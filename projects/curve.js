@@ -2,7 +2,6 @@ var Web3 = require('web3');
 const BigNumber = require("bignumber.js");
 const retry = require('async-retry')
 const axios = require("axios");
-//infura account 3
 const env = require('dotenv').config()
 const web3 = new Web3(new Web3.providers.HttpProvider(`https://mainnet.infura.io/v3/${env.parsed.INFURA_KEY}`));
 
@@ -179,6 +178,7 @@ let coinDecimals = [
 
 async function fetch() {
   var price_feed = await retry(async bail => await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,cdai,compound-usd-coin&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true'))
+
   var tvl = 0;
   var btcTVL = 0;
   await Promise.all(

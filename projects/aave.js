@@ -6,6 +6,7 @@ const BigNumber = require("bignumber.js");
 const retry = require('async-retry')
 const axios = require("axios");
 const abis = require('./config/abis.js')
+const utils = require('./helper/utils');
 
 
 let coins = [
@@ -66,8 +67,8 @@ let keys = [
 
 
 async function fetch() {
-  var price_feed = await retry(async bail => await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=republic-protocol,chainlink,aave,yearn-finance,ethlend,maker,0x,havven,decentraland,uniswap,kyber-network,enjincoin,basic-attention-token,bitcoin,ethereum&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true'))
 
+  var price_feed = await utils.getPrices(keys);
 
   var balanceCheck = '0x3dfd23A6c5E8BbcFc9581d2E864a68feb6a076d3';
   var tvl = 0;
