@@ -1,0 +1,23 @@
+{
+  "name": "defillama-adapters",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "babel-watch curve.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "async-retry": "^1.3.1",
+    "axios": "^0.21.0",
+    "dotenv": "^8.2.0",
+    "graphql": "^15.3.0",
+    "graphql-request": "^3.2.0",
+    "mysql": "^2.18.1",
+    "node-schedule": "^1.3.2",
+    "web3": "^1.3.0"
+  },
+  "devDependencies": {},
+  "description": ""
+}
