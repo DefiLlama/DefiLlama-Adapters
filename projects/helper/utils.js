@@ -14,6 +14,12 @@ async function returnBalance(token, address) {
   return parseFloat(balance);
 }
 
+async function returnEthBalance(address) {
+  let getethBalanceRes = await web3.eth.getBalance(address);
+  let ethAmount = await new BigNumber(getethBalanceRes).div(10 ** 18).toFixed(2);
+  return parseFloat(ethAmount);
+}
+
 async function getPrices(object) {
     var stringFetch = '';
     for (var key in object[0]) {
@@ -37,5 +43,6 @@ async function getPricesfromString(stringFeed) {
 module.exports = {
   getPricesfromString,
   getPrices,
-  returnBalance
+  returnBalance,
+  returnEthBalance
 }
