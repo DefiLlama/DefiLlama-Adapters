@@ -26,10 +26,16 @@ async function getPrices(object) {
       }
     }
     return await retry(async bail => await axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=${stringFetch}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`))
-
 }
 
+async function getPricesfromString(stringFeed) {
+
+    return await retry(async bail => await axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=${stringFeed}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`))
+}
+
+
 module.exports = {
-  returnBalance,
-  getPrices
+  getPricesfromString,
+  getPrices,
+  returnBalance
 }
