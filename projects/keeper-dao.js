@@ -1,21 +1,10 @@
-var Web3 = require('web3');
-const env = require('dotenv').config()
-const web3 = new Web3(new Web3.providers.HttpProvider(`https://mainnet.infura.io/v3/${env.parsed.INFURA_KEY}`));
-
-const BigNumber = require("bignumber.js");
-const retry = require('async-retry')
-const axios = require("axios");
-const abis = require('./config/abis.js')
 const utils = require('./helper/utils');
 
-
 let coins = [
-
     '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', //weth
     '0xeb4c2781e4eba804ce9a9803c67d0893436bb27d', //renbtc
     '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', //usdc
     '0x6b175474e89094c44da98b954eedeac495271d0f', //dai
-
 ]
 
 let keys = [
@@ -30,12 +19,9 @@ let keys = [
 ]
 
 
-
-
 async function fetch() {
 
   var price_feed = await utils.getPrices(keys);
-
   var balanceCheck = '0x53463cd0b074E5FDafc55DcE7B1C82ADF1a43B2E';
   var tvl = 0;
   await Promise.all(
