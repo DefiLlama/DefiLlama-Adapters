@@ -2,3 +2,5 @@ helper/db.js
 node_modules
 .env
 run.js
+blocks.js
+historical-data.js
