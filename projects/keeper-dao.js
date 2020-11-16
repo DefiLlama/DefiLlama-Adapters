@@ -1,48 +1,58 @@
+const retry = require('async-retry')
+const axios = require("axios");
+const { GraphQLClient, gql } = require('graphql-request')
 const utils = require('./helper/utils');
+const BigNumber = require("bignumber.js");
 
-let coins = [
-    '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', //weth
-    '0xeb4c2781e4eba804ce9a9803c67d0893436bb27d', //renbtc
-    '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', //usdc
-    '0x6b175474e89094c44da98b954eedeac495271d0f', //dai
-]
-
-let keys = [
-  {
-    '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48': 'stable',
-    '0x6b175474e89094c44da98b954eedeac495271d0f': 'stable',
-
-    '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2': 'ethereum',
-    '0xeb4c2781e4eba804ce9a9803c67d0893436bb27d': 'bitcoin'
-
-  }
-]
+async function fetch(latestBlock = null) {
+    let priceKeys =
+      [
+        {
+        '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48': 'stable',
+        '0x6b175474e89094c44da98b954eedeac495271d0f': 'stable',
+        '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2': 'ethereum',
+        '0xeb4c2781e4eba804ce9a9803c67d0893436bb27d': 'bitcoin',
+        '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee': 'ethereum',
+        }
+      ]
 
 
-async function fetch() {
+    let price_feed = await utils.getPrices(priceKeys);
 
-  var price_feed = await utils.getPrices(keys);
-  var balanceCheck = '0x53463cd0b074E5FDafc55DcE7B1C82ADF1a43B2E';
-  var tvl = 0;
-  await Promise.all(
-    coins.map(async (coin) => {
-      let tokenBalance = await utils.returnBalance(coin, balanceCheck);
-      if (keys[0][coin] !== 'stable') {
-        tvl += tokenBalance * price_feed.data[keys[0][coin]].usd;
-      } else {
-        tvl += tokenBalance
+    if (!latestBlock) {
+      latestBlock = await utils.returnBlock()
+    }
+
+    var endpoint = 'https://api.thegraph.com/subgraphs/name/keeperdao/keeperdao'
+    var graphQLClient = new GraphQLClient(endpoint)
+
+    var query = gql`
+    {
+      liquidityPoolSupplies(block: { number: ${latestBlock}}) {
+        id
+        supply
       }
+    }
+    `;
 
-    })
-  )
-  let ethBalance = await utils.returnEthBalance(balanceCheck)
-  tvl += (ethBalance * price_feed.data['ethereum'].usd)
+    let tvl = 0;
+    const results = await retry(async bail => await graphQLClient.request(query))
+    await Promise.all(
+      results.liquidityPoolSupplies.map(async token => {
 
-  return tvl;
+        let decimals = await utils.returnDecimals(token.id);
+        let balance = await new BigNumber(token.supply).div(10 ** decimals).toFixed(2);
+
+        if (priceKeys[0][token.id] !== 'stable') {
+          tvl += (price_feed.data[priceKeys[0][token.id]].usd * parseFloat(balance))
+        } else {
+          tvl += parseFloat(balance)
+        }
+      })
+    )
+
+    return tvl
 }
-
-
-
 
 module.exports = {
   fetch

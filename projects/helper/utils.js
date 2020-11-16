@@ -14,7 +14,17 @@ async function returnBalance(token, address) {
   return parseFloat(balance);
 }
 
+async function returnDecimals(address) {
+  if (address === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
+    return 18;
+  }
+  let contract = new web3.eth.Contract(abis.minABI, address)
+  let decimals = await contract.methods.decimals().call();
+  return decimals;
+}
+
 async function returnEthBalance(address) {
+
   let getethBalanceRes = await web3.eth.getBalance(address);
   let ethAmount = await new BigNumber(getethBalanceRes).div(10 ** 18).toFixed(2);
   return parseFloat(ethAmount);
@@ -38,6 +48,10 @@ async function getPricesfromString(stringFeed) {
   return await retry(async bail => await axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=${stringFeed}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`))
 }
 
+async function returnBlock() {
+  return await web3.eth.getBlockNumber()
+}
+
 async function fetchURL(url) {
   return await retry(async bail => await axios.get(url))
 }
@@ -48,5 +62,7 @@ module.exports = {
   getPricesfromString,
   getPrices,
   returnBalance,
+  returnBlock,
+  returnDecimals,
   returnEthBalance
 }
