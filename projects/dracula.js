@@ -4,10 +4,13 @@ const utils = require('./helper/utils');
 * ==> Correct adapter needs to be created.
 *
 *****************/
-
 async function fetch() {
-  let response = await utils.fetchURL('https://api-stats.valuedefi.io/api/common-stat/get-total-locked')
-  return response.data.data.total
+  var tvl = 0;
+  var staked = await utils.fetchURL('https://dracula.sucks/api/stats')
+  staked.data.victimPools.map(pool => {
+    tvl += pool.tvl
+  })
+  return tvl;
 }
 
 module.exports = {
