@@ -5,6 +5,9 @@ const KAVA_DENOM = "ukava";
 const HARD_DENOM = "hard";
 const USDX_DENOM = "usdx";
 const BNB_DENOM = "bnb";
+const BTC_DENOM = "btcb";
+const BUSD_DENOM = "busd";
+const XRPB_DENOM = "xrpb";
 
 
 var getPrices = async () => {
@@ -16,6 +19,8 @@ var getPrices = async () => {
     const hardPrice = {name: HARD_DENOM, price: 0};
     prices.push(hardPrice);
 
+    const busdPrice = {name: BUSD_DENOM, price: 1};
+    prices.push(busdPrice);
 
     const kavaMarketResponse = await retry(async bail => await axios.get('https://api.binance.com/api/v3/ticker/24hr?symbol=KAVAUSDT'))
 
@@ -30,6 +35,16 @@ var getPrices = async () => {
     const bnbPrice = {name: BNB_DENOM, price: Number(bnbMarketData.lastPrice)};
     prices.push(bnbPrice);
 
+    const btcMarketResponse = await retry(async bail => await axios.get('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT'))
+    const btcMarketData = btcMarketResponse.data;
+    const btcPrice = {name: BTC_DENOM, price: Number(btcMarketData.lastPrice)};
+    prices.push(btcPrice);
+
+    const xrpMarketResponse = await retry(async bail => await axios.get('https://api.binance.com/api/v3/ticker/24hr?symbol=XRPUSDT'))
+    const xrpMarketData = xrpMarketResponse.data;
+    const xrpPrice = {name: XRPB_DENOM, price: Number(xrpMarketData.lastPrice)};
+    prices.push(xrpPrice);
+
     return prices;
 }
 
@@ -39,6 +54,9 @@ var getTotalValues = async (prices) => {
     conversionMap.set(KAVA_DENOM, 10 ** 6);
     conversionMap.set(HARD_DENOM, 10 ** 6);
     conversionMap.set(BNB_DENOM, 10 ** 8);
+    conversionMap.set(BTC_DENOM, 10 ** 8);
+    conversionMap.set(BUSD_DENOM, 10 ** 8);
+    conversionMap.set(XRPB_DENOM, 10 ** 8);
 
 
     const response = await retry(async bail => await axios.get('https://kava4.data.kava.io/harvest/accounts'))
@@ -54,6 +72,7 @@ var getTotalValues = async (prices) => {
             const supply = Number(coin.amount)/conversionMap.get(coin.denom);
             const price = prices.find((item) => item.name === coin.denom).price;
             const value = supply * Number(price);
+            //console.log(coin.denom, value);
             totalValues.push({denom: coin.denom, total_value: value});
         }
     }
