@@ -34,6 +34,20 @@ const stakingPools = {
             "0xad32A8e6220741182940c5aBF610bDE99E737b2D"
         ]
     },
+    // DOUGH/ETH (OLD)
+    "0x8314337d2b13e1A61EadF0FD1686b2134D43762F": {
+        lpType: "balancer",
+        // LP token (BPT)
+        lp: "0xFAE2809935233d4BfE8a56c2355c4A2e7d1fFf1A",
+        // Address in which the underlyings are deposited
+        lpUnderlyingsAddress: "0xFAE2809935233d4BfE8a56c2355c4A2e7d1fFf1A",
+        underlyings: [
+            // WETH
+            "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            // DOUGH
+            "0xad32A8e6220741182940c5aBF610bDE99E737b2D"
+        ]
+    },
     // DEFI+S/ETH
     "0x220f25C2105a65425913FE0CF38e7699E3992B97": {
         lpType: "balancer",
