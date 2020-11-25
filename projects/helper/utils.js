@@ -7,7 +7,7 @@ const retry = require('async-retry')
 const axios = require("axios");
 
 async function returnBalance(token, address) {
-  let contract = new web3.eth.Contract(abis.minABI, token)
+  let contract = new web3.eth.Contract(abis.minABI, token);
   let decimals = await contract.methods.decimals().call();
   let balance = await contract.methods.balanceOf(address).call();
   balance = await new BigNumber(balance).div(10 ** decimals).toFixed(2);
@@ -48,6 +48,25 @@ async function getPricesfromString(stringFeed) {
   return await retry(async bail => await axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=${stringFeed}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`))
 }
 
+async function getTokenPrices(object) {
+  var stringFetch = '';
+  for (var key in object[0]) {
+    if (object[0][key] != 'stable') {
+      if (stringFetch.length > 0) {
+        stringFetch = stringFetch + ',' + object[0][key];
+      } else {
+        stringFetch = object[0][key];
+      }
+    }
+  }
+
+  return await getTokenPricesFromString(stringFetch);
+}
+
+async function getTokenPricesFromString(stringFeed) {
+  return result = await retry(async bail => await axios.get(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${stringFeed}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`));
+}
+
 async function returnBlock() {
   return await web3.eth.getBlockNumber()
 }
@@ -61,6 +80,8 @@ module.exports = {
   fetchURL,
   getPricesfromString,
   getPrices,
+  getTokenPricesFromString,
+  getTokenPrices,
   returnBalance,
   returnBlock,
   returnDecimals,
