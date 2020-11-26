@@ -69,7 +69,7 @@ async function fetch() {
   ])
   const price = priceFeed.data[TOKEN_ID].usd
   const tvl = new BigNumber(allValue).div(10 ** decimals).times(price)
-  return parseFloat(tvl.toString())
+  return parseFloat(tvl.toFixed())
 }
 
 module.exports = {
