@@ -62,10 +62,12 @@ async function fetch() {
   )
   const lockupAddress = await addressConfigInstance.methods.lockup().call()
   const lockupInstance = await new web3.eth.Contract(LOCKUP_ABI, lockupAddress)
-  const allValue = await lockupInstance.methods.getAllValue().call()
-  const priceFeed = await utils.getPrices(KEYS)
+  const [allValue, priceFeed, decimals] = await Promise.all([
+    lockupInstance.methods.getAllValue().call(),
+    utils.getPrices(KEYS),
+    utils.returnDecimals(TOKEN_ADDRESS),
+  ])
   const price = priceFeed.data[TOKEN_ID].usd
-  const decimals = await utils.returnDecimals(TOKEN_ADDRESS)
   const tvl = new BigNumber(allValue).div(10 ** decimals).times(price)
   return parseFloat(tvl.toString())
 }
