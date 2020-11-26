@@ -33,18 +33,6 @@ const ADDRESS_CONFIG_ABI = [
 
 const LOCKUP_ABI = [
   {
-    inputs: [
-      {
-        internalType: 'address',
-        name: '_config',
-        type: 'address',
-      },
-    ],
-    payable: false,
-    stateMutability: 'nonpayable',
-    type: 'constructor',
-  },
-  {
     constant: true,
     inputs: [],
     name: 'getAllValue',
