@@ -5,8 +5,8 @@ const utils = require('./helper/utils');
 
 
 async function fetch(latestBlock = null) {
-  var endpoint ='https://api.thegraph.com/subgraphs/name/bacon-labs/eighty-eight-mph';
-  var graphQLClient = new GraphQLClient(endpoint)
+  let endpoint ='https://api.thegraph.com/subgraphs/name/bacon-labs/eighty-eight-mph';
+  let graphQLClient = new GraphQLClient(endpoint)
 
   let price_feed = await utils.getPricesfromString('uniswap');
 
@@ -18,7 +18,7 @@ async function fetch(latestBlock = null) {
     }
   }
   `;
-  var tvl = 0;
+  let tvl = 0;
   const results = await retry(async bail => await graphQLClient.request(query))
   results.dpools.map(pool => {
     if (pool.stablecoin === '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984') {
