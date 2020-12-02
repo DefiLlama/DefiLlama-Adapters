@@ -7,16 +7,22 @@ const erc20ABI = require("./config/piedao/abi/ERC20.json");
 const env = require('dotenv').config()
 const web3 = new Web3(new Web3.providers.HttpProvider(`https://mainnet.infura.io/v3/${env.parsed.INFURA_KEY}`));
 
-const pies = [
+let pies = [
     // DEFI+S
     "0xad6a626ae2b43dcb1b39430ce496d2fa0365ba9c",
-    // // DEFI+L
+    // DEFI+L
     "0x78f225869c08d478c34e5f645d07a87d3fe8eb78",
-    // // USD++
+    // DEFI++
+    "0x8D1ce361eb68e9E05573443C407D4A3Bed23B033",
+    // USD++
     "0x9a48bd0ec040ea4f1d3147c025cd4076a2e71e3e",
-    // // BTC++
+    // BTC++
     "0x0327112423f3a68efdf1fcf402f6c5cb9f7c33fd",
+    // BCP
+    "0xe4f726adc8e89c6a6017f01eada77865db22da14",
 ];
+
+pies = pies.map((pie) => pie.toLowerCase());
 
 const stakingPools = {
     // DOUGH/ETH
@@ -77,6 +83,11 @@ async function fetch() {
     const tokenAmounts = {}
 
     async function pushTokenAmount(token, amount) {
+        // Prevent double counting of TVL by excluding pies
+        if(pies.includes(token.toLowerCase())) {
+            return;
+        }
+
         if(tokenAmounts[token] == undefined) {
 
             //create empty object
@@ -87,7 +98,13 @@ async function fetch() {
             }
 
             const decimals = await returnDecimals(token);
-            const price = (await getTokenPricesFromString(token)).data[token.toLowerCase()].usd;
+
+            try {
+                price = (await getTokenPricesFromString(token)).data[token.toLowerCase()].usd;
+            } catch {
+                // If no price is found set it to 0
+                price = 0;
+            } 
 
             tokenAmounts[token].decimals = decimals;
             tokenAmounts[token].price = price;
