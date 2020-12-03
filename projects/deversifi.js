@@ -47,13 +47,13 @@ let priceKeys = [
     '0xcc80c051057b774cd75067dc48f8987c4eb97a5e': 'nectar-token',
     '0xba100000625a3754423978a60c9317c58a424e3d': 'balancer',
     '0xc00e94cb662c3520282e6f5717214004a7f26888': 'uniswap',
-    '0xec67005c4e498ec7f55e092bd1d35cbc47c91892': 'compound',
+    '0xec67005c4e498ec7f55e092bd1d35cbc47c91892': 'compound-governance-token',
     '0x0d8775f648430679a709e98d2b0cb6250d2887ef': 'melon',
     '0x514910771af9ca656af840dff83e8264ecf986ca': 'basic-attention-token',
-    '0x93ed3fbe21207ec2e8f2d3c3de6e058cb73bc04d': 'chainlink',
-    '0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f': 'synthetix-network-token',
+    '0x514910771af9ca656af840dff83e8264ecf986ca': 'chainlink',
+    '0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f': 'havven',
     '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9': 'aave',
-    '0xeef9f339514298c6a857efcfc1a762af84438dee': 'hermez-network',
+    '0xeef9f339514298c6a857efcfc1a762af84438dee': 'hermez-network-token',
     '0xa117000000f279d81a1d3cc75430faa017fa5a2e': 'aragon',
     '0x1494ca1f11d487c2bbe4543e90080aeba4ba3c2b': 'defipulse-index'
   }
@@ -73,6 +73,7 @@ async function fetch() {
       var key = priceKeys[0][token]
       if (key !== 'stable') {
         tvl += balance * prices.data[key].usd;
+        console.log(key, balance * prices.data[key].usd);
       } else {
         tvl += balance;
       }
