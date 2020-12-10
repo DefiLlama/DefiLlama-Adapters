@@ -73,7 +73,7 @@ async function fetch() {
       var key = priceKeys[0][token]
       if (key !== 'stable') {
         tvl += balance * prices.data[key].usd;
-        console.log(key, balance * prices.data[key].usd);
+      //  console.log(key, balance * prices.data[key].usd);
       } else {
         tvl += balance;
       }
