@@ -25,8 +25,9 @@ async function fetch() {
 
     let ethUsdcTotal = await getEthTotalCollateral(abis.abis.fnxOracle,ethUsdcPool);
     let ethFnxTotal = await getEthTotalCollateral(abis.abis.fnxOracle,ethFnxPool);
-    let wanFnxTotal = await getWanTotalCollateral(abis.abis.fnxOracle,wanFnxPool);
-
+  //  let wanFnxTotal = await getWanTotalCollateral(abis.abis.fnxOracle,wanFnxPool);
+    wanFnxTotal = 0;
+    
     ethUsdcTotal = new BN(ethUsdcTotal).div(new BN(10 ** 26)).toFixed(2);
     ethFnxTotal = new BN(ethFnxTotal).div(new BN(10 ** 26)).toFixed(2);
     wanFnxTotal = new BN(wanFnxTotal).div(new BN(10 ** 26)).toFixed(2);
