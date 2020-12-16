@@ -1,6 +1,6 @@
 var Web3 = require('web3');
 const env = require('dotenv').config()
-const web3 = new Web3(new Web3.providers.HttpProvider(`https://mainnet.infura.io/v3/28b9b237d464407fabd90e7e7e1e9fa5`));
+const web3 = new Web3(new Web3.providers.HttpProvider(`https://mainnet.infura.io/v3/${env.parsed.INFURA_KEY}`));
 const abis = require('./config/n3rd/abis.js');
 const BN = require("bignumber.js");
 
