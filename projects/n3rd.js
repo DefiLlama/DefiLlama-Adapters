@@ -63,7 +63,6 @@ async function fetch() {
   ret = new BN(vaultTvl).plus(new BN(poolTvl)).toFixed(0);
   return ret;
 }
-fetch()
 
 module.exports = {
   fetch
