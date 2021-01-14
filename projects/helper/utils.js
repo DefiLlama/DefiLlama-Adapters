@@ -15,7 +15,7 @@ async function returnBalance(token, address) {
 }
 
 async function returnDecimals(address) {
-  if (address === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
+  if (address.toLowerCase() === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
     return 18;
   }
   let contract = new web3.eth.Contract(abis.minABI, address)
