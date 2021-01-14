@@ -4,7 +4,7 @@ const retry = require('async-retry')
 const axios = require("axios");
 const env = require('dotenv').config()
 const web3 = new Web3(new Web3.providers.HttpProvider(`https://mainnet.infura.io/v3/${env.parsed.INFURA_KEY}`));
-
+const utils = require('./helper/utils');
 const abis = require('./config/curve/abis.js')
 
 
@@ -19,7 +19,7 @@ let swaps = [
   {
     'name': 'hbtc',
     'address': '0x4CA9b3063Ec5866A4B82E437059D2C43d1be596F',
-    'coins': [0],
+    'coins': [0,1],
     'type': 'btc',
     'abi': abis.abis.abiNew
   },
@@ -135,7 +135,62 @@ let swaps = [
     'type': 1,
     'abi': abis.abis.abiNew
   },
-
+  {
+    'name': 'pbtc',
+    'address': '0x7F55DDe206dbAD629C080068923b36fe9D6bDBeF',
+    'coins': [0],
+    'type': 'btc',
+    'abi': abis.abis.abiNew
+  },
+  {
+    'name': 'bbtc',
+    'address': '0x071c661B4DeefB59E2a3DdB20Db036821eeE8F4b',
+    'coins': [0],
+    'type': 'btc',
+    'abi': abis.abis.abiNew
+  },
+  {
+    'name': 'obtc',
+    'address': '0xd81dA8D904b52208541Bade1bD6595D8a251F8dd',
+    'coins': [0],
+    'type': 'btc',
+    'abi': abis.abis.abiNew
+  },
+  {
+    'name': 'ust',
+    'address': '0x890f4e345B1dAED0367A877a1612f86A1f86985f',
+    'coins': [0],
+    'type': 1,
+    'abi': abis.abis.abiNew
+  },
+  {
+    'name': 'eurs',
+    'address': '0x0Ce6a5fF5217e38315f87032CF90686C96627CAA',
+    'coins': [0,1],
+    'type': 1.2,
+    'abi': abis.abis.abiNew
+  },
+  {
+    'name': 'seth',
+    'address': '0xc5424b857f758e906013f3555dad202e4bdb4567',
+    'coins': [0,1],
+    'type': 'eth',
+    'abi': abis.abis.abiNew
+  },
+  {
+    'name': 'steth',
+    'address': '0xDC24316b9AE028F1497c275EB9192a3Ea0f67022',
+    'coins': [0,1],
+    'type': 'eth',
+    'abi': abis.abis.steth
+  },
+  {
+    'name': 'aave',
+    'address': '0xDeBF20617708857ebe4F679508E7b7863a8A8EeE',
+    'coins': [0,1,2],
+    'type': 1,
+    'abi': abis.abis.aave
+  },
 
 
 ]
@@ -172,23 +227,54 @@ let coinDecimals = [
     '0x6B175474E89094C44Da98b954EedeAC495271d0F': '18', //DAI
     '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48': '6', //USDC
     '0x5BC25f649fc4e26069dDF4cF4010F9f706c23831': '18', //dusd
-    '0x0000000000085d4780B73119b644AE5ecd22b376': '18'
+    '0x0000000000085d4780B73119b644AE5ecd22b376': '18',
+    '0x5228a22e72ccC52d415EcFd199F99D0665E7733b': '18', //pbtc
+    '0x9BE89D2a4cd102D8Fecc6BF9dA793be995C22541': '8', //bbtc
+    '0x8064d9Ae6cDf087b1bcd5BDf3531bD5d8C537a68': '18',//obtc
+    '0xa47c8bf37f92aBed4A126BDA807A7b7498661acD': '18', //ust
+    '0xdB25f211AB05b1c97D595516F45794528a807ad8': '2', //eurs
+    '0xD71eCFF9342A5Ced620049e616c5035F1dB98620': '18', //seur
+    '0x5e74C9036fb86BD7eCdcb084a0673EFc32eA31cb': '18', //seth
+    '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE': '18', //etg
+    '0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84': '18', //steth
+    '0x028171bCA77440897B824Ca71D1c56caC55b68A3': '18',
+    '0xBcca60bB61934080951369a648Fb03DF4F96263C': '6',
+    '0x3Ed3B47Dd13EC9a98b44e6204A523E766B225811': '6'
+
+
+
+
+
   }
 ]
 
 async function fetch() {
-  var price_feed = await retry(async bail => await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,cdai,compound-usd-coin&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true'))
+  var price_feed = await retry(async bail => await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,bitcoin,cdai,compound-usd-coin&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true'))
 
   var tvl = 0;
   var btcTVL = 0;
+  var ethTVL = 0;
+  let pools = [];
   await Promise.all(
     swaps.map(async item => {
-      var details = {};
+
       await Promise.all(
         item.coins.map(async i => {
+
           poolAmount = await calc(item, i, price_feed);
+
+          if (pools[item.name] && pools[item.name].hasOwnProperty('value')) {
+            pools[item.name].value += parseFloat(poolAmount);
+          } else {
+            pools[item.name] = {
+              'value': parseFloat(poolAmount)
+            };
+          }
+
           if (item.type == 'btc') {
             btcTVL += parseFloat(poolAmount);
+          } else if (item.type == 'eth') {
+            ethTVL += parseFloat(poolAmount);
           } else {
             tvl += parseFloat(poolAmount )
           }
@@ -197,7 +283,8 @@ async function fetch() {
     })
   )
 
-  var tvl = (price_feed.data.bitcoin.usd * btcTVL) + tvl
+  //console.log(pools);
+  var tvl = (price_feed.data.ethereum.usd * ethTVL) + (price_feed.data.bitcoin.usd * btcTVL) + tvl
   return tvl;
 }
 
@@ -216,8 +303,13 @@ async function calc(item, i, price_feed) {
   var balances = await dacontract.methods.balances(i).call();
   var coins = await dacontract.methods.coins(i).call();
 
+  let poolAmount = 0
+  if (coins === '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE') {
+    poolAmount = await utils.returnEthBalance(item.address);
+  }  else {
+    poolAmount = await new BigNumber(balances).div(10 ** coinDecimals[0][coins]).toFixed(2);
 
-  var poolAmount = await new BigNumber(balances).div(10 ** coinDecimals[0][coins]).toFixed(2);
+  }
 
 
   if (item.type == 'compound') {
