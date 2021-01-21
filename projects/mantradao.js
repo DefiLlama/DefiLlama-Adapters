@@ -37,26 +37,49 @@ async function fetch() {
             { contract: '0x1a22188b5F6faf7253a3DefCC576884c0FF50a91', token: '0x3593D125a4f7849a1B059E64F4517A86Dd60c95d', price: 'mantra-dao'},
         ]
 
-        // Lending assets
+        // Lending / borrowing
+        // Zen assets
         const zenErc20 = [
-            // ZEN USDT - Lending USDT
+            // zenUSDT -
             ['0xF76cc2dc02F56B27761dBdb7a62e2B1C4a22aFcd', 'tether'],
-            // ZEN USDC - Lending USDC
+            // zenUSDC -
             ['0x0968c90198f08b67365840fa37631b29fe2aa9fc', 'usd-coin'],
-            // ZEN WBTC - Lending WBTC
+            // zenWBTC -
             ['0x5b4463bbd7b2e870601e91161e0f1f7f84cde214', 'wrapped-bitcoin'],
-            // ZEN COMP - Lending COMP
+            // zenCOMP -
             ['0x3f2e9a93428a22d2f4cacc3f184f1aad85054e1c', 'compound-governance-token'],
-            // ZEN DAI - Lending DAI
+            // zenDAI -
             ['0x3bafa9cd93c7bdc07fd9609e95e04a8904eacf7d', 'dai'],
-            // ZEN CREAM - Lending CREAM
+            // zenCREAM -
             ['0x66d696474784ded49b5d0a43e50bf59d63402d74', 'cream'],
-            // ZEN OM - Lending OM
+            // zenOM -
             ['0xf533c78c0790676008d576c5cc2e63e0856ed4f0', 'mantra-dao'],
-            // ZEN RFUEL - Lending RFUEL
+            // zenRFUEL -
             ['0x11c70caa910647d820bd014d676dcd97edd64a99', 'rio-defi'],
-            // ZEN LINK - Lending LINK
-            ['0x27d15446176b469ee7fbdec1e5a4b506fd77c0cd', 'chainlink']
+            // zenLINK -
+            ['0x27d15446176b469ee7fbdec1e5a4b506fd77c0cd', 'chainlink'],
+            // zenAAVE -  
+            ['0x57a8cb15e9575bf9bf80f3531183395703912f57', 'aave'],
+            // zenUNI -  
+            ['0x391f902c8979050ba8036e3d61d13d79cf545db8', 'uniswap'],
+            // zenSUSHI -  
+            ['0xb3c114d12cc260ff0a07a2cf22a910625367b403', 'sushi'],
+            // zenSNX -  
+            ['0xc4bdaa3b4f2c9a78baa4442cd81874881850ff2e', 'synthetix-network-token'],
+            // zenYFI -  
+            ['0xb595a7715d7d5a0252e5d3cdddfa2e1c7c1feebe', 'yearn-finance'],
+            // zenDSD -  
+            ['0x1c1bb5efec38b1b01e0e72fa0c8521d695299b60', 'dynamic-set-dollar'],
+            // zenBONDLY -  
+            ['0x53bafba543f8f1283ed5b21cafe7925c367ec3bd', 'bondly'],
+            // zenPOLS -  
+            ['0x5b37c72dde4c4efc3e2eeff4107ef6eb61f5de10', 'polkastarter'],
+            // zen1INCH -  
+            ['0x2ddfd56221568b6d4350b68432569a57bc1f9572', '1inch'],
+            // zenRSR -  
+            ['0xa0998fc7dcf51169d97a74f0b0b7d97e4af8e873', 'reserve-rights-token'],
+            // zenROYA -  
+            ['0x0e0055bf26f4bdde57b112112e5db25d56706580', 'royale'],
         ]
 
          let stakingAssetCalc = await Promise.all(stakingAssets.map(async (asset) => {
