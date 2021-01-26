@@ -19,4 +19,8 @@
 ##### Chain:
 
 
+##### Coingecko ID (so your TVL can appear on Coingecko):
+
+
+
 ##### Token address and ticker if any:
