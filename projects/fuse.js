@@ -2,13 +2,9 @@
   Modules
   ==================================================*/
 
-  var Web3 = require('web3')
-  const env = require('dotenv').config()
-  const web3 = new Web3(new Web3.providers.HttpProvider(`https://mainnet.infura.io/v3/${env.parsed.INFURA_KEY}`))
   const { GraphQLClient } = require('graphql-request')
   
   const BigNumber = require("bignumber.js")
-  const abis = require('./config/abis.js')
   const utils = require('./helper/utils')
   
   /*==================================================
@@ -37,10 +33,7 @@
     for (var key in tokenList) {
       if (tokenList[key] in prices.data)
       {
-        var dacontract = new web3.eth.Contract(abis.abis.minABI, tokenList[key])
-        var balances = await dacontract.methods.balanceOf(ambBridgeContract).call();
-        var decimals = await dacontract.methods.decimals().call();
-        balances = await new BigNumber(balances).div(10 ** decimals).toFixed(2);
+        var balances = await utils.returnBalance(tokenList[key], ambBridgeContract)
         bridgeTVL += (parseFloat(balances) * prices.data[tokenList[key]].usd)
       }
     }
