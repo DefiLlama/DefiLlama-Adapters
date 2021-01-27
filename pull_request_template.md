@@ -22,5 +22,7 @@
 ##### Coingecko ID (so your TVL can appear on Coingecko):
 
 
+##### Description/bio (to be shown on DefiLlama):
+
 
 ##### Token address and ticker if any:
