@@ -59,7 +59,7 @@ async function fetch() {
        console.log(e);
     }
 
-    console.log(tlv.toFixed(2))
+    //console.log(tlv.toFixed(2))
     return tlv.toFixed(2);
 
 }
