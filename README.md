@@ -6,6 +6,10 @@
 4. Don't hesitate to ping me on Twitter if I'm late to merge your PR
 
 
+## Getting listed
+
+Please send answers to questions there https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/pull_request_template.md when creating a PR.
+
 ## Work in progress
 
 This is a work in progress. The goal is to eventually handle historical data. DefiLlama aims to be transparent, accurate and open source.
