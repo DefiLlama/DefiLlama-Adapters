@@ -7,16 +7,22 @@ const erc20ABI = require("./config/piedao/abi/ERC20.json");
 const env = require('dotenv').config()
 const web3 = new Web3(new Web3.providers.HttpProvider(`https://mainnet.infura.io/v3/${env.parsed.INFURA_KEY}`));
 
-const pies = [
+let pies = [
     // DEFI+S
     "0xad6a626ae2b43dcb1b39430ce496d2fa0365ba9c",
-    // // DEFI+L
+    // DEFI+L
     "0x78f225869c08d478c34e5f645d07a87d3fe8eb78",
-    // // USD++
+    // DEFI++
+    "0x8D1ce361eb68e9E05573443C407D4A3Bed23B033",
+    // USD++
     "0x9a48bd0ec040ea4f1d3147c025cd4076a2e71e3e",
-    // // BTC++
+    // BTC++
     "0x0327112423f3a68efdf1fcf402f6c5cb9f7c33fd",
+    // BCP
+    "0xe4f726adc8e89c6a6017f01eada77865db22da14",
 ];
+
+pies = pies.map((pie) => pie.toLowerCase());
 
 const stakingPools = {
     // DOUGH/ETH
@@ -47,7 +53,7 @@ const stakingPools = {
             "0xad32A8e6220741182940c5aBF610bDE99E737b2D"
         ]
     },
-    // DEFI+S/ETH
+    // DEFI+S/ETH (OLD)
     "0x220f25C2105a65425913FE0CF38e7699E3992B97": {
         lpType: "balancer",
         // LP token (BPT)
@@ -59,7 +65,7 @@ const stakingPools = {
             "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
         ]
     },
-    // DEFI+L/ETH
+    // DEFI+L/ETH (OLD)
     "0xc1a116cb2d354503f9ec5cb436a3b213f377631d": {
         lpType: "balancer",
         // LP token (BPT)
@@ -70,13 +76,42 @@ const stakingPools = {
             // WETH
             "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
         ]
-    }
+    },
+    // DEFI+S/ETH 
+    "0xFcBB61bcd4909bf4AF708F15AAaa905E0978cAfc": {
+        lpType: "balancer",
+        // LP token (BPT)
+        lp: "0x35333cf3db8e334384ec6d2ea446da6e445701df",
+        // Address in which the underlyings are deposited
+        lpUnderlyingsAddress: "0x35333cf3db8e334384ec6d2ea446da6e445701df",
+        underlyings: [
+            // WETH
+            "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        ]
+    },
+    // DEFI+L/ETH
+    "0xb8E59ce1359d80E4834228eDd6a3F560e7534438": {
+        lpType: "balancer",
+        // LP token (BPT)
+        lp: "0xa795600590a7da0057469049ab8f1284baed977e",
+        // Address in which the underlyings are deposited
+        lpUnderlyingsAddress: "0xa795600590a7da0057469049ab8f1284baed977e",
+        underlyings: [
+            // WETH
+            "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        ]
+    },
 }
 
 async function fetch() {
     const tokenAmounts = {}
 
     async function pushTokenAmount(token, amount) {
+        // Prevent double counting of TVL by excluding pies
+        if(pies.includes(token.toLowerCase())) {
+            return;
+        }
+
         if(tokenAmounts[token] == undefined) {
 
             //create empty object
@@ -87,7 +122,13 @@ async function fetch() {
             }
 
             const decimals = await returnDecimals(token);
-            const price = (await getTokenPricesFromString(token)).data[token.toLowerCase()].usd;
+
+            try {
+                price = (await getTokenPricesFromString(token)).data[token.toLowerCase()].usd;
+            } catch {
+                // If no price is found set it to 0
+                price = 0;
+            } 
 
             tokenAmounts[token].decimals = decimals;
             tokenAmounts[token].price = price;

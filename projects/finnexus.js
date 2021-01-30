@@ -22,6 +22,7 @@ async function getWanTotalCollateral(abi,contract) {
 
 async function fetch() {
 
+
     let ethUsdcPool = '0x120f18f5b8edcaa3c083f9464c57c11d81a9e549';
     let ethFnxPool = '0xfdf252995da6d6c54c03fc993e7aa6b593a57b8d';
 
@@ -45,7 +46,6 @@ async function fetch() {
 
     try {
 
-
         let wanFnxTotal = await getWanTotalCollateral(abis.abis.fnxOracle,wanFnxPool);
         let wanUsdcTotal = await getWanTotalCollateral(abis.abis.fnxOracle,wanUsdcPool);
 
@@ -61,6 +61,8 @@ async function fetch() {
 
     //console.log(tlv.toFixed(2))
     return tlv.toFixed(2);
+
+}
 
 }
 

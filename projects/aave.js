@@ -44,7 +44,7 @@ let keys = [
     '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9': 'aave',
     '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48': 'stable',
     '0x0000000000085d4780B73119b644AE5ecd22b376': 'stable',
-    '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e': 'yearn-finance', //yfi
+    '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e': 'yearn-finance', //yfi 
     '0x408e41876cccdc0f92210600ef50372656052a38': 'republic-protocol', //ren
     '0x80fB784B7eD66730e8b1DBd9820aFD29931aab03': 'ethlend', //lend
     '0x4fabb145d64652a948d72533023f6e7a623c7c53': 'stable', //busd
