@@ -1,7 +1,6 @@
 var Web3 = require('web3');
 const env = require('dotenv').config()
 const web3 = new Web3(new Web3.providers.HttpProvider(`https://mainnet.infura.io/v3/${env.parsed.INFURA_KEY}`));
-//const web3 = new Web3(new Web3.providers.HttpProvider("https://mainnet.infura.io/v3/75c431806c0d49ee9868d4fdcef025bd"));
 
 const web3wan = new Web3(new Web3.providers.HttpProvider('https://gwan-ssl.wandevs.org:56891'));
 
@@ -64,7 +63,7 @@ async function fetch() {
 
 }
 
-}
+
 
 
 module.exports = {
