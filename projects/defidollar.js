@@ -26,11 +26,9 @@ async function fetch() {
 
   let tlv = await core.methods.totalSupply().call();
   tlv = BigNumber(tlv).dividedBy(TEN.pow(new BigNumber(DECIMAL)));
-  console.log(tlv.toFixed(4));
+
   return tlv.toFixed(4);
 }
-
-fetch();
 
 module.exports = {
   fetch,
