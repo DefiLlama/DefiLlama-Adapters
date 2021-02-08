@@ -27,9 +27,12 @@ let keys =
     '0xd26114cd6ee289accf82350c8d8487fedb8a0c07': 'omisego',
     '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359': 'sai',
     '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2': 'ethereum',
-    '0x5d3a536e4d6dbd6114cc1ead35777bab948e3643': 'cdai'
-
-
+    '0x5d3a536e4d6dbd6114cc1ead35777bab948e3643': 'cdai',
+    '0xbc396689893d065f41bc2c6ecbee5e0085233447': 'perpetual-protocol',
+    '0x92e187a03b6cd19cb6af293ba17f2745fd2357d5': 'unit-protocol-duck',
+    '0x2ba592f78db6436527729929aaf6c908497cb200': 'cream',
+    '0x0ae055097c6d159879521c384f1d2123d1f195e6': 'xdai-stake',
+    '0x1ceb5cb57c4d4e2b2433641b95dd330a33185a44': 'keep3rv1'
 
   }
 
