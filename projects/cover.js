@@ -20,6 +20,8 @@ async function fetch() {
         await Promise.all(
           protocolDetails._allCovers.map(async cover => {
             let coverBalance = await utils.returnBalance('0x6b175474e89094c44da98b954eedeac495271d0f', cover)
+            let coverBalanceYdai = await utils.returnBalance('0x16de59092dAE5CcF4A1E6439D611fd0653f0Bd01', cover)
+            tvl += coverBalanceYdai
             tvl += coverBalance
           })
         )
