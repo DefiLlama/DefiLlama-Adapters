@@ -13,13 +13,8 @@ const CETH = require('./config/mantra-dao/CETH.json');
 async function fetch() {
 
     try {
-<<<<<<< HEAD
 
         var price_feed = await retry(async bail => await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,tether,usd-coin,wrapped-bitcoin,dai,cream,chainlink,mantra-dao,rio-defi,compound-governance-token&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true'))
-=======
-        
-        var price_feed = await retry(async bail => await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,tether,usd-coin,wrapped-bitcoin,dai,cream,chainlink,mantra-dao,rio-defi,compound-governance-token,aave,uniswap,sushi,havven,yearn-finance,dynamic-set-dollar,bondly,polkastarter,1inch,reserve-rights-token,royale,ftx-token,serum,balancer,curve-dao-token,uma,thorchain-erc20,frax,hegic,rhegic,88mph,zlot,zhegic,whiteheart,wrapped-nxm,renbtc,bancor,kyber-network,celsius-degree-token,cornichon,api3,matic-network,bao-finance,terrausd&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true'))
->>>>>>> f7c781fdb106b34f0d09c793594e769033bbfdbb
 
         // Helper to get lending supply
         async function returnSupply(token, address, abi) {
@@ -63,73 +58,73 @@ async function fetch() {
             ['0x11c70caa910647d820bd014d676dcd97edd64a99', 'rio-defi'],
             // zenLINK -
             ['0x27d15446176b469ee7fbdec1e5a4b506fd77c0cd', 'chainlink'],
-            // zenAAVE -  
+            // zenAAVE -
             ['0x57a8cb15e9575bf9bf80f3531183395703912f57', 'aave'],
-            // zenUNI -  
+            // zenUNI -
             ['0x391f902c8979050ba8036e3d61d13d79cf545db8', 'uniswap'],
-            // zenSUSHI -  
+            // zenSUSHI -
             ['0xb3c114d12cc260ff0a07a2cf22a910625367b403', 'sushi'],
-            // zenSNX -  
+            // zenSNX -
             ['0xc4bdaa3b4f2c9a78baa4442cd81874881850ff2e', 'havven'],
-            // zenYFI -  
+            // zenYFI -
             ['0xb595a7715d7d5a0252e5d3cdddfa2e1c7c1feebe', 'yearn-finance'],
-            // zenDSD -  
+            // zenDSD -
             ['0x1c1bb5efec38b1b01e0e72fa0c8521d695299b60', 'dynamic-set-dollar'],
-            // zenBONDLY -  
+            // zenBONDLY -
             ['0x53bafba543f8f1283ed5b21cafe7925c367ec3bd', 'bondly'],
-            // zenPOLS -  
+            // zenPOLS -
             ['0x5b37c72dde4c4efc3e2eeff4107ef6eb61f5de10', 'polkastarter'],
-            // zen1INCH -  
+            // zen1INCH -
             ['0x2ddfd56221568b6d4350b68432569a57bc1f9572', '1inch'],
-            // zenRSR -  
+            // zenRSR -
             ['0xa0998fc7dcf51169d97a74f0b0b7d97e4af8e873', 'reserve-rights-token'],
-            // zenROYA -  
+            // zenROYA -
             ['0x0e0055bf26f4bdde57b112112e5db25d56706580', 'royale'],
-            // zenFTX -  
+            // zenFTX -
             ['0x650D62FCB1F22A10a2b810BFe305C1312a24A367', 'ftx-token'],
-            // zenSRM -  
+            // zenSRM -
             ['0x290a565ec7C28557AE872de2f3a5Ce500F46A5d2', 'serum'],
-            // zenBAL -  
+            // zenBAL -
             ['0x31b992fda33C6c52c602cF379B9bBe1745A903f7', 'balancer'],
-            // zenCRV -  
+            // zenCRV -
             ['0x144bdF52690c59B510DA5DBc09BB5f145FbdB8E1', 'curve-dao-token'],
-            // zenUMA -  
+            // zenUMA -
             ['0x1BAdCB0833072B986c845681D3C73603Adc5bA54', 'uma'],
-            // zenRUNE -  
+            // zenRUNE -
             ['0x3bdBd2B661560Bcdf59BDC74576f65E2F714b836', 'thorchain-erc20'],
-            // zenFRAX -  
+            // zenFRAX -
             ['0xa8e31aD81D609ff616645849987feF30A3FfABd9', 'frax'],
-            // zenHEGIC -  
+            // zenHEGIC -
             ['0x15Fcfd53fec9B72cF3725649F3eC4603077ad21e', 'hegic'],
-            // zenrHEGIC -  
+            // zenrHEGIC -
             ['0xB15e13Bc622315E29A7142fea3d0c67464B44e97', 'rhegic'],
-            // zenMPH -  
+            // zenMPH -
             ['0x4dD6D5D861EDcD361455b330fa28c4C9817dA687', '88mph'],
-            // zenzLOT -  
+            // zenzLOT -
             ['0x8eC3E4978E531565A46C22fbE0423Be1BB8E1156', 'zlot'],
-            // zenzHEGIC -  
+            // zenzHEGIC -
             ['0x0C91F1795e012BCEF586C925F747f23B0969B5eA', 'zhegic'],
-            // zenWHITE -  
+            // zenWHITE -
             ['0xE3334e66634acF17B2b97ab560ec92D6861b25fa', 'whiteheart'],
-            // zenWNXM -  
+            // zenWNXM -
             ['0xa07Be94D721DF448B63EC6C3160138A2b2619e1D', 'wrapped-nxm'],
-            // zenRENBTC -  
+            // zenRENBTC -
             ['0x7a665de4b80835295901dd84ece07e942a9fe400', 'renbtc'],
-            // zenBNT -  
+            // zenBNT -
             ['0x1b6d730a1dCAeB870BA3b0c6e51F801C1cCa0499', 'bancor'],
-            // zenKNC -  
+            // zenKNC -
             ['0x180087A6a87Fd6b09a78C9b9B87b71335906c61D', 'kyber-network'],
-            // zenCEL -  
+            // zenCEL -
             ['0xa6b8cbB493fe5682d627bdB9A6B361488086a2fD', 'celsius-degree-token'],
-            // zenCORN -  
+            // zenCORN -
             ['0x4E50972850822f8be8A034e23891B7063893Cc34', 'cornichon'],
-            // zenAPI3 -  
+            // zenAPI3 -
             ['0xA24c0E9195481821f9b5292E8c6A4209cc8cc3c9', 'api3'],
-            // zenMATIC -  
+            // zenMATIC -
             ['0xa3968dAbF386D99F67c92c4E3c7cfDf2c0ccc396', 'matic-network'],
-            // zenBAO -  
+            // zenBAO -
             ['0x132E549262f2b2AD48AA306c3d389e55BB510419', 'bao-finance'],
-            // zenUST -  
+            // zenUST -
             ['0xaB576bCBB0C3303C9e680fbFDeCa67e062eAE59c', 'terrausd'],
         ]
 
@@ -159,8 +154,7 @@ async function fetch() {
                 var contract = asset[0];
                 var token = asset[0];
                 balance = await returnSupply(token, contract, CERC);
-                console.log(asset)
-                console.log(price_feed.data[asset[1]])
+
                 tvl += (parseFloat(balance) * price_feed.data[asset[1]].usd)
             } catch (error) {
                 //console.log(error)

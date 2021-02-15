@@ -32,7 +32,12 @@ let keys =
     '0x92e187a03b6cd19cb6af293ba17f2745fd2357d5': 'unit-protocol-duck',
     '0x2ba592f78db6436527729929aaf6c908497cb200': 'cream',
     '0x0ae055097c6d159879521c384f1d2123d1f195e6': 'xdai-stake',
-    '0x1ceb5cb57c4d4e2b2433641b95dd330a33185a44': 'keep3rv1'
+    '0x1ceb5cb57c4d4e2b2433641b95dd330a33185a44': 'keep3rv1',
+    '0x4e15361fd6b4bb609fa63c81a2be19d873717870': 'fantom',
+    '0x6b3595068778dd592e39a122f4f5a5cf09c90fe2': 'sushi',
+    '0x4688a8b1f292fdab17e9a90c8bc379dc1dbd8713': 'cover-protocol',
+    '': 'badger-dao'
+
 
   }
 
