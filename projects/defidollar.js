@@ -2,7 +2,7 @@
  * Modules
  * ************************** */
 var Web3 = require("web3");
-const DUSD = require("./config/defidollar/abi.json");
+const DFD = require("./config/defidollar/abi.json");
 const ENV = require("dotenv").config();
 
 /* ************************** *
@@ -13,14 +13,14 @@ const WEB3 = new Web3(
     `https://mainnet.infura.io/v3/${ENV.parsed.INFURA_KEY}`
   )
 );
-const BASE = "0x5bc25f649fc4e26069ddf4cf4010f9f706c23831";
+const BASE = "0x20c36f062a31865bED8a5B1e512D9a1A20AA333A";
 
 /* ************************** *
  * Methods
  * ************************** */
 async function fetch() {
-  var dusd = new WEB3.eth.Contract(DUSD.abi, BASE);
-  return WEB3.utils.fromWei(await dusd.methods.totalSupply().call());
+  var dfd = new WEB3.eth.Contract(DFD.abi, BASE);
+  return WEB3.utils.fromWei(await dfd.methods.totalSupply().call());
 }
 
 module.exports = {
