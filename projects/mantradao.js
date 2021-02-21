@@ -131,7 +131,6 @@ async function fetch() {
         const stakingAssetCalc = Promise.all(stakingAssets.map(async (asset) => {
             try {
                 let balance = await utils.returnBalance(asset.token, asset.contract);
-                console.log(balance)
                 tvl += (parseFloat(balance) * price_feed.data[asset.price].usd)
             } catch (error) {
                 console.log(error)
@@ -154,8 +153,6 @@ async function fetch() {
                 var contract = asset[0];
                 var token = asset[0];
                 balance = await returnSupply(token, contract, CERC);
-                console.log(asset)
-                console.log(price_feed.data[asset[1]])
                 tvl += (parseFloat(balance) * price_feed.data[asset[1]].usd)
             } catch (error) {
                 console.log(error)
