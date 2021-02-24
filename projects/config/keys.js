@@ -36,8 +36,14 @@ let keys =
     '0x4e15361fd6b4bb609fa63c81a2be19d873717870': 'fantom',
     '0x6b3595068778dd592e39a122f4f5a5cf09c90fe2': 'sushi',
     '0x4688a8b1f292fdab17e9a90c8bc379dc1dbd8713': 'cover-protocol',
-    '': 'badger-dao'
-
+    '0x3472a5a71965499acd81997a54bba8d852c6e53d': 'badger-dao',
+    '0xa3bed4e1c75d00fa6f4e5e6922db7261b5e9acd2': 'meta',
+    '0xca1207647ff814039530d7d35df0e1dd2e91fa84': 'dhedge-dao',
+    '0x1b40183efb4dd766f11bda7a7c3ad8982e998421': 'vesper-finance',
+    '0x5f64ab1544d28732f0a24f4713c2c8ec0da089f0': 'dextf',
+    '0x903bef1736cddf2a537176cf3c64579c3867a881': 'ichi-farm',
+    '0xaac41ec512808d64625576eddd580e7ea40ef8b2': 'gameswap-org',
+    '0x7240ac91f01233baaf8b064248e80feaa5912ba3': 'octofi'
 
   }
 
