@@ -49,7 +49,7 @@ async function fetch() {
   let pool2 = '0x17ac188e09a7890a1844e5e65471fe8b0ccfadf3';
   let contract = new web3.eth.Contract(abis.abis.main, pool);
 
-  let price_feed = await utils.getPricesfromString('compound-governance-token,curve-dao-token,havven,maker,yearn-finance,aave,uniswap,chainlink,omisego,uma');
+  let price_feed = await utils.getPricesfromString('compound-governance-token,curve-dao-token,havven,maker,yearn-finance,aave,uniswap,chainlink,omisego,uma,0x,chainlink');
 
   let tokens = await contract.methods.getCurrentTokens().call();
 
@@ -70,6 +70,7 @@ async function fetch() {
     tokens2.map(async (token) => {
       let balance = await utils.returnBalance(token, pool2);
       if (keys[0][token.toLowerCase()]) {
+        console.log(token.toLowerCase(), 'oken.toLowerCase()');
         tvlPool2 += parseFloat(balance) * price_feed.data[keys[0][token.toLowerCase()]].usd
       } else {
         console.log('Indexed Could not find token', token)

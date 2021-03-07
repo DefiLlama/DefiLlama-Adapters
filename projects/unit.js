@@ -28,7 +28,13 @@ async function fetch() {
     '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e',
     '0xD533a949740bb3306d119CC777fa900bA034cd52',
     '0x6b3595068778dd592e39a122f4f5a5cf09c90fe2',
-    '0x4688a8b1f292fdab17e9a90c8bc379dc1dbd8713'
+    '0x4688a8b1f292fdab17e9a90c8bc379dc1dbd8713',
+    '0x8798249c2E607446EfB7Ad49eC89dD1865Ff4272',
+    '0xb753428af26e81097e7fd17f40c88aaa3e04902c',
+    '0xc944e90c64b2c07662a292be6244bdf05cda44a7',
+    '0x3472A5A71965499acd81997a54BBA8D852C6E53d',
+    '0xc5bddf9843308380375a611c18b50fb9341f502a', //apecrv
+    '0x1337def16f9b486faed0293eb623dc8395dfe46a', //armor
   ];
   let keys = '';
   await Promise.all(
@@ -53,6 +59,7 @@ async function fetch() {
         if (geckoKeys[token.toLowerCase()] == 'stable') {
           price = 1
         } else {
+          //console.log(token.toLowerCase(), 'token.toLowerCase()');
           price = price_feed.data[geckoKeys[token.toLowerCase()]].usd
         }
         tvl += price * balance

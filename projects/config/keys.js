@@ -43,7 +43,13 @@ let keys =
     '0x5f64ab1544d28732f0a24f4713c2c8ec0da089f0': 'dextf',
     '0x903bef1736cddf2a537176cf3c64579c3867a881': 'ichi-farm',
     '0xaac41ec512808d64625576eddd580e7ea40ef8b2': 'gameswap-org',
-    '0x7240ac91f01233baaf8b064248e80feaa5912ba3': 'octofi'
+    '0x7240ac91f01233baaf8b064248e80feaa5912ba3': 'octofi',
+    '0x8798249c2e607446efb7ad49ec89dd1865ff4272': 'xsushi',
+    '0xb753428af26e81097e7fd17f40c88aaa3e04902c': 'saffron-finance',
+    '0xc944e90c64b2c07662a292be6244bdf05cda44a7': 'the-graph',
+    '0xc5bddf9843308380375a611c18b50fb9341f502a': 'vecrv-dao-yvault',
+    '0x1337def16f9b486faed0293eb623dc8395dfe46a': 'armor',
+
 
   }
 
