@@ -35,6 +35,9 @@ async function fetch() {
     '0x3472A5A71965499acd81997a54BBA8D852C6E53d',
     '0xc5bddf9843308380375a611c18b50fb9341f502a', //apecrv
     '0x1337def16f9b486faed0293eb623dc8395dfe46a', //armor
+    '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', //wbtc
+    '0xeb4c2781e4eba804ce9a9803c67d0893436bb27d', //renbtc
+    '0xd291e7a03283640fdc51b121ac401383a46cc623'
   ];
   let keys = '';
   await Promise.all(
