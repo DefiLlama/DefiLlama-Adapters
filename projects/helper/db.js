@@ -5,7 +5,7 @@ const MOMENT= require( 'moment' );
 
 var getSQL = () => {
   return mysql.createPool({
-    connectionLimit : 1000,
+    connectionLimit : 5,
     connectTimeout  : 60 * 60 * 1000,
     acquireTimeout  : 60 * 60 * 1000,
     timeout         : 60 * 60 * 1000,
@@ -28,6 +28,10 @@ var getConnection = function(callback) {
     });
 };
 
+
+var closeAll = () => {
+  pool.end()
+}
 
 
 var make_query = async function (tvl, volume, id) {
@@ -132,5 +136,6 @@ module.exports = {
   getSQL,
   getConnection,
   make_query,
-  make_query_historical
+  make_query_historical,
+  closeAll
 }
