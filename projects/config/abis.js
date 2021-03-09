@@ -17,6 +17,14 @@ abis.minABI = [
     "name":"decimals",
     "outputs":[{"name":"","type":"uint8"}],
     "type":"function"
+  },
+  //totalSupply
+  {
+    "constant":true,
+    "inputs":[],
+    "name":"totalSupply",
+    "outputs":[{"name":"","type":"uint256"}],
+    "type":"function"
   }
 ];
 

@@ -49,9 +49,8 @@ let keys =
     '0xc944e90c64b2c07662a292be6244bdf05cda44a7': 'the-graph',
     '0xc5bddf9843308380375a611c18b50fb9341f502a': 'vecrv-dao-yvault',
     '0x1337def16f9b486faed0293eb623dc8395dfe46a': 'armor',
-    '0xd291e7a03283640fdc51b121ac401383a46cc623': 'rari-governance-token'
-
-
+    '0xd291e7a03283640fdc51b121ac401383a46cc623': 'rari-governance-token',
+    '0xeb4c2781e4eba804ce9a9803c67d0893436bb27d': 'bitcoin', //renbtc
   }
 
 
