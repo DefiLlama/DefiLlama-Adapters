@@ -11,13 +11,14 @@ const {
 
 const providerUrl = 'https://eth-mainnet.alchemyapi.io/v2/NR1gYkSQEB7lu0q-cONMsxRLwFct0luH'
 const provider = new ethers.providers.JsonRpcProvider(providerUrl)
-const bVaultSymbols = [ 'bUsdt', 'bUsdc', 'bArpa', 'bWbtc', 'bHbtc' ]
+const bVaultSymbols = [ 'bUsdt', 'bUsdc', 'bArpa', 'bWbtc', 'bHbtc', 'bBusd' ]
 const coinGeckoIdMap = {
   bUsdt: 'tether',
   bUsdc: 'usd-coin',
   bArpa: 'arpa-chain',
   bWbtc: 'wrapped-bitcoin',
   bHbtc: 'huobi-btc',
+  bBusd: 'binance-usd',
 }
 
 const getBTokenTotalSupply = (bTokenSymbol) => (precision) =>
