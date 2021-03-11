@@ -70,7 +70,6 @@ async function fetch() {
     tokens2.map(async (token) => {
       let balance = await utils.returnBalance(token, pool2);
       if (keys[0][token.toLowerCase()]) {
-        console.log(token.toLowerCase(), 'oken.toLowerCase()');
         tvlPool2 += parseFloat(balance) * price_feed.data[keys[0][token.toLowerCase()]].usd
       } else {
         console.log('Indexed Could not find token', token)
