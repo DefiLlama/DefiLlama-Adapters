@@ -6,3 +6,6 @@ When creating a PR, there will be a few questions to help us list you as soon as
 
 Many thanks,
 Alex
+
+
+https://github.com/DefiLlama/defillama-adapters
