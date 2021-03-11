@@ -74,7 +74,6 @@ async function fetch() {
   const totalALUSDSupply = await getTotalSupplyFloat(alusdcontract);
   tvl += totalALUSDSupply * 2;
 
-  console.log(`Alchemix TVL is ${tvl.toLocaleString()}`);
 
   return tvl;
 }
