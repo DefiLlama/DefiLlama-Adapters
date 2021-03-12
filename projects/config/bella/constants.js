@@ -16,6 +16,7 @@ const bVaults = {
   bArpa: { address: "0x750d30A8259E63eD72a075f5b6630f08ce7996d0", decimal: 18 },
   bWbtc: { address: "0x3fb6b07d77dace1BA6B5f6Ab1d8668643d15a2CC", decimal: 8 },
   bHbtc: { address: "0x8D9A39706d3B66446a298f1ae735730257Ec6108", decimal: 18 },
+  bBusd: { address: "0x378388aa69f3032FA46150221210C7FA70A35153", decimal: 18 },
 }
 
 const uniswapV2Pools = {
