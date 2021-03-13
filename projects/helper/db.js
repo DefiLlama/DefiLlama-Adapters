@@ -5,14 +5,11 @@ const MOMENT= require( 'moment' );
 
 var getSQL = () => {
   return mysql.createPool({
-    connectionLimit : 1000,
-    connectTimeout  : 60 * 60 * 1000,
-    acquireTimeout  : 60 * 60 * 1000,
-    timeout         : 60 * 60 * 1000,
-    host     : 'yogaandme-main-do-user-2347162-0.db.ondigitalocean.com',
-    user     : 'doadmin',
-    password : 'd5livek1rastxnua',
-    database: 'defillama',
+    connectionLimit : 1,
+    host     : 'defillama-do-user-2347162-0.b.db.ondigitalocean.com',
+    user     : 'defillama',
+    password : 'zthro7dfx0rgaclt',
+    database: 'defaultdb',
     port: '25060',
     insecureAuth : true
   });
@@ -28,6 +25,10 @@ var getConnection = function(callback) {
     });
 };
 
+
+var closeAll = () => {
+  pool.end()
+}
 
 
 var make_query = async function (tvl, volume, id) {
@@ -65,6 +66,7 @@ var make_query = async function (tvl, volume, id) {
                 })
              });
            } else {
+
            }
          })
       });
@@ -132,5 +134,6 @@ module.exports = {
   getSQL,
   getConnection,
   make_query,
-  make_query_historical
+  make_query_historical,
+  closeAll
 }
