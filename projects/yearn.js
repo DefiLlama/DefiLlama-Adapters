@@ -5,8 +5,8 @@ const utils = require('./helper/utils');
 *
 *****************/
 async function fetch() {
-  var totalTvl = await utils.fetchURL('https://aave-api-v2.aave.com/data/tvl')
-  return totalTvl.data.totalTvl.tvlInUsd;
+  let tvl = await utils.fetchURL('https://api.yearn.tools/tvl')
+  return tvl.data.TvlUSD;
 }
 
 module.exports = {

@@ -2,6 +2,7 @@ const retry = require('async-retry')
 const axios = require("axios");
 const { GraphQLClient, gql } = require('graphql-request')
 const BigNumber = require("bignumber.js");
+const utils = require('./helper/utils');
 
 async function fetch() {
 
@@ -26,8 +27,9 @@ async function fetch() {
   var endpoint = 'https://api.thegraph.com/subgraphs/name/suntzu93/keepnetwork';
   var graphQLClient = new GraphQLClient(endpoint)
   const results = await retry(async bail => await graphQLClient.request(q1))
-  var keepStaked = results.tokenStakings[0].totalTokenStaking;
-  var totalKeppStaked = (parseFloat(keepStaked) * price_feed.data['keep-network'].usd);
+  const keepPoolStaked = await utils.returnBalance('0x85Eee30c52B0b379b046Fb0F85F4f3Dc3009aFEC', '0xCf916681a6F08fa22e9EF3e665F2966Bf3089Ff1')
+  var keepStaked = parseFloat(results.tokenStakings[0].totalTokenStaking)+keepPoolStaked
+  var totalKeppStaked = (keepStaked * price_feed.data['keep-network'].usd);
   tvl += totalKeppStaked
 
   var q2 =  gql`{

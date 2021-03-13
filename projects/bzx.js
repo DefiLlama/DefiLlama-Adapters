@@ -5,8 +5,8 @@ const utils = require('./helper/utils');
 *
 *****************/
 async function fetch() {
-  var totalTvl = await utils.fetchURL('https://aave-api-v2.aave.com/data/tvl')
-  return totalTvl.data.totalTvl.tvlInUsd;
+  let staked = await utils.fetchURL('https://api.bzx.network/v1/vault-balance-usd')
+  return staked.data.data.all;
 }
 
 module.exports = {

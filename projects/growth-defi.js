@@ -1,22 +1,32 @@
-const utils = require('./helper/utils');
+const axios = require("axios");
 
 async function fetch() {
+  try {
+    const query = `
+    {
+      totalValueLocked(id: 1) {
+        totalValueLockedUSD
+      }
+    }
+  `;
 
-  let price_feed = await utils.getPricesfromString('cdai,compound-usd-coin');
+    const options = {
+      method: "post",
+      url: "https://api.thegraph.com/subgraphs/name/growthdefi/growth-defi",
+      data: {
+        query,
+      },
+    };
 
+    const response = await axios(options);
 
-  let pool = '0x3c918ab39c4680d3ebb3eafca91c3494f372a20d';
-  let tokenBalance = await utils.returnBalance('0x39aa39c021dfbae8fac545936693ac917d5e7563', pool);
-  var tvl = (price_feed.data['compound-usd-coin'].usd * tokenBalance)
+    const tvl = response.data.data.totalValueLocked.totalValueLockedUSD;
 
-  let pool2 = '0x8c659d745eb24df270a952f68f4b1d6817c3795c';
-  let tokenBalance2 = await utils.returnBalance('0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643', pool2);
-  tvl += (price_feed.data['cdai'].usd * tokenBalance)
-
-  return tvl;
-
+    return parseFloat(tvl);
+  } catch (e) {
+    return 0;
+  }
 }
-
 
 module.exports = {
   fetch
