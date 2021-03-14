@@ -5,13 +5,14 @@ const utils = require('./helper/utils');
 *
 *****************/
 async function fetch() {
-  var pools = await utils.fetchURL('https://api.venus.io/api/pool')
+  var markets = await utils.fetchURL('https://api.venus.io/api/governance/venus')
   let tvl = 0;
-  pools.data.pools.map(async(p) => {
-    tvl += parseFloat(p.totalStaked)
+  markets.data.data.markets.map(async(m) => {
+    tvl += parseFloat(m.liquidity)
   })
   return tvl;
 }
+fetch().then(console.log)
 
 module.exports = {
   fetch
