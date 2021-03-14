@@ -29,25 +29,8 @@ async function fetch() {
     .usd;
   const sYaxTVL = new BN(sYAX).div(10 ** 18).times(yaxisPrice);
 
-  // 3. LPS
-  const LPSTVL = await Promise.all(
-    constants.LPS.map(async (LP) => {
-      const contract = new web3.eth.Contract(abis[`LP_${LP.type}`], LP.address);
-      const [token0, token1] = LP.tokens;
-      const t0Price = (await utils.getPricesfromString(token0)).data[token0]
-        .usd;
-      const t1Price = (await utils.getPricesfromString(token1)).data[token1]
-        .usd;
-      const {
-        _reserve0,
-        _reserve1,
-      } = await contract.methods.getReserves().call();
-      const t0TVL = new BN(_reserve0).div(10 ** 18).times(t0Price);
-      const t1TVL = new BN(_reserve1).div(10 ** 18).times(t1Price);
-      return t0TVL.plus(t1TVL);
-    })
-  );
-  const totalLPTVL = LPSTVL.reduce((acc, curr) => acc.plus(curr), new BN(0));
+
+  const totalLPTVL = 0;
 
   // 4. VAULTS
   // vault balance
