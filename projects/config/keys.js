@@ -51,6 +51,7 @@ let keys =
     '0x1337def16f9b486faed0293eb623dc8395dfe46a': 'armor',
     '0xd291e7a03283640fdc51b121ac401383a46cc623': 'rari-governance-token',
     '0xeb4c2781e4eba804ce9a9803c67d0893436bb27d': 'bitcoin', //renbtc
+    '0xe1406825186D63980fd6e2eC61888f7B91C4bAe4': 'strudel-finance', // vBTC
   }
 
 
