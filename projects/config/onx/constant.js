@@ -2,6 +2,7 @@ const tokenAddresses = {
   onx: "0xe0ad1806fd3e7edf6ff52fdb822432e847411033",
   sOnx: "0xa99f0ad2a539b2867fcfea47f7e71f240940b47c",
   onxFarm: "0x168f8469ac17dd39cd9a2c2ead647f814a488ce9",
+  onxTripleFarm: "0x30D1A19EA928cCf46634cBC2944D2D89Be636f22",
   usdWethPair: "0x0d4a11d5eeaac28ec3f61d100daf4d40471f1852",
   onxWethSushiPair: "0x0652687e87a4b8b5370b05bc298ff00d205d9b5f",
   wethAethPair: "0x6147805e1011417b93e5d693424a62a70d09d0e5",
@@ -64,7 +65,16 @@ const tokenAddresses = {
         '0x8798249c2E607446EfB7Ad49eC89dD1865Ff4272', // xSushi
         '0x8798249c2E607446EfB7Ad49eC89dD1865Ff4272' // xSushi
       ]
-    }
+    },
+    {
+      title: 'onxEthSlpMulti',
+      address: '0x0652687E87a4b8b5370b05bc298Ff00d205D9B5f',
+      isLpToken: true,
+      tokens: [
+        '0xe0ad1806fd3e7edf6ff52fdb822432e847411033', // OnX
+        '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' // wETH
+      ]
+    },
   ],
   onePools: [
     {

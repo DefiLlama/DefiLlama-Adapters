@@ -134,6 +134,12 @@ const getFarmsTvl = async (price) => {
               new BigNumber(reserve1).times(price.onxPrice)
             ).div(1e18);
             break;
+          case 'onxEthSlpMulti':
+            balance = new BigNumber(await farmContracts[farm.title].methods.balanceOf(tokenAddresses.onxTripleFarm).call());
+            sum = new BigNumber(reserve0).times(price.wethPrice).plus(
+              new BigNumber(reserve1).times(price.onxPrice)
+            ).div(1e18);
+            break;
         }
         balance = balance.times(sum).div(totalSupply);
         // console.log(farm.title, reserve0, reserve1, balance.toString()); 

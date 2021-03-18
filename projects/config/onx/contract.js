@@ -33,7 +33,8 @@ const farmContracts = {
   onxEthSlp: new web3.eth.Contract(UniswapV2PairContractAbi, tokenAddresses.farms[1].address),
   aEth: new web3.eth.Contract(ERC20Abi, tokenAddresses.farms[2].address),
   ankr: new web3.eth.Contract(ERC20Abi, tokenAddresses.farms[3].address),
-  xSushi: new web3.eth.Contract(ERC20Abi, tokenAddresses.farms[4].address)
+  xSushi: new web3.eth.Contract(ERC20Abi, tokenAddresses.farms[4].address),
+  onxEthSlpMulti: new web3.eth.Contract(UniswapV2PairContractAbi, tokenAddresses.farms[5].address),
 }
 
 const onsPoolsContracts = {
