@@ -1,0 +1,13 @@
+{
+  "inputs": [],
+  "name": "redeemToken",
+  "outputs": [
+    {
+      "internalType": "address",
+      "name": "",
+      "type": "address"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+}

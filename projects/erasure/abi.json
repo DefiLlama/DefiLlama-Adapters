@@ -1,0 +1,42 @@
+{
+  "getInstanceCount": {
+    "constant": true,
+    "inputs": [],
+    "name": "getInstanceCount",
+    "outputs": [
+      {
+        "name": "count",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "getPaginatedInstances": {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "startIndex",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "endIndex",
+        "type": "uint256"
+      }
+    ],
+    "name": "getPaginatedInstances",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "instances",
+        "type": "address[]"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  }
+}
