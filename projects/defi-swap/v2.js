@@ -1,5 +1,5 @@
 const BigNumber = require("bignumber.js");
-const sdk = require("../../sdk");
+const sdk = require("@defillama/sdk");
 const token0 = require("./abis/token0.json");
 const token1 = require("./abis/token1.json");
 const getReserves = require("./abis/getReserves.json");

@@ -3,7 +3,7 @@
 ==================================================*/
 
 const abi = require('./abi');
-const sdk = require('../../sdk');
+const sdk = require('@defillama/sdk');
 
 /*==================================================
   Settings

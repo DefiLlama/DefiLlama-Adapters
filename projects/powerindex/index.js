@@ -2,7 +2,7 @@
   Modules
   ==================================================*/
 
-const sdk = require('../../sdk');
+const sdk = require('@defillama/sdk');
 const _ = require('underscore');
 const BigNumber = require('bignumber.js');
 

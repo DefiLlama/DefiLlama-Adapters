@@ -2,7 +2,7 @@
   Modules
 ==================================================*/
 
-const { api: { abi, util }, util: utilBase } = require('../../sdk');
+const { api: { abi, util }, util: utilBase } = require('@defillama/sdk');
 const { tvl: conditionalTokenTvl } = require('./conditional-token')
 
 /*==================================================

@@ -2,7 +2,7 @@
   Modules
   ==================================================*/
 
-const sdk = require('../../sdk')
+const sdk = require('@defillama/sdk')
 const BigNumber = require('bignumber.js')
 const getCacheBalances = require('./abis/getCacheBalances.json')
 const getUnderlyingTokenAddress = require('./abis/getUnderlyingTokenAddress.json')

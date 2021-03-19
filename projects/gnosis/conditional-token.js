@@ -2,7 +2,7 @@
   Modules
 ==================================================*/
 
-const { api: { abi, util } } = require('../../sdk');
+const { api: { abi, util } } = require('@defillama/sdk');
 
 /*==================================================
   Settings

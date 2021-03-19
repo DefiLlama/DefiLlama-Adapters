@@ -2,7 +2,7 @@
   Modules
   ==================================================*/
 
-const sdk = require("../../sdk");
+const sdk = require("@defillama/sdk");
 const { getAssets } = require("./api");
 
 const IDEX_CUSTODY_CONTRACT = "0xE5c405C5578d84c5231D3a9a29Ef4374423fA0c2";
