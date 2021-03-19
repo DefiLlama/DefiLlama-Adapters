@@ -1,4 +1,4 @@
-const sdk = require('../../sdk');
+const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js');
 const _ = require('underscore');
 
@@ -55,6 +55,7 @@ module.exports = async function tvl(timestamp, block) {
       "constant": true,
       "inputs": [],
       "name": "exchangeRateStored",
+      "type": "function",
       "outputs": [
         {
           "name":"",

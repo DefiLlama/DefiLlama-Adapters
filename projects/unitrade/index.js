@@ -1,4 +1,4 @@
-const sdk = require("../../sdk");
+const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 
 const UNITRADE_ORDERBOOK = "0xC1bF1B4929DA9303773eCEa5E251fDEc22cC6828";
@@ -52,7 +52,7 @@ async function tvl(_, block) {
 
   //formatting fetched data
   balances = balances.reduce((acc, item) => {
-    return Object.assign(acc, { [item.input.target]: [item.output] });
+    return Object.assign(acc, { [item.input.target]: item.output });
   }, {});
   
   let ethBalance = (await sdk.api.eth.getBalance({target: UNITRADE_ORDERBOOK, block})).output;

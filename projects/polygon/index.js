@@ -1,4 +1,4 @@
-const sdk = require('../../sdk');
+const sdk = require('@defillama/sdk');
 const { default: axios } = require('axios')
 const BigNumber = require("bignumber.js");
 

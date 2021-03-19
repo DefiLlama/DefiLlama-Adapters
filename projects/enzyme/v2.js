@@ -6,7 +6,7 @@ const BigNumber = require('bignumber.js');
 
 const abi = require('./abi');
 const utils = require('./utils');
-const sdk = require('../../sdk');
+const sdk = require('@defillama/sdk');
 
 /*==================================================
   Settings
@@ -183,7 +183,7 @@ module.exports = async function tvl(timestamp, block) {
   uniswapBalanceOfResult.output.forEach(result => {
     const balance = new BigNumber(result.output || 0);
 
-    if (balance <= 0) return;
+    if (balance < 0) return;
 
     const asset = result.input.target.toLowerCase();
     const total = pairs[asset].liquidity;

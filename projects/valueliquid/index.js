@@ -2,7 +2,7 @@
   Modules
 ==================================================*/
 
-const sdk = require('../../sdk');
+const sdk = require('@defillama/sdk');
 const getCurrentTokens = require('./abis/getCurrentTokens.json');
 const _ = require('underscore');
 const BigNumber = require("bignumber.js");
@@ -62,6 +62,7 @@ async function valueLiquidTvl(timestamp, block) {
     }
   });
 
+console.log(balances)
   return balances;
 }
 

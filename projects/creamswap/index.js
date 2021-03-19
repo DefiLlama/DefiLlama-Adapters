@@ -3,7 +3,7 @@
   ==================================================*/
 
   const _ = require('underscore');
-  const sdk = require('../../sdk');
+  const sdk = require('@defillama/sdk');
   const abi = require('./abi');
   const BigNumber = require('bignumber.js');
 
