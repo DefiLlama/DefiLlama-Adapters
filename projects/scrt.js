@@ -5,7 +5,9 @@ async function fetch() {
     
     let tvl  = 0;
     for (const p of data.data.tokens) {
-      tvl += parseFloat(p.totalLockedUSD)
+      if(p.src_coin !== "UNILP-WSCRT-ETH" && p.src_coin !== "WSCRT"){
+        tvl += parseFloat(p.totalLockedUSD)
+      }
     }
 
     return tvl;
