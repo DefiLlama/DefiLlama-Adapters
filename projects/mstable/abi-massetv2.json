@@ -1,0 +1,55 @@
+{
+  "getBassets": {
+
+    "inputs": [],
+    "name": "getBassets",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "addr",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "integrator",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "hasTxFee",
+            "type": "bool"
+          },
+          {
+            "internalType": "enum MassetStructs.BassetStatus",
+            "name": "status",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct MassetStructs.BassetPersonal[]",
+        "name": "personal",
+        "type": "tuple[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint128",
+            "name": "ratio",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "vaultBalance",
+            "type": "uint128"
+          }
+        ],
+        "internalType": "struct MassetStructs.BassetData[]",
+        "name": "data",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+}
