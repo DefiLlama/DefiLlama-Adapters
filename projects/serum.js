@@ -5,6 +5,7 @@ async function fetch() {
 
   var seen = [];
   var tvl = 0;
+  return '1';
   var response = await retry(async bail => await axios.get('https://serum-api.bonfida.com/pools'))
   await Promise.all(
     response.data.data.map(async pool => {
