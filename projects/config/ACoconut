@@ -1,0 +1,50 @@
+
+Why are you creating this pull request?
+ACoconut is a multi-chain BTC DeFi project designed to enable frictionless movement of BTC liquidity between blockchain networks and DeFi protocols. DeFiLlama is a reputable data aggregator, we wish to be listed on DeFiLlama in order to get greater coverage on our project.
+
+
+Twitter Link:
+https://twitter.com/NUTSFinance
+
+
+List of audit if any:
+https://github.com/nutsfinance/acBTC/blob/master/audits/acBTC_Phase_One_Report_EN.pdf
+https://github.com/nutsfinance/acBTC/blob/master/audits/acBTC_Phase_Two_Report_EN.pdf
+
+
+Website Link:
+http://acoconut.fi/
+
+
+Contact Email:
+vincent@nuts.finance
+
+
+Expected TVL:
+100mm
+
+Chain:
+Ethereum and BSC
+
+
+Coingecko ID (so your TVL can appear on Coingecko): (https://api.coingecko.com/api/v3/coins/list)
+https://www.coingecko.com/en/coins/acoconut
+
+
+Coinmarketcap ID (so your TVL can appear on Coinmarketcap): (https://api.coinmarketcap.com/data-api/v3/map/all?listing_status=active,inactive,untracked&start=1&limit=10000)
+https://coinmarketcap.com/currencies/acoconut/
+
+
+Description/bio (to be shown on DefiLlama):
+ACoconut is a suite of open protocols designed to enable frictionless movement of liquidity between decentralized systems. ACoconut is made up of acBTC and BTC+ protocols.
+BTC+ - a positively rebasing synthetic BTC made up of pegged BTC tokens and interest bearing tokens. Designed to provide global interests, stable peg against BTC and composability with DeFi protocols.
+acBTC - a composite Bitcoin up of a basket of pegged BTC assets. Designed for frictionless transfer of BTC liquidity across blockchain networks.
+
+
+Token address and ticker if any:
+AC Contract Address(ETH) - 0x9A0aBA393aac4dFbFf4333B06c407458002C6183 
+AC Contract Address(BSC) - 0x5B45A9be49c94236E127EFCc601b7e7a1a485d0a
+
+
+Category (Yield/Dexes/Lending/Minting):
+Yield, Minting
