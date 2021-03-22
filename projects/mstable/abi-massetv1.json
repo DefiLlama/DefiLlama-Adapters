@@ -1,0 +1,52 @@
+{
+  "getBassets": {
+    "constant": true,
+    "inputs": [],
+    "name": "getBassets",
+    "outputs": [{
+        "components": [{
+            "internalType": "address",
+            "name": "addr",
+            "type": "address"
+          },
+          {
+            "internalType": "enum MassetStructs.BassetStatus",
+            "name": "status",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bool",
+            "name": "isTransferFeeCharged",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "ratio",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxWeight",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "vaultBalance",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct MassetStructs.Basset[]",
+        "name": "bAssets",
+        "type": "tuple[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "len",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  }
+}
