@@ -75,9 +75,9 @@ async function fetchSwipeSwapTVL() {
 }
 
 async function fetch() {
-  const exchangeValue = await fetchExchangeTVL();
+  //const exchangeValue = await fetchExchangeTVL();
   const swipewapValue = await fetchSwipeSwapTVL();
-  const totalValue = exchangeValue+swipewapValue;
+  const totalValue = swipewapValue;
   return totalValue;
 }
 
