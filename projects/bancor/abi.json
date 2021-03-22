@@ -1,0 +1,58 @@
+{
+  "abiContractRegistryAddressOf": {
+    "inputs": [{
+      "internalType": "bytes32",
+      "name": "_contractName",
+      "type": "bytes32"
+    }],
+    "name": "addressOf",
+    "outputs": [{
+      "internalType": "address",
+      "name": "",
+      "type": "address"
+    }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "abiConverterRegistryGetPools": {
+    "inputs": [],
+    "name": "getLiquidityPools",
+    "outputs": [{
+      "internalType": "address[]",
+      "name": "",
+      "type": "address[]"
+    }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "abiRegistryGetConvertersBySmartTokens": {
+    "inputs": [{
+      "internalType": "address[]",
+      "name": "_smartTokens",
+      "type": "address[]"
+    }],
+    "name": "getConvertersBySmartTokens",
+    "outputs": [{
+      "internalType": "contract IConverter[]",
+      "name": "",
+      "type": "address[]"
+    }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "abiConverterConnectorTokens": {
+    "inputs": [{
+      "internalType": "uint256",
+      "name": "",
+      "type": "uint256"
+    }],
+    "name": "connectorTokens",
+    "outputs": [{
+      "internalType": "contract IERC20Token",
+      "name": "",
+      "type": "address"
+    }],
+    "stateMutability": "view",
+    "type": "function"
+  }
+}
