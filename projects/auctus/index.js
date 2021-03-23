@@ -4,7 +4,7 @@
 
   const sdk = require('@defillama/sdk');
   const _ = require('underscore');
-  const abi = require('./abi');
+  const abi = require('./abi.json');
   const { default: BigNumber } = require('bignumber.js');
 
   const START_BLOCK = 10104891;

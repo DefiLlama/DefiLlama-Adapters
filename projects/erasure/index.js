@@ -6,7 +6,7 @@
   const _ = require("underscore");
   const BigNumber = require("bignumber.js");
 
-  const abi = require('./abi');
+  const abi = require('./abi.json');
 
 /*==================================================
   Settings
