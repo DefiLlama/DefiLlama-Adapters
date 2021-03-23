@@ -21,7 +21,7 @@ async function tvl(timestamp, block) {
   
 
 module.exports = {
-  name: 'Jarvis',
+  name: 'Jarvis Network',
   token: '-',
   category: 'assets',
   start: 0, // WRONG!
