@@ -4,7 +4,7 @@
 
 const BigNumber = require('bignumber.js');
 
-const abi = require('./abi');
+const abi = require('./abi.json');
 const utils = require('./utils');
 const sdk = require('@defillama/sdk');
 

@@ -5,7 +5,7 @@
   const sdk = require('@defillama/sdk');
   const _ = require('underscore');
   const BigNumber = require('bignumber.js');
-  const abi = require('./abi');
+  const abi = require('./abi.json');
 
   const lendingReserves = [
     '0x4Fabb145d64652a948d72533023f6E7A623C7C53', // BUSD
