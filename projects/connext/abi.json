@@ -1,0 +1,16 @@
+{
+  "totalChannelToken": {
+    "constant": true,
+    "inputs": [],
+    "name": "totalChannelToken",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  }
+}
