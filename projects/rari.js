@@ -6,7 +6,7 @@ const web3 = new Web3(new Web3.providers.HttpProvider(`https://mainnet.infura.io
 const abis = require('./config/rari/abis.js')
 
 async function fetch() {
-  var contracts = ['0xD6e194aF3d9674b62D1b30Ec676030C23961275e', '0x59FA438cD0731EBF5F4cDCaf72D4960EFd13FCe6', '0xC6BF8C8A55f77686720E0a88e2Fd1fEEF58ddf4a']
+  var contracts = ['0xD6e194aF3d9674b62D1b30Ec676030C23961275e', '0x59FA438cD0731EBF5F4cDCaf72D4960EFd13FCe6', '0xC6BF8C8A55f77686720E0a88e2Fd1fEEF58ddf4a', '0xB465BAF04C087Ce3ed1C266F96CA43f4847D9635'];
 
   let price_feed = await utils.getPricesfromString('ethereum');
 

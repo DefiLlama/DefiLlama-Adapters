@@ -4,9 +4,10 @@ const utils = require('./helper/utils');
 * ==> Correct adapter needs to be created.
 *
 *****************/
+
 async function fetch() {
-  var staked = await utils.fetchURL('https://api-homora.alphafinance.io/pools')
-  return staked.data.tvlUSD;
+  let response = await utils.fetchURL('https://api.pancakeswap.finance/api/v1/stat')
+  return response.data.total_value_locked_all;
 }
 
 module.exports = {

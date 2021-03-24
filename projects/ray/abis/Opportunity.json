@@ -1,0 +1,21 @@
+{
+  "getBalance":  {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "principalToken",
+          "type": "address"
+        }
+      ],
+      "name": "getBalance",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    }
+}

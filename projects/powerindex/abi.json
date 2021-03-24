@@ -1,0 +1,31 @@
+
+{
+    "getCurrentTokens": {
+        "constant": true,
+        "inputs": [],
+        "name": "getCurrentTokens",
+        "outputs": [
+            {
+            "internalType": "address[]",
+            "name": "tokens",
+            "type": "address[]"
+            }
+        ],
+        "payable": false,
+         "type": "function"
+    },
+    "underlying": {
+        "constant": true,
+        "inputs": [],
+        "name": "underlying",
+        "outputs": [
+            {
+              "internalType": "contract IERC20",
+              "type": "address"
+            }
+        ],
+        "payable": false,
+        "type": "function"
+    }
+
+}
