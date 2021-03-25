@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk');
-const abi = require('./abi');
+const abi = require('./abi.json');
 
 
 const POOL = '0xa1e72267084192db7387c8cc1328fade470e4149';
