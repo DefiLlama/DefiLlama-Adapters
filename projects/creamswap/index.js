@@ -4,7 +4,7 @@
 
   const _ = require('underscore');
   const sdk = require('@defillama/sdk');
-  const abi = require('./abi');
+  const abi = require('./abi.json');
   const BigNumber = require('bignumber.js');
 
   /*==================================================
