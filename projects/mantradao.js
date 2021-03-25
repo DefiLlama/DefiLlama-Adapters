@@ -28,8 +28,10 @@ async function fetch() {
 
         // Staking and pool assets
         const stakingAssets = [
-            // sOM - Staked OM
+            // sOM POOL 1 - Staked OM
             { contract: '0x9E15Ad979919bB4db331Bfe864475Ae3BFFebA93', token: '0x3593D125a4f7849a1B059E64F4517A86Dd60c95d', price: 'mantra-dao'},
+            // sOM POOL 2 - Staked OM
+            { contract: '0xa01892d97e9c8290c2c225fb0b756bfe26bc9802', token: '0x3593D125a4f7849a1B059E64F4517A86Dd60c95d', price: 'mantra-dao'},
             // RFUEL - Staked RFUEL
             { contract: '0xE8F063c4dC60B2F6c2C900d870ddcDae7DaAb7F6', token: '0xaf9f549774ecedbd0966c52f250acc548d3f36e5', price: 'rio-defi'},
             // L3P - Staked Lepricon
