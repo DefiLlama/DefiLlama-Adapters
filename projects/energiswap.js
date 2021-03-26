@@ -16,7 +16,6 @@ async function fetch() {
 
     return data.energiswapFactories[0].totalLiquidityUSD;;
 }
-fetch().then(console.log)
 
 module.exports = {
     fetch
