@@ -13,7 +13,7 @@
 ##### Contact Email:
 
 
-##### Expected TVL:
+##### Current TVL:
 
 
 ##### Chain:
