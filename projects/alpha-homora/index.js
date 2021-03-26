@@ -7,6 +7,7 @@ const abi = require("./abi.json");
 const BigNumber = require("bignumber.js");
 const axios = require("axios");
 const { request, gql } = require("graphql-request");
+const { unwrapUniswapLPs } = require("../helper/unwrapLPs")
 
 /*==================================================
   TVL
@@ -361,7 +362,7 @@ const GET_GOBLIN_SUMMARIES = gql`
 `;
 const wBNB = '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'
 
-function getBSCAddress(address){
+function getBSCAddress(address) {
   return `bsc:${address}`
 }
 
@@ -369,6 +370,7 @@ async function tvlBSC(timestamp) {
   const { block } = await sdk.api.util.lookupBlock(timestamp, {
     chain: 'bsc'
   })
+  const balances = {}
   const {
     goblinSummaries
   } = await request('https://api.thegraph.com/subgraphs/name/hermioneeth/alpha-homora-bank-bsc', GET_GOBLIN_SUMMARIES, {
@@ -382,46 +384,16 @@ async function tvlBSC(timestamp) {
     })),
     chain: 'bsc'
   })).output
-  const lpTokenCalls = lpTokens.map(call => ({
-    target: call.output
-  }))
-  // get reserves
-  const lpReserves = sdk.api.abi.multiCall({
+  await unwrapUniswapLPs(balances, goblinSummaries.map(goblin => {
+    const lpToken = lpTokens.find(call => call.input.target === goblin.id).output;
+    return {
+      token: lpToken,
+      balance: goblin.totalLPToken
+    }
+  }),
     block,
-    abi: {"constant":true,"inputs":[],"name":"getReserves","outputs":[{"internalType":"uint112","name":"_reserve0","type":"uint112"},{"internalType":"uint112","name":"_reserve1","type":"uint112"},{"internalType":"uint32","name":"_blockTimestampLast","type":"uint32"}],"payable":false,"stateMutability":"view","type":"function"},
-    calls: lpTokenCalls,
-    chain: 'bsc'
-  })
-  // get total tokens
-  const lpSupplies = sdk.api.abi.multiCall({
-    block,
-    abi: {"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},
-    calls: lpTokenCalls,
-    chain: 'bsc'
-  })
-  const tokens0 = sdk.api.abi.multiCall({
-    block,
-    abi: {"constant":true,"inputs":[],"name":"token0","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},
-    calls: lpTokenCalls,
-    chain: 'bsc'
-  })
-  const tokens1 = sdk.api.abi.multiCall({
-    block,
-    abi: {"constant":true,"inputs":[],"name":"token1","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},
-    calls: lpTokenCalls,
-    chain: 'bsc'
-  })
-
-  const balances = {}
-  await Promise.all(goblinSummaries.map(async goblin => {
-    const lpToken = lpTokens.find(call=>call.input.target === goblin.id).output;
-    const token0 = (await tokens0).output.find(call=>call.input.target === lpToken).output
-    const token1 = (await tokens1).output.find(call=>call.input.target === lpToken).output
-    const supply = (await lpSupplies).output.find(call=>call.input.target === lpToken).output
-    const {_reserve0, _reserve1} = (await lpReserves).output.find(call=>call.input.target === lpToken).output
-    balances[getBSCAddress(token0)] = BigNumber(balances[getBSCAddress(token0)] || 0).plus(BigNumber(goblin.totalLPToken).times(BigNumber(_reserve0)).div(BigNumber(supply))).toFixed(0)
-    balances[getBSCAddress(token1)] = BigNumber(balances[getBSCAddress(token1)] || 0).plus(BigNumber(goblin.totalLPToken).times(BigNumber(_reserve1)).div(BigNumber(supply))).toFixed(0)
-  }))
+    'bsc',
+    (addr) => `bsc:${addr}`)
   const unusedBNB = await sdk.api.eth.getBalance({
     target: '0x3bB5f6285c312fc7E1877244103036ebBEda193d',
     block,
