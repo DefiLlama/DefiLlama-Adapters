@@ -7,6 +7,7 @@ const abi = require("./abi.json");
 const BigNumber = require("bignumber.js");
 const axios = require("axios");
 const { request, gql } = require("graphql-request");
+const { unwrapUniswapLPs } = require("../helper/unwrapLPs")
 
 /*==================================================
   TVL
@@ -21,10 +22,12 @@ async function tvl(timestamp, block) {
   const tvls = await Promise.all([
     tvlV1(timestamp, block),
     tvlV2(timestamp, block),
+    tvlBSC(timestamp)
   ]);
 
-  const tvl = BigNumber.sum(...tvls);
-  balances[ethAddress] = tvl.toFixed(0);
+  const ethTvl = BigNumber.sum(tvls[0], tvls[1]);
+  balances[ethAddress] = ethTvl.toFixed(0);
+  Object.assign(balances, tvls[2]) // bsc addresses are prefixed with 'bsc', so it's impossible to get collisions
 
   return balances;
 }
@@ -349,6 +352,57 @@ async function getTotalCollateral(block) {
   return collaterals;
 }
 
+const GET_GOBLIN_SUMMARIES = gql`
+  query GET_GOBLIN_SUMMARIES($block: Int) {
+    goblinSummaries(block: { number: $block }) {
+      id
+      totalLPToken
+    }
+  }
+`;
+const wBNB = '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'
+
+function getBSCAddress(address) {
+  return `bsc:${address}`
+}
+
+async function tvlBSC(timestamp) {
+  const { block } = await sdk.api.util.lookupBlock(timestamp, {
+    chain: 'bsc'
+  })
+  const balances = {}
+  const {
+    goblinSummaries
+  } = await request('https://api.thegraph.com/subgraphs/name/hermioneeth/alpha-homora-bank-bsc', GET_GOBLIN_SUMMARIES, {
+    block,
+  });
+  const lpTokens = (await sdk.api.abi.multiCall({
+    block,
+    abi: { "constant": true, "inputs": [], "name": "lpToken", "outputs": [{ "internalType": "contract IUniswapV2Pair", "name": "", "type": "address" }], "payable": false, "stateMutability": "view", "type": "function" },
+    calls: goblinSummaries.map(goblin => ({
+      target: goblin.id
+    })),
+    chain: 'bsc'
+  })).output
+  await unwrapUniswapLPs(balances, goblinSummaries.map(goblin => {
+    const lpToken = lpTokens.find(call => call.input.target === goblin.id).output;
+    return {
+      token: lpToken,
+      balance: goblin.totalLPToken
+    }
+  }),
+    block,
+    'bsc',
+    (addr) => `bsc:${addr}`)
+  const unusedBNB = await sdk.api.eth.getBalance({
+    target: '0x3bB5f6285c312fc7E1877244103036ebBEda193d',
+    block,
+    chain: 'bsc'
+  })
+  balances[getBSCAddress(wBNB)] = BigNumber(balances[getBSCAddress(wBNB)] || 0).plus(BigNumber(unusedBNB.output)).toFixed(0)
+  return balances
+}
+
 /*==================================================
   Exports
   ==================================================*/
@@ -359,5 +413,5 @@ module.exports = {
   category: "lending", // allowed values as shown on DefiPulse: 'Derivatives', 'DEXes', 'Lending', 'Payments', 'Assets'
   start: 1602054167, // unix timestamp (utc 0) specifying when the project began, or where live data begins
   tvl, // tvl adapter
-  contributesTo: ['Uniswap','Sushiswap'],
+  contributesTo: ['Uniswap', 'Sushiswap'],
 };
