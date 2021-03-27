@@ -399,7 +399,7 @@ async function tvlBSC(timestamp) {
     block,
     chain: 'bsc'
   })
-  balances[getBSCAddress(wBNB)] = BigNumber(balances[getBSCAddress(wBNB)] || 0).plus(BigNumber(unusedBNB.output))
+  balances[getBSCAddress(wBNB)] = BigNumber(balances[getBSCAddress(wBNB)] || 0).plus(BigNumber(unusedBNB.output)).toFixed(0)
   return balances
 }
 
