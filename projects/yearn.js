@@ -5,8 +5,8 @@ const utils = require('./helper/utils');
 *
 *****************/
 async function fetch() {
-  let tvl = await utils.fetchURL('https://api.yearn.tools/tvl')
-  return tvl.data.TvlUSD;
+  let tvl = await utils.fetchURL('https://yearn.science/v1/tvl/latest')
+  return tvl.data.tvl;
 }
 
 module.exports = {
