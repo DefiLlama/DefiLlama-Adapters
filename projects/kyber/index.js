@@ -26,18 +26,20 @@
     const tokenWalletCalls = [];
     const reserves = new Set();
     pairs.forEach(pair=>{
-      const pairReserves = new Set(pair.reserves_src?.concat(pair.reserves_dest))
-      pairReserves.forEach(reserveAddress=>{
-        reserves.add(reserveAddress)
-        tokenWalletCalls.push({
-          target: reserveAddress,
-          params: [pair.address]
+      if(pair.reserves_src){
+        const pairReserves = new Set(pair.reserves_src.concat(pair.reserves_dest))
+        pairReserves.forEach(reserveAddress=>{
+          reserves.add(reserveAddress)
+          tokenWalletCalls.push({
+            target: reserveAddress,
+            params: [pair.address]
+          })
+          balanceOfCalls.push({
+            target: pair.address,
+            params: [reserveAddress]
+          })
         })
-        balanceOfCalls.push({
-          target: pair.address,
-          params: [reserveAddress]
-        })
-      })
+      }
     })
     const tokenWallets = (await sdk.api.abi.multiCall({
       block,
