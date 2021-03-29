@@ -26,8 +26,12 @@ const lpStakingPools = [
   '0x28ac283b299BbdDf5B27822fA7C243De835cc121'
 ]
 
-function getCallsFromTargets(targets){
-  return targets.map(target=>({
+const wbnbInx = '0x898c75e1F9B80AD167403a72717A7Edf2F2Aa28d'
+const inx = 'bsc:0xd60D91EAE3E0F46098789fb593C06003253E5D0a'
+const wbnb = 'bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'
+
+function getCallsFromTargets(targets) {
+  return targets.map(target => ({
     target
   }))
 }
@@ -40,44 +44,71 @@ async function tvl(timestamp) {
 
   const vaultCalls = getCallsFromTargets(vaults)
   const vaultBalances = sdk.api.abi.multiCall({
-    abi:abi['balance'],
+    abi: abi['balance'],
     calls: vaultCalls,
     block,
     chain: 'bsc'
   })
-  const vaultTokens = sdk.api.abi.multiCall({
-    abi:abi['token'],
+  const vaultTokens = (await sdk.api.abi.multiCall({
+    abi: abi['token'],
     calls: vaultCalls,
     block,
     chain: 'bsc'
-  })
+  })).output
+  const vaultTokenSymbols = (await sdk.api.abi.multiCall({
+    abi: "erc20:symbol",
+    calls: vaultTokens.map(call => ({
+      target: call.output
+    })),
+    block,
+    chain: 'bsc'
+  })).output;
+  const resolvedVaultBalances = (await vaultBalances).output;
+
+  const lpTokensToCheck = []
+  for (let i = 0; i < resolvedVaultBalances.length; i++) {
+    if (vaultTokenSymbols[i].output === "Cake-LP") {
+      lpTokensToCheck.push({
+        token: vaultTokens[i].output,
+        balance: resolvedVaultBalances[i].output
+      })
+    } else {
+      sdk.util.sumSingleBalance(balances, `bsc:${vaultTokens[i].output}`, resolvedVaultBalances[i].output)
+    }
+  }
 
   const lpTokens = sdk.api.abi.multiCall({
-    abi:abi['_lpToken'],
+    abi: abi['_lpToken'],
     calls: getCallsFromTargets(lpStakingPools),
     block,
     chain: 'bsc'
   })
   const lpTokenBalances = (await sdk.api.abi.multiCall({
-    abi:abi['totalSupply'],
+    abi: abi['totalSupply'],
     calls: getCallsFromTargets(lpStakingPools),
     block,
     chain: 'bsc'
   })).output
-  console.log(await lpTokens)
-  /*
-  await unwrapUniswapLPs(balances, (await lpTokens).output.map((call, i)=>({
-    token: call.output,
-    balance: lpTokenBalances[i].output
-  })), block, 'bsc');
-  */
+  const resolvedLpTokens = (await lpTokens).output;
+  sdk.util.sumSingleBalance(balances, `bsc:${resolvedLpTokens.pop().output}`, resolvedVaultBalances.pop().output);
+  await unwrapUniswapLPs(balances, resolvedLpTokens
+    .map((call, i) => ({
+      token: call.output,
+      balance: lpTokenBalances[i].output
+    }))
+    .concat(lpTokensToCheck),
+    block, 'bsc', addr => `bsc:${addr}`);
 
-  const resolvedVaultBalances = (await vaultBalances).output
-  const resolvedVaultTokens = (await vaultTokens).output
-  for(let i=0; i< resolvedVaultBalances.length; i++){
-    sdk.util.sumSingleBalance(balances, `bsc:${resolvedVaultTokens[i].output}`, resolvedVaultBalances[i].output)
-  }
-
+  // Convert inx to bnb
+  const reservesInxBNB = (await sdk.api.abi.call({
+    target: wbnbInx,
+    abi: { "constant": true, "inputs": [], "name": "getReserves", "outputs": [{ "internalType": "uint112", "name": "_reserve0", "type": "uint112" }, { "internalType": "uint112", "name": "_reserve1", "type": "uint112" }, { "internalType": "uint32", "name": "_blockTimestampLast", "type": "uint32" }], "payable": false, "stateMutability": "view", "type": "function" },
+    block,
+    chain: 'bsc'
+  })).output;
+  const inxAmount = balances[inx];
+  delete balances[inx];
+  sdk.util.sumSingleBalance(balances, wbnb, BigNumber(reservesInxBNB[0]).div(reservesInxBNB[1]).times(inxAmount).toFixed(0))
   return balances
 }
 
