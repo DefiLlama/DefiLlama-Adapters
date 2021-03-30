@@ -36,7 +36,7 @@ async function fetch() {
         }
      }
     `;
-    const {streamTotalDatas} = await xhalflifeGraphQLClient.request(xhalflifeQuery)
+    const { streamTotalDatas } = await xhalflifeGraphQLClient.request(xhalflifeQuery)
 
     const tokenDataWithLocked = streamTotalDatas.reduce((all, current) => {
         return {
@@ -47,7 +47,7 @@ async function fetch() {
                 symbol: current.token.symbol
             }
         }
-    },{})
+    }, {})
 
     const tokenPriceQuery = gql`
     query getTokenPrices($ids: [String!]){
@@ -63,17 +63,16 @@ async function fetch() {
     const ethAddress = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
     const wethAddress = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
 
-    const {tokenPrices} = await request(xdexApi, tokenPriceQuery,{ids: Object.keys(tokenDataWithLocked).concat(wethAddress)})
+    const { tokenPrices } = await request(xdexApi, tokenPriceQuery, { ids: Object.keys(tokenDataWithLocked).concat(wethAddress) })
 
     Object.keys(tokenDataWithLocked).forEach(token => {
         const findToken = tokenPrices.find(tokenPrice => tokenPrice.id == token);
-        if(findToken){
+        if (findToken) {
             tokenDataWithLocked[token].price = findToken.price
-        }else{
-            if(token === ethAddress){
+        } else {
+            if (token === ethAddress) {
                 tokenDataWithLocked[token].price = tokenPrices.find(tokenPrice => tokenPrice.id == wethAddress).price;
-            }else{
-                console.debug(token, tokenDataWithLocked[token].symbol, 1);  //这里显示取不到价格的token
+            } else {
                 tokenDataWithLocked[token].price = 1
             }
         }
@@ -81,7 +80,8 @@ async function fetch() {
 
     const tokenTotalValue = Object.keys(tokenDataWithLocked).reduce((all, current) => {
         return all.plus(new BigNumber(tokenDataWithLocked[current].price).times(tokenDataWithLocked[current].locked));
-    },new BigNumber(0))
+    }, new BigNumber(0))
+
     return tokenTotalValue.plus(xdexTotalLiquidity).toString();
 }
 
