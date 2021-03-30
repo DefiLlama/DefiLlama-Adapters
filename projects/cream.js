@@ -19,13 +19,13 @@ async function fetch() {
     })
   )
 
-  let bscTokens = await utils.fetchURL('https://api.cream.finance/bsc/api/v1/crtoken')
-  await Promise.all(
-    bscTokens.data.map(async token => {
-      let balance = (token.underlying_price.value * token.exchange_rate.value * token.total_supply.value * price_feed.data['binancecoin'].usd);
-      tvl += balance
-    })
-  )
+  // let bscTokens = await utils.fetchURL('https://api.cream.finance/bsc/api/v1/crtoken')
+  // await Promise.all(
+  //   bscTokens.data.map(async token => {
+  //     let balance = (token.underlying_price.value * token.exchange_rate.value * token.total_supply.value * price_feed.data['binancecoin'].usd);
+  //     tvl += balance
+  //   })
+  // )
 
   console.log(tvl);
   return tvl;
