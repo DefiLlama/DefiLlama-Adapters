@@ -24,9 +24,9 @@ async function fetch() {
     var gov = '0x75D1aA733920b14fC74c9F6e6faB7ac1EcE8482E';
     var yfl = '0x28cb7e841ee97947a86B06fA4090C8451f64c0be';
     let balance = await utils.returnBalance(yfl, gov);
-    let liquidity = results.LinkswapFactory.totalLiquidityUSD;
-    let governance = results.bundles.yflPrice * balance;
-    let tvl = liquidity + governance;
+    let liquidity = results.linkswapFactory.totalLiquidityUSD;
+    let governance = results.bundles[0].yflPrice * balance;
+    let tvl = parseFloat(liquidity) + parseFloat(governance);
     return tvl;
 }
 
