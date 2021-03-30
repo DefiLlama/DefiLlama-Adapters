@@ -4,16 +4,6 @@ const BigNumber = require("bignumber.js");
 const axios = require('axios')
 const { unwrapUniswapLPs } = require('../helper/unwrapLPs')
 
-const lpStakingPools = [
-  '0x698ff49E49B6a80698e2Edb88710986d27157449',
-  '0xFd3d011f7dE602183eBd9e46A7Ce9e59192dDA85',
-  '0xF8864180D2baE3eC70A574e61baBB10fCca88b54',
-  '0xbEd523101DBDe8B465c8343B4443Eb7fB37C1F48',
-  '0x830f2Bb2BBe2576fC4692970Bdc55C535566Ba24',
-  '0xe2776a9BF4477BbF0c20CdA70741C4EA09Ddea3E',
-  '0x28ac283b299BbdDf5B27822fA7C243De835cc121',
-]
-
 const wbnbInx = '0x898c75e1F9B80AD167403a72717A7Edf2F2Aa28d'
 const inx = 'bsc:0xd60D91EAE3E0F46098789fb593C06003253E5D0a'
 const wbnb = 'bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'
@@ -30,7 +20,11 @@ async function tvl(timestamp) {
   })
   const balances = {};
 
-  const vaults = (await axios.get('https://api.allinx.io/api/vaults')).data.data.map(({contractAddress})=>contractAddress)
+  const config = (await axios.get('https://api.allinx.io/api/config')).data.data
+  const vaults = Object.values(config.vaults).map(({address})=>address)
+  const lpStakingPools = Object.values(config.stakepools).filter(pool=>{
+    return vaults.indexOf(pool.stakeToken.token.address) === -1
+  }).sort((a,b)=>a.name === 'INX'?1:-1).map(({address})=>address)
   const vaultCalls = getCallsFromTargets(vaults)
   const vaultBalances = sdk.api.abi.multiCall({
     abi: abi['balance'],
