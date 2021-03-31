@@ -1,4 +1,3 @@
-const BigNumber = require("bignumber.js");
 const { request, gql } = require("graphql-request");
 
 const graphUrl = 'https://api.thegraph.com/subgraphs/name/indexed-finance/indexed'
@@ -28,7 +27,6 @@ async function tvl(timestamp, block) {
         [usdtAddress]: (usdTvl*1e6).toFixed(0)
     }
 }
-
 
 module.exports = {
     name: 'Indexed',
