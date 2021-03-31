@@ -96,5 +96,5 @@ module.exports = {
   fetch
 }
 
-fetch();
+//fetch();
 
