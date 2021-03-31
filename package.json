@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@defillama/sdk": "^1.1.0",
+    "@defillama/sdk": "^1.1.2",
     "@makerdao/multicall": "^0.12.0",
     "async-retry": "^1.3.1",
     "axios": "^0.21.0",
