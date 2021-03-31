@@ -7,10 +7,8 @@ async function fetch() {
   let plus = await retry(async bail => await axios.get('https://bsc-api.acbtc.fi/ac/v0/global'));
   let tvl = acbtcPoolZero.data.poolValue + acbtcPoolOne.data.poolValue;
   let btcPrice = plus.data.quote['BTC'];
-  for (const [key, value] of Object.entries(plus.data.totalSupply)) {
-    if (!key.endsWith("-gauge") && key !== 'AC') {
-      tvl += value * btcPrice;
-    }
+  for (const [key, value] of Object.entries(plus.data.totalUnderlying)) {
+    tvl += value * btcPrice;
   }
   return tvl;
 }
