@@ -1,20 +1,12 @@
-/*==================================================
-  Modules
-  ==================================================*/
-
 const sdk = require('@defillama/sdk');
 const vaultAbi = require('./abis/vault');
 const singlePlusAbi = require('./abis/singlePlus');
 const _ = require('underscore');
 const BigNumber = require('bignumber.js');
 
-/*==================================================
-  Settings
-  ==================================================*/
-
 const iVaultAddresses = [
   '0x1eB47C01cfAb26D2346B449975b7BF20a34e0d45', //acBTC
-  '0xF2c6706af78d15549c9376d04E40957A3B357de4', //UNI-ETH-AC
+  //'0xF2c6706af78d15549c9376d04E40957A3B357de4', //UNI-ETH-AC
 ]
 
 const bscSingleTokens = [
@@ -23,10 +15,6 @@ const bscSingleTokens = [
   '0xD7806143A4206aa9A816b964e4c994F533b830b0', //acsBTCB+
   '0x02827D495B2bBe37e1C021eB91BCdCc92cD3b604', //autoBTC+
 ]
-
-/*==================================================
-  TVL
-  ==================================================*/
 
 async function tvl(timestamp, block) {
   const balances = {};
@@ -37,7 +25,8 @@ async function tvl(timestamp, block) {
     calls: _.map(iVaultAddresses, (address) => ({
       target: address
     })),
-    abi: vaultAbi["token"]
+    abi: vaultAbi["token"],
+    block,
   });
 
   _.each(underlyingIVaultAddressResults.output, (token) => {
@@ -63,14 +52,19 @@ async function tvl(timestamp, block) {
     if(tokenBalanceResult.success) {
       const valueInToken = tokenBalanceResult.output;
       const iVaultAddress = tokenBalanceResult.input.target;
-      balances[iVaultToUnderlyingToken[iVaultAddress]] = BigNumber(balances[iVaultToUnderlyingToken[iVaultAddress]]).plus(valueInToken);
+      balances[iVaultToUnderlyingToken[iVaultAddress]] = BigNumber(balances[iVaultToUnderlyingToken[iVaultAddress]]).plus(valueInToken).toFixed(0);
     }
   });
+
+  const bscBlock = await sdk.api.util.lookupBlock(timestamp, {
+    chain:'bsc'
+  })
 
   const underlyingSingleTokenAddressResults = await sdk.api.abi.multiCall({
     calls: _.map(bscSingleTokens, (address) => ({
       target: address
     })),
+    block: bscBlock.block,
     abi: singlePlusAbi["token"],
     chain: 'bsc'
   });
@@ -87,7 +81,7 @@ async function tvl(timestamp, block) {
   });
 
   const totalUnderlyingResults = await sdk.api.abi.multiCall({
-    block,
+    block: bscBlock.block,
     calls: _.map(bscSingleTokens, (address) => ({
       target: address
     })),
@@ -99,16 +93,12 @@ async function tvl(timestamp, block) {
     if(tokenBalanceResult.success) {
       const valueInToken = tokenBalanceResult.output;
       const singleTokenAddress = tokenBalanceResult.input.target;
-      balances[singleToUnderlyingToken[singleTokenAddress]] = BigNumber(balances[singleToUnderlyingToken[singleTokenAddress]]).plus(valueInToken);
+      balances[singleToUnderlyingToken[singleTokenAddress]] = BigNumber(balances[singleToUnderlyingToken[singleTokenAddress]]).plus(valueInToken).toFixed(0);
     }
   });
 
   return balances;
 }
-
-/*==================================================
-  Exports
-  ==================================================*/
 
 module.exports = {
   name: 'acoconut.fi',
