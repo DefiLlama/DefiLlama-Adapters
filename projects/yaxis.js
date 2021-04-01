@@ -1,15 +1,9 @@
-const Web3 = require("web3");
 const BN = require("bignumber.js");
 const utils = require("./helper/utils");
 const { abis } = require("./config/yaxis/abis.js");
 const constants = require("./config/yaxis/constants.js");
 
-const env = require("dotenv").config();
-const web3 = new Web3(
-  new Web3.providers.HttpProvider(
-    `https://mainnet.infura.io/v3/${env.parsed.INFURA_KEY}`
-  )
-);
+const web3 = require('./config/web3.js');
 
 async function fetch() {
   // 1. MetaVault
