@@ -1,13 +1,7 @@
-var Web3 = require('web3')
-const env = require('dotenv').config()
 const utils = require('./helper/utils')
 const BigNumber = require('bignumber.js')
 
-const web3 = new Web3(
-  new Web3.providers.HttpProvider(
-    `https://mainnet.infura.io/v3/${env.parsed.INFURA_KEY}`
-  )
-)
+const web3 = require('./config/web3.js');
 
 const ADDRESS_CONFIG_ADDRESS = '0x1D415aa39D647834786EB9B5a333A50e9935b796'
 const TOKEN_ADDRESS = '0x5cAf454Ba92e6F2c929DF14667Ee360eD9fD5b26'
