@@ -5,11 +5,9 @@ const BigNumber = require('bignumber.js')
 const dashboard = '0xd925cCBE59DA4513cE3389B7Fd6aEDF0F99C0f55'
 const pools = [
     '0xb037581cF0cE10b04C4735443d95e0C93db5d940',
-    '0x69FF781Cf86d42af9Bf93c06B8bE0F16a2905cBC',
+    //'0x69FF781Cf86d42af9Bf93c06B8bE0F16a2905cBC', // pool2
     '0xCADc8CB26c8C7cB46500E61171b5F27e9bd7889D',
-    
     '0xEDfcB78e73f7bA6aD2D829bf5D462a0924da28eD',
-    
     '0x7eaaEaF2aB59C2c85a17BEB15B110F81b192e98a',
     '0x3f139386406b0924eF115BAFF71D0d30CC090Bd5',
     '0x0137d886e832842a3B11c568d5992Ae73f7A792e',
@@ -29,19 +27,25 @@ const pools = [
 const ZERO = new BigNumber(0)
 const ETHER = new BigNumber(10).pow(18)
 
-async function fetch() {
+async function tvl(timestamp) {
+    const { block } = await sdk.api.util.lookupBlock(timestamp, {
+        chain: 'bsc'
+      })
     const total = (await sdk.api.abi.multiCall({
         calls: pools.map( address => ({
             target: dashboard,
             params: address
         })),
+        block,
         abi: abi,
         chain: 'bsc'
     })).output.reduce((tvl, call) => tvl.plus(new BigNumber(call.output)), ZERO)
     
-    return total.dividedBy(ETHER).toString()
+    return {
+        'tether': total.dividedBy(ETHER).toString()
+    }
 }
 
 module.exports = {
-    fetch
+    tvl
 }
