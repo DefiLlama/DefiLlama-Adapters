@@ -145,9 +145,16 @@ const keys = [
   }
 ];
 
+let web3RpcUrl;
+if(process.env && process.env.ALCHEMY_API){
+    web3RpcUrl = `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API}`
+} else if(env && env.parsed && env.parsed.INFURA_KEY){
+    web3RpcUrl = `https://mainnet.infura.io/v3/${env.parsed.INFURA_KEY}`
+}
+
 // Utils
 const aggregate = (calls) => Multicall.aggregate(
-  calls, { multicallAddress: '0xeefba1e63905ef1d7acba5a8513c70307c1ce441', rpcUrl: infuraURL, }
+  calls, { multicallAddress: '0xeefba1e63905ef1d7acba5a8513c70307c1ce441', rpcUrl: web3RpcUrl, }
 );
 
 const bytesToString = (hex) => Buffer.from(hex.replace(/^0x/, ''), 'hex')
