@@ -1,4 +1,4 @@
-const web3 = require('./config/web3.js');
+const web3 = require('../config/web3.js');
 
 const moment = require('moment')
 
