@@ -21,6 +21,9 @@ async function GenerateCallList() {
     }
   });
   _.forEach(marketStatus, status => {
+    if(status===null){
+       return;
+    }
     const id = status.marketID;
     if (id2Info[id] && status.perpetualStorage && status.perpetualStorage.collateralTokenAddress !== '0x0000000000000000000000000000000000000000') {
       id2Info[id].collateralTokenAddress = status.perpetualStorage.collateralTokenAddress;
