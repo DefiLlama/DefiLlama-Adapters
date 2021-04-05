@@ -1,5 +1,8 @@
 const sdk = require("@defillama/sdk");
 
+const stakingPool = '0x488933457E89656D7eF7E69C10F2f80C7acA19b5';
+const bfcAddr = '0x0c7D5ae016f806603CB1782bEa29AC69471CAb9c';
+
 const ethPool = '0x13000c4a215efe7e414bb329b2f11c39bcf92d78';
 const ethTokenPools = {
     'usdt': {
@@ -66,6 +69,14 @@ async function tvl(timestamp, block) {
         target: ethPool,
         ethBlock
     })).output
+
+    // staking pool
+    let tokenStaked = await sdk.api.erc20.balanceOf({
+        owner: stakingPool,
+        target: bfcAddr,
+        ethBlock
+      });
+      sdk.util.sumSingleBalance(balances, bfcAddr, tokenStaked.output);
 
     // eth tokens
     for (token in ethTokenPools) {
