@@ -1,4 +1,4 @@
-const web3 = require('./config/web3.js');
+const web3 = require("./config/web3.js");
 
 const BigNumber = require("bignumber.js");
 
@@ -10,18 +10,18 @@ let coins = [
   "0xBC6DA0FE9aD5f3b0d58160288917AA56653660E9", //alUSD
   "0xdBdb4d16EdA451D0503b854CF79D55697F90c8DF", //ALCX
   "0xC3f279090a47e80990Fe3a9c30d24Cb117EF91a8", //Sushiswap ALCX-WETH LP Token
-  "0x19D3364A399d251E894aC732651be8B0E4e85001",//yvDAI
+  "0x19D3364A399d251E894aC732651be8B0E4e85001" //yvDAI
 ];
 
 let daiHolders = [
   "0xaB7A49B971AFdc7Ee26255038C82b4006D122086", //Transmuter
   "0xc21D353FF4ee73C572425697f4F5aaD2109fe35b", //Alchemist
-  "0xf3cFfaEEa177Db444b68FB6f033d4a82f6D8C82d"//TransmuterB
+  "0xf3cFfaEEa177Db444b68FB6f033d4a82f6D8C82d" //TransmuterB
 ];
 
 let yvDaiHolders = [
-  "0x491EAFC47D019B44e13Ef7cC649bbA51E15C61d7"//YearnVaultAdapterWithIndirection
-]
+  "0x491EAFC47D019B44e13Ef7cC649bbA51E15C61d7" //YearnVaultAdapterWithIndirection
+];
 
 async function weiToFloat(wei) {
   wei = await new BigNumber(wei).div(10 ** 18).toFixed(2);
@@ -30,7 +30,7 @@ async function weiToFloat(wei) {
 
 async function getPricePerShareInFloat(contract) {
   let pricePerShare = await contract.methods.pricePerShare().call();
-  pricePerShare = await weiToFloat(pricePerShare)
+  pricePerShare = await weiToFloat(pricePerShare);
   return pricePerShare;
 }
 
@@ -92,10 +92,9 @@ async function fetch() {
   const totalALUSDSupply = await getTotalSupplyFloat(alusdcontract);
   tvl += totalALUSDSupply * 2;
 
-
   return tvl;
 }
 
 module.exports = {
-  fetch,
+  fetch
 };
