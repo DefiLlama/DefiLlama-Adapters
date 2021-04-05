@@ -77,22 +77,6 @@ async function tvl(timestamp, block) {
     // pool - wasabi
     const PoolWasabiTVL = resultBalance.output[0];
 
-    // pool - lp
-    const stakedLP = resultBalance.output[1];
-
-    const totalLP = await sdk.api.abi.call({
-      target: WASABILP,
-      abi: abi['totalSupply'],
-      block: block
-    });
-
-    const shareOfTotalStaked = new BigNumber(totalLP.output).div(new BigNumber(stakedLP.output));
-
-    const totalWETHinLP = resultBalance.output[2];
-
-    // times 2 for wasabi + weth
-    const totalWETHShareInLP = shareOfTotalStaked.times(new BigNumber(totalWETHinLP.output)).times(2);
-
     // pool - Wausd
     const PoolWAUSDTVL = resultBalance.output[3];
 
@@ -108,8 +92,7 @@ async function tvl(timestamp, block) {
                         .plus(new BigNumber(PoolWasabiTVL.output).times(baseTokenPriceInUsd))
                         .div(1e18);
 
-    // WETH = WETH in LP(staked) + WASABI in LP(staked)
-    balances['WETH'] = totalWETHShareInLP.div(1e18);
+
 
     return balances;
 }
