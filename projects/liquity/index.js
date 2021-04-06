@@ -21,7 +21,7 @@ async function tvl(_, block) {
 module.exports = {
   name: "Liquity",
   token: "LQTY",
-  category: "lending",
+  category: "minting",
   start: 1617607296,
   tvl,
 };
