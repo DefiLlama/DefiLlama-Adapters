@@ -1,47 +1,35 @@
-/*==================================================
-  Modules
-  ==================================================*/
-const BigNumber = require('bignumber.js');
-const sdk = require('@defillama/sdk');
-const v2TVL = require('./v2');
+const { request, gql } = require("graphql-request");
 
-/*==================================================
-  Settings
-  ==================================================*/
-const ETH = '0x0000000000000000000000000000000000000000';
-const WETH = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
-
-/*==================================================
-  TVL
-  ==================================================*/
+const graphUrl = 'https://api.thegraph.com/subgraphs/name/zippoxer/sushiswap-subgraph-fork'
+const graphQuery = gql`
+query get_tvl($block: Int) {
+  uniswapFactory(
+    id: "0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac",
+    block: { number: $block }
+  ) {
+    totalVolumeUSD
+    totalLiquidityUSD
+  }
+}
+`;
+const usdtAddress = '0xdac17f958d2ee523a2206206994597c13d831ec7'
 
 async function tvl(timestamp, block) {
-  const [v2] = await Promise.all([v2TVL(timestamp, block)]);
-
-  // replace WETH with ETH for v2
-  v2[ETH] = v2[WETH];
-  delete v2[WETH];
-
-  const tokenAddresses = new Set(Object.keys(v2));
-
-  const balances = (
-    Array
-      .from(tokenAddresses)
-      .reduce((accumulator, tokenAddress) => {
-        const v2Balance = new BigNumber(v2[tokenAddress] || '0');
-        accumulator[tokenAddress] = v2Balance.toFixed();
-
-        return accumulator
-      }, {})
+  const {uniswapFactory} = await request(
+    graphUrl,
+    graphQuery,
+    {
+      block,
+    }
   );
+  const usdTvl = Number(uniswapFactory.totalLiquidityUSD)
 
-  return balances;
+  return {
+    [usdtAddress]: (usdTvl * 1e6).toFixed(0)
+  }
 }
 
 module.exports = {
-  name: 'SushiSwap',
-  token: 'SUSHI',
-  category: 'dexes',
-  start: 1599214239, // 09/04/2020 @ 10:10:39am (UTC)
-  tvl,
-};
+  ethereum:tvl,
+  tvl
+}
