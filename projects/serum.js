@@ -12,8 +12,7 @@ async function fetch() {
   const connection = new Connection('https://solana-api.projectserum.com/');
   const programId = new PublicKey(serumProgramId);
   const markets = await axios.get('https://wallet-api.bonfida.com/cached/market-table')
-  const usdMarkets = markets.data.data//.filter(market=>market.market.split('/')[1].includes('USD'));
-  await Promise.all(usdMarkets.map(async marketData=>{
+  await Promise.all(markets.data.data.map(async marketData=>{
     const marketAddress = new PublicKey(marketData.address);
     const market = await Market.load(connection, marketAddress, {}, programId);
     const bids = await market.loadBids(connection);
