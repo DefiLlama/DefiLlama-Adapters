@@ -1,6 +1,8 @@
 const { request, gql } = require("graphql-request");
+const sdk = require('@defillama/sdk')
 const graphUrl = 'https://api.thegraph.com/subgraphs/name/olive-rose/olivecash'
 
+const usdtAddress = '0xdac17f958d2ee523a2206206994597c13d831ec7'
 const graphQuery = gql`
 query get_tvl($block: Int) {
   pangolinFactory(
@@ -29,8 +31,11 @@ query get_tvl($block: Int) {
 // }
 //  132833/ 0.031 = ~4.2M TVL - its correct now
 
-async function tvl(timestamp, block) {
-  const {response} = await request(
+async function tvl(timestamp) {
+  const {block} = await sdk.api.util.lookupBlock(timestamp,{
+    chain: 'avax'
+  })
+  const response = await request(
     graphUrl,
     graphQuery,
     {
@@ -38,7 +43,7 @@ async function tvl(timestamp, block) {
     }
   );
 
-  const usdTvl = Number(response.pangolinFactory.totalLiquidityETH / response.tokens.derivedETH)
+  const usdTvl = Number(response.pangolinFactory.totalLiquidityETH) / Number(response.tokens[0].derivedETH)
 
   return {
     [usdtAddress]: (usdTvl * 1e6).toFixed(0)
