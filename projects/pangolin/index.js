@@ -41,5 +41,6 @@ module.exports = {
   avalanche:{
     tvl,
   },
+  start: 1612715300, // 7th-Feb-2021
   tvl
 }
