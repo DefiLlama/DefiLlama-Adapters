@@ -51,6 +51,8 @@ async function tvl(timestamp) {
 }
 
 module.exports = {
-  ethereum:tvl,
+  avalanche:{
+    tvl,
+  },
   tvl
 }
