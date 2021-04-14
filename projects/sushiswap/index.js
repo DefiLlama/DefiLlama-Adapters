@@ -1,4 +1,5 @@
 const { request, gql } = require("graphql-request");
+const { toUSDTBalances } = require('../helper/balances');
 
 const graphUrl = 'https://api.thegraph.com/subgraphs/name/zippoxer/sushiswap-subgraph-fork'
 const graphQuery = gql`
@@ -12,7 +13,6 @@ query get_tvl($block: Int) {
   }
 }
 `;
-const usdtAddress = '0xdac17f958d2ee523a2206206994597c13d831ec7'
 
 async function tvl(timestamp, block) {
   const {uniswapFactory} = await request(
@@ -24,9 +24,7 @@ async function tvl(timestamp, block) {
   );
   const usdTvl = Number(uniswapFactory.totalLiquidityUSD)
 
-  return {
-    [usdtAddress]: (usdTvl * 1e6).toFixed(0)
-  }
+  return toUSDTBalances(usdTvl)
 }
 
 module.exports = {
