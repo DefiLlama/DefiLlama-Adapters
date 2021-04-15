@@ -7,7 +7,7 @@
 ##### Website Link:
 
 
-##### Contact Email:
+##### Logo (400x400, will be shown with rounded borders):
 
 
 ##### Current TVL:
