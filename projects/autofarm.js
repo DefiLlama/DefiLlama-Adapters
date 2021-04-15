@@ -13,7 +13,6 @@ async function fetch() {
   //var hecototalTvl = await utils.fetchURL('https://api.autofarm.network/heco/get_stats')
   return tvl// + hecototalTvl.data.platformTVL;
 }
-fetch().then(console.log)
 
 module.exports = {
   fetch
