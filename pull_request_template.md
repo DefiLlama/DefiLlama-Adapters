@@ -7,7 +7,7 @@
 ##### Website Link:
 
 
-##### Logo (400x400, will be shown with rounded borders):
+##### Logo (High resolution, preferably in .svg and .png, for application on both white and black backgrounds. Will be shown with rounded borders):
 
 
 ##### Current TVL:
