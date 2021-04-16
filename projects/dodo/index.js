@@ -1,10 +1,11 @@
 const { request, gql } = require("graphql-request");
 const sdk = require('@defillama/sdk');
 
-const graphEndpoint = "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2"
+const graphEndpoint = "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-beta"
 const graphQuery = gql`
 query get_pairs($block: Int) {
     pairs(
+      first: 1000,
       block: { number: $block }
     ) {
         id
@@ -30,7 +31,7 @@ async function tvl(timestamp, block) {
             block,
         }
     );
-    console.log(response.pairs)
+
     const balanceCalls = response.pairs.map(pair=>[{
         target: pair.quoteToken.id,
         params: [pair.id]
