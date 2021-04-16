@@ -5,9 +5,10 @@ const utils = require('./helper/utils');
 *
 *****************/
 async function fetch() {
-  let staked = await utils.fetchURL('https://api.bzx.network/v1/vault-balance-usd')
-  return staked.data.data.all;
+  let staked = await utils.fetchURL('https://api.bzx.network/v1/vault-balance-usd?networks=bsc,eth')
+  return Number(staked.data.data.bsc.all) + Number(staked.data.data.eth.all);
 }
+fetch().then(console.log)
 
 module.exports = {
   fetch
