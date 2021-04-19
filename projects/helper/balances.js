@@ -8,5 +8,6 @@ const toUSDTBalances = value => ({
 
 module.exports = {
     toUSDT,
-    toUSDTBalances
+    toUSDTBalances,
+    usdtAddress
 }
