@@ -40,11 +40,14 @@ async function fetch() {
     if(price === undefined){
       return
     }
-    tvl += price*balance
+    //balance error in here somewhere /Alex
+    if (balance < 1000000000) {
+      tvl += price*balance
+    }
   })
-
   return tvl;
 }
+
 
 module.exports = {
   fetch
