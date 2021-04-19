@@ -7,7 +7,7 @@ const utils = require('./helper/utils');
 
 async function fetch() {
   let response = await utils.fetchURL('https://api-stats.valuedefi.io/api/common-stat/get-total-locked')
-  return response.data.data.total
+  return response.data.data.ethTotal;
 }
 
 module.exports = {
