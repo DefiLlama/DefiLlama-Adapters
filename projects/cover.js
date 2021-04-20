@@ -1,6 +1,4 @@
-const Web3 = require('web3')
-const env = require('dotenv').config()
-const web3 = new Web3(new Web3.providers.HttpProvider(`https://mainnet.infura.io/v3/${env.parsed.INFURA_KEY}`));
+const web3 = require('./config/web3.js');
 const retry = require('async-retry')
 const axios = require("axios");
 const abis = require('./config/cover/cover.js')
@@ -20,6 +18,8 @@ async function fetch() {
         await Promise.all(
           protocolDetails._allCovers.map(async cover => {
             let coverBalance = await utils.returnBalance('0x6b175474e89094c44da98b954eedeac495271d0f', cover)
+            let coverBalanceYdai = await utils.returnBalance('0x16de59092dAE5CcF4A1E6439D611fd0653f0Bd01', cover)
+            tvl += coverBalanceYdai
             tvl += coverBalance
           })
         )

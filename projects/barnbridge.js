@@ -1,6 +1,4 @@
-var Web3 = require('web3');
-const env = require('dotenv').config()
-const web3 = new Web3(new Web3.providers.HttpProvider(`https://mainnet.infura.io/v3/${env.parsed.INFURA_KEY}`));
+const web3 = require('./config/web3.js');
 const utils = require('./helper/utils');
 
 var usdc = {
@@ -13,7 +11,7 @@ var susd = {
 }
 var dai = {
   address: '0x6b175474e89094c44da98b954eedeac495271d0f',
-  decimals: 18
+  decimals: 18 
 }
 
 async function fetch() {
