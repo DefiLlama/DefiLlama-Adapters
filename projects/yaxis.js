@@ -31,29 +31,12 @@ async function fetch() {
 	const sYaxisTVL = new BN(sYAXIS).div(10 ** 18).times(yaxisPrice);
 	const staked = sYaxTVL.plus(sYaxisTVL);
 
-	// 3. Staked LP tokens
-	const UniYaxisEthLP = new web3.eth.Contract(abis.LP_U, constants.LPS[0]);
-	const totalUniLP = await UniYaxisEthLP.methods.totalSupply().call();
-	const uniLPStaking = new web3.eth.Contract(abis.Rewards, constants.LPS[0]);
-	const sUniLP = await uniLPStaking.methods.totalSupply().call();
-	const percentStaked = new BN(sUniLP).div(totalUniLP);
-	const {
-		_reserves0: YAXIS,
-		_reserves1: WETH,
-	} = await UniYaxisEthLP.methods.getReserves().call();
-	const stakedYAXIS = percentStaked.times(YAXIS);
-	const stakedYaxisTVL = stakedYAXIS.times();
-	const stakedWETH = percentStaked.times(WETH);
-	const wethPrice = (await utils.getPricesfromString("weth")).data["weth"].usd;
-	const stakedWethTVL = stakedWETH.times(wethPrice);
-	const totalLPTVL = stakedYaxisTVL.plus(stakedWethTVL);
-
 	// 4. VAULTS
 	// vault balance
 	// plus
 	// amount staked in YaxisChef
 
-	const totalTVL = metaVaultTVL.plus(staked).plus(totalLPTVL).toFixed(2);
+	const totalTVL = metaVaultTVL.plus(staked).toFixed(2);
 	return totalTVL;
 }
 
