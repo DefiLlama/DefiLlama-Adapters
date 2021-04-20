@@ -1,0 +1,14 @@
+{
+  "constant": true,
+  "inputs": [],
+  "name": "getNumberOfOptionsContracts",
+  "outputs": [
+    {
+      "name": "",
+      "type": "uint256"
+    }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+}

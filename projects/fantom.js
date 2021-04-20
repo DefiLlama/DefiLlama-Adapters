@@ -44,30 +44,7 @@ async function fetch() {
 
       let tvl = new BigNumber(wData.erc20Token.totalDeposit).plus(new BigNumber(sData.erc20Token.totalDeposit)).div(10 ** 18).toNumber();
       const result = ((tvl * price_feed.data.fantom.usd) + (new BigNumber(fData.erc20Token.totalSupply)).div(10 ** 18).toNumber()).toFixed(2);
-      /*const json = {
-        wFTM : {
-          description : 'Wrapped FTM',
-          amount : new BigNumber(wData.erc20Token.totalSupply).div(10 ** 18).toNumber(),
-          collateral : new BigNumber(wData.erc20Token.totalDeposit).div(10 ** 18) * price_feed.data.fantom.usd,
-          usd : new BigNumber(wData.erc20Token.totalSupply).div(10 ** 18) * price_feed.data.fantom.usd
-        },
-        sFTM : {
-          description : 'Liquid staking FTM',
-          amount : new BigNumber(sData.erc20Token.totalSupply).div(10 ** 18).toNumber(),
-          collateral : new BigNumber(sData.erc20Token.totalDeposit).div(10 ** 18) * price_feed.data.fantom.usd,
-          usd : new BigNumber(sData.erc20Token.totalSupply).div(10 ** 18) * price_feed.data.fantom.usd
-        },
-        fUSD : {
-          description : 'Fantom USD',
-          amount : new BigNumber(fData.erc20Token.totalSupply).div(10 ** 18).toNumber(),
-          usd : new BigNumber(fData.erc20Token.totalSupply).div(10 ** 18).toNumber()
-        },
-        price : price_feed.data.fantom.usd,
-        collateral_usd : (tvl * price_feed.data.fantom.usd),
-        tvl,
-        result
-      }
-      console.log(json)*/
+  
       return result;
 }
 

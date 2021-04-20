@@ -1,6 +1,4 @@
-var Web3 = require('web3');
-const env = require('dotenv').config()
-const web3 = new Web3(new Web3.providers.HttpProvider(`https://mainnet.infura.io/v3/${env.parsed.INFURA_KEY}`));
+const web3 = require('../config/web3.js')
 const abis = require('../config/abis.js').abis
 const BigNumber = require("bignumber.js");
 const retry = require('async-retry')
@@ -15,7 +13,7 @@ async function returnBalance(token, address) {
 }
 
 async function returnDecimals(address) {
-  if (address === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
+  if (address.toLowerCase() === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
     return 18;
   }
   let contract = new web3.eth.Contract(abis.minABI, address)

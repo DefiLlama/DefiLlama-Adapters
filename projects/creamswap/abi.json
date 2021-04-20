@@ -1,0 +1,85 @@
+{
+    "getCurrentTokens": {
+        "constant": true,
+        "inputs": [],
+        "name": "getCurrentTokens",
+        "outputs": [
+            {
+                "internalType": "address[]",
+                "name": "tokens",
+                "type": "address[]"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "get_virtual_price": {
+        "constant": true,
+        "inputs": [],
+        "name": "get_virtual_price",
+        "outputs": [
+            {
+                "type": "uint256",
+                "name": "out"
+            }
+        ],
+        "payable": false,
+        "signature": "0xbb7b8b80",
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "getPricePerFullShare": {
+        "constant": true,
+        "inputs": [],
+        "name": "getPricePerFullShare",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function",
+        "signature": "0x77c7b8fc"
+    },
+    "balanceOfUnderlying": {
+        "constant": false,
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "owner",
+                "type": "address"
+            }
+        ],
+        "name": "balanceOfUnderlying",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function",
+        "signature": "0x3af9e669"
+    },
+    "underlying": {
+        "constant": true,
+        "inputs": [],
+        "name": "underlying",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    }
+}

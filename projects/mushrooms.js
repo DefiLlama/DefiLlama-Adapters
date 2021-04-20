@@ -8,7 +8,6 @@ const utils = require('./helper/utils');
 * }
 *
 *****************/
-
 async function fetch() {
   let response = await utils.fetchURL('https://swapoodxoh.execute-api.ap-southeast-1.amazonaws.com/tvl')
   return response.data.result;

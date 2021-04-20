@@ -1,11 +1,9 @@
-const env = require('dotenv').config();
-const Web3 = require('web3');
 const BigNumber = require('bignumber.js');
-const infuraURL = `https://mainnet.infura.io/v3/${env.parsed.INFURA_KEY}`;
-const web3 = new Web3(new Web3.providers.HttpProvider(infuraURL));
+const web3 = require('./config/web3.js');
 const defisaverABIs = require('./config/defisaver/abis');
 const utils = require('./helper/utils');
 const Multicall = require('@makerdao/multicall');
+const env = require("dotenv").config();
 
 // Configs
 const coins = {
@@ -148,9 +146,16 @@ const keys = [
   }
 ];
 
+let web3RpcUrl;
+if(process.env && process.env.ALCHEMY_API){
+    web3RpcUrl = `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API}`
+} else if(env && env.parsed && env.parsed.INFURA_KEY){
+    web3RpcUrl = `https://mainnet.infura.io/v3/${env.parsed.INFURA_KEY}`
+}
+
 // Utils
 const aggregate = (calls) => Multicall.aggregate(
-  calls, { multicallAddress: '0xeefba1e63905ef1d7acba5a8513c70307c1ce441', rpcUrl: infuraURL, }
+  calls, { multicallAddress: '0xeefba1e63905ef1d7acba5a8513c70307c1ce441', rpcUrl: web3RpcUrl, }
 );
 
 const bytesToString = (hex) => Buffer.from(hex.replace(/^0x/, ''), 'hex')

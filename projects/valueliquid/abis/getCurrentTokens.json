@@ -1,0 +1,15 @@
+{
+  "constant": true,
+  "inputs": [],
+  "name": "getCurrentTokens",
+  "outputs": [
+    {
+      "internalType": "address[]",
+      "name": "tokens",
+      "type": "address[]"
+    }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+}
