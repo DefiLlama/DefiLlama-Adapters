@@ -9,7 +9,7 @@ async function tvl(timestamp, block) {
   })
 
   return {
-    [wethAddress]: supply.output
+    [wethAddress]: supply.output 
   }
 }
 

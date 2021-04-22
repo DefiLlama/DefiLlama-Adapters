@@ -7,7 +7,7 @@
 ##### Website Link:
 
 
-##### Contact Email:
+##### Logo (High resolution, preferably in .svg and .png, for application on both white and black backgrounds. Will be shown with rounded borders):
 
 
 ##### Current TVL:
