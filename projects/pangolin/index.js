@@ -1,8 +1,8 @@
 const { request, gql } = require("graphql-request");
-const sdk = require('@defillama/sdk')
+const sdk = require('@defillama/sdk');
+const { toUSDTBalances } = require('../helper/balances');
 const graphUrl = 'https://api.thegraph.com/subgraphs/name/dasconnor/pangolin-dex'
 
-const usdtAddress = '0xdac17f958d2ee523a2206206994597c13d831ec7'
 const graphQuery = gql`
 query get_tvl($block: Int) {
   pangolinFactory(
@@ -32,9 +32,7 @@ async function tvl(timestamp) {
 
   const usdTvl = Number(response.pangolinFactory.totalLiquidityETH) / Number(response.tokens[0].derivedETH)
 
-  return {
-    [usdtAddress]: (usdTvl * 1e6).toFixed(0)
-  }
+  return toUSDTBalances(usdTvl)
 }
 
 module.exports = {
