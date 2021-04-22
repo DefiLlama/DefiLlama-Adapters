@@ -49,11 +49,14 @@ async function tvl(timestamp, block) {
     token: dpiEthToken,
     balance: (await dpiLPLocked).output
   }], block)
-  const wethOnLockedSLP = BigNumber((await totalWethOnSlp).output).times((await bDPILPLocked).output).div((await slpSupply).output)
-  sdk.util.sumSingleBalance(balances, weth, wethOnLockedSLP.toFixed(0))
   sdk.util.sumSingleBalance(balances, dpiToken, (await dpiLocked).output)
   sdk.util.sumSingleBalance(balances, dpiToken, (await dpiLockedOnMigrator).output)
-  sdk.util.sumSingleBalance(balances, bDPIToken, (await bdpiSupply).output)
+
+  try{
+    const wethOnLockedSLP = BigNumber((await totalWethOnSlp).output).times((await bDPILPLocked).output).div((await slpSupply).output)
+    sdk.util.sumSingleBalance(balances, weth, wethOnLockedSLP.toFixed(0))
+    sdk.util.sumSingleBalance(balances, bDPIToken, (await bdpiSupply).output)
+  }catch(e){}
   return balances
 }
 
