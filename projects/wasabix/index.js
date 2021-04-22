@@ -69,7 +69,7 @@ async function tvl(timestamp, block) {
     // yum - vesper
     const YUMVesperTVL = resultYUM.output[3];
 
-    // yum - vesper
+    // yum - liquity
     const YUMLiquityTVL = resultYUM.output[4];
 
     let resultBalance = await sdk.api.abi.multiCall({
@@ -143,8 +143,7 @@ async function tvl(timestamp, block) {
     // collector - LUSD
     const CollectorLUSDTVL = resultBalance.output[9];
 
-    //DAI = Dai in YUMYearn + Dai in YUMIdle + waUSD in StakingPools + WAUSD3CRV in StakingPools + WASABI in stakingPools * WASABI price in usd
-
+    //DAI = Dai in YUMYearn + Dai in YUMIdle + Dai in YUMPickle + LUSD in YUMLiquity + Dai in Collector + LUSD in Collector + waUSD in StakingPools + waLUSD in StakingPools + WAUSD3CRV in StakingPools + WASABI in stakingPools * WASABI price in usd
     balances['DAI'] =  (new BigNumber(YUMYearnTVL.output)
                         .plus(new BigNumber(YUMIdleTVL.output))
                         .plus(new BigNumber(YUMPickleTVL.output))
