@@ -5,8 +5,8 @@ const utils = require('./helper/utils');
 *
 *****************/
 async function fetch() {
-  var response = await utils.fetchURL('https://api.hyfi.pro/tvl')
-  return response.data.tvl;
+  var response = await utils.fetchURL('https://api.hyfi.pro/stat')
+  return response.data.vault_tvl;
 }
 
 module.exports = {
