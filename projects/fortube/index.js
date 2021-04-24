@@ -1,15 +1,10 @@
-/*==================================================
-  Modules
-  ==================================================*/
-
   const sdk = require("@defillama/sdk");
   const _ = require("underscore");
   const abi = require("./abi.json");
   const BigNumber = require("bignumber.js");
+  const axios = require("axios")
+  const {toUSDT, usdtAddress} = require("../helper/balances")
   
-  /*==================================================
-      Settings
-      ==================================================*/
   const ForTube = "0xE48BC2Ba0F2d2E140382d8B5C8f261a3d35Ed09C";
   const ForTubeV2 = "0x936E6490eD786FD0e0f0C1b1e4E1540b9D41F9eF";
   const EthAddress = "0x0000000000000000000000000000000000000000";
@@ -80,41 +75,6 @@
     })).output;
   }
 
-  async function multiGet(name, block) {
-    let fTokens = await getAllMarkets(block);
-    return (await sdk.api.abi.multiCall({
-      block,
-      calls: _.map(fTokens, (fToken) => ({
-        target: fToken,
-        params: [],
-      })),
-      abi: abi[name],
-    })).output;
-  }
-
-  async function getUnderlyingInfo(ftoken, block) {
-    let underlying = (await sdk.api.abi.call({
-      block,
-      target: ftoken,
-      params: [],
-      abi: abi["underlying"],
-    })).output;
-
-    if (underlying == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE") {
-      return { decimals: 18, symbol: "ETH" }
-    }
-
-    if (underlying == "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2") {
-      return { decimals: 18, symbol: "MKR" }
-    }
-
-    let info = await sdk.api.erc20.info(underlying);
-    return { decimals: info.output.decimals, symbol: info.output.symbol }
-  }
-
-  /*==================================================
-      TVL
-      ==================================================*/
   async function tvl(timestamp, block) {
     let balances = {};
     let erc20Assets = await getErc20Assets(block);
@@ -153,91 +113,18 @@
     }
 
     sdk.util.sumMultiBalanceOf(balances, balanceOfResults);
+
+    /*
+    const markets = await axios.get("https://api.for.tube/api/v1/bank/public/chain/BSC-Inno/markets")
+    const bscUsd = markets.data.data.reduce((acc, val)=>acc+val.global_token_reserved, 0)
+    sdk.util.sumSingleBalance(balances, usdtAddress, toUSDT(bscUsd));
+    */
   
     return balances;
   }
   
-  /*==================================================
-    Rates
-    ==================================================*/
-  async function rates(timestamp, block) {
-    let ratesData = { lend: {}, borrow: {}, supply: {} };
-    let allAssets = await getErc20Assets(block);
-    allAssets.push(EthAddress);
-  
-    const mktsResults = (await sdk.api.abi.multiCall({
-      block,
-      calls: _.map(allAssets, (asset) => ({
-        target: ForTube,
-        params: asset,
-      })),
-      abi: abi['mkts'],
-    })).output;
-    await (Promise.all(mktsResults.map(async (market) => {
-      if (market.success) {
-        const asset = market.input.params[0];
-        var symbol = "ETH";
-        var decimals = 18;
-        if (asset == "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2") {
-          symbol = "MKR";//MKR's symbol type is bytes32, not string
-          decimals = 18;
-        } else if (asset != EthAddress) {
-          let info = await sdk.api.erc20.info(asset);
-          symbol = info.output.symbol;
-          decimals = info.output.decimals;
-        }
-  
-        ratesData.lend[symbol] = String((market.output.supplyRate / 1e18) * 100);
-        ratesData.borrow[symbol] = String((market.output.demondRate / 1e18) * 100);
-        ratesData.supply[symbol] = BigNumber(market.output.totalBorrows).div(10 ** decimals).toFixed();
-      }
-    })));
-
-    //V2
-    if (block > V2BLOCK) {
-      let APRs = await multiGet('APR', block);
-      let APYs = await multiGet('APY', block);
-      let Supplies = await multiGet('totalBorrows', block);
-
-      await (Promise.all(APRs.map(async (APR) => {
-        if (APR.success) {
-          let info = await getUnderlyingInfo(APR.input.target, block);
-          ratesData.borrow[info.symbol] = String((APR.output / 1e18) * 100);
-        }
-      })));
-
-      await (Promise.all(APYs.map(async (APY) => {
-        if (APY.success) {
-          let info = await getUnderlyingInfo(APY.input.target, block);
-          ratesData.lend[info.symbol] = String((APY.output / 1e18) * 100);
-        }
-      })));
-
-      await (Promise.all(Supplies.map(async (supply) => {
-        if (supply.success) {
-          let info = await getUnderlyingInfo(supply.input.target, block);
-          ratesData.supply[info.symbol] = BigNumber(supply.output).div(10 ** info.decimals).toFixed();
-        }
-      })));
-    }
-
-    return ratesData;
-  }
-  
-  /*==================================================
-      Exports
-      ==================================================*/
-  
   module.exports = {
-    name: "ForTube",
-    website: 'https://for.tube',
-    token: "FOR",
-    category: "lending",
     start: 1596384000, // 2020/8/3 00:00:00 +UTC
-    tvl,
-    rates,
-    term: '1 block',
-    permissioning: 'Open',
-    variability: 'Medium',
+    tvl
   };
   
