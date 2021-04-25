@@ -37,7 +37,7 @@ async function tvl(timestamp) {
 
 module.exports = {
   xdai: {
-    tvl: getTvl.bind({ chain: "xdai" }),
+    tvl
   },
   name: "Levinswap", // Project name
   token: 'LEVIN', // LEVIN governance token
