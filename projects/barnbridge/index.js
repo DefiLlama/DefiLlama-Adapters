@@ -8,6 +8,15 @@ const BigNumber = require('bignumber.js');
   Settings
 ==================================================*/
 const listedTokens = [
+    // UNI LP - Yield Farm
+    {
+        isYield: true,
+        pool: '0x6591c4BcD6D7A1eb4E537DA8B78676C1576Ba244',
+        token: {
+            address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+            decimals: 6,
+        },
+    },
     // Compound - USDC
     {
         isCompound: true,
@@ -55,6 +64,17 @@ function createAbiViewItemFor(name, inputs, outputs) {
     };
 }
 
+function getYieldBalanceFor(poolAddress, tokenAddress, block) {
+    const abi = createAbiViewItemFor('balanceOf', ['address'], ['uint256']);
+
+    return sdk.api.abi.call({
+        abi,
+        target: tokenAddress,
+        params: [poolAddress],
+        block,
+    }).then(({output}) => new BigNumber(output));
+}
+
 function getCompoundBalanceFor(providerAddress, cTokenAddress, cTokenDecimals, block) {
     const abi = createAbiViewItemFor('balanceOf', ['address'], ['uint256']);
 
@@ -84,29 +104,43 @@ async function tvl(timestamp, block) {
     const balances = {};
 
     await Promise.all(listedTokens.map(async token => {
-        const {provider, cToken, uToken} = token;
+        let tokenAddress;
+        let tokenDecimals;
 
-        if (!balances[uToken.address]) {
-            balances[uToken.address] = new BigNumber(0);
-        }
+        if (token.isYield) {
+            tokenAddress = token.token.address;
 
-        let balance;
-        let exchangeRate;
+            try {
+                const amount = await getYieldBalanceFor(token.pool, tokenAddress);
 
-        try {
-            if (token.isCompound) {
-                balance = await getCompoundBalanceFor(provider, cToken.address, cToken.decimals, block);
-                exchangeRate = await getCompoundExchangeRateFor(provider, cToken.decimals, uToken.decimals, block);
+                balances[tokenAddress] = balances[tokenAddress].plus(amount);
+            } catch (e) {
+                console.log('ERROR', e);
+            }
+        } else if (token.isCompound) {
+            tokenAddress = token.uToken.address;
+            tokenDecimals = token.uToken.decimals;
+
+            if (!balances[tokenAddress]) {
+                balances[tokenAddress] = new BigNumber(0);
             }
 
-            const totalValue = balance
-                .multipliedBy(exchangeRate)
-                .multipliedBy(10 ** uToken.decimals)
-                .integerValue(BigNumber.ROUND_UP);
+            let balance;
+            let exchangeRate;
 
-            balances[uToken.address] = balances[uToken.address].plus(totalValue);
-        } catch (e) {
-            console.log('ERROR', e);
+            try {
+                balance = await getCompoundBalanceFor(token.provider, token.cToken.address, token.cToken.decimals, block);
+                exchangeRate = await getCompoundExchangeRateFor(token.provider, token.cToken.decimals, tokenDecimals, block);
+
+                const totalValue = balance
+                    .multipliedBy(exchangeRate)
+                    .multipliedBy(10 ** tokenDecimals)
+                    .integerValue(BigNumber.ROUND_UP);
+
+                balances[tokenAddress] = balances[tokenAddress].plus(totalValue);
+            } catch (e) {
+                console.log('ERROR', e);
+            }
         }
     }));
 
