@@ -8,15 +8,6 @@ const BigNumber = require('bignumber.js');
   Settings
 ==================================================*/
 const listedTokens = [
-    // UNI LP - Yield Farm
-    {
-        isYield: true,
-        pool: '0x6591c4BcD6D7A1eb4E537DA8B78676C1576Ba244',
-        token: {
-            address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-            decimals: 6,
-        },
-    },
     // Compound - USDC
     {
         isCompound: true,
@@ -64,17 +55,6 @@ function createAbiViewItemFor(name, inputs, outputs) {
     };
 }
 
-function getYieldBalanceFor(poolAddress, tokenAddress, block) {
-    const abi = createAbiViewItemFor('balanceOf', ['address'], ['uint256']);
-
-    return sdk.api.abi.call({
-        abi,
-        target: tokenAddress,
-        params: [poolAddress],
-        block,
-    }).then(({output}) => new BigNumber(output));
-}
-
 function getCompoundBalanceFor(providerAddress, cTokenAddress, cTokenDecimals, block) {
     const abi = createAbiViewItemFor('balanceOf', ['address'], ['uint256']);
 
@@ -107,17 +87,7 @@ async function tvl(timestamp, block) {
         let tokenAddress;
         let tokenDecimals;
 
-        if (token.isYield) {
-            tokenAddress = token.token.address;
-
-            try {
-                const amount = await getYieldBalanceFor(token.pool, tokenAddress);
-
-                balances[tokenAddress] = balances[tokenAddress].plus(amount);
-            } catch (e) {
-                console.log('ERROR', e);
-            }
-        } else if (token.isCompound) {
+        if (token.isCompound) {
             tokenAddress = token.uToken.address;
             tokenDecimals = token.uToken.decimals;
 
