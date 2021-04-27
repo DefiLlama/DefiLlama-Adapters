@@ -1,11 +1,7 @@
-const utils = require('./helper/utils');
+const axios = require('axios');
 
-/* * * * * * * *
-* ==> Correct adapter needs to be created.
-*
-*****************/
 async function fetch() {
-  var response = await utils.fetchURL('https://api.hyfi.pro/stat')
+  var response = await axios.get('http://api.hyfi.pro/stat')
   return response.data.vault_tvl;
 }
 
