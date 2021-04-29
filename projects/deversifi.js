@@ -86,7 +86,7 @@ async function fetch() {
     })
   )
   const ethBalance = await utils.returnEthBalance(deversifiStarkAddr);
-  tvl += ethBalance * prices.data['0x0'].usd;
+  tvl += ethBalance * prices.data['ethereum'].usd;
   return tvl;
 }
 
