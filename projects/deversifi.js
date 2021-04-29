@@ -60,7 +60,8 @@ let priceKeys = [
     '0xa117000000f279d81a1d3cc75430faa017fa5a2e': 'aragon',
     '0x1494ca1f11d487c2bbe4543e90080aeba4ba3c2b': 'defipulse-index',
     '0xf650c3d88d12db855b8bf7d11be6c55a4e07dcc9': 'compound-usdt',
-    '0x5a98fcbea516cf06857215779fd812ca3bef1b32': 'lido-dao'
+    '0x5a98fcbea516cf06857215779fd812ca3bef1b32': 'lido-dao',
+    '0x0': 'ethereum'
   }
 ]
 
@@ -84,6 +85,8 @@ async function fetch() {
       }
     })
   )
+  const ethBalance = await utils.returnEthBalance(deversifiStarkAddr);
+  tvl += ethBalance * prices.data['0x0'].usd;
   return tvl;
 }
 
