@@ -84,6 +84,8 @@ async function fetch() {
       }
     })
   )
+  const ethBalance = await utils.returnEthBalance(deversifiStarkAddr);
+  tvl += ethBalance;
   return tvl;
 }
 
