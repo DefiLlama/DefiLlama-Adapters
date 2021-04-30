@@ -1,0 +1,143 @@
+{
+  "cdpTvl": {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "contract BCdpManagerLike",
+        "name": "man",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "cdp",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "ilk",
+        "type": "bytes32"
+      }
+    ],
+    "name": "cdpTvl",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "cdpi": {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "contract BCdpManagerLike",
+        "name": "man",
+        "type": "address"
+      }
+    ],
+    "name": "cdpi",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "avatarLength": {
+    "constant": true,
+    "inputs": [],
+    "name": "avatarLength",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "signature": "0x6a7d9ff9"
+  },
+  "avatars": {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "avatars",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "signature": "0x834d5fac"
+  },
+  "getAllMarkets": {
+    "constant": true,
+    "inputs": [],
+    "name": "getAllMarkets",
+    "outputs": [
+      {
+        "internalType": "contract CToken[]",
+        "name": "",
+        "type": "address[]"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "balanceOfUnderlying": {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
+    ],
+    "name": "balanceOfUnderlying",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  "underlying": {
+    "constant": true,
+    "inputs": [],
+    "name": "underlying",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  }
+}
