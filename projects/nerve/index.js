@@ -14,6 +14,7 @@ const btcPoolAddress = 'bsc:0x6C341938bB75dDe823FAAfe7f446925c66E6270c'
 const usdPoolAddress = 'bsc:0x1B3771a66ee31180906972580adE9b81AFc5fCDc'
 const ethPoolAddress = 'bsc:0x146CD24dCc9f4EB224DFd010c5Bf2b0D25aFA9C0'
 const xnrvAddress = 'bsc:0x15B9462d4Eb94222a7506Bc7A25FB27a2359291e'
+const rusdPoolAddress = 'bsc:0x0eafaa7ed9866c1f08ac21dd0ef3395e910f7114'
 
 const tokens = {
   // BUSD
@@ -22,6 +23,10 @@ const tokens = {
   'bsc:0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d': [usdPoolAddress],
   // Binance Pegged USDT
   'bsc:0x55d398326f99059ff775485246999027b3197955': [usdPoolAddress],
+  // rUSD 
+  'bsc:0x07663837218a003e66310a01596af4bf4e44623d': [rusdPoolAddress],
+  // 3NRV-LP
+  'bsc:0xf2511b5e4fb0e5e2d123004b672ba14850478c14': [rusdPoolAddress],
   // Binance Pegged BTC
   '0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c': [btcPoolAddress],
   // anyBTC
