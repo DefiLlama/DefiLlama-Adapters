@@ -7,11 +7,13 @@ const utils = require('./helper/utils');
 const abis = require('./config/uma/abis.js');
 const CERC = require('./config/mantra-dao/CERC20.json');
 const CETH = require('./config/mantra-dao/CETH.json');
+const LP_STAKING = require('./config/mantra-dao/LP_STAKING.json');
+const UNI_LP = require('./config/mantra-dao/UNI_LP.json');
 
 async function fetch() {
 
     try {
-        var price_feed = await retry(async bail => await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,tether,usd-coin,wrapped-bitcoin,dai,cream,chainlink,mantra-dao,rio-defi,compound-governance-token,aave,uniswap,sushi,havven,yearn-finance,dynamic-set-dollar,bondly,polkastarter,1inch,reserve-rights-token,royale,ftx-token,serum,balancer,curve-dao-token,uma,thorchain-erc20,frax,hegic,rhegic,88mph,zlot,zhegic,whiteheart,wrapped-nxm,renbtc,bancor,kyber-network,celsius-degree-token,cornichon,api3,matic-network,bao-finance,terrausd,lepricon,royale,finxflo,daoventures,the-graph,0x,omisego,injective-protocol,badger-dao,rook,utrust,alpha-finance,rari-governance-token&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true'));
+        var price_feed = await retry(async bail => await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,weth,tether,usd-coin,wrapped-bitcoin,dai,cream,chainlink,mantra-dao,rio-defi,compound-governance-token,aave,uniswap,sushi,havven,yearn-finance,dynamic-set-dollar,bondly,polkastarter,1inch,reserve-rights-token,royale,ftx-token,serum,balancer,curve-dao-token,uma,thorchain-erc20,frax,hegic,rhegic,88mph,zlot,zhegic,whiteheart,wrapped-nxm,renbtc,bancor,kyber-network,celsius-degree-token,cornichon,api3,matic-network,bao-finance,terrausd,lepricon,royale,finxflo,daoventures,the-graph,0x,omisego,injective-protocol,badger-dao,rook,utrust,alpha-finance,rari-governance-token,polkafoundry,raze-network,kylin-network,labs-group,paid-network,enjincoin&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true'));
 
         // Helper to get lending supply
         async function returnSupply(token, address, abi) {
@@ -21,6 +23,18 @@ async function fetch() {
             balance = await new BigNumber(supply).div(10 ** decimals).toFixed(2);
             return parseFloat(balance);
         }
+
+        async function getPriceOfUniPair(pair) {
+            let lpTokenPrice = 0
+            const token1price = price_feed.data[pair.price1].usd
+            let uniPairContractService = new web3.eth.Contract(UNI_LP, pair.pairAddress);
+            let decimals = await uniPairContractService.methods.decimals().call();
+            const totalSupplyScaledDown = await uniPairContractService.methods.totalSupply().call() / 10 ** decimals;
+            const token1Supply = await uniPairContractService.methods.getReserves().call();
+            const token1SupplyScaledDown = token1Supply._reserve0 / 10 ** decimals;
+            lpTokenPrice = ((token1SupplyScaledDown * token1price) / totalSupplyScaledDown) * 2;
+            return lpTokenPrice;
+        };
 
         var tvl = 0;
 
@@ -38,8 +52,56 @@ async function fetch() {
             { contract: '0x4Cd4c0eEDb2bC21f4e280d0Fe4C45B17430F94A9', token: '0x7eaF9C89037e4814DC0d9952Ac7F888C784548DB', price: 'royale'},
             // Finxflo - Staked Finxflo
             { contract: '0x6BcDC61A7A6d86f7b7B66d461b7eF7fa268571a0', token: '0x8a40c222996f9F3431f63Bf80244C36822060f12', price: 'finxflo'},
+            // PKF - Staked Polkafoundry
+            { contract: '0x1dfdb0fb85402dc7f8d72d92ada8fbbb3ffc8633', token: '0x5eaa69b29f99c84fe5de8200340b4e9b4ab38eac', price: 'polkafoundry'},
+            // RAZE - Staked Raze
+            { contract: '0x2d0ea72db9f9a63f4b185eab1ca74137d808ebfa', token: '0x5eaa69b29f99c84fe5de8200340b4e9b4ab38eac', price: 'raze-network'},
+            // KYL - Staked KYL
+            { contract: '0x6ae05b5db520011bf76645ebb4d6a697e5b3774b', token: '0x67b6d479c7bb412c54e03dca8e1bc6740ce6b99c', price: 'kylin-network'},
+            // LABS - Staked LABS
+            { contract: '0x6f0db359309CAD297D2e7952a4F5f081bDC1e373', token: '0x8b0e42f366ba502d787bb134478adfae966c8798', price: 'labs-group'},
             // OM Mantra pool - Staked OM in mantra pool
             { contract: '0x1a22188b5F6faf7253a3DefCC576884c0FF50a91', token: '0x3593D125a4f7849a1B059E64F4517A86Dd60c95d', price: 'mantra-dao'},
+        ]
+
+        // LP Staking
+        const lpStakingAssets = [
+            // LABS-ETH UNI LP simple staking
+            { 
+                contract: '0x5f81a986611C600a3656d9adc202283186C6121D', 
+                pairAddress: '0x2d9fd51e896ff0352cb6d697d13d04c2cb85ca83',
+                token1: '0x2D9FD51E896Ff0352Cb6D697D13D04C2CB85CA83', 
+                price1: 'labs-group',
+                token2: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', 
+                price2: 'weth'
+            },
+            // LABS-ETH UNI LP staking with exit tollbooth 
+            { 
+                contract: '0xfc8e3b55897d8cef791451bbe69b204b9c58fc8a', 
+                pairAddress: '0x2d9fd51e896ff0352cb6d697d13d04c2cb85ca83',
+                token1: '0x2D9FD51E896Ff0352Cb6D697D13D04C2CB85CA83', 
+                price1: 'labs-group',
+                token2: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', 
+                price2: 'weth'
+            },
+            // MANTRA DAO OM-ETH LP staking
+            { 
+                contract: '0x91fe14df53eae3a87e310ec6edcdd2d775e1a23f', 
+                pairAddress: '0xe46935ae80e05cdebd4a4008b6ccaa36d2845370',
+                token1: '0x3593D125a4f7849a1B059E64F4517A86Dd60c95d', 
+                price1: 'mantra-dao',
+                token2: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', 
+                price2: 'weth'
+            },
+            // ROYA ROYA-ETH LP staking
+            { 
+                contract: '0x55e0F2cE66Fa8C86ef478fa47bA0bE978eFC2647', 
+                pairAddress: '0x6d9d2427cfa49e39b4667c4c3f627e56ae586f37',
+                token1: '0x4Cd4c0eEDb2bC21f4e280d0Fe4C45B17430F94A9', 
+                price1: 'royale',
+                token2: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', 
+                price2: 'weth'
+            },
         ]
 
         // Lending / borrowing
@@ -151,19 +213,42 @@ async function fetch() {
             ['0x49a39e062aaf28950f9d0d5fd423dfb3175c0bb1', 'alpha-finance'],
             // zenRGT 
             ['0x223f6fc2696beeb0d096a72b8db674e6bd520398', 'rari-governance-token'],
+            // zenFXF 
+            ['0x01A8F03E4EFb1ceF12D796d21468C5903A6ed5D6', 'finxflo'],
+            // zenKYL
+            ['0x6A4e7Daf7E1244944BDA17390B1ec5F44C9DF671', 'kylin-network'],
+            // zenPAID
+            ['0x2dD28391d7552363eED30eb172116cf3E13ECa23', 'paid-network'],
+            // zenENJ
+            ['0x25942b9496282ce18c3B8d8c722ccF8e5112b252', 'enjincoin'],
+            // zenLABS
+            ['0xaaB14c2115aaD338cEDb93e423834897651a3Ee2', 'labs-group'],
         ]
 
-         let stakingAssetCalc = await Promise.all(stakingAssets.map(async (asset) => {
+        await Promise.all(stakingAssets.map(async (asset) => {
+            // STAKING ASSETS
             try {
                 let balance = await utils.returnBalance(asset.token, asset.contract);
                 tvl += (parseFloat(balance) * price_feed.data[asset.price].usd)
             } catch (error) {
-                //console.log(error)
+                console.log(error)
             }
         }))
 
 
-         let ETHlendingCalc = await new Promise(async (resolve, reject) => {
+        await Promise.all(lpStakingAssets.map(async (pair) => {
+            // LP STAKING ASSETS
+            try {
+                let lpTokenPrice = await getPriceOfUniPair(pair)
+                let balance = await utils.returnBalance(pair.pairAddress, pair.contract);
+                tvl += (parseFloat(balance) * lpTokenPrice)
+            } catch (error) {
+                console.log(error)
+            }
+        }))
+
+
+        await new Promise(async (resolve, reject) => {
             // ZEN ETH - Lending ETH
             var contract = '0x4f905f75f5576228ed2d0ea508fb0c32a0696090';
             var token = '0x4f905f75f5576228ed2d0ea508fb0c32a0696090';
@@ -172,7 +257,7 @@ async function fetch() {
             resolve(0)
         })
 
-        let zen = await Promise.all(zenErc20.map(async (asset) => {
+        await Promise.all(zenErc20.map(async (asset) => {
             try {
                 // ZEN erc lending assets
                 var contract = asset[0];
@@ -185,21 +270,14 @@ async function fetch() {
             }
         }))
 
-        return tvl;
+        console.log(tvl)
 
-        // Promise.all([stakingAssetCalc, ETHlendingCalc, ERC20lendingCalc]).then((values) => {
-        //     console.log('tvl',tvl)
-        //     return tvl;
-        // });
+        return tvl;
 
     } catch (error) {
         //console.log(error)
     }
-
-
-
 }
-
 
 module.exports = {
   fetch
