@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@defillama/sdk": "^1.1.9",
+    "@defillama/sdk": "^2.0.0",
     "@makerdao/multicall": "^0.12.0",
     "@project-serum/serum": "^0.13.33",
     "@solana/web3.js": "^1.2.6",
