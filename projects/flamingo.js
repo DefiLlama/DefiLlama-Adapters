@@ -10,7 +10,6 @@ async function fetch() {
   })
   return tvl
 }
-fetch().then(console.log)
 
 module.exports = {
   fetch
