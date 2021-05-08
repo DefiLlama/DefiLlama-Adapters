@@ -144,7 +144,6 @@ async function tvl(_, ethBlock, chainBlocks) {
     return accumulator
   }, {})
 
-  console.log(balances);
   return balances
 };
 
