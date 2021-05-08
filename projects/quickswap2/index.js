@@ -148,8 +148,5 @@ async function tvl(_, ethBlock, chainBlocks) {
 };
 
 module.exports = {
-  ethereum:{
-    tvl
-  },
   tvl,
 };
