@@ -94,7 +94,6 @@ async function tvl(timestamp, block) {
 
     sdk.util.sumSingleBalance(balances, MakerMCDConstants.DAI, pie);
   }
-  console.log(balances)
 
   return balances;
 }
