@@ -171,6 +171,6 @@ module.exports = {
     tvl: xdai
   },
   bsc:{
-    bsc: bsc
+    tvl: bsc
   }
 };
