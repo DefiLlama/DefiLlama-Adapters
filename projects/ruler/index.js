@@ -25,6 +25,13 @@ const oldPools = [
     '0x421CB018b91b4048FaAC1760Cee3B66026B940f2'
 ]
 
+const replacements = {
+    '0x898BAD2774EB97cF6b94605677F43b41871410B1': '0x0000000000000000000000000000000000000000', // vETH2 -> ETH
+    '0xa921392015eB37c5977c4Fd77E14DD568c59D5F8': '0x4688a8b1F292FDaB17E9a90c8Bc379dC1DBd8713', // xCOVER -> COVER
+    '0x16f9D564Df80376C61AC914205D3fDfF7057d610': '0x6399C842dD2bE3dE30BF99Bc7D1bBF6Fa3650E70', // xPREMIA -> PREMIA
+    '0xE14d13d8B3b85aF791b2AADD661cDBd5E6097Db1': '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e' // yvYFI -> YFI
+}
+
 async function tvl(timestamp, block) {
     const balances = {}
     const data = await axios.get('https://api.rulerprotocol.com/backend_data/production')
@@ -54,6 +61,12 @@ async function tvl(timestamp, block) {
     })
     sdk.util.sumSingleBalance(balances, ruler, rulerOnXruler.output)
     delete balances[xruler]
+    Object.keys(balances).forEach(token=>{
+        if(replacements[token] !== undefined){
+            balances[replacements[token]] = balances[token];
+            delete balances[token];
+        }
+    })
     return balances;
 }
 
