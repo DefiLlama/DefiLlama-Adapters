@@ -22,7 +22,7 @@ const tokens = {
   // rUSD 
   '0x07663837218a003e66310a01596af4bf4e44623d': [rusdPoolAddress],
   // 3NRV-LP
-  '0xf2511b5e4fb0e5e2d123004b672ba14850478c14': [rusdPoolAddress],
+  //'0xf2511b5e4fb0e5e2d123004b672ba14850478c14': [rusdPoolAddress],
   // Binance Pegged BTC
   '0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c': [btcPoolAddress],
   // anyBTC
@@ -64,6 +64,8 @@ async function tvl(timestamp, block, chainBlocks) {
         return;
       } else if(address.toLowerCase() === "bsc:0x6f817a0ce8f7640add3bc0c1c2298635043c2423"){
         address = "bsc:0x2170ed0880ac9a755fd29b2688956bd959f933f8"
+      } else if(address.toLowerCase() === "bsc:0x07663837218a003e66310a01596af4bf4e44623d"){
+        address = "0x6b175474e89094c44da98b954eedeac495271d0f"
       }
       balances[address] = BigNumber(balances[address] || 0)
         .plus(balanceOf.output)
