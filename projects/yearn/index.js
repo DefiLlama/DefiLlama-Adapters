@@ -24,9 +24,5 @@ async function tvl(timestamp) {
 
 
 module.exports = {
-    name: 'Yearn',
-    token: 'YFI',
-    category: 'yield',
-    start: 1581552000,
     tvl,
 };
