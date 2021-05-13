@@ -44,11 +44,9 @@ async function tvl(timestamp, block) {
         target: item.underlyingAddress
       }))
     })).output
-    console.log(decimals)
     results.markets.map(async (item, index) => {
       sdk.util.sumSingleBalance(balances, item.underlyingAddress, BigNumber(item.cash).times(10**Number(decimals[index].output || 18)).toFixed(0))
     })
-    console.log(balances)
     return balances;
 }
 
