@@ -19,6 +19,9 @@ async function tvl(timestamp) {
             high = mid;
         }
     }
+    if(Math.abs(historicalTvls[low][0]-timestamp)>(24*3600)){
+        throw new Error('no data');
+    }
     return toUSDTBalances(historicalTvls[low][1])
 }
 
