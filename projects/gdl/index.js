@@ -23,18 +23,17 @@ async function balanceOf(owner, target, block) {
   let balance = (await sdk.api.erc20.balanceOf({
     owner,
     target,
-    decimals,
     block,
     chain,
   })).output;
-  return balance;
+  return Number(balance)/(10**decimals);
 }
 
 async function poolBalance(owner, targets, block) {
   let calls = await Promise.all(targets.map(async (target) => {
     return balanceOf(owner, target, block);
   }));
-  let sum = calls.reduce((s, a) => s.plus(a), BigNumber(0)).toString();
+  let sum = calls.reduce((s, a) => s+a, 0);
   return sum;
 }
 
@@ -47,7 +46,6 @@ async function tvl(timestamp, ethereumBlock, chainBlocks) {
   balances['ethereum'] = await poolBalance(GDL_ETH_POOL, [ETH, zETH], block);
   // TODO: update once coingecko fixed id typo.
   balances['gondala-finance'] = await poolBalance(GDL_POOL, [GDL], block);
-  console.log("balances: ", balances);
   return balances;
 }
 
