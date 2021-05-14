@@ -146,12 +146,7 @@ const keys = [
   }
 ];
 
-let web3RpcUrl;
-if(process.env && process.env.ALCHEMY_API){
-    web3RpcUrl = `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API}`
-} else if(env && env.parsed && env.parsed.INFURA_KEY){
-    web3RpcUrl = `https://mainnet.infura.io/v3/${env.parsed.INFURA_KEY}`
-}
+let web3RpcUrl = process.env.ETHEREUM_RPC;
 
 // Utils
 const aggregate = (calls) => Multicall.aggregate(
