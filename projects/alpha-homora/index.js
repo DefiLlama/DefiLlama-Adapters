@@ -413,5 +413,4 @@ module.exports = {
   category: "lending", // allowed values as shown on DefiPulse: 'Derivatives', 'DEXes', 'Lending', 'Payments', 'Assets'
   start: 1602054167, // unix timestamp (utc 0) specifying when the project began, or where live data begins
   tvl, // tvl adapter
-  contributesTo: ['Uniswap', 'Sushiswap'],
 };

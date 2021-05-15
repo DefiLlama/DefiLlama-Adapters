@@ -157,7 +157,6 @@
     name: 'B.Protocol',
     token: null,
     category: 'lending',
-    contributesTo: ['Maker', 'Compound'],
     start: 1605380632,  // 11/14/2020 @ 7:03pm (UTC)
     tvl,
   };
