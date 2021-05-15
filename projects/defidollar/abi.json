@@ -11,5 +11,25 @@
     ],
     "stateMutability": "view",
     "type": "function"
+  },
+  "yCrvDistribution": {
+    "constant": true,
+    "inputs": [],
+    "name": "yCrvDistribution",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "here",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "total",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
   }
 }
