@@ -1,18 +1,20 @@
 const sdk = require('@defillama/sdk')
 const BigNumber = require('bignumber.js')
 const _ = require('underscore')
+const {unwrapCrv} = require('../helper/unwrapLPs')
 
 /*==================================================
   Addresses
   ==================================================*/
 
-const btcPoolAddress = 'bsc:0x6C341938bB75dDe823FAAfe7f446925c66E6270c'
-const usdPoolAddress = 'bsc:0x1B3771a66ee31180906972580adE9b81AFc5fCDc'
-const ethPoolAddress = 'bsc:0x146CD24dCc9f4EB224DFd010c5Bf2b0D25aFA9C0'
-const xnrvAddress = 'bsc:0x15B9462d4Eb94222a7506Bc7A25FB27a2359291e'
-const rusdPoolAddress = 'bsc:0x0eafaa7ed9866c1f08ac21dd0ef3395e910f7114'
-const fusdtPoolAddress = 'bsc:0xd0fBF0A224563D5fFc8A57e4fdA6Ae080EbCf3D3'
-const ustPoolAddress = 'bsc:0x2dcCe1586b1664f41C72206900e404Ec3cA130e0'
+const btcPoolAddress = '0x6C341938bB75dDe823FAAfe7f446925c66E6270c'
+const usdPoolAddress = '0x1B3771a66ee31180906972580adE9b81AFc5fCDc'
+const ethPoolAddress = '0x146CD24dCc9f4EB224DFd010c5Bf2b0D25aFA9C0'
+const xnrvAddress = '0x15B9462d4Eb94222a7506Bc7A25FB27a2359291e'
+const rusdPoolAddress = '0x0eafaa7ed9866c1f08ac21dd0ef3395e910f7114'
+const fusdtPoolAddress = '0xd0fBF0A224563D5fFc8A57e4fdA6Ae080EbCf3D3'
+const ustPoolAddress = '0x2dcCe1586b1664f41C72206900e404Ec3cA130e0'
+const nrv3 = '0xf2511b5e4fb0e5e2d123004b672ba14850478c14'
 
 const tokens = {
   // BUSD
@@ -38,11 +40,11 @@ const tokens = {
   // FUSDT
   '0x049d68029688eabf473097a2fc38ef61633a3c7a': [fusdtPoolAddress],
   // 3NRV-LP
-  'bsc:0xf2511b5e4fb0e5e2d123004b672ba14850478c14': [fusdtPoolAddress],
+  '0xf2511b5e4fb0e5e2d123004b672ba14850478c14': [fusdtPoolAddress],
   // UST
   '0x23396cf899ca06c4472205fc903bdb4de249d6fc': [ustPoolAddress],
     // 3NRV-LP
-   'bsc:0xf2511b5e4fb0e5e2d123004b672ba14850478c14': [ustPoolAddress],  
+  '0xf2511b5e4fb0e5e2d123004b672ba14850478c14': [ustPoolAddress],  
 }
 
 async function tvl(timestamp, block, chainBlocks) {
@@ -68,13 +70,13 @@ async function tvl(timestamp, block, chainBlocks) {
   // Compute Balances
   _.each(balanceOfResults.output, (balanceOf) => {
     if (balanceOf.success) {
-      let address = `bsc:${balanceOf.input.target}`;
-      if(address.toLowerCase() === "bsc:0x54261774905f3e6e9718f2abb10ed6555cae308a"){
+      let address = `bsc:${balanceOf.input.target}`.toLowerCase();
+      if(address === "bsc:0x54261774905f3e6e9718f2abb10ed6555cae308a"){
         balances["bitcoin"] = Number(balanceOf.output)/1e8
         return;
-      } else if(address.toLowerCase() === "bsc:0x6f817a0ce8f7640add3bc0c1c2298635043c2423"){
+      } else if(address === "bsc:0x6f817a0ce8f7640add3bc0c1c2298635043c2423"){
         address = "bsc:0x2170ed0880ac9a755fd29b2688956bd959f933f8"
-      } else if(address.toLowerCase() === "bsc:0x07663837218a003e66310a01596af4bf4e44623d"){
+      } else if(address === "bsc:0x07663837218a003e66310a01596af4bf4e44623d" || address === 'bsc:0x049d68029688eabf473097a2fc38ef61633a3c7a'){ // fusdt and rusd
         address = "0x6b175474e89094c44da98b954eedeac495271d0f"
       }
       balances[address] = BigNumber(balances[address] || 0)
@@ -82,6 +84,8 @@ async function tvl(timestamp, block, chainBlocks) {
         .toFixed()
     }
   })
+  await unwrapCrv(balances, nrv3, balances['bsc:'+nrv3], chainBlocks['bsc'], 'bsc', (addr)=>`bsc:${addr}`)
+  delete balances['bsc:'+nrv3];
 
   return balances
 }

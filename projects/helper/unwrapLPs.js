@@ -13,15 +13,21 @@ const crvPools = {
     '0x075b1bb99792c9e1041ba13afef80c91a1e70fb3': {
         swapContract: '0x7fC77b5c7614E1533320Ea6DDc2Eb61fa00A9714',
         underlyingTokens: ['0xeb4c2781e4eba804ce9a9803c67d0893436bb27d', '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', '0xfe18be6b3bd88a2d2a7f928d00292e7a9963cfc6'],
+    },
+    // Nerve
+    '0xf2511b5e4fb0e5e2d123004b672ba14850478c14': {
+        swapContract: '0x1B3771a66ee31180906972580adE9b81AFc5fCDc',
+        underlyingTokens: ['0xe9e7cea3dedca5984780bafc599bd69add087d56', '0x55d398326f99059ff775485246999027b3197955', '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d'],
     }
 }
 
-async function unwrapCrv(balances, crvToken, balance3Crv, block) {
+async function unwrapCrv(balances, crvToken, balance3Crv, block, chain = "ethereum", transformAddress=(addr)=>addr) {
     const crvSwapContract = crvPools[crvToken.toLowerCase()].swapContract
     const underlyingTokens = crvPools[crvToken.toLowerCase()].underlyingTokens
     const crvTotalSupply = sdk.api.erc20.totalSupply({
         target: crvToken,
         block,
+        chain
     })
     const underlyingSwapTokens = (await sdk.api.abi.multiCall({
         calls: underlyingTokens.map(token => ({
@@ -29,12 +35,13 @@ async function unwrapCrv(balances, crvToken, balance3Crv, block) {
             params: [crvSwapContract]
         })),
         block,
+        chain,
         abi: 'erc20:balanceOf'
     })).output
     const resolvedCrvTotalSupply = (await crvTotalSupply).output
     underlyingSwapTokens.forEach(call => {
         const underlyingBalance = BigNumber(call.output).times(balance3Crv).div(resolvedCrvTotalSupply);
-        sdk.util.sumSingleBalance(balances, call.input.target, underlyingBalance.toFixed(0))
+        sdk.util.sumSingleBalance(balances, transformAddress(call.input.target), underlyingBalance.toFixed(0))
     })
 }
 /* lpPositions:{
