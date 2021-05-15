@@ -94,5 +94,4 @@ module.exports = {
   category: "assets",
   start: 1608667205, // December 22 2020 at 8:00 PM UTC
   tvl,
-  contributesTo: ["Aave", "Maker", "Compound"],
 };
