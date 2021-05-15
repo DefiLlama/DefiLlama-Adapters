@@ -12,6 +12,9 @@ function findClosestToDate(values, date) {
             min = val
         }
     }
+    if(Math.abs(new Date(min.time).getTime()-date) > 24*3600){
+        throw new Error("Date difference higher than 24hrs")
+    }
     return min
 }
 
