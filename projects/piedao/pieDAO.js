@@ -21,18 +21,12 @@ const IStakingUniswap = require("../config/piedao/abi/IStakingUniswap.json");
 const erc20ABI = require("../config/piedao/abi/ERC20.json");
 
 module.exports = class PieDAO {
-  pies = null;
-  ovens = null;
-  pools = null;
-  web3 = null;
-
-  tokenAmounts = {};
-  ovenAmounts = {};
-
   constructor(block) {
     this.pies = pies_config;
     this.ovens = ovens_config;
     this.pools = pools_config;
+    this.tokenAmounts = {};
+    this.ovenAmounts = {};
     this.web3 = new Web3(new Web3.providers.HttpProvider(process.env.ETHEREUM_RPC));
     this.web3.eth.defaultBlock = block;
   }
