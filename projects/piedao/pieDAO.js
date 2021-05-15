@@ -1,7 +1,8 @@
 const utils = require('../helper/utils');
 const BigNumber = require("bignumber.js");
+const sdk = require('@defillama/sdk')
 
-const web3 = require('../config/web3.js');
+const Web3 = require('web3');
 
 const pies_config = require("./pies.json");
 const ovens_config = require("./ovens.json");
@@ -23,20 +24,23 @@ module.exports = class PieDAO {
   pies = null;
   ovens = null;
   pools = null;
+  web3 = null;
 
   tokenAmounts = {};
   ovenAmounts = {};
 
-  constructor() {
+  constructor(block) {
     this.pies = pies_config;
     this.ovens = ovens_config;
     this.pools = pools_config;
+    this.web3 = new Web3(new Web3.providers.HttpProvider(process.env.ETHEREUM_RPC));
+    this.web3.eth.defaultBlock = block;
   }
 
   async calculatePies() {
     for (const pie of Object.keys(this.pies)) {  
       const pieAddress = this.pies[pie];   
-      const pie_contract = new web3.eth.Contract(pieABI, pieAddress);
+      const pie_contract = new this.web3.eth.Contract(pieABI, pieAddress);
       const totalSupply = await pie_contract.methods.totalSupply().call();
       const tokensAndAmounts = await pie_contract.methods.calcTokensForAmount(totalSupply).call();
   
@@ -54,9 +58,8 @@ module.exports = class PieDAO {
     for (const oven of Object.keys(this.ovens)) {
       const ovenAddress = this.ovens[oven];
 
-      const ovenBalance = await web3.eth.getBalance(ovenAddress);
-      const eth_value = await utils.getPricesfromString("ethereum");
-      this.ovenAmounts[ovenAddress] = (ovenBalance / 1e18) * eth_value.data.ethereum.usd;
+      const ovenBalance = await this.web3.eth.getBalance(ovenAddress);
+      this.ovenAmounts[ovenAddress] = (ovenBalance / 1e18)
     }
   }
 
@@ -68,12 +71,12 @@ module.exports = class PieDAO {
 
       switch(stakingPool.type) {
         case "all":
-          stakingContract = new web3.eth.Contract(pieStakingAll, poolAddress);
+          stakingContract = new this.web3.eth.Contract(pieStakingAll, poolAddress);
           const poolCount = await stakingContract.methods.poolCount().call();
 
           for(let i = 0; i < poolCount; i++) {
             underlyingAddress = await stakingContract.methods.getPoolToken(i).call();
-            underlyingContract = new web3.eth.Contract(erc20ABI, underlyingAddress);
+            underlyingContract = new this.web3.eth.Contract(erc20ABI, underlyingAddress);
 
             underlyingBalance = new BigNumber(await underlyingContract.methods.balanceOf(underlyingAddress).call());
             underlyingSupply = new BigNumber(await underlyingContract.methods.totalSupply().call());            
@@ -83,7 +86,7 @@ module.exports = class PieDAO {
 
             switch(symbol) {
               case "SLP":
-                underlyingContract = new web3.eth.Contract(ISLP, underlyingAddress);
+                underlyingContract = new this.web3.eth.Contract(ISLP, underlyingAddress);
                 
                 underlyings = new Array();
                 underlyings.push(await underlyingContract.methods.token0().call());
@@ -92,14 +95,14 @@ module.exports = class PieDAO {
 
                 break;
               case "BPT":
-                underlyingContract = new web3.eth.Contract(IBPT, underlyingAddress);
+                underlyingContract = new this.web3.eth.Contract(IBPT, underlyingAddress);
                 
                 underlyings = await underlyingContract.methods.getFinalTokens().call();
                 await this.calculateUnderLyings(underlyings, underlyingAddress, underlyingBalance, underlyingSupply);  
 
                 break;
               case "BCP":
-                underlyingContract = new web3.eth.Contract(IBCP, underlyingAddress);
+                underlyingContract = new this.web3.eth.Contract(IBCP, underlyingAddress);
                 
                 underlyings = await underlyingContract.methods.getTokens().call();
                 await this.calculateUnderLyings(underlyings, underlyingAddress, underlyingBalance, underlyingSupply);                  
@@ -109,11 +112,11 @@ module.exports = class PieDAO {
           break;
         
         case "balancer":
-          stakingContract = new web3.eth.Contract(IStakingBalancer, poolAddress);
+          stakingContract = new this.web3.eth.Contract(IStakingBalancer, poolAddress);
           underlyingAddress = stakingPool.lp ? stakingPool.lp : await stakingContract.methods.uni().call();
           //console.log("calculatePools", stakingPool.type, underlyingAddress);
 
-          underlyingContract = new web3.eth.Contract(IStakedToken, underlyingAddress);
+          underlyingContract = new this.web3.eth.Contract(IStakedToken, underlyingAddress);
           underlyingBalance = new BigNumber(await underlyingContract.methods.balanceOf(poolAddress).call());
           underlyingSupply = new BigNumber(await underlyingContract.methods.totalSupply().call());
 
@@ -123,10 +126,10 @@ module.exports = class PieDAO {
           break;
         
         case "piedao":
-          stakingContract = new web3.eth.Contract(IStakedPieDAO, poolAddress);
+          stakingContract = new this.web3.eth.Contract(IStakedPieDAO, poolAddress);
           underlyingAddress = await stakingContract.methods.uni().call();
 
-          underlyingContract = new web3.eth.Contract(IBCP, underlyingAddress);
+          underlyingContract = new this.web3.eth.Contract(IBCP, underlyingAddress);
 
           underlyingBalance = new BigNumber(await underlyingContract.methods.balanceOf(underlyingAddress).call());
           underlyingSupply = new BigNumber(await underlyingContract.methods.totalSupply().call());            
@@ -140,10 +143,10 @@ module.exports = class PieDAO {
           break;
 
         case "uniswap":
-          stakingContract = new web3.eth.Contract(IStakingUniswap, poolAddress);
+          stakingContract = new this.web3.eth.Contract(IStakingUniswap, poolAddress);
           underlyingAddress = await stakingContract.methods.uni().call();
 
-          underlyingContract = new web3.eth.Contract(IUniswap, underlyingAddress);
+          underlyingContract = new this.web3.eth.Contract(IUniswap, underlyingAddress);
 
           underlyingBalance = new BigNumber(await underlyingContract.methods.balanceOf(underlyingAddress).call());
           underlyingSupply = new BigNumber(await underlyingContract.methods.totalSupply().call());            
@@ -163,27 +166,27 @@ module.exports = class PieDAO {
 
   async calculateUnderLyings(underlyings, underlyingAddress, underlyingBalance, underlyingSupply) {
     for(const underlying of underlyings) {
-      const underlyingContract = new web3.eth.Contract(erc20ABI, underlying);
+      const underlyingContract = new this.web3.eth.Contract(erc20ABI, underlying);
       const tokenAmount = new BigNumber(await underlyingContract.methods.balanceOf(underlyingAddress).call());
       await this.pushTokenAmount(underlying, tokenAmount.times(underlyingBalance).div(underlyingSupply));
     }     
   }
 
   calculateNAV() {
-    let nav = 0;
+    const balances= {}
 
     // Sum up nav
     for (const tokenAddress of Object.keys(this.tokenAmounts)) {
         const tokenAmount = this.tokenAmounts[tokenAddress];
-
-        nav += tokenAmount.amount * tokenAmount.price;
+        sdk.util.sumSingleBalance(balances, tokenAddress, tokenAmount.amount.toFixed(0))
     }
 
+    balances['ethereum'] = 0;
     for (const ovenAddress of Object.keys(this.ovenAmounts)) {
-      nav += this.ovenAmounts[ovenAddress];
+      balances['ethereum'] += this.ovenAmounts[ovenAddress];
     }
 
-    return nav;    
+    return balances;
   }
 
   async pushTokenAmount(token, amount) {
@@ -199,21 +202,11 @@ module.exports = class PieDAO {
         //create empty object
         this.tokenAmounts[token] = {
             decimals: 0,
-            amount: 0,
+            amount: BigNumber(0),
             price: 0
         };
-
-        this.tokenAmounts[token].decimals = await utils.returnDecimals(token);
-
-        try {
-          this.tokenAmounts[token].price = (await utils.getTokenPricesFromString(token)).data[token.toLowerCase()].usd;
-        } catch {
-            // If no price is found set it to 0
-            this.tokenAmounts[token].price = 0;
-        } 
-
     }
 
-    this.tokenAmounts[token].amount += ((new BigNumber(amount)).div(10 ** this.tokenAmounts[token].decimals)).toNumber();
+    this.tokenAmounts[token].amount = this.tokenAmounts[token].amount.plus(amount)
 }  
 }

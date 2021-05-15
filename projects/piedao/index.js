@@ -1,8 +1,8 @@
 const PieDAO = require("./pieDAO.js");
 
-async function fetch() {
+async function tvl(timestamp, ethBlock) {
     // creating the PieDAO helper...
-    let pieDAO = new PieDAO();
+    let pieDAO = new PieDAO(ethBlock);
 
     // calculating the total for Ovens...
     await pieDAO.calculateOvens();
@@ -17,8 +17,6 @@ async function fetch() {
     return pieDAO.calculateNAV();
 }
 
-fetch().then(console.log).catch(error => console.error("error", error));
-
 module.exports = {
-    fetch
+    tvl
 }
