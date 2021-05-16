@@ -1,14 +1,7 @@
-/*==================================================
-  Modules
-  ==================================================*/
-
   const sdk = require('@defillama/sdk');
   const _ = require('underscore');
+  const axios = require('axios')
   const { default: BigNumber } = require('bignumber.js');
-
-/*==================================================
-  Settings
-  ==================================================*/
 
   const tokenAddresses = [
     '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359', // SAI
@@ -17,23 +10,16 @@
   ];
   const omniBridge = '0x88ad09518695c6c3712AC10a214bE5109a655671';
   const xDaiBridge = '0x4aa42145Aa6Ebf72e164C9bBC74fbD3788045016';
-
-/*==================================================
-  TVL
-  ==================================================*/
-
   async function tvl(timestamp, block) {
-    const balances = {
-      '0x0000000000000000000000000000000000000000': '0'
-    };
+    const balances = {};
 
-    const allTokens = await sdk.api.util.tokenList();
+    const allTokens = (await axios.get('https://api.covalenthq.com/v1/1/address/0x88ad09518695c6c3712AC10a214bE5109a655671/balances_v2/?&key=ckey_72cd3b74b4a048c9bc671f7c5a6')).data.data.items
 
     const balanceOfOmniBridge = block > 10590093
       ? await sdk.api.abi.multiCall({
         block,
         calls: _.map(allTokens, (token) => ({
-          target: token.contract,
+          target: token.contract_address,
           params: omniBridge
         })),
         abi: 'erc20:balanceOf'
@@ -49,37 +35,13 @@
       abi: 'erc20:balanceOf'
     });
 
-    const output = [
-      ...balanceOfOmniBridge.output,
-      ...balanceOfXdaiBridge.output
-    ];
-
-    _.each(output, (balanceOf) => {
-      if(balanceOf.success) {
-        const balance = balanceOf.output;
-        const address = balanceOf.input.target;
-        if (balance === '0') {
-          return;
-        }
-        if (!balances[address]) {
-          balances[address] = balance;
-        } else {
-          balances[address] = new BigNumber(balances[address]).plus(new BigNumber(balance)).toFixed();
-        }
-      }
-    });
+    sdk.util.sumMultiBalanceOf(balances, balanceOfOmniBridge)
+    sdk.util.sumMultiBalanceOf(balances, balanceOfXdaiBridge)
 
     return balances;
   }
 
-/*==================================================
-  Exports
-  ==================================================*/
-
   module.exports = {
-    name: 'xDai',
-    token: 'STAKE',
-    category: 'payments',
     start: 1539028166,
     tvl
   };

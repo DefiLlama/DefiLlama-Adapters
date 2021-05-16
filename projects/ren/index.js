@@ -35,7 +35,9 @@ async function getAssetBalance(block, graphUrl, transformAddr, chain){
 
   const resolvedSupplies = (await totalSupplies).output
   assets.forEach((asset, index)=>{
-    sdk.util.sumSingleBalance(balances, transformAddr(asset.tokenAddress), resolvedSupplies[index].output)
+    if(resolvedSupplies[index].success){
+      sdk.util.sumSingleBalance(balances, transformAddr(asset.tokenAddress), resolvedSupplies[index].output)
+    }
   })
   return balances
 }
