@@ -68,5 +68,18 @@
         "stateMutability": "view",
         "type": "function",
         "gas": 992854
+    },
+    "pricePerShare": {
+        "stateMutability": "view",
+        "type": "function",
+        "name": "pricePerShare",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "gas": 18195
     }
 }
