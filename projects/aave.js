@@ -7,14 +7,13 @@ async function fetch() {
 
 async function eth() {
   var totalTvl = await utils.fetchURL('https://aave-api-v2.aave.com/data/tvl')
-  return totalTvl.data.totalTvl.tvlInUsd - totalTvl.data.matic.tvlInUsd;
+  return totalTvl.data.totalTvl.tvlInUsd - totalTvl.data.marketTvls.matic.tvlInUsd;
 }
 
 async function polygon() {
   var totalTvl = await utils.fetchURL('https://aave-api-v2.aave.com/data/tvl')
-  return totalTvl.data.matic.tvlInUsd;
+  return totalTvl.data.marketTvls.matic.tvlInUsd;
 }
-
 
 module.exports = {
   ethereum: {
