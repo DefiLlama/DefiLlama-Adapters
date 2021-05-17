@@ -107,8 +107,8 @@ async function tvl(timestamp, block) {
       }
     }))
   }))
-  //sdk.util.sumSingleBalance(balances, crv, (await cvxCRVSupply).output)
-  //sdk.util.sumSingleBalance(balances, cvx, (await cvxStaked).output)
+  sdk.util.sumSingleBalance(balances, crv, (await cvxCRVSupply).output)
+  sdk.util.sumSingleBalance(balances, cvx, (await cvxStaked).output)
   return balances
 }
 
