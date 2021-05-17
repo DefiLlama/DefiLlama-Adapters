@@ -81,6 +81,17 @@ async function tvl(timestamp, block) {
           target: coinOutput.output
         }))
       })
+      const underlyingDecimals = await sdk.api.abi.multiCall({
+        abi: "erc20:decimals",
+        block,
+        calls: coins.output.map(coinOutput=>({
+          target: coinOutput.output
+        }))
+      })
+      coinBalances.output = coinBalances.output.map((result, i)=>({
+        ...result,
+        output: BigNumber(result.output).div(10**(10-Number(underlyingDecimals.output[i].output))).toFixed(0),
+      }))
     }
     const resolvedLPSupply = (await lpTokenSupply).output;
     await Promise.all(coinBalances.output.map(async (coinBalance, index)=>{
@@ -92,7 +103,9 @@ async function tvl(timestamp, block) {
         coinAddress = '0x0000000000000000000000000000000000000000'
       }
       const balance = BigNumber(tokenSupply.output).times(coinBalance.output).div(resolvedLPSupply);
-      sdk.util.sumSingleBalance(balances, coinAddress, balance.toFixed(0))
+      if(!balance.isZero()){
+        sdk.util.sumSingleBalance(balances, coinAddress, balance.toFixed(0))
+      }
     }))
   }))
   sdk.util.sumSingleBalance(balances, crv, (await cvxCRVSupply).output)
