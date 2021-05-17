@@ -74,23 +74,22 @@ async function tvl(timestamp, block) {
       }))
     })
     if(poolData.name === "ironbank"){
+      const calls = coins.output.map(coinOutput=>({
+        target: coinOutput.output
+      }))
       coins = await sdk.api.abi.multiCall({
         abi: abi.underlying,
         block,
-        calls: coins.output.map(coinOutput=>({
-          target: coinOutput.output
-        }))
+        calls
       })
-      const underlyingDecimals = await sdk.api.abi.multiCall({
-        abi: "erc20:decimals",
+      const exchangeRate = await sdk.api.abi.multiCall({
+        abi: abi.exchangeRateStored,
         block,
-        calls: coins.output.map(coinOutput=>({
-          target: coinOutput.output
-        }))
+        calls
       })
       coinBalances.output = coinBalances.output.map((result, i)=>({
         ...result,
-        output: BigNumber(result.output).div(10**(10-Number(underlyingDecimals.output[i].output))).toFixed(0),
+        output: BigNumber(result.output).times(exchangeRate.output[i].output).div(1e18).toFixed(0),
       }))
     }
     const resolvedLPSupply = (await lpTokenSupply).output;
@@ -108,8 +107,8 @@ async function tvl(timestamp, block) {
       }
     }))
   }))
-  sdk.util.sumSingleBalance(balances, crv, (await cvxCRVSupply).output)
-  sdk.util.sumSingleBalance(balances, cvx, (await cvxStaked).output)
+  //sdk.util.sumSingleBalance(balances, crv, (await cvxCRVSupply).output)
+  //sdk.util.sumSingleBalance(balances, cvx, (await cvxStaked).output)
   return balances
 }
 

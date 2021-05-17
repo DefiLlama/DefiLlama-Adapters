@@ -93,5 +93,34 @@
         "type": "function",
         "gas": 2190
     },
-    "underlying":{"constant":true,"inputs":[],"name":"underlying","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"}
+    "underlying": {
+        "constant": true,
+        "inputs": [],
+        "name": "underlying",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "exchangeRateStored": {
+        "constant": true,
+        "inputs": [],
+        "name": "exchangeRateStored",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    }
 }
