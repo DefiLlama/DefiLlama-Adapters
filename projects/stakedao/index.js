@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const abi = require('./abi.json')
-const { default: BigNumber } = require("bignumber.js");
 const {unwrapCrv} = require('../helper/unwrapLPs')
 
 const crv_3crv_vault1 = {
@@ -27,12 +26,18 @@ const vaults = [crv_3crv_vault1, crv_3crv_vault2, crv_eurs_vault, crv_btc_vault]
 
 const sanctuary = '0xaC14864ce5A98aF3248Ffbf549441b04421247D3'
 const sdtToken = '0x73968b9a57c6E53d41345FD57a6E6ae27d6CDB2F'
+const sdveCRV = '0x478bBC744811eE8310B461514BDc29D03739084D'
+const crvToken = '0xd533a949740bb3306d119cc777fa900ba034cd52'
 
 async function tvl(timestamp, block) {
   let balances = {};
   const sdtInSactuary = sdk.api.erc20.balanceOf({
     target: sdtToken,
     owner: sanctuary,
+    block
+  })
+  const sdveCRVSupply = sdk.api.erc20.totalSupply({
+    target: sdveCRV,
     block
   })
   await Promise.all(vaults.map(async vault=>{
@@ -44,13 +49,10 @@ async function tvl(timestamp, block) {
     await unwrapCrv(balances, vault.crvToken, crvBalance.output, block)
   }))
   sdk.util.sumSingleBalance(balances, sdtToken, (await sdtInSactuary).output)
+  sdk.util.sumSingleBalance(balances, crvToken, (await sdveCRVSupply).output)
   return balances
 }
 
 module.exports = {
-  name: 'StakeDAO',
-  token: 'SDT',
-  category: 'staking',
-  start: 0, // WRONG!
   tvl
 }
