@@ -168,7 +168,7 @@ async function poolUnderlyingCoinBalance(contractAddress, coinId) {
 }
 
 
-async function tvl() {
+async function fetch() {
     let balances = {};
 
     const channelsBalances1 = await poolUnderlyingCoinBalance(channels, 0)
@@ -191,7 +191,7 @@ async function tvl() {
         total += balances[key];
     }
     console.log(total)
-    return balances
+    return total
 }
 
 
@@ -201,5 +201,5 @@ module.exports = {
     token: 'DEP',
     category: 'lending',
     start: 1602054167,
-    tvl
+    fetch
 }
