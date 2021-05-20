@@ -1,5 +1,6 @@
 const sdk = require('@defillama/sdk');
 
+
 const formalDeposit = {
     "coins": {
         "name": "coins",
