@@ -37,7 +37,6 @@ async function calculateUniTvl(getAddress, block, chain, FACTORY, START_BLOCK, u
           topic: 'PairCreated(address,address,address,uint256)',
         })
     ).output;
-    console.log(logs.length)
 
     pairAddresses = logs
       // sometimes the full log is emitted
