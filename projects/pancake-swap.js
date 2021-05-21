@@ -1,5 +1,6 @@
 const utils = require('./helper/utils');
 const {calculateUniTvl} = require('./helper/calculateUniTvl.js')
+const sdk = require('@defillama/sdk')
 
 async function fetch() {
   let response = await utils.fetchURL('https://api.pancakeswap.finance/api/v1/stat')
