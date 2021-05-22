@@ -1,4 +1,4 @@
-const retry = require('async-retry')
+const retry = require('./helper/retry')
 const axios = require("axios")
 
 async function fetch() {

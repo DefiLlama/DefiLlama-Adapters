@@ -1,6 +1,6 @@
 const web3 = require('./config/web3.js');
 
-const retry = require('async-retry')
+const retry = require('./helper/retry')
 const axios = require("axios");
 
 const BigNumber = require('bignumber.js');

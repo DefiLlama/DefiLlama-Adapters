@@ -1,7 +1,7 @@
 const web3 = require('./config/web3.js');
 
 const BigNumber = require("bignumber.js");
-const retry = require('async-retry')
+const retry = require('./helper/retry')
 const axios = require("axios");
 const abis = require('./config/boringdao/abis.js')
 const utils = require('./helper/utils');

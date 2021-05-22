@@ -1,7 +1,7 @@
 const web3 = require('../config/web3.js')
 const abis = require('../config/abis.js').abis
 const BigNumber = require("bignumber.js");
-const retry = require('async-retry')
+const retry = require('./helper/retry')
 const axios = require("axios");
 
 async function returnBalance(token, address) {
@@ -39,7 +39,7 @@ async function getPrices(object) {
         }
       }
     }
-    return await retry(async bail => await axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=${stringFetch}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`))
+    return await fetchURL(`https://api.coingecko.com/api/v3/simple/price?ids=${stringFetch}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`)
 }
 
 async function getPricesFromContract(object) {
@@ -53,11 +53,11 @@ async function getPricesFromContract(object) {
       }
     }
   }
-  return await retry(async bail => await axios.get(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${contractFetch}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`))
+  return await fetchURL(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${contractFetch}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`)
 }
 
 async function getPricesfromString(stringFeed) {
-  return await retry(async bail => await axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=${stringFeed}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`))
+  return await fetchURL(`https://api.coingecko.com/api/v3/simple/price?ids=${stringFeed}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`)
 }
 
 async function getTokenPrices(object) {
@@ -76,7 +76,7 @@ async function getTokenPrices(object) {
 }
 
 async function getTokenPricesFromString(stringFeed) {
-  return result = await retry(async bail => await axios.get(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${stringFeed}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`));
+  return result = await fetchURL(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${stringFeed}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`);
 }
 
 async function returnBlock() {
@@ -84,7 +84,9 @@ async function returnBlock() {
 }
 
 async function fetchURL(url) {
-  return await retry(async bail => await axios.get(url))
+  return await retry(async bail => await axios.get(url), {
+    retries: 3
+  })
 }
 
 

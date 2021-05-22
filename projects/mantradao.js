@@ -1,7 +1,7 @@
 const web3 = require('./config/web3.js');
 const { GraphQLClient, gql } = require('graphql-request')
 const BigNumber = require("bignumber.js");
-const retry = require('async-retry')
+const retry = require('./helper/retry')
 const axios = require("axios");
 const utils = require('./helper/utils');
 const abis = require('./config/uma/abis.js');

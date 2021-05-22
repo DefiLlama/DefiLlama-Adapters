@@ -1,4 +1,4 @@
-const retry = require('async-retry')
+const retry = require('./helper/retry')
 const axios = require("axios");
 const { __Directive } = require('graphql');
 const { GraphQLClient, gql } = require('graphql-request')
