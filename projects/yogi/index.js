@@ -19,9 +19,7 @@ query get_tvl($block: Int) {
   }
 `;
 
-async function getChainTvl(timestamp, chain) {
-  const { block } = await sdk.api.util.lookupBlock(timestamp, { chain });
-
+async function getChainTvl(chain, block) {
   const graphQLClient = new GraphQLClient(endpoints[chain]);
   const results = await graphQLClient.request(query, { block });
 
@@ -29,26 +27,11 @@ async function getChainTvl(timestamp, chain) {
 }
 
 async function bsc(timestamp, block, chainBlocks) {
-  return getChainTvl(timestamp, 'bsc');
+  return getChainTvl('bsc', chainBlocks['bsc']);
 }
 
 async function polygon(timestamp, block, chainBlocks) {
-  return getChainTvl(timestamp, 'polygon');
-}
-
-function mergeBalances(balances, balancesToMerge) {
-  Object.entries(balancesToMerge).forEach(balance => {
-    sdk.util.sumSingleBalance(balances, balance[0], balance[1])
-  })
-}
-
-async function tvl(timestamp) {
-  const balances = {}
-  await Promise.all([
-      bsc(timestamp),
-      polygon(timestamp),
-  ]).then(poolBalances => poolBalances.forEach(pool => mergeBalances(balances, pool)))
-  return balances
+  return getChainTvl('polygon', chainBlocks['polygon']);
 }
 
 module.exports = {
@@ -58,5 +41,5 @@ module.exports = {
   polygon: {
     tvl: polygon
   },
-  tvl
+  tvl: sdk.util.sumChainTvls([bsc, polygon])
 }

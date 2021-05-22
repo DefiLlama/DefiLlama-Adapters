@@ -180,7 +180,7 @@
     );
 
     // get reserve balances
-    result = await sdk.api.abi.multiCall({
+    let result = await sdk.api.abi.multiCall({
       calls: balanceCalls,
       abi: 'erc20:balanceOf',
       block

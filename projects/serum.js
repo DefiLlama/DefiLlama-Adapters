@@ -3,7 +3,7 @@ const { Connection, PublicKey } = require('@solana/web3.js');
 const { Market } = require('@project-serum/serum');
 
 const serumProgramId = '9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin'
-const step = 2;
+const step = 1;
 
 async function fetch() {
   let tvl = 0;

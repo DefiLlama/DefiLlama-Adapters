@@ -3,29 +3,51 @@ const sdk = require('@defillama/sdk');
 const token0 = require('./abis/token0.json');
 const token1 = require('./abis/token1.json');
 const getReserves = require('./abis/getReserves.json');
+const factoryAbi = require('./abis/factory.json');
 
-async function calculateUniTvl(getAddress, block, chain, FACTORY, START_BLOCK) {
-  const logs = (
-    await sdk.api.util
-      .getLogs({
-        keys: [],
-        toBlock: block,
-        chain,
+async function calculateUniTvl(getAddress, block, chain, FACTORY, START_BLOCK, useMulticall = false) {
+  let pairAddresses;
+  if (useMulticall) {
+    const pairLength = (await sdk.api.abi.call({
+      target: FACTORY,
+      abi: factoryAbi.allPairsLength,
+      chain,
+      block
+    })).output
+    const pairNums = Array.from(Array(Number(pairLength)).keys())
+    const pairs = (await sdk.api.abi.multiCall({
+      abi: factoryAbi.allPairs,
+      chain,
+      calls: pairNums.map(num => ({
         target: FACTORY,
-        fromBlock: START_BLOCK,
-        topic: 'PairCreated(address,address,address,uint256)',
-      })
-  ).output;
+        params: [num]
+      })),
+      block
+    })).output
+    pairAddresses = pairs.map(result => result.output.toLowerCase())
+  } else {
+    const logs = (
+      await sdk.api.util
+        .getLogs({
+          keys: [],
+          toBlock: block,
+          chain,
+          target: FACTORY,
+          fromBlock: START_BLOCK,
+          topic: 'PairCreated(address,address,address,uint256)',
+        })
+    ).output;
 
-  const pairAddresses = logs
-    // sometimes the full log is emitted
-    .map((log) =>
-      typeof log === 'string' ? log : `0x${log.data.slice(64 - 40 + 2, 64 + 2)}`
-    )
-    // lowercase
-    .map((pairAddress) => pairAddress.toLowerCase());
+    pairAddresses = logs
+      // sometimes the full log is emitted
+      .map((log) =>
+        typeof log === 'string' ? log : `0x${log.data.slice(64 - 40 + 2, 64 + 2)}`
+      )
+      // lowercase
+      .map((pairAddress) => pairAddress.toLowerCase());
+  }
 
-  const [token0Addresses, token1Addresses] = await Promise.all([
+  const [token0Addresses, token1Addresses, reserves] = await Promise.all([
     sdk.api.abi
       .multiCall({
         abi: token0,
@@ -46,6 +68,15 @@ async function calculateUniTvl(getAddress, block, chain, FACTORY, START_BLOCK) {
         block,
       })
       .then(({ output }) => output),
+    sdk.api.abi
+    .multiCall({
+      abi: getReserves,
+      chain,
+      calls: pairAddresses.map((pairAddress) => ({
+        target: pairAddress,
+      })),
+      block,
+    }).then(({ output }) => output),
   ]);
 
   const pairs = {};
@@ -54,10 +85,10 @@ async function calculateUniTvl(getAddress, block, chain, FACTORY, START_BLOCK) {
     if (token0Address.success) {
       const tokenAddress = token0Address.output.toLowerCase();
 
-        const pairAddress = token0Address.input.target.toLowerCase();
-        pairs[pairAddress] = {
-          token0Address: getAddress(tokenAddress),
-        }
+      const pairAddress = token0Address.input.target.toLowerCase();
+      pairs[pairAddress] = {
+        token0Address: getAddress(tokenAddress),
+      }
     }
   });
 
@@ -65,23 +96,13 @@ async function calculateUniTvl(getAddress, block, chain, FACTORY, START_BLOCK) {
   token1Addresses.forEach((token1Address) => {
     if (token1Address.success) {
       const tokenAddress = token1Address.output.toLowerCase();
-        const pairAddress = token1Address.input.target.toLowerCase();
-        pairs[pairAddress] = {
-          ...(pairs[pairAddress] || {}),
-          token1Address: getAddress(tokenAddress),
-        }
+      const pairAddress = token1Address.input.target.toLowerCase();
+      pairs[pairAddress] = {
+        ...(pairs[pairAddress] || {}),
+        token1Address: getAddress(tokenAddress),
+      }
     }
   });
-
-  const reserves = (await sdk.api.abi
-    .multiCall({
-      abi: getReserves,
-      chain,
-      calls: Object.keys(pairs).map((pairAddress) => ({
-        target: pairAddress,
-      })),
-      block,
-    })).output;
 
   const balances = reserves.reduce((accumulator, reserve, i) => {
     if (reserve.success) {
