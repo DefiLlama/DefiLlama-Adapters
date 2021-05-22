@@ -45,16 +45,16 @@ function mergeBalances(balances, balancesToMerge) {
 async function tvl(timestamp) {
   const balances = {}
   await Promise.all([
-      // bsc(timestamp),
+      bsc(timestamp),
       polygon(timestamp),
   ]).then(poolBalances => poolBalances.forEach(pool => mergeBalances(balances, pool)))
   return balances
 }
 
 module.exports = {
-  // bsc: {
-  //   tvl: bsc
-  // },
+  bsc: {
+    tvl: bsc
+  },
   polygon: {
     tvl: polygon
   },
