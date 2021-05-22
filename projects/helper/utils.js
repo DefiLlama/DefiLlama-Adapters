@@ -1,7 +1,7 @@
 const web3 = require('../config/web3.js')
 const abis = require('../config/abis.js').abis
 const BigNumber = require("bignumber.js");
-const retry = require('./helper/retry')
+const retry = require('async-retry')
 const axios = require("axios");
 
 async function returnBalance(token, address) {

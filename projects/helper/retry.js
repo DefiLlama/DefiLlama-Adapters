@@ -1,4 +1,4 @@
-const retryModule = require('./helper/retry')
+const retryModule = require('async-retry')
 
 async function retry(func){
     return retryModule(func, {
