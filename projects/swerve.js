@@ -1,5 +1,5 @@
 const BigNumber = require("bignumber.js");
-const retry = require('async-retry')
+const retry = require('./helper/retry')
 const axios = require("axios");
 const web3 = require('./config/web3.js');
 const abis = require('./config/curve/abis.js')
