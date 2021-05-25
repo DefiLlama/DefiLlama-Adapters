@@ -1,6 +1,6 @@
 const utils = require('../helper/utils');
 
-async function fetchChain(chainId) {
+function fetchChain(chainId) {
   return async () => {
     const response = await utils.fetchURL('https://api.beefy.finance/tvl');
 
