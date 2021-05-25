@@ -1,4 +1,4 @@
-const utils = require('./helper/utils');
+const utils = require('../helper/utils');
 
 async function fetchChain(chainId) {
   return async () => {
