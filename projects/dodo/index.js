@@ -1,7 +1,7 @@
 const { request, gql } = require("graphql-request");
 const sdk = require('@defillama/sdk');
 
-const graphEndpoint = "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-beta"
+const graphEndpoint = "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2"
 const graphQuery = gql`
 query get_pairs($block: Int) {
     pairs(
