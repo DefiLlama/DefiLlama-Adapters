@@ -10,7 +10,7 @@ async function fetch() {
   var etherLockedInMarketMaker = await new BigNumber(tvl_details.etherLockedInMarketMaker)
   var tvl = new BigNumber(0)
   tvl = tvl.plus(stakingLockedValue).plus(uniswapLockedValue).plus(etherLockedInMarketMaker)
-  return tvl
+  return tvl.toNumber()
 }
 
 module.exports = {
