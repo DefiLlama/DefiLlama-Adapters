@@ -7,8 +7,7 @@ query get_tvl($block: Int) {
   factories(
     block: { number: $block }
   ) {
-    totalVolumeUSD
-    totalLiquidityUSD
+    liquidityUSD
   }
 }
 `;
@@ -21,7 +20,7 @@ async function tvl(timestamp, block) {
       block,
     }
   );
-  const usdTvl = Number(factories[0].totalLiquidityUSD)
+  const usdTvl = Number(factories[0].liquidityUSD)
 
   return toUSDTBalances(usdTvl)
 }
