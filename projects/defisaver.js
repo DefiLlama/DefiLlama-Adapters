@@ -3,7 +3,7 @@ const web3 = require('./config/web3.js');
 const defisaverABIs = require('./config/defisaver/abis');
 const utils = require('./helper/utils');
 const Multicall = require('@makerdao/multicall');
-const env = require("dotenv").config();
+require("dotenv").config();
 
 // Configs
 const coins = {
@@ -73,6 +73,7 @@ const coins = {
   'aAave' : 18,
   'BAL' : 18,
   'GUSD' : 2,
+  'RENBTC': 18
 };
 
 const keys = [
@@ -143,6 +144,7 @@ const keys = [
     'aAave': 'aave',
     'BAL': 'balancer',
     'GUSD': 'gemini-dollar',
+    'RENBTC': 'renbtc'
   }
 ];
 
