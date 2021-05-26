@@ -1,29 +1,12 @@
-const { request, gql } = require("graphql-request");
-const { toUSDTBalances } = require('../helper/balances');
+const {calculateUniTvl} = require('../helper/calculateUniTvl.js')
+const {transformFantomAddress} = require('../helper/portedTokens.js')
 
-const graphUrl = 'https://api.thegraph.com/subgraphs/name/layer3org/spiritswap-analytics'
-const graphQuery = gql`
-query get_tvl($block: Int) {
-  spiritswapFactories(
-    block: { number: $block }
-  ) {
-    totalVolumeUSD
-    totalLiquidityUSD
-  }
-}
-`;
+const factory = '0xEF45d134b73241eDa7703fa787148D9C9F4950b0'
+async function tvl(_timestamp, _ethBlock, chainBlocks){
+  const transform = await transformFantomAddress();
 
-async function tvl(timestamp, ethBlock, chainBlocks) {
-  const {spiritswapFactories} = await request(
-    graphUrl,
-    graphQuery,
-    {
-      block:chainBlocks['fantom'],
-    }
-  );
-  const usdTvl = Number(spiritswapFactories[0].totalLiquidityUSD)
-
-  return toUSDTBalances(usdTvl)
+  const balances = await calculateUniTvl(transform, chainBlocks['fantom'], 'fantom', factory, 3795376, true);
+  return balances
 }
 
 module.exports = {
