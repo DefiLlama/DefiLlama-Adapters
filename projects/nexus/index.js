@@ -11,14 +11,12 @@
   ==================================================*/
 
   const pools = [
-    '0xfd61352232157815cf7b71045557192bf0ce1884',  // old pool1
-    '0x7cbe5682be6b648cc1100c76d4f6c96997f753d6',  // old pool2
-    '0xcafea7934490EF8B9d2572EaeFeb9d48162ea5D8'   // current pool
+    '0xcafea35cE5a2fc4CED4464DA4349f81A122fd12b'   // current pool
   ];
 
   const tokensAddresses = [
     '0x6B175474E89094C44Da98b954EedeAC495271d0F', // DAI
-    '0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359', // SAI
+    '0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84', // stETH
   ]
 
 /*==================================================
