@@ -260,9 +260,15 @@ async function ethereumTvl(timestamp, block) {
   cashValArrEth.map(async (cashVal, idx) => {
     const str = keyserc20Eth[idx].substring(2);
 
-    balances[str] = BigNumber(cashVal.params)
-      .div(10 ** cashVal.decimals)
-      .toString();
+    if (str == "ETH") {
+      balances[str] = BigNumber(cashVal.params)
+        .div(10 ** 18)
+        .toString();
+    } else {
+      balances[str] = BigNumber(cashVal.params)
+        .div(10 ** cashVal.decimals)
+        .toString();
+    }
   });
 
   // --- Grab all the getCash values of cyERC20 (Iron Bank)---
@@ -310,13 +316,23 @@ async function ethereumTvl(timestamp, block) {
   cashValArrEth.map((cashVal, idx) => {
     const str = keyscyerc20Eth[idx].substring(2);
 
-    const val = BigNumber(cashVal.params)
-      .div(10 ** cashVal.decimals)
-      .integerValue();
+    if (str == "ETH") {
+      const val = BigNumber(cashVal.params)
+        .div(10 ** 18)
+        .integerValue();
 
-    balances[str] = BigNumber(balances[str] || 0)
-      .plus(val)
-      .toFixed();
+      balances[str] = BigNumber(balances[str] || 0)
+        .plus(val)
+        .toFixed();
+    } else {
+      const val = BigNumber(cashVal.params)
+        .div(10 ** cashVal.decimals)
+        .integerValue();
+
+      balances[str] = BigNumber(balances[str] || 0)
+        .plus(val)
+        .toFixed();
+    }
   });
 
   // --- Grab the accumulated on CRETH2 (ETH balance and update proper balances key) ---
