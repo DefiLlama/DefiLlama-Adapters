@@ -100,7 +100,6 @@ async function fetch() {
   let tvl = (await fetchChain('ethereum')()) + (await fetchChain('okexchain')())
   return tvl;
 }
-fetch().then(console.log)
 
 module.exports = {
   ethereum:{
