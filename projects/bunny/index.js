@@ -1,5 +1,6 @@
 const sdk = require('@defillama/sdk')
 const abi = require('./abi.json')
+const potABI = require('./pot_abi.json')
 const BigNumber = require('bignumber.js')
 
 const dashboard = '0xb3C96d3C3d643c2318E4CDD0a9A48aF53131F5f4'
@@ -47,6 +48,10 @@ const pools = [
     
 ]
 
+const pots = [
+    '0xa9b005d891414E0d6E0353490e099D0CA4C778Fc'
+]
+
 const ZERO = new BigNumber(0)
 const ETHER = new BigNumber(10).pow(18)
 
@@ -64,8 +69,19 @@ async function tvl(timestamp) {
         chain: 'bsc'
     })).output.reduce((tvl, call) => tvl.plus(new BigNumber(call.output)), ZERO)
     
+    const pot_total = (await sdk.api.abi.multiCall({
+        calls: pots.map( address => ({
+            target: address
+        })),
+        block,
+        abi: potABI,
+        chain: 'bsc'
+    })).output.reduce((tvl, call) => tvl.plus(new BigNumber(call.output)), ZERO)
+    
+
+        
     return {
-        'tether': total.dividedBy(ETHER).toString()
+        'tether': total.plus(pot_total).dividedBy(ETHER).toString()
     }
 }
 
