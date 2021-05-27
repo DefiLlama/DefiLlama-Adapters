@@ -1,0 +1,13 @@
+{
+  "inputs": [],
+  "name": "totalValueInUSD",
+  "outputs": [
+    {
+      "internalType": "uint256",
+      "name": "valueInUSD",
+      "type": "uint256"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+}
