@@ -1,15 +1,7 @@
-/*==================================================
-  Modules
-  ==================================================*/
-
 const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js').default;
 const abi = require('./config/wepiggy/abi.json');
 const utils = require('./helper/utils');
-
-/*==================================================
-    TVL
-    ==================================================*/
 
 const contracts = {
   ethereum: {
@@ -79,34 +71,43 @@ async function getCash(block, chain, token) {
   return cash;
 }
 
-async function fetch() {
-  let tvl = new BigNumber('0');
-  await Promise.all(
-    Object.keys(contracts).map(async key => {
-      let { comptroller, oracle } = contracts[key];
-      let chain = key;
-      let block = null;
-      // const { block } = await sdk.api.util.lookupBlock(timestamp, {
-      //   chain: chain,
-      // });
-      let allMarkets = await getAllMarkets(block, chain, comptroller);
+function fetchChain(chain) {
+  return async () => {
+    let tvl = new BigNumber('0');
+    let { comptroller, oracle } = contracts[chain];
+    let block = null;
+    // const { block } = await sdk.api.util.lookupBlock(timestamp, {
+    //   chain: chain,
+    // });
+    let allMarkets = await getAllMarkets(block, chain, comptroller);
 
-      await Promise.all(
-        allMarkets.map(async token => {
-          let cash = new BigNumber(await getCash(block, chain, token));
-          let decimals = await getUnderlyingDecimals(block, chain, token);
-          let locked = cash.div(10 ** decimals);
-          let underlyingPrice = new BigNumber(await getUnderlyingPrice(block, chain, oracle, token)).div(
-            10 ** (18 + 18 - decimals)
-          );
-          tvl = tvl.plus(locked.times(underlyingPrice));
-        })
-      );
-    })
-  );
-  return tvl.toFixed(2);
+    await Promise.all(
+      allMarkets.map(async token => {
+        let cash = new BigNumber(await getCash(block, chain, token));
+        let decimals = await getUnderlyingDecimals(block, chain, token);
+        let locked = cash.div(10 ** decimals);
+        let underlyingPrice = new BigNumber(await getUnderlyingPrice(block, chain, oracle, token)).div(
+          10 ** (18 + 18 - decimals)
+        );
+        tvl = tvl.plus(locked.times(underlyingPrice));
+      })
+    );
+    return tvl.toNumber();
+  }
 }
 
+async function fetch() {
+  let tvl = (await fetchChain('ethereum')()) + (await fetchChain('okexchain')())
+  return tvl;
+}
+fetch().then(console.log)
+
 module.exports = {
+  ethereum:{
+    fetch: fetchChain('ethereum')
+  },
+  okexchain:{
+    fetch: fetchChain('okexchain')
+  },
   fetch,
 };
