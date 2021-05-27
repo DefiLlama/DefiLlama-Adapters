@@ -1,5 +1,22 @@
 {
-  "getAllMarkets": [
+  "decimals":
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "decimals",
+      "outputs": [
+        {
+          "internalType": "uint8",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ,
+  "getAllMarkets":
     {
       "constant": true,
       "inputs": [],
@@ -13,11 +30,10 @@
       ],
       "payable": false,
       "stateMutability": "view",
-      "type": "function",
-      "signature": "0xb0772d0b"
+      "type": "function"
     }
-  ],
-  "underlying": [
+  ,
+  "underlying":
     {
       "constant": true,
       "inputs": [],
@@ -30,11 +46,10 @@
       ],
       "payable": false,
       "stateMutability": "view",
-      "type": "function",
-      "signature": "0x6f307dc3"
+      "type": "function"
     }
-  ],
-  "getCash": [
+  ,
+  "getCash":
     {
       "constant": true,
       "inputs": [],
@@ -46,9 +61,30 @@
         }
       ],
       "payable": false,
-      "signature": "0x3b1d21a2",
       "stateMutability": "view",
       "type": "function"
     }
-  ]
+  ,
+  "getUnderlyingPrice":
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_pToken",
+          "type": "address"
+        }
+      ],
+      "name": "getUnderlyingPrice",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    }
 }
