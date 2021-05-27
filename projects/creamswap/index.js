@@ -8,6 +8,7 @@ const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const abiCerc20 = require("./cerc20.json");
 const abiCereth2 = require("./cerc20.json");
+const abierc20 = require("./erc20.json");
 
 const BigNumber = require("bignumber.js");
 
@@ -205,8 +206,6 @@ const crCREAM = "0x892B14321a4FCba80669aE30Bd0cd99a7ECF6aC0";
 const cryUSD = "0x4EE15f44c6F0d8d1136c83EfD2e8E4AC768954c6";
 const CRETH2 = "0xcBc1065255cBc3aB41a6868c22d1f1C573AB89fd";
 
-const sixDecimals = ["USDT", "USDC"];
-const eightDecimals = ["WBTC"];
 /*==================================================
   TVL
   ==================================================*/
@@ -228,30 +227,42 @@ async function ethereumTvl(timestamp, block) {
     })
   ).output;
 
-  cashValues.map((cashVal) => {
+  let underlyings = (
+    await sdk.api.abi.multiCall({
+      block,
+      calls: _.map(
+        Object.values(lending_tokens_per_chain["ethereum"]),
+        (address) => ({ target: address })
+      ),
+      abi: abiCerc20["underlying"],
+    })
+  ).output;
+
+  let decimalsPerUnderlying = (
+    await sdk.api.abi.multiCall({
+      block,
+      calls: _.map(underlyings, (underlying) => ({
+        target: underlying.output,
+      })),
+      abi: abierc20["decimals"],
+    })
+  ).output;
+
+  cashValues.map((cashVal, idx) => {
     cashValArrEth.push({
       target: cashVal.input.target,
       params: cashVal.output,
+      decimals: decimalsPerUnderlying[idx].output,
     });
   });
 
   const keyserc20Eth = Object.keys(lending_tokens_per_chain["ethereum"]);
-  cashValArrEth.map((cashVal, idx) => {
+  cashValArrEth.map(async (cashVal, idx) => {
     const str = keyserc20Eth[idx].substring(2);
 
-    if (sixDecimals.includes(str)) {
-      balances[keyserc20Eth[idx].substring(2)] = BigNumber(cashVal.params)
-        .div(1e6)
-        .toString();
-    } else if (eightDecimals.includes(str)) {
-      balances[keyserc20Eth[idx].substring(2)] = BigNumber(cashVal.params)
-        .div(1e8)
-        .toString();
-    } else {
-      balances[keyserc20Eth[idx].substring(2)] = BigNumber(cashVal.params)
-        .div(1e18)
-        .toString();
-    }
+    balances[str] = BigNumber(cashVal.params)
+      .div(10 ** cashVal.decimals)
+      .toString();
   });
 
   // --- Grab all the getCash values of cyERC20 (Iron Bank)---
@@ -267,42 +278,45 @@ async function ethereumTvl(timestamp, block) {
     })
   ).output;
 
-  cashValuesIronBank.map((cashVal) => {
+  let underlyingsIronBank = (
+    await sdk.api.abi.multiCall({
+      block,
+      calls: _.map(Object.values(iron_bank_tokens["ethereum"]), (address) => ({
+        target: address,
+      })),
+      abi: abiCerc20["underlying"],
+    })
+  ).output;
+
+  let decimalsPerUnderlyingIronBank = (
+    await sdk.api.abi.multiCall({
+      block,
+      calls: _.map(underlyingsIronBank, (underlying) => ({
+        target: underlying.output,
+      })),
+      abi: abierc20["decimals"],
+    })
+  ).output;
+
+  cashValuesIronBank.map((cashVal, idx) => {
     cashValArrEth.push({
       target: cashVal.input.target,
       params: cashVal.output,
+      decimals: decimalsPerUnderlyingIronBank[idx].output,
     });
   });
 
   const keyscyerc20Eth = Object.keys(iron_bank_tokens["ethereum"]);
   cashValArrEth.map((cashVal, idx) => {
-    const str = keyserc20Eth[idx].substring(2);
+    const str = keyscyerc20Eth[idx].substring(2);
 
-    if (sixDecimals.includes(str)) {
-      const val = BigNumber(cashVal.params).div(1e6).integerValue();
+    const val = BigNumber(cashVal.params)
+      .div(10 ** cashVal.decimals)
+      .integerValue();
 
-      balances[keyscyerc20Eth[idx].substring(2)] = BigNumber(
-        balances[keyscyerc20Eth[idx].substring(2)] || 0
-      )
-        .plus(val)
-        .toFixed();
-    } else if (eightDecimals.includes(str)) {
-      const val = BigNumber(cashVal.params).div(1e8).integerValue();
-
-      balances[keyscyerc20Eth[idx].substring(2)] = BigNumber(
-        balances[keyscyerc20Eth[idx].substring(2)] || 0
-      )
-        .plus(val)
-        .toFixed();
-    } else {
-      const val = BigNumber(cashVal.params).div(1e8).integerValue();
-
-      balances[keyscyerc20Eth[idx].substring(2)] = BigNumber(
-        balances[keyscyerc20Eth[idx].substring(2)] || 0
-      )
-        .plus(val)
-        .toFixed();
-    }
+    balances[str] = BigNumber(balances[str] || 0)
+      .plus(val)
+      .toFixed();
   });
 
   // --- Grab the accumulated on CRETH2 (ETH balance and update proper balances key) ---
@@ -322,6 +336,8 @@ async function ethereumTvl(timestamp, block) {
   } catch (err) {
     console.error(err);
   }
+
+  console.log(balances);
 
   return balances;
 }
