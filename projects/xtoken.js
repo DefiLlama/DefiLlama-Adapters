@@ -14,12 +14,20 @@ const {
   xkncbAddr,
   kncAddr,
   xsnxaAddr,
+  xsnxaAdminAddr,
+  xsnxaTradeAccountingAddr,
+  ethrsi6040Addr,
+  snxAddr,
+  wethAddr,
 } = require("./config/xtoken/constants");
 const xAAVE = require("./config/xtoken/xAAVE.json");
 const xINCH = require("./config/xtoken/xINCH.json");
 const xKNC = require("./config/xtoken/xKNC.json");
 const xSNX = require("./config/xtoken/xSNX.json");
+const xSNXTradeAccountingContract = require("./config/xtoken/xSNXTradeAccountingContract.json");
 const xBNT = require("./config/xtoken/xBNT.json");
+const ERC20 = require("./config/xtoken/ERC20.json");
+const SNX = require("./config/xtoken/SNX.json");
 
 async function fetch() {
   const xaaveaCtr = new web3.eth.Contract(xAAVE, xaaveaAddr);
@@ -29,6 +37,12 @@ async function fetch() {
   const xkncaCtr = new web3.eth.Contract(xKNC, xkncaAddr);
   const xkncbCtr = new web3.eth.Contract(xKNC, xkncbAddr);
   const xsnxaCtr = new web3.eth.Contract(xSNX, xsnxaAddr);
+  const xsnxaTradeAccountingCtr = new web3.eth.Contract(
+    xSNXTradeAccountingContract,
+    xsnxaTradeAccountingAddr
+  );
+  const ethrsi6040Ctr = new web3.eth.Contract(ERC20, ethrsi6040Addr);
+  const snxCtr = new web3.eth.Contract(SNX, snxAddr);
   const xbntaCtr = new web3.eth.Contract(xBNT, xbntaAddr);
 
   const xaaveaTvlRaw = await xaaveaCtr.methods.getFundHoldings().call();
@@ -65,11 +79,6 @@ async function fetch() {
   const xkncaTvlToken = new BigNumber(xkncaTvlRaw).div(10 ** 18).toFixed(2);
   const xkncbTvlToken = new BigNumber(xkncbTvlRaw).div(10 ** 18).toFixed(2);
 
-  const xsnxaTotalSupplyRaw = await xsnxaCtr.methods.totalSupply().call();
-  const xsnxaTotalSupply = new BigNumber(xsnxaTotalSupplyRaw)
-    .div(10 ** 18)
-    .toFixed(2);
-
   const priceAave = await utils.getPricesfromString("aave");
   const priceBnt = await retry(
     async (bail) =>
@@ -84,10 +93,32 @@ async function fetch() {
         `https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${kncAddr}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`
       )
   );
-  const priceXsnxa = await retry(
+
+  const priceSnx = await retry(
     async (bail) =>
       await axios.get(
-        "https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=0x2367012aB9c3da91290F71590D5ce217721eEfE4&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true"
+        `https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${snxAddr}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`
+      )
+  );
+
+  const priceEthrsi6040 = await retry(
+    async (bail) =>
+      await axios.get(
+        `https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${ethrsi6040Addr}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`
+      )
+  );
+
+  const priceSusd = await retry(
+    async (bail) =>
+      await axios.get(
+        `https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=0x57ab1ec28d129707052df4df418d58a2d46d5f51&vs_currencies=usd`
+      )
+  );
+
+  const priceWeth = await retry(
+    async (bail) =>
+      await axios.get(
+        `https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${wethAddr}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`
       )
   );
 
@@ -118,9 +149,41 @@ async function fetch() {
     xkncbTvlToken *
     priceKnc.data["0xdd974d5c2e2928dea5f71b9825b8b646686bd200"].usd;
 
+  // xSNXa TVL is SNX + ETH + ETHRSI6040 - sUSD
+  const xsnxaSnxRaw = await xsnxaTradeAccountingCtr.methods
+    .getSnxBalance()
+    .call();
+  const xsnxaSnx = new BigNumber(xsnxaSnxRaw).div(10 ** 18).toFixed(2);
+  const xsnxaSnxTvl =
+    xsnxaSnx * priceSnx.data["0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f"].usd;
+
+  const xsnxaEthRaw = await xsnxaTradeAccountingCtr.methods
+    .getEthBalance()
+    .call();
+  const xsnxaEth = new BigNumber(xsnxaEthRaw).div(10 ** 18).toFixed(2);
+  const xsnxaEthTvl =
+    xsnxaEth * priceWeth.data["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"].usd;
+
+  const xsnxaEthrsi6040Raw = await ethrsi6040Ctr.methods
+    .balanceOf(xsnxaAdminAddr)
+    .call();
+  const xsnxaEthrsi6040 = new BigNumber(xsnxaEthrsi6040Raw)
+    .div(10 ** 18)
+    .toFixed(2);
+  const xsnxaEthrsi6040Tvl =
+    xsnxaEthrsi6040 *
+    priceEthrsi6040.data["0x93e01899c10532d76c0e864537a1d26433dbbddb"].usd;
+
+  const xsnxaSusdRaw = await snxCtr.methods
+    .debtBalanceOf(xsnxaAdminAddr, web3.utils.asciiToHex("sUSD"))
+    .call();
+  const xsnxaSusd = new BigNumber(xsnxaSusdRaw).div(10 ** 18).toFixed(2);
+  const xsnxaSusdTvl =
+    xsnxaSusd *
+    priceSusd.data["0x57ab1ec28d129707052df4df418d58a2d46d5f51"].usd;
+
   const xsnxaTvl =
-    xsnxaTotalSupply *
-    priceXsnxa.data["0x2367012ab9c3da91290f71590d5ce217721eefe4"].usd;
+    xsnxaSnxTvl + xsnxaEthTvl + xsnxaEthrsi6040Tvl - xsnxaSusdTvl;
 
   const tvl =
     xaaveaTvl +
@@ -129,8 +192,8 @@ async function fetch() {
     xinchaTvl +
     xinchbTvl +
     xkncaTvl +
-    xkncbTvl +
-    xsnxaTvl;
+    xkncbTvl;
+  xsnxaTvl;
 
   return tvl;
 }
