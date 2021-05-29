@@ -5,7 +5,7 @@ const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 
 const abi = require("./abi.json");
 const abiCerc20 = require("./cerc20.json");
-const abiCereth2 = require("./cerc20.json");
+const abiCereth2 = require("./creth2.json");
 const BigNumber = require("bignumber.js");
 
 const lending_tokens_per_chain = {
@@ -300,7 +300,7 @@ async function ethereumTvl(timestamp, block) {
   });
 
   // --- Grab the accumulated on CRETH2 (ETH balance and update proper balances key) ---
-  /*try {
+  try {
     const accumCRETH2 = (
       await sdk.api.abi.call({
         block,
@@ -309,13 +309,14 @@ async function ethereumTvl(timestamp, block) {
       })
     ).output;
 
-    const balETH_CRETH2 = BigNumber(accumCRETH2).div(1e18).integerValue();
-    console.log(balETH_CRETH2);
+    console.log("accumCRETH2:", accumCRETH2);
 
-    //balances["ETH"] += BigNumber(balances["ETH"]).plus(balETH_CRETH2);
+    balances["0x0000000000000000000000000000000000000000"] =
+      Number(balances["0x0000000000000000000000000000000000000000"]) +
+      Number(accumCRETH2);
   } catch (err) {
     console.error(err);
-  }*/
+  }
 
   return balances;
 }
