@@ -1,20 +1,13 @@
-/*==================================================
-  Modules
-  ==================================================*/
-
 const _ = require("underscore");
 const sdk = require("@defillama/sdk");
+const utils = require("../helper/utils");
+const {unwrapUniswapLPs} = require("../helper/unwrapLPs");
 
 const abi = require("./abi.json");
 const abiCerc20 = require("./cerc20.json");
 const abiCereth2 = require("./cerc20.json");
-const abierc20 = require("./erc20.json");
-
 const BigNumber = require("bignumber.js");
 
-/*==================================================
-  Settings
-  ==================================================*/
 
 const lending_tokens_per_chain = {
   ethereum: {
@@ -206,23 +199,17 @@ const crCREAM = "0x892B14321a4FCba80669aE30Bd0cd99a7ECF6aC0";
 const cryUSD = "0x4EE15f44c6F0d8d1136c83EfD2e8E4AC768954c6";
 const CRETH2 = "0xcBc1065255cBc3aB41a6868c22d1f1C573AB89fd";
 
-/*==================================================
-  TVL
-  ==================================================*/
-
 async function ethereumTvl(timestamp, block) {
   let balances = {};
 
+  let tokens_ethereum = (await utils.fetchURL(
+    "https://api.cream.finance/api/v1/crtoken?comptroller=eth"
+  )).data;
   //  --- Grab all the getCash values of crERC20 (Lending Contract Addresses) ---
-  let cashValArrEth = [];
-
   let cashValues = (
     await sdk.api.abi.multiCall({
       block,
-      calls: _.map(
-        Object.values(lending_tokens_per_chain["ethereum"]),
-        (address) => ({ target: address })
-      ),
+      calls: tokens_ethereum.map(token => ({ target: token.token_address })),
       abi: abiCerc20["getCash"],
     })
   ).output;
@@ -230,50 +217,28 @@ async function ethereumTvl(timestamp, block) {
   let underlyings = (
     await sdk.api.abi.multiCall({
       block,
-      calls: _.map(
-        Object.values(lending_tokens_per_chain["ethereum"]),
-        (address) => ({ target: address })
-      ),
+      calls: tokens_ethereum.map(token => ({ target: token.token_address })),
       abi: abiCerc20["underlying"],
     })
   ).output;
 
-  let decimalsPerUnderlying = (
-    await sdk.api.abi.multiCall({
-      block,
-      calls: _.map(underlyings, (underlying) => ({
-        target: underlying.output,
-      })),
-      abi: abierc20["decimals"],
-    })
-  ).output;
-
+  const lpPositions = []
   cashValues.map((cashVal, idx) => {
-    cashValArrEth.push({
-      target: cashVal.input.target,
-      params: cashVal.output,
-      decimals: decimalsPerUnderlying[idx].output,
-    });
-  });
-
-  const keyserc20Eth = Object.keys(lending_tokens_per_chain["ethereum"]);
-  cashValArrEth.map(async (cashVal, idx) => {
-    const str = keyserc20Eth[idx].substring(2);
-
-    if (str == "ETH") {
-      balances[str] = BigNumber(cashVal.params)
-        .div(10 ** 18)
-        .toString();
+    if(underlyings[idx].output === null){
+      // It's ETH
+      sdk.util.sumSingleBalance(balances, '0x0000000000000000000000000000000000000000', cashVal.output)
+    } else if(tokens_ethereum[idx].underlying_symbol === "UNI-V2" || tokens_ethereum[idx].underlying_symbol === "SLP"){
+      lpPositions.push({
+        token: underlyings[idx].output,
+        balance: cashVal.output
+      })
     } else {
-      balances[str] = BigNumber(cashVal.params)
-        .div(10 ** cashVal.decimals)
-        .toString();
+      sdk.util.sumSingleBalance(balances, underlyings[idx].output, cashVal.output)
     }
   });
+  await unwrapUniswapLPs(balances, lpPositions, block)
 
   // --- Grab all the getCash values of cyERC20 (Iron Bank)---
-  cashValArrEth = [];
-
   let cashValuesIronBank = (
     await sdk.api.abi.multiCall({
       block,
@@ -294,47 +259,11 @@ async function ethereumTvl(timestamp, block) {
     })
   ).output;
 
-  let decimalsPerUnderlyingIronBank = (
-    await sdk.api.abi.multiCall({
-      block,
-      calls: _.map(underlyingsIronBank, (underlying) => ({
-        target: underlying.output,
-      })),
-      abi: abierc20["decimals"],
-    })
-  ).output;
-
   cashValuesIronBank.map((cashVal, idx) => {
-    cashValArrEth.push({
-      target: cashVal.input.target,
-      params: cashVal.output,
-      decimals: decimalsPerUnderlyingIronBank[idx].output,
-    });
+    sdk.util.sumSingleBalance(balances, underlyingsIronBank[idx].output, cashVal.output)
   });
 
-  const keyscyerc20Eth = Object.keys(iron_bank_tokens["ethereum"]);
-  cashValArrEth.map((cashVal, idx) => {
-    const str = keyscyerc20Eth[idx].substring(2);
-
-    if (str == "ETH") {
-      const val = BigNumber(cashVal.params)
-        .div(10 ** 18)
-        .integerValue();
-
-      balances[str] = BigNumber(balances[str] || 0)
-        .plus(val)
-        .toFixed();
-    } else {
-      const val = BigNumber(cashVal.params)
-        .div(10 ** cashVal.decimals)
-        .integerValue();
-
-      balances[str] = BigNumber(balances[str] || 0)
-        .plus(val)
-        .toFixed();
-    }
-  });
-
+  /*
   // --- Grab the accumulated on CRETH2 (ETH balance and update proper balances key) ---
   try {
     const accumCRETH2 = (
@@ -352,21 +281,14 @@ async function ethereumTvl(timestamp, block) {
   } catch (err) {
     console.error(err);
   }
+*/
 
-  console.log(balances);
+  //console.log(balances);
 
   return balances;
 }
 
-/*==================================================
-  Exports
-  ==================================================*/
-
 module.exports = {
-  name: "C.R.E.A.M. Swap",
-  website: "https://cream.finance",
-  token: null,
-  category: "dexes",
   start: 1599552000, // 09/08/2020 @ 8:00am (UTC)
   ethereum: {
     tvl: ethereumTvl,
