@@ -236,18 +236,6 @@ async function ethereumTvl(timestamp, block) {
 
   const lpPositions = [];
   cashValues.map((cashVal, idx) => {
-    if (underlyings[idx].output == CRETH2) {
-      /* 
-        Despite of the underlying being the CRETH2, it is like sort of "wrapped" ETH version, so we can account as ETH pricing
-        Otherwise the tvl will miss M of $ into the calc
-      */
-      sdk.util.sumSingleBalance(
-        balances,
-        "0x0000000000000000000000000000000000000000",
-        cashVal.output
-      );
-    }
-
     if (underlyings[idx].output === null) {
       // It's ETH
       sdk.util.sumSingleBalance(
@@ -308,12 +296,20 @@ async function ethereumTvl(timestamp, block) {
         abi: abiCereth2["accumulated"],
       })
     ).output;
-
-    console.log("accumCRETH2:", accumCRETH2);
+    
+    /* 
+      In theory the ETH deposited in `0xcBc1065255cBc3aB41a6868c22d1f1C573AB89fd` mints CRETH2 which later,
+      but represents the same ETH portion, so we should deduct from the total value given by `accumulated()``
+      the amount of ETH already deployed in the ethereum market place, otherwise it will account a certain %
+      twice. Only certain portion can be considered "idle" in the eth deposit contract to account again as extra
+      eth tvl
+    */
+    const iddleInETHDepositContract =
+      Number(accumCRETH2) - Number(balances[CRETH2]);
 
     balances["0x0000000000000000000000000000000000000000"] =
       Number(balances["0x0000000000000000000000000000000000000000"]) +
-      Number(accumCRETH2);
+      Number(iddleInETHDepositContract);
   } catch (err) {
     console.error(err);
   }
