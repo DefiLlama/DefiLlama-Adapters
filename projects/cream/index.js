@@ -1,13 +1,12 @@
 const _ = require("underscore");
 const sdk = require("@defillama/sdk");
 const utils = require("../helper/utils");
-const {unwrapUniswapLPs} = require("../helper/unwrapLPs");
+const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 
 const abi = require("./abi.json");
 const abiCerc20 = require("./cerc20.json");
 const abiCereth2 = require("./cerc20.json");
 const BigNumber = require("bignumber.js");
-
 
 const lending_tokens_per_chain = {
   ethereum: {
@@ -198,27 +197,31 @@ const crYFI = "0xCbaE0A83f4f9926997c8339545fb8eE32eDc6b76";
 const crCREAM = "0x892B14321a4FCba80669aE30Bd0cd99a7ECF6aC0";
 const cryUSD = "0x4EE15f44c6F0d8d1136c83EfD2e8E4AC768954c6";
 const CRETH2 = "0xcBc1065255cBc3aB41a6868c22d1f1C573AB89fd";
-const crvIB = '0x27b7b1ad7288079A66d12350c828D3C00A6F07d7'
+const crvIB = "0x27b7b1ad7288079A66d12350c828D3C00A6F07d7";
 
 const replacements = {
-  '0xe1237aA7f535b0CC33Fd973D66cBf830354D16c7': wETH, // yWETH -> WETH
+  "0xe1237aA7f535b0CC33Fd973D66cBf830354D16c7": wETH, // yWETH -> WETH
   //'0x27b7b1ad7288079A66d12350c828D3C00A6F07d7': '0x6b175474e89094c44da98b954eedeac495271d0f', // yearn: yCRV-IB -> DAI
-  '0x986b4AFF588a109c09B50A03f42E4110E29D353F': wETH, // yearn: yCRV/sETH
-  '0xdCD90C7f6324cfa40d7169ef80b12031770B4325': wETH, // yearn: yCRV/stETH
-  '0x9cA85572E6A3EbF24dEDd195623F188735A5179f': '0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490' // yearn: y3Crv -> 3Crv
-}
+  "0x986b4AFF588a109c09B50A03f42E4110E29D353F": wETH, // yearn: yCRV/sETH
+  "0xdCD90C7f6324cfa40d7169ef80b12031770B4325": wETH, // yearn: yCRV/stETH
+  "0x9cA85572E6A3EbF24dEDd195623F188735A5179f":
+    "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490", // yearn: y3Crv -> 3Crv
+};
 
 async function ethereumTvl(timestamp, block) {
   let balances = {};
 
-  let tokens_ethereum = (await utils.fetchURL(
-    "https://api.cream.finance/api/v1/crtoken?comptroller=eth"
-  )).data;
+  let tokens_ethereum = (
+    await utils.fetchURL(
+      "https://api.cream.finance/api/v1/crtoken?comptroller=eth"
+    )
+  ).data;
+
   //  --- Grab all the getCash values of crERC20 (Lending Contract Addresses) ---
   let cashValues = (
     await sdk.api.abi.multiCall({
       block,
-      calls: tokens_ethereum.map(token => ({ target: token.token_address })),
+      calls: tokens_ethereum.map((token) => ({ target: token.token_address })),
       abi: abiCerc20["getCash"],
     })
   ).output;
@@ -226,29 +229,49 @@ async function ethereumTvl(timestamp, block) {
   let underlyings = (
     await sdk.api.abi.multiCall({
       block,
-      calls: tokens_ethereum.map(token => ({ target: token.token_address })),
+      calls: tokens_ethereum.map((token) => ({ target: token.token_address })),
       abi: abiCerc20["underlying"],
     })
   ).output;
 
-  const lpPositions = []
+  const lpPositions = [];
   cashValues.map((cashVal, idx) => {
-    if(underlyings[idx].output === null){
+    if (underlyings[idx].output == CRETH2) {
+      /* 
+        Despite of the underlying being the CRETH2, it is like sort of "wrapped" ETH version, so we can account as ETH pricing
+        Otherwise the tvl will miss M of $ into the calc
+      */
+      sdk.util.sumSingleBalance(
+        balances,
+        "0x0000000000000000000000000000000000000000",
+        cashVal.output
+      );
+    }
+
+    if (underlyings[idx].output === null) {
       // It's ETH
-      sdk.util.sumSingleBalance(balances, '0x0000000000000000000000000000000000000000', cashVal.output)
-    } else if(tokens_ethereum[idx].underlying_symbol === "UNI-V2" || tokens_ethereum[idx].underlying_symbol === "SLP"){
+      sdk.util.sumSingleBalance(
+        balances,
+        "0x0000000000000000000000000000000000000000",
+        cashVal.output
+      );
+    } else if (
+      tokens_ethereum[idx].underlying_symbol === "UNI-V2" ||
+      tokens_ethereum[idx].underlying_symbol === "SLP"
+    ) {
       lpPositions.push({
         token: underlyings[idx].output,
-        balance: cashVal.output
-      })
-    } else if(underlyings[idx].output === crvIB){
-      return // https://twitter.com/0xngmi/status/1398565590856515585
+        balance: cashVal.output,
+      });
+    } else if (underlyings[idx].output === crvIB) {
+      return; // https://twitter.com/0xngmi/status/1398565590856515585
     } else {
-      const token = replacements[underlyings[idx].output] ?? underlyings[idx].output;
-      sdk.util.sumSingleBalance(balances, token, cashVal.output)
+      const token =
+        replacements[underlyings[idx].output] || underlyings[idx].output;
+      sdk.util.sumSingleBalance(balances, token, cashVal.output);
     }
   });
-  await unwrapUniswapLPs(balances, lpPositions, block)
+  await unwrapUniswapLPs(balances, lpPositions, block);
 
   // --- Grab all the getCash values of cyERC20 (Iron Bank)---
   let cashValuesIronBank = (
@@ -272,39 +295,276 @@ async function ethereumTvl(timestamp, block) {
   ).output;
 
   cashValuesIronBank.map((cashVal, idx) => {
-    const token = replacements[underlyingsIronBank[idx].output] ?? underlyingsIronBank[idx].output;
-    sdk.util.sumSingleBalance(balances, token, cashVal.output)
+    const token = underlyingsIronBank[idx].output; //replacements[underlyingsIronBank[idx].output];
+    sdk.util.sumSingleBalance(balances, token, cashVal.output);
   });
 
-  /*
   // --- Grab the accumulated on CRETH2 (ETH balance and update proper balances key) ---
-  try {
+  /*try {
     const accumCRETH2 = (
       await sdk.api.abi.call({
         block,
         target: CRETH2,
-        params: [],
         abi: abiCereth2["accumulated"],
       })
     ).output;
 
     const balETH_CRETH2 = BigNumber(accumCRETH2).div(1e18).integerValue();
+    console.log(balETH_CRETH2);
 
-    balances["ETH"] += BigNumber(balances["ETH"]).plus(balETH_CRETH2);
+    //balances["ETH"] += BigNumber(balances["ETH"]).plus(balETH_CRETH2);
   } catch (err) {
     console.error(err);
-  }
-*/
-
-  //console.log(balances);
+  }*/
 
   return balances;
 }
+
+const bscTvl = async (timestamp, chainBlocks) => {
+  const block = chainBlocks["bsc"]; // req for the block type
+  let balances = {};
+
+  let tokens_coingecko_symbol_to_platform = (
+    await utils.fetchURL(
+      "https://api.coingecko.com/api/v3/coins/list?include_platform=true"
+    )
+  ).data;
+
+  let tokens_bsc = (
+    await utils.fetchURL(
+      "https://api.cream.finance/api/v1/crtoken?comptroller=bsc"
+    )
+  ).data;
+
+  let cashValues = (
+    await sdk.api.abi.multiCall({
+      block,
+      calls: tokens_bsc.map((token) => ({ target: token.token_address })),
+      abi: abiCerc20["getCash"],
+      chain: "bsc",
+    })
+  ).output;
+
+  let underlyings = (
+    await sdk.api.abi.multiCall({
+      block,
+      calls: tokens_bsc.map((token) => ({ target: token.token_address })),
+      abi: abiCerc20["underlying"],
+      chain: "bsc",
+    })
+  ).output;
+
+  const lpPositions = [];
+  cashValues.map((cashVal, idx) => {
+    if (tokens_bsc[idx].underlying_symbol === "CAKE-LP") {
+      lpPositions.push({
+        token: underlyings[idx].output,
+        balance: cashVal.output,
+      });
+    } else {
+      if (underlyings[idx].output == undefined) {
+        sdk.util.sumSingleBalance(
+          balances,
+          "0xB8c77482e45F1F44dE1745F52C74426C631bDD52",
+          cashVal.output
+        ); // BNB
+      } else if (
+        underlyings[idx].output == "0x2170Ed0880ac9A755fd29B2688956BD959F933F8"
+      ) {
+        sdk.util.sumSingleBalance(
+          balances,
+          "0x0000000000000000000000000000000000000000",
+          cashVal.output
+        ); // ETH
+      } else if (
+        underlyings[idx].output == "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c"
+      ) {
+        sdk.util.sumSingleBalance(
+          balances,
+          "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+          Number(cashVal.output) / 10 ** 10
+        ); // WBTC
+      } else if (
+        tokens_bsc[idx].underlying_symbol.toLocaleLowerCase() == "usdt" ||
+        tokens_bsc[idx].underlying_symbol.toLocaleLowerCase() == "usdc"
+      ) {
+        sdk.util.sumSingleBalance(
+          balances,
+          tokens_bsc[idx].underlying_symbol.toLocaleLowerCase() == "usdt"
+            ? "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+            : "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          Number(cashVal.output) / 10 ** 12
+        ); // USDT || USDC
+      } else if (
+        tokens_bsc[idx].underlying_symbol.toLocaleLowerCase() == "uni"
+      ) {
+        sdk.util.sumSingleBalance(
+          balances,
+          "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
+          cashVal.output
+        ); // UNI
+      } else if (tokens_bsc[idx].underlying_symbol == undefined) {
+        sdk.util.sumSingleBalance(
+          balances,
+          "0xB8c77482e45F1F44dE1745F52C74426C631bDD52",
+          cashVal.output
+        ); // BNB
+      } else {
+        const filteringAddr = tokens_coingecko_symbol_to_platform.filter(
+          (token) =>
+            token.symbol ==
+            tokens_bsc[idx].underlying_symbol.toLocaleLowerCase()
+        );
+
+        const tokenAddr =
+          filteringAddr.length > 0
+            ? filteringAddr[0].platforms.ethereum
+            : underlyings[idx].output;
+        sdk.util.sumSingleBalance(balances, tokenAddr, cashVal.output);
+      }
+    }
+  });
+
+  return balances;
+};
+
+const fantomTvl = async (timestamp, chainBlocks) => {
+  const block = chainBlocks["fantom"]; // req for the block type
+  let balances = {};
+
+  let tokens_coingecko_symbol_to_platform = (
+    await utils.fetchURL(
+      "https://api.coingecko.com/api/v3/coins/list?include_platform=true"
+    )
+  ).data;
+
+  let tokens_fantom = (
+    await utils.fetchURL(
+      "https://api.cream.finance/api/v1/crtoken?comptroller=fantom"
+    )
+  ).data;
+
+  let cashValues = (
+    await sdk.api.abi.multiCall({
+      block,
+      calls: tokens_fantom.map((token) => ({ target: token.token_address })),
+      abi: abiCerc20["getCash"],
+      chain: "fantom",
+    })
+  ).output;
+
+  let underlyings = (
+    await sdk.api.abi.multiCall({
+      block,
+      calls: tokens_fantom.map((token) => ({ target: token.token_address })),
+      abi: abiCerc20["underlying"],
+      chain: "fantom",
+    })
+  ).output;
+
+  cashValues.map((cashVal, idx) => {
+    if (
+      underlyings[idx].output == "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83"
+    ) {
+      sdk.util.sumSingleBalance(
+        balances,
+        "0x4E15361FD6b4BB609Fa63C81A2be19d873717870",
+        cashVal.output
+      ); // FTM
+    } else if (
+      underlyings[idx].output == "0x74b23882a30290451A17c44f4F05243b6b58C76d"
+    ) {
+      sdk.util.sumSingleBalance(
+        balances,
+        "0x0000000000000000000000000000000000000000",
+        cashVal.output
+      ); // ETH
+    } else if (
+      underlyings[idx].output == "0x321162Cd933E2Be498Cd2267a90534A804051b11"
+    ) {
+      sdk.util.sumSingleBalance(
+        balances,
+        "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+        Number(cashVal.output)
+      ); // WBTC
+    } else if (
+      tokens_fantom[idx].underlying_symbol.toLocaleLowerCase() == "usdt" ||
+      tokens_fantom[idx].underlying_symbol.toLocaleLowerCase() == "usdc"
+    ) {
+      sdk.util.sumSingleBalance(
+        balances,
+        tokens_fantom[idx].underlying_symbol.toLocaleLowerCase() == "usdt"
+          ? "0xdAC17F958D2ee523a2206206994597C13D831ec7"
+          : "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+        Number(cashVal.output)
+      ); // USDT || USDC
+    } else if (
+      tokens_fantom[idx].underlying_symbol.toLocaleLowerCase() == "uni"
+    ) {
+      sdk.util.sumSingleBalance(
+        balances,
+        "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
+        cashVal.output
+      ); // UNI
+    } else {
+      const filteringAddr = tokens_coingecko_symbol_to_platform.filter(
+        (token) =>
+          token.symbol ==
+          tokens_fantom[idx].underlying_symbol.toLocaleLowerCase()
+      );
+
+      const tokenAddr =
+        filteringAddr.length > 0
+          ? filteringAddr[0].platforms.ethereum
+          : underlyings[idx].output;
+      sdk.util.sumSingleBalance(balances, tokenAddr, cashVal.output);
+    }
+  });
+
+  return balances;
+};
+
+const ArrayConverter = (obj) => {
+  const keys = Object.keys(obj);
+  const arr = [];
+  keys.forEach((key) => arr.push({ address: key, value: Number(obj[key]) }));
+  return arr;
+};
+
+const totalTvl = async (timestamp, block) => {
+  const eth = ArrayConverter(await ethereumTvl(timestamp, block));
+  const bsc = ArrayConverter(await bscTvl(timestamp, block));
+  const fantom = ArrayConverter(await fantomTvl(timestamp, block));
+
+  const mergeArr = [...eth, ...bsc, ...fantom];
+
+  const sumTvl = mergeArr.reduce((a, c) => {
+    let x = a.find(
+      (e) => e.address.toLocaleLowerCase() === c.address.toLocaleLowerCase()
+    );
+    if (!x) a.push(Object.assign({}, c));
+    else x.value += c.value;
+    return a;
+  }, []);
+
+  const balances = sumTvl.reduce(
+    (o, arrElem) => ({ ...o, [arrElem.address]: arrElem.value.toString() }),
+    {}
+  );
+
+  return balances;
+};
 
 module.exports = {
   start: 1599552000, // 09/08/2020 @ 8:00am (UTC)
   ethereum: {
     tvl: ethereumTvl,
   },
-  tvl: ethereumTvl,
+  bsc: {
+    tvl: bscTvl,
+  },
+  fantom: {
+    tvl: fantomTvl,
+  },
+  tvl: totalTvl,
 };
