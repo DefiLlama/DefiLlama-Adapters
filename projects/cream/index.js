@@ -198,6 +198,15 @@ const crYFI = "0xCbaE0A83f4f9926997c8339545fb8eE32eDc6b76";
 const crCREAM = "0x892B14321a4FCba80669aE30Bd0cd99a7ECF6aC0";
 const cryUSD = "0x4EE15f44c6F0d8d1136c83EfD2e8E4AC768954c6";
 const CRETH2 = "0xcBc1065255cBc3aB41a6868c22d1f1C573AB89fd";
+const crvIB = '0x27b7b1ad7288079A66d12350c828D3C00A6F07d7'
+
+const replacements = {
+  '0xe1237aA7f535b0CC33Fd973D66cBf830354D16c7': wETH, // yWETH -> WETH
+  //'0x27b7b1ad7288079A66d12350c828D3C00A6F07d7': '0x6b175474e89094c44da98b954eedeac495271d0f', // yearn: yCRV-IB -> DAI
+  '0x986b4AFF588a109c09B50A03f42E4110E29D353F': wETH, // yearn: yCRV/sETH
+  '0xdCD90C7f6324cfa40d7169ef80b12031770B4325': wETH, // yearn: yCRV/stETH
+  '0x9cA85572E6A3EbF24dEDd195623F188735A5179f': '0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490' // yearn: y3Crv -> 3Crv
+}
 
 async function ethereumTvl(timestamp, block) {
   let balances = {};
@@ -232,8 +241,11 @@ async function ethereumTvl(timestamp, block) {
         token: underlyings[idx].output,
         balance: cashVal.output
       })
+    } else if(underlyings[idx].output === crvIB){
+      return // https://twitter.com/0xngmi/status/1398565590856515585
     } else {
-      sdk.util.sumSingleBalance(balances, underlyings[idx].output, cashVal.output)
+      const token = replacements[underlyings[idx].output] ?? underlyings[idx].output;
+      sdk.util.sumSingleBalance(balances, token, cashVal.output)
     }
   });
   await unwrapUniswapLPs(balances, lpPositions, block)
@@ -260,7 +272,8 @@ async function ethereumTvl(timestamp, block) {
   ).output;
 
   cashValuesIronBank.map((cashVal, idx) => {
-    sdk.util.sumSingleBalance(balances, underlyingsIronBank[idx].output, cashVal.output)
+    const token = replacements[underlyingsIronBank[idx].output] ?? underlyingsIronBank[idx].output;
+    sdk.util.sumSingleBalance(balances, token, cashVal.output)
   });
 
   /*
