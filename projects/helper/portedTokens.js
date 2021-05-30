@@ -20,6 +20,19 @@ async function transformFantomAddress() {
     }
 }
 
+async function transformBscAddress() {
+    const binanceBridge = (await utils.fetchURL("https://api.binance.org/bridge/api/v2/tokens?walletNetwork=")).data.data.tokens
+
+    return (addr) => {
+        const srcToken = binanceBridge.find(token => token.ethContractAddress !== "" && token.bscContractAddress.toLowerCase() === addr.toLowerCase())
+        if (srcToken !== undefined && srcToken.bscContractDecimal === srcToken.ethContractDecimal) {
+            return srcToken.ethContractAddress
+        }
+        return `bsc:${addr}`
+    }
+}
+
 module.exports = {
     transformFantomAddress,
+    transformBscAddress,
   };  
