@@ -85,9 +85,9 @@ async function unwrapUniswapLPs(balances, lpPositions, block, chain='ethereum', 
         const {_reserve0, _reserve1} = (await lpReserves).output.find(call=>call.input.target === lpToken).output
 
         const token0Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve0)).div(BigNumber(supply))
-        sdk.util.sumSingleBalance(balances, transformAddress(token0), token0Balance.toFixed(0))
+        sdk.util.sumSingleBalance(balances, await transformAddress(token0), token0Balance.toFixed(0))
         const token1Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve1)).div(BigNumber(supply))
-        sdk.util.sumSingleBalance(balances, transformAddress(token1), token1Balance.toFixed(0))
+        sdk.util.sumSingleBalance(balances, await transformAddress(token1), token1Balance.toFixed(0))
       }))
 }
 
