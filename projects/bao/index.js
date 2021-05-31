@@ -58,13 +58,15 @@ async function ethTvl(timestamp, block) {
 }
 
 async function transformAddress(address) {
-
     const result = await sdk.api.abi.call({
         target: bridgeAdd,
         abi: abi.abiXdaiBridge,
         params: [address],
         chain: 'xdai'
     });
+    if(result.output === "0x0000000000000000000000000000000000000000"){
+        return `xdai:${address}`
+    }
     return result.output
 }
 
