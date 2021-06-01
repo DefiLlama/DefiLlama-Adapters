@@ -1,0 +1,80 @@
+{
+    "balanceOf": {
+      "constant": true,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "balanceOf",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    "totalSupply": {
+      "constant": true,
+      "inputs": [],
+      "name": "totalSupply",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    "pancakeUserInfo": {
+      "inputs": [
+        { "internalType": "uint256", "name": "", "type": "uint256" },
+        { "internalType": "address", "name": "", "type": "address" }
+      ],
+      "name": "userInfo",
+      "outputs": [
+        { "internalType": "uint256", "name": "amount", "type": "uint256" },
+        { "internalType": "uint256", "name": "rewardDebt", "type": "uint256" }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    "alpacaUserInfo": {
+      "inputs": [
+        { "internalType": "uint256", "name": "", "type": "uint256" },
+        { "internalType": "address", "name": "", "type": "address" }
+      ],
+      "name": "userInfo",
+      "outputs": [
+        { "internalType": "uint256", "name": "amount", "type": "uint256" },
+        { "internalType": "uint256", "name": "rewardDebt", "type": "uint256" },
+        { "internalType": "uint256", "name": "bonusDebt", "type": "uint256" },
+        { "internalType": "address", "name": "fundedBy", "type": "address" }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    "beltUserInfo": {
+      "inputs": [
+        { "internalType": "uint256", "name": "", "type": "uint256" },
+        { "internalType": "address", "name": "", "type": "address" }
+      ],
+      "name": "userInfo",
+      "outputs": [
+        { "internalType": "uint256", "name": "shares", "type": "uint256" },
+        { "internalType": "uint256", "name": "rewardDebt", "type": "uint256" }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  }
+  
