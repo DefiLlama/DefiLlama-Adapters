@@ -183,6 +183,19 @@ const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
   });
   await unwrapUniswapLPs(balances, lpPositions, block, 'bsc', transformAdress);
 
+  // --- Staking bsc service ---
+  const bsc_staking_service = await utils.fetchURL(
+    "https://api.binance.org/v1/staking/chains/bsc/validators/bva1asktsxqny35hwxltpzqsvr64s5vr2ph2t2vlnw/"
+  );
+  
+  sdk.util.sumSingleBalance(
+    balances,
+    "bsc:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c", // -- Apparently it auto-merges balances (check on output) ---
+    BigNumber(bsc_staking_service.data.votingPower)
+      .multipliedBy(10 ** 18)
+      .toFixed(0)
+  );
+
   return balances;
 };
 
