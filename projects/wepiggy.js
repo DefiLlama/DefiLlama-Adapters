@@ -12,6 +12,10 @@ const contracts = {
     comptroller: '0xaa87715e858b482931eb2f6f92e504571588390b',
     oracle: '0x4c78015679fabe22f6e02ce8102afbf7d93794ea',
   },
+  bsc: {
+    comptroller: '0x8c925623708A94c7DE98a8e83e8200259fF716E0',
+    oracle: '0x4C78015679FabE22F6e02Ce8102AFbF7d93794eA',
+  },
 };
 
 // ask comptroller for all markets array
@@ -34,6 +38,9 @@ async function getUnderlyingDecimals(block, chain, token) {
   }
   if (token.toLowerCase() === '0x621ce6596e0b9ccf635316bfe7fdbc80c3029bec'.toLowerCase()) {
     return 18; //OKT
+  }
+  if (token.toLowerCase() === '0x33A32f0ad4AA704e28C93eD8Ffa61d50d51622a7'.toLowerCase()) {
+    return 18; //BNB
   }
   const { output: underlying } = await sdk.api.abi.call({
     target: token,
@@ -93,20 +100,23 @@ function fetchChain(chain) {
       })
     );
     return tvl.toNumber();
-  }
+  };
 }
 
 async function fetch() {
-  let tvl = (await fetchChain('ethereum')()) + (await fetchChain('okexchain')())
+  let tvl = (await fetchChain('ethereum')()) + (await fetchChain('okexchain')()) + (await fetchChain('bsc')());
   return tvl;
 }
 
 module.exports = {
-  ethereum:{
-    fetch: fetchChain('ethereum')
+  ethereum: {
+    fetch: fetchChain('ethereum'),
   },
-  okexchain:{
-    fetch: fetchChain('okexchain')
+  okexchain: {
+    fetch: fetchChain('okexchain'),
+  },
+  bsc: {
+    fetch: fetchChain('bsc'),
   },
   fetch,
 };
