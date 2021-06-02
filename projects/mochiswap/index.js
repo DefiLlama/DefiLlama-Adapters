@@ -38,8 +38,11 @@ module.exports = {
   bsc: {
     tvl: bsc
   },
+  /*
   harmony: {
     tvl: harmony
   },
   tvl: sdk.util.sumChainTvls([harmony, bsc])
+  */
+ tvl: bsc
 }
