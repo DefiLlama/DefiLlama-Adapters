@@ -1,16 +1,16 @@
-const { request, gql } = require("graphql-request");
 const sdk = require('@defillama/sdk');
 const { toUSDTBalances } = require('../helper/balances');
+const { GraphQLClient, gql } = require('graphql-request');
 
-// BSC Graph
-const graphUrl = 'https://api.thegraph.com/subgraphs/name/mochiswapdev/mochiswap3'
-// Harmony ONE Graph
-const graphUrlHarmony = 'https://api.mochiswap.io/subgraphs/name/mochiswap/mochiswap1'
+const endpoints = {
+  bsc: 'https://api.thegraph.com/subgraphs/name/mochiswapdev/mochiswap3',
+  harmony: 'https://api.mochiswap.io/subgraphs/name/mochiswap/mochiswap1',
+}
 
 const graphQuery = gql`
 query get_tvl($block: Int) {
   uniswapFactory(
-    id: "0xCBac17919f7aad11E623Af4FeA98B10B84802eAc",
+    first: 1,
     block: { number: $block }
   ) {
     totalLiquidityUSD
@@ -18,50 +18,27 @@ query get_tvl($block: Int) {
 }
 `;
 
-const graphQueryHarmony = gql`
-query get_tvl($block: Int) {
-  uniswapFactory(
-    id: "0x3bEF610a4A6736Fd00EBf9A73DA5535B413d82F6",
-    block: { number: $block }
-  ) {
-    totalLiquidityUSD
-  },
+async function getChainTvl(chain, block) {
+  const graphQLClient = new GraphQLClient(endpoints[chain]);
+  const results = await graphQLClient.request(query, { block });
+
+  return toUSDTBalances(results.uniswapFactory[0].totalLiquidityUSD);
 }
-`;
 
-async function tvl(timestamp) {
-  // BSC lookup
-  const {block} = await sdk.api.util.lookupBlock(timestamp,{
-    chain: 'bsc'
-  })
-  const response = await request(
-    graphUrl,
-    graphQuery,
-    {
-      block,
-    }
-  );
-  // Harmony ONE lookup
-  const {block} = await sdk.api.util.lookupBlock(timestamp,{
-    chain: 'harmony'
-  })
-  const responseHarmony = await request(
-    graphUrlHarmony,
-    graphQueryHarmony,
-    {
-      block,
-    }
-  );
+async function bsc(timestamp, block, chainBlocks) {
+  return getChainTvl('bsc', chainBlocks['bsc']);
+}
 
-  const usdTvl = Number(response.uniswapFactory.totalLiquidityUSD) + Number(responseHarmony.uniswapFactory.totalLiquidityUSD)
-
-  // Return Total MochiSwap Cross Chain Liquidity
-  return toUSDTBalances(usdTvl)
+async function harmony(timestamp, block, chainBlocks) {
+  return getChainTvl('harmony', chainBlocks['harmony']);
 }
 
 module.exports = {
-  bsc:{
-    tvl,
+  bsc: {
+    tvl: bsc
   },
-  tvl
+  harmony: {
+    tvl: harmony
+  },
+  tvl: sdk.util.sumChainTvls([harmony, bsc])
 }
