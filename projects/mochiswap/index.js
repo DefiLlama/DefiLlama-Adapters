@@ -9,7 +9,7 @@ const endpoints = {
 
 const graphQuery = gql`
 query get_tvl($block: Int) {
-  uniswapFactory(
+  uniswapFactories(
     first: 1,
     block: { number: $block }
   ) {
