@@ -515,7 +515,7 @@ async function fetch() {
       sHakkaTvl: sHakkaTvl,
       bscBhsTvl: bscBhsTvl,
       intelligenceTvl: intelligenceTvl,
-      rewardsTvl: rewardsTvl,
+      //rewardsTvl: rewardsTvl,
     }
     // console.log(allData)
     const tvl = Object.values(allData).reduce((a, c) => a.plus(c)).toFixed(0)
