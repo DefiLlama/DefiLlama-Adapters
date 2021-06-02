@@ -1,4 +1,5 @@
 const utils = require('../helper/utils');
+const sdk = require('@defillama/sdk')
 
 async function transformFantomAddress() {
     const multichainTokens = (await utils.fetchURL('https://netapi.anyswap.net/bridge/v2/info')).data.bridgeList
@@ -35,8 +36,8 @@ async function transformBscAddress() {
 const PoSMappedTokenList = 'https://api.bridge.matic.network/api/tokens/pos/erc20'
 const PlasmaMappedTokenList = 'https://api.bridge.matic.network/api/tokens/plasma/erc20'
 async function transformPolygonAddress() {
-    const posTokens = await axios.get(PoSMappedTokenList)
-    const plasmaTokens = await axios.get(PlasmaMappedTokenList)
+    const posTokens = await utils.fetchURL(PoSMappedTokenList)
+    const plasmaTokens = await utils.fetchURL(PlasmaMappedTokenList)
     const tokens = posTokens.data.tokens.concat(plasmaTokens.data.tokens).reduce((tokenMap, token) => {
         tokenMap[token.childToken.toLowerCase()] = token.rootToken.toLowerCase();
         return tokenMap;
