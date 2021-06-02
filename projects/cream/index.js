@@ -2,6 +2,7 @@ const sdk = require("@defillama/sdk");
 const utils = require("../helper/utils");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { transformFantomAddress, transformBscAddress } = require('../helper/portedTokens')
+const { GraphQLClient, gql } = require('graphql-request')
 
 const abiCerc20 = require("./cerc20.json");
 const abiCereth2 = require("./creth2.json");
@@ -187,7 +188,7 @@ const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
   const bsc_staking_service = await utils.fetchURL(
     "https://api.binance.org/v1/staking/chains/bsc/validators/bva1asktsxqny35hwxltpzqsvr64s5vr2ph2t2vlnw/"
   );
-  
+
   sdk.util.sumSingleBalance(
     balances,
     "bsc:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c", // -- Apparently it auto-merges balances (check on output) ---
@@ -199,6 +200,7 @@ const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
   return balances;
 };
 
+const fantomToken = "0x4e15361fd6b4bb609fa63c81a2be19d873717870";
 const fantomTvl = async (timestamp, ethBlock, chainBlocks) => {
   const block = chainBlocks["fantom"]; // req for the block type
   let balances = {};
@@ -232,6 +234,42 @@ const fantomTvl = async (timestamp, ethBlock, chainBlocks) => {
     const tokenAddr = underlyings[idx].output === "0x924828a9Fb17d47D0eb64b57271D10706699Ff11" ? "0xb753428af26e81097e7fd17f40c88aaa3e04902c" : fantomAddr(underlyings[idx].output); //SFI
     sdk.util.sumSingleBalance(balances, tokenAddr, cashVal.output);
   });
+
+  const stakerCreamAddressInFantom =
+    "0x0abad588c5490eee5850693e16bb6de9d60bdb6c";
+  const fantom_staking_service_endpoint = "https://xapi3.fantom.network/api";
+  const graphQLClient = new GraphQLClient(fantom_staking_service_endpoint);
+
+  const query = gql`
+    query StakerByAddress($address: Address!) {
+      staker(address: $address) {
+        id
+        stakerAddress
+        totalStake
+        stake
+        delegatedMe
+        createdEpoch
+        createdTime
+        downtime
+        lockedUntil
+        isActive
+        isOffline
+        stakerInfo {
+          name
+          website
+          contact
+          logoUrl
+          __typename
+        }
+        __typename
+      }
+    }
+  `;
+
+  const fantomStakingData = await graphQLClient.request(query, {
+    address: stakerCreamAddressInFantom,
+  });
+  sdk.util.sumSingleBalance(balances, fantomToken, fantomStakingData.staker.totalStake)
 
   return balances;
 };
