@@ -1,10 +1,11 @@
 const sdk = require("@defillama/sdk");
 const {unwrapUniswapLPs} = require('../helper/unwrapLPs')
 const axios = require('axios')
+const {transformXdaiAddress} = require('../helper/portedTokens')
+const {getBlock} = require('../helper/getBlock')
 
 const masterChef = '0xBD530a1c060DC600b951f16dc656E4EA451d1A2D'
 const xdaiMasterChef = '0xf712a82DD8e2Ac923299193e9d6dAEda2d5a32fd'
-const bridgeAdd = '0xf6A78083ca3e2a662D6dd1703c939c8aCE2e268d'
 const addresses = require('./lp.json')
 const abi = require('./abi.json')
 
@@ -13,10 +14,8 @@ function chainTvl(chain) {
         let block;
         if(chain === "ethereum"){
             block=ethBlock;
-        }
-        block = chainBlocks[chain]
-        if(block===undefined){
-            block = (await sdk.api.util.lookupBlock(timestamp, {chain})).block
+        } else {
+            block = await getBlock(timestamp, chain, chainBlocks)
         }
 
         if(chain === "ethereum") {
@@ -57,21 +56,9 @@ async function ethTvl(timestamp, block) {
     return balances
 }
 
-async function transformAddress(address) {
-    const result = await sdk.api.abi.call({
-        target: bridgeAdd,
-        abi: abi.abiXdaiBridge,
-        params: [address],
-        chain: 'xdai'
-    });
-    if(result.output === "0x0000000000000000000000000000000000000000"){
-        return `xdai:${address}`
-    }
-    return result.output
-}
-
 async function xdaiTvl(timestamp, block, ethBlock) {
     let balances = {};
+    const transformAddress = await transformXdaiAddress()
 
     const sushiLps = addresses.lp.xdaiSLP
     const xdai = addresses.lp.xdai

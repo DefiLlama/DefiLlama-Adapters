@@ -32,7 +32,59 @@ async function transformBscAddress() {
     }
 }
 
+const PoSMappedTokenList = 'https://api.bridge.matic.network/api/tokens/pos/erc20'
+const PlasmaMappedTokenList = 'https://api.bridge.matic.network/api/tokens/plasma/erc20'
+async function transformPolygonAddress() {
+    const posTokens = await axios.get(PoSMappedTokenList)
+    const plasmaTokens = await axios.get(PlasmaMappedTokenList)
+    const tokens = posTokens.data.tokens.concat(plasmaTokens.data.tokens).reduce((tokenMap, token) => {
+        tokenMap[token.childToken.toLowerCase()] = token.rootToken.toLowerCase();
+        return tokenMap;
+    }, {})
+
+    return (addr) => {
+        if (addr.toLowerCase() === '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619') {
+            return '0x0000000000000000000000000000000000000000'
+        }
+        return tokens[addr.toLowerCase()] ?? `polygon:${addr}`
+    }
+}
+
+const bridgeAdd = '0xf6A78083ca3e2a662D6dd1703c939c8aCE2e268d'
+const abiXdaiBridgeAbi = {
+    "type": "function",
+    "stateMutability": "view",
+    "payable": false,
+    "outputs": [{
+      "type": "address",
+      "name": ""
+    }],
+    "name": "foreignTokenAddress",
+    "inputs": [{
+      "internalType": "address",
+      "type": "address",
+      "name": "_homeToken"
+    }],
+    "constant": true
+  }
+async function transformXdaiAddress() {
+    return (address) => {
+        const result = await sdk.api.abi.call({
+            target: bridgeAdd,
+            abi: abiXdaiBridgeAbi,
+            params: [address],
+            chain: 'xdai'
+        });
+        if(result.output === "0x0000000000000000000000000000000000000000"){
+            return `xdai:${address}`
+        }
+        return result.output
+    }
+}
+
 module.exports = {
     transformFantomAddress,
     transformBscAddress,
-  };  
+    transformPolygonAddress,
+    transformXdaiAddress
+};
