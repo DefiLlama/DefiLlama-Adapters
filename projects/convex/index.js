@@ -10,7 +10,18 @@ const crv = '0xd533a949740bb3306d119cc777fa900ba034cd52'
 const cvx = '0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b'
 const cvxStakingPool = '0xCF50b810E57Ac33B91dCF525C6ddd9881B139332'
 
+const replacements = [
+  "0x99d1Fa417f94dcD62BfE781a1213c092a47041Bc",
+  "0x9777d7E2b60bB01759D0E2f8be2095df444cb07E",
+  "0x1bE5d71F2dA660BFdee8012dDc58D024448A0A59",
+  "0x16de59092dAE5CcF4A1E6439D611fd0653f0Bd01",
+  "0xd6aD7a6750A7593E092a9B218d66C0A814a3436e",
+  "0x83f798e925BcD4017Eb265844FDDAbb448f1707D",
+  "0x73a052500105205d34Daf004eAb301916DA8190f"
+]
+
 async function tvl(timestamp, block) {
+  console.log('convex start')
   let balances = {};
 
   const poolLength = (await sdk.api.abi.call({
@@ -95,6 +106,9 @@ async function tvl(timestamp, block) {
     const resolvedLPSupply = (await lpTokenSupply).output;
     await Promise.all(coinBalances.output.map(async (coinBalance, index)=>{
       let coinAddress = coins.output[index].output
+      if(replacements.includes(coinAddress)){
+        coinAddress = "0x6b175474e89094c44da98b954eedeac495271d0f" // dai
+      }
       if(coinBalance.input.target === "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"){
         coinBalance = await sdk.api.eth.getBalance({
           target: coinBalance.input.params[0]
@@ -109,6 +123,7 @@ async function tvl(timestamp, block) {
   }))
   sdk.util.sumSingleBalance(balances, crv, (await cvxCRVSupply).output)
   sdk.util.sumSingleBalance(balances, cvx, (await cvxStaked).output)
+  console.log('convex end', balances)
   return balances
 }
 
