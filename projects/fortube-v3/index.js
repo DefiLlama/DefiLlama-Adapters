@@ -1,4 +1,4 @@
-const utils = require('./helper/utils');
+const utils = require('../helper/utils');
 
 /* * * * * * * *
 * ==> Correct adapter needs to be created.
