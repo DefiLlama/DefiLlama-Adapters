@@ -27,22 +27,8 @@ async function tvl(timestamp, block) {
     owner: masterChef,
     block
   })
-  const bDPILPLocked = sdk.api.erc20.balanceOf({
-    target: bDPISLP,
-    owner: masterChef,
-    block
-  })
   const bdpiSupply = sdk.api.erc20.totalSupply({
     target: bDPIToken,
-    block
-  })
-  const totalWethOnSlp = sdk.api.erc20.balanceOf({
-    target: weth,
-    owner: bDPISLP,
-    block
-  })
-  const slpSupply = sdk.api.erc20.totalSupply({
-    target: bDPISLP,
     block
   })
   await unwrapUniswapLPs(balances, [{
@@ -53,17 +39,11 @@ async function tvl(timestamp, block) {
   sdk.util.sumSingleBalance(balances, dpiToken, (await dpiLockedOnMigrator).output)
 
   try{
-    const wethOnLockedSLP = BigNumber((await totalWethOnSlp).output).times((await bDPILPLocked).output).div((await slpSupply).output)
-    sdk.util.sumSingleBalance(balances, weth, wethOnLockedSLP.toFixed(0))
     sdk.util.sumSingleBalance(balances, bDPIToken, (await bdpiSupply).output)
   }catch(e){}
   return balances
 }
 
 module.exports = {
-  name: 'BasketDAO',
-  token: 'BASK',
-  category: 'Indexes',
-  start: 0, // WRONG!
   tvl
 }
