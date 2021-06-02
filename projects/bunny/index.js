@@ -49,7 +49,8 @@ const pools = [
 ]
 
 const pots = [
-    '0xa9b005d891414E0d6E0353490e099D0CA4C778Fc'
+    '0xa9b005d891414E0d6E0353490e099D0CA4C778Fc',
+    '0x60D8a581d519397E870c5376228cd7E7aBBC243B'
 ]
 
 const ZERO = new BigNumber(0)
