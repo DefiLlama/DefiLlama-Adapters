@@ -68,7 +68,7 @@ const abiXdaiBridgeAbi = {
     "constant": true
   }
 async function transformXdaiAddress() {
-    return (address) => {
+    return async (address) => {
         const result = await sdk.api.abi.call({
             target: bridgeAdd,
             abi: abiXdaiBridgeAbi,
