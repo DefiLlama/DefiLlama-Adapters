@@ -30,6 +30,7 @@ function chainTvl(chain) {
 async function ethTvl(timestamp, block) {
     let balances = {};
     const allTokens = (await axios.get(`https://api.covalenthq.com/v1/1/address/${masterChef}/balances_v2/?&key=ckey_72cd3b74b4a048c9bc671f7c5a6`)).data.data.items
+    const lpPositions = []
     await Promise.all(
         allTokens.map(async (token) =>{
         if(token.contract_ticker_symbol === 'SLP' || token.contract_ticker_symbol === 'UNI-V2')
@@ -39,10 +40,10 @@ async function ethTvl(timestamp, block) {
                 owner: masterChef,
                 block
             })
-            await unwrapUniswapLPs(balances, [{
+            lpPositions.push({
                 token: token.contract_address,
                 balance: (await uniLocked).output
-            }], block)
+            })
         } else if(token.supports_erc) {
             const singleTokenLocked = sdk.api.erc20.balanceOf({
                 target: token.contract_address,
@@ -52,6 +53,7 @@ async function ethTvl(timestamp, block) {
             sdk.util.sumSingleBalance(balances, token.contract_address, (await singleTokenLocked).output)
         }
     }))
+    await unwrapUniswapLPs(balances, lpPositions, block)
 
     return balances
 }
@@ -62,6 +64,8 @@ async function xdaiTvl(timestamp, block, ethBlock) {
 
     const sushiLps = addresses.lp.xdaiSLP
     const xdai = addresses.lp.xdai
+    const slpPositions = []
+    const xdaiLpPositions = []
     await Promise.all(
         sushiLps.map(async (address) =>{
             const uniLocked = sdk.api.erc20.balanceOf({
@@ -71,10 +75,10 @@ async function xdaiTvl(timestamp, block, ethBlock) {
                 chain: 'xdai'
             })
             const ethAddress = await transformAddress(address)
-            await unwrapUniswapLPs(balances, [{
+            slpPositions.push({
                 token: ethAddress,
                 balance: (await uniLocked).output
-            }], ethBlock )
+            })
         }),
         xdai.map(async (address) =>{
             const uniLocked = sdk.api.erc20.balanceOf({
@@ -83,20 +87,19 @@ async function xdaiTvl(timestamp, block, ethBlock) {
                 block,
                 chain: 'xdai'
             })
-            await unwrapUniswapLPs(balances, [{
+            xdaiLpPositions.push({
                 token: address,
                 balance: (await uniLocked).output
-            }], block,'xdai', transformAddress )
+            })
         })
     )
+    await unwrapUniswapLPs(balances, slpPositions, ethBlock )
+    await unwrapUniswapLPs(balances, xdaiLpPositions, block,'xdai', transformAddress )
 
     return balances
 }
 
 module.exports = {
-    name: 'Bao',
-    token: 'BAO',
-    category: 'yield',
     ethereum: {
         tvl: chainTvl('ethereum')
     },
