@@ -3,7 +3,9 @@
   const abi = require("./abi.json");
   const BigNumber = require("bignumber.js");
   const axios = require("axios")
-  const {toUSDT, usdtAddress} = require("../helper/balances")
+  const {unwrapUniswapLPs} = require('../helper/unwrapLPs')
+  const {getBlock} = require('../helper/getBlock')
+  const {toUSDTBalances} = require('../helper/balances')
   
   const ForTube = "0xE48BC2Ba0F2d2E140382d8B5C8f261a3d35Ed09C";
   const ForTubeV2 = "0x936E6490eD786FD0e0f0C1b1e4E1540b9D41F9eF";
@@ -75,7 +77,7 @@
     })).output;
   }
 
-  async function tvl(timestamp, block) {
+  async function eth(timestamp, block) {
     let balances = {};
     let erc20Assets = await getErc20Assets(block);
   
@@ -113,18 +115,78 @@
     }
 
     sdk.util.sumMultiBalanceOf(balances, balanceOfResults);
-
-    /*
-    const markets = await axios.get("https://api.for.tube/api/v1/bank/public/chain/BSC-Inno/markets")
-    const bscUsd = markets.data.data.reduce((acc, val)=>acc+val.global_token_reserved, 0)
-    sdk.util.sumSingleBalance(balances, usdtAddress, toUSDT(bscUsd));
-    */
   
     return balances;
+  }
+
+  async function unwrapVaultLP(balances, vaultAddress, amount, block){
+    const underlyingToken = await sdk.api.abi.call({
+      target: vaultAddress,
+      block,
+      chain: 'bsc',
+      abi: {"inputs":[],"name":"token","outputs":[{"internalType":"contract IERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"}
+    })
+    await unwrapUniswapLPs(balances, [{
+      token: underlyingToken.output,
+      balance: amount // Not really, but pricePerShare ~= 1
+    }], block, 'bsc', addr=>`bsc:${addr}`)
+  }
+
+  const fortubeCollateralBsc = "0xc78248D676DeBB4597e88071D3d889eCA70E5469"
+  const wbnb = "bsc:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"
+  async function bsc(_timestamp, _ethBlock, chainBlocks){
+    const balances = {}
+    const markets = await axios.get("https://api.for.tube/api/v1/bank/public/chain/BSC-Inno/markets")
+
+    const tokens = markets.data.data.map((val)=>val.token_address)
+    const tokenBalances = await sdk.api.abi.multiCall({
+      abi: 'erc20:balanceOf',
+      chain: 'bsc',
+      block: chainBlocks['bsc'],
+      calls: tokens.map(token=>({
+        target: token,
+        params: [fortubeCollateralBsc]
+      }))
+    })
+    const unwrapCalls = []
+    tokenBalances.output.map((call, idx)=>{
+      const token = call.input.target
+      if(token === "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"){
+        return
+      }
+      if(markets.data.data[idx].token_symbol.startsWith('v')){
+        unwrapCalls.push(unwrapVaultLP(balances, token, call.output, chainBlocks['bsc']))
+      }else {
+        sdk.util.sumSingleBalance(balances, 'bsc:'+token, call.output)
+      }
+    })
+    await Promise.all(unwrapCalls)
+    const bnbCollateral = await sdk.api.eth.getBalance({
+      target: fortubeCollateralBsc,
+      chain: 'bsc',
+      block: chainBlocks['bsc']
+    })
+    sdk.util.sumSingleBalance(balances, wbnb, bnbCollateral.output)
+    return balances
+  }
+
+  async function okexchain(_timestamp, _ethBlock, chainBlocks){
+    const markets = await axios.get("https://api.for.tube/api/v1/bank/public/chain/OEC-Inno/markets")
+    const usdCollateral = markets.data.data.reduce((acc, val)=>acc+val.token_price*val.balance_in_cheque, 0)
+    return toUSDTBalances(usdCollateral)
   }
   
   module.exports = {
     start: 1596384000, // 2020/8/3 00:00:00 +UTC
-    tvl
+    ethereum: {
+      tvl: eth
+    },
+    bsc: {
+      tvl: bsc
+    },
+    okexchain: {
+      tvl: okexchain
+    },
+    tvl:sdk.util.sumChainTvls([eth, bsc, okexchain])
   };
   
