@@ -1,9 +1,11 @@
 const { request, gql } = require("graphql-request");
 const sdk = require('@defillama/sdk');
+const {getBlock} = require('../helper/getBlock')
 
 const graphEndpoints = {
     'ethereum': "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2",
-    "bsc": "https://pq.hg.network/subgraphs/name/dodoex-v2-bsc/bsc"
+    "bsc": "https://pq.hg.network/subgraphs/name/dodoex-v2-bsc/bsc",
+    "heco": "https://q.hg.network/subgraphs/name/dodoex/heco"
 }
 const graphQuery = gql`
 query get_pairs($block: Int, $lastId: String) {
@@ -79,6 +81,11 @@ function eth(timestamp, ethBlock, chainBlocks){
     return getChainTvl('ethereum', ethBlock, addr=>addr)
 }
 
+
+async function heco(timestamp, ethBlock, chainBlocks){
+    return getChainTvl('heco', await getBlock(timestamp, 'heco', chainBlocks), addr=>`heco:${addr}`)
+}
+
 module.exports = {
     ethereum: {
         tvl:eth,
@@ -86,5 +93,6 @@ module.exports = {
     bsc:{
         tvl: bsc
     },
+    // We don't include heco because their subgraph is outdated
     tvl: sdk.util.sumChainTvls([eth, bsc])
 }
