@@ -83,6 +83,11 @@ async function transformXdaiAddress() {
     }
 }
 
+async function transformOkexAddress() {
+    const okexBridge = (await utils.fetchURL("https://www.okex.com/v2/asset/cross-chain/currencyAddress")).data.data.tokens
+    // TODO
+}
+
 module.exports = {
     transformFantomAddress,
     transformBscAddress,

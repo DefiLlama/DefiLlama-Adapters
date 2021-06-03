@@ -16,6 +16,7 @@ async function tvl(timestamp, block, chainBlocks) {
         block: chainBlocks.bsc
     })
     sdk.util.sumMultiBalanceOf(balances, tokenBalances, d=>`bsc:${d}`)
+    console.log('gambit', balances)
     return balances
 }
 

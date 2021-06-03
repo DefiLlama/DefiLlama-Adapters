@@ -170,6 +170,24 @@
     return balances
   }
 
+  /*
+  const okexPool = "0x33d6d5f813bf78163901b1e72fb1feb90e72fd72"
+  async function okexchain(timestamp, _ethBlock, chainBlocks){
+    const markets = await axios.get("https://api.for.tube/api/v1/bank/public/chain/OEC-Inno/markets")
+    const tokenBalances = await sdk.api.abi.multiCall({
+      abi: 'erc20:balanceOf',
+      chain: 'okexchain',
+      block: await getBlock(timestamp, 'okexchain', chainBlocks),
+      calls: markets.data.data.map(token=>({
+        target: token.token_address,
+        params: [okexPool]
+      }))
+    })
+    const balances = {}
+    sdk.util.sumMultiBalanceOf(balances, tokenBalances, d=>`okexchain:${d}`)
+    return balances
+  }
+  */
   async function okexchain(_timestamp, _ethBlock, chainBlocks){
     const markets = await axios.get("https://api.for.tube/api/v1/bank/public/chain/OEC-Inno/markets")
     const usdCollateral = markets.data.data.reduce((acc, val)=>acc+val.token_price*val.balance_in_cheque, 0)
@@ -187,6 +205,6 @@
     okexchain: {
       tvl: okexchain
     },
-    tvl:sdk.util.sumChainTvls([eth, bsc, okexchain])
+    tvl: sdk.util.sumChainTvls([eth, bsc, okexchain])
   };
   
