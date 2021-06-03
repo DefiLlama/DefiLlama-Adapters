@@ -69,43 +69,38 @@ async function calculateUniTvl(getAddress, block, chain, FACTORY, START_BLOCK, u
       })
       .then(({ output }) => output),
     sdk.api.abi
-    .multiCall({
-      abi: getReserves,
-      chain,
-      calls: pairAddresses.map((pairAddress) => ({
-        target: pairAddress,
-      })),
-      block,
-    }).then(({ output }) => output),
+      .multiCall({
+        abi: getReserves,
+        chain,
+        calls: pairAddresses.map((pairAddress) => ({
+          target: pairAddress,
+        })),
+        block,
+      }).then(({ output }) => output),
   ]);
 
   const pairs = {};
   // add token0Addresses
   token0Addresses.forEach((token0Address) => {
-    if (token0Address.success) {
-      const tokenAddress = token0Address.output.toLowerCase();
+    const tokenAddress = token0Address.output.toLowerCase();
 
-      const pairAddress = token0Address.input.target.toLowerCase();
-      pairs[pairAddress] = {
-        token0Address: getAddress(tokenAddress),
-      }
+    const pairAddress = token0Address.input.target.toLowerCase();
+    pairs[pairAddress] = {
+      token0Address: getAddress(tokenAddress),
     }
   });
 
   // add token1Addresses
   token1Addresses.forEach((token1Address) => {
-    if (token1Address.success) {
-      const tokenAddress = token1Address.output.toLowerCase();
-      const pairAddress = token1Address.input.target.toLowerCase();
-      pairs[pairAddress] = {
-        ...(pairs[pairAddress] || {}),
-        token1Address: getAddress(tokenAddress),
-      }
+    const tokenAddress = token1Address.output.toLowerCase();
+    const pairAddress = token1Address.input.target.toLowerCase();
+    pairs[pairAddress] = {
+      ...(pairs[pairAddress] || {}),
+      token1Address: getAddress(tokenAddress),
     }
   });
 
   const balances = reserves.reduce((accumulator, reserve, i) => {
-    if (reserve.success) {
       const pairAddress = reserve.input.target.toLowerCase();
       const pair = pairs[pairAddress] || {};
 
@@ -137,7 +132,6 @@ async function calculateUniTvl(getAddress, block, chain, FACTORY, START_BLOCK, u
             .toFixed()
         }
       }
-    }
 
     return accumulator
   }, {})
