@@ -32,4 +32,3 @@ module.exports = {
   },
   fetch
 }
-fetch().then(console.log)
