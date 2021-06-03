@@ -11,11 +11,19 @@ async function polygon() {
   return tvl.data.data.tvl
 }
 
+async function fantom() {
+  const tvl = await utils.fetchURL('https://api.curve.fi/api/getTVLFantom')
+  return tvl.data.data.tvl
+}
+
 async function fetch() {
-  return (await eth())+(await polygon())
+  return (await eth())+(await polygon()) + (await fantom())
 }
 
 module.exports = {
+  fantom:{
+    fetch: fantom
+  },
   ethereum:{
     fetch: eth
   },
@@ -24,3 +32,4 @@ module.exports = {
   },
   fetch
 }
+fetch().then(console.log)
