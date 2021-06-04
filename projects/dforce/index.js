@@ -134,19 +134,17 @@ const yieldUnderlyingTokens = {
   TVL
   ==================================================*/
 
-async function tvl(timestamp, block) {
+async function tvl(timestamp, block, chainBlocks) {
   let balances = await tvlEthereum(timestamp, block);
-  let bscTVLs = await tvlBSC(timestamp);
+  let bscTVLs = await tvlBSC(timestamp, block, chainBlocks);
   Object.assign(balances, bscTVLs);
 
   return balances;
 }
 
-async function tvlBSC(timestamp) {
+async function tvlBSC(timestamp, ethBlock, chainBlocks) {
   let balances = {};
-  const { block } = await sdk.api.util.lookupBlock(timestamp, {
-    chain: 'bsc'
-  })
+  const block = chainBlocks['bsc']
   await (
     Promise.all(bscYieldMarkets.map(async (yieldMarket) => {
       try {
@@ -283,9 +281,12 @@ async function tvlEthereum(timestamp, block) {
 }
 
 module.exports = {
-  name: 'dForce',
-  token: 'DF',
-  category: 'lending',
+  ethereum:{
+    tvl: tvlEthereum
+  },
+  bsc: {
+    tvl: tvlBSC
+  },
   start: 1564165044, // Jul-27-2019 02:17:24 AM +UTC
   tvl
 }
