@@ -1,7 +1,3 @@
-/*==================================================
-  Modules
-  ==================================================*/
-
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const BigNumber = require("bignumber.js");
@@ -9,11 +5,7 @@ const axios = require("axios");
 const { request, gql } = require("graphql-request");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs")
 
-/*==================================================
-  TVL
-  ==================================================*/
-
-async function tvl(timestamp, block) {
+async function ethTvl(timestamp, block) {
   const ethAddress = "0x0000000000000000000000000000000000000000";
   let balances = {
     [ethAddress]: "0", // ETH
@@ -22,12 +14,10 @@ async function tvl(timestamp, block) {
   const tvls = await Promise.all([
     tvlV1(timestamp, block),
     tvlV2(timestamp, block),
-    tvlBSC(timestamp)
   ]);
 
   const ethTvl = BigNumber.sum(tvls[0], tvls[1]);
   balances[ethAddress] = ethTvl.toFixed(0);
-  Object.assign(balances, tvls[2]) // bsc addresses are prefixed with 'bsc', so it's impossible to get collisions
 
   return balances;
 }
@@ -366,10 +356,8 @@ function getBSCAddress(address) {
   return `bsc:${address}`
 }
 
-async function tvlBSC(timestamp) {
-  const { block } = await sdk.api.util.lookupBlock(timestamp, {
-    chain: 'bsc'
-  })
+async function tvlBSC(timestamp, ethBlock, chainBlocks) {
+  const block = chainBlocks.bsc
   const balances = {}
   const {
     goblinSummaries
@@ -403,14 +391,13 @@ async function tvlBSC(timestamp) {
   return balances
 }
 
-/*==================================================
-  Exports
-  ==================================================*/
-
 module.exports = {
-  name: "Alpha Homora", // project name
-  token: "ALPHA", // null, or token symbol if project has a custom token
-  category: "lending", // allowed values as shown on DefiPulse: 'Derivatives', 'DEXes', 'Lending', 'Payments', 'Assets'
+  ethereum:{
+    tvl: ethTvl
+  },
+  bsc:{
+    tvl: tvlBSC
+  },
   start: 1602054167, // unix timestamp (utc 0) specifying when the project began, or where live data begins
-  tvl, // tvl adapter
+  tvl: sdk.util.sumChainTvls([ethTvl, tvlBSC])
 };
