@@ -12,7 +12,8 @@
 
   const contracts = [
     '0x5199071825CC1d6cd019B0D7D42B08106f6CF16D',
-    '0x1e0447b19bb6ecfdae1e4ae1694b0c3659614e4e'
+    '0x1e0447b19bb6ecfdae1e4ae1694b0c3659614e4e',
+    '0xD54f502e184B6B739d7D27a6410a67dc462D69c8'
   ];
 
   const tokens = [
