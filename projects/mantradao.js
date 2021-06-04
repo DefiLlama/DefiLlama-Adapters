@@ -1,6 +1,4 @@
 const web3 = require('./config/web3.js');
-var Web3 = require('web3');
-const env = require('dotenv').config()
 const { GraphQLClient, gql } = require('graphql-request')
 const BigNumber = require("bignumber.js");
 const retry = require('./helper/retry')
@@ -310,10 +308,10 @@ async function fetch() {
     }
 }
 
-let a = async function () {
-    console.log(await fetch())
-}
-a()
+// let a = async function () {
+//     console.log(await fetch())
+// }
+// a()
 
 
 module.exports = {
