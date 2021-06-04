@@ -1,7 +1,9 @@
-const web3 = require('./config/web3.js');
+var Web3 = require('web3');
+const env = require('dotenv').config()
+const web3 = new Web3(new Web3.providers.HttpProvider(`https://mainnet.infura.io/v3/${env.parsed.INFURA_KEY}`));
 const { GraphQLClient, gql } = require('graphql-request')
 const BigNumber = require("bignumber.js");
-const retry = require('./helper/retry')
+const retry = require('async-retry')
 const axios = require("axios");
 const utils = require('./helper/utils');
 const abis = require('./config/uma/abis.js');
@@ -62,6 +64,8 @@ async function fetch() {
             { contract: '0x6f0db359309CAD297D2e7952a4F5f081bDC1e373', token: '0x8b0e42f366ba502d787bb134478adfae966c8798', price: 'labs-group'},
             // OM Mantra pool - Staked OM in mantra pool
             { contract: '0x1a22188b5F6faf7253a3DefCC576884c0FF50a91', token: '0x3593D125a4f7849a1B059E64F4517A86Dd60c95d', price: 'mantra-dao'},
+            // Bondly staking
+            { contract: '0x39621A555554A7FF77F2b64185c53E04C90cD540', token: '0xd2dda223b2617cb616c1580db421e4cfae6a8a85', price: 'bondly'},
         ]
 
         // LP Staking
@@ -101,6 +105,33 @@ async function fetch() {
                 price1: 'royale',
                 token2: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', 
                 price2: 'weth'
+            },
+            // ROYA ROYA-ETH LP staking
+            { 
+                contract: '0x55e0F2cE66Fa8C86ef478fa47bA0bE978eFC2647', 
+                pairAddress: '0x6d9d2427cfa49e39b4667c4c3f627e56ae586f37',
+                token1: '0x4Cd4c0eEDb2bC21f4e280d0Fe4C45B17430F94A9', 
+                price1: 'royale',
+                token2: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', 
+                price2: 'weth'
+            },
+            // BONDLY BONDLY-ETH LP staking
+            { 
+                contract: '0x4D081F600b480b0Ce8b422FBa3a5ea1Fb4b36b3B', 
+                pairAddress: '0x9dc696f1067a6b9929986283f6d316be9c9198fd',
+                token1: '0xd2dda223b2617cb616c1580db421e4cfae6a8a85', 
+                price1: 'bondly',
+                token2: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', 
+                price2: 'weth'
+            },
+            // BONDLY BONDLY-USDT LP staking
+            { 
+                contract: '0x3dd713aafb46cb359c8711f4783836ba2e3e426c', 
+                pairAddress: '0xdc43e671428b4e7b7848ea92cd8691ac1b80903c',
+                token1: '0xd2dda223b2617cb616c1580db421e4cfae6a8a85', 
+                price1: 'bondly',
+                token2: '0xdAC17F958D2ee523a2206206994597C13D831ec7', 
+                price2: 'usdt'
             },
         ]
 
@@ -278,6 +309,12 @@ async function fetch() {
         //console.log(error)
     }
 }
+
+let a = async function () {
+    console.log(await fetch())
+}
+a()
+
 
 module.exports = {
   fetch
