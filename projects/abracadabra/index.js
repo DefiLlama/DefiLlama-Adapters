@@ -2,7 +2,7 @@ const sdk = require("@defillama/sdk");
 const {unwrapUniswapLPs, unwrapCrv} = require('../helper/unwrapLPs')
 const axios = require('axios')
 const stakingContract = '0xF43480afE9863da4AcBD4419A47D9Cc7d25A647F'
-
+const sSpell = '0x26fa3fffb6efe8c1e69103acb4044c26b9a106a9'
 async function tvl(timestamp, block) {
     const balances = {}
     const allTokens = (await axios.get(`https://api.covalenthq.com/v1/1/address/${stakingContract}/balances_v2/?&key=ckey_72cd3b74b4a048c9bc671f7c5a6`)).data.data.items
@@ -44,6 +44,18 @@ async function tvl(timestamp, block) {
             }
         })
     )
+
+    const spellTokens = (await axios.get(`https://api.covalenthq.com/v1/1/address/${sSpell}/balances_v2/?&key=ckey_72cd3b74b4a048c9bc671f7c5a6`)).data.data.items
+    spellTokens.map(async (stoken) => {
+        if(stoken.supports_erc) {
+            const singleTokenLocked = sdk.api.erc20.balanceOf({
+                target: stoken.contract_address,
+                owner: sSpell,
+                block
+            })
+            sdk.util.sumSingleBalance(balances, stoken.contract_address, (await singleTokenLocked).output)
+        }
+    })
     await unwrapUniswapLPs(balances, lpPositions, block)
 
     return balances
