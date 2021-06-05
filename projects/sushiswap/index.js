@@ -1,6 +1,8 @@
 const { request, gql } = require("graphql-request");
 const { toUSDTBalances } = require('../helper/balances');
-const {calculateUniTvl} = require('../helper/calculateUniTvl.js')
+const { calculateUniTvl } = require('../helper/calculateUniTvl.js')
+const { transformFantomAddress, transformXdaiAddress } = require('../helper/portedTokens')
+const { getBlock } = require('../helper/getBlock')
 const sdk = require('@defillama/sdk')
 
 const graphUrl = 'https://api.thegraph.com/subgraphs/name/zippoxer/sushiswap-subgraph-fork'
@@ -17,7 +19,7 @@ query get_tvl($block: Int) {
 `;
 
 async function eth(timestamp, block) {
-  const {uniswapFactory} = await request(
+  const { uniswapFactory } = await request(
     graphUrl,
     graphQuery,
     {
@@ -29,21 +31,57 @@ async function eth(timestamp, block) {
   return toUSDTBalances(usdTvl)
 }
 
-async function polygon(timestamp, ethBlock, chainBlocks){
-  return calculateUniTvl(addr=>{
-    if(addr === '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619'){
+const factory = '0xc35DADB65012eC5796536bD9864eD8773aBc74C4'
+
+async function polygon(timestamp, ethBlock, chainBlocks) {
+  return calculateUniTvl(addr => {
+    if (addr === '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619') {
       return '0x0000000000000000000000000000000000000000'
     }
     return `polygon:${addr}`
-  }, chainBlocks['polygon'], 'polygon', '0xc35DADB65012eC5796536bD9864eD8773aBc74C4', 11333218);
+  }, chainBlocks['polygon'], 'polygon', factory, 11333218);
 }
 
+async function fantom(timestamp, ethBlock, chainBlocks) {
+  const transform = await transformFantomAddress()
+  return calculateUniTvl(transform, chainBlocks['fantom'], 'fantom', factory, 0, true);
+}
+
+async function xdai(timestamp, ethBlock, chainBlocks) {
+  const transform = await transformXdaiAddress()
+  return calculateUniTvl(transform, chainBlocks['xdai'], 'xdai', factory, 0, true);
+}
+
+async function bsc(timestamp, ethBlock, chainBlocks) {
+  return calculateUniTvl(addr => `bsc:${addr}`, chainBlocks['bsc'], 'bsc', factory, 0, true);
+}
+
+// Not good support from coingecko
+async function heco(timestamp, ethBlock, chainBlocks) {
+  const block = undefined //TODO: FIx
+  return calculateUniTvl(addr => `heco:${addr}`, block, 'heco', factory, 0, true);
+}
+
+// Missing: avax, harmony, okex
+
 module.exports = {
-  ethereum:{
+  ethereum: {
     tvl: eth,
   },
   polygon: {
     tvl: polygon
   },
-  tvl: sdk.util.sumChainTvls([eth, polygon])
+  fantom: {
+    tvl: fantom,
+  },
+  bsc: {
+    tvl: bsc
+  },
+  xdai: {
+    tvl: xdai
+  },
+  heco:{
+    tvl: heco
+  },
+  tvl: sdk.util.sumChainTvls([eth, polygon, fantom, bsc, xdai, heco])
 }
