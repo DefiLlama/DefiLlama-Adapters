@@ -1,9 +1,8 @@
 var atob = require("atob"); // needed for decrypting values from contract
-const utils = require('./helper/utils');
+const utils = require('../helper/utils');
 
-async function fetch() {
-    let tvl = 0 
-
+// No time travelling
+async function tvl() {
     // Algorand token staked
     let algorandStaked = 0
     await utils.fetchURL('https://algoexplorerapi.io/v2/applications/233725844')
@@ -28,19 +27,14 @@ async function fetch() {
     //     });
     // })
 
-    let algoPrice = 0
-    await utils.fetchURL('https://api.coingecko.com/api/v3/simple/price?ids=algorand&vs_currencies=usd')
-      .then(body => {
-        algoPrice = body.data.algorand.usd
-      })
 
-    tvl = tvl + (algorandStaked * algoPrice)
     // console.log(tvl)
     // tvl = tvl + (yieldlyStaked * 0.002) // Yieldly price set to raise price until trading is open
-    return tvl
+    return {
+        'algorand': algorandStaked
+    }
 }
-// fetch()
 
 module.exports = {
-    fetch
+    tvl
 }

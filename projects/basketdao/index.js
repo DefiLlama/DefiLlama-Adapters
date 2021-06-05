@@ -38,9 +38,7 @@ async function tvl(timestamp, block) {
   sdk.util.sumSingleBalance(balances, dpiToken, (await dpiLocked).output)
   sdk.util.sumSingleBalance(balances, dpiToken, (await dpiLockedOnMigrator).output)
 
-  try{
-    sdk.util.sumSingleBalance(balances, bDPIToken, (await bdpiSupply).output)
-  }catch(e){}
+  sdk.util.sumSingleBalance(balances, bDPIToken, (await bdpiSupply).output)
   return balances
 }
 
