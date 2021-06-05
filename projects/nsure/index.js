@@ -24,7 +24,6 @@ const constant = {
 async function purchase(block){
   let weth = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
   let _purchasePool;
-  try{
     const [  surplus, treasury] = await Promise.all([
       sdk.api.abi.call({
         block,
@@ -42,9 +41,6 @@ async function purchase(block){
     ]);
 
     _purchasePool =BigNumber(surplus.output).plus(BigNumber(treasury.output)).toFixed();
-  }catch (e) {
-    _purchasePool = 0;
-  }
 
   return {[weth]:_purchasePool};
 
@@ -53,7 +49,6 @@ async function purchase(block){
 async function underwriting(block) {
   let nsure = '0x20945ca1df56d237fd40036d47e866c7dccd2114';
   let balanceOf;
-  try{
     balanceOf = await sdk.api.abi.call({
       block,
       target: nsure,
@@ -61,9 +56,6 @@ async function underwriting(block) {
       params: constant.stakePool.address,
     });
     balanceOf = balanceOf.output
-  }catch (e) {
-    balanceOf = 0;
-  }
 
   return {[nsure]: balanceOf}
 }
@@ -72,7 +64,6 @@ async function startEth(block) {
   let capitalAddr = '0xa6b658Ce4b1CDb4E7d8f97dFFB549B8688CAFb84'
   let ethAddr = '0x0000000000000000000000000000000000000000'
   let trueBalance = 0;
-  try {
     let _ethBalance = await sdk.api.eth.getBalance({target: capitalAddr, block: block});
 
     let _totalSupply = await sdk.api.abi.call({
@@ -90,9 +81,6 @@ async function startEth(block) {
     _ethBalance = BigNumber(_ethBalance.output);
     _poolBalance = BigNumber(_poolBalance.output);
     trueBalance = _ethBalance.times(_poolBalance).div(_totalSupply).toFixed();
-  } catch (e) {
-    trueBalance = 0;
-  }
 
 
   return {[ethAddr]:trueBalance}
