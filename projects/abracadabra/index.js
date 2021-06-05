@@ -3,6 +3,7 @@ const {unwrapUniswapLPs, unwrapCrv} = require('../helper/unwrapLPs')
 const axios = require('axios')
 const stakingContract = '0xF43480afE9863da4AcBD4419A47D9Cc7d25A647F'
 const sSpell = '0x26fa3fffb6efe8c1e69103acb4044c26b9a106a9'
+const dai = '0x6b175474e89094c44da98b954eedeac495271d0f'
 async function tvl(timestamp, block) {
     const balances = {}
     const allTokens = (await axios.get(`https://api.covalenthq.com/v1/1/address/${stakingContract}/balances_v2/?&key=ckey_72cd3b74b4a048c9bc671f7c5a6`)).data.data.items
@@ -20,7 +21,7 @@ async function tvl(timestamp, block) {
                             owner: token.contract_address,
                             block
                         })
-                        sdk.util.sumSingleBalance(balances, uToken.contract_address, (await singleTokenLocked).output)
+                        sdk.util.sumSingleBalance(balances, dai, (await singleTokenLocked).output)
                     }
                 })
             } else if(token.contract_ticker_symbol === 'SLP') {
