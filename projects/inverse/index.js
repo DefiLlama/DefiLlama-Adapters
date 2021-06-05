@@ -127,11 +127,11 @@ async function vaultsTVL(block) {
   _.each(vaults, (token) => {
     let totalSupply = _.find(
       totalSupplies,
-      (result) => result.success && result.input.target === token
+      (result) => result.input.target === token
     );
     let underlying = _.find(
       allUnderlying,
-      (result) => result.success && result.input.target === token
+      (result) => result.input.target === token
     );
     if (totalSupply && underlying) {
       balances[underlying.output] = BigNumber(
