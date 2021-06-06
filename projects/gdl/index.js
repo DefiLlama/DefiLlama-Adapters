@@ -40,12 +40,10 @@ async function poolBalance(owner, targets, block) {
 async function tvl(timestamp, ethereumBlock, chainBlocks) {
   const block = chainBlocks['avax'];
   let balances = {};
-
   balances['tether'] = await poolBalance(GDL_USD_POOL, [USDT, zUSDT], block);
   balances['dai'] = await poolBalance(GDL_DAI_POOL, [DAI, zDAI], block);
   balances['ethereum'] = await poolBalance(GDL_ETH_POOL, [ETH, zETH], block);
-  // TODO: update once coingecko fixed id typo.
-  balances['gondala-finance'] = await poolBalance(GDL_POOL, [GDL], block);
+  balances['gondola-finance'] = await poolBalance(GDL_POOL, [GDL], block);
   return balances;
 }
 
