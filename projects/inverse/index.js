@@ -100,11 +100,11 @@ async function anchorTVL(block) {
   _.each(tokens, (token) => {
     let cash = _.find(
       cashes,
-      (result) => result.success && result.input.target === token
+      (result) => result.input.target === token
     );
     let underlying = _.find(
       allUnderlying,
-      (result) => result.success && result.input.target === token
+      (result) => result.input.target === token
     );
     if (cash && underlying) {
       balances[underlying.output] = BigNumber(
