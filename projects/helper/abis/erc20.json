@@ -7,5 +7,14 @@
     "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
+  },
+  "symbol": {
+    "type": "function",
+    "stateMutability": "view",
+    "payable": false,
+    "outputs": [{ "type": "string", "name": "" }],
+    "name": "symbol",
+    "inputs": [],
+    "constant": true
   }
 }

@@ -47,7 +47,7 @@ async function transformPolygonAddress() {
         if (addr.toLowerCase() === '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619') {
             return '0x0000000000000000000000000000000000000000'
         }
-        return tokens[addr.toLowerCase()] ?? `polygon:${addr}`
+        return tokens[addr.toLowerCase()] || `polygon:${addr}`
     }
 }
 
