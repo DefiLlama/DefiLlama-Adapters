@@ -24,7 +24,6 @@ async function bsc() {
 async function fetch() {
   return (await polygon())+(await heco())+(await bsc())
 }
-fetch().then(console.log)
 
 module.exports = {
   bsc:{
