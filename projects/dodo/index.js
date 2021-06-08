@@ -68,7 +68,7 @@ async function getChainTvl(chain, block, transformAddr) {
         chain
     })
     const balances = {}
-    sdk.util.sumMultiBalanceOf(balances, balanceResults, transformAddr)
+    sdk.util.sumMultiBalanceOf(balances, balanceResults, true, transformAddr)
 
     return balances
 }
