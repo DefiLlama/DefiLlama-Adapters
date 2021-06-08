@@ -1,6 +1,5 @@
 const sdk = require('@defillama/sdk');
 
-
 const formalDeposit = {
     "coins": {
         "name": "coins",
@@ -88,6 +87,9 @@ const mdexRouter = {
     }
 };
 
+const vaultAbi = {"getSelfUnderlying":{"inputs":[],"name":"getSelfUnderlying","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}}
+const daoAbi={"sharesAndRewardsInfo":{"inputs":[],"name":"sharesAndRewardsInfo","outputs":[{"internalType":"uint256","name":"activeShares","type":"uint256"},{"internalType":"uint256","name":"pendingSharesToAdd","type":"uint256"},{"internalType":"uint256","name":"pendingSharesToReduce","type":"uint256"},{"internalType":"uint256","name":"rewards","type":"uint256"},{"internalType":"uint256","name":"claimedRewards","type":"uint256"},{"internalType":"uint256","name":"lastUpdatedEpochFlag","type":"uint256"}],"stateMutability":"view","type":"function"}}
+
 
 const channels = '0x11bFEE9D8625ac4cDa6Ce52EeBF5caC7DC033d15';
 const filda = '0xE796c55d6af868D8c5E4A92e4fbCF8D8F88AcDED';
@@ -95,6 +97,48 @@ const lendhub = '0xdA0519AA3F097A3A5b1325cb1D380C765d8F1D70';
 const lendhubeth = '0x15155042F8d13Db274224AF4530397f640f69274';
 
 
+const vaultGroup=[
+    {
+        "IsHUSD": false,
+        "Vaults": [
+            {
+                "Name": "Filda",
+                "ContractAddress": "0x6FF92A0e4dA9432a79748A15c5B8eCeE6CF0eE66",
+                "TokenName": "dfUSDT"
+            },
+            {
+                "Name": "Channels",
+                "ContractAddress": "0x95c258E41f5d204426C33628928b7Cc10FfcF866",
+                "TokenName": "dcUSDT"
+            },
+            {
+                "Name": "Lendhub",
+                "ContractAddress": "0x70941A63D4E24684Bd746432123Da1fE0bFA1A35",
+                "TokenName": "dlUSDT"
+            }
+        ]
+    },
+    {
+        "IsHUSD": true,
+        "Vaults": [
+            {
+                "Name": "Lendhub",
+                "ContractAddress": "0x80Da2161a80f50fea78BE73044E39fE5361aC0dC",
+                "TokenName": "dlHUSD"
+            },
+            {
+                "Name": "Filda",
+                "ContractAddress": "0xE308880c215246Fa78753DE7756F9fc814D1C186",
+                "TokenName": "dfHUSD"
+            },
+            {
+                "Name": "Channels",
+                "ContractAddress": "0x9213c6269Faed1dE6102A198d05a6f9E9D70e1D0",
+                "TokenName": "dcHUSD"
+            }
+        ]
+    }
+]
 async function exchangeRateStored(depositContractAddress, coinId) {
     const coinAddress = await sdk.api.abi.call({
         target: depositContractAddress,
@@ -167,8 +211,65 @@ async function poolUnderlyingCoinBalance(contractAddress, coinId) {
     return tvlPool
 }
 
+/*
+
+	dc18 := decimal.NewFromFloat(1e18)
+	dc8 := decimal.NewFromFloat(1e8)
+	activeShares := decimal.NewFromBigInt(out.ActiveShares, 0).Div(dc18)
+	pendingSharesToAdd := decimal.NewFromBigInt(out.PendingSharesToAdd, 0).Div(dc18)
+	pendingSharesToReduce := decimal.NewFromBigInt(out.PendingSharesToReduce, 0).Div(dc18)
+	rewards := decimal.NewFromBigInt(out.Rewards, 0).Div(dc8)
+
+	return activeShares, pendingSharesToAdd, pendingSharesToReduce, rewards, nil
+ */
+
+async function getPrice(contractAddress,dc) {
+
+    const getAmountsIn = await sdk.api.abi.call({
+        target: "0xED7d5F38C79115ca12fe6C0041abb22F0A06C300",
+        abi: mdexRouter['getAmountsOut'],
+        chain: "heco",
+        params: [1e8, [contractAddress,'0xa71edc38d189767582c38a3145b5873052c3e47a']],
+    });
+
+    return getAmountsIn.output[1] / Math.pow(10, 26 - dc)
+}
+
+
+async function getDaoSharesAndRewards() {
+    const out= await sdk.api.abi.call({
+        target: "0xfbac8c66d9b7461eefa7d8601568887c7b6f96ad",
+        abi: daoAbi['sharesAndRewardsInfo'],
+        chain: "heco",
+    });
+    const price=await getPrice("0x48C859531254F25e57D1C1A8E030Ef0B1c895c27",18)
+    let dao=out.output.activeShares/ Math.pow(10, 18)+out.output.pendingSharesToAdd/ Math.pow(10, 18)-out.output.pendingSharesToReduce/ Math.pow(10, 18)
+    return dao*price
+}
+
+async function getVaultTotalDeposit(){
+    let totalSelfUnderlying=0
+    for(let i=0;i<vaultGroup.length;i++){
+        for(let j=0;j<vaultGroup[i].Vaults.length;j++) {
+            const out= await sdk.api.abi.call({
+                target: vaultGroup[i].Vaults[j].ContractAddress,
+                abi: vaultAbi['getSelfUnderlying'],
+                chain: "heco",
+            });
+            if(vaultGroup[i].IsHUSD){
+                totalSelfUnderlying= totalSelfUnderlying+out.output/ Math.pow(10, 8)
+            }else{
+                totalSelfUnderlying= totalSelfUnderlying+out.output/ Math.pow(10, 18)
+            }
+
+        }
+
+    }
+    return totalSelfUnderlying
+}
 
 async function fetch() {
+
     let balances = {};
 
     const channelsBalances1 = await poolUnderlyingCoinBalance(channels, 0)
@@ -190,8 +291,9 @@ async function fetch() {
     for (var key in balances) {
         total += balances[key];
     }
-    console.log(total)
-    return total
+    let dao=await getDaoSharesAndRewards()
+    let vault=await getVaultTotalDeposit()
+    return total+dao+vault
 }
 
 
