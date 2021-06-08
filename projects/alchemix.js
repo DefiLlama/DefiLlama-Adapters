@@ -57,6 +57,8 @@ async function getVirtualPriceFloat(contract) {
 
 async function fetch() {
   const stakingPool = "0xAB8e74017a8Cc7c15FFcCd726603790d26d7DeCa";
+  const mcv2 = "0xEF0881eC094552b2e128Cf945EF17a6752B4Ec5d"; // MasterChefV2
+  const curveStakingPool = "0xb76256d1091e93976c61449d6e500d9f46d827d4"; // Curve Gauge ALCX Rewards
 
   const daicontract = new web3.eth.Contract(abis.abis.minABI, coins[0]);
   const alusdcontract = new web3.eth.Contract(abis.abis.minABI, coins[1]);
@@ -88,7 +90,9 @@ async function fetch() {
   tvl += stakedALCX * baseTokenPriceInUsd;
 
   //Get total amount of SLP staked in staking contract
-  const stakedLP = await getBalInFloat(alcxlpcontract, stakingPool);
+  const stakedLPPool = await getBalInFloat(alcxlpcontract, stakingPool);
+  const stakedLPMCV2 = await getBalInFloat(alcxlpcontract, mcv2);
+  const stakedLP = stakedLPPool + stakedLPMCV2; // Add up tokens in original pool plus tokens in mcv2
   //Get amount of ALCX in lp shares
   const totalLP = await getTotalSupplyFloat(alcxlpcontract);
   let shareOfTotalStaked = stakedLP / totalLP; //Gets ratio of total staked
@@ -96,10 +100,13 @@ async function fetch() {
   const totalALCXinLP = await getBalInFloat(alcxcontract, coins[3]);
   let totalALCXShareInLP = shareOfTotalStaked * totalALCXinLP;
   //Get approx tvl from lp staking by doubling the alcx * usd price
-  tvl += totalALCXShareInLP * 2 * baseTokenPriceInUsd;
+  let slpTVL = totalALCXShareInLP * 2 * baseTokenPriceInUsd;
+  tvl += slpTVL;
 
   //Get total amount of CLP staked in staking contract
-  const stakedCLP = await getBalInFloat(curvelpcontract, stakingPool);
+  const stakedCLPPool = await getBalInFloat(curvelpcontract, stakingPool);
+  const stakedCLPGauge = await getBalInFloat(curvelpcontract, curveStakingPool);
+  const stakedCLP = stakedCLPPool + stakedCLPGauge;
   let virtualPrice = await getVirtualPriceFloat(curvelpcontract)
   let curveTVL = stakedCLP * virtualPrice;
   tvl += curveTVL
