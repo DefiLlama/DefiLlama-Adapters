@@ -1,0 +1,15 @@
+{
+  "aum": {
+    "inputs": [],
+    "name": "aum",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "aumTotal",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+}
