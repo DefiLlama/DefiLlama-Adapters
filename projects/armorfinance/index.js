@@ -10,12 +10,6 @@ const DAI = "0x6b175474e89094c44da98b954eedeac495271d0f";
 const NXM = "0xd7c49cee7e9188cca6ad8ff264c1da2e69d4cf3b";
 const stETH = "0xae7ab96520de3a18e5e111b5eaab095312d7fe84";
 
-async function ethAddr() {
-  return (addr) => {
-    return addr;
-  };
-}
-
 // --- It only provides current, so better grab the addresses and use sdk ---
 const endpointFarms = "https://armorfi.info/api/apy";
 
@@ -133,14 +127,10 @@ const ethTvl = async (timestamp, ethBlock) => {
     }
   }
 
-  const transformAdress = await ethAddr();
-
   await unwrapUniswapLPs(
     balances,
     lpPositions,
-    ethBlock,
-    "ethereum",
-    transformAdress
+    ethBlock
   );
 
   return balances;

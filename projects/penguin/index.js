@@ -9,18 +9,18 @@ const nest = '0xD79A36056c271B988C5F1953e664E61416A9820F'
 const pefiToken = '0xe896CDeaAC9615145c0cA09C8Cd5C25bced6384c'
 
 const tokenToCoingeckoId = {
-  '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7': 'avalanche-2',
-  '0xe896CDeaAC9615145c0cA09C8Cd5C25bced6384c': 'penguin-finance',
-  '0xC38f41A296A4493Ff429F1238e030924A1542e50': 'snowball-token',
-  '0xf20d962a6c8f70c731bd838a3a388D7d48fA6e15': 'ethereum',
-  '0x60781C2586D68229fde47564546784ab3fACA982': 'pangolin'
+  '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7': 'avalanche-2',
+  '0xe896cdeaac9615145c0ca09c8cd5c25bced6384c': 'penguin-finance',
+  '0xc38f41a296a4493ff429f1238e030924a1542e50': 'snowball-token',
+  '0xf20d962a6c8f70c731bd838a3a388d7d48fa6e15': 'ethereum',
+  '0x60781c2586d68229fde47564546784ab3faca982': 'pangolin'
 }
 
 async function convertBalancesToCoingecko(balances){
   const newBalances = {}
   await Promise.all(Object.entries(balances).map(async ([token, balance])=>{
     const decimals = await sdk.api.erc20.decimals(token, 'avax')
-    newBalances[tokenToCoingeckoId[token]] = BigNumber(balance).div(10**Number(decimals.output)).toNumber()
+    newBalances[tokenToCoingeckoId[token.toLowerCase()]] = BigNumber(balance).div(10**Number(decimals.output)).toNumber()
   }))
   return newBalances
 }
@@ -40,7 +40,6 @@ async function getTokensInMasterChef(chainBlocks){
       token: output.input.target,
       balance: output.output
     })), chainBlocks['avax'], 'avax')
-    console.log(balances)
     return balances
 }
 

@@ -89,6 +89,7 @@ async function fetch() {
   const baseTokenPriceInUsd = await getTokenPriceCoinGecko("usd")("alchemix");
   tvl += stakedALCX * baseTokenPriceInUsd;
 
+  /*
   //Get total amount of SLP staked in staking contract
   const stakedLPPool = await getBalInFloat(alcxlpcontract, stakingPool);
   const stakedLPMCV2 = await getBalInFloat(alcxlpcontract, mcv2);
@@ -102,6 +103,7 @@ async function fetch() {
   //Get approx tvl from lp staking by doubling the alcx * usd price
   let slpTVL = totalALCXShareInLP * 2 * baseTokenPriceInUsd;
   tvl += slpTVL;
+  */
 
   //Get total amount of CLP staked in staking contract
   const stakedCLPPool = await getBalInFloat(curvelpcontract, stakingPool);
