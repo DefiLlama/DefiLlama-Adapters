@@ -1,45 +1,66 @@
-  const _ = require('underscore');
-  const sdk = require('@defillama/sdk');
-  const abi = require('./abi.json');
+const _ = require('underscore');
+const sdk = require('@defillama/sdk');
+const abi = require('./abi.json');
 
-const START_BLOCK = 12093712; // block 12093712, Mar-23-2021 07:22:04 AM +UTC
-const VAULT_FACTORY_PROXY = '0x3269DeB913363eE58E221808661CfDDa9d898127';
-const USDC = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
+const chainParams = {
+  ethereum: {
+    START_BLOCK: 12093712, // block 12093712, Mar-23-2021 07:22:04 AM +UTC
+    VAULT_FACTORY_PROXY: '0x3269DeB913363eE58E221808661CfDDa9d898127',
+    USDC: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+  },
+  polygon:{
+    START_BLOCK: 14908452,
+    VAULT_FACTORY_PROXY: '0xE970b0B1a2789e3708eC7DfDE88FCDbA5dfF246a',
+    USDC: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174', 
+  }
+}
 
-  async function tvl(timestamp, block) {
-    let balances = {};
-    balances[USDC] = 0;
 
-    let vaults = await getVaults(block);
+function getChainTvl(chain){
+  return async (timestamp, block, chainBlocks)=>chainTvl(chain, chainBlocks[chain], chain=='ethereum'?addr=>addr:addr=>`polygon:${addr}`)
+}
 
-    let vaultBalances = await sdk.api.abi.multiCall({
-      block,
-      calls: _.map(vaults, (vault) => ({
-        target: USDC,
-        params: vault,
-      })),
-      abi: 'erc20:balanceOf',
-    });
+async function chainTvl(chain, block, transformAddr) {
+  let balances = {};
+  const USDC = chainParams[chain].USDC
 
-    sdk.util.sumMultiBalanceOf(balances, vaultBalances);
+  let vaults = await getVaults(block, chain);
 
-    return balances;
+  let vaultBalances = await sdk.api.abi.multiCall({
+    block,
+    calls: _.map(vaults, (vault) => ({
+      target: USDC,
+      params: vault,
+    })),
+    chain,
+    abi: 'erc20:balanceOf',
+  });
+
+  sdk.util.sumMultiBalanceOf(balances, vaultBalances, true, transformAddr);
+
+  return balances;
+}
+
+async function getVaults(block, chain) {
+  if (block < chainParams[chain].START_BLOCK) {
+    return [];
   }
 
-  async function getVaults(block) {
-    if (block < START_BLOCK) {
-      return [];
-    }
+  return (await sdk.api.abi.call({
+    block,
+    chain,
+    target: chainParams[chain].VAULT_FACTORY_PROXY,
+    params: [],
+    abi: abi['getAllVaults'],
+  })).output;
+}
 
-    return (await sdk.api.abi.call({
-      block,
-      target: VAULT_FACTORY_PROXY,
-      params: [],
-      abi: abi['getAllVaults'],
-    })).output;
-  }
-
-  module.exports = {
-    start: START_BLOCK,
-    tvl
-  }
+module.exports = {
+  ethereum:{
+    tvl: getChainTvl('ethereum')
+  },
+  polygon: {
+    tvl: getChainTvl('polygon')
+  },
+  tvl: sdk.util.sumChainTvls([getChainTvl('ethereum'), getChainTvl('polygon')])
+}
