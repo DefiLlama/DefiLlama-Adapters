@@ -58,6 +58,21 @@ async function getMarkets(block) {
   return markets;
 }
 
+const replacements = {
+  "heco:0xc2CB6B5357CcCE1B99Cd22232942D9A225Ea4eb1": {
+    coingecko: "bitcoin-cash-sv",
+    decimals: 1e18
+  },
+  //"heco:0x581EdD7eAb23896513360D7EE8DfE07A5Cad2aBd": "tether",
+  "heco:0x6514a5Ebff7944099591Ae3e8A5c0979C83B2571": {
+    coingecko: "neo",
+    decimals: 1e8
+  },
+  "heco:0x45e97daD828AD735af1dF0473fc2735F0Fd5330c": {
+    coingecko: "tezos",
+    decimals: 1e18,
+  }
+}
 async function tvl(timestamp, ethBlock, chainBlocks) {
   let balances = {};
   const block = undefined //await getBlock(timestamp, 'heco', chainBlocks)
@@ -77,9 +92,18 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     let getCash = _.find(v2Locked.output, (result) => result.input.target === market.cToken);
 
     if (getCash) {
-      sdk.util.sumSingleBalance(balances, market.underlying, getCash.output)
+      if(getCash.output === null){
+        throw new Error("getCash failed")
+      }
+      const replacement = replacements[market.underlying]
+      if(replacement === undefined){
+        sdk.util.sumSingleBalance(balances, market.underlying, getCash.output)
+      } else {
+        sdk.util.sumSingleBalance(balances, replacement.coingecko, Number(getCash.output)/replacement.decimals)
+      }
     }
   });
+
   return balances;
 }
 
