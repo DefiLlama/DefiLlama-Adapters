@@ -135,13 +135,13 @@ const ethTvl = async (timestamp, ethBlock) => {
 
   const transformAdress = await ethAddr();
 
-  /*await unwrapUniswapLPs(
+  await unwrapUniswapLPs(
     balances,
     lpPositions,
     ethBlock,
     "ethereum",
     transformAdress
-  );*/
+  );
 
   return balances;
 };
