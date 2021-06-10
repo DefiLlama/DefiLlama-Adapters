@@ -8,10 +8,9 @@ const graphEndpoints = {
     "heco": "https://q.hg.network/subgraphs/name/dodoex/heco"
 }
 const graphQuery = gql`
-query get_pairs($block: Int, $lastId: String) {
+query get_pairs($lastId: String) {
     pairs(
       first: 1000,
-      block: { number: $block },
       where: {id_gt: $lastId}
     ) {
         id
@@ -40,7 +39,6 @@ async function getChainTvl(chain, block, transformAddr) {
             graphEndpoints[chain],
             graphQuery,
             {
-                block,
                 lastId
             }
         );
