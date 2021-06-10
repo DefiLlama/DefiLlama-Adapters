@@ -88,7 +88,7 @@ async function tvl(timestamp) {
 
         
     return {
-        'tether': total.plus(pot_total).dividedBy(ETHER).toString()
+        'tether': total.plus(pot_total).dividedBy(ETHER).toNumber()
     }
 }
 
