@@ -1,0 +1,58 @@
+{
+  "abiGetActiveOrdersLength": {
+    "inputs": [],
+    "name": "getActiveOrdersLength",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "abiGetOrderId": {
+    "inputs": [
+      { "internalType": "uint256", "name": "index", "type": "uint256" }
+    ],
+    "name": "getActiveOrderId",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "abiGetOrder": {
+    "inputs": [
+      { "internalType": "uint256", "name": "orderId", "type": "uint256" }
+    ],
+    "name": "getOrder",
+    "outputs": [
+      {
+        "internalType": "enum UniTradeOrderBook.OrderType",
+        "name": "orderType",
+        "type": "uint8"
+      },
+      { "internalType": "address payable", "name": "maker", "type": "address" },
+      { "internalType": "address", "name": "tokenIn", "type": "address" },
+      { "internalType": "address", "name": "tokenOut", "type": "address" },
+      {
+        "internalType": "uint256",
+        "name": "amountInOffered",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amountOutExpected",
+        "type": "uint256"
+      },
+      { "internalType": "uint256", "name": "executorFee", "type": "uint256" },
+      {
+        "internalType": "uint256",
+        "name": "totalEthDeposited",
+        "type": "uint256"
+      },
+      {
+        "internalType": "enum UniTradeOrderBook.OrderState",
+        "name": "orderState",
+        "type": "uint8"
+      },
+      { "internalType": "bool", "name": "deflationary", "type": "bool" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+}

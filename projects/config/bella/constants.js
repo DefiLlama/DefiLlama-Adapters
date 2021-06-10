@@ -11,22 +11,40 @@ const tokens = {
 }
 
 const bVaults = {
+<<<<<<< HEAD
   bUsdt: { address: "0x2c23276107b45E64c8c59482f4a24f4f2E568ea6", decimal: 6 },
   bUsdc: { address: "0x8016907D54eD8BCf5da100c4D0EB434C0185dC0E", decimal: 6 },
   bArpa: { address: "0x750d30A8259E63eD72a075f5b6630f08ce7996d0", decimal: 18 },
   bWbtc: { address: "0x3fb6b07d77dace1BA6B5f6Ab1d8668643d15a2CC", decimal: 8 },
   bHbtc: { address: "0x8D9A39706d3B66446a298f1ae735730257Ec6108", decimal: 18 },
+=======
+  bUsdt: { address: '0x2c23276107b45E64c8c59482f4a24f4f2E568ea6', decimal: 6 },
+  bUsdc: { address: '0x8016907D54eD8BCf5da100c4D0EB434C0185dC0E', decimal: 6 },
+  bArpa: { address: '0x750d30A8259E63eD72a075f5b6630f08ce7996d0', decimal: 18 },
+  bWbtc: { address: '0x3fb6b07d77dace1BA6B5f6Ab1d8668643d15a2CC', decimal: 8 },
+  bHbtc: { address: '0x8D9A39706d3B66446a298f1ae735730257Ec6108', decimal: 18 },
+  bBusd: { address: '0x378388aa69f3032FA46150221210C7FA70A35153', decimal: 18 },
+>>>>>>> upstream/main
 }
 
 const uniswapV2Pools = {
   usdcUsdt: { address: '0x3041cbd36888becc7bbcbc0045e3b1f144466f5f', decimal: 18 },
   belUsdt: { address: '0xf0d1109e723cb06e400e2e57d0b6c7c32bedf61a', decimal: 18 },
+<<<<<<< HEAD
+=======
+  belEth: { address: '0x9e98deac1a416c9ce3c892bd8eef586f1291ca35', decimal: 18 },
+>>>>>>> upstream/main
   arpaUsdt: { address: '0x9F624b25991b99D7b14d6740A9D581DD77980808', decimal: 18 },
   wbtcUsdt: { address: '0x0de0fa91b6dbab8c8503aaa2d1dfa91a192cb149', decimal: 18 },
 }
 
+<<<<<<< HEAD
 const bStaking = "0x6Cb6FF550Ea4473Ed462F8bda38aE3226C04649d"
 const bLocker = "0x20b91c9826E1a500570ea9c6396DBa8cff473A93"
+=======
+const bStaking = '0x6Cb6FF550Ea4473Ed462F8bda38aE3226C04649d'
+const bLocker = '0x20b91c9826E1a500570ea9c6396DBa8cff473A93'
+>>>>>>> upstream/main
 
 const getToken = (tokenSymbol) => tokens[tokenSymbol]
 const getTokenAddress = (tokenSymbol) => getToken(tokenSymbol).address

@@ -26,10 +26,25 @@ const calculateTvl = (baseTokenPrice) => (bTokenPricePerFullShare) => (bTokenTot
       baseTokenPrice * bTokenPricePerFullShare * bTokenTotalSupply 
   )
 
+<<<<<<< HEAD
+=======
+const calculateLiquidityMiningTvl = (baseTokenPriceInUsd) => (balance) =>
+  Promise
+  .all([baseTokenPriceInUsd, balance])
+  .then(
+    ([baseTokenPriceInUsd, balance]) => 
+      baseTokenPriceInUsd * balance * 2
+  )
+
+>>>>>>> upstream/main
 module.exports = {
   getContractInstance,
   extractBigNumber,
   generateCoinGeckoPricePredicate,
   getTokenPriceCoinGecko,
   calculateTvl,
+<<<<<<< HEAD
+=======
+  calculateLiquidityMiningTvl,
+>>>>>>> upstream/main
 }

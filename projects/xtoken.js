@@ -113,6 +113,7 @@ async function fetch() {
   );
 
   const priceSnx = await retry(
+<<<<<<< HEAD
     async (bail) =>
       await axios.get(
         `https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${snxAddr}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`
@@ -136,6 +137,31 @@ async function fetch() {
   const priceWeth = await retry(
     async (bail) =>
       await axios.get(
+=======
+    async (bail) =>
+      await axios.get(
+        `https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${snxAddr}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`
+      )
+  );
+
+  const priceEthrsi6040 = await retry(
+    async (bail) =>
+      await axios.get(
+        `https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${ethrsi6040Addr}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`
+      )
+  );
+
+  const priceSusd = await retry(
+    async (bail) =>
+      await axios.get(
+        `https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=0x57ab1ec28d129707052df4df418d58a2d46d5f51&vs_currencies=usd`
+      )
+  );
+
+  const priceWeth = await retry(
+    async (bail) =>
+      await axios.get(
+>>>>>>> 459a67d9ac216f5c22e2ca81b60f89d061a40a65
         `https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${wethAddr}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`
       )
   );
@@ -201,7 +227,11 @@ async function fetch() {
     priceSusd.data["0x57ab1ec28d129707052df4df418d58a2d46d5f51"].usd;
 
   const xsnxaTvl =
+<<<<<<< HEAD
     xsnxaSnxTvl + xsnxaEthTvl + xsnxaEthrsi6040Tvl - xsnxaSusdTvl;
+=======
+    xsnxaSnxTvl + xsnxaEthTvl + xsnxaEthrsi6040Tvl - xsnxaSusdTvl;``
+>>>>>>> 459a67d9ac216f5c22e2ca81b60f89d061a40a65
 
   const tvl =
     xaaveaTvl +

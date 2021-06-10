@@ -1,0 +1,85 @@
+{
+    "getCurrentTokens": {
+        "constant": true,
+        "inputs": [],
+        "name": "getCurrentTokens",
+        "outputs": [
+            {
+                "internalType": "address[]",
+                "name": "tokens",
+                "type": "address[]"
+            }
+        ],
+        "payable": false,
+        "type": "function"
+    },
+    "underlying": {
+        "constant": true,
+        "inputs": [],
+        "name": "underlying",
+        "outputs": [
+            {
+                "internalType": "contract IERC20",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "type": "function"
+    },
+    "getPricePerFullShare": {
+        "constant": true,
+        "inputs": [],
+        "name": "getPricePerFullShare",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "token": {
+        "constant": true,
+        "inputs": [],
+        "name": "token",
+        "outputs": [
+            {
+                "internalType": "contract IERC20",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "get_virtual_price": {
+        "name": "get_virtual_price",
+        "outputs": [
+            {
+                "type": "uint256",
+                "name": ""
+            }
+        ],
+        "inputs": [],
+        "stateMutability": "view",
+        "type": "function",
+        "gas": 992854
+    },
+    "pricePerShare": {
+        "stateMutability": "view",
+        "type": "function",
+        "name": "pricePerShare",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "gas": 18195
+    }
+}
