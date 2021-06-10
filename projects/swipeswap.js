@@ -72,7 +72,7 @@ function chainTvl(chain){
 
 async function fetch() {
   //const exchangeValue = await fetchExchangeTVL();
-  return fetchSwipeSwapTVL(graphQLUrls.ethereum) + await fetchSwipeSwapTVL(graphQLUrls.bsc);
+  return await fetchSwipeSwapTVL(graphQLUrls.ethereum) + await fetchSwipeSwapTVL(graphQLUrls.bsc);
 }
 
 module.exports = {
