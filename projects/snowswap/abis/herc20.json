@@ -1,0 +1,23 @@
+{
+    "underlyingBalanceWithInvestmentForHolder": {
+        "constant": true,
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "holder",
+                "type": "address"
+            }
+        ],
+        "name": "underlyingBalanceWithInvestmentForHolder",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    }
+}

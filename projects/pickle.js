@@ -1,15 +1,12 @@
-const utils = require('./helper/utils');
-
-/* * * * * * * *
-* ==> Correct adapter needs to be created.
-*
-*****************/
+const utils = require("./helper/utils");
 
 async function fetch() {
-  let response = await utils.fetchURL('https://api.pickle-jar.info/protocol/value')
-  return response.data.totalValue;
+  const response = await utils.fetchURL(
+    "https://stkpowy01i.execute-api.us-west-1.amazonaws.com/prod/protocol/pools"
+  );
+  return response.data.reduce((tvl, pool) => tvl + pool.liquidity_locked, 0);
 }
 
 module.exports = {
-  fetch
-}
+  fetch,
+};

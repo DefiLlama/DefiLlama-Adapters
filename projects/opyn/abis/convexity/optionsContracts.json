@@ -1,0 +1,19 @@
+{
+  "constant": true,
+  "inputs": [
+    {
+      "name": "",
+      "type": "uint256"
+    }
+  ],
+  "name": "optionsContracts",
+  "outputs": [
+    {
+      "name": "",
+      "type": "address"
+    }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+}

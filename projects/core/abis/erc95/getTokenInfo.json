@@ -1,0 +1,29 @@
+{
+    "inputs": [
+        {
+            "internalType": "uint256",
+            "name": "_id",
+            "type": "uint256"
+        }
+    ],
+    "name": "getTokenInfo",
+    "outputs": [
+        {
+            "internalType": "address",
+            "name": "address",
+            "type": "address"
+        },
+        {
+            "internalType": "uint256",
+            "name": "reserve",
+            "type": "uint256"
+        },
+        {
+            "internalType": "uint256",
+            "name": "amountWrapperPerUnit",
+            "type": "uint256"
+        }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+}

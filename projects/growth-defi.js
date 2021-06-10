@@ -22,13 +22,12 @@ async function fetch() {
 
     const tvl = response.data.data.totalValueLocked.totalValueLockedUSD;
 
-    return tvl;
+    return parseFloat(tvl);
   } catch (e) {
     return 0;
   }
 }
 
 module.exports = {
-  fetch
-}
-
+  fetch,
+};

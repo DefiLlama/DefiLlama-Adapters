@@ -1,0 +1,43 @@
+{
+  "Staked BCP": {
+    "type": "piedao",
+    "address": "0x9EFD60f40e35B3cA7294cC268A35d3e35101BE42"
+  },
+  "Staked DEFI++": {
+    "type": "piedao",
+    "address": "0x59706D38F1452F387563f06b632af7302456fE66"
+  },   
+  "Staked YPIE/ETH": {
+    "type": "uniswap",
+    "address": "0x3A05D2394F7241e00F4ae90A1f14D9c9c48A1E9B"
+  },    
+  "ALL": {
+    "type": "all",
+    "address": "0x6de77A304609472A4811a0BFD47d8682Aebc29df"
+  },   
+  "DOUGH/ETH": {
+    "type": "balancer",
+    "address": "0xB9a4Bca06F14A982fcD14907D31DFACaDC8ff88E"
+  },
+  "DOUGH/ETH (OLD)": {
+    "type": "balancer",
+    "address": "0x8314337d2b13e1A61EadF0FD1686b2134D43762F"
+  },
+  "DEFI+S/ETH": {
+    "type": "balancer",
+    "address": "0xFcBB61bcd4909bf4AF708F15AAaa905E0978cAfc"
+  },
+  "DEFI+S/ETH (OLD)": {
+    "type": "balancer",
+    "address": "0x220f25C2105a65425913FE0CF38e7699E3992B97"
+  },
+  "DEFI+L/ETH": {
+    "type": "balancer",
+    "address": "0xb8E59ce1359d80E4834228eDd6a3F560e7534438"
+  },
+  "DEFI+L/ETH (OLD)": {
+    "type": "balancer",
+    "address": "0xc1a116cb2d354503f9ec5cb436a3b213f377631d",
+    "lp": "0xa795600590a7da0057469049ab8f1284baed977e"
+  }
+}

@@ -5,6 +5,7 @@ const MOMENT= require( 'moment' );
 
 var getSQL = () => {
   return mysql.createPool({
+<<<<<<< HEAD
     connectionLimit : 1000,
     connectTimeout  : 60 * 60 * 1000,
     acquireTimeout  : 60 * 60 * 1000,
@@ -13,6 +14,13 @@ var getSQL = () => {
     user     : 'doadmin',
     password : 'd5livek1rastxnua',
     database: 'defillama',
+=======
+    connectionLimit : 1,
+    host     : 'defillama-do-user-2347162-0.b.db.ondigitalocean.com',
+    user     : 'defillama',
+    password : 'zthro7dfx0rgaclt',
+    database: 'defaultdb',
+>>>>>>> upstream/main
     port: '25060',
     insecureAuth : true
   });
@@ -29,6 +37,13 @@ var getConnection = function(callback) {
 };
 
 
+<<<<<<< HEAD
+=======
+var closeAll = () => {
+  pool.end()
+}
+
+>>>>>>> upstream/main
 
 var make_query = async function (tvl, volume, id) {
 
@@ -65,6 +80,10 @@ var make_query = async function (tvl, volume, id) {
                 })
              });
            } else {
+<<<<<<< HEAD
+=======
+
+>>>>>>> upstream/main
            }
          })
       });
@@ -132,5 +151,10 @@ module.exports = {
   getSQL,
   getConnection,
   make_query,
+<<<<<<< HEAD
   make_query_historical
+=======
+  make_query_historical,
+  closeAll
+>>>>>>> upstream/main
 }

@@ -1,0 +1,18 @@
+{
+  "abiXdaiBridge": {
+    "type": "function",
+    "stateMutability": "view",
+    "payable": false,
+    "outputs": [{
+      "type": "address",
+      "name": ""
+    }],
+    "name": "foreignTokenAddress",
+    "inputs": [{
+      "internalType": "address",
+      "type": "address",
+      "name": "_homeToken"
+    }],
+    "constant": true
+  }
+}

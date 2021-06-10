@@ -1,10 +1,8 @@
 # Defillama Adapters
 
-1. Place abis in the config folder within a subfolder with your protocol project name.
-2. Create a function called fetch returning your TVL (and export it)
-3. Use CoinGecko API (see helper/utils.js) when possible/applicable
-4. Don't hesitate to ping me on Twitter if I'm late to merge your PR
+Follow [this guide](https://docs.llama.fi/submit-a-project) to create an adapter and submit a PR with it.
 
+Also, don't hesitate to send a message on [our discord](https://discord.gg/buPFYXzDDd) if we're late to merge your PR.
 
 ## Getting listed
 
@@ -14,5 +12,4 @@ Please send answers to questions there https://github.com/DefiLlama/DefiLlama-Ad
 
 This is a work in progress. The goal is to eventually handle historical data. DefiLlama aims to be transparent, accurate and open source.
 
-If you have any suggestions, want to contribute or want to chat, please contact https://twitter.com/defillama or @defillama on Telegram.
-
+If you have any suggestions, want to contribute or want to chat, please join [our discord](https://discord.gg/buPFYXzDDd) and drop a message.

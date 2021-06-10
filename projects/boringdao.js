@@ -1,35 +1,40 @@
-var Web3 = require('web3');
-const env = require('dotenv').config()
-const web3 = new Web3(new Web3.providers.HttpProvider(`https://mainnet.infura.io/v3/${env.parsed.INFURA_KEY}`));
+const web3 = require("./config/web3.js");
 
 const BigNumber = require("bignumber.js");
-const retry = require('async-retry')
+const retry = require("./helper/retry");
 const axios = require("axios");
-const abis = require('./config/boringdao/abis.js')
-const utils = require('./helper/utils');
+const abis = require("./config/boringdao/abis.js");
+const utils = require("./helper/utils");
 
 async function fetch() {
-
   let tvl = 0;
-  let tunnel = '0x258a1eb6537ae84cf612f06b557b6d53f49cc9a1';
-  const tunnelContract = new web3.eth.Contract(abis.abis.tunnel, tunnel)
+  let tunnel = "0x258a1eb6537ae84cf612f06b557b6d53f49cc9a1";
+  const tunnelContract = new web3.eth.Contract(abis.abis.tunnel, tunnel);
 
-  let tvl1 = await tunnelContract.methods.totalTVL().call()
+  let tvl1 = await tunnelContract.methods.totalTVL().call();
   tvl += parseFloat(new BigNumber(tvl1).div(10 ** 18).toFixed(2));
 
-  let price_feed = await retry(async bail => await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true'))
-  let response = await retry(async bail => await axios.get('https://api.etherscan.io/api?module=stats&action=tokensupply&contractaddress=0x8064d9Ae6cDf087b1bcd5BDf3531bD5d8C537a68&apikey=H6NGIGG7N74TUH8K2X31J1KB65HFBH2E82'))
-  tvl += (parseFloat(new BigNumber(response.data.result).div(10 ** 18).toFixed(2)) * price_feed.data.bitcoin.usd);
+  let price_feed = await retry(
+    async (bail) =>
+      await axios.get(
+        "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true"
+      )
+  );
+  let response = await retry(
+    async (bail) =>
+      await axios.get(
+        "https://api.etherscan.io/api?module=stats&action=tokensupply&contractaddress=0x8064d9Ae6cDf087b1bcd5BDf3531bD5d8C537a68&apikey=H6NGIGG7N74TUH8K2X31J1KB65HFBH2E82"
+      )
+  );
+  tvl +=
+    parseFloat(new BigNumber(response.data.result).div(10 ** 18).toFixed(2)) *
+    price_feed.data.bitcoin.usd;
   return tvl;
-
 }
-
 
 module.exports = {
-  fetch
-}
-
-
+  fetch,
+};
 
 // contract：
 //
