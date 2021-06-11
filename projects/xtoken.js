@@ -2,8 +2,6 @@ const retry = require("async-retry");
 const axios = require("axios");
 const utils = require("./helper/utils");
 const web3 = require("./config/web3.js");
-
-console.log("web3 : ", web3);
 const BigNumber = require("bignumber.js");
 const {
   DEC_18,
