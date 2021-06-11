@@ -210,8 +210,6 @@ async function fetch() {
     xu3lpbTvl +
     xu3lpcTvl;
 
-  console.log("tvl : ", tvl);
-
   return tvl;
 }
 
