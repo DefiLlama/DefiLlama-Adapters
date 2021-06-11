@@ -24,12 +24,6 @@ const STAKING_CONTRACTS = [
   "0xda2c338350a0E59Ce71CDCED9679A3A590Dd9BEC",
 ];
 
-async function ethAddr() {
-  return (addr) => {
-    return addr;
-  };
-}
-
 const ethereumTvl = async (timestamp, block) => {
   let balances = {};
 
@@ -108,14 +102,10 @@ const ethereumTvl = async (timestamp, block) => {
     });
   }
 
-  const transformAdress = await ethAddr();
-
   await unwrapUniswapLPs(
     balances,
     lpPositions,
-    block,
-    "ethereum",
-    transformAdress
+    block
   );
 
   return balances;
