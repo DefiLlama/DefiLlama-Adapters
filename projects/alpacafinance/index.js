@@ -18,6 +18,9 @@ const vaults = [
   {
     token_address: "0x158Da805682BdC8ee32d52833aD41E74bb951E59",
   },
+  {
+    token_address: "0x08FC9Ba2cAc74742177e0afC3dC8Aed6961c24e7"
+  }
 ];
 
 const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
