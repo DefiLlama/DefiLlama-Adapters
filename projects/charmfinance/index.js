@@ -1,4 +1,6 @@
 const sdk = require("@defillama/sdk");
+const axios = require("axios");
+const yaml = require('js-yaml');
 
 const vaultAbi = require("./vaultAbi.json");
 const cubePoolAbi = require("./cubePoolAbi.json");
@@ -11,29 +13,15 @@ const ETH = "0x0000000000000000000000000000000000000000";
 
 const VAULT = "0x55535C4C56F6Bf373E06C43E44C0356aaFD0d21A";
 const CUBE_POOL = "0x23F6A2D8d691294c3A1144EeD14F5632e8bc1B67";
-const OPTIONS_CONTRACTS = [
-  // ETH 29 Jan 2021
-  "0x28cA0aa0F71bD7478aeB25b62C1ef26dCF78697F",
-  "0xfC12A7F6Dd190FA83bC4e672CdbA245651BB4D2e",
-  // ETH 5 Feb 2021
-  "0xD92D9217d01E6D62F2318558B97306E3610E3a19",
-  "0xd8f006FA42dab8386689f033285E54ac211859c6",
-  //ETH 26 Feb 2021
-  "0xA08189389A7683eC65cB998f1E96e5ae10fF4B2D",
-  "0xB997E16fA6808a73492EA5a8D6385120ED5e0727",
-  // WBTC 26 Feb 2021
-  "0x4Bd9224975bddd257a9d1b171d7c36ffF308a88F",
-  "0x95A6Ced453abCedb1c41f5c8850c55dC4d250259",
-  // ETH 25 June 2021
-  "0xdb51426172aE739651fc8a62461F4Ac10D9B55A1",
-  "0x8Dd6231992E75CA2D160D8fA2e0b506783B50D7f",
-  //WBTC 25 June 2021
-  "0x652e3AABc272c84FaCc6e5FeC337Ea616ddc11BC",
-  "0x18C51322A23230cA4aEb36C2b917aB6cf9b91de5",
-];
 
 const ethTvl = async (timestamp, ethBlock) => {
   let balances = {};
+
+  const optionsContracts = (await axios.get(
+    'https://raw.githubusercontent.com/charmfinance/options-protocol/main/markets.yaml'
+  )).data;
+
+  const OPTIONS_CONTRACTS = yaml.load(optionsContracts);
 
   const vaultAmts = (
     await sdk.api.abi.call({

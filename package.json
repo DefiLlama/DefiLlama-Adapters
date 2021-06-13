@@ -22,6 +22,7 @@
     "graph-results-pager": "^1.0.3",
     "graphql": "^15.5.0",
     "graphql-request": "^3.4.0",
+    "js-yaml": "^4.1.0",
     "mysql": "^2.18.1",
     "node-html-parser": "^3.3.5",
     "node-schedule": "^1.3.3",
