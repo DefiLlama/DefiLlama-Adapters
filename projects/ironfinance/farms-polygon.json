@@ -1,0 +1,95 @@
+{
+  "tokens": {
+    "usdc": "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+    "iron": "0xD86b5923F3AD7b585eD81B448170ae026c65ae9a",
+    "titan": "0xaAa5B9e6c589642f98a1cDA99B9D024B8407285A",
+    "eth": "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619",
+    "weth": "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619",
+    "matic": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+    "quick": "0x831753DD7087CaC61aB5644b308642cc1c33Dc13"
+  },
+  "farms": [
+    {
+      "masterChef": "0x65430393358e55A658BcdE6FF69AB28cF1CbB77a",
+      "reward": "titan",
+      "pools": [
+        {
+          "id": 0,
+          "lpToken": "0xa79983daf2a92c2c902cd74217efe3d8af9fba2a",
+          "token0": "titan",
+          "token1": "matic",
+          "rewardToken": "titan"
+        },
+        {
+          "id": 1,
+          "lpToken": "0x85de135ff062df790a5f20b79120f17d3da63b2d",
+          "token0": "iron",
+          "token1": "usdc",
+          "rewardToken": "titan"
+        },
+        {
+          "id": 2,
+          "lpToken": "0x2bbe0f728f4d5821f84eee0432d2a4be7c0cb7fc",
+          "token0": "iron",
+          "token1": "usdc",
+          "rewardToken": "titan"
+        }
+      ]
+    },
+    {
+      "masterChef": "0x08b5249F1fee6e4fCf8A7113943ed6796737386E",
+      "reward": "titan",
+      "pools": [
+        {
+          "id": 0,
+          "lpToken": "0xaAa5B9e6c589642f98a1cDA99B9D024B8407285A",
+          "token0": "titan",
+          "rewardToken": "titan",
+          "single": true
+        }
+      ]
+    },
+    {
+      "masterChef": "0xe012d73B31f34b6199194936f65e7A1a9Ed39D73",
+      "reward": "usdc",
+      "rewardDecimals": 6,
+      "pools": [
+        {
+          "id": 0,
+          "lpToken": "0x35c1895DAC1e2432b320e2927b4F71a0D995602F",
+          "token0": "titan",
+          "token1": "iron",
+          "rewardToken": "usdc"
+        }
+      ]
+    },
+    {
+      "masterChef": "0xa37DD1f62661EB18c338f18Cf797cff8b5102d8e",
+      "reward": "usdc",
+      "rewardDecimals": 6,
+      "pools": [
+        {
+          "id": 0,
+          "lpToken": "0xaAa5B9e6c589642f98a1cDA99B9D024B8407285A",
+          "token0": "titan",
+          "rewardToken": "usdc",
+          "single": true
+        }
+      ]
+    },
+    {
+      "masterChef": "0xb444d596273C66Ac269C33c30Fbb245F4ba8A79d",
+      "reward": "usdc",
+      "rewardDecimals": 6,
+      "pools": [
+        {
+          "id": 0,
+          "lpToken": "0x35c1895DAC1e2432b320e2927b4F71a0D995602F",
+          "rewardToken": "titan",
+          "token0": "titan",
+          "token1": "iron"
+        }
+      ]
+    }
+  ]
+}
