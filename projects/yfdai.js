@@ -9,8 +9,6 @@ async function fetch() {
     let tvl = new BigNumber(response.data.result).div(10 ** 8).toFixed(2);
     return (tvl * jsondata);
 }
-fetch()
-
 
 module.exports = {
     fetch
