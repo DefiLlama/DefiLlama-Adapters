@@ -1,96 +1,116 @@
 const sdk = require('@defillama/sdk');
 
-const abi_v1 = require('./abi-massetv1.json');
-const abi_v2 = require('./abi-massetv2.json');
+const MASSET_ABI_V2 = require('./abi-massetv2.json');
 
-const mUSD_data = {
-  version: 1,
-  addr: '0x66126B4aA2a1C07536Ef8E5e8bD4EfDA1FdEA96D',
-  start: 0
+const ASSETS = {
+  ethereum: [
+    {
+      // mUSD
+      address: '0xe2f2a5c287993345a840db3b0845fbc70f5935a5',
+      startBlock: 10148032,
+      isMasset: true,
+    },
+    // mBTC
+    {
+      address: '0x945facb997494cc2570096c74b5f66a3507330a1',
+      startBlock: 11840521,
+      isMasset: true,
+    },
+    {
+      // fPmBTC/HBTC
+      address: '0x48c59199da51b7e30ea200a74ea07974e62c4ba7',
+      startBlock: 12146645,
+    },
+    {
+      // fPmBTC/TBTC
+      address: '0xb61a6f928b3f069a68469ddb670f20eeeb4921e0',
+      startBlock: 12146645,
+    },
+    {
+      // fPmUSD/BUSD
+      address: '0xfe842e95f8911dcc21c943a1daa4bd641a1381c6',
+      startBlock: 12146707,
+    },
+    {
+      // fPmUSD/GUSD
+      address: '0x4fb30c5a3ac8e85bc32785518633303c4590752d',
+      startBlock: 12146745,
+    },
+  ],
+  polygon: [
+    {
+      // mUSD
+      address: '0xe840b73e5287865eec17d250bfb1536704b43b21',
+      startBlock: 13630640,
+      isMasset: true,
+    },
+  ],
 };
-const mBTC_data = {
-  version: 2,
-  addr: '0x945Facb997494CC2570096c74b5F66A3507330a1',
-  start: 11840521
-}
-const hbtc = {
-  version: 2,
-  addr: '0x48c59199Da51B7E30Ea200a74Ea07974e62C4bA7',
-  start: 11840521
-}
-const tbtc = {
-  version: 2,
-  addr: '0xb61A6F928B3f069A68469DDb670F20eEeB4921e0',
-  start: 11840521
-}
-const busd = {
-  version: 2,
-  addr: '0xfE842e95f8911dcc21c943a1dAA4bd641a1381c6',
-  start: 11840521
-}
-const gusd = {
-  version: 2,
-  addr: '0x4fB30C5A3aC8e85bC32785518633303C4590752d',
-  start: 11840521
-}
-const mAssets = [mUSD_data, mBTC_data, hbtc, tbtc, busd, gusd];
-const ownAssetAddresses = ['0xe2f2a5C287993345a840Db3B0845fbC70f5935a5', '0x945Facb997494CC2570096c74b5F66A3507330a1'].map(addr=>addr.toLowerCase())
 
-async function getV1(mAsset, block) {
-  const res = await sdk.api.abi.call({
+const OWN_ASSETS = new Set([
+  '0xe2f2a5c287993345a840db3b0845fbc70f5935a5', // Ethereum mUSD
+  '0x945facb997494cc2570096c74b5f66a3507330a1', // Ethereum mBTC
+  '0xe840b73e5287865eec17d250bfb1536704b43b21', // Polygon mUSD
+]);
+
+async function getLockedForAsset(chain, asset, block) {
+  const { output: { personal, data } } = await sdk.api.abi.call({
+    chain,
+    target: asset.address,
     block,
-    target: mAsset.addr,
-    abi: abi_v1['getBassets'],
-  });
-  const bAssets = res.output[0];
-
-  const lockedTokens = {};
-
-  bAssets.forEach(b => {
-    lockedTokens[b[0]] = b[5]
+    abi: MASSET_ABI_V2.getBassets,
   });
 
-  return lockedTokens;
+  return personal.reduce(
+    (lockedTokens, [address], i) => ({ ...lockedTokens, [address]: data[i][1] }),
+    {},
+  )
 }
 
-async function getV2(mAsset, block) {
-  const res = await sdk.api.abi.call({
-    block,
-    target: mAsset.addr,
-    abi: abi_v2['getBassets'],
-  });
+function tvlForChain(chain) {
+  const assets = ASSETS[chain]
+  const isEthereum = chain === 'ethereum'
 
-  const bAssetPersonal = res.output[0];
-  const bAssetData = res.output[1];
+  return async function tvl(timestamp, ethBlock, chainBlocks) {
+    const block = isEthereum ? ethBlock : chainBlocks[chain];
 
-  const lockedTokens = {};
+    const assetBalances = await Promise.all(
+      assets
+        .filter(({ startBlock }) => block > startBlock)
+        .map((asset) => getLockedForAsset(chain, asset, block))
+    );
 
-  bAssetPersonal.forEach((b, i) => {
-    lockedTokens[b[0]] = bAssetData[i][1]
-  });
+    const lockedBalances = {};
 
-  return lockedTokens;
+    assetBalances
+      .forEach((locked) => Object.entries(locked)
+        // No double-dipping; avoid double-counting mAssets
+        .filter(([underlying]) => !OWN_ASSETS.has(underlying.toLowerCase()))
+        .map(([underlying, balance]) => (
+          [isEthereum ? underlying : `${chain}:${underlying}`, balance]
+        ))
+        .forEach(([address, balance]) =>
+          sdk.util.sumSingleBalance(lockedBalances, address, balance)
+        )
+      );
+
+    return lockedBalances;
+  }
 }
 
-async function tvl(timestamp, block) {
-  const tokens = await Promise.all(mAssets.filter(m => block > m.start).map(m =>
-    m.version == 1 ? getV1(m, block) : getV2(m, block)
-  ))
-
-  const balances = {}
-  tokens.forEach(token=>Object.entries(token).forEach(underlying=>{
-    if(!ownAssetAddresses.includes(underlying[0].toLowerCase())){ // No double dipping
-      sdk.util.sumSingleBalance(balances, underlying[0], underlying[1])
-    }
-  }))
-
-  return balances;
-}
+const ethereumTvl = tvlForChain('ethereum')
+const polygonTvl = tvlForChain('polygon')
 
 module.exports = {
   name: 'mStable',
   token: 'MTA',
   category: 'assets',
   start: 1590624000, // May-28-2020 00:00:00
-  tvl
-}
+  polygon: {
+    tvl: polygonTvl,
+  },
+  ethereum: {
+    tvl: ethereumTvl,
+  },
+  tvl: sdk.util.sumChainTvls([ethereumTvl, polygonTvl]),
+};
