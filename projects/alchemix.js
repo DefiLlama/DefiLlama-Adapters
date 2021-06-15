@@ -85,7 +85,7 @@ async function fetch() {
   const alethContract = new web3.eth.Contract(abis.abis.minABI,  coins[7]);
   const yvWethContract = new web3.eth.Contract(abis.abis.minYvV2,  coins[8]);
 
-  let pricePerShare = await getPricePerShareInFloat(yvDAIContract);
+  let pricePerYvDai = await getPricePerShareInFloat(yvDAIContract);
 
   let tvl = 0;
 
@@ -98,10 +98,10 @@ async function fetch() {
   //Get total DAI TVL from yvDAI holders
   for (let i = 0; i < yvDaiHolders.length; i++) {
     let ydaibal = await getBalInFloat(yvDAIContract, yvDaiHolders[i]);
-    tvl += ydaibal * pricePerShare;
+    tvl += ydaibal * pricePerYvDai;
   }
 
-  pricePerShare = await getPricePerShareInFloat(yvWethContract);
+  const pricePerYvWeth = await getPricePerShareInFloat(yvWethContract);
 
   let totalEth = 0;
 
@@ -114,7 +114,7 @@ async function fetch() {
   //Get total ETH TVL from yvWETH holders
   for (let i = 0; i < yvWethHolders.length; i++) {
     let yethbal = await getBalInFloat(yvWethContract, yvWethHolders[i]);
-    totalEth += yethbal * pricePerShare;
+    totalEth += yethbal * pricePerYvWeth;
   }
   //Convert ETH to USD Via coingecko
   const ethPriceInUsd = await getTokenPriceCoinGecko("usd")("ethereum");
