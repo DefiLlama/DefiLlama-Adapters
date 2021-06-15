@@ -47,7 +47,7 @@ async function eth(timestamp, block) {
       }
     );
     allPrizePools = allPrizePools.concat(prizePools).concat([{
-      id: "0x6FE3103A51196687b464A09287d2A3dCc674CB67",
+      id: "0xc32a0f9dfe2d93e8a60ba0200e033a59aec91559",
       underlyingCollateralToken: "0x6B3595068778DD592e39A122f4f5a5cF09C90fE2"
     }])
   }
