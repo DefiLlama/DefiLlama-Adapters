@@ -24,7 +24,9 @@ function findClosestToDate(values, date) {
 const coingeckoIds = {
     'ETH': 'ethereum',
     'BTC': 'bitcoin',
-    'USDT': 'tether'
+    'SOL': 'solana',
+    'SRM': 'serum',
+    'USDC': 'usd-coin'
 }
 
 
@@ -39,6 +41,11 @@ async function tvl(timestamp) {
     })
     return balances
 }
+
+async function test() {
+    console.log(await tvl(Date.now()/1000));
+}
+// test();
 
 module.exports = {
     solana: {
