@@ -115,6 +115,16 @@ const vaultGroup=[
                 "Name": "Lendhub",
                 "ContractAddress": "0x70941A63D4E24684Bd746432123Da1fE0bFA1A35",
                 "TokenName": "dlUSDT"
+            },
+            {
+                "Name": "Back",
+                "ContractAddress": "0x22BAd7190D3585F6be4B9fCed192E9343ec9d5c7",
+                "TokenName": "dbUSDT"
+            },
+            {
+                "Name": "Pilot",
+                "ContractAddress": "0xB567bd78A4Ef08EE9C08762716B1699C46bA5ea3",
+                "TokenName": "plUSDT"
             }
         ]
     },
@@ -135,6 +145,16 @@ const vaultGroup=[
                 "Name": "Channels",
                 "ContractAddress": "0x9213c6269Faed1dE6102A198d05a6f9E9D70e1D0",
                 "TokenName": "dcHUSD"
+            },
+            {
+                "Name": "Back",
+                "ContractAddress": "0x996a0e31508E93EB53fd27d216E111fB08E22255",
+                "TokenName": "dbHUSD"
+            },
+            {
+                "Name": "Pilot",
+                "ContractAddress": "0x9bd25Ed64F55f317d0404CCD063631CbfC4fc90b",
+                "TokenName": "plHUSD"
             }
         ]
     }
@@ -212,14 +232,12 @@ async function poolUnderlyingCoinBalance(contractAddress, coinId) {
 }
 
 /*
-
 	dc18 := decimal.NewFromFloat(1e18)
 	dc8 := decimal.NewFromFloat(1e8)
 	activeShares := decimal.NewFromBigInt(out.ActiveShares, 0).Div(dc18)
 	pendingSharesToAdd := decimal.NewFromBigInt(out.PendingSharesToAdd, 0).Div(dc18)
 	pendingSharesToReduce := decimal.NewFromBigInt(out.PendingSharesToReduce, 0).Div(dc18)
 	rewards := decimal.NewFromBigInt(out.Rewards, 0).Div(dc8)
-
 	return activeShares, pendingSharesToAdd, pendingSharesToReduce, rewards, nil
  */
 
