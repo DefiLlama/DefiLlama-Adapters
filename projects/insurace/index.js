@@ -48,10 +48,52 @@ async function eth(timestamp, ethBlock) {
     return balances;
 }
 
+async function bsc(timestamp, ethBlock, chainBlocks){
+    // BSC
+    // start bscBlock: 8312474
+    // Stakers Pool creation time, Jun-15-2021 07:33:48 AM +UTC
+    const bscBlock = chainBlocks["bsc"]
+    if (bscBlock < 8312474) {
+        throw new Error("Not yet deployed")
+    }
+    const { data } = await axios.get("https://files.insurace.io/public/defipulse/bscPools.json");
+    const pools = data.pools;
+
+    const { output: _tvlList } = await sdk.api.abi.multiCall({
+        calls: pools.map((pool) => ({
+            target: pool.StakersPool,
+            params: pool.PoolToken,
+        })),
+        abi: abi["getStakedAmountPT"],
+        bscBlock,
+        chain: "bsc"
+    }
+    );
+
+    const balances = {};
+    _.each(_tvlList, (element) => {
+        let address = element.input.params[0].toLowerCase();
+        if (address == "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee") {
+            address = "bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
+        }else{
+            address = `bsc:${address}`;
+        }
+        let balance = element.output;
+        if (BigNumber(balance).toNumber() <= 0) {
+            return;
+        }
+        balances[address] = BigNumber(balances[address] || 0).plus(balance).toFixed();
+    })
+    console.log(balances);
+    return balances;
+}
+
 module.exports = {
     ethereum: {
         tvl: eth,
     },
-    // InsurAce will deploy to bsc in couple of weeks
-    tvl: sdk.util.sumChainTvls([eth])
+    bsc:{
+        tvl: bsc
+    },
+    tvl: sdk.util.sumChainTvls([eth, bsc])
 }
