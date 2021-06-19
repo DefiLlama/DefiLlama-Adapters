@@ -44,7 +44,7 @@ const tokenToCoingeckoId = {
     '0xf39f9671906d8630812f9d9863bBEf5D523c84Ab': 'uniswap',
     '0x8cE2Dee54bB9921a2AE0A63dBb2DF8eD88B91dD9': 'aave',
     '0x99519AcB025a0e0d44c3875A4BbF03af65933627': 'yearn-finance',
-    '0x6e7f5c0b9f4432716bdd0a77a3601291b9d9e985': 'spore',
+    '0x6e7f5c0b9f4432716bdd0a77a3601291b9d9e985': 'spore-finance-2',
     '0x846d50248baf8b7ceaa9d9b53bfd12d7d7fbb25a': 'verso'
 }
 
