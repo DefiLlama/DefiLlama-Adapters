@@ -57,7 +57,7 @@ const ethTvl = async (timestamp, ethBlock) => {
 
       sdk.util.sumSingleBalance(balances, erc20_holdings[j], erc20Bal.output);
     }
-    
+
     let ethBal = await sdk.api.eth.getBalance({
       target: OPTIONS_CONTRACTS[i],
       block: ethBlock,
