@@ -14,19 +14,21 @@ const snowglobes = ['0x6b32266e7793359Fa199C32e950cF5c0EB4b284A', '0x08d8C7C1a6E
     '0xe11248e5c0a98038633603F291267b74183AB7be', '0xe11248e5c0a98038633603F291267b74183AB7be',
     '0xdC3F53a364BE3b38d6f8e6a087f61cb2af58FC51', '0x53a6fFE10AdB8db0D861BF264134D42CAC03a1Bd',
     '0x47F884e0bfC0e56eCDc581e2774efeC12874f7FD', '0x8eE25bdfe0B749B78157505B92bd919414Af696c',
-    '0x93bc576943Ef7452888dD810f502595Ee83187EE', '0x586554828eE99811A8ef75029351179949762c26',
-    '0x621207093D2e65Bf3aC55dD8Bf0351B980A63815', '0x00933c16e06b1d15958317C2793BC54394Ae356C',
-    '0x751089F1bf31B13Fa0F0537ae78108088a2253BF', '0x39BE35904f52E83137881C0AC71501Edf0180181',
-    '0x3fcFBCB4b368222fCB4d9c314eCA597489FE8605', '0xb21b21E4fA802EE4c158d7cf4bD5416B8035c5e0',
-    '0xdf7F15d05d641dF701D961a38d03028e0a26a42D', '0x888Ab4CB2279bDB1A81c49451581d7c243AffbEf',
-    '0x27f8FE86a513bAAF18B59D3dD15218Cc629640Fc', '0x53B37b9A6631C462d74D65d61e1c056ea9dAa637',
-    '0x763Aa38c837f61DD8429313933Cc47f24E881430', '0x392c51Ab0AF3017E3e22713353eCF5B9d6fBDE84',
-    '0x7987aDB3C789f071FeFC1BEb15Ce6DfDfbc75899', '0x8eDd233546730C51a9d3840e954E5581Eb3fDAB1',
-    '0xcD651AD29835099334d312a9372418Eb2b70c72F', '0x3270b685A4a61252C6f30c1eBca9DbE622984e22',
-    '0x14F98349Af847AB472Eb7f7c705Dc4Bee530713B', '0x234ed7c95Be12b2A0A43fF602e737225C83c2aa1',
-    '0x8309C64390F376fD778BDd701d54d1F8DFfe1F39', '0xa39785a4E4CdDa7509751ed152a00f3D37FbFa9F']
+    '0x93bc576943Ef7452888dD810f502595Ee83187EE']
 
-const tokenToCoingeckoId = {
+const newSnowglobes = ['0x586554828eE99811A8ef75029351179949762c26',
+'0x621207093D2e65Bf3aC55dD8Bf0351B980A63815', '0x00933c16e06b1d15958317C2793BC54394Ae356C',
+'0x751089F1bf31B13Fa0F0537ae78108088a2253BF', '0x39BE35904f52E83137881C0AC71501Edf0180181',
+'0x3fcFBCB4b368222fCB4d9c314eCA597489FE8605', '0xb21b21E4fA802EE4c158d7cf4bD5416B8035c5e0',
+'0xdf7F15d05d641dF701D961a38d03028e0a26a42D', '0x888Ab4CB2279bDB1A81c49451581d7c243AffbEf',
+'0x27f8FE86a513bAAF18B59D3dD15218Cc629640Fc', // I believe this is a mistake, it's actually an LP token: '0x53B37b9A6631C462d74D65d61e1c056ea9dAa637',
+'0x763Aa38c837f61DD8429313933Cc47f24E881430', '0x392c51Ab0AF3017E3e22713353eCF5B9d6fBDE84',
+'0x7987aDB3C789f071FeFC1BEb15Ce6DfDfbc75899', '0x8eDd233546730C51a9d3840e954E5581Eb3fDAB1',
+'0xcD651AD29835099334d312a9372418Eb2b70c72F', '0x3270b685A4a61252C6f30c1eBca9DbE622984e22',
+'0x14F98349Af847AB472Eb7f7c705Dc4Bee530713B', '0x234ed7c95Be12b2A0A43fF602e737225C83c2aa1',
+'0x8309C64390F376fD778BDd701d54d1F8DFfe1F39', '0xa39785a4E4CdDa7509751ed152a00f3D37FbFa9F']
+
+const tokenToCoingeckoId = Object.fromEntries(Object.entries({
     '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7': 'avalanche-2',
     '0xe896CDeaAC9615145c0cA09C8Cd5C25bced6384c': 'penguin-finance',
     '0xC38f41A296A4493Ff429F1238e030924A1542e50': 'snowball-token',
@@ -46,41 +48,55 @@ const tokenToCoingeckoId = {
     '0x99519AcB025a0e0d44c3875A4BbF03af65933627': 'yearn-finance',
     '0x6e7f5c0b9f4432716bdd0a77a3601291b9d9e985': 'spore-finance-2',
     '0x846d50248baf8b7ceaa9d9b53bfd12d7d7fbb25a': 'verso'
-}
+}).map(t=>[t[0].toLowerCase(), t[1]]))
 
 async function convertBalancesToCoingecko(balances) {
     const newBalances = {}
     await Promise.all(Object.entries(balances).map(async ([rawToken, balance]) => {
         const token = rawToken.split(':')[1]
         const decimals = await sdk.api.erc20.decimals(token, 'avax')
-        newBalances[tokenToCoingeckoId[token]] = BigNumber(balance).div(10 ** Number(decimals.output)).toNumber()
+        newBalances[tokenToCoingeckoId[token.toLowerCase()]] = BigNumber(balance).div(10 ** Number(decimals.output)).toNumber()
     }))
     return newBalances
 }
 
 async function getTokensInSnowglobes(balances, snowglobes, block) {
-    const [lpTokens, lpTokenBalances] = await Promise.all([
+    const oldCalls = {
+        calls: snowglobes.map(address => ({
+            target: address,
+        })),
+        block,
+        chain: 'avax'
+    }
+    const newCalls = {
+        ...oldCalls,
+        calls: newSnowglobes.map(address => ({
+            target: address,
+        })),
+    }
+    const [lpTokens, lpTokenBalances, newLpTokens, newLpTokenBalances] = await Promise.all([
         sdk.api.abi.multiCall({
-            calls: snowglobes.map(address => ({
-                target: address,
-            })),
+            ...oldCalls,
             abi: abi.want,
-            block,
-            chain: 'avax'
         }),
         sdk.api.abi.multiCall({
-            calls: snowglobes.map(address => ({
-                target: address,
-            })),
+            ...oldCalls,
             abi: abi.balanceOf,
-            block,
-            chain: 'avax'
+        }),
+        sdk.api.abi.multiCall({
+            ...newCalls,
+            abi: abi.token,
+        }),
+        sdk.api.abi.multiCall({
+            ...newCalls,
+            abi: abi.balance,
         }),
     ])
-    await unwrapUniswapLPs(balances, lpTokens.output.map((lpToken, i) => ({
+    const lpPositions = lpTokens.output.concat(newLpTokens.output).map((lpToken, i) => ({
         token: lpToken.output,
-        balance: lpTokenBalances.output[i].output
-    })), block, 'avax', (addr) => `avax:${addr}`)
+        balance: lpTokenBalances.output.concat(newLpTokenBalances.output)[i].output
+    }))
+    await unwrapUniswapLPs(balances, lpPositions, block, 'avax', (addr) => `avax:${addr}`)
 }
 
 async function getBalancesOnStableVault(balances, address, block) {
