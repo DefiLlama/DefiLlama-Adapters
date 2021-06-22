@@ -10,7 +10,9 @@ async function tvl(_, ethBlock, chainBlocks) {
   const block = chainBlocks['polygon']
   const chain = 'polygon'
 
-  return await calculateUniTvl(transformPolygon, block, chain, FACTORY, START_BLOCK)
+  const balances = await calculateUniTvl(transformPolygon, block, chain, FACTORY, START_BLOCK)
+  delete balances['polygon:0x1c40ac03aacaf5f85808674e526e9c26309db92f']
+  return balances
 };
 
 module.exports = {
