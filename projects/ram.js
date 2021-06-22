@@ -48,8 +48,6 @@ async function getMarketsTotalSupply(web3, markets, oracle) {
   return value.toNumber();
 }
 
-fetch();
-
 module.exports = {
   fetch,
 };
