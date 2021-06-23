@@ -18,15 +18,12 @@ query get_tvl($block: Int) {
 }
 `;
 
-async function tvl(timestamp) {
-  const {block} = await sdk.api.util.lookupBlock(timestamp,{
-    chain: 'avax'
-  })
+async function tvl(timestamp, ethBlock, chainBlocks) {
   const response = await request(
     graphUrl,
     graphQuery,
     {
-      block,
+      block:chainBlocks.avax,
     }
   );
 
