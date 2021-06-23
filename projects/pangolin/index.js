@@ -12,7 +12,7 @@ query get_tvl($block: Int) {
         totalLiquidityETH
         totalLiquidityUSD
   },
-  tokens(where: { symbol: "USDT" }, first:1) {
+  tokens(where: { symbol: "USDT" }, first:1, orderBy: totalLiquidity, orderDirection: desc) {
     derivedETH
   }
 }
