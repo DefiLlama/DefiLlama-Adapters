@@ -14,7 +14,7 @@ if (process.argv.length < 3) {
 const passedFile = path.resolve(process.cwd(), process.argv[2]);
 
 (async () => {
-    const moduleToTest = (await import(passedFile)).default;
+    const moduleToTest = require(passedFile);
     let usdTvl;
     if (moduleToTest.fetch) {
         usdTvl = await moduleToTest.fetch();
