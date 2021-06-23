@@ -27,9 +27,9 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     }
   );
 
-  const usdTvl = Number(response.pangolinFactory.totalLiquidityETH) / Number(response.tokens[0].derivedETH)
-
-  return toUSDTBalances(usdTvl)
+  return {
+    'avalanche-2': Number(response.pangolinFactory.totalLiquidityETH)
+  }
 }
 
 module.exports = {
