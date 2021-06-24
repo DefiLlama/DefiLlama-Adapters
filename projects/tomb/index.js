@@ -17,7 +17,7 @@ async function tvl(timestamp, block, chainBlocks) {
     let masonryTokens = (await axios.get(`https://api.covalenthq.com/v1/250/address/${masonryAddress}/balances_v2/?&key=ckey_72cd3b74b4a048c9bc671f7c5a6`)).data.data.items
     let tombTokens = (await axios.get(`https://api.covalenthq.com/v1/250/address/${tombRewardAddress}/balances_v2/?&key=ckey_72cd3b74b4a048c9bc671f7c5a6`)).data.data.items
     let tshareTokens = (await axios.get(`https://api.covalenthq.com/v1/250/address/${tshareRewardAddress}/balances_v2/?&key=ckey_72cd3b74b4a048c9bc671f7c5a6`)).data.data.items
-    let daoTokens = (await axios.get(`https://api.covalenthq.com/v1/250/address/${daoFundAddress}/balances_v2/?&key=ckey_72cd3b74b4a048c9bc671f7c5a6`)).data.data.items
+    //let daoTokens = (await axios.get(`https://api.covalenthq.com/v1/250/address/${daoFundAddress}/balances_v2/?&key=ckey_72cd3b74b4a048c9bc671f7c5a6`)).data.data.items
     let devWallet =  (await axios.get(`https://api.covalenthq.com/v1/250/address/${devWalletAdd}/balances_v2/?&key=ckey_72cd3b74b4a048c9bc671f7c5a6`)).data.data.items
 
     await Promise.all(
@@ -65,6 +65,7 @@ async function tvl(timestamp, block, chainBlocks) {
                 })
             }
         }),
+        /*
         daoTokens.map( async (token) => {
             if(token.contract_ticker_symbol === 'spLP')
             {
@@ -91,6 +92,7 @@ async function tvl(timestamp, block, chainBlocks) {
                 sdk.util.sumSingleBalance(balances, transformAddress(token.contract_address), (await singleTokenLocked).output)
             }
         }),
+        */
         devWallet.map( async (token) => {
             if(token.supports_erc) {
                 const singleTokenLocked = sdk.api.erc20.balanceOf({
