@@ -87,7 +87,10 @@ const mdexRouter = {
     }
 };
 
-const vaultAbi = {"getSelfUnderlying":{"inputs":[],"name":"getSelfUnderlying","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}}
+const vaultAbi = {
+    "getSelfUnderlying":{"inputs":[],"name":"getSelfUnderlying","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+    "balance":{"inputs":[],"name":"balance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+}
 const daoAbi={"sharesAndRewardsInfo":{"inputs":[],"name":"sharesAndRewardsInfo","outputs":[{"internalType":"uint256","name":"activeShares","type":"uint256"},{"internalType":"uint256","name":"pendingSharesToAdd","type":"uint256"},{"internalType":"uint256","name":"pendingSharesToReduce","type":"uint256"},{"internalType":"uint256","name":"rewards","type":"uint256"},{"internalType":"uint256","name":"claimedRewards","type":"uint256"},{"internalType":"uint256","name":"lastUpdatedEpochFlag","type":"uint256"}],"stateMutability":"view","type":"function"}}
 
 
@@ -125,6 +128,11 @@ const vaultGroup=[
                 "Name": "Pilot",
                 "ContractAddress": "0xB567bd78A4Ef08EE9C08762716B1699C46bA5ea3",
                 "TokenName": "plUSDT"
+            },
+            {
+                "Name": "CoinWind",
+                "ContractAddress": "0xd96e3FeDbF4640063F2B20Bd7B646fFbe3c774FF",
+                "TokenName": "cwUSDT"
             }
         ]
     },
@@ -155,6 +163,11 @@ const vaultGroup=[
                 "Name": "Pilot",
                 "ContractAddress": "0x9bd25Ed64F55f317d0404CCD063631CbfC4fc90b",
                 "TokenName": "plHUSD"
+            },
+            {
+                "Name": "CoinWind",
+                "ContractAddress": "0x7e1Ac905214214c1E339aaFBA72E2Ce29a7bEC22",
+                "TokenName": "cwHUSD"
             }
         ]
     }
@@ -271,7 +284,7 @@ async function getVaultTotalDeposit(){
         for(let j=0;j<vaultGroup[i].Vaults.length;j++) {
             const out= await sdk.api.abi.call({
                 target: vaultGroup[i].Vaults[j].ContractAddress,
-                abi: vaultAbi['getSelfUnderlying'],
+                abi: vaultAbi['balance'],
                 chain: "heco",
             });
             if(vaultGroup[i].IsHUSD){
