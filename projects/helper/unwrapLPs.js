@@ -1,5 +1,6 @@
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
+const token0 = require('./abis/token0.json')
 
 const crvPools = {
     '0x6c3f90f043a72fa612cbac8115ee7e52bde6e490': {
@@ -91,7 +92,34 @@ async function unwrapUniswapLPs(balances, lpPositions, block, chain='ethereum', 
       }))
 }
 
+// Unwrap the tokens that are LPs and directly add the others
+async function addTokensAndLPs(balances, tokens, amounts, block, chain = "ethereum", transformAddress=id=>id){
+    const tokens0 = await sdk.api.abi.multiCall({
+        calls:tokens.output.map(t=>({
+            target: t.output
+        })),
+        abi: token0,
+        block,
+        chain
+    })
+    const lpBalances = []
+    tokens0.output.forEach((result, idx)=>{
+        const token = tokens.output[idx].output
+        const balance = amounts.output[idx].output
+        if(result.success){
+            lpBalances.push({
+                token,
+                balance
+            })
+        } else {
+            sdk.util.sumSingleBalance(balances, transformAddress(token), balance);
+        }
+    })
+    await unwrapUniswapLPs(balances, lpBalances, block, chain, transformAddress)
+}
+
 module.exports = {
     unwrapCrv,
-    unwrapUniswapLPs
+    unwrapUniswapLPs,
+    addTokensAndLPs
 }

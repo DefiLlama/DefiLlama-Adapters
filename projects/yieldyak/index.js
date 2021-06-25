@@ -1,8 +1,7 @@
 const sdk = require('@defillama/sdk');
-const { unwrapUniswapLPs } = require('../helper/unwrapLPs')
+const { addTokensAndLPs } = require('../helper/unwrapLPs')
 const abi = require('./abi.json')
 const { request, gql } = require("graphql-request");
-const token0 = require('../helper/abis/token0.json');
 const { transformAvaxAddress } = require('../helper/portedTokens');
 
 const graphUrl = 'https://api.thegraph.com/subgraphs/name/yieldyak/reinvest-tracker'
@@ -38,30 +37,13 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
         ...calls,
         abi: abi.depositToken,
     })
-    const tokens0 = await sdk.api.abi.multiCall({
-        calls:tokens.output.map(t=>({
-            target: t.output
-        })),
-        abi: token0,
-        block,
-        chain: 'avax'
-    })
-    const lpBalances = []
-    const balances = {}
-    tokens0.output.forEach((result, idx)=>{
-        const token = tokens.output[idx].output || farms[idx].depositToken.id
-        const balance = tokenAmounts.output[idx].output //|| farms[idx].depositTokenBalance
-        console.log(token, balance, result.success)
-        if(result.success){
-            lpBalances.push({
-                token,
-                balance
-            })
-        } else {
-            sdk.util.sumSingleBalance(balances, transformAddress(token), balance);
+    tokens.output.forEach((token, idx)=>{
+        if(token.output === null){
+            token.output = farms[idx].depositToken.id
         }
     })
-    await unwrapUniswapLPs(balances, lpBalances, block, 'avax', transformAddress)
+    const balances = {}
+    await addTokensAndLPs(balances, tokens, tokenAmounts, block, 'avax', transformAddress)
     return balances
 }
 
