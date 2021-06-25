@@ -35,9 +35,8 @@ async function tvl(timestamp, block) {
 
 
 module.exports = {
-    name: 'Ethernity Chain',               // project name
-    website: 'https://ethernity.io/',
-    token: 'ERN',
-    category: 'NFT',          // Lending
+    ethereum:{
+        tvl
+    },
     tvl
 }
