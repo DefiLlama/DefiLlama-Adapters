@@ -118,8 +118,43 @@ async function addTokensAndLPs(balances, tokens, amounts, block, chain = "ethere
     await unwrapUniswapLPs(balances, lpBalances, block, chain, transformAddress)
 }
 
+function addressesEqual(a,b){
+    return a.toLowerCase() === b.toLowerCase()
+}
+/*
+tokens [
+    [token, isLP] - eg ["0xaaa", true]
+]
+*/
+async function sumTokensAndLPs(balances, tokens, owners, block, chain = "ethereum", transformAddress=id=>id){
+    const balanceOfTokens = await sdk.api.abi.multiCall({
+        calls: tokens.map(t=>owners.map(o=>({
+            target: t[0],
+            params: o
+        }))).flat(),
+        abi: 'erc20:balanceOf',
+        block,
+        chain
+    })
+    const lpBalances = []
+    balanceOfTokens.output.forEach((result, idx)=>{
+        const token = result.input.target
+        const balance = result.output
+        if(tokens.find(t=>addressesEqual(t[0], token))[1]){
+            lpBalances.push({
+                token,
+                balance
+            })
+        } else {
+            sdk.util.sumSingleBalance(balances, transformAddress(token), balance);
+        }
+    })
+    await unwrapUniswapLPs(balances, lpBalances, block, chain, transformAddress)
+}
+
 module.exports = {
     unwrapCrv,
     unwrapUniswapLPs,
-    addTokensAndLPs
+    addTokensAndLPs,
+    sumTokensAndLPs
 }
