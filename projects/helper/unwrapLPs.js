@@ -92,6 +92,14 @@ async function unwrapUniswapLPs(balances, lpPositions, block, chain='ethereum', 
       }))
 }
 
+async function addBalanceOfTokensAndLPs(balances, balanceResult, block){
+    await addTokensAndLPs(balances, {
+        output: balanceResult.output.map(t=>({output:t.input.target}))
+    },
+    balanceResult,
+    block)
+}
+
 // Unwrap the tokens that are LPs and directly add the others
 async function addTokensAndLPs(balances, tokens, amounts, block, chain = "ethereum", transformAddress=id=>id){
     const tokens0 = await sdk.api.abi.multiCall({
@@ -156,5 +164,6 @@ module.exports = {
     unwrapCrv,
     unwrapUniswapLPs,
     addTokensAndLPs,
-    sumTokensAndLPs
+    sumTokensAndLPs,
+    addBalanceOfTokensAndLPs
 }
