@@ -466,6 +466,8 @@ const { addBalanceOfTokensAndLPs } = require('../helper/unwrapLPs');
     polygon:{
       tvl: polygon
     },
-    staking,
+    staking:{
+      tvl: staking
+    },
     tvl: sdk.util.sumChainTvls([ethereum, polygon])
   };

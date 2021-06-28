@@ -65,6 +65,8 @@ async function staking(timestamp, ethBlock, chainBlocks) {
 
 module.exports = {
   methodology: `TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://pancakeswap.info/ as the source. Staking accounts for the CAKE locked in MasterChef (${masterChef})`,
-  staking,
+  staking: {
+    tvl: staking
+  },
   tvl
 }
