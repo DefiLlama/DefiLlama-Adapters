@@ -44,5 +44,6 @@ async function fetch(){
 }
 
 module.exports = {
+    methodology: "Counts the liquidity on all AMM pools. The price of each token is determined in the following way: First we check if there's a pool between ATOM and the token we want to price, and if there is one we just take the price on that pool. If there's none, we find another pair where the token is one of assets and we know the price of the other asset, and then extract token price from that. By repeating these steps multiple times we can price all the assets against ATOM, and once that is done we fetch the price of ATOM from coingecko and calculate the TVL by adding up the amounts of tokens locked multiplied by their price against ATOM times the price of ATOM in USD (from coingecko).",
     fetch
 }
