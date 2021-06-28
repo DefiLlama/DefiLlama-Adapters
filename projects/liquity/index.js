@@ -28,8 +28,8 @@ async function tvl(_, block) {
   ).output;
 
   return {
-    [ETH_ADDRESS]: troveEthTvl.ETH_ADDRESS,
-    [STABILITY_POOL_ADDRESS]: stabilityPoolLusdTvl,
+    [ETH_ADDRESS]: troveEthTvl,
+    [LUSD_TOKEN_ADDRESS]: stabilityPoolLusdTvl,
   };
 }
 
