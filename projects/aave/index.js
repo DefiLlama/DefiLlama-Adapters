@@ -99,6 +99,8 @@ const { addBalanceOfTokensAndLPs } = require('../helper/unwrapLPs');
       const decimals = decimalsOfReserve[i]
       if (decimals.success) {
         assets.push({ address: reserve, symbol: symbol.output, decimals: decimals.output })
+      }else {
+        throw new Error("Call failed")
       }
     })
 
@@ -121,7 +123,7 @@ const { addBalanceOfTokensAndLPs } = require('../helper/unwrapLPs');
       abi: "erc20:balanceOf",
     });
 
-    sdk.util.sumMultiBalanceOf(balances, balanceOfResults);
+    sdk.util.sumMultiBalanceOf(balances, balanceOfResults, true);
 
     return balances;
   }
