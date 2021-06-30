@@ -1,0 +1,82 @@
+{
+    "getPoolTotalDeposited": {
+        "constant": true,
+        "inputs": [
+            {
+            "internalType": "uint256",
+            "name": "_poolId",
+            "type": "uint256"
+            }
+        ],
+        "name": "getPoolTotalDeposited",
+        "outputs": [
+            {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "totalDeposited": {
+        "constant": true,
+        "inputs":[],
+        "name":"totalDeposited",
+        "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
+        "payable": false,
+        "stateMutability":"view",
+        "type":"function" 
+    },
+    "poolInfo": {
+        "constant": true,
+        "inputs":[{"internalType":"uint256","name":"","type":"uint256"}],
+        "name":"poolInfo",
+        "outputs": [{
+            "internalType": "contract IERC20",
+            "name": "lpToken",
+            "type": "address"
+        }, {
+            "internalType": "uint256",
+            "name": "allocPoint",
+            "type": "uint256"
+        }, {
+            "internalType": "uint256",
+            "name": "lastRewardBlock",
+            "type": "uint256"
+        }, {
+            "internalType": "uint256",
+            "name": "accRewardPerShare",
+            "type": "uint256"
+        }, {
+            "internalType": "uint256",
+            "name": "workingSupply",
+            "type": "uint256"
+        }, {
+            "internalType": "uint256",
+            "name": "totalDeposited",
+            "type": "uint256"
+        }, {
+            "internalType": "bool",
+            "name": "needVesting",
+            "type": "bool"
+        }, {
+            "internalType": "uint256",
+            "name": "earlyWithdrawFee",
+            "type": "uint256"
+        }, {
+            "internalType": "uint256",
+            "name": "withdrawLock",
+            "type": "uint256"
+        }, {
+            "internalType": "bool",
+            "name": "veBoostEnabled",
+            "type": "bool"
+        }],
+        "payable": false,
+        "stateMutability":"view",
+        "type":"function"
+    }
+}
+  
