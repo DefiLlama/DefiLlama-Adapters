@@ -4,12 +4,13 @@
   const abi = require('./abi');
   const utils = require('../helper/utils')
   const web3 = require('../config/web3.js');
-  const { request, gql } = require("graphql-request");
+  const retry = require('async-retry')
+const { GraphQLClient, request, gql } = require('graphql-request')
 
 
   const usdtAddress = '0xdac17f958d2ee523a2206206994597c13d831ec7'
-  const graphUrl = 'https://api.thegraph.com/subgraphs/name/dynamic-amm/dynamic-amm'
-const graphQuery = gql`
+  const egraphUrl = 'https://api.thegraph.com/subgraphs/name/dynamic-amm/dynamic-amm'
+const egraphQuery = gql`
 query get_tvl($block: Int) {
   dmmFactory(
     id: "0x833e4083b7ae46cea85695c4f7ed25cdad8886de",
@@ -21,7 +22,7 @@ query get_tvl($block: Int) {
 }
 `;
 
-  async function tvl (timestamp, block) {
+  async function ethTvl (timestamp, block) {
     const balances = {};
 
     const pairs = (await utils.fetchURL(
@@ -100,26 +101,50 @@ query get_tvl($block: Int) {
       }
     });
     const {dmmFactory} = await request(
-      graphUrl,
-      graphQuery,
+      egraphUrl,
+      egraphQuery,
       {
         block,
       }
+      
     );
     if(dmmFactory !== null){ // Has been created
-      const dmmTvlInUsdt = (Number(dmmFactory.totalLiquidityUSD)* 1e6).toFixed(0)
-      sdk.util.sumSingleBalance(balances, usdtAddress, dmmTvlInUsdt)
+      const ethTVL = (Number(dmmFactory.totalLiquidityUSD)* 1e6).toFixed(0)
+      sdk.util.sumSingleBalance(balances, usdtAddress, ethTVL)
     }
 
     return balances;
   }
+  async function polygonTvl(){
+    var polygonEndpoint ='https://api.thegraph.com/subgraphs/name/piavgh/dmm-exchange-matic';
+      var query = gql`
+      {
+        dmmFactories(first: 1) {
+          totalLiquidityUSD,
+        }
+      }
+      `;
+    var graphQLClient = new GraphQLClient(polygonEndpoint)
+    const results = await retry(async bail => await graphQLClient.request(query))
+    return {
+      [usdtAddress]: BigNumber(results.dmmFactories[0].totalLiquidityUSD)
+      .multipliedBy(10 ** 6)
+      .toFixed(0),
+    }
 
+  }
 /*==================================================
   Exports
 ==================================================*/
 
   module.exports = {
-    ethereum: tvl,
-    start: 1546515458,  // Jan-03-2019 11:37:38 AM +UTC
-    tvl,
+
+    ethereum: {
+      tvl: ethTvl,
+    start: 1617606651, // @5-Apr-2021, 7:10:51 AM+UTC 
+    },
+    polygon: {
+      tvl: polygonTvl
+    },
+    tvl:sdk.util.sumChainTvls([ethTvl,polygonTvl])
   };
