@@ -1,11 +1,11 @@
-  const sdk = require('@defillama/sdk');
+const sdk = require('@defillama/sdk');
   const BigNumber = require('bignumber.js');
   const _ = require('underscore');
   const abi = require('./abi');
   const utils = require('../helper/utils')
   const web3 = require('../config/web3.js');
-  const retry = require('async-retry')
-const { GraphQLClient, request, gql } = require('graphql-request')
+  const {getBlock} = require('../helper/getBlock')
+const {request, gql } = require('graphql-request')
 
 
   const usdtAddress = '0xdac17f958d2ee523a2206206994597c13d831ec7'
@@ -115,17 +115,32 @@ query get_tvl($block: Int) {
 
     return balances;
   }
-  async function polygonTvl(){
+
+  //fetch polygon chain DMM TVL 
+
+  async function polygonTvl(timestamp, block, chainBlocks){
+    block = await getBlock(timestamp, 'polygon', chainBlocks)
     var polygonEndpoint ='https://api.thegraph.com/subgraphs/name/piavgh/dmm-exchange-matic';
       var query = gql`
-      {
-        dmmFactories(first: 1) {
-          totalLiquidityUSD,
+      query get_tvl($block: Int) {
+        dmmFactory(
+          id: "0x5F1fe642060B5B9658C15721Ea22E982643c095c",
+          block: {number: $block}
+        ) {
+          totalVolumeUSD
+          totalLiquidityUSD
         }
       }
       `;
-    var graphQLClient = new GraphQLClient(polygonEndpoint)
-    const results = await retry(async bail => await graphQLClient.request(query))
+      const {results} = await request(
+        polygonEndpoint,
+        query,
+        {
+          block,
+        }
+        
+      );
+    console.log(results)
     return {
       [usdtAddress]: BigNumber(results.dmmFactories[0].totalLiquidityUSD)
       .multipliedBy(10 ** 6)
@@ -141,7 +156,6 @@ query get_tvl($block: Int) {
 
     ethereum: {
       tvl: ethTvl,
-    start: 1617606651, // @5-Apr-2021, 7:10:51 AM+UTC 
     },
     polygon: {
       tvl: polygonTvl
