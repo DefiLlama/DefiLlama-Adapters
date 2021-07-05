@@ -119,12 +119,13 @@ query get_tvl($block: Int) {
   //fetch polygon chain DMM TVL 
 
   async function polygonTvl(timestamp, block, chainBlocks){
-    block = await getBlock(timestamp, 'polygon', chainBlocks)
+
+    block = chainBlocks['polygon']
     var polygonEndpoint ='https://api.thegraph.com/subgraphs/name/piavgh/dmm-exchange-matic';
       var query = gql`
       query get_tvl($block: Int) {
         dmmFactory(
-          id: "0x5F1fe642060B5B9658C15721Ea22E982643c095c",
+          id: "0x5f1fe642060b5b9658c15721ea22e982643c095c",
           block: {number: $block}
         ) {
           totalVolumeUSD
@@ -132,7 +133,7 @@ query get_tvl($block: Int) {
         }
       }
       `;
-      const {results} = await request(
+      const {dmmFactory} = await request(
         polygonEndpoint,
         query,
         {
@@ -140,11 +141,12 @@ query get_tvl($block: Int) {
         }
         
       );
-    console.log(results)
+      if(dmmFactory !== null){ // Has been created
+        polyTVL = (Number(dmmFactory.totalLiquidityUSD)* 1e6).toFixed(0)
+      }
+
     return {
-      [usdtAddress]: BigNumber(results.dmmFactories[0].totalLiquidityUSD)
-      .multipliedBy(10 ** 6)
-      .toFixed(0),
+      [usdtAddress]: polyTVL,
     }
 
   }
