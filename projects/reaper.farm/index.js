@@ -1,6 +1,6 @@
 const retry = require('async-retry')
 const axios = require("axios");
-const REAPER_API = "https://www.reaper.farm/api";
+const REAPER_API = "http://api.reaper.farm/api";
 
 async function fetch() {
   const tvlMsg = await retry(async bail => await axios.get(REAPER_API+"/tvlTotal"));
