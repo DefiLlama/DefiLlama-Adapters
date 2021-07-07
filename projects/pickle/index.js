@@ -56,7 +56,6 @@ const ethTvl = async (timestamp, block, chainBlocks) => {
       }
     })
   );
-
   await unwrapUniswapLPs(
     balances,
     lpPositions,
