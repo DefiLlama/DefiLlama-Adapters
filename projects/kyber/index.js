@@ -1,15 +1,16 @@
-  const sdk = require('@defillama/sdk');
+const sdk = require('@defillama/sdk');
   const BigNumber = require('bignumber.js');
   const _ = require('underscore');
   const abi = require('./abi');
   const utils = require('../helper/utils')
   const web3 = require('../config/web3.js');
-  const { request, gql } = require("graphql-request");
+  const {getBlock} = require('../helper/getBlock')
+const {request, gql } = require('graphql-request')
 
 
   const usdtAddress = '0xdac17f958d2ee523a2206206994597c13d831ec7'
-  const graphUrl = 'https://api.thegraph.com/subgraphs/name/dynamic-amm/dynamic-amm'
-const graphQuery = gql`
+  const egraphUrl = 'https://api.thegraph.com/subgraphs/name/dynamic-amm/dynamic-amm'
+const egraphQuery = gql`
 query get_tvl($block: Int) {
   dmmFactory(
     id: "0x833e4083b7ae46cea85695c4f7ed25cdad8886de",
@@ -21,7 +22,7 @@ query get_tvl($block: Int) {
 }
 `;
 
-  async function tvl (timestamp, block) {
+  async function ethTvl (timestamp, block) {
     const balances = {};
 
     const pairs = (await utils.fetchURL(
@@ -100,26 +101,66 @@ query get_tvl($block: Int) {
       }
     });
     const {dmmFactory} = await request(
-      graphUrl,
-      graphQuery,
+      egraphUrl,
+      egraphQuery,
       {
         block,
       }
+      
     );
     if(dmmFactory !== null){ // Has been created
-      const dmmTvlInUsdt = (Number(dmmFactory.totalLiquidityUSD)* 1e6).toFixed(0)
-      sdk.util.sumSingleBalance(balances, usdtAddress, dmmTvlInUsdt)
+      const ethTVL = (Number(dmmFactory.totalLiquidityUSD)* 1e6).toFixed(0)
+      sdk.util.sumSingleBalance(balances, usdtAddress, ethTVL)
     }
 
     return balances;
   }
 
+  //fetch polygon chain DMM TVL 
+
+  async function polygonTvl(timestamp, block, chainBlocks){
+
+    block = chainBlocks['polygon']
+    var polygonEndpoint ='https://api.thegraph.com/subgraphs/name/piavgh/dmm-exchange-matic';
+      var query = gql`
+      query get_tvl($block: Int) {
+        dmmFactory(
+          id: "0x5f1fe642060b5b9658c15721ea22e982643c095c",
+          block: {number: $block}
+        ) {
+          totalVolumeUSD
+          totalLiquidityUSD
+        }
+      }
+      `;
+      const {dmmFactory} = await request(
+        polygonEndpoint,
+        query,
+        {
+          block,
+        }
+        
+      );
+      if(dmmFactory !== null){ // Has been created
+        polyTVL = (Number(dmmFactory.totalLiquidityUSD)* 1e6).toFixed(0)
+      }
+
+    return {
+      [usdtAddress]: polyTVL,
+    }
+
+  }
 /*==================================================
   Exports
 ==================================================*/
 
   module.exports = {
-    ethereum: tvl,
-    start: 1546515458,  // Jan-03-2019 11:37:38 AM +UTC
-    tvl,
+
+    ethereum: {
+      tvl: ethTvl,
+    },
+    polygon: {
+      tvl: polygonTvl
+    },
+    tvl:sdk.util.sumChainTvls([ethTvl,polygonTvl])
   };

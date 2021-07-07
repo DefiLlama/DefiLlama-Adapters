@@ -321,5 +321,8 @@ module.exports = {
   fantom: {
     tvl: fantomTvl,
   },
-  tvl: polygonTvl// sdk.util.sumChainTvls([ethereumTvl, fantomTvl, bscTvl]),
+  polygon:{
+    tvl: polygonTvl
+  },
+  tvl: sdk.util.sumChainTvls([ethereumTvl, fantomTvl, bscTvl, polygonTvl]),
 };
