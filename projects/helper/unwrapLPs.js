@@ -1,5 +1,6 @@
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
+const token0 = require('./abis/token0.json')
 
 const crvPools = {
     '0x6c3f90f043a72fa612cbac8115ee7e52bde6e490': {
@@ -82,16 +83,91 @@ async function unwrapUniswapLPs(balances, lpPositions, block, chain='ethereum', 
         const token0 = (await tokens0).output.find(call=>call.input.target === lpToken).output
         const token1 = (await tokens1).output.find(call=>call.input.target === lpToken).output
         const supply = (await lpSupplies).output.find(call=>call.input.target === lpToken).output
-        const {_reserve0, _reserve1} = (await lpReserves).output.find(call=>call.input.target === lpToken).output
+        try {
+            const {_reserve0, _reserve1} = (await lpReserves).output.find(call=>call.input.target === lpToken).output
 
-        const token0Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve0)).div(BigNumber(supply))
-        sdk.util.sumSingleBalance(balances, await transformAddress(token0.toLowerCase()), token0Balance.toFixed(0))
-        const token1Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve1)).div(BigNumber(supply))
-        sdk.util.sumSingleBalance(balances, await transformAddress(token1.toLowerCase()), token1Balance.toFixed(0))
+            const token0Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve0)).div(BigNumber(supply))
+            sdk.util.sumSingleBalance(balances, await transformAddress(token0.toLowerCase()), token0Balance.toFixed(0))
+            const token1Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve1)).div(BigNumber(supply))
+            sdk.util.sumSingleBalance(balances, await transformAddress(token1.toLowerCase()), token1Balance.toFixed(0))
+        } catch(err) {
+            console.error(err);
+        }
       }))
+}
+
+async function addBalanceOfTokensAndLPs(balances, balanceResult, block){
+    await addTokensAndLPs(balances, {
+        output: balanceResult.output.map(t=>({output:t.input.target}))
+    },
+    balanceResult,
+    block)
+}
+
+// Unwrap the tokens that are LPs and directly add the others
+async function addTokensAndLPs(balances, tokens, amounts, block, chain = "ethereum", transformAddress=id=>id){
+    const tokens0 = await sdk.api.abi.multiCall({
+        calls:tokens.output.map(t=>({
+            target: t.output
+        })),
+        abi: token0,
+        block,
+        chain
+    })
+    const lpBalances = []
+    tokens0.output.forEach((result, idx)=>{
+        const token = tokens.output[idx].output
+        const balance = amounts.output[idx].output
+        if(result.success){
+            lpBalances.push({
+                token,
+                balance
+            })
+        } else {
+            sdk.util.sumSingleBalance(balances, transformAddress(token), balance);
+        }
+    })
+    await unwrapUniswapLPs(balances, lpBalances, block, chain, transformAddress)
+}
+
+function addressesEqual(a,b){
+    return a.toLowerCase() === b.toLowerCase()
+}
+/*
+tokens [
+    [token, isLP] - eg ["0xaaa", true]
+]
+*/
+async function sumTokensAndLPs(balances, tokens, owners, block, chain = "ethereum", transformAddress=id=>id){
+    const balanceOfTokens = await sdk.api.abi.multiCall({
+        calls: tokens.map(t=>owners.map(o=>({
+            target: t[0],
+            params: o
+        }))).flat(),
+        abi: 'erc20:balanceOf',
+        block,
+        chain
+    })
+    const lpBalances = []
+    balanceOfTokens.output.forEach((result, idx)=>{
+        const token = result.input.target
+        const balance = result.output
+        if(tokens.find(t=>addressesEqual(t[0], token))[1]){
+            lpBalances.push({
+                token,
+                balance
+            })
+        } else {
+            sdk.util.sumSingleBalance(balances, transformAddress(token), balance);
+        }
+    })
+    await unwrapUniswapLPs(balances, lpBalances, block, chain, transformAddress)
 }
 
 module.exports = {
     unwrapCrv,
-    unwrapUniswapLPs
+    unwrapUniswapLPs,
+    addTokensAndLPs,
+    sumTokensAndLPs,
+    addBalanceOfTokensAndLPs
 }

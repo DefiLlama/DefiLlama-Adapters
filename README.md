@@ -15,3 +15,7 @@ This is a work in progress. The goal is to eventually handle historical data. De
 
 If you have any suggestions, want to contribute or want to chat, please join [our discord](https://discord.gg/buPFYXzDDd) and drop a message.
 
+## Testing adapters
+```
+node test.js projects/pangolin/index.js
+```

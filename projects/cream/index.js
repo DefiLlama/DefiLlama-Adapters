@@ -274,6 +274,42 @@ const fantomTvl = async (timestamp, ethBlock, chainBlocks) => {
   return balances;
 };
 
+const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
+  const block = chainBlocks["polygon"];
+  const chain = 'polygon'
+  let balances = {};
+
+  let tokens = (
+    await utils.fetchURL(
+      "https://api.cream.finance/api/v1/crtoken?comptroller=polygon"
+    )
+  ).data;
+
+  let cashValues = (
+    await sdk.api.abi.multiCall({
+      block,
+      calls: tokens.map((token) => ({ target: token.token_address })),
+      abi: abiCerc20["getCash"],
+      chain
+    })
+  ).output;
+
+  let underlyings = (
+    await sdk.api.abi.multiCall({
+      block,
+      calls: tokens.map((token) => ({ target: token.token_address })),
+      abi: abiCerc20["underlying"],
+      chain
+    })
+  ).output;
+
+  cashValues.map((cashVal, idx) => {
+    const tokenAddr = 'polygon:'+ underlyings[idx].output
+    sdk.util.sumSingleBalance(balances, tokenAddr, cashVal.output);
+  });
+  return balances
+}
+
 module.exports = {
   start: 1599552000, // 09/08/2020 @ 8:00am (UTC)
   ethereum: {
@@ -285,5 +321,8 @@ module.exports = {
   fantom: {
     tvl: fantomTvl,
   },
-  tvl: sdk.util.sumChainTvls([ethereumTvl, fantomTvl, bscTvl]),
+  polygon:{
+    tvl: polygonTvl
+  },
+  tvl: sdk.util.sumChainTvls([ethereumTvl, fantomTvl, bscTvl, polygonTvl]),
 };

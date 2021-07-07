@@ -1,3 +1,4 @@
+const { default: BigNumber } = require("bignumber.js");
 const { request, gql } = require("graphql-request");
 
 const graphUrl = 'https://graph.mirror.finance/graphql'
@@ -16,13 +17,18 @@ query liq($network: Network){
 const tvlQuery = gql`
 query statistic{
   statistic{
-    totalValueLocked
+    totalValueLocked {
+      total
+      collateral
+      liquidity
+    }
     collateralRatio
   }
 }
 `
 
 const ust = val=>Number(val)*1e12
+const fixed = val=>BigNumber(val).toFixed(0)
 
 function getMirLiquidity(network){
   return request(
@@ -41,26 +47,26 @@ const ustAddress = "0xa47c8bf37f92abed4a126bda807a7b7498661acd"
 async function terraPool2() {
   const pool2TerraLiq = getPool2Liq(await getMirLiquidity('TERRA'))
   return {
-    [ustAddress] : pool2TerraLiq.toFixed(0),
+    [ustAddress] : fixed(pool2TerraLiq),
   }
 }
 
 async function ethereumPool2() {
   const pool2EthLiq = getPool2Liq(await getMirLiquidity('ETH'))
   return {
-    [ustAddress] : pool2EthLiq.toFixed(0),
+    [ustAddress] : fixed(pool2EthLiq),
   }
 }
 
 async function terraTvl() {
-  const totalTvl = request(graphUrl,tvlQuery).then(data=>ust(data.statistic.totalValueLocked))
+  const totalTvl = request(graphUrl,tvlQuery).then(data=>ust(data.statistic.totalValueLocked.total))
   const ethLiquidity = getMirLiquidity('ETH')
   const terraLiquidity = getMirLiquidity('TERRA')
   const totalEthLiquidity = getTotalLiq(await ethLiquidity)
   const pool2TerraLiq = getPool2Liq(await terraLiquidity)
 
   return {
-    [ustAddress] : ((await totalTvl)-totalEthLiquidity-pool2TerraLiq).toFixed(0),
+    [ustAddress] : fixed((await totalTvl)-totalEthLiquidity-pool2TerraLiq),
   }
 }
 
@@ -70,7 +76,7 @@ async function ethereumTvl() {
   const pool2EthLiq = getPool2Liq(await ethLiquidity)
 
   return {
-    [ustAddress]: (totalEthLiquidity-pool2EthLiq).toFixed(0)
+    [ustAddress]: fixed(totalEthLiquidity-pool2EthLiq)
   }
 }
 
@@ -79,7 +85,7 @@ async function tvl(timestamp, block) {
   const eth = getTvl(await ethereumTvl())
   const terr = getTvl(await terraTvl())
   return {
-    [ustAddress]: (eth+terr).toFixed(0)
+    [ustAddress]: fixed(eth+terr)
   }
 }
 

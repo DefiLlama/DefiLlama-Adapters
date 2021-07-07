@@ -21,6 +21,18 @@ async function transformFantomAddress() {
     }
 }
 
+async function transformAvaxAddress() {
+    const bridgeTokens = (await utils.fetchURL("https://raw.githubusercontent.com/0xngmi/bridge-tokens/main/data/penultimate.json")).data
+
+    return (addr) => {
+        const srcToken = bridgeTokens.find(token => token["Avalanche Token Address"].toLowerCase() === addr.toLowerCase())
+        if (srcToken !== undefined && srcToken["Ethereum Token Decimals"] === srcToken["Avalanche Token Decimals"]) {
+            return srcToken["Ethereum Token Address"]
+        }
+        return `avax:${addr}`
+    }
+}
+
 async function transformBscAddress() {
     const binanceBridge = (await utils.fetchURL("https://api.binance.org/bridge/api/v2/tokens?walletNetwork=")).data.data.tokens
 
@@ -92,5 +104,6 @@ module.exports = {
     transformFantomAddress,
     transformBscAddress,
     transformPolygonAddress,
-    transformXdaiAddress
+    transformXdaiAddress,
+    transformAvaxAddress
 };

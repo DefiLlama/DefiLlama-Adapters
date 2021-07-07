@@ -30,6 +30,8 @@ module.exports = {
         tvl: eth,
         staking
     },
+    staking:{
+        tvl: staking
+    },
     tvl: eth,
-    staking
 }

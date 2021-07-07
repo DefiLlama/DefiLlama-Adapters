@@ -1,10 +1,15 @@
 const sdk = require('@defillama/sdk');
 const _ = require('underscore');
 const BigNumber = require('bignumber.js');
+const curvePools = require('../convex/pools-crv.js')
 
 const abi = require('./abi');
 
 const gusd = '0x056Fd409E1d7A124BD7017459dFEa2F387b6d5Cd'
+const curveFactoryPools = [
+  "0xEd279fDD11cA84bEef15AF5D39BB4d4bEE23F0cA",
+  "0x4807862AA8b2bF68830e4C8dc86D0e9A998e085a"
+].map(pool=>pool.toLowerCase())
 
 async function tvl(timestamp, block) {
   let balances = {};
@@ -66,13 +71,16 @@ async function tvl(timestamp, block) {
     }
     if(pricePerFullShare.success){
       underlying = tokens[i];
-      if(underlying.output.toLowerCase() === '0xd2967f45c4f384deea880f807be904762a3dea07'){
+      const underlyingAddr = underlying.output.toLowerCase()
+
+      const curvePool = curvePools.find(pool=>pool.addresses.lpToken.toLowerCase() === underlyingAddr)?.addresses.swap ?? curveFactoryPools.find(underlyingAddr)
+      if(curvePool !== undefined){
         const virtualPrice = await sdk.api.abi.call({
-          target: '0x4f062658EaAF2C1ccf8C8e36D6824CDf41167956',
+          target: curvePool,
           abi: abi.get_virtual_price,
           block
         })
-        underlying.output = gusd
+        underlying.output = gusd // Wrong, we just count all curve lp underlyings as GUSD
         balanceOf.output = BigNumber(balanceOf.output).times(virtualPrice.output).div(BigNumber(10).pow(18+18-2)).toFixed(0) // 2 decimals for GUSD
       }
       balanceOf.output = BigNumber(balanceOf.output).times(pricePerFullShare.output).div(BigNumber(10).pow(18)).toFixed(0)
