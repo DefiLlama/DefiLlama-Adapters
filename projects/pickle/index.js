@@ -47,6 +47,12 @@ const ethTvl = async (timestamp, block, chainBlocks) => {
           balance: jar_balances[idx],
           token: jar.tokenAddress
         });
+      } else if(jar.name==="aleth") {
+        sdk.util.sumSingleBalance( // sum as weth
+          balances,
+          "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+          jar_balances[idx]
+        );
       } else {
         sdk.util.sumSingleBalance(
           balances,
