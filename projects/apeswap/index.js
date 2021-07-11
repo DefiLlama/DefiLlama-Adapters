@@ -64,13 +64,14 @@ async function poolsTvl(timestamp, ethBlock, chainBlocks) {
 
 module.exports = {
   bsc:{
-    bscTvl,
+    tvl: bscTvl,
   },
   polygon:{
-    polygonTvl,
+    tvl: polygonTvl,
   },
-  pools:{
-    poolsTvl,
+  staking:{
+    tvl: poolsTvl,
   },
-  tvl: sdk.util.sumChainTvls([polygonTvl, bscTvl, poolsTvl])
+  methodology: "TVL is extracted from the subgraphs, staking TVL is accounted as the banana on 0x5c8D727b265DBAfaba67E050f2f739cAeEB4A6F9",
+  tvl: sdk.util.sumChainTvls([polygonTvl, bscTvl])
 }
