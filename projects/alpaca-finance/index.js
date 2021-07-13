@@ -4,11 +4,6 @@ const BigNumber = require("bignumber.js");
 const axios = require("axios");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs")
 
-async function tvl(timestamp, ethBlock, chainBlocks) {
-  const tvl = await calTvl(timestamp)
-  return tvl;
-}
-
 async function getProcolAddresses() {
   return (await axios.get(
     'https://raw.githubusercontent.com/alpaca-finance/bsc-alpaca-contract/main/.mainnet.json'
@@ -19,16 +14,14 @@ function getBSCAddress(address) {
   return `bsc:${address}`
 }
 
-async function calTvl(timestamp) {
+async function tvl(timestamp, ethBlock, chainBlocks) {
   /// @dev Initialized variables
   const balances = {}
 
   /// @dev Getting all addresses from Github
   const addresses = await getProcolAddresses()
 
-  const { block } = await sdk.api.util.lookupBlock(timestamp, {
-      chain: 'bsc'
-  })
+  const block = chainBlocks.bsc;
 
   for(let i = 0; i < addresses['Vaults'].length; i++) {
     /// @dev getting balances that each of workers holding
@@ -82,7 +75,7 @@ async function calTvl(timestamp) {
 
     /// @dev sum single-asset balances to balances variable
     singleAssetWorkersBalances.forEach((s) => {
-      balances[getBSCAddress(u.input.target)] = BigNumber(balances[getBSCAddress(s.token)] || 0).plus(BigNumber(s.balance)).toFixed(0)
+      balances[getBSCAddress(s.token)] = BigNumber(balances[getBSCAddress(s.token)] || 0).plus(BigNumber(s.balance)).toFixed(0)
     })
   }
 

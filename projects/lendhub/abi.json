@@ -1,0 +1,61 @@
+
+{
+    "getAllMarkets": {
+        "constant": true,
+        "inputs": [],
+        "name": "getAllMarkets",
+        "outputs": [
+            {
+                "internalType": "contract CToken[]",
+                "name": "",
+                "type": "address[]"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "underlying": {
+		"constant": true,
+		"inputs": [],
+		"name": "underlying",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+    "getCash": {
+		"constant": true,
+		"inputs": [],
+		"name": "getCash",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+    "valtToken": {
+		"inputs": [],
+		"name": "token",
+		"outputs": [
+			{
+				"internalType": "contract IERC20",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+}
