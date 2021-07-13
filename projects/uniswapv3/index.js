@@ -1,7 +1,7 @@
 const { request, gql } = require("graphql-request");
 const { toUSDTBalances } = require('../helper/balances');
 
-const graphUrl = 'https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-v3-alt'
+const graphUrl = 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3'
 const graphQuery = gql`
 query get_tvl($block: Int) {
   factories(
