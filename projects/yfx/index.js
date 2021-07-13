@@ -3,13 +3,19 @@ const BigNumber = require("bignumber.js");
 const helper = require("../helper/utils.js");
 
 
-const url = 'https://info.yfx.com/Lineapi11/fundDistribution?chain=EVERY&type=ALL&token=ALL';
+const url = 'https://info.yfx.com/Lineapi/fundDistribution?chain=EVERY&type=ALL&token=ALL';
 
 
 async function getYFXLiquidity(block, chain) {
   let res = await helper.fetchURL(url);
-  if (!res.data) return 0;
-  for (let k in res.data){
+  try{
+    if (!res.data.data) return 0;
+  }
+  catch(e){
+      return 0;
+  }
+  res = res.data.data;
+  for (let k in res){
     if (res[k].name == chain){
       return res[k].value;
     }
