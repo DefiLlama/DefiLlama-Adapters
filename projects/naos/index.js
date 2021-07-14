@@ -90,8 +90,30 @@ async function tvl(timestamp, block) {
     block,
   });
 
-  balances[NAOS_ADDRESS] = uniEthNaosLP._reserve0;
-  balances[WETH_ADDRESS] = uniEthNaosLP._reserve1;
+  let uniNAOSTokenAmount = new BigNumber(uniEthNaosLP._reserve0);
+  let uniWETHTokenAmount = new BigNumber(uniEthNaosLP._reserve1);
+
+  let { output: uni_NAOS_WETH_LpTotalSupply } = await sdk.api.abi.call({
+    target: UNI_ETH_NAOS_LP_ADDRESS,
+    abi: abis.abis.minABI[2], // totalSupply
+    block,
+  });
+
+  uni_NAOS_WETH_LpTotalSupply = new BigNumber(uni_NAOS_WETH_LpTotalSupply);
+
+  let { output: stakingPoolHoldWethNaosLpTotalAmount } = await sdk.api.erc20.balanceOf({
+    target: UNI_ETH_NAOS_LP_ADDRESS,
+    owner: STAKING_POOL_ADDRESS,
+    block: block,
+  });
+
+  stakingPoolHoldWethNaosLpTotalAmount = new BigNumber(stakingPoolHoldWethNaosLpTotalAmount);
+  const stakedPercentage = stakingPoolHoldWethNaosLpTotalAmount.div(uni_NAOS_WETH_LpTotalSupply);
+  const naosStakedAmount = uniNAOSTokenAmount.multipliedBy(stakedPercentage);
+  const wethStakedAmount = uniWETHTokenAmount.multipliedBy(stakedPercentage);
+  balances[NAOS_ADDRESS] = naosStakedAmount.toFixed(0);
+  balances[WETH_ADDRESS] = wethStakedAmount.toFixed(0);
+
   // ---- End uniswap eth-naos lp
 
   // ---- Start naos staking
@@ -111,8 +133,6 @@ async function tvl(timestamp, block) {
   });
   sdk.util.sumSingleBalance(balances, CRV_ADDRESS, nUSD3CrvAmount); // treat nUSD-3CRV LP as 3CRV
   // ---- End nUSD-3CRV staking
-
-  console.log(balances);
 
   return balances;
 }
