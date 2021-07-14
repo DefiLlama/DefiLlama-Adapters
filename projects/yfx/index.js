@@ -40,6 +40,15 @@ const okTvl = async (timestamp, ethBlock, chainBlocks) => {
   return await getYFXLiquidity(1, 'OK');
 }
 
+const totalTvl = async (timestamp, ethBlock, chainBlocks) => {
+  let total = 0;
+  total += await bscTvl(1,1,1)*10**6;
+  total += await hecoTvl(1,1,1)*10**6;
+  total += await okTvl(1,1,1)*10**6;
+  total += await xdaiTvl(1,1,1)*10**6;
+  return {'0xdac17f958d2ee523a2206206994597c13d831ec7':total};
+}
+
 module.exports = {
   bsc: {
     tvl: bscTvl,
@@ -53,5 +62,6 @@ module.exports = {
   ok: {
     tvl: okTvl,
   },
-  tvl: sdk.util.sumChainTvls([hecoTvl, bscTvl, xdaiTvl, okTvl]),
+//   tvl: sdk.util.sumChainTvls([hecoTvl, bscTvl, xdaiTvl, okTvl]),
+  tvl: totalTvl,
 };
