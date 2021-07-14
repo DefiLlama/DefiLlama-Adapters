@@ -1,61 +1,26 @@
 {
-  "poolUsdc": {
-    "info": {
-      "type": "function",
-      "stateMutability": "view",
-      "outputs": [
-        {
-          "type": "uint256",
-          "name": "",
-          "internalType": "uint256"
-        },
-        {
-          "type": "uint256",
-          "name": "",
-          "internalType": "uint256"
-        },
-        {
-          "type": "uint256",
-          "name": "",
-          "internalType": "uint256"
-        },
-        {
-          "type": "bool",
-          "name": "",
-          "internalType": "bool"
-        },
-        {
-          "type": "bool",
-          "name": "",
-          "internalType": "bool"
-        }
-      ],
-      "name": "info",
-      "inputs": []
-    },
-    "collateral": {
-      "type": "function",
-      "stateMutability": "view",
-      "outputs": [
-        {
-          "type": "address",
-          "name": "",
-          "internalType": "address"
-        }
-      ],
-      "name": "collateral",
-      "inputs": []
-    }
-  },
-  "treasury": {
-    "globalCollateralBalance": {
+  "IronSwap": {
+    "getTokenBalances": {
       "inputs": [],
-      "name": "globalCollateralBalance",
+      "name": "getTokenBalances",
       "outputs": [
         {
-          "internalType": "uint256",
+          "internalType": "uint256[]",
           "name": "",
-          "type": "uint256"
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    "getTokens": {
+      "inputs": [],
+      "name": "getTokens",
+      "outputs": [
+        {
+          "internalType": "contract IERC20[]",
+          "name": "",
+          "type": "address[]"
         }
       ],
       "stateMutability": "view",

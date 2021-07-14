@@ -10,7 +10,7 @@ const snxGraphEndpoint = 'https://api.thegraph.com/subgraphs/name/synthetixio-te
 const ethStaking = "0xc1aae9d18bbe386b102435a8632c8063d31e747c"
 const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
 
-async function tvl(timestamp, block) {
+async function eth(timestamp, block) {
 
   let totalTopStakersSNXLocked = new BigNumber(0);
   let totalTopStakersSNX = new BigNumber(0);
@@ -56,7 +56,7 @@ async function tvl(timestamp, block) {
   })
 
   return {
-    [synthetix]: totalSNXLocked.times(Math.pow(10, 18)).toFixed(),
+    [synthetix]: totalSNXLocked.times(Math.pow(10, 18)).toFixed(0),
     [weth]: ethStaked.output
   };
 }
@@ -84,10 +84,23 @@ async function SNXHolders(blockNumber) {
   });
 }
 
+async function optimism(_timestamp, _ethBlock, chainBlocks){
+  return {
+    [synthetix]: (await sdk.api.erc20.totalSupply({
+      target: "0x8700daec35af8ff88c16bdf0418774cb3d7599b4",
+      chain: 'optimism',
+      block: chainBlocks.optimism
+    })).output
+  }
+}
+
 module.exports = {
-  name: 'Synthetix',
-  token: 'SNX',
-  category: 'derivatives',
   start: 1565287200,  // Fri Aug 09 2019 00:00:00
-  tvl,
+  ethereum:{
+    tvl: eth,
+  },
+  optimism:{
+    tvl: optimism
+  },
+  tvl: sdk.util.sumChainTvls([eth, optimism])
 };
