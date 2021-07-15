@@ -10,8 +10,8 @@ const BSC_DEX_SUBGRAPH =
   "https://graphapi.cafeswap.finance/subgraphs/name/cafeswap/cafeswap-subgraph-bsc";
 
 const liquidityQuery = gql`
-  query get_tvl($id: String) {
-    uniswapFactory(id: $id) {
+  query get_tvl($id: String, $block: Int) {
+    uniswapFactory(id: $id, block: { number: $block }) {
       totalVolumeUSD
       totalLiquidityUSD
     }
@@ -21,6 +21,7 @@ const liquidityQuery = gql`
 async function bscTvl(timestamp, block, chainBlocks) {
   const { uniswapFactory } = await request(BSC_DEX_SUBGRAPH, liquidityQuery, {
     id: BSC_DEX_FACTORY,
+    block: chainBlocks.bsc
   });
   const usdTvl = Number(uniswapFactory.totalLiquidityUSD); // (Subgraph) Use totalLiquidityUSD till last sync block
   return toUSDTBalances(usdTvl);
