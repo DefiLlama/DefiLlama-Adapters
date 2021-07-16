@@ -67,6 +67,23 @@ async function tvl(timestamp, block) {
   balances[DAI_CONTRACT_ADDRESS] = sumTwoNumber(balances[DAI_CONTRACT_ADDRESS], yvDaiTVL).toFixed(0); // add yvdai tvl with dai
   // ---- End DAI and yvDai
 
+
+
+
+  // ---- Start nUSD-3CRV staking
+  let { output: nUSD3CrvAmount } = await sdk.api.erc20.balanceOf({
+    target: NUSD_3CRV_LP_ADDRESS,
+    owner: STAKING_POOL_ADDRESS,
+    block: block,
+  });
+  sdk.util.sumSingleBalance(balances, CRV_ADDRESS, nUSD3CrvAmount); // treat nUSD-3CRV LP as 3CRV
+  // ---- End nUSD-3CRV staking
+
+  return balances;
+}
+
+async function pool2(timestamp, block) {
+  const balances = {}
   // ---- Start uniswap eth-naos lp
   const { output: uniEthNaosLP } = await sdk.api.abi.call({
     target: UNI_ETH_NAOS_LP_ADDRESS,
@@ -115,28 +132,31 @@ async function tvl(timestamp, block) {
   balances[WETH_ADDRESS] = wethStakedAmount.toFixed(0);
 
   // ---- End uniswap eth-naos lp
+  return balances
+}
 
-  // ---- Start naos staking
-  let { output: naosAmount } = await sdk.api.erc20.balanceOf({
-    target: NAOS_ADDRESS,
-    owner: STAKING_POOL_ADDRESS,
-    block: block,
-  });
-  sdk.util.sumSingleBalance(balances, NAOS_ADDRESS, naosAmount);
-  // ---- End naos staking
-
-  // ---- Start nUSD-3CRV staking
-  let { output: nUSD3CrvAmount } = await sdk.api.erc20.balanceOf({
-    target: NUSD_3CRV_LP_ADDRESS,
-    owner: STAKING_POOL_ADDRESS,
-    block: block,
-  });
-  sdk.util.sumSingleBalance(balances, CRV_ADDRESS, nUSD3CrvAmount); // treat nUSD-3CRV LP as 3CRV
-  // ---- End nUSD-3CRV staking
-
-  return balances;
+async function staking(timestamp, block) {
+    const balances = {}
+    // ---- Start naos staking
+    let { output: naosAmount } = await sdk.api.erc20.balanceOf({
+      target: NAOS_ADDRESS,
+      owner: STAKING_POOL_ADDRESS,
+      block: block,
+    });
+    sdk.util.sumSingleBalance(balances, NAOS_ADDRESS, naosAmount);
+    // ---- End naos staking
+    return balances
 }
 
 module.exports = {
+  ethereum:{
+    tvl
+  },
+  staking:{
+    tvl: staking
+  },
+  pool2:{
+    tvl: pool2
+  },
   tvl,
 };
