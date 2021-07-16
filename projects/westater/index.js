@@ -34,6 +34,14 @@ const farms = [
   },
 ]
 
+function transform(tokenAddress){
+  if(tokenAddress === "0x5545153ccfca01fbd7dd11c0b23ba694d9509a6f"){
+    return "0x6f259637dcd74c767781e37bc6133cd6a68aa161"
+  } else {
+    return `heco:${tokenAddress}`
+  }
+}
+
 async function tvl(timestamp, block) {
   const balances = {}
   for (let i = 0; i < farms.length; i++) {
@@ -49,30 +57,12 @@ async function tvl(timestamp, block) {
     })
 
     if (type === TYPE_TOKEN) {
-      if (typeof balances[`${chain}:${token}`] === 'undefined') {
-        Object.assign(balances, {
-          [`${chain}:${token}`]: balanceStones.output
-        })
-      } else {
-        balances[`${chain}:${token}`] = new BigNumber(balances[`${chain}:${token}`]).plus(new BigNumber(balanceStones.output)).toFixed(0)
-      }
+      sdk.util.sumSingleBalance(balances, transform(token), balanceStones.output)
     } else if (type === TYPE_LP) {
-      let _balances = {}
-      await unwrapUniswapLPs(_balances, [{
+      await unwrapUniswapLPs(balances, [{
         token,
         balance: balanceStones.output,
-      }],'latest', CHAIN_HECO)
-
-      for(const _token in _balances){
-        const _value = _balances[_token]
-        if (typeof balances[`${chain}:${_token}`] === 'undefined') {
-          Object.assign(balances, {
-            [`${chain}:${_token}`]: _value
-          })
-        }else {
-          balances[`${chain}:${token}`] = new BigNumber(balances[`${chain}:${token}`]).plus(new BigNumber(_value)).toFixed(0)
-        }
-      }
+      }],'latest', CHAIN_HECO, transform)
     }
   }
   return balances;
