@@ -35,7 +35,7 @@ async function tvl() {
         'terra-luna': wlunaAmount + renLunaAmount,
         'frax': fraxAmount,
         'usdp': paiAmount,
-        'wrapped-bitcoin': pbtcAmount,
+        'ptokens-btc': pbtcAmount,
         'bitcoin': btcAmount
     }
 }
