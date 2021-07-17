@@ -3,7 +3,7 @@ const {getTokenBalance} = require('./helper/solana')
 async function tvl() {
     const [usdcAmount, usdtAmount, paiAmount, usdcAmount_2, btcAmount, renBtcAmount, pbtcAmount, renBtcAmount_2,
     hbtcAmount, renBtcAmount_3, ustAmount, daiAmount, busdAmount, fraxAmount, usdcAmount_3, wlunaAmount, renLunaAmount] = await Promise.all([
-        //usdc-usdt pool/Users/michaelhuang/Projects/DefiLlama-Adapters/projects 
+        //usdc-usdt
         getTokenBalance("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "5C1k9yV7y4CjMnKv8eGYDgWND8P89Pdfj79Trk2qmfGo"),
         getTokenBalance("Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", "5C1k9yV7y4CjMnKv8eGYDgWND8P89Pdfj79Trk2qmfGo"),
         //pai-usdc pool
