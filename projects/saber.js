@@ -19,6 +19,8 @@ async function tvl() {
     usdcAmount_3,
     wlunaAmount,
     renLunaAmount,
+    husdAmount,
+    usdcAmount_4,
   ] = await Promise.all([
     //usdc-usdt
     getTokenBalance(
@@ -105,7 +107,7 @@ async function tvl() {
     ),
   ]);
   return {
-    "usd-coin": usdcAmount + usdcAmount_2 + usdcAmount_3,
+    "usd-coin": usdcAmount + usdcAmount_2 + usdcAmount_3 + usdcAmount_4,
     tether: usdtAmount,
     renbtc: renBtcAmount + renBtcAmount_2 + renBtcAmount_3,
     terrausd: ustAmount,
@@ -117,6 +119,7 @@ async function tvl() {
     "ptokens-btc": pbtcAmount,
     bitcoin: btcAmount,
     "huobi-btc": hbtcAmount,
+    husd: husdAmount,
   };
 }
 
