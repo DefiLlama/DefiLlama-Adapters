@@ -31,7 +31,7 @@ async function tvl() {
     return {
         'usd-coin': usdcAmount + usdcAmount_2 + usdcAmount_3,
         'tether': usdtAmount,
-        'renbtc': renBtcAmount + renBtcAmount_2 + rentBtcAmount_3,
+        'renbtc': renBtcAmount + renBtcAmount_2 + renBtcAmount_3,
         'terrausd': ustAmount,
         'dai': daiAmount,
         'busd': busdAmount,
