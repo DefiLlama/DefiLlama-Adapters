@@ -18,10 +18,10 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
-"@defillama/sdk@^2.1.1":
-  version "2.1.2"
-  resolved "https://registry.npmjs.org/@defillama/sdk/-/sdk-2.1.2.tgz#e71fce19b8b9abf0bb49ff60d27f38c3205540db"
-  integrity sha512-u/HP+Sft7QJKHnKAS+aaXMFf3x1jYli9gL2A+AQ2FXiKPxapx/p0Ylkmu3HWZXDu0F5tFtBvi96SmJCfCl3LPg==
+"@defillama/sdk@^2.1.10":
+  version "2.1.10"
+  resolved "https://registry.yarnpkg.com/@defillama/sdk/-/sdk-2.1.10.tgz#defea7caa50047a48840925962ae065214a02f20"
+  integrity sha512-W7lU27X2Z1u88Sh5JJRAHoKa+f/4HbTIw5jym3LuSt7WY0/FfptP1wobvq3tPnISIWu02lmmHwMvD3fPiQ8LrQ==
   dependencies:
     ethers "^5.0.32"
     graphql "^15.5.0"
