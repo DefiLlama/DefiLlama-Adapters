@@ -19,14 +19,14 @@ const factories = {
 const REDUCE_BLOCK = 60;
 
 const graphUrls = {
-  heco: "https://graph.mdex.com/subgraphs/name/mdex/swap",
+  heco: "https://heco-lite-graph.mdex.cc/subgraphs/name/chain/heco",
   bsc: "https://bsc-graph.mdex.com/subgraphs/name/chains/bsc",
 };
 
 const graphQueries = {
   heco: gql`
     query tvl($block: Int) {
-      uniswapFactory(
+      mdexFactory(
         id: "0xb0b670fc1F7724119963018DB0BfA86aDb22d941"
         block: { number: $block }
       ) {
@@ -194,7 +194,7 @@ const hecoTvl = async (timestamp, ethBlock, chainBlocks) => {
 
   return {
     // --- Arrange to account the decimals as it was usdt (decimals = 6) ---
-    [usdtToken]: BigNumber(results.uniswapFactory.totalLiquidityUSD)
+    [usdtToken]: BigNumber(results.mdexFactory.totalLiquidityUSD)
       .multipliedBy(10 ** 6)
       .toFixed(0),
   };
