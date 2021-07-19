@@ -1,8 +1,10 @@
 const {getTokenBalance} = require('./helper/solana')
 
 async function tvl() {
-    const [usdcAmount, usdtAmount, paiAmount, usdcAmount_2, btcAmount, renBtcAmount, pbtcAmount, renBtcAmount_2,
-    renBtcAmount_3, ustAmount, daiAmount, busdAmount, fraxAmount, usdcAmount_3, wlunaAmount, renLunaAmount, usdcAmount_4] = await Promise.all([
+    const [usdcAmount, usdtAmount, paiAmount, usdcAmount_2,
+          btcAmount, renBtcAmount, pbtcAmount, renBtcAmount_2, hbtcAmount, renBtcAmount_3,
+          ustAmount, daiAmount, busdAmount, fraxAmount, usdcAmount_3,
+          wlunaAmount, renLunaAmount, husdAmount, usdcAmount_4] = await Promise.all([
         //usdc-usdt
         getTokenBalance("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "5C1k9yV7y4CjMnKv8eGYDgWND8P89Pdfj79Trk2qmfGo"),
         getTokenBalance("Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", "5C1k9yV7y4CjMnKv8eGYDgWND8P89Pdfj79Trk2qmfGo"),
@@ -14,7 +16,7 @@ async function tvl() {
         getTokenBalance("CDJWUqTcYTVAKXAVXoQZFes5JUFc7owSeq7eMQcDSbo5", "Fekck54VF2MdesR74trJteZbiKj1TD5AVQisXr8E7fjG"),
         getTokenBalance("DYDWu4hE4MN3aH897xQ3sRTs5EAjJDmQsKLNhbpUiKun", "2wszCpUdVDFrJcP79wpV3FdBmU38UC1YKuoSUBA5mhWu"),
         getTokenBalance("CDJWUqTcYTVAKXAVXoQZFes5JUFc7owSeq7eMQcDSbo5", "2wszCpUdVDFrJcP79wpV3FdBmU38UC1YKuoSUBA5mhWu"),
-        //getTokenBalance("8pBc4v9GAwCBNWPB5XKA93APexMGAS4qMr37vNke9Ref", "G4cRef4AxEjaSV32xqQzDmHqi3iz8112LQwx8oPbZhYb"),
+        getTokenBalance("8pBc4v9GAwCBNWPB5XKA93APexMGAS4qMr37vNke9Ref", "G4cRef4AxEjaSV32xqQzDmHqi3iz8112LQwx8oPbZhYb"),
         getTokenBalance("CDJWUqTcYTVAKXAVXoQZFes5JUFc7owSeq7eMQcDSbo5", "D231Uoh24bXtUtWN51ZbFAFSBmGT3zuuEAHZNuCmtRjN"),
         //UST,wDAI,BUSD,FRAX and the USDC that corresponds
         getTokenBalance("CXLBjMMcwkc17GfJtBos6rQCo1ypeH6eDbB82Kby4MRm", "ASpJBf8HtyrNxaMqFNpjYCqi8SsJC5h56hd3HQUNk6M7"),
@@ -26,7 +28,7 @@ async function tvl() {
         getTokenBalance("2Xf2yAXJfg82sWwdLUo2x9mZXy6JCdszdMZkcF1Hf4KV", "4HP9xSxLcEK64zALBCP36GdfDLrMXorVk4X6DyLrBjbp"),
         getTokenBalance("KUANeD8EQvwpT1W7QZDtDqctLEh2FfSTy5pThE9CogT", "4HP9xSxLcEK64zALBCP36GdfDLrMXorVk4X6DyLrBjbp"),
         //HUSD-USDC pool
-        //getTokenBalance("BybpSTBoZHsmKnfxYG47GDhVPKrnEKX31CScShbrzUhX", "2mUxDu8NrhSKhQJMgKfYLxJqZzeEbmwhQdHeHMyohyuk"),
+        getTokenBalance("BybpSTBoZHsmKnfxYG47GDhVPKrnEKX31CScShbrzUhX", "ELnY6YAb1oSPGuARAV8rBJq44AXgT69GJhvWNfuabq9B"),
         getTokenBalance("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "G4gRGymKo7MGzGZup12JS39YVCvy8YMM6KY9AmcKi5iw"),
 
 
@@ -43,8 +45,8 @@ async function tvl() {
         'usdp': paiAmount,
         'ptokens-btc': pbtcAmount,
         'bitcoin': btcAmount,
-        //'huobi-btc': hbtcAmount
-        //'husd': husdAmount,
+        'huobi-btc': hbtcAmount,
+        'husd': husdAmount
     }
 }
 
