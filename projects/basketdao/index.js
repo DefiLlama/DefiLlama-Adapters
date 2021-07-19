@@ -8,6 +8,8 @@ const bmiToken = "0x0aC00355F80E289f53BF368C9Bdb70f5c114C44B";
 
 const bdiEthStaking = "0x2cfDBa69464acae0087476ca78B6b0025E9fc0DD";
 
+const daiToken = '0x6b175474e89094c44da98b954eedeac495271d0f'
+
 async function tvl(timestamp, block) {
   let balances = {};
 
@@ -36,7 +38,7 @@ async function tvl(timestamp, block) {
     block
   );
   sdk.util.sumSingleBalance(balances, bdiToken, (await bdiSupply).output);
-  sdk.util.sumSingleBalance(balances, bmiToken, (await bmiSupply).output);
+  sdk.util.sumSingleBalance(balances, daiToken, (await bmiSupply).output);
 
   return balances;
 }
