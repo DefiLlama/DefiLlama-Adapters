@@ -15,7 +15,7 @@ module.exports = {
   fantom: {
     tvl: chainTvl('fantom'),
   },
-  avax: {
+  avalanche: {
     tvl: chainTvl('avax'),
   },
   tvl: sdk.util.sumChainTvls(['polygon', 'avax', 'fantom'].map(chainTvl))
