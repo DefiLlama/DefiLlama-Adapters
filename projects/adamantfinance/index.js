@@ -10,7 +10,7 @@ const current_vaults_url =
 const polygonTvl = async (timestamp, block, chainBlocks) => {
   const balances = {};
 
-  let vaults = (await utils.fetchURL(current_vaults_url)).data.map((vault) => ({
+  let vaults = (await utils.fetchURL(current_vaults_url)).data.filter(vault=>vault.token0!==vault.lpAddress).map((vault) => ({
     vaultAddress: vault.vaultAddress,
     lpAddress: vault.lpAddress,
   }));
