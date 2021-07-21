@@ -4,7 +4,7 @@ async function tvl() {
     const [usdcAmount, usdtAmount, paiAmount, usdcAmount_2,
           btcAmount, renBtcAmount, pbtcAmount, renBtcAmount_2, hbtcAmount, renBtcAmount_3,
           ustAmount, daiAmount, busdAmount, fraxAmount, usdkAmount, usdcAmount_3,
-          wlunaAmount, renLunaAmount, husdAmount, usdcAmount_4] = await Promise.all([
+          wlunaAmount, renLunaAmount, husdAmount, usdcAmount_4, fttAmount, wfttAmount] = await Promise.all([
         //usdc-usdt
         getTokenBalance("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "5C1k9yV7y4CjMnKv8eGYDgWND8P89Pdfj79Trk2qmfGo"),
         getTokenBalance("Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", "5C1k9yV7y4CjMnKv8eGYDgWND8P89Pdfj79Trk2qmfGo"),
@@ -31,6 +31,9 @@ async function tvl() {
         //HUSD-USDC pool
         getTokenBalance("BybpSTBoZHsmKnfxYG47GDhVPKrnEKX31CScShbrzUhX", "ELnY6YAb1oSPGuARAV8rBJq44AXgT69GJhvWNfuabq9B"),
         getTokenBalance("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "G4gRGymKo7MGzGZup12JS39YVCvy8YMM6KY9AmcKi5iw"),
+        //FTT-wFTT pool
+        getTokenBalance("AGFEad2et2ZJif9jaGpdMixQqvW5i81aBdvKe7PHNfz3", "2ffwMLE4dxSv59eYXhfhfuS81kz6gzf6DZjdBxRHZz9A"),
+        getTokenBalance("GbBWwtYTMPis4VHb8MrBbdibPhn28TSrLB53KvUmb7Gi", "DGPFLHMzcfLeANN5m6gVoMFpo38KuU85tAGFHpLfn3gM"),
 
 
     ])
@@ -48,7 +51,8 @@ async function tvl() {
         'bitcoin': btcAmount,
         'huobi-btc': hbtcAmount,
         'husd': husdAmount,
-        'usdk': usdkAmount
+        'usdk': usdkAmount,
+        'ftx-token': fttAmount + wfttAmount
     }
 }
 
