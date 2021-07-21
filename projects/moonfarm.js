@@ -25,10 +25,10 @@ module.exports = {
   bsc:{
     fetch:bsc
   },
-  heco:{
+  polygon:{
     fetch: polygon
   },
-  polygon:{
+  ethereum:{
     fetch: ethereum
   },
   fetch
