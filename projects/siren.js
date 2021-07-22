@@ -1,68 +1,68 @@
-const web3 = require('./config/web3.js');
 
-const BigNumber = require("bignumber.js");
-const retry = require('./helper/retry')
-const axios = require("axios");
-const abis = require('./config/abis.js')
-const geckoKeys = require('./config/keys.js').keys
+const retry = require('async-retry')
+const { GraphQLClient } = require('graphql-request')
 
 const utils = require('./helper/utils');
 
-
+//This calculates the TVL for siren this value will be off by about 0.1% - 0.2% compared to siren markets because we are using coingecko for prices here.
+//On siren markets we get the price for tokens off chain so there is an expected difference.
 async function fetch() {
-  var opium = await utils.fetchURL('https://static.opium.network/data/opium-addresses.json');
 
+  const sirenSubgraphQL = new GraphQLClient( "https://api.thegraph.com/subgraphs/name/sirenmarkets/protocol",)
 
-  let tokens = [
-    '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-    '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
-    '0x6b3595068778dd592e39a122f4f5a5cf09c90fe2'
-  ]
+  let query = `
+                query GetAMMPoolData {
+                    amms{
+                      id
+                      collateralToken{
+                        id
+                        decimals
+                    }
+                    poolValueSnapshots(orderBy: timestamp, orderDirection: desc, first: 1 ) {
+                      id
+                      poolValue
+                      timestamp
+                    }
+                  }
+                }
+              `
+  //Query subgraph for needed data
+  const graphQueryResult = await retry ( async bail => sirenSubgraphQL.request(query));
 
-  let contracts = [
-    '0x87a3ef113c210ab35afebe820ff9880bf0dd4bfc',
-    '0x25bc339170adbff2b7b9ede682072577fa9d96e8',
-    '0x8337706f5faab1941c8b8b849d21b5016987a04a',
-    '0xde76305e3379aa5391ffc6028ceec655686c5b0a'
-  ]
-  let keys = '';
-  await Promise.all(
-    tokens.map(async (token) => {
-      if (geckoKeys[token.toLowerCase()]) {
-        if (geckoKeys[token.toLowerCase()] !== 'stable') {
-          keys += geckoKeys[token.toLowerCase()]+','
-        }
-      } else {
-
-      }
-    })
-  )
-  keys = keys.slice(0, -1)
-  let price_feed = await utils.getPricesfromString(keys)
   let tvl = 0;
-  await Promise.all(
-    contracts.map(async (contract) => {
-      await Promise.all(
-        tokens.map(async (token) => {
-          if (geckoKeys[token.toLowerCase()]) {
-            let balance = await utils.returnBalance(token, contract);
-            let price = 0;
-            if (geckoKeys[token.toLowerCase()] == 'stable') {
-              price = 1
-            } else {
-              price = price_feed.data[geckoKeys[token.toLowerCase()]].usd
-            }
-            tvl += price * balance
-          }
-        })
-      )
-    })
-  )
+  let tokenList = [];
+  //Loop through first to get token ids that we want to find the price of
+  for(amm of graphQueryResult.amms ) { 
+
+    let collateralTokenAddress = amm.collateralToken.id;
+
+    tokenList.push(collateralTokenAddress);
+  }
+
+  //get token price from coingecko
+  let collateralTokenUSDList = await utils.getPricesFromContract(tokenList);
+
+  //Loop through graphquery again to calcualt the tvl
+  for(amm of graphQueryResult.amms ) { 
+
+      let poolValue = amm.poolValueSnapshots[0].poolValue;
+      let decimals =  amm.collateralToken.decimals;
+
+      let currentCollateralToken = amm.collateralToken.id;
+      
+      let price = collateralTokenUSDList.data[currentCollateralToken];
+
+      let convertedDecimalToken = (poolValue / Math.pow(10, decimals));
+
+      let convertedToUSD = convertedDecimalToken * price.usd;
+
+      tvl = tvl + convertedToUSD;
+    }
 
   return tvl;
-  //return totalTvl.data.totalTvl.tvlInUsd;
 }
 
 module.exports = {
+  
   fetch
 }
