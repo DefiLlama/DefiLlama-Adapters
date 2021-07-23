@@ -6,17 +6,13 @@ const factoryBSC = "0xFC2604a3BCB3BA6016003806A288E7aBF75c8Aa3";
 
 const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
   const balances = {};
-
   await tvlOnPairs("bsc", chainBlocks, factoryBSC, balances);
-
   return balances;
 };
 
 const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
     const balances = {};
-  
     await tvlOnPairs("ethereum", chainBlocks, factoryETH, balances);
-  
     return balances;
   };
 
