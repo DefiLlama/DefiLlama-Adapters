@@ -4,7 +4,8 @@ async function tvl() {
     const [usdcAmount, usdtAmount, paiAmount, usdcAmount_2,
           btcAmount, renBtcAmount, pbtcAmount, renBtcAmount_2, hbtcAmount, renBtcAmount_3,
           ustAmount, daiAmount, busdAmount, fraxAmount, usdkAmount, usdcAmount_3,
-          wlunaAmount, renLunaAmount, husdAmount, usdcAmount_4, fttAmount, wfttAmount, wsrmAmount, srmAmount] = await Promise.all([
+          wlunaAmount, renLunaAmount, husdAmount, usdcAmount_4, fttAmount, wfttAmount, wsrmAmount, srmAmount,
+          ibBtcAmount, btcAmount_2, ibBtcAmount_2] = await Promise.all([
         //usdc-usdt
         getTokenBalance("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "5C1k9yV7y4CjMnKv8eGYDgWND8P89Pdfj79Trk2qmfGo"),
         getTokenBalance("Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", "5C1k9yV7y4CjMnKv8eGYDgWND8P89Pdfj79Trk2qmfGo"),
@@ -37,10 +38,16 @@ async function tvl() {
         //SRM-wSRM pool
         getTokenBalance("2jXy799YnEcRXneFo2GEAB6SDRsAa767HpWmktRr1DaP", "BdvYL4rH3CqJ6eX6d7iC4snNZZvJQXR67T8dHNTUeSmz"),
         getTokenBalance("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt", "BdvYL4rH3CqJ6eX6d7iC4snNZZvJQXR67T8dHNTUeSmz"),
+        //ibBTC-BTC pool & ibBTC from ibBTC-renBTC pool (the renBTC has same address as renBTC from hBTC-renBTC pool)
+        getTokenBalance("66CgfJQoZkpkrEgC1z4vFJcSFc4V6T5HqbjSSNuqcNJz", "4PHvSwhw8Gz26UZfgSjDLx8JLpJnh2kpNCtssgGUKQFe"),
+        getTokenBalance("9999j2A8sXUtHtDoQdk528oVzhaKBsXyRGZ67FKGoi7H", "4PHvSwhw8Gz26UZfgSjDLx8JLpJnh2kpNCtssgGUKQFe"),
+        getTokenBalance("66CgfJQoZkpkrEgC1z4vFJcSFc4V6T5HqbjSSNuqcNJz", "3rjYaVP4fkv4BVQsA7aaC7DZUdogkna7ACGaAhiuNYfi"),
+        
 
 
     ])
     return {
+        'bitcoin': btcAmount + ibBtcAmount + btcAmount_2 + ibBtcAmount_2,
         'usd-coin': usdcAmount + usdcAmount_2 + usdcAmount_3 + usdcAmount_4,
         'renbtc': renBtcAmount + renBtcAmount_2 + renBtcAmount_3,
         'terra-luna': wlunaAmount + renLunaAmount,
@@ -51,7 +58,6 @@ async function tvl() {
         'frax': fraxAmount,
         'usdp': paiAmount,
         'ptokens-btc': pbtcAmount,
-        'bitcoin': btcAmount,
         'huobi-btc': hbtcAmount,
         'husd': husdAmount,
         'usdk': usdkAmount,
