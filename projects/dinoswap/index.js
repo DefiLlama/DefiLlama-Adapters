@@ -30,6 +30,9 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
         block: chainBlocks["polygon"],
       })
     ).output[0];
+    if(token === "0xAa9654BECca45B5BDFA5ac646c939C62b527D394" || token === "0x388E2a3d389F27504212030c2D42Abf0a8188cd1"){ // DINO and stkGHOST-ETH
+      continue;
+    }
 
     const token_bal = (
       await sdk.api.abi.call({
@@ -47,7 +50,7 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
     });
   }
 
-  const transformAddress = await transformPolygonAddress();
+  const transformAddress = await transformPolygonAddress()
 
   await unwrapUniswapLPs(
     balances,
@@ -56,6 +59,10 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
     "polygon",
     transformAddress
   );
+
+  // eth dino to polygon dino
+  balances['polygon:0xAa9654BECca45B5BDFA5ac646c939C62b527D394'] = balances['0x2701e1d67219a49f5691c92468fe8d8adc03e609']
+  delete balances['0x2701e1d67219a49f5691c92468fe8d8adc03e609']
 
   return balances;
 };
