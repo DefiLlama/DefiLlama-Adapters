@@ -39,9 +39,10 @@ async function staking(timestamp, block) {
 }
 
 module.exports = {
-    methodology: "Counts USDC and DAI earning yield on Compound/Aave and backing the yield tokens and USDC in the pendle markets. Staking TVL is just staked PENDLE on SingleStaking",
+    
     tvl,
     staking:{
         tvl: staking
-    }
+    },
+    methodology: "Counts USDC and DAI earning yield on Compound/Aave and backing the yield tokens and USDC in the pendle markets. Staking TVL is just staked PENDLE on SingleStaking",
 }
