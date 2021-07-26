@@ -12,7 +12,7 @@ async function tvl(timestamp, block, chainBlocks) {
     block: chainBlocks['bsc'],
   })).output;
 
-  return { [MINT_TOKEN_CONTRACT]: collateralBalance };
+  return { ['bsc:'+MINT_TOKEN_CONTRACT]: collateralBalance };
 }
 
 module.exports = {
