@@ -30,19 +30,18 @@ async function tvl(timestamp, block) {
 
 async function staking(timestamp, block) {
     return {
-        [PENDLE]: await sdk.api.erc20.balanceOf({
+        [PENDLE]: (await sdk.api.erc20.balanceOf({
             target: PENDLE,
             owner: SingleStaking,
             block
-        })
+        })).output
     }
 }
 
 module.exports = {
-    
     tvl,
     staking:{
         tvl: staking
     },
-    methodology: "Counts USDC and DAI earning yield on Compound/Aave and backing the yield tokens and USDC in the pendle markets. Staking TVL is just staked PENDLE on SingleStaking",
+    methodology: "Counts USDC and DAI earning yield on Compound/Aave and backing the yield tokens and USDC in the pendle markets. Staking TVL is just staked PENDLE on 0x07282F2CEEbD7a65451Fcd268b364300D9e6D7f5",
 }
