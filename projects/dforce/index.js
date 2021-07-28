@@ -200,11 +200,10 @@ async function tvlBSC(timestamp, ethBlock, chainBlocks) {
     chain: 'bsc'
   });
 
-  sdk.util.sumMultiBalanceOf(balances, synthMarketsResults);
+  sdk.util.sumMultiBalanceOf(balances, synthMarketsResults, true);
 
   await (
     Promise.all(bscYieldMarkets.map(async (yieldMarket) => {
-      try {
         let marketTVL = (await sdk.api.abi.call({
           block,
           target: yieldMarket,
@@ -217,14 +216,10 @@ async function tvlBSC(timestamp, ethBlock, chainBlocks) {
         balances['bsc:'+bscYieldUnderlyingTokens[yieldMarket]] = BigNumber(balances[bscYieldUnderlyingTokens[yieldMarket]] || 0)
           .plus(_balance)
           .toFixed();
-      } catch (error) {
-        console.error(error)
-      }
     }))
   );
 
   await (Promise.all(bscLendingMarkets.map(async (lendingMarket) => {
-    try {
       let iTokenTotalSupply = (await sdk.api.abi.call({
         block,
         target: lendingMarket,
@@ -247,10 +242,6 @@ async function tvlBSC(timestamp, ethBlock, chainBlocks) {
       })).output;
 
       balances['bsc:'+underlying] = BigNumber(balances[underlying] || 0).plus(BigNumber(iTokenTotalSupply)).times(BigNumber(iTokenExchangeRate)).div(BigNumber(10 ** 18));
-
-    } catch (error) {
-      console.error(error)
-    }
   })));
 
 
@@ -300,7 +291,6 @@ async function tvlEthereum(timestamp, block) {
 
   await (
     Promise.all(yieldMarkets.map(async (yieldMarket) => {
-      try {
         let marketTVL = (await sdk.api.abi.call({
           block,
           target: yieldMarket,
@@ -312,14 +302,10 @@ async function tvlEthereum(timestamp, block) {
         balances[yieldUnderlyingTokens[yieldMarket]] = BigNumber(balances[yieldUnderlyingTokens[yieldMarket]] || 0)
           .plus(_balance)
           .toFixed();
-      } catch (error) {
-        console.error(error)
-      }
     }))
   );
 
   await (Promise.all(lendingMarkets.map(async (lendingMarket) => {
-    try {
       let iTokenTotalSupply = (await sdk.api.abi.call({
         block,
         target: lendingMarket,
@@ -339,10 +325,6 @@ async function tvlEthereum(timestamp, block) {
       })).output;
 
       balances[underlying] = BigNumber(balances[underlying] || 0).plus(BigNumber(iTokenTotalSupply)).times(BigNumber(iTokenExchangeRate)).div(BigNumber(10 ** 18));
-
-    } catch (error) {
-      console.error(error)
-    }
   })));
 
 
