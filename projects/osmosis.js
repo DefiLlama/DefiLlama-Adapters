@@ -1,7 +1,7 @@
 const utils = require('./helper/utils')
 
 const cosmosId = "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2"
-const NUM_RUNS = 4
+const NUM_RUNS = 10
 
 function setAssetPrice(assetPrices, token, otherToken, amount, otherAmount, weight, otherWeight){
     if(assetPrices[token]){
@@ -35,11 +35,14 @@ async function fetch(){
             setAssetPrice(assetPrices, token0, token1, amount0, amount1, weight0, weight1)
             setAssetPrice(assetPrices, token1, token0, amount1, amount0, weight1, weight1)
             if(i === (NUM_RUNS-1)){
-                totalCosmosTvl += amount0 * assetPrices[token0] / 1e6
-                totalCosmosTvl += amount1 * assetPrices[token1] / 1e6
+                if(assetPrices[token0] !== undefined && assetPrices[token1] !== undefined){
+                    totalCosmosTvl += amount0 * assetPrices[token0] / 1e6
+                    totalCosmosTvl += amount1 * assetPrices[token1] / 1e6
+                }
             }
         })
     }
+    console.log(totalCosmosTvl)
     return cosmosPrice.data.cosmos.usd * totalCosmosTvl
 }
 
