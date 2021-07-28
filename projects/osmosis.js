@@ -42,7 +42,6 @@ async function fetch(){
             }
         })
     }
-    console.log(totalCosmosTvl)
     return cosmosPrice.data.cosmos.usd * totalCosmosTvl
 }
 
