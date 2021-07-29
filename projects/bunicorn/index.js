@@ -31,7 +31,7 @@ query GET_TOTAL_STABLE_TVL($block: Int) {
 
 const graphBuniPriceQuery = gql`
 query GET_BUNI_PRICE($block: Int) {
-  tokenPrices(where: {id: "0x0e7beec376099429b85639eb3abe7cf22694ed49"}) {
+  tokenPrices(where: {id: "0x0e7beec376099429b85639eb3abe7cf22694ed49"}, block: { number: $block }) {
     id
     symbol
     name
