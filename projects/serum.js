@@ -5,6 +5,10 @@ const { Market } = require('@project-serum/serum');
 const serumProgramId = '9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin'
 const step = 1;
 
+function add(balances, token, amount){
+  balances[token] = (balances[token] || 0) + amount
+}
+
 async function fetch() {
   let tvl = 0;
   const balances = {}
@@ -23,30 +27,29 @@ async function fetch() {
       const floor = Math.max(...Array.from(bids).map(ask => ask.price))
       if (floor === -Infinity || ceil === Infinity) return
       const price = (floor + ceil) / 2
-      let marketSize = 0;
-      for (let order of Array.from(asks).concat(Array.from(bids))) {
-        //console.log(order.size, order.side, order.price)
-        marketSize += order.size
-      }
       const [buyCurrency, quoteCurrency] = marketData.market.split('/')
+      for (let order of Array.from(asks)) {
+        add(balances, buyCurrency, order.size)
+      }
+      for (let order of Array.from(bids)) {
+        add(balances, quoteCurrency, order.size * order.price)
+      }
 
-      if (quoteCurrency === 'USDT') {
+      if (quoteCurrency === 'USDT' || quoteCurrency === 'USDC') {
         tokenPrices[buyCurrency] = price
       }
-      balances[quoteCurrency] = (balances[quoteCurrency] || 0) + marketSize * price
     }))
   }
   tokenPrices['USDT'] = 1
   tokenPrices['USDC'] = 1
+
   Object.entries(balances).forEach(([token, balance]) => {
     const price = tokenPrices[token]
     if (price === undefined) {
+      console.error(`There's no price for ${token}`)
       return
     }
-    //balance error in here somewhere /Alex
-    if (balance < 1000000000) {
-      tvl += price * balance
-    }
+    tvl += price * balance
   })
   return tvl;
 }
