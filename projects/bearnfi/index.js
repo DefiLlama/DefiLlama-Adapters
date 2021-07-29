@@ -60,7 +60,7 @@ async function bscTvl(timestamp, chainBlocks) {
       strategy.token.includes("BLP") ||
       strategy.token.includes("CLP") ||
       strategy.token.includes("vBSWAP") ||
-      strategy.token.includes("VLP")
+      strategy.token.includes("VLP") && strategy.token !== "VLP_BDO_VDOLLAR"
     ) {
       lpPositions.push({
         token: wantedAddresses[idx],
