@@ -28,33 +28,6 @@ query GET_TOTAL_STABLE_TVL($block: Int) {
 }
 `;
 
-const graphBuniPriceQuery = gql`
-query GET_BUNI_PRICE($block: Int) {
-  tokenPrices(where: {id: "0x0e7beec376099429b85639eb3abe7cf22694ed49"}, block: { number: $block }) {
-    id
-    symbol
-    name
-    decimals
-    price
-  }
-}
-`;
-
-async function getBuniPrice(chainBlocks) {
-  const { tokenPrices } = await request(
-    tokenSubgraphUrl,
-    graphBuniPriceQuery,
-    {
-      block: chainBlocks.bsc
-    }
-  );
-  if (!tokenPrices || !tokenPrices[0]) {
-    throw new Error('Empty price');
-  }
-
-  return parseFloat(tokenPrices[0].price);
-}
-
 
 async function getTotalFarmTVL(timestamp, ethBlock, chainBlocks) {
   try {
