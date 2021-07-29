@@ -4,7 +4,6 @@ const abi = require("./abi.json");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { transformBscAddress } = require("../helper/portedTokens");
 const web3 = require("web3");
-y
 const MASTERCHEF_CONTRACT = "0x6dDb25ca46656767f8f2385D653992dC1cdb4470";
 
 const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
