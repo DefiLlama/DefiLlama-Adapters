@@ -27,10 +27,10 @@ const passedFile = path.resolve(process.cwd(), process.argv[2]);
     let usdTvl;
     const { timestamp, ethereumBlock, chainBlocks } = await getBlocks();
     for(const tvlSection of Object.keys(importedModule)){
-        if(typeof importedModule[tvlSection] !== "object"){
+        const moduleToTest = (tvlSection === 'tvl' || tvlSection === 'fetch') ? importedModule : importedModule[tvlSection]
+        if(typeof moduleToTest !== "object"){
             continue
         }
-        const moduleToTest = (tvlSection === 'tvl' || tvlSection === 'fetch') ? importedModule : importedModule[tvlSection]
         console.log(`--- ${tvlSection} ---`)
         if (moduleToTest.fetch) {
             usdTvl = await moduleToTest.fetch(timestamp);
