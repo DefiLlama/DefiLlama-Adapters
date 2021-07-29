@@ -2,7 +2,6 @@ const BigNumber = require("bignumber.js");
 const {toUSDTBalances} = require('../helper/balances');
 const sdk = require("@defillama/sdk");
 const { request, gql } = require("graphql-request");
-const abi = require("./abi.json");
 
 const tokenSubgraphUrl = 'https://graph.bunicorn.exchange/subgraphs/name/bunicorndefi/buni-token';
 const stableSubgraphUrl = 'https://api.thegraph.com/subgraphs/name/bunicorndefi/buni-stablecoins';
@@ -114,19 +113,21 @@ async function getTotalStableTVL(timestamp, ethBlock, chainBlocks) {
 }
 
 async function getTotalTVL(timestamp, ethBlock, chainBlocks) {
-  const [tokensSummary, stableSummary, farmSummary] = await Promise.all([
+  const [tokensSummary, stableSummary] = await Promise.all([
     getTotalTokenTVL(timestamp, ethBlock, chainBlocks),
-    getTotalStableTVL(timestamp, ethBlock, chainBlocks),
-    getTotalFarmTVL(timestamp, ethBlock, chainBlocks)
+    getTotalStableTVL(timestamp, ethBlock, chainBlocks)
   ]);
 
-  return toUSDTBalances(new BigNumber(tokensSummary).plus(stableSummary).plus(farmSummary));
+  return toUSDTBalances(new BigNumber(tokensSummary).plus(stableSummary));
 }
 
 module.exports = {
   bsc:{
     tvl: getTotalTVL
   },
-  tvl: sdk.util.sumChainTvls([getTotalTVL])
+  staking:{
+    tvl: getTotalFarmTVL,
+  },
+  tvl: sdk.util.sumChainTvls([getTotalTVL, getTotalFarmTVL])
 }
 
