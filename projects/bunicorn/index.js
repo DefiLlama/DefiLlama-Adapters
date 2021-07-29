@@ -127,6 +127,6 @@ module.exports = {
   bsc:{
     tvl: getTotalTVL
   },
-  tvl: getTotalTVL
+  tvl: sdk.util.sumChainTvls([getTotalTVL])
 }
 
