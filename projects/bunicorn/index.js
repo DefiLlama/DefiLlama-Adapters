@@ -28,25 +28,17 @@ query GET_TOTAL_STABLE_TVL($block: Int) {
 }
 `;
 
-
 async function getTotalFarmTVL(timestamp, ethBlock, chainBlocks) {
   try {
-    const block = chainBlocks.bsc
-    const result = await sdk.api.abi.multiCall({
-      calls: [
-        {
-          target: BUNI_CONTRACT_ADDRESS,
-          params: [MASTERCHET_CONTRACT_ADDRESS]
-        }
-      ],
-      block,
-      abi: abi.balanceOf,
-      chain: 'bsc'
+    const balances = {};
+    const stakedBuni = sdk.api.erc20.balanceOf({
+      target: BUNI_CONTRACT_ADDRESS,
+      owner: MASTERCHET_CONTRACT_ADDRESS,
+      chain: 'bsc',
+      block: chainBlocks.bsc
     })
-    const balance = result.output[0] && result.output[0].output;
-    const buniPrice = await getBuniPrice(chainBlocks);
-
-    return new BigNumber(balance).div(1e18).times(buniPrice);
+    sdk.util.sumSingleBalance(balances, 'bsc:' + BUNI_CONTRACT_ADDRESS, (await stakedBuni).output)
+    return balances
   } catch (e) {
     throw new Error('getTotalFarmTVL has exception:' + e.message);
   }
