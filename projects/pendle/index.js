@@ -9,8 +9,10 @@ const PENDLE = "0x808507121b80c02388fad14726482e061b8da827"
 const contracts = Object.keys({
     "0x33d3071cfa7404a406edB5826A11620282021745": "PendleAaveV2YieldTokenHolder",
     "0xb0aa68d8A0D56ae7276AB9E0E017965a67320c60": "PendleCompoundYieldTokenHolder",
-    "0x8315BcBC2c5C1Ef09B71731ab3827b0808A2D6bD": "PendleAaveMarket",
-    "0xB26C86330FC7F97533051F2F8cD0a90C2E82b5EE": "PendleCompoundMarket",
+    "0x9e382E5f78B06631E4109b5d48151f2b3f326df0": "PendleAaveDec21Market",
+    "0x8315BcBC2c5C1Ef09B71731ab3827b0808A2D6bD": "PendleAaveDec22Market",
+    "0x944d1727d0b656f497e74044ff589871c330334f": "PendleCompoundDec21Market",
+    "0xB26C86330FC7F97533051F2F8cD0a90C2E82b5EE": "PendleCompoundDec22Market",
     "0x2F16B22C839FA995375602562ba5dD15A22d349d": "PendleLpHolder_Compound",
     "0x76A16d9325E9519Ef1819A4e7d16B168956f325F": "PendleLpHolder_Aave",
 })
