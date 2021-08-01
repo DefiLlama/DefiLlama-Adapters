@@ -23,9 +23,9 @@ const crvPools = {
     "0xe7a24ef0c5e95ffb0f6684b813a78f2a3ad7d171": {
       swapContract: "0x445FE580eF8d70FF569aB36e80c647af338db351",
       underlyingTokens: [
-        "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
-        "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
-        "0xc2132d05d31c914a87c6611c10748aeb04b58e8f"
+        "0x27F8D03b3a2196956ED754baDc28D73be8830A6e",
+        "0x1a13F4Ca1d028320A707D99520AbFefca3998b7F",
+        "0x60D55F02A771d515e077c9C2403a1ef324885CeC"
       ]
     },
     // sCRV Eth
@@ -66,7 +66,20 @@ const crvPools = {
         "0x853d955acef822db058eb8505911ed77f175b99e",
         "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490"
       ]
-    }
+    },
+    // seCRV Eth
+    "0xa3d87fffce63b53e0d54faa1cc983b7eb0b74a9c": {
+        swapContract: "0xc5424B857f758E906013F3555Dad202e4bdB4567",
+        underlyingTokens: ["0x5e74C9036fb86BD7eCdcb084a0673EFc32eA31cb"]
+    },
+    // btcCRV Polygon
+    "0xf8a57c1d3b9629b77b6726a042ca48990a84fb49": {
+        swapContract: "0xC2d95EEF97Ec6C17551d45e77B590dc1F9117C67",
+        underlyingTokens: [
+          "0x5c2ed810328349100A66B82b78a1791B101C9D61",
+          "0xDBf31dF14B66535aF65AaC99C32e9eA844e14501"
+        ]
+      },
 }
 
 async function unwrapCrv(balances, crvToken, balance3Crv, block, chain = "ethereum", transformAddress=(addr)=>addr) {
@@ -87,15 +100,18 @@ async function unwrapCrv(balances, crvToken, balance3Crv, block, chain = "ethere
         abi: 'erc20:balanceOf'
     })).output
 
-    // steth case where balanceOf not applicable on ETH balance
-    if (crvToken === "0x06325440d014e39736583c165c2963ba99faf14e") {
+    // steth and seth case where balanceOf not applicable on ETH balance
+    if (crvToken.toLowerCase() === "0x06325440d014e39736583c165c2963ba99faf14e" || crvToken.toLowerCase() === "0xa3d87fffce63b53e0d54faa1cc983b7eb0b74a9c") {
         underlyingSwapTokens[0].output = underlyingSwapTokens[0].output * 2;
     }
-
     const resolvedCrvTotalSupply = (await crvTotalSupply).output
     underlyingSwapTokens.forEach(call => {
         const underlyingBalance = BigNumber(call.output).times(balance3Crv).div(resolvedCrvTotalSupply);
-        sdk.util.sumSingleBalance(balances, transformAddress(call.input.target), underlyingBalance.toFixed(0))
+        if (chain == 'polygon') {
+            sdk.util.sumSingleBalance(balances, transformAddress(`polygon:${call.input.target}`), underlyingBalance.toFixed(0))
+        } else {
+            sdk.util.sumSingleBalance(balances, transformAddress(call.input.target), underlyingBalance.toFixed(0))
+        }
     })
 }
 /* lpPositions:{
