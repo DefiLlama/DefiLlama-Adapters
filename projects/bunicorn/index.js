@@ -93,6 +93,6 @@ module.exports = {
   staking:{
     tvl: getTotalFarmTVL,
   },
-  tvl: sdk.util.sumChainTvls([getTotalTVL, getTotalFarmTVL])
+  tvl: getTotalTVL
 }
 
