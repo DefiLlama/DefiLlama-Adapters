@@ -1,12 +1,6 @@
-/*==================================================
-  Imports
-==================================================*/
 const sdk = require('@defillama/sdk');
-const BigNumber = require('bignumber.js');
+const {unwrapUniswapLPs} = require('../helper/unwrapLPs')
 
-/*==================================================
-  Settings
-==================================================*/
 const STAKING_ADDRESS = '0x2d615795a8bdb804541C69798F13331126BA0c09';
 
 const USDC_TOKEN = {
@@ -63,9 +57,7 @@ const USDC_XYZ_SUSHI_LP_TOKEN = {
     decimals: 18,
 };
 
-/*==================================================
-  Helpers
-==================================================*/
+// Unused but will leave it because they added it to the PR
 function createAbiViewItemFor(name, inputs, outputs) {
     return {
         name,
@@ -82,36 +74,22 @@ function createAbiViewItemFor(name, inputs, outputs) {
     };
 }
 
-async function getUsdcXyzSlpBalance(block) {
+async function pool2(_timestamp, block) {
     const balance = await sdk.api.abi.call({
         abi: 'erc20:balanceOf',
         target: USDC_XYZ_SUSHI_LP_TOKEN.address,
         params: [STAKING_ADDRESS],
         block,
-    }).then(({output}) => new BigNumber(output));
+    }).then(({output}) => output);
 
-    const totalSupply = await sdk.api.abi.call({
-        abi: 'erc20:totalSupply',
-        target: USDC_XYZ_SUSHI_LP_TOKEN.address,
-        params: [],
-        block,
-    }).then(({output}) => new BigNumber(output));
-
-    const usdcReserve = await sdk.api.abi.call({
-        abi: createAbiViewItemFor('getReserves', [], ['uint112', 'uint112']),
-        target: USDC_XYZ_SUSHI_LP_TOKEN.address,
-        params: [],
-        block,
-    }).then(({output}) => new BigNumber(output[1]));
-
-    const slpPrice = usdcReserve.dividedBy(totalSupply).multipliedBy(2);
-
-    return balance.multipliedBy(slpPrice);
+    const balances = {}
+    await unwrapUniswapLPs(balances, [{
+        token: USDC_XYZ_SUSHI_LP_TOKEN.address,
+        balance: balance
+    }], block)
+    return balances
 }
 
-/*==================================================
-  Main
-==================================================*/
 async function tvl(timestamp, block) {
     const balances = {};
 
@@ -124,21 +102,18 @@ async function tvl(timestamp, block) {
         block,
     });
 
-    sdk.util.sumMultiBalanceOf(balances, tokenBalances);
-
-    balances[USDC_TOKEN.address] = await getUsdcXyzSlpBalance(block);
+    sdk.util.sumMultiBalanceOf(balances, tokenBalances, true);
 
     return balances;
 }
 
-/*==================================================
-  Metadata
-==================================================*/
 module.exports = {
+    ethereum:{
+        tvl
+    },
+    pool2:{
+        tvl: pool2,
+    },
     tvl,
-    name: 'Universe',
-    website: 'https://dao.universe.xyz',
-    token: 'XYZ',
-    category: 'yield',
     start: 1621939189, // May-25-2021 10:39:49 AM +UTC
 };
