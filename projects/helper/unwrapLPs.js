@@ -107,11 +107,7 @@ async function unwrapCrv(balances, crvToken, balance3Crv, block, chain = "ethere
     const resolvedCrvTotalSupply = (await crvTotalSupply).output
     underlyingSwapTokens.forEach(call => {
         const underlyingBalance = BigNumber(call.output).times(balance3Crv).div(resolvedCrvTotalSupply);
-        if (chain == 'polygon') {
-            sdk.util.sumSingleBalance(balances, transformAddress(`polygon:${call.input.target}`), underlyingBalance.toFixed(0))
-        } else {
-            sdk.util.sumSingleBalance(balances, transformAddress(call.input.target), underlyingBalance.toFixed(0))
-        }
+        sdk.util.sumSingleBalance(balances, transformAddress(call.input.target), underlyingBalance.toFixed(0))
     })
 }
 /* lpPositions:{
