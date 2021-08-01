@@ -5,7 +5,8 @@ const { request, gql } = require("graphql-request");
 
 const tokenSubgraphUrl = 'https://graph.bunicorn.exchange/subgraphs/name/bunicorndefi/buni-token';
 const stableSubgraphUrl = 'https://api.thegraph.com/subgraphs/name/bunicorndefi/buni-stablecoins';
-
+const BUNI_CONTRACT_ADDRESS = '0x0e7beec376099429b85639eb3abe7cf22694ed49';
+const MASTERCHET_CONTRACT_ADDRESS = '0xA12c974fE40ea825E66615bA0Dc4Fd19be4D7d24';
 
 const graphTotalTokenTVLQuery = gql`
 query GET_TOTAL_TOKEN_TVL($block: Int) {
@@ -26,6 +27,23 @@ query GET_TOTAL_STABLE_TVL($block: Int) {
   }
 }
 `;
+
+async function getTotalFarmTVL(timestamp, ethBlock, chainBlocks) {
+  try {
+    const balances = {};
+    const stakedBuni = sdk.api.erc20.balanceOf({
+      target: BUNI_CONTRACT_ADDRESS,
+      owner: MASTERCHET_CONTRACT_ADDRESS,
+      chain: 'bsc',
+      block: chainBlocks.bsc
+    })
+    sdk.util.sumSingleBalance(balances, 'bsc:' + BUNI_CONTRACT_ADDRESS, (await stakedBuni).output)
+    return balances
+  } catch (e) {
+    throw new Error('getTotalFarmTVL has exception:' + e.message);
+  }
+}
+
 
 async function getTotalTokenTVL(timestamp, ethBlock, chainBlocks) {
   try {
@@ -72,6 +90,9 @@ module.exports = {
   bsc:{
     tvl: getTotalTVL
   },
-  tvl: sdk.util.sumChainTvls([getTotalTVL])
+  staking:{
+    tvl: getTotalFarmTVL,
+  },
+  tvl: sdk.util.sumChainTvls([getTotalTVL, getTotalFarmTVL])
 }
 
