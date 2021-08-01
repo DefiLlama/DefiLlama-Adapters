@@ -87,6 +87,7 @@ async function getTotalTVL(timestamp, ethBlock, chainBlocks) {
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   bsc:{
     tvl: getTotalTVL
   },

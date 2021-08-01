@@ -9,6 +9,7 @@ const graphUrls = {
 const chainTvl = getChainTvl(graphUrls, "factories", "totalValueLockedUSD")
 
 module.exports = {
+  misrepresentedTokens: true,
   ethereum: {
     tvl: chainTvl('ethereum'),
   },

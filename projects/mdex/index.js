@@ -201,6 +201,7 @@ const hecoTvl = async (timestamp, ethBlock, chainBlocks) => {
 };
 
 module.exports = {
+  misrepresentedTokens: true,
   bsc: {
     tvl: bscTvl, //   individually outputs >1B    ---   breakdown per token             (OK)
   },

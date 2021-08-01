@@ -63,6 +63,7 @@ async function poolsTvl(timestamp, ethBlock, chainBlocks) {
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   bsc:{
     tvl: bscTvl,
   },

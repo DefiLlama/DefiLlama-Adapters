@@ -27,6 +27,7 @@ async function tvl(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   bsc:{
     tvl,
   },

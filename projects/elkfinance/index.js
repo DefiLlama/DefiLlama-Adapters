@@ -9,6 +9,7 @@ const graphUrls = {
 const chainTvl = getChainTvl(graphUrls, "elkFactories")
 
 module.exports = {
+  misrepresentedTokens: true,
   polygon: {
     tvl: chainTvl('polygon'),
   },

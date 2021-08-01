@@ -155,6 +155,7 @@ query get_tvl($block: Int) {
 ==================================================*/
 
   module.exports = {
+    misrepresentedTokens: true,
 
     ethereum: {
       tvl: ethTvl,

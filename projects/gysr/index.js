@@ -47,6 +47,7 @@ async function polygon(timestamp, ethBlock, chainBlocks) {
 
 
 module.exports = {
+  misrepresentedTokens: true,
   ethereum: {
     tvl: ethereum
   },
