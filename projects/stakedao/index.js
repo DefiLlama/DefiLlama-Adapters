@@ -71,11 +71,6 @@ const crvToken = '0xD533a949740bb3306d119CC777fa900bA034cd52'
 
 async function ethereum(timestamp, block) {
   let balances = {};
-  const sdtInSactuary = sdk.api.erc20.balanceOf({
-    target: sdtToken,
-    owner: sanctuary,
-    block
-  })
   const crvInPerpetual = sdk.api.erc20.balanceOf({
     target: crv_perpetual_vault.crvToken,
     owner: crv_perpetual_vault.contract,
@@ -89,9 +84,20 @@ async function ethereum(timestamp, block) {
     })
     await unwrapCrv(balances, vault.crvToken, crvBalance.output, block)
   }))
-  sdk.util.sumSingleBalance(balances, sdtToken, (await sdtInSactuary).output)
   sdk.util.sumSingleBalance(balances, crvToken, (await crvInPerpetual).output)
   return balances
+}
+
+async function staking(timestamp, block){
+  const sdtInSactuary = sdk.api.erc20.balanceOf({
+    target: sdtToken,
+    owner: sanctuary,
+    block
+  })
+
+  return {
+    [sdtToken]:(await sdtInSactuary).output
+  }
 }
 
 async function polygon(timestamp, ethBlock, chainBlocks) {
@@ -116,6 +122,9 @@ module.exports = {
   },
   polygon:{
     tvl: polygon
+  },
+  staking:{
+    tvl: staking
   },
   tvl: sdk.util.sumChainTvls([ethereum, polygon])
 }
