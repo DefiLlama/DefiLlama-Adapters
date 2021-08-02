@@ -16,5 +16,6 @@ async function tvl() {
 }
 
 module.exports = {
-    tvl
+    tvl,
+    methodology: `To obtain the Parrot TVL we make chain calls using the getTokenBalance () function that uses the address of the token and the address of the contract where the token is located. The addresses used are the address where the corresponding tokens were deposited as collateral and these are addresses are hard-coded. This returns the number of tokens held in each contract. We then use Coingecko to get the price of each token in USD to export the sum of all tokens.`,
 }
