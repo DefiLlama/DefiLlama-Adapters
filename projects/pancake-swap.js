@@ -32,6 +32,18 @@ pancakeDayDatas(
   }
 }
 `
+
+const graphUrl = 'https://api.thegraph.com/subgraphs/name/pancakeswap/exchange'
+const graphQuery = gql`
+query get_tvl($block: Int) {
+  uniswapFactories(
+    block: { number: $block }
+  ) {
+    totalVolumeUSD
+    totalLiquidityUSD
+  }
+}
+`;
 async function tvl(timestamp, ethBlock, chainBlocks) {
   if (Math.abs(timestamp - Date.now() / 1000) < 3600) {
     const tvl = await request(graphEndpoint, currentQuery)
@@ -44,6 +56,18 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
         closest = dayTvl
       }
     })
+    if(Math.abs(dayTvl.date - timestamp) > 3600*24){ // Oldest data is too recent
+      const {uniswapFactories} = await request(
+        graphUrl,
+        graphQuery,
+        {
+          block: chainBlocks['bsc'],
+        }
+      );
+      const usdTvl = Number(uniswapFactories[0].totalLiquidityUSD)
+    
+      return toUSDTBalances(usdTvl)
+    }
     return toUSDTBalances(closest.totalLiquidityUSD)
   }
 }
@@ -65,6 +89,7 @@ async function staking(timestamp, ethBlock, chainBlocks) {
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   methodology: `TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://pancakeswap.info/ as the source. Staking accounts for the CAKE locked in MasterChef (${masterChef})`,
   staking: {
     tvl: staking
