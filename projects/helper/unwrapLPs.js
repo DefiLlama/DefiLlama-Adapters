@@ -129,6 +129,9 @@ const crvPools = {
 }
 
 async function unwrapCrv(balances, crvToken, balance3Crv, block, chain = "ethereum", transformAddress=(addr)=>addr) {
+    if(crvPools[crvToken.toLowerCase()] === undefined){
+        return
+    }
     const crvSwapContract = crvPools[crvToken.toLowerCase()].swapContract
     const underlyingTokens = crvPools[crvToken.toLowerCase()].underlyingTokens
     const crvTotalSupply = sdk.api.erc20.totalSupply({
