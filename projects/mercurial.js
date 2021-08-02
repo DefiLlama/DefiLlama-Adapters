@@ -19,5 +19,6 @@ async function fetch() {
 }
 
 module.exports = {
-    fetch
+    fetch,
+    methodology: `To obtain the Mercurial TVL we make on-chain calls using the function getTokenBalance() that uses the address of the token and the address of the contract where the token is located. The addresses used are the 3pool addresses where the corresponding tokens were deposited and these addresses are hard-coded. This returns the number of tokens held in each 3pool contract. We then use Coingecko to get the price of each token in USD to export the sum of all tokens.`,
 }
