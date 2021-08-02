@@ -67,5 +67,6 @@ async function tvl() {
 }
 
 module.exports = {
-    tvl
+    tvl,
+    methodology: `To obtain the TVL of Saber we make on-chain calls using the function getTokenBalance() that uses the address of the token and the address of the contract where the token is found. The pool addresses are hardcoded. This returns the amount of the tokens held in each contract. We then use Coingecko to get the price of each token in USD to export the sum of all tokens.`,
 }
