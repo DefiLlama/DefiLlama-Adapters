@@ -19,7 +19,53 @@ const crvPools = {
     '0xf2511b5e4fb0e5e2d123004b672ba14850478c14': {
         swapContract: '0x1B3771a66ee31180906972580adE9b81AFc5fCDc',
         underlyingTokens: ['0xe9e7cea3dedca5984780bafc599bd69add087d56', '0x55d398326f99059ff775485246999027b3197955', '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d'],
-    },  // am3CRV Polygon
+    },
+    // 4USD Dopple LP
+    '0x9116f04092828390799514bac9986529d70c3791': {
+        swapContract: '0x5162f992EDF7101637446ecCcD5943A9dcC63A8A',
+        underlyingTokens: [
+            '0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3',
+            '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
+            '0x55d398326f99059fF775485246999027B3197955',
+            '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d'
+        ],
+    },
+    // 2Pools Dopple LP
+    '0x124166103814e5a033869c88e0f40c61700fca17': {
+        swapContract: '0x449256e20ac3ed7F9AE81c2583068f7508d15c02',
+        underlyingTokens: [
+            '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
+            '0x55d398326f99059fF775485246999027B3197955'
+        ],
+    },
+    // UST Dopple LP
+    '0x7edcdc8cd062948ce9a9bc38c477e6aa244dd545': {
+        swapContract: '0x830e287ac5947B1C0DA865dfB3Afd7CdF7900464',
+        underlyingTokens: [
+            '0x23396cF899Ca06c4472205fC903bDB4de249D6fC',
+            '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
+            '0x55d398326f99059fF775485246999027B3197955'
+        ],
+    },
+    // DOLLY Dopple LP
+    '0xaa5509ce0ecea324bff504a46fc61eb75cb68b0c': {
+        swapContract: '0x61f864a7dFE66Cc818a4Fd0baabe845323D70454',
+        underlyingTokens: [
+            '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
+            '0x55d398326f99059fF775485246999027B3197955',
+            '0xfF54da7CAF3BC3D34664891fC8f3c9B6DeA6c7A5'
+        ],
+    },
+    // 3P QUANT LP
+    '0xb0f0983b32352a1cfaec143731ddd8a5f6e78b1f': {
+        swapContract: '0x3ED4b2070E3DB5eF5092F504145FB8150CfFE5Ea',
+        underlyingTokens: [
+            '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
+            '0x55d398326f99059fF775485246999027B3197955',
+            '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d'
+        ],
+    },
+    // am3CRV Polygon
     "0xe7a24ef0c5e95ffb0f6684b813a78f2a3ad7d171": {
       swapContract: "0x445FE580eF8d70FF569aB36e80c647af338db351",
       underlyingTokens: [
