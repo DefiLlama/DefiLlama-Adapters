@@ -141,18 +141,6 @@
     return balances
   }
 
-  async function tvl(timestamp, block) {
-    const [cTvl, mTvl] = await Promise.all([compoundTvl(timestamp, block), makerTvl(timestamp, block)])
-    // combine balances for Maker and Compound B.Protocol's TVL
-    const allLendingPlatformBalances = {}
-    // all assets in B.Protocol
-    _.uniq(Object.keys(cTvl).concat(Object.keys(mTvl))).forEach(asset => {
-      allLendingPlatformBalances[asset] = new BigNumber(cTvl[asset] || "0").plus(new BigNumber(mTvl[asset] || "0")).toString(10)
-    })
-
-    return allLendingPlatformBalances;
-  }
-
   async function liquityTvl(timestamp, block) {
     if (block < lFirstBlock) return { '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0': '0' };
 
