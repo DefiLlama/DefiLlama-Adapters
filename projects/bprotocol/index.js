@@ -16,8 +16,12 @@
   const ethIlk = '0x4554482d41000000000000000000000000000000000000000000000000000000';
   const mFirstBlock = 11257606
   const cFirstBlock = 11935020
+  const lFirstBlock = 12934992
   const registryAddress = "0xbf698df5591caf546a7e087f5806e216afed666a";
   const comptrollerAddress = "0x3d9819210A31b4961b30EF54bE2aeD79B9c9Cd3B";
+  const bKeeperAddress = "0xeaE019ef845A4Ffdb8829210De5D30aC6FbB5371";
+  const stabilityPoolAddress = "0x66017D22b0f8556afDd19FC67041899Eb65a21bb";
+
 
 /*==================================================
   TVL
@@ -149,13 +153,58 @@
     return allLendingPlatformBalances;
   }
 
+  async function liquityTvl(timestamp, block) {
+    if (block < lFirstBlock) return { '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0': '0' };
+
+    let totalBalance = new BigNumber(0);
+
+    for(let i = 0 ; ; i++) {
+      try {
+        const bamm = await sdk.api.abi.call(
+          {
+            block,
+            target: bKeeperAddress,
+            params: [i],
+            abi: abi["bamms"]
+          });
+        const balance = await sdk.api.abi.call(
+          {
+            block,
+            target: stabilityPoolAddress,
+            params: [bamm.output],
+            abi: abi["getCompoundedLUSDDeposit"]
+          });
+
+          totalBalance = totalBalance.plus(new BigNumber(balance.output));
+      }
+      catch {
+        break;
+      }
+    }
+
+    // all balance is lusd
+    return {'0x5f98805A4E8be255a32880FDeC7F6728C6568bA0' : totalBalance.toString(10)}
+  }
+
+  async function tvl(timestamp, block) {
+    const [cTvl, mTvl, lTvl] = await Promise.all([compoundTvl(timestamp, block), makerTvl(timestamp, block), liquityTvl(timestamp, block)])
+    // combine balances for Maker and Compound B.Protocol's TVL
+    const allLendingPlatformBalances = {}
+    // all assets in B.Protocol
+    _.uniq(Object.keys(cTvl).concat(Object.keys(mTvl)).concat(Object.keys(lTvl))).forEach(asset => {
+      allLendingPlatformBalances[asset] = new BigNumber(cTvl[asset] || "0").plus(new BigNumber(mTvl[asset] || "0")).plus(new BigNumber(lTvl[asset] || "0")).toString(10)
+    })
+
+    return allLendingPlatformBalances;
+  }  
+
 /*==================================================
   Exports
   ==================================================*/
 
   module.exports = {
     name: 'B.Protocol',
-    token: null,
+    //token: null,
     category: 'lending',
     start: 1605380632,  // 11/14/2020 @ 7:03pm (UTC)
     tvl,
