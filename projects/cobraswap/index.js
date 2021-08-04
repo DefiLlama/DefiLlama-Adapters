@@ -13,15 +13,12 @@ query get_tvl($block: Int) {
 }
 `;
 
-async function tvl(timestamp) {
-  const {block} = await sdk.api.util.lookupBlock(timestamp,{
-    chain: 'bsc'
-  })
+async function tvl(timestamp, ethBlock, chainBlocks) {
   const response = await request(
     graphUrl,
     graphQuery,
     {
-      block,
+      block: chainBlocks.bsc,
     }
   );
 
@@ -32,7 +29,7 @@ async function tvl(timestamp) {
 
 module.exports = {
   misrepresentedTokens: true,
-  methodology: `Includes all locked liquidity in AMM pools, pulling the data from TheGraph hosted'venomprotocol/cobra-exchange' subgraph`,
+  methodology: `Includes all locked liquidity in AMM pools, pulling the data from TheGraph hosted 'venomprotocol/cobra-exchange' subgraph`,
   bsc:{
     tvl,
   },
