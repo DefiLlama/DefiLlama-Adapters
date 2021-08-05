@@ -36,7 +36,8 @@ async function tvl(timestamp, block) {
 }
 
 module.exports = {
-  methodology: "Counts ",
+  methodology: `Counts the tokens staked on the flash pools, currently SNX on 0x9898d72c2901D09E72A426d1c24b6ab90eB100e7 and AXS on 0x099A3B242dceC87e729cEfc6157632d7D5F1c4ef
+  pool2 are the SLP tokens locked on 0x8B4d8443a0229349A9892D4F7CbE89eF5f843F72 and staking are the ILV tokens on 0x25121EDDf746c884ddE4619b573A7B10714E2a36`,
   staking:{
     tvl: staking
   },
