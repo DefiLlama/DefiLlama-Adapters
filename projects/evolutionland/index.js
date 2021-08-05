@@ -124,7 +124,10 @@ async function ethTvl(timestamp, blocks) {
       "params": lpETH.eth
     },
   ]
-  return await stakingBalanceTvl(timestamp, block, "ethereum", lps)
+  let ethBal = await stakingBalanceTvl(timestamp, block, "ethereum", lps)
+  let hecoBal = await hecoTvl(timestamp, blocks)
+  sdk.util.sumSingleBalance(ethBal, ring.eth, hecoBal[ring.heco])
+  return ethBal
 }
 
 async function stakingBalanceTvl(timestamp, block, chain, lps) {
