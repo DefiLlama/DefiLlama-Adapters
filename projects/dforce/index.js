@@ -25,6 +25,14 @@
   const USDx = '0xeb269732ab75A6fD61Ea60b06fE994cD32a83549';
   const wETH = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
   const WBTC = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599';
+  const USX =  '0x0a5E677a6A24b2F1A2Bf4F3bFfC443231d2fDEc8';
+  const EUX =  '0xb986F3a2d91d3704Dc974A24FB735dCc5E3C1E70';
+  const xBTC = '0x527Ec46Ac094B399265d1D71Eff7b31700aA655D';
+  const xETH = '0x8d2Cb35893C01fa8B564c84Bd540c5109d9D278e';
+  const xTSLA = '0x8dc6987F7D8E5aE9c39F767A324C5e46C1f731eB';
+  const xAAPL = '0xc4Ba45BeE9004408403b558a26099134282F2185';
+  const xAMZN = '0x966E726853Ca97449F458A3B012318a08B508202';
+  const xCOIN = '0x32F9063bC2A2A57bCBe26ef662Dc867d5e6446d1';
 
 /*==================================================
   USDx
@@ -76,6 +84,19 @@ const yieldUnderlyingTokens = {
     '0x1180c114f7fAdCB6957670432a3Cf8Ef08Ab5354', // iUSDT
     '0x5812fCF91adc502a765E5707eBB3F36a07f63c02', // iWBTC
   ]
+/*==================================================
+  Synth Markets
+  ==================================================*/
+  const allSynthMarkets = [
+    USX,
+    EUX,
+    xBTC,
+    xETH,
+    xTSLA,
+    xAAPL,
+    xAMZN,
+    xCOIN,
+  ]
 
 /*==================================================
   BSC Settings
@@ -93,6 +114,14 @@ const yieldUnderlyingTokens = {
   const BSC_UNI  = '0xbf5140a22578168fd562dccf235e5d43a02ce9b1';
   const BSC_USDC = '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d';
   const BSC_USDT = '0x55d398326f99059fF775485246999027B3197955';
+  const BSC_USX = '0xB5102CeE1528Ce2C760893034A4603663495fD72';
+  const BSC_EUX = '0x367c17D19fCd0f7746764455497D63c8e8b2BbA3';
+  const BSC_xBTC = '0x20Ecc92F0a33e16e8cf0417DFc3F586cf597F3a9';
+  const BSC_xETH = '0x463E3D1e01D048FDf872710F7f3745B5CDF50D0E';
+  const BSC_xTSLA = '0xf21259B517D307F0dF8Ff3D3F53cF1674EBeAFe8';
+  const BSC_xAAPL = '0x70D1d7cDeC24b16942669A5fFEaDA8527B744502';
+  const BSC_xAMZN = '0x0326dA9E3fA36F946CFDC87e59D24B45cbe4aaD0';
+  const BSC_xCOIN = '0x3D9a9ED8A28A64827A684cEE3aa499da1824BF6c';
 
   /*==================================================
     BSC dToken Protocol
@@ -130,6 +159,20 @@ const yieldUnderlyingTokens = {
     '0x0BF8C72d618B5d46b055165e21d661400008fa0F', // iUSDT
   ]
 
+  /*==================================================
+  BSC Synth Markets
+  ==================================================*/
+  const bscAllSynthMarkets = [
+    BSC_USX,
+    BSC_EUX,
+    BSC_xBTC,
+    BSC_xETH,
+    BSC_xTSLA,
+    BSC_xAAPL,
+    BSC_xAMZN,
+    BSC_xCOIN,
+  ]
+
 /*==================================================
   TVL
   ==================================================*/
@@ -144,7 +187,21 @@ async function tvl(timestamp, block, chainBlocks) {
 
 async function tvlBSC(timestamp, ethBlock, chainBlocks) {
   let balances = {};
-  const block = chainBlocks['bsc']
+  const block = chainBlocks['bsc'];
+
+  let synthMarketsCalls = _.map(bscAllSynthMarkets, (synthMarket) => ({
+    target: synthMarket,
+  }));
+
+  let synthMarketsResults = await sdk.api.abi.multiCall({
+    block,
+    calls: synthMarketsCalls,
+    abi: 'erc20:totalSupply',
+    chain: 'bsc'
+  });
+
+  sdk.util.sumMultiBalanceOf(balances, synthMarketsResults);
+
   await (
     Promise.all(bscYieldMarkets.map(async (yieldMarket) => {
       try {
@@ -220,6 +277,18 @@ async function tvlEthereum(timestamp, block) {
   });
 
   sdk.util.sumMultiBalanceOf(balances, assetsBalanceResults);
+
+  let synthMarketsCalls = _.map(allSynthMarkets, (synthMarket) => ({
+    target: synthMarket,
+  }));
+
+  let synthMarketsResults = await sdk.api.abi.multiCall({
+    block,
+    calls: synthMarketsCalls,
+    abi: 'erc20:totalSupply'
+  });
+
+  sdk.util.sumMultiBalanceOf(balances, synthMarketsResults);
 
   let usdxRemainingUSDC = (await sdk.api.abi.call({
     target: dUSDC,
