@@ -215,6 +215,7 @@ async function addBalanceOfTokensAndLPs(balances, balanceResult, block){
 }
 
 // Unwrap the tokens that are LPs and directly add the others
+// To be used when you don't know which tokens are LPs and which are not
 async function addTokensAndLPs(balances, tokens, amounts, block, chain = "ethereum", transformAddress=id=>id){
     const tokens0 = await sdk.api.abi.multiCall({
         calls:tokens.output.map(t=>({
@@ -248,7 +249,7 @@ tokens [
     [token, isLP] - eg ["0xaaa", true]
 ]
 */
-async function sumTokensAndLPs(balances, tokens, owners, block, chain = "ethereum", transformAddress=id=>id){
+async function sumTokensAndLPsSharedOwners(balances, tokens, owners, block, chain = "ethereum", transformAddress=id=>id){
     const balanceOfTokens = await sdk.api.abi.multiCall({
         calls: tokens.map(t=>owners.map(o=>({
             target: t[0],
@@ -263,6 +264,37 @@ async function sumTokensAndLPs(balances, tokens, owners, block, chain = "ethereu
         const token = result.input.target
         const balance = result.output
         if(tokens.find(t=>addressesEqual(t[0], token))[1]){
+            lpBalances.push({
+                token,
+                balance
+            })
+        } else {
+            sdk.util.sumSingleBalance(balances, transformAddress(token), balance);
+        }
+    })
+    await unwrapUniswapLPs(balances, lpBalances, block, chain, transformAddress)
+}
+
+/*
+tokens [
+    [token, owner, isLP] - eg ["0xaaa", "0xbbb", true]
+]
+*/
+async function sumTokensAndLPs(balances, tokens, block, chain = "ethereum", transformAddress=id=>id){
+    const balanceOfTokens = await sdk.api.abi.multiCall({
+        calls: tokens.map(t=>({
+            target: t[0],
+            params: t[1]
+        })),
+        abi: 'erc20:balanceOf',
+        block,
+        chain
+    })
+    const lpBalances = []
+    balanceOfTokens.output.forEach((result, idx)=>{
+        const token = result.input.target
+        const balance = result.output
+        if(tokens[idx][2]){
             lpBalances.push({
                 token,
                 balance
@@ -300,7 +332,8 @@ module.exports = {
     unwrapCrv,
     unwrapUniswapLPs,
     addTokensAndLPs,
-    sumTokensAndLPs,
+    sumTokensAndLPsSharedOwners,
     addBalanceOfTokensAndLPs,
+    sumTokensAndLPs,
     sumTokens
 }

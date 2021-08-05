@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk');
-const {sumTokensAndLPs} = require('../helper/unwrapLPs')
+const {sumTokensAndLPsSharedOwners} = require('../helper/unwrapLPs')
 
 const treasuryAddresses = ["0x886CE997aa9ee4F8c2282E182aB72A705762399D", "0x31F8Cc382c9898b273eff4e0b7626a6987C846E8"];
 const dai = "0x6b175474e89094c44da98b954eedeac495271d0f";
@@ -12,7 +12,7 @@ const slpOhm = "0x34d7d7aaf50ad4944b70b320acb24c95fa2def7c";
 // Treasury TVL consists of DAI balance + Sushi SLP balance
 async function tvl(timestamp, block) {
   const balances = {}
-  await sumTokensAndLPs(balances, [
+  await sumTokensAndLPsSharedOwners(balances, [
     [dai, false],
     [frax, false],
     [slp, true],
