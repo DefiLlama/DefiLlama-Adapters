@@ -1,4 +1,3 @@
-const retry = require("async-retry");
 const axios = require("axios");
 const BigNumber = require("bignumber.js");
 
@@ -10,25 +9,20 @@ const bnusdContract = 'cx88fd7df7ddff82f7cc735c871dc519838cb235bb'
 const sicxContract = 'cx2609b924e33ef00b648a409245c7ea394c467824'
 
 async function icxCall(address, method, params) {
-    try {
-        let response = await axios.post(icxApiEndpoint, {
-            jsonrpc: '2.0',
-            method: 'icx_call',
-            id: 1234,
-            params: {
-                to: address,
-                dataType: 'call',
-                data: {
-                    method: method,
-                    params: params
-                }
+    let response = await axios.post(icxApiEndpoint, {
+        jsonrpc: '2.0',
+        method: 'icx_call',
+        id: 1234,
+        params: {
+            to: address,
+            dataType: 'call',
+            data: {
+                method: method,
+                params: params
             }
-        })
-        return response.data.result
-    }
-    catch(e) {
-        console.log(e)
-    }
+        }
+    })
+    return response.data.result
 }
 
 async function getIcxUsdPrice() {
