@@ -24,4 +24,5 @@ module.exports = {
     tvl: ethTvl, //   individually outputs >1B    ---   breakdown per token             (OK)
   },
   tvl: sdk.util.sumChainTvls([bscTvl, ethTvl]),
+  methodology: `Bamboo Defi uses a Factory address to create new pairs and as BambooDefi exists in the Ethereum network and also in the BSC network, it has two Factory addresses. In the case of TVL, the Factory address is used to identify the existing pairs. First the balance of the pairs in the Ethereum network is achieved and then the balance in the BSC network, this allows to be able to show the balances individually and also together.`
 };
