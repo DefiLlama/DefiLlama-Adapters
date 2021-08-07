@@ -30,4 +30,5 @@ module.exports = {
         tvl
     },
     tvl,
+    methodology: `Amun Tokens has two investment strategies available which are the Defi Token Index(DFI) and the Defi Momentum Index(DMX) and each strategy has its own address where the underlying tokens are held. To get the TVL, first of all, an on-chain call is made using the function 'tvl()' that retrieves each token that is held within the strategy addresses. Then another function 'balanceOf()' is used to get the balances of these tokens which are added and used as TVL`
 };
