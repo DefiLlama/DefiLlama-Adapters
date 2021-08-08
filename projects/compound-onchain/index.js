@@ -142,13 +142,10 @@ async function tvl(timestamp, block) {
   });
 
   _.each(markets, (market) => {
-    let getCash = _.find(v2Locked.output, (result) => result.success && result.input.target === market.cToken);
-
-    if (getCash) {
+    let getCash = _.find(v2Locked.output, (result) => result.input.target === market.cToken);
       balances[market.underlying] = BigNumber(balances[market.underlying] || 0)
         .plus(getCash.output)
         .toFixed();
-    }
   });
   return balances;
 }

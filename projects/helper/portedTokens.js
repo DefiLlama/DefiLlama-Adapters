@@ -9,6 +9,12 @@ async function transformFantomAddress() {
         if (addr.toLowerCase() === "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83") {
             return "0x4e15361fd6b4bb609fa63c81a2be19d873717870"
         }
+        if (addr.toLowerCase() === "0x658b0c7613e890ee50b8c4bc6a3f41ef411208ad") { // fETH
+            return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+        }
+        if (addr.toLowerCase() === "0xe1146b9ac456fcbb60644c36fd3f868a9072fc6e") { // fBTC
+            return "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"
+        }
         const srcToken = multichainTokens.find(token => token.chainId === "250" && token.token === addr.toLowerCase())
         if (srcToken !== undefined) {
             if (srcToken.srcChainId === '1') {
