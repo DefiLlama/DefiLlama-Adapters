@@ -9,15 +9,13 @@ const weth = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
 const wbtc = '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599'
 const usdc = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
 
-async function addVault(balances, vault, token, block){
-    try{
-        const totalBalance = await sdk.api.abi.call({
-            target: vault,
-            block,
-            abi: abi.totalBalance
-        })
-        sdk.util.sumSingleBalance(balances, token, totalBalance.output)
-    } catch(e){}
+async function addVault(balances, vault, token, block) {
+    const totalBalance = await sdk.api.abi.call({
+        target: vault,
+        block,
+        abi: abi.totalBalance
+    })
+    sdk.util.sumSingleBalance(balances, token, totalBalance.output)
 }
 
 async function tvl(timestamp, block) {
@@ -32,8 +30,8 @@ async function tvl(timestamp, block) {
 }
 
 module.exports = {
-    ethereum:{
+    ethereum: {
         tvl
     },
     tvl
-  }
+}
