@@ -8,5 +8,6 @@ async function tvl(...params) {
 }
 
 module.exports={
+    methodology: "Same as compound, we just get all the collateral (not borrowed money) on the lending markets",
     tvl
 }
