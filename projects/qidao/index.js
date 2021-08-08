@@ -1,4 +1,5 @@
 const {sumTokens} = require('../helper/unwrapLPs')
+const sdk = require('@defillama/sdk')
 
 async function polygon(timestamp, block, chainBlocks) {
     const balances = {}
@@ -19,6 +20,11 @@ async function polygon(timestamp, block, chainBlocks) {
         ["0xd6df932a45c0f255f85145f286ea0b292b21c90b", "0x87ee36f780ae843A78D5735867bc1c13792b7b11"], // aave
         ["0x172370d5cd63279efa6d502dab29171933a610af", "0x98B5F32dd9670191568b661a3e847Ed764943875"], // crv
     ], chainBlocks.polygon, 'polygon', addr=>`polygon:${addr}`)
+    balances['polygon:0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270'] = (await sdk.api.eth.getBalance({
+        target: "0xa3fa99a148fa48d14ed51d610c367c61876997f1",
+        block: chainBlocks.polygon,
+        chain: 'polygon'
+    })).output
     return balances
 }
 
