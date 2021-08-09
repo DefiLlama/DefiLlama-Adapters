@@ -15,8 +15,16 @@ const DAI_CONTRACT_HOLDER = [
   '0x3ED6355Ad74605c0b09415d6B0b29a294Fd31265', // Transmuter
 ];
 
-const YEARN_VAULT_ADDRESS = '0x19d3364a399d251e894ac732651be8b0e4e85001';
-const YEARN_ADAPTER_ADDRESS = '0xC1802cccc61e671f7c547E9326523edD2f55E84D';
+// yearn V1
+const YEARN_VAULT = {
+  v1: '0x19d3364a399d251e894ac732651be8b0e4e85001',
+  v2: '0xda816459f1ab5631232fe5e97a05bbbb94970c95',
+};
+
+const YEARN_ADAPTER = {
+  v1: '0xC1802cccc61e671f7c547E9326523edD2f55E84D',
+  v2: '0x8394BB87481046C1ec84C39689D402c00189df43',
+};
 
 function weiToFloat(wei, decimal = 18) {
   wei = new BigNumber(wei).div(10 ** decimal).toPrecision();
@@ -38,6 +46,15 @@ function sumTwoNumber(token1, token2) {
 
 async function tvl(timestamp, block) {
   let balances = {};
+  let YEARN_VAULT_ADDRESS = '';
+  let YEARN_ADAPTER_ADDRESS = '';
+  if (block < 12983023) {
+    YEARN_VAULT_ADDRESS = YEARN_VAULT.v1;
+    YEARN_ADAPTER_ADDRESS = YEARN_ADAPTER.v1;
+  } else {
+    YEARN_VAULT_ADDRESS = YEARN_VAULT.v2;
+    YEARN_ADAPTER_ADDRESS = YEARN_ADAPTER.v2;
+  }
 
   // ---- Start DAI and yvDai
   const daiStakeTotalAmount = await sdk.api.abi.multiCall({
@@ -67,9 +84,6 @@ async function tvl(timestamp, block) {
   balances[DAI_CONTRACT_ADDRESS] = sumTwoNumber(balances[DAI_CONTRACT_ADDRESS], yvDaiTVL).toFixed(0); // add yvdai tvl with dai
   // ---- End DAI and yvDai
 
-
-
-
   // ---- Start nUSD-3CRV staking
   let { output: nUSD3CrvAmount } = await sdk.api.erc20.balanceOf({
     target: NUSD_3CRV_LP_ADDRESS,
@@ -83,7 +97,7 @@ async function tvl(timestamp, block) {
 }
 
 async function pool2(timestamp, block) {
-  const balances = {}
+  const balances = {};
   // ---- Start uniswap eth-naos lp
   const { output: uniEthNaosLP } = await sdk.api.abi.call({
     target: UNI_ETH_NAOS_LP_ADDRESS,
@@ -132,31 +146,31 @@ async function pool2(timestamp, block) {
   balances[WETH_ADDRESS] = wethStakedAmount.toFixed(0);
 
   // ---- End uniswap eth-naos lp
-  return balances
+  return balances;
 }
 
 async function staking(timestamp, block) {
-    const balances = {}
-    // ---- Start naos staking
-    let { output: naosAmount } = await sdk.api.erc20.balanceOf({
-      target: NAOS_ADDRESS,
-      owner: STAKING_POOL_ADDRESS,
-      block: block,
-    });
-    sdk.util.sumSingleBalance(balances, NAOS_ADDRESS, naosAmount);
-    // ---- End naos staking
-    return balances
+  const balances = {};
+  // ---- Start naos staking
+  let { output: naosAmount } = await sdk.api.erc20.balanceOf({
+    target: NAOS_ADDRESS,
+    owner: STAKING_POOL_ADDRESS,
+    block: block,
+  });
+  sdk.util.sumSingleBalance(balances, NAOS_ADDRESS, naosAmount);
+  // ---- End naos staking
+  return balances;
 }
 
 module.exports = {
-  ethereum:{
-    tvl
+  ethereum: {
+    tvl,
   },
-  staking:{
-    tvl: staking
+  staking: {
+    tvl: staking,
   },
-  pool2:{
-    tvl: pool2
+  pool2: {
+    tvl: pool2,
   },
   tvl,
 };
