@@ -30,7 +30,10 @@ const listedTokens = [
   '0xa117000000f279d81a1d3cc75430faa017fa5a2e',
   '0x1494ca1f11d487c2bbe4543e90080aeba4ba3c2b',
   '0xf650c3d88d12db855b8bf7d11be6c55a4e07dcc9',
-  '0x5a98fcbea516cf06857215779fd812ca3bef1b32'
+  '0x5a98fcbea516cf06857215779fd812ca3bef1b32',
+  '0xdddddd4301a082e62e84e43f474f044423921918', // DVF
+  '0x5d22045daceab03b158031ecb7d9d06fad24609b', // CEL
+  '0x6b3595068778dd592e39a122f4f5a5cf09c90fe2' // SUSHI
 ];
 
 let priceKeys = [
@@ -61,6 +64,9 @@ let priceKeys = [
     '0x1494ca1f11d487c2bbe4543e90080aeba4ba3c2b': 'defipulse-index',
     '0xf650c3d88d12db855b8bf7d11be6c55a4e07dcc9': 'compound-usdt',
     '0x5a98fcbea516cf06857215779fd812ca3bef1b32': 'lido-dao',
+    '0xdddddd4301a082e62e84e43f474f044423921918': 'dvf',
+    '0x5d22045daceab03b158031ecb7d9d06fad24609b', 'celsius-network-token',
+    '0x6b3595068778dd592e39a122f4f5a5cf09c90fe2' 'sushi',
     '0x0': 'ethereum'
   }
 ]
