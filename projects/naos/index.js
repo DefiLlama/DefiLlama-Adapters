@@ -15,12 +15,13 @@ const DAI_CONTRACT_HOLDER = [
   '0x3ED6355Ad74605c0b09415d6B0b29a294Fd31265', // Transmuter
 ];
 
-// yearn V1
+// yearn vault version/address
 const YEARN_VAULT = {
   v1: '0x19d3364a399d251e894ac732651be8b0e4e85001',
   v2: '0xda816459f1ab5631232fe5e97a05bbbb94970c95',
 };
 
+// yearn adapter version/address
 const YEARN_ADAPTER = {
   v1: '0xC1802cccc61e671f7c547E9326523edD2f55E84D',
   v2: '0x8394BB87481046C1ec84C39689D402c00189df43',
