@@ -22,5 +22,5 @@ async function tvl() {
 
 module.exports = {
     tvl,
-    methodology: `To obtain the Parrot TVL we make on-chain calls using the function getTokenBalance() that uses the token addresses and the vault addresses of deposits used to mint PAI, pBTC or pSOL. In effect, the addresses used are the addresses that hold the collateral for the protocol and these are addresses are hard-coded. These calls return the number of tokens held in each contract for us to then use Coingecko to get the price of each token in USD and export the sum of all tokens.`,
+    methodology: `To obtain the Parrot TVL we make on-chain calls using the function getTokenBalance() that uses the token addresses and the vault addresses of deposits used to mint PAI, pBTC or pSOL. In effect, the addresses used are the addresses that hold the collateral for the protocol and these addresses are hard-coded. The calls made return the number of tokens held in each contract for us to then use Coingecko to get the price of each token in USD and export the sum of all tokens.`,
 }
