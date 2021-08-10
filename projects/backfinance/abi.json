@@ -51,6 +51,19 @@
         "stateMutability": "view",
         "type": "function"
     },
+    "totalBorrow": {
+        "inputs": [],
+        "name": "totalBorrow",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
     "getPairs": {
         "inputs": [],
         "name": "getPairs",

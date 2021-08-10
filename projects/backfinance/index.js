@@ -28,23 +28,43 @@ const calcTvl = async (balances, chain, block, factoryAddr, poolAddrs, token, ba
         chain
     })).output.map(t => t.output);
 
-    if (balance == erc20.balanceOf) {
-        const balancePools = (await sdk.api.abi.multiCall({
-            abi: balance,
-            calls: poolAddresses.map((pool, idx) => ({
-                target: tokens[idx],
-                params: pool
-            })),
-            block,
-            chain
-        })).output.map(bp => bp.output);
+    if (balance == erc20.balanceOf || balance == abi.totalBorrow) {
 
-        for (let index = 0; index < poolAddresses.length; index++) {
-            sdk.util.sumSingleBalance(
-                balances,
-                `heco:${tokens[index]}`,
-                balancePools[index]
-            );
+        if (balance == erc20.balanceOf) {
+            const balancePools = (await sdk.api.abi.multiCall({
+                abi: balance,
+                calls: poolAddresses.map((pool, idx) => ({
+                    target: tokens[idx],
+                    params: pool
+                })),
+                block,
+                chain
+            })).output.map(bp => bp.output);
+
+            for (let index = 0; index < poolAddresses.length; index++) {
+                sdk.util.sumSingleBalance(
+                    balances,
+                    `heco:${tokens[index]}`,
+                    balancePools[index]
+                );
+            }
+        } else {
+            const balancePools = (await sdk.api.abi.multiCall({
+                abi: balance,
+                calls: poolAddresses.map(pool => ({
+                    target: pool
+                })),
+                block,
+                chain
+            })).output.map(bp => bp.output);
+
+            for (let index = 0; index < poolAddresses.length; index++) {
+                sdk.util.sumSingleBalance(
+                    balances,
+                    `heco:${tokens[index]}`,
+                    balancePools[index]
+                );
+            }
         }
     } else {
         const balancePools = (await sdk.api.abi.multiCall({
@@ -78,6 +98,16 @@ const hecoTvl = async (timestamp, ethBlock, chainBlocks) => {
         abi.getPools,
         abi.supplyToken,
         erc20.balanceOf
+    );
+
+    await calcTvl(
+        balances,
+        "heco",
+        chainBlocks["heco"],
+        abi.poolFactory,
+        abi.getPools,
+        abi.supplyToken,
+        abi.totalBorrow
     );
 
     //  --- Pairs pool TVL portion ---
