@@ -20,8 +20,14 @@ const {
   xu3lpaAddr,
   xu3lpbAddr,
   xu3lpcAddr,
+  xu3lpdAddr,
+  xu3lpeAddr,
+  xu3lpfAddr,
+  xu3lpgAddr,
+  xu3lphAddr,
   ethrsi6040Addr,
   snxAddr,
+  wbtcAddr,
   wethAddr,
 } = require("./config/xtoken/constants");
 const xAAVE = require("./config/xtoken/xAAVE.json");
@@ -45,6 +51,11 @@ async function fetch() {
   const xu3lpaCtr = new web3.eth.Contract(xU3LP, xu3lpaAddr);
   const xu3lpbCtr = new web3.eth.Contract(xU3LP, xu3lpbAddr);
   const xu3lpcCtr = new web3.eth.Contract(xU3LP, xu3lpcAddr);
+  const xu3lpdCtr = new web3.eth.Contract(xU3LP, xu3lpdAddr);
+  const xu3lpeCtr = new web3.eth.Contract(xU3LP, xu3lpeAddr);
+  const xu3lpfCtr = new web3.eth.Contract(xU3LP, xu3lpfAddr);
+  const xu3lpgCtr = new web3.eth.Contract(xU3LP, xu3lpgAddr);
+  const xu3lphCtr = new web3.eth.Contract(xU3LP, xu3lphAddr);
   const xsnxaTradeAccountingCtr = new web3.eth.Contract(
     xSNXTradeAccountingContract,
     xsnxaTradeAccountingAddr
@@ -52,44 +63,6 @@ async function fetch() {
   const ethrsi6040Ctr = new web3.eth.Contract(ERC20, ethrsi6040Addr);
   const snxCtr = new web3.eth.Contract(SNX, snxAddr);
   const xbntaCtr = new web3.eth.Contract(xBNT, xbntaAddr);
-
-  const xaaveaTvlRaw = await xaaveaCtr.methods.getFundHoldings().call();
-  const xaavebTvlRaw = await xaavebCtr.methods.getFundHoldings().call();
-
-  const xaaveaTvlToken = new BigNumber(xaaveaTvlRaw).div(DEC_18).toFixed(2);
-  const xaavebTvlToken = new BigNumber(xaavebTvlRaw).div(DEC_18).toFixed(2);
-
-  const xbntaStakedRaw = await xbntaCtr.methods.totalAllocatedNav().call();
-  const xbntaBufferRaw = await xbntaCtr.methods.getBufferBalance().call();
-  const xbntaPendingRaw = await xbntaCtr.methods
-    .getRewardsContributionToNav()
-    .call();
-
-  const xbntaStakedToken = new BigNumber(xbntaStakedRaw).div(DEC_18).toFixed(2);
-  const xbntaBufferToken = new BigNumber(xbntaBufferRaw).div(DEC_18).toFixed(2);
-  const xbntaPendingToken = new BigNumber(xbntaPendingRaw)
-    .div(DEC_18)
-    .toFixed(2);
-
-  const xinchaTvlRaw = await xinchaCtr.methods.getNav().call();
-  const xinchbTvlRaw = await xinchbCtr.methods.getNav().call();
-
-  const xinchaTvlToken = new BigNumber(xinchaTvlRaw).div(DEC_18).toFixed(2);
-  const xinchbTvlToken = new BigNumber(xinchbTvlRaw).div(DEC_18).toFixed(2);
-
-  const xkncaTvlRaw = await xkncaCtr.methods.getFundKncBalanceTwei().call();
-  const xkncbTvlRaw = await xkncbCtr.methods.getFundKncBalanceTwei().call();
-
-  const xkncaTvlToken = new BigNumber(xkncaTvlRaw).div(DEC_18).toFixed(2);
-  const xkncbTvlToken = new BigNumber(xkncbTvlRaw).div(DEC_18).toFixed(2);
-
-  const xu3lpaTvlRaw = await xu3lpaCtr.methods.getNav().call();
-  const xu3lpbTvlRaw = await xu3lpbCtr.methods.getNav().call();
-  const xu3lpcTvlRaw = await xu3lpcCtr.methods.getNav().call();
-
-  const xu3lpaTvl = Number(new BigNumber(xu3lpaTvlRaw).div(DEC_18).toFixed(2));
-  const xu3lpbTvl = Number(new BigNumber(xu3lpbTvlRaw).div(DEC_18).toFixed(2));
-  const xu3lpcTvl = Number(new BigNumber(xu3lpcTvlRaw).div(DEC_18).toFixed(2));
 
   const priceAave = await utils.getPricesfromString("aave");
   const priceBnt = await retry(
@@ -133,6 +106,66 @@ async function fetch() {
         `https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${wethAddr}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`
       )
   );
+
+  const priceWbtc = await retry(
+    async (bail) =>
+      await axios.get(
+        `https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${wbtcAddr}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`
+      )
+  );
+
+  const xaaveaTvlRaw = await xaaveaCtr.methods.getFundHoldings().call();
+  const xaavebTvlRaw = await xaavebCtr.methods.getFundHoldings().call();
+
+  const xaaveaTvlToken = new BigNumber(xaaveaTvlRaw).div(DEC_18).toFixed(2);
+  const xaavebTvlToken = new BigNumber(xaavebTvlRaw).div(DEC_18).toFixed(2);
+
+  const xbntaStakedRaw = await xbntaCtr.methods.totalAllocatedNav().call();
+  const xbntaBufferRaw = await xbntaCtr.methods.getBufferBalance().call();
+  const xbntaPendingRaw = await xbntaCtr.methods
+    .getRewardsContributionToNav()
+    .call();
+
+  const xbntaStakedToken = new BigNumber(xbntaStakedRaw).div(DEC_18).toFixed(2);
+  const xbntaBufferToken = new BigNumber(xbntaBufferRaw).div(DEC_18).toFixed(2);
+  const xbntaPendingToken = new BigNumber(xbntaPendingRaw)
+    .div(DEC_18)
+    .toFixed(2);
+
+  const xinchaTvlRaw = await xinchaCtr.methods.getNav().call();
+  const xinchbTvlRaw = await xinchbCtr.methods.getNav().call();
+
+  const xinchaTvlToken = new BigNumber(xinchaTvlRaw).div(DEC_18).toFixed(2);
+  const xinchbTvlToken = new BigNumber(xinchbTvlRaw).div(DEC_18).toFixed(2);
+
+  const xkncaTvlRaw = await xkncaCtr.methods.getFundKncBalanceTwei().call();
+  const xkncbTvlRaw = await xkncbCtr.methods.getFundKncBalanceTwei().call();
+
+  const xkncaTvlToken = new BigNumber(xkncaTvlRaw).div(DEC_18).toFixed(2);
+  const xkncbTvlToken = new BigNumber(xkncbTvlRaw).div(DEC_18).toFixed(2);
+
+  // xU3LP
+  const xu3lpaTvlRaw = await xu3lpaCtr.methods.getNav().call();
+  const xu3lpbTvlRaw = await xu3lpbCtr.methods.getNav().call();
+  const xu3lpcTvlRaw = await xu3lpcCtr.methods.getNav().call();
+  const xu3lpdTvlRaw = await xu3lpdCtr.methods.getNav().call();
+  const xu3lpeTvlRaw = await xu3lpeCtr.methods.getNav().call();
+  const xu3lpfTvlRaw = await xu3lpfCtr.methods.getNav().call();
+  const xu3lpgTvlRaw = await xu3lpgCtr.methods.getNav().call();
+  const xu3lphTvlRaw = await xu3lphCtr.methods.getNav().call();
+
+  const xu3lpaTvl = Number(new BigNumber(xu3lpaTvlRaw).div(DEC_18).toFixed(2));
+  const xu3lpbTvl = Number(new BigNumber(xu3lpbTvlRaw).div(DEC_18).toFixed(2));
+  const xu3lpcTvl = Number(new BigNumber(xu3lpcTvlRaw).div(DEC_18).toFixed(2));
+  const xu3lpdTvl =
+    Number(new BigNumber(xu3lpdTvlRaw).div(DEC_18).toFixed(2)) *
+    priceWeth.data["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"].usd;
+  const xu3lpeTvl =
+    Number(new BigNumber(xu3lpeTvlRaw).div(DEC_18).toFixed(2)) *
+    priceWbtc.data["0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"].usd;
+  const xu3lpfTvl = Number(new BigNumber(xu3lpfTvlRaw).div(DEC_18).toFixed(2));
+  const xu3lpgTvl = Number(new BigNumber(xu3lpgTvlRaw).div(DEC_18).toFixed(2));
+  const xu3lphTvl = Number(new BigNumber(xu3lphTvlRaw).div(DEC_18).toFixed(2));
 
   const xaaveaTvl = xaaveaTvlToken * priceAave.data.aave.usd;
   const xaavebTvl = xaavebTvlToken * priceAave.data.aave.usd;
@@ -208,7 +241,12 @@ async function fetch() {
     xsnxaTvl +
     xu3lpaTvl +
     xu3lpbTvl +
-    xu3lpcTvl;
+    xu3lpcTvl +
+    xu3lpdTvl +
+    xu3lpeTvl +
+    xu3lpfTvl +
+    xu3lpgTvl +
+    xu3lphTvl;
 
   return tvl;
 }
