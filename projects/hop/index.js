@@ -1,9 +1,14 @@
 const sdk = require('@defillama/sdk')
 const tokens = require('./mainnet')
+const {transformXdaiAddress} = require('../helper/portedTokens')
 
 function chainTvl(chain) {
     return async (timestamp, ethBlock, chainBlocks) => {
         const balances = {}
+        let transform = token =>`${chain}:${token}`
+        if(chain === "xdai"){
+            transform = await transformXdaiAddress()
+        }
         for (const tokenConstants of Object.values(tokens.bridges)) {
             const chainConstants = tokenConstants[chain]
             if (chainConstants === undefined) {
@@ -19,7 +24,7 @@ function chainTvl(chain) {
                 block: chainBlocks[chain],
                 chain: chain
             })
-            sdk.util.sumSingleBalance(balances, token==="0x4ECaBa5870353805a9F068101A40E0f32ed605C6"?'0xdac17f958d2ee523a2206206994597c13d831ec7':`${chain}:${token}`, amount.output)
+            sdk.util.sumSingleBalance(balances, await transform(token), amount.output)
         }
         return balances
     }
