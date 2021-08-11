@@ -2,9 +2,9 @@ const BigNumber = require('bignumber.js')
 const xUniswapV2TVL = require('./xUniswapV2');
 const {transformFantomAddress} = require('../helper/portedTokens')
 
-async function tvl(timestamp, block) {
+async function tvl(timestamp, ethBlock, chainBlocks) {
   const [xUniswapV2] = await Promise.all([
-    xUniswapV2TVL(timestamp, block),
+    xUniswapV2TVL(timestamp, chainBlocks.fantom),
   ]);
 
   const tokenAddresses = new Set(Object.keys(xUniswapV2));
