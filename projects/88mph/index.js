@@ -117,5 +117,6 @@ module.exports = {
   token: 'MPH',
   category: 'lending',
   start: 1606109629, // Monday, November 23, 2020 5:33:49 AM GMT
-  tvl
+  tvl,
+  methodology: `Using the addresses for the fixed interest rate bonds we are able to find the underlying tokens held in each address. Once we have the underlying token we then get the balances of each of the tokens. For the CRV tokens used "CRV:STETH" for example, the address is replaced with the address of one of the tokens. In the example at hand the address is replaced with the "WETH" address so that the price can be calculated.`,
 }
