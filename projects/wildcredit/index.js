@@ -1,16 +1,8 @@
 const sdk = require("@defillama/sdk");
 const erc20 = require("../helper/abis/erc20.json");
-const Web3 = require("web3");
+const web3 = require("../config/web3");
 const abi = require("./abi.json");
 const json = require("./abis.json");
-
-require("dotenv").config()
-
-let provider = new Web3.providers.WebsocketProvider(
-  process.env.INFURA_WWS
-);
-
-let web3 = new Web3(provider);
 
 const pair_factory = "0x23B74796b72f995E14a5e3FF2156Dad9653256Cf";
 
@@ -18,7 +10,7 @@ const calcTvl = async (balances, block, token, balance) => {
 
   const factory = new web3.eth.Contract(json, pair_factory);
   const START_BLOCK = 12867493;
-  const END_BLOCK = await web3.eth.getBlockNumber();
+  const END_BLOCK = block;
   const events = await factory.getPastEvents("PairCreated", {
     fromBlock: START_BLOCK,
     toBlock: END_BLOCK,
