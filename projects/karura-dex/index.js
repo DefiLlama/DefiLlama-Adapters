@@ -45,24 +45,12 @@ async function tvl() {
     // Iterate over all of the token symbols and add them to the object
     for (const i in tokens) {
       const { Token } = tokens[i];
-      if (totalLiquidity.Token) {
+      if (totalLiquidity[Token]) {
         totalLiquidity[Token] += amounts[i];
       } else {
         totalLiquidity[Token] = amounts[i];
       }
     }
-  }
-
-  // Query for all KSM positions, if there were multiple token positions
-  // you could use loans.totalPositions.entries() to query them all at once
-  const positions = await api.query.loans.totalPositions({ Token: "KSM" })
-  const totalCollateral = BigInt(positions.toJSON().collateral);
-
-  // Add total collateral to KSM
-  if (totalLiquidity.KSM) {
-    totalLiquidity.KSM += totalCollateral;
-  } else {
-    totalLiquidity = totalCollateral;
   }
 
   const totalLiquidityFormatted = {};
