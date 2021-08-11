@@ -2,7 +2,7 @@ const {getPools} = require('./pools')
 const axios = require('axios')
 
 async function getTokenBalance(account){
-    const tokenBalance = await axios.post("https://api.mainnet-beta.solana.com", {
+    const tokenBalance = await axios.post('https://solana-api.projectserum.com/', {
         "jsonrpc": "2.0",
         "id": 1,
         "method": "getTokenAccountBalance",
