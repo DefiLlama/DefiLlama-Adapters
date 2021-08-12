@@ -253,4 +253,5 @@ async function fetch() {
 
 module.exports = {
   fetch,
+  methodology: `TVL includes deposits made to the available strategies at xToken Markets.`
 };
