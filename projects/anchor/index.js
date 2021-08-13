@@ -36,6 +36,7 @@ async function tvl(timestamp, block) {
 
 module.exports = {
     tvl,
+    methodology: `We use the Anchor subgraph to get the amount of bLUNA used as collateral on anchor and the UST that is on anchor but has not been lent, we then use Coingecko to price the tokens in USD.`,
     terra: {
         tvl,
     }

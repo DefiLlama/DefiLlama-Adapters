@@ -22,22 +22,22 @@ let coins = [
 let daiHolders = [
   "0xaB7A49B971AFdc7Ee26255038C82b4006D122086", //USDTransmuter
   "0xc21D353FF4ee73C572425697f4F5aaD2109fe35b", //USDAlchemist
-  "0xf3cFfaEEa177Db444b68FB6f033d4a82f6D8C82d" //USDTransmuterB
+  "0xeE69BD81Bd056339368c97c4B2837B4Dc4b796E7" //USDTransmuterB
 ];
 
 let yvDaiHolders = [
-  "0x014dE182c147f8663589d77eAdB109Bf86958f13", //USDYearnVaultAdapter (Alchemist)
-  "0x491EAFC47D019B44e13Ef7cC649bbA51E15C61d7" //USDYearnVaultAdapterWithIndirection (TransmuterB)
+  "0xb039eA6153c827e59b620bDCd974F7bbFe68214A", //USDYearnVaultAdapter (Alchemist)
+  "0x6Fe02BE0EC79dCF582cBDB936D7037d2eB17F661" //USDYearnVaultAdapterWithIndirection (TransmuterB)
 ];
 
 let wethHolders = [
-  "0x45f81eF5F2ae78f49851f7A62e4061FF54Ff674B", //ETHTransmuter
-  "0x6B566554378477490ab040f6F757171c967D03ab"  //ETHAlchemist
+  "0x9FD9946E526357B35D95Bcb4b388614be4cFd4AC", //ETHTransmuter
+  "0xf8317BD5F48B6fE608a52B48C856D3367540B73B"  //ETHAlchemist
 ];
 
 let yvWethHolders = [
-  "0xEBA649E0010818Aa4321088D34bD6162d65E7971", //ETHYearnVaultAdapter (Alchemist)
-  "0x54dc35eb8c2E2E20f3657Af6F84cd9949C08CF38"  //ETHYearnVaultAdapter (Transmuter)
+  "0x546E6711032Ec744A7708D4b7b283A210a85B3BC", //ETHYearnVaultAdapter (Alchemist)
+  "0x6d75657771256C7a8CB4d475fDf5047B70160132"  //ETHYearnVaultAdapter (Transmuter)
 ];
 
 async function weiToFloat(wei) {

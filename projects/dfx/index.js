@@ -11,7 +11,7 @@ async function tvl(timestamp, block) {
     const xsgdTokens = (await axios.get(`https://api.covalenthq.com/v1/1/address/${poolXsgd}/balances_v2/?&key=ckey_72cd3b74b4a048c9bc671f7c5a6`)).data.data.items
     const cadcTokens = (await axios.get(`https://api.covalenthq.com/v1/1/address/${poolCadc}/balances_v2/?&key=ckey_72cd3b74b4a048c9bc671f7c5a6`)).data.data.items
 
-    await Promise.all(
+    await Promise.all([
         euroTokens.map( async (token) => {
             if(token.supports_erc) {
                 const singleTokenLocked = sdk.api.erc20.balanceOf({
@@ -41,8 +41,8 @@ async function tvl(timestamp, block) {
                 })
                 sdk.util.sumSingleBalance(balances, token.contract_address, (await singleTokenLocked).output)
             }
-        }),
-    )
+        })
+    ].flat())
 
     return balances
 }

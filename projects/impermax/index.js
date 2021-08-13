@@ -27,9 +27,5 @@ async function tvl(timestamp, block) {
 }
 
 module.exports = {
-  name: 'Impermax',
-  token: null,
-  category: 'lending',
-  start: 1614643200, // 02/03/2021 @ 12:00am (UTC)
   tvl,
 };

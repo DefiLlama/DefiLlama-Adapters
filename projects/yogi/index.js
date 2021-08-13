@@ -35,6 +35,7 @@ async function polygon(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   bsc: {
     tvl: bsc
   },

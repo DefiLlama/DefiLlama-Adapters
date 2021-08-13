@@ -188,7 +188,6 @@ async function tvl(timestamp, block) {
         let balance;
         let exchangeRate;
 
-        try {
             if (token.isCompound || token.isCream) {
                 balance = await getCBalanceFor(cTokenAddr, cTokenDecimals, provider, block);
                 exchangeRate = await getCExchangeRateFor(cTokenAddr, cTokenDecimals, uTokenDecimals, block);
@@ -203,9 +202,6 @@ async function tvl(timestamp, block) {
                 .integerValue(BigNumber.ROUND_UP);
 
             balances[uTokenAddr] = balances[uTokenAddr].plus(totalValue);
-        } catch (e) {
-            console.log('ERROR', e);
-        }
     }));
 
     return balances;
@@ -215,10 +211,6 @@ async function tvl(timestamp, block) {
   Metadata
 ==================================================*/
 module.exports = {
-    name: 'BarnBridge',
-    website: 'https://app.barnbridge.com',
-    token: 'BOND',
-    category: 'derivatives',
     start: 1615564559, // Mar-24-2021 02:17:40 PM +UTC
     tvl,
 };

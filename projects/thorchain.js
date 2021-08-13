@@ -1,16 +1,24 @@
 const retry = require('./helper/retry')
 const axios = require("axios");
-const BigNumber = require("bignumber.js");
 
+function diff(interval, timestamp){
+  const time = (Number(interval.endTime) + Number(interval.startTime))/2
+  return Math.abs(time-timestamp)
+}
 
-async function fetch() {
-  var price_feed = await retry(async bail => await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=thorchain&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true'))
+async function fetch(timestamp) {
+  var res = await retry(async bail => await axios.get('https://midgard.thorchain.info/v2/history/tvl?interval=day&count=400'))
+  let interval = res.data.intervals[0]
+  res.data.intervals.forEach(newInter=>{
+    if(diff(newInter, timestamp)<diff(interval, timestamp)){
+      interval = newInter
+    }
+  })
+  if(diff(interval, timestamp) > 24*3600){
+    throw new Error("Difference too large")
+  }
 
-  var res = await retry(async bail => await axios.get('https://chaosnet-midgard.bepswap.com/v1/network'))
-  var tvl = await new BigNumber((parseFloat(res.data.totalStaked) * 2) + parseFloat(res.data.bondMetrics.totalActiveBond) + parseFloat(res.data.bondMetrics.totalStandbyBond)).div(10 ** 8).toFixed(2);
-  tvl = tvl * price_feed.data.thorchain.usd;
-  return tvl;
-
+  return parseFloat(interval.totalValuePooled)*parseFloat(interval.runePriceUSD)/1e8
 }
 
 

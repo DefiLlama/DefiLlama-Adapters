@@ -49,6 +49,7 @@ async function tvl(timestamp) {
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   xdai: {
     tvl: getTvl.bind({ chain: "xdai" }),
   },

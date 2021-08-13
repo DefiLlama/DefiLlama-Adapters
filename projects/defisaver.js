@@ -319,10 +319,11 @@ async function fetch() {
 
   const makerColl = await getMakerData(contracts, prices);
   const compoundColl = await getCompoundData(contracts, prices);
-  const aaveColl = await getAaveData(contracts, prices);
+  // if block > 12837601 ignore aave v1, contract was self-destructed in https://etherscan.io/tx/0xded247efd3d46251f9b5b410b207140ea1852d78e8d09f1ab698c93a4ad9b513
+  //const aaveColl = await getAaveData(contracts, prices);
   const aaveV2Coll = await getAaveV2Data(contracts, prices);
 
-  return makerColl + compoundColl + aaveColl + aaveV2Coll;
+  return makerColl + compoundColl + aaveV2Coll;
 }
 
 module.exports = {

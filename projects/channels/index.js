@@ -1,6 +1,7 @@
 const _ = require('underscore');
 const sdk = require('@defillama/sdk');
 const abi = require('./abi.json');
+const { unwrapUniswapLPs } = require('../helper/unwrapLPs');
 
 const comptroller = "0x8955aeC67f06875Ee98d69e6fe5BDEA7B60e9770"
 
@@ -52,26 +53,51 @@ async function tvl() {
 
     let balances = {};
     let timestamp = Math.round(new Date() / 1000)
-    let currentBlock = (await sdk.api.util.lookupBlock(timestamp, {chain: "heco"}))
+    //let currentBlock = (await sdk.api.util.lookupBlock(timestamp, {chain: "heco"}))
     let markets = await getMarkets();
     let LockedInfo = await sdk.api.abi.multiCall({
-        currentBlock,
+        //block: currentBlock,
         calls: _.map(markets, (market) => ({
             target: market.cToken,
         })),
         chain: 'heco',
         abi: abi['getCash'],
     });
+    const symbols = await sdk.api.abi.multiCall({
+        //block: currentBlock,
+        calls: _.map(markets, (market) => ({
+            target: market.underlying.split(':')[1],
+        })),
+        chain: 'heco',
+        abi: "erc20:symbol",
+    });
+    const lpPositions = []
 
-    _.each(markets, (market) => {
+    _.each(markets, (market, idx) => {
         let getCash = _.find(LockedInfo.output, (result) => result.input.target === market.cToken);
         if (getCash) {
             if (getCash.output === null) {
                 throw new Error("failed")
             }
-            sdk.util.sumSingleBalance(balances, market.underlying, getCash.output)
+            const symbol = symbols.output[idx].output
+            if(symbol === "HMDX"){
+                lpPositions.push({
+                    token: market.underlying.split(':')[1],
+                    balance: getCash.output
+                })
+            } else if(symbol === "BETH"){
+                sdk.util.sumSingleBalance(balances, 'binance-eth', Number(getCash.output)/1e18)
+            } else {
+                sdk.util.sumSingleBalance(balances, market.underlying, getCash.output)
+            }
         }
     });
+    await unwrapUniswapLPs(balances, lpPositions, undefined, 'heco', addr=>{
+        if(addr === "0x5545153ccfca01fbd7dd11c0b23ba694d9509a6f"){
+            return '0x6f259637dcd74c767781e37bc6133cd6a68aa161' // WHT -> HT
+        }
+        return `heco:${addr}`
+    })
     return balances;
 }
 

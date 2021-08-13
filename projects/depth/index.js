@@ -87,15 +87,23 @@ const mdexRouter = {
     }
 };
 
-const vaultAbi = {"getSelfUnderlying":{"inputs":[],"name":"getSelfUnderlying","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}}
+const vaultAbi = {
+    "getSelfUnderlying":{"inputs":[],"name":"getSelfUnderlying","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+    "balance":{"inputs":[],"name":"balance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+}
 const daoAbi={"sharesAndRewardsInfo":{"inputs":[],"name":"sharesAndRewardsInfo","outputs":[{"internalType":"uint256","name":"activeShares","type":"uint256"},{"internalType":"uint256","name":"pendingSharesToAdd","type":"uint256"},{"internalType":"uint256","name":"pendingSharesToReduce","type":"uint256"},{"internalType":"uint256","name":"rewards","type":"uint256"},{"internalType":"uint256","name":"claimedRewards","type":"uint256"},{"internalType":"uint256","name":"lastUpdatedEpochFlag","type":"uint256"}],"stateMutability":"view","type":"function"}}
 
+const swapPoolAbiV2 ={
+    "balances":{"name":"balances","outputs":[{"type":"uint256","name":""}],"inputs":[{"type":"uint256","name":"arg0"}],"stateMutability":"view","type":"function","gas":2220},
+    "coins":{"name":"coins","outputs":[{"type":"address","name":""}],"inputs":[{"type":"uint256","name":"arg0"}],"stateMutability":"view","type":"function","gas":2190}
+}
 
 const channels = '0x11bFEE9D8625ac4cDa6Ce52EeBF5caC7DC033d15';
 const filda = '0xE796c55d6af868D8c5E4A92e4fbCF8D8F88AcDED';
 const lendhub = '0xdA0519AA3F097A3A5b1325cb1D380C765d8F1D70';
 const lendhubeth = '0x15155042F8d13Db274224AF4530397f640f69274';
 
+const fildaSwapV2Address="0xa7a0EA0C5D2257e44Ad87d10DB90158c9c5c54b3"
 
 const vaultGroup=[
     {
@@ -125,6 +133,11 @@ const vaultGroup=[
                 "Name": "Pilot",
                 "ContractAddress": "0xB567bd78A4Ef08EE9C08762716B1699C46bA5ea3",
                 "TokenName": "plUSDT"
+            },
+            {
+                "Name": "CoinWind",
+                "ContractAddress": "0xd96e3FeDbF4640063F2B20Bd7B646fFbe3c774FF",
+                "TokenName": "cwUSDT"
             }
         ]
     },
@@ -155,6 +168,11 @@ const vaultGroup=[
                 "Name": "Pilot",
                 "ContractAddress": "0x9bd25Ed64F55f317d0404CCD063631CbfC4fc90b",
                 "TokenName": "plHUSD"
+            },
+            {
+                "Name": "CoinWind",
+                "ContractAddress": "0x7e1Ac905214214c1E339aaFBA72E2Ce29a7bEC22",
+                "TokenName": "cwHUSD"
             }
         ]
     }
@@ -205,6 +223,31 @@ async function getDecimals(contractAddress, coinId) {
     return decimals.output
 }
 
+async function swapV2GetBalance(contractAddress, coinId) {
+    const balance = await sdk.api.abi.call({
+        target: contractAddress,
+        abi: swapPoolAbiV2['balances'],
+        chain: "heco",
+        params: coinId,
+
+    });
+    return balance.output
+}
+
+async function swapV2GetDecimals(contractAddress, coinId) {
+    const underlyingCoinsAddress = await sdk.api.abi.call({
+        target: contractAddress,
+        abi: swapPoolAbiV2['coins'],
+        chain: "heco",
+        params: coinId,
+    });
+    const decimals = await sdk.api.abi.call({
+        target: underlyingCoinsAddress.output,
+        abi: erc20['decimals'],
+        chain: "heco",
+    });
+    return decimals.output
+}
 async function getTokenPrice(contractAddress) {
     const underlyingCoinsAddress = await sdk.api.abi.call({
         target: contractAddress,
@@ -228,6 +271,12 @@ async function poolUnderlyingCoinBalance(contractAddress, coinId) {
     const balance = await getBalance(contractAddress, coinId)
     const decimals = await getDecimals(contractAddress, coinId)
     const tvlPool = rate * balance / 1e18 / Math.pow(10, decimals)
+    return tvlPool
+}
+async function swapV2PoolUnderlyingCoinBalance(contractAddress, coinId) {
+    const balance = await swapV2GetBalance(contractAddress, coinId)
+    const decimals = await swapV2GetDecimals(contractAddress, coinId)
+    const tvlPool =  balance  / Math.pow(10, decimals)
     return tvlPool
 }
 
@@ -271,7 +320,7 @@ async function getVaultTotalDeposit(){
         for(let j=0;j<vaultGroup[i].Vaults.length;j++) {
             const out= await sdk.api.abi.call({
                 target: vaultGroup[i].Vaults[j].ContractAddress,
-                abi: vaultAbi['getSelfUnderlying'],
+                abi: vaultAbi['balance'],
                 chain: "heco",
             });
             if(vaultGroup[i].IsHUSD){
@@ -300,10 +349,15 @@ async function fetch() {
     const lendhubethBalances2 = await poolUnderlyingCoinBalance(lendhubeth, 1)
     const price = await getTokenPrice(lendhubeth)
 
+    const fildaSwapV2Balances1 = await swapV2PoolUnderlyingCoinBalance(fildaSwapV2Address, 0)
+    const fildaSwapV2Balances2 = await swapV2PoolUnderlyingCoinBalance(fildaSwapV2Address, 1)
+
     balances[channels] = channelsBalances1 + channelsBalances2;
     balances[filda] = fildaBalances1 + fildaBalances2;
     balances[lendhub] = lendhubBalances1 + lendhubBalances2;
     balances[lendhubeth] = (lendhubethBalances1 + lendhubethBalances2) * price;
+
+    balances[fildaSwapV2Address] = fildaSwapV2Balances1 + fildaSwapV2Balances2;
 
     let total = 0
     for (var key in balances) {
@@ -311,8 +365,11 @@ async function fetch() {
     }
     let dao=await getDaoSharesAndRewards()
     let vault=await getVaultTotalDeposit()
+ 
+
     return total+dao+vault
 }
+
 
 
 module.exports = {

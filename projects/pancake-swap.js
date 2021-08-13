@@ -32,6 +32,18 @@ pancakeDayDatas(
   }
 }
 `
+
+const graphUrl = 'https://api.thegraph.com/subgraphs/name/pancakeswap/exchange'
+const graphQuery = gql`
+query get_tvl($block: Int) {
+  uniswapFactories(
+    block: { number: $block }
+  ) {
+    totalVolumeUSD
+    totalLiquidityUSD
+  }
+}
+`;
 async function tvl(timestamp, ethBlock, chainBlocks) {
   if (Math.abs(timestamp - Date.now() / 1000) < 3600) {
     const tvl = await request(graphEndpoint, currentQuery)
@@ -44,6 +56,18 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
         closest = dayTvl
       }
     })
+    if(Math.abs(dayTvl.date - timestamp) > 3600*24){ // Oldest data is too recent
+      const {uniswapFactories} = await request(
+        graphUrl,
+        graphQuery,
+        {
+          block: chainBlocks['bsc'],
+        }
+      );
+      const usdTvl = Number(uniswapFactories[0].totalLiquidityUSD)
+    
+      return toUSDTBalances(usdTvl)
+    }
     return toUSDTBalances(closest.totalLiquidityUSD)
   }
 }
@@ -52,6 +76,7 @@ const factory = '0xBCfCcbde45cE874adCB698cC183deBcF17952812'
 const cakeToken = '0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82'
 const masterChef = '0x73feaa1eE314F8c655E354234017bE2193C9E24E'
 async function staking(timestamp, ethBlock, chainBlocks) {
+  const balances = {}
   const stakedCake = sdk.api.erc20.balanceOf({
     target: cakeToken,
     owner: masterChef,
@@ -64,6 +89,10 @@ async function staking(timestamp, ethBlock, chainBlocks) {
 }
 
 module.exports = {
-  staking,
+  misrepresentedTokens: true,
+  methodology: `TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://pancakeswap.info/ as the source. Staking accounts for the CAKE locked in MasterChef (${masterChef})`,
+  staking: {
+    tvl: staking
+  },
   tvl
 }
