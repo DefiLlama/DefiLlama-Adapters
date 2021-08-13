@@ -259,7 +259,6 @@ const collectorsPolygon = [
 
 async function eth(timestamp, block) {
     let balances = {};
-    let balancesV4 = {};
 
     const ethBlock = block
 
@@ -337,7 +336,7 @@ async function eth(timestamp, block) {
 
     const { output: poolsInfoV4 } = await sdk.api.abi.multiCall({
       calls: callsV4,
-      abi: abi['getPoolTotalDeposited'],
+      abi: abi['poolInfo'],
     })
 
     for(let pool of poolsInfoV4) {
@@ -345,16 +344,16 @@ async function eth(timestamp, block) {
       let totalDeposited = pool.output ? pool.output[5] : 0
       
       if(pid != 1) {
-        sdk.util.sumSingleBalance(balancesV4, poolMappingV4[pid], totalDeposited);  
+        sdk.util.sumSingleBalance(balances, poolMappingV4[pid], totalDeposited);  
       } 
       else {
-        await unwrapUniswapLPs(balancesV4, [{
+        await unwrapUniswapLPs(balances, [{
           token: poolMappingV4[pid],
           balance: totalDeposited
         }], block)
       }
     }
-    
+   
     // vaults
 
     let vaultCalls = []
