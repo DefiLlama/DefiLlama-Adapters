@@ -1,110 +1,36 @@
+// Adapter for Gro Protocol : https://gro.xyz
+
 const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
+const groTokenAbi = require('./abi.json');
 
-const Controller = "0xCC5c60A319D33810b9EaB9764717EeF84deFB8F4";
+const PWRD = "0xf0a93d4994b3d98fb5e3a2f90dbc2d69073cb86b";
+const GVT = "0x3ADb04E127b9C0a5D36094125669d4603AC52a0c";
+const DAI = "0x6B175474E89094C44Da98b954EedeAC495271d0F";
 
-const calcTvl = async (
-  balances,
-  block,
-  token,
-  vaultAdaptor,
-  vault,
-  totalAsset
-) => {
-  const tokens = (
-    await sdk.api.abi.call({
-      abi: token,
-      target: vaultAdaptor,
-      block,
-    })
-  ).output;
+async function tvl(timestamp, ethBlock) {
 
-  const totalAssetsVaultAdaptor = (
-    await sdk.api.abi.call({
-      abi: totalAsset,
-      target: vaultAdaptor,
-      block,
-    })
-  ).output;
+    let balances = {};
 
-  const vaults = (
-    await sdk.api.abi.call({
-      abi: vault,
-      target: vaultAdaptor,
-      block,
-    })
-  ).output;
+    for (const token of [PWRD, GVT]) {
+        const current = await sdk.api.abi.call({
+            target: token,
+            abi: groTokenAbi["totalAssets"],
+            block: ethBlock,
+        });
+        sdk.util.sumSingleBalance(balances, DAI, current.output);
+    }
 
-  const totalAssetsVault = (
-    await sdk.api.abi.call({
-      abi: totalAsset,
-      target: vaults,
-      block,
-    })
-  ).output;
-
-  sdk.util.sumSingleBalance(balances, tokens, totalAssetsVaultAdaptor);
-  sdk.util.sumSingleBalance(balances, tokens, totalAssetsVault);
-};
-
-const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
-
-  // Curve Vault out of deadCoin Method at Controller Contract
-
-  const curveVaultAdaptor = (
-    await sdk.api.abi.call({
-      abi: abi.curveVault,
-      target: Controller,
-      ethBlock,
-    })
-  ).output;
-
-  await calcTvl(
-    balances,
-    ethBlock,
-    abi.token,
-    curveVaultAdaptor,
-    abi.vault,
-    abi.totalAssets
-  );
-
-  // Vaults in deadCoin Method at Controller Contract
-
-  const deadCoin = (
-    await sdk.api.abi.call({
-      abi: abi.deadCoin,
-      target: Controller,
-      ethBlock,
-    })
-  ).output;
-
-  for (let index = 0; index < deadCoin; index++) {
-    const vaultsAdaptor = (
-      await sdk.api.abi.call({
-        abi: abi.underlyingVaults,
-        target: Controller,
-        params: index,
-        ethBlock,
-      })
-    ).output;
-
-    await calcTvl(
-      balances,
-      ethBlock,
-      abi.token,
-      vaultsAdaptor,
-      abi.vault,
-      abi.totalAssets
-    );
-  }
-
-  return balances;
-};
+    return balances;
+}
 
 module.exports = {
-  eth: {
-    tvl: ethTvl,
-  },
-  tvl: sdk.util.sumChainTvls([ethTvl]),
+    ethereum:{
+        tvl,
+    },
+    name: 'Gro',
+    token: null,
+    category: 'assets',
+    start: 1622204347,  // 28-05-2021 12:19:07 (UTC)
+    methodology: "Using DAI as a placeholder with same 18 decimals until coins listed on coingecko. The totalAssets() call returns USD value",
+    tvl,
 };
