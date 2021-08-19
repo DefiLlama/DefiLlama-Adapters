@@ -50,6 +50,7 @@ async function tvl(timestamp) {
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   avalanche:{
     tvl,
   },

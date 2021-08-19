@@ -1,7 +1,7 @@
 /*==================================================
   Modules
   ==================================================*/
-
+  const axios = require('axios')
   const sdk = require('@defillama/sdk');
   const BigNumber = require('bignumber.js');
   const _ = require('underscore');
@@ -14,8 +14,11 @@
   const usdPoolAddress = "0x3911f80530595fbd01ab1516ab61255d75aeb066"
   const veth2PoolAddress = "0xdec2157831D6ABC3Ec328291119cc91B337272b5"
   const alethPoolAddress = "0xa6018520eaacc06c30ff2e1b3ee2c7c22e64196a"
+  const usdV2PoolAddress = "0xaCb83E0633d6605c5001e2Ab59EF3C745547C8C7"
+  const susdPoolAddress = "0x0C8BAe14c9f9BF2c953997C881BEfaC7729FD314"
   const veth2 = "0x898BAD2774EB97cF6b94605677F43b41871410B1"
   const weth = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+  const d4Pool = "0xc69ddcd4dfef25d8a793241834d4cc4b3668ead6"
 
   const tokens = {
     // TBTC
@@ -27,11 +30,13 @@
     // SBTC
     "0xfe18be6b3bd88a2d2a7f928d00292e7a9963cfc6": [btcPoolAddress],
     // DAI
-    "0x6B175474E89094C44Da98b954EedeAC495271d0F": [usdPoolAddress],
+    "0x6B175474E89094C44Da98b954EedeAC495271d0F": [usdPoolAddress, usdV2PoolAddress],
     // USDC
-    "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": [usdPoolAddress],
+    "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": [usdPoolAddress, usdV2PoolAddress],
     // USDT
-    "0xdAC17F958D2ee523a2206206994597C13D831ec7": [usdPoolAddress],
+    "0xdAC17F958D2ee523a2206206994597C13D831ec7": [usdPoolAddress, usdV2PoolAddress],
+    // SUSD
+    "0x57ab1ec28d129707052df4df418d58a2d46d5f51" : [susdPoolAddress],
     // WETH
     [weth] : [veth2PoolAddress, alethPoolAddress],
     // VETH2
@@ -78,6 +83,21 @@
         }
         balances[address] = BigNumber(balances[address] || 0).plus(amount).toFixed()
     });
+
+    let d4Tokens = (await axios.get(`https://api.covalenthq.com/v1/1/address/${d4Pool}/balances_v2/?&key=ckey_72cd3b74b4a048c9bc671f7c5a6`)).data.data.items
+
+     await Promise.all(
+         d4Tokens.map( async (token) => {
+           if(token.supports_erc) {
+             const singleTokenLocked = sdk.api.erc20.balanceOf({
+               target: token.contract_address,
+               owner: d4Pool,
+               block: block
+             })
+             sdk.util.sumSingleBalance(balances, token.contract_address, (await singleTokenLocked).output)
+           }
+         })
+     )
 
     return balances;
   }

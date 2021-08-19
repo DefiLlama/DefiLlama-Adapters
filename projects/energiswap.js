@@ -1,7 +1,7 @@
 const { GraphQLClient, gql } = require('graphql-request')
 
 async function fetch() {
-    const endpoint = 'https://graphnode.energiswap.info:8000/subgraphs/name/energi/energiswap'
+    const endpoint = 'https://graphnode.energiswap.exchange:8000/subgraphs/name/energi/energiswap'
     const graphQLClient = new GraphQLClient(endpoint)
 
     const query = gql`

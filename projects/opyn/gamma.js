@@ -15,6 +15,8 @@ const isWhitelistedCollateral = require('./abis/gamma/isWhitelistedCollateral.js
 const START_BLOCK = 11551118;
 const whitelist = "0xa5ea18ac6865f315ff5dd9f1a7fb1d41a30a6779";
 const marginPool = "0x5934807cc0654d46755ebd2848840b616256c6ef";
+const yvUSDC = "0x5f18c75abdae578b483e5f43f12a39cf75b973a9";
+const usdc = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
 
 /*==================================================
   TVL
@@ -64,6 +66,18 @@ module.exports = async function tvl(timestamp, block) {
         }
       }
     }));
+
+    // Add yvUSDC as USDC to balances
+    const yvUSDCBalance = (
+      await sdk.api.abi.call({
+        target: yvUSDC,
+        params: marginPool,
+        abi: 'erc20:balanceOf',
+        block
+      })
+    ).output;
+
+    balances[usdc] = BigNumber(balances[usdc] || 0).plus(BigNumber(yvUSDCBalance)).toFixed();
   }
 
   return balances;

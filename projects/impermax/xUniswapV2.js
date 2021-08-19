@@ -29,14 +29,6 @@ async function multiCallAndReduce(abi, targets, block) {
 }
 
 module.exports = async function tvl(_, block) {
-  const supportedTokens = await (
-    sdk
-      .api
-      .util
-      .tokenList()
-      .then((supportedTokens) => supportedTokens.map(({ contract }) => contract))
-  );
-
   const logs = (
     await sdk.api.util
       .getLogs({
@@ -56,15 +48,13 @@ module.exports = async function tvl(_, block) {
     const collateralAddress = toAddress(log.data);
     const borrowable0Address = toAddress(log.data, 1);
     const borrowable1Address = toAddress(log.data, 2);
-    const is0Supported = supportedTokens.includes(token0Address);
-    const is1Supported = supportedTokens.includes(token1Address);
     lendingPools.push({
       pairAddress: pairAddress,
-      token0Address: is0Supported ? token0Address : null,
-      token1Address: is1Supported ? token1Address : null,
+      token0Address: token0Address,
+      token1Address: token1Address,
       collateralAddress: collateralAddress,
-      borrowable0Address: is0Supported ? borrowable0Address : null,
-      borrowable1Address: is1Supported ? borrowable1Address : null,
+      borrowable0Address: borrowable0Address,
+      borrowable1Address: borrowable1Address,
     });
   }
 

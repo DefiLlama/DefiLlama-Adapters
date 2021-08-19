@@ -1,6 +1,7 @@
 const sdk = require('@defillama/sdk');
 const abi = require('./abi.json');
 const BigNumber = require('bignumber.js')
+const {getBlock} = require('../helper/getBlock')
 
 // V1
 const hubAddress = '0xdfa6edAe2EC0cF1d4A60542422724A48195A5071';
@@ -44,13 +45,6 @@ const xdaiSettings = {
   ]
 }
 
-
-function mergeBalances(balances, balancesToMerge) {
-  Object.entries(balancesToMerge).forEach(balance => {
-    sdk.util.sumSingleBalance(balances, balance[0], balance[1])
-  })
-}
-
 function constructBalanceOfCalls(tokens, useAddressProp){
   const calls = []
   for(const router of routers){
@@ -65,10 +59,7 @@ function constructBalanceOfCalls(tokens, useAddressProp){
   return calls
 }
 
-async function getRouterBalances(timestamp, chain, settings){
-  const {block} = await sdk.api.util.lookupBlock(timestamp,{
-    chain
-  })
+async function getRouterBalances(timestamp, chain, settings, block){
   const routerBalances = await sdk.api.abi.multiCall({
     abi: 'erc20:balanceOf',
     block,
@@ -121,10 +112,8 @@ async function ethereum(timestamp, block) {
   return balances
 }
 
-async function bsc(timestamp) {
-  const {block} = await sdk.api.util.lookupBlock(timestamp,{
-    chain:'bsc'
-  })
+async function bsc(timestamp, ethBlock, chainBlocks) {
+  const block = chainBlocks.bsc
   const balances={}
   const routerBalances = await sdk.api.abi.multiCall({
     abi: 'erc20:balanceOf',
@@ -138,29 +127,19 @@ async function bsc(timestamp) {
   return balances
 }
 
-async function polygon(timestamp, block) {
-  return getRouterBalances(timestamp, 'polygon', polygonSettings)
+async function polygon(timestamp, ethBlock, chainBlocks) {
+  const block = await getBlock(timestamp, 'polygon', chainBlocks)
+  return getRouterBalances(timestamp, 'polygon', polygonSettings, block)
 }
 
-async function xdai(timestamp, block) {
-  return getRouterBalances(timestamp, 'xdai', xdaiSettings)
-}
-
-async function tvl(timestamp, block) {
-  const balances = {};
-  const chainBalances = await Promise.all([
-    ethereum(timestamp, block),
-    polygon(timestamp, block),
-    xdai(timestamp, block),
-    bsc(timestamp, block)
-  ])
-  chainBalances.forEach(chainBalance => mergeBalances(balances, chainBalance))
-  return balances
+async function xdai(timestamp, ethBlock, chainBlocks) {
+  const block = await getBlock(timestamp, 'xdai', chainBlocks)
+  return getRouterBalances(timestamp, 'xdai', xdaiSettings, block)
 }
 
 module.exports = {
   start: 1552065900,  // 03/08/2019 @ 5:25pm (UTC)
-  tvl,
+  tvl:sdk.util.sumChainTvls([ethereum, polygon, xdai, bsc]),
   ethereum: {
     tvl: ethereum
   },

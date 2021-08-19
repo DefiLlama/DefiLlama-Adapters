@@ -152,7 +152,7 @@ const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
 };
 
 module.exports = {
-  eth: {
+  ethereum: {
     tvl: ethTvl,
   },
   bsc: {

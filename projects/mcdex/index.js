@@ -67,6 +67,7 @@ async function GenerateCallList() {
   ==================================================*/
 
   module.exports = {
+    misrepresentedTokens: true,
     name: 'MCDEX',
     website: 'https://mcdex.io',
     token: 'MCB',

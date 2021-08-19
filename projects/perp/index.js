@@ -29,7 +29,7 @@ async function xdai(_timestamp, ethBlock, chainBlocks) {
     return balances
 }
 
-async function eth(_timestamp, ethBlock, chainBlocks) {
+async function ethStaking(_timestamp, ethBlock, chainBlocks) {
     return {
         [perpToken]: (await sdk.api.erc20.balanceOf({
             target: perpToken,
@@ -40,9 +40,9 @@ async function eth(_timestamp, ethBlock, chainBlocks) {
 }
 
 module.exports = {
-    //ethereum: {
-    //    tvl: eth
-    //},
+    staking: {
+        tvl: ethStaking
+    },
     xdai: {
         tvl: xdai
     },
