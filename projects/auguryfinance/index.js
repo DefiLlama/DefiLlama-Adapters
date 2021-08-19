@@ -128,5 +128,5 @@ module.exports = {
   treasury: {
     tvl: treasuryTvl,
   },
-  tvl: sdk.util.sumChainTvls([polygonTvl, treasuryTvl]),
+  tvl: sdk.util.sumChainTvls([polygonTvl]),
 };
