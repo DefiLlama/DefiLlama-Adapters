@@ -6,6 +6,7 @@ const BigNumber = require('bignumber.js')
 const dashboard = '0xb3C96d3C3d643c2318E4CDD0a9A48aF53131F5f4'
 const pools = [
     '0xb037581cF0cE10b04C4735443d95e0C93db5d940',
+    '0x4fd0143a3DA1E4BA762D42fF53BE5Fab633e014D',
     //'0x69FF781Cf86d42af9Bf93c06B8bE0F16a2905cBC', // pool2
     '0xCADc8CB26c8C7cB46500E61171b5F27e9bd7889D',
     '0xEDfcB78e73f7bA6aD2D829bf5D462a0924da28eD',
