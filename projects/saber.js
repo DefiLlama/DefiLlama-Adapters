@@ -6,7 +6,7 @@ async function tvl() {
           ustAmount, daiAmount, busdAmount, fraxAmount, usdkAmount, usdcAmount_3,
           wlunaAmount, renLunaAmount, husdAmount, usdcAmount_4, fttAmount, wfttAmount, wsrmAmount, srmAmount,
           ibBtcAmount, btcAmount_2, ibBtcAmount_2,
-          msolAmount, solAmount] = await Promise.all([
+          msolAmount, solAmount, apusdtAmount, usdtAmount_2] = await Promise.all([
         //usdc-usdt
         getTokenBalance("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "5C1k9yV7y4CjMnKv8eGYDgWND8P89Pdfj79Trk2qmfGo"),
         getTokenBalance("Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", "5C1k9yV7y4CjMnKv8eGYDgWND8P89Pdfj79Trk2qmfGo"),
@@ -46,6 +46,9 @@ async function tvl() {
         //sol-msol
         getTokenBalance("mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So", "2Sj4MZvmLhud4uRmGHJvDxq612nmF4JJsU1R4ZjNNGMS"),
         getTokenBalance("So11111111111111111111111111111111111111112", "2Sj4MZvmLhud4uRmGHJvDxq612nmF4JJsU1R4ZjNNGMS"),
+        //apUSDT-USDT
+        getTokenBalance("DNhZkUaxHXYvpxZ7LNnHtss8sQgdAfd1ZYS1fB7LKWUZ", "4S8xo3PeKfs3kY7ecS2amiffJZ4WXCAceDhUseE11q5E"),
+        getTokenBalance("Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", "4S8xo3PeKfs3kY7ecS2amiffJZ4WXCAceDhUseE11q5E"),
         
 
 
@@ -55,7 +58,7 @@ async function tvl() {
         'usd-coin': usdcAmount + usdcAmount_2 + usdcAmount_3 + usdcAmount_4,
         'renbtc': renBtcAmount + renBtcAmount_2 + renBtcAmount_3,
         'terra-luna': wlunaAmount + renLunaAmount,
-        'tether': usdtAmount,
+        'tether': usdtAmount + usdtAmount_2 + apusdtAmount,
         'terrausd': ustAmount,
         'dai': daiAmount,
         'busd': busdAmount,
