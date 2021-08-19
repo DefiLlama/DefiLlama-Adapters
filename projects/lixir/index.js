@@ -39,5 +39,6 @@ module.exports={
     ethereum:{
         tvl
     },
+    methodology: "We just get the tokens on their UniV3 managed positions",
     tvl
 }
