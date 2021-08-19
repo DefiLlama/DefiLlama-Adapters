@@ -20,6 +20,14 @@ const ethTokenPools = {
     'usdc': {
         'pool': '0x128647690C7733593aA3Dd149EeBC5e256E79217',
         'token': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
+    },
+    'wbtc': {
+        'pool': '0x93948Aa8488F522d5b079AF84fe411FBCE476e9f',
+        'token': '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599'
+    },
+    'bibtc': {
+        'pool': '0x986Eb51E67e154901ff9B482835788B8f3054076',
+        'token': '0x4ca7a5Fb41660A9c5c31683B832A17f7f7457344'
     }
 }
 
@@ -45,6 +53,10 @@ const bscTokenPools = {
     'btcb': {
         'pool': '0x26d0E4707af1c1DAAd8e9BA21b99cDa7Fd24c40B',
         'token': '0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c'
+    },
+    'busd': {
+        'pool': '0x829ED2a2BeF8b72e648f92CBF01587C7E12e8c1e',
+        'token': '0xe9e7cea3dedca5984780bafc599bd69add087d56'
     }
 }
 
