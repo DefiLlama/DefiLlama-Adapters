@@ -24,10 +24,6 @@ const ethTokenPools = {
     'wbtc': {
         'pool': '0x93948Aa8488F522d5b079AF84fe411FBCE476e9f',
         'token': '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599'
-    },
-    'bibtc': {
-        'pool': '0x986Eb51E67e154901ff9B482835788B8f3054076',
-        'token': '0x4ca7a5Fb41660A9c5c31683B832A17f7f7457344'
     }
 }
 
@@ -98,6 +94,22 @@ async function eth(timestamp, block) {
     return balances
 }
 
+const wbtc = "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"
+async function bitcoin(timestamp, ethBlock){
+    const tokenPool = {
+        'pool': '0x986Eb51E67e154901ff9B482835788B8f3054076',
+        'token': '0x4ca7a5Fb41660A9c5c31683B832A17f7f7457344'
+    }
+    let tokenLocked = await sdk.api.erc20.balanceOf({
+        owner: tokenPool.pool,
+        target: tokenPool.token,
+        block: ethBlock
+    });
+    return {
+        [wbtc]: tokenLocked.output
+    }
+}
+
 const wbnb = "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"
 async function bsc(timestamp, block, chainBlocks) {
     let balances = {};
@@ -125,6 +137,15 @@ async function bsc(timestamp, block, chainBlocks) {
     return balances
 }
 
+async function total(...params) {
+    const balances = {}
+    for(let chain of [eth, bsc, bitcoin]){
+        const bal = await chain(...params);
+        Object.entries(bal).map(t=>sdk.util.sumSingleBalance(balances, t[0], t[1]))
+    }
+    return balances
+}
+
 module.exports = {
     ethereum:{
         tvl: eth
@@ -132,5 +153,8 @@ module.exports = {
     bsc:{
         tvl: bsc
     },
-  tvl: sdk.util.sumChainTvls([eth, bsc])
+    bitcoin:{
+        tvl: bitcoin
+    },
+  tvl: total
 }
