@@ -25,7 +25,7 @@ const ethTokenPools = {
         'pool': '0x93948Aa8488F522d5b079AF84fe411FBCE476e9f',
         'token': '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599'
     },
-    'btc': {
+    'bibtc': {
         'pool': '0x986Eb51E67e154901ff9B482835788B8f3054076',
         'token': '0x4ca7a5Fb41660A9c5c31683B832A17f7f7457344'
     }
