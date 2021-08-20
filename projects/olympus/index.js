@@ -1,28 +1,89 @@
-const sdk = require('@defillama/sdk');
-const {sumTokensAndLPsSharedOwners} = require('../helper/unwrapLPs')
+const sdk = require("@defillama/sdk");
+const erc20 = require("../helper/abis/erc20.json");
+const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 
-const treasuryAddresses = ["0x886CE997aa9ee4F8c2282E182aB72A705762399D", "0x31F8Cc382c9898b273eff4e0b7626a6987C846E8"];
-const dai = "0x6b175474e89094c44da98b954eedeac495271d0f";
-const ohm = "0x383518188c0c6d7730d91b2c03a03c837814a899";
-const slp = "0x34d7d7aaf50ad4944b70b320acb24c95fa2def7c";
-const frax = "0x853d955acef822db058eb8505911ed77f175b99e";
-const fraxLP = "0x2dce0dda1c2f98e0f171de8333c3c6fe1bbf4877";
+const OlympusStakings = [
+  // Old Staking Contract
+  "0x0822F3C03dcc24d200AFF33493Dc08d0e1f274A2",
+  // New Staking Contract
+  "0xFd31c7d00Ca47653c6Ce64Af53c1571f9C36566a",
+];
 
-// Treasury TVL consists of DAI balance + Sushi SLP balance
-async function tvl(timestamp, block) {
-  const balances = {}
-  await sumTokensAndLPsSharedOwners(balances, [
-    [dai, false],
-    [frax, false],
-    [slp, true],
-    [fraxLP, true]
-  ], treasuryAddresses, block)
+const OHM = "0x383518188c0c6d7730d91b2c03a03c837814a899";
 
-  return balances
+const treasuryAddresses = [
+  // V1
+  "0x886CE997aa9ee4F8c2282E182aB72A705762399D",
+  // V2
+  "0x31F8Cc382c9898b273eff4e0b7626a6987C846E8",
+];
+
+const bondsTokensLPsAddresses = [
+  //DAI
+  "0x6b175474e89094c44da98b954eedeac495271d0f",
+  //OHM/DAI SLP
+  "0x34d7d7aaf50ad4944b70b320acb24c95fa2def7c",
+  //FRAX
+  "0x853d955acef822db058eb8505911ed77f175b99e",
+  //OHM/FRAX UNI-V2
+  "0x2dce0dda1c2f98e0f171de8333c3c6fe1bbf4877",
+  //WETH
+  "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+];
+
+/*** Staking of native token (OHM) TVL Portion ***/
+const staking = async (timestamp, ethBlock, chainBlocks) => {
+  const balances = {};
+
+  for (const stakings of OlympusStakings) {
+    const stakingBalance = await sdk.api.abi.call({
+      abi: erc20.balanceOf,
+      target: OHM,
+      params: stakings,
+      block: ethBlock,
+    });
+
+    sdk.util.sumSingleBalance(balances, OHM, stakingBalance.output);
+  }
+
+  return balances;
+};
+
+/*** Bonds TVL Portion (Treasury) ***
+ * Treasury TVL consists of DAI, FRAX and WETH balances + Sushi SLP and UNI-V2 balances
+ ***/
+async function ethTvl(timestamp, block) {
+  const balances = {};
+  for (let index = 0; index < bondsTokensLPsAddresses.length; index++) {
+    if (index % 2 == 0) {
+      await sumTokensAndLPsSharedOwners(
+        balances,
+        [[bondsTokensLPsAddresses[index], false]],
+        treasuryAddresses,
+        block
+      );
+    } else {
+      await sumTokensAndLPsSharedOwners(
+        balances,
+        [[bondsTokensLPsAddresses[index], true]],
+        treasuryAddresses,
+        block
+      );
+    }
+  }
+
+  return balances;
 }
 
 module.exports = {
   start: 1616569200, // March 24th, 2021
-  methodology: "Counts DAI, OHM SLP (DAI-OHM), FRAX and FRAX LP (OHM-FRAX) on the treasury",
-  tvl
-}
+  ethereum: {
+    tvl: ethTvl,
+  },
+  staking: {
+    tvl: staking,
+  },
+  tvl: sdk.util.sumChainTvls([ethTvl]),
+  methodology:
+    "Counts DAI, DAI SLP (OHM-DAI), FRAX, FRAX ULP (OHM-FRAX), WETH on the treasury",
+};
