@@ -36,6 +36,32 @@ query get_tvl($block: Int) {
     }
 }
 
+function getAvaxUniswapTvl(graphUrl, factoriesName = "uniswapFactories", tvlName = "totalLiquidityETH") {
+    const graphQuery = gql`
+query get_tvl($block: Int) {
+  ${factoriesName}(
+    block: { number: $block }
+  ) {
+    ${tvlName}
+  }
+}
+`;
+    return async (timestamp, ethBlock, chainBlocks) => {
+        const response = await request(
+            graphUrl,
+            graphQuery,
+            {
+              block:chainBlocks.avax,
+            }
+          );
+        
+          return {
+            'avalanche-2': Number(response[factoriesName][0].totalLiquidityETH)
+          }
+    }
+}
+
 module.exports = {
-    getChainTvl
+    getChainTvl,
+    getAvaxUniswapTvl
 }
