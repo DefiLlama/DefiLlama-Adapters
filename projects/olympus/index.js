@@ -7,7 +7,6 @@ const ohm = "0x383518188c0c6d7730d91b2c03a03c837814a899";
 const slp = "0x34d7d7aaf50ad4944b70b320acb24c95fa2def7c";
 const frax = "0x853d955acef822db058eb8505911ed77f175b99e";
 const fraxLP = "0x2dce0dda1c2f98e0f171de8333c3c6fe1bbf4877";
-const slpOhm = "0x34d7d7aaf50ad4944b70b320acb24c95fa2def7c";
 
 // Treasury TVL consists of DAI balance + Sushi SLP balance
 async function tvl(timestamp, block) {
@@ -16,8 +15,7 @@ async function tvl(timestamp, block) {
     [dai, false],
     [frax, false],
     [slp, true],
-    [fraxLP, true],
-    [slpOhm, true]
+    [fraxLP, true]
   ], treasuryAddresses, block)
 
   return balances
