@@ -132,8 +132,12 @@ async function transformHecoAddress() {
 }
 
 function fixAvaxBalances(balances){
-    balances['avalanche-2'] = Number(balances['0x9dEbca6eA3af87Bf422Cea9ac955618ceb56EfB4'])/1e18
-    delete balances['0x9dEbca6eA3af87Bf422Cea9ac955618ceb56EfB4']
+    for(const representation of ["avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", '0x9dEbca6eA3af87Bf422Cea9ac955618ceb56EfB4']){
+        if(balances[representation] !== undefined){
+            balances['avalanche-2'] = Number(balances[representation])/1e18
+            delete balances[representation]
+        }
+    }
 }
 
 module.exports = {
