@@ -30,7 +30,21 @@ async function getTokenAccountBalance(account){
     return tokenBalance.data.result?.value?.uiAmount
 }
 
+// Example: [[token1, account1], [token2, account2], ...]
+async function sumTokens(tokensAndAccounts){
+    const tokenlist = axios.get("https://cdn.jsdelivr.net/gh/solana-labs/token-list@main/src/tokens/solana.tokenlist.json").then(r=>r.data.tokens)
+    const tokenBalances = await Promise.all(tokensAndAccounts.map(getTokenBalance))
+    const balances = {}
+    for(let i=0; i<tokensAndAccounts.length; i++){
+        const token = tokensAndAccounts[i][0]
+        const coingeckoId = tokenlist.find(t=>t.address === token)?.extensions?.coingeckoId
+        balances[coingeckoId] = tokenBalances[i]
+    }
+    return balances
+}
+
 module.exports = {
     getTokenBalance,
-    getTokenAccountBalance
+    getTokenAccountBalance,
+    sumTokens
 }
