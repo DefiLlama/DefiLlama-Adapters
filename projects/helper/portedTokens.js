@@ -131,11 +131,17 @@ async function transformHecoAddress() {
   };
 }
 
+function fixAvaxBalances(balances){
+    balances['avalanche-2'] = Number(balances['0x9dEbca6eA3af87Bf422Cea9ac955618ceb56EfB4'])/1e18
+    delete balances['0x9dEbca6eA3af87Bf422Cea9ac955618ceb56EfB4']
+}
+
 module.exports = {
     transformFantomAddress,
     transformBscAddress,
     transformPolygonAddress,
     transformXdaiAddress,
     transformAvaxAddress,
-    transformHecoAddress
+    transformHecoAddress,
+    fixAvaxBalances
 };
