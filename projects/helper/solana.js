@@ -15,7 +15,7 @@ async function getTokenBalance(token, account) {
             }
         ]
     })
-    return tokenBalance.data.result.value[0].account.data.parsed.info.tokenAmount.uiAmount
+    return tokenBalance.data.result.value.reduce((total, account)=>total+account.account.data.parsed.info.tokenAmount.uiAmount, 0)
 }
 
 async function getTokenAccountBalance(account){
