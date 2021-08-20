@@ -30,13 +30,29 @@ async function transformFantomAddress() {
     }
 }
 
+function compareAddresses(a, b){
+    return a.toLowerCase() === b.toLowerCase()
+}
+
 async function transformAvaxAddress() {
-    const bridgeTokens = (await utils.fetchURL("https://raw.githubusercontent.com/0xngmi/bridge-tokens/main/data/penultimate.json")).data
+    const [bridgeTokensOld, bridgeTokensNew, bridgeTokenDetails] = await Promise.all([
+        utils.fetchURL("https://raw.githubusercontent.com/0xngmi/bridge-tokens/main/data/penultimate.json"),
+        utils.fetchURL("https://raw.githubusercontent.com/ava-labs/avalanche-bridge-resources/main/avalanche_contract_address.json").then(r=>Object.entries(r.data)),
+        utils.fetchURL("https://raw.githubusercontent.com/ava-labs/avalanche-bridge-resources/main/token_list.json")
+    ]);
 
     return (addr) => {
-        const srcToken = bridgeTokens.find(token => token["Avalanche Token Address"].toLowerCase() === addr.toLowerCase())
+        const srcToken = bridgeTokensOld.data.find(token => compareAddresses(token["Avalanche Token Address"], addr))
         if (srcToken !== undefined && srcToken["Ethereum Token Decimals"] === srcToken["Avalanche Token Decimals"]) {
             return srcToken["Ethereum Token Address"]
+        }
+        const newBridgeToken = bridgeTokensNew.find(token=>compareAddresses(addr, token[1]))
+        if(newBridgeToken !== undefined){
+            const tokenName = newBridgeToken[0].split('.')[0]
+            const tokenData = bridgeTokenDetails.data[tokenName];
+            if(tokenData !== undefined){
+                return tokenData.nativeContractAddress
+            }
         }
         return `avax:${addr}`
     }

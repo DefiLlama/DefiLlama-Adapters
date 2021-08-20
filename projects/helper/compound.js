@@ -17,6 +17,9 @@ async function getUnderlying(block, chain, cToken) {
     if (cToken === '0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5') {
         return '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';//cETH => WETH
     }
+    if(cToken === '0x5C0401e81Bc07Ca70fAD469b451682c0d747Ef1c' && chain === 'avax'){
+        return "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7"
+    }
 
     return (await sdk.api.abi.call({
         block,
