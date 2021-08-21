@@ -21,7 +21,7 @@ async function tvl(timestamp, block) {
       block,
     }
   );
-  const usdTvl = Number(uniswapFactories[0].totalLiquidityUSD)
+  const usdTvl = Number(yapeswapFactories[0].totalLiquidityUSD) // not picking up yapeswap factories
 
   return toUSDTBalances(usdTvl)
 }
