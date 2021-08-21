@@ -18,18 +18,11 @@ const treasuryAddresses = [
   "0x31F8Cc382c9898b273eff4e0b7626a6987C846E8",
 ];
 
-const bondsTokensLPsAddresses = [
-  //DAI
-  "0x6b175474e89094c44da98b954eedeac495271d0f",
-  //OHM/DAI SLP
-  "0x34d7d7aaf50ad4944b70b320acb24c95fa2def7c",
-  //FRAX
-  "0x853d955acef822db058eb8505911ed77f175b99e",
-  //OHM/FRAX UNI-V2
-  "0x2dce0dda1c2f98e0f171de8333c3c6fe1bbf4877",
-  //WETH
-  "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-];
+const DAI = "0x6b175474e89094c44da98b954eedeac495271d0f";
+const OHM_DAI_SLP = "0x34d7d7aaf50ad4944b70b320acb24c95fa2def7c";
+const FRAX = "0x853d955acef822db058eb8505911ed77f175b99e";
+const OHM_FRAX_UNIV2 = "0x2dce0dda1c2f98e0f171de8333c3c6fe1bbf4877";
+const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 
 /*** Staking of native token (OHM) TVL Portion ***/
 const staking = async (timestamp, ethBlock, chainBlocks) => {
@@ -54,23 +47,19 @@ const staking = async (timestamp, ethBlock, chainBlocks) => {
  ***/
 async function ethTvl(timestamp, block) {
   const balances = {};
-  for (let index = 0; index < bondsTokensLPsAddresses.length; index++) {
-    if (index % 2 == 0) {
-      await sumTokensAndLPsSharedOwners(
-        balances,
-        [[bondsTokensLPsAddresses[index], false]],
-        treasuryAddresses,
-        block
-      );
-    } else {
-      await sumTokensAndLPsSharedOwners(
-        balances,
-        [[bondsTokensLPsAddresses[index], true]],
-        treasuryAddresses,
-        block
-      );
-    }
-  }
+
+  await sumTokensAndLPsSharedOwners(
+    balances,
+    [
+      [DAI, false],
+      [FRAX, false],
+      [WETH, false],
+      [OHM_DAI_SLP, true],
+      [OHM_FRAX_UNIV2, true],
+    ],
+    treasuryAddresses,
+    block
+  );
 
   return balances;
 }
