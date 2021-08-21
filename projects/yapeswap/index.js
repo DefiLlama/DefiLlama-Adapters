@@ -4,7 +4,7 @@ const { toUSDTBalances } = require('../helper/balances');
 const graphUrl = 'https://thegraph.com/legacy-explorer/subgraph/gavlomas/yapeswap-t2' //changed to yape subgraph
 const graphQuery = gql`
 query get_tvl($block: Int) {
-  uniswapFactories(
+  yapeswapFactories(
     block: { number: $block }
   ) {
     totalVolumeUSD
@@ -14,7 +14,7 @@ query get_tvl($block: Int) {
 `;
 
 async function tvl(timestamp, block) {
-  const {uniswapFactories} = await request(
+  const {yapeswapFactories} = await request(
     graphUrl,
     graphQuery,
     {
