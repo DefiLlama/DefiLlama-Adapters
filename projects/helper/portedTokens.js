@@ -131,10 +131,35 @@ async function transformHecoAddress() {
   };
 }
 
+async function transformHarmonyAddress() {
+    const bridge = (await utils.fetchURL("https://be4.bridge.hmny.io/tokens/?page=0&size=1000")).data.content
+
+    return (addr) => {
+        if(compareAddresses(addr, "0x6983D1E6DEf3690C4d616b13597A09e6193EA013")){
+            return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+        }
+        const srcToken = bridge.find(token => compareAddresses(addr, token.hrc20Address))
+        if (srcToken !== undefined) {
+            const prefix = srcToken.network === "BINANCE"?"bsc:":""
+            return prefix+srcToken.erc20Address
+        }
+        return `harmony:${addr}`
+    }
+}
+
 function fixAvaxBalances(balances){
     for(const representation of ["avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", '0x9dEbca6eA3af87Bf422Cea9ac955618ceb56EfB4']){
         if(balances[representation] !== undefined){
             balances['avalanche-2'] = Number(balances[representation])/1e18
+            delete balances[representation]
+        }
+    }
+}
+
+function fixHarmonyBalances(balances){
+    for(const representation of ["harmony:0xcf664087a5bb0237a0bad6742852ec6c8d69a27a", '0xcf664087a5bb0237a0bad6742852ec6c8d69a27a', 'harmony:0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a', '0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a', 'bsc:0xdE976f3344cd9F06E451aF3A94a324afC3E154F4', 'bsc:0xde976f3344cd9f06e451af3a94a324afc3e154f4']){
+        if(balances[representation] !== undefined){
+            balances['harmony'] = Number(balances[representation])/1e18
             delete balances[representation]
         }
     }
@@ -147,5 +172,7 @@ module.exports = {
     transformXdaiAddress,
     transformAvaxAddress,
     transformHecoAddress,
-    fixAvaxBalances
+    transformHarmonyAddress,
+    fixAvaxBalances,
+    fixHarmonyBalances
 };

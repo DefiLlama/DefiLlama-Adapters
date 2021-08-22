@@ -5,6 +5,21 @@ const token1 = require('./abis/token1.json');
 const getReserves = require('./abis/getReserves.json');
 const factoryAbi = require('./abis/factory.json');
 
+async function requery(results, chain, block, abi){
+  if(results.some(r=>!r.success)){
+    const failed = results.filter(r=>!r.success)
+    const newResults = await sdk.api.abi
+    .multiCall({
+      abi,
+      chain,
+      calls: failed.map((f) => ({
+        target: f.input.target,
+      })),
+      block,
+    }).then(({ output }) => output);
+  }
+}
+
 async function calculateUniTvl(getAddress, block, chain, FACTORY, START_BLOCK, useMulticall = false) {
   let pairAddresses;
   if (useMulticall) {
