@@ -1,17 +1,9 @@
-/*==================================================
-  Modules
-  ==================================================*/
-
 const sdk = require("@defillama/sdk");
 const axios = require('axios');
 const { unwrapUniswapLPs } = require('../helper/unwrapLPs');
-const { transformBscAddress } = require('../helper/portedTokens');
 const abi = require('./abi.json');
 
 
-/*==================================================
-  Settings
-  ==================================================*/
 function getBSCAddress(address) {
   return `bsc:${address}`
 }
@@ -30,10 +22,6 @@ const epsPool = '0x4076CC26EFeE47825917D0feC3A79d0bB9a6bB5c';
 const epsContract = '0xa7f552078dcc247c2684336020c03648500c6d9f';
 const epsBnbLP = '0xf9045866e7b372def1eff3712ce55fac1a98daf0';
 
-
-/*==================================================
-  TVL
-  ==================================================*/
 
 async function tvl(timestamp, block, chainBlocks) {
 
@@ -67,7 +55,7 @@ async function tvl(timestamp, block, chainBlocks) {
       chain: 'bsc'
     });
     if (Object.keys(replaceable).includes(element.token.address)) {
-      balances[replaceable[element.token.address]] = balance.output
+      sdk.util.sumSingleBalance(balances, replaceable[element.token.address], balance.output)
     } else {
       balances[getBSCAddress(element.token.address)] = balance.output
     }
@@ -79,8 +67,30 @@ async function tvl(timestamp, block, chainBlocks) {
 async function pool2(timestamp, block, chainBlocks) {
   let balances = {}
 
+  //Staked and locked EPS
+  const staked = await sdk.api.abi.call({
+    abi: abi.totalSupply,
+    target: epsPool,
+    block: chainBlocks['bsc'],
+    chain: 'bsc'
+  });
+  const locked = await sdk.api.abi.call({
+    abi: abi.lockedSupply,
+    target: epsPool,
+    block: chainBlocks['bsc'],
+    chain: 'bsc'
+  });
+  const epsStakedTotal = parseInt(staked.output) + parseInt(locked.output);
+
+  balances[getBSCAddress(epsContract)] = + epsStakedTotal;
+  return balances
+}
+
+async function staking(timestamp, block, chainBlocks) {
+  let balances = {}
+
   //EPS/BNB LP
-  const transformAdress = await transformBscAddress();
+  const transformAdress = addr=>'bsc:'+addr;
 
   const lpBalance = await sdk.api.abi.call({
     abi: abi.totalSupplyLP,
@@ -100,28 +110,9 @@ async function pool2(timestamp, block, chainBlocks) {
     transformAdress
   );
 
-
-  //Staked and locked EPS
-  const staked = await sdk.api.abi.call({
-    abi: abi.totalSupply,
-    target: epsPool,
-    block: chainBlocks['bsc'],
-    chain: 'bsc'
-  });
-  const locked = await sdk.api.abi.call({
-    abi: abi.lockedSupply,
-    target: epsPool,
-    block: chainBlocks['bsc'],
-    chain: 'bsc'
-  });
-  const epsStakedTotal = parseInt(staked.output) + parseInt(locked.output);
-  balances[getBSCAddress(epsContract)] =  parseInt(balances[getBSCAddress(epsContract)]) + epsStakedTotal;
   return balances
 }
 
-/*==================================================
-  Exports
-  ==================================================*/
 
 module.exports = {
   methodology: "pool2 is where eps is and eps/bnb staked. ffUSDT and anyBTC has been replaced with USDT and WBTC in the TVL calculation respectively",
@@ -131,5 +122,8 @@ module.exports = {
   tvl,
   pool2: {
     tvl: pool2
+  },
+  staking: {
+    tvl: staking
   }
 };
