@@ -5,7 +5,7 @@ const token0 = require('./abis/token0.json');
 const token1 = require('./abis/token1.json');
 const getReserves = require('./abis/getReserves.json');
 
-const START_BLOCK = 10000835;
+const START_BLOCK = 12767188;
 const FACTORY = '0x46aDc1C052Fafd590F56C42e379d7d16622835a2'; // updated to yape factory
 
 module.exports = async function tvl(_, block) {
