@@ -49,7 +49,7 @@ const polygonTvl = async (timestamp, block, chainBlocks) => {
   const singlePositions = [];
 
   vaults.forEach((v, idx) => {
-    if (lp_symbols[idx]==='UNI-V2' || lp_symbols[idx]==='DFYNLP' | lp_symbols[idx]==='SLP'  | lp_symbols[idx]==='WLP' | lp_symbols[idx]==='pWINGS-LP' | lp_symbols[idx]==='APE-LP'){
+    if (lp_symbols[idx]==='UNI-V2' || lp_symbols[idx]==='DFYNLP' | lp_symbols[idx]==='SLP'  | lp_symbols[idx]==='WLP' | lp_symbols[idx]==='pWINGS-LP' | lp_symbols[idx]==='APE-LP' | lp_symbols[idx]==='GLP'){
       lpPositions.push({
         vaultAddr: vaults[idx],
         balance: vault_balances[idx],
