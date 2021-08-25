@@ -1,18 +1,10 @@
-/*==================================================
-  Modules
-  ==================================================*/
-
-const sdk = require("../../sdk");
+const sdk = require("@defillama/sdk");
 const _ = require("underscore");
 _.flatMap = _.compose(_.flatten, _.map);
 const BN = require('bignumber.js');
 
 const abi = require("./abi.json");
 const { object } = require("underscore");
-
-/*==================================================
-  Constants
-  ==================================================*/
 
 const CurveAddressProvider = "0x0000000022d53366457f9d5e68ec105046fc4383";
 const etherAddress = "0x0000000000000000000000000000000000000000";
@@ -23,10 +15,6 @@ const factoryAddress = "0x0959158b6040D32d04c301A72CBFD6b39E21c9AE";
 const factoryStartBlock = 11942404;
 
 const triCrypto = "0x80466c64868E1ab14a1Ddf27A676C3fcBE638Fe5";
-
-/*==================================================
-  TVL
-  ==================================================*/
 
 async function tvl(timestamp, block) {
   let curvePools = [
@@ -172,8 +160,6 @@ async function tvl(timestamp, block) {
   delete balances['0x075b1bb99792c9E1041bA13afEf80C91a1e70fB3'];
   delete balances['0xdF5e0e81Dff6FAF3A7e52BA697820c5e32D806A8']
 
-  let { output } = await sdk.api.util.toSymbols(balances);
-
   const yTokens = [
     {
       symbol: "ySUSD",
@@ -222,86 +208,16 @@ async function tvl(timestamp, block) {
     },
   ];
 
-  // Count y tokens as their underlying asset, ie ycDAI = cDAI
-  output.map((_token) => {
-    const yToken = yTokens.filter((token) => token.symbol === _token.symbol)[0];
-    // is y token
-    if (yToken) {
-      let _data = output.find((t) => t.symbol === yToken.underlying);
+  balance[etherAddress] = balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"]
+  delete balances["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"]
 
-      if (!_data) {
-        _data = {
-          symbol: yToken.underlying,
-          address: yToken.contract,
-          balance: 0,
-        };
-
-        output.push(_data);
-      }
-      // Update balance
-      _data.balance = String(
-        parseFloat(_data.balance) + parseFloat(_token.balance)
-      );
-    }
-  });
-
-  output = output.filter(
-    (_token) => !yTokens.find((token) => token.symbol === _token.symbol)
-  );
-  for (let out of output) {
-    if (out.symbol === "ETH") {
-      out.address = etherAddress;
-    }
-  }
-
-  return output;
+  return balances
 }
 
-/**async function rates(timestamp, block) {
-    let yTokens = [
-      //yTokens curve.fi/y
-      '0x16de59092dAE5CcF4A1E6439D611fd0653f0Bd01',
-      '0xd6aD7a6750A7593E092a9B218d66C0A814a3436e',
-      '0x83f798e925BcD4017Eb265844FDDAbb448f1707D',
-      '0x73a052500105205d34Daf004eAb301916DA8190f',
-
-      //yTokens curve.fi/busd
-      '0xC2cB1040220768554cf699b0d863A3cd4324ce32',
-      '0x26EA744E5B887E5205727f55dFBE8685e3b21951',
-      '0xE6354ed5bC4b393a5Aad09f21c46E101e692d447',
-      '0x04bC0Ab673d88aE9dbC9DA2380cB6B79C4BCa9aE',
-
-      //ycTokens curve.fi/pax
-      '0x99d1Fa417f94dcD62BfE781a1213c092a47041Bc',
-      '0x9777d7E2b60bB01759D0E2f8be2095df444cb07E',
-      '0x1bE5d71F2dA660BFdee8012dDc58D024448A0A59',
-    ]
-
-    let yCalls = yTokens.map((token, i) => ({ target: token }))
-
-    let yRates = await sdk.api.abi.multiCall({
-      block,
-      calls: yCalls,
-      abi:  {
-        "constant":true,
-        "inputs":[],
-        "name":"getPricePerFullShare",
-        "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
-        "payable":false,
-        "stateMutability":"view",
-        "type":"function"
-      }
-    })
-  }**/
-
-/*==================================================
-  Exports
-  ==================================================*/
-
 module.exports = {
-  name: "Curve Finance",
-  token: null,
-  category: "DEXes",
   start: 1581138000, // 03/01/2020 @ 5:54pm UTC
+  ethereum:{
+    tvl
+  },
   tvl,
 };
