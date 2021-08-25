@@ -6,6 +6,8 @@ const Contracts = {
     pools: {
       is3usd: '0x837503e8a8753ae17fb8c8151b8e6f586defcb57',
       ispusd: '0x4a783cd1b4543559ece45db47e07e0cb59e55c09',
+      isxusd: '0xe440ccc13e6f273c110cf3cf4087c23a66b8e872',
+      isiron: '0xCaEb732167aF742032D13A9e76881026f91Cd087',
     },
     ignoredLps: ['0xb4d09ff3da7f9e9a2ba029cb0a81a989fd7b8f17'],
     lend: {
@@ -36,8 +38,6 @@ const poolTvl = async (poolAddress, block) => {
   tokens.output.forEach((token, i) => {
     if (!Contracts.polygon.ignoredLps.includes(token.toLowerCase())) {
       sdk.util.sumSingleBalance(sum, `polygon:${token}`, balances.output[i]);
-    } else {
-      console.debug('ignore', token)
     }
   });
 
@@ -45,7 +45,6 @@ const poolTvl = async (poolAddress, block) => {
 };
 
 const lendingTvl = async (block) => {
-  console.log('lending tvl', block)
   const { output: markets } = await sdk.api.abi.call({
     target: Contracts.polygon.lend.ironController,
     abi: abiPolygon.IronController.getAllMarkets,
