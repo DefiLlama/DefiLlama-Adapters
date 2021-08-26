@@ -56,7 +56,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
         closest = dayTvl
       }
     })
-    if(Math.abs(dayTvl.date - timestamp) > 3600*24){ // Oldest data is too recent
+    if(Math.abs(closest.date - timestamp) > 3600*24){ // Oldest data is too recent
       const {uniswapFactories} = await request(
         graphUrl,
         graphQuery,
