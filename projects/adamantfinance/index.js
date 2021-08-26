@@ -53,5 +53,5 @@ module.exports = {
     tvl: polygonTvl,
   },
   tvl: sdk.util.sumChainTvls([polygonTvl]),
-  methodology: `The current vaults on Adamant Finance are found using the info on "https://raw.githubusercontent.com/eepdev/vaults/main/current_vaults.json", once we have the vaults, we filter out the LP addresses of each vault and unwrap the LPs so that each token can be accounted for. Coingecko is used to price the tokens and the sum of all tokens is provided as the TVL`
+  methodology: 'The current vaults on Adamant Finance are found using the info on "https://raw.githubusercontent.com/eepdev/vaults/main/current_vaults.json", once we have the vaults, we filter out the LP addresses of each vault and unwrap the LPs so that each token can be accounted for. Coingecko is used to price the tokens and the sum of all tokens is provided as the TVL'
 };
