@@ -23,6 +23,9 @@ async function transformFantomAddress() {
             if (srcToken.srcChainId === '1') {
                 return srcToken.srcToken;
             } else if (srcToken.srcChainId === '56') {
+                if(srcToken.srcToken === ''){
+                    return 'bsc:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
+                }
                 return `bsc:${srcToken.srcToken}`;
             }
         }
