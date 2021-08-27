@@ -31,5 +31,5 @@ module.exports = {
     tvl: stakingTvl,
   },
   tvl: sdk.util.sumChainTvls([bscTvl, stakingTvl]),
-  methodology: 'TVL counts the liquidity in each of the Tendie swap pairs. Pairs are found using the factory address'
+  methodology: 'TVL counts the liquidity in each of the Tendieswap pairs. Pairs are found using the factory address. Staking TVL accounts for TENDIE on its masterchef contract.'
 };
