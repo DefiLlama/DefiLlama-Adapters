@@ -13,13 +13,13 @@ const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
 
 async function stakingTvl(timestamp, ethBlock, chainBlocks) {
   const balances = {};
-  const stakedBanana = sdk.api.erc20.balanceOf({
+  const stakedTendie = sdk.api.erc20.balanceOf({
     target: tendie,
     owner: masterchef,
     chain: 'bsc',
     block: chainBlocks.bsc
   })
-  sdk.util.sumSingleBalance(balances, 'bsc:' + tendie, (await stakedBanana).output)
+  sdk.util.sumSingleBalance(balances, 'bsc:' + tendie, (await stakedTendie).output)
   return balances;
 }
 
@@ -30,6 +30,6 @@ module.exports = {
   staking: {
     tvl: stakingTvl,
   },
-  tvl: sdk.util.sumChainTvls([bscTvl, stakingTvl]),
+  tvl: sdk.util.sumChainTvls([bscTvl]),
   methodology: 'TVL counts the liquidity in each of the Tendieswap pairs. Pairs are found using the factory address. Staking TVL accounts for TENDIE on its masterchef contract.'
 };
