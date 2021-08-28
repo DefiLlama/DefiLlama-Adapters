@@ -11,7 +11,7 @@ const toNumber = n=>Number(n)/1e18
 
 async function tvl(timestamp, ethBlock, chainBlocks) {
     const chain = 'celo'
-    const block = undefined // await getBlock(timestamp, chain, chainBlocks);
+    const block = await getBlock(timestamp, chain, chainBlocks);
     const balances = {
         "celo": toNumber((await sdk.api.eth.getBalance({
             block,
