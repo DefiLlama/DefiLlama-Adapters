@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk')
+const tokens = require('./mainnet')
 const {transformXdaiAddress} = require('../helper/portedTokens')
-const { default: axios } = require('axios')
 
 function chainTvl(chain) {
     return async (timestamp, ethBlock, chainBlocks) => {
@@ -9,8 +9,7 @@ function chainTvl(chain) {
         if(chain === "xdai"){
             transform = await transformXdaiAddress()
         }
-        const tokens = await axios.get('https://raw.githubusercontent.com/hop-protocol/hop/develop/packages/core/build/addresses/mainnet.json')
-        for (const tokenConstants of Object.values(tokens.data.bridges)) {
+        for (const tokenConstants of Object.values(tokens.bridges)) {
             const chainConstants = tokenConstants[chain]
             if (chainConstants === undefined) {
                 throw new Error("Chain doesn't exist")
