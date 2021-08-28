@@ -45,6 +45,9 @@ async function transformAvaxAddress() {
     ]);
 
     return (addr) => {
+        if(compareAddresses(addr, "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7")){ //WAVAX
+            return `avax:${addr}`
+        }
         const srcToken = bridgeTokensOld.data.find(token => compareAddresses(token["Avalanche Token Address"], addr))
         if (srcToken !== undefined && srcToken["Ethereum Token Decimals"] === srcToken["Avalanche Token Decimals"]) {
             return srcToken["Ethereum Token Address"]
