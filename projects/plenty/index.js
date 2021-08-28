@@ -12,6 +12,7 @@ async function staking(){
 }
 
 module.exports = {
+    misrepresentedTokens: true,
     staking:{
         fetch: staking
     },
