@@ -18,7 +18,7 @@ function getClosest(timestamp, array, timestampProperty){
 }
 
 async function tvl(timestamp){
-    const query = `      {        terraswap {          historicalData(          to: ${timestamp},          from: 1586974156,          ){            timestamp,            volumeUST,            liquidityUST          }        }      }`
+    const query = `      {        terraswap {          historicalData(          to: ${timestamp},          from: ${timestamp-30*24*3600},          ){            timestamp,            volumeUST,            liquidityUST          }        }      }`
     const result = (await axios.get(url+encodeURIComponent(query))).data.data.terraswap.historicalData
     const closest = getClosest(timestamp, result, "timestamp")
     return {
