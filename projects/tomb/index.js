@@ -70,6 +70,7 @@ async function tvl(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
+  methodology: 'The TVL of Tomb Finance is calculated using the Spooky LP token deposits(TOMB/FTM and TSHARE/FTM), and the TSHARE deposits found in the Masonry contract address(0x8764de60236c5843d9faeb1b638fbce962773b67).',
   fantom: {
     tvl,
   },
