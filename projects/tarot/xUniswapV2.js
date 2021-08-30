@@ -39,6 +39,9 @@ module.exports = async function tvl(_, block) {
         chain: 'fantom'
       })
   ).output;
+  if(logs.length<5){
+    throw new Error("Log length is too low")
+  }
 
   const lendingPools = [];
   for (const log of logs) {
