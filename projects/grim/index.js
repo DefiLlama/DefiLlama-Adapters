@@ -1,19 +1,5 @@
 const utils = require('../helper/utils');
 
-function fetchChain(chainId) {
-  return async () => {
-    const response = await utils.fetchURL('https://api.grim.finance/tvl');
-
-    let tvl = 0;
-    const chain = response.data[chainId];
-    for (vault in chain) {
-      tvl += chain[vault];
-    }
-
-    return tvl;
-  }
-}
-
 
 async function fetch() {
   const response = await utils.fetchURL('https://api.grim.finance/tvl');
@@ -31,8 +17,7 @@ async function fetch() {
 }
 
 module.exports = {
-  fantom:{
-    fetch: fetchChain(250)
-  },
-  fetch
+  methodology: 'TVL data is pulled from the Grim Finance API "https://api.grim.finance/tvl".',
+  fetch,
+
 }
