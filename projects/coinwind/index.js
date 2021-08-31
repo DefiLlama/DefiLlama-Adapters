@@ -67,8 +67,11 @@ const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
             const getReserves = (await sdk.api.abi.call({ target: lp, abi: abi['getReserves'], params: [], block: block, chain: chain })).output;
             const token0 = getBSCAddress((await sdk.api.abi.call({ target: lp, abi: abi['token0'], params: [], block: block, chain: chain })).output);
             const token0_amount = lp_totalAmount * getReserves._reserve0 / totalSupply;
+            const token1 = getBSCAddress((await sdk.api.abi.call({ target: lp, abi: abi['token1'], params: [], block: block, chain: chain })).output);
+            const token1_amount = lp_totalAmount * getReserves._reserve1 / totalSupply;
 
             sdk.util.sumSingleBalance(balances, token0, token0_amount);
+            sdk.util.sumSingleBalance(balances, token1, token1_amount);
         }
     }
 
@@ -106,8 +109,11 @@ const hecoTvl = async (timestamp, ethBlock, chainBlocks) => {
             const getReserves = (await sdk.api.abi.call({ target: lp, abi: abi['getReserves'], params: [], block: block, chain: chain })).output;
             const token0 = getHECOAddress((await sdk.api.abi.call({ target: lp, abi: abi['token0'], params: [], block: block, chain: chain })).output);
             const token0_amount = lp_totalAmount * getReserves._reserve0 / totalSupply;
+            const token1 = getHECOAddress((await sdk.api.abi.call({ target: lp, abi: abi['token1'], params: [], block: block, chain: chain })).output);
+            const token1_amount = lp_totalAmount * getReserves._reserve1 / totalSupply;
 
             sdk.util.sumSingleBalance(balances, token0, token0_amount);
+            sdk.util.sumSingleBalance(balances, token1, token1_amount);
         }
     }
 
