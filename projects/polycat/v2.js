@@ -210,8 +210,5 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
 };
 
 module.exports = {
-  polygon: {
-    tvl: sdk.util.sumChainTvls([polygonTvl, dexTvl]),
-  },
-   
+  tvl: sdk.util.sumChainTvls([polygonTvl, dexTvl]),
 };
