@@ -5,21 +5,9 @@ const abi = require("./abi.json");
 const abiVaultChef = require("./abiVaultChef.json");
 const abiStrat = require("./abiStrat.json");
 const erc20 = require("../helper/abis/erc20.json");
-const tvlOnPairs = require("../helper/processPairs.js");
 
-const vaultChef = "0xBdA1f897E851c7EF22CD490D2Cf2DAce4645A904";
-const masterChef = "0x4ce9Ae2f5983e19AebF5b8Bae4460f2B9EcE811a";
-const FACTORY = '0xEAA98F7b5f7BfbcD1aF14D0efAa9d9e68D82f640';
-
-
-
-const dexTvl = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
-  await tvlOnPairs("polygon", chainBlocks, FACTORY, balances);
-  return balances;
-};
-
-
+const vaultChef = "0xf2E8fC408d77e8fC012797654D76ed399BFcE174";
+const masterChef = "0x8CFD1B9B7478E7B0422916B72d1DB6A9D513D734";
 
 const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
   const block = chainBlocks["polygon"];
@@ -210,7 +198,7 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
 
 module.exports = {
   polygon: {
-    tvl: sdk.util.sumChainTvls([polygonTvl, dexTvl]),
+    tvl: polygonTvl,
   },
-   
+  tvl: sdk.util.sumChainTvls([polygonTvl]),
 };

@@ -21,6 +21,7 @@ const dexTvl = async (timestamp, ethBlock, chainBlocks) => {
 
 
 
+
 const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
   const block = chainBlocks["polygon"];
   let balances = {};
