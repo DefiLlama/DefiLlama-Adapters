@@ -160,7 +160,9 @@ async function transformOptimismAddress() {
         const dstToken = bridge.find(token => compareAddresses(addr, token.address))
         if (dstToken !== undefined) {
             const srcToken = bridge.find(token => dstToken.logoURI === token.logoURI && token.chainId === 1)
-            return srcToken.address
+            if(srcToken !== undefined){
+                return srcToken.address
+            }
         }
         return `optimism:${addr}`
     }
