@@ -31,7 +31,7 @@
 ##### Category (Yield/Dexes/Lending/Minting) *Please choose only one:
 
 
-##### Oracle used (Chainlink/Band/API3/TWAP):
+##### Oracle used (Chainlink/Band/API3/TWAP or any other that you are using):
 
 
 ##### forkedFrom (Does your project originate from another project):
