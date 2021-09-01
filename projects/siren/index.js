@@ -14,7 +14,7 @@
 /*==================================================
   TVL
   ==================================================*/
-async function calculateMainnetTVL(timestamp, block, chainBlocks) { 
+async function calculateMainnetTVL(timestamp, block, chainBlocks) {
 
   const ethereumBlock = chainBlocks['ethereum'];
 
@@ -63,7 +63,7 @@ async function calculateMainnetTVL(timestamp, block, chainBlocks) {
 
 }
 
-async function calculatePolygonTVL(timestamp, block, chainBlocks) { 
+async function calculatePolygonTVL(timestamp, block, chainBlocks) {
 
   const polygonBlock = chainBlocks['polygon'];
 
@@ -72,7 +72,7 @@ async function calculatePolygonTVL(timestamp, block, chainBlocks) {
   });
 
   const polygon_result = {
-    '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48': '0'
+    'polygon:0x2791bca1f2de4661ed88a30c99a7a9449aa84174': '0'
   };
 
   for (let i = 0; i < polygon_amms['amms'].length; i++) {
@@ -86,7 +86,6 @@ async function calculatePolygonTVL(timestamp, block, chainBlocks) {
         owner: amm['id'],
         chain: "polygon"
       });
-    
 
     if (!polygon_result['polygon:'+collateralToken]) {
       polygon_result['polygon:'+collateralToken] = '0';
@@ -141,7 +140,6 @@ query Pools($polygonBlock: Int) {
   }
 }
 `
-
 // async function calculateUniTvl()
 
 /*==================================================
@@ -156,7 +154,7 @@ query Pools($polygonBlock: Int) {
     polygon: {
       tvl: calculatePolygonTVL,
     },
-    ethereum: { 
+    ethereum: {
       tvl: calculateMainnetTVL
     },
     tvl: sdk.util.sumChainTvls([calculatePolygonTVL, calculateMainnetTVL]),
