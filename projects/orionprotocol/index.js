@@ -27,11 +27,11 @@ const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
 
 module.exports = {
     misrepresentedTokens: true,
-    methodology: 's',
-    bsc: {
+    methodology: 'The Factory address is used to find the liquidity in each of the LP pairs',
+    Binance: {
       tvl: bscTvl,
     },
-    ethereum: {
+    Ethereum: {
         tvl: ethTvl,
     },
     tvl: sdk.util.sumChainTvls([bscTvl, ethTvl]),
