@@ -183,47 +183,47 @@ const graphUrls = {
 
   const chainData = await fetchPublicVaultData('kcc');
 
-  // const farmsLiquidity = useMemo(() => {
-  //   if (woofPrice.gt(0)) {
-  //     const liquidities = farmsLP.map((farm) => {
-  //       if (farm.pid !== 0 && farm.multiplier !== '0X' && farm.lpTotalInQuoteToken && farm.quoteToken.busdPrice) {
-  //         return new BigNumber(farm.lpTotalInQuoteToken).times(farm.quoteToken.busdPrice)
-  //       }
-  //       return null
-  //     })
+  const farmsLiquidity = useMemo(() => {
+    if (woofPrice.gt(0)) {
+      const liquidities = farmsLP.map((farm) => {
+        if (farm.pid !== 0 && farm.multiplier !== '0X' && farm.lpTotalInQuoteToken && farm.quoteToken.busdPrice) {
+          return new BigNumber(farm.lpTotalInQuoteToken).times(farm.quoteToken.busdPrice)
+        }
+        return null
+      })
 
-  //     return liquidities.filter((liquidity) => !!liquidity).reduce((a, b) => a.plus(b))
-  //   }
-  //   return null
-  // }, [woofPrice, farmsLP])
+      return liquidities.filter((liquidity) => !!liquidity).reduce((a, b) => a.plus(b))
+    }
+    return null
+  }, [woofPrice, farmsLP])
 
-  // // Currently assumes all pools use WOOF as staking token
-  // const poolsStaked = useMemo(() => {
-  //   if (woofPrice.gt(0) && totalCakeInVault.gt(0)) {
-  //     const staked = pools.map((pool) => {
-  //       if (pool.sousId === 0) {
-  //         return new BigNumber(pool.totalStaked).minus(totalCakeInVault).times(woofPrice)
-  //       }
-  //       return new BigNumber(pool.totalStaked).times(woofPrice)
-  //     })
+  // Currently assumes all pools use WOOF as staking token
+  const poolsStaked = useMemo(() => {
+    if (woofPrice.gt(0) && totalCakeInVault.gt(0)) {
+      const staked = pools.map((pool) => {
+        if (pool.sousId === 0) {
+          return new BigNumber(pool.totalStaked).minus(totalCakeInVault).times(woofPrice)
+        }
+        return new BigNumber(pool.totalStaked).times(woofPrice)
+      })
 
-  //     return staked.reduce((a, b) => a.plus(b))
-  //   }
-  //   return null
-  // }, [woofPrice, pools, totalCakeInVault])
+      return staked.reduce((a, b) => a.plus(b))
+    }
+    return null
+  }, [woofPrice, pools, totalCakeInVault])
 
-  // const tvl =
-  //   farmsLiquidity && totalCakeInVault && poolsStaked
-  //     ? farmsLiquidity
-  //         .plus(getBalanceNumber(totalCakeInVault.times(woofPrice).plus(poolsStaked), 18))
-  //         .toNumber()
-  //         .toLocaleString('en-US', { maximumFractionDigits: 0 })
-  //     : null
+  const tvl =
+    farmsLiquidity && totalCakeInVault && poolsStaked
+      ? farmsLiquidity
+          .plus(getBalanceNumber(totalCakeInVault.times(woofPrice).plus(poolsStaked), 18))
+          .toNumber()
+          .toLocaleString('en-US', { maximumFractionDigits: 0 })
+      : null
 
-  // const woofPrice = new BigNumber();
-  // farmsLiquidity
-  //         .plus(getBalanceNumber(totalCakeInVault.times(woofPrice).plus(poolsStaked), 18))
-  //         .toNumber()
+  const woofPrice = new BigNumber();
+  farmsLiquidity
+          .plus(getBalanceNumber(totalCakeInVault.times(woofPrice).plus(poolsStaked), 18))
+          .toNumber()
 
   farmsLiquidity + 
   totalCakeInVault + 

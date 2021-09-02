@@ -39,7 +39,8 @@ const passedFile = path.resolve(process.cwd(), process.argv[2]);
             if (typeof tvl !== "object") {
                 throw new Error("TVL returned is not a balances object");
             }
-            usdTvl = (await computeTVL(tvl, "now", true)).usdTvl;
+            console.log(tvl);
+            // usdTvl = (await computeTVL(tvl, "now", true)).usdTvl;
         } else {
             throw new Error("File must export either a property called tvl or one called fetch")
         }
