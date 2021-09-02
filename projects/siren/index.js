@@ -9,8 +9,6 @@
 
   const POLYGON_GRAPH_URL = 'https://api.thegraph.com/subgraphs/name/sirenmarkets/protocol-v2-matic'
 
-  const POLYGON_SERIES_ADDRESS = '0x716c543b39a85aac0240ba7ed07e79f06e1fed48'
-
 /*==================================================
   TVL
   ==================================================*/
@@ -65,6 +63,8 @@ async function calculateMainnetTVL(timestamp, block, chainBlocks) {
 
 async function calculatePolygonTVL(timestamp, block, chainBlocks) {
 
+  const {seriesVaults} = await request(POLYGON_GRAPH_URL, GET_SERIES_VAULT_ID);
+
   const polygonBlock = chainBlocks['polygon'];
 
   const polygon_amms = await request(POLYGON_GRAPH_URL, GET_POOLS_POLYGON, {
@@ -93,18 +93,16 @@ async function calculatePolygonTVL(timestamp, block, chainBlocks) {
     polygon_result['polygon:'+collateralToken] = BigNumber(polygon_result['polygon:'+collateralToken]).plus(response.output).toFixed();
 
     // Get collateral in Series
-    for (let im = 0; im < amm.series.length; im++) {
+      const response2 = await sdk.api.erc20.balanceOf({
+        block: polygonBlock,
+        target: collateralToken,
+        owner: seriesVaults[0]['id'],
+        chain: "polygon"
+      });
+      polygon_result['polygon:'+collateralToken] = BigNumber(polygon_result['polygon:'+collateralToken]).plus(response2.output).toFixed();
 
-      const response = await sdk.api.erc20.balanceOf({
-          block: polygonBlock,
-          target: collateralToken,
-          owner: POLYGON_SERIES_ADDRESS,
-          chain: "polygon"
-        });
-
-      polygon_result['polygon:'+collateralToken] = BigNumber(polygon_result['polygon:'+collateralToken]).plus(response.output).toFixed();
-    }
   }
+  console.log( polygon_result);
   return polygon_result;
 
 }
@@ -130,16 +128,13 @@ query Pools($polygonBlock: Int) {
     collateralToken {
       id
     }
-    series{
-        	id,
-          series{
-            id,
-            seriesId
-          }
-        }
   }
-}
-`
+}`
+const GET_SERIES_VAULT_ID = gql`
+query  {seriesVaults{
+        id
+        }
+}`
 // async function calculateUniTvl()
 
 /*==================================================
