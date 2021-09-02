@@ -26,7 +26,6 @@ const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
 };
 
 module.exports = {
-    misrepresentedTokens: true,
     methodology: 'The Factory address is used to find the liquidity in each of the LP pairs',
     Binance: {
       tvl: bscTvl,
