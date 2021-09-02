@@ -102,7 +102,6 @@ async function calculatePolygonTVL(timestamp, block, chainBlocks) {
       polygon_result['polygon:'+collateralToken] = BigNumber(polygon_result['polygon:'+collateralToken]).plus(response2.output).toFixed();
 
   }
-  console.log( polygon_result);
   return polygon_result;
 
 }
