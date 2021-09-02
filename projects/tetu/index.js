@@ -50,6 +50,7 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
 
 module.exports = {
   start: 1628024400,  //Tue Aug 03 2021 21:00:00 GMT+0000
+  misrepresentedTokens: true,
   polygon: {
     tvl: polygonTvl,
   },
