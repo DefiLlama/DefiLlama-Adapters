@@ -58,6 +58,7 @@ async function getTokenBalances(block, addresses, coins) {
   }
 };
 async function tvl(timestamp, block) {
+  console.log('tvl', block)
   const trancheFactoryAddress = "0x62F161BF3692E4015BefB05A03a94A40f520d1c0";
   const trancheAddresses = await getTrancheAddresses(block, trancheFactoryAddress);
   // this gets quantities of crv tokens
