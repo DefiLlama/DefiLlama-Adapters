@@ -224,6 +224,10 @@ const graphUrls = {
   // farmsLiquidity
   //         .plus(getBalanceNumber(totalCakeInVault.times(woofPrice).plus(poolsStaked), 18))
   //         .toNumber()
+
+  farmsLiquidity + 
+  totalCakeInVault + 
+  poolsStaked
   console.log(chainData)
 })();
 
