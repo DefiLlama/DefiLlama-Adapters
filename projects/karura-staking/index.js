@@ -12,7 +12,7 @@ async function tvl() {
   const ksmLocked = (await api.query.homaLite.totalStakingCurrency()).toJSON() / 10 ** KSM_DECIMALS;
 
   return {
-    'karura': ksmLocked
+    'kusama': ksmLocked
   }
 }
 
