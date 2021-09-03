@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
 const _us = require('underscore');
 const abi = require('./abi.json');
+const {transformFantomAddress} = require('../helper/portedTokens')
 
 const _mensaCoreAddress = '0xc4fcDd290E25B4e12Cde6A56F23C1D3ffc72061A';
 
@@ -21,17 +22,6 @@ async function tvl(_, _ethBlock, chainBlocks) {
         target: reserve
       })),
       abi: "erc20:decimals",
-      block: chainBlocks['fantom'],
-      chain: 'fantom'
-    })
-  ).output;
-
-  const symbolsOfReserve = (
-    await sdk.api.abi.multiCall({
-      calls: _us.map(reserves_mensa, reserve => ({
-        target: reserve
-      })),
-      abi: "erc20:symbol",
       block: chainBlocks['fantom'],
       chain: 'fantom'
     })
@@ -59,8 +49,6 @@ async function tvl(_, _ethBlock, chainBlocks) {
     if (decimals.success) {
       assets.push({
         address: reserve,
-        symbol: symbol.output,
-        decimals:decimals.output
       })
     } else {
       throw new Error("Call failed")
@@ -87,12 +75,13 @@ async function tvl(_, _ethBlock, chainBlocks) {
   })
 
   const balances = {};
+  const transform = await transformFantomAddress()
 
   assets.forEach((_item,_i)=>{
-    balances['fantom:'+_item.address] = balanceOfResults.output[_i].output;
+    balances[transform(_item.address)] = balanceOfResults.output[_i].output;
   })
 
-  //balances['fantom:0x1111111111111111111111111111111111111111'] = balance_ftm
+  balances['fantom:0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83'] = balance_ftm
 
   return balances;
 
@@ -100,7 +89,9 @@ async function tvl(_, _ethBlock, chainBlocks) {
 
 module.exports = {
   misrepresentedTokens: true,
+  methodology: 'Using the same methodology applied to other lending platforms, TVL for Mensa consists deposits made to the protocol and borrowed tokens are not counted.',
   fantom:{
     tvl,
   },
+  tvl
 };

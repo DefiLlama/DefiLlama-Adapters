@@ -23,6 +23,9 @@ async function transformFantomAddress() {
             if (srcToken.srcChainId === '1') {
                 return srcToken.srcToken;
             } else if (srcToken.srcChainId === '56') {
+                if(srcToken.srcToken === ''){
+                    return 'bsc:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
+                }
                 return `bsc:${srcToken.srcToken}`;
             }
         }
@@ -42,6 +45,9 @@ async function transformAvaxAddress() {
     ]);
 
     return (addr) => {
+        if(compareAddresses(addr, "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7")){ //WAVAX
+            return `avax:${addr}`
+        }
         const srcToken = bridgeTokensOld.data.find(token => compareAddresses(token["Avalanche Token Address"], addr))
         if (srcToken !== undefined && srcToken["Ethereum Token Decimals"] === srcToken["Avalanche Token Decimals"]) {
             return srcToken["Ethereum Token Address"]
@@ -147,6 +153,21 @@ async function transformHarmonyAddress() {
     }
 }
 
+async function transformOptimismAddress() {
+    const bridge = (await utils.fetchURL("https://static.optimism.io/optimism.tokenlist.json")).data.tokens
+
+    return (addr) => {
+        const dstToken = bridge.find(token => compareAddresses(addr, token.address))
+        if (dstToken !== undefined) {
+            const srcToken = bridge.find(token => dstToken.logoURI === token.logoURI && token.chainId === 1)
+            if(srcToken !== undefined){
+                return srcToken.address
+            }
+        }
+        return `optimism:${addr}`
+    }
+}
+
 function fixAvaxBalances(balances){
     for(const representation of ["avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", '0x9dEbca6eA3af87Bf422Cea9ac955618ceb56EfB4']){
         if(balances[representation] !== undefined){
@@ -173,6 +194,7 @@ module.exports = {
     transformAvaxAddress,
     transformHecoAddress,
     transformHarmonyAddress,
+    transformOptimismAddress,
     fixAvaxBalances,
     fixHarmonyBalances
 };
