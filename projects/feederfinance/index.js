@@ -23,10 +23,12 @@ async function fetch() {
 module.exports = {
   bsc: {
     fetch,
-    pool2,
-    staking,
   },
   fetch,
-  pool2,
-  staking,
+  pool2:{
+    fetch: pool2
+  },
+  staking:{
+    fetch: staking
+  },
 };
