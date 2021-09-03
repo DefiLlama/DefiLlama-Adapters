@@ -1,12 +1,13 @@
 const web3 = require("../config/web3.js");
 const { sumTokensAndLPsSharedOwners } = require('../helper/unwrapLPs')
 const utils = require('../helper/utils');
+
 const exchangeRateFeederABI = require('./abi.json');
 const exchangeRateFeederAddress = '0xB12B8247bD1749CC271c55Bb93f6BD2B485C94A7';
 
 const fundedContracts = [
-    '0xefe0fed2b728b9711030e7643e98477957df9809',
-    '0xd9184981bbab68e05eafd631dd2f8cbaf47e3e13'
+    '0xefe0fed2b728b9711030e7643e98477957df9809', //TransparentUpgradeableProxy
+    '0xd9184981bbab68e05eafd631dd2f8cbaf47e3e13'  //TransparentUpgradeableProxy
 ];
 const stable = [
     '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', //'USDC' : 
@@ -41,8 +42,8 @@ async function tvl(timestamp, block) {
         const pricePerShare = await exchangeRateFeederContract.methods
         .exchangeRateOf(stable[i], true).call({}, block);
 
-        // sum token balances
-        const tokenDecimals = await utils.returnDecimals(anchor[i]);
+        // sum contract token balances
+        const tokenDecimals = await utils.returnDecimals(stable[i]);
         for (contract of fundedContracts) {
             const contractTokenBalance = 
                 await utils.returnBalance(anchor[i], contract);
@@ -54,7 +55,8 @@ async function tvl(timestamp, block) {
     };
     return balances;
 };
-// node test.js projects/orion-money/index.js
+
 module.exports = {
-    tvl
+    tvl,
+    methodology: "counts the value of each stablecoin, and interest-bearing anchor-stable, in the TransparentUpgradeableProxy contracts."
 };
