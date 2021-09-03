@@ -17,5 +17,6 @@ async function tvl() {
 }
 
 module.exports = {
+  methodology: 'TVL considers KSM tokens deposited to the Liquid-Staking program',
   tvl
 }
