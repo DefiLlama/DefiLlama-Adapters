@@ -244,7 +244,20 @@ async function tvl() {
             tokenB: "tether",
             decimals: 6,
             tvlReader: sunnySaberPoolReader
-        }
+        },
+        {
+            poolName: "Saber_MAI-USDC",
+            relevantAccounts: {
+              sunnyPool: "6UQSBG9p7Z9Tu9CTnQaYTyjP4r7CdV9yHDj8UojguNvA",
+              tokenAReserve: "DhgiEgiNdqZdRdo195UUHnoEJUtefK8buko8nU97XJUZ",
+              tokenBReserve: "2K2kkXsouBHtWVjtcgkyiXd8eP3oVBvq1bTJzcVdLLr2",
+              lpTokenSPL: "MAiP3Zmjhc6NYiCb2xK2893ifvTTDHciCS57Kga39pC"
+            },
+            tokenA: "dai", // MAI
+            tokenB: "usd-coin",
+            decimals: 9,
+            tvlReader: sunnySaberPoolReader
+        },
     ]
 
     // a mapping of coin name to coin amount
