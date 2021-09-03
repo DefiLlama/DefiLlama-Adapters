@@ -6,7 +6,8 @@ async function tvl() {
           ustAmount, daiAmount, busdAmount, fraxAmount, usdkAmount, usdcAmount_3,
           wlunaAmount, renLunaAmount, husdAmount, usdcAmount_4, fttAmount, wfttAmount, wsrmAmount, srmAmount,
           ibBtcAmount, btcAmount_2, ibBtcAmount_2,
-          msolAmount, solAmount, apusdtAmount, usdtAmount_2, maiAmount] = await Promise.all([
+          msolAmount, solAmount, apusdtAmount, usdtAmount_2, maiAmount,
+          apusdcAmount, usdcAmount_5] = await Promise.all([
         //usdc-usdt
         getTokenBalance("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "5C1k9yV7y4CjMnKv8eGYDgWND8P89Pdfj79Trk2qmfGo"),
         getTokenBalance("Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", "5C1k9yV7y4CjMnKv8eGYDgWND8P89Pdfj79Trk2qmfGo"),
@@ -49,15 +50,18 @@ async function tvl() {
         //apUSDT-USDT
         getTokenBalance("DNhZkUaxHXYvpxZ7LNnHtss8sQgdAfd1ZYS1fB7LKWUZ", "4S8xo3PeKfs3kY7ecS2amiffJZ4WXCAceDhUseE11q5E"),
         getTokenBalance("Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", "4S8xo3PeKfs3kY7ecS2amiffJZ4WXCAceDhUseE11q5E"),
-        //MAI
+        //MAI from Mai-USDC pool 
         getTokenBalance("9mWRABuz2x6koTPCWiCPM49WUbcrNqGTHBV9T9k7y1o7","41gN5ZP7inB3rgqQikVxWcfofyYsxH4zWQBRWyJrdZCy"),
+        //apusdc-USDC pool
+        getTokenBalance("eqKJTf1Do4MDPyKisMYqVaUFpkEFAs3riGF3ceDH2Ca","8puxJXzTyPXRsQ9PH9niMeje9M83a2bzatTzHxBWjGoP"),
+        getTokenBalance("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v","8puxJXzTyPXRsQ9PH9niMeje9M83a2bzatTzHxBWjGoP"),
         
 
 
     ])
     return {
         'bitcoin': btcAmount + ibBtcAmount + btcAmount_2 + ibBtcAmount_2,
-        'usd-coin': usdcAmount + usdcAmount_2 + usdcAmount_3 + usdcAmount_4,
+        'usd-coin': usdcAmount + usdcAmount_2 + usdcAmount_3 + usdcAmount_4 + apusdcAmount + usdcAmount_5,
         'renbtc': renBtcAmount + renBtcAmount_2 + renBtcAmount_3,
         'terra-luna': wlunaAmount + renLunaAmount,
         'tether': usdtAmount + usdtAmount_2 + apusdtAmount,
@@ -79,5 +83,5 @@ async function tvl() {
 
 module.exports = {
     tvl,
-    methodology: `To obtain the TVL of Saber we make on-chain calls using the function getTokenBalance() that uses the address of the token and the address of the contract where the tokens are found. TVL is calculated using the list of pool addresses found under the "Pools" button. These pools addresses are hard-coded. Making these calls returns the amount of tokens held in each contract. We then use Coingecko to get the price of each token in USD and export the sum of all tokens. "USDP" is used to get the price of stablecoin "PAI" since it has not been listed on Coingecko.`,
+    methodology: 'To obtain the TVL of Saber we make on-chain calls using the function getTokenBalance() that uses the address of the token and the address of the contract where the tokens are found. TVL is calculated using the list of pool addresses found under the "Pools" button of the Saber App. These pools addresses are hard-coded. Making these calls returns the amount of tokens held in each contract. We then use Coingecko to get the price of each token in USD and export the sum of all tokens. "USDP" is used to price the stablecoin "PAI" since it has not been listed on Coingecko.',
 }
