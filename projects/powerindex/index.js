@@ -43,8 +43,8 @@ async function getBscTvl() {
   return bscBalances;
 }
 
-async function tvl(timestamp, block) {
-  let balances = await getBscTvl();
+async function eth(timestamp, block) {
+  let balances = {};
 
   let poolLogs = await sdk.api.util.getLogs({
     target: '0x0Ba2e75FE1368d8d517BE1Db5C39ca50a1429441',
@@ -132,5 +132,11 @@ async function tvl(timestamp, block) {
 
 module.exports = {
   start: 1606768668, // 11/30/2021 @ 08:37am (UTC)
-  tvl
+  bsc:{
+    tvl: getBscTvl,
+  },
+  ethereum:{
+    tvl: eth
+  },
+  tvl: sdk.util.sumChainTvls([getBscTvl, eth])
 }
