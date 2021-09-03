@@ -31,7 +31,7 @@ async function staking(timestamp, block) {
         [tokens["SLP_OT_aUSDC_22"], true],
         [tokens["SLP_OT_cDAI_21"], true], 
         [tokens["SLP_OT_cDAI_22"], true],
-        [tokens["SLP_OT_ETHUSDC_22"], true],ƒ
+        [tokens["SLP_OT_ETHUSDC_22"], true],
         [tokens["SLP_OT_PEP_22"], true]
     ], stakingContracts, block)
     for (token of otTokens) {
