@@ -11,8 +11,40 @@ const curveFactoryPools = [
   "0x4807862AA8b2bF68830e4C8dc86D0e9A998e085a"
 ].map(pool => pool.toLowerCase())
 
+async function getBscTvl() {
+  let bscBalances = {}
+
+  const poolAddress = await sdk.api.util.getLogs({
+    keys: ['topics'],
+    toBlock: 10481380,
+    target: '0x37c4a7E826a7F6606628eb5180df7Be8d6Ca4B2C',
+    fromBlock: 10481280,
+    topic: 'LOG_NEW_POOL(address,address,address)',
+    chain: 'bsc'
+  }).then(r => `0x${r.output[0][2].slice(26)}`);
+  
+  let poolTokens = await sdk.api.abi.call({
+    chain: 'bsc',
+    abi: abi.getCurrentTokens,
+    target: poolAddress
+  });
+
+  let poolBalances = await sdk.api.abi.multiCall({
+    chain: 'bsc',
+    abi: 'erc20:balanceOf',
+    calls: _.map(poolTokens.output, 
+      (poolToken) => ({ target: poolToken, params: poolAddress}))
+  })
+
+  _.each(poolBalances.output, (poolBalance) => { 
+    bscBalances[`bsc:${poolBalance.input.target}`] = poolBalance.output
+  })
+  
+  return bscBalances;
+}
+
 async function tvl(timestamp, block) {
-  let balances = {};
+  let balances = await getBscTvl();
 
   let poolLogs = await sdk.api.util.getLogs({
     target: '0x0Ba2e75FE1368d8d517BE1Db5C39ca50a1429441',
