@@ -11,5 +11,6 @@ async function fetch() {
 }
 
 module.exports = {
+    methodology: 'TVL counts the XTZ tokens that are deposited to mint kUSD, borrowed tokens are not counted.',
     fetch
 };
