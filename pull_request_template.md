@@ -28,7 +28,7 @@
 ##### Token address and ticker if any:
 
 
-##### Category (Yield/Dexes/Lending/Minting) *Please choose only one:
+##### Category (Yield/Dexes/Lending/Minting/Assets/Insurance/Options/Indexes/Staking) *Please choose only one:
 
 
 ##### Oracle used (Chainlink/Band/API3/TWAP or any other that you are using):
