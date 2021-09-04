@@ -104,6 +104,7 @@ const bscTvl = async (timestamp, block, chainBlocks) => {
 };
 
 module.exports = {
+  methodology: 'TVL counts the LP tokens that have been deposited to the protocol. The LP tokens are unwrapped and the balances are summed per token.',
   bsc: {
     tvl: bscTvl,
   },
