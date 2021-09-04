@@ -1,93 +1,78 @@
-import BigNumber from "bignumber.js";
-import poolsConfig from "config/constants/pools";
-import sousChefABI from "config/abi/sousChef.json";
-import cakeABI from "config/abi/cake.json";
-import wbnbABI from "config/abi/weth.json";
-import multicall from "utils/multicall";
-import { getAddress, getWbnbAddress } from "utils/addressHelpers";
-import { BIG_ZERO } from "utils/bigNumber";
-import { getSouschefV2Contract } from "utils/contractHelpers";
-export const fetchPoolsBlockLimits = async () => {
-  const poolsWithEnd = poolsConfig.filter((p) => p.sousId !== 0);
-  const callsStartBlock = poolsWithEnd.map((poolConfig) => {
-    return {
-      address: getAddress(poolConfig.contractAddress),
-      name: "startBlock",
-    };
-  });
-  const callsEndBlock = poolsWithEnd.map((poolConfig) => {
-    return {
-      address: getAddress(poolConfig.contractAddress),
-      name: "bonusEndBlock",
-    };
-  });
-  const starts = await multicall(sousChefABI, callsStartBlock);
-  const ends = await multicall(sousChefABI, callsEndBlock);
-  return poolsWithEnd.map((cakePoolConfig, index) => {
-    const startBlock = starts[index];
-    const endBlock = ends[index];
-    return {
-      sousId: cakePoolConfig.sousId,
-      startBlock: new BigNumber(startBlock).toJSON(),
-      endBlock: new BigNumber(endBlock).toJSON(),
-    };
-  });
-};
-export const fetchPoolsTotalStaking = async () => {
-  const nonBnbPools = poolsConfig.filter(
-    (p) => p.stakingToken.symbol !== "BNB"
-  );
-  const bnbPool = poolsConfig.filter((p) => p.stakingToken.symbol === "BNB");
-  const callsNonBnbPools = nonBnbPools.map((poolConfig) => {
-    return {
-      address: getAddress(poolConfig.stakingToken.address),
-      name: "balanceOf",
-      params: [getAddress(poolConfig.contractAddress)],
-    };
-  });
-  const callsBnbPools = bnbPool.map((poolConfig) => {
-    return {
-      address: getWbnbAddress(),
-      name: "balanceOf",
-      params: [getAddress(poolConfig.contractAddress)],
-    };
-  });
-  const nonBnbPoolsTotalStaked = await multicall(cakeABI, callsNonBnbPools);
-  const bnbPoolsTotalStaked = await multicall(wbnbABI, callsBnbPools);
-  return [
-    ...nonBnbPools.map((p, index) => ({
-      sousId: p.sousId,
-      totalStaked: new BigNumber(nonBnbPoolsTotalStaked[index]).toJSON(),
-    })),
-    ...bnbPool.map((p, index) => ({
-      sousId: p.sousId,
-      totalStaked: new BigNumber(bnbPoolsTotalStaked[index]).toJSON(),
-    })),
-  ];
-};
-export const fetchPoolStakingLimit = async (sousId) => {
+const chains = require("./constants/chain");
+const sdk = require("@defillama/sdk");
+const multiCall = sdk.api.abi.multiCall;
+const BigNumber = require("bignumber.js");
+
+const fetchPoolsTotalStaking = async (chain, block) => {
   try {
-    const sousContract = getSouschefV2Contract(sousId);
-    const stakingLimit = await sousContract.methods.poolLimitPerUser().call();
-    return new BigNumber(stakingLimit);
-  } catch (error) {
-    return BIG_ZERO;
+    const chainId = chains[chain];
+    const tokens = require("./constants/" + chain + "/tokens");
+    const poolsConfig = require("./constants/" + chain + "/pools");
+
+    function getAddress(addrs) {
+      return addrs[chainId];
+    }
+
+    const getWbnbAddress = () => {
+      return getAddress(tokens.wbnb.address);
+    };
+
+    const nonBnbPools = poolsConfig.filter(
+      (p) => p.stakingToken.symbol !== "BNB"
+    );
+    const bnbPool = poolsConfig.filter((p) => p.stakingToken.symbol === "BNB");
+    const callsNonBnbPools = nonBnbPools
+      .map((poolConfig) => {
+        return {
+          target: getAddress(poolConfig.stakingToken.address),
+          params: getAddress(poolConfig.contractAddress),
+        };
+      })
+      .filter((_) => _.params);
+
+    const callsBnbPools = bnbPool
+      .map((poolConfig) => {
+        return {
+          target: getWbnbAddress(),
+          params: getAddress(poolConfig.contractAddress),
+        };
+      })
+      .filter((_) => _.params);
+
+    const nonBnbPoolsTotalStaked = (
+      await multiCall({
+        chain,
+        block,
+        calls: callsNonBnbPools,
+        abi: "erc20:balanceOf",
+      })
+    ).output.map((_) => _.output);
+
+    const bnbPoolsTotalStaked = (
+      await multiCall({
+        chain,
+        block,
+        calls: callsBnbPools,
+        abi: "erc20:balanceOf",
+      })
+    ).output.map((_) => _.output);
+
+    return [
+      ...nonBnbPools.map((p, index) => ({
+        sousId: p.sousId,
+        totalStaked: new BigNumber(nonBnbPoolsTotalStaked[index]).toJSON(),
+      })),
+      ...bnbPool.map((p, index) => ({
+        sousId: p.sousId,
+        totalStaked: new BigNumber(bnbPoolsTotalStaked[index]).toJSON(),
+      })),
+    ];
+  } catch (e) {
+    console.log("fetchPoolsTotalStaking", e);
   }
 };
-export const fetchPoolsStakingLimits = async (poolsWithStakingLimit) => {
-  const validPools = poolsConfig
-    .filter((p) => p.stakingToken.symbol !== "BNB" && !p.isFinished)
-    .filter((p) => !poolsWithStakingLimit.includes(p.sousId));
-  // Get the staking limit for each valid pool
-  // Note: We cannot batch the calls via multicall because V1 pools do not have "poolLimitPerUser" and will throw an error
-  const stakingLimitPromises = validPools.map((validPool) =>
-    fetchPoolStakingLimit(validPool.sousId)
-  );
-  const stakingLimits = await Promise.all(stakingLimitPromises);
-  return stakingLimits.reduce((accum, stakingLimit, index) => {
-    return {
-      ...accum,
-      [validPools[index].sousId]: stakingLimit,
-    };
-  }, {});
+
+
+module.exports = {
+  fetchPoolsTotalStaking,
 };

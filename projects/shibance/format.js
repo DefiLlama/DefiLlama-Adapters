@@ -1,7 +1,7 @@
 
 const BigNumber = require("bignumber.js");
 const BIG_TEN = new BigNumber(10)
-
+const BIG_ZERO = new BigNumber(0);
 /**
  * Take a formatted amount, e.g. 15 BNB and convert it to full decimal value, e.g. 15000000000000000
  */
@@ -33,6 +33,8 @@ const formatNumber = (number, minPrecision = 2, maxPrecision = 2) => {
 }
 
 module.exports = {
+  BIG_ZERO,
+  BIG_TEN,
   getBalanceAmount,
   formatNumber,
   getFullDisplayBalance,
