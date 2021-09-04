@@ -29,6 +29,7 @@ async function fetchStakedToken() {
 }
 
 module.exports = {
+  methodology: 'TVL counts the liquidity of KlaySwap DEX and staking counts the KSP that has been staked. Data is pulled from:"https://s.klayswap.com/stat/klayswapInfo.json".',
   fetch: fetchLiquidity,
   staking: {
     fetch: fetchStakedToken
