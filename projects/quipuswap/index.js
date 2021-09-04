@@ -18,6 +18,7 @@ async function fetch() {
 }
 
 module.exports = {
+  methodology: 'TVL counts the liquidity of QuipuSwap DEX. Data is pulled from:"https://granada-api.quipuswap.com".',
     misrepresentedTokens: true,
     fetch
 }
