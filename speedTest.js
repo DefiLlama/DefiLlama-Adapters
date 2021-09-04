@@ -9,7 +9,7 @@ function createProvider(name, url, chainId) {
     url
   ].join('='));
   
-  return new ethers.providers.StaticJsonRpcProvider(url,
+  return new ethers.providers.JsonRpcProvider(url,
     {
       name: name,
       chainId: chainId,

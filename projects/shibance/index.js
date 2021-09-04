@@ -16,14 +16,7 @@ function getChainTvl(chain) {
 }
 
 async function getTvl(chain, timestamp, _ethBlock, chainBlocks) {
-  console.log({
-    chain,
-    timestamp,
-    _ethBlock,
-    chainBlocks,
-  });
-  const block = chainBlocks[chain];
-  console.log("block", chain, block);
+  const block = chainBlocks ? chainBlocks[chain] : null;
   const chainPid = {
     kcc: 1,
     bsc: 3
@@ -85,10 +78,9 @@ async function getTvl(chain, timestamp, _ethBlock, chainBlocks) {
   const baseToken = woofLp.token.address[chainId];
   const balances = {};
   balances[`${chain}:${baseToken}`] = tvl.div(woofPrice).toNumber();
+  // console.log(balances, woofPrice.toJSON(), tvl.toNumber());
 
-  console.log(balances, woofPrice.toJSON(), tvl.toNumber());
-
-  return balances;
+  return tvl.toNumber();
 }
 
 // (async () => {
@@ -102,11 +94,12 @@ async function getTvl(chain, timestamp, _ethBlock, chainBlocks) {
 module.exports = {
   misrepresentedTokens: true,
   methodology: "We count liquidity on the dexes, pulling data from onchain",
-  kcc: {
-    tvl: getChainTvl("kcc"),
-  },
-  bsc: {
-    tvl: getChainTvl("bsc"),
-  },
-  tvl: sdk.util.sumChainTvls([getChainTvl("kcc"), getChainTvl("bsc")]),
+  fetch: getChainTvl("bsc"),
+  // kcc: {
+  //   tvl: getChainTvl("kcc"),
+  // },
+  // bsc: {
+  //   tvl: getChainTvl("bsc"),
+  // },
+  // tvl: sdk.util.sumChainTvls([getChainTvl("kcc"), getChainTvl("bsc")]),
 };
