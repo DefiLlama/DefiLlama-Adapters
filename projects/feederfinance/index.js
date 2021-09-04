@@ -21,6 +21,7 @@ async function fetch() {
 }
 
 module.exports = {
+  methodology: 'TVL counts the tokens deposited to the Autostaking strategy, Pool2 counts the deposits made to FEED farming and staking sums the deposits made to FEED staking.',
   bsc: {
     fetch,
   },
