@@ -37,6 +37,7 @@ async function bsc(timestamp, ethBlock, chainBlock) {
 }
 
 module.exports = {
+    misrepresentedTokens: true,
     bsc: {
         tvl: bsc
     },
