@@ -42,8 +42,10 @@ const avaxTvl = async (timestamp, ethBlock, chainBlocks) => {
     ).output;
 
     if (
-      (index >= 7 && index <= 13) ||
-      (index >= 15 && index <= 16) 
+      index == 7 ||
+      (index >= 8 && index <= 13) ||
+      (index >= 15 && index <= 16) || 
+      index == 18
     ) {
       sdk.util.sumSingleBalance(balances, `avax:${lpOrTokens}`, lpOrToken_bal);
     } else {
