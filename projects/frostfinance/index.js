@@ -70,9 +70,6 @@ const avaxTvl = async (timestamp, ethBlock, chainBlocks) => {
 };
 
 module.exports = {
-  avax: {
-    tvl: avaxTvl,
-  },
   tvl: sdk.util.sumChainTvls([avaxTvl]),
   methodology:
     "We add as tvl from the farming pools (ICICLE => LP Pairs && SNOWFLAKE => Single Tokens) threw StakingContract(MasterChefV2)",
