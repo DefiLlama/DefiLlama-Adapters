@@ -1,48 +1,32 @@
-const  sdk = require('@defillama/sdk');
+const BigNumber = require('bignumber.js')
 
-const MAIN = '0x8ECa806Aecc86CE90Da803b080Ca4E3A9b8097ad';
-const GOVERNANCE = '0x02ecef526f806f06357659fFD14834fe82Ef4B04';
-const START_BLOCK = 11841962;
+const v1TVL = require('./v1');
+const v2TVL = require('./v2');
 
 async function tvl(timestamp, block) {
-  // ETH
-  const ETHBalance = (await sdk.api.eth.getBalance({target: MAIN, block})).output;
-  const balances = {
-    '0x0000000000000000000000000000000000000000': ETHBalance
-  }
+  const [v1, v2] = await Promise.all([v1TVL(timestamp, block), v2TVL(timestamp, block)]);
 
-  // ERC20
-  const topic = 'NewToken(address,uint16)';
-  const logs = (
-    await sdk.api.util
-      .getLogs({
-        keys: [],
-        toBlock: block,
-        target: GOVERNANCE,
-        fromBlock: START_BLOCK,
-        topic,
-      })
-  ).output;
+  const tokenAddresses = new Set(Object.keys(v1).concat(Object.keys(v2)));
 
-  const tokenAddresses = logs.map(log => `0x${log.topics[1].slice(64 - 40 + 2, 64 + 2)}`.toLowerCase());
+  const balances = (
+    Array
+      .from(tokenAddresses)
+      .reduce((accumulator, tokenAddress) => {
+        const v1Balance = new BigNumber(v1[tokenAddress] || '0');
+        const v2Balance = new BigNumber(v2[tokenAddress] || '0');
+        accumulator[tokenAddress] = v1Balance.plus(v2Balance).toFixed();
 
-  const calls = tokenAddresses.map(tokenAddress => ({
-    target: tokenAddress,
-    params: MAIN
-  }));
-
-  const ERC20Balances = await sdk.api.abi.multiCall({
-    block,
-    calls,
-    abi: 'erc20:balanceOf'
-  });
-
-  sdk.util.sumMultiBalanceOf(balances, ERC20Balances);
+        return accumulator
+      }, {})
+  );
 
   return balances;
 }
 
 module.exports = {
+  name: "ZKSwap",
+  token: "ZKS",
+  category: "dexes",
   start: 1613135160, // 02/12/2021 @ 01:06pm UTC
-  tvl,
+  tvl
 };

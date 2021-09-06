@@ -201,11 +201,12 @@ module.exports = {
     transformPolygonAddress,
     transformXdaiAddress,
     transformAvaxAddress,
-    transformOkexAddress,
     transformHecoAddress,
     transformHarmonyAddress,
     transformOptimismAddress,
     fixAvaxBalances,
     fixHarmonyBalances,
-    transformKccAddress
+    transformOkexAddress,
+    transformKccAddress,
+    fixHarmonyBalances
 };

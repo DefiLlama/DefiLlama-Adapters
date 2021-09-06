@@ -4,6 +4,7 @@ const BigNumber = require("bignumber.js");
 
 
 async function fetch() {
+  return 0
   var price_feed = await retry(async bail => await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=thorchain&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true'))
 
   var res = await retry(async bail => await axios.get('https://chaosnet-midgard.bepswap.com/v1/network'))
