@@ -14,22 +14,32 @@ const Contracts = {
       ironController: '0xF20fcd005AFDd3AD48C85d0222210fe168DDd10c',
     },
   },
+  avax: {
+    pools: {
+      í3usd: '0x952BDA8A83c3D5F398a686bb4e8C6DD90072d523',
+    },
+  },
+  fantom: {
+    pools: {
+      í3usd: '0x952BDA8A83c3D5F398a686bb4e8C6DD90072d523',
+    },
+  },
 };
 
-const MaticAddress = '0x0000000000000000000000000000000000001010'
+const MaticAddress = '0x0000000000000000000000000000000000001010';
 
-const poolTvl = async (poolAddress, block) => {
+const poolTvl = async (chain, poolAddress, block) => {
   const [balances, tokens] = await Promise.all([
     sdk.api.abi.call({
       target: poolAddress,
       abi: abiPolygon.IronSwap.getTokenBalances,
-      chain: 'polygon',
+      chain: chain,
       block,
     }),
     sdk.api.abi.call({
       target: poolAddress,
       abi: abiPolygon.IronSwap.getTokens,
-      chain: 'polygon',
+      chain: chain,
       block,
     }),
   ]);
@@ -37,7 +47,7 @@ const poolTvl = async (poolAddress, block) => {
   const sum = {};
   tokens.output.forEach((token, i) => {
     if (!Contracts.polygon.ignoredLps.includes(token.toLowerCase())) {
-      sdk.util.sumSingleBalance(sum, `polygon:${token}`, balances.output[i]);
+      sdk.util.sumSingleBalance(sum, `${chain}:${token}`, balances.output[i]);
     }
   });
 
@@ -70,7 +80,7 @@ const lendingTvl = async (block) => {
       chain: 'polygon',
       block,
     }),
-    
+
     sdk.api.abi.multiCall({
       abi: abiPolygon.rToken.underlying,
       calls: markets.map((t) => ({
@@ -83,13 +93,17 @@ const lendingTvl = async (block) => {
 
   const sum = {};
   symbols.output.forEach((symbol, i) => {
-    let underlying
+    let underlying;
     if (symbol.output === 'rMATIC') {
-      underlying = MaticAddress
+      underlying = MaticAddress;
     } else {
       underlying = underlyingAddress.output[i].output;
     }
-    sdk.util.sumSingleBalance(sum, `polygon:${underlying}`, cash.output[i].output);
+    sdk.util.sumSingleBalance(
+      sum,
+      `polygon:${underlying}`,
+      cash.output[i].output,
+    );
   });
 
   return sum;
@@ -99,7 +113,33 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
   const tvl = await lendingTvl(chainBlocks['polygon']);
 
   for (let address of Object.values(Contracts.polygon.pools)) {
-    const balances = await poolTvl(address, chainBlocks['ploygon']);
+    const balances = await poolTvl('polygon', address, chainBlocks['polygon']);
+
+    Object.entries(balances).forEach(([token, value]) => {
+      sdk.util.sumSingleBalance(tvl, token, value);
+    });
+  }
+
+  return tvl;
+};
+
+const avaxTvl = async (timestamp, ethBlock, chainBlocks) => {
+  let tvl = {};
+  for (let address of Object.values(Contracts.avax.pools)) {
+    const balances = await poolTvl('avax', address, chainBlocks['avax']);
+
+    Object.entries(balances).forEach(([token, value]) => {
+      sdk.util.sumSingleBalance(tvl, token, value);
+    });
+  }
+
+  return tvl;
+};
+
+const fantomTvl = async (timestamp, ethBlock, chainBlocks) => {
+  let tvl = {};
+  for (let address of Object.values(Contracts.avax.pools)) {
+    const balances = await poolTvl('fantom', address, chainBlocks['fantom']);
 
     Object.entries(balances).forEach(([token, value]) => {
       sdk.util.sumSingleBalance(tvl, token, value);
@@ -113,5 +153,11 @@ module.exports = {
   polygon: {
     tvl: polygonTvl,
   },
-  tvl: sdk.util.sumChainTvls([polygonTvl]),
+  avax: {
+    tvl: avaxTvl,
+  },
+  fantom: {
+    tvl: fantomTvl,
+  },
+  tvl: sdk.util.sumChainTvls([polygonTvl, avaxTvl, fantomTvl]),
 };
