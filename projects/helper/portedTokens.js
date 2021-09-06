@@ -205,7 +205,6 @@ module.exports = {
     transformHarmonyAddress,
     transformOptimismAddress,
     fixAvaxBalances,
-    fixHarmonyBalances,
     transformOkexAddress,
     transformKccAddress,
     fixHarmonyBalances
