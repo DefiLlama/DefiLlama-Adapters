@@ -6,7 +6,8 @@ async function tvl() {
           ustAmount, daiAmount, busdAmount, fraxAmount, usdkAmount, usdcAmount_3,
           wlunaAmount, renLunaAmount, husdAmount, usdcAmount_4, fttAmount, wfttAmount, wsrmAmount, srmAmount,
           ibBtcAmount, btcAmount_2, ibBtcAmount_2,
-          msolAmount, solAmount, apusdtAmount, usdtAmount_2, maiAmount,
+          msolAmount, solAmount, prtSolAmount, solAmount_2, prtSolAmount_2, pSolAmount,
+          apusdtAmount, usdtAmount_2, maiAmount,
           apusdcAmount, usdcAmount_5] = await Promise.all([
         //usdc-usdt
         getTokenBalance("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "5C1k9yV7y4CjMnKv8eGYDgWND8P89Pdfj79Trk2qmfGo"),
@@ -44,9 +45,15 @@ async function tvl() {
         getTokenBalance("66CgfJQoZkpkrEgC1z4vFJcSFc4V6T5HqbjSSNuqcNJz", "4PHvSwhw8Gz26UZfgSjDLx8JLpJnh2kpNCtssgGUKQFe"),
         getTokenBalance("9999j2A8sXUtHtDoQdk528oVzhaKBsXyRGZ67FKGoi7H", "4PHvSwhw8Gz26UZfgSjDLx8JLpJnh2kpNCtssgGUKQFe"),
         getTokenBalance("66CgfJQoZkpkrEgC1z4vFJcSFc4V6T5HqbjSSNuqcNJz", "3rjYaVP4fkv4BVQsA7aaC7DZUdogkna7ACGaAhiuNYfi"),
-        //sol-msol
+        // mSOL-SOL pool
         getTokenBalance("mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So", "2Sj4MZvmLhud4uRmGHJvDxq612nmF4JJsU1R4ZjNNGMS"),
         getTokenBalance("So11111111111111111111111111111111111111112", "2Sj4MZvmLhud4uRmGHJvDxq612nmF4JJsU1R4ZjNNGMS"),
+        // prtSOL-SOL pool
+        getTokenBalance("BdZPG9xWrG3uFrx2KrUW1jT4tZ9VKPDWknYihzoPRJS3", "9ZDpBKPqMABtGfq66FbVribaArMvtk63xxy91onZAtDt"),    // prtSolAmount
+        getTokenBalance("So11111111111111111111111111111111111111112", "9ZDpBKPqMABtGfq66FbVribaArMvtk63xxy91onZAtDt"),     // solAmount_2
+        // prtSol-pSOL
+        getTokenBalance("BdZPG9xWrG3uFrx2KrUW1jT4tZ9VKPDWknYihzoPRJS3", "6rxqyX1fD27oepCCnv2uy9uJWmXHjPTeQ5PaP99JZrKx"),    // prtSolAmount_2
+        getTokenBalance("9EaLkQrbjmbbuZG9Wdpo8qfNUEjHATJFSycEmw6f1rGX", "6rxqyX1fD27oepCCnv2uy9uJWmXHjPTeQ5PaP99JZrKx"),
         //apUSDT-USDT
         getTokenBalance("DNhZkUaxHXYvpxZ7LNnHtss8sQgdAfd1ZYS1fB7LKWUZ", "4S8xo3PeKfs3kY7ecS2amiffJZ4WXCAceDhUseE11q5E"),
         getTokenBalance("Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", "4S8xo3PeKfs3kY7ecS2amiffJZ4WXCAceDhUseE11q5E"),
@@ -76,7 +83,7 @@ async function tvl() {
         'usdk': usdkAmount,
         'ftx-token': fttAmount + wfttAmount,
         'serum': wsrmAmount + srmAmount,
-        'solana': msolAmount + solAmount,
+        'solana': msolAmount + solAmount + prtSolAmount + solAmount_2 + prtSolAmount_2 + pSolAmount,
         'mimatic': maiAmount,
     }
 }
