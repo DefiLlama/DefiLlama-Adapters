@@ -1,0 +1,49 @@
+{
+    "poolInfo": {
+        "type": "function",
+        "stateMutability": "view",
+        "outputs": [
+            {
+                "type": "address",
+                "name": "lpToken",
+                "internalType": "contract IERC20"
+            },
+            {
+                "type": "uint256",
+                "name": "allocPoint",
+                "internalType": "uint256"
+            },
+            {
+                "type": "uint256",
+                "name": "lastRewardBlock",
+                "internalType": "uint256"
+            },
+            {
+                "type": "uint256",
+                "name": "accRewardPerShare",
+                "internalType": "uint256"
+            }
+        ],
+        "name": "poolInfo",
+        "inputs": [
+            {
+                "type": "uint256",
+                "name": "",
+                "internalType": "uint256"
+            }
+        ]
+    },
+    "poolLength": {
+        "type": "function",
+        "stateMutability": "view",
+        "outputs": [
+            {
+                "type": "uint256",
+                "name": "",
+                "internalType": "uint256"
+            }
+        ],
+        "name": "poolLength",
+        "inputs": []
+    }
+}
