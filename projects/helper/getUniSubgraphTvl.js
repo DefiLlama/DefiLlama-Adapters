@@ -1,5 +1,6 @@
 const { request, gql } = require("graphql-request");
 const { toUSDTBalances } = require('../helper/balances');
+const { getBlock } = require('../helper/getBlock');
 const sdk = require('@defillama/sdk')
 
 function getChainTvl(graphUrls, factoriesName = "uniswapFactories", tvlName = "totalLiquidityUSD") {
@@ -14,14 +15,7 @@ query get_tvl($block: Int) {
 `;
     return (chain) => {
         return async (timestamp, ethBlock, chainBlocks) => {
-            let block;
-            if (chain === "ethereum") {
-                block = ethBlock;
-            }
-            block = chainBlocks[chain]
-            if (block === undefined) {
-                block = (await sdk.api.util.lookupBlock(timestamp, { chain })).block
-            }
+            const block = await getBlock(timestamp, chain, chainBlocks)
             const uniswapFactories = (await request(
                 graphUrls[chain],
                 graphQuery,
@@ -36,6 +30,32 @@ query get_tvl($block: Int) {
     }
 }
 
+function getAvaxUniswapTvl(graphUrl, factoriesName = "uniswapFactories", tvlName = "totalLiquidityETH") {
+    const graphQuery = gql`
+query get_tvl($block: Int) {
+  ${factoriesName}(
+    block: { number: $block }
+  ) {
+    ${tvlName}
+  }
+}
+`;
+    return async (timestamp, ethBlock, chainBlocks) => {
+        const response = await request(
+            graphUrl,
+            graphQuery,
+            {
+              block:chainBlocks.avax,
+            }
+          );
+        
+          return {
+            'avalanche-2': Number(response[factoriesName][0].totalLiquidityETH)
+          }
+    }
+}
+
 module.exports = {
-    getChainTvl
+    getChainTvl,
+    getAvaxUniswapTvl
 }

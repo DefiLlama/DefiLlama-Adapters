@@ -9,6 +9,7 @@ async function tvl(){
 }
 
 module.exports = {
+    methodology: 'TVL counts the UST that is available as a prize on the protocol.',
     terra:{
         tvl
     },
