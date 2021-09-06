@@ -101,6 +101,6 @@ module.exports = {
             tvl: maticTvl,
         },
     },
-    methodology: "Lorem ipsum",
+    methodology: "TVL is accounted from YEL liquidity mining farms, enhanced pools, partner farms and other protocols. Basically, that’s all the funds held at YEL Finance smart-contracts.",
     tvl: sdk.util.sumChainTvls([ethereumTvl, bscTvl, ftmTvl, maticTvl]),
 };
