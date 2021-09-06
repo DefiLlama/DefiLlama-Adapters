@@ -128,26 +128,23 @@ const staking = async (timestamp, ethBlock, chainBlocks) => {
     })
   ).output;
 
+  const cycleLpOrTokens = [
+    [staking_lpToken, true],
+    [CYCLE, false],
+  ];
+
   const transformAddress = await transformAvaxAddress();
 
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    [[staking_lpToken, true]],
-    [coreRewards],
-    chainBlocks["avax"],
-    "avax",
-    transformAddress
-  );
-
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    [[CYCLE, false]],
-    [avaxRewards],
-    chainBlocks["avax"],
-    "avax",
-    transformAddress
-  );
-
+  for (const lpOrToken of cycleLpOrTokens) {
+    await sumTokensAndLPsSharedOwners(
+      balances,
+      [lpOrToken],
+      (lpOrToken[1] == true) ? [coreRewards] : [avaxRewards],
+      chainBlocks["avax"],
+      "avax",
+      transformAddress
+    );
+  }
   return balances;
 };
 
@@ -207,7 +204,6 @@ module.exports = {
     tvl: avaxTvl,
   },
   tvl: sdk.util.sumChainTvls([avaxTvl]),
-  methodology:
-    `We add liquidity that is on the VAULTS threw their contracts and the portion of staking the native token (CYCLE) 
+  methodology: `We add liquidity that is on the VAULTS threw their contracts and the portion of staking the native token (CYCLE) 
     && CYCLE/AVAX LP by coreRewards and avaxRewards contracts respectivly`,
 };
