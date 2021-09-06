@@ -1,5 +1,6 @@
 const sdk = require('@defillama/sdk');
 const abiPolygon = require('./abi-polygon.json');
+const { transformAddress } = require('./utils');
 
 const Contracts = {
   polygon: {
@@ -29,6 +30,7 @@ const Contracts = {
 const MaticAddress = '0x0000000000000000000000000000000000001010';
 
 const poolTvl = async (chain, poolAddress, block) => {
+  const addressTransformer = await transformAddress(chain);
   const [balances, tokens] = await Promise.all([
     sdk.api.abi.call({
       target: poolAddress,
@@ -45,11 +47,20 @@ const poolTvl = async (chain, poolAddress, block) => {
   ]);
 
   const sum = {};
-  tokens.output.forEach((token, i) => {
-    if (!Contracts.polygon.ignoredLps.includes(token.toLowerCase())) {
-      sdk.util.sumSingleBalance(sum, `${chain}:${token}`, balances.output[i]);
+  let i = 0;
+  for (const token of tokens.output) {
+    if (
+      Contracts[chain].ignoredLps &&
+      Contracts[chain].ignoredLps.includes(token.toLowerCase())
+    ) {
+      i++;
+      continue;
     }
-  });
+
+    const tokenAddress = await addressTransformer(token);
+    sdk.util.sumSingleBalance(sum, tokenAddress, balances.output[i]);
+    i++;
+  }
 
   return sum;
 };
