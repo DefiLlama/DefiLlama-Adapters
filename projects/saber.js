@@ -62,9 +62,6 @@ async function tvl() {
         //apusdc-USDC pool
         getTokenBalance("eqKJTf1Do4MDPyKisMYqVaUFpkEFAs3riGF3ceDH2Ca","8puxJXzTyPXRsQ9PH9niMeje9M83a2bzatTzHxBWjGoP"),
         getTokenBalance("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v","8puxJXzTyPXRsQ9PH9niMeje9M83a2bzatTzHxBWjGoP"),
-        
-
-
     ])
     return {
         'bitcoin': btcAmount + ibBtcAmount + btcAmount_2 + ibBtcAmount_2,
