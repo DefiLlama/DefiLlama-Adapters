@@ -12,8 +12,8 @@ const qTokens = [
     '0x474010701715658fC8004f51860c90eEF4584D2B', // qDAI
     '0xa3A155E76175920A40d2c8c765cbCB1148aeB9D1', // qBUSD
     '0xaB9eb4AE93B705b0A74d3419921bBec97F51b264', // qCAKE
-    '0xFF858dB0d6aA9D3fCA13F6341a1693BE4416A550'  // qMDX
-    // '0xcD2CD343CFbe284220677C78A08B1648bFa39865', // qQBT (do not add governance token liquidity)
+    '0xFF858dB0d6aA9D3fCA13F6341a1693BE4416A550', // qMDX
+    '0xcD2CD343CFbe284220677C78A08B1648bFa39865' // qQBT
 ]
 
 const ZERO = new BigNumber(0)
@@ -22,7 +22,7 @@ const ETHER = new BigNumber(10).pow(18)
 async function bsc(timestamp, ethBlock, chainBlock) {
     const block = chainBlock.bsc
     const total = (await sdk.api.abi.multiCall({
-        calls: qTokens.map( address => ({
+        calls: qTokens.map(address => ({
             target: dashboard,
             params: [[address]]
         })),
