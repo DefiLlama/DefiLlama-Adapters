@@ -25,7 +25,7 @@ const anchor = [
     '0x5a6a33117ecbc6ea38b3a140f3e20245052cc647', //'aBUSD':
     '0x0660ae7b180e584d05890e56be3a372f0b746515', //'aFRAX':
 ];
-async function tvl(timestamp, block) {
+async function ethTvl(timestamp, block) {
     // SUM STABLES BALANCES
     const balances = {};
     const stableTokens = stable.map(t => [t, false]);
@@ -57,6 +57,10 @@ async function tvl(timestamp, block) {
 };
 
 module.exports = {
-    tvl,
-    methodology: "counts the value of each stablecoin, and interest-bearing anchor-stable, in the TransparentUpgradeableProxy contracts."
+    methodology: "counts the value of each stablecoin, and interest-bearing anchor-stable, in the TransparentUpgradeableProxy contracts.",
+    ethereum:{
+        tvl:ethTvl,
+    },
+    tvl: sdk.util.sumChainTvls([ethTvl]),
+   
 };
