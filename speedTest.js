@@ -43,7 +43,7 @@ function createProvider(name, url, chainId) {
     const start = Date.now();
     const lastBlockNumber = await provider.getBlockNumber();
     const spend = Date.now() - start
-    console.log(name, 'spend', spend / 1000, 's');
+    console.log(name, "spend", spend / 1000, "s", "block", lastBlockNumber);
   }
   
   console.log('.env')

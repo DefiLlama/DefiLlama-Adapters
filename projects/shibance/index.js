@@ -23,6 +23,7 @@ async function getTvl(chain, timestamp, _ethBlock, chainBlocks) {
   };
 
   const chainId = chains[chain];
+  // console.log("block", block);
   const [vData, pools, farmsLP] = await Promise.all([
     fetchPublicVaultData(chain, block),
     fetchPoolsTotalStaking(chain, block),
@@ -75,17 +76,24 @@ async function getTvl(chain, timestamp, _ethBlock, chainBlocks) {
           )
       : null;
 
-  const baseToken = woofLp.token.address[chainId];
   const balances = {};
-  balances[`${chain}:${baseToken}`] = tvl.div(woofPrice).toNumber();
-  // console.log(balances, woofPrice.toJSON(), tvl.toNumber());
+  const usdMappings = {
+    'bsc' : '0x4fabb145d64652a948d72533023f6e7a623c7c53'
+  }
+  const baseToken = usdMappings[chain];
+  balances[`${chain}:${baseToken}`] = tvl.toNumber();
 
+  if (chainBlocks) return balances;
   return tvl.toNumber();
 }
 
 // (async () => {
 //   try {
-//     console.log(await getTvl('kcc'));
+//     console.log(
+//       await getTvl("bsc", null, null, {
+//         bsc: 10700328,
+//       })
+//     );
 //   } catch(e) {
 //     console.log(e.stack)
 //   }
@@ -101,5 +109,5 @@ module.exports = {
   // bsc: {
   //   tvl: getChainTvl("bsc"),
   // },
-  // tvl: sdk.util.sumChainTvls([getChainTvl("kcc"), getChainTvl("bsc")]),
+  // tvl: getChainTvl("bsc"),
 };

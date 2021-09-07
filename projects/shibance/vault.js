@@ -55,6 +55,7 @@ const fetchPublicVaultData = async (chain, block) => {
         .calculateTotalPendingCakeRewards()
         .call({}, block),
     ]);
+    
     const totalSharesAsBigNumber = new BigNumber(shares);
     const sharePriceAsBigNumber = new BigNumber(sharePrice);
     const totalCakeInVaultEstimate = convertSharesToWoof(
