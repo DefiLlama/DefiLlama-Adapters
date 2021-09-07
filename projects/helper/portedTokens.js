@@ -46,7 +46,7 @@ async function transformAvaxAddress() {
 
     return (addr) => {
         if(compareAddresses(addr, "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7")){ //WAVAX
-            return `avax:${addr}`
+          return `avax:${addr}`
         }
         const srcToken = bridgeTokensOld.data.find(token => compareAddresses(token["Avalanche Token Address"], addr))
         if (srcToken !== undefined && srcToken["Ethereum Token Decimals"] === srcToken["Avalanche Token Decimals"]) {
@@ -129,6 +129,9 @@ async function transformXdaiAddress() {
 async function transformOkexAddress() {
     const okexBridge = (await utils.fetchURL("https://www.okex.com/v2/asset/cross-chain/currencyAddress")).data.data.tokens
     // TODO
+    return (addr) => {
+      return `okexchain:${addr}`;
+    };
 }
 
 async function transformHecoAddress() {
@@ -186,6 +189,12 @@ function fixHarmonyBalances(balances){
     }
 }
 
+async function transformKccAddress() {
+    return (addr) => {
+      return `kcc:${addr}`;
+    };
+  }
+
 module.exports = {
     transformFantomAddress,
     transformBscAddress,
@@ -196,5 +205,7 @@ module.exports = {
     transformHarmonyAddress,
     transformOptimismAddress,
     fixAvaxBalances,
+    transformOkexAddress,
+    transformKccAddress,
     fixHarmonyBalances
 };
