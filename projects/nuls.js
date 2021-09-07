@@ -6,5 +6,6 @@ async function fetch(){
 }
 
 module.exports={
-    fetch
+    methodology: 'TVL counts native chain staking and data is pulled from: "https://public1.nuls.io/nuls/tvl".',
+    fetch,
 }
