@@ -8,8 +8,6 @@ var query = gql`
 {
     vault_aggregate {
       aggregate {
-        
-      
       sum {balance}
       }
     }
