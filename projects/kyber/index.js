@@ -4,27 +4,13 @@ const sdk = require('@defillama/sdk');
   const abi = require('./abi');
   const utils = require('../helper/utils')
   const web3 = require('../config/web3.js');
-  const {getBlock} = require('../helper/getBlock')
-const {request, gql } = require('graphql-request')
-
-
-  const usdtAddress = '0xdac17f958d2ee523a2206206994597c13d831ec7'
-  const egraphUrl = 'https://api.thegraph.com/subgraphs/name/dynamic-amm/dynamic-amm'
-const egraphQuery = gql`
-query get_tvl($block: Int) {
-  dmmFactory(
-    id: "0x833e4083b7ae46cea85695c4f7ed25cdad8886de",
-    block: { number: $block }
-  ) {
-    totalVolumeUSD
-    totalLiquidityUSD
-  }
-}
-`;
+  const bsc_factory = "0x878dFE971d44e9122048308301F540910Bbd934c";
+  const poly_factory = "0x5F1fe642060B5B9658C15721Ea22E982643c095c";
+  const eth_factory = "0x833e4083B7ae46CeA85695c4f7ed25CDAd8886dE";
 
   async function ethTvl (timestamp, block) {
     const balances = {};
-
+  // tracking TVL for Kybernetwork
     const pairs = (await utils.fetchURL(
       `https://api.kyber.network/currencies`
     )).data.data;
@@ -100,68 +86,209 @@ query get_tvl($block: Int) {
         balances[asset] = balance.toFixed();
       }
     });
-    const {dmmFactory} = await request(
-      egraphUrl,
-      egraphQuery,
-      {
-        block,
+  // tracking TVL for KyberDMM ethereum
+      const poolLength = Number(
+        (
+          await sdk.api.abi.call({
+            target: eth_factory,
+            abi: abi.allPoolsLength,
+            block: block,
+          })
+        ).output
+      );
+    
+      const allPoolNums = Array.from(Array(poolLength).keys());
+    
+      const poolAddresses = (
+        await sdk.api.abi.multiCall({
+          abi: abi.allPools,
+          calls: allPoolNums.map((num) => ({
+            target: eth_factory,
+            params: [num],
+          })),
+          block: block,
+        })
+      ).output.map((el) => el.output);
+    
+      for (let i = 0; i < poolAddresses.length; i++) {
+        const token0 = (
+          await sdk.api.abi.call({
+            target: poolAddresses[i],
+            abi: abi.token0,
+            block: block,
+          })
+        ).output;
+    
+        const token1 = (
+          await sdk.api.abi.call({
+            target: poolAddresses[i],
+            abi: abi.token1,
+            block: block,
+          })
+        ).output;
+    
+        const getReserves = (
+          await sdk.api.abi.call({
+            target: poolAddresses[i],
+            abi: abi.getReserves,
+            block: block,
+          })
+        ).output;
+    
+        sdk.util.sumSingleBalance(balances, token0, getReserves[0]);
+    
+        sdk.util.sumSingleBalance(balances, token1, getReserves[1]);
       }
-      
-    );
-    if(dmmFactory !== null){ // Has been created
-      const ethTVL = (Number(dmmFactory.totalLiquidityUSD)* 1e6).toFixed(0)
-      sdk.util.sumSingleBalance(balances, usdtAddress, ethTVL)
-    }
-
+    
+    
     return balances;
   }
-
-  //fetch polygon chain DMM TVL 
-
-  async function polygonTvl(timestamp, block, chainBlocks){
-
-    block = chainBlocks['polygon']
-    var polygonEndpoint ='https://api.thegraph.com/subgraphs/name/piavgh/dmm-exchange-matic';
-      var query = gql`
-      query get_tvl($block: Int) {
-        dmmFactory(
-          id: "0x5f1fe642060b5b9658c15721ea22e982643c095c",
-          block: {number: $block}
-        ) {
-          totalVolumeUSD
-          totalLiquidityUSD
-        }
-      }
-      `;
-      const {dmmFactory} = await request(
-        polygonEndpoint,
-        query,
-        {
-          block,
-        }
-        
-      );
-      if(dmmFactory !== null){ // Has been created
-        polyTVL = (Number(dmmFactory.totalLiquidityUSD)* 1e6).toFixed(0)
-      }
-
-    return {
-      [usdtAddress]: polyTVL,
+  // tracking TVL for KyberDMM polygon
+  const polyTvl = async (timestamp, ethBlock, chainBlocks) => {
+    const balances = {};
+  
+    const poolLength = Number(
+      (
+        await sdk.api.abi.call({
+          target: poly_factory,
+          abi: abi.allPoolsLength,
+          chain: "polygon",
+          block: chainBlocks["polygon"],
+        })
+      ).output
+    );
+  
+    const allPoolNums = Array.from(Array(poolLength).keys());
+  
+    const poolAddresses = (
+      await sdk.api.abi.multiCall({
+        abi: abi.allPools,
+        calls: allPoolNums.map((num) => ({
+          target: poly_factory,
+          params: [num],
+        })),
+        block: chainBlocks["polygon"],
+        chain: "polygon"
+      })
+    ).output.map((el) => el.output);
+  
+    for (let i = 0; i < poolAddresses.length; i++) {
+      const token0 = (
+        await sdk.api.abi.call({
+          target: poolAddresses[i],
+          abi: abi.token0,
+          chain: "polygon",
+          block: chainBlocks["polygon"],
+        })
+      ).output;
+  
+      const token1 = (
+        await sdk.api.abi.call({
+          target: poolAddresses[i],
+          abi: abi.token1,
+          chain: "polygon",
+          block: chainBlocks["polygon"],
+        })
+      ).output;
+  
+      const getReserves = (
+        await sdk.api.abi.call({
+          target: poolAddresses[i],
+          abi: abi.getReserves,
+          chain: "polygon",
+          block: chainBlocks["polygon"],
+        })
+      ).output;
+  
+      sdk.util.sumSingleBalance(balances, 'polygon:'+token0, getReserves[0]);
+  
+      sdk.util.sumSingleBalance(balances, 'polygon:'+token1, getReserves[1]);
     }
-
+  
+    return balances;
+  };
+    // tracking TVL for KyberDMM BSC
+  function getBSCAddress(address) {
+    return `bsc:${address}`
   }
+  const KNC = "0xfe56d5892BDffC7BF58f2E84BE1b2C32D21C308b";
+  const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
+    const balances = {};
+   
+    const poolLength = Number(
+      (
+        await sdk.api.abi.call({
+          target: bsc_factory,
+          abi: abi.allPoolsLength,
+          chain: "bsc",
+          block: chainBlocks["bsc"],
+        })
+      ).output
+    );
+  
+    const allPoolNums = Array.from(Array(poolLength).keys());
+  
+    const poolAddresses = (
+      await sdk.api.abi.multiCall({
+        abi: abi.allPools,
+        calls: allPoolNums.map((num) => ({
+          target: bsc_factory,
+          params: [num],
+        })),
+        block: chainBlocks["bsc"],
+        chain: "bsc"
+      })
+    ).output.map((el) => el.output);
+  
+    for (let i = 0; i < poolAddresses.length; i++) {
+      const token0 = (
+        await sdk.api.abi.call({
+          target: poolAddresses[i],
+          abi: abi.token0,
+          chain: "bsc",
+          block: chainBlocks["bsc"],
+        })
+      ).output;
+  
+      const token1 = (
+        await sdk.api.abi.call({
+          target: poolAddresses[i],
+          abi: abi.token1,
+          chain: "bsc",
+          block: chainBlocks["bsc"],
+        })
+      ).output;
+      const getReserves = (
+        await sdk.api.abi.call({
+          target: poolAddresses[i],
+          abi: abi.getReserves,
+          chain: "bsc",
+          block: chainBlocks["bsc"],
+        })
+      ).output;
+  
+      sdk.util.sumSingleBalance(balances, getBSCAddress(token0), getReserves[0]);
+  
+      sdk.util.sumSingleBalance(balances, getBSCAddress(token1), getReserves[1]);
+    }
+  
+    return balances;
+  };
+  
 /*==================================================
   Exports
 ==================================================*/
 
   module.exports = {
     misrepresentedTokens: true,
-
     ethereum: {
       tvl: ethTvl,
     },
     polygon: {
-      tvl: polygonTvl
-    },
-    tvl:sdk.util.sumChainTvls([ethTvl,polygonTvl])
+      tvl: polyTvl,
+   },
+    bsc: {
+      tvl: bscTvl,
+   },
+  tvl: sdk.util.sumChainTvls([ethTvl, bscTvl, polyTvl])
   };
