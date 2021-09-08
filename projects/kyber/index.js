@@ -208,10 +208,13 @@ const sdk = require('@defillama/sdk');
     return balances;
   };
     // tracking TVL for KyberDMM BSC
+    const KNC = "0xfe56d5892BDffC7BF58f2E84BE1b2C32D21C308b";
   function getBSCAddress(address) {
+    if(address.toLowerCase() === KNC.toLowerCase()){
+      return "0xdefa4e8a7bcba345f687a2f1456f5edd9ce97202"
+    }
     return `bsc:${address}`
   }
-  const KNC = "0xfe56d5892BDffC7BF58f2E84BE1b2C32D21C308b";
   const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
     const balances = {};
    
