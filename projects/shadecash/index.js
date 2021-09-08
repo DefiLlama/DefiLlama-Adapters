@@ -39,7 +39,10 @@ async function tvl(_, _ethBlock, chainBlocks) {
     // TRANSFORM ADDRESSES
     let transformAddress = await transformFantomAddress();
     Object.keys(balances).map(k => {
-        const transformed = transformAddress(k);
+        let transformed = transformAddress(k);
+        if(k.toLowerCase() === tokens.xBOO.toLowerCase()){
+            transformed = "fantom:0x841fad6eae12c286d1fd18d1d525dffa75c7effe"
+        }
         delete Object.assign(balances, {[transformed]: balances[k] })[k];
     });
     return balances;
