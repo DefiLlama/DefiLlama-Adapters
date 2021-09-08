@@ -2,6 +2,7 @@ const { sumTokens } = require('../helper/unwrapLPs')
 const addresses = require('./contracts.json')
 const { transformFantomAddress } = require("../helper/portedTokens");
 const sdk = require('@defillama/sdk');
+const staking = require('../helper/staking');
 
 const tokens = {
     "USDC": "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75",
@@ -44,10 +45,15 @@ async function tvl(_, _ethBlock, chainBlocks) {
     return balances;
 }
 
+const MASTERCHEF = "0x1719ab3C1518eB28d570a1E52980Dbc137B12e66"
+
 // node test.js projects/shadecash/index.js
 module.exports = {
     fantom:{
         tvl,
+    },
+    staking:{
+        tvl: staking(MASTERCHEF, tokens.SHADE, 'fantom', 'fantom:'+tokens.SHADE)
     },
     tvl,
  }
