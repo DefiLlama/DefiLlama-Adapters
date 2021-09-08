@@ -28,6 +28,13 @@ async function eth(timestamp, ethBlock, chainBlocks) {
   }
 }
 
+async function solana(timestamp, ethBlock, chainBlocks) {
+  const stats = await axios.get('https://solana.lido.fi/api/stats')
+  return {
+    'solana': stats.data.totalStaked.sol
+  }
+}
+
 module.exports = {
   ethereum: {
     tvl: eth
@@ -35,5 +42,8 @@ module.exports = {
   terra: {
     tvl: terra
   },
-  tvl: sdk.util.sumChainTvls([eth, terra])
+  solana:{
+    tvl: solana
+  },
+  tvl: sdk.util.sumChainTvls([eth, terra, solana])
 }
