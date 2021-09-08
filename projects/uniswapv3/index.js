@@ -2,11 +2,12 @@ const { getChainTvl } = require('../helper/getUniSubgraphTvl');
 const sdk = require('@defillama/sdk')
 
 const graphUrls = {
-  ethereum: 'https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-v3-alt',
+  ethereum: "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3",
+  optimism: "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-optimism-dev",
   arbitrum: 'https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-arbitrum-one',
-  optimism: 'https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-optimism',
 }
 const chainTvl = getChainTvl(graphUrls, "factories", "totalValueLockedUSD")
+
 
 module.exports = {
   misrepresentedTokens: true,

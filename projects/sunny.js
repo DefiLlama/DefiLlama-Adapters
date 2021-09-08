@@ -271,6 +271,19 @@ async function tvl() {
             decimals: 9,
             tvlReader: sunnySaberPoolReader
         },
+        {
+            poolName: "Saber_pSOL-prtSOL",
+            relevantAccounts: {
+            sunnyPool: "2z83EUtVrU27aL9hVvRmRaH1tRRW5qe2pE5joY8CyttA",
+            tokenAReserve: "3oyc6hpjYSJEquK6dSvG72NXyz3pqLZz5D8AC71pwgQb",
+            tokenBReserve: "Di2vordgFJVZ1aj1aBpvzXtLfZgJsuLLXawGtVFwX6Rz",
+            lpTokenSPL: "PSopTFPXzTRysj2H6W8oTvYBZmJHtRcVaQaDkckifAy",
+            },
+            tokenA: "solana",
+            tokenB: "solana",
+            decimals: 9,
+            tvlReader: sunnySaberPoolReader,
+        },
     ]
 
     // a mapping of coin name to coin amount

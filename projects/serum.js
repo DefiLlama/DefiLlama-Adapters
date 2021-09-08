@@ -5,7 +5,7 @@ const { Market } = require('@project-serum/serum');
 const serumProgramId = '9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin'
 const step = 1;
 
-function add(balances, token, amount){
+function add(balances, token, amount) {
   balances[token] = (balances[token] || 0) + amount
 }
 
@@ -16,9 +16,10 @@ async function fetch() {
 
   const connection = new Connection('https://solana-api.projectserum.com/');
   const programId = new PublicKey(serumProgramId);
-  const markets = await axios.get('https://wallet-api.bonfida.com/cached/market-table')
-  for (let i = 0; i < markets.data.data.length; i += step) {
-    await Promise.all(markets.data.data.slice(i, i + step).map(async marketData => {
+  const response = await axios.get('https://swap.sollet.io/api/markets');
+  const markets = response.data.result;
+  for (let i = 0; i < markets.length; i += step) {
+    await Promise.all(markets.slice(i, i + step).map(async marketData => {
       const marketAddress = new PublicKey(marketData.address);
       const market = await Market.load(connection, marketAddress, {}, programId);
       const bids = await market.loadBids(connection);
