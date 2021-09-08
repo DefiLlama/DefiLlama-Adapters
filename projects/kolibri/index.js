@@ -6,8 +6,16 @@ const tvlUrl = 'https://kolibri-data.s3.amazonaws.com/mainnet/totals.json';
 
 async function fetch() {
     const price = new BigNumber((await axios.get(priceUrl)).data.prices.XTZ);
-    const tvl = new BigNumber((await axios.get(tvlUrl)).data.totalBalance);
-    return tvl.multipliedBy(price).dividedBy(1000000).toFixed(0);
+    const data = (await axios.get(tvlUrl)).data
+
+    const tvl = new BigNumber(data.totalBalance);
+    const ovenTvl = tvl.multipliedBy(price).dividedBy(1000000).toFixed(0);
+
+    const liquidityPoolTvl = new BigNumber(data.liquidityPoolBalance)
+
+    const farmsTvl = new BigNumber(data.totalFarmBalanceUSD)
+
+    return ovenTvl.plus(liquidityPoolTvl).plus(farmsTvl)
 }
 
 module.exports = {
