@@ -69,9 +69,6 @@ const okexTvl = async (timestamp, ethBlock, chainBlocks) => {
 
 module.exports = {
   misrepresentedTokens: true,
-  okex: {
-    tvl: okexTvl,
-  },
   tvl: sdk.util.sumChainTvls([okexTvl]),
   methodology:
     "We count tvl on the mining pool threw LiquidityPool(pairs) contract and farming pool threw DepsitPool(single tokens) contract",
