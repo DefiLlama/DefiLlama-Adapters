@@ -9,6 +9,9 @@ function fetchChain(chainId) {
     for (vault in chain) {
       tvl += chain[vault];
     }
+    if(tvl === 0){
+      throw new Error("tvl is 0")
+    }
 
     return tvl;
   }
@@ -25,6 +28,9 @@ async function fetch() {
     for (vault in chain) {
       tvl += chain[vault];
     }
+  }
+  if(tvl === 0){
+    throw new Error("tvl is 0")
   }
 
   return tvl;

@@ -3,6 +3,7 @@ const addresses = require('./contracts.json')
 const { transformFantomAddress } = require("../helper/portedTokens");
 const sdk = require('@defillama/sdk');
 const staking = require('../helper/staking');
+const {pool2} = require('../helper/pool2')
 
 const tokens = {
     "USDC": "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75",
@@ -39,7 +40,10 @@ async function tvl(_, _ethBlock, chainBlocks) {
     // TRANSFORM ADDRESSES
     let transformAddress = await transformFantomAddress();
     Object.keys(balances).map(k => {
-        const transformed = transformAddress(k);
+        let transformed = transformAddress(k);
+        if(k.toLowerCase() === tokens.xBOO.toLowerCase()){
+            transformed = "fantom:0x841fad6eae12c286d1fd18d1d525dffa75c7effe"
+        }
         delete Object.assign(balances, {[transformed]: balances[k] })[k];
     });
     return balances;
@@ -51,6 +55,9 @@ const MASTERCHEF = "0x1719ab3C1518eB28d570a1E52980Dbc137B12e66"
 module.exports = {
     fantom:{
         tvl,
+    },
+    pool2:{
+        tvl: pool2(MASTERCHEF, "0x20aa395F3bcc4dc44a94215D129650533B3da0b3", 'fantom', addr=>`fantom:${addr}`)
     },
     staking:{
         tvl: staking(MASTERCHEF, tokens.SHADE, 'fantom', 'fantom:'+tokens.SHADE)
