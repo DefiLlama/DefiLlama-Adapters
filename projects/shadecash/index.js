@@ -3,6 +3,7 @@ const addresses = require('./contracts.json')
 const { transformFantomAddress } = require("../helper/portedTokens");
 const sdk = require('@defillama/sdk');
 const staking = require('../helper/staking');
+const {pool2} = require('../helper/pool2')
 
 const tokens = {
     "USDC": "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75",
@@ -54,6 +55,9 @@ const MASTERCHEF = "0x1719ab3C1518eB28d570a1E52980Dbc137B12e66"
 module.exports = {
     fantom:{
         tvl,
+    },
+    pool2:{
+        tvl: pool2(MASTERCHEF, "0x20aa395F3bcc4dc44a94215D129650533B3da0b3", 'fantom', addr=>`fantom:${addr}`)
     },
     staking:{
         tvl: staking(MASTERCHEF, tokens.SHADE, 'fantom', 'fantom:'+tokens.SHADE)
