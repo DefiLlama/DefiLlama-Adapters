@@ -115,6 +115,7 @@ const _tvl = async (timestamp, ethBlock, chainBlocks, chain, targetAddress) => {
     var result = results.filter(item => {
         return item.output !== '0' 
     })
+    
     var objects = {};
 
     for ( i = 0; i < result.length; i++) {
