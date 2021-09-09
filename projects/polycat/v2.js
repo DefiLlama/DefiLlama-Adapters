@@ -9,7 +9,7 @@ const tvlOnPairs = require("../helper/processPairs.js");
 
 const vaultChef = "0xBdA1f897E851c7EF22CD490D2Cf2DAce4645A904";
 const masterChef = "0x4ce9Ae2f5983e19AebF5b8Bae4460f2B9EcE811a";
-const FACTORY = '0xEAA98F7b5f7BfbcD1aF14D0efAa9d9e68D82f640';
+const FACTORY = '0x477ce834ae6b7ab003cce4bc4d8697763ff456fa';
 
 
 
