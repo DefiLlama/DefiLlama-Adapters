@@ -1,27 +1,5 @@
 const {getTokenBalance} = require('./helper/solana')
 
-async function tvl2() {
-    const [usdcAmount, usdtAmount, solAmount, srmAmount, usdcEarn, renBtcAmount, msolAmount, usdcToPBTC, mercLpAmount, sbrLpAmount] = await Promise.all([
-        getTokenBalance("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "DefDiDiauGqS8ZUiHHuRCpmt8XZPGTTp6DY7UQP5NkkP"),
-        getTokenBalance("Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", "DGi3TxcKUq3E5t1mL33n9jRgdWWKngeRkP3fUppG4inn"),
-        getTokenBalance("So11111111111111111111111111111111111111112", "62Xb5ydBN1vrkg85SuKEL6aPv4bsy6iTiH3Jvki8NfNr"),
-        getTokenBalance("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt", "q96RZiNkec9PAfLtgrJaGLvXSK9fxs4DQ1g6RbiSvJg"),
-        getTokenBalance("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "AjExAjiLEDLLka42n1biVs5akE5qJ6gNTHH8JKByxW4h"),
-        getTokenBalance("CDJWUqTcYTVAKXAVXoQZFes5JUFc7owSeq7eMQcDSbo5", "7Efka6Lp7i1zUdQxwCpVpCKkiU52t9HR8QULir3K6oBe"),
-        getTokenBalance("mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So", "GJU8CWPYSg6Zu4jpMN9M9JSxaftm54NjpZe6QPtiVeXK"),
-        getTokenBalance("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "DQV7nFUWKSsiT7eWPhfGhdiRFsU1DmnEYgbFGKuPPsMs"),
-        getTokenBalance("57h4LEnBooHrKbacYWGCFghmrTzYPVn8PwZkzTzRLvHa", "6EnWVbLNijTPNQEy73MvkPcDeyEvChiKeMY2aVvMtvkC"),
-        getTokenBalance("2poo1w1DL6yd2WNTCnNTzDqkC6MBXq7axo77P16yrBuf", "AvfKigSXwRKXNQ9PTeUDWQnMdZWz2j6oH569t96S1Md5"),
-        //(token, account)
-    ])
-    return {
-        'usd-coin': usdcAmount + usdcEarn + usdcToPBTC,
-        'tether': usdtAmount + sbrLpAmount + mercLpAmount,
-        'solana': solAmount + msolAmount,
-        'serum': srmAmount,
-        'renbtc': renBtcAmount,
-    }
-}
 async function tvl() {
     const [usdcEarn, btcSbrEarn, solMerPai, usdTriEarn, PTTPAI,
         usdcUstSbrEarn, solprtSbrEarn, usdcRayEarn, solPai, solPsol,
