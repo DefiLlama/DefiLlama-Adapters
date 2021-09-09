@@ -17,6 +17,7 @@ function tvl(timestamp){
 }
 
 module.exports = {
+    misrepresentedTokens: true,
     methodology: "Counts the liquidity on all AMM pools. Metrics come from https://info.osmosis.zone/",
     tvl
 }
