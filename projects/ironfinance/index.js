@@ -180,7 +180,7 @@ module.exports = {
   polygon: {
     tvl: polygonTvl,
   },
-  avax: {
+  avalanche: {
     tvl: avaxTvl,
   },
   fantom: {
