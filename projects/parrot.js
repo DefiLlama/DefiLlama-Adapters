@@ -1,11 +1,18 @@
-const {getTokenBalance} = require('./helper/solana')
+const { getTokenBalance, getTokenSupply } = require('./helper/solana')
 
 async function tvl() {
-    const [usdcEarn, btcSbrEarn, solMerPai, usdTriEarn, PTTPAI,
+    const [
+        usdcEarn, btcSbrEarn, solMerPai, usdTriEarn,
         usdcUstSbrEarn, solprtSbrEarn, usdcRayEarn, solPai, solPsol,
         btcRenP, btcRenPai, srmPai, usdtPai, solPrtP, 
         usdcPbtc, usdcUsdtSbrEarn, solRayEarn, usdcPai, btcPbtc,
-        solmSbrEarn ] = await Promise.all([
+        solmSbrEarn,
+        // invested
+        iUsdcEarn, iSbrBtcEarn, iMerTriUsdEarn1, iMerTriUsdEarn2,
+        iSbrUsdcUsdtEarn1, iSbrUsdcUsdtEarn2, iSbrUstUsdtEarn1, iSbrUstUsdtEarn2, iSbrMSolSolEarn,
+        // staked
+        sPoolSupplySol
+    ] = await Promise.all([
         //getTokenBalance('mint', 'vaultTypePDA') https://doc.parrot.fi/security/inspect.html
 
         //USDC:PAI+EARN YES
@@ -16,8 +23,9 @@ async function tvl() {
         getTokenBalance("GHhDU9Y7HM37v6cQyaie1A3aZdfpCDp6ScJ5zZn2c3uk", "nkNjtZMzxhFsb3hEWvA5cvsX1otTrKkTd1DnS177bd3"),
         //MER LP (USDC-USDT-UST):PAI+EARN NO
         getTokenBalance("57h4LEnBooHrKbacYWGCFghmrTzYPVn8PwZkzTzRLvHa", "6EnWVbLNijTPNQEy73MvkPcDeyEvChiKeMY2aVvMtvkC"),
-        //PTT:PAI ????
-        getTokenBalance("E2Ub8wPfxxEvdrtumbfeL2HaQHgpd3gUGkDxDmmgN3p9", "4wqB5wkBbQu4E4V3RofEJmy2zgHh354nvvPqhZw2ySVc"),
+
+        //PTT:PAI Parrot Test Token
+        // getTokenBalance("E2Ub8wPfxxEvdrtumbfeL2HaQHgpd3gUGkDxDmmgN3p9", "4wqB5wkBbQu4E4V3RofEJmy2zgHh354nvvPqhZw2ySVc"),
 
         //SBR LP (UST-USDC):PAI+EARN NO
         getTokenBalance("UST32f2JtPGocLzsL41B3VBBoJzTm1mK1j3rwyM3Wgc", "9zJi3M2wWeafjt9eyPh9iGNovuFeM4xrdtzen1sKSjeb"),
@@ -53,16 +61,47 @@ async function tvl() {
         getTokenBalance("9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E", "CkgNPPZasMZJyNsefrTGgG8shZ87W1CAcXCHjhjwAEUW"),
 
         //SBR LP (mSOL-SOL):pSOL+EARN
-        getTokenBalance("SoLEao8wTzSfqhuou8rcYsVoLjthVmiXuEjzdNPMnCz", "A8gtS5FV2UgjCjKxAEPm6aCXjPQaaeiZJKeGJnR1adCs")
+        getTokenBalance("SoLEao8wTzSfqhuou8rcYsVoLjthVmiXuEjzdNPMnCz", "A8gtS5FV2UgjCjKxAEPm6aCXjPQaaeiZJKeGJnR1adCs"),
+
+        // ----- INVESTED VAULTS -----
+
+        // USDC:PAI+EARN
+        getTokenBalance("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "36swmX3oraDDNQ1tDXHDefPmGREZuo1KFH77NEvdXKQr"),
+        // SBR LP:pBTC+Earn
+        getTokenBalance("SLPbsNrLHv8xG4cTc4R5Ci8kB9wUPs6yn6f7cKosoxs", "Gmzr6b6iPWKvWQtCmqL9yB6hYGec8Rv3XksmMT2VThDg"),
+        // MER LP (USDC-USDT-UST):PAI+Earn (1)
+        getTokenBalance("57h4LEnBooHrKbacYWGCFghmrTzYPVn8PwZkzTzRLvHa", "35j2STGDvjwkG8uBZBBkmW7JMJYa4hAAxxEXhs14n5tc"),
+        // MER LP (USDC-USDT-UST):PAI+Earn (2)
+        getTokenBalance("57h4LEnBooHrKbacYWGCFghmrTzYPVn8PwZkzTzRLvHa", "G88F6LQTHSWohXxDTEnZphWjwZZfrigNMbiQ1DwnHgfE"),
+        // SBR LP (USDC-USDT):PAI+Earn (1)
+        getTokenBalance("2poo1w1DL6yd2WNTCnNTzDqkC6MBXq7axo77P16yrBuf", "FTUFAHGQEDBgGA6GjRogas1LW4s4HmyUebTjVJQSv8rN"),
+        // SBR LP (USDC-USDT):PAI+Earn (2)
+        getTokenBalance("2poo1w1DL6yd2WNTCnNTzDqkC6MBXq7axo77P16yrBuf", "7CR2j9Dm3SrQyw8NF4JymtKc75e89yCRV6EvSnFxNykk"),
+        // SBR LP (UST-USDC):PAI+Earn (1)
+        getTokenBalance("UST32f2JtPGocLzsL41B3VBBoJzTm1mK1j3rwyM3Wgc", "6x3B6Y1bo6LrYMgyxiJhj1A2Suo8FaHupH81zoM2CGVP"),
+        // SBR LP (UST-USDC):PAI+Earn (2)
+        getTokenBalance("UST32f2JtPGocLzsL41B3VBBoJzTm1mK1j3rwyM3Wgc", "6Pv7Z8bRYXEYYabXvnLyTW6qRpwmuHTB1uFhdnKeSXgy"),
+        // SBR LP (mSOL-SOL):pSOL+Earn
+        getTokenBalance("SoLEao8wTzSfqhuou8rcYsVoLjthVmiXuEjzdNPMnCz", "PU6dC57WT8QRxZb4Z3tcLEPw2xszskKmobQBqqemZkh"),
+
+        // Stake pool total supply
+        getTokenSupply("BdZPG9xWrG3uFrx2KrUW1jT4tZ9VKPDWknYihzoPRJS3")
     ])
     return {
-        'usd-coin': usdcEarn + usdcPbtc + usdcPai + usdcUstSbrEarn + (usdTriEarn / 3),
-        'terra-usd': usdcUstSbrEarn + (usdTriEarn / 3),
-        'tether': usdtPai + usdcUsdtSbrEarn + (usdTriEarn / 3),
-        'solana': solPai + solPrtP + solPsol + solmSbrEarn + solprtSbrEarn + solRayEarn + solMerPai,
+        'usd-coin': usdcEarn + usdcPbtc + usdcPai + usdcUstSbrEarn + (usdTriEarn / 3)
+            + iUsdcEarn + (iMerTriUsdEarn1 / 3) + (iMerTriUsdEarn2 / 3)
+            + iSbrUsdcUsdtEarn1 / 2 + iSbrUsdcUsdtEarn2 / 2,
+        'terra-usd': usdcUstSbrEarn + (usdTriEarn / 3)
+            + (iMerTriUsdEarn1 / 3) + (iMerTriUsdEarn2 / 3)
+            + iSbrUstUsdtEarn1 / 2 + iSbrUstUsdtEarn2 / 2,
+        'tether': usdtPai + usdcUsdtSbrEarn + (usdTriEarn / 3)
+            + (iMerTriUsdEarn1 / 3) + (iMerTriUsdEarn2 / 3)
+            + iSbrUsdcUsdtEarn1 / 2 + iSbrUsdcUsdtEarn2 / 2
+            + iSbrUstUsdtEarn1 / 2 + iSbrUstUsdtEarn2 / 2,
+        'solana': solPai + solPrtP + solPsol + solmSbrEarn + solprtSbrEarn + solRayEarn + solMerPai + iSbrMSolSolEarn + sPoolSupplySol,
         'serum': srmPai,
         'renbtc': btcRenP + btcRenPai,
-        'bitcoin': btcPbtc + btcSbrEarn,
+        'bitcoin': btcPbtc + btcSbrEarn + iSbrBtcEarn,
     }
 }
 module.exports = {
