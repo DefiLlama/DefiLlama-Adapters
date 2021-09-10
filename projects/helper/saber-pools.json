@@ -77,7 +77,7 @@
     "reserveA": "Au5zcSost9sXpH8AQQjULRXJ9QCJ3kdKehUr1zYzTr6G",
     "reserveB": "Gx1L7n1YhDWLNfUyCeZfzKvwHJSxhppnk4DS5cZLqyd",
     "tokenACoingecko": "wrapped-terra",
-    "tokenBCoingecko": "luna"
+    "tokenBCoingecko": "terra-luna"
   },
   {
     "id": "frax",
