@@ -1,8 +1,10 @@
 const {fetchURL} = require('./helper/utils')
-
+const BigNumber = require("bignumber.js");
 async function fetch() {
-    const tvl = await fetchURL('https://www.cherryswap.net/api/tradeInfo')
-    return tvl.data.tvl;
+    const response = await fetchURL('https://cherryswap.net/api/tvl')
+    const liquidityTvl = new BigNumber(response.data.liquidityTvl)
+    const poolsTvl = new BigNumber(response.data.poolsTvl)
+    return liquidityTvl.plus(poolsTvl)
 }
 
 module.exports = {
