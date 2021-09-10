@@ -140,6 +140,23 @@ async function transformHecoAddress() {
   };
 }
 
+async function transformCeloAddress() {
+    return (addr) => {
+        if (addr.toLowerCase() === "0xd8763cba276a3738e6de85b4b3bf5fded6d6ca73") {
+            //return "0xd71ecff9342a5ced620049e616c5035f1db98620" //sEUR
+            return "celo-euro"
+        }
+        if (addr.toLowerCase() === "0x765de816845861e75a25fca122bb6898b8b1282a") {
+            //return "0x8e870d67f660d95d5be530380d0ec0bd388289e1" //USDP
+            return "celo-dollar"
+        }
+        if (addr.toLowerCase() === "0x471ece3750da237f93b8e339c536989b8978a438") {
+            return "celo" //CELO
+        }
+        return `celo:${addr}`;
+    };
+}
+
 async function transformHarmonyAddress() {
     const bridge = (await utils.fetchURL("https://be4.bridge.hmny.io/tokens/?page=0&size=1000")).data.content
 
@@ -196,6 +213,7 @@ async function transformKccAddress() {
   }
 
 module.exports = {
+    transformCeloAddress,
     transformFantomAddress,
     transformBscAddress,
     transformPolygonAddress,
