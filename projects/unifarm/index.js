@@ -161,7 +161,17 @@ const ethereum = async (timestamp, ethBlock, chainBlocks) => {
         _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0x32d72d6cc98436ef983be7f5288ab2ca63480fe4'),
         _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0xd5f119145bdf66998f3c33ae0fe529ad546c67f5'),
         _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0xa1f28581129f27c11ee0c6c421a4fbf29c3e9bc7'),
-        _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0x1f8a2a32fE05736e1f85f5E37a4F83E652a8206a')
+        _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0x1f8a2a32fE05736e1f85f5E37a4F83E652a8206a'),
+        // proxy
+        _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0xd23499e0Dc02C35d47D5284c85Cf4917D2454d2F'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0x2c09B8eA4606247Bf5AEC77B063c894334C6d205'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0xAf414C28FB7a33f736E5E55e102eB7954e95868C'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0xe4Be53c29c852e474ffdBE5555dE64BF143B613E'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0xC364572a61b05Ce0095F5Ca91F762eBeF7ab9494'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0x50572512c65DbC570634926309BF61fB19C2364c'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0x920a203e0C9F55d747F6b7Ea76ff96715725335a'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0x0F525981710E9d627f880D1e04C1F432317c84FF'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0x4d1cEC3f30aD9b1a7f69e510016a5D790cFA6fC0')
     ]).then((values)=> {balance = values})
     return arrayToObject(balance)
 }
@@ -179,7 +189,14 @@ const bsc = async (timestamp, ethBlock, chainBlocks) => {
         _tvl(timestamp, ethBlock, chainBlocks, 'bsc', '0x349d55f12fb166a926214ca0195a07a16fa4ccb1'),
         _tvl(timestamp, ethBlock, chainBlocks, 'bsc', '0x6d57d0f3549dd22513c98eee1a9b1bdeabeeb555'),
         _tvl(timestamp, ethBlock, chainBlocks, 'bsc', '0xD746eE9a18F0E8F37D151229c123A980f2b5dBcF'),
-        _tvl(timestamp, ethBlock, chainBlocks, 'bsc', '0x02e5de0ae2fc71e79dbd9e81c39edaca06ff4de2')
+        _tvl(timestamp, ethBlock, chainBlocks, 'bsc', '0x02e5de0ae2fc71e79dbd9e81c39edaca06ff4de2'),
+        // proxy
+        _tvl(timestamp, ethBlock, chainBlocks, 'bsc', '0xd23499e0Dc02C35d47D5284c85Cf4917D2454d2F'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'bsc', '0x2c09B8eA4606247Bf5AEC77B063c894334C6d205'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'bsc', '0xAf414C28FB7a33f736E5E55e102eB7954e95868C'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'bsc', '0x50572512c65DbC570634926309BF61fB19C2364c'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'bsc', '0xe4Be53c29c852e474ffdBE5555dE64BF143B613E'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'bsc', '0x920a203e0C9F55d747F6b7Ea76ff96715725335a')
     ]).then((values)=> {balance = values})
     return arrayToObject(balance)
 }
