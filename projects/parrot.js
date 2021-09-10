@@ -1,7 +1,8 @@
-const {getTokenBalance} = require('./helper/solana')
+const { getTokenBalance, getTokenSupply } = require('./helper/solana')
 
 async function tvl() {
-    const [usdcEarn, btcSbrEarn, solMerPai, usdTriEarn,
+    const [
+        usdcEarn, btcSbrEarn, solMerPai, usdTriEarn,
         usdcUstSbrEarn, solprtSbrEarn, usdcRayEarn, solPai, solPsol,
         btcRenP, btcRenPai, srmPai, usdtPai, solPrtP, 
         usdcPbtc, usdcUsdtSbrEarn, solRayEarn, usdcPai, btcPbtc,
