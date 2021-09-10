@@ -117,9 +117,15 @@ async function polygonTVL(timestamp, block) {
   }
 
   await unwrapUniswapLPs(balances, lpPositions, block, 'polygon', (address) => 'polygon:' + address)
+
+  // Workaround for rUSD (price not being found)
+  // Use coingecko id
+  const rUSD = 'polygon:0xfc40a4f89b410a1b855b5e205064a38fc29f5eb5'
+  balances['RUSD'] = parseFloat(balances[rUSD])  / (10 ** 18)
+  delete balances[rUSD]
+
   return balances
 }
-
 
 module.exports = {
   ethereum: {
