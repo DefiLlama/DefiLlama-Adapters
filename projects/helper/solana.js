@@ -36,6 +36,8 @@ async function getTokenAccountBalance(account) {
         "params": [
             account
         ]
+    }, {
+        headers: {'Content-Type': 'application/json'}
     })
     return tokenBalance.data.result?.value?.uiAmount
 }

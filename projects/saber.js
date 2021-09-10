@@ -1,5 +1,9 @@
 const { getTokenAccountBalance } = require("./helper/solana");
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 // The data here comes directly from
 // https://registry.saber.so/data/llama.mainnet.json
 const SABER_POOLS = require("./helper/saber-pools.json");
@@ -9,27 +13,35 @@ async function tvl() {
 
   const pools = await Promise.all(
     SABER_POOLS.map(
-      ({ reserveA, reserveB, tokenACoingecko, tokenBCoingecko }) => {
-        return [
-          {
-            coingeckoID: tokenACoingecko,
-            amount: await getTokenAccountBalance(reserveA),
-          },
-          {
-            coingeckoID: tokenBCoingecko,
-            amount: await getTokenAccountBalance(reserveB),
-          },
-        ];
+      async ({ reserveA, reserveB, tokenACoingecko, tokenBCoingecko }) => {
+        for (let i = 0; i < 5; i++) {
+          try {
+            return [
+              {
+                coingeckoID: tokenACoingecko,
+                amount: await getTokenAccountBalance(reserveA),
+              },
+              {
+                coingeckoID: tokenBCoingecko,
+                amount: await getTokenAccountBalance(reserveB),
+              },
+            ];
+          } catch (e) {
+            await sleep(1000)
+            console.log(e)
+          }
+        }
+        throw new Error(`Can't get data: ${reserveA}, ${reserveB}`)
       }
     )
   );
 
-  return pools.reduce((acc, pool) => {
+  return pools.flat().reduce((acc, pool) => {
     return {
       ...acc,
       [pool.coingeckoID]: (acc[pool.coingeckoID] ?? 0) + pool.amount,
     };
-  });
+  }, {});
 }
 
 module.exports = {
