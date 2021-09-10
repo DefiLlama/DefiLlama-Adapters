@@ -1,5 +1,6 @@
 const sdk = require('@defillama/sdk')
 const erc20Abi = require('./erc20.json')
+const BigNumber = require('bignumber.js')
 
 let ethereumToken = [
     '0xc3Eb2622190c57429aac3901808994443b64B466',
@@ -124,50 +125,72 @@ const _tvl = async (timestamp, ethBlock, chainBlocks, chain, targetAddress) => {
     return objects
 }
 
+let objectsHold = {}
+
+const arrayToObject = (array) =>
+   array.reduce((obj, item) => {
+       for (const [key, value] of Object.entries(item)) {
+           if (objectsHold[key]) {
+               const numbertoString = parseInt(value) + parseInt(objectsHold[key])
+                objectsHold[key] = numbertoString.toLocaleString('fullwide', {useGrouping:false})
+           } else {
+            objectsHold[key] = value
+           }
+       }
+     return objectsHold
+   }, {})
+
 const ethereum = async (timestamp, ethBlock, chainBlocks) => {
     let balance = []
-    balance.push(await _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0xAf414C28FB7a33f736E5E55e102eB7954e95868C'))
-    balance.push(await _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0x0862eD7f6B2bc350508B29542511249b7E11A0a0'))
-    balance.push(await _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0x152A8d34c5C4540645443A63Bd8C1d395543BdC2'))
-    balance.push(await _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0x559CD5B11Ca882CEDda823Ac06275558A92b7064'))
-    balance.push(await _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0xab6FfA6A5D5589378A21dbb30dF2940E0320d1Cd'))
-    balance.push(await _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0xfc0962c00efa1a1d7c51e68f7de865119219cec9'))
-    balance.push(await _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0x50E90d8E1c012A98fB4bA3246447f27035A8780A'))
-    balance.push(await _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0x4460788bc43dab5f4e530ec9dfa1dd8c483f188c'))
-    balance.push(await _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0xC364572a61b05Ce0095F5Ca91F762eBeF7ab9494'))
-    balance.push(await _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0x80d0540c7971922bde062e434ad7618bc2ac50bb'))
-    balance.push(await _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0x3d41675d0e5b610cfea98998129780753bd664b5'))
-    balance.push(await _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0xc2b00a388bf9eb2b02e0230d3afe0e16788196ce'))
-    balance.push(await _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0x53fe82a7334c6f3683d5b39f49f0f7be19823a64'))
-    balance.push(await _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0x6fd0bbf295965db381f1d5b353ff3e523c771dd6'))
-    balance.push(await _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0x1c14eb2f2bf443557fc131b3f6f4e929c0081346'))
-    balance.push(await _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0x32d72d6cc98436ef983be7f5288ab2ca63480fe4'))
-    balance.push(await _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0xd5f119145bdf66998f3c33ae0fe529ad546c67f5'))
-    balance.push(await _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0xa1f28581129f27c11ee0c6c421a4fbf29c3e9bc7'))
-    balance.push(await _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0x1f8a2a32fE05736e1f85f5E37a4F83E652a8206a'))
-    return Object.assign({}, ...balance)
+    await Promise.all([
+        _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0xAf414C28FB7a33f736E5E55e102eB7954e95868C'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0x0862eD7f6B2bc350508B29542511249b7E11A0a0'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0x152A8d34c5C4540645443A63Bd8C1d395543BdC2'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0x559CD5B11Ca882CEDda823Ac06275558A92b7064'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0xab6FfA6A5D5589378A21dbb30dF2940E0320d1Cd'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0xfc0962c00efa1a1d7c51e68f7de865119219cec9'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0x50E90d8E1c012A98fB4bA3246447f27035A8780A'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0x4460788bc43dab5f4e530ec9dfa1dd8c483f188c'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0xC364572a61b05Ce0095F5Ca91F762eBeF7ab9494'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0x80d0540c7971922bde062e434ad7618bc2ac50bb'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0x3d41675d0e5b610cfea98998129780753bd664b5'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0xc2b00a388bf9eb2b02e0230d3afe0e16788196ce'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0x53fe82a7334c6f3683d5b39f49f0f7be19823a64'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0x6fd0bbf295965db381f1d5b353ff3e523c771dd6'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0x1c14eb2f2bf443557fc131b3f6f4e929c0081346'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0x32d72d6cc98436ef983be7f5288ab2ca63480fe4'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0xd5f119145bdf66998f3c33ae0fe529ad546c67f5'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0xa1f28581129f27c11ee0c6c421a4fbf29c3e9bc7'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0x1f8a2a32fE05736e1f85f5E37a4F83E652a8206a')
+    ]).then((values)=> {balance = values})
+    return arrayToObject(balance)
 }
 
 const bsc = async (timestamp, ethBlock, chainBlocks) => {
     let balance = []
-    balance.push(await _tvl(timestamp, ethBlock, chainBlocks, 'bsc', '0xeE32c30C1fAa0364d3022B6Ca2456363DadAF71b'))
-    balance.push(await _tvl(timestamp, ethBlock, chainBlocks, 'bsc', '0x207c678457617bc8c8ab06f9088efc1dcd45887c'))
-    balance.push(await _tvl(timestamp, ethBlock, chainBlocks, 'bsc', '0x8Fd3298c3981Df23a94DDaa4b1325c7087661568'))
-    balance.push(await _tvl(timestamp, ethBlock, chainBlocks, 'bsc', '0xfd70c4a2280731fa7c63ee720d8da58898322ab7'))
-    balance.push(await _tvl(timestamp, ethBlock, chainBlocks, 'bsc', '0x69B63a145597F39Ed1703f6aeEB2B832BB92f670'))
-    balance.push(await _tvl(timestamp, ethBlock, chainBlocks, 'bsc', '0x33038f836d1edc7021534d0c7eeb84d58e3327a6'))
-    balance.push(await _tvl(timestamp, ethBlock, chainBlocks, 'bsc', '0x349d55f12fb166a926214ca0195a07a16fa4ccb1'))
-    balance.push(await _tvl(timestamp, ethBlock, chainBlocks, 'bsc', '0x6d57d0f3549dd22513c98eee1a9b1bdeabeeb555'))
-    balance.push(await _tvl(timestamp, ethBlock, chainBlocks, 'bsc', '0xD746eE9a18F0E8F37D151229c123A980f2b5dBcF'))
-    balance.push(await _tvl(timestamp, ethBlock, chainBlocks, 'bsc', '0x02e5de0ae2fc71e79dbd9e81c39edaca06ff4de2'))
-    return Object.assign({}, ...balance)
+
+    await Promise.all([
+        _tvl(timestamp, ethBlock, chainBlocks, 'bsc', '0xeE32c30C1fAa0364d3022B6Ca2456363DadAF71b'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'bsc', '0x207c678457617bc8c8ab06f9088efc1dcd45887c'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'bsc', '0x8Fd3298c3981Df23a94DDaa4b1325c7087661568'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'bsc', '0xfd70c4a2280731fa7c63ee720d8da58898322ab7'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'bsc', '0x69B63a145597F39Ed1703f6aeEB2B832BB92f670'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'bsc', '0x33038f836d1edc7021534d0c7eeb84d58e3327a6'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'bsc', '0x349d55f12fb166a926214ca0195a07a16fa4ccb1'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'bsc', '0x6d57d0f3549dd22513c98eee1a9b1bdeabeeb555'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'bsc', '0xD746eE9a18F0E8F37D151229c123A980f2b5dBcF'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'bsc', '0x02e5de0ae2fc71e79dbd9e81c39edaca06ff4de2')
+    ]).then((values)=> {balance = values})
+    return arrayToObject(balance)
 }
 
 const polygon = async (timestamp, ethBlock, chainBlocks) => {
     let balance = []
-    balance.push(await _tvl(timestamp, ethBlock, chainBlocks, 'polygon', '0xee32c30c1faa0364d3022b6ca2456363dadaf71b'))
-    balance.push(await _tvl(timestamp, ethBlock, chainBlocks, 'polygon', '0x207c678457617bc8c8ab06f9088efc1dcd45887c'))
-    return Object.assign({}, ...balance)
+    await Promise.all([
+        _tvl(timestamp, ethBlock, chainBlocks, 'polygon', '0xee32c30c1faa0364d3022b6ca2456363dadaf71b'),
+        _tvl(timestamp, ethBlock, chainBlocks, 'polygon', '0x207c678457617bc8c8ab06f9088efc1dcd45887c')
+    ]).then((values)=> {balance = values})
+    return arrayToObject(balance)
 }
 
 module.exports = {
