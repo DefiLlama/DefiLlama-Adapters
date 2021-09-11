@@ -18,12 +18,12 @@ const Contracts = {
   },
   avax: {
     pools: {
-      í3usd: '0x952BDA8A83c3D5F398a686bb4e8C6DD90072d523',
+      is3usd: '0x952BDA8A83c3D5F398a686bb4e8C6DD90072d523',
     },
   },
   fantom: {
     pools: {
-      í3usd: '0x952BDA8A83c3D5F398a686bb4e8C6DD90072d523',
+      is3usd: '0x952BDA8A83c3D5F398a686bb4e8C6DD90072d523',
     },
     lend: {
       ironController: '0xDc4C597E36Fc80876801df0309Cc11A7C12E0764',
@@ -159,8 +159,8 @@ const fantomTvl = async (timestamp, ethBlock, chainBlocks) => {
   const addressTransformer = await transformAddress('fantom');
   const block = chainBlocks['fantom'];
 
-  let tvl = lendingTvl('fantom', block, addressTransformer);
-  for (let address of Object.values(Contracts.avax.pools)) {
+  let tvl = await lendingTvl('fantom', block, addressTransformer);
+  for (let address of Object.values(Contracts.fantom.pools)) {
     const balances = await poolTvl(
       'fantom',
       address,
