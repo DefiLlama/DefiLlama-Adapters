@@ -16,7 +16,8 @@ async function polygon(timestamp, block) {
   })).output;
 
   totalSupply = parseFloat(new BigNumber(totalSupply).div(Math.pow(10, 2)));
-  return totalSupply;
+  let tk= 'polygon:' + ploypool;
+  return{[tk]:totalSupply};
 }
 
 async function bsc(timestamp, block) {
@@ -28,7 +29,8 @@ async function bsc(timestamp, block) {
     })).output;
 
     totalSupply = parseFloat(new BigNumber(totalSupply).div(Math.pow(10, 2)));
-    return totalSupply;
+    let tk= 'bsc:' + bscpool;
+    return{[tk]:totalSupply};
 }
 
 async function wan(timestamp, block) {
@@ -40,16 +42,19 @@ async function wan(timestamp, block) {
     })).output;
 
     totalSupply = parseFloat(new BigNumber(totalSupply).div(Math.pow(10, 2)));
-    return totalSupply;
+    let tk= 'wan:' + wanpool;
+    return{[tk]:totalSupply};
+}
+async function test() {
+   let res = await polygon();
+   console.log(res);
+    res = await bsc();
+    console.log(res);
+    res = await wan();
+    console.log(res);
 }
 
-async function tvl(timestamp, block) {
-    let tvl = (await polygon(timestamp, block))
-             +(await bsc(timestamp, block))
-             +(await wan(timestamp, block));
-    //console.log(tvl);
-    return tvl;
-}
+//test();
 
 module.exports = {
   start: 1631376000,  // beijing time 2021-9-11 0:0:
@@ -62,5 +67,5 @@ module.exports = {
   wan:{
      tvl: wan
   },
-  tvl
+  tvl:sdk.util.sumChainTvls([polygon,bsc,wan])
 };
