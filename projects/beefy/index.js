@@ -52,5 +52,8 @@ module.exports = {
   avalanche:{
     fetch: fetchChain(43114)
   },
+  harmony:{
+    fetch: fetchChain(1666600000)
+  },
   fetch
 }
