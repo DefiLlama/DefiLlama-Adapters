@@ -46,7 +46,7 @@
     "tokenB": "CXLBjMMcwkc17GfJtBos6rQCo1ypeH6eDbB82Kby4MRm",
     "reserveA": "D9yh4KAysxt9GLacVe4Wwh2XqghhcjTCSTV9HuM7TBJd",
     "reserveB": "HDYfJLpZKaMFb84jM4mRytn7XLR8UFZUnQpSfhJJaNEy",
-    "tokenACoingecko": "usdc",
+    "tokenACoingecko": "usd-coin",
     "tokenBCoingecko": "terrausd"
   },
   {
@@ -57,7 +57,7 @@
     "reserveA": "A7VkMFrnCCyeZFUrQ3TzDr4xFep7PZtxvy3jJnBjLB2a",
     "reserveB": "PhfHJ2Yu99BsEjZrefhApqUnLUiExcECcUT1YLoNUUv",
     "tokenACoingecko": "dai",
-    "tokenBCoingecko": "usdc"
+    "tokenBCoingecko": "usd-coin"
   },
   {
     "id": "busd",
@@ -67,7 +67,7 @@
     "reserveA": "5uerVwBnZQsuVhZ15igs7ZgmcqhHnYWbwoRtLyRqLvR",
     "reserveB": "9YWiQh5d4jCtgMdzcGLv9bWgnLaFtzvDDh2nnhJdzhBX",
     "tokenACoingecko": "binance-usd",
-    "tokenBCoingecko": "usdc"
+    "tokenBCoingecko": "usd-coin"
   },
   {
     "id": "luna",
@@ -87,7 +87,7 @@
     "reserveA": "7eEYpq6ShaJ9opZWMxitRFrdCHh6vfyHhGfoSvFht3N2",
     "reserveB": "H8VggnHmuwd1wvwpT8eg9cUJFEfZ7HAaeYjgXrSm7A2u",
     "tokenACoingecko": "frax",
-    "tokenBCoingecko": "usdc"
+    "tokenBCoingecko": "usd-coin"
   },
   {
     "id": "hbtc",
@@ -107,7 +107,7 @@
     "reserveA": "2mUxDu8NrhSKhQJMgKfYLxJqZzeEbmwhQdHeHMyohyuk",
     "reserveB": "AZCBmDBcFsA2jHHhfFJBTsWCHx9XnnKmGfFsue3ZVW1t",
     "tokenACoingecko": "husd",
-    "tokenBCoingecko": "usdc"
+    "tokenBCoingecko": "usd-coin"
   },
   {
     "id": "usdk",
@@ -117,7 +117,7 @@
     "reserveA": "5RfXYWvxR9PUaedokXVxgJHDoD4xnLLauVtdJ27shPWG",
     "reserveB": "DJcFPaQjyW9Xkt7sXCbnEGj1yfykGYuLRUXFyS4LLZ5F",
     "tokenACoingecko": "usdk",
-    "tokenBCoingecko": "usdc"
+    "tokenBCoingecko": "usd-coin"
   },
   {
     "id": "ftt",
@@ -197,7 +197,7 @@
     "reserveA": "DhgiEgiNdqZdRdo195UUHnoEJUtefK8buko8nU97XJUZ",
     "reserveB": "2K2kkXsouBHtWVjtcgkyiXd8eP3oVBvq1bTJzcVdLLr2",
     "tokenACoingecko": "mimatic",
-    "tokenBCoingecko": "usdc"
+    "tokenBCoingecko": "usd-coin"
   },
   {
     "id": "psol",
