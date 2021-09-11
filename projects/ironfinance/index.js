@@ -159,8 +159,8 @@ const fantomTvl = async (timestamp, ethBlock, chainBlocks) => {
   const addressTransformer = await transformAddress('fantom');
   const block = chainBlocks['fantom'];
 
-  let tvl = lendingTvl('fantom', block, addressTransformer);
-  for (let address of Object.values(Contracts.avax.pools)) {
+  let tvl = await lendingTvl('fantom', block, addressTransformer);
+  for (let address of Object.values(Contracts.fantom.pools)) {
     const balances = await poolTvl(
       'fantom',
       address,
