@@ -18,12 +18,12 @@ const Contracts = {
   },
   avax: {
     pools: {
-      í3usd: '0x952BDA8A83c3D5F398a686bb4e8C6DD90072d523',
+      is3usd: '0x952BDA8A83c3D5F398a686bb4e8C6DD90072d523',
     },
   },
   fantom: {
     pools: {
-      í3usd: '0x952BDA8A83c3D5F398a686bb4e8C6DD90072d523',
+      is3usd: '0x952BDA8A83c3D5F398a686bb4e8C6DD90072d523',
     },
     lend: {
       ironController: '0xDc4C597E36Fc80876801df0309Cc11A7C12E0764',
