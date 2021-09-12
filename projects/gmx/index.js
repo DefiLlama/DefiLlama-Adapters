@@ -1,7 +1,8 @@
 const sdk = require('@defillama/sdk');
 const {getBlock} = require('../helper/getBlock')
-
 const axios = require("axios");
+const retry = require('async-retry')
+const { GraphQLClient, gql } = require('graphql-request')
 
 const gmx = require('./GMX_ABI.json');
 const erc20 = require('./ERC20_ABI.json');
@@ -54,6 +55,26 @@ async function tvl(time, _ethBlock, chainBlocks) {
     balances[USDC] = vaultUSDC.output
     
     return convertBalances(balances);
+}
+
+/*
+    Returns the value of 1 GMX in ETH
+ */
+async function getGmxETHPrice(){
+    var endpoint ='https://api.thegraph.com/subgraphs/name/ianlapham/arbitrum-dev';
+    var graphQLClient = new GraphQLClient(endpoint)
+
+    var query = gql`
+    {
+      pools(where: {id_in: ["0x80a9ae39310abf666a87c743d6ebbd0e8c42158e"]})
+      {
+        token0Price
+      }
+    }
+  `;
+    const results = await retry(async bail => await graphQLClient.request(query))
+
+    return parseFloat(results.pools[0]['token0Price']);
 }
 
 async function getPriceCoingecko(pIds) {
