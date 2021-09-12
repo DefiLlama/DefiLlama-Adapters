@@ -77,5 +77,8 @@ async function convertBalances(pBalances) {
 }
 
 module.exports = {
+    arbitrum:{
+        tvl,
+    },
   tvl
-}
+};
