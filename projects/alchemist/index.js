@@ -23,6 +23,7 @@ return async function() {
 }
 
 module.exports={
+    methodology: 'Tvl equals the sum of the tokens locked on all rewards programs except their own (aludels). Aludels are counted as pool2',
     fetch: get(false),
     pool2:{
         fetch: get(true)
