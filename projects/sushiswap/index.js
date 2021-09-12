@@ -4,6 +4,15 @@ const { calculateUniTvl } = require('../helper/calculateUniTvl.js')
 const { transformFantomAddress, transformHarmonyAddress, fixHarmonyBalances } = require('../helper/portedTokens')
 const { getBlock } = require('../helper/getBlock')
 const sdk = require('@defillama/sdk')
+const HTMLParser = require("node-html-parser");
+const axios = require("axios");
+
+async function chainTvl(url){
+  const html = await axios.get("https://analytics-harmony.sushi.com/")
+  const data = HTMLParser.parse(html.data).querySelector("#__NEXT_DATA__")
+  const dayDatas = Object.entries(JSON.parse(data.innerHTML).props.pageProps.initialApolloState).filter(([name])=>name.startsWith("DayData"))
+}
+
 
 const graphUrl = 'https://api.thegraph.com/subgraphs/name/zippoxer/sushiswap-subgraph-fork'
 const graphQuery = gql`
@@ -18,7 +27,11 @@ query get_tvl($block: Int) {
 }
 `;
 
-async function eth(timestamp, block) {
+async function eth(timestamp, ethBlock) {
+  let block = ethBlock
+  if(block === undefined){
+    block = await getBlock(timestamp, 'ethereum', chainBlocks);
+  }
   const { uniswapFactory } = await request(
     graphUrl,
     graphQuery,
