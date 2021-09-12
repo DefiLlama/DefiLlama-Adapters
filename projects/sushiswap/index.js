@@ -27,7 +27,7 @@ query get_tvl($block: Int) {
 }
 `;
 
-async function eth(timestamp, ethBlock) {
+async function eth(timestamp, ethBlock, chainBlocks) {
   let block = ethBlock
   if(block === undefined){
     block = await getBlock(timestamp, 'ethereum', chainBlocks);
