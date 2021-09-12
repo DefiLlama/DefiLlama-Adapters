@@ -9,19 +9,30 @@ async function get_account_tvl(account) {
          balance_total * eos_price; // sum of EOS balance * price
 }
 
+// https://newdex.io
+// EOS limit orderbook
 async function eos() {
   return await get_account_tvl("newdexpublic");
 }
 
+// https://bsc.newdex.io
+// project active on BSC, however no TVL
+async function bsc() {
+  return 0;
+}
+
 async function fetch() {
-  return await eos()
+  return await eos() + await bsc();
 }
 
 module.exports = {
-  methodology: `NewDex TVL is achieved by querying token balances from NewDex smart contract via https://eosflare.io/api.`,
+  methodology: `NewDex TVL is achieved by querying token balances from NewDex's limit orderbook smart contract via https://eosflare.io/api.`,
   name: 'NewDex',
   token: 'DEX',
   category: 'dexes',
+  bsc: {
+    fetch: bsc
+  },
   eos: {
     fetch: eos
   },
