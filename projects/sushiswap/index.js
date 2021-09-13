@@ -16,7 +16,7 @@ async function tvl(){
 }
 
 const chainTvls = chains.reduce((obj, chain)=>{
-    obj[chain]={
+    obj[chain === 'avax'?'avalanche':chain]={
         tvl: async()=>{
             const data = await utils.fetchURL(endpoint)
             return data.data[chain]
