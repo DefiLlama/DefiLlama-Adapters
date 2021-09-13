@@ -153,6 +153,5 @@ module.exports = {
   tvl: sdk.util.sumChainTvls([
     masterchefTvl,
     minichefTvl,
-    staking(xLQDR, LQDR, "fantom", "fantom:" + LQDR),
   ]),
 };
