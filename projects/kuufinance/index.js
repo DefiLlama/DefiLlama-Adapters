@@ -49,7 +49,7 @@ const avaxTvl = async (timestamp, ethBlock, chainBlocks) => {
 
 module.exports = {
   misrepresentedTokens: true,
-  avax: {
+  avalanche: {
     tvl: avaxTvl,
   },
   tvl: sdk.util.sumChainTvls([avaxTvl]),
