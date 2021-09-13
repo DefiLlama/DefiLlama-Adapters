@@ -188,6 +188,19 @@ async function transformOptimismAddress() {
     }
 }
 
+async function transformArbitrumAddress() {
+    const bridge = (await utils.fetchURL("https://bridge.arbitrum.io/token-list-42161.json")).data.tokens
+
+    return (addr) => {
+        const dstToken = bridge.find(token => compareAddresses(addr, token.address))
+        if (dstToken !== undefined) {
+            return dstToken.extensions.l1Address
+        }
+        // `arbitrum:${addr}`
+        return addr; // TODO: Fix
+    }
+}
+
 function fixAvaxBalances(balances){
     for(const representation of ["avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", '0x9dEbca6eA3af87Bf422Cea9ac955618ceb56EfB4']){
         if(balances[representation] !== undefined){
@@ -225,5 +238,6 @@ module.exports = {
     fixAvaxBalances,
     transformOkexAddress,
     transformKccAddress,
-    fixHarmonyBalances
+    transformArbitrumAddress,
+    fixHarmonyBalances,
 };
