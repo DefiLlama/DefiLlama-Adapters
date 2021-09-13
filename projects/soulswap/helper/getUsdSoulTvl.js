@@ -4,7 +4,7 @@ const token0 = require('../abis/token0.json');
 const token1 = require('../abis/token1.json');
 const getReserves = require('../abis/getReserves.json');
 const factoryAbi = require('../abis/factory.json');
-const { getBlock } = require('./getBlock');
+const { getBlock } = require('../../helper/getBlock');
 
 async function requery(results, chain, block, abi) {
     if (results.some(r => !r.success)) {

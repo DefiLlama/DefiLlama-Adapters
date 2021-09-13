@@ -1,5 +1,5 @@
 const {calculateSoulTvl} = require('./helper/calculateSoulTvl.js')
-const {transformFantomAddress} = require('./helper/portedTokens.js')
+const {transformFantomAddress} = require('../helper/portedTokens.js')
 const {calculateUsdSoulTvl} = require('./helper/getUsdSoulTvl.js')
 
 const factory = '0x1120e150dA9def6Fe930f4fEDeD18ef57c0CA7eF'
