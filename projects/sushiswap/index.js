@@ -55,12 +55,7 @@ async function eth(timestamp, ethBlock, chainBlocks) {
 const factory = '0xc35DADB65012eC5796536bD9864eD8773aBc74C4'
 
 async function polygon(timestamp, ethBlock, chainBlocks) {
-  return calculateUniTvl(addr => {
-    if (addr === '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619') {
-      return '0x0000000000000000000000000000000000000000'
-    }
-    return `polygon:${addr}`
-  }, chainBlocks['polygon'], 'polygon', factory, 11333218);
+  return calculateUniTvl(addr => `polygon:${addr}`, chainBlocks['polygon'], 'polygon', factory, 0, true);
 }
 
 async function fantom(timestamp, ethBlock, chainBlocks) {
