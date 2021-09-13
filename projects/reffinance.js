@@ -15,5 +15,6 @@ async function fetch() {
   
 
   module.exports = {
+    methodology: 'TVL counts the tokens locked in the Ref Finance liquidity pools, data is pulled from the Sodaki API:"https://sodaki.com/api/last-tvl".',
     fetch
   }
