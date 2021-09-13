@@ -1,5 +1,6 @@
 const sdk = require('@defillama/sdk')
 const { getChainTvl } = require('../helper/getUniSubgraphTvl')
+const staking = require('../helper/staking')
 
 const subgraphs = {
     'ethereum': 'sushiswap/exchange',
@@ -29,7 +30,13 @@ const subgraphChainTvls = Object.keys(subgraphs).reduce((obj, chain) => ({
     }
 }), {})
 
+const xSUSHI = "0x8798249c2E607446EfB7Ad49eC89dD1865Ff4272"
+const SUSHI = "0x6b3595068778dd592e39a122f4f5a5cf09c90fe2"
+
 module.exports={
+    staking:{
+        tvl: staking(xSUSHI, SUSHI, 'ethereum')
+    },
     ...subgraphChainTvls,
     tvl: sdk.util.sumChainTvls(Object.values(subgraphChainTvls).map(tvl=>tvl.tvl))
 }
