@@ -23,7 +23,7 @@ function createProvider(name, url, chainId) {
     bsc: createProvider("bsc", "https://bsc-dataseed4.binance.org", 56),
     polygon: createProvider("polygon", "https://rpc-mainnet.maticvigil.com/", 137),
     heco: createProvider("heco", "https://http-mainnet.hecochain.com", 128),
-    fantom: createProvider("fantom", "https://rpcapi.fantom.network", 250),
+    fantom: createProvider("fantom", "https://rpc.ftm.tools", 250),
     rsk: createProvider("rsk", "https://public-node.rsk.co", 30),
     tomochain: createProvider("tomochain", "https://rpc.tomochain.com", 88),
     xdai: createProvider("xdai", "https://xdai.poanetwork.dev", 100),
