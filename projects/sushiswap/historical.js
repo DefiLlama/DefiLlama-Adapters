@@ -8,17 +8,17 @@ const subgraphs = {
     'polygon': 'sushiswap/matic-exchange',
     'fantom': 'sushiswap/fantom-exchange',
     'bsc': 'sushiswap/bsc-exchange',
-    'harmony': 'sushiswap/harmony-exchange',
-    'okexchain': 'sushiswap/okex-exchange',
+    'harmony': 'https://sushi.graph.t.hmny.io/subgraphs/name/sushiswap/harmony-exchange',
+    //'okexchain': 'https://q.hg.network/subgraphs/name/sushiswap/okex-exchange',
     'avax': 'sushiswap/avalanche-exchange',
     'celo': 'sushiswap/celo-exchange',
     'arbitrum': 'sushiswap/arbitrum-exchange',
-    //'okexchain': 'okex-exchange/oec',
-    'heco': 'heco-exchange/heco',
+    //'okexchain': 'https://q.hg.network/subgraphs/name/okex-exchange/oec',
+    'heco': 'https://q.hg.network/subgraphs/name/heco-exchange/heco',
 }
 
 const chainTvl = getChainTvl(
-    Object.fromEntries(Object.entries(subgraphs).map(s => [s[0], "https://api.thegraph.com/subgraphs/name/" + s[1]])),
+    Object.fromEntries(Object.entries(subgraphs).map(s => [s[0], s[1].startsWith("http")?s[1]:"https://api.thegraph.com/subgraphs/name/" + s[1]])),
     "factories",
     "liquidityUSD"
 )
