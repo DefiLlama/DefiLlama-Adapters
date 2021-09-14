@@ -42,8 +42,10 @@ module.exports = {
   terra: {
     tvl: terra
   },
+  /*
   solana:{
     tvl: solana
   },
-  tvl: sdk.util.sumChainTvls([eth, terra, solana])
+  */
+  tvl: sdk.util.sumChainTvls([eth, terra])
 }
