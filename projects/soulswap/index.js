@@ -1,5 +1,3 @@
-const {calculateSoulTvl} = require('./helper/calculateSoulTvl.js')
-const {transformFantomAddress} = require('../helper/portedTokens.js')
 const {calculateUsdSoulTvl} = require('./helper/getUsdSoulTvl.js')
 
 const factory = '0x1120e150dA9def6Fe930f4fEDeD18ef57c0CA7eF'
@@ -11,15 +9,9 @@ const whitelist = [
   '0x321162cd933e2be498cd2267a90534a804051b11' // btc
 ]
 
-async function tvl(_timestamp, _ethBlock, chainBlocks){
-  const transform = await transformFantomAddress();
-
-  const balances = await calculateSoulTvl(
-    transform, chainBlocks['fantom'], 'fantom', factory, 16108819, true);
-  return balances
-}
-
 
 module.exports = {
+  misrepresentedTokens: true,
+  methodology: "Counts liquidity on the exchange",
   tvl: calculateUsdSoulTvl(factory, 'fantom', ftm, whitelist, 'fantom')
 }
