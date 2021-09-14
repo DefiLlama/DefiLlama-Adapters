@@ -6,5 +6,6 @@ async function fetch() {
 }
 
 module.exports = {
-  fetch
+  methodology: 'TVL counts deposits made to the Robo-Vault vaults. Data is pulled from the Robo-Vault API:"https://api.robo-vault.com/vault".',
+  fetch,
 }

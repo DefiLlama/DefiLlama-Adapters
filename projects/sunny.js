@@ -244,7 +244,46 @@ async function tvl() {
             tokenB: "tether",
             decimals: 6,
             tvlReader: sunnySaberPoolReader
-        }
+        },
+        {
+            poolName: "Saber_MAI-USDC",
+            relevantAccounts: {
+              sunnyPool: "6UQSBG9p7Z9Tu9CTnQaYTyjP4r7CdV9yHDj8UojguNvA",
+              tokenAReserve: "DhgiEgiNdqZdRdo195UUHnoEJUtefK8buko8nU97XJUZ",
+              tokenBReserve: "2K2kkXsouBHtWVjtcgkyiXd8eP3oVBvq1bTJzcVdLLr2",
+              lpTokenSPL: "MAiP3Zmjhc6NYiCb2xK2893ifvTTDHciCS57Kga39pC"
+            },
+            tokenA: "dai", // MAI
+            tokenB: "usd-coin",
+            decimals: 9,
+            tvlReader: sunnySaberPoolReader
+        },
+        {
+            poolName: "Saber_prtSOL-SOL",
+            relevantAccounts: {
+              sunnyPool: "8U9eJKhA93ULi8U7CdEdAa93PQWxHCa7xYHTzpHoym1W",
+              tokenAReserve: "9ZDpBKPqMABtGfq66FbVribaArMvtk63xxy91onZAtDt",
+              tokenBReserve: "9ZDpBKPqMABtGfq66FbVribaArMvtk63xxy91onZAtDt",
+              lpTokenSPL: "PrsVdKtXDDf6kJQu5Ff6YqmjfE4TZXtBgHM4bjuvRnR"
+            },
+            tokenA: "solana", // prtSOL
+            tokenB: "solana",
+            decimals: 9,
+            tvlReader: sunnySaberPoolReader
+        },
+        {
+            poolName: "Saber_pSOL-prtSOL",
+            relevantAccounts: {
+            sunnyPool: "2z83EUtVrU27aL9hVvRmRaH1tRRW5qe2pE5joY8CyttA",
+            tokenAReserve: "3oyc6hpjYSJEquK6dSvG72NXyz3pqLZz5D8AC71pwgQb",
+            tokenBReserve: "Di2vordgFJVZ1aj1aBpvzXtLfZgJsuLLXawGtVFwX6Rz",
+            lpTokenSPL: "PSopTFPXzTRysj2H6W8oTvYBZmJHtRcVaQaDkckifAy",
+            },
+            tokenA: "solana",
+            tokenB: "solana",
+            decimals: 9,
+            tvlReader: sunnySaberPoolReader,
+        },
     ]
 
     // a mapping of coin name to coin amount
@@ -268,5 +307,6 @@ async function tvl() {
 }
 
 module.exports = {
+    methodology: 'TVL counts LP token deposits made to Sunny Aggregator. CoinGecko is used to find the price of tokens in USD, only the original "SOL" token price is used for all existing variations of the token.',
     tvl,
 }

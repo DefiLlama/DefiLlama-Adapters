@@ -19,5 +19,6 @@ async function tvl(ttimestamp, _b, chainBlocks){
 }
 
 module.exports = {
-    tvl
+    methodology: 'TVL counts the sETH and sUSD deposits.',
+    tvl,
 }

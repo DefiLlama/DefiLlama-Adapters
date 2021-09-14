@@ -21,8 +21,13 @@ async function xdai() {
   return tvl.data.data.tvl
 }
 
+async function arbitrum() {
+  const tvl = await utils.fetchURL('https://api.curve.fi/api/getTVLArbitrum')
+  return tvl.data.data.tvl
+}
+
 async function fetch() {
-  return (await eth())+(await polygon()) + (await fantom())+ (await xdai())
+  return (await eth())+(await polygon()) + (await fantom())+ (await xdai())+(await arbitrum())
 }
 
 module.exports = {
@@ -37,6 +42,9 @@ module.exports = {
   },
   xdai:{
     fetch: xdai
+  },
+  arbitrum:{
+    fetch: arbitrum
   },
   fetch
 }

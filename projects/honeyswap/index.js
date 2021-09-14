@@ -1,40 +1,19 @@
-const { request, gql } = require("graphql-request");
 const sdk = require('@defillama/sdk');
-const { toUSDTBalances } = require('../helper/balances');
+const { request, gql } = require("graphql-request");
+const { getChainTvl } = require('../helper/getUniSubgraphTvl');
 
-const graphUrl = 'https://api.thegraph.com/subgraphs/name/1hive/honeyswap-v2'
-const graphQuery = gql`
-query get_tvl($block: Int) {
-  uniswapFactory(
-    id: "0xa818b4f111ccac7aa31d0bcc0806d64f2e0737d7",
-    block: { number: $block }
-  ) {
-    totalVolumeUSD
-    totalLiquidityUSD
-  }
-}
-`;
-
-async function tvl(timestamp) {
-  const { block } = await sdk.api.util.lookupBlock(timestamp, {
-    chain: 'xdai'
-  })
-  const {uniswapFactory} = await request(
-    graphUrl,
-    graphQuery,
-    {
-      block,
-    }
-  );
-  const usdTvl = Number(uniswapFactory.totalLiquidityUSD)
-
-  return toUSDTBalances(usdTvl)
-}
+const chainTvl = getChainTvl({
+  xdai: 'https://api.thegraph.com/subgraphs/name/1hive/honeyswap-xdai',
+  polygon: 'https://api.thegraph.com/subgraphs/name/1hive/honeyswap-polygon'
+}, "honeyswapFactories")
 
 module.exports = {
   misrepresentedTokens: true,
   xdai: {
-    tvl,
+    tvl: chainTvl('xdai')
   },
-  tvl
+  polygon: {
+    tvl: chainTvl('polygon')
+  },
+  tvl: sdk.util.sumChainTvls([chainTvl('xdai'), chainTvl('polygon')])
 }

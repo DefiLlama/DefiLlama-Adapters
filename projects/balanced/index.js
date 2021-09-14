@@ -90,5 +90,6 @@ async function fetch() {
 }
 
 module.exports = {
-   fetch
+    Methodology: 'TVL consists of liquidty on the DEX and deposits made to the lending program. Data is pulled from the ICX API "https://ctz.solidwallet.io/api/v3"',
+   fetch,
 }

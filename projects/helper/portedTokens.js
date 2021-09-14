@@ -46,7 +46,7 @@ async function transformAvaxAddress() {
 
     return (addr) => {
         if(compareAddresses(addr, "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7")){ //WAVAX
-            return `avax:${addr}`
+          return `avax:${addr}`
         }
         const srcToken = bridgeTokensOld.data.find(token => compareAddresses(token["Avalanche Token Address"], addr))
         if (srcToken !== undefined && srcToken["Ethereum Token Decimals"] === srcToken["Avalanche Token Decimals"]) {
@@ -129,12 +129,32 @@ async function transformXdaiAddress() {
 async function transformOkexAddress() {
     const okexBridge = (await utils.fetchURL("https://www.okex.com/v2/asset/cross-chain/currencyAddress")).data.data.tokens
     // TODO
+    return (addr) => {
+      return `okexchain:${addr}`;
+    };
 }
 
 async function transformHecoAddress() {
   return (addr) => {
     return `heco:${addr}`;
   };
+}
+
+async function transformCeloAddress() {
+    return (addr) => {
+        if (addr.toLowerCase() === "0xd8763cba276a3738e6de85b4b3bf5fded6d6ca73") {
+            //return "0xd71ecff9342a5ced620049e616c5035f1db98620" //sEUR
+            return "celo-euro"
+        }
+        if (addr.toLowerCase() === "0x765de816845861e75a25fca122bb6898b8b1282a") {
+            //return "0x8e870d67f660d95d5be530380d0ec0bd388289e1" //USDP
+            return "celo-dollar"
+        }
+        if (addr.toLowerCase() === "0x471ece3750da237f93b8e339c536989b8978a438") {
+            return "celo" //CELO
+        }
+        return `celo:${addr}`;
+    };
 }
 
 async function transformHarmonyAddress() {
@@ -168,6 +188,19 @@ async function transformOptimismAddress() {
     }
 }
 
+async function transformArbitrumAddress() {
+    const bridge = (await utils.fetchURL("https://bridge.arbitrum.io/token-list-42161.json")).data.tokens
+
+    return (addr) => {
+        const dstToken = bridge.find(token => compareAddresses(addr, token.address))
+        if (dstToken !== undefined) {
+            return dstToken.extensions.l1Address
+        }
+        // `arbitrum:${addr}`
+        return addr; // TODO: Fix
+    }
+}
+
 function fixAvaxBalances(balances){
     for(const representation of ["avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", '0x9dEbca6eA3af87Bf422Cea9ac955618ceb56EfB4']){
         if(balances[representation] !== undefined){
@@ -186,7 +219,14 @@ function fixHarmonyBalances(balances){
     }
 }
 
+async function transformKccAddress() {
+    return (addr) => {
+      return `kcc:${addr}`;
+    };
+  }
+
 module.exports = {
+    transformCeloAddress,
     transformFantomAddress,
     transformBscAddress,
     transformPolygonAddress,
@@ -196,5 +236,8 @@ module.exports = {
     transformHarmonyAddress,
     transformOptimismAddress,
     fixAvaxBalances,
-    fixHarmonyBalances
+    transformOkexAddress,
+    transformKccAddress,
+    transformArbitrumAddress,
+    fixHarmonyBalances,
 };

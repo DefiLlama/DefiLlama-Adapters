@@ -30,5 +30,6 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 }
 
 module.exports = {
-    tvl
+    methodology: 'TVL counts Celo deposited as collateral to mint cUSD.',
+    tvl,
 }

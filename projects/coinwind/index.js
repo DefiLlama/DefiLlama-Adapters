@@ -121,6 +121,7 @@ const hecoTvl = async (timestamp, ethBlock, chainBlocks) => {
 };
 
 module.exports = {
+    methodology: 'TVL counts deposits made to Lossless single asset pools on Ethereum, Heco and Binance Smart Chain and to the various LP farms available on Heco and BSC.',
     name: 'CoinWind',
     website: 'https://www.coinwind.pro',
     token: 'COW',
