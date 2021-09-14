@@ -106,6 +106,7 @@ function getTokenId(address) {
 };
 // node test.js projects/moonswap/index.js
 module.exports = {
+    misrepresentedTokens: true,
     tvl,
     methodology: 'tvl is calculated by summing the value of moonswap pools that contain at least one of MOVR, USDC, USDT, ETH and BUSD. This is read from the blockchain, accounts for most of the value locked in the AMM, and was done because these tokens can be valued on CoinGecko. Currently, staking is not counted due to most moonriver tokens being difficult to value in USD.'
   };
