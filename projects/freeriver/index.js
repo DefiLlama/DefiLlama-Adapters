@@ -3,6 +3,7 @@ const {calculateUsdUniTvl} = require('../helper/getUsdUniTvl')
 const wMOVR = "0x98878B06940aE243284CA214f92Bb71a2b032B8A" // their own barely used version
 
 module.exports={
+    misrepresentedTokens: true,
     tvl: calculateUsdUniTvl("0x52abD262B13bef4E65Ff624880E8A0595a17af48", "moonriver", wMOVR, 
     [
         '0x63F2ADf5f76F00d48fe2CBef19000AF13Bb8de82', // FREE
