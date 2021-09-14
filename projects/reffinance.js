@@ -18,7 +18,7 @@ function tvl(time){
     const dayData = await utils.fetchURL('https://sodaki.com/api/historical-tvl')
     return dayData.data.map(d=>({
       date: Math.round(new Date(d.date).getTime()/1e3),
-      totalLiquidityUSD: d.newTvl.reduce((c,t)=>t+c.TVL*c.price, 0)
+      totalLiquidityUSD: d.newTvl.reduce((t,c)=>t+c.TLV*c.price, 0)
     }))
   })
 }
