@@ -1,5 +1,7 @@
 const { toUSDTBalances } = require('./balances')
 
+// getCurrent: ()=>number
+// getHistorical: ()=>[{date, totalLiquidityUSD}]
 async function getApiTvl(timestamp, getCurrent, getHistorical) {
     if (Math.abs(timestamp - Date.now() / 1000) < 3600) {
         const tvl = await getCurrent()
