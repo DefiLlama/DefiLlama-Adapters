@@ -18,7 +18,7 @@ async function eos() {
 // https://bsc.newdex.io
 // project active on BSC, however no TVL
 async function bsc() {
-  return 0;
+  return 0; // TODO FIX
 }
 
 async function fetch() {
@@ -27,12 +27,6 @@ async function fetch() {
 
 module.exports = {
   methodology: `NewDex TVL is achieved by querying token balances from NewDex's limit orderbook smart contract via https://eosflare.io/api.`,
-  name: 'NewDex',
-  token: 'DEX',
-  category: 'dexes',
-  bsc: {
-    fetch: bsc
-  },
   eos: {
     fetch: eos
   },
