@@ -78,8 +78,5 @@ const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
 };
 
 module.exports = {
-  eth: {
-    tvl: ethTvl,
-  },
   tvl: sdk.util.sumChainTvls([ethTvl]),
 };

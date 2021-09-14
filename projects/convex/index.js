@@ -77,6 +77,8 @@ async function tvl(timestamp, block) {
       block
     })
 
+    var share = BigNumber(convexsupply.output).times(1e18).div(totalsupply.output).toFixed(0);
+
     var pool = await sdk.api.abi.call({
       target: currentRegistryAddress,
       block,
@@ -84,19 +86,47 @@ async function tvl(timestamp, block) {
       params: poolInfo[i].lptoken
     })
 
+    var maincoins;
+
     if(pool.output == addressZero){
       console.log("pool " +i +" not in registry yet.")
-      return;
+
+      maincoins = {};
+      maincoins.output = [];
+
+      //i dont see a way to get number of coins..
+      //loop until it fails
+      for(var c=0; c < 10; c++){
+        try {
+          var coinX = await sdk.api.abi.call({
+            target: poolInfo[i].lptoken,
+            block,
+            abi: ABI.coins,
+            params: c
+          });
+          maincoins.output.push(coinX.output);
+        } catch (error) {
+          //console.error(error);
+          break;
+        }
+      }
+      
+      if(maincoins.output.length == 0){
+        console.log("could not get coins off of lptoken for pool " +i);
+        return;
+      }else{
+        //coins successfully pulled from lptoken (factory pool, thus swap is same as lp token)
+        console.log("pool " +i +" is a factory pool, use lptoken as swap address");
+        pool.output =  poolInfo[i].lptoken
+      }
+    }else{
+      maincoins = await sdk.api.abi.call({
+        target: currentRegistryAddress,
+        block,
+        abi: ABI.get_coins,
+        params: pool.output
+      });
     }
-
-    var share = BigNumber(convexsupply.output).times(1e18).div(totalsupply.output).toFixed(0);
-
-    var maincoins = await sdk.api.abi.call({
-      target: currentRegistryAddress,
-      block,
-      abi: ABI.get_coins,
-      params: pool.output
-    });
 
     var coins = [];
 
