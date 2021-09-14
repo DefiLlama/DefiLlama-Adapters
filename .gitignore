@@ -6,3 +6,4 @@ blocks.js
 historical-data.js
 /.idea
 yarn.lock
+.DS_Store
