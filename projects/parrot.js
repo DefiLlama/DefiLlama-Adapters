@@ -66,23 +66,23 @@ async function tvl() {
         // ----- INVESTED VAULTS -----
 
         // USDC:PAI+EARN
-        getTokenBalance("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "36swmX3oraDDNQ1tDXHDefPmGREZuo1KFH77NEvdXKQr"),
+        getTokenBalance("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "E82ho9Mc1xKmL6aPpDneFMobDywiRM5PuPa7AMcEhofw"),
         // SBR LP:pBTC+Earn
         getTokenBalance("SLPbsNrLHv8xG4cTc4R5Ci8kB9wUPs6yn6f7cKosoxs", "Gmzr6b6iPWKvWQtCmqL9yB6hYGec8Rv3XksmMT2VThDg"),
         // MER LP (USDC-USDT-UST):PAI+Earn (1)
-        getTokenBalance("57h4LEnBooHrKbacYWGCFghmrTzYPVn8PwZkzTzRLvHa", "35j2STGDvjwkG8uBZBBkmW7JMJYa4hAAxxEXhs14n5tc"),
+        getTokenBalance("57h4LEnBooHrKbacYWGCFghmrTzYPVn8PwZkzTzRLvHa", "E82ho9Mc1xKmL6aPpDneFMobDywiRM5PuPa7AMcEhofw"),
         // MER LP (USDC-USDT-UST):PAI+Earn (2)
-        getTokenBalance("57h4LEnBooHrKbacYWGCFghmrTzYPVn8PwZkzTzRLvHa", "G88F6LQTHSWohXxDTEnZphWjwZZfrigNMbiQ1DwnHgfE"),
+        getTokenBalance("57h4LEnBooHrKbacYWGCFghmrTzYPVn8PwZkzTzRLvHa", "4Xjmy2UMdj6WsHHpUUw7bZJWbusyPNYj3aNQMJa4ayxT"),
         // SBR LP (USDC-USDT):PAI+Earn (1)
-        getTokenBalance("2poo1w1DL6yd2WNTCnNTzDqkC6MBXq7axo77P16yrBuf", "FTUFAHGQEDBgGA6GjRogas1LW4s4HmyUebTjVJQSv8rN"),
+        getTokenBalance("2poo1w1DL6yd2WNTCnNTzDqkC6MBXq7axo77P16yrBuf", "BLzKZp83pw6ESC7Ks19uUMce81HEthMWonavsYFRKxvE"),
         // SBR LP (USDC-USDT):PAI+Earn (2)
-        getTokenBalance("2poo1w1DL6yd2WNTCnNTzDqkC6MBXq7axo77P16yrBuf", "7CR2j9Dm3SrQyw8NF4JymtKc75e89yCRV6EvSnFxNykk"),
+        getTokenBalance("2poo1w1DL6yd2WNTCnNTzDqkC6MBXq7axo77P16yrBuf", "9mazCmauvJ1bz8whGG6XF7jFCvdJz6r7n24kHkQyei8w"),
         // SBR LP (UST-USDC):PAI+Earn (1)
-        getTokenBalance("UST32f2JtPGocLzsL41B3VBBoJzTm1mK1j3rwyM3Wgc", "6x3B6Y1bo6LrYMgyxiJhj1A2Suo8FaHupH81zoM2CGVP"),
+        getTokenBalance("UST32f2JtPGocLzsL41B3VBBoJzTm1mK1j3rwyM3Wgc", "HSaGLKsiHDGUbXZRNrQ9R6WWmxjtoKZToSCUgcxpiuNj"),
         // SBR LP (UST-USDC):PAI+Earn (2)
-        getTokenBalance("UST32f2JtPGocLzsL41B3VBBoJzTm1mK1j3rwyM3Wgc", "6Pv7Z8bRYXEYYabXvnLyTW6qRpwmuHTB1uFhdnKeSXgy"),
+        getTokenBalance("UST32f2JtPGocLzsL41B3VBBoJzTm1mK1j3rwyM3Wgc", "CsmHqWmq5KHNpQ6YkffiByqdp23zphHqN27orXb1gkye"),
         // SBR LP (mSOL-SOL):pSOL+Earn
-        getTokenBalance("SoLEao8wTzSfqhuou8rcYsVoLjthVmiXuEjzdNPMnCz", "PU6dC57WT8QRxZb4Z3tcLEPw2xszskKmobQBqqemZkh"),
+        getTokenBalance("SoLEao8wTzSfqhuou8rcYsVoLjthVmiXuEjzdNPMnCz", "4iP8x3kMB3TJGhtpkng17wdHXyo4jj99K1N2Bk6mu3pW"),
 
         // Stake pool total supply
         getTokenSupply("BdZPG9xWrG3uFrx2KrUW1jT4tZ9VKPDWknYihzoPRJS3")
