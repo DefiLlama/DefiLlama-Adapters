@@ -1,12 +1,12 @@
 const { request, gql } = require("graphql-request");
 const sdk = require("@defillama/sdk");
-const { toUSDTBalances, usdtAddress } = require("../helper/balances");
+const { toUSDTBalances } = require("../helper/balances");
 const { getBlock } = require("../helper/getBlock");
 
 const SUBGRAPH_NAME = Object.freeze({
   ethereum: "swapr-mainnet-alpha",
   xdai: "swapr-xdai",
-  arbitrum: "swapr-arbitrum-one",
+  arbitrum: "swapr-arbitrum-one-v2",
 });
 
 const FACTORY_ADDRESS = Object.freeze({
