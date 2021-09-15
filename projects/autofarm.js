@@ -28,7 +28,7 @@ async function bsc() {
 }
 
 async function fetch() {
-  return (await polygon())+(await bsc())+(await heco())
+  return (await polygon())+(await bsc())+(await heco())+(await avax())
 }
 
 module.exports = {
