@@ -144,12 +144,6 @@ module.exports = {
   staking: {
     tvl: staking(xLQDR, LQDR, "fantom", "fantom:" + LQDR),
   },
-  masterchef: {
-    tvl: masterchefTvl,
-  },
-  minichef: {
-    tvl: minichefTvl,
-  },
   tvl: sdk.util.sumChainTvls([
     masterchefTvl,
     minichefTvl,
