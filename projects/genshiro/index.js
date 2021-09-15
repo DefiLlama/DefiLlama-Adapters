@@ -247,17 +247,17 @@ const types = {
 };
 
 const ASSETS = [
-	{ token: "ETH", code: "6648936" },
-	{ token: "DOT", code: "6582132" },
-	{ token: "CRV", code: "6517366" },
-	{ token: "EOS", code: "6647667" },
-	{ token: "GENS", code: "1734700659" },
-	{ token: "DAI", code: "6578537" },
-	{ token: "USDT", code: "1970496628" },
-	{ token: "BUSD", code: "1651864420" },
-	{ token: "USDC", code: "1970496611" },
-	{ token: "BNB", code: "6450786" },
-	{ token: "WBTC", code: "2002941027" },
+	{ token: "ethereum", code: "6648936" },
+	{ token: "polkadot", code: "6582132" },
+	{ token: "curve-dao-token", code: "6517366" },
+	{ token: "eos", code: "6647667" },
+	//{ token: "genshiro", code: "1734700659" },
+	{ token: "dai", code: "6578537" },
+	{ token: "tether", code: "1970496628" },
+	{ token: "binance-usd", code: "1651864420" },
+	{ token: "usd-coin", code: "1970496611" },
+	{ token: "binancecoin", code: "6450786" },
+	{ token: "wrapped-bitcoin", code: "2002941027" },
 ];
 
 const PRECISION = new BN(1_000_000_000);
