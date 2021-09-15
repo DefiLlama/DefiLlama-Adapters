@@ -3,7 +3,7 @@ const abi = require("./abi.json");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { transformFantomAddress } = require("../helper/portedTokens");
 const { addFundsInMasterChef } = require("../helper/masterchef");
-const staking = require("../helper/staking");
+const {staking} = require("../helper/staking");
 const BigNumber = require("bignumber.js");
 
 // --- All sushitokens lp tokens are staked here for LQDR tokens ---

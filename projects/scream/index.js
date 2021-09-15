@@ -1,6 +1,6 @@
 const {getCompoundV2Tvl} = require('../helper/compound')
 const {transformFantomAddress} = require('../helper/portedTokens')
-const staking = require('../helper/staking')
+const {staking} = require('../helper/staking')
 
 async function tvl(...params) {
     const transformAdress= await transformFantomAddress()

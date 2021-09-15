@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk')
 
-module.exports = function(stakingContract, stakingToken, chain="ethereum", transformedTokenAddress=undefined, decimals=undefined){
+function staking(stakingContract, stakingToken, chain="ethereum", transformedTokenAddress=undefined, decimals=undefined){
     return async (_timestamp, _ethBlock, chainBlocks)=>{
         const bal = await sdk.api.erc20.balanceOf({
             target: stakingToken,
@@ -23,4 +23,8 @@ module.exports = function(stakingContract, stakingToken, chain="ethereum", trans
             [address]: bal.output
         }
     }
+}
+
+module.exports={
+    staking
 }

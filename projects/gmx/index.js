@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk');
 const axios = require('axios')
-const staking = require('../helper/staking')
+const {staking} = require('../helper/staking')
 //Arbitrum
 const VAULT = '0x489ee077994B6658eAfA855C308275EAd8097C4A';
 const STAKING = '0x908C4D94D34924765f1eDc22A1DD098397c59dD4';

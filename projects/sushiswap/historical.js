@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk')
 const { getChainTvl } = require('../helper/getUniSubgraphTvl')
-const staking = require('../helper/staking')
+const {staking} = require('../helper/staking')
 
 const subgraphs = {
     'ethereum': 'sushiswap/exchange',

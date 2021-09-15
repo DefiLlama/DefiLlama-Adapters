@@ -1,6 +1,6 @@
 const {fetchURL, getPricesfromString} = require('../helper/utils')
 const {getChainTvl} = require('../helper/getUniSubgraphTvl')
-const staking = require('../helper/staking')
+const {staking} = require('../helper/staking')
 const sdk = require('@defillama/sdk')
 
 const che = "0x8179d97eb6488860d816e3ecafe694a4153f216c"

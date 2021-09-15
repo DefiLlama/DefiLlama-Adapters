@@ -2,7 +2,7 @@ const { sumTokens } = require('../helper/unwrapLPs')
 const addresses = require('./contracts.json')
 const { transformFantomAddress } = require("../helper/portedTokens");
 const sdk = require('@defillama/sdk');
-const staking = require('../helper/staking');
+const {staking} = require('../helper/staking');
 const {pool2} = require('../helper/pool2')
 
 const tokens = {

@@ -1,6 +1,6 @@
 const {calculateUniTvl} = require('../helper/calculateUniTvl.js')
 const {transformFantomAddress} = require('../helper/portedTokens.js')
-const staking = require('../helper/staking')
+const {staking} = require('../helper/staking')
 
 const factory = '0xEF45d134b73241eDa7703fa787148D9C9F4950b0'
 async function tvl(_timestamp, _ethBlock, chainBlocks){

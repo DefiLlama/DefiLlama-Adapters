@@ -1,6 +1,6 @@
 const utils = require('../helper/utils')
 const sdk = require('@defillama/sdk')
-const staking = require('../helper/staking')
+const {staking} = require('../helper/staking')
 
 const chains = ['polygon', 'celo', 'moonriver', 'bsc', 'avax', 'xdai', 'ethereum', 'heco', 'okexchain', 'palm', 'arbitrum', 'fantom', 'harmony']
 const endpoint = "https://sushi-analytics-defi.herokuapp.com/"

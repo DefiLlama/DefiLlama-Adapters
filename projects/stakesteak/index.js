@@ -1,6 +1,6 @@
 const {addFundsInMasterChef} = require('../helper/masterchef')
 const sdk = require('@defillama/sdk')
-const staking = require('../helper/staking')
+const {staking} = require('../helper/staking')
 const {transformFantomAddress} = require('../helper/portedTokens')
 const poolInfoAbi = require('./abi.json')
 
