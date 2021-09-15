@@ -3,6 +3,12 @@ const utils = require('./helper/utils');
 const bscEndpoint = "https://static.autofarm.network/bsc/farm_data.json"
 const polygonEndpoint = "https://static.autofarm.network/polygon/stats.json"
 const hecoEndpoint = "https://static.autofarm.network/heco/stats.json"
+const avaxEndpoint = "https://static.autofarm.network/avax/stats.json"
+
+async function avax() {
+  const data = await utils.fetchURL(avaxEndpoint)
+  return data.data.platformTVL
+}
 
 async function polygon() {
   const data = await utils.fetchURL(polygonEndpoint)
@@ -34,6 +40,9 @@ module.exports = {
   },
   heco:{
     fetch: heco
+  },
+  avax:{
+    fetch: avax
   },
   fetch
 }
