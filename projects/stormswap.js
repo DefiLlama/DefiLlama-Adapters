@@ -11,9 +11,15 @@ const avaxTvl = async (timestamp, ethBlock, chainBlocks) => {
 
   return balances;
 };
+
+async function tvl(){
+    return {}
+}
+
 // node test.js projects/stormswap.js
 module.exports={
     staking:{
         tvl: avaxTvl
-    }
+    },
+    tvl
 }
