@@ -51,7 +51,7 @@ async function timeout(ms) {
 
 // https://superdad.finance/
 // Staking Pools
-async function tvl() {
+async function fetch() {
   const balances = {};
   const accounts = [
     "depositpool1",
@@ -70,5 +70,5 @@ async function tvl() {
 
 module.exports = {
   methodology: `DAD TVL is achieved by querying token balances & unwrapping Defibox liquidity tokens from DAD's vaults via https://eosflare.io/api and https://defibox.io/.`,
-  tvl
+  fetch
 }
