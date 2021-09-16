@@ -8,12 +8,28 @@ const arbitrumTvl = async (timestamp, ethBlock, chainBlocks) => {
   const transformAddress = await transformArbitrumAddress();
   await addFundsInMasterChef(
       balances, STAKING_CONTRACT, chainBlocks.arbitrum, 'arbitrum', transformAddress);
-
+  delete balances['0x2c852d3334188be136bfc540ef2bb8c37b590bad'];
+  delete balances['0x2c852D3334188BE136bFC540EF2bB8C37b590BAD'];
   return balances;
 };
+const stakingTvl = async (timestamp, ethBlock, chainBlocks) => {
+    const balances = {};
+    const transformAddress = await transformArbitrumAddress();
+    await addFundsInMasterChef(
+        balances, STAKING_CONTRACT, chainBlocks.arbitrum, 'arbitrum', transformAddress);
+    let staked = {};
+    staked['0x2c852d3334188be136bfc540ef2bb8c37b590bad'] = 
+        balances['0x2c852d3334188be136bfc540ef2bb8c37b590bad'] +
+        balances['0x2c852D3334188BE136bFC540EF2bB8C37b590BAD'];
+    return staked;
+  };
 
 module.exports={
     arbitrum:{
         tvl: arbitrumTvl
     },
+    staking:{
+        tvl: stakingTvl
+    }
 }
+// node test.js projects/magicland/index.js
