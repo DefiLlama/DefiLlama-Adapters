@@ -72,5 +72,3 @@ module.exports = {
   methodology: `DAD TVL is achieved by querying token balances & unwrapping Defibox liquidity tokens from DAD's vaults via https://eosflare.io/api and https://defibox.io/.`,
   tvl
 }
-
-tvl().then(i => console.log(i)).catch(e => console.log(e))
