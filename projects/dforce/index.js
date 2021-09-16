@@ -1,3 +1,4 @@
+
 /*==================================================
   Modules
   ==================================================*/
@@ -6,6 +7,7 @@
   const _ = require('underscore');
   const BigNumber = require('bignumber.js');
   const abi = require('./abi.json');
+
 
 /*==================================================
   Ethereum Settings
@@ -33,6 +35,8 @@
   const xAAPL = '0xc4Ba45BeE9004408403b558a26099134282F2185';
   const xAMZN = '0x966E726853Ca97449F458A3B012318a08B508202';
   const xCOIN = '0x32F9063bC2A2A57bCBe26ef662Dc867d5e6446d1';
+  const LINK = '0x514910771AF9Ca656af840dff83E8264EcF986CA';
+  const MKR = '0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2';
 
 /*==================================================
   USDx
@@ -83,6 +87,13 @@ const yieldUnderlyingTokens = {
     '0x2f956b2f801c6dad74E87E7f45c94f6283BF0f45', // iUSDC
     '0x1180c114f7fAdCB6957670432a3Cf8Ef08Ab5354', // iUSDT
     '0x5812fCF91adc502a765E5707eBB3F36a07f63c02', // iWBTC
+    '0x1AdC34Af68e970a93062b67344269fD341979eb0', // iUSX
+    '0x44c324970e5CbC5D4C3F3B7604CbC6640C2dcFbF', // iEUX
+    '0x4013e6754634ca99aF31b5717Fa803714fA07B35', // ixBTC
+    '0x237C69E082A94d37EBdc92a84b58455872e425d6', // ixETH
+    '0x039E7Ef6a674f3EC1D88829B8215ED45385c24bc', // iMKR
+    '0x6E6a689a5964083dFf9FD7A0f788BAF620ea2DBe', // iTUSD
+    '0xA3068AA78611eD29d381E640bb2c02abcf3ca7DE', // iLINK
   ]
 /*==================================================
   Synth Markets
@@ -122,6 +133,12 @@ const yieldUnderlyingTokens = {
   const BSC_xAAPL = '0x70D1d7cDeC24b16942669A5fFEaDA8527B744502';
   const BSC_xAMZN = '0x0326dA9E3fA36F946CFDC87e59D24B45cbe4aaD0';
   const BSC_xCOIN = '0x3D9a9ED8A28A64827A684cEE3aa499da1824BF6c';
+  const BSC_XRP = '0x1D2F0da169ceB9fC7B3144628dB156f3F6c60dBE';
+  const BSC_LTC = '0x4338665CBB7B2485A8855A139b75D5e34AB0DB94';
+  const BSC_LINK = '0xF8A0BF9cF54Bb92F17374d9e9A321E6a111a51bD';
+  const BSC_CAKE = '0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82';
+  const BSC_BCH = '0x8fF795a6F4D97E7887C79beA79aba5cc76444aDf';
+  const BSC_XTZ = '0x16939ef78684453bfDFb47825F8a5F714f12623a';
 
   /*==================================================
     BSC dToken Protocol
@@ -146,6 +163,7 @@ const yieldUnderlyingTokens = {
   const bscLendingMarkets = [
     '0xFc5Bb1E8C29B100Ef8F12773f972477BCab68862', // iADA
     '0x55012aD2f0A50195aEF44f403536DF2465009Ef7', // iATOM
+    '0xd57E1425837567F74A35d07669B23Bfb67aA4A93', // iBNB
     '0x5511b64Ae77452C7130670C79298DEC978204a47', // iBUSD
     '0x0b66A250Dadf3237DdB38d485082a7BfE400356e', // iBTC
     '0xAD5Ec11426970c32dA48f58c92b1039bC50e5492', // iDAI
@@ -157,6 +175,16 @@ const yieldUnderlyingTokens = {
     '0xee9099C1318cf960651b3196747640EB84B8806b', // iUNI
     '0xAF9c10b341f55465E8785F0F81DBB52a9Bfe005d', // iUSDC
     '0x0BF8C72d618B5d46b055165e21d661400008fa0F', // iUSDT
+    '0x7B933e1c1F44bE9Fb111d87501bAADA7C8518aBe', // iUSX
+    '0x983A727Aa3491AB251780A13acb5e876D3f2B1d8', // iEUX
+    '0x219B850993Ade4F44E24E6cac403a9a40F1d3d2E', // ixBTC
+    '0xF649E651afE5F05ae5bA493fa34f44dFeadFE05d', // ixETH
+    '0x6D64eFfe3af8697336Fc57efD5A7517Ad526Dd6d', // iXRP
+    '0xd957BEa67aaDb8a72061ce94D033C631D1C1E6aC', // iLTC
+    '0x50E894894809F642de1E11B4076451734c963087', // iLINK
+    '0xeFae8F7AF4BaDa590d4E707D900258fc72194d73', // iCAKE
+    '0x9747e26c5Ad01D3594eA49ccF00790F564193c15', // iBCH
+    '0x8be8cd81737b282C909F1911f3f0AdE630c335AA', // iXTZ
   ]
 
   /*==================================================
@@ -174,6 +202,42 @@ const yieldUnderlyingTokens = {
   ]
 
 /*==================================================
+  Arbitrum Settings
+  ==================================================*/
+  const Arbitrum_WBTC = '0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f';
+  const Arbitrum_ETH  = "0x0000000000000000000000000000000000000000";
+  const Arbitrum_USDC = '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8';
+  const Arbitrum_USDT = '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9';
+  const Arbitrum_UNI  = '0xFa7F8980b0f1E64A2062791cc3b0871572f1F7f0';
+  const Arbitrum_LINK = '0xf97f4df75117a78c1A5a0DBb814Af92458539FB4';
+  const Arbitrum_USX = '0x641441c631e2F909700d2f41FD87F0aA6A6b4EDb';
+  const Arbitrum_EUX = '0xC2125882318d04D266720B598d620f28222F3ABd';
+
+/*==================================================
+  Arbitrum iToken Lending Protocol
+  ==================================================*/
+  const ArbitrumLendingMarkets = [
+    '0xEe338313f022caee84034253174FA562495dcC15', // iETH
+    '0x013ee4934ecbFA5723933c4B08EA5E47449802C8', // iLINK
+    '0x46Eca1482fffb61934C4abCA62AbEB0b12FEb17A', // iUNI
+    '0x8dc3312c68125a94916d62B97bb5D925f84d4aE0', // iUSDC
+    '0xf52f079Af080C9FB5AFCA57DDE0f8B83d49692a9', // iUSDT
+    '0xD3204E4189BEcD9cD957046A8e4A643437eE0aCC', // iWBTC
+    '0x5675546Eb94c2c256e6d7c3F7DcAB59bEa3B0B8B', // iEUX
+    '0x0385F851060c09A552F1A28Ea3f612660256cBAA', // iUSX
+  ]
+
+/*==================================================
+  Arbitrum Synth Markets
+  ==================================================*/
+  const arbitrumAllSynthMarkets = [
+    Arbitrum_USX,
+    Arbitrum_EUX,
+  ]
+
+
+
+/*==================================================
   TVL
   ==================================================*/
 
@@ -181,6 +245,8 @@ async function tvl(timestamp, block, chainBlocks) {
   let balances = await tvlEthereum(timestamp, block);
   let bscTVLs = await tvlBSC(timestamp, block, chainBlocks);
   Object.assign(balances, bscTVLs);
+  let arbitrumTVLs = await tvlArbitrum(timestamp, block, chainBlocks);
+  Object.assign(balances, arbitrumTVLs);
 
   return balances;
 }
@@ -243,7 +309,6 @@ async function tvlBSC(timestamp, ethBlock, chainBlocks) {
 
       balances['bsc:'+underlying] = BigNumber(balances[underlying] || 0).plus(BigNumber(iTokenTotalSupply)).times(BigNumber(iTokenExchangeRate)).div(BigNumber(10 ** 18));
   })));
-
 
   return balances;
 }
@@ -327,8 +392,50 @@ async function tvlEthereum(timestamp, block) {
       balances[underlying] = BigNumber(balances[underlying] || 0).plus(BigNumber(iTokenTotalSupply)).times(BigNumber(iTokenExchangeRate)).div(BigNumber(10 ** 18));
   })));
 
-
   return balances;
+}
+
+async function tvlArbitrum(timestamp, block, chainBlocks) {
+  let balances = {};
+
+  let synthMarketsCalls = _.map(arbitrumAllSynthMarkets, (synthMarket) => ({
+    target: synthMarket,
+  }));
+
+  let synthMarketsResults = await sdk.api.abi.multiCall({
+    block,
+    calls: synthMarketsCalls,
+    abi: 'erc20:totalSupply',
+    chain: 'arbitrum'
+  });
+
+  sdk.util.sumMultiBalanceOf(balances, synthMarketsResults, true);
+
+  await (Promise.all(ArbitrumLendingMarkets.map(async (lendingMarket) => {
+    let iTokenTotalSupply = (await sdk.api.abi.call({
+      block,
+      target: lendingMarket,
+      abi: abi['totalSupply'],
+      chain: 'arbitrum'
+    })).output;
+
+
+    let iTokenExchangeRate = (await sdk.api.abi.call({
+      block,
+      target: lendingMarket,
+      abi: abi['exchangeRateCurrent'],
+      chain: 'arbitrum'
+    })).output;
+
+    let underlying = (await sdk.api.abi.call({
+      block,
+      target: lendingMarket,
+      abi: abi['underlying'],
+      chain: 'arbitrum'
+    })).output;
+
+    balances['arbitrum:'+underlying] = BigNumber(balances[underlying] || 0).plus(BigNumber(iTokenTotalSupply)).times(BigNumber(iTokenExchangeRate)).div(BigNumber(10 ** 18));
+  })));
 }
 
 module.exports = {
@@ -337,6 +444,9 @@ module.exports = {
   },
   bsc: {
     tvl: tvlBSC
+  },
+  arbitrum:{
+    tvl: tvlArbitrum
   },
   start: 1564165044, // Jul-27-2019 02:17:24 AM +UTC
   tvl
