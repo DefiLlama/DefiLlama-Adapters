@@ -10,7 +10,7 @@ async function fetchTotalSupply() {
             'x-signature': 'f104e31bbc788b25c12ad65f4063bea9c9a731004212002f3f7c773f9d72f7a1'
         }
     }))
-    return (totalSupplyResponse.data);
+    return totalSupplyResponse.data;
 }
 
 async function ethereum() {
