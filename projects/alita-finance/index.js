@@ -32,5 +32,5 @@ module.exports = {
     tvl: poolsTvl,
   },
   methodology: "TVL is total of the DEX liquidity pools and staking TVL. The staking TVL is accounted as the ALI on MasterChef(0x4f7b2Be2bc3C61009e9aE520CCfc830612A10694)",
-  tvl: sdk.util.sumChainTvls([poolsTvl, bscTvl])
+  tvl: sdk.util.sumChainTvls([bscTvl])
 }
