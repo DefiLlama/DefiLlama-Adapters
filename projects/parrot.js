@@ -8,8 +8,13 @@ async function tvl() {
         usdcPbtc, usdcUsdtSbrEarn, solRayEarn, usdcPai, btcPbtc,
         solmSbrEarn,
         // invested
-        iUsdcEarn, iSbrBtcEarn, iMerTriUsdEarn1, iMerTriUsdEarn2,
-        iSbrUsdcUsdtEarn1, iSbrUsdcUsdtEarn2, iSbrUstUsdtEarn1, iSbrUstUsdtEarn2, iSbrMSolSolEarn,
+        iUsdcEarn, iSbrBtcEarn1, iSbrBtcEarn2, iMerTriUsdEarn1, iMerTriUsdEarn2,
+        iMerUsdcUsdtPai,
+        iSbrUsdcUsdtEarn1, iSbrUsdcUsdtEarn2, iSbrUsdcUsdtEarn3,
+        iSbrUstUsdcEarn1, iSbrUstUsdcEarn2, iSbrUstUsdcEarn,
+        iSbrMSolSolEarn1, iSbrMSolSolEarn2,
+        iSabPrtSolSolEarn1, iSabPrtSolSolEarn2,
+
         // staked
         sPoolSupplySol
     ] = await Promise.all([
@@ -67,22 +72,36 @@ async function tvl() {
 
         // USDC:PAI+EARN
         getTokenBalance("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "E82ho9Mc1xKmL6aPpDneFMobDywiRM5PuPa7AMcEhofw"),
-        // SBR LP:pBTC+Earn
+        // SBR LP (BTC-renBTC):pBTC+Earn (1)
         getTokenBalance("SLPbsNrLHv8xG4cTc4R5Ci8kB9wUPs6yn6f7cKosoxs", "Gmzr6b6iPWKvWQtCmqL9yB6hYGec8Rv3XksmMT2VThDg"),
+        // SBR LP (BTC-renBTC):pBTC+Earn (2: sunny)
+        getTokenBalance("9Re318zAqN2VxT9fELUJxhJkZ7zyEhLXMxW4gCoxqbwc", "HU6JgiEGGzPCMHXbJbuNTNniTDUkHntMML9PJZLrJttT"),
         // MER LP (USDC-USDT-UST):PAI+Earn (1)
         getTokenBalance("57h4LEnBooHrKbacYWGCFghmrTzYPVn8PwZkzTzRLvHa", "E82ho9Mc1xKmL6aPpDneFMobDywiRM5PuPa7AMcEhofw"),
         // MER LP (USDC-USDT-UST):PAI+Earn (2)
         getTokenBalance("57h4LEnBooHrKbacYWGCFghmrTzYPVn8PwZkzTzRLvHa", "4Xjmy2UMdj6WsHHpUUw7bZJWbusyPNYj3aNQMJa4ayxT"),
+        // MER LP (USDC-USDT-PAI)
+        getTokenBalance("B2ktYdD5pvymh56wHASWAi92kQgMaLxFS2hAUoJ846r7"),
         // SBR LP (USDC-USDT):PAI+Earn (1)
         getTokenBalance("2poo1w1DL6yd2WNTCnNTzDqkC6MBXq7axo77P16yrBuf", "BLzKZp83pw6ESC7Ks19uUMce81HEthMWonavsYFRKxvE"),
         // SBR LP (USDC-USDT):PAI+Earn (2)
         getTokenBalance("2poo1w1DL6yd2WNTCnNTzDqkC6MBXq7axo77P16yrBuf", "9mazCmauvJ1bz8whGG6XF7jFCvdJz6r7n24kHkQyei8w"),
+        // SBR LP (USDC-USDT):PAI+Earn (3: sunny)
+        getTokenBalance("DtYJRBbkHbSP1H8Gc3iAAEeBWfm3cPHqQqRW8Xrmu5xs", "4S7KVrXcQiF8Y23swSVpodzyLrruKhQ6mou62mdv2hHg"),
         // SBR LP (UST-USDC):PAI+Earn (1)
         getTokenBalance("UST32f2JtPGocLzsL41B3VBBoJzTm1mK1j3rwyM3Wgc", "HSaGLKsiHDGUbXZRNrQ9R6WWmxjtoKZToSCUgcxpiuNj"),
         // SBR LP (UST-USDC):PAI+Earn (2)
         getTokenBalance("UST32f2JtPGocLzsL41B3VBBoJzTm1mK1j3rwyM3Wgc", "CsmHqWmq5KHNpQ6YkffiByqdp23zphHqN27orXb1gkye"),
-        // SBR LP (mSOL-SOL):pSOL+Earn
+        // SBR LP (UST-USDC):PAI+Earn (3: sunny)
+        getTokenBalance("HoSvqUMwQsiHbykioLW4Wu1BgFB34kSVByW223ACqDz3", "9V5NgpvTSd4JbiWLY3EupiZVTZDJK6Q1JWwkfob5kJP1"),
+        // SBR LP (mSOL-SOL):pSOL+Earn (1)
         getTokenBalance("SoLEao8wTzSfqhuou8rcYsVoLjthVmiXuEjzdNPMnCz", "4iP8x3kMB3TJGhtpkng17wdHXyo4jj99K1N2Bk6mu3pW"),
+        // SBR LP (mSOL-SOL):pSOL+Earn (2: sunny)
+        getTokenBalance("3SfwMcnxtQQCM83ADxcp3VoTriLrL1WueuKZmuquTLiz", "7yN3Nx9QUThQFXnQdYGuYj1VypyzAdbRnHUFKgVoGyye"),
+        // SBR LP (prtSOL-SOL):pSOL+Earn (1)
+        getTokenBalance("PrsVdKtXDDf6kJQu5Ff6YqmjfE4TZXtBgHM4bjuvRnR", "B2MadbQ6LmdKo1fCz4cbbuXKDMtzRmZZPSCCUUJfApmb"),
+        // SBR LP (prtSOL-SOL):pSOL+Earn (2: sunny)
+        getTokenBalance("CNE9khSS1NdgP3Uf7woYKsCDrohgVpigfvDkCg2CqtC7", "FB81RMPyPtFQ1xb25RdBof8xBgtMVVXcfGBg8fWUwgyz"),
 
         // Stake pool total supply
         getTokenSupply("BdZPG9xWrG3uFrx2KrUW1jT4tZ9VKPDWknYihzoPRJS3")
@@ -90,18 +109,22 @@ async function tvl() {
     return {
         'usd-coin': usdcEarn + usdcPbtc + usdcPai + usdcUstSbrEarn + (usdTriEarn / 3)
             + iUsdcEarn + (iMerTriUsdEarn1 / 3) + (iMerTriUsdEarn2 / 3)
-            + iSbrUsdcUsdtEarn1 / 2 + iSbrUsdcUsdtEarn2 / 2,
+            + iSbrUsdcUsdtEarn1 / 2 + iSbrUsdcUsdtEarn2 / 2 + iSbrUsdcUsdtEarn3 / 2
+            + iSbrUstUsdcEarn1 / 2 + iSbrUstUsdcEarn2 / 2
+            + iMerUsdcUsdtPai / 3
+            + iSbrUstUsdcEarn / 2,
         'terra-usd': usdcUstSbrEarn + (usdTriEarn / 3)
             + (iMerTriUsdEarn1 / 3) + (iMerTriUsdEarn2 / 3)
-            + iSbrUstUsdtEarn1 / 2 + iSbrUstUsdtEarn2 / 2,
+            + iSbrUstUsdcEarn1 / 2 + iSbrUstUsdcEarn2 / 2
+            + iSbrUstUsdcEarn / 2,
         'tether': usdtPai + usdcUsdtSbrEarn + (usdTriEarn / 3)
             + (iMerTriUsdEarn1 / 3) + (iMerTriUsdEarn2 / 3)
-            + iSbrUsdcUsdtEarn1 / 2 + iSbrUsdcUsdtEarn2 / 2
-            + iSbrUstUsdtEarn1 / 2 + iSbrUstUsdtEarn2 / 2,
-        'solana': solPai + solPrtP + solPsol + solmSbrEarn + solprtSbrEarn + solRayEarn + solMerPai + iSbrMSolSolEarn + sPoolSupplySol,
+            + iSbrUsdcUsdtEarn1 / 2 + iSbrUsdcUsdtEarn2 / 2 + iSbrUsdcUsdtEarn3 / 2,
+        'solana': solPai + solPrtP + solPsol + solmSbrEarn + solprtSbrEarn + solRayEarn + solMerPai
+            + iSbrMSolSolEarn1 + iSbrMSolSolEarn2 + iSabPrtSolSolEarn1 + iSabPrtSolSolEarn2 + sPoolSupplySol,
         'serum': srmPai,
         'renbtc': btcRenP + btcRenPai,
-        'bitcoin': btcPbtc + btcSbrEarn + iSbrBtcEarn,
+        'bitcoin': btcPbtc + btcSbrEarn + iSbrBtcEarn1 + iSbrBtcEarn2,
     }
 }
 module.exports = {
