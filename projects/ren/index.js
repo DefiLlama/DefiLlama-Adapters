@@ -107,7 +107,7 @@ module.exports = {
   ethereum: {
     tvl: eth,
   },
-  avax: {
+  avalanche: {
     tvl: avax,
   },
   bsc: {
