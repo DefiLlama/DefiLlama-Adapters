@@ -4,7 +4,10 @@ const BigNumber = require("bignumber.js");
 const { toUSDT } = require("../helper/balances");
 
 const ethGraphUrl = "https://api.thegraph.com/subgraphs/name/renproject/renvm";
-const bscGraphUrl = "https://api.bscgraph.org/subgraphs/name/renproject/renvm";
+const bscGraphUrl =
+  "https://api.thegraph.com/subgraphs/name/renproject/renvm-binance-smart-chain";
+const avalancheGraphUrl =
+  "https://api.thegraph.com/subgraphs/name/renproject/renvm-avalanche";
 const fantomGraphUrl =
   "https://api.thegraph.com/subgraphs/name/renproject/renvm-fantom";
 const polygonGraphUrl =
@@ -23,7 +26,6 @@ const renToken = "0x408e41876cCCDC0F92210600ef50372656052a38";
 async function getAssetBalance(block, graphUrl, transformAddr, chain) {
   const balances = {};
   const { assets } = await request(graphUrl, graphQuery);
-  console.log(assets);
   const assetCalls = assets.map((asset) => ({
     target: asset.tokenAddress,
   }));
@@ -54,6 +56,15 @@ async function bsc(timestamp, ethBlock, chainBlocks) {
     bscGraphUrl,
     (ad) => `bsc:${ad}`,
     "bsc"
+  );
+}
+
+async function avax(timestamp, ethBlock, chainBlocks) {
+  return getAssetBalance(
+    chainBlocks["avax"],
+    avalancheGraphUrl,
+    (ad) => `avax:${ad}`,
+    "avax"
   );
 }
 
@@ -96,6 +107,9 @@ module.exports = {
   ethereum: {
     tvl: eth,
   },
+  avax: {
+    tvl: avax,
+  },
   bsc: {
     tvl: bsc,
   },
@@ -105,5 +119,5 @@ module.exports = {
   polygon: {
     tvl: polygon,
   },
-  tvl: sdk.util.sumChainTvls([eth, bsc, fantom, polygon]),
+  tvl: sdk.util.sumChainTvls([eth, bsc, avax, fantom, polygon]),
 };
