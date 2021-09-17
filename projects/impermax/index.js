@@ -1,33 +1,31 @@
-const sdk = require('@defillama/sdk')
-const { getChainTvl } = require('../helper/getUniSubgraphTvl')
-const {staking} = require('../helper/staking')
+const BigNumber = require('bignumber.js')
 
-const subgraphs = {
-  'ethereum': 'impermax-finance/impermax-x-uniswap-v2',
-  'polygon': 'impermax-finance/impermax-x-uniswap-v2-polygon',
-  'arbitrum': 'impermax-finance/impermax-x-uniswap-v2-arbitrum',
+const xUniswapV2TVL = require('./xUniswapV2');
+
+const ETH = '0x0000000000000000000000000000000000000000'.toLowerCase();
+const WETH = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'.toLowerCase();
+
+async function tvl(timestamp, block) {
+  const [xUniswapV2] = await Promise.all([
+    xUniswapV2TVL(timestamp, block),
+  ]);
+
+  // replace WETH with ETH
+  xUniswapV2[ETH] = xUniswapV2[WETH];
+  delete xUniswapV2[WETH];
+
+  const tokenAddresses = new Set(Object.keys(xUniswapV2));
+
+  return Array
+    .from(tokenAddresses)
+    .reduce((accumulator, tokenAddress) => {
+      const xUniswapV2Balance = new BigNumber(xUniswapV2[tokenAddress] || '0');
+      accumulator[tokenAddress] = xUniswapV2Balance.toFixed();
+
+      return accumulator
+    }, {});
 }
 
-const chainTvl = getChainTvl(
-  Object.fromEntries(Object.entries(subgraphs).map(s => [s[0], s[1].startsWith("http")?s[1]:"https://api.thegraph.com/subgraphs/name/" + s[1]])),
-  "impermaxFactories",
-  "totalBalanceUSD"
-)
-
-const subgraphChainTvls = Object.keys(subgraphs).reduce((obj, chain) => ({
-  ...obj,
-  [chain === 'avax' ? 'avalanche' : chain]: {
-    tvl:chainTvl(chain)
-  }
-}), {})
-
-const xIMX = "0x363b2deac84f0100d63c7427335f8350f596bf59"
-const IMX = "0x7b35ce522cb72e4077baeb96cb923a5529764a00"
-
-module.exports={
-  staking:{
-    tvl: staking(xIMX, IMX, 'ethereum')
-  },
-  ...subgraphChainTvls,
-  tvl: sdk.util.sumChainTvls(Object.values(subgraphChainTvls).map(tvl=>tvl.tvl))
-}
+module.exports = {
+  tvl,
+};
