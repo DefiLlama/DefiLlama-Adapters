@@ -81,7 +81,7 @@ async function tvl() {
         // MER LP (USDC-USDT-UST):PAI+Earn (2)
         getTokenBalance("57h4LEnBooHrKbacYWGCFghmrTzYPVn8PwZkzTzRLvHa", "4Xjmy2UMdj6WsHHpUUw7bZJWbusyPNYj3aNQMJa4ayxT"),
         // MER LP (USDC-USDT-PAI)
-        getTokenBalance("B2ktYdD5pvymh56wHASWAi92kQgMaLxFS2hAUoJ846r7"),
+        getTokenBalance("9s6dXtMgV5E6v3rHqBF2LejHcA2GWoZb7xNUkgXgsBqt", "E82ho9Mc1xKmL6aPpDneFMobDywiRM5PuPa7AMcEhofw"),
         // SBR LP (USDC-USDT):PAI+Earn (1)
         getTokenBalance("2poo1w1DL6yd2WNTCnNTzDqkC6MBXq7axo77P16yrBuf", "BLzKZp83pw6ESC7Ks19uUMce81HEthMWonavsYFRKxvE"),
         // SBR LP (USDC-USDT):PAI+Earn (2)
