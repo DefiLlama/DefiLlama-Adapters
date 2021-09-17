@@ -1,6 +1,9 @@
 const axios = require('axios');
 const abis = require('./abis.json')
 const sdk = require('@defillama/sdk')
+const { Connection, PublicKey } = require('@solana/web3.js');
+const { deserializeUnchecked } = require('borsh');
+const {Lido, schema} = require('./Lido')
 
 const ethContract = '0xae7ab96520de3a18e5e111b5eaab095312d7fe84';
 
@@ -29,23 +32,30 @@ async function eth(timestamp, ethBlock, chainBlocks) {
 }
 
 async function solana(timestamp, ethBlock, chainBlocks) {
-  const stats = await axios.get('https://solana.lido.fi/api/stats')
+  const connection = new Connection('https://solana-api.projectserum.com/');
+  const accountInfo = await connection.getAccountInfo(new PublicKey("49Yi1TKkNyYjPAFdR9LBvoHcUjuPX4Df5T5yv39w2XTn"));
+  const deserializedAccountInfo = deserializeUnchecked(
+    schema,
+    Lido,
+    accountInfo.data,
+  );
+
+  const totalSolInLamports = deserializedAccountInfo.exchange_rate.sol_balance.toNumber();
+  //const stats = await axios.get('https://solana.lido.fi/api/stats')
   return {
-    'solana': stats.data.totalStaked.sol
+    'solana': totalSolInLamports/1e9
   }
 }
 
 module.exports = {
+  solana: {
+    tvl: solana
+  },
   ethereum: {
     tvl: eth
   },
   terra: {
     tvl: terra
   },
-  /*
-  solana:{
-    tvl: solana
-  },
-  */
-  tvl: sdk.util.sumChainTvls([eth, terra])
+  tvl: sdk.util.sumChainTvls([eth, terra, solana])
 }
