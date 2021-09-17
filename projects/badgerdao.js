@@ -1,16 +1,11 @@
 const utils = require('./helper/utils');
+const {fetchChainExports} = require('./helper/exports')
 
-/* * * * * * * *
-* ==> Correct adapter needs to be created.
-*
-*****************/
-
-async function fetch() {
-  let eth = await utils.fetchURL('https://api.badger.finance/v2/value?chain=eth')
-  let bsc = await utils.fetchURL('https://api.badger.finance/v2/value?chain=bsc')
-  return eth.data.totalValue + bsc.data.totalValue;
+function chainTvl(chain){
+  return async()=>{
+    let data = await utils.fetchURL(`https://api.badger.finance/v2/value?chain=${chain==="ethereum"?"eth":chain}`)
+    return data.data.totalValue
+  }
 }
 
-module.exports = {
-  fetch
-}
+module.exports = fetchChainExports(chainTvl, ["ethereum", "bsc", "arbitrum"])
