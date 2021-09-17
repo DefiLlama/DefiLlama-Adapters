@@ -1,21 +1,40 @@
-const {getTokenAccountBalance} = require('../helper/solana')
+const {getTokenBalance} = require('../helper/solana')
 
-const markets = [
-    ["8UviNr47S8eL6J3WfDxMRa3hvLta1VDJwNWqsDgtN3Cv", "solana"],
-    ["8SheGtsopRUDzdiD6v6BR9a6bqZ9QwywYQY99Fp5meNf", "usd-coin"],
-    ["B7Lg4cJZHPLFaGdqfaAWG35KFFaEtBMmRAGf98kNaogt", "ethereum"],
-    ["4jkyJVWQm8NUkiJFJQx6ZJQhfKLGpeZsNrXoT4bAPrRv", "bitcoin"],
-    ["5suXmvdbKQ98VonxGCXqViuWRu8k4zgZRxndYKsH2fJg", "serum"]
-]
+async function tvl() {
+    const [usdcAmount, 
+          btcAmount, 
+          ethAmount, 
+          srmAmount,          
+          usdtAmount,
+          fttAmount,
+          rayAmount,
+          solAmount, ] = await Promise.all([
+        
+        getTokenBalance("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "DdZR6zRFiUt4S5mg7AV1uKB2z1f1WzcNYCaTEEWPAuby"),
+        getTokenBalance("9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E", "DdZR6zRFiUt4S5mg7AV1uKB2z1f1WzcNYCaTEEWPAuby"),
+        getTokenBalance("2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk", "DdZR6zRFiUt4S5mg7AV1uKB2z1f1WzcNYCaTEEWPAuby"),
+        getTokenBalance("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt", "DdZR6zRFiUt4S5mg7AV1uKB2z1f1WzcNYCaTEEWPAuby"),
+        getTokenBalance("Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", "DdZR6zRFiUt4S5mg7AV1uKB2z1f1WzcNYCaTEEWPAuby"),
+        getTokenBalance("AGFEad2et2ZJif9jaGpdMixQqvW5i81aBdvKe7PHNfz3", "DdZR6zRFiUt4S5mg7AV1uKB2z1f1WzcNYCaTEEWPAuby"),
+        getTokenBalance("4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R", "DdZR6zRFiUt4S5mg7AV1uKB2z1f1WzcNYCaTEEWPAuby"),
+        getTokenBalance("So11111111111111111111111111111111111111112", "DdZR6zRFiUt4S5mg7AV1uKB2z1f1WzcNYCaTEEWPAuby"),
+            
 
-async function tvl(){
-    const locked = await Promise.all(markets.map(market=>getTokenAccountBalance(market[0])))
-    return locked.reduce((total, value, idx)=>{
-        total[markets[idx][1]] = value;
-        return total
-    }, {})
+
+    ])
+    return {
+        'bitcoin': btcAmount,
+        'usd-coin': usdcAmount,
+        'ethereum': ethAmount,
+        'serum': srmAmount,
+        'usdt': usdtAmount,
+        'ftt': fttAmount,
+        'ray': rayAmount,
+        'solana': solAmount,
+    }
 }
 
 module.exports = {
-    tvl
+    tvl,
+    methodology: 'TVL consists of deposits made to the protocol and like other lending protocols, borrowed tokens are not counted. Coingecko is used to price tokens.',
 }

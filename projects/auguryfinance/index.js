@@ -122,6 +122,7 @@ const treasuryTvl = async (timestamp, ethBlock, chainBlocks) => {
 };
 
 module.exports = {
+  methodology: 'MasterAugur(MasterChef) contract is used to pull LP token amounts. LP tokens are unwrapped and each token token balance is considered in the TVL sum.',
   polygon: {
     tvl: polygonTvl,
   },

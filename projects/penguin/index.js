@@ -7,6 +7,7 @@ const pool2Token = '0x494Dd9f783dAF777D3fb4303da4de795953592d0'
 const iglooTokens = ['0x1bb5541EcCdA68A352649954D4C8eCe6aD68338d', '0x0b9753D73e1c62933e913e9c2C94f2fFa8236F6C', '0x1aCf1583bEBdCA21C8025E172D8E8f2817343d65']
 const nest = '0xD79A36056c271B988C5F1953e664E61416A9820F'
 const pefiToken = '0xe896CDeaAC9615145c0cA09C8Cd5C25bced6384c'
+const nestv2 = '0xE9476e16FE488B90ada9Ab5C7c2ADa81014Ba9Ee'
 
 const tokenToCoingeckoId = {
   '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7': 'avalanche-2',
@@ -40,15 +41,13 @@ async function getTokensInMasterChef(chainBlocks){
       token: output.input.target,
       balance: output.output
     })), chainBlocks['avax'], 'avax')
-    return balances
+    return await convertBalancesToCoingecko(balances)
 }
 
-async function pool2(timestamp){
 
-}
 
-async function tvl(timestamp, ethereumBlock, chainBlocks) {
-  const balances = await getTokensInMasterChef(chainBlocks)
+async function stakingtvl(timestamp, ethereumBlock, chainBlocks) {
+  const balances = {}
   const nestBalance = await sdk.api.erc20.balanceOf({
     block: chainBlocks['avax'],
     target: pefiToken,
@@ -59,9 +58,21 @@ async function tvl(timestamp, ethereumBlock, chainBlocks) {
   return await convertBalancesToCoingecko(balances)
 }
 
-module.exports = {
-    avalanche:{
-      tvl,
-    },
-    tvl
+async function stakingtvlv(timestamp, ethereumBlock, chainBlocks) {
+  const balances = {}
+  const inestBalance = await sdk.api.erc20.balanceOf({
+    block: chainBlocks['avax'],
+    target: pefiToken,
+    owner: nestv2,
+    chain: 'avax'
+  })
+  sdk.util.sumSingleBalance(balances, pefiToken, inestBalance.output)
+  return await convertBalancesToCoingecko(balances)
+}
+
+module.exports = { 
+  staking: {
+    tvl:sdk.util.sumChainTvls([stakingtvl,stakingtvlv]),
+  },
+  tvl: getTokensInMasterChef,
   }

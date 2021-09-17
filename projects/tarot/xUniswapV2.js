@@ -27,7 +27,7 @@ async function multiCallAndReduce(abi, targets, block) {
     }, {});
 }
 
-module.exports = async function tvl(_, block) {
+module.exports = async function tvl(_, block, transform) {
   const logs = (
     await sdk.api.util
       .getLogs({
@@ -39,6 +39,9 @@ module.exports = async function tvl(_, block) {
         chain: 'fantom'
       })
   ).output;
+  if(logs.length<5){
+    throw new Error("Log length is too low")
+  }
 
   const lendingPools = [];
   for (const log of logs) {
@@ -76,28 +79,26 @@ module.exports = async function tvl(_, block) {
     const borrowable0BalanceRaw = totalBalances[lendingPool.borrowable0Address];
     const borrowable1BalanceRaw = totalBalances[lendingPool.borrowable1Address];
 
-    if (!reservesRaw || !totalSupplyRaw || !collateralBalanceRaw) return accumulator;
-
     const collateralBalance = new BigNumber(collateralBalanceRaw);
     const totalSupply = new BigNumber(totalSupplyRaw);
 
-    if (lendingPool.token0Address && borrowable0BalanceRaw) {
+    {
       const reserve0 = new BigNumber(reservesRaw['0']);
       const borrowable0Balance = new BigNumber(borrowable0BalanceRaw);
       const collateral0Balance = collateralBalance.multipliedBy(reserve0).dividedToIntegerBy(totalSupply)
-      const existingBalance = new BigNumber(accumulator[lendingPool.token0Address] || '0');
-      accumulator[lendingPool.token0Address] = existingBalance
+      const existingBalance = new BigNumber(accumulator[transform(lendingPool.token0Address)] || '0');
+      accumulator[transform(lendingPool.token0Address)] = existingBalance
         .plus(borrowable0Balance)
         .plus(collateral0Balance)
         .toFixed()
     }
 
-    if (lendingPool.token1Address && borrowable1BalanceRaw) {
+    {
       const reserve1 = new BigNumber(reservesRaw['1']);
       const borrowable1Balance = new BigNumber(borrowable1BalanceRaw);
       const collateral1Balance = collateralBalance.multipliedBy(reserve1).dividedToIntegerBy(totalSupply)
-      const existingBalance = new BigNumber(accumulator[lendingPool.token1Address] || '0');
-      accumulator[lendingPool.token1Address] = existingBalance
+      const existingBalance = new BigNumber(accumulator[transform(lendingPool.token1Address)] || '0');
+      accumulator[transform(lendingPool.token1Address)] = existingBalance
         .plus(borrowable1Balance)
         .plus(collateral1Balance)
         .toFixed()

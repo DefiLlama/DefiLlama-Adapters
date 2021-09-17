@@ -77,25 +77,24 @@ async function eth(timestamp, block) {
         owner: stakingPool,
         target: bfcAddr,
         block: ethBlock
-      });
-      sdk.util.sumSingleBalance(balances, bfcAddr, tokenStaked.output);
+    });
+    sdk.util.sumSingleBalance(balances, bfcAddr, tokenStaked.output);
 
     // eth tokens
-    for (token in ethTokenPools) {
-        tokenPool = ethTokenPools[token];
-        let tokenLocked = await sdk.api.erc20.balanceOf({
-            owner: tokenPool.pool,
+    sdk.util.sumMultiBalanceOf(balances, await sdk.api.abi.multiCall({
+        abi: 'erc20:balanceOf',
+        block: ethBlock,
+        calls: Object.values(ethTokenPools).map(tokenPool=>({
+            params: tokenPool.pool,
             target: tokenPool.token,
-            block: ethBlock
-          });
-          sdk.util.sumSingleBalance(balances, tokenPool.token, tokenLocked.output);
-    }
+        }))
+    }), true)
 
     return balances
 }
 
 const wbtc = "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"
-async function bitcoin(timestamp, ethBlock){
+async function bitcoin(timestamp, ethBlock) {
     const tokenPool = {
         'pool': '0x986Eb51E67e154901ff9B482835788B8f3054076',
         'token': '0x4ca7a5Fb41660A9c5c31683B832A17f7f7457344'
@@ -123,38 +122,28 @@ async function bsc(timestamp, block, chainBlocks) {
     })).output)
 
     // bsc tokens
-    for (token in bscTokenPools) {
-        tokenPool = bscTokenPools[token];
-        let tokenLocked = await sdk.api.erc20.balanceOf({
-            owner: tokenPool.pool,
+    sdk.util.sumMultiBalanceOf(balances, await sdk.api.abi.multiCall({
+        abi: 'erc20:balanceOf',
+        block: bscBlock,
+        chain: 'bsc',
+        calls: Object.values(bscTokenPools).map(tokenPool=>({
+            params: tokenPool.pool,
             target: tokenPool.token,
-            chain: 'bsc',
-            block: bscBlock
-          });
-          sdk.util.sumSingleBalance(balances, getBSCAddress(tokenPool.token), tokenLocked.output);
-    }
+        }))
+    }), true, getBSCAddress)
 
-    return balances
-}
-
-async function total(...params) {
-    const balances = {}
-    for(let chain of [eth, bsc, bitcoin]){
-        const bal = await chain(...params);
-        Object.entries(bal).map(t=>sdk.util.sumSingleBalance(balances, t[0], t[1]))
-    }
     return balances
 }
 
 module.exports = {
-    ethereum:{
+    ethereum: {
         tvl: eth
     },
-    bsc:{
+    bsc: {
         tvl: bsc
     },
     bitcoin:{
         tvl: bitcoin
     },
-  tvl: total
+    tvl: sdk.util.sumChainTvls([bsc,eth, bitcoin]),
 }

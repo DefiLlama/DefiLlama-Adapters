@@ -93,6 +93,33 @@
         "type": "function",
         "gas": 2190
     },
+    "coins":{
+        "constant": true,
+        "name": "coins",
+        "outputs": [{
+            "type": "address",
+            "name": ""
+        }],
+        "inputs": [{
+            "type": "uint256",
+            "name": "arg0"
+        }],
+        "stateMutability": "view",
+        "type": "function",
+        "gas": 2280
+    },
+    "get_balances":{
+        "constant": true,
+        "name": "get_balances",
+        "outputs": [{
+            "type": "uint256[2]",
+            "name": ""
+        }],
+        "inputs": [],
+        "stateMutability": "view",
+        "type": "function",
+        "gas": 2284
+    },
     "underlying": {
         "constant": true,
         "inputs": [],

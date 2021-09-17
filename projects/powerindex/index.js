@@ -11,7 +11,39 @@ const curveFactoryPools = [
   "0x4807862AA8b2bF68830e4C8dc86D0e9A998e085a"
 ].map(pool => pool.toLowerCase())
 
-async function tvl(timestamp, block) {
+async function getBscTvl() {
+  let bscBalances = {}
+
+  const poolAddress = await sdk.api.util.getLogs({
+    keys: ['topics'],
+    toBlock: 10481380,
+    target: '0x37c4a7E826a7F6606628eb5180df7Be8d6Ca4B2C',
+    fromBlock: 10481280,
+    topic: 'LOG_NEW_POOL(address,address,address)',
+    chain: 'bsc'
+  }).then(r => `0x${r.output[0][2].slice(26)}`);
+  
+  let poolTokens = await sdk.api.abi.call({
+    chain: 'bsc',
+    abi: abi.getCurrentTokens,
+    target: poolAddress
+  });
+
+  let poolBalances = await sdk.api.abi.multiCall({
+    chain: 'bsc',
+    abi: 'erc20:balanceOf',
+    calls: _.map(poolTokens.output, 
+      (poolToken) => ({ target: poolToken, params: poolAddress}))
+  })
+
+  _.each(poolBalances.output, (poolBalance) => { 
+    bscBalances[`bsc:${poolBalance.input.target}`] = poolBalance.output
+  })
+  
+  return bscBalances;
+}
+
+async function eth(timestamp, block) {
   let balances = {};
 
   let poolLogs = await sdk.api.util.getLogs({
@@ -100,5 +132,11 @@ async function tvl(timestamp, block) {
 
 module.exports = {
   start: 1606768668, // 11/30/2021 @ 08:37am (UTC)
-  tvl
+  bsc:{
+    tvl: getBscTvl,
+  },
+  ethereum:{
+    tvl: eth
+  },
+  tvl: sdk.util.sumChainTvls([getBscTvl, eth])
 }
