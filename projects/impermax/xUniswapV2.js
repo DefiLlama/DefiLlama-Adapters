@@ -21,9 +21,10 @@ async function multiCallAndReduce(abi, targets, block) {
       })),
       block,
     })).output.reduce((accumulator, data, ) => {
-      if (data.success) {
-        accumulator[data.input.target.toLowerCase()] = data.output;
+      if (!data.success) {
+        throw new Error("call failed")
       }
+      accumulator[data.input.target.toLowerCase()] = data.output;
       return accumulator;
     }, {});
 }
