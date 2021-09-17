@@ -13,7 +13,8 @@ const arbitrumTvl = async (timestamp, ethBlock, chainBlocks) => {
 };
 
 module.exports={
-    arbitrum:{
+    arbitrum: {
         tvl: arbitrumTvl
     },
+    tvl: sdk.util.sumChainTvls([arbitrumTvl]),
 }
