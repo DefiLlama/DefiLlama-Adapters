@@ -17,10 +17,10 @@ async function solonaTvl() {
 }
 
 module.exports = {
-  solona: {
+  solana: {
     tvl: solonaTvl,
   },
   tvl: sdk.util.sumChainTvls([solonaTvl]),
   methodology:
-    "We count the liquidity on all Yield Pools on Solona Chain. Metrics come from https://stake.fsynth.io/#/",
+    "We count the liquidity on all Yield Pools on Solana Chain. Metrics come from https://stake.fsynth.io/#/",
 };
