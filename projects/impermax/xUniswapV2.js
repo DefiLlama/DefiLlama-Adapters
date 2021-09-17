@@ -5,16 +5,14 @@ const getReserves = require('./abis/getReserves.json');
 const getTotalSupply = require('./abis/totalSupply.json');
 const getTotalBalance = require('./abis/totalBalance.json');
 
-const START_BLOCK = 10000835;
-const FACTORY = '0x8c3736e2fe63cc2cd89ee228d9dbcab6ce5b767b';
-
 function toAddress(str, skip = 0) {
   return `0x${str.slice(64 - 40 + 2 + skip * 64, 64 + 2 + skip * 64)}`.toLowerCase();
 }
 
-async function multiCallAndReduce(abi, targets, block) {
+async function multiCallAndReduce(abi, chain, targets, block) {
   return (await sdk.api.abi
     .multiCall({
+      chain,
       abi: abi,
       calls: targets.map((target) => ({
         target: target,
@@ -29,14 +27,17 @@ async function multiCallAndReduce(abi, targets, block) {
     }, {});
 }
 
-module.exports = async function tvl(_, block) {
+module.exports = async function tvl(block, chain, factory, startBlock) {
+  if (block === undefined) return {};
+
   const logs = (
     await sdk.api.util
       .getLogs({
+        chain,
         keys: [],
         toBlock: block,
-        target: FACTORY,
-        fromBlock: START_BLOCK,
+        target: factory,
+        fromBlock: startBlock,
         topic: 'LendingPoolInitialized(address,address,address,address,address,address,uint256)',
       })
   ).output;
@@ -66,9 +67,9 @@ module.exports = async function tvl(_, block) {
     lendingPools.map((lendingPool) => lendingPool.collateralAddress),
   );
 
-  const reserves = await multiCallAndReduce(getReserves, pairAddresses, block);
-  const totalSupplies = await multiCallAndReduce(getTotalSupply, pairAddresses, block);
-  const totalBalances = await multiCallAndReduce(getTotalBalance, poolTokenAddresses, block);
+  const reserves = await multiCallAndReduce(getReserves, chain, pairAddresses, block);
+  const totalSupplies = await multiCallAndReduce(getTotalSupply, chain, pairAddresses, block);
+  const totalBalances = await multiCallAndReduce(getTotalBalance, chain, poolTokenAddresses, block);
 
   return lendingPools.reduce((accumulator, lendingPool, ) => {
     const reservesRaw = reserves[lendingPool.pairAddress];
