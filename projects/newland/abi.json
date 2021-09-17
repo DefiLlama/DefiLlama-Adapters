@@ -1,0 +1,143 @@
+{
+    "poolInfoA": {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "poolInfo",
+        "outputs": [
+            {
+                "internalType": "contract IERC20",
+                "name": "lpToken",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "allocPoint",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "lastRewardBlock",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "accHptPerShare",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "miningChefPid",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "lpBalance",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "accMiningPerShare",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "totalLPReinvest",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "totalPoints",
+                "type": "uint256"
+            },
+            {
+                "internalType": "contract IStrategyLink",
+                "name": "strategyLink",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "sid",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "mdxPid",
+                "type": "uint256"
+            },
+            {
+                "internalType": "bool",
+                "name": "paused",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "poolInfoB": {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "poolInfo",
+        "outputs": [
+            {
+                "internalType": "contract IERC20",
+                "name": "lpToken",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "allocPoint",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "lastRewardBlock",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "accHptPerShare",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "mdxChefPid",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "lpBalance",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "accMdxPerShare",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "poolLength": {
+        "inputs": [],
+        "name": "poolLength",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+}
