@@ -209,7 +209,8 @@ function getGWeiFromWei(wei, decimals = 18) {
 }
 
 // total tvl
-async function tvl() {
+async function fetch() {
+    let balance = {}
     let [
         vaultDepositBUSD,
         stakedScUsd, transmuteBUSD, transmuteAdapterBUSD,
@@ -235,7 +236,7 @@ async function tvl() {
     tvl = tvl.plus(farmBalance);
 
     tvl = getGWeiFromWei(tvl);
-    return parseFloat(tvl);
+    return  balance = parseFloat(tvl);
 }
 
 /*==================================================
@@ -246,5 +247,5 @@ module.exports = {
     name: 'scientix.finance',
     token: 'SCIX',
     start: 10880500,    // 09/16/2020 @ 12:00am (UTC+8)
-    tvl,
+    fetch,
 };
