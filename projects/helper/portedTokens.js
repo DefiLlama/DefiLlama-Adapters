@@ -174,6 +174,9 @@ async function transformOptimismAddress() {
     const bridge = (await utils.fetchURL("https://static.optimism.io/optimism.tokenlist.json")).data.tokens
 
     return (addr) => {
+        if(compareAddresses(addr, "0x4200000000000000000000000000000000000006")){
+            return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+        }
         const dstToken = bridge.find(token => compareAddresses(addr, token.address))
         if (dstToken !== undefined) {
             const srcToken = bridge.find(token => dstToken.logoURI === token.logoURI && token.chainId === 1)
@@ -181,7 +184,7 @@ async function transformOptimismAddress() {
                 return srcToken.address
             }
         }
-        return `optimism:${addr}`
+        return addr //`optimism:${addr}` // TODO: Fix
     }
 }
 
@@ -193,8 +196,7 @@ async function transformArbitrumAddress() {
         if (dstToken !== undefined) {
             return dstToken.extensions.l1Address
         }
-        // `arbitrum:${addr}`
-        return addr; // TODO: Fix
+        return `arbitrum:${addr}`; 
     }
 }
 

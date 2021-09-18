@@ -41,7 +41,7 @@ module.exports = {
   heco:{
     fetch: heco
   },
-  avax:{
+  avalanche:{
     fetch: avax
   },
   fetch

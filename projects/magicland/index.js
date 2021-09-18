@@ -25,11 +25,11 @@ const stakingTvl = async (timestamp, ethBlock, chainBlocks) => {
   };
 
 module.exports={
-    arbitrum:{
+    arbitrum: {
         tvl: arbitrumTvl
     },
+    tvl: sdk.util.sumChainTvls([arbitrumTvl]),
     staking:{
         tvl: stakingTvl
     }
 }
-// node test.js projects/magicland/index.js
