@@ -7,6 +7,9 @@
   const _ = require('underscore');
   const BigNumber = require('bignumber.js');
   const abi = require('./abi.json');
+  const BASE = BigNumber(10 ** 18)
+  const Double = BASE * BASE;
+  const mappingTokens = require("./tokenMapping.json");
 
 
 /*==================================================
@@ -47,24 +50,6 @@ const dUSDC = '0x16c9cF62d8daC4a38FB50Ae5fa5d51E9170F3179';
 
 const usdxPool = '0x7FdcDAd3b4a67e00D9fD5F22f4FD89a5fa4f57bA' // USDx Stablecoin Pool
 
-/*==================================================
-  dToken Protocol
-  ==================================================*/
-const yieldMarkets = [
-  '0x02285AcaafEB533e03A7306C55EC031297df9224', // dDAI
-  '0xF4dFc3Df8C83Be5a2ec2025491fd157c474f438a', // dPAX
-  '0x55BCf7173C8840d5517424eD19b7bbF11CFb9F2B', // dTUSD
-  '0x16c9cF62d8daC4a38FB50Ae5fa5d51E9170F3179', // dUSDC
-  '0x868277d475E0e475E38EC5CdA2d9C83B5E1D9fc8', // dUSDT
-]
-
-const yieldUnderlyingTokens = {
-  '0x02285AcaafEB533e03A7306C55EC031297df9224': DAI,
-  '0xF4dFc3Df8C83Be5a2ec2025491fd157c474f438a': PAX,
-  '0x55BCf7173C8840d5517424eD19b7bbF11CFb9F2B': TUSD,
-  '0x16c9cF62d8daC4a38FB50Ae5fa5d51E9170F3179': USDC,
-  '0x868277d475E0e475E38EC5CdA2d9C83B5E1D9fc8': USDT,
-}
 
 
 /*==================================================
@@ -94,19 +79,6 @@ const yieldUnderlyingTokens = {
     '0x039E7Ef6a674f3EC1D88829B8215ED45385c24bc', // iMKR
     '0x6E6a689a5964083dFf9FD7A0f788BAF620ea2DBe', // iTUSD
     '0xA3068AA78611eD29d381E640bb2c02abcf3ca7DE', // iLINK
-  ]
-/*==================================================
-  Synth Markets
-  ==================================================*/
-  const allSynthMarkets = [
-    USX,
-    EUX,
-    xBTC,
-    xETH,
-    xTSLA,
-    xAAPL,
-    xAMZN,
-    xCOIN,
   ]
 
 /*==================================================
@@ -139,23 +111,6 @@ const yieldUnderlyingTokens = {
   const BSC_CAKE = '0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82';
   const BSC_BCH = '0x8fF795a6F4D97E7887C79beA79aba5cc76444aDf';
   const BSC_XTZ = '0x16939ef78684453bfDFb47825F8a5F714f12623a';
-
-  /*==================================================
-    BSC dToken Protocol
-    ==================================================*/
-  const bscYieldMarkets = [
-    '0xce14792a280b20c4f8E1ae76805a6dfBe95729f5', // dBUSD
-    '0x4E0B5BaFC52D09A8F18eA0b7a6A7dc23A1096f99', // dDAI
-    '0x6c0F322442D10269Dd557C6e3A56dCC3a1198524', // dUSDC
-    '0x6199cC917C12E4735B4e9cEfbe29E9F0F75Af9E5', // dUSDT
-  ]
-
-  const bscYieldUnderlyingTokens = {
-    '0xce14792a280b20c4f8E1ae76805a6dfBe95729f5': BSC_BUSD,
-    '0x4E0B5BaFC52D09A8F18eA0b7a6A7dc23A1096f99': BSC_DAI,
-    '0x6c0F322442D10269Dd557C6e3A56dCC3a1198524': BSC_USDC,
-    '0x6199cC917C12E4735B4e9cEfbe29E9F0F75Af9E5': BSC_USDT,
-  }
 
 /*==================================================
   BSC iToken Lending Protocol
@@ -235,219 +190,334 @@ const yieldUnderlyingTokens = {
     Arbitrum_EUX,
   ]
 
+let oracles = {
+  "ethereum": "0x34BAf46eA5081e3E49c29fccd8671ccc51e61E79",
+  "bsc": "0x7DC17576200590C4d0D8d46843c41f324da2046C",
+  "arbitrum": "0xc3FeD5f21EB8218394f968c86CDafc66e30e259A",
+}
 
+let allControllers = {
+  "ethereum": "0x8B53Ab2c0Df3230EA327017C91Eb909f815Ad113",
+  "bsc": "0x0b53E608bD058Bb54748C35148484fD627E6dc0A",
+  "arbitrum": "0x8E7e9eA9023B81457Ae7E6D2a51b003D421E5408",
+}
+
+let yieldMarkets = {
+  "ethereum": [
+    '0x02285AcaafEB533e03A7306C55EC031297df9224', // dDAI
+    '0x109917F7C3b6174096f9E1744e41ac073b3E1F72', // dUSDx
+    '0x16c9cF62d8daC4a38FB50Ae5fa5d51E9170F3179', // dUSDC
+    '0x868277d475E0e475E38EC5CdA2d9C83B5E1D9fc8', // dUSDT
+  ],
+  "bsc": [
+    '0xce14792a280b20c4f8E1ae76805a6dfBe95729f5', // dBUSD
+    '0x4E0B5BaFC52D09A8F18eA0b7a6A7dc23A1096f99', // dDAI
+    '0x6c0F322442D10269Dd557C6e3A56dCC3a1198524', // dUSDC
+    '0x6199cC917C12E4735B4e9cEfbe29E9F0F75Af9E5', // dUSDT
+  ],
+}
+
+let yieldUnderlyingTokens = {
+  "ethereum": {
+    '0x02285AcaafEB533e03A7306C55EC031297df9224': DAI,
+    '0x109917F7C3b6174096f9E1744e41ac073b3E1F72': USDx,
+    '0x16c9cF62d8daC4a38FB50Ae5fa5d51E9170F3179': USDC,
+    '0x868277d475E0e475E38EC5CdA2d9C83B5E1D9fc8': USDT,
+  },
+  "bsc": {
+    '0xce14792a280b20c4f8E1ae76805a6dfBe95729f5': BSC_BUSD,
+    '0x4E0B5BaFC52D09A8F18eA0b7a6A7dc23A1096f99': BSC_DAI,
+    '0x6c0F322442D10269Dd557C6e3A56dCC3a1198524': BSC_USDC,
+    '0x6199cC917C12E4735B4e9cEfbe29E9F0F75Af9E5': BSC_USDT,
+  }
+}
+
+let allSynthMarkets = {
+  "ethereum": [
+    USX,
+    EUX,
+    xBTC,
+    xETH,
+    xTSLA,
+    xAAPL,
+    xAMZN,
+    xCOIN,
+  ],
+  "bsc": [
+    BSC_USX,
+    BSC_EUX,
+    BSC_xBTC,
+    BSC_xETH,
+    BSC_xTSLA,
+    BSC_xAAPL,
+    BSC_xAMZN,
+    BSC_xCOIN,
+  ],
+}
 
 /*==================================================
   TVL
   ==================================================*/
 
-async function tvl(timestamp, block, chainBlocks) {
-  let balances = await tvlEthereum(timestamp, block);
-  let bscTVLs = await tvlBSC(timestamp, block, chainBlocks);
-  Object.assign(balances, bscTVLs);
-  let arbitrumTVLs = await tvlArbitrum(timestamp, block, chainBlocks);
-  Object.assign(balances, arbitrumTVLs);
+async function getTVLByTotalSupply(chain, token, block) {
+  let balances = {}
+  let tvl = BigNumber("0");
 
-  return balances;
-}
-
-async function tvlBSC(timestamp, ethBlock, chainBlocks) {
-  let balances = {};
-  const block = chainBlocks['bsc'];
-
-  let synthMarketsCalls = _.map(bscAllSynthMarkets, (synthMarket) => ({
-    target: synthMarket,
-  }));
-
-  let synthMarketsResults = await sdk.api.abi.multiCall({
+  let { output: assetTotalSupply } = await sdk.api.abi.call({
     block,
-    calls: synthMarketsCalls,
-    abi: 'erc20:totalSupply',
-    chain: 'bsc'
-  });
-
-  sdk.util.sumMultiBalanceOf(balances, synthMarketsResults, true);
-
-  await (
-    Promise.all(bscYieldMarkets.map(async (yieldMarket) => {
-        let marketTVL = (await sdk.api.abi.call({
-          block,
-          target: yieldMarket,
-          abi: abi['getBaseData'],
-          chain: 'bsc'
-        })).output;
-
-        const _balance = marketTVL['4'] || 0;
-
-        balances['bsc:'+bscYieldUnderlyingTokens[yieldMarket]] = BigNumber(balances[bscYieldUnderlyingTokens[yieldMarket]] || 0)
-          .plus(_balance)
-          .toFixed();
-    }))
-  );
-
-  await (Promise.all(bscLendingMarkets.map(async (lendingMarket) => {
-      let iTokenTotalSupply = (await sdk.api.abi.call({
-        block,
-        target: lendingMarket,
-        abi: abi['totalSupply'],
-        chain: 'bsc'
-      })).output;
-
-      let iTokenExchangeRate = (await sdk.api.abi.call({
-        block,
-        target: lendingMarket,
-        abi: abi['exchangeRateCurrent'],
-        chain: 'bsc'
-      })).output;
-
-      let underlying = (await sdk.api.abi.call({
-        block,
-        target: lendingMarket,
-        abi: abi['underlying'],
-        chain: 'bsc'
-      })).output;
-
-      balances['bsc:'+underlying] = BigNumber(balances[underlying] || 0).plus(BigNumber(iTokenTotalSupply)).times(BigNumber(iTokenExchangeRate)).div(BigNumber(10 ** 18));
-  })));
-
-  return balances;
-}
-
-async function tvlEthereum(timestamp, block) {
-  let balances = {};
-
-  let assetsCalls = _.map(usdxReservedTokens, (token) => ({
     target: token,
-    params: usdxPool
-  }));
-
-  assetsCalls.push({
-    target: goldxReserve,
-    params: goldxProtocol
+    abi: 'erc20:totalSupply',
+    chain: chain
   });
 
-  let assetsBalanceResults = await sdk.api.abi.multiCall({
+  let assetPrice = await getUnderlyingPrice(chain, token, block);
+  tvl = tvl.plus(BigNumber(assetTotalSupply).times(BigNumber(assetPrice)).div(Double));
+  let convertedBalance = BigNumber(assetTotalSupply);
+
+  return {
+    convertedBalance,
+    tvl
+  }
+}
+
+async function getTVLByBalanceOf(chain, token, pool, block) {
+  let balances = {}
+  let tvl = BigNumber("0");
+
+  let { output: assetBalance } = await sdk.api.abi.call({
     block,
-    calls: assetsCalls,
-    abi: 'erc20:balanceOf'
+    target: pool,
+    params: token,
+    abi: 'erc20:balanceOf',
+    chain: chain
   });
 
-  sdk.util.sumMultiBalanceOf(balances, assetsBalanceResults);
+  let assetPrice = await getUnderlyingPrice(chain, pool, block);
+  tvl = tvl.plus(BigNumber(assetBalance).times(BigNumber(assetPrice)).div(Double));
+  let convertedBalance = BigNumber(assetBalance);
 
-  let synthMarketsCalls = _.map(allSynthMarkets, (synthMarket) => ({
-    target: synthMarket,
-  }));
+  return {
+    convertedBalance,
+    tvl
+  }
+}
 
-  let synthMarketsResults = await sdk.api.abi.multiCall({
+async function getCurrentCash(chain, token, block) {
+  let cash;
+  const { output: isiToken } = await sdk.api.abi.call({
     block,
-    calls: synthMarketsCalls,
-    abi: 'erc20:totalSupply'
+    target: token,
+    abi: abi['isiToken'],
+    chain: chain
   });
 
-  sdk.util.sumMultiBalanceOf(balances, synthMarketsResults);
+  if (isiToken) {
+    const { output: iTokenTotalSupply } = await sdk.api.abi.call({
+      block,
+      target: token,
+      abi: abi['totalSupply'],
+      chain: chain
+    });
 
-  let usdxRemainingUSDC = (await sdk.api.abi.call({
-    target: dUSDC,
-    params: usdxPool,
-    abi: abi['balanceOfUnderlying']
-  })).output;
+    const { output: iTokenExchangeRate } = await sdk.api.abi.call({
+      block,
+      target: token,
+      abi: abi['exchangeRateCurrent'],
+      chain: chain
+    });
 
-  balances[USDC] = BigNumber(balances[USDC] || 0).plus(usdxRemainingUSDC).toFixed();
+    cash = BigNumber(iTokenTotalSupply).times(BigNumber(iTokenExchangeRate)).div(BigNumber(10 ** 18));
+  } else {
+    let { output: underlying } = await sdk.api.abi.call({
+      block,
+      target: token,
+      abi: abi['underlying'],
+      chain: chain
+    });
 
+    // Maybe need to accrue borrowed interests
+    let { output: iMtokenSupply } = await sdk.api.abi.call({
+      block,
+      target: underlying,
+      abi: 'erc20:totalSupply',
+      chain: chain
+    });
+    cash = BigNumber(iMtokenSupply);
+  }
+  return cash;
+}
+
+async function getAllMarketsByChain(chain, block) {
+  const { output: markets } = await sdk.api.abi.call({
+    block,
+    target: allControllers[chain],
+    abi: abi['getAlliTokens'],
+    chain: chain
+  });
+
+  return markets;
+}
+
+async function getUnderlyingPrice(chain, token, block) {
+  const { output: iTokenPrices }  = await sdk.api.abi.call({
+    block,
+    target: oracles[chain],
+    params: mappingTokens[token]?mappingTokens[token]:token,
+    abi: abi['getUnderlyingPrice'],
+    chain: chain
+  });
+
+  return iTokenPrices;
+}
+
+async function getLendingTVLByChain(chain, block) {
+  let iTokens = {};
+  let lendingTVL = BigNumber("0");
+  let markets = await getAllMarketsByChain(chain, block);
+
+  await Promise.all(
+    markets.map(async market => {
+      let cash = await getCurrentCash(chain, market, block);
+      let price = await getUnderlyingPrice(chain, market, block);
+
+      iTokens[market] = cash;
+      lendingTVL = lendingTVL.plus(cash.times(price).div(Double));
+    })
+  );
+
+  return {iTokens, lendingTVL};
+}
+
+async function getTVLOfdToken(chain, block) {
+  let dTokenBalances = {};
+  let dTokenTVL = BigNumber("0");
+  let dTokens = yieldMarkets[chain];
+  let dTokenUnderlyings = yieldUnderlyingTokens[chain];
   await (
-    Promise.all(yieldMarkets.map(async (yieldMarket) => {
-        let marketTVL = (await sdk.api.abi.call({
-          block,
-          target: yieldMarket,
-          abi: abi['getBaseData']
-        })).output;
+    Promise.all(dTokens.map(async (dToken) => {
+      let { output: marketTVL } = await sdk.api.abi.call({
+        block,
+        target: dToken,
+        abi: abi['getBaseData'],
+        chain: chain
+      });
 
-        const _balance = marketTVL['4'] || 0;
+      const _balance = marketTVL['4'] || 0;
 
-        balances[yieldUnderlyingTokens[yieldMarket]] = BigNumber(balances[yieldUnderlyingTokens[yieldMarket]] || 0)
-          .plus(_balance)
-          .toFixed();
+      dTokenBalances[dTokenUnderlyings[dToken]] = BigNumber(_balance);
+
+      let assetPrice = await getUnderlyingPrice(chain, dTokenUnderlyings[dToken], block);
+
+      dTokenTVL = dTokenTVL.plus(BigNumber(_balance).times(BigNumber(assetPrice)).div(Double));
     }))
   );
 
-  await (Promise.all(lendingMarkets.map(async (lendingMarket) => {
-      let iTokenTotalSupply = (await sdk.api.abi.call({
-        block,
-        target: lendingMarket,
-        abi: abi['totalSupply']
-      })).output;
-
-      let iTokenExchangeRate = (await sdk.api.abi.call({
-        block,
-        target: lendingMarket,
-        abi: abi['exchangeRateCurrent']
-      })).output;
-
-      let underlying = (await sdk.api.abi.call({
-        block,
-        target: lendingMarket,
-        abi: abi['underlying']
-      })).output;
-
-      balances[underlying] = BigNumber(balances[underlying] || 0).plus(BigNumber(iTokenTotalSupply)).times(BigNumber(iTokenExchangeRate)).div(BigNumber(10 ** 18));
-  })));
-
-  return balances;
+  return {
+    dTokenBalances,
+    dTokenTVL
+  };
 }
 
-async function tvlArbitrum(timestamp, block, chainBlocks) {
+async function getTVLOfSynthMarket(chain, block) {
+  let synthMarketBalances = {};
+  let SynthMarketTVL = BigNumber("0");
+
+  let synthMarkets = allSynthMarkets[chain];
+
+  await Promise.all(
+    synthMarkets.map(async synthMarket => {
+      let {
+        convertedBalance: synthMarketTotalSupply,
+        tvl: synthMarketTVL
+      } = await getTVLByTotalSupply(chain, synthMarket, block);
+
+      synthMarketBalances[synthMarket] = synthMarketTotalSupply;
+      SynthMarketTVL = SynthMarketTVL.plus(synthMarketTVL);
+    })
+  );
+
+  return {synthMarketBalances,SynthMarketTVL};
+}
+
+async function getTVLByChain(chain, block) {
   let balances = {};
+  let tvl = BigNumber("0");
+  if (chain == "ethereum") {
+    // 1. get balance and tvl of the USDx token.
+    await Promise.all(
+      usdxReservedTokens.map(async reserveToken => {
+        let {
+          convertedBalance: reserveBalance,
+          tvl: reserveTVL
+        } = await getTVLByBalanceOf(chain, usdxPool, reserveToken, block);
 
-  let synthMarketsCalls = _.map(arbitrumAllSynthMarkets, (synthMarket) => ({
-    target: synthMarket,
-  }));
+        balances[reserveToken] = reserveBalance;
+        tvl = tvl.plus(reserveTVL);
+      })
+    );
+    // 2. get balance and tvl of the GOLDx token.
+    let {
+      convertedBalance: goldxTotalSupply,
+      tvl: goldxTVL
+    } = await getTVLByTotalSupply(chain, goldxProtocol, block);
+    balances[goldxProtocol] = BigNumber(balances[goldxProtocol] || 0).plus(goldxTotalSupply);
+    tvl = tvl.plus(goldxTVL);
+    // 3. get balance and tvl of the dToken protocol.
+    let {
+      dTokenBalances: dTokenDetails,
+      dTokenTVL: dTokenTVL
+    } = await getTVLOfdToken(chain, block);
+    tvl = tvl.plus(dTokenTVL);
 
-  let synthMarketsResults = await sdk.api.abi.multiCall({
-    block,
-    calls: synthMarketsCalls,
-    abi: 'erc20:totalSupply',
-    chain: 'arbitrum'
-  });
+  } else if (chain == "bsc") {
+    // 3. get balance and tvl of the dToken protocol.
+    let {
+      dTokenBalances: dTokenDetails,
+      dTokenTVL: dTokenTVL
+    } = await getTVLOfdToken(chain, block);
+    tvl = tvl.plus(dTokenTVL);
+  }
+  // 4. get balance and tvl of the lending protocol.
+  let {
+    iTokens: iTokensDetials,
+    lendingTVL: lendingTVL
+  } = await getLendingTVLByChain(chain, block);
 
-  sdk.util.sumMultiBalanceOf(balances, synthMarketsResults, true);
+  tvl = tvl.plus(lendingTVL);
 
-  await (Promise.all(ArbitrumLendingMarkets.map(async (lendingMarket) => {
-    let iTokenTotalSupply = (await sdk.api.abi.call({
-      block,
-      target: lendingMarket,
-      abi: abi['totalSupply'],
-      chain: 'arbitrum'
-    })).output;
+  console.log(chain, "total TVL is: ", tvl.toString());
+  return tvl;
+}
 
+async function ethereum(timestamp, ethBlock, chainBlocks) {
+  return getTVLByChain('ethereum', ethBlock);
+}
 
-    let iTokenExchangeRate = (await sdk.api.abi.call({
-      block,
-      target: lendingMarket,
-      abi: abi['exchangeRateCurrent'],
-      chain: 'arbitrum'
-    })).output;
+async function bsc(timestamp, ethBlock, chainBlocks) {
+  return getTVLByChain('bsc', chainBlocks['bsc']);
+}
 
-    let underlying = (await sdk.api.abi.call({
-      block,
-      target: lendingMarket,
-      abi: abi['underlying'],
-      chain: 'arbitrum'
-    })).output;
+async function arbitrum(timestamp, ethBlock, chainBlocks) {
+  return getTVLByChain('arbitrum', chainBlocks['arbitrum']);
+}
 
-    balances['arbitrum:'+underlying] = BigNumber(balances[underlying] || 0).plus(BigNumber(iTokenTotalSupply)).times(BigNumber(iTokenExchangeRate)).div(BigNumber(10 ** 18));
-  })));
+async function totalTVL(timestamp, ethBlock, chainBlocks) {
+  let ethereumTVL = await ethereum(timestamp, ethBlock, chainBlocks);
+  let bscTVL = await bsc(timestamp, ethBlock, chainBlocks);
+  let arbitrumTVL = await arbitrum(timestamp, ethBlock, chainBlocks);
+  return ethereumTVL.plus(bscTVL).plus(arbitrumTVL);
 }
 
 module.exports = {
   ethereum:{
-    tvl: tvlEthereum
+    tvl: ethereum
   },
   bsc: {
-    tvl: tvlBSC
+    tvl: bsc
   },
   arbitrum:{
-    tvl: tvlArbitrum
+    tvl: arbitrum
   },
   start: 1564165044, // Jul-27-2019 02:17:24 AM +UTC
-  tvl
+  tvl: totalTVL
 }
