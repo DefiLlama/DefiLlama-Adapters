@@ -91,7 +91,7 @@ module.exports = {
   ethereum: {
     tvl: ethTvl,
   },
-  binance: {
+  bsc: {
     tvl: bscTvl,
   },
   tvl: sdk.util.sumChainTvls([bscTvl, ethTvl]),
