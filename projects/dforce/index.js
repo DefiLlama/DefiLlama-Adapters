@@ -1,8 +1,3 @@
-
-/*==================================================
-  Modules
-  ==================================================*/
-
   const sdk = require('@defillama/sdk');
   const _ = require('underscore');
   const BigNumber = require('bignumber.js');
@@ -10,6 +5,7 @@
   const BASE = BigNumber(10 ** 18)
   const Double = BASE * BASE;
   const mappingTokens = require("./tokenMapping.json");
+  const {toUSDTBalances, usdtAddress} = require('../helper/balances')
 
 
 /*==================================================
@@ -485,8 +481,7 @@ async function getTVLByChain(chain, block) {
 
   tvl = tvl.plus(lendingTVL);
 
-  console.log(chain, "total TVL is: ", tvl.toString());
-  return tvl;
+  return toUSDTBalances(tvl.toNumber());
 }
 
 async function ethereum(timestamp, ethBlock, chainBlocks) {
@@ -501,13 +496,6 @@ async function arbitrum(timestamp, ethBlock, chainBlocks) {
   return getTVLByChain('arbitrum', chainBlocks['arbitrum']);
 }
 
-async function totalTVL(timestamp, ethBlock, chainBlocks) {
-  let ethereumTVL = await ethereum(timestamp, ethBlock, chainBlocks);
-  let bscTVL = await bsc(timestamp, ethBlock, chainBlocks);
-  let arbitrumTVL = await arbitrum(timestamp, ethBlock, chainBlocks);
-  return ethereumTVL.plus(bscTVL).plus(arbitrumTVL);
-}
-
 module.exports = {
   ethereum:{
     tvl: ethereum
@@ -519,5 +507,5 @@ module.exports = {
     tvl: arbitrum
   },
   start: 1564165044, // Jul-27-2019 02:17:24 AM +UTC
-  tvl: totalTVL
+  tvl: sdk.util.sumChainTvls([ethereum, bsc, arbitrum])
 }
