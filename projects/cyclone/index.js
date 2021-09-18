@@ -1,6 +1,7 @@
 const utils = require("../helper/utils");
 const retry = require("../helper/retry");
 const { GraphQLClient, gql } = require("graphql-request");
+const {fetchChainExports} = require('../helper/exports')
 
 const gqls = {
   eth: new GraphQLClient("https://analytics-eth.cyclone.xyz/query"),
@@ -9,7 +10,7 @@ const gqls = {
   polygon: new GraphQLClient("https://analytics-polygon.cyclone.xyz/query"),
 };
 
-function fetchChain(chain) {
+function fetchChain(chain, pool2 = false) {
   return async () => {
     const graphQLClient = gqls[chain];
     const query = gql`
@@ -24,8 +25,13 @@ function fetchChain(chain) {
       async (fail) => await graphQLClient.request(query)
     );
     const { lpLocked, pool } = result.total;
-    return Number(lpLocked) + Number(pool);
+    return pool2?Number(lpLocked) : Number(pool);
   };
+}
+
+async function pool2(){
+  const pools = await Promise.all(Object.keys(gqls).map(c=>fetchChain(c, true)()))
+  return pools.reduce((t,c)=>t+c)
 }
 
 async function fetch() {
@@ -35,17 +41,8 @@ async function fetch() {
 }
 
 module.exports = {
-  iotex: {
-    fetch: fetchChain("iotex"),
-  },
-  eth: {
-    fetch: fetchChain("eth"),
-  },
-  bsc: {
-    fetch: fetchChain("bsc"),
-  },
-  polygon: {
-    fetch: fetchChain("polygon"),
-  },
-  fetch,
+  ...fetchChainExports(fetchChain, Object.keys(gqls)),
+  pool2:{
+    fetch:pool2
+  }
 };
