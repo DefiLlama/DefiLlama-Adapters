@@ -25,7 +25,7 @@ const avaxTvl = async (timestamp, ethBlock, chainBlocks) => {
 };
 
 module.exports = {
-  avax: {
+  avalanche: {
     tvl: avaxTvl,
   },
   tvl: sdk.util.sumChainTvls([avaxTvl]),
