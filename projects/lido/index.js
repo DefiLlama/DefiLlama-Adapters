@@ -48,6 +48,7 @@ async function solana(timestamp, ethBlock, chainBlocks) {
 }
 
 module.exports = {
+  cantRefill: true,
   solana: {
     tvl: solana
   },
