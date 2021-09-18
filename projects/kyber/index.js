@@ -121,7 +121,7 @@ const { transformAvaxAddress, fixAvaxBalances } = require('../helper/portedToken
     bsc: {
       tvl: bscTVL,
    },
-   avalanche:{
+   avax:{
      tvl: avaxTVL,
    },
   tvl: sdk.util.sumChainTvls([ethTvl,ethDmmTVL,bscTVL,polyTVL,avaxTVL])
