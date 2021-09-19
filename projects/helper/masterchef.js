@@ -50,9 +50,9 @@ async function addFundsInMasterChef(balances, masterChef, block, chain = 'ethere
         const balance = tokenBalances.output[idx].output;
         const token = symbol.input.target;
         if(ignoreAddresses.some(addr=>addr.toLowerCase() === token.toLowerCase())){
-            return
+            return 
         }
-        if (symbol.output.includes('LP')) {
+        if(symbol.output.includes('LP') || symbol.output.includes('PGL')) {
             lpPositions.push({
                 balance,
                 token
