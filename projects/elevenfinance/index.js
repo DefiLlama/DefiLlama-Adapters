@@ -1,14 +1,34 @@
-const retry = require('async-retry');
-const axios = require('axios');
+const utils = require('../helper/utils');
 
 const apiUrl = 'https://eleven.finance/api.json';
 
+async function fetchChain(chainId) {
+    const response = await utils.fetchURL(apiUrl);
+    const tvl = parseFloat(response.tvlinfo[chainId]);
+    return Math.round(tvl);
+}
+
 async function fetch() {
-    const res = await retry(async bail => await axios.get(apiUrl));
-    const tvl = parseFloat(res.totalvaluelocked);
+    const response = await utils.fetchURL(apiUrl);
+    const tvl = parseFloat(response.totalvaluelocked);
     return Math.round(tvl);
 }
 
 module.exports = {
+    bsc: {
+        fetch: fetchChain('bsc'),
+    },
+    polygon: {
+        fetch: fetchChain('polygon'),
+    },
+    fantom: {
+        fetch: fetchChain('fantom'),
+    },
+    avalanche: {
+        fetch: fetchChain('avalanche'),
+    },
+    okexchain: {
+        fetch: fetchChain('okexchain'),
+    },
     fetch,
 }
