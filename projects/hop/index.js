@@ -1,6 +1,7 @@
 const sdk = require('@defillama/sdk')
 const {transformXdaiAddress, transformOptimismAddress} = require('../helper/portedTokens')
 const { getBlock } = require('../helper/getBlock')
+const {chainExports} = require('../helper/exports')
 const { default: axios } = require('axios')
 
 function chainTvl(chain) {
@@ -22,6 +23,9 @@ function chainTvl(chain) {
 
             let token = chainConstants.l2CanonicalToken ?? chainConstants.l1CanonicalToken;
             let bridge = chainConstants.l2SaddleSwap ?? chainConstants.l1Bridge;
+            if(token === "0x0000000000000000000000000000000000000000"){
+                continue
+            }
 
             const amount = await sdk.api.erc20.balanceOf({
                 target: token,
@@ -35,18 +39,4 @@ function chainTvl(chain) {
     }
 }
 
-module.exports = {
-    ethereum: {
-        tvl: chainTvl('ethereum')
-    },
-    xdai: {
-        tvl: chainTvl('xdai')
-    },
-    polygon: {
-        tvl: chainTvl('polygon')
-    },
-    optimism: {
-        tvl: chainTvl('optimism')
-    },
-    tvl: sdk.util.sumChainTvls(['ethereum', 'xdai', 'polygon', 'optimism'].map(chainTvl))
-}
+module.exports = chainExports(chainTvl, ['ethereum', 'xdai', 'polygon', 'optimism', 'arbitrum'])
