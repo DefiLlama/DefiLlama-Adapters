@@ -25,7 +25,7 @@ module.exports = {
         fetch: fetchChain('fantom'),
     },
     avalanche: {
-        fetch: fetchChain('avalanche'),
+        fetch: fetchChain('avax'),
     },
     okexchain: {
         fetch: fetchChain('okexchain'),
