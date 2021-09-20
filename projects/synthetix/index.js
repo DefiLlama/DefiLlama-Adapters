@@ -52,7 +52,7 @@ function chainTvl(chain) {
     let totalTopStakersSNXLocked = new BigNumber(0);
     let totalTopStakersSNX = new BigNumber(0);
 
-    const holders = await SNXHolders(snxGraphEndpoint, block);
+    const holders = await SNXHolders(snxGraphEndpoint, block, chain);
 
     const issuanceRatio = (await sdk.api.abi.call({
       block,
@@ -123,7 +123,7 @@ function chainTvl(chain) {
 
 // Uses graph protocol to run through SNX contract. Since there is a limit of 100 results per query
 // we can use graph-results-pager library to increase the limit.
-async function SNXHolders(snxGraphEndpoint, block) {
+async function SNXHolders(snxGraphEndpoint, block, chain) {
   let holders = []
   let lastID = ""
   let holdersPage;
