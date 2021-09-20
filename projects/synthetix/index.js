@@ -18,7 +18,7 @@ query manyHolders($lastID: String, $block: Int) {
 }
 `
 
-const QUERY_OPTIMISM = gql`
+const QUERY_NO_BLOCK = gql`
 query manyHolders($lastID: String, $block: Int) {
   holders(first: 1000, where: {
     id_gt: $lastID
@@ -128,7 +128,7 @@ async function SNXHolders(snxGraphEndpoint, block, chain) {
   let lastID = ""
   let holdersPage;
   do {
-    holdersPage = (await request(snxGraphEndpoint, chain==="optimism"?QUERY_OPTIMISM:QUERY, {
+    holdersPage = (await request(snxGraphEndpoint, QUERY_NO_BLOCK, {
       block,
       lastID
     })).holders
