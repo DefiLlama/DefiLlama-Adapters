@@ -75,6 +75,9 @@ async function eth(timestamp, block) {
 
   _.forEach(poolTokenData, (poolToken) => {
     let poolTokens = poolToken.output;
+    if(poolTokens === null){
+      throw new Error("poolTokens failed call")
+    }
     let poolAddress = poolToken.input.target;
 
     _.forEach(poolTokens, (token) => {
