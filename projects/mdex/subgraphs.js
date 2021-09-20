@@ -54,7 +54,7 @@ function getMDEXLiquidity(block, chain) {
 
 const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
   const chain = "bsc"
-  const block = await getBlock(timestamp, "heco", chainBlocks)
+  const block = await getBlock(timestamp, chain, chainBlocks)
   const results = await request(graphUrls[chain], graphQueries[chain], {
     block,
   });
