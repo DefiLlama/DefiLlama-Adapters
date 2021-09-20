@@ -4,7 +4,7 @@ const { GraphQLClient, gql } = require("graphql-request");
 const {fetchChainExports} = require('../helper/exports')
 
 const gqls = {
-  eth: new GraphQLClient("https://analytics-eth.cyclone.xyz/query"),
+  ethereum: new GraphQLClient("https://analytics-eth.cyclone.xyz/query"),
   bsc: new GraphQLClient("https://analytics-bsc.cyclone.xyz/query"),
   iotex: new GraphQLClient("https://analytics-iotex.cyclone.xyz/query"),
   polygon: new GraphQLClient("https://analytics-polygon.cyclone.xyz/query"),
