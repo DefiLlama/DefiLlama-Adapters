@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { calculateUniTvl } = require('../helper/calculateUniTvl');
-const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl");
+const { calculateUsdUniTvl } = require("../helper/getEfficientUsdUniTvl");
 const { transformBscAddress } = require('../helper/portedTokens.js')
 
 const factories = {
@@ -27,10 +27,10 @@ const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
 module.exports = {
   misrepresentedTokens: true,
   cantRefill: true,
+  heco: {
+    tvl: hecoTvl,
+  },
   bsc: {
     tvl: bscTvl,
   },
-  heco: {
-    tvl: hecoTvl,
-  }
 };
