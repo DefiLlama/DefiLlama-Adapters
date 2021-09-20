@@ -66,10 +66,9 @@ async function tvl(timestamp, blockEth, chainBlocks) {
     await sumTokensAndLPsSharedOwners(balances, v1tokens, vaults, block)
 
     // V2
-    const balances = {}
     let v2tokens = (await axios.get('https://data.enzyme.finance/api/asset/list')).data.data.map(token => token.id)
 
-    var vaults = (
+    var vaults2 = (
         await sdk.api.util.getLogs({
           keys: [],
           toBlock: block,
@@ -78,10 +77,10 @@ async function tvl(timestamp, blockEth, chainBlocks) {
           topic: 'VaultProxyDeployed(address,address,address,address,address,string)',
         })
       ).output
-    vaults = vaults.map(log => `0x${log.data.substr(26,40)}`);
+    vaults2 = vaults2.map(log => `0x${log.data.substr(26,40)}`);
 
     v2tokens = v2tokens.map(token => [token, false])
-    await sumTokensAndLPsSharedOwners(balances, v2tokens, vaults, block)
+    await sumTokensAndLPsSharedOwners(balances, v2tokens, vaults2, block)
 
     await unwrapCrv(balances, crvStEth, balances[crvGauge], block)
     delete balances[crvGauge]
