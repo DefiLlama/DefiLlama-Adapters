@@ -27,9 +27,11 @@ const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
 module.exports = {
   misrepresentedTokens: true,
   cantRefill: true,
+  /*
   heco: {
     tvl: hecoTvl,
   },
+  */
   bsc: {
     tvl: bscTvl,
   },
