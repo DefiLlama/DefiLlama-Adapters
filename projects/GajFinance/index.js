@@ -11,12 +11,6 @@ const JUNGLEPOOL = '0xD45AB9b5655D1A3d58162ed1a311df178C04ddDe'
 
 const GAJDFYNVAULT = '0xbf26b582680e7525da0e27ea9527bb0bf4f22de9'
 
-async function staking(timestamp, ethBlock, chainBlocks) {
-    const balances = {};
-    await sumTokensAndLPsSharedOwners(balances,[[GAJ_TOKEN, false]], [NFTFARM_GAJ, MASTER_GAJ, JUNGLEPOOL], chainBlocks.polygon, 'polygon', addr=>`polygon:${addr}`)
-    await sumTokensAndLPsSharedOwners(balances,[[GAJ_AVAX_TOKEN, false]], [NFTFARM_GAJ_AVAX], chainBlocks.avax, 'avax', addr=>`avax:${addr}`)
-    return balances
-}
 
 /*
 async function pool2(timestamp, ethBlock, chainBlocks) {
@@ -27,18 +21,15 @@ async function pool2(timestamp, ethBlock, chainBlocks) {
 */
 
 async function tvl(timestamp, ethBlock, chainBlocks) {
-  return {}
+  const balances = {};
+    await sumTokensAndLPsSharedOwners(balances,[[GAJ_TOKEN, false]], [NFTFARM_GAJ, MASTER_GAJ, JUNGLEPOOL], chainBlocks.polygon, 'polygon', addr=>`polygon:${addr}`)
+    await sumTokensAndLPsSharedOwners(balances,[[GAJ_AVAX_TOKEN, false]], [NFTFARM_GAJ_AVAX], chainBlocks.avax, 'avax', addr=>`avax:${addr}`)
+    return balances
 }
 
-async function vaults(timestamp, ethBlock, chainBlocks) {
-   let balance = await sdk.api.abi.call
-}
 
 module.exports = {
   misrepresentedTokens: true,
   methodology: "TVL comes from NFT Farming and Jungle Pools",
   tvl,
-  staking:{
-    tvl:staking
-  }
 }
