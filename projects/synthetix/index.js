@@ -18,6 +18,16 @@ query manyHolders($lastID: String, $block: Int) {
 }
 `
 
+const QUERY_OPTIMISM = gql`
+query manyHolders($lastID: String, $block: Int) {
+  holders(first: 1000, where: {
+    id_gt: $lastID
+  }){
+    id
+  }
+}
+`
+
 const synthetixStates = {
   ethereum: '0x4b9Ca5607f1fF8019c1C6A3c2f0CC8de622D5B82',
   optimism: '0x8377b25B8564f6Be579865639776c5082CB37163' // It's Issuer, not SynthetixState but has the same issuanceRatio function
@@ -118,7 +128,7 @@ async function SNXHolders(snxGraphEndpoint, block) {
   let lastID = ""
   let holdersPage;
   do {
-    holdersPage = (await request(snxGraphEndpoint, QUERY, {
+    holdersPage = (await request(snxGraphEndpoint, chain==="optimism"?QUERY_OPTIMISM:QUERY, {
       block,
       lastID
     })).holders
