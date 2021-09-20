@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 const token0 = require('./abis/token0.json')
+const {requery} = require('./requery')
 
 const crvPools = {
     '0x6c3f90f043a72fa612cbac8115ee7e52bde6e490': {
@@ -268,11 +269,16 @@ async function sumTokensAndLPsSharedOwners(balances, tokens, owners, block, chai
         block,
         chain
     })
+    await requery(balanceOfTokens, chain, block, 'erc20:balanceOf')
+    const isLP = {}
+    tokens.forEach(token=>{
+        isLP[token[0].toLowerCase()]=token[1]
+    })
     const lpBalances = []
     balanceOfTokens.output.forEach((result, idx)=>{
-        const token = result.input.target
+        const token = result.input.target.toLowerCase()
         const balance = result.output
-        if(tokens.find(t=>addressesEqual(t[0], token))[1]){
+        if(isLP[token] === true){
             lpBalances.push({
                 token,
                 balance
