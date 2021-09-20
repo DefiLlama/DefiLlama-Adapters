@@ -1,9 +1,16 @@
 const sdk = require('@defillama/sdk');
 const axios = require('axios');
+const {getBlock} = require('../helper/getBlock')
 const { sumTokensAndLPsSharedOwners, unwrapCrv } = require('../helper/unwrapLPs');
 // node test.js projects/enzyme/index2.js
 
-async function v1(timestamp, block) {
+const crvStEth = "0x06325440d014e39736583c165c2963ba99faf14e"
+const crvGauge = "0x182b723a58739a9c974cfdb385ceadb237453c28"
+
+async function tvl(timestamp, blockEth, chainBlocks) {
+  const block = await getBlock(timestamp, 'ethereum', chainBlocks)
+
+  // V1
   const balances = {}
     let v1tokens = [
         "0x0d8775f648430679a709e98d2b0cb6250d2887ef", // BAT
@@ -57,25 +64,10 @@ async function v1(timestamp, block) {
     vaults = vaults.map(log => `0x${log[2].substr(26,40)}`);
 
     await sumTokensAndLPsSharedOwners(balances, v1tokens, vaults, block)
-    return balances
-};
 
-const crvStEth = "0x06325440d014e39736583c165c2963ba99faf14e"
-const crvGauge = "0x182b723a58739a9c974cfdb385ceadb237453c28"
-
-async function v2(timestamp, block) {
-  const balances = {}
+    // V2
+    const balances = {}
     let v2tokens = (await axios.get('https://data.enzyme.finance/api/asset/list')).data.data.map(token => token.id)
-    /*
-    (await axios.post(
-        'https://api.thegraph.com/subgraphs/name/enzymefinance/enzyme', {
-            query: `query {
-            assets { id }}` 
-        }, {
-            headers: {'Content-Type': 'application/json'}}))
-            .data.data.assets
-            .map(r => r.id);
-            */
 
     var vaults = (
         await sdk.api.util.getLogs({
@@ -99,6 +91,6 @@ async function v2(timestamp, block) {
 
 module.exports = {
   ethereum:{
-    tvl: sdk.util.sumChainTvls([v1, v2])
+    tvl
   }
 };
