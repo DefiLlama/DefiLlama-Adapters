@@ -2,7 +2,8 @@ const { request, gql } = require("graphql-request");
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 const { calculateUniTvl } = require('../helper/calculateUniTvl')
-const {toUSDTBalances} = require('../helper/balances')
+const {toUSDTBalances} = require('../helper/balances');
+const { getBlock } = require("../helper/getBlock");
 
 // --> bsc addresses found here:    https://github.com/mdexSwap/bscswap
 // --> heco addresses found here:   https://github.com/mdexSwap/contracts
@@ -53,8 +54,9 @@ function getMDEXLiquidity(block, chain) {
 
 const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
   const chain = "bsc"
+  const block = await getBlock(timestamp, "heco", chainBlocks)
   const results = await request(graphUrls[chain], graphQueries[chain], {
-    block: chainBlocks.bsc,
+    block,
   });
   return toUSDTBalances(results.mdexFactory.totalLiquidityUSD)
 };
