@@ -1,7 +1,8 @@
-const web3 = require("../config/web3.js");
 const { calculateUsdUniTvl } = require('../helper/getUsdUniTvl.js')
 const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js');
+const Web3 = require('web3');
+const web3ftm = new Web3(new Web3.providers.HttpProvider(`https://rpc.ftm.tools/`));
 
 const factory = '0x733A9D1585f2d14c77b49d39BC7d7dd14CdA4aa5'
 const masterchef = '0xCb80F529724B9620145230A0C866AC2FACBE4e3D'
@@ -16,7 +17,7 @@ const whitelist = [
 ]
 
 const abi = require('./abis/getReserves.json');
-const ftmBrushPairContract = new web3.eth.Contract(abi, ftmBrushLP);
+const ftmBrushPairContract = new web3ftm.eth.Contract(abi, ftmBrushLP);
 
 const getBrushPriceInFtm = async (ftmBlock) => {
   const getReserves = async (pairContract) => {
