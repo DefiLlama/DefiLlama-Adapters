@@ -1,8 +1,6 @@
 const { calculateUsdUniTvl } = require('../helper/getUsdUniTvl.js')
 const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js');
-const Web3 = require('web3');
-const web3ftm = new Web3(new Web3.providers.HttpProvider(`https://rpc.ftm.tools/`));
 
 const factory = '0x733A9D1585f2d14c77b49d39BC7d7dd14CdA4aa5'
 const masterchef = '0xCb80F529724B9620145230A0C866AC2FACBE4e3D'
@@ -16,23 +14,10 @@ const whitelist = [
   '0x321162cd933e2be498cd2267a90534a804051b11'
 ]
 
-const abi = require('./abis/getReserves.json');
-const ftmBrushPairContract = new web3ftm.eth.Contract(abi, ftmBrushLP);
+const abiGetReserves = require('./abis/getReserves.json');
+const wftm = "fantom:0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83"
 
-const getBrushPriceInFtm = async (ftmBlock) => {
-  const getReserves = async (pairContract) => {
-    try {
-      return await pairContract.methods.getReserves().call();
-    } catch {
-      return { reserve0: '0', reserve1: '0' };
-    }
-  }; 
-  const { reserve0, reserve1 } = await getReserves(ftmBrushPairContract);
-  return new BigNumber(reserve1).div(new BigNumber(reserve0))
-}
-
-async function stakingtvl(timestamp, ftmBlock, chainBlocks) {
-  const balances = {}
+async function stakingtvl(timestamp, ethBlock, chainBlocks) {
   // Get the brush staked in the masterchef
   const brushBalance = await sdk.api.erc20.balanceOf({
     block: chainBlocks['fantom'],
@@ -40,23 +25,22 @@ async function stakingtvl(timestamp, ftmBlock, chainBlocks) {
     owner: masterchef,
     chain: 'fantom'
   })
-  sdk.util.sumSingleBalance(balances, brush, brushBalance.output)
-
-  // Convert to fantom amount as CoinGecko does not currently have our price
-  return new Promise(async (resolve, reject) => {
-    try {
-      const newBalances = {}
-      newBalances["fantom"] = BigNumber(balances[brush]).div(await getBrushPriceInFtm (ftmBlock)).div(BigNumber(10).pow(18));
-      resolve(newBalances);
-    } catch(error) {
-      reject(error);
-    }
+  const pool2Reserves = await sdk.api.abi.call({
+    target: ftmBrushLP,
+    chain: 'fantom',
+    block: chainBlocks.fantom,
+    abi: abiGetReserves[0]
   })
+  const { reserve0, reserve1 } = pool2Reserves.output
+  return {
+    [wftm]: BigNumber(reserve0).times(brushBalance.output).div(reserve1).toFixed(0)
+  }
 }
 
 module.exports = {
-  tvl: calculateUsdUniTvl(factory, 'fantom', ftm, whitelist, 'fantom'),
+  misrepresentedTokens: true,
   staking:{
     tvl: stakingtvl
-  }
+  },
+  tvl: calculateUsdUniTvl(factory, 'fantom', ftm, whitelist, 'fantom'),
 }
