@@ -32,6 +32,7 @@ async function tvl(timestamp) {
 }
 
 module.exports = {
+  methodology: `Counts the tokens locked on AMM pools, pulling the data from their subgraph "https://graph.fuzz.fi/subgraphs/name/fuzzfinance/fuzzswap".`,
   harmony:{
     tvl,
   },
