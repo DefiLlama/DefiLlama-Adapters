@@ -2,7 +2,7 @@ const sdk = require('@defillama/sdk');
 const abi = require('./abis/masterchef.json')
 const {unwrapUniswapLPs} = require('./unwrapLPs')
 
-async function addFundsInMasterChef(balances, masterChef, block, chain = 'ethereum', transformAddress=id=>id, poolInfoAbi=abi.poolInfo, ignoreAddresses = []) {
+async function addFundsInMasterChef(balances, masterChef, block, chain = 'ethereum', transformAddress=id=>id, poolInfoAbi=abi.poolInfo, ignoreAddresses = [], includeLPs = true) {
     const poolLength = (
         await sdk.api.abi.call({
             abi: abi.poolLength,
@@ -53,10 +53,12 @@ async function addFundsInMasterChef(balances, masterChef, block, chain = 'ethere
             return
         }
         if (symbol.output.includes('LP')) {
-            lpPositions.push({
-                balance,
-                token
-            });
+            if(includeLPs){
+                lpPositions.push({
+                    balance,
+                    token
+                });
+            }
         } else {
             sdk.util.sumSingleBalance(balances, transformAddress(token), balance)
         }
