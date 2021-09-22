@@ -3,7 +3,10 @@ const sdk = require('@defillama/sdk')
 const endpoint = "https://sushi-analytics-defi.herokuapp.com/"
 
 function getExports(protocol, chains) {
-    async function tvl() {
+    async function tvl(timestamp) {
+        if(Math.abs(Date.now()/1000-timestamp) > 3600){
+            throw new Error("Can't refill adapters moved to heroku")
+        }
         const data = await utils.fetchURL(endpoint)
         const balances = {}
         Object.values(data.data[protocol]).forEach(chain =>
