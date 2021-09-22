@@ -9,6 +9,7 @@ const holder = "0x1B7A4130827F8531626baEEE53fE02EA1c8865B7"
 const toNumber = n=>Number(n)/1e18
 
 async function tvl(timestamp, ethBlock, chainBlocks) {
+    balances = {}
     const chain = 'celo'
     const block = await getBlock(timestamp, chain, chainBlocks);
     for (token of tokens) {
