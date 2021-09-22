@@ -45,16 +45,12 @@ const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
     sdk.util.sumSingleBalance(balances, NXM, supply);
   }
 
-  for (const token of erc20Tokens) {
-    await sumTokensAndLPsSharedOwners(
-      balances,
-      [[token, false]],
-      vaults,
-      chainBlocks["ethereum"],
-      "ethereum",
-      (addr) => addr
-    );
-  }
+  await sumTokensAndLPsSharedOwners(
+    balances,
+    erc20Tokens.map(token => [token, false]),
+    vaults,
+    chainBlocks["ethereum"]
+  );
 
   return balances;
 };
