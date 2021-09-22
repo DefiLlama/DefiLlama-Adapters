@@ -1,71 +1,26 @@
-const sdk = require("@defillama/sdk");
-const erc20 = require("../helper/abis/erc20.json");
 const abi = require("./abi.json");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { transformAvaxAddress } = require("../helper/portedTokens");
+const { addFundsInMasterChef } = require("../helper/masterchef");
+const { staking } = require("../helper/staking");
+const { pool2Exports } = require("../helper/pool2");
 
 const STAKING_CONTRACT = "0xC0F19836931F5Ab43f279D4DD5Ab3089846Db264";
+const dregg = "0x88c090496125b751B4E3ce4d3FDB8E47DD079c57"
+const pool2s = ["0xB52a2b91Bf89BcB9435ad94D23555EaD26954CA9", "0x6c4339A47AA98CB5759d4B5C4058a30620eE46A5"]
 
-const avaxTvl = async (timestamp, ethBlock, chainBlocks) => {
+async function tvl(timestamp, ethBlock, chainBlocks){
   const balances = {};
 
-  const lengthPool = (
-    await sdk.api.abi.call({
-      abi: abi.poolLength,
-      target: STAKING_CONTRACT,
-      chain: "avax",
-      block: chainBlocks["avax"],
-    })
-  ).output;
-
-  const lpPositions = [];
-
-  for (let index = 0; index < lengthPool; index++) {
-    const lpOrTokens = (
-      await sdk.api.abi.call({
-        abi: abi.poolInfo,
-        target: STAKING_CONTRACT,
-        params: index,
-        chain: "avax",
-        block: chainBlocks["avax"],
-      })
-    ).output[0];
-
-    const lpOrToken_bal = (
-      await sdk.api.abi.call({
-        abi: erc20.balanceOf,
-        target: lpOrTokens,
-        params: STAKING_CONTRACT,
-        chain: "avax",
-        block: chainBlocks["avax"],
-      })
-    ).output;
-
-    if (
-      !(index >= 1 && index <= 3)
-    ) {
-      sdk.util.sumSingleBalance(balances, `avax:${lpOrTokens}`, lpOrToken_bal);
-    } else {
-      lpPositions.push({
-        token: lpOrTokens,
-        balance: lpOrToken_bal,
-      });
-    }
-  }
-
   const transformAddress = await transformAvaxAddress();
-
-  await unwrapUniswapLPs(
-    balances,
-    lpPositions,
-    chainBlocks["avax"],
-    "avax",
-    transformAddress
-  );
+  await addFundsInMasterChef(balances, STAKING_CONTRACT, chainBlocks.avax, "avax", transformAddress, abi.poolInfo, [...pool2s, dregg])
 
   return balances;
 };
 
 module.exports = {
-  tvl: sdk.util.sumChainTvls([avaxTvl])
+  staking:{
+    tvl: staking(STAKING_CONTRACT, dregg, "avax")
+  },
+  pool2:pool2Exports(STAKING_CONTRACT, pool2s, "avax"),
+  tvl
 };
