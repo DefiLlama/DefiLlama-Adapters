@@ -1,5 +1,6 @@
 const sdk = require("@defillama/sdk");
-const {sumTokensAndLPsSharedOwners} = require('../helper/unwrapLPs')
+const { sumTokensAndLPsSharedOwners } = require('../helper/unwrapLPs');
+const { fetchURL } = require("../helper/utils");
 const vaultabi = require("./vaultabi.json");
 
 const GAJ_TOKEN = '0xf4b0903774532aee5ee567c02aab681a81539e92'
@@ -11,34 +12,43 @@ const JUNGLEPOOL = '0xD45AB9b5655D1A3d58162ed1a311df178C04ddDe'
 
 const GAJDFYNVAULT = '0xbf26b582680e7525da0e27ea9527bb0bf4f22de9'
 
-async function staking(timestamp, ethBlock, chainBlocks) {
-    const balances = {};
-    await sumTokensAndLPsSharedOwners(balances,[[GAJ_TOKEN, false]], [NFTFARM_GAJ, MASTER_GAJ, JUNGLEPOOL], chainBlocks.polygon, 'polygon', addr=>`polygon:${addr}`)
-    await sumTokensAndLPsSharedOwners(balances,[[GAJ_AVAX_TOKEN, false]], [NFTFARM_GAJ_AVAX], chainBlocks.avax, 'avax', addr=>`avax:${addr}`)
-    return balances
-}
+const endpoint = "https://gajvaultapi.herokuapp.com/vaults"
 
-/*
-async function pool2(timestamp, ethBlock, chainBlocks) {
+async function staking(timestamp, ethBlock, chainBlocks) {
   const balances = {};
-  await sumTokensAndLPsSharedOwners(balances,[["", true]], ["0x05Fc9D75BA7E86b0aeCc4DA466B6Fe2679c200D7"], chainBlocks.avax, 'avax', addr=>`avax:${addr}`)
+  await sumTokensAndLPsSharedOwners(balances, [[GAJ_TOKEN, false]], [NFTFARM_GAJ, MASTER_GAJ, JUNGLEPOOL], chainBlocks.polygon, 'polygon', addr => `polygon:${addr}`)
+  await sumTokensAndLPsSharedOwners(balances, [[GAJ_AVAX_TOKEN, false]], [NFTFARM_GAJ_AVAX], chainBlocks.avax, 'avax', addr => `avax:${addr}`)
   return balances
 }
-*/
 
-async function tvl(timestamp, ethBlock, chainBlocks) {
-  return {}
-}
+function vaults(includePool2) {
+  return async (timestamp, ethBlock, chainBlocks) => {
+    const balances = {};
+    const vaults = (await fetchURL(endpoint)).data.filter(v => {
+      const pool2 = v.vaultName.includes("GAJ")
+      if(includePool2){
+        return pool2
+      } else{
+        return !pool2
+      }
+    })
+    for (const vault of vaults) {
+      const chain = vault.chain.toLowerCase()
+      await sumTokensAndLPsSharedOwners(balances, [[vault.pairAddress, true]], [vault.contractAddress], chainBlocks[chain], chain, addr => `${chain}:${addr}`)
+    }
 
-async function vaults(timestamp, ethBlock, chainBlocks) {
-   let balance = await sdk.api.abi.call
+    return balances
+  }
 }
 
 module.exports = {
   misrepresentedTokens: true,
   methodology: "TVL comes from NFT Farming and Jungle Pools",
-  tvl,
-  staking:{
-    tvl:staking
+  tvl: vaults(false),
+  staking: {
+    tvl: staking
+  },
+  pool2:{
+    tvl: vaults(true)
   }
 }
