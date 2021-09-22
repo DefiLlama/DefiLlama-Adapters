@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const erc20 = require("../helper/abis/erc20.json");
-const tvlOnPairs = require("../helper/processPairs.js");
+const {uniTvlExport} = require("../helper/calculateUniTvl");
 const { getCompoundV2Tvl } = require("../helper/compound");
 const {
   transformBscAddress,
@@ -75,45 +75,13 @@ const hecoMarketsTvl = async (...params) => {
   )(...params);
 };
 
-const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
+const ethTvl = uniTvlExport(factoryETH, "ethereum");
 
-  await tvlOnPairs("ethereum", chainBlocks, factoryETH, balances);
+const bscTvl = uniTvlExport(factoryBSC, "bsc");
 
-  return balances;
-};
-
-const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
-
-  await tvlOnPairs("bsc", chainBlocks, factoryBSC, balances);
-
-  return balances;
-};
-
-const hecoTvl = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
-
-  await tvlOnPairs("heco", chainBlocks, factoryHECO, balances);
-
-  return balances;
-};
+const hecoTvl = uniTvlExport(factoryHECO, "heco");
 
 module.exports = {
-  staking: {
-    tvl: staking,
-  },
-  ethereum: {
-    tvl: sdk.util.sumChainTvls([ethTvl,ethMarketsTvl]),
-    
-  },
-  bsc: {
-    tvl: sdk.util.sumChainTvls([bscTvl,bscMarketsTvl]),
-  },
-  heco: {
-    tvl:sdk.util.sumChainTvls([hecoTvl,hecoMarketsTvl]),
-    
-  },
   tvl: sdk.util.sumChainTvls([
     ethTvl,
     ethMarketsTvl,
@@ -122,6 +90,18 @@ module.exports = {
     hecoTvl,
     hecoMarketsTvl,
   ]),
+  staking: {
+    tvl: staking,
+  },
+  ethereum: {
+    tvl: sdk.util.sumChainTvls([ethTvl,ethMarketsTvl]),
+  },
+  bsc: {
+    tvl: sdk.util.sumChainTvls([bscTvl, bscMarketsTvl]),
+  },
+  heco: {
+    tvl: sdk.util.sumChainTvls([hecoTvl,hecoMarketsTvl]),
+  },
   methodology:
     "We count liquidity on the Farms (LP tokens) threw Factory Contract; and on the lending markets same as compound",
 };
