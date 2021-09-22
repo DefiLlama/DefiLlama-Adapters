@@ -77,8 +77,6 @@ async function avax(timestamp, ethBlock, chainBlocks){
 
 const chainsWithBadCoingeckoSupport = ([
   ["okexchain", "0x382bb369d343125bfb2117af9c149795c6c65c50",[
-    "0x54e4622dc504176b3bb432dccaf504569699a7ff", // btck
-    "0xef71ca2ee68f45b9ad6f72fbdb33d707b872315c", // ethk
     "0xc946daf81b08146b1c7a8da2a851ddf2b3eaaf85", // usdc
     "0x8f8526dbfd6e38e3d8307702ca8469bae6c56c15", // wokt
   ], "tether"],
