@@ -2,6 +2,8 @@ const sdk = require("@defillama/sdk");
 const { sumTokensAndLPsSharedOwners } = require('../helper/unwrapLPs');
 const { fetchURL } = require("../helper/utils");
 const vaultabi = require("./vaultabi.json");
+const { transformAvaxAddress } = require("../helper/portedTokens");
+const { transformPolygonAddress } = require("../helper/portedTokens");
 
 const GAJ_TOKEN = '0xf4b0903774532aee5ee567c02aab681a81539e92'
 const GAJ_AVAX_TOKEN = '0x595c8481c48894771CE8FaDE54ac6Bf59093F9E8'
@@ -21,8 +23,7 @@ async function staking(timestamp, ethBlock, chainBlocks) {
   return balances
 }
 
-function vaults(includePool2) {
-  return async (timestamp, ethBlock, chainBlocks) => {
+async function vaults(timestamp, ethBlock, chainBlocks) {
     const balances = {};
     const vaults = (await fetchURL(endpoint)).data.filter(v => {
       const pool2 = v.vaultName.includes("GAJ")
@@ -32,19 +33,42 @@ function vaults(includePool2) {
         return !pool2
       }
     })
-    for (const vault of vaults) {
-      const chain = vault.chain.toLowerCase()
-      await sumTokensAndLPsSharedOwners(balances, [[vault.pairAddress, true]], [vault.contractAddress], chainBlocks[chain], chain, addr => `${chain}:${addr}`)
-    }
-
-    return balances
-  }
+    const balance = (
+    await sdk.api.abi.multiCall({
+      abi: abi.balanceOfPool,
+      calls: vaults.map((vault) => ({
+        target: vault.contractAddress,
+      })),
+      block,
+      ...((chain == "avax" || chain == "polygon") && { chain }),
+    })
+  ).output.map((bal) => bal.output);
+  
+  
+  const lpPositions = [];
+  for (const vault of vaults) {
+      lpPositions.push({
+        token: vault.contractAddress,
+        balance: balance[vault.id],
+      });
+   }
+ 
+  await unwrapUniswapLPs(
+    balances,
+    lpPositions,
+    block,
+    chain,
+    chain == "avax"
+      ? await transformAvaxAddress()
+      : await transformPolygonAddress()
+  );
+  return balances
 }
 
 module.exports = {
   misrepresentedTokens: true,
-  methodology: "TVL comes from NFT Farming and Jungle Pools",
-  tvl: vaults(false),
+  methodology: "TVL comes from NFT Farming, Jungle Pools, MasterChef and Vaults",
+  tvl: vaults,
   staking: {
     tvl: staking
   },
