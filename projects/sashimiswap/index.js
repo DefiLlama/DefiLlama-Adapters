@@ -104,16 +104,15 @@ module.exports = {
     tvl: staking,
   },
   ethereum: {
-    tvl: ethTvl,
-    ethMarketsTvl,
+    tvl: sdk.util.sumChainTvls([ethTvl,ethMarketsTvl]),
+    
   },
   bsc: {
-    tvl: bscTvl,
-    bscMarketsTvl,
+    tvl: sdk.util.sumChainTvls([bscTvl,bscMarketsTvl]),
   },
   heco: {
-    tvl: hecoTvl,
-    hecoMarketsTvl,
+    tvl:sdk.util.sumChainTvls([hecoTvl,hecoMarketsTvl]),
+    
   },
   tvl: sdk.util.sumChainTvls([
     ethTvl,
