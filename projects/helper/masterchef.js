@@ -1,6 +1,8 @@
 const sdk = require('@defillama/sdk');
 const abi = require('./abis/masterchef.json')
 const {unwrapUniswapLPs} = require('./unwrapLPs')
+const { staking } = require("./staking");
+const { pool2Exports } = require("./pool2");
 
 async function addFundsInMasterChef(balances, masterChef, block, chain = 'ethereum', transformAddress=id=>id, poolInfoAbi=abi.poolInfo, ignoreAddresses = [], includeLPs = true) {
     const poolLength = (
@@ -73,6 +75,25 @@ async function addFundsInMasterChef(balances, masterChef, block, chain = 'ethere
     );
 }
 
+function masterChefExports(masterchef, chain, stakingToken, pool2Tokens){
+    async function tvl(timestamp, ethBlock, chainBlocks){
+        const balances = {};
+      
+        const transformAddress = addr=>`${chain}:${addr}`;
+        await addFundsInMasterChef(balances, masterchef, chainBlocks[chain], chain, transformAddress, abi.poolInfo, [...pool2Tokens, stakingToken])
+      
+        return balances;
+    };
+    return {
+        staking:{
+          tvl: staking(masterchef, stakingToken, chain)
+        },
+        pool2:pool2Exports(masterchef, pool2Tokens, chain),
+        tvl
+    };
+}
+
 module.exports = {
-    addFundsInMasterChef
+    addFundsInMasterChef,
+    masterChefExports
 }
