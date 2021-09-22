@@ -33,18 +33,32 @@ async function eth(timestamp, ethBlock, chainBlocks) {
 
 async function solana(timestamp, ethBlock, chainBlocks) {
   const connection = new Connection('https://solana-api.projectserum.com/');
+  const validatorsBalance = await retrieveValidatorsBalance(connection)
+  const reserveAccountBalance = await retrieveReserveAccountBalance(connection)
+
+  const totalSolInLamports = validatorsBalance + reserveAccountBalance;
+  return {
+    'solana': totalSolInLamports/1e9
+  }
+}
+
+async function retrieveValidatorsBalance(connection) {
   const accountInfo = await connection.getAccountInfo(new PublicKey("49Yi1TKkNyYjPAFdR9LBvoHcUjuPX4Df5T5yv39w2XTn"));
   const deserializedAccountInfo = deserializeUnchecked(
     schema,
     Lido,
     accountInfo.data,
   );
+  return deserializedAccountInfo.validators.entries
+    .map(pubKeyAndEntry => pubKeyAndEntry.entry)
+    .map(validator => validator.stake_accounts_balance.toNumber())
+    .reduce((prev, current) => prev + current, 0)
+}
 
-  const totalSolInLamports = deserializedAccountInfo.exchange_rate.sol_balance.toNumber();
-  //const stats = await axios.get('https://solana.lido.fi/api/stats')
-  return {
-    'solana': totalSolInLamports/1e9
-  }
+async function retrieveReserveAccountBalance(connection) {
+  const accountInfo = await connection.getAccountInfo(new PublicKey("3Kwv3pEAuoe4WevPB4rgMBTZndGDb53XT7qwQKnvHPfX"));
+  const rent = await connection.getMinimumBalanceForRentExemption(accountInfo.data.byteLength);
+  return accountInfo.lamports - rent;
 }
 
 module.exports = {
