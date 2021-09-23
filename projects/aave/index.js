@@ -181,12 +181,10 @@ const { addBalanceOfTokensAndLPs } = require('../helper/unwrapLPs');
 
     let aTokenAddresses = [];
     aTokenMarketData.map((aTokensData) => {
-      if (aTokensData.output) {
         aTokenAddresses = [
           ...aTokenAddresses,
           ...aTokensData.output.map((aToken) => aToken[1]),
         ];
-      }
     });
 
     const underlyingAddressesData = (
