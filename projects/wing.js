@@ -1,6 +1,7 @@
 const utils = require('./helper/utils');
 
 async function fetchChain(chainId) {
+  return async ()=>{
   let url;
   switch (chainId) {
     case 'ontology':
@@ -19,12 +20,14 @@ async function fetchChain(chainId) {
     tvl = response.data.result.TotalSupply - response.data.result.TotalBorrow;
   }
   return tvl;
+  }
 }
 async function fetch() {
   const tvl = await utils.fetchURL('https://api.wing.finance/wing/analytics/tvl-overview')
   return tvl.data.result.overview.totalSupply - tvl.data.result.overview.totalBorrow;
 }
 async function stake(chainId) {
+  return async ()=>{
   let url;
   switch (chainId) {
     case 'ontology':
@@ -43,6 +46,7 @@ async function stake(chainId) {
     staked = response.data.result.TotalLockedWingDollar;
   }
   return staked;
+  }
 }
 
 module.exports = {
