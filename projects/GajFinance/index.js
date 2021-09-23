@@ -2,6 +2,8 @@ const sdk = require("@defillama/sdk");
 const { sumTokensAndLPsSharedOwners } = require('../helper/unwrapLPs');
 const { fetchURL } = require("../helper/utils");
 const vaultabi = require("./vaultabi.json");
+const { transformAvaxAddress } = require("../helper/portedTokens");
+const { transformPolygonAddress } = require("../helper/portedTokens");
 
 const GAJ_TOKEN = '0xf4b0903774532aee5ee567c02aab681a81539e92'
 const GAJ_AVAX_TOKEN = '0x595c8481c48894771CE8FaDE54ac6Bf59093F9E8'
@@ -10,9 +12,8 @@ const NFTFARM_GAJ = '0xce52df6E9ca6db41DC4776B1735fdE60f5aD5012'
 const NFTFARM_GAJ_AVAX = '0x65096f7dB56fC27C7646f0aBb6F9bC0CEA2d8765'
 const JUNGLEPOOL = '0xD45AB9b5655D1A3d58162ed1a311df178C04ddDe'
 
-const GAJDFYNVAULT = '0xbf26b582680e7525da0e27ea9527bb0bf4f22de9'
-
-const endpoint = "https://gajvaultapi.herokuapp.com/vaults"
+const nativeEndpoint = "https://gajvaultapi.herokuapp.com/native"
+const nonNativeEndpoint = "https://gajvaultapi.herokuapp.com/nonNative"
 
 async function staking(timestamp, ethBlock, chainBlocks) {
   const balances = {};
@@ -21,34 +22,50 @@ async function staking(timestamp, ethBlock, chainBlocks) {
   return balances
 }
 
-function vaults(includePool2) {
+function vaults(pool2) {
   return async (timestamp, ethBlock, chainBlocks) => {
     const balances = {};
-    const vaults = (await fetchURL(endpoint)).data.filter(v => {
-      const pool2 = v.vaultName.includes("GAJ")
-      if(includePool2){
-        return pool2
-      } else{
-        return !pool2
-      }
-    })
-    for (const vault of vaults) {
+    const vaults = (await fetchURL(pool2 ? nativeEndpoint : nonNativeEndpoint)).data
+    for (const vault of vaults) { // Can't aggregate calls because there are multiple chains
       const chain = vault.chain.toLowerCase()
-      await sumTokensAndLPsSharedOwners(balances, [[vault.pairAddress, true]], [vault.contractAddress], chainBlocks[chain], chain, addr => `${chain}:${addr}`)
-    }
+      const block = chainBlocks[chain]
+      console.log(vault)
+      const balance = (
+        await sdk.api.abi.call({
+          abi: vaultabi.find(a=>a.name === "balance"),
+          target: vault.contractAddress,
+          block,
+          chain
+        })
+      ).output
 
+
+      const lpPositions = [{
+        balance,
+        token: vault.pairAddress
+      }];
+
+      await unwrapUniswapLPs(
+        balances,
+        lpPositions,
+        block,
+        chain,
+        chain == "avax"
+          ? await transformAvaxAddress()
+          : await transformPolygonAddress()
+      );
+    }
     return balances
   }
 }
 
 module.exports = {
-  misrepresentedTokens: true,
-  methodology: "TVL comes from NFT Farming and Jungle Pools",
+  methodology: "TVL comes from NFT Farming, Jungle Pools, MasterChef and Vaults",
   tvl: vaults(false),
   staking: {
     tvl: staking
   },
-  pool2:{
+  pool2: {
     tvl: vaults(true)
   }
 }
