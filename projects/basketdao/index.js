@@ -10,6 +10,9 @@ const masterChef = '0xDB9daa0a50B33e4fe9d0ac16a1Df1d335F96595e'
 const weth = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
 const continuousMigrator = '0x3f436dE9ef3f07b770c4DB45F60f9f1d323Bbf36'
 
+const bmiToken = "0x0aC00355F80E289f53BF368C9Bdb70f5c114C44B";
+const daiToken = '0x6b175474e89094c44da98b954eedeac495271d0f'
+
 async function tvl(timestamp, block) {
   let balances = {};
   const dpiLocked = sdk.api.erc20.balanceOf({
@@ -31,6 +34,10 @@ async function tvl(timestamp, block) {
     target: bDPIToken,
     block
   })
+  const bmiSupply = sdk.api.erc20.totalSupply({
+    target: bmiToken,
+    block,
+  });
   await unwrapUniswapLPs(balances, [{
     token: dpiEthToken,
     balance: (await dpiLPLocked).output
@@ -38,9 +45,8 @@ async function tvl(timestamp, block) {
   sdk.util.sumSingleBalance(balances, dpiToken, (await dpiLocked).output)
   sdk.util.sumSingleBalance(balances, dpiToken, (await dpiLockedOnMigrator).output)
 
-  try{
-    sdk.util.sumSingleBalance(balances, bDPIToken, (await bdpiSupply).output)
-  }catch(e){}
+  sdk.util.sumSingleBalance(balances, bDPIToken, (await bdpiSupply).output)
+  sdk.util.sumSingleBalance(balances, daiToken, (await bmiSupply).output);
   return balances
 }
 

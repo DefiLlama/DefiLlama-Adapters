@@ -26,6 +26,7 @@ async function tvl(timestamp, block) {
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   ethereum:{
     tvl,
   },

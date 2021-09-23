@@ -1,0 +1,76 @@
+{
+  "tokens": {
+    "usdc": "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
+    "eth": "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619",
+    "weth": "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619",
+    "matic": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+    "quick": "0x831753DD7087CaC61aB5644b308642cc1c33Dc13",
+    "sds": "0xAB72EE159Ff70b64beEcBbB0FbBE58b372391C54",
+    "safedollar": "0x66C59Dded4EF01a3412a8B019B6e41D4a8C49A35",
+    "susdc": "0xd2eba21c2e0d6f996fdd063ae20aca8264ac1929",
+    "smatic": "0xc1ac5c0b73ba01a31c93884c28a31e9985842c38"
+  },
+  "farms": [
+    {
+      "masterChef": "0x69E7Bbe85db0364397378364458952bEcB886920",
+      "reward": "sds",
+      "pools": [
+        {
+          "id": 0,
+          "lpToken": "0x46A30dFece0E0fc0977eefd15bd0595fdDe15a10",
+          "token0": "usdc",
+          "token1": "sds",
+          "rewardToken": "sds"
+        },
+        {
+          "id": 1,
+          "lpToken": "0x08e57E45b190d7b05003E6f80BA7cFdCA762cfb8",
+          "token0": "usdc",
+          "token1": "susdc",
+          "rewardToken": "sds"
+        },
+        {
+          "id": 2,
+          "lpToken": "0x6649F12E210862e0045B3dFe7E6eA1F8F0565049",
+          "token0": "usdc",
+          "token1": "safedollar",
+          "rewardToken": "sds"
+        },
+        {
+          "id": 3,
+          "lpToken": "0x853Ee4b2A13f8a742d64C8F088bE7bA2131f670d",
+          "token0": "usdc",
+          "token1": "weth",
+          "rewardToken": "sds"
+        },
+        {
+          "id": 4,
+          "lpToken": "0xa14B83FbB32C5207ab84370a28d01E4720B9C348",
+          "token0": "safedollar",
+          "token1": "smatic",
+          "rewardToken": "sds"
+        },
+        {
+          "id": 5,
+          "lpToken": "0xB949de02e5bB30DaC57460a61aBd4Fcd9c256f18",
+          "token0": "matic",
+          "token1": "smatic",
+          "rewardToken": "sds"
+        }
+      ]
+    },
+    {
+      "masterChef": "0x46C6a9b8E3243FB0dfB069119D5Fc6a75EEc8604",
+      "reward": "safedollar",
+      "pools": [
+        {
+          "id": 0,
+          "lpToken": "0x352db329B707773DD3174859F1047Fb4Fd2030BC",
+          "token0": "sds",
+          "rewardToken": "safedollar",
+          "single": true
+        }
+      ]
+    }
+  ]
+}

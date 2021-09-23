@@ -2,6 +2,7 @@ const { GraphQLClient, gql } = require('graphql-request')
 const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js')
 const endpoint ='https://api.thegraph.com/subgraphs/name/graphprotocol/compound-v2';
+const {lendingMarket} = require('../helper/methodologies')
 
 async function tvl(timestamp, block) {
     const graphQLClient = new GraphQLClient(endpoint)
@@ -54,5 +55,6 @@ module.exports = {
   ethereum:{
     tvl,
   },
+  methodology: `${lendingMarket}. TVL is calculated by getting the market addresses from the 'graphprotocol/compound-v2' subgraph and calling the balanceOf() on-chain method to get the amount of tokens locked in each of these addresses, then we get the price of each token from coingecko.`,
   tvl
 }

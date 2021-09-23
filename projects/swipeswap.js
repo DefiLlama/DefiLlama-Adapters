@@ -1,6 +1,4 @@
 const retry = require('./helper/retry')
-const axios = require("axios");
-const { __Directive } = require('graphql');
 const { GraphQLClient, gql } = require('graphql-request')
 
 async function fetchExchangeTVL() {
@@ -39,21 +37,16 @@ async function fetchExchangeTVL() {
   return totalValue;
 }
 
-async function fetchSwipeSwapTVL() {
+var graphQLUrls = {
+    "ethereum": "https://api.thegraph.com/subgraphs/name/swipewallet/exchange",
+    "bsc": "https://api.bscgraph.org/subgraphs/id/QmdWgpk8reg9ZfjUQZqpmApANMQWPRLYUX2wweDRjghQGb",
+}
+
+async function fetchSwipeSwapTVL(url) {
     var totalValue = 0;
 
-    var graphQLUrls = [
-      {
-        "exchange": "https://api.thegraph.com/subgraphs/name/swipewallet/exchange",
-      },
-      {
-        "exchange": "https://api.bscgraph.org/subgraphs/id/QmdWgpk8reg9ZfjUQZqpmApANMQWPRLYUX2wweDRjghQGb",
-      },
-    ]
-
     // total farming value
-    for (var j = 0; j < graphQLUrls.length; j ++) {
-      var graphQLClient = new GraphQLClient(graphQLUrls[j]["exchange"])
+      var graphQLClient = new GraphQLClient(url)
       var reserveQuery = gql`
       {
         pairs {
@@ -69,18 +62,25 @@ async function fetchSwipeSwapTVL() {
         var reserveUSD = Number(reserves[i].reserveUSD);
         totalValue += reserveUSD;
       }
-    }
     
     return totalValue;
 }
 
+function chainTvl(chain){
+  return ()=>fetchSwipeSwapTVL(graphQLUrls[chain])
+}
+
 async function fetch() {
   //const exchangeValue = await fetchExchangeTVL();
-  const swipewapValue = await fetchSwipeSwapTVL();
-  const totalValue = swipewapValue;
-  return totalValue;
+  return await fetchSwipeSwapTVL(graphQLUrls.ethereum) + await fetchSwipeSwapTVL(graphQLUrls.bsc);
 }
 
 module.exports = {
+  ethereum:{
+    fetch: chainTvl('ethereum')
+  },
+  bsc:{
+    fetch: chainTvl('bsc')
+  },
   fetch
 }

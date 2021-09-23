@@ -1,6 +1,7 @@
 const sdk = require('@defillama/sdk')
 const BigNumber = require('bignumber.js')
 const _ = require('underscore')
+const { staking } = require('../helper/staking')
 const {unwrapCrv} = require('../helper/unwrapLPs')
 
 /*==================================================
@@ -15,6 +16,7 @@ const rusdPoolAddress = '0x0eafaa7ed9866c1f08ac21dd0ef3395e910f7114'
 const fusdtPoolAddress = '0xd0fBF0A224563D5fFc8A57e4fdA6Ae080EbCf3D3'
 const ustPoolAddress = '0x2dcCe1586b1664f41C72206900e404Ec3cA130e0'
 const nrv3 = '0xf2511b5e4fb0e5e2d123004b672ba14850478c14'
+const nrv = "0x42F6f551ae042cBe50C739158b4f0CAC0Edb9096"
 
 const tokens = {
   // BUSD
@@ -35,8 +37,6 @@ const tokens = {
   '0x2170ed0880ac9a755fd29b2688956bd959f933f8': [ethPoolAddress],
   // anyETH
   '0x6f817a0ce8f7640add3bc0c1c2298635043c2423': [ethPoolAddress],
-  // NRV
-  '0x42F6f551ae042cBe50C739158b4f0CAC0Edb9096': [xnrvAddress],
   // FUSDT
   '0x049d68029688eabf473097a2fc38ef61633a3c7a': [fusdtPoolAddress],
   // 3NRV-LP
@@ -92,5 +92,8 @@ async function tvl(timestamp, block, chainBlocks) {
 
 module.exports = {
   start: 1614556800, // March 1, 2021 00:00 AM (UTC)
+  staking:{
+    tvl: staking(xnrvAddress, nrv, "bsc")
+  },
   tvl, // tvl adapter
 }

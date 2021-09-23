@@ -1,0 +1,19 @@
+{
+  "inputs": [
+    {
+      "internalType": "address[]",
+      "name": "markets",
+      "type": "address[]"
+    }
+  ],
+  "name": "totalValueLockedOf",
+  "outputs": [
+    {
+      "internalType": "uint256",
+      "name": "totalSupplyInUSD",
+      "type": "uint256"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+}

@@ -1,41 +1,13 @@
-const { request, gql } = require("graphql-request");
-const sdk = require('@defillama/sdk');
-const { toUSDTBalances } = require('../helper/balances');
+const {calculateUniTvl} = require('../helper/calculateUniTvl.js')
 
-const graphUrl = 'https://api.thegraph.com/subgraphs/name/kelvyne/comethswap'
-const graphQuery = gql`
-query get_tvl($block: Int) {
-  uniswapFactory(
-    id: "0x800b052609c355cA8103E06F022aA30647eAd60a",
-    block: { number: $block }
-  ) {
-    totalVolumeUSD
-    totalLiquidityUSD
-  }
+const FACTORY = "0x800b052609c355cA8103E06F022aA30647eAd60a";
+
+async function tvl(timestamp, block, chainBlocks) {
+  return calculateUniTvl(addr=>`polygon:${addr}`, chainBlocks['polygon'], 'polygon', FACTORY, 0, true);
 }
-`;
 
-async function tvl(timestamp) {
-  const { block } = await sdk.api.util.lookupBlock(timestamp, {
-    chain: 'polygon'
-  })
-  const {uniswapFactory} = await request(
-    graphUrl,
-    graphQuery,
-    {
-      block,
-    }
-  );
-  const usdTvl = Number(uniswapFactory.totalLiquidityUSD)
-
-  return toUSDTBalances(usdTvl)
-}
 
 module.exports = {
-  name: 'MustCometh',
-  token: 'MUST',
-  category: 'Dexes',
-  matic: tvl,
-  start: 0, // WRONG!
+  misrepresentedTokens: true,
   tvl
 }

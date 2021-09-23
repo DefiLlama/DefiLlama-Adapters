@@ -20,9 +20,8 @@ const bscSingleTokens = [
 
 const btcb = 'bsc:0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c'
 
-async function tvl(timestamp, block) {
+async function eth(timestamp, block) {
   const balances = {};
-  const singleToUnderlyingToken = {};
 
   const underlyingacBTC = await sdk.api.abi.multiCall({
     calls: tokensInacBTC.map(token => ({
@@ -33,10 +32,14 @@ async function tvl(timestamp, block) {
     block,
   });
   sdk.util.sumMultiBalanceOf(balances, underlyingacBTC)
+  
+  return balances;
+}
 
-  const bscBlock = await sdk.api.util.lookupBlock(timestamp, {
-    chain:'bsc'
-  })
+async function bsc(timestamp, block, chainBlocks) {
+  const balances = {};
+
+  const bscBlock = chainBlocks.bsc
 
   balances[btcb] = '0'
 
@@ -61,9 +64,12 @@ async function tvl(timestamp, block) {
 }
 
 module.exports = {
-  name: 'acoconut.fi',
-  token: 'AC',
-  category: 'assets',
+  ethereum:{
+    tvl: eth,
+  },
+  bsc:{
+    tvl: bsc
+  },
   start: 1600185600,    // 09/16/2020 @ 12:00am (UTC+8)
-  tvl,
+  tvl: sdk.util.sumChainTvls([eth, bsc])
 };

@@ -148,7 +148,7 @@ const keys = [
   }
 ];
 
-let web3RpcUrl = process.env.ETHEREUM_RPC;
+let web3RpcUrl = process.env.ETHEREUM_RPC.split(',')[0];
 
 // Utils
 const aggregate = (calls) => Multicall.aggregate(
@@ -284,7 +284,10 @@ const getAaveData = async (contracts, prices) => {
 const getAaveV2Data = async (contracts, prices) => {
   const defaultMarket = '0xB53C1a33016B2DC2fF3653530bfF1848a515c8c5'
   let aaveSubs = await contracts.aaveV2Subscriptions.methods.getSubscribers().call();
-  let subData = await contracts.aaveV2LoanInfo.methods.getLoanDataArr(defaultMarket, aaveSubs.map(s => s.user)).call();
+  let subData = [];
+  for(let i=0; i<subData.length; i+=30){
+    subData = subData.concat(await contracts.aaveV2LoanInfo.methods.getLoanDataArr(defaultMarket, aaveSubs.map(s => s.user).slice(i,i+30)).call());
+  }
   const activeSubs = subData.map((sub) => {
     let sumBorrowUsd = 0;
     let sumCollUsd = 0;
@@ -319,10 +322,11 @@ async function fetch() {
 
   const makerColl = await getMakerData(contracts, prices);
   const compoundColl = await getCompoundData(contracts, prices);
-  const aaveColl = await getAaveData(contracts, prices);
+  // if block > 12837601 ignore aave v1, contract was self-destructed in https://etherscan.io/tx/0xded247efd3d46251f9b5b410b207140ea1852d78e8d09f1ab698c93a4ad9b513
+  //const aaveColl = await getAaveData(contracts, prices);
   const aaveV2Coll = await getAaveV2Data(contracts, prices);
 
-  return makerColl + compoundColl + aaveColl + aaveV2Coll;
+  return makerColl + compoundColl + aaveV2Coll;
 }
 
 module.exports = {

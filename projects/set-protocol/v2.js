@@ -68,7 +68,7 @@ module.exports = async function tvl(timestamp, block) {
       const positionUnits = BigNumber(position[2]);
       
       const isExternalPosition = position[3] == EXTERNAL_POSITION;
-      balances[componentAddress] = BigNumber(balances[componentAddress] || 0).plus((positionUnits).times(setSupply).div(SUPPLY_SCALE)).toFixed();
+      balances[componentAddress] = BigNumber(balances[componentAddress] || 0).plus((positionUnits).times(setSupply).div(SUPPLY_SCALE)).toFixed(0);
     });    
   });
 

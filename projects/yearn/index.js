@@ -1,7 +1,9 @@
 const axios = require('axios')
+const {getPricesfromString} = require('../helper/utils')
 const { toUSDTBalances } = require('../helper/balances')
+const sdk = require('@defillama/sdk')
 
-async function tvl(timestamp) {
+async function ethereum(timestamp) {
     if(Math.abs(timestamp-Date.now()/1000)<3600){
         const tvl = await axios.get('https://yearn.science/v1/tvl/latest')
         return toUSDTBalances(tvl.data.tvl)
@@ -25,7 +27,21 @@ async function tvl(timestamp) {
     return toUSDTBalances(historicalTvls[low][1])
 }
 
+async function fantom(){
+    const vaults = (await axios.get("https://ape.tax/api/vaults?network=250")).data.data.map(vault=>[vault.want.cgID, Number(vault.data.totalAssets)])
+    const coingeckoPrices = await getPricesfromString(vaults.map(v=>v[0]).join(','))
+    const total = vaults.reduce((sum, vault)=>sum+vault[1]*coingeckoPrices.data[vault[0]].usd, 0)
+    return toUSDTBalances(total)
+}
+
 
 module.exports = {
-    tvl,
+    misrepresentedTokens: true,
+    fantom:{
+        tvl: fantom
+    },
+    ethereum:{
+        tvl: ethereum
+    },
+    tvl:sdk.util.sumChainTvls([ethereum, fantom]),
 };

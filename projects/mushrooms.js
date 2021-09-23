@@ -1,18 +1,32 @@
 const utils = require('./helper/utils');
 
-/* * * * * * * *
-* ==> Mushrooms Finance TVL adapter.
-* response example:
-* {
-*   "result":4176841.3366126437
-* }
-*
-*****************/
+function fetchChain(chainId) {
+  return async () => {
+    const response = await utils.fetchURL(`https://swapoodxoh.execute-api.ap-southeast-1.amazonaws.com/tvl?chainId=${chainId}`);
+    return response.data.result
+  }
+}
+
+// https://github.com/mushroomsforest/deployment/blob/main/apis.md
+const chains = {
+  "ethereum": 1,
+  "bsc": 56,
+  "fantom": 250,
+  "polygon": 137
+}
+
+const chainExports = Object.entries(chains).reduce((t,chain)=>({
+  ...t,
+  [chain[0]]:{
+    fetch: fetchChain(chain[1])
+  }
+}), {})
+
 async function fetch() {
-  let response = await utils.fetchURL('https://swapoodxoh.execute-api.ap-southeast-1.amazonaws.com/tvl')
-  return response.data.result;
+  return (await Promise.all(Object.values(chains).map(id=>fetchChain(id)()))).reduce((a,t)=>t+a, 0)
 }
 
 module.exports = {
+  ...chainExports,
   fetch
 }
