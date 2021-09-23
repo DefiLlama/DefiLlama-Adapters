@@ -1,6 +1,8 @@
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 const token0 = require('./abis/token0.json')
+const getPricePerShare = require('./abis/getPricePerShare.json')
+const {requery} = require('./requery')
 
 const crvPools = {
     '0x6c3f90f043a72fa612cbac8115ee7e52bde6e490': {
@@ -136,7 +138,47 @@ const crvPools = {
         ]
       },
 }
+const yearnVaults = {
+    // yvToken: underlying, eg yvYFI:YFI
+    // yvYFI v2
+    "0xe14d13d8b3b85af791b2aadd661cdbd5e6097db1": "0x0bc529c00c6401aef6d220be8c6ea1667f6ad93e",
+    // yvWETH v2
+    "0xa258c4606ca8206d8aa700ce2143d7db854d168c": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+    // yvWETH v1
+    "0xa9fe4601811213c340e850ea305481aff02f5b28": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+    // yvUSDT v2
+    "0x7da96a3891add058ada2e826306d812c638d87a7": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+    // yvUSDC v2
+    "0x5f18c75abdae578b483e5f43f12a39cf75b973a9": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    // yvcrvSTETH
+    "0xdcd90c7f6324cfa40d7169ef80b12031770b4325": "0x06325440d014e39736583c165c2963ba99faf14e",
+    // yvcrvIB
+    "0x27b7b1ad7288079a66d12350c828d3c00a6f07d7": "0x5282a4ef67d9c33135340fb3289cc1711c13638c",
+}
+async function unwrapYearn(balances, yToken, block, chain = "ethereum", transformAddress=(addr)=>addr) {
+    if (yearnVaults[yToken.toLowerCase()] == undefined) { return; };
+    const underlying = yearnVaults[yToken.toLowerCase()];
 
+    let pricePerShare = await sdk.api.abi.call({
+        target: yToken,
+        abi: getPricePerShare[1], 
+        block: block,
+        chain: chain
+    });
+    if (pricePerShare == undefined) {
+        pricePerShare = await sdk.api.abi.call({
+            target: yToken,
+            abi: getPricePerShare[0], 
+            block: block,
+            chain: chain
+        });
+    };
+    
+    sdk.util.sumSingleBalance(balances, transformAddress(underlying), 
+        balances[yToken] * pricePerShare.output / 10 ** 
+        (await sdk.api.erc20.decimals(underlying, chain)).output);
+    delete balances[yToken];
+};
 async function unwrapCrv(balances, crvToken, balance3Crv, block, chain = "ethereum", transformAddress=(addr)=>addr) {
     if(crvPools[crvToken.toLowerCase()] === undefined){
         return
@@ -268,11 +310,16 @@ async function sumTokensAndLPsSharedOwners(balances, tokens, owners, block, chai
         block,
         chain
     })
+    await requery(balanceOfTokens, chain, block, 'erc20:balanceOf')
+    const isLP = {}
+    tokens.forEach(token=>{
+        isLP[token[0].toLowerCase()]=token[1]
+    })
     const lpBalances = []
     balanceOfTokens.output.forEach((result, idx)=>{
-        const token = result.input.target
+        const token = result.input.target.toLowerCase()
         const balance = result.output
-        if(tokens.find(t=>addressesEqual(t[0], token))[1]){
+        if(isLP[token] === true){
             lpBalances.push({
                 token,
                 balance
@@ -340,6 +387,7 @@ async function sumTokens(balances, tokensAndOwners, block, chain = "ethereum", t
 }
 
 module.exports = {
+    unwrapYearn,
     unwrapCrv,
     unwrapUniswapLPs,
     addTokensAndLPs,

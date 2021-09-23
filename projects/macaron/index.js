@@ -177,7 +177,7 @@ const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
 
 module.exports = {
   misrepresentedTokens: true,
-  Treasury: {
+  treasury: {
     tvl: Treasury,
   },
   bsc: {

@@ -1,6 +1,7 @@
 const sdk = require('@defillama/sdk')
 const BigNumber = require('bignumber.js')
 const {getBlock} = require('../helper/getBlock')
+const {transformArbitrumAddress} = require('../helper/portedTokens')
 
 const xUniswapV2TVL = require('./xUniswapV2');
 
@@ -44,8 +45,11 @@ const data = {
 
 function getTvlCalculator(chainData) {
   return async (timestamp, ethBlock, chainBlocks) => {
-    const {chain, factory, startBlock, getAddress} = chainData;
+    let {chain, factory, startBlock, getAddress} = chainData;
     const block = await getBlock(timestamp, chain, chainBlocks);
+    if(chain === "arbitrum"){
+      getAddress = await transformArbitrumAddress()
+    }
 
     const [xUniswapV2] = await Promise.all([
       xUniswapV2TVL(block, chain, factory, startBlock),
@@ -53,27 +57,27 @@ function getTvlCalculator(chainData) {
 
     const tokenAddresses = new Set(Object.keys(xUniswapV2));
 
-    return Array
+    const balances = Array
       .from(tokenAddresses)
       .reduce((accumulator, tokenAddress) => {
         const xUniswapV2Balance = new BigNumber(xUniswapV2[tokenAddress] || '0');
-        console.log(tokenAddress, getAddress(tokenAddress));
         accumulator[getAddress(tokenAddress)] = xUniswapV2Balance.toFixed();
 
         return accumulator
       }, {});
+    return balances
   };
 }
 
 const chainTvls = {
+  arbitrum: {
+    tvl: getTvlCalculator(data.arbitrum)
+  },
   ethereum: {
     tvl: getTvlCalculator(data.ethereum)
   },
   polygon: {
     tvl: getTvlCalculator(data.polygon)
-  },
-  arbitrum: {
-    tvl: getTvlCalculator(data.arbitrum)
   },
 };
 

@@ -1,5 +1,5 @@
 const { calculateUniTvl } = require('../helper/calculateUniTvl.js')
-const { transformFantomAddress, transformHarmonyAddress, fixHarmonyBalances, transformAvaxAddress, fixAvaxBalances } = require('../helper/portedTokens')
+const { transformFantomAddress, transformHarmonyAddress, fixHarmonyBalances, transformAvaxAddress, fixAvaxBalances, transformHecoAddress } = require('../helper/portedTokens')
 const { getBlock } = require('../helper/getBlock')
 const sdk = require('@defillama/sdk')
 
@@ -29,8 +29,11 @@ async function bsc(timestamp, ethBlock, chainBlocks) {
 
 // Not good support from coingecko
 async function heco(timestamp, ethBlock, chainBlocks) {
-  const block = undefined //TODO: FIx
-  return calculateUniTvl(addr => `heco:${addr}`, block, 'heco', "0x997fCE9164D630CC58eE366d4D275B9D773d54A4", 0, true);
+  const block = undefined
+  const transform = await transformHecoAddress();
+  let balances = await calculateUniTvl(transform, block, 'heco', "0x997fCE9164D630CC58eE366d4D275B9D773d54A4", 0, true);
+  return {'avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c': 
+    2 * balances['avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c']};
 }
 
 // Missing: avax, harmony, okex
