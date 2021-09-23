@@ -22,90 +22,50 @@ async function staking(timestamp, ethBlock, chainBlocks) {
   return balances
 }
 
-async function vaultsNonNative(timestamp, ethBlock, chainBlocks) {
+function vaults(pool2) {
+  return async (timestamp, ethBlock, chainBlocks) => {
     const balances = {};
-    const vaults = (await fetchURL(nativeEndpoint)).data.filter(v => {
-      const pool2 = v.vaultName.includes("GAJ")
-      return !pool2
-    })
-    const balance = (
-    await sdk.api.abi.multiCall({
-      abi: abi.balanceOfPool,
-      calls: vaults.map((vault) => ({
-        target: vault.contractAddress,
-      })),
-      block,
-      ...((chain == "avax" || chain == "polygon") && { chain }),
-    })
-  ).output.map((bal) => bal.output);
-  
-  
-  const lpPositions = [];
-  for (const vault of vaults) {
-      lpPositions.push({
-        token: vault.contractAddress,
-        balance: balance[vault.id],
-      });
-   }
- 
-  await unwrapUniswapLPs(
-    balances,
-    lpPositions,
-    block,
-    chain,
-    chain == "avax"
-      ? await transformAvaxAddress()
-      : await transformPolygonAddress()
-  );
-  return balances
-}
+    const vaults = (await fetchURL(pool2 ? nativeEndpoint : nonNativeEndpoint)).data
+    for (const vault of vaults) { // Can't aggregate calls because there are multiple chains
+      const chain = vault.chain.toLowerCase()
+      const block = chainBlocks[chain]
+      console.log(vault)
+      const balance = (
+        await sdk.api.abi.call({
+          abi: vaultabi.find(a=>a.name === "balance"),
+          target: vault.contractAddress,
+          block,
+          chain
+        })
+      ).output
 
-async function vaultsNative(timestamp, ethBlock, chainBlocks) {
-    const balances = {};
-    const vaults = (await fetchURL(nonNativeEndpoint)).data.filter(v => {
-      const pool2 = v.vaultName.includes("GAJ")
-      return pool2
-    })
-    const balance = (
-    await sdk.api.abi.multiCall({
-      abi: abi.balanceOfPool,
-      calls: vaults.map((vault) => ({
-        target: vault.contractAddress,
-      })),
-      block,
-      ...((chain == "avax" || chain == "polygon") && { chain }),
-    })
-  ).output.map((bal) => bal.output);
-  
-  
-  const lpPositions = [];
-  for (const vault of vaults) {
-      lpPositions.push({
-        token: vault.contractAddress,
-        balance: balance[vault.id],
-      });
-   }
- 
-  await unwrapUniswapLPs(
-    balances,
-    lpPositions,
-    block,
-    chain,
-    chain == "avax"
-      ? await transformAvaxAddress()
-      : await transformPolygonAddress()
-  );
-  return balances
+
+      const lpPositions = [{
+        balance,
+        token: vault.pairAddress
+      }];
+
+      await unwrapUniswapLPs(
+        balances,
+        lpPositions,
+        block,
+        chain,
+        chain == "avax"
+          ? await transformAvaxAddress()
+          : await transformPolygonAddress()
+      );
+    }
+    return balances
+  }
 }
 
 module.exports = {
-  misrepresentedTokens: true,
   methodology: "TVL comes from NFT Farming, Jungle Pools, MasterChef and Vaults",
-  tvl: vaultsNonNative,
+  tvl: vaults(false),
   staking: {
     tvl: staking
   },
-  pool2:{
-    tvl: vaultsNative
+  pool2: {
+    tvl: vaults(true)
   }
 }
