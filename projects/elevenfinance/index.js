@@ -33,17 +33,19 @@ const excludedPools = {
     ],
 };
 
-async function fetchChain(chainId) {
+function fetchChain(chainId) {
+    return async()=>{
     const response = await utils.fetchURL(apiUrl);
     let tvl = parseFloat(response.data.tvlinfo[chainId]);
 
     if (excludedPools[chainId] !== undefined) {
         excludedPools[chainId].forEach((pool) => {
-            tvl -= parseFloat(response.data[pool]['tvl']);
+            tvl -= parseFloat(response.data[pool]?.tvl ?? 0);
         })
     }
 
     return Math.round(tvl);
+    }
 }
 
 async function fetch() {
@@ -57,7 +59,7 @@ async function fetch() {
         }
 
         excludedPools[chainId].forEach((pool) => {
-            tvl -= parseFloat(response.data[pool]['tvl']);
+            tvl -= parseFloat(response.data[pool]?.tvl ?? 0);
         })
     })
 
