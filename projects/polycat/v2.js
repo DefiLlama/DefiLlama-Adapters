@@ -9,7 +9,7 @@ const tvlOnPairs = require("../helper/processPairs.js");
 
 const vaultChef = "0xBdA1f897E851c7EF22CD490D2Cf2DAce4645A904";
 const masterChef = "0x4ce9Ae2f5983e19AebF5b8Bae4460f2B9EcE811a";
-const FACTORY = '0x477ce834ae6b7ab003cce4bc4d8697763ff456fa';
+const FACTORY = "0x477ce834ae6b7ab003cce4bc4d8697763ff456fa";
 
 
 
@@ -25,7 +25,7 @@ const dexTvl = async (timestamp, ethBlock, chainBlocks) => {
 const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
   const block = chainBlocks["polygon"];
   let balances = {};
-
+/*
   // --- Check the masterchef poolLenght and all the bal from lp/underlyings ---
   const poolLength = (
     await sdk.api.abi.call({
@@ -113,7 +113,7 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
     "polygon",
     transformAdress
   );
-
+*/
   // --- Check the vaultChef poolLenght and all the bal from lp/underlyings ---
   const stratLength = (
     await sdk.api.abi.call({
@@ -210,5 +210,6 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
 };
 
 module.exports = {
+  methodology: "TVL counts liquidity in the AMM found using the factory address(0x477ce834ae6b7ab003cce4bc4d8697763ff456fa) and the TVL in the vaults that is tracked using the vaultChef contract(0xBdA1f897E851c7EF22CD490D2Cf2DAce4645A904).",
   tvl: sdk.util.sumChainTvls([polygonTvl, dexTvl]),
 };
