@@ -7,7 +7,7 @@ const Contracts = {
     pools: {
       '1s3p': '0xb578a396e56388CbF398a12Dea9eb6B01b7c777f',
     },
-    ignoredLps: ['0x17da5445F3Cd02b3F1cD820E6DE55983fe80CF85'],
+    ignoredLps: ['0x17da5445f3cd02b3f1cd820e6de55983fe80cf85'],
   }
 };
 
