@@ -1,9 +1,8 @@
 const sdk = require("@defillama/sdk");
-const { sumTokensAndLPsSharedOwners } = require('../helper/unwrapLPs');
+const { sumTokensAndLPsSharedOwners, unwrapUniswapLPs } = require('../helper/unwrapLPs');
 const { fetchURL } = require("../helper/utils");
 const vaultabi = require("./vaultabi.json");
-const { transformAvaxAddress } = require("../helper/portedTokens");
-const { transformPolygonAddress } = require("../helper/portedTokens");
+const { transformAvaxAddress, transformPolygonAddress } = require("../helper/portedTokens");
 
 const GAJ_TOKEN = '0xf4b0903774532aee5ee567c02aab681a81539e92'
 const GAJ_AVAX_TOKEN = '0x595c8481c48894771CE8FaDE54ac6Bf59093F9E8'
@@ -29,10 +28,9 @@ function vaults(pool2) {
     for (const vault of vaults) { // Can't aggregate calls because there are multiple chains
       const chain = vault.chain.toLowerCase()
       const block = chainBlocks[chain]
-      console.log(vault)
       const balance = (
         await sdk.api.abi.call({
-          abi: vaultabi.find(a=>a.name === "balance"),
+          abi: vaultabi.balanceOfPool,
           target: vault.contractAddress,
           block,
           chain
