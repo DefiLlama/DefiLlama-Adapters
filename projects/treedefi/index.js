@@ -40,8 +40,7 @@ const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
         block: chainBlocks["bsc"],
       })
     ).output;
-
-    if (index >= 5 && index <= 10) {
+    if (index >= 5 && index <= 10 || index == 12 || index == 24) {
       sdk.util.sumSingleBalance(balances, `bsc:${token}`, token_balance);
     } else {
       lpPositions.push({
