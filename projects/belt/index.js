@@ -52,10 +52,10 @@ function hecoTvl(timestamp, ethBlock, chainBlocks) {
 
 module.exports = {
     bsc: {
-        bscTvl,
+        tvl: bscTvl,
     },
     heco: {
-        hecoTvl,
+        tvl: hecoTvl,
     },
     tvl: sdk.util.sumChainTvls([bscTvl, hecoTvl]),
 }
