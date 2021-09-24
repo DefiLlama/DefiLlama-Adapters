@@ -28,7 +28,7 @@ async function multiCallAndReduce(abi, chain, targets, block) {
 }
 
 module.exports = async function tvl(block, chain, factory, startBlock) {
-  if (block === undefined) return {};
+  if (block === undefined) throw new Error("Impermax: block is undefined");
 
   const logs = (
     await sdk.api.util
