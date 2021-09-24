@@ -1,13 +1,7 @@
-/*==================================================
-  Imports
-==================================================*/
 const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js');
 const { fetchURL } = require('../helper/utils');
 
-/*==================================================
-  Settings
-==================================================*/
 const MAINNET_SY_POOLS_API_URL = 'https://api-v2.barnbridge.com/api/smartyield/pools';
 const MAINNET_SA_POOLS_API_URL = 'https://api-v2.barnbridge.com/api/smartalpha/pools';
 
@@ -17,9 +11,6 @@ const POLYGON_SA_POOLS_API_URL = 'https://prod-poly-v2.api.barnbridge.com/api/sm
 const STK_AAVE_ADDRESS = '0x4da27a545c0c5b758a6ba100e3a049001de870f5';
 const AAVE_ADDRESS = '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9';
 
-/*==================================================
-  API
-==================================================*/
 async function fetchSyPools(apiUrl) {
     return fetchURL(apiUrl)
         .then(res => res.data)
@@ -32,9 +23,6 @@ async function fetchSaPools(apiUrl) {
         .then(({status, data}) => status === 200 ? data : []);
 }
 
-/*==================================================
-  Contract
-==================================================*/
 function syGetUnderlyingTotal(chain, smartYieldAddress, block) {
     return sdk.api.abi.call({
         abi: {
@@ -127,38 +115,12 @@ function saGetQueuedSeniorsUnderlyingIn(chain, smartAlphaAddress, block) {
     }).then(({output}) => new BigNumber(output));
 }
 
-/*==================================================
-  Helpers
-==================================================*/
-class TokensBalance {
-    #chain = '';
-    #balances = {};
-
-    constructor(chain) {
-        this.#chain = chain;
-    }
-
-    get balances() {
-        return Object.assign({}, this.#balances);
-    }
-
-    addTokenToBalance(address, amount) {
-        const key = `${this.#chain}:${this.resolveAddress(address)}`;
-
-        if (!this.#balances[key]) {
-            this.#balances[key] = new BigNumber(0);
-        }
-
-        this.#balances[key] = this.#balances[key].plus(amount);
-    }
-
-    resolveAddress(address) {
-        switch (address) {
-            case STK_AAVE_ADDRESS:
-                return AAVE_ADDRESS;
-            default:
-                return address;
-        }
+function resolveAddress(address) {
+    switch (address) {
+        case STK_AAVE_ADDRESS:
+            return AAVE_ADDRESS;
+        default:
+            return address;
     }
 }
 
@@ -169,13 +131,10 @@ function sumTvl(tvlList = []) {
     };
 }
 
-/*==================================================
-  TVL
-==================================================*/
 async function mainnetTvl(timestamp, ethBlock) {
     const chain = 'ethereum';
     const block = ethBlock;
-    const tb = new TokensBalance(chain);
+    const balances = {}
 
     // calculate TVL from SmartYield pools
     const syPools = await fetchSyPools(MAINNET_SY_POOLS_API_URL);
@@ -184,7 +143,7 @@ async function mainnetTvl(timestamp, ethBlock) {
         const {smartYieldAddress, underlyingAddress} = syPool;
         const underlyingTotal = await syGetUnderlyingTotal(chain, smartYieldAddress, block);
 
-        tb.addTokenToBalance(underlyingAddress, underlyingTotal);
+        sdk.util.sumSingleBalance(balances, chain+':'+resolveAddress(underlyingAddress), underlyingTotal.toFixed(0));
     }));
 
     // calculate TVL from SmartAlpha pools
@@ -201,16 +160,16 @@ async function mainnetTvl(timestamp, ethBlock) {
         const underlyingTotal = epochBalance
             .plus(queuedJuniorsUnderlyingIn)
             .plus(queuedSeniorsUnderlyingIn);
-        tb.addTokenToBalance(poolToken.address, underlyingTotal);
+        sdk.util.sumSingleBalance(balances, chain+':'+resolveAddress(poolToken.address), underlyingTotal.toFixed(0));
     }));
 
-    return tb.balances;
+    return balances;
 }
 
 async function polygonTvl(timestamp, _, chainBlocks) {
     const chain = 'polygon';
     const block = chainBlocks[chain];
-    const tb = new TokensBalance(chain);
+    const balances = {}
 
     // calculate TVL from SmartYield pools
     const syPools = await fetchSyPools(POLYGON_SY_POOLS_API_URL);
@@ -219,7 +178,7 @@ async function polygonTvl(timestamp, _, chainBlocks) {
         const {smartYieldAddress, underlyingAddress} = syPool;
         const underlyingTotal = await syGetUnderlyingTotal(chain, smartYieldAddress, block);
 
-        tb.addTokenToBalance(underlyingAddress, underlyingTotal);
+        sdk.util.sumSingleBalance(balances, chain+':'+resolveAddress(underlyingAddress), underlyingTotal.toFixed(0));
     }));
 
     // calculate TVL from SmartAlpha pools
@@ -236,15 +195,12 @@ async function polygonTvl(timestamp, _, chainBlocks) {
         const underlyingTotal = epochBalance
             .plus(queuedJuniorsUnderlyingIn)
             .plus(queuedSeniorsUnderlyingIn);
-        tb.addTokenToBalance(poolToken.address, underlyingTotal);
+        sdk.util.sumSingleBalance(balances, chain+':'+resolveAddress(poolToken.address), underlyingTotal.toFixed(0));
     }));
 
-    return tb.balances;
+    return balances;
 }
 
-/*==================================================
-  Metadata
-==================================================*/
 module.exports = {
     start: 1615564559, // Mar-24-2021 02:17:40 PM +UTC
     ethereum: {
