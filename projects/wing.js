@@ -49,7 +49,14 @@ function stake(chainId) {
   }
 }
 
+async function staking(){
+  return (await fetchChain('ontology')())+(await fetchChain('ethereum')())+(await fetchChain('okexchain')())
+}
+
 module.exports = {
+  staking:{
+    fetch: staking
+  },
   ontology:{
     fetch: fetchChain('ontology'),
     staking: stake('ontology')
