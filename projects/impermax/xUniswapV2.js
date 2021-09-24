@@ -67,9 +67,12 @@ module.exports = async function tvl(block, chain, factory, startBlock) {
     lendingPools.map((lendingPool) => lendingPool.collateralAddress),
   );
 
-  const reserves = await multiCallAndReduce(getReserves, chain, pairAddresses, block);
-  const totalSupplies = await multiCallAndReduce(getTotalSupply, chain, pairAddresses, block);
-  const totalBalances = await multiCallAndReduce(getTotalBalance, chain, poolTokenAddresses, block);
+  const [reserves, totalSupplies, totalBalances]  = await Promise.all([
+    multiCallAndReduce(getReserves, chain, pairAddresses, block),
+    multiCallAndReduce(getTotalSupply, chain, pairAddresses, block),
+    multiCallAndReduce(getTotalBalance, chain, poolTokenAddresses, block)
+  ]);
+  console.log("calls finished")
 
   return lendingPools.reduce((accumulator, lendingPool, ) => {
     const reservesRaw = reserves[lendingPool.pairAddress];
