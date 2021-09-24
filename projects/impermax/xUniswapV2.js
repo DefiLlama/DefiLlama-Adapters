@@ -78,12 +78,12 @@ module.exports = async function tvl(block, chain, factory, startBlock) {
     const borrowable0BalanceRaw = totalBalances[lendingPool.borrowable0Address];
     const borrowable1BalanceRaw = totalBalances[lendingPool.borrowable1Address];
 
-    if (!reservesRaw || !totalSupplyRaw || !collateralBalanceRaw) return accumulator;
-
     const collateralBalance = new BigNumber(collateralBalanceRaw);
     const totalSupply = new BigNumber(totalSupplyRaw);
 
-    if (lendingPool.token0Address && borrowable0BalanceRaw) {
+    if(totalSupply.isZero()) return accumulator
+
+    {
       const reserve0 = new BigNumber(reservesRaw['0']);
       const borrowable0Balance = new BigNumber(borrowable0BalanceRaw);
       const collateral0Balance = collateralBalance.multipliedBy(reserve0).dividedToIntegerBy(totalSupply)
@@ -94,7 +94,7 @@ module.exports = async function tvl(block, chain, factory, startBlock) {
         .toFixed()
     }
 
-    if (lendingPool.token1Address && borrowable1BalanceRaw) {
+    {
       const reserve1 = new BigNumber(reservesRaw['1']);
       const borrowable1Balance = new BigNumber(borrowable1BalanceRaw);
       const collateral1Balance = collateralBalance.multipliedBy(reserve1).dividedToIntegerBy(totalSupply)

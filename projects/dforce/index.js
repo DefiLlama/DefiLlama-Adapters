@@ -193,9 +193,17 @@ let oracles = {
 }
 
 let allControllers = {
-  "ethereum": "0x8B53Ab2c0Df3230EA327017C91Eb909f815Ad113",
-  "bsc": "0x0b53E608bD058Bb54748C35148484fD627E6dc0A",
-  "arbitrum": "0x8E7e9eA9023B81457Ae7E6D2a51b003D421E5408",
+  "ethereum": [
+    "0x8B53Ab2c0Df3230EA327017C91Eb909f815Ad113", // dForce general pool
+    "0x3bA6e5e5dF88b9A88B2c19449778A4754170EA17", // dForce stock pool
+    "0x8f1f15DCf4c70873fAF1707973f6029DEc4164b3", // liqee general pool
+  ],
+  "bsc": [
+    "0x0b53E608bD058Bb54748C35148484fD627E6dc0A", // dForce general pool
+    "0xb6f29c4507A53A7Ab78d99C1698999dbCf33c800", // dForce stock pool
+    "0x6d290f45A280A688Ff58d095de480364069af110"  // liqee general pool
+  ],
+  "arbitrum": ["0x8E7e9eA9023B81457Ae7E6D2a51b003D421E5408"],
 }
 
 let yieldMarkets = {
@@ -324,34 +332,46 @@ async function getCurrentCash(chain, token, block) {
 
     cash = BigNumber(iTokenTotalSupply).times(BigNumber(iTokenExchangeRate)).div(BigNumber(10 ** 18));
   } else {
-    let { output: underlying } = await sdk.api.abi.call({
-      block,
-      target: token,
-      abi: abi['underlying'],
-      chain: chain
-    });
+    if (
+      // Exclude iMUSX of Liqee on BSC
+      token != "0xee0D3450b577743Eee2793C0Ec6d59361eB9a454"
+      // Exclude iMUSX of Liqee on Ethereum mainnet
+      && token != "0x4c3F88A792325aD51d8c446e1815DA10dA3D184c"
+    ) {
+      let { output: underlying } = await sdk.api.abi.call({
+        block,
+        target: token,
+        abi: abi['underlying'],
+        chain: chain
+      });
 
-    // Maybe need to accrue borrowed interests
-    let { output: iMtokenSupply } = await sdk.api.abi.call({
-      block,
-      target: underlying,
-      abi: 'erc20:totalSupply',
-      chain: chain
-    });
-    cash = BigNumber(iMtokenSupply);
+      // Maybe need to accrue borrowed interests
+      let { output: iMtokenSupply } = await sdk.api.abi.call({
+        block,
+        target: underlying,
+        abi: 'erc20:totalSupply',
+        chain: chain
+      });
+      cash = BigNumber(iMtokenSupply);
+    } else {
+      cash = BigNumber("0");
+    }
   }
   return cash;
 }
 
 async function getAllMarketsByChain(chain, block) {
-  const { output: markets } = await sdk.api.abi.call({
-    block,
-    target: allControllers[chain],
-    abi: abi['getAlliTokens'],
-    chain: chain
-  });
+  const markets = await Promise.all(
+    allControllers[chain].map(async controller => {return (await
+      sdk.api.abi.call({
+        block,
+        target: controller,
+        abi: abi['getAlliTokens'],
+        chain: chain
+      })).output;
+    }));
 
-  return markets;
+  return markets.flat();
 }
 
 async function getUnderlyingPrice(chain, token, block) {
