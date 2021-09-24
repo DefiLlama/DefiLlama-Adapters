@@ -31,16 +31,21 @@ async function tvl(){
   data.bridgeList.forEach((item) => {
     const chainId = item.chainId
     const tvl = item.tvl ? item.tvl : 0
-    if (!balances[chains[chainId]]) {
-      balances[chains[chainId]] = {
-        tvl: 0
+    if (chainId && chains[chainId]) {
+      if (!balances[chains[chainId]]) {
+        balances[chains[chainId]] = {
+          tvl: 0
+        }
       }
+      balances[chains[chainId]].tvl += Number(tvl)
     }
-    balances[chains[chainId]].tvl += Number(tvl)
   })
-
+  
   const tvl = {}
+  let totaltvl = 0
+
   Object.keys(balances).forEach((value) => {
+    totaltvl += balances[value].tvl
     tvl[value] = {
       tvl: async()=>{
         return balances[value].tvl
@@ -51,7 +56,7 @@ async function tvl(){
   return {
     ...tvl,
     tvl: async()=>{
-      return data.totalAmount
+      return totaltvl
     }
   }
 }
