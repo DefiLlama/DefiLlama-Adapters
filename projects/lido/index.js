@@ -42,6 +42,7 @@ async function solana(timestamp, ethBlock, chainBlocks) {
 }
 
 module.exports = {
+  methodology: 'Counts staked ETH tokens.',
   cantRefill: true,
   solana: {
     tvl: solana
