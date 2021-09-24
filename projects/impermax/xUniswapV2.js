@@ -72,7 +72,6 @@ module.exports = async function tvl(block, chain, factory, startBlock) {
     multiCallAndReduce(getTotalSupply, chain, pairAddresses, block),
     multiCallAndReduce(getTotalBalance, chain, poolTokenAddresses, block)
   ]);
-  console.log("calls finished")
 
   return lendingPools.reduce((accumulator, lendingPool, ) => {
     const reservesRaw = reserves[lendingPool.pairAddress];
