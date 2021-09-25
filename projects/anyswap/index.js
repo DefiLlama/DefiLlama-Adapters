@@ -18,7 +18,7 @@ const chains = {
 
 const url = 'https://netapi.anyswap.net/bridge/v2/info'
 
-async function tvl(){
+async function fetch(){
   const {data} = await utils.fetchURL(url)
   let totaltvl = 0
   data.bridgeList.forEach((item) => {
@@ -36,27 +36,22 @@ const chainTvls = {}
 Object.keys(chains).forEach((chain) => {
   const key = chains[chain]
   chainTvls[key]={
-    tvl: async()=>{
+    fetch: async()=>{
       const {data} = await utils.fetchURL(url)
-      const balances = {}
+      let total = 0
       data.bridgeList.forEach((item) => {
         const chainId = item.chainId
         const tvl = item.tvl ? item.tvl : 0
         if (chainId.toString() === chain.toString()) {
-          if (!balances[key]) {
-            balances[key] = {
-              tvl: 0
-            }
-          }
-          balances[key].tvl += Number(tvl)
+          total += Number(tvl)
         }
       })
-      return balances[key].tvl
+      return total
     }
   }
 })
 
 module.exports = {
   ...chainTvls,
-  tvl
+  fetch
 }
