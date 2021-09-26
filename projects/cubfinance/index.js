@@ -101,8 +101,9 @@ async function tvl(timestamp, ethBlock,chainBlocks) {
 }
 
 module.exports = {
-  bsc:{
-    tvl,
-  },
-  tvl
+	methodology: 'Cub Finance has farms and what are call kingdoms on the platform (which are auto-compounding farms of other platforms). All farms are included, except those that pool the CUB token. All kingdoms are included except one, which is the CUB token kingdom. Where the farm is an LP token, that is decomposed into its underlying assets, where it is a single asset farm, that asset is being used.',
+	bsc:{
+		tvl,
+	},
+	tvl,
 }
