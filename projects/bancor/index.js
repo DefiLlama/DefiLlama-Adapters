@@ -1,17 +1,9 @@
-/*==================================================
-  Modules
-  ==================================================*/
-
   const abi = require('./abi.json');
   const sdk = require('@defillama/sdk');
   const axios = require('axios');
   const _ = require('underscore');
   const moment = require('moment');
   const BigNumber = require('bignumber.js');
-
-  /*==================================================
-  Helper Functions
-  ==================================================*/
 
   async function generateCallsByAPI(timestamp) {
     let tokenConverters = [];
@@ -169,7 +161,7 @@
       [ethAddress]: (await sdk.api.eth.getBalance({target: '0xc0829421C1d260BD3cB3E0F06cfE2D52db2cE315', block})).output
     };
 
-    const ethReserveAddresses = ['0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', '0xc0829421c1d260bd3cb3e0f06cfe2d52db2ce315'];
+    const ethReserveAddresses = ['0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'];
     const ethBalanceCalls = balanceCalls.filter((call) => ethReserveAddresses.includes(call.target.toLowerCase()));
 
     await (
@@ -181,27 +173,17 @@
 
     // get reserve balances
     let result = await sdk.api.abi.multiCall({
-      calls: balanceCalls,
+      calls: balanceCalls.filter(c=>c.target !== "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"),
       abi: 'erc20:balanceOf',
       block
     });
-
-    // filtering out bad balances (hacky)
-    result.output = result.output.filter((item) => item.success && item.output.length < 60);
 
     sdk.util.sumMultiBalanceOf(balances, result);
 
     return balances;
   }
 
-/*==================================================
-  Exports
-  ==================================================*/
-
   module.exports = {
-    name: 'Bancor',
-    token: 'BNT',
-    category: 'dexes',
     start: 1501632000,  // 08/02/2017 @ 12:00am (UTC)
     tvl,
   };
