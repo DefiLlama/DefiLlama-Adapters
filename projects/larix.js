@@ -1,8 +1,9 @@
-const {getTokenBalance} = require("./helper/solana")
+const {sumTokens} = require("./helper/solana")
+
+const getTokenBalance = (a,b)=>[a,b]
 
 async function tvl() {  
-  const [ btcAmount, ethAmount, solAmount, usdtAmount ] = await Promise.all([
-      
+  return sumTokens([
     //btcAmount
     getTokenBalance("9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E","BxnUi6jyYbtEEgkBq4bPLKzDpSfWVAzgyf3TF2jfC1my"),
     //ethAmount
@@ -11,16 +12,10 @@ async function tvl() {
     getTokenBalance("So11111111111111111111111111111111111111112","BxnUi6jyYbtEEgkBq4bPLKzDpSfWVAzgyf3TF2jfC1my"),
     //usdtAmount
     getTokenBalance("Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB","BxnUi6jyYbtEEgkBq4bPLKzDpSfWVAzgyf3TF2jfC1my"),
+    getTokenBalance("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v","BxnUi6jyYbtEEgkBq4bPLKzDpSfWVAzgyf3TF2jfC1my"), //usdc
+    getTokenBalance("AGFEad2et2ZJif9jaGpdMixQqvW5i81aBdvKe7PHNfz3","BxnUi6jyYbtEEgkBq4bPLKzDpSfWVAzgyf3TF2jfC1my"), // ftt
+    getTokenBalance("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt","BxnUi6jyYbtEEgkBq4bPLKzDpSfWVAzgyf3TF2jfC1my"), // serum
   ])
-  return {
-
-    'bitcoin': btcAmount,
-    'ethereum': ethAmount,
-    'tether': usdtAmount,
-    'solana': solAmount,
-
-  }
-
 }
 
 module.exports = {

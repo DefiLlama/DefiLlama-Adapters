@@ -1,24 +1,7 @@
 {
-    "getPoolLength": {
-        "constant": true,
-        "inputs": [],
-        "name": "getPoolLength",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    },
     "poolInfo": {
-        "constant": true,
         "inputs": [
             {
-                "indexed": false,
                 "internalType": "uint256",
                 "name": "",
                 "type": "uint256"
@@ -27,7 +10,7 @@
         "name": "poolInfo",
         "outputs": [
             {
-                "internalType": "address",
+                "internalType": "contract IBEP20",
                 "name": "lpToken",
                 "type": "address"
             },
@@ -43,26 +26,23 @@
             },
             {
                 "internalType": "uint256",
-                "name": "accKstPerShare",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "totalAmount",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "allocKstAmount",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "accKstAmount",
+                "name": "accCakePerShare",
                 "type": "uint256"
             }
         ],
-        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "poolLength": {
+        "inputs": [],
+        "name": "poolLength",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
         "stateMutability": "view",
         "type": "function"
     }

@@ -1,16 +1,15 @@
 const sdk = require('@defillama/sdk');
-  const BigNumber = require('bignumber.js');
-  const _ = require('underscore');
-  const abi = require('./abi');
-  const utils = require('../helper/utils')
-  const web3 = require('../config/web3.js');
-  const bsc_factory = "0x878dFE971d44e9122048308301F540910Bbd934c";
-  const poly_factory = "0x5F1fe642060B5B9658C15721Ea22E982643c095c";
-  const eth_factory = "0x833e4083B7ae46CeA85695c4f7ed25CDAd8886dE";
+const BigNumber = require('bignumber.js');
+const _ = require('underscore');
+const abi = require('./abi');
+const utils = require('../helper/utils')
+const web3 = require('../config/web3.js');
+const { calcTvl } = require('./tvl.js')
+const { transformAvaxAddress, fixAvaxBalances } = require('../helper/portedTokens')
 
+// tracking TVL for Kyber Network
   async function ethTvl (timestamp, block) {
     const balances = {};
-  // tracking TVL for Kybernetwork
     const pairs = (await utils.fetchURL(
       `https://api.kyber.network/currencies`
     )).data.data;
@@ -59,7 +58,6 @@ const sdk = require('@defillama/sdk');
         })
       }
     }))
-
     const ethBalances = sdk.api.eth.getBalances({
       targets: Array.from(reserves),
       block
@@ -71,7 +69,6 @@ const sdk = require('@defillama/sdk');
     });
     const ethBalance = BigNumber.sum(...(await ethBalances).output.map(result=>result.balance))
     balances['0x0000000000000000000000000000000000000000'] = ethBalance.toFixed()
-
     /* combine token volumes on multiple markets */
     _.forEach(balanceOfResult.output, (result) => {
       let balance = new BigNumber(result.output || 0);
@@ -85,198 +82,28 @@ const sdk = require('@defillama/sdk');
       } else {
         balances[asset] = balance.toFixed();
       }
-    });
-  // tracking TVL for KyberDMM ethereum
-      const poolLength = Number(
-        (
-          await sdk.api.abi.call({
-            target: eth_factory,
-            abi: abi.allPoolsLength,
-            block: block,
-          })
-        ).output
-      );
-    
-      const allPoolNums = Array.from(Array(poolLength).keys());
-    
-      const poolAddresses = (
-        await sdk.api.abi.multiCall({
-          abi: abi.allPools,
-          calls: allPoolNums.map((num) => ({
-            target: eth_factory,
-            params: [num],
-          })),
-          block: block,
-        })
-      ).output.map((el) => el.output);
-    
-      for (let i = 0; i < poolAddresses.length; i++) {
-        const token0 = (
-          await sdk.api.abi.call({
-            target: poolAddresses[i],
-            abi: abi.token0,
-            block: block,
-          })
-        ).output;
-    
-        const token1 = (
-          await sdk.api.abi.call({
-            target: poolAddresses[i],
-            abi: abi.token1,
-            block: block,
-          })
-        ).output;
-    
-        const getReserves = (
-          await sdk.api.abi.call({
-            target: poolAddresses[i],
-            abi: abi.getReserves,
-            block: block,
-          })
-        ).output;
-    
-        sdk.util.sumSingleBalance(balances, token0, getReserves[0]);
-    
-        sdk.util.sumSingleBalance(balances, token1, getReserves[1]);
-      }
-    
-    
+    }) 
     return balances;
+  }
+  // tracking TVL for KyberDMM ethereum
+   async function ethDmmTVL(timestamp, ethBlock, chainBlocks) {
+    return calcTvl(addr => `ethereum:${addr}`, ethBlock, 'ethereum', '0x833e4083B7ae46CeA85695c4f7ed25CDAd8886dE', 0, true);
   }
   // tracking TVL for KyberDMM polygon
-  const polyTvl = async (timestamp, ethBlock, chainBlocks) => {
-    const balances = {};
-  
-    const poolLength = Number(
-      (
-        await sdk.api.abi.call({
-          target: poly_factory,
-          abi: abi.allPoolsLength,
-          chain: "polygon",
-          block: chainBlocks["polygon"],
-        })
-      ).output
-    );
-  
-    const allPoolNums = Array.from(Array(poolLength).keys());
-  
-    const poolAddresses = (
-      await sdk.api.abi.multiCall({
-        abi: abi.allPools,
-        calls: allPoolNums.map((num) => ({
-          target: poly_factory,
-          params: [num],
-        })),
-        block: chainBlocks["polygon"],
-        chain: "polygon"
-      })
-    ).output.map((el) => el.output);
-  
-    for (let i = 0; i < poolAddresses.length; i++) {
-      const token0 = (
-        await sdk.api.abi.call({
-          target: poolAddresses[i],
-          abi: abi.token0,
-          chain: "polygon",
-          block: chainBlocks["polygon"],
-        })
-      ).output;
-  
-      const token1 = (
-        await sdk.api.abi.call({
-          target: poolAddresses[i],
-          abi: abi.token1,
-          chain: "polygon",
-          block: chainBlocks["polygon"],
-        })
-      ).output;
-  
-      const getReserves = (
-        await sdk.api.abi.call({
-          target: poolAddresses[i],
-          abi: abi.getReserves,
-          chain: "polygon",
-          block: chainBlocks["polygon"],
-        })
-      ).output;
-  
-      sdk.util.sumSingleBalance(balances, 'polygon:'+token0, getReserves[0]);
-  
-      sdk.util.sumSingleBalance(balances, 'polygon:'+token1, getReserves[1]);
-    }
-  
-    return balances;
-  };
-    // tracking TVL for KyberDMM BSC
-    const KNC = "0xfe56d5892BDffC7BF58f2E84BE1b2C32D21C308b";
-  function getBSCAddress(address) {
-    if(address.toLowerCase() === KNC.toLowerCase()){
-      return "0xdefa4e8a7bcba345f687a2f1456f5edd9ce97202"
-    }
-    return `bsc:${address}`
+  async function polyTVL(timestamp, ethBlock, chainBlocks) {
+    return calcTvl(addr => `polygon:${addr}`, chainBlocks['polygon'], 'polygon', '0x5F1fe642060B5B9658C15721Ea22E982643c095c', 0, true);
   }
-  const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
-    const balances = {};
-   
-    const poolLength = Number(
-      (
-        await sdk.api.abi.call({
-          target: bsc_factory,
-          abi: abi.allPoolsLength,
-          chain: "bsc",
-          block: chainBlocks["bsc"],
-        })
-      ).output
-    );
-  
-    const allPoolNums = Array.from(Array(poolLength).keys());
-  
-    const poolAddresses = (
-      await sdk.api.abi.multiCall({
-        abi: abi.allPools,
-        calls: allPoolNums.map((num) => ({
-          target: bsc_factory,
-          params: [num],
-        })),
-        block: chainBlocks["bsc"],
-        chain: "bsc"
-      })
-    ).output.map((el) => el.output);
-  
-    for (let i = 0; i < poolAddresses.length; i++) {
-      const token0 = (
-        await sdk.api.abi.call({
-          target: poolAddresses[i],
-          abi: abi.token0,
-          chain: "bsc",
-          block: chainBlocks["bsc"],
-        })
-      ).output;
-  
-      const token1 = (
-        await sdk.api.abi.call({
-          target: poolAddresses[i],
-          abi: abi.token1,
-          chain: "bsc",
-          block: chainBlocks["bsc"],
-        })
-      ).output;
-      const getReserves = (
-        await sdk.api.abi.call({
-          target: poolAddresses[i],
-          abi: abi.getReserves,
-          chain: "bsc",
-          block: chainBlocks["bsc"],
-        })
-      ).output;
-  
-      sdk.util.sumSingleBalance(balances, getBSCAddress(token0), getReserves[0]);
-  
-      sdk.util.sumSingleBalance(balances, getBSCAddress(token1), getReserves[1]);
-    }
-  
-    return balances;
-  };
+  // tracking TVL for KyberDMM BSC
+  async function bscTVL(timestamp, ethBlock, chainBlocks) {
+    return calcTvl(addr => `bsc:${addr}`, chainBlocks['bsc'], 'bsc', "0x878dFE971d44e9122048308301F540910Bbd934c", 0, true);
+  }
+  // tracking TVL for KyberDMM Avalanche
+  async function avaxTVL(timestamp, ethBlock, chainBlocks) {
+    const transform = await transformAvaxAddress()
+    const balances = await calcTvl(transform, chainBlocks['avax'], 'avax', "0x10908C875D865C66f271F5d3949848971c9595C9", 0, true);
+    fixAvaxBalances(balances)
+    return balances
+  }
   
 /*==================================================
   Exports
@@ -285,13 +112,17 @@ const sdk = require('@defillama/sdk');
   module.exports = {
     misrepresentedTokens: true,
     ethereum: {
-      tvl: ethTvl,
+      ethTvl,
+      tvl: ethDmmTVL,
     },
     polygon: {
-      tvl: polyTvl,
+      tvl: polyTVL,
    },
     bsc: {
-      tvl: bscTvl,
+      tvl: bscTVL,
    },
-  tvl: sdk.util.sumChainTvls([ethTvl, bscTvl, polyTvl])
+   avalanche:{
+     tvl: avaxTVL,
+   },
+  tvl: sdk.util.sumChainTvls([ethTvl,ethDmmTVL,bscTVL,polyTVL,avaxTVL])
   };

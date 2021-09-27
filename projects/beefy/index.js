@@ -49,6 +49,9 @@ module.exports = {
   fantom:{
     fetch: fetchChain(250)
   },
+  arbitrum:{
+    fetch: fetchChain(42161)
+  },
   avalanche:{
     fetch: fetchChain(43114)
   },

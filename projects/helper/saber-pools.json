@@ -160,14 +160,94 @@
     "tokenBCoingecko": "renbtc"
   },
   {
-    "id": "msol_sol",
-    "authority": "2Sj4MZvmLhud4uRmGHJvDxq612nmF4JJsU1R4ZjNNGMS",
-    "tokenA": "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So",
-    "tokenB": "So11111111111111111111111111111111111111112",
-    "reserveA": "9DgFSWkPDGijNKcLGbr3p5xoJbHsPgXUTr6QvGBJ5vGN",
-    "reserveB": "2hNHZg7XBhuhHVZ3JDEi4buq2fPQwuWBdQ9xkH7t1GQX",
-    "tokenACoingecko": "solana",
-    "tokenBCoingecko": "solana"
+    "id": "webusd",
+    "authority": "H73Bq4wPdkMyM1o1RCgFTrmCCTzkK7W9FrfyWWLZ8QCj",
+    "tokenA": "33fsBLA8djQm82RpHmE3SuVrPGtZBWNYExsEUeKX1HXX",
+    "tokenB": "88881Hu2jGMfCs9tMu5Rr7Ah7WBNBuXqde4nR5ZmKYYy",
+    "reserveA": "4ZjU6MKvtqVQKCiowhvZ5yUsPxXX5SCzd5eFsPeXyey5",
+    "reserveB": "BsyWeshjDbCvjDojry3vKDCesmFRM37WtwcR4Kfgzqr",
+    "tokenACoingecko": "binance-usd",
+    "tokenBCoingecko": "usd-coin"
+  },
+  {
+    "id": "weusdc",
+    "authority": "7XFMgfxhDURuaPwhUkXAy6uQJCoC3HPpjiZBqcot57Ge",
+    "tokenA": "A9mUU4qviSctJVPJdBJWkb28deg915LYJKrzQ19ji3FM",
+    "tokenB": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+    "reserveA": "3YB7hfpBdbQEuZqLGWVDpRPmeZWCUsrrWyqGXegnQ6Cg",
+    "reserveB": "4DPCj6Z1DsG6HUtwSogBGqXEUxdEV5a8YVrrFtcnz7UW",
+    "tokenACoingecko": "usd-coin",
+    "tokenBCoingecko": "usd-coin"
+  },
+  {
+    "id": "weusdt",
+    "authority": "2kHUshxGYQLo7RQYdLTM6MXZq118w3TA4oak9dCwsF6B",
+    "tokenA": "Dn4noZ5jgGfkntzcQSUZ8czkreiZ1ForXYoV2H8Dm7S1",
+    "tokenB": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+    "reserveA": "DtfyjjsZ5yCjWKLKHvwsfXs5QVsmm1QkK6Sh9JZHoq1g",
+    "reserveB": "e5wrKCRv4GhHvEf1VD5Pq2KGaZDXP77nTL612Jyrxwy",
+    "tokenACoingecko": "tether",
+    "tokenBCoingecko": "tether"
+  },
+  {
+    "id": "wusdk",
+    "authority": "2pVd6wjKqvNbv5RdLoqaBGRxTMTsCKDV8jvgpYDL3AJX",
+    "tokenA": "43m2ewFV5nDepieFjT9EmAQnc1HRtAF247RBpLGFem5F",
+    "tokenB": "88881Hu2jGMfCs9tMu5Rr7Ah7WBNBuXqde4nR5ZmKYYy",
+    "reserveA": "CMR2J7CwfW98RpvnJmFBgRFTLAd3x8CJ1SWs8Bt3uunG",
+    "reserveB": "FmRb5jHfSNj1YWP3b45d9vvYuhwjp4om8bALmtqZpr1v",
+    "tokenACoingecko": "usdk",
+    "tokenBCoingecko": "usd-coin"
+  },
+  {
+    "id": "whusd",
+    "authority": "Ah5zHaE8fA8GJCopa9jaCmxG8AVUtf7ae7V8znSFURAd",
+    "tokenA": "7VQo3HFLNH5QqGtM8eC3XQbPkJUu7nS9LeGWjerRh5Sw",
+    "tokenB": "88881Hu2jGMfCs9tMu5Rr7Ah7WBNBuXqde4nR5ZmKYYy",
+    "reserveA": "E7L8CZxreEeNwM1V8DLxa8AZQKu6oday6RvXxRo27CHi",
+    "reserveB": "48UJw19Ra8y5Kv989DsXPrfUHeUWUbHvXZmdPBbGuHdz",
+    "tokenACoingecko": "husd",
+    "tokenBCoingecko": "usd-coin"
+  },
+  {
+    "id": "wdai",
+    "authority": "7mupg3bhALz9TBNz8yWRroVpVqJMKDaJG1u1JasCebe8",
+    "tokenA": "EjmyN6qEC1Tf1JxiG1ae7UTJhUxSwk1TCWNWqxWV4J6o",
+    "tokenB": "88881Hu2jGMfCs9tMu5Rr7Ah7WBNBuXqde4nR5ZmKYYy",
+    "reserveA": "725ZA3fhyBAKb5iopNRrcbSuQa3LXA1656Q3mBvYPxeg",
+    "reserveB": "GLA6i1dSZpUfk2f9Nj8uiG7xyDdAR2reff8oEiZH3617",
+    "tokenACoingecko": "dai",
+    "tokenBCoingecko": "usd-coin"
+  },
+  {
+    "id": "wfrax",
+    "authority": "4DEzAUzQCmvd4LsxcQ8X2tjNH89wGby8g9UXqZB55Mwp",
+    "tokenA": "FR87nWEUxVgerFGhZM8Y4AggKGLnaXswr1Pd8wZ4kZcp",
+    "tokenB": "88881Hu2jGMfCs9tMu5Rr7Ah7WBNBuXqde4nR5ZmKYYy",
+    "reserveA": "DD4ACBWyVqdaKWh7v5btsgqQCCMwbKnuL2xd9pv7Gyuw",
+    "reserveB": "GcYqiJ1MAuYbNTNYXm1F1gQYTfTgkErACAhNU5dpVj9T",
+    "tokenACoingecko": "frax",
+    "tokenBCoingecko": "usd-coin"
+  },
+  {
+    "id": "wheth",
+    "authority": "2ctAWUAM4FUWp3iaHC5kEGktx4ThtC4tfnUEXQzxjFKm",
+    "tokenA": "SL819j8K9FuFPL84UepVcFkEZqDUUvVzwDmJjCHySYj",
+    "tokenB": "7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs",
+    "reserveA": "8p4mGnARWPBu6P2Gcw4adodLkNDorrXniZMhaY7eJXUn",
+    "reserveB": "AyY89zccbsgp9LKFgH4CFZMJmpSgqmPSdTfukhP227rc",
+    "tokenACoingecko": "ethereum",
+    "tokenBCoingecko": "ethereum"
+  },
+  {
+    "id": "acusd",
+    "authority": "4RcgjJHEndsDpSniNaU392dnfjFZFGhwUT3Fd9rSEcMv",
+    "tokenA": "EwxNF8g9UfmsJVcZFTpL9Hx5MCkoQFoJi6XNWzKf1j8e",
+    "tokenB": "JEFFSQ3s8T3wKsvp4tnRAsUBW7Cqgnf8ukBZC4C8XBm1",
+    "reserveA": "44ALBrpqi9PfZkBRTvbtRNtFJGsatfY4QydjtMbFWq8S",
+    "reserveB": "2ho8qEEie1UjVwWNBo9y4oAJZMyMLx8zPj9bxyUz6uWs",
+    "tokenACoingecko": "celo-dollar",
+    "tokenBCoingecko": "usd-coin"
   },
   {
     "id": "apusdt",
@@ -200,6 +280,36 @@
     "tokenBCoingecko": "usd-coin"
   },
   {
+    "id": "abbusd",
+    "authority": "ASniuTkvzrbk5gpV4mkibbFvyzL62ACdDBmLqeHxpvaB",
+    "tokenA": "6nuaX3ogrr2CaoAPjtaKHAoBNWok32BMcRozuf32s2QF",
+    "tokenB": "JEFFSQ3s8T3wKsvp4tnRAsUBW7Cqgnf8ukBZC4C8XBm1",
+    "reserveA": "7n9kgNL633yGzCYksgnzHyjG73ZLBAwvEae5sbAekbzW",
+    "reserveB": "SscdxE99omdG9AiMVwmaEMQySQnCgeAh1sPj2Leutm2",
+    "tokenACoingecko": "binance-usd",
+    "tokenBCoingecko": "usd-coin"
+  },
+  {
+    "id": "aeeth",
+    "authority": "4vKg9TxAmbmBQYvsv9StJYMwyDeWNyfVSumMzmemrXbZ",
+    "tokenA": "KNVfdSJyq1pRQk9AKKv1g5uyGuk6wpm4WG16Bjuwdma",
+    "tokenB": "AaAEw2VCw1XzgvKB8Rj2DyK2ZVau9fbt2bE8hZFWsMyE",
+    "reserveA": "CGoM82Hbz7QVqTgvQatYtjvDWBvoUJp5qm21P8iMs9yb",
+    "reserveB": "3dxNNww8TivyN5FMy5dCNdi3Zcxv6e4kUfSPxfFwpdNq",
+    "tokenACoingecko": "ethereum",
+    "tokenBCoingecko": "weth"
+  },
+  {
+    "id": "msol_sol",
+    "authority": "2Sj4MZvmLhud4uRmGHJvDxq612nmF4JJsU1R4ZjNNGMS",
+    "tokenA": "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So",
+    "tokenB": "So11111111111111111111111111111111111111112",
+    "reserveA": "9DgFSWkPDGijNKcLGbr3p5xoJbHsPgXUTr6QvGBJ5vGN",
+    "reserveB": "2hNHZg7XBhuhHVZ3JDEi4buq2fPQwuWBdQ9xkH7t1GQX",
+    "tokenACoingecko": "solana",
+    "tokenBCoingecko": "solana"
+  },
+  {
     "id": "psol",
     "authority": "6rxqyX1fD27oepCCnv2uy9uJWmXHjPTeQ5PaP99JZrKx",
     "tokenA": "9EaLkQrbjmbbuZG9Wdpo8qfNUEjHATJFSycEmw6f1rGX",
@@ -226,6 +336,16 @@
     "tokenB": "So11111111111111111111111111111111111111112",
     "reserveA": "4PgzyzLtds9bKZ2to9PMnKqJzKEUpjvNUaeN23phegax",
     "reserveB": "AtymwxoVN9peZo7EXTcDz9jKVc4vRmisJKKrNfe3ewBa",
+    "tokenACoingecko": "solana",
+    "tokenBCoingecko": "solana"
+  },
+  {
+    "id": "socean",
+    "authority": "3roMZdhjqzKF5HaZxF8a3G8bavz8EggQXFMNiPsBnMQz",
+    "tokenA": "5oVNBeEEQvYi1cX3ir8Dx5n1P7pdxydbGF2X4TxVusJm",
+    "tokenB": "So11111111111111111111111111111111111111112",
+    "reserveA": "DjvZuMZ46fxKBoBpGMPcRcos4xdTtHFxwMh69DpA2ZFY",
+    "reserveB": "9rvDPJLAng4uVVqnnSoEXgNDFhBZQTny9AoQioYDZbQX",
     "tokenACoingecko": "solana",
     "tokenBCoingecko": "solana"
   }

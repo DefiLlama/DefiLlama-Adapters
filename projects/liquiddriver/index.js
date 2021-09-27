@@ -3,7 +3,7 @@ const abi = require("./abi.json");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { transformFantomAddress } = require("../helper/portedTokens");
 const { addFundsInMasterChef } = require("../helper/masterchef");
-const staking = require("../helper/staking");
+const {staking} = require("../helper/staking");
 const BigNumber = require("bignumber.js");
 
 // --- All sushitokens lp tokens are staked here for LQDR tokens ---
@@ -143,12 +143,6 @@ const minichefTvl = async (timestamp, ethBlock, chainBlocks) => {
 module.exports = {
   staking: {
     tvl: staking(xLQDR, LQDR, "fantom", "fantom:" + LQDR),
-  },
-  masterchef: {
-    tvl: masterchefTvl,
-  },
-  minichef: {
-    tvl: minichefTvl,
   },
   tvl: sdk.util.sumChainTvls([
     masterchefTvl,

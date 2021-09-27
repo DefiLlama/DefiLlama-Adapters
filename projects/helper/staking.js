@@ -1,12 +1,14 @@
-const sdk = require('@defillama/sdk')
+const sdk = require('@defillama/sdk');
+const { getBlock } = require('./getBlock');
 
-module.exports = function(stakingContract, stakingToken, chain="ethereum", transformedTokenAddress=undefined, decimals=undefined){
-    return async (_timestamp, _ethBlock, chainBlocks)=>{
+function staking(stakingContract, stakingToken, chain="ethereum", transformedTokenAddress=undefined, decimals=undefined){
+    return async (timestamp, _ethBlock, chainBlocks)=>{
+        const block = await getBlock(timestamp, chain, chainBlocks)
         const bal = await sdk.api.erc20.balanceOf({
             target: stakingToken,
             owner: stakingContract,
             chain,
-            block: chainBlocks[chain]
+            block,
         })
         let address = stakingToken;
         if(transformedTokenAddress){
@@ -23,4 +25,8 @@ module.exports = function(stakingContract, stakingToken, chain="ethereum", trans
             [address]: bal.output
         }
     }
+}
+
+module.exports={
+    staking
 }

@@ -2,7 +2,7 @@ const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { transformAvaxAddress } = require("../helper/portedTokens");
 const {addFundsInMasterChef} = require('../helper/masterchef')
-const staking = require('../helper/staking')
+const {staking} = require('../helper/staking')
 const {sumTokensAndLPsSharedOwners} = require('../helper/unwrapLPs')
 
 const STAKING_CONTRACT = "0xaB0141F81b3129f03996D0679b81C07F6A24c435";

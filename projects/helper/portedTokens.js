@@ -12,9 +12,6 @@ async function transformFantomAddress() {
         if (addr.toLowerCase() === "0x658b0c7613e890ee50b8c4bc6a3f41ef411208ad") { // fETH
             return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
         }
-        if (addr.toLowerCase() === "0xe1146b9ac456fcbb60644c36fd3f868a9072fc6e") { // fBTC
-            return "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"
-        }
         if (addr.toLowerCase() === "0x82f0b8b456c1a451378467398982d4834b6829c1") { // MIM
             return "0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3"
         }
@@ -136,7 +133,11 @@ async function transformOkexAddress() {
 
 async function transformHecoAddress() {
   return (addr) => {
-    return `heco:${addr}`;
+    if (addr.toLowerCase() == '0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c') {
+        return 'avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c';
+    } else {
+        return `heco:${addr}`;
+    }
   };
 }
 
@@ -177,6 +178,9 @@ async function transformOptimismAddress() {
     const bridge = (await utils.fetchURL("https://static.optimism.io/optimism.tokenlist.json")).data.tokens
 
     return (addr) => {
+        if(compareAddresses(addr, "0x4200000000000000000000000000000000000006")){
+            return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+        }
         const dstToken = bridge.find(token => compareAddresses(addr, token.address))
         if (dstToken !== undefined) {
             const srcToken = bridge.find(token => dstToken.logoURI === token.logoURI && token.chainId === 1)
@@ -184,7 +188,7 @@ async function transformOptimismAddress() {
                 return srcToken.address
             }
         }
-        return `optimism:${addr}`
+        return addr //`optimism:${addr}` // TODO: Fix
     }
 }
 
@@ -196,8 +200,7 @@ async function transformArbitrumAddress() {
         if (dstToken !== undefined) {
             return dstToken.extensions.l1Address
         }
-        // `arbitrum:${addr}`
-        return addr; // TODO: Fix
+        return `arbitrum:${addr}`; 
     }
 }
 

@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk')
-const staking = require('../helper/staking')
+const {staking} = require('../helper/staking')
 const {getBlock} = require('../helper/getBlock')
 const {pool2} = require('../helper/pool2')
 
