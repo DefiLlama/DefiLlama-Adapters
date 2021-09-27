@@ -1,4 +1,3 @@
-const sdk = require("@defillama/sdk");
 const { pool2 } = require("../helper/pool2");
 const {staking} = require('../helper/staking');
 
@@ -14,14 +13,13 @@ const ethTvl = async (...params) => {
 };
 
 module.exports = {
-  misrepresentedTokens: true,
   staking: {
     tvl: staking(StakingYieldContract, FOX)
   },
-  ethereum: {
-    tvl: ethTvl,
+  pool2:{
+    tvl: pool2(StakingYieldContract, ETH_FOX_UNIV2)
   },
-  tvl: sdk.util.sumChainTvls([ethTvl]),
+  tvl: async ()=>({}),
   methodology:
-    "We count liquidity of ETH-FOX LP deposited on Uniswap V2 pool threw StakingYieldContract contract; and the staking of native token",
+    "We count liquidity of ETH-FOX LP deposited on Uniswap V2 pool through StakingYieldContract contract; and the staking of native token",
 };
