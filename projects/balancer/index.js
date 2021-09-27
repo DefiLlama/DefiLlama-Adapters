@@ -3,8 +3,10 @@ const BigNumber = require("bignumber.js");
 const { GraphQLClient, gql } = require('graphql-request')
 const { toUSDTBalances } = require('../helper/balances');
 const { getBlock } = require('../helper/getBlock');
-
+// node test.js projects/balancer/index.js
 async function getTVL(subgraphName, block) {
+  // delayed by around 5 mins to allow subgraph to update
+  block -= 25;
   var endpoint = `https://api.thegraph.com/subgraphs/name/balancer-labs/${subgraphName}`
   var graphQLClient = new GraphQLClient(endpoint)
 
