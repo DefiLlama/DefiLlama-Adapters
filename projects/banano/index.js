@@ -15,5 +15,6 @@ let bscPool2 = pool2(bscContract, bscLp, "bsc", addr=>`bsc:${addr}`);
 module.exports = {
     pool2:{
         tvl: sdk.util.sumChainTvls([polygonPool2,bscPool2])
-    }
+    },
+    tvl: async ()=>({})
 }
