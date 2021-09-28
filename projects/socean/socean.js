@@ -1,5 +1,4 @@
 const axios = require("axios");
-const retry = require('async-retry')
 
 async function tvl() {
     const publicAPIKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTYyOTIwMTUyOSwiZXhwIjoxOTQ0Nzc3NTI5fQ.nJcAWD5NXaHQJdPc0_J1lNMv-YDx9bpVlPkke91Jx0c'
