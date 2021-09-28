@@ -39,28 +39,14 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
     lpAddresses.push(poolInfo[0]);
   }
 
-  const tokens0 = (
+  const symbols1 = (
     await sdk.api.abi.multiCall({
       block,
-      abi: {
-        constant: true,
-        inputs: [],
-        name: "token0",
-        outputs: [{ internalType: "address", name: "", type: "address" }],
-        payable: false,
-        stateMutability: "view",
-        type: "function",
-      },
+      abi: 'erc20:symbol',
       calls: lpAddresses.map((addr) => ({ target: addr })),
       chain: "polygon",
     })
   ).output.map((token) => token.output);
-
-  const nonNull = tokens0
-    .map((el, idx) => {
-      if (el != null) return idx;
-    })
-    .filter((el) => el != null);
 
   const balOf = (
     await sdk.api.abi.multiCall({
@@ -77,16 +63,12 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
   let lpPositions = [];
 
   balOf.forEach((bal, idx) => {
-    if (nonNull.includes(idx)) {
+    if (symbols[idx] === 'UNI-V2' || symbols[idx] === 'SLP') {
       lpPositions.push({
         balance: bal,
         token: lpAddresses[idx],
       });
-    }
-  });
-
-  balOf.forEach((bal, idx) => {
-    if (!nonNull.includes(idx)) {
+    } else {
       sdk.util.sumSingleBalance(balances, `polygon:${lpAddresses[idx]}`, bal);
     }
   });
@@ -138,37 +120,30 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
     })
   ).output.map((bal) => bal.output);
 
-  const tokens0Strats = (
+  const symbols = (
     await sdk.api.abi.multiCall({
       block,
-      abi: {
-        constant: true,
-        inputs: [],
-        name: "token0",
-        outputs: [{ internalType: "address", name: "", type: "address" }],
-        payable: false,
-        stateMutability: "view",
-        type: "function",
-      },
+      abi: 'erc20:symbol',
       calls: stratAddresses.map((addr) => ({ target: addr[0] })),
       chain: "polygon",
     })
   ).output.map((token) => token.output);
 
-  const nonNullStrat = tokens0Strats
-    .map((el, idx) => {
-      if (el != null) return idx;
-    })
-    .filter((el) => el != null);
-
   lpPositions = [];
 
   sharesTotals.forEach((sharesTotal, idx) => {
-    if (nonNullStrat.includes(idx)) {
+    if (symbols[idx] === 'UNI-V2' || symbols[idx] === 'SLP') {
       lpPositions.push({
         balance: sharesTotal,
         token: stratAddresses[idx][0],
       });
+    } else {
+      console.log('Non zero:', stratAddresses[idx][0], sharesTotal);
+      sdk.util.sumSingleBalance(
+        balances,
+        `polygon:${stratAddresses[idx][0]}`,
+        sharesTotal
+      );
     }
   });
   
@@ -181,17 +156,6 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
     "polygon",
     transformAdressStrat
   );
-
-  sharesTotals.forEach((sharesTotal, idx) => {
-    if (!nonNullStrat.includes(idx)) {
-      console.log('Non zero:', stratAddresses[idx][0], sharesTotal);
-      sdk.util.sumSingleBalance(
-        balances,
-        `polygon:${stratAddresses[idx][0]}`,
-        sharesTotal
-      );
-    }
-  });
 
   return balances;
 };
