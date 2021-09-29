@@ -1,5 +1,6 @@
 const { request, gql } = require("graphql-request");
 const sdk = require("@defillama/sdk");
+const {getTokenSupply} = require('../helper/solana')
 
 const ethGraphUrl = "https://api.thegraph.com/subgraphs/name/renproject/renvm";
 const bscGraphUrl =
@@ -108,7 +109,28 @@ async function eth(timestamp, block) {
     return balances;
 }
 
+async function solana(){
+    // https://renproject.github.io/ren-client-docs/contracts/deployments/
+    const tokens = [
+        ["renBTC", "CDJWUqTcYTVAKXAVXoQZFes5JUFc7owSeq7eMQcDSbo5"],
+        ["renZEC", "E99CQ2gFMmbiyK2bwiaFNWUUmwz4r8k2CVEFxwuvQ7ue"],
+        ["renBCH", "G1a6jxYz3m8DVyMqYnuV7s86wD4fvuXYneWSpLJkmsXj"],
+        ["renFIL", "De2bU64vsXKU9jq4bCjeDxNRGPn8nr3euaTK8jBYmD3J"],
+        ["renDGB", "FKJvvVJ242tX7zFtzTmzqoA631LqHh4CdgcN8dcfFSju"],
+        ["renDOGE", "ArUkYE2XDKzqy77PRRGjo4wREWwqk6RXTfM9NeqzPvjU"],
+        ["renLUNA", "8wv2KAykQstNAj2oW6AHANGBiFKVFhvMiyyzzjhkmGvE"],
+    ]
+    const balances = {}
+    await Promise.all(tokens.map(async token=>{
+        balances[symbol(token[0])] = await getTokenSupply(token[1])
+    }))
+    return balances
+}
+
 module.exports = {
+    solana:{
+        tvl: solana
+    },
     ethereum: {
         tvl: eth,
     },
@@ -124,5 +146,5 @@ module.exports = {
     polygon: {
         tvl: polygon,
     },
-    tvl: sdk.util.sumChainTvls([eth, bsc, avax, fantom, polygon]),
+    tvl: sdk.util.sumChainTvls([eth, bsc, avax, fantom, polygon, solana]),
 };
