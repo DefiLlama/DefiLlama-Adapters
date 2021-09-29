@@ -22,6 +22,17 @@ const graphQuery = gql`
 const darknodeStakingContract = "0x60Ab11FE605D2A2C3cf351824816772a131f8782";
 const renToken = "0x408e41876cCCDC0F92210600ef50372656052a38";
 
+function symbol(s){
+    switch(s){
+        case "renDGB":
+            return "digibyte"
+        case "renLUNA":
+            return "terra-luna"
+        default:
+            return s
+    }
+}
+
 async function getAssetBalance(block, graphUrl, chain) {
     const balances = {};
     const { assets } = await request(graphUrl, graphQuery);
@@ -42,7 +53,7 @@ async function getAssetBalance(block, graphUrl, chain) {
         }
         sdk.util.sumSingleBalance(
             balances,
-            asset.symbol, // We assume the symbol is the same as the Coingecko ID.
+            symbol(asset.symbol), // We assume the symbol is the same as the Coingecko ID.
             resolvedSupplies[index].output / 10 ** asset.decimals,
         );
     });
