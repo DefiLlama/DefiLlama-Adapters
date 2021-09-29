@@ -10,7 +10,7 @@ async function tvl(time){
         const last = data[data.length-1]
         return last.usdnLocked + last.defoLocked
     }, async()=>{
-        const data = (await fetchURL(`${endpoint}?limit=1000&since=${time*1e3-60*MINUTE}`)).data
+        const data = (await fetchURL(`${endpoint}?limit=1000&since=${time*1e3-6*60*MINUTE}`)).data
         return data.map(item=>({
             date: item.createdAt/1e3,
             totalLiquidityUSD: item.usdnLocked + item.defoLocked
