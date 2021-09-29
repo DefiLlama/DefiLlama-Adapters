@@ -33,4 +33,3 @@ module.exports = {
         tvl: staking
     }
 }
-// node test.js projects/bogged.js
