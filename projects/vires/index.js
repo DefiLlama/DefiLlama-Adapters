@@ -7,5 +7,10 @@ module.exports={
         let tvl = 0;
         item.meta.forEach(market=> tvl += market.currentTotalDepositUsd - market.currentTotalDebtUsd)
         return tvl
-    })
+    }),
+    borrowed: wavesAdapter(endpoint, item => {
+        let tvl = 0;
+        item.meta.forEach(market=> tvl += market.currentTotalDebtUsd)
+        return tvl
+    }),
 }
