@@ -71,7 +71,6 @@ module.exports = async function tvl(timestamp, block) {
 
   // Compute Balances
   _.each(balanceOfResults.output, (balanceOf) => {
-    if(balanceOf.success) {
       let address = balanceOf.input.target
 
       if (address in cTokensMap) {
@@ -83,7 +82,6 @@ module.exports = async function tvl(timestamp, block) {
       } else {
         balances[address] = BigNumber(balances[address] || 0).plus(balanceOf.output).toFixed();
       }
-    }
   });
 
   return balances;

@@ -144,4 +144,5 @@ module.exports = {
     tvl: polygonTvl,
   },
   tvl: sdk.util.sumChainTvls([bscTvl, polygonTvl]),
+  methodology: `TVL consists of deposits made to the Earn Vaults of ApeRocket minus the 'SPACE' vault and the 'SPACE-BNB' pool2 vault which are created using the protocol's native token.`
 };

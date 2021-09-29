@@ -1,0 +1,22 @@
+module.exports = {
+  masterChef: {
+    56: "0x4fbEebd68B71aE4367F778129d4218668151EB99",
+    97: "0x5559C8a6267b0b1bcDe0005a44db0B1546711B76",
+  },
+  sousChef: {
+    56: "0x0703c295644ba1d333e14367e510773629264Ee2",
+    97: "0x4A2947DE6A35F0B83cc26827A9Cf832193c38614",
+  },
+  multiCall: {
+    56: "0x3dB443d8e82700FaBdB831dBe180994B6b109790",
+    97: "0x6a45C680E74c81797E287Ccf48284698f85909b4",
+  },
+  woofVault: {
+    56: "0x09fE45A62502E7a0b226a99f18043F3eC32F78E8",
+    97: "0x238d502163AC149Da69A180Cbae59347d72AE842",
+  },
+  woofCollectibles: {
+    56: "0x89e36408cc275168ab235e8a5902a2dd4c8fbaa7",
+    97: "",
+  },
+};

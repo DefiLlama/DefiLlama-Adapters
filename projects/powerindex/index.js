@@ -9,9 +9,44 @@ const gusd = '0x056Fd409E1d7A124BD7017459dFEa2F387b6d5Cd'
 const curveFactoryPools = [
   "0xEd279fDD11cA84bEef15AF5D39BB4d4bEE23F0cA",
   "0x4807862AA8b2bF68830e4C8dc86D0e9A998e085a"
-].map(pool=>pool.toLowerCase())
+].map(pool => pool.toLowerCase())
 
-async function tvl(timestamp, block) {
+async function getBscTvl(time, ethBlock, chainBlocks) {
+  let bscBalances = {}
+  const block = chainBlocks.bsc
+
+  const poolAddress = await sdk.api.util.getLogs({
+    keys: ['topics'],
+    toBlock: block,
+    target: '0x37c4a7E826a7F6606628eb5180df7Be8d6Ca4B2C',
+    fromBlock: 10481280,
+    topic: 'LOG_NEW_POOL(address,address,address)',
+    chain: 'bsc'
+  }).then(r => `0x${r.output[0][2].slice(26)}`);
+  
+  let poolTokens = await sdk.api.abi.call({
+    chain: 'bsc',
+    abi: abi.getCurrentTokens,
+    target: poolAddress,
+    block
+  });
+
+  let poolBalances = await sdk.api.abi.multiCall({
+    chain: 'bsc',
+    block,
+    abi: 'erc20:balanceOf',
+    calls: _.map(poolTokens.output, 
+      (poolToken) => ({ target: poolToken, params: poolAddress}))
+  })
+
+  _.each(poolBalances.output, (poolBalance) => { 
+    bscBalances[`bsc:${poolBalance.input.target}`] = poolBalance.output
+  })
+  
+  return bscBalances;
+}
+
+async function eth(timestamp, block) {
   let balances = {};
 
   let poolLogs = await sdk.api.util.getLogs({
@@ -43,6 +78,9 @@ async function tvl(timestamp, block) {
 
   _.forEach(poolTokenData, (poolToken) => {
     let poolTokens = poolToken.output;
+    if(poolTokens === null){
+      throw new Error("poolTokens failed call")
+    }
     let poolAddress = poolToken.input.target;
 
     _.forEach(poolTokens, (token) => {
@@ -53,12 +91,12 @@ async function tvl(timestamp, block) {
     })
   });
 
-  const [{output: poolBalances}, {output: tokensUnderlyings}, {output: pricesPerFullShare}, {output: tokens}, {output:v2PricePerShare}] = await Promise.all([
+  const [{ output: poolBalances }, { output: tokensUnderlyings }, { output: pricesPerFullShare }, { output: tokens }, { output: v2PricePerShare }] = await Promise.all([
     sdk.api.abi.multiCall({ block, calls: poolCalls, abi: 'erc20:balanceOf' }),
-    sdk.api.abi.multiCall({ block, calls: poolCalls.map(c => ({target: c.target})), abi: abi.underlying }),
-    sdk.api.abi.multiCall({ block, calls: poolCalls.map(c => ({target: c.target})), abi: abi.getPricePerFullShare }),
-    sdk.api.abi.multiCall({ block, calls: poolCalls.map(c => ({target: c.target})), abi: abi.token }),
-    sdk.api.abi.multiCall({ block, calls: poolCalls.map(c => ({target: c.target})), abi: abi.pricePerShare }),
+    sdk.api.abi.multiCall({ block, calls: poolCalls.map(c => ({ target: c.target })), abi: abi.underlying }),
+    sdk.api.abi.multiCall({ block, calls: poolCalls.map(c => ({ target: c.target })), abi: abi.getPricePerFullShare }),
+    sdk.api.abi.multiCall({ block, calls: poolCalls.map(c => ({ target: c.target })), abi: abi.token }),
+    sdk.api.abi.multiCall({ block, calls: poolCalls.map(c => ({ target: c.target })), abi: abi.pricePerShare }),
   ]);
 
   for (let i = 0; i < poolBalances.length; i++) {
@@ -66,41 +104,45 @@ async function tvl(timestamp, block) {
     const tokenAddress = balanceOf.input.target;
     let underlying = _.find(tokensUnderlyings, t => t.input.target === tokenAddress);
     let pricePerFullShare = pricesPerFullShare[i];
-    if(v2PricePerShare[i].success){
+    if (v2PricePerShare[i].success) {
       pricePerFullShare = v2PricePerShare[i];
     }
-    if(pricePerFullShare.success){
+    if (pricePerFullShare.success) {
       underlying = tokens[i];
       const underlyingAddr = underlying.output.toLowerCase()
 
-      const curvePool = curvePools.find(pool=>pool.addresses.lpToken.toLowerCase() === underlyingAddr)?.addresses.swap ?? curveFactoryPools.find(underlyingAddr)
-      if(curvePool !== undefined){
+      const curvePool = curvePools.find(pool => pool.addresses.lpToken.toLowerCase() === underlyingAddr)?.addresses.swap ?? curveFactoryPools.find(underlyingAddr)
+      if (curvePool !== undefined) {
         const virtualPrice = await sdk.api.abi.call({
           target: curvePool,
           abi: abi.get_virtual_price,
           block
         })
         underlying.output = gusd // Wrong, we just count all curve lp underlyings as GUSD
-        balanceOf.output = BigNumber(balanceOf.output).times(virtualPrice.output).div(BigNumber(10).pow(18+18-2)).toFixed(0) // 2 decimals for GUSD
+        balanceOf.output = BigNumber(balanceOf.output).times(virtualPrice.output).div(BigNumber(10).pow(18 + 18 - 2)).toFixed(0) // 2 decimals for GUSD
       }
       balanceOf.output = BigNumber(balanceOf.output).times(pricePerFullShare.output).div(BigNumber(10).pow(18)).toFixed(0)
     }
-    if (balanceOf.success) {
-      const balance = balanceOf.output;
-      const address = underlying.success ? underlying.output : tokenAddress;
+    const balance = balanceOf.output;
+    const address = underlying.success ? underlying.output : tokenAddress;
 
-      if (BigNumber(balance).toNumber() <= 0) {
-        continue;
-      }
-
-      balances[address] = BigNumber(balances[address] || 0).plus(balance).toFixed();
+    if (BigNumber(balance).toNumber() <= 0) {
+      continue;
     }
+
+    balances[address] = BigNumber(balances[address] || 0).plus(balance).toFixed();
   }
 
   return balances;
 }
 
 module.exports = {
-  start : 1606768668, // 11/30/2021 @ 08:37am (UTC)
-  tvl
+  start: 1606768668, // 11/30/2021 @ 08:37am (UTC)
+  bsc:{
+    tvl: getBscTvl,
+  },
+  ethereum:{
+    tvl: eth
+  },
+  tvl: sdk.util.sumChainTvls([getBscTvl, eth])
 }

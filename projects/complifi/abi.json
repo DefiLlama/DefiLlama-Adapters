@@ -12,5 +12,19 @@
     "stateMutability": "view",
     "type": "function",
     "constant": true
+  },
+  "getVaultCollateral": {
+    "inputs":[],
+    "name":"collateralToken",
+    "outputs":[
+      {
+        "internalType":"address",
+        "name":"",
+        "type":"address"
+      }
+    ],
+    "stateMutability":"view",
+    "type":"function",
+    "constant": true
   }
 }

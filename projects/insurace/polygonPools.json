@@ -1,0 +1,34 @@
+{
+    "pools": [
+        {
+            "StakersPool": "0xD2171aBb60D2994CF9aCB767F2116Cf47BBF596F",
+            "PoolToken": "0x8a0e8b4b0903929f47C3ea30973940D4a9702067",
+            "TokenTicker": "INSUR"
+        },
+        {
+            "StakersPool": "0xD2171aBb60D2994CF9aCB767F2116Cf47BBF596F",
+            "PoolToken": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+            "TokenTicker": "MATIC"
+        },
+        {
+            "StakersPool": "0xD2171aBb60D2994CF9aCB767F2116Cf47BBF596F",
+            "PoolToken": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+            "TokenTicker": "USDC"
+        },
+        {
+            "StakersPool": "0xD2171aBb60D2994CF9aCB767F2116Cf47BBF596F",
+            "PoolToken": "0xc2132d05d31c914a87c6611c10748aeb04b58e8f",
+            "TokenTicker": "USDT"
+        },
+        {
+            "StakersPool": "0xD2171aBb60D2994CF9aCB767F2116Cf47BBF596F",
+            "PoolToken": "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063",
+            "TokenTicker": "DAI"
+        },
+        {
+            "StakersPool": "0xD2171aBb60D2994CF9aCB767F2116Cf47BBF596F",
+            "PoolToken": "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
+            "TokenTicker": "WETH"
+        }
+    ]
+}

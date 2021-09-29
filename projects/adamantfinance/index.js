@@ -10,7 +10,7 @@ const current_vaults_url =
 const polygonTvl = async (timestamp, block, chainBlocks) => {
   const balances = {};
 
-  let vaults = (await utils.fetchURL(current_vaults_url)).data.filter(vault=>vault.token0!==vault.lpAddress).map((vault) => ({
+  let vaults = (await utils.fetchURL(current_vaults_url)).data.filter(vault=>vault.token0!==vault.token1).map((vault) => ({
     vaultAddress: vault.vaultAddress,
     lpAddress: vault.lpAddress,
   }));
@@ -53,4 +53,5 @@ module.exports = {
     tvl: polygonTvl,
   },
   tvl: sdk.util.sumChainTvls([polygonTvl]),
+  methodology: 'The current vaults on Adamant Finance are found using the info on "https://raw.githubusercontent.com/eepdev/vaults/main/current_vaults.json", once we have the vaults, we filter out the LP addresses of each vault and unwrap the LPs so that each token can be accounted for. Coingecko is used to price the tokens and the sum of all tokens is provided as the TVL'
 };

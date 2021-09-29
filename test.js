@@ -28,7 +28,7 @@ const passedFile = path.resolve(process.cwd(), process.argv[2]);
     const { timestamp, ethereumBlock, chainBlocks } = await getBlocks();
     for(const tvlSection of Object.keys(importedModule)){
         const moduleToTest = (tvlSection === 'tvl' || tvlSection === 'fetch') ? importedModule : importedModule[tvlSection]
-        if(typeof moduleToTest !== "object"){
+        if(typeof moduleToTest !== "object" || moduleToTest === null){
             continue
         }
         console.log(`--- ${tvlSection} ---`)
@@ -39,6 +39,7 @@ const passedFile = path.resolve(process.cwd(), process.argv[2]);
             if (typeof tvl !== "object") {
                 throw new Error("TVL returned is not a balances object");
             }
+            // console.log(tvl);
             usdTvl = (await computeTVL(tvl, "now", true)).usdTvl;
         } else {
             throw new Error("File must export either a property called tvl or one called fetch")

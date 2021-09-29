@@ -39,9 +39,7 @@ async function tvl(timestamp, block) {
   });
 
   _.each(poolListResponse.output, (response) => {
-    if (response.success) {
       vesperPoolAddresses.push(response.output)
-    }
   });
 
   // Get collateral token
@@ -53,14 +51,12 @@ async function tvl(timestamp, block) {
   });
 
   _.each(collateralTokenResponse.output, (response) => {
-    if (response.success) {
       const collateralTokenAddress = response.output;
       const poolAddress = response.input.target;
       collateralToken[poolAddress] = collateralTokenAddress;
       if (!balances.hasOwnProperty(collateralTokenAddress)) {
         balances[collateralTokenAddress] = 0;
       }
-    }
   });
 
   //Get TVL
@@ -73,12 +69,10 @@ async function tvl(timestamp, block) {
   });
 
   _.each(totalValueResponse.output, (response) => {
-    if (response.success) {
       const totalValue = response.output;
       const poolAddress = response.input.target;
       const existingBalance = new BigNumber(balances[collateralToken[poolAddress]] || "0");
       balances[collateralToken[poolAddress]] = existingBalance.plus(new BigNumber(totalValue)).toFixed();
-    }
   });
   return balances;
 }
