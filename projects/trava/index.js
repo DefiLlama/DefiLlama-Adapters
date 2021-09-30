@@ -40,6 +40,7 @@ async function getAllPools(block, chain, addressesProviderFactoryContract) {
 
 async function getReserveData(block, chain, allPools) {
     let tTokenList = []
+    let debtTokenList = []
     let reserveList = []
     for (pool of allPools) {
         let poolReserveList = (await sdk.api.abi.call({
@@ -59,38 +60,46 @@ async function getReserveData(block, chain, allPools) {
 
             })).output
             tToken = reserveData[6]
+            debtToken = reserveData[7]
             reserveList.push(reserve)
             tTokenList.push(tToken)
+            debtTokenList.push(debtToken)
         }
     }
-    return [reserveList, tTokenList]
+    return [reserveList, tTokenList, debtTokenList]
 }
 
-async function getSupply(block, chain, reserveList, tTokenList){
-    let supply ={}
-    for (let i=0; i < reserveList.length; i++ ){
+async function getTVL(block, chain, reserveList, tTokenList, debtTokenList) {
+    let tvl = {}
+    for (let i = 0; i < reserveList.length; i++) {
         let tokenSupply = (await sdk.api.abi.call({
             target: tTokenList[i],
             abi: abi["totalSupply"],
             block: block,
             chain: chain
         })).output
-        if (reserveList[i] == "0xfb6115445Bff7b52FeB98650C87f44907E58f802"){
+        let tokenBorrow = (await sdk.api.abi.call({
+            target: debtTokenList[i],
+            abi: abi["totalSupply"],
+            block: block,
+            chain: chain
+        })).output
+        if (reserveList[i] == "0xfb6115445Bff7b52FeB98650C87f44907E58f802") {
             // aave dont have bsc address on coingecko
-            supply["0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9"] = tokenSupply
-        }else{
-            supply["bsc:"+reserveList[i]] = tokenSupply
+            tvl["0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9"] = tokenSupply - tokenBorrow
+        } else {
+            tvl[chain + ":" + reserveList[i]] = tokenSupply - tokenBorrow
         }
     }
-    return supply
+    return tvl
 }
 
-async function bsc(timestamp, ethblock, chainBlocks){
+async function bsc(timestamp, ethblock, chainBlocks) {
     let block = chainBlocks.bsc
     let addressesProviderFactoryContract = await getAddressesProviderFactorContract(block, "bsc", bscFactoryRegistryContract)
     let allPools = await getAllPools(block, "bsc", addressesProviderFactoryContract)
-    let [reserveList, tTokens] = await getReserveData(block, "bsc", allPools)
-    let response = await getSupply(block, "bsc", reserveList, tTokens)
+    let [reserveList, tTokens, debtTokens] = await getReserveData(block, "bsc", allPools)
+    let response = await getTVL(block, "bsc", reserveList, tTokens, debtTokens)
     return response
 
 }
