@@ -177,6 +177,72 @@ const vaultGroup=[
         ]
     }
 ]
+
+const VaultGroupBsc= [
+    {
+      "CoinName": "USDT",
+      "Vaults": [
+        {
+          "Name": "Alpaca",
+          "ContractAddress": "0xcB08DA2339d562b66b314d2bBfB580CB87FFBD76",
+          "TokenName": "alUSDT",
+          "Pid": 11
+        },
+        {
+          "Name": "Venus",
+          "ContractAddress": "0x3253041F27416c975FFb0100b08734187F82c8A2",
+          "TokenName": "vUSDT",
+          "Pid": 10
+        },
+        {
+          "Name": "Coinwind",
+          "ContractAddress": "0x0B28a55dbBd6c5DdD4D1d7157361e9D6D0CcEfC0",
+          "TokenName": "cwUSDT",
+          "Pid": 8
+        }
+      ]
+    },
+    {
+      "CoinName": "BUSD",
+      "Vaults": [
+        {
+          "Name": "Alpaca",
+          "ContractAddress": "0xAf996B5E33007ed5EB33eaAe817ad8E1310CCebc",
+          "TokenName": "alBUSD",
+          "Pid": 5
+        },
+        {
+          "Name": "Venus",
+          "ContractAddress": "0x2E128EB2EE787428307A7B246d02C1801788e1A6",
+          "TokenName": "vBUSD",
+          "Pid": 4
+        },
+        {
+          "Name": "Coinwind",
+          "ContractAddress": "0x9F4198C4a73c103Bc9b1c34D1f680d4E43D901AF",
+          "TokenName": "cwBUSD",
+          "Pid": 7
+        }
+      ]
+    },
+    {
+      "CoinName": "BNB",
+      "Vaults": [
+        {
+          "Name": "Alpaca",
+          "ContractAddress": "0x024F05c70F203fb77f27b00422534cC33E1FB69d",
+          "TokenName": "alBNB",
+          "Pid": 12
+        },
+        {
+          "Name": "Coinwind",
+          "ContractAddress": "0xcd8EF3E3A7b25741cE5B8C728F582cF748b60b1A",
+          "TokenName": "cwBNB",
+          "Pid": 9
+        }
+      ]
+    }
+  ]
 async function exchangeRateStored(depositContractAddress, coinId) {
     const coinAddress = await sdk.api.abi.call({
         target: depositContractAddress,
@@ -335,7 +401,63 @@ async function getVaultTotalDeposit(){
     return totalSelfUnderlying
 }
 
-async function fetch() {
+
+async function swapV2GetBalanceBsc(contractAddress, coinId) {
+    const balance = await sdk.api.abi.call({
+        target: contractAddress,
+        abi: swapPoolAbiV2['balances'],
+        chain: "bsc",
+        params: coinId,
+
+    });
+    return balance.output
+}
+
+async function getBnbPrice() {
+
+    const getAmountsIn = await sdk.api.abi.call({
+        target: "0x10ed43c718714eb63d5aa57b78b54704e256024e",
+        abi: mdexRouter['getAmountsOut'],
+        chain: "bsc",
+        params: [1e8, ["0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c","0x55d398326f99059ff775485246999027b3197955"]],
+    });
+    return getAmountsIn.output[1] / Math.pow(10, 26 - 18)
+}
+
+async function swapV2PoolUnderlyingCoinBalanceBsc(contractAddress) {
+    const balance0 = await swapV2GetBalanceBsc(contractAddress, 0)
+    const balance1 = await swapV2GetBalanceBsc(contractAddress, 1)
+    const balance2 = await swapV2GetBalanceBsc(contractAddress, 2)
+
+    const tvlPool =  balance0  / Math.pow(10, 18)+ balance1  / Math.pow(10, 18)+ balance2 / Math.pow(10, 18)
+    return tvlPool
+}
+
+async function getVaultTotalDepositBsc(){
+    let totalSelfUnderlying=0
+    for(let i=0;i<VaultGroupBsc.length;i++){
+        for(let j=0;j<VaultGroupBsc[i].Vaults.length;j++) {
+            const out= await sdk.api.abi.call({
+                target: VaultGroupBsc[i].Vaults[j].ContractAddress,
+                abi: vaultAbi['balance'],
+                chain: "bsc",
+            });
+            if(VaultGroupBsc[i].CoinName==="BNB"){
+
+                const bnbPrice=await getBnbPrice()
+                totalSelfUnderlying=totalSelfUnderlying+out.output/ Math.pow(10, 18)*bnbPrice
+            }else{
+                totalSelfUnderlying= totalSelfUnderlying+out.output/ Math.pow(10, 18)
+            }
+
+        }
+
+    }
+    return totalSelfUnderlying
+}
+
+
+async function fetchHeco() {
 
     let balances = {};
 
@@ -365,18 +487,22 @@ async function fetch() {
     }
     let dao=await getDaoSharesAndRewards()
     let vault=await getVaultTotalDeposit()
- 
 
     return total+dao+vault
 }
 
+
+async function fetchBsc() {
+    const swapTvl=await swapV2PoolUnderlyingCoinBalanceBsc("0xc57220b65dd9200562aa73b850c06be7bd632b57")
+    const vaultTvl=await getVaultTotalDepositBsc()
+    return swapTvl+vaultTvl
+}
 
 
 module.exports = {
     name: 'Depth',
     website: 'https://depth.fi/',
     token: 'DEP',
-    category: 'lending',
-    start: 1602054167,
-    fetch
+    fetchHeco,//hecoTvl
+    fetchBsc//bsctvl
 }
