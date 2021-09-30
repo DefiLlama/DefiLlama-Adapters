@@ -83,6 +83,11 @@ async function getMultipleAccountBuffers(labeledAddresses) {
 
     const results = {}
     accountsData.forEach((account, index) => {
+        if (account === null) {
+            results[labels[index]] = null;
+        } else {
+            results[labels[index]] = Buffer.from(account.data[0], account.data[1]);
+        }
         results[labels[index]] = Buffer.from(account.data[0], account.data[1])
 
         // Uncomment and paste into a hex editor to do some reverse engineering
