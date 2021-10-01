@@ -19,11 +19,19 @@ async function ethTvl(timestamp, block) {
     calls.push({target: poolAddresses[i]})
   }
 
+<<<<<<< HEAD
   let underlyingTokens = await sdk.api.abi.multiCall({
     calls,
     abi: abi["underlying"],
     block:block
   })
+=======
+    let balance = await sdk.api.erc20.balanceOf({
+      target: target,
+      owner: owner,
+      block,
+    });
+>>>>>>> 646f1ef489e4249c545fbb7fbe5b33c0012ffa25
 
   let underlyingBalances = await sdk.api.abi.multiCall({
     calls,
