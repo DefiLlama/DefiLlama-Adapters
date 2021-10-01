@@ -10,7 +10,7 @@ async function fetch() {
   const lendArray = response.lend.map(pool => pool.available);
   const tvl = [...poolLiqArray, ...lendArray, response.old].reduce((a, b) => a + b, 0);
 
-  return tvl || 0;
+  return tvl;
 }
 
 module.exports = {
