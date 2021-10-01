@@ -151,6 +151,7 @@ async function tvl(timestamp, block) {
     const poolSummaries = (await sdk.api.abi.multiCall({
       target: fusePoolLensAddress,
       abi: abi['getPoolSummary'],
+      block,
       calls: fusePools.map((poolInfo) => ({
         params: [poolInfo[2]]
       }))
