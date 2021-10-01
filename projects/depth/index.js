@@ -500,9 +500,11 @@ async function fetchBsc() {
 
 
 module.exports = {
-    name: 'Depth',
-    website: 'https://depth.fi/',
-    token: 'DEP',
-    fetchHeco,
-    fetchBsc
+    heco:{
+        fetch: fetchHeco
+    },
+    bsc:{
+        fetch: fetchBsc
+    },
+    fetch: async ()=>{return (await fetchHeco())+(await fetchBsc())}
 }
