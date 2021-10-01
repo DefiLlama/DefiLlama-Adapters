@@ -19,6 +19,7 @@ async function tvl(timestamp, block) {
     let balance = await sdk.api.erc20.balanceOf({
       target: target,
       owner: owner,
+      block,
     });
 
     //If stkAAVE address then change target address to AAVE address
