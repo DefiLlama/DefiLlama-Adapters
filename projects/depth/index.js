@@ -456,7 +456,7 @@ async function getVaultTotalDepositBsc(){
     return totalSelfUnderlying
 }
 
-
+//heco tvl
 async function fetchHeco() {
 
     let balances = {};
@@ -491,7 +491,7 @@ async function fetchHeco() {
     return total+dao+vault
 }
 
-
+//bsc tvl
 async function fetchBsc() {
     const swapTvl=await swapV2PoolUnderlyingCoinBalanceBsc("0xc57220b65dd9200562aa73b850c06be7bd632b57")
     const vaultTvl=await getVaultTotalDepositBsc()
@@ -503,6 +503,6 @@ module.exports = {
     name: 'Depth',
     website: 'https://depth.fi/',
     token: 'DEP',
-    fetchHeco,//hecoTvl
-    fetchBsc//bsctvl
+    fetchHeco,
+    fetchBsc
 }
