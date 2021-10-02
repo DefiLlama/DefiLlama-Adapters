@@ -3,6 +3,15 @@ const { request, gql } = require("graphql-request");
 const queryUrl = "https://api.thegraph.com/subgraphs/name/enzymefinance/enzyme";
 const { BigNumber } = require("bignumber.js");
 
+/*
+  STAKEHOUND NO TVL 
+  NO CHAI TVL 
+  For CRV and UNI, TVL = networkAssetHolding.amount * price.price
+  which results in TVL in ETH which can be converted with sumSingleBalance()
+  Ignore "0x06325440d014e39736583c165c2963ba99faf14e", no TVL there 
+  "0x2e59005c5c0f0a4d77cca82653d48b46322ee5cd" is sXTZ which hasn't been updated by CoinGecko as of this commit
+*/
+
 async function query(derivative, queryUrl) {
   let queryField;
   switch (derivative) {
@@ -84,6 +93,7 @@ async function calcTvl(balances, assets, derivative) {
           sdk.util.sumSingleBalance(balances, asset, balance);
         }
         break;
+
       case "crv":
       case "uni":
         if (
@@ -158,9 +168,6 @@ async function ethTvl(timestamp, block) {
   //NULL
   let nullAssets = await query("null", queryUrl, "null");
   await calcTvl(balances, nullAssets, "null");
-
-  // STAKEHOUND NO TVL ON SITE
-  // NO CHAI ON SITE
 
   return balances;
 }
