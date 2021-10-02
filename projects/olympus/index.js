@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
 const erc20 = require("../helper/abis/erc20.json");
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
+const { sumTokensAndLPsSharedOwners, sumTokens, unwrapUniswapLPs } = require("../helper/unwrapLPs");
+const abi = require('./abi.json')
 
 const OlympusStakings = [
   // Old Staking Contract
@@ -42,6 +43,8 @@ const staking = async (timestamp, ethBlock, chainBlocks) => {
   return balances;
 };
 
+const onsenAllocator = '0x0316508a1b5abf1CAe42912Dc2C8B9774b682fFC'
+
 /*** Bonds TVL Portion (Treasury) ***
  * Treasury TVL consists of DAI, FRAX and WETH balances + Sushi SLP and UNI-V2 balances
  ***/
@@ -60,6 +63,18 @@ async function ethTvl(timestamp, block) {
     treasuryAddresses,
     block
   );
+  await sumTokens(balances, [
+    ["0x028171bca77440897b824ca71d1c56cac55b68a3", "0x0e1177e47151be72e5992e0975000e73ab5fd9d4"]
+  ], block)
+  const onsenLps = await sdk.api.abi.call({
+    target: onsenAllocator,
+    abi: abi.totalValueDeployed,
+    block
+  })
+  await unwrapUniswapLPs(balances, [{
+    balance: onsenLps.output,
+    token: OHM_DAI_SLP
+  }], block)
 
   return balances;
 }

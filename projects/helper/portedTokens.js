@@ -69,6 +69,9 @@ async function transformBscAddress() {
         if (srcToken !== undefined && srcToken.bscContractDecimal === srcToken.ethContractDecimal) {
             return srcToken.ethContractAddress
         }
+        if (addr.toLowerCase() == "0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c") {
+            return 'avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c'
+        }
         return `bsc:${addr}`
     }
 }
@@ -133,7 +136,11 @@ async function transformOkexAddress() {
 
 async function transformHecoAddress() {
   return (addr) => {
-    return `heco:${addr}`;
+    if (addr.toLowerCase() == '0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c') {
+        return 'avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c';
+    } else {
+        return `heco:${addr}`;
+    }
   };
 }
 

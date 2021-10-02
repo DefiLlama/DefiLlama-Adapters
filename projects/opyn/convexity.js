@@ -1,7 +1,3 @@
-/*==================================================
-  Modules
-==================================================*/
-
 const sdk = require('@defillama/sdk');
 const _ = require('underscore');
 const BigNumber = require('bignumber.js');
@@ -10,28 +6,12 @@ const getNumberOfOptionsContractsAbi = require('./abis/convexity/getNumberOfOpti
 const optionsContractsAbi = require('./abis/convexity/optionsContracts.json');
 const collateralAbi = require('./abis/convexity/collateral.json');
 
-/*==================================================
-  Settings
-==================================================*/
-
 const factoriesAddresses = [
   "0xb529964F86fbf99a6aA67f72a27e59fA3fa4FEaC",
   "0xcC5d905b9c2c8C9329Eb4e25dc086369D6C7777C"
 ]
 
-/*==================================================
-  TVL
-==================================================*/
-
 module.exports = async function tvl(timestamp, block) {  
-  const supportedTokens = await (
-    sdk
-      .api
-      .util
-      .tokenList()
-      .then((supportedTokens) => supportedTokens.map(({ contract }) => contract))
-  );
-
   let balances = {};
 
   for(let i = 0; i < factoriesAddresses.length; i++) {
@@ -95,7 +75,7 @@ module.exports = async function tvl(timestamp, block) {
 
     _.each(optionsCollateral, async (collateralAsset) => {     
       // only consider supported tokens   
-      if((collateralAsset.output.toLowerCase() != null) && (collateralAsset.output.toLowerCase() !== "0x0000000000000000000000000000000000000000") && (supportedTokens.includes(collateralAsset.output.toLowerCase())) && (!optionsCollateralAddresses.includes(collateralAsset.output.toLowerCase())) ) {
+      if((collateralAsset.output.toLowerCase() != null) && (collateralAsset.output.toLowerCase() !== "0x0000000000000000000000000000000000000000") && (!optionsCollateralAddresses.includes(collateralAsset.output.toLowerCase())) ) {
         optionsCollateralAddresses = [
           ...optionsCollateralAddresses,
           collateralAsset.output.toLowerCase()

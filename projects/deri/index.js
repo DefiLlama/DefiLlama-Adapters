@@ -44,10 +44,14 @@ async function _tvl(timestamp, ethBlock, chainBlocks, chain, pool, bTokenSymbol)
     return acc.plus(liquidity.times(price).times(discount).plus(pnl))
   }, ZERO)
 
-  return { [bTokenSymbol]: res.toNumber() };
+  if(bTokenSymbol==="TETHER"){
+    return { [bTokenSymbol]: res.toNumber() };
+  } else {
+    return { [bTokenSymbol]: (new BigNumber(res)).times(ETHER).toFixed(0) };
+  }
 }
 async function bsc(timestamp, ethBlock, chainBlocks) {
-  return await _tvl(timestamp, ethBlock, chainBlocks, 'bsc', '0x19c2655A0e1639B189FB0CF06e02DC0254419D92', 'BUSD')
+  return await _tvl(timestamp, ethBlock, chainBlocks, 'bsc', '0x19c2655A0e1639B189FB0CF06e02DC0254419D92', '0x4fabb145d64652a948d72533023f6e7a623c7c53') //busd
 }
 
 async function polygon(timestamp, ethBlock, chainBlocks) {

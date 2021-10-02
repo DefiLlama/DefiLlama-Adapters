@@ -1,216 +1,213 @@
-/*==================================================
-  Imports
-==================================================*/
 const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js');
+const { fetchURL } = require('../helper/utils');
 
-/*==================================================
-  Settings
-==================================================*/
-const listedTokens = [
-    // Compound - USDC
-    {
-        isCompound: true,
-        provider: '0xDAA037F99d168b552c0c61B7Fb64cF7819D78310',
-        cToken: {
-            address: '0x39aa39c021dfbae8fac545936693ac917d5e7563',
-            decimals: 8,
-        },
-        uToken: {
-            address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-            decimals: 6,
-        },
-    },
-    // Compound - DAI
-    {
-        isCompound: true,
-        provider: '0xe6c1a8e7a879d7febb8144276a62f9a6b381bd37',
-        cToken: {
-            address: '0x5d3a536e4d6dbd6114cc1ead35777bab948e3643',
-            decimals: 8,
-        },
-        uToken: {
-            address: '0x6b175474e89094c44da98b954eedeac495271d0f',
-            decimals: 18,
-        },
-    },
-    // AAVE - USDC
-    {
-        isAave: true,
-        provider: '0x99230f93135f3650ab5706b7b6d4b30b4ee961c9',
-        cToken: {
-            address: '0xbcca60bb61934080951369a648fb03df4f96263c',
-            decimals: 6,
-        },
-        uToken: {
-            address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-            decimals: 6,
-        },
-    },
-    // AAVE - DAI
-    {
-        isAave: true,
-        provider: '0x372d02e58a8fcf42114232f614d57f31401d4c7d',
-        cToken: {
-            address: '0x028171bca77440897b824ca71d1c56cac55b68a3',
-            decimals: 18,
-        },
-        uToken: {
-            address: '0x6b175474e89094c44da98b954eedeac495271d0f',
-            decimals: 18,
-        },
-    },
-    // AAVE - USDT
-    {
-        isAave: true,
-        provider: '0xbf5649526aa1dc1daa82ed29ddc65149278ca5d8',
-        cToken: {
-            address: '0x3ed3b47dd13ec9a98b44e6204a523e766b225811',
-            decimals: 6,
-        },
-        uToken: {
-            address: '0xdac17f958d2ee523a2206206994597c13d831ec7',
-            decimals: 6,
-        },
-    },
-    // AAVE - GUSD
-    {
-        isAave: true,
-        provider: '0x5cfcfb6171db72a26b84bc50edd2d80b0f3fc094',
-        cToken: {
-            address: '0xd37ee7e4f452c6638c96536e68090de8cbcdb583',
-            decimals: 2,
-        },
-        uToken: {
-            address: '0x056fd409e1d7a124bd7017459dfea2f387b6d5cd',
-            decimals: 2,
-        },
-    },
-    // Cream - USDC
-    {
-        isCream: true,
-        provider: '0xa4f8310cd972b1fc3ca9f130b235a91bc882badb',
-        cToken: {
-            address: '0x44fbebd2f576670a6c33f6fc0b00aa8c5753b322',
-            decimals: 8,
-        },
-        uToken: {
-            address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-            decimals: 6,
-        },
-    },
-    // Cream - DAI
-    {
-        isCream: true,
-        provider: '0x37923eb0f4a9097b2774eab9d928afad6196cf76',
-        cToken: {
-            address: '0x92b767185fb3b04f881e3ac8e5b0662a027a1d9f',
-            decimals: 8,
-        },
-        uToken: {
-            address: '0x6b175474e89094c44da98b954eedeac495271d0f',
-            decimals: 18,
-        },
-    },
-    // Cream - USDT
-    {
-        isCream: true,
-        provider: '0x7b1e1a841afe589f1b5337a2eec41a18a58475be',
-        cToken: {
-            address: '0x797aab1ce7c01eb727ab980762ba88e7133d2157',
-            decimals: 8,
-        },
-        uToken: {
-            address: '0xdac17f958d2ee523a2206206994597c13d831ec7',
-            decimals: 6,
-        },
-    },
-];
+const MAINNET_SY_POOLS_API_URL = 'https://api-v2.barnbridge.com/api/smartyield/pools';
+const MAINNET_SA_POOLS_API_URL = 'https://api-v2.barnbridge.com/api/smartalpha/pools';
 
-/*==================================================
-  Helpers
-==================================================*/
-function createAbiViewItemFor(name, inputs, outputs) {
-    return {
-        name,
-        type: 'function',
-        stateMutability: 'view',
-        inputs: inputs.map(input => ({
-            name: '',
-            type: input,
-        })),
-        outputs: outputs.map(output => ({
-            name: '',
-            type: output,
-        })),
+const POLYGON_SY_POOLS_API_URL = 'https://prod-poly-v2.api.barnbridge.com/api/smartyield/pools';
+const POLYGON_SA_POOLS_API_URL = 'https://prod-poly-v2.api.barnbridge.com/api/smartalpha/pools';
+
+const STK_AAVE_ADDRESS = '0x4da27a545c0c5b758a6ba100e3a049001de870f5';
+const AAVE_ADDRESS = '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9';
+
+async function fetchSyPools(apiUrl) {
+    return fetchURL(apiUrl)
+        .then(res => res.data)
+        .then(({status, data}) => status === 200 ? data : []);
+}
+
+async function fetchSaPools(apiUrl) {
+    return fetchURL(apiUrl)
+        .then(res => res.data)
+        .then(({status, data}) => status === 200 ? data : []);
+}
+
+function syGetUnderlyingTotal(chain, smartYieldAddress, block) {
+    return sdk.api.abi.call({
+        abi: {
+            name: "underlyingTotal",
+            type: "function",
+            stateMutability: "view",
+            constant: true,
+            payable: false,
+            inputs: [],
+            outputs: [
+                {
+                    name: "total",
+                    type: "uint256",
+                    internalType: "uint256",
+                },
+            ],
+        },
+        target: smartYieldAddress,
+        chain,
+        block,
+    }).then(({output}) => new BigNumber(output));
+}
+
+function saGetEpochBalance(chain, smartAlphaAddress, block) {
+    return sdk.api.abi.call({
+        abi: {
+            name: "epochBalance",
+            type: "function",
+            stateMutability: "view",
+            constant: true,
+            payable: false,
+            inputs: [],
+            outputs: [
+                {
+                    name: "balance",
+                    type: "uint256",
+                    internalType: "uint256",
+                },
+            ],
+        },
+        target: smartAlphaAddress,
+        chain,
+        block,
+    }).then(({output}) => new BigNumber(output));
+}
+
+function saGetQueuedJuniorsUnderlyingIn(chain, smartAlphaAddress, block) {
+    return sdk.api.abi.call({
+        abi: {
+            name: "queuedJuniorsUnderlyingIn",
+            type: "function",
+            stateMutability: "view",
+            constant: true,
+            payable: false,
+            inputs: [],
+            outputs: [
+                {
+                    name: "amount",
+                    type: "uint256",
+                    internalType: "uint256",
+                },
+            ],
+        },
+        target: smartAlphaAddress,
+        chain,
+        block,
+    }).then(({output}) => new BigNumber(output));
+}
+
+function saGetQueuedSeniorsUnderlyingIn(chain, smartAlphaAddress, block) {
+    return sdk.api.abi.call({
+        abi: {
+            name: "queuedSeniorsUnderlyingIn",
+            type: "function",
+            stateMutability: "view",
+            constant: true,
+            payable: false,
+            inputs: [],
+            outputs: [
+                {
+                    name: "amount",
+                    type: "uint256",
+                    internalType: "uint256",
+                },
+            ],
+        },
+        target: smartAlphaAddress,
+        chain,
+        block,
+    }).then(({output}) => new BigNumber(output));
+}
+
+function resolveAddress(address) {
+    switch (address) {
+        case STK_AAVE_ADDRESS:
+            return AAVE_ADDRESS;
+        default:
+            return address;
+    }
+}
+
+function sumTvl(tvlList = []) {
+    return async (...args) => {
+        const results = await Promise.all(tvlList.map(fn => fn(...args)));
+        return results.reduce((a, c) => Object.assign(a, c), {});
     };
 }
 
-function getCBalanceFor(cTokenAddress, cTokenDecimals, providerAddress, block) {
-    const abi = createAbiViewItemFor('balanceOf', ['address'], ['uint256']);
+async function mainnetTvl(timestamp, ethBlock) {
+    const chain = 'ethereum';
+    const block = ethBlock;
+    const balances = {}
 
-    return sdk.api.abi.call({
-        abi,
-        target: cTokenAddress,
-        params: [providerAddress],
-        block,
-    }).then(({output}) => new BigNumber(output).dividedBy(10 ** cTokenDecimals));
-}
+    // calculate TVL from SmartYield pools
+    const syPools = await fetchSyPools(MAINNET_SY_POOLS_API_URL);
 
-function getCExchangeRateFor(cTokenAddress, cTokenDecimals, uTokenDecimals, block) {
-    const abi = createAbiViewItemFor('exchangeRateStored', [], ['uint256']);
-    const decimals = 18 + uTokenDecimals - cTokenDecimals;
+    await Promise.all(syPools.map(async syPool => {
+        const {smartYieldAddress, underlyingAddress} = syPool;
+        const underlyingTotal = await syGetUnderlyingTotal(chain, smartYieldAddress, block);
 
-    return sdk.api.abi.call({
-        abi,
-        target: cTokenAddress,
-        block,
-    }).then(({output}) => new BigNumber(output).dividedBy(10 ** decimals));
-}
+        sdk.util.sumSingleBalance(balances, chain+':'+resolveAddress(underlyingAddress), underlyingTotal.toFixed(0));
+    }));
 
-/*==================================================
-  Main
-==================================================*/
-async function tvl(timestamp, block) {
-    const balances = {};
+    // calculate TVL from SmartAlpha pools
+    const saPools = await fetchSaPools(MAINNET_SA_POOLS_API_URL);
 
-    await Promise.all(listedTokens.map(async token => {
-        const {provider, uToken, cToken} = token;
-        const uTokenAddr = uToken.address;
-        const uTokenDecimals = uToken.decimals;
-        const cTokenAddr = cToken.address;
-        const cTokenDecimals = cToken.decimals;
+    await Promise.all(saPools.map(async saPool => {
+        const {poolAddress, poolToken} = saPool;
+        const [epochBalance, queuedJuniorsUnderlyingIn, queuedSeniorsUnderlyingIn] = await Promise.all([
+            saGetEpochBalance(chain, poolAddress, block),
+            saGetQueuedJuniorsUnderlyingIn(chain, poolAddress, block),
+            saGetQueuedSeniorsUnderlyingIn(chain, poolAddress, block),
+        ]);
 
-        if (!balances[uTokenAddr]) {
-            balances[uTokenAddr] = new BigNumber(0);
-        }
-
-        let balance;
-        let exchangeRate;
-
-            if (token.isCompound || token.isCream) {
-                balance = await getCBalanceFor(cTokenAddr, cTokenDecimals, provider, block);
-                exchangeRate = await getCExchangeRateFor(cTokenAddr, cTokenDecimals, uTokenDecimals, block);
-            } else if (token.isAave) {
-                balance = await getCBalanceFor(cTokenAddr, cTokenDecimals, provider, block);
-                exchangeRate = new BigNumber(1);
-            }
-
-            const totalValue = balance
-                .multipliedBy(exchangeRate)
-                .multipliedBy(10 ** uTokenDecimals)
-                .integerValue(BigNumber.ROUND_UP);
-
-            balances[uTokenAddr] = balances[uTokenAddr].plus(totalValue);
+        const underlyingTotal = epochBalance
+            .plus(queuedJuniorsUnderlyingIn)
+            .plus(queuedSeniorsUnderlyingIn);
+        sdk.util.sumSingleBalance(balances, chain+':'+resolveAddress(poolToken.address), underlyingTotal.toFixed(0));
     }));
 
     return balances;
 }
 
-/*==================================================
-  Metadata
-==================================================*/
+async function polygonTvl(timestamp, _, chainBlocks) {
+    const chain = 'polygon';
+    const block = chainBlocks[chain];
+    const balances = {}
+
+    // calculate TVL from SmartYield pools
+    const syPools = await fetchSyPools(POLYGON_SY_POOLS_API_URL);
+
+    await Promise.all(syPools.map(async syPool => {
+        const {smartYieldAddress, underlyingAddress} = syPool;
+        const underlyingTotal = await syGetUnderlyingTotal(chain, smartYieldAddress, block);
+
+        sdk.util.sumSingleBalance(balances, chain+':'+resolveAddress(underlyingAddress), underlyingTotal.toFixed(0));
+    }));
+
+    // calculate TVL from SmartAlpha pools
+    const saPools = await fetchSaPools(POLYGON_SA_POOLS_API_URL);
+
+    await Promise.all(saPools.map(async saPool => {
+        const {poolAddress, poolToken} = saPool;
+        const [epochBalance, queuedJuniorsUnderlyingIn, queuedSeniorsUnderlyingIn] = await Promise.all([
+            saGetEpochBalance(chain, poolAddress, block),
+            saGetQueuedJuniorsUnderlyingIn(chain, poolAddress, block),
+            saGetQueuedSeniorsUnderlyingIn(chain, poolAddress, block),
+        ]);
+
+        const underlyingTotal = epochBalance
+            .plus(queuedJuniorsUnderlyingIn)
+            .plus(queuedSeniorsUnderlyingIn);
+        sdk.util.sumSingleBalance(balances, chain+':'+resolveAddress(poolToken.address), underlyingTotal.toFixed(0));
+    }));
+
+    return balances;
+}
+
 module.exports = {
     start: 1615564559, // Mar-24-2021 02:17:40 PM +UTC
-    tvl,
+    ethereum: {
+        tvl: mainnetTvl,
+    },
+    polygon: {
+        tvl: polygonTvl
+    },
+    tvl: sumTvl([mainnetTvl, polygonTvl]),
 };

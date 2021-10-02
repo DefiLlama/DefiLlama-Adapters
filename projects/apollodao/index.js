@@ -2,14 +2,14 @@ const axios = require('axios');
 const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js');
 
-const limit = 10
+const limit = 1
 
 async function strategies(block) {
     let totalStrategies = []
     let current = 0
     do {
         // Node is semi-pruned, only every 100th block is stored
-        const url = "https://columbus-4.apollo.farm//wasm/contracts/terra1g7jjjkt5uvkjeyhp8ecdz4e4hvtn83sud3tmh2/store?query_msg=" +
+        const url = "https://lcd.terra.dev/wasm/contracts/terra1g7jjjkt5uvkjeyhp8ecdz4e4hvtn83sud3tmh2/store?query_msg=" +
             encodeURIComponent(`{"get_strategies": {"limit": ${limit}, "start_from": ${current}}}`) +
             `&height=${block - (block % 100)}`;
         const pagedStrategies = (await axios.get(url)).data.result.strategies

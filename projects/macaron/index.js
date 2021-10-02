@@ -25,6 +25,8 @@ const vaultsOnMacaron = [
   "0xCd59d44E94Dec10Bb666f50f98cD0B1593dC3a3A",
   //BananaVaultOnMacaron
   "0xd474366F6c80230507481495F3C1490e62E3093F",
+  //BakeVaultOnMacaron v2
+  "0x6dAc44A858Cb51e0d4d663A6589D2535A746607A",
 ];
 
 const ERC20s = [
@@ -112,7 +114,7 @@ const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
   const lpPositions = [];
 
   for (let index = 0; index < lengthOfPool; index++) {
-    const lpOrToken = (
+    const poolInfoResponse = (
       await sdk.api.abi.call({
         abi: abi.poolInfo,
         target: MasterChefContract,
@@ -120,12 +122,16 @@ const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
         chain: "bsc",
         block: chainBlocks["bsc"],
       })
-    ).output.lpToken;
+    );
+
+    const lpOrToken = poolInfoResponse.output.lpToken;
+    const isCLP = poolInfoResponse.output.isCLP;
+    const syrupToken = poolInfoResponse.output.syrupToken;
 
     const lpOrToken_Bal = (
       await sdk.api.abi.call({
         abi: erc20.balanceOf,
-        target: lpOrToken,
+        target: isCLP ? syrupToken : lpOrToken,
         params: MasterChefContract,
         chain: "bsc",
         block: chainBlocks["bsc"],
@@ -177,7 +183,7 @@ const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
 
 module.exports = {
   misrepresentedTokens: true,
-  Treasury: {
+  treasury: {
     tvl: Treasury,
   },
   bsc: {

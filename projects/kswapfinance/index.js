@@ -13,5 +13,5 @@ const whitelist = [
 module.exports = {
   tvl: calculateUsdUniTvl(factory, "okexchain", wokt, whitelist, "okexchain"),
   methodology:
-    "We count tvl on LiquidityPool(pairs) and DepsitPool(single tokens) threw factory contract",
+    "We count tvl on LiquidityPool(pairs) through factory contract",
 };

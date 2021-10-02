@@ -1,0 +1,61 @@
+{
+    "poolInfo": {
+        "type": "function",
+        "stateMutability": "view",
+        "outputs": [
+            {
+                "type": "address",
+                "name": "poolToken",
+                "internalType": "contract IERC20"
+            },
+            {
+                "type": "address",
+                "name": "rewarder",
+                "internalType": "contract IRewarder"
+            },
+            {
+                "type": "address",
+                "name": "strategy",
+                "internalType": "contract IIglooStrategy"
+            },
+            {
+                "type": "uint256",
+                "name": "allocPoint",
+                "internalType": "uint256"
+            },
+            {
+                "type": "uint256",
+                "name": "lastRewardTime",
+                "internalType": "uint256"
+            },
+            {
+                "type": "uint256",
+                "name": "accPEFIPerShare",
+                "internalType": "uint256"
+            },
+            {
+                "type": "uint16",
+                "name": "withdrawFeeBP",
+                "internalType": "uint16"
+            },
+            {
+                "type": "uint256",
+                "name": "totalShares",
+                "internalType": "uint256"
+            },
+            {
+                "type": "uint256",
+                "name": "lpPerShare",
+                "internalType": "uint256"
+            }
+        ],
+        "name": "poolInfo",
+        "inputs": [
+            {
+                "type": "uint256",
+                "name": "",
+                "internalType": "uint256"
+            }
+        ]
+    }
+}

@@ -6,5 +6,6 @@ async function fetch(){
 }
 
 module.exports={
+    methodology: 'TVL is comprised of tokens deposited to the protocol as collateral, similar to Compound Finance and other lending protocols the borrowed tokens are not counted as TVL. Data is pull from the Annex API "https://api.annex.finance/api/v1/governance/annex".',
     fetch
 }

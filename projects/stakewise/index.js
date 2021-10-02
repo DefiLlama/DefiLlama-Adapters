@@ -24,6 +24,7 @@ async function tvl(timestamp, block) {
 }
 
 module.exports = {
+  methodology: 'Counts ETH staked',
   ethereum: {
     tvl,
   },

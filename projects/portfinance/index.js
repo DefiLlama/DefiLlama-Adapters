@@ -15,12 +15,11 @@ async function tvl() {
     return {
         'usd-coin': usdcAmount,
         'tether': usdtAmount,
-        'solana': solAmount + pSolAmount,
+        'solana': solAmount + pSolAmount + mSolAmount,
         'usdp': paiAmount,
         'mercurial': merAmount,
         'bitcoin': btcAmount,
         'serum': srmAmount,
-        'marinade-staked-sol': mSolAmount,
     }
 }
 
