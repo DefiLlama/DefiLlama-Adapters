@@ -244,17 +244,20 @@ async function unwrapUniswapLPs(balances, lpPositions, block, chain='ethereum', 
         chain
       })
       await Promise.all(lpPositions.map(async lpPosition => {
-        const lpToken = lpPosition.token
-        const token0 = (await tokens0).output.find(call=>call.input.target === lpToken).output
-        const token1 = (await tokens1).output.find(call=>call.input.target === lpToken).output
-        const supply = (await lpSupplies).output.find(call=>call.input.target === lpToken).output
-        const {_reserve0, _reserve1} = (await lpReserves).output.find(call=>call.input.target === lpToken).output
-        if (token0 && token1 && supply > 0 && supply && lpPosition.balance) {
+        try{
+            const lpToken = lpPosition.token
+            const token0 = (await tokens0).output.find(call=>call.input.target === lpToken).output
+            const token1 = (await tokens1).output.find(call=>call.input.target === lpToken).output
+            const supply = (await lpSupplies).output.find(call=>call.input.target === lpToken).output
+            const {_reserve0, _reserve1} = (await lpReserves).output.find(call=>call.input.target === lpToken).output
             const token0Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve0)).div(BigNumber(supply))
             sdk.util.sumSingleBalance(balances, await transformAddress(token0.toLowerCase()), token0Balance.toFixed(0))
             const token1Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve1)).div(BigNumber(supply))
             sdk.util.sumSingleBalance(balances, await transformAddress(token1.toLowerCase()), token1Balance.toFixed(0))
-        }
+          } catch(e){
+              console.log(`Failed to get data for LP token at ${lpPosition.token} on chain ${chain}`)
+              throw e
+          }
       }))
 }
 
