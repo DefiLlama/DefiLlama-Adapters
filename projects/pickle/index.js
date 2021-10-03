@@ -19,7 +19,7 @@ const ethTvl = async (timestamp, block, chainBlocks) => {
           name: jar.identifier
         };
     })
-    .filter(x => x);
+    .filter(x => x).slice(0,-3);
 
   const jar_balances = (
     await sdk.api.abi.multiCall({

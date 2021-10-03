@@ -113,7 +113,7 @@ async function tvl() {
             + iSbrUstUsdcEarn1 / 2 + iSbrUstUsdcEarn2 / 2
             + iMerUsdcUsdtPai / 3
             + iSbrUstUsdcEarn / 2,
-        'terra-usd': usdcUstSbrEarn + (usdTriEarn / 3)
+        'terrausd': usdcUstSbrEarn + (usdTriEarn / 3)
             + (iMerTriUsdEarn1 / 3) + (iMerTriUsdEarn2 / 3)
             + iSbrUstUsdcEarn1 / 2 + iSbrUstUsdcEarn2 / 2
             + iSbrUstUsdcEarn / 2,

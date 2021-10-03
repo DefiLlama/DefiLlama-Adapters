@@ -1,5 +1,7 @@
 const axios = require('axios')
 
+const endpoint = 'https://solana-api.projectserum.com/'
+
 async function getTokenSupply(token) {
     const tokenSupply = await axios.post("https://api.mainnet-beta.solana.com", {
         "jsonrpc": "2.0",
@@ -11,7 +13,7 @@ async function getTokenSupply(token) {
 }
 
 async function getTokenBalance(token, account) {
-    const tokenBalance = await axios.post("https://api.mainnet-beta.solana.com", {
+    const tokenBalance = await axios.post(endpoint, {
         "jsonrpc": "2.0",
         "id": 1,
         "method": "getTokenAccountsByOwner",
@@ -29,7 +31,7 @@ async function getTokenBalance(token, account) {
 }
 
 async function getTokenAccountBalance(account) {
-    const tokenBalance = await axios.post('https://solana-api.projectserum.com/', {
+    const tokenBalance = await axios.post(endpoint, {
         "jsonrpc": "2.0",
         "id": 1,
         "method": "getTokenAccountBalance",

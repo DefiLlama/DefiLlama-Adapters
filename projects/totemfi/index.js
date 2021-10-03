@@ -1,6 +1,4 @@
-const sdk = require("@defillama/sdk");
 const { request, gql } = require("graphql-request");
-const abi = require('./abi.json')
 
 const graphUrls = [
     'https://graph.totemfi.com/subgraphs/name/totemfi/staking'
@@ -17,7 +15,6 @@ const graphUrls = [
   `;
   
   async function tvl(timestamp, block) {
-    try {
       let balances = {};
       let allPrizePools = []
       for (const graphUrl of graphUrls) {
@@ -41,9 +38,6 @@ const graphUrls = [
       }
       balances['TOTM'] = sumTOTM.toString()
       return balances
-    } catch (error) {
-      console.error(error)
-    }
   }
 
 
