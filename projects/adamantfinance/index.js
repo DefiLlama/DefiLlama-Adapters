@@ -62,7 +62,7 @@ const tvl = async (timestamp, chain, chainBlocks, transformAddress=a=>a) => {
   const block = await getBlock(timestamp, chain, chainBlocks);
   const balances = {};
 
-  let vaults = (await utils.fetchURL(vaultsUrl[chain])).data.filter(vault=>vault.token0!==vault.token1).map((vault) => ({
+  let vaults = (await utils.fetchURL(vaultsUrl[chain])).data.filter(vault=>vault.token0!==vault.token1 && vault.vaultAddress !== "" && vault.platform !== "dodo").map((vault) => ({
     vaultAddress: vault.vaultAddress,
     lpAddress: vault.lpAddress,
   }));
