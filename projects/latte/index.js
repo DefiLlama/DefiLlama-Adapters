@@ -1,8 +1,10 @@
 const utils = require('../helper/utils');
 
+const baseURL = 'https://api.latteswap.com/api'
 async function fetch() {
-  var totalTvl = await utils.fetchURL('https://api.latteswap.com/api/v1/amm/total-value-locked')
-  return totalTvl.data
+  const totalTvl = await utils.fetchURL(`${baseURL}/v1/amm/defi-llama/tvl-exclude-latte`)
+  const latteTvl = await utils.fetchURL(`${baseURL}/v1/amm/defi-llama/tvl-latte-pool`)
+  return Number(totalTvl.data) + Number(latteTvl.data)
 }
 
 module.exports = {
