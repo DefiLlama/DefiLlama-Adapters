@@ -1,5 +1,6 @@
 const {chainExports} = require('../helper/exports')
 const { sumTokensAndLPsSharedOwners} = require('../helper/unwrapLPs')
+const sdk = require('@defillama/sdk')
 
 const networks = {
     'ethereum': ['0xef4439f0fae7db0b5ce88c155fc6af50f1b38728', [
@@ -17,11 +18,28 @@ const networks = {
     ]]
 }
 
+const abi = [{"inputs":[],"name":"token","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalToken","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}]
+const rugPools = ['0x4a03ea61e543ec7141a3f90128b0c0c9514f8737', '0xf12da8470e2643ccb39a157e8577d9aa586a488f', '0x1941441d31809e9E1828Da0cE6d44175F657E215']
+
 function chainTvl(chain){
-    return async (_time, _ethBlock, chainBlocks)=>{
+    return async (_time, ethBlock, chainBlocks)=>{
         const balances = {}
         const [owner, tokens] = networks[chain]
         await sumTokensAndLPsSharedOwners(balances, tokens.map(t=>[t, false]), [owner], chainBlocks[chain], chain, addr=>`${chain}:${addr}`)
+        if(chain === "ethereum"){
+            for(const pool of rugPools){
+                const token = await sdk.api.abi.call({
+                    target: pool,
+                    abi: abi[0]
+                })
+                const bal = await sdk.api.abi.call({
+                    target: pool,
+                    abi: abi[1],
+                    block: ethBlock
+                })
+                sdk.util.sumSingleBalance(balances, token.output, bal.output)
+            }
+        }
         return balances
     }
 }
