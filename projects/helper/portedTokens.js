@@ -15,6 +15,9 @@ async function transformFantomAddress() {
         if (addr.toLowerCase() === "0x82f0b8b456c1a451378467398982d4834b6829c1") { // MIM
             return "0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3"
         }
+        if(compareAddresses(addr, "0x260b3e40c714ce8196465ec824cd8bb915081812")){
+            return "polygon:0x4a81f8796e0c6ad4877a51c86693b0de8093f2ef" // IRON ICE
+        }
         const srcToken = multichainTokens.find(token => token.chainId === "250" && token.token === addr.toLowerCase())
         if (srcToken !== undefined) {
             if (srcToken.srcChainId === '1') {
