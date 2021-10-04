@@ -67,5 +67,7 @@ module.exports = {
   },
   staking: {
     fetch: staking,
-  }
+  },
+  fetch : harmonyTvl
+
 };
