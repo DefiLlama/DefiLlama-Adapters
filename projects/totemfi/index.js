@@ -1,7 +1,7 @@
 const { request, gql } = require("graphql-request");
 
 const graphUrls = [
-    'https://graph.totemfi.com/subgraphs/name/totemfi/staking'
+    'https://graph.totemfi.com/subgraphs/name/totemfi/staking-v1'
   ]
   const graphQuery = gql`
   query GET_POOLS($block: Int,$timestamp: BigInt) {
