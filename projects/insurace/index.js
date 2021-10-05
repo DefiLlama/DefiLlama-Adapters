@@ -4,6 +4,7 @@ const _ = require('underscore');
 const BigNumber = require('bignumber.js');
 const axios = require("axios");
 const polygonPools = require('./polygonPools.json')
+const avalanchePools = require('./avalanchePools.json')
 
 
 async function eth(timestamp, ethBlock) {
@@ -116,6 +117,31 @@ async function polygon(timestamp, ethBlock, chainBlocks) {
     return balances;
 }
 
+async function avax(timestamp, ethBlock, chainBlocks) {
+    const pools = avalanchePools.pools;
+
+    const { output: _tvlList } = await sdk.api.abi.multiCall({
+        calls: pools.map((pool) => ({
+            target: pool.StakersPool,
+            params: pool.PoolToken,
+        })),
+        abi: abi["getStakedAmountPT"],
+        block: chainBlocks.avax,
+        chain: 'avax'
+    });
+
+    const balances = {};
+    _.each(_tvlList, (element) => {
+        let address = element.input.params[0].toLowerCase();
+        if(address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"){
+            address = "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"
+        }
+        let balance = element.output;
+        sdk.util.sumSingleBalance(balances, 'avax:'+address, balance)
+    })
+    return balances;
+}
+
 module.exports = {
     ethereum: {
         tvl: eth,
@@ -126,5 +152,8 @@ module.exports = {
     polygon:{
         tvl: polygon
     },
-    tvl: sdk.util.sumChainTvls([eth, bsc, polygon])
+    avax:{
+        tvl: avax
+    },
+    tvl: sdk.util.sumChainTvls([eth, bsc, polygon, avax])
 }
