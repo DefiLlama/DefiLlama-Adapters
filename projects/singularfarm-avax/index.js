@@ -73,5 +73,6 @@ async function getTokensInMasterChef(time, ethBlock, chainBlocks) {
 }
 
 module.exports = {
+	methodology: "Only staked LPs are counted as TVL. Excluded in TVL : Locked SING in the bank, meltingpot, value of BNB & xJOE which aren't on CoinGecko yet.",
 	tvl: getTokensInMasterChef,
 };
