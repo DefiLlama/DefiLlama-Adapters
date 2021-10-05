@@ -117,6 +117,7 @@ async function polygon(timestamp, ethBlock, chainBlocks) {
     return balances;
 }
 
+const INSUR = "0x544c42fbb96b39b21df61cf322b5edc285ee7429"
 async function avax(timestamp, ethBlock, chainBlocks) {
     const pools = avalanchePools.pools;
 
@@ -137,7 +138,7 @@ async function avax(timestamp, ethBlock, chainBlocks) {
             address = "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"
         }
         let balance = element.output;
-        sdk.util.sumSingleBalance(balances, 'avax:'+address, balance)
+        sdk.util.sumSingleBalance(balances, address===INSUR?INSUR:'avax:'+address, balance)
     })
     return balances;
 }
