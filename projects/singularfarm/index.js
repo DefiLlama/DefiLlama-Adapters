@@ -99,7 +99,8 @@ async function polyTvl(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
-	methodology: "TVL includes all farms in MasterChef contract",
+	methodology:
+		"Only staked LP is counted as TVL. Excluded in TVL : Locked SING in the bank, meltingpot, value of BNB & xJOE which aren't on CoinGecko yet.",
 	avalanche: {
 		tvl: avaxTvl,
 	},
