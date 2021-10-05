@@ -1,17 +1,4 @@
 {
-	"poolLength": {
-		"inputs": [],
-		"name": "poolLength",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
 	"poolInfo": {
 		"inputs": [
 			{
@@ -64,12 +51,12 @@
 			},
 			{
 				"internalType": "uint256",
-				"name": "stratFee",
+				"name": "earned",
 				"type": "uint256"
 			},
 			{
 				"internalType": "uint256",
-				"name": "earned",
+				"name": "earnfee",
 				"type": "uint256"
 			},
 			{
