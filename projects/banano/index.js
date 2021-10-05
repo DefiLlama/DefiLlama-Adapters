@@ -13,6 +13,7 @@ let polygonPool2 = pool2(polygonContract, polygonLp, "polygon", addr=>`polygon:$
 let bscPool2 = pool2(bscContract, bscLp, "bsc", addr=>`bsc:${addr}`);
 
 module.exports = {
+    methodology: 'Current value of Yield Farms on both chains',
     pool2:{
         tvl: sdk.util.sumChainTvls([polygonPool2,bscPool2])
     },
