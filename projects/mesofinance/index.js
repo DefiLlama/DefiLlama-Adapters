@@ -12,7 +12,7 @@ const mesoFtmLP = "0x0Dd94754C2BC621Ef8De2fd7A9DF2BC5283e9479"
 async function tvl(timestamp, block, chainBlocks) {
   const balances = {}
   const transformAddress = await transformFantomAddress();
-  await addFundsInMasterChef(balances, chef, chainBlocks.fantom, "fantom", transformAddress, abi.poolInfo, [meso])
+  await addFundsInMasterChef(balances, chef, chainBlocks.fantom, "fantom", transformAddress, abi.poolInfo, [meso, mesoFtmLP])
   return balances;
 }
 
