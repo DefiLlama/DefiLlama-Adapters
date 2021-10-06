@@ -13,6 +13,9 @@ async function tvl(timestamp, ethBlock) {
     // calculating the total for Pools...
     await pieDAO.calculatePools();    
 
+    // calculating the total DOUGHs staked...
+    await pieDAO.calculateStakedDough();
+
     // finally, returning the total NAV...
     return pieDAO.calculateNAV();
 }

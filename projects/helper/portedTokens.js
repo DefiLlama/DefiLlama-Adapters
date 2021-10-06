@@ -15,6 +15,9 @@ async function transformFantomAddress() {
         if (addr.toLowerCase() === "0x82f0b8b456c1a451378467398982d4834b6829c1") { // MIM
             return "0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3"
         }
+        if(compareAddresses(addr, "0x260b3e40c714ce8196465ec824cd8bb915081812")){
+            return "polygon:0x4a81f8796e0c6ad4877a51c86693b0de8093f2ef" // IRON ICE
+        }
         const srcToken = multichainTokens.find(token => token.chainId === "250" && token.token === addr.toLowerCase())
         if (srcToken !== undefined) {
             if (srcToken.srcChainId === '1') {
@@ -199,6 +202,9 @@ async function transformArbitrumAddress() {
     const bridge = (await utils.fetchURL("https://bridge.arbitrum.io/token-list-42161.json")).data.tokens
 
     return (addr) => {
+        if(compareAddresses(addr, "0xFEa7a6a0B346362BF88A9e4A88416B77a57D6c2A")){
+            return "0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3" // MIM
+        }
         const dstToken = bridge.find(token => compareAddresses(addr, token.address))
         if (dstToken !== undefined) {
             return dstToken.extensions.l1Address
@@ -229,9 +235,27 @@ async function transformKccAddress() {
     return (addr) => {
       return `kcc:${addr}`;
     };
-  }
+}
+
+const chainTransforms = {
+    celo: transformCeloAddress,
+    fantom: transformFantomAddress,
+    optimism: transformOptimismAddress,
+    harmony: transformHarmonyAddress,
+    arbitrum: transformArbitrumAddress,
+}
+async function getChainTransform(chain){
+    if(chain === 'ethereum'){
+        return id=>id
+    }
+    if(chainTransforms[chain]!== undefined){
+        return chainTransforms[chain]()
+    }
+    return addr=>`${chain}:${addr}`
+}
 
 module.exports = {
+    getChainTransform,
     transformCeloAddress,
     transformFantomAddress,
     transformBscAddress,

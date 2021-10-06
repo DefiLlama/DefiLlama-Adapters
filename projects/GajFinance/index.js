@@ -21,12 +21,15 @@ async function staking(timestamp, ethBlock, chainBlocks) {
   return balances
 }
 
-function vaults(pool2) {
+function vaults(pool2, selectedChain) {
   return async (timestamp, ethBlock, chainBlocks) => {
     const balances = {};
     const vaults = (await fetchURL(pool2 ? nativeEndpoint : nonNativeEndpoint)).data
     for (const vault of vaults) { // Can't aggregate calls because there are multiple chains
       const chain = vault.chain.toLowerCase()
+      if(selectedChain !== undefined && chain !== selectedChain){
+        continue
+      }
       const block = chainBlocks[chain]
       const balance = (
         await sdk.api.abi.call({
@@ -60,6 +63,12 @@ function vaults(pool2) {
 module.exports = {
   methodology: "TVL comes from NFT Farming, Jungle Pools, MasterChef and Vaults",
   tvl: vaults(false),
+  avalanche:{
+    tvl: vaults(false, 'avax')
+  },
+  polygon:{
+    tvl: vaults(false, 'polygon')
+  },
   staking: {
     tvl: staking
   },
