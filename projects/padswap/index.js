@@ -87,8 +87,8 @@ async function staking(timestamp, block, chainBlocks) {
 
 module.exports = {
   misrepresentedTokens: true,
-  'toad-staking': {
-    tvl: staking
+  bsc: {
+    staking
   },
   tvl
 }
