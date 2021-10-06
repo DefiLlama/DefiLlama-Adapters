@@ -12,10 +12,16 @@ const bscLp = "0x351A295AfBAB020Bc7eedcB7fd5A823c01A95Fda";
 let polygonPool2 = pool2(polygonContract, polygonLp, "polygon", addr=>`polygon:${addr}`);
 let bscPool2 = pool2(bscContract, bscLp, "bsc", addr=>`bsc:${addr}`);
 
+
 module.exports = {
     methodology: 'Current value of Yield Farms on both chains',
-    pool2:{
-        tvl: sdk.util.sumChainTvls([polygonPool2,bscPool2])
+    polygon: {
+        tvl: async ()=>({}),
+        pool2: polygonPool2
+    },   
+    bsc: {
+        tvl: async ()=>({}),
+        pool2: bscPool2
     },
     tvl: async ()=>({})
 }
