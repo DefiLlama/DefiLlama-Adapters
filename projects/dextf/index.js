@@ -30,6 +30,8 @@
         }, {})
     );
 
+    delete balances['0xa9859874e1743a32409f75bb11549892138bba1e'];  // removing IETH because the balance was 8637200000 at ts: 1608768000 which resulted in the DexTF tvl being $6698B
+
     return balances;
   }
 

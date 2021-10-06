@@ -57,15 +57,11 @@ const calcTvl = async (balances, chain, block, controller, arrFarms) => {
     ).output.map((bal) => bal.output);
 
     for (let i = 0; i < KERC20_TOKENS.length; i++) {
-      try {
         sdk.util.sumSingleBalance(
           balances,
           `${underlyingTokens[i]}`,
           getCash[i]
         );
-      } catch (err) {
-        console.error(err);
-      }
     }
 
     let getCashkETH = (
