@@ -1,6 +1,6 @@
 const { request, gql } = require("graphql-request");
 
-const graphUrl = 'https://mantle.anchorprotocol.com/'
+const graphUrl = 'https://mantle.terra.dev/'
 const query = gql`
 query __bAssetMarket($bAssetTokenBalanceQuery: String!, $bEthTokenBalanceQuery: String!) {
   ubLunaBalance: WasmContractsContractAddressStore(

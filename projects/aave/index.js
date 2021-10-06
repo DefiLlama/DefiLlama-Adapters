@@ -437,6 +437,21 @@ const { addBalanceOfTokensAndLPs } = require('../helper/unwrapLPs');
     return balances
   }
 
+  async function avax(timestamp, ethBlock, chainBlocks){
+    const balances = {}
+    const block = chainBlocks.avax
+    const chain = 'avax'
+    let v2Atokens = [];
+    let v2ReserveTokens = [];
+    let addressSymbolMapping = {};
+    [v2Atokens, v2ReserveTokens, addressSymbolMapping] = await getV2Reserves(block, "0x4235E22d9C3f28DCDA82b58276cb6370B01265C2", chain, v2Atokens, v2ReserveTokens, addressSymbolMapping)
+    const v2Tvl = await getV2Tvl(block, chain, v2Atokens, v2ReserveTokens, addressSymbolMapping);
+    v2Tvl.map(data => {
+      sdk.util.sumSingleBalance(balances, `${chain}:${data.underlying}`, data.balance);
+    })
+    return balances
+  }
+
   async function staking(timestamp, block){
     const balances = {}
         // Staking TVLs
@@ -463,11 +478,14 @@ const { addBalanceOfTokensAndLPs } = require('../helper/unwrapLPs');
       staking,
       tvl: ethereum
     },
+    avalanche:{
+      tvl: avax
+    },
     polygon:{
       tvl: polygon
     },
     staking:{
       tvl: staking
     },
-    tvl: sdk.util.sumChainTvls([ethereum, polygon])
+    tvl: sdk.util.sumChainTvls([ethereum, polygon, avax])
   };

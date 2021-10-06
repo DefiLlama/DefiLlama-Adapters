@@ -32,7 +32,7 @@ async function tvl(_, ethBlock, chainBlocks) {
 
   return {
     [chain+':'+NATIVE_ADDRESS]: troveEthTvl,
-    [LUSD_TOKEN_ADDRESS]: stabilityPoolLusdTvl,
+    [chain+':'+TSM]: stabilityPoolLusdTvl,
   };
 }
 

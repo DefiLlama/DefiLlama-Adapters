@@ -105,6 +105,7 @@ async function bsc(timestamp, ethblock, chainBlocks) {
 }
 
 module.exports = {
+    methodology: 'Total supply in lending pools, not couting borrowed amount.',
     bsc: {
         tvl: bsc
     },
