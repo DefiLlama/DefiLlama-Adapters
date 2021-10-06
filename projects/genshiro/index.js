@@ -283,5 +283,6 @@ async function tvl() {
 }
 
 module.exports = {
+	methodology: 'Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield as well as the deposits of the Bailsman. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted.',
 	tvl,
 };

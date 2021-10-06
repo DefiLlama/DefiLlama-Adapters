@@ -11,7 +11,7 @@ const { default: axios } = require('axios')
 /*
   Settings
 */
-let dInterestAddresses = [
+const olddInterestAddresses = [
   '0x35966201A7724b952455B73A36C8846D8745218e', // Compound DAI
   '0x374226dbAa3e44bF3923AfB63f5Fd83928B7e148', // Compound USDC
   '0x19E10132841616CE4790920d5f94B8571F9b9341', // Compound UNI
@@ -61,7 +61,7 @@ async function tvl (timestamp, block) {
   const poolToUnderlyingToken = {}
 
   const v3Pools = await axios.get('https://api.88mph.app/v3/pools')
-  dInterestAddresses= dInterestAddresses.concat(v3Pools.data.map(p=>p.address))
+  const dInterestAddresses= olddInterestAddresses.concat(v3Pools.data.map(p=>p.address))
 
   // Get deposit pools' underlying tokens
   const poolUnderlyingAddressResults = await sdk.api.abi.multiCall({
