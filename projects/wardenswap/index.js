@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
 const token0 = require("../helper/abis/token0.json");
 const token1 = require("../helper/abis/token1.json");
+const erc20 = require("../helper/abis/erc20.json");
 const getReserves = require("../helper/abis/getReserves.json");
 
 const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
@@ -15,9 +16,11 @@ const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
     "0x8485c5f255ff30aafab0030329e508bd8dde11c5", // ETH/BNB
     "0x087d69b97a6df4fb37e4e93a31752008223a6c19", // USDT/BUSD
   ];
+  const masterchefAddress = '0xde866dD77b6DF6772e320dC92BFF0eDDC626C674'; // WardenSwap's MasterChef contract
+  const wardenTokenAddress = '0x0fEAdcC3824E7F3c12f40E324a60c23cA51627fc'; // WardenSwap token contract
 
   const chain = "bsc";
-  const multiCallProperties = {
+  const poolMulticallProps = {
     chain,
     calls: trackedPairAddresses.map((pairAddress) => ({
       target: pairAddress,
@@ -25,23 +28,24 @@ const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
     block: chainBlocks[chain],
   };
 
+  // Calculate total liquidity of listed pools
   const [token0Addresses, token1Addresses, reserves] = await Promise.all([
     sdk.api.abi
       .multiCall({
         abi: token0,
-        ...multiCallProperties,
+        ...poolMulticallProps,
       })
       .then(({ output }) => output),
     sdk.api.abi
       .multiCall({
         abi: token1,
-        ...multiCallProperties,
+        ...poolMulticallProps,
       })
       .then(({ output }) => output),
     sdk.api.abi
       .multiCall({
         abi: getReserves,
-        ...multiCallProperties,
+        ...poolMulticallProps,
       })
       .then(({ output }) => output),
   ]);
@@ -59,6 +63,20 @@ const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
     );
   });
 
+  // Calculate total Warden staked in Warden-single-token pool.
+  const wardenFarmBalances = await sdk.api.abi.call({
+    abi: erc20.balanceOf,
+    chain,
+    target: wardenTokenAddress,
+    params: masterchefAddress,
+    block: chainBlocks[chain],
+  }).then(({ output }) => output);
+  sdk.util.sumSingleBalance(
+    balances,
+    `${chain}:${wardenTokenAddress}`,
+    wardenFarmBalances,
+  );
+
   return balances;
 };
 
@@ -67,7 +85,7 @@ module.exports = {
   website: 'https://www.wardenswap.finance/',
   token: 'WAD',
   category: 'dexes',
-  methodology: "TVL of WardenSwap is calculated by querying total liquidity of WardenSwap's active pools listed on our farm page https://farm.wardenswap.finance/?t=1&s=1/#/farm. However, pools at PancakeSwap and inactive pools are not included",
+  methodology: "TVL is calculated from total liquidity of WardenSwap's active pools listed on our farm page https://farm.wardenswap.finance/?t=1&s=1/#/farm, excluding pools at PancakeSwap and inactive pools are not included, plus total warden staked in Warden pool",
   bsc:{
     tvl: bscTvl,
   },
