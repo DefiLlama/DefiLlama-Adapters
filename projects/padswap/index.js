@@ -3,10 +3,10 @@ const { toUSDTBalances } = require('../helper/balances');
 const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js');
 
-TOAD_ADDRESS = '0x463e737d8f740395abf44f7aac2d9531d8d539e9'
-TOAD_FARM_ADDRESS = '0xe1F1EDfBcEfB1E924e4a031Ed6B4CAbC7e570154'
-TOAD_PADSWAP_FARM_V1_ADDRESS = '0xD2d7b6b333AbF180520494c021f7125806eD273e'
-TOAD_PADSWAP_FARM_V2_ADDRESS = '0x4992df071416370fe780627eDFDD8CbC694Ed08b'
+const TOAD_ADDRESS = '0x463e737d8f740395abf44f7aac2d9531d8d539e9'
+const TOAD_FARM_ADDRESS = '0xe1F1EDfBcEfB1E924e4a031Ed6B4CAbC7e570154'
+const TOAD_PADSWAP_FARM_V1_ADDRESS = '0xD2d7b6b333AbF180520494c021f7125806eD273e'
+const TOAD_PADSWAP_FARM_V2_ADDRESS = '0x4992df071416370fe780627eDFDD8CbC694Ed08b'
 
 const graphUrl = 'https://api.thegraph.com/subgraphs/name/toadguy/padswap'
 const graphQuery = gql`
