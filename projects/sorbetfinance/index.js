@@ -3,14 +3,14 @@ const abi = require("./abi.json");
 
 const G_UNI_Factory = "0xEA1aFf9dbFfD1580F6b81A3ad3589E66652dB7D9";
 
-const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
+const ethTvl = async (timestamp, block, chainBlocks) => {
   const balances = {};
 
   const getAllDeplores = (
     await sdk.api.abi.call({
       abi: abi.getDeployers,
       target: G_UNI_Factory,
-      ethBlock,
+      block,
     })
   ).output;
 
@@ -21,7 +21,7 @@ const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
         target: G_UNI_Factory,
         params: deployer,
       })),
-      ethBlock,
+      block,
     })
   ).output.map((pool) => pool.output);
 
@@ -33,7 +33,7 @@ const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
       calls: allGelatoPools.map((pool) => ({
         target: pool,
       })),
-      ethBlock,
+      block,
     })
   ).output.map((t0) => t0.output);
 
@@ -43,7 +43,7 @@ const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
       calls: allGelatoPools.map((pool) => ({
         target: pool,
       })),
-      ethBlock,
+      block,
     })
   ).output.map((t1) => t1.output);
 
@@ -53,7 +53,7 @@ const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
       calls: allGelatoPools.map((pool) => ({
         target: pool,
       })),
-      ethBlock,
+      block,
     })
   ).output.map((bal) => bal.output);
 
@@ -69,7 +69,6 @@ module.exports = {
   ethereum: {
     tvl: ethTvl,
   },
-  tvl: sdk.util.sumChainTvls([ethTvl]),
   methodology:
     "Counts TVL that's on all the Pools through G-UNI Factory Contract",
 };

@@ -2,8 +2,9 @@
 const path = require("path");
 require('dotenv').config();
 const { default: computeTVL } = require("@defillama/sdk/build/computeTVL");
-const { getCurrentBlocks } = require("@defillama/sdk/build//computeTVL/blocks");
-const { humanizeNumber } = require("@defillama/sdk/build//computeTVL/humanizeNumber");
+const { getCurrentBlocks } = require("@defillama/sdk/build/computeTVL/blocks");
+const { humanizeNumber } = require("@defillama/sdk/build/computeTVL/humanizeNumber");
+const { util } = require("@defillama/sdk");
 
 async function getBlocks() {
     for (let i = 0; i < 5; i++) {
@@ -105,10 +106,6 @@ const passedFile = path.resolve(process.cwd(), process.argv[2]);
     const chainTvlsToAdd = {};
     const knownTokenPrices = {};
 
-    if (module.tvl === undefined && module.tvl === undefined) {
-        throw new Error("File must export either a property called tvl or one called fetch")
-    }
-
     let tvlPromises = Object.entries(module).map(async ([chain, value]) => {
         if (typeof value !== "object" || value === null) {
             return;
@@ -157,6 +154,9 @@ const passedFile = path.resolve(process.cwd(), process.argv[2]);
             mergeBalances(tvlType, storedKeys, usdTokenBalances)
         }
     })
+    if(usdTvls.tvl === undefined){
+        throw new Error("Protocol doesn't have total tvl, make sure to export a tvl key either on the main object or in one of the chains")
+    }
 
     Object.entries(usdTokenBalances).forEach(([chain, balances]) => {
         console.log(`--- ${chain} ---`)
