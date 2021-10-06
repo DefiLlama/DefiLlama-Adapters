@@ -34,7 +34,7 @@ async function tvl(timestamp, block) {
     let sumTOTM = BigNumber.from(0)
     for (let i = 0; i < allPrizePools.length; i++) {
       if (allPrizePools[i]["totalUnStaked"] == null) {
-        continue
+        allPrizePools[i]["totalUnStaked"] = 0
       }
       let balance = BigNumber.from(allPrizePools[i]["totalStaked"]).sub(BigNumber.from(allPrizePools[i]["totalUnStaked"]))
       sumTOTM = sumTOTM.add(balance)
