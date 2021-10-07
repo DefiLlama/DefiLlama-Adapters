@@ -1,34 +1,100 @@
 {
-  "poolInfo": {
-    "type": "function",
+  "poolLength": {
+    "inputs": [],
+    "name": "poolLength",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
+    "type": "function"
+  },
+  "farmPoolInfo": {
+    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "name": "poolInfo",
     "outputs": [
       {
-        "type": "address",
+        "internalType": "contract IERC20",
         "name": "lpToken",
-        "internalType": "contract IERC20"
+        "type": "address"
       },
-      { "type": "uint256", "name": "allocPoint", "internalType": "uint256" },
+      { "internalType": "uint256", "name": "allocPoint", "type": "uint256" },
       {
-        "type": "uint256",
+        "internalType": "uint256",
+        "name": "totalDeposited",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
         "name": "lastRewardBlock",
-        "internalType": "uint256"
+        "type": "uint256"
       },
-      {
-        "type": "uint256",
-        "name": "accFishPerShare",
-        "internalType": "uint256"
-      },
-      { "type": "uint16", "name": "depositFeeBP", "internalType": "uint16" }
+      { "internalType": "uint256", "name": "accPawPerShare", "type": "uint256" }
     ],
-    "name": "poolInfo",
-    "inputs": [{ "type": "uint256", "name": "", "internalType": "uint256" }]
-  },
-  "poolLength": {
-    "type": "function",
     "stateMutability": "view",
-    "outputs": [{ "type": "uint256", "name": "", "internalType": "uint256" }],
-    "name": "poolLength",
-    "inputs": []
+    "type": "function"
+  },
+  "vaultPoolInfo": {
+    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "name": "poolInfo",
+    "outputs": [
+      { "internalType": "contract IERC20", "name": "want", "type": "address" },
+      { "internalType": "address", "name": "strat", "type": "address" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "balanceOf": {
+    "constant": true,
+    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "name": "balanceOf",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "name": {
+    "constant": true,
+    "inputs": [],
+    "name": "name",
+    "outputs": [{ "name": "", "type": "string" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "getReserves": {
+    "inputs": [],
+    "name": "getReserves",
+    "outputs": [
+      { "internalType": "uint112", "name": "_reserve0", "type": "uint112" },
+      { "internalType": "uint112", "name": "_reserve1", "type": "uint112" },
+      {
+        "internalType": "uint32",
+        "name": "_blockTimestampLast",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "token0": {
+    "inputs": [],
+    "name": "token0",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "token1": {
+    "inputs": [],
+    "name": "token1",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "balanceOfToken": {
+    "inputs": [
+      { "internalType": "address", "name": "account", "type": "address" }
+    ],
+    "name": "balanceOf",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
   }
 }
