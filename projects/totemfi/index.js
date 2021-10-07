@@ -1,6 +1,4 @@
-const sdk = require("@defillama/sdk");
 const { request, gql } = require("graphql-request");
-const abi = require('./abi.json')
 
 const graphUrls = [
   'https://graph.totemfi.com/subgraphs/name/totemfi/staking-v1'
