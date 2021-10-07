@@ -36,6 +36,7 @@ async function tvl(timestamp) {
   const usdTvl = Number(response.uniswapFactory.totalLiquidityUSD);
 
   return toUSDTBalances(usdTvl);
+
 }
 
 async function stakingTvl(timestamp) {
