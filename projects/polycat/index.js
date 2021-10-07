@@ -70,8 +70,10 @@ async function polygonPool2Tvl(timestamp, blocks, chainBlocks) {
 }
 
 module.exports = {
+  methodology: "Pool2 TVL are pairs that include PAW or FISH and regular TVL are the rest. TVL for each pool are the result of the reserveUSD call to the graph.",
   polygon: {
     tvl: polygonTvl,
     pool2: polygonPool2Tvl,
   },
+  tvl: polygonTvl
 };
