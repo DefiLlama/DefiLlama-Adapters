@@ -34,7 +34,6 @@ async function tvl(timestamp, block) {
         abi: abi['getTotalDeposited'],
         block: block
     })).output;
-    console.log(tvlUSDT);
     balances[USDT] = tvlUSDT;
     balances[DAI] = tvlDAI;
     balances[USDC] = tvlUSDC;
