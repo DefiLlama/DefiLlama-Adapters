@@ -80,7 +80,6 @@ async function valueInGauge(chain, block, GAUGE, HOLDER, transformAddress=a=>a) 
     .times(holder_gauge_balance).dividedBy(gauge_total_supply)).toFixed(0);
   };
 
-  console.log(poolCoins)
   return poolCoins;
 };
 async function crvPoolTvl(chain, block, COIN_TARGET, transformAddress=a=>a, SUPPLY_TARGET=COIN_TARGET) {
@@ -185,7 +184,7 @@ async function curveTvl(balances, chain, block, curveVaults, transformAddress=a=
 
   for (var i = 0; i < curveVaults.length; i++) {
 
-    maincoins = [];
+    const maincoins = [];
 
     // if it hasn't got a minter, the balance is probably in the token contract
     if (!strat_minters[i]) {
@@ -201,6 +200,9 @@ async function curveTvl(balances, chain, block, curveVaults, transformAddress=a=
           abi: abi.coins,
           params: c
         });
+        if(coinX.output === "0x7f90122BF0700F9E7e1F688fe926940E8839F353"){
+          coinX.output = "0xbF7E49483881C76487b0989CD7d9A8239B20CA41" // gauge
+        }
         maincoins.push(coinX.output);
       } catch { break; };
     };
@@ -230,29 +232,35 @@ async function curveTvl(balances, chain, block, curveVaults, transformAddress=a=
 
     if (i == curveVaults.length - 1) {
       if (chain == 'arbitrum') {
-        console.log(balances);
         // I know that this guaged pool wont add up properly, so do it manually
+        /*
         balances = join(balances, await 
           valueInGauge(chain, block, "0xbf7e49483881c76487b0989cd7d9a8239b20ca41", 
           "0x30dF229cefa463e991e29D42DB0bae2e122B2AC7", transformAddress));
+          */
       };
 
       // lastly, break down any 3crv / 2crv
       if (`${chain}:${crv3Address}` in balances) {
-        strat_balances.push(new BigNumber(balances[`${chain}:${crv3Address}`]));
+        //strat_balances.push(new BigNumber(balances[`${chain}:${crv3Address}`]));
       } else {
-        return balances;
+        //return balances;
       };
     };
   };
 
+  const crv2 = "arbitrum:0xbF7E49483881C76487b0989CD7d9A8239B20CA41"
+  sdk.util.sumSingleBalance(balances, "0x6b175474e89094c44da98b954eedeac495271d0f", balances[crv2] ?? '0')
+  delete balances[crv2]
   // something wrong with decimals
+  /*
   if (chain == 'arbitrum') {
     balances['0xdAC17F958D2ee523a2206206994597C13D831ec7'] = 
       (balances['0xdAC17F958D2ee523a2206206994597C13D831ec7'] / 10**12).toFixed(0);
     balances['0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'] = 
       (balances['0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'] / 10**12).toFixed(0);
   }
+  */
 
   return balances;
 };
