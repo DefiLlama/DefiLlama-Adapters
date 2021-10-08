@@ -15,7 +15,7 @@ const graphQuery = gql`
     }
   }
   `;
-
+const TOTM = "0x6FF1BFa14A57594a5874B37ff6AC5efbD9F9599A"
   async function tvl(timestamp, block) {
     let balances = {};
     try {
@@ -39,12 +39,12 @@ const graphQuery = gql`
         let balance = BigNumber.from(allPrizePools[i]["totalStaked"]).sub(BigNumber.from(allPrizePools[i]["totalUnStaked"]))
         sumTOTM = sumTOTM.add(balance)
       }
-      balances['TOTM'] = sumTOTM.toString()
+      balances[TOTM] = sumTOTM.toString()
       return balances
     } catch (error) {
       if (error.message !== undefined) {
         if (error.message.includes("decode") && error.response?.status == 200) {
-          balances['TOTM'] = "0"
+          balances[TOTM] = "0"
           return balances
         }
       }
