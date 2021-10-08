@@ -38,7 +38,6 @@ async function tvl(timestamp, block) {
     balances[USDT] = tvlUSDT;
     balances[DAI] = tvlDAI;
     balances[USDC] = tvlUSDC;
-    //balances['test'] = new BigNumber(tvlUSDT).plus(tvlDAI).plus(tvlUSDC).toFixed(0);
     return balances;
 }
 
