@@ -2,11 +2,15 @@ const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js');
 const { fetchURL } = require('../helper/utils');
 
-const MAINNET_SY_POOLS_API_URL = 'https://api-v2.barnbridge.com/api/smartyield/pools';
-const MAINNET_SA_POOLS_API_URL = 'https://api-v2.barnbridge.com/api/smartalpha/pools';
-
-const POLYGON_SY_POOLS_API_URL = 'https://prod-poly-v2.api.barnbridge.com/api/smartyield/pools';
-const POLYGON_SA_POOLS_API_URL = 'https://prod-poly-v2.api.barnbridge.com/api/smartalpha/pools';
+const syPoolAPIs = {
+    'ethereum': 'https://api-v2.barnbridge.com/api/smartyield/pools',
+    'polygon': 'https://prod-poly-v2.api.barnbridge.com/api/smartyield/pools',
+}
+const saPoolAPIs = {
+    'ethereum': 'https://api-v2.barnbridge.com/api/smartalpha/pools',
+    'polygon': 'https://prod-poly-v2.api.barnbridge.com/api/smartalpha/pools',
+    'avax': 'https://prod-avalanche.api.barnbridge.com/api/smartalpha/pools'
+}
 
 const STK_AAVE_ADDRESS = '0x4da27a545c0c5b758a6ba100e3a049001de870f5';
 const AAVE_ADDRESS = '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9';
@@ -131,76 +135,53 @@ function sumTvl(tvlList = []) {
     };
 }
 
-async function mainnetTvl(timestamp, ethBlock) {
-    const chain = 'ethereum';
-    const block = ethBlock;
-    const balances = {}
+async function tvl(chain, block) {
+    const balances = {};
 
-    // calculate TVL from SmartYield pools
-    const syPools = await fetchSyPools(MAINNET_SY_POOLS_API_URL);
+    if (chain in syPoolAPIs) {
+        // calculate TVL from SmartYield pools
+        const syPools = await fetchSyPools(syPoolAPIs[chain]);
 
-    await Promise.all(syPools.map(async syPool => {
-        const {smartYieldAddress, underlyingAddress} = syPool;
-        const underlyingTotal = await syGetUnderlyingTotal(chain, smartYieldAddress, block);
+        await Promise.all(syPools.map(async syPool => {
+            const {smartYieldAddress, underlyingAddress} = syPool;
+            const underlyingTotal = await syGetUnderlyingTotal(chain, smartYieldAddress, block);
 
-        sdk.util.sumSingleBalance(balances, chain+':'+resolveAddress(underlyingAddress), underlyingTotal.toFixed(0));
-    }));
+            sdk.util.sumSingleBalance(balances, chain+':'+resolveAddress(underlyingAddress), underlyingTotal.toFixed(0));
+        }));
+    };
+    if (chain in saPoolAPIs) {
+        // calculate TVL from SmartAlpha pools
+        const saPools = await fetchSaPools(saPoolAPIs[chain]);
 
-    // calculate TVL from SmartAlpha pools
-    const saPools = await fetchSaPools(MAINNET_SA_POOLS_API_URL);
+        await Promise.all(saPools.map(async saPool => {
+            const {poolAddress, poolToken} = saPool;
+            const [epochBalance, queuedJuniorsUnderlyingIn, queuedSeniorsUnderlyingIn] = await Promise.all([
+                saGetEpochBalance(chain, poolAddress, block),
+                saGetQueuedJuniorsUnderlyingIn(chain, poolAddress, block),
+                saGetQueuedSeniorsUnderlyingIn(chain, poolAddress, block),
+            ]);
 
-    await Promise.all(saPools.map(async saPool => {
-        const {poolAddress, poolToken} = saPool;
-        const [epochBalance, queuedJuniorsUnderlyingIn, queuedSeniorsUnderlyingIn] = await Promise.all([
-            saGetEpochBalance(chain, poolAddress, block),
-            saGetQueuedJuniorsUnderlyingIn(chain, poolAddress, block),
-            saGetQueuedSeniorsUnderlyingIn(chain, poolAddress, block),
-        ]);
-
-        const underlyingTotal = epochBalance
-            .plus(queuedJuniorsUnderlyingIn)
-            .plus(queuedSeniorsUnderlyingIn);
-        sdk.util.sumSingleBalance(balances, chain+':'+resolveAddress(poolToken.address), underlyingTotal.toFixed(0));
-    }));
-
-    return balances;
-}
-
-async function polygonTvl(timestamp, _, chainBlocks) {
-    const chain = 'polygon';
-    const block = chainBlocks[chain];
-    const balances = {}
-
-    // calculate TVL from SmartYield pools
-    const syPools = await fetchSyPools(POLYGON_SY_POOLS_API_URL);
-
-    await Promise.all(syPools.map(async syPool => {
-        const {smartYieldAddress, underlyingAddress} = syPool;
-        const underlyingTotal = await syGetUnderlyingTotal(chain, smartYieldAddress, block);
-
-        sdk.util.sumSingleBalance(balances, chain+':'+resolveAddress(underlyingAddress), underlyingTotal.toFixed(0));
-    }));
-
-    // calculate TVL from SmartAlpha pools
-    const saPools = await fetchSaPools(POLYGON_SA_POOLS_API_URL);
-
-    await Promise.all(saPools.map(async saPool => {
-        const {poolAddress, poolToken} = saPool;
-        const [epochBalance, queuedJuniorsUnderlyingIn, queuedSeniorsUnderlyingIn] = await Promise.all([
-            saGetEpochBalance(chain, poolAddress, block),
-            saGetQueuedJuniorsUnderlyingIn(chain, poolAddress, block),
-            saGetQueuedSeniorsUnderlyingIn(chain, poolAddress, block),
-        ]);
-
-        const underlyingTotal = epochBalance
-            .plus(queuedJuniorsUnderlyingIn)
-            .plus(queuedSeniorsUnderlyingIn);
-        sdk.util.sumSingleBalance(balances, chain+':'+resolveAddress(poolToken.address), underlyingTotal.toFixed(0));
-    }));
+            const underlyingTotal = epochBalance
+                .plus(queuedJuniorsUnderlyingIn)
+                .plus(queuedSeniorsUnderlyingIn);
+            sdk.util.sumSingleBalance(balances, chain+':'+resolveAddress(poolToken.address), underlyingTotal.toFixed(0));
+        }));
+    };
 
     return balances;
 }
 
+async function mainnetTvl(timestamp, block, chainBlocks) {
+    return tvl('ethereum', block)
+}
+
+async function polygonTvl(timestamp, block, chainBlocks) {
+    return tvl('polygon', chainBlocks['polygon'])
+}
+
+async function avaxTvl(timestamp, block, chainBlocks) {
+    return tvl('avax', chainBlocks['avax'])
+}
 module.exports = {
     start: 1615564559, // Mar-24-2021 02:17:40 PM +UTC
     ethereum: {
@@ -209,5 +190,8 @@ module.exports = {
     polygon: {
         tvl: polygonTvl
     },
-    tvl: sumTvl([mainnetTvl, polygonTvl]),
+    avalanche: {
+        tvl: avaxTvl
+    },
+    tvl: sumTvl([mainnetTvl, polygonTvl, avaxTvl]),
 };

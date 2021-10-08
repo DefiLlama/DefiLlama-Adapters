@@ -8,54 +8,44 @@ const {
 } = require("../helper/portedTokens");
 
 const MasterChefContract = "0xbf513aCe2AbDc69D38eE847EFFDaa1901808c31c";
+const ice = '0xf16e81dce15B08F326220742020379B855B87DF9'
 
-const calcTvl = async (chain) => {
-  const balances = {};
-  let chainBlocks = {};
+function calcTvl(chain) {
+  return async (timestamp, ethBlock, chainBlocks) => {
+    const balances = {};
 
-  const transformAddressBsc = await transformBscAddress();
-  const transformAddressFtm = await transformFantomAddress();
+    const transformAddressBsc = await transformBscAddress();
+    const transformAddressFtm = await transformFantomAddress();
 
-  await addFundsInMasterChef(
-    balances,
-    MasterChefContract,
-    chainBlocks[chain],
-    chain,
-    chain == "bsc" || chain == "fantom"
-      ? chain == "bsc"
-        ? transformAddressBsc
-        : transformAddressFtm
-      : (addr) => addr,
-    poolInfoAbi.poolInfo,
-    []
-  );
+    await addFundsInMasterChef(
+      balances,
+      MasterChefContract,
+      chainBlocks[chain],
+      chain,
+      chain == "bsc" || chain == "fantom"
+        ? chain == "bsc"
+          ? transformAddressBsc
+          : transformAddressFtm
+        : (addr) => addr,
+      poolInfoAbi.poolInfo,
+      [ice]
+    );
 
-  return balances;
+    return balances;
+  }
 };
 
-const ethTvl = async () => {
-  return calcTvl("ethereum");
-};
+const ethTvl = calcTvl("ethereum");
 
-const fantomTvl = async () => {
-  return calcTvl("fantom");
-};
+const fantomTvl = calcTvl("fantom")
 
-const bscTvl = async () => {
-  return calcTvl("bsc");
-};
+const bscTvl = calcTvl("bsc")
 
 module.exports = {
-  ethereum: {
-    tvl: ethTvl,
+  tvl: async () => ({}),
+  pool2: {
+    tvl: sdk.util.sumChainTvls([ethTvl, bscTvl, fantomTvl]),
   },
-  bsc: {
-    tvl: bscTvl,
-  },
-  fantom: {
-    tvl: fantomTvl,
-  },
-  tvl: sdk.util.sumChainTvls([ethTvl, bscTvl, fantomTvl]),
   methodology:
-    "We count liquidity on the Active Pools threw MasterChef Contract",
+    "We count pool2 liquidity staked on masterchef",
 };

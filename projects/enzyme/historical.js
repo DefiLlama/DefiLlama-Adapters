@@ -2,7 +2,6 @@ const sdk = require('@defillama/sdk');
 const axios = require('axios');
 const {getBlock} = require('../helper/getBlock')
 const { sumTokensAndLPsSharedOwners, unwrapCrv } = require('../helper/unwrapLPs');
-// node test.js projects/enzyme/index2.js
 
 const crvStEth = "0x06325440d014e39736583c165c2963ba99faf14e"
 const crvGauge = "0x182b723a58739a9c974cfdb385ceadb237453c28"
