@@ -7,4 +7,3 @@ historical-data.js
 /.idea
 yarn.lock
 .DS_Store
-package-lock.json
