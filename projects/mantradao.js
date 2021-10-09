@@ -595,16 +595,6 @@ async function fetchPolygon() {
     }
 }
 
-async function fetch() {
-    try {
-
-        return tvlTotal;
-
-    } catch (error) {
-        console.log(error);
-    }
-}
-
 module.exports = {
     ethereum: {
         fetch: fetchETH
@@ -612,8 +602,8 @@ module.exports = {
     bsc: {
         fetch: fetchBSC
     },
-    matic: {
+    polygon: {
         fetch: fetchPolygon
     },
-    fetch
+    fetch: async ()=>((await fetchETH())+(await fetchBSC())+(await fetchPolygon()))
 }
