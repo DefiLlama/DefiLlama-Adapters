@@ -19,18 +19,6 @@ const gqlQuery = gql`
   }
 `;
 
-const addBalanceWithExisting = (balances, token, balance) => {
-  const _balances = {};
-
-  if (balances[token] !== undefined) {
-    balance = ethers.utils.bigNumberify(balances[token]).add(balance);
-    sdk.util.sumSingleBalance(_balances, token, balance);
-    balances[token] = _balances[token];
-  } else {
-    sdk.util.sumSingleBalance(balances, token, balance);
-  }
-};
-
 const changeNumDecimals = (number, toDecimals) => {
   return ethers.utils.bigNumberify(number).div(10 ** toDecimals);
 };
@@ -69,7 +57,7 @@ function chainTvl(chain) {
             swap.balances[i] = changeNumDecimals(swap.balances[i], decimals);
         }
 
-        addBalanceWithExisting(
+        sdk.util.sumSingleBalance(
           balances,
           transform(swap.tokens[i].id),
           swap.balances[i]
