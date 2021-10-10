@@ -1,0 +1,26 @@
+const abi = require("./abi.json");
+const { transformFantomAddress } = require("../helper/portedTokens");
+const { addFundsInMasterChef } = require("../helper/masterchef");
+const { staking } = require("../helper/staking");
+const { pool2Exports } = require('../helper/pool2')
+
+
+const chef = "0x5A3b5A572789B87755Fa7720A4Fae36e2e2D3b35"
+const sapphire = "0xfa7d8c3CccC90c07c53feE45A7a333CEC40B441B"
+const sapphireFtmLP = "0xC0BFf8416E83E410c38B859Ac92a3268DaDc5494"
+
+async function tvl(timestamp, block, chainBlocks) {
+  const balances = {}
+  const transformAddress = await transformFantomAddress();
+  await addFundsInMasterChef(balances, chef, chainBlocks.fantom, "fantom", transformAddress, abi.poolInfo, [sapphire, sapphireFtmLP])
+  return balances;
+}
+
+module.exports = {
+  methodology: "TVL includes all farms in MasterChef contract",
+  staking:{
+    tvl: staking(chef, sapphire, "fantom")
+  },
+  pool2: pool2Exports(chef, [sapphireFtmLP], "fantom"),
+  tvl,
+}
