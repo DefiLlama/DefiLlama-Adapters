@@ -616,6 +616,20 @@
     "tvlReader": "sunnyQuarrySaberPoolReader"
   },
   {
+    "poolName": "quarry_saber_wftt",
+    "relevantAccounts": {
+      "sunnyPool": "6WSukUGc9EvRYHniPEz3KRAvc24wnZ1Q92DogQLSS4b",
+      "tokenAMint": "BFsCwfk8VsEbSfLkkgmoKsAPk2N6FMJjeTsuxfGa9VEf",
+      "tokenBMint": "FTT9GrHBVHvDeUTgLU8FxVJouGqg9uiWGmmjETdm32Sx",
+      "tokenAReserve": "CyFL8noR6CKMFBjZPziSmChCKJE1Jtg4hQyMhgWPgH84",
+      "tokenBReserve": "5PfKQpBWUayFWSSkwjp1PLr8LiHBrvVB81qfnSP5Dvkb",
+      "lpTokenSPL": "FTXjwjwWqituSXEHnL5VF1mjDhZoAyJqvHiRPsRq3KWK"
+    },
+    "tokenA": "ftx-token",
+    "tokenB": "ftx-token",
+    "tvlReader": "sunnyQuarrySaberPoolReader"
+  },
+  {
     "poolName": "quarry_saber_acusd",
     "relevantAccounts": {
       "sunnyPool": "D35qQwbQpVthbPxnab7TX29TxsycKtSAtHkL7YnXE6rg",
@@ -697,6 +711,118 @@
     },
     "tokenA": "ethereum",
     "tokenB": "weth",
+    "tvlReader": "sunnyQuarrySaberPoolReader"
+  },
+  {
+    "poolName": "quarry_saber_aeusdc",
+    "relevantAccounts": {
+      "sunnyPool": "Guc94iBoSxtDJx1XCz3E9go1FqYZwjnHWaG7K9JazJ7U",
+      "tokenAMint": "DdFPRnccQqLD4zCHrBqdY95D6hvw6PLWp9DEXj1fLCL9",
+      "tokenBMint": "JEFFSQ3s8T3wKsvp4tnRAsUBW7Cqgnf8ukBZC4C8XBm1",
+      "tokenAReserve": "3S2jpqSYxho6wiz3cafhjXruVY8cg4HYa2v3BqBHYFSj",
+      "tokenBReserve": "Dfe67M6TfrG74gKRtdqys4e6E9QirPD53BkF4FujFjuv",
+      "lpTokenSPL": "AECpyKJWfXVyWnk2d9md5dUj3RuzHRKfQra8MakjuVRz"
+    },
+    "tokenA": "usd-coin",
+    "tokenB": "usd-coin",
+    "tvlReader": "sunnyQuarrySaberPoolReader"
+  },
+  {
+    "poolName": "quarry_saber_aeusdt",
+    "relevantAccounts": {
+      "sunnyPool": "GWhJ9k9huHmDzg8TqGB8HJy3tu5QNuoEVgdXA6crMNG2",
+      "tokenAMint": "Bn113WT6rbdgwrm12UJtnmNqGqZjY4it2WoUQuQopFVn",
+      "tokenBMint": "AEUT5uFm1D575FVCoQd5Yq891FJEqkncZUbBFoFcAhTV",
+      "tokenAReserve": "Eu1Ze6Z84LWNkq7SNoAHBJbXx5t1P95EwyqYohrfCRFV",
+      "tokenBReserve": "ASMbv7WNu3qe4pkhREmvyEdwFNDZQ6B6iSrjkj4u8bdC",
+      "lpTokenSPL": "aeTwxcJhujVCq6rwbJri3s6ViYifsJUCFirMjLHgHZ7"
+    },
+    "tokenA": "tether",
+    "tokenB": "tether",
+    "tvlReader": "sunnyQuarrySaberPoolReader"
+  },
+  {
+    "poolName": "quarry_saber_aedai",
+    "relevantAccounts": {
+      "sunnyPool": "CVENcGmg3Fhm8BFQ9PGvVMm8N1AMpGaGEwtRt7BBC17X",
+      "tokenAMint": "9w6LpS7RU1DKftiwH3NgShtXbkMM1ke9iNU4g3MBXSUs",
+      "tokenBMint": "JEFFSQ3s8T3wKsvp4tnRAsUBW7Cqgnf8ukBZC4C8XBm1",
+      "tokenAReserve": "B4UtLRZND3D83CitRCBUyeiNr7H8m7YFRqBmiPmXjhW4",
+      "tokenBReserve": "AAmpYbuixWiSqDaJBCqYEs1pb5SrbdPr9mgXrB58Q2e",
+      "lpTokenSPL": "aeDebgky5BssqgLo426rXoQTmGrAn1JjEXp6aXFNLic"
+    },
+    "tokenA": "multi-collateral-dai",
+    "tokenB": "usd-coin",
+    "tvlReader": "sunnyQuarrySaberPoolReader"
+  },
+  {
+    "poolName": "quarry_saber_aausdc",
+    "relevantAccounts": {
+      "sunnyPool": "G3oiA7WtZFeyuj6DZzhoXHJtBHL8cB4xm7XVuMCuHc2W",
+      "tokenAMint": "8Yv9Jz4z7BUHP68dz8E8m3tMe6NKgpMUKn8KVqrPA6Fr",
+      "tokenBMint": "JEFFSQ3s8T3wKsvp4tnRAsUBW7Cqgnf8ukBZC4C8XBm1",
+      "tokenAReserve": "2bPenuBYfqzD8p5dFjCcggwkHDsc2RQDnx9AoyYGUBjA",
+      "tokenBReserve": "AE6n6iLuX8oYu61vt5hoDYkjswpnxFxrhSehxrnQTnbx",
+      "lpTokenSPL": "AVC7uVb6R9B34T8zWxQMEK8twvYk26U71gworsujxFNv"
+    },
+    "tokenA": "usd-coin",
+    "tokenB": "usd-coin",
+    "tvlReader": "sunnyQuarrySaberPoolReader"
+  },
+  {
+    "poolName": "quarry_saber_aausdt",
+    "relevantAccounts": {
+      "sunnyPool": "FYAoBTTQyL3pWhKvX8MjNvdhxSm4k5xAxRSPfi2dp5cQ",
+      "tokenAMint": "FwEHs3kJEdMa2qZHv7SgzCiFXUQPEycEXksfBkwmS8gj",
+      "tokenBMint": "AEUT5uFm1D575FVCoQd5Yq891FJEqkncZUbBFoFcAhTV",
+      "tokenAReserve": "3dFMPj4r9mMmPHF32mz1gNDX7f8ftidWof7S8YiYTs1j",
+      "tokenBReserve": "Fc1ED3YPeQfXQosHbd8DTaBd2AV5gHQtwiSAL5C5pUhi",
+      "lpTokenSPL": "AVTrxHq5P57fYZTYjMuCRWFqsrLmom2gGThNtgEgK1ip"
+    },
+    "tokenA": "tether",
+    "tokenB": "tether",
+    "tvlReader": "sunnyQuarrySaberPoolReader"
+  },
+  {
+    "poolName": "quarry_saber_aadai",
+    "relevantAccounts": {
+      "sunnyPool": "DKsQsX9YjK8Aj9fQs9819HFS8mJXgkkEaLxDy85S4UUS",
+      "tokenAMint": "EgQ3yNtVhdHz7g1ZhjfGbxhFKMPPaFkz8QHXM5RBZBgi",
+      "tokenBMint": "JEFFSQ3s8T3wKsvp4tnRAsUBW7Cqgnf8ukBZC4C8XBm1",
+      "tokenAReserve": "GiehZ4X2uQjhEKuxSm3ACmEFrabxh3RTvjbLfLjw1xGX",
+      "tokenBReserve": "rxDQYV77NKRKYxCjq4cECX3QQsiSyLv1T1FT2X3zNA2",
+      "lpTokenSPL": "AVDuGckLavyLr5YifViaxnoveY6rwqDezHw5kiKiRQEC"
+    },
+    "tokenA": "multi-collateral-dai",
+    "tokenB": "usd-coin",
+    "tvlReader": "sunnyQuarrySaberPoolReader"
+  },
+  {
+    "poolName": "quarry_saber_aawbtc",
+    "relevantAccounts": {
+      "sunnyPool": "4eBrJ9FiQwtnuqrjNSL5jNhNsZjHgW86sVeBEqvSUwsQ",
+      "tokenAMint": "Fd8xyHHRjTvxfZrBirb6MaxSmrZYw99gRSqFUKdFwFvw",
+      "tokenBMint": "FACTQhZBfRzC7A76antnpAoZtiwYmUfdAN8wz7e8rxC5",
+      "tokenAReserve": "bDVSLHopvEo45R3rR7JXoRRAcnUXKD7r14ijj1apALb",
+      "tokenBReserve": "33QrhvkyroiTxp21hbXPRowPhsgVHmrgEQbY7eHPp1h4",
+      "lpTokenSPL": "AVBDpg1UYpDYQLbzEnRY76R3u82PYHtDuc3NBdFS2k39"
+    },
+    "tokenA": "wrapped-bitcoin",
+    "tokenB": "renbtc",
+    "tvlReader": "sunnyQuarrySaberPoolReader"
+  },
+  {
+    "poolName": "quarry_saber_port_2pool",
+    "relevantAccounts": {
+      "sunnyPool": "3sGzHd66PGuC2Y1uJUtem6AXn4nwfEAy1YSUF9BGkSCW",
+      "tokenAMint": "3RudPTAkfcq9Q9Jk8SVeCoecCBmdKMj6q5smsWzxqtqZ",
+      "tokenBMint": "FgSsGV8GByPaMERxeQJPvZRZHf7zCBhrdYtztKorJS58",
+      "tokenAReserve": "2tBpLvzYBCs7e4DrRocEnssoJANB8rDh2jt5FbeCAeK1",
+      "tokenBReserve": "DLkWGoaeXw4oeGPnr2ecJze541HVKFhrhaW4iVSFEwET",
+      "lpTokenSPL": "PortuzxBGYMQXeNmM9Kc6AtHLBwqSrb6xWwZ4trQ1en"
+    },
+    "tokenA": "tether",
+    "tokenB": "usd-coin",
     "tvlReader": "sunnyQuarrySaberPoolReader"
   },
   {
