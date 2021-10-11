@@ -25,6 +25,7 @@ async function polygon(timestamp, block, chainBlocks) {
         // added
         ["0x9a71012b13ca4d3d0cdc72a177df3ef03b0e76a3", "0x701A1824e5574B0b6b1c8dA808B184a7AB7A2867"], //bal
         ["0xf28164a485b0b2c90639e47b0f377b4a438a16b1", "0x649Aa6E6b6194250C077DF4fB37c23EE6c098513"], //dquick
+        ['0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7', '0xF086dEdf6a89e7B16145b03a6CB0C0a9979F1433'],
     ], chainBlocks.polygon, 'polygon', addr=>`polygon:${addr}`)
     balances['polygon:0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270'] = (await sdk.api.eth.getBalance({
         target: "0xa3fa99a148fa48d14ed51d610c367c61876997f1",
@@ -39,5 +40,4 @@ module.exports = {
     polygon: {
         tvl: polygon
     },
-    tvl: polygon
 }
