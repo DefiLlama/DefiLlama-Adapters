@@ -1,7 +1,7 @@
 const {getTokenBalance} = require('../helper/solana')
 
 async function tvl() {
-    const [usdcAmount, btcAmount, srmAmount, ethAmount, rayAmount, stepAmount, solAmount, tulipAmount, sbrAmount] = await Promise.all([
+    const [usdcAmount, btcAmount, srmAmount, ethAmount, rayAmount, stepAmount, solAmount, tulipAmount, sbrAmount, merAmount] = await Promise.all([
         //usdc
         getTokenBalance("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "5Jo61FWkhG2jsaHfENdp7zz2G1SU6z5a2enpQWBEj83T"),
         //btc
@@ -20,6 +20,8 @@ async function tvl() {
         getTokenBalance("TuLipcqtGVXP9XR62wM8WWCm6a9vhLs7T1uoWBk6FDs", "5Jo61FWkhG2jsaHfENdp7zz2G1SU6z5a2enpQWBEj83T"),
         //sbr   
         getTokenBalance("Saber2gLauYim4Mvftnrasomsv6NvAuncvMEZwcLpD1", "5Jo61FWkhG2jsaHfENdp7zz2G1SU6z5a2enpQWBEj83T"),
+        //mer
+        getTokenBalance("MERt85fc5boKw3BW1eYdxonEuJNvXbiMbs6hvheau5K", "5Jo61FWkhG2jsaHfENdp7zz2G1SU6z5a2enpQWBEj83T"),
 
     ])
 
@@ -33,6 +35,7 @@ async function tvl() {
         'usd-coin': usdcAmount,
         'saber': sbrAmount,
         'solfarm': tulipAmount,
+        'mercurial': merAmount,
     }
 }
 

@@ -56,7 +56,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
         closest = dayTvl
       }
     })
-    if(Math.abs(dayTvl.date - timestamp) > 3600*24){ // Oldest data is too recent
+    if(Math.abs(closest.date - timestamp) > 3600*24){ // Oldest data is too recent
       const {uniswapFactories} = await request(
         graphUrl,
         graphQuery,
@@ -90,7 +90,7 @@ async function staking(timestamp, ethBlock, chainBlocks) {
 
 module.exports = {
   misrepresentedTokens: true,
-  methodology: `TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://pancakeswap.info/ as the source. Staking accounts for the CAKE locked in MasterChef (${masterChef})`,
+  methodology: 'TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://pancakeswap.info/ as the source. Staking accounts for the CAKE locked in MasterChef (0x73feaa1eE314F8c655E354234017bE2193C9E24E)',
   staking: {
     tvl: staking
   },

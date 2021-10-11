@@ -4,7 +4,7 @@ const BigNumber = require("bignumber.js");
 
 
 async function fetch() {
-  let price_feed = await retry(async bail => await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=ripple,hard-protocol,binancecoin,kava,bitcoin&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true'))
+  let price_feed = await retry(async bail => await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=ripple,kava-lend,binancecoin,kava,bitcoin&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true'))
 
   let cdps = await retry(async bail => await axios.get('https://kava4.data.kava.io/cdp/cdps?limit=5000'))
 
@@ -50,7 +50,7 @@ async function fetch() {
   tvl += (parseFloat(kavaAmount) * price_feed.data.kava.usd)
 
   let hardAmount = new BigNumber(hardTotal).div(10 ** 8).toFixed(2);
-  tvl += (parseFloat(hardAmount) * price_feed.data['hard-protocol'].usd)
+  tvl += (parseFloat(hardAmount) * price_feed.data['kava-lend'].usd)
 
   return tvl;
 

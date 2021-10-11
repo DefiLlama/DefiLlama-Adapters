@@ -1,6 +1,8 @@
 const axios = require('axios');
 const abis = require('./abis.json')
 const sdk = require('@defillama/sdk')
+const { Connection } = require('@solana/web3.js');
+const sol = require('./sol-helpers')
 
 const ethContract = '0xae7ab96520de3a18e5e111b5eaab095312d7fe84';
 
@@ -28,12 +30,28 @@ async function eth(timestamp, ethBlock, chainBlocks) {
   }
 }
 
+async function solana(timestamp, ethBlock, chainBlocks) {
+  const connection = new Connection('https://solana-api.projectserum.com/');
+  const validatorsBalance = await sol.retrieveValidatorsBalance(connection)
+  const reserveAccountBalance = await sol.retrieveReserveAccountBalance(connection)
+
+  const totalSolInLamports = validatorsBalance + reserveAccountBalance;
+  return {
+    'solana': totalSolInLamports/1e9
+  }
+}
+
 module.exports = {
+  methodology: 'Counts staked ETH tokens.',
+  cantRefill: true,
+  solana: {
+    tvl: solana
+  },
   ethereum: {
     tvl: eth
   },
   terra: {
     tvl: terra
   },
-  tvl: sdk.util.sumChainTvls([eth, terra])
+  tvl: sdk.util.sumChainTvls([eth, terra, solana])
 }

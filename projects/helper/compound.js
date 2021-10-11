@@ -13,11 +13,16 @@ async function getAllCTokens(comptroller, block, chain) {
     })).output;
 }
 
-async function getUnderlying(block, chain, cToken) {
+async function getUnderlying(block, chain, cToken, cether, cetheEquivalent) {
+    if(cToken === cether){
+        return cetheEquivalent
+    }
     if (cToken === '0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5') {
         return '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';//cETH => WETH
     }
-
+    if(cToken === '0x5C0401e81Bc07Ca70fAD469b451682c0d747Ef1c' && chain === 'avax'){
+        return "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7"
+    }
     return (await sdk.api.abi.call({
         block,
         target: cToken,
@@ -27,13 +32,13 @@ async function getUnderlying(block, chain, cToken) {
 }
 
 // returns {[underlying]: {cToken, decimals, symbol}}
-async function getMarkets(comptroller, block, chain) {
+async function getMarkets(comptroller, block, chain, cether, cetheEquivalent) {
     let allCTokens = await getAllCTokens(comptroller, block, chain);
     const markets = []
     // if not in cache, get from the blockchain
     await (
         Promise.all(allCTokens.map(async (cToken) => {
-            let underlying = await getUnderlying(block, chain, cToken);
+            let underlying = await getUnderlying(block, chain, cToken, cether, cetheEquivalent);
             markets.push({ underlying, cToken })
         }))
     );
@@ -41,11 +46,11 @@ async function getMarkets(comptroller, block, chain) {
     return markets;
 }
 
-function getCompoundV2Tvl(comptroller, chain, transformAdress = addr=>addr) {
+function getCompoundV2Tvl(comptroller, chain="ethereum", transformAdress = addr=>addr, cether="0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5", cetheEquivalent="0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2") {
     return async (timestamp, ethBlock, chainBlocks) => {
         const block = chainBlocks[chain]
         let balances = {};
-        let markets = await getMarkets(comptroller, block, chain);
+        let markets = await getMarkets(comptroller, block, chain, cether, cetheEquivalent);
 
         // Get V2 tokens locked
         let v2Locked = await sdk.api.abi.multiCall({

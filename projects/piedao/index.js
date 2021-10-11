@@ -17,6 +17,17 @@ async function tvl(timestamp, ethBlock) {
     return pieDAO.calculateNAV();
 }
 
+async function staking(timestamp, ethBlock) {
+    // creating the PieDAO helper...
+    let pieDAO = new PieDAO(ethBlock);
+
+    // calculating the total DOUGHs staked...
+    await pieDAO.calculateStakedDough();
+}
+
 module.exports = {
+    ethereum:{
+        staking
+    },
     tvl
 }

@@ -1,0 +1,21 @@
+{
+    "borrowableBalance": {
+        "type": "function",
+        "stateMutability": "view",
+        "outputs": [
+            {
+                "type": "uint256",
+                "name": "",
+                "internalType": "uint256"
+            }
+        ],
+        "name": "borrowableBalance",
+        "inputs": [
+            {
+                "type": "address",
+                "name": "_token",
+                "internalType": "address"
+            }
+        ]
+    }
+}

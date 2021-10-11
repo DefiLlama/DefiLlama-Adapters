@@ -7,6 +7,7 @@ const Web3 = require('web3');
 const pies_config = require("./pies.json");
 const ovens_config = require("./ovens.json");
 const pools_config = require("./pools.json");
+const staking_config = require("./staking.json");
 
 const pieABI = require("../config/piedao/abi/IPie.json");
 const pieStakingAll = require("../config/piedao/abi/IStakingAll.json");
@@ -25,9 +26,10 @@ module.exports = class PieDAO {
     this.pies = pies_config;
     this.ovens = ovens_config;
     this.pools = pools_config;
+    this.staking = staking_config;
     this.tokenAmounts = {};
     this.ovenAmounts = {};
-    this.web3 = new Web3(new Web3.providers.HttpProvider(process.env.ETHEREUM_RPC));
+    this.web3 = new Web3(new Web3.providers.HttpProvider(process.env.ETHEREUM_RPC.split(',')[0]));
     this.web3.eth.defaultBlock = block;
   }
 
@@ -156,6 +158,12 @@ module.exports = class PieDAO {
           break;
       }
     }
+  }
+
+  async calculateStakedDough() {
+    const doughErc20 = new this.web3.eth.Contract(erc20ABI, this.staking['DOUGHv2']);
+    const tokenAmount = new BigNumber(await doughErc20.methods.balanceOf(this.staking['SharesTimeLock']).call());
+    this.pushTokenAmount(this.staking['DOUGHv2'], tokenAmount)
   }
 
   async calculateUnderLyings(underlyings, underlyingAddress, underlyingBalance, underlyingSupply) {
