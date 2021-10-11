@@ -163,7 +163,7 @@ const passedFile = path.resolve(process.cwd(), process.argv[2]);
         Object.entries(balances).forEach(([symbol, balance]) => {
             console.log(symbol.padEnd(25, " "), humanizeNumber(balance))
         })
-        console.log("\nTotal:", humanizeNumber(usdTvls[chain]), "\n");
+        console.log("Total:", humanizeNumber(usdTvls[chain]), "\n");
     })
     console.log(`------ TVL ------`)
     Object.entries(usdTvls).forEach(([chain, usdTvl]) => {
