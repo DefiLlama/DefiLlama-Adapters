@@ -6,6 +6,7 @@ const sdk = require("@defillama/sdk");
 const retry = require("async-retry");
 const ethers = require("ethers");
 
+const MIM_FANTOM = "0x82f0b8b456c1a451378467398982d4834b6829c1";
 const gqlQuery = gql`
   query getTVL($block: Int) {
     swaps(block: { number: $block }) {
@@ -23,7 +24,7 @@ const changeNumDecimals = (number, toDecimals) => {
   return ethers.utils.bigNumberify(number).div(10 ** toDecimals);
 };
 
-// TODO: Support Fantom & Arb nUSD pool.
+// TODO: Support Arb nUSD pool.
 function chainTvl(chain) {
   return async (timestamp, ethBlock, chainBlocks) => {
     const transform = (token) => `${chain}:${token}`;
@@ -44,6 +45,20 @@ function chainTvl(chain) {
     );
 
     for (const swap of swaps) {
+      // So it seems like our luck of ordering by `symbol` has ran out.
+      // Time to start thinking like an ape now and sort this object
+      // By moving MIM object to the front to be in 'union' with balance.
+      if (chain == "fantom") {
+        const mim = swap.tokens.filter((x) => {
+          return x.id == MIM_FANTOM;
+        });
+
+        if (mim.length > 0) {
+          swap.tokens = swap.tokens.filter((x) => x.id !== MIM_FANTOM);
+          swap.tokens.unshift(mim[0]);
+        }
+      }
+
       for (let i = 0; i < swap.tokens.length; i++) {
         if (swap.tokens[i].name == "USD LP") continue;
 
@@ -74,6 +89,6 @@ module.exports = chainExports(chainTvl, [
   "bsc",
   "polygon",
   "avax",
-  // "fantom",
+  "fantom",
   "arbitrum",
 ]);
