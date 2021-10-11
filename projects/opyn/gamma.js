@@ -19,7 +19,7 @@ const yvUSDC = "0x5f18c75abdae578b483e5f43f12a39cf75b973a9";
 const usdc = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
 const sdeCRV = "0xa2761B0539374EB7AF2155f76eb09864af075250".toLowerCase();
 const sdcrvWSBTC = "0x24129b935aff071c4f0554882c0d9573f4975fed".toLowerCase();
-const WBTC = '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599'
+const WBTC = '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599'.toLowerCase();
 const ETH = '0x0000000000000000000000000000000000000000'.toLowerCase();
 
 /*==================================================
