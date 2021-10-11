@@ -154,13 +154,19 @@
       if(token === "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"){
         return
       }
-      if(markets.data.data[idx].token_symbol.startsWith('v')){
-        unwrapCalls.push(unwrapVaultLP(balances, token, call.output, chainBlocks['bsc']))
+      const symbol = markets.data.data[idx].token_symbol
+      if(symbol.startsWith('v')){
+        if(symbol === "v4Belt" || symbol === "v3EPS"){
+          sdk.util.sumSingleBalance(balances, '0x4fabb145d64652a948d72533023f6e7a623c7c53', call.output) // BUSD
+        } else {
+          unwrapCalls.push(unwrapVaultLP(balances, token, call.output, chainBlocks['bsc']))
+        }
       }else {
         sdk.util.sumSingleBalance(balances, 'bsc:'+token, call.output)
       }
     })
     await Promise.all(unwrapCalls)
+    console.log('call')
     const bnbCollateral = await sdk.api.eth.getBalance({
       target: fortubeCollateralBsc,
       chain: 'bsc',
@@ -195,12 +201,13 @@
   }
   
   module.exports = {
+    methodology: "4belt and 3EPS are replaced by BUSD",
     start: 1596384000, // 2020/8/3 00:00:00 +UTC
-    ethereum: {
-      tvl: eth
-    },
     bsc: {
       tvl: bsc
+    },
+    ethereum: {
+      tvl: eth
     },
     okexchain: {
       tvl: okexchain

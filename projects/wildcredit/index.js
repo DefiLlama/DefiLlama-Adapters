@@ -1,21 +1,21 @@
 const sdk = require("@defillama/sdk");
 const erc20 = require("../helper/abis/erc20.json");
-const web3 = require("../config/web3");
 const abi = require("./abi.json");
-const json = require("./abis.json");
 
 const pair_factory = "0x23B74796b72f995E14a5e3FF2156Dad9653256Cf";
+const toAddr= d=>"0x"+d.substr(26)
 
 const calcTvl = async (balances, block, token, balance) => {
-
-  const factory = new web3.eth.Contract(json, pair_factory);
   const START_BLOCK = 12867493;
   const END_BLOCK = block;
-  const events = await factory.getPastEvents("PairCreated", {
+  const events = await sdk.api.util.getLogs({
+    target: pair_factory,
+    topic: 'PairCreated(address,address,address)',
+    keys: [],
     fromBlock: START_BLOCK,
     toBlock: END_BLOCK,
-  });
-  const pairs = events.map(el => el.returnValues.pair);
+  })
+  const pairs = events.output.map(el => toAddr(el.topics[1]));
 
   const tokens = (await sdk.api.abi.multiCall({
     abi: token,

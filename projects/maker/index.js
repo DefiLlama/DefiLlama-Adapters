@@ -3,7 +3,8 @@ const utils = require('web3-utils');
 const sdk = require('@defillama/sdk');
 const MakerSCDConstants = require("./abis/makerdao.js");
 const MakerMCDConstants = require("./abis/maker-mcd.js");
-const { unwrapUniswapLPs } = require('../helper/unwrapLPs')
+const { unwrapUniswapLPs } = require('../helper/unwrapLPs');
+const { requery } = require('../helper/requery.js');
 
 async function getJoins(block) {
   let rely = utils.sha3("rely(address)").substr(0, 10);
@@ -27,20 +28,18 @@ async function getJoins(block) {
     return `0x${auth.topics[1].substr(26)}`;
   });
 
-  const ilks = (await sdk.api.abi.multiCall({
+  const ilks = await sdk.api.abi.multiCall({
     abi: MakerMCDConstants.ilk,
     calls: auths.map((auth) => ({
       target: auth,
     })),
     block
-  })).output;
+  });
+  await requery(ilks, "ethereum", block, MakerMCDConstants.ilk) // make sure that failed calls actually fail
 
-  for (let ilk of ilks) {
+  for (let ilk of ilks.output) {
     if (ilk.output) {
-      let name = utils.hexToString(ilk.output);
-      if (name.substr(0, 3) !== 'PSM') {
-        joins.push(ilk.input.target)
-      }
+      joins.push(ilk.input.target)
     }
   }
 
