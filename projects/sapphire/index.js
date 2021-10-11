@@ -12,7 +12,6 @@ async function tvl(timestamp, block, chainBlocks) {
   const balances = {}
   const transformAddress = await transformFantomAddress();
   await addFundsInMasterChef(balances, chef, chainBlocks.fantom, "fantom", transformAddress, poolInfo, [sapphire, sapphireFtmLP])
-  console.log(balances)
   return balances;
 }
 
