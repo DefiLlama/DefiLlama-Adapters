@@ -2,7 +2,19 @@ const utils = require('./helper/utils');
 
 async function tvl(timestamp, ethBlock, chainBlocks) {
     let balances = {};
-    const response = await utils.fetchURL('https://api.data.kava.io/swap/pools');
+    let startBlock = 4698;
+    const dailyBlockInterval = 12495;
+    let startDate = new Date(Date.UTC(2021, 7, 31));
+    let dateNow = new Date(timestamp * 1000);
+
+    while (startDate < dateNow) {
+        startDate.setDate(startDate.getDate() + 1);
+        startBlock = startBlock + dailyBlockInterval;
+    };
+
+    const response = await utils.fetchURL(
+        `https://api.data.kava.io/swap/pools?height=${startBlock}`);
+
     for (let pool of response.data.result) {
         for (let coin of pool.coins) {
             let tokenInfo = generic(coin.denom);
@@ -13,7 +25,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
             };
         };
     };
-    return balances;
+return balances;
 }
 function generic(ticker) {
     switch(ticker) {
@@ -30,4 +42,4 @@ function generic(ticker) {
 
 module.exports = {
     tvl
-  }
+}
