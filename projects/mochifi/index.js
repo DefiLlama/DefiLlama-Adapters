@@ -35,6 +35,7 @@ async function ethereum(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
+  methodology: "TVL counts collateral deposits to mint USDM",
   ethereum: {
     tvl: ethereum
   },
