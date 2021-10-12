@@ -1,35 +1,42 @@
-const sdk = require("@defillama/sdk");
-const utils = require("../helper/utils");
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
+const sdk = require('@defillama/sdk');
+const { GraphQLClient, gql } = require('graphql-request');
 
-const API_URL = "https://backend.mochi.fi/vaults?chainId=1";
+const BLOCK_SHIFT = 10
 
-const ethTvl = async () => {
-  const balances = {};
+const endpoints = {
+  ethereum: 'https://api.thegraph.com/subgraphs/name/ryuheimat/mochi-staging',
+}
 
-  const contractAddresses = (await utils.fetchURL(API_URL)).data.vaults.map(
-    (addr) => ({
-      vault: addr.vaultAddress,
-      stakedToken: addr.tokenAddress,
-    })
-  );
-
-  for (const addr of contractAddresses) {
-    await sumTokensAndLPsSharedOwners(
-      balances,
-      [[addr.stakedToken, false]],
-      [addr.vault]
-    );
+const query = gql`
+query get_tvl($block: Int) {
+  vaults(
+    first: 1000,
+    block: { number: $block }
+  ) {
+    asset
+    deposits
   }
+}
+`;
 
-  return balances;
-};
+async function ethereum(timestamp, block, chainBlocks) {
+  const graphQLClient = new GraphQLClient(endpoints.ethereum);
+  const { vaults } = await graphQLClient.request(
+    query,
+    { block: +block - BLOCK_SHIFT }
+  );
+  const results = vaults
+    .filter(v => +v.deposits > 0)
+    .reduce((acc, v) => {
+      acc[v.asset] = v.deposits
+      return acc
+    }, {})
+  return results
+}
 
 module.exports = {
-  misrepresentedTokens: true,
   ethereum: {
-    tvl: ethTvl,
+    tvl: ethereum
   },
-  tvl: sdk.util.sumChainTvls([ethTvl]),
-  methodology: `We count TVL from all the Vaults through their contracts`,
-};
+  tvl: sdk.util.sumChainTvls([ethereum])
+}

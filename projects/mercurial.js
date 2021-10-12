@@ -14,6 +14,8 @@ async function tvl() {
     Usd4PoolWUsdcAmount,
     Usd4PoolWUsdtAmount,
     Usd4PoolWDaiAmount,
+    stsolPoolStsolAmonunt,
+    stsolPoolSolAmount,
   ] = await Promise.all([
     //pai3pool
     getTokenBalance(
@@ -64,8 +66,17 @@ async function tvl() {
       "9gVstb8HkuYX8PqjLSc9b9zLMhFZwWX7k3ofLcWy7wyS"
     ),
     getTokenBalance(
-      "Dn4noZ5jgGfkntzcQSUZ8czkreiZ1ForXYoV2H8Dm7S1",
-      "9gVstb8HkuYX8PqjLSc9b9zLMhFZwWX7k3ofLcWy7wyS"
+      "EjmyN6qEC1Tf1JxiG1ae7UTJhUxSwk1TCWNWqxWV4J6o",
+      "HLdcfovcXkHKm4iQWNQZhJypySmuGa1PGoTuB6L68hhZ"
+    ),
+    //stsol2pool
+    getTokenBalance(
+      "7dHbWXmci3dT8UFYWYZweBLXgycu7Y3iL6trKn1Y7ARj",
+      "FqLtqRJvoVNYU5Xpcgp5FNPv8ciXCZw7CiNddjQ4nqkRo"
+    ),
+    getTokenBalance(
+      "So11111111111111111111111111111111111111112",
+      "9gizzFG33czvcTzn5N4V23uunV6YR55UNW8ow6qNPoX3"
     ),
   ]);
   return {
@@ -78,7 +89,11 @@ async function tvl() {
     tether: paiPoolUsdtAmount + ustPoolUsdtAmount + Usd4PoolWUsdtAmount,
     dai: Usd4PoolWDaiAmount,
     terrausd: ustPoolUstAmount,
-    solana: psolPoolSolAmount + psolPoolPsolAmount,
+    solana:
+      psolPoolSolAmount +
+      psolPoolPsolAmount +
+      stsolPoolStsolAmonunt +
+      stsolPoolSolAmount,
   };
 }
 

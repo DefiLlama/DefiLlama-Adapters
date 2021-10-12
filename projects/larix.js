@@ -2,6 +2,8 @@ const {sumTokens} = require("./helper/solana")
 
 const getTokenBalance = (a,b)=>[a,b]
 
+const contract = "BxnUi6jyYbtEEgkBq4bPLKzDpSfWVAzgyf3TF2jfC1my"
+
 async function tvl() {  
   return sumTokens([
     //btcAmount
@@ -14,7 +16,8 @@ async function tvl() {
     getTokenBalance("Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB","BxnUi6jyYbtEEgkBq4bPLKzDpSfWVAzgyf3TF2jfC1my"),
     getTokenBalance("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v","BxnUi6jyYbtEEgkBq4bPLKzDpSfWVAzgyf3TF2jfC1my"), //usdc
     getTokenBalance("AGFEad2et2ZJif9jaGpdMixQqvW5i81aBdvKe7PHNfz3","BxnUi6jyYbtEEgkBq4bPLKzDpSfWVAzgyf3TF2jfC1my"), // ftt
-    getTokenBalance("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt","BxnUi6jyYbtEEgkBq4bPLKzDpSfWVAzgyf3TF2jfC1my"), // serum
+    getTokenBalance("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt", contract), // serum
+    ["mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So", contract, 'solana'],
   ])
 }
 

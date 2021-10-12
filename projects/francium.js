@@ -14,5 +14,6 @@ async function fetch() {
 }
 
 module.exports = {
+  methodology: 'Value of total LP tokens locked + deposits that are not borrowed.',
   fetch,
 };

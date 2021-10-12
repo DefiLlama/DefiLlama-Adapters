@@ -1,8 +1,11 @@
 const { sumTokensAndLPs } = require('./unwrapLPs')
 
-function pool2(stakingContract, lpToken, chain = "ethereum", transformAddress = id => id) {
+function pool2(stakingContract, lpToken, chain = "ethereum", transformAddress) {
     return async (_timestamp, _ethBlock, chainBlocks) => {
         const balances = {}
+        if(transformAddress === undefined){
+            transformAddress = addr=>`${chain}:${addr}`
+        }
         await sumTokensAndLPs(balances, [[lpToken, stakingContract, true]], chainBlocks[chain], chain, transformAddress)
         return balances
     }

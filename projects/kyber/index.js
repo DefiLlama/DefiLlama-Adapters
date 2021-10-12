@@ -112,7 +112,6 @@ const { transformAvaxAddress, fixAvaxBalances } = require('../helper/portedToken
   module.exports = {
     misrepresentedTokens: true,
     ethereum: {
-      ethTvl,
       tvl: ethDmmTVL,
     },
     polygon: {
@@ -124,5 +123,4 @@ const { transformAvaxAddress, fixAvaxBalances } = require('../helper/portedToken
    avalanche:{
      tvl: avaxTVL,
    },
-  tvl: sdk.util.sumChainTvls([ethTvl,ethDmmTVL,bscTVL,polyTVL,avaxTVL])
   };

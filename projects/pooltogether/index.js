@@ -1,12 +1,13 @@
 const sdk = require("@defillama/sdk");
 const { request, gql } = require("graphql-request");
 const abi = require('./abi.json')
-const { transformCeloAddress } = require("../helper/portedTokens");
+const { transformCeloAddress, transformBscAddress } = require("../helper/portedTokens");
 const { getBlock } = require("../helper/getBlock");
 
 const graphUrls = ['https://api.thegraph.com/subgraphs/name/pooltogether/pooltogether-v3_1_0', 
-  'https://api.thegraph.com/subgraphs/name/pooltogether/pooltogether-v3_3_2']
+  'https://api.thegraph.com/subgraphs/name/pooltogether/pooltogether-v3_3_2', 'https://api.thegraph.com/subgraphs/name/pooltogether/pooltogether-v3_3_8', 'https://api.thegraph.com/subgraphs/name/pooltogether/pooltogether-v3_4_3']
 const celoGraphUrl = 'https://api.thegraph.com/subgraphs/name/pooltogether/celo-v3_4_5'
+const bscGraphUrl = 'https://api.thegraph.com/subgraphs/name/pooltogether/bsc-v3_4_3'
 
 const graphQuery = gql`
 query GET_POOLS($block: Int) {
@@ -45,6 +46,7 @@ async function getChainBalances(allPrizePools, chain, block, transform = a => a)
 
 async function eth(timestamp, block) {
   let allPrizePools = []
+  let combinedPrizePools = []
   for (const graphUrl of graphUrls) {
     const { prizePools } = await request(
       graphUrl,
@@ -53,11 +55,10 @@ async function eth(timestamp, block) {
         block,
       }
     );
-    allPrizePools = allPrizePools.concat(prizePools).concat([{
-      id: "0xc32a0f9dfe2d93e8a60ba0200e033a59aec91559",
-      underlyingCollateralToken: "0x6B3595068778DD592e39A122f4f5a5cF09C90fE2"
-    }])
+    allPrizePools = allPrizePools.concat(prizePools)
   }
+  combinedPrizePools = allPrizePools.flat()
+  allPrizePools = [...new Set(combinedPrizePools.map(a => JSON.stringify(a)))].map(a => JSON.parse(a))
   return getChainBalances(allPrizePools, 'ethereum', block)
 }
 
@@ -65,6 +66,10 @@ async function polygon(timestamp, block, chainBlocks) {
   return getChainBalances([{
     id: "0x887E17D791Dcb44BfdDa3023D26F7a04Ca9C7EF4",
     underlyingCollateralToken: "0xdac17f958d2ee523a2206206994597c13d831ec7"
+  },
+  {
+    id: "0xee06abe9e2af61cabcb13170e01266af2defa946",
+    underlyingCollateralToken: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
   }], 'polygon', chainBlocks.polygon)
 }
 
@@ -78,6 +83,16 @@ async function celo(timestamp, block, chainBlocks) {
   return getChainBalances(allPrizePools, 'celo', block, transform)
 }
 
+async function bsc(timestamp, block, chainBlocks) {
+  const transform = await transformBscAddress()
+  let allPrizePools = []
+  block = await getBlock(timestamp, 'bsc', chainBlocks)
+    const { prizePools } = await request(
+      bscGraphUrl, graphQuery, { block })
+    allPrizePools = allPrizePools.concat(prizePools)
+  return getChainBalances(allPrizePools, 'bsc', block, transform)
+}
+
 module.exports = {
   ethereum:{
     tvl: eth
@@ -88,6 +103,9 @@ module.exports = {
   celo:{
     tvl:celo
   },
-  tvl: sdk.util.sumChainTvls([eth, polygon, celo]),
-  methodology: `TVL is the total quantity of tokens locked in poolTogether pools, on Ethereum, Polygon and Celo`
+  bsc:{
+    tvl:bsc
+  },
+  tvl: sdk.util.sumChainTvls([eth, polygon, celo, bsc]),
+  methodology: `TVL is the total quantity of tokens locked in poolTogether pools, on Ethereum, Polygon, Celo, and BSC`
 }
