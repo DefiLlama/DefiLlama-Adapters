@@ -160,7 +160,7 @@ const passedFile = path.resolve(process.cwd(), process.argv[2]);
 
     Object.entries(usdTokenBalances).forEach(([chain, balances]) => {
         console.log(`--- ${chain} ---`)
-        Object.entries(balances).forEach(([symbol, balance]) => {
+        Object.entries(balances).sort((a, b)=>b[1]-a[1]).forEach(([symbol, balance]) => {
             console.log(symbol.padEnd(25, " "), humanizeNumber(balance))
         })
         console.log("Total:", humanizeNumber(usdTvls[chain]), "\n");
