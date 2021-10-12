@@ -30,6 +30,7 @@ function chainTvl(url, pool2, staking) {
 const oecUrl = "https://api.oakfarm.io/vault?network=oec"
 const bscUrl = "https://api.oakfarm.io/vault?network=bsc"
 module.exports={
+    methodology: "OakFarm is Yield for users to earn by APY, it supplies an fToken as certificate and vault share price for user to withdraw their token. Therefore, We use Web3.py fetching the balance of fToken and share price, also with the token usd price to calculate the TVL.",
     okexchain:{
         tvl: chainTvl(oecUrl, false, false),
         staking: chainTvl(oecUrl, false, true),
