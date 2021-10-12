@@ -19,6 +19,7 @@ const MASTER_FANTOM = "0x9180583C1ab03587b545629dd60D2be0bf1DF4f2";
 const COINGECKO_WINGS_TOKEN = "bsc:0x0487b824c8261462f88940f97053e65bdb498446"
 
 module.exports = {
+  methodology: "TVL accounts for the liquidity on all AMM pools (see https://info.jetswap.finance, https://polygon-info.jetswap.finance, https://fantom-info.jetswap.finance). Staking includes all WINGS(pWINGS/fWINGS) staked in WINGS(pWINGS/fWINGS) MasterChef farms.",
   misrepresentedTokens: true,
   bsc: {
     staking: staking(MASTER_BSC, WINGS_TOKEN_BSC,"bsc", COINGECKO_WINGS_TOKEN),
