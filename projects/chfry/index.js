@@ -41,6 +41,7 @@ async function tvl(timestamp, block) {
 }
 
 module.exports = {
+    methodology: "TVL is being calculated as the total amount deposited in the lending protocol by users.",
     ethereum:{
         tvl,
     },
