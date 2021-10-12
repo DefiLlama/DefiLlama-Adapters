@@ -5,15 +5,17 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     let startBlock = 4698;
     const dailyBlockInterval = 12495;
     let startDate = new Date(Date.UTC(2021, 7, 31));
-    let dateNow = new Date(timestamp * 1000);
+    let url = `https://api.data.kava.io/swap/pools`
+    if(Math.abs(Date.now()/1000 - timestamp) > 3600){
+        let dateNow = new Date(timestamp * 1000);
+        while (startDate < dateNow) {
+            startDate.setDate(startDate.getDate() + 1);
+            startBlock = startBlock + dailyBlockInterval;
+        };
+        url += `?height=${startBlock}`
+    }
 
-    while (startDate < dateNow) {
-        startDate.setDate(startDate.getDate() + 1);
-        startBlock = startBlock + dailyBlockInterval;
-    };
-
-    const response = await utils.fetchURL(
-        `https://api.data.kava.io/swap/pools?height=${startBlock}`);
+    const response = await utils.fetchURL(url);
 
     for (let pool of response.data.result) {
         for (let coin of pool.coins) {
