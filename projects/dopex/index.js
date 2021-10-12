@@ -18,5 +18,6 @@ module.exports={
     arbitrum:{
         staking:staking('0xc6D714170fE766691670f12c2b45C1f34405AAb6', '0x6c2c06790b3e3e3c38e12ee22f8183b37a13ee55', 'arbitrum', DPX),
         pool2: pool2("0x96B0d9c85415C69F4b2FAC6ee9e9CE37717335B4", "0x0C1Cf6883efA1B496B01f654E247B9b419873054", "arbitrum", transformArbitrum),
+        tvl: async()=>({})
     }
 }
