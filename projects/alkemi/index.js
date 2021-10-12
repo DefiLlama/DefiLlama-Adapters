@@ -73,6 +73,7 @@
   ==================================================*/
 
   module.exports = {
+    methodology: "TVL consists of Assets (ETH, WBTC, Stablecoins) deposited in Alkemi Earn, Assets (ETH, WBTC, Stablecoins) deposited in Alkemi Earn Open, and does NOT currently consider assets borrowed",
     name: 'Alkemi Network',   // project name
     website: 'https://alkemi.network',
     token: 'ALK',             // null, or token symbol if project has a custom token
