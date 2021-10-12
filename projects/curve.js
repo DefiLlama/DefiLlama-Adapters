@@ -43,6 +43,7 @@ async function fetch() {
 
 
 module.exports = {
+  misrepresentedTokens: true,
   fantom:{
     fetch: fantom
   },
