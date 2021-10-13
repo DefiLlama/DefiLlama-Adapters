@@ -158,8 +158,8 @@ async function tvl(timestamp, block) {
 module.exports = {
   misrepresentedTokens: true,
   start: 1596236058,        // July 14, 2020
-  tvl,
-  pool2:{
-    tvl: pool2(rariGovernanceTokenUniswapDistributorAddress, RGTETHSushiLPTokenAddress)
+  ethereum:{
+    tvl,
+    pool2: pool2(rariGovernanceTokenUniswapDistributorAddress, RGTETHSushiLPTokenAddress)
   }
 }
