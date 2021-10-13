@@ -18,5 +18,6 @@ async function tvl(){
 }
 
 module.exports={
+    methodology: 'TVL is the liquidity on the AMM.',
     tvl
 }

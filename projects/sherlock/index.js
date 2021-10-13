@@ -30,6 +30,7 @@ async function tvl(timestamp, block) {
 }
 
 module.exports = {
+  methodology: 'We count USDC that has been staked into the contracts (staking pool). Periodically USDC is swept into Aave, so we also count the aUSDC that is held (in a separate contract from the main contract).',
   name: 'Sherlock',               // project name
   website: 'https://app.sherlock.xyz',
   token: 'SHER',
