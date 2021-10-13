@@ -27,7 +27,7 @@ async function staking(timestamp, ethBlock) {
 
 module.exports = {
     ethereum:{
-        staking
-    },
-    tvl
+        staking,
+        tvl
+    }
 }
