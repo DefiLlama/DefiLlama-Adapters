@@ -234,12 +234,7 @@ async function pool2(timestamp, block) {
 module.exports = {
   ethereum: {
     tvl: ethTvl,
-  },
-  staking: {
-    tvl: staking,
-  },
-  pool2: {
-    tvl: pool2,
-  },
-  tvl: sdk.util.sumChainTvls([ethTvl]),
+    staking,
+    pool2
+  }
 };
