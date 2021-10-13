@@ -1,36 +1,38 @@
-const { request, gql } = require("graphql-request");
-const { toUSDTBalances } = require('../helper/balances');
+const { calculateUniTvl} = require('../helper/calculateUniTvl.js')
+const { transformPolygonAddress, 
+  transformOkexAddress } = require('../helper/portedTokens.js');
+const { getBlock } = require('../helper/getBlock')
 
-const graphUrl = 'https://api.thegraph.com/subgraphs/name/ss-sonic/dfyn-v4'
-const graphQuery = gql`
-query get_tvl($block: Int) {
-  uniswapFactories(
-    block: { number: $block }
-  ) {
-    totalVolumeUSD
-    totalLiquidityUSD
-  }
-}
-`;
-
-async function tvl(timestamp, block, chainBlocks) {
-  const {uniswapFactories} = await request(
-    graphUrl,
-    graphQuery,
-    {
-      block: chainBlocks['polygon'] - 60,
-    }
+async function polygon(timestamp, block, chainBlocks) {
+  return await tvl(
+    chainBlocks['polygon'], 
+    '0xE7Fb3e833eFE5F9c441105EB65Ef8b261266423B', 
+    'polygon', 
+    5436830, 
+    await transformPolygonAddress()
   );
-  console.log(uniswapFactories)
-  const usdTvl = Number(uniswapFactories[0].totalLiquidityUSD)
+};
 
-  return toUSDTBalances(usdTvl)
-}
+async function okex(timestamp, block, chainBlocks) {
+  let a = await getBlock(timestamp, 'okexchain', chainBlocks)
+  return await tvl(
+    await getBlock(timestamp, 'okexchain', chainBlocks), 
+    '0xE7Fb3e833eFE5F9c441105EB65Ef8b261266423B', 
+    'okexchain', 
+    5436830, 
+    await transformOkexAddress()
+  );
+};
+
+async function tvl(block, factory, chain, startBlock, transform=a=>a) {
+  return await calculateUniTvl(transform, block, chain, factory, startBlock, true);
+};
 
 module.exports = {
-  misrepresentedTokens: true,
   polygon:{
-    tvl,
+    tvl: polygon,
   },
-  tvl
+  okex:{
+    tvl: okex,
+  },
 }
