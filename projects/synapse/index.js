@@ -5,7 +5,9 @@ const { default: axios } = require("axios");
 const sdk = require("@defillama/sdk");
 const retry = require("async-retry");
 const ethers = require("ethers");
+const { sumTokens } = require("../helper/unwrapLPs");
 
+const MIM_FANTOM = "0x82f0b8b456c1a451378467398982d4834b6829c1";
 const gqlQuery = gql`
   query getTVL($block: Int) {
     swaps(block: { number: $block }) {
@@ -23,7 +25,7 @@ const changeNumDecimals = (number, toDecimals) => {
   return ethers.utils.bigNumberify(number).div(10 ** toDecimals);
 };
 
-// TODO: Support Fantom & Arb nUSD pool.
+// TODO: Support Arb nUSD pool.
 function chainTvl(chain) {
   return async (timestamp, ethBlock, chainBlocks) => {
     const transform = (token) => `${chain}:${token}`;
@@ -44,6 +46,23 @@ function chainTvl(chain) {
     );
 
     for (const swap of swaps) {
+      // So it seems like our luck of ordering by `symbol` has ran out.
+      // Time to start thinking like an ape now and sort this object
+      // By moving MIM object to the front to be in 'union' with balance.
+      if (chain == "fantom") {
+        const mim = swap.tokens.filter((x) => {
+          return x.id == MIM_FANTOM;
+        });
+
+        if (mim.length > 0) {
+          swap.tokens = swap.tokens.filter((x) => x.id !== MIM_FANTOM);
+          swap.tokens.unshift(mim[0]);
+        }
+      }
+      if (chain === "arbitrum" && swap.tokens[0].name !== "nETH") {
+        continue
+      }
+
       for (let i = 0; i < swap.tokens.length; i++) {
         if (swap.tokens[i].name == "USD LP") continue;
 
@@ -63,6 +82,18 @@ function chainTvl(chain) {
           swap.balances[i]
         );
       }
+
+    }
+    if (chain === "arbitrum") {
+      const baseSwap = "0xbaFc462d00993fFCD3417aBbC2eb15a342123FDA"
+      const nUSD = "0x2913e812cf0dcca30fb28e6cac3d2dcff4497688"
+      const tusd = "0x0000000000085d4780b73119b644ae5ecd22b376"
+      await sumTokens(balances, [
+        [nUSD, "0x84cd82204c07c67dF1C2C372d8Fd11B3266F76a3"], // metawap
+        ["0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1", baseSwap],
+        ["0xff970a61a04b1ca14834a43f5de4533ebddb5cc8", baseSwap],
+        ["0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9", baseSwap]
+      ], chainBlocks.arbitrum, "arbitrum", (addr) => addr === nUSD ? tusd : `arbitrum:${addr}`)
     }
 
     return balances;
@@ -74,6 +105,6 @@ module.exports = chainExports(chainTvl, [
   "bsc",
   "polygon",
   "avax",
-  // "fantom",
+  "fantom",
   "arbitrum",
 ]);

@@ -10,6 +10,7 @@ async function staking() {
 }
 
 module.exports = {
+  methodology: "TVL is the sum of all tokens in the staking pools",
   solana: {
     staking,
     tvl: async () => ({})

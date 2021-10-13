@@ -46,10 +46,10 @@ module.exports = {
   ethereum:{
     pool2: ethTvl
   },
-  bscTvl:{
+  bsc:{
     pool2: bscTvl
   },
-  fantomTvl:{
+  fantom:{
     pool2:fantomTvl
   },
   methodology:

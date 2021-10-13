@@ -72,7 +72,7 @@ module.exports = {
     fantom: {
         tvl: fantomTvl,
     },
-    avax: {
+    avalanche: {
         tvl: avaxTvl,
     },
     tvl: sdk.util.sumChainTvls([bscTvl, polygonTvl, fantomTvl, avaxTvl]),

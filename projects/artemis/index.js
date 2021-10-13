@@ -1,30 +1,31 @@
-const abi = require("./abi.json");
-const { transformHarmonyAddress } = require("../helper/portedTokens");
-const { addFundsInMasterChef } = require("../helper/masterchef");
+const { default: axios } = require("axios");
+const { toUSDTBalances } = require("../helper/balances");
+const retry = require("../helper/retry");
 
-const MASTERCHEF_CONTRACT = "0x59C777cd749b307Be910f15c54A3116ff88f9706";
+const farmApi = "https://api.elision.farm/getFarmStats/harmony/artemis";
 
-async function tvl(timestamp, block, chainBlocks) {
-  let balances = {};
-  const transformAddress = await transformHarmonyAddress();
-
-  await addFundsInMasterChef(
-    balances,
-    MASTERCHEF_CONTRACT,
-    chainBlocks["harmony"],
-    "harmony",
-    transformAddress,
-    abi.poolInfo,
-  );
-  if ('harmony' in balances) {
-      balances['harmony'] /= 10 ** 18
+function tvl(pool2) {
+  return async () => {
+    let tvl = 0;
+    let { data: farms } = await retry(async (bail) => await axios.get(farmApi));
+    for (let i = 0; i < farms.length; i++) {
+      if (farms[i].name.startsWith("MIS") || farms[i].name.endsWith("MIS")) {
+        if(pool2){
+          tvl += farms[i].farm_liquidity_usd;
+        }
+      } else {
+        if(!pool2){
+          tvl += farms[i].farm_liquidity_usd;
+        }
+      }
+    }
+    return toUSDTBalances(tvl);
   }
-  return balances;
 }
+
 module.exports = {
   harmony: {
-    tvl,
-  },
-  tvl,
+    pool2: tvl(true),
+    tvl: tvl(false),
+  }
 };
-// node test.js projects/artemis/index.js
