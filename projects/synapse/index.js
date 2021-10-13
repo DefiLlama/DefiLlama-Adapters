@@ -4,7 +4,7 @@ const { getBlock } = require("../helper/getBlock");
 const { default: axios } = require("axios");
 const sdk = require("@defillama/sdk");
 const retry = require("async-retry");
-const ethers = require("ethers");
+const BigNumber = require("bignumber.js");
 const { sumTokens } = require("../helper/unwrapLPs");
 
 const MIM_FANTOM = "0x82f0b8b456c1a451378467398982d4834b6829c1";
@@ -22,7 +22,7 @@ const gqlQuery = gql`
 `;
 
 const changeNumDecimals = (number, toDecimals) => {
-  return ethers.utils.bigNumberify(number).div(10 ** toDecimals);
+  return BigNumber(number).div(10 ** toDecimals).toFixed(0);
 };
 
 // TODO: Support Arb nUSD pool.

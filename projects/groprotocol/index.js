@@ -27,10 +27,6 @@ module.exports = {
     ethereum:{
         tvl,
     },
-    name: 'Gro',
-    token: null,
-    category: 'assets',
     start: 1622204347,  // 28-05-2021 12:19:07 (UTC)
     methodology: "Using DAI as a placeholder with same 18 decimals until coins listed on coingecko. The totalAssets() call returns USD value",
-    tvl,
 };
