@@ -138,6 +138,30 @@ const crvPools = {
           "0xDBf31dF14B66535aF65AaC99C32e9eA844e14501"
         ]
       },
+    // gondolaDAIeUSDTe Avax
+    "0xd7d4a4c67e9c1f5a913bc38e87e228f4b8820e8a": {
+        swapContract: "0xCF97190fAAfea63523055eBd139c008cdb4468eB",
+        underlyingTokens: [
+        "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70",
+        "0xc7198437980c041c805a1edcba50c1ce5db95118"
+        ]
+    },
+    // gondolaYAKPool Avax
+    "0x7f1e6a8730fec77f27daeecd82e1941518383a62": {
+        swapContract: "0xd72Dc856868f964D37D01CeA7A7a3c1F4da4F98f",
+        underlyingTokens: [
+            "0xddaaad7366b455aff8e7c82940c43ceb5829b604",
+            "0x59414b3089ce2af0010e7523dea7e2b35d776ec7"
+        ]
+    },
+    // gondolaUSDCe Avax
+    "0x4dc5a6308338e540aa97faab7fd2e03876075413": {
+        swapContract: "0x4b941276eb39d114c89514791d073a085acba3c0",
+        underlyingTokens: [
+            "0xc7198437980c041c805a1edcba50c1ce5db95118",
+            "0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664"
+        ]
+    },
 }
 const yearnVaults = {
     // yvToken: underlying, eg yvYFI:YFI
