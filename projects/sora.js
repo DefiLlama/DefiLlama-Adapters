@@ -30,11 +30,11 @@ async function fetch () {
   try {
     const { poolXYKEntities } = await request(BASE_URL, POOL_XYK_ENTITIES, {});
     if (!poolXYKEntities) {
-      return 0;
+      throw new Error('SORA adapter: Something was happened with SORA requested data!');
     }
     const data = poolXYKEntities.nodes[0].pools.edges.map(item => item.node);
     if (!data || !data.length) {
-      return 0;
+      throw new Error('SORA adapter: Something was happened with SORA requested data!');
     }
     const xor = data.find(item => item.targetAssetId === XOR_ASSET_ID);
     const xorPriceUSD = new BigNumber(xor.priceUSD);
@@ -52,7 +52,7 @@ async function fetch () {
 
     return tvl.toNumber();
   } catch (error) {
-    return 0;
+    throw new Error('SORA adapter: Something was happened with SORA subquery connection!');
   }
 }
 
