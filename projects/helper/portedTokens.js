@@ -226,10 +226,9 @@ async function transformArbitrumAddress() {
 }
 
 function fixAvaxBalances(balances){
-    for(const representation of ["avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", '0x9dEbca6eA3af87Bf422Cea9ac955618ceb56EfB4', "avax:0x0000000000000000000000000000000000000000"]){
+    for(const representation of ["avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", '0x9dEbca6eA3af87Bf422Cea9ac955618ceb56EfB4']){
         if(balances[representation] !== undefined){
-            const existingBalance = balances['avalanche-2'] || 0
-            balances['avalanche-2'] = existingBalance + Number(balances[representation])/1e18
+            balances['avalanche-2'] = Number(balances[representation])/1e18
             delete balances[representation]
         }
     }
