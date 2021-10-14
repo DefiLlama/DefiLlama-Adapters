@@ -50,6 +50,9 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     const crvLps = []
     await Promise.all(farms.map(async (farm, idx)=>{
         let token = tokens.output[idx].output
+        if (token == "0x0000000000000000000000000000000000000000") {
+            token = "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"; // Replace YY's AVAX with WAVAX
+        }
         let balance = tokenAmounts.output[idx].output
         if (farm.name.startsWith("Snowball: sPGL ")) {
             const [underlyingToken, ratio] = await Promise.all([abi.token, abi.getRatio].map(abi =>
