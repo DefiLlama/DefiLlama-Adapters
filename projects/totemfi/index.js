@@ -1,4 +1,6 @@
 const { request, gql } = require("graphql-request");
+const sdk = require('@defillama/sdk');
+const { default: BigNumber } = require("bignumber.js");
 
 const graphUrls = [
   'https://graph.totemfi.com/subgraphs/name/totemfi/staking-v1'
@@ -30,15 +32,12 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
       );
       allPrizePools = allPrizePools.concat(stakingPools)
     }
-    let sumTOTM = BigNumber.from(0)
     for (let i = 0; i < allPrizePools.length; i++) {
       if (allPrizePools[i]["totalUnStaked"] == null) {
         allPrizePools[i]["totalUnStaked"] = 0
       }
-      let balance = BigNumber.from(allPrizePools[i]["totalStaked"]).sub(BigNumber.from(allPrizePools[i]["totalUnStaked"]))
-      sumTOTM = sumTOTM.add(balance)
+      sdk.util.sumSingleBalance(balances, TOTM, BigNumber(allPrizePools[i]["totalStaked"]).minus(allPrizePools[i]["totalUnStaked"]).toFixed(0))
     }
-    balances[TOTM] = sumTOTM.toString()
     return balances
   } catch (error) {
     if (error.message !== undefined) {
@@ -55,6 +54,5 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 module.exports = {
   bsc: {
     tvl,
-  },
-  tvl
+  }
 }
