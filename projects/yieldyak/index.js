@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk');
-const { unwrapUniswapLPs } = require('../helper/unwrapLPs')
+const { unwrapUniswapLPs, unwrapCrv } = require('../helper/unwrapLPs')
 const abi = require('./abi.json')
 const { request, gql } = require("graphql-request");
 const { transformAvaxAddress, fixAvaxBalances } = require('../helper/portedTokens');
@@ -47,6 +47,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     })
     const balances = {}
     const lps = []
+    const crvLps = []
     await Promise.all(farms.map(async (farm, idx)=>{
         let token = tokens.output[idx].output
         let balance = tokenAmounts.output[idx].output
@@ -61,8 +62,12 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
             ));
             token = underlyingToken.output;
             balance = BigNumber(balance).times(ratio.output).div(1e18).toFixed(0)
-        }
-        if (farm.name.includes('-') && !farm.name.startsWith('Yield Yak: Gondola ')) {
+        } else if (farm.name.startsWith("Yield Yak: Gondola ")) {
+            crvLps.push({
+                token,
+                balance,
+            })
+        } else if (farm.name.includes('-')) {
             lps.push({
                 token,
                 balance,
@@ -73,6 +78,9 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     }))
 
     await unwrapUniswapLPs(balances, lps, block, 'avax', transformAddress)
+    await Promise.all(
+        crvLps.map(crvLp => unwrapCrv(balances, crvLp.token, crvLp.balance, block, 'avax', transformAddress))
+    )
     //await addTokensAndLPs(balances, tokens, tokenAmounts, block, 'avax', transformAddress)
     fixAvaxBalances(balances)
     return balances
