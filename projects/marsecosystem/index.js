@@ -87,10 +87,8 @@ async function calculate(chainBlocks, localPools, remotePools) {
 
 module.exports = {
   bsc: {
-    tvl
-  },
-  staking: {
-    tvl: staking
-  },
-  tvl
+    tvl,
+    staking,
+    masterchef: tvl,
+  }
 };
