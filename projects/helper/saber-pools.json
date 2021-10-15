@@ -230,6 +230,16 @@
     "tokenBCoingecko": "usd-coin"
   },
   {
+    "id": "wheth",
+    "authority": "2ctAWUAM4FUWp3iaHC5kEGktx4ThtC4tfnUEXQzxjFKm",
+    "tokenA": "SL819j8K9FuFPL84UepVcFkEZqDUUvVzwDmJjCHySYj",
+    "tokenB": "7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs",
+    "reserveA": "8p4mGnARWPBu6P2Gcw4adodLkNDorrXniZMhaY7eJXUn",
+    "reserveB": "AyY89zccbsgp9LKFgH4CFZMJmpSgqmPSdTfukhP227rc",
+    "tokenACoingecko": "ethereum",
+    "tokenBCoingecko": "ethereum"
+  },
+  {
     "id": "acusd",
     "authority": "4RcgjJHEndsDpSniNaU392dnfjFZFGhwUT3Fd9rSEcMv",
     "tokenA": "EwxNF8g9UfmsJVcZFTpL9Hx5MCkoQFoJi6XNWzKf1j8e",
@@ -278,6 +288,16 @@
     "reserveB": "SscdxE99omdG9AiMVwmaEMQySQnCgeAh1sPj2Leutm2",
     "tokenACoingecko": "binance-usd",
     "tokenBCoingecko": "usd-coin"
+  },
+  {
+    "id": "aeeth",
+    "authority": "4vKg9TxAmbmBQYvsv9StJYMwyDeWNyfVSumMzmemrXbZ",
+    "tokenA": "KNVfdSJyq1pRQk9AKKv1g5uyGuk6wpm4WG16Bjuwdma",
+    "tokenB": "AaAEw2VCw1XzgvKB8Rj2DyK2ZVau9fbt2bE8hZFWsMyE",
+    "reserveA": "CGoM82Hbz7QVqTgvQatYtjvDWBvoUJp5qm21P8iMs9yb",
+    "reserveB": "3dxNNww8TivyN5FMy5dCNdi3Zcxv6e4kUfSPxfFwpdNq",
+    "tokenACoingecko": "ethereum",
+    "tokenBCoingecko": "weth"
   },
   {
     "id": "msol_sol",

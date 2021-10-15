@@ -1,5 +1,7 @@
 const axios = require('axios')
 
+const endpoint = 'https://solana-api.projectserum.com/'
+
 async function getTokenSupply(token) {
     const tokenSupply = await axios.post("https://api.mainnet-beta.solana.com", {
         "jsonrpc": "2.0",
@@ -11,7 +13,7 @@ async function getTokenSupply(token) {
 }
 
 async function getTokenBalance(token, account) {
-    const tokenBalance = await axios.post("https://api.mainnet-beta.solana.com", {
+    const tokenBalance = await axios.post(endpoint, {
         "jsonrpc": "2.0",
         "id": 1,
         "method": "getTokenAccountsByOwner",
@@ -29,7 +31,7 @@ async function getTokenBalance(token, account) {
 }
 
 async function getTokenAccountBalance(account) {
-    const tokenBalance = await axios.post('https://solana-api.projectserum.com/', {
+    const tokenBalance = await axios.post(endpoint, {
         "jsonrpc": "2.0",
         "id": 1,
         "method": "getTokenAccountBalance",
@@ -49,8 +51,16 @@ async function sumTokens(tokensAndAccounts) {
     const balances = {}
     for (let i = 0; i < tokensAndAccounts.length; i++) {
         const token = tokensAndAccounts[i][0]
-        const coingeckoId = tokenlist.find(t => t.address === token)?.extensions?.coingeckoId
-        balances[coingeckoId] = tokenBalances[i]
+        let coingeckoId = tokenlist.find(t => t.address === token)?.extensions?.coingeckoId
+        const replacementCoingeckoId = tokensAndAccounts[i][2]
+        if(coingeckoId === undefined){
+            if(replacementCoingeckoId !== undefined){
+                coingeckoId = replacementCoingeckoId
+            } else {
+                throw new Error(`Solana token ${token} has no coingecko id`)
+            }
+        }
+        balances[coingeckoId] = (balances[coingeckoId] || 0) + tokenBalances[i]
     }
     return balances
 }
@@ -83,7 +93,11 @@ async function getMultipleAccountBuffers(labeledAddresses) {
 
     const results = {}
     accountsData.forEach((account, index) => {
-        results[labels[index]] = Buffer.from(account.data[0], account.data[1])
+        if (account === null) {
+            results[labels[index]] = null;
+        } else {
+            results[labels[index]] = Buffer.from(account.data[0], account.data[1]);
+        }
 
         // Uncomment and paste into a hex editor to do some reverse engineering
         // console.log(`${labels[index]}: ${results[labels[index]].toString("hex")}`);

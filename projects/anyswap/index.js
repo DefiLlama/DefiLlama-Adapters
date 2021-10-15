@@ -35,7 +35,7 @@ async function fetch(){
 const chainTvls = {}
 Object.keys(chains).forEach((chain) => {
   const key = chains[chain]
-  chainTvls[key]={
+  chainTvls[key === 'avax'? 'avalanche': key]={
     fetch: async()=>{
       const {data} = await utils.fetchURL(url)
       let total = 0

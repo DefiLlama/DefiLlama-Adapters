@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 const token0 = require('./abis/token0.json')
+const {getPoolTokens, getPoolId} = require('./abis/balancer.json')
 const getPricePerShare = require('./abis/getPricePerShare.json')
 const {requery} = require('./requery')
 
@@ -137,6 +138,30 @@ const crvPools = {
           "0xDBf31dF14B66535aF65AaC99C32e9eA844e14501"
         ]
       },
+    // gondolaDAIeUSDTe Avax
+    "0xd7d4a4c67e9c1f5a913bc38e87e228f4b8820e8a": {
+        swapContract: "0xCF97190fAAfea63523055eBd139c008cdb4468eB",
+        underlyingTokens: [
+        "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70",
+        "0xc7198437980c041c805a1edcba50c1ce5db95118"
+        ]
+    },
+    // gondolaYAKPool Avax
+    "0x7f1e6a8730fec77f27daeecd82e1941518383a62": {
+        swapContract: "0xd72Dc856868f964D37D01CeA7A7a3c1F4da4F98f",
+        underlyingTokens: [
+            "0xddaaad7366b455aff8e7c82940c43ceb5829b604",
+            "0x59414b3089ce2af0010e7523dea7e2b35d776ec7"
+        ]
+    },
+    // gondolaUSDCe Avax
+    "0x4dc5a6308338e540aa97faab7fd2e03876075413": {
+        swapContract: "0x4b941276eb39d114c89514791d073a085acba3c0",
+        underlyingTokens: [
+            "0xc7198437980c041c805a1edcba50c1ce5db95118",
+            "0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664"
+        ]
+    },
 }
 const yearnVaults = {
     // yvToken: underlying, eg yvYFI:YFI
@@ -215,7 +240,8 @@ async function unwrapCrv(balances, crvToken, balance3Crv, block, chain = "ethere
     token
 }[]
 */
-async function unwrapUniswapLPs(balances, lpPositions, block, chain='ethereum', transformAddress=(addr)=>addr) {
+async function unwrapUniswapLPs(balances, lpPositions, block, chain='ethereum', transformAddress=(addr)=>addr, excludeTokensRaw = []) {
+    const excludeTokens = excludeTokensRaw.map(addr=>addr.toLowerCase())
     const lpTokenCalls = lpPositions.map(lpPosition=>({
         target: lpPosition.token
     }))
@@ -244,16 +270,23 @@ async function unwrapUniswapLPs(balances, lpPositions, block, chain='ethereum', 
         chain
       })
       await Promise.all(lpPositions.map(async lpPosition => {
-        const lpToken = lpPosition.token
-        const token0 = (await tokens0).output.find(call=>call.input.target === lpToken).output
-        const token1 = (await tokens1).output.find(call=>call.input.target === lpToken).output
-        const supply = (await lpSupplies).output.find(call=>call.input.target === lpToken).output
-        const {_reserve0, _reserve1} = (await lpReserves).output.find(call=>call.input.target === lpToken).output
-
-        const token0Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve0)).div(BigNumber(supply))
-        sdk.util.sumSingleBalance(balances, await transformAddress(token0.toLowerCase()), token0Balance.toFixed(0))
-        const token1Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve1)).div(BigNumber(supply))
-        sdk.util.sumSingleBalance(balances, await transformAddress(token1.toLowerCase()), token1Balance.toFixed(0))
+        try{
+            const lpToken = lpPosition.token
+            const token0 = (await tokens0).output.find(call=>call.input.target === lpToken).output.toLowerCase()
+            const token1 = (await tokens1).output.find(call=>call.input.target === lpToken).output.toLowerCase()
+            if(excludeTokens.includes(token0) || excludeTokens.includes(token1)){
+                return
+            }
+            const supply = (await lpSupplies).output.find(call=>call.input.target === lpToken).output
+            const {_reserve0, _reserve1} = (await lpReserves).output.find(call=>call.input.target === lpToken).output
+            const token0Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve0)).div(BigNumber(supply))
+            sdk.util.sumSingleBalance(balances, await transformAddress(token0), token0Balance.toFixed(0))
+            const token1Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve1)).div(BigNumber(supply))
+            sdk.util.sumSingleBalance(balances, await transformAddress(token1), token1Balance.toFixed(0))
+          } catch(e){
+              console.log(`Failed to get data for LP token at ${lpPosition.token} on chain ${chain}`)
+              throw e
+          }
       }))
 }
 
@@ -364,6 +397,55 @@ async function sumTokensAndLPs(balances, tokens, block, chain = "ethereum", tran
     await unwrapUniswapLPs(balances, lpBalances, block, chain, transformAddress)
 }
 
+const balancerVault = "0xBA12222222228d8Ba445958a75a0704d566BF2C8"
+async function sumBalancerLps(balances, tokensAndOwners, block, chain, transformAddress){
+    const poolIds = sdk.api.abi.multiCall({
+        calls: tokensAndOwners.map(t => ({
+            target: t[0]
+        })),
+        abi: getPoolId,
+        block,
+        chain
+    })
+    const balancerPoolSupplies = sdk.api.abi.multiCall({
+        calls: tokensAndOwners.map(t => ({
+            target: t[0]
+        })),
+        abi: 'erc20:totalSupply',
+        block,
+        chain
+    })
+    const balanceOfTokens = sdk.api.abi.multiCall({
+        calls: tokensAndOwners.map(t => ({
+            target: t[0],
+            params: t[1]
+        })),
+        abi: 'erc20:balanceOf',
+        block,
+        chain
+    });
+    const balancerPoolsPromise = sdk.api.abi.multiCall({
+        calls: (await poolIds).output.map(o => ({
+            target: balancerVault,
+            params: o.output
+        })),
+        abi: getPoolTokens,
+        block,
+        chain
+    })
+    const [poolSupplies, tokenBalances, balancerPools] = await Promise.all([balancerPoolSupplies, balanceOfTokens, balancerPoolsPromise])
+    tokenBalances.output.forEach((result, idx)=>{
+        const lpBalance = result.output
+        const balancerPool = balancerPools.output[idx].output
+        const supply = poolSupplies.output[idx].output
+        balancerPool.tokens.forEach((token, tokenIndex)=>{
+            const tokensInPool = balancerPool.balances[tokenIndex]
+            const underlyingBalance = BigNumber(tokensInPool).times(lpBalance).div(supply)
+            sdk.util.sumSingleBalance(balances, transformAddress(token), underlyingBalance.toFixed(0));
+        })
+    })
+}
+
 /*
 tokensAndOwners [
     [token, owner] - eg ["0xaaa", "0xbbb"]
@@ -394,5 +476,6 @@ module.exports = {
     sumTokensAndLPsSharedOwners,
     addBalanceOfTokensAndLPs,
     sumTokensAndLPs,
-    sumTokens
+    sumTokens,
+    sumBalancerLps
 }

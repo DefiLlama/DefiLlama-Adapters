@@ -3,16 +3,25 @@ const sdk = require('@defillama/sdk')
 
 const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
 
+function normalizeArray(arrayOrString){
+    if(Array.isArray(arrayOrString)){
+        return arrayOrString
+    }else {
+        return [arrayOrString]
+    }
+}
+
 function tokenHolderBalances(tokenHolderMap) {
     return async (timestamp, block) => {
         const tokensAndHolders = []
         let ethHolders = []
         for (const group of tokenHolderMap) {
-            const holders = Array.isArray(group.holders) ? group.holders : [group.holders];
+            const holders = normalizeArray(group.holders);
+            const tokens = normalizeArray(group.tokens)
             if (group.checkETHBalance === true) {
                 ethHolders = ethHolders.concat(holders)
             }
-            group.tokens.forEach(token => {
+            tokens.forEach(token => {
                 holders.forEach(holder => {
                     tokensAndHolders.push([token, holder])
                 })
