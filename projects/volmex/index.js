@@ -33,7 +33,9 @@ async function arbitrum(timestamp, block, chainBlocks) {
     const balances = {}
     await sumTokens(balances, [
         [arbitrumDai, "0xE46277336d9CC2eBe7b24bA7268624F5f1495611"],
+        [arbitrumDai, "0xf613b55131cf8a69c5b4f62d0d5e5d2c2d9c3280"],
         [arbitrumUsdc, "0xF9b04Aad2612D3d664F41E9aF5711953E058ff52"],
+        [arbitrumUsdc, "0xdf87072ac4722431861837492edf7adbfec0efa9"],
     ], chainBlocks.arbitrum, 'arbitrum', addr=>`arbitrum:${addr}`)
     return balances
 }
