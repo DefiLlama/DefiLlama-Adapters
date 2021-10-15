@@ -9,31 +9,53 @@ const url = 'https://api.marsecosystem.com/api/pools';
 async function tvl(timestamp, chainBlocks) {
   const rows = (await utils.fetchURL(url)).data;
   const localPools = rows.filter(v => v.masterChef.includes('LiquidityMiningMaster') && !(v.baseToken == 'xms' && v.quoteToken == 'xms' ));
-  const remotePools = rows.filter(v => v.masterChef.includes('MarsFarmV2'));
+  const remotePools = rows.filter(v => v.masterChef.includes('MarsFarmV2') && !(v.baseToken == 'xms' && v.quoteToken == 'xms' ));
   return await calculate(chainBlocks, localPools, remotePools);
 };
 
 async function staking(timstamp, chainBlocks) {
   const balances = {};
   const rows = (await utils.fetchURL(url)).data;
-  const stakingPools = rows.filter(v => v.masterChef.includes('LiquidityMiningMaster') && v.baseToken == 'xms' && v.quoteToken == 'xms');
+  const localPools = rows.filter(v => v.masterChef.includes('LiquidityMiningMaster') && v.baseToken == 'xms' && v.quoteToken == 'xms');
+  const remotePools = rows.filter(v => v.masterChef.includes('MarsFarmV2') && v.baseToken == 'xms' && v.quoteToken == 'xms');
 
-  const stakingPoolsBalances = (
-    await sdk.api.abi.multiCall({
-      block: chainBlocks["bsc"],
-      calls: stakingPools.map(v => ({ target: v.masterChefAddress })),
-      abi: abi.totalSupply,
-      chain: "bsc",
-    })
-  ).output.map(v => v.output);
+  if (localPools.length > 0) {
+    const localPoolsBalances = (
+      await sdk.api.abi.multiCall({
+        block: chainBlocks["bsc"],
+        calls: localPools.map(v => ({ target: v.masterChefAddress })),
+        abi: abi.totalSupply,
+        chain: "bsc",
+      })
+    ).output.map(v => v.output);
 
-  stakingPools.forEach((v, i) => {
-    sdk.util.sumSingleBalance(
-      balances,
-      `bsc:${v.address}`,
-      stakingPoolsBalances[i]
-    );
-  });
+    localPools.forEach((v, i) => {
+      sdk.util.sumSingleBalance(
+        balances,
+        `bsc:${v.address}`,
+        localPoolsBalances[i]
+      );
+    });
+  }
+
+  if (remotePools.length > 0) {
+    const remotePoolsBalances = (
+      await sdk.api.abi.multiCall({
+        block: chainBlocks["bsc"],
+        calls: remotePools.map(v => ({ target: v.masterChefAddress, params: [ v.pid ] })),
+        abi: abi.sharesTotal,
+        chain: "bsc",
+      })
+    ).output.map(v => v.output);
+
+    localPools.forEach((v, i) => {
+      sdk.util.sumSingleBalance(
+        balances,
+        `bsc:${v.address}`,
+        remotePoolsBalances[i]
+      );
+    });
+  }
 
   return balances;
 };
