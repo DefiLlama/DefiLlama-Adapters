@@ -56,9 +56,30 @@ const bscTokenPools = {
     }
 }
 
+const avaxPool = '0x446881360d6d39779D292662fca9BC85C5789dB3'
+const avaxTokenPools = {
+    'eth': {
+        'pool': '0x8AbA88E8A4AB28319b782199cB17f0001EE67984',
+        'token': '0x49D5c2BdFfac6CE2BFdB6640F4F80f226bc10bAB'
+    },
+    'usdt': {
+        'pool': '0xE893233515b7D02dD4e3D888162d4C87Dc837943',
+        'token': '0xc7198437980c041c805A1EDcbA50c1Ce5db95118'
+    },
+    'usdc': {
+        'pool': '0x8385Ea36dD4BDC84B3F2ac718C332E18C1E42d36',
+        'token': '0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664'
+    }
+}
+
+function getAVAXAddress(address) {
+    return `avax:${address}`
+}
+
 function getBSCAddress(address) {
     return `bsc:${address}`
 }
+
 const coinAddress = '0x0000000000000000000000000000000000000000'
 
 async function eth(timestamp, block) {
@@ -135,6 +156,34 @@ async function bsc(timestamp, block, chainBlocks) {
     return balances
 }
 
+const wavax = "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7"
+async function avax(timestamp, block, chainBlocks) {
+    let balances = {};
+
+    const avaxBlock = chainBlocks.avax
+    // avax
+    balances[getAVAXAddress(wavax)] = ((await sdk.api.eth.getBalance({
+        target: avaxPool,
+        chain: 'avax',
+        block: avaxBlock
+    })).output)
+
+    // avax tokens
+    for (token in avaxTokenPools) {
+        tokenPool = avaxTokenPools[token];
+        let tokenLocked = await sdk.api.erc20.balanceOf({
+            owner: tokenPool.pool,
+            target: tokenPool.token,
+            chain: 'avax',
+            block: avaxBlock
+          });
+
+          sdk.util.sumSingleBalance(balances, getAVAXAddress(tokenPool.token), tokenLocked.output);
+    }
+
+    return balances
+}
+
 module.exports = {
     ethereum: {
         tvl: eth
@@ -145,5 +194,8 @@ module.exports = {
     bitcoin:{
         tvl: bitcoin
     },
-    tvl: sdk.util.sumChainTvls([bsc,eth, bitcoin]),
+    avax: {
+        tvl: avax
+    },
+    tvl: sdk.util.sumChainTvls([bsc,eth, bitcoin, avax]),
 }
