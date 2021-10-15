@@ -27,6 +27,18 @@ async function polygon(timestamp, block, chainBlocks) {
     return balances
 }
 
+const arbitrumDai = "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1"
+const arbitrumUsdc = "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8"
+async function arbitrum(timestamp, block, chainBlocks) {
+    const balances = {}
+    await sumTokens(balances, [
+        [arbitrumDai, "0xE46277336d9CC2eBe7b24bA7268624F5f1495611"],
+        [arbitrumUsdc, "0xF9b04Aad2612D3d664F41E9aF5711953E058ff52"],
+    ], chainBlocks.arbitrum, 'arbitrum', addr=>`arbitrum:${addr}`)
+    return balances
+}
+
+
 module.exports = {
     ethereum:{
         tvl: eth,
@@ -34,5 +46,7 @@ module.exports = {
     polygon: {
         tvl: polygon
     },
-    tvl: sdk.util.sumChainTvls([eth, polygon])
+    arbitrum:{
+        tvl: arbitrum
+    }
 }
