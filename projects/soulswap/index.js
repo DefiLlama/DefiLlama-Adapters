@@ -12,10 +12,10 @@ const whitelist = [
 ]
 
 module.exports = {
-    staking:{
-    tvl: staking("0x124b06c5ce47de7a6e9efda71a946717130079e6", "0xe2fb177009ff39f52c0134e8007fa0e4baacbd07", "fantom")
+  fantom:{
+    staking: staking("0x124b06c5ce47de7a6e9efda71a946717130079e6", "0xe2fb177009ff39f52c0134e8007fa0e4baacbd07", "fantom"),
+    tvl: calculateUsdSoulTvl(factory, 'fantom', ftm, whitelist, 'fantom')
   },
   misrepresentedTokens: true,
   methodology: "Counts liquidity on the exchange.",
-  tvl: calculateUsdSoulTvl(factory, 'fantom', ftm, whitelist, 'fantom')
 }
