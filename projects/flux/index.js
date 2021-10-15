@@ -77,6 +77,9 @@ module.exports = {
   polygon: {
     fetch: polygon,
   },
+  conflux: {
+    fetch: conflux,
+  },
   fetch,
   name: "Flux Project",
 };

@@ -38,8 +38,13 @@ async function getMarkets(comptroller, block, chain, cether, cetheEquivalent) {
     // if not in cache, get from the blockchain
     await (
         Promise.all(allCTokens.map(async (cToken) => {
-            let underlying = await getUnderlying(block, chain, cToken, cether, cetheEquivalent);
-            markets.push({ underlying, cToken })
+            try{
+                let underlying = await getUnderlying(block, chain, cToken, cether, cetheEquivalent);
+                markets.push({ underlying, cToken })
+            } catch(e){
+                console.log(`${cToken} market rugged, is that market CETH?`)
+                throw e
+            }
         }))
     );
 

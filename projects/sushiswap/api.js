@@ -87,9 +87,9 @@ const chainsWithBadCoingeckoSupport = ([
     "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9", // usdt
   ], "ethereum"], 
   ["celo", "0x471ece3750da237f93b8e339c536989b8978a438", [
-    "0x64defa3544c695db8c535d289d843a189aa26b98", //mCUSD
-    "0x2def4285787d58a2f811af24755a8150622f4361", //cETH
-    "0xd629eb00deced2a080b7ec630ef6ac117e614f1b", //WBTC
+    //"0x64defa3544c695db8c535d289d843a189aa26b98", //mCUSD
+    //"0x2def4285787d58a2f811af24755a8150622f4361", //cETH
+    //"0xd629eb00deced2a080b7ec630ef6ac117e614f1b", //WBTC
     "0x765de816845861e75a25fca122bb6898b8b1282a", //cUSD
   ], "celo"],
   ["moonriver", "0x639a647fbe20b6c8ac19e48e2de44ea792c62c5c", [

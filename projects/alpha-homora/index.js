@@ -458,5 +458,4 @@ module.exports = {
     tvl: tvlBSC
   },
   start: 1602054167, // unix timestamp (utc 0) specifying when the project began, or where live data begins
-  tvl: sdk.util.sumChainTvls([ethTvl, tvlBSC])
 };
