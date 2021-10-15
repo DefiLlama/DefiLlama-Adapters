@@ -81,7 +81,39 @@ async function final() {
 final();
 */
 
+async function stakingTvl(timestamp, block) {
+  let balances = {};
+
+  calls = [
+    {
+      target: "0x77dce26c03a9b833fc2d7c31c22da4f42e9d9582",
+      params: "0x1193c036833B0010fF80a3617BBC94400A284338"
+    },
+    {
+      target: "0x51e00a95748dbd2a3f47bc5c3b3e7b3f0fea666c",
+      params: "0xD6Ce913C3e81b5e67a6b94d705d9E7cDdf073A7e"
+    }
+  ]
+
+  let {output: balance} = await sdk.api.abi.multiCall({
+    calls,
+    abi: 'erc20:balanceOf',
+    block
+  });
+
+  for (let i = 0; i < calls.length; i++) {
+    sdk.util.sumSingleBalance(balances, "0x77dce26c03a9b833fc2d7c31c22da4f42e9d9582", balance[i].output);
+  }
+
+  return balances;
+}
+
 module.exports = {
-  tvl,
   misrepresentedTokens: true,
+  ethereum: {
+    tvl: tvl,
+    staking: stakingTvl,
+  },
+  tvl: tvl,
+  
 };
