@@ -8,19 +8,38 @@ const url = 'https://api.marsecosystem.com/api/pools';
 
 async function tvl(timestamp, chainBlocks) {
   const rows = (await utils.fetchURL(url)).data;
-  const localPools = rows.filter(v => v.masterChef.includes('LiquidityMiningMaster') && !v.baseToken.includes('xms'));
-  const remotePools = rows.filter(v => v.masterChef.includes('MarsFarmV2') && !v.baseToken.includes('xms'));
-  return await calculate(chainBlocks, localPools, remotePools);
-};
-async function staking(timstamp, chainBlocks) {
-  const rows = (await utils.fetchURL(url)).data;
-  const localPools = rows.filter(v => v.masterChef.includes('LiquidityMiningMaster') && v.baseToken.includes('xms'));
-  const remotePools = rows.filter(v => v.masterChef.includes('MarsFarmV2') && v.baseToken.includes('xms'));
+  const localPools = rows.filter(v => v.masterChef.includes('LiquidityMiningMaster') && !(v.baseToken == 'xms' && v.quoteToken == 'xms' ));
+  const remotePools = rows.filter(v => v.masterChef.includes('MarsFarmV2'));
   return await calculate(chainBlocks, localPools, remotePools);
 };
 
+async function staking(timstamp, chainBlocks) {
+  const balances = {};
+  const rows = (await utils.fetchURL(url)).data;
+  const stakingPools = rows.filter(v => v.masterChef.includes('LiquidityMiningMaster') && v.baseToken == 'xms' && v.quoteToken == 'xms');
+
+  const stakingPoolsBalances = (
+    await sdk.api.abi.multiCall({
+      block: chainBlocks["bsc"],
+      calls: stakingPools.map(v => ({ target: v.masterChefAddress })),
+      abi: abi.totalSupply,
+      chain: "bsc",
+    })
+  ).output.map(v => v.output);
+
+  stakingPools.forEach((v, i) => {
+    sdk.util.sumSingleBalance(
+      balances,
+      `bsc:${v.address}`,
+      stakingPoolsBalances[i]
+    );
+  });
+
+  return balances;
+};
+
 async function calculate(chainBlocks, localPools, remotePools) {
-  let balances = {};
+  const balances = {};
 
   const localPoolsBalances = (
     await sdk.api.abi.multiCall({
@@ -31,11 +50,11 @@ async function calculate(chainBlocks, localPools, remotePools) {
     })
   ).output.map(v => v.output);
 
-  const transformAdress = await transformBscAddress();
+  const transformAddress = await transformBscAddress();
 
   const lpPositions = [];
 
-  localPools.map((v, i) => {
+  localPools.forEach((v, i) => {
     if (v.baseToken == v.quoteToken) {
       sdk.util.sumSingleBalance(
         balances,
@@ -59,7 +78,7 @@ async function calculate(chainBlocks, localPools, remotePools) {
     })
   ).output.map(v => v.output);
 
-  remotePools.map((v, i) => {
+  remotePools.forEach((v, i) => {
     if (v.baseToken == v.quoteToken) {
       sdk.util.sumSingleBalance(
         balances,
@@ -79,7 +98,7 @@ async function calculate(chainBlocks, localPools, remotePools) {
     lpPositions,
     chainBlocks["bsc"],
     "bsc",
-    transformAdress
+    transformAddress
   );
 
   return balances;
