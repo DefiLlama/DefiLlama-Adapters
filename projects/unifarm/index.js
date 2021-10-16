@@ -219,20 +219,19 @@ const _tvl = async (timestamp, ethBlock, chainBlocks, chain, targetAddress) => {
     return objects
 }
 
-let objectsHold = {}
-
-const arrayToObject = (array) =>
+const arrayToObject = (array, chain) =>
    array.reduce((obj, item) => {
-       for (const [key, value] of Object.entries(item)) {
+       for (const [rawKey, value] of Object.entries(item)) {
         //    const symbol = addressToSymbol(key)
-           if (objectsHold[key]) {
-            const numbertoString = parseInt(value) + parseInt(objectsHold[key])
-            objectsHold[key] = numbertoString.toLocaleString('fullwide', {useGrouping:false})
+        const key = chain + ':' + rawKey
+           if (obj[key]) {
+            const numbertoString = parseInt(value) + parseInt(obj[key])
+            obj[key] = numbertoString.toLocaleString('fullwide', {useGrouping:false})
            } else {
-            objectsHold[key] = value
+            obj[key] = value
            }
        }
-     return objectsHold
+     return obj
    }, {})
 
 const ethereum = async (timestamp, ethBlock, chainBlocks) => {
@@ -268,7 +267,7 @@ const ethereum = async (timestamp, ethBlock, chainBlocks) => {
         _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0x0F525981710E9d627f880D1e04C1F432317c84FF'),
         _tvl(timestamp, ethBlock, chainBlocks, 'ethereum', '0x4d1cEC3f30aD9b1a7f69e510016a5D790cFA6fC0')
     ]).then((values)=> {balance = values})
-    return arrayToObject(balance)
+    return arrayToObject(balance, 'ethereum')
 }
 
 const bsc = async (timestamp, ethBlock, chainBlocks) => {
@@ -293,7 +292,7 @@ const bsc = async (timestamp, ethBlock, chainBlocks) => {
         _tvl(timestamp, ethBlock, chainBlocks, 'bsc', '0xe4Be53c29c852e474ffdBE5555dE64BF143B613E'),
         _tvl(timestamp, ethBlock, chainBlocks, 'bsc', '0x920a203e0C9F55d747F6b7Ea76ff96715725335a')
     ]).then((values)=> {balance = values})
-    return arrayToObject(balance)
+    return arrayToObject(balance, 'bsc')
 }
 
 const polygon = async (timestamp, ethBlock, chainBlocks) => {
@@ -302,7 +301,7 @@ const polygon = async (timestamp, ethBlock, chainBlocks) => {
         _tvl(timestamp, ethBlock, chainBlocks, 'polygon', '0xee32c30c1faa0364d3022b6ca2456363dadaf71b'),
         _tvl(timestamp, ethBlock, chainBlocks, 'polygon', '0x207c678457617bc8c8ab06f9088efc1dcd45887c')
     ]).then((values)=> {balance = values})
-    return arrayToObject(balance)
+    return arrayToObject(balance, 'polygon')
 }
 
 module.exports = {
@@ -315,5 +314,4 @@ module.exports = {
     polygon: {
         tvl: polygon
     },
-    tvl: sdk.util.sumChainTvls([ethereum, bsc, polygon])
 }
