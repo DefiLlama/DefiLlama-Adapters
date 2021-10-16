@@ -1,10 +1,7 @@
-const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { transformFantomAddress } = require("../helper/portedTokens");
 const { addFundsInMasterChef } = require("../helper/masterchef");
 const {staking} = require("../helper/staking");
-const BigNumber = require("bignumber.js");
 
 const MASTERCHEF = "0x4de6c2de6b9eBD974738686C9be7a31597146Ac6";
 const MASTERCHEF2 = "0x92eEd89eeC81d992FF9135Ee451008E93b83dD86";
@@ -19,77 +16,24 @@ const masterchefTvl = async (timestamp, ethBlock, chainBlocks) => {
 
   const transformAddress = await transformFantomAddress();
 
-  await addFundsInMasterChef(
+  for(const currentMasterchef of [MASTERCHEF, MASTERCHEF2, MASTERCHEF3, MASTERCHEF4]){
+   await addFundsInMasterChef(
     balances,
-    MASTERCHEF,
+    currentMasterchef,
     chainBlocks.fantom,
     "fantom",
     transformAddress,
-    abi.poolInfo
-  );
+    currentMasterchef === MASTERCHEF4?abi.masterFarmerPoolInfo:abi.poolInfo
+   );
+  }
 
   return balances;
 };
-
-const masterchefTvl2 = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
-
-  const transformAddress = await transformFantomAddress();
-
-  await addFundsInMasterChef(
-    balances,
-    MASTERCHEF2,
-    chainBlocks.fantom,
-    "fantom",
-    transformAddress,
-    abi.poolInfo
-  );
-
-  return balances;
-};
-
-const masterchefTvl3 = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
-
-  const transformAddress = await transformFantomAddress();
-
-  await addFundsInMasterChef(
-    balances,
-    MASTERCHEF3,
-    chainBlocks.fantom,
-    "fantom",
-    transformAddress,
-    abi.poolInfo
-  );
-
-  return balances;
-};
-
-const masterchefTvl4 = async (timestamp, ethBlock, chainBlocks) => {
-    const balances = {};
-  
-    const transformAddress = await transformFantomAddress();
-  
-    await addFundsInMasterChef(
-      balances,
-      MASTERCHEF4,
-      chainBlocks.fantom,
-      "fantom",
-      transformAddress,
-      abi.poolInfo
-    );
-  
-    return balances;
-  };
 
 module.exports = {
-  staking:{
-    tvl: staking(GPL, EARS, 'fantom')
-  },
-  tvl: sdk.util.sumChainTvls([
-    masterchefTvl,
-    masterchefTvl2,
-    masterchefTvl3,
-    masterchefTvl4,
-  ]),
+  fantom:{
+    //staking:staking(GPL, EARS, 'fantom'),
+    tvl: masterchefTvl,
+    masterchef: masterchefTvl
+  }
 };
