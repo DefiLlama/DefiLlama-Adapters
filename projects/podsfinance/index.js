@@ -72,7 +72,9 @@ async function calcTvl(balances, chain, block, fromBlock, optionFactory, optionR
         })),
         ...(chain == "polygon" && { chain })
     })
-    sdk.util.sumMultiBalanceOf(balances, balanceOfs_USDC, balanceOfs_AUSDC)
+    let transform = addr => `${chain}:${addr}`
+    sdk.util.sumMultiBalanceOf(balances, balanceOfs_USDC, true, transform)
+    sdk.util.sumMultiBalanceOf(balances, balanceOfs_AUSDC, true, transform)
     return balances
 }
 
