@@ -1,5 +1,6 @@
 const sdk = require('@defillama/sdk')
 const abi = require('./abi.json')
+const { transformPolygonAddress } = require("../helper/portedTokens");
 
 const OPTION_FACTORY_ETH = "0x43fF98EB7Ec681A7DBF7e2b2C3589E79d5ce11E3"
 const OPTION_FACTORY_POLYGON = "0x8C9ac1a57891c9C2EE9Ae39cA7C1dC5D70e0D59C"
@@ -19,7 +20,16 @@ const FROM_BLOCK_POLYGON = 18383588
 async function ethTvl(time, ethBlock, chainBlocks) {
     const balances = {};
 
-    await calcTvl(balances, "ethereum", ethBlock, FROM_BLOCK_ETH, OPTION_FACTORY_ETH, REGISTRY_ETH, USDC_ETH, AUSDC_ETH);
+    await calcTvl(
+        balances, 
+        "ethereum", 
+        ethBlock, 
+        FROM_BLOCK_ETH, 
+        OPTION_FACTORY_ETH, 
+        REGISTRY_ETH, 
+        USDC_ETH, 
+        AUSDC_ETH
+        );
   
     return balances;
 }
@@ -27,13 +37,33 @@ async function ethTvl(time, ethBlock, chainBlocks) {
 async function polygonTvl(time, ethBlock, chainBlocks) {
     const balances = {};
 
-    await calcTvl(balances, "polygon", chainBlocks["polygon"], FROM_BLOCK_POLYGON, OPTION_FACTORY_POLYGON, REGISTRY_POLYGON, USDC_POLYGON, AUSDC_POLYGON);
+    await calcTvl(
+        balances, 
+        "polygon", 
+        chainBlocks["polygon"], 
+        FROM_BLOCK_POLYGON, 
+        OPTION_FACTORY_POLYGON, 
+        REGISTRY_POLYGON, 
+        USDC_POLYGON, 
+        AUSDC_POLYGON,
+        await transformPolygonAddress()
+        );
   
     return balances;
 }
 
 
-async function calcTvl(balances, chain, block, fromBlock, optionFactory, optionRegistry, usdc, ausdc){
+async function calcTvl(
+    balances, 
+    chain, 
+    block, 
+    fromBlock, 
+    optionFactory, 
+    optionRegistry, 
+    usdc, 
+    ausdc, 
+    transform=a=>a
+    ){
     const options = (await sdk.api.util.getLogs({
         target: optionFactory,
         topic: 'OptionCreated(address,address,uint8,uint8,address,address,uint256,uint256,uint256)',
@@ -72,7 +102,6 @@ async function calcTvl(balances, chain, block, fromBlock, optionFactory, optionR
         })),
         ...(chain == "polygon" && { chain })
     })
-    let transform = addr => `${chain}:${addr}`
     sdk.util.sumMultiBalanceOf(balances, balanceOfs_USDC, true, transform)
     sdk.util.sumMultiBalanceOf(balances, balanceOfs_AUSDC, true, transform)
     return balances
