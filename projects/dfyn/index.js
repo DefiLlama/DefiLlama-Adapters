@@ -32,7 +32,7 @@ module.exports = {
   polygon:{
     tvl: polygon,
   },
-  okex:{
+  okexchain:{
     tvl: okex,
   },
 }

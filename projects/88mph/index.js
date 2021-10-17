@@ -1,16 +1,12 @@
-/*
-  Modules
-*/
-
 const sdk = require('@defillama/sdk')
 const abi = require('./abi')
 const _ = require('underscore')
 const BigNumber = require('bignumber.js')
 const { default: axios } = require('axios')
+const { chainExports } = require('../helper/exports')
+const { staking } = require('../helper/staking')
+const { transformFantomAddress } = require('../helper/portedTokens')
 
-/*
-  Settings
-*/
 const olddInterestAddresses = [
   '0x35966201A7724b952455B73A36C8846D8745218e', // Compound DAI
   '0x374226dbAa3e44bF3923AfB63f5Fd83928B7e148', // Compound USDC
@@ -49,47 +45,64 @@ const wrappedTokenToSubsitute = {
   '0x49849C98ae39Fff122806C06791Fa73784FB3675': { // CRV:RENWBTC
     address: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
     decimals: 8
+  },
+  '0x075b1bb99792c9E1041bA13afEf80C91a1e70fB3': { // CRV: sBTC
+    address: '0xfe18be6b3bd88a2d2a7f928d00292e7a9963cfc6', //sBTC
+    decimals: 18
   }
 }
 
-/*
-  TVL
-*/
+const urls = {
+  ethereum: "https://api.88mph.app/v3/pools",
+  polygon: 'https://api.88mph.app/v3/polygon/pools',
+  avax: 'https://api.88mph.app/v3/avalanche/pools',
+  fantom: 'https://api.88mph.app/v3/fantom/pools',
+}
 
-async function tvl (timestamp, block) {
-  const balances = {}
-  const poolToUnderlyingToken = {}
+function chainTvl(chain) {
+  const url = urls[chain]
+  return async (timestamp, ethBlock, chainBlocks) => {
+    const block = chainBlocks[chain]
+    const balances = {}
+    const poolToUnderlyingToken = {}
+    let transform = addr=>`${chain}:${addr}`
+    if(chain === "fantom"){
+      transform = await transformFantomAddress()
+    }
 
-  const v3Pools = await axios.get('https://api.88mph.app/v3/pools')
-  const dInterestAddresses= olddInterestAddresses.concat(v3Pools.data.map(p=>p.address))
+    const v3Pools = await axios.get(url)
+    let dInterestAddresses = v3Pools.data.map(p => p.address)
+    if (chain === "ethereum") {
+      dInterestAddresses = olddInterestAddresses.concat(dInterestAddresses)
+    }
 
-  // Get deposit pools' underlying tokens
-  const poolUnderlyingAddressResults = await sdk.api.abi.multiCall({
-    calls: _.map(dInterestAddresses, (address) => ({
-      target: address
-    })),
-    abi: abi.stablecoin
-  })
+    // Get deposit pools' underlying tokens
+    const poolUnderlyingAddressResults = await sdk.api.abi.multiCall({
+      calls: _.map(dInterestAddresses, (address) => ({
+        target: address
+      })),
+      block,
+      chain,
+      abi: abi.stablecoin
+    })
 
-  _.each(poolUnderlyingAddressResults.output, (token) => {
+    _.each(poolUnderlyingAddressResults.output, (token) => {
       const underlyingTokenAddress = token.output
       const poolAddress = token.input.target
       poolToUnderlyingToken[poolAddress] = underlyingTokenAddress
-      if (!balances[underlyingTokenAddress]) {
-        balances[underlyingTokenAddress] = 0
-      }
-  })
+    })
 
-  // Get deposit pools' balances in underlying token
-  const poolDepositBalanceResults = await sdk.api.abi.multiCall({
-    block,
-    calls: _.map(dInterestAddresses, (address) => ({
-      target: address
-    })),
-    abi: abi.totalDeposit
-  })
+    // Get deposit pools' balances in underlying token
+    const poolDepositBalanceResults = await sdk.api.abi.multiCall({
+      block,
+      calls: _.map(dInterestAddresses, (address) => ({
+        target: address
+      })),
+      chain,
+      abi: abi.totalDeposit
+    })
 
-  _.each(poolDepositBalanceResults.output, (tokenBalanceResult) => {
+    _.each(poolDepositBalanceResults.output, (tokenBalanceResult) => {
       let valueInToken = tokenBalanceResult.output
       const poolAddress = tokenBalanceResult.input.target
       let underlyingTokenAddress = poolToUnderlyingToken[poolAddress]
@@ -97,26 +110,19 @@ async function tvl (timestamp, block) {
       if (wrappedTokenToSubsitute[underlyingTokenAddress]) {
         const substituteInfo = wrappedTokenToSubsitute[underlyingTokenAddress]
         underlyingTokenAddress = substituteInfo.address
-        valueInToken = BigNumber(valueInToken).div(BigNumber(10).pow(18 - substituteInfo.decimals)).integerValue()
-        if (!balances[underlyingTokenAddress]) {
-          balances[underlyingTokenAddress] = 0
-        }
+        valueInToken = BigNumber(valueInToken).div(BigNumber(10).pow(18 - substituteInfo.decimals)).toFixed(0)
       }
-      balances[underlyingTokenAddress] = BigNumber(balances[underlyingTokenAddress]).plus(valueInToken)
-  })
+      sdk.util.sumSingleBalance(balances, transform(underlyingTokenAddress), valueInToken)
+    })
 
-  return balances
+    return balances
+  }
 }
 
-/*
-  Exports
-*/
-
+const tvlExports = chainExports(chainTvl, Object.keys(urls))
+tvlExports.ethereum.staking = staking("0x1702F18c1173b791900F81EbaE59B908Da8F689b", "0x8888801af4d980682e47f1a9036e589479e835c5")
 module.exports = {
   methodology: `Using the addresses for the fixed interest rate bonds we are able to find the underlying tokens held in each address. Once we have the underlying token we then get the balances of each of the tokens. For the CRV tokens used "CRV:STETH" for example, the address is replaced with the address of one of the tokens. In the example at hand the address is replaced with the "WETH" address so that the price can be calculated.`,
-  name: '88mph',
-  token: 'MPH',
-  category: 'lending',
   start: 1606109629, // Monday, November 23, 2020 5:33:49 AM GMT
-  tvl
+  ...tvlExports
 }
