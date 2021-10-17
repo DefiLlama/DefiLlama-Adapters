@@ -235,40 +235,56 @@ async function unwrapCrv(balances, crvToken, balance3Crv, block, chain = "ethere
         sdk.util.sumSingleBalance(balances, transformAddress(call.input.target), underlyingBalance.toFixed(0))
     })
 }
+
+const lpReservesAbi = { "constant": true, "inputs": [], "name": "getReserves", "outputs": [{ "internalType": "uint112", "name": "_reserve0", "type": "uint112" }, { "internalType": "uint112", "name": "_reserve1", "type": "uint112" }, { "internalType": "uint32", "name": "_blockTimestampLast", "type": "uint32" }], "payable": false, "stateMutability": "view", "type": "function" }
+const lpSuppliesAbi = {"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}
+const token0Abi =  {"constant":true,"inputs":[],"name":"token0","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"}
+const token1Abi = {"constant":true,"inputs":[],"name":"token1","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"}
+
 /* lpPositions:{
     balance,
     token
 }[]
 */
-async function unwrapUniswapLPs(balances, lpPositions, block, chain='ethereum', transformAddress=(addr)=>addr, excludeTokensRaw = []) {
+async function unwrapUniswapLPs(balances, lpPositions, block, chain='ethereum', transformAddress=(addr)=>addr, excludeTokensRaw = [], retry = false) {
     const excludeTokens = excludeTokensRaw.map(addr=>addr.toLowerCase())
     const lpTokenCalls = lpPositions.map(lpPosition=>({
         target: lpPosition.token
     }))
     const lpReserves = sdk.api.abi.multiCall({
         block,
-        abi: { "constant": true, "inputs": [], "name": "getReserves", "outputs": [{ "internalType": "uint112", "name": "_reserve0", "type": "uint112" }, { "internalType": "uint112", "name": "_reserve1", "type": "uint112" }, { "internalType": "uint32", "name": "_blockTimestampLast", "type": "uint32" }], "payable": false, "stateMutability": "view", "type": "function" },
+        abi: lpReservesAbi,
         calls: lpTokenCalls,
         chain
     })
     const lpSupplies = sdk.api.abi.multiCall({
         block,
-        abi: {"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},
+        abi: lpSuppliesAbi,
         calls: lpTokenCalls,
         chain
       })
       const tokens0 = sdk.api.abi.multiCall({
         block,
-        abi: {"constant":true,"inputs":[],"name":"token0","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},
+        abi:token0Abi,
         calls: lpTokenCalls,
         chain
       })
       const tokens1 = sdk.api.abi.multiCall({
         block,
-        abi: {"constant":true,"inputs":[],"name":"token1","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},
+        abi:token1Abi,
         calls: lpTokenCalls,
         chain
       })
+      if(retry){
+        await Promise.all([
+            [lpReserves, lpReservesAbi],
+            [lpSupplies, lpSuppliesAbi],
+            [tokens0, token0Abi],
+            [tokens1, token1Abi]
+        ].map(async call=>{
+            await requery(await call[0], chain, block, call[1])
+        }))
+      }
       await Promise.all(lpPositions.map(async lpPosition => {
         try{
             const lpToken = lpPosition.token
