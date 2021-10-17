@@ -1,4 +1,6 @@
 const sdk = require('@defillama/sdk');
+const { staking } = require('../helper/staking');
+const { pool2 } = require('../helper/pool2');
 const abi = require('./abi.json');
 
 function getBSCAddress(address) {
@@ -77,6 +79,7 @@ const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
         }
     }
 
+    /*
     {
         let pool = BSC_POOL_DAO;
         const poolLength = (await sdk.api.abi.call({ target: pool, abi: abi["poolLength"], block: block, chain: chain })).output;
@@ -111,6 +114,7 @@ const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
             }
         }
     }
+    */
 
     return balances;
 };
@@ -154,6 +158,7 @@ const hecoTvl = async (timestamp, ethBlock, chainBlocks) => {
         }
     }
 
+    /*
     {
         let pool = HECO_POOL_DAO;
         const poolLength = (await sdk.api.abi.call({ target: pool, abi: abi["poolLength"], block: block, chain: chain })).output;
@@ -188,18 +193,22 @@ const hecoTvl = async (timestamp, ethBlock, chainBlocks) => {
             }
         }
     }
+    */
 
     return balances;
 };
 
 module.exports = {
     methodology: 'TVL counts deposits made to Lossless single asset pools on Ethereum, Heco and Binance Smart Chain and to the various LP farms available on Heco and BSC.',
-    name: 'CoinWind',
-    website: 'https://www.coinwind.pro',
-    token: 'COW',
-    category: 'Yield',
     ethereum: { tvl: ethTvl },
-    bsc: { tvl: bscTvl },
-    heco: { tvl: hecoTvl },
-    tvl: sdk.util.sumChainTvls([ethTvl, bscTvl, hecoTvl])
+    bsc: {
+        staking: staking(BSC_POOL_DAO, "0x422e3af98bc1de5a1838be31a56f75db4ad43730", "bsc"),
+        pool2: pool2(BSC_POOL_DAO, "0xf16d5142086dbf7723b0a57b8d96979810e47448", "bsc"),
+        tvl: bscTvl 
+    },
+    heco: {
+        staking: staking(HECO_POOL_DAO, "0x80861a817106665bca173db6ac2ab628a738c737", "heco"),
+        pool2: pool2(HECO_POOL_DAO, "0x3f57530bdba9bcd703c8ba75c57cf7de52014036", "heco"),
+        tvl: hecoTvl
+    },
 };
