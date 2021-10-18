@@ -1,7 +1,5 @@
 const BigNumber = require("bignumber.js");
 module.exports = class Result {
-    result = {}
-
     constructor(obj) {
         this.result = obj;
     }
