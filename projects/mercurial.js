@@ -14,8 +14,10 @@ async function tvl() {
     Usd4PoolWUsdcAmount,
     Usd4PoolWUsdtAmount,
     Usd4PoolWDaiAmount,
-    stsolPoolStsolAmonunt,
+    stsolPoolStsolAmount,
     stsolPoolSolAmount,
+    msolPoolMsolAmount,
+    msolPoolSolAmount,
   ] = await Promise.all([
     //pai3pool
     getTokenBalance(
@@ -78,6 +80,15 @@ async function tvl() {
       "So11111111111111111111111111111111111111112",
       "pG6noYMPVR9ykNgD4XSNa6paKKGGwciU2LckEQPDoSW"
     ),
+    //msol2pool
+    getTokenBalance(
+      "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So",
+      "GM48qFn8rnqhyNMrBHyPJgUVwXQ1JvMbcu3b9zkThW9L"
+    ),
+    getTokenBalance(
+      "So11111111111111111111111111111111111111112",
+      "EWy2hPdVT4uGrYokx65nAyn2GFBv7bUYA2pFPY96pw7Y"
+    ),
   ]);
   return {
     "usd-coin":
@@ -89,11 +100,13 @@ async function tvl() {
     tether: paiPoolUsdtAmount + ustPoolUsdtAmount + Usd4PoolWUsdtAmount,
     dai: Usd4PoolWDaiAmount,
     terrausd: ustPoolUstAmount,
+    "lido-staked-sol": stsolPoolStsolAmount,
+    msol: msolPoolMsolAmount,
     solana:
       psolPoolSolAmount +
       psolPoolPsolAmount +
-      stsolPoolStsolAmonunt +
-      stsolPoolSolAmount,
+      stsolPoolSolAmount +
+      msolPoolSolAmount,
   };
 }
 
