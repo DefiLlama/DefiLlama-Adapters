@@ -1,4 +1,5 @@
 const sdk = require("@defillama/sdk");
+const { staking } = require("../helper/staking");
 
 const stakingPool = '0x488933457E89656D7eF7E69C10F2f80C7acA19b5';
 const bfcAddr = '0x0c7D5ae016f806603CB1782bEa29AC69471CAb9c';
@@ -93,14 +94,6 @@ async function eth(timestamp, block) {
         block: ethBlock
     })).output
 
-    // staking pool
-    let tokenStaked = await sdk.api.erc20.balanceOf({
-        owner: stakingPool,
-        target: bfcAddr,
-        block: ethBlock
-    });
-    sdk.util.sumSingleBalance(balances, bfcAddr, tokenStaked.output);
-
     // eth tokens
     sdk.util.sumMultiBalanceOf(balances, await sdk.api.abi.multiCall({
         abi: 'erc20:balanceOf',
@@ -186,7 +179,8 @@ async function avax(timestamp, block, chainBlocks) {
 
 module.exports = {
     ethereum: {
-        tvl: eth
+        tvl: eth,
+        staking: staking(stakingPool, bfcAddr, "ethereum")
     },
     bsc: {
         tvl: bsc
@@ -197,5 +191,5 @@ module.exports = {
     avax: {
         tvl: avax
     },
-    tvl: sdk.util.sumChainTvls([bsc,eth, bitcoin, avax]),
+    tvl: sdk.util.sumChainTvls([eth, bsc, bitcoin, avax]),
 }
