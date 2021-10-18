@@ -31,7 +31,7 @@ async function xdaiTvl() {
 
   // Filter out deprecated contracts
   realt_tokens = realt_tokens.filter(t => !t['fullName'].startsWith('OLD-'));
-  realt_tokens = realt_tokens.slice(0,5);
+  // realt_tokens = realt_tokens.slice(0,5);
   // .filter(t => t['xDaiContract'] !== null).slice(0,5)
 
   var tvl = new BigNumber(0);
