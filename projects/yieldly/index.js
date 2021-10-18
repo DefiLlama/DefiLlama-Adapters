@@ -1,5 +1,6 @@
 //const utils = require("../helper/utils");
-const axios = require ("axios")
+const axios = require("axios");
+
 async function tvl() {
   let usdTVL = 0;
 
@@ -14,7 +15,7 @@ async function tvl() {
 
 module.exports = {
   algorand: {
-    tvl: tvl
+    tvl: tvl,
   },
   tvl: tvl,
 };
