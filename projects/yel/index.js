@@ -6,101 +6,129 @@ const YelEnhancedLpFarm = require("./Providers/YelEnhancedLpFarm");
 const YelSingleStaking = require("./Providers/YelSingleStaking");
 const YelEnhancedSingleStake = require("./Providers/YelEnhancedSingleStake");
 
-async function ethereumTvl() {
+async function ethereumStaking() {
     const [
-        yelInLpEth,
-        yelInLpBsc,
-        yelInLpFantom,
-        yelInLpPolygon,
-        wethInLp,
         ifarmEnhanced,
         yelSSEth,
-        yelSSBsc,
-        yelSSFantom,
-        yelSSPolygon,
     ] = await Promise.all([
-        YelLPFarm.yelTokensInLp(addr.yelFarmingContract.ethereum, 'ethereum'),
-        YelLPFarm.yelTokensInLp(addr.yelFarmingContract.bsc, 'bsc'),
-        YelLPFarm.yelTokensInLp(addr.yelFarmingContract.fantom, 'fantom'),
-        YelLPFarm.yelTokensInLp(addr.yelFarmingContract.polygon, 'polygon'),
-        YelLPFarm.nonYELTokensInLP(addr.yelFarmingContract.ethereum, 'ethereum'),
         YelEnhancedSingleStake.getStakedTokens(addr.yelEnhancedPools.ethereum.ifarm, 'ethereum'),
         YelSingleStaking.getStakedYel(addr.yelFarmingContract.ethereum, 'ethereum'),
-        YelSingleStaking.getStakedYel(addr.yelFarmingContract.bsc, 'bsc'),
-        YelSingleStaking.getStakedYel(addr.yelFarmingContract.fantom, 'fantom'),
-        YelSingleStaking.getStakedYel(addr.yelFarmingContract.polygon, 'polygon'),
     ])
-    return (new Result(yelInLpEth))
-        .append(yelInLpBsc)
-        .append(yelInLpFantom)
-        .append(yelInLpPolygon)
-        .append(wethInLp)
-        .append(ifarmEnhanced)
+    return (new Result(ifarmEnhanced))
         .append(yelSSEth)
-        .append(yelSSBsc)
-        .append(yelSSFantom)
-        .append(yelSSPolygon)
         .render();
 }
 
-async function bscTvl() {
+async function bscStaking() {
+    return await YelSingleStaking.getStakedYel(addr.yelFarmingContract.bsc, 'bsc');
+}
+
+async function ftmStaking() {
+    const [
+        anySwap,
+        yelSSFantom
+    ] = await Promise.all([
+        YelEnhancedSingleStake.getStakedTokens(addr.yelEnhancedPools.fantom.anySwap, 'fantom', 2),
+        YelSingleStaking.getStakedYel(addr.yelFarmingContract.fantom, 'fantom'),
+    ])
+    return (new Result(anySwap))
+        .append(yelSSFantom)
+        .render();
+}
+
+async function maticStaking() {
+    const [
+        yelInLpPolygon,
+        dQuick
+    ] = await Promise.all([
+        YelEnhancedSingleStake.getStakedTokens(addr.yelEnhancedPools.polygon.dQuick, 'polygon', 2),
+        YelSingleStaking.getStakedYel(addr.yelFarmingContract.polygon, 'polygon'),
+    ])
+    return (new Result(dQuick))
+        .append(yelInLpPolygon)
+        .render();
+}
+
+async function ethereumPool2() {
+    const [
+        yelInLpEth,
+        wethInLp,
+    ] = await Promise.all([
+        YelLPFarm.yelTokensInLp(addr.yelFarmingContract.ethereum, 'ethereum'),
+        YelLPFarm.nonYELTokensInLP(addr.yelFarmingContract.ethereum, 'ethereum'),
+    ])
+    return (new Result(yelInLpEth))
+        .append(wethInLp)
+        .render();
+}
+
+async function bscPool2() {
     const [
         bnbInYel,
-        bananaBnb
+        yelInLpBsc,
+        bananaBnb,
     ] = await Promise.all([
         YelLPFarm.nonYELTokensInLP(addr.yelFarmingContract.bsc, 'bsc'),
-        YelEnhancedLpFarm.tokensInLP(addr.yelEnhancedPools.bsc.bnbBanana, 'bsc')
+        YelLPFarm.yelTokensInLp(addr.yelFarmingContract.bsc, 'bsc'),
+        YelEnhancedLpFarm.tokensInLP(addr.yelEnhancedPools.bsc.bnbBanana, 'bsc'),
     ])
     return (new Result(bnbInYel))
         .append(bananaBnb)
+        .append(yelInLpBsc)
         .render();
 }
 
-async function ftmTvl() {
+async function ftmPool2() {
     const [
         ftmInYel,
+        yelInLpFantom,
         ftmBoo,
-        anySwap
     ] = await Promise.all([
         YelLPFarm.nonYELTokensInLP(addr.yelFarmingContract.fantom, 'fantom'),
-        YelEnhancedLpFarm.tokensInLP(addr.yelEnhancedPools.fantom.ftmBoo, 'fantom'),
-        YelEnhancedSingleStake.getStakedTokens(addr.yelEnhancedPools.fantom.anySwap, 'fantom', 2)
+        YelLPFarm.yelTokensInLp(addr.yelFarmingContract.fantom, 'fantom'),
+        YelEnhancedLpFarm.tokensInLP(addr.yelEnhancedPools.fantom.ftmBoo, 'fantom')
     ])
     return (new Result(ftmInYel))
         .append(ftmBoo)
-        .append(anySwap)
+        .append(yelInLpFantom)
         .render();
 }
 
-async function maticTvl() {
+async function maticPool2() {
     const [
         maticInYel,
-        dQuick
+        yelInLpPolygon,
     ] = await Promise.all([
         YelLPFarm.nonYELTokensInLP(addr.yelFarmingContract.polygon, 'polygon'),
-        YelEnhancedSingleStake.getStakedTokens(addr.yelEnhancedPools.polygon.dQuick, 'polygon', 2)
+        YelLPFarm.yelTokensInLp(addr.yelFarmingContract.polygon, 'polygon'),
     ])
     return (new Result(maticInYel))
-        .append(dQuick)
+        .append(yelInLpPolygon)
         .render();
 }
 
+async function tvl() { 
+    return {}; 
+}
 
 module.exports = {
-    staking: {
-        ethereum: {
-            tvl: ethereumTvl,
-        },
-        bsc: {
-            tvl: bscTvl,
-        },
-        fantom: {
-            tvl: ftmTvl,
-        },
-        polygon: {
-            tvl: maticTvl,
-        },
+    ethereum: {
+        staking: ethereumStaking,
+        pool2: ethereumPool2
     },
+    bsc: {
+        staking: bscStaking,
+        pool2: ethereumPool2
+    },
+    fantom: {
+        staking: ftmStaking,
+        pool2: ftmPool2
+    },
+    polygon: {
+        staking: maticStaking,
+        pool2: maticPool2
+    },
+    tvl,
     methodology: "TVL is accounted from YEL liquidity mining farms, enhanced pools, partner farms and other protocols. Basically, that’s all the funds held at YEL Finance smart-contracts.",
-    tvl: sdk.util.sumChainTvls([ethereumTvl, bscTvl, ftmTvl, maticTvl]),
 };
+// node test.js projects/yel/index.js
