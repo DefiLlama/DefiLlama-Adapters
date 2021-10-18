@@ -88,7 +88,7 @@ async function ethTvl(timestamp, ethBlock, chainBlocks) {
 async function bscTvl(timestamp, ethBlock, chainBlocks) {
     return await tvl(chainBlocks, 'bsc', await transformBscAddress());
 };
-
+async function tvl() { return {}; };
 module.exports = {
     ethereum: {
       staking: ethTvl,
@@ -96,4 +96,5 @@ module.exports = {
     bsc: {
       staking: bscTvl,
     },
+    tvl
 }
