@@ -13,5 +13,8 @@ async function tvl() {
 }
 
 module.exports = {
+  algorand: {
+    tvl: tvl
+  },
   tvl: tvl,
 };
