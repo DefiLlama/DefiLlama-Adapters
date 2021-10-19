@@ -29,7 +29,7 @@ async function tvl(timestamp, block) {
 
 module.exports = {
   misrepresentedTokens: true,
-  methodology: `Counts the tokens locked on AMM pools, pulling the data from the 'arrenv/behodler' subgraph`,
+  methodology: `Tracks liquidity of universal AMM liquidity token, pulling the data from the 'arrenv/behodler' subgraph`,
   ethereum:{
     tvl,
   },
