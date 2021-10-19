@@ -11,11 +11,17 @@ async function getTVL (network, block) {
     abi: 'erc20:balanceOf',
     block,
     calls: options
-      .filter(option => option && option.strikeAsset && option.address)
-      .map(option => ({
-        target: option.strikeAsset,
-        params: [option.address]
-      })),
+      .map(option => [
+        {
+          target: option.strikeAsset,
+          params: [option.address]
+        },
+        {
+          target: option.underlyingAsset,
+          params: [option.address]
+        }
+      ])
+      .reduce((prev, curr) => prev.concat(curr), []),
     chain: network.name
   })
 
