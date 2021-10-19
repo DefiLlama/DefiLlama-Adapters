@@ -61,11 +61,11 @@ async function unwrapBalancerLPs(
   chain = 'ethereum',
   transformAddress = (addr) => addr,
 ) {
-  const vaultRatio = (
+  const vaultBalances = (
     await sdk.api.abi.multiCall({
       chain,
       block,
-      abi: abi.getRatio,
+      abi: abi.balance,
       calls: lpPositions.map((lp) => ({ target: lp.vaultAddr })),
     })
   ).output
@@ -94,6 +94,10 @@ async function unwrapBalancerLPs(
     })
   ).output
 
+  console.log(vaultBalances[0].output)
+  console.log(totalSupply[0].output)
+  console.log(poolTokens[0].output['1'][0])
+
   await Promise.all(
     poolTokens.map(async (lp, idx) => {
       try {
@@ -102,26 +106,31 @@ async function unwrapBalancerLPs(
 
         // Not correct calculations
         const token0Balance = new BigNumber(lp.output['1'][0])
-          .times(lpPositions[idx].balance)
-          .div(totalSupply[idx].output)
+          .times(
+            BigNumber(lpPositions[idx].balance).div(totalSupply[idx].output),
+          )
+          .integerValue()
+
         const token1Balance = new BigNumber(lp.output['1'][1])
-          .times(lpPositions[idx].balance)
-          .div(totalSupply[idx].output)
+          .times(
+            BigNumber(lpPositions[idx].balance).div(totalSupply[idx].output),
+          )
+          .integerValue()
 
         console.log(token0)
         console.log(token1)
-        console.log(token0Balance)
-        console.log(token1Balance)
+        console.log(lp.output['1'][0].toString())
+        console.log(lp.output['1'][1].toString())
 
         sdk.util.sumSingleBalance(
           balances,
           await transformAddress(token0.toLowerCase()),
-          token0Balance,
+          token0Balance.toFixed(0),
         )
         sdk.util.sumSingleBalance(
           balances,
           await transformAddress(token1.toLowerCase()),
-          token1Balance,
+          token1Balance.toFixed(0),
         )
       } catch (e) {
         console.log(
