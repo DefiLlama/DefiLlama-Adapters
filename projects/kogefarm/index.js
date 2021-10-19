@@ -205,8 +205,7 @@ const fantomTvl = async (timestamp, block, chainBlocks) => {
 }
 
 module.exports = {
-  methodology:
-    'The vaults are obtained through the following link: "https://raw.githubusercontent.com/kogecoin/vault-contracts/main/vaultaddresses". By getting the vaults, we can then pull LP token deposit amounts. We then take the LP token deposits and unwrap them to count each token individually.',
+  methodology: `The vaults are obtained through the following links: polygon:"${current_polygon_vaults_url}", fantom:"${current_fantom_vaults_url}". By getting the vaults, we can then pull LP token deposit amounts. We then take the LP token deposits and unwrap them to count each token individually.`,
   polygon: {
     tvl: polygonTvl,
   },
