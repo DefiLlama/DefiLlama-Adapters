@@ -8,6 +8,22 @@ function transformAddressKF(chain = 'polygon') {
     if (addr.toLowerCase() === '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619') {
       return '0x0000000000000000000000000000000000000000'
     }
+    // Special case for fUSDT, since coingecko doesn't find it on Fantom
+    if (addr.toLowerCase() === '0x049d68029688eabf473097a2fc38ef61633a3c7a') {
+      // USDT
+      return `ethereum:0xdac17f958d2ee523a2206206994597c13d831ec7`
+    }
+    // Special case for MIM, since coingecko doesn't find it on Fantom
+    if (addr.toLowerCase() === '0x82f0b8b456c1a451378467398982d4834b6829c1') {
+      // MIM
+      return `ethereum:0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3`
+    }
+    // Special case for LINK, since coingecko doesn't find it on Fantom
+    if (addr.toLowerCase() === '0xb3654dc3d10ea7645f8319668e8f54d2574fbdc8') {
+      // LINK
+      return `ethereum:0x514910771af9ca656af840dff83e8264ecf986ca`
+    }
+
     return `${chain}:${addr}`
   }
 }
@@ -94,44 +110,26 @@ async function unwrapBalancerLPs(
     })
   ).output
 
-  console.log(vaultBalances[0].output)
-  console.log(totalSupply[0].output)
-  console.log(poolTokens[0].output['1'][0])
-
   await Promise.all(
     poolTokens.map(async (lp, idx) => {
       try {
-        const token0 = lp.output.tokens[0]
-        const token1 = lp.output.tokens[1]
+        const tokens = lp.output.tokens
 
-        // Not correct calculations
-        const token0Balance = new BigNumber(lp.output['1'][0])
-          .times(
-            BigNumber(lpPositions[idx].balance).div(totalSupply[idx].output),
-          )
-          .integerValue()
-
-        const token1Balance = new BigNumber(lp.output['1'][1])
-          .times(
-            BigNumber(lpPositions[idx].balance).div(totalSupply[idx].output),
-          )
-          .integerValue()
-
-        console.log(token0)
-        console.log(token1)
-        console.log(lp.output['1'][0].toString())
-        console.log(lp.output['1'][1].toString())
-
-        sdk.util.sumSingleBalance(
-          balances,
-          await transformAddress(token0.toLowerCase()),
-          token0Balance.toFixed(0),
+        const tokenBalances = tokens.map((t, tidx) =>
+          BigNumber(lp.output['1'][tidx])
+            .times(
+              BigNumber(lpPositions[idx].balance).div(totalSupply[idx].output),
+            )
+            .integerValue(),
         )
-        sdk.util.sumSingleBalance(
-          balances,
-          await transformAddress(token1.toLowerCase()),
-          token1Balance.toFixed(0),
-        )
+
+        tokenBalances.forEach(async (tokenBalance, tidx) => {
+          sdk.util.sumSingleBalance(
+            balances,
+            await transformAddress(tokens[tidx].toLowerCase()),
+            tokenBalance.toFixed(0),
+          )
+        })
       } catch (e) {
         console.log(
           `Failed to get data for LP token at ${lpPositions[idx].token} on chain ${chain}`,

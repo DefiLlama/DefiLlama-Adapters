@@ -201,8 +201,6 @@ const fantomTvl = async (timestamp, block, chainBlocks) => {
     transformAddress,
   )
 
-  console.log(balances)
-
   return balances
 }
 
