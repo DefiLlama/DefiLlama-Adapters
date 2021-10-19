@@ -26,11 +26,24 @@ async function arbitrum() {
   return tvl.data.data.tvl
 }
 
-async function fetch() {
-  return (await eth())+(await polygon()) + (await fantom())+ (await xdai())+(await arbitrum())
+async function avax() {
+  const tvl = await utils.fetchURL('https://api.curve.fi/api/getTVLAvalanche')
+  return tvl.data.data.tvl
 }
 
+async function harmony() {
+  const tvl = await utils.fetchURL('https://api.curve.fi/api/getTVLHarmony')
+  return tvl.data.data.tvl
+}
+
+async function fetch() {
+  return (await eth())+(await polygon()) + (await fantom()) + (await xdai())+(await arbitrum())+(await avax()) + (await harmony())
+}
+
+
+
 module.exports = {
+  misrepresentedTokens: true,
   fantom:{
     fetch: fantom
   },
@@ -45,6 +58,12 @@ module.exports = {
   },
   arbitrum:{
     fetch: arbitrum
+  },
+  avalanche:{
+    fetch: avax
+  },
+  harmony:{
+    fetch: harmony
   },
   fetch
 }

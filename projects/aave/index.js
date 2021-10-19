@@ -1,8 +1,9 @@
   const sdk = require('@defillama/sdk');
   const _ = require('underscore');
   const BigNumber = require("bignumber.js");
-  const abi = require('./abi.json');
+  const abi = require('../helper/abis/aave.json');
 const { addBalanceOfTokensAndLPs } = require('../helper/unwrapLPs');
+const {getV2Reserves, getV2Tvl, aaveChainTvl} = require('../helper/aave')
 
   const aaveLendingPoolCore = "0x3dfd23A6c5E8BbcFc9581d2E864a68feb6a076d3";
   const aaveLendingPool = "0x398eC7346DcD622eDc5ae82352F02bE94C62d119";
@@ -139,150 +140,7 @@ const { addBalanceOfTokensAndLPs } = require('../helper/unwrapLPs');
     }
   }
 
-  async function getV2Reserves(block, addressesProviderRegistry, chain, v2Atokens, v2ReserveTokens, addressSymbolMapping) {
-    if (v2Atokens.length !== 0 && v2ReserveTokens.length !== 0) return
 
-    const addressesProviders = (
-      await sdk.api.abi.call({
-        target: addressesProviderRegistry,
-        abi: abi["getAddressesProvidersList"],
-        block,
-        chain
-      })
-    ).output;
-
-    const protocolDataHelpers = (
-      await sdk.api.abi.multiCall({
-        calls: _.map(addressesProviders, (provider) => ({
-          target: provider,
-          params: "0x0100000000000000000000000000000000000000000000000000000000000000",
-        })),
-        abi: abi["getAddress"],
-        block,
-        chain
-      })
-    ).output;
-
-    const validProtocolDataHelpers = protocolDataHelpers.filter(
-      (helper) =>
-        helper.output !== "0x0000000000000000000000000000000000000000"
-    );
-
-    const aTokenMarketData = (
-      await sdk.api.abi.multiCall({
-        calls: _.map(validProtocolDataHelpers, (dataHelper) => ({
-          target: dataHelper.output,
-        })),
-        abi: abi["getAllATokens"],
-        block,
-        chain
-      })
-    ).output;
-
-    let aTokenAddresses = [];
-    aTokenMarketData.map((aTokensData) => {
-        aTokenAddresses = [
-          ...aTokenAddresses,
-          ...aTokensData.output.map((aToken) => aToken[1]),
-        ];
-    });
-
-    const underlyingAddressesData = (
-      await sdk.api.abi.multiCall({
-        calls: _.map(aTokenAddresses, (aToken) => ({
-          target: aToken,
-        })),
-        abi: abi["getUnderlying"],
-        block,
-        chain
-      })
-    ).output;
-
-    let reserveAddresses = [];
-    underlyingAddressesData.map((reserveData) => {
-      reserveAddresses.push(reserveData.output)
-    });
-
-    v2Atokens = aTokenAddresses
-    v2ReserveTokens = reserveAddresses;
-
-    // Fetch associated token info
-    const symbolsOfReserves = (
-      await sdk.api.abi.multiCall({
-        calls: _.map(v2ReserveTokens, (underlying) => ({
-          target: underlying,
-        })),
-        abi: "erc20:symbol",
-        block,
-        chain
-      })
-    ).output;
-
-    const decimalsOfReserves = (
-      await sdk.api.abi.multiCall({
-        calls: _.map(v2ReserveTokens, (underlying) => ({
-          target: underlying,
-        })),
-        abi: "erc20:decimals",
-        block,
-        chain
-      })
-    ).output
-
-    symbolsOfReserves.map((r) => {
-      const address = r.input.target;
-      let symbol;
-
-      if (address == "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2") {
-        symbol = "MKR";
-      } else {
-        symbol = r.output;
-      }
-
-      addressSymbolMapping[address] = { symbol };
-    });
-
-    decimalsOfReserves.map((r) => {
-      const address = r.input.target;
-      const existingAddress = addressSymbolMapping[address];
-      addressSymbolMapping[address] = {
-        ...existingAddress,
-        decimals: r.output,
-      };
-    });
-    return [v2Atokens, v2ReserveTokens, addressSymbolMapping]
-  }
-
-  async function getV2Tvl(block, chain, v2Atokens, v2ReserveTokens, addressSymbolMapping) {
-    const underlyingAddressesDict = Object.keys(v2ReserveTokens).map(
-      (key) => v2ReserveTokens[key]
-    );
-
-    const balanceOfUnderlying = (
-      await sdk.api.abi.multiCall({
-        calls: _.map(v2Atokens, (aToken, index) => ({
-          target: underlyingAddressesDict[index],
-          params: aToken,
-        })),
-        abi: "erc20:balanceOf",
-        block,
-        chain
-      })
-    ).output;
-
-    const v2Data = balanceOfUnderlying.map((underlying, index) => {
-      const address = underlying.input.target
-      return {
-        aToken: v2Atokens[index],
-        underlying: address,
-        symbol: addressSymbolMapping[address].symbol,
-        decimals: addressSymbolMapping[address].decimals,
-        balance: underlying.output,
-      };
-    })
-
-    return v2Data
-  }
 
   async function ammMarket(balances, block){
     const lendingPool = "0x7937D4799803FbBe595ed57278Bc4cA21f3bFfCB"
@@ -423,34 +281,9 @@ const { addBalanceOfTokensAndLPs } = require('../helper/unwrapLPs');
     return balances;
   }
 
-  async function polygon(timestamp, ethBlock, chainBlocks){
-    const balances = {}
-    const block = chainBlocks.polygon
-    let v2Atokens = [];
-    let v2ReserveTokens = [];
-    let addressSymbolMapping = {};
-    [v2Atokens, v2ReserveTokens, addressSymbolMapping] = await getV2Reserves(block, "0x3ac4e9aa29940770aeC38fe853a4bbabb2dA9C19", 'polygon', v2Atokens, v2ReserveTokens, addressSymbolMapping)
-    const v2Tvl = await getV2Tvl(block, 'polygon', v2Atokens, v2ReserveTokens, addressSymbolMapping);
-    v2Tvl.map(data => {
-      sdk.util.sumSingleBalance(balances, `polygon:${data.underlying}`, data.balance);
-    })
-    return balances
-  }
+  const polygon = aaveChainTvl("polygon", "0x3ac4e9aa29940770aeC38fe853a4bbabb2dA9C19");
 
-  async function avax(timestamp, ethBlock, chainBlocks){
-    const balances = {}
-    const block = chainBlocks.avax
-    const chain = 'avax'
-    let v2Atokens = [];
-    let v2ReserveTokens = [];
-    let addressSymbolMapping = {};
-    [v2Atokens, v2ReserveTokens, addressSymbolMapping] = await getV2Reserves(block, "0x4235E22d9C3f28DCDA82b58276cb6370B01265C2", chain, v2Atokens, v2ReserveTokens, addressSymbolMapping)
-    const v2Tvl = await getV2Tvl(block, chain, v2Atokens, v2ReserveTokens, addressSymbolMapping);
-    v2Tvl.map(data => {
-      sdk.util.sumSingleBalance(balances, `${chain}:${data.underlying}`, data.balance);
-    })
-    return balances
-  }
+  const avax = aaveChainTvl("avax", "0x4235E22d9C3f28DCDA82b58276cb6370B01265C2")
 
   async function staking(timestamp, block){
     const balances = {}
@@ -474,6 +307,7 @@ const { addBalanceOfTokensAndLPs } = require('../helper/unwrapLPs');
   }
 
   module.exports = {
+    methodology: `Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There's multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending`,
     ethereum:{
       staking,
       tvl: ethereum

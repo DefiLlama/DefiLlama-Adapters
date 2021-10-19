@@ -2,6 +2,7 @@ const _ = require("underscore");
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const BigNumber = require("bignumber.js");
+const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 
 // Anchor
 const anchorStart = 11915867;
@@ -174,9 +175,20 @@ async function tvl(timestamp, block) {
     stabilizerTVL(block),
   ]);
 
+  const lps = []
   _.each(_.pairs(anchorBalances), ([token, value]) => {
     const balance = BigNumber(balances[token] || 0);
-    balances[token] = balance.plus(BigNumber(value)).toFixed();
+    if(token === '0xAA5A67c256e27A5d80712c51971408db3370927D'){
+      token = "0x865377367054516e17014ccded1e7d814edc9ce4"
+    }
+    if(token === "0x5BA61c0a8c4DccCc200cd0ccC40a5725a426d002"){
+      lps.push({
+        token,
+        balance: value.toFixed(0)
+      })
+    } else {
+      balances[token] = balance.plus(BigNumber(value)).toFixed();
+    }
   });
 
   _.each(_.pairs(vaultBalances), ([token, value]) => {
@@ -188,11 +200,13 @@ async function tvl(timestamp, block) {
     const balance = BigNumber(balances[token] || 0);
     balances[token] = balance.plus(BigNumber(value)).toFixed();
   });
+  await unwrapUniswapLPs(balances, lps, block)
 
   return balances;
 }
 
 module.exports = {
+  methodology: "DOLA curve metapool replaced by DOLA",
   start: 1607731200, // Dec 12 2020 00:00:00 GMT+0000
   tvl,
 };

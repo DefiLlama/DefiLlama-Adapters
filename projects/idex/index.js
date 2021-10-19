@@ -44,9 +44,6 @@ async function tvl(timestamp, block) {
   ==================================================*/
 
 module.exports = {
-  name: "IDEX", // project name
-  token: "IDEX", // null, or token symbol if project has a custom token
-  category: "dexes", // allowed values as shown on DefiPulse: 'Derivatives', 'DEXes', 'Lending', 'Payments', 'Assets'
   start: 1603166400, // unix timestamp (utc 0) specifying when the project began, 10-20-2020 UTC 0:00:00
   tvl, // tvl adapter
 };
