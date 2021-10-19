@@ -26,6 +26,10 @@ async function heco() {
   return data.data.platformTVL
 }
 
+async function moonriver() {
+  const data = await utils.fetchURL("https://static.autofarm.network/moonriver/stats.json")
+  return data.data.platformTVL
+}
 
 async function bsc() {
   var bscPools = await utils.fetchURL(bscEndpoint)
@@ -34,7 +38,7 @@ async function bsc() {
 }
 
 async function fetch() {
-  return (await polygon())+(await bsc())+(await heco())+(await avax())+(await fantom())
+  return (await polygon())+(await bsc())+(await heco())+(await avax())+(await fantom()) + (await moonriver())
 }
 
 module.exports = {
@@ -52,6 +56,9 @@ module.exports = {
   },
   fantom:{
     fetch: fantom
+  },
+  moonriver:{
+    fetch: moonriver
   },
   fetch
 }

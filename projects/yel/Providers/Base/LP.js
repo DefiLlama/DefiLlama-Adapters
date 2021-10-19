@@ -7,21 +7,22 @@ module.exports = class LP {
     /**
      * @type {"bsc"|"fantom"|"polygon"|"ethereum"}
      */
-    network = "ethereum";
-    lpFarmingContract = "";
-    totalAmount1 = 0;
-    totalAmount0 = 0;
-    lpTokenContract = "";
-    lpToken1 = "";
-    lpToken0 = "";
-    lpTotalSupply = 0;
-    fraction1 = 1;
-    fraction0 = 1;
-    totalLockedLPs = 0;
-    token1InLP = 0;
-    token0InLP = 0;
+
 
     constructor(lpFarmingContract, network) {
+        this.network = "ethereum";
+        this.lpFarmingContract = "";
+        this.totalAmount1 = 0;
+        this.totalAmount0 = 0;
+        this.lpTokenContract = "";
+        this.lpToken1 = "";
+        this.lpToken0 = "";
+        this.lpTotalSupply = 0;
+        this.fraction1 = 1;
+        this.fraction0 = 1;
+        this.totalLockedLPs = 0;
+        this.token1InLP = 0;
+        this.token0InLP = 0;
         this.network = network;
         this.lpFarmingContract = lpFarmingContract;
     }
@@ -80,13 +81,13 @@ module.exports = class LP {
     }
 
     getCoefToken0ToToken1() {
-        BigNumber.config({EXPONENTIAL_AT: 100});
+        BigNumber.config({ EXPONENTIAL_AT: 100 });
         this.fraction1 = new BigNumber(this.totalAmount1).div(this.lpTotalSupply).toNumber();
         this.fraction0 = new BigNumber(this.totalAmount0).div(this.lpTotalSupply).toNumber();
     }
 
     getTotalLockedTokens() {
-        BigNumber.config({EXPONENTIAL_AT: 100});
+        BigNumber.config({ EXPONENTIAL_AT: 100 });
         this.token1InLP = new BigNumber(this.totalLockedLPs)
             .multipliedBy(new BigNumber(this.fraction1))
             .toFixed(0);
