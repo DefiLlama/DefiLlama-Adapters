@@ -14,7 +14,10 @@ module.exports={
             ],
             holders: [
                 '0x8f26D7bAB7a73309141A291525C965EcdEa7Bf42',
-                '0xC2D019b901f8D4fdb2B9a65b5d226Ad88c66EE8D'
+                '0xC2D019b901f8D4fdb2B9a65b5d226Ad88c66EE8D',
+                // old
+                '0x2E703D658f8dd21709a7B458967aB4081F8D3d05',
+                '0x02Af7C867d6Ddd2c87dEcec2E4AFF809ee118FBb',
             ],
         },
     ])

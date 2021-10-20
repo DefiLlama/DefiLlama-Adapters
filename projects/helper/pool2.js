@@ -1,4 +1,4 @@
-const { sumTokensAndLPs } = require('./unwrapLPs')
+const { sumTokensAndLPs, sumTokensAndLPsSharedOwners } = require('./unwrapLPs')
 const {_BASE_TOKEN_, _QUOTE_TOKEN_} = require('./abis/dodo.json')
 const sdk = require('@defillama/sdk')
 const { default: BigNumber } = require('bignumber.js')
@@ -14,17 +14,21 @@ function pool2(stakingContract, lpToken, chain = "ethereum", transformAddress) {
     }
 }
 
-function pool2Exports(stakingContract, lpTokens, chain = "ethereum", transformAddress = undefined) {
-    return {
-        tvl: async (_timestamp, _ethBlock, chainBlocks) => {
-            const balances = {}
-            let transform = transformAddress
-            if(transform === undefined){
-                transform = addr=>`${chain}:${addr}`
-            }
-            await sumTokensAndLPs(balances, lpTokens.map(token=>[token, stakingContract, true]), chainBlocks[chain], chain, transform)
-            return balances
+function pool2s(stakingContracts, lpTokens, chain = "ethereum", transformAddress = undefined){
+    return async (_timestamp, _ethBlock, chainBlocks) => {
+        const balances = {}
+        let transform = transformAddress
+        if(transform === undefined){
+            transform = addr=>`${chain}:${addr}`
         }
+        await sumTokensAndLPsSharedOwners(balances, lpTokens.map(token=>[token, true]), stakingContracts, chainBlocks[chain], chain, transform)
+        return balances
+    }
+}
+
+function pool2Exports(stakingContract, lpTokens, chain, transformAddress) {
+    return {
+        tvl: pool2s([stakingContract], lpTokens, chain, transformAddress)
     }
 }
 
@@ -56,5 +60,6 @@ function dodoPool2(stakingContract, lpToken, chain = "ethereum", transformAddres
 module.exports = {
     pool2,
     pool2Exports,
-    dodoPool2
+    dodoPool2,
+    pool2s
 }
