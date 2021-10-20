@@ -16,6 +16,7 @@ query get_supertokens {
   }
 }
 `;
+// An upcoming superfluid graphql subgraph will be published soon and provide token supplies. 
 
 // Callback for lockedTokens - XDAI chain transform is async but polygon transform is sync
 function lockedTokensCallback_sync(call, transform) {
@@ -88,12 +89,16 @@ async function getChainBalances(allTokens, chain, block, transform = a => a) {
     // Find corresponding token and retrieve mainnetUnderlyingAddress and decimals stored previously
     const token = allTokens.find(token => token.id === call.input.target)
     let mainnetUnderlyingAddress = token.mainnetUnderlyingAddress;
-    let decimals = token.decimals || 18;
 
-    // Edit balance given ABI multicall output and decimalCount, and accumulate to balances
+    // Edit balance given decimal ABI multicall output and decimalCount. Note: all super tokens have 18 decimals, regardless of underlying asset, but need to adjust balance based on decimal of underlying
+    let decimals = token.decimals || 18;
     let underlyingTokenBalance = call.output / 10 ** (18 - decimals) 
-    sdk.util.sumSingleBalance(balances, mainnetUnderlyingAddress, underlyingTokenBalance)
-    console.log('token.symbol', token.symbol, 'mainnetUnderlyingAddress', mainnetUnderlyingAddress, 'underlyingTokenBalance', underlyingTokenBalance, 'decimals', decimals, 'balances')
+    
+    // Accumulate to balances, the balance for tokens on mainnet or sidechain
+    prefixedUnderlyingAddress = chain + ':' + token.underlyingAddress
+    if (tokensNativeToSidechain.includes(token.id)) prefixedUnderlyingAddress = chain + ':' + token.id
+    sdk.util.sumSingleBalance(balances, prefixedUnderlyingAddress, underlyingTokenBalance)
+    console.log('Token:', token.symbol, '- decimals:', decimals, '- underlyingTokenBalance:', underlyingTokenBalance, '- mainnetUnderlyingAddress:', mainnetUnderlyingAddress)
   })
 
   // Remove null balances
@@ -103,7 +108,13 @@ async function getChainBalances(allTokens, chain, block, transform = a => a) {
   return balances
 }
 
-const selectedTokens = ['USDCx', 'ETHx', 'DAIx', 'WBTCx', 'USDTx', 'SDTx', 'QIx', 'MOCAx']
+const tokensNativeToSidechain = [
+  '0x2bf2ba13735160624a0feae98f6ac8f70885ea61', // xdai FRACTION
+  '0x63e62989d9eb2d37dfdb1f93a22f063635b07d51'  // xdai MIVA 
+]
+
+let selectedTokens = ['USDCx', 'ETHx', 'DAIx', 'WBTCx', 'USDTx', 'SDTx', 'QIx', 'MOCAx']
+selectedTokens = ['WORKx', 'WORK', 'RIC', 'MIVA', 'FRACTION']
 
 async function retrieveSupertokensBalances(chain, timestamp, block, chainBlocks) {
   // Retrieve supertokens from graphql API
@@ -137,7 +148,6 @@ async function xdai(timestamp, block, chainBlocks) {
 
 
 module.exports = {
-  
   polygon: {
     tvl: polygon
   }, 
@@ -145,8 +155,7 @@ module.exports = {
     tvl: xdai
   },
   tvl: sdk.util.sumChainTvls([xdai, polygon]),
-  
+
   //tvl: xdai,
   methodology: `TVL is the total quantity of tokens locked in Super Tokens from Superfluid, on Polygon and xDai (most important being weth, dai, usdc and wbtc, as well as QiDAO and MOCA)`
 }
-
