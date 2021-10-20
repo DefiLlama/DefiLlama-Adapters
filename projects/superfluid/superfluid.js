@@ -48,7 +48,7 @@ async function getChainBalances(allTokens, chain, block, transform = a => a) {
 
   // Abi MultiCall to get supertokens supplies
   const lockedTokensOutput = await sdk.api.abi.multiCall({
-    abi: abi['totalSupply'],
+    abi: 'erc20:totalSupply', // abi['totalSupply'],
     calls: allTokens.map(token => ({
       target: token.id, 
       methodName: 'totalSupply',
@@ -67,7 +67,7 @@ async function getChainBalances(allTokens, chain, block, transform = a => a) {
   
   // Execute decimals ABI (future proof), otherwise could simply store them in a variable
   const decimals = await sdk.api.abi.multiCall({
-    abi: abi['decimals'],
+    abi: 'erc20:decimals', // abi['decimals'],
     calls: mainnetDecimalsCalls,
     block,
     chain: 'ethereum'
