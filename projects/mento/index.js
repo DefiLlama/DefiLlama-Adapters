@@ -31,8 +31,6 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
         chain: 'celo'
     })
 
-    console.log()
-
     return {
         'celo': Number(mento_pooled.output)/1e18 + Number(mento_locked_pooled.output)/1e18
     };
