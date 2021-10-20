@@ -43,8 +43,14 @@ const bscTvl = calcTvl("bsc")
 
 module.exports = {
   tvl: async () => ({}),
-  pool2: {
-    tvl: sdk.util.sumChainTvls([ethTvl, bscTvl, fantomTvl]),
+  ethereum:{
+    pool2: ethTvl
+  },
+  bsc:{
+    pool2: bscTvl
+  },
+  fantom:{
+    pool2:fantomTvl
   },
   methodology:
     "We count pool2 liquidity staked on masterchef",

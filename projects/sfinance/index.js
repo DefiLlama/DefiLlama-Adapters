@@ -175,9 +175,6 @@
   ==================================================*/
 
   module.exports = {
-    name: 'S Finance',
-    token: 'SFG',
-    category: 'dexes',
     // #1 susdv2 pool started
     // start: 1600758000, // 09/22/2020 @ 03:00:00pm +UTC
     // #2 dfi pool started

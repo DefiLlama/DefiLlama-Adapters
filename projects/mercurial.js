@@ -14,6 +14,10 @@ async function tvl() {
     Usd4PoolWUsdcAmount,
     Usd4PoolWUsdtAmount,
     Usd4PoolWDaiAmount,
+    stsolPoolStsolAmount,
+    stsolPoolSolAmount,
+    msolPoolMsolAmount,
+    msolPoolSolAmount,
   ] = await Promise.all([
     //pai3pool
     getTokenBalance(
@@ -53,19 +57,37 @@ async function tvl() {
     //wusd4pool
     getTokenBalance(
       "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-      "54q2ct7kTknGvADuHSXjtnKqMbmNQ4xpDVK2xgcnh1xv"
+      "3m15qNJDM5zydsYNJzkFYXE7iGCVnkKz1mrmbawrDUAH"
     ),
     getTokenBalance(
       "A9mUU4qviSctJVPJdBJWkb28deg915LYJKrzQ19ji3FM",
-      "5cvqiPREvEYmhvBt3cZ7fmrCE6tbYvwkAiuvf1pHUPBq"
+      "3m15qNJDM5zydsYNJzkFYXE7iGCVnkKz1mrmbawrDUAH"
     ),
     getTokenBalance(
       "Dn4noZ5jgGfkntzcQSUZ8czkreiZ1ForXYoV2H8Dm7S1",
-      "9gVstb8HkuYX8PqjLSc9b9zLMhFZwWX7k3ofLcWy7wyS"
+      "3m15qNJDM5zydsYNJzkFYXE7iGCVnkKz1mrmbawrDUAH"
     ),
     getTokenBalance(
-      "Dn4noZ5jgGfkntzcQSUZ8czkreiZ1ForXYoV2H8Dm7S1",
-      "9gVstb8HkuYX8PqjLSc9b9zLMhFZwWX7k3ofLcWy7wyS"
+      "EjmyN6qEC1Tf1JxiG1ae7UTJhUxSwk1TCWNWqxWV4J6o",
+      "3m15qNJDM5zydsYNJzkFYXE7iGCVnkKz1mrmbawrDUAH"
+    ),
+    //stsol2pool
+    getTokenBalance(
+      "7dHbWXmci3dT8UFYWYZweBLXgycu7Y3iL6trKn1Y7ARj",
+      "pG6noYMPVR9ykNgD4XSNa6paKKGGwciU2LckEQPDoSW"
+    ),
+    getTokenBalance(
+      "So11111111111111111111111111111111111111112",
+      "pG6noYMPVR9ykNgD4XSNa6paKKGGwciU2LckEQPDoSW"
+    ),
+    //msol2pool
+    getTokenBalance(
+      "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So",
+      "GM48qFn8rnqhyNMrBHyPJgUVwXQ1JvMbcu3b9zkThW9L"
+    ),
+    getTokenBalance(
+      "So11111111111111111111111111111111111111112",
+      "EWy2hPdVT4uGrYokx65nAyn2GFBv7bUYA2pFPY96pw7Y"
     ),
   ]);
   return {
@@ -78,7 +100,13 @@ async function tvl() {
     tether: paiPoolUsdtAmount + ustPoolUsdtAmount + Usd4PoolWUsdtAmount,
     dai: Usd4PoolWDaiAmount,
     terrausd: ustPoolUstAmount,
-    solana: psolPoolSolAmount + psolPoolPsolAmount,
+    "lido-staked-sol": stsolPoolStsolAmount,
+    msol: msolPoolMsolAmount,
+    solana:
+      psolPoolSolAmount +
+      psolPoolPsolAmount +
+      stsolPoolSolAmount +
+      msolPoolSolAmount,
   };
 }
 

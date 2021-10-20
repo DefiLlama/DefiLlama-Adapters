@@ -99,9 +99,6 @@ async function tvl(timestamp, block) {
   ==================================================*/
 
 module.exports = {
-    name: 'PerlinX',
-    token: null,
-    category: 'derivatives',
     start: 1600905600,
     tvl
 }

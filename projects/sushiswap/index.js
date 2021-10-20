@@ -6,10 +6,9 @@ const chains = ['polygon', 'celo', 'moonriver', 'bsc', 'avax', 'xdai', 'ethereum
 const xSUSHI = "0x8798249c2E607446EfB7Ad49eC89dD1865Ff4272"
 const SUSHI = "0x6b3595068778dd592e39a122f4f5a5cf09c90fe2"
 
+const modulesToExport = getExports("sushi", chains)
+modulesToExport.ethereum.staking = staking(xSUSHI, SUSHI, 'ethereum')
 module.exports = {
     misrepresentedTokens: true,
-    staking:{
-        tvl: staking(xSUSHI, SUSHI, 'ethereum')
-    },
-    ...getExports("sushi", chains)
+    ...modulesToExport,
 }

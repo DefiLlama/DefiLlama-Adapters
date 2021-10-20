@@ -178,6 +178,5 @@ async function tvl(_timestamp, _ethereumBlock, chainBlocks) {
 module.exports = {
   avalanche: {
       tvl,
-  },
-  tvl
+  }
 }
