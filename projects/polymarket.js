@@ -42,7 +42,7 @@ query GET_POLYMARKET($skip: Int, $block: Int) {
 
 async function getMarketsLiquidity_graphql(timestamp, block, chainBlocks) {
   let scaledLiquidityParameterSum = BigNumber(0)
-  skip = 0
+  let skip = 0
   // Continue querying graph while end not reached. Hard cap: skip = 5000
   while (skip !== -1) { 
     const { conditions } = await request(
@@ -54,8 +54,7 @@ async function getMarketsLiquidity_graphql(timestamp, block, chainBlocks) {
     if (conditions && conditions.length > 0) {
       conditions.forEach(condition => {
         condition.fixedProductMarketMakers.forEach(fpmm => {
-          ({collateralToken, collateralVolume, scaledLiquidityParameter, liquidityParameter} = fpmm)
-          scaledLiquidityParameterSum = scaledLiquidityParameterSum.plus(BigNumber(scaledLiquidityParameter))
+          scaledLiquidityParameterSum = scaledLiquidityParameterSum.plus(BigNumber(fpmm.scaledLiquidityParameter))
         })
       })
     } 
@@ -74,8 +73,6 @@ async function getMarketsLiquidity_graphql(timestamp, block, chainBlocks) {
 const conditionalTokensContract = '0x4D97DCd97eC945f40cF65F87097ACe5EA0476045'
 const polygonUsdcContract = '0x2791bca1f2de4661ed88a30c99a7a9449aa84174'
 const polymarket_api_url = 'https://strapi-matic.poly.market/markets?_limit=-1&_sort=volume:desc' // &active=true
-
-
 async function getMarketsLiquidity_api() {
   let markets = await utils.fetchURL(polymarket_api_url)
   // Filter out unwanted fields
@@ -115,40 +112,6 @@ module.exports = {
   polygon: {
     tvl: polygon
   },
-  //tvl: polygon,
-  methodology: `TVL is the total quantity of USDC held in the conditional tokens contract as well as USDC collateral submitted to every polymarket' markets ever opened - once the markets resolve, participants can withdraw theire share given the redeption rate and their input stake, but they do not all do it`
+  tvl: polygon,
+  methodology: `TVL is the total quantity of USDC held in the conditional tokens contract as well as USDC collateral submitted to every polymarket' markets ever opened - once the markets resolve, participants can withdraw theire share given the redeption rate and their input stake, but they do not all do it.`
 }
-
-/*
-const largeMarkets = markets.filter(market => market.volume > 1e5)
-console.log('\n\n', largeMarkets, `\n\n${largeMarkets.length} markets with volume above 100k` )
-
-const bad_liquidity = [
-  'how-many-tweets-will-donald-j-trump-jr-post-from-jan-18th-to-25th', 
-  'will-the-buffalo-bills-or-the-kansas-city-chiefs-win-the-afc-championship',
-  'will-weekly-jobless-claims-exceed-348k-for-the-week-ending-on-august-21', 
-  'who-will-win-suns-v-clippers-western-conference-finals-game-3', 
-  'will-fabiano-caruana-win-the-2021-sinquefield-cup',
-  'will-f9-gross-more-than-62m-domestically-on-opening-weekend',
-  'will-the-mavericks-or-the-jazz-win-their-january-29th-matchup',
-  'will-fewociouss-his-name-is-victor-have-a-final-sale-price-of-more-than-850k-at-christies',
-  'will-fewociouss-my-mamas-dream-have-a-final-sale-price-of-more-than-650k-at-christies',
-]
-
-
-const csvString = [
-  [ 'id', 'slug', 'volume', 'liquidity', 'created_at', 'closed'],
-  ...markets.map(m => [m.id, m.slug, m.volume, m.liquidity, m.created_at, m.closed])
-]
- .map(e => e.join(',')) 
- .join('\n');
-console.log(csvString);
-const fs = require('fs')
-fs.writeFile('D:/Users/TERRAIN-PC/Downloads/polymarket_tvl.csv', csvString, err => {
-  if (err) {
-    console.error(err)
-    return
-  }
-  //file written successfully
-})
-*/
