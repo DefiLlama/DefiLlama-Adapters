@@ -31,6 +31,8 @@ query GET_POLYMARKET($skip: Int, $block: Int) {
         collateralToken {
           id name symbol decimals
         }
+        liquidityParameter
+        scaledLiquidityParameter
         collateralVolume
         scaledCollateralVolume
       }
@@ -38,8 +40,8 @@ query GET_POLYMARKET($skip: Int, $block: Int) {
 }
 `;
 
-async function polygon_graphql(timestamp, block) {
-  let scaledCollateralVolumeSum = 0
+async function getMarketsLiquidity_graphql(timestamp, block, chainBlocks) {
+  let scaledLiquidityParameterSum = BigNumber(0)
   skip = 0
   // Continue querying graph while end not reached. Hard cap: skip = 5000
   while (skip !== -1) { 
@@ -52,8 +54,8 @@ async function polygon_graphql(timestamp, block) {
     if (conditions && conditions.length > 0) {
       conditions.forEach(condition => {
         condition.fixedProductMarketMakers.forEach(fpmm => {
-          ({collateralToken, collateralVolume, scaledCollateralVolume} = fpmm)
-          scaledCollateralVolumeSum += Number(scaledCollateralVolume)
+          ({collateralToken, collateralVolume, scaledLiquidityParameter, liquidityParameter} = fpmm)
+          scaledLiquidityParameterSum = scaledLiquidityParameterSum.plus(BigNumber(scaledLiquidityParameter))
         })
       })
     } 
@@ -62,18 +64,20 @@ async function polygon_graphql(timestamp, block) {
       skip = -1
     }
   }
-  console.log(`${conditions.length} conditions found`)
-  
-  return {'polygon:0x2791bca1f2de4661ed88a30c99a7a9449aa84174': scaledCollateralVolumeSum * 1e6};;
+
+  return scaledLiquidityParameterSum
 }
 
 // After a market resolves, then the market participants can withdraw their share based on the redemption rate and their contribution at the closing of the market. All participants do not do it immediately though, so volume of every market should be accounted for in TVL
 // const polymarket_api_url = 'https://strapi-matic.poly.market/markets?_limit=-1&_sort=closed_time:desc' // &active=true
 
+const conditionalTokensContract = '0x4D97DCd97eC945f40cF65F87097ACe5EA0476045'
+const polygonUsdcContract = '0x2791bca1f2de4661ed88a30c99a7a9449aa84174'
 const polymarket_api_url = 'https://strapi-matic.poly.market/markets?_limit=-1&_sort=volume:desc' // &active=true
-async function polygon(timestamp, block) {
-  let markets = await utils.fetchURL(polymarket_api_url)
 
+
+async function getMarketsLiquidity_api() {
+  let markets = await utils.fetchURL(polymarket_api_url)
   // Filter out unwanted fields
   markets = markets.data.map(({ id, slug, volume, liquidity, created_at, closed }) => ({id, slug, volume, liquidity, created_at, closed})); 
   markets.forEach(market => {
@@ -81,10 +85,29 @@ async function polygon(timestamp, block) {
     market.liquidity = Number(market.liquidity) || 0
     if (market.liquidity < 0) market.liquidity = 0
   }); 
-  
-  const tvl = markets.reduce((acc, market) => acc + market.liquidity, 0); 
-  
-  return {'polygon:0x2791bca1f2de4661ed88a30c99a7a9449aa84174': tvl * 1e6};
+  const marketsLiquidity = markets.reduce((acc, market) => acc.plus(BigNumber(market.liquidity)), BigNumber(0)); 
+  return marketsLiquidity
+}
+
+async function polygon(timestamp, block, chainBlocks) {
+  // Get markets liquidity using API
+  const marketsLiquidity = (await getMarketsLiquidity_api()).times(1e6)
+  //const marketsLiquidity = (await getMarketsLiquidity_graphql(timestamp, block, chainBlocks)).times(1e6)
+
+  // Also account for USDC held in the conditional tokens contract because a lot of positions are held outside of the LPs
+  // Corresponds to open positions that should be counted as TVL (since they still represent USDC locked into the conditional tokens contract)
+  let conditionalTokensUSDC = await sdk.api.erc20.balanceOf({
+    target: polygonUsdcContract,
+    owner: conditionalTokensContract,
+    block: chainBlocks['polygon'],
+    chain: 'polygon'
+  })
+  conditionalTokensUSDC = BigNumber(conditionalTokensUSDC.output)
+
+  // Total open interest: the conditional tokens are held at 0x4D97DCd97eC945f40cF65F87097ACe5EA0476045 and then each market has it's own contract, the address of which is the id of the FixedProductMarketMaker
+  const tvl = marketsLiquidity.plus(conditionalTokensUSDC).toFixed(0)
+  console.log(`-----\n${marketsLiquidity.div(1e12).toFixed(8)}M of marketsLiquidity \n${conditionalTokensUSDC.div(1e12).toFixed(8)}M of conditionalTokensUSDC \nTVL: ${BigNumber(tvl).div(1e12).toFixed(2)}M\n`)
+  return {['polygon:' + polygonUsdcContract]: tvl};
 }
 
 
@@ -93,7 +116,7 @@ module.exports = {
     tvl: polygon
   },
   //tvl: polygon,
-  methodology: `TVL is the total quantity of USDC collateral submitted to every polymarket' markets ever opened - once the markets resolve, participants can withdraw theire share given the redeption rate and their input stake, but they do not all do it`
+  methodology: `TVL is the total quantity of USDC held in the conditional tokens contract as well as USDC collateral submitted to every polymarket' markets ever opened - once the markets resolve, participants can withdraw theire share given the redeption rate and their input stake, but they do not all do it`
 }
 
 /*
