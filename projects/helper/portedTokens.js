@@ -217,6 +217,10 @@ async function transformArbitrumAddress() {
         if(compareAddresses(addr, "0xDBf31dF14B66535aF65AaC99C32e9eA844e14501")){
             return "0xeb4c2781e4eba804ce9a9803c67d0893436bb27d" // renBTC
         }
+        if(compareAddresses(addr, "0x9ef758ac000a354479e538b8b2f01b917b8e89e7")){
+            return "polygon:0x3dc7b06dd0b1f08ef9acbbd2564f8605b4868eea" // XDO
+        }
+
         const dstToken = bridge.find(token => compareAddresses(addr, token.address))
         if (dstToken !== undefined) {
             return dstToken.extensions.l1Address
