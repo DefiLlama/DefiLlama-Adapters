@@ -39,15 +39,13 @@ async function getV2Reserves(block, addressesProviderRegistry, chain, v2Atokens,
   // v2Atokens = atokens.map(atoken => atoken.id)
   v2ReserveTokens = []
   v2Atokens = atokens.map(atoken => {
-    underlyingAssetAddress = atoken.underlyingAssetAddress
+    const underlyingAssetAddress = atoken.underlyingAssetAddress
     v2ReserveTokens.push(underlyingAssetAddress)
     const reserve = reserves.find(r => r.underlyingAsset === underlyingAssetAddress)
-    reserveSymbol = reserve.symbol
-    decimals = reserve.decimals
 
     addressSymbolMapping[underlyingAssetAddress] = {
-      symbol: reserveSymbol,
-      decimals: decimals
+      symbol: reserve.symbol,
+      decimals: reserve.decimals
     }
     return atoken.id
   })
@@ -61,12 +59,11 @@ const {getV2Tvl} = require('./helper/aave.js');
 function aaveChainTvl(chain, addressesProviderRegistry, transformAddress){
   return async (timestamp, ethBlock, chainBlocks)=>{
     const balances = {}
-    const block = chainBlocks[chain]
     let v2Atokens = [];
     let v2ReserveTokens = [];
     let addressSymbolMapping = {};
-    [v2Atokens, v2ReserveTokens, addressSymbolMapping] = await getV2Reserves(block, addressesProviderRegistry, chain, v2Atokens, v2ReserveTokens, addressSymbolMapping)
-    const v2Tvl = await getV2Tvl(block, chain, v2Atokens, v2ReserveTokens, addressSymbolMapping);
+    [v2Atokens, v2ReserveTokens, addressSymbolMapping] = await getV2Reserves(chainBlocks[chain], addressesProviderRegistry, chain, v2Atokens, v2ReserveTokens, addressSymbolMapping)
+    const v2Tvl = await getV2Tvl(chainBlocks[chain], chain, v2Atokens, v2ReserveTokens, addressSymbolMapping);
     v2Tvl.map(data => {
       sdk.util.sumSingleBalance(balances, transformAddress?transformAddress(data.underlying):`${chain}:${data.underlying}`, data.balance);
     })
