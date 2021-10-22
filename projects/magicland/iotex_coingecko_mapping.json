@@ -21,7 +21,6 @@
     },
     "0xc7b93720f73b037394ce00f954f849ed484a3dea": {
         "contract": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
-        "iotexContractAddress": "",
         "coingeckoId": "bitcoin"     
     },
     "0x62a9d987cbf4c45a550deed5b57b200d7a319632": {
