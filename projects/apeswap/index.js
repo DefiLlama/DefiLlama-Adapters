@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
-const { request, gql } = require("graphql-request");
-const { toUSDTBalances } = require('../helper/balances');
+const {calculateUniTvl} = require('../helper/calculateUniTvl.js')
 
 const BANANA_TOKEN = '0x603c7f932ED1fc6575303D8Fb018fDCBb0f39a95'
 const MASTER_APE = '0x5c8D727b265DBAfaba67E050f2f739cAeEB4A6F9'
@@ -10,44 +9,12 @@ const FACTORY_POLYGON = "0xcf083be4164828f00cae704ec15a36d711491284";
 const SUBGRAPH_BSC = "https://graph2.apeswap.finance/subgraphs/name/ape-swap/apeswap-subgraph"
 const SUBGRAPH_POLYGON = "https://api.thegraph.com/subgraphs/name/apeswapfinance/dex-polygon" 
 
-const liquidityQuery = gql`
-query get_tvl($block: Int, $id: String) {
-  uniswapFactory(
-    id: $id,
-    block: { number: $block }
-  ) {
-    totalVolumeUSD
-    totalLiquidityUSD
-  }
-}
-`;
-
 async function bscTvl(timestamp, block, chainBlocks) {
-  const {uniswapFactory} = await request(
-    SUBGRAPH_BSC,
-    liquidityQuery,
-    {
-      block: chainBlocks['bsc'],
-      id: FACTORY_BSC
-    }
-  );
-  const usdTvl = Number(uniswapFactory.totalLiquidityUSD)
-
-  return toUSDTBalances(usdTvl)
+  return calculateUniTvl(addr=>`bsc:${addr}`, chainBlocks['bsc'], 'bsc', FACTORY_BSC, 0, true);
 }
 
 async function polygonTvl(timestamp, block, chainBlocks) {
-  const {uniswapFactory} = await request(
-    SUBGRAPH_POLYGON,
-    liquidityQuery,
-    {
-      block: chainBlocks['polygon'],
-      id: FACTORY_POLYGON
-    }
-  );
-  const usdTvl = Number(uniswapFactory.totalLiquidityUSD)
-
-  return toUSDTBalances(usdTvl)
+  return calculateUniTvl(addr=>`polygon:${addr}`, chainBlocks['polygon'], 'polygon', FACTORY_POLYGON, 0, true);
 }
 
 async function poolsTvl(timestamp, ethBlock, chainBlocks) {
@@ -73,6 +40,6 @@ module.exports = {
   staking:{
     tvl: poolsTvl,
   },
-  methodology: "TVL is extracted from the subgraphs, staking TVL is accounted as the banana on 0x5c8D727b265DBAfaba67E050f2f739cAeEB4A6F9",
+  methodology: "TVL comes from the DEX liquidity pools, staking TVL is accounted as the banana on 0x5c8D727b265DBAfaba67E050f2f739cAeEB4A6F9",
   tvl: sdk.util.sumChainTvls([polygonTvl, bscTvl])
 }

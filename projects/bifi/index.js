@@ -1,4 +1,5 @@
 const sdk = require("@defillama/sdk");
+const { staking } = require("../helper/staking");
 
 const stakingPool = '0x488933457E89656D7eF7E69C10F2f80C7acA19b5';
 const bfcAddr = '0x0c7D5ae016f806603CB1782bEa29AC69471CAb9c';
@@ -20,6 +21,10 @@ const ethTokenPools = {
     'usdc': {
         'pool': '0x128647690C7733593aA3Dd149EeBC5e256E79217',
         'token': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
+    },
+    'wbtc': {
+        'pool': '0x93948Aa8488F522d5b079AF84fe411FBCE476e9f',
+        'token': '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599'
     }
 }
 
@@ -45,12 +50,37 @@ const bscTokenPools = {
     'btcb': {
         'pool': '0x26d0E4707af1c1DAAd8e9BA21b99cDa7Fd24c40B',
         'token': '0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c'
+    },
+    'busd': {
+        'pool': '0x829ED2a2BeF8b72e648f92CBF01587C7E12e8c1e',
+        'token': '0xe9e7cea3dedca5984780bafc599bd69add087d56'
     }
+}
+
+const avaxPool = '0x446881360d6d39779D292662fca9BC85C5789dB3'
+const avaxTokenPools = {
+    'eth': {
+        'pool': '0x8AbA88E8A4AB28319b782199cB17f0001EE67984',
+        'token': '0x49D5c2BdFfac6CE2BFdB6640F4F80f226bc10bAB'
+    },
+    'usdt': {
+        'pool': '0xE893233515b7D02dD4e3D888162d4C87Dc837943',
+        'token': '0xc7198437980c041c805A1EDcbA50c1Ce5db95118'
+    },
+    'usdc': {
+        'pool': '0x8385Ea36dD4BDC84B3F2ac718C332E18C1E42d36',
+        'token': '0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664'
+    }
+}
+
+function getAVAXAddress(address) {
+    return `avax:${address}`
 }
 
 function getBSCAddress(address) {
     return `bsc:${address}`
 }
+
 const coinAddress = '0x0000000000000000000000000000000000000000'
 
 async function eth(timestamp, block) {
@@ -64,26 +94,33 @@ async function eth(timestamp, block) {
         block: ethBlock
     })).output
 
-    // staking pool
-    let tokenStaked = await sdk.api.erc20.balanceOf({
-        owner: stakingPool,
-        target: bfcAddr,
-        block: ethBlock
-      });
-      sdk.util.sumSingleBalance(balances, bfcAddr, tokenStaked.output);
-
     // eth tokens
-    for (token in ethTokenPools) {
-        tokenPool = ethTokenPools[token];
-        let tokenLocked = await sdk.api.erc20.balanceOf({
-            owner: tokenPool.pool,
+    sdk.util.sumMultiBalanceOf(balances, await sdk.api.abi.multiCall({
+        abi: 'erc20:balanceOf',
+        block: ethBlock,
+        calls: Object.values(ethTokenPools).map(tokenPool=>({
+            params: tokenPool.pool,
             target: tokenPool.token,
-            block: ethBlock
-          });
-          sdk.util.sumSingleBalance(balances, tokenPool.token, tokenLocked.output);
-    }
+        }))
+    }), true)
 
     return balances
+}
+
+const wbtc = "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"
+async function bitcoin(timestamp, ethBlock) {
+    const tokenPool = {
+        'pool': '0x986Eb51E67e154901ff9B482835788B8f3054076',
+        'token': '0x4ca7a5Fb41660A9c5c31683B832A17f7f7457344'
+    }
+    let tokenLocked = await sdk.api.erc20.balanceOf({
+        owner: tokenPool.pool,
+        target: tokenPool.token,
+        block: ethBlock
+    });
+    return {
+        [wbtc]: tokenLocked.output
+    }
 }
 
 const wbnb = "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"
@@ -99,26 +136,59 @@ async function bsc(timestamp, block, chainBlocks) {
     })).output)
 
     // bsc tokens
-    for (token in bscTokenPools) {
-        tokenPool = bscTokenPools[token];
+    sdk.util.sumMultiBalanceOf(balances, await sdk.api.abi.multiCall({
+        abi: 'erc20:balanceOf',
+        block: bscBlock,
+        chain: 'bsc',
+        calls: Object.values(bscTokenPools).map(tokenPool=>({
+            params: tokenPool.pool,
+            target: tokenPool.token,
+        }))
+    }), true, getBSCAddress)
+
+    return balances
+}
+
+const wavax = "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7"
+async function avax(timestamp, block, chainBlocks) {
+    let balances = {};
+
+    const avaxBlock = chainBlocks.avax
+    // avax
+    balances[getAVAXAddress(wavax)] = ((await sdk.api.eth.getBalance({
+        target: avaxPool,
+        chain: 'avax',
+        block: avaxBlock
+    })).output)
+
+    // avax tokens
+    for (token in avaxTokenPools) {
+        tokenPool = avaxTokenPools[token];
         let tokenLocked = await sdk.api.erc20.balanceOf({
             owner: tokenPool.pool,
             target: tokenPool.token,
-            chain: 'bsc',
-            block: bscBlock
-          });
-          sdk.util.sumSingleBalance(balances, getBSCAddress(tokenPool.token), tokenLocked.output);
+            chain: 'avax',
+            block: avaxBlock
+        });
+
+          sdk.util.sumSingleBalance(balances, getAVAXAddress(tokenPool.token), tokenLocked.output);
     }
 
     return balances
 }
 
 module.exports = {
-    ethereum:{
-        tvl: eth
+    ethereum: {
+        tvl: eth,
+        staking: staking(stakingPool, bfcAddr)
     },
-    bsc:{
+    bsc: {
         tvl: bsc
     },
-  tvl: sdk.util.sumChainTvls([eth, bsc])
+    bitcoin:{
+        tvl: bitcoin
+    },
+    avax: {
+        tvl: avax
+    }
 }

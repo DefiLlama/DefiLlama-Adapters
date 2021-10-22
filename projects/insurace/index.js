@@ -3,7 +3,8 @@ const abi = require('./abi.json');
 const _ = require('underscore');
 const BigNumber = require('bignumber.js');
 const axios = require("axios");
-const { unwrapUniswapLPs } = require('../helper/unwrapLPs');
+const polygonPools = require('./polygonPools.json')
+const avalanchePools = require('./avalanchePools.json')
 
 
 async function eth(timestamp, ethBlock) {
@@ -91,6 +92,57 @@ async function bsc(timestamp, ethBlock, chainBlocks){
     return balances;
 }
 
+async function polygon(timestamp, ethBlock, chainBlocks) {
+    const pools = polygonPools.pools;
+
+    const { output: _tvlList } = await sdk.api.abi.multiCall({
+        calls: pools.map((pool) => ({
+            target: pool.StakersPool,
+            params: pool.PoolToken,
+        })),
+        abi: abi["getStakedAmountPT"],
+        block: chainBlocks.polygon,
+        chain: 'polygon'
+    });
+
+    const balances = {};
+    _.each(_tvlList, (element) => {
+        let address = element.input.params[0].toLowerCase();
+        if(address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"){
+            address = "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"
+        }
+        let balance = element.output;
+        sdk.util.sumSingleBalance(balances, 'polygon:'+address, balance)
+    })
+    return balances;
+}
+
+const INSUR = "0x544c42fbb96b39b21df61cf322b5edc285ee7429"
+async function avax(timestamp, ethBlock, chainBlocks) {
+    const pools = avalanchePools.pools;
+
+    const { output: _tvlList } = await sdk.api.abi.multiCall({
+        calls: pools.map((pool) => ({
+            target: pool.StakersPool,
+            params: pool.PoolToken,
+        })),
+        abi: abi["getStakedAmountPT"],
+        block: chainBlocks.avax,
+        chain: 'avax'
+    });
+
+    const balances = {};
+    _.each(_tvlList, (element) => {
+        let address = element.input.params[0].toLowerCase();
+        if(address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"){
+            address = "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"
+        }
+        let balance = element.output;
+        sdk.util.sumSingleBalance(balances, address===INSUR?INSUR:'avax:'+address, balance)
+    })
+    return balances;
+}
+
 module.exports = {
     ethereum: {
         tvl: eth,
@@ -98,5 +150,11 @@ module.exports = {
     bsc:{
         tvl: bsc
     },
-    tvl: sdk.util.sumChainTvls([eth, bsc])
+    polygon:{
+        tvl: polygon
+    },
+    avalanche:{
+        tvl: avax
+    },
+    tvl: sdk.util.sumChainTvls([eth, bsc, polygon, avax])
 }

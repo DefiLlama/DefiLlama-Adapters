@@ -134,13 +134,26 @@ async function tvlV1(timestamp, block) {
   return tvl;
 }
 
-const coreOracleAddress = "0x1e5bddd0cdf8839d6b27b34927869ef0ad7bf692";
-const werc20Address = "0xe28d9df7718b0b5ba69e01073fe82254a9ed2f98";
-const wMasterChefAddress = "0x373ae78a14577682591e088f2e78ef1417612c68";
-const wLiquidityGauge = "0xfdb4f97953150e47c8606758c13e70b5a789a7ec";
-const wStakingRewardIndex = "0x713df2ddda9c7d7bda98a9f8fcd82c06c50fbd90";
+const coreOracleAddress = "0x6be987c6d72e25f02f6f061f94417d83a6aa13fc";
+
+const werc20Address = "0x06799a1e4792001aa9114f0012b9650ca28059a3";
+const wMasterChefAddress = "0xa2caea05ff7b98f10ad5ddc837f15905f33feb60";
+const wLiquidityGauge = "0xf1f32c8eeb06046d3cc3157b8f9f72b09d84ee5b";
+const wStakingRewardIndex = "0x011535fd795fd28c749363e080662d62fbb456a7";
 const wStakingRewardPerp = "0xc4635854480fff80f742645da0310e9e59795c63";
-const AlphaHomoraV2GraphUrl = `https://api.thegraph.com/subgraphs/name/hermioneeth/alpha-homora-v2-mainnet`;
+const poolsJsonUrl = "https://homora-v2.alphafinance.io/static/pools.json";
+const AlphaHomoraV2GraphUrl = `https://api.thegraph.com/subgraphs/name/hermioneeth/alpha-homora-v2-relaunch`;
+
+// Legacy Urls
+const werc20AddressLegacy = "0xe28d9df7718b0b5ba69e01073fe82254a9ed2f98";
+const wMasterChefAddressLegacy = "0x373ae78a14577682591e088f2e78ef1417612c68";
+const wLiquidityGaugeLegacy = "0xfdb4f97953150e47c8606758c13e70b5a789a7ec";
+const wStakingRewardIndexLegacy = "0x713df2ddda9c7d7bda98a9f8fcd82c06c50fbd90";
+const wStakingRewardPerpLegacy = "0xc4635854480fff80f742645da0310e9e59795c63";
+const poolsJsonUrlLegacy =
+  "https://homora-v2.alphafinance.io/static/legacy-pools.json";
+const AlphaHomoraV2GraphUrlLegacy = `https://api.thegraph.com/subgraphs/name/hermioneeth/alpha-homora-v2-mainnet`;
+
 const GET_TOTAL_COLLATERALS = gql`
   query GET_TOTAL_COLLATERALS($block: Int) {
     werc20Collaterals(block: { number: $block }) {
@@ -181,13 +194,35 @@ const GET_CY_TOKEN = gql`
 `;
 
 async function tvlV2(timestamp, block) {
-  const [collaterals, cyTokens] = await Promise.all([
-    getTotalCollateral(block),
+  const [legacyCollaterals, collaterals, cyTokens] = await Promise.all([
+    // Legacy
+    getTotalCollateral(block, {
+      werc20Address: werc20AddressLegacy,
+      wMasterChefAddress: wMasterChefAddressLegacy,
+      wLiquidityGauge: wLiquidityGaugeLegacy,
+      wStakingRewardIndex: wStakingRewardIndexLegacy,
+      wStakingRewardPerp: wStakingRewardPerpLegacy,
+      poolsJsonUrl: poolsJsonUrlLegacy,
+      graphUrl: AlphaHomoraV2GraphUrlLegacy,
+    }),
+    // Current V2
+    getTotalCollateral(block, {
+      werc20Address,
+      wMasterChefAddress,
+      wLiquidityGauge,
+      wStakingRewardIndex,
+      wStakingRewardPerp,
+      poolsJsonUrl,
+      graphUrl: AlphaHomoraV2GraphUrl,
+    }),
     getCyTokens(block),
   ]);
 
   const tokens = Array.from(
     new Set([
+      ...legacyCollaterals
+        .map((collateral) => collateral.lpTokenAddress)
+        .filter((lpToken) => !!lpToken),
       ...collaterals
         .map((collateral) => collateral.lpTokenAddress)
         .filter((lpToken) => !!lpToken),
@@ -209,6 +244,18 @@ async function tvlV2(timestamp, block) {
     })
   );
 
+  const totalLegacyCollateralValue = BigNumber.sum(
+    0, // Default value
+    ...legacyCollaterals.map((collateral) => {
+      if (collateral.lpTokenAddress in tokenPrices) {
+        return BigNumber(collateral.amount).times(
+          tokenPrices[collateral.lpTokenAddress]
+        );
+      }
+      return BigNumber(0);
+    })
+  );
+
   const totalCyValue = BigNumber.sum(
     0,
     ...cyTokens.map((cy) => {
@@ -219,7 +266,9 @@ async function tvlV2(timestamp, block) {
     })
   );
 
-  return totalCollateralValue.plus(totalCyValue);
+  return totalCollateralValue
+    .plus(totalLegacyCollateralValue)
+    .plus(totalCyValue);
 }
 
 async function getCyTokens(block) {
@@ -268,17 +317,26 @@ async function getTokenPrices(tokens, block) {
   return tokenPrices;
 }
 
-async function getTotalCollateral(block) {
-  const { data: pools } = await axios.get(
-    "https://homora-v2.alphafinance.io/static/pools.json"
-  );
+async function getTotalCollateral(
+  block,
+  {
+    werc20Address,
+    wMasterChefAddress,
+    wLiquidityGauge,
+    wStakingRewardIndex,
+    wStakingRewardPerp,
+    poolsJsonUrl,
+    graphUrl,
+  }
+) {
+  const { data: pools } = await axios.get(poolsJsonUrl);
 
   const {
     crvCollaterals,
     sushiswapCollaterals,
     werc20Collaterals,
     wstakingRewardCollaterals,
-  } = await request(AlphaHomoraV2GraphUrl, GET_TOTAL_COLLATERALS, {
+  } = await request(graphUrl, GET_TOTAL_COLLATERALS, {
     block,
   });
 
@@ -400,5 +458,4 @@ module.exports = {
     tvl: tvlBSC
   },
   start: 1602054167, // unix timestamp (utc 0) specifying when the project began, or where live data begins
-  tvl: sdk.util.sumChainTvls([ethTvl, tvlBSC])
 };

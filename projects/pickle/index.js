@@ -2,24 +2,30 @@ const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const utils = require("../helper/utils");
 const { unwrapUniswapLPs, unwrapCrv } = require("../helper/unwrapLPs");
-const { transformPolygonAddress } = require("../helper/portedTokens");
+const { getChainTransform } = require("../helper/portedTokens");
+const { chainExports } = require("../helper/exports");
+const { toUSDT, usdtAddress } = require("../helper/balances");
 
+const excluded = ["pbamm", "pickle-eth", "sushi-pickle-eth"]
 const jars_url =
   "https://stkpowy01i.execute-api.us-west-1.amazonaws.com/prod/protocol/pools";
 
-const ethTvl = async (timestamp, block, chainBlocks) => {
+function chainTvl(chain){
+  return async (timestamp, _ethBlock, chainBlocks) => {
+  const block = chainBlocks[chain]
+  const transformAddress = await getChainTransform(chain)
   const balances = {};
 
   let jars = (await utils.fetchURL(jars_url)).data
     .map(jar => {
-      if (jar.network === "eth")
+      if (jar.network === (chain==="ethereum"?'eth':chain))
         return {
-          jarAddress: jar.jarAddress,
-          tokenAddress: jar.tokenAddress,
+          ...jar,
           name: jar.identifier
         };
     })
-    .filter(x => x);
+    .filter(x => x && !excluded.includes(x.name));
+  
 
   const jar_balances = (
     await sdk.api.abi.multiCall({
@@ -27,7 +33,8 @@ const ethTvl = async (timestamp, block, chainBlocks) => {
       calls: jars.map(jar => ({
         target: jar.jarAddress
       })),
-      abi: abi.balance
+      abi: abi.balance,
+      chain
     })
   ).output.map(val => val.output);
 
@@ -35,14 +42,22 @@ const ethTvl = async (timestamp, block, chainBlocks) => {
 
   await Promise.all(
     jars.map(async (jar, idx) => {
-      if (jar.name.toLowerCase().includes("crv") && jar.name != "yvecrv-eth") {
+      if((jar.name.includes("crv") || jar.name === "dodohndeth") && chain === "arbitrum"){
+        sdk.util.sumSingleBalance(
+          balances,
+          usdtAddress,
+          toUSDT(jar.liquidity_locked)
+        );
+      } else if (jar.name.toLowerCase().includes("crv") && jar.name != "yvecrv-eth") {
         await unwrapCrv(
           balances,
           jar.tokenAddress,
           jar_balances[idx],
           block,
+          chain,
+          transformAddress
         );
-      } else if (jar.name.includes("-")) {
+      } else if (jar.name.includes("-") || jar.name.includes("lp")) {
         lpPositions.push({
           balance: jar_balances[idx],
           token: jar.tokenAddress
@@ -56,7 +71,7 @@ const ethTvl = async (timestamp, block, chainBlocks) => {
       } else {
         sdk.util.sumSingleBalance(
           balances,
-          jar.tokenAddress,
+          transformAddress(jar.tokenAddress),
           jar_balances[idx]
         );
       }
@@ -65,83 +80,13 @@ const ethTvl = async (timestamp, block, chainBlocks) => {
   await unwrapUniswapLPs(
     balances,
     lpPositions,
-    block
-  );
-
-  return balances;
-};
-
-const polygonTvl = async (timestamp, block, chainBlocks) => {
-  const balances = {};
-
-  let jars = (await utils.fetchURL(jars_url)).data
-    .map(jar => {
-      if (jar.network === "polygon")
-        return {
-          jarAddress: jar.jarAddress,
-          tokenAddress: jar.tokenAddress,
-          name: jar.identifier
-        };
-    })
-    .filter(x => x);
-
-  const jar_balances = (
-    await sdk.api.abi.multiCall({
-      chain: "polygon",
-      block: chainBlocks["polygon"],
-      calls: jars.map(jar => ({
-        target: jar.jarAddress
-      })),
-      abi: abi.balance
-    })
-  ).output.map(val => val.output);
-
-  const lpPositions = [];
-
-  const transformAddress = await transformPolygonAddress();
-  await Promise.all(
-    jars.map(async (jar, idx) => {
-      if (jar.name.toLowerCase().includes("crv")) {
-        await unwrapCrv(
-          balances,
-          jar.tokenAddress,
-          jar_balances[idx],
-          chainBlocks["polygon"],
-          "polygon",
-          transformAddress
-        );
-      } else if (jar.name.includes("-")) {
-        lpPositions.push({
-          balance: jar_balances[idx],
-          token: jar.tokenAddress
-        });
-      } else {
-        sdk.util.sumSingleBalance(
-          balances,
-          `polygon:${jar.tokenAddress}`,
-          jar_balances[idx]
-        );
-      }
-    })
-  );
-
-  await unwrapUniswapLPs(
-    balances,
-    lpPositions,
-    chainBlocks["polygon"],
-    "polygon",
+    block,
+    chain,
     transformAddress
   );
 
   return balances;
-};
+}
+}
 
-module.exports = {
-  ethereum:{
-    tvl: ethTvl
-  },
-  polygon: {
-    tvl: polygonTvl
-  },
-  tvl: sdk.util.sumChainTvls([ethTvl, polygonTvl])
-};
+module.exports = chainExports(chainTvl, ["polygon", "ethereum", "arbitrum"])

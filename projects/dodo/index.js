@@ -1,5 +1,6 @@
 const { request, gql } = require("graphql-request");
 const sdk = require('@defillama/sdk');
+const {transformArbitrumAddress} = require('../helper/portedTokens')
 const { getBlock } = require('../helper/getBlock')
 
 const graphEndpoints = {
@@ -7,6 +8,7 @@ const graphEndpoints = {
     "bsc": "https://pq.hg.network/subgraphs/name/dodoex-v2-bsc/bsc",
     "heco": "https://q.hg.network/subgraphs/name/dodoex/heco",
     "polygon": "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-polygon",
+    "arbitrum": "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-arbitrum"
 }
 const graphQuery = gql`
 query get_pairs($lastId: String) {
@@ -84,6 +86,12 @@ function polygon(timestamp, ethBlock, chainBlocks) {
     return getChainTvl('polygon', chainBlocks['polygon'], addr => `polygon:${addr}`)
 }
 
+async function arbitrum(timestamp, ethBlock, chainBlocks) {
+    const block = await getBlock(timestamp, "arbitrum", chainBlocks)
+    const transform = await transformArbitrumAddress()
+    return getChainTvl('arbitrum', block, transform)
+}
+
 async function heco(timestamp, ethBlock, chainBlocks) {
     return getChainTvl('heco', await getBlock(timestamp, 'heco', chainBlocks), addr => `heco:${addr}`)
 }
@@ -98,6 +106,9 @@ module.exports = {
     polygon: {
         tvl: polygon
     },
+    arbitrum:{
+        tvl: arbitrum
+    },
     // We don't include heco because their subgraph is outdated
-    tvl: sdk.util.sumChainTvls([eth, bsc, polygon])
+    tvl: sdk.util.sumChainTvls([eth, bsc, polygon, arbitrum])
 }

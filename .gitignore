@@ -5,3 +5,7 @@ run.js
 blocks.js
 historical-data.js
 /.idea
+yarn.lock
+.DS_Store
+projects/pooltogether/index.js
+package-lock.json

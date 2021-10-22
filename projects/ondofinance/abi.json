@@ -1,0 +1,130 @@
+{
+    "getVaults": {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_from",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_to",
+                "type": "uint256"
+            }
+        ],
+        "name": "getVaults",
+        "outputs": [
+            {
+                "components": [
+                    {
+                        "internalType": "uint256",
+                        "name": "id",
+                        "type": "uint256"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "contract IERC20",
+                                "name": "token",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "contract ITrancheToken",
+                                "name": "trancheToken",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "trancheCap",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "userCap",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "deposited",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "originalInvested",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "totalInvested",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "received",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "rolloverDeposited",
+                                "type": "uint256"
+                            }
+                        ],
+                        "internalType": "struct IPairVault.Asset[]",
+                        "name": "assets",
+                        "type": "tuple[]"
+                    },
+                    {
+                        "internalType": "contract IStrategy",
+                        "name": "strategy",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "creator",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "strategist",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "rollover",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "hurdleRate",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "enum OLib.State",
+                        "name": "state",
+                        "type": "uint8"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "startAt",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "investAt",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "redeemAt",
+                        "type": "uint256"
+                    }
+                ],
+                "internalType": "struct IPairVault.VaultView[]",
+                "name": "vaults",
+                "type": "tuple[]"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+}

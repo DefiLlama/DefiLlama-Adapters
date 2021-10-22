@@ -11,12 +11,18 @@ const xsnxaTradeAccountingAddr = "0x6461E964D687E7ca3082bECC595D079C6c775Ac8";
 const xu3lpaAddr = "0xDa4d2152B2230e33c80b0A88b7C28b1C464EE3c2";
 const xu3lpbAddr = "0x420CF01fdC7e3c42c3D89ae8799bACCBfFa9ceAA";
 const xu3lpcAddr = "0x74e87FBA6C4bCd17fe5f14D73f590eD3C13E821B";
+const xu3lpdAddr = "0xdd699eae49a3504a28aeb9bd76a3f0369fa08471";
+const xu3lpeAddr = "0x828EC6E678A40c251f1F37DA389db0f820Af6f9D";
+const xu3lpfAddr = "0x4296d40183356A770Fd8cA3Ba0592f0163BE9CA3";
+const xu3lpgAddr = "0x28ce95124FB0d5Febe6Ab258072848f5fe1010eC";
+const xu3lphAddr = "0x9ed880b7F75a220C0450E4884521ba8d500eb4bb";
 const ethrsi6040Addr = "0x93E01899c10532d76C0E864537a1D26433dBbDdB";
 const sUsdAddr = "0x57ab1e02fee23774580c119740129eac7081e9d3";
 const xbntaAddr = "0x6949f1118FB09aD2567fF675f96DbB3B6985ACd0";
 const bntAddr = "0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C";
 const kncAddr = "0xdd974d5c2e2928dea5f71b9825b8b646686bd200";
 const snxAddr = "0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F";
+const wbtcAddr = "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599";
 const wethAddr = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 
 module.exports = {
@@ -36,8 +42,14 @@ module.exports = {
   xu3lpaAddr,
   xu3lpbAddr,
   xu3lpcAddr,
+  xu3lpdAddr,
+  xu3lpeAddr,
+  xu3lpfAddr,
+  xu3lpgAddr,
+  xu3lphAddr,
   ethrsi6040Addr,
   snxAddr,
   sUsdAddr,
+  wbtcAddr,
   wethAddr,
 };

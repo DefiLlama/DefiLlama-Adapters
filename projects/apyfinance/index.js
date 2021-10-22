@@ -47,4 +47,5 @@ module.exports = {
     tvl: ethTvl,
   },
   tvl: sdk.util.sumChainTvls([ethTvl]),
+  methodology: `The TVL for APY.Finance can be found in three contract addresses. Each address corresponds to the type of token that can be deposited, DAI, USDC, and USDT. After having the balance for each address, they are simply added together to get the total TVL.`
 };

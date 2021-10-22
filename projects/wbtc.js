@@ -11,5 +11,6 @@ async function fetch() {
 
 
 module.exports = {
-  fetch
+  fetch,
+  methodology: `TVL for WBTC consists of the BTC deposits in custody that were used to mint WBTC`
 }

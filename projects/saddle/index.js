@@ -15,6 +15,7 @@
   const veth2PoolAddress = "0xdec2157831D6ABC3Ec328291119cc91B337272b5"
   const alethPoolAddress = "0xa6018520eaacc06c30ff2e1b3ee2c7c22e64196a"
   const usdV2PoolAddress = "0xaCb83E0633d6605c5001e2Ab59EF3C745547C8C7"
+  const susdPoolAddress = "0x0C8BAe14c9f9BF2c953997C881BEfaC7729FD314"
   const veth2 = "0x898BAD2774EB97cF6b94605677F43b41871410B1"
   const weth = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
   const d4Pool = "0xc69ddcd4dfef25d8a793241834d4cc4b3668ead6"
@@ -34,6 +35,8 @@
     "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": [usdPoolAddress, usdV2PoolAddress],
     // USDT
     "0xdAC17F958D2ee523a2206206994597C13D831ec7": [usdPoolAddress, usdV2PoolAddress],
+    // SUSD
+    "0x57ab1ec28d129707052df4df418d58a2d46d5f51" : [susdPoolAddress],
     // WETH
     [weth] : [veth2PoolAddress, alethPoolAddress],
     // VETH2
@@ -104,10 +107,6 @@
   ==================================================*/
 
   module.exports = {
-    name: 'Saddle',   // project name
-    website: "https://saddle.finance",
-    token: null,              // null, or token symbol if project has a custom token
-    category: 'dexes',        // allowed values as shown on DefiPulse: 'Derivatives', 'DEXes', 'Lending', 'Payments', 'Assets'
     start: 1611057090,        // January 19, 2021 11:51:30 AM
     tvl                       // tvl adapter
   }

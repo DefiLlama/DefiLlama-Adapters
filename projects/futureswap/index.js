@@ -70,9 +70,6 @@ async function tvl(timestamp, block) {
   ==================================================*/
 
 module.exports = {
-  name: "Futureswap", // project name
-  token: "FST", // null, or token symbol if project has a custom token
-  category: "derivatives", // allowed values as shown on DefiPulse: 'Derivatives', 'DEXes', 'Lending', 'Payments', 'Assets'
   start: 1609459200, // unix timestamp (utc 0) specifying when the project began, or where live data begins
   tvl, // tvl adapter
 };

@@ -1,31 +1,69 @@
+const sdk = require('@defillama/sdk')
 const BigNumber = require('bignumber.js')
+const {getBlock} = require('../helper/getBlock')
+const {transformArbitrumAddress} = require('../helper/portedTokens')
+const {polygon} = require('./subgraph')
 
 const xUniswapV2TVL = require('./xUniswapV2');
 
-const ETH = '0x0000000000000000000000000000000000000000'.toLowerCase();
-const WETH = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'.toLowerCase();
+const data = {
+  ethereum: {
+    chain: 'ethereum',
+    factory: '0x8c3736e2fe63cc2cd89ee228d9dbcab6ce5b767b',
+    startBlock: 10000835,
+    getAddress: addr => addr,
+  },
+  polygon: {
+    chain: 'polygon',
+    factory: '0xBB92270716C8c424849F17cCc12F4F24AD4064D6',
+    startBlock: 14868433,
+    getAddress: addr => `polygon:${addr}`,
+  },
+  arbitrum: {
+    chain: 'arbitrum',
+    factory: '0x8c3736e2fe63cc2cd89ee228d9dbcab6ce5b767b',
+    startBlock: 763103,
+    getAddress: addr => `arbitrum:${addr}`
+  }
+};
 
-async function tvl(timestamp, block) {
-  const [xUniswapV2] = await Promise.all([
-    xUniswapV2TVL(timestamp, block),
-  ]);
+function getTvlCalculator(chainData) {
+  return async (timestamp, ethBlock, chainBlocks) => {
+    let {chain, factory, startBlock, getAddress} = chainData;
+    const block = await getBlock(timestamp, chain, chainBlocks);
+    if(chain === "arbitrum"){
+      getAddress = await transformArbitrumAddress()
+    }
 
-  // replace WETH with ETH
-  xUniswapV2[ETH] = xUniswapV2[WETH];
-  delete xUniswapV2[WETH];
+    const xUniswapV2= await xUniswapV2TVL(block, chain, factory, startBlock);
 
-  const tokenAddresses = new Set(Object.keys(xUniswapV2));
+    const tokenAddresses = new Set(Object.keys(xUniswapV2));
 
-  return Array
-    .from(tokenAddresses)
-    .reduce((accumulator, tokenAddress) => {
-      const xUniswapV2Balance = new BigNumber(xUniswapV2[tokenAddress] || '0');
-      accumulator[tokenAddress] = xUniswapV2Balance.toFixed();
+    const balances = Array
+      .from(tokenAddresses)
+      .reduce((accumulator, tokenAddress) => {
+        const xUniswapV2Balance = new BigNumber(xUniswapV2[tokenAddress] || '0');
+        accumulator[getAddress(tokenAddress)] = xUniswapV2Balance.toFixed();
 
-      return accumulator
-    }, {});
+        return accumulator
+      }, {});
+    return balances
+  };
 }
 
+const chainTvls = {
+  polygon: {
+    tvl: polygon.tvl
+  },
+  arbitrum: {
+    tvl: getTvlCalculator(data.arbitrum)
+  },
+  ethereum: {
+    tvl: getTvlCalculator(data.ethereum)
+  },
+};
+
 module.exports = {
-  tvl,
+  ...chainTvls,
+  tvl: sdk.util.sumChainTvls(Object.values(chainTvls).map(tvl=>tvl.tvl))
 };

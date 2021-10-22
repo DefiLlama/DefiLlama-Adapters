@@ -7,9 +7,8 @@ const collaterals = {
 }
 
 async function tvl(timestamp, block) {
-    const assetsRaw = await axios.get('https://raw.githubusercontent.com/yam-finance/degenerative/master/protocol/assets.json')
-    const assets =  Object.values(assetsRaw.data).flat()
-    console.log(assets)
+    const assetsRaw = await axios.get('https://raw.githubusercontent.com/yam-finance/synths-sdk/master/src/assets.json')
+    const assets =  Object.values(assetsRaw.data).map(b=>Object.values(b)).flat().flat()
     const balances = {}
     const collateralBalances = await sdk.api.abi.multiCall({
         abi: 'erc20:balanceOf',

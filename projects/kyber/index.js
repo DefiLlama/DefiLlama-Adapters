@@ -1,30 +1,15 @@
 const sdk = require('@defillama/sdk');
-  const BigNumber = require('bignumber.js');
-  const _ = require('underscore');
-  const abi = require('./abi');
-  const utils = require('../helper/utils')
-  const web3 = require('../config/web3.js');
-  const {getBlock} = require('../helper/getBlock')
-const {request, gql } = require('graphql-request')
+const BigNumber = require('bignumber.js');
+const _ = require('underscore');
+const abi = require('./abi');
+const utils = require('../helper/utils')
+const web3 = require('../config/web3.js');
+const { calcTvl } = require('./tvl.js')
+const { transformAvaxAddress, fixAvaxBalances } = require('../helper/portedTokens')
 
-
-  const usdtAddress = '0xdac17f958d2ee523a2206206994597c13d831ec7'
-  const egraphUrl = 'https://api.thegraph.com/subgraphs/name/dynamic-amm/dynamic-amm'
-const egraphQuery = gql`
-query get_tvl($block: Int) {
-  dmmFactory(
-    id: "0x833e4083b7ae46cea85695c4f7ed25cdad8886de",
-    block: { number: $block }
-  ) {
-    totalVolumeUSD
-    totalLiquidityUSD
-  }
-}
-`;
-
+// tracking TVL for Kyber Network
   async function ethTvl (timestamp, block) {
     const balances = {};
-
     const pairs = (await utils.fetchURL(
       `https://api.kyber.network/currencies`
     )).data.data;
@@ -73,7 +58,6 @@ query get_tvl($block: Int) {
         })
       }
     }))
-
     const ethBalances = sdk.api.eth.getBalances({
       targets: Array.from(reserves),
       block
@@ -85,7 +69,6 @@ query get_tvl($block: Int) {
     });
     const ethBalance = BigNumber.sum(...(await ethBalances).output.map(result=>result.balance))
     balances['0x0000000000000000000000000000000000000000'] = ethBalance.toFixed()
-
     /* combine token volumes on multiple markets */
     _.forEach(balanceOfResult.output, (result) => {
       let balance = new BigNumber(result.output || 0);
@@ -99,69 +82,45 @@ query get_tvl($block: Int) {
       } else {
         balances[asset] = balance.toFixed();
       }
-    });
-    const {dmmFactory} = await request(
-      egraphUrl,
-      egraphQuery,
-      {
-        block,
-      }
-      
-    );
-    if(dmmFactory !== null){ // Has been created
-      const ethTVL = (Number(dmmFactory.totalLiquidityUSD)* 1e6).toFixed(0)
-      sdk.util.sumSingleBalance(balances, usdtAddress, ethTVL)
-    }
-
+    }) 
     return balances;
   }
-
-  //fetch polygon chain DMM TVL 
-
-  async function polygonTvl(timestamp, block, chainBlocks){
-
-    block = chainBlocks['polygon']
-    var polygonEndpoint ='https://api.thegraph.com/subgraphs/name/piavgh/dmm-exchange-matic';
-      var query = gql`
-      query get_tvl($block: Int) {
-        dmmFactory(
-          id: "0x5f1fe642060b5b9658c15721ea22e982643c095c",
-          block: {number: $block}
-        ) {
-          totalVolumeUSD
-          totalLiquidityUSD
-        }
-      }
-      `;
-      const {dmmFactory} = await request(
-        polygonEndpoint,
-        query,
-        {
-          block,
-        }
-        
-      );
-      if(dmmFactory !== null){ // Has been created
-        polyTVL = (Number(dmmFactory.totalLiquidityUSD)* 1e6).toFixed(0)
-      }
-
-    return {
-      [usdtAddress]: polyTVL,
-    }
-
+  // tracking TVL for KyberDMM ethereum
+   async function ethDmmTVL(timestamp, ethBlock, chainBlocks) {
+    return calcTvl(addr => `ethereum:${addr}`, ethBlock, 'ethereum', '0x833e4083B7ae46CeA85695c4f7ed25CDAd8886dE', 0, true);
   }
+  // tracking TVL for KyberDMM polygon
+  async function polyTVL(timestamp, ethBlock, chainBlocks) {
+    return calcTvl(addr => `polygon:${addr}`, chainBlocks['polygon'], 'polygon', '0x5F1fe642060B5B9658C15721Ea22E982643c095c', 0, true);
+  }
+  // tracking TVL for KyberDMM BSC
+  async function bscTVL(timestamp, ethBlock, chainBlocks) {
+    return calcTvl(addr => `bsc:${addr}`, chainBlocks['bsc'], 'bsc', "0x878dFE971d44e9122048308301F540910Bbd934c", 0, true);
+  }
+  // tracking TVL for KyberDMM Avalanche
+  async function avaxTVL(timestamp, ethBlock, chainBlocks) {
+    const transform = await transformAvaxAddress()
+    const balances = await calcTvl(transform, chainBlocks['avax'], 'avax', "0x10908C875D865C66f271F5d3949848971c9595C9", 0, true);
+    fixAvaxBalances(balances)
+    return balances
+  }
+  
 /*==================================================
   Exports
 ==================================================*/
 
   module.exports = {
     misrepresentedTokens: true,
-
     ethereum: {
-      tvl: ethTvl,
+      tvl: ethDmmTVL,
     },
     polygon: {
-      tvl: polygonTvl
-    },
-    tvl:sdk.util.sumChainTvls([ethTvl,polygonTvl])
+      tvl: polyTVL,
+   },
+    bsc: {
+      tvl: bscTVL,
+   },
+   avalanche:{
+     tvl: avaxTVL,
+   },
   };
