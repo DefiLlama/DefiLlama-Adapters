@@ -79,7 +79,7 @@ const xdai = aaveChainTvl("xdai", "not-needed-but-left-for-compatibility-with-he
 const agaveTokenAddress = '0x3a97704a1b25F08aa230ae53B352e2e72ef52843'
 const agaveStakingContract = '0x610525b415c1BFAeAB1a3fc3d85D87b92f048221'
 async function staking(timestamp, block, chainBlocks){
-  const agveHeldInStkAgve = (await sdk.api.abi.call({
+  const stakedAgaveAmount = (await sdk.api.abi.call({
     target: agaveTokenAddress,
     params: agaveStakingContract,
     abi: "erc20:balanceOf",
@@ -95,8 +95,8 @@ async function staking(timestamp, block, chainBlocks){
 
 module.exports = {
   methodology: `Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There's multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending`,
-  staking:{
-    tvl: staking
-  },
-  tvl: xdai
+  xdai:{
+    staking,
+    tvl: xdai
+  }
 };
