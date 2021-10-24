@@ -98,7 +98,7 @@ async function xdai_registry(timestamp, ethBlock, chainBlocks) {
 
   const chain = 'xdai'
   const block = chainBlocks[chain]
-  validProtocolDataHelpers = '0xa874f66342a04c24b213BF0715dFf18818D24014'
+  const validProtocolDataHelpers = '0xa874f66342a04c24b213BF0715dFf18818D24014'
   
   const aTokenMarketData = (
     await sdk.api.abi.multiCall({
