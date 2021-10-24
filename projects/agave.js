@@ -80,6 +80,7 @@ const xdai_graphql = aaveChainTvl_graphql("xdai", "not-needed-but-left-for-compa
 const agaveTokenAddress = '0x3a97704a1b25F08aa230ae53B352e2e72ef52843'
 const agaveStakingContract = '0x610525b415c1BFAeAB1a3fc3d85D87b92f048221'
 
+
 // getAddressesProvidersList executed on https://blockscout.com/xdai/mainnet/address/0xa5E80AEAa020Ae41b1cBEe75dE7826297F7D803E/read-contract returns [0x24604cc6a929e10878534f9e7bf8083d98aba0a2, 0xa91b9095efa6c0568467562032202108e49c9ef8]
 // however, cannot find the correct parameter to getAddress(param) on these two contracts
 // Can instead use directly the ProtocolDataProvider 0xa874f66342a04c24b213BF0715dFf18818D24014
