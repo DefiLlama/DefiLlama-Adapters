@@ -171,6 +171,15 @@ const crvPools = {
           "0x532E6537FEA298397212F09A61e03311686f548e"
         ]
       },
+    // MIM-fUSDT-USDC Fantom
+    "0x2dd7C9371965472E5A5fD28fbE165007c61439E1": {
+        swapContract: "0x3a1659Ddcf2339Be3aeA159cA010979FB49155FF",
+        underlyingTokens: [
+            "0x82f0B8B456c1A451378467398982d4834b6829c1",
+            "0x049d68029688eAbF473097a2fC38ef61633A3C7A",
+            "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75"
+        ]
+    },
 }
 const yearnVaults = {
     // yvToken: underlying, eg yvYFI:YFI
