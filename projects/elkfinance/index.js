@@ -20,7 +20,7 @@ async function polygon(timestamp, ethBlock, chainBlocks) {
 async function avax(timestamp, ethBlock, chainBlocks) {
   const transform = await transformAvaxAddress()
   const balances = await calculateUniTvl(transform, chainBlocks['avax'], 'avax', "0x091d35d7F63487909C863001ddCA481c6De47091", 0, true);
-  fixAvaxBalances(balances)
+  //fixAvaxBalances(balances)
   return balances
 }
 
@@ -59,7 +59,7 @@ async function staking(timestamp, ethBlock, chainBlocks) {
   return {'avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c': balance};
 }
 // Missing: harmony, okex
-
+// node test.js projects/elkfinance/index.js
 module.exports = {
   misrepresentedTokens: true,
   xdai: {
@@ -80,7 +80,7 @@ module.exports = {
   avalanche:{
     tvl: avax
   },
-  tvl: sdk.util.sumChainTvls([avax, polygon, fantom, bsc, xdai, heco]),
+  //tvl: sdk.util.sumChainTvls([avax, polygon, fantom, bsc, xdai, heco]),
   staking:{
     tvl: staking
   }
