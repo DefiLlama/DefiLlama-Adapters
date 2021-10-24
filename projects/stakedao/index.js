@@ -166,7 +166,8 @@ async function avax(timestamp, ethBlock, chainBlocks) {
 
 module.exports = {
   ethereum:{
-    tvl: ethereum
+    tvl: ethereum,
+    staking
   },
   polygon:{
     tvl: polygon
@@ -174,8 +175,4 @@ module.exports = {
   avalanche: {
     tvl: avax
   },
-  staking:{
-    tvl: staking
-  },
-  tvl: sdk.util.sumChainTvls([ethereum, polygon, avax])
 }
