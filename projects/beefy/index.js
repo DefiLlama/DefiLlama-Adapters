@@ -10,7 +10,7 @@ function fetchChain(chainId) {
       tvl += chain[vault];
     }
     if(tvl === 0){
-      throw new Error("tvl is 0")
+      throw new Error(`chain ${chainId} tvl is 0`)
     }
 
     return tvl;
@@ -55,8 +55,8 @@ module.exports = {
   avalanche:{
     fetch: fetchChain(43114)
   },
-  harmony:{
-    fetch: fetchChain(1666600000)
-  },
+  // harmony:{
+  //   fetch: fetchChain(1666600000)
+  // },
   fetch
 }
