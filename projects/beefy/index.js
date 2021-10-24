@@ -2,7 +2,7 @@ const utils = require('../helper/utils');
 
 function fetchChain(chainId) {
   return async () => {
-    const response = await utils.fetchURL('https://api.beefy.finance/tvl');
+    const response = await utils.fetchURL('https://api.beefy.finance/tvl?q=1666600000');
 
     let tvl = 0;
     const chain = response.data[chainId];
@@ -19,7 +19,7 @@ function fetchChain(chainId) {
 
 
 async function fetch() {
-  const response = await utils.fetchURL('https://api.beefy.finance/tvl');
+  const response = await utils.fetchURL('https://api.beefy.finance/tvl?q=1666600000');
 
   let tvl = 0;
   for (chainId in response.data) {
@@ -55,8 +55,8 @@ module.exports = {
   avalanche:{
     fetch: fetchChain(43114)
   },
-  // harmony:{
-  //   fetch: fetchChain(1666600000)
-  // },
+  harmony:{
+    fetch: fetchChain(1666600000)
+  },
   fetch
 }
