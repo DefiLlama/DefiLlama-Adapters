@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
 const utils = require("../helper/utils");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
+const { getCompoundV2Tvl } = require("../helper/compound");
 const { transformFantomAddress, transformBscAddress } = require('../helper/portedTokens')
 const { GraphQLClient, gql } = require('graphql-request')
 
@@ -324,5 +325,7 @@ module.exports = {
   polygon:{
     tvl: polygonTvl
   },
-  tvl: sdk.util.sumChainTvls([ethereumTvl, fantomTvl, bscTvl, polygonTvl]),
+  avalanche:{
+    tvl: getCompoundV2Tvl("0x2eE80614Ccbc5e28654324a66A396458Fa5cD7Cc", "avax", addr=>`avax:${addr}`)
+  }
 };
