@@ -8,8 +8,11 @@ const { transformPolygonAddress, transformXdaiAddress } = require("./helper/port
 const polygonGraphUrl = 'https://api.thegraph.com/subgraphs/name/superfluid-finance/superfluid-matic'
 const xdaiGraphUrl = 'https://api.thegraph.com/subgraphs/name/superfluid-finance/superfluid-xdai'
 const supertokensQuery = gql`
-query get_supertokens {
-  tokens(first: 1000) {
+query get_supertokens($block: Int) {
+  tokens(
+    first: 1000, 
+    block: { number: $block } 
+  ) {
     id
     underlyingAddress
     name
@@ -96,7 +99,11 @@ async function retrieveSupertokensBalances(chain, timestamp, ethBlock, chainBloc
     transform = await transformXdaiAddress()
   }
 
-  const { tokens } = await request(graphUrl, supertokensQuery)
+  const { tokens } = await request(
+    graphUrl, 
+    supertokensQuery, 
+    {block}
+  )
 
   const allTokens = tokens.filter(t => t.symbol.length > 0)
 
