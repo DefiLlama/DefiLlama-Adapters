@@ -6,7 +6,7 @@ async function fetch() {
       await retry(async () => await axios.get("https://api.synthetify.io/stats/mainnet"))
     ).data;
     const index = response.length - 1
-    return response[index].collateralAll + response[index].synthetic
+    return response[index].collateralAll
   }
 
   const tvl = fetch()
