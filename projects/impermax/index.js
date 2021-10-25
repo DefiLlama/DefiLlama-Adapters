@@ -24,6 +24,12 @@ const data = {
     factory: '0x8c3736e2fe63cc2cd89ee228d9dbcab6ce5b767b',
     startBlock: 763103,
     getAddress: addr => `arbitrum:${addr}`
+  },
+  avax: {
+    chain: 'avax',
+    factory: '0x8c3736e2fe63cc2cd89ee228d9dbcab6ce5b767b',
+    startBlock: 5928819,
+    getAddress: addr => `avax:${addr}`
   }
 };
 
@@ -60,6 +66,9 @@ const chainTvls = {
   },
   ethereum: {
     tvl: getTvlCalculator(data.ethereum)
+  },
+  avax: {
+    tvl: getTvlCalculator(data.avax)
   },
 };
 
