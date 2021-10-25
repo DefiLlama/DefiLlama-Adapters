@@ -3,7 +3,11 @@ const utils = require('./helper/utils');
 function fetchChain(chainId) {
   return async () => {
     const response = await utils.fetchURL(`https://swapoodxoh.execute-api.ap-southeast-1.amazonaws.com/tvl?chainId=${chainId}`);
-    return response.data.result
+    if (response.data) {
+      return response.data.result
+    } else {
+      return 0
+    }
   }
 }
 
@@ -25,7 +29,7 @@ const chainExports = Object.entries(chains).reduce((t,chain)=>({
 async function fetch() {
   return (await Promise.all(Object.values(chains).map(id=>fetchChain(id)()))).reduce((a,t)=>t+a, 0)
 }
-
+// node test.js projects/mushrooms.js
 module.exports = {
   ...chainExports,
   fetch
