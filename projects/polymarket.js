@@ -17,6 +17,7 @@ query GET_POLYMARKET($skip: Int, $block: Int) {
     conditions(
       first: 1000
       skip: $skip
+      block: { number: $block }
     ) { 
       id
       oracle
@@ -47,7 +48,8 @@ async function getMarketsLiquidity_graphql(timestamp, block, chainBlocks) {
   while (skip !== -1) { 
     const { conditions } = await request(
       graphUrl,
-      graphQuery, {skip, block}
+      graphQuery, 
+      {skip, block}
     );
     skip += 1000
     console.log(`${conditions && conditions.length} conditions found for skip: ${skip}`)
@@ -67,7 +69,7 @@ async function getMarketsLiquidity_graphql(timestamp, block, chainBlocks) {
   return scaledLiquidityParameterSum
 }
 
-// After a market resolves, then the market participants can withdraw their share based on the redemption rate and their contribution at the closing of the market. All participants do not do it immediately though, so volume of every market should be accounted for in TVL
+// After a market resolves, then the winning market participants can withdraw their share based on the redemption rate and their contribution at the closing of the market. All participants do not do it immediately though, so volume of every market should be accounted for in TVL
 // const polymarket_api_url = 'https://strapi-matic.poly.market/markets?_limit=-1&_sort=closed_time:desc' // &active=true
 
 const conditionalTokensContract = '0x4D97DCd97eC945f40cF65F87097ACe5EA0476045'
