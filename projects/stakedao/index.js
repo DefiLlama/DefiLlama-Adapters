@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
 const abi = require('./abi.json')
-const {unwrapCrv} = require('../helper/unwrapLPs')
+const { unwrapCrv } = require('../helper/unwrapLPs')
+const { transformAvaxAddress } = require('../helper/portedTokens');
 
 // Mainnet
 const crv_3crv_vault = {
@@ -51,6 +52,13 @@ const crv_btc_vault_polygon = {
   abi: 'balance'
 }
 
+// Avalanche
+const crv_3crv_vault_avalanche = {
+  contract: '0x0665eF3556520B21368754Fb644eD3ebF1993AD4',
+  crvToken: '0x1337BedC9D22ecbe766dF105c9623922A27963EC',
+  abi: 'balance'
+}
+
 const vaults = [
   crv_3crv_vault, 
   crv_eurs_vault, 
@@ -63,6 +71,10 @@ const vaults = [
 const vaultsPolygon = [
   crv_3crv_vault_polygon,
   crv_btc_vault_polygon
+]
+
+const vaultsAvalanche = [
+  crv_3crv_vault_avalanche
 ]
 
 const sanctuary = '0xaC14864ce5A98aF3248Ffbf549441b04421247D3'
@@ -113,19 +125,54 @@ async function polygon(timestamp, ethBlock, chainBlocks) {
     })  
     await unwrapCrv(balances, vault.crvToken, crvBalance.output, block, 'polygon', addr=>`polygon:${addr}`)
   }))
+  return balances
+}
+
+async function avax(timestamp, ethBlock, chainBlocks) {
+  const transformAddress = await transformAvaxAddress()
+  let balances = {};
+  const block = chainBlocks.avax
+  await Promise.all(vaultsAvalanche.map(async vault=>{
+    const crvBalance = await sdk.api.abi.call({
+      target: vault.contract,
+      block,
+      abi: abi[vault.abi], 
+      chain: 'avax'
+    })  
+    //console.log(crvBalance)
+    await unwrapCrv(balances, vault.crvToken, crvBalance.output, block, 'avax', addr=>`avax:${addr}`)
+  }))
+
+  // map from avax to ethereum token address 
+  const dai_eth_address = transformAddress('0xbA7dEebBFC5fA1100Fb055a87773e1E99Cd3507a')
+  const usdc_eth_address = transformAddress('0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664')
+  const usdt_eth_address = transformAddress('0xde3A24028580884448a5397872046a019649b084')
+
+  // avDAI
+  const avDAI = 'avax:0x47AFa96Cdc9fAb46904A55a6ad4bf6660B53c38a'
+  balances[dai_eth_address] = balances[avDAI]
+  delete balances[avDAI]
+  // avUSDC
+  const avUSDC = 'avax:0x46A51127C3ce23fb7AB1DE06226147F446e4a857'
+  balances[usdc_eth_address] = balances[avUSDC]
+  delete balances[avUSDC]
+  // avUSDT
+  const avUSDT = 'avax:0x532E6537FEA298397212F09A61e03311686f548e'
+  balances[usdt_eth_address] = balances[avUSDT]
+  delete balances[avUSDT]
 
   return balances
 }
 
 module.exports = {
   ethereum:{
-    tvl: ethereum
+    tvl: ethereum,
+    staking
   },
   polygon:{
     tvl: polygon
   },
-  staking:{
-    tvl: staking
+  avalanche: {
+    tvl: avax
   },
-  tvl: sdk.util.sumChainTvls([ethereum, polygon])
 }

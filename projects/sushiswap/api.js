@@ -92,12 +92,11 @@ const chainsWithBadCoingeckoSupport = ([
     //"0xd629eb00deced2a080b7ec630ef6ac117e614f1b", //WBTC
     "0x765de816845861e75a25fca122bb6898b8b1282a", //cUSD
   ], "celo"],
-  ["moonriver", "0x639a647fbe20b6c8ac19e48e2de44ea792c62c5c", [
+  ["moonriver", "0xf50225a84382c74CbdeA10b0c176f71fc3DE0C4d", [
     "0xb44a9b6905af7c801311e8f4e76932ee959c663c", // usdt
     "0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d", // usdc
-    "0x98878b06940ae243284ca214f92bb71a2b032b8a", // moonriver
-    "0x5d9ab5522c64e1f6ef5e3627eccc093f56167818", // busd
-  ], "ethereum"],
+    "0x639a647fbe20b6c8ac19e48e2de44ea792c62c5c", // eth
+  ], "moonriver"],
   ["palm", "0x4c1f6fcbd233241bf2f4d02811e3bf8429bc27b8", [
     "0xf98cabf0a963452c5536330408b2590567611a71" // wpalm
   ], "dai"]
