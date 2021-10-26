@@ -3,11 +3,7 @@ const utils = require('./helper/utils');
 function fetchChain(chainId) {
   return async () => {
     const response = await utils.fetchURL(`https://swapoodxoh.execute-api.ap-southeast-1.amazonaws.com/tvl?chainId=${chainId}`);
-    if (response.data && response.data.result) {
-      return response.data.result
-    } else {
-      return 0
-    }
+    return response.data.result
   }
 }
 
