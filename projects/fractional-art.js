@@ -59,12 +59,10 @@ function exampleVaultDebug() {
 
 // Get Fractional.art TVL
 async function tvl(timestamp, block, chainBlocks, chain) {
+  // Get vaults and Compute vaults TVL (trusting fractional rest api)
   const {vaults, openedVaultsCount} = await retrieveVaultsAPI()
-  
-  // Compute vaults TVL by trusting fractional rest api
-  const vaulstTVL_api = vaults.reduce((acc, vault) => acc.plus(BigNumber(vault.analytics ? vault.analytics.tvlUsd : 0)), BigNumber(0))
+  const vaulstTVL_api = getVaultsTvlApi(vaults)
   // note: vault with slug fractional-dream-930 has null analytics and symbol, because it is an ERC1155 not listed on any DEXes
-
   
   // Or try to find all pools associated to vault and account for tokens locked against vault token
   // In pool: provider, pool, token0, token1
@@ -128,17 +126,23 @@ async function tvl(timestamp, block, chainBlocks, chain) {
   // TODO: Choose if we remove the vaults tokens from pooled balances or not
   balances = clearVaultsTokenBalances(vaults, balances)
 
-  // Compare to TVL from REST API
-  console.log(`${vaulstTVL_api.div(1e6).toFixed(2)}M TVL locked in vaults computed from REST API / in ${openedVaultsCount} opened vaults out of ${vaults.length} total vaults count`)
-
-  // Using fractional REST API, a TVL is returned in USD, stored as USDC
-  // balances = {'0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48': vaulstTVL_api.times(1e6)} 
-
   return balances
 }
 
+// Using fractional REST API, a TVL is returned in USD, stored as USDC
+function getVaultsTvlApi(vaults) {
+  return vaults.reduce((acc, vault) => acc.plus(BigNumber(vault.analytics ? vault.analytics.tvlUsd : 0)), BigNumber(0))
+  console.log(`${vaulstTVL_api.div(1e6).toFixed(2)}M TVL locked in vaults computed from REST API / in ${openedVaultsCount} opened vaults out of ${vaults.length} total vaults count`)
+}
+
+const usdc = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
+async function tvl_api(timestamp, block, chainBlocks, chain) {
+  const {vaults, openedVaultsCount} = await retrieveVaultsAPI()
+  return {[usdc]: getVaultsTvlApi(vaults).times(1e6)} 
+}
+
 module.exports = {
-  tvl,
+  tvl: tvl,
   methodology: `TVL is the total quantity of tokens held in LPs against any vault token. Each vault has a token, which is provided as LP in several pools returned by fractional REST API. Do not account for vault token locked in pools as contributing to TVL.`
 }
 
