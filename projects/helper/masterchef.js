@@ -49,13 +49,16 @@ async function addFundsInMasterChef(balances, masterChef, block, chain = 'ethere
     const lpPositions = [];
 
     symbols.output.forEach((symbol, idx) => {
+        if (symbol.success == false) {
+            return;
+        }
         const balance = tokenBalances.output[idx].output;
         const token = symbol.input.target;
         if(ignoreAddresses.some(addr=>addr.toLowerCase() === token.toLowerCase())){
             return 
         }
         if(symbol.output.includes('LP') || symbol.output.includes('PGL') || symbol.output.includes('UNI-V2')) {
-          if(includeLPs){
+          if(includeLPs && balance){
             lpPositions.push({
                 balance,
                 token

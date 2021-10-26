@@ -101,7 +101,10 @@ async function polygonTvl(timestamp, blocks) {
       "params": lpETH.polygon
     },
   ]
-  return await stakingBalanceTvl(timestamp, block, "polygon", lps)
+  let balances = await stakingBalanceTvl(timestamp, block, "polygon", lps)
+  balances[ring.eth] = balances[ring.polygon]
+  delete balances[ring.polygon]
+  return balances
 }
 
 async function hecoTvl(timestamp, blocks) {
@@ -137,7 +140,10 @@ async function hecoTvl(timestamp, blocks) {
       "params": lpETH.heco
     },
   ]
-  return await stakingBalanceTvl(timestamp, block, "heco", lps)
+  let balances = await stakingBalanceTvl(timestamp, block, "heco", lps)
+  balances[ring.eth] = balances[ring.heco]
+  delete balances[ring.heco]
+  return balances
 }
 
 async function ethTvl(timestamp, blocks) {
@@ -173,10 +179,7 @@ async function ethTvl(timestamp, blocks) {
       "params": lpETH.eth
     },
   ]
-  let ethBal = await stakingBalanceTvl(timestamp, block, "ethereum", lps)
-  let hecoBal = await hecoTvl(timestamp, blocks)
-  sdk.util.sumSingleBalance(ethBal, ring.eth, hecoBal[ring.heco])
-  return ethBal
+  return await stakingBalanceTvl(timestamp, block, "ethereum", lps)
 }
 
 async function stakingBalanceTvl(timestamp, block, chain, lps) {

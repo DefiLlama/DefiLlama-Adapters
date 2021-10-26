@@ -33,6 +33,10 @@ const stakingVaults = [
         // lixGauge
         'contract': '0xDa42DEC00F7A11a325daf53a144c041Afb5AD448',
         'tokenLocked': '0xd0345d30fd918d7682398acbcdf139c808998709'
+    },{
+        // stakingContract
+        'contract': '0x29adccf67821e9236b401df02080bac67f84192d',
+        'tokenLocked': '0xd0345d30fd918d7682398acbcdf139c808998709'
     }
 ];
 // node test.js projects/lixir/index.js
