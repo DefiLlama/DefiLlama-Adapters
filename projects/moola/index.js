@@ -1,6 +1,7 @@
 const {getBlock} = require('../helper/getBlock')
 const {aaveChainTvl} = require('../helper/aave')
 const sdk = require('@defillama/sdk')
+const { any } = require('underscore')
 
 const tokens = [
     ["0x765DE816845861e75A25fCA122bb6898B8B1282a", "celo-dollar"],
@@ -28,6 +29,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
         })).output)
     }
     for(token of tokens){
+        var token
         const bal = await sdk.api.erc20.balanceOf({
             block,
             chain,
