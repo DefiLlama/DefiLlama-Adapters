@@ -1,7 +1,6 @@
 const { request, gql } = require("graphql-request");
 const { toUSDTBalances } = require('../helper/balances');
 const { getBlock } = require('../helper/getBlock');
-const sdk = require('@defillama/sdk')
 
 function getChainTvl(graphUrls, factoriesName = "uniswapFactories", tvlName = "totalLiquidityUSD") {
     const graphQuery = gql`
