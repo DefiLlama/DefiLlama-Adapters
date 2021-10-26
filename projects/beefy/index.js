@@ -51,6 +51,9 @@ module.exports = {
   },
   arbitrum:{
     fetch: fetchChain(42161)
+  }, 
+  celo:{
+    fetch: fetchChain(42220)
   },
   avalanche:{
     fetch: fetchChain(43114)
