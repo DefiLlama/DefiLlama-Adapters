@@ -63,7 +63,7 @@ async function tvl(timestamp, block, chainBlocks, chain) {
   
   // Compute vaults TVL by trusting fractional rest api
   const vaulstTVL_api = vaults.reduce((acc, vault) => acc.plus(BigNumber(vault.analytics ? vault.analytics.tvlUsd : 0)), BigNumber(0))
-  // note: vault with slug fractional-dream-930 has null analytics and symbol
+  // note: vault with slug fractional-dream-930 has null analytics and symbol, because it is an ERC1155 not listed on any DEXes
 
   
   // Or try to find all pools associated to vault and account for tokens locked against vault token
