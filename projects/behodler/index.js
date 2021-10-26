@@ -29,7 +29,7 @@ async function tvl(timestamp, block) {
 
 module.exports = {
   misrepresentedTokens: true,
-  methodology: `ERC20 tokens deposited as liquidity on the AMM. You can see this on https://analytics.behodler.io/#/, pulling the data from the 'arrenv/behodler' subgraph. Behodler also utilizes a universal liquidity token called Scarcity ($SCX).`,
+  methodology: `ERC20 tokens deposited as liquidity on the AMM. You can see this on https://analytics.behodler.io/#/, pulling the data from the 'arrenv/behodler' subgraph.`,
   ethereum:{
     tvl,
   },
