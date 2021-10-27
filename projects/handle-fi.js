@@ -37,27 +37,15 @@ const treasureTokens = [WETH]
 
 async function arbitrum_onchain(timestamp, block, chainBlocks, chain) {
   const balances = {}
-  chain = 'arbitrum'
-  const balanceOfs = await sdk.api.abi.multiCall({
-    abi: "erc20:balanceOf",
-    calls: treasureTokens.map(t => ({
-      target: t, 
-      params: treasuryContract
-    })),
-    block, 
-    chain
-  })
-  sdk.util.sumMultiBalanceOf(balances, balanceOfs, 'arbitrum', addr=>`arbitrum:${addr}`)
-  
- return balances
-  await sumTokens(balances, treasureTokens.map(t => [t, treasuryContract]), chainBlocks.arbitrum, 'arbitrum', addr=>`arbitrum:${addr}`)
+  await sumTokens(balances, treasureTokens.map(
+    t => [t, treasuryContract]
+  ), chainBlocks.arbitrum, 'arbitrum', addr=>`arbitrum:${addr}`)
   return balances
 }
-
 
 module.exports = {
   arbitrum: {
     tvl: arbitrum_onchain
   },
-  methodology: `TVL is sum of al collateralTokens provided in vaults to mint any fxTokens. It is`
+  methodology: `TVL is sum of al collateralTokens provided in vaults to mint any fxTokens. We can do an on-chain call to the ERC20 held in the treasuryContract.`
 }
