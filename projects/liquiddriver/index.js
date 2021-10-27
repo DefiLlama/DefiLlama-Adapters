@@ -114,7 +114,7 @@ const minichefTvl = async (timestamp, ethBlock, chainBlocks) => {
       );
       i++;
     }
-// node test.js projects/liquiddriver/index.js
+
     const token = balance.input.target;
     if (symbols.output[idx].success && symbols.output[idx].output.includes("LP")) {
       lpPositions.push({
