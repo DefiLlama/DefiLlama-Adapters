@@ -9,7 +9,6 @@ async function fetch() {
     return response[index].collateralAll
   }
 
-  const tvl = fetch()
   module.exports = {
       fetch,
       methodology:
