@@ -35,6 +35,5 @@ const tvlHeco = async (timestamp, blockETH, chainBlocks) => {
 module.exports = {
     heco: {
        tvl: tvlHeco
-    },
-    tvl: tvlHeco
+    }
 };
