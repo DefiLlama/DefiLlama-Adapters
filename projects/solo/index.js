@@ -38,11 +38,39 @@ const tvlBsc = async (timestamp, blockETH, chainBlocks) => {
     return balances;
 };
 
+const tvlPolygon = async (timestamp, blockETH, chainBlocks) => {
+    let block = chainBlocks[CHAIN_POLYGON];
+    if (block === undefined) {
+        block = (await sdk.api.util.lookupBlock(timestamp, { chain: CHAIN_POLYGON })).block;
+    }
+    const statistics = (await sdk.api.abi.call({ target: VAULT_POLYGON, abi: abi["getGlobalStatistics"], block: block, chain: CHAIN_POLYGON })).output;
+    const balances = {}
+    balances[CHAIN_POLYGON + ":" + USDT_POLYGON] = statistics[0]
+    return balances;
+};
+
+const tvlOec = async (timestamp, blockETH, chainBlocks) => {
+    let block = chainBlocks[CHAIN_OEC];
+    if (block === undefined) {
+        block = (await sdk.api.util.lookupBlock(timestamp, { chain: CHAIN_OEC })).block;
+    }
+    const statistics = (await sdk.api.abi.call({ target: VAULT_OEC, abi: abi["getGlobalStatistics"], block: block, chain: CHAIN_OEC })).output;
+    const balances = {}
+    balances[CHAIN_OEC + ":" + USDT_OEC] = statistics[0]
+    return balances;
+};
+
 module.exports = {
     heco: {
         tvl: tvlHeco
     },
     bsc: {
         tvl: tvlBsc
+    },
+    polygon: {
+        tvl: tvlPolygon
+    },
+    oec: {
+        tvl: tvlOec
     }
 };
