@@ -2,16 +2,17 @@
 const path = require("path");
 require('dotenv').config();
 const { default: computeTVL } = require("@defillama/sdk/build/computeTVL");
-const { getCurrentBlocks } = require("@defillama/sdk/build/computeTVL/blocks");
+const { chainsForBlocks } = require("@defillama/sdk/build/computeTVL/blocks");
+const { getLatestBlock } = require("@defillama/sdk/build/util/index");
 const { humanizeNumber } = require("@defillama/sdk/build/computeTVL/humanizeNumber");
 const { util } = require("@defillama/sdk");
 
-async function getBlocks() {
+async function getLatestBlockRetry(chain) {
     for (let i = 0; i < 5; i++) {
         try {
-            return await getCurrentBlocks();
+            return await getLatestBlock(chain);
         } catch (e) {
-            throw new Error("Couln't get block heights", e)
+            throw new Error(`Couln't get block heights for chain "${chain}"`, e)
         }
     }
 }
@@ -99,7 +100,18 @@ const passedFile = path.resolve(process.cwd(), process.argv[2]);
 
 (async () => {
     const module = require(passedFile);
-    const { timestamp:unixTimestamp, ethereumBlock:ethBlock, chainBlocks } = await getBlocks();
+    const unixTimestamp = Math.round(Date.now()/1000) - 60;
+    const chainBlocks = {}
+    const chains = Object.keys(module)
+    if(!chains.includes("ethereum")){
+        chains.push("ethereum")
+    }
+    await Promise.all(chains.map(async chain=>{
+        if(chainsForBlocks.includes(chain) || chain === "ethereum"){
+            chainBlocks[chain] = (await getLatestBlockRetry(chain)).number
+        }
+    }))
+    const ethBlock = chainBlocks.ethereum
     const usdTvls = {};
     const tokensBalances = {};
     const usdTokenBalances = {};
@@ -144,7 +156,7 @@ const passedFile = path.resolve(process.cwd(), process.argv[2]);
         }
         const mainTvlPromise = getTvl(unixTimestamp, ethBlock, chainBlocks, usdTvls, tokensBalances,
             usdTokenBalances, mainTvlIsFetch ? module.fetch : module.tvl, mainTvlIsFetch, 'tvl', knownTokenPrices)
-        tvlPromises = tvlPromises.concat([mainTvlPromise])
+        tvlPromises.push(mainTvlPromise)
     }
     await Promise.all(tvlPromises)
     Object.entries(chainTvlsToAdd).map(([tvlType, storedKeys]) => {
