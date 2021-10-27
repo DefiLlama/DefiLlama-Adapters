@@ -35,7 +35,8 @@ async function getJoins(block) {
     })),
     block
   });
-  await requery(ilks, "ethereum", block, MakerMCDConstants.ilk) // make sure that failed calls actually fail
+  await requery(ilks, "ethereum", block, MakerMCDConstants.ilk)
+  await requery(ilks, "ethereum", block, MakerMCDConstants.ilk)  // make sure that failed calls actually fail
 
   for (let ilk of ilks.output) {
     if (ilk.output) {
@@ -70,7 +71,7 @@ async function tvl(timestamp, block) {
           block
         })).output;
 
-        const symbol = await sdk.api.erc20.symbol(gem)
+        const symbol = join === "0xad37fd42185ba63009177058208dd1be4b136e6b"?"SAI": await sdk.api.erc20.symbol(gem)
         if (symbol.output === "UNI-V2") {
           await unwrapUniswapLPs(balances, [{
             token: gem,
@@ -81,7 +82,18 @@ async function tvl(timestamp, block) {
           sdk.util.sumSingleBalance(balances, gem, balance);
         }
       } catch (e) {
-        return
+        try{
+          if(join !== "0x7b3799b30f268ba55f926d7f714a3001af89d359"){
+            await sdk.api.abi.call({
+              block,
+              target: join,
+              abi: MakerMCDConstants.dog
+            })
+          }
+          return
+        } catch(e){
+          throw new Error("failed gem() and dog() on "+join)
+        }
       }
     }))
 
