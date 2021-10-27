@@ -42,14 +42,10 @@ async function pool2(timestamp, block) {
 }
 
 module.exports = {
-  staking: {
-    tvl: staking
-  },
-  pool2: {
-    tvl: pool2
-  },
   ethereum: {
     tvl,
+    pool2,
+    staking
   },
-  tvl,
+  tvl
 }
