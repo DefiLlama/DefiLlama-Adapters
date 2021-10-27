@@ -1,4 +1,5 @@
 const sdk = require('@defillama/sdk');
+const BigNumber = require("bignumber.js")
 const abi = require('./abi.json');
 
 const CHAIN_HECO = "heco"
@@ -6,8 +7,8 @@ const CHAIN_BSC = "bsc"
 const CHAIN_POLYGON = "polygon"
 const CHAIN_OEC = "okexchain"
 
-const VAULT_HECO_MDEX = "0x1cF73836aE625005897a1aF831479237B6d1e4D2"
-const VAULT_HECO_BXH = "0xE1f39a72a1D012315d581c4F35bb40e24196DAc8"
+const VAULT_HECO_1 = "0x1cF73836aE625005897a1aF831479237B6d1e4D2"
+const VAULT_HECO_2 = "0xE1f39a72a1D012315d581c4F35bb40e24196DAc8"
 const VAULT_BSC = "0x7033A512639119C759A51b250BfA461AE100894b"
 const VAULT_POLYGON = "0xE95876787B055f1b9E4cfd5d3e32BDe302BF789d"
 const VAULT_OEC = "0xa8AF3199aCE72E47c1DEb56E58BEA1CD41C37c22"
@@ -22,10 +23,10 @@ const tvlHeco = async (timestamp, blockETH, chainBlocks) => {
     if (block === undefined) {
         block = (await sdk.api.util.lookupBlock(timestamp, { chain: CHAIN_HECO })).block;
     }
-    const statisticsMdex = (await sdk.api.abi.call({ target: VAULT_HECO_MDEX, abi: abi["getGlobalStatistics"], block: block, chain: CHAIN_HECO })).output;
-    const statisticsBxh = (await sdk.api.abi.call({ target: VAULT_HECO_BXH, abi: abi["getGlobalStatistics"], block: block, chain: CHAIN_HECO })).output;
+    const statistics1 = (await sdk.api.abi.call({ target: VAULT_HECO_1, abi: abi["getGlobalStatistics"], block: block, chain: CHAIN_HECO })).output;
+    const statistics2 = (await sdk.api.abi.call({ target: VAULT_HECO_2, abi: abi["getGlobalStatistics"], block: block, chain: CHAIN_HECO })).output;
     const balances = {}
-    balances[CHAIN_HECO + ":" + USDT_HECO] = statisticsMdex[0] + statisticsBxh[0]
+    balances[CHAIN_HECO + ":" + USDT_HECO] = BigNumber(statistics1[0]).plus(BigNumber(statistics2[0]));
     return balances;
 };
 
