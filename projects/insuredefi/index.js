@@ -1,30 +1,18 @@
-const abi = require("./abi");
-const sdk = require("@defillama/sdk");
-const BigNumber = require("bignumber.js");
+const sdk = require('@defillama/sdk')
 
-const AssetAddress = "0xF4b2aa60Cd469717857a8A4129C3dB9108f54D74";
-
-
-async function tvl(timestamp, block) {
-  let balances = {};
-  let tokens = await _tokens();
-
-  for (let i in tokens) {
-    let token = tokens[i];
-    let output = (
-      await sdk.api.abi.call({
-        block,
-        target: AssetAddress,
-        params: token,
-        abi: abi.asset.balances,
-      })
-    ).output;
-    balances[token] = balances[token]
-      ? balances[token].plus(output)
-      : new BigNumber(output);
-  }
-  return balances;
+const SURE = "0xcb86c6a22cb56b6cf40cafedb06ba0df188a416e"
+const contract = "0xF4b2aa60Cd469717857a8A4129C3dB9108f54D74"
+const currentTvlAbi = {"inputs":[],"name":"currentTVL","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+async function tvl(time, block){
+    return {
+        [SURE]:(await sdk.api.abi.call({
+            target: contract,
+            block,
+            abi: currentTvlAbi
+        })).output
+    }
 }
+
 
 module.exports = {
   name: "inSure DeFi",
