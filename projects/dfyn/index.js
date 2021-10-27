@@ -1,6 +1,6 @@
 const { calculateUniTvl} = require('../helper/calculateUniTvl.js')
 const { transformPolygonAddress, 
-  transformOkexAddress } = require('../helper/portedTokens.js');
+  transformOkexAddress, transformFantomAddress } = require('../helper/portedTokens.js');
 const { getBlock } = require('../helper/getBlock')
 
 async function polygon(timestamp, block, chainBlocks) {
@@ -24,6 +24,16 @@ async function okex(timestamp, block, chainBlocks) {
   );
 };
 
+async function fantom(timestamp, block, chainBlocks) {
+  return await tvl(
+    chainBlocks['fantom'], 
+    '0xd9820a17053d6314B20642E465a84Bf01a3D64f5', 
+    'fantom', 
+    5436830, 
+    await transformFantomAddress()
+  );
+};
+
 async function tvl(block, factory, chain, startBlock, transform=a=>a) {
   return await calculateUniTvl(transform, block, chain, factory, startBlock, true);
 };
@@ -34,5 +44,8 @@ module.exports = {
   },
   okexchain:{
     tvl: okex,
+  },
+  fantom:{
+    tvl: fantom,
   },
 }
