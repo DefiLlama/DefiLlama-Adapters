@@ -17,23 +17,32 @@ const USDT_POLYGON = "0xc2132D05D31c914a87C6611C10748AEb04B58e8F"
 const USDT_OEC = "0x382bB369d343125BfB2117af9c149795C6C65C50"
 
 const tvlHeco = async (timestamp, blockETH, chainBlocks) => {
-    console.log("timestamp: " + timestamp + ", blockETH:" + blockETH, ", chainBlocks:" + chainBlocks)
     let block = chainBlocks[CHAIN_HECO];
-    console.log("block: " + block)
     if (block === undefined) {
         block = (await sdk.api.util.lookupBlock(timestamp, { chain: CHAIN_HECO })).block;
     }
-    console.log("block: " + block)
     const statistics = (await sdk.api.abi.call({ target: VAULT_HECO, abi: abi["getGlobalStatistics"], block: block, chain: CHAIN_HECO })).output;
-    console.log("statistics: " + statistics + ", tvl: " + statistics[0])
     const balances = {}
     balances[CHAIN_HECO + ":" + USDT_HECO] = statistics[0]
-    console.log("balances: " + balances)
+    return balances;
+};
+
+const tvlBsc = async (timestamp, blockETH, chainBlocks) => {
+    let block = chainBlocks[CHAIN_BSC];
+    if (block === undefined) {
+        block = (await sdk.api.util.lookupBlock(timestamp, { chain: CHAIN_BSC })).block;
+    }
+    const statistics = (await sdk.api.abi.call({ target: VAULT_BSC, abi: abi["getGlobalStatistics"], block: block, chain: CHAIN_BSC })).output;
+    const balances = {}
+    balances[CHAIN_BSC + ":" + USDT_BSC] = statistics[0]
     return balances;
 };
 
 module.exports = {
     heco: {
-       tvl: tvlHeco
+        tvl: tvlHeco
+    },
+    bsc: {
+        tvl: tvlBsc
     }
 };
