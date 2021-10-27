@@ -10,9 +10,8 @@ async function fetch() {
   }
 
   const tvl = fetch()
-
   module.exports = {
-      tvl,
+      fetch,
       methodology:
         'To obtain TVL of Synthetify we must add all colaterals which was deposited.'
   }
