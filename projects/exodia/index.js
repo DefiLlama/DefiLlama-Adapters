@@ -29,7 +29,7 @@ async function tvl(timestamp, block, chainBlocks) {
     balances,
     [
       [dai, false],
-      ["0x113f413371fC4CC4C9d6416cf1DE9dFd7BF747Df", true],
+      ["0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E", true],
     ],
     [treasury],
     chainBlocks.fantom,
