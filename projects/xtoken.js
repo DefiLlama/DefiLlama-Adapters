@@ -7,6 +7,8 @@ const {
   DEC_18,
   xaaveaAddr,
   xaavebAddr,
+  xalphaaAddr,
+  alphaAddr,
   xbntaAddr,
   bntAddr,
   xinchaAddr,
@@ -31,6 +33,7 @@ const {
   wethAddr,
 } = require("./config/xtoken/constants");
 const xAAVE = require("./config/xtoken/xAAVE.json");
+const xALPHA = require("./config/xtoken/xALPHA.json");
 const xBNT = require("./config/xtoken/xBNT.json");
 const xINCH = require("./config/xtoken/xINCH.json");
 const xKNC = require("./config/xtoken/xKNC.json");
@@ -43,6 +46,8 @@ const SNX = require("./config/xtoken/SNX.json");
 async function fetch() {
   const xaaveaCtr = new web3.eth.Contract(xAAVE, xaaveaAddr);
   const xaavebCtr = new web3.eth.Contract(xAAVE, xaavebAddr);
+  const xalphaaCtr = new web3.eth.Contract(xALPHA, xalphaaAddr);
+  const xbntaCtr = new web3.eth.Contract(xBNT, xbntaAddr);
   const xinchaCtr = new web3.eth.Contract(xINCH, xinchaAddr);
   const xinchbCtr = new web3.eth.Contract(xINCH, xinchbAddr);
   const xkncaCtr = new web3.eth.Contract(xKNC, xkncaAddr);
@@ -62,9 +67,15 @@ async function fetch() {
   );
   const ethrsi6040Ctr = new web3.eth.Contract(ERC20, ethrsi6040Addr);
   const snxCtr = new web3.eth.Contract(SNX, snxAddr);
-  const xbntaCtr = new web3.eth.Contract(xBNT, xbntaAddr);
 
   const priceAave = await utils.getPricesfromString("aave");
+  const priceAlpha = await retry(
+    async (bail) =>
+      await axios.get(
+        `https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${alphaAddr}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`
+      )
+  );
+
   const priceBnt = await retry(
     async (bail) =>
       await axios.get(
@@ -167,6 +178,14 @@ async function fetch() {
   const xu3lpgTvl = Number(new BigNumber(xu3lpgTvlRaw).div(DEC_18).toFixed(2));
   const xu3lphTvl = Number(new BigNumber(xu3lphTvlRaw).div(DEC_18).toFixed(2));
 
+  // xALPHAa
+  const xalphaaTvlRaw = await xalphaaCtr.methods.getNav().call();
+  const xalphaaTvl =
+    Number(new BigNumber(xalphaaTvlRaw).div(DEC_18).toFixed(2)) *
+    priceAlpha.data["0xa1faa113cbe53436df28ff0aee54275c13b40975"].usd;
+
+  console.log("xalphaaTvl : ", xalphaaTvl);
+
   const xaaveaTvl = xaaveaTvlToken * priceAave.data.aave.usd;
   const xaavebTvl = xaavebTvlToken * priceAave.data.aave.usd;
 
@@ -233,6 +252,7 @@ async function fetch() {
   const tvl =
     xaaveaTvl +
     xaavebTvl +
+    xalphaaTvl +
     xbntaTvl +
     xinchaTvl +
     xinchbTvl +
@@ -253,5 +273,5 @@ async function fetch() {
 
 module.exports = {
   fetch,
-  methodology: `TVL includes deposits made to the available strategies at xToken Markets.`
+  methodology: `TVL includes deposits made to the available strategies at xToken Markets.`,
 };
