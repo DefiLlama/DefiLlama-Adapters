@@ -74,6 +74,7 @@ async function tvl(timestamp, block) {
 }
 
 module.exports = {
+  methodology: "Vault TVL consists of the tokens in the vault contract and the total amount in the UNI V3 pool through the getTotalAmounts ABI call",
   ethereum: {
     tvl,
   },
