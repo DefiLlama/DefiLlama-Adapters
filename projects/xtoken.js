@@ -184,8 +184,6 @@ async function fetch() {
     Number(new BigNumber(xalphaaTvlRaw).div(DEC_18).toFixed(2)) *
     priceAlpha.data["0xa1faa113cbe53436df28ff0aee54275c13b40975"].usd;
 
-  console.log("xalphaaTvl : ", xalphaaTvl);
-
   const xaaveaTvl = xaaveaTvlToken * priceAave.data.aave.usd;
   const xaavebTvl = xaavebTvlToken * priceAave.data.aave.usd;
 
