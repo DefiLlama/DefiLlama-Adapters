@@ -177,9 +177,6 @@ async function transformHarmonyAddress() {
         if(compareAddresses(addr, "0x224e64ec1bdce3870a6a6c777edd450454068fec")){
             return "0xa47c8bf37f92abed4a126bda807a7b7498661acd"
         }
-        if(compareAddresses(addr, "0xcf664087a5bb0237a0bad6742852ec6c8d69a27a")){
-            return "harmony"
-        }
         const srcToken = bridge.find(token => compareAddresses(addr, token.hrc20Address))
         if (srcToken !== undefined) {
             const prefix = srcToken.network === "BINANCE"?"bsc:":""
