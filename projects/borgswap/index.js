@@ -31,6 +31,7 @@ const masterchefTvl = async (timestamp, ethBlock, chainBlocks) => {
 };
 
 module.exports = {
+  methodology: 'MasterChef Contents Sum',
   fantom:{
     //staking:staking(GPL, EARS, 'fantom'),
     tvl: masterchefTvl,
