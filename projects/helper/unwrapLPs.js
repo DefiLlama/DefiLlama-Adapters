@@ -4,6 +4,7 @@ const token0 = require('./abis/token0.json')
 const {getPoolTokens, getPoolId} = require('./abis/balancer.json')
 const getPricePerShare = require('./abis/getPricePerShare.json')
 const {requery} = require('./requery')
+const creamAbi = require('./abis/cream.json')
 
 const crvPools = {
     '0x6c3f90f043a72fa612cbac8115ee7e52bde6e490': {
@@ -199,7 +200,7 @@ const yearnVaults = {
     "0x27b7b1ad7288079a66d12350c828d3c00a6f07d7": "0x5282a4ef67d9c33135340fb3289cc1711c13638c",
 }
 async function unwrapYearn(balances, yToken, block, chain = "ethereum", transformAddress=(addr)=>addr) {
-    if (yearnVaults[yToken.toLowerCase()] == undefined) { return; };
+    //if (yearnVaults[yToken.toLowerCase()] == undefined) { return; };
     const underlying = yearnVaults[yToken.toLowerCase()];
 
     let pricePerShare = await sdk.api.abi.call({
@@ -502,6 +503,41 @@ async function sumTokens(balances, tokensAndOwners, block, chain = "ethereum", t
     })
 }
 
+async function unwrapCreamTokens(balances, tokensAndOwners, block, chain = "ethereum", transformAddress=id=>id){
+    const [balanceOfTokens, exchangeRates, underlyingTokens] = await Promise.all([
+        sdk.api.abi.multiCall({
+            calls: tokensAndOwners.map(t => ({
+                target: t[0],
+                params: t[1]
+            })),
+            abi: 'erc20:balanceOf',
+            block,
+            chain
+        }),
+        sdk.api.abi.multiCall({
+            calls: tokensAndOwners.map(t => ({
+                target: t[0],
+            })),
+            abi: creamAbi.exchangeRateStored,
+            block,
+            chain
+        }),
+        sdk.api.abi.multiCall({
+            calls: tokensAndOwners.map(t => ({
+                target: t[0],
+            })),
+            abi: creamAbi.underlying,
+            block,
+            chain
+        })
+    ])
+    balanceOfTokens.output.forEach((balanceCall, i)=>{
+        const underlying = underlyingTokens.output[i].output
+        const balance = BigNumber(balanceCall.output).times(exchangeRates.output[i].output).div(1e18).toFixed(0)
+        sdk.util.sumSingleBalance(balances, transformAddress(underlying), balance)
+    })
+}
+
 module.exports = {
     unwrapYearn,
     unwrapCrv,
@@ -511,5 +547,6 @@ module.exports = {
     addBalanceOfTokensAndLPs,
     sumTokensAndLPs,
     sumTokens,
-    sumBalancerLps
+    sumBalancerLps,
+    unwrapCreamTokens
 }
