@@ -1,0 +1,39 @@
+{
+  "inputs": [],
+  "name": "getPools",
+  "outputs": [
+    {
+      "components": [
+        { "internalType": "uint16", "name": "apy", "type": "uint16" },
+        {
+          "internalType": "uint16",
+          "name": "lockPeriodInDays",
+          "type": "uint16"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalDeposit",
+          "type": "uint256"
+        },
+        { "internalType": "uint256", "name": "startDate", "type": "uint256" },
+        { "internalType": "uint256", "name": "endDate", "type": "uint256" },
+        {
+          "internalType": "uint256",
+          "name": "minContrib",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "maxContrib",
+          "type": "uint256"
+        },
+        { "internalType": "uint256", "name": "hardCap", "type": "uint256" }
+      ],
+      "internalType": "struct DecubateStaking.Pool[]",
+      "name": "",
+      "type": "tuple[]"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+}
