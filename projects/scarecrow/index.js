@@ -1,26 +1,64 @@
+const sdk = require('@defillama/sdk');
 const abi = require("./abi.json");
 const { transformFantomAddress } = require("../helper/portedTokens");
-const { addFundsInMasterChef } = require("../helper/masterchef");
-const { staking } = require("../helper/staking");
-const { pool2Exports } = require('../helper/pool2')
+const { addTokensAndLPs } = require("../helper/unwrapLPs");
+const erc20 = require("../helper/abis/erc20.json");
 
+const chef = "0xbcef0849ddd928835a6aa130ae527c2703cd832c"
 
-const chef = "0xbCEf0849DDd928835A6Aa130aE527C2703CD832C"
-const scare = "0x46e1Ee17f51c52661D04238F1700C547dE3B84A1"
-const scareFtmLP = "0xd6b312d05fadba48ec6b899dd7db61e79fc36681"
+async function chainTvl(timestamp, block, chainBlocks) {
+  const poolLength = Number(
+    (
+      await sdk.api.abi.call({
+        abi: abi.poolLength,
+        target: chef,
+        chain: "fantom",
+        block: chainBlocks["fantom"],
+      })
+    ).output
+  );
+  const poolIds = Array.from(Array(poolLength).keys());
 
-async function tvl(timestamp, block, chainBlocks) {
-  const balances = {}
+  const lpTokens = (
+    await sdk.api.abi.multiCall({
+      abi: abi.poolInfo,
+      calls: poolIds.map((pid) => ({
+        target: chef,
+        params: pid,
+      })),
+      chain: "fantom",
+      block: chainBlocks["fantom"],
+    })
+  ).output.map((lp) => ({ output: lp.output[0].toLowerCase() }));
+
+  const amounts = (
+    await sdk.api.abi.multiCall({
+      abi: erc20.balanceOf,
+      calls: lpTokens.map((lp) => ({
+        target: lp.output,
+        params: chef,
+      })),
+      chain: "fantom",
+      block: chainBlocks["fantom"],
+    })
+  )
+
+  const balances = {};
+  const tokens = { output: lpTokens };
   const transformAddress = await transformFantomAddress();
-  await addFundsInMasterChef(balances, chef, chainBlocks.fantom, "fantom", transformAddress, abi.poolInfo, [scare, scareFtmLP])
+  await addTokensAndLPs(
+    balances,
+    tokens,
+    amounts,
+    chainBlocks["fantom"],
+    "fantom",
+    transformAddress
+  );
+
   return balances;
 }
 
 module.exports = {
   methodology: "TVL includes all farms in MasterChef contract",
-  staking:{
-    tvl: staking(chef, scare, "fantom")
-  },
-  pool2: pool2Exports(chef, [scareFtmLP], "fantom"),
-  tvl,
+  tvl: sdk.util.sumChainTvls([chainTvl]),
 }
