@@ -1,7 +1,10 @@
 const retry = require("async-retry");
 const { GraphQLClient, gql } = require("graphql-request");
 
+//USDH TOKEN ADDRESS ON POLYGON MAINNET
 const USDH_TOKEN_ADDRESS = "0x92B27abe3C96d3B1266f881b3B0886e68645F51F";
+
+//MATIC ADDRESS ON POLYGON MAINNET
 const MATIC_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 async function fetch() {
