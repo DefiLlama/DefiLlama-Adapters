@@ -21,7 +21,7 @@
         },
         {
             "internalType": "uint256",
-            "name": "lastRewardTimestamp",
+            "name": "lastRewardBlock",
             "type": "uint256"
         },
         {
