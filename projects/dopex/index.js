@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 const abi = require("./abi");
-const { pool2 } = require("../helper/pool2");
+const { pool2s } = require("../helper/pool2");
 const { staking } = require("../helper/staking");
 
 const DPX = "0xeec2be5c91ae7f8a338e1e5f3b5de49d07afdc81";
@@ -52,9 +52,15 @@ module.exports = {
       DPX,
       "ethereum"
     ),
-    pool2: pool2(
-      "0x2a52330be21d311a7a3f40dacbfee8978541b74a",
-      "0xf64af01a14c31164ff7381cf966df6f2b4cb349f",
+    pool2: pool2s(
+      [
+        "0x2a52330be21d311a7a3f40dacbfee8978541b74a",
+        "0x175029c85b14c326c83c9f83d4a21ca339f44cb5",
+      ],
+      [
+        "0xf64af01a14c31164ff7381cf966df6f2b4cb349f",
+        "0x0bf46ba06dc1d33c3bd80ff42497ebff13a88900",
+      ],
       "ethereum"
     ),
     tvl: async () => ({}),
@@ -66,9 +72,15 @@ module.exports = {
       "arbitrum",
       DPX
     ),
-    pool2: pool2(
-      "0x96B0d9c85415C69F4b2FAC6ee9e9CE37717335B4",
-      "0x0C1Cf6883efA1B496B01f654E247B9b419873054",
+    pool2: pool2s(
+      [
+        "0x96B0d9c85415C69F4b2FAC6ee9e9CE37717335B4",
+        "0x03ac1Aa1ff470cf376e6b7cD3A3389Ad6D922A74",
+      ],
+      [
+        "0x0C1Cf6883efA1B496B01f654E247B9b419873054",
+        "0x7418F5A2621E13c05d1EFBd71ec922070794b90a",
+      ],
       "arbitrum",
       transformArbitrum
     ),
