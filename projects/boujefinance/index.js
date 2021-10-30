@@ -11,9 +11,9 @@ const boujeFtmLP = "0x91af3c43b77217c1f9622BFC2Cd313e213332901"
 const boujeUsdcLP = "0xacf6728c977E349440827375C73Ee23bCE4Db291";
 
 async function tvl(timestamp, block, chainBlocks) {
-  const balances = {}
+  const balances = {};
   const transformAddress = await transformFantomAddress();
-  await addFundsInMasterChef(balances, chef, chainBlocks.fantom, "fantom", transformAddress, abi.poolInfo, [bouje])
+  await addFundsInMasterChef(balances, chef, chainBlocks.fantom, "fantom", transformAddress, abi.poolInfo, [bouje, boujeFtmLP, boujeUsdcLP]);
   return balances;
 }
 
