@@ -1,7 +1,9 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { sumTokens } = require("../helper/unwrapLPs");
+const tvlV1 = require('./v1')
 
+/*
 const PREMIA_OPTIONS_CONTRACT_ETH =
   "0x5920cb60B1c62dC69467bf7c6EDFcFb3f98548c0";
 const PREMIA_OPTIONS_CONTRACT_BSC =
@@ -52,7 +54,6 @@ const calcTvl = async (balances, chain, block, premiaOptionsContract) => {
   }
 };
 
-const DAI = "0x6b175474e89094c44da98b954eedeac495271d0f"
 const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
   const balances = {};
 
@@ -66,13 +67,6 @@ const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
     })
   ).output;
   sdk.util.sumSingleBalance(balances, erc20DAI, erc20DAIBalance);
-
-  const newPools = [
-    ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", "0x398D1622B10fE01f5F90a7bdA7A97eD4B54D6e28"],
-    ["0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", "0xC88aE38Cc8dF85dA9de09F9C0f587249Cc98eE23"],
-    ["0x514910771af9ca656af840dff83e8264ecf986ca", "0x26Bc47E2b076FC7EC68cB6D5824fac2047653246"]
-  ]
-  await sumTokens(balances, newPools.concat(newPools.map(pool=>[DAI, pool[1]])), ethBlock)
 
   return balances;
 };
@@ -100,12 +94,28 @@ const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
 
   return balances;
 };
+*/
+
+const DAI = "0x6b175474e89094c44da98b954eedeac495271d0f"
+const ethTvlV2 = async (timestamp, ethBlock, chainBlocks) => {
+  const balances = {};
+
+  const newPools = [
+    ["0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", "0x398D1622B10fE01f5F90a7bdA7A97eD4B54D6e28"],
+    ["0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", "0xC88aE38Cc8dF85dA9de09F9C0f587249Cc98eE23"],
+    ["0x514910771af9ca656af840dff83e8264ecf986ca", "0x26Bc47E2b076FC7EC68cB6D5824fac2047653246"]
+  ]
+  await sumTokens(balances, newPools.concat(newPools.map(pool=>[DAI, pool[1]])), ethBlock)
+
+  return balances;
+};
+
 
 module.exports = {
   ethereum: {
-    tvl: ethTvl,
+    tvl: sdk.util.sumChainTvls([ethTvlV2, tvlV1('ethereum')]),
   },
   bsc: {
-    tvl: bscTvl,
+    tvl: tvlV1('bsc'),
   },
 };
