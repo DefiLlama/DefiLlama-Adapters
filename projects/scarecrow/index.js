@@ -13,7 +13,7 @@ const scareUsdcLP = "0xC4C9a74b10Ca90DbA51a4ec69c7b3CE6709bAebf";
 async function tvl(timestamp, block, chainBlocks) {
   const balances = {}
   const transformAddress = await transformFantomAddress();
-  await addFundsInMasterChef(balances, chef, chainBlocks.fantom, "fantom", transformAddress, abi.poolInfo, [scare])
+  await addFundsInMasterChef(balances, chef, chainBlocks.fantom, "fantom", transformAddress, abi.poolInfo, [scare, scareFtmLP, scareUsdcLP]);
   return balances;
 }
 
