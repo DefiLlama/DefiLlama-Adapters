@@ -21,9 +21,7 @@ module.exports = {
   methodology: "TVL includes Cave and Attic in MasterChef contract",
   fantom: {
     tvl: tvlFantom,
+    staking: staking(chef["fantom"], token["fantom"], "fantom")
   },
-  staking:{
-    tvl: staking(chef["fantom"], token["fantom"], "fantom")
-  },
-  tvlFantom,
+  
 }
