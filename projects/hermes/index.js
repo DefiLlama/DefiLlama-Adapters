@@ -110,6 +110,7 @@ const token1Abi = {"constant":true,"inputs":[],"name":"token1","outputs":[{"inte
   
 const balanceUSDCString = "polygon:" + tokens.usdc
 
+//Transform apollo's balance into usdc's balance
 async function apolloRoute(lpBalance){
   const lptokenA = tokens.lp_apir;
   const lptokenIce = tokens.lp_irice;
@@ -137,6 +138,7 @@ async function apolloRoute(lpBalance){
   return Number(usdcBalance).toFixed(0).toString();
 }
 
+// Async function to get the equivalent balance of apollos lp in usdc
   async function unwrapApolloLPs(balances, lpPositions, block, chain='polygon', transformAddress=(addr)=>addr, excludeTokensRaw = [], retry = false) {
     const excludeTokens = excludeTokensRaw.map(addr=>addr.toLowerCase())
     const lpTokenCalls = lpPositions.map(lpPosition=>({
@@ -206,6 +208,7 @@ async function apolloRoute(lpBalance){
           }
       }))
 }
+
 async function getBalancerTVL(chainBlocks){
   const block = chainBlocks.polygon;
   const chain = "polygon";
