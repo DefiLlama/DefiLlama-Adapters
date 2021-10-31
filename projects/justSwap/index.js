@@ -9,7 +9,7 @@ async function tvl(timestamp){
       const r = await axios.get("https://abc.ablesdxd.link/swap/scan/liquidityall")
       // {liquidity: "0.000000000000000000", time: 1597492800000}
       return r.data.data.map(d=>({
-        date: d.time,
+        date: d.time/1000,
         totalLiquidityUSD: Number(d.liquidity)
       }))
     })
