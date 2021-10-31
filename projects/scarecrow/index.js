@@ -24,5 +24,5 @@ module.exports = {
       staking: staking(chef, scare, "fantom"),
       pool2: pool2Exports(chef, [scareFtmLP, scareUsdcLP], "fantom"),
   },
-  tvl,
+  
 } 
