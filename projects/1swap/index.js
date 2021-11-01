@@ -76,7 +76,7 @@ function getTokenId(address) {
       case '0x5d9ab5522c64e1f6ef5e3627eccc093f56167818':
           return ['busd', 18]
       case '0x0cae51e1032e8461f4806e26332c030e34de3adb':
-          return ['mim', 18]
+          return ['magic-internet-money', 18]
       default:
           return false;
   };
