@@ -1,14 +1,14 @@
 const retry = require('../helper/retry')
+const {toUSDTBalances} = require('../helper/balances')
 const { GraphQLClient, gql } = require('graphql-request')
 
 const API_URL = 'https://api.aldrin.com/graphql'
 
-async function fetch() {
-
+async function tvl(timestamp) {
   var graphQLClient = new GraphQLClient(API_URL)
 
-  const timestampFrom = Math.floor(Date.now() / 1000 - 60 * 60)
-  const timestampTo = Math.floor(Date.now() / 1000)
+  const timestampFrom = Math.floor(timestamp - 60 * 60)
+  const timestampTo = Math.floor(timestamp)
 
   var query = gql`
     {
@@ -26,9 +26,10 @@ async function fetch() {
     `;
 
   const results = await retry(async bail => await graphQLClient.request(query))
-  return results.getTotalVolumeLockedHistory.volumes[0].vol
+  return toUSDTBalances(results.getTotalVolumeLockedHistory.volumes[0].vol)
 }
 
 module.exports = {
-  fetch
+  misrepresentedTokens: true,
+  tvl
 }

@@ -1,16 +1,5 @@
 const {getTokenAccountBalance} = require('../helper/solana')
 
-const llama = [
-  {
-    coingeckoID: "solana",
-    account: "4Bo98VrTYkHLbE9zoXx3tCD3qEDcGZFCZFksgyYPKdG9",
-  },
-  {
-    coingeckoID: "msol",
-    account: "7n1AmrpywC84MdALohPBipAx1SYhjpSLjYFb2EuTV9wm",
-  },
-];
-
 async function tvl() {
   return {
     "solana": await getTokenAccountBalance("4Bo98VrTYkHLbE9zoXx3tCD3qEDcGZFCZFksgyYPKdG9"),
