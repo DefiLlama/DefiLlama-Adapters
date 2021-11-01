@@ -1,3 +1,5 @@
+const {getTokenAccountBalance} = require('../helper/solana')
+
 const llama = [
   {
     coingeckoID: "solana",
@@ -10,14 +12,10 @@ const llama = [
 ];
 
 async function tvl() {
-  return Promise.all(
-    llama.map(async ({ coingeckoID, account }) => {
-      return {
-        coingeckoID,
-        amount: await getTokenAccountBalance(account),
-      };
-    })
-  );
+  return {
+    "solana": await getTokenAccountBalance("4Bo98VrTYkHLbE9zoXx3tCD3qEDcGZFCZFksgyYPKdG9"),
+    "msol": await getTokenAccountBalance("7n1AmrpywC84MdALohPBipAx1SYhjpSLjYFb2EuTV9wm"),
+  }
 }
 
 module.exports = {
