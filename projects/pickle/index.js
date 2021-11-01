@@ -42,7 +42,7 @@ function chainTvl(chain){
 
   await Promise.all(
     jars.map(async (jar, idx) => {
-      if((jar.name.includes("crv") || jar.name === "dodohndeth") && chain === "arbitrum"){
+      if((jar.name.includes("crv") || jar.name === "dodohndeth") && chain === "arbitrum" || jar.name === "rbn-eth"){
         sdk.util.sumSingleBalance(
           balances,
           usdtAddress,
