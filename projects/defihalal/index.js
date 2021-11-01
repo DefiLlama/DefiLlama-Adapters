@@ -1,40 +1,12 @@
-const retry = require("async-retry");
-const { GraphQLClient, gql } = require("graphql-request");
+const {getLiquityTvl} = require('../helper/liquity')
 
 //USDH TOKEN ADDRESS ON POLYGON MAINNET
 const USDH_TOKEN_ADDRESS = "0x92B27abe3C96d3B1266f881b3B0886e68645F51F";
 
-//MATIC ADDRESS ON POLYGON MAINNET
-const MATIC_ADDRESS = "0x0000000000000000000000000000000000000000";
-
-async function fetch() {
-  var endpoint = "https://api.thegraph.com/subgraphs/name/defihalal/defi-halal";
-  var graphQLClient = new GraphQLClient(endpoint);
-
-  var query = gql`
-    {
-      globals(first: 1) {
-        currentSystemState {
-          totalCollateral
-          tokensInStabilityPool
-        }
-      }
-    }
-  `;
-  const results = await retry(async (bail) => await graphQLClient.request(query));
-  let stabilityPoolUsdhTvl = parseFloat(results.globals[0].currentSystemState.tokensInStabilityPool);
-  let troveMaticTvl = parseFloat(results.globals[0].currentSystemState.totalCollateral);
-
-  return {
-    [MATIC_ADDRESS]: troveMaticTvl,
-    [USDH_TOKEN_ADDRESS]: stabilityPoolUsdhTvl,
-  };
-}
-
 module.exports = {
-  name: "DeFiHalal",
-  token: "USDH",
-  category: "minting",
-  start: 1633123998,
-  fetch,
+  methodology: "USDH replaced with TUSD",
+  polygon:{
+    tvl: getLiquityTvl("0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270", USDH_TOKEN_ADDRESS,
+      "0x5668f18f99c8767e7c7d8ffe6aec1d70bc2f1d50", "0xd8a3e8c70091d6231a63e671a6ce8ea44e143d24", "polygon", true)
+  }
 };
