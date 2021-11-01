@@ -19,8 +19,6 @@ const web3polygon = new Web3('https://speedy-nodes-nyc.moralis.io/915f60cde0d3e9
 let tvlTotal = 0;
 
 async function fetchETH() {
-
-    try {
         var tvlETH = 0;
         var price_feed = await retry(async bail => await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,weth,tether,usd-coin,mist,wrapped-bitcoin,blockbank,roseon-finance,dai,cream,chainlink,mantra-dao,rio-defi,compound-governance-token,aave,uniswap,sushi,havven,yearn-finance,dynamic-set-dollar,bondly,polkastarter,1inch,reserve-rights-token,royale,ftx-token,serum,balancer,curve-dao-token,uma,thorchain-erc20,frax,hegic,rhegic,88mph,zlot,zhegic,whiteheart,wrapped-nxm,renbtc,bancor,kyber-network,celsius-degree-token,cornichon,api3,matic-network,bao-finance,terrausd,lepricon,royale,finxflo,daoventures,the-graph,0x,omisego,injective-protocol,badger-dao,rook,utrust,alpha-finance,rari-governance-token,polkafoundry,raze-network,kylin-network,labs-group,paid-network,dragonbite,b-cube-ai,alpha-impact,media-licensing-token,refinable,wbnb,greenheart-cbd,enjincoin&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true'));
 
@@ -327,23 +325,15 @@ async function fetchETH() {
 
         await Promise.all(stakingAssetsETH.map(async (asset) => {
             // ETH STAKING ASSETS
-            try {
                 let balance = await utils.returnBalance(asset.token, asset.contract);
                 tvlETH += (parseFloat(balance) * price_feed.data[asset.price].usd)
-            } catch (error) {
-                console.log(error)
-            }
         }))
 
         await Promise.all(lpStakingAssetsETH.map(async (pair) => {
             // ETH LP STAKING ASSETS
-            try {
                 let lpTokenPrice = await getPriceOfUniPair(pair)
                 let balance = await utils.returnBalance(pair.pairAddress, pair.contract);
                 tvlETH += (parseFloat(balance) * lpTokenPrice)
-            } catch (error) {
-                console.log(error)
-            }
         }))
 
         await new Promise(async (resolve, reject) => {
@@ -356,30 +346,20 @@ async function fetchETH() {
         })
 
         await Promise.all(zenErc20.map(async (asset) => {
-            try {
                 // ZEN erc lending assets
                 var contract = asset[0];
                 var token = asset[0];
                 balance = await returnSupplyETH(token, contract, CERC);
 
                 tvlETH += (parseFloat(balance) * price_feed.data[asset[1]].usd)
-            } catch (error) {
-                //console.log(error)
-            }
         }))
 
         tvlTotal += tvlETH;
 
         return tvlETH;
-
-    } catch (error) {
-        console.log(error)
-    }
 }
 
 async function fetchBSC() {
-
-    try {
         var tvlBSC = 0;
         var price_feed = await retry(async bail => await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,weth,tether,usd-coin,mist,wrapped-bitcoin,blockbank,roseon-finance,dai,cream,chainlink,mantra-dao,rio-defi,compound-governance-token,aave,uniswap,sushi,havven,yearn-finance,dynamic-set-dollar,bondly,polkastarter,1inch,reserve-rights-token,royale,ftx-token,serum,balancer,curve-dao-token,uma,thorchain-erc20,frax,hegic,rhegic,88mph,zlot,zhegic,whiteheart,wrapped-nxm,renbtc,bancor,kyber-network,celsius-degree-token,cornichon,api3,matic-network,bao-finance,terrausd,lepricon,royale,finxflo,daoventures,the-graph,0x,omisego,injective-protocol,badger-dao,rook,utrust,alpha-finance,rari-governance-token,polkafoundry,raze-network,kylin-network,labs-group,paid-network,dragonbite,b-cube-ai,alpha-impact,media-licensing-token,refinable,wbnb,greenheart-cbd,enjincoin&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true'));
 
@@ -493,39 +473,26 @@ async function fetchBSC() {
 
         await Promise.all(stakingAssetsBSC.map(async (asset) => {
             // BSC STAKING ASSETS
-            try {
                 let balance = await returnBalanceBSC(asset.token, asset.contract);
                 tvlBSC += (parseFloat(balance) * price_feed.data[asset.price].usd)
-            } catch (error) {
-                console.log(error)
-            }
         }))
 
         await Promise.all(lpStakingAssetsBSC.map(async (pair) => {
             // BSC LP STAKING ASSETS
-            try {
                 let lpTokenPrice = await getPriceOfPancakePair(pair)
                 let balance = await returnBalanceBSC(pair.pairAddress, pair.contract);
                 tvlBSC += (parseFloat(balance) * lpTokenPrice)
-            } catch (error) {
-                console.log(error)
-            }
         }))
 
         tvlTotal += tvlBSC;
 
         return tvlBSC;
 
-    } catch (error) {
-        console.log(error);
-    }
 }
 
 async function fetchPolygon() {
-
-    try {
         var tvlPolygon = 0;
-        var price_feed = await retry(async bail => await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,weth,tether,usd-coin,mist,wrapped-bitcoin,blockbank,roseon-finance,dai,cream,chainlink,mantra-dao,rio-defi,compound-governance-token,aave,uniswap,sushi,havven,yearn-finance,dynamic-set-dollar,bondly,polkastarter,1inch,reserve-rights-token,royale,ftx-token,serum,balancer,curve-dao-token,uma,thorchain-erc20,frax,hegic,rhegic,88mph,zlot,zhegic,whiteheart,wrapped-nxm,renbtc,bancor,kyber-network,celsius-degree-token,cornichon,api3,matic-network,bao-finance,terrausd,lepricon,royale,finxflo,daoventures,the-graph,0x,omisego,injective-protocol,badger-dao,rook,utrust,alpha-finance,rari-governance-token,polkafoundry,raze-network,kylin-network,labs-group,paid-network,dragonbite,b-cube-ai,alpha-impact,media-licensing-token,refinable,wbnb,greenheart-cbd,enjincoin&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true'));
+        var price_feed = await retry(async bail => await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,weth,tether,usd-coin,mist,wrapped-bitcoin,blockbank,roseon-finance,dai,cream,chainlink,mantra-dao,rio-defi,compound-governance-token,aave,uniswap,sushi,havven,yearn-finance,dynamic-set-dollar,bondly,polkastarter,1inch,reserve-rights-token,royale,ftx-token,serum,balancer,curve-dao-token,uma,thorchain-erc20,frax,hegic,rhegic,88mph,zlot,zhegic,whiteheart,wrapped-nxm,renbtc,bancor,kyber-network,celsius-degree-token,cornichon,api3,matic-network,bao-finance,terrausd,lepricon,royale,finxflo,daoventures,the-graph,0x,omisego,injective-protocol,badger-dao,rook,utrust,alpha-finance,rari-governance-token,polkafoundry,raze-network,kylin-network,labs-group,paid-network,dragonbite,b-cube-ai,alpha-impact,media-licensing-token,refinable,wbnb,greenheart-cbd,gamestation,enjincoin&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true'));
 
         async function returnBalancePOLYGON(token, address) {
             let contract = new web3polygon.eth.Contract(abis.minABI, token);
@@ -548,8 +515,10 @@ async function fetchPolygon() {
         };
 
         const stakingAssetsPOLYGON = [
-            //OM staking
-            { contract: '0xCdD0f77A2A158B0C7cFe38d00443E9A4731d6ea6', token: '0xc3ec80343d2bae2f8e680fdadde7c17e71e114ea', price: 'mantra-dao'}
+            // OM staking
+            { contract: '0xCdD0f77A2A158B0C7cFe38d00443E9A4731d6ea6', token: '0xc3ec80343d2bae2f8e680fdadde7c17e71e114ea', price: 'mantra-dao'},
+            // GAMER staking
+            { contract: '0xd1ecDC553651daB068486d9c4d066eCDC614416e', token: '0x3f6b3595ecf70735d3f48d69b09c4e4506db3f47', price: 'gamestation'}
         ]
 
         // POLYGON  LP Staking
@@ -567,42 +536,21 @@ async function fetchPolygon() {
 
         await Promise.all(stakingAssetsPOLYGON.map(async (asset) => {
             // POLYGON STAKING ASSETS
-            try {
                 let balance = await returnBalancePOLYGON(asset.token, asset.contract);
                 tvlPolygon += (parseFloat(balance) * price_feed.data[asset.price].usd)
-            } catch (error) {
-                console.log(error)
-            }
         }))
 
         await Promise.all(lpStakingAssetsPOLYGON.map(async (pair) => {
             // POLYGON LP STAKING ASSETS
-            try {
                 let lpTokenPrice = await getPriceOfQuickPair(pair)
                 let balance = await returnBalancePOLYGON(pair.pairAddress, pair.contract);
                 tvlPolygon += (parseFloat(balance) * lpTokenPrice)
-            } catch (error) {
-                console.log(error)
-            }
         }))
 
         tvlTotal += tvlPolygon;
 
         return tvlPolygon;
 
-    } catch(error) {
-        console.log(error);
-    }
-}
-
-async function fetch() {
-    try {
-
-        return tvlTotal;
-
-    } catch (error) {
-        console.log(error);
-    }
 }
 
 module.exports = {
@@ -612,8 +560,8 @@ module.exports = {
     bsc: {
         fetch: fetchBSC
     },
-    matic: {
+    polygon: {
         fetch: fetchPolygon
     },
-    fetch
+    fetch: async ()=>((await fetchETH())+(await fetchBSC())+(await fetchPolygon()))
 }
