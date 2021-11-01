@@ -19,23 +19,13 @@ async function fetch() {
 
   /*** Pools TVL Portion ***/
   let tvlPools = 0;
-  const data_pools = (
-    await retry(async (bail) => await graphQLClient.request(query))
-  ).pools
-    .map((liq) => Number(liq.totalLiquidity))
-    .forEach(function (sum) {
-      tvlPools += sum;
+  (await retry(async (bail) => await graphQLClient.request(query)))
+    .pools
+    .forEach(function (liq) {
+      tvlPools += Number(liq.totalLiquidity);
     });
-
-  /*** Farms TVL Portion ***/
-  let tvlFarms = 0;
-  const data_farms = (await utils.fetchURL(endpoint_farms)).data.data
-    .map((t) => t.tvl)
-    .forEach(function (sum) {
-      tvlFarms += sum;
-    });
-
-  return tvlPools + tvlFarms;
+  
+  return tvlPools;
 }
 
 module.exports = {
