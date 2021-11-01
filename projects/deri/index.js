@@ -20,7 +20,7 @@ async function perpetualPool(block, chain, pool, balances, transform=a=>a) {
   const bTokens = (await sdk.api.abi.multiCall({
     calls: bTokenIds.map((bTokenId) => ({
       target: pool,
-      params: [bTokenId],
+      params: bTokenId,
     })),
     block,
     abi: abi['getBToken'],
@@ -49,7 +49,7 @@ async function perpetualPoolLite(block, chain, pool, token, balances, transform=
 };
 let bscContracts = {
   'a' : {
-    'bTokenSymbol': '0xe9e7cea3dedca5984780bafc599bd69add087d56',
+    'bTokenSymbol': '0x4fabb145d64652a948d72533023f6e7a623c7c53',
     'pool': '0x4B439ABCBc736837D0F7f7A9C5619bF8fa650e15'
   },
   'b': {
