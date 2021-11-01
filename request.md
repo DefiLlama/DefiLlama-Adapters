@@ -34,7 +34,7 @@ chainge-finance
 
 
 ##### Short Description (to be shown on DefiLlama):
-
+Chainge Finance is a new generation DeFi app that includes all the DeFi services a user might need, including a Spot DEX, Futures DEX, Options DEX and corresponding Liquidity Pools - all powered by the innovative DCRM Fusion cross-chain technology.
 
 ##### Token address and ticker if any:
 
