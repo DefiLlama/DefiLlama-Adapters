@@ -1,6 +1,7 @@
 const { request, gql, rawRequest } = require("graphql-request");
 const sdk = require('@defillama/sdk');
 const { toUSDTBalances } = require('../helper/balances');
+const { getBlock } = require("../helper/getBlock");
 
 const graphUrl = 'https://api.openswap.one/subgraphs/name/openswap/openswapv2'
 const graphQuery = gql`
@@ -13,48 +14,21 @@ query get_tvl($block: Int) {
   },
 }
 `;
-const openxLiquidity = gql`
-  query get_tvl($block: Int) {
-    token(id: "0x01a4b054110d57069c1658afbc46730529a3e326") {
-      symbol
-      tokenDayData(orderDirection: desc) {
-        totalLiquidityUSD
-      }
-    }
-  }
-`;
-async function tvl(timestamp) {
-  const {block} = await sdk.api.util.lookupBlock(timestamp,{
-    chain: 'harmony'
-  })
+async function tvl(timestamp, ethBlock, chainBlocks) {
+  const block = await getBlock(timestamp, "harmony", chainBlocks)
   const response = await request(
     graphUrl,
     graphQuery,
     {
-      block,
+      block: block - 100,
     }
   );
   const usdTvl = Number(response.uniswapFactory.totalLiquidityUSD)
 
   return toUSDTBalances(usdTvl)
 }
-async function openxTvl(timestamp) {
-  const { block } = await sdk.api.util.lookupBlock(timestamp, {
-    chain: "harmony",
-  });
-  const response = await request(graphUrl, openxLiquidity, {
-    block,
-  });
-
-  const openxTvl = Number(
-    response.token.tokenDayData.slice(-1)[0].totalLiquidityUSD
-  );
-  return toUSDTBalances(openxTvl);
-}
 module.exports = {
   harmony:{
     tvl,
-    staking: openxTvl,
   },
-  tvl
 }
