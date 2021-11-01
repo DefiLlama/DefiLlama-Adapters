@@ -116,12 +116,12 @@ const minichefTvl = async (timestamp, ethBlock, chainBlocks) => {
     }
 
     const token = balance.input.target;
-    if (symbols.output[idx].output.includes("LP")) {
+    if (symbols.output[idx].success && symbols.output[idx].output.includes("LP")) {
       lpPositions.push({
         balance: totalBalance.toString(10),
         token,
       });
-    } else {
+    } else if (symbols.output[idx].success) {
       sdk.util.sumSingleBalance(
         balances,
         transformAddress(token),

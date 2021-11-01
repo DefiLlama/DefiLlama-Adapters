@@ -1,5 +1,7 @@
-const { sumTokensAndLPsSharedOwners } = require('../helper/unwrapLPs')
-const contracts = require('./contracts')
+const { sumTokensAndLPsSharedOwners, unwrapUniswapLPs } = require('../helper/unwrapLPs');
+const sdk = require("@defillama/sdk");
+const abi = require("./abi.json");
+const contracts = require('./contracts');
 
 const tokens = contracts.tokens;
 const fundedContracts = Object.keys(contracts.funded);
@@ -8,8 +10,22 @@ const otTokens = Object.keys(contracts.otTokens);
 const pool2Contracts = Object.keys(contracts.pool2);
 
 async function tvl(timestamp, block) {
-    const balances = {}
+    const balances = {};
+    let lpBalances = [];
+    const masterChefContract = "0xc2edad668740f1aa35e4d8f227fb8e17dca888cd";
 
+    const masterChefDeposits = await sdk.api.abi.call({
+        target: masterChefContract,
+        abi: abi,
+        params: [1, fundedContracts[4]],
+        block: block,
+      });
+    lpBalances.push({
+        'token': tokens.SLP_ETHUSDC,
+        'balance': masterChefDeposits.output.amount
+    })
+    await unwrapUniswapLPs(balances, lpBalances, block);
+    
     await sumTokensAndLPsSharedOwners(balances, [
         [tokens["USDC"], false],
         [tokens["aUSDC"], false],
@@ -49,7 +65,7 @@ async function pool2(timestamp, block) {
 
     return pool2
 }
-// node test.js projects/pendle/index.js
+
 module.exports = {
     tvl,
     staking:{
@@ -58,5 +74,5 @@ module.exports = {
     pool2:{
         tvl: pool2
     },
-    methodology: "Counts the collateral backing the yield tokens and USDC in the pendle markets. Staking TVL is just staked PENDLE on 0x07282F2CEEbD7a65451Fcd268b364300D9e6D7f5. Pool2 refers to the Pe,P pool at 0x685d32f394a5F03e78a1A0F6A91B4E2bf6F52cfE",
+    methodology: "Counts the collateral backing the yield tokens and USDC in the pendle markets, plus SLP staked in masterchef. Staking TVL is just staked PENDLE on 0x07282F2CEEbD7a65451Fcd268b364300D9e6D7f5. Pool2 refers to the Pe,P pool at 0x685d32f394a5F03e78a1A0F6A91B4E2bf6F52cfE",
 }

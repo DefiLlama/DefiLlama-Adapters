@@ -1,8 +1,79 @@
 const sdk = require("@defillama/sdk");
-const v1 = require('./v1')
-const v2 = require('./v2')
+const { request, gql } = require("graphql-request");
+const queryUrl =
+  "https://api.thegraph.com/subgraphs/name/polycatfi/polycat-finance-amm";
+const { BigNumber } = require("bignumber.js");
+
+const queryFieldPolygonTvl = gql`
+  query getPools($block: Int) {
+    pairs(orderBy: reserveUSD, orderDirection: desc) {
+      token0 {
+        symbol
+      }
+      token1 {
+        symbol
+      }
+      reserveUSD
+    }
+  }
+`;
+
+async function polygonTvl(timestmap, blocks, chainBlocks) {
+  let balances = {};
+  let { pairs: result } = await request(queryUrl, queryFieldPolygonTvl);
+  for (let i = 0; i < result.length; i++) {
+    let symbol0 = result[i].token0.symbol;
+    let symbol1 = result[i].token1.symbol;
+    if (
+      symbol0 === "PAW" ||
+      symbol1 === "PAW" ||
+      symbol0 === "FISH" ||
+      symbol1 === "FISH"
+    ) {
+      continue;
+    }
+    let reserve = BigNumber(result[i].reserveUSD)
+      .times(10 ** 6)
+      .toFixed(0);
+    sdk.util.sumSingleBalance(
+      balances,
+      `polygon:${"0x2791bca1f2de4661ed88a30c99a7a9449aa84174"}`,
+      reserve
+    );
+  }
+  return balances;
+}
+
+async function polygonPool2Tvl(timestamp, blocks, chainBlocks) {
+  let balances = {};
+  let { pairs: result } = await request(queryUrl, queryFieldPolygonTvl);
+  for (let i = 0; i < result.length; i++) {
+    let symbol0 = result[i].token0.symbol;
+    let symbol1 = result[i].token1.symbol;
+    if (
+      symbol0 === "PAW" ||
+      symbol1 === "PAW" ||
+      symbol0 === "FISH" ||
+      symbol1 === "FISH"
+    ) {
+      let reserve = BigNumber(result[i].reserveUSD)
+        .times(10 ** 6)
+        .toFixed(0);
+      sdk.util.sumSingleBalance(
+        balances,
+        `polygon:${"0x2791bca1f2de4661ed88a30c99a7a9449aa84174"}`,
+        reserve
+      );
+    }
+  }
+  return balances;
+}
 
 module.exports = {
-  methodology: 'TVL considers v1 and v2 deposits made to the farming strategies found with the MasterChef contracts and the VaultChef contracts, as well as the liquidity on the DEX that is calculated using the factory address (0x477ce834ae6b7ab003cce4bc4d8697763ff456fa)',
-  tvl: sdk.util.sumChainTvls([v1.tvl, v2.tvl]),
+  methodology: "Pool2 TVL are pairs that include PAW or FISH and regular TVL are the rest. TVL for each pool are the result of the reserveUSD call to the graph.",
+  polygon: {
+    tvl: polygonTvl,
+    pool2: polygonPool2Tvl,
+  },
+  tvl: polygonTvl
 };

@@ -44,6 +44,9 @@ const avaxTvl = async (timestamp, ethBlock, chainBlocks) => {
   const lpPositions = [];
 
   for (let index = 0; index < CountOfPools; index++) {
+    if (index == 14) {
+      continue // 14 isn't a normal pool, it's NFT staking rewards
+    }
     const getPoolAddress = (
       await sdk.api.abi.call({
         abi: abi.getPool,

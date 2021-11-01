@@ -15,6 +15,9 @@ async function transformFantomAddress() {
         if (addr.toLowerCase() === "0x82f0b8b456c1a451378467398982d4834b6829c1") { // MIM
             return "0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3"
         }
+        if(compareAddresses(addr, "0x260b3e40c714ce8196465ec824cd8bb915081812")){
+            return "polygon:0x4a81f8796e0c6ad4877a51c86693b0de8093f2ef" // IRON ICE
+        }
         const srcToken = multichainTokens.find(token => token.chainId === "250" && token.token === addr.toLowerCase())
         if (srcToken !== undefined) {
             if (srcToken.srcChainId === '1') {
@@ -68,6 +71,12 @@ async function transformBscAddress() {
         const srcToken = binanceBridge.find(token => token.ethContractAddress !== "" && token.bscContractAddress.toLowerCase() === addr.toLowerCase())
         if (srcToken !== undefined && srcToken.bscContractDecimal === srcToken.ethContractDecimal) {
             return srcToken.ethContractAddress
+        }
+        if (addr.toLowerCase() == "0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c") {
+            return 'avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c'
+        }
+        if (addr.toLowerCase() == "0x2170ed0880ac9a755fd29b2688956bd959f933f8") {
+            return '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
         }
         return `bsc:${addr}`
     }
@@ -165,6 +174,9 @@ async function transformHarmonyAddress() {
         if(compareAddresses(addr, "0x6983D1E6DEf3690C4d616b13597A09e6193EA013")){
             return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
         }
+        if(compareAddresses(addr, "0x224e64ec1bdce3870a6a6c777edd450454068fec")){
+            return "0xa47c8bf37f92abed4a126bda807a7b7498661acd"
+        }
         const srcToken = bridge.find(token => compareAddresses(addr, token.hrc20Address))
         if (srcToken !== undefined) {
             const prefix = srcToken.network === "BINANCE"?"bsc:":""
@@ -196,6 +208,16 @@ async function transformArbitrumAddress() {
     const bridge = (await utils.fetchURL("https://bridge.arbitrum.io/token-list-42161.json")).data.tokens
 
     return (addr) => {
+        if(compareAddresses(addr, "0xFEa7a6a0B346362BF88A9e4A88416B77a57D6c2A")){
+            return "0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3" // MIM
+        }
+        if(compareAddresses(addr, "0xDBf31dF14B66535aF65AaC99C32e9eA844e14501")){
+            return "0xeb4c2781e4eba804ce9a9803c67d0893436bb27d" // renBTC
+        }
+        if(compareAddresses(addr, "0x9ef758ac000a354479e538b8b2f01b917b8e89e7")){
+            return "polygon:0x3dc7b06dd0b1f08ef9acbbd2564f8605b4868eea" // XDO
+        }
+
         const dstToken = bridge.find(token => compareAddresses(addr, token.address))
         if (dstToken !== undefined) {
             return dstToken.extensions.l1Address
@@ -226,9 +248,27 @@ async function transformKccAddress() {
     return (addr) => {
       return `kcc:${addr}`;
     };
-  }
+}
+
+const chainTransforms = {
+    celo: transformCeloAddress,
+    fantom: transformFantomAddress,
+    optimism: transformOptimismAddress,
+    harmony: transformHarmonyAddress,
+    arbitrum: transformArbitrumAddress,
+}
+async function getChainTransform(chain){
+    if(chain === 'ethereum'){
+        return id=>id
+    }
+    if(chainTransforms[chain]!== undefined){
+        return chainTransforms[chain]()
+    }
+    return addr=>`${chain}:${addr}`
+}
 
 module.exports = {
+    getChainTransform,
     transformCeloAddress,
     transformFantomAddress,
     transformBscAddress,

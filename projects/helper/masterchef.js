@@ -54,13 +54,13 @@ async function addFundsInMasterChef(balances, masterChef, block, chain = 'ethere
         if(ignoreAddresses.some(addr=>addr.toLowerCase() === token.toLowerCase())){
             return 
         }
-        if (symbol.output.includes('LP') || symbol.output.includes('PGL')) {
-            if(includeLPs){
-                lpPositions.push({
-                    balance,
-                    token
-                });
-            }
+        if(symbol.output.includes('LP') || symbol.output.includes('PGL') || symbol.output.includes('UNI-V2')) {
+          if(includeLPs && balance){
+            lpPositions.push({
+                balance,
+                token
+            });
+          }
         } else {
             sdk.util.sumSingleBalance(balances, transformAddress(token), balance)
         }

@@ -1,0 +1,74 @@
+{
+    "poolInfo": {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "poolInfo",
+        "outputs": [
+            {
+                "internalType": "contract IERC20",
+                "name": "lpToken",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "allocPoint",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "lastRewardBlock",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "accsYSLPerShare",
+                "type": "uint256"
+            },
+            {
+                "internalType": "contract IStrategy",
+                "name": "strat",
+                "type": "address"
+            },
+            {
+                "internalType": "bool",
+                "name": "isActive",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "poolLength": {
+        "inputs": [],
+        "name": "poolLength",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "symbol": {
+        "constant": true,
+        "inputs": [],
+        "name": "symbol",
+        "outputs": [
+            {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    }
+}

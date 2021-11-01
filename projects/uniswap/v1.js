@@ -58,13 +58,11 @@ module.exports = async function tvl(timestamp, block) {
 
   return tokenBalances.reduce(
     (accumulator, tokenBalance) => {
-      if (tokenBalance.success) {
         const balanceBigNumber = new BigNumber(tokenBalance.output)
         if (!balanceBigNumber.isZero()) {
           const tokenAddress = tokenBalance.input.target.toLowerCase()
           accumulator[tokenAddress] = balanceBigNumber.toFixed()
         }
-      }
       return accumulator
     },
     {

@@ -92,7 +92,7 @@ const treasuryTvl = async (timestamp, ethBlock, chainBlocks) => {
     await utils.fetchURL(
       "https://raw.githubusercontent.com/augury-finance/default-token-list/master/tokens/matic.json"
     )
-  ).data.map((tokenAddress) => tokenAddress.address);
+  ).data.map((tokenAddress) => tokenAddress.address).filter(token => token !== "0xaaAEBE6Fe48E54f431b0C390CfaF0b017d09D42d");
 
   tokens_polygon.push(amWMATIC, OMEN, QUICK);
 
@@ -109,13 +109,11 @@ const treasuryTvl = async (timestamp, ethBlock, chainBlocks) => {
   ).output.map((lp) => lp.output);
 
   for (let index = 0; index < tokens_polygon.length; index++) {
-    try {
       sdk.util.sumSingleBalance(
         balances,
         `polygon:${tokens_polygon[index]}`,
         balanceTreasury[index]
       );
-    } catch (err) {}
   }
 
   return balances;
@@ -125,9 +123,6 @@ module.exports = {
   methodology: 'MasterAugur(MasterChef) contract is used to pull LP token amounts. LP tokens are unwrapped and each token token balance is considered in the TVL sum.',
   polygon: {
     tvl: polygonTvl,
+    treasury: treasuryTvl
   },
-  treasury: {
-    tvl: treasuryTvl,
-  },
-  tvl: sdk.util.sumChainTvls([polygonTvl]),
 };

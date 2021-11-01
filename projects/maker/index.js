@@ -3,7 +3,8 @@ const utils = require('web3-utils');
 const sdk = require('@defillama/sdk');
 const MakerSCDConstants = require("./abis/makerdao.js");
 const MakerMCDConstants = require("./abis/maker-mcd.js");
-const { unwrapUniswapLPs } = require('../helper/unwrapLPs')
+const { unwrapUniswapLPs } = require('../helper/unwrapLPs');
+const { requery } = require('../helper/requery.js');
 
 async function getJoins(block) {
   let rely = utils.sha3("rely(address)").substr(0, 10);
@@ -27,20 +28,19 @@ async function getJoins(block) {
     return `0x${auth.topics[1].substr(26)}`;
   });
 
-  const ilks = (await sdk.api.abi.multiCall({
+  const ilks = await sdk.api.abi.multiCall({
     abi: MakerMCDConstants.ilk,
     calls: auths.map((auth) => ({
       target: auth,
     })),
     block
-  })).output;
+  });
+  await requery(ilks, "ethereum", block, MakerMCDConstants.ilk)
+  await requery(ilks, "ethereum", block, MakerMCDConstants.ilk)  // make sure that failed calls actually fail
 
-  for (let ilk of ilks) {
+  for (let ilk of ilks.output) {
     if (ilk.output) {
-      let name = utils.hexToString(ilk.output);
-      if (name.substr(0, 3) !== 'PSM') {
-        joins.push(ilk.input.target)
-      }
+      joins.push(ilk.input.target)
     }
   }
 
@@ -71,7 +71,7 @@ async function tvl(timestamp, block) {
           block
         })).output;
 
-        const symbol = await sdk.api.erc20.symbol(gem)
+        const symbol = join === "0xad37fd42185ba63009177058208dd1be4b136e6b"?"SAI": await sdk.api.erc20.symbol(gem)
         if (symbol.output === "UNI-V2") {
           await unwrapUniswapLPs(balances, [{
             token: gem,
@@ -82,7 +82,18 @@ async function tvl(timestamp, block) {
           sdk.util.sumSingleBalance(balances, gem, balance);
         }
       } catch (e) {
-        return
+        try{
+          if(join !== "0x7b3799b30f268ba55f926d7f714a3001af89d359"){
+            await sdk.api.abi.call({
+              block,
+              target: join,
+              abi: MakerMCDConstants.dog
+            })
+          }
+          return
+        } catch(e){
+          throw new Error("failed gem() and dog() on "+join)
+        }
       }
     }))
 

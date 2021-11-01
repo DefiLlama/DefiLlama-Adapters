@@ -28,7 +28,7 @@ async function multiCallAndReduce(abi, chain, targets, block) {
 }
 
 module.exports = async function tvl(block, chain, factory, startBlock) {
-  if (block === undefined) return {};
+  if (block === undefined) throw new Error("Impermax: block is undefined");
 
   const logs = (
     await sdk.api.util
@@ -67,9 +67,11 @@ module.exports = async function tvl(block, chain, factory, startBlock) {
     lendingPools.map((lendingPool) => lendingPool.collateralAddress),
   );
 
-  const reserves = await multiCallAndReduce(getReserves, chain, pairAddresses, block);
-  const totalSupplies = await multiCallAndReduce(getTotalSupply, chain, pairAddresses, block);
-  const totalBalances = await multiCallAndReduce(getTotalBalance, chain, poolTokenAddresses, block);
+  const [reserves, totalSupplies, totalBalances]  = await Promise.all([
+    multiCallAndReduce(getReserves, chain, pairAddresses, block),
+    multiCallAndReduce(getTotalSupply, chain, pairAddresses, block),
+    multiCallAndReduce(getTotalBalance, chain, poolTokenAddresses, block)
+  ]);
 
   return lendingPools.reduce((accumulator, lendingPool, ) => {
     const reservesRaw = reserves[lendingPool.pairAddress];
