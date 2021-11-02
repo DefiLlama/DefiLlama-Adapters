@@ -3,26 +3,6 @@ const retry = require('./helper/retry')
 const axios = require("axios")
 const BigNumber = require("bignumber.js")
 
-// Get supply for token (from xdai or mainnet)
-async function getSupply(token, contractChain) {
-  const contract = token[contractChain]
-  if (contract === null) {
-    return new BigNumber(0)
-  }
-  // URL from scanner depends on contract chain
-  let url
-  if (contractChain === 'ethereumContract') {
-    url = 'https://api.etherscan.io/api?module=stats&action=tokensupply&contractaddress=' + contract + '&apikey=H6NGIGG7N74TUH8K2X31J1KB65HFBH2E82'
-  }
-  else if (contractChain === 'xDaiContract') {
-    url = 'https://blockscout.com/xdai/mainnet/api?module=stats&action=tokensupply&contractaddress=' + contract
-  }
-  // Once URL built, parse response with 18 decimals
-  const response = await retry(async bail => await axios.get(url))
-  const supply = new BigNumber(response.data.result).div(10 ** 18)
-  return supply
-}
-
 // Loop through all RealT tokens listed by realt.community API and accumulate tokenprice * supply, where supply is biggest of xdai or mainnet
 // See https://api.realt.community/ for reference
 const xdai_usdc = 'xdai:0xDDAfbb505ad214D7b80b1f830fcCc89B60fb7A83'
