@@ -26,33 +26,56 @@ async function getSupply(token, contractChain) {
 // Loop through all RealT tokens listed by realt.community API and accumulate tokenprice * supply, where supply is biggest of xdai or mainnet
 // See https://api.realt.community/ for reference
 const xdai_usdc = 'xdai:0xDDAfbb505ad214D7b80b1f830fcCc89B60fb7A83'
-async function xdaiTvl() {
+async function xdaiTvl(timestamp, block, chainBlocks) {
   let realt_tokens = await retry(async bail => await axios.get('https://api.realt.community/v1/token'))
   realt_tokens = realt_tokens.data
 
   // Filter out deprecated contracts
   realt_tokens = realt_tokens.filter(t => !t['fullName'].startsWith('OLD-'))
   // realt_tokens = realt_tokens.slice(0,5)
-  // .filter(t => t['xDaiContract'] !== null).slice(0,5)
-  //realt_tokens = realt_tokens.filter(t => t['fullName'].startsWith('18273 Monte '))
-  // console.log(realt_tokens)
 
-  let tvl = new BigNumber(0)
-  for (let token of realt_tokens) { 
-    // Retrieve mainnet and xdai supplies of tokens
-    const mainnetSupply = await getSupply(token, 'ethereumContract')
-    const xdaiSupply = await getSupply(token, 'xDaiContract')
-    const largestSupply = mainnetSupply.isGreaterThan(xdaiSupply) ? mainnetSupply : xdaiSupply
-    console.log(largestSupply.toFixed())
+  const calls_xdai = realt_tokens.map((token) => ({
+    target: token['xDaiContract'],
+  })).filter(t => t.target)
+  const tokenSupplies_xdai = (
+    await sdk.api.abi.multiCall({
+      calls: calls_xdai,
+      abi: 'erc20:totalSupply',
+      block: chainBlocks['xdai'],
+      chain: 'xdai'
+    })
+  ).output
 
-    // Get property price by multiplying supply by token price (as given by price feed from realt community)
-    const propertyPrice = largestSupply.times(token['tokenPrice'])
+  const calls_eth = realt_tokens.map((token) => ({
+    target: token['ethereumContract'],
+  })).filter(t => t.target)
+  const tokenSupplies_eth = (
+    await sdk.api.abi.multiCall({
+      calls: calls_eth,
+      abi: 'erc20:totalSupply',
+      block: chainBlocks['ethereum'],
+      chain: 'ethereum'
+    })
+  ).output
 
-    // Accumulate to TVL in USD and log
-    tvl = tvl.plus(propertyPrice)
-    console.log(token['fullName'], ' - propertyPrice:', propertyPrice.toFixed(2), ' - TOKEN PRICE:', token['currency'], token['tokenPrice'], ' - LargestSupply:', largestSupply.toFixed(2))
-  }
+  const tokenProperties = tokenSupplies_xdai.map((supply) => {
+    const tokenContract = supply.input.target
+    const token = realt_tokens.find(t => t['xDaiContract'] === tokenContract)
+    return {
+      'contract': tokenContract,
+      'supply': supply.output,
+      'tokenPrice': token['tokenPrice'],
+      'propertyPrice': BigNumber(supply.output).div(1e18).times(BigNumber(token['tokenPrice']))
+    }
+  })
+
+  // Accumulate to TVL in USD and log
+  let tvl = tokenProperties.reduce(
+    (acc, token) => acc.plus(BigNumber(token['propertyPrice'])), 
+    BigNumber(0)
+  ) 
   tvl = tvl.times(1e6).toFixed(0)
+  console.log('Realt TVL:', tvl)
   return {[xdai_usdc]: tvl}
 }
 
