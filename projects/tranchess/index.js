@@ -2,7 +2,8 @@ const sdk = require('@defillama/sdk')
 const abi = require('./abi.json')
 
 const funds = [
-  '0xd6B3B86209eBb3C608f3F42Bf52818169944E402'
+  '0xd6B3B86209eBb3C608f3F42Bf52818169944E402', // BTC
+  '0x677B7304Cb944b413D3c9aEbc4D4B5DA1A698A6B'  // ETH
 ]
 
 function getBSCAddress(address) {
