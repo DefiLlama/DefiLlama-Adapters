@@ -136,7 +136,10 @@ async function transformOkexAddress() {
     const okexBridge = (await utils.fetchURL("https://www.okex.com/v2/asset/cross-chain/currencyAddress")).data.data.tokens
     // TODO
     return (addr) => {
-      return `okexchain:${addr}`;
+        if(compareAddresses(addr, "0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c")){
+            return "avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c"
+        }
+        return `okexchain:${addr}`;
     };
 }
 
@@ -177,6 +180,9 @@ async function transformHarmonyAddress() {
         if(compareAddresses(addr, "0x224e64ec1bdce3870a6a6c777edd450454068fec")){
             return "0xa47c8bf37f92abed4a126bda807a7b7498661acd"
         }
+        if(compareAddresses(addr, "0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c")){
+            return "avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c"
+        }
         const srcToken = bridge.find(token => compareAddresses(addr, token.hrc20Address))
         if (srcToken !== undefined) {
             const prefix = srcToken.network === "BINANCE"?"bsc:":""
@@ -201,6 +207,16 @@ async function transformOptimismAddress() {
             }
         }
         return addr //`optimism:${addr}` // TODO: Fix
+    }
+}
+
+async function transformMoonriverAddress() {
+
+    return (addr) => {
+        if(compareAddresses(addr, "0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c")){
+            return "avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c"
+        }
+        return `moonriver:${addr}` //`optimism:${addr}` // TODO: Fix
     }
 }
 
@@ -246,7 +262,10 @@ function fixHarmonyBalances(balances){
 
 async function transformKccAddress() {
     return (addr) => {
-      return `kcc:${addr}`;
+        if(compareAddresses(addr, "0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c")){
+            return "avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c"
+        }
+        return `kcc:${addr}`;
     };
 }
 
@@ -278,6 +297,7 @@ module.exports = {
     transformHecoAddress,
     transformHarmonyAddress,
     transformOptimismAddress,
+    transformMoonriverAddress,
     fixAvaxBalances,
     transformOkexAddress,
     transformKccAddress,
