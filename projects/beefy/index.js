@@ -49,6 +49,9 @@ module.exports = {
   fantom:{
     fetch: fetchChain(250)
   },
+  moonriver:{
+    fetch: fetchChain(1285)
+  },
   arbitrum:{
     fetch: fetchChain(42161)
   }, 
