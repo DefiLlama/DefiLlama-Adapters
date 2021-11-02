@@ -11,10 +11,9 @@ async function tvl(timestamp){
       // {liquidity: "0.000000000000000000", time: 1597492800000}
       return r.data.data.map(d=>({
         date: d.t/1000,
-        totalLiquidityUSD: Number(d.wtrxLocked)/1e6
+        totalLiquidityUSD: Number(d.wtrxLocked)/1e12
       }))
     });
-    console.log(balances)
     return {
       "tron": Number(balances[usdtAddress])
     }

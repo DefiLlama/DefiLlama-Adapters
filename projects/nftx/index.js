@@ -52,8 +52,6 @@ query get_vaults($block: Int) {
       is1155
       isFinalized
       totalHoldings
-      totalMints
-      totalRedeems
       holdings(first: 1000) {
         id
         tokenId
@@ -64,33 +62,10 @@ query get_vaults($block: Int) {
         name
         symbol
       }
-      fees {
-        mintFee
-        randomRedeemFee
-        targetRedeemFee
-        swapFee
-      }
       asset {
         id
         name
         symbol
-      }
-      manager {
-        id
-      }
-      createdBy {
-        id
-      }
-      eligibilityModule {
-        id
-        eligibleIds
-        eligibleRange
-      }
-      features {
-        enableMint
-        enableRandomRedeem
-        enableTargetRedeem
-        enableSwap
       }
     }
   }
