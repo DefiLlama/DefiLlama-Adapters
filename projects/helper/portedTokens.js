@@ -265,7 +265,7 @@ async function transformKccAddress() {
         if(compareAddresses(addr, "0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c")){
             return "avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c"
         }
-        if(compareAddresses(addr, "0x0039f574eE5cC39bdD162E9A88e3EB1f111bAF48")){
+        if(compareAddresses(addr.toLowerCase(), "0x0039f574ee5cc39bdd162e9a88e3eb1f111baf48")){
             return "0xdac17f958d2ee523a2206206994597c13d831ec7"
         }
         if(compareAddresses(addr, "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48")){
@@ -279,6 +279,15 @@ async function transformKccAddress() {
         }
         if(compareAddresses(addr, "0xc9baa8cfdde8e328787e29b4b078abf2dadc2055")){
             return "0x6b175474e89094c44da98b954eedeac495271d0f"
+        }
+        if(compareAddresses(addr, "0x218c3c3d49d0e7b37aff0d8bb079de36ae61a4c0")){
+            return "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"
+        }
+        if(compareAddresses(addr, "0xf55af137a98607f7ed2efefa4cd2dfe70e4253b1")){
+            return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+        }
+        if(compareAddresses(addr, "0x980a5afef3d17ad98635f6c5aebcbaeded3c3430")){
+            return "okexchain:0xc946daf81b08146b1c7a8da2a851ddf2b3eaaf85"
         }
         return `kcc:${addr}`;
     };
