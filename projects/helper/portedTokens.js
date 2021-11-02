@@ -265,6 +265,21 @@ async function transformKccAddress() {
         if(compareAddresses(addr, "0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c")){
             return "avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c"
         }
+        if(compareAddresses(addr, "0x0039f574eE5cC39bdD162E9A88e3EB1f111bAF48")){
+            return "0xdac17f958d2ee523a2206206994597c13d831ec7"
+        }
+        if(compareAddresses(addr, "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48")){
+            return "okexchain:0xc946daf81b08146b1c7a8da2a851ddf2b3eaaf85"
+        }
+        if(compareAddresses(addr, "0x639a647fbe20b6c8ac19e48e2de44ea792c62c5c")){
+            return "bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+        }
+        if(compareAddresses(addr, "0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d")){
+            return "0x4fabb145d64652a948d72533023f6e7a623c7c53"
+        }
+        if(compareAddresses(addr, "0xc9baa8cfdde8e328787e29b4b078abf2dadc2055")){
+            return "0x6b175474e89094c44da98b954eedeac495271d0f"
+        }
         return `kcc:${addr}`;
     };
 }
