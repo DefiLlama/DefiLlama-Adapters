@@ -46,5 +46,6 @@ async function kashiLending(timestamp, block, chainBlocks) {
 
 module.exports = {
   tvl: kashiLending,
+  kashiLending: kashiLending,
   methodology: `TVL of Sushiswap Kashi lending consists of the tokens held in Sushiswap Bentoboxes contracts (only one bentobox at the moment)`
 }
