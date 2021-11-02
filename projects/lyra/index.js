@@ -2,7 +2,7 @@ const { getBlock } = require('../helper/getBlock')
 const { staking } = require('../helper/staking')
 const {sumTokens} = require('../helper/unwrapLPs')
 
-const pools = ['0x7Af4e1cE484f40D927b9C90fB6905Df4376fc3F6', '0xd7d974E81382D05E8D9fc6d0d17d0d852e9806dd', '0x69B4B35504a8c1d6179fef7AdDCDB37A8c663BC9', '0x2935CD347B79C319A6464fe3b1087170f142418C']
+const pools = ['0x7Af4e1cE484f40D927b9C90fB6905Df4376fc3F6', '0xd7d974E81382D05E8D9fc6d0d17d0d852e9806dd', '0x69B4B35504a8c1d6179fef7AdDCDB37A8c663BC9', '0x2935CD347B79C319A6464fe3b1087170f142418C', "0x788843DE0Be1598155bFFaAB7Cfa2eCBd542E7f1"]
 const tokens = ['0x8c6f28f2f1a3c87f0f938b96d27520d9751ec8d9', '0xe405de8f52ba7559f9df3c368500b6e6ae6cee49']
 
 async function tvl(ttimestamp, _b, chainBlocks){
