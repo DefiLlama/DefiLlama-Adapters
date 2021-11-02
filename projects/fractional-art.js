@@ -1,7 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { BigNumber } = require("bignumber.js");
 const utils = require('./helper/utils');
-const {unwrapUniswapLPs} = require('./helper/unwrapLPs.js')
 
 
 // Retrieve needed vaults attributes from REST API
@@ -26,15 +25,6 @@ async function retrieveVaultsAPI() {
     vaults.push(...vaults_i)
   }
   return {vaults, openedVaultsCount}
-}
-
-// Remove vaults tokens (token0) balances as they should not account for TVL
-function clearVaultsTokenBalances(vaults, balances) {
-  const vaults_t0 = vaults.map(v => v.contractAddress.toLowerCase())
-  balances = Object.assign({}, ...
-    Object.entries(balances).filter(([k,v]) => (!vaults_t0.includes(k.toLowerCase()))).map(([k,v]) => ({[k]:v}))
-  )
-  return balances 
 }
 
 // This API returns a list of vaults similar to the following exampleVaultDebug
@@ -96,10 +86,7 @@ async function tvl(timestamp, block, chainBlocks, chain) {
   const calls_v3_v2_t0_t1 = v2_v3_pools.map((pool) => ({ 
       target: pool.token1,
       params: pool.pool
-    })).concat(v2_v3_pools.map((pool) => ({
-      target: pool.token0,
-      params: pool.pool
-    })))
+    }))
   /*
   const calls_v3_t1 = univ3_pools.map((pool) => ({ // 33.67 // 20.69
       target: pool.token1,
@@ -124,7 +111,6 @@ async function tvl(timestamp, block, chainBlocks, chain) {
 
   // Remove vaults tokens balances as they should not account for TVL. 
   // TODO: Choose if we remove the vaults tokens from pooled balances or not
-  balances = clearVaultsTokenBalances(vaults, balances)
 
   return balances
 }
