@@ -37,24 +37,13 @@ async function xdaiTvl(timestamp, block, chainBlocks) {
   const calls_xdai = realt_tokens.map((token) => ({
     target: token['xDaiContract'],
   })).filter(t => t.target)
+  
   const tokenSupplies_xdai = (
     await sdk.api.abi.multiCall({
       calls: calls_xdai,
       abi: 'erc20:totalSupply',
       block: chainBlocks['xdai'],
       chain: 'xdai'
-    })
-  ).output
-
-  const calls_eth = realt_tokens.map((token) => ({
-    target: token['ethereumContract'],
-  })).filter(t => t.target)
-  const tokenSupplies_eth = (
-    await sdk.api.abi.multiCall({
-      calls: calls_eth,
-      abi: 'erc20:totalSupply',
-      block: chainBlocks['ethereum'],
-      chain: 'ethereum'
     })
   ).output
 
