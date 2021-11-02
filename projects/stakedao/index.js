@@ -2,6 +2,7 @@ const sdk = require("@defillama/sdk");
 const abi = require('./abi.json')
 const { unwrapCrv } = require('../helper/unwrapLPs')
 const { transformAvaxAddress } = require('../helper/portedTokens');
+const BigNumber = require("bignumber.js");
 
 // Mainnet
 const crv_3crv_vault = {
@@ -39,6 +40,11 @@ const crv_perpetual_vault = {
   crvToken: '0x5f3b5DfEb7B28CDbD7FAba78963EE202a494e2A2',
   abi: 'locked'
 }
+const crv_steth_vault = {
+  contract: '0xbC10c4F7B9FE0B305e8639B04c536633A3dB7065',
+  crvToken: '0x06325440D014e39736583c165C2963BA99fAf14E',
+  abi:'balance'
+}
 
 // Polygon
 const crv_3crv_vault_polygon = {
@@ -65,7 +71,8 @@ const vaults = [
   crv_btc_vault, 
   crv_frax_vault,
   crv_frax_vault2,
-  crv_eth_vault
+  crv_eth_vault,
+  crv_steth_vault,
 ]
 
 const vaultsPolygon = [
@@ -78,6 +85,7 @@ const vaultsAvalanche = [
 ]
 
 const sanctuary = '0xaC14864ce5A98aF3248Ffbf549441b04421247D3'
+const arbStrat = '0x20D1b558Ef44a6e23D9BF4bf8Db1653626e642c3'
 const sdtToken = '0x73968b9a57c6E53d41345FD57a6E6ae27d6CDB2F'
 const crvToken = '0xD533a949740bb3306d119CC777fa900bA034cd52'
 
@@ -102,14 +110,22 @@ async function ethereum(timestamp, block) {
 }
 
 async function staking(timestamp, block){
-  const sdtInSactuary = sdk.api.erc20.balanceOf({
+  const sdtInSactuary = await sdk.api.erc20.balanceOf({
     target: sdtToken,
     owner: sanctuary,
     block
   })
 
+  const sdtInArbStrategy = await sdk.api.erc20.balanceOf({
+    target: sdtToken,
+    owner: arbStrat,
+    block
+  })
+
+  const totalSDTStaked = BigNumber(sdtInSactuary.output).plus(BigNumber(sdtInArbStrategy.output)).toFixed()
+
   return {
-    [sdtToken]:(await sdtInSactuary).output
+    [sdtToken]:totalSDTStaked
   }
 }
 
