@@ -13,7 +13,7 @@ function getBSCAddress(address) {
   return `bsc:${address}`
 }
 
-async function tvl(timestamp, blockETH, chainBlocks){
+async function bsc(timestamp, blockETH, chainBlocks){
   let balances = {};
   const block = chainBlocks["bsc"];
   
@@ -77,6 +77,13 @@ async function staking(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
-  tvl: tvl,
-  staking: staking
+  methodology: `Counts the underlying assets in each fund.`,
+  tvl: sdk.util.sumChainTvls([bsc]),
+  staking:{
+    tvl: staking
+  },
+  bsc:{
+    staking,
+    tvl: bsc
+  }
 }
