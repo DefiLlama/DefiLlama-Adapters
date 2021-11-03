@@ -11,7 +11,7 @@ const stakingContracts = {
   "avax": "0xB105D4D17a09397960f2678526A4063A64FAd9bd",
   "fantom": "0x6B7E64854e4591f8F8E552b56F612E1Ab11486C3",
   "xdai": "0xAd3379b0EcC186ddb842A7895350c4657f151e6e",
-  "okex": "0x1e0C4867253698355d0689567D2F7968542e6e9f",
+  "okexchain": "0x1e0C4867253698355d0689567D2F7968542e6e9f",
   "esc": "0x59d39bC9b0B36306b36895017A56B40eCC98D1d9",
   "hoo": "0x3A68B0dB21135E089AEaa13C5f5cd5E6cA158199",
   "moonriver": "0x64aA42D30428Cd53fD9F2fe01da161d90d878260",
@@ -19,23 +19,23 @@ const stakingContracts = {
   "harmony": "0xf4f3495a35c0a73268eEa08b258C7968E976F5D4"
 };
 // node test.js projects/elkfinance/index.js
-async function staking(timestamp, ethBlock, chainBlocks) {
+function chainStaking(chain, contract){
+ return async (timestamp, ethBlock, chainBlocks) => {
   balance = 0;
-  for (const key of Object.keys(stakingContracts)) {
-    const block = await getBlock(timestamp, key, chainBlocks, true);
+    const block = await getBlock(timestamp, chain, chainBlocks, true);
 
     balance += Number((await sdk.api.erc20.balanceOf({
       target: elkAddress,
-      owner: stakingContracts[key],
+      owner: contract,
       block: block,
-      chain: key
+      chain
     })).output);
-  };
 
   return { 'avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c': balance };
+ }
 };
 
-module.exports = {
+const chainExports = {
   misrepresentedTokens: true,
   xdai: {
     tvl: calculateUsdUniTvl(
@@ -91,9 +91,6 @@ module.exports = {
       "elk-finance"
       ),
   },
-  staking:{
-    tvl: staking
-  },
   kcc: {
     tvl: calculateUsdUniTvl(
       "0x1f9aa39001ed0630dA6854859D7B3eD255648599", 
@@ -112,7 +109,7 @@ module.exports = {
       "elk-finance"
       ),
   },
-  okex: {
+  okexchain: {
     tvl: calculateUsdUniTvl(
       "0x1116f8B82028324f2065078b4ff6b47F1Cc22B97", 
       "okexchain", 
@@ -141,7 +138,7 @@ module.exports = {
       true
       ),
   },
-  elastos: {
+  esc: {
     tvl: calculateUsdUniTvl(
       "0x440a1B8b8e968D6765D41E6b92DF3cBb0e9D2b1e", 
       "esc", 
@@ -153,3 +150,9 @@ module.exports = {
       ),
   }
 };
+
+Object.entries(stakingContracts).forEach(contract=>{
+  chainExports[contract[0] === "avax"?"avalanche":contract[0]].staking = chainStaking(contract[0], contract[1])
+})
+
+module.exports = chainExports
