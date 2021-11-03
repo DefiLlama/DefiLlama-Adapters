@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { sumTokens } = require("../helper/unwrapLPs");
+const { staking } = require("../helper/staking");
 //const tvlV1 = require('./v1')
 
 
@@ -116,6 +117,7 @@ const ethTvlV2 = async (timestamp, ethBlock, chainBlocks) => {
 module.exports = {
   ethereum: {
     tvl: sdk.util.sumChainTvls([ethTvlV2, ethTvl]),
+    staking: staking("0x16f9d564df80376c61ac914205d3fdff7057d610", "0x6399c842dd2be3de30bf99bc7d1bbf6fa3650e70")
   },
   bsc: {
     tvl: bscTvl,
