@@ -1,4 +1,5 @@
 const sdk = require("@defillama/sdk")
+const BigNumber = require('bignumber.js')
 
 // Registry will be released in next sdk of Angle + graphql endpoint to come
 const collaterals = {
@@ -15,36 +16,54 @@ const agEUR = {
 }
 const agTokens = [agEUR]
 
-
+const poolManagers_abi = { 
+    "getTotalAsset": {
+      "inputs": [],
+      "name": "getTotalAsset",
+      "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+      "stateMutability": "view",
+      "type": "function"
+    }
+}
+  
 async function tvl(timestamp, block, chainBlocks) {
-   // Building the api calls using the poolManager object of each agToken. Could also read the poolManager.token() but abi not yet available
-    const poolManagers_calls = agTokens.map(t => {
+    // Building the api calls using the poolManager object of each agToken. Could also read the poolManager.token() but abi not yet available
+    const poolManagersBalanceOf_calls = agTokens.map(t => {
         return Object.entries(t.poolManagers).map( ([key, value]) => ({ target: collaterals[key], params: value}))
     }).flat()
-    // Call erc20:balanceOf
+    /*
+    // Call erc20:balanceOf only gets available assets and not those lent to strategies
     let collateralBalances = await sdk.api.abi.multiCall({
         calls: poolManagers_calls,
         abi: 'erc20:balanceOf',
         block: chainBlocks['ethereum'],
         chain: 'ethereum'
     })
+    //const balances = {}
+    //sdk.util.sumMultiBalanceOf(balances, collateralBalances)
+    */
+   
+    const poolManagersTotalAsset_calls = agTokens.map(t => {
+        return Object.entries(t.poolManagers).map( ([key, value]) => ({ target: value}))
+    }).flat()
+    let collateralBalances = await sdk.api.abi.multiCall({
+        calls: poolManagersTotalAsset_calls,
+        abi: poolManagers_abi['getTotalAsset'],
+        block: chainBlocks['ethereum'],
+        chain: 'ethereum'
+    })
 
     // Accumulate collateral to balances
     const balances = {}
-    sdk.util.sumMultiBalanceOf(balances, collateralBalances)
+    collateralBalances.output.forEach(bal => {
+        const token = poolManagersBalanceOf_calls.find(t => bal.input.target == t.params).target
+        balances[token] = BigNumber(balances[token] || 0).plus(BigNumber(bal.output)).toFixed();
+    })
+
     return balances
-
-    // Get ag* tokens supply and collateral ratios
-    /*
-    const agTokensSupply_calls = agTokens.map(token => [{target: token.contract}]) // abi: 'erc20:totalSupply' 
-    const agTokensSupply_calls = agTokens.map(token => [{target: token.stableMasterFront}]) // 'erc20:getCollateralRatio'
-    const agEurCollat = agTokensSupply[0].output * collateralRatio[0].output
-    balances = {[EURS_substitute]: agEurCollat}
-    */
-
 }
 
 module.exports = {
     tvl: tvl, 
-    methodology: `TVL is retrieved on chain by querying balances of collaterals held by poolManagers of each agToken stablecoin. Graph endpoint soon available. Otherwise could be approximated by the totalMintedStablecoins, agToken.totalSupply multiplied by the collateral ratio, stableMaster.getCollateralRatio. `
+    methodology: `TVL is retrieved on chain by querying balances of collaterals held by poolManagers of each agToken stablecoin (not only balanceOf which returns available assets, but getTotalAssets which also accounts for assets lent to strategies). Graph endpoint soon available. Otherwise could be approximated by the totalMintedStablecoins, agToken.totalSupply multiplied by the collateral ratio, stableMaster.getCollateralRatio. `
 }
