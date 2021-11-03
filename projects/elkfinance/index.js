@@ -1,5 +1,6 @@
 const sdk = require('@defillama/sdk');
 const {calculateUsdUniTvl} = require('../helper/getUsdUniTvl');
+const { getBlock } = require('../helper/getBlock');
 
 const elkAddress = '0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c';
 
@@ -9,18 +10,26 @@ const stakingContracts = {
   "bsc": "0xD5B9b0DB5f766B1c934B5d890A2A5a4516A97Bc5",
   "avax": "0xB105D4D17a09397960f2678526A4063A64FAd9bd",
   "fantom": "0x6B7E64854e4591f8F8E552b56F612E1Ab11486C3",
-  "xdai": "0xAd3379b0EcC186ddb842A7895350c4657f151e6e"
+  "xdai": "0xAd3379b0EcC186ddb842A7895350c4657f151e6e",
+  "okex": "0x1e0C4867253698355d0689567D2F7968542e6e9f",
+  "esc": "0x59d39bC9b0B36306b36895017A56B40eCC98D1d9",
+  "hoo": "0x3A68B0dB21135E089AEaa13C5f5cd5E6cA158199",
+  "moonriver": "0x64aA42D30428Cd53fD9F2fe01da161d90d878260",
+  "kcc": "0x719a11f32340983E8D764C143d964CB3F4e5b49b",
+  "harmony": "0xf4f3495a35c0a73268eEa08b258C7968E976F5D4"
 };
-
+// node test.js projects/elkfinance/index.js
 async function staking(timestamp, ethBlock, chainBlocks) {
   balance = 0;
   for (const key of Object.keys(stakingContracts)) {
+    const block = await getBlock(timestamp, key, chainBlocks, true);
+
     balance += Number((await sdk.api.erc20.balanceOf({
       target: elkAddress,
       owner: stakingContracts[key],
-      block: chainBlocks[key],
+      block: block,
       chain: key
-    })).output)
+    })).output);
   };
 
   return { 'avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c': balance };
@@ -82,9 +91,9 @@ module.exports = {
       "elk-finance"
       ),
   },
-  staking:{
-    tvl: staking
-  },
+  // staking:{
+  //   tvl: staking
+  // },
   kcc: {
     tvl: calculateUsdUniTvl(
       "0x1f9aa39001ed0630dA6854859D7B3eD255648599", 
@@ -119,6 +128,28 @@ module.exports = {
       elkAddress, 
       [], 
       "elk-finance"
+      ),
+  },
+  hoo: {
+    tvl: calculateUsdUniTvl(
+      "0x9c03E724455306491BfD2CE0805fb872727313eA", 
+      "hoo", 
+      elkAddress, 
+      [], 
+      "elk-finance",
+      18,
+      true
+      ),
+  },
+  elastos: {
+    tvl: calculateUsdUniTvl(
+      "0x440a1B8b8e968D6765D41E6b92DF3cBb0e9D2b1e", 
+      "esc", 
+      elkAddress, 
+      [], 
+      "elk-finance",
+      18,
+      true
       ),
   }
 };
