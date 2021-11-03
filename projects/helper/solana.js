@@ -111,5 +111,6 @@ module.exports = {
     getTokenBalance,
     getTokenAccountBalance,
     sumTokens,
+    getMultipleAccountsRaw,
     getMultipleAccountBuffers
 }

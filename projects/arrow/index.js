@@ -1,7 +1,7 @@
 const utils = require("../helper/utils");
 const SUNNY_POOLS = require("../helper/sunny-pools.json");
 
-const { getMultipleAccountBuffers } = require("../helper/solana");
+const { getMultipleAccountBuffers, getMultipleAccountsRaw } = require("../helper/solana");
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -51,7 +51,7 @@ const readTVL = async ({
 
   const poolTvlCoins = {};
 
-  if (pool.tokenA === pool.tokenB) {
+  if (tokenA === tokenB) {
     poolTvlCoins[tokenA] =
       poolShare * reserveAAmount + poolShare * reserveBAmount;
   } else {
@@ -89,7 +89,7 @@ async function tvl() {
       poolMint,
       tokenAccounts,
     });
-    console.log(pool.poolName, poolTVL);
+    console.log(sunnyPool.poolName, poolTVL);
     await sleep(1200);
 
     for (const [tokenId, amount] of Object.entries(poolTVL)) {
