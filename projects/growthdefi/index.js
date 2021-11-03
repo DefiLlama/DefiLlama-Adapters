@@ -53,7 +53,18 @@ const morChains = {
     ignoreAddresses: []
   },
   avax: {
-    pools: [],
+    pools: [
+      "0x3eC9379c79ace6510574EE2c3B0B67aeeE1C23AC",
+      "0x156a4aD3aDbD14599F96dDC24e690e0B2841aB28",
+      "0x53073f685474341cdc765F97E7CFB2F427BD9db9",
+      "0x14955760d8c09D51a984C1c977e5A306C6133891",
+      "0xf5aFfe3459813AB193329E53f17098806709046A",
+      "0xDf93E61037DeEf5ca280e4A915bEB62e1bdE481F",
+      "0x5141da4ab5b3e13ceE7B10980aE6bB848FdB59Cd",
+      "0x0B32788B77c77265D08bf13E12FcE4C4978c64E8",
+      "0x691e486b5F7E39e90d37485164fAbDDd93aE43cD",
+      "0xB1429FB053242fd5b8483Ed452E22c688E405CB5",
+    ],
     ignoreAddresses: []
   }
 }
@@ -479,7 +490,7 @@ module.exports = {
     tvl: sdk.util.sumChainTvls([wheatBscTvl, morBscTvl]),
   },
   avax: {
-    tvl: sdk.util.sumChainTvls([wheatAvaxTvl, morAvaxTvl])
+    tvl: sdk.util.sumChainTvls([wheatAvaxTvl, morAvaxTvl]),
   },
   tvl: sdk.util.sumChainTvls([wheatBscTvl, morBscTvl, wheatAvaxTvl, morAvaxTvl]),
   methodology:
