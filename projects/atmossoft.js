@@ -75,9 +75,9 @@ async function ftm(timestamp, ethBlock, chainBlocks) {
 module.exports = {
     misrepresentedTokens: true,
     fantom: {
-        tvl: ftm,
+        pool2: ftm,
     },
     bsc: {
-        tvl: bsc
+        pool2: bsc
     },
 };
