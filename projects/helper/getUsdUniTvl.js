@@ -39,11 +39,11 @@ function setPrice(prices, address, coreAmount, tokenAmount) {
     prices[address] = [Number(coreAmount), Number(coreAmount) / Number(tokenAmount)]
 }
 
-function calculateUsdUniTvl(FACTORY, chain, coreAssetRaw, whitelistRaw, coreAssetName, decimals = 18) {
+function calculateUsdUniTvl(FACTORY, chain, coreAssetRaw, whitelistRaw, coreAssetName, decimals = 18, allowUndefinedBlock = false) {
     const whitelist = whitelistRaw.map(t => t.toLowerCase())
     const coreAsset = coreAssetRaw.toLowerCase()
     return async (timestamp, ethBlock, chainBlocks) => {
-        const block = await getBlock(timestamp, chain, chainBlocks)
+        const block = await getBlock(timestamp, chain, chainBlocks, allowUndefinedBlock)
 
         let pairAddresses;
         const pairLength = (await sdk.api.abi.call({
