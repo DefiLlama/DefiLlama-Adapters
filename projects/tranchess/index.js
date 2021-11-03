@@ -79,9 +79,6 @@ async function staking(timestamp, block, chainBlocks) {
 module.exports = {
   methodology: `Counts the underlying assets in each fund.`,
   tvl: sdk.util.sumChainTvls([bsc]),
-  staking:{
-    tvl: staking
-  },
   bsc:{
     staking,
     tvl: bsc
