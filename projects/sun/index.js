@@ -26,7 +26,8 @@ async function staking() {
 }
 
 const lpToken = 'TDQaYrhQynYV9aXTYj63nwLAafRffWSEj6'
-const lpStaking = "TGsymdggp98tLKZWGHcGX58TjTcaQr9s4x"
+const oldLpStaking = "TGsymdggp98tLKZWGHcGX58TjTcaQr9s4x"
+const lpStaking = "TAkrcKsS5FW9f3ZfzvWy6Zvsz9uEjUxPoV"
 
 async function pool2() {
     const [lpTokenAmount, sunInLp, trxInLp, totalSupply] = await Promise.all([
