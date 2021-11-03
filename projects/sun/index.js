@@ -13,6 +13,7 @@ async function tvl() {
     await Promise.all(stablecoins.map(async stable=>{
         balances[stable[1]] = await getTokenBalance(stable[0], pool3)
     }))
+    balances["usd-coin"] = await getTokenBalance("TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8", "TQx6CdLHqjwVmJ45ecRzodKfVumAsdoRXH")
     return balances
 }
 
@@ -43,13 +44,8 @@ async function pool2() {
 
 module.exports = {
     tron: {
-        tvl
+        tvl,
+        staking,
+        pool2
     },
-    staking:{
-        tvl:staking
-    },
-    pool2:{
-        tvl:pool2
-    },
-    tvl
 }
