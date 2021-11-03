@@ -10,7 +10,7 @@
 ##### Logo (High resolution, preferably in .svg and .png, for application on both white and black backgrounds. Will be shown with rounded borders): https://drive.google.com/file/d/15KYfDnX6P9xgOrjrPcekGs0v5uuMWkBo/view?usp=sharing
 
 
-##### Current TVL: $50,505,182
+##### Current TVL: $24,687,270
 
 
 ##### Chain: BSC
@@ -37,6 +37,6 @@
 ##### forkedFrom (Does your project originate from another project): No
 
 
-##### methodology (what is being counted as tvl, how is tvl being calculated):
+##### methodology (what is being counted as tvl, how is tvl being calculated):http://156.249.24.82/Bagels/BagelsTVL
 
 
