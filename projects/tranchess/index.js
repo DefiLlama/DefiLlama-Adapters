@@ -77,6 +77,13 @@ async function staking(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
+  methodology: `Counts the underlying assets in each fund.`,
   tvl: tvl,
-  staking: staking
+  staking:{
+    tvl: staking
+  },
+  bsc:{
+    staking,
+    tvl: tvl
+  }
 }
