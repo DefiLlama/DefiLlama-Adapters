@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi");
 const { default: BigNumber } = require("bignumber.js");
+const {getCompoundV2Tvl} = require('../helper/compound')
 const {pool2} = require('../helper/pool2')
 //const {getCompoundV2Tvl} = require('../helper/compound')
 
@@ -67,7 +68,7 @@ async function tvl(timestamp, block) {
       })),
       block,
       abi: abi['getRawFundBalancesAndPrices']
-    })).output.filter(resp => resp.success === true).map((resp) => resp.output)
+    })).output.map((resp) => resp.output)
     for (let j = 0; j < earnPoolData.length; j++) {
       if (earnPoolData[j] && earnPoolData[j]['0'] && earnPoolData[j]['0'].length > 0) {
         for (let i = 0; i < earnPoolData[j]['0'].length; i++) {
@@ -96,51 +97,30 @@ async function tvl(timestamp, block) {
 
   // Earn yield pool
   const earnYieldProxyAddress = getEarnYieldProxyAddressAsArray(block)
-  try {
     await getBalancesFromEarnPool(earnYieldProxyAddress)
-  } catch(e) {
-    throw e
-   // ignore error
-  }
 
   //Earn ETH pool
-  try {
     const ethPoolData = (await sdk.api.abi.multiCall({
       block,
       abi: abi['getRawFundBalances'],
       calls: earnETHPoolFundControllerAddressesIncludingLegacy.map((address) => ({
         target: address
       }))
-    })).output.filter(resp => resp.success === true).map((resp) => resp.output).flat()
+    })).output.map((resp) => resp.output).flat()
     for (let i = 0; i < ethPoolData.length; i++) {
       const ethAmount = BigNumber(ethPoolData[i]['0'])
       if (ethAmount.isGreaterThan(bigNumZero)) {
         updateBalance(ETHAddress, ethAmount)
       }
     }
-  } catch(e) {
-    throw e
-    // ignore error
-  }
 
   // Earn DAI pool
-  try {
     await getBalancesFromEarnPool(earnDAIPoolControllerAddressesIncludingLegacy)
-  } catch(e) {
-    throw e
-    // ignore error
-  }
 
   // Earn stable pool
-  try {
     await getBalancesFromEarnPool(earnStablePoolAddressesIncludingLegacy)
-  } catch(e) {
-    throw e
-    // ignore error
-  }
 
   // Fuse
-  try {
     const fusePools = (await sdk.api.abi.call({
       target: fusePoolDirectoryAddress,
       block,
@@ -155,20 +135,21 @@ async function tvl(timestamp, block) {
       calls: fusePools.map((poolInfo) => ({
         params: [poolInfo[2]]
       }))
-    })).output.filter(resp => resp.success === true).map((resp) => resp.output)
+    })).output
     //console.log("summaries", poolSummaries.map(t=>t[0]))
 
-    for (let summary of poolSummaries) {
+  for (let summaryResult of poolSummaries) {
+    if (summaryResult.success) {
+      const summary = summaryResult.output
       // https://docs.rari.capital/fuse/#get-pools-by-account-with-data
       const collateral = BigNumber(summary['0']).minus(summary['1'])
       if (collateral.isGreaterThan(bigNumZero)) {
         updateBalance(ETHAddress, collateral)
       }
+    } else {
+      const newBalances = await getCompoundV2Tvl(summaryResult.input.params[0], 'ethereum', id=>id)(timestamp, block, {})
+      Object.entries(newBalances).forEach(entry=>sdk.util.sumSingleBalance(balances, entry[0], entry[1]))
     }
-
-  } catch(e) {
-    throw e
-    // ignore error
   }
 
   return balances
@@ -177,8 +158,8 @@ async function tvl(timestamp, block) {
 module.exports = {
   misrepresentedTokens: true,
   start: 1596236058,        // July 14, 2020
-  tvl,
-  pool2:{
-    tvl: pool2(rariGovernanceTokenUniswapDistributorAddress, RGTETHSushiLPTokenAddress)
+  ethereum:{
+    tvl,
+    pool2: pool2(rariGovernanceTokenUniswapDistributorAddress, RGTETHSushiLPTokenAddress)
   }
 }

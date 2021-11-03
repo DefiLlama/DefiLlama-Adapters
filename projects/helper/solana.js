@@ -51,8 +51,16 @@ async function sumTokens(tokensAndAccounts) {
     const balances = {}
     for (let i = 0; i < tokensAndAccounts.length; i++) {
         const token = tokensAndAccounts[i][0]
-        const coingeckoId = tokenlist.find(t => t.address === token)?.extensions?.coingeckoId
-        balances[coingeckoId] = tokenBalances[i]
+        let coingeckoId = tokenlist.find(t => t.address === token)?.extensions?.coingeckoId
+        const replacementCoingeckoId = tokensAndAccounts[i][2]
+        if(coingeckoId === undefined){
+            if(replacementCoingeckoId !== undefined){
+                coingeckoId = replacementCoingeckoId
+            } else {
+                throw new Error(`Solana token ${token} has no coingecko id`)
+            }
+        }
+        balances[coingeckoId] = (balances[coingeckoId] || 0) + tokenBalances[i]
     }
     return balances
 }

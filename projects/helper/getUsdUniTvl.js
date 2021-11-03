@@ -129,7 +129,6 @@ function calculateUsdUniTvl(FACTORY, chain, coreAssetRaw, whitelistRaw, coreAsse
         const balances = {}
         let coreBalance = 0
         const prices = {}
-        const list = []
         for (let i = 0; i < reserves.length; i++) {
             const pairAddress = reserves[i].input.target.toLowerCase();
             const pair = pairs[pairAddress];
@@ -141,7 +140,6 @@ function calculateUsdUniTvl(FACTORY, chain, coreAssetRaw, whitelistRaw, coreAsse
                 if (whitelist.includes(token1Address)) {
                     setPrice(prices, token1Address, reserveAmounts[0], reserveAmounts[1])
                 }
-                list.push([pairAddress, Number(reserveAmounts[0]), reserveAmounts])
             } else if (token1Address === coreAsset) {
                 coreBalance += Number(reserveAmounts[1]) * 2
                 if (whitelist.includes(token0Address)) {

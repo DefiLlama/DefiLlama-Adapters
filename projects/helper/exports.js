@@ -8,10 +8,7 @@ function chainExports(chainTvl, chains){
     }
   }), {})
 
-  return {
-    ...chainTvls,
-    tvl: sdk.util.sumChainTvls(Object.values(chainTvls).map(tvl=>tvl.tvl))
-  }
+  return chainTvls
 }
 
 function fetchChainExports(chainTvl, chains){

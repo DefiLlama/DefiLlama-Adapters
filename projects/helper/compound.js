@@ -38,8 +38,13 @@ async function getMarkets(comptroller, block, chain, cether, cetheEquivalent) {
     // if not in cache, get from the blockchain
     await (
         Promise.all(allCTokens.map(async (cToken) => {
-            let underlying = await getUnderlying(block, chain, cToken, cether, cetheEquivalent);
-            markets.push({ underlying, cToken })
+            try{
+                let underlying = await getUnderlying(block, chain, cToken, cether, cetheEquivalent);
+                markets.push({ underlying, cToken })
+            } catch(e){
+                console.log(`${cToken} market rugged, is that market CETH?`)
+                throw e
+            }
         }))
     );
 
@@ -71,6 +76,101 @@ function getCompoundV2Tvl(comptroller, chain="ethereum", transformAdress = addr=
     }
 }
 
+const BigNumber = require('bignumber.js').default;
+const { toUSDTBalances } = require('./balances');
+
+// ask comptroller for all markets array
+async function getAllMarkets(block, chain, comptroller) {
+    const { output: markets } = await sdk.api.abi.call({
+        target: comptroller,
+        abi: abi['getAllMarkets'],
+        block,
+        chain: chain,
+    });
+    return markets;
+}
+
+// ask comptroller for oracle
+async function getOracle(block, chain, comptroller) {
+    const { output: oracle } = await sdk.api.abi.call({
+        target: comptroller,
+        abi: abi['oracle'],
+        block,
+        chain: chain,
+    });
+    return oracle;
+}
+
+async function getUnderlyingDecimals(block, chain, token, cether) {
+    if (token.toLowerCase() === cether?.toLowerCase()) {
+        return 18;
+    }
+
+    try {
+        const { output: underlying } = await sdk.api.abi.call({
+            target: token,
+            abi: abi['underlying'],
+            block,
+            chain: chain,
+        });
+        const { output: decimals } = await sdk.api.abi.call({
+            target: underlying,
+            abi: "erc20:decimals",
+            block,
+            chain: chain,
+        });
+        return decimals;
+    } catch (e) {
+        console.log(`${token} market rugged, is that market CETH?`)
+        throw e
+    }
+}
+
+async function getUnderlyingPrice(block, chain, oracle, token) {
+    const { output: underlyingPrice } = await sdk.api.abi.call({
+        target: oracle,
+        abi: abi['getUnderlyingPrice'],
+        block,
+        params: [token],
+        chain: chain,
+    });
+    return underlyingPrice;
+}
+
+async function getCash(block, chain, token) {
+    const { output: cash } = await sdk.api.abi.call({
+        target: token,
+        abi: abi['getCash'],
+        block,
+        chain: chain,
+    });
+    return cash;
+}
+
+function getCompoundUsdTvl(comptroller, chain, cether) {
+    return async (timestamp, ethBlock, chainBlocks) => {
+        const block = chainBlocks[chain]
+        let tvl = new BigNumber('0');
+
+        let allMarkets = await getAllMarkets(block, chain, comptroller);
+        let oracle = await getOracle(block, chain, comptroller);
+
+        await Promise.all(
+            allMarkets.map(async token => {
+                let cash = new BigNumber(await getCash(block, chain, token));
+                let decimals = await getUnderlyingDecimals(block, chain, token, cether);
+                let locked = cash.div(10 ** decimals);
+                let underlyingPrice = new BigNumber(await getUnderlyingPrice(block, chain, oracle, token)).div(
+                    10 ** (18 + 18 - decimals)
+                );
+                tvl = tvl.plus(locked.times(underlyingPrice));
+            })
+        );
+        return toUSDTBalances(tvl.toNumber());
+    }
+}
+
 module.exports = {
     getCompoundV2Tvl,
+    getCompoundUsdTvl,
 };

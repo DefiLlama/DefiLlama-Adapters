@@ -14,5 +14,6 @@ async function fetch() {
 }
 
 module.exports = {
+  methodology: "The Atrix API endpoint fetches on-chain data from the Serum orderbook and token accounts for each liquidity pool, then uses prices from Coingecko to aggregate total TVL.",
   fetch,
 };

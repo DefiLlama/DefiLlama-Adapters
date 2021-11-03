@@ -96,7 +96,6 @@
     })).output;
 
     _.each(poolBalances, (balanceOf) => {
-      if(balanceOf.success) {
         let balance = balanceOf.output;
         let address = balanceOf.input.target;
 
@@ -105,7 +104,6 @@
         }
 
         balances[address] = BigNumber(balances[address] || 0).plus(balance).toFixed();
-      }
     });
 
     let underlyingBalanceCalls = [];
@@ -152,18 +150,15 @@
 
     // convert cTokens into underlying tokens
     _.each(underlyingBalances, (underlying, i) => {
-      if(underlying.success) {
         let balance = underlying.output;
         let address = underlyingAddress[i].output;
         let cAddress = underlying.input.target;
         balances[address] = balance;
         delete balances[cAddress];
-      }
     })
 
     // convert vault tokens into underlying values
     _.each(poolBalances, (balanceOf, i) => {
-      if(balanceOf.success) {
         let balance = balanceOf.output;
         let address = balanceOf.input.target;
 
@@ -181,7 +176,6 @@
         } else {
           balances[address] = BigNumber(balances[address] || 0).plus(balance).toFixed();
         }
-      }
     });
     return balances;
   }
@@ -191,10 +185,6 @@
   ==================================================*/
 
   module.exports = {
-    name: 'C.R.E.A.M. Swap',
-    website: 'https://cream.finance',
-    token: null,
-    category: 'dexes',
     start: 1599552000, // 09/08/2020 @ 8:00am (UTC)
     tvl
   }

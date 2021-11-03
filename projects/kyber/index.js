@@ -40,7 +40,7 @@ const { transformAvaxAddress, fixAvaxBalances } = require('../helper/portedToken
     })).output;
     const repeatedTokenWallets = {}
     await Promise.all(tokenWallets.map(async result=>{
-      if(result.success && !reserves.has(result.output)){
+      if(!reserves.has(result.output)){
         const token = result.input.params[0];
         const tokenWallet = result.output
 
@@ -112,7 +112,6 @@ const { transformAvaxAddress, fixAvaxBalances } = require('../helper/portedToken
   module.exports = {
     misrepresentedTokens: true,
     ethereum: {
-      ethTvl,
       tvl: ethDmmTVL,
     },
     polygon: {
@@ -124,5 +123,4 @@ const { transformAvaxAddress, fixAvaxBalances } = require('../helper/portedToken
    avalanche:{
      tvl: avaxTVL,
    },
-  tvl: sdk.util.sumChainTvls([ethTvl,ethDmmTVL,bscTVL,polyTVL,avaxTVL])
   };
