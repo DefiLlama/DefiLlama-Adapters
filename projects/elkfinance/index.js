@@ -91,9 +91,9 @@ module.exports = {
       "elk-finance"
       ),
   },
-  // staking:{
-  //   tvl: staking
-  // },
+  staking:{
+    tvl: staking
+  },
   kcc: {
     tvl: calculateUsdUniTvl(
       "0x1f9aa39001ed0630dA6854859D7B3eD255648599", 
