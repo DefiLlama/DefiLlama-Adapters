@@ -62,11 +62,11 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
   }).map((n) => {
     const stakingTokenAddr = n.input.params[0];
     const i5 = n.output['5'];
-    const i6 = n.output['6'];  
+    //const i6 = n.output['6'];
     const i8 = n.output['8'];
     return {
       token: stakingTokenAddr,
-      balance: BigNumber(i5).plus(BigNumber(i6)).plus(BigNumber(i6)).plus(BigNumber(i8)).plus(BigNumber(i6)).toFixed(0)
+      balance: BigNumber(i5).plus(BigNumber(i8)).toFixed(0)
     }
   })
   lendingBalances.forEach((s) => {
