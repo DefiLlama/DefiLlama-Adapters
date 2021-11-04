@@ -28,7 +28,6 @@ const changeNumDecimals = (number, toDecimals) => {
     .toFixed(0);
 };
 
-// TODO: Support Arb nUSD pool.
 function chainTvl(chain) {
   return async (timestamp, ethBlock, chainBlocks) => {
     const transform = (token) => `${chain}:${token}`;
