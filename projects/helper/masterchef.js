@@ -55,7 +55,7 @@ async function addFundsInMasterChef(balances, masterChef, block, chain = 'ethere
             return 
         }
         if(symbol.output.includes('LP') || symbol.output.includes('PGL') || symbol.output.includes('UNI-V2')) {
-          if(includeLPs){
+          if(includeLPs && balance){
             lpPositions.push({
                 balance,
                 token

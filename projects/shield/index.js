@@ -29,6 +29,7 @@ async function tvl(timestamp, block) {
 }
 
 module.exports = {
+  methodology: 'Dual liquidity pool is an innovation by Shield that allows the private pool to hedge the market making risk, while the low-risk public pool can accommodate liquidity to guarantee abundant liquidity on the market. TVL on Shield should combine liquidity from both public pool and private pool.',
   name: "Shield", // project name
   website: "https://shieldex.io",
   category: "Options",

@@ -27,9 +27,7 @@ function pool2s(stakingContracts, lpTokens, chain = "ethereum", transformAddress
 }
 
 function pool2Exports(stakingContract, lpTokens, chain, transformAddress) {
-    return {
-        tvl: pool2s([stakingContract], lpTokens, chain, transformAddress)
-    }
+    return pool2s([stakingContract], lpTokens, chain, transformAddress)
 }
 
 function dodoPool2(stakingContract, lpToken, chain = "ethereum", transformAddress=addr=>addr) {

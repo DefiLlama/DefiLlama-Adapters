@@ -88,7 +88,6 @@ module.exports = async function tvl(_, block) {
   const options = {}
   // add underlyingAddresses
   underlyingAddresses.forEach((underlyingAddress) => {
-    if (underlyingAddress.success) {
       const tokenAddress = underlyingAddress.output.toLowerCase()
 
       if (supportedTokens.includes(tokenAddress)) {
@@ -97,12 +96,10 @@ module.exports = async function tvl(_, block) {
           underlyingAddress: tokenAddress,
         }
       }
-    }
   })
 
   // add strikeAddresses
   strikeAddresses.forEach((strikeAddress) => {
-    if (strikeAddress.success) {
       const tokenAddress = strikeAddress.output.toLowerCase()
       if (supportedTokens.includes(tokenAddress)) {
         const optionAddress = strikeAddress.input.target.toLowerCase()
@@ -111,18 +108,15 @@ module.exports = async function tvl(_, block) {
           strikeAddress: tokenAddress,
         }
       }
-    }
   })
 
   redeemAddresses.forEach((redeemAddress) => {
-    if (redeemAddress.success) {
       const tokenAddress = redeemAddress.output.toLowerCase()
       const optionAddress = redeemAddress.input.target.toLowerCase()
       options[optionAddress] = {
         ...(options[optionAddress] || {}),
         redeemAddress: tokenAddress,
       }
-    }
   })
 
   // The internally tracked balances of underlying and strike tokens in the Primitive option contracts
@@ -155,10 +149,8 @@ module.exports = async function tvl(_, block) {
   const optionPairs = []
 
   optionPairAddresses.forEach((optionPairAddress) => {
-    if (optionPairAddress.success) {
       const marketAddress = optionPairAddress.output.toLowerCase()
       if (marketAddress !== ZERO_ADDRESS) optionPairs.push(marketAddress)
-    }
   })
 
   const [token0Addresses, token1Addresses] = await Promise.all([
@@ -185,7 +177,6 @@ module.exports = async function tvl(_, block) {
   const pairs = {}
   // add token0Addresses
   token0Addresses.forEach((token0Address) => {
-    if (token0Address.success) {
       const tokenAddress = token0Address.output.toLowerCase()
 
       if (
@@ -197,12 +188,10 @@ module.exports = async function tvl(_, block) {
           token0Address: tokenAddress,
         }
       }
-    }
   })
 
   // add token1Addresses
   token1Addresses.forEach((token1Address) => {
-    if (token1Address.success) {
       const tokenAddress = token1Address.output.toLowerCase()
       if (
         supportedTokens.includes(tokenAddress) ||
@@ -214,7 +203,6 @@ module.exports = async function tvl(_, block) {
           token1Address: tokenAddress,
         }
       }
-    }
   })
 
   // Reserves of option pools in Sushiswap
@@ -232,7 +220,6 @@ module.exports = async function tvl(_, block) {
 
   // accumulate the balances in the Sushiswap option pools
   const inSushiSwap = reserves.reduce((accumulator, reserve, i) => {
-    if (reserve.success) {
       const pairAddress = reserve.input.target.toLowerCase()
       const pair = pairs[pairAddress] || {}
 
@@ -264,14 +251,12 @@ module.exports = async function tvl(_, block) {
             .toFixed()
         }
       }
-    }
 
     return accumulator
   }, {})
 
   // accumulate the caches of Primitive with the reserves of Sushiswap
   return caches.reduce((accumulator, cache, i) => {
-    if (cache.success) {
       const optionAddress = cache.input.target.toLowerCase()
       const option = options[optionAddress] || {}
 
@@ -300,7 +285,6 @@ module.exports = async function tvl(_, block) {
           .plus(strikeCache)
           .toFixed()
       }
-    }
 
     return accumulator
   }, inSushiSwap)

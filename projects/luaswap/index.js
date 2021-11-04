@@ -31,5 +31,4 @@ module.exports = {
       "ethereum"
     ),
   },
-  tvl: async () => ({}),
 };

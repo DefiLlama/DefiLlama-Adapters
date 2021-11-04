@@ -3,27 +3,30 @@ const sdk = require('@defillama/sdk');
 const abi = require('./abi.json');
 const { unwrapUniswapLPs } = require('../helper/unwrapLPs');
 const { default: BigNumber } = require('bignumber.js');
-
-const comptroller = "0x8955aeC67f06875Ee98d69e6fe5BDEA7B60e9770"
-
+const comptroller = {
+    heco: "0x8955aeC67f06875Ee98d69e6fe5BDEA7B60e9770",
+    bsc: "0x8Cd2449Ed0469D90a7C4321DF585e7913dd6E715",
+    arbitrum: "0x3C13b172bf8BE5b873EB38553feC50F78c826284"
+}
 // ask comptroller for all markets array
-async function getAllCTokens(block) {
+async function getAllCTokens(block, chain) {
     return (await sdk.api.abi.call({
         block,
-        chain: "heco",
-        target: comptroller,
+        chain: chain,
+        target: comptroller[chain],
         params: [],
         abi: abi['getAllMarkets'],
     })).output;
 }
-
-async function getUnderlying(block, cToken) {
+async function getUnderlying(block, cToken, chain) {
     if (cToken === '0x397c6D1723360CC1c317CdC9B2E926Ae29626Ff3') {
         return '0x6f259637dcd74c767781e37bc6133cd6a68aa161';//cHT => HT
+    } else if (cToken === '0x14E134365F754496FBC70906b8611b8b49f66dd4'){
+        return '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c';//cBNB =>BNB
     } else {
         const token = (await sdk.api.abi.call({
             block,
-            chain: 'heco',
+            chain: chain,
             target: cToken,
             abi: abi['underlying'],
         })).output;
@@ -31,43 +34,39 @@ async function getUnderlying(block, cToken) {
             return '0x6b175474e89094c44da98b954eedeac495271d0f';//DAI => DAI
         } else if (token === '0x9362Bbef4B8313A8Aa9f0c9808B80577Aa26B73B') {
             return '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';//USDC => USDC
-        } else if(token === "0x5eE41aB6edd38cDfB9f6B4e6Cf7F75c87E170d98"){
-            return "0x0000000000085d4780b73119b644ae5ecd22b376" //TUSD
         } else {
-            return 'heco:' + token
+            return chain + ':' + token
         }
     }
 }
 
 // returns {[underlying]: [cToken]}
-async function getMarkets(block) {
-    let allCTokens = await getAllCTokens(block);
+async function getMarkets(block, chain) {
+    let allCTokens = await getAllCTokens(block, chain)
     const markets = []
     await (
         Promise.all(allCTokens.map(async (cToken) => {
-            let underlying = await getUnderlying(block, cToken);
+            let underlying = await getUnderlying(block, cToken, chain);
             markets.push({ underlying, cToken })
         }))
     );
     return markets;
 }
-
 const replacements = {
     "heco:0xA2F3C2446a3E20049708838a779Ff8782cE6645a": 'bsc:0x1d2f0da169ceb9fc7b3144628db156f3f6c60dbe',
     "heco:0x843Af718EF25708765a8E0942F89edEae1D88DF0": 'bsc:0x3ee2200efb3400fabb9aacf31297cbdd1d435d47',
 }
-
-async function tvl() {
+async function chainTvl(chain) {
     let balances = {};
     let timestamp = Math.round(new Date() / 1000)
-    //let currentBlock = (await sdk.api.util.lookupBlock(timestamp, {chain: "heco"}))
-    let markets = await getMarkets();
+    let currentBlock = (await sdk.api.util.lookupBlock(timestamp, { chain: chain }))
+    let markets = await getMarkets(currentBlock.block, chain);
     let LockedInfo = await sdk.api.abi.multiCall({
-        //block: currentBlock,
+        currentBlock,
         calls: _.map(markets, (market) => ({
             target: market.cToken,
         })),
-        chain: 'heco',
+        chain: chain,
         abi: abi['getCash'],
     });
     const symbols = await sdk.api.abi.multiCall({
@@ -75,7 +74,7 @@ async function tvl() {
         calls: _.map(markets, (market) => ({
             target: market.underlying.split(':')[1],
         })),
-        chain: 'heco',
+        chain: chain,
         abi: "erc20:symbol",
     });
     const lpPositions = []
@@ -86,7 +85,7 @@ async function tvl() {
             throw new Error("failed")
         }
         const symbol = symbols.output[idx].output
-        if (symbol === "HMDX") {
+        if (["HMDX", "Cake-LP"].includes(symbol)) {
             lpPositions.push({
                 token: market.underlying.split(':')[1],
                 balance: getCash.output
@@ -99,15 +98,34 @@ async function tvl() {
             sdk.util.sumSingleBalance(balances, market.underlying, getCash.output)
         }
     });
-    await unwrapUniswapLPs(balances, lpPositions, undefined, 'heco', addr => {
+    await unwrapUniswapLPs(balances, lpPositions, undefined, chain, addr => {
         if (addr === "0x5545153ccfca01fbd7dd11c0b23ba694d9509a6f") {
             return '0x6f259637dcd74c767781e37bc6133cd6a68aa161' // WHT -> HT
         }
-        return `heco:${addr}`
+        return `${chain}:${addr}`
     })
     return balances;
 }
 
+async function hecoTvl() {
+    return await chainTvl('heco');
+}
+async function bscTvl() {
+    return await chainTvl('bsc');
+}
+async function arbitrumTvl() {
+    return await chainTvl('arbitrum');
+}
+
 module.exports = {
-    tvl,
+    heco: {
+        tvl: hecoTvl
+    },
+    bsc: {
+        tvl: bscTvl
+    },
+    arbitrum: {
+        tvl: arbitrumTvl
+    },
+    tvl: sdk.util.sumChainTvls([hecoTvl, bscTvl, arbitrumTvl])
 };

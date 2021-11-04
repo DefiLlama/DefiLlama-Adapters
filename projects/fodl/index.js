@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
+const { unwrapUniswapLPs } = require("../helper/unwrapLPs.js");  
 
 const sushiLps = [
   "0xa5c475167f03b1556c054e0da78192cd2779087f", // FODL USDC
@@ -9,32 +9,26 @@ const sushiLps = [
 async function ethPool2(timestamp, block) {
   let balances = {};
 
-  for (let i = 0; i < sushiLps.length; i++) {
-    let { output: token0 } = await sdk.api.abi.call({
-      target: sushiLps[i],
-      abi: abi["token0"],
-      block,
-    });
+  let { output: totalSupply } = await sdk.api.abi.multiCall({
+    calls: sushiLps.map(address => ({
+      target: address
+    })),
+    abi: "erc20:totalSupply",
+    block
+  });
 
-    let { output: token1 } = await sdk.api.abi.call({
-      target: sushiLps[i],
-      abi: abi["token1"],
-      block,
-    });
+  let lpPos = totalSupply.map(result => ({
+    balance: result.output,
+    token: result.input.target
+  }));
 
-    let { output: reserves } = await sdk.api.abi.call({
-      target: sushiLps[i],
-      abi: abi["getReserves"],
-      block,
-    });
+  await unwrapUniswapLPs(balances, lpPos, block);
 
-    sdk.util.sumSingleBalance(balances, token0, reserves._reserve0);
-    sdk.util.sumSingleBalance(balances, token1, reserves._reserve1);
-  }
-  return balances;
+  return balances;  
 }
 
 module.exports = {
+  methodology: "Pool2 TVL are the tokens locked in the SUSHI pools",
   ethereum: {
     tvl: async () => ({}),
     pool2: ethPool2,

@@ -1,6 +1,8 @@
 const sdk = require("@defillama/sdk");
 const abi = require('./abi.json')
-const {unwrapCrv} = require('../helper/unwrapLPs')
+const { unwrapCrv } = require('../helper/unwrapLPs')
+const { transformAvaxAddress } = require('../helper/portedTokens');
+const BigNumber = require("bignumber.js");
 
 // Mainnet
 const crv_3crv_vault = {
@@ -38,6 +40,11 @@ const crv_perpetual_vault = {
   crvToken: '0x5f3b5DfEb7B28CDbD7FAba78963EE202a494e2A2',
   abi: 'locked'
 }
+const crv_steth_vault = {
+  contract: '0xbC10c4F7B9FE0B305e8639B04c536633A3dB7065',
+  crvToken: '0x06325440D014e39736583c165C2963BA99fAf14E',
+  abi:'balance'
+}
 
 // Polygon
 const crv_3crv_vault_polygon = {
@@ -51,13 +58,21 @@ const crv_btc_vault_polygon = {
   abi: 'balance'
 }
 
+// Avalanche
+const crv_3crv_vault_avalanche = {
+  contract: '0x0665eF3556520B21368754Fb644eD3ebF1993AD4',
+  crvToken: '0x1337BedC9D22ecbe766dF105c9623922A27963EC',
+  abi: 'balance'
+}
+
 const vaults = [
   crv_3crv_vault, 
   crv_eurs_vault, 
   crv_btc_vault, 
   crv_frax_vault,
   crv_frax_vault2,
-  crv_eth_vault
+  crv_eth_vault,
+  crv_steth_vault,
 ]
 
 const vaultsPolygon = [
@@ -65,7 +80,12 @@ const vaultsPolygon = [
   crv_btc_vault_polygon
 ]
 
+const vaultsAvalanche = [
+  crv_3crv_vault_avalanche
+]
+
 const sanctuary = '0xaC14864ce5A98aF3248Ffbf549441b04421247D3'
+const arbStrat = '0x20D1b558Ef44a6e23D9BF4bf8Db1653626e642c3'
 const sdtToken = '0x73968b9a57c6E53d41345FD57a6E6ae27d6CDB2F'
 const crvToken = '0xD533a949740bb3306d119CC777fa900bA034cd52'
 
@@ -90,14 +110,22 @@ async function ethereum(timestamp, block) {
 }
 
 async function staking(timestamp, block){
-  const sdtInSactuary = sdk.api.erc20.balanceOf({
+  const sdtInSactuary = await sdk.api.erc20.balanceOf({
     target: sdtToken,
     owner: sanctuary,
     block
   })
 
+  const sdtInArbStrategy = await sdk.api.erc20.balanceOf({
+    target: sdtToken,
+    owner: arbStrat,
+    block
+  })
+
+  const totalSDTStaked = BigNumber(sdtInSactuary.output).plus(BigNumber(sdtInArbStrategy.output)).toFixed()
+
   return {
-    [sdtToken]:(await sdtInSactuary).output
+    [sdtToken]:totalSDTStaked
   }
 }
 
@@ -113,19 +141,54 @@ async function polygon(timestamp, ethBlock, chainBlocks) {
     })  
     await unwrapCrv(balances, vault.crvToken, crvBalance.output, block, 'polygon', addr=>`polygon:${addr}`)
   }))
+  return balances
+}
+
+async function avax(timestamp, ethBlock, chainBlocks) {
+  const transformAddress = await transformAvaxAddress()
+  let balances = {};
+  const block = chainBlocks.avax
+  await Promise.all(vaultsAvalanche.map(async vault=>{
+    const crvBalance = await sdk.api.abi.call({
+      target: vault.contract,
+      block,
+      abi: abi[vault.abi], 
+      chain: 'avax'
+    })  
+    //console.log(crvBalance)
+    await unwrapCrv(balances, vault.crvToken, crvBalance.output, block, 'avax', addr=>`avax:${addr}`)
+  }))
+
+  // map from avax to ethereum token address 
+  const dai_eth_address = transformAddress('0xbA7dEebBFC5fA1100Fb055a87773e1E99Cd3507a')
+  const usdc_eth_address = transformAddress('0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664')
+  const usdt_eth_address = transformAddress('0xde3A24028580884448a5397872046a019649b084')
+
+  // avDAI
+  const avDAI = 'avax:0x47AFa96Cdc9fAb46904A55a6ad4bf6660B53c38a'
+  balances[dai_eth_address] = balances[avDAI]
+  delete balances[avDAI]
+  // avUSDC
+  const avUSDC = 'avax:0x46A51127C3ce23fb7AB1DE06226147F446e4a857'
+  balances[usdc_eth_address] = balances[avUSDC]
+  delete balances[avUSDC]
+  // avUSDT
+  const avUSDT = 'avax:0x532E6537FEA298397212F09A61e03311686f548e'
+  balances[usdt_eth_address] = balances[avUSDT]
+  delete balances[avUSDT]
 
   return balances
 }
 
 module.exports = {
   ethereum:{
-    tvl: ethereum
+    tvl: ethereum,
+    staking
   },
   polygon:{
     tvl: polygon
   },
-  staking:{
-    tvl: staking
+  avalanche: {
+    tvl: avax
   },
-  tvl: sdk.util.sumChainTvls([ethereum, polygon])
 }

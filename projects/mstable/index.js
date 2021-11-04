@@ -27,6 +27,11 @@ const ASSETS = {
       startBlock: 12146645,
     },
     {
+      // fPmBTC/tBTCv2
+      address: '0xc3280306b6218031E61752d060b091278d45c329',
+      startBlock: 13460377,
+    },
+    {
       // fPmUSD/BUSD
       address: '0xfe842e95f8911dcc21c943a1daa4bd641a1381c6',
       startBlock: 12146707,

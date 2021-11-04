@@ -280,7 +280,5 @@ module.exports = {
     ethereum:{
         tvl: eth
     },
-
-    tvl: sdk.util.sumChainTvls([eth, bsc, polygon]),
 };
 

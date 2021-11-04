@@ -31,6 +31,15 @@ async function moonriver() {
   return data.data.platformTVL
 }
 
+async function okex() {
+  const data = await utils.fetchURL("https://static.autofarm.network/okex/stats.json")
+  return data.data.platformTVL
+}
+async function celo() {
+  const data = await utils.fetchURL("https://static.autofarm.network/celo/stats.json")
+  return data.data.platformTVL
+}
+
 async function bsc() {
   var bscPools = await utils.fetchURL(bscEndpoint)
   let tvl = Object.values(bscPools.data.pools).reduce((total, pool) => total + (pool.poolWantTVL || 0), 0)
@@ -38,7 +47,7 @@ async function bsc() {
 }
 
 async function fetch() {
-  return (await polygon())+(await bsc())+(await heco())+(await avax())+(await fantom()) + (await moonriver())
+  return (await polygon())+(await bsc())+(await heco())+(await avax())+(await fantom()) + (await moonriver()+(await okex())+(await celo()))
 }
 
 module.exports = {
@@ -59,6 +68,12 @@ module.exports = {
   },
   moonriver:{
     fetch: moonriver
+  },
+  okexchain:{
+    fetch: okex
+  },
+  celo:{
+    fetch: celo
   },
   fetch
 }
