@@ -17,7 +17,7 @@ async function tvl(time, ethBlock, chainBlocks){
 }
 
 module.exports={
-    fantom:{
+    polygon:{
         tvl,
         staking: staking("0x25d28a24Ceb6F81015bB0b2007D795ACAc411b4d", "0x4e78011ce80ee02d2c3e649fb657e45898257815", "polygon")
     }
