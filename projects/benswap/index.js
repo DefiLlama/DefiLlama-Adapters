@@ -27,7 +27,7 @@ async function bchMasterChef(timestamp, ethBlock, chainBlocks) {
     }
 }
 
-const bchDexTvl = calculateUsdUniTvl(FACTORY, CHAIN, WBCH, [], COREASSETNAME)
+const bchDexTvl = calculateUsdUniTvl(FACTORY, CHAIN, WBCH, [EBEN], COREASSETNAME)
 
 module.exports = {
     misrepresentedTokens: true,
