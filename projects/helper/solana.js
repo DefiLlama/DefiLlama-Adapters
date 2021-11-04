@@ -106,11 +106,30 @@ async function getMultipleAccountBuffers(labeledAddresses) {
     return results;
 }
 
+// Example: [[token1, account1], [token2, account2], ...]
+async function sumOrcaLPs(tokensAndAccounts) {
+    const [tokenlist, orcaPools] = await Promise.all([
+        axios.get("https://cdn.jsdelivr.net/gh/solana-labs/token-list@main/src/tokens/solana.tokenlist.json").then(r => r.data.tokens),
+        axios.get("https://api.orca.so/pools").then(r => r.data)
+    ])
+    let totalUsdValue = 0
+    await Promise.all(tokensAndAccounts.map(async ([token, owner])=>{
+        const balance = await getTokenBalance(token, owner)
+        const symbol = tokenlist.find(t => t.address === token)?.symbol?.replace("[stable]", "")
+        const supply = await getTokenSupply(token)
+        const poolLiquidity = orcaPools.find(p => p.name2 === symbol)?.liquidity ?? 0
+        totalUsdValue += balance * poolLiquidity / supply
+    }))
+    return totalUsdValue
+}
+
+
 module.exports = {
     getTokenSupply,
     getTokenBalance,
     getTokenAccountBalance,
     sumTokens,
     getMultipleAccountsRaw,
-    getMultipleAccountBuffers
+    getMultipleAccountBuffers,
+    sumOrcaLPs
 }
