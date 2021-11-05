@@ -54,11 +54,12 @@ async function unwrapCrvLPs(
   block,
   chain = 'ethereum',
   transformAddress = (addr) => addr,
+  excludeTokensRaw=[]
 ) {
   await Promise.all(
     lpPositions.map(async (lp) => {
       try {
-        await unwrapCrv(balances, lp, block, chain, transformAddress)
+        await unwrapCrv(balances, lp, block, chain, transformAddress, excludeTokensRaw)
       } catch (e) {
         console.log(
           `Failed to get data for LP token at ${lpPosition.token} on chain ${chain}`,
