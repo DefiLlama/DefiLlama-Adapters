@@ -2,7 +2,7 @@ const { request, gql } = require("graphql-request");
 const sdk = require('@defillama/sdk');
 const { toUSDTBalances } = require('../helper/balances');
 
-const graphUrl = 'https://graph.t.hmny.io/subgraphs/name/elephantproject/subgraph15'
+const graphUrl = 'https://elephantgraph.com/subgraphs/name/elephantproject/subgraph20'
 const graphQuery = gql`
 query get_tvl($block: Int) {
   uniswapFactory(
