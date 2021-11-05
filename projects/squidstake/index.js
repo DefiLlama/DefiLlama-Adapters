@@ -2,7 +2,7 @@ const sdk = require("@defillama/sdk");
 const { transformBscAddress } = require("../helper/portedTokens");
 const { addFundsInMasterChef } = require("../helper/masterchef");
 const { BigNumber } = require("bignumber.js");
-const { pool2 } = require("../helper/pool2");
+const { stakingPricedLP } = require("../helper/staking");
 
 const squidToken = "0xAE61e7dc989718E700C046a2483e93513eDCA484";
 const masterchef = "0x86A47ddD4c6522251d6a5A5800f3F24c03332CB4";
@@ -88,7 +88,7 @@ async function tvl(timestamp, chain, chainBlocks) {
 module.exports = {
   bsc: {
     tvl,
-    pool2: pool2(masterchef, squidBnbLP, "bsc", (addr) => `bsc:${addr}`),
+    pool2: stakingPricedLP(masterchef, squidToken, "bsc", squidBnbLP, "wbnb", true),
   },
   tvl,
 };
