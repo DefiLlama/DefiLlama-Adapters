@@ -91,10 +91,10 @@ async function getAllMarkets(block, chain, comptroller) {
 }
 
 // ask comptroller for oracle
-async function getOracle(block, chain, comptroller) {
+async function getOracle(block, chain, comptroller, oracleAbi) {
     const { output: oracle } = await sdk.api.abi.call({
         target: comptroller,
-        abi: abi['oracle'],
+        abi: oracleAbi,
         block,
         chain: chain,
     });
@@ -126,10 +126,10 @@ async function getUnderlyingDecimals(block, chain, token, cether) {
     }
 }
 
-async function getUnderlyingPrice(block, chain, oracle, token) {
+async function getUnderlyingPrice(block, chain, oracle, token, methodAbi) {
     const { output: underlyingPrice } = await sdk.api.abi.call({
         target: oracle,
-        abi: abi['getUnderlyingPrice'],
+        abi: methodAbi,
         block,
         params: [token],
         chain: chain,
@@ -147,20 +147,23 @@ async function getCash(block, chain, token) {
     return cash;
 }
 
-function getCompoundUsdTvl(comptroller, chain, cether) {
+function getCompoundUsdTvl(comptroller, chain, cether, abis={
+    oracle: abi['oracle'],
+    underlyingPrice: abi['getUnderlyingPrice']
+}) {
     return async (timestamp, ethBlock, chainBlocks) => {
         const block = chainBlocks[chain]
         let tvl = new BigNumber('0');
 
         let allMarkets = await getAllMarkets(block, chain, comptroller);
-        let oracle = await getOracle(block, chain, comptroller);
+        let oracle = await getOracle(block, chain, comptroller, abis.oracle);
 
         await Promise.all(
             allMarkets.map(async token => {
                 let cash = new BigNumber(await getCash(block, chain, token));
                 let decimals = await getUnderlyingDecimals(block, chain, token, cether);
                 let locked = cash.div(10 ** decimals);
-                let underlyingPrice = new BigNumber(await getUnderlyingPrice(block, chain, oracle, token)).div(
+                let underlyingPrice = new BigNumber(await getUnderlyingPrice(block, chain, oracle, token, abis.underlyingPrice)).div(
                     10 ** (18 + 18 - decimals)
                 );
                 tvl = tvl.plus(locked.times(underlyingPrice));
