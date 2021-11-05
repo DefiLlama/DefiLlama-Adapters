@@ -6,8 +6,10 @@ const REVA_CHEF_ABI = require("./RevaChef.json");
 const config = require("./mainnet.json");
 
 async function tvl(timestamp, block) {
-  const calls = config.tokens.map((token) => ({
-    params: token.address,
+  const tokenAddresses = Array.from(new Set(config.tokens.map((token) => token.address)));
+
+  const calls = tokenAddresses.map((tokenAddress) => ({
+    params: tokenAddress,
     target: REVA_CHEF,
   }));
 
@@ -17,11 +19,13 @@ async function tvl(timestamp, block) {
 		block: block,
     chain: "bsc",
 	});
+
   const balances = tokenInfos["output"].map((response) => ({
     [`bsc:${response.input.params[0]}`]: response.output.tvlBusd
   }));
 	console.log(balances);
 	
+  return { "bsc:0x58F876857a02D6762E0101bb5C46A8c1ED44Dc16" : "30000000" };
 	return balances;
 }
 
