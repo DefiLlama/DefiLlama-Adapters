@@ -11,7 +11,6 @@ module.exports = {
                 '0x985458e523db3d53125813ed68c274899e9dfab4', // USDC
                 '0xe176ebe47d621b984a73036b9da5d834411ef734', // BUSD
                 '0x224e64ec1bdce3870a6a6c777edd450454068fec', // UST
-                '0x0ab43550a6915f9f67d0c454c2e90385e6497eaa' // bscBUSD
             ],  "harmony"),
     }
 }
