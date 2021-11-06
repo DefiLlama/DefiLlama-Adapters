@@ -2,6 +2,9 @@ const { sumTokensAndLPs, sumTokensAndLPsSharedOwners } = require('./unwrapLPs')
 const {_BASE_TOKEN_, _QUOTE_TOKEN_} = require('./abis/dodo.json')
 const sdk = require('@defillama/sdk')
 const { default: BigNumber } = require('bignumber.js')
+const masterchefAbi = require("./abis/masterchef.json")
+const token0Abi = require("./abis/token0.json")
+const token1Abi = require("./abis/token1.json")
 
 function pool2(stakingContract, lpToken, chain = "ethereum", transformAddress) {
     return async (_timestamp, _ethBlock, chainBlocks) => {
@@ -55,9 +58,94 @@ function dodoPool2(stakingContract, lpToken, chain = "ethereum", transformAddres
     }
 }
 
+
+async function pool2LPsFromMasterChef(masterchef, token, block, chain = "ethereum") {
+    let pool2LPs = [];
+
+    let poolLength = (
+        await sdk.api.abi.call({
+        target: masterchef,
+        abi: masterchefAbi.poolLength,
+        block,
+        chain,
+        })
+    ).output;
+
+    let poolInfo = (
+        await sdk.api.abi.multiCall({
+        calls: Array.from({ length: Number(poolLength) }, (_, k) => ({
+            target: masterchef,
+            params: k,
+        })),
+        abi: masterchefAbi.poolInfo,
+        block,
+        chain,
+        })
+    ).output;
+
+    let symbols = (
+        await sdk.api.abi.multiCall({
+        calls: poolInfo.map((p) => ({
+            target: p.output.lpToken,
+        })),
+        abi: "erc20:symbol",
+        block,
+        chain,
+        })
+    ).output;
+
+    let lpTokens = [];
+
+    for (let i = 0; i < symbols.length; i++) {
+        let symbol = symbols[i];
+        if (symbol.output === null) {
+            continue;
+        }
+        if (
+        symbol.output.includes("LP") ||
+        symbol.output.includes("PGL") ||
+        symbol.output.includes("UNI-V2")){
+            lpTokens.push(symbol.input.target);
+        }
+    }
+
+    let [tokens0, tokens1] = await Promise.all([
+        sdk.api.abi.multiCall({
+        calls: lpTokens.map((p) => ({
+            target: p,
+        })),
+        abi: token0Abi,
+        block,
+        chain,
+        }),
+        sdk.api.abi.multiCall({
+        calls: lpTokens.map((p) => ({
+            target: p,
+        })),
+        abi: token1Abi,
+        block,
+        chain,
+        }),
+    ]);
+
+    for (let i = 0; i < lpTokens.length; i++) {
+        if (
+        tokens0.output[i].output.toLowerCase() === token.toLowerCase() ||
+        tokens1.output[i].output.toLowerCase() === token.toLowerCase()
+        ){
+            pool2LPs.push(lpTokens[i]);
+        }
+    }
+
+    return pool2LPs;
+}
+
+
+
 module.exports = {
     pool2,
     pool2Exports,
     dodoPool2,
-    pool2s
+    pool2s,
+    pool2LPsFromMasterChef
 }
