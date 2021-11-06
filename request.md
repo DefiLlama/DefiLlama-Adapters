@@ -8,8 +8,7 @@ https://www.certik.org/projects/chaingefinance
 https://www.chainge.finance
 
 ##### Logo (High resolution, preferably in .svg and .png, for application on both white and black backgrounds. Will be shown with rounded borders):
-![image](https://user-images.githubusercontent.com/43104791/140470996-d0cd1d7c-0f45-4747-88f4-b6b167f29d98.png)
-
+![image](https://user-images.githubusercontent.com/43104791/140598063-555d025d-50f2-494e-8ed7-20f01c3b296d.png)
 
 ##### Current TVL:
 90.97M
