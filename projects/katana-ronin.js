@@ -1,6 +1,7 @@
 const sdk = require('@defillama/sdk');
 const { request, gql } = require("graphql-request");
 const { sumMultiBalanceOf } = require('@defillama/sdk/build/generalUtil');
+const { getBlock } = require('./helper/getBlock');
 
 // Ronin -> Mainnet lookup table
 const token_lookup_table = { // needed to add 0x in front
@@ -51,15 +52,8 @@ query tokens {
   }
 }
 `
-async function tvl(timestamp, block, chainBlocks) {
-  console.log('DEBUG chainBlocks', chainBlocks, 'block', block)
-  const {tokens} = await request(
-    graphUrl,
-    tokensQuery,
-  )
-  
-  // TODO: remove block and get it from sdk
-  block = 8211142
+async function tvl(timestamp, ethBlock, chainBlocks) {
+  const block = await getBlock(timestamp, "ronin", chainBlocks)
 
   const {pairs} = await request(
     graphUrl,
