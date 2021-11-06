@@ -5,6 +5,7 @@ const { sumBalancerLps } = require("../helper/unwrapLPs");
 const { unwrapUniswapLPs, unwrapCrvLPs } = require("./helpers");
 
 const groTokenAbi = require("./abi.json");
+const { staking } = require("../helper/staking");
 
 // Gro Protocol Token Addresses
 const GRO = "0x3Ec8798B81485A254928B70CDA1cf0A2BB0B74D7"; // Governance Token, not counted for TVL unless staked in pools
@@ -31,8 +32,6 @@ const GROTokenStaker = "0x001C249c09090D79Dc350A286247479F08c7aaD7";
 
 async function tvl(timestamp, ethBlock) {
   let balances = {};
-  const uniLpPositions = [];
-  const balLpPositions = [];
   const crvLpPositions = [];
 
   if (timestamp < 1633046400) {
@@ -64,14 +63,34 @@ async function tvl(timestamp, ethBlock) {
 
     // Assets held in staking pools (not counting any PWRD or GVT assets as these are already counted)
 
-    // PO_SS_GRO
-    const p0 = await sdk.api.erc20.balanceOf({
-      target: GRO,
+    // P3_SS_GVT - GVT already accounted for
+
+    // P4_CRV_PWRD_TCRV
+    const p4 = await sdk.api.erc20.balanceOf({
+      target: P4_CRV_PWRD_TCRV,
       owner: GROTokenStaker,
       block: ethBlock,
     });
-    sdk.util.sumSingleBalance(balances, GRO, p0.output);
+    crvLpPositions.push({ token: P4_CRV_PWRD_TCRV, balance: p4.output });
 
+    await unwrapCrvLPs(
+      balances,
+      crvLpPositions,
+      ethBlock,
+      "ethereum",
+      undefined,
+      [PWRD]
+    ); // Excludes already counted PWRD amount
+
+  }
+
+  return balances;
+}
+
+async function pool2(timestamp, ethBlock) {
+  let balances = {};
+  const uniLpPositions = [];
+  const balLpPositions = [];
     // P1_UNI_GRO_GVT
     // P2_UNI_GRO_USDC
     const p1 = (
@@ -100,51 +119,31 @@ async function tvl(timestamp, ethBlock) {
       undefined,
       [GVT]
     ); // Excludes already counted GVT amount
-
-    // P3_SS_GVT - GVT already accounted for
-
-    // P4_CRV_PWRD_TCRV
-    const p4 = await sdk.api.erc20.balanceOf({
-      target: P4_CRV_PWRD_TCRV,
+  // P5_BAL_GRO_WETH
+  if (timestamp > 1633392000) {
+    // On or after 05-10-2021, P5 pool available
+    const p5 = await sdk.api.erc20.balanceOf({
+      target: P5_BAL_GRO_WETH,
       owner: GROTokenStaker,
       block: ethBlock,
     });
-    crvLpPositions.push({ token: P4_CRV_PWRD_TCRV, balance: p4.output });
+    balLpPositions.push({ P5_BAL_GRO_WETH, p5 });
 
-    await unwrapCrvLPs(
+    await sumBalancerLps(
       balances,
-      crvLpPositions,
+      [[P5_BAL_GRO_WETH, GROTokenStaker, true]],
       ethBlock,
       "ethereum",
-      undefined,
-      [PWRD]
-    ); // Excludes already counted PWRD amount
-
-    // P5_BAL_GRO_WETH
-    if (timestamp > 1633392000) {
-      // On or after 05-10-2021, P5 pool available
-      const p5 = await sdk.api.erc20.balanceOf({
-        target: P5_BAL_GRO_WETH,
-        owner: GROTokenStaker,
-        block: ethBlock,
-      });
-      balLpPositions.push({ P5_BAL_GRO_WETH, p5 });
-
-      await sumBalancerLps(
-        balances,
-        [[P5_BAL_GRO_WETH, GROTokenStaker, true]],
-        ethBlock,
-        "ethereum",
-        (addr) => addr.toLowerCase(addr)
-      );
-    }
+      (addr) => addr.toLowerCase(addr)
+    );
   }
-
-  return balances;
+  return balances
 }
 
 module.exports = {
   ethereum: {
+    pool2,
+    staking: staking(GROTokenStaker, GRO),
     tvl,
   },
   start: 1622204347, // 28-05-2021 12:19:07 (UTC)
