@@ -34,12 +34,11 @@ module.exports = {
     "All data is pulled from feeder's API. TVL counts the tokens deposited to the Vault strategies, Pool2 counts the deposits made to FEED farming and staking sums the deposits made to FEED staking.",
   misrepresentedTokens: true,
   bsc: {
-    bscTvl,
+    tvl:bscTvl,
     pool2,
     staking,
   },
   fantom: {
-    fantomTvl,
+    tvl:fantomTvl,
   },
-  tvl,
 };
