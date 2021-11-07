@@ -135,7 +135,9 @@ function masterChefExports(masterchef, chain, stakingToken){
         staking:{
           tvl: staking(masterchef, stakingToken, chain)
         },
-        pool2:pool2BalanceFromMasterChefExports(masterchef, stakingToken, "bsc", addr=>`${chain}:${addr}`),
+        pool2: {
+          tvl: pool2BalanceFromMasterChefExports(masterchef, stakingToken, chain, addr=>`${chain}:${addr}`)
+        },
         tvl
     };
 }
