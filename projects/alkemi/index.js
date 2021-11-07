@@ -62,8 +62,6 @@
     balances[wethEarnOpen] = '0';
     balances[wethEarn] = '0';
 
-    //let supported = await sdk.api.util.tokenList();
-    //console.table(supported); // print supported assets
     //console.table(balances); // for debugging
     return balances;
   };

@@ -5,15 +5,7 @@ const START_BLOCK = 6627917;
 const FACTORY = '0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95';
 const ETH = '0x0000000000000000000000000000000000000000'.toLowerCase();
 
-module.exports = async function tvl(timestamp, block) {
-  const supportedTokens = await (
-    sdk
-      .api
-      .util
-      .tokenList()
-      .then((supportedTokens) => supportedTokens.map(({ contract }) => contract))
-  );
-
+async function tvl(timestamp, block) {
   const logs = (await sdk.api.util
     .getLogs({
       keys: [],
@@ -27,11 +19,8 @@ module.exports = async function tvl(timestamp, block) {
   logs.forEach((log) => {
     const tokenAddress = `0x${log.topics[1].substring(26)}`.toLowerCase();
 
-    // only consider supported tokens
-    if (supportedTokens.includes(tokenAddress)) {
       const exchangeAddress = `0x${log.topics[2].substring(26)}`.toLowerCase();
       exchanges[exchangeAddress] = tokenAddress;
-    }
   });
 
   const tokenBalances = (
@@ -58,6 +47,10 @@ module.exports = async function tvl(timestamp, block) {
 
   return tokenBalances.reduce(
     (accumulator, tokenBalance) => {
+      if(tokenBalance.output === null){
+        console.log("excluded", tokenBalance.input.target)
+        return accumulator
+      }
         const balanceBigNumber = new BigNumber(tokenBalance.output)
         if (!balanceBigNumber.isZero()) {
           const tokenAddress = tokenBalance.input.target.toLowerCase()
@@ -74,3 +67,7 @@ module.exports = async function tvl(timestamp, block) {
     }
   )
 };
+
+module.exports={
+  tvl
+}
