@@ -199,7 +199,7 @@ async function transformOptimismAddress() {
         if(compareAddresses(addr, "0x4200000000000000000000000000000000000006")){
             return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
         }
-        const dstToken = bridge.find(token => compareAddresses(addr, token.address))
+        const dstToken = bridge.find(token => compareAddresses(addr, token.address) && token.chainId === 10)
         if (dstToken !== undefined) {
             const srcToken = bridge.find(token => dstToken.logoURI === token.logoURI && token.chainId === 1)
             if(srcToken !== undefined){
