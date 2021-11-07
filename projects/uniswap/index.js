@@ -1,7 +1,10 @@
-const { request, gql } = require("graphql-request");
-const { toUSDTBalances } = require('../helper/balances');
 const { getChainTvl } = require('../helper/getUniSubgraphTvl');
 const sdk = require('@defillama/sdk')
+
+const v1graph = getChainTvl({
+  ethereum: 'https://api.thegraph.com/subgraphs/name/ianlapham/uniswap'
+}, "uniswaps", "totalLiquidityUSD")
+
 
 const v2graph = getChainTvl({
   ethereum: 'https://api.thegraph.com/subgraphs/name/ianlapham/uniswapv2'
@@ -17,7 +20,7 @@ module.exports = {
   misrepresentedTokens: true,
   methodology: `Counts the tokens locked on AMM pools, pulling the data from the 'ianlapham/uniswapv2' subgraph`,
   ethereum:{
-    tvl: sdk.util.sumChainTvls([v3Graphs('ethereum'), v2graph('ethereum')]),
+    tvl: sdk.util.sumChainTvls([v1graph("ethereum"), v2graph('ethereum'), v3Graphs('ethereum')]),
   },
   arbitrum:{
     tvl: v3Graphs('arbitrum')
