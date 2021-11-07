@@ -1,7 +1,7 @@
 const {_BASE_TOKEN_, _QUOTE_TOKEN_} = require('./abis/dodo.json')
 const sdk = require('@defillama/sdk')
 const { default: BigNumber } = require('bignumber.js')
-const { unwrapUniswapLPs, sumTokensAndLPsSharedOwners } = require('./unwrapLPs');
+const { unwrapUniswapLPs, sumTokensAndLPsSharedOwners, sumTokensAndLPs } = require('./unwrapLPs');
 const masterchefAbi = require("./abis/masterchef.json")
 const token0Abi = require("./abis/token0.json")
 const token1Abi = require("./abis/token1.json")
