@@ -108,5 +108,4 @@ module.exports = {
   arbitrum: {
     tvl: chainTvl('arbitrum'),
   },
-  tvl: sdk.util.sumChainTvls(['ethereum', 'optimism', 'arbitrum'].map(chainTvl))
 }
