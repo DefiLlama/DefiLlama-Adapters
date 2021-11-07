@@ -48,7 +48,8 @@ async function tvl(timestamp, block) {
   return tokenBalances.reduce(
     (accumulator, tokenBalance) => {
       if(tokenBalance.output === null){
-        console.log(tokenBalance.input)
+        console.log("excluded", tokenBalance.input.target)
+        return accumulator
       }
         const balanceBigNumber = new BigNumber(tokenBalance.output)
         if (!balanceBigNumber.isZero()) {
