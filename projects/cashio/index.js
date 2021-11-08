@@ -6,7 +6,7 @@ const {
   getMultipleAccountsRaw,
 } = require("../helper/solana");
 
-async function getTotalBalancesFromMultipleAccounts(accountsArray) {
+async function getTotalBalancesFromMultipleAccounts(tokenAccounts) {
   const tokenAccountsData = (await getMultipleAccountsRaw(tokenAccounts))
     .map((account) => {
       if (account !== null) {
@@ -95,7 +95,7 @@ async function tvl() {
   const { coingeckoTokens, sunnyPools } = cashioTreasuryAccounts.data;
 
   // fetch all normal tokens (tokens with coingecko IDs)
-  for (const [coingeckoID, tokenAccounts] of coingeckoTokens.entries()) {
+  for (const [coingeckoID, tokenAccounts] of Object.entries(coingeckoTokens)) {
     const amount = await getTotalBalancesFromMultipleAccounts(tokenAccounts);
     if (!tvlResult[coingeckoID]) {
       tvlResult[coingeckoID] = amount;
@@ -105,7 +105,7 @@ async function tvl() {
   }
 
   // Run these serially to avoid rate limiting issues
-  for (const [sunnyPoolKey, tokenAccounts] of sunnyPools.entries()) {
+  for (const [sunnyPoolKey, tokenAccounts] of  Object.entries(sunnyPools)) {
     const sunnyPool = SUNNY_POOLS.find(
       (pool) => pool.relevantAccounts.sunnyPool === sunnyPoolKey
     );

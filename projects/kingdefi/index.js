@@ -38,16 +38,13 @@ const polygonTvl = calctvl("polygon");
 
 module.exports = {
   misrepresentedTokens: true,
-  staking: {
-    tvl: staking(stakingContract, KRW, "bsc"),
-  },
   bsc: {
+    staking: staking(stakingContract, KRW, "bsc"),
     tvl: bscTvl,
   },
   polygon: {
     tvl: polygonTvl,
   },
-  tvl: sdk.util.sumChainTvls([bscTvl, polygonTvl]),
   methodology:
     "We count liquidity on the Farms seccion through MasterChef Contracts; and the staking part separtely",
 };

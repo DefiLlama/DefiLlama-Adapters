@@ -130,9 +130,6 @@ async function staking(timestamp, block) {
 }
 
 module.exports = {
-  name: "Bidge Mutual",
-  website: "https://www.bridgemutual.io/",
-  token: "BMI",
   ethereum: {
     tvl: tvl,
     staking: staking,

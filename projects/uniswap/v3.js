@@ -4,10 +4,6 @@ const START_BLOCK = 12369621
 const FACTORY = '0x1F98431c8aD98523631AE4a59f267346ea31F984'
 
 module.exports = async function tvl(_, block) {
-  const supportedTokens = await sdk.api.util
-    .tokenList()
-    .then((supportedTokens) => supportedTokens.map(({ contract }) => contract))
-
   const logs = (
     await sdk.api.util.getLogs({
       keys: [],
@@ -30,23 +26,19 @@ module.exports = async function tvl(_, block) {
   const pairs = {}
   // add token0Addresses
   token0Addresses.forEach((token0Address, i) => {
-    if (supportedTokens.includes(token0Address)) {
       const pairAddress = pairAddresses[i]
       pairs[pairAddress] = {
         token0Address: token0Address,
       }
-    }
   })
 
   // add token1Addresses
   token1Addresses.forEach((token1Address, i) => {
-    if (supportedTokens.includes(token1Address)) {
       const pairAddress = pairAddresses[i]
       pairs[pairAddress] = {
         ...(pairs[pairAddress] || {}),
         token1Address: token1Address,
       }
-    }
   })
 
   let balanceCalls = []
