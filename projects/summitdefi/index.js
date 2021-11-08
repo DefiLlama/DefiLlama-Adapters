@@ -1,13 +1,14 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
+const stableabi = require("./stableABI.json");
 const { staking } = require("../helper/staking");
 const { transformFantomAddress } = require("../helper/portedTokens");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-
+// node test.js projects/summitdefi/index.js
 const CartographerContract = "0x46d303b6829aDc7AC3217D92f71B1DbbE77eBBA2";
 const CartOasisContract = "0x68889c9d8e923b3e310B60ee588242A407fa6755";
 const CartElevationContract = "0xdE1e14e2ED8B2D883B8338b514dDc173e792271a";
-
+const triPoolAddress = '0xD163415BD34EF06f57C58D2AEd5A5478AfB464cC';
 const WFTM = "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83";
 
 const ignoreAddresses = [
@@ -65,7 +66,7 @@ const calcTvl = async (balances, poolInfo, cartographerTypeContract) => {
     })
   ).output;
 
-  const lpPositions = [];
+  let lpPositions = [];
 
   lpToken.forEach((lp, pid) => {
     if (
@@ -87,14 +88,33 @@ const calcTvl = async (balances, poolInfo, cartographerTypeContract) => {
   });
 
   const transformAddress = await transformFantomAddress();
+  lpPositions = lpPositions.filter(
+    a => a.token != triPoolAddress);
 
   await unwrapUniswapLPs(
     balances,
     lpPositions,
     chainBlocks["fantom"],
     "fantom",
-    transformAddress
+    transformAddress,
   );
+
+  const rate = (await sdk.api.abi.call({
+    abi: stableabi,
+    chain: "fantom",
+    block: chainBlocks["fantom"],
+    target: triPoolAddress
+  })).output;
+
+  const balance = (await sdk.api.abi.call({
+    abi: 'erc20:balanceOf',
+    chain: "fantom",
+    block: chainBlocks["fantom"],
+    target: triPoolAddress,
+    params: CartographerContract
+  })).output;
+
+  sdk.util.sumSingleBalance(balances, `usd-coin`, balance * rate / 10 ** 36);
 
   return balances;
 };
