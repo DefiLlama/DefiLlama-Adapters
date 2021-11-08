@@ -8,6 +8,8 @@ const DPX = "0xeec2be5c91ae7f8a338e1e5f3b5de49d07afdc81";
 const RDPX = "0x0ff5A8451A839f5F0BB3562689D9A44089738D11";
 const stakingRewardsDPX = "0xc6D714170fE766691670f12c2b45C1f34405AAb6";
 const SSOVDpx = "0x818ceD3D446292061913f1f74B2EAeE6341a76Ec";
+const stakingRewardsRDPX = "0x8d481245801907b45823Fb032E6848d0D3c29AE5";
+const SSOVRdpx = "0x6607c5e39a43cce1760288Dc33f20eAd51b14D7B";
 
 function transformArbitrum(addr) {
   if (addr.toLowerCase() === "0x6c2c06790b3e3e3c38e12ee22f8183b37a13ee55") {
@@ -41,6 +43,29 @@ async function arbitrumTvl(timestamp, block) {
     .plus(new BigNumber(ssovEarntRewards.output.DPXtokensEarned))
     .toFixed();
   balances[RDPX] = ssovEarntRewards.output.RDPXtokensEarned;
+
+  const ssovRDPXBalance = await sdk.api.abi.call({
+    target: stakingRewardsRDPX,
+    abi: abi["balanceOf"],
+    params: [SSOVRdpx],
+    block: block,
+    chain: "arbitrum",
+  });
+  const ssovRDPXEarntRewards = await sdk.api.abi.call({
+    target: stakingRewardsRDPX,
+    abi: abi["earned"],
+    params: [SSOVRdpx],
+    block: block,
+    chain: "arbitrum",
+  });
+
+  balances[DPX] = new BigNumber(balances[DPX])
+    .plus(new BigNumber(ssovRDPXEarntRewards.output.DPXtokensEarned))
+    .toFixed();
+  balances[RDPX] = new BigNumber(balances[RDPX])
+    .plus(new BigNumber(ssovRDPXBalance.output))
+    .plus(new BigNumber(ssovRDPXEarntRewards.output.RDPXtokensEarned))
+    .toFixed();
 
   return balances;
 }
