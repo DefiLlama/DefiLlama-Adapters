@@ -70,6 +70,22 @@ async function arbitrumTvl(timestamp, block) {
   return balances;
 }
 
+async function dopexStakings(timestamp, _ethBlock, chainBlocks) {
+  const stakingDpx = await staking(
+    stakingRewardsDPX,
+    "0x6c2c06790b3e3e3c38e12ee22f8183b37a13ee55",
+    "arbitrum",
+    DPX
+  )(timestamp, _ethBlock, chainBlocks);
+  const stakingRdpx = await staking(
+    stakingRewardsRDPX,
+    "0x32Eb7902D4134bf98A28b963D26de779AF92A212",
+    "arbitrum",
+    RDPX
+  )(timestamp, _ethBlock, chainBlocks);
+  return { ...stakingDpx, ...stakingRdpx };
+}
+
 module.exports = {
   ethereum: {
     staking: staking(
@@ -91,12 +107,7 @@ module.exports = {
     tvl: async () => ({}),
   },
   arbitrum: {
-    staking: staking(
-      "0xc6D714170fE766691670f12c2b45C1f34405AAb6",
-      "0x6c2c06790b3e3e3c38e12ee22f8183b37a13ee55",
-      "arbitrum",
-      DPX
-    ),
+    staking: dopexStakings,
     pool2: pool2s(
       [
         "0x96B0d9c85415C69F4b2FAC6ee9e9CE37717335B4",
