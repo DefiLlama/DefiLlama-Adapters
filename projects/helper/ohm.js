@@ -10,7 +10,7 @@ function ohmTvl(treasury, treasuryTokens, chain, stakingAddress, stakingToken) {
         return balances
     }
     return {
-        [chain]: {
+        [chain === "avax"?"avalanche":chain]: {
             tvl,
             staking: staking(stakingAddress, stakingToken, chain, transform(stakingToken))
         }
