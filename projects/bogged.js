@@ -27,9 +27,9 @@ async function staking(timestamp, ethBlock, chainBlocks) {
     return balances;
 };
 
-module.exports = { 
-    tvl,
-    staking: {
-        tvl: staking
-    }
+module.exports = {
+    bsc:{
+        tvl,
+        staking
+    },
 }
