@@ -3,7 +3,7 @@ const { transformAvaxAddress } = require('../helper/portedTokens')
 
 async function tvl(timestamp, ethBlock, chainBlocks) {
     const transform = await transformAvaxAddress()
-    return  aaveChainTvl("avalanche", "0xfF50b540c9152F1841edF47b49dA69696Be59783", transform)(timestamp, ethBlock, chainBlocks)
+    return  aaveChainTvl("avax", "0xfF50b540c9152F1841edF47b49dA69696Be59783", transform)(timestamp, ethBlock, chainBlocks)
 }
 
 module.exports={
