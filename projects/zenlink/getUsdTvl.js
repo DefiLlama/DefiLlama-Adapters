@@ -4,6 +4,8 @@ const token0 = require('./abis/token0.json');
 const token1 = require('./abis/token1.json');
 const getReserves = require('./abis/getReserves.json');
 const factoryAbi = require('./abis/factory.json');
+const stakeAbi = require('./abis/stake.json');
+
 const { getBlock } = require('../helper/getBlock');
 
 async function requery(results, chain, block, abi) {
@@ -128,6 +130,54 @@ function calculateUsdTvl(
             sum(balances, `${chain}:${token0Address}`, reserveAmounts[0])
             sum(balances, `${chain}:${token1Address}`, reserveAmounts[1])
         }
+
+        const stakeList = stakeListRaw.map(item => item.toLowerCase());
+        const stakeTokensAddress = (await sdk.api.abi.multiCall({
+            abi: stakeAbi.stakeToken,
+            chain,
+            calls: stakeList.map(stakeAddress => ({
+                target: stakeAddress,
+            })),
+            block
+        })).output
+        const stakeTokensAmount = (await sdk.api.abi.multiCall({
+            abi: stakeAbi.totalStakedAmount,
+            chain,
+            calls: stakeList.map(stakeAddress => ({
+                target: stakeAddress,
+            })),
+            block
+        })).output
+        await requery(stakeTokensAddress, chain, block, stakeAbi.stakeToken);
+        await requery(stakeTokensAmount, chain, block, stakeAbi.totalStakedAmount);
+
+        const stakesInfoMap = {};
+        // add stake token address;
+        stakeTokensAddress.forEach((item) => {
+            const stakeAddress = item.input.target.toLowerCase();
+            const tokenAddress = item.output.toLowerCase();
+
+            stakesInfoMap[stakeAddress] = {
+                tokenAddress
+            };
+        });
+        // add stake token amount;
+        stakeTokensAmount.forEach((item) => {
+            const stakeAddress = item.input.target.toLowerCase();
+            const tokenAmount = item.output;
+
+            stakesInfoMap[stakeAddress] = {
+                ...(stakesInfoMap[stakeAddress] || {}),
+                tokenAmount,
+            };
+        });
+        stakeList.forEach(item => {
+            const stakeInfo = stakesInfoMap[item];
+            const tokenAddress = stakeInfo.tokenAddress;
+            const tokenAmount = stakeInfo.tokenAmount;
+            sum(balances, `${chain}:${tokenAddress}`, tokenAmount)
+        });
+
         return balances;
     }
 };
