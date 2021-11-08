@@ -73,7 +73,7 @@ async function tvl(_, block) {
         block
     })
 
-    let wrappedETHIndex = lockedPlasmaBalances.output.findIndex(v => v.success && v.input.target == '0xa45b966996374E9e65ab991C6FE4Bfce3a56DDe8')
+    let wrappedETHIndex = lockedPlasmaBalances.output.findIndex(v => v.input.target == '0xa45b966996374E9e65ab991C6FE4Bfce3a56DDe8')
     if (wrappedETHIndex > -1) {
 
         balances[etherAddress] = new BigNumber(balances[etherAddress]).plus(lockedPlasmaBalances.output[wrappedETHIndex].output)

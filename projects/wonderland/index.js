@@ -45,11 +45,8 @@ async function tvl(timestamp, block, chainBlocks) {
 module.exports = {
   avalanche: {
     tvl,
+    staking
   },
-  staking: {
-    tvl: staking,
-  },
-  tvl,
   methodology:
     "Counts tokens on the treasury for tvl and staked TIME for staking",
 };

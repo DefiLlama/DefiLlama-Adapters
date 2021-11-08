@@ -21,7 +21,19 @@ async function fetch(timestamp) {
   return parseFloat(interval.totalValuePooled)*parseFloat(interval.runePriceUSD)/1e8
 }
 
+async function staking(timestamp) {
+  var res = await retry(async bail => await axios.get('https://midgard.thorchain.info/v2/network'))
+  const {totalActiveBond, totalStandbyBond} = res.data.bondMetrics;
+  return{
+    "thorchain": (Number(totalActiveBond) + Number(totalStandbyBond))/1e8
+  }
+}
+
 
 module.exports = {
+  thorchain:{
+    fetch,
+    staking
+  },
   fetch
 }

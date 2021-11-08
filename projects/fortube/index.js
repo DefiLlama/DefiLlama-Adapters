@@ -41,7 +41,7 @@
       abi: abi["collateralTokens"],
     });
     _.each(erc20AssetResults.output, (result) => {
-      if (result.success && result.output != EthAddress) {
+      if (result.output != EthAddress) {
         erc20Assets.push(result.output);
       }
     });
@@ -62,7 +62,7 @@
     });
 
     _.each(underlyings.output, (result) => {
-      if (result.success && result.output != EthAddressV2) {
+      if (result.output != EthAddressV2) {
         erc20AssetsV2.push(result.output);
       }
     });

@@ -1,3 +1,4 @@
+const { toUSDTBalances } = require('./helper/balances');
 const utils = require('./helper/utils');
 
 function fetchChain(chainId) {
@@ -45,18 +46,11 @@ function stake(chainId) {
   if (!staked) {
     staked = response.data.result.TotalLockedWingDollar;
   }
-  return staked;
+  return toUSDTBalances(staked);
   }
 }
 
-async function staking(){
-  return (await fetchChain('ontology')())+(await fetchChain('ethereum')())+(await fetchChain('okexchain')())
-}
-
 module.exports = {
-  staking:{
-    fetch: staking
-  },
   ontology:{
     fetch: fetchChain('ontology'),
     staking: stake('ontology')

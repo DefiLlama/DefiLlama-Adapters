@@ -21,7 +21,6 @@ function chainTvl(chain) {
   return async (timestamp, ethBlock, chainBlocks) => {
     const  START_BLOCK = startBlocks[chain]
     const block = await getBlock(timestamp, chain, chainBlocks)
-    console.log(block)
     const logs = (
       await sdk.api.util.getLogs({
         keys: [],
@@ -81,7 +80,6 @@ function chainTvl(chain) {
         chain,
       })
     )
-    console.log(tokenBalances.output.filter(c=>!c.success))
     let transform = id=>id
     if(chain === "optimism"){
       transform = await transformOptimismAddress()
@@ -110,5 +108,4 @@ module.exports = {
   arbitrum: {
     tvl: chainTvl('arbitrum'),
   },
-  tvl: sdk.util.sumChainTvls(['ethereum', 'optimism', 'arbitrum'].map(chainTvl))
 }

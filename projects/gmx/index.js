@@ -62,14 +62,11 @@ async function balanceOf(pTarget, pParam, pChainBlocks) {
 }
 
 module.exports = {
-  staking:{
-    tvl: staking(STAKING, GMX, "arbitrum", "gmx", 18)
-  },
   arbitrum: {
+    stakign: staking(STAKING, GMX, "arbitrum", "gmx", 18),
     tvl: arbitrumTVL,
   },
   bsc: {
     tvl: bscTVL,
   },
-  tvl: sdk.util.sumChainTvls([arbitrumTVL, bscTVL])
 };

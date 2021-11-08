@@ -13,9 +13,6 @@ async function tvl(_timestamp, _ethBlock, chainBlocks){
 module.exports = {
   fantom:{
     tvl,
+    staking: staking("0x2fbff41a9efaeae77538bd63f1ea489494acdc08", "0x5cc61a78f164885776aa610fb0fe1257df78e59b", 'fantom')
   },
-  staking:{
-    tvl: staking("0x2fbff41a9efaeae77538bd63f1ea489494acdc08", "0x5cc61a78f164885776aa610fb0fe1257df78e59b", 'fantom')
-  },
-  tvl
 }

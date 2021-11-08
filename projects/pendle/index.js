@@ -67,12 +67,10 @@ async function pool2(timestamp, block) {
 }
 
 module.exports = {
-    tvl,
-    staking:{
-        tvl: staking
-    },
-    pool2:{
-        tvl: pool2
+    ethereum:{
+        pool2,
+        tvl,
+        staking
     },
     methodology: "Counts the collateral backing the yield tokens and USDC in the pendle markets, plus SLP staked in masterchef. Staking TVL is just staked PENDLE on 0x07282F2CEEbD7a65451Fcd268b364300D9e6D7f5. Pool2 refers to the Pe,P pool at 0x685d32f394a5F03e78a1A0F6A91B4E2bf6F52cfE",
 }
