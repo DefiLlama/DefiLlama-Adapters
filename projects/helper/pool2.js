@@ -59,7 +59,7 @@ function dodoPool2(stakingContract, lpToken, chain = "ethereum", transformAddres
 }
 
 
-async function pool2BalanceFromMasterChef(balances, masterchef, token, block, chain = "ethereum", transformAddress=(addr)=>addr) {
+async function pool2BalanceFromMasterChef(balances, masterchef, token, block, chain = "ethereum", transformAddress=(addr)=>addr, poolInfoAbi = masterchefAbi.poolInfo) {
 
     let poolLength = (
         await sdk.api.abi.call({
@@ -76,7 +76,7 @@ async function pool2BalanceFromMasterChef(balances, masterchef, token, block, ch
             target: masterchef,
             params: k,
         })),
-        abi: masterchefAbi.poolInfo,
+        abi: poolInfoAbi,
         block,
         chain,
         })
@@ -157,12 +157,12 @@ async function pool2BalanceFromMasterChef(balances, masterchef, token, block, ch
 
 }
 
-function pool2BalanceFromMasterChefExports(masterchef, token, chain = "ethereum", transformAddress=(addr)=>addr) {
+function pool2BalanceFromMasterChefExports(masterchef, token, chain = "ethereum", transformAddress=(addr)=>addr, poolInfoAbi = masterchefAbi.poolInfo) {
     
     return async (_timestamp, _ethBlock, chainBlocks) => {
         let balances = {};
 
-        await pool2BalanceFromMasterChef(balances, masterchef, token, chainBlocks[chain], chain, transformAddress);
+        await pool2BalanceFromMasterChef(balances, masterchef, token, chainBlocks[chain], chain, transformAddress, poolInfoAbi);
 
         return balances;
     } 
