@@ -38,7 +38,8 @@ async function tvl() {
         'raydium': rayAmount,
         'saber': sbrAmount,
         'mercurial': merAmount,
-        'solana': solAmount + msolAmount,
+        'solana': solAmount,
+        'msol': msolAmount,
     }
 }
 
