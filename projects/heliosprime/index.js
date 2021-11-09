@@ -21,10 +21,7 @@ const ethTvl = async (time, block) => {
     abi: getComponents
   })
   const balances={}
-  await sumTokens(balances, [
-    [USDT, CoverageContract],
-    ...components.output.map(t=>[t, EDP])
-  ], block)
+  await sumTokens(balances, components.output.map(t=>[t, EDP]), block)
   return balances
 };
 
