@@ -3,8 +3,16 @@ const { staking } = require('../helper/staking')
 const { sumTokens } = require('../helper/unwrapLPs')
 
 const v1_0_Pools = ['0x7Af4e1cE484f40D927b9C90fB6905Df4376fc3F6', '0xd7d974E81382D05E8D9fc6d0d17d0d852e9806dd']
-const v1_1_LiquidityPool = ['0x2935CD347B79C319A6464fe3b1087170f142418C', '0x69B4B35504a8c1d6179fef7AdDCDB37A8c663BC9', '0x788843DE0Be1598155bFFaAB7Cfa2eCBd542E7f1']
-const v1_1_ShortCollateral = ['0x2935CD347B79C319A6464fe3b1087170f142418C', '0x69B4B35504a8c1d6179fef7AdDCDB37A8c663BC9', '0x0A68E15f8E289b9f1Ad1BCAD524FeA30C6125c2D']
+const v1_1_LiquidityPool = [
+    '0x2935CD347B79C319A6464fe3b1087170f142418C', 
+    '0x69B4B35504a8c1d6179fef7AdDCDB37A8c663BC9', 
+    '0x788843DE0Be1598155bFFaAB7Cfa2eCBd542E7f1'
+]
+const v1_1_ShortCollateral = [
+    '0xE722F9aee66F649FBfc8CB0d4F906cb55803553c', 
+    '0x585a72ccecde68dDFE5327B23134723a305D70F3', 
+    '0x0A68E15f8E289b9f1Ad1BCAD524FeA30C6125c2D'
+]
 
 const pools = [...new Set([...v1_0_Pools, ...v1_1_LiquidityPool, ...v1_1_ShortCollateral].map(t=>t.toLowerCase()))]
 
