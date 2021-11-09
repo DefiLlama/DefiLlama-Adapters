@@ -3,14 +3,6 @@ const {uniTvlExport} = require("../helper/calculateUniTvl");
 
 const factory = "0x858e3312ed3a876947ea49d572a7c42de08af7ee";
 
-const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
-
-  await tvlOnPairs("bsc", chainBlocks, factory, balances);
-
-  return balances;
-};
-
 const subgraphTvl = getChainTvl({
   "bsc": "https://api.thegraph.com/subgraphs/name/biswapcom/exchange5"
 }, "pancakeFactories")('bsc')
