@@ -141,7 +141,7 @@ const chainExports = {
   elastos: {
     tvl: calculateUsdUniTvl(
       "0x440a1B8b8e968D6765D41E6b92DF3cBb0e9D2b1e", 
-      "esc", 
+      "elastos", 
       elkAddress, 
       [], 
       "elk-finance",
