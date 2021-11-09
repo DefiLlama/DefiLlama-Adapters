@@ -10,10 +10,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@acala-network/api": "^2.0.1",
-    "@defillama/sdk": "^2.3.16",
+    "@acala-network/api": "^3.0.2",
+    "@defillama/sdk": "^2.3.17",
     "@makerdao/multicall": "^0.12.0",
-    "@polkadot/api": "^5.4.1",
+    "@polkadot/api": "^6.6.1",
     "@project-serum/serum": "^0.13.38",
     "@solana/web3.js": "^1.17.0",
     "async-retry": "^1.3.1",

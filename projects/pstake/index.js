@@ -33,6 +33,8 @@ let pStakeContractArray = [
 const sushiGraphUrl =
   "https://api.thegraph.com/subgraphs/name/sushiswap/exchange";
 
+// graphQL query to only get the Staking Contract section of the TVL (pool2)
+
 const sushiGraphQuery = gql`
   query pstakePairs($stkContract: String, $block: Int) {
     pairs(where: { token0: $stkContract }, block: { number: $block }) {
@@ -47,51 +49,50 @@ const sushiGraphQuery = gql`
 async function eth(timestamp, block) {
   let balances = {};
 
-  try {
-    for (let index = 0; index < pStakeContractArray.length; index++) {
-      let contractTotalSupply = await sdk.api.erc20.totalSupply({
-        target: pStakeContractArray[index],
-        block: block,
-      });
-      balances[pStakeContractArray[index]] = balances[
-        pStakeContractArray[index]
-      ]
-        ? BigNumber(balances[pStakeContractArray[index]])
-            .plus(BigNumber(contractTotalSupply.output))
-            .toFixed(0)
-        : BigNumber(contractTotalSupply.output).toFixed(0);
-    }
-  } catch (error) {
-    console.log("Error while eth Calculation: ", error);
-  }
+  // get the total supply of each token
+  const totalSupplyValues = await sdk.api.abi.multiCall({
+    abi: "erc20:totalSupply",
+    calls: pStakeContractArray.map((t) => ({ target: t })),
+    block,
+  });
 
-  // console.log("balances: ", balances);
+  // add the total supply values individually to the balances object
+  totalSupplyValues.output.forEach((call, index) => {
+    const underlyingToken = pStakeContractArray[index];
+    const underlyingTokenBalance = call.output;
+    sdk.util.sumSingleBalance(
+      balances,
+      underlyingToken,
+      underlyingTokenBalance
+    );
+  });
+
+  // console.log("balances eth: ", balances);
   return balances;
 }
 
 async function pool2(timestamp, block) {
-  const balances = {};
+  let balances = {};
 
-  try {
-    for (let index = 0; index < stkContractArray.length; index++) {
-      const { pairs } = await request(sushiGraphUrl, sushiGraphQuery, {
-        stkContract: stkContractArray[index],
-        block: block,
-      });
-      let reserve0BN = BigNumber(pairs[0].reserve0);
-      let decimals = Number(pairs[0].token0.decimals);
-      reserve0BN = reserve0BN.shiftedBy(decimals);
-      balances[stkContractArray[index]] = balances[stkContractArray[index]]
-        ? BigNumber(balances[stkContractArray[index]])
-            .plus(reserve0BN)
-            .toFixed(0)
-        : reserve0BN.toFixed(0);
-    }
-  } catch (error) {
-    console.log("Error while Pool2 Calculation: ", error);
+  for (let index = 0; index < stkContractArray.length; index++) {
+    const { pairs } = await request(sushiGraphUrl, sushiGraphQuery, {
+      stkContract: stkContractArray[index],
+      block: block,
+    });
+    let reserve0BN = BigNumber(pairs[0].reserve0);
+    let decimals = Number(pairs[0].token0.decimals);
+
+    const underlyingToken = stkContractArray[index];
+    const underlyingTokenBalance = reserve0BN.shiftedBy(decimals).toString();
+    // console.log("underlying balance: ", underlyingTokenBalance);
+    sdk.util.sumSingleBalance(
+      balances,
+      underlyingToken,
+      underlyingTokenBalance
+    );
   }
 
-  // console.log("balances: ", balances);
+  // console.log("balances pool2: ", balances);
 
   return balances;
 }
@@ -104,5 +105,5 @@ module.exports = {
   pool2: {
     tvl: pool2,
   },
-  tvl: sdk.util.sumChainTvls([eth]),
+  // tvl: sdk.util.sumChainTvls([eth]),
 };

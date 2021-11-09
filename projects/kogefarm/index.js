@@ -14,16 +14,23 @@ const current_polygon_vaults_url =
   'https://raw.githubusercontent.com/kogecoin/vault-contracts/main/vaultaddresses'
 const current_fantom_vaults_url =
   'https://raw.githubusercontent.com/kogecoin/vault-contracts/main/ftm_vault_addresses.json'
+const current_moonriver_vaults_url =
+  'https://raw.githubusercontent.com/kogecoin/vault-contracts/main/movr_vault_addresses.json'
 
 const beethovenX = '0x20dd72Ed959b6147912C2e529F0a0C651c33c9ce'
 
-const ftm_CrvVaultAddr = ['0x0a5E266afB071CB0F69310706154F2893a208D1c']
+const ftm_CrvVaultAddr = [
+  '0x0a5E266afB071CB0F69310706154F2893a208D1c',
+  '0x4Ef103DF324b20604e13170377233DDecD15074B',
+]
+const movr_CrvVaultAddr = []
 const ftm_BalancerForks = [
   {
     name: 'beethoven',
     vault: beethovenX,
   },
 ]
+const movr_BalancerForks = []
 
 const polygonMasterChef = (masterChef, pid) => async (
   timestamp,
@@ -301,6 +308,99 @@ const fantomTvl = async (timestamp, block, chainBlocks) => {
   return balances
 }
 
+const moonriverTvl = async (timestamp, block, chainBlocks) => {
+  const balances = {}
+
+  let vaults = (await utils.fetchURL(current_moonriver_vaults_url)).data
+
+  const lp_addresses = (
+    await sdk.api.abi.multiCall({
+      chain: 'moonriver',
+      block: chainBlocks['moonriver'],
+      calls: vaults.map((vault) => ({
+        target: vault.vault,
+      })),
+      abi: abi.token,
+    })
+  ).output.map((val) => val.output)
+
+  vaults = vaults.map((e, idx) => ({ ...e, lp_address: lp_addresses[idx] }))
+
+  const vault_balances = (
+    await sdk.api.abi.multiCall({
+      chain: 'moonriver',
+      block: chainBlocks['moonriver'],
+      calls: vaults.map((vault) => ({
+        target: vault.vault,
+      })),
+      abi: abi.balance,
+    })
+  ).output.map((val) => val.output)
+
+  vaults = vaults.map((e, idx) => ({ ...e, balance: vault_balances[idx] }))
+
+  const uniV2Positions = []
+  const balancerPositions = []
+  const crvPositions = []
+
+  // We populate the positions by protocol
+  vaults.forEach((vault) => {
+    const pushElem = (array) =>
+      array.push({
+        vaultAddr: vault.vault,
+        balance: vault.balance,
+        token: vault.lp_address,
+        name: vault.__comment,
+      })
+    // Balancer
+    if (
+      movr_BalancerForks.length &&
+      movr_BalancerForks
+        .map((e) => String(vault.__comment).toLowerCase().includes(e.name))
+        .reduce((p, c) => p && c, true)
+    ) {
+      pushElem(balancerPositions)
+    }
+    // CRV
+    else if (movr_CrvVaultAddr.includes(vault.vault)) {
+      pushElem(crvPositions)
+    }
+    // Uni-V2
+    else {
+      pushElem(uniV2Positions)
+    }
+  })
+
+  const transformAddress = transformAddressKF('moonriver')
+
+  await unwrapUniswapLPs(
+    balances,
+    uniV2Positions,
+    chainBlocks['moonriver'],
+    'moonriver',
+    transformAddress,
+  )
+
+  await unwrapCrvLPs(
+    balances,
+    crvPositions.map((e) => e.token),
+    chainBlocks['moonriver'],
+    'moonriver',
+    transformAddress,
+  )
+
+  await unwrapBalancerLPs(
+    beethovenX,
+    balances,
+    balancerPositions,
+    chainBlocks['moonriver'],
+    'moonriver',
+    transformAddress,
+  )
+
+  return balances
+}
+
 const kogeMasterChefAddr = '0x6275518a63e891b1bC54FEEBBb5333776E32fAbD'
 
 // vKogeKoge
@@ -333,7 +433,7 @@ const _polygonTvl = polygonTvl({
 })
 
 module.exports = {
-  methodology: `The vaults are obtained through the following links: polygon:"${current_polygon_vaults_url}", fantom:"${current_fantom_vaults_url}". By getting the vaults, we can then pull LP token deposit amounts. We then take the LP token deposits and unwrap them to count each token individually.`,
+  methodology: `The vaults are obtained through the following links: polygon:"${current_polygon_vaults_url}", fantom:"${current_fantom_vaults_url}, moonriver:"${current_moonriver_vaults_url}". By getting the vaults, we can then pull LP token deposit amounts. We then take the LP token deposits and unwrap them to count each token individually.`,
   polygon: {
     tvl: _polygonTvl,
     staking: _polygonStaking,
@@ -342,5 +442,8 @@ module.exports = {
   fantom: {
     tvl: fantomTvl,
   },
-  tvl: sdk.util.sumChainTvls([fantomTvl, _polygonTvl]),
+  moonriver: {
+    tvl: moonriverTvl,
+  },
+  tvl: sdk.util.sumChainTvls([moonriverTvl, fantomTvl, _polygonTvl]),
 }
