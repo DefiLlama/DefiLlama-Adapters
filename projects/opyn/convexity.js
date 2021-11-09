@@ -86,7 +86,7 @@ module.exports = async function tvl(timestamp, block) {
     // get ETH balance
     _.each(optionsAddresses, async (optionAddress) => {
       let balance = (await sdk.api.eth.getBalance({target: optionAddress, block})).output;
-      balances["0x0000000000000000000000000000000000000000"] = BigNumber(balances["0x0000000000000000000000000000000000000000"] || 0).plus(BigNumber(balance)).toFixed();
+      sdk.util.sumSingleBalance(balances, "0x0000000000000000000000000000000000000000", balance)
     })
 
     // batch balanceOf calls
@@ -108,7 +108,7 @@ module.exports = async function tvl(timestamp, block) {
       abi: "erc20:balanceOf"
     });
 
-    await sdk.util.sumMultiBalanceOf(balances, balanceOfResults);
+    sdk.util.sumMultiBalanceOf(balances, balanceOfResults);
   }
 
   return balances;
