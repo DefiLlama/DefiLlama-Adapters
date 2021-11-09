@@ -22,6 +22,22 @@ function transformAddressKF(chain = 'polygon') {
       return `ethereum:0xdac17f958d2ee523a2206206994597c13d831ec7`
     }
     if (
+      // Dai on Fantom
+      (chain === 'fantom' &&
+        addr.toLowerCase() === '0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e')
+    ) {
+      // Dai on Eth
+      return `ethereum:0x6b175474e89094c44da98b954eedeac495271d0f`
+    }
+    if (
+      // wMemo on Fantom
+      (chain === 'fantom' &&
+        addr.toLowerCase() === '0xddc0385169797937066bbd8ef409b5b3c0dfeb52')
+    ) {
+      // Time on avax (per Wonderland docs, staked time = Memo at a 1:1 ratio)
+      return `avax:0xb54f16fb19478766a268f172c9480f8da1a7c9c3`
+    }
+    if (
       chain === 'moonriver' &&
       addr.toLowerCase() === '0x748134b5f553f2bcbd78c6826de99a70274bdeb3' // USDC.m
     ) {
