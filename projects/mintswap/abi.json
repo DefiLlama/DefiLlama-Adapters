@@ -1,0 +1,713 @@
+[
+	{
+		"inputs": [
+			{
+				"type": "address",
+				"name": "_mint",
+				"internalType": "contract MintToken"
+			},
+			{
+				"type": "address",
+				"name": "_devaddr",
+				"internalType": "address"
+			},
+			{
+				"type": "address",
+				"name": "_feeAddress",
+				"internalType": "address"
+			},
+			{
+				"type": "uint256",
+				"name": "_MintPerSecond",
+				"internalType": "uint256"
+			},
+			{
+				"type": "uint256",
+				"name": "_startTime",
+				"internalType": "uint256"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"type": "address",
+				"name": "user",
+				"internalType": "address",
+				"indexed": true
+			},
+			{
+				"type": "uint256",
+				"name": "pid",
+				"internalType": "uint256",
+				"indexed": true
+			},
+			{
+				"type": "uint256",
+				"name": "amount",
+				"internalType": "uint256",
+				"indexed": false
+			}
+		],
+		"name": "Deposit",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"type": "address",
+				"name": "user",
+				"internalType": "address",
+				"indexed": true
+			},
+			{
+				"type": "uint256",
+				"name": "pid",
+				"internalType": "uint256",
+				"indexed": true
+			},
+			{
+				"type": "uint256",
+				"name": "amount",
+				"internalType": "uint256",
+				"indexed": false
+			}
+		],
+		"name": "EmergencyWithdraw",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"type": "address",
+				"name": "previousOwner",
+				"internalType": "address",
+				"indexed": true
+			},
+			{
+				"type": "address",
+				"name": "newOwner",
+				"internalType": "address",
+				"indexed": true
+			}
+		],
+		"name": "OwnershipTransferred",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"type": "address",
+				"name": "user",
+				"internalType": "address",
+				"indexed": true
+			},
+			{
+				"type": "address",
+				"name": "newAddress",
+				"internalType": "address",
+				"indexed": true
+			}
+		],
+		"name": "SetDevAddress",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"type": "address",
+				"name": "user",
+				"internalType": "address",
+				"indexed": true
+			},
+			{
+				"type": "address",
+				"name": "newAddress",
+				"internalType": "address",
+				"indexed": true
+			}
+		],
+		"name": "SetFeeAddress",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"type": "address",
+				"name": "user",
+				"internalType": "address",
+				"indexed": true
+			},
+			{
+				"type": "uint256",
+				"name": "MintPerSecond",
+				"internalType": "uint256",
+				"indexed": false
+			}
+		],
+		"name": "UpdateEmissionRate",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"type": "uint256",
+				"name": "newStartTime",
+				"internalType": "uint256",
+				"indexed": false
+			}
+		],
+		"name": "UpdateStartTime",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"type": "address",
+				"name": "user",
+				"internalType": "address",
+				"indexed": true
+			},
+			{
+				"type": "uint256",
+				"name": "pid",
+				"internalType": "uint256",
+				"indexed": true
+			},
+			{
+				"type": "uint256",
+				"name": "amount",
+				"internalType": "uint256",
+				"indexed": false
+			}
+		],
+		"name": "Withdraw",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"type": "uint256",
+				"name": "pid",
+				"internalType": "uint256",
+				"indexed": true
+			},
+			{
+				"type": "address",
+				"name": "lpToken",
+				"internalType": "address",
+				"indexed": false
+			},
+			{
+				"type": "uint256",
+				"name": "allocPoint",
+				"internalType": "uint256",
+				"indexed": false
+			},
+			{
+				"type": "uint256",
+				"name": "depositFeeBP",
+				"internalType": "uint256",
+				"indexed": false
+			}
+		],
+		"name": "addPool",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"type": "uint256",
+				"name": "pid",
+				"internalType": "uint256",
+				"indexed": true
+			},
+			{
+				"type": "address",
+				"name": "lpToken",
+				"internalType": "address",
+				"indexed": false
+			},
+			{
+				"type": "uint256",
+				"name": "allocPoint",
+				"internalType": "uint256",
+				"indexed": false
+			},
+			{
+				"type": "uint256",
+				"name": "depositFeeBP",
+				"internalType": "uint256",
+				"indexed": false
+			}
+		],
+		"name": "setPool",
+		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "MAX_EMISSION_RATE",
+		"outputs": [
+			{
+				"type": "uint256",
+				"name": "",
+				"internalType": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "MintPerSecond",
+		"outputs": [
+			{
+				"type": "uint256",
+				"name": "",
+				"internalType": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"type": "uint256",
+				"name": "_allocPoint",
+				"internalType": "uint256"
+			},
+			{
+				"type": "address",
+				"name": "_lpToken",
+				"internalType": "contract IBEP20"
+			},
+			{
+				"type": "uint16",
+				"name": "_depositFeeBP",
+				"internalType": "uint16"
+			},
+			{
+				"type": "bool",
+				"name": "_withUpdate",
+				"internalType": "bool"
+			}
+		],
+		"name": "add",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"type": "uint256",
+				"name": "_pid",
+				"internalType": "uint256"
+			},
+			{
+				"type": "uint256",
+				"name": "_amount",
+				"internalType": "uint256"
+			}
+		],
+		"name": "deposit",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "devaddr",
+		"outputs": [
+			{
+				"type": "address",
+				"name": "",
+				"internalType": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"type": "uint256",
+				"name": "_pid",
+				"internalType": "uint256"
+			}
+		],
+		"name": "emergencyWithdraw",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "feeAddress",
+		"outputs": [
+			{
+				"type": "address",
+				"name": "",
+				"internalType": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"type": "uint256",
+				"name": "_from",
+				"internalType": "uint256"
+			},
+			{
+				"type": "uint256",
+				"name": "_to",
+				"internalType": "uint256"
+			}
+		],
+		"name": "getMultiplier",
+		"outputs": [
+			{
+				"type": "uint256",
+				"name": "",
+				"internalType": "uint256"
+			}
+		],
+		"stateMutability": "pure",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "massUpdatePools",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "mint",
+		"outputs": [
+			{
+				"type": "address",
+				"name": "",
+				"internalType": "contract MintToken"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "owner",
+		"outputs": [
+			{
+				"type": "address",
+				"name": "",
+				"internalType": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"type": "uint256",
+				"name": "_pid",
+				"internalType": "uint256"
+			},
+			{
+				"type": "address",
+				"name": "_user",
+				"internalType": "address"
+			}
+		],
+		"name": "pendingMint",
+		"outputs": [
+			{
+				"type": "uint256",
+				"name": "",
+				"internalType": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"type": "address",
+				"name": "",
+				"internalType": "contract IBEP20"
+			}
+		],
+		"name": "poolExistence",
+		"outputs": [
+			{
+				"type": "bool",
+				"name": "",
+				"internalType": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"type": "uint256",
+				"name": "",
+				"internalType": "uint256"
+			}
+		],
+		"name": "poolInfo",
+		"outputs": [
+			{
+				"type": "address",
+				"name": "lpToken",
+				"internalType": "contract IBEP20"
+			},
+			{
+				"type": "uint256",
+				"name": "allocPoint",
+				"internalType": "uint256"
+			},
+			{
+				"type": "uint256",
+				"name": "lastRewardSecond",
+				"internalType": "uint256"
+			},
+			{
+				"type": "uint256",
+				"name": "accMintPerShare",
+				"internalType": "uint256"
+			},
+			{
+				"type": "uint16",
+				"name": "depositFeeBP",
+				"internalType": "uint16"
+			},
+			{
+				"type": "uint256",
+				"name": "lpSupply",
+				"internalType": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "poolLength",
+		"outputs": [
+			{
+				"type": "uint256",
+				"name": "",
+				"internalType": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "renounceOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"type": "uint256",
+				"name": "_pid",
+				"internalType": "uint256"
+			},
+			{
+				"type": "uint256",
+				"name": "_allocPoint",
+				"internalType": "uint256"
+			},
+			{
+				"type": "uint16",
+				"name": "_depositFeeBP",
+				"internalType": "uint16"
+			},
+			{
+				"type": "bool",
+				"name": "_withUpdate",
+				"internalType": "bool"
+			}
+		],
+		"name": "set",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"type": "address",
+				"name": "_devaddr",
+				"internalType": "address"
+			}
+		],
+		"name": "setDevAddress",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"type": "address",
+				"name": "_feeAddress",
+				"internalType": "address"
+			}
+		],
+		"name": "setFeeAddress",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "startTime",
+		"outputs": [
+			{
+				"type": "uint256",
+				"name": "",
+				"internalType": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "totalAllocPoint",
+		"outputs": [
+			{
+				"type": "uint256",
+				"name": "",
+				"internalType": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"type": "address",
+				"name": "newOwner",
+				"internalType": "address"
+			}
+		],
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"type": "uint256",
+				"name": "_MintPerSecond",
+				"internalType": "uint256"
+			}
+		],
+		"name": "updateEmissionRate",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"type": "uint256",
+				"name": "_pid",
+				"internalType": "uint256"
+			}
+		],
+		"name": "updatePool",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"type": "uint256",
+				"name": "_newStartTime",
+				"internalType": "uint256"
+			}
+		],
+		"name": "updateStartTime",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"type": "uint256",
+				"name": "",
+				"internalType": "uint256"
+			},
+			{
+				"type": "address",
+				"name": "",
+				"internalType": "address"
+			}
+		],
+		"name": "userInfo",
+		"outputs": [
+			{
+				"type": "uint256",
+				"name": "amount",
+				"internalType": "uint256"
+			},
+			{
+				"type": "uint256",
+				"name": "rewardDebt",
+				"internalType": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"type": "uint256",
+				"name": "_pid",
+				"internalType": "uint256"
+			},
+			{
+				"type": "uint256",
+				"name": "_amount",
+				"internalType": "uint256"
+			}
+		],
+		"name": "withdraw",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
+]
