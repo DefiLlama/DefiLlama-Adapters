@@ -41,6 +41,7 @@ const pool2LPs = [
 ];
 
 const nDefi = "0xd3f07EA86DDf7BAebEfd49731D7Bbd207FedC53B"; // nDEFI Nest
+const nStable = "0x2Bb2eF50c53E406c80875663C2A2e5592F8a3ccc"
 
 async function tvl(timestamp, block, chainBlocks) {
   let balances = {};
@@ -66,7 +67,7 @@ async function tvl(timestamp, block, chainBlocks) {
   for (let i = 0; i < pools.length; i++) {
     let token = pools[i].output.lpToken;
 
-    if (token === nDefi || excludedPools.includes(token)) {
+    if (token === nDefi || token === nStable || excludedPools.includes(token)) {
       continue;
     }
 
@@ -210,5 +211,4 @@ module.exports = {
     pool2,
     staking,
   },
-  tvl: tvl,
 };
