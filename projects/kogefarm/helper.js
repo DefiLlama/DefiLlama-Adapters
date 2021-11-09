@@ -5,20 +5,77 @@ const { unwrapCrv } = require('../helper/unwrapLPs')
 
 function transformAddressKF(chain = 'polygon') {
   return (addr) => {
+    // WETH
     if (addr.toLowerCase() === '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619') {
       return '0x0000000000000000000000000000000000000000'
     }
-    // Special case for fUSDT, since coingecko doesn't find it on Fantom
-    if (addr.toLowerCase() === '0x049d68029688eabf473097a2fc38ef61633a3c7a') {
+
+    // Special cases since coingecko doesn't find them
+    if (
+      // fUSDT
+      (chain === 'fantom' &&
+        addr.toLowerCase() === '0x049d68029688eabf473097a2fc38ef61633a3c7a') ||
+      (chain === 'moonriver' &&
+        addr.toLowerCase() === '0xe936caa7f6d9f5c9e907111fcaf7c351c184cda7')
+    ) {
       // USDT
       return `ethereum:0xdac17f958d2ee523a2206206994597c13d831ec7`
     }
-    // Special case for MIM, since coingecko doesn't find it on Fantom
+    if (
+      chain === 'moonriver' &&
+      addr.toLowerCase() === '0x748134b5f553f2bcbd78c6826de99a70274bdeb3' // USDC.m
+    ) {
+      // USDC
+      return `ethereum:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48`
+    }
+    if (
+      chain === 'moonriver' &&
+      addr.toLowerCase() === '0x15b9ca9659f5dff2b7d35a98dd0790a3cbb3d445' // DOT.m
+    ) {
+      // BSC DOT
+      return `bsc:0x7083609fce4d1d8dc0c979aab8c869ea2c873402`
+    }
+    if (
+      chain === 'moonriver' &&
+      addr.toLowerCase() === '0x9a92b5ebf1f6f6f7d93696fcd44e5cf75035a756' // FINN
+    ) {
+      // FINN
+      return `moonriver:0x9a92b5ebf1f6f6f7d93696fcd44e5cf75035a756`
+    }
+    if (
+      chain === 'moonriver' &&
+      addr.toLowerCase() === '0x576fde3f61b7c97e381c94e7a03dbc2e08af1111' // ETH.M
+    ) {
+      // WETH
+      return `ethereum:0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2`
+    }
+    if (
+      chain === 'moonriver' &&
+      addr.toLowerCase() === '0x78f811a431d248c1edcf6d95ec8551879b2897c3' // BTC.m
+    ) {
+      // WBTC
+      return `ethereum:0x2260fac5e5542a773aa44fbcfedf7c193bc2c599`
+    }
+    if (
+      chain === 'moonriver' &&
+      addr.toLowerCase() === '0x9d5bc9b873aed984e2b6a64d4792249d68bba2fe' // XRP.m
+    ) {
+      // Binance-Peg XRP
+      return `bsc:0x1d2f0da169ceb9fc7b3144628db156f3f6c60dbe`
+    }
+    if (
+      chain === 'moonriver' &&
+      addr.toLowerCase() === '0xc005a7a1502c9de16ccdaba7cda0cee4ac304993' // AVAX.m
+    ) {
+      // WAVAX
+      return `avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7`
+    }
+    // Special case for MIM, since coingecko doesn't find
     if (addr.toLowerCase() === '0x82f0b8b456c1a451378467398982d4834b6829c1') {
       // MIM
       return `ethereum:0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3`
     }
-    // Special case for LINK, since coingecko doesn't find it on Fantom
+    // Special case for LINK, since coingecko doesn't find
     if (addr.toLowerCase() === '0xb3654dc3d10ea7645f8319668e8f54d2574fbdc8') {
       // LINK
       return `ethereum:0x514910771af9ca656af840dff83e8264ecf986ca`
