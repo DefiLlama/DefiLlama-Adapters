@@ -445,11 +445,5 @@ module.exports = {
   moonriver: {
     tvl: moonriverTvl,
   },
-  tvl: sdk.util.sumChainTvls([
-    moonriverTvl,
-    fantomTvl,
-    _polygonTvl,
-    _polygonStaking,
-    _polygonPool2,
-  ]),
+  tvl: sdk.util.sumChainTvls([moonriverTvl, fantomTvl, _polygonTvl]),
 }
