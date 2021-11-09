@@ -12,7 +12,7 @@ const stakingContracts = {
   "fantom": "0x6B7E64854e4591f8F8E552b56F612E1Ab11486C3",
   "xdai": "0xAd3379b0EcC186ddb842A7895350c4657f151e6e",
   "okexchain": "0x1e0C4867253698355d0689567D2F7968542e6e9f",
-  "esc": "0x59d39bC9b0B36306b36895017A56B40eCC98D1d9",
+  "elastos": "0x59d39bC9b0B36306b36895017A56B40eCC98D1d9",
   "hoo": "0x3A68B0dB21135E089AEaa13C5f5cd5E6cA158199",
   "moonriver": "0x64aA42D30428Cd53fD9F2fe01da161d90d878260",
   "kcc": "0x719a11f32340983E8D764C143d964CB3F4e5b49b",
@@ -138,7 +138,7 @@ const chainExports = {
       true
       ),
   },
-  esc: {
+  elastos: {
     tvl: calculateUsdUniTvl(
       "0x440a1B8b8e968D6765D41E6b92DF3cBb0e9D2b1e", 
       "esc", 
