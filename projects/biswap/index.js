@@ -1,5 +1,5 @@
-const sdk = require("@defillama/sdk");
-const tvlOnPairs = require("../helper/processPairs.js");
+const {getChainTvl} = require("../helper/getUniSubgraphTvl");
+const {uniTvlExport} = require("../helper/calculateUniTvl");
 
 const factory = "0x858e3312ed3a876947ea49d572a7c42de08af7ee";
 
@@ -11,9 +11,12 @@ const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
   return balances;
 };
 
+const subgraphTvl = getChainTvl({
+  "bsc": "https://api.thegraph.com/subgraphs/name/biswapcom/exchange5"
+}, "pancakeFactories")('bsc')
+
 module.exports = {
   bsc: {
-    tvl: bscTvl,
+    tvl: uniTvlExport(factory, "bsc")
   },
-  tvl: sdk.util.sumChainTvls([bscTvl]),
 };
