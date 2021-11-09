@@ -59,7 +59,7 @@ module.exports = async function tvl(timestamp, block) {
         block
       })
     ).output;
-    balances[usdc] = BigNumber(balances[usdc] || 0).plus(BigNumber(yvUSDCBalance)).toFixed();
+    sdk.util.sumSingleBalance(balances, usdc, yvUSDCBalance)
 
     // Add sdeCRV as ETH to balances
     const sdeCRVBalance = (
@@ -70,7 +70,7 @@ module.exports = async function tvl(timestamp, block) {
         block
       })
     ).output;
-    balances[ETH] = BigNumber(balances[ETH] || 0).plus(BigNumber(sdeCRVBalance)).toFixed();
+    sdk.util.sumSingleBalance(balances, ETH, sdeCRVBalance)
 
     // Add sdcrvWSBTC as WBTC to balances
     const sdcrvWSBTCBalance = (
@@ -81,9 +81,7 @@ module.exports = async function tvl(timestamp, block) {
         block
       })
     ).output;
-
-    balances[WBTC] = BigNumber(balances[WBTC] || 0).plus(BigNumber(sdcrvWSBTCBalance / 10**10)).toFixed();
-
+    balances[WBTC] = BigNumber(balances[WBTC] || 0).plus(BigNumber(sdcrvWSBTCBalance).div(10**10)).toFixed(0);
   }
 
   return balances;
