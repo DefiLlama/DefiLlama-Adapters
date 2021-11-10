@@ -118,7 +118,7 @@ function transformAddressKF(chain = 'polygon') {
     if (
       chain === 'polygon' &&
       addr.toLowerCase() === '0x2c89bbc92bd86f8075d1decc58c7f4e0107f286b') {
-      return `avax:FvwEAhmxKfeiG8SnEvq42hc6whRyY3EFYAvebMqDNDGCgxN5Z`
+      return `avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7`
     }
 
     return `${chain}:${addr}`
