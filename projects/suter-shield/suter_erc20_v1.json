@@ -1,162 +1,196 @@
 [
   {
+     "anonymous":false,
      "inputs":[
         {
-           "internalType":"address",
-           "name":"_transfer",
-           "type":"address"
+           "indexed":false,
+           "internalType":"bytes32[2]",
+           "name":"y",
+           "type":"bytes32[2]"
         },
         {
-           "internalType":"address",
-           "name":"_burn",
-           "type":"address"
-        },
-        {
+           "indexed":false,
            "internalType":"uint256",
-           "name":"_unit",
+           "name":"unitAmount",
            "type":"uint256"
         }
      ],
-     "stateMutability":"nonpayable",
-     "type":"constructor"
+     "name":"BurnSuccess",
+     "type":"event"
   },
   {
      "anonymous":false,
      "inputs":[
         {
            "indexed":false,
-           "internalType":"string",
-           "name":"label",
-           "type":"string"
+           "internalType":"bytes32[2]",
+           "name":"y",
+           "type":"bytes32[2]"
+        },
+        {
+           "indexed":false,
+           "internalType":"uint256",
+           "name":"unitAmount",
+           "type":"uint256"
+        }
+     ],
+     "name":"FundSuccess",
+     "type":"event"
+  },
+  {
+     "anonymous":false,
+     "inputs":[
+        {
+           "indexed":true,
+           "internalType":"address",
+           "name":"previousOwner",
+           "type":"address"
         },
         {
            "indexed":true,
-           "internalType":"uint256",
-           "name":"value",
-           "type":"uint256"
+           "internalType":"address",
+           "name":"newOwner",
+           "type":"address"
         }
      ],
-     "name":"LogUint256",
+     "name":"OwnershipTransferred",
      "type":"event"
   },
   {
      "anonymous":false,
      "inputs":[
         {
-           "components":[
-              {
-                 "internalType":"bytes32",
-                 "name":"x",
-                 "type":"bytes32"
-              },
-              {
-                 "internalType":"bytes32",
-                 "name":"y",
-                 "type":"bytes32"
-              }
-           ],
            "indexed":false,
-           "internalType":"struct Utils.G1Point[]",
-           "name":"parties",
-           "type":"tuple[]"
+           "internalType":"bytes32[2]",
+           "name":"y_tuple",
+           "type":"bytes32[2]"
         }
      ],
-     "name":"TransferOccurred",
+     "name":"RegisterSuccess",
+     "type":"event"
+  },
+  {
+     "anonymous":false,
+     "inputs":[
+        {
+           "indexed":false,
+           "internalType":"uint256",
+           "name":"multiplier",
+           "type":"uint256"
+        },
+        {
+           "indexed":false,
+           "internalType":"uint256",
+           "name":"dividend",
+           "type":"uint256"
+        }
+     ],
+     "name":"SetBurnFeeStrategySuccess",
+     "type":"event"
+  },
+  {
+     "anonymous":false,
+     "inputs":[
+        {
+           "indexed":false,
+           "internalType":"address",
+           "name":"token",
+           "type":"address"
+        }
+     ],
+     "name":"SetERC20TokenSuccess",
+     "type":"event"
+  },
+  {
+     "anonymous":false,
+     "inputs":[
+        {
+           "indexed":false,
+           "internalType":"uint256",
+           "name":"epochBase",
+           "type":"uint256"
+        }
+     ],
+     "name":"SetEpochBaseSuccess",
+     "type":"event"
+  },
+  {
+     "anonymous":false,
+     "inputs":[
+        {
+           "indexed":false,
+           "internalType":"uint256",
+           "name":"epochLength",
+           "type":"uint256"
+        }
+     ],
+     "name":"SetEpochLengthSuccess",
+     "type":"event"
+  },
+  {
+     "anonymous":false,
+     "inputs":[
+        {
+           "indexed":false,
+           "internalType":"address",
+           "name":"suterAgency",
+           "type":"address"
+        }
+     ],
+     "name":"SetSuterAgencySuccess",
+     "type":"event"
+  },
+  {
+     "anonymous":false,
+     "inputs":[
+        {
+           "indexed":false,
+           "internalType":"uint256",
+           "name":"multiplier",
+           "type":"uint256"
+        },
+        {
+           "indexed":false,
+           "internalType":"uint256",
+           "name":"dividend",
+           "type":"uint256"
+        }
+     ],
+     "name":"SetTransferFeeStrategySuccess",
+     "type":"event"
+  },
+  {
+     "anonymous":false,
+     "inputs":[
+        {
+           "indexed":false,
+           "internalType":"uint256",
+           "name":"unit",
+           "type":"uint256"
+        }
+     ],
+     "name":"SetUnitSuccess",
+     "type":"event"
+  },
+  {
+     "anonymous":false,
+     "inputs":[
+        {
+           "indexed":false,
+           "internalType":"bytes32[2][]",
+           "name":"parties",
+           "type":"bytes32[2][]"
+        }
+     ],
+     "name":"TransferSuccess",
      "type":"event"
   },
   {
      "inputs":[
-        
-     ],
-     "name":"BURN_FEE_DIVIDEND",
-     "outputs":[
         {
-           "internalType":"uint256",
-           "name":"",
-           "type":"uint256"
-        }
-     ],
-     "stateMutability":"view",
-     "type":"function"
-  },
-  {
-     "inputs":[
-        
-     ],
-     "name":"BURN_FEE_MULTIPLIER",
-     "outputs":[
-        {
-           "internalType":"uint256",
-           "name":"",
-           "type":"uint256"
-        }
-     ],
-     "stateMutability":"view",
-     "type":"function"
-  },
-  {
-     "inputs":[
-        
-     ],
-     "name":"MAX",
-     "outputs":[
-        {
-           "internalType":"uint256",
-           "name":"",
-           "type":"uint256"
-        }
-     ],
-     "stateMutability":"view",
-     "type":"function"
-  },
-  {
-     "inputs":[
-        
-     ],
-     "name":"TRANSFER_FEE_DIVIDEND",
-     "outputs":[
-        {
-           "internalType":"uint256",
-           "name":"",
-           "type":"uint256"
-        }
-     ],
-     "stateMutability":"view",
-     "type":"function"
-  },
-  {
-     "inputs":[
-        
-     ],
-     "name":"TRANSFER_FEE_MULTIPLIER",
-     "outputs":[
-        {
-           "internalType":"uint256",
-           "name":"",
-           "type":"uint256"
-        }
-     ],
-     "stateMutability":"view",
-     "type":"function"
-  },
-  {
-     "inputs":[
-        {
-           "components":[
-              {
-                 "internalType":"bytes32",
-                 "name":"x",
-                 "type":"bytes32"
-              },
-              {
-                 "internalType":"bytes32",
-                 "name":"y",
-                 "type":"bytes32"
-              }
-           ],
-           "internalType":"struct Utils.G1Point",
+           "internalType":"bytes32[2]",
            "name":"y",
-           "type":"tuple"
+           "type":"bytes32[2]"
         },
         {
            "internalType":"uint256",
@@ -164,21 +198,9 @@
            "type":"uint256"
         },
         {
-           "components":[
-              {
-                 "internalType":"bytes32",
-                 "name":"x",
-                 "type":"bytes32"
-              },
-              {
-                 "internalType":"bytes32",
-                 "name":"y",
-                 "type":"bytes32"
-              }
-           ],
-           "internalType":"struct Utils.G1Point",
+           "internalType":"bytes32[2]",
            "name":"u",
-           "type":"tuple"
+           "type":"bytes32[2]"
         },
         {
            "internalType":"bytes",
@@ -196,6 +218,106 @@
         
      ],
      "stateMutability":"nonpayable",
+     "type":"function"
+  },
+  {
+     "inputs":[
+        {
+           "internalType":"address",
+           "name":"sink",
+           "type":"address"
+        },
+        {
+           "internalType":"bytes32[2]",
+           "name":"y",
+           "type":"bytes32[2]"
+        },
+        {
+           "internalType":"uint256",
+           "name":"unitAmount",
+           "type":"uint256"
+        },
+        {
+           "internalType":"bytes32[2]",
+           "name":"u",
+           "type":"bytes32[2]"
+        },
+        {
+           "internalType":"bytes",
+           "name":"proof",
+           "type":"bytes"
+        },
+        {
+           "internalType":"bytes",
+           "name":"encGuess",
+           "type":"bytes"
+        }
+     ],
+     "name":"burnTo",
+     "outputs":[
+        
+     ],
+     "stateMutability":"nonpayable",
+     "type":"function"
+  },
+  {
+     "inputs":[
+        
+     ],
+     "name":"burn_fee_dividend",
+     "outputs":[
+        {
+           "internalType":"uint256",
+           "name":"",
+           "type":"uint256"
+        }
+     ],
+     "stateMutability":"view",
+     "type":"function"
+  },
+  {
+     "inputs":[
+        
+     ],
+     "name":"burn_fee_multiplier",
+     "outputs":[
+        {
+           "internalType":"uint256",
+           "name":"",
+           "type":"uint256"
+        }
+     ],
+     "stateMutability":"view",
+     "type":"function"
+  },
+  {
+     "inputs":[
+        
+     ],
+     "name":"currentEpoch",
+     "outputs":[
+        {
+           "internalType":"uint256",
+           "name":"",
+           "type":"uint256"
+        }
+     ],
+     "stateMutability":"view",
+     "type":"function"
+  },
+  {
+     "inputs":[
+        
+     ],
+     "name":"currentTimestamp",
+     "outputs":[
+        {
+           "internalType":"uint256",
+           "name":"",
+           "type":"uint256"
+        }
+     ],
+     "stateMutability":"view",
      "type":"function"
   },
   {
@@ -231,21 +353,9 @@
   {
      "inputs":[
         {
-           "components":[
-              {
-                 "internalType":"bytes32",
-                 "name":"x",
-                 "type":"bytes32"
-              },
-              {
-                 "internalType":"bytes32",
-                 "name":"y",
-                 "type":"bytes32"
-              }
-           ],
-           "internalType":"struct Utils.G1Point",
+           "internalType":"bytes32[2]",
            "name":"y",
-           "type":"tuple"
+           "type":"bytes32[2]"
         },
         {
            "internalType":"uint256",
@@ -262,64 +372,28 @@
      "outputs":[
         
      ],
-     "stateMutability":"payable",
+     "stateMutability":"nonpayable",
      "type":"function"
   },
   {
      "inputs":[
         {
-           "components":[
-              {
-                 "internalType":"bytes32",
-                 "name":"x",
-                 "type":"bytes32"
-              },
-              {
-                 "internalType":"bytes32",
-                 "name":"y",
-                 "type":"bytes32"
-              }
-           ],
-           "internalType":"struct Utils.G1Point",
+           "internalType":"bytes32[2]",
            "name":"y",
-           "type":"tuple"
+           "type":"bytes32[2]"
         }
      ],
      "name":"getAccountState",
      "outputs":[
         {
-           "components":[
-              {
-                 "internalType":"bytes32",
-                 "name":"x",
-                 "type":"bytes32"
-              },
-              {
-                 "internalType":"bytes32",
-                 "name":"y",
-                 "type":"bytes32"
-              }
-           ],
-           "internalType":"struct Utils.G1Point[2]",
+           "internalType":"bytes32[2][2]",
            "name":"y_available",
-           "type":"tuple[2]"
+           "type":"bytes32[2][2]"
         },
         {
-           "components":[
-              {
-                 "internalType":"bytes32",
-                 "name":"x",
-                 "type":"bytes32"
-              },
-              {
-                 "internalType":"bytes32",
-                 "name":"y",
-                 "type":"bytes32"
-              }
-           ],
-           "internalType":"struct Utils.G1Point[2]",
+           "internalType":"bytes32[2][2]",
            "name":"y_pending",
-           "type":"tuple[2]"
+           "type":"bytes32[2][2]"
         }
      ],
      "stateMutability":"view",
@@ -328,21 +402,9 @@
   {
      "inputs":[
         {
-           "components":[
-              {
-                 "internalType":"bytes32",
-                 "name":"x",
-                 "type":"bytes32"
-              },
-              {
-                 "internalType":"bytes32",
-                 "name":"y",
-                 "type":"bytes32"
-              }
-           ],
-           "internalType":"struct Utils.G1Point[]",
-           "name":"y",
-           "type":"tuple[]"
+           "internalType":"bytes32[2][]",
+           "name":"y_tuples",
+           "type":"bytes32[2][]"
         },
         {
            "internalType":"uint256",
@@ -353,21 +415,9 @@
      "name":"getBalance",
      "outputs":[
         {
-           "components":[
-              {
-                 "internalType":"bytes32",
-                 "name":"x",
-                 "type":"bytes32"
-              },
-              {
-                 "internalType":"bytes32",
-                 "name":"y",
-                 "type":"bytes32"
-              }
-           ],
-           "internalType":"struct Utils.G1Point[2][]",
+           "internalType":"bytes32[2][2][]",
            "name":"accounts",
-           "type":"tuple[2][]"
+           "type":"bytes32[2][2][]"
         }
      ],
      "stateMutability":"view",
@@ -376,21 +426,9 @@
   {
      "inputs":[
         {
-           "components":[
-              {
-                 "internalType":"bytes32",
-                 "name":"x",
-                 "type":"bytes32"
-              },
-              {
-                 "internalType":"bytes32",
-                 "name":"y",
-                 "type":"bytes32"
-              }
-           ],
-           "internalType":"struct Utils.G1Point",
+           "internalType":"bytes32[2]",
            "name":"y",
-           "type":"tuple"
+           "type":"bytes32[2]"
         }
      ],
      "name":"getGuess",
@@ -402,6 +440,51 @@
         }
      ],
      "stateMutability":"view",
+     "type":"function"
+  },
+  {
+     "inputs":[
+        {
+           "internalType":"address",
+           "name":"_transfer",
+           "type":"address"
+        },
+        {
+           "internalType":"address",
+           "name":"_burn",
+           "type":"address"
+        }
+     ],
+     "name":"initializeBase",
+     "outputs":[
+        
+     ],
+     "stateMutability":"nonpayable",
+     "type":"function"
+  },
+  {
+     "inputs":[
+        {
+           "internalType":"address",
+           "name":"_token",
+           "type":"address"
+        },
+        {
+           "internalType":"address",
+           "name":"_transfer",
+           "type":"address"
+        },
+        {
+           "internalType":"address",
+           "name":"_burn",
+           "type":"address"
+        }
+     ],
+     "name":"initializeSuterERC20",
+     "outputs":[
+        
+     ],
+     "stateMutability":"nonpayable",
      "type":"function"
   },
   {
@@ -423,7 +506,7 @@
      "inputs":[
         {
            "internalType":"bytes32",
-           "name":"",
+           "name":"yHash",
            "type":"bytes32"
         }
      ],
@@ -440,22 +523,25 @@
   },
   {
      "inputs":[
+        
+     ],
+     "name":"owner",
+     "outputs":[
         {
-           "components":[
-              {
-                 "internalType":"bytes32",
-                 "name":"x",
-                 "type":"bytes32"
-              },
-              {
-                 "internalType":"bytes32",
-                 "name":"y",
-                 "type":"bytes32"
-              }
-           ],
-           "internalType":"struct Utils.G1Point",
-           "name":"y",
-           "type":"tuple"
+           "internalType":"address",
+           "name":"",
+           "type":"address"
+        }
+     ],
+     "stateMutability":"view",
+     "type":"function"
+  },
+  {
+     "inputs":[
+        {
+           "internalType":"bytes32[2]",
+           "name":"y_tuple",
+           "type":"bytes32[2]"
         },
         {
            "internalType":"uint256",
@@ -496,6 +582,17 @@
   },
   {
      "inputs":[
+        
+     ],
+     "name":"renounceOwnership",
+     "outputs":[
+        
+     ],
+     "stateMutability":"nonpayable",
+     "type":"function"
+  },
+  {
+     "inputs":[
         {
            "internalType":"uint256",
            "name":"multiplier",
@@ -508,6 +605,21 @@
         }
      ],
      "name":"setBurnFeeStrategy",
+     "outputs":[
+        
+     ],
+     "stateMutability":"nonpayable",
+     "type":"function"
+  },
+  {
+     "inputs":[
+        {
+           "internalType":"address",
+           "name":"_token",
+           "type":"address"
+        }
+     ],
+     "name":"setERC20Token",
      "outputs":[
         
      ],
@@ -601,7 +713,7 @@
      "name":"suterAgency",
      "outputs":[
         {
-           "internalType":"address payable",
+           "internalType":"address",
            "name":"",
            "type":"address"
         }
@@ -702,72 +814,24 @@
   {
      "inputs":[
         {
-           "components":[
-              {
-                 "internalType":"bytes32",
-                 "name":"x",
-                 "type":"bytes32"
-              },
-              {
-                 "internalType":"bytes32",
-                 "name":"y",
-                 "type":"bytes32"
-              }
-           ],
-           "internalType":"struct Utils.G1Point[]",
-           "name":"C",
-           "type":"tuple[]"
+           "internalType":"bytes32[2][]",
+           "name":"C_tuples",
+           "type":"bytes32[2][]"
         },
         {
-           "components":[
-              {
-                 "internalType":"bytes32",
-                 "name":"x",
-                 "type":"bytes32"
-              },
-              {
-                 "internalType":"bytes32",
-                 "name":"y",
-                 "type":"bytes32"
-              }
-           ],
-           "internalType":"struct Utils.G1Point",
-           "name":"D",
-           "type":"tuple"
+           "internalType":"bytes32[2]",
+           "name":"D_tuple",
+           "type":"bytes32[2]"
         },
         {
-           "components":[
-              {
-                 "internalType":"bytes32",
-                 "name":"x",
-                 "type":"bytes32"
-              },
-              {
-                 "internalType":"bytes32",
-                 "name":"y",
-                 "type":"bytes32"
-              }
-           ],
-           "internalType":"struct Utils.G1Point[]",
-           "name":"y",
-           "type":"tuple[]"
+           "internalType":"bytes32[2][]",
+           "name":"y_tuples",
+           "type":"bytes32[2][]"
         },
         {
-           "components":[
-              {
-                 "internalType":"bytes32",
-                 "name":"x",
-                 "type":"bytes32"
-              },
-              {
-                 "internalType":"bytes32",
-                 "name":"y",
-                 "type":"bytes32"
-              }
-           ],
-           "internalType":"struct Utils.G1Point",
-           "name":"u",
-           "type":"tuple"
+           "internalType":"bytes32[2]",
+           "name":"u_tuple",
+           "type":"bytes32[2]"
         },
         {
            "internalType":"bytes",
@@ -780,6 +844,51 @@
         
      ],
      "stateMutability":"payable",
+     "type":"function"
+  },
+  {
+     "inputs":[
+        {
+           "internalType":"address",
+           "name":"newOwner",
+           "type":"address"
+        }
+     ],
+     "name":"transferOwnership",
+     "outputs":[
+        
+     ],
+     "stateMutability":"nonpayable",
+     "type":"function"
+  },
+  {
+     "inputs":[
+        
+     ],
+     "name":"transfer_fee_dividend",
+     "outputs":[
+        {
+           "internalType":"uint256",
+           "name":"",
+           "type":"uint256"
+        }
+     ],
+     "stateMutability":"view",
+     "type":"function"
+  },
+  {
+     "inputs":[
+        
+     ],
+     "name":"transfer_fee_multiplier",
+     "outputs":[
+        {
+           "internalType":"uint256",
+           "name":"",
+           "type":"uint256"
+        }
+     ],
+     "stateMutability":"view",
      "type":"function"
   },
   {
