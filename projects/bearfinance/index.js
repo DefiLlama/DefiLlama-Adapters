@@ -1,12 +1,7 @@
 const sdk = require('@defillama/sdk');
 const BigNumber = require("bignumber.js");
 const { transformFantomAddress } = require("../helper/portedTokens");
-const IERC20Abi = require("../helper/abis/erc20.json");
-const masterChefAbi = require("../helper/abis/masterchef.json");
-const token0Abi = require("../helper/abis/token0.json");
-const token1Abi = require("../helper/abis/token1.json");
 const {unwrapUniswapLPs} = require("../helper/unwrapLPs");
-const { masterChefExports } = require("../helper/masterchef");
 
 const MASTER_CHEF = "0x16a06259725e4c7dFcE648f24D3443AfB96Aa0e5"
 const BEAR = "0x3b1a7770A8c97dCB21c18a2E18D60eF1B01d6DeC"
