@@ -10,6 +10,7 @@ const Contracts = {
       '1s3pmim': '0x23A479A83e4FaC12C2096Ab1D79Ea7a788f4489E',
       '1s3pfrax': '0xF223B776C86E1ADa8fD205dBb804D1Fd6C87E05E',
       '1s3pavaxusd': '0x7179F2C31763f395082489588534F4abb3Dd4Be6',
+      '1s3pwanusd': '0x02A105939Dc0C47cb6bD04f320dAa77Bd9E3Bb0D',
     },
     ignoredLps: ['0x17da5445f3cd02b3f1cd820e6de55983fe80cf85'],
   }
@@ -87,6 +88,10 @@ function getTokenId(address) {
         return ['tether', 6];
       case '0x26dfff76d9123a1c79279abc29b676c48a8bd77e': // AVAX bridge
         return ['dai', 18];
+      case '0x748134b5f553f2bcbd78c6826de99a70274bdeb3': // WANCHAIN bridge
+        return ['usd-coin', 6];
+      case '0xe936caa7f6d9f5c9e907111fcaf7c351c184cda7': // WANCHAIN bridge
+        return ['tether', 6];
       default:
           return false;
   };
