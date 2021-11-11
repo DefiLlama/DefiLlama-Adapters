@@ -1,4 +1,5 @@
 const sdk = require('@defillama/sdk');
+const BigNumber = require("bignumber.js")
 const suter_shield_abi = require('./suter_shield.json');
 
 // ETH
@@ -54,31 +55,31 @@ const FLEXUSD_COIN = 'smartbch:0x7b2B3C5308ab5b2a1d9a94d20D35CCDf61e05b72';
 const SUTER_FLEXUSD_V2 = '0xe253BAA5C5b5615727Cf2C55Aa806090D891Cd54';
 
 
-async function eth_tvl(timestamp, block) {
+async function tvl(timestamp, block) {
   let balances = {};
   let total_eth_tvl = 0;
   let pools = {ETH_COIN: [SUTER_ETH_V1, SUTER_ETH_V2], USDT_COIN: [SUTER_USDT_V1, SUTER_USDT_V2], DAI_COIN: [SUTER_DAI_V1, SUTER_DAI_V2], SUTER_COIN: [SUTER_SUTER_V1]};
   for(var coin in pools){
     for(var pool of pools[coin]) {
-      if(coin !== ETH_COIN){
-        let erc20_tvl = await sdk.api.erc20.balanceOf({
-          target: coin,
-          owner: pool,
-          block: block,
-          chain: 'ethereum'
-        });
-        if(balances[coin] === undefined){
-          balances[coin] = erc20_tvl.toString();
-        }else{
-          balances[coin] = BigNumber.from(balances[coin]).add(erc20_tvl).toString();
-        }
-      }
+      // if(coin !== ETH_COIN){
+      //   let erc20_tvl = await sdk.api.erc20.balanceOf({
+      //     target: coin,
+      //     owner: pool,
+      //     block: block,
+      //     chain: 'ethereum'
+      //   });
+      //   if(balances[coin] === undefined){
+      //     balances[coin] = erc20_tvl.toString();
+      //   }else{
+      //     balances[coin] = BigNumber.from(balances[coin]).add(erc20_tvl).toString();
+      //   }
+      // }
       let eth_tvl = await sdk.api.eth.getBalance({
         target: pool,
         block,
         chain: 'ethereum'
       });
-      total_eth_tvl = BigNumber.from(eth_tvl).add(total_eth_tvl);
+      total_eth_tvl = new BigNumber(eth_tvl.output).plus(new BigNumber(`${total_eth_tvl}`));
     }
   }
 
@@ -88,7 +89,7 @@ async function eth_tvl(timestamp, block) {
 
 module.exports = {
   ethereum:{
-    eth_tvl,
+    tvl,
   },
-  eth_tvl
-}
+  tvl
+};
