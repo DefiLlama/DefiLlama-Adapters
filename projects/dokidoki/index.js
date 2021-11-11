@@ -3,9 +3,11 @@ const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 
 const doki = "0x9cEB84f92A0561fa3Cc4132aB9c0b76A59787544";
 const azuki = "0x910524678C0B1B23FFB9285a81f99C29C11CBaEd";
+const polyDoki = "0x5C7F7Fe4766fE8f0fa9b41E2E4194d939488ff1C";
+const polyAzuki = "0x7CdC0421469398e0F3aA8890693d86c840Ac8931";
 
 // STAKING
-const stakingPools = [
+const ethStakingPools = [
   {
     pool: "0x0CE0f2b998C0a1b0280Dcc95935108781d18E65b",
     token: "0x9cEB84f92A0561fa3Cc4132aB9c0b76A59787544",
@@ -20,8 +22,8 @@ const stakingPools = [
   }, // AZUKI
 ];
 
-// POOL2 LPS LP
-const pool2LPs = [
+// POOL2 LPS
+const ethPool2LPs = [
   {
     owner: "0x95583A6F7aAAA56C48b27413d070219e22844435",
     pool: "0x1D4b2B2a2Ca8762410801b51f128B73743439E39",
@@ -37,7 +39,7 @@ const pool2LPs = [
 ];
 
 // POOLS
-const pools = [
+const ethPools = [
   {
     pool: "0xb3a2AF499aF8f717BB3431968f8e0b038C975686",
     token: "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
@@ -48,36 +50,66 @@ const pools = [
   }, // WETH
 ];
 
-async function tvl(timestamp, block) {
-  let balances = {};
+// POLYGON POOL2 LPS
+const polyPool2LPs = [
+  {
+    owner: "0xc0a1dFb85734E465C5dadc5683DE58358C906598",
+    pool: "0xd0985A2E8410c03B3bB0D7997DA433428D58342f"
+  }, // AZUKI-MUST
+  {
+    owner: "0x69Cb6f98E45c13A230d292bE0a6aF93a6521c39B",
+    pool: "0x92Bb3233F59561FC1fEC53EfC3339E4Af8E917F4"
+  }, // AZUKI-ETH
+  {
+    owner: "0x2146baC214D9BF2Da56c3d4A69b9149e457F9d8c",
+    pool: "0x9cb31B03089eca4C0f42554256d0217326D15AE7"
+  }, // DOKI-MUST
+  {
+    owner: "0xBbDC1681e43549d3871CF1953D1dD9afF320feF0",
+    pool: "0xcCeD5cB001D6081c4561bf7911F11Ccd9aAA1474"
+  } // DOKI-ETH
+];
 
+const polyStakingPools = [
+  {
+    pool: "0xE699FFCeD532BB43BD2A84C82c73C858758d12cC",
+    token: "0x5C7F7Fe4766fE8f0fa9b41E2E4194d939488ff1C"
+  } // DOKI
+]
+
+async function calcTvl(balances, chainBlocks, chain, pool) {
   let tokenBalance = (
     await sdk.api.abi.multiCall({
-      calls: pools.map((p) => ({
+      calls: pool.map((p) => ({
         target: p.token,
         params: p.pool,
       })),
       abi: "erc20:balanceOf",
-      block,
+      block: chainBlocks[chain],
+      chain: chain
     })
   ).output;
   tokenBalance.forEach((i) => {
-    sdk.util.sumSingleBalance(balances, i.input.target, i.output);
+    if (chain !== "ethereum") {
+      sdk.util.sumSingleBalance(balances, `${chain}:${i.input.target}`, i.output);
+    } else {
+      sdk.util.sumSingleBalance(balances, i.input.target, i.output);
+    }
   });
   return balances;
 }
 
-async function pool2(timestamp, block) {
-  let balances = {};
+async function pool2(balances, chainBlocks, chain, pool) {
   let lpPositions = [];
   let lpBalances = (
     await sdk.api.abi.multiCall({
-      calls: pool2LPs.map((p) => ({
+      calls: pool.map((p) => ({
         target: p.pool,
         params: p.owner,
       })),
       abi: "erc20:balanceOf",
-      block,
+      block: chainBlocks[chain],
+      chain: chain
     })
   ).output;
   lpBalances.forEach((i) => {
@@ -86,35 +118,51 @@ async function pool2(timestamp, block) {
       token: i.input.target,
     });
   });
-  await unwrapUniswapLPs(balances, lpPositions, block);
+  await unwrapUniswapLPs(balances, lpPositions, chainBlocks[chain], chain, addr=>`${chain}:${addr}`);
   return balances;
 }
 
-async function staking(timestamp, block) {
+async function ethTvl(timestamp, block) {
   let balances = {};
-
-  let tokenBalance = (
-    await sdk.api.abi.multiCall({
-      calls: stakingPools.map((p) => ({
-        target: p.token,
-        params: p.pool,
-      })),
-      abi: "erc20:balanceOf",
-      block,
-    })
-  ).output;
-  tokenBalance.forEach((i) => {
-    sdk.util.sumSingleBalance(balances, i.input.target, i.output);
-  });
-
+  await calcTvl(balances, block, "ethereum", ethPools);
   return balances;
 }
+
+async function ethStaking(timestamp, block) {
+  let balances = {};
+  await calcTvl(balances, block ,"ethereum", ethStakingPools);
+  return balances;
+}
+
+async function ethPool2(timestamp, block) {
+  let balances = {};
+  await pool2(balances, block, "ethereum", ethPool2LPs);
+  return balances;
+}
+
+async function polygonStaking(timestamp, block, chainBlocks) {
+  let balances = {};
+  await calcTvl(balances, chainBlocks.polygon, "polygon", polyStakingPools);
+  return balances;
+}
+
+async function polygonPool2(timestamp, block, chainBlocks) {
+  let balances = {};
+  await pool2(balances, chainBlocks.polygon, "polygon", polyPool2LPs);
+  return balances;
+}
+
 
 module.exports = {
   ethereum: {
-    tvl,
-    pool2,
-    staking,
+    tvl: ethTvl,
+    staking: ethStaking,
+    pool2: ethPool2
   },
-  tvl,
+  polygon: {
+    tvl: async () => ({}),
+    staking: polygonStaking,
+    pool2: polygonPool2
+  },
+  tvl: sdk.util.sumChainTvls([ethTvl])
 };
