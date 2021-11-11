@@ -1,6 +1,5 @@
 const sdk = require('@defillama/sdk');
 const BigNumber = require("bignumber.js")
-const suter_shield_abi = require('./suter_shield.json');
 
 // ETH
 const ETH_COIN = '0x0000000000000000000000000000000000000000';
