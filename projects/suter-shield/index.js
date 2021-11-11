@@ -1,8 +1,5 @@
 const sdk = require('@defillama/sdk');
-const suter_eth_v1_abi = require('./suter_eth_v1.json');
-const suter_erc20_v1_abi = require('./suter_erc20_v1.json');
-const suter_eth_v2_abi = require('./suter_eth_v2.json');
-const suter_erc20_v2_abi = require('./suter_erc20_v2.json');
+const suter_shield_abi = require('./suter_shield.json');
 
 // ETH
 const ETH_COIN = '0x0000000000000000000000000000000000000000';
