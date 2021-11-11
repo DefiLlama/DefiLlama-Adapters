@@ -176,6 +176,8 @@ const polygonTvl = ({ include, exclude }) => async (
       (lp_symbols[idx] === 'DFYNLP') |
         (lp_symbols[idx] === 'SLP') |
         (lp_symbols[idx] === 'WLP') |
+        (lp_symbols[idx] === 'ELP') |
+        (lp_symbols[idx] === 'FLP') |
         (lp_symbols[idx] === 'pWINGS-LP') |
         (lp_symbols[idx] === 'APE-LP') |
         (lp_symbols[idx] === 'GLP') |
@@ -186,7 +188,7 @@ const polygonTvl = ({ include, exclude }) => async (
         balance: vault_balances[idx],
         token: lp_addresses[idx],
       })
-    } else if (vaults[idx] !== '') {
+    } else if ((vaults[idx] !== '') & (lp_addresses[idx] !== null)) {
       singlePositions.push({
         vaultAddr: vaults[idx],
         balance: vault_balances[idx],
@@ -233,6 +235,7 @@ const fantomTvl = async (timestamp, block, chainBlocks) => {
   ).output.map((val) => val.output)
 
   vaults = vaults.map((e, idx) => ({ ...e, lp_address: lp_addresses[idx] }))
+  vaults = vaults.filter(item => item.lp_address !== null)
 
   const vault_balances = (
     await sdk.api.abi.multiCall({
@@ -351,6 +354,7 @@ const moonriverTvl = async (timestamp, block, chainBlocks) => {
   ).output.map((val) => val.output)
 
   vaults = vaults.map((e, idx) => ({ ...e, lp_address: lp_addresses[idx] }))
+  vaults = vaults.filter(item => item.lp_address !== null)
 
   const vault_balances = (
     await sdk.api.abi.multiCall({
