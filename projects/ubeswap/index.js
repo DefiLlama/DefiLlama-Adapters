@@ -3,7 +3,7 @@ const sdk = require('@defillama/sdk');
 const { calculateUsdUniTvl } = require('../helper/getUsdUniTvl');
 
 const graphUrls = {
-  celo: 'https://api.thegraph.com/subgraphs/name/ubeswap/ubeswap',
+  celo: 'https://thegraph.com/hosted-service/subgraph/ubeswap/ubeswap?version=current',
 }
 
 module.exports = {
