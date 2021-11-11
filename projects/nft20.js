@@ -92,6 +92,6 @@ async function tvl(timestamp, block, chainBlocks, chain) {
 
 module.exports = {
   methodology: `TVL for NFT20 consists of the weth locked in LPs (uni_v2, uni_v3, sushi) of every NFT20 pool on mainnet and polygon.`, 
-  tvl: eth,
+  ethereum:{tvl: eth},
   polygon: {tvl: polygon}
 }
