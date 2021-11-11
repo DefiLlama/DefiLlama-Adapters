@@ -54,53 +54,35 @@ const FLEXUSD_COIN = 'smartbch:0x7b2B3C5308ab5b2a1d9a94d20D35CCDf61e05b72';
 const SUTER_FLEXUSD_V2 = '0xe253BAA5C5b5615727Cf2C55Aa806090D891Cd54';
 
 
-async function eth_tvl_v1(timestamp, block) {
+async function eth_tvl(timestamp, block) {
   let balances = {};
-  let pools = [SUTER_ETH_V1, SUTER_USDT_V1, SUTER_DAI_V1, SUTER_SUTER_V1];
-  let eth_tvl;
-  for (const pool of pools) {
-    if(pool === SUTER_ETH_V1){
-      eth_tvl = await sdk.api.eth.getBalance({
-        target: pool,
-        block,
+  let total_eth_tvl = 0;
+  let pools = {ETH_COIN: [SUTER_ETH_V1, SUTER_ETH_V2], USDT_COIN: [SUTER_USDT_V1, SUTER_USDT_V2], DAI_COIN: [SUTER_DAI_V1, SUTER_DAI_V2], SUTER_COIN: [SUTER_SUTER_V1]};
+  for(var coin in pools){
+    if(coin !== ETH_COIN){
+      let erc20_tvl = await sdk.api.erc20.balanceOf({
+        target: coin,
+        owner: pools[coin],
+        block: block,
         chain: 'ethereum'
-      })
-    }else{
-      let tvl = await sdk.api.abi.call({
-        target: pool,
-        abi: suter_erc20_v1_abi['poolValue'],
-        block: block 
       });
-    }  
-}
-  
+      balances[coin] = BigNumber.from(balances[coin]).add(erc20_tvl);
+    }
+    let eth_tvl = await sdk.api.eth.getBalance({
+      target: pools[coin],
+      block,
+      chain: 'ethereum'
+    });
+    total_eth_tvl = BigNumber.from(eth_tvl).add(total_eth_tvl);
+  }
+
+  balances[ETH_COIN] = total_eth_tvl.toString();
   return balances;
-}
-
-
-async function tvl(timestamp, block) {
-    let balances = {};
-
-    const poolTVL = await sdk.api.abi.call({
-      target: SUTER_ETH_V1,
-      abi: abi['poolValue'],
-      block: block 
-    });
-    const truTVL = await sdk.api.abi.call({
-      target: stkTRU,
-      abi: abi['stakeSupply'],
-      block: block 
-    });
-    
-    balances[TUSD] = poolTVL.output;
-    balances[TRU] = truTVL.output;
-    
-    return balances;
 }
 
 module.exports = {
   ethereum:{
-    tvl,
+    eth_tvl,
   },
-  tvl
+  eth_tvl
 }
