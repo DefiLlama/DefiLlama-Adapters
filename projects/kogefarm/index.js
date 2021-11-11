@@ -309,29 +309,29 @@ const fantomTvl = async (timestamp, block, chainBlocks) => {
   )
 
   // Convert wMEMO into Time by dividing by 10 ** 9 and multiplying by the wMemo to Memo ratio
-  // First, find the wMemo to Memo ratio by looking at the total supply of wMemo divided by the Memo locked
-  const wMemoSupply = (
-    await sdk.api.abi.call({
-      chain: 'avax',
-      block: chainBlocks['avax'],
-      target: "0x0da67235dD5787D67955420C84ca1cEcd4E5Bb3b",
-      abi: abi.totalSupply,
-    })
-  ).output
-  const memoLocked = (
-    await sdk.api.abi.call({
-      chain: 'avax',
-      block: chainBlocks['avax'],
-      target: "0x136Acd46C134E8269052c62A67042D6bDeDde3C9",
-      params: ["0x0da67235dD5787D67955420C84ca1cEcd4E5Bb3b"],
-      abi: abi.balanceOf,
-    })
-  ).output
-  const memoPerWMemo = memoLocked / wMemoSupply * 10 ** 9
-
-  // Then, multiply the wMEMO balance by memo per wMemo ratio, use price of Time as price of Memo since they are 1:1
   const TIME = 'avax:0xb54f16fb19478766a268f172c9480f8da1a7c9c3';
   if (TIME in balances){
+    // First, find the wMemo to Memo ratio by looking at the total supply of wMemo divided by the Memo locked
+    const wMemoSupply = (
+      await sdk.api.abi.call({
+        chain: 'avax',
+        block: chainBlocks['avax'],
+        target: "0x0da67235dD5787D67955420C84ca1cEcd4E5Bb3b",
+        abi: abi.totalSupply,
+      })
+    ).output
+    const memoLocked = (
+      await sdk.api.abi.call({
+        chain: 'avax',
+        block: chainBlocks['avax'],
+        target: "0x136Acd46C134E8269052c62A67042D6bDeDde3C9",
+        params: ["0x0da67235dD5787D67955420C84ca1cEcd4E5Bb3b"],
+        abi: abi.balanceOf,
+      })
+    ).output
+    const memoPerWMemo = memoLocked / wMemoSupply * 10 ** 9
+
+    // Then, multiply the wMEMO balance by memo per wMemo ratio, use price of Time as price of Memo since they are 1:1
     balances[TIME] = Math.floor(balances[TIME] * memoPerWMemo / 10 ** 9);
   }
   return balances
