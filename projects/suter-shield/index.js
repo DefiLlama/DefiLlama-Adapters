@@ -59,21 +59,27 @@ async function eth_tvl(timestamp, block) {
   let total_eth_tvl = 0;
   let pools = {ETH_COIN: [SUTER_ETH_V1, SUTER_ETH_V2], USDT_COIN: [SUTER_USDT_V1, SUTER_USDT_V2], DAI_COIN: [SUTER_DAI_V1, SUTER_DAI_V2], SUTER_COIN: [SUTER_SUTER_V1]};
   for(var coin in pools){
-    if(coin !== ETH_COIN){
-      let erc20_tvl = await sdk.api.erc20.balanceOf({
-        target: coin,
-        owner: pools[coin],
-        block: block,
+    for(var pool of pools[coin]) {
+      if(coin !== ETH_COIN){
+        let erc20_tvl = await sdk.api.erc20.balanceOf({
+          target: coin,
+          owner: pool,
+          block: block,
+          chain: 'ethereum'
+        });
+        if(balances[coin] === undefined){
+          balances[coin] = erc20_tvl.toString();
+        }else{
+          balances[coin] = BigNumber.from(balances[coin]).add(erc20_tvl).toString();
+        }
+      }
+      let eth_tvl = await sdk.api.eth.getBalance({
+        target: pool,
+        block,
         chain: 'ethereum'
       });
-      balances[coin] = BigNumber.from(balances[coin]).add(erc20_tvl);
+      total_eth_tvl = BigNumber.from(eth_tvl).add(total_eth_tvl);
     }
-    let eth_tvl = await sdk.api.eth.getBalance({
-      target: pools[coin],
-      block,
-      chain: 'ethereum'
-    });
-    total_eth_tvl = BigNumber.from(eth_tvl).add(total_eth_tvl);
   }
 
   balances[ETH_COIN] = total_eth_tvl.toString();
