@@ -217,7 +217,7 @@ const polygonTvl = ({ include, exclude }) => async (
 }
 
 const fantomTvl = async (timestamp, block, chainBlocks) => {
-  const balances = {}
+  let balances = {}
 
   let vaults = (await utils.fetchURL(current_fantom_vaults_url)).data
 
@@ -304,6 +304,9 @@ const fantomTvl = async (timestamp, block, chainBlocks) => {
     'fantom',
     transformAddress,
   )
+  
+  const TIME = 'avax:0xb54f16fb19478766a268f172c9480f8da1a7c9c3';
+  balances[TIME] = Math.floor(balances[TIME] / 10 ** 9);
 
   return balances
 }
