@@ -39,6 +39,6 @@ module.exports = {
   avax: {
     tvl: chainTvl("avax"),
   },
-  tvl: async () => ({}),
+  
   methodology: "Liquidity on the DEX, data comes from their subgraphs. Factory address on bsc (0x06530550A48F990360DFD642d2132354A144F31d) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
 };
