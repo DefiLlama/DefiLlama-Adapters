@@ -29,7 +29,7 @@ module.exports = {
     tvl: v3Graphs('optimism')
   },
   hallmarks:[
-    [1598412107, "SushiSwap liquidity mining starts"],
+    [1598412107, "SushiSwap launch"],
     [1596856907, "SushiSwap migration"],
     [1600226507, "LM starts"],
     [1605583307, "LM ends"],
