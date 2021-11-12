@@ -48,9 +48,78 @@ async function tvl(timestamp, block, chainBlocks) {
 	return results;
 }
 
+async function handleStaking(timestamp, _ethBlock, chainBlocks) {
+	const [tokenBalances] = await Promise.all([
+		sdk.api.abi.multiCall({
+			block: chainBlocks['fantom'],
+			calls: [
+				{
+					target: BEAR,
+					params: MASTER_CHEF
+				}, {
+					target: BEAR_DAI_LP,
+					params: MASTER_CHEF
+				}
+			],
+			abi: 'erc20:balanceOf',
+			chain: 'fantom',
+		})
+	]);
+
+	const transformAddress = await transformFantomAddress();
+	let balances = {};
+	await unwrapUniswapLPs(balances, [{
+		balance: tokenBalances.output[1].output,
+		token: tokenBalances.output[1].input.target
+	}], chainBlocks['fantom'], 'fantom', transformAddress);
+	const bearInLiquidity = new BigNumber(balances[`fantom:${BEAR.toLowerCase()}`]);
+	const daiInLiquidity = new BigNumber(balances[DAI.toLowerCase()]);
+	const bearPrice = daiInLiquidity.dividedBy(bearInLiquidity);
+	const bearStaked = new BigNumber(tokenBalances.output[0].output);
+	const bearStakedInDai = bearStaked.multipliedBy(bearPrice);
+	const results = {};
+	results[DAI.toLowerCase()] = new BigNumber(daiInLiquidity.plus(bearStakedInDai).toFixed(0)).toString(10);
+	return results;
+}
+
+async function handlePool2(timestamp, _ethBlock, chainBlocks) {
+	const [tokenBalances] = await Promise.all([
+		sdk.api.abi.multiCall({
+			block: chainBlocks['fantom'],
+			calls: [
+				{
+					target: BEAR,
+					params: MASTER_CHEF
+				}, {
+					target: BEAR_DAI_LP,
+					params: MASTER_CHEF
+				}
+			],
+			abi: 'erc20:balanceOf',
+			chain: 'fantom',
+		})
+	]);
+
+	const transformAddress = await transformFantomAddress();
+	let balances = {};
+	await unwrapUniswapLPs(balances, [{
+		balance: tokenBalances.output[1].output,
+		token: tokenBalances.output[1].input.target
+	}], chainBlocks['fantom'], 'fantom', transformAddress);
+	const bearInLiquidity = new BigNumber(balances[`fantom:${BEAR.toLowerCase()}`]);
+	const daiInLiquidity = new BigNumber(balances[DAI.toLowerCase()]);
+	const bearPrice = daiInLiquidity.dividedBy(bearInLiquidity);
+	const daiBalanceFromBear = bearInLiquidity.multipliedBy(bearPrice);
+	const results = {};
+	results[DAI.toLowerCase()] = new BigNumber(daiInLiquidity.plus(daiBalanceFromBear).toFixed(0)).toString(10);
+	return results;
+}
+
 module.exports = {
 	methodology: "TVL includes all farms in MasterChef contract",
 	fantom: {
-		tvl
+		tvl,
+		staking: handleStaking,
+		pool2: handlePool2,
 	}
 }
