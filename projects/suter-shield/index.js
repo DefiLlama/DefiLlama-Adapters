@@ -19,6 +19,8 @@ const SUTER_SUTER_V1 = '0xab4e72599e2cec5dcc8249657833b3408905900e';
 
 // BSC
 const BNB_COIN = '0x0000000000000000000000000000000000000000';
+// WBNB
+// const BNB_COIN = '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c';
 const SUTER_BNB_V1 = '0x2A00d7d2de1E147a3BCAa122B4EC5D6f9F0c1147';
 const SUTER_BNB_V2 = '0x5bb6eE37a6503fe381207c3BAC0Aa6d7B33590Fa';
 
@@ -70,7 +72,7 @@ async function eth_tvl(timestamp, block) {
         if(balances[coin] === undefined){
           balances[coin] = erc20_tvl.output;
         }else{
-          balances[coin] = new BigNumber(balances[coin]).plus(new BigNumber(erc20_tvl.output)).toString();
+          balances[coin] = new BigNumber(balances[coin]).plus(new BigNumber(erc20_tvl.output));
         }
       }
       let eth_tvl = await sdk.api.eth.getBalance({
@@ -102,7 +104,7 @@ async function bsc_tvl(timestamp, block) {
         if(balances[`bsc:${coin}`] === undefined){
           balances[`bsc:${coin}`] = erc20_tvl.output;
         }else{
-          balances[`bsc:${coin}`] = new BigNumber(balances[`bsc:${coin}`]).plus(new BigNumber(erc20_tvl.output)).toString();
+          balances[`bsc:${coin}`] = new BigNumber(balances[`bsc:${coin}`]).plus(new BigNumber(erc20_tvl.output));
         }
       }
       let bnb_tvl = await sdk.api.eth.getBalance({
@@ -166,7 +168,7 @@ async function bch_tvl(timestamp, block) {
         if(balances[`smartbch:${coin}`] === undefined){
           balances[`smartbch:${coin}`] = erc20_tvl.output;
         }else{
-          balances[`smartbch:${coin}`] = new BigNumber(balances[`smartbch:${coin}`]).plus(new BigNumber(erc20_tvl.output)).toString();
+          balances[`smartbch:${coin}`] = new BigNumber(balances[`smartbch:${coin}`]).plus(new BigNumber(erc20_tvl.output));
         }
       }
       let bch_tvl = await sdk.api.eth.getBalance({
