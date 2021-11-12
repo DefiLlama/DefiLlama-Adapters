@@ -28,4 +28,11 @@ module.exports = {
   optimism:{
     tvl: v3Graphs('optimism')
   },
+  hallmarks:[
+    [1598412107, "SushiSwap launch"],
+    [1596856907, "SushiSwap migration"],
+    [1600226507, "LM starts"],
+    [1605583307, "LM ends"],
+    [1617333707, "FEI launch"]
+  ]
 }
