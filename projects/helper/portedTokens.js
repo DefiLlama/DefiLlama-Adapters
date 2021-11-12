@@ -228,6 +228,12 @@ function fixHarmonyBalances(balances){
     }
 }
 
+async function transformIotexAddress() {
+    return (addr) => {
+      return `iotex:${addr}`;
+    };
+}
+
 async function transformKccAddress() {
     return (addr) => {
       return `kcc:${addr}`;
@@ -267,4 +273,5 @@ module.exports = {
     transformKccAddress,
     transformArbitrumAddress,
     fixHarmonyBalances,
+    transformIotexAddress
 };
