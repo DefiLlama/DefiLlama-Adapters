@@ -12,7 +12,7 @@ const Contracts = {
       '1s3pavaxusd': '0x7179F2C31763f395082489588534F4abb3Dd4Be6',
       '1s3pwanusd': '0x02A105939Dc0C47cb6bD04f320dAa77Bd9E3Bb0D',
     },
-    ignoredLps: ['0x17da5445f3cd02b3f1cd820e6de55983fe80cf85'],
+    ignoredLps: ['0x17da5445f3cd02b3f1cd820e6de55983fe80cf85'] ,
   }
 };
 
