@@ -1,0 +1,73 @@
+{
+  "getToken": {
+      "type": "function",
+      "stateMutability": "view",
+      "outputs": [
+          {
+              "type": "address",
+              "name": "",
+              "internalType": "contract IERC20"
+          }
+      ],
+      "name": "getToken",
+      "inputs": [
+          {
+              "type": "uint8",
+              "name": "index",
+              "internalType": "uint8"
+          }
+      ]
+  },
+  "want": {
+      "type": "function",
+      "stateMutability": "view",
+      "outputs": [
+          {
+              "type": "address",
+              "name": "",
+              "internalType": "address"
+          }
+      ],
+      "name": "want",
+      "inputs": []
+  },
+  "balanceOf": {
+      "type": "function",
+      "stateMutability": "view",
+      "outputs": [
+          {
+              "type": "uint256",
+              "name": "",
+              "internalType": "uint256"
+          }
+      ],
+      "name": "balanceOf",
+      "inputs": []
+  },
+  "token": {
+      "type": "function",
+      "stateMutability": "view",
+      "outputs": [
+          {
+              "type": "address",
+              "name": "",
+              "internalType": "contract IERC20"
+          }
+      ],
+      "name": "token",
+      "inputs": []
+  },
+  "balance": {
+      "type": "function",
+      "stateMutability": "view",
+      "outputs": [
+          {
+              "type": "uint256",
+              "name": "",
+              "internalType": "uint256"
+          }
+      ],
+      "name": "balance",
+      "inputs": []
+  }
+}
