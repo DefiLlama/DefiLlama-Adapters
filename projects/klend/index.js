@@ -60,7 +60,7 @@ async function bscPool2(timestamp, block, chainBlocks) {
     return balances;
 }
 
-async function okexPool2(timestmap, block, chainBlocks) {
+async function okexPool2(timestamp, block, chainBlocks) {
     let balances = {};
 
     await pool2Tvl(balances, chainBlocks.okexchain, "okexchain", okexPools);
