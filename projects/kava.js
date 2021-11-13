@@ -1,21 +1,35 @@
 const retry = require('./helper/retry')
 const axios = require("axios");
-// node test.js projects/kava.js
+
 async function tvl() {
   let balances = {};
-  let feed = (await retry(async bail => 
+
+  let deposits = (await retry(async bail => 
     await axios.get('https://api.kava.io/cdp/totalCollateral'))).data.result;
-  for (let i = 0; i < feed.length; i++) {
-    const info = convertSymbol(feed[i].amount.denom);
+  for (let i = 0; i < deposits.length; i++) {
+    const info = convertSymbol(deposits[i].amount.denom);
     if (info.id in balances) {
       balances[info.id] = Number(balances[info.id]) + 
-        Number(feed[i].amount.amount / 10 ** info.decimals);
+        Number(deposits[i].amount.amount / 10 ** info.decimals);
     } else {
-      balances[info.id] = feed[i].amount.amount / 10 ** info.decimals;
+      balances[info.id] = deposits[i].amount.amount / 10 ** info.decimals;
     };
   };
+
+  let borrowed = (await retry(async bail => 
+    await axios.get('https://api.kava.io/cdp/totalPrincipal'))).data.result;
+  for (let i = 0; i < borrowed.length; i++) {
+    const symbol = borrowed[i].collateral_type.substring(
+      0, borrowed[i].collateral_type.indexOf('-'));
+    const info = convertSymbol(symbol);
+    const tokenPrice = (await retry(async bail => await axios.get(
+      `https://api.coingecko.com/api/v3/simple/price?ids=${info.id}&vs_currencies=usd`
+      ))).data[info.id].usd;
+    const borrowedQty = borrowed[i].amount.amount / (tokenPrice * 10 ** 6);
+    balances[info.id] = Number(balances[info.id]) - Number(borrowedQty);
+  };
   return balances;
-}
+};
 
 function convertSymbol(symbol) {
   switch (symbol) {
@@ -40,7 +54,6 @@ function convertSymbol(symbol) {
   };
 };
 
-
 module.exports = {
   tvl
-}
+};
