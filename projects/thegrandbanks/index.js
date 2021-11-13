@@ -1,8 +1,8 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { unwrapUniswapLPs, unwrapCrv } = require("../helper/unwrapLPs");
-const { transformBscAddress } = require("../helper/portedTokens");
-
+const { transformBscAddress, transformPolygonAddress 
+  } = require("../helper/portedTokens");
 const GRAND = {
   bsc: "0xeE814F5B2bF700D2e843Dc56835D28d095161dd9",
   polygon: "0x14af08eccF4E305a332E1B7E146EbEC98A9637F0",

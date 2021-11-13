@@ -260,6 +260,12 @@ function fixHarmonyBalances(balances){
     }
 }
 
+async function transformIotexAddress() {
+    return (addr) => {
+      return `iotex:${addr}`;
+    };
+}
+
 async function transformKccAddress() {
     return (addr) => {
         if(compareAddresses(addr, "0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c")){
@@ -327,4 +333,5 @@ module.exports = {
     transformKccAddress,
     transformArbitrumAddress,
     fixHarmonyBalances,
+    transformIotexAddress
 };

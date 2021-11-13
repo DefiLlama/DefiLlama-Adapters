@@ -176,6 +176,8 @@ const polygonTvl = ({ include, exclude }) => async (
       (lp_symbols[idx] === 'DFYNLP') |
         (lp_symbols[idx] === 'SLP') |
         (lp_symbols[idx] === 'WLP') |
+        (lp_symbols[idx] === 'ELP') |
+        (lp_symbols[idx] === 'FLP') |
         (lp_symbols[idx] === 'pWINGS-LP') |
         (lp_symbols[idx] === 'APE-LP') |
         (lp_symbols[idx] === 'GLP') |
@@ -186,7 +188,7 @@ const polygonTvl = ({ include, exclude }) => async (
         balance: vault_balances[idx],
         token: lp_addresses[idx],
       })
-    } else if (vaults[idx] !== '') {
+    } else if ((vaults[idx] !== '') & (lp_addresses[idx] !== null)) {
       singlePositions.push({
         vaultAddr: vaults[idx],
         balance: vault_balances[idx],
@@ -217,7 +219,7 @@ const polygonTvl = ({ include, exclude }) => async (
 }
 
 const fantomTvl = async (timestamp, block, chainBlocks) => {
-  const balances = {}
+  let balances = {}
 
   let vaults = (await utils.fetchURL(current_fantom_vaults_url)).data
 
@@ -233,6 +235,7 @@ const fantomTvl = async (timestamp, block, chainBlocks) => {
   ).output.map((val) => val.output)
 
   vaults = vaults.map((e, idx) => ({ ...e, lp_address: lp_addresses[idx] }))
+  vaults = vaults.filter(item => item.lp_address !== null)
 
   const vault_balances = (
     await sdk.api.abi.multiCall({
@@ -305,6 +308,32 @@ const fantomTvl = async (timestamp, block, chainBlocks) => {
     transformAddress,
   )
 
+  // Convert wMEMO into Time by dividing by 10 ** 9 and multiplying by the wMemo to Memo ratio
+  const TIME = 'avax:0xb54f16fb19478766a268f172c9480f8da1a7c9c3';
+  if (TIME in balances){
+    // First, find the wMemo to Memo ratio by looking at the total supply of wMemo divided by the Memo locked
+    const wMemoSupply = (
+      await sdk.api.abi.call({
+        chain: 'avax',
+        block: chainBlocks['avax'],
+        target: "0x0da67235dD5787D67955420C84ca1cEcd4E5Bb3b",
+        abi: abi.totalSupply,
+      })
+    ).output
+    const memoLocked = (
+      await sdk.api.abi.call({
+        chain: 'avax',
+        block: chainBlocks['avax'],
+        target: "0x136Acd46C134E8269052c62A67042D6bDeDde3C9",
+        params: ["0x0da67235dD5787D67955420C84ca1cEcd4E5Bb3b"],
+        abi: abi.balanceOf,
+      })
+    ).output
+    const memoPerWMemo = memoLocked / wMemoSupply * 10 ** 9
+
+    // Then, multiply the wMEMO balance by memo per wMemo ratio, use price of Time as price of Memo since they are 1:1
+    balances[TIME] = Math.floor(balances[TIME] * memoPerWMemo / 10 ** 9);
+  }
   return balances
 }
 
@@ -325,6 +354,7 @@ const moonriverTvl = async (timestamp, block, chainBlocks) => {
   ).output.map((val) => val.output)
 
   vaults = vaults.map((e, idx) => ({ ...e, lp_address: lp_addresses[idx] }))
+  vaults = vaults.filter(item => item.lp_address !== null)
 
   const vault_balances = (
     await sdk.api.abi.multiCall({

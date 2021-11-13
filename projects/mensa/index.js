@@ -14,7 +14,7 @@ async function tvl(_, _ethBlock, chainBlocks) {
       block: chainBlocks['fantom'],
       chain: 'fantom'
     })
-  ).output;
+  ).output.filter(t=>t!=="0x1111111111111111111111111111111111111111");
 
   const decimalsOfReserve = (
     await sdk.api.abi.multiCall({
