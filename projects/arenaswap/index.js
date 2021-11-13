@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const {addFundsInMasterChef} = require("../helper/masterchef");
-const {pool2BalanceFromMasterChef} = require("../helper/pool2");
 const arena = "0x2A17Dc11a1828725cdB318E0036ACF12727d27a2";
 const arenaMasterChef = "0xbEa60d145747a66CF27456ef136B3976322b7e77";
 const pyram = "0xedeCfB4801C04F3EB394b89397c6Aafa4ADDa15B";
@@ -9,15 +8,8 @@ const poolInfo = {"inputs":[{"internalType":"uint256","name":"","type":"uint256"
 
 async function tvl(timestamp, block, chainBlocks) {
     let balances = {};
-    await addFundsInMasterChef(balances, arenaMasterChef, chainBlocks.bsc, "bsc", addr => `bsc:${addr}`, poolInfo, [arena], true, true, arena);
-    await addFundsInMasterChef(balances, pyramMasterChef, chainBlocks.bsc, "bsc", addr => `bsc:${addr}`, poolInfo, [pyram], true, true, pyram);
-    return balances;
-}
-
-async function pool2(timestamp, block, chainBlocks) {
-    let balances = {};
-    await pool2BalanceFromMasterChef(balances, arenaMasterChef, arena, chainBlocks.bsc, "bsc", addr=>`bsc:${addr}`, poolInfo);
-    await pool2BalanceFromMasterChef(balances, pyramMasterChef, pyram, chainBlocks.bsc, "bsc", addr=>`bsc:${addr}`, poolInfo);
+    await addFundsInMasterChef(balances, arenaMasterChef, chainBlocks.bsc, "bsc", addr => `bsc:${addr}`, poolInfo, [arena], true, false, arena);
+    await addFundsInMasterChef(balances, pyramMasterChef, chainBlocks.bsc, "bsc", addr => `bsc:${addr}`, poolInfo, [pyram], true, false, pyram);
     return balances;
 }
 
@@ -56,7 +48,6 @@ module.exports = {
     methodology: "Counts value locked in farms and pools",
     bsc: {
         tvl,
-        pool2,
         staking
     },
     tvl
