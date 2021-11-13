@@ -46,4 +46,7 @@ async function tvl() {
 module.exports = {
     tvl,
     methodology: 'TVL consists of deposits made to the protocol and like other lending protocols, borrowed tokens are not counted. Coingecko is used to price tokens.',
+    hallmarks: [
+        [1635940800, "SLND launch"]
+    ]
 }
