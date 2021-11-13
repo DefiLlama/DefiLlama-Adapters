@@ -155,11 +155,13 @@ async function unwrapCrvLPs(
 ) {
   await Promise.all(
     lpPositions.map(async (lp) => {
+      const underlyingToken = lp.token
+      const underlyingTokenBalance = lp.balance
       try {
-        await unwrapCrv(balances, lp, block, chain, transformAddress, excludeTokensRaw)
+        await unwrapCrv(balances, underlyingToken, underlyingTokenBalance, block, chain, transformAddress, excludeTokensRaw)
       } catch (e) {
         console.log(
-          `Failed to get data for LP token at ${lpPosition.token} on chain ${chain}`,
+          `Failed to get data for Curve LP token at ${lp.token} on chain ${chain}`,
         )
         throw e
       }

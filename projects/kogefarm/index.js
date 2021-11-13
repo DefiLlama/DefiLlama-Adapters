@@ -169,6 +169,7 @@ const polygonTvl = ({ include, exclude }) => async (
 
   const lpPositions = []
   const singlePositions = []
+  const crvPositions = []
 
   vaults.forEach((v, idx) => {
     if (
@@ -188,6 +189,12 @@ const polygonTvl = ({ include, exclude }) => async (
         balance: vault_balances[idx],
         token: lp_addresses[idx],
       })
+    } else if ((lp_symbols[idx] === 'crvUSDBTCETH') | (lp_symbols[idx] === 'am3CRV') | (lp_symbols[idx] === 'btcCRV')) {
+      crvPositions.push({
+        vaultAddr: vaults[idx],
+        balance: vault_balances[idx],
+        token: lp_addresses[idx],
+      })
     } else if ((vaults[idx] !== '') & (lp_addresses[idx] !== null)) {
       singlePositions.push({
         vaultAddr: vaults[idx],
@@ -197,11 +204,20 @@ const polygonTvl = ({ include, exclude }) => async (
     }
   })
 
+
   const transformAddress = transformAddressKF()
 
   await unwrapUniswapLPs(
     balances,
     lpPositions,
+    chainBlocks['polygon'],
+    'polygon',
+    transformAddress,
+  )
+
+  await unwrapCrvLPs(
+    balances,
+    crvPositions,
     chainBlocks['polygon'],
     'polygon',
     transformAddress,
@@ -272,7 +288,7 @@ const fantomTvl = async (timestamp, block, chainBlocks) => {
       pushElem(balancerPositions)
     }
     // CRV
-    else if (ftm_CrvVaultAddr.includes(vault.vault)) {
+    else if ((ftm_CrvVaultAddr.includes(vault.vault)) | (String(vault.__comment).toLowerCase().includes('curve '))) {
       pushElem(crvPositions)
     }
     // Uni-V2
@@ -290,10 +306,9 @@ const fantomTvl = async (timestamp, block, chainBlocks) => {
     'fantom',
     transformAddress,
   )
-
   await unwrapCrvLPs(
     balances,
-    crvPositions.map((e) => e.token),
+    crvPositions,
     chainBlocks['fantom'],
     'fantom',
     transformAddress,
@@ -413,7 +428,7 @@ const moonriverTvl = async (timestamp, block, chainBlocks) => {
 
   await unwrapCrvLPs(
     balances,
-    crvPositions.map((e) => e.token),
+    crvPositions,
     chainBlocks['moonriver'],
     'moonriver',
     transformAddress,
