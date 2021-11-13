@@ -18,9 +18,9 @@ const SUTER_COIN = '0xAA2ce7Ae64066175E0B90497CE7d9c190c315DB4';
 const SUTER_SUTER_V1 = '0xab4e72599e2cec5dcc8249657833b3408905900e';
 
 // BSC
-const BNB_COIN = '0x0000000000000000000000000000000000000000';
+// const BNB_COIN = '0x0000000000000000000000000000000000000000';
 // WBNB
-// const BNB_COIN = '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c';
+const BNB_COIN = '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c';
 const SUTER_BNB_V1 = '0x2A00d7d2de1E147a3BCAa122B4EC5D6f9F0c1147';
 const SUTER_BNB_V2 = '0x5bb6eE37a6503fe381207c3BAC0Aa6d7B33590Fa';
 
@@ -80,6 +80,7 @@ async function eth_tvl(timestamp, block) {
         block,
         chain: 'ethereum'
       });
+      // console.log("eth:", eth_tvl.output, typeof(eth_tvl.output))
       total_eth_tvl = new BigNumber(eth_tvl.output).plus(new BigNumber(total_eth_tvl));
     }
   }
@@ -106,13 +107,14 @@ async function bsc_tvl(timestamp, block) {
         }else{
           balances[`bsc:${coin}`] = new BigNumber(balances[`bsc:${coin}`]).plus(new BigNumber(erc20_tvl.output));
         }
+        // console.log(erc20_tvl.output, typeof(erc20_tvl.output))
       }
-      let bnb_tvl = await sdk.api.eth.getBalance({
-        target: pool,
-        block,
-        chain: 'bsc'
-      });
-      total_bnb_tvl = new BigNumber(bnb_tvl.output).plus(new BigNumber(total_bnb_tvl));
+      // let bnb_tvl = await sdk.api.eth.getBalance({
+      //   target: pool,
+      //   block,
+      //   chain: 'bsc'
+      // });
+      // total_bnb_tvl = new BigNumber(bnb_tvl.output).plus(new BigNumber(total_bnb_tvl));
     }
   }
 
@@ -120,69 +122,70 @@ async function bsc_tvl(timestamp, block) {
   return balances;
 }
 
-async function polygon_tvl(timestamp, block) {
-  let balances = {};
-  let total_matic_tvl = 0;
-  let pools = {[MATIC_COIN]: [POLYGON_SUTER_MATIC_V1]};
-  for(var coin in pools){
-    for(var pool of pools[coin]) {
-      if(coin !== MATIC_COIN){
-        let erc20_tvl = await sdk.api.erc20.balanceOf({
-          target: coin,
-          owner: pool,
-          block: block,
-          chain: 'polygon'
-        });
-        if(balances[`polygon:${coin}`] === undefined){
-          balances[`polygon:${coin}`] = erc20_tvl.output;
-        }else{
-          balances[`polygon:${coin}`] = new BigNumber(balances[`polygon:${coin}`]).plus(new BigNumber(erc20_tvl.output)).toString();
-        }
-      }
-      let matic_tvl = await sdk.api.eth.getBalance({
-        target: pool,
-        block,
-        chain: 'polygon'
-      });
-      total_matic_tvl = new BigNumber(matic_tvl.output).plus(new BigNumber(total_matic_tvl));
-    }
-  }
 
-  balances[`polygon:${MATIC_COIN}`] = total_matic_tvl.toString();
-  return balances;
-}
+// async function polygon_tvl(timestamp, block) {
+//   let balances = {};
+//   let total_matic_tvl = 0;
+//   let pools = {[MATIC_COIN]: [POLYGON_SUTER_MATIC_V1]};
+//   for(var coin in pools){
+//     for(var pool of pools[coin]) {
+//       if(coin !== MATIC_COIN){
+//         let erc20_tvl = await sdk.api.erc20.balanceOf({
+//           target: coin,
+//           owner: pool,
+//           block: block,
+//           chain: 'polygon'
+//         });
+//         if(balances[`polygon:${coin}`] === undefined){
+//           balances[`polygon:${coin}`] = erc20_tvl.output;
+//         }else{
+//           balances[`polygon:${coin}`] = new BigNumber(balances[`polygon:${coin}`]).plus(new BigNumber(erc20_tvl.output)).toString();
+//         }
+//       }
+//       let matic_tvl = await sdk.api.eth.getBalance({
+//         target: pool,
+//         block,
+//         chain: 'polygon'
+//       });
+//       total_matic_tvl = new BigNumber(matic_tvl.output).plus(new BigNumber(total_matic_tvl));
+//     }
+//   }
 
-async function bch_tvl(timestamp, block) {
-  let balances = {};
-  let total_bch_tvl = 0;
-  let pools = {[BCH_COIN]: [SUTER_BCH_V2], [FLEXUSD_COIN]: [SUTER_FLEXUSD_V2]};
-  for(var coin in pools){
-    for(var pool of pools[coin]) {
-      if(coin !== BCH_COIN){
-        let erc20_tvl = await sdk.api.erc20.balanceOf({
-          target: coin,
-          owner: pool,
-          block: block,
-          chain: 'smartbch'
-        });
-        if(balances[`smartbch:${coin}`] === undefined){
-          balances[`smartbch:${coin}`] = erc20_tvl.output;
-        }else{
-          balances[`smartbch:${coin}`] = new BigNumber(balances[`smartbch:${coin}`]).plus(new BigNumber(erc20_tvl.output));
-        }
-      }
-      let bch_tvl = await sdk.api.eth.getBalance({
-        target: pool,
-        block,
-        chain: 'smartbch'
-      });
-      total_bch_tvl = new BigNumber(bch_tvl.output).plus(new BigNumber(total_bch_tvl));
-    }
-  }
+//   balances[`polygon:${MATIC_COIN}`] = total_matic_tvl.toString();
+//   return balances;
+// }
 
-  balances[`smartbch:${MATIC_COIN}`] = total_bch_tvl.toString();
-  return balances;
-}
+// async function bch_tvl(timestamp, block) {
+//   let balances = {};
+//   let total_bch_tvl = 0;
+//   let pools = {[BCH_COIN]: [SUTER_BCH_V2], [FLEXUSD_COIN]: [SUTER_FLEXUSD_V2]};
+//   for(var coin in pools){
+//     for(var pool of pools[coin]) {
+//       if(coin !== BCH_COIN){
+//         let erc20_tvl = await sdk.api.erc20.balanceOf({
+//           target: coin,
+//           owner: pool,
+//           block: block,
+//           chain: 'smartbch'
+//         });
+//         if(balances[`smartbch:${coin}`] === undefined){
+//           balances[`smartbch:${coin}`] = erc20_tvl.output;
+//         }else{
+//           balances[`smartbch:${coin}`] = new BigNumber(balances[`smartbch:${coin}`]).plus(new BigNumber(erc20_tvl.output));
+//         }
+//       }
+//       let bch_tvl = await sdk.api.eth.getBalance({
+//         target: pool,
+//         block,
+//         chain: 'smartbch'
+//       });
+//       total_bch_tvl = new BigNumber(bch_tvl.output).plus(new BigNumber(total_bch_tvl));
+//     }
+//   }
+
+//   balances[`smartbch:${MATIC_COIN}`] = total_bch_tvl.toString();
+//   return balances;
+// }
 
 module.exports = {
   ethereum:{
@@ -191,10 +194,10 @@ module.exports = {
   bsc: {
     tvl: bsc_tvl,
   },
-  polygon: {
-    tvl: polygon_tvl
-  },
-  smartbch: {
-    tvl: bch_tvl,
-  }
+  // polygon: {
+  //   tvl: polygon_tvl
+  // },
+  // smartbch: {
+  //   tvl: bch_tvl,
+  // }
 };
