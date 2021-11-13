@@ -139,6 +139,33 @@ const crvPools = {
           "0xDBf31dF14B66535aF65AaC99C32e9eA844e14501"
         ]
       },
+    // tricryptoCRV v1 Polygon
+    "0x8096ac61db23291252574D49f036f0f9ed8ab390": {
+        swapContract: "0x751B1e21756bDbc307CBcC5085c042a0e9AaEf36",
+        underlyingTokens: [
+          "0x28424507fefb6f7f8e9d3860f56504e4e5f5f390",
+          "0x5c2ed810328349100a66b82b78a1791b101c9d61",
+          "0xe7a24ef0c5e95ffb0f6684b813a78f2a3ad7d171"
+        ]
+      },
+    // tricryptoCRV v2 Polygon
+    "0xbece5d20a8a104c54183cc316c8286e3f00ffc71": {
+        swapContract: "0x92577943c7aC4accb35288aB2CC84D75feC330aF",
+        underlyingTokens: [
+          "0x28424507fefb6f7f8e9d3860f56504e4e5f5f390",
+          "0x5c2ed810328349100a66b82b78a1791b101c9d61",
+          "0xe7a24ef0c5e95ffb0f6684b813a78f2a3ad7d171"
+        ]
+      },
+    // tricryptoCRV v3 Polygon
+    "0xdad97f7713ae9437fa9249920ec8507e5fbb23d3": {
+        swapContract: "0x92215849c439e1f8612b6646060b4e3e5ef822cc",
+        underlyingTokens: [
+          "0x28424507fefb6f7f8e9d3860f56504e4e5f5f390",
+          "0x5c2ed810328349100a66b82b78a1791b101c9d61",
+          "0xe7a24ef0c5e95ffb0f6684b813a78f2a3ad7d171"
+        ]
+      },
     // gondolaDAIeUSDTe Avax
     "0xd7d4a4c67e9c1f5a913bc38e87e228f4b8820e8a": {
         swapContract: "0xCF97190fAAfea63523055eBd139c008cdb4468eB",
@@ -173,12 +200,46 @@ const crvPools = {
         ]
       },
     // MIM-fUSDT-USDC Fantom
-    "0x2dd7C9371965472E5A5fD28fbE165007c61439E1": {
-        swapContract: "0x3a1659Ddcf2339Be3aeA159cA010979FB49155FF",
+    "0x2dd7c9371965472e5a5fd28fbe165007c61439e1": {
+        swapContract: "0x2dd7C9371965472E5A5fD28fbE165007c61439E1",
         underlyingTokens: [
             "0x82f0B8B456c1A451378467398982d4834b6829c1",
             "0x049d68029688eAbF473097a2fC38ef61633A3C7A",
             "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75"
+        ]
+    },
+    // Dai-Usdc Fantom
+    "0x27e611fd27b276acbd5ffd632e5eaebec9761e40": {
+        swapContract: "0x27E611FD27b276ACbd5Ffd632E5eAEBEC9761E40",
+        underlyingTokens: [
+            "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75",
+            "0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E"
+        ]
+    },
+    // gDai-gUSDC-gUSDT Fantom
+    "0xd02a30d33153877bc20e5721ee53dedee0422b2f": {
+        swapContract: "0x0fa949783947Bf6c1b171DB13AEACBB488845B3f",
+        underlyingTokens: [
+            "0x940F41F0ec9ba1A34CF001cc03347ac092F5F6B5",
+            "0x07E6332dD090D287d3489245038daF987955DCFB",
+            "0xe578C856933D8e1082740bf7661e379Aa2A30b26"
+        ]
+    },
+    // tricrypto Fantom
+    "0x58e57ca18b7a47112b877e31929798cd3d703b0f": {
+        swapContract: "0x3a1659Ddcf2339Be3aeA159cA010979FB49155FF",
+        underlyingTokens: [
+            "0x74b23882a30290451A17c44f4F05243b6b58C76d",
+            "0x321162Cd933E2Be498Cd2267a90534A804051b11",
+            "0x049d68029688eAbF473097a2fC38ef61633A3C7A"
+        ]
+    },
+    // btc-renbtc Fantom
+    "0x5b5cfe992adac0c9d48e05854b2d91c73a003858": {
+        swapContract: "0x3eF6A01A0f81D6046290f3e2A8c5b843e738E604",
+        underlyingTokens: [
+            "0xDBf31dF14B66535aF65AaC99C32e9eA844e14501",
+            "0x321162Cd933E2Be498Cd2267a90534A804051b11"
         ]
     },
 }
@@ -205,21 +266,21 @@ async function unwrapYearn(balances, yToken, block, chain = "ethereum", transfor
 
     let pricePerShare = await sdk.api.abi.call({
         target: yToken,
-        abi: getPricePerShare[1], 
+        abi: getPricePerShare[1],
         block: block,
         chain: chain
     });
     if (pricePerShare == undefined) {
         pricePerShare = await sdk.api.abi.call({
             target: yToken,
-            abi: getPricePerShare[0], 
+            abi: getPricePerShare[0],
             block: block,
             chain: chain
         });
     };
-    
-    sdk.util.sumSingleBalance(balances, transformAddress(underlying), 
-        balances[yToken] * pricePerShare.output / 10 ** 
+
+    sdk.util.sumSingleBalance(balances, transformAddress(underlying),
+        balances[yToken] * pricePerShare.output / 10 **
         (await sdk.api.erc20.decimals(underlying, chain)).output);
     delete balances[yToken];
 };
