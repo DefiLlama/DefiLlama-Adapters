@@ -2,7 +2,7 @@ const sdk = require('@defillama/sdk');
 const { getChainTvl } = require('../helper/getUniSubgraphTvl');
 
 const chainTvl = getChainTvl({
-    polis: 'https://graph.polis.tech/subgraphs/name/hadesswap/plutus/graphql',
+    polis: 'https://graph.polis.tech/subgraphs/name/hadeswap/plutus/graphql',
 }, "hadesSwapFactories")
 
 module.exports = {
