@@ -2,8 +2,8 @@ const sdk = require('@defillama/sdk');
 const { getChainTvl } = require('../helper/getUniSubgraphTvl');
 
 const chainTvl = getChainTvl({
-    polis: 'https://graph.polis.tech/subgraphs/name/hadesswap/plutus/graphql',
-}, "hadesSwapFactories")
+    polis: 'https://graph.polis.tech/subgraphs/name/hadeswap/exchange',
+}, "factories", "liquidityUSD")
 
 module.exports = {
     misrepresentedTokens: true,
