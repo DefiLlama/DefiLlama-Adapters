@@ -7,7 +7,7 @@ const ethContracts = [
    *
    * coingecko: wrapped-celo
    * coinmarketcap: wrapped-celo
-  */
+   */
   '0xE452E6Ea2dDeB012e20dB73bf5d3863A3Ac8d77a',
 
   /**
@@ -15,7 +15,7 @@ const ethContracts = [
    *
    * coingecko: wrapped-filecoin
    * coinmarketcap: wrapped-filecoin
-  */
+   */
   '0x6e1A19F235bE7ED8E3369eF73b196C07257494DE',
 
   /**
@@ -23,7 +23,7 @@ const ethContracts = [
    *
    * coingecko: wrapped-celo-dollar
    * coinmarketcap: wrapped-celo-dollar
-  */
+   */
   '0xad3E3Fc59dff318BecEaAb7D00EB4F68b1EcF195',
 
   /**
@@ -31,13 +31,13 @@ const ethContracts = [
    *
    * coingecko: wrapped-zcash
    * coinmarketcap: wrapped-zec
-  */
+   */
   '0x4A64515E5E1d1073e83f30cB97BEd20400b66E10',
 
   /**
    * WLTC
    *
-   * no price available for
+   * no price available
    */
   '0x53c4871322Bb47e7A24136fce291a6dcC832a294',
 ];
