@@ -82,7 +82,7 @@ async function avax(timestamp, block, chainBlocks) {
         ["0x1B156C5c75E9dF4CAAb2a5cc5999aC58ff4F9090","0xfA19c1d104F4AEfb8d5564f02B3AdCa1b515da58"]
     ], chainBlocks[chain], chain, addr=>{
         if(addr === "0x1B156C5c75E9dF4CAAb2a5cc5999aC58ff4F9090") {
-            return "avax:0x63a72806098bd3d9520cc43356dd78afe5d386d9"
+            return "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"
         }
         return `${chain}:${addr}`
     })
