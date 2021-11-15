@@ -48,6 +48,12 @@ async function transformAvaxAddress() {
         if(compareAddresses(addr, "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7")){ //WAVAX
           return `avax:${addr}`
         }
+        if(compareAddresses(addr, "0xaf2c034c764d53005cc6cbc092518112cbd652bb")){ //qiAVAX
+            return `avax:0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7`
+        }
+        if(compareAddresses(addr, "0x57319d41F71E81F3c65F2a47CA4e001EbAFd4F33")){ //xJOE
+            return `avax:0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd`
+        }
         const srcToken = bridgeTokensOld.data.find(token => compareAddresses(token["Avalanche Token Address"], addr))
         if (srcToken !== undefined && srcToken["Ethereum Token Decimals"] === srcToken["Avalanche Token Decimals"]) {
             return srcToken["Ethereum Token Address"]
@@ -146,7 +152,7 @@ async function transformOkexAddress() {
 async function transformHecoAddress() {
   return (addr) => {
     if (addr.toLowerCase() == '0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c') {
-        return 'avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c';
+        return 'avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c'; 
     } else {
         return `heco:${addr}`;
     }
