@@ -39,7 +39,7 @@ const ethContracts = [
    *
    * no price available
    */
-  '0x53c4871322Bb47e7A24136fce291a6dcC832a294',
+  // '0x53c4871322Bb47e7A24136fce291a6dcC832a294',
 ];
 
 const celoContracts = [
