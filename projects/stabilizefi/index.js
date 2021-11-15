@@ -45,10 +45,8 @@ const U_DAI_ADDRESS = '0x9fee03160502782CeB5845e8799638AF351D1Ed5';
 const DAI_STABILITY_POOL_ADDRESS = "0x7Dd93401Df9BDe8a61d43ee99511CA658685f0BD";
 
 
-async function tvl(_, _ethBlock, chainBlocks) {
-  
-  // --- staking ---
-
+// --- staking ---
+async function stakingTvl(_, _ethBlock, chainBlocks) {
   const StakesBalance = (
     await sdk.api.abi.call({
       target: TOKEN_STAKING_ADDRESS,
@@ -57,6 +55,17 @@ async function tvl(_, _ethBlock, chainBlocks) {
       chain: 'avax'
     })
   ).output;
+
+  return { 
+    [SET_ADDRESS] : StakesBalance}
+
+}
+
+
+async function tvl(_, _ethBlock, chainBlocks) {
+  
+ 
+
 
   // --- farm ---
   const FarmPoolLPBalance_SUSD_USDC = (
@@ -202,7 +211,7 @@ async function tvl(_, _ethBlock, chainBlocks) {
     .plus(StabilityPoolBalanceOfDAI).toFixed();
 
   return { 
-    [SET_ADDRESS] : StakesBalance, 
+    
     [USDC_ADDRESS]: FarmPoolBalance,
     [SUSD_ADDRESS]: StabilityPoolTotalBalance,
     [AVAX_ADDRESS]: AVAXBalance, 
@@ -212,5 +221,9 @@ async function tvl(_, _ethBlock, chainBlocks) {
 }
 
 module.exports = {
-  tvl,
+  avalanche:{
+    tvl: tvl,
+    staking: stakingTvl
+  }
+  
 };
