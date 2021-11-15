@@ -155,37 +155,6 @@ async function bsc_tvl(timestamp, block) {
 //   return balances;
 // }
 
-// async function bch_tvl(timestamp, block) {
-//   let balances = {};
-//   let total_bch_tvl = 0;
-//   let pools = {[BCH_COIN]: [SUTER_BCH_V2], [FLEXUSD_COIN]: [SUTER_FLEXUSD_V2]};
-//   for(var coin in pools){
-//     for(var pool of pools[coin]) {
-//       if(coin !== BCH_COIN){
-//         let erc20_tvl = await sdk.api.erc20.balanceOf({
-//           target: coin,
-//           owner: pool,
-//           block: block,
-//           chain: 'smartbch'
-//         });
-//         if(balances[`smartbch:${coin}`] === undefined){
-//           balances[`smartbch:${coin}`] = erc20_tvl.output;
-//         }else{
-//           balances[`smartbch:${coin}`] = new BigNumber(balances[`smartbch:${coin}`]).plus(new BigNumber(erc20_tvl.output));
-//         }
-//       }
-//       let bch_tvl = await sdk.api.eth.getBalance({
-//         target: pool,
-//         block,
-//         chain: 'smartbch'
-//       });
-//       total_bch_tvl = new BigNumber(bch_tvl.output).plus(new BigNumber(total_bch_tvl));
-//     }
-//   }
-
-//   balances[`smartbch:${MATIC_COIN}`] = total_bch_tvl.toString();
-//   return balances;
-// }
 
 module.exports = {
   ethereum:{
