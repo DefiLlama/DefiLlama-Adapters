@@ -1,6 +1,6 @@
 
 const { ApiPromise, WsProvider } = require("@polkadot/api");
-const { options } = require("@acala-network/api");
+const { options } = require("@PlasmNetwork/api");
 
 const SDN_DECIMALS = 18;
 
