@@ -169,6 +169,7 @@ const polygonTvl = ({ include, exclude }) => async (
 
   const lpPositions = []
   const singlePositions = []
+  const crvPositions = []
 
   vaults.forEach((v, idx) => {
     if (
@@ -176,6 +177,8 @@ const polygonTvl = ({ include, exclude }) => async (
       (lp_symbols[idx] === 'DFYNLP') |
         (lp_symbols[idx] === 'SLP') |
         (lp_symbols[idx] === 'WLP') |
+        (lp_symbols[idx] === 'ELP') |
+        (lp_symbols[idx] === 'FLP') |
         (lp_symbols[idx] === 'pWINGS-LP') |
         (lp_symbols[idx] === 'APE-LP') |
         (lp_symbols[idx] === 'GLP') |
@@ -186,7 +189,13 @@ const polygonTvl = ({ include, exclude }) => async (
         balance: vault_balances[idx],
         token: lp_addresses[idx],
       })
-    } else if (vaults[idx] !== '') {
+    } else if ((lp_symbols[idx] === 'crvUSDBTCETH') | (lp_symbols[idx] === 'am3CRV') | (lp_symbols[idx] === 'btcCRV')) {
+      crvPositions.push({
+        vaultAddr: vaults[idx],
+        balance: vault_balances[idx],
+        token: lp_addresses[idx],
+      })
+    } else if ((vaults[idx] !== '') & (lp_addresses[idx] !== null)) {
       singlePositions.push({
         vaultAddr: vaults[idx],
         balance: vault_balances[idx],
@@ -195,11 +204,20 @@ const polygonTvl = ({ include, exclude }) => async (
     }
   })
 
+
   const transformAddress = transformAddressKF()
 
   await unwrapUniswapLPs(
     balances,
     lpPositions,
+    chainBlocks['polygon'],
+    'polygon',
+    transformAddress,
+  )
+
+  await unwrapCrvLPs(
+    balances,
+    crvPositions,
     chainBlocks['polygon'],
     'polygon',
     transformAddress,
@@ -233,6 +251,7 @@ const fantomTvl = async (timestamp, block, chainBlocks) => {
   ).output.map((val) => val.output)
 
   vaults = vaults.map((e, idx) => ({ ...e, lp_address: lp_addresses[idx] }))
+  vaults = vaults.filter(item => item.lp_address !== null)
 
   const vault_balances = (
     await sdk.api.abi.multiCall({
@@ -269,7 +288,7 @@ const fantomTvl = async (timestamp, block, chainBlocks) => {
       pushElem(balancerPositions)
     }
     // CRV
-    else if (ftm_CrvVaultAddr.includes(vault.vault)) {
+    else if ((ftm_CrvVaultAddr.includes(vault.vault)) | (String(vault.__comment).toLowerCase().includes('curve '))) {
       pushElem(crvPositions)
     }
     // Uni-V2
@@ -287,10 +306,9 @@ const fantomTvl = async (timestamp, block, chainBlocks) => {
     'fantom',
     transformAddress,
   )
-
   await unwrapCrvLPs(
     balances,
-    crvPositions.map((e) => e.token),
+    crvPositions,
     chainBlocks['fantom'],
     'fantom',
     transformAddress,
@@ -304,10 +322,33 @@ const fantomTvl = async (timestamp, block, chainBlocks) => {
     'fantom',
     transformAddress,
   )
-  
-  const TIME = 'avax:0xb54f16fb19478766a268f172c9480f8da1a7c9c3';
-  balances[TIME] = Math.floor(balances[TIME] / 10 ** 9);
 
+  // Convert wMEMO into Time by dividing by 10 ** 9 and multiplying by the wMemo to Memo ratio
+  const TIME = 'avax:0xb54f16fb19478766a268f172c9480f8da1a7c9c3';
+  if (TIME in balances){
+    // First, find the wMemo to Memo ratio by looking at the total supply of wMemo divided by the Memo locked
+    const wMemoSupply = (
+      await sdk.api.abi.call({
+        chain: 'avax',
+        block: chainBlocks['avax'],
+        target: "0x0da67235dD5787D67955420C84ca1cEcd4E5Bb3b",
+        abi: abi.totalSupply,
+      })
+    ).output
+    const memoLocked = (
+      await sdk.api.abi.call({
+        chain: 'avax',
+        block: chainBlocks['avax'],
+        target: "0x136Acd46C134E8269052c62A67042D6bDeDde3C9",
+        params: ["0x0da67235dD5787D67955420C84ca1cEcd4E5Bb3b"],
+        abi: abi.balanceOf,
+      })
+    ).output
+    const memoPerWMemo = memoLocked / wMemoSupply * 10 ** 9
+
+    // Then, multiply the wMEMO balance by memo per wMemo ratio, use price of Time as price of Memo since they are 1:1
+    balances[TIME] = Math.floor(balances[TIME] * memoPerWMemo / 10 ** 9);
+  }
   return balances
 }
 
@@ -328,6 +369,7 @@ const moonriverTvl = async (timestamp, block, chainBlocks) => {
   ).output.map((val) => val.output)
 
   vaults = vaults.map((e, idx) => ({ ...e, lp_address: lp_addresses[idx] }))
+  vaults = vaults.filter(item => item.lp_address !== null)
 
   const vault_balances = (
     await sdk.api.abi.multiCall({
@@ -386,7 +428,7 @@ const moonriverTvl = async (timestamp, block, chainBlocks) => {
 
   await unwrapCrvLPs(
     balances,
-    crvPositions.map((e) => e.token),
+    crvPositions,
     chainBlocks['moonriver'],
     'moonriver',
     transformAddress,

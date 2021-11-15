@@ -3,16 +3,16 @@ const { unwrapUniswapLPs } = require("../helper/unwrapLPs.js");
 const BigNumber = require("bignumber.js")
 const abi = require('./abi.json')
 
-const position_erc721 = '0xB410075E1E13c182475b2D0Ece9445f2710AB197'
+const position_nft = '0xB410075E1E13c182475b2D0Ece9445f2710AB197'
 const lens_contract = '0x080155C42b0854C3A718B610cC5183e963851Afb'
 
 async function tvl(timestamp, ethBlock, chainBlocks) {
   // Get number of positions opened by users by querying the supply of ERC721 tokens
-  const erc721_supply = (await sdk.api.abi.call({ target: position_erc721, abi: 'erc20:totalSupply', block: ethBlock, chain: 'ethereum' })).output;
+  const erc721_supply = (await sdk.api.abi.call({ target: position_nft, abi: 'erc20:totalSupply', block: ethBlock, chain: 'ethereum' })).output;
   console.log(`${erc721_supply} position ownership ERC 721 existing`)
 
   // Get all positions contracts addresses
-  const positionsCalls = [...Array(parseInt(erc721_supply)).keys()].map(t => ({target: position_erc721, params: t}))
+  const positionsCalls = [...Array(parseInt(erc721_supply)).keys()].map(t => ({target: position_nft, params: t}))
   const positionsAddresses = (
     await sdk.api.abi.multiCall({
       calls: positionsCalls,
@@ -22,8 +22,9 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     })
   ).output
 
+  // console.log(positionsAddresses.map(t => t.output).slice(0,5))
   // Get all positions paramters using the lens contract
-  const lensResult = (
+  const usersPositions = (
     await sdk.api.abi.call({
       target: lens_contract, 
       params: [positionsAddresses.map(t => t.output)],
@@ -32,14 +33,15 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
       chain: 'ethereum'
     })
   ).output
-  // console.log('first position example', lensResult[0])
+  // console.log('first position example', usersPositions[0])
   
   // FODL uses flashloans to leverage the user provided collateral. TVL should count only what the user brought in, which is supplyAmount of supplyTokenAddress 
-  // const usersSuppliedBalances = lensResult.map(t => ({[t.supplyTokenAddress]: t.supplyAmount}))
+  // const usersSuppliedBalances = usersPositions.map(t => ({[t.supplyTokenAddress]: t.supplyAmount}))
   const balances = {}
-  lensResult.forEach(t => {
+  usersPositions.forEach(t => {
     const token = t.supplyTokenAddress
-    balances[token] = (new BigNumber(balances[token] || "0").plus(new BigNumber(t.supplyAmount)) ).toString(10)
+    // const collatAmount = t.positionValue // principalValue or supplyAmount or positionValue 
+    balances[token] = (new BigNumber(balances[token] || "0").plus(new BigNumber(t.principalValue)) ).toString(10)
   })
   return balances
 }
@@ -87,7 +89,7 @@ module.exports = {
   methodology: "FODL leverages users positions on Aave and Compound. The fodl lens contract is used to get the positions metadata, especially supplyAmount and supplyTokenAddress, which counts as the TVL of the position of the user. Pool2 TVL are the tokens locked in the SUSHI pools",
   ethereum: {
     tvl: tvl,
-    pool2: ethPool2,
   },
-  tvl
+  tvl,
+  pool2: ethPool2,
 };
