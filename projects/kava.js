@@ -16,18 +16,18 @@ async function tvl() {
     };
   };
 
-  let borrowed = (await retry(async bail => 
-    await axios.get('https://api.kava.io/cdp/totalPrincipal'))).data.result;
-  for (let i = 0; i < borrowed.length; i++) {
-    const symbol = borrowed[i].collateral_type.substring(
-      0, borrowed[i].collateral_type.indexOf('-'));
-    const info = convertSymbol(symbol);
-    const tokenPrice = (await retry(async bail => await axios.get(
-      `https://api.coingecko.com/api/v3/simple/price?ids=${info.id}&vs_currencies=usd`
-      ))).data[info.id].usd;
-    const borrowedQty = borrowed[i].amount.amount / (tokenPrice * 10 ** 6);
-    balances[info.id] = Number(balances[info.id]) - Number(borrowedQty);
-  };
+  // let borrowed = (await retry(async bail => 
+  //   await axios.get('https://api.kava.io/cdp/totalPrincipal'))).data.result;
+  // for (let i = 0; i < borrowed.length; i++) {
+  //   const symbol = borrowed[i].collateral_type.substring(
+  //     0, borrowed[i].collateral_type.indexOf('-'));
+  //   const info = convertSymbol(symbol);
+  //   const tokenPrice = (await retry(async bail => await axios.get(
+  //     `https://api.coingecko.com/api/v3/simple/price?ids=${info.id}&vs_currencies=usd`
+  //     ))).data[info.id].usd;
+  //   const borrowedQty = borrowed[i].amount.amount / (tokenPrice * 10 ** 6);
+  //   balances[info.id] = Number(balances[info.id]) - Number(borrowedQty);
+  // };
   return balances;
 };
 
@@ -57,3 +57,4 @@ function convertSymbol(symbol) {
 module.exports = {
   tvl
 };
+// node test.js projects/kava.js
