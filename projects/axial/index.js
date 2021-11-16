@@ -2,7 +2,7 @@
 const sdk = require('@defillama/sdk');
 const abi = require('./abi.json');
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-
+// node test.js projects/axial/index.js
 const AXIAL_JLP_TOKEN = "0x5305A6c4DA88391F4A9045bF2ED57F4BF0cF4f62";
 const AXIAL_MASTERCHEF_V3 = "0x958C0d0baA8F220846d3966742D4Fb5edc5493D3";
 
@@ -54,7 +54,8 @@ async function getAxialPools() {
   let vaults = [];
   const poolLength = (await sdk.api.abi.call({
     target: AXIAL_MASTERCHEF_V3,
-    abi: abi.poolLength
+    abi: abi.poolLength,
+    chain: 'avax'
   })).output;
   await sdk.api.abi.multiCall({
     calls: [...Array(Number(poolLength)).keys()].map(num => ({

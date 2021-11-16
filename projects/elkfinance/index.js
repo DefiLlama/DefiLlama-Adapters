@@ -127,6 +127,24 @@ const chainExports = {
       "elk-finance"
       ),
   },
+  cronos: {
+    tvl: calculateUsdUniTvl(
+      "0xEEa0e2830D09D8786Cb9F484cA20898b61819ef1", 
+      "cronos", 
+      elkAddress, 
+      [], 
+      "elk-finance"
+      ),
+  },
+  telos: {
+    tvl: calculateUsdUniTvl(
+      "0x47c3163e691966f8c1b93B308A236DDB3C1C592d", 
+      "telos", 
+      elkAddress, 
+      [], 
+      "elk-finance"
+      ),
+  },
   hoo: {
     tvl: calculateUsdUniTvl(
       "0x9c03E724455306491BfD2CE0805fb872727313eA", 
