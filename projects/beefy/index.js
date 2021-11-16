@@ -18,6 +18,9 @@ function fetchChain(chainId) {
 }
 
 module.exports = {
+  cronos:{
+    fetch: fetchChain(25)
+  },
   bsc:{
     fetch: fetchChain(56)
   },
