@@ -9,10 +9,11 @@ async function simple_price(ids) {
 
 const tokens = [
   ["eosio.token", "EOS", "eos"],
-  ["minedfstoken", "DFS", "defis-network"],
-  ["btc.ptokens", "PBTC", "ptokens-btc"],
   ["tethertether", "USDT", "tether"],
+  ["btc.ptokens", "PBTC", "ptokens-btc"],
   ["token.defi", "BOX", "defibox"],
+  ["minedfstoken", "DFS", "defis-network"],
+  ["emanateoneos", "EMT", "emanate"],
   ["token.newdex", "DEX", "newdex-token"],
   ["chexchexchex", "CHEX", "chex-token"],
   ["everipediaiq", "IQ", "everipedia"],
