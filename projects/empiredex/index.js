@@ -83,6 +83,17 @@ module.exports = {
       "avalanche-2"
     ),
   },
+  ethereum: {
+    tvl: calculateUsdUniTvl(
+      "0xd674b01E778CF43D3E6544985F893355F46A74A5",
+      "ethereum",
+      "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+      [
+        "0x2302f393690487a4fc5927bbef63ff113e0c479d"
+      ],
+      "ethereum"
+    ),
+  },
   
   methodology: "Factory address(0x06530550A48F990360DFD642d2132354A144F31d) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
 };
