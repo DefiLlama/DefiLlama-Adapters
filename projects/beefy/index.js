@@ -17,6 +17,24 @@ function fetchChain(chainId) {
   }
 }
 
+async function fetch() {
+  const response = await utils.fetchURL('https://api.beefy.finance/tvl?q=1666600000');
+
+  let tvl = 0;
+  for (chainId in response.data) {
+    const chain = response.data[chainId];
+
+    for (vault in chain) {
+      tvl += chain[vault];
+    }
+  }
+  if(tvl === 0){
+    throw new Error("tvl is 0")
+  }
+
+  return tvl;
+}
+
 module.exports = {
   cronos:{
     fetch: fetchChain(25)
@@ -47,5 +65,6 @@ module.exports = {
   },
   harmony:{
     fetch: fetchChain(1666600000)
-  }
+  },
+  fetch
 }
