@@ -97,6 +97,15 @@ const DATA = {
       metapool: "0x84cd82204c07c67df1c2c372d8fd11b3266f76a3",
     },
   },
+  boba: {
+    stables: [
+      "0xf74195Bb8a5cf652411867c5C2C5b8C2a402be35", // DAI
+      "0x66a2A913e447d6b4BF33EFbec43aAeF87890FBbc", // USDC
+      "0x5DE1677344D3Cb0D7D465c10b72A8f60699C062d", // USDT
+    ],
+    nusd: "0x6B4712AE9797C199edd44F897cA09BC57628a1CF",
+    pool: "0x75FF037256b36F15919369AC58695550bE72fead",
+  },
 };
 
 const misrepresentedTokensMap = {
@@ -105,6 +114,15 @@ const misrepresentedTokensMap = {
     "arbitrum:0xfea7a6a0b346362bf88a9e4a88416b77a57d6c2a",
   // fUSDT (FTM) -> USDT (ETH)
   "0x049d68029688eabf473097a2fc38ef61633a3c7a":
+    "0xdac17f958d2ee523a2206206994597c13d831ec7",
+  // DAI (BOBA) -> DAI (ETH)
+  "0xf74195Bb8a5cf652411867c5C2C5b8C2a402be35":
+    "0x6b175474e89094c44da98b954eedeac495271d0f",
+  // USDC (BOBA) -> USDC (ETH)
+  "0x66a2A913e447d6b4BF33EFbec43aAeF87890FBbc":
+    "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+  // USDT (BOBA) -> USDT (ETH)
+  "0x5DE1677344D3Cb0D7D465c10b72A8f60699C062d":
     "0xdac17f958d2ee523a2206206994597c13d831ec7",
 };
 
@@ -164,5 +182,7 @@ module.exports = chainExports(chainTVL, [
   "fantom",
   "arbitrum",
   "harmony",
+  "boba",
 ]);
+module.exports.methodology = "Synapse AMM pools are counted as TVL";
 module.exports.misrepresentedTokens = true;
