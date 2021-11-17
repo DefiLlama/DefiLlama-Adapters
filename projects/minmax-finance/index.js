@@ -105,6 +105,7 @@ async function tvl(block) {
 }
 
 module.exports = {
+  methodology: "All the assets in the pool.",
   iotex:{
     tvl,
   },
