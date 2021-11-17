@@ -34,7 +34,6 @@ async function tvl(_timestamp, ethBlock, chainBlocks) {
 
     const vaultBalances = (await sdk.api.abi.multiCall({
         abi: 'erc20:balanceOf',
-        target: tokens.BNB,
         calls: tokens.map((t, i) => ({
             target: t,
             params: poolsV1[i]
