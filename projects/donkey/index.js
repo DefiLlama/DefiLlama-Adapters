@@ -3,7 +3,7 @@ const Caver = require('caver-js');
 const axios = require('axios');
 const dotenv = require('dotenv');
 const path = require('path')
-dotenv.config({path : path.resolve(__dirname, "../../env.sample")});
+dotenv.config({path : path.resolve(__dirname, "../../.env")});
 
 const DTokenAbi = require('./abi/DToken.json').abi;
 const PriceOracleAbi = require('./abi/PriceOracleView.json').abi
