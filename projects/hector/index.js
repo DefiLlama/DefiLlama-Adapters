@@ -74,5 +74,5 @@ module.exports = {
     staking
   },
   methodology:
-    "Counts tokens on the treasury for TVL and staked EXOD for staking",
+    "TVL consists of tokens that have been bonded on the protocol and staking consist of the native tokens that have been deposited to the staking contract",
 };
