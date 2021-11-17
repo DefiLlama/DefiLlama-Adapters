@@ -1,33 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { BigNumber } = require("bignumber.js");
-const { request, gql } = require("graphql-request"); 
-const {sumTokens} = require('./helper/unwrapLPs')
-
-const arbitrumoneGraphUrl = 'https://api.thegraph.com/subgraphs/name/handle-fi/handle'
-const handlefiQuery = gql`
-query get_collateralTokens($block: Int) {
-  collateralTokens(
-    first: 100, 
-    # block: { number: $block } 
-  ) {
-    id
-    symbol
-    totalBalance
-  }
-}
-`
-
-async function arbitrum_graphql(timestamp, block, chainBlocks, chain) {
-  const { collateralTokens } = await request(
-    arbitrumoneGraphUrl, 
-    handlefiQuery, 
-    {block}
-  )
-  const collateralBalances = Object.assign({}, ...collateralTokens.map(
-    (token) => ({['arbitrum:' + token.id]: Number(token.totalBalance)}))
-  )
-  return collateralBalances
-}
+const {sumTokens} = require('./helper/unwrapLPs');
 
 // Retrieve tokens stored in treasury contract - only weth at the moment
 // https://arbiscan.io/address/0x5710B75A0aA37f4Da939A61bb53c519296627994
