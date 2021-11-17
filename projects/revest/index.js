@@ -11,6 +11,7 @@ async function tvl(time, block){
 }
 
 module.exports={
+    methodology: "We list all tokens in our vault and sum them together",
     ethereum:{
         tvl
     }
