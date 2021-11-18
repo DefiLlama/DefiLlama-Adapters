@@ -10,11 +10,11 @@ const contracts = {
 
     "usdcPool": "0x07B0B00B9008798055071dde6f2d343782b35dC6",
 };
-
+const cap = "0x031d35296154279dc1984dcd93e392b1f946737b";
 const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 const usdc = "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8";
 
-async function tvl(_time, _ethBlock, chainBlocks){
+async function tvl(_time, _ethBlock, chainBlocks) {
     let balances = {};
 
     balances[`arbitrum:${usdc}`] = (await sdk.api.erc20.balanceOf({
@@ -24,25 +24,31 @@ async function tvl(_time, _ethBlock, chainBlocks){
         block: chainBlocks.arbitrum
     })).output;
 
+    balances[`arbitrum:${cap}`] = (await sdk.api.erc20.balanceOf({
+        target: cap,
+        owner: contracts.staking,
+        chain: 'arbitrum',
+        block: chainBlocks.arbitrum
+    })).output;
+
     const ethLocked = await sdk.api.eth.getBalances({
         targets: [
-            contracts.trading1, 
-            contracts.trading2, 
-            contracts.trading3, 
-            contracts.staking, 
+            contracts.trading1,
+            contracts.trading2,
+            contracts.trading3,
             contracts.ethPool
         ],
         chain: 'arbitrum',
         block: chainBlocks.arbitrum
     });
 
-    balances[weth] = ethLocked.output.reduce((total, item) => 
+    balances[weth] = ethLocked.output.reduce((total, item) =>
         BigNumber(item.balance).plus(total), 0).toFixed(0);
-    
+
     return balances;
 };
 
-async function treasury(_time, _ethBlock, chainBlocks){
+async function treasury(_time, _ethBlock, chainBlocks) {
     const ethLocked = await sdk.api.eth.getBalance({
         target: "0x1058afe66bb5b79c295ccce51016586949bc4e8d",
         chain: 'arbitrum',
@@ -53,9 +59,9 @@ async function treasury(_time, _ethBlock, chainBlocks){
 };
 
 
-module.exports={
+module.exports = {
     methodology: "ETH locked on trading contracts",
-    arbitrum:{
+    arbitrum: {
         treasury,
         tvl
     }
