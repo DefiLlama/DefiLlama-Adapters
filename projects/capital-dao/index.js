@@ -29,6 +29,7 @@ async function tvl(timestamp, block) {
 }
 
 module.exports = {
+  methodology: "TVL includes all farms in staking and swap contract",
   staking:{
     tvl: staking(stakingAddress, cdsAddress)
   },

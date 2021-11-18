@@ -89,6 +89,7 @@ async function tvl(_timestamp, _ethereumBlock, chainBlocks) {
 
 
 module.exports = {
+  methodology: "Our TVL is the value of the tokens within the Axial pools, and the Axial LP tokens within our rewards pools MasterChef",
   avalanche: {
     tvl,
     pool2: getAxialJLPBalance
