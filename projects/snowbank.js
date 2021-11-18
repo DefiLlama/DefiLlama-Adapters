@@ -1,4 +1,4 @@
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
+const { sumTokensAndLPsSharedOwners } = require("./helper/unwrapLPs");
 const sdk = require('@defillama/sdk');
 
 const TimeStaking = "0x85784d5e2CCae89Bcb39EbF0ac6Cdc93d42d99AD"
