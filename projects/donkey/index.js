@@ -313,7 +313,7 @@ async function fetch() {
     totalTvlKrw += tvlKrw
   }
   
-  return totalTvlKrw * currency;
+  return totalTvlKrw / currency;
 }
 
 module.exports = {
