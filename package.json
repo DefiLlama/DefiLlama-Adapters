@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@acala-network/api": "^3.0.2",
-    "@defillama/sdk": "^2.3.20",
+    "@defillama/sdk": "^2.3.21",
     "@makerdao/multicall": "^0.12.0",
     "@polkadot/api": "^6.6.1",
     "@project-serum/serum": "^0.13.38",
