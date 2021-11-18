@@ -16,7 +16,9 @@ const stakingContracts = {
   "hoo": "0x3A68B0dB21135E089AEaa13C5f5cd5E6cA158199",
   "moonriver": "0x64aA42D30428Cd53fD9F2fe01da161d90d878260",
   "kcc": "0x719a11f32340983E8D764C143d964CB3F4e5b49b",
-  "harmony": "0xf4f3495a35c0a73268eEa08b258C7968E976F5D4"
+  "harmony": "0xf4f3495a35c0a73268eEa08b258C7968E976F5D4",
+  "cronos": "0x7D4fB4BFf1EE561a97394e29B7Fa5FdE96f6d44E",
+  "telos": "0xB61b4ee3A00A8D01039625c13bd93A066c85EF2C",
 };
 // node test.js projects/elkfinance/index.js
 function chainStaking(chain, contract){
@@ -142,7 +144,9 @@ const chainExports = {
       "telos", 
       elkAddress, 
       [], 
-      "elk-finance"
+      "elk-finance", 
+      18,
+      true
       ),
   },
   hoo: {
