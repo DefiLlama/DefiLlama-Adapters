@@ -121,7 +121,7 @@ async function bsc_tvl(timestamp, block) {
   }
 
   const data = (await utils.fetchURL(suter_bnb_shield_tvl_api)).data;
-  balances[`bsc:${BNB_COIN}`] = data["tvl"];
+  balances[`bsc:${BNB_COIN}`] = parseFloat(data["tvl"]);
   return balances;
 }
 
