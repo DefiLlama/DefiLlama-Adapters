@@ -24,13 +24,6 @@ async function tvl(_time, _ethBlock, chainBlocks) {
         block: chainBlocks.arbitrum
     })).output;
 
-    balances[`arbitrum:${cap}`] = (await sdk.api.erc20.balanceOf({
-        target: cap,
-        owner: contracts.staking,
-        chain: 'arbitrum',
-        block: chainBlocks.arbitrum
-    })).output;
-
     const ethLocked = await sdk.api.eth.getBalances({
         targets: [
             contracts.trading1,
@@ -58,11 +51,22 @@ async function treasury(_time, _ethBlock, chainBlocks) {
     return { [weth]: ethLocked.output };
 };
 
+async function staking(_time, _ethBlock, chainBlocks) {
+    const capLocked = (await sdk.api.erc20.balanceOf({
+        target: cap,
+        owner: contracts.staking,
+        chain: 'arbitrum',
+        block: chainBlocks.arbitrum
+    }));
+
+    return { [`arbitrum:${cap}`]: capLocked.output }
+}
 
 module.exports = {
     methodology: "ETH locked on trading contracts",
     arbitrum: {
         treasury,
+        staking,
         tvl
     }
 };
