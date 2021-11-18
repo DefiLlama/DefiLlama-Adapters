@@ -2,7 +2,16 @@ const { getBlock } = require("../helper/getBlock")
 const { chainExports } = require("../helper/exports")
 const sdk = require('@defillama/sdk')
 
-const bridgeContract = "0x841ce48F9446C8E281D3F1444cB859b4A6D0738C"
+const bridgeContractV1 = "0x841ce48F9446C8E281D3F1444cB859b4A6D0738C"
+
+const bridgeContractsV2 = {
+    ethereum: "0xc578Cbaf5a411dFa9F0D227F97DaDAa4074aD062",
+    bsc: "0x5d96d4287D1ff115eE50faC0526cf43eCf79bFc6",
+    arbitrum: "0xdd90E5E87A2081Dcf0391920868eBc2FFB81a1aF",
+    polygon: "0xa251c4691C1ffd7d9b128874C023427513D8Ac5C",
+    avax: "0xBB7684Cc5408F4DD0921E5c2Cadd547b8f1AD573",
+    fantom: "0x3795C36e7D12A8c252A20C5a7B455f7c57b60283",
+}
 
 // From https://cbridge-docs.celer.network/#/FAQ?id=what-are-the-token-addresses-on-each-chain
 const tokens = [{
@@ -64,30 +73,39 @@ const tokens = [{
 
 const chainsWithDifferentDecimals = ['bsc', 'okexchain', 'heco']
 
-function chainTvl(chain){
-    return async (time, ethBlock, chainBlocks)=>{
+function chainTvl(chain) {
+    return async (time, ethBlock, chainBlocks) => {
         const block = await getBlock(time, chain, chainBlocks, true)
         const balances = {}
-        await Promise.all(tokens.map(async token=>{
-            if(token[chain] === undefined){
+        await Promise.all(tokens.map(async token => {
+            if (token[chain] === undefined) {
                 return
             }
-            const balance = await sdk.api.erc20.balanceOf({
+            const balanceV1 = await sdk.api.erc20.balanceOf({
                 chain,
                 block,
                 target: token[chain],
-                owner: bridgeContract
+                owner: bridgeContractV1
             })
-            const tokenAddress = chainsWithDifferentDecimals.includes(chain)?chain+':'+token[chain]:token.ethereum
-            sdk.util.sumSingleBalance(balances, tokenAddress, balance.output)
+            const tokenAddress = chainsWithDifferentDecimals.includes(chain) ? chain + ':' + token[chain] : token.ethereum
+            sdk.util.sumSingleBalance(balances, tokenAddress, balanceV1.output)
+            if (bridgeContractsV2[chain] !== undefined) {
+                const balanceV2 = await sdk.api.erc20.balanceOf({
+                    chain,
+                    block,
+                    target: token[chain],
+                    owner: bridgeContractsV2[chain]
+                })
+                sdk.util.sumSingleBalance(balances, tokenAddress, balanceV2.output)
+            }
         }))
         return balances
     }
 }
 
-const chains = tokens.reduce((allChains, token)=>{
-    Object.keys(token).forEach(chain=>allChains.add(chain))
+const chains = tokens.reduce((allChains, token) => {
+    Object.keys(token).forEach(chain => allChains.add(chain))
     return allChains
 }, new Set())
 
-module.exports=chainExports(chainTvl, Array.from(chains))
+module.exports = chainExports(chainTvl, Array.from(chains))
