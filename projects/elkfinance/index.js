@@ -138,7 +138,7 @@ const chainExports = {
       "elk-finance"
       ),
   },
-  /*telos: {
+  telos: {
     tvl: calculateUsdUniTvl(
       "0x47c3163e691966f8c1b93B308A236DDB3C1C592d", 
       "telos", 
@@ -148,7 +148,7 @@ const chainExports = {
       18,
       true
       ),
-  },*/
+  },
   hoo: {
     tvl: calculateUsdUniTvl(
       "0x9c03E724455306491BfD2CE0805fb872727313eA", 
