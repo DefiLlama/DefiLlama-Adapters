@@ -1,5 +1,6 @@
 const sdk = require('@defillama/sdk');
-const BigNumber = require("bignumber.js")
+const BigNumber = require("bignumber.js");
+const utils = require('../helper/utils');
 
 // ETH
 const ETH_COIN = '0x0000000000000000000000000000000000000000';
@@ -89,9 +90,10 @@ async function eth_tvl(timestamp, block) {
   return balances;
 }
 
+const suter_bnb_shield_tvl_api = "https://data-platform.suterusu.io/public_api/suter_bnb_tvls"
+
 async function bsc_tvl(timestamp, block) {
   let balances = {};
-  let total_bnb_tvl = 0;
   let pools = {[BNB_COIN]: [SUTER_BNB_V1, SUTER_BNB_V2], [BUSD_COIN]: [SUTER_BUSD_V1, SUTER_BUSD_V2], [CAKE_COIN]: [SUTER_CAKE_V1, SUTER_CAKE_V2], [BAKE_COIN]: [SUTER_BAKE_V1, SUTER_BAKE_V2], [BSC_SUTER_COIN]: [BSC_SUTER_SUTER_V1, BSC_SUTER_SUTER_V2], [XSUTER_COIN]: [BSC_SUTER_XSUTER_V1, BSC_SUTER_XSUTER_V2]};
   for(var coin in pools){
     for(var pool of pools[coin]) {
@@ -118,7 +120,8 @@ async function bsc_tvl(timestamp, block) {
     }
   }
 
-  balances[`bsc:${BNB_COIN}`] = total_bnb_tvl.toString();
+  const data = (await utils.fetchURL(suter_bnb_shield_tvl_api)).data;
+  balances[`bsc:${BNB_COIN}`] = data["tvl"];
   return balances;
 }
 
