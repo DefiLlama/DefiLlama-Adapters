@@ -140,11 +140,11 @@ const chainExports = {
   },
   /*telos: {
     tvl: calculateUsdUniTvl(
-      "0x9c03E724455306491BfD2CE0805fb872727313eA", 
+      "0x47c3163e691966f8c1b93B308A236DDB3C1C592d", 
       "telos", 
-      "0x818ec0a7fe18ff94269904fced6ae3dae6d6dc0b", 
+      elkAddress, 
       [], 
-      "usd-coin"
+      "elk-finance"
       ),
   },*/
   hoo: {
