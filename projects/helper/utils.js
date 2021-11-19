@@ -1,4 +1,5 @@
 const web3 = require('../config/web3.js')
+const bsc_web3 = require('../config/bsc_web3.js')
 const abis = require('../config/abis.js').abis
 const BigNumber = require("bignumber.js");
 const retry = require('async-retry')
@@ -24,6 +25,12 @@ async function returnDecimals(address) {
 async function returnEthBalance(address) {
 
   let getethBalanceRes = await web3.eth.getBalance(address);
+  let ethAmount = await new BigNumber(getethBalanceRes).div(10 ** 18).toFixed(2);
+  return parseFloat(ethAmount);
+}
+
+async function returnBnbBalance(address) {
+  let getethBalanceRes = await bsc_web3.eth.getBalance(address);
   let ethAmount = await new BigNumber(getethBalanceRes).div(10 ** 18).toFixed(2);
   return parseFloat(ethAmount);
 }
@@ -100,5 +107,6 @@ module.exports = {
   returnBlock,
   returnDecimals,
   returnEthBalance,
+  returnBnbBalance,
   getPricesFromContract
 }
