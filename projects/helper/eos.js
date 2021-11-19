@@ -12,6 +12,16 @@ async function get_currency_balance(code, account, symbol) {
     }
 }
 
+async function get_account_tvl(account, tokens) {
+    const balances = {}
+    for ( const [ code, symbol, id ] of tokens ) {
+      const balance = await get_currency_balance(code, account, symbol);
+      balances[id] = balance
+    }
+    return balances;
+  }
+
 module.exports = {
     get_currency_balance,
+    get_account_tvl,
 }

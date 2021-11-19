@@ -1,11 +1,4 @@
-const axios = require("axios");
-const retry = require('../helper/retry')
-const { get_currency_balance } = require("../helper/eos");
-
-async function simple_price(ids) {
-  const response = await retry(async () => await axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`));
-  return response.data;
-}
+const { get_account_tvl } = require("../helper/eos");
 
 const tokens = [
   ["eosio.token", "EOS", "eos"],
@@ -21,30 +14,15 @@ const tokens = [
   ["core.ogx", "OGX", "organix"],
 ]
 
-async function get_account_tvl(account) {
-  let tvl = 0;
-  const price_feed = await simple_price(tokens.map(row => row[2]).join(","));
-  for ( const [ code, symbol, id ] of tokens ) {
-    const balance = await get_currency_balance(code, account, symbol);
-    tvl += balance * price_feed[id].usd;
-  }
-  return tvl;
-}
-
 // https://apps.defis.network/
 // AMM swap
 async function eos() {
-  return await get_account_tvl("defisswapcnt");
-}
-
-async function fetch() {
-  return await eos();
+  return await get_account_tvl("defisswapcnt", tokens);
 }
 
 module.exports = {
   methodology: `DFS TVL is achieved by querying token balances from DFS's AMM swap liquidity smart contract.`,
   eos: {
-    fetch: eos
+    tvl: eos
   },
-  fetch
 }
