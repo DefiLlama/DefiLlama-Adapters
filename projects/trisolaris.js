@@ -16,8 +16,6 @@ module.exports = {
                 "0xC42C30aC6Cc15faC9bD938618BcaA1a1FaE8501d"
             ], 
             "weth", 
-            18, 
-            true
         ),
     },
 };
