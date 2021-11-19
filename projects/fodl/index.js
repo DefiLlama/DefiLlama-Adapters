@@ -22,27 +22,36 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     })
   ).output
 
-  // console.log(positionsAddresses.map(t => t.output).slice(0,5))
-  // Get all positions paramters using the lens contract
-  const usersPositions = (
-    await sdk.api.abi.call({
-      target: lens_contract, 
-      params: [positionsAddresses.map(t => t.output)],
-      abi: abi['getPositionsMetadata'],
-      block: ethBlock,
-      chain: 'ethereum'
-    })
-  ).output
-  // console.log('first position example', usersPositions[0])
   
   // FODL uses flashloans to leverage the user provided collateral. TVL should count only what the user brought in, which is supplyAmount of supplyTokenAddress 
   // const usersSuppliedBalances = usersPositions.map(t => ({[t.supplyTokenAddress]: t.supplyAmount}))
   const balances = {}
-  usersPositions.forEach(t => {
-    const token = t.supplyTokenAddress
-    // const collatAmount = t.positionValue // principalValue or supplyAmount or positionValue 
-    balances[token] = (new BigNumber(balances[token] || "0").plus(new BigNumber(t.principalValue)) ).toString(10)
-  })
+
+  // console.log(positionsAddresses.map(t => t.output).slice(0,5))
+  // The call to getPositionsMetadata only accounts for max 192 positions
+  const nParamsMax = 100
+  for (let iSlice = 0; iSlice < positionsAddresses.length / nParamsMax; iSlice++) {
+    // Get all positions paramters using the lens contract
+    const positionsSlice = positionsAddresses.slice(iSlice * nParamsMax, (iSlice+1) * nParamsMax)
+    let params = [positionsSlice.map(t => t.output)]
+    const usersPositions = (
+      await sdk.api.abi.call({
+        target: lens_contract, 
+        params: params,
+        abi: abi['getPositionsMetadata'],
+        block: ethBlock,
+        chain: 'ethereum'
+      })
+    ).output
+    // console.log('first position example', usersPositions[0])
+    
+    usersPositions.forEach(t => {
+      const token = t.supplyTokenAddress
+      //principalValue is capital provided by users, while supplyAmount also accounts for that flashloan'd for the borrow-lend leverage loops 
+      balances[token] = (new BigNumber(balances[token] || "0").plus(new BigNumber(t.principalValue)) ).toString(10)
+    })
+    // console.log(iSlice, balances)
+  }
   return balances
 }
 
@@ -60,7 +69,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 
 
 const sushiLps = [
-  "0xa5c475167f03b1556c054e0da78192cd2779087f", // FODL USDC
+  "0xa5c475167f03b1556c054e0da78192cd2779087f", // FODL-USDC
   "0xce7e98d4da6ebda6af474ea618c6b175729cd366", // FODL-WETH
 ];
 
@@ -90,6 +99,5 @@ module.exports = {
   ethereum: {
     tvl: tvl,
   },
-  tvl,
   pool2: ethPool2,
 };
