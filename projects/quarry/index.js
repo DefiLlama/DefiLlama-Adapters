@@ -1,4 +1,5 @@
 const utils = require("../helper/utils");
+const { Connection, PublicKey } = require("@solana/web3.js");
 const { Coder } = require("@project-serum/anchor");
 const QuarryMineIDL = require("./quarry_mine.json");
 const { getMSolLPTokens, MSOL_LP_MINT } = require("./msolLP");
@@ -27,7 +28,7 @@ const readTVL = async ({
   const divisor = 10 ** decimals;
 
   const lpTokenTotalSupply = Number(accountData.poolMint.readBigUInt64LE(36));
-  const poolShare = tokenAmount / lpTokenTotalSupply;
+  const poolShare = (tokenAmount * divisor) / lpTokenTotalSupply;
 
   const reserveAAmount =
     Number(accountData.tokenAReserve.readBigUInt64LE(64)) / divisor;
@@ -61,37 +62,49 @@ async function tvl() {
   const { data: saberPools } = await utils.fetchURL(
     "https://registry.saber.so/data/llama.mainnet.json"
   );
+
+  const connection = new Connection("https://api.mainnet-beta.solana.com");
   const coder = new Coder(QuarryMineIDL);
 
   for (const [stakedMint, quarryKeys] of Object.entries(quarriesByStakedMint)) {
+    console.log(`Fetching ${stakedMint}`);
     const coingeckoID = coingeckoIDs[stakedMint];
     const saberPool = coingeckoID
       ? null
       : saberPools.find((p) => p.lpMint === stakedMint);
-    const isMsolSolLP = stakedMint === MSOL_LP_MINT;
+    const isMsolSolLP = stakedMint === MSOL_LP_MINT.toString();
 
-    if (!coingeckoID || !saberPool) {
+    if (!coingeckoID && !saberPool && !isMsolSolLP) {
       // we can't price this asset, so don't bother fetching anything
       continue;
     }
 
-    const quarries = coder.accounts.mine.fetchMultiple(quarryKeys);
-    const totalTokens =
-      quarries.reduce((sum, q) => sum + q.totalTokensDeposited.toNumber(), 0) /
-      10 ** q.tokenMintDecimals;
+    const quarriesRaw = await connection.getMultipleAccountsInfo(
+      quarryKeys.map((q) => new PublicKey(q))
+    );
+    const quarries = quarriesRaw.map((q) =>
+      coder.accounts.decode("Quarry", q.data)
+    );
+    const totalTokens = quarries.reduce(
+      (sum, q) =>
+        sum +
+        parseFloat(q.totalTokensDeposited.toString()) /
+          10 ** q.tokenMintDecimals,
+      0
+    );
 
     if (coingeckoID) {
       if (!tvlResult[coingeckoID]) {
-        tvlResult[coingeckoID] = amount;
+        tvlResult[coingeckoID] = totalTokens;
       } else {
-        tvlResult[coingeckoID] += amount;
+        tvlResult[coingeckoID] += totalTokens;
       }
     } else if (saberPool) {
       const quarryTVL = await readTVL({
-        tokenA: saberPool.tokenA,
-        tokenB: saberPool.tokenB,
-        tokenAReserve: saberPool.tokenAReserve,
-        tokenBReserve: saberPool.tokenBReserve,
+        tokenA: saberPool.tokenACoingecko,
+        tokenB: saberPool.tokenBCoingecko,
+        tokenAReserve: saberPool.reserveA,
+        tokenBReserve: saberPool.reserveB,
         poolMint: stakedMint,
         tokenAmount: totalTokens,
       });
@@ -103,7 +116,7 @@ async function tvl() {
         }
       }
     } else if (isMsolSolLP) {
-      const msolTVL = getMSolLPTokens(totalTokens);
+      const msolTVL = await getMSolLPTokens(totalTokens);
       for (const [tokenId, amount] of Object.entries(msolTVL)) {
         if (!tvlResult[tokenId]) {
           tvlResult[tokenId] = amount;
