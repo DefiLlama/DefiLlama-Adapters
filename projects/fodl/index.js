@@ -29,7 +29,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 
   // console.log(positionsAddresses.map(t => t.output).slice(0,5))
   // The call to getPositionsMetadata only accounts for max 192 positions
-  const nParamsMax = 190
+  const nParamsMax = 100
   for (let iSlice = 0; iSlice < positionsAddresses.length / nParamsMax; iSlice++) {
     // Get all positions paramters using the lens contract
     const positionsSlice = positionsAddresses.slice(iSlice * nParamsMax, (iSlice+1) * nParamsMax)
