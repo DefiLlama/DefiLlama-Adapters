@@ -47,7 +47,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     
     usersPositions.forEach(t => {
       const token = t.supplyTokenAddress
-      // const collatAmount = t.principalValue // principalValue or supplyAmount or positionValue 
+      //principalValue is capital provided by users, while supplyAmount also accounts for that flashloan'd for the borrow-lend leverage loops 
       balances[token] = (new BigNumber(balances[token] || "0").plus(new BigNumber(t.principalValue)) ).toString(10)
     })
     // console.log(iSlice, balances)
