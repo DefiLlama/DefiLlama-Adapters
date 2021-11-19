@@ -349,6 +349,34 @@ const fantomTvl = async (timestamp, block, chainBlocks) => {
     // Then, multiply the wMEMO balance by memo per wMemo ratio, use price of Time as price of Memo since they are 1:1
     balances[TIME] = Math.floor(balances[TIME] * memoPerWMemo / 10 ** 9);
   }
+
+  // Convert sSpell into Spell by multiplying by the appropriate ratio
+  const sSpell = 'fantom:0xbb29d2a58d880af8aa5859e30470134deaf84f2b';
+  if (sSpell in balances){
+    // First, find the spell to staked spell ratio by looking at the total supply of staked spell divided by the spell locked
+    const sSpellSupply = (
+      await sdk.api.abi.call({
+        chain: 'ethereum',
+        block: chainBlocks['ethereum'],
+        target: "0x26FA3fFFB6EfE8c1E69103aCb4044C26B9A106a9",
+        abi: abi.totalSupply,
+      })
+    ).output
+    const spellLocked = (
+      await sdk.api.abi.call({
+        chain: 'ethereum',
+        block: chainBlocks['ethereum'],
+        target: "0x090185f2135308BaD17527004364eBcC2D37e5F6",
+        params: ["0x26FA3fFFB6EfE8c1E69103aCb4044C26B9A106a9"],
+        abi: abi.balanceOf,
+      })
+    ).output
+    const spellPersSpell = spellLocked / sSpellSupply
+
+    // Then, multiply the staked spell balance by spell to staked spell ratio
+    balances[sSpell] = Math.floor(balances[sSpell] * spellPersSpell);
+  }
+
   return balances
 }
 

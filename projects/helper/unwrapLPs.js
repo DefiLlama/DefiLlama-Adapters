@@ -467,6 +467,39 @@ async function sumTokensAndLPsSharedOwners(balances, tokens, owners, block, chai
     }
 }
 
+async function sumTokensSharedOwners(balances, tokens, owners, block, chain = "ethereum", transformAddress){
+    if(transformAddress===undefined){
+        transformAddress = addr=>`${chain}:${addr}`
+    }
+    await sumTokensAndLPsSharedOwners(balances, tokens.map(t=>[t,false]), owners, block, chain, transformAddress)
+}
+
+async function sumLPWithOnlyOneToken(balances, lpToken, owner, listedToken, block, chain = "ethereum", transformAddress=id=>id){
+    const [balanceOfLP, balanceOfTokenListedInLP, lpSupply] = await Promise.all([
+        sdk.api.erc20.balanceOf({
+            target: lpToken,
+            owner,
+            block,
+            chain
+        }),
+        sdk.api.erc20.balanceOf({
+            target: listedToken,
+            owner: lpToken,
+            block,
+            chain
+        }),
+        sdk.api.erc20.totalSupply({
+            target: lpToken,
+            block,
+            chain
+        }),
+    ])
+    sdk.util.sumSingleBalance(balances, transformAddress(listedToken), 
+        BigNumber(balanceOfLP.output).times(balanceOfTokenListedInLP.output).div(lpSupply.output).times(2).toFixed(0)
+    )
+}
+
+
 /*
 tokens [
     [token, owner, isLP] - eg ["0xaaa", "0xbbb", true]
@@ -614,5 +647,7 @@ module.exports = {
     sumTokensAndLPs,
     sumTokens,
     sumBalancerLps,
-    unwrapCreamTokens
+    unwrapCreamTokens,
+    sumLPWithOnlyOneToken,
+    sumTokensSharedOwners
 }
