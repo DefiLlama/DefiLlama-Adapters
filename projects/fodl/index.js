@@ -98,6 +98,6 @@ module.exports = {
   methodology: "FODL leverages users positions on Aave and Compound. The fodl lens contract is used to get the positions metadata, especially supplyAmount and supplyTokenAddress, which counts as the TVL of the position of the user. Pool2 TVL are the tokens locked in the SUSHI pools",
   ethereum: {
     tvl: tvl,
+    pool2: ethPool2,
   },
-  pool2: ethPool2,
 };
