@@ -12,5 +12,6 @@ async function fetch() {
 }
 
 module.exports = {
+  methodology: "The TVL is calculated using a google cloud function that runs every 30 minutes, it checks the value of all the LPs staked in our vaults and returns the total",
   fetch
 }

@@ -17,8 +17,9 @@ async function tvl() {
 };
 
 module.exports = {
+    methodology: "Counts NEST tokens that have been staked in the nest dapp",
     ethereum: {
         tvl,
         staking
-    }
+    },
 };
