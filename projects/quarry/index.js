@@ -22,9 +22,6 @@ const readTVL = async ({
     tokenBReserve,
     poolMint,
   });
-  if (accountData.sunnyPool === null) {
-    return {};
-  }
 
   const decimals = accountData.poolMint.readUInt8(44);
   const divisor = 10 ** decimals;
