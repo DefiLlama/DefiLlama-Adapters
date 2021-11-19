@@ -104,7 +104,15 @@ const DATA = {
       "0x5DE1677344D3Cb0D7D465c10b72A8f60699C062d", // USDT
     ],
     nusd: "0x6B4712AE9797C199edd44F897cA09BC57628a1CF",
+    neth: "0x96419929d7949D6A801A6909c145C8EEf6A40431",
+    weth: "0xd203De32170130082896b4111eDF825a4774c18E",
     pool: "0x75FF037256b36F15919369AC58695550bE72fead",
+    ethPool: "0x753bb855c8fe814233d26Bb23aF61cb3d2022bE5",
+  },
+  optimism: {
+    neth: "0x809DC529f07651bD43A172e8dB6f4a7a0d771036",
+    weth: "0x121ab82b49B2BC4c7901CA46B8277962b4350204",
+    ethPool: "0xE27BFf97CE92C3e1Ff7AA9f86781FDd6D48F5eE9",
   },
 };
 
@@ -124,6 +132,10 @@ const misrepresentedTokensMap = {
   // USDT (BOBA) -> USDT (ETH)
   "0x5DE1677344D3Cb0D7D465c10b72A8f60699C062d":
     "0xdac17f958d2ee523a2206206994597c13d831ec7",
+  // WETH (BOBA) -> WETH (ETH)
+  "0xd203De32170130082896b4111eDF825a4774c18E": WETH,
+  // WETH (OPTIMISM) -> WETH (ETH)
+  "0x121ab82b49B2BC4c7901CA46B8277962b4350204": WETH,
 };
 
 const sumLegacyPools = async (balances, block, chain, transform) => {
@@ -139,11 +151,14 @@ const sumLegacyPools = async (balances, block, chain, transform) => {
   }
 };
 
-const mapStables = (data, chain) => {
-  const stables = data.stables.map((x) => [x, data.pool]);
-  if (chain !== "ethereum") stables.push([data.nusd, data.pool]);
+const mapStables = (data) => {
+  let stables = [];
 
-  if (chain === "arbitrum")
+  if (data.stables) stables = data.stables.map((x) => [x, data.pool]);
+
+  if (data.nusd) stables.push([data.nusd, data.pool]);
+
+  if (data.neth && data.ethPool)
     stables.push([data.neth, data.ethPool], [data.weth, data.ethPool]);
 
   return stables;
@@ -165,7 +180,7 @@ const chainTVL = (chain) => {
     const block = await getBlock(timestamp, chain, chainBlocks);
     const data = DATA[chain];
 
-    await sumTokens(balances, mapStables(data, chain), block, chain, transform);
+    await sumTokens(balances, mapStables(data), block, chain, transform);
 
     if (chain !== "ethereum")
       await sumLegacyPools(balances, block, chain, transform);
@@ -183,6 +198,7 @@ module.exports = chainExports(chainTVL, [
   "arbitrum",
   "harmony",
   "boba",
+  "optimism",
 ]);
 module.exports.methodology = "Synapse AMM pools are counted as TVL";
 module.exports.misrepresentedTokens = true;
