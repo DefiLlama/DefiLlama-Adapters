@@ -84,21 +84,24 @@ async function getHandleContractMainnetLendingTVL({ contract, token }, ltv) {
   const assetPrice = new web3.utils.BN(
     (await oracle.methods.price(token).call()).toString()
   );
-  return parseInt(totalBorrowed
-    .mul(assetPrice)
-    .mul(new web3.utils.BN("100"))
-    .div(new web3.utils.BN(ltv.toString()))
-    .div(oneEther).toString);
+  return parseInt(
+    totalBorrowed
+      .mul(assetPrice)
+      .mul(new web3.utils.BN("100"))
+      .div(new web3.utils.BN(ltv.toString()))
+      .div(oneEther).toString()
+  ) / 1e18;
 }
 
 async function ethereum_onchain(timestamp, block, chainBlock, chain) {
-  return (await Promise.all([
+  const ltv = (await Promise.all([
     await getHandleContractMainnetLendingTVL(audP76, 70),
     await getHandleContractMainnetLendingTVL(eurP76, 70),
     await getHandleContractMainnetLendingTVL(audP116, 87),
     await getHandleContractMainnetLendingTVL(eurP116, 87),
     await getHandleContractMainnetLendingTVL(phpP116, 87),
-  ])).reduce((a, b) => a + b, 0)
+  ])).reduce((a, b) => a + b, 0);
+  return { WETH: ltv };
 }
 
 module.exports = {
