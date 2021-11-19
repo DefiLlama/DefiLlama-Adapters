@@ -84,8 +84,8 @@ function chainTvl(chain) {
     collateral.output.forEach(r => collaterals[r.input.params[0]] = r.output)
 
     _.forEach(holders, (holder) => {
-      let _collateral = collaterals[holder.id];
-      let _ratio = ratios[holder.id];
+      let _collateral = collaterals[holder];
+      let _ratio = ratios[holder];
       if(_collateral === null || _ratio === null){
         throw new Error(`Failed request for collateral/ratio of holder ${holder}`)
       }
