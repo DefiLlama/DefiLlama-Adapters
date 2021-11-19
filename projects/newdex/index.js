@@ -1,12 +1,34 @@
 const axios = require("axios");
+const retry = require('../helper/retry')
+const { get_currency_balance } = require("../helper/eos");
 
-const EOSFLARE_ENDPOINT = "https://api.eosflare.io";
+async function simple_price(ids) {
+  const response = await retry(async () => await axios.get(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`));
+  return response.data;
+}
+
+const tokens = [
+  ["eosio.token", "EOS", "eos"],
+  ["tethertether", "USDT", "tether"],
+  ["btc.ptokens", "PBTC", "ptokens-btc"],
+  ["token.defi", "BOX", "defibox"],
+  ["minedfstoken", "DFS", "defis-network"],
+  ["emanateoneos", "EMT", "emanate"],
+  ["token.newdex", "DEX", "newdex-token"],
+  ["chexchexchex", "CHEX", "chex-token"],
+  ["everipediaiq", "IQ", "everipedia"],
+  ["eosiotptoken", "TPT", "token-pocket"],
+  ["core.ogx", "OGX", "organix"],
+]
 
 async function get_account_tvl(account) {
-  const response = await axios.default.post(EOSFLARE_ENDPOINT + "/v1/eosflare/get_account", {account});
-  const { token_value, balance_total, eos_price } = response.data.account;
-  return token_value + // sum of all alt tokens
-         balance_total * eos_price; // sum of EOS balance * price
+  let tvl = 0;
+  const price_feed = await simple_price(tokens.map(row => row[2]).join(","));
+  for ( const [ code, symbol, id ] of tokens ) {
+    const balance = await get_currency_balance(code, account, symbol);
+    tvl += balance * price_feed[id].usd;
+  }
+  return tvl;
 }
 
 // https://newdex.io
@@ -15,18 +37,12 @@ async function eos() {
   return await get_account_tvl("newdexpublic");
 }
 
-// https://bsc.newdex.io
-// project active on BSC, however no TVL
-async function bsc() {
-  return 0; // TODO FIX
-}
-
 async function fetch() {
-  return await eos() + await bsc();
+  return await eos();
 }
 
 module.exports = {
-  methodology: `NewDex TVL is achieved by querying token balances from NewDex's limit orderbook smart contract via https://eosflare.io/api.`,
+  methodology: `NewDex TVL is achieved by querying token balances from NewDex's limit orderbook smart contract.`,
   eos: {
     fetch: eos
   },
