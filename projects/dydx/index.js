@@ -43,4 +43,10 @@
   module.exports = {
     start: 1538179200,  // 09/29/2018 @ 12:00am (UTC)
     tvl,
+   hallmarks:[
+    [1611630974, "Series B Announcement - $10M"],
+    [1623726974, "Series C Announcement - $65M"],
+    [1627960574, "dydx Foundation Announced"],
+    [1632798974, "$250k Trading Competition Announced"],
+  ]
   };
