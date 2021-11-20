@@ -492,7 +492,7 @@ async function fetchBSC() {
 
 async function fetchPolygon() {
         var tvlPolygon = 0;
-        var price_feed = await retry(async bail => await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,weth,tether,usd-coin,mist,wrapped-bitcoin,blockbank,roseon-finance,dai,cream,chainlink,mantra-dao,rio-defi,compound-governance-token,aave,uniswap,sushi,havven,yearn-finance,dynamic-set-dollar,bondly,polkastarter,1inch,reserve-rights-token,royale,ftx-token,serum,balancer,curve-dao-token,uma,thorchain-erc20,frax,hegic,rhegic,88mph,zlot,zhegic,whiteheart,wrapped-nxm,renbtc,bancor,kyber-network,celsius-degree-token,cornichon,api3,matic-network,bao-finance,terrausd,lepricon,royale,finxflo,daoventures,the-graph,0x,omisego,injective-protocol,badger-dao,rook,utrust,alpha-finance,rari-governance-token,polkafoundry,raze-network,kylin-network,labs-group,paid-network,dragonbite,b-cube-ai,alpha-impact,media-licensing-token,refinable,wbnb,greenheart-cbd,enjincoin&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true'));
+        var price_feed = await retry(async bail => await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,weth,tether,usd-coin,mist,wrapped-bitcoin,blockbank,roseon-finance,dai,cream,chainlink,mantra-dao,rio-defi,compound-governance-token,aave,uniswap,sushi,havven,yearn-finance,dynamic-set-dollar,bondly,polkastarter,1inch,reserve-rights-token,royale,ftx-token,serum,balancer,curve-dao-token,uma,thorchain-erc20,frax,hegic,rhegic,88mph,zlot,zhegic,whiteheart,wrapped-nxm,renbtc,bancor,kyber-network,celsius-degree-token,cornichon,api3,matic-network,bao-finance,terrausd,lepricon,royale,finxflo,daoventures,the-graph,0x,omisego,injective-protocol,badger-dao,rook,utrust,alpha-finance,rari-governance-token,polkafoundry,raze-network,kylin-network,labs-group,paid-network,dragonbite,b-cube-ai,alpha-impact,media-licensing-token,refinable,wbnb,greenheart-cbd,gamestation,enjincoin&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true'));
 
         async function returnBalancePOLYGON(token, address) {
             let contract = new web3polygon.eth.Contract(abis.minABI, token);
@@ -516,7 +516,8 @@ async function fetchPolygon() {
 
         const stakingAssetsPOLYGON = [
             //OM staking
-            { contract: '0xCdD0f77A2A158B0C7cFe38d00443E9A4731d6ea6', token: '0xc3ec80343d2bae2f8e680fdadde7c17e71e114ea', price: 'mantra-dao'}
+            { contract: '0xCdD0f77A2A158B0C7cFe38d00443E9A4731d6ea6', token: '0xc3ec80343d2bae2f8e680fdadde7c17e71e114ea', price: 'mantra-dao'},
+            { contract: '0xd1ecDC553651daB068486d9c4d066eCDC614416e', token: '0x3f6b3595ecf70735d3f48d69b09c4e4506db3f47', price: 'gamestation'}
         ]
 
         // POLYGON  LP Staking

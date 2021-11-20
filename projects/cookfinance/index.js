@@ -67,5 +67,4 @@ module.exports = {
     pool2: ethPool2s,
     staking: staking(stakingPool, cookToken),
   },
-  tvl: ethTvl,
 };

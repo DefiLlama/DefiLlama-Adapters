@@ -1,6 +1,7 @@
 const { getChainTvl } = require('../helper/getUniSubgraphTvl');
 const sdk = require('@defillama/sdk')
 const {transformOptimismAddress, transformArbitrumAddress} = require('../helper/portedTokens')
+const oldOptPools = require('./oldUniPools.json')
 
 const graphUrls = {
   ethereum: "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3",
@@ -35,6 +36,13 @@ function chainTvl(chain) {
     const pairAddresses = []
     const token0Addresses = []
     const token1Addresses = []
+    if(chain === "optimism"){
+      for(const pool of oldOptPools){
+        token0Addresses.push(pool.token0)
+        token1Addresses.push(pool.token1)
+        pairAddresses.push(pool.newAddress)
+      }
+    }
     for (let log of logs) {
       token0Addresses.push(`0x${log.topics[1].substr(-40)}`.toLowerCase())
       token1Addresses.push(`0x${log.topics[2].substr(-40)}`.toLowerCase())
@@ -108,5 +116,4 @@ module.exports = {
   arbitrum: {
     tvl: chainTvl('arbitrum'),
   },
-  tvl: sdk.util.sumChainTvls(['ethereum', 'optimism', 'arbitrum'].map(chainTvl))
 }

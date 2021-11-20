@@ -108,7 +108,7 @@ const passedFile = path.resolve(process.cwd(), process.argv[2]);
     }
     await Promise.all(chains.map(async chain=>{
         if(chainsForBlocks.includes(chain) || chain === "ethereum"){
-            chainBlocks[chain] = (await getLatestBlockRetry(chain)).number
+            chainBlocks[chain] = (await getLatestBlockRetry(chain)).number - 10
         }
     }))
     const ethBlock = chainBlocks.ethereum

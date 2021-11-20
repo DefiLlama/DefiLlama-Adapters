@@ -7,7 +7,7 @@ function fetchChain(chainId) {
     let tvl = 0;
     const chain = response.data[chainId];
     for (vault in chain) {
-      tvl += chain[vault];
+      tvl += Number(chain[vault]);
     }
     if(tvl === 0){
       throw new Error(`chain ${chainId} tvl is 0`)
@@ -16,7 +16,6 @@ function fetchChain(chainId) {
     return tvl;
   }
 }
-
 
 async function fetch() {
   const response = await utils.fetchURL('https://api.beefy.finance/tvl?q=1666600000');
@@ -37,6 +36,9 @@ async function fetch() {
 }
 
 module.exports = {
+  cronos:{
+    fetch: fetchChain(25)
+  },
   bsc:{
     fetch: fetchChain(56)
   },
@@ -48,6 +50,9 @@ module.exports = {
   },
   fantom:{
     fetch: fetchChain(250)
+  },
+  moonriver:{
+    fetch: fetchChain(1285)
   },
   arbitrum:{
     fetch: fetchChain(42161)

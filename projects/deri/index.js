@@ -20,7 +20,7 @@ async function perpetualPool(block, chain, pool, balances, transform=a=>a) {
   const bTokens = (await sdk.api.abi.multiCall({
     calls: bTokenIds.map((bTokenId) => ({
       target: pool,
-      params: [bTokenId],
+      params: bTokenId,
     })),
     block,
     abi: abi['getBToken'],
@@ -50,37 +50,37 @@ async function perpetualPoolLite(block, chain, pool, token, balances, transform=
 let bscContracts = {
   'a' : {
     'bTokenSymbol': '0x4fabb145d64652a948d72533023f6e7a623c7c53',
-    'pool': '0x19c2655A0e1639B189FB0CF06e02DC0254419D92'
+    'pool': '0x4B439ABCBc736837D0F7f7A9C5619bF8fa650e15'
   },
   'b': {
     'bTokenSymbol': '0xe9e7cea3dedca5984780bafc599bd69add087d56',
-    'pool': '0x3465A2a1D7523DAF811B1abE63bD9aE36D2753e0',
+    'pool': '0xbC259DCA83b7EdD81b28BcCd1fee87d7b881785a',
     lite: true
   },
   'everlastingOption': {
     'bTokenSymbol': '0xe9e7cea3dedca5984780bafc599bd69add087d56',
-    'pool': '0xD5147D3d43BB741D8f78B2578Ba8bB141A834de4',
+    'pool': '0x6fEfdd54E0aA425F9B0E647d5BA6bF6d6f3F8Ab8',
     lite: true,
   },
   'deriPool': {
     'bTokenSymbol': '0xe60eaf5a997dfae83739e035b005a33afdcc6df5',
-    'pool': '0x1a9b1B83C4592B9F315E933dF042F53D3e7E4819',
+    'pool': '0x9e2f5E284BEEb2C955987eD1EbB2149494CC1e41',
     lite:true
   }
 };
 let polygonContracts = {
   'a': {
     'bTokenSymbol': '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
-    'pool': '0x43b4dfb998b4D17705EEBfFCc0380c6b98699252'
+    'pool': '0x6be39f5C04C837aE3c55bF19D10EC370c52Dc0ac'
   },
   'b': {
     'bTokenSymbol': '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
-    'pool': '0xb144cCe7992f792a7C41C2a341878B28b8A11984',
+    'pool': '0x9C0033D74618BC081Aca8b5E4bf64574a8C5960E',
     lite: true
   },
   'deriPool':{
     'bTokenSymbol': '0x3d1d2afd191b165d140e3e8329e634665ffb0e5e',
-    'pool': '0xa4eDe2C4CB210CD07DaFbCe56dA8d36b7d688cd0',
+    'pool': '0x29e9dC4634bd9a8930FF07f4Fa2E1479CDF5d17F',
     lite: true
   }
 };

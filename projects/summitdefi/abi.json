@@ -1,0 +1,146 @@
+{
+    "poolsCount": {
+        "inputs": [],
+        "name": "poolsCount",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "oasisPoolInfo": {
+        "inputs": [
+            {
+                "internalType": "uint16",
+                "name": "",
+                "type": "uint16"
+            }
+        ],
+        "name": "oasisPoolInfo",
+        "outputs": [
+            {
+                "internalType": "uint16",
+                "name": "pid",
+                "type": "uint16"
+            },
+            {
+                "internalType": "contract IBEP20",
+                "name": "token",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "supply",
+                "type": "uint256"
+            },
+            {
+                "internalType": "bool",
+                "name": "live",
+                "type": "bool"
+            },
+            {
+                "internalType": "uint256",
+                "name": "lastRewardTimestamp",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "accSummitPerShare",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint16",
+                "name": "feeBP",
+                "type": "uint16"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "elevationPoolInfo":{
+        "inputs": [
+            {
+                "internalType": "uint16",
+                "name": "",
+                "type": "uint16"
+            }
+        ],
+        "name": "elevationPoolInfo",
+        "outputs": [
+            {
+                "internalType": "uint16",
+                "name": "pid",
+                "type": "uint16"
+            },
+            {
+                "internalType": "bool",
+                "name": "launched",
+                "type": "bool"
+            },
+            {
+                "internalType": "bool",
+                "name": "live",
+                "type": "bool"
+            },
+            {
+                "internalType": "bool",
+                "name": "active",
+                "type": "bool"
+            },
+            {
+                "internalType": "contract IBEP20",
+                "name": "token",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "supply",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "lastRewardTimestamp",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "accSummitPerShare",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint16",
+                "name": "feeBP",
+                "type": "uint16"
+            },
+            {
+                "internalType": "uint8",
+                "name": "elevation",
+                "type": "uint8"
+            },
+            {
+                "internalType": "uint256",
+                "name": "roundRewards",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "symbol": {
+        "inputs": [],
+        "name": "symbol",
+        "outputs": [
+            {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+}
