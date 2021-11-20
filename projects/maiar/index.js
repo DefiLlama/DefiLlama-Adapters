@@ -56,10 +56,12 @@ const LiquidityQuery= gql`
 async function tvl(){
     const {pairs} = await request("https://graph.maiar.exchange/graphql", LiquidityQuery)
     const totalTvl = pairs.reduce((total, pair)=>{
-        if(pair.liquidityPoolTokenPriceUSD === "NaN"){
+        if(pair.firstTokenPriceUSD === "NaN" || pair.secondTokenPriceUSD === "NaN"){
             return total
         }
-        return total + (pair.liquidityPoolTokenPriceUSD * pair.info.totalSupply /1e18)
+        return total 
+        + (pair.firstTokenPriceUSD * pair.info.reserves0 / (10**(pair.firstToken.decimals)))
+        + (pair.secondTokenPriceUSD * pair.info.reserves1 / (10**(pair.secondToken.decimals))) 
     }, 0)
     return toUSDTBalances(totalTvl)
 }
