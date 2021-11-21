@@ -6,4 +6,4 @@ const bouje = "0x37F70aa9fEfc8971117BD53A1Ddc2372aa7Eec41"
 module.exports = {
   ...masterChefExports(chef, "fantom", bouje),
   methodology: "TVL includes all farms in MasterChef contract",
-} 
+}
