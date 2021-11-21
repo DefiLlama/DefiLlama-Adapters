@@ -60,7 +60,6 @@ function dodoPool2(stakingContract, lpToken, chain = "ethereum", transformAddres
 
 
 async function pool2BalanceFromMasterChef(balances, masterchef, token, block, chain = "ethereum", transformAddress=(addr)=>addr, poolInfoAbi = masterchefAbi.poolInfo) {
-
     let poolLength = (
         await sdk.api.abi.call({
         target: masterchef,

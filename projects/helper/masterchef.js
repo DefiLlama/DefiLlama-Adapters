@@ -132,15 +132,16 @@ function masterChefExports(masterchef, chain, stakingToken){
         return balances;
     };
     return {
-        staking:{
-          tvl: staking(masterchef, stakingToken, chain)
-        },
-        pool2: {
-          tvl: pool2BalanceFromMasterChefExports(masterchef, stakingToken, chain, addr=>`${chain}:${addr}`)
-        },
-        tvl
+        methodology: "TVL includes all farms in MasterChef contract",
+        [chain]:{
+            staking: staking(masterchef, stakingToken, chain),
+            pool2: pool2BalanceFromMasterChefExports(masterchef, stakingToken, chain, addr=>`${chain}:${addr}`),
+            tvl
+        }
     };
 }
+
+
 
 module.exports = {
     addFundsInMasterChef,
