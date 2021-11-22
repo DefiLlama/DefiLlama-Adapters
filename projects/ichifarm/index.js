@@ -6,11 +6,15 @@ const { staking } = require("../helper/staking");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 
-const stakingContract = "0x70605a6457B0A8fBf1EEE896911895296eAB467E";
+const Contracts = [
+  // StakingConract
+  "0x70605a6457B0A8fBf1EEE896911895296eAB467E",
+  //farmV1Contract
+  "0xcC50953A743B9CE382f423E37b07Efa6F9d9B000",
+  //farmV2Contract
+  "0x275dFE03bc036257Cd0a713EE819Dbd4529739c8",
+];
 const ICHI = "0x903bEF1736CDdf2A537176cf3C64579C3867A881";
-
-const farmV1Contract = "0xcC50953A743B9CE382f423E37b07Efa6F9d9B000";
-const farmV2Contract = "0x275dFE03bc036257Cd0a713EE819Dbd4529739c8";
 
 const ignoreAddresses = [
   "0x22c6289dB7E8EAB6aA12C35a044410327c4d9F93",
@@ -31,6 +35,12 @@ const oneTokensV1 = [
 const USDC = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
 const endpoint =
   "https://raw.githubusercontent.com/ichifarm/ichi/main/ichi-tokenlist.json";
+
+const Staking = async (...params) => {
+  for (const stakingContract of Contracts) {
+    return staking(stakingContract, ICHI)(...params);
+  }
+};
 
 const calc = async (block, balances, farm, poolLength, lpToken, lpBalance) => {
   const lengthOfPool = (
@@ -120,7 +130,7 @@ const ethTvl = async (block) => {
   await calc(
     block,
     balances,
-    farmV1Contract,
+    Contracts[1],
     abiFarm.poolLength,
     abiFarm.getPoolToken,
     abiFarm.getLPSupply
@@ -199,7 +209,7 @@ const ethTvl = async (block) => {
   await calc(
     block,
     balances,
-    farmV2Contract,
+    Contracts[2],
     abiFarm.poolLength,
     abiFarm.lpToken,
     abiFarm.getLPSupply
@@ -210,12 +220,9 @@ const ethTvl = async (block) => {
 module.exports = {
   misrepresentedTokens: true,
   ethereum: {
-    staking: staking(stakingContract, ICHI),
-    stakingFarmV1: staking(farmV1Contract, ICHI),
-    stakingFarmV2: staking(farmV2Contract, ICHI),
+    staking: Staking,
     tvl: ethTvl,
   },
-  tvl: sdk.util.sumChainTvls([ethTvl]),
   methodology:
     "We count liquidity on the oneTokens and Farm seccions through oneTokenfactor and Farm Contracts",
 };
