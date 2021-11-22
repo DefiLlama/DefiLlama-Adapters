@@ -75,6 +75,20 @@ async function fantom(timestamp, block, chainBlocks) {
     return balances
 }
 
+async function avax(timestamp, block, chainBlocks) {
+    const balances = {};
+    const chain = 'avax';
+    await sumTokens(balances, [
+        ["0x1B156C5c75E9dF4CAAb2a5cc5999aC58ff4F9090","0xfA19c1d104F4AEfb8d5564f02B3AdCa1b515da58"]
+    ], chainBlocks[chain], chain, addr=>{
+        if(addr === "0x1B156C5c75E9dF4CAAb2a5cc5999aC58ff4F9090") {
+            return "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"
+        }
+        return `${chain}:${addr}`
+    })
+    return balances;
+}
+
 module.exports = {
     methodology: 'TVL counts the AAVE tokens that are deposited within the Yield Instruments section of QiDao, the Vault token deposits of CRV, LINK, AAVE and WETH, as well as USDC deposited to mint MAI.',
     polygon: {
@@ -82,5 +96,8 @@ module.exports = {
     },
     fantom:{
         tvl: fantom
+    },
+    avax: {
+        tvl: avax
     }
 }

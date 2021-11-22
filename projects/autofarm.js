@@ -1,79 +1,22 @@
 const utils = require('./helper/utils');
+const {fetchChainExports} = require('./helper/exports');
 
-const bscEndpoint = "https://static.autofarm.network/bsc/farm_data.json"
-const polygonEndpoint = "https://static.autofarm.network/polygon/stats.json"
-const hecoEndpoint = "https://static.autofarm.network/heco/stats.json"
-const avaxEndpoint = "https://static.autofarm.network/avax/stats.json"
-const fantomEndpoint = "https://static.autofarm.network/fantom/stats.json"
+const transformChain = {
+  okexchain: 'okex',
+  avalanche: 'avax',
+}
 
-async function fantom() {
-  const data = await utils.fetchURL(fantomEndpoint)
+function chainTvl(chain){
+  return async()=>{
+    const data = await utils.fetchURL(`https://static.autofarm.network/${transformChain[chain] ?? chain}/stats.json`)
   return data.data.platformTVL
+  }
 }
 
-async function avax() {
-  const data = await utils.fetchURL(avaxEndpoint)
-  return data.data.platformTVL
-}
-
-async function polygon() {
-  const data = await utils.fetchURL(polygonEndpoint)
-  return data.data.platformTVL
-}
-
-async function heco() {
-  const data = await utils.fetchURL(hecoEndpoint)
-  return data.data.platformTVL
-}
-
-async function moonriver() {
-  const data = await utils.fetchURL("https://static.autofarm.network/moonriver/stats.json")
-  return data.data.platformTVL
-}
-
-async function okex() {
-  const data = await utils.fetchURL("https://static.autofarm.network/okex/stats.json")
-  return data.data.platformTVL
-}
-async function celo() {
-  const data = await utils.fetchURL("https://static.autofarm.network/celo/stats.json")
-  return data.data.platformTVL
-}
-
-async function bsc() {
-  var bscPools = await utils.fetchURL(bscEndpoint)
-  let tvl = Object.values(bscPools.data.pools).reduce((total, pool) => total + (pool.poolWantTVL || 0), 0)
-  return tvl
-}
-
-async function fetch() {
-  return (await polygon())+(await bsc())+(await heco())+(await avax())+(await fantom()) + (await moonriver()+(await okex())+(await celo()))
-}
-
-module.exports = {
-  bsc:{
-    fetch:bsc
-  },
-  polygon:{
-    fetch: polygon
-  },
-  heco:{
-    fetch: heco
-  },
-  avalanche:{
-    fetch: avax
-  },
-  fantom:{
-    fetch: fantom
-  },
-  moonriver:{
-    fetch: moonriver
-  },
-  okexchain:{
-    fetch: okex
-  },
-  celo:{
-    fetch: celo
-  },
-  fetch
-}
+module.exports=fetchChainExports(chainTvl, [
+  'bsc',       'polygon',
+  'heco',      'avalanche',
+  'fantom',    'moonriver',
+  'okexchain', 'celo',
+  'cronos',    'boba',
+])

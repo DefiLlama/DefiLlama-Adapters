@@ -96,7 +96,8 @@ async function tvl() {
 
   // fetch all normal tokens (tokens with coingecko IDs)
   for (const [coingeckoID, tokenAccounts] of Object.entries(coingeckoTokens)) {
-    const amount = await getTotalBalancesFromMultipleAccounts(tokenAccounts);
+    const amount =
+      (await getTotalBalancesFromMultipleAccounts(tokenAccounts)) / 10 ** 6;
     if (!tvlResult[coingeckoID]) {
       tvlResult[coingeckoID] = amount;
     } else {
@@ -105,7 +106,7 @@ async function tvl() {
   }
 
   // Run these serially to avoid rate limiting issues
-  for (const [sunnyPoolKey, tokenAccounts] of  Object.entries(sunnyPools)) {
+  for (const [sunnyPoolKey, tokenAccounts] of Object.entries(sunnyPools)) {
     const sunnyPool = SUNNY_POOLS.find(
       (pool) => pool.relevantAccounts.sunnyPool === sunnyPoolKey
     );

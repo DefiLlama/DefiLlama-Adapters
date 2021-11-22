@@ -10,7 +10,13 @@ const WBTC = '0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f';
 const USDC = '0xff970a61a04b1ca14834a43f5de4533ebddb5cc8';
 const USDT = '0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9';
 const LINK = '0xf97f4df75117a78c1a5a0dbb814af92458539fb4';
-const UNI = '0xfa7f8980b0f1e64a2062791cc3b0871572f1f7f0'; 
+const UNI = '0xfa7f8980b0f1e64a2062791cc3b0871572f1f7f0';
+const MIM = '0xfea7a6a0b346362bf88a9e4a88416b77a57d6c2a';
+const FRAX = '0x17fc002b466eec40dae837fc4be5c67993ddbd6f';
+const DAI = '0xda10009cbd5d07dd0cecc66161fc93d7c9000da1';
+//const AAVE = ''; Arbitrum address TBD
+const SPELL = '0x3e6648c5a70a150a88bce65f4ad4d506fe15d2af';
+const SUSHI = '0xd4d42f0b6def4ce0383636770ef773390d85c61a';
 // BSC
 const apiEndpoint = 'https://gambit-server-staging.uc.r.appspot.com/tokens'
 const pool = "0xc73A8DcAc88498FD4b4B1b2AaA37b0a2614Ff67B"
@@ -24,6 +30,12 @@ const arbitrumTVL = async (timestamp, block, chainBlocks) => {
     balances['tether'] = await balanceOf(USDT, VAULT, chainBlocks);
     balances['chainlink'] = await balanceOf(LINK, VAULT, chainBlocks);
     balances['uniswap'] = await balanceOf(UNI, VAULT, chainBlocks);
+    balances['magic-internet-money'] = await balanceOf(MIM, VAULT, chainBlocks);
+    balances['frax'] = await balanceOf(FRAX, VAULT, chainBlocks);
+    balances['dai'] = await balanceOf(DAI, VAULT, chainBlocks);
+    //balances['aave'] = await balanceOf(AAVE, VAULT, chainBlocks); Arbitrum address TBD
+    balances['spell-token'] = await balanceOf(SPELL, VAULT, chainBlocks);
+    balances['sushi'] = await balanceOf(SUSHI, VAULT, chainBlocks);
     
     return balances;
 }

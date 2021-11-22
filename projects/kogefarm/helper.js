@@ -22,6 +22,38 @@ function transformAddressKF(chain = 'polygon') {
       return `ethereum:0xdac17f958d2ee523a2206206994597c13d831ec7`
     }
     if (
+      // renbtc on Fantom
+      (chain === 'fantom' &&
+        addr.toLowerCase() === '0xdbf31df14b66535af65aac99c32e9ea844e14501')
+    ) {
+      // renbtc on Polygon
+      return `polygon:0xDBf31dF14B66535aF65AaC99C32e9eA844e14501`
+    }
+    if (
+      // staked spell on Fantom
+      (chain === 'fantom' &&
+        addr.toLowerCase() === '0xbb29d2a58d880af8aa5859e30470134deaf84f2b')
+    ) {
+      // spell on Fantom
+      return `fantom:0x468003B688943977e6130F4F68F23aad939a1040`
+    }
+    if (
+      // Dai on Fantom
+      (chain === 'fantom' &&
+        addr.toLowerCase() === '0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e')
+    ) {
+      // Dai on Eth
+      return `ethereum:0x6b175474e89094c44da98b954eedeac495271d0f`
+    }
+    if (
+      // wMemo on Fantom
+      (chain === 'fantom' &&
+        addr.toLowerCase() === '0xddc0385169797937066bbd8ef409b5b3c0dfeb52')
+    ) {
+      // Time on avax (per Wonderland docs, staked time = Memo at a 1:1 ratio)
+      return `avax:0xb54f16fb19478766a268f172c9480f8da1a7c9c3`
+    }
+    if (
       chain === 'moonriver' &&
       addr.toLowerCase() === '0x748134b5f553f2bcbd78c6826de99a70274bdeb3' // USDC.m
     ) {
@@ -79,6 +111,30 @@ function transformAddressKF(chain = 'polygon') {
     if (addr.toLowerCase() === '0xb3654dc3d10ea7645f8319668e8f54d2574fbdc8') {
       // LINK
       return `ethereum:0x514910771af9ca656af840dff83e8264ecf986ca`
+      // Special case for Bella, since coingecko doesn't find
+      if (
+        chain === 'polygon' &&
+        addr.toLowerCase() === '0x28c388fb1f4fa9f9eb445f0579666849ee5eeb42') {
+        return `ethereum:0xa91ac63d040deb1b7a5e4d4134ad23eb0ba07e14`
+      }
+      // Special case for SFI, since coingecko doesn't find
+      if (
+        chain === 'polygon' &&
+        addr.toLowerCase() === '0x35b937583f04a24963eb685f728a542240f28dd8') {
+        return `ethereum:0xb753428af26e81097e7fd17f40c88aaa3e04902c`
+      }
+      // Special case for Impermax, since coingecko doesn't find
+      if (
+        chain === 'polygon' &&
+        addr.toLowerCase() === '0x60bb3d364b765c497c8ce50ae0ae3f0882c5bd05') {
+        return `ethereum:0x7b35ce522cb72e4077baeb96cb923a5529764a00`
+      }
+      // Special case for Avax, since coingecko doesn't find
+      if (
+        chain === 'polygon' &&
+        addr.toLowerCase() === '0x2c89bbc92bd86f8075d1decc58c7f4e0107f286b') {
+        return `avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7`
+      }
     }
 
     return `${chain}:${addr}`
@@ -115,11 +171,13 @@ async function unwrapCrvLPs(
 ) {
   await Promise.all(
     lpPositions.map(async (lp) => {
+      const underlyingToken = lp.token
+      const underlyingTokenBalance = lp.balance
       try {
-        await unwrapCrv(balances, lp, block, chain, transformAddress, excludeTokensRaw)
+        await unwrapCrv(balances, underlyingToken, underlyingTokenBalance, block, chain, transformAddress, excludeTokensRaw)
       } catch (e) {
         console.log(
-          `Failed to get data for LP token at ${lpPosition.token} on chain ${chain}`,
+          `Failed to get data for Curve LP token at ${lp.token} on chain ${chain}`,
         )
         throw e
       }

@@ -1,5 +1,6 @@
 const { getChainTvl } = require('../helper/getUniSubgraphTvl');
 const sdk = require('@defillama/sdk')
+const {optimism} = require('../uniswapv3/index')
 
 const v1graph = getChainTvl({
   ethereum: 'https://api.thegraph.com/subgraphs/name/ianlapham/uniswap'
@@ -25,7 +26,12 @@ module.exports = {
   arbitrum:{
     tvl: v3Graphs('arbitrum')
   },
-  optimism:{
-    tvl: v3Graphs('optimism')
-  },
+  optimism,
+  hallmarks:[
+    [1598412107, "SushiSwap launch"],
+    [1599535307, "SushiSwap migration"],
+    [1600226507, "LM starts"],
+    [1605583307, "LM ends"],
+    [1617333707, "FEI launch"]
+  ]
 }

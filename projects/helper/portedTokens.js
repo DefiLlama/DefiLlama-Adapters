@@ -48,6 +48,12 @@ async function transformAvaxAddress() {
         if(compareAddresses(addr, "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7")){ //WAVAX
           return `avax:${addr}`
         }
+        if(compareAddresses(addr, "0xaf2c034c764d53005cc6cbc092518112cbd652bb")){ //qiAVAX
+            return `avax:0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7`
+        }
+        if(compareAddresses(addr, "0x57319d41F71E81F3c65F2a47CA4e001EbAFd4F33")){ //xJOE
+            return `avax:0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd`
+        }
         const srcToken = bridgeTokensOld.data.find(token => compareAddresses(token["Avalanche Token Address"], addr))
         if (srcToken !== undefined && srcToken["Ethereum Token Decimals"] === srcToken["Avalanche Token Decimals"]) {
             return srcToken["Ethereum Token Address"]
@@ -146,7 +152,7 @@ async function transformOkexAddress() {
 async function transformHecoAddress() {
   return (addr) => {
     if (addr.toLowerCase() == '0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c') {
-        return 'avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c';
+        return 'avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c'; 
     } else {
         return `heco:${addr}`;
     }
@@ -192,12 +198,23 @@ async function transformHarmonyAddress() {
     }
 }
 
+const optimismSynths = {
+    "0x8c6f28f2f1a3c87f0f938b96d27520d9751ec8d9": "0x57ab1ec28d129707052df4df418d58a2d46d5f51",
+    "0xc5db22719a06418028a40a9b5e9a7c02959d0d08": "0xbbc455cb4f1b9e4bfc4b73970d360c8f032efee6",
+    "0xe405de8f52ba7559f9df3c368500b6e6ae6cee49": "0x5e74c9036fb86bd7ecdcb084a0673efc32ea31cb",
+    "0x298b9b95708152ff6968aafd889c6586e9169f1d": "0xfe18be6b3bd88a2d2a7f928d00292e7a9963cfc6",
+}
+
 async function transformOptimismAddress() {
     const bridge = (await utils.fetchURL("https://static.optimism.io/optimism.tokenlist.json")).data.tokens
 
     return (addr) => {
         if(compareAddresses(addr, "0x4200000000000000000000000000000000000006")){
             return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+        }
+        const possibleSynth = optimismSynths[addr.toLowerCase()]
+        if(possibleSynth !== undefined){
+            return possibleSynth
         }
         const dstToken = bridge.find(token => compareAddresses(addr, token.address) && token.chainId === 10)
         if (dstToken !== undefined) {
@@ -258,6 +275,12 @@ function fixHarmonyBalances(balances){
             delete balances[representation]
         }
     }
+}
+
+async function transformIotexAddress() {
+    return (addr) => {
+      return `iotex:${addr}`;
+    };
 }
 
 async function transformKccAddress() {
@@ -327,4 +350,5 @@ module.exports = {
     transformKccAddress,
     transformArbitrumAddress,
     fixHarmonyBalances,
+    transformIotexAddress
 };
