@@ -1,5 +1,4 @@
-const { staking } = require('../helper/staking')
-const {sumTokensAndLPsSharedOwners} = require('../helper/unwrapLPs')
+const {sumTokensAndLPsSharedOwners, sumLPWithOnlyOneToken} = require('../helper/unwrapLPs')
 const {transformAvaxAddress} = require('../helper/portedTokens')
 const { stakingPricedLP } = require('../helper/staking')
 
@@ -10,21 +9,23 @@ const LP_TOKEN = "0xd3a6eebbe6f6d9197a7fc2aaaf94d8b0ec51f8a8";
 const STAKING_ADDRESS = "0xE4738791690AF507C8C7Bf5981ef541568C7C312"
 const COREASSETNAME = "magic-internet-money";
 const CHAIN = "avax";
+const MIM = "0x130966628846bfd36ff31a822705796e8cb8c18d"
 
 
 async function avaxTvl(time, ethBlock, chainBlocks){
     const balances = {}
     const transform = await transformAvaxAddress()
+    await sumLPWithOnlyOneToken(balances, "0xd3a6eebbe6f6d9197a7fc2aaaf94d8b0ec51f8a8", treasury, MIM, chainBlocks.avax, "avax", transform)
     await sumTokensAndLPsSharedOwners(balances, [
-        ["0x130966628846bfd36ff31a822705796e8cb8c18d", false],
-        ["0xd3a6eebbe6f6d9197a7fc2aaaf94d8b0ec51f8a8", true],
+        [MIM, false],
         ["0x50b7545627a5162f82a992c33b87adc75187b218", false]
     ], [treasury], chainBlocks.avax, "avax", transform)
     return balances
 }
 
 module.exports={
-    avax:{
+    misrepresentedTokens: true,
+    avalanche:{
         tvl: avaxTvl,
         staking: stakingPricedLP(STAKING_ADDRESS, PB_TOKEN, CHAIN, LP_TOKEN, COREASSETNAME, true),
     }

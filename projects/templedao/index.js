@@ -14,7 +14,6 @@ async function treasuryTvl() {
     balances,
     [
       [FRAX, false],
-      [TEMPLE, false],
     ],
     [templeTreasuryContract]
   );
