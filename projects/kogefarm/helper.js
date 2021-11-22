@@ -22,6 +22,22 @@ function transformAddressKF(chain = 'polygon') {
       return `ethereum:0xdac17f958d2ee523a2206206994597c13d831ec7`
     }
     if (
+      // renbtc on Fantom
+      (chain === 'fantom' &&
+        addr.toLowerCase() === '0xdbf31df14b66535af65aac99c32e9ea844e14501')
+    ) {
+      // renbtc on Polygon
+      return `polygon:0xDBf31dF14B66535aF65AaC99C32e9eA844e14501`
+    }
+    if (
+      // staked spell on Fantom
+      (chain === 'fantom' &&
+        addr.toLowerCase() === '0xbb29d2a58d880af8aa5859e30470134deaf84f2b')
+    ) {
+      // spell on Fantom
+      return `fantom:0x468003B688943977e6130F4F68F23aad939a1040`
+    }
+    if (
       // Dai on Fantom
       (chain === 'fantom' &&
         addr.toLowerCase() === '0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e')
