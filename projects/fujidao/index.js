@@ -46,14 +46,14 @@ const allMarketSupplies = async (contracts, block, chain) => {
             allMarkets.output = temp.concat(response);
         } 
     }
-    return allMarkets;
+    return allMarkets.output.reduce((t,v) => t.plus(v.output), BigNumber(0)).toFixed(0);
 }
 
 async function eth(_timestamp, block){
     const supplies = await allMarketSupplies(ethContracts, block, "ethereum");
 
     return {
-        [weth]: supplies.output.reduce((t,v) => t.plus(v.output), BigNumber(0)).toFixed(0)
+        [weth]: supplies
     }
 }
 
@@ -61,15 +61,21 @@ const fantomContracts = [
     {
         name: "F1155 Core",
         address: "0xB4E2eC87f8E6E166929A900Ed433c4589d721D70",
-        ids: [0, 2, 4]
+        ids: [0, 2]
     },
 ];
 
 async function fantom(_timestamp, ethBlock, chainBlocks){
-    const supplies = await allMarketSupplies(fantomContracts, chainBlocks.fantom, "fantom");
+    const ftmSupplies = await allMarketSupplies(fantomContracts, chainBlocks.fantom, "fantom");
+    const wbtcSupplies = await allMarketSupplies([{
+        name: "F1155 Core",
+        address: "0xB4E2eC87f8E6E166929A900Ed433c4589d721D70",
+        ids: [4]
+    }], chainBlocks.fantom, "fantom");
 
     return {
-        [ftm]: supplies.output.reduce((t,v) => t.plus(v.output), BigNumber(0)).toFixed(0)
+        [ftm]: ftmSupplies,
+        [wbtc]: wbtcSupplies,
     }
 }
 
