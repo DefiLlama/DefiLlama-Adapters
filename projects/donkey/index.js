@@ -271,9 +271,7 @@ async function fetch() {
   for(let i=0; i<ethMarkets.length; i++) {
     const market = ethMarkets[i];
     const contract = new web3.eth.Contract(DTokenAbi, market.contractAddress);
-    const totalSupply = await contract.methods.totalSupply().call() / 10 ** market.underlyingDecimals;
-    const exchangeRate = await contract.methods.exchangeRateCurrent().call() / 1e18;
-    const cash = totalSupply * exchangeRate;
+    const cash = await contract.methods.getCash().call() / 10 ** market.underlyingDecimals;
     const tvlKrw = cash * priceObj[market.underlyingSymbol];
     totalTvlKrw += tvlKrw;
   }
@@ -305,9 +303,7 @@ async function fetch() {
     const market = klaytnMarkets[i];
     const contract = new caver.klay.Contract(DTokenAbi, market.contractAddress);
 
-    const totalSupply = await contract.methods.totalSupply().call() / 10 ** market.underlyingDecimals;
-    const exchangeRate = await contract.methods.exchangeRateCurrent().call() / 1e18;
-    const cash = totalSupply * exchangeRate;
+    const cash = await contract.methods.getCash().call() / 10 ** market.underlyingDecimals;
 
     const tvlKrw = cash * klaytnPriceObj[market.underlyingSymbol];
     totalTvlKrw += tvlKrw
