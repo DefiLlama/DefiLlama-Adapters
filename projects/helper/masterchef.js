@@ -59,7 +59,7 @@ function isLP(symbol) {
 
 async function addFundsInMasterChef(balances, masterChef, block, chain = 'ethereum', transformAddress = id => id, poolInfoAbi = abi.poolInfo, ignoreAddresses = [], includeLPs = true, excludePool2 = false, stakingToken = undefined) {
     const poolInfo = await getPoolInfo(masterChef, block, chain, poolInfoAbi)
-    const [symbols, tokenBalances] = await getPoolInfo(masterChef, block, chain, poolInfo);
+    const [symbols, tokenBalances] = await getSymbolsAndBalances(masterChef, block, chain, poolInfo);
 
     const lpPositions = [];
     const lpTokens = [];
@@ -237,5 +237,7 @@ function masterChefExports(masterChef, chain, stakingTokenRaw) {
 
 module.exports = {
     addFundsInMasterChef,
-    masterChefExports
+    masterChefExports,
+    getPoolInfo,
+    isLP,
 }
