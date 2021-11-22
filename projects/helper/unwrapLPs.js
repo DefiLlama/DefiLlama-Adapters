@@ -499,6 +499,22 @@ async function sumLPWithOnlyOneToken(balances, lpToken, owner, listedToken, bloc
     )
 }
 
+async function sumLPWithOnlyOneTokenOtherThanKnown(balances, lpToken, owner, tokenNotToUse, block, chain = "ethereum", transformAddress=id=>id){
+    const [token0, token1] = await Promise.all([token0Abi, token1Abi]
+        .map(abi=>sdk.api.abi.call({
+            target: lpToken,
+            abi,
+            chain,
+            block
+        }).then(o=>o.output))
+    )
+    let listedToken = token0
+    if(tokenNotToUse.toLowerCase() === listedToken.toLowerCase()){
+        listedToken = token1
+    }
+    await sumLPWithOnlyOneToken(balances, lpToken, owner, listedToken, block, chain, transformAddress)
+}
+
 
 /*
 tokens [
@@ -649,5 +665,6 @@ module.exports = {
     sumBalancerLps,
     unwrapCreamTokens,
     sumLPWithOnlyOneToken,
-    sumTokensSharedOwners
+    sumTokensSharedOwners,
+    sumLPWithOnlyOneTokenOtherThanKnown
 }
