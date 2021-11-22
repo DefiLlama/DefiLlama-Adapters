@@ -261,14 +261,10 @@ async function fetchETH() {
             ['0xa8e31aD81D609ff616645849987feF30A3FfABd9', 'frax'],
             // zenHEGIC -
             ['0x15Fcfd53fec9B72cF3725649F3eC4603077ad21e', 'hegic'],
-            // zenrHEGIC -
-            ['0xB15e13Bc622315E29A7142fea3d0c67464B44e97', 'rhegic'],
             // zenMPH -
             ['0x4dD6D5D861EDcD361455b330fa28c4C9817dA687', '88mph'],
             // zenzLOT -
             ['0x8eC3E4978E531565A46C22fbE0423Be1BB8E1156', 'zlot'],
-            // zenzHEGIC -
-            ['0x0C91F1795e012BCEF586C925F747f23B0969B5eA', 'zhegic'],
             // zenWHITE -
             ['0xE3334e66634acF17B2b97ab560ec92D6861b25fa', 'whiteheart'],
             // zenWNXM -
