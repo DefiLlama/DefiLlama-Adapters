@@ -90,8 +90,7 @@ async function eth_tvl(timestamp, block) {
   return balances;
 }
 
-// const suter_bnb_shield_tvl_api = "https://data-platform.suterusu.io/public_api/suter_bnb_tvls"
-let total_bnb_tvl = 0;
+// let total_bnb_tvl = 0;
 async function bsc_tvl(timestamp, block) {
   let balances = {};
   let pools = {[BNB_COIN]: [SUTER_BNB_V1, SUTER_BNB_V2], [BUSD_COIN]: [SUTER_BUSD_V1, SUTER_BUSD_V2], [CAKE_COIN]: [SUTER_CAKE_V1, SUTER_CAKE_V2], [BAKE_COIN]: [SUTER_BAKE_V1, SUTER_BAKE_V2], [BSC_SUTER_COIN]: [BSC_SUTER_SUTER_V1, BSC_SUTER_SUTER_V2], [XSUTER_COIN]: [BSC_SUTER_XSUTER_V1, BSC_SUTER_XSUTER_V2]};
@@ -117,14 +116,12 @@ async function bsc_tvl(timestamp, block) {
       //   chain: 'bsc'
       // });
       
-      var bnb_tvl = await utils.returnBnbBalance(pool);
-
-      total_bnb_tvl = bnb_tvl + total_bnb_tvl;
+      // total_bnb_tvl = bnb_tvl + total_bnb_tvl;
     }
   }
-
-  // const data = (await utils.fetchURL(suter_bnb_shield_tvl_api)).data;
-  balances[`bsc:${BNB_COIN}`] = new BigNumber(total_bnb_tvl).times(10**18);
+  const suter_bnb_shield_tvl_api = "https://data-platform.suterusu.io/public_api/suter_bnb_tvls"
+  const data = (await utils.fetchURL(suter_bnb_shield_tvl_api)).data;
+  balances[`bsc:${BNB_COIN}`] = new BigNumber(parseFloat(data["tvl"])).times(10**18);
   return balances;
 }
 
