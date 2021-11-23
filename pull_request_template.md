@@ -1,4 +1,4 @@
-##### Twitter Link:https://meet.google.com/izs-ifhe-gve?authuser=1
+##### Twitter Link:https://twitter.com/PlayCrabada
 
 
 ##### List of audit links if any: https://github.com/verichains/public-audit-reports/blob/main/Verichains%20Public%20Audit%20Report%20-%20Crabada%20Game%20-%20v1.1.pdf https://github.com/verichains/public-audit-reports/blob/main/Verichains%20Public%20Audit%20Report%20-%20Crabada%20Sale%20-%20v1.2.pdf
