@@ -4,6 +4,7 @@ const utils = require("../helper/utils");
 const { unwrapUniswapLPs, unwrapCrv } = require("../helper/unwrapLPs");
 const { getChainTransform } = require("../helper/portedTokens");
 const { chainExports } = require("../helper/exports");
+const { toUSDT, usdtAddress } = require("../helper/balances");
 
 const excluded = ["pbamm", "pickle-eth", "sushi-pickle-eth"]
 const jars_url =
@@ -19,8 +20,7 @@ function chainTvl(chain){
     .map(jar => {
       if (jar.network === (chain==="ethereum"?'eth':chain))
         return {
-          jarAddress: jar.jarAddress,
-          tokenAddress: jar.tokenAddress,
+          ...jar,
           name: jar.identifier
         };
     })
@@ -42,7 +42,13 @@ function chainTvl(chain){
 
   await Promise.all(
     jars.map(async (jar, idx) => {
-      if (jar.name.toLowerCase().includes("crv") && jar.name != "yvecrv-eth") {
+      if((jar.name.includes("crv") || jar.name === "dodohndeth") && chain === "arbitrum" || jar.name === "rbn-eth"){
+        sdk.util.sumSingleBalance(
+          balances,
+          usdtAddress,
+          toUSDT(jar.liquidity_locked)
+        );
+      } else if (jar.name.toLowerCase().includes("crv") && jar.name != "yvecrv-eth") {
         await unwrapCrv(
           balances,
           jar.tokenAddress,

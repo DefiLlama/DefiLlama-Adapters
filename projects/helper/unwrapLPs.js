@@ -1,8 +1,10 @@
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 const token0 = require('./abis/token0.json')
+const {getPoolTokens, getPoolId} = require('./abis/balancer.json')
 const getPricePerShare = require('./abis/getPricePerShare.json')
 const {requery} = require('./requery')
+const creamAbi = require('./abis/cream.json')
 
 const crvPools = {
     '0x6c3f90f043a72fa612cbac8115ee7e52bde6e490': {
@@ -137,6 +139,109 @@ const crvPools = {
           "0xDBf31dF14B66535aF65AaC99C32e9eA844e14501"
         ]
       },
+    // tricryptoCRV v1 Polygon
+    "0x8096ac61db23291252574D49f036f0f9ed8ab390": {
+        swapContract: "0x751B1e21756bDbc307CBcC5085c042a0e9AaEf36",
+        underlyingTokens: [
+          "0x28424507fefb6f7f8e9d3860f56504e4e5f5f390",
+          "0x5c2ed810328349100a66b82b78a1791b101c9d61",
+          "0xe7a24ef0c5e95ffb0f6684b813a78f2a3ad7d171"
+        ]
+      },
+    // tricryptoCRV v2 Polygon
+    "0xbece5d20a8a104c54183cc316c8286e3f00ffc71": {
+        swapContract: "0x92577943c7aC4accb35288aB2CC84D75feC330aF",
+        underlyingTokens: [
+          "0x28424507fefb6f7f8e9d3860f56504e4e5f5f390",
+          "0x5c2ed810328349100a66b82b78a1791b101c9d61",
+          "0xe7a24ef0c5e95ffb0f6684b813a78f2a3ad7d171"
+        ]
+      },
+    // tricryptoCRV v3 Polygon
+    "0xdad97f7713ae9437fa9249920ec8507e5fbb23d3": {
+        swapContract: "0x92215849c439e1f8612b6646060b4e3e5ef822cc",
+        underlyingTokens: [
+          "0x28424507fefb6f7f8e9d3860f56504e4e5f5f390",
+          "0x5c2ed810328349100a66b82b78a1791b101c9d61",
+          "0xe7a24ef0c5e95ffb0f6684b813a78f2a3ad7d171"
+        ]
+      },
+    // gondolaDAIeUSDTe Avax
+    "0xd7d4a4c67e9c1f5a913bc38e87e228f4b8820e8a": {
+        swapContract: "0xCF97190fAAfea63523055eBd139c008cdb4468eB",
+        underlyingTokens: [
+        "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70",
+        "0xc7198437980c041c805a1edcba50c1ce5db95118"
+        ]
+    },
+    // gondolaYAKPool Avax
+    "0x7f1e6a8730fec77f27daeecd82e1941518383a62": {
+        swapContract: "0xd72Dc856868f964D37D01CeA7A7a3c1F4da4F98f",
+        underlyingTokens: [
+            "0xddaaad7366b455aff8e7c82940c43ceb5829b604",
+            "0x59414b3089ce2af0010e7523dea7e2b35d776ec7"
+        ]
+    },
+    // gondolaUSDCe Avax
+    "0x4dc5a6308338e540aa97faab7fd2e03876075413": {
+        swapContract: "0x4b941276eb39d114c89514791d073a085acba3c0",
+        underlyingTokens: [
+            "0xc7198437980c041c805a1edcba50c1ce5db95118",
+            "0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664"
+        ]
+    },
+    // av3CRV Avax
+    "0x1337bedc9d22ecbe766df105c9623922a27963ec": {
+        swapContract: "0x7f90122BF0700F9E7e1F688fe926940E8839F353",
+        underlyingTokens: [
+          "0x47AFa96Cdc9fAb46904A55a6ad4bf6660B53c38a",
+          "0x46A51127C3ce23fb7AB1DE06226147F446e4a857",
+          "0x532E6537FEA298397212F09A61e03311686f548e"
+        ]
+      },
+    // MIM-fUSDT-USDC Fantom
+    "0x2dd7c9371965472e5a5fd28fbe165007c61439e1": {
+        swapContract: "0x2dd7C9371965472E5A5fD28fbE165007c61439E1",
+        underlyingTokens: [
+            "0x82f0B8B456c1A451378467398982d4834b6829c1",
+            "0x049d68029688eAbF473097a2fC38ef61633A3C7A",
+            "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75"
+        ]
+    },
+    // Dai-Usdc Fantom
+    "0x27e611fd27b276acbd5ffd632e5eaebec9761e40": {
+        swapContract: "0x27E611FD27b276ACbd5Ffd632E5eAEBEC9761E40",
+        underlyingTokens: [
+            "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75",
+            "0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E"
+        ]
+    },
+    // gDai-gUSDC-gUSDT Fantom
+    "0xd02a30d33153877bc20e5721ee53dedee0422b2f": {
+        swapContract: "0x0fa949783947Bf6c1b171DB13AEACBB488845B3f",
+        underlyingTokens: [
+            "0x940F41F0ec9ba1A34CF001cc03347ac092F5F6B5",
+            "0x07E6332dD090D287d3489245038daF987955DCFB",
+            "0xe578C856933D8e1082740bf7661e379Aa2A30b26"
+        ]
+    },
+    // tricrypto Fantom
+    "0x58e57ca18b7a47112b877e31929798cd3d703b0f": {
+        swapContract: "0x3a1659Ddcf2339Be3aeA159cA010979FB49155FF",
+        underlyingTokens: [
+            "0x74b23882a30290451A17c44f4F05243b6b58C76d",
+            "0x321162Cd933E2Be498Cd2267a90534A804051b11",
+            "0x049d68029688eAbF473097a2fC38ef61633A3C7A"
+        ]
+    },
+    // btc-renbtc Fantom
+    "0x5b5cfe992adac0c9d48e05854b2d91c73a003858": {
+        swapContract: "0x3eF6A01A0f81D6046290f3e2A8c5b843e738E604",
+        underlyingTokens: [
+            "0xDBf31dF14B66535aF65AaC99C32e9eA844e14501",
+            "0x321162Cd933E2Be498Cd2267a90534A804051b11"
+        ]
+    },
 }
 const yearnVaults = {
     // yvToken: underlying, eg yvYFI:YFI
@@ -156,30 +261,31 @@ const yearnVaults = {
     "0x27b7b1ad7288079a66d12350c828d3c00a6f07d7": "0x5282a4ef67d9c33135340fb3289cc1711c13638c",
 }
 async function unwrapYearn(balances, yToken, block, chain = "ethereum", transformAddress=(addr)=>addr) {
-    if (yearnVaults[yToken.toLowerCase()] == undefined) { return; };
+    //if (yearnVaults[yToken.toLowerCase()] == undefined) { return; };
     const underlying = yearnVaults[yToken.toLowerCase()];
 
     let pricePerShare = await sdk.api.abi.call({
         target: yToken,
-        abi: getPricePerShare[1], 
+        abi: getPricePerShare[1],
         block: block,
         chain: chain
     });
     if (pricePerShare == undefined) {
         pricePerShare = await sdk.api.abi.call({
             target: yToken,
-            abi: getPricePerShare[0], 
+            abi: getPricePerShare[0],
             block: block,
             chain: chain
         });
     };
-    
-    sdk.util.sumSingleBalance(balances, transformAddress(underlying), 
-        balances[yToken] * pricePerShare.output / 10 ** 
+
+    sdk.util.sumSingleBalance(balances, transformAddress(underlying),
+        balances[yToken] * pricePerShare.output / 10 **
         (await sdk.api.erc20.decimals(underlying, chain)).output);
     delete balances[yToken];
 };
-async function unwrapCrv(balances, crvToken, balance3Crv, block, chain = "ethereum", transformAddress=(addr)=>addr) {
+async function unwrapCrv(balances, crvToken, balance3Crv, block, chain = "ethereum", transformAddress=(addr)=>addr, excludeTokensRaw=[]) {
+    const excludeTokens = excludeTokensRaw.map(addr=>addr.toLowerCase())
     if(crvPools[crvToken.toLowerCase()] === undefined){
         return
     }
@@ -206,58 +312,78 @@ async function unwrapCrv(balances, crvToken, balance3Crv, block, chain = "ethere
     }
     const resolvedCrvTotalSupply = (await crvTotalSupply).output
     underlyingSwapTokens.forEach(call => {
+        if (excludeTokens.includes(call.input.target.toLowerCase())) {
+            return;
+        }
         const underlyingBalance = BigNumber(call.output).times(balance3Crv).div(resolvedCrvTotalSupply);
         sdk.util.sumSingleBalance(balances, transformAddress(call.input.target), underlyingBalance.toFixed(0))
     })
 }
+
+const lpReservesAbi = { "constant": true, "inputs": [], "name": "getReserves", "outputs": [{ "internalType": "uint112", "name": "_reserve0", "type": "uint112" }, { "internalType": "uint112", "name": "_reserve1", "type": "uint112" }, { "internalType": "uint32", "name": "_blockTimestampLast", "type": "uint32" }], "payable": false, "stateMutability": "view", "type": "function" }
+const lpSuppliesAbi = {"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}
+const token0Abi =  {"constant":true,"inputs":[],"name":"token0","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"}
+const token1Abi = {"constant":true,"inputs":[],"name":"token1","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"}
+
 /* lpPositions:{
     balance,
     token
 }[]
 */
-async function unwrapUniswapLPs(balances, lpPositions, block, chain='ethereum', transformAddress=(addr)=>addr, excludeTokensRaw = []) {
+async function unwrapUniswapLPs(balances, lpPositions, block, chain='ethereum', transformAddress=(addr)=>addr, excludeTokensRaw = [], retry = false) {
     const excludeTokens = excludeTokensRaw.map(addr=>addr.toLowerCase())
     const lpTokenCalls = lpPositions.map(lpPosition=>({
         target: lpPosition.token
     }))
     const lpReserves = sdk.api.abi.multiCall({
         block,
-        abi: { "constant": true, "inputs": [], "name": "getReserves", "outputs": [{ "internalType": "uint112", "name": "_reserve0", "type": "uint112" }, { "internalType": "uint112", "name": "_reserve1", "type": "uint112" }, { "internalType": "uint32", "name": "_blockTimestampLast", "type": "uint32" }], "payable": false, "stateMutability": "view", "type": "function" },
+        abi: lpReservesAbi,
         calls: lpTokenCalls,
         chain
     })
     const lpSupplies = sdk.api.abi.multiCall({
         block,
-        abi: {"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},
+        abi: lpSuppliesAbi,
         calls: lpTokenCalls,
         chain
       })
       const tokens0 = sdk.api.abi.multiCall({
         block,
-        abi: {"constant":true,"inputs":[],"name":"token0","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},
+        abi:token0Abi,
         calls: lpTokenCalls,
         chain
       })
       const tokens1 = sdk.api.abi.multiCall({
         block,
-        abi: {"constant":true,"inputs":[],"name":"token1","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},
+        abi:token1Abi,
         calls: lpTokenCalls,
         chain
       })
+      if(retry){
+        await Promise.all([
+            [lpReserves, lpReservesAbi],
+            [lpSupplies, lpSuppliesAbi],
+            [tokens0, token0Abi],
+            [tokens1, token1Abi]
+        ].map(async call=>{
+            await requery(await call[0], chain, block, call[1])
+        }))
+      }
       await Promise.all(lpPositions.map(async lpPosition => {
         try{
             const lpToken = lpPosition.token
             const token0 = (await tokens0).output.find(call=>call.input.target === lpToken).output.toLowerCase()
             const token1 = (await tokens1).output.find(call=>call.input.target === lpToken).output.toLowerCase()
-            if(excludeTokens.includes(token0) || excludeTokens.includes(token1)){
-                return
-            }
             const supply = (await lpSupplies).output.find(call=>call.input.target === lpToken).output
             const {_reserve0, _reserve1} = (await lpReserves).output.find(call=>call.input.target === lpToken).output
-            const token0Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve0)).div(BigNumber(supply))
-            sdk.util.sumSingleBalance(balances, await transformAddress(token0), token0Balance.toFixed(0))
-            const token1Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve1)).div(BigNumber(supply))
-            sdk.util.sumSingleBalance(balances, await transformAddress(token1), token1Balance.toFixed(0))
+            if(!excludeTokens.includes(token0)){
+                const token0Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve0)).div(BigNumber(supply))
+                sdk.util.sumSingleBalance(balances, await transformAddress(token0), token0Balance.toFixed(0))
+            }
+            if(!excludeTokens.includes(token1)){
+                const token1Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve1)).div(BigNumber(supply))
+                sdk.util.sumSingleBalance(balances, await transformAddress(token1), token1Balance.toFixed(0))
+            }
           } catch(e){
               console.log(`Failed to get data for LP token at ${lpPosition.token} on chain ${chain}`)
               throw e
@@ -341,6 +467,55 @@ async function sumTokensAndLPsSharedOwners(balances, tokens, owners, block, chai
     }
 }
 
+async function sumTokensSharedOwners(balances, tokens, owners, block, chain = "ethereum", transformAddress){
+    if(transformAddress===undefined){
+        transformAddress = addr=>`${chain}:${addr}`
+    }
+    await sumTokensAndLPsSharedOwners(balances, tokens.map(t=>[t,false]), owners, block, chain, transformAddress)
+}
+
+async function sumLPWithOnlyOneToken(balances, lpToken, owner, listedToken, block, chain = "ethereum", transformAddress=id=>id){
+    const [balanceOfLP, balanceOfTokenListedInLP, lpSupply] = await Promise.all([
+        sdk.api.erc20.balanceOf({
+            target: lpToken,
+            owner,
+            block,
+            chain
+        }),
+        sdk.api.erc20.balanceOf({
+            target: listedToken,
+            owner: lpToken,
+            block,
+            chain
+        }),
+        sdk.api.erc20.totalSupply({
+            target: lpToken,
+            block,
+            chain
+        }),
+    ])
+    sdk.util.sumSingleBalance(balances, transformAddress(listedToken), 
+        BigNumber(balanceOfLP.output).times(balanceOfTokenListedInLP.output).div(lpSupply.output).times(2).toFixed(0)
+    )
+}
+
+async function sumLPWithOnlyOneTokenOtherThanKnown(balances, lpToken, owner, tokenNotToUse, block, chain = "ethereum", transformAddress=id=>id){
+    const [token0, token1] = await Promise.all([token0Abi, token1Abi]
+        .map(abi=>sdk.api.abi.call({
+            target: lpToken,
+            abi,
+            chain,
+            block
+        }).then(o=>o.output))
+    )
+    let listedToken = token0
+    if(tokenNotToUse.toLowerCase() === listedToken.toLowerCase()){
+        listedToken = token1
+    }
+    await sumLPWithOnlyOneToken(balances, lpToken, owner, listedToken, block, chain, transformAddress)
+}
+
+
 /*
 tokens [
     [token, owner, isLP] - eg ["0xaaa", "0xbbb", true]
@@ -372,6 +547,55 @@ async function sumTokensAndLPs(balances, tokens, block, chain = "ethereum", tran
     await unwrapUniswapLPs(balances, lpBalances, block, chain, transformAddress)
 }
 
+const balancerVault = "0xBA12222222228d8Ba445958a75a0704d566BF2C8"
+async function sumBalancerLps(balances, tokensAndOwners, block, chain, transformAddress){
+    const poolIds = sdk.api.abi.multiCall({
+        calls: tokensAndOwners.map(t => ({
+            target: t[0]
+        })),
+        abi: getPoolId,
+        block,
+        chain
+    })
+    const balancerPoolSupplies = sdk.api.abi.multiCall({
+        calls: tokensAndOwners.map(t => ({
+            target: t[0]
+        })),
+        abi: 'erc20:totalSupply',
+        block,
+        chain
+    })
+    const balanceOfTokens = sdk.api.abi.multiCall({
+        calls: tokensAndOwners.map(t => ({
+            target: t[0],
+            params: t[1]
+        })),
+        abi: 'erc20:balanceOf',
+        block,
+        chain
+    });
+    const balancerPoolsPromise = sdk.api.abi.multiCall({
+        calls: (await poolIds).output.map(o => ({
+            target: balancerVault,
+            params: o.output
+        })),
+        abi: getPoolTokens,
+        block,
+        chain
+    })
+    const [poolSupplies, tokenBalances, balancerPools] = await Promise.all([balancerPoolSupplies, balanceOfTokens, balancerPoolsPromise])
+    tokenBalances.output.forEach((result, idx)=>{
+        const lpBalance = result.output
+        const balancerPool = balancerPools.output[idx].output
+        const supply = poolSupplies.output[idx].output
+        balancerPool.tokens.forEach((token, tokenIndex)=>{
+            const tokensInPool = balancerPool.balances[tokenIndex]
+            const underlyingBalance = BigNumber(tokensInPool).times(lpBalance).div(supply)
+            sdk.util.sumSingleBalance(balances, transformAddress(token), underlyingBalance.toFixed(0));
+        })
+    })
+}
+
 /*
 tokensAndOwners [
     [token, owner] - eg ["0xaaa", "0xbbb"]
@@ -394,6 +618,41 @@ async function sumTokens(balances, tokensAndOwners, block, chain = "ethereum", t
     })
 }
 
+async function unwrapCreamTokens(balances, tokensAndOwners, block, chain = "ethereum", transformAddress=id=>id){
+    const [balanceOfTokens, exchangeRates, underlyingTokens] = await Promise.all([
+        sdk.api.abi.multiCall({
+            calls: tokensAndOwners.map(t => ({
+                target: t[0],
+                params: t[1]
+            })),
+            abi: 'erc20:balanceOf',
+            block,
+            chain
+        }),
+        sdk.api.abi.multiCall({
+            calls: tokensAndOwners.map(t => ({
+                target: t[0],
+            })),
+            abi: creamAbi.exchangeRateStored,
+            block,
+            chain
+        }),
+        sdk.api.abi.multiCall({
+            calls: tokensAndOwners.map(t => ({
+                target: t[0],
+            })),
+            abi: creamAbi.underlying,
+            block,
+            chain
+        })
+    ])
+    balanceOfTokens.output.forEach((balanceCall, i)=>{
+        const underlying = underlyingTokens.output[i].output
+        const balance = BigNumber(balanceCall.output).times(exchangeRates.output[i].output).div(1e18).toFixed(0)
+        sdk.util.sumSingleBalance(balances, transformAddress(underlying), balance)
+    })
+}
+
 module.exports = {
     unwrapYearn,
     unwrapCrv,
@@ -402,5 +661,10 @@ module.exports = {
     sumTokensAndLPsSharedOwners,
     addBalanceOfTokensAndLPs,
     sumTokensAndLPs,
-    sumTokens
+    sumTokens,
+    sumBalancerLps,
+    unwrapCreamTokens,
+    sumLPWithOnlyOneToken,
+    sumTokensSharedOwners,
+    sumLPWithOnlyOneTokenOtherThanKnown
 }

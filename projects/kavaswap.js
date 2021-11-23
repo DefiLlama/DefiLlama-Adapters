@@ -1,8 +1,16 @@
 const utils = require('./helper/utils');
+const sdk = require('@defillama/sdk')
 
 async function tvl(timestamp, ethBlock, chainBlocks) {
     let balances = {};
-    const response = await utils.fetchURL('https://api.data.kava.io/swap/pools');
+    let url = `https://api.data.kava.io/swap/pools`
+    if(Math.abs(Date.now()/1000 - timestamp) > 3600){
+        const block = await sdk.api.util.lookupBlock(timestamp, {chain:'kava'})
+        url += `?height=${block.block}`
+    }
+
+    const response = await utils.fetchURL(url);
+
     for (let pool of response.data.result) {
         for (let coin of pool.coins) {
             let tokenInfo = generic(coin.denom);
@@ -13,7 +21,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
             };
         };
     };
-    return balances;
+return balances;
 }
 function generic(ticker) {
     switch(ticker) {
@@ -30,4 +38,4 @@ function generic(ticker) {
 
 module.exports = {
     tvl
-  }
+}

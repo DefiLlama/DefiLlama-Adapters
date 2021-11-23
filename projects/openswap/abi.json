@@ -1,0 +1,66 @@
+{
+    "poolInfo": {
+        "name": "poolInfo",
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "type": "uint256",
+                "name": ""
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "outputs": [
+            {
+                "type": "address",
+                "name": "lpToken",
+                "internalType": "contract IERC20"
+            },
+            {
+                "type": "uint256",
+                "internalType": "uint256",
+                "name": "allocPoint"
+            },
+            {
+                "internalType": "uint256",
+                "name": "lastRewardBlock",
+                "type": "uint256"
+            },
+            {
+                "type": "uint256",
+                "internalType": "uint256",
+                "name": "accSushiPerShare"
+            }
+        ]
+    },
+    "poolLength": {
+        "type": "function",
+        "inputs": [],
+        "outputs": [
+            {
+                "type": "uint256",
+                "name": "",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "name": "poolLength",
+        "constant": true,
+        "signature": "0x081e3eda"
+    },
+    "symbol": {
+        "constant": true,
+        "inputs": [],
+        "name": "symbol",
+        "outputs": [
+            {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    }
+}

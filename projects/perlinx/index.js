@@ -80,7 +80,6 @@ async function tvl(timestamp, block) {
     })).output;
 
     _.each(synthBalances, (balanceOf) => {
-        if (balanceOf.success) {
             let balance = balanceOf.output;
             let address = balanceOf.input.target;
 
@@ -89,7 +88,6 @@ async function tvl(timestamp, block) {
             }
 
             balances[address] = BigNumber(balances[address] || 0).plus(balance).toFixed();
-        }
     });
     return balances;
 }
@@ -99,9 +97,6 @@ async function tvl(timestamp, block) {
   ==================================================*/
 
 module.exports = {
-    name: 'PerlinX',
-    token: null,
-    category: 'derivatives',
     start: 1600905600,
     tvl
 }

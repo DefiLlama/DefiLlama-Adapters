@@ -117,7 +117,7 @@ module.exports = {
   staking: {
     tvl: staking(VaultBlizz, BLIZZ, "avax"),
   },
-  avax: {
+  avalanche: {
     tvl: avaxTvl,
   },
   tvl: sdk.util.sumChainTvls([avaxTvl]),

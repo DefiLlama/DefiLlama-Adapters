@@ -16,9 +16,10 @@ const QUICK_LP = require('./config/mantra-dao/QUICK_LP.json');
 const web3bsc = new Web3('https://bsc-dataseed1.binance.org:443');
 const web3polygon = new Web3('https://speedy-nodes-nyc.moralis.io/915f60cde0d3e95599501fa2/polygon/mainnet');
 
-async function fetch() {
+let tvlTotal = 0;
 
-    try {
+async function fetchETH() {
+        var tvlETH = 0;
         var price_feed = await retry(async bail => await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,weth,tether,usd-coin,mist,wrapped-bitcoin,blockbank,roseon-finance,dai,cream,chainlink,mantra-dao,rio-defi,compound-governance-token,aave,uniswap,sushi,havven,yearn-finance,dynamic-set-dollar,bondly,polkastarter,1inch,reserve-rights-token,royale,ftx-token,serum,balancer,curve-dao-token,uma,thorchain-erc20,frax,hegic,rhegic,88mph,zlot,zhegic,whiteheart,wrapped-nxm,renbtc,bancor,kyber-network,celsius-degree-token,cornichon,api3,matic-network,bao-finance,terrausd,lepricon,royale,finxflo,daoventures,the-graph,0x,omisego,injective-protocol,badger-dao,rook,utrust,alpha-finance,rari-governance-token,polkafoundry,raze-network,kylin-network,labs-group,paid-network,dragonbite,b-cube-ai,alpha-impact,media-licensing-token,refinable,wbnb,greenheart-cbd,enjincoin&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true'));
 
         // Helper to get lending supply on ETH
@@ -27,22 +28,6 @@ async function fetch() {
             let decimals = await contract.methods.decimals().call();
             let supply = await contract.methods.totalSupply().call();
             balance = await new BigNumber(supply).div(10 ** decimals).toFixed(2);
-            return parseFloat(balance);
-        }
-
-        async function returnBalanceBSC(token, address) {
-            let contract = new web3bsc.eth.Contract(abis.minABI, token);
-            let decimals = await contract.methods.decimals().call();
-            let balance = await contract.methods.balanceOf(address).call();
-            balance = await new BigNumber(balance).div(10 ** decimals).toFixed(2);
-            return parseFloat(balance);
-        }
-
-        async function returnBalancePOLYGON(token, address) {
-            let contract = new web3polygon.eth.Contract(abis.minABI, token);
-            let decimals = await contract.methods.decimals().call();
-            let balance = await contract.methods.balanceOf(address).call();
-            balance = await new BigNumber(balance).div(10 ** decimals).toFixed(2);
             return parseFloat(balance);
         }
 
@@ -57,32 +42,6 @@ async function fetch() {
             lpTokenPrice = ((token1SupplyScaledDown * token1price) / totalSupplyScaledDown) * 2;
             return lpTokenPrice;
         };
-
-        async function getPriceOfPancakePair(pair) {
-            let lpTokenPrice = 0
-            const token1price = price_feed.data[pair.price1].usd
-            let pancakePairContractService = new web3bsc.eth.Contract(PANCAKE_LP, pair.pairAddress);
-            let decimals = await pancakePairContractService.methods.decimals().call();
-            const totalSupplyScaledDown = await pancakePairContractService.methods.totalSupply().call() / 10 ** decimals;
-            const token1Supply = await pancakePairContractService.methods.getReserves().call();
-            const token1SupplyScaledDown = token1Supply._reserve0 / 10 ** decimals;
-            lpTokenPrice = ((token1SupplyScaledDown * token1price) / totalSupplyScaledDown) * 2;
-            return lpTokenPrice;
-        };
-
-        async function getPriceOfQuickPair(pair) {
-            let lpTokenPrice = 0
-            const token1price = price_feed.data[pair.price1].usd
-            let quickPairContractService = new web3polygon.eth.Contract(QUICK_LP, pair.pairAddress);
-            let decimals = await quickPairContractService.methods.decimals().call();
-            const totalSupplyScaledDown = await quickPairContractService.methods.totalSupply().call() / 10 ** decimals;
-            const token1Supply = await quickPairContractService.methods.getReserves().call();
-            const token1SupplyScaledDown = token1Supply._reserve0 / 10 ** decimals;
-            lpTokenPrice = ((token1SupplyScaledDown * token1price) / totalSupplyScaledDown) * 2;
-            return lpTokenPrice;
-        };
-
-        var tvl = 0;
 
         // ETH Staking and pool assets
         const stakingAssetsETH = [
@@ -120,23 +79,6 @@ async function fetch() {
             { contract: '0xb19b94d53D362CDfC7360C951a85ca2c1d5400BA', token: '0x93C9175E26F57d2888c7Df8B470C9eeA5C0b0A93', price: 'b-cube-ai'},
             // IMPACT staking
             { contract: '0x6DdF7743f56Efa60a4834AFEd16B2dc13308f13e', token: '0xFAc3f6391C86004289A186Ae0198180fCB4D49Ab', price: 'alpha-impact'}
-        ]
-
-        // BSC Staking and pool assets
-        const stakingAssetsBSC = [
-            // ROSN staking
-            { contract: '0x7dd79e93dba1d677574d0b5e99721f2e4b45e297', token: '0x651cd665bd558175a956fb3d72206ea08eb3df5b', price: 'roseon-finance'},
-            // BONDLY staking
-            { contract: '0x004c0908518e19aa8b27a55c171564097fa3c354', token: '0x96058f8c3e16576d9bd68766f3836d9a33158f89', price: 'bondly'},
-            // MLT staking
-            { contract: '0xF0185520Cc773502f0f208433ca178f2f57157A9', token: '0x4518231a8fdf6ac553b9bbd51bbb86825b583263', price: 'media-licensing-token'},
-            // OM staking
-            { contract: '0xEfc2d65302eb6345A7C0e212B791e0d45C2C3c91', token: '0xf78d2e7936f5fe18308a3b2951a93b6c4a41f5e2', price: 'mantra-dao'}
-        ]
-
-        const stakingAssetsPOLYGON = [
-            //OM staking
-            { contract: '0xCdD0f77A2A158B0C7cFe38d00443E9A4731d6ea6', token: '0xc3ec80343d2bae2f8e680fdadde7c17e71e114ea', price: 'mantra-dao'}
         ]
 
         // ETH LP Staking
@@ -257,95 +199,6 @@ async function fetch() {
                 price1: 'b-cube-ai',
                 token2: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
                 price2: 'weth'
-            }
-        ]
-
-        // BSC LP Staking
-        const lpStakingAssetsBSC = [
-            // FINE-BNB LP staking
-            {
-                contract: '0xF25897a7EDf1Dfa9C65f5DB7Ec4Bad868873805B',
-                pairAddress: '0xC309a6d2F1537922E06f15aA2eb21CaA1b2eEDb6',
-                token1: '0x4e6415a5727ea08aae4580057187923aec331227',
-                price1: 'refinable',
-                token2: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
-                price2: 'wbnb'
-            },
-            // OM-BNB LP staking
-            {
-                contract: '0xcbf42ace1dbd895ffdcabc1b841488542626014d',
-                pairAddress: '0x49837a48abde7c525bdc86d9acba39f739cbe22c',
-                token1: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
-                price1: 'wbnb',
-                token2: '0xf78d2e7936f5fe18308a3b2951a93b6c4a41f5e2',
-                price2: 'mantra-dao'
-            },
-            // CBD-BNB LP staking
-            {
-                contract: '0x92fCe8AfFB2A68d418BaDF8E360E0CDe06c39356',
-                pairAddress: '0x0b49580278b403ca13055bf4d81b6b7aa85fd8b9',
-                token1: '0x0e2b41ea957624a314108cc4e33703e9d78f4b3c',
-                price1: 'greenheart-cbd',
-                token2: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
-                price2: 'wbnb'
-            },
-            // BBANK-BNB LP staking
-            {
-                contract: '0x1E8BC897bf03ebac570Df7e5526561f8a42eCe05',
-                pairAddress: '0x538e61bd3258304e9970f4f2db37a217f60436e1',
-                token1: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
-                price1: 'wbnb',
-                token2: '0xf4b5470523ccd314c6b9da041076e7d79e0df267',
-                price2: 'blockbank'
-            },
-            // BONDLY-BNB LP staking
-            {
-                contract: '0xD862866599CA681c492492E1B7B9aB80066f2FaC',
-                pairAddress: '0xb8b4383b49d451bbea63bc4421466e1086da6f18',
-                token1: '0x96058f8c3e16576d9bd68766f3836d9a33158f89',
-                price1: 'bondly',
-                token2: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
-                price2: 'wbnb'
-            },
-            // MIST-BNB LP staking
-            {
-                contract: '0x4F905f75F5576228eD2D0EA508Fb0c32a0696090',
-                pairAddress: '0x5a26eb7c9c72140d01039eb172dcb8ec98d071bd',
-                token1: '0x68e374f856bf25468d365e539b700b648bf94b67',
-                price1: 'mist',
-                token2: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
-                price2: 'wbnb'
-            },
-            // ROSN-BNB LP staking
-            {
-                contract: '0x5B4463bBD7B2E870601e91161e0F1F7f84CDE214',
-                pairAddress: '0x5548bd47293171d3bc1621edccd953bcc9b814cb',
-                token1: '0x651Cd665bD558175A956fb3D72206eA08Eb3dF5b',
-                price1: 'roseon-finance',
-                token2: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
-                price2: 'wbnb'
-            },
-            // MLT-BNB LP staking
-            {
-                contract: '0x398a5FEE22E0dEb67dA1bD15FA4841b6Aa64c471',
-                pairAddress: '0x560b96f81a2190ff6ac84ebfd17788bab3679cbc',
-                token1: '0x4518231a8fdf6ac553b9bbd51bbb86825b583263',
-                price1: 'media-licensing-token',
-                token2: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
-                price2: 'wbnb'
-            }
-        ]
-
-        // POLYGON  LP Staking
-        const lpStakingAssetsPOLYGON = [
-            // OM-WETH LP staking
-            {
-                contract: '0xCBf42Ace1dBD895FFDCaBC1b841488542626014d',
-                pairAddress: '0xff2bbcb399ad50bbd06debadd47d290933ae1038',
-                token1: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
-                price1: 'weth',
-                token2: '0xC3Ec80343D2bae2F8E680FDADDe7C17E71E114ea',
-                price2: 'mantra-dao'
             }
         ]
 
@@ -472,65 +325,15 @@ async function fetch() {
 
         await Promise.all(stakingAssetsETH.map(async (asset) => {
             // ETH STAKING ASSETS
-            try {
                 let balance = await utils.returnBalance(asset.token, asset.contract);
-                tvl += (parseFloat(balance) * price_feed.data[asset.price].usd)
-            } catch (error) {
-                console.log(error)
-            }
-        }))
-
-        await Promise.all(stakingAssetsBSC.map(async (asset) => {
-            // BSC STAKING ASSETS
-            try {
-                let balance = await returnBalanceBSC(asset.token, asset.contract);
-                tvl += (parseFloat(balance) * price_feed.data[asset.price].usd)
-            } catch (error) {
-                console.log(error)
-            }
-        }))
-
-        await Promise.all(stakingAssetsPOLYGON.map(async (asset) => {
-            // POLYGON STAKING ASSETS
-            try {
-                let balance = await returnBalancePOLYGON(asset.token, asset.contract);
-                tvl += (parseFloat(balance) * price_feed.data[asset.price].usd)
-            } catch (error) {
-                console.log(error)
-            }
+                tvlETH += (parseFloat(balance) * price_feed.data[asset.price].usd)
         }))
 
         await Promise.all(lpStakingAssetsETH.map(async (pair) => {
             // ETH LP STAKING ASSETS
-            try {
                 let lpTokenPrice = await getPriceOfUniPair(pair)
                 let balance = await utils.returnBalance(pair.pairAddress, pair.contract);
-                tvl += (parseFloat(balance) * lpTokenPrice)
-            } catch (error) {
-                console.log(error)
-            }
-        }))
-
-        await Promise.all(lpStakingAssetsBSC.map(async (pair) => {
-            // BSC LP STAKING ASSETS
-            try {
-                let lpTokenPrice = await getPriceOfPancakePair(pair)
-                let balance = await returnBalanceBSC(pair.pairAddress, pair.contract);
-                tvl += (parseFloat(balance) * lpTokenPrice)
-            } catch (error) {
-                console.log(error)
-            }
-        }))
-
-        await Promise.all(lpStakingAssetsPOLYGON.map(async (pair) => {
-            // POLYGON LP STAKING ASSETS
-            try {
-                let lpTokenPrice = await getPriceOfQuickPair(pair)
-                let balance = await returnBalancePOLYGON(pair.pairAddress, pair.contract);
-                tvl += (parseFloat(balance) * lpTokenPrice)
-            } catch (error) {
-                console.log(error)
-            }
+                tvlETH += (parseFloat(balance) * lpTokenPrice)
         }))
 
         await new Promise(async (resolve, reject) => {
@@ -538,33 +341,226 @@ async function fetch() {
             var contract = '0x4f905f75f5576228ed2d0ea508fb0c32a0696090';
             var token = '0x4f905f75f5576228ed2d0ea508fb0c32a0696090';
             balance = await returnSupplyETH(token, contract, CETH);
-            tvl += (parseFloat(balance) * price_feed.data['ethereum'].usd)
+            tvlETH += (parseFloat(balance) * price_feed.data['ethereum'].usd)
             resolve(0)
         })
 
         await Promise.all(zenErc20.map(async (asset) => {
-            try {
                 // ZEN erc lending assets
                 var contract = asset[0];
                 var token = asset[0];
                 balance = await returnSupplyETH(token, contract, CERC);
 
-                tvl += (parseFloat(balance) * price_feed.data[asset[1]].usd)
-            } catch (error) {
-                //console.log(error)
-            }
+                tvlETH += (parseFloat(balance) * price_feed.data[asset[1]].usd)
         }))
 
-        console.log(tvl)
+        tvlTotal += tvlETH;
 
-        return tvl;
+        return tvlETH;
+}
 
-    } catch (error) {
-        console.log(error)
-    }
+async function fetchBSC() {
+        var tvlBSC = 0;
+        var price_feed = await retry(async bail => await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,weth,tether,usd-coin,mist,wrapped-bitcoin,blockbank,roseon-finance,dai,cream,chainlink,mantra-dao,rio-defi,compound-governance-token,aave,uniswap,sushi,havven,yearn-finance,dynamic-set-dollar,bondly,polkastarter,1inch,reserve-rights-token,royale,ftx-token,serum,balancer,curve-dao-token,uma,thorchain-erc20,frax,hegic,rhegic,88mph,zlot,zhegic,whiteheart,wrapped-nxm,renbtc,bancor,kyber-network,celsius-degree-token,cornichon,api3,matic-network,bao-finance,terrausd,lepricon,royale,finxflo,daoventures,the-graph,0x,omisego,injective-protocol,badger-dao,rook,utrust,alpha-finance,rari-governance-token,polkafoundry,raze-network,kylin-network,labs-group,paid-network,dragonbite,b-cube-ai,alpha-impact,media-licensing-token,refinable,wbnb,greenheart-cbd,enjincoin&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true'));
+
+        async function returnBalanceBSC(token, address) {
+            let contract = new web3bsc.eth.Contract(abis.minABI, token);
+            let decimals = await contract.methods.decimals().call();
+            let balance = await contract.methods.balanceOf(address).call();
+            balance = await new BigNumber(balance).div(10 ** decimals).toFixed(2);
+            return parseFloat(balance);
+        }
+
+        async function getPriceOfPancakePair(pair) {
+            let lpTokenPrice = 0
+            const token1price = price_feed.data[pair.price1].usd
+            let pancakePairContractService = new web3bsc.eth.Contract(PANCAKE_LP, pair.pairAddress);
+            let decimals = await pancakePairContractService.methods.decimals().call();
+            const totalSupplyScaledDown = await pancakePairContractService.methods.totalSupply().call() / 10 ** decimals;
+            const token1Supply = await pancakePairContractService.methods.getReserves().call();
+            const token1SupplyScaledDown = token1Supply._reserve0 / 10 ** decimals;
+            lpTokenPrice = ((token1SupplyScaledDown * token1price) / totalSupplyScaledDown) * 2;
+            return lpTokenPrice;
+        };
+
+        // BSC Staking and pool assets
+        const stakingAssetsBSC = [
+            // ROSN staking
+            { contract: '0x7dd79e93dba1d677574d0b5e99721f2e4b45e297', token: '0x651cd665bd558175a956fb3d72206ea08eb3df5b', price: 'roseon-finance'},
+            // BONDLY staking
+            { contract: '0x004c0908518e19aa8b27a55c171564097fa3c354', token: '0x96058f8c3e16576d9bd68766f3836d9a33158f89', price: 'bondly'},
+            // MLT staking
+            { contract: '0xF0185520Cc773502f0f208433ca178f2f57157A9', token: '0x4518231a8fdf6ac553b9bbd51bbb86825b583263', price: 'media-licensing-token'},
+            // OM staking
+            { contract: '0xEfc2d65302eb6345A7C0e212B791e0d45C2C3c91', token: '0xf78d2e7936f5fe18308a3b2951a93b6c4a41f5e2', price: 'mantra-dao'}
+        ]
+
+        // BSC LP Staking
+        const lpStakingAssetsBSC = [
+            // FINE-BNB LP staking
+            {
+                contract: '0xF25897a7EDf1Dfa9C65f5DB7Ec4Bad868873805B',
+                pairAddress: '0xC309a6d2F1537922E06f15aA2eb21CaA1b2eEDb6',
+                token1: '0x4e6415a5727ea08aae4580057187923aec331227',
+                price1: 'refinable',
+                token2: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
+                price2: 'wbnb'
+            },
+            // OM-BNB LP staking
+            {
+                contract: '0xcbf42ace1dbd895ffdcabc1b841488542626014d',
+                pairAddress: '0x49837a48abde7c525bdc86d9acba39f739cbe22c',
+                token1: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
+                price1: 'wbnb',
+                token2: '0xf78d2e7936f5fe18308a3b2951a93b6c4a41f5e2',
+                price2: 'mantra-dao'
+            },
+            // CBD-BNB LP staking
+            {
+                contract: '0x92fCe8AfFB2A68d418BaDF8E360E0CDe06c39356',
+                pairAddress: '0x0b49580278b403ca13055bf4d81b6b7aa85fd8b9',
+                token1: '0x0e2b41ea957624a314108cc4e33703e9d78f4b3c',
+                price1: 'greenheart-cbd',
+                token2: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
+                price2: 'wbnb'
+            },
+            // BBANK-BNB LP staking
+            {
+                contract: '0x1E8BC897bf03ebac570Df7e5526561f8a42eCe05',
+                pairAddress: '0x538e61bd3258304e9970f4f2db37a217f60436e1',
+                token1: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
+                price1: 'wbnb',
+                token2: '0xf4b5470523ccd314c6b9da041076e7d79e0df267',
+                price2: 'blockbank'
+            },
+            // BONDLY-BNB LP staking
+            {
+                contract: '0xD862866599CA681c492492E1B7B9aB80066f2FaC',
+                pairAddress: '0xb8b4383b49d451bbea63bc4421466e1086da6f18',
+                token1: '0x96058f8c3e16576d9bd68766f3836d9a33158f89',
+                price1: 'bondly',
+                token2: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
+                price2: 'wbnb'
+            },
+            // MIST-BNB LP staking
+            {
+                contract: '0x4F905f75F5576228eD2D0EA508Fb0c32a0696090',
+                pairAddress: '0x5a26eb7c9c72140d01039eb172dcb8ec98d071bd',
+                token1: '0x68e374f856bf25468d365e539b700b648bf94b67',
+                price1: 'mist',
+                token2: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
+                price2: 'wbnb'
+            },
+            // ROSN-BNB LP staking
+            {
+                contract: '0x5B4463bBD7B2E870601e91161e0F1F7f84CDE214',
+                pairAddress: '0x5548bd47293171d3bc1621edccd953bcc9b814cb',
+                token1: '0x651Cd665bD558175A956fb3D72206eA08Eb3dF5b',
+                price1: 'roseon-finance',
+                token2: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
+                price2: 'wbnb'
+            },
+            // MLT-BNB LP staking
+            {
+                contract: '0x398a5FEE22E0dEb67dA1bD15FA4841b6Aa64c471',
+                pairAddress: '0x560b96f81a2190ff6ac84ebfd17788bab3679cbc',
+                token1: '0x4518231a8fdf6ac553b9bbd51bbb86825b583263',
+                price1: 'media-licensing-token',
+                token2: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
+                price2: 'wbnb'
+            }
+        ]
+
+        await Promise.all(stakingAssetsBSC.map(async (asset) => {
+            // BSC STAKING ASSETS
+                let balance = await returnBalanceBSC(asset.token, asset.contract);
+                tvlBSC += (parseFloat(balance) * price_feed.data[asset.price].usd)
+        }))
+
+        await Promise.all(lpStakingAssetsBSC.map(async (pair) => {
+            // BSC LP STAKING ASSETS
+                let lpTokenPrice = await getPriceOfPancakePair(pair)
+                let balance = await returnBalanceBSC(pair.pairAddress, pair.contract);
+                tvlBSC += (parseFloat(balance) * lpTokenPrice)
+        }))
+
+        tvlTotal += tvlBSC;
+
+        return tvlBSC;
+
+}
+
+async function fetchPolygon() {
+        var tvlPolygon = 0;
+        var price_feed = await retry(async bail => await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=ethereum,weth,tether,usd-coin,mist,wrapped-bitcoin,blockbank,roseon-finance,dai,cream,chainlink,mantra-dao,rio-defi,compound-governance-token,aave,uniswap,sushi,havven,yearn-finance,dynamic-set-dollar,bondly,polkastarter,1inch,reserve-rights-token,royale,ftx-token,serum,balancer,curve-dao-token,uma,thorchain-erc20,frax,hegic,rhegic,88mph,zlot,zhegic,whiteheart,wrapped-nxm,renbtc,bancor,kyber-network,celsius-degree-token,cornichon,api3,matic-network,bao-finance,terrausd,lepricon,royale,finxflo,daoventures,the-graph,0x,omisego,injective-protocol,badger-dao,rook,utrust,alpha-finance,rari-governance-token,polkafoundry,raze-network,kylin-network,labs-group,paid-network,dragonbite,b-cube-ai,alpha-impact,media-licensing-token,refinable,wbnb,greenheart-cbd,gamestation,enjincoin&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true'));
+
+        async function returnBalancePOLYGON(token, address) {
+            let contract = new web3polygon.eth.Contract(abis.minABI, token);
+            let decimals = await contract.methods.decimals().call();
+            let balance = await contract.methods.balanceOf(address).call();
+            balance = await new BigNumber(balance).div(10 ** decimals).toFixed(2);
+            return parseFloat(balance);
+        }
+
+        async function getPriceOfQuickPair(pair) {
+            let lpTokenPrice = 0
+            const token1price = price_feed.data[pair.price1].usd
+            let quickPairContractService = new web3polygon.eth.Contract(QUICK_LP, pair.pairAddress);
+            let decimals = await quickPairContractService.methods.decimals().call();
+            const totalSupplyScaledDown = await quickPairContractService.methods.totalSupply().call() / 10 ** decimals;
+            const token1Supply = await quickPairContractService.methods.getReserves().call();
+            const token1SupplyScaledDown = token1Supply._reserve0 / 10 ** decimals;
+            lpTokenPrice = ((token1SupplyScaledDown * token1price) / totalSupplyScaledDown) * 2;
+            return lpTokenPrice;
+        };
+
+        const stakingAssetsPOLYGON = [
+            //OM staking
+            { contract: '0xCdD0f77A2A158B0C7cFe38d00443E9A4731d6ea6', token: '0xc3ec80343d2bae2f8e680fdadde7c17e71e114ea', price: 'mantra-dao'},
+            { contract: '0xd1ecDC553651daB068486d9c4d066eCDC614416e', token: '0x3f6b3595ecf70735d3f48d69b09c4e4506db3f47', price: 'gamestation'}
+        ]
+
+        // POLYGON  LP Staking
+        const lpStakingAssetsPOLYGON = [
+            // OM-WETH LP staking
+            {
+                contract: '0xCBf42Ace1dBD895FFDCaBC1b841488542626014d',
+                pairAddress: '0xff2bbcb399ad50bbd06debadd47d290933ae1038',
+                token1: '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619',
+                price1: 'weth',
+                token2: '0xC3Ec80343D2bae2F8E680FDADDe7C17E71E114ea',
+                price2: 'mantra-dao'
+            }
+        ]
+
+        await Promise.all(stakingAssetsPOLYGON.map(async (asset) => {
+            // POLYGON STAKING ASSETS
+                let balance = await returnBalancePOLYGON(asset.token, asset.contract);
+                tvlPolygon += (parseFloat(balance) * price_feed.data[asset.price].usd)
+        }))
+
+        await Promise.all(lpStakingAssetsPOLYGON.map(async (pair) => {
+            // POLYGON LP STAKING ASSETS
+                let lpTokenPrice = await getPriceOfQuickPair(pair)
+                let balance = await returnBalancePOLYGON(pair.pairAddress, pair.contract);
+                tvlPolygon += (parseFloat(balance) * lpTokenPrice)
+        }))
+
+        tvlTotal += tvlPolygon;
+
+        return tvlPolygon;
+
 }
 
 module.exports = {
-    fetch
+    ethereum: {
+        fetch: fetchETH
+    },
+    bsc: {
+        fetch: fetchBSC
+    },
+    polygon: {
+        fetch: fetchPolygon
+    },
+    fetch: async ()=>((await fetchETH())+(await fetchBSC())+(await fetchPolygon()))
 }
-

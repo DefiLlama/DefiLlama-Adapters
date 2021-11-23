@@ -1,0 +1,33 @@
+{
+  "balanceOf": {
+    "constant": true,
+    "inputs": [
+      { "internalType": "address", "name": "account", "type": "address" }
+    ],
+    "payable": false,
+    "name": "balanceOf",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "earned": {
+    "inputs": [
+      { "internalType": "address", "name": "account", "type": "address" }
+    ],
+    "name": "earned",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "DPXtokensEarned",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "RDPXtokensEarned",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+}

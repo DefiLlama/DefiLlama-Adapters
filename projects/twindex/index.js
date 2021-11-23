@@ -26,10 +26,7 @@ module.exports = {
   misrepresentedTokens: true,
   bsc:{
     tvl: bscTvl,
-  },
-  staking:{
-    tvl: poolsTvl,
+    staking: poolsTvl
   },
   methodology: "TVL comes from the DEX liquidity pools, staking TVL is accounted as the TWX on 0x41171D5770C4c68686d1aF042Ada88a45B02f82b",
-  tvl: bscTvl
 }

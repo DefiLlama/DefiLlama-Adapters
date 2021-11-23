@@ -6,6 +6,8 @@ const {
   transformBscAddress,
   transformFantomAddress,
 } = require("../helper/portedTokens");
+const { fetchURL } = require("../helper/utils");
+const { toUSDTBalances } = require("../helper/balances");
 
 const MasterChefContract = "0xbf513aCe2AbDc69D38eE847EFFDaa1901808c31c";
 const ice = '0xf16e81dce15B08F326220742020379B855B87DF9'
@@ -35,6 +37,11 @@ function calcTvl(chain) {
   }
 };
 
+async function optimizerV3(time, block){
+  const data = await fetchURL("https://analytics.back.popsicle.finance/api/v1/FragolaApy");
+  return toUSDTBalances(data.data.reduce((total, pool)=>total+pool.tvl, 0))
+}
+
 const ethTvl = calcTvl("ethereum");
 
 const fantomTvl = calcTvl("fantom")
@@ -42,14 +49,15 @@ const fantomTvl = calcTvl("fantom")
 const bscTvl = calcTvl("bsc")
 
 module.exports = {
-  tvl: async () => ({}),
+  misrepresentedTokens: true,
   ethereum:{
-    pool2: ethTvl
+    pool2: ethTvl,
+    tvl: optimizerV3
   },
-  bscTvl:{
+  bsc:{
     pool2: bscTvl
   },
-  fantomTvl:{
+  fantom:{
     pool2:fantomTvl
   },
   methodology:

@@ -90,7 +90,6 @@ async function eth_tvl(timestamp, block) {
   return balances;
 }
 
-// let total_bnb_tvl = 0;
 async function bsc_tvl(timestamp, block) {
   let balances = {};
   let pools = {[BNB_COIN]: [SUTER_BNB_V1, SUTER_BNB_V2], [BUSD_COIN]: [SUTER_BUSD_V1, SUTER_BUSD_V2], [CAKE_COIN]: [SUTER_CAKE_V1, SUTER_CAKE_V2], [BAKE_COIN]: [SUTER_BAKE_V1, SUTER_BAKE_V2], [BSC_SUTER_COIN]: [BSC_SUTER_SUTER_V1, BSC_SUTER_SUTER_V2], [XSUTER_COIN]: [BSC_SUTER_XSUTER_V1, BSC_SUTER_XSUTER_V2]};
@@ -110,13 +109,6 @@ async function bsc_tvl(timestamp, block) {
         }
         // console.log(erc20_tvl.output, typeof(erc20_tvl.output))
       }
-      // let bnb_tvl = await sdk.api.eth.getBalance({
-      //   target: pool,
-      //   block,
-      //   chain: 'bsc'
-      // });
-      
-      // total_bnb_tvl = bnb_tvl + total_bnb_tvl;
     }
   }
   const suter_bnb_shield_tvl_api = "https://data-platform.suterusu.io/public_api/suter_bnb_tvls"

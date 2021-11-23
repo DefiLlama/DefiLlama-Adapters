@@ -62,8 +62,6 @@
     balances[wethEarnOpen] = '0';
     balances[wethEarn] = '0';
 
-    //let supported = await sdk.api.util.tokenList();
-    //console.table(supported); // print supported assets
     //console.table(balances); // for debugging
     return balances;
   };
@@ -73,10 +71,7 @@
   ==================================================*/
 
   module.exports = {
-    name: 'Alkemi Network',   // project name
-    website: 'https://alkemi.network',
-    token: 'ALK',             // null, or token symbol if project has a custom token
-    category: 'lending',      // allowed values as shown on DefiPulse: 'Derivatives', 'DEXes', 'Lending', 'Payments', 'Assets'
+    methodology: "TVL consists of Assets (ETH, WBTC, Stablecoins) deposited in Alkemi Earn, Assets (ETH, WBTC, Stablecoins) deposited in Alkemi Earn Open, and does NOT currently consider assets borrowed",
     start: 1609380306,        // unix timestamp (utc 0) specifying when the project began, or where live data begins
     tvl                       // tvl adapter
   };

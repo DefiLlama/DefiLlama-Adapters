@@ -1,0 +1,18 @@
+{
+  "inputs": [],
+  "name": "getReserves",
+  "outputs": [
+    {
+      "internalType": "uint112",
+      "name": "_reserve0",
+      "type": "uint112"
+    },
+    {
+      "internalType": "uint112",
+      "name": "_reserve1",
+      "type": "uint112"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+}
