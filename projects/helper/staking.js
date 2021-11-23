@@ -56,7 +56,7 @@ function stakingPricedLP(stakingContract, stakingToken, chain, lpContract, coing
     }
 }
 
-function stakingUnknownPricedLP(stakingContract, stakingToken, chain, lpContract) {
+function stakingUnknownPricedLP(stakingContract, stakingToken, chain, lpContract, transform) {
     return async (timestamp, _ethBlock, chainBlocks) => {
         const block = await getBlock(timestamp, chain, chainBlocks, true)
         const [bal, reserveAmounts, token0, token1] = await Promise.all([
@@ -75,11 +75,11 @@ function stakingUnknownPricedLP(stakingContract, stakingToken, chain, lpContract
         ])
         if(token0.toLowerCase() === stakingToken.toLowerCase()){
             return {
-                [`${chain}:${token1}`]: BigNumber(bal.output).times(reserveAmounts[1]).div(reserveAmounts[0]).toFixed(0)
+                [transform?transform(token1):`${chain}:${token1}`]: BigNumber(bal.output).times(reserveAmounts[1]).div(reserveAmounts[0]).toFixed(0)
             }
         }else {
             return {
-                [`${chain}:${token0}`]: BigNumber(bal.output).times(reserveAmounts[0]).div(reserveAmounts[1]).toFixed(0)
+                [transform?transform(token0):`${chain}:${token0}`]: BigNumber(bal.output).times(reserveAmounts[0]).div(reserveAmounts[1]).toFixed(0)
             }
         }
     }

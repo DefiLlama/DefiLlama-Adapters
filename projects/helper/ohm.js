@@ -23,7 +23,7 @@ function ohmTvl(treasury, treasuryTokens, chain, stakingAddress, stakingToken, t
             tvl,
             staking: tokenOnCoingecko?
                 staking(stakingAddress, stakingToken, chain, transform(stakingToken))
-                : stakingUnknownPricedLP(stakingAddress, stakingToken, chain, treasuryTokens.find(t=>t[1]===true)[0])
+                : stakingUnknownPricedLP(stakingAddress, stakingToken, chain, treasuryTokens.find(t=>t[1]===true)[0], transform)
         }
     }
 }
