@@ -49,6 +49,13 @@ module.exports = {
       ],
       "shiden"
     ),
+    staking: staking(
+      STAKING_CONTRACTS["shiden"],
+      KWIK_TOKEN_ADDRESSES["shiden"],
+      "shiden",
+      KWIK_TOKEN_ADDRESSES["ethereum"],
+      0
+    )
   },
   bsc: {
     tvl: v1graph("bsc"),
