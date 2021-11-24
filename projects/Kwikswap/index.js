@@ -7,7 +7,6 @@ const v1graph = getChainTvl(
     ethereum:
       "https://api.thegraph.com/subgraphs/name/kwikswap/kwikswap-subgraph",
     bsc: "https://api.thegraph.com/subgraphs/name/kwikswap/kwikswap-bsc-subgraph",
-    polygon: "https://api.thegraph.com/subgraphs/name/kwikswap/matic-exchange",
   },
   "kwikswapFactories",
   "totalLiquidityUSD"
@@ -58,9 +57,12 @@ module.exports = {
     )
   },
   bsc: {
-    tvl: v1graph("bsc"),
-  },
-  polygon: {
-    tvl: v1graph("polygon"),
+    tvl: calculateUsdUniTvl(
+      "0x64eBD6CaCece790e9C4DDeA1a24952Ddb2715279",
+      "bsc",
+      "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+      [],
+      "wbnb"
+    )
   },
 };

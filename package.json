@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "babel-watch curve.js"
+    "dev": "babel-watch curve.js",
+    "prepare": "husky install"
   },
   "author": "",
   "license": "ISC",
@@ -36,5 +37,13 @@
     "underscore": "^1.13.1",
     "web3": "^1.5.3"
   },
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "husky": ">=6",
+    "lint-staged": ">=10",
+    "prettier": "^2.4.1"
+  },
+  "lint-staged": {
+    "*.{js,css,md,json,yml,yaml}": "prettier --write"
+  }
 }

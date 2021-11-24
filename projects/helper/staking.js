@@ -31,32 +31,11 @@ function staking(stakingContract, stakingToken, chain = "ethereum", transformedT
     }
 }
 
-function stakingPricedLP(stakingContract, stakingToken, chain, lpContract, coingeckoIdOfPairedToken, stakedTokenIsToken0 = false, decimals = 18) {
-    return async (timestamp, _ethBlock, chainBlocks) => {
-        const block = await getBlock(timestamp, chain, chainBlocks, true)
-        const [bal, reserveAmounts] = await Promise.all([
-            sdk.api.erc20.balanceOf({
-                target: stakingToken,
-                owner: stakingContract,
-                chain,
-                block,
-            }),
-            sdk.api.abi.call({
-                target: lpContract,
-                abi: getReserves,
-                chain,
-                block
-            })
-        ])
-        const price = stakedTokenIsToken0 ?
-            Number(reserveAmounts.output[1]) / Number(reserveAmounts.output[0]) : Number(reserveAmounts.output[0]) / Number(reserveAmounts.output[1])
-        return {
-            [coingeckoIdOfPairedToken]: (Number(bal.output) / (10 ** decimals)) * price
-        }
-    }
+function stakingPricedLP(stakingContract, stakingToken, chain, lpContract, coingeckoIdOfPairedToken, stakedTokenIsToken0 = false, decimals=18) {
+    return stakingUnknownPricedLP(stakingContract, stakingToken, chain, lpContract, ()=>coingeckoIdOfPairedToken, decimals)
 }
 
-function stakingUnknownPricedLP(stakingContract, stakingToken, chain, lpContract) {
+function stakingUnknownPricedLP(stakingContract, stakingToken, chain, lpContract, transform, decimals) {
     return async (timestamp, _ethBlock, chainBlocks) => {
         const block = await getBlock(timestamp, chain, chainBlocks, true)
         const [bal, reserveAmounts, token0, token1] = await Promise.all([
@@ -73,14 +52,19 @@ function stakingUnknownPricedLP(stakingContract, stakingToken, chain, lpContract
                 block
             }).then(o=>o.output))
         ])
+        let token, stakedBal;
         if(token0.toLowerCase() === stakingToken.toLowerCase()){
-            return {
-                [`${chain}:${token1}`]: BigNumber(bal.output).times(reserveAmounts[1]).div(reserveAmounts[0]).toFixed(0)
-            }
+            token = token1;
+            stakedBal = BigNumber(bal.output).times(reserveAmounts[1]).div(reserveAmounts[0]).toFixed(0);
         }else {
-            return {
-                [`${chain}:${token0}`]: BigNumber(bal.output).times(reserveAmounts[0]).div(reserveAmounts[1]).toFixed(0)
-            }
+            stakedBal = BigNumber(bal.output).times(reserveAmounts[0]).div(reserveAmounts[1]).toFixed(0);
+            token = token0
+        }
+        if(decimals !== undefined){
+            stakedBal = Number(stakedBal)/(10**decimals)
+        }
+        return {
+            [transform?transform(token):`${chain}:${token}`]: stakedBal
         }
     }
 }
