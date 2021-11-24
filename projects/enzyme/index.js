@@ -77,7 +77,7 @@ async function tvl(timestamp, block) {
             sdk.util.sumSingleBalance(balances, "0x5e74c9036fb86bd7ecdcb084a0673efc32ea31cb", BigNumber(asset.networkAssetHolding.amount).times(10 ** 18).div(2).toFixed(0));
           }
           // Handles steCRV Gauge
-          if (token === "0x182b723a58739a9c974cfdb385ceadb237453c28") {
+          else if (token === "0x182b723a58739a9c974cfdb385ceadb237453c28") {
             sdk.util.sumSingleBalance(balances, ["ethereum"], BigNumber(asset.networkAssetHolding.amount).div(2).toFixed(0));
             sdk.util.sumSingleBalance(balances, "0xae7ab96520de3a18e5e111b5eaab095312d7fe84", BigNumber(asset.networkAssetHolding.amount).times(10 ** 18).div(2).toFixed(0));
           }
@@ -87,7 +87,6 @@ async function tvl(timestamp, block) {
               balance
             });
           }
-          
           break;
         case "UniswapPool":
           token = asset.id;
@@ -132,6 +131,7 @@ async function tvl(timestamp, block) {
   return balances;
 }
 
+// Gets MLN TVL
 async function staking(timestamp, block) {
   let balances = {};
   const field = gql`
@@ -148,6 +148,7 @@ async function staking(timestamp, block) {
   return balances;
 }
 
+// Calculates TVL locked in the MLN-WETH UNI LP
 async function pool2(timestamp, block) {
   let balances = {};
   let token = mlnWethPool;
@@ -167,6 +168,7 @@ async function pool2(timestamp, block) {
 }
 
 module.exports = {
+  methodology: "Uses subgraph to retrieve asset information and balances then uses onchain calls to calculate TVL.",
   misrepresentedTokens: true,
   ethereum: {
     tvl,
