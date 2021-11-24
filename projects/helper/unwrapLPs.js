@@ -251,6 +251,23 @@ const crvPools = {
             "0x130966628846bfd36ff31a822705796e8cb8c18d",
         ]
     },
+    // EURS/sEUR Eth
+    "0x194ebd173f6cdace046c53eacce9b953f28411d1": {
+        swapContract: "0x0ce6a5ff5217e38315f87032cf90686c96627caa",
+        underlyingTokens: [
+            "0xd71ecff9342a5ced620049e616c5035f1db98620",
+            "0xdb25f211ab05b1c97d595516f45794528a807ad8"
+        ]
+    },
+    // aDAI/aUSDC/aUSDT (a3CRV) Eth
+    "0xfd2a8fa60abd58efe3eee34dd494cd491dc14900": {
+        swapContract: "0xdebf20617708857ebe4f679508e7b7863a8a8eee",
+        underlyingTokens: [
+            "0x028171bca77440897b824ca71d1c56cac55b68a3",
+            "0xbcca60bb61934080951369a648fb03df4f96263c",
+            "0x3ed3b47dd13ec9a98b44e6204a523e766b225811"
+        ]
+    },
 }
 const yearnVaults = {
     // yvToken: underlying, eg yvYFI:YFI
