@@ -253,7 +253,6 @@ async function fetch() {
   const result = await axios.get('https://quotation-api-cdn.dunamu.com/v1/forex/recent?codes=FRX.KRWUSD');
   const currency = result.data[0].basePrice;
 
-  //const web3 = new Web3(process.env.ETHEREUM_RPC);
   const priceOracleContract = new web3.eth.Contract(PriceOracleAbi, PriceOracleAddress.ethereum);
   const { 0 : symbols, 1 : prices} = await priceOracleContract.methods.getPrices().call();
 
