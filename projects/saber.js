@@ -1,18 +1,20 @@
 const { getTokenAccountBalance } = require("./helper/solana");
 
 function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 // The data here comes directly from
 // https://registry.saber.so/data/llama.mainnet.json
-const SABER_POOLS = require("./helper/saber-pools.json");
+const utils = require("./helper/utils");
 
 async function tvl() {
-  const amounts = {};
+  const { data: saberPools } = await utils.fetchURL(
+    "https://registry.saber.so/data/llama.mainnet.json"
+  );
 
   const pools = await Promise.all(
-    SABER_POOLS.map(
+    saberPools.map(
       async ({ reserveA, reserveB, tokenACoingecko, tokenBCoingecko }) => {
         for (let i = 0; i < 5; i++) {
           try {
@@ -27,11 +29,11 @@ async function tvl() {
               },
             ];
           } catch (e) {
-            await sleep(1000)
-            console.log(e)
+            await sleep(1000);
+            console.log(e);
           }
         }
-        throw new Error(`Can't get data: ${reserveA}, ${reserveB}`)
+        throw new Error(`Can't get data: ${reserveA}, ${reserveB}`);
       }
     )
   );
