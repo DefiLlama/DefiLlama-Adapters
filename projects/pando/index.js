@@ -34,7 +34,7 @@ async function fetchLeaf() {
 async function fetchRings() {
   const resp = await retry(async bail => await axios.get(APIs.rings))
   const data = resp.data;
-  let sum = new BigNumber(data.total_supply);
+  let sum = new BigNumber(data.total_supply).minus(data.total_borrow);
   return sum.toFixed(2);
 }
 
