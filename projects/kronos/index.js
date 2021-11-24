@@ -4,7 +4,7 @@ const abi = require("./abi.json");
 const BigNumber = require("bignumber.js");
 
 const sKRNO_ADDRESS = "0x6555F93f608980526B5cA79b3bE2d4EdadB5C562";
-const BOND_CALCULATOR = "0x58e3CAd0fD5AF0bBaA012fb3E2D0EF17fe1B0c3E";
+const BOND_CALCULATOR = "0x1f6b7Bde22d1618724519d135839fDc5D2Ffd35A";
 
 const TREASURY_ADDRESS = "0x03c812eE50e244909efE72e8c729976ACc5C16bb";
 
@@ -112,7 +112,11 @@ async function fetchLiquidity() {
     MINT_DATA_ARRAY.map((mintData) => getMintVolume(caver, mintData))
   );
 
-  return volumes.reduce((acc, cur) => acc + cur, 0).toFixed(2);
+  const mintVolume = await fetchStakedToken();
+
+  return (
+    volumes.reduce((acc, cur) => acc + cur, 0) + Number(mintVolume)
+  ).toFixed(2);
 }
 
 module.exports = {
