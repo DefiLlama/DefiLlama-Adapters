@@ -112,11 +112,7 @@ async function fetchLiquidity() {
     MINT_DATA_ARRAY.map((mintData) => getMintVolume(caver, mintData))
   );
 
-  const mintVolume = await fetchStakedToken();
-
-  return (
-    volumes.reduce((acc, cur) => acc + cur, 0) + Number(mintVolume)
-  ).toFixed(2);
+  return volumes.reduce((acc, cur) => acc + cur, 0).toFixed(2);
 }
 
 module.exports = {
