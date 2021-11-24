@@ -242,6 +242,15 @@ const crvPools = {
             "0x321162Cd933E2Be498Cd2267a90534A804051b11"
         ]
     },
+    // mim pool avax
+    "0xaea2e71b631fa93683bcf256a8689dfa0e094fcd": {
+        swapContract: "0xaea2e71b631fa93683bcf256a8689dfa0e094fcd",
+        underlyingTokens: [
+            "0xc7198437980c041c805a1edcba50c1ce5db95118",
+            "0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664",
+            "0x130966628846bfd36ff31a822705796e8cb8c18d",
+        ]
+    },
 }
 const yearnVaults = {
     // yvToken: underlying, eg yvYFI:YFI
