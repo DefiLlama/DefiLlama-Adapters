@@ -2,49 +2,18 @@ const utils = require('../helper/utils');
 
 const apiUrl = 'https://eleven.finance/api.json';
 
-const excludedPools = {
-    'polygon': [
-        'ELE ',
-        'ELE-MUST cLP',
-        'ELE-QUICK qLP',
-        'ELE-MATIC cLP',
-        'ELE-MATIC qLP',
-        'ELE-MATIC SLP',
-        'ELE-MATIC WLP',
-        'ELE-USDC DLP',
-        'ELE-DFYN DLP',
-    ],
-    'fantom': [
-        'ELE-WFTM SLP',
-    ],
-    'bsc': [
-        'ELE',
-        'ELE-BNB WLP',
-        'ELE-BNB LP V2',
-    ],
-    'avax': [
-        'ELE-WAVAX TLP',
-        'ELE-WAVAX PLP',
-        'ELE-PNG PLP',
-        'ELE  ',
-    ],
-    'okexchain': [
-        'ELE-USDT PLP',
-    ],
-};
-
 function fetchChain(chainId) {
     return async()=>{
-    const response = await utils.fetchURL(apiUrl);
-    let tvl = parseFloat(response.data.tvlinfo[chainId]);
+        const response = await utils.fetchURL(apiUrl);
+        let tvl = parseFloat(response.data.tvlinfo[chainId]);
 
-    if (excludedPools[chainId] !== undefined) {
-        excludedPools[chainId].forEach((pool) => {
-            tvl -= parseFloat(response.data[pool]?.tvl ?? 0);
-        })
-    }
+        if (excludedPools[chainId] !== undefined) {
+            excludedPools[chainId].forEach((pool) => {
+                tvl -= parseFloat(response.data[pool]?.tvl ?? 0);
+            })
+        }
 
-    return Math.round(tvl);
+        return Math.round(tvl);
     }
 }
 
