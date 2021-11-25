@@ -77,10 +77,10 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
   ])
 
   // ETH staked in Rocketpool pools
-  unmatched_minipools = minipool_count_per_status[0] * 16 // Unmatched minipools
-  pending_minipools = minipool_count_per_status[1] * 32 // Pending minipools (matched but not staking yet)
-  staking_minipools = minipool_count_per_status[2] * 32 // Staking minipools
-  withdrawable_minipools = minipool_count_per_status[3] * 32 // Withdrawable minipools
+  const unmatched_minipools = minipool_count_per_status[0] * 16 // Unmatched minipools
+  const pending_minipools = minipool_count_per_status[1] * 32 // Pending minipools (matched but not staking yet)
+  const staking_minipools = minipool_count_per_status[2] * 32 // Staking minipools
+  const withdrawable_minipools = minipool_count_per_status[3] * 32 // Withdrawable minipools
   // Deposit pool balance
   // rocketDepositPool_balance = solidity.to_float(rp.call("rocketDepositPool.getBalance"))
   // rETH collateral from withdrawn minipools
