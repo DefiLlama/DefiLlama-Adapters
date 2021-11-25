@@ -328,9 +328,9 @@ async function _fetchForBsc() {
 
 module.exports = {
   bsc: {
-    fetch: _fetchForBsc
+    fetch: _fetchForBsc()
   },
   ethereum: {
-    tvl: _fetchKft
+    tvl: _fetchKft()
   }
 }
