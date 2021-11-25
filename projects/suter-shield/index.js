@@ -89,7 +89,8 @@ async function eth_tvl(timestamp, block) {
   return balances;
 }
 
-async function bsc_tvl(timestamp, block) {
+async function bsc_tvl(timestamp, ethBlock, chainBlocks) {
+  const block = chainBlocks.bsc;
   let balances = {};
   let total_bnb_tvl = 0;
   let pools = {[BNB_COIN]: [SUTER_BNB_V1, SUTER_BNB_V2], [BUSD_COIN]: [SUTER_BUSD_V1, SUTER_BUSD_V2], [CAKE_COIN]: [SUTER_CAKE_V1, SUTER_CAKE_V2], [BAKE_COIN]: [SUTER_BAKE_V1, SUTER_BAKE_V2], [BSC_SUTER_COIN]: [BSC_SUTER_SUTER_V1, BSC_SUTER_SUTER_V2], [XSUTER_COIN]: [BSC_SUTER_XSUTER_V1, BSC_SUTER_XSUTER_V2]};
@@ -109,12 +110,12 @@ async function bsc_tvl(timestamp, block) {
         }
         // console.log(erc20_tvl.output, typeof(erc20_tvl.output))
       }
-      // let bnb_tvl = await sdk.api.eth.getBalance({
-      //   target: pool,
-      //   block,
-      //   chain: 'bsc'
-      // });
-      // total_bnb_tvl = new BigNumber(bnb_tvl.output).plus(new BigNumber(total_bnb_tvl));
+      let bnb_tvl = await sdk.api.eth.getBalance({
+         target: pool,
+         block,
+         chain: 'bsc'
+      });
+      total_bnb_tvl = new BigNumber(bnb_tvl.output).plus(new BigNumber(total_bnb_tvl));
     }
   }
 

@@ -14,9 +14,7 @@ const bscGraphUrl = 'https://api.thegraph.com/subgraphs/name/pooltogether/bsc-v3
 
 const graphQuery = gql`
 query GET_POOLS($block: Int) {
-  prizePools(
-    block: { number: $block }
-  ) {
+  prizePools{
     id
     underlyingCollateralSymbol
     underlyingCollateralToken

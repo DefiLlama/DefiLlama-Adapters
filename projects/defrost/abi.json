@@ -1,0 +1,17 @@
+{
+  "totalSupply": {
+    "constant": true,
+    "inputs": [],
+    "name": "getTvl",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  }
+}
