@@ -76,7 +76,7 @@ async function polygonStaking(timestamp, ethBlock, chainBlocks) {
       return 'polygon:' + addr
     }
   }
-  await unwrapUniswapLPs(balances, lpPositions, chainBlocks['polygon'], chain='polygon', transform)
+  await unwrapUniswapLPs(balances, lpPositions, chainBlocks['polygon'], 'polygon', transform)
 
   return balances
 }
