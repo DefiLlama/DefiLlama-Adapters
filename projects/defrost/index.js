@@ -23,7 +23,7 @@ async function avax(timestamp, block) {
 
 
 module.exports = {
-  start: 6965653,  // beijing time 2021-9-11 0:0:
+  start: 6965653, 
   avax:{
     tvl: avax
   }
