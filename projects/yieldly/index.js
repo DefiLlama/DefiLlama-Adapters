@@ -1,4 +1,4 @@
-//const utils = require("../helper/utils");
+const { toUSDTBalances } = require("../helper/balances");
 const axios = require("axios");
 
 async function tvl() {
@@ -7,21 +7,9 @@ async function tvl() {
     .then((body) => {
       return body.data.nllTVL;
     })
-    .catch(() => {
-      return 0;
-    });
-
-  let algoPrice = await axios
-    .get("https://api1.binance.com/api/v3/ticker/price?symbol=ALGOUSDT")
-    .then((response) => {
-      return response.data.price;
-    })
-    .catch(() => {
-      return 0;
-    });
 
   return {
-    tvl: (algoPrice * nllTVL) / 10 ** 6,
+    algorand: nllTVL / 10 ** 6,
   };
 }
 
@@ -32,20 +20,23 @@ async function staking() {
     .then((body) => {
       return body.data.usdTVL;
     })
-    .catch(() => {
-      return 0;
-    });
 
-  // Get NLL TVL in USD
-  let nllTVLUSD = await tvl();
+  let algoPrice = await axios
+    .get("https://api1.binance.com/api/v3/ticker/price?symbol=ALGOUSDT")
+    .then((response) => {
+      return response.data.price;
+    })
+
+  // Get NLL TVL in ALGO
+  let nllTVLUSD = (await tvl()).algorand;
 
   // Get the staking amount TVL
-  return totalTVLUSD - nllTVLUSD.tvl;
+  return toUSDTBalances(totalTVLUSD - nllTVLUSD*algoPrice);
 }
 
 module.exports = {
-  staking: {
-    tvl: staking,
-  },
-  tvl,
+  algorand: {
+    tvl,
+    staking
+  }
 };
