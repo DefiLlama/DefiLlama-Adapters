@@ -59,7 +59,7 @@ async function treasury(timestamp, chain, chainBlocks) {
 
 module.exports = {
   methodolgy:
-    "TVL is calculated by value locked in MasterChef contract and treasury value is the POSI in the treasury contract.",
+    "TVL is calculated by value locked in MasterChef contract, casted NFT and treasury value is the POSI in the treasury contract.",
   bsc: {
     tvl,
     staking,
