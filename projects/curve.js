@@ -1,3 +1,4 @@
+const { staking } = require('./helper/staking');
 const utils = require('./helper/utils');
 
 async function eth() {
@@ -48,6 +49,7 @@ module.exports = {
     fetch: fantom
   },
   ethereum:{
+    staking: staking("0x5f3b5DfEb7B28CDbD7FAba78963EE202a494e2A2", "0xD533a949740bb3306d119CC777fa900bA034cd52"),
     fetch: eth
   },
   polygon:{
