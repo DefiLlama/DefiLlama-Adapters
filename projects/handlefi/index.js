@@ -50,7 +50,7 @@ async function arbitrum_staking(timestamp, ethBlock, chainBlocks, chain) {
       'balance': FOREX_WETH_LP_tokens
   }]
   console.log('Sushiswap FOREX/WETH LP staked in masterchef', FOREX_WETH_LP_tokens / 1e18)
-  await unwrapUniswapLPs(balances, lpBalances, chainBlocks['arbitrum'], chain='arbitrum', transformAddress=transformArbitrumAddress)
+  await unwrapUniswapLPs(balances, lpBalances, chainBlocks['arbitrum'], 'arbitrum', transformArbitrumAddress)
   return balances
 }
 
