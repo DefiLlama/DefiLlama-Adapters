@@ -14,7 +14,7 @@ async function avax(timestamp, block) {
         chain:'avax'
     })).output;
 
-  totalSupply = parseFloat(new BigNumber(totalSupply).times(Math.pow(10, 4)));
+  totalSupply = parseFloat(new BigNumber(totalSupply).times(Math.pow(10, 6)).div(100));
 
   let tk= usd;
   return{[tk]:totalSupply};
