@@ -6,7 +6,7 @@ async function fetch() {
 
   let tvl = 0;
   for (chainId in response.data) {
-    const chain = response.data[chainId];
+    const chain = response.data[250];
 
     for (vault in chain) {
       tvl += chain[vault];
