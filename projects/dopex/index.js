@@ -31,6 +31,13 @@ async function arbitrumTvl(timestamp, block) {
     block: block,
     chain: "arbitrum",
   });
+  const ssovDpxBalance = await sdk.api.abi.call({
+    target: "0x6c2c06790b3e3e3c38e12ee22f8183b37a13ee55",
+    abi: "erc20:balanceOf",
+    params: [SSOVDpx],
+    block: block,
+    chain: "arbitrum",
+  });
   const ssovEarntRewards = await sdk.api.abi.call({
     target: stakingRewardsDPX,
     abi: abi["earned"],
@@ -38,15 +45,32 @@ async function arbitrumTvl(timestamp, block) {
     block: block,
     chain: "arbitrum",
   });
+  const ssovRdpxBalance = await sdk.api.abi.call({
+    target: "0x32eb7902d4134bf98a28b963d26de779af92a212",
+    abi: "erc20:balanceOf",
+    params: [SSOVDpx],
+    block: block,
+    chain: "arbitrum",
+  });
 
   balances[DPX] = new BigNumber(ssovBalance.output)
     .plus(new BigNumber(ssovEarntRewards.output.DPXtokensEarned))
+    .plus(new BigNumber(ssovDpxBalance.output))
     .toFixed();
-  balances[RDPX] = ssovEarntRewards.output.RDPXtokensEarned;
+  balances[RDPX] = new BigNumber(ssovEarntRewards.output.RDPXtokensEarned)
+    .plus(new BigNumber(ssovRdpxBalance.output))
+    .toFixed();
 
   const ssovRDPXBalance = await sdk.api.abi.call({
     target: stakingRewardsRDPX,
     abi: abi["balanceOf"],
+    params: [SSOVRdpx],
+    block: block,
+    chain: "arbitrum",
+  });
+  const ssovRDPXDpxBalance = await sdk.api.abi.call({
+    target: "0x6c2c06790b3e3e3c38e12ee22f8183b37a13ee55",
+    abi: "erc20:balanceOf",
     params: [SSOVRdpx],
     block: block,
     chain: "arbitrum",
@@ -58,13 +82,22 @@ async function arbitrumTvl(timestamp, block) {
     block: block,
     chain: "arbitrum",
   });
+  const ssovRDPXRdpxBalance = await sdk.api.abi.call({
+    target: "0x32eb7902d4134bf98a28b963d26de779af92a212",
+    abi: "erc20:balanceOf",
+    params: [SSOVRdpx],
+    block: block,
+    chain: "arbitrum",
+  });
 
   balances[DPX] = new BigNumber(balances[DPX])
     .plus(new BigNumber(ssovRDPXEarntRewards.output.DPXtokensEarned))
+    .plus(new BigNumber(ssovRDPXDpxBalance.output))
     .toFixed();
   balances[RDPX] = new BigNumber(balances[RDPX])
     .plus(new BigNumber(ssovRDPXBalance.output))
     .plus(new BigNumber(ssovRDPXEarntRewards.output.RDPXtokensEarned))
+    .plus(new BigNumber(ssovRDPXRdpxBalance.output))
     .toFixed();
 
   return balances;
