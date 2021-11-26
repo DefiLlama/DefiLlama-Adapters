@@ -4,12 +4,6 @@ const BigNumber = require('bignumber.js')
 const sdk = require('@defillama/sdk')
 
 const _fetchKft = async () => {
-  let kft_price_feed = await retry(
-    async bail =>
-      await axios.get(
-        'https://api.coingecko.com/api/v3/simple/price?ids=knit-finance&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true'
-      )
-  )
   let kft_response = await retry(
     async bail =>
       await axios.get(
@@ -23,13 +17,6 @@ const _fetchKft = async () => {
 }
 
 const _fetchForBsc = async () => {
-  let price_feed = await retry(
-    async bail =>
-      await axios.get(
-        'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,litecoin,cardano,polygon,avalanche,elrond,iost,dash,ripple,stellar,dogecoin,bitcoin-cash,zcash,bitcoin-sv,frontier,stacks,fantom,loom-network-new&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true'
-      )
-  )
-
   let btc_bsc_response = await retry(
     async bail =>
       await axios.get(
