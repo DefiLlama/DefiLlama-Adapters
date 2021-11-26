@@ -198,12 +198,23 @@ async function transformHarmonyAddress() {
     }
 }
 
+const optimismSynths = {
+    "0x8c6f28f2f1a3c87f0f938b96d27520d9751ec8d9": "0x57ab1ec28d129707052df4df418d58a2d46d5f51",
+    "0xc5db22719a06418028a40a9b5e9a7c02959d0d08": "0xbbc455cb4f1b9e4bfc4b73970d360c8f032efee6",
+    "0xe405de8f52ba7559f9df3c368500b6e6ae6cee49": "0x5e74c9036fb86bd7ecdcb084a0673efc32ea31cb",
+    "0x298b9b95708152ff6968aafd889c6586e9169f1d": "0xfe18be6b3bd88a2d2a7f928d00292e7a9963cfc6",
+}
+
 async function transformOptimismAddress() {
     const bridge = (await utils.fetchURL("https://static.optimism.io/optimism.tokenlist.json")).data.tokens
 
     return (addr) => {
         if(compareAddresses(addr, "0x4200000000000000000000000000000000000006")){
             return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+        }
+        const possibleSynth = optimismSynths[addr.toLowerCase()]
+        if(possibleSynth !== undefined){
+            return possibleSynth
         }
         const dstToken = bridge.find(token => compareAddresses(addr, token.address) && token.chainId === 10)
         if (dstToken !== undefined) {
