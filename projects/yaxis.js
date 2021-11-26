@@ -1,45 +1,149 @@
-const BN = require("bignumber.js");
-const utils = require("./helper/utils");
-const { abis } = require("./config/yaxis/abis.js");
-const constants = require("./config/yaxis/constants.js");
+const sdk = require("@defillama/sdk");
+const BigNumber = require("bignumber.js");
+const { unwrapCrv, unwrapUniswapLPs } = require("./helper/unwrapLPs");
+const { abi } = require("./yaxis/abi.js");
+const constants = require("./yaxis/constants.js");
 
-const web3 = require("./config/web3.js");
+async function tvl(timestamp, block) {
+  const balances = {};
 
-async function fetch() {
-	// 1. MetaVault
-	const metaVault = new web3.eth.Contract(
-		abis.yAxisMetaVault,
-		constants.METAVAULT
-	);
-	const threeCrv = await metaVault.methods.balance().call();
-	const threeCrvPrice = (await utils.getPricesfromString("lp-3pool-curve"))
-		.data["lp-3pool-curve"].usd;
-	const metaVaultTVL = new BN(threeCrv).div(10 ** 18).times(threeCrvPrice);
+  // 1. MetaVault (LEGACY v2) - LP-3POOL-CURVE
+  const metaVault = (
+    await sdk.api.abi.call({
+      target: constants.METAVAULT,
+      abi: abi.yAxisMetaVault,
+      block: block,
+    })
+  ).output;
 
-	// 2. sYAX (Legacy)
-	const chef = new web3.eth.Contract(abis.yAxisBar, constants.BAR);
-	const sYAX = await chef.methods.availableBalance().call();
-	const yaxisPrice = (await utils.getPricesfromString("yaxis")).data["yaxis"]
-		.usd;
-	const sYaxTVL = new BN(sYAX).div(10 ** 18).times(yaxisPrice);
-	// sYAXIS
-	const yaxisStaking = new web3.eth.Contract(
-		abis.Rewards,
-		constants.STAKING.YAXIS
-	);
-	const sYAXIS = await yaxisStaking.methods.totalSupply().call();
-	const sYaxisTVL = new BN(sYAXIS).div(10 ** 18).times(yaxisPrice);
-	const staked = sYaxTVL.plus(sYaxisTVL);
+  sdk.util.sumSingleBalance(
+    balances,
+    constants.CURRENCIES["LP-3POOL-CURVE"],
+    metaVault
+  );
 
-	// 4. VAULTS
-	// vault balance
-	// plus
-	// amount staked in YaxisChef
+  // 2. sYAX (LEGACY v1) - YAXIS
+  const sYAX = (
+    await sdk.api.abi.call({
+      target: constants.BAR,
+      abi: abi.yAxisBar,
+      block: block,
+    })
+  ).output;
 
-	const totalTVL = metaVaultTVL.plus(staked).toFixed(2);
-	return totalTVL;
+  sdk.util.sumSingleBalance(balances, constants.CURRENCIES["YAXIS"], sYAX);
+
+  // sYAXIS (LEGACY v2) - YAXIS
+  const sYAXIS = (
+    await sdk.api.erc20.totalSupply({
+      target: constants.STAKING.YAXIS,
+      block,
+    })
+  ).output;
+
+  sdk.util.sumSingleBalance(balances, constants.CURRENCIES["YAXIS"], sYAXIS);
+
+  //  Voting Escrow (v3) - YAXIS
+  const veYAXIS = (
+    await sdk.api.abi.call({
+      target: constants.VOTING_ESCROW,
+      abi: abi.votingEscrow,
+      block,
+    })
+  ).output;
+
+  sdk.util.sumSingleBalance(balances, constants.CURRENCIES["YAXIS"], veYAXIS);
+
+  // 3. VAULTS
+
+  const vaults = (
+    await sdk.api.abi.multiCall({
+      calls: constants.VAULTS.map(({ vaultTokenContract }) => ({
+        target: vaultTokenContract,
+      })),
+      abi: "erc20:totalSupply",
+      block: block,
+    })
+  ).output.map((val) => val.output);
+
+  await Promise.all(
+    constants.VAULTS.map(async (vault, index) => {
+      await unwrapCrv(balances, vault.tokenContract, vaults[index]);
+    })
+  );
+
+  // Add ALETH eth balance
+
+  const alethVault = (
+    await sdk.api.erc20.totalSupply({
+      target: "0xeF84fAc432846Ad5f6f1bD4caCcF2849e2818e66",
+      block,
+    })
+  ).output;
+
+  const crvTotalSupply = (
+    await sdk.api.erc20.totalSupply({
+      target: "0xC4C319E2D4d66CcA4464C0c2B32c9Bd23ebe784e",
+      block,
+    })
+  ).output;
+
+  const eth = (
+    await sdk.api.eth.getBalance({
+      target: "0xC4C319E2D4d66CcA4464C0c2B32c9Bd23ebe784e",
+      block,
+    })
+  ).output;
+
+  balances["0x0000000000000000000000000000000000000000"] = BigNumber(alethVault)
+    .multipliedBy(eth)
+    .dividedBy(crvTotalSupply)
+    .toFixed(0);
+
+  // Add YAXIS vault
+  const yaxisVault = (
+    await sdk.api.erc20.totalSupply({
+      target: constants.YAXIS_GAUGE,
+      block,
+    })
+  ).output;
+
+  sdk.util.sumSingleBalance(
+    balances,
+    constants.CURRENCIES["YAXIS"],
+    yaxisVault
+  );
+
+  // 4. LPs
+
+  const uniswapLPs = (
+    await sdk.api.abi.multiCall({
+      calls: constants.UNISWAP_LPS.map((lp) => ({
+        target: lp.address,
+      })),
+      abi: "erc20:totalSupply",
+      block: block,
+    })
+  ).output.map((val) => val.output);
+
+  const lpPositions = [];
+
+  constants.UNISWAP_LPS.forEach((lp, index) => {
+    lpPositions.push({
+      balance: uniswapLPs[index],
+      token: lp.address,
+    });
+  });
+
+  await unwrapUniswapLPs(balances, lpPositions, block);
+
+  return balances;
 }
 
 module.exports = {
-	fetch,
+  ethereum: {
+    tvl,
+  },
+  tvl,
+  start: 1600185600, // 09/16/2020 @ 12:00am (UTC+8)
 };
