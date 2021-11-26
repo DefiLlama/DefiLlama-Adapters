@@ -1,4 +1,6 @@
 const utils = require('../helper/utils');
+var chainId;
+var vault;
 
 
 async function fetch() {
@@ -6,7 +8,7 @@ async function fetch() {
 
   let tvl = 0;
   for (chainId in response.data) {
-    const chain = response.data[250];
+    const chain = response.data[chainId];
 
     for (vault in chain) {
       tvl += chain[vault];
