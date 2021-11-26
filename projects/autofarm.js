@@ -18,5 +18,5 @@ module.exports=fetchChainExports(chainTvl, [
   'heco',      'avalanche',
   'fantom',    'moonriver',
   'okexchain', 'celo',
-  'cronos',
+  'cronos',    'boba',
 ])

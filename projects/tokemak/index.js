@@ -16,6 +16,8 @@ const tcrPool = "0x15A629f0665A3Eb97D7aE9A7ce7ABF73AeB79415";
 const tcr = "0x9C4A4204B79dd291D6b6571C5BE8BbcD0622F050";
 const rtoke = "0xa760e26aA76747020171fCF8BdA108dFdE8Eb930"
 const toke = "0x2e9d63788249371f1dfc918a52f8d799f4a38c94"
+const sushiPool = "0xf49764c9C5d644ece6aE2d18Ffd9F1E902629777";
+const sushi = "0x6B3595068778DD592e39A122f4f5a5cF09C90fE2";
 
 async function tvl(timestamp, block) {
   const balances = {}
@@ -27,7 +29,8 @@ async function tvl(timestamp, block) {
     [ohm, ohmPool],
     [alcx, alcxPool],
     [fxs, fxsPool],
-    [tcr, tcrPool]
+    [tcr, tcrPool],
+    [sushi, sushiPool]
   ], block)
   return balances
 }

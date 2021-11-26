@@ -242,6 +242,32 @@ const crvPools = {
             "0x321162Cd933E2Be498Cd2267a90534A804051b11"
         ]
     },
+    // mim pool avax
+    "0xaea2e71b631fa93683bcf256a8689dfa0e094fcd": {
+        swapContract: "0xaea2e71b631fa93683bcf256a8689dfa0e094fcd",
+        underlyingTokens: [
+            "0xc7198437980c041c805a1edcba50c1ce5db95118",
+            "0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664",
+            "0x130966628846bfd36ff31a822705796e8cb8c18d",
+        ]
+    },
+    // EURS/sEUR Eth
+    "0x194ebd173f6cdace046c53eacce9b953f28411d1": {
+        swapContract: "0x0ce6a5ff5217e38315f87032cf90686c96627caa",
+        underlyingTokens: [
+            "0xd71ecff9342a5ced620049e616c5035f1db98620",
+            "0xdb25f211ab05b1c97d595516f45794528a807ad8"
+        ]
+    },
+    // aDAI/aUSDC/aUSDT (a3CRV) Eth
+    "0xfd2a8fa60abd58efe3eee34dd494cd491dc14900": {
+        swapContract: "0xdebf20617708857ebe4f679508e7b7863a8a8eee",
+        underlyingTokens: [
+            "0x028171bca77440897b824ca71d1c56cac55b68a3",
+            "0xbcca60bb61934080951369a648fb03df4f96263c",
+            "0x3ed3b47dd13ec9a98b44e6204a523e766b225811"
+        ]
+    },
 }
 const yearnVaults = {
     // yvToken: underlying, eg yvYFI:YFI
@@ -467,6 +493,55 @@ async function sumTokensAndLPsSharedOwners(balances, tokens, owners, block, chai
     }
 }
 
+async function sumTokensSharedOwners(balances, tokens, owners, block, chain = "ethereum", transformAddress){
+    if(transformAddress===undefined){
+        transformAddress = addr=>`${chain}:${addr}`
+    }
+    await sumTokensAndLPsSharedOwners(balances, tokens.map(t=>[t,false]), owners, block, chain, transformAddress)
+}
+
+async function sumLPWithOnlyOneToken(balances, lpToken, owner, listedToken, block, chain = "ethereum", transformAddress=id=>id){
+    const [balanceOfLP, balanceOfTokenListedInLP, lpSupply] = await Promise.all([
+        sdk.api.erc20.balanceOf({
+            target: lpToken,
+            owner,
+            block,
+            chain
+        }),
+        sdk.api.erc20.balanceOf({
+            target: listedToken,
+            owner: lpToken,
+            block,
+            chain
+        }),
+        sdk.api.erc20.totalSupply({
+            target: lpToken,
+            block,
+            chain
+        }),
+    ])
+    sdk.util.sumSingleBalance(balances, transformAddress(listedToken), 
+        BigNumber(balanceOfLP.output).times(balanceOfTokenListedInLP.output).div(lpSupply.output).times(2).toFixed(0)
+    )
+}
+
+async function sumLPWithOnlyOneTokenOtherThanKnown(balances, lpToken, owner, tokenNotToUse, block, chain = "ethereum", transformAddress=id=>id){
+    const [token0, token1] = await Promise.all([token0Abi, token1Abi]
+        .map(abi=>sdk.api.abi.call({
+            target: lpToken,
+            abi,
+            chain,
+            block
+        }).then(o=>o.output))
+    )
+    let listedToken = token0
+    if(tokenNotToUse.toLowerCase() === listedToken.toLowerCase()){
+        listedToken = token1
+    }
+    await sumLPWithOnlyOneToken(balances, lpToken, owner, listedToken, block, chain, transformAddress)
+}
+
+
 /*
 tokens [
     [token, owner, isLP] - eg ["0xaaa", "0xbbb", true]
@@ -614,5 +689,8 @@ module.exports = {
     sumTokensAndLPs,
     sumTokens,
     sumBalancerLps,
-    unwrapCreamTokens
+    unwrapCreamTokens,
+    sumLPWithOnlyOneToken,
+    sumTokensSharedOwners,
+    sumLPWithOnlyOneTokenOtherThanKnown
 }

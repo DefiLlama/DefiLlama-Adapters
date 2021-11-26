@@ -18,5 +18,4 @@ module.exports = {
   polygon: {
     tvl: getPolygonTVL
   },
-  tvl: sdk.util.sumChainTvls([getEthereumTVL, getPolygonTVL])
 }
