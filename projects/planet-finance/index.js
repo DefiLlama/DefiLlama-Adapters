@@ -133,7 +133,7 @@ async function tvl(timestamp, ethBlock,chainBlocks) {
           chain:'bsc',
         })).output;
 
-      const marketTvl = ((totalSupply * exchangeRateStored) / 1e18)
+      const marketTvl = ((totalSupply * exchangeRateStored) / 1e18).toLocaleString('fullwide', {useGrouping:false})
       
       let addr = greenMarketReplacement[greenMarkets[i]]
       sdk.util.sumSingleBalance(balances, 'bsc:'+addr, marketTvl)
