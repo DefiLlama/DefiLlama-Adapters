@@ -10,7 +10,9 @@ const graphQuery = gql`
             orderDirection: desc
         )
         {
-            totalValueLocked
+            ohmPrice,
+            treasuryMarketValue,
+            sOhmCirculatingSupply
         }
     }
 `;
@@ -21,10 +23,23 @@ async function tvl() {
     graphQuery
   );
 
-  return Number.parseFloat(protocolMetrics[0].totalValueLocked)
+  return Number.parseFloat(protocolMetrics[0].treasuryMarketValue)
+}
+
+async function staking() {
+    const { protocolMetrics } = await request(
+      graphUrl,
+      graphQuery
+    );
+
+    return Number.parseFloat(protocolMetrics[0].sOhmCirculatingSupply) * Number.parseFloat(protocolMetrics[0].ohmPrice);
 }
 
 module.exports = {
-    avalanche: { tvl },
-    tvl
+    avalanche: {
+        tvl,
+        staking
+    },
+    tvl,
+    staking
 }
