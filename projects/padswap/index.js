@@ -103,7 +103,7 @@ async function staking(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
-  methodology: `TVL accounts for the liquidity on all AMM pools (see https://info.padswap.exchange/). Staking includes all TOAD staked in TOAD farms.`,
+  methodology: `TVL accounts for the liquidity on all AMM pools (see https://info.padswap.exchange/ and https://movr-info.padswap.exchange/). Staking includes all TOAD staked in TOAD farms.`,
   misrepresentedTokens: true,
   bsc: {
     tvl: bscTvl,
