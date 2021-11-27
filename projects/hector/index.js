@@ -2,7 +2,6 @@ const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const sdk = require('@defillama/sdk');
 const erc20 = require("../helper/abis/erc20.json");
 const { transformFantomAddress } = require("../helper/portedTokens");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs")
 const { getBlock } = require('../helper/getBlock');
 
 const hectorStakingv1 = "0x9ae7972BA46933B3B20aaE7Acbf6C311847aCA40"
@@ -14,6 +13,7 @@ const dai = "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e"
 const ftm = "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83"
 const hecUsdcLP = "0xd661952749f05acc40503404938a91af9ac1473b"
 const usdc = "0x04068da6c83afcfa0e13ba15a6696662335d5b75"
+const mim = "0x82f0b8b456c1a451378467398982d4834b6829c1"
 
 const HectorStakings = [
   // V1
@@ -33,6 +33,7 @@ async function tvl(timestamp, block, chainBlocks) {
       [dai, false],
       [usdc, false],
       [ftm, false],
+      [mim, false],
       [hecUsdcLP, true],
       [hecDaiSLP, true]
     ],
@@ -47,6 +48,7 @@ async function tvl(timestamp, block, chainBlocks) {
 
 /*** Staking of native token (OHM) TVL Portion ***/
 const staking = async (timestamp, ethBlock, chainBlocks) => {
+  const balances = {};
   const chain = "fantom";
   let stakingBalance, totalBalance = 0;
   const block = await getBlock(timestamp, chain, chainBlocks)
