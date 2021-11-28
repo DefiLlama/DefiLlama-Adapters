@@ -112,7 +112,7 @@ async function bsc_tvl(timestamp, ethBlock, chainBlocks) {
       }
       let bnb_tvl = await sdk.api.eth.getBalance({
          target: pool,
-         block,
+         //block,
          chain: 'bsc'
       });
       total_bnb_tvl = new BigNumber(bnb_tvl.output).plus(new BigNumber(total_bnb_tvl));
@@ -158,6 +158,7 @@ async function bsc_tvl(timestamp, ethBlock, chainBlocks) {
 
 
 module.exports = {
+  timetravel: false,
   ethereum:{
     tvl: eth_tvl,
   },

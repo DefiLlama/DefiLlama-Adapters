@@ -6,7 +6,13 @@ const getReserves = require('./abis/getReserves.json');
 const factoryAbi = require('./abis/factory.json');
 const {getBlock} = require('./getBlock')
 
-async function requery(results, chain, block, abi){
+async function requery(results, chain, block, abi, times = 2){
+  for(let i=0; i<times; i++){
+    await requeryOnce(results, chain, block, abi)
+  }
+}
+
+async function requeryOnce(results, chain, block, abi){
   if(results.some(r=>!r.success)){
     const failed = results.map((r,i)=>[r,i]).filter(r=>!r[0].success)
     const newResults = await sdk.api.abi
