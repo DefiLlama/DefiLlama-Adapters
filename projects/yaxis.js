@@ -22,38 +22,6 @@ async function tvl(timestamp, block) {
     metaVault
   );
 
-  // 2. sYAX (LEGACY v1) - YAXIS
-  const sYAX = (
-    await sdk.api.abi.call({
-      target: constants.BAR,
-      abi: abi.yAxisBar,
-      block: block,
-    })
-  ).output;
-
-  sdk.util.sumSingleBalance(balances, constants.CURRENCIES["YAXIS"], sYAX);
-
-  // sYAXIS (LEGACY v2) - YAXIS
-  const sYAXIS = (
-    await sdk.api.erc20.totalSupply({
-      target: constants.STAKING.YAXIS,
-      block,
-    })
-  ).output;
-
-  sdk.util.sumSingleBalance(balances, constants.CURRENCIES["YAXIS"], sYAXIS);
-
-  //  Voting Escrow (v3) - YAXIS
-  const veYAXIS = (
-    await sdk.api.abi.call({
-      target: constants.VOTING_ESCROW,
-      abi: abi.votingEscrow,
-      block,
-    })
-  ).output;
-
-  sdk.util.sumSingleBalance(balances, constants.CURRENCIES["YAXIS"], veYAXIS);
-
   // 3. VAULTS
 
   const vaults = (
@@ -100,7 +68,73 @@ async function tvl(timestamp, block) {
     .dividedBy(crvTotalSupply)
     .toFixed(0);
 
-  // Add YAXIS vault
+  return balances;
+}
+
+async function pool2(time, block){
+  const balances = {};
+    // 4. LPs
+    const uniswapLPs = (
+      await sdk.api.abi.multiCall({
+        calls: constants.UNISWAP_LPS.map((lp) => ({
+          target: lp.address,
+          params: [lp.staking]
+        })),
+        abi: "erc20:balanceOf",
+        block: block,
+      })
+    ).output.map((val) => val.output);
+  
+    const lpPositions = [];
+  
+    constants.UNISWAP_LPS.forEach((lp, index) => {
+      lpPositions.push({
+        balance: uniswapLPs[index],
+        token: lp.address,
+      });
+    });
+  
+    await unwrapUniswapLPs(balances, lpPositions, block);
+
+    return balances
+}
+
+async function staking(time, block){
+  const balances = {};
+
+    // 2. sYAX (LEGACY v1) - YAXIS
+    const sYAX = (
+      await sdk.api.abi.call({
+        target: constants.BAR,
+        abi: abi.yAxisBar,
+        block: block,
+      })
+    ).output;
+  
+    sdk.util.sumSingleBalance(balances, constants.CURRENCIES["YAXIS"], sYAX);
+  
+    // sYAXIS (LEGACY v2) - YAXIS
+    const sYAXIS = (
+      await sdk.api.erc20.totalSupply({
+        target: constants.STAKING.YAXIS,
+        block,
+      })
+    ).output;
+  
+    sdk.util.sumSingleBalance(balances, constants.CURRENCIES["YAXIS"], sYAXIS);
+  
+    //  Voting Escrow (v3) - YAXIS
+    const veYAXIS = (
+      await sdk.api.abi.call({
+        target: constants.VOTING_ESCROW,
+        abi: abi.votingEscrow,
+        block,
+      })
+    ).output;
+  
+    sdk.util.sumSingleBalance(balances, constants.CURRENCIES["YAXIS"], veYAXIS);
+
+      // Add YAXIS vault
   const yaxisVault = (
     await sdk.api.erc20.totalSupply({
       target: constants.YAXIS_GAUGE,
@@ -114,36 +148,14 @@ async function tvl(timestamp, block) {
     yaxisVault
   );
 
-  // 4. LPs
-
-  const uniswapLPs = (
-    await sdk.api.abi.multiCall({
-      calls: constants.UNISWAP_LPS.map((lp) => ({
-        target: lp.address,
-      })),
-      abi: "erc20:totalSupply",
-      block: block,
-    })
-  ).output.map((val) => val.output);
-
-  const lpPositions = [];
-
-  constants.UNISWAP_LPS.forEach((lp, index) => {
-    lpPositions.push({
-      balance: uniswapLPs[index],
-      token: lp.address,
-    });
-  });
-
-  await unwrapUniswapLPs(balances, lpPositions, block);
-
-  return balances;
+  return balances
 }
 
 module.exports = {
   ethereum: {
     tvl,
+    staking,
+    pool2
   },
-  tvl,
   start: 1600185600, // 09/16/2020 @ 12:00am (UTC+8)
 };
