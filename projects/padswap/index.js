@@ -29,7 +29,7 @@ module.exports = {
       "0x463e737d8f740395abf44f7aac2d9531d8d539e9", //toad
       "0xc0888d80ee0abf84563168b3182650c0addeb6d5", //pad
     ], "wbnb"),
-    staking: stakings([TOAD_PADSWAP_FARM_V1_ADDRESS, TOAD_PADSWAP_FARM_V2_ADDRESS], TOAD_ADDRESS, "bsc"),
+    staking: stakings([TOAD_FARM_ADDRESS, TOAD_PADSWAP_FARM_V1_ADDRESS, TOAD_PADSWAP_FARM_V2_ADDRESS], TOAD_ADDRESS, "bsc"),
   },
   moonriver:{
     tvl: calculateUsdUniTvl(PADSWAP_MOONRIVER_FACTORY_ADDRESS, "moonriver", "0x663a07a2648296f1a3c02ee86a126fe1407888e5", [
