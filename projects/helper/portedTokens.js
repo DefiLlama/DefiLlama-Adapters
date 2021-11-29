@@ -212,6 +212,9 @@ async function transformOptimismAddress() {
         if(compareAddresses(addr, "0x4200000000000000000000000000000000000006")){
             return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
         }
+        if(compareAddresses(addr, "0x5029c236320b8f15ef0a657054b84d90bfbeded3")){
+            return "0x15ee120fd69bec86c1d38502299af7366a41d1a6"
+        }
         const possibleSynth = optimismSynths[addr.toLowerCase()]
         if(possibleSynth !== undefined){
             return possibleSynth
