@@ -4,7 +4,9 @@ const axios = require('axios');
 const web3 = require('../config/web3')
 
 const DTokenAbi = require('./abi/DToken.json').abi;
-const PriceOracleAbi = require('./abi/PriceOracleView.json').abi
+const PriceOracleAbi = require('./abi/PriceOracleView.json').abi;
+const StakingAbi = require('./abi/Staking.json').abi;
+const VDONStakingAbi = require('./abi/VDONStaking.json').abi;
 
 const PriceOracleAddress = {
   ethereum : '0x44EA07640609E60Ad0CFC27E9D63b68a1E240a13',
@@ -176,6 +178,16 @@ const ethMarkets = [
   },
 ]
 
+const stakings = [
+  '0x4f2ED52bC4CbdE54e2b3547D3758474A21598D7c',
+  '0x024510151204DeC56Cc4D54ed064f62efAC264d5',
+  '0x2EacD2D7cF5Cba9dA031C0a9C5d7FDeDc056216C',
+  '0x8c9886Aca8B6984c10F988078C5e1D91976dFD16',
+] 
+
+const VDONStakingAddress = '0x63D21dBD5A30940C605d77882D065736e8fffC94';
+
+
 const klaytnMarkets = [
   {
     symbol: 'dKLAY',
@@ -249,19 +261,76 @@ const klaytnMarkets = [
   }, 
 ]
 
-async function fetch() {
+async function getDonkeySwapRatio() {
+  return axios
+  .post('https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3', {
+    query: '{ pool(id: "0xe73fe82f905e265d26e4a5a3d36d0d03bc4119fc") { token0Price } }',
+  })
+  .then((res) => res.data.data.pool.token0Price);
+}
+
+
+async function staking() {
+  let totalTvlKrw = 0;
   const result = await axios.get('https://quotation-api-cdn.dunamu.com/v1/forex/recent?codes=FRX.KRWUSD');
   const currency = result.data[0].basePrice;
 
+  const web3 = new Web3(process.env.ETHEREUM_RPC);
   const priceOracleContract = new web3.eth.Contract(PriceOracleAbi, PriceOracleAddress.ethereum);
   const { 0 : symbols, 1 : prices} = await priceOracleContract.methods.getPrices().call();
-
+  
   const priceObj = symbols.reduce((accum, symbol, index) => {
     return {
       ...accum,
       [Web3.utils.hexToUtf8(symbol)] : prices[index]
     }
   }, {});
+
+  const donRatio = await getDonkeySwapRatio();
+  const ethPrice = priceObj['ETH'];
+
+  const donkeyPrice = Math.ceil(ethPrice / Math.floor(donRatio));
+  priceObj['DON'] = donkeyPrice;
+
+  for(let i=0; i<stakings.length; i++) {
+    const address = stakings[i];
+    const contract = new web3.eth.Contract(StakingAbi, address);
+    const stakingMetaData = await contract.methods.stakingMetaData().call();
+    const totalPrincipal = stakingMetaData['totalPrincipalAmount'] / 1e18;
+    totalTvlKrw += totalPrincipal * priceObj['DON'];
+  }
+
+  const contract = new web3.eth.Contract(VDONStakingAbi, VDONStakingAddress);
+  const productInfoList = await contract.methods.productInfoList().call();
+  const totalPrincipal = productInfoList.reduce((accum, current) => {
+    return accum + current['totalPrincipalAmount'] / 1e18;
+  }, 0)
+  totalTvlKrw += totalPrincipal * priceObj['DON']
+  return totalTvlKrw / currency;
+}
+
+async function fetch() {
+  const result = await axios.get('https://quotation-api-cdn.dunamu.com/v1/forex/recent?codes=FRX.KRWUSD');
+  const currency = result.data[0].basePrice;
+
+  
+  const web3 = new Web3(process.env.ETHEREUM_RPC);
+  const priceOracleContract = new web3.eth.Contract(PriceOracleAbi, PriceOracleAddress.ethereum);
+  const { 0 : symbols, 1 : prices} = await priceOracleContract.methods.getPrices().call();
+  
+  const priceObj = symbols.reduce((accum, symbol, index) => {
+    return {
+      ...accum,
+      [Web3.utils.hexToUtf8(symbol)] : prices[index]
+    }
+  }, {});
+
+  const donRatio = await getDonkeySwapRatio();
+  const ethPrice = priceObj['ETH'];
+  const donkeyPrice = Math.ceil(ethPrice / Math.floor(donRatio));
+
+  priceObj['DON'] = donkeyPrice;
+  priceObj['kDON'] = donkeyPrice;
 
   let totalTvlKrw = 0;
 
@@ -273,8 +342,10 @@ async function fetch() {
     totalTvlKrw += tvlKrw;
   }
 
+
   const KLAYTN_ACCESS_KEY_ID = "KASK19AHMII2AZN1MAJDRFOU"
   const KLAYTN_SECRET_ACCESS_KEY = "I1Iwgwt1C6z_jA79eh6JBJKOHTGLIK-tAozkz-bl"
+
   const option = {
     headers: [
       {
@@ -302,15 +373,17 @@ async function fetch() {
     const market = klaytnMarkets[i];
     const contract = new caver.klay.Contract(DTokenAbi, market.contractAddress);
 
+
     const cash = await contract.methods.getCash().call() / 10 ** market.underlyingDecimals;
 
     const tvlKrw = cash * klaytnPriceObj[market.underlyingSymbol];
     totalTvlKrw += tvlKrw
   }
-  
   return totalTvlKrw / currency;
 }
 
+
 module.exports = {
-  fetch
+  fetch,
+  staking
 }
