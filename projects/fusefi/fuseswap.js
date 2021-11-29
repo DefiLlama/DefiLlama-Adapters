@@ -1,5 +1,7 @@
 const axios = require("axios");
+const sdk = require('@defillama/sdk');
 const { GraphQLClient, gql } = require('graphql-request');
+const {getCompoundUsdTvl} = require('./helper/compound');
 const retry = require('./helper/retry');
 const endpoint = 'https://api.thegraph.com/subgraphs/name/fuseio/fuseswap';
 
@@ -16,6 +18,12 @@ async function fetch() {
     return parseFloat(results.uniswapFactories[0].totalLiquidityUSD);
 };
 
-module.exports = {
-  fetch
-};
+
+
+module.exports={
+    
+    fetch,
+    
+}
+
+
