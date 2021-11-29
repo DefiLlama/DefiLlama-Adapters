@@ -271,6 +271,46 @@ async function getDonkeySwapRatio() {
   .then((res) => res.data.data.pool.token0Price);
 }
 
+
+async function staking() {
+  let totalTvlKrw = 0;
+  const result = await axios.get('https://quotation-api-cdn.dunamu.com/v1/forex/recent?codes=FRX.KRWUSD');
+  const currency = result.data[0].basePrice;
+
+  const web3 = new Web3(process.env.ETHEREUM_RPC);
+  const priceOracleContract = new web3.eth.Contract(PriceOracleAbi, PriceOracleAddress.ethereum);
+  const { 0 : symbols, 1 : prices} = await priceOracleContract.methods.getPrices().call();
+  
+  const priceObj = symbols.reduce((accum, symbol, index) => {
+    return {
+      ...accum,
+      [Web3.utils.hexToUtf8(symbol)] : prices[index]
+    }
+  }, {});
+
+  const donRatio = await getDonkeySwapRatio();
+  const ethPrice = priceObj['ETH'];
+
+  const donkeyPrice = Math.ceil(ethPrice / Math.floor(donRatio));
+  priceObj['DON'] = donkeyPrice;
+
+  for(let i=0; i<stakings.length; i++) {
+    const address = stakings[i];
+    const contract = new web3.eth.Contract(StakingAbi, address);
+    const stakingMetaData = await contract.methods.stakingMetaData().call();
+    const totalPrincipal = stakingMetaData['totalPrincipalAmount'] / 1e18;
+    totalTvlKrw += totalPrincipal * priceObj['DON'];
+  }
+
+  const contract = new web3.eth.Contract(VDONStakingAbi, VDONStakingAddress);
+  const productInfoList = await contract.methods.productInfoList().call();
+  const totalPrincipal = productInfoList.reduce((accum, current) => {
+    return accum + current['totalPrincipalAmount'] / 1e18;
+  }, 0)
+  totalTvlKrw += totalPrincipal * priceObj['DON']
+  return totalTvlKrw / currency;
+}
+
 async function fetch() {
   const result = await axios.get('https://quotation-api-cdn.dunamu.com/v1/forex/recent?codes=FRX.KRWUSD');
   const currency = result.data[0].basePrice;
@@ -303,22 +343,6 @@ async function fetch() {
     const tvlKrw = cash * priceObj[market.underlyingSymbol];
     totalTvlKrw += tvlKrw;
   }
-
-  for(let i=0; i<stakings.length; i++) {
-    const address = stakings[i];
-    const contract = new web3.eth.Contract(StakingAbi, address);
-    const stakingMetaData = await contract.methods.stakingMetaData().call();
-    const totalPrincipal = stakingMetaData['totalPrincipalAmount'] / 1e18;
-    totalTvlKrw += totalPrincipal * priceObj['DON'];
-  }
-
-  const contract = new web3.eth.Contract(VDONStakingAbi, VDONStakingAddress);
-  const productInfoList = await contract.methods.productInfoList().call();
-  const totalPrincipal = productInfoList.reduce((accum, current) => {
-    return accum + current['totalPrincipalAmount'] / 1e18;
-  }, 0)
-
-  totalTvlKrw += totalPrincipal * priceObj['DON']
 
   const option = {
     headers: [
@@ -356,8 +380,8 @@ async function fetch() {
   return totalTvlKrw / currency;
 }
 
-fetch()
 
 module.exports = {
-  fetch
+  fetch,
+  staking
 }
