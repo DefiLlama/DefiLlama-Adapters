@@ -9,20 +9,16 @@ const stakingInfo = {
         {
             // DPOL
             meta: {
-                stakingAddress: '0x8271529b62c82b4d30a2eFdB3ec89D7abA60897E',
-                tokenAddress: '0x4964B3B599B82C3FdDC56e3A9Ffd77d48c6AF0f0',
-                poolId: 0
+                clusterAddress: '0x4964B3B599B82C3FdDC56e3A9Ffd77d48c6AF0f0',
             },
-            tvl: stakingTvl
+            tvl: clusterStakingTvl
         },
         {
             // DGAME
             meta: {
-                stakingAddress: '0x8271529b62c82b4d30a2eFdB3ec89D7abA60897E',
-                tokenAddress: '0x589Ea336092184d9eD74b8263c4eecA73Ed0cE7a',
-                poolId: 1
+                clusterAddress: '0x589Ea336092184d9eD74b8263c4eecA73Ed0cE7a',
             },
-            tvl: stakingTvl
+            tvl: clusterStakingTvl
         },
         {
             // WETH/DAI
@@ -157,8 +153,6 @@ const stakingInfo = {
             // BSC-deCluster
             meta: {
                 clusterAddress: '0x0a684421ef48b431803BFd75F38675EAb1e38Ed5',
-                clustersLockAddress: '0x7cDA416c096768971c0b7605F5aaABD8fA713818',
-                poolId: 0,
             },
             tvl: clusterStakingTvl
         },
@@ -409,10 +403,9 @@ async function crvStakingTvl(chain, meta, ethBlock) {
 }
 
 async function clusterStakingTvl(chain, meta, ethBlock) {
-    const { poolSupply } = (await sdk.api.abi.call({
-        target: meta.clustersLockAddress,
-        abi: abi.poolInfo,
-        params: meta.poolId,
+    const poolSupply = (await sdk.api.abi.call({
+        target: meta.clusterAddress,
+        abi: "erc20:totalSupply",
         chain,
         block: ethBlock
     })).output;
