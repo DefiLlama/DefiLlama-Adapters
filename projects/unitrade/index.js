@@ -1,7 +1,9 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
+const gatewayAbi = require("./gateway.abi.json");
 
 const UNITRADE_ORDERBOOK = "0xC1bF1B4929DA9303773eCEa5E251fDEc22cC6828";
+const UNITRADE_BRIDGE = "0x64B17B166090B8F9BA19C13Bf8D5dA951b2d653D";
 
 async function tvl(_, block) {
   //getting active orders length
@@ -34,10 +36,10 @@ async function tvl(_, block) {
       })),
     })
   ).output.map((orderCall) => orderCall.output);
-  //filtering out duplicate tokens 
+  //filtering out duplicate tokens
   const uniqueLockedTokenAddresses = [
     ...new Set(activeOrders.map((order) => order.tokenIn)),
-  ]
+  ];
   //getting Unitrade orderbook balance of specified tokens
   let balances = (
     await sdk.api.abi.multiCall({
@@ -46,7 +48,7 @@ async function tvl(_, block) {
         target: address,
         params: UNITRADE_ORDERBOOK,
       })),
-      block
+      block,
     })
   ).output;
 
@@ -54,17 +56,45 @@ async function tvl(_, block) {
   balances = balances.reduce((acc, item) => {
     return Object.assign(acc, { [item.input.target]: item.output });
   }, {});
-  
-  let ethBalance = (await sdk.api.eth.getBalance({target: UNITRADE_ORDERBOOK, block})).output;
-  balances['0x0000000000000000000000000000000000000000'] = ethBalance;
+  //fetching first 10 gateway tokens and formatting output (temp fix until we can fetch addedTokens.length )
+  const gatewayTokens = (
+    await sdk.api.abi.multiCall({
+      abi: gatewayAbi.abi.filter((item) => item.name === "tokens")[0],
+      calls: new Array(10).fill(null).map((_, index) => ({
+        target: UNITRADE_BRIDGE,
+        params: index,
+      })),
+    })
+  ).output
+    .filter((item) => item.output !== null)
+    .map((item) => item.output.tokenAddress);
+  //fetching gateway contract balance of the gateway tokens
+  const gatewayBalances = (
+    await sdk.api.abi.multiCall({
+      abi: "erc20:balanceOf",
+      calls: gatewayTokens.map((address) => ({
+        target: address,
+        params: UNITRADE_BRIDGE,
+      })),
+      block,
+    })
+  );
+  //combining balance from orderbook and gateway
+  sdk.util.sumMultiBalanceOf(balances, gatewayBalances, true)
+  let ethBalanceOrderbook = (
+    await sdk.api.eth.getBalance({ target: UNITRADE_ORDERBOOK, block })
+  ).output;
+  let ethBalanceGateway = (
+    await sdk.api.eth.getBalance({ target: UNITRADE_BRIDGE, block })
+  ).output;
+  const combinedETHBalances =
+    parseInt(ethBalanceGateway) + parseInt(ethBalanceOrderbook);
 
+  balances["0x0000000000000000000000000000000000000000"] = combinedETHBalances.toFixed(0);
+  
   return balances;
 }
 
 module.exports = {
-  name: "UniTrade",
-  token: "TRADE",
-  category: "dexes",
-  start: 1603843200, // Oct-28-2020 00:00:00 PM +UTC
-  tvl,
+  ethereum:{tvl},
 };

@@ -1,9 +1,7 @@
 const Web3 = require('web3')
 const Caver = require('caver-js');
 const axios = require('axios');
-const dotenv = require('dotenv');
-const path = require('path')
-dotenv.config({path : path.resolve(__dirname, "../../.env")});
+const web3 = require('../config/web3')
 
 const DTokenAbi = require('./abi/DToken.json').abi;
 const PriceOracleAbi = require('./abi/PriceOracleView.json').abi;
@@ -344,11 +342,15 @@ async function fetch() {
     totalTvlKrw += tvlKrw;
   }
 
+
+  const KLAYTN_ACCESS_KEY_ID = "KASK19AHMII2AZN1MAJDRFOU"
+  const KLAYTN_SECRET_ACCESS_KEY = "I1Iwgwt1C6z_jA79eh6JBJKOHTGLIK-tAozkz-bl"
+
   const option = {
     headers: [
       {
         name: 'Authorization',
-        value: `Basic ${Buffer.from(`${process.env.KLAYTN_ACCESS_KEY_ID}:${process.env.KLAYTN_SECRET_ACCESS_KEY}`).toString('base64')}`,
+        value: `Basic ${Buffer.from(`${KLAYTN_ACCESS_KEY_ID}:${KLAYTN_SECRET_ACCESS_KEY}`).toString('base64')}`,
       },
       { name: 'x-chain-id', value: '8217' },
     ],

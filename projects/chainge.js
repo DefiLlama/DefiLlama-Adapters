@@ -8,5 +8,6 @@ async function fetch() {
 }
 
 module.exports = {
+    methodology: "assets in liquidity are counted as TVL",
     fetch
 }
