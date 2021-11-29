@@ -1,18 +1,11 @@
 const sdk = require("@defillama/sdk");
-const BigNumber = require("bignumber.js")
+const BigNumber = require("bignumber.js");
+const { staking } = require("../helper/staking");
+const { pool2 } = require("../helper/pool2");
 const abi = require('./abi.json')
 
 const stakingInfo = {
     'polygon': [
-        {
-            // DHV
-            meta: {
-                stakingAddress: '0x88cFC1bc9aEb80f6C8f5d310d6C3761c2a646Df7',
-                tokenAddress: '0x5fCB9de282Af6122ce3518CDe28B7089c9F97b26',
-                poolId: 0,
-            },
-            tvl: stakingTvl
-        },
         {
             // DPOL
             meta: {
@@ -161,15 +154,6 @@ const stakingInfo = {
     ],
     'bsc': [
         {
-            // DHV
-            meta: {
-                stakingAddress: '0x35f28aA0B2F34eFF17d2830135312ab2a777De36',
-                tokenAddress: '0x58759dd469ae5631c42cf8a473992335575b58d7',
-                poolId: 0,
-            },
-            tvl: stakingTvl
-        },
-        {
             // BSC-deCluster
             meta: {
                 clusterAddress: '0x0a684421ef48b431803BFd75F38675EAb1e38Ed5',
@@ -177,19 +161,6 @@ const stakingInfo = {
                 poolId: 0,
             },
             tvl: clusterStakingTvl
-        },
-        {
-            // DHV/BUSD
-            meta: {
-                stakingAddress: '0xF2e8CD1c40C766FEe73f56607fDffa526Ba8fa6c',
-                lpAddress: '0x72ba008B631D9FD5a8E8013023CB3c05E19A7CA9',
-                underlying: [
-                    '0x58759dd469ae5631c42cf8a473992335575b58d7',
-                    '0xe9e7cea3dedca5984780bafc599bd69add087d56'
-                ],
-                poolId: 0
-            },
-            tvl: lpStakingTvl
         },
         {
             // CAKE/BUSD
@@ -349,15 +320,6 @@ const stakingInfo = {
         },
     ],
     'ethereum': [
-        {
-            // DHV
-            meta: {
-                stakingAddress: '0x04595f9010F79422a9b411ef963e4dd1F7107704',
-                tokenAddress: '0x62Dc4817588d53a056cBbD18231d91ffCcd34b2A',
-                poolId: 0,
-            },
-            tvl: stakingTvl
-        },
         // {
         //     // DHV/WETH
         //     meta: {
@@ -473,25 +435,17 @@ async function clusterStakingTvl(chain, meta, ethBlock) {
     return underlyingList.map((_, i) => [underlyingList[i], underlyingAmount[i]]);
 }
 
-async function chainTvl(chain, ethBlock) {
+async function chainTvl(chain, chainBlocks) {
     const tvl = {};
+    const transform = addr => `${chain}:${addr}`
+    const block = chainBlocks[chain]
     for (const staking of stakingInfo[chain]) {
-        const stakingTvl = await staking.tvl(chain, staking.meta)
+        const stakingTvl = await staking.tvl(chain, staking.meta, block)
         if (typeof stakingTvl === 'string') {
-            if (tvl[staking.meta.tokenAddress]) {
-                tvl[staking.meta.tokenAddress] =
-                    new BigNumber(tvl[staking.meta.tokenAddress]).plus(stakingTvl).toFixed();
-            } else {
-                tvl[staking.meta.tokenAddress] = stakingTvl;
-            }
+            sdk.util.sumSingleBalance(tvl, transform(staking.meta.tokenAddress), stakingTvl)
         } else {
             for (let i = 0; i < stakingTvl.length; i++) {
-                if (tvl[stakingTvl[i][0]]) {
-                    tvl[stakingTvl[i][0]] =
-                        new BigNumber(tvl[stakingTvl[i][0]]).plus(stakingTvl[i][1]).toFixed();
-                } else {
-                    tvl[stakingTvl[i][0]] = stakingTvl[i][1];
-                }
+                sdk.util.sumSingleBalance(tvl, transform(stakingTvl[i][0]), stakingTvl[i][1])
             }
         }
     }
@@ -499,25 +453,29 @@ async function chainTvl(chain, ethBlock) {
 }
 
 async function polygonTvl(timestamp, ethBlock, chainBlocks) {
-    return chainTvl('polygon', ethBlock);
+    return chainTvl('polygon', chainBlocks);
 }
 
 async function bscTvl(timestamp, ethBlock, chainBlocks) {
-    return chainTvl('bsc', ethBlock);
+    return chainTvl('bsc', chainBlocks);
 }
 
 async function ethereumTvl(timestamp, ethBlock, chainBlocks) {
-    return chainTvl('ethereum', ethBlock)
+    return chainTvl('ethereum', chainBlocks)
 }
 
 module.exports = {
     polygon: {
+        staking: staking('0x88cFC1bc9aEb80f6C8f5d310d6C3761c2a646Df7', '0x5fCB9de282Af6122ce3518CDe28B7089c9F97b26', 'polygon'),
         tvl: polygonTvl
     },
     bsc: {
+        staking: staking('0x35f28aA0B2F34eFF17d2830135312ab2a777De36', '0x58759dd469ae5631c42cf8a473992335575b58d7', 'bsc'),
+        pool2: pool2("0xF2e8CD1c40C766FEe73f56607fDffa526Ba8fa6c", "0x72ba008B631D9FD5a8E8013023CB3c05E19A7CA9", "bsc"),
         tvl: bscTvl
     },
     ethereum: {
-        tvl: ethereumTvl
+        staking: staking('0x04595f9010F79422a9b411ef963e4dd1F7107704', '0x62Dc4817588d53a056cBbD18231d91ffCcd34b2A'),
+        //tvl: ethereumTvl
     }
 };
