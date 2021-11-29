@@ -1,3 +1,5 @@
+const { ohmTvl } = require('../helper/ohm')
+
 const treasury = "0x458B737d87C40252EC11b160C76bb1C53F248b28"
 module.exports = ohmTvl(treasury, [
     //busd 
