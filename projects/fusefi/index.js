@@ -3,5 +3,5 @@ const swap = require('./swap')
 const olalending = require('./olalending')
 
 module.exports = {
-    tvl: sdk.util.sumChainTvls(swap, olalending),
+    tvl: sdk.util.sumChainTvls([swap.tvl, olalending.tvl]),
 }

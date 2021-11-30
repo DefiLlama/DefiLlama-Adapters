@@ -8,7 +8,5 @@ const abis = {
 }
 
 module.exports={
-    
     tvl: getCompoundUsdTvl(unitroller_fuse, "fuse", "0x025B0ff0920298e087308F3b2de0CF6399685909", abis)
-    
 }
