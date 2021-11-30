@@ -35,6 +35,12 @@ const MINT_DATA_ARRAY = [
     BOND: "0xb805CD015D52e852fC31B8937b80adBc00Cc2B61",
     TYPE: "LP",
   },
+   {
+    NAME: "KRNO_KLAY_LP",
+    TOKEN: "0x193ce4066aebe1911feb03425d4312a7b6514081",
+    BOND: "0x16DC360812d3d07D27bA35eca4CFC01b6E1C947f",
+    TYPE: "LP",
+  },
 ];
 
 async function getMintVolume(caver, mintData) {
@@ -49,13 +55,13 @@ async function getMintVolume(caver, mintData) {
       [abi.markdown, abi.valuation],
       BOND_CALCULATOR
     );
-    const markdown = await bondCalculatorContract.methods
+    const [markdown,valuation] = await Promise.all([
+      bondCalculatorContract.methods
       .markdown(mintData.TOKEN)
-      .call();
-
-    const valuation = await bondCalculatorContract.methods
+      .call(),bondCalculatorContract.methods
       .valuation(mintData.TOKEN, amount)
-      .call();
+      .call()
+    ])
 
     volume = (markdown / Math.pow(10, 18)) * (valuation / Math.pow(10, 9));
   } else {
