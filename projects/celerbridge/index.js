@@ -11,6 +11,7 @@ const bridgeContractsV2 = {
     polygon: "0xa251c4691C1ffd7d9b128874C023427513D8Ac5C",
     avax: "0xBB7684Cc5408F4DD0921E5c2Cadd547b8f1AD573",
     fantom: "0x3795C36e7D12A8c252A20C5a7B455f7c57b60283",
+    optimism: "0x6De33698e9e9b787e09d3Bd7771ef63557E148bb"
 }
 
 // From https://cbridge-docs.celer.network/#/FAQ?id=what-are-the-token-addresses-on-each-chain
@@ -49,6 +50,7 @@ const tokens = [{
     polygon: "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
     avax: "0x49D5c2BdFfac6CE2BFdB6640F4F80f226bc10bAB",
     fantom: "0x74b23882a30290451A17c44f4F05243b6b58C76d",
+    optimism: "0x4200000000000000000000000000000000000006"
 }, {
     ethereum: "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
     arbitrum: "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
