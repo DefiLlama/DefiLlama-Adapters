@@ -4,6 +4,7 @@ const BigNumber = require("bignumber.js");
 const fetch = require("cross-fetch");
 
 const fetchPool = (chainId) => {
+  let pool;
   fetch("https://graph.unifarm.co/graphql", {
     method: "POST",
     headers: {
@@ -11,49 +12,60 @@ const fetchPool = (chainId) => {
     },
     body: JSON.stringify({
       query: `
-                query AllPools($where: PoolsGroupWhereClause!) {
-                    allPools(where: $where) {
-                    pools {
-                        cohort {
-                        cohortAddress
-                        tokens
-                        }
-                    }
-                    }
-                }
-                `,
+      query Query($where: CohortGroupWhereClause!, $filter: Filter!) {
+        allCohorts(where: $where, filter: $filter) {
+          cohorts {
+            tokens
+            proxies
+            cohortAddress
+          }
+        }
+      }`,
       variables: {
         where: {
           chainId: chainId,
         },
+        filter: {
+          limit: 100,
+        },
       },
     }),
   }).then((res) => {
-    return res.json();
+    if (res.status >= 400) {
+      throw new Error("Bad response from server");
+    }
+    pool = res.data.allCohorts.cohorts;
   });
+  return pool;
 };
 
 const _tvl = async (timestamp, ethBlock, chainBlocks, chain) => {
   const block = chainBlocks[chain];
-  var tokens = [];
   let pools;
 
   if (chain === "ethereum") {
-    tokens = ethereumToken;
-    pools = fetchPool(1);
+    pools = await fetchPool(1);
   } else if (chain === "bsc") {
-    tokens = bscToken;
-    pools = fetchPool(56);
+    pools = await fetchPool(56);
   } else {
-    tokens = polygonToken;
-    pools = fetchPool(137);
+    pools = await fetchPool(137);
   }
 
+  console.log(pools);
+
   const multiCallResult = await sdk.api.abi.multiCall({
-    calls: pools.data.allpools.pools.map((data) => ({
-      target: data.cohotAddress,
-      params: data.tokens,
-    })),
+    calls: pools.map(
+      (data) => (
+        {
+          target: data.cohortAddress,
+          params: data.tokens,
+        },
+        {
+          target: data.proxies[0],
+          params: data.tokens,
+        }
+      )
+    ),
     block,
     abi: erc20Abi[5],
     chain,
@@ -63,32 +75,17 @@ const _tvl = async (timestamp, ethBlock, chainBlocks, chain) => {
 };
 
 const ethereum = async (timestamp, ethBlock, chainBlocks) => {
-  let balance = [];
-  await Promise(_tvl(timestamp, ethBlock, chainBlocks, "ethereum")).then(
-    (values) => {
-      balance = values;
-    }
-  );
+  let balance = await _tvl(timestamp, ethBlock, chainBlocks, "ethereum");
   return arrayToObject(balance, "ethereum");
 };
 
 const bsc = async (timestamp, ethBlock, chainBlocks) => {
-  let balance = [];
-  await Promise(_tvl(timestamp, ethBlock, chainBlocks, "bsc")).then(
-    (values) => {
-      balance = values;
-    }
-  );
+  let balance = await _tvl(timestamp, ethBlock, chainBlocks, "bsc");
   return arrayToObject(balance, "bsc");
 };
 
 const polygon = async (timestamp, ethBlock, chainBlocks) => {
-  let balance = [];
-  await Promise(_tvl(timestamp, ethBlock, chainBlocks, "polygon")).then(
-    (values) => {
-      balance = values;
-    }
-  );
+  let balance = await _tvl(timestamp, ethBlock, chainBlocks, "polygon");
   return arrayToObject(balance, "polygon");
 };
 
