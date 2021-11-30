@@ -62,7 +62,6 @@ async function getMintVolume(caver, mintData) {
     getBondMarketPrice(caver, mintData),
     getTreasuryAmount(caver, mintData),
   ]);
-  console.log({name:mintData.NAME, marketPrice,amount})
 
   if (mintData.TYPE.includes("LP")) {
     const bondCalculatorContract = caver.contract.create(
@@ -78,7 +77,6 @@ async function getMintVolume(caver, mintData) {
     ])
     volume = (markdown ) * (valuation / Math.pow(10, 9));
     if( mintData.NAME==="KRNO_KLAY_LP"){
-      console.log("getBondMarketPrice and KRNO_KLAY_LP")
       const klayPrice =(await loadTokenPrices()).KLAY
       volume *= klayPrice
     } 
