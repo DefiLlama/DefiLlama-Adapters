@@ -1,7 +1,7 @@
 const sdk = require('@defillama/sdk')
-const fuseswap = require('../fuseswap')
+const swap = require('./swap')
 const olalending = require('./olalending')
 
 module.exports = {
-    tvl: sdk.util.sumChainTvls(fuseswap, olalending),
+    tvl: sdk.util.sumChainTvls(swap, olalending),
 }
