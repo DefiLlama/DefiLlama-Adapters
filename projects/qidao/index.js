@@ -47,6 +47,11 @@ async function fantom(timestamp, block, chainBlocks) {
         ['0xae75A438b2E0cB8Bb01Ec1E1e376De11D44477CC', '0x267bDD1C19C932CE03c7A62BBe5b95375F9160A6'],
         ['0xb3654dc3d10ea7645f8319668e8f54d2574fbdc8', '0xd6488d586E8Fcd53220e4804D767F19F5C846086'],
         ['0x6a07A792ab2965C72a5B8088d3a069A7aC3a993B', '0xdB09908b82499CAdb9E6108444D5042f81569bD9'],
+        ['0x49c68edb7aebd968f197121453e41b8704acde0c', '0x3609A304c6A41d87E895b9c1fd18c02ba989Ba90'],
+        ['0x0a03d2c1cfca48075992d810cc69bd9fe026384a', '0xC1c7eF18ABC94013F6c58C6CdF9e829A48075b4e'],
+        ['0x97927abfe1abbe5429cbe79260b290222fc9fbba', '0x5563Cc1ee23c4b17C861418cFF16641D46E12436'],
+        ['0x6dfe2aaea9daadadf0865b661b53040e842640f8', '0x8e5e4D08485673770Ab372c05f95081BE0636Fa2'],
+        ['0x920786cff2a6f601975874bb24c63f0115df7dc8', '0xBf0ff8ac03f3E0DD7d8faA9b571ebA999a854146'],
     ], chainBlocks[chain], chain, addr=>{
         if(addr === "0x0DEC85e74A92c52b7F708c4B10207D9560CEFaf0"){
             return "fantom:0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83"
@@ -54,10 +59,34 @@ async function fantom(timestamp, block, chainBlocks) {
             return "0x6b175474e89094c44da98b954eedeac495271d0f"
         } else if (addr === "0xb3654dc3d10ea7645f8319668e8f54d2574fbdc8"){
             return "0x514910771af9ca656af840dff83e8264ecf986ca"
+        } else if (addr === "0x0a03d2c1cfca48075992d810cc69bd9fe026384a"){
+            return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+        } else if (addr === "0x97927abfe1abbe5429cbe79260b290222fc9fbba"){
+            return "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"
+        } else if (addr === "0x6dfe2aaea9daadadf0865b661b53040e842640f8"){
+            return "0x514910771af9ca656af840dff83e8264ecf986ca"
+        } else if (addr === "0x920786cff2a6f601975874bb24c63f0115df7dc8"){
+            return "0x6b175474e89094c44da98b954eedeac495271d0f"
+        } else if (addr === "0x49c68edb7aebd968f197121453e41b8704acde0c"){
+            return "fantom:0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83"
         }
         return `${chain}:${addr}`
     })
     return balances
+}
+
+async function avax(timestamp, block, chainBlocks) {
+    const balances = {};
+    const chain = 'avax';
+    await sumTokens(balances, [
+        ["0x1B156C5c75E9dF4CAAb2a5cc5999aC58ff4F9090","0xfA19c1d104F4AEfb8d5564f02B3AdCa1b515da58"]
+    ], chainBlocks[chain], chain, addr=>{
+        if(addr === "0x1B156C5c75E9dF4CAAb2a5cc5999aC58ff4F9090") {
+            return "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"
+        }
+        return `${chain}:${addr}`
+    })
+    return balances;
 }
 
 module.exports = {
@@ -67,5 +96,8 @@ module.exports = {
     },
     fantom:{
         tvl: fantom
+    },
+    avax: {
+        tvl: avax
     }
 }

@@ -25,7 +25,6 @@ module.exports = {
   ethereum: {
     tvl: ethTvl,
   },
-  tvl: sdk.util.sumChainTvls([ethTvl]),
   methodology:
     "We count liquidity that's on the Senior Pool (liquidity provider supply) through its Contract",
 };

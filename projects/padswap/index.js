@@ -1,95 +1,42 @@
-const { request, gql } = require("graphql-request");
-const { toUSDTBalances } = require('../helper/balances');
-const sdk = require('@defillama/sdk');
-const BigNumber = require('bignumber.js');
+const { stakings } = require("../helper/staking");
+const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl");
+const { getChainTvl } = require("../helper/getUniSubgraphTvl");
 
-const TOAD_ADDRESS = '0x463e737d8f740395abf44f7aac2d9531d8d539e9'
-const TOAD_FARM_ADDRESS = '0xe1F1EDfBcEfB1E924e4a031Ed6B4CAbC7e570154'
-const TOAD_PADSWAP_FARM_V1_ADDRESS = '0xD2d7b6b333AbF180520494c021f7125806eD273e'
-const TOAD_PADSWAP_FARM_V2_ADDRESS = '0x4992df071416370fe780627eDFDD8CbC694Ed08b'
+const TOAD_ADDRESS = "0x463e737d8f740395abf44f7aac2d9531d8d539e9";
+const TOAD_FARM_ADDRESS = "0xe1F1EDfBcEfB1E924e4a031Ed6B4CAbC7e570154";
+const TOAD_PADSWAP_FARM_V1_ADDRESS =
+  "0xD2d7b6b333AbF180520494c021f7125806eD273e";
+const TOAD_PADSWAP_FARM_V2_ADDRESS =
+  "0x4992df071416370fe780627eDFDD8CbC694Ed08b";
 
-const graphUrl = 'https://api.thegraph.com/subgraphs/name/toadguy/padswap'
-const graphQuery = gql`
-query get_tvl($block: Int) {
-  uniswapFactory(
-    id: "0xB836017ACf10b8A7c6c6C9e99eFE0f5B0250FC45",
-    block: { number: $block }
-  ) {
-    totalVolumeUSD
-    totalLiquidityUSD
-  }
-}
-`
+const PADSWAP_BSC_FACTORY_ADDRESS =
+  "0xB836017ACf10b8A7c6c6C9e99eFE0f5B0250FC45";
+const PADSWAP_MOONRIVER_FACTORY_ADDRESS =
+  "0x760d2Bdb232027aB3b1594405077F9a1b91C04c1";
 
-const toadPriceQuery = gql`
-query get_toad_reserve($block: Int) {
-  pair(
-    id: "0xef6421325f7ed6ebeeaa2b092f9cc64ee2aa3b3b",
-    block: { number: $block }
-  ) {
-    reserve0
-    reserveUSD
-  }
-}
-`
-
-async function getToadPrice(chainBlocks) {
-  const { pair } = await request(
-    graphUrl,
-    toadPriceQuery,
-    { block: chainBlocks['bsc'] }
-  )
-  const toadReserve = pair.reserveUSD / 2
-  const toadPrice = toadReserve / pair.reserve0
-  return toadPrice
-}
-
-async function tvl(timestamp, block, chainBlocks) {
-  const {uniswapFactory} = await request(
-    graphUrl,
-    graphQuery,
-    {
-      block: chainBlocks['bsc'],
-    }
-  );
-  const usdTvl = Number(uniswapFactory.totalLiquidityUSD)
-
-  return toUSDTBalances(usdTvl)
-}
-
-async function staking(timestamp, block, chainBlocks) {
-  const { output: toadFarmOutput } = await sdk.api.erc20.balanceOf({
-    block: chainBlocks['bsc'],
-    target: TOAD_ADDRESS,
-    owner: TOAD_FARM_ADDRESS,
-    chain: 'bsc'
-  })
-  const { output: padswapV1Output } = await sdk.api.erc20.balanceOf({
-    block: chainBlocks['bsc'],
-    target: TOAD_ADDRESS,
-    owner: TOAD_PADSWAP_FARM_V1_ADDRESS,
-    chain: 'bsc'
-  })
-  const { output: padswapV2Output } = await sdk.api.erc20.balanceOf({
-    block: chainBlocks['bsc'],
-    target: TOAD_ADDRESS,
-    owner: TOAD_PADSWAP_FARM_V2_ADDRESS,
-    chain: 'bsc'
-  })
-  const toadBalanceBn = BigNumber(toadFarmOutput).plus(BigNumber(padswapV1Output))
-                                                 .plus(BigNumber(padswapV2Output))
-  const toadBalance = toadBalanceBn.times(10 ** -18).toNumber()
-  const toadPrice = await getToadPrice(chainBlocks)
-  const usdTvl = toadBalance * toadPrice
-  const balances = toUSDTBalances(usdTvl)
-  return balances
-}
+const subgraphTvls = getChainTvl({
+  bsc: "https://api.thegraph.com/subgraphs/name/toadguy/padswap",
+  moonriver: "https://api.thegraph.com/subgraphs/name/toadguy/padswap-subgraph-moonriver"
+})
 
 module.exports = {
-  methodology: `TVL accounts for the liquidity on all AMM pools (see https://info.padswap.exchange/). Staking includes all TOAD staked in TOAD farms.`,
+  methodology: `TVL accounts for the liquidity on all AMM pools (see https://info.padswap.exchange/ and https://movr-info.padswap.exchange/). Staking includes all TOAD staked in TOAD farms.`,
   misrepresentedTokens: true,
   bsc: {
-    staking
+    tvl: subgraphTvls("bsc"),
+    /*calculateUsdUniTvl(PADSWAP_BSC_FACTORY_ADDRESS, "bsc", "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c", [
+      "0x463e737d8f740395abf44f7aac2d9531d8d539e9", //toad
+      "0xc0888d80ee0abf84563168b3182650c0addeb6d5", //pad
+    ], "wbnb"),
+    */
+    staking: stakings([TOAD_FARM_ADDRESS, TOAD_PADSWAP_FARM_V1_ADDRESS, TOAD_PADSWAP_FARM_V2_ADDRESS], TOAD_ADDRESS, "bsc"),
   },
-  tvl
-}
+  moonriver:{
+    tvl: subgraphTvls("moonriver")
+    /*calculateUsdUniTvl(PADSWAP_MOONRIVER_FACTORY_ADDRESS, "moonriver", "0x663a07a2648296f1a3c02ee86a126fe1407888e5", [
+      "0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d", //usdc
+      "0x45488c50184ce2092756ba7cdf85731fd17e6f3d", //pad
+    ], "moonriver"),
+    */
+  }
+};

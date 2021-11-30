@@ -3,8 +3,11 @@ const _ = require('underscore');
 const BigNumber = require("bignumber.js");
 const abi = require('../helper/abis/aave.json');
 
-async function getV2Reserves(block, addressesProviderRegistry, chain, v2Atokens, v2ReserveTokens, addressSymbolMapping) {
+async function getV2Reserves(block, addressesProviderRegistry, chain, v2Atokens, v2ReserveTokens, addressSymbolMapping, dataHelperAddress) {
     if (v2Atokens.length !== 0 && v2ReserveTokens.length !== 0) return
+
+    let validProtocolDataHelpers
+    if(dataHelperAddress === undefined){
 
     const addressesProviders = (
       await sdk.api.abi.call({
@@ -27,15 +30,18 @@ async function getV2Reserves(block, addressesProviderRegistry, chain, v2Atokens,
       })
     ).output;
 
-    const validProtocolDataHelpers = protocolDataHelpers.filter(
+    validProtocolDataHelpers = protocolDataHelpers.filter(
       (helper) =>
         helper.output !== "0x0000000000000000000000000000000000000000"
-    );
+    ).map(p=>p.output);
+    } else {
+      validProtocolDataHelpers = dataHelperAddress
+    }
 
     const aTokenMarketData = (
       await sdk.api.abi.multiCall({
         calls: _.map(validProtocolDataHelpers, (dataHelper) => ({
-          target: dataHelper.output,
+          target: dataHelper,
         })),
         abi: abi["getAllATokens"],
         block,
@@ -148,14 +154,14 @@ async function getV2Reserves(block, addressesProviderRegistry, chain, v2Atokens,
     return v2Data
   }
 
-  function aaveChainTvl(chain, addressesProviderRegistry, transformAddress){
+  function aaveChainTvl(chain, addressesProviderRegistry, transformAddress, dataHelperAddress){
       return async (timestamp, ethBlock, chainBlocks)=>{
     const balances = {}
     const block = chainBlocks[chain]
     let v2Atokens = [];
     let v2ReserveTokens = [];
     let addressSymbolMapping = {};
-    [v2Atokens, v2ReserveTokens, addressSymbolMapping] = await getV2Reserves(block, addressesProviderRegistry, chain, v2Atokens, v2ReserveTokens, addressSymbolMapping)
+    [v2Atokens, v2ReserveTokens, addressSymbolMapping] = await getV2Reserves(block, addressesProviderRegistry, chain, v2Atokens, v2ReserveTokens, addressSymbolMapping, dataHelperAddress)
     const v2Tvl = await getV2Tvl(block, chain, v2Atokens, v2ReserveTokens, addressSymbolMapping);
     v2Tvl.map(data => {
       sdk.util.sumSingleBalance(balances, transformAddress?transformAddress(data.underlying):`${chain}:${data.underlying}`, data.balance);

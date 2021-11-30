@@ -1,25 +1,26 @@
 const axios = require('axios')
+const {getApiTvl} = require('../helper/historicalApi')
+const { usdtAddress } = require('../helper/balances')
 
-let nowDate = new Date();
-nowDate.setFullYear(nowDate.getFullYear() - 1);
-let T = parseInt(nowDate.getTime() / 1000);
-
-const url = "https://apilist.tronscan.org/api/defiTvl?type=tvlline&project=&startTime=" + T;
-
-function getItemByName (projectName, listArr) {
-  for (let i = 0; i < listArr.length; i++) {
-    if (listArr[i].project === projectName) {
-      return listArr[i];
+async function tvl(timestamp){
+    const balances = await getApiTvl(timestamp, async ()=>{
+      const r = (await axios.get("https://abc.ablesdxd.link/scan/collInfo/timeLine")).data.data
+      return Number(r[r.length-1].wtrxLocked)/1e12
+    }, async()=>{
+      const r = await axios.get("https://abc.ablesdxd.link/scan/collInfo/timeLine")
+      // {liquidity: "0.000000000000000000", time: 1597492800000}
+      return r.data.data.map(d=>({
+        date: d.t/1000,
+        totalLiquidityUSD: Number(d.wtrxLocked)/1e12
+      }))
+    });
+    return {
+      "tron": Number(balances[usdtAddress])
     }
-  }
-}
-
-async function fetch(){
-    const pools = await axios.get(url);
-    let item = getItemByName('JustStable', pools.data.projects);
-    return parseInt(item.locked);
 }
 
 module.exports = {
-    fetch
+    tron:{
+      tvl
+    }
 }

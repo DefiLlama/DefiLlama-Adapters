@@ -1,7 +1,8 @@
 const sdk = require("@defillama/sdk");
 const abi = require('./abi.json')
 const { unwrapCrv } = require('../helper/unwrapLPs')
-const { transformAvaxAddress } = require('../helper/portedTokens');
+const { transformAvaxAddress, transformBscAddress } = require('../helper/portedTokens');
+const BigNumber = require("bignumber.js");
 
 // Mainnet
 const crv_3crv_vault = {
@@ -39,6 +40,11 @@ const crv_perpetual_vault = {
   crvToken: '0x5f3b5DfEb7B28CDbD7FAba78963EE202a494e2A2',
   abi: 'locked'
 }
+const crv_steth_vault = {
+  contract: '0xbC10c4F7B9FE0B305e8639B04c536633A3dB7065',
+  crvToken: '0x06325440D014e39736583c165C2963BA99fAf14E',
+  abi:'balance'
+}
 
 // Polygon
 const crv_3crv_vault_polygon = {
@@ -59,13 +65,31 @@ const crv_3crv_vault_avalanche = {
   abi: 'balance'
 }
 
+// BSC
+const btcEPS_vault_bsc = {
+  contract: '0xf479e1252481360f67c2b308F998395cA056a77f',
+  crvToken: '0x2a435ecb3fcc0e316492dc1cdd62d0f189be5640',
+  abi: 'balance'
+}
+const EPS3_vault_bsc = {
+  contract: '0x4835BC54e87ff7722a89450dc26D9dc2d3A69F36',
+  crvToken: '0xaf4de8e872131ae328ce21d909c74705d3aaf452',
+  abi: 'balance'
+}
+const fusdt3EPS_vault_bsc = {
+  contract: '0x8E724986B08F2891cD98F7F71b5F52E7CFF420de',
+  crvToken: '0x373410a99b64b089dfe16f1088526d399252dace',
+  abi: 'balance'
+}
+
 const vaults = [
   crv_3crv_vault, 
   crv_eurs_vault, 
   crv_btc_vault, 
   crv_frax_vault,
   crv_frax_vault2,
-  crv_eth_vault
+  crv_eth_vault,
+  crv_steth_vault,
 ]
 
 const vaultsPolygon = [
@@ -77,7 +101,14 @@ const vaultsAvalanche = [
   crv_3crv_vault_avalanche
 ]
 
+const vaultsBsc = [
+  btcEPS_vault_bsc,
+  EPS3_vault_bsc,
+  fusdt3EPS_vault_bsc
+]
+
 const sanctuary = '0xaC14864ce5A98aF3248Ffbf549441b04421247D3'
+const arbStrat = '0x20D1b558Ef44a6e23D9BF4bf8Db1653626e642c3'
 const sdtToken = '0x73968b9a57c6E53d41345FD57a6E6ae27d6CDB2F'
 const crvToken = '0xD533a949740bb3306d119CC777fa900bA034cd52'
 
@@ -102,14 +133,22 @@ async function ethereum(timestamp, block) {
 }
 
 async function staking(timestamp, block){
-  const sdtInSactuary = sdk.api.erc20.balanceOf({
+  const sdtInSactuary = await sdk.api.erc20.balanceOf({
     target: sdtToken,
     owner: sanctuary,
     block
   })
 
+  const sdtInArbStrategy = await sdk.api.erc20.balanceOf({
+    target: sdtToken,
+    owner: arbStrat,
+    block
+  })
+
+  const totalSDTStaked = BigNumber(sdtInSactuary.output).plus(BigNumber(sdtInArbStrategy.output)).toFixed()
+
   return {
-    [sdtToken]:(await sdtInSactuary).output
+    [sdtToken]:totalSDTStaked
   }
 }
 
@@ -164,6 +203,31 @@ async function avax(timestamp, ethBlock, chainBlocks) {
   return balances
 }
 
+async function bsc(timestamp, ethBlock, chainBlocks) {
+  let balances = {};
+  const block = chainBlocks.bsc;
+  const transform = await transformBscAddress();
+  await Promise.all(vaultsBsc.map(async vault=>{
+
+    const crvBalance = (await sdk.api.abi.call({
+      target: vault.contract,
+      block,
+      abi: abi[vault.abi], 
+      chain: 'bsc'
+    })).output;
+
+    switch(vault.crvToken) {
+      case '0x2a435ecb3fcc0e316492dc1cdd62d0f189be5640':
+        balances['bitcoin'] = crvBalance / 10 ** 18; break;
+      case '0xaf4de8e872131ae328ce21d909c74705d3aaf452':
+        balances['usd-coin'] = crvBalance / 10 ** 18; break;
+      case '0x373410a99b64b089dfe16f1088526d399252dace':
+        balances['tether'] = crvBalance / 10 ** 18; break;
+    }
+  }))
+  return balances
+}
+
 module.exports = {
   ethereum:{
     tvl: ethereum,
@@ -175,4 +239,7 @@ module.exports = {
   avalanche: {
     tvl: avax
   },
+  bsc: {
+    tvl: bsc
+  }
 }

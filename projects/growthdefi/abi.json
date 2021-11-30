@@ -84,5 +84,73 @@
         ],
         "stateMutability": "view",
         "type": "function"
+    },
+    "state": {
+        "inputs": [],
+        "name": "state",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "_masterChef",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_pid",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "_rewardToken",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "_routingToken",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "_reserveToken",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "_treasury",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "_collector",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "_exchange",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_minimalGulpFactor",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_forceGulpRatio",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_performanceFee",
+                "type": "uint256"
+            },
+            {
+                "internalType": "bool",
+                "name": "_emergencyMode",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
     }
 }

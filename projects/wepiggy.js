@@ -45,6 +45,13 @@ const contracts = {
       decimals:18,
     },
   },
+  optimism: {
+    comptroller: '0x896aecb9E73Bf21C50855B7874729596d0e511CB',
+    gas:{
+      pToken:"0x8e1e582879Cb8baC6283368e8ede458B63F499a5",
+      decimals:18,
+    },
+  },
 };
 
 // ask comptroller for all markets array
@@ -146,7 +153,8 @@ async function fetch() {
     (await fetchChain('bsc')()) +
     (await fetchChain('polygon')()) +
     (await fetchChain('heco')()) +
-    (await fetchChain('arbitrum')());
+    (await fetchChain('arbitrum')()) +
+    (await fetchChain('optimism')());
   return tvl;
 }
 
@@ -168,6 +176,9 @@ module.exports = {
   },
   arbitrum: {
     fetch: fetchChain('arbitrum'),
+  },
+  optimism: {
+    fetch: fetchChain('optimism'),
   },
   fetch,
   methodology: `TVL is comprised of tokens deposited to the protocol as collateral, similar to Compound Finance and other lending protocols the borrowed tokens are not counted as TVL.`

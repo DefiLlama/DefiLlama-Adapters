@@ -1,3 +1,4 @@
+const { toUSDTBalances } = require('./helper/balances');
 const utils = require('./helper/utils');
 
 function fetchChain(chainId) {
@@ -12,6 +13,9 @@ function fetchChain(chainId) {
       break;
     case 'okexchain':
       url = 'https://ethapi.wing.finance/okexchain/flash-pool/detail';
+      break;
+    case 'bsc':
+      url = "https://ethapi.wing.finance/bsc/flash-pool/detail";
       break;
   };
   const response = await utils.fetchURL(url);
@@ -39,24 +43,20 @@ function stake(chainId) {
     case 'okexchain':
       url = 'https://ethapi.wing.finance/okexchain/flash-pool/detail';
       break;
+    case 'bsc':
+        url = "https://ethapi.wing.finance/bsc/flash-pool/detail";
+        break;
   };
   const response = await utils.fetchURL(url);
   let staked = response.data.result.totalLockedWingDollar;
   if (!staked) {
     staked = response.data.result.TotalLockedWingDollar;
   }
-  return staked;
+  return toUSDTBalances(staked);
   }
 }
 
-async function staking(){
-  return (await fetchChain('ontology')())+(await fetchChain('ethereum')())+(await fetchChain('okexchain')())
-}
-
 module.exports = {
-  staking:{
-    fetch: staking
-  },
   ontology:{
     fetch: fetchChain('ontology'),
     staking: stake('ontology')
@@ -68,6 +68,10 @@ module.exports = {
   okexchain:{
     fetch: fetchChain('okexchain'),
     staking: stake('okexchain')
+  },
+  bsc:{
+    fetch: fetchChain('bsc'),
+    staking: stake('bsc')
   },
   fetch,
   methodology: `Wing Finance TVL is achieved by subtracting total borrow from total supply on each chain. Staking is calculated by finding the dollar value of locked WING on each chain. The values are fetched from Wing Finance's own API.`

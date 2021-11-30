@@ -10,5 +10,8 @@ async function fetch(){
 }
 
 module.exports = {
-    fetch
+    fetch,
+    hallmarks:[
+        [1628565707, "Token+LM launch"]
+    ]
 }

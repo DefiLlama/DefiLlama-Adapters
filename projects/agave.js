@@ -6,13 +6,17 @@ const { staking } = require("./helper/staking.js");
 // Retrieve aTokens Deposited on AGAVE (v2 aave tokens) and not borrowed against
 const graphUrl = 'https://api.thegraph.com/subgraphs/name/agave-dao/agave-xdai'
 const graphQuery = gql`
-query GET_AGAVE {
-  atokens {
+query GET_AGAVE($block: Int) {
+  atokens (
+    block: { number: $block }
+  ){
     id 
     underlyingAssetAddress 
     underlyingAssetDecimals 
   }
-  reserves {
+  reserves (
+    block: { number: $block }
+  ) {
     id
     symbol
     decimals
@@ -32,7 +36,9 @@ async function getV2Reserves_graphql(block, addressesProviderRegistry, chain, v2
   // Retrieve aTokens and reserves from graphql API endpoint
   const { atokens, reserves } = await request(
     graphUrl,
-    graphQuery
+    graphQuery,{
+      block,
+    }
   );
 
   // Parse aTokens, underlying reserveTokens, symbols and decimals

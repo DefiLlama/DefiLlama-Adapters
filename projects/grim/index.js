@@ -1,4 +1,6 @@
 const utils = require('../helper/utils');
+var chainId;
+var vault;
 
 
 async function fetch() {
