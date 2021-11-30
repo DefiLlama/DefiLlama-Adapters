@@ -45,6 +45,7 @@ module.exports = {
         tvl: ethTvl,
     },
     polygon: {
+        tvl: async () => ({}),
         staking: staking(stakingContract, POWER_polygon, "polygon"),
         pool2: pool2(stakingContract, POWER_USDC_UNIV2, "polygon"),
     },
