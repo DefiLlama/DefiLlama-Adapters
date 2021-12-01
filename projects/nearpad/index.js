@@ -27,5 +27,4 @@ module.exports = {
     ),
   },
 };
-
 // node test.js projects/nearpad/index.js
