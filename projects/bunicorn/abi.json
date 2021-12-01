@@ -1,0 +1,44 @@
+{
+  "allPoolsLength": {
+    "inputs": [],
+    "name": "allPoolsLength",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "allPools": {
+    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "name": "allPools",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "token0": {
+    "inputs": [],
+    "name": "token0",
+    "outputs": [
+      { "internalType": "contract IERC20", "name": "", "type": "address" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "token1": {
+    "inputs": [],
+    "name": "token1",
+    "outputs": [
+      { "internalType": "contract IERC20", "name": "", "type": "address" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "getReserves": {
+    "inputs": [],
+    "name": "getReserves",
+    "outputs": [
+      { "internalType": "uint112", "name": "_reserve0", "type": "uint112" },
+      { "internalType": "uint112", "name": "_reserve1", "type": "uint112" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+}
