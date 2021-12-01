@@ -180,7 +180,7 @@ function calculateUsdUniTvl(
     Object.entries(balances).forEach(([address, amount]) => {
       const price = prices[address];
       if (price !== undefined) {
-        coreBalance += price[1] * (amount || 0);
+        coreBalance += price[1] * (amount ?? 0);
       }
     });
     return {
