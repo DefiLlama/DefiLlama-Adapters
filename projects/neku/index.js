@@ -10,6 +10,6 @@ module.exports={
         tvl: getCompoundUsdTvl(unitroller, "moonriver", "0xBC4a19345c598D73939b62371cF9891128ecCB8B")
     },
     bsc:{
-        tvl: getCompoundUsdTvl(unitroller, "bsc", "0xFd4224A5358162d5d4F97C3C51966383642F0553")
+        tvl: getCompoundUsdTvl(unitroller, "bsc", "0xBC4a19345c598D73939b62371cF9891128ecCB8B")
     }
 }
