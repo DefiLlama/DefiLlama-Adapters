@@ -40,7 +40,7 @@
   },
   "description": "",
   "devDependencies": {
-    "husky": "^4.3.8",
+    "husky": ">=6",
     "lint-staged": ">=10",
     "prettier": "^2.4.1"
   },
