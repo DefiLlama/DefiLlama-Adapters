@@ -31,7 +31,7 @@ query get_tvl($block: Int) {
 
 function getChainTvlBuffered(graphUrls, bufferSeconds, factoriesName = "uniswapFactories", tvlName = "totalLiquidityUSD") {
     const chainFn = getChainTvl(graphUrls, factoriesName, tvlName)
-    return (chain) =>{
+    return (chain) => {
         const tvl = chainFn(chain)
         return async (timestamp, ethBlock, chainBlocks) => {
             timestamp -= bufferSeconds
