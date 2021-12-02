@@ -181,7 +181,6 @@ async function fetch() {
   }
   return totalTvlKrw / currency;
 }
-fetch()
 
 module.exports = {
   fetch,
