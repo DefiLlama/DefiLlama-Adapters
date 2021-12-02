@@ -5,10 +5,10 @@ const BASE_URL = 'https://api.subquery.network/sq/sora-xor/sora';
 const XOR_ASSET_ID = '0x0200000000000000000000000000000000000000000000000000000000000000';
 const POOL_XYK_ENTITIES = gql`
 query PoolXYKEntities (
-  $last: Int = 1)
+  $first: Int = 1)
 {
   poolXYKEntities (
-    last: $last
+    first: $first
   )
   {
     nodes {
