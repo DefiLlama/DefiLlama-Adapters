@@ -40,28 +40,52 @@ function chainTvl(chain) {
       chainNameToChainId[chain]
     );
     if (!contractAddress) {
+      // console.log("Returning early, no contract for chain");
       return balances;
     }
     const chainData = await getChainData();
     const _chain = chainData.get(chainNameToChainId[chain].toString());
     await Promise.all(
       Object.keys(_chain.assetId).map(async (assetId) => {
-        const balance = await sdk.api.erc20.balanceOf({
-          chain,
-          block,
-          target: assetId,
-          owner: contractAddress,
-        });
-        sdk.util.sumSingleBalance(balances, assetId, balance.output);
+        try {
+          if (assetId === "0x0000000000000000000000000000000000000000") {
+            return;
+            // TODO: figure out how to handle native assets
+          }
+          const balance = await sdk.api.erc20.balanceOf({
+            chain,
+            block,
+            target: assetId,
+            owner: contractAddress,
+          });
+          // console.log(`Balance of contract ${contractAddress} for asset ${assetId} on chain ${chain}, ${balance.toString()}`);
+          sdk.util.sumSingleBalance(balances, assetId, balance.output);
+        } catch (e) {
+          // console.log(`Error on chain ${chain}, asset ${assetId}`);
+        }
       })
     );
     return balances;
   };
 }
 
-const chains = tokens.reduce((allChains, token) => {
-  Object.keys(token).forEach((chain) => allChains.add(chain));
-  return allChains;
-}, new Set());
+const chains = [
+  "ethereum",
+  "bsc",
+  "polygon",
+  "heco",
+  "fantom",
+  "xdai",
+  "avax",
+  "harmony",
+  "okexchain",
+  "optimism",
+  "arbitrum",
+  "fuse",
+  "aurora",
+  "boba",
+  "cronos",
+  "metis",
+];
 
 module.exports = chainExports(chainTvl, Array.from(chains));
