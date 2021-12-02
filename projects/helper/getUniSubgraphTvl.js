@@ -29,6 +29,21 @@ query get_tvl($block: Int) {
     }
 }
 
+function getChainTvlBuffered(graphUrls, bufferSeconds, factoriesName = "uniswapFactories", tvlName = "totalLiquidityUSD") {
+    const chainFn = getChainTvl(graphUrls, factoriesName, tvlName)
+    return (chain) =>{
+        const tvl = chainFn(chain)
+        return async (timestamp, ethBlock, chainBlocks) => {
+            timestamp -= bufferSeconds
+            for (const chainName in chainBlocks) {
+                chainBlocks[chainName] = await getBlock(timestamp, chainName, {}, false)
+            }
+            ethBlock = chainBlocks['ethereum']
+            return await tvl(timestamp, ethBlock, chainBlocks)
+        }
+    }
+}
+
 function getAvaxUniswapTvl(graphUrl, factoriesName = "uniswapFactories", tvlName = "totalLiquidityETH") {
     const graphQuery = gql`
 query get_tvl($block: Int) {
@@ -56,5 +71,6 @@ query get_tvl($block: Int) {
 
 module.exports = {
     getChainTvl,
+    getChainTvlBuffered,
     getAvaxUniswapTvl
 }
