@@ -10,7 +10,7 @@ const axios = require('axios');
 async function tvl(price) {
   try {
     const response = await axios.get('https://xdc.blocksscan.io/api/accounts/xdc0000000000000000000000000000000000000088');
-    var logString = ("{Total TVL: "+response.data.balanceNumber*price+ ", Timestamp: " +response.headers.date+ "}")
+    var logString = ("{Total TVL: "+response.data.balanceNumber*price+ ", Timestamp: " +Date.parse(response.headers.date)+ "}")
     console.log(logString);
   } catch (error) {
     console.error(error);
@@ -21,4 +21,4 @@ module.exports = {
   tvl
   }
   
-tvl(1)
+tvl(0.08686)
