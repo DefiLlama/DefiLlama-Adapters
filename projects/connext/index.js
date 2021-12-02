@@ -40,16 +40,17 @@ function chainTvl(chain) {
         if (!contractAddress) {
           return balances;
         }
-        const tokens = await getChainData(); //TODO
-        await Promise.all(tokens.map(async token => {
-            const balance = await sdk.api.erc20.balanceOf({
-                chain,
-                block,
-                target: token,
-                owner: contractAddress
-            })
-            sdk.util.sumSingleBalance(balances, tokenAddress, balance.output)
-        }))
+        const chainData = await getChainData();
+        const chain = chainData.get(chainNameToChainId[chain].toString());
+        Promise.all(Object.entries(chain.assetId).map(async ([assetId, assetInfo]) => {
+          const balance = await sdk.api.erc20.balanceOf({
+              chain,
+              block,
+              target: assetId,
+              owner: contractAddress
+          })
+          sdk.util.sumSingleBalance(balances, assetId, balance.output)
+        }));
         return balances
     }
 }
