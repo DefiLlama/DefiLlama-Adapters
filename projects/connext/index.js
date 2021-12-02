@@ -1,8 +1,8 @@
-const { getBlock } = require("../helper/getBlock")
-const { chainExports } = require("../helper/exports")
-const sdk = require('@defillama/sdk')
-const { getChainData } = require('@connext/nxtp-utils')
-const contractDeployments = require("@connext/nxtp-contracts/deployments.json")
+const { getBlock } = require("../helper/getBlock");
+const { chainExports } = require("../helper/exports");
+const sdk = require("@defillama/sdk");
+const { getChainData } = require("@connext/nxtp-utils");
+const contractDeployments = require("@connext/nxtp-contracts/deployments.json");
 
 // Includes some chains that are not yet live
 const chainNameToChainId = {
@@ -19,8 +19,8 @@ const chainNameToChainId = {
   moonriver: 1285,
   celo: 42220,
   aurora: 1313161554,
-  harmony: 1666600000
-}
+  harmony: 1666600000,
+};
 
 async function getDeployedContractAddress(chainId) {
   const record = contractDeployments[String(chainId)] ?? {};
@@ -30,34 +30,38 @@ async function getDeployedContractAddress(chainId) {
   }
   const contract = record[name]?.contracts?.TransactionManager;
   return contract ? contract.address : undefined;
-};
+}
 
 function chainTvl(chain) {
-    return async (time, ethBlock, chainBlocks) => {
-        const block = await getBlock(time, chain, chainBlocks, true);
-        const balances = {};
-        const contractAddress = await getDeployedContractAddress(chainNameToChainId[chain]);
-        if (!contractAddress) {
-          return balances;
-        }
-        const chainData = await getChainData();
-        const chain = chainData.get(chainNameToChainId[chain].toString());
-        Promise.all(Object.entries(chain.assetId).map(async ([assetId, assetInfo]) => {
-          const balance = await sdk.api.erc20.balanceOf({
-              chain,
-              block,
-              target: assetId,
-              owner: contractAddress
-          })
-          sdk.util.sumSingleBalance(balances, assetId, balance.output)
-        }));
-        return balances
+  return async (time, ethBlock, chainBlocks) => {
+    const block = await getBlock(time, chain, chainBlocks, true);
+    const balances = {};
+    const contractAddress = await getDeployedContractAddress(
+      chainNameToChainId[chain]
+    );
+    if (!contractAddress) {
+      return balances;
     }
+    const chainData = await getChainData();
+    const _chain = chainData.get(chainNameToChainId[chain].toString());
+    await Promise.all(
+      Object.keys(_chain.assetId).map(async (assetId) => {
+        const balance = await sdk.api.erc20.balanceOf({
+          chain,
+          block,
+          target: assetId,
+          owner: contractAddress,
+        });
+        sdk.util.sumSingleBalance(balances, assetId, balance.output);
+      })
+    );
+    return balances;
+  };
 }
 
 const chains = tokens.reduce((allChains, token) => {
-    Object.keys(token).forEach(chain => allChains.add(chain))
-    return allChains
-}, new Set())
+  Object.keys(token).forEach((chain) => allChains.add(chain));
+  return allChains;
+}, new Set());
 
-module.exports = chainExports(chainTvl, Array.from(chains))
+module.exports = chainExports(chainTvl, Array.from(chains));
