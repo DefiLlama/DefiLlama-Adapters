@@ -256,7 +256,7 @@ async function transformArbitrumAddress() {
 
         const dstToken = bridge.find(token => compareAddresses(addr, token.address))
         if (dstToken !== undefined) {
-            return dstToken.extensions.l1Address
+            return dstToken.extensions.bridgeInfo[1].tokenAddress
         }
         return `arbitrum:${addr}`; 
     }
