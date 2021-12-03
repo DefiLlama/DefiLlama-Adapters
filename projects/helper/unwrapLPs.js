@@ -268,6 +268,27 @@ const crvPools = {
             "0x3ed3b47dd13ec9a98b44e6204a523e766b225811"
         ]
     },
+    // MIM / USDT/USDC/DAI Eth
+    "0x5a6a4d54456819380173272a5e8e9b9904bdf41b": {
+        swapContract: "0x5a6A4D54456819380173272A5E8E9B9904BdF41B",
+        underlyingTokens: [
+            "0x99D8a9C45b2ecA8864373A26D1459e3Dff1e17F3",
+            "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490",
+    ],
+    },
+    // ETH / alETH Eth
+    "0xc4c319e2d4d66cca4464c0c2b32c9bd23ebe784e": {
+        swapContract: "0xC4C319E2D4d66CcA4464C0c2B32c9Bd23ebe784e",
+        underlyingTokens: ["0x0100546F2cD4C9D97f798fFC9755E47865FF7Ee6"],
+    },
+    // LINK / sLINK Eth
+    "0xcee60cfa923170e4f8204ae08b4fa6a3f5656f3a": {
+        swapContract: "0xF178C0b5Bb7e7aBF4e12A4838C7b7c5bA2C623c0",
+        underlyingTokens: [
+            "0x514910771AF9Ca656af840dff83E8264EcF986CA",
+            "0xbBC455cb4F1B9e4bFC4B73970d360c8f032EfEE6",
+    ],
+    },
 }
 const yearnVaults = {
     // yvToken: underlying, eg yvYFI:YFI

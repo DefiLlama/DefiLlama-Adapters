@@ -10,5 +10,6 @@ async function fetch() {
 }
 
 module.exports = {
+  timetravel: false,
   fetch
 }

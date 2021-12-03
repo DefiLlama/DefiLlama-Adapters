@@ -18,6 +18,7 @@ const v3Graphs = getChainTvl({
 }, "factories", "totalValueLockedUSD")
 
 module.exports = {
+  timetravel: true,
   misrepresentedTokens: true,
   methodology: `Counts the tokens locked on AMM pools, pulling the data from the 'ianlapham/uniswapv2' subgraph`,
   ethereum:{

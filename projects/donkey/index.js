@@ -190,6 +190,7 @@ async function klaytn() {
   }
   return totalTvlKrw / currency;
 }
+
 module.exports = {
   ethereum : {
     staking,

@@ -312,6 +312,7 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
 }
 
 module.exports = {
+  timetravel: true,
   start: 1599552000, // 09/08/2020 @ 8:00am (UTC)
   ethereum: {
     tvl: ethereumTvl,

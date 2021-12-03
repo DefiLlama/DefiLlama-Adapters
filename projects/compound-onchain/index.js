@@ -152,6 +152,7 @@ async function tvl(timestamp, block) {
 }
 
 module.exports = {
+  timetravel: true,
   ethereum: {
     tvl
   },

@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk');
+const { default: BigNumber } = require('bignumber.js');
 const { request, gql } = require("graphql-request");
-const { sumMultiBalanceOf } = require('@defillama/sdk/build/generalUtil');
 const { getBlock } = require('./helper/getBlock');
 
 // Ronin -> Mainnet lookup table
@@ -15,7 +15,7 @@ const token_lookup_table = { // needed to add 0x in front
 // const slp_weth_LP_staking = 'd4640c26c1a31cd632d8ae1a96fe5ac135d1eb52'
 
 // Get pairs using the graph 
-const graphUrl = 'https://thegraph.roninchain.com/subgraphs/name/axieinfinity/katana-subgraph'
+const graphUrl = 'https://thegraph.roninchain.com/subgraphs/name/axieinfinity/katana-subgraph-green'
 
 const pairsQuery = gql`
 query pairs($block: Int, $skip: Int!) {
@@ -43,48 +43,66 @@ query pairs($block: Int, $skip: Int!) {
 `
 
 const tokensQuery = gql`
-query tokens {
-  tokens(first: 500) {
+query tokens($block: Int) {
+  tokens(first: 500, block: { number: $block }) {
     id
     name
     symbol
     totalLiquidity
+    decimals
   }
 }
 `
+
+const factoryQuery = gql`
+query get_tvl($block: Int) {
+  katanaFactories(
+    block: { number: $block }
+  ) {
+    id
+    totalLiquidity
+  }
+}
+`
+
+const blockQuery = gql`
+query blocks($timestampFrom: Int!, $timestampTo: Int!) {
+  blocks(first: 1, orderBy: timestamp, orderDirection: asc, where: {timestamp_gt: $timestampFrom, timestamp_lt: $timestampTo}) {
+    id
+    number
+    timestamp
+    __typename
+  }
+}
+`
+
+const blocksGraph = "https://thegraph.roninchain.com/subgraphs/name/axieinfinity/ronin-blocks"
+
+// https://katana-analytics.roninchain.com/home
+
 async function tvl(timestamp, ethBlock, chainBlocks) {
-  const block = await getBlock(timestamp, "ronin", chainBlocks)
-
-  const {pairs} = await request(
-    graphUrl,
-    pairsQuery,
-    {block, skip: 0}
-  )
-
-  const calls = pairs.map(pair => [{
-    target: pair.token0.id,
-    params: pair.id
-  }, {
-    target: pair.token1.id,
-    params: pair.id 
-  }]).flat()
-  const LP_balances = (
-    await sdk.api.abi.multiCall({
-      calls: calls,
-      abi: 'erc20:balanceOf',
-      block: block,
-      chain: 'ronin'
+  const block = Number((await request(blocksGraph, blockQuery,
+    {
+      timestampFrom: timestamp - 30,
+      timestampTo: timestamp + 30
     })
+  ).blocks[0].number)
+
+  const { tokens } = await request(
+    graphUrl,
+    tokensQuery,
+    { block }
   )
 
   // const transform = addr => tokens.find(t => t.id == addr).symbol
   const transform = addr => token_lookup_table[addr.toLowerCase()]
 
   const balances = {};
-  sdk.util.sumMultiBalanceOf(balances, LP_balances, true, transform);
-  // console.log('balances', balances)
+  tokens.forEach(token=>{
+    sdk.util.sumSingleBalance(balances, transform(token.id), BigNumber(token.totalLiquidity).times(10**token.decimals).toFixed(0))
+  })
   if (balances[undefined]) {
-    throw('One balance is undefined, probably because the ronin-to-mainnet mapping is not defined for some tokens')
+    throw ('One balance is undefined, probably because the ronin-to-mainnet mapping is not defined for some tokens')
   }
   return balances
 }
@@ -99,5 +117,5 @@ const tvl2 = (timestamp, block, chainBlocks) => getChainTvl({
 
 module.exports = {
   methodology: `Counts the tokens locked on LPs pools, pulling the pairs data from the katana graphql endpoint`,
-  ronin: {tvl: tvl}
+  ronin: { tvl: tvl }
 }
