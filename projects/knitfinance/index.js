@@ -81,6 +81,10 @@ const apiPath = {
     base_url: "https://api.polygonscan.com",
     api_key: "M2Y1KZE5BUJP8DBCCDGWVSDJYCHXCPDVYK",
   },
+  fantom: {
+    base_url: "https://api.ftmscan.com",
+    api_key: "FZ6JS5HUR9RE23UKA8KT9P439BGNSZSGS1",
+  },
 };
 
 const getTokenSupply = (contractaddress, network) => {
@@ -109,7 +113,7 @@ const getNetworkAssets = async (network) => {
   const allAddress = Object.keys(assets[network]);
   allAddress.forEach((item, i) => {
     promises.push(
-      new Promise((res) => setTimeout(res, 1000 * i)).then(() =>
+      new Promise((res) => setTimeout(res, 500 * i)).then(() =>
         _fetch(item, network, assets[network][item])
       )
     );
@@ -144,7 +148,16 @@ const _bscFetch = async () => {
 const _maticFetch = async () => {
   try {
     const result = await getNetworkAssets("matic");
-    console.log(result);
+    const object = Object.assign({}, ...result);
+    return object;
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+const _fantomFetch = async () => {
+  try {
+    const result = await getNetworkAssets("fantom");
     const object = Object.assign({}, ...result);
     return object;
   } catch (e) {
@@ -163,5 +176,8 @@ module.exports = {
   },
   polygon: {
     tvl: _maticFetch,
+  },
+  fantom: {
+    tvl: _fantomFetch,
   },
 };
