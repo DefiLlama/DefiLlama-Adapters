@@ -93,6 +93,16 @@ async function polygon(timestamp, ethBlock, chainBlocks) {
     );
 }
 
+async function arbitrum(timestamp, ethBlock, chainBlocks) {
+    return {
+        "0xeb4c2781e4eba804ce9a9803c67d0893436bb27d": (await sdk.api.erc20.totalSupply({
+            target: "0xdbf31df14b66535af65aac99c32e9ea844e14501",
+            chain: "arbitrum",
+            block: chainBlocks.arbitrum
+        })).output
+    }
+}
+
 async function eth(timestamp, block) {
     const balances = await getAssetBalance(
         block,
@@ -146,5 +156,7 @@ module.exports = {
     polygon: {
         tvl: polygon,
     },
-    tvl: sdk.util.sumChainTvls([eth, bsc, avax, fantom, polygon, solana]),
+    arbitrum:{
+        tvl:arbitrum
+    },
 };

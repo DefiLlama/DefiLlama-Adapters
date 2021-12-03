@@ -42,5 +42,9 @@ module.exports = {
     },
     ethereum:{
         tvl: staking("0x54d59c4596c7ea66fd62188ba1e16db39e6f5472", "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", "ethereum")
-    }
+    },
+ hallmarks:[
+    [1635218174, "Lyra Token"],
+    [1635822974, "Token Program Start"],
+  ]
 }
