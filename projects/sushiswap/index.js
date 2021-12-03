@@ -16,6 +16,7 @@ modulesToExport.ethereum.tvl = sdk.util.sumChainTvls([modulesToExport.ethereum.t
 // modulesToExport.ethereum.tvl = async (timestamp, block, chainBlocks) => getExports("sushi", ['ethereum']).ethereum.tvl() + kashiLending(timestamp, block, chainBlocks)
 
 module.exports = {
+    timetravel: true,
     misrepresentedTokens: true,
     ...modulesToExport,
 }
