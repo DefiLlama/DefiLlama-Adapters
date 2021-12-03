@@ -3,8 +3,10 @@ const sdk = require('@defillama/sdk');
 const { getBlock } = require('./helper/getBlock');
 const { transformMoonriverAddress } = require('./helper/portedTokens');
 const { unwrapUniswapLPs } = require('./helper/unwrapLPs');
+const abi = require("./pendle/abi.json");
 
-const contract = '0x995ef3a5D14b66Ac5C7Fa1a967F8D9Cd727452bA';
+const masterchefContract = '0x1f4b7660b6AdC3943b5038e3426B33c1c0e343E6'
+const stakingContract = '0x995ef3a5D14b66Ac5C7Fa1a967F8D9Cd727452bA';
 const tokens = [
     {
         address: '0x9a92b5ebf1f6f6f7d93696fcd44e5cf75035a756', // FINN
@@ -15,24 +17,46 @@ const tokens = [
     },{
         address: '0x6714cd1e19363dc613154ebe440172e41575c469', // PAWS
         isLP: false 
+    }, {
+        address: '0xDCd92eb568157D3c1a6b3AE53ADF18a230bc304A', // HBLP
+        isLP: true
     }
 ];
-
-async function staking(timestamp, block, chainBlocks) {
+// node test.js projects/rivrkitty.js
+async function pool2(timestamp, block, chainBlocks) {
     const balances = {};
     block = await getBlock(timestamp, 'moonriver', chainBlocks);
     const transform = await transformMoonriverAddress();
+
+    const masterChefDeposits = await sdk.api.abi.call({
+        target: masterchefContract,
+        abi,
+        params: [19, stakingContract],
+        block,
+        chain: 'moonriver'
+      });
     
+    await unwrapUniswapLPs(
+        balances,
+        [{
+            balance: masterChefDeposits.output.amount, 
+            token: tokens[3].address
+        }],
+        block,
+        'moonriver',
+        transform
+    );
+
     const balanceOfs = (await sdk.api.abi.multiCall({
         calls: tokens.map(c => ({
             target: c.address,
-            params: [contract]})),
+            params: [stakingContract]})),
         abi: 'erc20:balanceOf',
         block,
         chain: 'moonriver'
       })).output;
     
-      for (let i = 0; i < tokens.length; i++) {
+      for (let i = 0; i < tokens.length - 1; i++) {
         if (tokens[i].isLP) {
             await unwrapUniswapLPs(
                 balances,
@@ -52,12 +76,13 @@ async function staking(timestamp, block, chainBlocks) {
             );
         };
     };
+
     return balances;
 };
 
 module.exports = {
     moonriver: {
-        staking,
+        pool2,
         tvl: async()=>({})
     }
 };
