@@ -2,8 +2,11 @@ const sdk = require("@defillama/sdk");
 const utils = require("../helper/utils");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { getCompoundV2Tvl } = require("../helper/compound");
-const { transformFantomAddress, transformBscAddress } = require('../helper/portedTokens')
-const { GraphQLClient, gql } = require('graphql-request')
+const {
+  transformFantomAddress,
+  transformBscAddress,
+} = require("../helper/portedTokens");
+const { GraphQLClient, gql } = require("graphql-request");
 
 const abiCerc20 = require("./cerc20.json");
 const abiCereth2 = require("./creth2.json");
@@ -82,8 +85,15 @@ async function ethereumTvl(timestamp, block) {
     )
   ).data;
   // --- Grab all the getCash values of cyERC20 (Iron Bank)---
-  const ironBankCalls = iron_bank_tokens.map((token) => ({ target: token.token_address }))
-  let [cashValuesIronBank, totalBorrowsIB, totalReservesIB, underlyingsIronBank] = await Promise.all([
+  const ironBankCalls = iron_bank_tokens.map((token) => ({
+    target: token.token_address,
+  }));
+  let [
+    cashValuesIronBank,
+    totalBorrowsIB,
+    totalReservesIB,
+    underlyingsIronBank,
+  ] = await Promise.all([
     sdk.api.abi.multiCall({
       block,
       calls: ironBankCalls,
@@ -103,12 +113,16 @@ async function ethereumTvl(timestamp, block) {
       block,
       calls: ironBankCalls,
       abi: abiCerc20["underlying"],
-    })
+    }),
   ]);
 
   cashValuesIronBank.output.map((cashVal, idx) => {
-    const token = replacements[underlyingsIronBank.output[idx].output] || underlyingsIronBank.output[idx].output;
-    const amount = BigNumber(cashVal.output).plus(totalBorrowsIB.output[idx].output).minus(totalReservesIB.output[idx].output)
+    const token =
+      replacements[underlyingsIronBank.output[idx].output] ||
+      underlyingsIronBank.output[idx].output;
+    const amount = BigNumber(cashVal.output)
+      .plus(totalBorrowsIB.output[idx].output)
+      .minus(totalReservesIB.output[idx].output);
     sdk.util.sumSingleBalance(balances, token, amount.toFixed(0));
   });
 
@@ -128,10 +142,15 @@ async function ethereumTvl(timestamp, block) {
     twice. Only certain portion can be considered "idle" in the eth deposit contract to account again as extra
     eth tvl
   */
-  const iddleInETHDepositContract =
-    BigNumber(accumCRETH2).minus(balances[CRETH2]);
+  const iddleInETHDepositContract = BigNumber(accumCRETH2).minus(
+    balances[CRETH2]
+  );
 
-  balances["0x0000000000000000000000000000000000000000"] = BigNumber(balances["0x0000000000000000000000000000000000000000"]).plus(iddleInETHDepositContract).toFixed(0);
+  balances["0x0000000000000000000000000000000000000000"] = BigNumber(
+    balances["0x0000000000000000000000000000000000000000"]
+  )
+    .plus(iddleInETHDepositContract)
+    .toFixed(0);
 
   return balances;
 }
@@ -164,7 +183,7 @@ const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
     })
   ).output;
 
-  const transformAdress = await transformBscAddress()
+  const transformAdress = await transformBscAddress();
   const lpPositions = [];
   cashValues.map((cashVal, idx) => {
     if (tokens_bsc[idx].underlying_symbol === "Cake-LP") {
@@ -180,10 +199,14 @@ const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
       ); // BNB
     } else {
       const tokenAddr = underlyings[idx].output;
-      sdk.util.sumSingleBalance(balances, transformAdress(tokenAddr), cashVal.output);
+      sdk.util.sumSingleBalance(
+        balances,
+        transformAdress(tokenAddr),
+        cashVal.output
+      );
     }
   });
-  await unwrapUniswapLPs(balances, lpPositions, block, 'bsc', transformAdress);
+  await unwrapUniswapLPs(balances, lpPositions, block, "bsc", transformAdress);
 
   // --- Staking bsc service ---
   const bsc_staking_service = await utils.fetchURL(
@@ -230,9 +253,12 @@ const fantomTvl = async (timestamp, ethBlock, chainBlocks) => {
     })
   ).output;
 
-  const fantomAddr = await transformFantomAddress()
+  const fantomAddr = await transformFantomAddress();
   cashValues.map((cashVal, idx) => {
-    const tokenAddr = underlyings[idx].output === "0x924828a9Fb17d47D0eb64b57271D10706699Ff11" ? "0xb753428af26e81097e7fd17f40c88aaa3e04902c" : fantomAddr(underlyings[idx].output); //SFI
+    const tokenAddr =
+      underlyings[idx].output === "0x924828a9Fb17d47D0eb64b57271D10706699Ff11"
+        ? "0xb753428af26e81097e7fd17f40c88aaa3e04902c"
+        : fantomAddr(underlyings[idx].output); //SFI
     sdk.util.sumSingleBalance(balances, tokenAddr, cashVal.output);
   });
 
@@ -270,14 +296,18 @@ const fantomTvl = async (timestamp, ethBlock, chainBlocks) => {
   const fantomStakingData = await graphQLClient.request(query, {
     address: stakerCreamAddressInFantom,
   });
-  sdk.util.sumSingleBalance(balances, fantomToken, fantomStakingData.staker.totalStake)
+  sdk.util.sumSingleBalance(
+    balances,
+    fantomToken,
+    fantomStakingData.staker.totalStake
+  );
 
   return balances;
 };
 
 const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
   const block = chainBlocks["polygon"];
-  const chain = 'polygon'
+  const chain = "polygon";
   let balances = {};
 
   let tokens = (
@@ -291,7 +321,7 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
       block,
       calls: tokens.map((token) => ({ target: token.token_address })),
       abi: abiCerc20["getCash"],
-      chain
+      chain,
     })
   ).output;
 
@@ -300,18 +330,19 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
       block,
       calls: tokens.map((token) => ({ target: token.token_address })),
       abi: abiCerc20["underlying"],
-      chain
+      chain,
     })
   ).output;
 
   cashValues.map((cashVal, idx) => {
-    const tokenAddr = 'polygon:'+ underlyings[idx].output
+    const tokenAddr = "polygon:" + underlyings[idx].output;
     sdk.util.sumSingleBalance(balances, tokenAddr, cashVal.output);
   });
-  return balances
-}
+  return balances;
+};
 
 module.exports = {
+  timetravel: true,
   start: 1599552000, // 09/08/2020 @ 8:00am (UTC)
   ethereum: {
     tvl: ethereumTvl,
@@ -322,10 +353,14 @@ module.exports = {
   fantom: {
     tvl: fantomTvl,
   },
-  polygon:{
-    tvl: polygonTvl
+  polygon: {
+    tvl: polygonTvl,
   },
-  avalanche:{
-    tvl: getCompoundV2Tvl("0x2eE80614Ccbc5e28654324a66A396458Fa5cD7Cc", "avax", addr=>`avax:${addr}`)
-  }
+  avalanche: {
+    tvl: getCompoundV2Tvl(
+      "0x2eE80614Ccbc5e28654324a66A396458Fa5cD7Cc",
+      "avax",
+      (addr) => `avax:${addr}`
+    ),
+  },
 };

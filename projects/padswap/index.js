@@ -1,6 +1,7 @@
 const { stakings } = require("../helper/staking");
 const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl");
-const { getChainTvl } = require("../helper/getUniSubgraphTvl");
+const { getChainTvlBuffered } = require("../helper/getUniSubgraphTvl");
+const { getBlock } = require("../helper/getBlock");
 
 const TOAD_ADDRESS = "0x463e737d8f740395abf44f7aac2d9531d8d539e9";
 const TOAD_FARM_ADDRESS = "0xe1F1EDfBcEfB1E924e4a031Ed6B4CAbC7e570154";
@@ -14,11 +15,16 @@ const PADSWAP_BSC_FACTORY_ADDRESS =
 const PADSWAP_MOONRIVER_FACTORY_ADDRESS =
   "0x760d2Bdb232027aB3b1594405077F9a1b91C04c1";
 
-const subgraphTvls = getChainTvl({
-  bsc: "https://subgraph.toadlytics.com:8080/subgraphs/name/padswap-subgraph",
-  moonriver:
-    "https://api.thegraph.com/subgraphs/name/toadguy/padswap-subgraph-moonriver",
-});
+const SUBGRAPH_BUFFER_DELAY = 10 * 60; // 10 minutes
+
+const subgraphTvls = getChainTvlBuffered(
+  {
+    bsc: "https://subgraph.toadlytics.com:8080/subgraphs/name/padswap-subgraph",
+    moonriver:
+      "https://api.thegraph.com/subgraphs/name/toadguy/padswap-subgraph-moonriver",
+  },
+  SUBGRAPH_BUFFER_DELAY
+);
 
 module.exports = {
   methodology: `TVL accounts for the liquidity on all AMM pools (see https://info.padswap.exchange/ and https://movr-info.padswap.exchange/). Staking includes all TOAD staked in TOAD farms.`,
