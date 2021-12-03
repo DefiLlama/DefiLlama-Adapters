@@ -83,11 +83,10 @@ async function staking() {
   return totalTvlKrw / currency;
 }
 
-async function fetch() {
+async function ethereum() {
+  let totalTvlKrw = 0;
   const result = await axios.get('https://quotation-api-cdn.dunamu.com/v1/forex/recent?codes=FRX.KRWUSD');
   const currency = result.data[0].basePrice;
-
-  
   const web3 = new Web3(process.env.ETHEREUM_RPC);
   const priceOracleContract = new web3.eth.Contract(PriceOracleAbi, PriceOracleAddress.ethereum);
   const { 0 : symbols, 1 : prices} = await priceOracleContract.methods.getPrices().call();
@@ -104,9 +103,6 @@ async function fetch() {
   const donkeyPrice = Math.ceil(ethPrice / Math.floor(donRatio));
 
   priceObj['DON'] = donkeyPrice;
-  priceObj['kDON'] = donkeyPrice;
-
-  let totalTvlKrw = 0;
 
   const controllerContrat = new web3.eth.Contract(ControllerAbi, controllerAddress.ethereum)
   const ethMarkets = await controllerContrat.methods.getAllMarkets().call();
@@ -130,6 +126,13 @@ async function fetch() {
       totalTvlKrw += tvlKrw;
     }
   }
+  return totalTvlKrw / currency;
+}
+
+async function klaytn() {
+  const result = await axios.get('https://quotation-api-cdn.dunamu.com/v1/forex/recent?codes=FRX.KRWUSD');
+  const currency = result.data[0].basePrice;
+  let totalTvlKrw = 0;
 
   const KLAYTN_ACCESS_KEY_ID = "KASK19AHMII2AZN1MAJDRFOU"
   const KLAYTN_SECRET_ACCESS_KEY = "I1Iwgwt1C6z_jA79eh6JBJKOHTGLIK-tAozkz-bl"
@@ -157,6 +160,12 @@ async function fetch() {
     }
   }, {})
 
+  const donRatio = await getDonkeySwapRatio();
+  const ethPrice = klaytnPriceObj['KETH'];
+  const donkeyPrice = Math.ceil(ethPrice / Math.floor(donRatio)); 
+
+  klaytnPriceObj['kDON'] = donkeyPrice;
+
   const controllerContract = new caver.klay.Contract(ControllerAbi, controllerAddress.klaytn);
   const klaytnMarkets = await controllerContract.methods.getAllMarkets().call();
 
@@ -181,9 +190,15 @@ async function fetch() {
   }
   return totalTvlKrw / currency;
 }
-fetch()
-
 module.exports = {
-  fetch,
-  staking
+  ethereum : {
+    staking,
+    tvl: ethereum
+  },
+  klaytn: {
+    tvl: klaytn
+  },
+  staking : {
+    tvl: staking
+  },
 }
