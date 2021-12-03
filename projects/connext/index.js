@@ -2,6 +2,7 @@ const { getBlock } = require("../helper/getBlock");
 const { chainExports } = require("../helper/exports");
 const sdk = require("@defillama/sdk");
 const { getChainData } = require("@connext/nxtp-utils");
+const { getChainTransform } = require("../helper/portedTokens");
 const contractDeployments = require("@connext/nxtp-contracts/deployments.json");
 
 // Includes some chains that are not yet live
@@ -23,7 +24,9 @@ const chainNameToChainId = {
 };
 
 async function getDeployedContractAddress(chainId) {
-  const record = contractDeployments[String(chainId)] ?? {};
+  const record = contractDeployments[String(chainId)]
+    ? contractDeployments[String(chainId)]
+    : {};
   const name = Object.keys(record)[0];
   if (!name) {
     return undefined;
@@ -40,29 +43,44 @@ function chainTvl(chain) {
       chainNameToChainId[chain]
     );
     if (!contractAddress) {
-      // console.log("Returning early, no contract for chain");
       return balances;
     }
     const chainData = await getChainData();
     const _chain = chainData.get(chainNameToChainId[chain].toString());
     await Promise.all(
       Object.keys(_chain.assetId).map(async (assetId) => {
-        try {
-          if (assetId === "0x0000000000000000000000000000000000000000") {
-            return;
-            // TODO: figure out how to handle native assets
-          }
-          const balance = await sdk.api.erc20.balanceOf({
+        let balance;
+        if (assetId === "0x0000000000000000000000000000000000000000") {
+          balance = await sdk.api.eth.getBalance({
+            chain,
+            block,
+            target: contractAddress,
+          });
+        } else {
+          balance = await sdk.api.erc20.balanceOf({
             chain,
             block,
             target: assetId,
             owner: contractAddress,
           });
-          // console.log(`Balance of contract ${contractAddress} for asset ${assetId} on chain ${chain}, ${balance.toString()}`);
-          sdk.util.sumSingleBalance(balances, assetId, balance.output);
-        } catch (e) {
-          // console.log(`Error on chain ${chain}, asset ${assetId}`);
         }
+        const chainTransform = await getChainTransform(chain);
+        let transformedAssetId;
+        if (chain == "arbitrum") {
+          transformedAssetId =
+            assetId == "0x0000000000000000000000000000000000000000"
+              ? "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+              : `arbitrum:${assetId}`;
+        } else if (chain == "polygon") {
+          transformedAssetId =
+            assetId == "0x0000000000000000000000000000000000000000"
+              ? "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0"
+              : `polygon:${assetId}`;
+        } else {
+          transformedAssetId = await chainTransform(assetId);
+        }
+
+        sdk.util.sumSingleBalance(balances, transformedAssetId, balance.output);
       })
     );
     return balances;
@@ -86,6 +104,7 @@ const chains = [
   "boba",
   "cronos",
   "metis",
+  "moonriver",
 ];
 
 module.exports = chainExports(chainTvl, Array.from(chains));
