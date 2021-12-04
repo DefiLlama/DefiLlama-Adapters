@@ -51,6 +51,7 @@ function chainTvl(chain){
 }
 
 module.exports = {
+  timetravel: true,
   ethereum: {
     tvl: ethereum,
     staking:  getTvlFunction("RFIS", "stafi")
