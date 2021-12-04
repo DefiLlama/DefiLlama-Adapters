@@ -134,6 +134,7 @@ async function tvl() {
 }
 
 module.exports = {
+  timetravel: false,
   methodology:
     "TVL counts deposits made to Quarry Protocol. CoinGecko is used to find the price of tokens in USD.",
   tvl,
