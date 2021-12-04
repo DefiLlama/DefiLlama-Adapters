@@ -32,6 +32,7 @@ async function tvl() {
 }
 
 module.exports = {
+    timetravel: false,
     tvl,
     methodology: 'TVL consists of deposits made to the protocol and borrowed tokens are not counted.'
 }
