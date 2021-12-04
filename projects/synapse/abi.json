@@ -1,0 +1,19 @@
+{
+  "inputs": [
+    {
+      "internalType": "address",
+      "name": "tokenAddress",
+      "type": "address"
+    }
+  ],
+  "name": "getFeeBalance",
+  "outputs": [
+    {
+      "internalType": "uint256",
+      "name": "",
+      "type": "uint256"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+}
