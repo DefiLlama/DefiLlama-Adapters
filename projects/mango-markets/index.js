@@ -55,6 +55,7 @@ async function test() {
 // test();
 
 module.exports = {
+    timetravel: false,
     solana: {
         tvl,
     },
