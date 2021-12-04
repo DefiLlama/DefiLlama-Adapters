@@ -1,5 +1,8 @@
 const { chainExports } = require("../helper/exports");
-const { sumTokens } = require("../helper/unwrapLPs");
+const {
+  sumTokensAndLPsSharedOwners,
+  sumTokens,
+} = require("../helper/unwrapLPs");
 const { getBlock } = require("../helper/getBlock");
 const BigNumber = require("bignumber.js");
 const sdk = require("@defillama/sdk");
@@ -293,6 +296,19 @@ const bridgeTVL = async (balances, data, block, chain, transform) => {
   });
 };
 
+const ethPool2 = async (timestamp, ethBlock, chainBlocks) => {
+  const balances = {};
+
+  await sumTokensAndLPsSharedOwners(
+    balances,
+    [["0x4a86c01d67965f8cb3d0aaa2c655705e64097c31", true]], // SYN/ETH SLP
+    ["0xd10eF2A513cEE0Db54E959eF16cAc711470B62cF"], // MiniChefV2
+    ethBlock
+  );
+
+  return balances;
+};
+
 const chainTVL = (chain) => {
   const transform = (token) => {
     if (token === DATA[chain].nusd) return TUSD;
@@ -333,3 +349,4 @@ module.exports = chainExports(chainTVL, [
 ]);
 module.exports.methodology = `Synapse AMM pools and tokens locked on the Synapse bridge are counted as TVL`;
 module.exports.misrepresentedTokens = true;
+module.exports.ethereum.pool2 = ethPool2;
