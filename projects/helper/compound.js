@@ -173,7 +173,42 @@ function getCompoundUsdTvl(comptroller, chain, cether, abis={
     }
 }
 
+function compoundExports(comptroller, chain, cether, cetheEquivalent, transformAdressRaw){
+    const transformAddress = transformAdressRaw === undefined? addr=>`${chain}:${addr}`:transformAdressRaw
+    if(cether !== undefined && cetheEquivalent === undefined){
+        throw new Error("You need to define the underlying for native cAsset")
+    }
+    return {
+        tvl: getCompoundV2Tvl(comptroller, chain, transformAddress, cether, cetheEquivalent),
+        borrowed: getCompoundV2Tvl(comptroller, chain, transformAddress, cether, cetheEquivalent, true)
+    }
+}
+
+function compoundExportsWithAsyncTransform(comptroller, chain, cether, cetheEquivalent, transformAdressConstructor){
+    return {
+        tvl: async (...args)=>{
+            const transformAddress = await transformAdressConstructor()
+            return getCompoundV2Tvl(comptroller, chain, transformAddress, cether, cetheEquivalent)(...args)
+        },
+        borrowed:  async (...args)=>{
+            const transformAddress = await transformAdressConstructor()
+            return getCompoundV2Tvl(comptroller, chain, transformAddress, cether, cetheEquivalent, true)(...args)
+        },
+    }
+}
+
+function fullCoumpoundExports(comptroller, chain, cether, cetheEquivalent){
+    return {
+        timetravel: true,
+        doublecounted: false,
+        [chain]:compoundExports(comptroller, chain, cether, cetheEquivalent)
+    }
+}
+
 module.exports = {
     getCompoundV2Tvl,
     getCompoundUsdTvl,
+    compoundExports,
+    compoundExportsWithAsyncTransform,
+    fullCoumpoundExports
 };

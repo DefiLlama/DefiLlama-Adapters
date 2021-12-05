@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk')
-const {transformAvaxAddress, fixAvaxBalances} = require('../helper/portedTokens')
+const {transformAvaxAddress} = require('../helper/portedTokens')
 const {calculateUniTvl} = require('../helper/calculateUniTvl')
 const {getCompoundV2Tvl} = require('../helper/compound')
 
@@ -11,28 +11,18 @@ async function swapTvl(timestamp, ethBlock, chainBlocks){
 }
 
 const { getChainTvl } = require('../helper/getUniSubgraphTvl');
+const { staking } = require('../helper/staking')
 const joeBar = "0x57319d41F71E81F3c65F2a47CA4e001EbAFd4F33"
 const joeToken = "0x6e84a6216eA6dACC71eE8E6b0a5B7322EEbC0fDd"
 
 const graphUrls = {
   avax: 'https://api.thegraph.com/subgraphs/name/traderjoe-xyz/exchange',
 }
-const chainTvl = getChainTvl(graphUrls, "factories", "liquidityUSD")
-
-async function staking(timestamp, ethBlock, chainBlocks) {
-  const balances = {};
-  const stakedJoe = sdk.api.erc20.balanceOf({
-    target: joeToken,
-    owner: joeBar,
-    chain: 'avax',
-    block: chainBlocks.avax
-  })
-  sdk.util.sumSingleBalance(balances, 'avax:' + joeToken, (await stakedJoe).output)
-  return balances;
-}
+const chainTvl = getChainTvl(graphUrls, "factories", "liquidityUSD")("avax")
 
 module.exports = {
   timetravel: true,
+  doublecounted: false,
   misrepresentedTokens: true,
   methodology: 'We count liquidity on the pairs and we get that information from the "traderjoe-xyz/exchange" subgraph. The staking portion of TVL includes the JoeTokens within the JoeBar contract.',
   avalanche:{
@@ -40,6 +30,7 @@ module.exports = {
       swapTvl,
       getCompoundV2Tvl(comptroller, "avax", addr=>`avax:${addr}`, "0xC22F01ddc8010Ee05574028528614634684EC29e", "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7")
     ]),
-    staking
+    borrowed: getCompoundV2Tvl(comptroller, "avax", addr=>`avax:${addr}`, "0xC22F01ddc8010Ee05574028528614634684EC29e", "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", true),
+    staking: staking(joeBar, joeToken, "avax"),
   }
 }
