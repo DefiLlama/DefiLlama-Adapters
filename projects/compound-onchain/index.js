@@ -1,6 +1,7 @@
 const _ = require('underscore');
 const sdk = require('@defillama/sdk');
 const abi = require('./abi.json');
+const v1abi = require('./v1Abi.json');
 const BigNumber = require('bignumber.js');
 const {lendingMarket} = require('../helper/methodologies')
 
@@ -117,8 +118,40 @@ async function getMarkets(block) {
   }
 }
 
-async function tvl(timestamp, block) {
-  let balances = {};
+const v1Contract = '0x3FDA67f7583380E67ef93072294a7fAc882FD7E7'
+async function v1Tvl(balances, block, borrowed){
+  const marketsLength = await sdk.api.abi.call({
+    target: v1Contract,
+    block,
+    abi: v1abi.getCollateralMarketsLength
+  });
+  const underlyings = await sdk.api.abi.multiCall({
+    calls: Array(Number(marketsLength.output)).fill().map((n, i)=>({
+      target: v1Contract,
+      params: [i]
+    })),
+    block,
+    abi: v1abi.collateralMarkets
+  });
+  const markets = await sdk.api.abi.multiCall({
+    calls: underlyings.output.map(m=>({
+      target: v1Contract,
+      params: [m.output]
+    })),
+    block,
+    abi: v1abi.markets
+  });
+  markets.output.forEach(m=>{
+    const token = m.input.params[0]
+    let amount
+    if(borrowed){
+      amount = m.output.totalBorrows
+    }
+    sdk.util.sumSingleBalance(balances, token, amount)
+  })
+}
+
+async function v2Tvl(balances, block, borrowed){
   let markets = await getMarkets(block);
 
   // Get V1 tokens locked
@@ -139,7 +172,7 @@ async function tvl(timestamp, block) {
     calls: _.map(markets, (market) => ({
       target: market.cToken,
     })),
-    abi: abi['getCash'],
+    abi: borrowed?abi.totalBorrows: abi['getCash'],
   });
 
   _.each(markets, (market) => {
@@ -151,11 +184,37 @@ async function tvl(timestamp, block) {
   return balances;
 }
 
+async function borrowed(timestamp, block){
+  const balances = {};
+  await v1Tvl(balances, block, true)
+  await v2Tvl(balances, block, true)
+  return balances
+}
+
+async function tvl(timestamp, block) {
+  let balances = {};
+
+  // Get V1 tokens locked
+  let v1Locked = await sdk.api.abi.multiCall({
+    block,
+    calls: _.map(markets, (market) => ({
+      target: market.underlying,
+      params: v1Contract,
+    })),
+    abi: 'erc20:balanceOf',
+  });
+
+  sdk.util.sumMultiBalanceOf(balances, v1Locked);
+
+  await v2Tvl(balances, block, false)
+  return balances;
+}
+
 module.exports = {
   timetravel: true,
   ethereum: {
-    tvl
+    tvl,
+    borrowed
   },
   methodology: `${lendingMarket}. TVL is calculated by getting the market addresses from comptroller and calling the getCash() on-chain method to get the amount of tokens locked in each of these addresses, then we get the price of each token from coingecko.`,
-  tvl,
 };
