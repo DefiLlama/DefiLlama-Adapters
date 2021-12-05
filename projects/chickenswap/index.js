@@ -65,7 +65,7 @@ module.exports = {
     ethereum: {
         staking: staking(chickenChefContract, KFC),
         pool2: pool2(chickenChefContract, WETH_KFC_UNIV2),
-        tvl: ethTvl,
+        masterchef: ethTvl,
     },
     tvl: sdk.util.sumChainTvls([ethTvl, ethChainTvl('ethereum')]),
     methodology:
