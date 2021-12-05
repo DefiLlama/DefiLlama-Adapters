@@ -51,7 +51,7 @@ async function getMarkets(comptroller, block, chain, cether, cetheEquivalent) {
     return markets;
 }
 
-function getCompoundV2Tvl(comptroller, chain="ethereum", transformAdress = addr=>addr, cether="0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5", cetheEquivalent="0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2") {
+function getCompoundV2Tvl(comptroller, chain="ethereum", transformAdress = addr=>addr, cether="0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5", cetheEquivalent="0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", borrowed=false) {
     return async (timestamp, ethBlock, chainBlocks) => {
         const block = chainBlocks[chain]
         let balances = {};
@@ -64,7 +64,7 @@ function getCompoundV2Tvl(comptroller, chain="ethereum", transformAdress = addr=
             calls: _.map(markets, (market) => ({
                 target: market.cToken,
             })),
-            abi: abi['getCash'],
+            abi: borrowed? abi.totalBorrows: abi['getCash'],
         });
 
         _.each(markets, (market) => {
