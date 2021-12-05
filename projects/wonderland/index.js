@@ -30,7 +30,11 @@ async function tvl(timestamp, block, chainBlocks) {
     balances,
     [
       [mim, false],
+      //wAVAX
+      ["0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", false], 
+      //joe LP
       ["0x113f413371fC4CC4C9d6416cf1DE9dFd7BF747Df", true],
+      //joe LP
       ["0xf64e1c5B6E17031f5504481Ac8145F4c3eab4917", true],
     ],
     [treasury],
