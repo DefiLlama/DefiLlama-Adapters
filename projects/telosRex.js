@@ -12,8 +12,6 @@ async function tvl() {
 }
 
 module.exports = {
-  telos: {
-    tvl,
-  },
+  
   tvl,
 };
