@@ -137,17 +137,17 @@ async function getUnderlyingPrice(block, chain, oracle, token, methodAbi) {
     return underlyingPrice;
 }
 
-async function getCash(block, chain, token) {
+async function getCash(block, chain, token, borrowed) {
     const { output: cash } = await sdk.api.abi.call({
         target: token,
-        abi: abi['getCash'],
+        abi: borrowed?abi.totalBorrows: abi['getCash'],
         block,
         chain: chain,
     });
     return cash;
 }
 
-function getCompoundUsdTvl(comptroller, chain, cether, abis={
+function getCompoundUsdTvl(comptroller, chain, cether, borrowed, abis={
     oracle: abi['oracle'],
     underlyingPrice: abi['getUnderlyingPrice']
 }) {
@@ -160,9 +160,9 @@ function getCompoundUsdTvl(comptroller, chain, cether, abis={
 
         await Promise.all(
             allMarkets.map(async token => {
-                let cash = new BigNumber(await getCash(block, chain, token));
+                let amount = new BigNumber(await getCash(block, chain, token, borrowed));
                 let decimals = await getUnderlyingDecimals(block, chain, token, cether);
-                let locked = cash.div(10 ** decimals);
+                let locked = amount.div(10 ** decimals);
                 let underlyingPrice = new BigNumber(await getUnderlyingPrice(block, chain, oracle, token, abis.underlyingPrice)).div(
                     10 ** (18 + 18 - decimals)
                 );
@@ -205,10 +205,17 @@ function fullCoumpoundExports(comptroller, chain, cether, cetheEquivalent){
     }
 }
 
+function usdCompoundExports(comptroller, chain, cether, abis){
+    return {
+        tvl: getCompoundUsdTvl(comptroller, chain, cether, false, abis),
+        borrowed:  getCompoundUsdTvl(comptroller, chain, cether, true, abis)
+    }
+}
+
 module.exports = {
     getCompoundV2Tvl,
-    getCompoundUsdTvl,
     compoundExports,
     compoundExportsWithAsyncTransform,
-    fullCoumpoundExports
+    fullCoumpoundExports,
+    usdCompoundExports
 };

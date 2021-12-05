@@ -1,4 +1,4 @@
-const {getCompoundUsdTvl} = require('../helper/compound')
+const {usdCompoundExports} = require('../helper/compound')
 
 const unitroller_fantom = "0x892701d128d63c9856A9Eb5d967982F78FD3F2AE"
 const unitroller_bsc = "0xAD48B2C9DC6709a560018c678e918253a65df86e"
@@ -12,11 +12,8 @@ const abis = {
 
 
 module.exports={
-    fantom:{
-        tvl: getCompoundUsdTvl(unitroller_fantom, "fantom", "0xed8F2C964b47D4d607a429D4eeA972B186E6f111", abis)
-    },
-    bsc:{
-        tvl: getCompoundUsdTvl(unitroller_bsc, "bsc", "0x34878F6a484005AA90E7188a546Ea9E52b538F6f", abis) 
-    }
-    
+    timetravel: true,
+    doublecounted: false,
+    fantom:usdCompoundExports(unitroller_fantom, "fantom", "0xed8F2C964b47D4d607a429D4eeA972B186E6f111", abis),
+    bsc:usdCompoundExports(unitroller_bsc, "bsc", "0x34878F6a484005AA90E7188a546Ea9E52b538F6f", abis),
 }
