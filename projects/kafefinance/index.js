@@ -1,6 +1,6 @@
 const utils = require('../helper/utils');
 // Please refer to Github(https://github.com/kukafe/kafe-defillama/tree/main/kafe-defillama) for the codes to calculate the TVL via on-chain calls
-const apiUrl = 'https://kafe-defillama.herokuapp.com/getTvl'; 
+const apiUrl = 'http://142.93.53.244:5001/getTvl'; 
 
 function fetchChain(chainId) {
     return async()=>{
