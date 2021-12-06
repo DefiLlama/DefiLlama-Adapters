@@ -1,6 +1,4 @@
-const sdk = require('@defillama/sdk');
-const BigNumber = require('bignumber.js').default;
-const abi = require('./config/wepiggy/abi.json');
+const {usdCompoundExports} = require('./helper/compound');
 
 const contracts = {
   ethereum: {
@@ -54,132 +52,13 @@ const contracts = {
   },
 };
 
-// ask comptroller for all markets array
-async function getAllMarkets(block, chain, comptroller) {
-  const { output: markets } = await sdk.api.abi.call({
-    target: comptroller,
-    abi: abi['getAllMarkets'],
-    block,
-    chain: chain,
-  });
-  return markets;
-}
+const chainExports = {}
+Object.entries(contracts).forEach(([chain, chainData])=>{
+  chainExports[chain]=usdCompoundExports(chainData.comptroller, chain, chainData.gas.pToken)
+})
 
-// ask comptroller for oracle
-async function getOracle(block, chain, comptroller) {
-  const { output: oracle } = await sdk.api.abi.call({
-    target: comptroller,
-    abi: abi['oracle'],
-    block,
-    chain: chain,
-  });
-  return oracle;
-}
-
-async function getUnderlyingDecimals(block, chain, token) {
-  // if (token === '0x27A94869341838D5783368a8503FdA5fbCd7987c') {
-  //   return { underlying: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', decimals: 18 }; //pETH => WETH
-  // }
-  if (token.toLowerCase() === contracts[chain].gas.pToken.toLowerCase()) {
-    return contracts[chain].gas.decimals;
-  }
-
-  const { output: underlying } = await sdk.api.abi.call({
-    target: token,
-    abi: abi['underlying'],
-    block,
-    chain: chain,
-  });
-  const { output: decimals } = await sdk.api.abi.call({
-    target: underlying,
-    abi: abi['decimals'],
-    block,
-    chain: chain,
-  });
-  return decimals;
-}
-
-async function getUnderlyingPrice(block, chain, oracle, token) {
-  const { output: underlyingPrice } = await sdk.api.abi.call({
-    target: oracle,
-    abi: abi['getUnderlyingPrice'],
-    block,
-    params: [token],
-    chain: chain,
-  });
-  return underlyingPrice;
-}
-
-async function getCash(block, chain, token) {
-  const { output: cash } = await sdk.api.abi.call({
-    target: token,
-    abi: abi['getCash'],
-    block,
-    chain: chain,
-  });
-  return cash;
-}
-
-function fetchChain(chain) {
-  return async () => {
-    let tvl = new BigNumber('0');
-    let { comptroller } = contracts[chain];
-    let block = null;
-    // const { block } = await sdk.api.util.lookupBlock(timestamp, {
-    //   chain: chain,
-    // });
-    let allMarkets = await getAllMarkets(block, chain, comptroller);
-    let oracle = await getOracle(block, chain, comptroller);
-
-    await Promise.all(
-      allMarkets.map(async token => {
-        let cash = new BigNumber(await getCash(block, chain, token));
-        let decimals = await getUnderlyingDecimals(block, chain, token);
-        let locked = cash.div(10 ** decimals);
-        let underlyingPrice = new BigNumber(await getUnderlyingPrice(block, chain, oracle, token)).div(
-          10 ** (18 + 18 - decimals)
-        );
-        tvl = tvl.plus(locked.times(underlyingPrice));
-      })
-    );
-    return tvl.toNumber();
-  };
-}
-
-async function fetch() {
-  let tvl =
-    (await fetchChain('ethereum')()) +
-    (await fetchChain('okexchain')()) +
-    (await fetchChain('bsc')()) +
-    (await fetchChain('polygon')()) +
-    (await fetchChain('heco')()) +
-    (await fetchChain('arbitrum')()) +
-    (await fetchChain('optimism')());
-  return tvl;
-}
-
-module.exports = {
-  ethereum: {
-    fetch: fetchChain('ethereum'),
-  },
-  okexchain: {
-    fetch: fetchChain('okexchain'),
-  },
-  bsc: {
-    fetch: fetchChain('bsc'),
-  },
-  polygon: {
-    fetch: fetchChain('polygon'),
-  },
-  heco: {
-    fetch: fetchChain('heco'),
-  },
-  arbitrum: {
-    fetch: fetchChain('arbitrum'),
-  },
-  optimism: {
-    fetch: fetchChain('optimism'),
-  },
-  fetch,
+module.exports={
+  timetravel: true,
+  ...chainExports,
   methodology: `TVL is comprised of tokens deposited to the protocol as collateral, similar to Compound Finance and other lending protocols the borrowed tokens are not counted as TVL.`
 };
