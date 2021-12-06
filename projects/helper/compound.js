@@ -198,14 +198,14 @@ function getCompoundUsdTvl(comptroller, chain, cether, borrowed, abis={
     }
 }
 
-function compoundExports(comptroller, chain, cether, cetheEquivalent, transformAdressRaw){
+function compoundExports(comptroller, chain, cether, cetheEquivalent, transformAdressRaw, checkForLPTokens){
     const transformAddress = transformAdressRaw === undefined? addr=>`${chain}:${addr}`:transformAdressRaw
     if(cether !== undefined && cetheEquivalent === undefined){
         throw new Error("You need to define the underlying for native cAsset")
     }
     return {
-        tvl: getCompoundV2Tvl(comptroller, chain, transformAddress, cether, cetheEquivalent, false),
-        borrowed: getCompoundV2Tvl(comptroller, chain, transformAddress, cether, cetheEquivalent, true)
+        tvl: getCompoundV2Tvl(comptroller, chain, transformAddress, cether, cetheEquivalent, false, checkForLPTokens),
+        borrowed: getCompoundV2Tvl(comptroller, chain, transformAddress, cether, cetheEquivalent, true, checkForLPTokens)
     }
 }
 
