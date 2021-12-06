@@ -1,6 +1,8 @@
 const _ = require('underscore');
 const sdk = require('@defillama/sdk');
 const abi = require('./abis/compound.json');
+const {getBlock} = require('./getBlock');
+const { unwrapUniswapLPs } = require('./unwrapLPs');
 
 // ask comptroller for all markets array
 async function getAllCTokens(comptroller, block, chain) {
@@ -51,9 +53,9 @@ async function getMarkets(comptroller, block, chain, cether, cetheEquivalent) {
     return markets;
 }
 
-function getCompoundV2Tvl(comptroller, chain="ethereum", transformAdress = addr=>addr, cether="0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5", cetheEquivalent="0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", borrowed=false) {
+function getCompoundV2Tvl(comptroller, chain="ethereum", transformAdress = addr=>addr, cether="0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5", cetheEquivalent="0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", borrowed=false, checkForLPTokens=undefined) {
     return async (timestamp, ethBlock, chainBlocks) => {
-        const block = chainBlocks[chain]
+        const block = await getBlock(timestamp, chain, chainBlocks, true);
         let balances = {};
         let markets = await getMarkets(comptroller, block, chain, cether, cetheEquivalent);
 
@@ -67,11 +69,34 @@ function getCompoundV2Tvl(comptroller, chain="ethereum", transformAdress = addr=
             abi: borrowed? abi.totalBorrows: abi['getCash'],
         });
 
-        _.each(markets, (market) => {
+        let symbols;
+        if(checkForLPTokens!==undefined){
+            symbols = await sdk.api.abi.multiCall({
+                block,
+                chain,
+                calls: _.map(markets, (market) => ({
+                    target: market.cToken,
+                })),
+                abi: "erc20:symbol",
+            });
+        }
+
+        const lpPositions = []
+        _.each(markets, (market, idx) => {
             let getCash = _.find(v2Locked.output, (result) => result.input.target === market.cToken);
 
-            sdk.util.sumSingleBalance(balances, transformAdress(market.underlying), getCash.output)
+            if(checkForLPTokens!==undefined && checkForLPTokens(symbols.output[idx].output)){
+                lpPositions.push({
+                    token: market.underlying,
+                    balance: getCash.output
+                })
+            } else {
+                sdk.util.sumSingleBalance(balances, transformAdress(market.underlying), getCash.output)
+            }
         });
+        if(lpPositions.length > 0){
+            await unwrapUniswapLPs(balances, lpPositions, block, chain, transformAdress)
+        }
         return balances;
     }
 }
@@ -152,7 +177,7 @@ function getCompoundUsdTvl(comptroller, chain, cether, borrowed, abis={
     underlyingPrice: abi['getUnderlyingPrice']
 }) {
     return async (timestamp, ethBlock, chainBlocks) => {
-        const block = chainBlocks[chain]
+        const block = await getBlock(timestamp, chain, chainBlocks, true);
         let tvl = new BigNumber('0');
 
         let allMarkets = await getAllMarkets(block, chain, comptroller);
@@ -179,7 +204,7 @@ function compoundExports(comptroller, chain, cether, cetheEquivalent, transformA
         throw new Error("You need to define the underlying for native cAsset")
     }
     return {
-        tvl: getCompoundV2Tvl(comptroller, chain, transformAddress, cether, cetheEquivalent),
+        tvl: getCompoundV2Tvl(comptroller, chain, transformAddress, cether, cetheEquivalent, false),
         borrowed: getCompoundV2Tvl(comptroller, chain, transformAddress, cether, cetheEquivalent, true)
     }
 }
@@ -197,11 +222,11 @@ function compoundExportsWithAsyncTransform(comptroller, chain, cether, cetheEqui
     }
 }
 
-function fullCoumpoundExports(comptroller, chain, cether, cetheEquivalent){
+function fullCoumpoundExports(comptroller, chain, cether, cetheEquivalent, transformAdress){
     return {
         timetravel: true,
         doublecounted: false,
-        [chain]:compoundExports(comptroller, chain, cether, cetheEquivalent)
+        [chain]:compoundExports(comptroller, chain, cether, cetheEquivalent, transformAdress)
     }
 }
 
