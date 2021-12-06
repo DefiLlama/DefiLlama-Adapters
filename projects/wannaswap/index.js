@@ -1,4 +1,4 @@
-const {calculateUsdUniTvl} = require('./helper/getUsdUniTvl');
+const {calculateUsdUniTvl} = require('../helper/getUsdUniTvl');
 const { staking } = require('../helper/staking.js');
 
 module.exports = {
