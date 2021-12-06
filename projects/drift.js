@@ -8,6 +8,7 @@ async function tvl(){
 }
 
 module.exports={
+    timetravel: false,
     methodology: "Calculate the USDC on 6W9yiHDCW9EpropkFV8R3rPiL8LVWUHSiys3YeW6AT6S through on-chain calls",
     solana:{
         tvl

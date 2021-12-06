@@ -1,4 +1,5 @@
 const { request, gql } = require("graphql-request");
+const { fetchURL } = require("../helper/utils");
 
 const graphUrl = 'https://mantle.terra.dev/'
 const query = gql`
@@ -43,11 +44,19 @@ async function tvl(timestamp, block) {
     }
 }
 
+async function borrowed(){
+  const data = await fetchURL("https://api.anchorprotocol.com/api/v1/borrow")
+  return {
+    "terrausd": Number(data.data.total_borrowed) / 1e6
+  }
+}
+
 
 module.exports = {
-    tvl,
+    timetravel: false,
     methodology: `We use the Anchor subgraph to get the amount of bLUNA and bETH used as collateral on anchor and the UST that is on anchor but has not been lent, we then use Coingecko to price the tokens in USD.`,
     terra: {
         tvl,
+        borrowed
     }
 }

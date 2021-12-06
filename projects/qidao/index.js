@@ -264,7 +264,7 @@ async function fantom(timestamp, block, chainBlocks) {
       "0x75D4aB6843593C111Eeb02Ff07055009c836A1EF",
     ],
   ];
-  //await handleMooTokens(balances, chainBlocks.fantom, chain, ftmMooTokens)
+  await handleMooTokens(balances, chainBlocks.fantom, chain, ftmMooTokens);
   const ftmLPs = [
     //Vault, token, LP
     [
@@ -295,6 +295,34 @@ async function avax(timestamp, block, chainBlocks) {
   return balances;
 }
 
+async function moonriver(timestamp, block, chainBlocks) {
+  const balances = {};
+  const chain = "moonriver";
+  const moonriverMooLPs = [
+    [
+      "0x97D811A7eb99Ef4Cb027ad59800cE27E68Ee1109",
+      "0x932009984bd2a7da8c6396694e811da5c0952d05",
+      "0xA0D8DFB2CC9dFe6905eDd5B71c56BA92AD09A3dC",
+    ],
+  ];
+  await sumTokens(
+    balances,
+    [
+      [
+        "0x639a647fbe20b6c8ac19e48e2de44ea792c62c5c",
+        "0x4a0474E3262d4DB3306Cea4F207B5d66eC8E0AA9",
+      ],
+    ],
+    chainBlocks.moonriver,
+    chain,
+    (addr) => {
+      return `moonriver:${addr}`;
+    }
+  );
+  await handleMooLPs(balances, chainBlocks.moonriver, chain, moonriverMooLPs);
+  return balances;
+}
+
 module.exports = {
   methodology:
     "TVL counts the AAVE tokens that are deposited within the Yield Instruments section of QiDao, the Vault token deposits of CRV, LINK, AAVE and WETH, as well as USDC deposited to mint MAI.",
@@ -306,5 +334,8 @@ module.exports = {
   },
   avax: {
     tvl: avax,
+  },
+  moonriver: {
+    tvl: moonriver,
   },
 };

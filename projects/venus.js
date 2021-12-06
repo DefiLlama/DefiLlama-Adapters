@@ -1,21 +1,10 @@
-const utils = require('./helper/utils');
+const {fullCoumpoundExports} = require('./helper/compound');
 
-/* * * * * * * *
-* ==> Correct adapter needs to be created.
-*
-*****************/
-async function fetch() {
-  var markets = await utils.fetchURL('https://api.venus.io/api/governance/venus')
-  let tvl = 0;
-  markets.data.data.markets.map(async(m) => {
-    tvl += parseFloat(m.liquidity)
-  })
-  return tvl;
+const replace = {
+  "0x250632378e573c6be1ac2f97fcdf00515d0aa91b": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // beth->weth
+  "0xfb6115445bff7b52feb98650c87f44907e58f802": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9", // aave
 }
 
-
-module.exports = {
-  timetravel: false,
-  methodology: 'TVL is comprised of tokens deposited to the protocol as collateral, similar to Compound Finance and other lending protocols the borrowed tokens are not counted as TVL.',
-  fetch,
-}
+module.exports = fullCoumpoundExports("0xfd36e2c2a6789db23113685031d7f16329158384", "bsc", "0xA07c5b74C9B40447a954e1466938b865b6BBea36", "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c", addr=>{
+  return replace[addr.toLowerCase()] || `bsc:${addr}`
+})
