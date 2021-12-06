@@ -43,72 +43,56 @@ const _tvl = async (timestamp, ethBlock, chainBlocks, chain) => {
   const block = chainBlocks[chain];
   let pools;
 
-  try {
-    if (chain === "ethereum") {
-      const pool = await fetchPool(1);
-      pools = pool.data.allCohorts.cohorts;
-    } else if (chain === "bsc") {
-      const pool = await fetchPool(56);
-      pools = pool.data.allCohorts.cohorts;
-    } else {
-      const pool = await fetchPool(137);
-      pools = pool.data.allCohorts.cohorts;
-    }
-
-    const multiCallResult = await sdk.api.abi.multiCall({
-      calls: pools.map((data) => {
-        return (
-          data.tokens.map((token) => ({
-            target: data.cohortAddress,
-            params: token,
-          })),
-          data.tokens.map((token) => {
-            if (!data.proxies) {
-              return;
-            }
-
-            return {
-              target: data.proxies[0],
-              params: token,
-            };
-          })
-        );
-      }),
-      block,
-      abi: erc20Abi[5],
-      chain,
-    });
-    return multiCallResult;
-  } catch (e) {
-    console.log(e);
+  if (chain === "ethereum") {
+    const pool = await fetchPool(1);
+    pools = pool.data.allCohorts.cohorts;
+  } else if (chain === "bsc") {
+    const pool = await fetchPool(56);
+    pools = pool.data.allCohorts.cohorts;
+  } else {
+    const pool = await fetchPool(137);
+    pools = pool.data.allCohorts.cohorts;
   }
+
+  const multiCallResult = await sdk.api.abi.multiCall({
+    calls: pools.map((data) => {
+      return (
+        data.tokens.map((token) => ({
+          target: data.cohortAddress,
+          params: token,
+        })),
+        data.tokens.map((token) => {
+          if (!data.proxies) {
+            return;
+          }
+
+          return {
+            target: data.proxies[0],
+            params: token,
+          };
+        })
+      );
+    }),
+    block,
+    abi: erc20Abi[5],
+    chain,
+  });
+  return multiCallResult;
 };
 
 const ethereum = async (timestamp, ethBlock, chainBlocks) => {
-  try {
-    let balance = await _tvl(timestamp, ethBlock, chainBlocks, "ethereum");
-    return balance;
-  } catch (err) {
-    console.log(err);
-  }
+  let balance = await _tvl(timestamp, ethBlock, chainBlocks, "ethereum");
+  return balance;
 };
 
 const bsc = async (timestamp, ethBlock, chainBlocks) => {
-  try {
-    let balance = await _tvl(timestamp, ethBlock, chainBlocks, "bsc");
-    return balance;
-  } catch (err) {
-    console.log(err);
-  }
+  let balance = await _tvl(timestamp, ethBlock, chainBlocks, "bsc");
+  return balance;
 };
 
 const polygon = async (timestamp, ethBlock, chainBlocks) => {
-  try {
-    let balance = await _tvl(timestamp, ethBlock, chainBlocks, "polygon");
-    return balance;
-  } catch (err) {
-    console.log(err);
-  }
+  let balance = await _tvl(timestamp, ethBlock, chainBlocks, "polygon");
+  return balance;
 };
 
 module.exports = {
