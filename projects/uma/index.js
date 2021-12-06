@@ -15,6 +15,11 @@ const polygonLspCreators = [
   "0x62410e96a2ceB4d66824346e3264d1D9107a0aBE",
   "0x5Fd7FFF20Ee851cD7bEE72fB3C6d324e4C104c9f",
 ];
+const ethEmpCreators = [
+  "0xad8fD1f418FB860A383c9D4647880af7f043Ef39",
+  "0x9A077D4fCf7B26a0514Baa4cff0B481e9c35CE87",
+  "0xddfC7E3B4531158acf4C7a5d2c3cB0eE81d018A5",
+];
 
 // Captures TVL for EMP contracts on Ethereum
 async function ethEmp(timestamp, block) {
@@ -33,28 +38,30 @@ async function ethEmp(timestamp, block) {
   };
 
   const balances = {};
-  const logs = await sdk.api.util.getLogs({
-    target: "0x3e532e6222afe9Bcf02DCB87216802c75D5113aE",
-    topic: "NewContractRegistered(address,address,address[])",
-    keys: ["topics"],
-    fromBlock: 9937650,
-    toBlock: block,
-  });
-  const collaterals = await sdk.api.abi.multiCall({
-    calls: logs.output.map((poolLog) => ({
-      target: `0x${poolLog[1].slice(26)}`,
-    })),
-    block,
-    abi,
-  });
-  await requery(collaterals, "ethereum", block, abi);
-  await sumTokens(
-    balances,
-    collaterals.output
-      .filter((t) => t.output !== null)
-      .map((c) => [c.output, c.input.target]),
-    block
-  );
+  for (let i = 0; i < ethEmpCreators.length; i++) {
+    const logs = await sdk.api.util.getLogs({
+      target: ethEmpCreators[i],
+      topic: "CreatedExpiringMultiParty(address,address)",
+      keys: ["topics"],
+      fromBlock: 9937650,
+      toBlock: block,
+    });
+    const collaterals = await sdk.api.abi.multiCall({
+      calls: logs.output.map((poolLog) => ({
+        target: `0x${poolLog[1].slice(26)}`,
+      })),
+      block,
+      abi,
+    });
+    await requery(collaterals, "ethereum", block, abi);
+    await sumTokens(
+      balances,
+      collaterals.output
+        .filter((t) => t.output !== null)
+        .map((c) => [c.output, c.input.target]),
+      block
+    );
+  }
   return balances;
 }
 
