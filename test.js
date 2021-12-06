@@ -10,14 +10,13 @@ const {
 const { util } = require("@defillama/sdk");
 
 async function getLatestBlockRetry(chain) {
-  // for (let i = 0; i < 5; i++) {
-  //     try {
-  //         return await getLatestBlock(chain);
-  //     } catch (e) {
-  //         throw new Error(`Couln't get block heights for chain "${chain}"`, e)
-  //     }
-  // }
-  return 100000;
+  for (let i = 0; i < 5; i++) {
+    try {
+      return await getLatestBlock(chain);
+    } catch (e) {
+      throw new Error(`Couln't get block heights for chain "${chain}"`, e);
+    }
+  }
 }
 
 const locks = [];
