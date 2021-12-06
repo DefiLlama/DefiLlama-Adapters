@@ -182,7 +182,14 @@ function uniTvlExport(factory, chain, transformAddressOriginal=undefined){
   }
 }
 
+async function simpleAddUniTvl(balances, factory, chain, timestamp, chainBlocks){
+  const transformAddress = addr=>`${chain}:${addr}`;
+  const block = await getBlock(timestamp, chain , chainBlocks);
+  return calculateUniTvl(transformAddress, block, chain, factory, 0, true)
+}
+
 module.exports = {
   calculateUniTvl,
-  uniTvlExport
+  uniTvlExport,
+  simpleAddUniTvl
 };
