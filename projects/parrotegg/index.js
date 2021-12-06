@@ -1,11 +1,11 @@
 const sdk = require("@defillama/sdk");
-const { transformArbitrumAddress, transformPolygonAddress } = require("../helper/portedTokens");
+const { transformArbitrumAddress, transformPolygonAddress, transformHarmonyAddress, fixHarmonyBalances } = require("../helper/portedTokens");
 const { addFundsInMasterChef } = require('../helper/masterchef');
 const IOTEX_CG_MAPPING = require("./iotex_coingecko_mapping.json")
 const STAKING_CONTRACT_ARBITRUM = "0x1cCf20F4eE3EFD291267c07268BEcbFDFd192311"; //MASTERCHEF ARBITRUM
 const STAKING_CONTRACT_IOTEX = "0x83E7e97C4e92D56c0653f92d9b0c0B70288119b8";  // MASTERCHEF IOTEX
 const STAKING_CONTRACT_POLYGON = "0x34E4cd20F3a4FdC5e42FdB295e5A118D4eEB0b79";  // MASTERCHEF POLYGON
-
+const STAKING_CONTRACT_HARMONY = "0xFb15945E38a11450AF5E3FF20355D71Da72FfE8a";  // MASTERCHEF HARMONY
 
 function compareAddresses(a, b){
     return a.toLowerCase() === b.toLowerCase()
@@ -53,17 +53,30 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
   return balances;
 };
 
+const harmonyTvl = async (timestamp, ethBlock, chainBlocks) => {
+  const balances = {};
+  const transformAddress = await transformHarmonyAddress();
+
+  await addFundsInMasterChef(
+      balances, STAKING_CONTRACT_HARMONY, chainBlocks.harmony, 'harmony', transformAddress);
+  delete balances['0xC36769DFcDF05B2949F206FC34C8870707D33C89'];  //TOKEN ADDRESS
+  delete balances['0xC36769DFcDF05B2949F206FC34C8870707D33C89']; //TOKEN ADDRESS
+
+  fixHarmonyBalances(balances)
+
+  return balances;
+};
 
 const iotexTvl = async (timestamp, ethBlock, chainBlocks) => {
-    const balances = {};
-    const transformAddress = await transformIotexAddress();
-    
-    await addFundsInMasterChef(
-        balances, STAKING_CONTRACT_IOTEX, chainBlocks.iotex, 'iotex', transformAddress);
+  const balances = {};
+  const transformAddress = await transformIotexAddress();
+  
+  await addFundsInMasterChef(
+      balances, STAKING_CONTRACT_IOTEX, chainBlocks.iotex, 'iotex', transformAddress);
 
-    fixIotexBalances(balances);
+  fixIotexBalances(balances);
 
-    return balances;
+  return balances;
 };
 
 module.exports={
@@ -76,5 +89,8 @@ module.exports={
     polygon: {
         tvl: polygonTvl
     },
-    tvl: sdk.util.sumChainTvls([arbitrumTvl, iotexTvl, polygonTvl]),
+    harmony: {
+        tvl: harmonyTvl
+    },
+    tvl: sdk.util.sumChainTvls([arbitrumTvl, iotexTvl, polygonTvl, harmonyTvl]),
 }

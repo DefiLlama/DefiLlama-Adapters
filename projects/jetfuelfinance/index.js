@@ -2,7 +2,8 @@ const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { transformBscAddress } = require("../helper/portedTokens");
-const tvlOnPairs = require("../helper/processPairs.js");
+const { compoundExports } = require("../helper/compound");
+const {calculateUniTvl} = require("../helper/calculateUniTvl");
 
 // Jetswap section
 const factory = "0x0eb58E5c8aA63314ff5547289185cC4583DfCBD5";
@@ -49,36 +50,9 @@ const single_side_assets = [
   "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c",
 ];
 
-const markets = [
-  //fUSDC
-  "0x3ef88D7FDe18Fe966474FE3878b802F678b029bC",
-  //fUSDT
-  "0x554530ecDE5A4Ba780682F479BC9F64F4bBFf3a1",
-  //fBUSD
-  "0x8BB0d002bAc7F1845cB2F14fe3D6Aae1D1601e29",
-  //fBTC
-  "0x47BAA29244c342f1e6cDe11C968632E7403aE258",
-  //fETH
-  "0x5F3EF8B418a8cd7E3950123D980810A0A1865981",
-  //fLTC
-  "0xE75b16cc66F8820Fb97f52f0C25F41982ba4daF3",
-  //fXRP
-  "0xa7FB72808de4FFcaCf9a815Bd1CcbE70F03b54ca",
-  //fADA
-  "0x4C0933453359733b4867DfF1145A9a0749931A00",
-  //fDAI
-  "0x5F30fDDdCf14a0997a52fdb7D7F23b93F0f21998",
-  //fDOT
-  "0x8fc4f7A57BB19E701108b17d785a28118604a3D1",
-  //fBETH
-  "0x8ed1f4c1326E5d3C1b6E99Ac9E5EC6651E11e3Da",
-];
-
 const bscTvl = async (timestamp, block, chainBlocks) => {
-  const balances = {};
-
   // Jetswap section
-  await tvlOnPairs("bsc", chainBlocks, factory, balances);
+  const balances = await calculateUniTvl(addr=>`bsc:${addr}`, chainBlocks.bsc, "bsc", factory, 0, true)
 
   // Vault section in their repo
   const vault_balances = (
@@ -131,39 +105,15 @@ const bscTvl = async (timestamp, block, chainBlocks) => {
     sdk.util.sumSingleBalance(balances, `bsc:${single_side_assets[idx]}`, bal);
   });
 
-  // Fortress section
-  const underlyings = (
-    await sdk.api.abi.multiCall({
-      abi: abi.underlying,
-      calls: markets.map((address) => ({ target: address })),
-      chain: "bsc",
-      block: chainBlocks["bsc"],
-    })
-  ).output.map((el) => el.output);
-
-  const balances_markets = (
-    await sdk.api.abi.multiCall({
-      abi: abi.getCash,
-      calls: markets.map((address) => ({ target: address })),
-      chain: "bsc",
-      block: chainBlocks["bsc"],
-    })
-  ).output.map((el) => el.output);
-
-  underlyings.forEach((underlying, idx) => {
-    sdk.util.sumSingleBalance(
-      balances,
-      `bsc:${underlying}`,
-      balances_markets[idx]
-    );
-  });
-
   return balances;
 };
 
+const {tvl:lendingTvl, borrowed} = compoundExports("0x67340bd16ee5649a37015138b3393eb5ad17c195", "bsc", "0xE24146585E882B6b59ca9bFaaaFfED201E4E5491", "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c")
+
 module.exports = {
+  timetravel: true,
   bsc: {
-    tvl: bscTvl,
+    tvl: sdk.util.sumChainTvls([bscTvl, lendingTvl]),
+    borrowed
   },
-  tvl: sdk.util.sumChainTvls([bscTvl]),
 };

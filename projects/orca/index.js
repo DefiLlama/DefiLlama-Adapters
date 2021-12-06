@@ -10,6 +10,7 @@ async function fetch(){
 }
 
 module.exports = {
+    timetravel: false,
     fetch,
     hallmarks:[
         [1628565707, "Token+LM launch"]

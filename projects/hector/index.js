@@ -14,6 +14,8 @@ const ftm = "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83"
 const hecUsdcLP = "0xd661952749f05acc40503404938a91af9ac1473b"
 const usdc = "0x04068da6c83afcfa0e13ba15a6696662335d5b75"
 const mim = "0x82f0b8b456c1a451378467398982d4834b6829c1"
+const frax = "0xdc301622e621166bd8e82f2ca0a26c13ad0be355"
+const fraxLp = "0x0f8D6953F58C0dd38077495ACA64cbd1c76b7501"
 
 const HectorStakings = [
   // V1
@@ -34,7 +36,9 @@ async function tvl(timestamp, block, chainBlocks) {
       [usdc, false],
       [ftm, false],
       [mim, false],
+      [frax, false],
       [hecUsdcLP, true],
+      [fraxLp, true],
       [hecDaiSLP, true]
     ],
     [treasury],

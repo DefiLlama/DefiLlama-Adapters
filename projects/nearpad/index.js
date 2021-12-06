@@ -15,6 +15,7 @@ const tokens = [
   "0xDA2585430fEf327aD8ee44Af8F1f989a2A91A3d2",
 ];
 
+
 module.exports = {
   misrepresentedTokens: true,
   aurora: {

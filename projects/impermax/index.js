@@ -2,7 +2,7 @@ const sdk = require('@defillama/sdk')
 const BigNumber = require('bignumber.js')
 const {getBlock} = require('../helper/getBlock')
 const {transformArbitrumAddress} = require('../helper/portedTokens')
-const {polygon} = require('./subgraph')
+const {polygon, moonriver} = require('./subgraph')
 
 const xUniswapV2TVL = require('./xUniswapV2');
 
@@ -70,9 +70,9 @@ const chainTvls = {
   avax: {
     tvl: getTvlCalculator(data.avax)
   },
+  moonriver: {
+    tvl: moonriver.tvl
+  },
 };
 
-module.exports = {
-  ...chainTvls,
-  tvl: sdk.util.sumChainTvls(Object.values(chainTvls).map(tvl=>tvl.tvl))
-};
+module.exports = chainTvls
