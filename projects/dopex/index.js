@@ -1,8 +1,8 @@
 const sdk = require("@defillama/sdk");
-const BigNumber = require("bignumber.js");
-const abi = require("./abi");
+const { getBlock } = require("../helper/getBlock");
 const { pool2s } = require("../helper/pool2");
 const { staking } = require("../helper/staking");
+const { sumTokensSharedOwners } = require("../helper/unwrapLPs");
 
 const DPX = "0xeec2be5c91ae7f8a338e1e5f3b5de49d07afdc81";
 const RDPX = "0x0ff5A8451A839f5F0BB3562689D9A44089738D11";
@@ -11,112 +11,43 @@ const SSOVDpx = "0x818ceD3D446292061913f1f74B2EAeE6341a76Ec";
 const stakingRewardsRDPX = "0x8d481245801907b45823Fb032E6848d0D3c29AE5";
 const SSOVRdpx = "0x6607c5e39a43cce1760288Dc33f20eAd51b14D7B";
 
+const arbiDPX = "0x6c2c06790b3e3e3c38e12ee22f8183b37a13ee55"
+const arbiRDPX = "0x32eb7902d4134bf98a28b963d26de779af92a212"
+
+const replacements = {
+  [arbiRDPX.toLowerCase()]: RDPX,
+  [arbiDPX.toLowerCase()]: DPX,
+  [stakingRewardsDPX.toLowerCase()]: DPX,
+  [stakingRewardsRDPX.toLowerCase()]: RDPX
+}
+
 function transformArbitrum(addr) {
-  if (addr.toLowerCase() === "0x6c2c06790b3e3e3c38e12ee22f8183b37a13ee55") {
-    return DPX;
-  } else if (
-    addr.toLowerCase() === "0x32eb7902d4134bf98a28b963d26de779af92a212"
-  ) {
-    return RDPX;
-  }
-  return `arbitrum:${addr}`;
+  return replacements[addr.toLowerCase()] ?? `arbitrum:${addr}`;
 }
 
-async function arbitrumTvl(timestamp, block) {
-  let balances = {};
-  const ssovBalance = await sdk.api.abi.call({
-    target: stakingRewardsDPX,
-    abi: abi["balanceOf"],
-    params: [SSOVDpx],
-    block: block,
-    chain: "arbitrum",
-  });
-  const ssovDpxBalance = await sdk.api.abi.call({
-    target: "0x6c2c06790b3e3e3c38e12ee22f8183b37a13ee55",
-    abi: "erc20:balanceOf",
-    params: [SSOVDpx],
-    block: block,
-    chain: "arbitrum",
-  });
-  const ssovEarntRewards = await sdk.api.abi.call({
-    target: stakingRewardsDPX,
-    abi: abi["earned"],
-    params: [SSOVDpx],
-    block: block,
-    chain: "arbitrum",
-  });
-  const ssovRdpxBalance = await sdk.api.abi.call({
-    target: "0x32eb7902d4134bf98a28b963d26de779af92a212",
-    abi: "erc20:balanceOf",
-    params: [SSOVDpx],
-    block: block,
-    chain: "arbitrum",
-  });
+const tokensInPools = [
+  stakingRewardsDPX, stakingRewardsRDPX, arbiDPX, arbiRDPX, 
+]
 
-  balances[DPX] = new BigNumber(ssovBalance.output)
-    .plus(new BigNumber(ssovEarntRewards.output.DPXtokensEarned))
-    .plus(new BigNumber(ssovDpxBalance.output))
-    .toFixed();
-  balances[RDPX] = new BigNumber(ssovEarntRewards.output.RDPXtokensEarned)
-    .plus(new BigNumber(ssovRdpxBalance.output))
-    .toFixed();
+const ethPool = "0x3154B747C4bFd35C67607d860b884D28F32Ed00F"
+const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
 
-  const ssovRDPXBalance = await sdk.api.abi.call({
-    target: stakingRewardsRDPX,
-    abi: abi["balanceOf"],
-    params: [SSOVRdpx],
-    block: block,
-    chain: "arbitrum",
-  });
-  const ssovRDPXDpxBalance = await sdk.api.abi.call({
-    target: "0x6c2c06790b3e3e3c38e12ee22f8183b37a13ee55",
-    abi: "erc20:balanceOf",
-    params: [SSOVRdpx],
-    block: block,
-    chain: "arbitrum",
-  });
-  const ssovRDPXEarntRewards = await sdk.api.abi.call({
-    target: stakingRewardsRDPX,
-    abi: abi["earned"],
-    params: [SSOVRdpx],
-    block: block,
-    chain: "arbitrum",
-  });
-  const ssovRDPXRdpxBalance = await sdk.api.abi.call({
-    target: "0x32eb7902d4134bf98a28b963d26de779af92a212",
-    abi: "erc20:balanceOf",
-    params: [SSOVRdpx],
-    block: block,
-    chain: "arbitrum",
-  });
+const pools = [
+  //Old pools
+  SSOVDpx, SSOVRdpx,
+  // New pools
+  "0x0359B4dcd2412ff0dafa8B020bcb57aA8Bd13A33",
+  "0xfE351e85eb6B4292088Dc28B66E9E92aB62fB663"
+]
 
-  balances[DPX] = new BigNumber(balances[DPX])
-    .plus(new BigNumber(ssovRDPXEarntRewards.output.DPXtokensEarned))
-    .plus(new BigNumber(ssovRDPXDpxBalance.output))
-    .toFixed();
-  balances[RDPX] = new BigNumber(balances[RDPX])
-    .plus(new BigNumber(ssovRDPXBalance.output))
-    .plus(new BigNumber(ssovRDPXEarntRewards.output.RDPXtokensEarned))
-    .plus(new BigNumber(ssovRDPXRdpxBalance.output))
-    .toFixed();
-
+async function arbitrumTvl(timestamp, ethBlock, chainBlocks) {
+  const chain = "arbitrum"
+  const block = await getBlock(timestamp, chain, chainBlocks)
+  const balances = {};
+  await sumTokensSharedOwners(balances, tokensInPools, pools, block, chain, transformArbitrum)
+  const wethInPool = await sdk.api.eth.getBalance({target: ethPool, block, chain})
+  sdk.util.sumSingleBalance(balances, weth, wethInPool.output)
   return balances;
-}
-
-async function dopexStakings(timestamp, _ethBlock, chainBlocks) {
-  const stakingDpx = await staking(
-    stakingRewardsDPX,
-    "0x6c2c06790b3e3e3c38e12ee22f8183b37a13ee55",
-    "arbitrum",
-    DPX
-  )(timestamp, _ethBlock, chainBlocks);
-  const stakingRdpx = await staking(
-    stakingRewardsRDPX,
-    "0x32Eb7902D4134bf98A28b963D26de779AF92A212",
-    "arbitrum",
-    RDPX
-  )(timestamp, _ethBlock, chainBlocks);
-  return { ...stakingDpx, ...stakingRdpx };
 }
 
 module.exports = {
@@ -140,7 +71,17 @@ module.exports = {
     tvl: async () => ({}),
   },
   arbitrum: {
-    staking: dopexStakings,
+    staking: sdk.util.sumChainTvls([staking(
+      stakingRewardsDPX,
+      "0x6c2c06790b3e3e3c38e12ee22f8183b37a13ee55",
+      "arbitrum",
+      DPX
+    ), staking(
+      stakingRewardsRDPX,
+      "0x32Eb7902D4134bf98A28b963D26de779AF92A212",
+      "arbitrum",
+      RDPX
+    )]),
     pool2: pool2s(
       [
         "0x96B0d9c85415C69F4b2FAC6ee9e9CE37717335B4",
