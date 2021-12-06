@@ -46,6 +46,7 @@ let oracles = {
   "ethereum": "0x34BAf46eA5081e3E49c29fccd8671ccc51e61E79",
   "bsc": "0x7DC17576200590C4d0D8d46843c41f324da2046C",
   "arbitrum": "0xc3FeD5f21EB8218394f968c86CDafc66e30e259A",
+  "optimism": "0x4f9312A21F8853384E0f6141F3F9fB855d860161",
 }
 
 let allControllers = {
@@ -60,6 +61,7 @@ let allControllers = {
     "0x6d290f45A280A688Ff58d095de480364069af110"  // liqee general pool
   ],
   "arbitrum": ["0x8E7e9eA9023B81457Ae7E6D2a51b003D421E5408"],
+  "optimism": ["0xA300A84D8970718Dac32f54F61Bd568142d8BCF4"],
 }
 
 let yieldMarkets = {
@@ -328,6 +330,10 @@ async function arbitrum(timestamp, ethBlock, chainBlocks) {
   return getTVLByChain('arbitrum', chainBlocks['arbitrum']);
 }
 
+async function optimism(timestamp, ethBlock, chainBlocks) {
+  return getTVLByChain('optimism', chainBlocks['optimism']);
+}
+
 module.exports = {
   ethereum:{
     tvl: ethereum
@@ -338,6 +344,9 @@ module.exports = {
   arbitrum:{
     tvl: arbitrum
   },
+  optimism: {
+    tvl: optimism
+  },
   start: 1564165044, // Jul-27-2019 02:17:24 AM +UTC
-  tvl: sdk.util.sumChainTvls([ethereum, bsc, arbitrum])
+  tvl: sdk.util.sumChainTvls([ethereum, bsc, arbitrum, optimism])
 }
