@@ -1,5 +1,4 @@
-const { pool2 } = require("../helper/pool2");
-const {staking} = require('../helper/staking');
+const { pool2s } = require("../helper/pool2");
 
 // Contracts
 const StakingYieldContract = "0xDd80E21669A664Bce83E3AD9a0d74f8Dad5D9E72";
@@ -10,11 +9,8 @@ const ETH_FOX_UNIV2 = "0x470e8de2eBaef52014A47Cb5E6aF86884947F08c";
 const FOX = "0xc770eefad204b5180df6a14ee197d99d808ee52d";
 
 module.exports = {
-  stakingV1: {
-    tvl: pool2(StakingYieldContract, ETH_FOX_UNIV2)
-  },
-  stakingV2:{
-    tvl: pool2(StakingYieldContractV2, ETH_FOX_UNIV2)
+  ethereum: {
+    pool2: pool2s([StakingYieldContract, StakingYieldContractV2], [ETH_FOX_UNIV2])
   },
   tvl: async ()=>({}),
   methodology:

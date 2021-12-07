@@ -205,7 +205,7 @@ async function avax(timestamp, block, chainBlocks) {
             target: tokenPool.token,
             chain: 'avax',
             block: avaxBlock
-          });
+        });
 
           sdk.util.sumSingleBalance(balances, getAVAXAddress(tokenPool.token), tokenLocked.output);
     }

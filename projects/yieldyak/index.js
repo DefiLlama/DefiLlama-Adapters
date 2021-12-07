@@ -2,8 +2,10 @@ const sdk = require('@defillama/sdk');
 const { unwrapUniswapLPs, unwrapCrv } = require('../helper/unwrapLPs')
 const abi = require('./abi.json')
 const { request, gql } = require("graphql-request");
-const { transformAvaxAddress, fixAvaxBalances } = require('../helper/portedTokens');
+const { transformAvaxAddress } = require('../helper/portedTokens');
 const { default: BigNumber } = require('bignumber.js');
+const { staking } = require('../helper/staking');
+const { addFundsInMasterChef } = require('../helper/masterchef');
 
 const graphUrl = 'https://api.thegraph.com/subgraphs/name/yieldyak/reinvest-tracker'
 const graphQuery = gql`
@@ -70,6 +72,8 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
                 token,
                 balance,
             })
+        } else if(farm.name.includes("ZERO")){
+            sdk.util.sumSingleBalance(balances, transformAddress(token), balance)
         } else if (farm.name.includes('-')) {
             lps.push({
                 token,
@@ -80,15 +84,26 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
         }
     }))
 
-    await unwrapUniswapLPs(balances, lps, block, 'avax', transformAddress)
+    await unwrapUniswapLPs(balances, lps, block, 'avax', transformAddress, [], true)
     await Promise.all(
         crvLps.map(crvLp => unwrapCrv(balances, crvLp.token, crvLp.balance, block, 'avax', transformAddress))
     )
     //await addTokensAndLPs(balances, tokens, tokenAmounts, block, 'avax', transformAddress)
-    fixAvaxBalances(balances)
+    return balances
+}
+
+const masterYak = "0x0cf605484A512d3F3435fed77AB5ddC0525Daf5f"
+const yakToken = "0x59414b3089ce2af0010e7523dea7e2b35d776ec7"
+async function pool2(time, ethBlock, chainBlocks){
+    const balances = {}
+    await addFundsInMasterChef(balances, masterYak, chainBlocks.avax, "avax", addr=>`avax:${addr}`, undefined, [yakToken])
     return balances
 }
 
 module.exports = {
-    tvl
+    avalanche:{
+        tvl,
+        staking: staking(masterYak, yakToken, "avax"),
+        pool2
+    }
 }

@@ -35,9 +35,31 @@ async function polygon(timestamp, block, chainBlocks) {
     return balances
 }
 
+async function fantom(timestamp, block, chainBlocks) {
+    const balances = {}
+    const chain = 'fantom'
+    await sumTokens(balances, [
+        ["0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83", "0x1066b8FC999c1eE94241344818486D5f944331A0"],
+        ["0x0DEC85e74A92c52b7F708c4B10207D9560CEFaf0", "0x7efB260662a6FA95c1CE1092c53Ca23733202798"],
+        ["0x637eC617c86D24E421328e6CAEa1d92114892439", "0x682E473FcA490B0adFA7EfE94083C1E63f28F034"],
+        ["0x74b23882a30290451A17c44f4F05243b6b58C76d", "0xD939c268C49c442F037E968F045ba02f499562D4"],
+    ], chainBlocks[chain], chain, addr=>{
+        if(addr === "0x0DEC85e74A92c52b7F708c4B10207D9560CEFaf0"){
+            return "fantom:0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83"
+        } else if(addr === "0x637eC617c86D24E421328e6CAEa1d92114892439"){
+            return "0x6b175474e89094c44da98b954eedeac495271d0f"
+        }
+        return `${chain}:${addr}`
+    })
+    return balances
+}
+
 module.exports = {
     methodology: 'TVL counts the AAVE tokens that are deposited within the Yield Instruments section of QiDao, the Vault token deposits of CRV, LINK, AAVE and WETH, as well as USDC deposited to mint MAI.',
     polygon: {
         tvl: polygon
     },
+    fantom:{
+        tvl: fantom
+    }
 }
