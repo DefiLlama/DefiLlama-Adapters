@@ -1,8 +1,7 @@
-const { staking } = require("../helper/staking");
+const { stakings } = require("../helper/staking");
 const { pool2s } = require("../helper/pool2");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 
-const daoMakerStakingContract = "0xEfEE3763000Afbffb8551dF16800e571b9B66188";
 const DAO = "0x0f51bb10119727a7e5ea3538074fb341f56b09ad";
 
 const vaultsFarmsPool2Addresses = [
@@ -15,7 +14,11 @@ const vaultsFarmsPool2Addresses = [
     //openocean
     "0x329420649604a57c616692c51106196a4712ea24",
     //yield protocol
-    "0x2909122ea182368A4ba7bC5Eed2D2D536B3e25Ae"
+    "0x2909122ea182368A4ba7bC5Eed2D2D536B3e25Ae",
+    //yield protocol v1
+    "0xe33b15629739770a27c4726a22be61128aa1c781",
+    //dao maker v3
+    "0xd07e86f68C7B9f9B215A3ca3E79E74Bf94D6A847",
 ];
 
 const DAO_USDC_UNIV2 = "0x4cd36d6F32586177e36179a810595a33163a20BF";
@@ -54,7 +57,7 @@ async function ethTvl(block) {
 
 module.exports = {
   ethereum: {
-    staking: staking(daoMakerStakingContract, DAO),
+    staking: stakings(vaultsFarmsPool2Addresses, DAO),
     pool2: pool2s(vaultsFarmsPool2Addresses, [DAO_USDC_UNIV2]),
     tvl: ethTvl,
   },
