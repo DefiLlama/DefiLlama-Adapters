@@ -6,6 +6,7 @@ const chainTvl = getChainTvl({
 }, "factories", "liquidityUSD")
 
 module.exports = {
+    timetravel: true,
     misrepresentedTokens: true,
     polis: {
         tvl: chainTvl('polis')

@@ -10,6 +10,7 @@ const thundercoreTvl = async () => {
 };
 
 module.exports = {
+  timetravel: false,
   ThunderCore: {
     tvl: thundercoreTvl,
   },
