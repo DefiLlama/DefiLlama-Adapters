@@ -80,6 +80,7 @@ const iotexTvl = async (timestamp, ethBlock, chainBlocks) => {
 };
 
 module.exports={
+    timetravel: true,
     arbitrum: {
         tvl: arbitrumTvl
     },
