@@ -8,11 +8,11 @@ const masterchefABI = require("./abis/masterchef.json");
 const lptokenABI = require("./abis/lpToken.json");
 const erc20TokenABI = require("./abis/ERC20.json");
 
-const staking = async () => {
+const stakedTVL = async () => {
   let stakingTVL = new BigNumber(0);
   const fromWei = (value, decimals = 18) =>
     decimals < 18
-      ? new BigNumber(value).div(10 ** decimals).toFixed(decimals, 0)
+      ? new BigNumber(value).div(10 ** decimals).toString(10)
       : new BigNumber(value).div(10 ** 18).toString(10);
 
   const masterchefContract = await getContractInstance(
@@ -113,12 +113,19 @@ const staking = async () => {
 
 const fetch = async () => {
   var res = await utils.fetchURL("https://drops.co/status");
-  const stakingTVL = await staking();
-  return res.data ? new BigNumber(res.data.totalSupply).plus(stakingTVL) : 0;
+  return res.data ? new BigNumber(res.data.TVL) : 0;
+};
+
+const staking = async () => {
+  const stakingTVL = await stakedTVL();
+  return stakingTVL;
 };
 
 module.exports = {
   methodology:
     "TVL is comprised of tokens deposited to the protocol as collateral, similar to Compound Finance and other lending protocols the borrowed tokens are not counted as TVL.",
-  fetch,
+  ethereum: {
+    tvl: fetch,
+    staking,
+  },
 };
