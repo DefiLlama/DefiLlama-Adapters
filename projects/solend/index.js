@@ -11,7 +11,8 @@ async function tvl() {
           sbrAmount,
           merAmount,
           solAmount,
-          msolAmount, ] = await Promise.all([
+          msolAmount,
+          wewethAmount, ] = await Promise.all([
 
         getTokenBalance("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "DdZR6zRFiUt4S5mg7AV1uKB2z1f1WzcNYCaTEEWPAuby"),
         getTokenBalance("9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E", "DdZR6zRFiUt4S5mg7AV1uKB2z1f1WzcNYCaTEEWPAuby"),
@@ -24,9 +25,7 @@ async function tvl() {
         getTokenBalance("MERt85fc5boKw3BW1eYdxonEuJNvXbiMbs6hvheau5K", "DdZR6zRFiUt4S5mg7AV1uKB2z1f1WzcNYCaTEEWPAuby"),
         getTokenBalance("So11111111111111111111111111111111111111112", "DdZR6zRFiUt4S5mg7AV1uKB2z1f1WzcNYCaTEEWPAuby"),
         getTokenBalance("mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So", "DdZR6zRFiUt4S5mg7AV1uKB2z1f1WzcNYCaTEEWPAuby"),
-
-
-
+        getTokenBalance("7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs", "DdZR6zRFiUt4S5mg7AV1uKB2z1f1WzcNYCaTEEWPAuby"),
     ])
     return {
         'bitcoin': btcAmount,
@@ -40,6 +39,7 @@ async function tvl() {
         'mercurial': merAmount,
         'solana': solAmount,
         'msol': msolAmount,
+        'weweth': wewethAmount,
     }
 }
 
