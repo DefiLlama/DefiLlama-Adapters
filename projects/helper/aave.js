@@ -1,5 +1,6 @@
 const sdk = require('@defillama/sdk');
-const abi = require('../helper/abis/aave.json');
+const { default: BigNumber } = require('bignumber.js');
+const abi = require('./abis/aave.json');
 const { getBlock } = require('./getBlock');
 
 async function getV2Reserves(block, addressesProviderRegistry, chain, dataHelperAddress) {
@@ -66,7 +67,7 @@ async function getV2Reserves(block, addressesProviderRegistry, chain, dataHelper
 
   const reserveAddresses = underlyingAddressesData.map((reserveData) => reserveData.output);
 
-  return [aTokenAddresses, reserveAddresses]
+  return [aTokenAddresses, reserveAddresses, validProtocolDataHelpers[0]]
 }
 
 async function getV2Tvl(balances, block, chain, v2Atokens, v2ReserveTokens, transformAddress) {
@@ -82,18 +83,44 @@ async function getV2Tvl(balances, block, chain, v2Atokens, v2ReserveTokens, tran
   sdk.util.sumMultiBalanceOf(balances, balanceOfUnderlying, true, transformAddress)
 }
 
-function aaveChainTvl(chain, addressesProviderRegistry, transformAddress, dataHelperAddress) {
+async function getV2Borrowed(balances, block, chain, v2ReserveTokens, dataHelper, transformAddress) {
+  const reserveData = await sdk.api.abi.multiCall({
+      calls: v2ReserveTokens.map((token) => ({
+        target: dataHelper,
+        params: [token],
+      })),
+      abi: abi.getHelperReserveData,
+      block,
+      chain
+    });
+    reserveData.output.forEach((data, idx)=>{
+      sdk.util.sumSingleBalance(balances, transformAddress(data.input.params[0]), BigNumber(data.output.totalVariableDebt).plus(data.output.totalStableDebt).toFixed(0))
+    })
+}
+
+function aaveChainTvl(chain, addressesProviderRegistry, transformAddressRaw, dataHelperAddress, borrowed) {
+  const transformAddress = transformAddressRaw ? transformAddressRaw : addr=>`${chain}:${addr}`
   return async (timestamp, ethBlock, chainBlocks) => {
     const balances = {}
     const block = await getBlock(timestamp, chain, chainBlocks, true);
-    const [v2Atokens, v2ReserveTokens] = await getV2Reserves(block, addressesProviderRegistry, chain, dataHelperAddress)
-    const transformAddressFinal = transformAddress ? transformAddress : addr=>`${chain}:${addr}`
-    await getV2Tvl(balances, block, chain, v2Atokens, v2ReserveTokens, transformAddressFinal);
+    const [v2Atokens, v2ReserveTokens, dataHelper] = await getV2Reserves(block, addressesProviderRegistry, chain, dataHelperAddress)
+    if(borrowed){
+      await getV2Borrowed(balances, block, chain, v2ReserveTokens, dataHelper, transformAddress);
+    } else {
+      await getV2Tvl(balances, block, chain, v2Atokens, v2ReserveTokens, transformAddress);
+    }
     return balances
+  }
+}
+function aaveExports(chain, addressesProviderRegistry){
+  return {
+    tvl: aaveChainTvl(chain, addressesProviderRegistry, undefined, undefined, false),
+    borrowed: aaveChainTvl(chain, addressesProviderRegistry, undefined, undefined, true)
   }
 }
 module.exports = {
   aaveChainTvl,
   getV2Reserves,
-  getV2Tvl
+  getV2Tvl,
+  aaveExports
 }
