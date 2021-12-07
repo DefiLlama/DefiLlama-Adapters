@@ -18,6 +18,22 @@ const alpacaAdapterAbi = [
   },
 ];
 
+const boostPoolAbi = [
+  {
+    inputs: [],
+    name: "getPoolTotalDeposited",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+];
+
 // BSC address
 const BSC_NAOS_ADDRESS = "0x758d08864fb6cce3062667225ca10b8f00496cc2";
 const BSC_BNB_ADDRESS = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
@@ -345,10 +361,10 @@ async function bscStaking(timestamp, ethBlock, chainBlocks) {
   let block = chainBlocks["bsc"];
   const balances = {};
   // Start naos staking
-  let { output: naosAmount } = await sdk.api.erc20.balanceOf({
-    target: BSC_NAOS_ADDRESS,
-    owner: BSC_BOOST_POOL,
-    block: block,
+  let { output: naosAmount } = await sdk.api.abi.call({
+    target: BSC_BOOST_POOL,
+    abi: boostPoolAbi[0], // getPoolTotalDeposited
+    block,
     chain: "bsc",
   });
   sdk.util.sumSingleBalance(balances, `bsc:${BSC_NAOS_ADDRESS}`, naosAmount);
