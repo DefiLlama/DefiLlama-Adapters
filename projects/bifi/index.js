@@ -1,5 +1,8 @@
 const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
+const Caver = require('caver-js');
+const OracleAbi = require('./abi/oracle.json');
+const TokenAbi = require('./abi/token.json');
 
 const stakingPool = '0x488933457E89656D7eF7E69C10F2f80C7acA19b5';
 const bfcAddr = '0x0c7D5ae016f806603CB1782bEa29AC69471CAb9c';
@@ -71,6 +74,39 @@ const avaxTokenPools = {
         'pool': '0x8385Ea36dD4BDC84B3F2ac718C332E18C1E42d36',
         'token': '0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664'
     }
+}
+
+const klayOracleContract = '0xCD4F7C7451FFD8628b7F3D5c1b68a3A207ab1125';
+const klayPool = '0x829fCFb6A6EeA9d14eb4C14FaC5B29874BdBaD13';
+const klaytnTokenPools = {
+    'keth': {
+        'pool': '0x07970F9D979D8594B394fE12345211C376aDfF89',
+        'token': '0x34d21b1e550d73cee41151c77f3c73359527a396'
+    },
+    'kusdt': {
+        'pool': '0xe0e67b991d6b5CF73d8A17A10c3DE74616C1ec11',
+        'token': '0xcee8faf64bb97a73bb51e115aa89c17ffa8dd167'
+    },
+    'kusdt': {
+        'pool': '0xe0e67b991d6b5CF73d8A17A10c3DE74616C1ec11',
+        'token': '0xcee8faf64bb97a73bb51e115aa89c17ffa8dd167'
+    },
+    'kdai': {
+        'pool': '0xE03487927e137526a2dB796A9B3b4048ab615043',
+        'token': '0x5c74070fdea071359b86082bd9f9b3deaafbe32b'
+    },
+    'usdc': {
+        'pool': '0x808c707c53c3D30d0247e4b8D78AA0D8b75CAAE1',
+        'token': '0x754288077d0ff82af7a5317c7cb8c444d421d103'
+    },
+    'kwbtc': {
+        'pool': '0xa6aDE2e6c6F50a2d9b9C4b819e84b367F88C1598',
+        'token': '0x16d0e1fbd024c600ca0380a4c5d57ee7a2ecbf9c'
+    },
+    'kxrp': {
+        'pool': '0x4800577A71F68eD7ef4C09cFBe7fd6E066D5F0dA',
+        'token': '0x9eaefb09fe4aabfbe6b1ca316a3c36afc83a393f'
+    },
 }
 
 function getAVAXAddress(address) {
@@ -177,6 +213,40 @@ async function avax(timestamp, block, chainBlocks) {
     return balances
 }
 
+async function klaytn() {
+    const provider = new Caver.providers.HttpProvider("https://cypress.chain.thebifrost.io/");
+    const caver = new Caver(provider);
+    let klaytnTVL = 0;
+
+    const oracleContract = new caver.klay.Contract(OracleAbi, klayOracleContract);
+
+    const klayPrice = await oracleContract.methods.getTokenPrice(0).call();
+    const klayBalance = await caver.rpc.klay.getBalance(klayPool);
+
+    klaytnTVL += klayPrice * klayBalance / (10 ** 36);
+
+    let oracleID = 0
+    for (token in klaytnTokenPools) {
+        oracleID += 1;
+
+        const tokenAddress = klaytnTokenPools[token].token;
+        const tokenPoolAddress = klaytnTokenPools[token].pool;
+
+        const tokenPrice = await oracleContract.methods.getTokenPrice(oracleID).call();
+
+        const tokenContract = new caver.klay.Contract(TokenAbi, tokenAddress);
+        const balance = await tokenContract.methods.balanceOf(tokenPoolAddress).call();
+        const decimals = await tokenContract.methods.decimals().call();
+
+        const div = 18 + parseInt(decimals, 10);
+
+        klaytnTVL += balance * tokenPrice / 10 ** div;
+    }
+
+    console.log(klaytnTVL);
+    return klaytnTVL;
+}
+
 module.exports = {
     ethereum: {
         tvl: eth,
@@ -190,5 +260,8 @@ module.exports = {
     },
     avax: {
         tvl: avax
+    },
+    klaytn: {
+        tvl: klaytn
     }
 }
