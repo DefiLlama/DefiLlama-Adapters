@@ -258,20 +258,8 @@ const {getV2Reserves, getV2Tvl, aaveChainTvl} = require('../helper/aave')
 
     // V2 TVLs
     if (block >= 11360925) {
-      let v2Atokens = [];
-      let v2ReserveTokens = [];
-      let addressSymbolMapping = {};
-      [v2Atokens, v2ReserveTokens, addressSymbolMapping] = await getV2Reserves(block, addressesProviderRegistryETH, 'ethereum', v2Atokens, v2ReserveTokens, addressSymbolMapping)
-      const v2Tvl = await getV2Tvl(block, 'ethereum', v2Atokens, v2ReserveTokens, addressSymbolMapping);
-      v2Tvl.map(data => {
-        if (balances[data.underlying]) {
-          balances[data.underlying] = BigNumber(balances[data.underlying])
-            .plus(data.balance)
-            .toFixed();
-        } else {
-          balances[data.underlying] = data.balance;
-        }
-      })
+      const [v2Atokens, v2ReserveTokens] = await getV2Reserves(block, addressesProviderRegistryETH, 'ethereum')
+      await getV2Tvl(balances, block, 'ethereum', v2Atokens, v2ReserveTokens, id=>id);
     }
 
     if(block >= 11998773){
@@ -319,8 +307,4 @@ const {getV2Reserves, getV2Tvl, aaveChainTvl} = require('../helper/aave')
     polygon:{
       tvl: polygon
     },
-    staking:{
-      tvl: staking
-    },
-    tvl: sdk.util.sumChainTvls([ethereum, polygon, avax])
   };
