@@ -1,5 +1,5 @@
-const utils = require('./helper/utils');
-const {toUSDTBalances} = require('./helper/balances');
+const utils = require('../helper/utils');
+const {toUSDTBalances} = require('../helper/balances');
 const sdk = require('@defillama/sdk')
 
 async function tvl() {
