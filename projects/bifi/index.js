@@ -198,8 +198,8 @@ async function avax(timestamp, block, chainBlocks) {
     })).output)
 
     // avax tokens
-    for (token in avaxTokenPools) {
-        tokenPool = avaxTokenPools[token];
+    for (const token in avaxTokenPools) {
+        const tokenPool = avaxTokenPools[token];
         let tokenLocked = await sdk.api.erc20.balanceOf({
             owner: tokenPool.pool,
             target: tokenPool.token,
@@ -226,7 +226,7 @@ async function klaytn() {
     klaytnTVL += klayPrice * klayBalance / (10 ** 36);
 
     let oracleID = 0
-    for (token in klaytnTokenPools) {
+    for (const token in klaytnTokenPools) {
         oracleID += 1;
 
         const tokenAddress = klaytnTokenPools[token].token;
