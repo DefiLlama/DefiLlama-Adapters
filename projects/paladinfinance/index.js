@@ -39,7 +39,7 @@ async function ethTvl(timestamp, block) {
 
   let totalReserve = await sdk.api.abi.multiCall({
     calls,
-    abi: abi["totalBorrowed"],
+    abi: abi["totalReserve"],
     block: block
   })
 

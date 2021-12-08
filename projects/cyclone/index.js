@@ -41,6 +41,7 @@ async function fetch() {
 }
 
 module.exports = {
+  timetravel: false,
   ...fetchChainExports(fetchChain, Object.keys(gqls)),
   pool2:{
     fetch:pool2

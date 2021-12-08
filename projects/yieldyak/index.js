@@ -6,6 +6,7 @@ const { transformAvaxAddress } = require('../helper/portedTokens');
 const { default: BigNumber } = require('bignumber.js');
 const { staking } = require('../helper/staking');
 const { addFundsInMasterChef } = require('../helper/masterchef');
+const { requery } = require('../helper/requery');
 
 const graphUrl = 'https://api.thegraph.com/subgraphs/name/yieldyak/reinvest-tracker'
 const graphQuery = gql`
@@ -42,6 +43,8 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
             abi: abi.depositToken,
         })
     ])
+    await requery(tokenAmounts, "avax", block, abi.totalDeposits)
+    await requery(tokens, "avax", block, abi.depositToken)
     tokens.output.forEach((token, idx) => {
         if (token.output === null) {
             token.output = farms[idx].depositToken.id
@@ -51,7 +54,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     const lps = []
     const crvLps = []
     await Promise.all(farms.map(async (farm, idx)=>{
-        let token = tokens.output[idx].output
+        let token = tokens.output[idx].output.toLowerCase()
         if (token == "0x0000000000000000000000000000000000000000") {
             token = "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"; // Replace YY's AVAX with WAVAX
         }
@@ -67,7 +70,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
             ));
             token = underlyingToken.output;
             balance = BigNumber(balance).times(ratio.output).div(1e18).toFixed(0)
-        } else if (farm.name.startsWith("Yield Yak: Gondola ")) {
+        } else if (farm.name.startsWith("Yield Yak: Gondola ") || farm.name.includes("Curve 3pool")) {
             crvLps.push({
                 token,
                 balance,

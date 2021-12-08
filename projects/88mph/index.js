@@ -88,6 +88,9 @@ function chainTvl(chain) {
 
     _.each(poolUnderlyingAddressResults.output, (token) => {
       const underlyingTokenAddress = token.output
+      if(underlyingTokenAddress === null){
+        throw new Error(`token ${token} is broken`)
+      }
       const poolAddress = token.input.target
       poolToUnderlyingToken[poolAddress] = underlyingTokenAddress
     })

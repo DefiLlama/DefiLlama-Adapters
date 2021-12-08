@@ -1,0 +1,42 @@
+{
+    "0x3cdb7c48e70b854ed2fa392e21687501d84b3afc": {
+        "contract": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        "coingeckoId": "tether"
+    },
+    "0x6fbcdc1169b5130c59e72e51ed68a84841c98cd1": {
+        "contract": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        "coingeckoId": "tether"
+    },
+    "0x42C9255D5e522e83B16ea11a3BA04c2D3AfCA079": {
+        "contract": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        "coingeckoId": "tether"
+    },
+    "0x3b2bf2b523f54c4e454f08aa286d03115aff326c":{
+        "contract": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        "coingeckoId": "usd-coin"         
+    },
+    "0x037346E5a5722957Ac2cAb6ceb8c74fC18Cea91D":{
+        "contract": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        "coingeckoId": "usd-coin"         
+    },
+    "0xc04da3a99d17135857bb937d2fbb321d3b6c6a81":{
+        "contract": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        "coingeckoId": "usd-coin"         
+    },
+    "0x84abcb2832be606341a50128aeb1db43aa017449": {
+        "contract": "0x4fabb145d64652a948d72533023f6e7a623c7c53",
+        "coingeckoId": "binance-usd"           
+    },
+    "0xacee9b11cd4b3f57e58880277ac72c8c41abe4e4": {
+        "contract": "0x4fabb145d64652a948d72533023f6e7a623c7c53",
+        "coingeckoId": "binance-usd"           
+    },
+    "0x62a9d987cbf4c45a550deed5b57b200d7a319632": {
+        "contract": "0x6b175474e89094c44da98b954eedeac495271d0f",
+        "coingeckoId": "dai"   
+    },
+    "0x1CbAd85Aa66Ff3C12dc84C5881886EEB29C1bb9b": {
+        "contract": "0x6b175474e89094c44da98b954eedeac495271d0f",
+        "coingeckoId": "dai"   
+    }
+}

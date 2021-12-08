@@ -2,7 +2,7 @@ const sdk = require('@defillama/sdk')
 const BigNumber = require('bignumber.js')
 const {getBlock} = require('../helper/getBlock')
 const {transformArbitrumAddress} = require('../helper/portedTokens')
-const {polygon} = require('./subgraph')
+const {polygon, moonriver} = require('./subgraph')
 
 const xUniswapV2TVL = require('./xUniswapV2');
 
@@ -24,6 +24,12 @@ const data = {
     factory: '0x8c3736e2fe63cc2cd89ee228d9dbcab6ce5b767b',
     startBlock: 763103,
     getAddress: addr => `arbitrum:${addr}`
+  },
+  avax: {
+    chain: 'avax',
+    factory: '0x8c3736e2fe63cc2cd89ee228d9dbcab6ce5b767b',
+    startBlock: 5928819,
+    getAddress: addr => `avax:${addr}`
   }
 };
 
@@ -61,9 +67,12 @@ const chainTvls = {
   ethereum: {
     tvl: getTvlCalculator(data.ethereum)
   },
+  avax: {
+    tvl: getTvlCalculator(data.avax)
+  },
+  moonriver: {
+    tvl: moonriver.tvl
+  },
 };
 
-module.exports = {
-  ...chainTvls,
-  tvl: sdk.util.sumChainTvls(Object.values(chainTvls).map(tvl=>tvl.tvl))
-};
+module.exports = chainTvls

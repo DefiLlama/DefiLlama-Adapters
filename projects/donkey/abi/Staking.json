@@ -1,0 +1,431 @@
+{
+  "contractName": "Staking",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "",
+          "type": "address"
+        },
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "stakingProductOf",
+      "outputs": [
+        {
+          "name": "releaseTime",
+          "type": "uint256"
+        },
+        {
+          "name": "principal",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "stakingMetaData",
+      "outputs": [
+        {
+          "name": "lockupTerm",
+          "type": "uint256"
+        },
+        {
+          "name": "totalInterestLimitAmount",
+          "type": "uint256"
+        },
+        {
+          "name": "interestRate",
+          "type": "uint256"
+        },
+        {
+          "name": "totalPrincipalAmount",
+          "type": "uint256"
+        },
+        {
+          "name": "totalPaidInterestAmount",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "",
+          "type": "address"
+        },
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "allStakingProductsTimestampOf",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "admin",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "minter",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "mintAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Mint",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "redeemer",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "redeemAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Redeem",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "redeemer",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "redeemAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "RedeemPrincipal",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "newLockupTerm",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "name": "newLimitAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "name": "newInterestRate",
+          "type": "uint256"
+        }
+      ],
+      "name": "UpdateStakingStandard",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "oldController",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "newController",
+          "type": "address"
+        }
+      ],
+      "name": "UpdateController",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "oldAdmin",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "newAdmin",
+          "type": "address"
+        }
+      ],
+      "name": "UpdateAdmin",
+      "type": "event"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "donkeyAddress_",
+          "type": "address"
+        },
+        {
+          "name": "lockupTerm_",
+          "type": "uint256"
+        },
+        {
+          "name": "totalInterestLimitAmount_",
+          "type": "uint256"
+        },
+        {
+          "name": "interestRate_",
+          "type": "uint256"
+        },
+        {
+          "name": "controller_",
+          "type": "address"
+        }
+      ],
+      "name": "initialize",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "mintAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "mint",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "mintMax",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "registeredTimestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "redeem",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "registeredTimestamp",
+          "type": "uint256"
+        }
+      ],
+      "name": "redeemPrincipal",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "newLockupTerm",
+          "type": "uint256"
+        },
+        {
+          "name": "newLimitAmount",
+          "type": "uint256"
+        },
+        {
+          "name": "newInterestRate",
+          "type": "uint256"
+        }
+      ],
+      "name": "updateStakingStandard",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "currentUsedRateOfInterestLimit",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "stakingProductsOf",
+      "outputs": [
+        {
+          "components": [
+            {
+              "name": "startTime",
+              "type": "uint256"
+            },
+            {
+              "name": "releaseTime",
+              "type": "uint256"
+            },
+            {
+              "name": "principal",
+              "type": "uint256"
+            },
+            {
+              "name": "lockupTerm",
+              "type": "uint256"
+            },
+            {
+              "name": "interestRate",
+              "type": "uint256"
+            }
+          ],
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "newController",
+          "type": "address"
+        }
+      ],
+      "name": "setController",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "newAdmin",
+          "type": "address"
+        }
+      ],
+      "name": "setAdmin",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "currentTotalDonBalanceOf",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ]
+}

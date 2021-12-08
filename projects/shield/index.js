@@ -3,8 +3,8 @@ const BigNumber = require("bignumber.js");
 
 const USDT = "0x55d398326f99059fF775485246999027B3197955";
 
-const publicPool = "0x6ACc136471c3796Db904FBD1329A32F6C11aD051";
-const privatePool = "0xF7bf13b6e8A91970e2a18f46B256edF15485c121";
+const publicPool = "0x65081C21228dc943f47b1Cdb394Eb8db022bc744";
+const privatePool = "0xFa4e13EfAf2C90D6Eaf5033A4f3cB189ee4eF189";
 const pools = [publicPool, privatePool];
 
 async function tvl(timestamp, block) {
@@ -29,6 +29,7 @@ async function tvl(timestamp, block) {
 }
 
 module.exports = {
+  methodology: 'Dual liquidity pool is an innovation by Shield that allows the private pool to hedge the market making risk, while the low-risk public pool can accommodate liquidity to guarantee abundant liquidity on the market. TVL on Shield should combine liquidity from both public pool and private pool.',
   name: "Shield", // project name
   website: "https://shieldex.io",
   category: "Options",

@@ -53,11 +53,9 @@ async function bsc(timestamp, block, chainBlocks) {
   });
 
   _.each(totalUnderlyingResults.output, (tokenBalanceResult) => {
-    if(tokenBalanceResult.success) {
       const valueInToken = tokenBalanceResult.output;
       const singleTokenAddress = tokenBalanceResult.input.target;
       balances[btcb] = BigNumber(balances[btcb]).plus(valueInToken).toFixed(0);
-    }
   });
 
   return balances;

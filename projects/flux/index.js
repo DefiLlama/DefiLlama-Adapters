@@ -62,6 +62,7 @@ async function fetch() {
 }
 
 module.exports = {
+  timetravel: true,
   bsc: {
     fetch: bsc,
   },

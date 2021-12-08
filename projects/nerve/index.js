@@ -69,7 +69,6 @@ async function tvl(timestamp, block, chainBlocks) {
 
   // Compute Balances
   _.each(balanceOfResults.output, (balanceOf) => {
-    if (balanceOf.success) {
       let address = `bsc:${balanceOf.input.target}`.toLowerCase();
       if(address === "bsc:0x54261774905f3e6e9718f2abb10ed6555cae308a"){
         balances["bitcoin"] = Number(balanceOf.output)/1e8
@@ -82,7 +81,6 @@ async function tvl(timestamp, block, chainBlocks) {
       balances[address] = BigNumber(balances[address] || 0)
         .plus(balanceOf.output)
         .toFixed()
-    }
   })
   await unwrapCrv(balances, nrv3, balances['bsc:'+nrv3], chainBlocks['bsc'], 'bsc', (addr)=>`bsc:${addr}`)
   delete balances['bsc:'+nrv3];

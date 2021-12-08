@@ -418,5 +418,4 @@ module.exports = {
     pool2: polyPool2Tvl,
     staking: polyStaking,
   },
-  tvl: sdk.util.sumChainTvls([ethTvl, bscTvl, polyTvl]),
 };

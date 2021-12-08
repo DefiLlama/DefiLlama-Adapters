@@ -25,7 +25,7 @@ const chainExports = Object.entries(chains).reduce((t,chain)=>({
 async function fetch() {
   return (await Promise.all(Object.values(chains).map(id=>fetchChain(id)()))).reduce((a,t)=>t+a, 0)
 }
-
+// node test.js projects/mushrooms.js
 module.exports = {
   ...chainExports,
   fetch
