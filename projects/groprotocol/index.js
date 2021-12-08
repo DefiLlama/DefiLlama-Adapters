@@ -3,6 +3,8 @@
 const sdk = require("@defillama/sdk");
 const { sumBalancerLps } = require("../helper/unwrapLPs");
 const { unwrapUniswapLPs, unwrapCrvLPs } = require("./helpers");
+const { getBlock } = require("../helper/getBlock");
+const { transformAvaxAddress } = require("../helper/portedTokens");
 
 const groTokenAbi = require("./abi.json");
 const { staking } = require("../helper/staking");
@@ -81,7 +83,6 @@ async function tvl(timestamp, ethBlock) {
       undefined,
       [PWRD]
     ); // Excludes already counted PWRD amount
-
   }
 
   return balances;
@@ -91,34 +92,34 @@ async function pool2(timestamp, ethBlock) {
   let balances = {};
   const uniLpPositions = [];
   const balLpPositions = [];
-    // P1_UNI_GRO_GVT
-    // P2_UNI_GRO_USDC
-    const p1 = (
-      await sdk.api.erc20.balanceOf({
-        target: P1_UNI_GRO_GVT,
-        owner: GROTokenStaker,
-        block: ethBlock,
-      })
-    ).output;
-    uniLpPositions.push({ token: P1_UNI_GRO_GVT, balance: p1 });
+  // P1_UNI_GRO_GVT
+  // P2_UNI_GRO_USDC
+  const p1 = (
+    await sdk.api.erc20.balanceOf({
+      target: P1_UNI_GRO_GVT,
+      owner: GROTokenStaker,
+      block: ethBlock,
+    })
+  ).output;
+  uniLpPositions.push({ token: P1_UNI_GRO_GVT, balance: p1 });
 
-    const p2 = (
-      await sdk.api.erc20.balanceOf({
-        target: P2_UNI_GRO_USDC,
-        owner: GROTokenStaker,
-        block: ethBlock,
-      })
-    ).output;
-    uniLpPositions.push({ token: P2_UNI_GRO_USDC, balance: p2 });
+  const p2 = (
+    await sdk.api.erc20.balanceOf({
+      target: P2_UNI_GRO_USDC,
+      owner: GROTokenStaker,
+      block: ethBlock,
+    })
+  ).output;
+  uniLpPositions.push({ token: P2_UNI_GRO_USDC, balance: p2 });
 
-    await unwrapUniswapLPs(
-      balances,
-      uniLpPositions,
-      ethBlock,
-      "ethereum",
-      undefined,
-      [GVT]
-    ); // Excludes already counted GVT amount
+  await unwrapUniswapLPs(
+    balances,
+    uniLpPositions,
+    ethBlock,
+    "ethereum",
+    undefined,
+    [GVT]
+  ); // Excludes already counted GVT amount
   // P5_BAL_GRO_WETH
   if (timestamp > 1633392000) {
     // On or after 05-10-2021, P5 pool available
@@ -137,16 +138,64 @@ async function pool2(timestamp, ethBlock) {
       (addr) => addr.toLowerCase(addr)
     );
   }
-  return balances
+  return balances;
 }
 
+const labs = [
+  {
+    // USDC
+    groToken: "0x57daed1ee021be9991f5d30cf494b6b09b5b449e",
+    vault: "0x57DaED1ee021BE9991F5d30CF494b6B09B5B449E",
+    baseToken: "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664",
+  },
+  {
+    // DAI
+    groToken: "0x5e57e11483a3f60a76af3045303604522059da2a",
+    vault: "0x5E57E11483A3F60A76af3045303604522059dA2a",
+    baseToken: "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70",
+  },
+  {
+    // USDT
+    groToken: "0x471f4b4b9a97f82c3a25b034b33a8e306ee9beb5",
+    vault: "0x471F4B4b9A97F82C3a25b034B33A8E306eE9Beb5",
+    baseToken: "0xc7198437980c041c805A1EDcbA50c1Ce5db95118",
+  },
+];
+
+async function avaxTvl(timestamp, block, chainBlocks) {
+  let balances = {};
+  block = await getBlock(timestamp, "avax", chainBlocks);
+  const transform = await transformAvaxAddress();
+  const totalAssets = (
+    await sdk.api.abi.multiCall({
+      calls: labs.map((l) => ({ target: l.vault })),
+      abi: groTokenAbi.totalAssets,
+      block,
+      chain: "avax",
+    })
+  ).output;
+
+  for (let i = 0; i < labs.length; i++) {
+    sdk.util.sumSingleBalance(
+      balances,
+      transform(labs[i].baseToken),
+      totalAssets[i].output
+    );
+  }
+  return balances;
+}
+
+// node test.js projects/groprotocol/index.js
 module.exports = {
-  ethereum: {
-    pool2,
-    staking: staking(GROTokenStaker, GRO),
-    tvl,
+  // ethereum: {
+  //   pool2,
+  //   staking: staking(GROTokenStaker, GRO),
+  //   tvl,
+  // },
+  avalanche: {
+    tvl: avaxTvl,
   },
   start: 1622204347, // 28-05-2021 12:19:07 (UTC)
   methodology:
-    "Assets held within the GRO Protocol - either within the PWRD or Vault (GVT) products, or staked in the Gro Protocol pools.",
+    "Assets held within the GRO Protocol - either within the PWRD or Vault (GVT) products, or staked in the Gro Protocol pools. Avax TVL is the sum of tokens locked in Gro Labs.",
 };
