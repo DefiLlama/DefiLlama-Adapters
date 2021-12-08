@@ -12,7 +12,7 @@ module.exports = {
         }),
         borrowed: wavesAdapter(endpoint, item => {
             let tvl = 0;
-            item.meta.forEach(market => tvl += market.currentTotalDebtUsd)
+            item.meta.forEach(market => tvl += Number(market.currentTotalDebtUsd))
             return tvl
         }),
     }
