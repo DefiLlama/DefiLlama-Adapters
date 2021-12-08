@@ -89,7 +89,7 @@ function chainTvl(chain) {
 
 const chains = [
   "ethereum",
-  "bsc",
+  //"bsc",
   "polygon",
   "moonriver",
   "fantom",
