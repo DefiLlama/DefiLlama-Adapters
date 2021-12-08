@@ -2,12 +2,13 @@ const sdk = require('@defillama/sdk');
 const BigNumber = require("bignumber.js");
 const abi = require('../helper/abis/aave.json');
 
-async function getV1Assets(lendingPoolCore, block) {
+async function getV1Assets(lendingPoolCore, block, chain) {
     const reserves = (
         await sdk.api.abi.call({
             target: lendingPoolCore,
             abi: abi["getReserves"],
-            block
+            block,
+            chain
         })
     ).output;
 
@@ -16,8 +17,8 @@ async function getV1Assets(lendingPoolCore, block) {
 
 const ethReplacement = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
 
-async function multiMarketV1TvlBorrowed(balances, lendingPoolCore, block) {
-    const reserves = await getV1Assets(lendingPoolCore, block);
+async function multiMarketV1TvlBorrowed(balances, lendingPoolCore, block, chain, eth) {
+    const reserves = await getV1Assets(lendingPoolCore, block, chain);
     const totalBorrowed = await sdk.api.abi.multiCall({
         block,
         calls: reserves.map((reserve) => ({
@@ -25,6 +26,7 @@ async function multiMarketV1TvlBorrowed(balances, lendingPoolCore, block) {
             params: reserve,
         })),
         abi: abi.getReserveTotalBorrows,
+        chain
     });
     totalBorrowed.output.forEach(borrowed=>{
         const token = borrowed.input.params[0]
@@ -34,14 +36,10 @@ async function multiMarketV1TvlBorrowed(balances, lendingPoolCore, block) {
     return balances;
 }
 
-function multiMarketV1Tvl(balances, lendingPoolCore, block, borrowed) {
-    return (borrowed?multiMarketV1TvlBorrowed:depositMultiMarketV1Tvl)(balances, lendingPoolCore, block)
-}
+async function depositMultiMarketV1Tvl(balances, lendingPoolCore, block, chain, eth) {
+    const reserves = (await getV1Assets(lendingPoolCore, block, chain)).filter(reserve => reserve !== ethReplacement);
 
-async function depositMultiMarketV1Tvl(balances, lendingPoolCore, block) {
-    const reserves = (await getV1Assets(lendingPoolCore, block)).filter(reserve => reserve !== ethReplacement);
-
-    sdk.util.sumSingleBalance(balances, eth, (await sdk.api.eth.getBalance({ target: lendingPoolCore, block })).output)
+    sdk.util.sumSingleBalance(balances, eth, (await sdk.api.eth.getBalance({ target: lendingPoolCore, block, chain })).output)
 
     const balanceOfResults = await sdk.api.abi.multiCall({
         block,
@@ -50,6 +48,7 @@ async function depositMultiMarketV1Tvl(balances, lendingPoolCore, block) {
             params: lendingPoolCore,
         })),
         abi: "erc20:balanceOf",
+        chain,
     });
 
     sdk.util.sumMultiBalanceOf(balances, balanceOfResults, true);
@@ -57,10 +56,15 @@ async function depositMultiMarketV1Tvl(balances, lendingPoolCore, block) {
     return balances;
 }
 
-const uniswapLendingPoolCore = "0x1012cfF81A1582ddD0616517eFB97D02c5c17E25";
-const eth = "0x0000000000000000000000000000000000000000"
+function multiMarketV1Tvl(balances, lendingPoolCore, block, borrowed, chain="ethereum", eth = "0x0000000000000000000000000000000000000000") {
+    return (borrowed?multiMarketV1TvlBorrowed:depositMultiMarketV1Tvl)(balances, lendingPoolCore, block, chain, eth)
+}
 
-async function uniswapV1Market(balances, block, borrowed){
+async function singleAssetV1Market(balances, lendingPoolCore, block, borrowed, chain, eth) {
+    return multiMarketV1Tvl(balances, lendingPoolCore, block, borrowed, chain, eth);
+}
+
+async function uniswapV1Market(balances, uniswapLendingPoolCore, block, borrowed, eth = "0x0000000000000000000000000000000000000000"){
     const uniswapMarketTvlBalances = {}
     await multiMarketV1Tvl(
         uniswapMarketTvlBalances,
@@ -111,12 +115,6 @@ async function uniswapV1Market(balances, block, borrowed){
     });
 
     return balances
-}
-
-const aaveLendingPoolCore = "0x3dfd23A6c5E8BbcFc9581d2E864a68feb6a076d3";
-
-async function singleAssetV1Market(balances, block, borrowed) {
-    return multiMarketV1Tvl(balances, aaveLendingPoolCore, block, borrowed);
 }
 
 module.exports={
