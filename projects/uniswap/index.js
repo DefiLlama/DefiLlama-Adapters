@@ -1,6 +1,6 @@
 const { getChainTvl } = require('../helper/getUniSubgraphTvl');
 const sdk = require('@defillama/sdk')
-const {optimism, ethereum:v3Ethereum} = require('../uniswapv3/index')
+const {optimism, ethereum:v3Ethereum} = require('./v3/index')
 
 const v1graph = getChainTvl({
   ethereum: 'https://api.thegraph.com/subgraphs/name/ianlapham/uniswap'
