@@ -44,6 +44,7 @@ async function fetch() {
 
 
 module.exports = {
+  timetravel: false,
   misrepresentedTokens: true,
   fantom:{
     fetch: fantom
