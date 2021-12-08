@@ -185,13 +185,12 @@ async function avaxTvl(timestamp, block, chainBlocks) {
   return balances;
 }
 
-// node test.js projects/groprotocol/index.js
 module.exports = {
-  // ethereum: {
-  //   pool2,
-  //   staking: staking(GROTokenStaker, GRO),
-  //   tvl,
-  // },
+  ethereum: {
+    pool2,
+    staking: staking(GROTokenStaker, GRO),
+    tvl,
+  },
   avalanche: {
     tvl: avaxTvl,
   },
