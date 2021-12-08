@@ -98,12 +98,12 @@ async function getV2Borrowed(balances, block, chain, v2ReserveTokens, dataHelper
     })
 }
 
-function aaveChainTvl(chain, addressesProviderRegistry, transformAddressRaw, dataHelperAddress, borrowed) {
+function aaveChainTvl(chain, addressesProviderRegistry, transformAddressRaw, dataHelperAddresses, borrowed) {
   const transformAddress = transformAddressRaw ? transformAddressRaw : addr=>`${chain}:${addr}`
   return async (timestamp, ethBlock, chainBlocks) => {
     const balances = {}
     const block = await getBlock(timestamp, chain, chainBlocks, true);
-    const [v2Atokens, v2ReserveTokens, dataHelper] = await getV2Reserves(block, addressesProviderRegistry, chain, dataHelperAddress)
+    const [v2Atokens, v2ReserveTokens, dataHelper] = await getV2Reserves(block, addressesProviderRegistry, chain, dataHelperAddresses)
     if(borrowed){
       await getV2Borrowed(balances, block, chain, v2ReserveTokens, dataHelper, transformAddress);
     } else {
@@ -122,5 +122,6 @@ module.exports = {
   aaveChainTvl,
   getV2Reserves,
   getV2Tvl,
-  aaveExports
+  aaveExports,
+  getV2Borrowed,
 }
