@@ -12,5 +12,10 @@ module.exports = {
     id: 1,
     name: 'ethereum',
     subgraph: 'https://api.thegraph.com/subgraphs/name/pods-finance/pods'
+  },
+  NETWORK_ARBITRUM: {
+    id: 42161,
+    name: 'arbitrum',
+    subgraph: 'https://api.thegraph.com/subgraphs/name/pods-finance/pods-arbitrum'
   }
 }
