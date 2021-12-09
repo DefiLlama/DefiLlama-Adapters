@@ -14,13 +14,14 @@ const chainIds = {
     celo: 42220,
     songbird: 19,
     harmony: 1666600000,
-    etc: 61,
+    ethereumclassic: 61,
     heco: 128,
     rsk: 30,
     okexchain: 66,
     hpb: 269,
-    ewt: 246,
+    energyweb: 246,
     kcc: 321,
+    arbitrum: 42161,
 }
 
 function chainTvl(chain) {
@@ -30,11 +31,15 @@ function chainTvl(chain) {
     }
 }
 
-module.exports = Object.keys(chainIds).reduce((obj, chain) => ({
-    ...obj,
-    [chain]: {
-        offers: chainTvl(chain)
-    }
-}), {
-    tvl:async()=>({})
-})
+module.exports = {
+    timetravel: false,
+    misrepresentedTokens:true,
+    ...Object.keys(chainIds).reduce((obj, chain) => ({
+        ...obj,
+        [chain]: {
+            offers: chainTvl(chain)
+        }
+    }), {
+        tvl: async () => ({})
+    })
+}
