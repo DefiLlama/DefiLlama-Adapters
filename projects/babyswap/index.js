@@ -9,7 +9,7 @@ const MasterChefContract = "0xdfAa0e08e357dB0153927C7EaBB492d1F60aC730";
 const BABY = "0x53E562b9B7E5E94b81f10e96Ee70Ad06df3D2657";
 
 /*** Staking of native token (BABY) TVL portion ***/
-const staking = async (chainBlocks) => {
+const staking = async (timestamp, ethBlock, chainBlocks) => {
   const balances = {};
 
   let transformAddress = await transformBscAddress();
@@ -25,7 +25,7 @@ const staking = async (chainBlocks) => {
 
   return balances;
 };
-
+// node test.js projects/babyswap/index.js
 const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
   const balances = {};
 

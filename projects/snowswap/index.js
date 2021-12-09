@@ -76,7 +76,6 @@ async function tvl(timestamp, block) {
   let tokenBalances = {};
   for (let pool in Pools) {
     for (let coin in Pools[pool]) {
-      try {
         const bal = await sdk.api.abi.call({
           block,
           target: coin,
@@ -86,7 +85,6 @@ async function tvl(timestamp, block) {
         if (bal && bal.output) {
           Pools[pool][coin] = BN(bal.output);
         }
-      } catch (e) {}
     }
   }
 

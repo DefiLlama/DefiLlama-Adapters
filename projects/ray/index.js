@@ -1,16 +1,8 @@
-/*==================================================
-  Modules
-  ==================================================*/
-
   const sdk = require('@defillama/sdk');
   const _ = require('underscore');
   const BigNumber = require('bignumber.js');
 
   const opportunityAbi = require('./abis/Opportunity');
-
-/*==================================================
-  Settings
-  ==================================================*/
 
   const ETH_ADDRESS = '0x0000000000000000000000000000000000000000';
   const WETH_ADDRESS = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
@@ -56,10 +48,6 @@
       address: '0x06a5Bf70BfF314177488864Fe03576ff608e6aec', beginTimestamp: 1568274392, endTimestamp: null
     }
   ];
-
-/*==================================================
-  Helper Functions
-  ==================================================*/
 
   function getPmCalls(timestamp) {
 
@@ -134,10 +122,6 @@
     return tokens;
   }
 
-/*==================================================
-  TVL
-  ==================================================*/
-
   async function tvl(timestamp, block) {
     let balances = {};
 
@@ -164,7 +148,6 @@
     })).output;
 
     _.each(pmBalances, (result) => {
-      if (result.success) {
         let balance = result.output;
         let address = result.input.target;
 
@@ -173,7 +156,6 @@
         }
 
         balances[address] = BigNumber(balances[address] || 0).plus(balance).toFixed();
-      }
     });
 
     let opportunityBalances = (await sdk.api.abi.multiCall({
@@ -183,7 +165,9 @@
     })).output;
 
     _.each(opportunityBalances, (result) => {
-      if (result.success) {
+      if(result.input.params[0] === '0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359' && result.input.target === "0x759A728653C4d0483D897DCCf3a343fe2bBbb54A"){
+        return
+      }
         let balance = result.output;
         let address = result.input.params;
 
@@ -192,17 +176,14 @@
         }
 
         balances[address] = BigNumber(balances[address] || 0).plus(balance).toFixed();
-      }
     });
 
     return balances;
   }
 
-/*==================================================
-  Exports
-  ==================================================*/
-
   module.exports = {
     start: 1568274392,  // 09/12/2019 @ 7:46am (UTC)
-    tvl
+    ethereum:{
+      tvl
+    }
   }

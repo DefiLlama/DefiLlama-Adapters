@@ -3,7 +3,7 @@ const _us = require('underscore');
 const abi = require('./abi.json');
 const {transformFantomAddress} = require('../helper/portedTokens')
 
-const _mensaCoreAddress = '0xc4fcDd290E25B4e12Cde6A56F23C1D3ffc72061A';
+const _mensaCoreAddress = '0xa7D5d34207eb2EfB510Fb15b06feE6224Cd936Cd';
 
 async function tvl(_, _ethBlock, chainBlocks) {
 
@@ -14,7 +14,7 @@ async function tvl(_, _ethBlock, chainBlocks) {
       block: chainBlocks['fantom'],
       chain: 'fantom'
     })
-  ).output;
+  ).output.filter(t=>t!=="0x1111111111111111111111111111111111111111");
 
   const decimalsOfReserve = (
     await sdk.api.abi.multiCall({
@@ -29,21 +29,8 @@ async function tvl(_, _ethBlock, chainBlocks) {
 
   const assets = [];
   reserves_mensa.map((reserve, i) => {
-    if (reserve === '0x1111111111111111111111111111111111111111') return;
-    if (reserve === 'fantom:0x049d68029688eAbF473097a2fC38ef61633A3C7A') return;
-    if (reserve === 'fantom:fantom:0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E') return;
-    if (reserve === 'fantom:fantom:0x76975293D202bdFd2f66E8d405B4457dc7BBD7eB') return;
 
     let symbol;
-    // switch (reserve) {
-    //   case "0x76975293D202bdFd2f66E8d405B4457dc7BBD7eB":
-    //     symbol = {
-    //       output: 'MENSALP'
-    //     };
-    //     break
-    //   default:
-    //     symbol = symbolsOfReserve[i]
-    // }
 
     let decimals = decimalsOfReserve[i];
     if (decimals.success) {

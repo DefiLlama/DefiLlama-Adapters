@@ -1,0 +1,62 @@
+{
+    "0x3cdb7c48e70b854ed2fa392e21687501d84b3afc": {
+        "contract": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        "coingeckoId": "tether"
+    },
+    "0x6fbcdc1169b5130c59e72e51ed68a84841c98cd1": {
+        "contract": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        "coingeckoId": "tether"
+    },
+    "0x3fe04320885e6124231254c802004871be681218": {
+        "contract": "0xd91e9a0fef7c0fa4ebdaf4d0acf55888949a2a9b",
+        "coingeckoId": "mcn-ventures"
+    },
+    "0x4d7b88403aa2f502bf289584160db01ca442426c": {
+        "contract": "0x8861cff2366c1128fd699b68304ad99a0764ef9a",
+        "coingeckoId": "cyclone-protocol"        
+    },
+    "0x0258866edaf84d6081df17660357ab20a07d0c80": {
+        "contract": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        "coingeckoId": "ethereum"     
+    },
+    "0xc7b93720f73b037394ce00f954f849ed484a3dea": {
+        "contract": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+        "coingeckoId": "bitcoin"     
+    },
+    "0x62a9d987cbf4c45a550deed5b57b200d7a319632": {
+        "contract": "0x6b175474e89094c44da98b954eedeac495271d0f",
+        "coingeckoId": "dai"   
+    },
+    "0xacee9b11cd4b3f57e58880277ac72c8c41abe4e4": {
+        "contract": "0x4fabb145d64652a948d72533023f6e7a623c7c53",
+        "coingeckoId": "iobusd"           
+    },
+    "0x84abcb2832be606341a50128aeb1db43aa017449": {
+        "contract": "0x4fabb145d64652a948d72533023f6e7a623c7c53",
+        "coingeckoId": "binance-usd"           
+    },
+    "0x3b2bf2b523f54c4e454f08aa286d03115aff326c":{
+        "contract": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        "coingeckoId": "usdc"         
+    },
+    "0x17df9fbfc1cdab0f90eddc318c4f6fcada730cf2":{
+        "contract": "",
+        "coingeckoId": "game-fantasy-token"         
+    },
+    "0x4752456e00def6025c77b55a88a2f8a1701f92f9":{
+        "contract": "",
+        "coingeckoId": "metanyx"         
+    },
+    "0x490cfbf9b9c43633ddd1968d062996227ef438a9":{
+        "contract": "",
+        "coingeckoId": "imagictoken"         
+    },
+    "0xa00744882684c3e4747faefd68d283ea44099d03":{
+        "contract": "bsc:0x9678E42ceBEb63F23197D726B29b1CB20d0064E5",
+        "coingeckoId": "wrapped-iotex"         
+    },
+    "0x99b2b0efb56e62e36960c20cd5ca8ec6abd5557a":{
+        "contract": "polygon:0x300211def2a644b036a9bdd3e58159bb2074d388",
+        "coingeckoId": "crosschain-iotx"         
+    }
+}

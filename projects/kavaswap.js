@@ -1,18 +1,12 @@
 const utils = require('./helper/utils');
+const sdk = require('@defillama/sdk')
 
 async function tvl(timestamp, ethBlock, chainBlocks) {
     let balances = {};
-    let startBlock = 4698;
-    const dailyBlockInterval = 12495;
-    let startDate = new Date(Date.UTC(2021, 7, 31));
     let url = `https://api.data.kava.io/swap/pools`
     if(Math.abs(Date.now()/1000 - timestamp) > 3600){
-        let dateNow = new Date(timestamp * 1000);
-        while (startDate < dateNow) {
-            startDate.setDate(startDate.getDate() + 1);
-            startBlock = startBlock + dailyBlockInterval;
-        };
-        url += `?height=${startBlock}`
+        const block = await sdk.api.util.lookupBlock(timestamp, {chain:'kava'})
+        url += `?height=${block.block}`
     }
 
     const response = await utils.fetchURL(url);

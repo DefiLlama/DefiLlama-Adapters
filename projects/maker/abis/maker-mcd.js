@@ -36,4 +36,5 @@ module.exports = {
     stateMutability: "view",
     type: "function",
   },
+  dog: {"inputs":[],"name":"dog","outputs":[{"internalType":"contract DogLike","name":"","type":"address"}],"stateMutability":"view","type":"function"}
 };

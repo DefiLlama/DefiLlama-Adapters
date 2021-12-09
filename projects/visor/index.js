@@ -182,7 +182,6 @@ async function tvlUniV3(timestamp, block) {
 
   // Sum up balance0 and balance1 for each hypervisor
   for (let balance of hypervisorBalances.output) {
-    if (balance.success) {
       let hypervisorAddress = balance.input.target
       let address0 = hypervisors[hypervisorAddress].token0Address
       let address1 = hypervisors[hypervisorAddress].token1Address
@@ -191,7 +190,6 @@ async function tvlUniV3(timestamp, block) {
 
       balances[address0] = BigNumber(balances[address0] || 0).plus(balance0).toFixed()
       balances[address1] = BigNumber(balances[address1] || 0).plus(balance1).toFixed()
-    }
   }
 
   return balances;

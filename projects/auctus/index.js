@@ -83,9 +83,7 @@
     let collateralAddressMap = {}
 
     _.each(collateralResult.output, (result) => {
-      if(result.success) {
         collateralAddressMap[result.input.target] = result.output;
-      }
     });
 
     let totalCollateralResult = await sdk.api.abi.multiCall({
@@ -100,14 +98,12 @@
     balances[ETHER_ADDRESS] = "0"
 
     _.each(totalCollateralResult.output, (result) => {
-      if(result.success) {
         var colateralAddress = collateralAddressMap[result.input.target].toLowerCase()
         if (!balances[colateralAddress]) {
           balances[colateralAddress] = "0"
         }
         const existingBalance = new BigNumber(balances[colateralAddress]);
         balances[colateralAddress] = existingBalance.plus(new BigNumber(result.output)).toFixed()
-      }
     });
 
     const newAcoPoolLogs = logsPromises[2].output;
@@ -172,11 +168,9 @@
     });
 
     _.each(balancesResult.output, (result, index) => {
-      if(result.success) {
         var token = tokensResult.output[index].output.toLowerCase()
         var balance = result.output;
         balances[token] = BigNumber(balances[token]).plus(new BigNumber(balance)).toFixed();
-      }
     });
 
     return balances;

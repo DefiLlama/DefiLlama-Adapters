@@ -7,7 +7,7 @@ async function getTVL (network, block) {
   const balances = {}
   const options = await getOptions(network, EXPIRATION_START_FROM)
 
-  const collateralInOptions = await sdk.api.abi.multiCall({
+  const strikeAssetInOptions = await sdk.api.abi.multiCall({
     abi: 'erc20:balanceOf',
     block,
     calls: options
@@ -32,6 +32,18 @@ async function getTVL (network, block) {
     chain: network.name
   })
 
+  const underlyingAssetInOptions = await sdk.api.abi.multiCall({
+    abi: 'erc20:balanceOf',
+    block,
+    calls: options
+      .filter(option => option && option.underlyingAsset && option.address)
+      .map(option => ({
+        target: option.underlyingAsset,
+        params: [option.address]
+      })),
+    chain: network.name
+  })
+
   const stablesInPools = await sdk.api.abi.multiCall({
     abi: 'erc20:balanceOf',
     block,
@@ -46,7 +58,8 @@ async function getTVL (network, block) {
 
   const transform = address => `${network.name}:${address}`
 
-  sdk.util.sumMultiBalanceOf(balances, collateralInOptions, true, transform)
+  sdk.util.sumMultiBalanceOf(balances, strikeAssetInOptions, true, transform)
+  sdk.util.sumMultiBalanceOf(balances, underlyingAssetInOptions, true, transform)
   sdk.util.sumMultiBalanceOf(balances, stablesInPools, true, transform)
   return balances
 }

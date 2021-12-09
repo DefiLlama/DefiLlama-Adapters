@@ -96,4 +96,5 @@ module.exports = {
     bsc: {
       staking: bscTvl,
     },
+    tvl: async ()=>({})
 }
