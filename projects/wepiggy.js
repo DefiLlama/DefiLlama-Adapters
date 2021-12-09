@@ -50,6 +50,13 @@ const contracts = {
       decimals:18,
     },
   },
+  moonriver: {
+    comptroller: '0x9a9b2bF1d1c96332C55d0B6aCb8C2B441381116d',
+    gas:{
+      pToken:"0x621CE6596E0B9CcF635316BFE7FdBC80C3029Bec",
+      decimals:18,
+    },
+  },
 };
 
 const chainExports = {}
