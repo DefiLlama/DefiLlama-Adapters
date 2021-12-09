@@ -3,7 +3,12 @@ const axios = require("axios");
 
 async function tvl() {
   let balances = {};
-  const dikoPrice = 1;
+  const dikoPrice = (
+    await retry(
+      async (bail) =>
+        await axios.get("https://arkadiko-api.herokuapp.com/api/v1/tokens/diko")
+    )
+  ).data["price_in_cents"];
 
   const response = (
     await retry(
@@ -29,7 +34,7 @@ async function tvl() {
   delete balances["usda-token"];
   balances["usd-coin"] =
     Number(balances["usd-coin"]) +
-    Number(balances["arkadiko-token"] / 10 ** 6) * dikoPrice;
+    Number(balances["arkadiko-token"] / 10 ** 8) * dikoPrice;
   delete balances["arkadiko-token"];
 
   return balances;
@@ -37,6 +42,8 @@ async function tvl() {
 
 module.exports = {
   misrepresentedTokens: true,
-  tvl,
+  stacks: {
+    tvl,
+  },
 };
 // node test.js projects/arkadiko.js
