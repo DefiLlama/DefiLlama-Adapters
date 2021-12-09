@@ -31,10 +31,7 @@ function chainTvl(chain) {
     }
 }
 
-module.exports = {
-    timetravel: false,
-    misrepresentedTokens:true,
-    ...Object.keys(chainIds).reduce((obj, chain) => ({
+const tvls = Object.keys(chainIds).reduce((obj, chain) => ({
         ...obj,
         [chain]: {
             offers: chainTvl(chain)
@@ -42,4 +39,10 @@ module.exports = {
     }), {
         tvl: async () => ({})
     })
+tvls.ethereumclassic.tvl = async () => ({});
+
+module.exports = {
+    timetravel: false,
+    misrepresentedTokens:true,
+    ...tvls,
 }
