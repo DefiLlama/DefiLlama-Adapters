@@ -17,5 +17,6 @@ async function fetch() {
 }
 
 module.exports = {
+    methodology: `Finds TotalLiquidityUSD using the WagyuSwap subgraph "https://thegraph.wagyuswap.app/subgraphs/name/wagyu".`,
     fetch
 }
