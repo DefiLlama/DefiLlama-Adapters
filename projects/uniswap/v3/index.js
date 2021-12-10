@@ -1,6 +1,6 @@
-const { getChainTvl } = require('../helper/getUniSubgraphTvl');
+const { getChainTvl } = require('../../helper/getUniSubgraphTvl');
 const sdk = require('@defillama/sdk')
-const {transformOptimismAddress, transformArbitrumAddress} = require('../helper/portedTokens')
+const {transformOptimismAddress, transformArbitrumAddress} = require('../../helper/portedTokens')
 const oldOptPools = require('./oldUniPools.json')
 
 const graphUrls = {
@@ -9,7 +9,7 @@ const graphUrls = {
   arbitrum: 'https://api.thegraph.com/subgraphs/name/ianlapham/arbitrum-dev',
 }
 
-const { getBlock } = require('../helper/getBlock');
+const { getBlock } = require('../../helper/getBlock');
 
 const FACTORY =  '0x1F98431c8aD98523631AE4a59f267346ea31F984'; // same on all chains
 const startBlocks = {

@@ -1,5 +1,5 @@
-const { staking } = require('./helper/staking');
-const utils = require('./helper/utils');
+const { staking } = require('../helper/staking');
+const utils = require('../helper/utils');
 
 async function eth() {
   let staked = await utils.fetchURL('https://api.curve.fi/api/getTVL')
@@ -44,6 +44,7 @@ async function fetch() {
 
 
 module.exports = {
+  timetravel: false,
   misrepresentedTokens: true,
   fantom:{
     fetch: fantom
