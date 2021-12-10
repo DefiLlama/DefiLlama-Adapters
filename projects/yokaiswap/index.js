@@ -17,5 +17,6 @@ async function fetch() {
 }
 
 module.exports = {
+    methodology: `Finds TotalLiquidityUSD using the YokaiSwap subgraph "https://www.yokaiswap.com/subgraphs/name/yokaiswap/exchange".`,
     fetch
 }
