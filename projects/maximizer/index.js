@@ -53,5 +53,6 @@ module.exports = {
     tvl,
     staking,
   },
-  methodology: "Counts DAI, DAI JLP (MAXI-DAI), WAVAX on the treasury",
+  methodology:
+    "Counts DAI, DAI LP (MAXI-DAI JLP), WAVAX, WAVAX LP (MAXI-WAVAX PGL, PNG-WAVAX PGL) on the treasury",
 };
