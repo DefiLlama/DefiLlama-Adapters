@@ -15,7 +15,7 @@ async function fetch() {
     async () => await axios.get("https://api.starterra.io/cmc?q=tvl")
   );
 
-  return parseFloat(res.data);
+  return parseFloat(res.data) - (await pool2());
 }
 
 module.exports = {
