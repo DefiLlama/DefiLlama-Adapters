@@ -8,6 +8,7 @@ const MAXI = "0x7C08413cbf02202a1c13643dB173f2694e0F73f0";
 const DAI = "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70";
 const WAVAX = "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7";
 const MAXI_DAI_JLP = "0xfBDC4aa69114AA11Fae65E858e92DC5D013b2EA9";
+const MAXI_WAVAX_PGL = "0xbb700450811a30c5ee0dB80925Cf1BA53dBBd60A";
 
 const staking = async (timestamp, ethBlock, chainBlocks) => {
   const balances = {};
@@ -34,6 +35,7 @@ async function tvl(timestamp, block, chainBlocks) {
       [DAI, false],
       [WAVAX, false],
       [MAXI_DAI_JLP, true],
+      [MAXI_WAVAX_PGL, true],
     ],
     [Treasury],
     chainBlocks.avax,
