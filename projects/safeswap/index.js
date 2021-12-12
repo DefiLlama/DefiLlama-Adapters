@@ -21,4 +21,18 @@ module.exports = {
       "wmatic"
     ),
   },
+  ethereum: {
+    tvl: calculateUsdUniTvl(
+      "0xB919aD419688F7C274f11F180112514941a910CB",
+      "ethereum",
+      "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+      [
+        "0xf4cd3d3fda8d7fd6c5a500203e38640a70bf9577",
+        "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        "0x84cffa78b2fbbeec8c37391d2b12a04d2030845e",
+        "0x560cc7de81b2a594f6518713cbe122bcf297a6e8",
+      ],
+      "weth"
+    ),
+  },
 };
