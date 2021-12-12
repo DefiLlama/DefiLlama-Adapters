@@ -10,4 +10,4 @@ module.exports = ohmTvl(treasuryAddress, [
   ["0x9e2d266d6c90f6c0d80a88159b15958f7135b8af", false] ,
 //Sushi LP
   ["0xc16e382aa7353aad0f598856afd9a93513542970", true]
-], "polygon", "0x99bbc86E1f5447cf1908b27CEd0D2a0B9aA5efb2", "0xAC63686230f64BDEAF086Fe6764085453ab3023F")
+], "polygon", "0x99bbc86E1f5447cf1908b27CEd0D2a0B9aA5efb2", "0xAC63686230f64BDEAF086Fe6764085453ab3023F", undefined, undefined, false)
