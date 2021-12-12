@@ -15,8 +15,8 @@ async function tvl(timestamp, block, chainBlocks) {
 
 module.exports = {
   methodology: "TVL includes all farms in MasterChef contract",
-  staking:{
-    tvl: staking(chef, morph, "fantom")
-  },
-  tvl,
+  fantom:{
+    tvl,
+    staking: staking(chef, morph, "fantom")
+  }
 }
