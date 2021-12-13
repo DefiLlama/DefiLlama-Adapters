@@ -3,6 +3,7 @@ const erc20 = require("../helper/abis/erc20.json");
 const abi = require("./abi.json");
 const BigNumber = require("bignumber.js");
 const axios = require("axios");
+const { toUSDTBalances } = require("../helper/balances");
 
 const sKRNO_ADDRESS = "0x6555F93f608980526B5cA79b3bE2d4EdadB5C562";
 const BOND_CALCULATOR = "0x1f6b7Bde22d1618724519d135839fDc5D2Ffd35A";
@@ -123,7 +124,7 @@ async function fetchStakedToken() {
       MINT_DATA_ARRAY.find((mintData) => mintData.NAME === "KDAI_KRNO_LP")
     ),
   ]);
-  return (sKRNOcirculatingSupply * marketPrice) / Math.pow(10, 9).toFixed(2);
+  return toUSDTBalances((sKRNOcirculatingSupply * marketPrice) / Math.pow(10, 9).toFixed(2));
 }
 
 async function fetchLiquidity() {
@@ -133,13 +134,15 @@ async function fetchLiquidity() {
     MINT_DATA_ARRAY.map((mintData) => getMintVolume(caver, mintData))
   );
 
-  return volumes.reduce((acc, cur) => acc + cur, 0).toFixed(2);
+  return toUSDTBalances(volumes.reduce((acc, cur) => acc + cur, 0).toFixed(2));
 }
 
 module.exports = {
-  fetch: fetchLiquidity,
-  staking: {
-    fetch: fetchStakedToken,
+  timetravel: false,
+  misrepresentedTokens: true,
+  klaytn:{
+    staking: fetchStakedToken,
+    tvl: fetchLiquidity
   },
   methodology:
     "Counts tokens on the treasury for tvl and staked KRNO for staking",

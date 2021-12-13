@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
+const { staking } = require("../helper/staking");
 
 const tenFarmAddress = "0x264A1b3F6db28De4D3dD4eD23Ab31A468B0C1A96";
 const tenVault = "0xC2fB710D39f1D116FD3A70789381a3699Ff9fce0";
@@ -94,7 +95,7 @@ async function tvl(timestamp, block, chainBlocks) {
     const symbol = symbols[i].output;
     const balance = lockedTotals[i].output;
     const token = poolInfos[i].output.want;
-    if (symbol === null || balance === null || token === null) continue;
+    if(token === "0xFBF4cf9CdD629bF102F68BFEE43A49923f869505") continue;
     if (symbol.endsWith("LP")) {
       const token0 = token0Tokens[i].output.toLowerCase();
       const token1 = token1Tokens[i].output.toLowerCase();
@@ -206,7 +207,7 @@ async function pool2(timestamp, block, chainBlocks) {
     const symbol = symbols[i].output;
     const balance = lockedTotals[i].output;
     const token = poolInfos[i].output.want;
-    if (symbol === null || balance === null || token === null) continue;
+    if(token === "0xFBF4cf9CdD629bF102F68BFEE43A49923f869505") continue;
     if (symbol.endsWith("LP")) {
       const token0 = token0Tokens[i].output;
       const token1 = token1Tokens[i].output;
@@ -229,25 +230,10 @@ async function pool2(timestamp, block, chainBlocks) {
   return balances;
 }
 
-async function staking(timestamp, block, chainBlocks) {
-  let balances = {};
-  let balance = (
-    await sdk.api.erc20.balanceOf({
-      target: tenfi,
-      owner: tenVault,
-      block: chainBlocks.bsc,
-      chain: "bsc",
-    })
-  ).output;
-  sdk.util.sumSingleBalance(balances, `bsc:${tenfi}`, balance);
-  return balances;
-}
-
 module.exports = {
   bsc: {
     tvl,
     pool2,
-    staking,
+    staking: staking(tenVault, tenfi, "bsc"),
   },
-  tvl,
 };

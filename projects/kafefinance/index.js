@@ -1,4 +1,5 @@
 const utils = require("../helper/utils");
+const {toUSDTBalances} = require("../helper/balances");
 // Please refer to Github(https://github.com/kukafe/kafe-defillama/tree/main/kafe-defillama) for the codes to calculate the TVL via on-chain calls
 const apiUrl = "http://142.93.53.244:5001/getTvl";
 
@@ -16,7 +17,7 @@ async function fetchChain(chain, includePool2) {
     }
     totalTvl = totalTvl + Number(entry.TVL);
   });
-  return Math.round(totalTvl);
+  return toUSDTBalances(Math.round(totalTvl));
 }
 
 async function fetchCronos() {
@@ -33,7 +34,7 @@ async function fetchMoonRiverPool2() {
 
 async function fetchMoonriverStaking() {
   let response = (await utils.fetchURL(apiUrl)).data;
-  return Math.round(Number(response["KAFE"].TVL));
+  return toUSDTBalances(Math.round(Number(response["KAFE"].TVL)));
 }
 
 async function fetch() {
@@ -43,17 +44,14 @@ async function fetch() {
 }
 
 module.exports = {
+  misrepresentedTokens: true,
+  timetravel: false,
   cronos: {
-    fetch: fetchCronos,
+    tvl: fetchCronos,
   },
   moonriver: {
-    fetch: fetchMoonriver,
+    tvl: fetchMoonriver,
+    staking: fetchMoonriverStaking,
+    pool2: fetchMoonRiverPool2
   },
-  pool2: {
-    fetch: fetchMoonRiverPool2,
-  },
-  staking: {
-    fetch: fetchMoonriverStaking,
-  },
-  fetch,
-};
+}

@@ -46,12 +46,9 @@ const v2TVL = async (timestamp, ethBlock, chainBlocks) => {
 
 module.exports = {
   misrepresentedTokens: true,
-  staking: {
-    tvl: staking(stakingContract, WFTM, "fantom"),
-  },
   fantom: {
+    staking: staking(stakingContract, WFTM, "fantom"),
     tvl: sdk.util.sumChainTvls([ftmTvl, v2TVL]),
   },
-  tvl: sdk.util.sumChainTvls([ftmTvl, v2TVL]),
   methodology: "We count liquidity on the Farms through MasterChef and MasterChefv2 Contract",
 };
