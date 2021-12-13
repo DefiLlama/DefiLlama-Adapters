@@ -85,6 +85,21 @@ const bscPools = [
     "0xf81628edeb110a73c016ab7afa57d80afae07f59",
     "bsc:0xf81628edeb110a73c016ab7afa57d80afae07f59",
   ], //1-Month LOTT Vault
+  [
+    "0x01ba0f95Ca1Ba5Dd9981398fE79103F058381B12",
+    "0x22168882276e5d5e1da694343b41dd7726eeb288",
+    "bsc:0x22168882276e5d5e1da694343b41dd7726eeb288",
+  ], //6-Month WSB Vault
+  [
+    "0x83ed2A12943c67e66f4084368A07F2B51CbF5e51",
+    "0x22168882276e5d5e1da694343b41dd7726eeb288",
+    "bsc:0x22168882276e5d5e1da694343b41dd7726eeb288",
+  ], //3-Month WSB Vault
+  [
+    "0x3314CfD1c5538c7521790347FA129ec23FEDED4E",
+    "0x22168882276e5d5e1da694343b41dd7726eeb288",
+    "bsc:0x22168882276e5d5e1da694343b41dd7726eeb288",
+  ], //1-Month WSB Vault
 ];
 
 async function bsc(_timestamp, block, chainBlocks) {
