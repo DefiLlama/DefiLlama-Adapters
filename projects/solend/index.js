@@ -1,6 +1,6 @@
 const BigNumber = require("bignumber.js");
 const { PublicKey, Connection } = require("@solana/web3.js");
-const { parseReserve } = require("@solendprotocol/solend-sdk");
+const { parseReserve } = require("./utils");
 const { getTokenBalance } = require("../helper/solana");
 
 async function borrowed() {
