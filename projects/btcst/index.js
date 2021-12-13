@@ -55,7 +55,7 @@ async function bscTvl(chainBlocks) {
 
 module.exports = {
   misrepresentedTokens: true,
-  ethereum: {
+  bsc: {
     treasury: Treasury,
     staking: stakings(vaultContracts, BTCST, "bsc"),
     tvl: bscTvl,
