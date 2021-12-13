@@ -1,12 +1,5 @@
-/*==================================================
-  Modules
-  ==================================================*/
 const sdk = require("@defillama/sdk");
-const BigNumber = require("bignumber.js");
 
-/*==================================================
-        Settings
-        ==================================================*/
 const abi = require("./abi.json");
 const contracts = {
   ethereum: {
@@ -23,9 +16,6 @@ const contracts = {
   },
 };
 
-/*==================================================
-        utility
-        ==================================================*/
 const utility = {
   // get the latest TokenRegistry address through the GlobalConfig contract
   async getTokenRegistryAddressByGlobalConfig(block, chain) {
@@ -174,217 +164,14 @@ const utility = {
 
     let zeroCTokenAddress = "0x0000000000000000000000000000000000000000";
     cToken.forEach((item) => {
-      if (item.success) {
         allTokenObj[item.input.params[0]] =
           item.output === zeroCTokenAddress ? "" : item.output;
-      }
     });
     return allTokenObj;
   },
   //
-  async handlerTokenApr(block, markets, chain) {
-    // Year Total Blocks Number
-    let yearTotalBlocksNumber = 365 * 24 * 60 * 4;
-
-    let targetTokenObj = {};
-
-    let allTokenObj = await utility.getCTokens(block, markets, chain);
-
-    let ctokenMapToken = {};
-    let callsCompArray = [];
-    let capitalCompoundRatioArray = [];
-
-    // Get capitalUtilizationRatio
-    let bankAddress = await utility.getBankAddressByGlobalConfig(block, chain);
-    let callsArray = [];
-    markets.forEach((token_address) => {
-      callsArray.push({
-        target: bankAddress,
-        params: token_address,
-      });
-    });
-    let capitalUtilizationRatio = (
-      await sdk.api.abi.multiCall({
-        block: block,
-        chain: chain,
-        abi: abi["bank:getCapitalUtilizationRatio"],
-        calls: callsArray,
-      })
-    ).output;
-
-    let tempValue = BigNumber(3).times(Math.pow(10, 16)).toFixed(0);
-    capitalUtilizationRatio.forEach((item) => {
-      if (allTokenObj[item.input.params[0]]) {
-        callsCompArray.push({
-          target: allTokenObj[item.input.params[0]],
-        });
-        capitalCompoundRatioArray.push({
-          target: bankAddress,
-          params: item.input.params[0],
-        });
-        ctokenMapToken[allTokenObj[item.input.params[0]]] =
-          item.input.params[0];
-      }
-
-      if (item.success) {
-        // ((capitalUtilizationRatio * 15*10**16)/10**18)+3*10**16;
-        let notSupportCompBorrowRatePerBlock = BigNumber(item.output)
-          .times(15 * Math.pow(10, 16))
-          .div(Math.pow(10, 18))
-          .plus(tempValue)
-          .div(yearTotalBlocksNumber)
-          .toFixed(0);
-
-        targetTokenObj[item.input.params[0]] = {
-          ctoken: allTokenObj[item.input.params[0]] || "",
-          capitalUtilizationRatio: item.output,
-          notSupportCompBorrowRatePerBlock: notSupportCompBorrowRatePerBlock,
-          supplyRatePerBlockComp: "",
-          borrowRatePerBlockComp: "",
-          capitalCompoundRatio: "",
-          deposit_apr: "",
-          borrow_apr: "",
-        };
-      }
-    });
-
-    let supplyRatePerBlock = (
-      await sdk.api.abi.multiCall({
-        block: block,
-        chain: chain,
-        abi: abi["ctoken:supplyRatePerBlock"],
-        calls: callsCompArray,
-      })
-    ).output;
-
-    let borrowRatePerBlock = (
-      await sdk.api.abi.multiCall({
-        block: block,
-        abi: abi["ctoken:borrowRatePerBlock"],
-        calls: callsCompArray,
-      })
-    ).output;
-
-    // capitalCompoundRatioArray
-    let getCapitalCompoundRatio = (
-      await sdk.api.abi.multiCall({
-        block: block,
-        chain: chain,
-        abi: abi["bank:getCapitalCompoundRatio"],
-        calls: capitalCompoundRatioArray,
-      })
-    ).output;
-
-    supplyRatePerBlock.forEach((item) => {
-      if (item.success) {
-        targetTokenObj[
-          ctokenMapToken[item.input.target]
-        ].supplyRatePerBlockComp = item.output;
-      }
-    });
-    borrowRatePerBlock.forEach((item) => {
-      if (item.success) {
-        targetTokenObj[
-          ctokenMapToken[item.input.target]
-        ].borrowRatePerBlockComp = item.output;
-      }
-    });
-    getCapitalCompoundRatio.forEach((item) => {
-      if (item.success) {
-        targetTokenObj[item.input.params[0]].capitalCompoundRatio = item.output;
-      }
-    });
-
-    // handle borrowRatePerBlock / depositRatePerBlock
-    Object.keys(targetTokenObj).forEach((token_address) => {
-      let item = targetTokenObj[token_address];
-      let borrowRatePerBlock;
-      let depositRatePerBlock;
-      if (item.ctoken) {
-        let supplyRatePerBlockCompValue = BigNumber(item.supplyRatePerBlockComp)
-          .times(0.4)
-          .toFixed(0);
-        let borrowRatePerBlockCompValue = BigNumber(item.borrowRatePerBlockComp)
-          .times(0.6)
-          .toFixed(0);
-        // supply*0.4+borrow*0.6
-        borrowRatePerBlock = BigNumber(supplyRatePerBlockCompValue)
-          .plus(borrowRatePerBlockCompValue)
-          .toFixed(0);
-
-        // ((borrowRatePerBlock * capitalUtilizationRatio ) + ( supplyRatePerBlockComp * capitalCompoundRatio ))/10**18
-        depositRatePerBlock = BigNumber(borrowRatePerBlock)
-          .times(item.capitalUtilizationRatio)
-          .plus(
-            BigNumber(item.supplyRatePerBlockComp).times(
-              item.capitalCompoundRatio
-            )
-          )
-          .div(Math.pow(10, 18))
-          .toFixed(0);
-
-        // if deposit depositRatePerBlock is zero;
-        // depositRatePerBlock = supplyRatePerBlockComp * 0.85
-        if (depositRatePerBlock === "0") {
-          depositRatePerBlock = BigNumber(item.supplyRatePerBlockComp || 0)
-            .times(0.85)
-            .toFixed(0);
-        }
-      } else {
-        // Does not support CToken
-        borrowRatePerBlock = item.notSupportCompBorrowRatePerBlock;
-
-        // notSupportCompBorrowRatePerBlock * capitalUtilizationRatio / 10**18
-        depositRatePerBlock = BigNumber(item.notSupportCompBorrowRatePerBlock)
-          .times(item.capitalUtilizationRatio)
-          .div(Math.pow(10, 18))
-          .toFixed(0);
-      }
-      let depositApr = (
-        (Math.pow(
-          1 + depositRatePerBlock / Math.pow(10, 18),
-          yearTotalBlocksNumber
-        ) -
-          1) *
-        100
-      ).toFixed(18);
-      let borrowApr = (
-        (Math.pow(
-          1 + borrowRatePerBlock / Math.pow(10, 18),
-          yearTotalBlocksNumber
-        ) -
-          1) *
-        100
-      ).toFixed(18);
-      item.deposit_apr = depositApr;
-      item.borrow_apr = borrowApr;
-    });
-    return targetTokenObj;
-  },
-  formatRates(tokensObj) {
-    let result = {
-      lend: {},
-      borrow: {},
-      supply: {},
-    };
-    Object.keys(tokensObj).forEach((tokenAddress) => {
-      let tokenItem = tokensObj[tokenAddress];
-      result.lend[tokenItem.symbol] =
-        parseFloat(tokenItem.lend) > 0 ? tokenItem.lend : "0";
-      result.borrow[tokenItem.symbol] =
-        parseFloat(tokenItem.borrow) > 0 ? tokenItem.borrow : "0";
-      result.supply[tokenItem.symbol] = tokenItem.supply;
-    });
-    return result;
-  },
 };
 
-/*==================================================
-        TVL
-        ==================================================*/
-async function tvl(timestamp, blockETH, chainBlocks) {
-  return await ethereumTvl(timestamp, blockETH, chainBlocks);
-}
 async function ethereumTvl(timestamp, blockETH, chainBlocks) {
   const block = blockETH;
   const chain = "ethereum";
@@ -411,9 +198,7 @@ async function getTvlByChain(timestamp, block, chain) {
       chain
     );
     banksPoolAmounts.forEach((result) => {
-      if (result.success === true) {
         balances[networkAddressSymbol + result.input.params] = result.output;
-      }
     });
 
     // cETH value
@@ -426,94 +211,11 @@ async function getTvlByChain(timestamp, block, chain) {
   return balances;
 }
 
-/*==================================================
-        Rates
-        ==================================================*/
-async function rates(timestamp, blockETH, chainBlocks) {
-  return await ethereumRates(timestamp, blockETH, chainBlocks);
-}
-async function ethereumRates(timestamp, blockETH, chainBlocks) {
-  const block = blockETH;
-  const chain = "ethereum";
-  return await getRatesByChain(timestamp, block, chain);
-}
-async function okexchainRates(timestamp, blockETH, chainBlocks) {
-  const block = chainBlocks["okexchain"];
-  const chain = "okexchain";
-  return await getRatesByChain(timestamp, block, chain);
-}
-async function getRatesByChain(timestamp, block, chain) {
-  let initTokens = {};
-  if (block > 10819469) {
-    // Get all Tokens in the market
-    let markets = await utility.getMarkets(block, chain);
-
-    // Create source data format
-    let tokenSymbols = await utility.getSymbol(block, markets);
-    tokenSymbols.forEach((item) => {
-      if (item.success === true) {
-        initTokens[item.input.target] = {
-          symbol: item.output,
-          lend: "0",
-          borrow: "0",
-          supply: "0",
-        };
-      } else {
-        initTokens[item.input.target] = {
-          symbol: "Unknown",
-          lend: "0",
-          borrow: "0",
-          supply: "0",
-        };
-      }
-    });
-
-    // handle token supply
-    let banksContractTokenState = await utility.getBankContractTokenState(
-      block,
-      markets,
-      chain
-    );
-    banksContractTokenState.forEach((item) => {
-      if (item.success === true) {
-        initTokens[item.input.params[0]].supply = item.output.loans;
-      }
-    });
-
-    // handle token APR
-    let tokenAprInfoObj = await utility.handlerTokenApr(block, markets, chain);
-    Object.keys(tokenAprInfoObj).forEach((token_address) => {
-      initTokens[token_address].lend =
-        tokenAprInfoObj[token_address].deposit_apr;
-      initTokens[token_address].borrow =
-        tokenAprInfoObj[token_address].borrow_apr;
-    });
-  }
-
-  // Create output format
-  let result = utility.formatRates(initTokens);
-  return result;
-}
-
-/*==================================================
-        Exports
-        ==================================================*/
 module.exports = {
-  name: "DeFiner",
-  website: "https://definer.org/",
-  token: "FIN",
-  category: "lending",
-  tvl: sdk.util.sumChainTvls([ethereumTvl, okexchainTvl]),
-  rates,
-  term: "1 block",
-  permissioning: "Open",
-  variability: "Medium",
   ethereum: {
     tvl: ethereumTvl,
-    rates: ethereumRates,
   },
   okexchain: {
     tvl: okexchainTvl,
-    rates: okexchainRates,
   },
 };

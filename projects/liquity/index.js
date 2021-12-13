@@ -34,6 +34,7 @@ async function tvl(_, block) {
 }
 
 module.exports = {
+  timetravel: true,
   name: "Liquity",
   token: "LUSD",
   category: "minting",

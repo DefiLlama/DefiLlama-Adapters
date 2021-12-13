@@ -1,6 +1,3 @@
-/*==================================================
-  Modules
-  ==================================================*/
   const { request, gql } = require("graphql-request");
   const BigNumber = require('bignumber.js');
   const sdk = require("@defillama/sdk");
@@ -9,9 +6,6 @@
 
   const POLYGON_GRAPH_URL = 'https://api.thegraph.com/subgraphs/name/sirenmarkets/protocol-v2-matic'
 
-/*==================================================
-  TVL
-  ==================================================*/
 async function calculateMainnetTVL(timestamp, block, chainBlocks) {
 
   const ethereumBlock = chainBlocks['ethereum'];
@@ -121,8 +115,8 @@ async function calculatePolygonTVL(timestamp, block, chainBlocks) {
   `
 
 const GET_POOLS_POLYGON = gql`
-query Pools($polygonBlock: Int) {
-  amms(block: { number: $polygonBlock }) {
+query Pools {
+  amms {
     id
     collateralToken {
       id

@@ -31,6 +31,7 @@ async function tvl(_timestamp, block){
 }
 
 module.exports={
+    methodology: 'TVL is comprised of tokens deposited to the protocol as collateral, similar to Compound Finance and other lending protocols the borrowed tokens are not counted as TVL.',
     ethereum:{
         tvl
     },

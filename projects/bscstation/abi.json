@@ -1,0 +1,15 @@
+{
+    "stakedToken": {
+        "inputs": [],
+        "name": "stakedToken",
+        "outputs": [
+            {
+                "internalType": "contract ERC20",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+}

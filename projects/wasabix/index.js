@@ -779,7 +779,7 @@ module.exports = {
         tvl: bsc
     },
     polygon:{
-        tbl: polygon
+        tvl: polygon
     },
     tvl: sdk.util.sumChainTvls([eth,bsc,polygon])
 }

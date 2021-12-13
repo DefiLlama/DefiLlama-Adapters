@@ -1,8 +1,41 @@
 const sdk = require("@defillama/sdk");
-const v1 = require('./v1')
-const v2 = require('./v2')
+const { calculateUniTvl } = require("../helper/calculateUniTvl");
+const factory = "0x477Ce834Ae6b7aB003cCe4BC4d8697763FF456FA";
+
+async function tvl(timestamp, block, chainBlocks) {
+  return calculateUniTvl(
+    (addr) => `polygon:${addr}`,
+    chainBlocks.polygon,
+    "polygon",
+    factory,
+    0,
+    true
+  );
+}
+
+async function staking(timestamp, block, chainBlocks) {
+  let balances = {};
+  let balance = (
+    await sdk.api.erc20.balanceOf({
+      target: "0x3a3Df212b7AA91Aa0402B9035b098891d276572B",
+      owner: "0x640328B6BB1856dDB6a7d7BB07e5E1F3D9F50B94",
+      block: chainBlocks.polygon,
+      chain: "polygon",
+    })
+  ).output;
+  sdk.util.sumSingleBalance(
+    balances,
+    "polygon:0x3a3Df212b7AA91Aa0402B9035b098891d276572B",
+    balance
+  );
+  return balances;
+}
 
 module.exports = {
-  methodology: 'TVL considers v1 and v2 deposits made to the farming strategies found with the MasterChef contracts and the VaultChef contracts, as well as the liquidity on the DEX that is calculated using the factory address (0x477ce834ae6b7ab003cce4bc4d8697763ff456fa)',
-  tvl: sdk.util.sumChainTvls([v1.tvl, v2.tvl]),
+  methodology: "TVL are from the pools created by the factory.",
+  polygon: {
+    tvl,
+    staking,
+  },
+  tvl,
 };

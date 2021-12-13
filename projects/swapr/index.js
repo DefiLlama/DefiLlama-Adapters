@@ -12,7 +12,7 @@ const SUBGRAPH_NAME = Object.freeze({
 const FACTORY_ADDRESS = Object.freeze({
   ethereum: "0xd34971BaB6E5E356fd250715F5dE0492BB070452",
   xdai: "0x5d48c95adffd4b40c1aaadc4e08fc44117e02179",
-  arbitrum: "0xbf9173b60a30b9ff8c37cac787b6ee87d5e47916",
+  arbitrum: "0x359f20ad0f42d75a5077e65f30274cabe6f4f01a",
 });
 
 const QUERY = gql`
@@ -30,7 +30,7 @@ async function getTvl(timestamp) {
     }`,
     QUERY,
     {
-      block: await getBlock(timestamp, this.chain, {}),
+      block: await getBlock(timestamp, this.chain, {}) - (this.chain==="arbitrum"? 450:10), // ~10 minutes
       factory: FACTORY_ADDRESS[this.chain],
     }
   );

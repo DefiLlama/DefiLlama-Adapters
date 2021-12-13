@@ -1,0 +1,34 @@
+{
+    "pools": [
+        {
+            "StakersPool": "0xF851cBB9940F8bAebd1D0EaF259335c108E9E893",
+            "PoolToken": "0x544c42fBB96B39B21DF61cf322b5EDC285EE7429",
+            "TokenTicker": "INSUR"
+        },
+        {
+            "StakersPool": "0xF851cBB9940F8bAebd1D0EaF259335c108E9E893",
+            "PoolToken": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+            "TokenTicker": "AVAX"
+        },
+        {
+            "StakersPool": "0xF851cBB9940F8bAebd1D0EaF259335c108E9E893",
+            "PoolToken": "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664",
+            "TokenTicker": "USDC"
+        },
+        {
+            "StakersPool": "0xF851cBB9940F8bAebd1D0EaF259335c108E9E893",
+            "PoolToken": "0xc7198437980c041c805A1EDcbA50c1Ce5db95118",
+            "TokenTicker": "USDT"
+        },
+        {
+            "StakersPool": "0xF851cBB9940F8bAebd1D0EaF259335c108E9E893",
+            "PoolToken": "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70",
+            "TokenTicker": "DAI"
+        },
+        {
+            "StakersPool": "0xF851cBB9940F8bAebd1D0EaF259335c108E9E893",
+            "PoolToken": "0x49D5c2BdFfac6CE2BFdB6640F4F80f226bc10bAB",
+            "TokenTicker": "WETH"
+        }
+    ]
+}

@@ -11,5 +11,102 @@
     ],
     "stateMutability": "view",
     "type": "function"
+  },
+  "balanceOfVault": {
+      "inputs": [],
+      "name": "balanceOf",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  "balanceOf": {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "balanceOf",
+    "inputs": [
+      {
+        "name": "arg0",
+        "type": "address"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ]
+  },
+  "minter": {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "minter",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ]
+  },
+  "totalSupply": {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "totalSupply",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ]
+  },
+  "coins": {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "coins",
+    "inputs": [
+      {
+        "name": "arg0",
+        "type": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ]
+  },
+  "lp_token": {
+    "stateMutability":"view",
+    "type":"function",
+    "name":"lp_token",
+    "inputs":[],
+    "outputs":[
+      {
+        "name":"",
+        "type":"address"
+      }
+    ]
+  },
+  "decimals": {
+    "constant": true,
+    "inputs": [],
+    "name": "decimals",
+    "outputs": [
+        {
+            "name": "",
+            "type": "uint8"
+        }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
   }
 }

@@ -36,3 +36,7 @@
 
 ##### forkedFrom (Does your project originate from another project):
 
+
+##### methodology (what is being counted as tvl, how is tvl being calculated):
+
+

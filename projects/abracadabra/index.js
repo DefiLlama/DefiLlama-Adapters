@@ -1,70 +1,98 @@
-const sdk = require("@defillama/sdk");
-const {unwrapUniswapLPs, unwrapCrv} = require('../helper/unwrapLPs')
-const axios = require('axios')
-const stakingContract = '0xF43480afE9863da4AcBD4419A47D9Cc7d25A647F'
-const sSpell = '0x26fa3fffb6efe8c1e69103acb4044c26b9a106a9'
-const dai = '0x6b175474e89094c44da98b954eedeac495271d0f'
-async function tvl(timestamp, block) {
-    const balances = {}
-    const allTokens = (await axios.get(`https://api.covalenthq.com/v1/1/address/${stakingContract}/balances_v2/?&key=ckey_72cd3b74b4a048c9bc671f7c5a6`)).data.data.items
-    const lpPositions = []
-    await Promise.all(
-        allTokens.map(async (token)=>{
-            if(token.contract_ticker_symbol === 'MIM-3LP3CRV-f') {
-                const cTokens = (await axios.get(`https://api.covalenthq.com/v1/1/address/${token.contract_address}/balances_v2/?&key=ckey_72cd3b74b4a048c9bc671f7c5a6`)).data.data.items
-                cTokens.map(async (uToken)=> {
-                    if(uToken.contract_ticker_symbol === '3Crv') {
-                        await unwrapCrv(balances, uToken.contract_address, uToken.balance, block)
-                    } else if(uToken.contract_ticker_symbol === 'MIM') {
-                        const singleTokenLocked = sdk.api.erc20.balanceOf({
-                            target: uToken.contract_address,
-                            owner: token.contract_address,
-                            block
-                        })
-                        sdk.util.sumSingleBalance(balances, dai, (await singleTokenLocked).output)
-                    }
-                })
-            } else if(token.contract_ticker_symbol === 'SLP') {
-                const uniLocked = sdk.api.erc20.balanceOf({
-                    target: token.contract_address,
-                    owner: stakingContract,
-                    block
-                })
-                lpPositions.push({
-                    token: token.contract_address,
-                    balance: (await uniLocked).output
-                })
+const sdk = require('@defillama/sdk');
+const marketsJSON = require('./market.json');
+const abi = require('./abi.json');
+const { unwrapCrv, unwrapYearn } = require('../helper/unwrapLPs')
+const { transformAvaxAddress, transformArbitrumAddress, transformFantomAddress 
+    } = require("../helper/portedTokens");
+const { getBlock } = require('../helper/getBlock');
 
-            } else if(token.supports_erc) {
-                const singleTokenLocked = sdk.api.erc20.balanceOf({
-                    target: token.contract_address,
-                    owner: stakingContract,
-                    block
-                })
-                sdk.util.sumSingleBalance(balances, token.contract_address, (await singleTokenLocked).output)
-            }
-        })
-    )
+// --------------------------
+// cvx3pool & yvcrvIB tokens
+// are not being unwrapped
+// on eth (~$169M tvl)
+// --------------------------
+const bentoBoxAddresses = {
+    "ethereum": "0xF5BCE5077908a1b7370B9ae04AdC565EBd643966",
+    "arbitrum": "0x74c764D41B77DBbb4fe771daB1939B00b146894A",
+    "avax": "0xf4F46382C2bE1603Dc817551Ff9A7b333Ed1D18f",
+    "fantom": "0xF5BCE5077908a1b7370B9ae04AdC565EBd643966"
+};
+async function transformEthAddress() {
+    return (addr) => {
+        switch(addr.toLowerCase()) {
+            case '0xca76543cf381ebbb277be79574059e32108e3e65':
+                return '0x383518188c0c6d7730d91b2c03a03c837814a899';
+            default:
+                return addr;
+        };
+    };
+};
+async function ethTvl(timestamp, ethBlock, chainBlocks) {
+    return tvl(timestamp, chainBlocks, 'ethereum', (await transformEthAddress()));
+};
+async function ftmTvl(timestamp, ethBlock, chainBlocks) {
+    return tvl(timestamp, chainBlocks, 'fantom', (await transformFantomAddress()));
+};
+async function arbiTvl(timestamp, ethBlock, chainBlocks) {
+    return tvl(timestamp, chainBlocks, 'arbitrum', (await transformArbitrumAddress()));
+};
+async function avaxTvl(timestamp, ethBlock, chainBlocks) {
+    return tvl(timestamp, chainBlocks, 'avax', (await transformAvaxAddress()));
+};
+async function tvl(timestamp, chainBlocks, chain, transformAddress=addr=>addr) {
+    let marketsArray = [];
+    let balances = {};
+    let block;
 
-    const spellTokens = (await axios.get(`https://api.covalenthq.com/v1/1/address/${sSpell}/balances_v2/?&key=ckey_72cd3b74b4a048c9bc671f7c5a6`)).data.data.items
-    spellTokens.map(async (stoken) => {
-        if(stoken.supports_erc) {
-            const singleTokenLocked = sdk.api.erc20.balanceOf({
-                target: stoken.contract_address,
-                owner: sSpell,
-                block
-            })
-            sdk.util.sumSingleBalance(balances, stoken.contract_address, (await singleTokenLocked).output)
-        }
-    })
-    await unwrapUniswapLPs(balances, lpPositions, block)
+    for (const [marketContract, lockedToken] of Object.entries(marketsJSON[chain])) {
+        marketsArray.push([lockedToken, marketContract]);
+    };
 
-    return balances
-}
+    if (chainBlocks[chain]) {
+        block = chainBlocks[chain];
+    } else {
+        block = await getBlock(timestamp, chain, chainBlocks);
+    };
 
+    let tokenBalances = (await sdk.api.abi.multiCall({
+        block: block,
+        calls: marketsArray.map((market) => ({
+            target: bentoBoxAddresses[chain],
+            params: market
+        })),
+        abi: abi.balanceOf,
+        chain: chain
+    })).output.map(t => t.output);
+
+    for (let index = 0; index < marketsArray.length; index++) {
+        sdk.util.sumSingleBalance(
+          balances,
+          transformAddress(marketsArray[index][0]),
+          tokenBalances[index]
+        );
+        await unwrapYearn(balances, marketsArray[index][0], block, chain, transformAddress);
+      };
+    for (let [token, balance] of Object.entries(balances)) {
+        await unwrapCrv(balances, token, balance, block, chain, transformAddress);
+    };
+    if ('0x383518188c0c6d7730d91b2c03a03c837814a899' in balances) {
+        balances['0x383518188c0c6d7730d91b2c03a03c837814a899'] = 
+            balances['0x383518188c0c6d7730d91b2c03a03c837814a899'] / 10**9;
+    };
+    return balances;
+};
 module.exports = {
     ethereum: {
-        tvl
+        tvl: ethTvl
     },
-    tvl
+    arbitrum: {
+        tvl: arbiTvl
+    },
+    avax: {
+        tvl: avaxTvl
+    },
+    fantom: {
+        tvl: ftmTvl
+    },
+    tvl: sdk.util.sumChainTvls([ethTvl, arbiTvl, avaxTvl, ftmTvl]),
 }

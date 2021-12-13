@@ -2,6 +2,8 @@ const sdk = require('@defillama/sdk')
 const abi = require('./abi.json')
 const BigNumber = require('bignumber.js')
 
+const ETHER = new BigNumber(10).pow(18)
+
 const dashboardBsc = '0x3BF0EbF0B846Fff73Df543bACacC542A6CE9fc15'
 const qTokensBsc = [
     '0xbE1B5D17777565D67A5D2793f879aBF59Ae5D351', // qBNB
@@ -28,23 +30,31 @@ const qTokensKlaytn = [
     '0x3dB032090A06e3dEaC905543C0AcC92B8f827a70'  // qKQBT
 ]
 
-const ZERO = new BigNumber(0)
-const ETHER = new BigNumber(10).pow(18)
-
-async function bsc(timestamp, ethBlock, chainBlock) {
-    const block = chainBlock.bsc
-    const total = (await sdk.api.abi.multiCall({
-        calls: qTokensBsc.map(address => ({
-            target: dashboardBsc,
-            params: [[address]]
-        })),
-        block,
-        abi: abi,
-        chain: 'bsc'
-    })).output.reduce((tvl, call) => tvl.plus(new BigNumber(call.output)), ZERO)
-    
-    return {
-        'tether': total.dividedBy(ETHER).toNumber()
+function tvl(borrowed) {
+    return async (timestamp, ethBlock, chainBlocks) => {
+        const chain = 'bsc'
+        const block = chainBlocks[chain]
+        const balances = {}
+        
+        async function bsc(timestamp, ethBlock, chainBlock) {
+            const block = chainBlock.bsc
+            const total = (await sdk.api.abi.multiCall({
+                calls: qTokensBsc.map(address => ({
+                    target: dashboardBsc,
+                    params: [[address]]
+                })),
+                block,
+                abi: abi,
+                chain: 'bsc'
+            })).output.reduce((tvl, call) => tvl.plus(new BigNumber(call.output)), ZERO)
+            
+            return {
+                'tether': total.dividedBy(ETHER).toNumber()
+                
+            }
+            
+            return balances
+        }
     }
 }
 

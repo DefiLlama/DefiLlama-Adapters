@@ -50,7 +50,6 @@ async function valueLiquidTvl(timestamp, block) {
   })).output;
 
   _.each(poolBalances, (balanceOf) => {
-    if (balanceOf.success) {
       let balance = balanceOf.output;
       let address = balanceOf.input.target;
 
@@ -59,10 +58,8 @@ async function valueLiquidTvl(timestamp, block) {
       }
 
       balances[address] = new BigNumber(balances[address] || 0).plus(balance).toFixed();
-    }
   });
 
-console.log(balances)
   return balances;
 }
 
@@ -74,9 +71,6 @@ async function tvl(timestamp, block) {
   Exports
 ==================================================*/
 module.exports = {
-  name: 'valueliquid',
-  token: null,
-  category: 'dexes',
   start: 1601440616,  // 09/30/2020 @ 4:36am (UTC)
   tvl,
 };

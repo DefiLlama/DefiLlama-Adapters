@@ -44,6 +44,9 @@ const avaxTvl = async (timestamp, ethBlock, chainBlocks) => {
   const lpPositions = [];
 
   for (let index = 0; index < CountOfPools; index++) {
+    if (index == 14) {
+      continue // 14 isn't a normal pool, it's NFT staking rewards
+    }
     const getPoolAddress = (
       await sdk.api.abi.call({
         abi: abi.getPool,
@@ -101,14 +104,11 @@ const avaxTvl = async (timestamp, ethBlock, chainBlocks) => {
 };
 
 module.exports = {
-  misrepresentedTokens: true,
-  staking: {
-    tvl: staking,
-  },
+  timetravel: true,
   avalanche: {
+    staking,
     tvl: avaxTvl,
   },
-  tvl: sdk.util.sumChainTvls([avaxTvl]),
   methodology: `We count TVL that is on the Farms threw FarmPoolManager contract 
     and the portion of staking the native token (AVE) by treasury contract`,
 };

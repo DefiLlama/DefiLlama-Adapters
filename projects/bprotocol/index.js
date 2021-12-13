@@ -191,9 +191,6 @@
   ==================================================*/
 
   module.exports = {
-    name: 'B.Protocol',
-    //token: null,
-    category: 'lending',
     start: 1605380632,  // 11/14/2020 @ 7:03pm (UTC)
     tvl,
   };

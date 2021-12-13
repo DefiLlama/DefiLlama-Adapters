@@ -10,7 +10,7 @@ async function getTVL(subgraphName, block) {
 
   var query = gql`
   query get_tvl($block: Int) {
-    balancers(
+    symmetrics(
       first: 5,
       block: { number: $block }
     ) {
@@ -22,15 +22,15 @@ async function getTVL(subgraphName, block) {
   const results = await graphQLClient.request(query, {
     block
   })
-  return results.balancers[0].totalLiquidity;
+  return results.symmetrics[0].totalLiquidity;
 }
 
 async function xdai(timestamp, ethBlock, chainBlocks) {
-  return toUSDTBalances(await getTVL("cent-swap-xdai", await getBlock(timestamp, "xdai", chainBlocks)))
+  return toUSDTBalances(await getTVL("symmetric-xdai", await getBlock(timestamp, "xdai", chainBlocks)))
 }
 
 async function celo(timestamp, ethBlock, chainBlocks) {
-  return toUSDTBalances(await getTVL("cent-swap-celo", await getBlock(timestamp, "celo", chainBlocks)))
+  return toUSDTBalances(await getTVL("symmetric-celo", await getBlock(timestamp, "celo", chainBlocks)))
 }
 
 module.exports = {

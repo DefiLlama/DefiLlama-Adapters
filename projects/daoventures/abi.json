@@ -1,0 +1,16 @@
+{
+  "getAllPoolInUSD": {
+    "inputs": [],
+    "name": "getAllPoolInUSD",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "getTotalValueInPool": {
+    "inputs": [],
+    "name": "getTotalValueInPool",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  }
+}

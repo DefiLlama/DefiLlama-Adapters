@@ -114,5 +114,50 @@
 	],
 	"stateMutability": "view",
 	"type": "function"
+  },
+  "getUnderlyingPrice":{
+	"inputs": [
+	  {
+		"internalType": "address",
+		"name": "_asset",
+		"type": "address"
+	  }
+	],
+	"name": "getUnderlyingPrice",
+	"outputs": [
+	  {
+		"internalType": "uint256",
+		"name": "",
+		"type": "uint256"
+	  }
+	],
+	"stateMutability": "view",
+	"type": "function"
+  },
+  "getAlliTokens": {
+	"inputs": [],
+	"name": "getAlliTokens",
+	"outputs": [
+	  {
+		"internalType": "address[]",
+		"name": "_alliTokens",
+		"type": "address[]"
+	  }
+	],
+	"stateMutability": "view",
+	"type": "function"
+  },
+  "isiToken":{
+	"inputs": [],
+	"name": "isiToken",
+	"outputs": [
+	  {
+		"internalType": "bool",
+		"name": "",
+		"type": "bool"
+	  }
+	],
+	"stateMutability": "pure",
+	"type": "function"
   }
 }
