@@ -3,7 +3,7 @@ const BigNumber = require("bignumber.js");
 const utils = require("../helper/utils");
 const { Pools, tokensAddress } = require("./constants.js");
 const { getContractInstance } = require("./utils.js");
-
+// node test.js projects/drops/index.js
 const masterchefABI = require("./abis/masterchef.json");
 const lptokenABI = require("./abis/lpToken.json");
 const erc20TokenABI = require("./abis/ERC20.json");
@@ -124,8 +124,8 @@ const staking = async () => {
 module.exports = {
   methodology:
     "TVL is comprised of tokens deposited to the protocol as collateral, similar to Compound Finance and other lending protocols the borrowed tokens are not counted as TVL.",
-  ethereum: {
-    tvl: fetch,
-    staking,
+  staking: {
+    fetch: staking
   },
+  fetch
 };
