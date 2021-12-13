@@ -2,7 +2,7 @@ const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 
 const abis = require("./abis.json");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
+const { pool2 } = require("../helper/pool2");
 
 const LnCollateralSystemAddress = "0xcE2c94d40e289915d4401c3802D75f6cA5FEf57E";
 const LnRewardLockerAddress = "0x66D60EDc3876b8aFefD324d4edf105fd5c4aBeDc";
@@ -21,6 +21,9 @@ const vaultpools = {
 };
 
 function getBSCAddress(address) {
+  if(address.toLowerCase() === tokens.lUSD){
+    return "bsc:"+tokens.bUSD
+  }
   return `bsc:${address}`;
 }
 
@@ -35,13 +38,7 @@ async function tvl(timestamp, blockETH, chainBlocks) {
     params: LnCollateralSystemAddress,
     abi: "erc20:balanceOf",
   });
-
-  const lockedLina = await sdk.api.abi.call({
-    block,
-    chain: "bsc",
-    target: LnRewardLockerAddress,
-    abi: abis["totalLockedAmount"],
-  });
+  sdk.util.sumSingleBalance(balances, getBSCAddress(tokens["LINA"]), stakedLina.output)
 
   const bUSDPoolLockedlUSD = await sdk.api.abi.call({
     block,
@@ -59,44 +56,17 @@ async function tvl(timestamp, blockETH, chainBlocks) {
     abi: "erc20:balanceOf",
   });
 
-  const vaultsLockedLpToken = await sdk.api.abi.call({
-    block,
-    chain: "bsc",
-    target: vaultpools["LP"],
-    abi: abis["totalStakeAmount"],
-  });
-
-  balances[getBSCAddress(tokens["LINA"])] = BigNumber(stakedLina.output)
-    .plus(lockedLina.output)
-    .toFixed(0);
-
-  await unwrapUniswapLPs(
-    balances,
-    [
-      {
-        balance: vaultsLockedLpToken.output,
-        token: tokens["LPTOKEN"],
-      },
-    ],
-    chainBlocks.bsc,
-    "bsc",
-    getBSCAddress
-  );
-
-  // use bUSD to represent lUSD as it is not listed on coingecko
-  delete balances[getBSCAddress(tokens["lUSD"])];
-
-  balances[getBSCAddress(tokens["bUSD"])] = BigNumber(
-    balances[getBSCAddress(tokens["bUSD"])] * 2
-  )
-    .plus(bUSDPoolLockedlUSD.output)
-    .plus(lUSDPoolLockedlUSD.output);
+  balances[getBSCAddress(tokens["bUSD"])] = BigNumber(bUSDPoolLockedlUSD.output)
+    .plus(lUSDPoolLockedlUSD.output).toFixed(0);
 
   return balances;
 }
 
 module.exports = {
+  timetravel: true,
+  methodology: "Counts LINA used to collateralize lUSD and lUSD locked in the vaults. lUSD is replaced with BUSD.",
   bsc: {
     tvl,
+    pool2: pool2(vaultpools["LP"], "0x392f351fc02a3b74f7900de81a9aaac13ec28e95", "bsc", getBSCAddress),
   },
 };
