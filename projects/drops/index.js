@@ -116,6 +116,11 @@ const fetch = async () => {
   return res.data ? new BigNumber(res.data.TVL) : 0;
 };
 
+const borrowed = async () => {
+  var res = await utils.fetchURL("https://drops.co/status");
+  return res.data ? new BigNumber(res.data.totalBorrow) : 0;
+};
+
 const staking = async () => {
   const stakingTVL = await stakedTVL();
   return stakingTVL;
@@ -125,7 +130,10 @@ module.exports = {
   methodology:
     "TVL is comprised of tokens deposited to the protocol as collateral, similar to Compound Finance and other lending protocols the borrowed tokens are not counted as TVL.",
   staking: {
-    fetch: staking
+    fetch: staking,
   },
-  fetch
+  borrowed: {
+    fetch: borrowed,
+  },
+  fetch,
 };
