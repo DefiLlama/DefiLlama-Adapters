@@ -1,5 +1,5 @@
 module.exports = {
-  endpoint: {
+  endpoints: {
     v1: 'https://api.thegraph.com/subgraphs/name/ianlapham/uniswap',
     v2: 'https://api.thegraph.com/subgraphs/name/ianlapham/uniswapv2',
     v3: {

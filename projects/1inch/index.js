@@ -1,9 +1,9 @@
 const retry = require('../helper/retry')
 const { GraphQLClient, gql } = require('graphql-request')
-const { endpoint } = require('./api')
+const { endpoints } = require('./api')
 
 async function fetch() {
-  var graphQLClient = new GraphQLClient(endpoint)
+  var graphQLClient = new GraphQLClient(endpoints.ethereum)
 
   var query = gql`
     {

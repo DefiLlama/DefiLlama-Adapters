@@ -3,11 +3,11 @@ const {
   DEFAULT_DAILY_VOLUME_FACTORY,
   DEFAULT_TOTAL_VOLUME_FIELD,
 } = require('../helper/getUniSubgraphVolume')
-const { endpoint } = require('./api')
+const { endpoints } = require('./api')
 
 const v1Graph = getChainVolume({
   graphUrls: {
-    ethereum: endpoint.v1,
+    ethereum: endpoints.v1,
   },
   totalVolume: {
     factory: 'uniswaps',
@@ -21,12 +21,12 @@ const v1Graph = getChainVolume({
 
 const v2Graph = getChainVolume({
   graphUrls: {
-    ethereum: endpoint.v2,
+    ethereum: endpoints.v2,
   },
 })
 
 const v3Graphs = getChainVolume({
-  graphUrls: { ...endpoint.v3, ethereum: 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3' },
+  graphUrls: { ...endpoints.v3, ethereum: 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3' },
   totalVolume: {
     factory: 'factories',
     field: DEFAULT_TOTAL_VOLUME_FIELD,

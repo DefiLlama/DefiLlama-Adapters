@@ -1,21 +1,21 @@
 const sdk = require('@defillama/sdk')
 const { getChainTvl } = require('../helper/getUniSubgraphTvl')
 const { optimism } = require('../uniswapv3/index')
-const { endpoint } = require('./api')
+const { endpoints } = require('./api')
 
 const v1graph = getChainTvl(
   {
-    ethereum: endpoint.v1,
+    ethereum: endpoints.v1,
   },
   'uniswaps',
   'totalLiquidityUSD'
 )
 
 const v2graph = getChainTvl({
-  ethereum: endpoint.v2,
+  ethereum: endpoints.v2,
 })
 
-const v3Graphs = getChainTvl(endpoint.v3, 'factories', 'totalValueLockedUSD')
+const v3Graphs = getChainTvl(endpoints.v3, 'factories', 'totalValueLockedUSD')
 
 module.exports = {
   timetravel: true,
