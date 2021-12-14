@@ -1,4 +1,3 @@
-const { getCurrentBlocks } = require('@defillama/sdk/build/computeTVL/blocks')
 const {
   getChainVolume,
   DEFAULT_TOTAL_VOLUME_FIELD,

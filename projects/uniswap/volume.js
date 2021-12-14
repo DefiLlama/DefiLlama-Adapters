@@ -47,6 +47,7 @@ module.exports = {
     },
     v3: {
       ethereum: v3Graphs('ethereum'),
+      // Will have to replace with faster indexer
       arbitrum: v3Graphs('arbitrum'),
     },
   },
