@@ -1,5 +1,5 @@
 const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl.js");
-const { staking } = require("../helper/staking.js");
+const { stakingUnknownPricedLP } = require("../helper/staking.js");
 
 const factory = "0xAffdbEAE1ec595cba4C262Bdb52A6083aEc2e2a6";
 const masterchef = "0x53e986884c55c9AEDB7f003583f350EE789505D0";
@@ -17,6 +17,12 @@ module.exports = {
   doublecounted: false,
   fantom: {
     tvl: calculateUsdUniTvl(factory, "fantom", ftm, whitelist, "fantom"),
-    staking: staking(masterchef, dfy, "fantom"),
+    staking: stakingUnknownPricedLP(
+      masterchef,
+      dfy,
+      "fantom",
+      "0x46c1dccC44c3255A22B8041856cff0dE8f5958D6",
+      (addr) => `fantom:${addr}`
+    ),
   },
 };
