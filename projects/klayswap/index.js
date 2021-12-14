@@ -1,6 +1,7 @@
 const retry = require('async-retry')
 const axios = require("axios");
 const BigNumber = require("bignumber.js");
+const { toUSDTBalances } = require('../helper/balances');
 
 async function fetchLiquidity() {
   const klayswapInfo = await retry(async bail => await axios.get('https://s.klayswap.com/stat/klayswapInfo.json'))
@@ -10,7 +11,7 @@ async function fetchLiquidity() {
   for(const pool of recentPoolInfo){
     totalLiquidity = totalLiquidity.plus(pool.poolVolume);
   }
-  return totalLiquidity.toFixed(2);
+  return toUSDTBalances(totalLiquidity.toFixed(2));
 }
 
 async function fetchStakedToken() {
@@ -25,13 +26,15 @@ async function fetchStakedToken() {
   const tvl = new BigNumber(dayTvl[dayTvl.length-1].amount);
 
   const stakedKsp = tvl.minus(totalLiquidity);
-  return stakedKsp.toFixed(2);
+  return toUSDTBalances(stakedKsp.toFixed(2));
 }
 
 module.exports = {
   methodology: 'TVL counts the liquidity of KlaySwap DEX and staking counts the KSP that has been staked. Data is pulled from:"https://s.klayswap.com/stat/klayswapInfo.json".',
-  fetch: fetchLiquidity,
-  staking: {
-    fetch: fetchStakedToken
-  }
+  klaytn:{
+    tvl: fetchLiquidity,
+    staking: fetchStakedToken
+  },
+  misrepresentedTokens: true,
+  timetravel: false,
 }

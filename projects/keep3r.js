@@ -27,8 +27,8 @@ async function tvl(timestmpa, block) {
     return {};
 };
 module.exports  = {
-    tvl,
-    staking: {
-        tvl: staking
-    }
+    ethereum:{
+        tvl,
+        staking
+    },
 };

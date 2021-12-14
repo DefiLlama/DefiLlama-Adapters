@@ -48,11 +48,9 @@ async function staking(timestamp, ethBlock, chainBlocks){
 
 module.exports={
     methodology: "Within pool2, it counts the XAVA-AVAX staked in the farm",
-    tvl,
-    pool2:{
-        tvl:pool2
+    avalanche:{
+        tvl,
+        pool2,
+        staking
     },
-    staking:{
-        tvl:staking
-    }
 }

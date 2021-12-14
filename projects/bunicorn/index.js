@@ -94,9 +94,6 @@ module.exports = {
   misrepresentedTokens: true,
   bsc: {
     tvl: getTotalTVL,
+    staking: getTotalFarmTVL
   },
-  staking: {
-    tvl: getTotalFarmTVL,
-  },
-  tvl: getTotalTVL,
 };
