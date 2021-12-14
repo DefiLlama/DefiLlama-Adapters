@@ -6,7 +6,7 @@ const { addFundsInMasterChef } = require("../helper/masterchef");
 const { toUSDTBalances } = require("../helper/balances");
 
 const usdtAddress = "0xdac17f958d2ee523a2206206994597c13d831ec7";
-
+// node test.js projects/hermes/index.js
 const masterchefs = {
   iris: "0x4aA8DeF481d19564596754CD2108086Cf0bDc71B",
   apollo: "0x75409C27EA0E28A486B35Bad6006DD114Ae3559B",
@@ -25,12 +25,12 @@ const lpFarms = {
 };
 const vaults = [
   //IRIS VAULTS
-  {
-    name: "KAVIAN/WMATIC",
-    vault: "0x75fd7fa818f0d970668dca795b7d79508776a5b1",
-    lpToken: "0xca2cfc8bf76d9d8eb08e824ee6278f7b885c3b70",
-    amm: "quickswap",
-  },
+  // {
+  //   name: "KAVIAN/WMATIC",
+  //   vault: "0x75fd7fa818f0d970668dca795b7d79508776a5b1",
+  //   lpToken: "0xca2cfc8bf76d9d8eb08e824ee6278f7b885c3b70",
+  //   amm: "quickswap",
+  // },
   {
     name: "GBNT/WMATIC",
     vault: "0x483a58Fd4B023CAE2789cd1E1e5F6F52f93df2C7",
@@ -38,30 +38,30 @@ const vaults = [
     amm: "polycat",
   },
   //APOLLO VAULTS
-  {
-    name: "USDC/WETH",
-    vault: "0x0f8860515B51bBbB3AEe4603Fe8716454a2Ed24C",
-    lpToken: "0x853ee4b2a13f8a742d64c8f088be7ba2131f670d",
-    amm: "quickswap",
-  },
-  {
-    name: "USDC/USDT",
-    vault: "0xaaF43E30e1Aa6ed2dfED9CCD03AbAF7C34B5B8F6",
-    lpToken: "0x2cf7252e74036d1da831d11089d326296e64a728",
-    amm: "quickswap",
-  },
-  {
-    name: "ETH/WMATIC",
-    vault: "0xC12b54BAEc88CC4F28501f90Bb189Ac7132ee97F",
-    lpToken: "0xadbf1854e5883eb8aa7baf50705338739e558e5b",
-    amm: "quickswap",
-  },
-  {
-    name: "BTC/ETH",
-    vault: "0xf32baBB43226DdF187151Eb392c1e7F8C0F4a2BB",
-    lpToken: "0xdc9232e2df177d7a12fdff6ecbab114e2231198d",
-    amm: "quickswap",
-  },
+  // {
+  //   name: "USDC/WETH",
+  //   vault: "0x0f8860515B51bBbB3AEe4603Fe8716454a2Ed24C",
+  //   lpToken: "0x853ee4b2a13f8a742d64c8f088be7ba2131f670d",
+  //   amm: "quickswap",
+  // },
+  // {
+  //   name: "USDC/USDT",
+  //   vault: "0xaaF43E30e1Aa6ed2dfED9CCD03AbAF7C34B5B8F6",
+  //   lpToken: "0x2cf7252e74036d1da831d11089d326296e64a728",
+  //   amm: "quickswap",
+  // },
+  // {
+  //   name: "ETH/WMATIC",
+  //   vault: "0xC12b54BAEc88CC4F28501f90Bb189Ac7132ee97F",
+  //   lpToken: "0xadbf1854e5883eb8aa7baf50705338739e558e5b",
+  //   amm: "quickswap",
+  // },
+  // {
+  //   name: "BTC/ETH",
+  //   vault: "0xf32baBB43226DdF187151Eb392c1e7F8C0F4a2BB",
+  //   lpToken: "0xdc9232e2df177d7a12fdff6ecbab114e2231198d",
+  //   amm: "quickswap",
+  // },
   {
     name: "DFYN/ROUTE",
     vault: "0x467cb3cE716e0801355BFb3b3F4070108E46051f",
