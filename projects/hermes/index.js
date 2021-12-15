@@ -426,8 +426,8 @@ module.exports = {
     masterchefTVL,
     tvlBalancer,
   },
-  vault: {
+  polygon: {
     tvlVaults,
   },
-  tvl: sdk.util.sumChainTvls([masterchefTVL, tvlBalancer, tvlVaults]),
+  
 };
