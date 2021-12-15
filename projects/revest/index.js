@@ -89,10 +89,10 @@ module.exports = {
     tvl: polygonTVL,
   },
   fantom: {
-    fantomTVL,
+    tvl: fantomTVL,
   },
   avalanche: {
-    avaxTVL,
+    tvl: avaxTVL,
   },
   tvl: sumTvl([mainnetTVL, polygonTVL, fantomTVL, avaxTVL]),
 };
