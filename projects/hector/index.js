@@ -12,7 +12,7 @@ const treasury = "0xCB54EA94191B280C296E6ff0E37c7e76Ad42dC6A";
 const dai = "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e";
 const ftm = "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83";
 const hecUsdcLP = "0xd661952749f05acc40503404938a91af9ac1473b";
-const gohmLP = "0xde13DD3BCA9CBac23F46e5C587b48320F5f5c483";
+const hecGohmLP = "0xEb7942E26368b2052CBbDa2c054482F00436ef7B";
 const usdc = "0x04068da6c83afcfa0e13ba15a6696662335d5b75";
 const mim = "0x82f0b8b456c1a451378467398982d4834b6829c1";
 const frax = "0xdc301622e621166bd8e82f2ca0a26c13ad0be355";
@@ -39,7 +39,7 @@ async function tvl(timestamp, block, chainBlocks) {
       [frax, false],
       [hecUsdcLP, true],
       [fraxLp, true],
-      //[gohmLP, true],
+      [hecGohmLP, true],
       [hecDaiSLP, true],
     ],
     [treasury],
@@ -82,5 +82,5 @@ module.exports = {
     staking,
   },
   methodology:
-    "Counts tokens on the treasury for TVL and staked EXOD for staking",
+    "Counts tokens on the treasury for TVL and staked HEC for staking",
 };
