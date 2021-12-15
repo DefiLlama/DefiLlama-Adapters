@@ -425,9 +425,6 @@ module.exports = {
   pool2: {
     masterchefTVL,
     tvlBalancer,
-  },
-  vault: {
-    tvlVaults,
-  },
+  },  
   tvl: sdk.util.sumChainTvls([masterchefTVL, tvlBalancer, tvlVaults]),
 };
