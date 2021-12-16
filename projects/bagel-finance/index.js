@@ -10,7 +10,8 @@ const tokens = ["0x55d398326f99059ff775485246999027b3197955",
                 "0x2170ed0880ac9a755fd29b2688956bd959f933f8",
                 "0x9c65ab58d8d978db963e63f2bfb7121627e3a739",
                 "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
-                "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d"]
+                "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
+				"0xbb238fce6e2ee90781cd160c9c6eaf3a4cfad801"]
 
 const lps = [{"0":"0x35e716c5D1038D41BdbA201413dBa9FDF16BBede","1":"0x0eD7e52944161450477ee417DE9Cd3a859b14fD0"},
              {"0":"0x9583a15ED9766634d5b947F9837fB9156e80Cc55","1":"0x58f876857a02d6762e0101bb5c46a8c1ed44dc16"},
@@ -29,7 +30,18 @@ const lps = [{"0":"0x35e716c5D1038D41BdbA201413dBa9FDF16BBede","1":"0x0eD7e52944
              {"0":"0xe4aD6C2Cd37DEd0560f766327dD426e04B0Fa657","1":"0x1c0276642f2a7cbcf6624d511f34811cdc65212c"},
              {"0":"0x3b402F7448edC7c7a959B336367a06aDDe9Ca07B","1":"0x223740a259e461abee12d84a9fff5da69ff071dd"},
              {"0":"0xdf7039684F943E82a8738A340830e4D8068F1f7D","1":"0x969f2556F786a576F32AeF6c1D6618f0221Ec70e"},
-             {"0":"0x514b825ebb062EB29681C281092f27eFeC838Ceb","1":"0x82E8F9e7624fA038DfF4a39960F5197A43fa76aa"},]
+             {"0":"0x514b825ebb062EB29681C281092f27eFeC838Ceb","1":"0x82E8F9e7624fA038DfF4a39960F5197A43fa76aa"},
+			 {"0":"0x116D641DCBDc3Ad83377720Befb2B3ACcC3525Fd","1":"0xe1cbe92b5375ee6afe1b22b555d257b4357f6c68"},
+			 {"0":"0x5dA197Fc0d6Cc95E2FfAB1b5d716787Ed361086f","1":"0xda28eb7aba389c1ea226a420bce04cb565aafb85"},
+			 {"0":"0x04b5bfE991F70917b3c57372969A556ba82d1490","1":"0x09cb618bf5ef305fadfd2c8fc0c26eecf8c6d5fd"},
+			 {"0":"0x24290AaBeD957BD9dbFa26B7E35D4848493DF257","1":"0x0fb881c078434b1c0e4d0b64d8c64d12078b7ce2"},
+			 {"0":"0x54fa364FA14Bb522b974423a7975736a179ABb64","1":"0x340192d37d95fb609874b1db6145ed26d1e47744"},
+			 {"0":"0xC99733f519F95f332f7c89783E53A47b2baa146e","1":"0xaf9aa53146c5752bf6068a84b970e9fbb22a87bc"},
+			 {"0":"0x738977EF319acC5b68E4e33d4ae15e9439587DF5","1":"0xba68d6bee4f433630dee22c248a236c8f6eae246"},
+			 {"0":"0xB6E9E7cC2ED0bc17c9904E7Bddb9bAD0B23572fc","1":"0x1c0276642f2a7cbcf6624d511f34811cdc65212c"},
+			 {"0":"0xfAeEEc3bf5c95cB656e8D1F7B4a11C822Bbcf600","1":"0x223740a259e461abee12d84a9fff5da69ff071dd"},
+			 {"0":"0x0Fef1343E8f4104AcA4f248BbD9b97E99735483E","1":"0x969f2556F786a576F32AeF6c1D6618f0221Ec70e"},
+			 {"0":"0x661FFF9Da7Be79Ffc5c745Cd5fe164Eb7f19560D","1":"0x82E8F9e7624fA038DfF4a39960F5197A43fa76aa"}]
 async function bnbTvl(bankAddress, block) {
   let balances = {
     "0x0000000000000000000000000000000000000000": (
@@ -62,11 +74,11 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
   }).map((n) => {
     const stakingTokenAddr = n.input.params[0];
     const i5 = n.output['5'];
-    //const i6 = n.output['6'];
+    const i6 = n.output['6'];  
     const i8 = n.output['8'];
     return {
       token: stakingTokenAddr,
-      balance: BigNumber(i5).plus(BigNumber(i8)).toFixed(0)
+      balance: BigNumber(i5).plus(BigNumber(i6)).plus(BigNumber(i6)).plus(BigNumber(i8)).toFixed(0)
     }
   })
   lendingBalances.forEach((s) => {
