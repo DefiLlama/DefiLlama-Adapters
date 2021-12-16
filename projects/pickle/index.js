@@ -5,10 +5,10 @@ const { unwrapUniswapLPs, unwrapCrv } = require("../helper/unwrapLPs");
 const { getChainTransform } = require("../helper/portedTokens");
 const { toUSDT, usdtAddress } = require("../helper/balances");
 const { staking } = require("../helper/staking");
-
+// node test.js projects/pickle/index.js
 const excluded = ["pbamm", "pickle-eth", "sushi-pickle-eth"];
 const jars_url =
-  "https://stkpowy01i.execute-api.us-west-1.amazonaws.com/prod/protocol/pools";
+  "https://f8wgg18t1h.execute-api.us-west-1.amazonaws.com/prod/protocol/pools";
 
 // Contracts
 const dillAddress = "0xbBCf169eE191A1Ba7371F30A1C344bFC498b29Cf";
@@ -20,6 +20,7 @@ function chainTvl(chain) {
     const transformAddress = await getChainTransform(chain);
     const balances = {};
 
+    let a = await utils.fetchURL(jars_url);
     let jars = (await utils.fetchURL(jars_url)).data
       .map((jar) => {
         if (jar.network === (chain === "ethereum" ? "eth" : chain))
