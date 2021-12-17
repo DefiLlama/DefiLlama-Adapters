@@ -3,6 +3,7 @@ const erc20 = require("../helper/abis/erc20.json");
 const abi = require("./abi.json");
 const BigNumber = require("bignumber.js");
 const axios = require("axios");
+const { toUSDTBalances } = require("../helper/balances");
 
 const sKRNO_ADDRESS = "0x6555F93f608980526B5cA79b3bE2d4EdadB5C562";
 const BOND_CALCULATOR = "0x1f6b7Bde22d1618724519d135839fDc5D2Ffd35A";
@@ -36,24 +37,32 @@ const MINT_DATA_ARRAY = [
     BOND: "0xb805CD015D52e852fC31B8937b80adBc00Cc2B61",
     TYPE: "LP",
   },
-   {
+  {
     NAME: "KRNO_KLAY_LP",
     TOKEN: "0x193ce4066aebe1911feb03425d4312a7b6514081",
     BOND: "0x16DC360812d3d07D27bA35eca4CFC01b6E1C947f",
     TYPE: "LP_UNSTABLE",
   },
+  {
+    NAME: "KRNO_KSP_LP",
+    TOKEN: "0x2febbaed702b9a1d9f6ffccd67701550ac546115",
+    BOND: "0xFA3A46Bc0E1587CE4ae26298B5c89B5b85Ca7786",
+    TYPE: "LP_UNSTABLE",
+  },
 ];
 
 const loadTokenPrices = async () => {
-  const url = "https://api.coingecko.com/api/v3/simple/price?ids=avalanche-2,olympus,magic-internet-money,dai,klay-token&vs_currencies=usd";
+  const url =
+    "https://api.coingecko.com/api/v3/simple/price?ids=avalanche-2,olympus,magic-internet-money,dai,klay-token,klayswap-protocol&vs_currencies=usd";
   const { data } = await axios.get(url);
-  const result = {}
+  const result = {};
   result["AVAX"] = data["avalanche-2"].usd;
   result["MIM"] = data["dai"].usd;
   result["OHM"] = data["olympus"].usd;
   result["OHM"] = data["olympus"].usd;
   result["KLAY"] = data["klay-token"].usd;
-  return result
+  result["KSP"] = data["klayswap-protocol"].usd;
+  return result;
 };
 
 async function getMintVolume(caver, mintData) {
@@ -68,23 +77,23 @@ async function getMintVolume(caver, mintData) {
       [abi.markdown, abi.valuation],
       BOND_CALCULATOR
     );
-    const [markdown,valuation] = await Promise.all([
-      bondCalculatorContract.methods
-      .markdown(mintData.TOKEN)
-      .call(),bondCalculatorContract.methods
-      .valuation(mintData.TOKEN, amount)
-      .call()
-    ])
-    volume = (markdown ) * (valuation / Math.pow(10, 9));
-    if( mintData.NAME==="KRNO_KLAY_LP"){
-      const klayPrice =(await loadTokenPrices()).KLAY
-      volume *= klayPrice
-    } 
+    const [markdown, valuation] = await Promise.all([
+      bondCalculatorContract.methods.markdown(mintData.TOKEN).call(),
+      bondCalculatorContract.methods.valuation(mintData.TOKEN, amount).call(),
+    ]);
+    volume = markdown * (valuation / Math.pow(10, 9));
+    if (mintData.NAME === "KRNO_KLAY_LP") {
+      const klayPrice = (await loadTokenPrices()).KLAY;
+      volume *= klayPrice;
+    } else if (mintData.NAME === "KRNO_KSP_LP") {
+      const kspPrice = (await loadTokenPrices()).KSP;
+      volume *= kspPrice;
+    }
   } else {
-    volume = (marketPrice * amount) ;
+    volume = marketPrice * amount;
   }
 
-  return volume/Math.pow(10, 18);
+  return volume / Math.pow(10, 18);
 }
 
 async function getBondMarketPrice(caver, mintData) {
@@ -94,7 +103,8 @@ async function getBondMarketPrice(caver, mintData) {
     contract = caver.contract.create([abi.getCurrentPool], mintData.TOKEN);
     const reserves = await contract.methods.getCurrentPool().call();
     marketPrice = new BigNumber(reserves[0])
-      .div(reserves[1]).div(10 ** 9)
+      .div(reserves[1])
+      .div(10 ** 9)
       .toString();
   } else if (mintData.TYPE === "STABLE_TOKEN") {
     marketPrice = "1";
@@ -123,7 +133,9 @@ async function fetchStakedToken() {
       MINT_DATA_ARRAY.find((mintData) => mintData.NAME === "KDAI_KRNO_LP")
     ),
   ]);
-  return (sKRNOcirculatingSupply * marketPrice) / Math.pow(10, 9).toFixed(2);
+  return toUSDTBalances(
+    (sKRNOcirculatingSupply * marketPrice) / Math.pow(10, 9).toFixed(2)
+  );
 }
 
 async function fetchLiquidity() {
@@ -133,13 +145,15 @@ async function fetchLiquidity() {
     MINT_DATA_ARRAY.map((mintData) => getMintVolume(caver, mintData))
   );
 
-  return volumes.reduce((acc, cur) => acc + cur, 0).toFixed(2);
+  return toUSDTBalances(volumes.reduce((acc, cur) => acc + cur, 0).toFixed(2));
 }
 
 module.exports = {
-  fetch: fetchLiquidity,
-  staking: {
-    fetch: fetchStakedToken,
+  timetravel: false,
+  misrepresentedTokens: true,
+  klaytn: {
+    staking: fetchStakedToken,
+    tvl: fetchLiquidity,
   },
   methodology:
     "Counts tokens on the treasury for tvl and staked KRNO for staking",

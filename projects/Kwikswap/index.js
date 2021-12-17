@@ -23,6 +23,7 @@ const STAKING_CONTRACTS = {
 };
 
 module.exports = {
+  timetravel: true,
   misrepresentedTokens: true,
   ethereum: {
     tvl: v1graph("ethereum"),

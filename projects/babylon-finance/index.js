@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk")
 const BigNumber = require("bignumber.js")
 const abi = require('./abi.json');
+const { unwrapUniswapV3LPs } = require("../helper/unwrapLPs");
 
 const babController = '0xd4a5b5fcb561daf3adf86f8477555b92fba43b5f'
 const babylonViewer = '0x740913FEF40720E82498D5b73A4E8C3a5D9b9d79'
@@ -58,11 +59,25 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     return balances
 }
 
+const harvest_vault = '0xadB16dF01b9474347E8fffD6032360D3B54627fB'
+const harvest_pool = '0x3e6397E309f68805FA8Ef66A6216bD2010DdAF19'
+// const harvest_position_id = 158516
+async function staking(timestamp, ethBlock, chainBlocks) { 
+    const balances = {}
+    const univ3_Positions = [{
+        vault: harvest_vault,
+        pool: harvest_pool
+    }]
+    await unwrapUniswapV3LPs(balances, univ3_Positions, ethBlock, chain='ethereum')
+    console.log('balances:', balances)
+    return balances
+}
+
 module.exports = {
   methodology: "TVL of Babylon corresponds to capital locked into each garden (idle capital waiting to be deployed) as well as capital deployed to each strategy of these gardens",
   ethereum: {
-    staking: () => ({}),
-    tvl,
+    staking, // : () => ({})
+    tvl // : () => ({}),
   }
 }
 

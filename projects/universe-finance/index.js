@@ -1,73 +1,78 @@
 const sdk = require("@defillama/sdk");
+const utils = require("../helper/utils");
 
-const vaults = [
-  "0xe6505575a49d904Aea01bB8452c94eB393EE74E0", // Team Vault
-  "0x39A88389Ae0A307b9E4041d8778c8bf1ebCd54D6", // Early Bird Vault
-];
+const vaultsUrl = "https://raw.githubusercontent.com/UniverseFinance/UniverseFinanceProtocol/main/doc/vaultAddress.json";
 
-const getTotalAmounts = {
-  inputs: [],
-  name: "getTotalAmounts",
-  outputs: [
-    { internalType: "uint128", name: "", type: "uint128" },
-    { internalType: "uint256", name: "", type: "uint256" },
-    { internalType: "uint256", name: "", type: "uint256" },
-  ],
-  stateMutability: "view",
-  type: "function",
-};
+
 const token0Abi = require("../helper/abis/token0.json");
 const token1Abi = require("../helper/abis/token1.json");
 
 async function tvl(timestamp, block) {
   let balances = {};
 
-  let { output: totalAmount } = await sdk.api.abi.multiCall({
-    calls: vaults.map((address) => ({
-      target: address,
-    })),
-    abi: getTotalAmounts,
-    block,
-  });
+  let resp = await utils.fetchURL(vaultsUrl);
 
-  let { output: token0 } = await sdk.api.abi.multiCall({
-    calls: vaults.map((address) => ({
-      target: address,
-    })),
-    abi: token0Abi,
-    block,
-  });
+  let allVaults = resp.data.filter(vault => vault.type > 0).map((vault) => ({
+        address: vault.address,
+        name: vault.name,
+        getTotalAmounts: vault.getTotalAmounts,
+        type: vault.type,
+        amountIndex: vault.amountIndex
+  }));
 
-  let { output: token1 } = await sdk.api.abi.multiCall({
-    calls: vaults.map((address) => ({
-      target: address,
-    })),
-    abi: token1Abi,
-    block,
-  });
+  const abiMap = {};
+  const addressMap = {};
 
-  for (let i = 0; i < vaults.length; i++) {
+  for (let i = 0; i < allVaults.length; i++) {
+      if(abiMap[allVaults[i].type] == undefined){
+          abiMap[allVaults[i].type] = allVaults[i].getTotalAmounts;
+      }
+      if(addressMap[allVaults[i].type] == undefined){
+          addressMap[allVaults[i].type] = [{
+              "address":allVaults[i].address,
+              "index":allVaults[i].amountIndex
+          }];
+      }else{
+          addressMap[allVaults[i].type].push({
+              "address":allVaults[i].address,
+              "index":allVaults[i].amountIndex
+          });
+      }
+  }
+  const types = Object.keys(abiMap);
+  const typeNumber = types.length;
+  for (let i = 0; i < typeNumber; i++) {
+      const addressList = addressMap[types[i]];
+      const abi = abiMap[types[i]];
+      let { output: totalAmount } = await sdk.api.abi.multiCall({
+        calls: addressList.map((address) => ({
+          target: address.address,
+        })),
+        abi: abi,
+        block,
+      });
 
-    // Gets balance in vault contracts
-    let { output: token0Balance } = await sdk.api.erc20.balanceOf({
-      target: token0[i].output,
-      owner: vaults[i],
-      block,
-    });
-    let { output: token1Balance } = await sdk.api.erc20.balanceOf({
-      target: token1[i].output,
-      owner: vaults[i],
-      block,
-    });
+      let { output: token0 } = await sdk.api.abi.multiCall({
+        calls: addressList.map((address) => ({
+          target: address.address,
+        })),
+        abi: token0Abi,
+        block,
+      });
 
-    // Sums value in vault contracts
-    sdk.util.sumSingleBalance(balances, token0[i].output, token0Balance);
-    sdk.util.sumSingleBalance(balances, token1[i].output, token1Balance);
+      let { output: token1 } = await sdk.api.abi.multiCall({
+        calls: addressList.map((address) => ({
+          target: address.address,
+        })),
+        abi: token1Abi,
+        block,
+      });
 
-    // Sums value in UNI pools
-    sdk.util.sumSingleBalance(balances, token0[i].output, totalAmount[i].output[1]);
-    sdk.util.sumSingleBalance(balances, token1[i].output, totalAmount[i].output[2]);
-
+      for (let i = 0; i < addressList.length; i++) {
+        // Sums value in UNI pools
+        sdk.util.sumSingleBalance(balances, token0[i].output, totalAmount[i].output[addressList[i].index]);
+        sdk.util.sumSingleBalance(balances, token1[i].output, totalAmount[i].output[addressList[i].index + 1]);
+      }
   }
 
   return balances;

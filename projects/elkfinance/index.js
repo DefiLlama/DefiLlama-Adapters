@@ -69,6 +69,7 @@ function chainTvl(chain){
 
 const chainExports = getChainExports(chainTvl, Object.keys(factories))
 chainExports.misrepresentedTokens= true;
+chainExports.timetravel= true,
 /*
 Object.entries(stakingContracts).forEach(contract=>{
   chainExports[contract[0] === "avax"?"avalanche":contract[0]].staking = chainStaking(contract[0], contract[1])

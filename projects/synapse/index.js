@@ -123,6 +123,9 @@ const DATA = {
       metapool: "0xf44938b0125a6662f9536281ad2cd6c499f22004",
     },
     bridge: "0xc05e61d0e7a63d27546389b7ad62fdff5a91aace",
+    ethPool: "0x77a7e60555bC18B4Be44C181b2575eee46212d44",
+    // Well this is really Aave Avalanche Market WETH
+    weth: "0x53f7c5869a859f0aec3d334ee8b4cf01e3492f21",
     bridgeAssets: [
       "0xf1293574ee43950e7a8c9f1005ff097a9a713959", // NFD
       "0x321e7092a180bb43555132ec53aaa65a5bf84251", // gOHM
@@ -240,6 +243,8 @@ const misrepresentedTokensMap = {
   // gOHM (MOVR) -> gOHM (ETH)
   "0x3bf21ce864e58731b6f28d68d5928bcbeb0ad172":
     "0x0ab87046fbb341d058f17cbc4c1133f25a20a52f",
+  // avWETH (AVAX) -> WETH (ETH)
+  "0x53f7c5869a859f0aec3d334ee8b4cf01e3492f21": WETH,
 };
 
 const sumLegacyPools = async (balances, block, chain, transform) => {
