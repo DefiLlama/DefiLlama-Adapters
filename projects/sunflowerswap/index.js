@@ -1,6 +1,5 @@
 const { getChainTvl } = require("../helper/getUniSubgraphTvl");
 const { staking } = require("../helper/staking");
-const { pool2BalanceFromMasterChefExports } = require("../helper/pool2");
 
 const chainTvl = getChainTvl({
   ethereum:
@@ -14,7 +13,6 @@ module.exports = {
   misrepresentedTokens: true,
   ethereum: {
     staking: staking(masterChef, SFR),
-    pool2: pool2BalanceFromMasterChefExports(masterChef, SFR),
     tvl: chainTvl("ethereum"),
   },
   methodology:
