@@ -56,7 +56,7 @@ async function getSymbolsAndBalances(masterChef, block, chain, poolInfo) {
 }
 
 function isLP(symbol) {
-    return symbol.includes('LP') || symbol.includes('PGL') || symbol.includes('UNI-V2')
+    return symbol.includes('LP') || symbol.includes('PGL') || symbol.includes('UNI-V2') ||  symbol === "PNDA-V2"
 }
 
 async function addFundsInMasterChef(balances, masterChef, block, chain = 'ethereum', transformAddress = id => id, poolInfoAbi = abi.poolInfo, ignoreAddresses = [], includeLPs = true, excludePool2 = false, stakingToken = undefined) {
@@ -142,9 +142,8 @@ function awaitBalanceUpdate(balancePromise, section) {
     return async ()=>balancePromise.then(b => b[section])
 }
 
-function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingecko = true) {
+function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingecko = true, poolInfoAbi=abi.poolInfo) {
     const stakingToken = stakingTokenRaw.toLowerCase();
-    const poolInfoAbi = abi.poolInfo;
     let balanceResolve;
     const balancePromise = new Promise((resolve) => { balanceResolve = resolve })
 
