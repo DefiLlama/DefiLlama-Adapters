@@ -24,7 +24,7 @@ module.exports = {
   ethereum: {
     staking: stakings(stakingContracts, BASE),
     pool2: pool2s(stakingLpContracts, [WETH_BASE_UNIV2]),
-    tvl: (async) => ({}),
+    tvl: async() => ({}),
   },
   methodology: "Counts liquidty on the staking and pool2s only",
 };
