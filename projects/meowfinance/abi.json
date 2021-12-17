@@ -8,9 +8,6 @@
       "type": "function"
     }
   },
-
-
-  
   "WORKER": {
     "lpToken": {
       "inputs": [],
@@ -46,9 +43,6 @@
         "type": "function"
       }
   },
-
-
-
   "MASRERCHEF": {
     "userinfo": {
       "inputs": [

@@ -2,6 +2,7 @@ const { sumTokens, unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { BigNumber } = require("bignumber.js");
+const { fixHarmonyBalances } = require("../helper/portedTokens");
 
 async function handleMooTokens(balances, block, chain, tokens) {
   let balance = (
@@ -323,6 +324,30 @@ async function moonriver(timestamp, block, chainBlocks) {
   return balances;
 }
 
+async function harmony(timestamp, block, chainBlocks) {
+  const balances = {};
+  await sumTokens(
+    balances,
+    [
+      [
+        "0xcf664087a5bb0237a0bad6742852ec6c8d69a27a",
+        "0x12FcB286D664F37981a42cbAce92eAf28d1dA94f",
+      ],
+      [
+        "0x6983d1e6def3690c4d616b13597a09e6193ea013",
+        "0x46469f995A5CB60708200C25EaD3cF1667Ed36d6",
+      ],
+    ],
+    chainBlocks.harmony,
+    "harmony",
+    (addr) => {
+      return `harmony:${addr}`;
+    }
+  );
+  fixHarmonyBalances(balances);
+  return balances;
+}
+
 module.exports = {
   methodology:
     "TVL counts the AAVE tokens that are deposited within the Yield Instruments section of QiDao, the Vault token deposits of CRV, LINK, AAVE and WETH, as well as USDC deposited to mint MAI.",
@@ -337,5 +362,8 @@ module.exports = {
   },
   moonriver: {
     tvl: moonriver,
+  },
+  harmony: {
+    tvl: harmony,
   },
 };

@@ -39,14 +39,16 @@ const BSC_NAOS_ADDRESS = "0x758d08864fb6cce3062667225ca10b8f00496cc2";
 const BSC_BNB_ADDRESS = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
 const CAKE_BNB_NAOS_LP_ADDRESS = "0xcaa662ad41a662b81be2aea5d59ec0697628665f";
 const BSC_BOOST_POOL = "0x3dcd32dd2b225749aa830ca3b4f2411bfeb03db4";
-const BUSD_CONTRACT_ADDRESS = "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56";
+const BUSD_CONTRACT_ADDRESS = "0xe9e7cea3dedca5984780bafc599bd69add087d56";
 const BUSD_CONTRACT_HOLDER = [
   "0x9591ff9c5070107000155ff6c5ce049aa1443dd3", // Formation
   "0xb9ece39b356d5c0842301b42a716e4385617c871", // Transmuter
+  "0xcd2e1ebfc804dd867ca052133fa70d9db6d86ab7", // Beta insurance
 ];
 const BSC_ALPACA_ADAPTERS = [
   "0x640848400fc1cbaf9e4a1ed18d1bd3e2b16d1de2", // Formation adapter
   "0x4ca1a19d108b84f6f671ffe3555e7743c5ed6a2c", // Transmuter adapter
+  "0xAB806724B03D0F4aEE891976fA0Eee77bC22739b", // Beta insurance adapter
 ];
 
 const BSC_STAKING_POOL_WITH_TRANSFER =
@@ -187,9 +189,22 @@ async function bscTvl(timestamp, ethBlock, chainBlocks) {
     `bsc:${BUSD_CONTRACT_ADDRESS}`,
     transmuterBUSDAmount
   );
+  // beta insurance
+  let { output: betaInsuranceBUSDTotalAmount } = await sdk.api.erc20.balanceOf({
+    target: BUSD_CONTRACT_ADDRESS,
+    owner: BUSD_CONTRACT_HOLDER[2], // beta insurance address
+    block: block,
+    chain: "bsc",
+  });
+  sdk.util.sumSingleBalance(
+    balances,
+    `bsc:${BUSD_CONTRACT_ADDRESS}`,
+    betaInsuranceBUSDTotalAmount
+  );
   // ---- End BUSD
 
   // ---- Start ibBUSD (map ibBUSD value to BUSD)
+  // formation
   const ibBUSDAlpacaFormationAdapterValue = (
     await sdk.api.abi.call({
       target: BSC_ALPACA_ADAPTERS[0],
@@ -198,10 +213,19 @@ async function bscTvl(timestamp, ethBlock, chainBlocks) {
       chain: "bsc",
     })
   ).output;
-
+  // transmuter
   const ibBUSDAlpacaTransmuterAdapterValue = (
     await sdk.api.abi.call({
       target: BSC_ALPACA_ADAPTERS[1],
+      abi: alpacaAdapterAbi[0],
+      block: block,
+      chain: "bsc",
+    })
+  ).output;
+  // beta insurance
+  const ibBUSDAlpacaBetaInsuranceAdapterValue = (
+    await sdk.api.abi.call({
+      target: BSC_ALPACA_ADAPTERS[2], // beta insurance adapter
       abi: alpacaAdapterAbi[0],
       block: block,
       chain: "bsc",
@@ -217,6 +241,11 @@ async function bscTvl(timestamp, ethBlock, chainBlocks) {
     balances,
     `bsc:${BUSD_CONTRACT_ADDRESS}`,
     ibBUSDAlpacaTransmuterAdapterValue
+  );
+  sdk.util.sumSingleBalance(
+    balances,
+    `bsc:${BUSD_CONTRACT_ADDRESS}`,
+    ibBUSDAlpacaBetaInsuranceAdapterValue
   );
   // ---- End ibBUSD
 
@@ -360,7 +389,7 @@ async function staking(timestamp, block) {
 async function bscStaking(timestamp, ethBlock, chainBlocks) {
   let block = chainBlocks["bsc"];
   const balances = {};
-  // Start naos staking
+  // ---- Start naos staking
   let { output: naosAmount } = await sdk.api.abi.call({
     target: BSC_BOOST_POOL,
     abi: boostPoolAbi[0], // getPoolTotalDeposited

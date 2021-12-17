@@ -1,7 +1,7 @@
 {
-  "balance": {
+  "totalSupply": {
     "inputs": [],
-    "name": "balance",
+    "name": "totalSupply",
     "outputs": [
       {
         "internalType": "uint256",
