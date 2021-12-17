@@ -22,7 +22,7 @@ const ifswapDexTvl = calculateUsdUniTvl(
 module.exports = {
   misrepresentedTokens: true,
   methodology:
-    "We count liquidity on the Farms (LP tokens) and Pools (single tokens) seccions threw MasterChef Contract.",
+    "We count liquidity of all paris through Factory Contract and Pools (single tokens) seccions through MasterChef Contract.",
   csc: {
     tvl: ifswapDexTvl,
     staking: stakingPricedLP(
