@@ -3,6 +3,7 @@ const { fetchURL } = require("../helper/utils");
 async function tvl(){
   const res = await fetchURL("https://staderverse.staderlabs.com/tvl")
   return {
+    "terra-luna": res.data.totalStakedLuna / 1e6,
     "terrausd": res.data.totalStakedLunaInUst / 1e6
   }
 }
