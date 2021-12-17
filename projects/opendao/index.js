@@ -1,26 +1,12 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json")
-const { staking } = require("../helper/staking");
 const { pool2s } = require("../helper/pool2");
 const { unwrapUniswapLPs } = require('../helper/unwrapLPs');
 
 /*** Ethereum Addresses ***/
 const comptroller = "0x959Fb43EF08F415da0AeA39BEEf92D96f41E41b3";
-const OPEN = "0x69e8b9528CABDA89fe846C67675B5D73d463a916";
 
 const farmContract = "0x9C3c5a058B83CBbE3Aa0a8a8711c2BD5080ccCa7";
-
-/*** BSC Addresses ***/
-const comptrollersBSC = [
-    // pOPEN Vault
-    "0x5AcEc8328f41145562548Dd335556c12559f2913",
-    //OCP Vault
-    "0xA21d5c762E13FcfC8541558dAce9BA54f1F6176F",
-    //LIME Vault
-    "0x2240e2A6805b31Bd1BC03bd5190f644334F53b9A",
-    //LAND Vault
-    "0xdaD9b52fE5ffd4331aaA02321f1ffa400C827EC8"
-];
 
 const farmContractsBSC = [
     // Farm ID 41
@@ -118,26 +104,6 @@ const calc = async (balances, balance, comptroller, chain = "ethereum") => {
     );
 };
 
-const bscTvl = async () => {
-    const balances = {};
-
-    for (const comptroller of comptrollersBSC) {
-        await calc(balances, abi.getCash, comptroller, "bsc");
-    }
-
-    return balances;
-};
-
-const bscBorrows = async () => {
-    const balances = {};
-
-    for (const comptroller of comptrollersBSC) {
-        await calc(balances, abi.totalBorrows, comptroller, "bsc");
-    }
-
-    return balances;
-};
-
 const ethTvl = async () => {
     const balances = {};
 
@@ -179,30 +145,6 @@ const ethTvl = async () => {
     return balances;
 };
 
-const ethBorrows = async () => {
-    const balances = {};
-
-    await calc(balances, abi.totalBorrows, comptroller);
-
-    return balances;
-};
-
-module.exports = {
-    misrepresentedTokens: true,
-    ethereum: {
-        staking: staking(comptroller, OPEN),
-        pool2: pool2s(farmContractsBSC, pool2LpsBSC),
-        borrow: ethBorrows,
-        tvl: ethTvl
-    },
-    bsc: {
-        borrow: bscBorrows,
-        tvl: bscTvl,
-    },
-    methodology:
-        "We count liquidity on the Markets same as compound, and we export Borrowing part too",
-}
-
 const vaults = [
   "0x0a234ef34614a4eed1c1430a23b46f95df5f4257", // pOPEN
   "0xfff0cc78a7e7ce5d6ba60f23628ff9a63beee87f", // OCP
@@ -211,7 +153,7 @@ const vaults = [
   "0xcfefc606c4c010c242431f60a7afc13461df399c", // ROSEN
 ];
 
-async function oldBscTvl(timestamp, block, chainBlocks) {
+async function bscTvl(timestamp, block, chainBlocks) {
   let balances = {};
   let underlying = (
     await sdk.api.abi.multiCall({
@@ -238,4 +180,17 @@ async function oldBscTvl(timestamp, block, chainBlocks) {
     sdk.util.sumSingleBalance(balances, `bsc:${p.input.target}`, p.output);
   });
   return balances;
+}
+
+module.exports = {
+  misrepresentedTokens: true,
+  ethereum: {
+      pool2: pool2s(farmContractsBSC, pool2LpsBSC),
+      tvl: ethTvl
+  },
+  bsc: {
+      tvl: bscTvl,
+  },
+  methodology:
+      "We count liquidity on the Markets same as compound, and we export Borrowing part too",
 }
