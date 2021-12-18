@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
+//const abi = require("./abi.json");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { stakingUnknownPricedLP, staking } = require("../helper/staking");
 
