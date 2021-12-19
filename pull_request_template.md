@@ -1,16 +1,19 @@
 ##### Twitter Link:
+https://twitter.com/JetProtocol
 
 
 ##### List of audit links if any:
 
 
 ##### Website Link:
+https://app.jetprotocol.io/
 
 
 ##### Logo (High resolution, preferably in .svg and .png, for application on both white and black backgrounds. Will be shown with rounded borders):
 
 
 ##### Current TVL:
+$36.3M
 
 
 ##### Chain:
@@ -38,5 +41,6 @@
 
 
 ##### methodology (what is being counted as tvl, how is tvl being calculated):
+TVL is calculated as the tokens deposited on Jet, which includes tokens held by Jet protocol as well as tokens loaned out to borrowers.
 
 
