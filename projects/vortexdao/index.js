@@ -52,7 +52,7 @@ async function staking(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
-  avax: {
+  avalanche: {
     tvl,
     staking,
   },
