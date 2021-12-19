@@ -4,9 +4,9 @@ const dataUrl = 'https://spicyb.sdaotools.xyz/api/rest/SpicyDailyMetrics';
 
 async function tvl() {
     const data = (await axios(dataUrl)).data;
-    const totalLiquidity = new BigNumber(data.spicy_day_data[0].totalliquidityxtz).toFixed(2);
+    const totalLiquidity = data.spicy_day_data[0].totalliquidityxtz;
     return {
-        tezos: totalLiquidity
+        "tezos": totalLiquidity
     }
 }
 module.exports = {
