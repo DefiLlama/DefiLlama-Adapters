@@ -1,9 +1,10 @@
 const sdk = require("@defillama/sdk");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
+const { staking } = require("../helper/staking");
+const { pool2 } = require("../helper/pool2");
 
 // --- ABI's section ---
 const curveamoABI = require("./curveamo.json");
-const vefxsABI = require("./vefxs.json");
 const usdcPoolABI = require("./usdcpool.json");
 const stakingcontratABI = require("./stakingcontract.json");
 
@@ -21,7 +22,6 @@ const INVESTOR_AMO_V2 = "0xB8315Af919729c823B2d996B1A6DDE381E7444f1";
 const STAKING_CONTRACTS = [
   "0xD875628B942f8970De3CcEaf6417005F68540d4f",
   "0xa29367a3f057F3191b62bd4055845a33411892b6",
-  "0xda2c338350a0E59Ce71CDCED9679A3A590Dd9BEC",
 ];
 
 const ethereumTvl = async (timestamp, block) => {
@@ -43,17 +43,6 @@ const ethereumTvl = async (timestamp, block) => {
       .dividedBy(10 ** 12)
       .toFixed(0)
   );
-
-  // --- FXS LOCKED in escrow ---
-  const fxsLocked = (
-    await sdk.api.abi.call({
-      target: veFXS,
-      abi: vefxsABI.supply,
-      block,
-    })
-  ).output;
-
-  sdk.util.sumSingleBalance(balances, FXS_ETH, fxsLocked);
 
   // --- USDC POOL + AMO Investor + AMO Lending TVL ---
   const usdcTvls = (
@@ -113,7 +102,8 @@ const ethereumTvl = async (timestamp, block) => {
 
 module.exports = {
   ethereum: {
+    staking: staking(veFXS, FXS_ETH),
+    pool2: pool2("0xda2c338350a0E59Ce71CDCED9679A3A590Dd9BEC", "0xe1573b9d29e2183b1af0e743dc2754979a40d237"),
     tvl: ethereumTvl,
   },
-  tvl: sdk.util.sumChainTvls([ethereumTvl]),
 };
