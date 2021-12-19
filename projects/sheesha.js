@@ -1,9 +1,9 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./zenlink/abis/getReserves.json");
-const retry = require("./helper/retry");
-const axios = require("axios");
+const { getPrices } = require("./helper/utils.js");
 const { unwrapUniswapLPs } = require("./helper/unwrapLPs");
 
+// node test.js projects/sheesha.js
 async function tokenPrice(chainBlocks) {
   const [reserves, response] = await Promise.all([
     sdk.api.abi.call({
@@ -12,12 +12,7 @@ async function tokenPrice(chainBlocks) {
       block: chainBlocks.bsc,
       chain: "bsc",
     }),
-    retry(
-      async () =>
-        await axios.get(
-          "https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd"
-        )
-    ),
+    getPrices([{ key: "binancecoin" }]),
   ]);
 
   return (
