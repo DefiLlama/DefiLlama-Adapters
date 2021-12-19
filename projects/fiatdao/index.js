@@ -1,4 +1,3 @@
-const sdk = require("@defillama/sdk");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const { staking } = require("../helper/staking");
 
@@ -47,6 +46,8 @@ async function tvl(timestamp, block) {
 }
 
 module.exports = {
+  methodology:
+    "TVL includes value of Rewards Pools and staking includes FDT staked in Senatus",
   ethereum: {
     tvl,
     staking: staking(comitium, fdt),
