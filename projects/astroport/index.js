@@ -1,4 +1,5 @@
 const {getBalance, unwrapLp} = require('../helper/terra')
+const {getBlock} = require('../helper/getBlock')
 
 const pairs = [
     "terra1nuy34nwnsh53ygpc4xprlj263cztw7vc99leh2", //bLUNA-LUNA 
@@ -15,15 +16,16 @@ const pairs = [
 
 const holder = "terra1627ldjvxatt54ydd3ns6xaxtd68a2vtyu7kakj"
 
-async function tvl() {
+async function tvl(timestamp, ethBlock, chainBlocks) {
     const ustBalances = {}
     const lunaBalances = {}
+    const block = await getBlock(timestamp, "terra", chainBlocks, true)
     await Promise.all(pairs.map(async (pair,i) => {
-        const balance = await getBalance(pair, holder)
+        const balance = await getBalance(pair, holder, block)
         if(i>0){
-            await unwrapLp(ustBalances, pair, balance)
+            await unwrapLp(ustBalances, pair, balance, block)
         } else {
-            await unwrapLp(lunaBalances, pair, balance)
+            await unwrapLp(lunaBalances, pair, balance, block)
         }
     }))
     return {
@@ -35,5 +37,5 @@ async function tvl() {
 module.exports = {
     tvl,
     misrepresentedTokens: true,
-    timetravel: false,
+    timetravel: true,
 }

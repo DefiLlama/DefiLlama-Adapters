@@ -1,7 +1,7 @@
 const axios = require('axios')
 
 async function query(url, block) {
-    let endpoint = `https://lcd.terra.dev/wasm/${url}`
+    let endpoint = `${process.env["TERRA_RPC"] ?? "https://lcd.terra.dev"}/wasm/${url}`
     if (block !== undefined) {
         endpoint += `&height=${block - (block % 100)}`
     }
