@@ -36,7 +36,7 @@ module.exports = {
     ),
   },
   
-  matic: {
+  polygon: {
     tvl: v1graph("matic"),
     staking: staking(
       STAKING_CONTRACTS["matic"],
