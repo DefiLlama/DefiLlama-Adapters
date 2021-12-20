@@ -13,6 +13,7 @@ jobs:
     - name: Deploy Stage
       uses: actions/github-script@v5
       with:
+        github-token: ${{ secrets.PAT }}
         script: |
           await github.rest.actions.createWorkflowDispatch({
             owner: 'DefiLlama',
