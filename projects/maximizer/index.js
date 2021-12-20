@@ -46,7 +46,12 @@ async function tvl(timestamp, block, chainBlocks) {
     [Treasury],
     chainBlocks.avax,
     "avax",
-    await transformAvaxAddress()
+    (addr) => {
+      if (addr.toLowerCase() === "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e") {
+        return `avax:0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664`;
+      }
+      return `avax:${addr}`;
+    }
   );
 
   return balances;
