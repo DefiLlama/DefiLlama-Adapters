@@ -18,9 +18,6 @@ module.exports = {
     ],
     "avax",
     cakeStaking,
-    cake,
-    undefined,
-    undefined,
-    false
+    cake
   ),
 };
