@@ -38,7 +38,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 
 module.exports = {
   methodology:
-    "Polkamarkets v1 TVL equals the contract (0xdcbe79f74c98368141798ea0b7b979b9ba54b026) Moonriver balance.",
+    "Polkamarkets v1 TVL equals the markets contract (0xdcbe79f74c98368141798ea0b7b979b9ba54b026) MOVR + bonds contract (0x60d7956805ec5a698173def4d0e1ecdefb06cc57) POLK balance.",
   moonriver: {
     tvl,
   },
