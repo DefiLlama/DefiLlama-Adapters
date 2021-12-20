@@ -1,7 +1,8 @@
+const Web3 = require('web3')
+require("dotenv").config();
 const retry = require("async-retry");
 const axios = require("axios");
 const utils = require("./helper/utils");
-const web3 = require("./config/web3.js");
 const BigNumber = require("bignumber.js");
 const {
   DEC_18,
@@ -29,6 +30,8 @@ const {
   snxAddr,
   wbtcAddr,
   wethAddr,
+  xu3lpaAddrArbitrum,
+  xu3lpbAddrArbitrum
 } = require("./config/xtoken/constants");
 const xAAVE = require("./config/xtoken/xAAVE.json");
 const xBNT = require("./config/xtoken/xBNT.json");
@@ -40,7 +43,8 @@ const xU3LP = require("./config/xtoken/xU3LP.json");
 const ERC20 = require("./config/xtoken/ERC20.json");
 const SNX = require("./config/xtoken/SNX.json");
 
-async function fetch() {
+async function eth() {
+  let web3 = new Web3(new Web3.providers.HttpProvider(process.env.ETHEREUM_RPC));
   const xaaveaCtr = new web3.eth.Contract(xAAVE, xaaveaAddr);
   const xaavebCtr = new web3.eth.Contract(xAAVE, xaavebAddr);
   const xinchaCtr = new web3.eth.Contract(xINCH, xinchaAddr);
@@ -251,7 +255,33 @@ async function fetch() {
   return tvl;
 }
 
+async function arbitrum() {
+  let web3 = new Web3(new Web3.providers.HttpProvider(process.env.ARBITRUM_RPC));
+  const xu3lpaCtr = new web3.eth.Contract(xU3LP, xu3lpaAddrArbitrum);
+  const xu3lpbCtr = new web3.eth.Contract(xU3LP, xu3lpbAddrArbitrum);
+
+  const xu3lpaTvlRaw = await xu3lpaCtr.methods.getNav().call();
+  const xu3lpbTvlRaw = await xu3lpbCtr.methods.getNav().call();
+
+  const xu3lpaTvl = Number(new BigNumber(xu3lpaTvlRaw).div(DEC_18).toFixed(2));
+  const xu3lpbTvl = Number(new BigNumber(xu3lpbTvlRaw).div(DEC_18).toFixed(2));
+
+  const tvl = xu3lpaTvl + xu3lpbTvl
+  return tvl
+}
+
+async function fetch() {
+  return (await eth())+(await arbitrum())
+}
+
+
 module.exports = {
+  ethereum:{
+    fetch: eth
+  },
+  arbitrum:{
+    fetch: arbitrum
+  },
   fetch,
   methodology: `TVL includes deposits made to the available strategies at xToken Markets.`
 };

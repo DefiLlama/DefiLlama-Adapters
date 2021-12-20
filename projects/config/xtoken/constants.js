@@ -25,6 +25,9 @@ const snxAddr = "0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F";
 const wbtcAddr = "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599";
 const wethAddr = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 
+const xu3lpaAddrArbitrum = "0x9F8cFc08f781e1576A05d4d3669b3E6FF22913FF";
+const xu3lpbAddrArbitrum = "0x216D135926f5EC9E5924564A342580B0b5A3bdc6";
+
 module.exports = {
   DEC_18,
   kncAddr,
@@ -52,4 +55,6 @@ module.exports = {
   sUsdAddr,
   wbtcAddr,
   wethAddr,
+  xu3lpaAddrArbitrum,
+  xu3lpbAddrArbitrum
 };
