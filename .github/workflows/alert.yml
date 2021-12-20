@@ -18,6 +18,4 @@ jobs:
           await github.rest.actions.createWorkflowDispatch({
             owner: 'DefiLlama',
             repo: 'defillama-server',
-            workflow_id: 'backend.yaml',
-            ref: 'master',
           });
