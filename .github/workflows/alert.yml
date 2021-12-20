@@ -10,3 +10,13 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - run: curl https://born-to-llama.herokuapp.com/refresh
+    - name: Deploy Stage
+      uses: actions/github-script@v5
+      with:
+        script: |
+          await github.rest.actions.createWorkflowDispatch({
+            'DefiLlama',
+            'defillama-server',
+            'workflows/backend.yaml',
+            'master',
+          });
