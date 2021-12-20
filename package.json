@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "babel-watch curve.js",
+    "dev": "babel-watch curve.js"
   },
   "author": "",
   "license": "ISC",
@@ -43,5 +43,5 @@
     "underscore": "^1.13.1",
     "web3": "^1.5.3"
   },
-  "description": "",
+  "description": ""
 }
