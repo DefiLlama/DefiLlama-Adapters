@@ -10,12 +10,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - run: curl https://born-to-llama.herokuapp.com/refresh
-    - name: Deploy Stage
-      uses: actions/github-script@v5
-      with:
-        github-token: ${{ secrets.PAT }}
-        script: |
-          await github.rest.actions.createWorkflowDispatch({
-            owner: 'DefiLlama',
-            repo: 'defillama-server',
-          });
+    - name: Deploy
+      run: |
+        curl -XPOST -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" -H "Authorization: Bearer ${{ secrets.PAT }}" https://api.github.com/repos/DefiLlama/defillama-server/dispatches --data '{"event_type": "build"}'
