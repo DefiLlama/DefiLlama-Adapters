@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
-const { unwrapUniswapLPs } = require("./helper/unwrapLPs");
-const { staking } = require("./helper/staking");
+const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
+const { staking } = require("../helper/staking");
 
 const polyKitty = "0xcD86152047e800d67BDf00A4c635A8B6C0e5C4c2";
 const polyCat = "0x948D0a28b600BDBd77AF4ea30E6F338167034181";
