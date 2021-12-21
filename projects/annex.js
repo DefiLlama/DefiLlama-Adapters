@@ -1,20 +1,27 @@
 const axios = require("axios");
 
 async function bsc() {
-  const result = await axios.get(
-    "https://api.annex.finance/api/v1/governance/annex"
-  );
-  return result.data.data.markets.reduce(
-    (total, market) => total + Number(market.liquidity),
-    0
+  const [lending, pools] = await Promise.all([
+    axios.get("https://api.annex.finance/api/v1/governance/annex"),
+    axios.get("https://api.annex.finance/api/v1/pools"),
+  ]);
+  return (
+    lending.data.data.markets.reduce(
+      (total, market) => total + Number(market.liquidity),
+      0
+    ) +
+    pools.data.pairs.reduce(
+      (total, market) => total + Number(market.liquidity),
+      0
+    )
   );
 }
-
+// https://api.annex.finance/api/v1/pools
 async function cronos() {
-  const lending = await axios.get(
-    "https://cronosapi.annex.finance/api/v1/governance/annex"
-  );
-  const pools = await axios.get("https://cronosapi.annex.finance/api/v1/pools");
+  const [lending, pools] = await Promise.all([
+    axios.get("https://cronosapi.annex.finance/api/v1/governance/annex"),
+    axios.get("https://cronosapi.annex.finance/api/v1/pools"),
+  ]);
   return (
     lending.data.data.markets.reduce(
       (total, market) => total + Number(market.liquidity),
