@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk')
-const { getChainTvl } = require('../helper/getUniSubgraphTvl');
-const { getBlock } = require('../helper/getBlock');
+const { getChainTvl } = require('./helper/getUniSubgraphTvl');
+const { getBlock } = require('./helper/getBlock');
 const { default: BigNumber } = require('bignumber.js');
 
 const graphUrls = {
