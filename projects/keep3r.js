@@ -41,7 +41,7 @@ const cTokens = {
   CYGBP: "0xecaB2C76f1A8359A06fAB5fA0CEea51280A97eCF",
   CYCHF: "0x1b3E95E8ECF7A7caB6c4De1b344F94865aBD12d5",
   CYAUD: "0x86BBD9ac8B9B44C95FFc6BAAe58E25033B7548AA",
-  CYKRW: "0x3c9f5385c288cE438Ed55620938A4B967c080101",
+  CYKRW: "0x3c9f5385c288cE438Ed55620938A4B967c080101"
 };
 const ibTokens = {
   IBEUR: "0x96e61422b6a9ba0e068b6c5add4ffabc6a4aae27",
@@ -93,9 +93,9 @@ const totalBorrows = {
   "payable": false,
   "stateMutability": "view",
   "type": "function"
-}
+};
 
-async function staking(timestamp, block) {
+async function pool2(timestamp, block) {
 
   const balances = {};
   // Protocol Credit Mining LPs
@@ -105,13 +105,14 @@ async function staking(timestamp, block) {
       [KPR_LDO_SUSHI_POOL, true],
       [KPR_MM_SUSHI_POOL, true],
       [KPR_AMOR_SUSHI_POOL, true],
-      [KP3R, false]],
-    [KP3R],
+      [KP3R, false],
+      [KPR_WETH_SUSHI_POOL, true]
+    ],
+    [KP3R, BOND_TREASURY],
     block
   );
 
   return balances;
-
 }
 
 async function tvl(timestamp, block) {
@@ -139,7 +140,6 @@ async function tvl(timestamp, block) {
       [SJPY, false],
       [SCHF, false]
     ].concat([
-      [KPR_WETH_SUSHI_POOL, true],
       [USDC_ibAUD_POOL, true],
       [USDC_ibEUR_POOL, true],
       [USDC_ibKRW_POOL, true],
@@ -157,27 +157,27 @@ async function tvl(timestamp, block) {
 async function borrowed(timestamp, block) {
   const balances = {};
 
-  const cyTokens = Object.values(cTokens)
-  const { output: borrowed} = await sdk.api.abi.multiCall({
+  const cyTokens = Object.values(cTokens);
+  const { output: borrowed } = await sdk.api.abi.multiCall({
     block: block,
     calls: cyTokens.map((coin) => ({
-      target: coin,
+      target: coin
     })),
-    abi: totalBorrows,
-  })
+    abi: totalBorrows
+  });
 
-  const ib = Object.values(ibTokens)
-  for(const idx in borrowed) {
+  const ib = Object.values(ibTokens);
+  for (const idx in borrowed) {
     sdk.util.sumSingleBalance(balances, ib[idx], borrowed[idx].output);
   }
 
-  return balances
+  return balances;
 }
 
 module.exports = {
   ethereum: {
     tvl,
-    staking,
+    pool2,
     borrowed
   }
 };
