@@ -20,6 +20,7 @@ const stakingContracts = {
   "harmony": "0xf4f3495a35c0a73268eEa08b258C7968E976F5D4",
   "cronos": "0x7D4fB4BFf1EE561a97394e29B7Fa5FdE96f6d44E",
   "telos": "0xB61b4ee3A00A8D01039625c13bd93A066c85EF2C",
+  "fuse": "0xA83FF3b61c7b5812d6f0B39d5C7dDD920B2bDa61",
 };
 // node test.js projects/elkfinance/index.js
 function chainStaking(chain, contract){
@@ -53,6 +54,8 @@ const factories = {
   //telos: "0x47c3163e691966f8c1b93B308A236DDB3C1C592d",
   hoo: "0x9c03E724455306491BfD2CE0805fb872727313eA",
   elastos: "0x440a1B8b8e968D6765D41E6b92DF3cBb0e9D2b1e",
+  fuse: "0x779407e40Dad9D70Ba5ADc30E45cC3494ec71ad2",
+  //iotex: "0xF96bE66DA0b9bC9DFD849827b4acfA7e8a6F3C42"
 }
 
 function chainTvl(chain){
