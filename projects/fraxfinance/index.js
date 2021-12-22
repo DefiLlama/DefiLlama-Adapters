@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const BigNumber = require("bignumber.js");
-const { staking } = require("../helper/staking");
+const { staking, stakings } = require("../helper/staking");
 const { pool2s } = require("../helper/pool2");
 
 const USDC = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
@@ -54,6 +54,14 @@ const LP_ADDRESSES = [
   "0xecBa967D84fCF0405F6b32Bc45F4d36BfDBB2E81",
 ];
 
+const treasuryContracts = [
+  "0x63278bF9AcdFC9fA65CFa2940b89A34ADfbCb4A1",
+  "0x8D4392F55bC76A046E443eb3bab99887F4366BB0",
+  "0xa95f86fE0409030136D6b82491822B3D70F890b3",
+  "0x9AA7Db8E488eE3ffCC9CdFD4f2EaECC8ABeDCB48",
+  "0x874a873e4891fB760EdFDae0D26cA2c00922C404",
+];
+
 const ethereumTvl = async (timestamp, block) => {
   let balances = {};
 
@@ -101,9 +109,11 @@ const ethereumTvl = async (timestamp, block) => {
 module.exports = {
   misrepresentedTokens: true,
   ethereum: {
+    treasury: stakings(treasuryContracts, FXS),
     staking: staking(veFXS_StakingContract, FXS),
     pool2: pool2s(POOL_STAKING_CONTRACTS, LP_ADDRESSES),
     tvl: ethereumTvl,
   },
-  methodology: "Counts liquidty as the Collateral USDC on all AMOs, USDC POOLs, FRAX3CRV and FEI3CRVs through their Contracts",
+  methodology:
+    "Counts liquidty as the Collateral USDC on all AMOs, USDC POOLs, FRAX3CRV and FEI3CRVs through their Contracts",
 };
