@@ -51,6 +51,7 @@ async function getGlobalMarketState(algodClient, marketId) {
     let decodedKey = atob(x.key)
     results[decodedKey] = x.value.uint
   })
+
   return results
 }
 
@@ -65,20 +66,23 @@ async function getPrices(algodClient) {
       }
     }
   }
+
   return prices
 }
 
 function getMarketSupply(assetName, marketGlobalState, prices) {
-        underlying_cash = assetName === "STBL" ? marketGlobalState[marketStrings.active_collateral] : marketGlobalState[marketStrings.underlying_cash]
-        supplyUnderlying = underlying_cash - marketGlobalState[marketStrings.underlying_reserves]
-        supplyUnderlying /= Math.pow(10, assetDictionary[assetName]['decimals'])
-        return supplyUnderlying * prices[assetName]
+    underlying_cash = assetName === "STBL" ? marketGlobalState[marketStrings.active_collateral] : marketGlobalState[marketStrings.underlying_cash]
+    supplyUnderlying = underlying_cash - marketGlobalState[marketStrings.underlying_reserves]
+    supplyUnderlying /= Math.pow(10, assetDictionary[assetName]['decimals'])
+
+    return supplyUnderlying * prices[assetName]
 }
 
 function getMarketBorrow(assetName, marketGlobalState, prices) {
-        borrowUnderlying = marketGlobalState[marketStrings.underlying_borrowed]
-        borrowUnderlying /= Math.pow(10, assetDictionary[assetName]['decimals'])
-        return borrowUnderlying * prices[assetName]
+    borrowUnderlying = marketGlobalState[marketStrings.underlying_borrowed]
+    borrowUnderlying /= Math.pow(10, assetDictionary[assetName]['decimals'])
+
+    return borrowUnderlying * prices[assetName]
 }
 
 async function getTvl() {
