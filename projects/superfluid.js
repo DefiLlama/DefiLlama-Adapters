@@ -82,7 +82,8 @@ async function getChainBalances(allTokens, chain, block, transform = a => a) {
 
 const tokensNativeToSidechain = [
   '0x2bf2ba13735160624a0feae98f6ac8f70885ea61', // xdai FRACTION
-  '0x63e62989d9eb2d37dfdb1f93a22f063635b07d51'  // xdai MIVA 
+  '0x63e62989d9eb2d37dfdb1f93a22f063635b07d51', // xdai MIVA 
+  '0x263026e7e53dbfdce5ae55ade22493f828922965', // polygon RIC
 ]
 
 async function retrieveSupertokensBalances(chain, timestamp, ethBlock, chainBlocks) {
@@ -105,7 +106,7 @@ async function retrieveSupertokensBalances(chain, timestamp, ethBlock, chainBloc
     {block}
   )
 
-  const allTokens = tokens.filter(t => t.symbol.length > 0)
+  const allTokens = tokens // .filter(t => t.symbol.length > 0)
 
   return getChainBalances(allTokens, chain, block, transform)
 }
