@@ -5,8 +5,12 @@ const { transformPolygonAddress, transformXdaiAddress } = require("./helper/port
 // const abi = require('./erc20-abi.json')
 
 // Superfluid Supertokens can be retrieved using GraphQl API - cannot use block number to retrieve historical data at the moment though
-const polygonGraphUrl = 'https://api.thegraph.com/subgraphs/name/superfluid-finance/superfluid-matic'
-const xdaiGraphUrl = 'https://api.thegraph.com/subgraphs/name/superfluid-finance/superfluid-xdai'
+// TheGraph URL before being deprecated, before 2021-12-23
+// const polygonGraphUrl = 'https://api.thegraph.com/subgraphs/name/superfluid-finance/superfluid-matic'
+// const xdaiGraphUrl = 'https://api.thegraph.com/subgraphs/name/superfluid-finance/superfluid-xdai'
+const polygonGraphUrl = 'https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-matic'
+const xdaiGraphUrl = 'https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-xdai'
+
 const supertokensQuery = gql`
 query get_supertokens($block: Int) {
   tokens(
