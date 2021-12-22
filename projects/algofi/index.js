@@ -1,5 +1,5 @@
 const algosdk = require("algosdk")
-const {toUSDTBalances} = require('../helper/balances')
+const { toUSDTBalances } = require('../helper/balances')
 
 const marketStrings = {
     underlying_cash : "uc",
@@ -82,19 +82,14 @@ function getMarketBorrow(assetName, marketGlobalState, prices) {
 }
 
 async function getTvl() {
-
-    let client = new algosdk.Algodv2(
-                         "",
-                         "https://algoexplorerapi.io/",
-                         ""
-                       )
-
+    let client = new algosdk.Algodv2("", "https://algoexplorerapi.io/", "")
     let prices = await getPrices(client)
 
     let tvl = {
         supply: 0,
         borrow: 0,
     }
+
     for (const assetName of orderedAssets) {
         marketGlobalState = await getGlobalMarketState(client, assetDictionary[assetName]["marketAppId"])
         tvl.supply += getMarketSupply(assetName, marketGlobalState, prices)
@@ -120,7 +115,7 @@ async function supply() {
 }
 
 module.exports = {
-    algorand:{
+    algorand: {
         tvl,
         borrow,
         supply
