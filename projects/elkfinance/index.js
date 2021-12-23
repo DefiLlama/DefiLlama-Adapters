@@ -55,7 +55,7 @@ const factories = {
   hoo: "0x9c03E724455306491BfD2CE0805fb872727313eA",
   elastos: "0x440a1B8b8e968D6765D41E6b92DF3cBb0e9D2b1e",
   fuse: "0x779407e40Dad9D70Ba5ADc30E45cC3494ec71ad2",
-  //iotex: "0xF96bE66DA0b9bC9DFD849827b4acfA7e8a6F3C42"
+  iotex: "0xF96bE66DA0b9bC9DFD849827b4acfA7e8a6F3C42"
 }
 
 function chainTvl(chain){
