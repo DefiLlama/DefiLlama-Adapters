@@ -1,9 +1,9 @@
-const { request, gql } = require('graphql-request')
-const { getBlock } = require('./getBlock')
+const { request, gql } = require("graphql-request");
+const { getBlock } = require("./getBlock");
 
 // To get ID for daily data https://docs.uniswap.org/protocol/V2/reference/API/entities
 var getUniqStartOfTodayTimestamp = () => {
-  var now = new Date()
+  var now = new Date();
   var now_utc = Date.UTC(
     now.getUTCFullYear(),
     now.getUTCMonth(),
@@ -11,17 +11,17 @@ var getUniqStartOfTodayTimestamp = () => {
     now.getUTCHours(),
     now.getUTCMinutes(),
     now.getUTCSeconds()
-  )
-  var startOfDay = new Date(now_utc)
-  var timestamp = startOfDay / 1000
-  return Math.floor(timestamp / 86400)
-}
+  );
+  var startOfDay = new Date(now_utc);
+  var timestamp = startOfDay / 1000;
+  return Math.floor(timestamp / 86400);
+};
 
-const DEFAULT_TOTAL_VOLUME_FACTORY = 'uniswapFactories'
-const DEFAULT_TOTAL_VOLUME_FIELD = 'totalVolumeUSD'
+const DEFAULT_TOTAL_VOLUME_FACTORY = "uniswapFactories";
+const DEFAULT_TOTAL_VOLUME_FIELD = "totalVolumeUSD";
 
-const DEFAULT_DAILY_VOLUME_FACTORY = 'uniswapDayData'
-const DEFAULT_DAILY_VOLUME_FIELD = 'dailyVolumeUSD'
+const DEFAULT_DAILY_VOLUME_FACTORY = "uniswapDayData";
+const DEFAULT_DAILY_VOLUME_FIELD = "dailyVolumeUSD";
 
 function getChainVolume({
   graphUrls,
@@ -41,7 +41,7 @@ function getChainVolume({
   ) {
     ${totalVolume.field}
   }
-  `
+  `;
 
   const dailyVolumeQuery = gql`
   ${dailyVolume.factory} (
@@ -50,31 +50,34 @@ function getChainVolume({
     ${dailyVolume.field}
   }
   
-  `
+  `;
 
   const graphQuery = gql`
 query get_tvl($block: Int, $id: Int) {
   ${totalVolumeQuery}
-  ${hasDailyVolume ? dailyVolumeQuery : ''}
+  ${hasDailyVolume ? dailyVolumeQuery : ""}
 }
-`
+`;
   return (chain) => {
     return async (timestamp, chainBlocks) => {
-      const block = await getBlock(timestamp, chain, chainBlocks)
-      const id = getUniqStartOfTodayTimestamp()
+      const block = await getBlock(timestamp, chain, chainBlocks);
+      const id = getUniqStartOfTodayTimestamp();
       const uniswapRes = await request(graphUrls[chain], graphQuery, {
         block,
         id,
-      })
+      });
 
       return {
-        totalVolume: Number(uniswapRes[totalVolume.factory][0][totalVolume.field]),
+        totalVolume: Number(
+          uniswapRes[totalVolume.factory][0][totalVolume.field]
+        ),
         dailyVolume: hasDailyVolume
-          ? Number(uniswapRes[dailyVolume.factory][dailyVolume.field]) ?? undefined
+          ? Number(uniswapRes[dailyVolume.factory][dailyVolume.field]) ??
+            undefined
           : undefined,
-      }
-    }
-  }
+      };
+    };
+  };
 }
 
 module.exports = {
@@ -83,4 +86,4 @@ module.exports = {
   DEFAULT_TOTAL_VOLUME_FIELD,
   DEFAULT_DAILY_VOLUME_FACTORY,
   DEFAULT_DAILY_VOLUME_FIELD,
-}
+};
