@@ -10,7 +10,7 @@ async function fetch() {
 
   const tvl = liqArrPerPool.reduce((a, b) => a + b, 0);
 
-  return tvl || 0;
+  return tvl;
 }
 
 module.exports = {
