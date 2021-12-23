@@ -103,11 +103,6 @@ async function getTvl() {
     return tvl
 }
 
-async function tvl() {
-    tvlDict = await getTvl();
-    return toUSDTBalances(tvlDict.supply + tvlDict.borrow)
-}
-
 async function borrow() {
     tvlDict = await getTvl();
     return toUSDTBalances(tvlDict.borrow)
@@ -120,8 +115,7 @@ async function supply() {
 
 module.exports = {
     algorand: {
-        tvl,
+        tvl: supply,
         borrow,
-        supply
     }
 }
