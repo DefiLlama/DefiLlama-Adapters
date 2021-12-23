@@ -1,5 +1,3 @@
-const { getCurrentBlocks } = require("@defillama/sdk/build/computeTVL/blocks");
-
 const {
   getChainVolume,
   DEFAULT_DAILY_VOLUME_FACTORY,
