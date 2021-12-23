@@ -29,6 +29,13 @@ const wbnbCallVault = '0xcd69b95d35e640621813ca097eb1798e7b6a4c44'
 const wMaticCallVault = '0x156d422436f4441dde6ac0ab41ff58c9258c438b'
 const wMaticPutVault = '0x47831E1ff871f6D79CFb72956f5Aca65ec244733'
 
+//Aurora Vaults
+//const nearCallVault = '0x6d31e1126b4abf8502fc80a1f61f1e930862b075'
+
+//Boba Vaults
+//const bobaCallVault = '0xf802f5ef19a0033c297a26649f2eb54e416a989c'
+//const bobaPutVault = '0xff5fe7909fc4d0d6643f1e8be8cba72610d0b485'
+
 
 
 // Ethereum Assets
@@ -56,6 +63,14 @@ const wbnb = '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
 // Polygon Assets
 const wmatic = '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270'
 const pousdc = '0x2791bca1f2de4661ed88a30c99a7a9449aa84174'
+
+// Aurora Assets
+// const near = '0xC42C30aC6Cc15faC9bD938618BcaA1a1FaE8501d'
+
+// Boba Assets
+// const boba = '0xa18bF3994C0Cc6E3b63ac420308E5383f53120D7'
+// const bobaUSDC = '0x66a2A913e447d6b4BF33EFbec43aAeF87890FBbc'
+
 
 
 
