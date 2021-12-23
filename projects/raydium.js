@@ -8,9 +8,7 @@ async function fetch() {
 
   const liqArrPerPool = response.map((pool) => pool.liquidity);
 
-  const tvl = liqArrPerPool.reduce((a, b) => a + b, 0);
-
-  return tvl;
+  return liqArrPerPool.reduce((a, b) => a + b, 0);
 }
 
 module.exports = {

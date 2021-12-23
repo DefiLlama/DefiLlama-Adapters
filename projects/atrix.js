@@ -8,9 +8,7 @@ async function fetch() {
     )
   ).data;
 
-  const tvl = response.tvl;
-
-  return tvl;
+  return response.tvl;
 }
 
 module.exports = {

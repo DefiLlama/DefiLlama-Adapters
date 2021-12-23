@@ -44,7 +44,9 @@ function stakings(stakingContracts, stakingToken, chain = "ethereum", transforme
       balances = {
           [address]: bal
       }
-      sdk.util.sumSingleBalance(balances, AVAXToken, (await stakedAVAX).output)
+      console.log(stakedAVAX)
+      console.log((await stakedAVAX).output)
+      sdk.util.sumSingleBalance(balances, AVAXToken, stakedAVAX)
       return balances
   }
 }
