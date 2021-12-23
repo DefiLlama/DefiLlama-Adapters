@@ -46,5 +46,51 @@
     ],
     "stateMutability": "view",
     "type": "function"
+  },
+  "lpToken": {
+    "inputs": [],
+    "name": "lpToken",
+    "outputs": [
+      {
+        "internalType": "contract IUniswapV2Pair",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "masterchef": {
+    "inputs": [],
+    "name": "masterChef",
+    "outputs": [
+      {
+        "internalType": "contract ISpookyMasterChef",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "pid": {
+    "inputs": [],
+    "name": "pid",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "userInfo": {
+    "inputs": [
+      { "internalType": "uint256", "name": "", "type": "uint256" },
+      { "internalType": "address", "name": "", "type": "address" }
+    ],
+    "name": "userInfo",
+    "outputs": [
+      { "internalType": "uint256", "name": "amount", "type": "uint256" },
+      { "internalType": "uint256", "name": "rewardDebt", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   }
 }
