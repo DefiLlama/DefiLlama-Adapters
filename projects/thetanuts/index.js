@@ -101,7 +101,7 @@ async function addVault(balances, vault, token, block, chain) {
     }
 }
 
-async function ethTvl(_, block) {
+async function ethTvl(timestamp, block) {
     const balances = {}
     await Promise.all([
         addVault(balances, ethCallVault, weth, block, 'ethereum'),
@@ -116,7 +116,7 @@ async function ethTvl(_, block) {
 }
 
 
-async function avaxTvl(_, _, chainBlocks) {
+async function avaxTvl(timestamp, ethblocks, chainBlocks) {
     const balances = {}
     await Promise.all([
         addVault(balances, avaxCallVault, wavax, chainBlocks["avax"], 'avax'),
@@ -125,7 +125,7 @@ async function avaxTvl(_, _, chainBlocks) {
     return balances
 }
 
-async function ftmTvl(_, _, chainBlocks) {
+async function ftmTvl(timestamp, ethblocks, chainBlocks) {
     const balances = {}
     await Promise.all([
         addVault(balances, ftmCallVault, wftm, chainBlocks["fantom"], 'fantom'),
@@ -134,7 +134,7 @@ async function ftmTvl(_, _, chainBlocks) {
     return balances
 }
 
-async function bscTvl(_, _, chainBlocks) {
+async function bscTvl(timestamp, ethblocks, chainBlocks) {
     const balances = {}
     await Promise.all([
         addVault(balances, adaPutVault, busd, chainBlocks["bsc"], 'bsc'),
@@ -147,7 +147,7 @@ async function bscTvl(_, _, chainBlocks) {
     return balances
 }
 
-async function polygonTvl(_, _, chainBlocks) {
+async function polygonTvl(timestamp, ethblocks, chainBlocks) {
     const balances = {}
     await Promise.all([
         addVault(balances, wMaticCallVault, wmatic, chainBlocks["polygon"], 'polygon'),
