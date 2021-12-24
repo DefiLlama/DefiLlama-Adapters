@@ -13,7 +13,7 @@ const endpoints = {
     optimism:
       "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-optimism-dev",
     arbitrum:
-      "https://api.thegraph.com/subgraphs/name/ianlapham/arbitrum-minimal",
+      "https://api.thegraph.com/subgraphs/name/shinitakunai/uni-arbitrum-volume",
   },
 };
 
@@ -40,7 +40,6 @@ const v2Graph = getChainVolume({
 const v3Graphs = getChainVolume({
   graphUrls: {
     ...endpoints.v3,
-    ethereum: "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3",
   },
   totalVolume: {
     factory: "factories",

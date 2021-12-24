@@ -33,7 +33,9 @@ function getChainVolume({
     factory: DEFAULT_DAILY_VOLUME_FACTORY,
     field: DEFAULT_DAILY_VOLUME_FIELD,
   },
+  customDailyVolume,
   hasDailyVolume = true,
+  hasTotalVolume = true,
 }) {
   const totalVolumeQuery = gql`
   ${totalVolume.factory}(
@@ -43,18 +45,19 @@ function getChainVolume({
   }
   `;
 
-  const dailyVolumeQuery = gql`
+  const dailyVolumeQuery =
+    customDailyVolume ||
+    gql`
   ${dailyVolume.factory} (
     id: $id
   ) {
     ${dailyVolume.field}
   }
-  
   `;
 
   const graphQuery = gql`
 query get_tvl($block: Int, $id: Int) {
-  ${totalVolumeQuery}
+  ${hasTotalVolume ? totalVolumeQuery : ""}
   ${hasDailyVolume ? dailyVolumeQuery : ""}
 }
 `;
@@ -62,17 +65,17 @@ query get_tvl($block: Int, $id: Int) {
     return async (timestamp, chainBlocks) => {
       const block = await getBlock(timestamp, chain, chainBlocks);
       const id = getUniqStartOfTodayTimestamp();
-      const uniswapRes = await request(graphUrls[chain], graphQuery, {
+      const graphRes = await request(graphUrls[chain], graphQuery, {
         block,
         id,
       });
 
       return {
         totalVolume: Number(
-          uniswapRes[totalVolume.factory][0][totalVolume.field]
+          graphRes[totalVolume.factory][0][totalVolume.field]
         ),
         dailyVolume: hasDailyVolume
-          ? Number(uniswapRes[dailyVolume.factory][dailyVolume.field]) ??
+          ? Number(graphRes[dailyVolume.factory][dailyVolume.field]) ??
             undefined
           : undefined,
       };
