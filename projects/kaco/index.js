@@ -44,7 +44,7 @@ module.exports = {
   },
   shiden: {
     tvl: calculateUsdUniTvl(
-      "0x073386AE3292299a5814B00bC1ceB8f2bfC92c51",
+      KACMasterChefContract["shiden"],
       "shiden",
       "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
       [
