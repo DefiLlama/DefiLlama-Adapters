@@ -21,16 +21,3 @@ const graphs = (chain) => async () => {
 module.exports = {
   ethereum: graphs("ethereum"),
 };
-
-// const { getCurrentBlocks } = require("@defillama/sdk/build/computeTVL/blocks");
-
-// const test = async () => {
-//   const { timestamp, chainBlocks } = await getCurrentBlocks();
-//   console.log(chainBlocks, "chainBlocks");
-
-//   graphs("bsc")(timestamp, chainBlocks).then((res) => {
-//     console.log(res);
-//   });
-// };
-
-// test();
