@@ -2,7 +2,7 @@ const sdk = require("@defillama/sdk");
 const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl");
 const { calculateUniTvl } = require("../helper/calculateUniTvl.js");
 const { pool2 } = require("../helper/pool2");
-const { staking } = require("../helper/staking");
+const { staking, stakingUnknownPricedLP} = require("../helper/staking");
 
 const KACMasterChefContract = {
   bsc: "0x81b71D0bC2De38e37978E6701C342d0b7AA67D59",
@@ -47,7 +47,7 @@ module.exports = {
   methodology:
     "Fast growing Defi on BSC and Shiden! Fractionalize and farm NFTs.",
   bsc: {
-    staking: poolsTvl,
+    staking: stakingUnknownPricedLP("0x81b71D0bC2De38e37978E6701C342d0b7AA67D59", "0xf96429A7aE52dA7d07E60BE95A3ece8B042016fB", "bsc", "0x315F25Cea80AC6c039B86e79Ffc46aE6b2e30922", addr=>`bsc:${addr}`),
     tvl: bscTvl,
   },
   shiden: {
