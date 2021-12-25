@@ -9,4 +9,4 @@ const ZD_USDT_POOL = "0x4cb107576c7f3d59e3355ce760af5cbc36cf5e0d";
 module.exports = ohmTvl(treasuryAddress, [
   [USDT, false],
   [ZD_USDT_POOL, true],
-], "bsc", Staking, ZD, undefined, undefined, false)
+], "bsc", Staking, ZD)
