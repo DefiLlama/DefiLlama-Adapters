@@ -17,12 +17,6 @@ const chains = {
   rsk: {
     uniswapFactoryAddress: "0x6d0aE8f3da7A451A82B48594E91Bf9d79491971d",
     bdxTokenAddress: "0xb3dd46a470b2c3df15931238c61c49cdf429dd9a", // Must be lower case
-    bdstables: [
-      {
-        name: "BDEU",
-        address: "0x09b070184E6b57475d5993D9Dd8157f0273EE230",
-      },
-    ],
     // If a token doesn't exist on CoinGecko, map it to the base token it wrappes
     coingeckoMapping: {
       prefix: "rsk",
@@ -170,6 +164,34 @@ async function uniswapV2Tvl(block, chainName) {
   return balances;
 }
 
+async function getAllBDStables(bdxTokenAddress) {
+  const bdStables = [];
+  const bdstablesLength = (
+    await sdk.api.abi.call({
+      target: bdxTokenAddress,
+      abi: abi["getBdStablesLength"],
+      chain: chainName,
+      block,
+    })
+  ).output;
+
+  for (let index = 0; index < bdstablesLength; index++) {
+    bdStables.push({
+      address: (
+        await sdk.api.abi.call({
+          target: bdxTokenAddress,
+          abi: abi["getBDStable"],
+          chain: chainName,
+          block,
+          params: index,
+        })
+      ).output,
+    });
+  }
+
+  return bdStables;
+}
+
 async function tvl(chainName, block) {
   const balancesArray = [];
 
@@ -182,7 +204,7 @@ async function tvl(chainName, block) {
   //===================
   // Collateral
   //===================
-  const bdstables = chains[chainName].bdstables;
+  const bdstables = await getAllBDStables(chains[chainName].bdxTokenAddress);
   for (let index = 0; index < bdstables.length; index++) {
     balancesArray.push(
       await getBDStableCollateralBalances(block, chainName, bdstables[index])
