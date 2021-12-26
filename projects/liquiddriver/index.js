@@ -196,11 +196,11 @@ const minichefTvl = async (timestamp, ethBlock, chainBlocks) => {
 };
 
 module.exports = {
-  staking: {
-    tvl: staking(xLQDR, LQDR, "fantom", "fantom:" + LQDR),
-  },
-  tvl: sdk.util.sumChainTvls([
-    masterchefTvl,
-    minichefTvl,
-  ]),
+  fantom: {
+    staking: staking(xLQDR, LQDR, "fantom", "fantom:" + LQDR),
+    tvl: sdk.util.sumChainTvls([
+      masterchefTvl,
+      minichefTvl,
+    ]),
+  }
 };

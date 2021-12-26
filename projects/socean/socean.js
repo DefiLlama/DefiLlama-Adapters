@@ -12,7 +12,7 @@ async function tvl() {
     )
 
     return {
-        'solana': response.data[0].tvl_sol / 1_000_000_000 || 0
+        'solana': response.data[0].tvl_sol / 1_000_000_000
     }
 }
 

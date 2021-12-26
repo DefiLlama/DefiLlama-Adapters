@@ -131,13 +131,10 @@ const ftmTvl = async () => {
 
 module.exports = {
   misrepresentedTokens: true,
-  staking: {
-    tvl: staking(CartographerContract, WFTM, "fantom"),
-  },
   fantom: {
+    staking: staking(CartographerContract, WFTM, "fantom"),
     tvl: ftmTvl,
   },
-  tvl: sdk.util.sumChainTvls([ftmTvl]),
   methodology:
     "We count liquidity on the all Farm Cartographer Types through their Cartographer Contracts",
 };

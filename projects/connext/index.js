@@ -108,5 +108,4 @@ const chains = [
   "boba",
   */
 ];
-
 module.exports = chainExports(chainTvl, Array.from(chains));

@@ -1,14 +1,7 @@
-/*==================================================
-  Modules
-  ==================================================*/
-
   const _ = require('underscore');
   const sdk = require("@defillama/sdk")
   const BigNumber = require('bignumber.js');
-
- /*==================================================
-  Settings
-  ==================================================*/
+const { staking } = require('../helper/staking');
 
   const zeroAddress = '0x0000000000000000000000000000000000000000'
   const peakAddress = '0x630d98424eFe0Ea27fB1b3Ab7741907DFFEaAd78'
@@ -84,10 +77,6 @@
     bsc: '0xe9428B8acaA6b9d7C3314D093975c291Ec59A009',
   }
 
-/*==================================================
-  TVL
-  ==================================================*/
-
   async function getFundBalances(block) {
     let calls = [];
     let balances = {};
@@ -125,58 +114,17 @@
     return balances;
   }
 
-  async function getStakedTokens(block) {
-    const balances = {};
-
-    const bscBalance = (
-        await sdk.api.abi.call({
-        block,
-        chain: 'bsc',
-        target: peakAddress,
-        params: [stakingContracts.bsc],
-        abi: 'erc20:balanceOf'
-      })
-    ).output;
-
-    sdk.util.sumSingleBalance(balances, peakAddress, bscBalance);
-
-    const ethBalance = (
-      await sdk.api.abi.call({
-        block,
-        chain: 'ethereum',
-        target: peakAddress,
-        params: [stakingContracts.ethereum],
-        abi: 'erc20:balanceOf'
-      })
-    ).output;
-
-    sdk.util.sumSingleBalance(balances, peakAddress, ethBalance);
-
-    return balances;
-  }
-
   async function tvl(timestamp, block) {
     const balances = await getFundBalances(block);
     return balances;
   }
-
-  async function staking(timestamp, block) {
-    const balances = await getStakedTokens(block);
-    return balances;
-  }
-
-/*==================================================
-  Exports
-  ==================================================*/
-
   module.exports = {
-    misrepresentedTokens: true,
-    name: 'PEAKDEFI',         // Peakdefi
-    token: 'PEAK',            // PEAK token
-    category: 'assets',       // Allowed values as shown on DefiPulse: 'Derivatives', 'DEXes', 'Lending', 'Payments', 'Assets'
     start: 1607405152,        // Dec-08-2020 05:25:52 PM +UTC
-    staking: {
-      tvl: staking
+    bsc:{
+      staking: staking(stakingContracts.bsc, peakAddress, "bsc", peakAddress),
     },
-    tvl,                      // Tvl adapter
+    ethereum:{
+      staking: staking(stakingContracts.ethereum, peakAddress),
+      tvl
+    },
   }
