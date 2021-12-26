@@ -2,6 +2,7 @@ const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const {sumTokens} = require("../helper/unwrapLPs.js");
 const {staking} = require("../helper/staking.js");
+const {pool2s} = require("../helper/pool2.js");
 
 const registry = '0x72d15eae2cd729d8f2e41b1328311f3e275612b9' // same address for polygon and mainnet
 
@@ -21,10 +22,16 @@ const transform  = {
   'polygon': addr => transformMapping_polygon[addr] || `polygon:${addr}`
 }
 
-// Staking
+// Staking - vote escrowed staking ala crv
 const APW = '0x4104b135dbc9609fc1a9490e61369036497660c8'
 const veAPW = '0xc5ca1ebf6e912e49a6a70bb0385ea065061a4f09'
 
+// Pool2 - APW-XXX LP staked
+const APW_WETH_cometh = '0x70797fc5b1c04541113b5ac20ea05cb390392e30'
+const APW_MUST_cometh = '0x174f902194fce92ef3a51079b531f1e5073de335'
+const APW_WETH_cometh_staking = '0x4e2114f7fa11dc0765ddd51ad98b6624c3bf1908'
+const APW_MUST_cometh_staking = '0xb7ae78f49ac9bd9388109a4c5f53c6b79be4deda'
+// const APW_WETH_sushi = '0x53162d78dca413d9e28cf62799d17a9e278b60e8'
 
 const tvl_from_registry = (chain) => {
   return async (timestamp, ethBlock, chainBlocks) => {
@@ -63,13 +70,15 @@ const tvl_from_registry = (chain) => {
   };
 }
 
+
 module.exports = {
   ethereum: {
     tvl: tvl_from_registry('ethereum'),
-    staking: staking(veAPW, APW, "ethereum")
+    staking: staking(veAPW, APW, "ethereum"), 
   },
   polygon: {
-    tvl: tvl_from_registry('polygon'), // ethereum polygon
+    tvl: tvl_from_registry('polygon'), 
+    pool2: pool2s([APW_WETH_cometh_staking, APW_MUST_cometh_staking], [APW_WETH_cometh, APW_MUST_cometh], "polygon", id=>`polygon:${id}`)
   },
   methodology: `Use the registry to retrieve futureVaults, and get for each vault the IBT which is the token that this vault holds - the user locked collateral`
 };
