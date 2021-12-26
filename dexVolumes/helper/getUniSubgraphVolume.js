@@ -2,17 +2,16 @@ const { request, gql } = require("graphql-request");
 const { getBlock } = require("./getBlock");
 
 // To get ID for daily data https://docs.uniswap.org/protocol/V2/reference/API/entities
-var getUniqStartOfTodayTimestamp = () => {
-  var now = new Date();
-  var now_utc = Date.UTC(
-    now.getUTCFullYear(),
-    now.getUTCMonth(),
-    now.getUTCDate(),
-    now.getUTCHours(),
-    now.getUTCMinutes(),
-    now.getUTCSeconds()
+const getUniqStartOfTodayTimestamp = (date = new Date()) => {
+  var date_utc = Date.UTC(
+    date.getUTCFullYear(),
+    date.getUTCMonth(),
+    date.getUTCDate(),
+    date.getUTCHours(),
+    date.getUTCMinutes(),
+    date.getUTCSeconds()
   );
-  var startOfDay = new Date(now_utc);
+  var startOfDay = new Date(date_utc);
   var timestamp = startOfDay / 1000;
   return Math.floor(timestamp / 86400);
 };
@@ -84,6 +83,7 @@ query get_tvl($block: Int, $id: Int) {
 }
 
 module.exports = {
+  getUniqStartOfTodayTimestamp,
   getChainVolume,
   DEFAULT_TOTAL_VOLUME_FACTORY,
   DEFAULT_TOTAL_VOLUME_FIELD,
