@@ -1,5 +1,7 @@
 const {getBlock} = require('../helper/getBlock')
 const sdk = require('@defillama/sdk')
+const solana = require('../helper/solana')
+const terra = require('../helper/terra')
 
 const NATIVE_ADDRESS = "NATIVE";
 
@@ -102,6 +104,25 @@ const data = {
     }
 }
 
+const solanaData = {
+    contractAddress: 'bb1XfNoER5QC3rhVDaVz3AJp9oFKoHNHG6PHfZLcCjj',
+    tokens: [
+        {name: "apyswap", tokenAccount: '8fdkYq4XWb1LfkNcAByZUHspyvasyqH7CmFBCkoqSK5d'},
+        {name: "solana", tokenAccount: 'HHC3niNsTB3hNN1kZH9BHMLiwLvCSegKBLu82tAT2iG8'},
+        {name: "usd-coin", tokenAccount: 'AxsSzB2JvyHZr6uDjV3Prmak2JEqYUoaSQh9rPMSUvf2'},
+        {name: "saber", tokenAccount: '7KkMhrF9Hv7dfaX5xXFtTTrfJfVjHYZ5ymwAuXVgJ6Kf'},
+    ]
+}
+
+
+const terraData = {
+    contractAddress: 'terra18hf7422vyyc447uh3wpzm50wzr54welhxlytfg',
+    tokens: [
+        {name: "tether", address: 'uusd', decimals: 6},
+        {name: "terra-luna", address: 'uluna', decimals: 6},
+    ]
+}
+
 const toNumber = (decimals, n) => Number(n)/Math.pow(10, decimals)
 
 function getTVLFunction(chain)
@@ -122,6 +143,26 @@ function getTVLFunction(chain)
     }
 }
 
+async function solanaTvl() {
+    const balances = {}
+    for (const token of solanaData.tokens) {
+        const balance = await solana.getTokenAccountBalance(token.tokenAccount);
+        sdk.util.sumSingleBalance(balances, token.name, balance);
+    }
+    return balances
+}
+
+async function terraTvl() {
+    const balances = {}
+    for (const token of terraData.tokens) {
+        const balance = token.address.length > 5
+          ? await terra.getBalance(token.address, terraData.contractAddress)
+          : await terra.getDenomBalance(token.address, terraData.contractAddress);
+        sdk.util.sumSingleBalance(balances, token.name, toNumber(token.decimals, balance));
+    }
+    return balances
+}
+
 
 module.exports={
     methodology: "All tokens locked in Allbridge contracts.",
@@ -131,5 +172,7 @@ module.exports={
     fantom: { tvl: getTVLFunction('fantom') },
     avax: { tvl: getTVLFunction('avax') },
     heco: { tvl: getTVLFunction('heco') },
-    celo: { tvl: getTVLFunction('celo') }
+    celo: { tvl: getTVLFunction('celo') },
+    solana: { tvl: solanaTvl },
+    terra: { tvl: terraTvl }
 }
