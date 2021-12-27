@@ -126,10 +126,12 @@ async function supply() {
 
     return toUSDTBalances(supply)
 }
+
 async function stake() {
     let client = new algosdk.Algodv2("", "https://algoexplorerapi.io/", "")
     let prices = { 'STBL': 1, 'STBL-USDC-LP': 2 }
     staked = 0
+
     for (const contractName of stakingContracts) {
         marketGlobalState = await getGlobalMarketState(client, assetDictionary['STAKING_CONTRACTS'][contractName]["marketAppId"])
         staked += getMarketSupply(contractName, marketGlobalState, prices, assetDictionary['STAKING_CONTRACTS'])
