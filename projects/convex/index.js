@@ -143,7 +143,7 @@ async function tvl(timestamp, block) {
       }else{
         //coins successfully pulled from lptoken (factory pool, thus swap is same as lp token)
         console.log("pool " +i +" is a factory pool, use lptoken as swap address");
-        pool.output =  poolInfo[i].lptoken
+        pool.output = swapPool
       }
     }else{
       maincoins = await sdk.api.abi.call({
