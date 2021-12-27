@@ -49,9 +49,8 @@ async function tvl() {
 
   // Run three times just in case there is a problem with RPC rate limiting
   for (let i = 0; i < 3; i++) {
+    const page = await browser.newPage();
     try {
-      const page = await browser.newPage();
-
       await page.goto(
         useLocalhost ? "http://localhost:3000/" : "https://app.friktion.fi"
       );
@@ -110,6 +109,6 @@ async function tvl() {
 module.exports = {
   timetravel: false,
   methodology:
-    "TVL is scraped from the window.friktionSnapshot variable in app.friktion.fi and saved to the GitHub repo at Friktion-Labs/mainnet-tvl-snapshots. The data is the same as what is displayed on the app",
+    "TVL is scraped from the a hidden variable called window.friktionSnapshot on friktion.fi. The data exact same as what is displayed on the app",
   tvl,
 };
