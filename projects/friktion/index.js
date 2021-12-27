@@ -43,8 +43,6 @@ async function tvl() {
   let maxFriktionSnapshot /*: FriktionSnapshot */ = {
     totalTvlUSD: 0,
     coinsByCoingeckoId: {},
-    pricesByCoingeckoId: {},
-    sharePricesByGlobalId: {},
   };
 
   const useLocalhost = fs.existsSync("DRY_RUN_SNAPSHOT");
@@ -86,14 +84,6 @@ async function tvl() {
           if (amount > maxFriktionSnapshot.coinsByCoingeckoId[coingeckoId]) {
             maxFriktionSnapshot.coinsByCoingeckoId[coingeckoId] += amount;
           }
-          if (Object.keys(friktionSnapshot.sharePricesByGlobalId)) {
-            maxFriktionSnapshot.sharePricesByGlobalId =
-              friktionSnapshot.sharePricesByGlobalId;
-          }
-          if (Object.keys(friktionSnapshot.pricesByCoingeckoId)) {
-            maxFriktionSnapshot.pricesByCoingeckoId =
-              friktionSnapshot.pricesByCoingeckoId;
-          }
         }
       }
     } catch (e) {
@@ -109,9 +99,7 @@ async function tvl() {
   // Yes, there are other properties, but those aren't as critical
   if (
     maxFriktionSnapshot.totalTvlUSD > 10_000_000 &&
-    Object.keys(maxFriktionSnapshot.coinsByCoingeckoId).length > 5 &&
-    Object.keys(maxFriktionSnapshot.pricesByCoingeckoId).length > 5 &&
-    Object.keys(maxFriktionSnapshot.sharePricesByGlobalId).length > 5
+    Object.keys(maxFriktionSnapshot.coinsByCoingeckoId).length > 5
   ) {
     return maxFriktionSnapshot.coinsByCoingeckoId;
   } else {
