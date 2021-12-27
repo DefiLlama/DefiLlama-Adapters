@@ -1,106 +1,94 @@
 const sdk = require("@defillama/sdk");
-const erc20 = require("../helper/abis/erc20.json");
 const abi = require("./abi.json");
 
-const pair_factory = "0x23B74796b72f995E14a5e3FF2156Dad9653256Cf";
-const toAddr= d=>"0x"+d.substr(26)
+const PAIR_FACTORY = "0x0fC7e80090bbc1740595b1fcCd33E0e82547212F";
+const START_BLOCK = 13847198
 
-const calcTvl = async (balances, block, token, balance) => {
-  const START_BLOCK = 12867493;
-  const END_BLOCK = block;
-  const events = await sdk.api.util.getLogs({
-    target: pair_factory,
+const calculateTokenTotal = async (balances, block, pairs, abi) => {
+  const pairsTokenBalances = (await sdk.api.abi.multiCall({
+    calls: pairs.map(pair => ({
+      target: pair.pair,
+      params: pair.token
+    })),
+    abi,
+    block
+  })).output.map(result => result.output);
+
+  for (let index = 0; index < pairs.length; index++) {
+    sdk.util.sumSingleBalance(
+      balances,
+      pairs[index].token,
+      pairsTokenBalances[index]
+    );
+  }
+}
+
+const getPairs = async (toBlock) => {
+  const logs = (await sdk.api.util.getLogs({
+    target: PAIR_FACTORY,
     topic: 'PairCreated(address,address,address)',
     keys: [],
     fromBlock: START_BLOCK,
-    toBlock: END_BLOCK,
+    toBlock,
+  })).output
+
+  return logs.map(log => {
+    return {
+      pair: `0x${log.topics[1].substr(-40).toLowerCase()}`,
+      tokenA: `0x${log.topics[2].substr(-40).toLowerCase()}`,
+      tokenB: `0x${log.topics[3].substr(-40).toLowerCase()}`
+    }
   })
-  const pairs = events.output.map(el => toAddr(el.topics[1]));
-
-  const tokens = (await sdk.api.abi.multiCall({
-    abi: token,
-    calls: pairs.map(pair => ({
-      target: pair
-    })),
-    block
-  })).output.map(t => t.output);
-
-  if (balance == erc20.balanceOf) {
-    const balancePairs = (await sdk.api.abi.multiCall({
-      abi: balance,
-      calls: pairs.map((pair, idx) => ({
-        target: tokens[idx],
-        params: pair
-      })),
-      block
-    })).output.map(bp => bp.output);
-
-    for (let index = 0; index < pairs.length; index++) {
-      sdk.util.sumSingleBalance(
-        balances,
-        tokens[index],
-        balancePairs[index]
-      );
-    }
-  } else {
-    const totalDebt = (await sdk.api.abi.multiCall({
-      abi: balance,
-      calls: pairs.map((pair, idx) => ({
-        target: pair,
-        params: tokens[idx]
-      })),
-      block,
-    })).output.map(td => td.output);
-
-    for (let index = 0; index < pairs.length; index++) {
-      sdk.util.sumSingleBalance(
-        balances,
-        tokens[index],
-        totalDebt[index]
-      );
-    }
-  }
 }
 
 const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
   const balances = {};
 
-  //  --- Total of TVL's pairs without using ---
-  await calcTvl(
-    balances,
-    ethBlock,
-    abi.tokenA,
-    erc20.balanceOf
-  );
+  const pairs = await getPairs(ethBlock)
 
-  await calcTvl(
-    balances,
-    ethBlock,
-    abi.tokenB,
-    erc20.balanceOf
-  );
+  await calculateTokenTotal(
+    balances, 
+    ethBlock, 
+    pairs.map(({ pair, tokenA }) => ({ pair, token: tokenA })),
+    abi.totalSupplyAmount
+  )
 
-  //  --- Total of TVL's pairs with using ---
-  await calcTvl(
-    balances,
-    ethBlock,
-    abi.tokenA,
-    abi.totalDebt,
-  );
-
-  await calcTvl(
-    balances,
-    ethBlock,
-    abi.tokenB,
-    abi.totalDebt,
-  );
+  await calculateTokenTotal(
+    balances, 
+    ethBlock, 
+    pairs.map(({ pair, tokenB }) => ({ pair, token: tokenB })),
+    abi.totalSupplyAmount
+  )
 
   return balances;
 };
 
+const borrowed = async (timestamp, ethBlock, chainBlocks) => {
+  const balances = {};
+
+  const pairs = await getPairs(ethBlock)
+
+  await calculateTokenTotal(
+    balances,
+    ethBlock,
+    pairs.map(({ pair, tokenA }) => ({ pair, token: tokenA })),
+    abi.totalDebtAmount
+  )
+
+  await calculateTokenTotal(
+    balances,
+    ethBlock,
+    pairs.map(({ pair, tokenB }) => ({ pair, token: tokenB })),
+    abi.totalDebtAmount
+  )
+
+  return balances
+}
+
 module.exports = {
   ethereum: {
     tvl: ethTvl,
+    borrowed
   },
   tvl: sdk.util.sumChainTvls([ethTvl]),
 };
