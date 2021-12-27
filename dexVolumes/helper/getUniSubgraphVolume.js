@@ -74,7 +74,7 @@ query get_tvl($block: Int, $id: Int) {
           graphRes[totalVolume.factory][0][totalVolume.field]
         ),
         dailyVolume: hasDailyVolume
-          ? Number(graphRes[dailyVolume.factory][dailyVolume.field]) ??
+          ? Number(graphRes?.[dailyVolume.factory]?.[dailyVolume.field] || 0) ??
             undefined
           : undefined,
       };

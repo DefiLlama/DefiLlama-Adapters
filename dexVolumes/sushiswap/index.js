@@ -1,6 +1,5 @@
 const { getChainVolume } = require("../helper/getUniSubgraphVolume");
 
-// Copy pasta subgraphs from ./historical, cuz i dont want to break anything
 const endpoints = {
   ethereum: "https://api.thegraph.com/subgraphs/name/sushiswap/exchange",
   xdai: "https://api.thegraph.com/subgraphs/name/sushiswap/xdai-exchange",
