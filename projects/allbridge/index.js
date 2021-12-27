@@ -118,7 +118,7 @@ const solanaData = {
 const terraData = {
     contractAddress: 'terra18hf7422vyyc447uh3wpzm50wzr54welhxlytfg',
     tokens: [
-        {name: "tether", address: 'uusd', decimals: 6},
+        {name: "terrausd", address: 'uusd', decimals: 6},
         {name: "terra-luna", address: 'uluna', decimals: 6},
     ]
 }
