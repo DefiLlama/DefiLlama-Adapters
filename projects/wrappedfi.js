@@ -27,6 +27,13 @@ const ethContracts = [
   '0x6e1A19F235bE7ED8E3369eF73b196C07257494DE',
 
   /**
+   * WKDA
+   *
+   * coingecko: wrapped-kadena
+   */
+  '0x85d7bdfc9c3426b33a684241eeee70385bc42820',
+
+  /**
    * WLTC
    *
    * no price available
@@ -34,12 +41,19 @@ const ethContracts = [
   '0x53c4871322Bb47e7A24136fce291a6dcC832a294',
 
   /**
+   * WXRP
+   *
+   * coingecko: wrapped-xrp
+   */
+  '0x39fBBABf11738317a448031930706cd3e612e1B9',
+
+  /**
    * WZEC
    *
    * coingecko: wrapped-zcash
    * coinmarketcap: wrapped-zec
    */
-  '0x4A64515E5E1d1073e83f30cB97BEd20400b66E10',
+  '0x4A64515E5E1d1073e83f30cB97BEd20400b66E10'
 ];
 
 const celoContracts = [
