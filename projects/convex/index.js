@@ -13,6 +13,7 @@ const currentRegistryAddress = "0x90E00ACe148ca3b23Ac1bC8C240C2a7Dd9c2d7f5";
 const cvxAddress = "0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B";
 const cvxRewardsAddress = "0xCF50b810E57Ac33B91dCF525C6ddd9881B139332";
 const cvxcrvAddress = "0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7";
+const cvxfxsAddress = "0xFEEf77d3f69374f66429C91d732A244f074bdf74";
 const wbtcAddress = "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599";
 
 /*
@@ -236,6 +237,14 @@ async function tvl(timestamp, block) {
   });
 
   sdk.util.sumSingleBalance(allCoins, cvxcrvAddress, cvxcrvSupply.output)
+
+  //cvxfxs supply
+  var cvxfxsSupply = await sdk.api.erc20.totalSupply({
+    target: cvxfxsAddress,
+    block
+  });
+
+  sdk.util.sumSingleBalance(allCoins, cvxfxsAddress, cvxfxsSupply.output)
 
   //TODO: all replacement coins need to queuery their actual balance
   //as the tokens have accrued interest, this means current tvl is under reporting
