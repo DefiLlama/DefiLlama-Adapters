@@ -6,8 +6,12 @@ const {
   getCohortsAndProxiesByChain,
   createMulticalls,
 } = require("../helper/unifarm");
-
-const _tvl = async (timestamp, ethBlock, chainBlocks, chain) => {
+const { 
+  transformBscAddress, 
+  transformPolygonAddress 
+} = require('../helper/portedTokens');
+// node test.js projects/unifarm/index.js
+const _tvl = async (timestamp, ethBlock, chainBlocks, chain, transform = a => a) => {
   const block = chainBlocks[chain];
 
   const tokens = await getCohortTokensByChainName(chain);
@@ -49,7 +53,7 @@ const _tvl = async (timestamp, ethBlock, chainBlocks, chain) => {
       }
     }
 
-    balances[token.address] = new BigNumber(
+    balances[transform(token.address)] = new BigNumber(
       cohortBalances.reduce((a, b) => a + b, 0)
     )
       .multipliedBy(new BigNumber(10).pow(token.decimals))
@@ -65,12 +69,14 @@ const ethereum = async (timestamp, ethBlock, chainBlocks) => {
 };
 
 const bsc = async (timestamp, ethBlock, chainBlocks) => {
-  let balance = await _tvl(timestamp, ethBlock, chainBlocks, "bsc");
+  const transform = await transformBscAddress();
+  let balance = await _tvl(timestamp, ethBlock, chainBlocks, "bsc", transform);
   return balance;
 };
 
 const polygon = async (timestamp, ethBlock, chainBlocks) => {
-  let balance = await _tvl(timestamp, ethBlock, chainBlocks, "polygon");
+  const transform = await transformPolygonAddress();
+  let balance = await _tvl(timestamp, ethBlock, chainBlocks, "polygon", transform);
   return balance;
 };
 
