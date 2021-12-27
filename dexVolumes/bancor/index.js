@@ -13,13 +13,9 @@ const graphs = (chain) => async () => {
   let res;
   switch (chain) {
     case "ethereum":
-      res = await fetchURL(
-        endpoints.ethereum(getUniqStartOfTodayTimestamp() * 86400)
-      );
+      res = await fetchURL(endpoints.ethereum(getUniqStartOfTodayTimestamp()));
     default:
-      res = await fetchURL(
-        endpoints.ethereum(getUniqStartOfTodayTimestamp() * 86400)
-      );
+      res = await fetchURL(endpoints.ethereum(getUniqStartOfTodayTimestamp()));
   }
 
   const todayHourlyData = res?.data?.data;

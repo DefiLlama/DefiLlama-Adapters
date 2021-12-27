@@ -1,7 +1,6 @@
 const { request, gql } = require("graphql-request");
 const { getBlock } = require("./getBlock");
 
-// To get ID for daily data https://docs.uniswap.org/protocol/V2/reference/API/entities
 const getUniqStartOfTodayTimestamp = (date = new Date()) => {
   var date_utc = Date.UTC(
     date.getUTCFullYear(),
@@ -13,8 +12,11 @@ const getUniqStartOfTodayTimestamp = (date = new Date()) => {
   );
   var startOfDay = new Date(date_utc);
   var timestamp = startOfDay / 1000;
-  return Math.floor(timestamp / 86400);
+  return Math.floor(timestamp / 86400) * 86400;
 };
+
+// To get ID for daily data https://docs.uniswap.org/protocol/V2/reference/API/entities
+const getUniswapDateId = () => getUniqStartOfTodayTimestamp() / 86400;
 
 const DEFAULT_TOTAL_VOLUME_FACTORY = "uniswapFactories";
 const DEFAULT_TOTAL_VOLUME_FIELD = "totalVolumeUSD";
@@ -55,7 +57,7 @@ function getChainVolume({
   `;
 
   const graphQuery = gql`
-query get_tvl($block: Int, $id: Int) {
+query get_volume($block: Int, $id: Int) {
   ${hasTotalVolume ? totalVolumeQuery : ""}
   ${hasDailyVolume ? dailyVolumeQuery : ""}
 }
@@ -63,7 +65,7 @@ query get_tvl($block: Int, $id: Int) {
   return (chain) => {
     return async (timestamp, chainBlocks) => {
       const block = await getBlock(timestamp, chain, chainBlocks);
-      const id = getUniqStartOfTodayTimestamp();
+      const id = getUniswapDateId();
       const graphRes = await request(graphUrls[chain], graphQuery, {
         block,
         id,
