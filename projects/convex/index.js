@@ -28,7 +28,6 @@ EURN: 0x9fcf418B971134625CdF38448B949C8640971671
 These tokens come up with 0 value
 -----------
 IBGBP
-RAI
 */
 
 const usdReplacements = [
