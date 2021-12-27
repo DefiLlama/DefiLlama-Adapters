@@ -26,10 +26,8 @@ const calcPoolLiquidityVolume = async (caver, poolInfo) => {
     const t1Info = t1Detail.info;
     const t1Price = t1Detail.price;
 
-    const priceDiv = 1e18;
-
-    return ((t0Price / priceDiv) * (poolInfo.token0Reserve / Math.pow(10, t0Info.decimals))) +
-    ((t1Price / priceDiv) * (poolInfo.token1Reserve / Math.pow(10, t1Info.decimals)));
+    return ((t0Price / 1e18) * (poolInfo.token0Reserve / Math.pow(10, t0Info.decimals))) +
+    ((t1Price / 1e18) * (poolInfo.token1Reserve / Math.pow(10, t1Info.decimals)));
 }
 
 const fetchLiquidity = async () => {
