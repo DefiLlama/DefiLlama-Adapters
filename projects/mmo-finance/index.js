@@ -12,13 +12,16 @@ const poolsCronos = [
   "0x7A42441f5Cf40cF0fBdA98F494fA2cc500177e86",
   "0x7D35398F35F1dAD6e7a48d6f6E470CB11C77fc46",
   "0xD2B3BDd43Bf5f6f28bD8b12d432afA46a3B20234",
-  "0x692db42F84bb6cE6A6eA62495c804C71aA6887A7",
 ];
+
+const staking = [
+  "0x692db42F84bb6cE6A6eA62495c804C71aA6887A7", //MMO single sided
+]
 
 const ZERO = new BigNumber(0);
 const ETHER = new BigNumber(10).pow(18);
 
-async function cronos(timestamp, ethBlock, chainBlock) {
+async function TVLPool(timestamp, ethBlock, chainBlock) {
   const block = chainBlock.cronos;
   const total = (
     await sdk.api.abi.multiCall({
@@ -43,10 +46,36 @@ async function cronos(timestamp, ethBlock, chainBlock) {
   };
 }
 
+async function singleStaking(timestamp, ethBlock, chainBlock) {
+  const block = chainBlock.cronos;
+  const total = (
+    await sdk.api.abi.multiCall({
+      calls: staking.map((address) => ({
+        target: dashboardCronos,
+        params: address,
+      })),
+      block,
+      abi: abi,
+      chain: "cronos",
+    })
+  ).output.reduce((tvl, call) => {
+    let value = call && call.output && new BigNumber(call.output);
+    if (value) {
+      return tvl.plus(value.dividedBy(ETHER));
+    }
+    return tvl;
+  }, ZERO);
+
+  return {
+    tether: total.toNumber(),
+  };
+}
+
 module.exports = {
   misrepresentedTokens: true,
   cronos: {
-    tvl: cronos,
+    tvl: TVLPool,
+    staking: singleStaking
   },
-  tvl: cronos,
+  tvl: TVLPool,
 };
