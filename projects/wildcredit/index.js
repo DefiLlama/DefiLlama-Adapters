@@ -60,6 +60,12 @@ const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
     abi.totalSupplyAmount
   )
 
+  const borrows = await borrowed(timestamp, ethBlock, chainBlocks);
+
+  for (let b of Object.keys(balances)) {
+    balances[b] -= borrows[b];
+  };
+
   return balances;
 };
 
