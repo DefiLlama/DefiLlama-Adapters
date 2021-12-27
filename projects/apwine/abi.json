@@ -1,0 +1,5 @@
+{
+    "futureVaultCount": {"inputs":[],"name":"futureVaultCount","outputs":[{"internalType":"uint256","name":"futureVaultCount","type":"uint256"}],"stateMutability":"nonpayable","type":"function"}, 
+    "getFutureVaultAt": {"inputs":[{"internalType":"uint256","name":"_index","type":"uint256"}],"name":"getFutureVaultAt","outputs":[{"internalType":"address","name":"futureVault","type":"address"}],"stateMutability":"nonpayable","type":"function"}, 
+    "getIBTAddress": {"inputs":[],"name":"getIBTAddress","outputs":[{"internalType":"address","name":"IBTAddress","type":"address"}],"stateMutability":"nonpayable","type":"function"}
+}
