@@ -13,8 +13,23 @@ const currentRegistryAddress = "0x90E00ACe148ca3b23Ac1bC8C240C2a7Dd9c2d7f5";
 const cvxAddress = "0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B";
 const cvxRewardsAddress = "0xCF50b810E57Ac33B91dCF525C6ddd9881B139332";
 const cvxcrvAddress = "0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7";
+const cvxfxsAddress = "0xFEEf77d3f69374f66429C91d732A244f074bdf74";
 const wbtcAddress = "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599";
 
+/*
+These tokens still come up as UNKNOWN
+-------------
+sGBP: 0x97fe22E7341a0Cd8Db6F6C021A24Dc8f4DAD855F
+sCHF: 0x0F83287FF768D1c1e17a42F44d644D7F22e8ee1d
+sKRW: 0x269895a3dF4D73b077Fc823dD6dA1B95f72Aaf9B
+sJPY: 0xF6b1C627e95BFc3c1b4c9B825a032Ff0fBf3e07d
+EURN: 0x9fcf418B971134625CdF38448B949C8640971671
+
+
+These tokens come up with 0 value
+-----------
+IBGBP
+*/
 
 const usdReplacements = [
   "0x99d1Fa417f94dcD62BfE781a1213c092a47041Bc",
@@ -31,10 +46,16 @@ const usdReplacements = [
 ]
 
 const btcReplacements = [
-  "0x075b1bb99792c9E1041bA13afEf80C91a1e70fB3"
+  "0x075b1bb99792c9E1041bA13afEf80C91a1e70fB3",
+  "0x8751D4196027d4e6DA63716fA7786B5174F04C15"
 ]
 
 
+const lpTokenToSwapAddress = {
+  "0x3A283D9c08E8b55966afb64C515f5143cf907611":"0xB576491F1E6e5E62f1d8F26062Ee822B40B0E0d4", //cvx-eth
+  "0x6BA5b4e438FA0aAf7C1bD179285aF65d13bD3D90":"0x618788357D0EBd8A37e763ADab3bc575D54c2C7d", //rai-3pool
+  "0xEd4064f376cB8d68F770FB1Ff088a3d0F3FF5c4d":"0x8301AE4fc9c624d1D396cbDAa1ed877821D7C511", //crv-eth
+}
 
 async function tvl(timestamp, block) {
   console.log('convex start')
@@ -94,12 +115,17 @@ async function tvl(timestamp, block) {
       maincoins = {};
       maincoins.output = [];
 
+      var swapPool = poolInfo[i].lptoken;
+      if(lpTokenToSwapAddress[swapPool] != undefined){
+        swapPool = lpTokenToSwapAddress[swapPool];
+      }
+
       //i dont see a way to get number of coins..
       //loop until it fails
       for(var c=0; c < 10; c++){
         try {
           var coinX = await sdk.api.abi.call({
-            target: poolInfo[i].lptoken,
+            target: swapPool,
             block,
             abi: ABI.coins,
             params: c
@@ -117,7 +143,7 @@ async function tvl(timestamp, block) {
       }else{
         //coins successfully pulled from lptoken (factory pool, thus swap is same as lp token)
         console.log("pool " +i +" is a factory pool, use lptoken as swap address");
-        pool.output =  poolInfo[i].lptoken
+        pool.output = swapPool
       }
     }else{
       maincoins = await sdk.api.abi.call({
@@ -211,6 +237,14 @@ async function tvl(timestamp, block) {
   });
 
   sdk.util.sumSingleBalance(allCoins, cvxcrvAddress, cvxcrvSupply.output)
+
+  //cvxfxs supply
+  var cvxfxsSupply = await sdk.api.erc20.totalSupply({
+    target: cvxfxsAddress,
+    block
+  });
+
+  sdk.util.sumSingleBalance(allCoins, cvxfxsAddress, cvxfxsSupply.output)
 
   //TODO: all replacement coins need to queuery their actual balance
   //as the tokens have accrued interest, this means current tvl is under reporting
