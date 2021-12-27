@@ -1,10 +1,11 @@
 const sdk = require('@defillama/sdk');
-const {getCompoundV2Tvl} = require('../helper/compound');
+const {compoundExports} = require('../helper/compound');
 const {unwrapUniswapLPs} = require('../helper/unwrapLPs');
 
 // BSC
 const unitroller = "0xA6bEd5B7320941eA185A315D1292492F7Fdd1e5c";
 const kBnb = "0x2C334c6cBC0547e759084bD8D469f933B17Ff481";
+const wbnb = "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"
 const bscPools = [
     "0xf1D447656692d51d4DB7057104Ac6E97029A7790",
     "0x95D4D2D88C96cE96c97A912Aa7122715716013D4"
@@ -18,6 +19,7 @@ const lpAbi = {"constant":true,"inputs":[],"name":"lp","outputs":[{"internalType
 // OKEX
 const okexUnitroller = "0x9589c9c9b7A484F57d69aC09c14EcE4b6d785710";
 const kOkt = "0x4923abEe988f7bB7A9ae136BEBE4A8455e8dE229";
+const wokt = "0x8f8526dbfd6e38e3d8307702ca8469bae6c56c15"
 
 async function pool2Tvl(balances, chainBlocks, chain, pools) {
 
@@ -69,12 +71,14 @@ async function okexPool2(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
+    timetravel: true,
+    doublecounted: false,
     bsc: {
-        tvl: getCompoundV2Tvl(unitroller, "bsc", addr=>`bsc:${addr}`, kBnb),
+        ...compoundExports(unitroller, "bsc", kBnb, wbnb),
         pool2: bscPool2
     },
     okexchain: {
-        tvl: getCompoundV2Tvl(okexUnitroller, "okexchain", addr=>`okexchain:${addr}`, kOkt),
+        ...compoundExports(okexUnitroller, "okexchain", kOkt, wokt),
         pool2: okexPool2
     }
 }

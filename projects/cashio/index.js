@@ -138,6 +138,7 @@ async function tvl() {
 }
 
 module.exports = {
+  timetravel: false,
   methodology:
     "TVL counts LP token deposits made to Cashio and accrued reward tokens to its bank. CoinGecko is used to find the price of tokens in USD.",
   tvl,

@@ -75,7 +75,4 @@ const chainTvls = {
   },
 };
 
-module.exports = {
-  ...chainTvls,
-  tvl: sdk.util.sumChainTvls(Object.values(chainTvls).map(tvl=>tvl.tvl))
-};
+module.exports = chainTvls

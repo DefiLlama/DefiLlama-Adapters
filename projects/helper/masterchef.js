@@ -3,7 +3,9 @@ const abi = require('./abis/masterchef.json')
 const { unwrapUniswapLPs } = require('./unwrapLPs')
 const token0Abi = require("./abis/token0.json");
 const token1Abi = require("./abis/token1.json");
-const { getBlock } = require('./getBlock')
+const getReservesAbi = require("./abis/getReserves.json");
+const { getBlock } = require('./getBlock');
+const { default: BigNumber } = require('bignumber.js');
 
 async function getPoolInfo(masterChef, block, chain, poolInfoAbi) {
     const poolLength = (
@@ -54,7 +56,7 @@ async function getSymbolsAndBalances(masterChef, block, chain, poolInfo) {
 }
 
 function isLP(symbol) {
-    return symbol.includes('LP') || symbol.includes('PGL') || symbol.includes('UNI-V2')
+    return symbol.includes('LP') || symbol.includes('PGL') || symbol.includes('UNI-V2') ||  symbol === "PNDA-V2"
 }
 
 async function addFundsInMasterChef(balances, masterChef, block, chain = 'ethereum', transformAddress = id => id, poolInfoAbi = abi.poolInfo, ignoreAddresses = [], includeLPs = true, excludePool2 = false, stakingToken = undefined) {
@@ -140,9 +142,8 @@ function awaitBalanceUpdate(balancePromise, section) {
     return async ()=>balancePromise.then(b => b[section])
 }
 
-function masterChefExports(masterChef, chain, stakingTokenRaw) {
+function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingecko = true, poolInfoAbi=abi.poolInfo) {
     const stakingToken = stakingTokenRaw.toLowerCase();
-    const poolInfoAbi = abi.poolInfo;
     let balanceResolve;
     const balancePromise = new Promise((resolve) => { balanceResolve = resolve })
 
@@ -204,7 +205,6 @@ function masterChefExports(masterChef, chain, stakingTokenRaw) {
                 outsideLpPositions.push(position);
             }
         })
-
         await Promise.all([unwrapUniswapLPs(
             balances.tvl,
             outsideLpPositions,
@@ -218,6 +218,50 @@ function masterChefExports(masterChef, chain, stakingTokenRaw) {
             chain,
             transformAddress
         )]);
+
+        if(!tokenIsOnCoingecko){
+            const maxPool2ByToken = (await sdk.api.abi.multiCall({
+                calls: pool2LpPositions.map(p => ({
+                    target: stakingToken,
+                    params: [p.token]
+                })),
+                abi: "erc20:balanceOf",
+                block,
+                chain
+            })).output.reduce((max, curr)=>{
+                if(BigNumber(curr.output).gt(max.output)){
+                    return curr
+                }
+                return max
+            });
+            const poolAddress = maxPool2ByToken.input.params[0].toLowerCase()
+            const poolReserves = await sdk.api.abi.call({
+                block,
+                chain,
+                abi: getReservesAbi,
+                target: poolAddress
+            })
+            const posToken0 = token0.output.find(t=>t.input.target.toLowerCase()===poolAddress).output;
+            const posToken1 = token1.output.find(t=>t.input.target.toLowerCase()===poolAddress).output;
+            let price, otherToken;
+            if(posToken0.toLowerCase() === stakingToken){
+                price = poolReserves.output[1]/poolReserves.output[0]
+                otherToken = transformAddress(posToken1)
+            } else {
+                price = poolReserves.output[0]/poolReserves.output[1]
+                otherToken = transformAddress(posToken0)
+            }
+            const transformedStakingToken = transformAddress(stakingToken)
+            Object.values(balances).forEach(balance=>{
+                Object.entries(balance).forEach(([addr, bal])=>{
+                    if(addr.toLowerCase()===transformedStakingToken){
+                        balance[otherToken]= BigNumber(bal).times(price).toFixed(0)
+                        delete balance[addr]
+                    }
+                })
+            })
+        }
+
         balanceResolve(balances)
         return balances.tvl
     };

@@ -138,6 +138,7 @@ async function solana(){
 }
 
 module.exports = {
+    timetravel: true,
     solana:{
         tvl: solana
     },

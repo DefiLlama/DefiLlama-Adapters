@@ -18,6 +18,7 @@ async function solonaTvl() {
 }
 
 module.exports = {
+  timetravel: false,
   solana: {
     tvl: solonaTvl,
   },
