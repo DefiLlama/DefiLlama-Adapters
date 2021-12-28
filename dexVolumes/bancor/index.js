@@ -23,10 +23,10 @@ const graphs = (chain) => async () => {
   return {
     dailyVolume: todayHourlyData
       .reduce((acc, { usd }) => acc.plus(BigNumber(usd)), new BigNumber(0))
-      .toNumber(),
+      .toString(),
     hourlyVolume: new BigNumber(
       todayHourlyData[todayHourlyData.length - 1]?.usd
-    ).toNumber(),
+    ).toString(),
   };
 };
 

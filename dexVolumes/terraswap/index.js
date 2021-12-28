@@ -51,9 +51,7 @@ const graph = async () => {
 
   return {
     totalVolume: allVolume.toString(),
-    dailyVolume: Number(
-      dailyVolumeRequest?.terraswap?.historicalData?.[0]?.volumeUST
-    ),
+    dailyVolume: dailyVolumeRequest?.terraswap?.historicalData?.[0]?.volumeUST,
   };
 };
 
