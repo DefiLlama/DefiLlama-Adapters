@@ -100,7 +100,7 @@ function getMarketBorrow(assetName, marketGlobalState, prices) {
     return borrowUnderlying * prices[assetName]
 }
 
-async function borrow() {
+async function borrowed() {
     let client = new algosdk.Algodv2("", "https://algoexplorerapi.io/", "")
     let prices = await getPrices(client, assetDictionary, orderedAssets)
 
@@ -127,7 +127,7 @@ async function supply() {
     return toUSDTBalances(supply)
 }
 
-async function stake() {
+async function staking() {
     let client = new algosdk.Algodv2("", "https://algoexplorerapi.io/", "")
     let prices = { 'STBL': 1, 'STBL-USDC-LP': 2 }
     staked = 0
@@ -143,7 +143,7 @@ async function stake() {
 module.exports = {
     algorand: {
         tvl: supply,
-        borrow,
-        stake
+        borrowed,
+        staking
     }
 }
