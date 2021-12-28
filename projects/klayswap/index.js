@@ -11,8 +11,18 @@ async function fetchLiquidity() {
   for(const pool of recentPoolInfo){
     totalLiquidity = totalLiquidity.plus(pool.poolVolume);
   }
-  return toUSDTBalances(totalLiquidity.toFixed(2));
+
+  // Single-sided deposits
+  const SinglePoolInfo = klayswapInfo.data.leveragePoolInfo.single;
+  var totalSingleSided = new BigNumber('0');
+
+  for(const spool of SinglePoolInfo){
+    totalSingleSided = totalSingleSided.plus(spool.totalDepositVol);
+  }
+
+  return toUSDTBalances(totalLiquidity.plus(totalSingleSided).toFixed(2));
 }
+
 
 async function fetchStakedToken() {
   const klayswapInfo = await retry(async bail => await axios.get('https://s.klayswap.com/stat/klayswapInfo.json'))
