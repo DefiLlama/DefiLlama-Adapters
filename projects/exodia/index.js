@@ -74,11 +74,8 @@ module.exports = {
   misrepresentedTokens: true,
   fantom: {
     tvl,
+    staking
   },
-  staking: {
-    tvl: staking,
-  },
-  tvl,
   methodology:
     "Counts tokens on the treasury for TVL and staked EXOD for staking",
 };

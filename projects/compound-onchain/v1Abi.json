@@ -1,0 +1,86 @@
+{
+    "getCollateralMarketsLength": {
+        "constant": true,
+        "inputs": [],
+        "name": "getCollateralMarketsLength",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "markets": {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "markets",
+        "outputs": [
+            {
+                "name": "isSupported",
+                "type": "bool"
+            },
+            {
+                "name": "blockNumber",
+                "type": "uint256"
+            },
+            {
+                "name": "interestRateModel",
+                "type": "address"
+            },
+            {
+                "name": "totalSupply",
+                "type": "uint256"
+            },
+            {
+                "name": "supplyRateMantissa",
+                "type": "uint256"
+            },
+            {
+                "name": "supplyIndex",
+                "type": "uint256"
+            },
+            {
+                "name": "totalBorrows",
+                "type": "uint256"
+            },
+            {
+                "name": "borrowRateMantissa",
+                "type": "uint256"
+            },
+            {
+                "name": "borrowIndex",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "collateralMarkets": {
+        "constant": true,
+        "inputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "collateralMarkets",
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    }
+}

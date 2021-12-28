@@ -1,6 +1,7 @@
 const sdk = require('@defillama/sdk')
 const abi = require('./abi.json')
 const potABI = require('./pot_abi.json')
+const leverageABI = require('./leverage_abi.json')
 const BigNumber = require('bignumber.js')
 
 const dashboard = '0xb3C96d3C3d643c2318E4CDD0a9A48aF53131F5f4'
@@ -70,6 +71,12 @@ const pots = [
     '0xD601966588E812218a45f3ec06D3A89602348183'
 ]
 
+const leveragedPools = [
+    '0xfb8358f34133c275B0393E3883BDd8764Cb610DE',
+    '0xD75f3E4e8ed51ec98ED57386Cb47DF457308Ad08',
+    '0xb04D1A8266Ff97Ee9f48d48Ad2F2868b77F1C668'
+]
+
 const dashboardPolygon = '0xFA71FD547A6654b80c47DC0CE16EA46cECf93C02'
 const poolsPolygon = [
     // polyBUNNY
@@ -126,10 +133,17 @@ async function bsc(timestamp, ethBlock, chainBlock) {
         chain: 'bsc'
     })).output.reduce((tvl, call) => tvl.plus(new BigNumber(call.output)), ZERO)
     
-
+    const leverage_total = (await sdk.api.abi.multiCall({
+        calls: leveragedPools.map( address => ({
+            target: address
+        })),
+        block,
+        abi: leverageABI,
+        chain: 'bsc'
+    })).output.reduce((tvl, call) => tvl.plus(new BigNumber(call.output[1])), ZERO)
         
     return {
-        'tether': total.plus(pot_total).dividedBy(ETHER).toNumber()
+        'tether': total.plus(pot_total).plus(leverage_total).dividedBy(ETHER).toNumber()
     }
 }
 

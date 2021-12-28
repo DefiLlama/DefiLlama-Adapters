@@ -16,6 +16,7 @@ async function tvl(timestamp){
 }
 
 module.exports = {
+    timetravel: true,
     tron:{
       tvl
     }

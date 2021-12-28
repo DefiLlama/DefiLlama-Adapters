@@ -7,13 +7,11 @@ const NSDX_USDC_UNIV2 = "0x56B8936a96cD5EE5C5837F385a19B4c2999fD74a";
 
 module.exports = {
   misrepresentedTokens: true,
-  staking: {
-    tvl: staking(stakingContract, NSDX, "polygon"),
+  polygon:{
+    staking: staking(stakingContract, NSDX, "polygon"),
+    pool2: pool2(stakingContract, NSDX_USDC_UNIV2, "polygon"),
+    tvl: async () => ({}),
   },
-  pool2: {
-    tvl: pool2(stakingContract, NSDX_USDC_UNIV2, "polygon"),
-  },
-  tvl: async () => ({}),
   methodology:
     "We count liquidity on the Stake Seccion through Staking (MasterChef) Contract",
 };

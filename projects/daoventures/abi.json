@@ -6,6 +6,15 @@
     "stateMutability": "view",
     "type": "function"
   },
+  "getAllPoolInUSDProxy": {
+    "inputs": [
+      { "internalType": "bool", "name": "includeVestedILV", "type": "bool" }
+    ],
+    "name": "getAllPoolInUSD",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
   "getTotalValueInPool": {
     "inputs": [],
     "name": "getTotalValueInPool",

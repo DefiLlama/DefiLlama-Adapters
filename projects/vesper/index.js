@@ -1,10 +1,5 @@
-/*==================================================
-  Modules
-  ==================================================*/
-
 const sdk = require("@defillama/sdk");
 const abi = require('./abi.json')
-const BigNumber = require("bignumber.js");
 const _ = require("underscore");
 
 async function tvl(timestamp, block) {
@@ -71,21 +66,12 @@ async function tvl(timestamp, block) {
   _.each(totalValueResponse.output, (response) => {
       const totalValue = response.output;
       const poolAddress = response.input.target;
-      const existingBalance = new BigNumber(balances[collateralToken[poolAddress]] || "0");
-      balances[collateralToken[poolAddress]] = existingBalance.plus(new BigNumber(totalValue)).toFixed();
+      sdk.util.sumSingleBalance(balances, collateralToken[poolAddress], totalValue)
   });
   return balances;
 }
 
-/*==================================================
-  Exports
-  ==================================================*/
-
 module.exports = {
-  name: "Vesper",
-  website: "https://vesper.finance",
-  token: "VSP",
-  category: "assets",
   start: 1608667205, // December 22 2020 at 8:00 PM UTC
   tvl,
 };

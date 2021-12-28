@@ -23,6 +23,7 @@ async function tvl() {
 }
 
 module.exports = {
+  timetravel: false,
   methodology:
     "Sencha TVL is computed by iterating each known Sencha pool, then taking the value of each of the underlying tokens. Assets not listed on Coingecko are not counted.",
   tvl,

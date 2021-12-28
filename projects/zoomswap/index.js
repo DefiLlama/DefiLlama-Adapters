@@ -18,6 +18,7 @@ async function staking(timestamp, ethBlock, chainBlocks) {
 }
 
 module.exports = {
+  timetravel: true,
   iotex: {
     tvl: staking
   }

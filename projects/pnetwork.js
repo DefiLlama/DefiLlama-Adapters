@@ -37,6 +37,7 @@ const chainTvls = Object.fromEntries(Object.entries(chains).map(c=>[c[0], {
 }]))
 
 module.exports = {
+    timetravel: true,
     ...chainTvls,
     tvl: sdk.util.sumChainTvls(Object.values(chains).map(getChainTvl)),
     methodology: 'Queries the pNetwork database, using the same API endpoint as their own UI. TVL is based on the amount of assets “locked” in the system and that therefore has a 1:1 tokenisation on a host blockchain, including all of the assets and all of the blockchains supported by pNetwork.'

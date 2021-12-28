@@ -41,6 +41,7 @@ async function arbitrum(timestamp, ethBlock, chainBlocks) {
 }
 
 module.exports = {
+  timetravel: true,
   misrepresentedTokens: true,
   methodology: `Balancer TVL is pulled from the Balancer subgraph and includes deposits made to Balancer v1 and v2 liquidity pools.`,
   ethereum:{

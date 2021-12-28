@@ -57,7 +57,7 @@ async function tvl() {
   const {
     data: { quarriesByStakedMint, coingeckoIDs },
   } = await utils.fetchURL(
-    "https://raw.githubusercontent.com/QuarryProtocol/rewarder-list/master/data/mainnet-beta/tvl.json"
+    "https://raw.githubusercontent.com/QuarryProtocol/rewarder-list-build/master/mainnet-beta/tvl.json"
   );
   const { data: saberPools } = await utils.fetchURL(
     "https://registry.saber.so/data/llama.mainnet.json"
@@ -134,6 +134,7 @@ async function tvl() {
 }
 
 module.exports = {
+  timetravel: false,
   methodology:
     "TVL counts deposits made to Quarry Protocol. CoinGecko is used to find the price of tokens in USD.",
   tvl,
