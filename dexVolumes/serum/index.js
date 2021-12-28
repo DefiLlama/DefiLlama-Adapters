@@ -21,7 +21,6 @@ const graphQLClient = new GraphQLClient(endpoint, {
 
 const solana = async () => {
   const data = await graphQLClient.request(query);
-  console.log(data);
 
   const volumes = data.api_serum_dex_m.globalVolumeStats.v;
 
