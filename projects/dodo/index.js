@@ -8,7 +8,8 @@ const graphEndpoints = {
     "bsc": "https://pq.hg.network/subgraphs/name/dodoex-v2-bsc/bsc",
     "heco": "https://q.hg.network/subgraphs/name/dodoex/heco",
     "polygon": "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-polygon",
-    "arbitrum": "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-arbitrum"
+    "arbitrum": "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-arbitrum",
+    "aurora": "https://thegraph.com/hosted-service/subgraph/dodoex/dodoex-v2-aurora"
 }
 const graphQuery = gql`
 query get_pairs($lastId: String) {
@@ -92,6 +93,10 @@ async function arbitrum(timestamp, ethBlock, chainBlocks) {
     return getChainTvl('arbitrum', block, transform)
 }
 
+async function aurora(timestamp, ethBlock, chainBlocks) {
+    return getChainTvl('aurora', await getBlock(timestamp, 'aurora', chainBlocks), addr => `aurora:${addr}`)
+}
+
 async function heco(timestamp, ethBlock, chainBlocks) {
     return getChainTvl('heco', await getBlock(timestamp, 'heco', chainBlocks), addr => `heco:${addr}`)
 }
@@ -108,6 +113,9 @@ module.exports = {
     },
     arbitrum:{
         tvl: arbitrum
+    },
+    aurora:{
+        tvl: aurora
     },
     // We don't include heco because their subgraph is outdated
     tvl: sdk.util.sumChainTvls([eth, bsc, polygon, arbitrum])
