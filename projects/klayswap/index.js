@@ -8,7 +8,7 @@ async function fetchLiquidity() {
   const recentPoolInfo = klayswapInfo.data.recentPoolInfo;
   var totalLiquidity = new BigNumber('0');
 
-  for(const pool of recentPoolInfo){
+  for (const pool of recentPoolInfo) {
     totalLiquidity = totalLiquidity.plus(pool.poolVolume);
   }
 
@@ -16,7 +16,7 @@ async function fetchLiquidity() {
   const SinglePoolInfo = klayswapInfo.data.leveragePoolInfo.single;
   var totalSingleSided = new BigNumber('0');
 
-  for(const spool of SinglePoolInfo){
+  for (const spool of SinglePoolInfo) {
     totalSingleSided = totalSingleSided.plus(spool.totalDepositVol);
   }
 
@@ -26,22 +26,13 @@ async function fetchLiquidity() {
 
 async function fetchStakedToken() {
   const klayswapInfo = await retry(async bail => await axios.get('https://s.klayswap.com/stat/klayswapInfo.json'))
-  const recentPoolInfo = klayswapInfo.data.recentPoolInfo;
-  var totalLiquidity = new BigNumber('0');
-
-  for(const pool of recentPoolInfo){
-    totalLiquidity = totalLiquidity.plus(pool.poolVolume);
-  }
-  const dayTvl = klayswapInfo.data.dayTvl;
-  const tvl = new BigNumber(dayTvl[dayTvl.length-1].amount);
-
-  const stakedKsp = tvl.minus(totalLiquidity);
-  return toUSDTBalances(stakedKsp.toFixed(2));
+  var totalStaking = new BigNumber(klayswapInfo.data.common.stakingVol);
+  return toUSDTBalances(totalStaking.toFixed(2));
 }
 
 module.exports = {
   methodology: 'TVL counts the liquidity of KlaySwap DEX and staking counts the KSP that has been staked. Data is pulled from:"https://s.klayswap.com/stat/klayswapInfo.json".',
-  klaytn:{
+  klaytn: {
     tvl: fetchLiquidity,
     staking: fetchStakedToken
   },
