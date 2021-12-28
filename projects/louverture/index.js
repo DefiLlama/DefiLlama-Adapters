@@ -1,3 +1,4 @@
+/*
 const sdk = require('@defillama/sdk');
 const abi = require('./abi.json');
 
@@ -26,3 +27,4 @@ module.exports = {
       staking
   }                           // tvl adapter
 }
+*/
