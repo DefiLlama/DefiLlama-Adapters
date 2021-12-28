@@ -37,6 +37,7 @@ function getChainVolume({
   customDailyVolume,
   hasDailyVolume = true,
   hasTotalVolume = true,
+  getCustomBlock,
 }) {
   const totalVolumeQuery = gql`
   ${totalVolume.factory}(
@@ -64,7 +65,9 @@ query get_volume($block: Int, $id: Int) {
 `;
   return (chain) => {
     return async (timestamp, chainBlocks) => {
-      const block = await getBlock(timestamp, chain, chainBlocks);
+      const block =
+        (getCustomBlock && (await getCustomBlock(timestamp))) ||
+        (await getBlock(timestamp, chain, chainBlocks));
       const id = getUniswapDateId();
       const graphRes = await request(graphUrls[chain], graphQuery, {
         block,
