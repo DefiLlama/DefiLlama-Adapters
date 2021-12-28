@@ -92,8 +92,5 @@ module.exports = {
     pool2: pool2,
     staking: staking,
     tvl: tvl
-  },
-  pool2: pool2,
-  staking: staking,
-  tvl: tvl
+  }
 }
