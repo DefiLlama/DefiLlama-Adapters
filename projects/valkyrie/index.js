@@ -11,16 +11,10 @@ const pair = "terra17fysmcl52xjrs8ldswhz7n6mt37r9cmpcguack"; // VKR-UST lp
 async function staking(timestamp, chainBlocks) {
   const block = await getBlock(timestamp, "terra", chainBlocks, true);
 
-  const price_vkr = (
-    await utils.fetchURL(
-      "https://api.valkyrieprotocol.com/valkyrie/price/history/30m?from=1640524205549"
-    )
-  ).data.data.items.map((p) => p.price);
-
   const tokenBalance = await getBalance(token, holderToken, block);
 
   return {
-    terrausd: (tokenBalance * price_vkr[0]) / 1e6,
+    "valkyrie-protocol": (tokenBalance) / 1e6,
   };
 }
 
