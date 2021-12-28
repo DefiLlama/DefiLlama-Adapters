@@ -11,14 +11,6 @@ const ethContracts = [
   '0xE452E6Ea2dDeB012e20dB73bf5d3863A3Ac8d77a',
 
   /**
-   * WFIL
-   *
-   * coingecko: wrapped-filecoin
-   * coinmarketcap: wrapped-filecoin
-   */
-  '0x6e1A19F235bE7ED8E3369eF73b196C07257494DE',
-
-  /**
    * WCUSD
    *
    * coingecko: wrapped-celo-dollar
@@ -27,12 +19,19 @@ const ethContracts = [
   '0xad3E3Fc59dff318BecEaAb7D00EB4F68b1EcF195',
 
   /**
-   * WZEC
+   * WFIL
    *
-   * coingecko: wrapped-zcash
-   * coinmarketcap: wrapped-zec
+   * coingecko: wrapped-filecoin
+   * coinmarketcap: wrapped-filecoin
    */
-  '0x4A64515E5E1d1073e83f30cB97BEd20400b66E10',
+  '0x6e1A19F235bE7ED8E3369eF73b196C07257494DE',
+
+  /**
+   * WKDA
+   *
+   * coingecko: wrapped-kadena
+   */
+  '0x85d7bdfc9c3426b33a684241eeee70385bc42820',
 
   /**
    * WLTC
@@ -40,22 +39,37 @@ const ethContracts = [
    * no price available
    */
   '0x53c4871322Bb47e7A24136fce291a6dcC832a294',
+
+  /**
+   * WXRP
+   *
+   * coingecko: wrapped-xrp
+   */
+  '0x39fBBABf11738317a448031930706cd3e612e1B9',
+
+  /**
+   * WZEC
+   *
+   * coingecko: wrapped-zcash
+   * coinmarketcap: wrapped-zec
+   */
+  '0x4A64515E5E1d1073e83f30cB97BEd20400b66E10'
 ];
 
 const celoContracts = [
-  /**
-   * CETH
-   *
-   * no identifiers for coingecko or coinmarketcap
-   */
-  '0x2def4285787d58a2f811af24755a8150622f4361', // ceth
-
   /**
    * CBTC or WBTC
    *
    * no identifiers for coingecko or coinmarketcap
    */
   '0xD629eb00dEced2a080B7EC630eF6aC117e614f1b',
+
+  /**
+   * CETH
+   *
+   * no identifiers for coingecko or coinmarketcap
+   */
+  '0x2def4285787d58a2f811af24755a8150622f4361', // ceth
 ];
 
 const ethTvls = ethContracts.map((contractAddress) => {
