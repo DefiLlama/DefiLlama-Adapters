@@ -49,7 +49,7 @@ const _tvl = async (timestamp, ethBlock, chainBlocks, chain) => {
       }
     }
 
-    balances[token.address] = new BigNumber(
+    balances[`${chain}:${token.address}`] = new BigNumber(
       cohortBalances.reduce((a, b) => a + b, 0)
     )
       .multipliedBy(new BigNumber(10).pow(token.decimals))
