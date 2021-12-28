@@ -235,6 +235,14 @@ async function fantom(timestamp, block, chainBlocks) {
         "0x920786cff2a6f601975874bb24c63f0115df7dc8",
         "0xBf0ff8ac03f3E0DD7d8faA9b571ebA999a854146",
       ],
+      [
+        "0x6c021Ae822BEa943b2E66552bDe1D2696a53fbB7",
+        "0x051b82448a521bC32Ac7007a7A76F9dEC80F6BA2"
+      ],
+      [
+        "0x4cdF39285D7Ca8eB3f090fDA0C069ba5F4145B37",
+        "0xD60FBaFc954Bfbd594c7723C980003c196bDF02F"
+      ]
     ],
     chainBlocks[chain],
     chain,
@@ -367,3 +375,4 @@ module.exports = {
     tvl: harmony,
   },
 };
+// node test.js projects/qidao/index.js
