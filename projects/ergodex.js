@@ -2,8 +2,8 @@ const utils = require('./helper/utils');
 const {toUSDTBalances} = require('./helper/balances')
 
 async function tvl() {
-  var totalTvl = await utils.fetchURL('https://api.ergodex.io/v1/amm/platform/stats?from=1640131200000&to=1640302452170');
-  return toUSDTBalances(totalTvl.data.tvl.value);
+  var totalTvl = await utils.fetchURL('https://api.ergodex.io/v1/amm/platform/stats');
+  return toUSDTBalances(totalTvl.data.tvl.value/100);
 }
 
 module.exports = {
@@ -12,5 +12,5 @@ module.exports = {
     ergo:{
         tvl
     },
-    methodology: `ErgoDEX TVL is achieved by making a call to its API: https://api.ergodex.io/v1/amm/platform/stats?from=1640131200000&to=1640302452170.`
+    methodology: `ErgoDEX TVL is achieved by making a call to its API: https://api.ergodex.io/v1/amm/platform/stats.`
 }

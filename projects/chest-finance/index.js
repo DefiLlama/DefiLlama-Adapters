@@ -6,11 +6,11 @@ const SOL_chest_owner = "3SGP67y3XAxZivaz2peNTxS6E44cQXErnEMyBXaCeT2n";
 const mSOL = "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So";
 const soETH = "2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk";
 const soBTC = "9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E";
-const tokensAndAccounts = [
-  [mSOL, SOL_chest_owner],
-  [soETH, SOL_chest_owner],
-  [soBTC, SOL_chest_owner],
-];
+const soUSDC = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
+const tokensAndAccounts = [mSOL, soETH, soBTC, soUSDC].map((token) => [
+  token,
+  SOL_chest_owner,
+]);
 
 async function solanaTVL() {
   // Sum Tokens balances

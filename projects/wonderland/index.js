@@ -22,6 +22,7 @@ async function tvl(timestamp, block, chainBlocks) {
       ["0x781655d802670bba3c89aebaaea59d3182fd755d", true], // wavax-mim
       ["0x8ea6dd9482a49791e8c3d0f7c515bbd3be702f74", true], // MIM-WETH
       ["0xf64e1c5B6E17031f5504481Ac8145F4c3eab4917", true], // wavax-time
+      ["0x49d5c2bdffac6ce2bfdb6640f4f80f226bc10bab", false] // WETH
     ],
     [treasury, dao],
     chainBlocks.avax,
