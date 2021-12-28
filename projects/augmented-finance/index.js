@@ -1,4 +1,5 @@
 const sdk = require('@defillama/sdk');
+const { transformBscAddress } = require('../helper/portedTokens');
 const abi = require('./abi.json');
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
@@ -10,7 +11,7 @@ const DATA_PROVIDERS = {
 function _tvlByChain(chainName, dataProviderAddress) {
     return async function tvl(timestamp, ethBlock, chainBlocks) {
         const block = chainBlocks[chainName];
-
+        const transform = (chainName == 'ethereum' ? (a => a) : await transformBscAddress())
         const {output: reservesData} = await sdk.api.abi.call({
             target: dataProviderAddress,
             abi: abi.find(abi => abi.name === 'getReservesData'),
@@ -32,9 +33,17 @@ function _tvlByChain(chainName, dataProviderAddress) {
             const tokenAddress = reserves[index].underlyingAsset;
             const tokenBalance = call.output;
 
-            const formattedAddress = chainName === 'ethereum' ? tokenAddress : `${chainName}:${tokenAddress}`;
-            sdk.util.sumSingleBalance(balances, formattedAddress, tokenBalance);
+            sdk.util.sumSingleBalance(balances, transform(tokenAddress), tokenBalance);
         })
+
+        if ('bsc:0x85EAC5Ac2F758618dFa09bDbe0cf174e7d574D5B' in balances) {
+            balances['tron'] = balances['bsc:0x85EAC5Ac2F758618dFa09bDbe0cf174e7d574D5B'] / 10 ** 18;
+            delete balances['bsc:0x85EAC5Ac2F758618dFa09bDbe0cf174e7d574D5B'];
+        };
+        if ('0x8E16bf47065Fe843A82f4399bAF5aBac4E0822B7' in balances) {
+            balances['filecoin'] = balances['0x8E16bf47065Fe843A82f4399bAF5aBac4E0822B7'] / 10 ** 18;
+            delete balances['0x8E16bf47065Fe843A82f4399bAF5aBac4E0822B7'];
+        };
 
         return balances;
     }
