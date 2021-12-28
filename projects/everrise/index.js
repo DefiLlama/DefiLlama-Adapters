@@ -3,6 +3,7 @@ const abi = require('./abi.json');
 const BigNumber = require("bignumber.js");
 
 const STATS ='0xC4DD716a29357317BdC66d9D9cF2ec02fD995742';
+const BRIDGE_CONTROLLER = '0x0Dd4A86077dC53D5e4eAE6332CB3C5576Da51281';
 const TOKEN ='0x0cD022ddE27169b20895e0e2B2B8A33B25e63579';
 const STAKING ='0x1490EaA0De0b2D4F9fE0E354A7D99d6C6532be84';
 
@@ -72,8 +73,7 @@ async function ethStaking(timestamp, block) {
 
   const balance = (await sdk.api.erc20.balanceOf({
     target: TOKEN,
-    owner: STAKING,
-    block: block
+    owner: STAKING
   })).output;
 
   staking = staking.plus(BigNumber(balance));
@@ -86,19 +86,17 @@ async function ethStaking(timestamp, block) {
 async function tvl(timestamp, block, chain) {
     let balances = {};
 
-    const stats = (await sdk.api.abi.call({
-      target: STATS,
-      abi: abi['getStats'],
-      block: block,
+    const results = (await sdk.api.eth.getBalances({
+      targets: [TOKEN, BRIDGE_CONTROLLER],
       chain: chain
-    })).output;
+    }));
 
-    const tvlCoin = BigNumber(stats.reservesBalance).div(BigNumber(10).pow(BigNumber(stats.coinDecimals)));
+    let total = BigNumber(0);
+    for (const c of results.output) {
+      total = total.plus(BigNumber(c.balance));
+    }
 
-    const tvlToken = BigNumber(stats.bridgeVault);
-
-    balances[coin(chain)] = tvlCoin
-    balances[chain+':'+TOKEN] = tvlToken;
+    balances[coin(chain)] = total.div(BigNumber(10).pow(18));
     
     return balances;
 }
@@ -106,18 +104,16 @@ async function tvl(timestamp, block, chain) {
 async function ethTvl(timestamp, block) {
   let balances = {};
 
-  const stats = (await sdk.api.abi.call({
-    target: STATS,
-    abi: abi['getStats'],
-    block: block
-  })).output;
+  const results = (await sdk.api.eth.getBalances({
+    targets: [TOKEN, BRIDGE_CONTROLLER]
+  }));
 
-  const tvlCoin = BigNumber(stats.reservesBalance).div(BigNumber(10).pow(BigNumber(stats.coinDecimals)));
+  let total = BigNumber(0);
+  for (const c of results.output) {
+    total = total.plus(BigNumber(c.balance));
+  }
 
-  const tvlToken = BigNumber(stats.bridgeVault);
-
-  balances['ethereum'] = tvlCoin
-  balances[TOKEN] = tvlToken;
+  balances['ethereum'] = total.div(BigNumber(10).pow(18));
   
   return balances;
 }
@@ -127,18 +123,15 @@ module.exports = {
   token: 'RISE',
   bsc:{
     tvl: bscTvl,
-    staking: bscStaking,
-    start: 13428052,
+    staking: bscStaking
   },
   ethereum:{
     tvl: ethTvl,
-    staking: ethStaking,
-    start: 13794318,
+    staking: ethStaking
   },
   polygon:{
     tvl: polygonTvl,
-    staking: polygonStaking,
-    start: 22460297,
+    staking: polygonStaking
   },
   methodology: "TVL comes from the buyback reserves and cross-chain bridge vaults",
 };
