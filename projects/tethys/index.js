@@ -1,5 +1,5 @@
 const {calculateUsdUniTvl} = require('../helper/getUsdUniTvl.js')
-const { staking } = require('../helper/staking.js');
+const { staking, stakingPricedLP } = require('../helper/staking.js');
 
 const factory = '0x2CdFB20205701FF01689461610C9F321D1d00F80'
 const metis = '0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000'
@@ -17,7 +17,7 @@ module.exports = {
   timetravel: true,
   doublecounted: false,
   metis:{
-    tvl: calculateUsdUniTvl(factory, 'metis', metis, whitelist, 'metis'),
-    staking: staking(masterchef, tethys, "metis"),
+    tvl: calculateUsdUniTvl(factory, 'metis', metis, whitelist, 'metis-token'),
+    staking: stakingPricedLP(masterchef, tethys, "metis","0xc9b290ff37fa53272e9d71a0b13a444010af4497", "metis-token"),
   }
 }
