@@ -1,23 +1,28 @@
-const {calculateUsdUniTvl} = require('../helper/getUsdUniTvl.js')
-const { staking } = require('../helper/staking.js');
-
-const factory = '0x2CdFB20205701FF01689461610C9F321D1d00F80'
-const metis = '0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000'
-const tethys = '0x69fdb77064ec5c84FA2F21072973eB28441F43F3'
-const masterchef = '0x54A8fB8c634dED694D270b78Cb931cA6bF241E21'
-const whitelist = [
-  tethys, // TETHYS
-  '0xEA32A96608495e54156Ae48931A7c20f0dcc1a21', // USDC
-  '0xbB06DCA3AE6887fAbF931640f67cab3e3a16F4dC', // USDT
-  '0x420000000000000000000000000000000000000A', // WETH
-]
+const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl");
 
 module.exports = {
   misrepresentedTokens: true,
-  timetravel: true,
-  doublecounted: false,
-  metis:{
-    tvl: calculateUsdUniTvl(factory, 'metis', metis, whitelist, 'metis'),
-    staking: staking(masterchef, tethys, "metis"),
-  }
-}
+  methodology:
+    "Factory address (0x2CdFB20205701FF01689461610C9F321D1d00F80) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
+  metis: {
+    tvl: calculateUsdUniTvl(
+      "0x2CdFB20205701FF01689461610C9F321D1d00F80",
+      "metis",
+      "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000",
+      [
+        "0x69fdb77064ec5c84FA2F21072973eB28441F43F3", //tethys
+        "0xea32a96608495e54156ae48931a7c20f0dcc1a21", //usdc
+        "0xbb06dca3ae6887fabf931640f67cab3e3a16f4dc", //usdt
+        "0x420000000000000000000000000000000000000a", //weth
+        "0x90fe084f877c65e1b577c7b2ea64b8d8dd1ab278", //nett
+        "0xf5f66d5daa89c090a7afa10e6c1553b2887a9a33", //link
+        "0x87dd4a7ad23b95cd9ff9c26b5cf325905caf8663", //crv
+        "0x5ce34d9abe4bf239cbc08b89287c87f4cd6d80b7", //mwow
+        "0x80ffd7d26304b1443aa49ff35ae86e0b74077848", //mm
+        "0xb453140460761f6e5e8f6d303f1a7c1fef3b7220", //str
+        "0x1d94cc954fce49db542a61d68901f787b874cf4b", //alchi
+      ],
+      "metis-token"
+    ),
+  },
+};
