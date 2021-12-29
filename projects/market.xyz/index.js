@@ -11,10 +11,7 @@ const fusePoolLensAddress = {
   fantom: "0x5aB6215AB8344C28B899efdE93BEe47B124200Fb",
 };
 
-const WETH_CHAIN = {
-  polygon: "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
-  fantom: "0x74b23882a30290451a17c44f4f05243b6b58c76d",
-};
+const WETH = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
 
 async function getFusePools(
   timestamp,
@@ -44,9 +41,9 @@ async function getFusePools(
   }
 
   if (borrowed) {
-    balances[WETH_CHAIN[chain]] = totalSupplyInETH;
+    balances[WETH] = totalBorrowInETH;
   } else {
-    balances[WETH_CHAIN[chain]] = totalBorrowInETH;
+    balances[WETH] = totalSupplyInETH - totalBorrowInETH;
   }
 }
 
