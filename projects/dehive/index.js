@@ -1,24 +1,72 @@
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
-const { staking } = require("../helper/staking");
-const { pool2 } = require("../helper/pool2");
 const abi = require('./abi.json')
 
 const stakingInfo = {
+    'ethereum': [
+        {
+            // DHV
+            meta: {
+                stakingAddress: '0x04595f9010F79422a9b411ef963e4dd1F7107704',
+                tokenAddress: '0x62Dc4817588d53a056cBbD18231d91ffCcd34b2A',
+                poolId: 0,
+            },
+            tvl: stakingTvl
+        },
+        {
+            // DHV/WETH
+            meta: {
+                stakingAddress: '0x4964B3B599B82C3FdDC56e3A9Ffd77d48c6AF0f0',
+                lpAddress: '0x60c5BF43140d6341bebFE13293567FafBe01D65b',
+                underlying: [
+                    '0x62Dc4817588d53a056cBbD18231d91ffCcd34b2A',
+                    '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+                ],
+                poolId: 0
+            },
+            tvl: lpStakingTvl
+        },
+        {
+            // DECR
+            meta: {
+                clusterAddress: '0x6Bc3F65Fc50E49060e21eD6996be96ee4B404752',
+            },
+            tvl: clusterTvl
+        },
+    ],
     'polygon': [
+        {
+            // DHV
+            meta: {
+                stakingAddress: '0x88cFC1bc9aEb80f6C8f5d310d6C3761c2a646Df7',
+                tokenAddress: '0x5fCB9de282Af6122ce3518CDe28B7089c9F97b26',
+                poolId: 0,
+            },
+            tvl: stakingTvl
+        },
         {
             // DPOL
             meta: {
                 clusterAddress: '0x4964B3B599B82C3FdDC56e3A9Ffd77d48c6AF0f0',
             },
-            tvl: clusterStakingTvl
+            tvl: clusterTvl
         },
         {
             // DGAME
             meta: {
                 clusterAddress: '0x589Ea336092184d9eD74b8263c4eecA73Ed0cE7a',
             },
-            tvl: clusterStakingTvl
+            tvl: clusterTvl
+        },
+        {
+            // CRV
+            meta: {
+                stakingAddress: '0xE6E6982fb5dDF4fcc74cCCe4e4eea774E002D17F',
+                strategyAddress: '0x849b2f194875Af260C0f9dA4e6E0a8d7Ce90388D',
+                lpAddress: '0xdad97f7713ae9437fa9249920ec8507e5fbb23d3',
+                poolId: 0
+            },
+            tvl: crvStakingTvl
         },
         {
             // WETH/DAI
@@ -137,24 +185,36 @@ const stakingInfo = {
             },
             tvl: lpStakingTvl
         },
-        {
-            // CRV
-            meta: {
-                stakingAddress: '0xE6E6982fb5dDF4fcc74cCCe4e4eea774E002D17F',
-                strategyAddress: '0x849b2f194875Af260C0f9dA4e6E0a8d7Ce90388D',
-                lpAddress: '0xdad97f7713ae9437fa9249920ec8507e5fbb23d3',
-                poolId: 0
-            },
-            tvl: crvStakingTvl
-        }
     ],
     'bsc': [
+        {
+            // DHV
+            meta: {
+                stakingAddress: '0x35f28aA0B2F34eFF17d2830135312ab2a777De36',
+                tokenAddress: '0x58759dd469ae5631c42cf8a473992335575b58d7',
+                poolId: 0,
+            },
+            tvl: stakingTvl
+        },
         {
             // BSC-deCluster
             meta: {
                 clusterAddress: '0x0a684421ef48b431803BFd75F38675EAb1e38Ed5',
             },
-            tvl: clusterStakingTvl
+            tvl: clusterTvl
+        },
+        {
+            // DHV/BUSD
+            meta: {
+                stakingAddress: '0xF2e8CD1c40C766FEe73f56607fDffa526Ba8fa6c',
+                lpAddress: '0x72ba008B631D9FD5a8E8013023CB3c05E19A7CA9',
+                underlying: [
+                    '0x58759dd469ae5631c42cf8a473992335575b58d7',
+                    '0xe9e7cea3dedca5984780bafc599bd69add087d56'
+                ],
+                poolId: 0
+            },
+            tvl: lpStakingTvl
         },
         {
             // CAKE/BUSD
@@ -313,20 +373,43 @@ const stakingInfo = {
             tvl: lpStakingTvl
         },
     ],
-    'ethereum': [
-        // {
-        //     // DHV/WETH
-        //     meta: {
-        //         stakingAddress: '0x62Dc4817588d53a056cBbD18231d91ffCcd34b2A',
-        //         lpAddress: '0x60c5BF43140d6341bebFE13293567FafBe01D65b',
-        //         underlying: [
-        //             '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
-        //             '0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7'
-        //         ],
-        //         poolId: 0
-        //     },
-        //     tvl: lpStakingTvl
-        // },
+    'xdai': [
+        {
+            // DHV
+            meta: {
+                stakingAddress: '0x589Ea336092184d9eD74b8263c4eecA73Ed0cE7a',
+                tokenAddress: '0xFbdd194376de19a88118e84E279b977f165d01b8',
+                poolId: 0,
+            },
+            tvl: stakingTvl
+        },
+        {
+            // DXIN
+            meta: {
+                clusterAddress: '0xA6C090c5572f54d529B0839b8fd2D50a4afB1E6B',
+            },
+            tvl: clusterTvl
+        },
+        {
+            // DXDC
+            meta: {
+                clusterAddress: '0xF557B2B73b872E6d2F43826f9D77B7402A363Bc0',
+            },
+            tvl: clusterTvl
+        },
+        {
+            // DHV/XDAI
+            meta: {
+                stakingAddress: '0xa4E7BE054000603B82B79208aC3eE5428554CaF6',
+                lpAddress: '0x14EE6d20B8167eacb885F4F2F45C3Bf2d4FD06f4',
+                underlying: [
+                    '0xFbdd194376de19a88118e84E279b977f165d01b8',
+                    '0xe91d153e0b41518a2ce8dd3d7944fa863463a97d'
+                ],
+                poolId: 0
+            },
+            tvl: lpStakingTvl
+        },
     ]
 }
 
@@ -402,7 +485,10 @@ async function crvStakingTvl(chain, meta, ethBlock) {
     return underlyingList.map((_, i) => [underlyingList[i], priceInUnderlying[i]]);
 }
 
-async function clusterStakingTvl(chain, meta, ethBlock) {
+// TODO
+// async function clusterStakingTvl(){}
+
+async function clusterTvl(chain, meta, ethBlock) {
     const poolSupply = (await sdk.api.abi.call({
         target: meta.clusterAddress,
         abi: "erc20:totalSupply",
@@ -445,6 +531,10 @@ async function chainTvl(chain, chainBlocks) {
     return tvl
 }
 
+async function ethereumTvl(timestamp, ethBlock, chainBlocks) {
+    return chainTvl('ethereum', chainBlocks)
+}
+
 async function polygonTvl(timestamp, ethBlock, chainBlocks) {
     return chainTvl('polygon', chainBlocks);
 }
@@ -453,22 +543,22 @@ async function bscTvl(timestamp, ethBlock, chainBlocks) {
     return chainTvl('bsc', chainBlocks);
 }
 
-async function ethereumTvl(timestamp, ethBlock, chainBlocks) {
-    return chainTvl('ethereum', chainBlocks)
+async function xdaiTvl(timestamp, ethBlock, chainBlocks) {
+    return chainTvl('xdai', chainBlocks)
 }
 
+
 module.exports = {
+    ethereum: {
+        tvl: ethereumTvl
+    },
     polygon: {
-        staking: staking('0x88cFC1bc9aEb80f6C8f5d310d6C3761c2a646Df7', '0x5fCB9de282Af6122ce3518CDe28B7089c9F97b26', 'polygon'),
         tvl: polygonTvl
     },
     bsc: {
-        staking: staking('0x35f28aA0B2F34eFF17d2830135312ab2a777De36', '0x58759dd469ae5631c42cf8a473992335575b58d7', 'bsc'),
-        pool2: pool2("0xF2e8CD1c40C766FEe73f56607fDffa526Ba8fa6c", "0x72ba008B631D9FD5a8E8013023CB3c05E19A7CA9", "bsc"),
         tvl: bscTvl
     },
-    ethereum: {
-        staking: staking('0x04595f9010F79422a9b411ef963e4dd1F7107704', '0x62Dc4817588d53a056cBbD18231d91ffCcd34b2A'),
-        //tvl: ethereumTvl
+    xdai: {
+        tvl: xdaiTvl
     }
 };
