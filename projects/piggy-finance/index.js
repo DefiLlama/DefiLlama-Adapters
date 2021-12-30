@@ -23,7 +23,9 @@ async function tvl (timestamp, block, chainBlocks) {
 }
 
 module.exports = {
+    methodology: 'The TVL of Piggy Finance is calculated using the TraderJoe LP token deposits(PIGGY/AVAX and PSHARE/AVAX), and the PSHARE deposits found in the Masonry contract address(0x4cCc31bfd4b32BFcb9bF148f44FB9CfE75c379AB).',
     avalanche: {
         tvl,
     }
 }
+
