@@ -118,5 +118,4 @@ module.exports = {
         tvl: aurora
     },
     // We don't include heco because their subgraph is outdated
-    tvl: sdk.util.sumChainTvls([eth, bsc, polygon, arbitrum])
 }
