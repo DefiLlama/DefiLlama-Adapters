@@ -48,9 +48,9 @@ async function calculateUniTvl(getAddress, block, chain, FACTORY, START_BLOCK, u
         target: FACTORY,
         params: [num]
       })),
-      block
+      block,
+      requery: true
     })).output
-    await requery(pairs, chain, block, factoryAbi.allPairs);
     pairAddresses = pairs.map(result => result.output.toLowerCase())
   } else {
     const logs = (
@@ -83,6 +83,7 @@ async function calculateUniTvl(getAddress, block, chain, FACTORY, START_BLOCK, u
           target: pairAddress,
         })),
         block,
+        requery: true
       })
       .then(({ output }) => output),
     sdk.api.abi
@@ -93,6 +94,7 @@ async function calculateUniTvl(getAddress, block, chain, FACTORY, START_BLOCK, u
           target: pairAddress,
         })),
         block,
+        requery: true
       })
       .then(({ output }) => output),
     sdk.api.abi
@@ -103,11 +105,9 @@ async function calculateUniTvl(getAddress, block, chain, FACTORY, START_BLOCK, u
           target: pairAddress,
         })),
         block,
+        requery: true
       }).then(({ output }) => output),
   ]);
-  await requery(token0Addresses, chain, block, token0);
-  await requery(token1Addresses, chain, block, token1);
-  await requery(reserves, chain, block, getReserves);
 
   const pairs = {};
   // add token0Addresses
