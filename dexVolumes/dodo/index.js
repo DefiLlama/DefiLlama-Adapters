@@ -27,9 +27,11 @@ const graphs = getChainVolume({
 });
 
 module.exports = {
-  ethereum: graphs("ethereum"),
-  bsc: graphs("bsc"),
-  heco: graphs("heco"),
-  polygon: graphs("polygon"),
-  arbitrum: graphs("arbitrum"),
+  volume: {
+    ethereum: graphs("ethereum"),
+    bsc: graphs("bsc"),
+    heco: graphs("heco"),
+    polygon: graphs("polygon"),
+    arbitrum: graphs("arbitrum"),
+  },
 };

@@ -41,17 +41,19 @@ const graphs = getChainVolume({
 });
 
 module.exports = {
-  ethereum: graphs("ethereum"),
-  xdai: graphs("xdai"),
-  polygon: graphs("polygon"),
-  // Will have to replace with faster indexer
-  fantom: graphs("fantom"),
-  bsc: graphs("bsc"),
-  harmony: graphs("harmony"),
-  avax: graphs("avax"),
-  celo: graphs("celo"),
-  // Will have to replace with faster indexer
-  arbitrum: graphs("arbitrum"),
-  // Heco currently returning 0
-  heco: graphs("heco"),
+  volume: {
+    ethereum: graphs("ethereum"),
+    xdai: graphs("xdai"),
+    polygon: graphs("polygon"),
+    // Will have to replace with faster indexer
+    fantom: graphs("fantom"),
+    bsc: graphs("bsc"),
+    harmony: graphs("harmony"),
+    avax: graphs("avax"),
+    celo: graphs("celo"),
+    // Will have to replace with faster indexer
+    arbitrum: graphs("arbitrum"),
+    // Heco currently returning 0
+    heco: graphs("heco"),
+  },
 };

@@ -19,5 +19,7 @@ const klaytn = async () => {
 };
 
 module.exports = {
-  klaytn,
+  volume: {
+    klaytn,
+  },
 };

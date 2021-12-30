@@ -22,5 +22,7 @@ const graphs = getChainVolume({
 });
 
 module.exports = {
-  ethereum: graphs("ethereum"),
+  volume: {
+    ethereum: graphs("ethereum"),
+  },
 };

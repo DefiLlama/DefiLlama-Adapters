@@ -18,7 +18,7 @@ const historicalData = gql`
   }
 `;
 
-const graph = async () => {
+const terra = async () => {
   const todayUnix = getUniqStartOfTodayTimestamp();
   const dailyVolumeRequest = await request(endpoints.terra, historicalData, {
     from: todayUnix,
@@ -56,5 +56,7 @@ const graph = async () => {
 };
 
 module.exports = {
-  terra: graph,
+  volume: {
+    terra,
+  },
 };
