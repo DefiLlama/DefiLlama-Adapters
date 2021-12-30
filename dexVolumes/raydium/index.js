@@ -19,7 +19,9 @@ const graphs = (chain) => async () => {
 };
 
 module.exports = {
-  solana: graphs("solana"),
+  volume: {
+    solana: graphs("solana"),
+  },
 };
 
 /*
