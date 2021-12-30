@@ -22,7 +22,7 @@ module.exports = {
     staking: staking(stakingContract_KARDIA, DFL, "kardia"),
   },
   harmony: {
-    staking: staking(stakingContract_Harmony, DFL_Harmony, "harmony"),
+    staking: staking(stakingContract_Harmony, DFL_Harmony, "harmony", `kardia:${DFL}`),
   },
   fetch,
 };
