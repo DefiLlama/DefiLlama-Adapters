@@ -3,6 +3,7 @@ const sdk = require('@defillama/sdk');
 const abi = require('./abis/compound.json');
 const {getBlock} = require('./getBlock');
 const { unwrapUniswapLPs } = require('./unwrapLPs');
+const { fixHarmonyBalances } = require('../helper/portedTokens');
 
 // ask comptroller for all markets array
 async function getAllCTokens(comptroller, block, chain) {
@@ -94,6 +95,9 @@ function getCompoundV2Tvl(comptroller, chain="ethereum", transformAdress = addr=
                 sdk.util.sumSingleBalance(balances, transformAdress(market.underlying), getCash.output)
             }
         });
+        if(chain == "harmony") {
+            fixHarmonyBalances(balances);
+        }
         if(lpPositions.length > 0){
             await unwrapUniswapLPs(balances, lpPositions, block, chain, transformAdress)
         }
