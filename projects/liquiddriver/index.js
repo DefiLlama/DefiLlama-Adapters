@@ -175,13 +175,32 @@ const minichefTvl = async (timestamp, ethBlock, chainBlocks) => {
     }
   });
 
-  await unwrapUniswapLPs(
-    balances,
-    lpPositions,
-    chainBlocks["fantom"],
-    "fantom",
-    transformAddress
-  );
+  const beetXLP_MIM_USDC_USDT = '0xd163415bd34ef06f57c58d2aed5a5478afb464cc';
+
+  for (let pos of lpPositions) {
+    if (pos.token.toLowerCase() == beetXLP_MIM_USDC_USDT) {
+      sdk.util.sumSingleBalance(
+        balances,
+        transformAddress(usdtTokenAddress),
+        pos.balance
+      );
+      delete lpPositions[pos];
+    };
+  };
+
+  const turns = Math.floor(lpPositions.length / 10);
+  let n = 0;
+  for (let i = 0; i < turns; i++) {
+    await unwrapUniswapLPs(
+      balances,
+      lpPositions.slice(n, n + 10),
+      chainBlocks["fantom"],
+      "fantom",
+      transformAddress
+    );
+    n += 10;
+  }
+
   sdk.util.sumSingleBalance(
     balances,
     transformAddress(usdtTokenAddress),
