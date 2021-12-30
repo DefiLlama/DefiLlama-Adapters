@@ -59,11 +59,12 @@ const assetDictionary = {
     }
 }
 
+
 async function getGlobalMarketState(algodClient, marketId) {
   let response = await algodClient.getApplicationByID(marketId).do()
   let results = {}
   response.params["global-state"].forEach(x => {
-    let decodedKey = atob(x.key)
+    let decodedKey =  Buffer.from(x.key, 'base64').toString('binary')
     results[decodedKey] = x.value.uint
   })
 
