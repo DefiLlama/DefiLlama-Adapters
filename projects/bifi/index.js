@@ -73,7 +73,15 @@ const avaxTokenPools = {
     'usdc': {
         'pool': '0x8385Ea36dD4BDC84B3F2ac718C332E18C1E42d36',
         'token': '0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664'
-    }
+    },
+    'dai': {
+        'pool': '0x34DA42143b0c6E321CEb76931c637c12Bd865f7e',
+        'token': '0xd586E7F844cEa2F87f50152665BCbc2C279D8d70'
+    },
+    'wbtc': {
+        'pool': '0xc4D1e935F02A44D44985E6b1C0eE1ee616fC146a',
+        'token': '0x50b7545627a5162F82A992c33b87aDc75187B218'
+    },
 }
 
 const klayOracleContract = '0xCD4F7C7451FFD8628b7F3D5c1b68a3A207ab1125';
