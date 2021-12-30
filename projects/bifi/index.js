@@ -3,6 +3,7 @@ const { staking } = require("../helper/staking");
 const Caver = require('caver-js');
 const OracleAbi = require('./abi/oracle.json');
 const TokenAbi = require('./abi/token.json');
+const { toUSDTBalances } = require("../helper/balances");
 
 const stakingPool = '0x488933457E89656D7eF7E69C10F2f80C7acA19b5';
 const bfcAddr = '0x0c7D5ae016f806603CB1782bEa29AC69471CAb9c';
@@ -251,8 +252,7 @@ async function klaytn() {
         klaytnTVL += balance * tokenPrice / 10 ** div;
     }
 
-    console.log(klaytnTVL);
-    return klaytnTVL;
+    return toUSDTBalances(klaytnTVL);
 }
 
 module.exports = {
