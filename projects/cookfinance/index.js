@@ -1,5 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking.js");
+const { pool2s } = require("../helper/pool2");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs.js");
 const yieldyakAbi = require("./yieldyakAbi.json");
 
@@ -114,69 +115,17 @@ async function avaTvl(timestamp, ethBlock, chainBlocks) {
   return balances;
 }
 
-async function ethPool2s(timestamp, block) {
-  let balances = {};
-
-  let { output: balance } = await sdk.api.abi.multiCall({
-    calls: ethPool2LPs.map((address) => ({ target: address })),
-    abi: "erc20:totalSupply",
-    block,
-  });
-  for (let i = 0; i < ethPool2LPs.length; i++) {
-    await unwrapUniswapLPs(balances, [
-      { balance: balance[i].output, token: ethPool2LPs[i] },
-    ]);
-  }
-  return balances;
-}
-
-async function bscPool2s(timestamp, ethBlock, chainBlocks) {
-  const block = chainBlocks.bsc;
-  let balances = {};
-
-  let { output: balance } = await sdk.api.abi.multiCall({
-    calls: bscPool2LPs.map((address) => ({ target: address })),
-    abi: "erc20:totalSupply",
-    chain: "bsc",
-    block,
-  });
-  for (let i = 0; i < bscPool2LPs.length; i++) {
-    await unwrapUniswapLPs(balances, [
-      { balance: balance[i].output, token: bscPool2LPs[i] },
-    ], block, 'bsc', addr => 'bsc:' + addr);
-  }
-  return balances;
-}
-
-async function avaxPool2s(timestamp, ethBlock, chainBlocks) {
-  const block = chainBlocks.avax;
-  let balances = {};
-
-  let { output: balance } = await sdk.api.abi.multiCall({
-    calls: avaxPool2LPs.map((address) => ({ target: address })),
-    abi: "erc20:totalSupply",
-    chain: "avax",
-    block,
-  });
-  for (let i = 0; i < avaxPool2LPs.length; i++) {
-    await unwrapUniswapLPs(balances, [
-      { balance: balance[i].output, token: avaxPool2LPs[i] },
-    ], block, 'avax', addr => 'avax:' + addr);
-  }
-  return balances;
-}
-
 module.exports = {
   methodology:
     "TVL are the tokens locked into the index contracts. Pool2 are the tokens locked into DEX LP. Staking are the tokens locked into the active staking contract.",
   ethereum: {
     tvl: ethTvl,
-    pool2: ethPool2s,
+    pool2: pool2s(["0x4b21da40dd8d9f4363e69a9a1620d7cdb49123be"], ethPool2LPs, "ethereum"),
     staking: staking(stakingPool, cookToken),
   },
   avalanche: {
     tvl: avaTvl,
-    pool2: avaxPool2s,
+    pool2: pool2s(["0x35be7982bc5e40a8c9af39a639bddce32081102e"], avaxPool2LPs, "avax"),
     staking: staking(
       "0x35bE7982bC5E40A8C9aF39A639bDDcE32081102e",
       "0x637afeff75ca669ff92e4570b14d6399a658902f",
@@ -184,7 +133,7 @@ module.exports = {
       "avax:0x637afeff75ca669ff92e4570b14d6399a658902f"),
   },
   bsc: {
-    pool2: bscPool2s,
+    pool2: pool2s(["0x47b517061841e6bFaaeB6336C939724F47e5E263"], bscPool2LPs, "bsc"),
     staking: staking(
       "0x1Abeaa9D633162586a4c80389160c33327C9Aff5",
       "0x965b0df5bda0e7a0649324d78f03d5f7f2de086a",
