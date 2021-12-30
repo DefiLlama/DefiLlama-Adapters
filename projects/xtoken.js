@@ -1,7 +1,8 @@
+const Web3 = require('web3')
+require("dotenv").config();
 const retry = require("async-retry");
 const axios = require("axios");
 const utils = require("./helper/utils");
-const web3 = require("./config/web3.js");
 const BigNumber = require("bignumber.js");
 const {
   DEC_18,
@@ -31,6 +32,19 @@ const {
   snxAddr,
   wbtcAddr,
   wethAddr,
+  xu3lpaAddrArbitrum,
+  xu3lpbAddrArbitrum,
+  xbtc3xAddrArbitrum,
+  xeth3xAddrArbitrum,
+  wbtcAddrArbitrum,
+  wethAddrArbitrum,
+  X_ETH_3X,
+  X_BTC_3X,
+  WBTC,
+  WETH,
+  QUOTER_ADDRESS,
+  usdcAddress,
+  wethAddress,
 } = require("./config/xtoken/constants");
 const xAAVE = require("./config/xtoken/xAAVE.json");
 const xALPHA = require("./config/xtoken/xALPHA.json");
@@ -42,8 +56,14 @@ const xSNXTradeAccountingContract = require("./config/xtoken/xSNXTradeAccounting
 const xU3LP = require("./config/xtoken/xU3LP.json");
 const ERC20 = require("./config/xtoken/ERC20.json");
 const SNX = require("./config/xtoken/SNX.json");
+const xAssetLev = require("./config/xtoken/xAssetLev.json");
+const QuoterAbi = require("./config/xtoken/uniswapQuoterAbi.json");
+const { ethers, BigNumber: BigNumberEthers, Contract } = require('ethers')
+const { formatFixed } = require("@ethersproject/bignumber");
+const { formatEther, parseEther, parseUnits } = require('ethers/lib/utils')
 
-async function fetch() {
+async function eth() {
+  let web3 = new Web3(new Web3.providers.HttpProvider(process.env.ETHEREUM_RPC));
   const xaaveaCtr = new web3.eth.Contract(xAAVE, xaaveaAddr);
   const xaavebCtr = new web3.eth.Contract(xAAVE, xaavebAddr);
   const xalphaaCtr = new web3.eth.Contract(xALPHA, xalphaaAddr);
@@ -269,7 +289,159 @@ async function fetch() {
   return tvl;
 }
 
+async function arbitrum() {
+  let web3 = new Web3(new Web3.providers.HttpProvider(process.env.ARBITRUM_RPC));
+  const provider = new ethers.providers.JsonRpcProvider(
+    process.env.ARBITRUM_RPC
+  )
+  const xu3lpaCtr = new web3.eth.Contract(xU3LP, xu3lpaAddrArbitrum);
+  const xu3lpbCtr = new web3.eth.Contract(xU3LP, xu3lpbAddrArbitrum);
+  const xu3lpaTvlRaw = await xu3lpaCtr.methods.getNav().call();
+  const xu3lpbTvlRaw = await xu3lpbCtr.methods.getNav().call();
+  const xu3lpaTvl = Number(new BigNumber(xu3lpaTvlRaw).div(DEC_18).toFixed(2));
+  const xu3lpbTvl = Number(new BigNumber(xu3lpbTvlRaw).div(DEC_18).toFixed(2));
+  // XAssetLev
+  const getXAssetLevAUM = async(xassetlevContract) => {
+    const DEC_18 = parseEther('1')
+    
+    const FEES = BigNumberEthers.from('3000') // 0.3% for xAssetCLR swaps
+    const MIN_PRICE = BigNumberEthers.from('4295128740') // asset0 -> asset1 swap
+    const MAX_PRICE = BigNumberEthers.from(
+      '1461446703485210103287273052203988822378723970341'
+    ) // asset1 -> asset0 swap
+    
+
+    const getXAssetLevTokenSymbol = (symbol) => {
+      switch (symbol) {
+        case X_BTC_3X:
+          return WBTC
+        case X_ETH_3X:
+          return WETH
+      }
+    }
+
+    const formatNumber = (val, digits = 4) => {
+      const n = Number(val)
+      return Number.isInteger(n) ? n : parseFloat(n.toFixed(digits))
+    }
+
+    function formatUnits(value, unitName) {
+      if (typeof(unitName) === "string") {
+          const index = names.indexOf(unitName);
+          if (index !== -1) { unitName = 3 * index; }
+      }
+      return formatFixed(value, (unitName != null) ? unitName: 18);
+    }
+
+    const getEthUsdcPriceUniswapV3 = async() => {
+      const quoterContract = new Contract(QUOTER_ADDRESS, QuoterAbi, provider)
+      const quantity = await quoterContract.callStatic.quoteExactInputSingle(
+        wethAddress,
+        usdcAddress,
+        FEES,
+        DEC_18,
+        // In case of Token0 to Token1 trade, the price limit is `MIN_PRICE` and the reverse would be `MAX_PRICE`
+        BigNumberEthers.from(usdcAddress).gt(BigNumberEthers.from(wethAddress))
+          ? MIN_PRICE
+          : MAX_PRICE
+      )
+    
+      return formatUnits(quantity, 6)
+    }
+
+    const getTokenEthPriceUniswapV3 = async (
+      symbol,
+    ) => {
+      const addresses = {
+        wbtc: wbtcAddrArbitrum,
+        weth: wethAddrArbitrum
+      }
+      const quoterContract = new Contract(QUOTER_ADDRESS, QuoterAbi, provider)
+      const tokenContract = new Contract(addresses[symbol], ERC20, provider)
+      const tokenDecimals = await tokenContract.decimals()
+      const quantity = await quoterContract.callStatic.quoteExactInputSingle(
+        tokenContract.address,
+        wethAddress,
+        FEES,
+        parseUnits('1', tokenDecimals),
+        // In case of Token0 to Token1 trade, the price limit is `MIN_PRICE` and the reverse would be `MAX_PRICE`
+        BigNumberEthers.from(wethAddress).gt(BigNumberEthers.from(tokenContract.address))
+          ? MIN_PRICE
+          : MAX_PRICE
+      )
+    
+      return formatEther(quantity)
+    }
+
+    const symbol = await xassetlevContract.symbol()
+    const token = getXAssetLevTokenSymbol(symbol)
+
+    const [
+      xassetlevTotalSupply,
+      { bufferBalance, marketBalance },
+      ethUsdcPrice,
+    ] = await Promise.all([
+      xassetlevContract.totalSupply(),
+      xassetlevContract.getFundBalances(),
+      getEthUsdcPriceUniswapV3(),
+    ])
+
+    let tokenEthPrice = BigNumberEthers.from('0')
+    if (symbol !== X_ETH_3X) {
+      tokenEthPrice = parseEther(
+        await getTokenEthPriceUniswapV3(token, provider)
+      )
+    }
+
+    // Price in terms of base asset
+    const priceToken = bufferBalance
+      .add(marketBalance)
+      .mul(DEC_18)
+      .div(xassetlevTotalSupply)
+
+    let priceBtc = BigNumberEthers.from('0')
+    let priceEth
+
+    if (symbol === X_ETH_3X) {
+      priceEth = priceToken
+    } else {
+      if (symbol === X_BTC_3X) {
+        priceBtc = parseUnits(priceToken.toString(), 10)
+        priceEth = priceBtc.mul(tokenEthPrice).div(DEC_18)
+      } else {
+        priceEth = priceToken.mul(tokenEthPrice).div(DEC_18)
+      }
+    }
+
+    const priceUsd = priceEth.mul(parseEther(ethUsdcPrice)).div(DEC_18)
+    
+    const aum = priceUsd.mul(xassetlevTotalSupply).div(DEC_18)
+    return formatNumber(formatEther(aum), 0)
+  }
+  
+  const xbtc3xCtr = new ethers.Contract(xbtc3xAddrArbitrum, xAssetLev, provider)
+  const xeth3xCtr = new ethers.Contract(xeth3xAddrArbitrum, xAssetLev, provider)
+
+  const [xbtc3xTvl, xeth3xTvl] = await Promise.all([
+    getXAssetLevAUM(xbtc3xCtr), getXAssetLevAUM(xeth3xCtr)
+  ]) 
+
+  const tvl = xu3lpaTvl + xu3lpbTvl + xbtc3xTvl + xeth3xTvl
+  return tvl
+}
+
+async function fetch() {
+  return (await eth())+(await arbitrum())
+}
+
+
 module.exports = {
+  ethereum:{
+    fetch: eth
+  },
+  arbitrum:{
+    fetch: arbitrum
+  },
   fetch,
   methodology: `TVL includes deposits made to the available strategies at xToken Markets.`,
 };

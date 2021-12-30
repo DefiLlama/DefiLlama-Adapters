@@ -80,28 +80,35 @@
             "JOE": "0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd",
             "USDC": "0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664",
             "PENDLE": "0xfb98b335551a418cd0737375a2ea0ded62ea213b",
+            "MIM": "0x130966628846BFd36ff31a822705796e8cb8C18D",
+            "wMEMO": "0x0da67235dd5787d67955420c84ca1cecd4e5bb3b",
 
             "JLP_OT_PAP": "0x82922e6fbe83547c5e2e0229815942a2108e4624",
             "JLP_OT_qiUSDC": "0x82db765c214c1aab16672058a3c22b12f6a42cd0",
             "JLP_OT_qiAVAX": "0x5f973e06a59d0bafe464faf36d5b3b06e075c543",
-            "JLP_OT_xJOE": "0xd1f377b881010cb97ab0890a5ef908c45bcf13f9"
+            "JLP_OT_xJOE": "0xd1f377b881010cb97ab0890a5ef908c45bcf13f9",
+            "JLP_OT_wMEMO": "0x588DC0Dd7C8be073E9DA79307E023F1F756F06C6"
         },
         "funded" : {
             "0x9c2082216E15b2Fb32EE0648052b483f29dB5Ad3": "PendleJLPxJOEYieldTokenHolder",
             "0x5910B40343E51422AF27705d4783cbf408017d90": "PendleJLPqiAVAXYieldTokenHolder",
             "0xFAb894A4df458237fE75Ac82Bb0682F8CD4A0155": "PendleJLPqiUSDCYieldTokenHolder",
+            "0xd836C78BEF9847AF68d951279C6b5df95Af5B5A8": "PendlewMEMOYieldTokenHolder",
 
             "0x7552f903e33db53a86167c1e74f0e082bd0740d5": "PendleqiUSDCMarket",
             "0x80aae49b1142e2f135033829a1b647b1636c1506": "PendleqiAVAXMarket",
             "0x3e2737eb1b513bcee93a2144204d22695b272215": "PendleqiUSDCMarket",
+            "0x11B9346EeFa301e278f246D857C0a6EdFbf97FB4": "PendlewMEMOMarket",
 
             "0xA94B02aBe193e372100f667526b2c45118a681a6": "PendleLpHolder_JLPxJOE",
             "0x1a14F2964664B9d7e45DF70D09fe4007615E31C2": "PendleLpHolder_JLPqiAVAX",
             "0x9e2CcB276AE94f58e430f248e494bc2D6aEd8620": "PendleLpHolder_JLPqiUSDC",
+            "0x7D2ac45124f35260C8E7fDB0231c28655281672A": "PendleLpHolder_wMEMO",
 
             "0xD0788Af7a613b81F437a51b96594A6387c7329b1": "OTJLP-xJOE/USDCStaking",
             "0xfe60eEC35E3C4Aad1e69f10957Ad0A7D3CFc6CEA": "OTJLP-qiAVAX/USDCStaking",
-            "0x224D395e9e123Bc9C37BfF8bCd845562d5232713": "OTJLP-qiUSDC/USDCStaking"
+            "0x224D395e9e123Bc9C37BfF8bCd845562d5232713": "OTJLP-qiUSDC/USDCStaking",
+            "0x2aA0Bec34dEEB6987c118Ce353D14Eea6deF24Ce": "OTJLP-wMEMO/MIMStaking"
         },
         "staking" : {
 
@@ -110,7 +117,8 @@
             "0xfffe5fC3E511cE11dF20684AEC435A3E2b7D8136": "OT-qiUSDCDec23",
             "0xECC5748b1fF6b23f284EC81E8bf034409961d8Dc": "OT-qiAVAXDec23",
             "0xABCED2A62FD308BD1B98085c13DF74B685140C0b": "OT-JLPDec23",
-            "0x7D1e8650aBD5f8363D63Dc7AB838ceC8c726Dd38": "OT-xJOEJun23"
+            "0x7D1e8650aBD5f8363D63Dc7AB838ceC8c726Dd38": "OT-xJOEJun23",
+            "0xb7E446ff1a2eEEa8CD07331C7e06B0276d0B06b7": "OT-wMEMOFeb22"
         },
         "pool2" : {
             "0xd5736ba0be93c99a10e2264e8e4ebd54633306f8": "PendleJLP_PENDLEAVAX/PENDLEMarket",

@@ -1,95 +1,88 @@
 {
-    "poolInfos":{
-        "inputs": [],
-        "name": "poolInfos",
-        "outputs": [
-          {
-            "components": [
-              { "internalType": "address", "name": "pool", "type": "address" },
-              { "internalType": "address", "name": "token0", "type": "address" },
-              { "internalType": "address", "name": "token1", "type": "address" },
-              { "internalType": "string", "name": "name", "type": "string" },
-              { "internalType": "string", "name": "symbol", "type": "string" },
-              { "internalType": "uint8", "name": "decimals", "type": "uint8" },
-              { "internalType": "uint256", "name": "totalSupply", "type": "uint256" },
-              { "internalType": "uint112", "name": "token0Reserve", "type": "uint112" },
-              { "internalType": "uint112", "name": "token1Reserve", "type": "uint112" },
-              { "internalType": "uint256", "name": "token0Balance", "type": "uint256" },
-              { "internalType": "uint256", "name": "token1Balance", "type": "uint256" }
-            ],
-            "internalType": "struct Viewer.PoolInfo[]",
-            "name": "poolInfoList",
-            "type": "tuple[]"
-          }
+  "poolInfos":{
+      "inputs": [],
+      "name": "poolInfos",
+      "outputs": [
+        {
+          "components": [
+            { "internalType": "address", "name": "pool", "type": "address" },
+            { "internalType": "address", "name": "token0", "type": "address" },
+            { "internalType": "address", "name": "token1", "type": "address" },
+            { "internalType": "string", "name": "name", "type": "string" },
+            { "internalType": "string", "name": "symbol", "type": "string" },
+            { "internalType": "uint8", "name": "decimals", "type": "uint8" },
+            { "internalType": "uint256", "name": "totalSupply", "type": "uint256" },
+            { "internalType": "uint112", "name": "token0Reserve", "type": "uint112" },
+            { "internalType": "uint112", "name": "token1Reserve", "type": "uint112" },
+            { "internalType": "uint256", "name": "token0Balance", "type": "uint256" },
+            { "internalType": "uint256", "name": "token1Balance", "type": "uint256" }
+          ],
+          "internalType": "struct Viewer.PoolInfo[]",
+          "name": "poolInfoList",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function",
+      "constant": true
+  },
+  "tokenInfoDetail":{
+    "inputs": [{ "internalType": "address", "name": "token", "type": "address" }],
+    "name": "tokenInfoDetail",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "address", "name": "token", "type": "address" },
+          { "internalType": "string", "name": "name", "type": "string" },
+          { "internalType": "string", "name": "symbol", "type": "string" },
+          { "internalType": "uint8", "name": "decimals", "type": "uint8" },
+          { "internalType": "uint256", "name": "totalSupply", "type": "uint256" }
         ],
-        "stateMutability": "view",
-        "type": "function",
-        "constant": true
-    },
-    "tokenPrice":{
-        "inputs": [{ "internalType": "address", "name": "token", "type": "address" }],
-        "name": "tokenPrice",
-        "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-        "stateMutability": "view",
-        "type": "function",
-        "constant": true
-    },
-    "tokenInfo":{
-        "inputs": [{ "internalType": "address", "name": "token", "type": "address" }],
-        "name": "tokenInfo",
-        "outputs": [
-          {
-            "components": [
-              { "internalType": "address", "name": "token", "type": "address" },
-              { "internalType": "string", "name": "name", "type": "string" },
-              { "internalType": "string", "name": "symbol", "type": "string" },
-              { "internalType": "uint8", "name": "decimals", "type": "uint8" },
-              { "internalType": "uint256", "name": "totalSupply", "type": "uint256" }
-            ],
-            "internalType": "struct Viewer.TokenInfo",
-            "name": "info",
-            "type": "tuple"
-          }
-        ],
-        "stateMutability": "view",
-        "type": "function",
-        "constant": true
-    },
-    "balanceOf":{
-        "constant": true,
-        "inputs": [
-          {
-            "internalType": "address",
-            "name": "",
-            "type": "address"
-          }
-        ],
-        "name": "balanceOf",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
+        "internalType": "struct Viewer.TokenInfo",
+        "name": "info",
+        "type": "tuple"
       },
-      "totalSupply":{
-        "constant": true,
-        "inputs": [],
-        "name": "totalSupply",
-        "outputs": [
-          {
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-          }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-      }
+      { "internalType": "uint256", "name": "price", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function",
+    "constant": true
+  },
+  "balanceOf":{
+      "constant": true,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "balanceOf",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    "totalSupply":{
+      "constant": true,
+      "inputs": [],
+      "name": "totalSupply",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    }
 
 }
