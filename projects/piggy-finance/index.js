@@ -1,5 +1,5 @@
+const sdk = require("@defillama/sdk")
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
-const { staking } = require("../helper/staking");
 
 const piggy = "0x1a877B68bdA77d78EEa607443CcDE667B31B0CdF";
 const pshare = "0xa5e2cfe48fe8c4abd682ca2b10fcaafe34b8774c";
@@ -11,13 +11,19 @@ async function tvl (timestamp, block, chainBlocks) {
     await sumTokensAndLPsSharedOwners(balances, [
         ["0x2440885843d8e9f16a4b64933354d1CfBCf7F180", true], // PIGGY-WAVAX
         ["0x40128a19F97cb09f13cc370909fC82E69Bccabb1", true], // PSHARE-WAVAX
-    ], [rewardPool], chainBlocks.avax, "avax", addr=>`avax:${addr}`)
+    ], [rewardPool], chainBlocks.avax, "avax", addr=>`avax:${addr}`);
+    const pshareBalance = (await sdk.api.erc20.balanceOf({
+        target: pshare,
+        owner: pshareStaking,
+        block: chainBlocks.avax,
+        chain: "avax"
+    })).output;
+    sdk.util.sumSingleBalance(balances, `avax:${pshare}`, pshareBalance);
     return balances;
 }
 
 module.exports = {
     avalanche: {
         tvl,
-        staking: staking(pshareStaking, pshare, "avax")
     }
 }
