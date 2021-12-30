@@ -9,7 +9,7 @@ const graphEndpoints = {
     "heco": "https://q.hg.network/subgraphs/name/dodoex/heco",
     "polygon": "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-polygon",
     "arbitrum": "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-arbitrum",
-    "aurora": "https://thegraph.com/hosted-service/subgraph/dodoex/dodoex-v2-aurora"
+    "aurora": "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-aurora"
 }
 const graphQuery = gql`
 query get_pairs($lastId: String) {
