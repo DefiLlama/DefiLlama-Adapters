@@ -9,5 +9,5 @@ module.exports = {
     staking: staking(api3_dao_pool, api3_token), // tvl / staking
     tvl: () => ({})
   },
-  methodology: 'The API3 APY is all API3 token staked in the API3 DAO Pool',
+  methodology: 'API3 TVL is all API3 token staked in the API3 DAO Pool contract',
 }
