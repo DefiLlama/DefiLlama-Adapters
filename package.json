@@ -31,7 +31,6 @@
     "caver-js": "^1.6.5",
     "cross-fetch": "^3.1.4",
     "dotenv": "^8.6.0",
-    "evm-bn": "^1.1.1",
     "graph-results-pager": "^1.0.3",
     "graphql": "^15.5.0",
     "graphql-request": "^3.6.1",

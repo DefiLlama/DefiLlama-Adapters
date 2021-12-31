@@ -185,35 +185,9 @@ const TOKENS = {
     ],
 };
 
-const CHAIN_IDS = [1313161554, 4, 1337];
-
 const TOKEN_SYMBOLS = ["NEAR", "WETH", "BTC"];
 
-const TOKENS_MAP = {};
-
-const TOKENS_BY_SYMBOL_MAP = {};
-
-for (let j = 0; j < CHAIN_IDS.length; j++) {
-    const chainId = CHAIN_IDS[j];
-    TOKENS_MAP[chainId] = {};
-    TOKENS_BY_SYMBOL_MAP[chainId] = {};
-    for (let i = 0; i < TOKENS[chainId].length; i++) {
-        const token = TOKENS[chainId][i];
-        TOKENS_MAP[chainId][token.address] = token;
-        TOKENS_BY_SYMBOL_MAP[chainId][token.symbol] = token;
-    }
-}
-
-function getTokenBySymbol(chainId, symbol) {
-    const token = TOKENS_BY_SYMBOL_MAP[chainId][symbol];
-    if (!token) {
-        throw new Error(`Incorrect symbol "${symbol}" for chainId ${chainId}`);
-    }
-    return token;
-}
-
 module.exports = {
-    getTokenBySymbol,
     TOKEN_SYMBOLS,
     TOKENS
 }

@@ -1,19 +1,4 @@
-const { toBn } = require("evm-bn");
-
 const { TOKENS, TOKEN_SYMBOLS } = require("./tokens")
-
-function bigNumberify(n) {
-    const ONE = 1;
-    if (n === "")
-        return toBn("0");
-    return toBn(n.toString()).div(toBn(ONE.toString()));
-}
-
-function expandDecimals(n, decimals) {
-    if (n === "")
-        return toBn("0");
-    return toBn(n.toString(), decimals);
-}
 
 function getToken(chainId, address) {
     const CHAIN_IDS = [
@@ -72,7 +57,5 @@ function getInfoTokens(chainId, tokens) {
 }
 
 module.exports = {
-    getInfoTokens,
-    expandDecimals,
-    bigNumberify
+    getInfoTokens
 }
