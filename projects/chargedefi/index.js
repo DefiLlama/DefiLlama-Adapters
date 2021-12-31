@@ -1,6 +1,8 @@
 const sdk = require("@defillama/sdk");
 const { transformBscAddress } = require("../helper/portedTokens");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
+const { pool2Exports } = require("../helper/pool2");
+const { staking } = require("../helper/staking");
 
 const chargeTokenAddress = "0x1C6bc8e962427dEb4106aE06A7fA2d715687395c";
 
@@ -86,9 +88,16 @@ async function tvl(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
-  methodology: 'The TVL of Charge Defi is calculated using the Pancake LP token deposits (Static/BUSD and Charge/BUSD), and the Charge deposits found in the Boardroom.',
+  methodology: 'The TVL of Charge Defi is calculated using the Pancake LP token deposits (Static/BUSD and Charge/BUSD) in the farms, and the Charge & Static-BUSD deposits found in each Boardroom.',
   bsc: {
     tvl,
+    pool2: pool2Exports(
+      chargeBUSDFarmStrategyAddress,
+      [chargeBUSDLpAddress],
+      "bsc"
+    ),
+    staking: staking(chargeBoardroomAddress, chargeTokenAddress, "bsc"),
+
   },
   tvl,
 };
