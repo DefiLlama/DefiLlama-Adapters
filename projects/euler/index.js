@@ -7,7 +7,10 @@ const contracts = {
   euler: "0x27182842E098f60e3D576794A5bFFb0777E025d3",
   markets: '0xE5d0A7A3ad358792Ba037cB6eE375FfDe7Ba2Cd1',
   markets_proxy: '0x3520d5a913427E6F0D6A83E07ccD4A4da316e4d3',
-  null: '0x0000000000000000000000000000000000000000'
+  null: '0x0000000000000000000000000000000000000000', 
+  markets_proxy_creator: '0x27182842e098f60e3d576794a5bffb0777e025d3', 
+  markets_activator_0: '0xee009faf00cf54c1b4387829af7a8dc5f0c8c8c5',
+  markets_activator_n: '0x4e6313a4e9b6f60ea3841eb252ca5217184e6ef1'
 }
 
 // Graphql endpoint to query markets
