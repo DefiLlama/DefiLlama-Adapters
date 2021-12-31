@@ -76,6 +76,25 @@ async function ethereum(timestamp, ethBlock, chainBlocks, chain) {
     console.log('ERROR: axios request on euler graphql endpoint failed, probably bad auth token \n', error.response.data.error)
   }
 
+  // Onchain tries to get markets underlyings onchain
+  const {output: test} = await sdk.api.abi.call({
+    abi: abi['underlyingToAssetConfig'],
+    params: markets_underlyings[0],
+    target: contracts.markets_proxy,
+    block,
+    chain,
+  })
+  console.log('test', test)
+  const {output: test2} = await sdk.api.abi.call({
+    abi: abi['getEnteredMarkets'],
+    params: contracts.null, // tried contracts.null euler markets markets_proxy
+    target: contracts.markets_proxy,
+    block,
+    chain,
+  })
+  console.log('test2', test2)
+  return {}
+
   // use markets_underlyings or markets_underlyings_nographql
   const tokensAndOwners = markets_underlyings.map(underlying => [underlying, contracts.euler])
   await sumTokens(balances, tokensAndOwners, block, "ethereum")
