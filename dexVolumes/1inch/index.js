@@ -23,8 +23,7 @@ const graphs = getChainVolume({
 });
 
 module.exports = {
-  volumes: {
+  volume: {
     ethereum: graphs("ethereum"),
   },
-  isAggregator: true,
 };

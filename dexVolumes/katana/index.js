@@ -59,5 +59,7 @@ const graphs = getChainVolume({
 });
 
 module.exports = {
-  ronin: graphs("ronin"),
+  volume: {
+    ronin: graphs("ronin"),
+  },
 };

@@ -5,11 +5,11 @@ const { getBlock } = require('../helper/getBlock')
 
 const graphEndpoints = {
     'ethereum': "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2",
-    "bsc": "https://pq.hg.network/subgraphs/name/dodoex-v2-bsc/bsc",
+    "bsc": "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-bsc",
     "heco": "https://q.hg.network/subgraphs/name/dodoex/heco",
     "polygon": "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-polygon",
     "arbitrum": "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-arbitrum",
-    "aurora": "https://thegraph.com/hosted-service/subgraph/dodoex/dodoex-v2-aurora"
+    "aurora": "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-aurora"
 }
 const graphQuery = gql`
 query get_pairs($lastId: String) {
@@ -118,5 +118,4 @@ module.exports = {
         tvl: aurora
     },
     // We don't include heco because their subgraph is outdated
-    tvl: sdk.util.sumChainTvls([eth, bsc, polygon, arbitrum])
 }

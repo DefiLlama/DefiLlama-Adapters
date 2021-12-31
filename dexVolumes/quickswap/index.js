@@ -11,5 +11,7 @@ const graphs = getChainVolume({
 });
 
 module.exports = {
-  polygon: graphs("polygon"),
+  volume: {
+    polygon: graphs("polygon"),
+  },
 };

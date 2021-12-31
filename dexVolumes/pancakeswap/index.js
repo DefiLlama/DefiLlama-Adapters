@@ -23,5 +23,7 @@ const graphs = getChainVolume({
 });
 
 module.exports = {
-  bsc: graphs("bsc"),
+  volume: {
+    bsc: graphs("bsc"),
+  },
 };

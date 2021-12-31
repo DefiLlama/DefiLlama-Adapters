@@ -27,6 +27,21 @@ const snxAddr = "0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F";
 const wbtcAddr = "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599";
 const wethAddr = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 
+const xu3lpaAddrArbitrum = "0x9F8cFc08f781e1576A05d4d3669b3E6FF22913FF";
+const xu3lpbAddrArbitrum = "0x216D135926f5EC9E5924564A342580B0b5A3bdc6";
+const xbtc3xAddrArbitrum = "0x93B135416A1796707b273ad709099d47ADDA18D6";
+const xeth3xAddrArbitrum = "0xc4C251c7d7c2F1165176e3BF503276fB0df05daa";
+const wbtcAddrArbitrum = "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f";
+const wethAddrArbitrum = "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1";
+
+const X_ETH_3X = "xETH3x"
+const X_BTC_3X = "xBTC3x"
+const WBTC = "wbtc";
+const WETH = "weth";
+const QUOTER_ADDRESS = '0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6'
+const usdcAddress = '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8'
+const wethAddress = '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1'
+
 module.exports = {
   DEC_18,
   kncAddr,
@@ -56,4 +71,17 @@ module.exports = {
   sUsdAddr,
   wbtcAddr,
   wethAddr,
+  xu3lpaAddrArbitrum,
+  xu3lpbAddrArbitrum,
+  xbtc3xAddrArbitrum,
+  xeth3xAddrArbitrum,
+  wbtcAddrArbitrum,
+  wethAddrArbitrum,
+  X_ETH_3X,
+  X_BTC_3X,
+  WBTC,
+  WETH,
+  QUOTER_ADDRESS,
+  usdcAddress,
+  wethAddress,
 };
