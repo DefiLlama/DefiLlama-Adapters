@@ -1,0 +1,3 @@
+{
+  "underlyingToAssetConfig": {"inputs":[{"internalType":"address","name":"underlying","type":"address"}],"name":"underlyingToAssetConfig","outputs":[{"components":[{"internalType":"address","name":"eTokenAddress","type":"address"},{"internalType":"bool","name":"borrowIsolated","type":"bool"},{"internalType":"uint32","name":"collateralFactor","type":"uint32"},{"internalType":"uint32","name":"borrowFactor","type":"uint32"},{"internalType":"uint24","name":"twapWindow","type":"uint24"}],"internalType":"struct Storage.AssetConfig","name":"","type":"tuple"}],"stateMutability":"view","type":"function"}
+}
