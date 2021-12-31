@@ -2,7 +2,7 @@ const {getLiquityTvl} = require('../helper/liquity')
 
 module.exports = {
   timetravel: true,
-  methodology: "Deposited Matic and USDH, USDH is not listed on CoinGecko and has been replaced with TUSD",
+  methodology: "Deposited AVAX, BNB and FTM on all three chains as well as deposits in staking pools.",
   bsc:{
     tvl: getLiquityTvl("0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c", "0xD295F4b58D159167DB247de06673169425B50EF2",
       "0xF40D2991d41ce989c4DCc0C475D4cEFbA7776866", "0x15102B7579aE3b913B0cbb2edE791fC58C528195", "bsc", true)

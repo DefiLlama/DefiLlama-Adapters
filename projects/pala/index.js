@@ -13,21 +13,18 @@ const getPoolsInfo = async (caver) => {
     return await sc.methods.poolInfos().call();
 }
 
-const getTokenPrice = async (caver, tokenAddr) => {
-    const sc = caver.contract.create([ABI.tokenPrice], VIEWER_ADDR);
-    return await sc.methods.tokenPrice(tokenAddr).call();
-}
-
-const getTokenInfo = async (caver, tokenAddr) => {
-    const sc = caver.contract.create([ABI.tokenInfo], VIEWER_ADDR);
-    return await sc.methods.tokenInfo(tokenAddr).call();
+const getTokenInfoDetail = async (caver, tokenAddr) => {
+    const sc = caver.contract.create([ABI.tokenInfoDetail], VIEWER_ADDR);
+    return await sc.methods.tokenInfoDetail(tokenAddr).call();
 }
 
 const calcPoolLiquidityVolume = async (caver, poolInfo) => {
-    const t0Price = await getTokenPrice(caver, poolInfo.token0);
-    const t0Info = await getTokenInfo(caver, poolInfo.token0);
-    const t1Price = await getTokenPrice(caver, poolInfo.token1);
-    const t1Info = await getTokenInfo(caver, poolInfo.token1);
+    const t0Detail = await getTokenInfoDetail(caver, poolInfo.token0);
+    const t0Info = t0Detail.info;
+    const t0Price = t0Detail.price;
+    const t1Detail = await getTokenInfoDetail(caver, poolInfo.token1);
+    const t1Info = t1Detail.info;
+    const t1Price = t1Detail.price;
 
     return ((t0Price / 1e18) * (poolInfo.token0Reserve / Math.pow(10, t0Info.decimals))) +
     ((t1Price / 1e18) * (poolInfo.token1Reserve / Math.pow(10, t1Info.decimals)));

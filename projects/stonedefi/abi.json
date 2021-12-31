@@ -1,0 +1,53 @@
+{
+  "poolLength": {
+    "inputs": [],
+    "name": "poolLength",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "poolInfo": {
+    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "name": "poolInfo",
+    "outputs": [
+      {
+        "internalType": "contract IERC20",
+        "name": "lpToken",
+        "type": "address"
+      },
+      { "internalType": "uint256", "name": "allocPoint", "type": "uint256" },
+      {
+        "internalType": "uint256",
+        "name": "lastRewardBlock",
+        "type": "uint256"
+      },
+      { "internalType": "uint256", "name": "accPerShare", "type": "uint256" },
+      { "internalType": "uint256", "name": "lockPeriod", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "token": {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "token",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "address" }],
+    "gas": 3948
+  },
+  "totalAssets": {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "totalAssets",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "gas": 8878
+  },
+  "stbnbMarketCapacityCountByBNB": {
+    "inputs": [],
+    "name": "stbnbMarketCapacityCountByBNB",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  }
+}
