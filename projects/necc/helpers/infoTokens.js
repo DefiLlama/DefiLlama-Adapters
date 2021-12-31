@@ -52,7 +52,7 @@ function getToken(chainId, address) {
     return tokensMap[address];
 }
 
-function getInfoTokens(chainId, tokens, vaultTokenInfo) {
+function getInfoTokens(chainId, tokens) {
     if (!tokens) {
         return;
     }
@@ -61,23 +61,6 @@ function getInfoTokens(chainId, tokens, vaultTokenInfo) {
         let token = JSON.parse(JSON.stringify(tokens[i]));
         const tokenInfo = getToken(chainId, token.id);
         token = { ...token, ...tokenInfo };
-        if (vaultTokenInfo) {
-            const vaultPropsLength = 9;
-            token.poolAmount = vaultTokenInfo[i * vaultPropsLength];
-            token.minPrice = vaultTokenInfo[i * vaultPropsLength + 4];
-            token.maxPrice = vaultTokenInfo[i * vaultPropsLength + 5];
-        }
-
-        token.availableAmount = bigNumberify(
-            token.poolAmounts || bigNumberify(0)
-        ).sub(bigNumberify(token.reservedAmounts || 0));
-        const availableUsd = token.minPrice
-            ? bigNumberify(token.availableAmount || 0)
-                .mul(token.minPrice)
-                .div(expandDecimals(1, token.decimals))
-            : bigNumberify(0);
-        token.availableUsd = availableUsd;
-        token.managedUsd = availableUsd.add(token.guaranteedUsd);
         tokenMap[token.symbol] = token;
     }
     const info = [];
