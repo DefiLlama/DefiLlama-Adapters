@@ -5,7 +5,7 @@ const { getBlock } = require('../helper/getBlock')
 
 const graphEndpoints = {
     'ethereum': "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2",
-    "bsc": "https://pq.hg.network/subgraphs/name/dodoex-v2-bsc/bsc",
+    "bsc": "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-bsc",
     "heco": "https://q.hg.network/subgraphs/name/dodoex/heco",
     "polygon": "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-polygon",
     "arbitrum": "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-arbitrum",
