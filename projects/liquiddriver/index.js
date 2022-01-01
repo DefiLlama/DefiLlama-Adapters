@@ -123,7 +123,7 @@ const minichefTvl = async (timestamp, ethBlock, chainBlocks) => {
 
     const token = balance.input.target;
     if (symbols.output[idx].success) {
-      if (symbols.output[idx].output.includes("LP")) {
+      if (symbols.output[idx].output.includes("LP") && symbols.output[idx].output != "BeetXLP_MIM_USDC_USDT") {
         lpPositions.push({
           balance: totalBalance.toString(10),
           token,
