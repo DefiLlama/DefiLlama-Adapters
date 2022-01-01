@@ -9,8 +9,9 @@ async function adaTvl(){
         if(orders.fromToken !== "."){
             throw new Error("Tokens paired against something other than ADA")
         }
+        let totalBuy= 0;
         orders.buy.forEach(o=>{
-            totalAda += o.totalPrice
+            totalBuy += o.totalPrice
         })
         if(orders.buy.length === 0 || orders.sell.length === 0){
             return
@@ -20,7 +21,8 @@ async function adaTvl(){
         orders.sell.forEach(o=>{
             totalAmountOtherToken += o.amount
         })
-        totalAda += totalAmountOtherToken * topPrice
+        const totalSell = totalAmountOtherToken * topPrice
+        totalAda += totalBuy + totalSell
     }))
     return {
         cardano: totalAda
