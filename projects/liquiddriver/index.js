@@ -175,17 +175,15 @@ const minichefTvl = async (timestamp, ethBlock, chainBlocks) => {
     }
   });
 
-  const beetXLP_MIM_USDC_USDT = '0xd163415bd34ef06f57c58d2aed5a5478afb464cc';
+  const beetXLP_MIM_USDC_USDT = 'fantom:0xD163415BD34EF06f57C58D2AEd5A5478AfB464cC';
 
-  for (let pos of lpPositions) {
-    if (pos.token.toLowerCase() == beetXLP_MIM_USDC_USDT) {
-      sdk.util.sumSingleBalance(
-        balances,
-        transformAddress(usdtTokenAddress),
-        pos.balance
-      );
-      delete lpPositions[pos];
-    };
+  if (beetXLP_MIM_USDC_USDT in balances) {
+    sdk.util.sumSingleBalance(
+      balances,
+      transformAddress(usdtTokenAddress),
+      balances[beetXLP_MIM_USDC_USDT] / 10 ** 12
+    );
+    delete balances[beetXLP_MIM_USDC_USDT];
   };
 
   const turns = Math.floor(lpPositions.length / 10);
