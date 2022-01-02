@@ -12,7 +12,7 @@ const mim = "0x130966628846BFd36ff31a822705796e8cb8C18D"
 const wavax = "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"
 const wMEMO = "0x0da67235dd5787d67955420c84ca1cecd4e5bb3b"
 
-async function tvl(timestamp, block, chainBlocks) {
+async function tvl(timestamp, ethBlock, chainBlocks) {
   const balances = {};
   const transform = addr => addr.toLowerCase() === "0x130966628846bfd36ff31a822705796e8cb8c18d" ? "0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3" : `avax:${addr}`
 
@@ -37,7 +37,7 @@ async function tvl(timestamp, block, chainBlocks) {
   const wmemoAddress = transform(wMEMO)
   const memo = await sdk.api.abi.call({
     target: wMEMO,
-    abi: { "inputs": [{ "internalType": "uint256", "name": "_amount", "type": "uint256" }], "name": "wMEMOToMEMO", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, block,
+    abi: { "inputs": [{ "internalType": "uint256", "name": "_amount", "type": "uint256" }], "name": "wMEMOToMEMO", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
     chain:'avax',
     block: chainBlocks.avax,
     params: [balances[wmemoAddress]]
@@ -48,10 +48,36 @@ async function tvl(timestamp, block, chainBlocks) {
   return balances;
 }
 
+const ethTransforms = {
+  "0x26fa3fffb6efe8c1e69103acb4044c26b9a106a9": "0x090185f2135308bad17527004364ebcc2d37e5f6"
+}
+
+async function ethTvl(timestamp, ethBlock, chainBlocks) {
+  const balances = {};
+
+  await sumTokensAndLPsSharedOwners(
+    balances,
+    [
+      ["0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b", false], //cvx
+      ["0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3", false], //mim
+      ["0x26fa3fffb6efe8c1e69103acb4044c26b9a106a9", false], // sSPELL
+    ],
+    ["0x355d72fb52ad4591b2066e43e89a7a38cf5cb341"],
+    ethBlock,
+    'ethereum',
+    addr=>ethTransforms[addr.toLowerCase()]??addr
+  );
+  return balances
+}
+
+
 module.exports = {
   avalanche: {
     tvl,
     staking: staking(TimeStaking, time, "avax")
+  },
+  ethereum:{
+    tvl:ethTvl
   },
   methodology:
     "Counts tokens on the treasury for tvl and staked TIME for staking",
