@@ -1,3 +1,4 @@
+// v1: Updated Logo icon
 const BigNumber = require("bignumber.js");
 
 const utils = require("../helper/utils");
