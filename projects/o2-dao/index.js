@@ -31,6 +31,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
         target: wMEMO,
         abi:{"inputs":[{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"wMEMOToMEMO","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},        block,
         chain,
+        block: chainBlocks.avax,
         params: [balances[wmemoAddress]]
     })
     balances[time] = memo.output
