@@ -31,7 +31,7 @@ const bchDexTvl = calculateUsdUniTvl(FACTORY, CHAIN, WBCH, [DAIQUIRI], COREASSET
 
 module.exports = {
     misrepresentedTokens: true,
-    methodology: "Factory address (" + FACTORY + ") is used to find the LP pairs on smartBCH. TVL is equal to DEX liquidity plus the staked amounst in Pools and Farms.",
+    methodology: "Factory address (" + FACTORY + ") is used to find the LP pairs on smartBCH. TVL is equal to DEX liquidity plus the staked amounts across Pools and Farms in Masterchef.",
     smartbch: {
         tvl: sdk.util.sumChainTvls([bchDexTvl, bchMasterChef]),
         masterchef: bchMasterChef,
