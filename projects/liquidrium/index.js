@@ -27,7 +27,7 @@ async function tvl(block, chain) {
 			sdk.util.sumSingleBalance(
 				balances, vaults[i].token2Name, token1Amount);
 		};
-	}; // node test.js projects/liquidrium/index.js
+	};
 
 	return balances;
 };
