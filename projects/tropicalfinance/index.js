@@ -34,7 +34,6 @@ module.exports = {
     methodology: "Factory address (" + FACTORY + ") is used to find the LP pairs on smartBCH. TVL is equal to DEX liquidity plus the staked amounts across Pools and Farms in Masterchef.",
     smartbch: {
         tvl: sdk.util.sumChainTvls([bchDexTvl, bchMasterChef]),
-        masterchef: bchMasterChef,
         staking: stakingPricedLP(TRAVELBUREAU, DAIQUIRI, "smartbch", DAIQUIRI_WBCH_LP, COREASSETNAME),
     },
 }

@@ -21,20 +21,6 @@ async function tvl(timestamp, block, chainBlocks) {
   let lpPositions = [];
   let transformAddress = await transformBscAddress();
 
-  // Charge Boardroom TVL
-  const chargeBoardroomBalance = sdk.api.erc20
-    .balanceOf({
-      target: chargeTokenAddress,
-      owner: chargeBoardroomAddress,
-      block: chainBlocks["bsc"],
-      chain: "bsc",
-    });
-  sdk.util.sumSingleBalance(
-    balances,
-    transformAddress(chargeTokenAddress),
-    (await chargeBoardroomBalance).output
-  );
-
   // Static-BUSD Boardroom TVL
   const staticBUSDBoardroomBalance = sdk.api.erc20
     .balanceOf({
@@ -61,20 +47,6 @@ async function tvl(timestamp, block, chainBlocks) {
   lpPositions.push({
     token: staticBUSDLpAddress,
     balance: (await chargeFarmStaticBUSDBalance).output,
-  });
-
-  // Charge Farms Charge-BUSD TVL
-  const chargeFarmChargeBUSDBalance = sdk.api.erc20
-    .balanceOf({
-      target: chargeBUSDLpAddress,
-      owner: chargeBUSDFarmStrategyAddress,
-      block: chainBlocks["bsc"],
-      chain: "bsc",
-    });
-
-  lpPositions.push({
-    token: chargeBUSDLpAddress,
-    balance: (await chargeFarmChargeBUSDBalance).output,
   });
 
   await unwrapUniswapLPs(
