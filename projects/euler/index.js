@@ -77,7 +77,7 @@ async function ethereum(timestamp, ethBlock, chainBlocks, chain) {
   } catch(error)   {
     console.log('ERROR: axios request on euler graphql endpoint failed, probably bad auth token \n', error.response.data.error)
     // fails hard and returns empty balances on mongodb auth error
-    return {}
+    throw e
   }
   // Confirmed by team, no way currently to get all markets (or underlyings) on chain. Do it using graphql for now
 
