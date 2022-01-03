@@ -11,9 +11,6 @@ const avalancheApiEndpoint = 'https://gmx-avax-server.uc.r.appspot.com/tokens'
 const avalancheVault = '0x9ab2De34A33fB459b538c43f251eB825645e8595'
 const avalancheStaking = '0x2bD10f8E93B3669b6d42E74eEedC65dd1B0a1342'
 const avalancheGMX = '0x62edc0692BD897D2295872a9FFCac5425011c661'
-// BSC
-const bscApiEndpoint = 'https://gambit-server-staging.uc.r.appspot.com/tokens'
-const pool = "0xc73A8DcAc88498FD4b4B1b2AaA37b0a2614Ff67B"
 
 const arbitrumTVL = async (timestamp, block, chainBlocks) =>{
   const balances = {}
@@ -47,32 +44,13 @@ const avalancheTVL = async (timestamp, block, chainBlocks) =>{
   return balances
 }
 
-const bscTVL = async (timestamp, block, chainBlocks) =>{
-  const balances = {}
-  const allTokens = (await axios.get(bscApiEndpoint)).data
-  const tokenBalances = await sdk.api.abi.multiCall({
-      calls: allTokens.map(token=>({
-          target: token.id,
-          params: [pool]
-      })),
-      abi: 'erc20:balanceOf',
-      chain: 'bsc',
-      block: chainBlocks.bsc
-  })
-  sdk.util.sumMultiBalanceOf(balances, tokenBalances, true, d=>`bsc:${d}`)
-  return balances
-}
-
 module.exports = {
   arbitrum: {
     staking: staking(arbitrumStaking, arbitrumGMX, "arbitrum", "gmx", 18),
-    tvl: arbitrumTVL,
+    tvl: arbitrumTVL
   },
   avalanche: {
     staking: staking(avalancheStaking, avalancheGMX, "avax", "gmx", 18),
-    tvl: avalancheTVL,
-  },
-  bsc: {
-    tvl: bscTVL,
-  },
+    tvl: avalancheTVL
+  }
 };
