@@ -1,55 +1,78 @@
 const sdk = require("@defillama/sdk");
+const axios = require("axios");
+const { transformPolygonAddress } = require("../helper/portedTokens");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { staking } = require("../helper/staking");
 
-const polyKitty = "0xcD86152047e800d67BDf00A4c635A8B6C0e5C4c2";
-const polyCat = "0x948D0a28b600BDBd77AF4ea30E6F338167034181";
-const polyChef = "0xdD694F459645eb6EfAE934FE075403760eEb9aA1";
-const Bowl = "0x975fa17a8b9f103819d3fa1187f44bc9c07658f0";
+const tombTokenAddress = "0xcD86152047e800d67BDf00A4c635A8B6C0e5C4c2";
+const tshareTokenAddress = "0x948D0a28b600BDBd77AF4ea30E6F338167034181";
 
-const polyLPs = [
-  "0x8D25fec513309F2d329d99d6F677D46C831FDEe8", // WETH-NACHO LP
-  "0x1C84Cd20Ea6cc100E0A890464411F1365Ab1F664", //WMATIC-NSHARE LP
-];
+const tombFtmLpAddress = "0x8d25fec513309f2d329d99d6f677d46c831fdee8";
+const tshareFtmLpAddress = "0x1c84cd20ea6cc100e0a890464411f1365ab1f664";
 
-async function calcPool2(masterchef, lps, block, chain) {
-  let balances = {};
-  const lpBalances = (
-    await sdk.api.abi.multiCall({
-      calls: lps.map((p) => ({
-        target: p,
-        params: masterchef,
-      })),
-      abi: "erc20:balanceOf",
-      block,
-      chain,
-    })
-  ).output;
+const masonryAddress = "0x1ad667aCe03875fe48534c65BFE14191CF81fd64";
+const tshareRewardPoolAddress = "0xdD694F459645eb6EfAE934FE075403760eEb9aA1";
+
+async function tvl(timestamp, block, chainBlocks) {
+  const balances = {};
   let lpPositions = [];
-  lpBalances.forEach((p) => {
-    lpPositions.push({
-      balance: p.output,
-      token: p.input.target,
+  let transformAddress = await transformPolygonAddress();
+
+  // Masonry TVL
+  const masonryBalance = sdk.api.erc20
+    .balanceOf({
+      target: tshareTokenAddress,
+      owner: masonryAddress,
+      block: chainBlocks["polygon"],
+      chain: "polygon",
     });
+  sdk.util.sumSingleBalance(
+    balances,
+    transformAddress(tshareTokenAddress),
+    (await masonryBalance).output
+  );
+
+  // Cemetery TOMB-FTM LP TVL
+  const tombFtmLpCemeteryBalance = sdk.api.erc20
+    .balanceOf({
+      target: tombFtmLpAddress,
+      owner: tshareRewardPoolAddress,
+      block: chainBlocks["polygon"],
+      chain: "polygon",
+    });
+
+  lpPositions.push({
+    token: tombFtmLpAddress,
+    balance: (await tombFtmLpCemeteryBalance).output,
   });
+
+  // Cemetery TSHARE-FTM LP TVL
+  const tshareFtmLpCemeteryBalance = sdk.api.erc20
+    .balanceOf({
+      target: tshareFtmLpAddress,
+      owner: tshareRewardPoolAddress,
+      block: chainBlocks["polygon"],
+      chain: "polygon",
+    });
+
+  lpPositions.push({
+    token: tshareFtmLpAddress,
+    balance: (await tshareFtmLpCemeteryBalance).output,
+  });
+
   await unwrapUniswapLPs(
     balances,
     lpPositions,
-    block,
-    chain,
-    (addr) => `${chain}:${addr}`
+    chainBlocks["polygon"],
+    "polygon",
+    transformAddress
   );
   return balances;
 }
 
-async function polyPool2(timestamp, block, chainBlocks) {
-  return await calcPool2(polyChef, polyLPs, chainBlocks.polygon, "polygon");
-}
-
 module.exports = {
+  methodology: 'The TVL of Nacho Finance is calculated using the Quickswap LP token deposits(NACHO/ETH and NSHARE/MATIC), and the NSHSARE deposits found in the Bowl contract.',
   polygon: {
-    tvl: async () => ({}),
-    pool2: polyPool2,
-    staking: staking(Bowl, polyCat, "polygon"),
+    tvl,
   },
+  tvl,
 };
