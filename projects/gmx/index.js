@@ -38,7 +38,7 @@ const avalancheTVL = async (timestamp, block, chainBlocks) =>{
       })),
       abi: 'erc20:balanceOf',
       chain: 'avax',
-      block: chainBlocks.arbitrum
+      block: chainBlocks.avax
   })
   sdk.util.sumMultiBalanceOf(balances, tokenBalances, true, d=>`avax:${d}`)
   return balances
