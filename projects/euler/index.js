@@ -1,5 +1,3 @@
-const sdk = require('@defillama/sdk')
-const abi = require('./abi')
 const { default: axios } = require('axios')
 const {sumTokens} = require('../helper/unwrapLPs')
 
@@ -7,15 +5,15 @@ const contracts = {
   euler: "0x27182842E098f60e3D576794A5bFFb0777E025d3",
   markets: '0xE5d0A7A3ad358792Ba037cB6eE375FfDe7Ba2Cd1',
   markets_proxy: '0x3520d5a913427E6F0D6A83E07ccD4A4da316e4d3',
-  null: '0x0000000000000000000000000000000000000000', 
-  markets_proxy_creator: '0x27182842e098f60e3d576794a5bffb0777e025d3', 
-  markets_activator_0: '0xee009faf00cf54c1b4387829af7a8dc5f0c8c8c5',
-  markets_activator_n: '0x4e6313a4e9b6f60ea3841eb252ca5217184e6ef1'
 }
 
 // Graphql endpoint to query markets
 const graphql_url = 'https://realm.mongodb.com/api/client/v2.0/app/euler-realm-mainnet-almcs/graphql'
-const auth_token = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYWFzX2RldmljZV9pZCI6IjYxY2VmODEwODBmNWJiNjcxZGRhMmU5YiIsImJhYXNfZG9tYWluX2lkIjoiNjFhNzdlMGZjNTFkYmU3MDIxNzA5YWUwIiwiZXhwIjoxNjQwOTYwNTU0LCJpYXQiOjE2NDA5NTg3NTQsImlzcyI6IjYxY2VmODEwODBmNWJiNjcxZGRhMmU5YyIsInN0aXRjaF9kZXZJZCI6IjYxY2VmODEwODBmNWJiNjcxZGRhMmU5YiIsInN0aXRjaF9kb21haW5JZCI6IjYxYTc3ZTBmYzUxZGJlNzAyMTcwOWFlMCIsInN1YiI6IjYxYTc4MDRiYmIwNTc2NDcxNzNlNGYzZiIsInR5cCI6ImFjY2VzcyJ9.zKaF4z5vbTY2CaNwfptt8cvNBgXZuvimGnNBRI07KqI-'
+const graphql_config = {
+  headers: { 
+    'apiKey': process.env.EULER_MONGODB_APIKEY 
+  }
+}
 const markets_query = `query getMarketsAndOverview(
   $queryMarkets: MarketviewQueryInput
   ) {  
@@ -31,9 +29,16 @@ const markets_query = `query getMarketsAndOverview(
         underlyingBalance { _hex _isBigNumber } 
       }
     }`
+const graphql_payload = {
+  query: markets_query, 
+  operationName: "getMarketsAndOverview", 
+  variables: {
+    queryMarkets: {chainId: 1},
+  }
+}
 
 // In case graphql request does not work because of wrong credentials, there are 22 markets as of 2021-12-31
-let markets_underlyings = [                                                      
+const markets_underlyings = [                                                      
   '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', // WETH
   '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC
   '0x6b175474e89094c44da98b954eedeac495271d0f', // DAI
@@ -61,22 +66,18 @@ let markets_underlyings = [
 async function ethereum(timestamp, ethBlock, chainBlocks, chain) {
   const block = chainBlocks[chain]
   const balances = {}
+  let markets_underlyings
 
   try {
-    const graphql_response = await axios.post(graphql_url, {
-      query: markets_query, 
-      operationName: "getMarketsAndOverview", 
-      variables: {
-        queryMarkets: {chainId: 1},
-      }
-    }, {
-      headers: { 'Authorization': auth_token }
-    })
+    // console.log('EULER_MONGODB_APIKEY', process.env.EULER_MONGODB_APIKEY)
+    const graphql_response = await axios.post(graphql_url, graphql_payload, graphql_config)
   
     const markets = graphql_response.data.data.marketviews
     markets_underlyings = markets.map(market => market.underlying)
   } catch(error)   {
     console.log('ERROR: axios request on euler graphql endpoint failed, probably bad auth token \n', error.response.data.error)
+    // fails hard and returns empty balances on mongodb auth error
+    return {}
   }
   // Confirmed by team, no way currently to get all markets (or underlyings) on chain. Do it using graphql for now
 
