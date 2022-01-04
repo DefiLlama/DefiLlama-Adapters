@@ -7,12 +7,13 @@ const tokens = [
   ["token.defi", "BOX", "defibox"],
   ["minedfstoken", "DFS", "defis-network"],
   ["emanateoneos", "EMT", "emanate"],
+  ["dappservices", "DAPP", "dapp"],
   ["token.newdex", "DEX", "newdex-token"],
   ["chexchexchex", "CHEX", "chex-token"],
   ["everipediaiq", "IQ", "everipedia"],
   ["eosiotptoken", "TPT", "token-pocket"],
   ["core.ogx", "OGX", "organix"],
-  ["pizzatotoken", "PIZZA", "pizza"],
+  ["pizzatotoken", "PIZZA", "pizza-usde"],
 ]
 
 // https://swap.defiob.com
@@ -20,8 +21,6 @@ const tokens = [
 async function eos() {
   return await get_account_tvl("swap.ob", tokens);
 }
-
-eos().then(a => console.log(a))
 
 module.exports = {
   methodology: `OBSwap TVL is achieved by querying token balances from their swap pool smart contract.`,
