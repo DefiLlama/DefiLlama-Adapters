@@ -16,16 +16,16 @@ const CYS = "BRLsMczKuaR5w9vSubF4j8HwEGGprVAyyVgS4EX7DKEg";
 async function staking() {
   const pools = await Promise.all(
     stakingPoolContracts.map(async ({ cys_nl, cys_2m, token_nl, token_2m }) => {
-          return [
-            {
-              coingeckoID: token_nl,
-              amount: await getTokenAccountBalance(cys_nl),
-            },
-            {
-              coingeckoID: token_2m,
-              amount: await getTokenAccountBalance(cys_2m),
-            },
-          ];
+      return [
+        {
+          coingeckoID: token_nl,
+          amount: await getTokenAccountBalance(cys_nl),
+        },
+        {
+          coingeckoID: token_2m,
+          amount: await getTokenAccountBalance(cys_2m),
+        },
+      ];
     })
   );
 
@@ -44,5 +44,5 @@ module.exports = {
     tvl: (tvl) => ({}),
   },
   methodology:
-    'To obtain the Staking Part of Cyclos through on-chain calls using the function getTokenBalance() that uses the address of the token and the address of the contract where the tokens are found.',
+    "To obtain the Staking Part of Cyclos through on-chain calls using the function getTokenBalance() that uses the address of the token and the address of the contract where the tokens are found.",
 };
