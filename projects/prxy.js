@@ -69,7 +69,7 @@ async function balance(){
 }
 
 module.exports = {
-    Polygon:{
+    polygon:{
         balance: balance
     },
     methodology: `BTC Proxy offers a unique institutional-grade wrapped Bitcoin solution that leverages Polygon technology to bring Bitcoin to DeFi 2.0 with no gas and no slippage and insured custody. BTC Proxy features (3,3) Staking and Bonding via the PRXY Governance token`
