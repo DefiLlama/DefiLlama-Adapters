@@ -10,6 +10,12 @@ async function getProcolAddresses() {
   )).data
 }
 
+async function getProcolAUSDAddresses() {
+  return (await axios.get(
+    'https://raw.githubusercontent.com/alpaca-finance/alpaca-stablecoin/main/.mainnet.json'
+  )).data
+}
+
 function getBSCAddress(address) {
   return `bsc:${address}`
 }
@@ -20,6 +26,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 
   /// @dev Getting all addresses from Github
   const addresses = await getProcolAddresses()
+  const ausdAddresses = await getProcolAUSDAddresses()
 
   const block = chainBlocks.bsc;
 
@@ -95,6 +102,20 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
   unusedBTOKEN.forEach((u) => {
     balances[getBSCAddress(u.input.target)] = BigNumber(balances[getBSCAddress(u.input.target)] || 0).plus(BigNumber(u.output)).toFixed(0)
   })
+
+  /// @dev getting total supply ausd
+  const ausdTVL = (await sdk.api.abi.multiCall({
+    block,
+    abi: abi.ausdTotalStablecoinIssued,
+    calls: [{
+        target: ausdAddresses['BookKeeper'].address
+    }],
+    chain: 'bsc'
+  })).output
+  const base = new BigNumber(10)
+  const balanceAUSDTVL = new BigNumber(ausdTVL[0].output).dividedBy(base.exponentiatedBy(27))
+  const ausdAddress = ausdAddresses['AlpacaStablecoin']['AUSD'].address
+  balances[getBSCAddress(ausdAddress)] = balanceAUSDTVL.toFixed(0)
 
   return balances
 }
