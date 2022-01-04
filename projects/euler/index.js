@@ -64,27 +64,24 @@ const markets_underlyings = [
 ] 
 
 async function ethereum(timestamp, ethBlock, chainBlocks, chain) {
-  const block = chainBlocks[chain]
   const balances = {}
-  let markets_underlyings
 
   try {
     // console.log('EULER_MONGODB_APIKEY', process.env.EULER_MONGODB_APIKEY)
     const graphql_response = await axios.post(graphql_url, graphql_payload, graphql_config)
-  
     const markets = graphql_response.data.data.marketviews
-    markets_underlyings = markets.map(market => market.underlying)
-  } catch(error)   {
-    console.log('ERROR: axios request on euler graphql endpoint failed, probably bad auth token \n', error.response.data.error)
-    // fails hard and returns empty balances on mongodb auth error
-    return {}
-  }
-  // Confirmed by team, no way currently to get all markets (or underlyings) on chain. Do it using graphql for now
+    const markets_underlyings = markets.map(market => market.underlying)
+    
+    // use markets_underlyings or markets_underlyings_nographql
+    const tokensAndOwners = markets_underlyings.map(underlying => [underlying, contracts.euler])
+    await sumTokens(balances, tokensAndOwners, ethBlock, "ethereum")
+    return balances
 
-  // use markets_underlyings or markets_underlyings_nographql
-  const tokensAndOwners = markets_underlyings.map(underlying => [underlying, contracts.euler])
-  await sumTokens(balances, tokensAndOwners, block, "ethereum")
-  return balances
+  } catch(error)   {
+    // fails hard and returns empty balances on mongodb auth error
+    console.log('ERROR, probably bad graphql endpoint auth token:', error)
+    throw error
+  }
 }
 
 module.exports = {
