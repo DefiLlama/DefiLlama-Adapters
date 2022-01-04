@@ -63,12 +63,15 @@ module.exports = async function tvl(timestamp, block) {
   let uniswapPositions = {};
   _.each(positionsForSets, function(positionForSet, i) {
     const setSupply = BigNumber(supplies[i].output);
+    if(positionForSet.output === null){
+      throw new Error("positionForSet call failed")
+    }
     _.each(positionForSet.output, (position) => {
       const componentAddress = position[0];
       const positionUnits = BigNumber(position[2]);
       
       const isExternalPosition = position[3] == EXTERNAL_POSITION;
-      balances[componentAddress] = BigNumber(balances[componentAddress] || 0).plus((positionUnits).times(setSupply).div(SUPPLY_SCALE)).toFixed();
+      balances[componentAddress] = BigNumber(balances[componentAddress] || 0).plus((positionUnits).times(setSupply).div(SUPPLY_SCALE)).toFixed(0);
     });    
   });
 

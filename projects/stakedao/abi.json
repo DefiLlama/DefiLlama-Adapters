@@ -26,5 +26,27 @@
         ],
         "stateMutability": "view",
         "type": "function"
+    },
+    "locked": {
+        "name": "locked",
+        "outputs": [
+            {
+                "type": "int128",
+                "name": "amount"
+            },
+            {
+                "type": "uint256",
+                "name": "end"
+            }
+        ],
+        "inputs": [
+            {
+                "type": "address",
+                "name": "arg0"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "gas": 3359
     }
 }

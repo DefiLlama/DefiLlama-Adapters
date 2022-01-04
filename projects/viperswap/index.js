@@ -2,7 +2,7 @@ const { request, gql } = require("graphql-request");
 const sdk = require('@defillama/sdk');
 const { toUSDTBalances } = require('../helper/balances');
 
-const graphUrl = 'https://graph.viper.exchange/subgraphs/name/venomprotocol/venomswap'
+const graphUrl = 'https://graph.viper.exchange/subgraphs/name/venomprotocol/venomswap-v2'
 const graphQuery = gql`
 query get_tvl($block: Int) {
   uniswapFactory(

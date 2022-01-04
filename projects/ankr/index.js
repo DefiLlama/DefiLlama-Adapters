@@ -8,6 +8,7 @@ async function tvl(timestamp, block) {
     block
   })
 
+
   return {
     [wethAddress]: supply.output 
   }
@@ -17,5 +18,6 @@ module.exports = {
   ethereum: {
     tvl,
   },
-  tvl
+  tvl,
+  methodology: `We get the total supply of aETHc, the ETH staking contract and convert it to USD.`
 }

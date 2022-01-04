@@ -1,0 +1,145 @@
+{
+    "getReserves": {
+        "constant": true,
+        "inputs": [],
+        "name": "getReserves",
+        "outputs": [
+            {
+                "internalType": "address[]",
+                "name": "",
+                "type": "address[]"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "getReserveData": {
+        "constant": true,
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_reserve",
+                "type": "address"
+            }
+        ],
+        "name": "getReserveData",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "totalLiquidity",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "availableLiquidity",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "totalBorrowsStable",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "totalBorrowsVariable",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "liquidityRate",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "variableBorrowRate",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "stableBorrowRate",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "averageStableBorrowRate",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "utilizationRate",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "liquidityIndex",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "variableBorrowIndex",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "mTokenAddress",
+                "type": "address"
+            },
+            {
+                "internalType": "uint40",
+                "name": "lastUpdateTimestamp",
+                "type": "uint40"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "totalSupply": {
+        "constant": true,
+        "inputs": [],
+        "name": "totalSupply",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "getNoOfErc20s": {
+        "inputs": [],
+        "name": "getNoOfErc20s",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "erc20List": {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "erc20List",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+}

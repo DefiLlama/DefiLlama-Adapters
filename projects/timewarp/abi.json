@@ -1,0 +1,15 @@
+{
+    "erc20Deposit": {
+        "inputs": [],
+        "name": "erc20Deposit",
+        "outputs": [
+            {
+                "internalType": "contract IERC20",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+}

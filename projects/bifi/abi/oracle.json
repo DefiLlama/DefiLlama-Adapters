@@ -1,0 +1,21 @@
+[
+    {
+       "inputs":[
+          {
+             "internalType":"uint256",
+             "name":"tokenID",
+             "type":"uint256"
+          }
+       ],
+       "name":"getTokenPrice",
+       "outputs":[
+          {
+             "internalType":"uint256",
+             "name":"",
+             "type":"uint256"
+          }
+       ],
+       "stateMutability":"view",
+       "type":"function"
+    }
+]

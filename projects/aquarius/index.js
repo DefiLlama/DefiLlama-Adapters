@@ -19,4 +19,5 @@ async function tvl(_, _ethBlock, chainBlocks) {
 
 module.exports = {
   tvl,
+  methodology: `Aquarius does not run its own web interface deposits for it's TVL are made at third-party frontend operators incetivized with the AQU token. TVL consists of deposits made to mint aUSD.`
 };

@@ -10,5 +10,6 @@ async function fetch() {
 }
 
 module.exports = {
-  fetch
+  fetch,
+  methodology: `TVL for Wheat Protocol is achieved by making calls to their API: https://api.growthdefi.com/tvl/wheat-tvl`
 }

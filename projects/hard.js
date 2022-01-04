@@ -10,7 +10,7 @@ const BUSD_DENOM = "busd";
 const XRPB_DENOM = "xrpb";
 const coingeckoIds = {
     [KAVA_DENOM]: 'kava',
-    [HARD_DENOM]:'hard-protocol',
+    [HARD_DENOM]:'kava-lend',
     [USDX_DENOM]:'usdx',
     [BNB_DENOM]:'binancecoin',
     [BTC_DENOM]:'bitcoin',

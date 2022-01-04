@@ -1,0 +1,62 @@
+{
+    "avgBorrowInterestRate": {
+        "constant": true,
+        "inputs": [],
+        "name": "avgBorrowInterestRate",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "totalAssetBorrow": {
+        "constant": true,
+        "inputs": [],
+        "name": "totalAssetBorrow",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "supplyInterestRate": {
+        "constant": true,
+        "inputs": [],
+        "name": "supplyInterestRate",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "borrowInterestRate": {
+        "constant": true,
+        "inputs": [],
+        "name": "borrowInterestRate",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    }
+}

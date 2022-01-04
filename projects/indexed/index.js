@@ -27,6 +27,7 @@ async function tvl(timestamp, block) {
 }
 
 module.exports = {
+  misrepresentedTokens: true,
     name: 'Indexed',
     token: 'NDX',
     category: 'Indexes',

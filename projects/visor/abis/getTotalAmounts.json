@@ -1,0 +1,18 @@
+{
+  "inputs": [],
+  "name": "getTotalAmounts",
+  "outputs": [
+    {
+      "internalType": "uint256",
+      "name": "total0",
+      "type": "uint256"
+    },
+    {
+      "internalType": "uint256",
+      "name": "total1",
+      "type": "uint256"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+}

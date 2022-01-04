@@ -59,29 +59,16 @@ async function processPairs(balances, pairNums, chain, block, factory) {
 
   for (let n = 0; n < pairNums.length; n++) {
     // --- Added try/catch block for both outputs from reserve and check null vals before ---
-    try {
-      if (reserves[n] != null) {
         sdk.util.sumSingleBalance(
           balances,
           `${chain}:${token1Addresses[n].output}`,
           reserves[n].output[1]
         );
-      }
-    } catch (err) {
-      console.error(err);
-    }
-
-    try {
-      if (reserves[n] != null) {
         sdk.util.sumSingleBalance(
           balances,
           `${chain}:${token0Addresses[n].output}`,
           reserves[n].output[0]
         );
-      }
-    } catch (err) {
-      console.error(err);
-    }
   }
 }
 

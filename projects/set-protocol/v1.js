@@ -70,7 +70,6 @@ module.exports = async function tvl(timestamp, block) {
 
   // Compute Balances
   _.each(balanceOfResults.output, (balanceOf) => {
-    if(balanceOf.success) {
       let address = balanceOf.input.target
 
       if (address in cTokensMap) {
@@ -78,11 +77,10 @@ module.exports = async function tvl(timestamp, block) {
         let conversionRate = BigNumber(cTokenConversionRatesMap[address]);
         let balanceOfUnderlying = BigNumber(balanceOf.output).times(conversionRate).div(cTokenDecimalScale);
 
-        balances[addressOfUnderlying] = BigNumber(balances[addressOfUnderlying] || 0).plus(balanceOfUnderlying).toFixed();
+        balances[addressOfUnderlying] = BigNumber(balances[addressOfUnderlying] || 0).plus(balanceOfUnderlying).toFixed(0);
       } else {
-        balances[address] = BigNumber(balances[address] || 0).plus(balanceOf.output).toFixed();
+        balances[address] = BigNumber(balances[address] || 0).plus(balanceOf.output).toFixed(0);
       }
-    }
   });
 
   return balances;

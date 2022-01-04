@@ -1,0 +1,147 @@
+{
+  "markets": {
+    "constant":true,
+    "inputs":[
+      {
+        "name":"",
+        "type":"address"
+      }
+    ],
+    "name":"markets",
+    "outputs":[
+      {
+        "name":"isSupported",
+        "type":"bool"
+      },
+      {
+        "name":"blockNumber",
+        "type":"uint256"
+      },
+      {
+        "name":"interestRateModel",
+        "type":"address"
+      },
+      {
+        "name":"totalSupply",
+        "type":"uint256"
+      },
+      {
+        "name":"supplyRateMantissa",
+        "type":"uint256"
+      },
+      {
+        "name":"supplyIndex",
+        "type":"uint256"
+      },
+      {
+        "name":"totalBorrows",
+        "type":"uint256"
+      },
+      {
+        "name":"borrowRateMantissa",
+        "type":"uint256"
+      },
+      {
+        "name":"borrowIndex",
+        "type":"uint256"
+      }
+    ],
+    "payable":false,
+    "stateMutability":"view",
+    "type":"function"
+  },
+  "totalBorrows": {
+    "constant":true,
+    "inputs":[
+
+    ],
+    "name":"totalBorrows",
+    "outputs":[
+      {
+        "name":"",
+        "type":"uint256"
+      }
+    ],
+    "payable":false,
+    "stateMutability":"view",
+    "type":"function"
+  },
+  "borrowRatePerBlock": {
+    "constant":true,
+    "inputs":[
+
+    ],
+    "name":"borrowRatePerBlock",
+    "outputs":[
+      {
+        "name":"",
+        "type":"uint256"
+      }
+    ],
+    "payable":false,
+    "stateMutability":"view",
+    "type":"function"
+  },
+  "supplyRatePerBlock": {
+    "constant":true,
+    "inputs":[
+
+    ],
+    "name":"supplyRatePerBlock",
+    "outputs":[
+      {
+        "name":"",
+        "type":"uint256"
+      }
+    ],
+    "payable":false,
+    "stateMutability":"view",
+    "type":"function"
+  },
+  "underlying": {
+    "constant": true,
+    "inputs": [],
+    "name": "underlying",
+    "outputs": [
+      {
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "signature": "0x6f307dc3"
+  },
+  "getCash": {
+    "constant": true,
+    "inputs": [],
+    "name": "getCash",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "signature": "0x3b1d21a2",
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "getAllMarkets": {
+    "constant": true,
+    "inputs": [],
+    "name": "getAllMarkets",
+    "outputs": [
+      {
+        "internalType": "contract CToken[]",
+        "name": "",
+        "type": "address[]"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function",
+    "signature": "0xb0772d0b"
+  }
+}

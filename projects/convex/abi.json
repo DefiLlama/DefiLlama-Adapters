@@ -93,6 +93,33 @@
         "type": "function",
         "gas": 2190
     },
+    "coins":{
+        "constant": true,
+        "name": "coins",
+        "outputs": [{
+            "type": "address",
+            "name": ""
+        }],
+        "inputs": [{
+            "type": "uint256",
+            "name": "arg0"
+        }],
+        "stateMutability": "view",
+        "type": "function",
+        "gas": 2280
+    },
+    "get_balances":{
+        "constant": true,
+        "name": "get_balances",
+        "outputs": [{
+            "type": "uint256[2]",
+            "name": ""
+        }],
+        "inputs": [],
+        "stateMutability": "view",
+        "type": "function",
+        "gas": 2284
+    },
     "underlying": {
         "constant": true,
         "inputs": [],
@@ -122,5 +149,77 @@
         "payable": false,
         "stateMutability": "view",
         "type": "function"
+    },
+    "get_underlying_coins" : {
+        "stateMutability": "view",
+        "type": "function",
+        "name": "get_underlying_coins",
+        "inputs": [
+            {
+                "name": "_pool",
+                "type": "address"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "address[8]"
+            }
+        ],
+        "gas": 12194
+    },
+    "get_pool_from_lp_token" : {
+        "stateMutability": "view",
+        "type": "function",
+        "name": "get_pool_from_lp_token",
+        "inputs": [
+            {
+                "name": "arg0",
+                "type": "address"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "gas": 2443
+    },
+    "get_coins" : {
+        "stateMutability": "view",
+        "type": "function",
+        "name": "get_coins",
+        "inputs": [
+            {
+                "name": "_pool",
+                "type": "address"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "address[8]"
+            }
+        ],
+        "gas": 12102
+    },
+    "get_underlying_balances" : {
+        "stateMutability": "view",
+        "type": "function",
+        "name": "get_underlying_balances",
+        "inputs": [
+            {
+                "name": "_pool",
+                "type": "address"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256[8]"
+            }
+        ],
+        "gas": 162842
     }
 }

@@ -1,0 +1,126 @@
+{
+  "getTokens": {
+    "constant": true,
+    "inputs": [
+      { "name": "_start", "type": "uint256" },
+      { "name": "_count", "type": "uint256" },
+      { "name": "_tokenType", "type": "uint256" }
+    ],
+    "name": "getTokens",
+    "outputs": [
+      {
+        "components": [
+          { "name": "token", "type": "address" },
+          { "name": "asset", "type": "address" },
+          { "name": "name", "type": "string" },
+          { "name": "symbol", "type": "string" },
+          { "name": "tokenType", "type": "uint256" },
+          { "name": "index", "type": "uint256" }
+        ],
+        "name": "tokenData",
+        "type": "tuple[]"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "totalAssetSupply": {
+    "constant": true,
+    "inputs": [
+
+    ],
+    "name": "totalAssetSupply",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "totalAssetBorrow": {
+    "constant": true,
+    "inputs": [
+
+    ],
+    "name": "totalAssetBorrow",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+
+  "totalSupplyByAsset": {
+    "constant": true,
+    "inputs": [
+      { "name": "asset", "type": "address" }
+    ],
+    "name": "totalSupplyByAsset",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+
+  "balanceOf": {
+    "constant": true,
+    "inputs": [
+      { "name": "asset", "type": "address" }
+    ],
+    "name": "balanceOf",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+
+  "totalVested": {
+    "constant": true,
+    "inputs": [
+    ],
+    "name": "totalVested",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+
+  "totalSupply": {
+    "constant": true,
+    "inputs": [
+    ],
+    "name": "totalSupply",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  }
+}

@@ -139,5 +139,19 @@
     "payable": false,
     "stateMutability": "view",
     "type": "function"
+  },
+  "bamms" : {
+    "inputs":[{"internalType":"uint256","name":"","type":"uint256"}],
+    "name":"bamms",
+    "outputs":[{"internalType":"address","name":"","type":"address"}],
+    "stateMutability":"view","type":"function"
+  },
+  "getCompoundedLUSDDeposit" : {
+    "inputs":[{"internalType":"address","name":"_depositor","type":"address"}],
+    "name":"getCompoundedLUSDDeposit",
+    "outputs":[{"internalType":"uint256","name":"","type":"uint256"}],
+    "stateMutability":"view",
+    "type":"function"
   }
+
 }

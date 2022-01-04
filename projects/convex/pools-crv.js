@@ -1159,19 +1159,81 @@ module.exports = [{
               name: '3CrvCrypto',
               symbol: '3CrvCrypto',
           },
-          assets: 'usdc+weth+wbtc',
+          assets: 'usdt+weth+wbtc',
           coins: [
-              coins.usdc,
+              coins.usdt,
               coins.wbtc,
               coins.weth,
           ],
           addresses: {
-              swap: '0x65a8b215F34Df5c30c64523D638eA698065FFa15',
-              lpToken: '0x0D89774935e3d88b91f0CEA0991F4FCD7d9f5470',
+              swap: '0x80466c64868E1ab14a1Ddf27A676C3fcBE638Fe5',
+              lpToken: '0xcA3d75aC011BF5aD07a98d02f18225F9bD9A6BDF',
           },
           gaugeVersion: 2,
           hasNoGauge: true,
           cryptoPool: true
-        }
+        },{
+        dataIndex: 38,
+        id: 'alusd',
+        name: 'alisd',
+        lpTokenInfo: {
+            name: 'alusdCurve',
+            symbol: 'alusdCrv',
+        },
+        coingeckoInfo: {
+            id: 'alchemix-usd',
+            symbol: 'ALUSD',
+        },
+        assets: 'alusd+3pool',
+        isMetaPool: true,
+        coins: [
+            coins.alusd,
+            coins.tricrv,
+        ],
+        metaCoins: [
+            coins.dai,
+            coins.usdc,
+            coins.usdt,
+        ],
+        addresses: {
+            swap: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
+            lpToken: '0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c',
+            gauge: '0x9582C4ADACB3BCE56Fea3e590F05c3ca2fb9C477',
+            deposit: '0xA79828DF1850E8a3A3064576f380D90aECDD3359',
+        },
+        gaugeVersion: 2,
+      }, {
+        dataIndex: 39,
+        id: 'reth',
+        name: 'reth',
+        lpTokenInfo: {
+            name: 'rethCurve',
+            symbol: 'rethCrv',
+        },
+        coingeckoInfo: {
+            id: 'reth',
+            symbol: 'RETH',
+            referenceAssetId: 'ethereum',
+        },
+        assets: 'eth+reth',
+        coins: [
+            coins.eth,
+            coins.reth,
+        ],
+        referenceAsset: REFERENCE_ASSETS.ETH,
+        additionalRewards: [{
+            name: 'FIS',
+            amountDataKey: 'rethRewards',
+            rewardTokenAddress: '0xef3A930e1FfFFAcd2fc13434aC81bD278B0ecC8d',
+            rewardTokenDecimals: 18,
+            rewardTokenCoingeckoId: 'stafi',
+        }],
+        addresses: {
+            swap: '0xF9440930043eb3997fc70e1339dBb11F341de7A8',
+            lpToken: '0x53a901d48795C58f485cBB38df08FA96a24669D5',
+            gauge: '0x824F13f1a2F29cFEEa81154b46C0fc820677A637',
+        },
+        gaugeVersion: 2,
+    }
 
     ];

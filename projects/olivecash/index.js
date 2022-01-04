@@ -1,57 +1,89 @@
-const { request, gql } = require("graphql-request");
 const sdk = require('@defillama/sdk');
-const { toUSDTBalances } = require('../helper/balances');
+const abi = require("./abi.json");
+const { addTokensAndLPs } = require("../helper/unwrapLPs");
+const erc20 = require("../helper/abis/erc20.json");
 
-const graphUrl = 'https://api.thegraph.com/subgraphs/name/olive-rose/olivecash'
-
-const graphQuery = gql`
-query get_tvl($block: Int) {
-  pangolinFactory(
-    id: "0x4Fe4D8b01A56706Bc6CaD26E8C59D0C7169976b3",
-    block: { number: $block }
-  ) {
-        totalLiquidityETH
-  },
-  tokens(where: { symbol: "USDT" }, first:1) {
-    derivedETH
-  }
+const CHEFS = {
+  "avax": "0x5A9710f3f23053573301C2aB5024D0a43A461E80",
+  "bsc": "0xD92bc4Afc7775FF052Cdac90352c39Cb6a455900",
+  "fantom": "0xC90812E4502D7848E58e53753cA397A201f2e99B"
 }
-`;
-// Response should be the following:
-// {
-//   "data": {
-//   "tokens": [
-//     {
-//       "derivedETH": "0.03153220767265978413381371295488958"
-//     }
-//   ],
-//       "pangolinFactory": {
-//     "totalLiquidityETH": "132833.6232868980185536992835742923"
-//   }
-// }
-// }
-//  132833/ 0.031 = ~4.2M TVL - its correct now
 
-async function tvl(timestamp) {
-  const {block} = await sdk.api.util.lookupBlock(timestamp,{
-    chain: 'avax'
-  })
-  const response = await request(
-    graphUrl,
-    graphQuery,
-    {
-      block,
-    }
+async function chainTvl(timestamp, block, chainBlocks, chain) {
+  const chef = CHEFS[chain];
+  const poolLength = Number(
+    (
+      await sdk.api.abi.call({
+        abi: abi.poolLength,
+        target: chef,
+        chain: chain,
+        block: chainBlocks[chain],
+      })
+    ).output
+  );
+  const poolIds = Array.from(Array(poolLength).keys());
+
+  const lpTokens = (
+    await sdk.api.abi.multiCall({
+      abi: abi.poolInfo,
+      calls: poolIds.map((pid) => ({
+        target: chef,
+        params: pid,
+      })),
+      chain: chain,
+      block: chainBlocks[chain],
+    })
+  ).output.map((lp) => ({ output: lp.output[0].toLowerCase() }));
+
+  const amounts = (
+    await sdk.api.abi.multiCall({
+      abi: erc20.balanceOf,
+      calls: lpTokens.map((lp) => ({
+        target: lp.output,
+        params: chef,
+      })),
+      chain: chain,
+      block: chainBlocks[chain],
+    })
+  )
+
+  const balances = {};
+  const tokens = { output: lpTokens };
+  const transformAddress = addr => `${chain}:${addr}`;
+  await addTokensAndLPs(
+    balances,
+    tokens,
+    amounts,
+    chainBlocks[chain],
+    chain,
+    transformAddress
   );
 
-  const usdTvl = Number(response.pangolinFactory.totalLiquidityETH) / Number(response.tokens[0].derivedETH)
+  return balances;
+}
 
-  return toUSDTBalances(usdTvl)
+async function avaxTvl(timestamp, block, chainBlocks) {
+  return await chainTvl(timestamp, block, chainBlocks, "avax")
+}
+
+async function bscTvl(timestamp, block, chainBlocks) {
+  return await chainTvl(timestamp, block, chainBlocks, "bsc")
+}
+
+async function fantomTvl(timestamp, block, chainBlocks) {
+  return await chainTvl(timestamp, block, chainBlocks, "fantom")
 }
 
 module.exports = {
-  avalanche:{
-    tvl,
+  methodology: "TVL includes all farms in MasterChef contract",
+  avalanche: {
+    tvl: avaxTvl,
   },
-  tvl
+  bsc: {
+    tvl: bscTvl,
+  },
+  fantom: {
+    tvl: fantomTvl,
+  },
+  tvl: sdk.util.sumChainTvls([avaxTvl, bscTvl, fantomTvl]),
 }

@@ -27,7 +27,7 @@ module.exports = class PieDAO {
     this.pools = pools_config;
     this.tokenAmounts = {};
     this.ovenAmounts = {};
-    this.web3 = new Web3(new Web3.providers.HttpProvider(process.env.ETHEREUM_RPC));
+    this.web3 = new Web3(new Web3.providers.HttpProvider(process.env.ETHEREUM_RPC.split(',')[0]));
     this.web3.eth.defaultBlock = block;
   }
 

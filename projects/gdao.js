@@ -96,5 +96,6 @@ async function fetch() {
 
 
 module.exports = {
-	fetch
+	methodology: 'TVL counts tokens deposited in the Liquidity Mining program.',
+	fetch,
 }

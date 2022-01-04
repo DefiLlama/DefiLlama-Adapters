@@ -23,5 +23,6 @@ module.exports = {
   bsc: {
     fetch: bsc
   },
-  fetch
-}
+  fetch,
+  methodology: `TVL for ValueDefi is obtained from the ValueDefi API:'https://api-stats.valuedefi.io/api/common-stat/get-total-locked'.`
+};

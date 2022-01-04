@@ -1,0 +1,1519 @@
+{
+  "abi": [
+  {
+  "constant": true,
+  "inputs": [
+  {
+  "name": "",
+  "type": "address"
+  }
+  ],
+  "name": "isStakingContract",
+  "outputs": [
+  {
+  "name": "",
+  "type": "bool"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+  },
+  {
+  "constant": true,
+  "inputs": [
+  {
+  "name": "",
+  "type": "address"
+  }
+  ],
+  "name": "isPauseGuardian",
+  "outputs": [
+  {
+  "name": "",
+  "type": "bool"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+  },
+  {
+  "constant": true,
+  "inputs": [],
+  "name": "DONKEY_ADDRESS",
+  "outputs": [
+  {
+  "name": "",
+  "type": "address"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+  },
+  {
+  "constant": true,
+  "inputs": [
+  {
+  "name": "",
+  "type": "address"
+  }
+  ],
+  "name": "borrowCaps",
+  "outputs": [
+  {
+  "name": "",
+  "type": "uint256"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+  },
+  {
+  "constant": true,
+  "inputs": [],
+  "name": "isController",
+  "outputs": [
+  {
+  "name": "",
+  "type": "bool"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+  },
+  {
+  "constant": true,
+  "inputs": [
+  {
+  "name": "",
+  "type": "uint256"
+  }
+  ],
+  "name": "allMarkets",
+  "outputs": [
+  {
+  "name": "",
+  "type": "address"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+  },
+  {
+  "constant": true,
+  "inputs": [
+  {
+  "name": "",
+  "type": "address"
+  }
+  ],
+  "name": "donkeySpeeds",
+  "outputs": [
+  {
+  "name": "",
+  "type": "uint256"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+  },
+  {
+  "constant": true,
+  "inputs": [],
+  "name": "transferGuardianPaused",
+  "outputs": [
+  {
+  "name": "",
+  "type": "bool"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+  },
+  {
+  "constant": true,
+  "inputs": [
+  {
+  "name": "",
+  "type": "address"
+  }
+  ],
+  "name": "markets",
+  "outputs": [
+  {
+  "name": "isListed",
+  "type": "bool"
+  },
+  {
+  "name": "collateralFactorMantissa",
+  "type": "uint256"
+  },
+  {
+  "name": "isDonkeyed",
+  "type": "bool"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+  },
+  {
+  "constant": true,
+  "inputs": [
+  {
+  "name": "",
+  "type": "address"
+  }
+  ],
+  "name": "isMintPaused",
+  "outputs": [
+  {
+  "name": "",
+  "type": "bool"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+  },
+  {
+  "constant": true,
+  "inputs": [
+  {
+  "name": "",
+  "type": "address"
+  },
+  {
+  "name": "",
+  "type": "address"
+  }
+  ],
+  "name": "donkeySupplierIndex",
+  "outputs": [
+  {
+  "name": "",
+  "type": "uint256"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+  },
+  {
+  "constant": true,
+  "inputs": [
+  {
+  "name": "",
+  "type": "address"
+  }
+  ],
+  "name": "donkeySupplyState",
+  "outputs": [
+  {
+  "name": "index",
+  "type": "uint224"
+  },
+  {
+  "name": "block",
+  "type": "uint32"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+  },
+  {
+  "constant": true,
+  "inputs": [
+  {
+  "name": "",
+  "type": "address"
+  }
+  ],
+  "name": "isSeizePaused",
+  "outputs": [
+  {
+  "name": "",
+  "type": "bool"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+  },
+  {
+  "constant": true,
+  "inputs": [],
+  "name": "seizeGuardianPaused",
+  "outputs": [
+  {
+  "name": "",
+  "type": "bool"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+  },
+  {
+  "constant": true,
+  "inputs": [],
+  "name": "donkeyRate",
+  "outputs": [
+  {
+  "name": "",
+  "type": "uint256"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+  },
+  {
+  "constant": true,
+  "inputs": [
+  {
+  "name": "",
+  "type": "address"
+  }
+  ],
+  "name": "isBorrowPaused",
+  "outputs": [
+  {
+  "name": "",
+  "type": "bool"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+  },
+  {
+  "constant": true,
+  "inputs": [
+  {
+  "name": "",
+  "type": "address"
+  }
+  ],
+  "name": "protectedAssets",
+  "outputs": [
+  {
+  "name": "",
+  "type": "bool"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+  },
+  {
+  "constant": true,
+  "inputs": [],
+  "name": "donkeyLockUpBlock",
+  "outputs": [
+  {
+  "name": "",
+  "type": "uint256"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+  },
+  {
+  "constant": true,
+  "inputs": [
+  {
+  "name": "",
+  "type": "address"
+  }
+  ],
+  "name": "oracleGuardianPaused",
+  "outputs": [
+  {
+  "name": "",
+  "type": "bool"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+  },
+  {
+  "constant": true,
+  "inputs": [
+  {
+  "name": "",
+  "type": "address"
+  }
+  ],
+  "name": "donkeyBorrowState",
+  "outputs": [
+  {
+  "name": "index",
+  "type": "uint224"
+  },
+  {
+  "name": "block",
+  "type": "uint32"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+  },
+  {
+  "constant": true,
+  "inputs": [],
+  "name": "donkeyInitialIndex",
+  "outputs": [
+  {
+  "name": "",
+  "type": "uint224"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+  },
+  {
+  "constant": true,
+  "inputs": [
+  {
+  "name": "",
+  "type": "address"
+  }
+  ],
+  "name": "donkeyAccrued",
+  "outputs": [
+  {
+  "name": "",
+  "type": "uint256"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+  },
+  {
+  "constant": true,
+  "inputs": [
+  {
+  "name": "",
+  "type": "address"
+  },
+  {
+  "name": "",
+  "type": "uint256"
+  }
+  ],
+  "name": "accountAssets",
+  "outputs": [
+  {
+  "name": "",
+  "type": "address"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+  },
+  {
+  "constant": true,
+  "inputs": [],
+  "name": "closeFactorMantissa",
+  "outputs": [
+  {
+  "name": "",
+  "type": "uint256"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+  },
+  {
+  "constant": true,
+  "inputs": [],
+  "name": "admin",
+  "outputs": [
+  {
+  "name": "",
+  "type": "address"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+  },
+  {
+  "constant": true,
+  "inputs": [
+  {
+  "name": "",
+  "type": "address"
+  },
+  {
+  "name": "",
+  "type": "address"
+  }
+  ],
+  "name": "donkeyBorrowerIndex",
+  "outputs": [
+  {
+  "name": "",
+  "type": "uint256"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+  },
+  {
+  "anonymous": false,
+  "inputs": [
+  {
+  "indexed": false,
+  "name": "dToken",
+  "type": "address"
+  }
+  ],
+  "name": "MarketListed",
+  "type": "event"
+  },
+  {
+  "anonymous": false,
+  "inputs": [
+  {
+  "indexed": false,
+  "name": "dToken",
+  "type": "address"
+  },
+  {
+  "indexed": false,
+  "name": "account",
+  "type": "address"
+  }
+  ],
+  "name": "MarketEntered",
+  "type": "event"
+  },
+  {
+  "anonymous": false,
+  "inputs": [
+  {
+  "indexed": false,
+  "name": "dToken",
+  "type": "address"
+  },
+  {
+  "indexed": false,
+  "name": "account",
+  "type": "address"
+  }
+  ],
+  "name": "MarketExited",
+  "type": "event"
+  },
+  {
+  "anonymous": false,
+  "inputs": [
+  {
+  "indexed": false,
+  "name": "dToken",
+  "type": "address"
+  },
+  {
+  "indexed": false,
+  "name": "action",
+  "type": "string"
+  },
+  {
+  "indexed": false,
+  "name": "pauseState",
+  "type": "bool"
+  }
+  ],
+  "name": "ActionPaused",
+  "type": "event"
+  },
+  {
+  "anonymous": false,
+  "inputs": [
+  {
+  "indexed": false,
+  "name": "newAdmin",
+  "type": "address"
+  }
+  ],
+  "name": "NewAdmin",
+  "type": "event"
+  },
+  {
+  "anonymous": false,
+  "inputs": [
+  {
+  "indexed": true,
+  "name": "dToken",
+  "type": "address"
+  },
+  {
+  "indexed": false,
+  "name": "newBorrowCap",
+  "type": "uint256"
+  }
+  ],
+  "name": "NewBorrowCap",
+  "type": "event"
+  },
+  {
+  "anonymous": false,
+  "inputs": [
+  {
+  "indexed": false,
+  "name": "dToken",
+  "type": "address"
+  },
+  {
+  "indexed": false,
+  "name": "oldCollateralFactorMantissa",
+  "type": "uint256"
+  },
+  {
+  "indexed": false,
+  "name": "newCollateralFactorMantissa",
+  "type": "uint256"
+  }
+  ],
+  "name": "NewCollateralFactor",
+  "type": "event"
+  },
+  {
+  "anonymous": false,
+  "inputs": [
+  {
+  "indexed": false,
+  "name": "oldCloseFactorMantissa",
+  "type": "uint256"
+  },
+  {
+  "indexed": false,
+  "name": "newCloseFactorMantissa",
+  "type": "uint256"
+  }
+  ],
+  "name": "NewCloseFactor",
+  "type": "event"
+  },
+  {
+  "anonymous": false,
+  "inputs": [
+  {
+  "indexed": false,
+  "name": "newPriceOracle",
+  "type": "address"
+  }
+  ],
+  "name": "NewPriceOracle",
+  "type": "event"
+  },
+  {
+  "anonymous": false,
+  "inputs": [
+  {
+  "indexed": false,
+  "name": "newGuardianAddress",
+  "type": "address"
+  }
+  ],
+  "name": "NewGuardian",
+  "type": "event"
+  },
+  {
+  "anonymous": false,
+  "inputs": [
+  {
+  "indexed": true,
+  "name": "dToken",
+  "type": "address"
+  },
+  {
+  "indexed": true,
+  "name": "supplier",
+  "type": "address"
+  },
+  {
+  "indexed": false,
+  "name": "donkeyDelta",
+  "type": "uint256"
+  },
+  {
+  "indexed": false,
+  "name": "donkeySupplyIndex",
+  "type": "uint256"
+  }
+  ],
+  "name": "DistributeSupplierDonkey",
+  "type": "event"
+  },
+  {
+  "anonymous": false,
+  "inputs": [
+  {
+  "indexed": true,
+  "name": "dToken",
+  "type": "address"
+  },
+  {
+  "indexed": true,
+  "name": "borrower",
+  "type": "address"
+  },
+  {
+  "indexed": false,
+  "name": "donkeyDelta",
+  "type": "uint256"
+  },
+  {
+  "indexed": false,
+  "name": "donkeyBorrowIndex",
+  "type": "uint256"
+  }
+  ],
+  "name": "DistributeBorrowerDonkey",
+  "type": "event"
+  },
+  {
+  "anonymous": false,
+  "inputs": [
+  {
+  "indexed": false,
+  "name": "error",
+  "type": "uint256"
+  },
+  {
+  "indexed": false,
+  "name": "info",
+  "type": "uint256"
+  },
+  {
+  "indexed": false,
+  "name": "detail",
+  "type": "uint256"
+  }
+  ],
+  "name": "Failure",
+  "type": "event"
+  },
+  {
+  "constant": false,
+  "inputs": [
+  {
+  "name": "admin_",
+  "type": "address"
+  },
+  {
+  "name": "donkeyAddress_",
+  "type": "address"
+  }
+  ],
+  "name": "initialize",
+  "outputs": [],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "function"
+  },
+  {
+  "constant": false,
+  "inputs": [
+  {
+  "name": "newAdmin_",
+  "type": "address"
+  }
+  ],
+  "name": "setAdmin",
+  "outputs": [],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "function"
+  },
+  {
+  "constant": false,
+  "inputs": [
+  {
+  "name": "account",
+  "type": "address"
+  }
+  ],
+  "name": "exitMarket",
+  "outputs": [
+  {
+  "name": "",
+  "type": "uint256"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "function"
+  },
+  {
+  "constant": false,
+  "inputs": [
+  {
+  "name": "dTokens",
+  "type": "address[]"
+  },
+  {
+  "name": "newBorrowCaps",
+  "type": "uint256[]"
+  }
+  ],
+  "name": "_setMarketBorrowCaps",
+  "outputs": [],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "function"
+  },
+  {
+  "constant": false,
+  "inputs": [
+  {
+  "name": "dToken",
+  "type": "address"
+  },
+  {
+  "name": "redeemer",
+  "type": "address"
+  },
+  {
+  "name": "redeemAmount",
+  "type": "uint256"
+  }
+  ],
+  "name": "redeemAllowed",
+  "outputs": [
+  {
+  "name": "",
+  "type": "uint256"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "function"
+  },
+  {
+  "constant": false,
+  "inputs": [
+  {
+  "name": "dToken",
+  "type": "address"
+  },
+  {
+  "name": "src",
+  "type": "address"
+  },
+  {
+  "name": "dst",
+  "type": "address"
+  },
+  {
+  "name": "transferTokens",
+  "type": "uint256"
+  }
+  ],
+  "name": "transferAllowed",
+  "outputs": [
+  {
+  "name": "",
+  "type": "uint256"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "function"
+  },
+  {
+  "constant": false,
+  "inputs": [
+  {
+  "name": "dToken",
+  "type": "address"
+  },
+  {
+  "name": "minter",
+  "type": "address"
+  }
+  ],
+  "name": "mintAllowed",
+  "outputs": [
+  {
+  "name": "",
+  "type": "uint256"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "function"
+  },
+  {
+  "constant": false,
+  "inputs": [
+  {
+  "name": "dToken",
+  "type": "address"
+  },
+  {
+  "name": "state",
+  "type": "bool"
+  }
+  ],
+  "name": "setMintPaused",
+  "outputs": [
+  {
+  "name": "",
+  "type": "bool"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "function"
+  },
+  {
+  "constant": false,
+  "inputs": [
+  {
+  "name": "dTokens",
+  "type": "address[]"
+  },
+  {
+  "name": "state",
+  "type": "bool"
+  }
+  ],
+  "name": "setOracleGuardianPaused",
+  "outputs": [
+  {
+  "name": "",
+  "type": "bool"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "function"
+  },
+  {
+  "constant": false,
+  "inputs": [
+  {
+  "name": "dToken",
+  "type": "address"
+  }
+  ],
+  "name": "_supportMarket",
+  "outputs": [
+  {
+  "name": "",
+  "type": "uint256"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "function"
+  },
+  {
+  "constant": false,
+  "inputs": [
+  {
+  "name": "dToken",
+  "type": "address"
+  },
+  {
+  "name": "borrower",
+  "type": "address"
+  },
+  {
+  "name": "borrowAmount",
+  "type": "uint256"
+  }
+  ],
+  "name": "borrowAllowed",
+  "outputs": [
+  {
+  "name": "",
+  "type": "uint256"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "function"
+  },
+  {
+  "constant": false,
+  "inputs": [
+  {
+  "name": "dToken",
+  "type": "address"
+  },
+  {
+  "name": "borrower",
+  "type": "address"
+  }
+  ],
+  "name": "repayBorrowAllowed",
+  "outputs": [
+  {
+  "name": "",
+  "type": "uint256"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "function"
+  },
+  {
+  "constant": false,
+  "inputs": [
+  {
+  "name": "newGuardianAddress",
+  "type": "address"
+  },
+  {
+  "name": "state",
+  "type": "bool"
+  }
+  ],
+  "name": "setPauseGuardian",
+  "outputs": [
+  {
+  "name": "",
+  "type": "uint256"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "function"
+  },
+  {
+  "constant": false,
+  "inputs": [
+  {
+  "name": "dToken",
+  "type": "address"
+  },
+  {
+  "name": "state",
+  "type": "bool"
+  }
+  ],
+  "name": "setBorrowPaused",
+  "outputs": [
+  {
+  "name": "",
+  "type": "bool"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "function"
+  },
+  {
+  "constant": false,
+  "inputs": [
+  {
+  "name": "dTokens",
+  "type": "address[]"
+  },
+  {
+  "name": "state",
+  "type": "bool"
+  }
+  ],
+  "name": "_setSeizePaused",
+  "outputs": [
+  {
+  "name": "",
+  "type": "bool"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "function"
+  },
+  {
+  "constant": false,
+  "inputs": [
+  {
+  "name": "dTokenCollateral",
+  "type": "address"
+  },
+  {
+  "name": "dTokenBorrowed",
+  "type": "address"
+  },
+  {
+  "name": "liquidator",
+  "type": "address"
+  },
+  {
+  "name": "borrower",
+  "type": "address"
+  }
+  ],
+  "name": "seizeAllowed",
+  "outputs": [
+  {
+  "name": "",
+  "type": "uint256"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "function"
+  },
+  {
+  "constant": true,
+  "inputs": [
+  {
+  "name": "dTokenBorrowed",
+  "type": "address"
+  },
+  {
+  "name": "dTokenCollateral",
+  "type": "address"
+  },
+  {
+  "name": "actualRepayAmount",
+  "type": "uint256"
+  }
+  ],
+  "name": "liquidateCalculateSeizeTokens",
+  "outputs": [
+  {
+  "name": "",
+  "type": "uint256"
+  },
+  {
+  "name": "",
+  "type": "uint256"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+  },
+  {
+  "constant": true,
+  "inputs": [
+  {
+  "name": "account",
+  "type": "address"
+  },
+  {
+  "name": "isProtectedCall",
+  "type": "bool"
+  }
+  ],
+  "name": "getAccountLiquidity",
+  "outputs": [
+  {
+  "name": "",
+  "type": "uint256"
+  },
+  {
+  "name": "",
+  "type": "uint256"
+  },
+  {
+  "name": "",
+  "type": "uint256"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+  },
+  {
+  "constant": false,
+  "inputs": [
+  {
+  "name": "redeemAmount",
+  "type": "uint256"
+  },
+  {
+  "name": "redeemTokens",
+  "type": "uint256"
+  }
+  ],
+  "name": "redeemVerify",
+  "outputs": [],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "function"
+  },
+  {
+  "constant": false,
+  "inputs": [
+  {
+  "name": "newCloseFactorMantissa",
+  "type": "uint256"
+  }
+  ],
+  "name": "_setCloseFactor",
+  "outputs": [
+  {
+  "name": "",
+  "type": "uint256"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "function"
+  },
+  {
+  "constant": false,
+  "inputs": [
+  {
+  "name": "dToken",
+  "type": "address"
+  },
+  {
+  "name": "newCollateralFactorMantissa",
+  "type": "uint256"
+  }
+  ],
+  "name": "_setCollateralFactor",
+  "outputs": [
+  {
+  "name": "",
+  "type": "uint256"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "function"
+  },
+  {
+  "constant": false,
+  "inputs": [
+  {
+  "name": "lockupBlockNum",
+  "type": "uint256"
+  }
+  ],
+  "name": "setDonkeyLockUp",
+  "outputs": [
+  {
+  "name": "",
+  "type": "uint256"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "function"
+  },
+  {
+  "constant": false,
+  "inputs": [
+  {
+  "name": "holders",
+  "type": "address[]"
+  },
+  {
+  "name": "dTokens",
+  "type": "address[]"
+  },
+  {
+  "name": "borrowers",
+  "type": "bool"
+  },
+  {
+  "name": "suppliers",
+  "type": "bool"
+  },
+  {
+  "name": "isMax",
+  "type": "bool"
+  }
+  ],
+  "name": "claimDonkey",
+  "outputs": [],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "function"
+  },
+  {
+  "constant": false,
+  "inputs": [
+  {
+  "name": "holder",
+  "type": "address"
+  },
+  {
+  "name": "dTokens",
+  "type": "address[]"
+  }
+  ],
+  "name": "claimDonkey",
+  "outputs": [],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "function"
+  },
+  {
+  "constant": false,
+  "inputs": [
+  {
+  "name": "holder",
+  "type": "address"
+  }
+  ],
+  "name": "claimDonkey",
+  "outputs": [],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "function"
+  },
+  {
+  "constant": false,
+  "inputs": [
+  {
+  "name": "recipient",
+  "type": "address"
+  },
+  {
+  "name": "amount",
+  "type": "uint256"
+  }
+  ],
+  "name": "_grantDonkey",
+  "outputs": [],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "function"
+  },
+  {
+  "constant": false,
+  "inputs": [
+  {
+  "name": "dTokens",
+  "type": "address[]"
+  },
+  {
+  "name": "donkeySpeeds",
+  "type": "uint256[]"
+  }
+  ],
+  "name": "_setDonkeySpeed",
+  "outputs": [],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "function"
+  },
+  {
+  "constant": true,
+  "inputs": [],
+  "name": "getDonkeyAddress",
+  "outputs": [
+  {
+  "name": "",
+  "type": "address"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+  },
+  {
+  "constant": true,
+  "inputs": [],
+  "name": "getBlockNumber",
+  "outputs": [
+  {
+  "name": "",
+  "type": "uint256"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+  },
+  {
+  "constant": true,
+  "inputs": [
+  {
+  "name": "owner",
+  "type": "address"
+  }
+  ],
+  "name": "getAccountAssets",
+  "outputs": [
+  {
+  "name": "",
+  "type": "address[]"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+  },
+  {
+  "constant": false,
+  "inputs": [
+  {
+  "name": "dTokenBorrowed",
+  "type": "address"
+  },
+  {
+  "name": "dTokenCollateral",
+  "type": "address"
+  },
+  {
+  "name": "borrower",
+  "type": "address"
+  },
+  {
+  "name": "liquidator",
+  "type": "address"
+  },
+  {
+  "name": "repayAmount",
+  "type": "uint256"
+  }
+  ],
+  "name": "liquidateBorrowAllowed",
+  "outputs": [
+  {
+  "name": "",
+  "type": "uint256"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "function"
+  },
+  {
+  "constant": false,
+  "inputs": [
+  {
+  "name": "dTokens",
+  "type": "address[]"
+  },
+  {
+  "name": "newLiquidationIncentiveMantissas",
+  "type": "uint256[]"
+  }
+  ],
+  "name": "_setLiquidationIncentive",
+  "outputs": [
+  {
+  "name": "",
+  "type": "uint256"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "function"
+  },
+  {
+  "constant": true,
+  "inputs": [],
+  "name": "getAllMarkets",
+  "outputs": [
+  {
+  "name": "",
+  "type": "address[]"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+  },
+  {
+  "constant": true,
+  "inputs": [
+  {
+  "name": "account",
+  "type": "address"
+  }
+  ],
+  "name": "getCurrentMyDonkey",
+  "outputs": [
+  {
+  "name": "",
+  "type": "uint256"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+  },
+  {
+  "constant": false,
+  "inputs": [
+  {
+  "name": "account",
+  "type": "address"
+  },
+  {
+  "name": "isMax",
+  "type": "bool"
+  }
+  ],
+  "name": "claimDonkeyBehalfOf",
+  "outputs": [
+  {
+  "name": "",
+  "type": "bool"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "function"
+  },
+  {
+  "constant": false,
+  "inputs": [
+  {
+  "name": "stakingAddressList",
+  "type": "address[]"
+  },
+  {
+  "name": "state",
+  "type": "bool"
+  }
+  ],
+  "name": "setIsStakingContract",
+  "outputs": [],
+  "payable": false,
+  "stateMutability": "nonpayable",
+  "type": "function"
+  },
+  {
+  "constant": true,
+  "inputs": [
+  {
+  "name": "dToken",
+  "type": "address"
+  }
+  ],
+  "name": "getLiquidationIncentiveOf",
+  "outputs": [
+  {
+  "name": "",
+  "type": "uint256"
+  }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+  }
+  ]
+  }

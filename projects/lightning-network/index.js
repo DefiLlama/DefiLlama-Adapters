@@ -109,9 +109,6 @@ async function tvl(timestamp, block) {
 }
 
 module.exports = {
-    name: 'Lightning Network',
-    token: null,
-    category: 'payments',
     start: 1516406400,
     tvl,
   };

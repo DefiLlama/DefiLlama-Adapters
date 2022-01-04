@@ -16,12 +16,6 @@ async function tvl(_, block) {
   return balances;
 }
 
-async function getSupportedTokens() {
-  const tokens = await sdk.api.util.tokenList();
-
-  return new Set(tokens.map(({ contract }) => contract));
-}
-
 async function getPairAddresses(block) {
   const logs = await sdk.api.util.getLogs({
     keys: [],
@@ -37,10 +31,9 @@ async function getPairAddresses(block) {
 }
 
 async function getPairs(block) {
-  const supportedTokens = await getSupportedTokens();
   const pairAddresses = await getPairAddresses(block);
   const [token0Addresses, token1Addresses] = await getTokenAddresses(block, pairAddresses);
-  const pairs = constructPairs(supportedTokens, token0Addresses, token1Addresses);
+  const pairs = constructPairs(token0Addresses, token1Addresses);
 
   return pairs;
 }
@@ -66,32 +59,24 @@ async function getTokenAddresses(block, pairAddresses) {
   return [token0Addresses.output, token1Addresses.output];
 }
 
-async function constructPairs(supportedTokens, token0Addresses, token1Addresses) {
+async function constructPairs(token0Addresses, token1Addresses) {
   const pairs = {};
 
   token0Addresses.forEach((token0Address) => {
-    if (token0Address.success) {
       const tokenAddress = token0Address.output.toLowerCase();
-      if (supportedTokens.has(tokenAddress)) {
         const pairAddress = token0Address.input.target.toLowerCase();
         pairs[pairAddress] = {
           token0Address: tokenAddress,
         }
-      }
-    }
   });
 
   token1Addresses.forEach((token1Address) => {
-    if (token1Address.success) {
       const tokenAddress = token1Address.output.toLowerCase();
-      if (supportedTokens.has(tokenAddress)) {
         const pairAddress = token1Address.input.target.toLowerCase();
         pairs[pairAddress] = {
           ...(pairs[pairAddress] || {}),
           token1Address: tokenAddress,
         }
-      }
-    }
   });
 
   return pairs;
@@ -111,7 +96,6 @@ async function getReserves(block, pairs) {
 
 async function getBalances(pairs, reserves) {
   return reserves.reduce((memo, reserve) => {
-    if (reserve.success) {
       const pairAddress = reserve.input.target.toLowerCase();
       const pair = pairs[pairAddress] || {};
 
@@ -130,16 +114,12 @@ async function getBalances(pairs, reserves) {
           memo[pair.token1Address] = existingBalance.plus(reserve1).toFixed()
         }
       }
-    }
 
     return memo
   }, {});
 }
 
 module.exports = {
-  name: 'Integral',
-  token: null,
-  category: 'dexes',
   start: 1617031800, // 03/29/2021 @ 2:30PM (UTC)
   tvl,
 };

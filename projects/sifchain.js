@@ -8,7 +8,7 @@ async function fetch() {
   const getPoolsRes = await retry(async bail => 
     await axios('https://api.sifchain.finance/clp/getPools'))
 
-  const tvl = getPoolsRes.data.result.Pools
+  const tvl = getPoolsRes.data.result.pools
     .map(pool => BigNumber(pool.native_asset_balance))
     .reduce((sum, current) => sum.plus(current))
     .multipliedBy(2)

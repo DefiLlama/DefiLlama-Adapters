@@ -5,45 +5,39 @@ const getReserves = require('./abis/getReserves.json');
 const getTotalSupply = require('./abis/totalSupply.json');
 const getTotalBalance = require('./abis/totalBalance.json');
 
-const START_BLOCK = 10000835;
-const FACTORY = '0x8c3736e2fe63cc2cd89ee228d9dbcab6ce5b767b';
-
 function toAddress(str, skip = 0) {
   return `0x${str.slice(64 - 40 + 2 + skip * 64, 64 + 2 + skip * 64)}`.toLowerCase();
 }
 
-async function multiCallAndReduce(abi, targets, block) {
+async function multiCallAndReduce(abi, chain, targets, block) {
   return (await sdk.api.abi
     .multiCall({
+      chain,
       abi: abi,
       calls: targets.map((target) => ({
         target: target,
       })),
       block,
     })).output.reduce((accumulator, data, ) => {
-      if (data.success) {
-        accumulator[data.input.target.toLowerCase()] = data.output;
+      if (!data.success) {
+        throw new Error("call failed")
       }
+      accumulator[data.input.target.toLowerCase()] = data.output;
       return accumulator;
     }, {});
 }
 
-module.exports = async function tvl(_, block) {
-  const supportedTokens = await (
-    sdk
-      .api
-      .util
-      .tokenList()
-      .then((supportedTokens) => supportedTokens.map(({ contract }) => contract))
-  );
+module.exports = async function tvl(block, chain, factory, startBlock) {
+  if (block === undefined) throw new Error("Impermax: block is undefined");
 
   const logs = (
     await sdk.api.util
       .getLogs({
+        chain,
         keys: [],
         toBlock: block,
-        target: FACTORY,
-        fromBlock: START_BLOCK,
+        target: factory,
+        fromBlock: startBlock,
         topic: 'LendingPoolInitialized(address,address,address,address,address,address,uint256)',
       })
   ).output;
@@ -56,15 +50,13 @@ module.exports = async function tvl(_, block) {
     const collateralAddress = toAddress(log.data);
     const borrowable0Address = toAddress(log.data, 1);
     const borrowable1Address = toAddress(log.data, 2);
-    const is0Supported = supportedTokens.includes(token0Address);
-    const is1Supported = supportedTokens.includes(token1Address);
     lendingPools.push({
       pairAddress: pairAddress,
-      token0Address: is0Supported ? token0Address : null,
-      token1Address: is1Supported ? token1Address : null,
+      token0Address: token0Address,
+      token1Address: token1Address,
       collateralAddress: collateralAddress,
-      borrowable0Address: is0Supported ? borrowable0Address : null,
-      borrowable1Address: is1Supported ? borrowable1Address : null,
+      borrowable0Address: borrowable0Address,
+      borrowable1Address: borrowable1Address,
     });
   }
 
@@ -75,9 +67,11 @@ module.exports = async function tvl(_, block) {
     lendingPools.map((lendingPool) => lendingPool.collateralAddress),
   );
 
-  const reserves = await multiCallAndReduce(getReserves, pairAddresses, block);
-  const totalSupplies = await multiCallAndReduce(getTotalSupply, pairAddresses, block);
-  const totalBalances = await multiCallAndReduce(getTotalBalance, poolTokenAddresses, block);
+  const [reserves, totalSupplies, totalBalances]  = await Promise.all([
+    multiCallAndReduce(getReserves, chain, pairAddresses, block),
+    multiCallAndReduce(getTotalSupply, chain, pairAddresses, block),
+    multiCallAndReduce(getTotalBalance, chain, poolTokenAddresses, block)
+  ]);
 
   return lendingPools.reduce((accumulator, lendingPool, ) => {
     const reservesRaw = reserves[lendingPool.pairAddress];
@@ -86,12 +80,12 @@ module.exports = async function tvl(_, block) {
     const borrowable0BalanceRaw = totalBalances[lendingPool.borrowable0Address];
     const borrowable1BalanceRaw = totalBalances[lendingPool.borrowable1Address];
 
-    if (!reservesRaw || !totalSupplyRaw || !collateralBalanceRaw) return accumulator;
-
     const collateralBalance = new BigNumber(collateralBalanceRaw);
     const totalSupply = new BigNumber(totalSupplyRaw);
 
-    if (lendingPool.token0Address && borrowable0BalanceRaw) {
+    if(totalSupply.isZero()) return accumulator
+
+    {
       const reserve0 = new BigNumber(reservesRaw['0']);
       const borrowable0Balance = new BigNumber(borrowable0BalanceRaw);
       const collateral0Balance = collateralBalance.multipliedBy(reserve0).dividedToIntegerBy(totalSupply)
@@ -102,7 +96,7 @@ module.exports = async function tvl(_, block) {
         .toFixed()
     }
 
-    if (lendingPool.token1Address && borrowable1BalanceRaw) {
+    {
       const reserve1 = new BigNumber(reservesRaw['1']);
       const borrowable1Balance = new BigNumber(borrowable1BalanceRaw);
       const collateral1Balance = collateralBalance.multipliedBy(reserve1).dividedToIntegerBy(totalSupply)

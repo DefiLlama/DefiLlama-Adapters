@@ -1,0 +1,3 @@
+{
+    "activeMarkets":{"constant":true,"inputs":[{"internalType":"uint256","name":"index","type":"uint256"},{"internalType":"uint256","name":"pageSize","type":"uint256"}],"name":"activeMarkets","outputs":[{"internalType":"address[]","name":"","type":"address[]"}],"payable":false,"stateMutability":"view","type":"function"}
+}

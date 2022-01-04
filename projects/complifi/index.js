@@ -6,12 +6,10 @@ const chainParams = {
   ethereum: {
     START_BLOCK: 12093712, // block 12093712, Mar-23-2021 07:22:04 AM +UTC
     VAULT_FACTORY_PROXY: '0x3269DeB913363eE58E221808661CfDDa9d898127',
-    USDC: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
   },
   polygon:{
     START_BLOCK: 14908452,
     VAULT_FACTORY_PROXY: '0xE970b0B1a2789e3708eC7DfDE88FCDbA5dfF246a',
-    USDC: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174', 
   }
 }
 
@@ -22,14 +20,22 @@ function getChainTvl(chain){
 
 async function chainTvl(chain, block, transformAddr) {
   let balances = {};
-  const USDC = chainParams[chain].USDC
 
   let vaults = await getVaults(block, chain);
 
-  let vaultBalances = await sdk.api.abi.multiCall({
+  let vaultCollaterals = (await sdk.api.abi.multiCall({
     block,
     calls: _.map(vaults, (vault) => ({
-      target: USDC,
+      target: vault,
+    })),
+    chain,
+    abi: abi['getVaultCollateral'],
+  })).output;
+
+  let vaultBalances = await sdk.api.abi.multiCall({
+    block,
+    calls: _.map(vaults, (vault,index) => ({
+      target: vaultCollaterals[index].output,
       params: vault,
     })),
     chain,
