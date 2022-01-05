@@ -137,5 +137,18 @@
     ],
     "stateMutability": "view",
     "type": "function"
+  },
+  "xalpacaTotalSupply": {
+    "inputs": [],
+    "name": "supply",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   }
 }
