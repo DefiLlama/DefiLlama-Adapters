@@ -181,13 +181,14 @@ const minichefTvl = async (timestamp, ethBlock, chainBlocks) => {
     sdk.util.sumSingleBalance(
       balances,
       transformAddress(usdtTokenAddress),
-      balances[beetXLP_MIM_USDC_USDT] / 10 ** 12
+      Math.round(balances[beetXLP_MIM_USDC_USDT] / 10 ** 12)
     );
     delete balances[beetXLP_MIM_USDC_USDT];
   };
 
   const turns = Math.floor(lpPositions.length / 10);
   let n = 0;
+
   for (let i = 0; i < turns; i++) {
     await unwrapUniswapLPs(
       balances,
