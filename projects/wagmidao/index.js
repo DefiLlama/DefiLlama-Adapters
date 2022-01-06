@@ -134,7 +134,7 @@ module.exports = {
   harmony: {
     treasury: Treasury,
     staking: Staking,
-    tvl: harmonyTvl,
+    tvl: sdk.util.sumChainTvls([harmonyTvl, Treasury]),
   },
-  methodology: "Counts liquidity on the Farms through Factory Contract, and counts Treasury part separate",
+  methodology: "Counts liquidity on the Farms through Factory Contract, and counts Treasury as it is determined by bonding of assets. Staking refers to the staked GMI tokens",
 };
