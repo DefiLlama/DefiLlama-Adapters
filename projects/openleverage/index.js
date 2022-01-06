@@ -1,5 +1,4 @@
 const sdk = require('@defillama/sdk');
-const abi = require('./abi.json');
 const erc20 = require("../helper/abis/erc20.json");
 
 controller_address = '0x0eabe8e34a1fae4601953667f811acb9ff808e78'
