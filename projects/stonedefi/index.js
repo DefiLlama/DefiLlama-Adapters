@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const {BigNumber} = require("bignumber.js");
-const { pool2Exports, pool2s, pool2 } = require("../helper/pool2");
+const { pool2Exports, pool2s} = require("../helper/pool2");
 
 const ethVaults = [
    "0x0F9F39F6AABc86c457901df26275c72de32B26A4", // WETH
