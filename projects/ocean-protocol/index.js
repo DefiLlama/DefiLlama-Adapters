@@ -1,5 +1,7 @@
 const sdk = require("@defillama/sdk");
+const abi = require("./abi.json");
 const retry = require("../helper/retry");
+const BigNumber = require('bignumber.js');
 const { GraphQLClient, gql } = require("graphql-request");
 // const { transformBscAddress, transformPolygonAddress, transformMoonriverAddress } = require("../helper/portedTokens");
 
@@ -27,6 +29,7 @@ const contracts = {
   }, 
 }
 
+const PAGE_SIZE = 1000
 const graphqlQuery = gql`
 query GET_POOLS($skip: Int, $block: Int, $first: Int) {
   poolFactories {
@@ -44,14 +47,12 @@ query GET_POOLS($skip: Int, $block: Int, $first: Int) {
 }
 `
 
-const PAGE_SIZE = 1000
-
 function chainTvl(chain) {
   return async (timestamp, ethBlock, chainBlocks) => {
     const {graphql_endpoint, OCEAN} = contracts[chain]
     console.log(graphql_endpoint, OCEAN) 
-    // go back a few blocks as graph is not always up to date
-    const block = chainBlocks[chain] - 50 
+    let block = chainBlocks[chain] - 50 // go back a few blocks as graph is not always up to date 
+    if (chain == 'moonriver') {block = 1242900;}
     const transform = (chain === 'bsc') ? 
         t => contracts.ethereum.OCEAN: 
         t => `${chain}:${t}`;
@@ -66,18 +67,31 @@ function chainTvl(chain) {
           graphqlQuery, {skip, block, first: PAGE_SIZE}
         ))
       );
-      const pools = query.pools;
+      let pools = query.pools;
       console.log(chain, 'skip', skip, 'pools.length', pools.length, 'poolFactories.length', query.poolFactories.length, '\n   poolCount', query.poolFactories[0].poolCount, 'tvl', query.poolFactories[0].totalValueLocked);
       
       // Stop criteria for while loop once graphql query returned less than page-size pools
-      if (pools.length < PAGE_SIZE) {
+      if (true || pools.length < PAGE_SIZE) {
         skip = -1;
       } else {
         skip += PAGE_SIZE;
       }
       
-      
-      const collateralTokens = await sdk.api.abi.multiCall({
+      // Filter out not-finalized pools 
+      const {output: finalizeds} = await sdk.api.abi.multiCall({
+        abi: abi['pool_isFinalized'],
+        calls: pools.map(pool => ({
+          target: pool.id,
+        })),
+        block,
+        chain
+      });
+      console.log('pools.length before filter isFinalized', pools.length)
+      pools = pools.filter((p, i) => finalizeds[i].output)
+      console.log('pools.length after filter isFinalized', pools.length)
+
+      // Compute OCEAN balance - to count as TVL, but also filter-out pools with no OCEAN balance
+      let collateralBalances = await sdk.api.abi.multiCall({
         abi: 'erc20:balanceOf',
         calls: pools.map(pool => ({
           target: OCEAN,
@@ -86,7 +100,31 @@ function chainTvl(chain) {
         block,
         chain
       });
-      sdk.util.sumMultiBalanceOf(balances, collateralTokens, true, transform);
+
+      // Filter out pools with null OCEAN balance
+      const OCEAN_balance_gt_0 = collateralBalances.output.map(b => b.output > 0)
+      pools = pools.filter((p, i) => OCEAN_balance_gt_0[i])
+      collateralBalances.output = collateralBalances.output.filter((p, i) => OCEAN_balance_gt_0[i])
+      console.log('pools.length after filter balancesGt0', pools.length)
+
+      // Get Normalized weights to account for balance of data-tokens
+      // At pool creation, the OCEAN collateral is used to mint data-tokens with a iven ratio of OCEAN/dtoken
+      // The TVL of the pool, like any AMM, should account for both sides of the liquisity 
+      const {output: weights} = await sdk.api.abi.multiCall({
+        abi: abi['pool_getNormalizedWeight'],
+        calls: pools.map(pool => ({
+          target: pool.id,
+          params: [OCEAN]
+        })),
+        block,
+        chain
+      });
+
+      collateralBalances.output.forEach((v,i) => {
+        const w = (new BigNumber(weights[i].output || '0')).div(1e18) 
+        collateralBalances.output[i].output = (new BigNumber(v.output).idiv(w)).toString(10)
+      })
+      sdk.util.sumMultiBalanceOf(balances, collateralBalances, true, transform);
       // sdk.util.sumSingleBalance(balances, 'ethereum:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', query.poolFactories[0].totalValueLocked)
       console.log(balances);
     }
@@ -104,8 +142,8 @@ module.exports = {
   bsc: {
     tvl: chainTvl('bsc')
   }, 
-  // moonriver: {
-  //   tvl: chainTvl('moonriver')
-  // },
+  moonriver: {
+    tvl: chainTvl('moonriver')
+  },
   'Methodology': 'OCEAN TVL is OCEAN locked as a stake in each pool of data'
 }
