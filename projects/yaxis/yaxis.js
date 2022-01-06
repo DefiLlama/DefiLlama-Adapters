@@ -1,8 +1,8 @@
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
-const { unwrapCrv, unwrapUniswapLPs } = require("./helper/unwrapLPs");
-const { abi } = require("./yaxis/abi.js");
-const constants = require("./yaxis/constants.js");
+const { unwrapCrv, unwrapUniswapLPs } = require("../helper/unwrapLPs");
+const { abi } = require("../yaxis/abi.js");
+const constants = require("../yaxis/constants.js");
 
 async function tvl(timestamp, block) {
   const balances = {};
