@@ -2,6 +2,7 @@ const { sumTokens, unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { BigNumber } = require("bignumber.js");
+const { fixHarmonyBalances } = require("../helper/portedTokens");
 
 async function handleMooTokens(balances, block, chain, tokens) {
   let balance = (
@@ -234,6 +235,14 @@ async function fantom(timestamp, block, chainBlocks) {
         "0x920786cff2a6f601975874bb24c63f0115df7dc8",
         "0xBf0ff8ac03f3E0DD7d8faA9b571ebA999a854146",
       ],
+      [
+        "0x6c021Ae822BEa943b2E66552bDe1D2696a53fbB7",
+        "0x051b82448a521bC32Ac7007a7A76F9dEC80F6BA2"
+      ],
+      [
+        "0x4cdF39285D7Ca8eB3f090fDA0C069ba5F4145B37",
+        "0xD60FBaFc954Bfbd594c7723C980003c196bDF02F"
+      ]
     ],
     chainBlocks[chain],
     chain,
@@ -323,6 +332,30 @@ async function moonriver(timestamp, block, chainBlocks) {
   return balances;
 }
 
+async function harmony(timestamp, block, chainBlocks) {
+  const balances = {};
+  await sumTokens(
+    balances,
+    [
+      [
+        "0xcf664087a5bb0237a0bad6742852ec6c8d69a27a",
+        "0x12FcB286D664F37981a42cbAce92eAf28d1dA94f",
+      ],
+      [
+        "0x6983d1e6def3690c4d616b13597a09e6193ea013",
+        "0x46469f995A5CB60708200C25EaD3cF1667Ed36d6",
+      ],
+    ],
+    chainBlocks.harmony,
+    "harmony",
+    (addr) => {
+      return `harmony:${addr}`;
+    }
+  );
+  fixHarmonyBalances(balances);
+  return balances;
+}
+
 module.exports = {
   methodology:
     "TVL counts the AAVE tokens that are deposited within the Yield Instruments section of QiDao, the Vault token deposits of CRV, LINK, AAVE and WETH, as well as USDC deposited to mint MAI.",
@@ -338,4 +371,8 @@ module.exports = {
   moonriver: {
     tvl: moonriver,
   },
+  harmony: {
+    tvl: harmony,
+  },
 };
+// node test.js projects/qidao/index.js

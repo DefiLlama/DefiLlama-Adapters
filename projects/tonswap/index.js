@@ -14,7 +14,7 @@ async function fetch() {
     )).data.pairs.map(p => p.tvl).reduce(
       (a, c) => new BigNumber(a).plus(c));
 
-  return tvl || 0;
+  return tvl;
 };
 
 module.exports = {

@@ -15,6 +15,16 @@ function toAddress(str, skip = 0) {
   return `0x${str.slice(64 - 40 + 2 + skip * 64, 64 + 2 + skip * 64)}`.toLowerCase();
 }
 
+const yvUSDC2="0xa354f35829ae975e850e23e9615b11da1b3dc4de"
+const transforms = {
+  [yvUSDC]:usdc,
+  [sdeCRV]:ETH,
+  [sdcrvWSBTC]: WBTC,
+  [yvUSDC2]:usdc,
+}
+
+const transform = addr=>transforms[addr]??addr
+
 module.exports = async function tvl(timestamp, block) {  
   let balances = {};
 
@@ -48,40 +58,7 @@ module.exports = async function tvl(timestamp, block) {
       calls: balanceCalls,
       block
     })
-    sdk.util.sumMultiBalanceOf(balances, balanceOfs, true)
-
-    // Add yvUSDC as USDC to balances
-    const yvUSDCBalance = (
-      await sdk.api.abi.call({
-        target: yvUSDC,
-        params: marginPool,
-        abi: 'erc20:balanceOf',
-        block
-      })
-    ).output;
-    sdk.util.sumSingleBalance(balances, usdc, yvUSDCBalance)
-
-    // Add sdeCRV as ETH to balances
-    const sdeCRVBalance = (
-      await sdk.api.abi.call({
-        target: sdeCRV,
-        params: marginPool,
-        abi: 'erc20:balanceOf',
-        block
-      })
-    ).output;
-    sdk.util.sumSingleBalance(balances, ETH, sdeCRVBalance)
-
-    // Add sdcrvWSBTC as WBTC to balances
-    const sdcrvWSBTCBalance = (
-      await sdk.api.abi.call({
-        target: sdcrvWSBTC,
-        params: marginPool,
-        abi: 'erc20:balanceOf',
-        block
-      })
-    ).output;
-    balances[WBTC] = BigNumber(balances[WBTC] || 0).plus(BigNumber(sdcrvWSBTCBalance).div(10**10)).toFixed(0);
+    sdk.util.sumMultiBalanceOf(balances, balanceOfs, true, transform)
   }
 
   return balances;

@@ -207,6 +207,16 @@ const DATA = {
       "0x3bf21ce864e58731b6f28d68d5928bcbeb0ad172", // gOHM
     ],
   },
+  aurora: {
+    stables: [
+      "0xB12BFcA5A55806AaF64E99521918A4bf0fC40802", // USDC
+      "0x4988a896b1227218e4A686fdE5EabdcAbd91571f", // USDT
+    ],
+    bridge: "0xaeD5b25BE1c3163c907a471082640450F928DDFE",
+    bridgeAssets: [],
+    nusd: "0x07379565cD8B0CaE7c60Dc78e7f601b34AF2A21c",
+    pool: "0xcEf6C2e20898C2604886b888552CA6CcF66933B0",
+  },
 };
 
 const misrepresentedTokensMap = {
@@ -245,6 +255,9 @@ const misrepresentedTokensMap = {
     "0x0ab87046fbb341d058f17cbc4c1133f25a20a52f",
   // avWETH (AVAX) -> WETH (ETH)
   "0x53f7c5869a859f0aec3d334ee8b4cf01e3492f21": WETH,
+  // USDC (NEAR) -> USDC (ETH)
+  "0xB12BFcA5A55806AaF64E99521918A4bf0fC40802":
+    "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
 };
 
 const sumLegacyPools = async (balances, block, chain, transform) => {
@@ -351,6 +364,7 @@ module.exports = chainExports(chainTVL, [
   "boba",
   "optimism",
   "moonriver",
+  "aurora",
 ]);
 module.exports.methodology = `Synapse AMM pools and tokens locked on the Synapse bridge are counted as TVL`;
 module.exports.misrepresentedTokens = true;

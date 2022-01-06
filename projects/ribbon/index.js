@@ -8,6 +8,7 @@ const wbtcCallVault = '0x8b5876f5B0Bf64056A89Aa7e97511644758c3E8c'
 const wbtcCallVaultV2 = '0x65a833afDc250D9d38f8CD9bC2B1E3132dB13B2F'
 const usdcETHPutVault = '0x16772a7f4a3ca291C21B8AcE76F9332dDFfbb5Ef'
 const yvUSDCETHPutVault = '0x8FE74471F198E426e96bE65f40EeD1F8BA96e54f'
+const yvUSDCETHPutVaultV2 = '0xCc323557c71C0D1D20a1861Dc69c06C5f3cC9624'
 const aaveCallVault = '0xe63151A0Ed4e5fafdc951D877102cf0977Abd365'
 const stETHCallVault = '0x53773E034d9784153471813dacAFF53dBBB78E8c'
 
@@ -42,6 +43,7 @@ async function ethTvl(_, block) {
         addVault(balances, wbtcCallVaultV2, wbtc, block),
         addVault(balances, usdcETHPutVault, usdc, block),
         addVault(balances, yvUSDCETHPutVault, usdc, block),
+        addVault(balances, yvUSDCETHPutVaultV2, usdc, block),
         addVault(balances, aaveCallVault, aave, block),
         addVault(balances, stETHCallVault, weth, block),
     ])

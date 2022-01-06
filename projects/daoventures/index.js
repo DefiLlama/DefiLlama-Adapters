@@ -44,8 +44,9 @@ async function tvl(timestamp, ethereumBlock, chainBlocks) {
 
       sdk.api.abi.call({
         target: DAOvault.Metaverse, // contract address
-        abi: abi.getAllPoolInUSD, // erc20:methodName
+        abi: abi.getAllPoolInUSDProxy, // erc20:methodName
         block: block[block], // Current block number
+        params: [false],
       }),
     ]);
 
@@ -80,7 +81,7 @@ async function final() {
 
 final();
 */
-
+// node test.js projects/daoventures/index.js
 async function stakingTvl(timestamp, block) {
   let balances = {};
   let { output: balance } = await sdk.api.erc20.balanceOf({
@@ -104,5 +105,4 @@ module.exports = {
     tvl: tvl,
     staking: stakingTvl,
   },
-  tvl: tvl,
 };

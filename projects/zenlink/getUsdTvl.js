@@ -34,6 +34,7 @@ function calculateUsdTvl(
     FACTORY,
     chain,
     stakeListRaw,
+    tokenChainMap = {},
     allowUndefinedBlock = true
 ) {
     return async (timestamp, ethBlock, chainBlocks) => {
@@ -127,8 +128,16 @@ function calculateUsdTvl(
             const token0Address = pair.token0Address.toLowerCase()
             const token1Address = pair.token1Address.toLowerCase()
             const reserveAmounts = reserves[i].output
-            sum(balances, `${chain}:${token0Address}`, reserveAmounts[0])
-            sum(balances, `${chain}:${token1Address}`, reserveAmounts[1])
+            let token0ChainAddress = `${chain}:${token0Address}`;
+            let token1ChainAddress = `${chain}:${token1Address}`;
+            if(tokenChainMap[token0Address]) {
+                token0ChainAddress = tokenChainMap[token0Address];
+            }
+            if(tokenChainMap[token1Address]) {
+                token1ChainAddress = tokenChainMap[token1Address];
+            }
+            sum(balances, token0ChainAddress, reserveAmounts[0])
+            sum(balances, token1ChainAddress, reserveAmounts[1])
         }
 
         const stakeList = stakeListRaw.map(item => item.toLowerCase());

@@ -5,7 +5,7 @@ async function tvl() {
     var response = await retry(async bail => await axios.get('https://api.marinade.finance/tlv'))
 
     return {
-        'solana': response.data.total_sol || 0
+        'solana': response.data.total_sol
     }
 }
 

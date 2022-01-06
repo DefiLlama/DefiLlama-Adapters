@@ -37,4 +37,8 @@ module.exports = {
     xdai: {
         tvl: xdai
     },
+    optimism:{
+        tvl: staking("0xAD7b4C162707E0B2b5f6fdDbD3f8538A5fbA0d60", "0x7f5c764cbc14f9669b88837ca1490cca17c31607", "optimism")
+    },
+
 }

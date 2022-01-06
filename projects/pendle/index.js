@@ -24,7 +24,7 @@ async function ethTvl(timestamp, block) {
 
     const masterChefDeposits = await sdk.api.abi.call({
         target: masterChefContract,
-        abi: abi,
+        abi: abi.userInfo,
         params: [1, ethFundedContracts[4]],
         block: block,
       });
@@ -75,11 +75,13 @@ async function avaxTvl(timestamp, block, chainBlocks) {
     const transform = await transformAvaxAddress();
     const balances = {};
     block = await getBlock(timestamp, "avax", chainBlocks);
+    
     const masterChefContract = "0xd6a4F121CA35509aF06A0Be99093d08462f53052";
+    const TIME = "avax:0xb54f16fb19478766a268f172c9480f8da1a7c9c3";
 
     balances[transform(avaxTokens.xJOE)] = (await sdk.api.abi.call({
         target: masterChefContract,
-        abi: abi,
+        abi: abi.userInfo,
         params: [24, avaxFundedContracts[0]],
         block: block,
         chain: "avax"
@@ -94,11 +96,24 @@ async function avaxTvl(timestamp, block, chainBlocks) {
         [avaxTokens.WAVAX, false],
         [avaxTokens.JOE, false],
         [avaxTokens.QI, false],
+        [avaxTokens.MIM, false],
+        [avaxTokens.wMEMO, false],
         [avaxTokens.JLP_OT_PAP, true],
         [avaxTokens.JLP_OT_qiUSDC, true],
         [avaxTokens.JLP_OT_qiAVAX, true],
         [avaxTokens.JLP_OT_xJOE, true],
+        [avaxTokens.JLP_OT_wMEMO, true]
     ], avaxFundedContracts, block, "avax", transform);
+
+
+    balances[TIME] = (await sdk.api.abi.call({
+        target: avaxTokens.wMEMO,
+        abi: abi.wMEMOToMEMO,
+        params: [ balances[`avax:${avaxTokens.wMEMO}`] ],
+        block: block,
+        chain: "avax"
+      })).output;
+    delete balances[`avax:${avaxTokens.wMEMO}`];
 
     for (token of avaxOtTokens) {
         delete balances[`avax:${token.toLowerCase()}`];
@@ -110,6 +125,7 @@ async function avaxTvl(timestamp, block, chainBlocks) {
         delete balances[`avax:${avaxTokens.qiUSDC}`]
     };
     delete balances[avaxTokens.PENDLE];
+
     return balances;
 };
 async function avaxPool2(timestamp, block, chainBlocks) {

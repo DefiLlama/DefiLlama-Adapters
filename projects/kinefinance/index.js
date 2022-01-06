@@ -94,7 +94,7 @@ async function ethTvl(timestamp, block) {
 }
 
 async function ethPool2Tvl(timestamp, block) {
-  balances = {};
+  let balances = {};
 
   let { output: stakingToken } = await sdk.api.abi.call({
     target: ethPool2,
