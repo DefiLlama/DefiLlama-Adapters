@@ -9,6 +9,7 @@ const HECO = "heco";
 const OKEXCHAIN = "okexchain";
 const OPTIMISM = "optimism";
 const POLYGON = "polygon";
+const RONIN = "ronin";
 const XDAI = "xdai";
 
 module.exports = {
@@ -23,5 +24,6 @@ module.exports = {
   OKEXCHAIN,
   OPTIMISM,
   POLYGON,
+  RONIN,
   XDAI,
 };
