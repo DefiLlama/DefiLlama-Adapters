@@ -42,6 +42,9 @@ module.exports = {
   bsc:{
     fetch: fetchChain(56)
   },
+  fuse:{
+    fetch: fetchChain(122)
+  },
   heco:{
     fetch: fetchChain(128)
   },

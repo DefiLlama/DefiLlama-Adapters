@@ -14,6 +14,17 @@ async function getBalance(token, owner, block) {
     return Number(data.balance)
 }
 
+async function getDenomBalance(denom, owner, block) {
+    let endpoint = `${process.env["TERRA_RPC"] ?? "https://lcd.terra.dev"}/bank/balances/${owner}`
+    if (block !== undefined) {
+        endpoint += `&height=${block - (block % 100)}`
+    }
+    const data = (await axios.get(endpoint)).data.result
+
+    const balance = data.find(balance => balance.denom === denom);
+    return balance ? Number(balance.amount) : 0
+}
+
 
 // LP stuff
 async function totalSupply(token, block) {
@@ -41,6 +52,7 @@ async function unwrapLp(balances, lpToken, lpBalance, block) {
 
 module.exports = {
     getBalance,
+    getDenomBalance,
     unwrapLp,
     query
 }
