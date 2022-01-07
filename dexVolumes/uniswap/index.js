@@ -4,22 +4,33 @@ const {
   DEFAULT_TOTAL_VOLUME_FIELD,
 } = require("../helper/getUniSubgraphVolume");
 
-const endpoints = {
-  v1: "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap",
-  v2: "https://api.thegraph.com/subgraphs/name/ianlapham/uniswapv2",
-  v3: {
-    ethereum:
-      "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-v3-subgraph",
-    optimism:
-      "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-optimism-dev",
-    arbitrum:
-      "https://api.thegraph.com/subgraphs/name/shinitakunai/uni-arbitrum-volume",
-  },
+const { ARBITRUM, ETHEREUM, OPTIMISM, POLYGON } = require("../helper/chains");
+
+const { getStartTimestamp } = require("../helper/getStartTimestamp");
+
+const v1Endpoints = {
+  [ETHEREUM]: "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap",
 };
+
+const v2Endpoints = {
+  [ETHEREUM]: "https://api.thegraph.com/subgraphs/name/ianlapham/uniswapv2",
+};
+
+const v3Endpoints = {
+  [ETHEREUM]: "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3",
+  [OPTIMISM]:
+    "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-optimism-dev",
+  [ARBITRUM]:
+    "https://api.thegraph.com/subgraphs/name/ianlapham/arbitrum-minimal",
+  [POLYGON]:
+    "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-v3-polygon",
+};
+
+const VOLUME_USD = "volumeUSD";
 
 const v1Graph = getChainVolume({
   graphUrls: {
-    ethereum: endpoints.v1,
+    [ETHEREUM]: v1Endpoints[ETHEREUM],
   },
   totalVolume: {
     factory: "uniswaps",
@@ -33,13 +44,13 @@ const v1Graph = getChainVolume({
 
 const v2Graph = getChainVolume({
   graphUrls: {
-    ethereum: endpoints.v2,
+    [ETHEREUM]: v2Endpoints[ETHEREUM],
   },
 });
 
 const v3Graphs = getChainVolume({
   graphUrls: {
-    ...endpoints.v3,
+    ...v3Endpoints,
   },
   totalVolume: {
     factory: "factories",
@@ -47,22 +58,56 @@ const v3Graphs = getChainVolume({
   },
   dailyVolume: {
     factory: DEFAULT_DAILY_VOLUME_FACTORY,
-    field: "volumeUSD",
+    field: VOLUME_USD,
   },
 });
 
 module.exports = {
   breakdown: {
     v1: {
-      ethereum: v1Graph("ethereum"),
+      [ETHEREUM]: {
+        fetch: v1Graph(ETHEREUM),
+        start: getStartTimestamp({
+          endpoints: v1Endpoints,
+          chain: ETHEREUM,
+          volumeField: "dailyVolumeInUSD",
+        }),
+      },
     },
     v2: {
-      ethereum: v2Graph("ethereum"),
+      [ETHEREUM]: {
+        fetch: v2Graph(ETHEREUM),
+        start: getStartTimestamp({
+          endpoints: v2Endpoints,
+          chain: ETHEREUM,
+        }),
+      },
     },
     v3: {
-      ethereum: v3Graphs("ethereum"),
-      // Will have to replace with faster indexer
-      arbitrum: v3Graphs("arbitrum"),
+      [ETHEREUM]: {
+        fetch: v3Graphs(ETHEREUM),
+        start: getStartTimestamp({
+          endpoints: v3Endpoints,
+          chain: ETHEREUM,
+          volumeField: VOLUME_USD,
+        }),
+      },
+      [ARBITRUM]: {
+        fetch: v3Graphs(ARBITRUM),
+        start: getStartTimestamp({
+          endpoints: v3Endpoints,
+          chain: ARBITRUM,
+          volumeField: VOLUME_USD,
+        }),
+      },
+      [POLYGON]: {
+        fetch: v3Graphs(POLYGON),
+        start: getStartTimestamp({
+          endpoints: v3Endpoints,
+          chain: POLYGON,
+          volumeField: VOLUME_USD,
+        }),
+      },
     },
   },
 };

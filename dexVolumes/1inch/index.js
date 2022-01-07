@@ -4,7 +4,6 @@ const {
   DEFAULT_DAILY_VOLUME_FIELD,
 } = require("../helper/getUniSubgraphVolume");
 const { ETHEREUM } = require("../helper/chains");
-
 const { getStartTimestamp } = require("../helper/getStartTimestamp");
 
 const endpoints = {
