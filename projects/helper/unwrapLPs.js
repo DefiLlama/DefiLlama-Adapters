@@ -5,6 +5,7 @@ const {getPoolTokens, getPoolId} = require('./abis/balancer.json')
 const getPricePerShare = require('./abis/getPricePerShare.json')
 const {requery} = require('./requery')
 const creamAbi = require('./abis/cream.json')
+const { request, gql } = require("graphql-request");
 
 const crvPools = {
     '0x6c3f90f043a72fa612cbac8115ee7e52bde6e490': {
@@ -156,16 +157,26 @@ const crvPools = {
           "0x5c2ed810328349100a66b82b78a1791b101c9d61",
           "0xe7a24ef0c5e95ffb0f6684b813a78f2a3ad7d171"
         ]
-      },
+    },
     // tricryptoCRV v3 Polygon
     "0xdad97f7713ae9437fa9249920ec8507e5fbb23d3": {
         swapContract: "0x92215849c439e1f8612b6646060b4e3e5ef822cc",
         underlyingTokens: [
-          "0x28424507fefb6f7f8e9d3860f56504e4e5f5f390",
-          "0x5c2ed810328349100a66b82b78a1791b101c9d61",
-          "0xe7a24ef0c5e95ffb0f6684b813a78f2a3ad7d171"
+        "0x28424507fefb6f7f8e9d3860f56504e4e5f5f390",
+        "0x5c2ed810328349100a66b82b78a1791b101c9d61",
+        "0xe7a24ef0c5e95ffb0f6684b813a78f2a3ad7d171"
         ]
-      },
+    },
+    // 4eur-f Polygon
+    "0xad326c253a84e9805559b73a08724e11e49ca651": {
+        swapContract: "0xad326c253a84e9805559b73a08724e11e49ca651",
+        underlyingTokens: [
+        "0xe111178a87a3bff0c8d18decba5798827539ae99",
+        "0x4e3decbb3645551b8a19f0ea1678079fcb33fb4c", 
+        "0x7BDF330f423Ea880FF95fC41A280fD5eCFD3D09f", 
+        "0xe2aa7db6da1dae97c5f5c6914d285fbfcc32a128"
+        ]
+    },
     // gondolaDAIeUSDTe Avax
     "0xd7d4a4c67e9c1f5a913bc38e87e228f4b8820e8a": {
         swapContract: "0xCF97190fAAfea63523055eBd139c008cdb4468eB",
@@ -241,6 +252,53 @@ const crvPools = {
             "0xDBf31dF14B66535aF65AaC99C32e9eA844e14501",
             "0x321162Cd933E2Be498Cd2267a90534A804051b11"
         ]
+    },
+    // mim pool avax
+    "0xaea2e71b631fa93683bcf256a8689dfa0e094fcd": {
+        swapContract: "0xaea2e71b631fa93683bcf256a8689dfa0e094fcd",
+        underlyingTokens: [
+            "0xc7198437980c041c805a1edcba50c1ce5db95118",
+            "0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664",
+            "0x130966628846bfd36ff31a822705796e8cb8c18d",
+        ]
+    },
+    // EURS/sEUR Eth
+    "0x194ebd173f6cdace046c53eacce9b953f28411d1": {
+        swapContract: "0x0ce6a5ff5217e38315f87032cf90686c96627caa",
+        underlyingTokens: [
+            "0xd71ecff9342a5ced620049e616c5035f1db98620",
+            "0xdb25f211ab05b1c97d595516f45794528a807ad8"
+        ]
+    },
+    // aDAI/aUSDC/aUSDT (a3CRV) Eth
+    "0xfd2a8fa60abd58efe3eee34dd494cd491dc14900": {
+        swapContract: "0xdebf20617708857ebe4f679508e7b7863a8a8eee",
+        underlyingTokens: [
+            "0x028171bca77440897b824ca71d1c56cac55b68a3",
+            "0xbcca60bb61934080951369a648fb03df4f96263c",
+            "0x3ed3b47dd13ec9a98b44e6204a523e766b225811"
+        ]
+    },
+    // MIM / USDT/USDC/DAI Eth
+    "0x5a6a4d54456819380173272a5e8e9b9904bdf41b": {
+        swapContract: "0x5a6A4D54456819380173272A5E8E9B9904BdF41B",
+        underlyingTokens: [
+            "0x99D8a9C45b2ecA8864373A26D1459e3Dff1e17F3",
+            "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490",
+    ],
+    },
+    // ETH / alETH Eth
+    "0xc4c319e2d4d66cca4464c0c2b32c9bd23ebe784e": {
+        swapContract: "0xC4C319E2D4d66CcA4464C0c2B32c9Bd23ebe784e",
+        underlyingTokens: ["0x0100546F2cD4C9D97f798fFC9755E47865FF7Ee6"],
+    },
+    // LINK / sLINK Eth
+    "0xcee60cfa923170e4f8204ae08b4fa6a3f5656f3a": {
+        swapContract: "0xF178C0b5Bb7e7aBF4e12A4838C7b7c5bA2C623c0",
+        underlyingTokens: [
+            "0x514910771AF9Ca656af840dff83E8264EcF986CA",
+            "0xbBC455cb4F1B9e4bFC4B73970d360c8f032EfEE6",
+    ],
     },
 }
 const yearnVaults = {
@@ -391,6 +449,162 @@ async function unwrapUniswapLPs(balances, lpPositions, block, chain='ethereum', 
       }))
 }
 
+// pool will give you the amount of fUniV3_WETH_ABC held by the pool of the position token against that token total supply
+const uniV3_nft_contract = '0xc36442b4a4522e871399cd717abdd847ab11fe88'
+const abi_staking = {
+    'univ3_positions': {"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"positions","outputs":[{"internalType":"uint96","name":"nonce","type":"uint96"},{"internalType":"address","name":"operator","type":"address"},{"internalType":"address","name":"token0","type":"address"},{"internalType":"address","name":"token1","type":"address"},{"internalType":"uint24","name":"fee","type":"uint24"},{"internalType":"int24","name":"tickLower","type":"int24"},{"internalType":"int24","name":"tickUpper","type":"int24"},{"internalType":"uint128","name":"liquidity","type":"uint128"},{"internalType":"uint256","name":"feeGrowthInside0LastX128","type":"uint256"},{"internalType":"uint256","name":"feeGrowthInside1LastX128","type":"uint256"},{"internalType":"uint128","name":"tokensOwed0","type":"uint128"},{"internalType":"uint128","name":"tokensOwed1","type":"uint128"}],"stateMutability":"view","type":"function"}, 
+
+    'erc721_tokenOfOwnerByIndex': {"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"uint256","name":"index","type":"uint256"}],"name":"tokenOfOwnerByIndex","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}, 
+
+    'token0': {"inputs":[],"name":"token0","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}, 
+    'token1': {"inputs":[],"name":"token1","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+}
+// Convert Uniswap v3 tick to a price (i.e. the ratio between the amounts of tokens: token1/token0)
+const tickBase = 1.0001
+function tick_to_price(tick) {
+    return tickBase ** tick
+}
+// GraphQL query to get the pool information
+const univ3_graph_url = "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3"
+const univ3_graph_query = gql`
+query position($block: Int, $position_id: ID!) {
+    position (
+        id: $position_id
+        block: { number: $block }
+    ) {
+        id
+        owner
+        tickLower {tickIdx}
+        tickUpper {tickIdx}
+        liquidity
+        pool {
+            tick
+            liquidity
+            feeTier
+            token0 { symbol decimals id }
+            token1 { symbol  decimals id }
+        }
+    }
+}`
+
+async function getUniv3PositionBalances(position_id, block) {
+    // Retrieve aTokens and reserves from graphql API endpoint
+    const { position } = await request(
+        univ3_graph_url,
+        univ3_graph_query, {
+            block: block,
+            position_id: position_id 
+        })
+    
+    // Extract pool parameters
+    const pool = position['pool']
+    const tick = pool['tick']
+    const token0 = pool['token0']['id']
+    const token1 = pool['token1']['id']
+    // Retrieve these from the graphql query instead of onchain call
+    const bottom_tick = position['tickLower']['tickIdx']
+    const top_tick = position['tickUpper']['tickIdx']
+    const liquidity = position['liquidity']
+    
+    // Compute square roots of prices corresponding to the bottom and top ticks
+    const sa = tick_to_price(Math.floor(bottom_tick / 2))
+    const sb = tick_to_price(Math.floor(top_tick / 2))
+    const price = tick_to_price(tick)
+    const sp = price ** 0.5
+    // const decimals0 = pool['token0']['decimals']
+    // const decimals1 = pool['token1']['decimals']
+    // const adjusted_price = price / (10 ** (decimals1 - decimals0))
+
+    // Compute real amounts of the two assets
+    const amount0 = liquidity * (sb - sp) / (sp * sb)
+    const amount1 = liquidity * (sp - sa)
+
+    console.log(`Whole pool: amount0: ${(amount0 / 1e18).toFixed(1)} / amount1: ${(amount1 / 1e18).toFixed(1)}`)
+    return {
+        [token0]: amount0, 
+        [token1]: amount1, 
+    }
+}
+/*
+// Could get some props of the position itself onchain rather than using uni-v3 graphql endpoint, but some information needed is missing like whole pool liq/tick etc
+const {output: position_props} = await sdk.api.abi.call({
+    block,
+    abi: abi_staking['univ3_positions'],
+    target: uniV3_nft_contract,
+    params: position_id, // get the last one for demonstration
+    chain: 'ethereum'
+})
+const bottom_tick = position_props['tickLower']
+const top_tick = position_props['tickUpper']
+const L = position_props['liquidity']
+const token0 = position_props['token0']
+const token1 = position_props['token1']
+*/
+
+/*
+univ3_Positions:{
+    vault,
+    pool
+}[]
+*/
+async function unwrapUniswapV3LPs(balances, univ3_Positions, block, chain='ethereum', transformAddress=(addr)=>addr, excludeTokensRaw = [], retry = false) {
+    const excludeTokens = excludeTokensRaw.map(addr=>addr.toLowerCase())
+    await Promise.all(univ3_Positions.map(async univ3_Position => {
+        try{ 
+            // Get share of that LP NFT inside the vault as balanceOf / totalSupply
+            const {output: totalSupply} = await sdk.api.abi.call({
+                block,
+                abi: 'erc20:totalSupply',
+                target: univ3_Position.vault,
+                chain: 'ethereum'
+            })
+            const {output: heldLPshares} = await sdk.api.abi.call({
+                block,
+                abi: 'erc20:balanceOf',
+                target: univ3_Position.vault,
+                params: univ3_Position.pool,
+                chain: 'ethereum'
+            })
+            const sharesRatio = heldLPshares / totalSupply
+
+            /*
+            const {output: uniV3_nft_count} = await sdk.api.abi.call({
+                block,
+                abi: 'erc20:balanceOf',
+                target: uniV3_nft_contract,
+                params: univ3_Position.vault,
+                chain: 'ethereum'
+            })
+            */
+           // Here we assume only the first nft position is retrieved
+           // could look for more using uniV3_nft_count 
+            const {output: position_id} = await sdk.api.abi.call({
+                block,
+                abi: abi_staking['erc721_tokenOfOwnerByIndex'],
+                target: uniV3_nft_contract,
+                params: [univ3_Position.vault, 0], 
+                chain: 'ethereum'
+            })
+
+            const positionBalances = await getUniv3PositionBalances(position_id, block)
+
+            // Add balances while multiplying amount by ratio of shares
+            Object.entries(positionBalances).forEach(async entry => {
+                const [key, value] = entry;
+                if(!excludeTokens.includes(key)){
+                    // balances[key] = BigNumber( balances[key] || 0 ).plus(sharesRatio * value);
+                    sdk.util.sumSingleBalance(balances, await transformAddress(key), sharesRatio * value) 
+                }
+            });
+            console.log(`ratio of the pool: ${(100 * sharesRatio).toFixed(1)}% of position_id ${position_id}`)
+            
+        } catch(e) {
+            console.log(`Failed to get data for LP token vault at ${univ3_Position.vault} on chain ${chain}`)
+            throw e
+        }
+    }))
+}
+
 async function addBalanceOfTokensAndLPs(balances, balanceResult, block){
     await addTokensAndLPs(balances, {
         output: balanceResult.output.map(t=>({output:t.input.target}))
@@ -497,6 +711,22 @@ async function sumLPWithOnlyOneToken(balances, lpToken, owner, listedToken, bloc
     sdk.util.sumSingleBalance(balances, transformAddress(listedToken), 
         BigNumber(balanceOfLP.output).times(balanceOfTokenListedInLP.output).div(lpSupply.output).times(2).toFixed(0)
     )
+}
+
+async function sumLPWithOnlyOneTokenOtherThanKnown(balances, lpToken, owner, tokenNotToUse, block, chain = "ethereum", transformAddress=id=>id){
+    const [token0, token1] = await Promise.all([token0Abi, token1Abi]
+        .map(abi=>sdk.api.abi.call({
+            target: lpToken,
+            abi,
+            chain,
+            block
+        }).then(o=>o.output))
+    )
+    let listedToken = token0
+    if(tokenNotToUse.toLowerCase() === listedToken.toLowerCase()){
+        listedToken = token1
+    }
+    await sumLPWithOnlyOneToken(balances, lpToken, owner, listedToken, block, chain, transformAddress)
 }
 
 
@@ -641,6 +871,7 @@ module.exports = {
     unwrapYearn,
     unwrapCrv,
     unwrapUniswapLPs,
+    unwrapUniswapV3LPs,
     addTokensAndLPs,
     sumTokensAndLPsSharedOwners,
     addBalanceOfTokensAndLPs,
@@ -649,5 +880,6 @@ module.exports = {
     sumBalancerLps,
     unwrapCreamTokens,
     sumLPWithOnlyOneToken,
-    sumTokensSharedOwners
+    sumTokensSharedOwners,
+    sumLPWithOnlyOneTokenOtherThanKnown
 }

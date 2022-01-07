@@ -1,6 +1,7 @@
 const {calculateUsdUniTvl} = require('../helper/getUsdUniTvl')
 
 module.exports={
+    timetravel: true,
     misrepresentedTokens: true,
     methodology: "Factory address (0x073386AE3292299a5814B00bC1ceB8f2bfC92c51) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
     shiden: {
@@ -31,4 +32,16 @@ module.exports={
             "0x9040e237c3bf18347bb00957dc22167d0f2b999d",
             ], "weth"),
     },
+    metis: {
+        tvl: calculateUsdUniTvl(
+            "0xFA68bAAdBDCf014fA20bD1A4542967AE40Ddca53",
+            "metis",
+            "0x75cb093e4d61d2a2e65d8e0bbb01de8d89b53481",
+            [
+                //STND
+                "0xc12cac7090baa48ec750cceec57c80768f6ee58e",
+                //MDOGE
+                "0x31021e0b1cc6f89e04586a0e3cf5c46d5498a5e9",
+            ], "metis-token"),
+    }
 }

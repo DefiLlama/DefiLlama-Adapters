@@ -10,6 +10,18 @@ async function getProcolAddresses() {
   )).data
 }
 
+async function getProcolAUSDAddresses() {
+  return (await axios.get(
+    'https://raw.githubusercontent.com/alpaca-finance/alpaca-stablecoin/main/.mainnet.json'
+  )).data
+}
+
+async function getProcolXAlpacaAddresses() {
+  return (await axios.get(
+    'https://raw.githubusercontent.com/alpaca-finance/xALPACA-contract/main/.mainnet.json'
+  )).data
+}
+
 function getBSCAddress(address) {
   return `bsc:${address}`
 }
@@ -20,6 +32,8 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 
   /// @dev Getting all addresses from Github
   const addresses = await getProcolAddresses()
+  const ausdAddresses = await getProcolAUSDAddresses()
+  const xalpacaAddresses = await getProcolXAlpacaAddresses()
 
   const block = chainBlocks.bsc;
 
@@ -95,6 +109,32 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
   unusedBTOKEN.forEach((u) => {
     balances[getBSCAddress(u.input.target)] = BigNumber(balances[getBSCAddress(u.input.target)] || 0).plus(BigNumber(u.output)).toFixed(0)
   })
+
+  /// @dev getting total supply ausd
+  const ausdTVL = (await sdk.api.abi.multiCall({
+    block,
+    abi: abi.ausdTotalStablecoinIssued,
+    calls: [{
+        target: ausdAddresses['BookKeeper'].address
+    }],
+    chain: 'bsc'
+  })).output
+  const base = new BigNumber(10)
+  const balanceAUSDTVL = new BigNumber(ausdTVL[0].output).dividedBy(base.exponentiatedBy(27))
+  const ausdAddress = ausdAddresses['AlpacaStablecoin']['AUSD'].address
+  balances[getBSCAddress(ausdAddress)] = balanceAUSDTVL.toFixed(0)
+
+  // @dev getting total supply xalpaca
+  const xalpacaTVL = (await sdk.api.abi.multiCall({
+    block,
+    abi: abi.xalpacaTotalSupply,
+    calls: [{
+        target: xalpacaAddresses['xALPACA']
+    }],
+    chain: 'bsc'
+  })).output
+  const alpacaAddress = xalpacaAddresses['Tokens']['ALPACA']
+  balances[getBSCAddress(alpacaAddress)] = BigNumber(balances[getBSCAddress(alpacaAddress)] || 0).plus(BigNumber(xalpacaTVL[0].output)).toFixed(0)
 
   return balances
 }

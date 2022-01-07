@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const erc20 = require("../helper/abis/erc20.json");
 const abi = require("./abi.json");
 
 const vault = "0xE75D77B1865Ae93c7eaa3040B038D7aA7BC02F70";

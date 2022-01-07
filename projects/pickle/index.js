@@ -1,92 +1,76 @@
-const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
-const utils = require("../helper/utils");
-const { unwrapUniswapLPs, unwrapCrv } = require("../helper/unwrapLPs");
-const { getChainTransform } = require("../helper/portedTokens");
-const { chainExports } = require("../helper/exports");
 const { toUSDT, usdtAddress } = require("../helper/balances");
+const axios = require("axios");
 
-const excluded = ["pbamm", "pickle-eth", "sushi-pickle-eth"]
-const jars_url =
-  "https://stkpowy01i.execute-api.us-west-1.amazonaws.com/prod/protocol/pools";
+const pfcore = "https://api.pickle.finance/prod/protocol/pfcore/";
+const pickleAddress = "0x429881672B9AE42b8EbA0E26cD9C73711b891Ca5";
 
-function chainTvl(chain){
-  return async (timestamp, _ethBlock, chainBlocks) => {
-  const block = chainBlocks[chain]
-  const transformAddress = await getChainTransform(chain)
-  const balances = {};
+function fetch(chain, type) {
+  return async (_timestamp, _ethBlock, chainBlocks) => {
+    const response = (await axios.get(pfcore))?.data;
 
-  let jars = (await utils.fetchURL(jars_url)).data
-    .map(jar => {
-      if (jar.network === (chain==="ethereum"?'eth':chain))
-        return {
-          ...jar,
-          name: jar.identifier
-        };
-    })
-    .filter(x => x && !excluded.includes(x.name));
-  
+    chain = chain === "ethereum" ? "eth" : chain;
 
-  const jar_balances = (
-    await sdk.api.abi.multiCall({
-      block,
-      calls: jars.map(jar => ({
-        target: jar.jarAddress
-      })),
-      abi: abi.balance,
-      chain
-    })
-  ).output.map(val => val.output);
+    let tvl = 0;
+    let pool2 = 0;
 
-  const lpPositions = [];
+    Object.keys(response.assets).forEach((assetsType) => {
+      response.assets[assetsType].forEach((asset) => {
+        if (asset.chain === chain) {
+          if (asset.tags && asset.tags.includes("pool2")) {
+            pool2 += asset.details.harvestStats.balanceUSD;
+          } else {
+            tvl += asset.details.harvestStats?.balanceUSD ?? 0;
+          }
+        }
+      });
+    });
 
-  await Promise.all(
-    jars.map(async (jar, idx) => {
-      if((jar.name.includes("crv") || jar.name === "dodohndeth") && chain === "arbitrum" || jar.name === "rbn-eth"){
-        sdk.util.sumSingleBalance(
-          balances,
-          usdtAddress,
-          toUSDT(jar.liquidity_locked)
-        );
-      } else if (jar.name.toLowerCase().includes("crv") && jar.name != "yvecrv-eth") {
-        await unwrapCrv(
-          balances,
-          jar.tokenAddress,
-          jar_balances[idx],
-          block,
-          chain,
-          transformAddress
-        );
-      } else if (jar.name.includes("-") || jar.name.includes("lp")) {
-        lpPositions.push({
-          balance: jar_balances[idx],
-          token: jar.tokenAddress
-        });
-      } else if(jar.name==="aleth") {
-        sdk.util.sumSingleBalance( // sum as weth
-          balances,
-          "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-          jar_balances[idx]
-        );
-      } else {
-        sdk.util.sumSingleBalance(
-          balances,
-          transformAddress(jar.tokenAddress),
-          jar_balances[idx]
-        );
-      }
-    })
-  );
-  await unwrapUniswapLPs(
-    balances,
-    lpPositions,
-    block,
-    chain,
-    transformAddress
-  );
+    let result = {};
 
-  return balances;
-}
+    switch (type) {
+      case "tvl":
+        result = { [usdtAddress]: toUSDT(tvl) };
+        break;
+      case "pool2":
+        result = { [usdtAddress]: toUSDT(pool2) };
+        break;
+      case "staking":
+        const picklesLocked = response.dill.pickleLocked;
+        result = { [pickleAddress]: picklesLocked * 1e18 };
+        break;
+    }
+
+    return result;
+  };
 }
 
-module.exports = chainExports(chainTvl, ["polygon", "ethereum", "arbitrum"])
+module.exports = {
+  ethereum: {
+    tvl: fetch("ethereum", "tvl"),
+    pool2: fetch("ethereum", "pool2"),
+    staking: fetch("ethereum", "staking"),
+  },
+  polygon: {
+    tvl: fetch("polygon", "tvl"),
+    pool2: fetch("polygon", "pool2"),
+  },
+  arbitrum: {
+    tvl: fetch("arbitrum", "tvl"),
+    pool2: fetch("arbitrum", "pool2"),
+  },
+  moonriver: {
+    tvl: fetch("moonriver", "tvl"),
+  },
+  harmony: {
+    tvl: fetch("harmony", "tvl"),
+  },
+  okexchain: {
+    tvl: fetch("okex", "tvl"),
+  },
+  cronos: {
+    tvl: fetch("cronos", "tvl"),
+  },
+  aurora: {
+    tvl: fetch("aurora", "tvl"),
+  },
+};

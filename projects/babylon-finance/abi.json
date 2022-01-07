@@ -1,0 +1,118 @@
+{
+    "getGardens": {
+        "name": "getGardens",
+        "inputs": [],
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address[]"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    "getGardenDetails": {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_garden",
+                "type": "address"
+            }
+        ],
+        "name": "getGardenDetails",
+        "outputs": [
+            {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+            },
+            {
+                "internalType": "address[5]",
+                "name": "",
+                "type": "address[5]"
+            },
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            },
+            {
+                "internalType": "bool[4]",
+                "name": "",
+                "type": "bool[4]"
+            },
+            {
+                "internalType": "address[]",
+                "name": "",
+                "type": "address[]"
+            },
+            {
+                "internalType": "address[]",
+                "name": "",
+                "type": "address[]"
+            },
+            {
+                "internalType": "uint256[10]",
+                "name": "",
+                "type": "uint256[10]"
+            },
+            {
+                "internalType": "uint256[10]",
+                "name": "",
+                "type": "uint256[10]"
+            },
+            {
+                "internalType": "uint256[3]",
+                "name": "",
+                "type": "uint256[3]"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "getCompleteStrategy": {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_strategy",
+                "type": "address"
+            }
+        ],
+        "name": "getCompleteStrategy",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            },
+            {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+            },
+            {
+                "internalType": "uint256[16]",
+                "name": "",
+                "type": "uint256[16]"
+            },
+            {
+                "internalType": "bool[]",
+                "name": "",
+                "type": "bool[]"
+            },
+            {
+                "internalType": "uint256[]",
+                "name": "",
+                "type": "uint256[]"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+}

@@ -89,9 +89,10 @@ async function tvl(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
+  timetravel: true,
   start: 1614556800, // March 1, 2021 00:00 AM (UTC)
-  staking:{
-    tvl: staking(xnrvAddress, nrv, "bsc")
-  },
-  tvl, // tvl adapter
+  bsc:{
+    tvl,
+    staking:staking(xnrvAddress, nrv, "bsc")
+  }
 }

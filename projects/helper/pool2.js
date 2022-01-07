@@ -5,6 +5,7 @@ const { unwrapUniswapLPs, sumTokensAndLPsSharedOwners, sumTokensAndLPs } = requi
 const masterchefAbi = require("./abis/masterchef.json")
 const token0Abi = require("./abis/token0.json")
 const token1Abi = require("./abis/token1.json")
+const {isLP, getPoolInfo} = require('./masterchef')
 
 function pool2(stakingContract, lpToken, chain = "ethereum", transformAddress) {
     return async (_timestamp, _ethBlock, chainBlocks) => {
@@ -60,27 +61,7 @@ function dodoPool2(stakingContract, lpToken, chain = "ethereum", transformAddres
 
 
 async function pool2BalanceFromMasterChef(balances, masterchef, token, block, chain = "ethereum", transformAddress=(addr)=>addr, poolInfoAbi = masterchefAbi.poolInfo) {
-
-    let poolLength = (
-        await sdk.api.abi.call({
-        target: masterchef,
-        abi: masterchefAbi.poolLength,
-        block,
-        chain,
-        })
-    ).output;
-
-    let poolInfo = (
-        await sdk.api.abi.multiCall({
-        calls: Array.from({ length: Number(poolLength) }, (_, k) => ({
-            target: masterchef,
-            params: k,
-        })),
-        abi: poolInfoAbi,
-        block,
-        chain,
-        })
-    ).output;
+    const poolInfo = await getPoolInfo(masterchef, block, chain, poolInfoAbi)
 
     let symbols = (
         await sdk.api.abi.multiCall({
@@ -100,10 +81,7 @@ async function pool2BalanceFromMasterChef(balances, masterchef, token, block, ch
         if (symbol.output === null) {
             continue;
         }
-        if (
-        symbol.output.includes("LP") ||
-        symbol.output.includes("PGL") ||
-        symbol.output.includes("UNI-V2")){
+        if (isLP(symbol.output)){
             lpTokens.push(symbol.input.target);
         }
     }
