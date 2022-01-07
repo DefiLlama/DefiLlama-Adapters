@@ -3,6 +3,7 @@ const BigNumber = require("bignumber.js");
 const { unwrapCrv, unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { abi } = require("../yaxis/abi.js");
 const constants = require("../yaxis/constants.js");
+const { eth } = require('../alchemix.js')
 
 async function tvl(timestamp, block) {
   const balances = {};
@@ -68,6 +69,7 @@ async function tvl(timestamp, block) {
     .dividedBy(crvTotalSupply)
     .toFixed(0);
 
+  await convertALETHtoETH(block, balances)
   return balances;
 }
 
@@ -150,7 +152,23 @@ async function staking(time, block){
 
   return balances
 }
-
+async function convertALETHtoETH(block, balances) {
+  const alETH = '0x0100546F2cD4C9D97f798fFC9755E47865FF7Ee6'
+  const ETH = '0x0000000000000000000000000000000000000000'
+  const [alETHSupply, alETHLocked] = await Promise.all([
+    sdk.api.erc20.totalSupply({
+      target: alETH,
+      block,
+    }),
+    eth()
+  ])
+  sdk.util.sumSingleBalance(
+    balances,
+    ETH,
+    (balances[alETH] * alETHSupply.output / alETHLocked * 10 ** -18).toLocaleString('fullwide', { useGrouping: false })
+  );
+  delete balances[alETH]
+}
 module.exports = {
   ethereum: {
     tvl,
