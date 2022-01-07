@@ -2,32 +2,43 @@ const sdk = require('@defillama/sdk');
 const BigNumber = require("bignumber.js");
 const { GraphQLClient, gql } = require('graphql-request')
 const { toUSDTBalances } = require('../helper/balances');
-async function getTVL(subgraphName) {
+const { getBlock } = require('../helper/getBlock');
+
+async function getTVL(subgraphName, block) {
+	
+	block -= 25;
 	
 	var endpoint = `https://api.thegraph.com/subgraphs/name/dfx-finance/${subgraphName}`;
 	var graphQLClient = new GraphQLClient(endpoint)
 
 	var query = gql`
-		{
-			dfxfactories {
+		query get_tvl($block: Int)	{
+			dfxfactories(
+				block: { number: $block }
+			) {
 				totalLiquidityUSD
 			}
 		}
 	`;
-	const results = await graphQLClient.request(query)
+	
+	
+	const results = await graphQLClient.request(query, {
+		block
+	})
 
 	return results.dfxfactories[0].totalLiquidityUSD
 }
 
-async function ethereum() {
-	return toUSDTBalances(await getTVL("dfx-v1"))
+async function ethereum(timestamp, ethBlock) {
+	return toUSDTBalances(await getTVL("dfx-v1", ethBlock))
 }
 
-async function polygon() {
-	return toUSDTBalances(await getTVL("dfx-v1-polygon"))
+async function polygon(timestamp, ethBlock, chainBlocks) {
+	return toUSDTBalances(await getTVL("dfx-v1-polygon",await getBlock(timestamp, "polygon", chainBlocks)))
 }
 
 module.exports = {
+	timetravel: true,
 	methodology: `DFX TVL is pulled from the DFX subgraph for Eth and Polygon networks.`,
 	ethereum:{
 		tvl: ethereum
