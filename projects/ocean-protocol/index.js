@@ -31,7 +31,7 @@ const contracts = {
 
 const PAGE_SIZE = 1000
 const graphqlQuery = gql`
-query GET_POOLS($skip: Int, $block: Int, $first: Int) {
+query GET_POOLS($skip: Int, $first: Int) {
   poolFactories {
     id
     totalValueLocked
@@ -40,7 +40,7 @@ query GET_POOLS($skip: Int, $block: Int, $first: Int) {
   pools (
   	first: $first
     skip: $skip
-    block: { number: $block }
+    
   ) {
     id
   }
@@ -53,8 +53,8 @@ function chainTvl(chain) {
     const {graphql_endpoint, OCEAN} = contracts[chain]
     const graphQLClient = new GraphQLClient(graphql_endpoint);
 
-    let block = chainBlocks[chain] - 50 // go back a few blocks as graph is not always up to date 
-    block = getBlock(timestamp, chain, chainBlocks) - 50;
+    let block = chainBlocks[chain] // go back a few blocks as graph is not always up to date 
+    block = getBlock(timestamp, chain, chainBlocks);
     // if (chain == 'moonriver') {block = 1242900;} // TODO: get correct moonriver block
     // console.log(chainBlocks[chain])
     const transform = (['bsc', 'moonriver'].includes(chain)) ? 
