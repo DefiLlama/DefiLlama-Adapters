@@ -1,11 +1,16 @@
 const { request, gql } = require("graphql-request");
 
+const {
+  DEFAULT_DAILY_VOLUME_FACTORY,
+  DEFAULT_DAILY_VOLUME_FIELD,
+} = require("./getUniSubgraphVolume");
+
 const getStartTimestamp =
   ({
     endpoints,
     chain,
-    dailyDataField,
-    volumeField,
+    dailyDataField = DEFAULT_DAILY_VOLUME_FACTORY,
+    volumeField = DEFAULT_DAILY_VOLUME_FIELD,
     dateField = "date",
     first = 1000,
   }) =>
@@ -23,7 +28,11 @@ const getStartTimestamp =
 
     const days = result?.[dailyDataField];
 
+    console.log(days, "days");
+
     const firstValidDay = days.find((data) => data[volumeField] !== "0");
+
+    console.log(firstValidDay, "firstValidDay");
 
     return firstValidDay[dateField];
   };
