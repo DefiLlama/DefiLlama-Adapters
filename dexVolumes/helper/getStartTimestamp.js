@@ -9,7 +9,7 @@ const getStartTimestamp =
   ({
     endpoints,
     chain,
-    dailyDataField = DEFAULT_DAILY_VOLUME_FACTORY,
+    dailyDataField = `${DEFAULT_DAILY_VOLUME_FACTORY}s`,
     volumeField = DEFAULT_DAILY_VOLUME_FIELD,
     dateField = "date",
     first = 1000,

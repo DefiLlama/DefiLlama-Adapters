@@ -4,7 +4,7 @@ const axios = require("axios");
 
 async function getBlock(timestamp, chain, chainBlocks, undefinedOk = false) {
   if (
-    chainBlocks[chain] !== undefined ||
+    chainBlocks?.[chain] !== undefined ||
     (process.env.HISTORICAL === undefined && undefinedOk)
   ) {
     return chainBlocks[chain];

@@ -6,6 +6,7 @@ const ETHEREUM = "ethereum";
 const FANTOM = "fantom";
 const HARMONY = "harmony";
 const HECO = "heco";
+const OKEXCHAIN = "okexchain";
 const OPTIMISM = "optimism";
 const POLYGON = "polygon";
 const XDAI = "xdai";
@@ -19,6 +20,7 @@ module.exports = {
   FANTOM,
   HARMONY,
   HECO,
+  OKEXCHAIN,
   OPTIMISM,
   POLYGON,
   XDAI,
