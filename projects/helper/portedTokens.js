@@ -132,6 +132,9 @@ async function transformBscAddress() {
     if (addr.toLowerCase() == "0x2170ed0880ac9a755fd29b2688956bd959f933f8") {
       return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
     }
+    if (addr.toLowerCase() == "0xa35d95872d8eb056eb2cbd67d25124a6add7455e") {
+      return "0x123" // 2030FLOKI returns nonsense TVL
+    }
     return `bsc:${addr}`;
   };
 }
