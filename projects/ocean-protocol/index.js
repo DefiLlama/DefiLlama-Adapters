@@ -3,6 +3,7 @@ const abi = require("./abi.json");
 const retry = require("../helper/retry");
 const BigNumber = require('bignumber.js');
 const { GraphQLClient, gql } = require("graphql-request");
+const { getBlock } = require("../helper/getBlock.js");
 
 // https://github.com/oceanprotocol/contracts/blob/main/artifacts/address.json
 const contracts = {
@@ -53,6 +54,7 @@ function chainTvl(chain) {
     const graphQLClient = new GraphQLClient(graphql_endpoint);
 
     let block = chainBlocks[chain] - 50 // go back a few blocks as graph is not always up to date 
+    block = getBlock(timestamp, chain, chainBlocks) - 50;
     // if (chain == 'moonriver') {block = 1242900;} // TODO: get correct moonriver block
     // console.log(chainBlocks[chain])
     const transform = (['bsc', 'moonriver'].includes(chain)) ? 
