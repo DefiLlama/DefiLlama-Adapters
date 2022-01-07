@@ -81,5 +81,5 @@ module.exports = {
         tvl:fetchLiquidity
     },
     methodology:
-        "Sum of the total volume of the LPs and sum of the total staked ATTENTION and PALA tokens"
+        "Sum of the total volume of the LPs. Staked is calculated by sum of the total staked PALA tokens"
 }
