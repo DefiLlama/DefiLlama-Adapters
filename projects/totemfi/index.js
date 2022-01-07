@@ -3,7 +3,8 @@ const sdk = require('@defillama/sdk');
 const { default: BigNumber } = require("bignumber.js");
 
 const graphUrls = [
-  'https://graph.totemfi.com/subgraphs/name/totemfi/predictor'
+  'https://graph.totemfi.com/subgraphs/name/totemfi/predictor',
+  'https://graph-v2.totemfi.com/subgraphs/name/totemfi/predictor-v2'
 ]
 const graphQuery = gql`
   query GET_POOLS($block: Int,$timestamp: BigInt) {
