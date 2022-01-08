@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const { sumTokens } = require("../helper/unwrapLPs");
 const { requery } = require("../helper/requery");
 
 const abi = {
@@ -40,13 +39,20 @@ async function across(timestamp, block) {
     abi: abi,
   });
   await requery(collaterals, "ethereum", block, abi);
-  await sumTokens(
-    balances,
-    collaterals.output
-      .filter((t) => t.output !== null)
-      .map((c) => [c.output, c.input.target]),
-    block
-  );
+  const poolCollaterals = collaterals.output
+    .filter((t) => t.output !== null)
+    .map((c) => [c.output, c.input.target])
+  await Promise.all(poolCollaterals.map(async poolCollateral=>{
+    const poolSupply = await sdk.api.erc20.totalSupply({
+      target: poolCollateral[1],
+      block
+    })
+    sdk.util.sumSingleBalance(
+      balances,
+      poolCollateral[0],
+      poolSupply.output
+    );
+  }))
   return balances;
 }
 
