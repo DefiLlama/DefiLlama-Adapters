@@ -30,7 +30,7 @@
 ##### Token address and ticker if any: 0xA32608e873F9DdEF944B24798db69d80Bbb4d1ed $CRA
 
 
-##### Category (Yield/Dexes/Lending/Minting/Assets/Insurance/Options/Indexes/Staking) *Please choose only one: Yield
+##### Category (Yield/Dexes/Lending/Minting/Assets/Insurance/Options/Indexes/Staking) *Please choose only one: Staking
 
 
 ##### Oracle used (Chainlink/Band/API3/TWAP or any other that you are using): No Oracle used
