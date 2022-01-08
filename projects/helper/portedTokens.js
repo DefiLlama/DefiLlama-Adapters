@@ -135,6 +135,9 @@ async function transformBscAddress() {
     if (addr.toLowerCase() == "0xa35d95872d8eb056eb2cbd67d25124a6add7455e") {
       return "0x123" // 2030FLOKI returns nonsense TVL
     }
+    if (addr.toLowerCase() == "0x0cf8e180350253271f4b917ccfb0accc4862f262") {
+      return "0x123" // BTCBR returns nonsense TVL
+    }
     return `bsc:${addr}`;
   };
 }
