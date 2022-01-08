@@ -3,27 +3,37 @@ const {
   DEFAULT_TOTAL_VOLUME_FIELD,
   DEFAULT_DAILY_VOLUME_FIELD,
 } = require("../helper/getUniSubgraphVolume");
-
+const { BSC } = require("../helper/chains");
+const { getStartTimestamp } = require("../helper/getStartTimestamp");
 const endpoints = {
-  bsc: "https://bsc.streamingfast.io/subgraphs/name/pancakeswap/exchange-v2",
+  [BSC]: "https://bsc.streamingfast.io/subgraphs/name/pancakeswap/exchange-v2",
 };
+
+const DAILY_VOLUME_FACTORY = "pancakeDayData";
 
 const graphs = getChainVolume({
   graphUrls: {
-    bsc: endpoints.bsc,
+    [BSC]: endpoints[BSC],
   },
   totalVolume: {
     factory: "pancakeFactories",
     field: DEFAULT_TOTAL_VOLUME_FIELD,
   },
   dailyVolume: {
-    factory: "pancakeDayData",
+    factory: DAILY_VOLUME_FACTORY,
     field: DEFAULT_DAILY_VOLUME_FIELD,
   },
 });
 
 module.exports = {
   volume: {
-    bsc: graphs("bsc"),
+    [BSC]: {
+      fetch: graphs(BSC),
+      start: getStartTimestamp({
+        endpoints,
+        chain: BSC,
+        dailyDataField: `${DAILY_VOLUME_FACTORY}s`,
+      }),
+    },
   },
 };
