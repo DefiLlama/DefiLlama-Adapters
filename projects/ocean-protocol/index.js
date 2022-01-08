@@ -53,8 +53,8 @@ function chainTvl(chain) {
     const {graphql_endpoint, OCEAN} = contracts[chain]
     const graphQLClient = new GraphQLClient(graphql_endpoint);
 
-    let block = chainBlocks[chain] // go back a few blocks as graph is not always up to date 
-    block = getBlock(timestamp, chain, chainBlocks);
+    let block = chainBlocks[chain] -50// go back a few blocks as graph is not always up to date 
+    block = getBlock(timestamp, chain, chainBlocks) -50;
     // if (chain == 'moonriver') {block = 1242900;} // TODO: get correct moonriver block
     // console.log(chainBlocks[chain])
     const transform = (['bsc', 'moonriver'].includes(chain)) ? 
