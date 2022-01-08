@@ -12,7 +12,7 @@
 ![CRAB_LOGO_STROKE_crop](https://user-images.githubusercontent.com/94895077/142991392-33f0aee7-5041-4d69-b156-0fa4c5066c2a.png)
 
 
-##### Current TVL: Not available
+##### Current TVL: 18,376,384
 
 
 ##### Chain: Avalanche
@@ -39,6 +39,6 @@
 ##### forkedFrom (Does your project originate from another project): No
 
 
-##### methodology (what is being counted as tvl, how is tvl being calculated): TVL is not calculated at the moment because staking has yet to go live.
+##### methodology (what is being counted as tvl, how is tvl being calculated): TVL is number of CRA staked. TVL is calculated by number of CRA x Price of CRA
 
 
