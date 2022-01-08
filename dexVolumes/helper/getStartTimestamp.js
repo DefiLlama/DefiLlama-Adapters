@@ -28,11 +28,7 @@ const getStartTimestamp =
 
     const days = result?.[dailyDataField];
 
-    console.log(days, "days");
-
     const firstValidDay = days.find((data) => data[volumeField] !== "0");
-
-    console.log(firstValidDay, "firstValidDay");
 
     return firstValidDay[dateField];
   };
