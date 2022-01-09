@@ -20,6 +20,9 @@ const graphs = getChainVolume({
 
 module.exports = {
   volume: {
-    avax: graphs("avax"),
+    avax: {
+      fetch: graphs("avax"),
+      start: 1628467200,
+    },
   },
 };

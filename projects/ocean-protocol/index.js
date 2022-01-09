@@ -32,7 +32,9 @@ const contracts = {
 const PAGE_SIZE = 1000
 const graphqlQuery = gql`
 query GET_POOLS($skip: Int, $block: Int, $first: Int) {
-  poolFactories {
+  poolFactories(
+    block: {number: $block}
+  ) {
     id
     totalValueLocked
     poolCount
@@ -40,7 +42,7 @@ query GET_POOLS($skip: Int, $block: Int, $first: Int) {
   pools (
   	first: $first
     skip: $skip
-    block: { number: $block }
+    block: {number: $block}
   ) {
     id
   }
@@ -53,8 +55,8 @@ function chainTvl(chain) {
     const {graphql_endpoint, OCEAN} = contracts[chain]
     const graphQLClient = new GraphQLClient(graphql_endpoint);
 
-    let block = chainBlocks[chain] - 50 // go back a few blocks as graph is not always up to date 
-    block = getBlock(timestamp, chain, chainBlocks) - 50;
+    let block = chainBlocks[chain] // go back a few blocks as graph is not always up to date 
+    block = await getBlock(timestamp, chain, chainBlocks);
     // if (chain == 'moonriver') {block = 1242900;} // TODO: get correct moonriver block
     // console.log(chainBlocks[chain])
     const transform = (['bsc', 'moonriver'].includes(chain)) ? 
@@ -70,7 +72,7 @@ function chainTvl(chain) {
         ))
       );
       let pools = query.pools;
-      console.log(chain, 'skip', skip, 'poolCount', query.poolFactories[0].poolCount, 'tvl', parseInt(query.poolFactories[0].totalValueLocked));
+      console.log(chain, 'block', block, 'skip', skip, 'poolCount', query.poolFactories[0].poolCount, 'tvl', parseInt(query.poolFactories[0].totalValueLocked));
       
       // Stop criteria for while loop once graphql query returned less than page-size pools
       if (pools.length < PAGE_SIZE) {
