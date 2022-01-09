@@ -265,7 +265,7 @@ module.exports = {
     staking: stakings(stakingContractPolygon, HONOR, "polygon"),
     pool2: pool2s(pool2StratsPolygon, excludePool2Polygon, "polygon"),
   },
-  okex: {
+  okexchain: {
     tvl: okexTvl,
     staking: stakings(stakingContractOkex, GLORY, "okexchain"),
     pool2: pool2s(pool2StratsOkex, excludePool2Okex, "okexchain"),
