@@ -25,7 +25,7 @@ const transforms = {
 
 const transform = addr=>transforms[addr]??addr
 
-module.exports = async function tvl(timestamp, block) {  
+module.exports.tvl = async function tvl(timestamp, block) {  
   let balances = {};
 
   if(block >= START_BLOCK) {
