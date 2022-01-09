@@ -134,7 +134,7 @@ function chainTvl(chain) {
 }
 
 module.exports = {
-  Methodology: 'OCEAN TVL is OCEAN locked as a stake in each pool of data + the balance of datatokens of each pool like any AMM - inferred from the pools weights',
+  methodology: 'OCEAN TVL is OCEAN locked as a stake in each pool of data + the balance of datatokens of each pool like any AMM - inferred from the pools weights',
   ethereum: {
     tvl: chainTvl('ethereum')
   },
