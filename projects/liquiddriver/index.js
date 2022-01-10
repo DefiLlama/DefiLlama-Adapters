@@ -14,6 +14,8 @@ const usdcTokenAddress = "0x04068da6c83afcfa0e13ba15a6696662335d5b75";
 const spiritTokenAddress = "0x5Cc61A78F164885776AA610fb0FE1257df78E59B";
 const beethovenVaultAddress = "0x20dd72Ed959b6147912C2e529F0a0C651c33c9ce";
 const spiritLinspiritLpInSpirit = "0x54d5b6881b429a694712fa89875448ca8adf06f4";
+const linspiritStakingAddress = "0x1CC765cD7baDf46A215bD142846595594AD4ffe3";
+const linspiritTokenAddress = "0xc5713B6a0F26bf0fdC1c52B90cd184D950be515C";
 
 const LQDR = "0x10b620b2dbac4faa7d7ffd71da486f5d44cd86f9";
 const xLQDR = "0x3Ae658656d1C526144db371FaEf2Fff7170654eE";
@@ -239,6 +241,15 @@ const minichefTvl = async (timestamp, ethBlock, chainBlocks) => {
     );
     n += 10;
   }
+  const linspiritStakedBalance = ((await sdk.api.abi.call({
+    chain: 'fantom',
+    block: chainBlocks['fantom'],
+    target: linspiritTokenAddress,
+    abi: 'erc20:balanceOf',
+    params: linspiritStakingAddress
+  })).output);
+
+  const linspiritTvlInSpirit = new BigNumber(linspiritStakedBalance).times(linspiritPriceInSpirit).toFixed(0);
 
   sdk.util.sumSingleBalance(
     balances,
@@ -259,6 +270,11 @@ const minichefTvl = async (timestamp, ethBlock, chainBlocks) => {
     balances,
     transformAddress(usdcTokenAddress),
     ftmOperaTvlInUsdc
+  );
+  sdk.util.sumSingleBalance(
+    balances,
+    transformAddress(spiritTokenAddress),
+    linspiritTvlInSpirit
   );
 
   return balances;
