@@ -7,7 +7,7 @@ const LOOKS_ETH_univ2 = '0xdc00ba87cc2d99468f7f34bc04cbf72e111a32f7'
 const LOOKS_ETH_univ2_staking = '0x2a70e7f51f6cd40c3e9956aa964137668cbfadc5'
 
 module.exports = {
-  methodology: `TVL for LOOKS RARE consists of the staking of LOOKS and pool2 of uni LOOKS-WETH.`, 
+  methodology: `TVL for LOOKS.RARE consists of the staking of LOOKS and pool2 of uni-v2 LOOKS-WETH.`, 
   ethereum:{
     tvl: () => ({}),
     staking: staking(stkLOOKS, LOOKS, "ethereum"), 
