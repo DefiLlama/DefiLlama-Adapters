@@ -10,6 +10,9 @@ const treasuryTokens = [
     ["0x45c32fa6df82ead1e2ef74d17b76547eddfaff89", false], //FRAX
     ["0x692597b009d13c4049a947cab2239b7d6517875f", false], //UST
     ["0x27f8d03b3a2196956ed754badc28d73be8830a6e", false], //amDAI
+    ["0xd8cA34fd379d9ca3C6Ee3b3905678320F5b45195", false], //gOHM
+    ["0xa9536b9c75a9e0fae3b56a96ac8edf76abc91978", false], //PECO
+    ["0x7fb27ee135db455de5ab1ccec66a24cbc82e712d", false], //GMI
     ["0x5Cf66CeAf7F6395642cD11b5929499229edEF531", true], //VSQ DAI LP
     ["0x41d18c810e70c643cc1326f232546abb620aae7e", true], //VSQ FRAX LP
     ["0xc2f4694ab1384e6bce1c8aa91b9a3e8cc1a6477e", true], //VSQ MAI LP
