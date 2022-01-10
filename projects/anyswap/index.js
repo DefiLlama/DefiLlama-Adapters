@@ -13,6 +13,7 @@ const chains = {
   42161: 'arbitrum',
   43114: 'avax',
   1666600000: 'harmony',
+  57: 'syscoin'
 }
 
 
