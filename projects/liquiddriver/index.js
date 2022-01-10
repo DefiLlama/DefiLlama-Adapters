@@ -11,6 +11,7 @@ const MASTERCHEF = "0x742474dae70fa2ab063ab786b1fbe5704e861a0c";
 const MINICHEF = "0x6e2ad6527901c9664f016466b8DA1357a004db0f";
 const usdtTokenAddress = "0x049d68029688eabf473097a2fc38ef61633a3c7a";
 const usdcTokenAddress = "0x04068da6c83afcfa0e13ba15a6696662335d5b75";
+const wftmTokenAddress = "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83";
 const spiritTokenAddress = "0x5Cc61A78F164885776AA610fb0FE1257df78E59B";
 const beethovenVaultAddress = "0x20dd72Ed959b6147912C2e529F0a0C651c33c9ce";
 const spiritLinspiritLpInSpirit = "0x54d5b6881b429a694712fa89875448ca8adf06f4";
@@ -43,7 +44,7 @@ const minichefTvl = async (timestamp, ethBlock, chainBlocks) => {
   let bptLinspiritTvlInSpirit;
   let bptQuartetTvlInUsdc;
   let ftmOperaTvlInUsdc;
-  let linspiritPriceInSpirit
+  let linspiritPriceInSpirit;
 
   const transformAddress = await transformFantomAddress();
 
@@ -128,7 +129,48 @@ const minichefTvl = async (timestamp, ethBlock, chainBlocks) => {
 
     const token = balance.input.target;
     if (symbols.output[idx].success) {
-      if (symbols.output[idx].output.includes("LP") && symbols.output[idx].output != "BeetXLP_MIM_USDC_USDT") {
+      if (
+        [
+          "0x936D23C83c2469f6a14B9f5bEaec13879598A5aC", // ICE-FTM SPIRIT LP
+          "0x31c0385DDE956f95D43Dac80Bd74FEE149961f4c", // SPELL-fUSDT SPIRIT LP
+          "0x30872e4fc4edbFD7a352bFC2463eb4fAe9C09086", // SCREAM-FTM SPOOKY LP
+        ].includes(token)
+      ) {
+        const [reserves, totalSupply] = await Promise.all([
+          sdk.api.abi.call({
+            abi: abi.getReserves,
+            target: token,
+            chain: "fantom",
+            block: chainBlocks["fantom"],
+          }),
+          sdk.api.abi.call({
+            abi: abi.totalSupply,
+            target: token,
+            chain: "fantom",
+            block: chainBlocks["fantom"],
+          }),
+        ]);
+        const lpTokenRatio = new BigNumber(totalSupply.output).isZero() ? new BigNumber(0) : totalBalance.div(totalSupply.output);
+        if (token === "0x936D23C83c2469f6a14B9f5bEaec13879598A5aC") { // ICE-FTM SPIRIT LP
+          sdk.util.sumSingleBalance(
+            balances,
+            transformAddress(wftmTokenAddress),
+            new BigNumber(Number(reserves.output[0])).times(2).times(lpTokenRatio).toFixed(0)
+          );
+        } else if (token === "0x31c0385DDE956f95D43Dac80Bd74FEE149961f4c") { // SPELL-fUSDT SPIRIT LP
+          sdk.util.sumSingleBalance(
+            balances,
+            transformAddress(usdtTokenAddress),
+            new BigNumber(Number(reserves.output[0])).times(2).times(lpTokenRatio).toFixed(0)
+          );
+        } else if (token === "0x30872e4fc4edbFD7a352bFC2463eb4fAe9C09086") { // SCREAM-FTM SPOOKY LP
+          sdk.util.sumSingleBalance(
+            balances,
+            transformAddress(wftmTokenAddress),
+            new BigNumber(Number(reserves.output[0])).times(2).times(lpTokenRatio).toFixed(0)
+          );
+        }
+      } else if (symbols.output[idx].output.includes("LP") && symbols.output[idx].output != "BeetXLP_MIM_USDC_USDT") {
         lpPositions.push({
           balance: totalBalance.toString(10),
           token,
