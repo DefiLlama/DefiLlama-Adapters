@@ -7,8 +7,7 @@ const treasury = "0x623845e7961F7A2E535885F983a804608b69D026"
 const treasuryTokens = [
     ["0xd586e7f844cea2f87f50152665bcbc2c279d8d70", false], // DAI
     ["0xbf56ea8a64faf58889584930716e655317d22ea6", true] // VERSE-DAI
-]
-
+];
 
 module.exports = {
     misrepresentedTokens: true,
