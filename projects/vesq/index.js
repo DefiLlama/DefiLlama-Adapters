@@ -16,5 +16,6 @@ const treasuryTokens = [
     ["0x5Cf66CeAf7F6395642cD11b5929499229edEF531", true], //VSQ DAI LP
     ["0x41d18c810e70c643cc1326f232546abb620aae7e", true], //VSQ FRAX LP
     ["0xc2f4694ab1384e6bce1c8aa91b9a3e8cc1a6477e", true], //VSQ MAI LP
+    ["0xe7a24ef0c5e95ffb0f6684b813a78f2a3ad7d171", false], //Curve am3CRV
    ]
 module.exports = ohmTvl(treasury, treasuryTokens, "polygon", stakingAddress, vsq_token, undefined, undefined, true)
