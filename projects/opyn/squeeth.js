@@ -1,7 +1,7 @@
 const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js');
 
-const START_BLOCK = 13944813;
+const START_BLOCK = 13977497;
 const controller = "0x0344f8706947321fa87881d3dad0eb1b8c65e732";
 const ETH = '0x0000000000000000000000000000000000000000';
 
