@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
 const abiOneToken = require("./abiOneToken.json");
 const abiFarm = require("./abiFarm.json");
+const BigNumber = require("bignumber.js");
 const { fetchURL } = require("../helper/utils");
 const { staking } = require("../helper/staking");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
@@ -156,54 +157,17 @@ const ethTvl = async (block) => {
       })
     ).output;
 
-    const countAssets = (
+    const totalSuplay = (
       await sdk.api.abi.call({
-        abi: abiOneToken.assetCount,
+        abi: abiOneToken.totalSupply,
         target: oneToken,
         block,
       })
     ).output;
 
-    for (let i = 0; i < countAssets; i++) {
-      const asset = (
-        await sdk.api.abi.call({
-          abi: abiOneToken.assetAtIndex,
-          target: oneToken,
-          params: i,
-          block,
-        })
-      ).output;
+    const totalBalance = BigNumber(totalSuplay).div(1e12).toFixed(0);
 
-      const assetBalInVault = Number(
-        (
-          await sdk.api.abi.call({
-            abi: abiOneToken.balances,
-            target: oneToken,
-            params: asset,
-            block,
-          })
-        ).output.inVault
-      );
-
-      const assetBalInStrategy = Number(
-        (
-          await sdk.api.abi.call({
-            abi: abiOneToken.balances,
-            target: oneToken,
-            params: asset,
-            block,
-          })
-        ).output.inStrategy
-      );
-
-      const totalBalance = (
-        assetBalInVault + assetBalInStrategy
-      ).toLocaleString("fullwide", {
-        useGrouping: false,
-      });
-
-      sdk.util.sumSingleBalance(balances, asset, totalBalance);
-    }
+    sdk.util.sumSingleBalance(balances, USDC, totalBalance);
   }
 
   /*** ICHI Farm V2 TVL Portion ***/
