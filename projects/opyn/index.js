@@ -2,6 +2,7 @@ const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js');
 const v1TVL = require('./convexity');
 const v2TVL = require('./gamma');
+const v2AvaxTVL = require('./gamma_avax');
 const squeethTVL = require('./squeeth');
 
 async function ethTvl(_, block) { 
@@ -14,7 +15,6 @@ async function ethTvl(_, block) {
     return objs.reduce((a, b) => {
       for (let k in b) {
         if (b.hasOwnProperty(k))
-          // a[k] = (a[k] || 0) + b[k];
           a[k] = BigNumber( a[k] || 0).plus(BigNumber(b[k])).toFixed();
       }
       return a;
@@ -22,17 +22,27 @@ async function ethTvl(_, block) {
   }
 
   const totBalances = sumObjectsByKey(v1Balances, v2Balances, squeethBalances);
+  
 
   return totBalances
 
 }
 
-
+async function avaxTvl(_, block) {
+  const avaxBalances = await v2AvaxTVL.tvl(_, block);
+  return avaxBalances;
+}
 
 module.exports = {
-  start: 1581542700,  // 02/12/2020 @ 09:25PM (UTC)
-  tvl: sdk.util.sumChainTvls([ethTvl]),
+  ethereum: {
+    tvl: ethTvl
+  },
+  avalanche: {
+    tvl: avaxTvl
+  },
+  tvl: sdk.util.sumChainTvls([ethTvl, avaxTvl]),
   hallmarks: [
-    [1619493707, "Ribbon launch"]
+    [1619493707, "Ribbon launch"],
+    [1641855660, "Squeeth launch"]
   ]
 }
