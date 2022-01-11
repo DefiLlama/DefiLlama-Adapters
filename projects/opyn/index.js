@@ -22,6 +22,7 @@ async function ethTvl(_, block) {
   }
 
   const totBalances = sumObjectsByKey(v1Balances, v2Balances, squeethBalances);
+  
 
   return totBalances
 

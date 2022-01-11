@@ -9,7 +9,7 @@ module.exports.tvl = async function tvl(timestamp, block) {
 
   const wavaxBalance = (
     await sdk.api.abi.call({
-      target: '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7',
+      target: wavax,
       params: marginPool,
       abi: 'erc20:balanceOf',
       block,
