@@ -2,7 +2,6 @@ const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js');
 const v1TVL = require('./convexity');
 const v2TVL = require('./gamma');
-const v2AvaxTVL = require('./gamma_avax');
 const squeethTVL = require('./squeeth');
 
 async function ethTvl(_, block) { 
@@ -28,22 +27,11 @@ async function ethTvl(_, block) {
 
 }
 
-async function avaxTvl(_, block) {
-  const avaxBalances = await v2AvaxTVL.tvl(_, block);
-  return avaxBalances;
-}
-
 module.exports = {
   start: 1581542700,  // 02/12/2020 @ 09:25PM (UTC)
-  ethereum: {
-    tvl: ethTvl
-  },
-  avalanche: {
-    tvl: avaxTvl
-  },
-  tvl: sdk.util.sumChainTvls([ethTvl, avaxTvl]),
+  tvl: sdk.util.sumChainTvls([ethTvl]),
   hallmarks: [
     [1619493707, "Ribbon launch"],
-    [13982541, "Squeeth launch"],
+    [1641855660, "Squeeth launch"]
   ]
 }
