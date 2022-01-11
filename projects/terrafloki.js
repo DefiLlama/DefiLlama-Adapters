@@ -1,12 +1,13 @@
 const retry = require("./helper/retry");
 const axios = require("axios");
+const {toUSDTBalances} = require('./helper/balances')
 
 async function pool2() {
     var res = await retry(
         async () => await axios.get("https://api.terrafloki.io/defi-llama/trade-pair-llp")
     );
 
-    return parseFloat(res.data);
+    return toUSDTBalances(parseFloat(res.data));
 }
 
 async function staking() {
@@ -14,7 +15,7 @@ async function staking() {
         async () => await axios.get("https://api.terrafloki.io/defi-llama/ticket-farming-tfloki")
     );
 
-    return parseFloat(res.data);
+    return toUSDTBalances(parseFloat(res.data));
 }
 
 async function tvl() {
@@ -22,11 +23,15 @@ async function tvl() {
         async () => await axios.get("https://api.terrafloki.io/defi-llama/ticket-farming-llp")
     );
 
-    return parseFloat(res.data);
+    return toUSDTBalances(parseFloat(res.data));
 }
 
 module.exports = {
-    pool2,
-    staking,
-    tvl
+    terra:{        
+        pool2,
+        staking,
+        tvl
+
+    }
+    
 }; 
