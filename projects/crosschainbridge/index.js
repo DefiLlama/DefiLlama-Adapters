@@ -135,7 +135,7 @@ const toExport = {};
 for (const network of Object.keys(tokens)) {
   toExport[network] = {
     tvl: createTvlFunction(network),
-    rewardPoolsTvl: createRewardPoolsTvlFunction(network),
+    staking: createRewardPoolsTvlFunction(network),
   };
 }
 
