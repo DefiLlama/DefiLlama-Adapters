@@ -32,6 +32,8 @@ async function handleMooTokens(balances, block, chain, tokens) {
       addr = "fantom:0xd6070ae98b8069de6b494332d1a1a81b6179d960";
     } else if (addr === "0x1b156c5c75e9df4caab2a5cc5999ac58ff4f9090") {
       addr = "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7";
+    } else if (addr === "0xf18f4847a5db889b966788dcbdbcbfa72f22e5a6") {
+      addr = "fantom:0x841fad6eae12c286d1fd18d1d525dffa75c7effe"
     } else {
       addr = `${chain}:${addr}`;
     }
@@ -242,7 +244,9 @@ async function fantom(timestamp, block, chainBlocks) {
       [
         "0x4cdF39285D7Ca8eB3f090fDA0C069ba5F4145B37",
         "0xD60FBaFc954Bfbd594c7723C980003c196bDF02F"
-      ]
+      ],
+      //[t,p],
+      
     ],
     chainBlocks[chain],
     chain,
@@ -272,6 +276,10 @@ async function fantom(timestamp, block, chainBlocks) {
       "0xbf07093ccd6adfc3deb259c557b61e94c1f66945",
       "0x75D4aB6843593C111Eeb02Ff07055009c836A1EF",
     ],
+    [
+      "0xf18F4847a5Db889B966788dcbDbcBfA72f22E5A6",
+      "0xa48d959AE2E88f1dAA7D5F611E01908106dE7598",
+    ]
   ];
   await handleMooTokens(balances, chainBlocks.fantom, chain, ftmMooTokens);
   const ftmLPs = [
@@ -285,6 +293,21 @@ async function fantom(timestamp, block, chainBlocks) {
       "0xF34e271312e41Bbd7c451B76Af2AF8339D6f16ED",
       "0xA3e3Af161943CfB3941B631676134bb048739727",
       "0xFdb9Ab8B9513Ad9E419Cf19530feE49d412C3Ee3",
+    ],
+    [
+      "0xB595C02147bCEDE84e0E85D9e95727cF38C02b07",
+      "0xee3a7c885fd3cc5358ff583f2dab3b8bc473316f",
+      "0xEc7178F4C41f346b2721907F5cF7628E388A7a58"
+    ],
+    [
+      "0x27c77411074ba90ca35e6f92a79dad577c05a746",
+      "0x3F4f523ACf811E713e7c34852b24E927D773a9e5",
+      "0x2a651563c9d3af67ae0388a5c8f89b867038089e"
+    ],
+    [
+      "0x872C847056e11cF75D1D9636b522D077E8C9F653",
+      "0xae94e96bf81b3a43027918b138b71a771d381150",
+      "0x4733bc45eF91cF7CcEcaeeDb794727075fB209F2"
     ],
   ];
   await handleMooLPs(balances, chainBlocks.fantom, chain, ftmLPs);
@@ -359,20 +382,20 @@ async function harmony(timestamp, block, chainBlocks) {
 module.exports = {
   methodology:
     "TVL counts the AAVE tokens that are deposited within the Yield Instruments section of QiDao, the Vault token deposits of CRV, LINK, AAVE and WETH, as well as USDC deposited to mint MAI.",
-  polygon: {
-    tvl: polygon,
-  },
+  // polygon: {
+  //   tvl: polygon,
+  // },
   fantom: {
     tvl: fantom,
   },
-  avax: {
-    tvl: avax,
-  },
-  moonriver: {
-    tvl: moonriver,
-  },
-  harmony: {
-    tvl: harmony,
-  },
+  // avax: {
+  //   tvl: avax,
+  // },
+  // moonriver: {
+  //   tvl: moonriver,
+  // },
+  // harmony: {
+  //   tvl: harmony,
+  // },
 };
 // node test.js projects/qidao/index.js
