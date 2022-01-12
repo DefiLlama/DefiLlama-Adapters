@@ -41,7 +41,7 @@ async function handleMooTokens(balances, block, chain, tokens) {
       balances,
       addr,
       BigNumber(balance[i].output)
-        .times(Number(pricePerShare[i].output) / 1e18)
+        .times(pricePerShare[i].output).div(1e18)
         .toFixed(0)
     );
   }
@@ -73,7 +73,7 @@ async function handleMooLPs(balances, block, chain, tokens) {
   for (let i = 0; i < tokens.length; i++) {
     lpPositions.push({
       balance: BigNumber(lpBalances[i].output)
-        .times(Number(pricePerShare[i].output) / 1e18)
+        .times(pricePerShare[i].output).div(1e18)
         .toFixed(0),
       token: tokens[i][2],
     });

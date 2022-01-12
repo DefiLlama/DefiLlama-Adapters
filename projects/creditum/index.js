@@ -42,12 +42,12 @@ async function handleYearnTokens(balances, tokens, owner, block, chain, transfor
       ).output;
     for (let i = 0; i < balance.length; i++) {
       let addr = transform(underlyingTokens[i].output.toLowerCase());
-      const price = Number(pricePerShare[i].output)
+      const price = pricePerShare[i].output
       sdk.util.sumSingleBalance(
         balances,
         addr,
         BigNumber(balance[i].output)
-          .times(price / (10**Math.log10(price)))
+          .times(price).div(10**Math.log10(price))
           .toFixed(0)
       );
     }
