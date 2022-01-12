@@ -8,5 +8,6 @@ const karma = "0x5ccff6723f592c223e7b31c6872ba999a028653f";
 const stakingcontract = "0x4c9b7D49C86220A91c0c8756940C7c27583dC5EB";
 
 module.exports = {
+    misrepresentedTokens: true,
     ...ohmTvl(treasury, treasuryTokens, "avax", stakingcontract, karma, undefined, undefined, false)
 }
