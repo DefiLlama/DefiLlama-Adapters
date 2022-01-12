@@ -39,9 +39,6 @@ async function tvl(_timestamp, block, chainBlocks, chain) {
     default:
       throw new Error('Unknown chain ' + chain);
   }
-  if (chain !== 'ethereum') {
-    block = chainBlocks['polygon'] || block;
-  }
 
   const balances = {
     [transformAddress(nativeAddress)]: (
