@@ -4,8 +4,9 @@ const {getApiTvl} = require('./helper/historicalApi')
 function tvl(timestamp){
     return getApiTvl(timestamp, 
     async()=>{
-        const data = await utils.fetchURL("https://api-osmosis.imperator.co/tokens/v1/CMDX")
-        return data.data[0].liquidity
+        const data = await utils.fetchURL("https://api-comdex.zenchainlabs.io/staking/pool")
+        bonded = data.data.result.bonded_tokens
+        return bonded / Math.pow(10,6)
     },
     async()=>{
         const data = await utils.fetchURL("https://api-osmosis.imperator.co/tokens/v1/liquidity/CMDX/chart")
