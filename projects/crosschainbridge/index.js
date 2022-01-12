@@ -107,24 +107,36 @@ const createTvlFunction = (chain) => async (timestamp, block) => {
     });
     tokenBalance = tokenBalance.plus(result.output);
 
-    // Also get balance of BRIDGE tokens in Reward Pools contract
-    if (symbol === "BRIDGE") {
-      const resultRewardPools = await sdk.api.erc20.balanceOf({
-        target: address,
-        owner: REWARD_POOLS,
-        chain,
-        block,
-      });
-      tokenBalance = tokenBalance.plus(resultRewardPools.output);
-    }
     balances[`${getAddrPrefix(chain)}${address}`] = tokenBalance.toFixed();
   }
   return balances;
 };
 
+const createRewardPoolsTvlFunction = (chain) => async (timestamp, block) => {
+  const bridgeTokenAddress = tokens[chain].BRIDGE;
+
+  if (!bridgeTokenAddress) return 0;
+
+  let tokenBalance = BigNumber(0);
+
+  const resultRewardPools = await sdk.api.erc20.balanceOf({
+    target: bridgeTokenAddress,
+    owner: REWARD_POOLS,
+    chain,
+    block,
+  });
+
+  tokenBalance = tokenBalance.plus(resultRewardPools.output);
+
+  return tokenBalance.toFixed();
+};
+
 const toExport = {};
 for (const network of Object.keys(tokens)) {
-  toExport[network] = { tvl: createTvlFunction(network) };
+  toExport[network] = {
+    tvl: createTvlFunction(network),
+    rewardPoolsTvl: createRewardPoolsTvlFunction(network),
+  };
 }
 
 module.exports = toExport;
