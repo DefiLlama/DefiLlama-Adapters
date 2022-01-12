@@ -2,8 +2,9 @@ const sdk = require("@defillama/sdk");
 const abi = require('./abi.json');
 const retry = require("async-retry");
 const axios = require("axios");
-const { staking } = require("../helper/staking.js");
+const { stakings } = require("../helper/staking.js");
 const usdc = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
+const prxy = '0xab3d689c22a2bb821f50a4ff0f21a7980dcb8591';
 
 async function getPrograms() {
     const programList = await retry(async bail => await axios.get(
@@ -17,6 +18,17 @@ async function getPrograms() {
 
 async function tvl(block, chain) {
     let balances = {};
+
+    if (chain == 'polygon') {
+        balances[`polygon:${prxy}`] = (
+            await sdk.api.erc20.balanceOf({
+            target: prxy,
+            owner: '0x015CEe3aB6d03267B1B2c05D2Ac9e2250AF5268d',
+            block,
+            chain
+            })).output;
+    };
+
     const programs = await getPrograms()
     for (const program of programs) {
         if (program.chain.toLowerCase() == chain) {
@@ -43,13 +55,7 @@ async function polygon(timestamp, block, chainBlocks) {
 module.exports = {
     misrepresentedTokens: true,
     polygon: {
-        tvl: polygon,
-        staking: staking(
-            '0x015CEe3aB6d03267B1B2c05D2Ac9e2250AF5268d',
-            '0xab3d689c22a2bb821f50a4ff0f21a7980dcb8591',
-            'polygon',
-            'polygon:0xab3d689c22a2bb821f50a4ff0f21a7980dcb8591'
-        )
+        tvl: polygon
     },
     ethereum: {
         tvl: ethereum

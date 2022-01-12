@@ -108,7 +108,7 @@ module.exports.tvl = async function tvl(timestamp, block) {
       abi: "erc20:balanceOf"
     });
 
-    sdk.util.sumMultiBalanceOf(balances, balanceOfResults);
+    sdk.util.sumMultiBalanceOf(balances, balanceOfResults, false);
   }
 
   return balances;
