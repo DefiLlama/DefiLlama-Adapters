@@ -15,5 +15,5 @@ module.exports = {
     pool2: pool2s(stakingContracts, lpTokens, 'ethereum'),
     tvl: () => ({}), 
   },
-  methodology: `UBI/ETH and UBI/ETH can be staked in a uni-v2 pool2 contract`
+  methodology: `UBI/ETH and UBI/DAI LP can be staked in a uni-v2 pool2 contract`
 }
