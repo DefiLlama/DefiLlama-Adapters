@@ -87,7 +87,7 @@ module.exports = {
     tvl: ethereumTvl,
   },
   polygon: {
-    start: 1669852800,
+    start: 1638316800,
     tvl: polygonTvl,
   },
 };
