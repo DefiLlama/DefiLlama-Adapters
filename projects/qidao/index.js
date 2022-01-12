@@ -382,20 +382,20 @@ async function harmony(timestamp, block, chainBlocks) {
 module.exports = {
   methodology:
     "TVL counts the AAVE tokens that are deposited within the Yield Instruments section of QiDao, the Vault token deposits of CRV, LINK, AAVE and WETH, as well as USDC deposited to mint MAI.",
-  // polygon: {
-  //   tvl: polygon,
-  // },
+  polygon: {
+    tvl: polygon,
+  },
   fantom: {
     tvl: fantom,
   },
-  // avax: {
-  //   tvl: avax,
-  // },
-  // moonriver: {
-  //   tvl: moonriver,
-  // },
-  // harmony: {
-  //   tvl: harmony,
-  // },
+  avax: {
+    tvl: avax,
+  },
+  moonriver: {
+    tvl: moonriver,
+  },
+  harmony: {
+    tvl: harmony,
+  },
 };
 // node test.js projects/qidao/index.js
