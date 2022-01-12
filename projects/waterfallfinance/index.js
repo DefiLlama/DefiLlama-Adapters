@@ -1,7 +1,7 @@
 const abi = require("../helper/abis/masterchef.json")
 const { transformFantomAddress } = require("../helper/portedTokens");
 const { addFundsInMasterChef } = require("../helper/masterchef");
-const { staking } = require("../helper/staking");
+const { staking, stakingPricedLP } = require("../helper/staking");
 const { pool2Exports } = require('../helper/pool2')
 
 
@@ -21,7 +21,7 @@ module.exports = {
   methodology: "TVL includes all farms in MasterChef contract",
   fantom: {
       tvl,
-      staking: staking(chef, waterfall, "fantom"),
+      staking: stakingPricedLP(chef, waterfall, "fantom", "0xc4Ec70361f57Ba0Ca0Ac82319677fB95B9837A78", "wrapped-fantom"),
       pool2: pool2Exports(chef, [waterfallFtmLP, waterfallUsdcLP], "fantom"),
   },
   
