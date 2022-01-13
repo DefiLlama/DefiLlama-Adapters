@@ -8,5 +8,5 @@ module.exports={
     arbitrum:compoundExportsWithAsyncTransform(comptroller, "arbitrum", "0x8e15a22853A0A60a0FBB0d875055A8E66cff0235", "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1", transformArbitrumAddress),
     fantom:compoundExportsWithAsyncTransform(comptroller, "fantom", "0xfCD8570AD81e6c77b8D252bEbEBA62ed980BD64D", "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83", transformFantomAddress),
     harmony:compoundExportsWithAsyncTransform(comptroller, "harmony", "0xbb93C7F378B9b531216f9aD7b5748be189A55807", "0xcf664087a5bb0237a0bad6742852ec6c8d69a27a", transformHarmonyAddress),
-    harmony:compoundExportsWithAsyncTransform(comptroller, "moonriver", "0x42B458056f887Fd665ed6f160A59Afe932e1F559", "0x98878b06940ae243284ca214f92bb71a2b032b8a", transformMoonriverAddress),
+    moonriver:compoundExportsWithAsyncTransform(comptroller, "moonriver", "0x42B458056f887Fd665ed6f160A59Afe932e1F559", "0x98878b06940ae243284ca214f92bb71a2b032b8a", transformMoonriverAddress),
 }
