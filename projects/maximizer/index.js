@@ -13,6 +13,7 @@ const MAXI_WAVAX_PGL = "0xbb700450811a30c5ee0dB80925Cf1BA53dBBd60A";
 const PNG_WAVAX_PGL = "0xd7538cABBf8605BdE1f4901B47B8D42c61DE0367";
 const QI_WAVAX_PGL = "0xE530dC2095Ef5653205CF5ea79F8979a7028065c";
 const JOE_WAVAX_JLP = "0x454E67025631C065d3cFAD6d71E6892f74487a15";
+const ISA_WAVAX_JLP = "0x9155f441FFDfA81b13E385bfAc6b3825C05184Ee";
 
 const staking = async (timestamp, ethBlock, chainBlocks) => {
   const balances = {};
@@ -44,6 +45,7 @@ async function tvl(timestamp, block, chainBlocks) {
       [PNG_WAVAX_PGL, true],
       [QI_WAVAX_PGL, true],
       [JOE_WAVAX_JLP, true],
+      [ISA_WAVAX_JLP, true],
     ],
     [Treasury],
     chainBlocks.avax,
@@ -65,5 +67,5 @@ module.exports = {
     staking,
   },
   methodology:
-    "Counts DAI.e, DAI.e LP (MAXI-DAI.e JLP), USDC, WAVAX, WAVAX LP (MAXI-WAVAX PGL, PNG-WAVAX PGL, QI-WAVAX PGL, JOE-WAVAX JLP) on the treasury",
+    "Counts DAI.e, DAI.e LP (MAXI-DAI.e JLP), USDC, WAVAX, WAVAX LP (MAXI-WAVAX PGL, PNG-WAVAX PGL, QI-WAVAX PGL, JOE-WAVAX JLP, ISA-WAVAX JLP) on the treasury",
 };
