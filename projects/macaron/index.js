@@ -7,7 +7,7 @@ const { transformBscAddress, transformPolygonAddress } = require("../helper/port
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 
 const MasterChefContractBsc = "0xFcDE390bF7a8B8614EC11fa8bde7565b3E64fe0b";
-const MasterChefContractPolygon = "0xFcDE390bF7a8B8614EC11fa8bde7565b3E64fe0b";
+const MasterChefContractPolygon = "0xC200cE4853d97e5f11320Bb8ee17F4D895f5e7BB";
 
 const chocoChefAddressesBsc = [
   // MCRN -> DUEL
@@ -37,6 +37,12 @@ const chocoChefAddressesBsc = [
 ];
 
 const chocoChefAddressesPolygon = [
+  // MCRN -> WMATIC
+  "0xA7661a7aeAF507a7782C230a45a002519cFC158C",
+  // MCRN -> QUICK
+  "0x337CC5daBaf1f874ACec0031d3d682CAF6DD2FC8",
+  // QUICK -> MCRN
+  "0x4b68bA327Cad4d8C4d0Bc783d686d08CFAa5C5D3"
 ];
 
 const vaultsOnMacaronBsc = [
@@ -60,6 +66,7 @@ const ERC20sBSC = [
   "0x603c7f932ed1fc6575303d8fb018fdcbb0f39a95",
   //CAKE
   "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
+  
 ];
 
 const ERC20sPOLYGON = [
@@ -291,7 +298,7 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
 
   // --- Staking Tokens by Choco Falls Tvl portion ---
   // TODO: ChocoChefs will add when create new pools
-  /*
+  
   await calcTvl(
     balances,
     "polygon",
@@ -300,11 +307,11 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
     abi.lpSupply,
     chocoChefAddressesPolygon
   );
-  */
+  
 
   // --- Vaults of other Protocols on Macaron (Boost Pools) Tvl portion ---
   // TODO: Vaults will add when create new vault pools
-  /*
+  
   await calcTvl(
     balances,
     "bsc",
@@ -313,7 +320,7 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
     abi.balanceOf,
     vaultsOnMacaronPolygon
   );
-  */
+  
 
   return balances;
 };
@@ -329,7 +336,7 @@ module.exports = {
   polygon: {
     tvl: polygonTvl,
   },
-  tvl: sdk.util.sumChainTvls([bscTvl, polygonTvl]),
+  
   methodology: `We add as TVL the staking LPs on Magic Box by Masterchef contract; the staking Assets on Choco Falls 
   by ChocoChef Contract; and the Vaults of other protocols on Macaron by Boost Pools. 
   The treasury part separated from TVL`,
