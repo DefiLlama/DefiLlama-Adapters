@@ -5,6 +5,7 @@ const { transformAvaxAddress } = require("../helper/portedTokens");
 const MaximizerStaking = "0x6d7AD602Ec2EFdF4B7d34A9A53f92F06d27b82B1";
 const Treasury = "0x22cF6c46b4E321913ec30127C2076b7b12aC6d15";
 const MAXI = "0x7C08413cbf02202a1c13643dB173f2694e0F73f0";
+const SMAXI = "0xEcE4D1b3C2020A312Ec41A7271608326894076b4";
 const DAI = "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70";
 const USDC = "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E";
 const WAVAX = "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7";
@@ -41,6 +42,8 @@ async function tvl(timestamp, block, chainBlocks) {
   await sumTokensAndLPsSharedOwners(
     balances,
     [
+      [MAXI, false],
+      [SMAXI, false],
       [DAI, false],
       [USDC, false],
       [WAVAX, false],
