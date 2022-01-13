@@ -5,6 +5,7 @@ const {staking} = require("../helper/staking.js")
 const {pool2s} = require("../helper/pool2.js")
 
 const registry = '0x72d15eae2cd729d8f2e41b1328311f3e275612b9' // same address for polygon and mainnet
+const AMMregistry = '0x6646A35e74e35585B0B02e5190445A324E5D4D01'
 
 // Mapping from tokens locked in APWine to ones that can be read by coingecko
 const transformMapping_ethereum = {
@@ -18,6 +19,8 @@ const transformMapping_polygon = {
 const tokensToUnwrap =  {
   'polygon:0xDDe43710DefEf6CbCf820B18DeBfC3cF9a4f449F': {'type': 'crv', 'unwrapTo': '0xad326c253a84e9805559b73a08724e11e49ca651'},  // miFARM_4eur-f (bf4eur-f) -> 4eur-f
   'polygon:0x5A0801BAd20B6c62d86C566ca90688A6b9ea1d3f': {'type': 'crv', 'unwrapTo': '0xdad97f7713ae9437fa9249920ec8507e5fbb23d3'}, // Moo Curve aTriCrypto3 -> aTriCrypto3
+  // 'polygon:0x5A0801BAd20B6c62d86C566ca90688A6b9ea1d3f': {'type': 'crv', 'unwrapTo': '0xdad97f7713ae9437fa9249920ec8507e5fbb23d3'}, // Moo Curve aTriCrypto3 -> aTriCrypto3
+  'polygon:0xe7a24ef0c5e95ffb0f6684b813a78f2a3ad7d171': {'type': 'crv', 'unwrapTo': '0xe7a24ef0c5e95ffb0f6684b813a78f2a3ad7d171'}, // curve am3CRV
 }
 const transform  = {
   'ethereum': addr => transformMapping_ethereum[addr] || addr,
@@ -34,19 +37,22 @@ const APW_MUST_cometh = '0x174f902194fce92ef3a51079b531f1e5073de335'
 const APW_WETH_cometh_staking = '0x4e2114f7fa11dc0765ddd51ad98b6624c3bf1908'
 const APW_MUST_cometh_staking = '0xb7ae78f49ac9bd9388109a4c5f53c6b79be4deda'
 
+const unwrap_output_array = (arr) => arr.map(c => c.output)
+
 const tvl_from_registry = (chain) => {
   return async (timestamp, ethBlock, chainBlocks) => {
     const balances = {}
     const block = chainBlocks[chain]
-    // Get vaults count, vault addresses, and IBT tokens held by each vault
-    const {output: futureVaultCount} = await sdk.api.abi.call({
-        abi: abi['futureVaultCount'],
+    // A. Get vaults count, vault addresses, and IBT tokens held by each vault
+    let {output: futureVaultCount} = await sdk.api.abi.call({
+        abi: abi['registry_futureVaultCount'],
         target: registry,
         block,
         chain,
       })
+    // futureVaultCount = 2
     const {output: futureVaults} = await sdk.api.abi.multiCall({
-        abi: abi['getFutureVaultAt'],
+        abi: abi['registry_getFutureVaultAt'],
         calls:  [...Array(parseInt(futureVaultCount)).keys()].map((i) => ({
           target: registry,
           params: i,
@@ -55,29 +61,88 @@ const tvl_from_registry = (chain) => {
         chain,
       })
     const {output: IBTAddressTokens} = await sdk.api.abi.multiCall({
-      abi: abi['getIBTAddress'],
+      abi: abi['registry_getIBTAddress'],
       calls: futureVaults.map((vault) => ({
         target: vault.output,
       })),
       block,
       chain,
     })
-
     // Unwrap tokens amount held by each vault
     const tokensAndOwners = IBTAddressTokens.map(t => [t.output, t.input.target])
+    console.log('t', tokensAndOwners)
     await sumTokens(balances, tokensAndOwners, block, chain, transform[chain]) 
-    console.log(`balances for chain ${chain}`, balances) 
+    
+    // B. Also get AMM pools balances
+    const {output: ammPools} = await sdk.api.abi.multiCall({
+      abi: abi['ammregistry_getFutureAMMPool'],
+      calls: futureVaults.map((vault) => ({
+        target: AMMregistry,
+        params: vault.output,
+      })),
+      block,
+      chain,
+    })
+    // console.log('ammPools', ammPools)
+    const {output: FYTAddresses} = await sdk.api.abi.multiCall({
+      abi: abi['ammPool_getFYTAddress'],
+      calls: ammPools.map((vault) => ({
+        target: vault.output,
+      })),
+      block,
+      chain,
+    })
+    // console.log('FYTAddresses', FYTAddresses)
+    const {output: underlyingOfIBTAddresses} = await sdk.api.abi.multiCall({
+      abi: abi['ammPool_getUnderlyingOfIBTAddress'],
+      calls: ammPools.map((vault) => ({
+        target: vault.output,
+      })),
+      block,
+      chain,
+    })
+    // console.log('underlyingOfIBTAddresses', underlyingOfIBTAddresses)
+
+    let transform_to_underlying = (addr) => {
+      const idx = FYTAddresses.map(c => c.output).indexOf(addr)
+      if (idx >= 0) {
+        return transform[chain](underlyingOfIBTAddresses[idx].output)
+      } 
+      return transform[chain](addr)
+    }
+    transform_to_underlying = transform[chain]
+
+    console.log('underlyingOfIBTAddresses', underlyingOfIBTAddresses)
+    const tokensAndOwnersAMM = underlyingOfIBTAddresses.map( (t, i) => [t.output, ammPools[i].output] )
+      .concat(underlyingOfIBTAddresses.map((t, i) => [t.output, ammPools[i].output]))
+    // Use FYTAddresses in the concat to get balances of FYT
+    // Use underlyingOfIBTAddresses in concat to mimic a twice
+    await sumTokens(balances, tokensAndOwnersAMM, block, chain, transform_to_underlying) 
+
+      // EURT polygon: 0x7BDF330f423Ea880FF95fC41A280fD5eCFD3D09f
+
 
     // Handle wrapped pools in balances - like curvePools, etc
+    console.log(tokensToUnwrap)
     for (const token of Object.keys(balances)) {
+      console.log('+', token)
       if (Object.keys(tokensToUnwrap).includes(token)) {
         if (tokensToUnwrap[token].type === 'crv') {
+          console.log('--------------------', token)
           await unwrapCrv(balances, tokensToUnwrap[token].unwrapTo, balances[token], block, chain, transform[chain]) 
+          console.log(balances)
         }
         balances[token] = 0 // Once unwrapped, set balance of wrapped curve token to zero
       }
     }
 
+
+    // Unwrap atricrypto which gets here when unwrapping
+    // const atricrypto = 'polygon:0xe7a24ef0c5e95ffb0f6684b813a78f2a3ad7d171'
+    // await unwrapCrv(balances, atricrypto, balances[atricrypto], block, chain, transform[chain]) 
+    // balances[atricrypto] = 0
+
+    console.log(`balances for chain ${chain}`, balances) 
     return balances
   }
 }
