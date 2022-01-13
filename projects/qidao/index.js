@@ -34,6 +34,7 @@ async function handleMooTokens(balances, block, chain, tokens) {
       addr = "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7";
     } else if (addr === "0xf18f4847a5db889b966788dcbdbcbfa72f22e5a6") {
       addr = "fantom:0x841fad6eae12c286d1fd18d1d525dffa75c7effe"
+      pricePerShare[i].output = 1e18;
     } else {
       addr = `${chain}:${addr}`;
     }
@@ -300,8 +301,8 @@ async function fantom(timestamp, block, chainBlocks) {
       "0xEc7178F4C41f346b2721907F5cF7628E388A7a58"
     ],
     [
-      "0x27c77411074ba90ca35e6f92a79dad577c05a746",
       "0x3F4f523ACf811E713e7c34852b24E927D773a9e5",
+      "0x27c77411074ba90ca35e6f92a79dad577c05a746",
       "0x2a651563c9d3af67ae0388a5c8f89b867038089e"
     ],
     [
