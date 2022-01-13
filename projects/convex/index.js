@@ -4,6 +4,7 @@ const axios = require('axios')
 const { unwrapCrv, unwrapUniswapLPs } = require('../helper/unwrapLPs')
 const curvePools = require('./pools-crv.js');
 const { default: BigNumber } = require("bignumber.js");
+const methodAbi = require('./abi.json')
 
 
 const addressZero = "0x0000000000000000000000000000000000000000"
@@ -254,7 +255,21 @@ async function tvl(timestamp, block) {
   return allCoins;
 }
 
+async function staking(timestamp, block){
+  return {
+    "0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b": (await sdk.api.abi.call({
+      target: "0xD18140b4B819b895A3dba5442F959fA44994AF50",
+      abi: methodAbi.lockedSupply,
+      block
+    })).output
+  }
+}
+
 module.exports = {
   timetravel: true,
-  tvl
+  ethereum:{
+    tvl,
+    staking,
+    //pool2: pool2("0x5F465e9fcfFc217c5849906216581a657cd60605", "0x05767d9ef41dc40689678ffca0608878fb3de906"),
+  }
 }
