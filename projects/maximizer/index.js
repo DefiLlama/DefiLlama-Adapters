@@ -8,6 +8,10 @@ const MAXI = "0x7C08413cbf02202a1c13643dB173f2694e0F73f0";
 const DAI = "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70";
 const USDC = "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E";
 const WAVAX = "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7";
+const PNG = "0x60781C2586D68229fde47564546784ab3fACA982";
+const QI = "0x8729438EB15e2C8B576fCc6AeCdA6A148776C0F5";
+const JOE = "0x6e84a6216eA6dACC71eE8E6b0a5B7322EEbC0fDd";
+const ISA = "0x3EeFb18003D033661f84e48360eBeCD181A84709";
 const MAXI_DAI_JLP = "0xfBDC4aa69114AA11Fae65E858e92DC5D013b2EA9";
 const MAXI_WAVAX_PGL = "0xbb700450811a30c5ee0dB80925Cf1BA53dBBd60A";
 const PNG_WAVAX_PGL = "0xd7538cABBf8605BdE1f4901B47B8D42c61DE0367";
@@ -40,6 +44,10 @@ async function tvl(timestamp, block, chainBlocks) {
       [DAI, false],
       [USDC, false],
       [WAVAX, false],
+      [PNG, false],
+      [QI, false],
+      [JOE, false],
+      [ISA, false],
       [MAXI_DAI_JLP, true],
       [MAXI_WAVAX_PGL, true],
       [PNG_WAVAX_PGL, true],
