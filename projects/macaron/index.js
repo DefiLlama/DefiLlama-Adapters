@@ -328,7 +328,7 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
 module.exports = {
   misrepresentedTokens: true,
   treasury: {
-    tvl: TreasuryBsc + TreasuryPolygon,
+    tvl: sdk.util.sumChainTvls([TreasuryBsc, TreasuryPolygon]) 
   },
   bsc: {
     tvl: bscTvl,
