@@ -2,7 +2,7 @@ const retry = require("../helper/retry");
 const { request, gql } = require("graphql-request");
 const _ = require("lodash");
 
-const apiURL = "https://smart-graph-demo.onrender.com/zoomswap/graphql";
+const apiURL = "https://smart-graph.iotex.me/iotube/graphql";
 
 const query = gql`
   query (
