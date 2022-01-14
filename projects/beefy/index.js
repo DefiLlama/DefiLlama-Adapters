@@ -7,7 +7,9 @@ function fetchChain(chainId) {
     let tvl = 0;
     const chain = response.data[chainId];
     for (vault in chain) {
-      tvl += Number(chain[vault]);
+      if(!vault.includes("bifi")){
+        tvl += Number(chain[vault]);
+      }
     }
     if(tvl === 0){
       throw new Error(`chain ${chainId} tvl is 0`)
@@ -25,7 +27,9 @@ async function fetch() {
     const chain = response.data[chainId];
 
     for (vault in chain) {
-      tvl += chain[vault];
+      if(!vault.includes("bifi")){
+        tvl += chain[vault];
+      }
     }
   }
   if(tvl === 0){
