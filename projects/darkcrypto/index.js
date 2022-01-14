@@ -3,7 +3,6 @@ const { stakingUnknownPricedLP } = require("../helper/staking");
 const { pool2BalanceFromMasterChef } = require("../helper/pool2");
 const farmUtils = require('./farm-utils');
 
-
 const sdk = require("@defillama/sdk");
 const dark = "0x83b2AC8642aE46FC2823Bc959fFEB3c1742c48B5";
 const sky = "0x9D3BBb0e988D9Fb2d55d07Fe471Be2266AD9c81c";
@@ -12,9 +11,6 @@ const krx_usdc = '0x9504a7cEd300B2C79e64FC63f368fC27011Fe916'
 const masterchefDark = "0x28d81863438F25b6EC4c9DA28348445FC5E44196";
 const boardroom = "0x2e7d17ABCb9a2a40ec482B2ac9a9F811c12Bf630";
 
-const translate = {
-
-}
 async function tvl(timestamp, block, chainBlocks) {
   let balances = {};
 
@@ -28,13 +24,9 @@ async function tvl(timestamp, block, chainBlocks) {
     return `cronos:${addr}`
   }, undefined, [dark, krx], true, true, dark);
 
-  //get tvl Dark LP
-  await pool2BalanceFromMasterChef(balances, masterchefDark, dark, chainBlocks.cronos, "cronos", addr => `cronos:${addr}`);
-
   //get staking KRX token
   let krxBalance = await stakingUnknownPricedLP(masterchefDark, krx, "cronos", krx_usdc)(timestamp, block, chainBlocks)
   sdk.util.sumSingleBalance(balances, "cronos:0xc21223249CA28397B4B6541dfFaEcC539BfF0c59", krxBalance['cronos:0xc21223249CA28397B4B6541dfFaEcC539BfF0c59']);
-
 
   // SKY POOL
   const farmTvl = await farmUtils.farmLocked(chainBlocks['cronos'])
@@ -52,11 +44,16 @@ async function tvl(timestamp, block, chainBlocks) {
 
   return balances;
 }
-
+async function pool2(timestamp, block, chainBlocks) {
+  const balances = {};
+  await pool2BalanceFromMasterChef(balances, masterchefDark, dark, chainBlocks.cronos, "cronos", addr => `cronos:${addr}`)
+  return balances;
+}
 
 module.exports = {
   cronos: {
     tvl,
+    pool2,
     boardroom: stakingUnknownPricedLP(boardroom, sky, "cronos", "0xaA0845EE17e4f1D4F3A8c22cB1e8102baCf56a77")
   }
 }
