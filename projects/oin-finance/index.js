@@ -17,7 +17,6 @@ const getTotalTVL = async (timestamp, block) => {
     .div(BYTES)
     .times(new BigNumber(stake_lock).div(NEAR_BYTES))
     .plus(new BigNumber(stability_lock).div(BYTES)).plus(oin_tvl)
-    .toFixed();
 };
 
 const getOinTvl = async (timestamp, block) => {
@@ -101,6 +100,6 @@ const fetchStabilityLock = async () => {
 };
 
 module.exports = {
-  getTotalTVL,
+  fetch: getTotalTVL,
   methodology: "Counts OIN, stNEAR tvl of OIN-Finance",
 };
