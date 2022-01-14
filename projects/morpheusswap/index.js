@@ -1,5 +1,5 @@
 const abi = require("./abi.json");
-const { transformFantomAddress } = require("../helper/portedTokens");
+const {calculateUsdUniTvl } = require("../helper/getUsdUniTvl");
 const { addFundsInMasterChef } = require("../helper/masterchef");
 const { staking } = require("../helper/staking");
 
@@ -16,7 +16,9 @@ async function tvl(timestamp, block, chainBlocks) {
 module.exports = {
   methodology: "TVL includes all farms in MasterChef contract",
   fantom:{
-    tvl,
+    tvl: calculateUsdUniTvl("0x9C454510848906FDDc846607E4baa27Ca999FBB6", "fantom", "0x82f0b8b456c1a451378467398982d4834b6829c1", [
+      "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83"
+    ], "magic-internet-money", 18, true),
     staking: staking(chef, morph, "fantom")
   }
 }
