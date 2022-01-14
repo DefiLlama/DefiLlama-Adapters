@@ -41,7 +41,16 @@ function getTVLFunction(chain)
 
 module.exports={
     methodology: "All tokens locked in Smartpad.",
-    ethereum: { tvl: getTVLFunction('ethereum') },
-    polygon: { tvl: getTVLFunction('polygon') },
-    aurora: { tvl: getTVLFunction('aurora') }
+    ethereum: {
+      staking: getTVLFunction('ethereum'),
+      tvl: () => ({})
+    },
+    polygon: {
+      staking: getTVLFunction('polygon'),
+      tvl: () => ({})
+    },
+    aurora: {
+      staking: getTVLFunction('aurora'),
+      tvl: () => ({})
+    }
 }
