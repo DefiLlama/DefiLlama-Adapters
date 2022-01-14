@@ -1,5 +1,4 @@
 const sdk = require('@defillama/sdk');
-const BigNumber = require("bignumber.js");
 const { GraphQLClient, gql } = require('graphql-request')
 const { toUSDTBalances } = require('../helper/balances');
 const { getBlock } = require('../helper/getBlock');
