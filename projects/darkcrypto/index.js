@@ -90,7 +90,7 @@ module.exports = {
   cronos: {
     tvl,
     pool2,
-    boardroom: stakingUnknownPricedLP(
+    staking: stakingUnknownPricedLP(
       boardroom,
       sky,
       "cronos",

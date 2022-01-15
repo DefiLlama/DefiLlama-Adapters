@@ -114,6 +114,10 @@ module.exports = {
     pool2: pool2s(POOL_STAKING_CONTRACTS, LP_ADDRESSES),
     tvl: ethereumTvl,
   },
+  fantom:{
+    // assuming all liquidity is staked
+    tvl: staking("0x7a656b342e14f745e2b164890e88017e27ae7320", "0x8866414733f22295b7563f9c5299715d2d76caf4", "fantom", "0x6b175474e89094c44da98b954eedeac495271d0f")
+  },
   methodology:
     "Counts liquidty as the Collateral USDC on all AMOs, USDC POOLs, FRAX3CRV and FEI3CRVs through their Contracts",
 };
