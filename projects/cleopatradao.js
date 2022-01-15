@@ -49,5 +49,5 @@ module.exports = {
         tvl,
         staking
     },
-    methodology: "Counts tokens on the treasury for tvl and staked CROWN for staking",
+    methodology: "Counts tokens on the treasury for tvl and staked CAT for staking",
 };
