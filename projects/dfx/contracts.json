@@ -5,6 +5,18 @@
   },
   "ethereum": [
     {
+      "address": "0xa6c0cbcaebd93ad3c6c94412ec06aaa37870216d",
+      "token": "0xcadc0acd4b445166f12d2c07eac6e2544fbe2eef"
+    },
+    {
+      "address": "0x1a4ffe0dcbdb4d551cfca61a5626afd190731347",
+      "token": "0xdb25f211ab05b1c97d595516f45794528a807ad8"
+    },
+    {
+      "address": "0x2bab29a12a9527a179da88f422cdaaa223a90bd5",
+      "token": "0x70e8de73ce538da2beed35d14187f6959a8eca96"
+    },
+    {
       "address": "0xdD39379AB7C93b9bAAE29E6eC03795d0bC99a889",
       "token": "0xebf2096e01455108badcbaf86ce30b6e5a72aa52"
     },
