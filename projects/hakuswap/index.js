@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const { calculateUniTvl } = require("../helper/calculateUniTvl");
 
-const FACTORY_ADDRESS = "0xb8cfa0e3016eD655f72FE9a9A5850C90C372fE99";
+const FACTORY_ADDRESS = "0x2Db46fEB38C57a6621BCa4d97820e1fc1de40f41";
 const HAKU_TOKEN_ADDRESS = "0x695Fa794d59106cEbd40ab5f5cA19F458c723829";
 const XHAKU_ADDRESS = "0xa95C238B5a72f481f6Abd50f951F01891130b441";
 
