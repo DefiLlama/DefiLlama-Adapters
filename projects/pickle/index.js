@@ -74,6 +74,6 @@ module.exports = {
     tvl: fetch("aurora", "tvl"),
   },
   metis: {
-    tvl: fetch("metis", "tvl")
-  }
+    tvl: fetch("metis", "tvl"),
+  },
 };
