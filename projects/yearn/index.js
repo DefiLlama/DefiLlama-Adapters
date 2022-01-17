@@ -30,10 +30,20 @@ async function ethereum(timestamp) {
 
 async function fantom(timestamp) {
     return getApiTvl(timestamp, async () => {
-        const tvl = await axios.get('https://api.yearn.finance/v1/chains/1/vaults/all')
+        const tvl = await axios.get('https://api.yearn.finance/v1/chains/250/vaults/all')
         return tvl.data.reduce((all, vault) => all + vault.tvl.tvl, 0)
     }, async () => {
-        throw new Error("no historical tvl data for yearn on fantom")
+        const totalTvl = await axios.post("https://yearn.vision/api/ds/query", {"queries":[{"datasource":{"uid":"PBFE396EC0B189D67","type":"prometheus"},"expr":"(sum(ironbank{network=\"FTM\", param=\"tvl\"}) or vector(0)) + (sum(yearn_vault{network=\"FTM\", param=\"tvl\"}) or vector(0))", "utcOffsetSec":0,"datasourceId":1}],"from":"1642091361529","to": Date.now().toString() })
+        const result = []
+        const [tvlTimestamps, tvls] = totalTvl.data.results.A.frames[0].data.values
+        tvlTimestamps.forEach((time, index) => {
+            const tvl = tvls[index]
+            result.push({
+                date: Math.round(time / 1000),
+                totalLiquidityUSD: tvl
+            })
+        })
+        return result
     })
 }
 
