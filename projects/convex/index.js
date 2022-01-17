@@ -221,15 +221,6 @@ async function tvl(timestamp, block) {
         sdk.util.sumSingleBalance(allCoins, coinAddress, balanceShare)
     }
   }))
-  
-
-  //staked cvx
-  var cvxStakedSupply = await sdk.api.erc20.totalSupply({
-    target: cvxRewardsAddress,
-    block
-  });
-
-  sdk.util.sumSingleBalance(allCoins, cvxAddress, cvxStakedSupply.output)
 
   //cvxcrv supply
   var cvxcrvSupply = await sdk.api.erc20.totalSupply({
@@ -256,13 +247,15 @@ async function tvl(timestamp, block) {
 }
 
 async function staking(timestamp, block){
-  return {
-    "0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b": (await sdk.api.abi.call({
-      target: "0xD18140b4B819b895A3dba5442F959fA44994AF50",
-      abi: methodAbi.lockedSupply,
+  const allCoins = {}
+    //staked cvx
+    var cvxStakedSupply = await sdk.api.erc20.totalSupply({
+      target: cvxRewardsAddress,
       block
-    })).output
-  }
+    });
+  
+    sdk.util.sumSingleBalance(allCoins, cvxAddress, cvxStakedSupply.output)
+    return allCoins
 }
 
 module.exports = {

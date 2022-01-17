@@ -5,8 +5,8 @@ const sdk = require('@defillama/sdk')
 
 async function ethereum(timestamp) {
     if(Math.abs(timestamp-Date.now()/1000)<3600){
-        const tvl = await axios.get('https://yearn.science/v1/tvl/latest')
-        return toUSDTBalances(tvl.data.tvl)
+        const tvl = await axios.get('https://api.yearn.finance/v1/chains/1/vaults/all')
+        return toUSDTBalances(tvl.data.reduce((all, vault)=>all+vault.tvl.tvl, 0))
     }
     const historicalTvls = Object.entries((await axios.get('https://yearn.science/v1/tvl')).data)
         .map(([date, tvl]) => [Date.parse(date)/1000, tvl]).sort(([date1], [date2]) => date1 - date2);
@@ -28,20 +28,19 @@ async function ethereum(timestamp) {
 }
 
 async function fantom(){
-    const vaults = (await axios.get("https://ape.tax/api/vaults?network=250")).data.data.map(vault=>[vault.want.cgID, Number(vault.data.totalAssets)])
-    const coingeckoPrices = await getPricesfromString(vaults.map(v=>v[0]).join(','))
-    const total = vaults.reduce((sum, vault)=>sum+vault[1]*coingeckoPrices.data[vault[0]].usd, 0)
+    const vaults = (await axios.get("https://api.yearn.finance/v1/chains/250/vaults/all")).data
+    const total = vaults.reduce((sum, vault)=>sum+vault.tvl.tvl, 0)
     return toUSDTBalances(total)
 }
 
 
 module.exports = {
     misrepresentedTokens: true,
+    timetravel: false,
     fantom:{
         tvl: fantom
     },
     ethereum:{
         tvl: ethereum
     },
-    tvl:sdk.util.sumChainTvls([ethereum, fantom]),
 };
