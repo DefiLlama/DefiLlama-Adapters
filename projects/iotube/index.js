@@ -12,7 +12,15 @@ const query = gql`
     $polygonTokens: [String!]!
   ) {
     iotex: IoTeX_Mainnet {
-      ERC20(address: $iotexTokens) {
+      chainId
+      CIOTX: ERC20(address: ["0xa00744882684c3e4747faefd68d283ea44099d03"]) {
+        address
+        symbol
+        decimals
+        balanceOf(account: "0x99B2B0eFb56E62E36960c20cD5ca8eC6ABD5557A")
+        balance: any(field: balance)
+      }
+      TokenSafe: ERC20(address: $iotexTokens) {
         address
         symbol
         decimals
@@ -21,7 +29,15 @@ const query = gql`
       }
     }
     ethereum: ETH {
-      ERC20(address: $ethTokens) {
+      chainId
+      CYC: ERC20(address: ["0x8861cfF2366C1128fd699B68304aD99a0764Ef9a"]) {
+        address
+        symbol
+        decimals
+        totalSupply
+        balance: any(field: market_cap)
+      }
+      TokenSafe: ERC20(address: $ethTokens) {
         address
         symbol
         decimals
@@ -30,7 +46,15 @@ const query = gql`
       }
     }
     bsc: BSC {
-      ERC20(address: $bscTokens) {
+      chainId
+      CYC: ERC20(address: ["0x810ee35443639348adbbc467b33310d2ab43c168"]) {
+        address
+        symbol
+        decimals
+        totalSupply
+        balance: any(field: market_cap)
+      }
+      TokenSafe: ERC20(address: $bscTokens) {
         address
         symbol
         decimals
@@ -39,7 +63,15 @@ const query = gql`
       }
     }
     polygon: Polygon {
-      ERC20(address: $polygonTokens) {
+      chainId
+      CYC: ERC20(address: ["0xcFb54a6D2dA14ABeCD231174FC5735B4436965D8"]) {
+        address
+        symbol
+        decimals
+        totalSupply
+        balance: any(field: market_cap)
+      }
+      TokenSafe: ERC20(address: $polygonTokens) {
         address
         symbol
         decimals
@@ -93,20 +125,48 @@ const variables = {
     "0x300211Def2a644b036A9bdd3e58159bb2074d388",
   ],
 };
-const loadTvl = async (chain) => {
-  const result = await retry(
-    async (fail) => await request(apiURL, query, variables)
-  ).then((i) => {
-    _.each(i, (v, k) => {
-      i[k] = _.sum(
-        v.ERC20.filter((i) => i.balance > 0).map((i) => Number(i.balance))
+let cache = null;
+
+const loadTvl = async () => {
+  const result = cache
+    ? cache
+    : await retry(async (fail) => await request(apiURL, query, variables)).then(
+        (res) => {
+          _.each(res, (v, k) => {
+            res[k] = _.sum([
+              ...(v.CIOTX?.filter((i) => i.balance > 0).map((i) =>
+                Number(i.balance)
+              ) || []),
+              ...(v.CYC?.filter((i) => i.balance > 0).map((i) =>
+                Number(i.balance)
+              ) || []),
+              ...(v.TokenSafe?.filter((i) => i.balance > 0).map((i) =>
+                Number(i.balance)
+              ) || []),
+            ]);
+            if (!cache) cache = {};
+            cache[res] = res[k];
+          });
+          return res;
+        }
       );
-    });
-    return i;
-  });
-  return _.sum(Object.values(result));
+  return result;
 };
 
+const allChains = ["iotex", "ethereum", "bsc", "polygon"].reduce((p, c) => {
+  p[c] = {
+    fetch: async () => {
+      const tvl = await loadTvl();
+      return tvl[c];
+    },
+  };
+  return p;
+}, {});
+
 module.exports = {
-  fetch: loadTvl,
+  ...allChains,
+  fetch: async () => {
+    const tvl = await loadTvl();
+    return _.sum(Object.values(tvl));
+  },
 };
