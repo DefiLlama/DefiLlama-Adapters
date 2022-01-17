@@ -97,11 +97,12 @@ const chains = [
   "avax",
   "optimism",
   "arbitrum",
+  "moonbeam",
+  "fuse",
   /*
   "okexchain",
   "metis",
   "harmony",
-  "fuse",
   "cronos",
   "heco",
   "aurora",
