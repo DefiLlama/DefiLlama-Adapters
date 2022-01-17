@@ -83,6 +83,9 @@ const bscTvl = async (timestamp, block, chainBlocks) => {
 };
 
 module.exports = {
-  tvl: bscTvl,
-  methodology: `TVL consists of deposits made to the Earn Vaults of ApeRocket minus the 'SPACE' vault and the 'SPACE-BNB' pool2 vault which are created using the protocol's native token.`
+  bsc: {
+    tvl: bscTvl,
+  },  
+  methodology: `TVL consists of deposits made to the Earn Vaults of ApeRocket minus the 'SPACE' vault and the 'SPACE-BNB' pool2 vault which are created using the protocol's native token.`,
+  misrepresentedTokens: true,
 };
