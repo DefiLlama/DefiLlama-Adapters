@@ -1,5 +1,6 @@
 const sdk = require("@defillama/sdk")
 const BigNumber = require('bignumber.js')
+const { staking } = require('../helper/staking')
 
 // Registry will be released in next sdk of Angle + graphql endpoint to come
 const collaterals = {
@@ -19,6 +20,9 @@ const agEUR = {
     }
 }
 const agTokens = [agEUR]
+
+const ANGLE = "0x31429d1856ad1377a8a0079410b297e1a9e214c2"
+const veANGLE = "0x0C462Dbb9EC8cD1630f1728B2CFD2769d09f0dd5"
 
 const poolManagers_abi = { 
     "getTotalAsset": {
@@ -70,6 +74,7 @@ async function tvl(timestamp, block, chainBlocks) {
 module.exports = {
     ethereum: {
         tvl, 
+        staking: staking(veANGLE, ANGLE, 'ethereum')
     },
-    methodology: `TVL is retrieved on chain by querying balances of collaterals held by poolManagers of each agToken stablecoin (not only balanceOf which returns available assets, but getTotalAssets which also accounts for assets lent to strategies). Graph endpoint soon available. Otherwise could be approximated by the totalMintedStablecoins, agToken.totalSupply multiplied by the collateral ratio, stableMaster.getCollateralRatio. `, 
+    methodology: `TVL is retrieved on chain by querying balances of collaterals held by poolManagers of each agToken stablecoin (not only balanceOf which returns available assets, but getTotalAssets which also accounts for assets lent to strategies).`, 
 }
