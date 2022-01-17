@@ -7,5 +7,7 @@ async function fetch() {
 }
 
 module.exports = {
+  misrepresentedTokens: true,
+  timeTravel: false,
   fetch
 }
