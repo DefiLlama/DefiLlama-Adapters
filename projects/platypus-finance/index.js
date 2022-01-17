@@ -1,4 +1,5 @@
 const sdk = require("@defillama/sdk");
+const { staking } = require("../helper/staking");
 // avax addresses below.
 const PTP_DAIe_POOL = "0xc1Daa16E6979C2D1229cB1fd0823491eA44555Be";
 const DAIe = "0xd586e7f844cea2f87f50152665bcbc2c279d8d70";
@@ -39,6 +40,6 @@ async function tvl(timestamp, ethereumBlock, chainBlocks) {
 module.exports = {
   avalanche: {
     tvl,
+    staking: staking("0x5857019c749147eee22b1fe63500f237f3c1b692", "0x22d4002028f537599be9f666d1c4fa138522f9c8", "avax")
   },
-  tvl,
 };
