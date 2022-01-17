@@ -1,5 +1,3 @@
-const { compoundExports } = require('./helper/compound')
-const sdk = require('@defillama/sdk')
 const { calculateUsdUniTvl } = require("./helper/getUsdUniTvl");
 module.exports = {
     moonriver: {
