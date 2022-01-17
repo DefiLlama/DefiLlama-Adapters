@@ -10,7 +10,8 @@ async function transformFantomAddress() {
     // WFTM && FTM
     if (
       compareAddresses(addr, "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83") ||
-      compareAddresses(addr, "0x0000000000000000000000000000000000000000")
+      compareAddresses(addr, "0x0000000000000000000000000000000000000000") ||
+      compareAddresses(addr, "0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
     ) {
       return "0x4e15361fd6b4bb609fa63c81a2be19d873717870";
     }
@@ -75,7 +76,7 @@ async function transformAvaxAddress() {
       //xJOE
       return `avax:0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd`;
     }
-    if (compareAddresses(addr, "0x0000000000000000000000000000000000000000")) {
+    if (compareAddresses(addr, "0x0000000000000000000000000000000000000000") || compareAddresses(addr, "0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")) {
       //AVAX
       return "avax:0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7";
     }
@@ -123,7 +124,10 @@ async function transformBscAddress() {
       return srcToken.ethContractAddress;
     }
     // BNB
-    if (addr.toLowerCase() == "0x0000000000000000000000000000000000000000") {
+    if (
+      addr.toLowerCase() == "0x0000000000000000000000000000000000000000" ||
+      addr.toLowerCase() == "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    ) {
       return "bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
     }
     if (addr.toLowerCase() == "0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c") {
@@ -133,10 +137,10 @@ async function transformBscAddress() {
       return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
     }
     if (addr.toLowerCase() == "0xa35d95872d8eb056eb2cbd67d25124a6add7455e") {
-      return "0x123" // 2030FLOKI returns nonsense TVL
+      return "0x123"; // 2030FLOKI returns nonsense TVL
     }
     if (addr.toLowerCase() == "0x0cf8e180350253271f4b917ccfb0accc4862f262") {
-      return "0x123" // BTCBR returns nonsense TVL
+      return "0x123"; // BTCBR returns nonsense TVL
     }
     return `bsc:${addr}`;
   };
@@ -158,6 +162,9 @@ async function transformPolygonAddress() {
     }, {});
 
   return (addr) => {
+    if (addr.toLowerCase() == '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
+      return "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0";
+    }
     if (addr.toLowerCase() === "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619") {
       return "0x0000000000000000000000000000000000000000";
     }
@@ -267,7 +274,7 @@ async function transformHecoAddress() {
     if (addr.toLowerCase() == "0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c") {
       return "avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c";
     }
-    if (addr.toLowerCase() == "0x0000000000000000000000000000000000000000") {
+    if (addr.toLowerCase() == "0x0000000000000000000000000000000000000000" || addr.toLowerCase() == "0xhecozzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz") {
       return "0x6f259637dcd74c767781e37bc6133cd6a68aa161";
     }
     return `heco:${addr}`;
