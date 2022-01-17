@@ -13,13 +13,6 @@ const query = gql`
   ) {
     iotex: IoTeX_Mainnet {
       chainId
-      CIOTX: ERC20(address: ["0x99B2B0eFb56E62E36960c20cD5ca8eC6ABD5557A"]) {
-        address
-        symbol
-        decimals
-        totalSupply
-        balance: any(field: market_cap)
-      }
       TokenSafe: ERC20(address: $iotexTokens) {
         address
         symbol
