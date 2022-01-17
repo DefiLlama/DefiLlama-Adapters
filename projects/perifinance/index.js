@@ -1,6 +1,6 @@
-const { getLiquityTvl } = require("../helper/liquity");
 const sdk = require("@defillama/sdk");
-const { sumTokens } = require("../helper/unwrapLPs");
+const { utils: w3utils } = require("web3");
+const { totalIssuedPynths } = require("./abi.json");
 
 const BigNumber = require("bignumber.js");
 
@@ -8,44 +8,37 @@ const ethereum = "ethereum";
 const polygon = "polygon";
 const bsc = "bsc";
 
-const pUSDContractEther = "0x0A51952e61a990E585316cAA3d6D15C8d3e55976";
-const pUSDContractPolygon = "0xA590C980050d934c046920f8a9e0d9567536eDce";
-const pUSDContractBSC = "0xc9363d559D2e6DCAc6955A00B47d28326e07Cf07";
-
-const tokenKey = "usd-coin";
-
-const erc20TotalSupplyByChain = async (tokenAddress, chain) => {
-  const { output: decimals } = await sdk.api.erc20.decimals(
-    tokenAddress,
-    chain
-  );
-
-  const { output: totalSupply } = await sdk.api.erc20.totalSupply({
-    target: tokenAddress,
-    chain,
-    decimals,
-  });
-
-  return totalSupply;
+const periFinanceContract = {
+  ethereum: "0x3a9a93A04eFB22e632632Ab584fF45DEB7321aC8",
+  polygon: "0x7C4cE79655Ac1e84400bC5962b4B75c2b86Bd974",
+  bsc: "0x82995a4170318f5E26CA6b650A337738dcc8114c",
 };
 
-const getTVL = (totalSupply) => {
-  return BigNumber(totalSupply).times(1e18).times(4);
+const pUSD = "pUSD";
+const tokenKey = "usd-coin";
+
+const totalIssuedPynthByChain = async (chain) => {
+  const currencyKey = w3utils.padRight(w3utils.asciiToHex(pUSD), 64);
+
+  const { output: totalIssuedPynth } = await sdk.api.abi.call({
+    abi: totalIssuedPynths,
+    params: currencyKey,
+    target: periFinanceContract[chain],
+    chain,
+  });
+  return totalIssuedPynth;
+};
+
+const getTVL = (totalIssuedPynths) => {
+  return BigNumber(totalIssuedPynths)
+    .div(10 ** 18)
+    .times(4);
 };
 
 const tvlByChain = (chain) => async (timestamp, block) => {
-  const pUSDContract =
-    chain === ethereum
-      ? pUSDContractEther
-      : chain === bsc
-      ? pUSDContractBSC
-      : chain === polygon
-      ? pUSDContractPolygon
-      : null;
+  const totalIssuedPynth = await totalIssuedPynthByChain(chain);
 
-  const pUSDTotalSupply = await erc20TotalSupplyByChain(pUSDContract, chain);
-
-  const tvl = getTVL(pUSDTotalSupply);
+  const tvl = getTVL(totalIssuedPynth);
 
   // toFixed(0) just converts the numbers into strings
   return {
