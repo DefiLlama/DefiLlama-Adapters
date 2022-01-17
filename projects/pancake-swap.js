@@ -11,10 +11,7 @@ const graphEndpoint = 'https://bsc.streamingfast.io/subgraphs/name/pancakeswap/e
 const currentQuery = gql`
 query pancakeFactories {
   pancakeFactories(first: 1) {
-    totalTransactions
-    totalVolumeUSD
     totalLiquidityUSD
-    __typename
   }
 }
 `
@@ -46,7 +43,10 @@ query get_tvl($block: Int) {
 `;
 async function tvl(timestamp, ethBlock, chainBlocks) {
   if (Math.abs(timestamp - Date.now() / 1000) < 3600) {
-    const tvl = await request(graphEndpoint, currentQuery)
+    const tvl = await request(graphEndpoint, currentQuery, {}, {
+      "referer": "https://pancakeswap.finance/",
+      "origin": "https://pancakeswap.finance",
+    })
     return toUSDTBalances(tvl.pancakeFactories[0].totalLiquidityUSD)
   } else {
     const tvl = (await request(graphEndpoint, historicalQuery)).pancakeDayDatas
