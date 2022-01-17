@@ -13,12 +13,12 @@ const query = gql`
   ) {
     iotex: IoTeX_Mainnet {
       chainId
-      CIOTX: ERC20(address: ["0xa00744882684c3e4747faefd68d283ea44099d03"]) {
+      CIOTX: ERC20(address: ["0x99B2B0eFb56E62E36960c20cD5ca8eC6ABD5557A"]) {
         address
         symbol
         decimals
-        balanceOf(account: "0x99B2B0eFb56E62E36960c20cD5ca8eC6ABD5557A")
-        balance: any(field: balance)
+        totalSupply
+        balance: any(field: market_cap)
       }
       TokenSafe: ERC20(address: $iotexTokens) {
         address
@@ -47,6 +47,13 @@ const query = gql`
     }
     bsc: BSC {
       chainId
+      CIOTX: ERC20(address: ["0x2aaF50869739e317AB80A57Bf87cAA35F5b60598"]) {
+        address
+        symbol
+        decimals
+        totalSupply
+        balance: any(field: market_cap)
+      }
       CYC: ERC20(address: ["0x810ee35443639348adbbc467b33310d2ab43c168"]) {
         address
         symbol
@@ -64,6 +71,13 @@ const query = gql`
     }
     polygon: Polygon {
       chainId
+      CIOTX: ERC20(address: ["0x300211Def2a644b036A9bdd3e58159bb2074d388"]) {
+        address
+        symbol
+        decimals
+        totalSupply
+        balance: any(field: market_cap)
+      }
       CYC: ERC20(address: ["0xcFb54a6D2dA14ABeCD231174FC5735B4436965D8"]) {
         address
         symbol
