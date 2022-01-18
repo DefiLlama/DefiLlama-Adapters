@@ -37,7 +37,7 @@ function chainTvl(chain) {
 }
 
 module.exports = {
-  methodology: 'TVL explanation',
+  methodology: 'TVL for each network - USDC balance of the pool, in each network we have one pool and the total indicator is calculated as the sum of the balances of all pools.',
   website: 'https://rubic.exchange/',
   bsc: {
     tvl: chainTvl('bsc'),
