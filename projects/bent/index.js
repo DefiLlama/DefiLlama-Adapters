@@ -16,6 +16,7 @@ const {
   bentCVXAddress,
   CVXAddress,
   bentSingleStaking,
+  bentCVXSingleStaking,
   pool2Address,
   sushiLpAddress,
   bentAddress,
@@ -185,7 +186,8 @@ async function tvl(timestamp, block) {
   const stakedBentCVX = (
     await sdk.api.erc20.balanceOf({
       target: bentCVXAddress,
-      owner: bentSingleStaking,
+      bentSingleStaking,
+      owner: bentCVXSingleStaking,
       block,
     })
   ).output;
@@ -232,11 +234,26 @@ async function pool2(timestamp, block) {
   };
 }
 
+async function staking(timestamp, block) {
+  const stakingBalance = (
+    await sdk.api.erc20.balanceOf({
+      target: bentAddress,
+      owner: bentSingleStaking,
+    })
+  ).output;
+
+  return {
+    [bentAddress]: stakingBalance,
+  };
+}
+
 module.exports = {
   ethereum: {
     tvl,
     pool2,
+    staking,
   },
   tvl,
   pool2,
+  staking,
 };
