@@ -16,6 +16,10 @@ const {
   bentCVXAddress,
   CVXAddress,
   bentSingleStaking,
+  pool2Address,
+  sushiLpAddress,
+  bentAddress,
+  daiAddress,
 } = require("./constants");
 
 async function tvl(timestamp, block) {
@@ -193,9 +197,46 @@ async function tvl(timestamp, block) {
   return balances;
 }
 
+async function pool2(timestamp, block) {
+  const pool2Balance = (
+    await sdk.api.erc20.balanceOf({
+      target: sushiLpAddress,
+      owner: pool2Address,
+      block,
+    })
+  ).output;
+
+  const lpTotalSupply = (
+    await sdk.api.erc20.totalSupply({
+      target: sushiLpAddress,
+      block,
+    })
+  ).output;
+
+  const share = new BigNumber(pool2Balance).dividedBy(lpTotalSupply);
+
+  const [daiBalance, bentBalance] = (
+    await sdk.api.abi.multiCall({
+      calls: [
+        { target: daiAddress, params: sushiLpAddress },
+        { target: bentAddress, params: sushiLpAddress },
+      ],
+      abi: "erc20:balanceOf",
+      block,
+    })
+  ).output.map(({ output }) => new BigNumber(output).times(share));
+
+  return {
+    [daiAddress]: daiBalance.toFixed(0),
+    [bentAddress]: bentBalance.toFixed(0),
+  };
+}
+
 module.exports = {
   ethereum: {
     tvl,
+    pool2,
   },
   tvl,
+  pool2,
 };
