@@ -23,11 +23,11 @@ async function tvl(_timestamp, ethBlock, chainBlocks) {
           chain: "bsc",
         })
       ).output;
-
-    const balances = {
-        `bsc:${tokens.IBFR}`: ibfrV1,
-        `bsc:${tokens.WBNB}`: bnbV1
-    }
+    iBFR_address = `bsc:${tokens.IBFR}`;
+    WBNB_address = `bsc:${tokens.WBNB}`;
+    var balances = {};
+    balances[iBFR_address]= ibfrV1;
+    balances[WBNB_address]= bnbV1;
 
     return balances
 };
