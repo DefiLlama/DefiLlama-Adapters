@@ -74,6 +74,7 @@ const decimals = {
   'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v': 6, // usdc
   'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB': 6, // usdt
   'AfXLBfMZd32pN6QauazHCd7diEWoBgw1GNUALDw3suVZ': 6, // fire
+  'mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So': 9 // msol
 }
 
 async function pools(){
@@ -93,7 +94,9 @@ async function pools(){
 
   var amounts = []
 
-  for (var i = 0; i < 6; i ++) {
+  const poolLength = buffer.readBigUInt64LE(0)
+
+  for (var i = 0; i < poolLength; i ++) {
     const offset = 8 + i * 96
 
     const pubkey = new PublicKey(buffer.subarray(offset, offset + 32))
@@ -126,6 +129,7 @@ async function pools(){
     bitcoin: amounts[2],
     'usd-coin': amounts[3],
     tether: amounts[4],
+    'msol': amounts[6],
   }
 }
 
