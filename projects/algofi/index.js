@@ -59,11 +59,12 @@ const assetDictionary = {
     }
 }
 
+
 async function getGlobalMarketState(algodClient, marketId) {
   let response = await algodClient.getApplicationByID(marketId).do()
   let results = {}
   response.params["global-state"].forEach(x => {
-    let decodedKey = atob(x.key)
+    let decodedKey =  Buffer.from(x.key, 'base64').toString('binary')
     results[decodedKey] = x.value.uint
   })
 
@@ -75,7 +76,7 @@ async function getPrices(algodClient, assetDictionary, orderedAssets) {
   for (const assetName of orderedAssets) {
     let response = await algodClient.getApplicationByID(assetDictionary[assetName]["oracleAppId"]).do()
     for (const y of response.params["global-state"]) {
-      let decodedKey = atob(y.key)
+      let decodedKey = Buffer.from(y.key, 'base64').toString('binary')
       if (decodedKey === assetDictionary[assetName]["oracleFieldName"]) {
         prices[assetName] = y.value.uint / 1000000
       }

@@ -1,0 +1,17 @@
+{
+    "totalToken": {
+        "constant": true,
+        "inputs": [],
+        "name": "totalToken",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    }
+}

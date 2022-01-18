@@ -1,35 +1,63 @@
 const { getChainVolume } = require("../helper/getUniSubgraphVolume");
+const {
+  ARBITRUM,
+  BSC,
+  ETHEREUM,
+  HECO,
+  OKEXCHAIN,
+  POLYGON,
+} = require("../helper/chains");
+const { getStartTimestamp } = require("../helper/getStartTimestamp");
 
 const endpoints = {
-  ethereum: "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2",
-  bsc: "https://pq.hg.network/subgraphs/name/dodoex-v2-bsc/bsc",
-  heco: "https://q.hg.network/subgraphs/name/dodoex/heco",
-  polygon: "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-polygon",
-  arbitrum: "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-arbitrum",
+  [ARBITRUM]:
+    "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-arbitrum",
+  [BSC]: "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-bsc",
+  [ETHEREUM]: "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2",
+  [HECO]: "https://n10.hg.network/subgraphs/name/dodoex-v2-heco-hg/heco",
+  // [OKEXCHAIN]: "https://graph.kkt.one/subgraphs/name/dodoex/dodoex-v2-okchain",
+  [POLYGON]: "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-polygon",
 };
+
+const DAILY_VOLUME_FACTORY = "dodoDayData";
+const VOLUME_FIELD = "volumeUSD";
 
 const graphs = getChainVolume({
   graphUrls: {
-    ethereum: endpoints.ethereum,
-    bsc: endpoints.bsc,
-    heco: endpoints.heco,
-    polygon: endpoints.polygon,
-    arbitrum: endpoints.arbitrum,
+    [ARBITRUM]: endpoints[ARBITRUM],
+    [BSC]: endpoints[BSC],
+    [ETHEREUM]: endpoints[ETHEREUM],
+    [HECO]: endpoints[HECO],
+    // [OKEXCHAIN]: endpoints[OKEXCHAIN],
+    [POLYGON]: endpoints[POLYGON],
   },
   totalVolume: {
     factory: "dodoZoos",
-    field: "volumeUSD",
+    field: VOLUME_FIELD,
   },
   dailyVolume: {
-    factory: "dodoDayData",
-    field: "volumeUSD",
+    factory: DAILY_VOLUME_FACTORY,
+    field: VOLUME_FIELD,
   },
 });
 
+const startTimeQuery = {
+  endpoints,
+  dailyDataField: `${DAILY_VOLUME_FACTORY}s`,
+  volumeField: VOLUME_FIELD,
+};
+
+const volume = Object.keys(endpoints).reduce(
+  (acc, chain) => ({
+    ...acc,
+    [chain]: {
+      fetch: graphs(chain),
+      start: getStartTimestamp({ ...startTimeQuery, chain }),
+    },
+  }),
+  {}
+);
+
 module.exports = {
-  ethereum: graphs("ethereum"),
-  bsc: graphs("bsc"),
-  heco: graphs("heco"),
-  polygon: graphs("polygon"),
-  arbitrum: graphs("arbitrum"),
+  volume,
 };

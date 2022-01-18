@@ -81,5 +81,5 @@ module.exports = {
         staking: stakingUnknownPricedLP(polychef, polySalem, "polygon", "0x131db18FE666370B377A7408bC756d6c6737885b"),
         pool2: pool2Exports(polychef, polyPool2, "polygon")
     },
-    tvl: sdk.util.sumChainTvls([cronosTvl, ftmTvl, polyTvl])
+    
 }

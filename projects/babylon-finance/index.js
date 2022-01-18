@@ -30,6 +30,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     })
 
     for (const gardenDetails of gardensDetails.output) {
+        if (gardenDetails.output === null) continue;
         const [gardenName, symbol, creators, reserveAsset, arr1, strategies, finalizedStrategies, voteParams, capitalArr, profits] = gardenDetails.output
         // const garden_principal = capitalArr[0]
         const garden_idle = capitalArr[9]

@@ -21,5 +21,8 @@ const graphs = async () => {
 };
 
 module.exports = {
-  cosmos: graphs,
+  volume: {
+    cosmos: graphs,
+    // TODO custom backfill
+  },
 };

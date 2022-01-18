@@ -2,7 +2,9 @@ const utils = require('../helper/utils')
 
 const chains = {
   1: 'ethereum',
+  40: 'telos',
   56: 'bsc',
+  57: 'syscoin',
   66: 'okexchain',
   100: 'xdai',
   128: 'heco',

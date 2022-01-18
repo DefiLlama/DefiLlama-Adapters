@@ -1,5 +1,6 @@
 const { request, gql } = require("graphql-request");
-
+const { RONIN } = require("../helper/chains");
+const { getStartTimestamp } = require("../helper/getStartTimestamp");
 const {
   getChainVolume,
   DEFAULT_TOTAL_VOLUME_FIELD,
@@ -7,7 +8,7 @@ const {
 } = require("../helper/getUniSubgraphVolume");
 
 const endpoints = {
-  ronin:
+  [RONIN]:
     "https://thegraph.roninchain.com/subgraphs/name/axieinfinity/katana-subgraph-green",
 };
 
@@ -43,21 +44,32 @@ const getCustomBlock = async (timestamp) => {
   return block;
 };
 
+const DAILY_VOLUME_FACTORY = "katanaDayData";
+
 const graphs = getChainVolume({
   graphUrls: {
-    ronin: endpoints.ronin,
+    [RONIN]: endpoints.ronin,
   },
   totalVolume: {
     factory: "katanaFactories",
     field: DEFAULT_TOTAL_VOLUME_FIELD,
   },
   dailyVolume: {
-    factory: "katanaDayData",
+    factory: DAILY_VOLUME_FACTORY,
     field: DEFAULT_DAILY_VOLUME_FIELD,
   },
   getCustomBlock,
 });
 
 module.exports = {
-  ronin: graphs("ronin"),
+  volume: {
+    [RONIN]: {
+      fetch: graphs(RONIN),
+      start: getStartTimestamp({
+        endpoints,
+        chain: RONIN,
+        dailyDataField: `${DAILY_VOLUME_FACTORY}s`,
+      }),
+    },
+  },
 };

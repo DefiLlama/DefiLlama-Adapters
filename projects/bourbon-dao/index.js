@@ -12,5 +12,6 @@ const treasuryTokens = [
 ]
 
 module.exports = {
+    misrepresentedTokens: true,
     ...ohmTvl(treasury, treasuryTokens, "bsc", stakingContract, whiskey, undefined, undefined, false)
 }
