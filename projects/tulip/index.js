@@ -1,4 +1,4 @@
-const { staking } = require('../helper/staking');
+const { stakingPricedLP } = require('../helper/staking');
 const { pool2Exports } = require('../helper/pool2');
 
 const token = "0x9e832CaE5d19e7ff2f0D62881D1E33bb16Ac9bdc";
@@ -15,7 +15,7 @@ const pool2LPs = [
 module.exports = {
     oasis: {
         tvl: async () => ({}),
-        staking: staking(garden, petal, "oasis"),
-        pool2: pool2Exports(rewardPool, pool2LPs, "oasis")
+        staking: stakingPricedLP(garden, petal, "oasis", "0x48b819c83bC0cBa256d92488b9400199Bc4E5842", "oasis-network"),
+        //pool2: pool2Exports(rewardPool, pool2LPs, "oasis")
     }
 }
