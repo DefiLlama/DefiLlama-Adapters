@@ -239,6 +239,7 @@ async function staking(timestamp, block) {
     await sdk.api.erc20.balanceOf({
       target: bentAddress,
       owner: bentSingleStaking,
+      block,
     })
   ).output;
 
