@@ -119,8 +119,6 @@ async function tvl(timestamp, block) {
       }
     }
 
-    if (coins.length === 0) debugger;
-
     const includesEth =
       coins.findIndex(
         (addr) =>
