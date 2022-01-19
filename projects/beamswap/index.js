@@ -1,4 +1,10 @@
 const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl");
+const { stakingPricedLP, stakingUnknownPricedLP } = require("../helper/staking");
+
+const GLINT_TOKEN = "0xcd3B51D98478D53F4515A306bE565c6EebeF1D58"
+const SHARE_CONTRACT = "0x4204cAd97732282d261FbB7088e07557810A6408"
+const GLINT_GLMR_LP = "0x99588867e817023162F4d4829995299054a5fC57"
+
 
 module.exports = {
   misrepresentedTokens: true,
@@ -19,5 +25,6 @@ module.exports = {
       ],
       "moonbeam"
     ),
+    staking: stakingPricedLP(SHARE_CONTRACT, GLINT_TOKEN, "moonbeam", GLINT_GLMR_LP, "moonbeam")
   },
 };
