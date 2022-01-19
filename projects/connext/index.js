@@ -84,10 +84,6 @@ function chainTvl(chain) {
           transformedAssetId = await chainTransform(assetId);
         }
 
-        // console.log(balances)
-        // console.log(transformedAssetId)
-        // console.log(balance.output)
-        // console.log("====================")
         sdk.util.sumSingleBalance(balances, transformedAssetId, balance.output);
       })
     );
@@ -97,15 +93,15 @@ function chainTvl(chain) {
 
 const chains = [
   "ethereum",
-  // "bsc",
-  // "polygon",
-  // "moonriver",
-  // "fantom",
-  // "xdai",
-  // "avax",
-  // "optimism",
-  // "arbitrum",
-  // "moonbeam",
+  "bsc",
+  "polygon",
+  "moonriver",
+  "fantom",
+  "xdai",
+  "avax",
+  "optimism",
+  "arbitrum",
+  "moonbeam",
   "fuse",
   /*
   "okexchain",
