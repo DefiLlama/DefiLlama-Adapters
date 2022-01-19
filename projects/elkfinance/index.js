@@ -3,8 +3,14 @@ const {calculateUsdUniTvl} = require('../helper/getUsdUniTvl');
 const { getBlock } = require('../helper/getBlock');
 const { chainExports: getChainExports } = require('../helper/exports');
 
-const elkAddress = '0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c';
-
+function elkAddress(chain) {
+  switch(chain) {
+    case 'iotex': 
+    return '0xa00744882684c3e4747faefd68d283ea44099d03';
+    default:
+      return '0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c';
+  }
+} 
 const stakingContracts = {
   "heco": "0xdE16c49fA4a4B78071ae0eF04B2E496dF584B2CE",
   "polygon": "0xB8CBce256a713228F690AC36B6A0953EEd58b957",
@@ -29,7 +35,7 @@ function chainStaking(chain, contract){
     const block = await getBlock(timestamp, chain, chainBlocks, true);
 
     balance += Number((await sdk.api.erc20.balanceOf({
-      target: elkAddress,
+      target: elkAddress(chain),
       owner: contract,
       block: block,
       chain
@@ -51,7 +57,7 @@ const factories = {
   okexchain: "0x1116f8B82028324f2065078b4ff6b47F1Cc22B97",
   moonriver: "0xd45145f10fD4071dfC9fC3b1aefCd9c83A685e77",
   cronos: "0xEEa0e2830D09D8786Cb9F484cA20898b61819ef1",
-  //telos: "0x47c3163e691966f8c1b93B308A236DDB3C1C592d",
+  telos: "0x47c3163e691966f8c1b93B308A236DDB3C1C592d",
   hoo: "0x9c03E724455306491BfD2CE0805fb872727313eA",
   elastos: "0x440a1B8b8e968D6765D41E6b92DF3cBb0e9D2b1e",
   fuse: "0x779407e40Dad9D70Ba5ADc30E45cC3494ec71ad2",
@@ -62,8 +68,8 @@ function chainTvl(chain){
   return calculateUsdUniTvl(
     factories[chain], 
     chain, 
-    elkAddress, 
-    [], 
+    elkAddress(chain), 
+    [],
     "elk-finance",
     18,
     true
