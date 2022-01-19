@@ -3,8 +3,14 @@ const {calculateUsdUniTvl} = require('../helper/getUsdUniTvl');
 const { getBlock } = require('../helper/getBlock');
 const { chainExports: getChainExports } = require('../helper/exports');
 
-const elkAddress = '0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c';
-
+function elkAddress(chain) {
+  switch(chain) {
+    case 'iotex': 
+    return '0xa00744882684c3e4747faefd68d283ea44099d03';
+    default:
+      return '0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c';
+  }
+} 
 const stakingContracts = {
   "heco": "0xdE16c49fA4a4B78071ae0eF04B2E496dF584B2CE",
   "polygon": "0xB8CBce256a713228F690AC36B6A0953EEd58b957",
@@ -29,7 +35,7 @@ function chainStaking(chain, contract){
     const block = await getBlock(timestamp, chain, chainBlocks, true);
 
     balance += Number((await sdk.api.erc20.balanceOf({
-      target: elkAddress,
+      target: elkAddress(chain),
       owner: contract,
       block: block,
       chain
@@ -62,8 +68,8 @@ function chainTvl(chain){
   return calculateUsdUniTvl(
     factories[chain], 
     chain, 
-    elkAddress, 
-    [], 
+    elkAddress(chain), 
+    [],
     "elk-finance",
     18,
     true
