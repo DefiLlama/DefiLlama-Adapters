@@ -11,6 +11,24 @@ function elkAddress(chain) {
       return '0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c';
   }
 } 
+
+function geckoId(chain) {
+  switch(chain) {
+    case 'iotex': 
+    return 'iotex';
+    default:
+      return 'elk-finance';
+  }
+}
+
+function whitelist(chain) {
+  switch(chain) {
+    case 'iotex': 
+    return ["0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c", "0x3b2bf2b523f54c4e454f08aa286d03115aff326c"];
+    default:
+      return [];
+  }
+}
 const stakingContracts = {
   "heco": "0xdE16c49fA4a4B78071ae0eF04B2E496dF584B2CE",
   "polygon": "0xB8CBce256a713228F690AC36B6A0953EEd58b957",
@@ -69,8 +87,8 @@ function chainTvl(chain){
     factories[chain], 
     chain, 
     elkAddress(chain), 
-    [],
-    "elk-finance",
+    whitelist(chain),
+    geckoId(chain),
     18,
     true
   )
