@@ -1,5 +1,10 @@
 const { calculateUsdUniTvl } = require("./helper/getUsdUniTvl");
 module.exports = {
+    methodology: `OmniDex is an automated market-making (AMM) decentralized exchange. Swap, Farm and earn rewards on the first native DEX built on the Telos EVM!`,
+    misrepresentedTokens: true,
+    doublecounting: false,
+    timeTravel: true,
+    incentivized: true,
     telos: {
         tvl: calculateUsdUniTvl(
             "0xF9678db1CE83f6f51E5df348E2Cc842Ca51EfEc1",
