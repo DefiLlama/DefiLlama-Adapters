@@ -76,10 +76,18 @@ function chainTvl(chain) {
             assetId == "0x0000000000000000000000000000000000000000"
               ? "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0"
               : `polygon:${assetId}`;
+        } else if (chain == "moonbeam") {
+          transformedAssetId = `moonbeam:${assetId}`
+        } else if (chain == "fuse") {
+          transformedAssetId = `fuse:${assetId}`
         } else {
           transformedAssetId = await chainTransform(assetId);
         }
 
+        // console.log(balances)
+        // console.log(transformedAssetId)
+        // console.log(balance.output)
+        // console.log("====================")
         sdk.util.sumSingleBalance(balances, transformedAssetId, balance.output);
       })
     );
@@ -89,15 +97,15 @@ function chainTvl(chain) {
 
 const chains = [
   "ethereum",
-  "bsc",
-  "polygon",
-  "moonriver",
-  "fantom",
-  "xdai",
-  "avax",
-  "optimism",
-  "arbitrum",
-  "moonbeam",
+  // "bsc",
+  // "polygon",
+  // "moonriver",
+  // "fantom",
+  // "xdai",
+  // "avax",
+  // "optimism",
+  // "arbitrum",
+  // "moonbeam",
   "fuse",
   /*
   "okexchain",
