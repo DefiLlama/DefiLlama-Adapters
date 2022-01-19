@@ -118,6 +118,21 @@ async function ethTvl(timestamp, block) {
   return balances;
 }
 
+function mergeBalances(balances, balancesToMerge) {
+    Object.entries(balancesToMerge).forEach(balance => {
+        sdk.util.sumSingleBalance(balances, balance[0], balance[1].toNumber())
+    })
+}
+async function totalTvl(timestamp, block, chainBlocks) {
+    const balances = {}
+    await Promise.all([
+        ethTvl(timestamp, block, chainBlocks),
+        bscTvl(timestamp, block, chainBlocks),
+        polygonTvl(timestamp, block, chainBlocks),
+    ]).then(poolBalances => poolBalances.forEach(pool => mergeBalances(balances, pool)))
+    return balances
+}
+
 module.exports = {
   name: 'EverRise',
   token: 'RISE',
@@ -132,6 +147,7 @@ module.exports = {
   polygon:{
     tvl: polygonTvl,
     staking: polygonStaking
-  },
+    },
+  tvl: totalTvl,
   methodology: "TVL comes from the buyback reserves and cross-chain bridge vaults",
 };

@@ -24,7 +24,7 @@ function chainExports(chain) {
 
 module.exports = {
   timetravel: false,
-  kucoin: chainExports("KCC"),
+  kcc: chainExports("KCC"),
   fantom: chainExports("Fantom"),
   bsc: chainExports("BSC"),
   polygon: chainExports("Polygon"),
