@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk');
+const solana = require('../helper/solana')
 const { staking } = require('../helper/staking');
-const { getTokenBalance } = require('../helper/solana');
 
 const stakingContract = '0x8d9Ae5a2Ecc16A66740A53Cc9080CcE29a7fD9F5';
 const stakingToken = '0x8e3bcc334657560253b83f08331d85267316e08a'; // BRBC token (bsc)
@@ -41,6 +41,19 @@ function chainTvl(chain) {
   }
 }
 
+function solanaTvl() {
+  return async (timestamp, ethBlock, chainBlocks) => {
+    const balances = {};
+    const poolBalance = await solana.getTokenBalance(usdcByChain['solana'], pools['solana']);
+
+    sdk.util.sumSingleBalance(balances, 'solana:'+usdcByChain['solana'], poolBalance);
+
+    return balances;
+  }
+}
+
+
+
 module.exports = {
   methodology: 'TVL for each network - USDC balance of the pool, in each network we have one pool and the total indicator is calculated as the sum of the balances of all pools.',
   website: 'https://rubic.exchange/',
@@ -65,5 +78,8 @@ module.exports = {
   },
   moonriver: {
     tvl: chainTvl('moonriver')
+  },
+  solana: {
+    tvl: solanaTvl()
   }
 }
