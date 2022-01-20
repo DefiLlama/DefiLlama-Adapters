@@ -74,7 +74,11 @@ const decimals = {
   'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v': 6, // usdc
   'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB': 6, // usdt
   'AfXLBfMZd32pN6QauazHCd7diEWoBgw1GNUALDw3suVZ': 6, // fire
-  'mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So': 9 // msol
+  'mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So': 9, // msol
+  'F6v4wfAdJB8D8p77bMXZgYt8TDKsYxLYxH5AFhUkYx9W': 6, // luna
+  '4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R': 6, //ray
+  'SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt': 6, //srm
+  'Saber2gLauYim4Mvftnrasomsv6NvAuncvMEZwcLpD1': 6, //sbr
 }
 
 async function pools(){
@@ -130,6 +134,10 @@ async function pools(){
     'usd-coin': amounts[3],
     tether: amounts[4],
     'msol': amounts[6],
+    'terra-luna': amounts[7],
+    raydium: amounts[8],
+    serum: amounts[9],
+    saber: amounts[10],
   }
 }
 
@@ -150,7 +158,9 @@ async function firepool() {
 
   var amounts = []
 
-  for (var i = 5; i < 6; i ++) {
+  const poolLength = buffer.readBigUInt64LE(0)
+
+  for (var i = 0; i < poolLength; i ++) {
     const offset = 8 + i * 96
 
     const pubkey = new PublicKey(buffer.subarray(offset, offset + 32))
@@ -219,7 +229,9 @@ async function tvl()
 
   var amounts = []
 
-  for (var i = 0; i < 6; i ++) {
+  const poolLength = buffer.readBigUInt64LE(0)
+
+  for (var i = 0; i < poolLength; i ++) {
     const offset = 8 + i * 96
 
     const pubkey = new PublicKey(buffer.subarray(offset, offset + 32))
@@ -244,6 +256,22 @@ async function tvl()
   }
 
   tvl = tvl.div(solPrice)
+
+  var lpTvl = new BigNumber(0)
+  try {
+    url = 'https://api.solscan.io/amm/read?address=E4LrqfBsPX4MdgoW7gF3rCW8Hn5eV2cPyTR4d1z4AwZU'
+
+    const res = await utils.fetchURL(url)
+    //console.log(res.data.data)
+    if (res && res.data && res.data.data && res.data.data.price) {
+      lpTvl = new BigNumber(res.data.data.liquidity)
+    }
+
+    //console.log(res.data)
+  } catch (e) {
+    console.log(e)
+  }
+
   lpTvl = lpTvl.div(solPrice)
 
   return {
