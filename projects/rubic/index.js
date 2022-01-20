@@ -27,7 +27,7 @@ function chainTvl(chain) {
     const block = chainBlocks[chain];
     const balances = {};
     const poolBalance = await sdk.api.erc20.balanceOf({
-      target: usdcByChain[chain], owner: pools[chain], block, decimals: 6, chain
+      target: usdcByChain[chain], owner: pools[chain], block, undefined, chain
     });
 
     sdk.util.sumSingleBalance(balances, chain+':'+usdcByChain[chain], poolBalance.output);
@@ -41,7 +41,7 @@ module.exports = {
   website: 'https://rubic.exchange/',
   bsc: {
     tvl: chainTvl('bsc'),
-    staking: staking(stakingContract, stakingToken, 'bsc', undefined, 18)
+    staking: staking(stakingContract, stakingToken, 'bsc')
   },
   ethereum: {
     tvl: chainTvl('ethereum')
@@ -58,12 +58,5 @@ module.exports = {
   harmony: {
     tvl: chainTvl('harmony')
   },
-  tvl: sdk.util.sumChainTvls([
-    chainTvl('bsc'),
-    chainTvl('ethereum'),
-    chainTvl('polygon'),
-    chainTvl('fantom'),
-    chainTvl('avax'),
-    chainTvl('harmony')
-  ])
+  
 }

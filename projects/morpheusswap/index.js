@@ -22,9 +22,9 @@ async function tvl(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
-  methodology: "TVL includes all farms in MasterChef contract",
+  methodology: "TVL includes all farms in MasterChef contract, as well as staking pools.",
   fantom: {
     tvl,
-    staking: stakings(["0xb31bF9a835584d18595d886D35157467576A76e8", "0xde1592f643F9c77f186970daa43D3cAB22C0fd22"], "0xB66b5D38E183De42F21e92aBcAF3c712dd5d6286", "fantom")
+    staking: stakings(["0xb31bF9a835584d18595d886D35157467576A76e8", "0xde1592f643F9c77f186970daa43D3cAB22C0fd22", "0xeF5627d8B7BC8102E0C9760F62E0c5b0b7F38AF6", "0x80da05De8B759B7A9399F43C04A859cC0eaA24AC"], "0xB66b5D38E183De42F21e92aBcAF3c712dd5d6286", "fantom")
   }
 }

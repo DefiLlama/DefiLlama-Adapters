@@ -139,6 +139,7 @@ async function ftmTvl(timestamp, ethblocks, chainBlocks) {
     await Promise.all([
         addVault(balances, ftmCallVault, wftm, chainBlocks["fantom"], 'fantom'),
         addVault(balances, ftmPutVault, fusdc, chainBlocks["fantom"], 'fantom'),
+        addVault(balances, "0xB265B013000970909Ac06427fCA58ac34f8B1843", "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83", chainBlocks["fantom"], 'fantom'),
     ])
     return balances
 }
@@ -206,5 +207,4 @@ module.exports = {
     aurora: {
         tvl: auroraTvl
     },
-   tvl: sdk.util.sumChainTvls([ethTvl, avaxTvl, ftmTvl, bscTvl, polygonTvl, bobaTvl, auroraTvl]),
 }
