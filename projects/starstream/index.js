@@ -6,7 +6,7 @@ const client = axios.create({
 });
 
 async function fetch() {
-  const tvlMsg = await client.get("/tvlTotal");
+  const tvlMsg = await client.get("/tvl");
   return tvlMsg.data.tvlTotal;
 }
 
