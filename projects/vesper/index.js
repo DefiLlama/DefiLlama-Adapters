@@ -11,12 +11,14 @@ async function tvl(timestamp, block) {
   // Get pool list
   let poolAddressListResponse = await sdk.api.abi.call({
     target: controller,
-    abi: abi["pools"]
+    abi: abi["pools"],
+    block,
   });
 
   let poolsCountResponse = await sdk.api.abi.call({
     target: poolAddressListResponse.output,
-    abi: abi["length"]
+    abi: abi["length"],
+    block,
   });
 
   const calls = []
@@ -31,6 +33,7 @@ async function tvl(timestamp, block) {
   const poolListResponse = await sdk.api.abi.multiCall({
     calls,
     abi: abi["at"],
+    block
   });
 
   _.each(poolListResponse.output, (response) => {
@@ -43,15 +46,13 @@ async function tvl(timestamp, block) {
       target: poolAddress
     })),
     abi: abi["token"],
+    requery: true
   });
 
   _.each(collateralTokenResponse.output, (response) => {
       const collateralTokenAddress = response.output;
       const poolAddress = response.input.target;
       collateralToken[poolAddress] = collateralTokenAddress;
-      if (!balances.hasOwnProperty(collateralTokenAddress)) {
-        balances[collateralTokenAddress] = 0;
-      }
   });
 
   //Get TVL
