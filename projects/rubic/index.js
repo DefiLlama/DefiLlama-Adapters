@@ -46,7 +46,7 @@ function solanaTvl() {
     const balances = {};
     const poolBalance = await solana.getTokenBalance(usdcByChain['solana'], pools['solana']);
 
-    sdk.util.sumSingleBalance(balances, 'solana:'+usdcByChain['solana'], poolBalance);
+    sdk.util.sumSingleBalance(balances, 'usd-coin', poolBalance);
 
     return balances;
   }
@@ -55,8 +55,8 @@ function solanaTvl() {
 
 
 module.exports = {
+  timetravel: false, // solana :cries:
   methodology: 'TVL for each network - USDC balance of the pool, in each network we have one pool and the total indicator is calculated as the sum of the balances of all pools.',
-  website: 'https://rubic.exchange/',
   bsc: {
     tvl: chainTvl('bsc'),
     staking: staking(stakingContract, stakingToken, 'bsc')
