@@ -297,5 +297,7 @@ module.exports = {
     masterChefExports,
     getPoolInfo,
     isLP,
-    standardPoolInfoAbi
+    standardPoolInfoAbi,
+    getSymbolsAndBalances,
+    isYV
 }

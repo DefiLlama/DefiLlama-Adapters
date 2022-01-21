@@ -177,6 +177,15 @@ async function polygon(timestamp, block, chainBlocks) {
       chain: "polygon",
     })
   ).output;
+  
+  balances['avax:0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664'] = (
+    await sdk.api.erc20.balanceOf({
+      target: "0x7d60F21072b585351dFd5E8b17109458D97ec120",
+      owner: "0x57cbf36788113237d64e46f25a88855c3dff1691",
+      block: chainBlocks.polygon,
+      chain: "polygon",
+    })
+  ).output / 10 ** 12;
   return balances;
 }
 
