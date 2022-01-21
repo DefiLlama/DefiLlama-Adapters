@@ -9,6 +9,7 @@ const CurvePoolRewards = "0x9727D535165e19590013bdDea8Fd85dd618b9aF7";
 const account = "0x0000000000000000000000000000000000000000";
 const methodology = "";
 const { BigNumber } = require("ethers");
+const tokenListJson = require("./tokenList.json");
 
 /*==================================================
   TVL
@@ -212,9 +213,12 @@ async function tvl(timestamp, block) {
     })
   );
 
-  const tokenList = tokensMeta.map((token, index) => {
-    return { address: token, decimals: decimals[index].output };
-  });
+  const tokenList = [
+    tokensMeta.map((token, index) => {
+      return { address: token, decimals: decimals[index].output };
+    }),
+    ...tokenListJson.tokens,
+  ];
 
   const tvlsFarm = stakingMeta.tvl;
 
@@ -223,9 +227,8 @@ async function tvl(timestamp, block) {
       return { ...row, tvl: new BigNumber.from(row.tvl) };
     })
     .map((strat) => {
-      let decimals = tokenList.filter(
-        (t) => t.address === strat.token
-      )[0]?.decimals;
+      let decimals = tokenList.filter((t) => t.address === strat.token)[0]
+        ?.decimals;
       return {
         ...strat,
         tvlInPeg: decimals
