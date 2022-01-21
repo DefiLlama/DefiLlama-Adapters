@@ -1,4 +1,4 @@
-/*const sdk = require("@defillama/sdk");
+const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 
 const { addFundsInMasterChef } = require("../helper/masterchef");
@@ -30,7 +30,7 @@ const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
 
   return balances;
 };
-
+/*
 module.exports = {
   timetravel: true,
   bsc: {
@@ -47,7 +47,7 @@ module.exports = {
     doublecounting: false,
     timeTravel: true,
     incentivized: true,
-    moonriver: {
+    bsc: {
         tvl: calculateUsdUniTvl(
             "0x86407bEa2078ea5f5EB5A52B2caA963bC1F889Da",
             "bsc",
@@ -64,6 +64,7 @@ module.exports = {
             ],
             "tether"
         ),
+        staking: staking(MasterChefContract, BABY, "bsc"),
     }
 };
 
