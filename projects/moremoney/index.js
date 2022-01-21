@@ -7,7 +7,6 @@ const sdk = require("@defillama/sdk");
 const IsolatedLending = "0xDc5CCAAA928De5D318605A76eEDE50f205Aa6D93";
 const CurvePoolRewards = "0x9727D535165e19590013bdDea8Fd85dd618b9aF7";
 const account = "0x0000000000000000000000000000000000000000";
-const tokenList = require("./tokenlist.json");
 const methodology = "";
 const { BigNumber } = require("ethers");
 
@@ -204,6 +203,19 @@ async function tvl(timestamp, block) {
     })
   ).output;
 
+  const tokensMeta = Object.values(stratMeta).map((strat) => {
+    return strat.token;
+  });
+  const decimals = await Promise.all(
+    tokensMeta.map((token) => {
+      return sdk.api.erc20.decimals(token, "avax");
+    })
+  );
+
+  const tokenList = tokensMeta.map((token, index) => {
+    return { address: token, decimals: decimals[index].output };
+  });
+
   const tvlsFarm = stakingMeta.tvl;
 
   const tvlNoFarm = Object.values(stratMeta)
@@ -211,7 +223,7 @@ async function tvl(timestamp, block) {
       return { ...row, tvl: new BigNumber.from(row.tvl) };
     })
     .map((strat) => {
-      let decimals = tokenList.tokens.filter(
+      let decimals = tokenList.filter(
         (t) => t.address === strat.token
       )[0]?.decimals;
       return {
