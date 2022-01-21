@@ -147,7 +147,7 @@ function awaitBalanceUpdate(balancePromise, section) {
     return async ()=>balancePromise.then(b => b[section])
 }
 
-function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingecko = true, poolInfoAbi=abi.poolInfo) {
+function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingecko = true, poolInfoAbi=abi.poolInfo, includeYVTokens = false) {
     const stakingToken = stakingTokenRaw.toLowerCase();
     let balanceResolve;
     const balancePromise = new Promise((resolve) => { balanceResolve = resolve })
@@ -177,7 +177,7 @@ function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingeck
                     balance,
                     token
                 });
-            } else if (isYV(symbol.output)) {
+            } else if (includeYVTokens && isYV(symbol.output)) {
                 let underlyingToken = (await sdk.api.abi.call({
                     target: token,
                     abi: tokenAbi,
