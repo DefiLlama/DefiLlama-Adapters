@@ -143,7 +143,7 @@ async function staking (timestamp, block, chainBlocks) {
         block,
         chain
     })).output;
-    // sdk.util.sumSingleBalance(balances, `bsc:${love}`, daoStakeBalance);
+     sdk.util.sumSingleBalance(balances, `bsc:${love}`, daoStakeBalance);
     return balances;
 }
 
