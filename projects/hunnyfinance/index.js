@@ -107,14 +107,14 @@ async function tvl (timestamp, block, chainBlocks) {
 
     // HUNNY DAO TVL
 
-    await sumTokensAndLPsSharedOwners(
-		balances,
-		treasuryTokens,
-		[treasury],
-		chainBlocks.bsc,
-		'bsc',
-		addr=>`bsc:${addr}`
-	);
+    // await sumTokensAndLPsSharedOwners(
+	// 	balances,
+	// 	treasuryTokens,
+	// 	[treasury],
+	// 	chainBlocks.bsc,
+	// 	'bsc',
+	// 	addr=>`bsc:${addr}`
+	// );
 
     return balances;
     
@@ -137,13 +137,13 @@ async function staking (timestamp, block, chainBlocks) {
     });
 
     // HUNNY DAO STAKING
-    const daoStakeBalance = (await sdk.api.erc20.balanceOf({
-        target: love,
-        owner: loveStaking,
-        block,
-        chain
-    })).output;
-     sdk.util.sumSingleBalance(balances, `bsc:${love}`, daoStakeBalance);
+    // const daoStakeBalance = (await sdk.api.erc20.balanceOf({
+    //     target: love,
+    //     owner: loveStaking,
+    //     block,
+    //     chain
+    // })).output;
+    // sdk.util.sumSingleBalance(balances, `bsc:${love}`, daoStakeBalance);
     return balances;
 }
 
