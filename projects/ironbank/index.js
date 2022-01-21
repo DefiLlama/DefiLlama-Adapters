@@ -1,13 +1,10 @@
 const sdk = require("@defillama/sdk");
 const utils = require("../helper/utils");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { getCompoundV2Tvl, compoundExports } = require("../helper/compound");
 const { transformFantomAddress } = require('../helper/portedTokens')
 const { GraphQLClient, gql } = require('graphql-request')
 
 const abiCerc20 = require("./cerc20.json");
-const BigNumber = require("bignumber.js");
-
 const wETH = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
 
 const replacements = {
@@ -18,48 +15,6 @@ const replacements = {
   "0x9cA85572E6A3EbF24dEDd195623F188735A5179f":
     "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490", // yearn: y3Crv -> 3Crv
 };
-
-async function ethereumTvl(timestamp, block) {
-  let balances = {};
-
-  let iron_bank_tokens = (
-    await utils.fetchURL(
-      "https://api.cream.finance/api/v1/crtoken?comptroller=ironbank"
-    )
-  ).data;
-  // --- Grab all the getCash values of cyERC20 (Iron Bank)---
-  const ironBankCalls = iron_bank_tokens.map((token) => ({ target: token.token_address }))
-  let [cashValuesIronBank, totalBorrowsIB, totalReservesIB, underlyingsIronBank] = await Promise.all([
-    sdk.api.abi.multiCall({
-      block,
-      calls: ironBankCalls,
-      abi: abiCerc20["getCash"],
-    }),
-    sdk.api.abi.multiCall({
-      block,
-      calls: ironBankCalls,
-      abi: abiCerc20["totalBorrows"],
-    }),
-    sdk.api.abi.multiCall({
-      block,
-      calls: ironBankCalls,
-      abi: abiCerc20["totalReserves"],
-    }),
-    sdk.api.abi.multiCall({
-      block,
-      calls: ironBankCalls,
-      abi: abiCerc20["underlying"],
-    })
-  ]);
-
-  cashValuesIronBank.output.map((cashVal, idx) => {
-    const token = replacements[underlyingsIronBank.output[idx].output] || underlyingsIronBank.output[idx].output;
-    //const amount = BigNumber(cashVal.output).plus(totalBorrowsIB.output[idx].output).minus(totalReservesIB.output[idx].output)
-    sdk.util.sumSingleBalance(balances, token, cashVal.output);
-  });
-
-  return balances;
-}
 
 const fantomToken = "0x4e15361fd6b4bb609fa63c81a2be19d873717870";
 const fantomTvl = async (timestamp, ethBlock, chainBlocks) => {
@@ -138,10 +93,7 @@ const fantomTvl = async (timestamp, ethBlock, chainBlocks) => {
 module.exports = {
   timetravel: false, // fantom api's for staked coins can't be queried at historical points
   start: 1599552000, // 09/08/2020 @ 8:00am (UTC)
-  ethereum: {
-    tvl: ethereumTvl,
-    borrowed: getCompoundV2Tvl("0xAB1c342C7bf5Ec5F02ADEA1c2270670bCa144CbB", "ethereum", undefined, undefined, undefined, true),
-  },
+  ethereum: compoundExports("0xAB1c342C7bf5Ec5F02ADEA1c2270670bCa144CbB", "ethereum"),
   fantom: {
     tvl: fantomTvl,
     borrowed: getCompoundV2Tvl("0x4250a6d3bd57455d7c6821eecb6206f507576cd2", "fantom", addr=>`fantom:${addr}`, undefined, undefined, true)
