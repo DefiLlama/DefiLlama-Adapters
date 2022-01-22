@@ -307,12 +307,22 @@ const bridgeTVL = async (balances, data, block, chain, transform) => {
 };
 
 const ethPool2 = async (timestamp, ethBlock, chainBlocks) => {
+  const SYN_FEI = [
+    "0x0f2d719407fdbeff09d87557abb7232601fd9f29", //SYN
+    "0x956F47F50A910163D8BF957Cf5846D573E7f87CA", // FEI
+  ];
   const balances = {};
 
   await sumTokensAndLPsSharedOwners(
     balances,
     [["0x4a86c01d67965f8cb3d0aaa2c655705e64097c31", true]], // SYN/ETH SLP
     ["0xd10eF2A513cEE0Db54E959eF16cAc711470B62cF"], // MiniChefV2
+    ethBlock
+  );
+
+  await sumTokens(
+    balances,
+    SYN_FEI.map((x) => [x, "0x9e2336aef4157944f201becd90ccb24e298660cb"]),
     ethBlock
   );
 
