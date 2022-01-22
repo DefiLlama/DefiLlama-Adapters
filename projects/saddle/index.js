@@ -121,6 +121,7 @@
 
   async function tvlFantom(timestamp, block) {
     let balances = {};
+    let rawBalances = {};
     let calls = [];
 
     for (const token in fantom_tokens) {
@@ -143,8 +144,15 @@
     _.each(balanceOfResults.output, (balanceOf) => {
         let address = balanceOf.input.target
         let amount =  balanceOf.output
-        balances[address] = BigNumber(balances[address] || 0).plus(amount).toFixed()
+        rawBalances[address] = BigNumber(rawBalances[address] || 0).plus(amount).toFixed()
     });
+
+    // NB: Treat both tokens as USDC since prices aren't tracked for Fantom tokens
+    // [3:52 AM] 0xngmi: the issue is that atm we don't track price for solana tokens
+    // [3:52 AM] 0xngmi: you can just use "usd-coin" and it'll work
+    let combinedBalance = rawBalances["0x04068DA6C83AFCFA0e13ba15A6696662335D5B75"] / 1e6 + rawBalances["0xdc301622e621166BD8E82f2cA0A26c13Ad0BE355"] / 1e18
+
+    sdk.util.sumSingleBalance(balances, 'usd-coin', combinedBalance);
 
     return balances;
   }
@@ -159,6 +167,7 @@
       tvl                       // tvl adapter
     },
     fantom: {
+      start: 1642723200,        // Friday, January 21, 2022 12:00:00 AM UTC
       tvl: tvlFantom
     }
   }
