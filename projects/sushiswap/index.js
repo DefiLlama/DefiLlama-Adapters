@@ -11,8 +11,9 @@ const modulesToExport = getExports("sushi", chains)
 modulesToExport.ethereum.staking = staking(xSUSHI, SUSHI, 'ethereum')
 
 // Add Kashi Lending to ethereum TVL
-const {kashiLending} = require('./kashi-lending.js')
+const {kashiLending, kashiLendingFantom} = require('./kashi-lending.js')
 modulesToExport.ethereum.tvl = sdk.util.sumChainTvls([modulesToExport.ethereum.tvl, kashiLending])
+modulesToExport.fantom.tvl = sdk.util.sumChainTvls([modulesToExport.fantom.tvl, kashiLendingFantom])
 // modulesToExport.ethereum.tvl = async (timestamp, block, chainBlocks) => getExports("sushi", ['ethereum']).ethereum.tvl() + kashiLending(timestamp, block, chainBlocks)
 
 module.exports = {
