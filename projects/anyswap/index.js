@@ -25,24 +25,32 @@ function fetchChain(chain) {
     const protocolsInChain = chain === null ? data.bridgeList : data.bridgeList.filter(p => p.chainId.toString() === chain.toString())
     const protocolsWithRouters = protocolsInChain.filter(p => p.type === "router");
 
-    const coingeckoMcaps = await utils.fetchURL(
-      `https://api.coingecko.com/api/v3/simple/price?ids=${protocolsWithRouters.map(p => p.label.toLowerCase()).join(',')
-      }&vs_currencies=usd&include_market_cap=true`
-    )
+    const coingeckoMcaps = {}
+    for(let i=0; i<protocolsWithRouters.length; i+=50){
+      const cgUrl = `https://api.coingecko.com/api/v3/simple/price?vs_currencies=usd&include_market_cap=true&ids=${
+        protocolsWithRouters.slice(i, i+50).map(p => p.label.toLowerCase()).join(',')
+      }`
+      const partMcaps = await utils.fetchURL(cgUrl)
+      Object.assign(coingeckoMcaps, partMcaps.data)
+    }
 
     const counted = {}
     let total = 0
     protocolsInChain.forEach((item) => {
-      const tvl = item.tvl || 0
+      const tvl = Number(item.tvl || 0)
 
       if (item.type === "bridge") {
-        total += Number(tvl)
+        total += tvl
       } else if (item.type === "router") {
         const label = item.label
-        const mcap = coingeckoMcaps.data[label]?.usd_market_cap //coingeckoMcaps.data[item.token.toLowerCase()]?.usd_market_cap
-        if (mcap !== undefined && (counted[label]===undefined || counted[label]<mcap)) {
-          total += Math.min(Number(tvl), mcap)
-          counted[label]=(counted[label] || 0) + tvl
+        const mcap = coingeckoMcaps[label]?.usd_market_cap
+        if(counted[label]===undefined){
+          counted[label] = 0
+        }
+        if (mcap !== undefined && mcap>counted[label]) {
+          const tvlToAdd = Math.min(tvl, mcap-counted[label])
+          total += tvlToAdd
+          counted[label] += tvlToAdd
         }
       }
     })
