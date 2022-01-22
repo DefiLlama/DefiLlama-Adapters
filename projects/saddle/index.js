@@ -5,6 +5,7 @@
   const sdk = require('@defillama/sdk');
   const BigNumber = require('bignumber.js');
   const _ = require('underscore');
+  const { staking } = require('../helper/staking');
 
 /*==================================================
   Addresses
@@ -52,6 +53,15 @@
     "0x18084fba666a33d37592fa2633fd49a74dd93a88" : [tbtcV2MetapoolAddress],
     // WCUSD
     "0xad3e3fc59dff318beceaab7d00eb4f68b1ecf195" : [wcusdMetapoolAddress]
+  }
+
+  const fantom_usdPoolAddress = "0xBea9F78090bDB9e662d8CB301A00ad09A5b756e9"
+  const fantom_usdc = "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75"
+  const fantom_frax = "0xdc301622e621166BD8E82f2cA0A26c13Ad0BE355"
+
+  const fantom_tokens = {
+    [fantom_usdc]: [fantom_usdPoolAddress],
+    [fantom_frax]: [fantom_usdPoolAddress],
   }
 
 /*==================================================
@@ -109,11 +119,46 @@
     return balances;
   }
 
+  async function tvlFantom(timestamp, block) {
+    let balances = {};
+    let calls = [];
+
+    for (const token in fantom_tokens) {
+      for(const poolAddress of fantom_tokens[token])
+      calls.push({
+        target: token,
+        params: poolAddress,
+      })
+    }
+
+    // Pool Balances
+    let balanceOfResults = await sdk.api.abi.multiCall({
+      block,
+      calls: calls,
+      abi: 'erc20:balanceOf',
+      chain: "fantom"
+    });
+
+    // Compute Balances
+    _.each(balanceOfResults.output, (balanceOf) => {
+        let address = balanceOf.input.target
+        let amount =  balanceOf.output
+        balances[address] = BigNumber(balances[address] || 0).plus(amount).toFixed()
+    });
+
+    return balances;
+  }
+
 /*==================================================
   Exports
   ==================================================*/
 
   module.exports = {
-    start: 1611057090,        // January 19, 2021 11:51:30 AM
-    tvl                       // tvl adapter
+    ethereum: {
+      start: 1611057090,        // January 19, 2021 11:51:30 AM
+      tvl                       // tvl adapter
+    },
+    fantom: {
+      tvl: tvlFantom
+    }
   }
