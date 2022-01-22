@@ -25,11 +25,6 @@ const ethIndexes = [
   "0x43633bDb2675aDaB99CE3059D734b92a1deDAb2b", // EDI
 ];
 
-const avaIndexes = [
-  "0x6F4a6a855412635668d9EBc69977870a637882CE", // YB-MCI
-  "0x1967514bEB1464857B54aa3e6cBE4Fc7D245Fa40", // YB-SCI
-  "0xd3b4A602DF2a3ABDc0CA241674bCd7566ABA4D93", // AEI
-];
 
 async function ethTvl(timestamp, block) {
   let balances = {};
@@ -62,7 +57,20 @@ async function ethTvl(timestamp, block) {
 
 async function avaTvl(timestamp, ethBlock, chainBlocks) {
   const block = chainBlocks.avax;
+  const CONTROLLER_ADDRESS = "0xE565711e7a59800e110c959E156121988E6F4704";
   let balances = {};
+  let { output: avaIndexes } = await sdk.api.abi.call({
+    target: CONTROLLER_ADDRESS,
+    abi: {
+      inputs: [],
+      name: "getCKs",
+      outputs: [{ internalType: "address[]", name: "", type: "address[]" }],
+      stateMutability: "view",
+      type: "function",
+    },
+    chain: "avax",
+    block,
+  });
   for (let i = 0; i < avaIndexes.length; i++) {
     let { output: components } = await sdk.api.abi.call({
       target: avaIndexes[i],
