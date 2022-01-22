@@ -1,6 +1,7 @@
 const sdk = require('@defillama/sdk');
 const abi = require('./abis/masterchef.json')
 const { unwrapUniswapLPs } = require('./unwrapLPs')
+const tokenAbi = require("./abis/token.json");
 const token0Abi = require("./abis/token0.json");
 const token1Abi = require("./abis/token1.json");
 const getReservesAbi = require("./abis/getReserves.json");
@@ -57,6 +58,10 @@ async function getSymbolsAndBalances(masterChef, block, chain, poolInfo) {
 
 function isLP(symbol) {
     return symbol.includes('LP') || symbol.includes('PGL') || symbol.includes('UNI-V2') ||  symbol === "PNDA-V2"
+}
+
+function isYV(symbol) {
+    return symbol.includes('yv')
 }
 
 async function addFundsInMasterChef(balances, masterChef, block, chain = 'ethereum', transformAddress = id => id, poolInfoAbi = abi.poolInfo, ignoreAddresses = [], includeLPs = true, excludePool2 = false, stakingToken = undefined) {
@@ -142,7 +147,7 @@ function awaitBalanceUpdate(balancePromise, section) {
     return async ()=>balancePromise.then(b => b[section])
 }
 
-function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingecko = true, poolInfoAbi=abi.poolInfo) {
+function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingecko = true, poolInfoAbi=abi.poolInfo, includeYVTokens = false) {
     const stakingToken = stakingTokenRaw.toLowerCase();
     let balanceResolve;
     const balancePromise = new Promise((resolve) => { balanceResolve = resolve })
@@ -162,7 +167,7 @@ function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingeck
 
         const lpPositions = [];
 
-        symbols.output.forEach((symbol, idx) => {
+        await Promise.all(symbols.output.map(async (symbol, idx) => {
             const balance = tokenBalances.output[idx].output;
             const token = symbol.input.target.toLowerCase();
             if (token === stakingToken) {
@@ -172,10 +177,18 @@ function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingeck
                     balance,
                     token
                 });
+            } else if (includeYVTokens && isYV(symbol.output)) {
+                let underlyingToken = (await sdk.api.abi.call({
+                    target: token,
+                    abi: tokenAbi,
+                    block,
+                    chain,
+                })).output;
+                sdk.util.sumSingleBalance(balances.tvl, transformAddress(underlyingToken), balance)
             } else {
                 sdk.util.sumSingleBalance(balances.tvl, transformAddress(token), balance)
             }
-        })
+        }));
 
         const [token0, token1] = await Promise.all([
             sdk.api.abi.multiCall({
@@ -284,5 +297,7 @@ module.exports = {
     masterChefExports,
     getPoolInfo,
     isLP,
-    standardPoolInfoAbi
+    standardPoolInfoAbi,
+    getSymbolsAndBalances,
+    isYV
 }
