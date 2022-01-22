@@ -11,20 +11,56 @@ const mai = "0xfb98b335551a418cd0737375a2ea0ded62ea213b"
 const treasury = "0x6a654d988eebcd9ffb48ecd5af9bd79e090d8347"
 const dai = "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e"
 const wftm = "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83"
+const beetsvault = "0x20dd72Ed959b6147912C2e529F0a0C651c33c9ce"
+const poolid = "0xa216aa5d67ef95dde66246829c5103c7843d1aab000100000000000000000112"
 
-const graphUrl = "https://api.thegraph.com/subgraphs/name/exodiafinance/exodia-subgraph"
-const GET_TREASURY_BALANCES = gql`
-query GET_TREASURY_BALANCES($timestamp: BigInt) {
-  protocolMetrics(where: {timestamp_lt: $timestamp}, first: 1, orderBy: timestamp, orderDirection: desc) {
-    treasuryMaiBalance
-    treasuryDaiMarketValue
-    treasuryGOhmBalance
-    treasuryMonolithExodBalance
-    treasuryMonolithWFtmBalance
-    treasuryMonolithWsExodBalance
-  }
+function compareAddresses(a, b) {
+  return a.toLowerCase() === b.toLowerCase();
 }
-`;
+
+const getPoolTokens = async (block) => {
+  const poolTokens = (await sdk.api.abi.call({
+    target: beetsvault,
+    abi: {"inputs":[{"internalType":"bytes32","name":"poolId","type":"bytes32"}],"name":"getPoolTokens","outputs":[{"internalType":"contract IERC20[]","name":"tokens","type":"address[]"},{"internalType":"uint256[]","name":"balances","type":"uint256[]"},{"internalType":"uint256","name":"lastChangeBlock","type":"uint256"}],"stateMutability":"view","type":"function"},
+    params: poolid,
+    block,
+    chain: 'fantom',
+  })).output
+
+  const output = {}
+
+  poolTokens.tokens.forEach((t, i) => {
+    if (compareAddresses(mai, t)) {
+      output[mai] = Number(poolTokens.balances[i])
+    } else if (compareAddresses(wftm, t)) {
+      output[wftm] = Number(poolTokens.balances[i])
+    } else if (compareAddresses(gohm, t)) {
+      output[gohm] = Number(poolTokens.balances[i])
+    } else if (compareAddresses(exod, t)) {
+      output[exod] = Number(poolTokens.balances[i])
+    } else if (compareAddresses(wsexod, t)) {
+      output[wsexod] = Number(poolTokens.balances[i])
+    }
+  })
+
+  const tokens = [mai, dai, wftm, gohm]
+
+  const balances = (await sdk.api.abi.multiCall({
+    abi: 'erc20:balanceOf',
+    calls: tokens.map(t => ({
+      target: t,
+      params: treasury,
+    })),
+    block,
+    chain: 'fantom',          
+  })).output
+
+  balances.forEach((balance, idx) => {
+    output[tokens[idx]] = output[tokens[idx]] ? output[tokens[idx]] + Number(balance.output) : Number(balance.output)
+  })
+
+  return output
+}
 
 const staking = async (timestamp, ethBlock, chainBlocks) => {
   const balances = {};
@@ -39,28 +75,13 @@ async function tvl(timestamp, block, chainBlocks) {
   const balances = {};
   const transformAddress = await transformFantomAddress();
 
-  const { protocolMetrics } = await request(
-    graphUrl,
-    GET_TREASURY_BALANCES,
-    { timestamp },
-  );
-  const treasuryBalances = protocolMetrics[0]
+  const treasuryBalances = await getPoolTokens(chainBlocks.fantom)
+  const tokens = [mai, dai, wftm, gohm, exod, wsexod]
+  console.log(treasuryBalances)
 
-  let wFTMBalance = (await sdk.api.abi.call({
-    abi: 'erc20:balanceOf',
-    target: wftm,
-    params: treasury,
-    block: chainBlocks.fantom,
-    chain: 'fantom'
-  })).output;
-  wFTMBalance = Number(wFTMBalance) + Number(treasuryBalances.treasuryMonolithWFtmBalance).toFixed(18) * 10**18
-
-  sdk.util.sumSingleBalance(balances, transformAddress(wftm), wFTMBalance) //wFTM
-  sdk.util.sumSingleBalance(balances, transformAddress(mai), Number(treasuryBalances.treasuryMaiBalance).toFixed(18) * 10**18) //MAI
-  sdk.util.sumSingleBalance(balances, transformAddress(dai), Number(treasuryBalances.treasuryDaiMarketValue).toFixed(18) * 10**18) //DAI
-  sdk.util.sumSingleBalance(balances, transformAddress(gohm), Number(treasuryBalances.treasuryGOhmBalance).toFixed(18) * 10**18) //gOHM
-  sdk.util.sumSingleBalance(balances, transformAddress(exod), Number(treasuryBalances.treasuryMonolithExodBalance).toFixed(18) * 10**9) //EXOD
-  sdk.util.sumSingleBalance(balances, transformAddress(wsexod), Number(treasuryBalances.treasuryMonolithWsExodBalance).toFixed(18) * 10**18) //wsEXOD
+  tokens.forEach(token => {
+    sdk.util.sumSingleBalance(balances, transformAddress(token), treasuryBalances[token])
+  })
   
   return balances;
 }
