@@ -77,7 +77,6 @@ async function tvl(timestamp, block, chainBlocks) {
 
   const treasuryBalances = await getPoolTokens(chainBlocks.fantom)
   const tokens = [mai, dai, wftm, gohm, exod, wsexod]
-  console.log(treasuryBalances)
 
   tokens.forEach(token => {
     sdk.util.sumSingleBalance(balances, transformAddress(token), treasuryBalances[token])
