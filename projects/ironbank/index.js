@@ -51,6 +51,8 @@ const fantomTvl = async (timestamp, ethBlock, chainBlocks) => {
     sdk.util.sumSingleBalance(balances, tokenAddr, cashVal.output);
   });
 
+  /*
+
   const stakerCreamAddressInFantom =
     "0x0abad588c5490eee5850693e16bb6de9d60bdb6c";
   const fantom_staking_service_endpoint = "https://xapi3.fantom.network/api";
@@ -86,7 +88,8 @@ const fantomTvl = async (timestamp, ethBlock, chainBlocks) => {
     address: stakerCreamAddressInFantom,
   });
   sdk.util.sumSingleBalance(balances, fantomToken, fantomStakingData.staker.totalStake)
-
+  */
+ 
   return balances;
 };
 
