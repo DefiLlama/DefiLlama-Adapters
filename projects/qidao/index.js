@@ -255,6 +255,10 @@ async function fantom(timestamp, block, chainBlocks) {
         "0x4cdF39285D7Ca8eB3f090fDA0C069ba5F4145B37",
         "0xD60FBaFc954Bfbd594c7723C980003c196bDF02F"
       ],
+      [
+        "0x5cc61a78f164885776aa610fb0fe1257df78e59b",
+        "0xCB99178C671761482097F32595cb79fb28a49Fd8"
+      ]
       //[t,p],
       
     ],
@@ -319,6 +323,21 @@ async function fantom(timestamp, block, chainBlocks) {
       "0xae94e96bf81b3a43027918b138b71a771d381150",
       "0x4733bc45eF91cF7CcEcaeeDb794727075fB209F2"
     ],
+    [
+      "0x413f1815D32e5aca0d8984FA89e50E83dDac0BBE",
+      "0x5d2EF803D6e255eF4D1c66762CBc8845051B54dB",
+      "0x9606d683d03f012dda296ef0ae9261207c4a5847"
+    ],
+    [
+      "0x03c20569c2c78CD48f491415a4cDEAC02608DB7e",
+      "0xA4e2EE5a7fF51224c27C98098D8DB5C770bAAdbE",
+      "0xe7e90f5a767406eff87fdad7eb07ef407922ec1d"
+    ],
+    [
+      "0xD3af91f21F791F29FC664cD5cD61180edc263191",
+      "0xD8dd2EA228968F7f043474Db610A20aF887866c7",
+      "0xd14dd3c56d9bc306322d4cea0e1c49e9ddf045d4"
+    ]
   ];
   await handleMooLPs(balances, chainBlocks.fantom, chain, ftmLPs);
   return balances;
