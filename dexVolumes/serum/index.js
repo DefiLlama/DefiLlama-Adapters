@@ -32,7 +32,9 @@ const solana = async () => {
 };
 
 module.exports = {
-  solana,
+  volume: {
+    solana,
+  },
 };
 
 // Todo Total volume and backfill

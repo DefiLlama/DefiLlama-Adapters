@@ -24,5 +24,10 @@ const graphs = getChainVolume({
 });
 
 module.exports = {
-  fantom: graphs("fantom"),
+  volume: {
+    fantom: {
+      fetch: graphs("fantom"),
+      start: 1620864000,
+    },
+  },
 };

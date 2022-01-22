@@ -10,7 +10,7 @@ const marketStrings = {
 }
 
 const orderedAssets = ["ALGO", "STBL", "USDC", "goBTC", "goETH"]
-const stakingContracts = ["STBL", "STBL-USDC-LP"]
+const stakingContracts = ["STBL", "TINYMAN11_STBL_USDC_LP_STAKING"]
 
 const assetDictionary = {
     "ALGO": {
@@ -50,20 +50,19 @@ const assetDictionary = {
             "oracleAppId": 451327550,
             "oracleFieldName": "price"
         },
-        "STBL-USDC-LP": {
+        "TINYMAN11_STBL_USDC_LP_STAKING" : {
             "decimals": 6,
-            "marketAppId": 485244022,
-            "oracleAppId": 451327550,
-            "oracleFieldName": "price"
+            "marketAppId" : 553866305,
         }
     }
 }
+
 
 async function getGlobalMarketState(algodClient, marketId) {
   let response = await algodClient.getApplicationByID(marketId).do()
   let results = {}
   response.params["global-state"].forEach(x => {
-    let decodedKey = atob(x.key)
+    let decodedKey =  Buffer.from(x.key, 'base64').toString('binary')
     results[decodedKey] = x.value.uint
   })
 
@@ -75,7 +74,7 @@ async function getPrices(algodClient, assetDictionary, orderedAssets) {
   for (const assetName of orderedAssets) {
     let response = await algodClient.getApplicationByID(assetDictionary[assetName]["oracleAppId"]).do()
     for (const y of response.params["global-state"]) {
-      let decodedKey = atob(y.key)
+      let decodedKey = Buffer.from(y.key, 'base64').toString('binary')
       if (decodedKey === assetDictionary[assetName]["oracleFieldName"]) {
         prices[assetName] = y.value.uint / 1000000
       }
@@ -129,7 +128,7 @@ async function supply() {
 
 async function staking() {
     let client = new algosdk.Algodv2("", "https://algoexplorerapi.io/", "")
-    let prices = { 'STBL': 1, 'STBL-USDC-LP': 2 }
+    let prices = { 'STBL': 1, 'TINYMAN11_STBL_USDC_LP_STAKING': 2 }
     staked = 0
 
     for (const contractName of stakingContracts) {

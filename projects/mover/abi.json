@@ -1,0 +1,28 @@
+{
+    "inceptionLPPriceUSDC": {
+        "inputs": [],
+        "name": "inceptionLPPriceUSDC",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "lpTokensBalance": {
+        "inputs": [],
+        "name": "lpTokensBalance",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+}
