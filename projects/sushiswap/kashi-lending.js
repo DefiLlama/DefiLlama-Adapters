@@ -61,6 +61,7 @@ async function kashiLendingFantom(timestamp, ethBlock, chainBlocks) {
     chain,
     transform
   );
+  delete balances["fantom:0x0dec85e74a92c52b7f708c4b10207d9560cefaf0"];
   const sSPA = (await sdk.api.abi.call({
     target: wsSPA,
     params:[balances["fantom:0x89346b51a54263cf2e92da79b1863759efa68692"]],
