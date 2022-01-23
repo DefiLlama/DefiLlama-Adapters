@@ -37,5 +37,8 @@ module.exports = {
   kcc: {
     fetch: fetchChain("kcc"),
   },
+  aurora: {
+    fetch: fetchChain("aurora"),
+  },
   fetch,
 };
