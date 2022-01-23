@@ -58,7 +58,6 @@ const DATA = {
     tokens: [
       "0x1852f70512298d56e9c8fdd905e02581e04ddb2a", // synFRAX
       "0x67c10c397dd0ba417329543c1a40eb48aaa7cd00", // gOHM
-      "0x0b5740c6b4a97f90ef2f0220651cca420b868ffb", // nETH
     ],
   },
   ethereum: {
@@ -82,7 +81,6 @@ const DATA = {
       metapool: "0x96cf323e477ec1e17a4197bdcc6f72bb2502756a",
     },
     tokens: [
-      "0xb6c473756050de474286bed418b77aeac39b02af", // nUSD
       "0xd8ca34fd379d9ca3c6ee3b3905678320f5b45195", // gOHM
       "0xeee3371b89fc43ea970e908536fcddd975135d8a", // DOG
       "0x48a34796653afdaa1647986b33544c911578e767", // synFRAX
