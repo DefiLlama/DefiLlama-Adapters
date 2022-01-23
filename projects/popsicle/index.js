@@ -50,13 +50,9 @@ async function fantomTvl(timestamp, block, chainBlocks) {
     balances,
     [
       ["0xddc0385169797937066bbd8ef409b5b3c0dfeb52", false],
-      ["0x7f620d7d0b3479b1655cefb1b0bc67fb0ef4e443", false],
-      ["0xf16e81dce15b08f326220742020379b855b87df9", false],
     ],
     [
       "0xFDB988aF9ef9D0C430176f972bA82B98b476F3ee",
-      "0xBC8d95Ab498502242b41fdaD30bDFfC841f436e2",
-      "0xaE2e07276A77DAdE3378046eEd92FfDE3995b0D5",
     ],
     chainBlocks.fantom, "fantom", transform
   );
@@ -83,6 +79,25 @@ async function fantomTvl(timestamp, block, chainBlocks) {
   ).output;
   balances["avax:0xb54f16fb19478766a268f172c9480f8da1a7c9c3"] = memo;
   delete balances["fantom:0xddc0385169797937066bbd8ef409b5b3c0dfeb52"];
+
+  return balances;
+};
+async function fantomStaking(timestamp, block, chainBlocks) {
+  const transform = await transformFantomAddress();
+  const balances = {};
+
+  await sumTokensAndLPsSharedOwners(
+    balances,
+    [
+      ["0x7f620d7d0b3479b1655cefb1b0bc67fb0ef4e443", false],
+      ["0xf16e81dce15b08f326220742020379b855b87df9", false],
+    ],
+    [
+      "0xBC8d95Ab498502242b41fdaD30bDFfC841f436e2",
+      "0xaE2e07276A77DAdE3378046eEd92FfDE3995b0D5",
+    ],
+    chainBlocks.fantom, "fantom", transform
+  );
 
   //nICE
   const nIce = 'fantom:0x7f620d7d0b3479b1655cefb1b0bc67fb0ef4e443';
@@ -112,7 +127,7 @@ async function fantomTvl(timestamp, block, chainBlocks) {
     delete balances[nIce]
   //}
   return balances;
-};
+}
 const ethTvl = calcTvl("ethereum");
 
 const fantomPool2 = calcTvl("fantom");
@@ -130,7 +145,8 @@ module.exports = {
   },
   fantom: {
     pool2: fantomPool2,
-    tvl: fantomTvl
+    tvl: fantomTvl,
+    staking: fantomStaking
   },
   methodology: "We count pool2 liquidity staked on masterchef",
 };
