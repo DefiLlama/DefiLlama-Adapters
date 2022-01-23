@@ -127,6 +127,7 @@ const DATA = {
     tokens: [
       "0x91fa20244fb509e8289ca630e5db3e9166233fdc", // gOHM
       "0x1852f70512298d56e9c8fdd905e02581e04ddb2a", // synFRAX
+      "0x961318Fc85475E125B99Cc9215f62679aE5200aB", // synFXS
     ],
   },
   arbitrum: {
@@ -258,6 +259,9 @@ const misrepresentedTokensMap = {
   "0x88918495892BAF4536611E38E75D771Dc6Ec0863": GOHM,
   // gOHM (BOBA) -> gOHM (ETH)
   "0xd22C0a4Af486C7FA08e282E9eB5f30F9AaA62C95": GOHM,
+  // synFXS (FTM) -> FXS (ETH)
+  "0x961318Fc85475E125B99Cc9215f62679aE5200aB":
+    "0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0",
 };
 
 const sumLegacyPools = async (balances, block, chain, transform) => {
