@@ -148,7 +148,7 @@ const fantomTvl = async (timestamp, ethBlock, chainBlocks) => {
   await sumTokens(balances, [
     ["0x8866414733f22295b7563f9c5299715d2d76caf4", "0x7a656b342e14f745e2b164890e88017e27ae7320"],
     [ "0x04068da6c83afcfa0e13ba15a6696662335d5b75", "0xbea9f78090bdb9e662d8cb301a00ad09a5b756e9"]
-  ], block, chain, addr=>"0x6b175474e89094c44da98b954eedeac495271d0f")
+  ], block, chain, addr=>addr==="0x8866414733f22295b7563f9c5299715d2d76caf4"?"0x6b175474e89094c44da98b954eedeac495271d0f":`${chain}:${addr}`)
 
 	return balances;
 }
