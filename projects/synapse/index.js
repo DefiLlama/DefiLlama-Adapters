@@ -36,6 +36,7 @@ const DATA = {
       "0x5f4bde007dc06b867f86ebfe4802e34a1ffeed63", // HIGH
       "0x130025ee738a66e691e6a7a62381cb33c6d9ae83", // JUMP
       "0x0fe9778c005a5a6115cbe12b0568a2d50b765a51", // NFD
+      "0x88918495892BAF4536611E38E75D771Dc6Ec0863", // gOHM
     ],
   },
   harmony: {
@@ -161,6 +162,9 @@ const DATA = {
     weth: "0xd203De32170130082896b4111eDF825a4774c18E",
     pool: "0x75FF037256b36F15919369AC58695550bE72fead",
     ethPool: "0x753bb855c8fe814233d26Bb23aF61cb3d2022bE5",
+    tokens: [
+      "0xd22C0a4Af486C7FA08e282E9eB5f30F9AaA62C95", // gOHM
+    ],
   },
   optimism: {
     neth: "0x809DC529f07651bD43A172e8dB6f4a7a0d771036",
@@ -308,7 +312,7 @@ const bridgeTVL = async (balances, data, block, chain, transform) => {
 
 const ethPool2 = async (timestamp, ethBlock, chainBlocks) => {
   const SYN_FEI = [
-    "0x0f2d719407fdbeff09d87557abb7232601fd9f29", //SYN
+    "0x0f2d719407fdbeff09d87557abb7232601fd9f29", // SYN
     "0x956F47F50A910163D8BF957Cf5846D573E7f87CA", // FEI
   ];
   const balances = {};
