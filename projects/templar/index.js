@@ -49,7 +49,7 @@ module.exports = {
     },
     moonriver: {
         tvl: moonriverTvl,
-        staking: staking(moonriverStaking, moonriverTem, "moonriver", addr = "bsc:0x19e6BfC1A6e4B042Fb20531244D47E252445df01")
+        staking: staking(moonriverStaking, moonriverTem, "moonriver", "bsc:0x19e6BfC1A6e4B042Fb20531244D47E252445df01")
     },
     tvl: sdk.util.sumChainTvls([bscTvl, moonriverTvl])
 }
