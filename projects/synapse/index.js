@@ -182,7 +182,6 @@ const DATA = {
     ],
     nusd: "0x07379565cD8B0CaE7c60Dc78e7f601b34AF2A21c",
     pool: "0xcEf6C2e20898C2604886b888552CA6CcF66933B0",
-    tokens: [],
   },
   moonbeam: {
     tokens: [
@@ -255,6 +254,10 @@ const misrepresentedTokensMap = {
   // AVAX (GLMR) -> WAVAX (AVAX)
   "0xA1f8890E39b4d8E33efe296D698fe42Fb5e59cC3":
     "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+  // gOHM (BSC) -> gOHM (ETH)
+  "0x88918495892BAF4536611E38E75D771Dc6Ec0863": GOHM,
+  // gOHM (BOBA) -> gOHM (ETH)
+  "0xd22C0a4Af486C7FA08e282E9eB5f30F9AaA62C95": GOHM,
 };
 
 const sumLegacyPools = async (balances, block, chain, transform) => {
