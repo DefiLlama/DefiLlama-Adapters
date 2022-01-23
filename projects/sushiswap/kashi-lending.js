@@ -1,6 +1,8 @@
 const sdk = require("@defillama/sdk");
 const { request, gql } = require("graphql-request"); 
 const {sumTokens} = require('../helper/unwrapLPs')
+const { handleYearnTokens } = require("../creditum/index.js");
+const { transformFantomAddress } = require("../helper/portedTokens");
 
 const graphUrl = 'https://api.thegraph.com/subgraphs/name/sushiswap/bentobox' // https://thegraph.com/hosted-service/subgraph/sushiswap/bentobox
 const bentoboxQuery = gql`
@@ -28,9 +30,13 @@ query get_bentoboxes {
 `
 
 async function kashiLendingFantom(timestamp, ethBlock, chainBlocks) {
+  const transform = await transformFantomAddress()
   const chain = "fantom"
   const block = chainBlocks[chain]
   const box = "0xF5BCE5077908a1b7370B9ae04AdC565EBd643966"
+  const wsSPA= "0x89346b51a54263cf2e92da79b1863759efa68692";
+  const spa = "fantom:0x5602df4a94eb6c680190accfa2a475621e0ddbdc";
+
   const boxTokens = [
     "0x82f0b8b456c1a451378467398982d4834b6829c1", // mim
     "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83", //wftm
@@ -45,6 +51,25 @@ async function kashiLendingFantom(timestamp, ethBlock, chainBlocks) {
   ]
   const balances = {}
   await sumTokens(balances, boxTokens.map(t=>[t, box]), block, chain, addr=>`${chain}:${addr}`)
+  await handleYearnTokens(
+    balances,
+    [
+      "0x0dec85e74a92c52b7f708c4b10207d9560cefaf0",
+    ],
+    box,
+    block,
+    chain,
+    transform
+  );
+  const sSPA = (await sdk.api.abi.call({
+    target: wsSPA,
+    params:[balances["fantom:0x89346b51a54263cf2e92da79b1863759efa68692"]],
+    abi: {"inputs":[{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"wOHMTosOHM","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+    block,
+    chain: "fantom"
+  })).output;
+  balances[spa] = sSPA;
+  delete balances["fantom:0x89346b51a54263cf2e92da79b1863759efa68692"];
   return balances
 }
 
