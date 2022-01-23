@@ -30,14 +30,12 @@ const bamms = {
         {"bamm" : usdcArbitrumBAMM, "underlying" : usdcArbitrum, "underlyingEth" : usdcEth },
         { "bamm" : usdtArbitrumBAMM, "underlying" : usdtArbitrum, "underlyingEth" : usdtEth }
     ]
-}
+} 
 
-const tvlFunc = {}    
-
-async function bammTvlFunc(chain, unixTimestamp, ethBlock, chainBlocks) {
+async function bammTvlFunc(chain, retTvl, unixTimestamp, ethBlock, chainBlocks) {
     const block = chainBlocks[chain]
 
-    const balances = await tvlFunc[chain](unixTimestamp, ethBlock, chainBlocks)
+    const balances = await retTvl(unixTimestamp, ethBlock, chainBlocks)
 
     for(let bamm of bamms[chain]) {
         const bammBalance = (
@@ -59,8 +57,7 @@ async function bammTvlFunc(chain, unixTimestamp, ethBlock, chainBlocks) {
 function tvlWithBamm() {
     const chain = arguments[1]
     const retVal = compoundExportsWithAsyncTransform(...arguments)
-    tvlFunc[chain] = retVal.tvl
-    return {tvl: async(...args)=> bammTvlFunc(chain, ...args), borrowed: retVal.borrowed}
+    return {tvl: async(...args)=> bammTvlFunc(chain, retVal.tvl, ...args), borrowed: retVal.borrowed}
 }
 
 module.exports={
