@@ -321,15 +321,15 @@ async function fetchETH() {
 
         await Promise.all(stakingAssetsETH.map(async (asset) => {
             // ETH STAKING ASSETS
-                let balance = await utils.returnBalance(asset.token, asset.contract);
-                tvlETH += (parseFloat(balance) * price_feed.data[asset.price].usd)
+            let balance = await utils.returnBalance(asset.token, asset.contract);
+            tvlETH += (parseFloat(balance) * price_feed.data[asset.price].usd)
         }))
 
         await Promise.all(lpStakingAssetsETH.map(async (pair) => {
             // ETH LP STAKING ASSETS
-                let lpTokenPrice = await getPriceOfUniPair(pair)
-                let balance = await utils.returnBalance(pair.pairAddress, pair.contract);
-                tvlETH += (parseFloat(balance) * lpTokenPrice)
+            let lpTokenPrice = await getPriceOfUniPair(pair)
+            let balance = await utils.returnBalance(pair.pairAddress, pair.contract);
+            tvlETH += (parseFloat(balance) * lpTokenPrice)
         }))
 
         await new Promise(async (resolve, reject) => {
@@ -342,12 +342,12 @@ async function fetchETH() {
         })
 
         await Promise.all(zenErc20.map(async (asset) => {
-                // ZEN erc lending assets
-                var contract = asset[0];
-                var token = asset[0];
-                balance = await returnSupplyETH(token, contract, CERC);
+            // ZEN erc lending assets
+            var contract = asset[0];
+            var token = asset[0];
+            balance = await returnSupplyETH(token, contract, CERC);
 
-                tvlETH += (parseFloat(balance) * price_feed.data[asset[1]].usd)
+            tvlETH += (parseFloat(balance) * price_feed.data[asset[1]].usd)
         }))
 
         tvlTotal += tvlETH;
@@ -469,15 +469,15 @@ async function fetchBSC() {
 
         await Promise.all(stakingAssetsBSC.map(async (asset) => {
             // BSC STAKING ASSETS
-                let balance = await returnBalanceBSC(asset.token, asset.contract);
-                tvlBSC += (parseFloat(balance) * price_feed.data[asset.price].usd)
+            let balance = await returnBalanceBSC(asset.token, asset.contract);
+            tvlBSC += (parseFloat(balance) * price_feed.data[asset.price].usd)
         }))
 
         await Promise.all(lpStakingAssetsBSC.map(async (pair) => {
             // BSC LP STAKING ASSETS
-                let lpTokenPrice = await getPriceOfPancakePair(pair)
-                let balance = await returnBalanceBSC(pair.pairAddress, pair.contract);
-                tvlBSC += (parseFloat(balance) * lpTokenPrice)
+            let lpTokenPrice = await getPriceOfPancakePair(pair)
+            let balance = await returnBalanceBSC(pair.pairAddress, pair.contract);
+            tvlBSC += (parseFloat(balance) * lpTokenPrice)
         }))
 
         tvlTotal += tvlBSC;
@@ -531,15 +531,15 @@ async function fetchPolygon() {
 
         await Promise.all(stakingAssetsPOLYGON.map(async (asset) => {
             // POLYGON STAKING ASSETS
-                let balance = await returnBalancePOLYGON(asset.token, asset.contract);
-                tvlPolygon += (parseFloat(balance) * price_feed.data[asset.price].usd)
+            let balance = await returnBalancePOLYGON(asset.token, asset.contract);
+            tvlPolygon += (parseFloat(balance) * price_feed.data[asset.price].usd)
         }))
 
         await Promise.all(lpStakingAssetsPOLYGON.map(async (pair) => {
             // POLYGON LP STAKING ASSETS
-                let lpTokenPrice = await getPriceOfQuickPair(pair)
-                let balance = await returnBalancePOLYGON(pair.pairAddress, pair.contract);
-                tvlPolygon += (parseFloat(balance) * lpTokenPrice)
+            let lpTokenPrice = await getPriceOfQuickPair(pair)
+            let balance = await returnBalancePOLYGON(pair.pairAddress, pair.contract);
+            tvlPolygon += (parseFloat(balance) * lpTokenPrice)
         }))
 
         tvlTotal += tvlPolygon;
