@@ -1,10 +1,5 @@
-/*==================================================
-  Modules
-  ==================================================*/
-
 const sdk = require("@defillama/sdk");
 const abi = require('./abi.json')
-const BigNumber = require("bignumber.js");
 const _ = require("underscore");
 
 async function tvl(timestamp, block) {
@@ -16,12 +11,14 @@ async function tvl(timestamp, block) {
   // Get pool list
   let poolAddressListResponse = await sdk.api.abi.call({
     target: controller,
-    abi: abi["pools"]
+    abi: abi["pools"],
+    block,
   });
 
   let poolsCountResponse = await sdk.api.abi.call({
     target: poolAddressListResponse.output,
-    abi: abi["length"]
+    abi: abi["length"],
+    block,
   });
 
   const calls = []
@@ -36,6 +33,7 @@ async function tvl(timestamp, block) {
   const poolListResponse = await sdk.api.abi.multiCall({
     calls,
     abi: abi["at"],
+    block
   });
 
   _.each(poolListResponse.output, (response) => {
@@ -48,15 +46,13 @@ async function tvl(timestamp, block) {
       target: poolAddress
     })),
     abi: abi["token"],
+    requery: true
   });
 
   _.each(collateralTokenResponse.output, (response) => {
       const collateralTokenAddress = response.output;
       const poolAddress = response.input.target;
       collateralToken[poolAddress] = collateralTokenAddress;
-      if (!balances.hasOwnProperty(collateralTokenAddress)) {
-        balances[collateralTokenAddress] = 0;
-      }
   });
 
   //Get TVL
@@ -71,21 +67,12 @@ async function tvl(timestamp, block) {
   _.each(totalValueResponse.output, (response) => {
       const totalValue = response.output;
       const poolAddress = response.input.target;
-      const existingBalance = new BigNumber(balances[collateralToken[poolAddress]] || "0");
-      balances[collateralToken[poolAddress]] = existingBalance.plus(new BigNumber(totalValue)).toFixed();
+      sdk.util.sumSingleBalance(balances, collateralToken[poolAddress], totalValue)
   });
   return balances;
 }
 
-/*==================================================
-  Exports
-  ==================================================*/
-
 module.exports = {
-  name: "Vesper",
-  website: "https://vesper.finance",
-  token: "VSP",
-  category: "assets",
   start: 1608667205, // December 22 2020 at 8:00 PM UTC
   tvl,
 };

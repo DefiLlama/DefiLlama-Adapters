@@ -3,6 +3,7 @@ const { request, gql } = require("graphql-request");
 const abi = require('./abi.json')
 const { transformCeloAddress, transformBscAddress } = require("../helper/portedTokens");
 const { getBlock } = require("../helper/getBlock");
+const { sumTokens } = require("../helper/unwrapLPs");
 
 const graphUrls = ['https://api.thegraph.com/subgraphs/name/pooltogether/pooltogether-v3_1_0',
   'https://api.thegraph.com/subgraphs/name/pooltogether/pooltogether-v3_3_2',
@@ -13,9 +14,7 @@ const bscGraphUrl = 'https://api.thegraph.com/subgraphs/name/pooltogether/bsc-v3
 
 const graphQuery = gql`
 query GET_POOLS($block: Int) {
-  prizePools(
-    block: { number: $block }
-  ) {
+  prizePools{
     id
     underlyingCollateralSymbol
     underlyingCollateralToken
@@ -26,8 +25,21 @@ query GET_POOLS($block: Int) {
 }
 `;
 
-async function getChainBalances(allPrizePools, chain, block, transform = a => a) {
+const v4pools={
+  ethereum:[
+    ["0xbcca60bb61934080951369a648fb03df4f96263c", "0x32e8d4c9d1b711bc958d0ce8d14b41f77bb03a64"]
+  ],
+  polygon:[
+    ["0x1a13f4ca1d028320a707d99520abfefca3998b7f", "0xD4F6d570133401079D213EcF4A14FA0B4bfB5b9C"]
+  ],
+  avax:[
+    ['0x46a51127c3ce23fb7ab1de06226147f446e4a857', '0x7437db21A0dEB844Fa64223e2d6Db569De9648Ff']
+  ]
+}
+
+async function getChainBalances(allPrizePools, chain, block, transform) {
   const balances = {};
+  transform = transform || (addr=>`${chain}:${addr}`);
   const lockedTokens = await sdk.api.abi.multiCall({
     abi: abi['accountedBalance'],
     calls: allPrizePools.map(pool => ({
@@ -43,6 +55,9 @@ async function getChainBalances(allPrizePools, chain, block, transform = a => a)
       call.output : call.output / 10 ** 18)
     sdk.util.sumSingleBalance(balances, underlyingToken, underlyingTokenBalance)
   })
+  if(v4pools[chain]!== undefined){
+    await sumTokens(balances, v4pools[chain], block, chain, transform)
+  }
   return balances
 }
 
@@ -78,6 +93,10 @@ async function polygon(timestamp, block, chainBlocks) {
   }], 'polygon', chainBlocks.polygon)
 }
 
+async function avax(timestamp, block, chainBlocks) {
+  return getChainBalances([], 'avax', chainBlocks.avax, ()=>`avax:0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664`)
+}
+
 async function celo(timestamp, block, chainBlocks) {
   const transform = await transformCeloAddress()
   let allPrizePools = []
@@ -91,7 +110,7 @@ async function celo(timestamp, block, chainBlocks) {
 async function bsc(timestamp, block, chainBlocks) {
   const transform = await transformBscAddress()
   let allPrizePools = []
-  block = await getBlock(timestamp, 'bsc', chainBlocks)
+  block = await getBlock(timestamp, 'bsc', chainBlocks) - 1000
   const { prizePools } = await request(
     bscGraphUrl, graphQuery, { block })
   allPrizePools = allPrizePools.concat(prizePools)
@@ -111,6 +130,8 @@ module.exports = {
   bsc: {
     tvl: bsc
   },
-  tvl: sdk.util.sumChainTvls([eth, polygon, celo, bsc]),
+  avalanche:{
+    tvl: avax
+  },
   methodology: `TVL is the total quantity of tokens locked in poolTogether pools, on Ethereum, Polygon, Celo, and BSC`
 }

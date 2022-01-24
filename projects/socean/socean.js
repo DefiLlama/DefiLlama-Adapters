@@ -12,11 +12,12 @@ async function tvl() {
     )
 
     return {
-        'solana': response.data[0].tvl_sol / 1_000_000_000 || 0
+        'solana': response.data[0].tvl_sol / 1_000_000_000
     }
 }
 
 module.exports = {
+    timetravel: false,
     tvl,
     methodology: 'We call our API endpoint to get total SOL TVL. An alternative is to check our total supply for a lower bound on TVL, as each SOCN token is guaranteed to be backed by (at least) 1 SOL.',
 }

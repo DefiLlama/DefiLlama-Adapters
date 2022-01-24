@@ -27,6 +27,11 @@ const ASSETS = {
       startBlock: 12146645,
     },
     {
+      // fPmBTC/tBTCv2
+      address: '0xc3280306b6218031E61752d060b091278d45c329',
+      startBlock: 13460377,
+    },
+    {
       // fPmUSD/BUSD
       address: '0xfe842e95f8911dcc21c943a1daa4bd641a1381c6',
       startBlock: 12146707,
@@ -40,6 +45,16 @@ const ASSETS = {
       // fPmUSD/alUSD
       address: '0x4eaa01974b6594c0ee62ffd7fee56cf11e6af936',
       startBlock: 12806795,
+    },
+        {
+      // fPmUSD/RAI
+      address: '0x36F944B7312EAc89381BD78326Df9C84691D8A5B',
+      startBlock: 13643595,
+    },
+    {
+      // fPmUSD/FEI
+      address: '0x2F1423D27f9B20058d9D1843E342726fDF985Eb4',
+      startBlock: 13682060,
     },
   ],
   polygon: [

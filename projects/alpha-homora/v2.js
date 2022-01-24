@@ -21,7 +21,7 @@ const chainParams = {
         ]
     },
     ethereum: {
-        safeBoxApi: "https://homora-v2.alphafinance.io/static/safebox.json",
+        safeBoxApi: "https://homora-api.alphafinance.io/v2/1/safeboxes",
         coreOracleAddress: "0x6be987c6d72e25f02f6f061f94417d83a6aa13fc",
         latestAlphaHomoraV2GraphUrl: `https://api.thegraph.com/subgraphs/name/hermioneeth/alpha-homora-v2-mainnet`,
         instances: [
@@ -43,7 +43,7 @@ const chainParams = {
                 wStakingRewardIndex: "0x713df2ddda9c7d7bda98a9f8fcd82c06c50fbd90",
                 wStakingRewardPerp: "0xc4635854480fff80f742645da0310e9e59795c63",
                 poolsJsonUrl:
-                    "https://homora-v2.alphafinance.io/static/legacy-pools.json",
+                    "local",
                 graphUrl: `https://api.thegraph.com/subgraphs/name/hermioneeth/alpha-homora-v2-mainnet`,
             }
         ]
@@ -94,13 +94,17 @@ module.exports = {
     tvlV2Onchain
 }
 
+async function getPools(poolsJsonUrl){
+    return poolsJsonUrl === "local"? require('./v2/legacy-pools.json') : (await axios.get(poolsJsonUrl)).data
+}
+
 async function tvlV2Onchain(block, chain) {
     const balances = {}
     const transform = addr => `${chain}:${addr}`
     const { safeBoxApi, poolsJsonUrl } = chainParams[chain];
     const { data: safebox } = await axios.get(safeBoxApi);
     await unwrapCreamTokens(balances, safebox.map(s=>[s.cyTokenAddress, s.safeboxAddress]), block, chain, transform)
-    const { data: pools } = await axios.get(poolsJsonUrl);
+    const pools= await getPools(poolsJsonUrl);
     const { output: masterchefLpTokens } = await sdk.api.abi.multiCall({
         calls: pools.map((pool) => ({
             target: pool.exchange.stakingAddress,
@@ -236,7 +240,7 @@ async function getTotalCollateral(
         graphUrl,
     }
 ) {
-    const { data: pools } = await axios.get(poolsJsonUrl);
+    const pools = await getPools(poolsJsonUrl);
 
     const {
         crvCollaterals,

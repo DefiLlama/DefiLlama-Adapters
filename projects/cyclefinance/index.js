@@ -197,13 +197,10 @@ const avaxTvl = async (timestamp, ethBlock, chainBlocks) => {
 
 module.exports = {
   misrepresentedTokens: true,
-  staking: {
-    tvl: staking,
-  },
   avalanche: {
     tvl: avaxTvl,
+    staking
   },
-  tvl: sdk.util.sumChainTvls([avaxTvl]),
   methodology: `We add liquidity that is on the VAULTS threw their contracts and the portion of staking the native token (CYCLE) 
     && CYCLE/AVAX LP by coreRewards and avaxRewards contracts respectivly`,
 };

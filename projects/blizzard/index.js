@@ -114,12 +114,9 @@ const avaxTvl = async (timestamp, ethBlock, chainBlocks) => {
 
 module.exports = {
   misrepresentedTokens: true,
-  staking: {
-    tvl: staking(VaultBlizz, BLIZZ, "avax"),
-  },
   avalanche: {
     tvl: avaxTvl,
+    staking: staking(VaultBlizz, BLIZZ, "avax"),
   },
-  tvl: sdk.util.sumChainTvls([avaxTvl]),
   methodology: "We count liquidity on the Vaults through their contracts",
 };

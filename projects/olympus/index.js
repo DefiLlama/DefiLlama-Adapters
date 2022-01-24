@@ -18,6 +18,8 @@ const treasuryAddresses = [
   "0x886CE997aa9ee4F8c2282E182aB72A705762399D",
   // V2
   "0x31F8Cc382c9898b273eff4e0b7626a6987C846E8",
+  // V3
+  "0x9A315BdF513367C0377FB36545857d12e85813Ef",
 ];
 
 const DAI = "0x6b175474e89094c44da98b954eedeac495271d0f";
@@ -27,6 +29,7 @@ const OHM_FRAX_UNIV2 = "0x2dce0dda1c2f98e0f171de8333c3c6fe1bbf4877";
 const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 const LUSD = "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0"
 const lusd_lp = "0xfdf12d1f85b5082877a6e070524f50f6c84faa6b"
+const OHM_ETH_SLP="0xfffae4a0f4ac251f4705717cd24cadccc9f33e06"
 
 /*** Staking of native token (OHM) TVL Portion ***/
 const staking = async (timestamp, ethBlock, chainBlocks) => {
@@ -65,7 +68,8 @@ async function ethTvl(timestamp, block) {
       [OHM_DAI_SLP, true],
       [OHM_FRAX_UNIV2, true],
       [LUSD, false],
-      [lusd_lp, true]
+      [lusd_lp, true],
+      [OHM_ETH_SLP, true],
     ],
     treasuryAddresses,
     block
@@ -79,15 +83,21 @@ async function ethTvl(timestamp, block) {
     block
   })
   sdk.util.sumSingleBalance(balances, FRAX, BigNumber(fraxAllocated.output).times(1e9).toFixed(0))
-  const onsenLps = await sdk.api.abi.call({
-    target: sushiMasterchef,
+  const onsenLps = await sdk.api.abi.multiCall({
+    calls: [185, 323].map(onsenId=>({
+      target: sushiMasterchef,
+      params: [onsenId, onsenAllocator]
+    })),
     block,
     abi: abi.userInfo,
-    params: [185, onsenAllocator]
   })
   await unwrapUniswapLPs(balances, [{
-    balance: onsenLps.output.amount,
+    balance: onsenLps.output[0].output.amount,
     token: OHM_DAI_SLP
+  },
+  {
+    balance: onsenLps.output[1].output.amount,
+    token: lusd_lp
   }], block)
 
   return balances;

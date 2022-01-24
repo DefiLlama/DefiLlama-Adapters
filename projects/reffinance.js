@@ -1,13 +1,12 @@
 const utils = require('./helper/utils');
 const { getApiTvl } = require('./helper/historicalApi');
 
-
 async function current() {
   var deposits = await utils.fetchURL('https://sodaki.com/api/last-tvl')
   let tvl = 0;
   for (let datas of deposits.data) {
 
-    tvl += parseFloat(datas.TLV * datas.price)
+    tvl += parseFloat(datas.TVL * datas.price)
   }
 
   return tvl;

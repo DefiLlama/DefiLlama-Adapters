@@ -1,7 +1,3 @@
-/*==================================================
-  Modules
-  ==================================================*/
-
 const sdk = require('@defillama/sdk')
 const BigNumber = require('bignumber.js')
 const getCacheBalances = require('./abis/getCacheBalances.json')
@@ -13,23 +9,12 @@ const token0 = require('./abis/token0.json')
 const token1 = require('./abis/token1.json')
 const getReserves = require('./abis/getReserves.json')
 
-/*==================================================
-  Addresses
-  ==================================================*/
-
 const START_BLOCK = 11142900
 const REGISTRY = '0x16274044dab9635Df2B5AeAF7CeCb5f381c71680'
 const FACTORY = '0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac'
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
-/*==================================================
-  TVL
-  ==================================================*/
-
 module.exports = async function tvl(_, block) {
-  const supportedTokens = await sdk.api.util
-    .tokenList()
-    .then((supportedTokens) => supportedTokens.map(({ contract }) => contract))
 
   // ===== Primitive Contracts =====
 
@@ -90,24 +75,20 @@ module.exports = async function tvl(_, block) {
   underlyingAddresses.forEach((underlyingAddress) => {
       const tokenAddress = underlyingAddress.output.toLowerCase()
 
-      if (supportedTokens.includes(tokenAddress)) {
         const optionAddress = underlyingAddress.input.target.toLowerCase()
         options[optionAddress] = {
           underlyingAddress: tokenAddress,
         }
-      }
   })
 
   // add strikeAddresses
   strikeAddresses.forEach((strikeAddress) => {
       const tokenAddress = strikeAddress.output.toLowerCase()
-      if (supportedTokens.includes(tokenAddress)) {
         const optionAddress = strikeAddress.input.target.toLowerCase()
         options[optionAddress] = {
           ...(options[optionAddress] || {}),
           strikeAddress: tokenAddress,
         }
-      }
   })
 
   redeemAddresses.forEach((redeemAddress) => {
@@ -180,7 +161,6 @@ module.exports = async function tvl(_, block) {
       const tokenAddress = token0Address.output.toLowerCase()
 
       if (
-        supportedTokens.includes(tokenAddress) ||
         allRedeemAddresses.indexOf(tokenAddress) != -1
       ) {
         const pairAddress = token0Address.input.target.toLowerCase()
@@ -194,7 +174,6 @@ module.exports = async function tvl(_, block) {
   token1Addresses.forEach((token1Address) => {
       const tokenAddress = token1Address.output.toLowerCase()
       if (
-        supportedTokens.includes(tokenAddress) ||
         allRedeemAddresses.indexOf(tokenAddress) != -1
       ) {
         const pairAddress = token1Address.input.target.toLowerCase()
