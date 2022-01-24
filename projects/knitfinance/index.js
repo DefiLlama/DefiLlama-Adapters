@@ -65,6 +65,8 @@ const assets = {
     "0x5F3b083B1571f92a67894a989f035BdBf1ee7729": "fantom",
     "0x7621F2bd65624a579a9483c7d2B126c8877545b9": "loom-network",
     "0xaEAB17e79C40bFccC477746CE77B661aa724CDfc": "knit-finance",
+    "0x69d17c151ef62421ec338a0c92ca1c1202a427ec": "supernova",
+    "0x5cc61a78f164885776aa610fb0fe1257df78e59b": "spiritswap",
   },
 };
 
