@@ -1,4 +1,5 @@
 const sdk = require('@defillama/sdk')
+const { toUSDTBalances } = require('../helper/balances')
 
 // Ethereum Vaults
 const ethCallVault = '0xB5c72818C3bDC5F8C51CA127b13ab724e3BA2379'
@@ -30,11 +31,11 @@ const wMaticCallVault = '0x156d422436f4441dde6ac0ab41ff58c9258c438b'
 const wMaticPutVault = '0x47831E1ff871f6D79CFb72956f5Aca65ec244733'
 
 //Aurora Vaults
-//const nearCallVault = '0x6d31e1126b4abf8502fc80a1f61f1e930862b075'
+const nearCallVault = '0x6d31e1126b4abf8502fc80a1f61f1e930862b075'
 
 //Boba Vaults
-//const bobaCallVault = '0xf802f5ef19a0033c297a26649f2eb54e416a989c'
-//const bobaPutVault = '0xff5fe7909fc4d0d6643f1e8be8cba72610d0b485'
+const bobaCallVault = '0xf802f5ef19a0033c297a26649f2eb54e416a989c'
+const bobaPutVault = '0xff5fe7909fc4d0d6643f1e8be8cba72610d0b485'
 
 
 
@@ -65,11 +66,11 @@ const wmatic = '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270'
 const pousdc = '0x2791bca1f2de4661ed88a30c99a7a9449aa84174'
 
 // Aurora Assets
-// const near = '0xC42C30aC6Cc15faC9bD938618BcaA1a1FaE8501d'
+const near = '0xC42C30aC6Cc15faC9bD938618BcaA1a1FaE8501d'
 
 // Boba Assets
-// const boba = '0xa18bF3994C0Cc6E3b63ac420308E5383f53120D7'
-// const bobaUSDC = '0x66a2A913e447d6b4BF33EFbec43aAeF87890FBbc'
+let boba = '0xa18bF3994C0Cc6E3b63ac420308E5383f53120D7'
+const bobaUSDC = '0x66a2A913e447d6b4BF33EFbec43aAeF87890FBbc'
 
 
 
@@ -98,6 +99,14 @@ async function addVault(balances, vault, token, block, chain) {
 
     else if(chain == 'polygon'){
     sdk.util.sumSingleBalance(balances,`polygon:${token}`,totalBalance.output)
+    }
+
+    else if(chain == 'boba'){
+    sdk.util.sumSingleBalance(balances,`boba:${token}`,totalBalance.output,)
+    }
+
+    else if(chain == 'aurora'){
+    sdk.util.sumSingleBalance(balances,`aurora:${token}`,totalBalance.output)
     }
 }
 
@@ -130,6 +139,7 @@ async function ftmTvl(timestamp, ethblocks, chainBlocks) {
     await Promise.all([
         addVault(balances, ftmCallVault, wftm, chainBlocks["fantom"], 'fantom'),
         addVault(balances, ftmPutVault, fusdc, chainBlocks["fantom"], 'fantom'),
+        addVault(balances, "0xB265B013000970909Ac06427fCA58ac34f8B1843", "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83", chainBlocks["fantom"], 'fantom'),
     ])
     return balances
 }
@@ -156,6 +166,24 @@ async function polygonTvl(timestamp, ethblocks, chainBlocks) {
     return balances
 }
 
+async function bobaTvl(timestamp, ethblocks, chainBlocks) {
+    const balances = {}
+    await Promise.all([
+        addVault(balances, bobaCallVault, boba, chainBlocks["boba"], 'boba'),
+        addVault(balances, bobaPutVault, bobaUSDC, chainBlocks["boba"], 'boba'),
+    ])
+    return balances
+}
+
+async function auroraTvl(timestamp, ethblocks, chainBlocks) {
+    const balances = {}
+    await Promise.all([
+        addVault(balances, nearCallVault, near, chainBlocks["aurora"], 'aurora'),
+        
+    ])
+    return balances
+}
+
 
 module.exports = {
     ethereum: {
@@ -173,5 +201,10 @@ module.exports = {
     polygon: {
         tvl: polygonTvl
     },
-   tvl: sdk.util.sumChainTvls([ethTvl, avaxTvl, ftmTvl, bscTvl, polygonTvl]),
+    boba: {
+        tvl: bobaTvl
+    },
+    aurora: {
+        tvl: auroraTvl
+    },
 }

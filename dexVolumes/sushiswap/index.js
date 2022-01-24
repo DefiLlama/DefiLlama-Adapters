@@ -1,59 +1,78 @@
 const { getChainVolume } = require("../helper/getUniSubgraphVolume");
+const { getStartTimestamp } = require("../helper/getStartTimestamp");
+const {
+  ARBITRUM,
+  AVAX,
+  BSC,
+  CELO,
+  ETHEREUM,
+  FANTOM,
+  HARMONY,
+  HECO,
+  POLYGON,
+  XDAI,
+} = require("../helper/chains");
 
 const endpoints = {
-  ethereum: "https://api.thegraph.com/subgraphs/name/sushiswap/exchange",
-  xdai: "https://api.thegraph.com/subgraphs/name/sushiswap/xdai-exchange",
-  polygon: "https://api.thegraph.com/subgraphs/name/sushiswap/matic-exchange",
-  fantom: "https://api.thegraph.com/subgraphs/name/sushiswap/fantom-exchange",
-  bsc: "https://api.thegraph.com/subgraphs/name/sushiswap/bsc-exchange",
-  harmony:
-    "https://sushi.graph.t.hmny.io/subgraphs/name/sushiswap/harmony-exchange",
-  //'okexchain': 'https://q.hg.network/subgraphs/name/sushiswap/okex-exchange',
-  avax: "https://api.thegraph.com/subgraphs/name/sushiswap/avalanche-exchange",
-  celo: "https://api.thegraph.com/subgraphs/name/sushiswap/celo-exchange",
-  arbitrum:
+  [ARBITRUM]:
     "https://api.thegraph.com/subgraphs/name/sushiswap/arbitrum-exchange",
+  [AVAX]:
+    "https://api.thegraph.com/subgraphs/name/sushiswap/avalanche-exchange",
+  [BSC]: "https://api.thegraph.com/subgraphs/name/sushiswap/bsc-exchange",
+  [CELO]: "https://api.thegraph.com/subgraphs/name/sushiswap/celo-exchange",
+  [ETHEREUM]: "https://api.thegraph.com/subgraphs/name/sushiswap/exchange",
+  [FANTOM]: "https://api.thegraph.com/subgraphs/name/sushiswap/fantom-exchange",
+  [HARMONY]:
+    "https://sushi.graph.t.hmny.io/subgraphs/name/sushiswap/harmony-exchange",
+  // [HECO]: "https://q.hg.network/subgraphs/name/heco-exchange/heco",
   //'okexchain': 'https://q.hg.network/subgraphs/name/okex-exchange/oec',
-  heco: "https://q.hg.network/subgraphs/name/heco-exchange/heco",
+  //'okexchain': 'https://q.hg.network/subgraphs/name/sushiswap/okex-exchange',
+  [POLYGON]: "https://api.thegraph.com/subgraphs/name/sushiswap/matic-exchange",
+  [XDAI]: "https://api.thegraph.com/subgraphs/name/sushiswap/xdai-exchange",
 };
+
+const VOLUME_FIELD = "volumeUSD";
 
 const graphs = getChainVolume({
   graphUrls: {
-    ethereum: endpoints.ethereum,
-    xdai: endpoints.xdai,
-    polygon: endpoints.polygon,
-    fantom: endpoints.xdai,
-    bsc: endpoints.bsc,
-    harmony: endpoints.harmony,
-    avax: endpoints.avax,
-    celo: endpoints.celo,
-    arbitrum: endpoints.arbitrum,
-    heco: endpoints.heco,
+    [ARBITRUM]: endpoints[ARBITRUM],
+    [AVAX]: endpoints[AVAX],
+    [BSC]: endpoints[BSC],
+    [CELO]: endpoints[CELO],
+    [ETHEREUM]: endpoints[ETHEREUM],
+    [FANTOM]: endpoints[FANTOM],
+    [HARMONY]: endpoints[HARMONY],
+    // [HECO]: endpoints[HECO],
+    [POLYGON]: endpoints[POLYGON],
+    [XDAI]: endpoints[XDAI],
   },
   totalVolume: {
     factory: "factories",
-    field: "volumeUSD",
+    field: VOLUME_FIELD,
   },
   dailyVolume: {
     factory: "dayData",
-    field: "volumeUSD",
+    field: VOLUME_FIELD,
   },
 });
 
+const startTimeQuery = {
+  endpoints,
+  dailyDataField: "dayDatas",
+  volumeField: VOLUME_FIELD,
+};
+
+const volume = Object.keys(endpoints).reduce(
+  (acc, chain) => ({
+    ...acc,
+    [chain]: {
+      fetch: graphs(chain),
+      start: getStartTimestamp({ ...startTimeQuery, chain }),
+    },
+  }),
+  {}
+);
+
 module.exports = {
-  volume: {
-    ethereum: graphs("ethereum"),
-    xdai: graphs("xdai"),
-    polygon: graphs("polygon"),
-    // Will have to replace with faster indexer
-    fantom: graphs("fantom"),
-    bsc: graphs("bsc"),
-    harmony: graphs("harmony"),
-    avax: graphs("avax"),
-    celo: graphs("celo"),
-    // Will have to replace with faster indexer
-    arbitrum: graphs("arbitrum"),
-    // Heco currently returning 0
-    heco: graphs("heco"),
-  },
+  volume,
 };
