@@ -59,7 +59,6 @@ async function avax(timestamp, block) {
 }
 
 module.exports = {
-  start: 6965653,
   avax: {
     tvl: avax,
   },
