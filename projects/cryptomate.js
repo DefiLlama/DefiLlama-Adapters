@@ -8,21 +8,21 @@ async function tvl() {
   let pools = (
     await retry(
       async (bail) =>
-        await axios.get("https://cdn.cryptomate.me/tokens/pools")
+        await axios.get("https://api-finance.dev.cryptomate.me/tokens/mainnet/pools")
     )
   ).data.pools;
 
   const tokensPrice = (
     await retry(
       async (bail) =>
-        await axios.get("https://cdn.cryptomate.me/tokens/price")
+        await axios.get("https://api-finance.dev.cryptomate.me/tokens/mainnet/price")
     )
   ).data;
 
   const tokensMetadata = (
     await retry(
       async (bail) =>
-        await axios.get("https://cdn.cryptomate.me/tokens/metadata")
+        await axios.get("https://api-finance.dev.cryptomate.me/tokens/mainnet/metadata")
     )
   ).data.metadata;
   pools = pools.filter(pool =>{
