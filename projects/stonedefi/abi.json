@@ -1,0 +1,25 @@
+{
+  "token": {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "token",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "address" }],
+    "gas": 3948
+  },
+  "totalAssets": {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "totalAssets",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "uint256" }],
+    "gas": 8878
+  },
+  "stbnbMarketCapacityCountByBNB": {
+    "inputs": [],
+    "name": "stbnbMarketCapacityCountByBNB",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  }
+}

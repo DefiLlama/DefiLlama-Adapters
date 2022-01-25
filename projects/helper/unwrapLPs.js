@@ -157,16 +157,26 @@ const crvPools = {
           "0x5c2ed810328349100a66b82b78a1791b101c9d61",
           "0xe7a24ef0c5e95ffb0f6684b813a78f2a3ad7d171"
         ]
-      },
+    },
     // tricryptoCRV v3 Polygon
     "0xdad97f7713ae9437fa9249920ec8507e5fbb23d3": {
         swapContract: "0x92215849c439e1f8612b6646060b4e3e5ef822cc",
         underlyingTokens: [
-          "0x28424507fefb6f7f8e9d3860f56504e4e5f5f390",
-          "0x5c2ed810328349100a66b82b78a1791b101c9d61",
-          "0xe7a24ef0c5e95ffb0f6684b813a78f2a3ad7d171"
+        "0x28424507fefb6f7f8e9d3860f56504e4e5f5f390",
+        "0x5c2ed810328349100a66b82b78a1791b101c9d61",
+        "0xe7a24ef0c5e95ffb0f6684b813a78f2a3ad7d171"
         ]
-      },
+    },
+    // 4eur-f Polygon
+    "0xad326c253a84e9805559b73a08724e11e49ca651": {
+        swapContract: "0xad326c253a84e9805559b73a08724e11e49ca651",
+        underlyingTokens: [
+        "0xe111178a87a3bff0c8d18decba5798827539ae99",
+        "0x4e3decbb3645551b8a19f0ea1678079fcb33fb4c", 
+        "0x7BDF330f423Ea880FF95fC41A280fD5eCFD3D09f", 
+        "0xe2aa7db6da1dae97c5f5c6914d285fbfcc32a128"
+        ]
+    },
     // gondolaDAIeUSDTe Avax
     "0xd7d4a4c67e9c1f5a913bc38e87e228f4b8820e8a": {
         swapContract: "0xCF97190fAAfea63523055eBd139c008cdb4468eB",

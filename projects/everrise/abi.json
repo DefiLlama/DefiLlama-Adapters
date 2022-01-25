@@ -1,0 +1,148 @@
+{
+	"everRiseAddress": {
+		"inputs": [],
+		"name": "everRiseAddress",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	"getStats": {
+		"inputs": [],
+		"name": "getStats",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "reservesBalance",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "liquidityToken",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "liquidityCoin",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "staked",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "aveMultiplier",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "rewards",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "volumeTransfers",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "volumeBuy",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "volumeSell",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "volumeTrade",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "bridgeVault",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "tokenPriceCoin",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "coinPriceStable",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "tokenPriceStable",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "marketCap",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint128",
+						"name": "blockNumber",
+						"type": "uint128"
+					},
+					{
+						"internalType": "uint32",
+						"name": "holders",
+						"type": "uint32"
+					},
+					{
+						"internalType": "uint8",
+						"name": "tokenDecimals",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint8",
+						"name": "coinDecimals",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint8",
+						"name": "stableDecimals",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint8",
+						"name": "multiplierDecimals",
+						"type": "uint8"
+					}
+				],
+				"internalType": "struct EverRiseStaked.Stats",
+				"name": "stats",
+				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	"wrappedCoinAddress": {
+		"inputs": [],
+		"name": "wrappedCoinAddress",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+}

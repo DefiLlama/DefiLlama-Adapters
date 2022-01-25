@@ -6,28 +6,6 @@ const getReserves = require('./abis/getReserves.json');
 const factoryAbi = require('./abis/factory.json');
 const {getBlock} = require('./getBlock')
 
-async function requery(results, chain, block, abi, times = 2){
-  for(let i=0; i<times; i++){
-    await requeryOnce(results, chain, block, abi)
-  }
-}
-
-async function requeryOnce(results, chain, block, abi){
-  if(results.some(r=>!r.success)){
-    const failed = results.map((r,i)=>[r,i]).filter(r=>!r[0].success)
-    const newResults = await sdk.api.abi
-    .multiCall({
-      abi,
-      chain,
-      calls: failed.map((f) => f[0].input),
-      block,
-    }).then(({ output }) => output);
-    failed.forEach((f, i)=>{
-      results[f[1]] = newResults[i]
-    })
-  }
-}
-
 async function calculateUniTvl(getAddress, block, chain, FACTORY, START_BLOCK, useMulticall = false) {
   let pairAddresses;
   if (useMulticall) {
@@ -48,9 +26,9 @@ async function calculateUniTvl(getAddress, block, chain, FACTORY, START_BLOCK, u
         target: FACTORY,
         params: [num]
       })),
-      block
+      block,
+      requery: true
     })).output
-    await requery(pairs, chain, block, factoryAbi.allPairs);
     pairAddresses = pairs.map(result => result.output.toLowerCase())
   } else {
     const logs = (
@@ -83,6 +61,7 @@ async function calculateUniTvl(getAddress, block, chain, FACTORY, START_BLOCK, u
           target: pairAddress,
         })),
         block,
+        requery: true
       })
       .then(({ output }) => output),
     sdk.api.abi
@@ -93,6 +72,7 @@ async function calculateUniTvl(getAddress, block, chain, FACTORY, START_BLOCK, u
           target: pairAddress,
         })),
         block,
+        requery: true
       })
       .then(({ output }) => output),
     sdk.api.abi
@@ -103,11 +83,9 @@ async function calculateUniTvl(getAddress, block, chain, FACTORY, START_BLOCK, u
           target: pairAddress,
         })),
         block,
+        requery: true
       }).then(({ output }) => output),
   ]);
-  await requery(token0Addresses, chain, block, token0);
-  await requery(token1Addresses, chain, block, token1);
-  await requery(reserves, chain, block, getReserves);
 
   const pairs = {};
   // add token0Addresses

@@ -3,8 +3,32 @@ const {calculateUsdUniTvl} = require('../helper/getUsdUniTvl');
 const { getBlock } = require('../helper/getBlock');
 const { chainExports: getChainExports } = require('../helper/exports');
 
-const elkAddress = '0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c';
+function elkAddress(chain) {
+  switch(chain) {
+    case 'iotex': 
+    return '0xa00744882684c3e4747faefd68d283ea44099d03';
+    default:
+      return '0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c';
+  }
+} 
 
+function geckoId(chain) {
+  switch(chain) {
+    case 'iotex': 
+    return 'iotex';
+    default:
+      return 'elk-finance';
+  }
+}
+
+function whitelist(chain) {
+  switch(chain) {
+    case 'iotex': 
+    return ["0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c", "0x3b2bf2b523f54c4e454f08aa286d03115aff326c"];
+    default:
+      return [];
+  }
+}
 const stakingContracts = {
   "heco": "0xdE16c49fA4a4B78071ae0eF04B2E496dF584B2CE",
   "polygon": "0xB8CBce256a713228F690AC36B6A0953EEd58b957",
@@ -29,7 +53,7 @@ function chainStaking(chain, contract){
     const block = await getBlock(timestamp, chain, chainBlocks, true);
 
     balance += Number((await sdk.api.erc20.balanceOf({
-      target: elkAddress,
+      target: elkAddress(chain),
       owner: contract,
       block: block,
       chain
@@ -55,16 +79,16 @@ const factories = {
   hoo: "0x9c03E724455306491BfD2CE0805fb872727313eA",
   elastos: "0x440a1B8b8e968D6765D41E6b92DF3cBb0e9D2b1e",
   fuse: "0x779407e40Dad9D70Ba5ADc30E45cC3494ec71ad2",
-  //iotex: "0xF96bE66DA0b9bC9DFD849827b4acfA7e8a6F3C42"
+  iotex: "0xF96bE66DA0b9bC9DFD849827b4acfA7e8a6F3C42"
 }
 
 function chainTvl(chain){
   return calculateUsdUniTvl(
     factories[chain], 
     chain, 
-    elkAddress, 
-    [], 
-    "elk-finance",
+    elkAddress(chain), 
+    whitelist(chain),
+    geckoId(chain),
     18,
     true
   )
