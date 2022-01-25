@@ -13,6 +13,7 @@ const whitelist = [
 ]
 
 module.exports = {
+  methodology: `Metis tokens, USDC, USDT, WETH, TETHYS allocated in LP`,
   misrepresentedTokens: true,
   timetravel: true,
   doublecounted: false,

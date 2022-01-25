@@ -69,6 +69,7 @@ async function fetch() {
 }
 
 module.exports = {
+  methodology: `Balance of av3CRV-gauge in contract multiple by virtual price of corresponding Curve pool`,
   avalanche: {
     fetch,
   },
