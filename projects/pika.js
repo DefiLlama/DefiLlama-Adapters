@@ -5,7 +5,7 @@ async function tvl(timestamp, block, chainBlocks) {
 	block = await getBlock(timestamp, 'optimism', chainBlocks);
 	const balance = (await sdk.api.erc20.balanceOf({
 		target: '0x7f5c764cbc14f9669b88837ca1490cca17c31607',
-		owner: '0x365324E5045df8c886EBe6AD5449F5CeB5881A40',
+		owner: '0x2FaE8C7Edd26213cA1A88fC57B65352dbe353698',
 		block: block,
 		chain: 'optimism'
 	})).output;
