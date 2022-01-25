@@ -176,17 +176,6 @@ function mergeBalances(balances, balancesToMerge) {
         sdk.util.sumSingleBalance(balances, balance[0], balance[1].toNumber())
     })
 }
-async function totalTvl(timestamp, block, chainBlocks) {
-    const balances = {}
-    await Promise.all([
-        ethTvl(timestamp, block, chainBlocks),
-        bscTvl(timestamp, block, chainBlocks),
-        polygonTvl(timestamp, block, chainBlocks),
-        avalancheTvl(timestamp, block, chainBlocks),
-        fantomTvl(timestamp, block, chainBlocks),
-    ]).then(poolBalances => poolBalances.forEach(pool => mergeBalances(balances, pool)))
-    return balances
-}
 
 async function pool2(balances, chainBlocks, chain, pool) {
   let lpPositions = [];
@@ -241,6 +230,42 @@ async function fantomPool2(timestamp, block) {
   return balances;
 }
 
+async function totalTvl(timestamp, block, chainBlocks) {
+    const balances = {}
+    await Promise.all([
+        ethTvl(timestamp, block, chainBlocks),
+        bscTvl(timestamp, block, chainBlocks),
+        polygonTvl(timestamp, block, chainBlocks),
+        avalancheTvl(timestamp, block, chainBlocks),
+        fantomTvl(timestamp, block, chainBlocks),
+    ]).then(poolBalances => poolBalances.forEach(pool => mergeBalances(balances, pool)))
+    return balances
+}
+
+async function totalPool2(timestamp, block, chainBlocks) {
+    const balances = {}
+    await Promise.all([
+      ethPool2(timestamp, block, chainBlocks),
+      bscPool2(timestamp, block, chainBlocks),
+      polygonPool2(timestamp, block, chainBlocks),
+      avaxPool2(timestamp, block, chainBlocks),
+      fantomPool2(timestamp, block, chainBlocks),
+    ]).then(poolBalances => poolBalances.forEach(pool => mergeBalances(balances, pool)))
+    return balances
+}
+
+async function totalStaking(timestamp, block, chainBlocks) {
+    const balances = {}
+    await Promise.all([
+      ethStaking(timestamp, block, chainBlocks),
+      bscStaking(timestamp, block, chainBlocks),
+      polygonStaking(timestamp, block, chainBlocks),
+      avalancheStaking(timestamp, block, chainBlocks),
+      fantomStaking(timestamp, block, chainBlocks),
+    ]).then(poolBalances => poolBalances.forEach(pool => mergeBalances(balances, pool)))
+    return balances
+}
+
 module.exports = {
   name: 'EverRise',
   token: 'RISE',
@@ -270,5 +295,7 @@ module.exports = {
     pool2: avaxPool2,
   },
   tvl: totalTvl,
+  staking: totalStaking,
+  pool2: totalPool2,
   methodology: "TVL comes from the buyback reserves and cross-chain bridge vaults",
 };
