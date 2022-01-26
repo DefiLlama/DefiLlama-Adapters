@@ -22,7 +22,265 @@ const web3polygon = new Web3(
   "https://speedy-nodes-nyc.moralis.io/915f60cde0d3e95599501fa2/polygon/mainnet"
 );
 
-let tvlTotal = 0;
+async function calculateZenterestTVL() {
+  // ZENTEREST assets
+  const zenTokens = [
+    // zenETH -
+    ["0x4F905f75F5576228eD2D0EA508Fb0c32a0696090", "ethereum"],
+    // zenUSDT -
+    ["0xF76cc2dc02F56B27761dBdb7a62e2B1C4a22aFcd", "tether"],
+    // zenUSDC -
+    ["0x0968c90198f08b67365840fa37631b29fe2aa9fc", "usd-coin"],
+    // zenWBTC -
+    ["0x5b4463bbd7b2e870601e91161e0f1f7f84cde214", "wrapped-bitcoin"],
+    // zenCOMP -
+    ["0x3f2e9a93428a22d2f4cacc3f184f1aad85054e1c", "compound-governance-token"],
+    // zenDAI -
+    ["0x3bafa9cd93c7bdc07fd9609e95e04a8904eacf7d", "dai"],
+    // zenCREAM -
+    ["0x66d696474784ded49b5d0a43e50bf59d63402d74", "cream"],
+    // zenOM -
+    ["0x11c70CAA910647d820bD014d676Dcd97EDD64A99", "mantra-dao"],
+    // zenRFUEL -
+    ["0xf533c78c0790676008d576c5cc2e63e0856ed4f0", "rio-defi"],
+    // zenLINK -
+    ["0x27d15446176b469ee7fbdec1e5a4b506fd77c0cd", "chainlink"],
+    // zenAAVE -
+    ["0x57a8cb15e9575bf9bf80f3531183395703912f57", "aave"],
+    // zenUNI -
+    ["0x391f902c8979050ba8036e3d61d13d79cf545db8", "uniswap"],
+    // zenSUSHI -
+    ["0xb3c114d12cc260ff0a07a2cf22a910625367b403", "sushi"],
+    // zenSNX -
+    ["0xc4bdaa3b4f2c9a78baa4442cd81874881850ff2e", "havven"],
+    // zenYFI -
+    ["0xb595a7715d7d5a0252e5d3cdddfa2e1c7c1feebe", "yearn-finance"],
+    // zenDSD -
+    ["0x1c1bb5efec38b1b01e0e72fa0c8521d695299b60", "dynamic-set-dollar"],
+    // zenBONDLY -
+    ["0x53bafba543f8f1283ed5b21cafe7925c367ec3bd", "bondly"],
+    // zenPOLS -
+    ["0x5b37c72dde4c4efc3e2eeff4107ef6eb61f5de10", "polkastarter"],
+    // zen1INCH -
+    ["0x2ddfd56221568b6d4350b68432569a57bc1f9572", "1inch"],
+    // zenRSR -
+    ["0xa0998fc7dcf51169d97a74f0b0b7d97e4af8e873", "reserve-rights-token"],
+    // zenROYA -
+    ["0x0e0055bf26f4bdde57b112112e5db25d56706580", "royale"],
+    // zenFTX -
+    ["0x650D62FCB1F22A10a2b810BFe305C1312a24A367", "ftx-token"],
+    // zenSRM -
+    ["0x290a565ec7C28557AE872de2f3a5Ce500F46A5d2", "serum"],
+    // zenBAL -
+    ["0x31b992fda33C6c52c602cF379B9bBe1745A903f7", "balancer"],
+    // zenCRV -
+    ["0x144bdF52690c59B510DA5DBc09BB5f145FbdB8E1", "curve-dao-token"],
+    // zenUMA -
+    ["0x1BAdCB0833072B986c845681D3C73603Adc5bA54", "uma"],
+    // zenRUNE -
+    ["0x3bdBd2B661560Bcdf59BDC74576f65E2F714b836", "thorchain-erc20"],
+    // zenFRAX -
+    ["0xa8e31aD81D609ff616645849987feF30A3FfABd9", "frax"],
+    // zenHEGIC -
+    ["0x15Fcfd53fec9B72cF3725649F3eC4603077ad21e", "hegic"],
+    // zenMPH -
+    ["0x4dD6D5D861EDcD361455b330fa28c4C9817dA687", "88mph"],
+    // zenzLOT -
+    ["0x8eC3E4978E531565A46C22fbE0423Be1BB8E1156", "zlot"],
+    // zenWHITE -
+    ["0xE3334e66634acF17B2b97ab560ec92D6861b25fa", "whiteheart"],
+    // zenWNXM -
+    ["0xa07Be94D721DF448B63EC6C3160138A2b2619e1D", "wrapped-nxm"],
+    // zenRENBTC -
+    ["0x7a665de4b80835295901dd84ece07e942a9fe400", "renbtc"],
+    // zenBNT -
+    ["0x1b6d730a1dCAeB870BA3b0c6e51F801C1cCa0499", "bancor"],
+    // zenKNC -
+    ["0x180087A6a87Fd6b09a78C9b9B87b71335906c61D", "kyber-network"],
+    // zenCEL -
+    ["0xa6b8cbB493fe5682d627bdB9A6B361488086a2fD", "celsius-degree-token"],
+    // zenCORN -
+    ["0x4E50972850822f8be8A034e23891B7063893Cc34", "cornichon"],
+    // zenAPI3 -
+    ["0xA24c0E9195481821f9b5292E8c6A4209cc8cc3c9", "api3"],
+    // zenMATIC -
+    ["0xa3968dAbF386D99F67c92c4E3c7cfDf2c0ccc396", "matic-network"],
+    // zenBAO -
+    ["0x132E549262f2b2AD48AA306c3d389e55BB510419", "bao-finance"],
+    // zenUST -
+    ["0xaB576bCBB0C3303C9e680fbFDeCa67e062eAE59c", "terrausd"],
+    // zenDVG
+    ["0x07d22cd5d483b1242518d5cd26b21b552f0cfcdb", "daoventures"],
+    // zenGRT
+    ["0x90ea640fd96b10d79b95166ea9d4b5fb2fb4f4be", "the-graph"],
+    // zenOX
+    ["0x33a9f9bace23cfb8dad597a564d055ad415648ff", "0x"],
+    // zenOMG
+    ["0x7283fe6ae81f39d07850b78f282037b65448a2bc", "omisego"],
+    // zenINJ
+    ["0xd7756be9aedc211a9d5677d7d67295e6d7dd86c7", "injective-protocol"],
+    // zenBADGER
+    ["0x4a5b823592c2a1e95502c0b55afba2397e71799d", "badger-dao"],
+    // zenROOK
+    ["0xf9aea09993e1a43b5f7dcdbd67cda89690a51491", "rook"],
+    // zenUTK
+    ["0x8fb35c58e48660a29c80452d3c7bf98fe81de921", "utrust"],
+    // zenALPHA
+    ["0x49a39e062aaf28950f9d0d5fd423dfb3175c0bb1", "alpha-finance"],
+    // zenRGT
+    ["0x223f6fc2696beeb0d096a72b8db674e6bd520398", "rari-governance-token"],
+    // zenFXF
+    ["0x01A8F03E4EFb1ceF12D796d21468C5903A6ed5D6", "finxflo"],
+    // zenKYL
+    ["0x6A4e7Daf7E1244944BDA17390B1ec5F44C9DF671", "kylin-network"],
+    // zenPAID
+    ["0x2dD28391d7552363eED30eb172116cf3E13ECa23", "paid-network"],
+    // zenENJ
+    ["0x25942b9496282ce18c3B8d8c722ccF8e5112b252", "enjincoin"],
+    // zenLABS
+    ["0xaaB14c2115aaD338cEDb93e423834897651a3Ee2", "labs-group"],
+  ];
+
+  // ETH ZENTEREST ASSETS
+  let compaundLensContractService = () => {
+    return new web3.eth.Contract(
+      COMPOUND_LENS_ABI,
+      "0x491bf5613f23bfaf9a6cc9b2cd6fedeba7ab803e" // comp lens address
+    );
+  };
+
+  let aggregatedData = {};
+  let totalSupplySize = BigNumber(0);
+  let totalBorrowSize = BigNumber(0);
+
+  var price_feed = await retry(
+    async (bail) =>
+      await axios.get(
+        "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true"
+      )
+  );
+
+  const ethUsdPrice = price_feed.data["ethereum"].usd;
+  const ZEN_TOKEN_ADRESSES = zenTokens.flat().filter((a, i) => i % 2 === 0);
+
+  const [tokensMetadata, tokensUnderlyingPrices] = await Promise.all([
+    await compaundLensContractService()
+      .methods.cTokenMetadataAll(ZEN_TOKEN_ADRESSES)
+      .call(),
+    await compaundLensContractService()
+      .methods.cTokenUnderlyingPriceAll(ZEN_TOKEN_ADRESSES)
+      .call(),
+  ]);
+
+  tokensUnderlyingPrices.forEach(([zenToken, underlyingPrice]) => {
+    let decimals;
+    const zenTokenAddress = zenToken.toLowerCase();
+
+    if (zenTokenAddress === "0xa6b8cbb493fe5682d627bdb9a6b361488086a2fd") {
+      // celsius
+      decimals = 4;
+    } else if (
+      zenTokenAddress === "0xf76cc2dc02f56b27761dbdb7a62e2b1c4a22afcd"
+    ) {
+      // usdt
+      decimals = 6;
+    } else if (
+      zenTokenAddress === "0x0968c90198f08b67365840fa37631b29fe2aa9fc"
+    ) {
+      // usdc
+      decimals = 6;
+    } else if (
+      zenTokenAddress === "0x290a565ec7c28557ae872de2f3a5ce500f46a5d2"
+    ) {
+      // serum
+      decimals = 6;
+    } else if (
+      zenTokenAddress === "0x5b4463bbd7b2e870601e91161e0f1f7f84cde214"
+    ) {
+      // wbtc
+      decimals = 8;
+    } else if (
+      zenTokenAddress === "0x7a665de4b80835295901dd84ece07e942a9fe400"
+    ) {
+      // renbtc
+      decimals = 8;
+    } else {
+      decimals = 18;
+    }
+
+    aggregatedData[zenTokenAddress] = {
+      underlyingPrice: toBNScaled(underlyingPrice, 36 - decimals),
+    };
+  });
+
+  tokensMetadata.forEach(
+    ({
+      cToken: zenToken,
+      supplyRatePerBlock,
+      borrowRatePerBlock,
+      reserveFactorMantissa,
+      totalBorrows: totalBorrowsResult,
+      totalSupply: totalSupplyZenResult,
+      collateralFactorMantissa,
+      underlyingDecimals,
+      exchangeRateCurrent,
+      cTokenDecimals,
+      totalCash,
+    }) => {
+      const zenTokenAddress = zenToken.toLowerCase();
+
+      const { underlyingPrice } = aggregatedData[zenTokenAddress];
+      const underlyingDecimalsNumber = Number(underlyingDecimals);
+      const exchangeRate = toBNScaled(
+        exchangeRateCurrent,
+        EXP_DECIMALS + underlyingDecimalsNumber - cTokenDecimals
+      );
+      const totalSupply =
+        totalSupplyZenResult > 0
+          ? toBNScaled(totalSupplyZenResult, cTokenDecimals).times(exchangeRate)
+          : toBN(0);
+
+      const totalBorrows = toBNScaled(
+        totalBorrowsResult,
+        underlyingDecimalsNumber
+      );
+
+      let totalSupplyUsd = totalSupply
+        .times(underlyingPrice)
+        .times(ethUsdPrice);
+      let totalBorrowsUsd = totalBorrows
+        .times(underlyingPrice)
+        .times(ethUsdPrice);
+
+      aggregatedData[zenTokenAddress] = {
+        ...aggregatedData[zenTokenAddress],
+        zenTokenAddress,
+        collateralFactor: toBNScaled(collateralFactorMantissa, EXP_DECIMALS),
+        reserveFactor: toBNScaled(reserveFactorMantissa, EXP_DECIMALS),
+        totalSupplyUsd,
+        totalBorrowsUsd,
+        marketLiquidityEth: toBNScaled(totalCash, underlyingDecimals).times(
+          underlyingPrice
+        ),
+      };
+
+      totalSupplySize = totalSupplySize.plus(totalSupplyUsd);
+      totalBorrowSize = totalBorrowSize.plus(totalBorrowsUsd);
+    }
+  );
+
+  return [totalSupplySize, totalBorrowSize];
+}
+
+async function fetchZenterestSupply() {
+  const [totalZenterestSupply] = await calculateZenterestTVL();
+  return parseFloat(totalZenterestSupply.toFixed(0));
+}
+
+async function fetchZenterestBorrow() {
+  const [, totalZenterestBorrow] = await calculateZenterestTVL();
+  return parseFloat(totalZenterestBorrow.toFixed(0));
+}
 
 async function fetchETH() {
   var tvlETH = 0;
@@ -278,125 +536,6 @@ async function fetchETH() {
     },
   ];
 
-  // Lending / borrowing
-  // Zen assets
-  const zenTokens = [
-    // zenETH -
-    ["0x4F905f75F5576228eD2D0EA508Fb0c32a0696090", "ethereum"],
-    // zenUSDT -
-    ["0xF76cc2dc02F56B27761dBdb7a62e2B1C4a22aFcd", "tether"],
-    // zenUSDC -
-    ["0x0968c90198f08b67365840fa37631b29fe2aa9fc", "usd-coin"],
-    // zenWBTC -
-    ["0x5b4463bbd7b2e870601e91161e0f1f7f84cde214", "wrapped-bitcoin"],
-    // zenCOMP -
-    ["0x3f2e9a93428a22d2f4cacc3f184f1aad85054e1c", "compound-governance-token"],
-    // zenDAI -
-    ["0x3bafa9cd93c7bdc07fd9609e95e04a8904eacf7d", "dai"],
-    // zenCREAM -
-    ["0x66d696474784ded49b5d0a43e50bf59d63402d74", "cream"],
-    // zenOM -
-    ["0x11c70CAA910647d820bD014d676Dcd97EDD64A99", "mantra-dao"],
-    // zenRFUEL -
-    ["0xf533c78c0790676008d576c5cc2e63e0856ed4f0", "rio-defi"],
-    // zenLINK -
-    ["0x27d15446176b469ee7fbdec1e5a4b506fd77c0cd", "chainlink"],
-    // zenAAVE -
-    ["0x57a8cb15e9575bf9bf80f3531183395703912f57", "aave"],
-    // zenUNI -
-    ["0x391f902c8979050ba8036e3d61d13d79cf545db8", "uniswap"],
-    // zenSUSHI -
-    ["0xb3c114d12cc260ff0a07a2cf22a910625367b403", "sushi"],
-    // zenSNX -
-    ["0xc4bdaa3b4f2c9a78baa4442cd81874881850ff2e", "havven"],
-    // zenYFI -
-    ["0xb595a7715d7d5a0252e5d3cdddfa2e1c7c1feebe", "yearn-finance"],
-    // zenDSD -
-    ["0x1c1bb5efec38b1b01e0e72fa0c8521d695299b60", "dynamic-set-dollar"],
-    // zenBONDLY -
-    ["0x53bafba543f8f1283ed5b21cafe7925c367ec3bd", "bondly"],
-    // zenPOLS -
-    ["0x5b37c72dde4c4efc3e2eeff4107ef6eb61f5de10", "polkastarter"],
-    // zen1INCH -
-    ["0x2ddfd56221568b6d4350b68432569a57bc1f9572", "1inch"],
-    // zenRSR -
-    ["0xa0998fc7dcf51169d97a74f0b0b7d97e4af8e873", "reserve-rights-token"],
-    // zenROYA -
-    ["0x0e0055bf26f4bdde57b112112e5db25d56706580", "royale"],
-    // zenFTX -
-    ["0x650D62FCB1F22A10a2b810BFe305C1312a24A367", "ftx-token"],
-    // zenSRM -
-    ["0x290a565ec7C28557AE872de2f3a5Ce500F46A5d2", "serum"],
-    // zenBAL -
-    ["0x31b992fda33C6c52c602cF379B9bBe1745A903f7", "balancer"],
-    // zenCRV -
-    ["0x144bdF52690c59B510DA5DBc09BB5f145FbdB8E1", "curve-dao-token"],
-    // zenUMA -
-    ["0x1BAdCB0833072B986c845681D3C73603Adc5bA54", "uma"],
-    // zenRUNE -
-    ["0x3bdBd2B661560Bcdf59BDC74576f65E2F714b836", "thorchain-erc20"],
-    // zenFRAX -
-    ["0xa8e31aD81D609ff616645849987feF30A3FfABd9", "frax"],
-    // zenHEGIC -
-    ["0x15Fcfd53fec9B72cF3725649F3eC4603077ad21e", "hegic"],
-    // zenMPH -
-    ["0x4dD6D5D861EDcD361455b330fa28c4C9817dA687", "88mph"],
-    // zenzLOT -
-    ["0x8eC3E4978E531565A46C22fbE0423Be1BB8E1156", "zlot"],
-    // zenWHITE -
-    ["0xE3334e66634acF17B2b97ab560ec92D6861b25fa", "whiteheart"],
-    // zenWNXM -
-    ["0xa07Be94D721DF448B63EC6C3160138A2b2619e1D", "wrapped-nxm"],
-    // zenRENBTC -
-    ["0x7a665de4b80835295901dd84ece07e942a9fe400", "renbtc"],
-    // zenBNT -
-    ["0x1b6d730a1dCAeB870BA3b0c6e51F801C1cCa0499", "bancor"],
-    // zenKNC -
-    ["0x180087A6a87Fd6b09a78C9b9B87b71335906c61D", "kyber-network"],
-    // zenCEL -
-    ["0xa6b8cbB493fe5682d627bdB9A6B361488086a2fD", "celsius-degree-token"],
-    // zenCORN -
-    ["0x4E50972850822f8be8A034e23891B7063893Cc34", "cornichon"],
-    // zenAPI3 -
-    ["0xA24c0E9195481821f9b5292E8c6A4209cc8cc3c9", "api3"],
-    // zenMATIC -
-    ["0xa3968dAbF386D99F67c92c4E3c7cfDf2c0ccc396", "matic-network"],
-    // zenBAO -
-    ["0x132E549262f2b2AD48AA306c3d389e55BB510419", "bao-finance"],
-    // zenUST -
-    ["0xaB576bCBB0C3303C9e680fbFDeCa67e062eAE59c", "terrausd"],
-    // zenDVG
-    ["0x07d22cd5d483b1242518d5cd26b21b552f0cfcdb", "daoventures"],
-    // zenGRT
-    ["0x90ea640fd96b10d79b95166ea9d4b5fb2fb4f4be", "the-graph"],
-    // zenOX
-    ["0x33a9f9bace23cfb8dad597a564d055ad415648ff", "0x"],
-    // zenOMG
-    ["0x7283fe6ae81f39d07850b78f282037b65448a2bc", "omisego"],
-    // zenINJ
-    ["0xd7756be9aedc211a9d5677d7d67295e6d7dd86c7", "injective-protocol"],
-    // zenBADGER
-    ["0x4a5b823592c2a1e95502c0b55afba2397e71799d", "badger-dao"],
-    // zenROOK
-    ["0xf9aea09993e1a43b5f7dcdbd67cda89690a51491", "rook"],
-    // zenUTK
-    ["0x8fb35c58e48660a29c80452d3c7bf98fe81de921", "utrust"],
-    // zenALPHA
-    ["0x49a39e062aaf28950f9d0d5fd423dfb3175c0bb1", "alpha-finance"],
-    // zenRGT
-    ["0x223f6fc2696beeb0d096a72b8db674e6bd520398", "rari-governance-token"],
-    // zenFXF
-    ["0x01A8F03E4EFb1ceF12D796d21468C5903A6ed5D6", "finxflo"],
-    // zenKYL
-    ["0x6A4e7Daf7E1244944BDA17390B1ec5F44C9DF671", "kylin-network"],
-    // zenPAID
-    ["0x2dD28391d7552363eED30eb172116cf3E13ECa23", "paid-network"],
-    // zenENJ
-    ["0x25942b9496282ce18c3B8d8c722ccF8e5112b252", "enjincoin"],
-    // zenLABS
-    ["0xaaB14c2115aaD338cEDb93e423834897651a3Ee2", "labs-group"],
-  ];
-
   async function returnBalanceETHLP(token, address) {
     let contract = new web3.eth.Contract(abis.minABI, token);
     let decimals = await contract.methods.decimals().call();
@@ -442,130 +581,9 @@ async function fetchETH() {
     })
   );
 
-  // ETH ZENTEREST ASSETS
-  let compaundLensContractService = () => {
-    return new web3.eth.Contract(
-      COMPOUND_LENS_ABI,
-      "0x491bf5613f23bfaf9a6cc9b2cd6fedeba7ab803e" // comp lens address
-    );
-  };
+  const totalZenterestSupply = await fetchZenterestSupply();
 
-  let aggregatedData = {};
-  let totalMarketSize = BigNumber(0);
-
-  const ethUsdPrice = price_feed.data["ethereum"].usd;
-  const ZEN_TOKEN_ADRESSES = zenTokens.flat().filter((a, i) => i % 2 === 0);
-
-  const [tokensMetadata, tokensUnderlyingPrices] = await Promise.all([
-    await compaundLensContractService()
-      .methods.cTokenMetadataAll(ZEN_TOKEN_ADRESSES)
-      .call(),
-    await compaundLensContractService()
-      .methods.cTokenUnderlyingPriceAll(ZEN_TOKEN_ADRESSES)
-      .call(),
-  ]);
-
-  tokensUnderlyingPrices.forEach(([zenToken, underlyingPrice]) => {
-    let decimals;
-    const zenTokenAddress = zenToken.toLowerCase();
-
-    if (zenTokenAddress === "0xa6b8cbb493fe5682d627bdb9a6b361488086a2fd") {
-      // celsius
-      decimals = 4;
-    } else if (
-      zenTokenAddress === "0xf76cc2dc02f56b27761dbdb7a62e2b1c4a22afcd"
-    ) {
-      // usdt
-      decimals = 6;
-    } else if (
-      zenTokenAddress === "0x0968c90198f08b67365840fa37631b29fe2aa9fc"
-    ) {
-      // usdc
-      decimals = 6;
-    } else if (
-      zenTokenAddress === "0x290a565ec7c28557ae872de2f3a5ce500f46a5d2"
-    ) {
-      // serum
-      decimals = 6;
-    } else if (
-      zenTokenAddress === "0x5b4463bbd7b2e870601e91161e0f1f7f84cde214"
-    ) {
-      // wbtc
-      decimals = 8;
-    } else if (
-      zenTokenAddress === "0x7a665de4b80835295901dd84ece07e942a9fe400"
-    ) {
-      // renbtc
-      decimals = 8;
-    } else {
-      decimals = 18;
-    }
-
-    aggregatedData[zenTokenAddress] = {
-      underlyingPrice: toBNScaled(underlyingPrice, 36 - decimals),
-    };
-  });
-
-  tokensMetadata.forEach(
-    ({
-      cToken: zenToken,
-      supplyRatePerBlock,
-      borrowRatePerBlock,
-      reserveFactorMantissa,
-      totalBorrows: totalBorrowsResult,
-      totalSupply: totalSupplyZenResult,
-      collateralFactorMantissa,
-      underlyingDecimals,
-      exchangeRateCurrent,
-      cTokenDecimals,
-      totalCash,
-    }) => {
-      const zenTokenAddress = zenToken.toLowerCase();
-
-      const { underlyingPrice } = aggregatedData[zenTokenAddress];
-      const underlyingDecimalsNumber = Number(underlyingDecimals);
-      const exchangeRate = toBNScaled(
-        exchangeRateCurrent,
-        EXP_DECIMALS + underlyingDecimalsNumber - cTokenDecimals
-      );
-      const totalSupply =
-        totalSupplyZenResult > 0
-          ? toBNScaled(totalSupplyZenResult, cTokenDecimals).times(exchangeRate)
-          : toBN(0);
-
-      const totalBorrows = toBNScaled(
-        totalBorrowsResult,
-        underlyingDecimalsNumber
-      );
-
-      let totalSupplyUsd = totalSupply
-        .times(underlyingPrice)
-        .times(ethUsdPrice);
-      let totalBorrowsUsd = totalBorrows
-        .times(underlyingPrice)
-        .times(ethUsdPrice);
-
-      aggregatedData[zenTokenAddress] = {
-        ...aggregatedData[zenTokenAddress],
-        zenTokenAddress,
-        collateralFactor: toBNScaled(collateralFactorMantissa, EXP_DECIMALS),
-        reserveFactor: toBNScaled(reserveFactorMantissa, EXP_DECIMALS),
-        totalSupplyUsd,
-        totalBorrowsUsd,
-        marketLiquidityEth: toBNScaled(totalCash, underlyingDecimals).times(
-          underlyingPrice
-        ),
-      };
-
-      totalMarketSize = totalMarketSize
-        .plus(totalSupplyUsd)
-        .plus(totalBorrowsUsd);
-    }
-  );
-
-  tvlETH += parseFloat(totalMarketSize.toFixed(0));
-  tvlTotal += tvlETH;
-
+  tvlETH += parseFloat(totalZenterestSupply.toFixed(0));
   return tvlETH;
 }
 
@@ -744,8 +762,6 @@ async function fetchBSC() {
     })
   );
 
-  tvlTotal += tvlBSC;
-
   return tvlBSC;
 }
 
@@ -838,8 +854,6 @@ async function fetchPolygon() {
     })
   );
 
-  tvlTotal += tvlPolygon;
-
   return tvlPolygon;
 }
 
@@ -852,6 +866,9 @@ module.exports = {
   },
   polygon: {
     fetch: fetchPolygon,
+  },
+  borrowed: {
+    fetch: fetchZenterestBorrow,
   },
   fetch: async () =>
     (await fetchETH()) + (await fetchBSC()) + (await fetchPolygon()),
