@@ -14,5 +14,6 @@ async function fetch() {
 }
 
 module.exports = {
+  methodology: `GlobianceDEX TVL is a sum of all the crypto assets locked in various liquidity pools & staking pools available on the DEX.`,
   fetch,
 };
