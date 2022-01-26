@@ -22,6 +22,20 @@
   const bKeeperAddress = "0xeaE019ef845A4Ffdb8829210De5D30aC6FbB5371";
   const stabilityPoolAddress = "0x66017D22b0f8556afDd19FC67041899Eb65a21bb";
 
+  const usdcEth = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+  const usdcFantom = "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75"
+  const usdcArbitrum = "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8"
+  
+  const daiEth = "0x6b175474e89094c44da98b954eedeac495271d0f"
+  const daiFantom = "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e"
+  
+  const usdtEth = "0xdac17f958d2ee523a2206206994597c13d831ec7"
+  const usdtArbitrum = "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9"
+  
+  const usdcFantomBAMM = "0xEDC7905a491fF335685e2F2F1552541705138A3D"
+  const daiFantomBAMM = "0x6d62d6Af9b82CDfA3A7d16601DDbCF8970634d22"
+  const usdcArbitrumBAMM = "0x04208f296039f482810B550ae0d68c3E1A5EB719"
+  const usdtArbitrumBAMM = "0x24099000AE45558Ce4D049ad46DDaaf71429b168"
 
 /*==================================================
   TVL
@@ -174,7 +188,7 @@
     return {'0x5f98805A4E8be255a32880FDeC7F6728C6568bA0' : totalBalance.toString(10)}
   }
 
-  async function tvl(timestamp, block) {
+  async function tvlEth(timestamp, block) {
     const [cTvl, mTvl, lTvl] = await Promise.all([compoundTvl(timestamp, block), makerTvl(timestamp, block), liquityTvl(timestamp, block)])
     // combine balances for Maker and Compound B.Protocol's TVL
     const allLendingPlatformBalances = {}
@@ -184,13 +198,67 @@
     })
 
     return allLendingPlatformBalances;
+  }
+
+  async function tvlFantom(unixTimestamp, ethBlock, chainBlocks) {
+    const block = chainBlocks["fantom"]
+
+    const balances = {}
+
+    balances[usdcEth] = (
+      await sdk.api.erc20.balanceOf({
+        target: usdcFantom,
+        owner: usdcFantomBAMM,
+        block: block,
+        chain: "fantom",
+      })
+    ).output;
+
+    balances[daiEth] = daiTvl = (
+      await sdk.api.erc20.balanceOf({
+        target: daiFantom,
+        owner: daiFantomBAMM,
+        block: block,
+        chain: "fantom",
+      })
+    ).output;    
+
+    return balances
+  }
+
+  async function tvlArbitrum(unixTimestamp, ethBlock, chainBlocks) {
+    const block = chainBlocks["arbitrum"]
+
+    const balances = {}
+
+    balances[usdcEth] = (
+      await sdk.api.erc20.balanceOf({
+        target: usdcArbitrum,
+        owner: usdcArbitrumBAMM,
+        block: block,
+        chain: "arbitrum",
+      })
+    ).output;
+
+    balances[usdtEth] = daiTvl = (
+      await sdk.api.erc20.balanceOf({
+        target: usdtArbitrum,
+        owner: usdtArbitrumBAMM,
+        block: block,
+        chain: "arbitrum",
+      })
+    ).output;    
+
+    return balances
   }  
+
 
 /*==================================================
   Exports
   ==================================================*/
 
   module.exports = {
-    start: 1605380632,  // 11/14/2020 @ 7:03pm (UTC)
-    tvl,
+    ethereum: {"tvl": tvlEth},
+    fantom: {"tvl" : tvlFantom},
+    arbitrum: {"tvl" : tvlArbitrum}
   };
