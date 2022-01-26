@@ -12,11 +12,14 @@ const treasury = "0xCB54EA94191B280C296E6ff0E37c7e76Ad42dC6A";
 const dai = "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e";
 const ftm = "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83";
 const hecUsdcLP = "0xd661952749f05acc40503404938a91af9ac1473b";
-const hecGohmLP = "0xEb7942E26368b2052CBbDa2c054482F00436ef7B";
 const usdc = "0x04068da6c83afcfa0e13ba15a6696662335d5b75";
 const mim = "0x82f0b8b456c1a451378467398982d4834b6829c1";
 const frax = "0xdc301622e621166bd8e82f2ca0a26c13ad0be355";
 const fraxLp = "0x0f8D6953F58C0dd38077495ACA64cbd1c76b7501";
+const crv = "0x1E4F97b9f9F913c46F1632781732927B9019C68b";
+const wETH = "0x74b23882a30290451A17c44f4F05243b6b58C76d";
+const boo = "0x841FAD6EAe12c286d1Fd18d1d525DFfA75C7EFFE";
+const wFTM = "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83";
 
 const HectorStakings = [
   // V1
@@ -37,9 +40,12 @@ async function tvl(timestamp, block, chainBlocks) {
       [ftm, false],
       [mim, false],
       [frax, false],
+      [wFTM, false],
+      [crv, false],
+      [wETH, false],
+      [boo, false],
       [hecUsdcLP, true],
       [fraxLp, true],
-      [hecGohmLP, true],
       [hecDaiSLP, true],
     ],
     [treasury],
