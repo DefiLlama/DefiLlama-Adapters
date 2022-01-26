@@ -1,8 +1,9 @@
 const sdk = require("@defillama/sdk");
 const { request, gql } = require("graphql-request"); 
 const {sumTokens} = require('../helper/unwrapLPs')
-<<<<<<< HEAD
 const { BigNumber } = require('bignumber.js');
+
+const {getBlock} = require('../helper/getBlock')
 
 // https://thegraph.com/hosted-service/subgraph/sushiswap/bentobox
 const graphUrls = {
@@ -13,17 +14,9 @@ const graphUrls = {
   'xdai': 'https://api.thegraph.com/subgraphs/name/sushiswap/xdai-bentobox',
   'arbitrum': 'https://api.thegraph.com/subgraphs/name/sushiswap/arbitrum-bentobox'
 }
-=======
-const { handleYearnTokens } = require("../creditum/index.js");
-const { transformFantomAddress } = require("../helper/portedTokens");
->>>>>>> main
 
 const bentoboxQuery = gql`
-<<<<<<< HEAD
 query get_bentoboxes($block: Int, $tokensSkip: Int) {
-=======
-query get_bentoboxes {
->>>>>>> main
    bentoBoxes(
      first: 100, 
       # block: { number: $block } 
@@ -46,7 +39,6 @@ query get_bentoboxes {
  } 
 `
 
-<<<<<<< HEAD
 function kashiLending(chain, borrowed) {
   return async (timestamp, ethBlock, chainBlocks) => {
     // Retrieve bento boxes tokens held in contract
@@ -92,11 +84,17 @@ function kashiLending(chain, borrowed) {
       return balances
     }
   }
-=======
+}
+
+// Handle Kashi Lending on fantom differently for unwrapping correctly most important tokens like yvWFTM and wsSPA
+const { handleYearnTokens } = require("../creditum/index.js");
+const { transformFantomAddress } = require("../helper/portedTokens");
 async function kashiLendingFantom(timestamp, ethBlock, chainBlocks) {
   const transform = await transformFantomAddress()
   const chain = "fantom"
-  const block = chainBlocks[chain]
+  console.log('test')
+  const block = await getBlock(timestamp, chain, chainBlocks, false) 
+  console.log('blocks', chainBlocks, block)
   const box = "0xF5BCE5077908a1b7370B9ae04AdC565EBd643966"
   const wsSPA= "0x89346b51a54263cf2e92da79b1863759efa68692";
   const spa = "fantom:0x5602df4a94eb6c680190accfa2a475621e0ddbdc";
@@ -138,27 +136,8 @@ async function kashiLendingFantom(timestamp, ethBlock, chainBlocks) {
   return balances
 }
 
-
-async function kashiLending(timestamp, block, chainBlocks) {
-  // Retrieve bento boxes tokens held in contract
-  const { bentoBoxes } = await request(
-    graphUrl, 
-    bentoboxQuery, 
-  )
-  const boxTokens = []
-  bentoBoxes.forEach(async box => {
-    boxTokens.push(...box.tokens.map(t => [t.id, box.id]))
-    if (box.totalTokens > box.tokens.length) {console.log('More tokens in bento box than returned by graphql api, probably over the 1000 tokens limit')}
-  })
-  const balances = {}
-  await sumTokens(balances, boxTokens, block, 'ethereum')
-  return balances
->>>>>>> main
-}
-
 module.exports = {
-  tvl: kashiLendingFantom,
   kashiLendingFantom,
-  kashiLending: kashiLending,
+  kashiLending,
   methodology: `TVL of Sushiswap Kashi lending consists of the tokens held in Sushiswap Bentoboxes contracts - one bentobox per chain - and borrows = supply - tvl`
 }
