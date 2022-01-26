@@ -72,7 +72,7 @@ async function treasury(timestamp, block, chainBlocks) {
 }
 module.exports = {
   methodology:
-    "Pool2 deposits consist of COMFY/ONE and CSHARE/ONE LP tokens deposits while the staking TVL consists of the CSHARE tokens locked within the Zen Den contract(0x108426718E67da46e09E841bC4e8430A824BDaFc).",
+    "Pool2 deposits consist of COMFY/ONE and CSHARE/ONE LP tokens deposited in the MasterChef based contracts, whilst the staking TVL consists of the CSHARE tokens locked within the Zen Den contract(0x108426718E67da46e09E841bC4e8430A824BDaFc).",
   harmony: {
     tvl: async () => ({}),
     pool2: onePool2,
