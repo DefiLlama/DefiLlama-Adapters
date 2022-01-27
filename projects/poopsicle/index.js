@@ -72,7 +72,8 @@ async function poop(timestamp, ethBlock, chainBlocks) {
 
 module.exports = {
   fantom: {
-    tvl: sdk.util.sumChainTvls([
+    tvl: () => ({}),
+    pool2: sdk.util.sumChainTvls([
       poop,
       staking(data["ftm_poop"].lp, data["ftm_poop"].dt, CHAIN),
       staking(data["any_poop"].lp, data["any_poop"].dt, CHAIN),
@@ -83,14 +84,5 @@ module.exports = {
       staking(data["gohm_poop"].lp, data["gohm_poop"].dt, CHAIN),
       staking(data["spirit_poop"].lp, data["spirit_poop"].dt, CHAIN),
     ]),
-    poop,
-    ftm_poop: staking(data["ftm_poop"].lp, data["ftm_poop"].dt, CHAIN),
-    any_poop: staking(data["any_poop"].lp, data["any_poop"].dt, CHAIN),
-    usdc_poop: staking(data["usdc_poop"].lp, data["usdc_poop"].dt, CHAIN),
-    boo_poop: staking(data["boo_poop"].lp, data["boo_poop"].dt, CHAIN),
-    band_poop: staking(data["band_poop"].lp, data["band_poop"].dt, CHAIN),
-    link_poop: staking(data["link_poop"].lp, data["link_poop"].dt, CHAIN),
-    gohm_poop: staking(data["gohm_poop"].lp, data["gohm_poop"].dt, CHAIN),
-    spirit_poop: staking(data["spirit_poop"].lp, data["spirit_poop"].dt, CHAIN),
   },
 };
