@@ -41,6 +41,7 @@ async function tvl(timestamp, block) {
 }
 
 module.exports = {
+  methodology: `All assets that were deposited into our active pools.`,
   ethereum: {
     tvl,
   },
