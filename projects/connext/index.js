@@ -79,7 +79,6 @@ function chainTvl(chain) {
         } else {
           transformedAssetId = await chainTransform(assetId);
         }
-
         sdk.util.sumSingleBalance(balances, transformedAssetId, balance.output);
       })
     );

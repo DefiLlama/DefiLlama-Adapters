@@ -49,6 +49,7 @@ async function fantom(timestamp) {
 
 
 module.exports = {
+    doublecounted: true,
     misrepresentedTokens: true,
     timetravel: false,
     fantom: {

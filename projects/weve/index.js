@@ -1,4 +1,4 @@
-const {masterChefExports} = require('../helper/masterchef')
+const {masterChefExports, standardPoolInfoAbi} = require('../helper/masterchef')
 module.exports=masterChefExports("0xe04c26444d37fe103b9cc8033c99b09d47056f51", "fantom", "0x911da02c1232a3c3e1418b834a311921143b04d7", false, 
-    {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"poolInfo","outputs":[{"internalType":"contract IERC20","name":"lpToken","type":"address"},{"internalType":"uint256","name":"allocPoint","type":"uint256"},{"internalType":"uint256","name":"lastRewardBlock","type":"uint256"},{"internalType":"uint256","name":"accWeVEPerShare","type":"uint256"}],"stateMutability":"view","type":"function"}
+    standardPoolInfoAbi
 )

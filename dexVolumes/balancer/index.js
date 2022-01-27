@@ -31,7 +31,7 @@ module.exports = {
   volume: {
     [ETHEREUM]: {
       fetch: graphs(ETHEREUM),
-      start: ethStart,
+      start: 0,
       customBackfill: () => {},
     },
     // POLYGON

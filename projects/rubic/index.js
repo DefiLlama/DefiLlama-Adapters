@@ -1,4 +1,5 @@
 const sdk = require('@defillama/sdk');
+const solana = require('../helper/solana')
 const { staking } = require('../helper/staking');
 
 const stakingContract = '0x8d9Ae5a2Ecc16A66740A53Cc9080CcE29a7fD9F5';
@@ -10,7 +11,9 @@ const pools = {
   polygon:'0xeC52A30E4bFe2D6B0ba1D0dbf78f265c0a119286',
   fantom: '0xd23B4dA264A756F427e13C72AB6cA5A6C95E4608',
   avax: '0x541eC7c03F330605a2176fCD9c255596a30C00dB',
-  harmony: '0x5681012ccc3ec5bafefac21ce4280ad7fe22bbf2'
+  harmony: '0x5681012ccc3ec5bafefac21ce4280ad7fe22bbf2',
+  moonriver: '0xD8b19613723215EF8CC80fC35A1428f8E8826940',
+  solana: 'DrmQS74dx5yDPzAJdGpVMqpSkVP9RXFQnMQAdeo1P7mj'
 };
 
 const usdcByChain = {
@@ -19,7 +22,9 @@ const usdcByChain = {
   polygon: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',
   fantom: '0x04068da6c83afcfa0e13ba15a6696662335d5b75',
   avax: '0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664',
-  harmony: '0x985458e523db3d53125813ed68c274899e9dfab4'
+  harmony: '0x985458e523db3d53125813ed68c274899e9dfab4',
+  moonriver: '0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d',
+  solana: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
 }
 
 function chainTvl(chain) {
@@ -36,9 +41,22 @@ function chainTvl(chain) {
   }
 }
 
+function solanaTvl() {
+  return async (timestamp, ethBlock, chainBlocks) => {
+    const balances = {};
+    const poolBalance = await solana.getTokenBalance(usdcByChain['solana'], pools['solana']);
+
+    sdk.util.sumSingleBalance(balances, 'usd-coin', poolBalance);
+
+    return balances;
+  }
+}
+
+
+
 module.exports = {
+  timetravel: false, // solana :cries:
   methodology: 'TVL for each network - USDC balance of the pool, in each network we have one pool and the total indicator is calculated as the sum of the balances of all pools.',
-  website: 'https://rubic.exchange/',
   bsc: {
     tvl: chainTvl('bsc'),
     staking: staking(stakingContract, stakingToken, 'bsc')
@@ -58,5 +76,10 @@ module.exports = {
   harmony: {
     tvl: chainTvl('harmony')
   },
-  
+  moonriver: {
+    tvl: chainTvl('moonriver')
+  },
+  solana: {
+    tvl: solanaTvl()
+  }
 }

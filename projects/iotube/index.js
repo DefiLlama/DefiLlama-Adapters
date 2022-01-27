@@ -20,7 +20,23 @@ const query = gql`
         totalSupply
         balance: any(field: market_cap)
       }
-      TokenSafe: ERC20(address: $iotexTokens) {
+      CYC: ERC20(address: ["0x4d7b88403aa2f502bf289584160db01ca442426c"]) {
+        address
+        symbol
+        decimals
+        totalSupply
+        balance: any(field: market_cap)
+      }
+      Tokens: ERC20(address: $iotexTokens) {
+        address
+        symbol
+        decimals
+        totalSupply
+        balance: any(field: market_cap)
+      }
+      TokenSafe: ERC20(
+        address: ["0xa00744882684c3e4747faefd68d283ea44099d03"]
+      ) {
         address
         symbol
         decimals
@@ -97,7 +113,33 @@ const query = gql`
 `;
 
 const variables = {
-  iotexTokens: ["0xa00744882684c3e4747faefd68d283ea44099d03"],
+  iotexTokens: [
+    "0x0258866edaf84d6081df17660357ab20a07d0c80",
+    "0xc7b93720f73b037394ce00f954f849ed484a3dea",
+    "0xacee9b11cd4b3f57e58880277ac72c8c41abe4e4",
+    "0xedeefaca6a1581fe2349cdfc3083d4efa8188e55",
+    "0x2a6003e4b618ff3457a4a2080d028b0249b51c80",
+    "0x6fbCdc1169B5130C59E72E51Ed68A84841C98cd1",
+    "0x3B2bf2b523f54C4E454F08Aa286D03115aFF326c",
+    "0x1CbAd85Aa66Ff3C12dc84C5881886EEB29C1bb9b",
+    "0x97e6c48867fdc391a8dfe9d169ecd005d1d90283",
+    "0x84abcb2832be606341a50128aeb1db43aa017449",
+    "0x42C9255D5e522e83B16ea11a3BA04c2D3AfCA079",
+    "0x037346E5a5722957Ac2cAb6ceb8c74fC18Cea91D",
+    "0x0bDF82F276309E2efd4947Ee8E0A248b2726E8Df",
+    "0x8e66c0d6b70c0b23d39f4b21a1eac52bba8ed89a",
+    "0x653656f84381e8a359a268f3002621bbb14c62f8",
+    "0x7f0ad63c902c67b1fa1b1102b0daffb889f5d5cb",
+    "0x62a9d987cbf4c45a550deed5b57b200d7a319632",
+    "0x3cdb7c48e70b854ed2fa392e21687501d84b3afc",
+    "0xc04da3a99d17135857bb937d2fbb321d3b6c6a81",
+    "0x295ebb8c782e186bcb70d9a8124053043d1adf5c",
+    "0xe46ba98a87dca989725e9a2389975c0bbbb8f985",
+    "0xaadc74127109d944e36cbd70f71fc5f0c921fc6c",
+    "0x0499a3ec965136bea01e4350113a2105724785dc",
+    "0x28873cEA8c26F603b15937f9985A888C5DA5Fd90",
+    "0xc1B58620aD839383c662BFe80dB4514344DeC6d7",
+  ],
   ethTokens: [
     "0x6fb3e0a217407efff7ca062d46c26e5d60a14d69",
     "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
@@ -149,6 +191,9 @@ const loadTvl = async () => {
           _.each(res, (v, k) => {
             res[k] = _.sum([
               ...(v.CIOTX?.filter((i) => i.balance > 0).map((i) =>
+                Number(i.balance)
+              ) || []),
+              ...(v.Tokens?.filter((i) => i.balance > 0).map((i) =>
                 Number(i.balance)
               ) || []),
               ...(v.CYC?.filter((i) => i.balance > 0).map((i) =>
