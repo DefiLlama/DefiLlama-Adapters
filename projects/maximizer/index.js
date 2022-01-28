@@ -19,6 +19,7 @@ const QI = "0x8729438EB15e2C8B576fCc6AeCdA6A148776C0F5";
 const JOE = "0x6e84a6216eA6dACC71eE8E6b0a5B7322EEbC0fDd";
 const XJOE = "0x57319d41F71E81F3c65F2a47CA4e001EbAFd4F33";
 const ISA = "0x3EeFb18003D033661f84e48360eBeCD181A84709";
+const PTP = "0x22d4002028f537599bE9f666d1c4Fa138522f9c8";
 const MAXI_DAI_JLP = "0xfBDC4aa69114AA11Fae65E858e92DC5D013b2EA9";
 const MAXI_WAVAX_PGL = "0xbb700450811a30c5ee0dB80925Cf1BA53dBBd60A";
 const PNG_WAVAX_PGL = "0xd7538cABBf8605BdE1f4901B47B8D42c61DE0367";
@@ -99,6 +100,7 @@ async function tvl(timestamp, block, chainBlocks) {
       [QI, false],
       [JOE, false],
       [ISA, false],
+      [PTP, false],
       [MAXI_DAI_JLP, true],
       [MAXI_WAVAX_PGL, true],
       [PNG_WAVAX_PGL, true],
