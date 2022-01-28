@@ -1,9 +1,12 @@
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
+const { sumTokensAndLPsSharedOwners, unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const sdk = require("@defillama/sdk");
-const { transformAvaxAddress } = require("../helper/portedTokens");
+const abi = require('./allocatorAbi.json')
 
 const MaximizerStaking = "0x6d7AD602Ec2EFdF4B7d34A9A53f92F06d27b82B1";
 const Treasury = "0x22cF6c46b4E321913ec30127C2076b7b12aC6d15";
+const PngAllocator = "0x9747ada761D9325D08bE0f18913215ce2F827807";
+const JoeAllocator = "0xa7b74883309eA1696676c714A83004d7591166F0";
+
 const MAXI = "0x7C08413cbf02202a1c13643dB173f2694e0F73f0";
 const SMAXI = "0xEcE4D1b3C2020A312Ec41A7271608326894076b4";
 const DAI = "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70";
@@ -19,6 +22,27 @@ const PNG_WAVAX_PGL = "0xd7538cABBf8605BdE1f4901B47B8D42c61DE0367";
 const QI_WAVAX_PGL = "0xE530dC2095Ef5653205CF5ea79F8979a7028065c";
 const JOE_WAVAX_JLP = "0x454E67025631C065d3cFAD6d71E6892f74487a15";
 const ISA_WAVAX_JLP = "0x9155f441FFDfA81b13E385bfAc6b3825C05184Ee";
+
+const Allocations = [
+  { allocator: PngAllocator, token: PNG_WAVAX_PGL, pid: 0 },
+  { allocator: PngAllocator, token: QI_WAVAX_PGL, pid: 19 },
+  { allocator: PngAllocator, token: MAXI_WAVAX_PGL, pid: 42 },
+  { allocator: JoeAllocator, token: JOE_WAVAX_JLP, pid: 0 },
+  { allocator: JoeAllocator, token: ISA_WAVAX_JLP, pid: 36},
+];
+
+const transformAddress = (addr) => {
+  if (addr.toLowerCase() === "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e") {
+    return `avax:0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664`;
+  }
+  return `avax:${addr}`;
+}
+
+const chainConfig = (chainBlocks) => ({
+  block: chainBlocks.avax,
+  chain: "avax",
+  transformAddress,
+})
 
 const staking = async (timestamp, ethBlock, chainBlocks) => {
   const balances = {};
@@ -37,6 +61,7 @@ const staking = async (timestamp, ethBlock, chainBlocks) => {
 };
 
 async function tvl(timestamp, block, chainBlocks) {
+  const config = chainConfig(chainBlocks);
   const balances = {};
 
   await sumTokensAndLPsSharedOwners(
@@ -59,14 +84,29 @@ async function tvl(timestamp, block, chainBlocks) {
       [ISA_WAVAX_JLP, true],
     ],
     [Treasury],
-    chainBlocks.avax,
-    "avax",
-    (addr) => {
-      if (addr.toLowerCase() === "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e") {
-        return `avax:0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664`;
-      }
-      return `avax:${addr}`;
-    }
+    config.block,
+    config.chain,
+    config.transformAddress,
+  );
+
+  const allocatedLps = await sdk.api.abi.multiCall({
+    calls: Allocations.map(allocation => ({
+      target: allocation.allocator,
+      params: [allocation.token]
+    })),
+    abi: abi.balanceOf,
+    ...config,
+  });
+  
+  await unwrapUniswapLPs(
+    balances,
+    Allocations.map((allocation, index) => ({
+      balance: allocatedLps.output[index].output,
+      token: allocation.token,
+    })),
+    config.block,
+    config.chain,
+    config.transformAddress,
   );
 
   return balances;
