@@ -41,9 +41,22 @@ const Allocations = [
   { allocator: JoeAllocator, token: ISA_WAVAX_JLP, pid: 36},
 ];
 
+function compareToIgnoreCase(a, b) {
+  return a.toLowerCase() === b.toLowerCase();
+}
+
 const transformAddress = (addr) => {
-  if (addr.toLowerCase() === "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e") {
+  // sMAXI -> MAXI
+  if (compareToIgnoreCase(addr, "0xEcE4D1b3C2020A312Ec41A7271608326894076b4")) {
+    return `avax:0x7c08413cbf02202a1c13643db173f2694e0f73f0`;
+  }
+  // USDC -> USDC.e
+  if (compareToIgnoreCase(addr, "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E")) {
     return `avax:0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664`;
+  }
+  // xJOE -> JOE
+  if (compareToIgnoreCase(addr, "0x57319d41F71E81F3c65F2a47CA4e001EbAFd4F33")) {
+    return `avax:0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd`;
   }
   return `avax:${addr}`;
 }
