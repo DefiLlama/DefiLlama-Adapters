@@ -31,7 +31,11 @@ const coingeckoIds = {
     'MNGO': 'mango-markets',
     'RAY': 'raydium',
     'COPE': 'cope',
-    'STEP': 'step-finance'
+    'FTT': 'ftx-token',
+    'MSOL': 'marinade-staked-sol',
+    'BNB': 'binance-coin',
+    'AVAX': 'avalanche',
+    'LUNA': 'terra-luna'
 }
 
 

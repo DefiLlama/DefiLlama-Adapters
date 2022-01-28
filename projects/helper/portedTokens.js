@@ -10,7 +10,8 @@ async function transformFantomAddress() {
     // WFTM && FTM
     if (
       compareAddresses(addr, "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83") ||
-      compareAddresses(addr, "0x0000000000000000000000000000000000000000")
+      compareAddresses(addr, "0x0000000000000000000000000000000000000000") ||
+      compareAddresses(addr, "0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
     ) {
       return "0x4e15361fd6b4bb609fa63c81a2be19d873717870";
     }
@@ -75,7 +76,7 @@ async function transformAvaxAddress() {
       //xJOE
       return `avax:0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd`;
     }
-    if (compareAddresses(addr, "0x0000000000000000000000000000000000000000")) {
+    if (compareAddresses(addr, "0x0000000000000000000000000000000000000000") || compareAddresses(addr, "0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")) {
       //AVAX
       return "avax:0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7";
     }
@@ -123,7 +124,10 @@ async function transformBscAddress() {
       return srcToken.ethContractAddress;
     }
     // BNB
-    if (addr.toLowerCase() == "0x0000000000000000000000000000000000000000") {
+    if (
+      addr.toLowerCase() == "0x0000000000000000000000000000000000000000" ||
+      addr.toLowerCase() == "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    ) {
       return "bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
     }
     if (addr.toLowerCase() == "0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c") {
@@ -131,6 +135,12 @@ async function transformBscAddress() {
     }
     if (addr.toLowerCase() == "0x2170ed0880ac9a755fd29b2688956bd959f933f8") {
       return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+    }
+    if (addr.toLowerCase() == "0xa35d95872d8eb056eb2cbd67d25124a6add7455e") {
+      return "0x123"; // 2030FLOKI returns nonsense TVL
+    }
+    if (addr.toLowerCase() == "0x0cf8e180350253271f4b917ccfb0accc4862f262") {
+      return "0x123"; // BTCBR returns nonsense TVL
     }
     return `bsc:${addr}`;
   };
@@ -152,6 +162,9 @@ async function transformPolygonAddress() {
     }, {});
 
   return (addr) => {
+    if (addr.toLowerCase() == '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
+      return "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0";
+    }
     if (addr.toLowerCase() === "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619") {
       return "0x0000000000000000000000000000000000000000";
     }
@@ -261,7 +274,7 @@ async function transformHecoAddress() {
     if (addr.toLowerCase() == "0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c") {
       return "avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c";
     }
-    if (addr.toLowerCase() == "0x0000000000000000000000000000000000000000") {
+    if (addr.toLowerCase() == "0x0000000000000000000000000000000000000000" || addr.toLowerCase() == "0xhecozzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz") {
       return "0x6f259637dcd74c767781e37bc6133cd6a68aa161";
     }
     return `heco:${addr}`;
@@ -299,6 +312,9 @@ async function transformHarmonyAddress() {
     }
     if (compareAddresses(addr, "0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c")) {
       return "avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c";
+    }
+    if (compareAddresses(addr, "0xd754ae7bb55feb0c4ba6bc037b4a140f14ebe018")) {
+      return "bsc:0x19e6bfc1a6e4b042fb20531244d47e252445df01";
     }
     const srcToken = bridge.find((token) =>
       compareAddresses(addr, token.hrc20Address)
@@ -469,6 +485,19 @@ async function transformKccAddress() {
   };
 }
 
+function transformMetisAddress() {
+  const map = {
+    "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000": "0x9e32b13ce7f2e80a01932b42553652e053d6ed8e",
+    "0xbb06dca3ae6887fabf931640f67cab3e3a16f4dc": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+    "0x420000000000000000000000000000000000000a": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+    "0x5801d0e1c7d977d78e4890880b8e579eb4943276": "bsc:0x5801d0e1c7d977d78e4890880b8e579eb4943276",
+    "0xea32a96608495e54156ae48931a7c20f0dcc1a21": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+  }
+  return (addr) => {
+    return map[addr.toLowerCase()]
+  };
+}
+
 const chainTransforms = {
   celo: transformCeloAddress,
   fantom: transformFantomAddress,
@@ -513,4 +542,5 @@ module.exports = {
   transformArbitrumAddress,
   fixHarmonyBalances,
   transformIotexAddress,
+  transformMetisAddress
 };

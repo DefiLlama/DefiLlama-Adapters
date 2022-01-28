@@ -75,6 +75,8 @@ query get_volume($block: Int, $id: Int) {
       });
 
       return {
+        timestamp,
+        block,
         totalVolume: graphRes[totalVolume.factory][0][totalVolume.field],
         dailyVolume: hasDailyVolume
           ? (graphRes?.[dailyVolume.factory]?.[dailyVolume.field] || "0") ??
