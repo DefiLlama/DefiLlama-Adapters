@@ -167,5 +167,5 @@ module.exports = {
     staking,
   },
   methodology:
-    "Counts DAI.e, DAI.e LP (MAXI-DAI.e JLP), USDC, WAVAX, WAVAX LP (MAXI-WAVAX PGL, PNG-WAVAX PGL, QI-WAVAX PGL, JOE-WAVAX JLP, ISA-WAVAX JLP) on the treasury",
+    "Counts MAXI, MAXI LP (MAXI-DAI.e JLP, MAXI-WAVAX PGL), DAI.e, USDC, WAVAX, liquidity tokens (PGL, JLP), single partner tokens on the treasury and allocators",
 };
