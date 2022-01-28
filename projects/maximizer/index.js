@@ -1,6 +1,8 @@
 const { sumTokensAndLPsSharedOwners, unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const sdk = require("@defillama/sdk");
-const abi = require('./allocatorAbi.json')
+const allocatorAbi = require('./allocatorAbi.json')
+const pngStakingAbi = require('./stakingrewardsAbi.json')
+const joeStakingAbi = require('./masterchefAbi.json')
 
 const MaximizerStaking = "0x6d7AD602Ec2EFdF4B7d34A9A53f92F06d27b82B1";
 const Treasury = "0x22cF6c46b4E321913ec30127C2076b7b12aC6d15";
@@ -15,6 +17,7 @@ const WAVAX = "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7";
 const PNG = "0x60781C2586D68229fde47564546784ab3fACA982";
 const QI = "0x8729438EB15e2C8B576fCc6AeCdA6A148776C0F5";
 const JOE = "0x6e84a6216eA6dACC71eE8E6b0a5B7322EEbC0fDd";
+const XJOE = "0x57319d41F71E81F3c65F2a47CA4e001EbAFd4F33";
 const ISA = "0x3EeFb18003D033661f84e48360eBeCD181A84709";
 const MAXI_DAI_JLP = "0xfBDC4aa69114AA11Fae65E858e92DC5D013b2EA9";
 const MAXI_WAVAX_PGL = "0xbb700450811a30c5ee0dB80925Cf1BA53dBBd60A";
@@ -23,6 +26,13 @@ const QI_WAVAX_PGL = "0xE530dC2095Ef5653205CF5ea79F8979a7028065c";
 const JOE_WAVAX_JLP = "0x454E67025631C065d3cFAD6d71E6892f74487a15";
 const ISA_WAVAX_JLP = "0x9155f441FFDfA81b13E385bfAc6b3825C05184Ee";
 
+const PngStaking = "0x88afdaE1a9F58Da3E68584421937E5F564A0135b"
+const JoeStaking = "0xd6a4F121CA35509aF06A0Be99093d08462f53052"
+
+const Allocators = [
+  { allocator: PngAllocator, stakeToken: PNG, yieldToken: PNG, yieldStaking: PngStaking, abi: pngStakingAbi.balanceOf, params: [ PngAllocator ], transformResult: (result) => result.output },
+  { allocator: JoeAllocator, stakeToken: XJOE, yieldToken: JOE, yieldStaking: JoeStaking, abi: joeStakingAbi.userInfo, params: [ 24, JoeAllocator ], transformResult: (result) => result.output.amount },
+]
 const Allocations = [
   { allocator: PngAllocator, token: PNG_WAVAX_PGL, pid: 0 },
   { allocator: PngAllocator, token: QI_WAVAX_PGL, pid: 19 },
@@ -94,7 +104,7 @@ async function tvl(timestamp, block, chainBlocks) {
       target: allocation.allocator,
       params: [allocation.token]
     })),
-    abi: abi.balanceOf,
+    abi: allocatorAbi.balanceOf,
     ...config,
   });
   
@@ -108,6 +118,30 @@ async function tvl(timestamp, block, chainBlocks) {
     config.chain,
     config.transformAddress,
   );
+
+  const stakedYieldTokens = (await Promise.all(
+    Allocators.map(allocator => (
+      sdk.api.abi.call({
+        target: allocator.yieldStaking,
+        params: allocator.params,
+        abi: allocator.abi,
+        ...config,
+      })
+    ))
+  )).map((result, index) => Allocators[index].transformResult(result));
+
+  const pendingYieldTokens = (await sdk.api.abi.multiCall({
+    calls: Allocators.map(allocator => ({
+      target: allocator.allocator,
+    })),
+    abi: allocatorAbi.pending,
+    ...config,
+  })).output.map(result => result.output);
+
+  Allocators.forEach((allocator, index) => {
+    sdk.util.sumSingleBalance(balances, config.transformAddress(allocator.stakeToken), stakedYieldTokens[index]);
+    sdk.util.sumSingleBalance(balances, config.transformAddress(allocator.yieldToken), pendingYieldTokens[index]);
+  });
 
   return balances;
 }
