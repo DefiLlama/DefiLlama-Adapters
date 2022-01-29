@@ -108,6 +108,10 @@ const { transformAvaxAddress, fixAvaxBalances, transformFantomAddress } = requir
   async function ftmTVL(timestamp, ethBlock, chainBlocks) {
     return calcTvl(addr => `fantom:${addr}`, chainBlocks['fantom'], 'fantom', '0x78df70615ffc8066cc0887917f2Cd72092C86409', 0, true);
   }
+  // tracking TVL for KyberDMM Cronos
+  async function croTVL(timestamp, ethBlock, chainBlocks) {
+    return calcTvl(addr => `cronos:${addr}`, chainBlocks['cronos'], 'cronos', '0xD9bfE9979e9CA4b2fe84bA5d4Cf963bBcB376974', 0, true);
+  }
   
 /*==================================================
   Exports
@@ -129,5 +133,8 @@ const { transformAvaxAddress, fixAvaxBalances, transformFantomAddress } = requir
    },
    fantom:{
      tvl: ftmTVL
+   },
+   cronos:{
+     tvl: croTVL
    }
   };
