@@ -10,5 +10,6 @@ const pool2LPs = [
 ]
 
 module.exports = {
+    misrepresentedTokens: true,
     ...tombTvl(magik, mshare, rewardPool, masonry, pool2LPs, "fantom", undefined, false, pool2LPs[1])
 }
