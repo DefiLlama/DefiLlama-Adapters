@@ -1,7 +1,7 @@
 const { sumTokensAndLPsSharedOwners, unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const sdk = require("@defillama/sdk");
 const allocatorAbi = require('./allocatorAbi.json')
-const pngStakingAbi = require('./stakingrewardsAbi.json')
+const pngStakingAbi = require('./stakingRewardsAbi.json')
 const joeStakingAbi = require('./masterchefAbi.json')
 
 const MaximizerStaking = "0x6d7AD602Ec2EFdF4B7d34A9A53f92F06d27b82B1";
