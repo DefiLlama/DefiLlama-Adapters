@@ -26,6 +26,7 @@ async function borrowed() {
         new PublicKey("5sjkv6HD8wycocJ4tC4U36HHbvgcXYqcyiPRUkncnwWs"),
         new PublicKey("Ab48bKsiEzdm481mGaNVmv9m9DmXsWWxcYHM588M59Yd"),
         new PublicKey("FKZTsydxPShJ8baThobis6qFxTjALMkVC49EA88wqvm7"),
+        new PublicKey("8bDyV3N7ctLKoaSVqUoEwUzw6msS2F65yyNPgAVUisKm"),
       ],
       "processed"
     )
@@ -41,7 +42,7 @@ async function borrowed() {
     ethAmount,
     srmAmount,
     usdtAmount,
-    fttAmount,
+    softtAmount,
     rayAmount,
     sbrAmount,
     merAmount,
@@ -53,6 +54,7 @@ async function borrowed() {
     stsolAmount,
     ustAmount,
     orcaAmount,
+    fttAmount,
   ] = parsedAccounts.map((acc) => {
     return new BigNumber(
       acc.info.liquidity.borrowedAmountWads.toString()
@@ -71,7 +73,7 @@ async function borrowed() {
     ethereum: ethAmount.plus(wewethAmount),
     serum: srmAmount,
     tether: usdtAmount,
-    "ftx-token": fttAmount,
+    "ftx-token": softtAmount.plus(fttAmount),
     raydium: rayAmount,
     saber: sbrAmount,
     mercurial: merAmount,
@@ -92,7 +94,7 @@ async function tvl() {
     ethAmount,
     srmAmount,
     usdtAmount,
-    fttAmount,
+    softtAmount,
     rayAmount,
     sbrAmount,
     merAmount,
@@ -104,6 +106,7 @@ async function tvl() {
     stsolAmount,
     ustAmount,
     orcaAmount,
+    fttAmount,
   ] = await Promise.all([
     getTokenBalance(
       "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
@@ -173,6 +176,10 @@ async function tvl() {
       "orcaEKTdK7LKz57vaAYr9QeNsVEPfiu6QeMU1kektZE",
       "DdZR6zRFiUt4S5mg7AV1uKB2z1f1WzcNYCaTEEWPAuby"
     ),
+    getTokenBalance(
+      "EzfgjvkSwthhgHaceR3LnKXUoRkP6NUhfghdaHAj1tUv",
+      "DdZR6zRFiUt4S5mg7AV1uKB2z1f1WzcNYCaTEEWPAuby"
+    ),
   ]);
   return {
     bitcoin: btcAmount,
@@ -180,7 +187,7 @@ async function tvl() {
     ethereum: ethAmount + wewethAmount,
     serum: srmAmount,
     tether: usdtAmount,
-    "ftx-token": fttAmount,
+    "ftx-token": softtAmount + fttAmount,
     raydium: rayAmount,
     saber: sbrAmount,
     mercurial: merAmount,
@@ -204,3 +211,4 @@ module.exports = {
     "TVL consists of deposits made to the protocol and like other lending protocols, borrowed tokens are not counted. Coingecko is used to price tokens.",
   hallmarks: [[1635940800, "SLND launch"]],
 };
+
