@@ -1,73 +1,100 @@
 const sdk = require("@defillama/sdk");
+const BigNumber = require('bignumber.js')
 const getEntireSystemCollAbi = require("./getEntireSystemColl.abi.json")
+const _ = require('underscore');
+const IOTEX_CG_MAPPING = require("./iotex_cg_mapping.json")
 
-const maticAddress = "0x0000000000000000000000000000000000001010";
-const troveManagerAddress = "0x68738A47d40C34d890168aB7B612A6f649f395e4";
-const avaxAddress = "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7";
-const troveManagerAddress_avax = "0x561d2d58bDAD7a723a2cF71e8909A409Dc2112ec";
-const wethAddress = "0x82af49447d8a07e3bd95bd0d56f35241523fbab1";
-const troveManagerAddress_arbitrum = "0x10713d83f0936e78E5f8Ca8CeAf41763578861B9";
+const iotexTMs = {
+    "0x366D48c04B0d315acF27Bd358558e92D4e2E9f3D": "0xa00744882684c3e4747faefd68d283ea44099d03", // WIOTX
+}
 
-const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
+const iotexStableAPs = {
+    "0x8Af0EE5A98609fEdaf301Af74d3ca4Da614eaD43": "0x84abcb2832be606341a50128aeb1db43aa017449", // BUSD_b
+    "0xF524F844216069b167d65DCe68B24F3358260BD5": "0x6fbcdc1169b5130c59e72e51ed68a84841c98cd1", // USDT
+    "0x206aAF608d1DD7eA9Db4b8460B2Bf8647522f90a": "0xd6070ae98b8069de6b494332d1a1a81b6179d960" // any
+}
+
+/*==================================================
+  Helper
+  ==================================================*/
+
+function compareAddresses(a, b){
+    return a.toLowerCase() === b.toLowerCase()
+}
+
+function transformIotexAddress(addr) {
+    const dstToken = Object.keys(IOTEX_CG_MAPPING).find(token => compareAddresses(addr, token))
+    if (dstToken !== undefined) {
+        return IOTEX_CG_MAPPING[dstToken].contract || IOTEX_CG_MAPPING[dstToken].coingeckoId
+    }
+    return `iotex:${addr}`, 0; 
+}
+
+/*==================================================
+  TVL
+  ==================================================*/
+
+const iotexTvl = async (timestamp, ethBlock, chainBlocks) => {
     const balances = {};
+    const calls = [];
 
-    const info  = (
-        await sdk.api.abi.call({
-            target: troveManagerAddress,
-            abi: getEntireSystemCollAbi,
-            block: chainBlocks['polygon'],
-            chain: 'polygon'
+    for (const troveManager in iotexTMs) {
+        calls.push({
+            target: troveManager
         })
-    ).output;
+    }
 
-    sdk.util.sumSingleBalance(balances, `polygon:${maticAddress}`, info);
+    let getCollResults = await sdk.api.abi.multiCall({
+        block: chainBlocks.iotex,
+        calls: calls,
+        abi: getEntireSystemCollAbi,
+        chain: 'iotex'
+    });
+
+    _.each(getCollResults.output, (getColl) => {
+        let address = iotexTMs[getColl.input.target]
+        let amount =  getColl.output
+
+        address  = transformIotexAddress(address);
+
+        if (address == 'iotex') {
+            amount = parseInt(amount / 1e18)
+        }
+  
+        balances[address] = BigNumber(balances[address]|| 0).plus(amount).toFixed()
+    });
+
+    const balanceOfCalls = []
+    for (const activePool in iotexStableAPs) {
+        balanceOfCalls.push({
+            target: iotexStableAPs[activePool],
+            params: activePool
+        })
+    }
+
+    let balanceOfResults = await sdk.api.abi.multiCall({
+        block: chainBlocks.iotex,
+        calls: balanceOfCalls,
+        abi: 'erc20:balanceOf',
+        chain: 'iotex'
+    });
+
+    _.each(balanceOfResults.output, (balanceOf) => {
+        let address = balanceOf.input.target
+        let amount =  balanceOf.output
+
+        address  = transformIotexAddress(address);
+
+        balances[address] = BigNumber(balances[address]|| 0).plus(amount).toFixed()
+    });
 
     return balances;
 };
 
-const avalancheTvl = async (timestamp, ethBlock, chainBlocks) => {
-    const balances = {};
-
-    const info  = (
-        await sdk.api.abi.call({
-            target: troveManagerAddress_avax,
-            abi: getEntireSystemCollAbi,
-            block: chainBlocks['avax'],
-            chain: 'avax'
-        })
-    ).output;
-
-    sdk.util.sumSingleBalance(balances, `avax:${avaxAddress}`, info);
-
-    return balances;
-};
-
-const arbitrumTvl = async (timestamp, ethBlock, chainBlocks) => {
-    const balances = {};
-
-    const info  = (
-        await sdk.api.abi.call({
-            target: troveManagerAddress_arbitrum,
-            abi: getEntireSystemCollAbi,
-            block: chainBlocks['arbitrum'],
-            chain: 'arbitrum'
-        })
-    ).output;
-
-    sdk.util.sumSingleBalance(balances, `arbitrum:${wethAddress}`, info);
-
-    return balances;
-};
 
 module.exports = {
-    polygon: {
-        tvl: polygonTvl,
+    iotex: {
+        tvl: iotexTvl,
     },
-    avalanche: {
-        tvl: avalancheTvl,
-    },
-    arbitrum: {
-        tvl: arbitrumTvl,
-    },
-    tvl: sdk.util.sumChainTvls([polygonTvl, avalancheTvl, arbitrumTvl]),
+    tvl: sdk.util.sumChainTvls([iotexTvl]),
 };
