@@ -14,7 +14,7 @@ module.exports.tvl = async function tvl(timestamp, block) {
   if(block >= START_BLOCK) {
     // get ETH balance in squeeth vaults
     const balanceVault = (await sdk.api.eth.getBalance({ target: controller, block})).output;
-    balances[ETH] = BigNumber(balances[ETH] || 0).plus(BigNumber(balanceVault)).toFixed();
+    balances[ETH] = BigNumber(balances[ETH] || 0).plus(BigNumber(balanceVault)).toFixed(0);
     
     // get ETH balance in squeeth pool
     const balancePool = (
@@ -25,7 +25,7 @@ module.exports.tvl = async function tvl(timestamp, block) {
       })
     );
 
-    balances[ETH] = BigNumber(balances[ETH] || 0).plus(BigNumber(balancePool.output)).toFixed();
+    balances[ETH] = BigNumber(balances[ETH] || 0).plus(BigNumber(balancePool.output)).toFixed(0);
 
   }
 

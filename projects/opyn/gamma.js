@@ -50,7 +50,7 @@ module.exports.tvl = async function tvl(timestamp, block) {
     whitelistedCollaterals.output.forEach(async (log) => {
       const collateralAsset = toAddress(log.topics[1]).toLowerCase();
       
-      const ignored = [ETH, sdeCRV, yvUSDC, sdcrvWSBTC]
+      const ignored = [ETH, sdcrvWSBTC]
       if(!ignored.includes(collateralAsset)) {
         balanceCalls.push({
           target: collateralAsset,
@@ -77,7 +77,7 @@ module.exports.tvl = async function tvl(timestamp, block) {
       })
     ).output;
 
-    balances[WBTC] = BigNumber(balances[WBTC] || 0).plus(BigNumber(sdcrvWSBTCBalance / 10 ** 10)).toFixed();
+    balances[WBTC] = BigNumber(balances[WBTC] || 0).plus(BigNumber(sdcrvWSBTCBalance / 10 ** 10)).toFixed(0);
 
   }
 
