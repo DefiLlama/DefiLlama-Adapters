@@ -13,16 +13,15 @@ const transform = (addr) => `aurora:${addr}`;
 
 async function tvl(timestamp, block) {
     return {
-        [contracts.Wood]: (await sdk.api.erc20.totalSupply({target: transform(contracts.Wood), block: block['aurora'], chain: 'aurora' })).output,
-        [contracts.Stone]: (await sdk.api.erc20.totalSupply({target: transform(contracts.Stone), block: block['aurora'], chain: 'aurora' })).output,
-        [contracts.Iron]: (await sdk.api.erc20.totalSupply({target: transform(contracts.Iron), block: block['aurora'], chain: 'aurora' })).output,
-        [contracts.Gold]: (await sdk.api.erc20.totalSupply({target: transform(contracts.Gold), block: block['aurora'], chain: 'aurora' })).output,
-        [contracts.TokenV2]: (await sdk.api.erc20.totalSupply({target: transform(contracts.TokenV2), block: block['aurora'], chain: 'aurora' })).output,
+        [contracts.Wood]: (await sdk.api.erc20.totalSupply({target: contracts.Wood, block: block['aurora'], chain: 'aurora' })).output,
+        [contracts.Stone]: (await sdk.api.erc20.totalSupply({target: contracts.Stone, block: block['aurora'], chain: 'aurora' })).output,
+        [contracts.Iron]: (await sdk.api.erc20.totalSupply({target: contracts.Iron, block: block['aurora'], chain: 'aurora' })).output,
+        [contracts.Gold]: (await sdk.api.erc20.totalSupply({target: contracts.Gold, block: block['aurora'], chain: 'aurora' })).output,
+        [contracts.TokenV2]: (await sdk.api.erc20.totalSupply({target: contracts.TokenV2, block: block['aurora'], chain: 'aurora' })).output,
     };
 }
 
 module.exports = {
-    misrepresentedTokens: true,
     aurora: {
         tvl,
     },
