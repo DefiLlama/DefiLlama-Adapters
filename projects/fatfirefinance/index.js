@@ -1,3 +1,4 @@
+<<<<<<< HEAD:projects/fatfirefinance/index.js
 const abi = require("../helper/abis/masterchef.json")
 const { transformFantomAddress } = require("../helper/portedTokens");
 const { addFundsInMasterChef } = require("../helper/masterchef");
@@ -26,3 +27,13 @@ module.exports = {
   },
   
 } 
+=======
+const { masterChefExports } = require("../helper/masterchef");
+
+const chef = "0xf908ed281f008eE3FcEaCfF2FdfbC2dADf213811"
+const fatfire = "0xa5ee311609665Eaccdbef3BE07e1223D9dBe51de"
+
+module.exports = {
+  ...masterChefExports(chef, "fantom", fatfire, false),
+}
+>>>>>>> a5a597a63d723829d755e201100c2c446303450b:projects/fatfire/index.js

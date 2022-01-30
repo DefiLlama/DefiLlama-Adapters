@@ -6,7 +6,7 @@ const { TOKENSBASE } = require("./tokens");
 const { Provider, Program } = require("@project-serum/anchor");
 const { NodeWallet } = require("@project-serum/anchor/dist/cjs/provider");
 const PsyAmericanIdl = require('./idl.json')
-const Axios = require('axios');
+const axios = require('axios');
 const { toUSDTBalances } = require("../helper/balances");
 
 function getAmountWithDecimal(amount, decimal) {
@@ -21,9 +21,10 @@ function getAmountWithDecimal(amount, decimal) {
 async function getPriceWithTokenAddress(
     mintAddress
 ) {
-    const response = await Axios("https://price-api.sonar.watch/prices")
-    const token = response.data.filter((value) => mintAddress.indexOf(value.mint) >= 0);
-    return token;
+    const {data} = await axios.post("https://coins.llama.fi/prices", {
+        coins: mintAddress.map(a=>`solana:${a}`)
+    })
+    return data.coins
 }
 
 async function getAllOptionAccounts(program) {
@@ -83,7 +84,7 @@ async function tvl() {
         accountList.forEach(accInfo => {
             if (assetPoolList[key].indexOf(accInfo.pubkey) >= 0) {
                 const mint = mintList.find((mint) => mint && mint.key === key);
-                const pMint = priceOfMint.find((mint) => mint.mint === key);
+                const pMint = priceOfMint[`solana:${key}`];
                 const price = pMint ? pMint.price : 0;
                 if (mint) {
                     let decimal = mint.data.decimals;
@@ -113,6 +114,7 @@ async function tvl() {
 
 module.exports={
     misrepresentedTokens: true,
+    timetravel: false,
     solana:{
         tvl
     }
