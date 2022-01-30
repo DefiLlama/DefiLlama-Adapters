@@ -1,12 +1,25 @@
-const retry = require('../helper/retry');
+const retry = require("../helper/retry");
 const axios = require("axios");
 
-async function fetch() {
-  var response = await retry(async _ => await axios.get('https://devilfinance.io/api/tvls'));
+function tvl(type) {
+  return async () => {
+    var response = await retry(
+      async (_) => await axios.get("https://devilfinance.io/api/tvls")
+    );
 
-  return response.data;
-}
+    return response.data[type];
+  };
+};
 
 module.exports = {
-  fetch
-}
+  fantom: {
+    fetch: tvl("nonNative"),
+  },
+  pool2: {
+    fetch: tvl("nativeLP"),
+  },
+  staking: {
+    fetch: tvl("native"),
+  },
+  fetch: tvl("nonNative"),
+};
