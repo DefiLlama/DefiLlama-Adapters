@@ -109,7 +109,7 @@ async function stakings(timestamp, block, chainBlocks) {
 module.exports = {
   fantom: {
     tvl,
-    stakings,
+    staking: stakings,
     pool2: pool2Exports(rewardPool, pool2LPs, "fantom"),
   },
 };
