@@ -65,6 +65,13 @@ const crv_3crv_vault_avalanche = {
   abi: 'balance'
 }
 
+// Harmony
+const crv_3crv_vault_harmony = {
+  contract: '0x787C95Fb37FFc32e36121aD49CA27b7E3D45b77e',
+  crvToken: '0xC5cfaDA84E902aD92DD40194f0883ad49639b023',
+  abi: 'balance'
+}
+
 // BSC
 const btcEPS_vault_bsc = {
   contract: '0xf479e1252481360f67c2b308F998395cA056a77f',
@@ -99,6 +106,10 @@ const vaultsPolygon = [
 
 const vaultsAvalanche = [
   crv_3crv_vault_avalanche
+]
+
+const vaultsHarmony = [
+  crv_3crv_vault_harmony
 ]
 
 const vaultsBsc = [
@@ -178,7 +189,6 @@ async function avax(timestamp, ethBlock, chainBlocks) {
       abi: abi[vault.abi], 
       chain: 'avax'
     })  
-    //console.log(crvBalance)
     await unwrapCrv(balances, vault.crvToken, crvBalance.output, block, 'avax', addr=>`avax:${addr}`)
   }))
 
@@ -199,6 +209,22 @@ async function avax(timestamp, ethBlock, chainBlocks) {
   const avUSDT = 'avax:0x532E6537FEA298397212F09A61e03311686f548e'
   balances[usdt_eth_address] = balances[avUSDT]
   delete balances[avUSDT]
+
+  return balances
+}
+
+async function harmony(timestamp, ethBlock, chainBlocks) {
+  let balances = {};
+  const block = chainBlocks.harmony
+  await Promise.all(vaultsHarmony.map(async vault=>{
+    const crvBalance = await sdk.api.abi.call({
+      target: vault.contract,
+      block,
+      abi: abi[vault.abi], 
+      chain: 'harmony'
+    })
+    await unwrapCrv(balances, vault.crvToken, crvBalance.output, block, 'harmony', addr=>`harmony:${addr}`)
+  }))
 
   return balances
 }
@@ -238,6 +264,9 @@ module.exports = {
   },
   avalanche: {
     tvl: avax
+  },
+  harmony: {
+    tvl: harmony
   },
   bsc: {
     tvl: bsc
