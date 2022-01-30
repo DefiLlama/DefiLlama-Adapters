@@ -21,7 +21,8 @@ module.exports.tvl = async function tvl(timestamp, block) {
       await sdk.api.abi.call({
         target: WETH,
         params: uniPool,
-        abi: 'erc20:balanceOf'
+        abi: 'erc20:balanceOf',
+        block
       })
     );
 
