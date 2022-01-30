@@ -66,7 +66,6 @@ async function tvl(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
-  methodology: `TVL comes from the Staking Vaults and Launchpad Tiers`,
   ethereum: {
     tvl: eth,
     staking: stakings(ethStaking, token, "ethereum"),

@@ -1,7 +1,6 @@
 const sdk = require("@defillama/sdk");
 const hypervisorAbi = require('./abis/hypervisor.json')
 const { unwrapUniswapLPs } = require('../helper/unwrapLPs')
-const { staking } = require('../helper/staking')
 const { request, gql } = require("graphql-request");
 
 const BigNumber = require('bignumber.js');
@@ -197,9 +196,10 @@ async function tvlUniV3(timestamp, block) {
 }
 
 module.exports = {
+  name: 'Visor',               // project name
+  website: 'https://www.visor.finance/',
+  token: 'VISR',
+  category: 'Other',          // Lending
   start: 1616679762,            // (Mar-25-2021 01:42:42 PM +UTC)
-  ethereum:{
-    tvl,
-    staking: staking("0x26805021988f1a45dc708b5fb75fc75f21747d8c", "0x6bea7cfef803d1e3d5f7c0103f7ded065644e197", "ethereum")
-  }
+  tvl                           // tvl adapter
 }

@@ -76,7 +76,6 @@ async function singleStaking(timestamp, ethBlock, chainBlock) {
 }
 
 module.exports = {
-  methodology: `Total value in pools`,
   misrepresentedTokens: true,
   cronos: {
     tvl: TVLPool,

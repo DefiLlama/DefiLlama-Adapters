@@ -25,7 +25,6 @@ async function tvl() {
 
 
 module.exports = {
-  methodology: `TVL is the sum of Singel Asset Staking tokens i Liquidity pool tokens`,
   misrepresentedTokens: true,
   timetravel: false,
   terra: {

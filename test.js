@@ -105,8 +105,7 @@ const passedFile = path.resolve(process.cwd(), process.argv[2]);
     chains.push("ethereum");
   }
   await Promise.all(
-    chains.map(async (chainRaw) => {
-      const chain = chainRaw === "avalanche"?"avax":chainRaw
+    chains.map(async (chain) => {
       if (chainsForBlocks.includes(chain) || chain === "ethereum") {
         chainBlocks[chain] = (await getLatestBlockRetry(chain)).number - 10;
       }

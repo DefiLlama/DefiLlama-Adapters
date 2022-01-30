@@ -259,7 +259,6 @@ async function staking(timestamp, block){
 }
 
 module.exports = {
-  doublecounted: true,
   timetravel: true,
   ethereum:{
     tvl,

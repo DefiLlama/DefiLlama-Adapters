@@ -186,7 +186,6 @@ async function auroraTvl(timestamp, ethblocks, chainBlocks) {
 
 
 module.exports = {
-    methodology: `Only the funds deposited by the users into our vaults are calculated as TVL.`,
     ethereum: {
         tvl: ethTvl
     },
