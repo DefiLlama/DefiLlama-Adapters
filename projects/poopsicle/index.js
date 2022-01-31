@@ -80,7 +80,8 @@ async function poop(timestamp, ethBlock, chainBlocks) {
 
 module.exports = {
   fantom: {
-    tvl: sdk.util.sumChainTvls([
+    tvl: async () => ({}),
+    pool2: sdk.util.sumChainTvls([
       poop,
       staking(data["ftm_poop"].lp, data["ftm_poop"].dt, CHAIN),
       staking(data["any_poop"].lp, data["any_poop"].dt, CHAIN),
@@ -100,38 +101,38 @@ module.exports = {
       staking(data["gohm_poop"].lp, data["gohm_poop"].gohm, CHAIN),
       staking(data["spirit_poop"].lp, data["spirit_poop"].spirit, CHAIN),
     ]),
-    poop,
-    ftm_poop: sdk.util.sumChainTvls([
-      staking(data["ftm_poop"].lp, data["ftm_poop"].dt, CHAIN),
-      staking(data["ftm_poop"].lp, data["ftm_poop"].ftm, CHAIN),
-    ]),
-    any_poop: sdk.util.sumChainTvls([
-      staking(data["any_poop"].lp, data["any_poop"].dt, CHAIN),
-      staking(data["any_poop"].lp, data["any_poop"].any, CHAIN),
-    ]),
-    usdc_poop: sdk.util.sumChainTvls([
-      staking(data["usdc_poop"].lp, data["usdc_poop"].dt, CHAIN),
-      staking(data["usdc_poop"].lp, data["usdc_poop"].usdc, CHAIN),
-    ]),
-    boo_poop: sdk.util.sumChainTvls([
-      staking(data["boo_poop"].lp, data["boo_poop"].dt, CHAIN),
-      staking(data["boo_poop"].lp, data["boo_poop"].boo, CHAIN),
-    ]),
-    band_poop: sdk.util.sumChainTvls([
-      staking(data["band_poop"].lp, data["band_poop"].dt, CHAIN),
-      staking(data["band_poop"].lp, data["band_poop"].band, CHAIN),
-    ]),
-    link_poop: sdk.util.sumChainTvls([
-      staking(data["link_poop"].lp, data["link_poop"].dt, CHAIN),
-      staking(data["link_poop"].lp, data["link_poop"].link, CHAIN),
-    ]),
-    gohm_poop: sdk.util.sumChainTvls([
-      staking(data["gohm_poop"].lp, data["gohm_poop"].dt, CHAIN),
-      staking(data["gohm_poop"].lp, data["gohm_poop"].gohm, CHAIN),
-    ]),
-    spirit_poop: sdk.util.sumChainTvls([
-      staking(data["spirit_poop"].lp, data["spirit_poop"].dt, CHAIN),
-      staking(data["spirit_poop"].lp, data["spirit_poop"].spirit, CHAIN),
-    ]),
+    // poop,
+    // ftm_poop: sdk.util.sumChainTvls([
+    //   staking(data["ftm_poop"].lp, data["ftm_poop"].dt, CHAIN),
+    //   staking(data["ftm_poop"].lp, data["ftm_poop"].ftm, CHAIN),
+    // ]),
+    // any_poop: sdk.util.sumChainTvls([
+    //   staking(data["any_poop"].lp, data["any_poop"].dt, CHAIN),
+    //   staking(data["any_poop"].lp, data["any_poop"].any, CHAIN),
+    // ]),
+    // usdc_poop: sdk.util.sumChainTvls([
+    //   staking(data["usdc_poop"].lp, data["usdc_poop"].dt, CHAIN),
+    //   staking(data["usdc_poop"].lp, data["usdc_poop"].usdc, CHAIN),
+    // ]),
+    // boo_poop: sdk.util.sumChainTvls([
+    //   staking(data["boo_poop"].lp, data["boo_poop"].dt, CHAIN),
+    //   staking(data["boo_poop"].lp, data["boo_poop"].boo, CHAIN),
+    // ]),
+    // band_poop: sdk.util.sumChainTvls([
+    //   staking(data["band_poop"].lp, data["band_poop"].dt, CHAIN),
+    //   staking(data["band_poop"].lp, data["band_poop"].band, CHAIN),
+    // ]),
+    // link_poop: sdk.util.sumChainTvls([
+    //   staking(data["link_poop"].lp, data["link_poop"].dt, CHAIN),
+    //   staking(data["link_poop"].lp, data["link_poop"].link, CHAIN),
+    // ]),
+    // gohm_poop: sdk.util.sumChainTvls([
+    //   staking(data["gohm_poop"].lp, data["gohm_poop"].dt, CHAIN),
+    //   staking(data["gohm_poop"].lp, data["gohm_poop"].gohm, CHAIN),
+    // ]),
+    // spirit_poop: sdk.util.sumChainTvls([
+    //   staking(data["spirit_poop"].lp, data["spirit_poop"].dt, CHAIN),
+    //   staking(data["spirit_poop"].lp, data["spirit_poop"].spirit, CHAIN),
+    // ]),
   },
 };
