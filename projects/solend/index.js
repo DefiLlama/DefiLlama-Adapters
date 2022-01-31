@@ -27,6 +27,8 @@ async function borrowed() {
         new PublicKey("Ab48bKsiEzdm481mGaNVmv9m9DmXsWWxcYHM588M59Yd"),
         new PublicKey("FKZTsydxPShJ8baThobis6qFxTjALMkVC49EA88wqvm7"),
         new PublicKey("8bDyV3N7ctLKoaSVqUoEwUzw6msS2F65yyNPgAVUisKm"),
+        new PublicKey("UTABCRXirrbpCNDogCoqEECtM3V44jXGCsK23ZepV3Z"),
+        new PublicKey("EjUgEaPpKMg2nqex9obb46gZQ6Ar9mWSdVKbw9A6PyXA"),
       ],
       "processed"
     )
@@ -55,6 +57,8 @@ async function borrowed() {
     ustAmount,
     orcaAmount,
     fttAmount,
+    turboSolSolAmount,
+    turboSolUsdcAmount,
   ] = parsedAccounts.map((acc) => {
     return new BigNumber(
       acc.info.liquidity.borrowedAmountWads.toString()
@@ -69,7 +73,7 @@ async function borrowed() {
 
   return {
     bitcoin: btcAmount,
-    "usd-coin": usdcAmount,
+    "usd-coin": usdcAmount.plus(turboSolUsdcAmount),
     ethereum: ethAmount.plus(wewethAmount),
     serum: srmAmount,
     tether: usdtAmount,
@@ -77,7 +81,7 @@ async function borrowed() {
     raydium: rayAmount,
     saber: sbrAmount,
     mercurial: merAmount,
-    solana: solAmount,
+    solana: solAmount.plus(turboSolSolAmount),
     msol: msolAmount,
     solend: slndAmount,
     "socean-staked-sol": scnsolAmount,
@@ -107,6 +111,8 @@ async function tvl() {
     ustAmount,
     orcaAmount,
     fttAmount,
+    turboSolSolAmount,
+    turboSolUsdcAmount,
   ] = await Promise.all([
     getTokenBalance(
       "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
@@ -180,10 +186,18 @@ async function tvl() {
       "EzfgjvkSwthhgHaceR3LnKXUoRkP6NUhfghdaHAj1tUv",
       "DdZR6zRFiUt4S5mg7AV1uKB2z1f1WzcNYCaTEEWPAuby"
     ),
+    getTokenBalance(
+      "So11111111111111111111111111111111111111112",
+      "55YceCDfyvdcPPozDiMeNp9TpwmL1hdoTEFw5BMNWbpf"
+    ),
+    getTokenBalance(
+      "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      "55YceCDfyvdcPPozDiMeNp9TpwmL1hdoTEFw5BMNWbpf"
+    ),
   ]);
   return {
     bitcoin: btcAmount,
-    "usd-coin": usdcAmount,
+    "usd-coin": usdcAmount + turboSolUsdcAmount,
     ethereum: ethAmount + wewethAmount,
     serum: srmAmount,
     tether: usdtAmount,
@@ -191,7 +205,7 @@ async function tvl() {
     raydium: rayAmount,
     saber: sbrAmount,
     mercurial: merAmount,
-    solana: solAmount,
+    solana: solAmount + turboSolSolAmount,
     msol: msolAmount,
     solend: slndAmount,
     "socean-staked-sol": scnsolAmount,
