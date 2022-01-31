@@ -152,7 +152,6 @@ async function polygon(timestamp, block, chainBlocks) {
         "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6",
         "0x37131aEDd3da288467B6EBe9A77C523A700E6Ca1",
       ], // wbtc
-      // added
       [
         "0x9a71012b13ca4d3d0cdc72a177df3ef03b0e76a3",
         "0x701A1824e5574B0b6b1c8dA808B184a7AB7A2867",
@@ -164,6 +163,10 @@ async function polygon(timestamp, block, chainBlocks) {
       [
         "0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7",
         "0xF086dEdf6a89e7B16145b03a6CB0C0a9979F1433",
+      ],
+      [
+        "0x1a3acf6d19267e2d3e7f898f42803e90c9219062",
+        "0xff2c44fb819757225a176e825255a01b3b8bb051",
       ],
     ],
     chainBlocks.polygon,
@@ -177,7 +180,7 @@ async function polygon(timestamp, block, chainBlocks) {
       chain: "polygon",
     })
   ).output;
-  
+
   balances['avax:0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664'] = (
     await sdk.api.erc20.balanceOf({
       target: "0x7d60F21072b585351dFd5E8b17109458D97ec120",
