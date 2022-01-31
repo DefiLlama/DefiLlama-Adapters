@@ -73,7 +73,7 @@ module.exports = {
   cronos: {
     treasury: staking(treasury, WCRO, "cronos"),
     pool2: pool2(pool2Farm, WCRO_CROBLANC_CronaLP[0], "cronos"),
-    tvl: fntmTvl,
+    tvl: cronosTvl,
   },
   methodology:
     "Counts liquidity on all the Farms through CroblancAlpha Contract",
