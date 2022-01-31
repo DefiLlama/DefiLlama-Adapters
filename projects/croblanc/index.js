@@ -12,7 +12,7 @@ const croblancAlpha = "0x52a87ef19e4a0E8cc70aE69D22bc8254bc6fa0F9";
 const pool2Farm = "0x4c1EC4Bf75CdFAF9b172e94cc85b7a8eA647F267";
 const WCRO_CROBLANC_CronaLP = ["0xac23a7de083719c0e11d5c2efbcc99db5c73bb48"];
 
-const fntmTvl = async (chainBlocks) => {
+const cronosTvl = async (chainBlocks) => {
   const balances = {};
 
   const farms = (
@@ -70,7 +70,7 @@ const fntmTvl = async (chainBlocks) => {
 
 module.exports = {
   misrepresentedTokens: true,
-  fantom: {
+  cronos: {
     treasury: staking(treasury, WCRO, "cronos"),
     pool2: pool2(pool2Farm, WCRO_CROBLANC_CronaLP[0], "cronos"),
     tvl: fntmTvl,
