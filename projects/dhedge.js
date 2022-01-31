@@ -1,8 +1,5 @@
 const utils = require('./helper/utils');
 const { GraphQLClient, gql } = require('graphql-request');
-// const web3 = require('./config/web3.js');
-// const abis = require('./config/abis.js');
-const sdk = require('@defillama/sdk');
 
 const { getTokenPriceCoinGecko } = require('./config/bella/utilities.js');
 
