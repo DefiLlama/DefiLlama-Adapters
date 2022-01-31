@@ -1,19 +1,11 @@
-/*==================================================
-  Modules
-  ==================================================*/
-
 const sdk = require("@defillama/sdk");
 
 const IsolatedLending = "0xDc5CCAAA928De5D318605A76eEDE50f205Aa6D93";
 const CurvePoolRewards = "0x9727D535165e19590013bdDea8Fd85dd618b9aF7";
 const account = "0x0000000000000000000000000000000000000000";
 const methodology = "";
-const { BigNumber } = require("ethers");
-const tokenListJson = require("./tokenList.json");
-
-/*==================================================
-  TVL
-  ==================================================*/
+const BigNumber = require("bignumber.js");
+const tokenListJson = require("./tokenlist.json");
 
 async function tvl(timestamp, block) {
   const stratMeta = (
@@ -224,7 +216,7 @@ async function tvl(timestamp, block) {
 
   const tvlNoFarm = Object.values(stratMeta)
     .map((row) => {
-      return { ...row, tvl: new BigNumber.from(row.tvl) };
+      return { ...row, tvl: new BigNumber(row.tvl) };
     })
     .map((strat) => {
       let decimals = tokenList.filter((t) => t.address === strat.token)[0]
@@ -232,24 +224,20 @@ async function tvl(timestamp, block) {
       return {
         ...strat,
         tvlInPeg: decimals
-          ? strat.tvl.mul(strat.valuePer1e18).div((10 ** decimals).toString())
+          ? strat.tvl.times(strat.valuePer1e18).div((10 ** decimals).toFixed(0))
           : 0,
       };
     })
     .reduce((tvl, row) => {
-      return tvl.add(row.tvlInPeg);
-    }, new BigNumber.from(0));
+      return tvl.plus(row.tvlInPeg);
+    }, BigNumber(0));
 
-  const tvl = tvlNoFarm.add(tvlsFarm);
+  const tvl = tvlNoFarm.plus(tvlsFarm);
 
   return {
-    "avax:0xd586e7f844cea2f87f50152665bcbc2c279d8d70": tvl.toString(),
+    "avax:0xd586e7f844cea2f87f50152665bcbc2c279d8d70": tvl.toFixed(0),
   };
 }
-
-/*==================================================
-  Exports
-  ==================================================*/
 
 module.exports = {
   methodology: methodology,

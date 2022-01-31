@@ -7,7 +7,7 @@ async function adaTvl(){
     await Promise.all(tokens.map(async t=>{
         const policyId = t.address.split(".")[0];
         const tokenname = t.address.split(".")[1];
-        const orders = (await fetchURL(`https://orders.muesliswap.com/orderbook/?policy-id=${policyId}&tokenname=${tokenname}`)).data
+        const orders = (await fetchURL(`https://orders.muesliswap.com/orderbook/?policy-id=${policyId}&tokenname=${encodeURIComponent(tokenname)}`)).data
         if(orders.fromToken !== "."){
             throw new Error("Tokens paired against something other than ADA")
         }

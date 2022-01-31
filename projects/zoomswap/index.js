@@ -1,14 +1,14 @@
 const axios = require("axios");
-const { default: BigNumber } = require("bignumber.js");
 
 async function iotex() {
   const tvl = await axios.get("https://service.zoomswap.io/tvl");
-  return tvl.data;
+  return Number(tvl.data);
 }
 
 module.exports = {
-  timetravel: true,
+  timetravel: false,
   iotex: {
     fetch: iotex,
   },
+  fetch: iotex
 };
