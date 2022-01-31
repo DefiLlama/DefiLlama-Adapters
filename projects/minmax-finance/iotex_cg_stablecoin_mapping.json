@@ -38,5 +38,9 @@
     "0x1CbAd85Aa66Ff3C12dc84C5881886EEB29C1bb9b": {
         "contract": "0x6b175474e89094c44da98b954eedeac495271d0f",
         "coingeckoId": "dai"   
+    },
+    "0xec690cdd448e3cbb51ed135df72301c3265a8f80": {
+        "contract": "0x6b175474e89094c44da98b954eedeac495271d0f",
+        "coingeckoId": "dai"  
     }
 }

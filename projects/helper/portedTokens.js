@@ -1,5 +1,6 @@
 const utils = require("../helper/utils");
 const sdk = require("@defillama/sdk");
+const IOTEX_CG_MAPPING = require("./../xdollar-finance/iotex_cg_mapping.json")
 
 async function transformFantomAddress() {
   const multichainTokens = (
@@ -313,6 +314,9 @@ async function transformHarmonyAddress() {
     if (compareAddresses(addr, "0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c")) {
       return "avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c";
     }
+    if (compareAddresses(addr, "0xd754ae7bb55feb0c4ba6bc037b4a140f14ebe018")) {
+      return "bsc:0x19e6bfc1a6e4b042fb20531244d47e252445df01";
+    }
     const srcToken = bridge.find((token) =>
       compareAddresses(addr, token.hrc20Address)
     );
@@ -440,6 +444,10 @@ function fixHarmonyBalances(balances) {
 
 async function transformIotexAddress() {
   return (addr) => {
+    const dstToken = Object.keys(IOTEX_CG_MAPPING).find(token => compareAddresses(addr, token))
+    if (dstToken !== undefined) {
+        return IOTEX_CG_MAPPING[dstToken].contract || IOTEX_CG_MAPPING[dstToken].coingeckoId
+    }
     return `iotex:${addr}`;
   };
 }
