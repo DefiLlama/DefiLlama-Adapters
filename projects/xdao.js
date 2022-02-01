@@ -72,7 +72,7 @@ async function getTransform(chain) {
       return await transformHecoAddress();
   }
 }
-
+// node test.js projects/xdao.js
 function tvl(chain, gasToken) {
   return async (timestamp, block, chainBlocks) => {
     block = chainBlocks[chain];
@@ -138,7 +138,7 @@ module.exports = {
     tvl: tvl("polygon", "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"),
   },
   avax: {
-    tvl: tvl("avax", "0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"),
+    tvl: tvl("avax", "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"),
   },
   fantom: {
     tvl: tvl("fantom", "0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"),
