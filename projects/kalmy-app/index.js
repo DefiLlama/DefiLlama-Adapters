@@ -106,6 +106,18 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 
   balances[getBSCAddress(vBNB['baseToken'])] = BigNumber(balances[getBSCAddress(vBNB['baseToken'])] || 0).plus(BigNumber(unusedBNB)).toFixed(0)
 
+  return balances
+}
+
+async function staking(timestamp, ethBlock, chainBlocks) {
+  /// @dev Initialized variables
+  const balances = {}
+
+  /// @dev Getting all addresses from Github
+  const addresses = await getProcolAddresses()
+
+  const block = chainBlocks.bsc;
+
   /// @dev getting staking amount on each vault
   const stakingTokens = (await sdk.api.abi.multiCall({
     block,
@@ -175,6 +187,10 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 }
 
 module.exports = {
-  tvl
+  tvl,
+  bsc: {
+    tvl,
+    staking
+  }
 };
   
