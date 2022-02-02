@@ -13,7 +13,6 @@ async function fetch() {
     query {
       protocolMetrics(first: 1, orderBy: timestamp, orderDirection: desc) {
         treasuryMarketValue
-        totalValueLocked
       }
     }
   `;
