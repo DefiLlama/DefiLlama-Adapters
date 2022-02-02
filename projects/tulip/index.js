@@ -1,5 +1,6 @@
-const { stakingPricedLP } = require('../helper/staking');
+const { staking } = require('../helper/staking');
 const { pool2Exports } = require('../helper/pool2');
+const { calculateUsdUniTvl } = require('../helper/getUsdUniTvl');
 
 const token = "0x9e832CaE5d19e7ff2f0D62881D1E33bb16Ac9bdc";
 const petal = "0x2736643C7fFFe186984f60a2d34b91b1b7398bF1";
@@ -14,8 +15,17 @@ const pool2LPs = [
 
 module.exports = {
     oasis: {
-        tvl: async () => ({}),
-        staking: stakingPricedLP(garden, petal, "oasis", "0x48b819c83bC0cBa256d92488b9400199Bc4E5842", "oasis-network"),
-        //pool2: pool2Exports(rewardPool, pool2LPs, "oasis")
+        staking: staking(garden, petal, "oasis"),
+        tvl: calculateUsdUniTvl(
+            // FACTORY, chain, coreAssetRaw, whitelistRaw, coreAssetName
+            '0x90a5e676EFBdeFeeeb015cd87484B712fd54C96A',
+            'oasis',
+            '0x9e832CaE5d19e7ff2f0D62881D1E33bb16Ac9bdc',
+            [
+                '0x9e832CaE5d19e7ff2f0D62881D1E33bb16Ac9bdc',
+                '0x2736643C7fFFe186984f60a2d34b91b1b7398bF1',
+            ],
+            'oasis-network'
+        ),
     }
-}
+};
