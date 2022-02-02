@@ -9,7 +9,7 @@ const MAGIC_WETH_SLP = "0xB7E50106A5bd3Cf21AF210A755F9C8740890A8c9";
 
 module.exports = {
   misrepresentedTokens: true,
-  bsc: {
+  arbitrum: {
     staking: staking(stakingContract, MAGIC, "arbitrum"),
     pool2: pool2(stakingPool2Contract, MAGIC_WETH_SLP, "arbitrum"),
   },

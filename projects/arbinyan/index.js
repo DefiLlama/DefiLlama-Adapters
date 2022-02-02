@@ -46,7 +46,6 @@ async function pool2(time, ethBlock, chainBlocks) {
       block: chainBlocks["arbitrum"],
     })
   ).output;
-  console.log(underlyingsBalance);
 
   underlyingsBalance.forEach((call) => {
     const underlyingSetBalance = BigNumber(call.output)
