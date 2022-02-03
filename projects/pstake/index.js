@@ -116,9 +116,7 @@ module.exports = {
   methodology: `We get the totalSupply of the constituent token contracts (like stkATOM, pATOM, stkXPRT, pXPRT etc.) and then we multiply it with the USD market value of the constituent token`,
   ethereum: {
     tvl: eth,
-  },
-  pool2: {
-    tvl: pool2,
+    pool2: pool2,
   },
   // tvl: sdk.util.sumChainTvls([eth]),
 };
