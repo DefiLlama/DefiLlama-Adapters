@@ -6,5 +6,7 @@ async function fetch(){
 }
 
 module.exports={
+    methodology: "Data is retrieved from the api at https://dex-api.adax.pro/",
+    timetravel: false, // but there's historical data, this can be changed!
     fetch
 }
