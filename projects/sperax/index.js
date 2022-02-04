@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const abi = require("./abis/abi.json");
+const abi = require("../sperax/abi.json");
 const BigNumber = require("bignumber.js");
 
 const vaultcore = '0xF783DD830A4650D2A8594423F123250652340E3f'

@@ -7,7 +7,7 @@ const pool2Address = "0xd564b2feec19df8f4d6cb52c0a4386d05a993583";
 const sushiLpAddress = "0x5fa4370164a2fabeef159b893299d59ff5dc1e6d";
 const bentAddress = "0x01597e397605bf280674bf292623460b4204c375";
 const daiAddress = "0x6b175474e89094c44da98b954eedeac495271d0f";
-const bentSingleStaking = "0x07228C1820b4a3D75206a6E61F1AdD1BB157ce80";
+const weBent = "0x04637d61F538911929ff96E755B589C014fD9ce2";
 
 const bentPools = {
   BentPoolBentCvxCvx: "0xf083FBa98dED0f9C970e5a418500bad08D8b9732",
@@ -24,6 +24,7 @@ const bentPools = {
   BentPoolUSTWormHole: "0x7c325F13395334a376D7D388FD3450d38488a1AF",
   BentPoolDola: "0xD6B8580a39A17b9fBea427fD50593970f4Ac31b6",
   BentPoolCrvEth: "0x5D77b731803916cbcdec2BBdb3Ad0649C6a6EA17",
+  BentPool3Pool: "0x9a9606a399c62d20d7ba11028ed1218ed3f8f244",
 };
 
 const bentCVXSingleStaking = "0xe55C5069ED7F8fE2EA656aFf4551af52F8dbdeF7";
@@ -56,7 +57,7 @@ module.exports = {
   bentCVXAddress,
   CVXAddress,
   bentCVXSingleStaking,
-  bentSingleStaking,
+  weBent,
   pool2Address,
   sushiLpAddress,
   bentAddress,

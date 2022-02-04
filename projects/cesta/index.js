@@ -38,10 +38,10 @@ async function avax(timestamp, block) {
       }),
     ]);
 
-  DexAvaxTVL = parseInt(DexAvaxTVL.output) / 10 ** 18;
-  DexStableTVL = parseInt(DexStableTVL.output) / 10 ** 18;
-  StableAvaxTVL = parseInt(StableAvaxTVL.output) / 10 ** 18;
-  StableStableTVL = parseInt(StableStableTVL.output) / 10 ** 18;
+  DexAvaxTVL = parseInt(DexAvaxTVL.output) / 10 ** 12;
+  DexStableTVL = parseInt(DexStableTVL.output) / 10 ** 12;
+  StableAvaxTVL = parseInt(StableAvaxTVL.output) / 10 ** 12;
+  StableStableTVL = parseInt(StableStableTVL.output) / 10 ** 12;
 
   const result = {
     "Dex-Avax Vault": DexAvaxTVL,

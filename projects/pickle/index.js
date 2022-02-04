@@ -76,4 +76,10 @@ module.exports = {
   metis: {
     tvl: fetch("metis", "tvl"),
   },
+  moonbeam: {
+    tvl: fetch("moonbeam", "tvl"),
+  },
+  optimism: {
+    tvl: fetch("optimism", "tvl"),
+  },
 };

@@ -1,5 +1,6 @@
 const utils = require("../helper/utils");
 const sdk = require("@defillama/sdk");
+const IOTEX_CG_MAPPING = require("./../xdollar-finance/iotex_cg_mapping.json")
 
 async function transformFantomAddress() {
   const multichainTokens = (
@@ -443,6 +444,10 @@ function fixHarmonyBalances(balances) {
 
 async function transformIotexAddress() {
   return (addr) => {
+    const dstToken = Object.keys(IOTEX_CG_MAPPING).find(token => compareAddresses(addr, token))
+    if (dstToken !== undefined) {
+        return IOTEX_CG_MAPPING[dstToken].contract || IOTEX_CG_MAPPING[dstToken].coingeckoId
+    }
     return `iotex:${addr}`;
   };
 }

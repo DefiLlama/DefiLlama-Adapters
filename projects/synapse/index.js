@@ -119,10 +119,11 @@ const DATA = {
     weth: "0x74b23882a30290451A17c44f4F05243b6b58C76d",
     neth: "0x67c10c397dd0ba417329543c1a40eb48aaa7cd00",
     ethPool: "0x8D9bA570D6cb60C7e3e0F31343Efe75AB8E65FB1",
-    pool: "0x2913E812Cf0dcCA30FB28E6Cac3d2DCFF4497688",
+    pool: "0x85662fd123280827e11C59973Ac9fcBE838dC3B4",
     legacy: {
       basepool: "0x080F6AEd32Fc474DD5717105Dba5ea57268F46eb",
       metapool: "0x1f6a0656ff5061930076bf0386b02091e0839f9f",
+      nusdpool: "0x2913E812Cf0dcCA30FB28E6Cac3d2DCFF4497688",
     },
     tokens: [
       "0x91fa20244fb509e8289ca630e5db3e9166233fdc", // gOHM
@@ -139,11 +140,12 @@ const DATA = {
     nusd: "0x2913e812cf0dcca30fb28e6cac3d2dcff4497688",
     neth: "0x3ea9b0ab55f34fb188824ee288ceaefc63cf908e",
     weth: "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
-    pool: "0x0Db3FE3B770c95A0B99D1Ed6F2627933466c0Dd8",
+    pool: "0x9Dd329F5411466d9e0C488fF72519CA9fEf0cb40",
     ethPool: "0xa067668661C84476aFcDc6fA5D758C4c01C34352",
     legacy: {
       basepool: "0xbafc462d00993ffcd3417abbc2eb15a342123fda",
       metapool: "0x84cd82204c07c67df1c2c372d8fd11b3266f76a3",
+      nusdpool: "0x0Db3FE3B770c95A0B99D1Ed6F2627933466c0Dd8",
     },
     tokens: [
       "0x8d9ba570d6cb60c7e3e0f31343efe75ab8e65fb1", // gOHM
