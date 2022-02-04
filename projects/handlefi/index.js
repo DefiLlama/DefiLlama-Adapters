@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk")
 const BigNumber = require("bignumber.js")
 const { sumTokens, unwrapUniswapLPs } = require("../helper/unwrapLPs")
+const {pool2 } = require("../helper/pool2")
 const { getBlock } = require("../helper/getBlock")
 const abi = require("./abi.json");
 
@@ -34,26 +35,6 @@ async function arbitrum_tvl(timestamp, ethBlock, chainBlocks, chain) {
     "arbitrum",
     transformArbitrumAddress
   )
-  return balances
-}
-
-// Arbitrum Staking is sushiswap LP FOREX/WETH provided to staking contract
-async function arbitrum_staking(timestamp, ethBlock, chainBlocks, chain) {
-  const balances = {}  
-  const block = await getBlock(timestamp, "arbitrum", chainBlocks)
-  // Sushiswap LP FOREX/WETH staking on arbitrum
-  const { output: FOREX_WETH_LP_tokens } = await sdk.api.erc20.balanceOf({
-    target: WETH_FOREX_sushi_LP,
-    owner: LP_staking_contract,
-    block, 
-    chain: 'arbitrum' 
-  })
-  const lpBalances = [{
-      'token': WETH_FOREX_sushi_LP, 
-      'balance': FOREX_WETH_LP_tokens
-  }]
-  //console.log('Sushiswap FOREX/WETH LP staked in masterchef', FOREX_WETH_LP_tokens / 1e18)
-  await unwrapUniswapLPs(balances, lpBalances, chainBlocks['arbitrum'], 'arbitrum', transformArbitrumAddress)
   return balances
 }
 
@@ -104,7 +85,7 @@ async function ethereum_tvl(timestamp, ethBlock, chainBlocks) {
 
   // Set to zero balance of fxTokens, which are not collateral but are backed by the other assets of rari pools
   for (const [key, value] of Object.entries(fxTokens)) {
-    balances[value] = '0'
+    delete balances[value];
   }
   return balances
 }
@@ -112,7 +93,7 @@ async function ethereum_tvl(timestamp, ethBlock, chainBlocks) {
 module.exports = {
   arbitrum: {
     tvl: arbitrum_tvl,
-    staking: arbitrum_staking
+    pool2: pool2(LP_staking_contract, WETH_FOREX_sushi_LP, "arbitrum")
   },
   ethereum: {
     tvl: ethereum_tvl,

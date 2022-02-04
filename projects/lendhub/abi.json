@@ -1,21 +1,20 @@
-
 {
-    "getAllMarkets": {
-        "constant": true,
-        "inputs": [],
-        "name": "getAllMarkets",
-        "outputs": [
-            {
-                "internalType": "contract CToken[]",
-                "name": "",
-                "type": "address[]"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    },
-    "underlying": {
+	"getAllMarkets": {
+		"constant": true,
+		"inputs": [],
+		"name": "getAllMarkets",
+		"outputs": [
+			{
+				"internalType": "contract CToken[]",
+				"name": "",
+				"type": "address[]"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	"underlying": {
 		"constant": true,
 		"inputs": [],
 		"name": "underlying",
@@ -30,7 +29,7 @@
 		"stateMutability": "view",
 		"type": "function"
 	},
-    "getCash": {
+	"getCash": {
 		"constant": true,
 		"inputs": [],
 		"name": "getCash",
@@ -45,7 +44,7 @@
 		"stateMutability": "view",
 		"type": "function"
 	},
-    "valtToken": {
+	"valtToken": {
 		"inputs": [],
 		"name": "token",
 		"outputs": [
@@ -55,6 +54,20 @@
 				"type": "address"
 			}
 		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	"totalBorrows": {
+		"constant": true,
+		"inputs": [],
+		"name": "totalBorrows",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
 		"stateMutability": "view",
 		"type": "function"
 	}

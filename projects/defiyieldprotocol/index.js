@@ -38,7 +38,21 @@ const contractFarms = {
 		"0x7637fa253180556ba486d2fa5d2bb328eb0aa7ca",
 		"0x2f3c4a08dad0f8a56ede3961ab654020534b8a8c",
 		"0x417538f319afddd351f33222592b60f985475a21",
-		"0x350f3fe979bfad4766298713c83b387c2d2d7a7a"
+		"0x350f3fe979bfad4766298713c83b387c2d2d7a7a",
+		"0xf13aDbEb27ea9d9469D95e925e56a1CF79c06E90",
+		"0xaF411BF994dA1435A3150B874395B86376C5f2d5",
+		"0x9af074cE714FE1Eb32448052a38D274E93C5dc28",
+		"0xDBfb96e2899d52B469C1a1C35eD71fBBa228d2cC",
+		"0xc794cDb8D6aC5eB42d5ABa9c1E641ae17c239c8c",
+		"0x23609B1f5274160564e4afC5eB9329A8Bf81c744",
+		"0x264922696b9972687522b6e98Bf78A0430E2163C",
+		"0x9DF0A645BeB6F7aDFaDC56f3689E79405337EFE2",
+		"0xbd574278fEbad04b7A0694C37DeF4f2ecFa9354A",
+		"0x537DC4fee298Ea79A7F65676735415f1E2882F92",
+		"0x219717BF0bC33b2764A6c1A772F75305458BDA3d",
+		"0xD1151a2434931f34bcFA6c27639b67C1A23D93Af",
+		"0xed869Ba773c3F1A1adCC87930Ca36eE2dC73435d",
+		"0x415B1624710296717FA96cAD84F53454E8F02D18",
 	],
 	avax: [
 		"0x499c588146443235357e9c630a66d6fe0250caa1",
@@ -62,18 +76,19 @@ const lps = {
 		"0x2fcf1b0d83f83135b6e5e2e231e07ae89c235f68",
 		"0x87c546525cf48f28d73ea218c625d6f748721717",
 		"0xc7a4d04699a9539d33e86ce746e88553149c8528",
+		"0x1bC61d08A300892e784eD37b2d0E63C85D1d57fb"
 	],
 	avax: [
 		"0x497070e8b6C55fD283D8B259a6971261E2021C01"
 	]
 }
 
-function transform(chain){
-	return (addr)=>{
-		if(addr === dyp){
+function transform(chain) {
+	return (addr) => {
+		if (addr === dyp) {
 			return dyp
 		}
-		return chain+':'+addr
+		return chain + ':' + addr
 	}
 }
 
@@ -88,7 +103,7 @@ function staking(chain) {
 function pool2(chain) {
 	return async (time, ethBlock, chainBlocks) => {
 		const balances = {}
-		await sumTokensAndLPsSharedOwners(balances, lps[chain].map(lp=>[lp, true]), contractFarms[chain], chainBlocks[chain], chain, transform(chain))
+		await sumTokensAndLPsSharedOwners(balances, lps[chain].map(lp => [lp, true]), contractFarms[chain], chainBlocks[chain], chain, transform(chain))
 		return balances
 	}
 }

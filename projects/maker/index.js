@@ -110,6 +110,7 @@ async function tvl(timestamp, block) {
 }
 
 module.exports = {
+  timetravel: true,
   methodology: `Counts all the tokens being used as collateral of CDPs and the DAI locked in the DSR (Dai Savings Rate) contract.
   
   On the technical level, we get all the collateral tokens by fetching events, get the amounts locked by calling balanceOf() directly, unwrap any uniswap LP tokens and then get the price of each token from coingecko`,
