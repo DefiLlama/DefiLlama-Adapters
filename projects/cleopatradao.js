@@ -7,6 +7,7 @@ const CAT = "0x48358BfAA1EC39AafCb0786c3e0342Db676Df93E";
 const JoePair = "0x6a71044647c960afb6bbe758cc444dedfa9349f7";
 const TREASURY = "0x10243C6D13875443716ff3E88b7Da7664e431E09";
 const MIM = "0x130966628846BFd36ff31a822705796e8cb8C18D";
+const USDCe = "0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664";
 const WAVAX = "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"
 
 const staking = async (timestamp, ethBlock, chainBlocks) => {
@@ -32,6 +33,7 @@ async function tvl(timestamp, block, chainBlocks) {
         balances,
         [
             [MIM, false],
+            [USDCe, false],
             [WAVAX, false],
             [JoePair, true],
         ],
