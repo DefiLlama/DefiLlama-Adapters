@@ -1,5 +1,4 @@
 const sdk = require('@defillama/sdk');
-const { transformBscAddress } = require('../helper/portedTokens');
 const abi = require('./abi.json');
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
@@ -12,7 +11,7 @@ const DATA_PROVIDERS = {
 function _tvlByChain(chainName, dataProviderAddress) {
     return async function tvl(timestamp, ethBlock, chainBlocks) {
         const block = chainBlocks[chainName];
-        const transform = (chainName == 'ethereum' ? (a => a) : await transformBscAddress())
+        const transform = a=>`${chainName}:${a}`
         const {output: reservesData} = await sdk.api.abi.call({
             target: dataProviderAddress,
             abi: abi.find(abi => abi.name === 'getReservesData'),
@@ -55,10 +54,6 @@ const bsc = _tvlByChain('bsc', DATA_PROVIDERS.BSC);
 const avalanche = _tvlByChain('avax', DATA_PROVIDERS.AVALANCHE);
 
 module.exports = {
-    name: 'Augmented Finance',
-    website: 'https://augmented.finance',
-    token: 'AGF',
-    category: 'lending',
     start: 13339609, // Oct-02-2021 11:33:05 AM +UTC
     ethereum: {
         tvl: ethereum,
@@ -70,5 +65,4 @@ module.exports = {
         tvl: avalanche,
     },
     methodology: "Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There's multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending.",
-    tvl: sdk.util.sumChainTvls([ethereum, bsc, avalanche])
 }
