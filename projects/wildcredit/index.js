@@ -195,5 +195,4 @@ module.exports = {
     tvl: ethTvl,
     borrowed
   },
-  tvl: sdk.util.sumChainTvls([ethTvl]),
 };
