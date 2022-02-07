@@ -10,5 +10,6 @@ const pool2 = [
 ]
 
 module.exports = {
+    misrepresentedTokens: true,
     ...tombTvl(token, share, rewardPool, masonry, pool2, "fantom", undefined, false, pool2[1])
 }
