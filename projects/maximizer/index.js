@@ -1,8 +1,8 @@
 const { sumTokensAndLPsSharedOwners, unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const sdk = require("@defillama/sdk");
-const allocatorAbi = require('./allocatorAbi.json')
-const pngStakingAbi = require('./stakingRewardsAbi.json')
-const joeStakingAbi = require('./masterchefAbi.json')
+const allocatorAbi = require("./allocatorAbi.json");
+const pngStakingAbi = require("./stakingRewardsAbi.json");
+const joeStakingAbi = require("./masterchefAbi.json");
 
 const MaximizerStaking = "0x6d7AD602Ec2EFdF4B7d34A9A53f92F06d27b82B1";
 const Treasury = "0x22cF6c46b4E321913ec30127C2076b7b12aC6d15";
@@ -33,13 +33,13 @@ const PTP_WAVAX_JLP = "0xCDFD91eEa657cc2701117fe9711C9a4F61FEED23";
 const MORE_WAVAX_JLP = "0xb8361D0E3F3B0fc5e6071f3a3C3271223C49e3d9";
 const HEC_WAVAX_JLP = "0x4dc5291cdc7ad03342994e35d0ccc76de065a566";
 
-const PngStaking = "0x88afdaE1a9F58Da3E68584421937E5F564A0135b"
-const JoeStaking = "0xd6a4F121CA35509aF06A0Be99093d08462f53052"
+const PngStaking = "0x88afdaE1a9F58Da3E68584421937E5F564A0135b";
+const JoeStaking = "0xd6a4F121CA35509aF06A0Be99093d08462f53052";
 
 const Allocators = [
   { allocator: PngAllocator, stakeToken: PNG, yieldToken: PNG, yieldStaking: PngStaking, abi: pngStakingAbi.balanceOf, params: [ PngAllocator ], transformResult: (result) => result.output },
   { allocator: JoeAllocator, stakeToken: XJOE, yieldToken: JOE, yieldStaking: JoeStaking, abi: joeStakingAbi.userInfo, params: [ 24, JoeAllocator ], transformResult: (result) => result.output.amount },
-]
+];
 const Allocations = [
   { allocator: PngAllocator, token: PNG_WAVAX_PGL, pid: 0 },
   { allocator: PngAllocator, token: QI_WAVAX_PGL, pid: 19 },
@@ -50,7 +50,7 @@ const Allocations = [
 
 function compareToIgnoreCase(a, b) {
   return a.toLowerCase() === b.toLowerCase();
-}
+};
 
 const transformAddress = (addr) => {
   // sMAXI -> MAXI
@@ -66,13 +66,13 @@ const transformAddress = (addr) => {
     return `avax:0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd`;
   }
   return `avax:${addr}`;
-}
+};
 
 const chainConfig = (chainBlocks) => ({
   block: chainBlocks.avax,
   chain: "avax",
   transformAddress,
-})
+});
 
 const staking = async (timestamp, ethBlock, chainBlocks) => {
   const balances = {};
@@ -171,7 +171,7 @@ async function tvl(timestamp, block, chainBlocks) {
   });
 
   return balances;
-}
+};
 
 module.exports = {
   avalanche: {
