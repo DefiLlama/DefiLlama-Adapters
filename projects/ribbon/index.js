@@ -15,14 +15,24 @@ const stETHCallVault = '0x53773E034d9784153471813dacAFF53dBBB78E8c'
 // Avalanche Vaults
 const avaxCallVault = '0x98d03125c62DaE2328D9d3cb32b7B969e6a87787'
 
+// Aurora Vaults
+const wnearCallVault = '0x7796d6B1706855303655EB12F54FaE294c468a66'
+
+// Treasury Vaults
+const perpCallVault = '0xe44eDF7aD1D434Afe3397687DD0A914674F2E405'
+
 // Ethereum Assets
 const weth = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
 const wbtc = '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599'
 const usdc = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
 const aave = '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9'
+const perp = '0xbC396689893D065F41bc2C6EcbeE5e0085233447'
 
 // Avalanche Assets
 const wavax = 'avax:0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7'
+
+// Aurora Assets
+const wnear = 'aurora:0xC42C30aC6Cc15faC9bD938618BcaA1a1FaE8501d'
 
 async function addVault(balances, vault, token, block, chain='ethereum') {
     const totalBalance = await sdk.api.abi.call({
@@ -46,6 +56,7 @@ async function ethTvl(_, block) {
         addVault(balances, yvUSDCETHPutVaultV2, usdc, block),
         addVault(balances, aaveCallVault, aave, block),
         addVault(balances, stETHCallVault, weth, block),
+        addVault(balances, perpCallVault, perp, block),
     ])
     return balances
 }
@@ -58,6 +69,14 @@ async function avaxTvl(_, block) {
     return balances
 }
 
+async function auroraTvl(_, block) {
+    const balances = {}
+    await Promise.all([
+        addVault(balances, wnearCallVault, wnear, block, 'aurora'),
+    ])
+    return balances
+}
+
 module.exports = {
     ethereum: {
         tvl: ethTvl
@@ -65,5 +84,8 @@ module.exports = {
     avalanche: {
         tvl: avaxTvl
     },
-    tvl: sdk.util.sumChainTvls([ethTvl, avaxTvl]),
+    aurora: {
+        tvl: auroraTvl
+    },
+    tvl: sdk.util.sumChainTvls([ethTvl, avaxTvl, auroraTvl]),
 }
