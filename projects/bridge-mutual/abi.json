@@ -42,5 +42,24 @@
     ],
     "stateMutability": "view",
     "type": "function"
+  },
+  "getShieldTokenAddress": {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_policyBook",
+        "type": "address"
+      }
+    ],
+    "name": "getShieldTokenAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   }
 }

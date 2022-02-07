@@ -99,7 +99,13 @@ const chainsWithBadCoingeckoSupport = ([
   ], "moonriver"],
   ["palm", "0x4c1f6fcbd233241bf2f4d02811e3bf8429bc27b8", [
     "0xf98cabf0a963452c5536330408b2590567611a71" // wpalm
-  ], "dai"]
+  ], "dai"],
+  ["telos", "0xD102cE6A4dB07D247fcc28F366A623Df0938CA9E", [
+    "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f", //weth
+    "0xf390830df829cf22c53c8840554b98eafc5dcbc2", //btc
+    "0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b", //usdc
+    "0xeFAeeE334F0Fd1712f9a8cc375f427D9Cdd40d73", //usdt
+  ], "telos"]
 ]).reduce((object, chainData)=>{
   const chain = chainData[0]
   object[chain === 'avax'? 'avalanche':chain]={
@@ -107,6 +113,17 @@ const chainsWithBadCoingeckoSupport = ([
   }
   return object
 }, {})
+
+const fuse = calculateUsdUniTvl(
+  "0x43eA90e2b786728520e4f930d2A71a477BF2737C",
+  "fuse",
+  "0x0be9e53fd7edac9f859882afdda116645287c629", // wfuse
+  [
+    "0x620fd5fa44BE6af63715Ef4E65DDFA0387aD13F5", //usdc
+    "0xa722c13135930332Eb3d749B2F0906559D2C5b99", //weth
+  ],
+  "fuse-network-token"
+)
 
 module.exports = {
   ...chainsWithBadCoingeckoSupport,
@@ -133,5 +150,8 @@ module.exports = {
   },
   avax:{
     tvl: avax
-  }
+  },
+  fuse:{
+    tvl: fuse
+  },
 }

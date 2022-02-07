@@ -32,6 +32,9 @@ async function handleMooTokens(balances, block, chain, tokens) {
       addr = "fantom:0xd6070ae98b8069de6b494332d1a1a81b6179d960";
     } else if (addr === "0x1b156c5c75e9df4caab2a5cc5999ac58ff4f9090") {
       addr = "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7";
+    } else if (addr === "0xf18f4847a5db889b966788dcbdbcbfa72f22e5a6") {
+      addr = "fantom:0x841fad6eae12c286d1fd18d1d525dffa75c7effe"
+      pricePerShare[i].output = 1e18;
     } else {
       addr = `${chain}:${addr}`;
     }
@@ -39,7 +42,7 @@ async function handleMooTokens(balances, block, chain, tokens) {
       balances,
       addr,
       BigNumber(balance[i].output)
-        .times(Number(pricePerShare[i].output) / 1e18)
+        .times(pricePerShare[i].output).div(1e18)
         .toFixed(0)
     );
   }
@@ -71,7 +74,7 @@ async function handleMooLPs(balances, block, chain, tokens) {
   for (let i = 0; i < tokens.length; i++) {
     lpPositions.push({
       balance: BigNumber(lpBalances[i].output)
-        .times(Number(pricePerShare[i].output) / 1e18)
+        .times(pricePerShare[i].output).div(1e18)
         .toFixed(0),
       token: tokens[i][2],
     });
@@ -149,7 +152,6 @@ async function polygon(timestamp, block, chainBlocks) {
         "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6",
         "0x37131aEDd3da288467B6EBe9A77C523A700E6Ca1",
       ], // wbtc
-      // added
       [
         "0x9a71012b13ca4d3d0cdc72a177df3ef03b0e76a3",
         "0x701A1824e5574B0b6b1c8dA808B184a7AB7A2867",
@@ -161,6 +163,10 @@ async function polygon(timestamp, block, chainBlocks) {
       [
         "0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7",
         "0xF086dEdf6a89e7B16145b03a6CB0C0a9979F1433",
+      ],
+      [
+        "0x1a3acf6d19267e2d3e7f898f42803e90c9219062",
+        "0xff2c44fb819757225a176e825255a01b3b8bb051",
       ],
     ],
     chainBlocks.polygon,
@@ -174,6 +180,15 @@ async function polygon(timestamp, block, chainBlocks) {
       chain: "polygon",
     })
   ).output;
+
+  balances['avax:0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664'] = (
+    await sdk.api.erc20.balanceOf({
+      target: "0x7d60F21072b585351dFd5E8b17109458D97ec120",
+      owner: "0x57cbf36788113237d64e46f25a88855c3dff1691",
+      block: chainBlocks.polygon,
+      chain: "polygon",
+    })
+  ).output / 10 ** 12;
   return balances;
 }
 
@@ -235,6 +250,20 @@ async function fantom(timestamp, block, chainBlocks) {
         "0x920786cff2a6f601975874bb24c63f0115df7dc8",
         "0xBf0ff8ac03f3E0DD7d8faA9b571ebA999a854146",
       ],
+      [
+        "0x6c021Ae822BEa943b2E66552bDe1D2696a53fbB7",
+        "0x051b82448a521bC32Ac7007a7A76F9dEC80F6BA2"
+      ],
+      [
+        "0x4cdF39285D7Ca8eB3f090fDA0C069ba5F4145B37",
+        "0xD60FBaFc954Bfbd594c7723C980003c196bDF02F"
+      ],
+      [
+        "0x5cc61a78f164885776aa610fb0fe1257df78e59b",
+        "0xCB99178C671761482097F32595cb79fb28a49Fd8"
+      ]
+      //[t,p],
+      
     ],
     chainBlocks[chain],
     chain,
@@ -264,6 +293,10 @@ async function fantom(timestamp, block, chainBlocks) {
       "0xbf07093ccd6adfc3deb259c557b61e94c1f66945",
       "0x75D4aB6843593C111Eeb02Ff07055009c836A1EF",
     ],
+    [
+      "0xf18F4847a5Db889B966788dcbDbcBfA72f22E5A6",
+      "0xa48d959AE2E88f1dAA7D5F611E01908106dE7598",
+    ]
   ];
   await handleMooTokens(balances, chainBlocks.fantom, chain, ftmMooTokens);
   const ftmLPs = [
@@ -278,6 +311,36 @@ async function fantom(timestamp, block, chainBlocks) {
       "0xA3e3Af161943CfB3941B631676134bb048739727",
       "0xFdb9Ab8B9513Ad9E419Cf19530feE49d412C3Ee3",
     ],
+    [
+      "0xB595C02147bCEDE84e0E85D9e95727cF38C02b07",
+      "0xee3a7c885fd3cc5358ff583f2dab3b8bc473316f",
+      "0xEc7178F4C41f346b2721907F5cF7628E388A7a58"
+    ],
+    [
+      "0x3F4f523ACf811E713e7c34852b24E927D773a9e5",
+      "0x27c77411074ba90ca35e6f92a79dad577c05a746",
+      "0x2a651563c9d3af67ae0388a5c8f89b867038089e"
+    ],
+    [
+      "0x872C847056e11cF75D1D9636b522D077E8C9F653",
+      "0xae94e96bf81b3a43027918b138b71a771d381150",
+      "0x4733bc45eF91cF7CcEcaeeDb794727075fB209F2"
+    ],
+    [
+      "0x413f1815D32e5aca0d8984FA89e50E83dDac0BBE",
+      "0x5d2EF803D6e255eF4D1c66762CBc8845051B54dB",
+      "0x9606d683d03f012dda296ef0ae9261207c4a5847"
+    ],
+    [
+      "0x03c20569c2c78CD48f491415a4cDEAC02608DB7e",
+      "0xA4e2EE5a7fF51224c27C98098D8DB5C770bAAdbE",
+      "0xe7e90f5a767406eff87fdad7eb07ef407922ec1d"
+    ],
+    [
+      "0xD3af91f21F791F29FC664cD5cD61180edc263191",
+      "0xD8dd2EA228968F7f043474Db610A20aF887866c7",
+      "0xd14dd3c56d9bc306322d4cea0e1c49e9ddf045d4"
+    ]
   ];
   await handleMooLPs(balances, chainBlocks.fantom, chain, ftmLPs);
   return balances;
@@ -367,3 +430,4 @@ module.exports = {
     tvl: harmony,
   },
 };
+// node test.js projects/qidao/index.js

@@ -92,8 +92,6 @@ async function fetch() {
     return tokenTotalValue.plus(xdexTotalLiquidity).toString();
 }
 
-fetch();
-
 module.exports = {
     fetch
 }

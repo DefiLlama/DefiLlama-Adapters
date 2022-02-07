@@ -14,6 +14,8 @@ const PADSWAP_BSC_FACTORY_ADDRESS =
   "0xB836017ACf10b8A7c6c6C9e99eFE0f5B0250FC45";
 const PADSWAP_MOONRIVER_FACTORY_ADDRESS =
   "0x760d2Bdb232027aB3b1594405077F9a1b91C04c1";
+const PADSWAP_MOONBEAM_FACTORY_ADDRESS =
+  "0x663a07a2648296f1A3C02EE86A126fE1407888E5";
 
 const SUBGRAPH_BUFFER_DELAY = 10 * 60; // 10 minutes
 
@@ -65,4 +67,19 @@ module.exports = {
       "moonriver"
     ),
   },
+  moonbeam: {
+    tvl: calculateUsdUniTvl(
+      PADSWAP_MOONBEAM_FACTORY_ADDRESS,
+      "moonbeam",
+      "0xe3db50049c74de2f7d7269823af3178cf22fd5e3",
+      [
+        "0x59193512877E2EC3bB27C178A8888Cfac62FB32D", //pad
+        "0xc9BAA8cfdDe8E328787E29b4B078abf2DaDc2055", //bnb
+        "0x8e70cd5b4ff3f62659049e74b6649c6603a0e594", //tether
+        "0x8f552a71efe5eefc207bf75485b356a0b3f01ec9", //usdc
+        "0xF480f38C366dAaC4305dC484b2Ad7a496FF00CeA", //toad
+      ],
+      "moonbeam"
+    ),
+  }
 };

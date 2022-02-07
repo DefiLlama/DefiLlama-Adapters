@@ -171,6 +171,6 @@ getTotalTVL().then((result) => {
 });
 
 module.exports = {
-  getTotalTVL,
+  fetch: getTotalTVL,
   methodology: "Counts OIN, stNEAR tvl of OIN-Finance",
 };
