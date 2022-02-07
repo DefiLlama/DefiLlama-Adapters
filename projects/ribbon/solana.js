@@ -12,5 +12,5 @@ const tvl = async () => {
 module.exports = {
     solana: {
         tvl
-    }
+    },
 }
