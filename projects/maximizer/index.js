@@ -48,6 +48,31 @@ const Allocations = [
   { allocator: JoeAllocator, token: ISA_WAVAX_JLP, pid: 36},
 ];
 
+const Tokens = [
+  [MAXI, false],
+  [SMAXI, false],
+  [DAI, false],
+  [USDC, false],
+  [WAVAX, false],
+  [PNG, false],
+  [QI, false],
+  [JOE, false],
+  [ISA, false],
+  [PTP, false],
+  [MORE, false],
+  [MONEY, false],
+  [HEC, false],
+  [MAXI_DAI_JLP, true],
+  [MAXI_WAVAX_PGL, true],
+  [PNG_WAVAX_PGL, true],
+  [QI_WAVAX_PGL, true],
+  [JOE_WAVAX_JLP, true],
+  [ISA_WAVAX_JLP, true],
+  [PTP_WAVAX_JLP, true],
+  [MORE_WAVAX_JLP, true],
+  [HEC_WAVAX_JLP, true],
+];
+
 function compareToIgnoreCase(a, b) {
   return a.toLowerCase() === b.toLowerCase();
 };
@@ -96,30 +121,7 @@ async function tvl(timestamp, block, chainBlocks) {
 
   await sumTokensAndLPsSharedOwners(
     balances,
-    [
-      [MAXI, false],
-      [SMAXI, false],
-      [DAI, false],
-      [USDC, false],
-      [WAVAX, false],
-      [PNG, false],
-      [QI, false],
-      [JOE, false],
-      [ISA, false],
-      [PTP, false],
-      [MORE, false],
-      [MONEY, false],
-      [HEC, false],
-      [MAXI_DAI_JLP, true],
-      [MAXI_WAVAX_PGL, true],
-      [PNG_WAVAX_PGL, true],
-      [QI_WAVAX_PGL, true],
-      [JOE_WAVAX_JLP, true],
-      [ISA_WAVAX_JLP, true],
-      [PTP_WAVAX_JLP, true],
-      [MORE_WAVAX_JLP, true],
-      [HEC_WAVAX_JLP, true],
-    ],
+    Tokens,
     [Treasury],
     config.block,
     config.chain,
