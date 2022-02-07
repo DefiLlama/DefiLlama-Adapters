@@ -144,8 +144,8 @@ function sumBalances(balancesArray) {
       balances[coingeckoTokenId] += amount;
     }
 
-    console.log("=======================");
-    console.log(balances);
+    // console.log("=======================");
+    // console.log(balances);
     return balances;
   }, {});
 }
@@ -229,7 +229,7 @@ async function tvl(chainName, block) {
     );
   }
 
-  console.log(balancesArray);
+  // console.log(balancesArray);
   return sumBalances(balancesArray);
 }
 
