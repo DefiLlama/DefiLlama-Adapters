@@ -60,7 +60,6 @@ async function bullbearTVL(block, chain, usdToken) {
     chain,
   });
   sdk.util.sumMultiBalanceOf(balances, underlyingBalances, true)
-  console.log('balances', balances)
   return balances
 }
 
@@ -135,7 +134,6 @@ async function bscTVL(block){
   return Object.assign(dualinvestTVL, bullbearTvl)
 }
 
-avaxBullbearTVL('latest')
 module.exports = {
   methodology: "Antimatter application is consist of four parts: 1) Antimatter structured product 2) Antimatter Bull and Bear 3) Antimatter Governance staking and 4) antimatter Nonfungible finance . There are assets locked in each part of the application on multiple chains. TVL is counted as the value of the underlying assets in each part of the application’s contract. Our TVL is calling contract from our smart contracts",
   ethereum: {
