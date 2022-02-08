@@ -63,7 +63,7 @@ async function bullbearTVL(block, chain, usdToken) {
   return balances
 }
 
-async function ethBullbearTVL(block){
+async function ethBullbearTVL(timestamp, block){
   return await bullbearTVL(block, 'ethereum', '0xdac17f958d2ee523a2206206994597c13d831ec7')
 }
 
@@ -71,12 +71,22 @@ async function bscBullbearTVL(block){
   return await bullbearTVL(block, 'bsc', '0xe9e7cea3dedca5984780bafc599bd69add087d56')
 }
 
-async function arbitrumBullbearTVL(block){
-  return await bullbearTVL(block, 'arbitrum', '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9')
+async function arbitrumBullbearTVL(timestamp, block){
+  const balances = await bullbearTVL(block, 'arbitrum', '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9')
+  const chainBalances = {}
+  Object.keys(balances).forEach(key => chainBalances['arbitrum:'+key] = balances[key])
+  return chainBalances
 }
 
-async function avaxBullbearTVL(block){
-  return await bullbearTVL(block, 'avax', '0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664')
+async function avaxBullbearTVL(timestamp, block){
+  const balances = await bullbearTVL(block, 'avax', '0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664')
+  const chainBalances = {}
+  Object.keys(balances).forEach(key => chainBalances['avax:'+key] = balances[key])
+  return  chainBalances
+}
+
+function getChainAddress(chain, address) {
+  return `${chain}:${address}`
 }
 
 const dualInvestTVL = async (bscBlock) => {
@@ -96,7 +106,6 @@ const dualInvestTVL = async (bscBlock) => {
     block: bscBlock,
     chain: "bsc"
   });
-
   const btcValue = await sdk.api.abi.multiCall({
     target: bscUSDTContract,
     calls: [{
@@ -112,26 +121,31 @@ const dualInvestTVL = async (bscBlock) => {
     block: bscBlock,
     chain: "bsc"
   });
+
   sdk.util.sumMultiBalanceOf(balances, usdtValue, true);
   sdk.util.sumMultiBalanceOf(balances, btcValue, true);
-
   return balances;
 };
 
-const stakingTVL = async (ethBlock) => {
+const stakingTVL = async (timestamp, ethBlock) => {
+  const balances = {}
   const { output: staked } = await sdk.api.abi.call({
     target: antimatterStakingContract,
-    abi: abi["TVL"],
+    abi: abi.staking.TVL,
     block: ethBlock,
     chain: "ethereum"
   });
-  return stakingTVL;
+  sdk.util.sumSingleBalance(balances, '0xdac17f958d2ee523a2206206994597c13d831ec7', staked)
+  return  balances
 };
 
-async function bscTVL(block){
+async function bscTVL(timestamp, block){
   const dualinvestTVL = await dualInvestTVL(block)
   const bullbearTvl = await bscBullbearTVL(block)
-  return Object.assign(dualinvestTVL, bullbearTvl)
+  const tvl = Object.assign(dualinvestTVL, bullbearTvl)
+  const chainBalances = {}
+  Object.keys(tvl).forEach(key => chainBalances['bsc:'+key] = tvl[key])
+  return chainBalances
 }
 
 module.exports = {
@@ -146,7 +160,7 @@ module.exports = {
   arbitrum: {
     tvl: arbitrumBullbearTVL
   },
-  avax: {
+  avalanche: {
     tvl: avaxBullbearTVL
   },
   timetravel: true,
