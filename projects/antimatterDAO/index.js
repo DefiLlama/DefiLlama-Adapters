@@ -137,7 +137,7 @@ async function bscTVL(block){
 
 avaxBullbearTVL('latest')
 module.exports = {
-  methodology: "Data is retrieved from the api at https://dex-api.adax.pro/",
+  methodology: "Antimatter application is consist of four parts: 1) Antimatter structured product 2) Antimatter Bull and Bear 3) Antimatter Governance staking and 4) antimatter Nonfungible finance . There are assets locked in each part of the application on multiple chains. TVL is counted as the value of the underlying assets in each part of the application’s contract. Our TVL is calling contract from our smart contracts",
   ethereum: {
     staking: stakingTVL, // dao staking
     tvl: ethBullbearTVL
