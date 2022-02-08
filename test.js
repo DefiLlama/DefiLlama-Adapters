@@ -118,7 +118,7 @@ const passedFile = path.resolve(process.cwd(), process.argv[2]);
   const usdTokenBalances = {};
   const chainTvlsToAdd = {};
   const knownTokenPrices = {};
-  console.log('ethBlock', ethBlock)
+
   let tvlPromises = Object.entries(module).map(async ([chain, value]) => {
     if (typeof value !== "object" || value === null) {
       return;
