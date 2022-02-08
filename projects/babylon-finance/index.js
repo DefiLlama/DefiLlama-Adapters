@@ -57,7 +57,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
         if (garden_tvl/1e18 > 10) 
             console.log(`Garden with name "${gardenName}" TVL: ${garden_tvl/1e18} of reserveAsset: ${reserveAsset} locked\n${strategy_str}-----------------------------`)
     }
-    return balances
+    return Object.fromEntries(Object.entries(balances).map(b=>[b[0], b[1].toFixed(0)]))
 }
 
 const harvest_vault = '0xadB16dF01b9474347E8fffD6032360D3B54627fB'
