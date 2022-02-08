@@ -14,22 +14,27 @@ const viper_stable = "0x8b1473f086178690124cB6793679770521DD20A2";
 const viper_oracle = "0x74e290b0cc6D1c39948f2347606e88Fe759D674f";
 
 const getTotalTVL = async (timestamp, block) => {
-  const [price, stake_lock, stability_lock, oin_tvl, harmony_tvl] =
+  const [near_tvl, oin_tvl, harmony_tvl] =
     await Promise.all([
-      fetchTokenPrice(),
-      fetchSystemLock(),
-      fetchStabilityLock(),
-      getOinTvl(timestamp, block),
+      fetchNearTVL(),
+      fetchOinTVL(timestamp, block),
       fetchHarmonyTVL(timestamp, block),
     ]);
-  return new BigNumber(price)
-    .div(BYTES)
-    .times(new BigNumber(stake_lock).div(NEAR_BYTES))
-    .plus(new BigNumber(stability_lock).div(BYTES))
+  return new BigNumber(near_tvl)
     .plus(oin_tvl)
     .plus(harmony_tvl)
     .toFixed();
 };
+
+const fetchNearTVL = async () => {
+  const [price, near_stake, near_stability] = await Promise.all([fetchTokenPrice(),
+  fetchSystemLock(),
+  fetchStabilityLock(),])
+  return new BigNumber(price)
+    .div(BYTES)
+    .times(new BigNumber(near_stake).div(NEAR_BYTES))
+    .plus(new BigNumber(near_stability).div(BYTES)).toFixed();
+}
 
 const fetchHarmonyTVL = async (timestamp, block) => {
   const p1 = sdk.api.abi.call({
@@ -86,7 +91,7 @@ const fetchHarmonyTVL = async (timestamp, block) => {
     .toFixed();
 };
 
-const getOinTvl = async (timestamp, block) => {
+const fetchOinTVL = async (timestamp, block) => {
   const promise = axios.get("https://dao.oin.finance/OINPrice");
   const promise_2 = sdk.api.abi.call({
     target: target_addr,
@@ -166,11 +171,16 @@ const fetchStabilityLock = async () => {
   }
 };
 
-getTotalTVL().then((result) => {
-  console.log(result);
-});
-
 module.exports = {
-  fetch: getTotalTVL,
-  methodology: "Counts OIN, stNEAR tvl of OIN-Finance",
+  harmony: {
+    fetchHarmonyTVL
+  },
+  ethereum: {
+    fetchOinTVL
+  },
+  near: {
+    fetchNearTVL
+  },
+  getTotalTVL,
+  methodology: "Counts TVL on multi-chain of OIN-Finance",
 };
