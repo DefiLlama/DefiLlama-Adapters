@@ -29,6 +29,9 @@ async function borrowed() {
         new PublicKey("8bDyV3N7ctLKoaSVqUoEwUzw6msS2F65yyNPgAVUisKm"),
         new PublicKey("UTABCRXirrbpCNDogCoqEECtM3V44jXGCsK23ZepV3Z"),
         new PublicKey("EjUgEaPpKMg2nqex9obb46gZQ6Ar9mWSdVKbw9A6PyXA"),
+        new PublicKey("4XYbgZJirfnwjmpJKQgMQEvjncYFi2CsPTFzBguCjCjG"),
+        new PublicKey("AuT5vA4bScsaJBiyNHnAttKToTCHj4Kwi4sg8bCyPPr8"),
+        new PublicKey("7MymBKwTPPMC4A9Ktwc1F2V5Xw7Kj3DqvRYUvLk2SF4h"),
       ],
       "processed"
     )
@@ -59,6 +62,9 @@ async function borrowed() {
     fttAmount,
     turboSolSolAmount,
     turboSolUsdcAmount,
+    invictusLsinAmount,
+    invictusUsdcAmount,
+    invictusUstAmount,
   ] = parsedAccounts.map((acc) => {
     return new BigNumber(
       acc.info.liquidity.borrowedAmountWads.toString()
@@ -73,7 +79,7 @@ async function borrowed() {
 
   return {
     bitcoin: btcAmount,
-    "usd-coin": usdcAmount.plus(turboSolUsdcAmount),
+    "usd-coin": usdcAmount.plus(turboSolUsdcAmount).plus(invictusUsdcAmount),
     ethereum: ethAmount.plus(wewethAmount),
     serum: srmAmount,
     tether: usdtAmount,
@@ -86,8 +92,9 @@ async function borrowed() {
     solend: slndAmount,
     "socean-staked-sol": scnsolAmount,
     "lido-staked-sol": stsolAmount,
-    terrausd: ustAmount,
+    terrausd: ustAmount.plus(invictusUstAmount),
     orca: orcaAmount,
+    lsin: invictusLsinAmount,
   };
 }
 
@@ -113,6 +120,9 @@ async function tvl() {
     fttAmount,
     turboSolSolAmount,
     turboSolUsdcAmount,
+    invictusLsinAmount,
+    invictusUsdcAmount,
+    invictusUstAmount,
   ] = await Promise.all([
     getTokenBalance(
       "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
@@ -194,10 +204,22 @@ async function tvl() {
       "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
       "55YceCDfyvdcPPozDiMeNp9TpwmL1hdoTEFw5BMNWbpf"
     ),
+    getTokenBalance(
+      "LsinpBtQH68hzHqrvWw4PYbH7wMoAobQAzcvxVHwTLv",
+      "6N6tqnemGoR5pUdtKKp3FvdD94Gi98f2ySEo1dzZ2Uqv"
+    ),
+    getTokenBalance(
+      "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      "6N6tqnemGoR5pUdtKKp3FvdD94Gi98f2ySEo1dzZ2Uqv"
+    ),
+    getTokenBalance(
+      "9vMJfxuKxXBoEa7rM12mYLMwTacLMLDJqHozw96WQL8i",
+      "6N6tqnemGoR5pUdtKKp3FvdD94Gi98f2ySEo1dzZ2Uqv"
+    ),
   ]);
   return {
     bitcoin: btcAmount,
-    "usd-coin": usdcAmount + turboSolUsdcAmount,
+    "usd-coin": usdcAmount + turboSolUsdcAmount + invictusUsdcAmount,
     ethereum: ethAmount + wewethAmount,
     serum: srmAmount,
     tether: usdtAmount,
@@ -210,8 +232,9 @@ async function tvl() {
     solend: slndAmount,
     "socean-staked-sol": scnsolAmount,
     "lido-staked-sol": stsolAmount,
-    terrausd: ustAmount,
+    terrausd: ustAmount + invictusUstAmount,
     orca: orcaAmount,
+    lsin: invictusLsinAmount,
   };
 }
 
