@@ -63,30 +63,26 @@ async function bullbearTVL(block, chain, usdToken) {
   return balances
 }
 
-async function ethBullbearTVL(timestamp, block){
-  return await bullbearTVL(block, 'ethereum', '0xdac17f958d2ee523a2206206994597c13d831ec7')
+async function ethBullbearTVL(timestamp, ethBlock){
+  return await bullbearTVL(ethBlock, 'ethereum', '0xdac17f958d2ee523a2206206994597c13d831ec7')
 }
 
 async function bscBullbearTVL(block){
   return await bullbearTVL(block, 'bsc', '0xe9e7cea3dedca5984780bafc599bd69add087d56')
 }
 
-async function arbitrumBullbearTVL(timestamp, block){
-  const balances = await bullbearTVL(block, 'arbitrum', '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9')
+async function arbitrumBullbearTVL(timestamp, ethBlock, chainBlocks){
+  const balances = await bullbearTVL(chainBlocks['arbitrum'], 'arbitrum', '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9')
   const chainBalances = {}
   Object.keys(balances).forEach(key => chainBalances['arbitrum:'+key] = balances[key])
   return chainBalances
 }
 
-async function avaxBullbearTVL(timestamp, block){
-  const balances = await bullbearTVL(block, 'avax', '0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664')
+async function avaxBullbearTVL(timestamp, ethBlock, chainBlocks){
+  const balances = await bullbearTVL(chainBlocks['avax'], 'avax', '0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664')
   const chainBalances = {}
   Object.keys(balances).forEach(key => chainBalances['avax:'+key] = balances[key])
   return  chainBalances
-}
-
-function getChainAddress(chain, address) {
-  return `${chain}:${address}`
 }
 
 const dualInvestTVL = async (bscBlock) => {
@@ -139,9 +135,9 @@ const stakingTVL = async (timestamp, ethBlock) => {
   return  balances
 };
 
-async function bscTVL(timestamp, block){
-  const dualinvestTVL = await dualInvestTVL(block)
-  const bullbearTvl = await bscBullbearTVL(block)
+async function bscTVL(timestamp, ethBlock, chainBlocks){
+  const dualinvestTVL = await dualInvestTVL(chainBlocks['bsc'])
+  const bullbearTvl = await bscBullbearTVL(chainBlocks['bsc'])
   const tvl = Object.assign(dualinvestTVL, bullbearTvl)
   const chainBalances = {}
   Object.keys(tvl).forEach(key => chainBalances['bsc:'+key] = tvl[key])
