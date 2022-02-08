@@ -69,7 +69,7 @@ async function staking(timestamp, ethBlock, chainBlocks) {
         vault: harvest_vault,
         pool: harvest_pool
     }]
-    await unwrapUniswapV3LPs(balances, univ3_Positions, ethBlock, chain='ethereum')
+    await unwrapUniswapV3LPs(balances, univ3_Positions, ethBlock, 'ethereum')
     console.log('balances:', balances)
     return balances
 }
