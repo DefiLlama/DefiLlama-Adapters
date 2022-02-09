@@ -1,4 +1,4 @@
-// Auto generated at 24-1-2022 12:40
+// Auto generated at 9-2-2022 11:21
 module.exports = {
   'ethereum' : [
     {//DHV (solo)
@@ -18,6 +18,7 @@ module.exports = {
           '0x62Dc4817588d53a056cBbD18231d91ffCcd34b2A', // DHV
           '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', // WETH
         ],
+        isPool2: true,
         poolId: 0
       },
       tvl: "lpStakingTvl"
@@ -50,7 +51,14 @@ module.exports = {
       },
       tvl: "clusterTvl"
     },
-    {//Curve pool (impulse-multiple)
+    {//Stable Curve 3-Pool (impulse-multiple)
+      meta: {
+        stakingAddress: '0xE6E6982fb5dDF4fcc74cCCe4e4eea774E002D17F', // ImpulseMultiStaking
+        poolId: 1
+      },
+      tvl: "crvStakingTvl"
+    },
+    {//Curve 5-Pool (impulse-multiple)
       meta: {
         stakingAddress: '0xE6E6982fb5dDF4fcc74cCCe4e4eea774E002D17F', // ImpulseMultiStaking
         poolId: 0
@@ -199,6 +207,7 @@ module.exports = {
           '0x58759dd469ae5631c42cf8a473992335575b58d7', // DHV
           '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56', // BUSD
         ],
+        isPool2: true,
         poolId: 0
       },
       tvl: "lpStakingTvl"
@@ -375,7 +384,7 @@ module.exports = {
       },
       tvl: "clusterTvl"
     },
-    {//De-xDai Cluster (cluster)
+    {//De-Gnosis Cluster (cluster)
       meta: {
         clusterAddress: '0xF557B2B73b872E6d2F43826f9D77B7402A363Bc0', // DXDC
       },
@@ -390,9 +399,17 @@ module.exports = {
           '0xFbdd194376de19a88118e84E279b977f165d01b8', // DHV
           '0xe91d153e0b41518a2ce8dd3d7944fa863463a97d', // WXDAI
         ],
+        isPool2: true,
         poolId: 1
       },
       tvl: "lpStakingTvl"
+    },
+    {//Stable Curve 3-Pool (impulse-multiple)
+      meta: {
+        stakingAddress: '0xfa7Ca14a28CD419a69E45e8416cA4FA87457aCE8', // ImpulseMultiStaking
+        poolId: 0
+      },
+      tvl: "crvStakingTvl"
     },
   ],
 };
