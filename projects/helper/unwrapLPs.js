@@ -602,7 +602,7 @@ async function unwrapUniswapV3LPs(balances, univ3_Positions, block, chain='ether
                 const [key, value] = entry;
                 if(!excludeTokens.includes(key)){
                     // balances[key] = BigNumber( balances[key] || 0 ).plus(sharesRatio * value);
-                    sdk.util.sumSingleBalance(balances, await transformAddress(key), sharesRatio * value) 
+                    sdk.util.sumSingleBalance(balances, await transformAddress(key), BigNumber(sharesRatio * value).toFixed(0))
                 }
             });
             console.log(`ratio of the pool: ${(100 * sharesRatio).toFixed(1)}% of position_id ${position_id}`)

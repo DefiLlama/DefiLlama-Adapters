@@ -76,7 +76,7 @@ async function arbTvl(time, _ethBlock, chainBlocks) {
 
 module.exports = {
   misrepresentedTokens: true,
-  arbirtum: {
+  arbitrum: {
     staking: staking(stakingNYANContract, NYAN, "arbitrum"),
     pool2: pool2,
     tvl: arbTvl,

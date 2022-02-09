@@ -1,4 +1,7 @@
 const utils = require('./helper/utils');
+const { GraphQLClient, gql } = require('graphql-request');
+
+const { getTokenPriceCoinGecko } = require('./config/bella/utilities.js');
 
 /* * * * * * * *
  * ==> Correct adapter needs to be created.
@@ -27,6 +30,28 @@ async function optimism() {
   return totalTvl.data.protocolStats.optimism.totalAumOptimism;
 }
 
+async function staking() {
+  var endpoint = 'https://api.thegraph.com/subgraphs/name/dhedge/dht-staking';
+  var graphQLClient = new GraphQLClient(endpoint);
+
+  var query = gql`
+    {
+      stakingContracts {
+        id
+        balance
+      }
+    }
+  `;
+
+  const data = await graphQLClient.request(query);
+  const balance = data.stakingContracts[0].balance;
+  const formattedBalance = balance / 10 ** 18;
+
+  const baseTokenPriceInUsd = await getTokenPriceCoinGecko('usd')('dhedge-dao');
+  const tvl = formattedBalance * baseTokenPriceInUsd;
+  return tvl;
+}
+
 module.exports = {
   ethereum: {
     fetch: ethereum,
@@ -36,6 +61,9 @@ module.exports = {
   },
   optimism: {
     fetch: optimism,
+  },
+  staking: {
+    fetch: staking,
   },
   fetch,
 };
