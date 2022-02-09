@@ -1,4 +1,4 @@
-// Auto generated at 9-2-2022 11:21
+// Auto generated at 9-2-2022 16:14
 module.exports = {
   'ethereum' : [
     {//DHV (solo)
@@ -38,18 +38,6 @@ module.exports = {
         poolId: 0
       },
       tvl: "stakingDhvTvl"
-    },
-    {//Poly Cluster (cluster)
-      meta: {
-        clusterAddress: '0x4964B3B599B82C3FdDC56e3A9Ffd77d48c6AF0f0', // DPOL
-      },
-      tvl: "clusterTvl"
-    },
-    {//Poly Gaming Cluster (cluster)
-      meta: {
-        clusterAddress: '0x589Ea336092184d9eD74b8263c4eecA73Ed0cE7a', // DGAME
-      },
-      tvl: "clusterTvl"
     },
     {//Stable Curve 3-Pool (impulse-multiple)
       meta: {
@@ -182,6 +170,18 @@ module.exports = {
       },
       tvl: "impulseStakingTvl"
     },
+    {//DPOL (cluster)
+      meta: {
+        clusterAddress: '0x4964B3B599B82C3FdDC56e3A9Ffd77d48c6AF0f0', // DPOL
+      },
+      tvl: "clusterTvl"
+    },
+    {//DGAME (cluster)
+      meta: {
+        clusterAddress: '0x589Ea336092184d9eD74b8263c4eecA73Ed0cE7a', // DGAME
+      },
+      tvl: "clusterTvl"
+    },
   ],
   'bsc' : [
     {//DHV (solo)
@@ -191,12 +191,6 @@ module.exports = {
         poolId: 0
       },
       tvl: "stakingDhvTvl"
-    },
-    {//BSC-deCluster (cluster)
-      meta: {
-        clusterAddress: '0x0a684421ef48b431803BFd75F38675EAb1e38Ed5', // DBSC
-      },
-      tvl: "clusterTvl"
     },
     {//DHV/BUSD (lp)
       meta: {
@@ -368,6 +362,12 @@ module.exports = {
       },
       tvl: "impulseStakingTvl"
     },
+    {//DBSC (cluster)
+      meta: {
+        clusterAddress: '0x0a684421ef48b431803BFd75F38675EAb1e38Ed5', // DBSC
+      },
+      tvl: "clusterTvl"
+    },
   ],
   'xdai' : [
     {//DHV (solo)
@@ -377,18 +377,6 @@ module.exports = {
         poolId: 0
       },
       tvl: "stakingDhvTvl"
-    },
-    {//xInfra Cluster (cluster)
-      meta: {
-        clusterAddress: '0xA6C090c5572f54d529B0839b8fd2D50a4afB1E6B', // DXIN
-      },
-      tvl: "clusterTvl"
-    },
-    {//De-Gnosis Cluster (cluster)
-      meta: {
-        clusterAddress: '0xF557B2B73b872E6d2F43826f9D77B7402A363Bc0', // DXDC
-      },
-      tvl: "clusterTvl"
     },
     {//DHV/XDAI (lp)
       meta: {
@@ -410,6 +398,18 @@ module.exports = {
         poolId: 0
       },
       tvl: "crvStakingTvl"
+    },
+    {//DXDC (cluster)
+      meta: {
+        clusterAddress: '0xF557B2B73b872E6d2F43826f9D77B7402A363Bc0', // DXDC
+      },
+      tvl: "clusterTvl"
+    },
+    {//DXIN (cluster)
+      meta: {
+        clusterAddress: '0xA6C090c5572f54d529B0839b8fd2D50a4afB1E6B', // DXIN
+      },
+      tvl: "clusterTvl"
     },
   ],
 };
