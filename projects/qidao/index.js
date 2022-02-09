@@ -35,6 +35,14 @@ async function handleMooTokens(balances, block, chain, tokens) {
     } else if (addr === "0xf18f4847a5db889b966788dcbdbcbfa72f22e5a6") {
       addr = "fantom:0x841fad6eae12c286d1fd18d1d525dffa75c7effe"
       pricePerShare[i].output = 1e18;
+    } else if (addr === "0xd795d70ec3c7b990ffed7a725a18be5a9579c3b9") {
+      addr = "avax:0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664"
+    } else if (addr === "0xb6767518b205ea8b312d2ef4d992a2a08c2f2416") {
+      addr = "avax:0xc7198437980c041c805a1edcba50c1ce5db95118"
+    } else if (addr === "0xaf9f33df60ca764307b17e62dde86e9f7090426c") {
+      addr = "avax:0xd586e7f844cea2f87f50152665bcbc2c279d8d70"
+    } else if (addr === "0x808d5f0a62336917da14fa9a10e9575b1040f71c") {
+      addr = "avax:0x60781c2586d68229fde47564546784ab3faca982"
     } else {
       addr = `${chain}:${addr}`;
     }
@@ -354,8 +362,47 @@ async function avax(timestamp, block, chainBlocks) {
       "0x1B156C5c75E9dF4CAAb2a5cc5999aC58ff4F9090",
       "0xfA19c1d104F4AEfb8d5564f02B3AdCa1b515da58",
     ],
+    [
+      "0xD795d70ec3C7b990ffED7a725a18Be5A9579c3b9",
+      "0xC3537ef04Ad744174A4A4a91AfAC4Baf0CF80cB3"
+    ],
+    [
+      "0xb6767518b205ea8B312d2EF4d992A2a08C2f2416",
+      "0xF8AC186555cbd5104c0e8C5BacF8bB779a3869f5"
+    ],
+    [
+      "0xAf9f33df60CA764307B17E62dde86e9F7090426c",
+      "0xEa88eB237baE0AE26f4500146c251d25F409FA32"
+    ],
+    [
+      "0x808D5f0A62336917Da14fA9A10E9575B1040f71c",
+      "0x8Edc3fB6Fcdd5773216331f74AfDb6a2a2E16dc9"
+    ]
   ];
   await handleMooTokens(balances, chainBlocks.avax, chain, avaxMooTokens);
+
+  await sumTokens(
+    balances,
+    [
+      [
+        "0x60781C2586D68229fde47564546784ab3fACA982",
+        "0xfc3eAFD931ebcd0D8E59bfa0BeaE776d7F987716"
+      ],
+      [
+        "0x0665eF3556520B21368754Fb644eD3ebF1993AD4",
+        "0x13a7fe3ab741ea6301db8b164290be711f546a73"
+      ]
+    ],
+    chainBlocks.avax,
+    "avax",
+    addr=> {
+      addr = addr.toLowerCase();
+      if (addr === "0x0665ef3556520b21368754fb644ed3ebf1993ad4") {
+        return "0x6c3f90f043a72fa612cbac8115ee7e52bde6e490"
+      }
+      return `avax:${addr}`
+    }
+  );
   return balances;
 }
 
@@ -411,7 +458,25 @@ async function harmony(timestamp, block, chainBlocks) {
   return balances;
 }
 
+async function xdai (timestamp, block, chainBlocks) {
+  const balances = {};
+  await sumTokens(
+    balances,
+    [
+      [
+        "0x6a023ccd1ff6f2045c3309768ead9e68f978f6e1",
+        "0x5c49b268c9841AFF1Cc3B0a418ff5c3442eE3F3b"
+      ]
+    ],
+    chainBlocks.xdai,
+    "xdai",
+    addr=>`xdai:${addr}`
+  );
+  return balances;
+}
+
 module.exports = {
+  misrepresentedTokens: true,
   methodology:
     "TVL counts the AAVE tokens that are deposited within the Yield Instruments section of QiDao, the Vault token deposits of CRV, LINK, AAVE and WETH, as well as USDC deposited to mint MAI.",
   polygon: {
@@ -429,5 +494,8 @@ module.exports = {
   harmony: {
     tvl: harmony,
   },
+  xdai: {
+    tvl: xdai
+  }
 };
 // node test.js projects/qidao/index.js
