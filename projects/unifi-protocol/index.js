@@ -55,6 +55,5 @@ module.exports = {
   icon: {
     fetch: fetchChain('ICX')
   },
-  
   fetch: fetchTvl
 }
