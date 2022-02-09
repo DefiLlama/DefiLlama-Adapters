@@ -73,4 +73,13 @@ module.exports = {
   aurora: {
     tvl: fetch("aurora", "tvl"),
   },
+  metis: {
+    tvl: fetch("metis", "tvl"),
+  },
+  moonbeam: {
+    tvl: fetch("moonbeam", "tvl"),
+  },
+  optimism: {
+    tvl: fetch("optimism", "tvl"),
+  },
 };

@@ -11,6 +11,9 @@ async function fetch() {
       tvl += chain[vault];
     }
   }
+  if(tvl === 0){
+    throw new Error("TVL for grim finance cannot be 0")
+  }
 
   return tvl;
 }

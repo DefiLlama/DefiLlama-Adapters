@@ -23,7 +23,7 @@ async function underwriting(block) {
 
   return { [SURE]: balanceOf }
 }
-
+//tracking SURE contributed to the community vaults.
 async function tvl(timestamp, block) {
   let underwritingPool = await underwriting(block);
   

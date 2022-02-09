@@ -19,5 +19,8 @@ const graphs = (chain) => async () => {
 };
 
 module.exports = {
-  ethereum: graphs("ethereum"),
+  volume: {
+    ethereum: graphs("ethereum"),
+    // CUSTOM BACKFILL
+  },
 };

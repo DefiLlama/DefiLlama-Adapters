@@ -1,0 +1,47 @@
+{
+    "principal": {
+        "stateMutability": "view",
+        "type": "function",
+        "name": "principal",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "internalType": "address",
+                "type": "address"
+            }
+        ],
+        "constant": true,
+        "signature": "0xba5d3078"
+    },
+    "totalPrincipalReceived": {
+        "stateMutability": "view",
+        "inputs": [],
+        "outputs": [
+            {
+                "type": "uint256",
+                "internalType": "uint256",
+                "name": ""
+            }
+        ],
+        "type": "function",
+        "name": "totalPrincipalReceived",
+        "constant": true,
+        "signature": "0xb1c7a664"
+    },
+    "balanceOf": {
+        "type": "function",
+        "name": "balanceOf",
+        "inputs": [],
+        "stateMutability": "view",
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "constant": true,
+        "signature": "0x722713f7"
+    }
+}

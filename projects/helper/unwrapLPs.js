@@ -300,6 +300,15 @@ const crvPools = {
             "0xbBC455cb4F1B9e4bFC4B73970d360c8f032EfEE6",
     ],
     },
+    // 3CRV Harmony
+    "0xc5cfada84e902ad92dd40194f0883ad49639b023": {
+        swapContract: "0xc5cfada84e902ad92dd40194f0883ad49639b023",
+        underlyingTokens: [
+          "0xef977d2f931c1978db5f6747666fa1eacb0d0339",
+          "0x985458e523db3d53125813ed68c274899e9dfab4",
+          "0x3c2b8be99c50593081eaa2a724f0b8285f5aba8f"
+        ]
+    }
 }
 const yearnVaults = {
     // yvToken: underlying, eg yvYFI:YFI
@@ -593,7 +602,7 @@ async function unwrapUniswapV3LPs(balances, univ3_Positions, block, chain='ether
                 const [key, value] = entry;
                 if(!excludeTokens.includes(key)){
                     // balances[key] = BigNumber( balances[key] || 0 ).plus(sharesRatio * value);
-                    sdk.util.sumSingleBalance(balances, await transformAddress(key), sharesRatio * value) 
+                    sdk.util.sumSingleBalance(balances, await transformAddress(key), BigNumber(sharesRatio * value).toFixed(0))
                 }
             });
             console.log(`ratio of the pool: ${(100 * sharesRatio).toFixed(1)}% of position_id ${position_id}`)

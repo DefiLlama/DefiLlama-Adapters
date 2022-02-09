@@ -19,5 +19,8 @@ const klaytn = async () => {
 };
 
 module.exports = {
-  klaytn,
+  volume: {
+    klaytn,
+    // TODO custom backfill
+  },
 };

@@ -2,23 +2,40 @@ const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js');
 const _ = require('underscore');
 const abi = require('./abi');
+const {gql, request} = require('graphql-request')
+const {getApiTvl} = require('../helper/historicalApi')
 
 const avaxpool = '0x34f2fe77a14afac8a7b7f18ed1e3b2c5a1e0ccbc';
-let usd = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
 
-async function avax(timestamp, block) {
-    let totalSupply = (await sdk.api.abi.call({
-        block,
-        target: avaxpool,
-        abi: abi['totalSupply'],
-        chain:'avax'
-    })).output;
+const url = "https://api.thegraph.com/subgraphs/name/jeffqg123/defrost-finance-mainnet"
 
-  totalSupply = parseFloat(new BigNumber(totalSupply).times(Math.pow(10, 4)));
-
-  let tk= usd;
-  return{[tk]:totalSupply};
-
+async function avax(timestamp) {
+  return getApiTvl(timestamp, async ()=>{
+    const data = await request(url, gql`
+    {
+      entityLp2H2OColUsdTvls(first: 1, orderBy: TimeStamp, orderDirection: desc) {
+        id
+        TimeStamp
+        UsdValue
+        __typename
+      }
+    }`)
+    return data.entityLp2H2OColUsdTvls[0].UsdValue / 1e4
+  }, async ()=>{
+    const data = await request(url, gql`
+    {
+      entityLp2H2OColUsdTvls(first: 1000, orderBy: TimeStamp, orderDirection: asc) {
+        id
+        TimeStamp
+        UsdValue
+        __typename
+      }
+    }`)
+    return data.entityLp2H2OColUsdTvls.map(t=>({
+      date: t.TimeStamp,
+      totalLiquidityUSD: t.UsdValue/1e4,
+    }))
+  })
 }
 
 

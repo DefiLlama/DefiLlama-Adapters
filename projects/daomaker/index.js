@@ -44,13 +44,11 @@ const vaultlp = [
 async function ethTvl(block) {
   const balances = {};
 
-  for (let i = 0; i < vaultFarmsAddresses.length; i++) {
     await sumTokensAndLPsSharedOwners(
       balances,
-      [[vaultlp[i], true]],
-      [vaultFarmsAddresses[i]]
+      vaultlp.map(v=>[v, true]),
+      vaultFarmsAddresses
     );
-  }
 
   return balances;
 }
