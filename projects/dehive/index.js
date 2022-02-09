@@ -4,6 +4,10 @@ const abi = require('./abi.json')
 
 const stakingInfo = require("./stakingInfo");
 
+const EXPORT_TYPE_TVL = 0;
+const EXPORT_TYPE_DHV_STAKING = 1;
+const EXPORT_TYPE_POOL2 = 2;
+
 async function stakingTvl(chain, meta, ethBlock) {
     return (await sdk.api.abi.call({
         target: meta.stakingAddress,
@@ -173,7 +177,7 @@ async function clusterTvl(chain, meta, ethBlock) {
     return underlyingList.map((_, i) => [underlyingList[i], underlyingAmount[i]]);
 }
 
-async function chainTvl(chain, chainBlocks) {
+async function chainTvl(chain, chainBlocks, exportType) {
     const tvl = {};
     const transform = addr => `${chain}:${addr}`
     const block = chainBlocks[chain]
@@ -202,6 +206,14 @@ async function chainTvl(chain, chainBlocks) {
                 console.log('unknown tvl type', JSON.stringify(staking, null,4));
                 continue;
         }
+        if (
+          (staking.tvl === "stakingDhvTvl" && exportType !== EXPORT_TYPE_DHV_STAKING)
+          || (staking.tvl !== "stakingDhvTvl" && exportType === EXPORT_TYPE_DHV_STAKING)
+          || (staking.tvl === "lpStakingTvl" && exportType === EXPORT_TYPE_POOL2 && (staking.isPool2 !== true))
+          || (staking.tvl === "lpStakingTvl" && exportType !== EXPORT_TYPE_POOL2 && (staking.isPool2 === true))
+        ) {
+            continue;
+        }
         const tvls = await stakingTvlFunction(chain, staking.meta, block);
         if (typeof tvls === 'string') {
             sdk.util.sumSingleBalance(tvl, transform(staking.meta.tokenAddress), tvls)
@@ -215,33 +227,73 @@ async function chainTvl(chain, chainBlocks) {
 }
 
 async function ethereumTvl(timestamp, ethBlock, chainBlocks) {
-    return chainTvl('ethereum', chainBlocks)
+    return chainTvl('ethereum', chainBlocks, EXPORT_TYPE_TVL);
 }
 
 async function polygonTvl(timestamp, ethBlock, chainBlocks) {
-    return chainTvl('polygon', chainBlocks);
+    return chainTvl('polygon', chainBlocks, EXPORT_TYPE_TVL);
 }
 
 async function bscTvl(timestamp, ethBlock, chainBlocks) {
-    return chainTvl('bsc', chainBlocks);
+    return chainTvl('bsc', chainBlocks, EXPORT_TYPE_TVL);
 }
 
 async function xdaiTvl(timestamp, ethBlock, chainBlocks) {
-    return chainTvl('xdai', chainBlocks)
+    return chainTvl('xdai', chainBlocks, EXPORT_TYPE_TVL);
+}
+
+async function ethereumStaking(timestamp, ethBlock, chainBlocks) {
+    return chainTvl('ethereum', chainBlocks, EXPORT_TYPE_DHV_STAKING);
+}
+
+async function polygonStaking(timestamp, ethBlock, chainBlocks) {
+    return chainTvl('polygon', chainBlocks, EXPORT_TYPE_DHV_STAKING);
+}
+
+async function bscStaking(timestamp, ethBlock, chainBlocks) {
+    return chainTvl('bsc', chainBlocks, EXPORT_TYPE_DHV_STAKING);
+}
+
+async function xdaiStaking(timestamp, ethBlock, chainBlocks) {
+    return chainTvl('xdai', chainBlocks, EXPORT_TYPE_DHV_STAKING);
+}
+
+async function ethereumPool2(timestamp, ethBlock, chainBlocks) {
+    return chainTvl('ethereum', chainBlocks, EXPORT_TYPE_POOL2);
+}
+
+async function polygonPool2(timestamp, ethBlock, chainBlocks) {
+    return chainTvl('polygon', chainBlocks, EXPORT_TYPE_POOL2);
+}
+
+async function bscPool2(timestamp, ethBlock, chainBlocks) {
+    return chainTvl('bsc', chainBlocks, EXPORT_TYPE_POOL2);
+}
+
+async function xdaiPool2(timestamp, ethBlock, chainBlocks) {
+    return chainTvl('xdai', chainBlocks, EXPORT_TYPE_POOL2);
 }
 
 
 module.exports = {
     ethereum: {
-        tvl: ethereumTvl
+        tvl: ethereumTvl,
+        pool2: ethereumPool2,
+        staking: ethereumStaking
     },
     polygon: {
-        tvl: polygonTvl
+        tvl: polygonTvl,
+        pool2: polygonPool2,
+        staking: polygonStaking
     },
     bsc: {
-        tvl: bscTvl
+        tvl: bscTvl,
+        pool2: bscPool2,
+        staking: bscStaking
     },
     xdai: {
-        tvl: xdaiTvl
+        tvl: xdaiTvl,
+        pool2: xdaiPool2,
+        staking: xdaiStaking
     }
 };
