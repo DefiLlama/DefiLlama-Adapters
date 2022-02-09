@@ -31,7 +31,9 @@ async function ethereum(timestamp) {
 async function fantom(timestamp) {
     return getApiTvl(timestamp, async () => {
         const tvl = await axios.get('https://api.yearn.finance/v1/chains/250/vaults/all')
-        return tvl.data.reduce((all, vault) => all + vault.tvl.tvl, 0)
+        const total = tvl.data.reduce((all, vault) => all + vault.tvl.tvl, 0)
+        if(total === 0){ throw new Error("TVL can't be 0")}
+        return total
     }, async () => {
         const totalTvl = await axios.post("https://yearn.vision/api/ds/query", {"queries":[{"datasource":{"uid":"PBFE396EC0B189D67","type":"prometheus"},"expr":"(sum(ironbank{network=\"FTM\", param=\"tvl\"}) or vector(0)) + (sum(yearn_vault{network=\"FTM\", param=\"tvl\"}) or vector(0))", "utcOffsetSec":0,"datasourceId":1}],"from":"1642091361529","to": Date.now().toString() })
         const result = []

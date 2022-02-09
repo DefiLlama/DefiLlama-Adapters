@@ -84,7 +84,6 @@ async function avaTvl(timestamp, ethBlock, chainBlocks) {
       chain: "avax",
       block,
     });
-
     for (let j = 0; j < components.length; j++) {
       let { output: balance } = await sdk.api.erc20.balanceOf({
         target: components[j],
@@ -103,6 +102,10 @@ async function avaTvl(timestamp, ethBlock, chainBlocks) {
           chain: "avax",
           abi: yieldyakAbi.depositToken,
         });
+        if (underlyingToken === '0x0000000000000000000000000000000000000000') {
+          // set underlyingToken to WAVAX whenever yieldYakVault.depositToken returns zero_address
+          underlyingToken = '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7'
+        }
         let { output: underlyingTokenBalance } = await sdk.api.abi.call({
           target: components[j],
           block,
@@ -133,7 +136,7 @@ module.exports = {
   },
   avalanche: {
     tvl: avaTvl,
-    pool2: pool2s(["0x35be7982bc5e40a8c9af39a639bddce32081102e"], avaxPool2LPs, "avax"),
+    pool2: pool2s(["0x35be7982bc5e40a8c9af39a639bddce32081102e", "0x188bED1968b795d5c9022F6a0bb5931Ac4c18F00"], avaxPool2LPs, "avax"),
     staking: staking(
       "0x35bE7982bC5E40A8C9aF39A639bDDcE32081102e",
       "0x637afeff75ca669ff92e4570b14d6399a658902f",
