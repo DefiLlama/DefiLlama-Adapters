@@ -2,7 +2,7 @@ const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 const abi = require('./abi.json')
 
-const stakingInfo = require("./stakingInfo");
+const assetsInfo = require("./assetsInfo");
 
 const EXPORT_TYPE_TVL = 0;
 const EXPORT_TYPE_DHV_STAKING = 1;
@@ -148,9 +148,6 @@ async function impulseStakingTvl(chain, meta, ethBlock) {
     return tvl;
 }
 
-// TODO
-// async function clusterStakingTvl(){}
-
 async function clusterTvl(chain, meta, ethBlock) {
     const poolSupply = (await sdk.api.abi.call({
         target: meta.clusterAddress,
@@ -181,26 +178,26 @@ async function chainTvl(chain, chainBlocks, exportType) {
     const tvl = {};
     const transform = addr => `${chain}:${addr}`
     const block = chainBlocks[chain]
-    for (const staking of stakingInfo[chain]) {
-        let stakingTvlFunction = undefined;
+    for (const staking of assetsInfo[chain]) {
+        let calculateTvlFunction = undefined;
         switch (staking.tvl) {
             case "stakingTvl":
-                stakingTvlFunction = stakingTvl;
+                calculateTvlFunction = stakingTvl;
                 break;
             case "stakingDhvTvl":
-                stakingTvlFunction = stakingDhvTvl;
+                calculateTvlFunction = stakingDhvTvl;
                 break;
             case "lpStakingTvl":
-                stakingTvlFunction = lpStakingTvl;
+                calculateTvlFunction = lpStakingTvl;
                 break;
             case "crvStakingTvl":
-                stakingTvlFunction = crvStakingTvl;
+                calculateTvlFunction = crvStakingTvl;
                 break;
             case "clusterTvl":
-                stakingTvlFunction = clusterTvl;
+                calculateTvlFunction = clusterTvl;
                 break;
             case "impulseStakingTvl":
-                stakingTvlFunction = impulseStakingTvl;
+                calculateTvlFunction = impulseStakingTvl;
                 break;
             default:
                 console.log('unknown tvl type', JSON.stringify(staking, null,4));
@@ -214,7 +211,7 @@ async function chainTvl(chain, chainBlocks, exportType) {
         ) {
             continue;
         }
-        const tvls = await stakingTvlFunction(chain, staking.meta, block);
+        const tvls = await calculateTvlFunction(chain, staking.meta, block);
         if (typeof tvls === 'string') {
             sdk.util.sumSingleBalance(tvl, transform(staking.meta.tokenAddress), tvls)
         } else {
