@@ -125,7 +125,7 @@ async function treasury(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
-  methodology: "Pool2 deposits consist of BASED/TOMB and BSHARE/FTM LP tokens deposits while the staking TVL consists of the BSHARES tokens locked within the Acropolis contract(0xe5009dd5912a68b0d7c6f874cd0b4492c9f0e5cd).",
+  methodology: "Pool2 deposits consist of BASED/TOMB, BSHARE/FTM LP, g3CRV (geist stable LP on Curve) receipt tokens while the staking TVL consists of the BSHARES tokens locked within the Acropolis contract. Treasury consists of deposit fees accumulated from genesis pools as well as g3CRV pool",
   fantom: {
     tvl: async () => ({}),
     pool2,
