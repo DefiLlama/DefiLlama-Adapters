@@ -38,10 +38,23 @@ async function avax(timestamp) {
   })
 }
 
+async function staking(time, ethBlock, chainBlocks){
+  const stk = await sdk.api.abi.call({
+    target: "0x1e93b54AC156Ac2FC9714B91Fa10f1b65e2daFD9",
+    block: chainBlocks.avax,
+    chain: "avax",
+    abi: {"constant":true,"inputs":[],"name":"totalStaked","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}
+  })
+  return {
+    "avax:0x47eb6f7525c1aa999fbc9ee92715f5231eb1241d": stk.output
+  }
+}
+
 
 module.exports = {
   start: 6965653, 
   avax:{
-    tvl: avax
+    tvl: avax,
+    staking
   }
 };
