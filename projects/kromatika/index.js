@@ -1,18 +1,31 @@
-const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl");
+const sdk = require("@defillama/sdk");
+const { getBlock } = require('../helper/getBlock');
+const BigNumber = require('bignumber.js');
+
+const contracts = {
+  optimism: {
+    KROM: '0xf98dcd95217e15e05d8638da4c91125e59590b07',
+    position: '0x7314Af7D05e054E96c44D7923E68d66475FfaAb8'
+  }
+}
+
+tvl = (chain) => async function (timestamp, ethBlock, chainBlocks) {
+  const block = await getBlock(timestamp, chain, chainBlocks, false)
+  const underlying = contracts[chain].KROM;
+  const {output: balance} = await sdk.api.erc20.balanceOf({
+    target: underlying,
+    owner: contracts[chain].position,
+    block,
+    chain
+  });
+  const balances = {};
+  sdk.util.sumSingleBalance(balances, 'kromatika', BigNumber(balance).div(1e18).toFixed(0));
+  return balances
+}
 
 module.exports = {
-  misrepresentedTokens: true,
-  methodology:
-    "Kromatika Factory address is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
+  methodology: "Kromatika KROM held by contract",
   optimism: {
-    tvl: calculateUsdUniTvl(
-      "0x1f98431c8ad98523631ae4a59f267346ea31f984",
-      "optimism",
-      "0x4200000000000000000000000000000000000006",
-      [],
-      "ethereum", 
-      18, false
-    ),
-    staking: () => ({})
+    tvl: tvl('optimism')
   }
 };
