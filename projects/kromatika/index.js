@@ -10,7 +10,8 @@ module.exports = {
       "optimism",
       "0x4200000000000000000000000000000000000006",
       [],
-      "ethereum"
+      "ethereum", 
+      18, false
     ),
     staking: () => ({})
   }
