@@ -13,7 +13,7 @@ const contracts = {
 };
 
 tvl = (chain) => async function (timestamp, ethBlock, chainBlocks) {
-  const underlying = contracts[chain].KROM;
+  const krom = contracts[chain].KROM;
   const krom_position = contracts[chain].position;
   
   let transform = id=>id;
@@ -24,15 +24,15 @@ tvl = (chain) => async function (timestamp, ethBlock, chainBlocks) {
   // Get Kroma deposited by users to pay for their fees
   const block = await getBlock(timestamp, chain, chainBlocks, false);
   const {output: balance} = await sdk.api.erc20.balanceOf({
-    target: underlying,
+    target: krom,
     owner: krom_position,
     chain,
     block,
   });
   const balances = {};
-  sdk.util.sumSingleBalance(balances, KROM_mainnet, BigNumber(balance).div(1e18).toFixed(0));
+  sdk.util.sumSingleBalance(balances, transform(krom), balance);
 
-  // Get LP positions 
+  // Get LP positions tokens owed
   const {output: positionsSupply} = await sdk.api.erc20.totalSupply({
     target: krom_position,
     chain,
@@ -48,23 +48,21 @@ tvl = (chain) => async function (timestamp, ethBlock, chainBlocks) {
     chain,
     block,
   });
+  // Retrieve valid orders and add tokens owed to balances
   const valid_orders = orders.output
       .map(order => order.output)
       .filter(order => order);
-  console.log(valid_orders.length)
-
   valid_orders.forEach(order => {
-    // Get each order params
     sdk.util.sumSingleBalance(balances, transform(order.token0), order.tokensOwed0);
     sdk.util.sumSingleBalance(balances, transform(order.token1), order.tokensOwed1);
   });
+  console.log('Kroma positions count', valid_orders.length)
 
-  console.log(balances);
   return balances;
 }
 
 module.exports = {
-  methodology: "Kromatika KROM held by contract",
+  methodology: "Kromatika handles Uniswap-v3 positions for their users who submit limit orders - TVL is amounts of tokens of each LP as well as KROM held by the contract to pay for fees",
   optimism: {
     tvl: tvl('optimism')
   }
