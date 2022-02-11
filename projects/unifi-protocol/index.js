@@ -52,8 +52,5 @@ module.exports = {
   avalanche: {
     fetch: fetchChain('AVAX')
   },
-  icon: {
-    fetch: fetchChain('ICX')
-  },
   fetch: fetchTvl
 }
