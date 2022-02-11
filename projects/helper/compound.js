@@ -228,6 +228,16 @@ function getCompoundUsdTvl(comptroller, chain, cether, borrowed, abis = {
                 let underlyingPrice = new BigNumber(await getUnderlyingPrice(block, chain, oracle, token, abis.underlyingPrice)).div(
                     10 ** (18 + 18 - decimals)
                 );
+                /*
+                Uncomment for debugging
+                console.log(
+                    //token, 
+                    (await sdk.api.erc20.symbol(token, chain)).output, 
+                    //locked.times(underlyingPrice).toNumber()/1e6, 
+                    underlyingPrice.toNumber(), 
+                    //amount.toNumber()
+                )
+                */
                 tvl = tvl.plus(locked.times(underlyingPrice));
             })
         );

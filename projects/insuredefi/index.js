@@ -15,7 +15,7 @@ async function underwriting(block) {
   let balanceOf;
   balanceOf = await sdk.api.abi.call({
     block,
-    target: nsure,
+    target: SURE,
     abi: abi["balanceOf"],
     params: constant.treasuryPool.address,
   });
