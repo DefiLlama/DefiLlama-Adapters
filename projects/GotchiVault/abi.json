@@ -18,6 +18,8 @@
       ],
       "stateMutability": "view",
       "type": "function"
-    }
+    },
+    "tokenIdsOfOwner":
+    {"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"tokenIdsOfOwner","outputs":[{"internalType":"uint32[]","name":"tokenIds_","type":"uint32[]"}],"stateMutability":"view","type":"function"}
 
   }
