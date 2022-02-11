@@ -1,6 +1,6 @@
 const { calculateUsdUniTvl } = require('../helper/getUsdUniTvl');
 module.exports = {
-    emerald: {
+    oasis: {
         tvl: calculateUsdUniTvl(
             '0xefA6861931991CCE372c477a015619A21dfEBE8c',
             'emerald',
