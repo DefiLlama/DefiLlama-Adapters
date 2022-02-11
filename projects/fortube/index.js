@@ -222,12 +222,12 @@
     okexchain: {
       tvl: okexchain
     },
-    iotexchain: {
+    iotex: {
       tvl: iotexchain
     },
-    polygonchain: {
+    polygon: {
       tvl: polygonchain
     },
-    tvl: sdk.util.sumChainTvls([eth, bsc, okexchain, iotexchain, polygonchain])
+    
   };
   
