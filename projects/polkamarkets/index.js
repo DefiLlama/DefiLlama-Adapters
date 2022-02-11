@@ -21,60 +21,70 @@ const protocols = [
   }
 ];
 
-async function tvl(chain) {
-  const balances = {};
-  const chainProtocols = protocols.filter(protocol => protocol.chain === chain);
+function chainTvl(chain) {
+  return async function tvl(timestamp, ethBlock, chainBlocks) {
+    const balances = {};
+    const chainProtocols = protocols.filter(protocol => protocol.chain === chain);
+    const block = chainBlocks[chain];
 
-  for (const protocol of chainProtocols) {
-    const balance = (
-      await sdk.api.eth.getBalance({
-        target: protocol.predictionMarketContractAddress,
-        chain: protocol.chain,
-      })
-    ).output;
+    for (const protocol of chainProtocols) {
+      const balance = (
+        await sdk.api.eth.getBalance({
+          target: protocol.predictionMarketContractAddress,
+          params: timestamp,
+          chain,
+          block,
+        })
+      ).output;
 
-    sdk.util.sumSingleBalance(balances, protocol.chain, Number(balance) / 1e18);
+      sdk.util.sumSingleBalance(balances, protocol.chain, Number(balance) / 1e18);
+    }
+
+    return balances;
   }
-
-  return balances;
 }
 
-async function staking(chain) {
-  const balances = {};
-  const chainProtocols = protocols.filter(protocol => protocol.chain === chain);
+function chainStaking(chain) {
+  return async function staking(timestamp, ethBlock, chainBlocks) {
+    const balances = {};
+    const chainProtocols = protocols.filter(protocol => protocol.chain === chain);
+    const block = chainBlocks[chain];
 
-  for (const protocol of chainProtocols) {
-    const polkBalance = (
-      await sdk.api.erc20.balanceOf({
-        target: protocol.polkAddress,
-        owner: protocol.realitioContractAddress,
-        chain: protocol.chain,
-      })
-    ).output;
+    for (const protocol of chainProtocols) {
+      const polkBalance = (
+        await sdk.api.erc20.balanceOf({
+          target: protocol.polkAddress,
+          owner: protocol.realitioContractAddress,
+          params: timestamp,
+          chain,
+          block,
+        })
+      ).output;
 
-    sdk.util.sumSingleBalance(
-      balances,
-      "polkamarkets",
-      Number(polkBalance) / 1e18
-    );
-  };
+      sdk.util.sumSingleBalance(
+        balances,
+        "polkamarkets",
+        Number(polkBalance) / 1e18
+      );
+    };
 
-  return balances;
+    return balances;
+  }
 }
 
 module.exports = {
   methodology:
     "Polkamarkets TVL equals the contracts' EVM balance + bonds contracts' POLK balance.",
   moonriver: {
-    tvl: () => { return tvl('moonriver') },
-    staking: () => { return staking('moonriver') },
+    tvl: chainTvl('moonriver'),
+    staking: chainStaking('moonriver')
   },
   moonbeam: {
-    tvl: () => { return tvl('moonbeam') },
-    staking: () => { return staking('moonbeam') },
+    tvl: chainTvl('moonbeam'),
+    staking: chainStaking('moonbeam')
   },
   ethereum: {
-    tvl: () => { return tvl('ethereum') },
-    staking: () => { return staking('ethereum') },
+    tvl: chainTvl('ethereum'),
+    staking: chainStaking('ethereum')
   },
 };
