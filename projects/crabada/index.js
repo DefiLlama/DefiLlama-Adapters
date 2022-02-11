@@ -15,7 +15,6 @@ const treasuryContracts = [
   // Tavern fees
   "0x2BA9033E49EC1aa030fA46DE6d6793983945497E",
 ];
-const USDC = "0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664";
 
 const lpTokens = [
   [CRA, false],
@@ -24,6 +23,7 @@ const lpTokens = [
   ["0x565d20BD591b00EAD0C927e4b6D7DD8A33b0B319", true], // WAVAX-TUS JLP
   ["0x21889033414f652f0fD0e0f60a3fc0221d870eE4", true], // CRA-TUS JLP
   ["0x134905461773eF228b66CEBd5E1FF06D7CC79B12", true], // TUS-CRAM JLP
+  ["0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664", false] // USDC
 ];
 
 async function Treasury(timestamp, chainBlocks) {
@@ -42,28 +42,12 @@ async function Treasury(timestamp, chainBlocks) {
   return balances;
 }
 
-async function avaxTvl(timestamp, chainBlocks) {
-  const balances = {};
-
-  const transformAddress = await transformAvaxAddress();
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    [[USDC, false]],
-    treasuryContracts,
-    chainBlocks["avax"],
-    "avax",
-    transformAddress
-  );
-
-  return balances;
-}
-
 module.exports = {
   misrepresentedTokens: true,
   avax: {
     treasury: Treasury,
     staking: staking(stakingContract, CRA, "avax"),
-    tvl: avaxTvl,
+    tvl: () =>({}),
   },
   methodology:
   "Counts liquidty of the assets(USDC) deposited through Treasury Contract; also Staking and Treasury parts",
