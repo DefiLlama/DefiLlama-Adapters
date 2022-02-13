@@ -19,11 +19,14 @@ const basedTombLpAddress = "0xab2ddcbb346327bbdf97120b0dd5ee172a9c8f9e";
 const bshsareFtmLpAddress = "0x6f607443dc307dcbe570d0ecff79d65838630b56";
 const g3CrvAddress = "0xd02a30d33153877bc20e5721ee53dedee0422b2f";
 const stakedG3CrvAddress = "0xd4f94d0aaa640bbb72b5eec2d85f6d114d81a88e";
+const crv3CryptoAddress = "0x58e57cA18B7A47112b877E31929798Cd3D703b0f";
+const stakedCrv3CryptoAddress = "0x00702BbDEaD24C40647f235F15971dB0867F6bdB";
 
 const poolLPs = [
   basedTombLpAddress,
   bshsareFtmLpAddress,
   stakedG3CrvAddress,
+  stakedCrv3CryptoAddress,
 ];
 
 const treasuryTokens = [
@@ -68,6 +71,15 @@ async function calcPool2(rewardPool, lps, block, chain) {
     balances,
     g3CrvAddress, // sending address of g3Crv LP instead of receipt token. Both have same value.
     lpBalances[2].output,
+    block,
+    chain,
+    (addr) => `${chain}:${addr}`
+  );
+
+  await unwrapCrv(
+    balances,
+    crv3CryptoAddress, // sending address of crv3Crypto LP instead of receipt token. Both have same value.
+    lpBalances[3].output,
     block,
     chain,
     (addr) => `${chain}:${addr}`
