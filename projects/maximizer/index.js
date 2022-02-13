@@ -90,6 +90,10 @@ const transformAddress = (addr) => {
   if (compareToIgnoreCase(addr, USDC)) {
     return `avax:${USDCe}`;
   }
+  // MONEY -> DAI
+  if (compareToIgnoreCase(addr, MONEY)) {
+    return `avax:${DAI}`;
+  }
   // xJOE -> JOE
   if (compareToIgnoreCase(addr, XJOE)) {
     return `avax:${JOE}`;
