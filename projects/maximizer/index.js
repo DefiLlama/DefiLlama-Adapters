@@ -3,9 +3,11 @@ const sdk = require("@defillama/sdk");
 const allocatorAbi = require("./allocatorAbi.json");
 const pngStakingAbi = require("./stakingRewardsAbi.json");
 const joeStakingAbi = require("./masterchefAbi.json");
+const veptpAbi = require("./veptpAbi.json");
 
 const MaximizerStaking = "0x6d7AD602Ec2EFdF4B7d34A9A53f92F06d27b82B1";
 const Treasury = "0x22cF6c46b4E321913ec30127C2076b7b12aC6d15";
+const Deployer = "0xb2Fe117269292D41c3b5bdD6B600Fc80239AfBeC";
 const PngAllocator = "0x9747ada761D9325D08bE0f18913215ce2F827807";
 const JoeAllocator = "0xa7b74883309eA1696676c714A83004d7591166F0";
 
@@ -13,6 +15,7 @@ const MAXI = "0x7C08413cbf02202a1c13643dB173f2694e0F73f0";
 const SMAXI = "0xEcE4D1b3C2020A312Ec41A7271608326894076b4";
 const DAI = "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70";
 const USDC = "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E";
+const USDCe = "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664";
 const WAVAX = "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7";
 const PNG = "0x60781C2586D68229fde47564546784ab3fACA982";
 const QI = "0x8729438EB15e2C8B576fCc6AeCdA6A148776C0F5";
@@ -20,6 +23,7 @@ const JOE = "0x6e84a6216eA6dACC71eE8E6b0a5B7322EEbC0fDd";
 const XJOE = "0x57319d41F71E81F3c65F2a47CA4e001EbAFd4F33";
 const ISA = "0x3EeFb18003D033661f84e48360eBeCD181A84709";
 const PTP = "0x22d4002028f537599bE9f666d1c4Fa138522f9c8";
+const VEPTP = "0x5857019c749147EEE22b1Fe63500F237F3c1B692";
 const MORE = "0xd9D90f882CDdD6063959A9d837B05Cb748718A05";
 const MONEY = "0x0f577433Bf59560Ef2a79c124E9Ff99fCa258948";
 const HEC = "0xC7f4debC8072e23fe9259A5C0398326d8EfB7f5c";
@@ -79,16 +83,20 @@ function compareToIgnoreCase(a, b) {
 
 const transformAddress = (addr) => {
   // sMAXI -> MAXI
-  if (compareToIgnoreCase(addr, "0xEcE4D1b3C2020A312Ec41A7271608326894076b4")) {
-    return `avax:0x7c08413cbf02202a1c13643db173f2694e0f73f0`;
+  if (compareToIgnoreCase(addr, SMAXI)) {
+    return `avax:${MAXI}`;
   }
   // USDC -> USDC.e
-  if (compareToIgnoreCase(addr, "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E")) {
-    return `avax:0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664`;
+  if (compareToIgnoreCase(addr, USDC)) {
+    return `avax:${USDCe}`;
+  }
+  // MONEY -> DAI
+  if (compareToIgnoreCase(addr, MONEY)) {
+    return `avax:${DAI}`;
   }
   // xJOE -> JOE
-  if (compareToIgnoreCase(addr, "0x57319d41F71E81F3c65F2a47CA4e001EbAFd4F33")) {
-    return `avax:0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd`;
+  if (compareToIgnoreCase(addr, XJOE)) {
+    return `avax:${JOE}`;
   }
   return `avax:${addr}`;
 };
@@ -171,6 +179,14 @@ async function tvl(timestamp, block, chainBlocks) {
     sdk.util.sumSingleBalance(balances, config.transformAddress(allocator.stakeToken), stakedYieldTokens[index]);
     sdk.util.sumSingleBalance(balances, config.transformAddress(allocator.yieldToken), pendingYieldTokens[index]);
   });
+
+  const stakedPtp = (await sdk.api.abi.call({
+    target: VEPTP,
+    abi: veptpAbi.getStakedPtp,
+    params: [Deployer],
+    ...config,
+  })).output;
+  sdk.util.sumSingleBalance(balances, config.transformAddress(PTP), stakedPtp);
 
   return balances;
 };
