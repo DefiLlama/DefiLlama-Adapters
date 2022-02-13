@@ -1,16 +1,13 @@
-const { compoundExportsWithAsyncTransform } = require('../helper/compound')
-const { transformMoonriverAddress } = require('../helper/portedTokens')
+const { usdCompoundExports } = require('../helper/compound')
 
-const comptroller = "0x8529ea4DBDcA738aA928d682ea9c1382Bf2Ff098"
+const comptroller = "0x0b7a0EAA884849c6Af7a129e899536dDDcA4905E"
 const chain = "moonriver"
 const mMOVR = "0x6a1A771C7826596652daDC9145fEAaE62b1cd07f"
 
 module.exports = {
-  moonriver: compoundExportsWithAsyncTransform(
+  moonriver: usdCompoundExports(
     comptroller,
     chain,
     mMOVR,
-    undefined,
-    transformMoonriverAddress
   ),
 }
