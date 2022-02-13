@@ -3,9 +3,11 @@ const sdk = require("@defillama/sdk");
 const allocatorAbi = require("./allocatorAbi.json");
 const pngStakingAbi = require("./stakingRewardsAbi.json");
 const joeStakingAbi = require("./masterchefAbi.json");
+const veptpAbi = require("./veptpAbi.json");
 
 const MaximizerStaking = "0x6d7AD602Ec2EFdF4B7d34A9A53f92F06d27b82B1";
 const Treasury = "0x22cF6c46b4E321913ec30127C2076b7b12aC6d15";
+const Deployer = "0xb2Fe117269292D41c3b5bdD6B600Fc80239AfBeC";
 const PngAllocator = "0x9747ada761D9325D08bE0f18913215ce2F827807";
 const JoeAllocator = "0xa7b74883309eA1696676c714A83004d7591166F0";
 
@@ -20,6 +22,7 @@ const JOE = "0x6e84a6216eA6dACC71eE8E6b0a5B7322EEbC0fDd";
 const XJOE = "0x57319d41F71E81F3c65F2a47CA4e001EbAFd4F33";
 const ISA = "0x3EeFb18003D033661f84e48360eBeCD181A84709";
 const PTP = "0x22d4002028f537599bE9f666d1c4Fa138522f9c8";
+const VEPTP = "0x5857019c749147EEE22b1Fe63500F237F3c1B692";
 const MORE = "0xd9D90f882CDdD6063959A9d837B05Cb748718A05";
 const MONEY = "0x0f577433Bf59560Ef2a79c124E9Ff99fCa258948";
 const HEC = "0xC7f4debC8072e23fe9259A5C0398326d8EfB7f5c";
@@ -171,6 +174,14 @@ async function tvl(timestamp, block, chainBlocks) {
     sdk.util.sumSingleBalance(balances, config.transformAddress(allocator.stakeToken), stakedYieldTokens[index]);
     sdk.util.sumSingleBalance(balances, config.transformAddress(allocator.yieldToken), pendingYieldTokens[index]);
   });
+
+  const stakedPtp = (await sdk.api.abi.call({
+    target: VEPTP,
+    abi: veptpAbi.getStakedPtp,
+    params: [Deployer],
+    ...config,
+  })).output;
+  sdk.util.sumSingleBalance(balances, config.transformAddress(PTP), stakedPtp);
 
   return balances;
 };
