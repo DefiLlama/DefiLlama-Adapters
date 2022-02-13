@@ -32,6 +32,7 @@ const poolLPs = [
 const treasuryTokens = [
   basedTombLpAddress,
   stakedG3CrvAddress,
+  stakedCrv3CryptoAddress,
   tombAddress,
   usdcAddress,
   wftmAddress,
@@ -121,7 +122,16 @@ async function calcTreasury(treasury, tokens, block, chain) {
     (addr) => `${chain}:${addr}`
   );
 
-  tokenBalances.slice(2).map((balance) => {
+  await unwrapCrv(
+    balances,
+    crv3CryptoAddress, // sending address of crv3Crypto LP instead of receipt token. Both have same value.
+    tokenBalances[2].output,
+    block,
+    chain,
+    (addr) => `${chain}:${addr}`
+  );
+
+  tokenBalances.slice(3).map((balance) => {
     sdk.util.sumSingleBalance(balances, `${chain}:${balance.input.target}`, balance.output);
   });
 
