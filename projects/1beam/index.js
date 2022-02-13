@@ -67,5 +67,5 @@ module.exports = {
   moonbeam: {
     tvl: moonbeamTvl,
   },
-  tvl: sdk.util.sumChainTvls([moonbeamTvl]),
+  
 };
