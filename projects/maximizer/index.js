@@ -15,6 +15,7 @@ const MAXI = "0x7C08413cbf02202a1c13643dB173f2694e0F73f0";
 const SMAXI = "0xEcE4D1b3C2020A312Ec41A7271608326894076b4";
 const DAI = "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70";
 const USDC = "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E";
+const USDCe = "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664";
 const WAVAX = "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7";
 const PNG = "0x60781C2586D68229fde47564546784ab3fACA982";
 const QI = "0x8729438EB15e2C8B576fCc6AeCdA6A148776C0F5";
@@ -82,16 +83,16 @@ function compareToIgnoreCase(a, b) {
 
 const transformAddress = (addr) => {
   // sMAXI -> MAXI
-  if (compareToIgnoreCase(addr, "0xEcE4D1b3C2020A312Ec41A7271608326894076b4")) {
-    return `avax:0x7c08413cbf02202a1c13643db173f2694e0f73f0`;
+  if (compareToIgnoreCase(addr, SMAXI)) {
+    return `avax:${MAXI}`;
   }
   // USDC -> USDC.e
-  if (compareToIgnoreCase(addr, "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E")) {
-    return `avax:0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664`;
+  if (compareToIgnoreCase(addr, USDC)) {
+    return `avax:${USDCe}`;
   }
   // xJOE -> JOE
-  if (compareToIgnoreCase(addr, "0x57319d41F71E81F3c65F2a47CA4e001EbAFd4F33")) {
-    return `avax:0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd`;
+  if (compareToIgnoreCase(addr, XJOE)) {
+    return `avax:${JOE}`;
   }
   return `avax:${addr}`;
 };
