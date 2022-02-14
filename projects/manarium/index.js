@@ -21,6 +21,7 @@ async function tvl(timestamp, block, chainBlocks){
 
 module.exports = {
     bsc: {
-      tvl,
+      tvl: () => ({}),
+      staking: tvl
     }
   }; 
