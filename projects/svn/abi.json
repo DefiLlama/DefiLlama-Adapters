@@ -26,7 +26,7 @@
             },
             {
                 "internalType": "uint256",
-                "name": "accDSharePerShare",
+                "name": "accMSharePerShare",
                 "type": "uint256"
             },
             {
