@@ -114,6 +114,5 @@ module.exports = {
         pool2: pool2,
         tvl: cronosTvl
     },
-    methodology: "Counts liquidity of the tokens deposited on the DAO Fund through the wallet Address; and Pool2s and Staking parts through MSHARERewardPools and Oasis Contracts.",
-
+    methodology: "amount staked on the platform and, the dao treasury",
 }
