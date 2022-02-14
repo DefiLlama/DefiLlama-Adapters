@@ -11,7 +11,18 @@ async function fetch() {
   return liqArrPerPool.reduce((a, b) => a + b, 0);
 }
 
+async function fetchStaking() {
+  const response = (
+    await retry(async (bail) => await axios.get("https://api.cropper.finance/staking/"))
+  ).data;
+
+  return response.value;
+}
+
 module.exports = {
   timetravel: false,
   fetch,
+  staking: {
+    fetchStaking
+  }
 };
