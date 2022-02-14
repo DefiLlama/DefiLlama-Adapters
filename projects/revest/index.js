@@ -6,13 +6,19 @@ const {
   transformPolygonAddress,
 } = require("../helper/portedTokens.js");
 
-const holder = "0xA81bd16Aa6F6B25e66965A2f842e9C806c0AA11F";
+const HOLDERS = {
+  1: "0xA81bd16Aa6F6B25e66965A2f842e9C806c0AA11F",
+  137: "0x3cCc20d960e185E863885913596b54ea666b2fe7",
+  250: "0x3923E7EdBcb3D0cE78087ac58273E732ffFb82cf",
+  43114: "0x955a88c27709a1EEf4ACa0df0712c67B48240919",
+};
 
 async function mainnetTVL(time, block) {
   const tokens = await axios.get(
     "https://defi-llama-feed.vercel.app/api/address"
   );
   const balances = {};
+  let holder = HOLDERS[1];
   await sumTokensAndLPsSharedOwners(
     balances,
     tokens.data.body.map((t) => [t, false]),
@@ -27,6 +33,7 @@ async function polygonTVL(time, block) {
     "https://defi-llama-feed.vercel.app/api/address?chainId=137"
   );
   const balances = {};
+  let holder = HOLDERS[137];
   const transform = await transformPolygonAddress();
   await sumTokensAndLPsSharedOwners(
     balances,
@@ -44,6 +51,7 @@ async function fantomTVL(time, block) {
     "https://defi-llama-feed.vercel.app/api/address?chainId=250"
   );
   const balances = {};
+  let holder = HOLDERS[250];
   const transform = await transformFantomAddress();
   await sumTokensAndLPsSharedOwners(
     balances,
@@ -61,6 +69,7 @@ async function avaxTVL(time, block) {
     "https://defi-llama-feed.vercel.app/api/address?chainId=43114"
   );
   const balances = {};
+  let holder = HOLDERS[43114];
   const transform = await transformAvaxAddress();
   await sumTokensAndLPsSharedOwners(
     balances,
