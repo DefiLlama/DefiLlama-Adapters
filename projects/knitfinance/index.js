@@ -2,6 +2,11 @@ const retry = require("../helper/retry");
 const axios = require("axios");
 const BigNumber = require("bignumber.js");
 const sdk = require("@defillama/sdk");
+let abi = require("./abi.json");
+const { getBlock } = require("../helper/getBlock");
+const PLTO = "0xC6654beCeA3503143a73aaED2873be760062f534";
+const contract = "0x166ccfdd538f9413ffcba11cc95f3780e0490a52";
+const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 
 const apiKey = "UZC789UVNGW1UDUUZAQXD562CEG64JWTAE";
 const assets = {
@@ -23,9 +28,7 @@ const assets = {
     "0x60aa3676582a1369a79ae415122470f245fbc5a8": "frontier",
     "0x1d9f90c145df4950a50e7637a8b4066b90727159": "fantom",
     "0xd7110c535aedbe0edaedab40cbc74cc7f45fc9e7": "loom-network",
-    "0xf3e94c72889afba13ba53898d22717821883e1a5": "knit-finance",
   },
-  eth: { "0xef53462838000184f35f7d991452e5f25110b207": "knit-finance" },
   matic: {
     "0x94e152511588e79f6db10e7c879d4bad437107af": "ethereum",
     "0xeB062AD3FE3fDa9cb20e0466E4F023b557Df116B": "bitcoin",
@@ -44,7 +47,6 @@ const assets = {
     "0x2dc1cc99f5E6F72197236fe1e30921EB863E38b5": "frontier",
     "0x555B1774b6419dC41D917EC47B1f4fBB76e69d68": "fantom",
     "0x710BC8cD80F812e1E51468f120617136EA8fc3Ca": "loom-network",
-    "0xC8DDB51cE5002c1984c96926022Ce20B06f11339": "knit-finance",
   },
   fantom: {
     "0x251f6a75192d0003d0ebc7abddc1795354df674e": "bitcoin",
@@ -64,9 +66,6 @@ const assets = {
     "0x11B3d4F5786487d72F7814395a5455f213609bcf": "frontier",
     "0x5F3b083B1571f92a67894a989f035BdBf1ee7729": "fantom",
     "0x7621F2bd65624a579a9483c7d2B126c8877545b9": "loom-network",
-    "0xaEAB17e79C40bFccC477746CE77B661aa724CDfc": "knit-finance",
-    "0x69d17c151ef62421ec338a0c92ca1c1202a427ec": "supernova",
-    "0x5cc61a78f164885776aa610fb0fe1257df78e59b": "spiritswap",
   },
 };
 
@@ -167,12 +166,53 @@ const _fantomFetch = async () => {
   }
 };
 
+async function fantomTvl(timestamp, block, chainBlocks) {
+  let data = await _fantomFetch();
+  const balances = {};
+  block = getBlock(timestamp, "fantom", chainBlocks);
+  const PLTOPrice = await getPluetoPrice(block);
+  console.log("$$$$$$", PLTOPrice);
+
+  await sumTokensAndLPsSharedOwners(
+    balances,
+    [[PLTO, false]],
+    [contract],
+    block,
+    "fantom",
+    (addr) => `fantom:${addr}`
+  );
+
+  balances.terrausd = new BigNumber(
+    balances["fantom:0xc6654becea3503143a73aaed2873be760062f534"] * PLTOPrice
+  ).div(10 ** 18);
+
+  data.terrausd = new BigNumber(
+    balances["fantom:0xc6654becea3503143a73aaed2873be760062f534"] * PLTOPrice
+  ).div(10 ** 18);
+  delete balances["fantom:0xc6654becea3503143a73aaed2873be760062f534"];
+
+  console.log(data);
+  return data;
+}
+
+async function getPluetoPrice(block) {
+  const reserves = (
+    await sdk.api.abi.call({
+      target: "0xCcEF45aa2EEBe1d8bA7556c629F8a60e9668aD6b",
+      abi: abi.getReserves,
+      block,
+      chain: "fantom",
+    })
+  ).output;
+  return reserves[0] / reserves[1];
+}
+
 module.exports = {
   methodology:
     "TVL is calculated based on the total KFT in circulation along with every k-assset minted on other chains against native assets deposited.",
-  ethereum: {
-    tvl: _ethFetch,
-  },
+  // // ethereum: {
+  // //   tvl: _ethFetch,
+  // // },
   bsc: {
     tvl: _bscFetch,
   },
@@ -180,6 +220,6 @@ module.exports = {
     tvl: _maticFetch,
   },
   fantom: {
-    tvl: _fantomFetch,
+    tvl: fantomTvl,
   },
 };
