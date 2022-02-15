@@ -16,7 +16,7 @@ async function staking_tvl(_timestamp, ethBlock, chainBlocks) {
       chain: "bsc",
     })
   ).output;
-  iBFR_address = `bsc:${tokens.IBFR}`;
+  let iBFR_address = `bsc:${tokens.IBFR}`;
   var balances = {};
   balances[iBFR_address] = ibfrV1;
 
@@ -31,7 +31,7 @@ async function tvl(_timestamp, ethBlock, chainBlocks) {
       chain: "bsc",
     })
   ).output;
-  WBNB_address = `bsc:${tokens.WBNB}`;
+  let WBNB_address = `bsc:${tokens.WBNB}`;
   var balances = {};
   balances[WBNB_address] = bnbV1;
 

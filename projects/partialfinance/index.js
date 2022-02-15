@@ -2,15 +2,15 @@ const sdk = require("@defillama/sdk");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { staking } = require("../helper/staking");
 
-const tombTokenAddress = "0x6c021ae822bea943b2e66552bde1d2696a53fbb7";
-const tshareTokenAddress = "0x4cdf39285d7ca8eb3f090fda0c069ba5f4145b37";
-const tshareRewardPoolAddress = "0xcc0a87f7e7c693042a9cc703661f5060c80acb43";
-const masonryAddress = "0x8764de60236c5843d9faeb1b638fbce962773b67";
-const treasuryAddress = "0xF50c6dAAAEC271B56FCddFBC38F0b56cA45E6f0d";
+const partialTokenAddress = "0x9486fDA4C1192db69a08CA7235E2E6bAf31B467B";
+const pshareTokenAddress = "0x8C64D18E9d4A7b8e8c10C5c5a4b8D6D83cb15002";
+const pshareRewardPoolAddress = "0xd5f73D588C3CaCd45B334f873b7B2E7DfaA4cCc7";
+const boardroomAddress = "0x5FcE757a1aa5C489B008a4Df6CA2ef9088B5bCA4";
+const treasuryAddress = "0x5Cf2EB28083B95A7c0E73FE0F1312e4497FC2A53";
 
 const ftmLPs = [
-  "0x2a651563c9d3af67ae0388a5c8f89b867038089e", // tombFtmLpAddress
-  "0x4733bc45ef91cf7ccecaeedb794727075fb209f2", //tshareFtmLpAddress
+  "0xe78c2b734F0e7BD708B1a6d79a0cF8937C4DA278", // partialFtmLpAddress
+  "0x802ed580E7b48abBfaBf6edC73009705CE210d0b", // pshareFtmLpAddress
 ];
 
 async function calcPool2(masterchef, lps, block, chain) {
@@ -44,25 +44,25 @@ async function calcPool2(masterchef, lps, block, chain) {
 }
 
 async function ftmPool2(timestamp, block, chainBlocks) {
-  return await calcPool2(tshareRewardPoolAddress, ftmLPs, chainBlocks.fantom, "fantom");
+  return await calcPool2(pshareRewardPoolAddress, ftmLPs, chainBlocks.fantom, "fantom");
 }
 
 async function treasury(timestamp, block, chainBlocks) {
   let balance = (await sdk.api.erc20.balanceOf({
-    target: tombTokenAddress,
+    target: partialTokenAddress,
     owner: treasuryAddress, 
     block: chainBlocks.fantom,
     chain: 'fantom'
   })).output;
 
-  return { [`fantom:${tombTokenAddress}`] : balance }
+  return { [`fantom:${partialTokenAddress}`] : balance }
 }
 module.exports = {
-  methodology: "Pool2 deposits consist of TOMB/FTM and TSHARE/FTM LP tokens deposits while the staking TVL consists of the TSHARES tokens locked within the Masonry contract(0x8764de60236c5843d9faeb1b638fbce962773b67).",
+  methodology: "Pool2 deposits consist of PARTIAL/FTM and PSHARE/FTM LP tokens deposits while the staking TVL consists of the PSHARES tokens locked within the Boardroom contract(0x5FcE757a1aa5C489B008a4Df6CA2ef9088B5bCA4).",
   fantom: {
     tvl: async () => ({}),
     pool2: ftmPool2,
-    staking: staking(masonryAddress, tshareTokenAddress, "fantom"),
+    staking: staking(boardroomAddress, pshareTokenAddress, "fantom"),
     treasury
   },
 };
