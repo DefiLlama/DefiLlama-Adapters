@@ -159,35 +159,13 @@ async function getTreasury() {
 	return data
 }
 
-function sumTvl(tvlList = []) {
-	return async (...args) => {
-		try {
-			const results = await Promise.all(tvlList.map((fn) => fn(...args)));
-			let accumulator = {};
-			results.forEach((c) => {
-				Object.keys(c).forEach(x => {
-					if (accumulator[x]) {
-						accumulator[x] = accumulator[x].plus(new BN(c[x]));
-					} else {
-						accumulator[x] = new BN(c[x])
-					}
-				})
-			});
-
-			return accumulator
-		} catch (err) {
-			console.error(err)
-		}
-	};
-}
-
 module.exports = {
 	misrepresentedTokens: true,
 	cronos: {
 		treasury: getTreasury,
 		staking: Staking,
 		pool2: pool2,
-		tvl: sumTvl([cronosTvl, getTreasury, Staking, pool2]),
+		tvl: cronosTvl
 	},
 	methodology: "amount staked on the platform and, the dao treasury",
 }
