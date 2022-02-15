@@ -5,6 +5,7 @@ const { sumTokens } = require("../helper/unwrapLPs")
 const ethers = require("ethers")
 const { config } = require('@defillama/sdk/build/api');
 const { getProvider } = require("@defillama/sdk/build/general")
+const { chainToCoingeckoId } = require("@defillama/sdk/build/computeTVL")
 
 if (!getProvider("astar")) {
     config.setProvider("astar", new ethers.providers.StaticJsonRpcProvider(
@@ -77,6 +78,7 @@ const tokens = [{
     oasis: "0x4Bf769b05E832FCdc9053fFFBC78Ca889aCb5E1E",
     celo: "0xB0d8cF9560EF31B8Fe6D9727708D19b31F7C90Dc",
     syscoin: "0x6de33698e9e9b787e09d3bd7771ef63557e148bb",
+    aurora: "0x4988a896b1227218e4A686fdE5EabdcAbd91571f",
 }, {
     // USDC
     ethereum: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
@@ -95,6 +97,7 @@ const tokens = [{
     oasis: "0x81ECac0D6Be0550A00FF064a4f9dd2400585FE9c",
     celo: "0x48421FF1c6B93988138130865C4B7Cce10358271",
     syscoin: "0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98",
+    aurora: "0xB12BFcA5A55806AaF64E99521918A4bf0fC40802",
 }, {
     // BUSD
     ethereum: "0x4fabb145d64652a948d72533023f6e7a623c7c53",
@@ -431,7 +434,19 @@ const tokens = [{
     ethereum: "0xa9C125BF4C8bB26f299c00969532B66732b1F758",
 }]
 
+// Some tokens have different decimals on certain chains.
 const chainsWithDifferentDecimals = ['bsc', 'okexchain', 'heco']
+const tokensWithDifferentDecimals = [
+    // USDT
+    '0xdac17f958d2ee523a2206206994597c13d831ec7',
+    // USDC
+    '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
+]
+// Some tokens don't have Ethereum address registered on Coingecko.
+const tokensUsingNonEthereumAddress = {
+    // USX
+    '0x0a5e677a6a24b2f1a2bf4f3bffc443231d2fdec8': 'bsc'
+}
 
 function chainTvl(chain) {
     return async (time, ethBlock, chainBlocks) => {
@@ -441,14 +456,28 @@ function chainTvl(chain) {
             if (token[chain] === undefined) {
                 return
             }
-            let balanceV1;
+            let balanceV1
             balanceV1 = await sdk.api.erc20.balanceOf({
                 chain,
                 block: block,
                 target: token[chain],
                 owner: bridgeContractV1
             })
-            const tokenAddress = chainsWithDifferentDecimals.includes(chain) ? chain + ':' + token[chain] : token.ethereum
+            let tokenAddress
+            // Use the Ethereum address if possible.
+            // Also do special handling for tokens with different decimals on some chains.
+            if ((!token.ethereum ||
+                    (tokensWithDifferentDecimals.includes(token.ethereum) &&
+                        chainsWithDifferentDecimals.includes(chain))) &&
+                chainToCoingeckoId[chain]) {
+                tokenAddress = chain + ':' + token[chain]
+            } else if (tokensUsingNonEthereumAddress[token.ethereum]) {
+                // Use the address on a specific chain
+                const chainToUse  = tokensUsingNonEthereumAddress[token.ethereum]
+                tokenAddress = chainToUse + ':' + token[chainToUse]
+            } else {
+                tokenAddress = token.ethereum
+            }
             sdk.util.sumSingleBalance(balances, tokenAddress, balanceV1.output)
             if (liquidityBridgeContractsV2[chain] !== undefined) {
                 await sumTokens(balances, liquidityBridgeContractsV2[chain].map(b=>[token[chain], b]), block, chain, ()=>tokenAddress)
