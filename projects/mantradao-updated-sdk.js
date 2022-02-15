@@ -234,7 +234,7 @@ const lpStakingAssetsETH = [
   },
 ];
 
-async function getNakedStakingPoolTVL(chain, asset, block) {
+async function getNakedStakingTotalStaked(chain, asset, block) {
   let { output: assetTotalStaked } = await sdk.api.abi.call({
     block,
     target: asset.contract,
@@ -289,12 +289,14 @@ async function getLPStakingPoolTVL(chain, asset, block) {
 
   // get pairAddress token1 price
 
-  let { output: token1price } = sdk.util.sumSingleBalance(
-    balances,
-    asset.price1,
-    0
-  );
-  console.log(token1price);
+  let { output: tokenA } = await sdk.api.abi.call({
+    block,
+    target: asset.pairAddress,
+    abi: UNI_ABI.token0,
+    chain: chain,
+  });
+  sdk.util.sumSingleBalance(balances, tokenA, 0);
+  console.log(balances);
 
   // calculate lp token price
 
@@ -319,7 +321,7 @@ async function getLPStakingPoolTVL(chain, asset, block) {
     chain: chain,
   });
 
-  let totalSupplyScaled = BigNumber(totalSupply).div(10 ** decimals);
+  // let totalSupplyScaled = BigNumber(totalSupply).div(10 ** decimals);
 
   let lpTVL = parseFloat(totalSupplyScaled) * lpTokenPrice;
   // console.log(BigNumber(lpTVL).toFixed(0));
@@ -332,7 +334,7 @@ async function ethereum(timestamp, ethBlock, chainBlocks) {
 
   await Promise.all(
     stakingAssetsETH.map(async (asset) => {
-      let poolTVL = await getNakedStakingPoolTVL(
+      let poolTVL = await getNakedStakingTotalStaked(
         "ethereum",
         asset,
         chainBlocks["ethereum"]
