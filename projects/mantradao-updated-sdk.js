@@ -1,13 +1,11 @@
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
+const { unwrapUniswapLPs } = require("./helper/unwrapLPs");
 
-// ABIS
+// ABIs
 const NAKED_ABI = require("./config/mantra-dao/NAKED_STAKING.json");
-const LP_ABI = require("./config/mantra-dao/LP_STAKING.json");
-const UNI_ABI = require("./config/mantra-dao/UNI_LP.json");
-const { extendSchemaImpl } = require("graphql/utilities/extendSchema");
+const ZENTEREST_LENS_ABI = require("./config/mantra-dao/ZENTEREST_LENS_ABI.json");
 
-// ETH Staking and pool assets
 const stakingAssetsETH = [
   // sOM POOL 1 - Staked OM
   {
@@ -21,12 +19,6 @@ const stakingAssetsETH = [
     token: "0x3593D125a4f7849a1B059E64F4517A86Dd60c95d",
     price: "mantra-dao",
   },
-  // RFUEL Pool 1 - Staked RFUEL
-  // {
-  //   contract: "0xE8F063c4dC60B2F6c2C900d870ddcDae7DaAb7F6",
-  //   token: "0xaf9f549774ecedbd0966c52f250acc548d3f36e5",
-  //   price: "rio-defi",
-  // },
   // RFUEL Pool 2 - Staked RFUEL
   {
     contract: "0x456DF576962289256A92290C9E48EE116B8Cb413",
@@ -81,13 +73,7 @@ const stakingAssetsETH = [
     token: "0x8b0E42F366bA502d787BB134478aDfAE966C8798",
     price: "labs-group",
   },
-  // OM Mantra pool - Staked OM in mantra pool
-  // {
-  //   contract: "0x1a22188b5F6faf7253a3DefCC576884c0FF50a91",
-  //   token: "0x3593D125a4f7849a1B059E64F4517A86Dd60c95d",
-  //   price: "mantra-dao",
-  // },
-  // Bondly staking
+  // BONDLY staking
   {
     contract: "0x39621A555554A7FF77F2b64185c53E04C90cD540",
     token: "0xd2dda223b2617cb616c1580db421e4cfae6a8a85",
@@ -105,15 +91,8 @@ const stakingAssetsETH = [
     token: "0x93C9175E26F57d2888c7Df8B470C9eeA5C0b0A93",
     price: "b-cube-ai",
   },
-  // IMPACT staking
-  {
-    contract: "0x6DdF7743f56Efa60a4834AFEd16B2dc13308f13e",
-    token: "0xFAc3f6391C86004289A186Ae0198180fCB4D49Ab",
-    price: "alpha-impact",
-  },
 ];
 
-// ETH LP Staking
 const lpStakingAssetsETH = [
   // LABS-ETH UNI LP simple staking
   {
@@ -160,24 +139,6 @@ const lpStakingAssetsETH = [
     token2: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
     price2: "weth",
   },
-  // BONDLY-ETH LP staking
-  {
-    contract: "0x4D081F600b480b0Ce8b422FBa3a5ea1Fb4b36b3B",
-    pairAddress: "0x9dc696f1067a6b9929986283f6d316be9c9198fd",
-    token1: "0xd2dda223b2617cb616c1580db421e4cfae6a8a85",
-    price1: "bondly",
-    token2: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-    price2: "weth",
-  },
-  // BONDLY-USDT LP staking
-  {
-    contract: "0x3dd713aafb46cb359c8711f4783836ba2e3e426c",
-    pairAddress: "0xdc43e671428b4e7b7848ea92cd8691ac1b80903c",
-    token1: "0xd2dda223b2617cb616c1580db421e4cfae6a8a85",
-    price1: "bondly",
-    token2: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-    price2: "usdt",
-  },
   // BITE-ETH LP staking
   {
     contract: "0xb12f0CbcC89457d44323139e6Bb0526Fd82f12F2",
@@ -214,15 +175,6 @@ const lpStakingAssetsETH = [
     token2: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
     price2: "weth",
   },
-  // IMPACT-ETH LP staking
-  {
-    contract: "0x7c82127b14C69C05fa482B7B079A59F2d114d333",
-    pairAddress: "0xa3053da613e5312c9e4b50edfb85f5a512c556d7",
-    token1: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-    price1: "weth",
-    token2: "0xfac3f6391c86004289a186ae0198180fcb4d49ab",
-    price2: "alpha-impact",
-  },
   // BCUBE-ETH LP staking
   {
     contract: "0xFF964d0bf9f81c401932A6B975EAE54129712eE5",
@@ -234,15 +186,135 @@ const lpStakingAssetsETH = [
   },
 ];
 
+const ZENTEREST_LENS_ADDRESS = "0x491bf5613f23bfaf9a6cc9b2cd6fedeba7ab803e";
+
+const zenTokens = [
+  // zenETH -
+  ["0x4F905f75F5576228eD2D0EA508Fb0c32a0696090", "ethereum"],
+  // zenUSDT -
+  ["0xF76cc2dc02F56B27761dBdb7a62e2B1C4a22aFcd", "tether"],
+  // zenUSDC -
+  ["0x0968c90198f08b67365840fa37631b29fe2aa9fc", "usd-coin"],
+  // zenWBTC -
+  ["0x5b4463bbd7b2e870601e91161e0f1f7f84cde214", "wrapped-bitcoin"],
+  // zenCOMP -
+  ["0x3f2e9a93428a22d2f4cacc3f184f1aad85054e1c", "compound-governance-token"],
+  // zenDAI -
+  ["0x3bafa9cd93c7bdc07fd9609e95e04a8904eacf7d", "dai"],
+  // zenCREAM -
+  ["0x66d696474784ded49b5d0a43e50bf59d63402d74", "cream"],
+  // zenOM -
+  ["0x11c70CAA910647d820bD014d676Dcd97EDD64A99", "mantra-dao"],
+  // zenRFUEL -
+  ["0xf533c78c0790676008d576c5cc2e63e0856ed4f0", "rio-defi"],
+  // zenLINK -
+  ["0x27d15446176b469ee7fbdec1e5a4b506fd77c0cd", "chainlink"],
+  // zenAAVE -
+  ["0x57a8cb15e9575bf9bf80f3531183395703912f57", "aave"],
+  // zenUNI -
+  ["0x391f902c8979050ba8036e3d61d13d79cf545db8", "uniswap"],
+  // zenSUSHI -
+  ["0xb3c114d12cc260ff0a07a2cf22a910625367b403", "sushi"],
+  // zenSNX -
+  ["0xc4bdaa3b4f2c9a78baa4442cd81874881850ff2e", "havven"],
+  // zenYFI -
+  ["0xb595a7715d7d5a0252e5d3cdddfa2e1c7c1feebe", "yearn-finance"],
+  // zenDSD -
+  ["0x1c1bb5efec38b1b01e0e72fa0c8521d695299b60", "dynamic-set-dollar"],
+  // zenBONDLY -
+  ["0x53bafba543f8f1283ed5b21cafe7925c367ec3bd", "bondly"],
+  // zenPOLS -
+  ["0x5b37c72dde4c4efc3e2eeff4107ef6eb61f5de10", "polkastarter"],
+  // zen1INCH -
+  ["0x2ddfd56221568b6d4350b68432569a57bc1f9572", "1inch"],
+  // zenRSR -
+  ["0xa0998fc7dcf51169d97a74f0b0b7d97e4af8e873", "reserve-rights-token"],
+  // zenROYA -
+  ["0x0e0055bf26f4bdde57b112112e5db25d56706580", "royale"],
+  // zenFTX -
+  ["0x650D62FCB1F22A10a2b810BFe305C1312a24A367", "ftx-token"],
+  // zenSRM -
+  ["0x290a565ec7C28557AE872de2f3a5Ce500F46A5d2", "serum"],
+  // zenBAL -
+  ["0x31b992fda33C6c52c602cF379B9bBe1745A903f7", "balancer"],
+  // zenCRV -
+  ["0x144bdF52690c59B510DA5DBc09BB5f145FbdB8E1", "curve-dao-token"],
+  // zenUMA -
+  ["0x1BAdCB0833072B986c845681D3C73603Adc5bA54", "uma"],
+  // zenRUNE -
+  ["0x3bdBd2B661560Bcdf59BDC74576f65E2F714b836", "thorchain-erc20"],
+  // zenFRAX -
+  ["0xa8e31aD81D609ff616645849987feF30A3FfABd9", "frax"],
+  // zenHEGIC -
+  ["0x15Fcfd53fec9B72cF3725649F3eC4603077ad21e", "hegic"],
+  // zenMPH -
+  ["0x4dD6D5D861EDcD361455b330fa28c4C9817dA687", "88mph"],
+  // zenzLOT -
+  ["0x8eC3E4978E531565A46C22fbE0423Be1BB8E1156", "zlot"],
+  // zenWHITE -
+  ["0xE3334e66634acF17B2b97ab560ec92D6861b25fa", "whiteheart"],
+  // zenWNXM -
+  ["0xa07Be94D721DF448B63EC6C3160138A2b2619e1D", "wrapped-nxm"],
+  // zenRENBTC -
+  ["0x7a665de4b80835295901dd84ece07e942a9fe400", "renbtc"],
+  // zenBNT -
+  ["0x1b6d730a1dCAeB870BA3b0c6e51F801C1cCa0499", "bancor"],
+  // zenKNC -
+  ["0x180087A6a87Fd6b09a78C9b9B87b71335906c61D", "kyber-network"],
+  // zenCEL -
+  ["0xa6b8cbB493fe5682d627bdB9A6B361488086a2fD", "celsius-degree-token"],
+  // zenCORN -
+  ["0x4E50972850822f8be8A034e23891B7063893Cc34", "cornichon"],
+  // zenAPI3 -
+  ["0xA24c0E9195481821f9b5292E8c6A4209cc8cc3c9", "api3"],
+  // zenMATIC -
+  ["0xa3968dAbF386D99F67c92c4E3c7cfDf2c0ccc396", "matic-network"],
+  // zenBAO -
+  ["0x132E549262f2b2AD48AA306c3d389e55BB510419", "bao-finance"],
+  // zenUST -
+  ["0xaB576bCBB0C3303C9e680fbFDeCa67e062eAE59c", "terrausd"],
+  // zenDVG
+  ["0x07d22cd5d483b1242518d5cd26b21b552f0cfcdb", "daoventures"],
+  // zenGRT
+  ["0x90ea640fd96b10d79b95166ea9d4b5fb2fb4f4be", "the-graph"],
+  // zenOX
+  ["0x33a9f9bace23cfb8dad597a564d055ad415648ff", "0x"],
+  // zenOMG
+  ["0x7283fe6ae81f39d07850b78f282037b65448a2bc", "omisego"],
+  // zenINJ
+  ["0xd7756be9aedc211a9d5677d7d67295e6d7dd86c7", "injective-protocol"],
+  // zenBADGER
+  ["0x4a5b823592c2a1e95502c0b55afba2397e71799d", "badger-dao"],
+  // zenROOK
+  ["0xf9aea09993e1a43b5f7dcdbd67cda89690a51491", "rook"],
+  // zenUTK
+  ["0x8fb35c58e48660a29c80452d3c7bf98fe81de921", "utrust"],
+  // zenALPHA
+  ["0x49a39e062aaf28950f9d0d5fd423dfb3175c0bb1", "alpha-finance"],
+  // zenRGT
+  ["0x223f6fc2696beeb0d096a72b8db674e6bd520398", "rari-governance-token"],
+  // zenFXF
+  ["0x01A8F03E4EFb1ceF12D796d21468C5903A6ed5D6", "finxflo"],
+  // zenKYL
+  ["0x6A4e7Daf7E1244944BDA17390B1ec5F44C9DF671", "kylin-network"],
+  // zenPAID
+  ["0x2dD28391d7552363eED30eb172116cf3E13ECa23", "paid-network"],
+  // zenENJ
+  ["0x25942b9496282ce18c3B8d8c722ccF8e5112b252", "enjincoin"],
+  // zenLABS
+  ["0xaaB14c2115aaD338cEDb93e423834897651a3Ee2", "labs-group"],
+];
+
+// Naked Staking helper
 async function getNakedStakingTotalStaked(chain, asset, block) {
-  let { output: assetTotalStaked } = await sdk.api.abi.call({
+  const { output: assetTotalStaked } = await sdk.api.abi.call({
     block,
     target: asset.contract,
     abi: NAKED_ABI.totalStaked,
     chain: chain,
   });
 
-  let { output: decimals } = await sdk.api.abi.call({
+  const { output: decimals } = await sdk.api.abi.call({
     abi: "erc20:decimals",
     target: asset.contract,
     chain: chain,
@@ -253,85 +325,38 @@ async function getNakedStakingTotalStaked(chain, asset, block) {
     .toFixed(0);
 }
 
-async function getLPStakingPoolTVL(chain, asset, block) {
-  let balances = {};
-  // get pairAddress decimals
-
-  let { output: pairDecimals } = await sdk.api.abi.call({
-    abi: "erc20:decimals",
-    target: asset.pairAddress,
-    chain: chain,
-  });
-
-  // get pairAddress totalSupply scaled down
-
-  let { output: pairtTotalSupply } = await sdk.api.abi.call({
+// LP Staking helper
+async function getLPStakingPositions(assetList, block) {
+  const { output: lpBalances } = await sdk.api.abi.multiCall({
+    calls: assetList.map((p) => ({
+      target: p.pairAddress,
+      params: p.contract,
+    })),
+    abi: "erc20:balanceOf",
     block,
-    target: asset.pairAddress,
-    abi: UNI_ABI.totalSupply,
-    chain: chain,
   });
 
-  let pairtTotalSupplyScaled = BigNumber(pairtTotalSupply).div(
-    10 ** pairDecimals
-  );
+  let lpPositions = [];
 
-  // get pairAddress token1supply scaled down
-
-  let { output: token1supply } = await sdk.api.abi.call({
-    block,
-    target: asset.pairAddress,
-    abi: UNI_ABI.getReserves,
-    chain: chain,
+  lpBalances.forEach((p) => {
+    lpPositions.push({
+      token: p.input.target,
+      balance: p.output,
+    });
   });
 
-  let token1SupplyScaled = BigNumber(token1supply).div(10 ** pairDecimals);
-
-  // get pairAddress token1 price
-
-  let { output: tokenA } = await sdk.api.abi.call({
-    block,
-    target: asset.pairAddress,
-    abi: UNI_ABI.token0,
-    chain: chain,
-  });
-  sdk.util.sumSingleBalance(balances, tokenA, 0);
-  console.log(balances);
-
-  // calculate lp token price
-
-  let lpTokenPrice =
-    ((token1SupplyScaled * token1price) / pairtTotalSupplyScaled) * 2;
-
-  // get decimals of mdao lp staking contract
-
-  let { output: decimals } = await sdk.api.abi.call({
-    block,
-    target: asset.contract,
-    abi: "erc20:decimals",
-    chain: chain,
-  });
-
-  // get totalSupply of lp staking contract
-
-  let { output: totalSupply } = await sdk.api.abi.call({
-    block,
-    target: asset.contract,
-    abi: LP_ABI.totalSupply,
-    chain: chain,
-  });
-
-  // let totalSupplyScaled = BigNumber(totalSupply).div(10 ** decimals);
-
-  let lpTVL = parseFloat(totalSupplyScaled) * lpTokenPrice;
-  // console.log(BigNumber(lpTVL).toFixed(0));
-  return BigNumber(lpTVL).toFixed(0);
+  return lpPositions;
 }
+
+// ZENTEREST helper
+// async function getZENTERESTStats(block) {
+//   const { output:  }
+// }
 
 async function ethereum(timestamp, ethBlock, chainBlocks) {
   let balances = {};
-  let balancesLP = {};
 
+  // Naked Staking TVL calc
   await Promise.all(
     stakingAssetsETH.map(async (asset) => {
       let poolTVL = await getNakedStakingTotalStaked(
@@ -343,17 +368,23 @@ async function ethereum(timestamp, ethBlock, chainBlocks) {
     })
   );
 
-  await Promise.all(
-    lpStakingAssetsETH.map(async (asset) => {
-      let lpPoolTVL = await getLPStakingPoolTVL(
-        "ethereum",
-        asset,
-        chainBlocks["ethereum"]
-      );
-      // console.log(asset.pairAddress, lpPoolTVL);
-      // sdk.util.sumSingleBalance(balances, asset.contract, lpPoolTVL);
-    })
+  // LP Staking TVL calc
+  let lpPositions = await getLPStakingPositions(lpStakingAssetsETH, ethBlock);
+
+  await unwrapUniswapLPs(
+    balances,
+    lpPositions,
+    ethBlock,
+    "ethereum",
+    (addr) => {
+      if (addr.toLowerCase() === "0x2baecdf43734f22fd5c152db08e3c27233f0c7d2") {
+        return "0x3593d125a4f7849a1b059e64f4517a86dd60c95d";
+      }
+      return addr;
+    }
   );
+
+  // ZENTEREST TVL calc
 
   return balances;
 }
