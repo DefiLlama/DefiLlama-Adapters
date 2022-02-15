@@ -1,7 +1,7 @@
-const VAULT_ADDR = '0x66D586eae9B30CD730155Cb7fb361e79D372eA2a'
-const sdk = require('@defillama/sdk');
-const BigNumber = require('bignumber.js');
-const abi = require('./abi.json')
+const VAULT_ADDR = "0x66D586eae9B30CD730155Cb7fb361e79D372eA2a"
+const sdk = require("@defillama/sdk");
+const BigNumber = require("bignumber.js");
+const abi = require("./abi.json")
 const farmLPBalance = async (
   chain,
   block,
@@ -13,7 +13,7 @@ const farmLPBalance = async (
 ) => {
   const balances = (
     await sdk.api.abi.multiCall({
-      abi: 'erc20:balanceOf',
+      abi: "erc20:balanceOf",
       calls: [
         {
           target: token0,
@@ -32,7 +32,7 @@ const farmLPBalance = async (
   const lpTotalSuply = (
     await sdk.api.abi.call({
       target: lpToken,
-      abi: 'erc20:totalSupply',
+      abi: "erc20:totalSupply",
       chain: chain,
       block,
     })
@@ -40,7 +40,7 @@ const farmLPBalance = async (
   const token0Locked = (lpLocked * balances[0].output) / lpTotalSuply;
   const token1Locked = (lpLocked * balances[1].output) / lpTotalSuply;
   const unknowPricePid = [0, 1];
-  let whiteListToken = ['0x97749c9B61F878a880DfE312d2594AE07AEd7656']
+  let whiteListToken = ["0x97749c9B61F878a880DfE312d2594AE07AEd7656"]
   whiteListToken = whiteListToken.map(addr=>addr.toLowerCase())
   if (unknowPricePid.includes(pid)) {
     if(whiteListToken.includes(token0.toLowerCase())){
@@ -64,7 +64,7 @@ const farmLPBalance = async (
 const vaultLocked = async (block, chain) => {
   const balances = {};
   const { output: poolLength } = await sdk.api.abi.call({
-    abi: abi['poolLength'],
+    abi: abi["poolLength"],
     target: VAULT_ADDR,
     chain,
   })
@@ -75,7 +75,7 @@ const vaultLocked = async (block, chain) => {
 
   let poolInfos =
     await sdk.api.abi.multiCall({
-      abi: abi['poolInfo'],
+      abi: abi["poolInfo"],
       calls: arr.map(pid => {
         return {
           target: VAULT_ADDR,
@@ -89,7 +89,7 @@ const vaultLocked = async (block, chain) => {
   // console.log(poolInfos)
   let wanLockedTotals =
     await sdk.api.abi.multiCall({
-      abi: abi['wantLockedTotal'],
+      abi: abi["wantLockedTotal"],
       calls: poolInfos.map(poolInfo => {
         return {
           target: poolInfo.strategy,
@@ -102,7 +102,7 @@ const vaultLocked = async (block, chain) => {
       .then(d => d.output).then(d => d.map(lock => lock.output));
   let token0Infos =
     await sdk.api.abi.multiCall({
-      abi: abi['token0'],
+      abi: abi["token0"],
       calls: poolInfos.map(poolInfo => {
         return {
           target: poolInfo.want,
@@ -115,7 +115,7 @@ const vaultLocked = async (block, chain) => {
       .then(d => d.output).then(d => d.map(lock => lock.output));
   let token1Infos =
     await sdk.api.abi.multiCall({
-      abi: abi['token1'],
+      abi: abi["token1"],
       calls: poolInfos.map(poolInfo => {
         return {
           target: poolInfo.want,
@@ -128,7 +128,7 @@ const vaultLocked = async (block, chain) => {
       .then(d => d.output).then(d => d.map(lock => lock.output));
   const promises = arr.map((i) => {
     return farmLPBalance(
-      'cronos',
+      "cronos",
       block,
       poolInfos[i].want,
       wanLockedTotals[i],
