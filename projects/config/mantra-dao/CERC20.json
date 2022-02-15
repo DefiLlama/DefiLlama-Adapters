@@ -1,63 +1,5 @@
-[
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "underlying_",
-        "type": "address"
-      },
-      {
-        "internalType": "contract ComptrollerInterface",
-        "name": "comptroller_",
-        "type": "address"
-      },
-      {
-        "internalType": "contract InterestRateModel",
-        "name": "interestRateModel_",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "initialExchangeRateMantissa_",
-        "type": "uint256"
-      },
-      {
-        "internalType": "string",
-        "name": "name_",
-        "type": "string"
-      },
-      {
-        "internalType": "string",
-        "name": "symbol_",
-        "type": "string"
-      },
-      {
-        "internalType": "uint8",
-        "name": "decimals_",
-        "type": "uint8"
-      },
-      {
-        "internalType": "address payable",
-        "name": "admin_",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "implementation_",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes",
-        "name": "becomeImplementationData",
-        "type": "bytes"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "constructor",
-    "signature": "constructor"
-  },
-  {
+{
+  "AccrueInterest": {
     "anonymous": false,
     "inputs": [
       {
@@ -89,7 +31,7 @@
     "type": "event",
     "signature": "0x4dec04e750ca11537cabcd8a9eab06494de08da3735bc8871cd41250e190bc04"
   },
-  {
+  "Approval": {
     "anonymous": false,
     "inputs": [
       {
@@ -115,7 +57,7 @@
     "type": "event",
     "signature": "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925"
   },
-  {
+  "Borrow": {
     "anonymous": false,
     "inputs": [
       {
@@ -147,7 +89,7 @@
     "type": "event",
     "signature": "0x13ed6866d4e1ee6da46f845c46d7e54120883d75c5ea9a2dacc1c4ca8984ab80"
   },
-  {
+  "Failure": {
     "anonymous": false,
     "inputs": [
       {
@@ -173,7 +115,7 @@
     "type": "event",
     "signature": "0x45b96fe442630264581b197e84bbada861235052c5a1aadfff9ea4e40a969aa0"
   },
-  {
+  "LiquidateBorrow": {
     "anonymous": false,
     "inputs": [
       {
@@ -211,7 +153,7 @@
     "type": "event",
     "signature": "0x298637f684da70674f26509b10f07ec2fbc77a335ab1e7d6215a4b2484d8bb52"
   },
-  {
+  "Mint": {
     "anonymous": false,
     "inputs": [
       {
@@ -237,7 +179,7 @@
     "type": "event",
     "signature": "0x4c209b5fc8ad50758f13e2e1088ba56a560dff690a1c6fef26394f4c03821c4f"
   },
-  {
+  "NewAdmin": {
     "anonymous": false,
     "inputs": [
       {
@@ -257,7 +199,7 @@
     "type": "event",
     "signature": "0xf9ffabca9c8276e99321725bcb43fb076a6c66a54b7f21c4e8146d8519b417dc"
   },
-  {
+  "NewComptroller": {
     "anonymous": false,
     "inputs": [
       {
@@ -277,7 +219,7 @@
     "type": "event",
     "signature": "0x7ac369dbd14fa5ea3f473ed67cc9d598964a77501540ba6751eb0b3decf5870d"
   },
-  {
+  "NewImplementation": {
     "anonymous": false,
     "inputs": [
       {
@@ -297,7 +239,7 @@
     "type": "event",
     "signature": "0xd604de94d45953f9138079ec1b82d533cb2160c906d1076d1f7ed54befbca97a"
   },
-  {
+  "NewMarketInterestRateModel": {
     "anonymous": false,
     "inputs": [
       {
@@ -317,7 +259,7 @@
     "type": "event",
     "signature": "0xedffc32e068c7c95dfd4bdfd5c4d939a084d6b11c4199eac8436ed234d72f926"
   },
-  {
+  "NewPendingAdmin": {
     "anonymous": false,
     "inputs": [
       {
@@ -337,7 +279,7 @@
     "type": "event",
     "signature": "0xca4f2f25d0898edd99413412fb94012f9e54ec8142f9b093e7720646a95b16a9"
   },
-  {
+  "NewReserveFactor": {
     "anonymous": false,
     "inputs": [
       {
@@ -357,7 +299,7 @@
     "type": "event",
     "signature": "0xaaa68312e2ea9d50e16af5068410ab56e1a1fd06037b1a35664812c30f821460"
   },
-  {
+  "Redeem": {
     "anonymous": false,
     "inputs": [
       {
@@ -383,7 +325,7 @@
     "type": "event",
     "signature": "0xe5b754fb1abb7f01b499791d0b820ae3b6af3424ac1c59768edb53f4ec31a929"
   },
-  {
+  "RepayBorrow": {
     "anonymous": false,
     "inputs": [
       {
@@ -421,7 +363,7 @@
     "type": "event",
     "signature": "0x1a2a22cb034d26d1854bdc6666a5b91fe25efbbb5dcad3b0355478d6f5c362a1"
   },
-  {
+  "ReservesAdded": {
     "anonymous": false,
     "inputs": [
       {
@@ -447,7 +389,7 @@
     "type": "event",
     "signature": "0xa91e67c5ea634cd43a12c5a482724b03de01e85ca68702a53d0c2f45cb7c1dc5"
   },
-  {
+  "ReservesReduced": {
     "anonymous": false,
     "inputs": [
       {
@@ -473,7 +415,7 @@
     "type": "event",
     "signature": "0x3bad0c59cf2f06e7314077049f48a93578cd16f5ef92329f1dab1420a99c177e"
   },
-  {
+  "Transfer": {
     "anonymous": false,
     "inputs": [
       {
@@ -499,12 +441,7 @@
     "type": "event",
     "signature": "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
   },
-  {
-    "payable": true,
-    "stateMutability": "payable",
-    "type": "fallback"
-  },
-  {
+  "_acceptAdmin": {
     "constant": false,
     "inputs": [],
     "name": "_acceptAdmin",
@@ -520,7 +457,7 @@
     "type": "function",
     "signature": "0xe9c714f2"
   },
-  {
+  "_addReserves": {
     "constant": false,
     "inputs": [
       {
@@ -542,7 +479,7 @@
     "type": "function",
     "signature": "0x3e941010"
   },
-  {
+  "_reduceReserves": {
     "constant": false,
     "inputs": [
       {
@@ -564,7 +501,7 @@
     "type": "function",
     "signature": "0x601a0bf1"
   },
-  {
+  "_setComptroller": {
     "constant": false,
     "inputs": [
       {
@@ -586,7 +523,7 @@
     "type": "function",
     "signature": "0x4576b5db"
   },
-  {
+  "_setImplementation": {
     "constant": false,
     "inputs": [
       {
@@ -612,7 +549,7 @@
     "type": "function",
     "signature": "0x555bcc40"
   },
-  {
+  "_setInterestRateModel": {
     "constant": false,
     "inputs": [
       {
@@ -634,7 +571,7 @@
     "type": "function",
     "signature": "0xf2b3abbd"
   },
-  {
+  "_setPendingAdmin": {
     "constant": false,
     "inputs": [
       {
@@ -656,7 +593,7 @@
     "type": "function",
     "signature": "0xb71d1a0c"
   },
-  {
+  "_setReserveFactor": {
     "constant": false,
     "inputs": [
       {
@@ -678,7 +615,7 @@
     "type": "function",
     "signature": "0xfca7820b"
   },
-  {
+  "accrualBlockNumber": {
     "constant": true,
     "inputs": [],
     "name": "accrualBlockNumber",
@@ -694,7 +631,7 @@
     "type": "function",
     "signature": "0x6c540baf"
   },
-  {
+  "accrueInterest": {
     "constant": false,
     "inputs": [],
     "name": "accrueInterest",
@@ -710,7 +647,7 @@
     "type": "function",
     "signature": "0xa6afed95"
   },
-  {
+  "admin": {
     "constant": true,
     "inputs": [],
     "name": "admin",
@@ -726,7 +663,7 @@
     "type": "function",
     "signature": "0xf851a440"
   },
-  {
+  "allowance": {
     "constant": true,
     "inputs": [
       {
@@ -753,7 +690,7 @@
     "type": "function",
     "signature": "0xdd62ed3e"
   },
-  {
+  "approve": {
     "constant": false,
     "inputs": [
       {
@@ -780,7 +717,7 @@
     "type": "function",
     "signature": "0x095ea7b3"
   },
-  {
+  "balanceOf": {
     "constant": true,
     "inputs": [
       {
@@ -802,7 +739,7 @@
     "type": "function",
     "signature": "0x70a08231"
   },
-  {
+  "balanceOfUnderlying": {
     "constant": false,
     "inputs": [
       {
@@ -824,7 +761,7 @@
     "type": "function",
     "signature": "0x3af9e669"
   },
-  {
+  "borrow": {
     "constant": false,
     "inputs": [
       {
@@ -846,7 +783,7 @@
     "type": "function",
     "signature": "0xc5ebeaec"
   },
-  {
+  "borrowBalanceCurrent": {
     "constant": false,
     "inputs": [
       {
@@ -868,7 +805,7 @@
     "type": "function",
     "signature": "0x17bfdfbc"
   },
-  {
+  "borrowBalanceStored": {
     "constant": true,
     "inputs": [
       {
@@ -890,7 +827,7 @@
     "type": "function",
     "signature": "0x95dd9193"
   },
-  {
+  "borrowIndex": {
     "constant": true,
     "inputs": [],
     "name": "borrowIndex",
@@ -906,7 +843,7 @@
     "type": "function",
     "signature": "0xaa5af0fd"
   },
-  {
+  "borrowRatePerBlock": {
     "constant": true,
     "inputs": [],
     "name": "borrowRatePerBlock",
@@ -922,7 +859,7 @@
     "type": "function",
     "signature": "0xf8f9da28"
   },
-  {
+  "comptroller": {
     "constant": true,
     "inputs": [],
     "name": "comptroller",
@@ -938,7 +875,7 @@
     "type": "function",
     "signature": "0x5fe3b567"
   },
-  {
+  "decimals": {
     "constant": true,
     "inputs": [],
     "name": "decimals",
@@ -954,7 +891,7 @@
     "type": "function",
     "signature": "0x313ce567"
   },
-  {
+  "delegateToImplementation": {
     "constant": false,
     "inputs": [
       {
@@ -976,7 +913,7 @@
     "type": "function",
     "signature": "0x0933c1ed"
   },
-  {
+  "delegateToViewImplementation": {
     "constant": true,
     "inputs": [
       {
@@ -998,7 +935,7 @@
     "type": "function",
     "signature": "0x4487152f"
   },
-  {
+  "exchangeRateCurrent": {
     "constant": false,
     "inputs": [],
     "name": "exchangeRateCurrent",
@@ -1014,7 +951,7 @@
     "type": "function",
     "signature": "0xbd6d894d"
   },
-  {
+  "exchangeRateStored": {
     "constant": true,
     "inputs": [],
     "name": "exchangeRateStored",
@@ -1030,7 +967,7 @@
     "type": "function",
     "signature": "0x182df0f5"
   },
-  {
+  "getAccountSnapshot": {
     "constant": true,
     "inputs": [
       {
@@ -1067,7 +1004,7 @@
     "type": "function",
     "signature": "0xc37f68e2"
   },
-  {
+  "getCash": {
     "constant": true,
     "inputs": [],
     "name": "getCash",
@@ -1083,7 +1020,7 @@
     "type": "function",
     "signature": "0x3b1d21a2"
   },
-  {
+  "implementation": {
     "constant": true,
     "inputs": [],
     "name": "implementation",
@@ -1099,7 +1036,7 @@
     "type": "function",
     "signature": "0x5c60da1b"
   },
-  {
+  "interestRateModel": {
     "constant": true,
     "inputs": [],
     "name": "interestRateModel",
@@ -1115,7 +1052,7 @@
     "type": "function",
     "signature": "0xf3fdb15a"
   },
-  {
+  "isCToken": {
     "constant": true,
     "inputs": [],
     "name": "isCToken",
@@ -1131,7 +1068,7 @@
     "type": "function",
     "signature": "0xfe9c44ae"
   },
-  {
+  "liquidateBorrow": {
     "constant": false,
     "inputs": [
       {
@@ -1163,7 +1100,7 @@
     "type": "function",
     "signature": "0xf5e3c462"
   },
-  {
+  "mint": {
     "constant": false,
     "inputs": [
       {
@@ -1185,23 +1122,7 @@
     "type": "function",
     "signature": "0xa0712d68"
   },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "name",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function",
-    "signature": "0x06fdde03"
-  },
-  {
+  "pendingAdmin": {
     "constant": true,
     "inputs": [],
     "name": "pendingAdmin",
@@ -1217,7 +1138,7 @@
     "type": "function",
     "signature": "0x26782247"
   },
-  {
+  "redeem": {
     "constant": false,
     "inputs": [
       {
@@ -1239,7 +1160,7 @@
     "type": "function",
     "signature": "0xdb006a75"
   },
-  {
+  "redeemUnderlying": {
     "constant": false,
     "inputs": [
       {
@@ -1261,7 +1182,7 @@
     "type": "function",
     "signature": "0x852a12e3"
   },
-  {
+  "repayBorrow": {
     "constant": false,
     "inputs": [
       {
@@ -1283,7 +1204,7 @@
     "type": "function",
     "signature": "0x0e752702"
   },
-  {
+  "repayBorrowBehalf": {
     "constant": false,
     "inputs": [
       {
@@ -1310,7 +1231,7 @@
     "type": "function",
     "signature": "0x2608f818"
   },
-  {
+  "reserveFactorMantissa": {
     "constant": true,
     "inputs": [],
     "name": "reserveFactorMantissa",
@@ -1326,7 +1247,7 @@
     "type": "function",
     "signature": "0x173b9904"
   },
-  {
+  "seize": {
     "constant": false,
     "inputs": [
       {
@@ -1358,7 +1279,7 @@
     "type": "function",
     "signature": "0xb2a02ff1"
   },
-  {
+  "setTotalBorrows": {
     "constant": false,
     "inputs": [
       {
@@ -1374,7 +1295,7 @@
     "type": "function",
     "signature": "0x977e19e9"
   },
-  {
+  "setTotalReserves": {
     "constant": false,
     "inputs": [
       {
@@ -1390,7 +1311,7 @@
     "type": "function",
     "signature": "0xb0e0bf2a"
   },
-  {
+  "supplyRatePerBlock": {
     "constant": true,
     "inputs": [],
     "name": "supplyRatePerBlock",
@@ -1406,7 +1327,7 @@
     "type": "function",
     "signature": "0xae9d70b0"
   },
-  {
+  "symbol": {
     "constant": true,
     "inputs": [],
     "name": "symbol",
@@ -1422,7 +1343,7 @@
     "type": "function",
     "signature": "0x95d89b41"
   },
-  {
+  "totalBorrows": {
     "constant": true,
     "inputs": [],
     "name": "totalBorrows",
@@ -1438,7 +1359,7 @@
     "type": "function",
     "signature": "0x47bd3718"
   },
-  {
+  "totalBorrowsCurrent": {
     "constant": false,
     "inputs": [],
     "name": "totalBorrowsCurrent",
@@ -1454,7 +1375,7 @@
     "type": "function",
     "signature": "0x73acee98"
   },
-  {
+  "totalReserves": {
     "constant": true,
     "inputs": [],
     "name": "totalReserves",
@@ -1470,7 +1391,7 @@
     "type": "function",
     "signature": "0x8f840ddd"
   },
-  {
+  "totalSupply": {
     "constant": true,
     "inputs": [],
     "name": "totalSupply",
@@ -1486,7 +1407,7 @@
     "type": "function",
     "signature": "0x18160ddd"
   },
-  {
+  "transfer": {
     "constant": false,
     "inputs": [
       {
@@ -1513,7 +1434,7 @@
     "type": "function",
     "signature": "0xa9059cbb"
   },
-  {
+  "transferFrom": {
     "constant": false,
     "inputs": [
       {
@@ -1545,7 +1466,7 @@
     "type": "function",
     "signature": "0x23b872dd"
   },
-  {
+  "underlying": {
     "constant": true,
     "inputs": [],
     "name": "underlying",
@@ -1561,4 +1482,4 @@
     "type": "function",
     "signature": "0x6f307dc3"
   }
-]
+}
