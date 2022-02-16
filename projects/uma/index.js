@@ -240,11 +240,25 @@ async function sherlock(timestamp, block) {
   return balances;
 }
 
+// Captures TVL for Polymarket liquidity that uses UMA's OO/DVM to resolve its markets
+async function polymarket(timestamp, block, chainBlocks) {
+  const conditionalTokensContract = '0x4D97DCd97eC945f40cF65F87097ACe5EA0476045'
+  const polygonUsdcContract = '0x2791bca1f2de4661ed88a30c99a7a9449aa84174'
+  
+  let conditionalTokensUSDC = await sdk.api.erc20.balanceOf({
+    target: polygonUsdcContract,
+    owner: conditionalTokensContract,
+    block: chainBlocks['polygon'],
+    chain: 'polygon'
+  })
+  return {['polygon:' + polygonUsdcContract]: conditionalTokensUSDC.output};
+}
+
 module.exports = {
   ethereum: {
-    tvl: sdk.util.sumChainTvls([ethEmp, across, ethLsp]),
+    tvl: sdk.util.sumChainTvls([ethEmp, across, ethLsp, sherlock]),
   },
   polygon: {
-    tvl: sdk.util.sumChainTvls([polygonLsp, jarvisLsp, sherlock]),
+    tvl: sdk.util.sumChainTvls([polygonLsp, jarvisLsp, polymarket]),
   },
 };
