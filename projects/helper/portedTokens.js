@@ -63,46 +63,46 @@ async function transformAvaxAddress() {
         "https://raw.githubusercontent.com/ava-labs/avalanche-bridge-resources/main/token_list.json"
       ),
     ]);
-
-  return (addr) => {
-    if (compareAddresses(addr, "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7")) {
-      //WAVAX
-      return `avax:${addr}`;
-    }
-    if (compareAddresses(addr, "0xaf2c034c764d53005cc6cbc092518112cbd652bb")) {
-      //qiAVAX
-      return `avax:0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7`;
-    }
-    if (compareAddresses(addr, "0x57319d41F71E81F3c65F2a47CA4e001EbAFd4F33")) {
-      //xJOE
-      return `avax:0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd`;
-    }
-    if (compareAddresses(addr, "0x0000000000000000000000000000000000000000") || compareAddresses(addr, "0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")) {
-      //AVAX
-      return "avax:0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7";
-    }
-    const srcToken = bridgeTokensOld.data.find((token) =>
+    return (addr) => {
+      const srcToken = bridgeTokensOld.data.find((token) =>
       compareAddresses(token["Avalanche Token Address"], addr)
-    );
-    if (
-      srcToken !== undefined &&
-      srcToken["Ethereum Token Decimals"] ===
-      srcToken["Avalanche Token Decimals"]
-    ) {
-      return srcToken["Ethereum Token Address"];
-    }
-    const newBridgeToken = bridgeTokensNew.find((token) =>
-      compareAddresses(addr, token[1])
-    );
-    if (newBridgeToken !== undefined) {
-      const tokenName = newBridgeToken[0].split(".")[0];
-      const tokenData = bridgeTokenDetails.data[tokenName];
-      if (tokenData !== undefined) {
-        return tokenData.nativeContractAddress;
+      );
+      if (
+        srcToken !== undefined &&
+        srcToken["Ethereum Token Decimals"] ===
+        srcToken["Avalanche Token Decimals"]
+      ) {
+        return srcToken["Ethereum Token Address"];
       }
-    }
-    return `avax:${addr}`;
-  };
+      const newBridgeToken = bridgeTokensNew.find((token) =>
+        compareAddresses(addr, token[1])
+      );
+      if (newBridgeToken !== undefined) {
+        const tokenName = newBridgeToken[0].split(".")[0];
+        const tokenData = bridgeTokenDetails.data[tokenName];
+        if (tokenData !== undefined) {
+          return tokenData.nativeContractAddress;
+        }
+      }
+      const map = {
+        "0xaf2c034c764d53005cc6cbc092518112cbd652bb": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", 
+        "0x57319d41f71e81f3c65f2a47ca4e001ebafd4f33": "avax:0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd", 
+        "0x0000000000000000000000000000000000000000": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", 
+        "0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", 
+        "0xd45b7c061016102f9fa220502908f2c0f1add1d7": "0xffc97d72e13e01096502cb8eb52dee56f74dad7b", 
+        "0x47afa96cdc9fab46904a55a6ad4bf6660b53c38a": "0x028171bca77440897b824ca71d1c56cac55b68a3", 
+        "0x46a51127c3ce23fb7ab1de06226147f446e4a857": "0xbcca60bb61934080951369a648fb03df4f96263c", 
+        "0x532e6537fea298397212f09a61e03311686f548e": "0x3ed3b47dd13ec9a98b44e6204a523e766b225811", 
+        "0xdfe521292ece2a4f44242efbcd66bc594ca9714b": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", 
+        "0x686bef2417b6dc32c50a3cbfbcc3bb60e1e9a15d": "0x9ff58f4ffb29fa2266ab25e75e2a8b3503311656", 
+        "0x53f7c5869a859f0aec3d334ee8b4cf01e3492f21": "0x030ba81f1c18d280636f32af80b9aad02cf0854e", 
+
+        "0xd45b7c061016102f9fa220502908f2c0f1add1d7": "0xffc97d72e13e01096502cb8eb52dee56f74dad7b", 
+        "0x47afa96cdc9fab46904a55a6ad4bf6660b53c38a": "0x028171bca77440897b824ca71d1c56cac55b68a3", 
+        "0x46A51127C3ce23fb7AB1DE06226147F446e4a857": "0xbcca60bb61934080951369a648fb03df4f96263c", 
+      }
+      return map[addr.toLowerCase()] || `avax:${addr}`
+  }
 }
 
 async function transformBscAddress() {
