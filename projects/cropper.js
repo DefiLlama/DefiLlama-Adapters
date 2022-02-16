@@ -6,7 +6,7 @@ async function fetch() {
     await retry(async (bail) => await axios.get("https://api.cropper.finance/cmc/pools"))
   ).data;
 
-  const liqArrPerPool = response.map((pool) => pool.tvl);
+  const liqArrPerPool = Object.values(response).map((pool) => pool.tvl);
 
   return liqArrPerPool.reduce((a, b) => a + b, 0);
 }
@@ -23,6 +23,6 @@ module.exports = {
   timetravel: false,
   fetch,
   staking: {
-    fetchStaking
+    fetch: fetchStaking
   }
-};
+}; // node test.js projects/cropper.js
