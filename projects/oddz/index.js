@@ -65,6 +65,18 @@ const avaxStakingPool = [
   ], // sODDZ
 ];
 
+const avaxPool2 = [
+  [
+    "0xBAe8Ee2D95Aa5c68Fe8373Cd0208227E94075D5d",
+    "0xb0a6e056b587d0a85640b39b1cb44086f7a26a1e",
+    "avax:0xb0a6e056b587d0a85640b39b1cb44086f7a26a1e",
+  ], // sODDZ
+  [
+    "0x3c2c77353E2F6AC1578807b6b2336Bf3a3CbB014",
+    "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+    "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+  ], // ODDZ-AVAX
+];
 
 
 async function bsc(_timestamp, block, chainBlocks) {
@@ -79,6 +91,9 @@ async function bscStaking(timestamp, block, chainBlocks) {
 
 async function avax(_timestamp, block, chainBlocks) {
   return getTotalCollateral(avaxPools, "avax", chainBlocks["avax"]);
+}
+async function pool3(timestamp, block, chainBlocks) {
+  return getTotalCollateral(avaxPool2, "avax", chainBlocks["avax"]);
 }
 async function avaxStaking(timestamp, block, chainBlocks) {
   return getTotalCollateral(avaxStakingPool, "avax", chainBlocks["avax"]);
@@ -105,6 +120,7 @@ module.exports = {
   },
   avax: {
     tvl: avax,
+    pool3,
     avaxStaking,
   },
   tvl,
