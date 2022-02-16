@@ -5,23 +5,21 @@ const client = axios.create({
   baseURL: HUBBLE_API,
 });
 
-function exports() {
-  return async () => {
-    const metrics = await client.get("/metrics");
-    const stakings = metrics.data.hbb.staked * metrics.data.hbb.price;
-
-    const staking = () => { stakings };
-    const tvl = () => { metrics.data.totalValueLocked - stakings };
-
-    return {
-      methodology: `To obtain the Hubble Protocol TVL we use the formula 'TVL = Total HBB Staked * Current HBB Price + Total Collateral Value + Total Stablecoin (USDH) in Stability Pool'.`,
-      fetch: tvl,
-      staking: {
-        fetch: staking,
-      },
-      fetch: tvl
-    };
-  }
+async function tvl() {
+  const metrics = await client.get("/metrics");
+  return metrics.data.totalValueLocked - metrics.data.hbb.staked * metrics.data.hbb.price;
 }
-// node test.js projects/hubble/index.js
-module.exports = exports;
+
+async function staking() {
+  const metrics = await client.get("/metrics");
+  return metrics.data.hbb.staked * metrics.data.hbb.price;
+}
+
+module.exports = {
+  methodology: `To obtain the Hubble Protocol TVL we use the formula 'TVL = Total HBB Staked * Current HBB Price + Total Collateral Value + Total Stablecoin (USDH) in Stability Pool'.`,
+  solana: {
+    fetch: tvl,
+  },
+  staking: { fetch: staking },
+  fetch: tvl
+};
