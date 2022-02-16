@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { staking } = require("../helper/staking");
+const { staking, stakingPricedLP } = require("../helper/staking");
 
 const partialTokenAddress = "0x9486fDA4C1192db69a08CA7235E2E6bAf31B467B";
 const pshareTokenAddress = "0x8C64D18E9d4A7b8e8c10C5c5a4b8D6D83cb15002";
@@ -62,7 +62,7 @@ module.exports = {
   fantom: {
     tvl: async () => ({}),
     pool2: ftmPool2,
-    staking: staking(boardroomAddress, pshareTokenAddress, "fantom"),
+    staking: stakingPricedLP(boardroomAddress, pshareTokenAddress, "fantom", "0x802ed580E7b48abBfaBf6edC73009705CE210d0b", "fantom"),
     treasury
   },
 };
