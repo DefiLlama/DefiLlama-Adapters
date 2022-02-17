@@ -326,6 +326,16 @@ const yearnVaults = {
     "0xdcd90c7f6324cfa40d7169ef80b12031770b4325": "0x06325440d014e39736583c165c2963ba99faf14e",
     // yvcrvIB
     "0x27b7b1ad7288079a66d12350c828d3c00a6f07d7": "0x5282a4ef67d9c33135340fb3289cc1711c13638c",
+    // yvYFI FTM
+    "0x2c850cced00ce2b14aa9d658b7cad5df659493db": "0x29b0Da86e484E1C0029B56e817912d778aC0EC69",
+    // yvDAI FTM
+    "0x637ec617c86d24e421328e6caea1d92114892439": "0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E",
+    // yvMIM FTM
+    "0x0a0b23d9786963de69cb2447dc125c49929419d8": "0x82f0b8b456c1a451378467398982d4834b6829c1",
+    // yvUSDC FTM
+    "0xef0210eb96c7eb36af8ed1c20306462764935607": "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
+    // yvWFTM FTM
+    "0x0dec85e74a92c52b7f708c4b10207d9560cefaf0": "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83"
 }
 async function unwrapYearn(balances, yToken, block, chain = "ethereum", transformAddress=(addr)=>addr) {
     //if (yearnVaults[yToken.toLowerCase()] == undefined) { return; };
@@ -345,11 +355,10 @@ async function unwrapYearn(balances, yToken, block, chain = "ethereum", transfor
             chain: chain
         });
     };
-
     sdk.util.sumSingleBalance(balances, transformAddress(underlying),
-        balances[yToken] * pricePerShare.output / 10 **
+        balances[(chain == 'ethereum' ? yToken : `${chain}:${yToken}`)] * pricePerShare.output / 10 **
         (await sdk.api.erc20.decimals(underlying, chain)).output);
-    delete balances[yToken];
+    delete balances[(chain == 'ethereum' ? yToken : `${chain}:${yToken}`)];
 };
 async function unwrapCrv(balances, crvToken, balance3Crv, block, chain = "ethereum", transformAddress=(addr)=>addr, excludeTokensRaw=[]) {
     const excludeTokens = excludeTokensRaw.map(addr=>addr.toLowerCase())
