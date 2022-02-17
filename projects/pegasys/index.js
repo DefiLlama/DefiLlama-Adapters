@@ -3,7 +3,7 @@ const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl");
 module.exports = {
   misrepresentedTokens: true,
   methodology:
-    "Factory address (0xe9c29cB475C0ADe80bE0319B74AD112F1e80058F) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
+    "Factory address (0x7Bbbb6abaD521dE677aBe089C85b29e3b2021496) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
   cronos: {
     tvl: calculateUsdUniTvl(
       "0x7Bbbb6abaD521dE677aBe089C85b29e3b2021496",
