@@ -67,11 +67,7 @@ module.exports = {
     v1: {
       [ETHEREUM]: {
         fetch: v1Graph(ETHEREUM),
-        start: getStartTimestamp({
-          endpoints: v1Endpoints,
-          chain: ETHEREUM,
-          volumeField: "dailyVolumeInUSD",
-        }),
+        start: 1541203200,
       },
     },
     v2: {
