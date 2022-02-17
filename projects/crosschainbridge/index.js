@@ -1,8 +1,25 @@
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 
-const BRIDGE_CONTRACT = "0xCBCe172d7af2616804ab5b2494102dAeC47B2635";
-const REWARD_POOLS = "0x0BDC1f983bC82B8F6F6BCcbF9810A9cdC1FE455f";
+const getBridgeContract = (chain) => {
+  switch (chain) {
+    case 'avalanche':
+      return '0x46325c7005F04900F8D74cD0eAB903597b6EFFFF';
+    default:
+      return '0xCBCe172d7af2616804ab5b2494102dAeC47B2635';
+  }
+}
+
+const getRewardPools = (chain) => {
+  switch (chain) {
+    case 'avalanche':
+      return '0xbAb537b7AE2Fcb00eeA7e91Fa4782EEbaD3B6d10';
+    case 'fantom':
+      return '0x6eBC0D4Ae955218195E6D016Fb9D4358Ee34d1F9';
+    default:
+      return '0x0BDC1f983bC82B8F6F6BCcbF9810A9cdC1FE455f';
+  }
+}
 
 /*
  * TOKEN CONFIGURATION
@@ -85,6 +102,24 @@ const tokens = {
     PMON: "0x1796ae0b0fa4862485106a0de9b654efe301d0b2",
     ULTI: "0xa6516f07c5fc7169fca3149b188c37ca617f1d41",
   },
+  avalanche: {
+    // Project tokens
+    BRIDGE: "0xC0367f9b1f84Ca8DE127226AC2A994EA4bf1e41b",
+    // Stablecoins
+    USDC: "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664",
+    USDT: "0xc7198437980c041c805a1edcba50c1ce5db95118",
+    // Network Tokens
+    WETH: "0x49d5c2bdffac6ce2bfdb6640f4f80f226bc10bab",
+  },
+  fantom: {
+    // Project tokens
+    BRIDGE: "0x92868A5255C628dA08F550a858A802f5351C5223",
+    // Stablecoins
+    USDC: "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75",
+    USDT: "0x049d68029688eabf473097a2fc38ef61633a3c7a",
+    // Network Tokens
+    WETH: "0x74b23882a30290451A17c44f4F05243b6b58C76d",
+  }
 };
 
 /*
@@ -95,13 +130,14 @@ const getAddrPrefix = (chain) => (chain === "ethereum" ? "" : `${chain}:`);
 
 const createTvlFunction = (chain) => async (timestamp, block) => {
   const balances = {};
+  const bridgeContract = getBridgeContract(chain);
 
   for (const [symbol, address] of Object.entries(tokens[chain])) {
     let tokenBalance = BigNumber(0);
     // Get balance of token in bridge contract
     const result = await sdk.api.erc20.balanceOf({
       target: address,
-      owner: BRIDGE_CONTRACT,
+      owner: bridgeContract,
       chain,
       block,
     });
@@ -114,6 +150,7 @@ const createTvlFunction = (chain) => async (timestamp, block) => {
 
 const createRewardPoolsTvlFunction = (chain) => async (timestamp, block) => {
   const bridgeTokenAddress = tokens[chain].BRIDGE;
+  const rewardPoolsContract = getRewardPools(chain);
 
   if (!bridgeTokenAddress) return 0;
 
@@ -121,7 +158,7 @@ const createRewardPoolsTvlFunction = (chain) => async (timestamp, block) => {
 
   const resultRewardPools = await sdk.api.erc20.balanceOf({
     target: bridgeTokenAddress,
-    owner: REWARD_POOLS,
+    owner: rewardPoolsContract,
     chain,
     block,
   });
