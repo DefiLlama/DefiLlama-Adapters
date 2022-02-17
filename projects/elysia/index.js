@@ -23,7 +23,6 @@ function getValueOfPool(balance, price) {
   return value;
 }
 
-// TODO : remove test, "test": "mocha", ->  "test": "echo \"Error: no test specified\" && exit 1",
 const getTvl = async () => {
   const elfiAddress = "0x4da34f8264cb33a5c9f17081b9ef5ff6091116f4";
   const elAddress = "0x2781246fe707bb15cee3e5ea354e2154a2877b16";
