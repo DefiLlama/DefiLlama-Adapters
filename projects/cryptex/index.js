@@ -71,6 +71,7 @@ async function treasury(timestamp, block) {
 }
 
 module.exports = {
+  methodology: "TVL includes collateral in vaults",
   ethereum: {
     tvl: ethTvl,
     pool2: pool2s(ethStakingContracts, ethPool2s),
