@@ -36,4 +36,3 @@ const thedon = "0x62E96896d417dD929A4966f2538631AD5AF6Cb46"
 module.exports = {
   ...masterChefExports(chef, "fantom", thedon, false),
 }
->>>>>>> a5a597a63d723829d755e201100c2c446303450b:projects/thedon/index.js
