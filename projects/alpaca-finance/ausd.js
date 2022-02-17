@@ -4,10 +4,27 @@ const BigNumber = require("bignumber.js");
 const axios = require("axios");
 
 async function getProcolAUSDAddresses(chain) {
-  if(chain == 'bsc') {
+  if (chain == "bsc") {
     return (
       await axios.get(
         "https://raw.githubusercontent.com/alpaca-finance/alpaca-stablecoin/main/.mainnet.json"
+      )
+    ).data;
+  }
+}
+
+async function getProcolLYFAddresses(chain) {
+  if (chain == "bsc") {
+    return (
+      await axios.get(
+        "https://raw.githubusercontent.com/alpaca-finance/bsc-alpaca-contract/main/.mainnet.json"
+      )
+    ).data;
+  }
+  if (chain == "fantom") {
+    return (
+      await axios.get(
+        "https://raw.githubusercontent.com/alpaca-finance/bsc-alpaca-contract/main/.fantom_mainnet.json"
       )
     ).data;
   }
@@ -18,30 +35,67 @@ async function calAusdTvl(chain, block) {
   const balances = {};
 
   const ausdAddresses = await getProcolAUSDAddresses(chain);
+  const lyfAddresses = await getProcolLYFAddresses(chain);
 
-  /// @dev getting total supply ausd
-  const ausdTVL = (
-    await sdk.api.abi.multiCall({
-      block,
-      abi: abi.ausdTotalStablecoinIssued,
-      calls: [
-        {
-          target: ausdAddresses["BookKeeper"].address,
-        },
-      ],
-      chain,
-    })
-  ).output;
-  const base = new BigNumber(10);
-  const balanceAUSDTVL = new BigNumber(ausdTVL[0].output).dividedBy(
-    base.exponentiatedBy(27)
-  );
-  const ausdAddress = ausdAddresses["AlpacaStablecoin"]["AUSD"].address;
-  balances[`${chain}:${ausdAddress}`] = balanceAUSDTVL.toFixed(0);
-
+  const pids = await sdk.api.abi.multiCall({
+    block,
+    abi: abi.pid,
+    calls: ausdAddresses["IbTokenAdapters"].map((each) => {
+      return {
+        target: each.address,
+      };
+    }),
+    chain,
+  });
+  const failaunchUserInfos = await sdk.api.abi.multiCall({
+    block,
+    abi: abi.userInfo,
+    calls: pids.output.map((each) => {
+      return {
+        target: lyfAddresses["FairLaunch"].address,
+        params: [each.output, each.input.target],
+      };
+    }),
+    chain,
+  });
+  const totalTokens = await sdk.api.abi.multiCall({
+    block,
+    abi: abi.totalToken,
+    calls: ausdAddresses["IbTokenAdapters"].map((each) => {
+      return {
+        target: each.collateralToken,
+      };
+    }),
+    chain,
+  });
+  const totalSupplys = await sdk.api.abi.multiCall({
+    block,
+    abi: abi.totalSupply,
+    calls: ausdAddresses["IbTokenAdapters"].map((each) => {
+      return {
+        target: each.collateralToken,
+      };
+    }),
+    chain,
+  });
+  const vaultTokens = await sdk.api.abi.multiCall({
+    block,
+    abi: abi.token,
+    calls: ausdAddresses["IbTokenAdapters"].map((each) => {
+      return {
+        target: each.collateralToken,
+      };
+    }),
+    chain,
+  });
+  
+  failaunchUserInfos.output.forEach((eachUserInfo, i) => {
+    const balance = new BigNumber(eachUserInfo.output.amount).multipliedBy(totalTokens.output[i].output).dividedBy(totalSupplys.output[i].output)
+    balances[`${chain}:${vaultTokens.output[i].output}`] = balance.toFixed(0);
+  })
   return balances;
 }
 
 module.exports = {
-  calAusdTvl
-}
+  calAusdTvl,
+};
