@@ -106,7 +106,7 @@ module.exports = {
     },
     fuse: {
         staking: fuseStaking,
-        tvl: fuse,
+        tvl: () => ({}),
         treasury: fuseTreasury
     },
 }
