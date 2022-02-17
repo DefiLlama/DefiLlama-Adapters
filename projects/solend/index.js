@@ -264,9 +264,8 @@ async function tvl() {
     "lido-staked-sol": stsolAmount,
     terrausd: ustAmount + invictusUstAmount,
     orca: orcaAmount,
-    lsin: invictusLsinAmount,
-    step: stepPoolStepAmount,
-    xstep: stepPoolXstepAmount,
+    invictus: invictusLsinAmount,
+    step: stepPoolStepAmount+stepPoolXstepAmount,
   };
 }
 
