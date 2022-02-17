@@ -129,6 +129,5 @@ const getTvl = async () => {
 };
 
 module.exports = {
-  tvl: 1,
-  getTvl,
+  tvl,
 };
