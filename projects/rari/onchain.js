@@ -168,6 +168,7 @@ async function tvl(timestamp, block) {
 module.exports = {
   timetravel: true,
   misrepresentedTokens: true,
+  doublecounted: true,
   start: 1596236058,        // July 14, 2020
   ethereum: {
     tvl,
