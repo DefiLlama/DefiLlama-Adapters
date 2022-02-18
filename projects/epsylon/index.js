@@ -28,6 +28,8 @@ async function tvl() {
 }
 
 module.exports = {
+  timetravel: false,
+  methodology: `Counts deposits made to the the USDC and wFTM vaults`,
   fantom: {
     tvl,
   },
