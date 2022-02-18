@@ -3,7 +3,8 @@ const { request, gql } = require("graphql-request");
 const { getBlock } = require('../helper/getBlock');
 const { staking } = require('../helper/staking')
 const { pool2 } = require('../helper/pool2')
-const { unwrapUniswapV3LPs, unwrapUniswapLPs, unwrapGelatoLPs } = require('../helper/unwrapLPs')
+const { unwrapUniswapLPs } = require('../helper/unwrapLPs')
+const { default: BigNumber } = require('bignumber.js')
 const abi = require('./abi.json')
 
 const aelin_data = {
@@ -11,6 +12,7 @@ const aelin_data = {
     'graphUrl': 'https://api.thegraph.com/subgraphs/name/aelin-xyz/aelin',
     'AELIN_ETH_LP': '0x974d51fafc9013e42cbbb9465ea03fe097824bcc',
     'AELIN_ETH_staking': '0x944cb90082fc1416d4b551a21cfe6d7cc5447c80',
+    'AELIN': '0xa9c125bf4c8bb26f299c00969532b66732b1f758'
   },
   'optimism': {
     'graphUrl': 'https://api.thegraph.com/subgraphs/name/aelin-xyz/optimism', 
@@ -99,6 +101,9 @@ pool2TVL = chain => async (timestamp, ethBlock, chainBlocks) => {
 
   if (chain === 'ethereum') {
     const staked = await pool2(stakingContract, lpToken, chain) (timestamp, ethBlock, chainBlocks)
+    const aelin_addr = `ethereum:${aelin_data[chain]['AELIN']}`
+    staked['AELIN'] = BigNumber(staked[aelin_addr]).div(1e18).toFixed(0)
+    staked[aelin_addr] = 0
     return staked
   } 
   else if (chain === 'optimism') {
@@ -117,9 +122,8 @@ pool2TVL = chain => async (timestamp, ethBlock, chainBlocks) => {
         token: lpToken
       }
     ]
-
+    // Unwrao Gelato pools
     await unwrapUniswapLPs(balances, lpBalances, block, chain, transformAddress, [], false, 'gelato')
-
     return balances
   }
 }
