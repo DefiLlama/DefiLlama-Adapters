@@ -313,6 +313,9 @@ async function transformHarmonyAddress() {
     if (compareAddresses(addr, "0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c")) {
       return "avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c";
     }
+    if (compareAddresses(addr, "0xd754ae7bb55feb0c4ba6bc037b4a140f14ebe018")) {
+      return "bsc:0x19e6bfc1a6e4b042fb20531244d47e252445df01";
+    }
     const srcToken = bridge.find((token) =>
       compareAddresses(addr, token.hrc20Address)
     );

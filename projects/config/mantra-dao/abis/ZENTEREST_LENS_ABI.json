@@ -1,5 +1,5 @@
-[
-    {
+{
+    "cTokenBalances": {
         "constant": false,
         "inputs": [
             {
@@ -57,7 +57,7 @@
         "stateMutability": "nonpayable",
         "type": "function"
     },
-    {
+    "cTokenBalancesAll": {
         "constant": false,
         "inputs": [
             {
@@ -115,7 +115,7 @@
         "stateMutability": "nonpayable",
         "type": "function"
     },
-    {
+    "cTokenMetadata": {
         "constant": false,
         "inputs": [
             {
@@ -208,7 +208,7 @@
         "stateMutability": "nonpayable",
         "type": "function"
     },
-    {
+    "cTokenMetadataAll": {
         "constant": false,
         "inputs": [
             {
@@ -301,7 +301,7 @@
         "stateMutability": "nonpayable",
         "type": "function"
     },
-    {
+    "cTokenUnderlyingPrice": {
         "constant": false,
         "inputs": [
             {
@@ -334,7 +334,7 @@
         "stateMutability": "nonpayable",
         "type": "function"
     },
-    {
+    "cTokenUnderlyingPriceAll": {
         "constant": false,
         "inputs": [
             {
@@ -367,7 +367,7 @@
         "stateMutability": "nonpayable",
         "type": "function"
     },
-    {
+    "getAccountLimits": {
         "constant": false,
         "inputs": [
             {
@@ -410,7 +410,7 @@
         "stateMutability": "nonpayable",
         "type": "function"
     },
-    {
+    "getCompBalanceMetadataExt": {
         "constant": false,
         "inputs": [
             {
@@ -453,4 +453,4 @@
         "stateMutability": "nonpayable",
         "type": "function"
     }
-]
+}

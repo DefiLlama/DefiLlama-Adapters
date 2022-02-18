@@ -1,61 +1,5 @@
-[
-    {
-        "inputs": [
-            {
-                "internalType": "string",
-                "name": "syntheticTokenName",
-                "type": "string"
-            },
-            {
-                "internalType": "string",
-                "name": "syntheticTokenSymbol",
-                "type": "string"
-            },
-            {
-                "internalType": "contract IERC20",
-                "name": "stakingToken_",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "owner_",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "claimingFeePercent_",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "perBlockReward_",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "startBlockNumber_",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "duration_",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "unstakingTime_",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "defaultPriceMantissa",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "nonpayable",
-        "type": "constructor"
-    },
-    {
+{
+    "Approval": {
         "anonymous": false,
         "inputs": [
             {
@@ -80,7 +24,7 @@
         "name": "Approval",
         "type": "event"
     },
-    {
+    "Claimed": {
         "anonymous": false,
         "inputs": [
             {
@@ -117,7 +61,7 @@
         "name": "Claimed",
         "type": "event"
     },
-    {
+    "ClaimingFeePercentUpdated": {
         "anonymous": false,
         "inputs": [
             {
@@ -130,32 +74,32 @@
         "name": "ClaimingFeePercentUpdated",
         "type": "event"
     },
-    {
+    "CurrentStrategyUpdated": {
         "anonymous": false,
         "inputs": [
             {
                 "indexed": false,
                 "internalType": "uint256",
-                "name": "perBlockReward",
+                "name": "perSecondReward",
                 "type": "uint256"
             },
             {
                 "indexed": false,
                 "internalType": "uint256",
-                "name": "startBlockNumber",
+                "name": "startsAt",
                 "type": "uint256"
             },
             {
                 "indexed": false,
                 "internalType": "uint256",
-                "name": "endBlockNumber",
+                "name": "endsAt",
                 "type": "uint256"
             }
         ],
         "name": "CurrentStrategyUpdated",
         "type": "event"
     },
-    {
+    "FeeClaimed": {
         "anonymous": false,
         "inputs": [
             {
@@ -174,69 +118,38 @@
         "name": "FeeClaimed",
         "type": "event"
     },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": true,
-                "internalType": "address",
-                "name": "account",
-                "type": "address"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "omTokenV1StakeAmount",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "stakingPoolV1Reward",
-                "type": "uint256"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "stakingPoolV2Reward",
-                "type": "uint256"
-            }
-        ],
-        "name": "Migrated",
-        "type": "event"
-    },
-    {
+    "NextStrategyRemoved": {
         "anonymous": false,
         "inputs": [],
         "name": "NextStrategyRemoved",
         "type": "event"
     },
-    {
+    "NextStrategyUpdated": {
         "anonymous": false,
         "inputs": [
             {
                 "indexed": false,
                 "internalType": "uint256",
-                "name": "perBlockReward",
+                "name": "perSecondReward",
                 "type": "uint256"
             },
             {
                 "indexed": false,
                 "internalType": "uint256",
-                "name": "startBlockNumber",
+                "name": "startsAt",
                 "type": "uint256"
             },
             {
                 "indexed": false,
                 "internalType": "uint256",
-                "name": "endBlockNumber",
+                "name": "endsAt",
                 "type": "uint256"
             }
         ],
         "name": "NextStrategyUpdated",
         "type": "event"
     },
-    {
+    "OwnerChanged": {
         "anonymous": false,
         "inputs": [
             {
@@ -249,7 +162,7 @@
         "name": "OwnerChanged",
         "type": "event"
     },
-    {
+    "OwnerNominated": {
         "anonymous": false,
         "inputs": [
             {
@@ -262,7 +175,7 @@
         "name": "OwnerNominated",
         "type": "event"
     },
-    {
+    "PoolDecreased": {
         "anonymous": false,
         "inputs": [
             {
@@ -275,7 +188,7 @@
         "name": "PoolDecreased",
         "type": "event"
     },
-    {
+    "PoolIncreased": {
         "anonymous": false,
         "inputs": [
             {
@@ -294,7 +207,7 @@
         "name": "PoolIncreased",
         "type": "event"
     },
-    {
+    "PriceUpdated": {
         "anonymous": false,
         "inputs": [
             {
@@ -319,7 +232,7 @@
         "name": "PriceUpdated",
         "type": "event"
     },
-    {
+    "RewardsUnlocked": {
         "anonymous": false,
         "inputs": [
             {
@@ -332,7 +245,7 @@
         "name": "RewardsUnlocked",
         "type": "event"
     },
-    {
+    "Staked": {
         "anonymous": false,
         "inputs": [
             {
@@ -363,7 +276,7 @@
         "name": "Staked",
         "type": "event"
     },
-    {
+    "Transfer": {
         "anonymous": false,
         "inputs": [
             {
@@ -388,7 +301,7 @@
         "name": "Transfer",
         "type": "event"
     },
-    {
+    "Unstaked": {
         "anonymous": false,
         "inputs": [
             {
@@ -419,7 +332,7 @@
         "name": "Unstaked",
         "type": "event"
     },
-    {
+    "UnstakingCanceled": {
         "anonymous": false,
         "inputs": [
             {
@@ -438,7 +351,7 @@
         "name": "UnstakingCanceled",
         "type": "event"
     },
-    {
+    "UnstakingTimeUpdated": {
         "anonymous": false,
         "inputs": [
             {
@@ -451,7 +364,7 @@
         "name": "UnstakingTimeUpdated",
         "type": "event"
     },
-    {
+    "Withdrawed": {
         "anonymous": false,
         "inputs": [
             {
@@ -470,7 +383,7 @@
         "name": "Withdrawed",
         "type": "event"
     },
-    {
+    "MIN_STAKE_BALANCE": {
         "inputs": [],
         "name": "MIN_STAKE_BALANCE",
         "outputs": [
@@ -483,7 +396,7 @@
         "stateMutability": "view",
         "type": "function"
     },
-    {
+    "acceptOwnership": {
         "inputs": [],
         "name": "acceptOwnership",
         "outputs": [
@@ -496,7 +409,7 @@
         "stateMutability": "nonpayable",
         "type": "function"
     },
-    {
+    "allowance": {
         "inputs": [
             {
                 "internalType": "address",
@@ -520,7 +433,7 @@
         "stateMutability": "view",
         "type": "function"
     },
-    {
+    "approve": {
         "inputs": [
             {
                 "internalType": "address",
@@ -544,7 +457,7 @@
         "stateMutability": "nonpayable",
         "type": "function"
     },
-    {
+    "balanceOf": {
         "inputs": [
             {
                 "internalType": "address",
@@ -563,7 +476,7 @@
         "stateMutability": "view",
         "type": "function"
     },
-    {
+    "calculateUnstake": {
         "inputs": [
             {
                 "internalType": "address",
@@ -592,7 +505,7 @@
         "stateMutability": "view",
         "type": "function"
     },
-    {
+    "cancelUnstaking": {
         "inputs": [
             {
                 "internalType": "uint256",
@@ -611,7 +524,7 @@
         "stateMutability": "nonpayable",
         "type": "function"
     },
-    {
+    "claim": {
         "inputs": [
             {
                 "internalType": "uint256",
@@ -635,7 +548,7 @@
         "stateMutability": "nonpayable",
         "type": "function"
     },
-    {
+    "claimFees": {
         "inputs": [],
         "name": "claimFees",
         "outputs": [
@@ -648,7 +561,7 @@
         "stateMutability": "nonpayable",
         "type": "function"
     },
-    {
+    "claimingFeePercent": {
         "inputs": [],
         "name": "claimingFeePercent",
         "outputs": [
@@ -661,16 +574,16 @@
         "stateMutability": "view",
         "type": "function"
     },
-    {
+    "createNewStrategy": {
         "inputs": [
             {
                 "internalType": "uint256",
-                "name": "perBlockReward_",
+                "name": "perSecondReward_",
                 "type": "uint256"
             },
             {
                 "internalType": "uint256",
-                "name": "startBlockNumber_",
+                "name": "startsAt_",
                 "type": "uint256"
             },
             {
@@ -690,7 +603,7 @@
         "stateMutability": "nonpayable",
         "type": "function"
     },
-    {
+    "currentStrategy": {
         "inputs": [],
         "name": "currentStrategy",
         "outputs": [
@@ -698,17 +611,17 @@
                 "components": [
                     {
                         "internalType": "uint256",
-                        "name": "endBlockNumber",
+                        "name": "endsAt",
                         "type": "uint256"
                     },
                     {
                         "internalType": "uint256",
-                        "name": "perBlockReward",
+                        "name": "perSecondReward",
                         "type": "uint256"
                     },
                     {
                         "internalType": "uint256",
-                        "name": "startBlockNumber",
+                        "name": "startsAt",
                         "type": "uint256"
                     }
                 ],
@@ -720,7 +633,7 @@
         "stateMutability": "view",
         "type": "function"
     },
-    {
+    "decimals": {
         "inputs": [],
         "name": "decimals",
         "outputs": [
@@ -733,7 +646,7 @@
         "stateMutability": "view",
         "type": "function"
     },
-    {
+    "decreaseAllowance": {
         "inputs": [
             {
                 "internalType": "address",
@@ -757,7 +670,7 @@
         "stateMutability": "nonpayable",
         "type": "function"
     },
-    {
+    "decreasePool": {
         "inputs": [
             {
                 "internalType": "uint256",
@@ -776,7 +689,7 @@
         "stateMutability": "nonpayable",
         "type": "function"
     },
-    {
+    "defaultPrice": {
         "inputs": [],
         "name": "defaultPrice",
         "outputs": [
@@ -799,7 +712,7 @@
         "stateMutability": "view",
         "type": "function"
     },
-    {
+    "feePool": {
         "inputs": [],
         "name": "feePool",
         "outputs": [
@@ -812,7 +725,7 @@
         "stateMutability": "view",
         "type": "function"
     },
-    {
+    "getCurrentStrategyUnlockedRewards": {
         "inputs": [],
         "name": "getCurrentStrategyUnlockedRewards",
         "outputs": [
@@ -825,7 +738,7 @@
         "stateMutability": "view",
         "type": "function"
     },
-    {
+    "getUnlockedRewards": {
         "inputs": [],
         "name": "getUnlockedRewards",
         "outputs": [
@@ -843,7 +756,7 @@
         "stateMutability": "view",
         "type": "function"
     },
-    {
+    "getUnstake": {
         "inputs": [
             {
                 "internalType": "address",
@@ -874,7 +787,7 @@
         "stateMutability": "view",
         "type": "function"
     },
-    {
+    "increaseAllowance": {
         "inputs": [
             {
                 "internalType": "address",
@@ -898,7 +811,7 @@
         "stateMutability": "nonpayable",
         "type": "function"
     },
-    {
+    "increasePool": {
         "inputs": [
             {
                 "internalType": "uint256",
@@ -917,9 +830,9 @@
         "stateMutability": "nonpayable",
         "type": "function"
     },
-    {
+    "lastUpdatedAt": {
         "inputs": [],
-        "name": "lastUpdateBlockNumber",
+        "name": "lastUpdatedAt",
         "outputs": [
             {
                 "internalType": "uint256",
@@ -930,7 +843,7 @@
         "stateMutability": "view",
         "type": "function"
     },
-    {
+    "lockedRewards": {
         "inputs": [],
         "name": "lockedRewards",
         "outputs": [
@@ -943,20 +856,7 @@
         "stateMutability": "view",
         "type": "function"
     },
-    {
-        "inputs": [],
-        "name": "name",
-        "outputs": [
-            {
-                "internalType": "string",
-                "name": "",
-                "type": "string"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
+    "nextStrategy": {
         "inputs": [],
         "name": "nextStrategy",
         "outputs": [
@@ -964,17 +864,17 @@
                 "components": [
                     {
                         "internalType": "uint256",
-                        "name": "endBlockNumber",
+                        "name": "endsAt",
                         "type": "uint256"
                     },
                     {
                         "internalType": "uint256",
-                        "name": "perBlockReward",
+                        "name": "perSecondReward",
                         "type": "uint256"
                     },
                     {
                         "internalType": "uint256",
-                        "name": "startBlockNumber",
+                        "name": "startsAt",
                         "type": "uint256"
                     }
                 ],
@@ -986,7 +886,7 @@
         "stateMutability": "view",
         "type": "function"
     },
-    {
+    "nominateNewOwner": {
         "inputs": [
             {
                 "internalType": "address",
@@ -1005,7 +905,7 @@
         "stateMutability": "nonpayable",
         "type": "function"
     },
-    {
+    "nominatedOwner": {
         "inputs": [],
         "name": "nominatedOwner",
         "outputs": [
@@ -1018,7 +918,7 @@
         "stateMutability": "view",
         "type": "function"
     },
-    {
+    "owner": {
         "inputs": [],
         "name": "owner",
         "outputs": [
@@ -1031,7 +931,7 @@
         "stateMutability": "view",
         "type": "function"
     },
-    {
+    "price": {
         "inputs": [],
         "name": "price",
         "outputs": [
@@ -1054,7 +954,7 @@
         "stateMutability": "view",
         "type": "function"
     },
-    {
+    "priceStored": {
         "inputs": [],
         "name": "priceStored",
         "outputs": [
@@ -1077,7 +977,7 @@
         "stateMutability": "view",
         "type": "function"
     },
-    {
+    "setClaimingFeePercent": {
         "inputs": [
             {
                 "internalType": "uint256",
@@ -1096,7 +996,7 @@
         "stateMutability": "nonpayable",
         "type": "function"
     },
-    {
+    "setUnstakingTime": {
         "inputs": [
             {
                 "internalType": "uint256",
@@ -1115,7 +1015,7 @@
         "stateMutability": "nonpayable",
         "type": "function"
     },
-    {
+    "stake": {
         "inputs": [
             {
                 "internalType": "uint256",
@@ -1134,7 +1034,7 @@
         "stateMutability": "nonpayable",
         "type": "function"
     },
-    {
+    "stakeForUser": {
         "inputs": [
             {
                 "internalType": "address",
@@ -1158,7 +1058,7 @@
         "stateMutability": "nonpayable",
         "type": "function"
     },
-    {
+    "stakingToken": {
         "inputs": [],
         "name": "stakingToken",
         "outputs": [
@@ -1171,7 +1071,7 @@
         "stateMutability": "view",
         "type": "function"
     },
-    {
+    "symbol": {
         "inputs": [],
         "name": "symbol",
         "outputs": [
@@ -1184,7 +1084,7 @@
         "stateMutability": "view",
         "type": "function"
     },
-    {
+    "totalStaked": {
         "inputs": [],
         "name": "totalStaked",
         "outputs": [
@@ -1197,20 +1097,7 @@
         "stateMutability": "view",
         "type": "function"
     },
-    {
-        "inputs": [],
-        "name": "totalSupply",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
+    "totalUnstaked": {
         "inputs": [],
         "name": "totalUnstaked",
         "outputs": [
@@ -1223,7 +1110,7 @@
         "stateMutability": "view",
         "type": "function"
     },
-    {
+    "transfer": {
         "inputs": [
             {
                 "internalType": "address",
@@ -1247,7 +1134,7 @@
         "stateMutability": "nonpayable",
         "type": "function"
     },
-    {
+    "transferFrom": {
         "inputs": [
             {
                 "internalType": "address",
@@ -1276,7 +1163,7 @@
         "stateMutability": "nonpayable",
         "type": "function"
     },
-    {
+    "unstake": {
         "inputs": [
             {
                 "internalType": "uint256",
@@ -1300,7 +1187,7 @@
         "stateMutability": "nonpayable",
         "type": "function"
     },
-    {
+    "unstakingTime": {
         "inputs": [],
         "name": "unstakingTime",
         "outputs": [
@@ -1313,7 +1200,7 @@
         "stateMutability": "view",
         "type": "function"
     },
-    {
+    "update": {
         "inputs": [],
         "name": "update",
         "outputs": [
@@ -1326,7 +1213,7 @@
         "stateMutability": "nonpayable",
         "type": "function"
     },
-    {
+    "withdraw": {
         "inputs": [],
         "name": "withdraw",
         "outputs": [
@@ -1339,4 +1226,4 @@
         "stateMutability": "nonpayable",
         "type": "function"
     }
-]
+}
