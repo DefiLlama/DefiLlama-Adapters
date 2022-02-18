@@ -66,4 +66,3 @@ module.exports = {
     treasury
   },
 };
-// node test.js projects/tomb/index.js

@@ -4,6 +4,25 @@ const abi = require("./abi.json");
 const { BigNumber } = require("bignumber.js");
 const { fixHarmonyBalances } = require("../helper/portedTokens");
 
+const translateTokens = {
+  "0xbf07093ccd6adfc3deb259c557b61e94c1f66945": "fantom:0xd6070ae98b8069de6b494332d1a1a81b6179d960",
+  "0x1b156c5c75e9df4caab2a5cc5999ac58ff4f9090": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+  "0xa48d959ae2e88f1daa7d5f611e01908106de7598": "fantom:0x841fad6eae12c286d1fd18d1d525dffa75c7effe",
+  "0xd795d70ec3c7b990ffed7a725a18be5a9579c3b9": "avax:0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
+  "0xb6767518b205ea8b312d2ef4d992a2a08c2f2416": "avax:0xc7198437980c041c805a1edcba50c1ce5db95118",
+  "0xaf9f33df60ca764307b17e62dde86e9f7090426c": "avax:0xd586e7f844cea2f87f50152665bcbc2c279d8d70",
+  "0x808d5f0a62336917da14fa9a10e9575b1040f71c": "avax:0x60781c2586d68229fde47564546784ab3faca982",
+  "0x0dec85e74a92c52b7f708c4b10207d9560cefaf0": "fantom:0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
+  "0x637ec617c86d24e421328e6caea1d92114892439": "0x6b175474e89094c44da98b954eedeac495271d0f",
+  "0xb3654dc3d10ea7645f8319668e8f54d2574fbdc8": "0x514910771af9ca656af840dff83e8264ecf986ca",
+  "0x0a03d2c1cfca48075992d810cc69bd9fe026384a": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+  "0x97927abfe1abbe5429cbe79260b290222fc9fbba": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+  "0x6dfe2aaea9daadadf0865b661b53040e842640f8": "0x514910771af9ca656af840dff83e8264ecf986ca",
+  "0x920786cff2a6f601975874bb24c63f0115df7dc8": "0x6b175474e89094c44da98b954eedeac495271d0f",
+  "0x49c68edb7aebd968f197121453e41b8704acde0c": "fantom:0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
+  "0x0665ef3556520b21368754fb644ed3ebf1993ad4": "0x6c3f90f043a72fa612cbac8115ee7e52bde6e490"
+}
+
 async function handleMooTokens(balances, block, chain, tokens) {
   let balance = (
     await sdk.api.abi.multiCall({
@@ -28,13 +47,8 @@ async function handleMooTokens(balances, block, chain, tokens) {
   ).output;
   for (let i = 0; i < balance.length; i++) {
     let addr = balance[i].input.target.toLowerCase();
-    if (addr === "0xbf07093ccd6adfc3deb259c557b61e94c1f66945") {
-      addr = "fantom:0xd6070ae98b8069de6b494332d1a1a81b6179d960";
-    } else if (addr === "0x1b156c5c75e9df4caab2a5cc5999ac58ff4f9090") {
-      addr = "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7";
-    } else if (addr === "0xf18f4847a5db889b966788dcbdbcbfa72f22e5a6") {
-      addr = "fantom:0x841fad6eae12c286d1fd18d1d525dffa75c7effe"
-      pricePerShare[i].output = 1e18;
+    if (translateTokens[addr] !== null) {
+      addr =  translateTokens[addr];
     } else {
       addr = `${chain}:${addr}`;
     }
@@ -152,7 +166,6 @@ async function polygon(timestamp, block, chainBlocks) {
         "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6",
         "0x37131aEDd3da288467B6EBe9A77C523A700E6Ca1",
       ], // wbtc
-      // added
       [
         "0x9a71012b13ca4d3d0cdc72a177df3ef03b0e76a3",
         "0x701A1824e5574B0b6b1c8dA808B184a7AB7A2867",
@@ -164,6 +177,10 @@ async function polygon(timestamp, block, chainBlocks) {
       [
         "0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7",
         "0xF086dEdf6a89e7B16145b03a6CB0C0a9979F1433",
+      ],
+      [
+        "0x1a3acf6d19267e2d3e7f898f42803e90c9219062",
+        "0xff2c44fb819757225a176e825255a01b3b8bb051",
       ],
     ],
     chainBlocks.polygon,
@@ -177,7 +194,7 @@ async function polygon(timestamp, block, chainBlocks) {
       chain: "polygon",
     })
   ).output;
-  
+
   balances['avax:0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664'] = (
     await sdk.api.erc20.balanceOf({
       target: "0x7d60F21072b585351dFd5E8b17109458D97ec120",
@@ -265,22 +282,9 @@ async function fantom(timestamp, block, chainBlocks) {
     chainBlocks[chain],
     chain,
     (addr) => {
-      if (addr === "0x0DEC85e74A92c52b7F708c4B10207D9560CEFaf0") {
-        return "fantom:0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83";
-      } else if (addr === "0x637eC617c86D24E421328e6CAEa1d92114892439") {
-        return "0x6b175474e89094c44da98b954eedeac495271d0f";
-      } else if (addr === "0xb3654dc3d10ea7645f8319668e8f54d2574fbdc8") {
-        return "0x514910771af9ca656af840dff83e8264ecf986ca";
-      } else if (addr === "0x0a03d2c1cfca48075992d810cc69bd9fe026384a") {
-        return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-      } else if (addr === "0x97927abfe1abbe5429cbe79260b290222fc9fbba") {
-        return "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599";
-      } else if (addr === "0x6dfe2aaea9daadadf0865b661b53040e842640f8") {
-        return "0x514910771af9ca656af840dff83e8264ecf986ca";
-      } else if (addr === "0x920786cff2a6f601975874bb24c63f0115df7dc8") {
-        return "0x6b175474e89094c44da98b954eedeac495271d0f";
-      } else if (addr === "0x49c68edb7aebd968f197121453e41b8704acde0c") {
-        return "fantom:0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83";
+      addr = addr.toLowerCase();
+      if (translateTokens[addr] !== undefined) {
+        return translateTokens[addr];
       }
       return `${chain}:${addr}`;
     }
@@ -289,10 +293,6 @@ async function fantom(timestamp, block, chainBlocks) {
     [
       "0xbf07093ccd6adfc3deb259c557b61e94c1f66945",
       "0x75D4aB6843593C111Eeb02Ff07055009c836A1EF",
-    ],
-    [
-      "0xf18F4847a5Db889B966788dcbDbcBfA72f22E5A6",
-      "0xa48d959AE2E88f1dAA7D5F611E01908106dE7598",
     ]
   ];
   await handleMooTokens(balances, chainBlocks.fantom, chain, ftmMooTokens);
@@ -340,6 +340,25 @@ async function fantom(timestamp, block, chainBlocks) {
     ]
   ];
   await handleMooLPs(balances, chainBlocks.fantom, chain, ftmLPs);
+
+  await sumTokens(
+    balances,
+    [
+      [
+        "0xa48d959ae2e88f1daa7d5f611e01908106de7598",
+        "0xf18F4847a5Db889B966788dcbDbcBfA72f22E5A6",
+      ]
+    ],
+    chainBlocks.fantom,
+    "fantom",
+    addr=> {
+      addr = addr.toLowerCase();
+      if (translateTokens[addr] !== undefined) {
+        return translateTokens[addr];
+      }
+      return `fantom:${addr}`
+    }
+  )
   return balances;
 }
 
@@ -351,8 +370,47 @@ async function avax(timestamp, block, chainBlocks) {
       "0x1B156C5c75E9dF4CAAb2a5cc5999aC58ff4F9090",
       "0xfA19c1d104F4AEfb8d5564f02B3AdCa1b515da58",
     ],
+    [
+      "0xD795d70ec3C7b990ffED7a725a18Be5A9579c3b9",
+      "0xC3537ef04Ad744174A4A4a91AfAC4Baf0CF80cB3"
+    ],
+    [
+      "0xb6767518b205ea8B312d2EF4d992A2a08C2f2416",
+      "0xF8AC186555cbd5104c0e8C5BacF8bB779a3869f5"
+    ],
+    [
+      "0xAf9f33df60CA764307B17E62dde86e9F7090426c",
+      "0xEa88eB237baE0AE26f4500146c251d25F409FA32"
+    ],
+    [
+      "0x808D5f0A62336917Da14fA9A10E9575B1040f71c",
+      "0x8Edc3fB6Fcdd5773216331f74AfDb6a2a2E16dc9"
+    ]
   ];
   await handleMooTokens(balances, chainBlocks.avax, chain, avaxMooTokens);
+
+  await sumTokens(
+    balances,
+    [
+      [
+        "0x60781C2586D68229fde47564546784ab3fACA982",
+        "0xfc3eAFD931ebcd0D8E59bfa0BeaE776d7F987716"
+      ],
+      [
+        "0x0665eF3556520B21368754Fb644eD3ebF1993AD4",
+        "0x13a7fe3ab741ea6301db8b164290be711f546a73"
+      ]
+    ],
+    chainBlocks.avax,
+    "avax",
+    addr=> {
+      addr = addr.toLowerCase();
+      if (translateTokens[addr] !== undefined) {
+        return translateTokens[addr];
+      }
+      return `avax:${addr}`
+    }
+  );
   return balances;
 }
 
@@ -408,7 +466,25 @@ async function harmony(timestamp, block, chainBlocks) {
   return balances;
 }
 
+async function xdai (timestamp, block, chainBlocks) {
+  const balances = {};
+  await sumTokens(
+    balances,
+    [
+      [
+        "0x6a023ccd1ff6f2045c3309768ead9e68f978f6e1",
+        "0x5c49b268c9841AFF1Cc3B0a418ff5c3442eE3F3b"
+      ]
+    ],
+    chainBlocks.xdai,
+    "xdai",
+    addr=>`xdai:${addr}`
+  );
+  return balances;
+}
+
 module.exports = {
+  misrepresentedTokens: true,
   methodology:
     "TVL counts the AAVE tokens that are deposited within the Yield Instruments section of QiDao, the Vault token deposits of CRV, LINK, AAVE and WETH, as well as USDC deposited to mint MAI.",
   polygon: {
@@ -417,7 +493,7 @@ module.exports = {
   fantom: {
     tvl: fantom,
   },
-  avax: {
+  avalanche: {
     tvl: avax,
   },
   moonriver: {
@@ -426,5 +502,8 @@ module.exports = {
   harmony: {
     tvl: harmony,
   },
+  xdai: {
+    tvl: xdai
+  }
 };
 // node test.js projects/qidao/index.js

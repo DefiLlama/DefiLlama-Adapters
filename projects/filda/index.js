@@ -3,7 +3,8 @@ const sdk = require('@defillama/sdk');
 const abi = require('./abi.json');
 const { getBlock } = require('../helper/getBlock')
 const { unwrapUniswapLPs } = require('../helper/unwrapLPs')
-const { usdCompoundExports, compoundExports } = require('../helper/compound')
+const { usdCompoundExports, compoundExports } = require('../helper/compound');
+const { usdtAddress } = require('../helper/balances');
 
 const comptroller = "0xb74633f2022452f377403B638167b0A135DB096d"
 
@@ -126,13 +127,32 @@ function lending(borrowed) {
   }
 }
 
+const ioRaw = usdCompoundExports("0x55E5F6E48FD4715e1c05b9dAfa5CfD0B387425Ee", "iotex")
+async function ioTvl(...params){
+  const tvl = await ioRaw.tvl(...params)
+  return {
+    "iotex": Number(tvl[usdtAddress])/1e6
+  }
+}
+
+async function ioBorrowed(...params){
+  const tvl = await ioRaw.borrowed(...params)
+  return {
+    "iotex": Number(tvl[usdtAddress])/1e6
+  }
+}
+
+// DANGER!! Oracles are not priced against USD but against other base tokens, such as IOTX
 module.exports = {
   timetravel: true, // Impossible because getBlock will rug tho
   heco: {
     tvl: lending(false),
     borrowed: lending(true)
   },
-  iotex:usdCompoundExports("0x55E5F6E48FD4715e1c05b9dAfa5CfD0B387425Ee", "iotex"),
+  iotex:{
+    tvl: ioTvl,
+    borrowed: ioBorrowed
+  },
   bsc: compoundExports("0xF0700A310Cb14615a67EEc1A8dAd5791859f65f1", "bsc"),
   polygon: compoundExports("0xfBE0f3A3d1405257Bd69691406Eafa73f5095723", "polygon")
 };

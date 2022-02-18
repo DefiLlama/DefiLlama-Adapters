@@ -33,12 +33,14 @@ const chains = {
   arbitrum: 42161,
   celo: 42220,
   avalanche: 43114,
+  aurora: 1313161554,
   harmony: 1666600000
 }
 
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
+  doublecounted: true,
   ...Object.fromEntries(Object.entries(chains).map(chain=>[chain[0], {
     tvl: fetchChain(chain[1], false),
     staking: fetchChain(chain[1], true),

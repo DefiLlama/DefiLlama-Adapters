@@ -23,6 +23,7 @@ async function avaxTvl(timestamp, block, chainBlocks) {
 
 module.exports = {
   misrepresentedTokens: true,
+  doublecounted: true,
   ethereum:{
     tvl: ethTvl
   },

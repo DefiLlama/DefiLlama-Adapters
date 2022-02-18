@@ -48,6 +48,7 @@ async function ethStaking(timestamp, block) {
 const chainTvl = getChainTvl({
   
   kcc: 'https://thegraph.kcc.network/subgraphs/name/emiswap/emiswap1',
+  polygon: 'https://api.thegraph.com/subgraphs/name/lombardi22/polygon'
 }, 'emiswapFactories');
 
 module.exports = {
@@ -59,5 +60,7 @@ module.exports = {
   kcc: {
     tvl: chainTvl('kcc'),
   },
-  
+  polygon: {
+    tvl: chainTvl('polygon'),
+  }
 };

@@ -4,6 +4,9 @@ const { staking } = require("../helper/staking");
 const PTP_DAIe_POOL = "0xc1Daa16E6979C2D1229cB1fd0823491eA44555Be";
 const DAIe = "0xd586e7f844cea2f87f50152665bcbc2c279d8d70";
 
+const PTP_USDC_POOL = "0xAEf735B1E7EcfAf8209ea46610585817Dc0a2E16";
+const USDC = "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E";
+
 const PTP_USDCe_POOL = "0x909B0ce4FaC1A0dCa78F8Ca7430bBAfeEcA12871";
 const USDCe = "0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664";
 
@@ -31,7 +34,12 @@ async function tvl(timestamp, ethereumBlock, chainBlocks) {
   const block = chainBlocks["avax"];
   let balances = {};
   balances["dai"] = await balanceOf(PTP_DAIe_POOL, DAIe, block);
-  balances["usd-coin"] = await balanceOf(PTP_USDCe_POOL, USDCe, block);
+  balances["usd-coin"] = await balanceOf(PTP_USDC_POOL, USDC, block);
+  balances["usd-coin-avalanche-bridged-usdc-e"] = await balanceOf(
+    PTP_USDCe_POOL,
+    USDCe,
+    block
+  );
   balances["tether"] = await balanceOf(PTP_USDTe_POOL, USDTe, block);
   balances["magic-internet-money"] = await balanceOf(PTP_MIM_POOL, MIM, block);
   return balances;
@@ -40,6 +48,10 @@ async function tvl(timestamp, ethereumBlock, chainBlocks) {
 module.exports = {
   avalanche: {
     tvl,
-    staking: staking("0x5857019c749147eee22b1fe63500f237f3c1b692", "0x22d4002028f537599be9f666d1c4fa138522f9c8", "avax")
+    staking: staking(
+      "0x5857019c749147eee22b1fe63500f237f3c1b692",
+      "0x22d4002028f537599be9f666d1c4fa138522f9c8",
+      "avax"
+    ),
   },
 };
