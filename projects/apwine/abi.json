@@ -1,0 +1,21 @@
+{
+    "registry_futureVaultCount": {"inputs":[],"name":"futureVaultCount","outputs":[{"internalType":"uint256","name":"futureVaultCount","type":"uint256"}],"stateMutability":"nonpayable","type":"function"}, 
+    "registry_getFutureVaultAt": {"inputs":[{"internalType":"uint256","name":"_index","type":"uint256"}],"name":"getFutureVaultAt","outputs":[{"internalType":"address","name":"futureVault","type":"address"}],"stateMutability":"nonpayable","type":"function"}, 
+    "registry_getIBTAddress": {"inputs":[],"name":"getIBTAddress","outputs":[{"internalType":"address","name":"IBTAddress","type":"address"}],"stateMutability":"nonpayable","type":"function"},
+    "ammregistry_getFutureAMMPool": {"inputs":[{"internalType":"address","name":"_futureVaultAddress ","type":"address"}],"name":"getFutureAMMPool","outputs":[{"internalType":"address","name":"_futureAMMPoolAddress ","type":"address"}],"stateMutability":"nonpayable","type":"function"},
+    "futurevault_STAKED_TOKEN": {"inputs":[],"name":"STAKED_TOKEN","outputs":[{"internalType":"address","name":"_STAKED_TOKEN_Address ","type":"address"}],"stateMutability":"nonpayable","type":"function"},
+    "futurevault_getPTAddress": {"inputs":[],"name":"getPTAddress","outputs":[{"internalType":"address","name":"_PTAddress ","type":"address"}],"stateMutability":"nonpayable","type":"function"},
+        
+    "ammPool_getFYTAddress": {"inputs":[],"name":"getFYTAddress","outputs":[{"internalType":"address","name":"_address ","type":"address"}],"stateMutability":"nonpayable","type":"function"}, 
+    "ammPool_getFutureAddress": {"inputs":[],"name":"getFutureAddress","outputs":[{"internalType":"address","name":"_address ","type":"address"}],"stateMutability":"nonpayable","type":"function"}, 
+    "ammPool_getIBTAddress": {"inputs":[],"name":"getIBTAddress","outputs":[{"internalType":"address","name":"IBTAddress","type":"address"}],"stateMutability":"nonpayable","type":"function"},
+    "ammPool_getPTAddress": {"inputs":[],"name":"getPTAddress","outputs":[{"internalType":"address","name":"_address ","type":"address"}],"stateMutability":"nonpayable","type":"function"},
+    "ammPool_getPoolTokenAddress": {"inputs":[],"name":"getPoolTokenAddress","outputs":[{"internalType":"address","name":"_address ","type":"address"}],"stateMutability":"nonpayable","type":"function"},
+    "ammPool_getUnderlyingOfIBTAddress": {"inputs":[],"name":"getUnderlyingOfIBTAddress","outputs":[{"internalType":"address","name":"_address ","type":"address"}],"stateMutability":"nonpayable","type":"function"},
+    "ammPool_getPairWithID_BAD_OUTPUT_ABI": {"inputs":[{"internalType":"uint256","name":"id","type":"uint256"}],"name":"getPairWithID","outputs":[
+        {"internalType":"address","name":"tokenAddress ","type":"address"},
+        {"internalType":"uint256[2]","name":"weights ","type":"uint256[2]"},
+        {"internalType":"uint256[2]","name":"balances ","type":"uint256[2]"},
+        {"internalType":"bool","name":"liquidityIsInitialized ","type":"bool"}
+    ],"stateMutability":"nonpayable","type":"function"}   
+}

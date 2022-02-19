@@ -18,7 +18,11 @@ module.exports={
                 //USDT
                 "0x66e428c3f67a68878562e79A0234c1F83c208770",
                 //DAI
-                "0xF2001B145b43032AAF5Ee2884e456CCd805F677D"
+                "0xF2001B145b43032AAF5Ee2884e456CCd805F677D",
+                //WETH
+                "0xe44fd7fcb2b1581822d0c862b68222998a0c299a",
+                //WBTC
+                "0x062e66477faf219f25d27dced647bf57c3107d52",
             ], "crypto-com-chain"),
         staking: stakingPricedLP("0x77ea4a4cF9F77A034E4291E8f457Af7772c2B254", "0xadbd1231fb360047525BEdF962581F3eee7b49fe", "cronos", "0xeD75347fFBe08d5cce4858C70Df4dB4Bbe8532a0", "crypto-com-chain")
     }

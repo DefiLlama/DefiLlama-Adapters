@@ -30,8 +30,8 @@ const usdxPool = '0x7FdcDAd3b4a67e00D9fD5F22f4FD89a5fa4f57bA' // USDx Stablecoin
 /*==================================================
   GOLDx Protocol
   ==================================================*/
-  goldxReserve  = '0x45804880De22913dAFE09f4980848ECE6EcbAf78'  // PAXG
-  goldxProtocol = '0x355C665e101B9DA58704A8fDDb5FeeF210eF20c0'  // GOLDx
+  const goldxReserve  = '0x45804880De22913dAFE09f4980848ECE6EcbAf78'  // PAXG
+  const goldxProtocol = '0x355C665e101B9DA58704A8fDDb5FeeF210eF20c0'  // GOLDx
 
 /*==================================================
   BSC Settings

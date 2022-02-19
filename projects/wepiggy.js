@@ -57,6 +57,13 @@ const contracts = {
       decimals:18,
     },
   },
+  harmony: {
+    comptroller: '0xaa87715E858b482931eB2f6f92E504571588390b',
+    gas:{
+      pToken:"0xd1121aDe04EE215524aeFbF7f8D45029214d668D",
+      decimals:18,
+    },
+  },
 };
 
 const chainExports = {}

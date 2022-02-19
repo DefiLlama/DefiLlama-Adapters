@@ -31,11 +31,15 @@ const v4pools={
   ],
   polygon:[
     ["0x1a13f4ca1d028320a707d99520abfefca3998b7f", "0xD4F6d570133401079D213EcF4A14FA0B4bfB5b9C"]
+  ],
+  avax:[
+    ['0x46a51127c3ce23fb7ab1de06226147f446e4a857', '0x7437db21A0dEB844Fa64223e2d6Db569De9648Ff']
   ]
 }
 
-async function getChainBalances(allPrizePools, chain, block, transform = a => a) {
+async function getChainBalances(allPrizePools, chain, block, transform) {
   const balances = {};
+  transform = transform || (addr=>`${chain}:${addr}`);
   const lockedTokens = await sdk.api.abi.multiCall({
     abi: abi['accountedBalance'],
     calls: allPrizePools.map(pool => ({
@@ -52,7 +56,7 @@ async function getChainBalances(allPrizePools, chain, block, transform = a => a)
     sdk.util.sumSingleBalance(balances, underlyingToken, underlyingTokenBalance)
   })
   if(v4pools[chain]!== undefined){
-    await sumTokens(balances, v4pools[chain], block, chain, addr=>`${chain}:${addr}`)
+    await sumTokens(balances, v4pools[chain], block, chain, transform)
   }
   return balances
 }
@@ -89,6 +93,10 @@ async function polygon(timestamp, block, chainBlocks) {
   }], 'polygon', chainBlocks.polygon)
 }
 
+async function avax(timestamp, block, chainBlocks) {
+  return getChainBalances([], 'avax', chainBlocks.avax, ()=>`avax:0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664`)
+}
+
 async function celo(timestamp, block, chainBlocks) {
   const transform = await transformCeloAddress()
   let allPrizePools = []
@@ -121,6 +129,9 @@ module.exports = {
   },
   bsc: {
     tvl: bsc
+  },
+  avalanche:{
+    tvl: avax
   },
   methodology: `TVL is the total quantity of tokens locked in poolTogether pools, on Ethereum, Polygon, Celo, and BSC`
 }
