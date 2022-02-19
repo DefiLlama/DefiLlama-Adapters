@@ -11,5 +11,6 @@ const lps = [
 ];
 
 module.exports = {
-    ...tombTvl(peel, pshare, rewardPool, masonry, lps, "bsc")
+    misrepresentedTokens: true,
+    ...tombTvl(peel, pshare, rewardPool, masonry, lps, "bsc", undefined, false, lps[1])
 }
