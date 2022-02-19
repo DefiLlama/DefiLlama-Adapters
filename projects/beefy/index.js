@@ -29,6 +29,7 @@ const chains = {
   polygon: 137,
   fantom: 250,
   metis: 1088,
+  moonbeam: 1284,
   moonriver: 1285,
   arbitrum: 42161,
   celo: 42220,
