@@ -131,5 +131,3 @@ module.exports = {
   methodology:
     "Total Value Locked includes all stability pools, troves, and vst pairs",
 };
-
-tvl(undefined, 5653951);
