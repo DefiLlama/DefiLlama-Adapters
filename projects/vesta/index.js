@@ -1,7 +1,8 @@
 const sdk = require("@defillama/sdk");
 const getEntireSystemCollAbi = require("./getEntireSystemColl.abi.json");
+const vestaFarmingAbi = require("./vestaFarming.abi.json");
 const BigNumber = require("bignumber.js");
-const { pool2 } = require("../helper/pool2.js");
+const { sumBalancerLps, unwrapCrv } = require("../helper/unwrapLPs.js");
 
 const VST_ADDRESS = "0x64343594ab9b56e99087bfa6f2335db24c2d1f17";
 
@@ -25,13 +26,15 @@ const LP_VST_FRAX_ADDRESS = "0x59bF0545FCa0E5Ad48E13DA269faCD2E8C886Ba4";
 // TroveManager holds total system collateral (deposited ETH, renBTC, and GOHM)
 const TROVE_MANAGER_ADDRESS = "0x100EC08129e0FD59959df93a8b914944A3BbD5df";
 
+const chain = "arbitrum";
+
 async function tvl(_, block) {
   const renBtcStabilityPoolVST = (
     await sdk.api.erc20.balanceOf({
       target: VST_ADDRESS,
       owner: STABILITY_POOL_ADDRESS_RENBTC,
       block,
-      chain: "arbitrum",
+      chain,
     })
   ).output;
 
@@ -40,7 +43,7 @@ async function tvl(_, block) {
       target: VST_ADDRESS,
       owner: STABILITY_POOL_ADDRESS_ETH,
       block,
-      chain: "arbitrum",
+      chain,
     })
   ).output;
 
@@ -49,7 +52,7 @@ async function tvl(_, block) {
       target: VST_ADDRESS,
       owner: STABILITY_POOL_ADDRESS_GOHM,
       block,
-      chain: "arbitrum",
+      chain,
     })
   ).output;
 
@@ -63,7 +66,7 @@ async function tvl(_, block) {
       abi: getEntireSystemCollAbi,
       block,
       params: [ETH_ADDRESS],
-      chain: "arbitrum",
+      chain,
     })
   ).output;
 
@@ -73,7 +76,7 @@ async function tvl(_, block) {
       abi: getEntireSystemCollAbi,
       block,
       params: [renBTC_ADDRESS],
-      chain: "arbitrum",
+      chain,
     })
   ).output;
 
@@ -83,22 +86,45 @@ async function tvl(_, block) {
       abi: getEntireSystemCollAbi,
       block,
       params: [gOHM_ADDRESS],
-      chain: "arbitrum",
+      chain,
     })
   ).output;
+
+  const curveBalances = (
+    await sdk.api.abi.call({
+      target: VST_FARMING_ADDRESS,
+      abi: vestaFarmingAbi,
+      block,
+      params: [],
+      chain,
+    })
+  ).output;
+
+  const crvBal = {};
+  await unwrapCrv(crvBal, LP_VST_FRAX_ADDRESS, curveBalances, block, chain);
 
   return {
     [VST_ADDRESS]: stabilityPoolTotalVST.toString(),
     [gOHM_ADDRESS]: gOhmtroveTvl,
     [renBTC_ADDRESS]: renBtcTroveTvl,
     [ETH_ADDRESS]: ethTroveTvl,
+    ...crvBal,
   };
 }
+
+const pool2 = (_timestamp, block) =>
+  sumBalancerLps(
+    {},
+    [[LP_VSTA_ETH_ADDRESS, VSTA_FARMING_ADDRESS]],
+    block,
+    "arbitrum",
+    (a) => a
+  );
 
 module.exports = {
   arbitrum: {
     tvl,
-    pool2: pool2(VSTA_FARMING_ADDRESS, LP_VSTA_ETH_ADDRESS, "arbitrum"),
+    pool2,
   },
   start: 1644339600,
   timetravel: true,
@@ -106,11 +132,4 @@ module.exports = {
     "Total Value Locked includes all stability pools, troves, and vst pairs",
 };
 
-// tvl(undefined, 5653951);
-pool2(VSTA_FARMING_ADDRESS, LP_VSTA_ETH_ADDRESS, "arbitrum")(
-  undefined,
-  undefined,
-  {
-    arbitrum: 5653951,
-  }
-);
+tvl(undefined, 5653951);
