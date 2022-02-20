@@ -170,6 +170,7 @@ async function convertALETHtoETH(block, balances) {
   delete balances[alETH]
 }
 module.exports = {
+  doublecounted: true,
   ethereum: {
     tvl,
     staking,

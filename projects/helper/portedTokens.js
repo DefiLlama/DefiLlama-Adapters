@@ -64,6 +64,9 @@ async function transformAvaxAddress() {
       ),
     ]);
     return (addr) => {
+      if(compareAddresses(addr, "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7")){
+        return "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"
+      }
       const srcToken = bridgeTokensOld.data.find((token) =>
       compareAddresses(token["Avalanche Token Address"], addr)
       );
