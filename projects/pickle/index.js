@@ -45,6 +45,9 @@ function fetch(chain, type) {
 }
 
 module.exports = {
+  doublecounted: true,
+  misrepresentedTokens: true,
+  timetravel: false,
   ethereum: {
     tvl: fetch("ethereum", "tvl"),
     pool2: fetch("ethereum", "pool2"),
