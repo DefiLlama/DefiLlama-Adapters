@@ -23,7 +23,7 @@ function getValueOfPool(balance, price) {
   return value;
 }
 
-const getTvl = async () => {
+const tvl = async () => {
   const elfiAddress = "0x4da34f8264cb33a5c9f17081b9ef5ff6091116f4";
   const elAddress = "0x2781246fe707bb15cee3e5ea354e2154a2877b16";
   const elStakingPoolAddress = "0xd804e198d25a1920522ca0094a670184a9c972d7";
