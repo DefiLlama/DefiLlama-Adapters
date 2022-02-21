@@ -49,7 +49,9 @@ const Allocations = [
   { allocator: PngAllocator, token: QI_WAVAX_PGL, pid: 19 },
   { allocator: PngAllocator, token: MAXI_WAVAX_PGL, pid: 42 },
   { allocator: JoeAllocator, token: JOE_WAVAX_JLP, pid: 0 },
-  { allocator: JoeAllocator, token: ISA_WAVAX_JLP, pid: 36},
+  { allocator: JoeAllocator, token: ISA_WAVAX_JLP, pid: 36 },
+  { allocator: JoeAllocator, token: HEC_WAVAX_JLP, pid: 41 },
+  { allocator: JoeAllocator, token: MORE_WAVAX_JLP, pid: 44 },
 ];
 
 const Tokens = [
