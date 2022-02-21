@@ -308,6 +308,14 @@ const crvPools = {
           "0x985458e523db3d53125813ed68c274899e9dfab4",
           "0x3c2b8be99c50593081eaa2a724f0b8285f5aba8f"
         ]
+    },
+    // VST-FRAX Arbitrum
+    "0x59bf0545fca0e5ad48e13da269facd2e8c886ba4": {
+        swapContract: "0x59bf0545fca0e5ad48e13da269facd2e8c886ba4",
+        underlyingTokens: [
+          "0x64343594ab9b56e99087bfa6f2335db24c2d1f17",
+          "0x17FC002b466eEc40DaE837Fc4bE5c67993ddBd6F",
+        ]
     }
 }
 const yearnVaults = {

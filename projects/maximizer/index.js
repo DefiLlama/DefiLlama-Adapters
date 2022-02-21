@@ -8,8 +8,8 @@ const veptpAbi = require("./veptpAbi.json");
 const MaximizerStaking = "0x6d7AD602Ec2EFdF4B7d34A9A53f92F06d27b82B1";
 const Treasury = "0x22cF6c46b4E321913ec30127C2076b7b12aC6d15";
 const Deployer = "0xb2Fe117269292D41c3b5bdD6B600Fc80239AfBeC";
-const PngAllocator = "0x9747ada761D9325D08bE0f18913215ce2F827807";
-const JoeAllocator = "0xa7b74883309eA1696676c714A83004d7591166F0";
+const PngAllocator = "0x1ff1E60e7af648DFE7B95E025214bfCd6f3D9524";
+const JoeAllocator = "0x63FCb1d8B6B5681f8A470A8c61F6b73B3F66923a";
 
 const MAXI = "0x7C08413cbf02202a1c13643dB173f2694e0F73f0";
 const SMAXI = "0xEcE4D1b3C2020A312Ec41A7271608326894076b4";
@@ -49,7 +49,9 @@ const Allocations = [
   { allocator: PngAllocator, token: QI_WAVAX_PGL, pid: 19 },
   { allocator: PngAllocator, token: MAXI_WAVAX_PGL, pid: 42 },
   { allocator: JoeAllocator, token: JOE_WAVAX_JLP, pid: 0 },
-  { allocator: JoeAllocator, token: ISA_WAVAX_JLP, pid: 36},
+  { allocator: JoeAllocator, token: ISA_WAVAX_JLP, pid: 36 },
+  { allocator: JoeAllocator, token: HEC_WAVAX_JLP, pid: 41 },
+  { allocator: JoeAllocator, token: MORE_WAVAX_JLP, pid: 44 },
 ];
 
 const Tokens = [
