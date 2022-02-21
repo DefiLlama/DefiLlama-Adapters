@@ -23,6 +23,8 @@ const LP_VSTA_ETH_ADDRESS = "0xc61ff48f94d801c1ceface0289085197b5ec44f0";
 const VST_FARMING_ADDRESS = "0xB3667b3d1b3D4ed3d451dF68C9C12A686227Bada";
 const LP_VST_FRAX_ADDRESS = "0x59bF0545FCa0E5Ad48E13DA269faCD2E8C886Ba4";
 
+const FRAX_ADDRESS = "0x17FC002b466eEc40DaE837Fc4bE5c67993ddBd6F";
+
 // TroveManager holds total system collateral (deposited ETH, renBTC, and GOHM)
 const TROVE_MANAGER_ADDRESS = "0x100EC08129e0FD59959df93a8b914944A3BbD5df";
 
@@ -103,12 +105,14 @@ async function tvl(_, block) {
   const crvBal = {};
   await unwrapCrv(crvBal, LP_VST_FRAX_ADDRESS, curveBalances, block, chain);
 
+  const totalVST = stabilityPoolTotalVST.plus(crvBal[VST_ADDRESS] ?? 0);
+
   return {
-    [VST_ADDRESS]: stabilityPoolTotalVST.toString(),
     [gOHM_ADDRESS]: gOhmtroveTvl,
     [renBTC_ADDRESS]: renBtcTroveTvl,
     [ETH_ADDRESS]: ethTroveTvl,
-    ...crvBal,
+    [VST_ADDRESS]: totalVST.toString(),
+    [FRAX_ADDRESS]: crvBal[FRAX_ADDRESS],
   };
 }
 
@@ -131,3 +135,5 @@ module.exports = {
   methodology:
     "Total Value Locked includes all stability pools, troves, and vst pairs",
 };
+
+tvl(undefined, 6518988);
