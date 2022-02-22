@@ -31,7 +31,7 @@ async function treasury(timestamp, ethBlock, chainBlocks) {
     return balances;
 }
 
-async function tvl(timestamp, ethBlock, chainBlocks) {
+async function staking(timestamp, ethBlock, chainBlocks) {
     const chain = "celo"
     const balances = {}
     const block = await getBlock(timestamp, chain, chainBlocks, true);
@@ -50,6 +50,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 module.exports={
     celo: {
         treasury,
-        tvl,
+        staking,
+        tvl: () => ({})
     }
 }
