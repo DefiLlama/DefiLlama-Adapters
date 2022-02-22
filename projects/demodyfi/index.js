@@ -1,7 +1,7 @@
 const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl");
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
-const wGLMR = "0x5f6c5C2fB289dB2228d159C69621215e354218d7"; // their own barely used version
+const wGLMR = "0x5f6c5C2fB289dB2228d159C69621215e354218d7"; 
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { transformBscAddress } = require("../helper/portedTokens");
 
@@ -75,18 +75,6 @@ async function dmodBscLPPool(timestamp, block, chainBlocks) {
     ).output
   );
 
-  //   const decimals = new BigNumber(
-  //     (
-  //       await sdk.api.abi.call({
-  //         abi: "erc20:decimals",
-  //         chain: "bsc",
-  //         target: "0x0f35d854C267D29C0E418F561b75aE09B9E413D4",
-  //         params: [],
-  //         block: chainBlocks["bsc"],
-  //       })
-  //     ).output
-  //   );
-
   await unwrapUniswapLPs(
     balances,
     [
@@ -104,7 +92,6 @@ async function dmodBscLPPool(timestamp, block, chainBlocks) {
 }
 
 async function dmodEthereumLPPool(timestamp, block, chainBlocks) {
-  const individualBalances = {};
   const balances = {};
 
   const lpTokenbalance = new BigNumber(
@@ -117,17 +104,6 @@ async function dmodEthereumLPPool(timestamp, block, chainBlocks) {
       })
     ).output
   );
-
-  //   const decimals = new BigNumber(
-  //     (
-  //       await sdk.api.abi.call({
-  //         abi: "erc20:decimals",
-  //         chain: "ethereum",
-  //         target: "0xD5B1Cd8D245A93E0697707AEe82497388508b132",
-  //         params: [],
-  //       })
-  //     ).output
-  //   );
 
   await unwrapUniswapLPs(
     balances,
