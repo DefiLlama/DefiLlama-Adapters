@@ -1,16 +1,18 @@
 const { fetchURL } = require('../helper/utils')
+const { toUSDTBalances } = require('../helper/balances');
 
 const vaults = [
-    ["https://lcd.terra.dev/wasm/contracts/terra1ec3r2esp9cqekqqvn0wd6nwrjslnwxm7fh8egy/store?query_msg=%7B%22pool_state%22:%7B%7D%7D"]
+    "https://lcd.terra.dev/wasm/contracts/terra1ec3r2esp9cqekqqvn0wd6nwrjslnwxm7fh8egy/store?query_msg=%7B%22pool_state%22:%7B%7D%7D"
 ]
 
 async function tvl() {
-    const pool_state = {}
-    const tvl = {}
+    let pool_state = {}
+    let tvl = {}
     await Promise.all(vaults.map(async vault => {
         pool_state = await fetchURL(vault)
-        tvl = Number(pool_state.total_share_in_ust) / 1e6
+        tvl = toUSDTBalances(Number(pool_state.data.result.total_value_in_ust) / 1e6)
     }))
+    console.log(Number(pool_state.data.result.total_value_in_ust) / 1e6)
     return tvl
 }
 
@@ -20,12 +22,13 @@ async function staking() {
     )
     console.log(Number(staked.data.result.balance) / 1e6)
     return {
-        "whitewhale-governance-token": Number(staked.data.result.balance) / 1e6
+        "white-whale": Number(staked.data.result.balance) / 1e6
     }
 }
 
 module.exports = {
     timetravel: false,
+    misrepresentedTokens: true,
     terra: {
         staking,
         tvl
