@@ -10,5 +10,6 @@ const fetch = async function () {
 };
 
 module.exports = {
-  fetch
+  methodology: "The TVL is calculated by adding the value of total deposits in all markets minus the total borrows.",
+  fetch,
 };
