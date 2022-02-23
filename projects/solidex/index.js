@@ -2,15 +2,26 @@ const sdk = require("@defillama/sdk");
 const { transformFantomAddress } = require('../helper/portedTokens');
 const { unwrapUniswapLPs } = require('../helper/unwrapLPs');
 const abis = require("./abis.json");
+
 const SOLID = '0x888EF71766ca594DED1F0FA3AE64eD2941740A20';
+const excludedTokens = [
+    '0x9861b8a9acc9b4f249981164bfe7f84202068bfe',
+    '0x10acb810b4d9a8d7c9a50fd793af80931c73832d',
+    '0x7bff7b5a436de7d0e8b860d495a8239a233d2f22',
+    '0xc61553f86e8dbdb732a3d0e9118bbce1ed84900a',
+    '0x7c4296d0c49db126d0781504d8ed28ee5bf9b83a',
+    '0x184fef2286fdfeb6c581f45ce96628ce4bb274dd',
+    '0x62e2819dd417f3b430b6fa5fd34a49a377a02ac8',
+    '0xfcec86af8774d69e2e4412b8de3f4abf1f671ecc'
+];
 
 async function tvl(timestamp, block, chainBlocks) {
     const balances = {};
     const transform = await transformFantomAddress();
-    balances[`fantom:${SOLID}`]= (await sdk.api.abi.call({
+    balances[`fantom:${SOLID}`] = (await sdk.api.abi.call({
         target: '0xcbd8fea77c2452255f59743f55a3ea9d83b3c72b',
         abi: abis.locked,
-        params: [ 8 ],
+        params: [8],
         block: chainBlocks.fantom,
         chain: 'fantom'
     })).output.amount;
@@ -26,12 +37,12 @@ async function tvl(timestamp, block, chainBlocks) {
         target: '0x3fAaB499b519fdC5819e3D7ed0C26111904cbc28',
         calls: Array.from({ length: Number(noPairs) }, (_, k) => ({
             params: k,
-          })),
+        })),
         abi: abis.allPairs,
         block: chainBlocks.fantom,
         chain: 'fantom'
     })).output;
-    // node test.js projects/solidex/index.js
+
     let pairBalances = (await sdk.api.abi.multiCall({
         target: '0x26E1A0d851CF28E697870e1b7F053B605C8b060F',
         calls: pairAddresses.map(a => ({
@@ -44,6 +55,12 @@ async function tvl(timestamp, block, chainBlocks) {
 
     let lpPositions = [];
     for (let i = 0; i < pairBalances.length; i++) {
+        if (
+            pairAddresses[i].output &&
+            excludedTokens.includes(pairAddresses[i].output.toLowerCase())
+        ) {
+            continue;
+        };
         lpPositions.push({
             balance: pairBalances[i].output,
             token: pairAddresses[i].output
@@ -51,20 +68,11 @@ async function tvl(timestamp, block, chainBlocks) {
     };
 
     await unwrapUniswapLPs(
-        balances, 
-        lpPositions, 
-        chainBlocks.fantom, 
-        'fantom', 
-        transform 
-        [
-            '0x888ef71766ca594ded1f0fa3ae64ed2941740a20',
-            '0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83',
-            '0x41adac6c1ff52c5e27568f27998d747f7b69795b',
-            '0xb0cc73023ba20b17d8117b117a05fc86a3a62aa1',
-            '0xe0eb2dc74e7431cc519085dfd1993ced4803f80e',
-            '0x7ab86db5431cfd7b98b2c12024c90e6fddb4c252',
-            '0xd31fcd1f7ba190dbc75354046f6024a9b86014d7'
-        ]
+        balances,
+        lpPositions,
+        chainBlocks.fantom,
+        'fantom',
+        transform
     );
 
     return balances;
