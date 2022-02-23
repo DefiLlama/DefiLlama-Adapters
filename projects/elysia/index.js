@@ -136,16 +136,11 @@ async function getPool2() {
 }
 
 const getEthereumTvl = async () => {
-  const promiseArray = [
-    axios.post(
-      apiInfo["elyfi-subgraph"].endpoint,
-      apiInfo["elyfi-subgraph"].body
-    ),
-  ];
-
-  const [elyfiSubgraphCacheResponse] = await Promise.all(promiseArray);
+  const elyfiSubgraphCacheResponse = await axios.post(
+    apiInfo["elyfi-subgraph"].endpoint,
+    apiInfo["elyfi-subgraph"].body
+  );
   const reserves = elyfiSubgraphCacheResponse.data.data.reserves;
-
   const daiTotalDeposit = getTotalDeposit(
     reserves[0].totalDeposit,
     1e18,
@@ -163,7 +158,6 @@ const getEthereumTvl = async () => {
     prices.elysia.usd,
     "elysia"
   );
-
   const ethereumTvl = elStakingValue + daiTotalDeposit + usdtTotalDeposit;
   console.log(`getEthereumTvl ethereumTvl : ${ethereumTvl}`);
   return ethereumTvl;
