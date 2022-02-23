@@ -10,6 +10,8 @@ const BigNumber = require("bignumber.js");
 const tokenListJson = require("./tokenlist.json");
 const addresses = require("./addresses.json");
 const StrategyViewer = require("./StrategyViewer.json");
+const StrategyRegistry = require("./StrategyRegistry.json");
+const IStrategy = require("./IStrategy.json");
 
 function useAddresses() {
   return addresses[43114];
@@ -20,52 +22,52 @@ async function tvl(timestamp, block) {
   const provider = new ethers.providers.JsonRpcProvider(
     "https://api.avax.network/ext/bc/C/rpc"
   );
-  const token2Strat = {
-    ["0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7"]:
-      addresses.YieldYakAVAXStrategy,
-    ["0x60781C2586D68229fde47564546784ab3fACA982"]: addresses.YieldYakStrategy,
-    ["0x59414b3089ce2AF0010e7523Dea7E2b35d776ec7"]: addresses.YieldYakStrategy,
-    ["0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd"]: addresses.YieldYakStrategy,
-    ["0xd586e7f844cea2f87f50152665bcbc2c279d8d70"]: addresses.YieldYakStrategy,
-    ["0x8729438EB15e2C8B576fCc6AeCdA6A148776C0F5"]: addresses.YieldYakStrategy,
-    ["0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664"]: addresses.YieldYakStrategy,
-    ["0x454E67025631C065d3cFAD6d71E6892f74487a15"]:
-      addresses.TraderJoeMasterChefStrategy,
-    ["0x2148D1B21Faa7eb251789a51B404fc063cA6AAd6"]:
-      addresses.SimpleHoldingStrategy,
-  };
 
-  const masterChef2Tokens = [
-    "0x57319d41f71e81f3c65f2a47ca4e001ebafd4f33",
-    "0xa389f9430876455c36478deea9769b7ca4e3ddb1",
-    "0xed8cbd9f0ce3c6986b22002f03c6475ceb7a6256",
-    "0xd5a37dc5c9a396a03dd1136fc76a1a02b1c88ffa",
-  ];
+  const stratRegistry = new ethers.Contract(
+    addresses.StrategyRegistry,
+    StrategyRegistry.abi,
+    provider
+  );
 
-  const tokens = Object.keys(token2Strat);
-  const strats = Object.values(token2Strat);
   const stratViewer = new ethers.Contract(
     addresses.StrategyViewer,
     StrategyViewer.abi,
     provider
   );
-  const normalResults = await stratViewer.viewMetadata(
-    addresses.StableLending,
-    tokens,
-    strats
+
+  const enabledStrategies = await stratRegistry.allEnabledStrategies();
+
+  const approvedTokens = await Promise.all(
+    enabledStrategies.map((address) => {
+      const contract = new ethers.Contract(address, IStrategy.abi, provider);
+      return contract.viewAllApprovedTokens();
+    })
   );
+  let token2Strat2 = {};
+
+  for (let i = 0; i < enabledStrategies.length; i++) {
+    const strategy = enabledStrategies[i];
+    const tokens = approvedTokens[i];
+    for (let j = 0; j < tokens.length; j++) {
+      if (token2Strat2[tokens[j]] == undefined) {
+        token2Strat2[tokens[j]] = strategy;
+      }
+    }
+  }
+
+  const tokens = Object.keys(token2Strat2);
+  const strats = Object.values(token2Strat2);
+
   const noHarvestBalanceResults =
     await stratViewer.viewMetadataNoHarvestBalance(
       addresses.StableLending,
       addresses.OracleRegistry,
       addresses.Stablecoin,
-      masterChef2Tokens,
-      Array(masterChef2Tokens.length).fill(
-        addresses.TraderJoeMasterChef2Strategy
-      )
+      tokens,
+      strats
     );
 
-  const stratMeta = [...normalResults, ...noHarvestBalanceResults];
+  const stratMeta = [...noHarvestBalanceResults];
   const stakingMeta = (
     await sdk.api.abi.call({
       target: CurvePoolRewards,
