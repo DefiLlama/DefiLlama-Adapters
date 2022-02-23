@@ -301,7 +301,7 @@ const peggedTokens = [
     moonbeam: "0x81ECac0D6Be0550A00FF064a4f9dd2400585FE9c",
     moonriver: "0xb74527786818aE18B69B6A823960bfAF3906182F",
     oasis: "0x4Bf769b05E832FCdc9053fFFBC78Ca889aCb5E1E",
-    syscoin: "0x6de33698e9e9b787e09d3bd7771ef63557e148bb",
+    syscoin: "0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98",
   },
   {
     // BUSD
