@@ -25,7 +25,7 @@ async function wax() {
     // ["e.rplanet", "RDAO", null], // no CoinGecko price support
     // ["prospectorsw", "PGL", null], // no CoinGecko price support
   ];
-  return await get_account_tvl("cpu.box", tokens, "wax");
+  return await get_account_tvl("swap.box", tokens, "wax");
 }
 
 async function balancesToTvl( balances ) {
