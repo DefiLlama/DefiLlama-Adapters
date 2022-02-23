@@ -15,7 +15,7 @@
     "@connext/nxtp-utils": "^0.1.17",
     "@defillama/sdk": "^2.3.43",
     "@makerdao/multicall": "^0.12.0",
-    "@polkadot/api": "^6.6.1",
+    "@polkadot/api": "^7.5.1",
     "@port.finance/port-sdk": "0.1.42",
     "@project-serum/anchor": "^0.18.2",
     "@project-serum/serum": "^0.13.38",
