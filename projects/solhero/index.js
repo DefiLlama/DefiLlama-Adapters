@@ -339,75 +339,22 @@ async function lpTvl() {
 
 async function tvl()
 {
-  const connection = getConnection()
-  const poolInfoAccount = await connection.getAccountInfo(poolInfoKey)
+  const [pool, farm] = await Promise.all([
+    pools(),
+    farmPool(),
+  ]);
 
-  const buffer = Buffer.from(poolInfoAccount.data)
+  pool.solana = (pool.solana).plus(farm.solana)
 
-  var tvl = new BigNumber(0)
-
-  var solPrice = new BigNumber(1)
-
-  var amounts = []
-
-  const poolLength = buffer.readBigUInt64LE(0)
-
-  for (var i = 0; i < poolLength; i ++) {
-    if (i == 10)
-      continue
-
-    const offset = 8 + i * 104
-
-    const pubkey = new PublicKey(buffer.subarray(offset, offset + 32))
-    const dec = new BigNumber(10).pow(decimals[pubkey.toString()])
-    const amount = buffer.readBigUInt64LE(offset + 40)
-
-    amounts.push(new BigNumber(amount).div(dec))
-
-    var price = new BigNumber(1.0)
-    if (i == 0)
-      price = await getHeroPrice()
-    else if (isLp(pubkey))
-      price = await getLpPrice(pubkey)
-    else
-      price = await getTokenPrice(pubkey)
-
-    if (i == 1)
-      solPrice = price
-
-    const boost = 3
-    const poolTvl = new BigNumber(amount).times(price).times(3).div(dec)
-    tvl = tvl.plus(poolTvl)
-  }
-
-  tvl = tvl.div(solPrice)
-
-  var lpTvl = new BigNumber(0)
-  try {
-    url = 'https://api.solscan.io/amm/read?address=FJB4xeMJ9KoZVDZb7Pf91hggwy6hLJMQFXTMKCfugwU8'
-
-    const res = await utils.fetchURL(url)
-    if (res && res.data && res.data.data && res.data.data.liquidity) {
-      lpTvl = new BigNumber(res.data.data.liquidity)
-    }
-  } catch (e) {
-    console.log(e)
-  }
-
-  lpTvl = lpTvl.div(solPrice)
-
-  return {
-    solana: tvl.plus(lpTvl),
-  }
+  return pool
 }
 
 module.exports = {
+  timetravel: false, 
   solana: {
-    pools,
-    farmPool,
-    lpTvl,
+    tvl,
+    pool2: lpTvl,
     staking,
   },
-  tvl,
   methodology: 'TVL consists of staked tokens and raydium LPs',
 }
