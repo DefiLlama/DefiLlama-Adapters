@@ -7,7 +7,8 @@ const marketStrings = {
     underlying_borrowed : "ub",
     underlying_reserves : "ur",
     active_collateral : "acc",
-    oracle_price_scale_factor: "ops"
+    oracle_price_scale_factor: "ops",
+    lp_circulation: "lc"
 }
 
 const orderedAssets = ["ALGO", "STBL", "USDC", "goBTC", "goETH"]
@@ -142,7 +143,7 @@ async function stake() {
         client,
         assetDictionary['STAKING_CONTRACTS']["ALGOFI-STBL-ALGO-LP"]["poolAppId"]
     )
-    let algoStblLpCirculation = algoStblLpContractState['lc'] / 1000000
+    let algoStblLpCirculation = algoStblLpContractState[marketStrings.lp_circulation] / 1000000
 
     let poolSnapshotsResponse = await fetch("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_pool_snapshots/?network=MAINNET")
     let poolSnapshots = await poolSnapshotsResponse.json();
