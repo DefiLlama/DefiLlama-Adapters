@@ -79,7 +79,6 @@ function chainTvl(chain) {
         } else {
           transformedAssetId = await chainTransform(assetId);
         }
-
         sdk.util.sumSingleBalance(balances, transformedAssetId, balance.output);
       })
     );
@@ -97,11 +96,12 @@ const chains = [
   "avax",
   "optimism",
   "arbitrum",
+  "moonbeam",
+  "fuse",
   /*
   "okexchain",
   "metis",
   "harmony",
-  "fuse",
   "cronos",
   "heco",
   "aurora",

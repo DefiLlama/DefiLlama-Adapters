@@ -45,6 +45,9 @@ function fetch(chain, type) {
 }
 
 module.exports = {
+  doublecounted: true,
+  misrepresentedTokens: true,
+  timetravel: false,
   ethereum: {
     tvl: fetch("ethereum", "tvl"),
     pool2: fetch("ethereum", "pool2"),
@@ -72,5 +75,14 @@ module.exports = {
   },
   aurora: {
     tvl: fetch("aurora", "tvl"),
+  },
+  metis: {
+    tvl: fetch("metis", "tvl"),
+  },
+  moonbeam: {
+    tvl: fetch("moonbeam", "tvl"),
+  },
+  optimism: {
+    tvl: fetch("optimism", "tvl"),
   },
 };

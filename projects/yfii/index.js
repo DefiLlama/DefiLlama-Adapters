@@ -104,6 +104,7 @@ async function tvl(timestamp, block) {
   ==================================================*/
 
 module.exports = {
+  doublecounted: true,
   name: 'dfi.money',
   token: 'YFII',
   category: 'assets',

@@ -74,6 +74,7 @@ const coins = {
   BAL: 18,
   GUSD: 2,
   RENBTC: 18,
+  MATIC: 18,
 };
 
 const keys = [
@@ -146,6 +147,7 @@ const keys = [
     GUSD: "gemini-dollar",
     RENBTC: "renbtc",
     WSTETH: "staked-ether",
+    MATIC: "matic-network",
   },
 ];
 

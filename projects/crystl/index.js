@@ -6,6 +6,9 @@ const apePriceGetterAbi = require("./apePriceGetter.json");
 const { fetchURL } = require("../helper/utils");
 const { default: BigNumber } = require("bignumber.js");
 
+let p;
+let c;
+
 const CHAIN_DATA = {
   polygon: {
     name: "polygon",
@@ -205,6 +208,9 @@ async function fetchChain(chain) {
   let [poolBalance] = await Promise.all([
     poolsTvl(chain),
     getFarmBalance(lpShares, lpList, chain),
+  ]);
+
+  await Promise.all([
     getVaultBalance(lpShares, lpList, chain.vaulthealer_v1, chain),
     getVaultBalance(lpShares, lpList, chain.vaulthealer_v2, chain),
   ]);
@@ -221,15 +227,18 @@ async function fetchChain(chain) {
 }
 
 async function fetch() {
-  return (await polygon()) + (await cronos());
+  let [a, b] = await Promise.all([p, c])
+  return a + b
 }
 
 async function polygon() {
-  return fetchChain(CHAIN_DATA.polygon);
+  p = fetchChain(CHAIN_DATA.polygon);
+  return p
 }
 
 async function cronos() {
-  return fetchChain(CHAIN_DATA.cronos);
+  c = fetchChain(CHAIN_DATA.cronos);
+  return c
 }
 
 module.exports = {

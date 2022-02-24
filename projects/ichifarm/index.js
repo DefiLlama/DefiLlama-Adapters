@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
 const abiOneToken = require("./abiOneToken.json");
 const abiFarm = require("./abiFarm.json");
+const BigNumber = require("bignumber.js");
 const { fetchURL } = require("../helper/utils");
 const { staking } = require("../helper/staking");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
@@ -20,6 +21,7 @@ const ignoreAddresses = [
   "0x22c6289dB7E8EAB6aA12C35a044410327c4d9F93",
   "0x1dcE26F543E591c27717e25294AEbbF59AD9f3a5",
   "0x46935b2489d1468A580CcC3ccbA11D1eb7737199",
+  "0xfaeCcee632912c42a7c88c3544885A8D455408FA",
 ];
 
 const OneTokenFactoryContract = "0xD0092632B9Ac5A7856664eeC1abb6E3403a6A36a";
@@ -155,54 +157,17 @@ const ethTvl = async (block) => {
       })
     ).output;
 
-    const countAssets = (
+    const totalSuplay = (
       await sdk.api.abi.call({
-        abi: abiOneToken.assetCount,
+        abi: abiOneToken.totalSupply,
         target: oneToken,
         block,
       })
     ).output;
 
-    for (let i = 0; i < countAssets; i++) {
-      const asset = (
-        await sdk.api.abi.call({
-          abi: abiOneToken.assetAtIndex,
-          target: oneToken,
-          params: i,
-          block,
-        })
-      ).output;
+    const totalBalance = BigNumber(totalSuplay).div(1e12).toFixed(0);
 
-      const assetBalInVault = Number(
-        (
-          await sdk.api.abi.call({
-            abi: abiOneToken.balances,
-            target: oneToken,
-            params: asset,
-            block,
-          })
-        ).output.inVault
-      );
-
-      const assetBalInStrategy = Number(
-        (
-          await sdk.api.abi.call({
-            abi: abiOneToken.balances,
-            target: oneToken,
-            params: asset,
-            block,
-          })
-        ).output.inStrategy
-      );
-
-      const totalBalance = (
-        assetBalInVault + assetBalInStrategy
-      ).toLocaleString("fullwide", {
-        useGrouping: false,
-      });
-
-      sdk.util.sumSingleBalance(balances, asset, totalBalance);
-    }
+    sdk.util.sumSingleBalance(balances, USDC, totalBalance);
   }
 
   /*** ICHI Farm V2 TVL Portion ***/

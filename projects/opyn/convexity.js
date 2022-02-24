@@ -11,7 +11,7 @@ const factoriesAddresses = [
   "0xcC5d905b9c2c8C9329Eb4e25dc086369D6C7777C"
 ]
 
-module.exports = async function tvl(timestamp, block) {  
+module.exports.tvl = async function tvl(timestamp, block) {  
   let balances = {};
 
   for(let i = 0; i < factoriesAddresses.length; i++) {
@@ -108,7 +108,7 @@ module.exports = async function tvl(timestamp, block) {
       abi: "erc20:balanceOf"
     });
 
-    sdk.util.sumMultiBalanceOf(balances, balanceOfResults);
+    sdk.util.sumMultiBalanceOf(balances, balanceOfResults, false);
   }
 
   return balances;

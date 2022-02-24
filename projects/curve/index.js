@@ -37,8 +37,13 @@ async function harmony() {
   return tvl.data.data.tvl
 }
 
+async function optimism() {
+  const tvl = await utils.fetchURL('https://api.curve.fi/api/getTVLOptimism')
+  return tvl.data.data.tvl
+}
+
 async function fetch() {
-  return (await eth())+(await polygon()) + (await fantom()) + (await xdai())+(await arbitrum())+(await avax()) + (await harmony())
+  return (await eth())+(await polygon()) + (await fantom()) + (await xdai())+(await arbitrum())+(await avax()) + (await harmony())+(await optimism())
 }
 
 
@@ -67,6 +72,9 @@ module.exports = {
   },
   harmony:{
     fetch: harmony
+  },
+  optimism:{
+    fetch: optimism,
   },
   fetch
 }
