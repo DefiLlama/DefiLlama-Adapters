@@ -1,6 +1,5 @@
 const algosdk = require("algosdk")
 const { toUSDTBalances } = require('../helper/balances')
-//const fetch = require("node-fetch")
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 const marketStrings = {
