@@ -14,6 +14,164 @@
         "stateMutability": "view",
         "type": "function"
     },
+    "balanceOf": {
+        "constant": true,
+        "name": "balanceOf",
+        "inputs": [
+            {
+                "type": "address",
+                "name": "arg0"
+            }
+        ],
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "collateralMap": {
+        "constant": true,
+        "name":"collateralMap",
+        "outputs": [
+            {
+                "internalType":"contract IERC20",
+                "name":"token",
+                "type":"address"
+            },
+            {
+                "internalType":"contract ISanToken",
+                "name":"sanToken",
+                "type":"address"
+            },
+            {
+                "internalType":"contract IPerpetualManager",
+                "name":"perpetualManager",
+                "type":"address"
+            },
+            {
+                "internalType":"contract IOracle",
+                "name":"oracle",
+                "type":"address"
+            },
+            {
+                "internalType":"uint256",
+                "name":"stocksUsers",
+                "type":"uint256"
+            },
+            {
+                "internalType":"uint256",
+                "name":"sanRate",
+                "type":"uint256"
+            },
+            {
+                "internalType":"uint256",
+                "name":"collatBase",
+                "type":"uint256"
+            },
+            {
+                "components":[
+                    {
+                        "internalType":"uint256",
+                        "name":"lastBlockUpdated",
+                        "type":"uint256"
+                    },
+                    {
+                        "internalType":"uint256",
+                        "name":"lockedInterests",
+                        "type":"uint256"
+                    },
+                    {
+                        "internalType":"uint256",
+                        "name":"maxInterestsDistributed",
+                        "type":"uint256"
+                    },
+                    {
+                        "internalType":"uint256",
+                        "name":"feesAside",
+                        "type":"uint256"
+                    },
+                    {
+                        "internalType":"uint64",
+                        "name":"slippageFee",
+                        "type":"uint64"
+                    },
+                    {
+                        "internalType":"uint64",
+                        "name":"feesForSLPs",
+                        "type":"uint64"
+                    },
+                    {
+                        "internalType":"uint64",
+                        "name":"slippage",
+                        "type":"uint64"
+                    },
+                    {
+                        "internalType":"uint64",
+                        "name":"interestsForSLPs",
+                        "type":"uint64"
+                    }
+                ],"internalType":"struct SLPData","name":"slpData","type":"tuple"
+            },
+            {
+                "components":[
+                    {
+                        "internalType":"uint64[]",
+                        "name":"xFeeMint",
+                        "type":"uint64[]"
+                    },
+                    {
+                        "internalType":"uint64[]",
+                        "name":"yFeeMint",
+                        "type":"uint64[]"
+                    },
+                    {
+                        "internalType":"uint64[]",
+                        "name":"xFeeBurn",
+                        "type":"uint64[]"
+                    },
+                    {
+                        "internalType":"uint64[]",
+                        "name":"yFeeBurn",
+                        "type":"uint64[]"
+                    },
+                    {
+                        "internalType":"uint64",
+                        "name":"targetHAHedge",
+                        "type":"uint64"
+                    },
+                    {
+                        "internalType":"uint64",
+                        "name":"bonusMalusMint",
+                        "type":"uint64"
+                    },
+                    {
+                        "internalType":"uint64",
+                        "name":"bonusMalusBurn",
+                        "type":"uint64"
+                    },
+                    {
+                        "internalType":"uint256",
+                        "name":"capOnStableMinted",
+                        "type":"uint256"
+                    }
+                ], "internalType":"struct MintBurnData","name":"feeData","type":"tuple"
+            }
+        ],
+        "inputs": [
+            {
+                "internalType":"contract IPoolManager",
+                "name":"",
+                "type":"address"
+            }
+        ], 
+        "stateMutability":"view",
+        "type":"function"
+    },
     "bal": {
         "inputs": [],
         "name": "bal",

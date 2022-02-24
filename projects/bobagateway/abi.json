@@ -1,0 +1,56 @@
+{
+    "poolInfo": {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "poolInfo",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "l1TokenAddress",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "l2TokenAddress",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "userDepositAmount",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "lastAccUserReward",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "accUserReward",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "accUserRewardPerShare",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "accOwnerReward",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "startTime",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+}

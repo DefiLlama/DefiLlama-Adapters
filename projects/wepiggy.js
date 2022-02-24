@@ -57,6 +57,20 @@ const contracts = {
       decimals:18,
     },
   },
+  harmony: {
+    comptroller: '0xaa87715E858b482931eB2f6f92E504571588390b',
+    gas:{
+      pToken:"0xd1121aDe04EE215524aeFbF7f8D45029214d668D",
+      decimals:18,
+    },
+  },
+  oasis: {
+    comptroller: '0x5Ea2321aBFF78E81702cE877319cD775E0dc865B',
+    gas:{
+      pToken:"0x33A32f0ad4AA704e28C93eD8Ffa61d50d51622a7",
+      decimals:18,
+    },
+  },
 };
 
 const chainExports = {}

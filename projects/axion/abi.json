@@ -1,0 +1,56 @@
+{
+  "getStatFields": {
+    "inputs": [],
+    "name": "getStatFields",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint72",
+            "name": "totalStakedAmount",
+            "type": "uint72"
+          },
+          {
+            "internalType": "uint72",
+            "name": "sharesTotalSupply",
+            "type": "uint72"
+          },
+          {
+            "internalType": "uint72",
+            "name": "_gap",
+            "type": "uint72"
+          },
+          {
+            "internalType": "uint40",
+            "name": "lastStakeId",
+            "type": "uint40"
+          }
+        ],
+        "internalType": "struct StakeBase.StatFields",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "balanceOf": {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "balanceOf",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+}

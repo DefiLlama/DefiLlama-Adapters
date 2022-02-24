@@ -1,0 +1,15 @@
+{
+  "getPortfolios": {
+    "inputs": [],
+    "name": "getPortfolios",
+    "outputs": [
+      {
+        "internalType": "contract IManagedPortfolio[]",
+        "name": "",
+        "type": "address[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+}

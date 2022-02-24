@@ -7,9 +7,19 @@ const { transformBscAddress, transformPolygonAddress } = require("../helper/port
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 
 const MasterChefContractBsc = "0xFcDE390bF7a8B8614EC11fa8bde7565b3E64fe0b";
-const MasterChefContractPolygon = "0xFcDE390bF7a8B8614EC11fa8bde7565b3E64fe0b";
+const MasterChefContractPolygon = "0xC200cE4853d97e5f11320Bb8ee17F4D895f5e7BB";
 
 const chocoChefAddressesBsc = [
+  // MCRN -> TAPE
+  "0x765c1a0b22130d0e8a61dbb125c1eec5710383f1",
+  // TAPE -> TAPE
+  "0xa71aFD72A7ed03d2ad9D08A20cdadf17b067f33a",
+  // MCRN -> CAKE
+  "0x28D0e8f18FA73824C91ca77e28727d79b815aEF1",
+  // MCRN -> WBNB
+  "0xD80bdF70b17bA4fDd0383171623D782D00c8be2E",
+  // MCRN -> CAKE
+  "0x99d3334CC9dF44Fb2788C2161FB296fb6Cf14a57",
   // MCRN -> DUEL
   "0xF60EDbF7D95E79878f4d448F0CA5622479eB8790",
   // CAKE -> MCRN
@@ -37,6 +47,12 @@ const chocoChefAddressesBsc = [
 ];
 
 const chocoChefAddressesPolygon = [
+  // MCRN -> WMATIC
+  "0xA7661a7aeAF507a7782C230a45a002519cFC158C",
+  // MCRN -> QUICK
+  "0x337CC5daBaf1f874ACec0031d3d682CAF6DD2FC8",
+  // QUICK -> MCRN
+  "0x4b68bA327Cad4d8C4d0Bc783d686d08CFAa5C5D3"
 ];
 
 const vaultsOnMacaronBsc = [
@@ -60,6 +76,7 @@ const ERC20sBSC = [
   "0x603c7f932ed1fc6575303d8fb018fdcbb0f39a95",
   //CAKE
   "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
+  
 ];
 
 const ERC20sPOLYGON = [
@@ -291,7 +308,7 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
 
   // --- Staking Tokens by Choco Falls Tvl portion ---
   // TODO: ChocoChefs will add when create new pools
-  /*
+  
   await calcTvl(
     balances,
     "polygon",
@@ -300,11 +317,11 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
     abi.lpSupply,
     chocoChefAddressesPolygon
   );
-  */
+  
 
   // --- Vaults of other Protocols on Macaron (Boost Pools) Tvl portion ---
   // TODO: Vaults will add when create new vault pools
-  /*
+  
   await calcTvl(
     balances,
     "bsc",
@@ -313,7 +330,7 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
     abi.balanceOf,
     vaultsOnMacaronPolygon
   );
-  */
+  
 
   return balances;
 };
@@ -321,7 +338,7 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
 module.exports = {
   misrepresentedTokens: true,
   treasury: {
-    tvl: TreasuryBsc + TreasuryPolygon,
+    tvl: sdk.util.sumChainTvls([TreasuryBsc, TreasuryPolygon]) 
   },
   bsc: {
     tvl: bscTvl,
@@ -329,7 +346,7 @@ module.exports = {
   polygon: {
     tvl: polygonTvl,
   },
-  tvl: sdk.util.sumChainTvls([bscTvl, polygonTvl]),
+  
   methodology: `We add as TVL the staking LPs on Magic Box by Masterchef contract; the staking Assets on Choco Falls 
   by ChocoChef Contract; and the Vaults of other protocols on Macaron by Boost Pools. 
   The treasury part separated from TVL`,

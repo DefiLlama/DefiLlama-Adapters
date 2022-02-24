@@ -1,6 +1,9 @@
 const algosdk = require("algosdk")
+const sdk = require('@defillama/sdk')
 const { toUSDTBalances } = require('../helper/balances')
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+const retry = require("async-retry");
+const axios = require("axios");
 
 const marketStrings = {
     underlying_cash : "uc",
@@ -66,11 +69,12 @@ const assetDictionary = {
     }
 }
 
+
 async function getGlobalMarketState(algodClient, marketId) {
   let response = await algodClient.getApplicationByID(marketId).do()
   let results = {}
   response.params["global-state"].forEach(x => {
-    let decodedKey = atob(x.key)
+    let decodedKey =  Buffer.from(x.key, 'base64').toString('binary')
     results[decodedKey] = x.value.uint
   })
 
@@ -82,7 +86,7 @@ async function getPrices(algodClient, assetDictionary, orderedAssets) {
   for (const assetName of orderedAssets) {
     let response = await algodClient.getApplicationByID(assetDictionary[assetName]["oracleAppId"]).do()
     for (const y of response.params["global-state"]) {
-      let decodedKey = atob(y.key)
+      let decodedKey = Buffer.from(y.key, 'base64').toString('binary')
       if (decodedKey === assetDictionary[assetName]["oracleFieldName"]) {
         prices[assetName] = y.value.uint / 1000000
       }
@@ -107,7 +111,7 @@ function getMarketBorrow(assetName, marketGlobalState, prices) {
     return borrowUnderlying * prices[assetName]
 }
 
-async function borrow() {
+async function borrowed() {
     let client = new algosdk.Algodv2("", "https://algoexplorerapi.io/", "")
     let prices = await getPrices(client, assetDictionary, orderedAssets)
 
@@ -135,10 +139,11 @@ async function supply() {
         supply += assetTvl
     }
 
-    return toUSDTBalances(supply)
+    let borrow = await borrowed()
+    return toUSDTBalances(supply - borrow['0xdac17f958d2ee523a2206206994597c13d831ec7'] / 10 ** 6)
 }
 
-async function stake() {
+async function staking() {
     let client = new algosdk.Algodv2("", "https://algoexplorerapi.io/", "")
 
     let algoStblLpContractState = await getGlobalMarketState(
@@ -174,10 +179,20 @@ async function stake() {
     return toUSDTBalances(staked)
 }
 
+async function dex() {
+    const response = (
+        await retry(
+          async (bail) =>
+            await axios.get("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_protocol_snapshot/?network=MAINNET")
+        )
+      ).data.asset_snapshots[0].tvl;
+    return toUSDTBalances(response)
+}
 module.exports = {
     algorand: {
-        tvl: supply,
-        borrow,
-        stake
+        tvl: sdk.util.sumChainTvls([supply, dex]),
+        borrowed,
+        staking
     }
 }
+// node test.js projects/algofi/index.js

@@ -27,7 +27,7 @@ const transforms = {
 
 const factory = "0x9014B937069918bd319f80e8B3BB4A2cf6FAA5F7"
 async function tvl(timestamp, _ethBlock, chainBlocks) {
-  const block = await getBlock(timestamp, "harmony", chainBlocks);
+  const block = await getBlock(timestamp, "harmony", chainBlocks, true);
   const transformAddress = addr=>{
     return transforms[addr.toLowerCase()] ?? `harmony:${addr}`;
   }

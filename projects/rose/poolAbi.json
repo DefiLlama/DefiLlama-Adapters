@@ -1,0 +1,17 @@
+{
+  "name": "balances",
+  "outputs": [
+    {
+      "type": "uint256",
+      "name": ""
+    }
+  ],
+  "inputs": [
+    {
+      "type": "uint256",
+      "name": "arg0"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+}

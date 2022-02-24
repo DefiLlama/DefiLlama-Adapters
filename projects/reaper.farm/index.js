@@ -12,5 +12,6 @@ async function fetch() {
 }
 
 module.exports = {
+  methodology: `TVL is fetched from the Reaper API(http://api.reaper.farm/api)`,
   fetch
 }

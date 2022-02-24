@@ -1,0 +1,28 @@
+{
+    "Token":     {
+        "inputs": [],
+        "name": "Token",
+        "outputs": [
+          {
+            "internalType": "address",
+            "name": "",
+            "type": "address"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      "checkInvestedLast": {
+        "inputs": [],
+        "name": "checkInvestedLast",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      }
+}
