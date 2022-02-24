@@ -128,19 +128,15 @@ async function borrowed() {
 async function supply() {
     let client = new algosdk.Algodv2("", "https://algoexplorerapi.io/", "")
     let prices = await getPrices(client, assetDictionary, orderedAssets)
-    console.log(prices)
 
     supply = 0
     for (const assetName of orderedAssets) {
-        console.log(assetName)
         marketGlobalState = await getGlobalMarketState(client, assetDictionary[assetName]["marketAppId"])
         assetTvl = getMarketSupply(assetName, marketGlobalState, prices, assetDictionary)
-        console.log(assetTvl)
         supply += assetTvl
     }
 
-    let borrow = await borrowed()
-    return toUSDTBalances(supply - borrow['0xdac17f958d2ee523a2206206994597c13d831ec7'] / 10 ** 6)
+    return toUSDTBalances(supply)
 }
 
 async function staking() {
