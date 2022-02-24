@@ -40,5 +40,5 @@ module.exports = {
   'stacks': {
     tvl
   }, 
-  methodology: 'Alex Lab TVL is made of the vault token balances. The tokens balances are retrieved using Blockstacks HTTP REST API. LP balances not unwinded at the moment.'
+  methodology: 'Alex Lab TVL is made of the vault token balances. The tokens balances are retrieved using Blockstacks HTTP REST API.'
 }
