@@ -122,5 +122,6 @@ module.exports = {
         tvl: eth_tvl
     }, bsc: {
         tvl: bsc_tvl
-    }
+    },
+    tvl: sdk.util.sumChainTvls([ethereum, bsc])
 }
