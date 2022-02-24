@@ -34,10 +34,10 @@ const contracts = {
       ]      
 }
 
-const trancheContracts = ["0xd0DbcD556cA22d3f3c142e9a3220053FD7a247BC", "0x77648a2661687ef3b05214d824503f6717311596"]
+const trancheContracts = ["0xd0DbcD556cA22d3f3c142e9a3220053FD7a247BC", "0x77648a2661687ef3b05214d824503f6717311596", "0x34dcd573c5de4672c8248cd12a99f875ca112ad8", '0x4ccaf1392a17203edab55a1f2af3079a8ac513e7','0x151e89e117728ac6c93aae94c621358b0ebd1866']
 
 function chainTvl(chain){
-    return async (time, ethBlock, chainBlocks)=>{
+    return async (time, ethBlock, chainBlocks)=>{   
         const block = chainBlocks[chain]
         const calls = {
             chain,
