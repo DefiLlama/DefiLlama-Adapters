@@ -18,7 +18,7 @@ const assetDictionary = {
     "ALGO": {
         "decimals": 6,
         "marketAppId": 465814065,
-        "oracleAppId": 451324964,
+        "oracleAppId": 531724540,
         "oracleFieldName": "latest_twap_price"
     },
     "USDC": {
@@ -30,13 +30,13 @@ const assetDictionary = {
     "goBTC": {
         "decimals": 8,
         "marketAppId": 465814149,
-        "oracleAppId": 451325630,
+        "oracleAppId": 531725044,
         "oracleFieldName": "latest_twap_price"
     },
     "goETH": {
         "decimals": 8,
         "marketAppId": 465814222,
-        "oracleAppId": 451326395,
+        "oracleAppId": 531725449,
         "oracleFieldName": "latest_twap_price"
     },
     "STBL": {
@@ -49,8 +49,6 @@ const assetDictionary = {
         "STBL": {
             "decimals": 6,
             "marketAppId": 482608867,
-            "oracleAppId": 451327550,
-            "oracleFieldName": "price"
         },
         "TINYMAN11_STBL_USDC_LP_STAKING" : {
             "decimals": 6,
@@ -126,11 +124,15 @@ async function borrow() {
 async function supply() {
     let client = new algosdk.Algodv2("", "https://algoexplorerapi.io/", "")
     let prices = await getPrices(client, assetDictionary, orderedAssets)
+    console.log(prices)
 
     supply = 0
     for (const assetName of orderedAssets) {
+        console.log(assetName)
         marketGlobalState = await getGlobalMarketState(client, assetDictionary[assetName]["marketAppId"])
-        supply += getMarketSupply(assetName, marketGlobalState, prices, assetDictionary)
+        assetTvl = getMarketSupply(assetName, marketGlobalState, prices, assetDictionary)
+        console.log(assetTvl)
+        supply += assetTvl
     }
 
     return toUSDTBalances(supply)
