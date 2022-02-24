@@ -1,5 +1,7 @@
 const algosdk = require("algosdk")
 const { toUSDTBalances } = require('../helper/balances')
+//const fetch = require("node-fetch")
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 const marketStrings = {
     underlying_cash : "uc",
@@ -10,7 +12,7 @@ const marketStrings = {
 }
 
 const orderedAssets = ["ALGO", "STBL", "USDC", "goBTC", "goETH"]
-const stakingContracts = ["STBL", "TINYMAN11_STBL_USDC_LP_STAKING"]
+const stakingContracts = ["STBL", "TINYMAN11_STBL_USDC_LP_STAKING", "ALGOFI-STBL-USDC-LP", "ALGOFI-STBL-ALGO-LP"]
 
 const assetDictionary = {
     "ALGO": {
@@ -53,6 +55,15 @@ const assetDictionary = {
         "TINYMAN11_STBL_USDC_LP_STAKING" : {
             "decimals": 6,
             "marketAppId" : 553866305,
+        },
+        "ALGOFI-STBL-USDC-LP": {
+            "marketAppId": 611867642,
+            "decimals": 6,
+        },
+        "ALGOFI-STBL-ALGO-LP": {
+            "poolAppId": 607645439,
+            "marketAppId": 611801333,
+            "decimals": 6,
         }
     }
 }
@@ -127,13 +138,36 @@ async function supply() {
 
 async function stake() {
     let client = new algosdk.Algodv2("", "https://algoexplorerapi.io/", "")
-    let prices = { 'STBL': 1, 'TINYMAN11_STBL_USDC_LP_STAKING': 2 }
-    staked = 0
 
+    let algoStblLpContractState = await getGlobalMarketState(
+        client,
+        assetDictionary['STAKING_CONTRACTS']["ALGOFI-STBL-ALGO-LP"]["poolAppId"]
+    )
+    let algoStblLpCirculation = algoStblLpContractState['lc'] / 1000000
+
+    let poolSnapshotsResponse = await fetch("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_pool_snapshots/?network=MAINNET")
+    let poolSnapshots = await poolSnapshotsResponse.json();
+    let algoStblTvl = 0;
+    for (const poolSnapshot of poolSnapshots['pool_snapshots']) {
+        if (poolSnapshot.id == assetDictionary['STAKING_CONTRACTS']["ALGOFI-STBL-ALGO-LP"]["poolAppId"]) {
+            algoStblTvl = poolSnapshot.balance_info.total_usd
+            break
+        }
+    }
+
+    let prices = {
+         'STBL': 1,
+         'TINYMAN11_STBL_USDC_LP_STAKING': 2,
+         'ALGOFI-STBL-USDC-LP': 2,
+         'ALGOFI-STBL-ALGO-LP': algoStblTvl / algoStblLpCirculation,
+    }
+
+    staked = 0
     for (const contractName of stakingContracts) {
         marketGlobalState = await getGlobalMarketState(client, assetDictionary['STAKING_CONTRACTS'][contractName]["marketAppId"])
         staked += getMarketSupply(contractName, marketGlobalState, prices, assetDictionary['STAKING_CONTRACTS'])
     }
+
 
     return toUSDTBalances(staked)
 }
