@@ -89,9 +89,15 @@ async function fetchURL(url) {
   })
 }
 
+async function postURL(url, data) {
+  return await retry(async bail => await axios.post(url, data), {
+    retries: 3
+  })
+}
 
 module.exports = {
   fetchURL,
+  postURL,
   getPricesfromString,
   getPrices,
   getTokenPricesFromString,

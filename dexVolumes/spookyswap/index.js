@@ -1,21 +1,20 @@
-const {
-  getChainVolume,
-  DEFAULT_TOTAL_VOLUME_FIELD,
-  DEFAULT_DAILY_VOLUME_FIELD,
-} = require("../helper/getUniSubgraphVolume");
-
+const { getChainVolume } = require("../helper/getUniSubgraphVolume");
+const { FANTOM } = require("../helper/chains");
 const endpoints = {
-  fantom: "https://api.thegraph.com/subgraphs/name/eerieeight/spookyswap",
+  [FANTOM]: "https://api.thegraph.com/subgraphs/name/eerieeight/spookyswap",
 };
 
 const graphs = getChainVolume({
   graphUrls: {
-    fantom: endpoints.fantom,
+    [FANTOM]: endpoints[FANTOM],
   },
 });
 
 module.exports = {
   volume: {
-    fantom: graphs("fantom"),
+    [FANTOM]: {
+      fetch: graphs(FANTOM),
+      start: 1618617600,
+    },
   },
 };

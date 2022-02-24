@@ -2,10 +2,13 @@ const sdk = require("@defillama/sdk");
 const axios = require("axios");
 const abi = require("./abi.json");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
+const { staking } = require("../helper/staking.js");
 
 /* Note: there are LON staked tokens within the protocol, accounting for aprox $30M at current market price
  *  but the protocol itself are minting them...
  */
+const LON_TOKEN = "0x0000000000095413afc295d19edeb1ad7b71c952";
+const CONTRACT_FOR_STAKING = "0xf88506B0F1d30056B9e5580668D5875b9cd30F23";
 
 // Used for grabbing AMM wrapper & PMM
 const PERMANENT_STORAGE_PROXY = "0x6D9Cc14a1d36E6fF13fc6efA9e9326FcD12E7903";
@@ -118,6 +121,7 @@ const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
 module.exports = {
   ethereum: {
     tvl: ethTvl,
+    staking: staking(CONTRACT_FOR_STAKING, LON_TOKEN)
   },
-  tvl: sdk.util.sumChainTvls([ethTvl]),
+  
 };
