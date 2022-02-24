@@ -1,5 +1,8 @@
 const algosdk = require("algosdk")
+const sdk = require('@defillama/sdk')
 const { toUSDTBalances } = require('../helper/balances')
+const retry = require("async-retry");
+const axios = require("axios");
 
 const marketStrings = {
     underlying_cash : "uc",
@@ -123,7 +126,8 @@ async function supply() {
         supply += getMarketSupply(assetName, marketGlobalState, prices, assetDictionary)
     }
 
-    return toUSDTBalances(supply)
+    let borrow = await borrowed()
+    return toUSDTBalances(supply - borrow['0xdac17f958d2ee523a2206206994597c13d831ec7'] / 10 ** 6)
 }
 
 async function staking() {
@@ -139,10 +143,20 @@ async function staking() {
     return toUSDTBalances(staked)
 }
 
+async function dex() {
+    const response = (
+        await retry(
+          async (bail) =>
+            await axios.get("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_protocol_snapshot/?network=MAINNET")
+        )
+      ).data.asset_snapshots[0].tvl;
+    return toUSDTBalances(response)
+}
 module.exports = {
     algorand: {
-        tvl: supply,
+        tvl: sdk.util.sumChainTvls([supply, dex]),
         borrowed,
         staking
     }
 }
+// node test.js projects/algofi/index.js
