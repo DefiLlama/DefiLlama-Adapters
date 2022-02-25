@@ -5,14 +5,11 @@ const abis = require("./abis.json");
 
 const SOLID = '0x888EF71766ca594DED1F0FA3AE64eD2941740A20';
 const excludedTokens = [
-    '0x9861b8a9acc9b4f249981164bfe7f84202068bfe',
     '0x10acb810b4d9a8d7c9a50fd793af80931c73832d',
     '0x7bff7b5a436de7d0e8b860d495a8239a233d2f22',
     '0xc61553f86e8dbdb732a3d0e9118bbce1ed84900a',
     '0x7c4296d0c49db126d0781504d8ed28ee5bf9b83a',
     '0x184fef2286fdfeb6c581f45ce96628ce4bb274dd',
-    '0x62e2819dd417f3b430b6fa5fd34a49a377a02ac8',
-    '0xfcec86af8774d69e2e4412b8de3f4abf1f671ecc'
 ];
 
 async function tvl(timestamp, block, chainBlocks) {
