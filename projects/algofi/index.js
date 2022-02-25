@@ -1,6 +1,7 @@
 const algosdk = require("algosdk")
 const sdk = require('@defillama/sdk')
 const { toUSDTBalances } = require('../helper/balances')
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const retry = require("async-retry");
 const axios = require("axios");
 
@@ -9,17 +10,18 @@ const marketStrings = {
     underlying_borrowed : "ub",
     underlying_reserves : "ur",
     active_collateral : "acc",
-    oracle_price_scale_factor: "ops"
+    oracle_price_scale_factor: "ops",
+    lp_circulation: "lc"
 }
 
 const orderedAssets = ["ALGO", "STBL", "USDC", "goBTC", "goETH"]
-const stakingContracts = ["STBL", "TINYMAN11_STBL_USDC_LP_STAKING"]
+const stakingContracts = ["STBL", "TINYMAN11_STBL_USDC_LP_STAKING", "ALGOFI-STBL-USDC-LP", "ALGOFI-STBL-ALGO-LP"]
 
 const assetDictionary = {
     "ALGO": {
         "decimals": 6,
         "marketAppId": 465814065,
-        "oracleAppId": 451324964,
+        "oracleAppId": 531724540,
         "oracleFieldName": "latest_twap_price"
     },
     "USDC": {
@@ -31,13 +33,13 @@ const assetDictionary = {
     "goBTC": {
         "decimals": 8,
         "marketAppId": 465814149,
-        "oracleAppId": 451325630,
+        "oracleAppId": 531725044,
         "oracleFieldName": "latest_twap_price"
     },
     "goETH": {
         "decimals": 8,
         "marketAppId": 465814222,
-        "oracleAppId": 451326395,
+        "oracleAppId": 531725449,
         "oracleFieldName": "latest_twap_price"
     },
     "STBL": {
@@ -50,12 +52,19 @@ const assetDictionary = {
         "STBL": {
             "decimals": 6,
             "marketAppId": 482608867,
-            "oracleAppId": 451327550,
-            "oracleFieldName": "price"
         },
         "TINYMAN11_STBL_USDC_LP_STAKING" : {
             "decimals": 6,
             "marketAppId" : 553866305,
+        },
+        "ALGOFI-STBL-USDC-LP": {
+            "marketAppId": 611867642,
+            "decimals": 6,
+        },
+        "ALGOFI-STBL-ALGO-LP": {
+            "poolAppId": 607645439,
+            "marketAppId": 611801333,
+            "decimals": 6,
         }
     }
 }
@@ -123,22 +132,45 @@ async function supply() {
     supply = 0
     for (const assetName of orderedAssets) {
         marketGlobalState = await getGlobalMarketState(client, assetDictionary[assetName]["marketAppId"])
-        supply += getMarketSupply(assetName, marketGlobalState, prices, assetDictionary)
+        assetTvl = getMarketSupply(assetName, marketGlobalState, prices, assetDictionary)
+        supply += assetTvl
     }
 
-    let borrow = await borrowed()
-    return toUSDTBalances(supply - borrow['0xdac17f958d2ee523a2206206994597c13d831ec7'] / 10 ** 6)
+    return toUSDTBalances(supply)
 }
 
 async function staking() {
     let client = new algosdk.Algodv2("", "https://algoexplorerapi.io/", "")
-    let prices = { 'STBL': 1, 'TINYMAN11_STBL_USDC_LP_STAKING': 2 }
-    staked = 0
 
+    let algoStblLpContractState = await getGlobalMarketState(
+        client,
+        assetDictionary['STAKING_CONTRACTS']["ALGOFI-STBL-ALGO-LP"]["poolAppId"]
+    )
+    let algoStblLpCirculation = algoStblLpContractState[marketStrings.lp_circulation] / 1000000
+
+    let poolSnapshotsResponse = await fetch("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_pool_snapshots/?network=MAINNET")
+    let poolSnapshots = await poolSnapshotsResponse.json();
+    let algoStblTvl = 0;
+    for (const poolSnapshot of poolSnapshots['pool_snapshots']) {
+        if (poolSnapshot.id == assetDictionary['STAKING_CONTRACTS']["ALGOFI-STBL-ALGO-LP"]["poolAppId"]) {
+            algoStblTvl = poolSnapshot.balance_info.total_usd
+            break
+        }
+    }
+
+    let prices = {
+         'STBL': 1,
+         'TINYMAN11_STBL_USDC_LP_STAKING': 2,
+         'ALGOFI-STBL-USDC-LP': 2,
+         'ALGOFI-STBL-ALGO-LP': algoStblTvl / algoStblLpCirculation,
+    }
+
+    staked = 0
     for (const contractName of stakingContracts) {
         marketGlobalState = await getGlobalMarketState(client, assetDictionary['STAKING_CONTRACTS'][contractName]["marketAppId"])
         staked += getMarketSupply(contractName, marketGlobalState, prices, assetDictionary['STAKING_CONTRACTS'])
     }
+
 
     return toUSDTBalances(staked)
 }
