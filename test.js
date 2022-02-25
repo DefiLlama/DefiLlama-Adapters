@@ -118,16 +118,21 @@ const passedFile = path.resolve(process.cwd(), process.argv[2]);
   const chainTvlsToAdd = {};
   const knownTokenPrices = {};
 
+  console.log('module', module)
   let tvlPromises = Object.entries(module).map(async ([chain, value]) => {
     if (typeof value !== "object" || value === null) {
       return;
     }
     return Promise.all(
       Object.entries(value).map(async ([tvlType, tvlFunction]) => {
+        console.log('value', value)
         if (typeof tvlFunction !== "function") {
+          console.log('tvlFunction !== "function"');
           return;
         }
         let storedKey = `${chain}-${tvlType}`;
+        console.log('storedKey', storedKey)
+        console.log('tvlType', tvlType)
         let tvlFunctionIsFetch = false;
         if (tvlType === "tvl") {
           storedKey = chain;
@@ -181,6 +186,7 @@ const passedFile = path.resolve(process.cwd(), process.argv[2]);
     tvlPromises.push(mainTvlPromise);
   }
   await Promise.all(tvlPromises);
+  console.log('chainTvlsToAdd', chainTvlsToAdd);
   Object.entries(chainTvlsToAdd).map(([tvlType, storedKeys]) => {
     if (usdTvls[tvlType] === undefined) {
       usdTvls[tvlType] = storedKeys.reduce(
@@ -197,6 +203,7 @@ const passedFile = path.resolve(process.cwd(), process.argv[2]);
     );
   }
 
+  console.log('usdTokenBalances', usdTokenBalances)
   Object.entries(usdTokenBalances).forEach(([chain, balances]) => {
     console.log(`--- ${chain} ---`);
     Object.entries(balances)
