@@ -68,9 +68,11 @@ const SUPPORTED_NETWORKS = {
 };
 
 const fantomRpcUrl = SUPPORTED_NETWORKS[SupportedChainId.FANTOM].rpcUrls[0];
+const polygonRpcUrl = SUPPORTED_NETWORKS[SupportedChainId.MATIC].rpcUrls[0];
 
 module.exports = {
   SupportedChainId,
   SUPPORTED_NETWORKS,
   fantomRpcUrl,
+  polygonRpcUrl,
 }

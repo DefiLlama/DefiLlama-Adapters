@@ -60,11 +60,8 @@ const url = 'https://api.thegraph.com/subgraphs/name/eerieeight/spookyswap';
 
 const getPairsData = async (pairAddress) => {
   try {
-    console.log(222, pairAddress);
     const result = await request(url, getUniPairQuery(pairAddress));
-
     const last = result.pairDayDatas.length;
-
     return result && result.pairDayDatas ? result.pairDayDatas[last - 2] : {};
   } catch (e) {
     console.error(e);
@@ -77,25 +74,16 @@ const getSpookyPoolPrice = async (vault) => {
   if (!vault.contract.address) {
     return ZERO;
   }
-
-  console.log(111, vault.exchangeType);
-
   if (vault.exchangeType == EXCHANGE_TYPE.SPOOKYSWAP) {
     const data = await getPairsData(vault.contract.address);
     const { reserveUSD, totalSupply } = data;
-
-    console.log(998, reserveUSD, totalSupply);
-
     const result = totalSupply ? fromWei(new BigNumber(reserveUSD).div(totalSupply)) : ZERO;
-    console.log(999, result.toNumber());
     return result;
   } else if (vault.exchangeType == EXCHANGE_TYPE.SPOOKYSWAP_SINGLE) {
     return fromWei(await getBooPrice());
   } else {
     return ZERO;
   }
-
-  return fromWei(await getBooPrice());
 };
 
 const getFantomTvl = async () => {

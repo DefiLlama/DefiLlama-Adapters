@@ -31,8 +31,6 @@ const getNetworkTokenTvlUsd = async (vaults, getPrice, web3 = require('../web3.j
         await vaultContract.methods.underlyingBalanceWithInvestment().call()
       );
 
-      console.log(111, underlyingBalanceWithInvestment.toNumber());
-
       const usd = await getPrice(item);
 
       resolve(usd.multipliedBy(underlyingBalanceWithInvestment));
