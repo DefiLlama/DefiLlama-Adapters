@@ -1,6 +1,6 @@
 const BigNumber = require('bignumber.js');
-const { onx, aethPairOns } = require('./config/onx/constant');
 const tokenAddresses = require('./config/onx/constant');
+const { getFantomTvl } = require('./config/onx/fantom');
 const {
   onxTokenContract,
   usdtWethPairContract,
@@ -8,7 +8,6 @@ const {
   onxPoolContract,
   aethPairOnsContract,
   aethPairOneContract,
-  aethPairEthContract,
   wethAethPairContract,
   onsTokenContract,
   aethTokenContract,
@@ -22,7 +21,6 @@ const {
   fraxTokenContract,
   usdcTokenContract
 } = require('./config/onx/contract');
-const ERC20Abi = require('./config/onx/abis/ERC20.json');
 
 const getReserves = async (pairContract) => {
   try {
@@ -148,7 +146,7 @@ const getFarmsTvl = async (price) => {
     })
   );
   return totalBalance;
-} 
+}
 
 const getOnePoolsTvl = async (price) => {
   let totalBalance = new BigNumber(0);
@@ -214,10 +212,17 @@ const getOnsPoolsTvl = async (price) => {
   return totalBalance;
 }
 
+async function staking() {
+  const wethPrice = await getWethPrice();
+  const onxPrice = (await getOnxPrice()).times(wethPrice);
+  const stakedTvl = await getStakeTvl(onxPrice);
+  return stakedTvl;
+}
+
 async function fetch() {
   let netTvl = new BigNumber(0);
   const wethPrice = await getWethPrice();
-  const onxPrice = (await getOnxPrice()).times(wethPrice); 
+  const onxPrice = (await getOnxPrice()).times(wethPrice);
   const aethPrice = (await getAethPrice()).times(wethPrice);
   const onsPrice = (await getOnsPrice()).times(wethPrice);
   const ankrPrice = (await getAnkrPrice()).times(wethPrice);
@@ -225,16 +230,24 @@ async function fetch() {
   const sushiPrice = (await getSushiPrice()).times(wethPrice);
   const onePrice = (await getOnePrice()).times(aethPrice);
   const farmsTvl = await getFarmsTvl({ wethPrice, onxPrice, aethPrice, ankrPrice, bondPrice, sushiPrice });
-  const stakedTvl = await getStakeTvl(onxPrice); 
+  const stakedTvl = await getStakeTvl(onxPrice);
   const lendingTvl = await getLendingTvl(wethPrice);
   const oneVaultTvl = await getOneVaultTvl(wethPrice, aethPrice, onsPrice);
   const onePoolsTvl = await getOnePoolsTvl({ aethPrice, wethPrice, onxPrice });
   const onsPoolsTvl = await getOnsPoolsTvl({ aethPrice, onePrice, onsPrice, wethPrice });
-  return netTvl.plus(farmsTvl).plus(stakedTvl).plus(lendingTvl).plus(oneVaultTvl).plus(onePoolsTvl).plus(onsPoolsTvl);
+  const tvl = netTvl.plus(farmsTvl).plus(stakedTvl).plus(lendingTvl).plus(oneVaultTvl).plus(onePoolsTvl).plus(onsPoolsTvl);
+  return tvl;
 }
 
 module.exports = {
   timetravel: false,
   doublecounted: true,
-  fetch
+  fetch,
+  ethereum: {
+    staking,
+    // fetch
+  },
+  fantom: {
+    tvl: getFantomTvl,
+  }
 }

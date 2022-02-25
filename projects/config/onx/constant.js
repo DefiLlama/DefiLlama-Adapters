@@ -20,6 +20,9 @@ const tokenAddresses = {
   wethToken: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
   bondPairEth: "0xb17b1342579e4bce6b6e9a426092ea57d33843d9",
   sushiPairEth: "0xce84867c3c02b05dc570d0135103d3fb9cc19433",
+  fantom: {
+    usdcBooPair: '0xf8cb2980120469d79958151daa45eb937c6e1ed6',
+  },
   farms: [
     {
       title: 'onxEthLp',
