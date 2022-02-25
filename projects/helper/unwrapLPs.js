@@ -459,6 +459,9 @@ async function unwrapUniswapLPs(balances, lpPositions, block, chain='ethereum', 
             const token0 = (await tokens0).output.find(call=>call.input.target === lpToken).output.toLowerCase()
             const token1 = (await tokens1).output.find(call=>call.input.target === lpToken).output.toLowerCase()
             const supply = (await lpSupplies).output.find(call=>call.input.target === lpToken).output
+            if(supply === "0"){
+                return
+            }
 
             let _reserve0, _reserve1
             if (uni_type === 'standard') {
