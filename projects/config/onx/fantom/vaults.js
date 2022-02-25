@@ -1,8 +1,8 @@
 const { createWeb3, createContractObject } = require('../utils');
 const { fantomRpcUrl } = require('../networks');
 const { EXCHANGE_TYPE } = require('../vault');
-const spookyPoolAbi = require('./sp-pool-abi.json');
-const spookyVaultABI = require('./sp-vault-abi.json');
+const spookyPoolAbi = require('./abis/sp-pool-abi.json');
+const spookyVaultABI = require('./abis/sp-vault-abi.json');
 const web3 = createWeb3(fantomRpcUrl);
 
 const createVaultModel = (poolAddress, vaultAddress, exchangeType = EXCHANGE_TYPE.SPOOKYSWAP) => {
