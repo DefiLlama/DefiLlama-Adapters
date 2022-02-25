@@ -11,12 +11,12 @@ const stakingContracts = [
 ];
 
 const WETH_BPF_UNIV2 = "0x0111842555A378cbaA937eb02818101d0040733B";
-const PBF = "0x5197FBE1a86679FF1360E27862BF88B0c5119BD8";
+const BPF = "0x5197FBE1a86679FF1360E27862BF88B0c5119BD8";
 
 module.exports = {
   misrepresentedTokens: true,
   ethereum: {
-    staking: stakings(stakingContracts, PBF),
+    staking: stakings(stakingContracts, BPF),
     pool2: pool2s(stakingContracts, [WETH_BPF_UNIV2]),
     tvl: (async) => ({}),
   },

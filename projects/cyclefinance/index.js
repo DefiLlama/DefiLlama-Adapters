@@ -196,6 +196,7 @@ const avaxTvl = async (timestamp, ethBlock, chainBlocks) => {
 };
 
 module.exports = {
+  doublecounted: true,
   misrepresentedTokens: true,
   avalanche: {
     tvl: avaxTvl,

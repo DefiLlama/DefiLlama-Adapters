@@ -1,0 +1,28 @@
+{
+    "getPricePerFullShare": {
+        "type": "function",
+        "stateMutability": "view",
+        "outputs": [
+            {
+                "type": "uint256",
+                "name": "",
+                "internalType": "uint256"
+            }
+        ],
+        "name": "getPricePerFullShare",
+        "inputs": []
+    },
+    "want": {
+        "type": "function",
+        "stateMutability": "view",
+        "outputs": [
+            {
+                "type": "address",
+                "name": "",
+                "internalType": "contract IERC20"
+            }
+        ],
+        "name": "want",
+        "inputs": []
+    }
+}

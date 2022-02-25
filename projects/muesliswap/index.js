@@ -2,10 +2,12 @@ const {calculateUsdUniTvl} = require('../helper/getUsdUniTvl')
 const { fetchURL } = require('../helper/utils')
 
 async function adaTvl(){
-    const tokens = (await fetchURL("https://orders.muesliswap.com/tokens-info")).data
+    const tokens = (await fetchURL("https://orders.muesliswap.com/known-tokens")).data
     let totalAda = 0
     await Promise.all(tokens.map(async t=>{
-        const orders = (await fetchURL(`https://orders.muesliswap.com/orderbook/?policy-id=${t.policyId}&tokenname=${t.name}`)).data
+        const policyId = t.address.split(".")[0];
+        const tokenname = t.address.split(".")[1];
+        const orders = (await fetchURL(`https://orders.muesliswap.com/orderbook/?policy-id=${policyId}&tokenname=${encodeURIComponent(tokenname)}`)).data
         if(orders.fromToken !== "."){
             throw new Error("Tokens paired against something other than ADA")
         }

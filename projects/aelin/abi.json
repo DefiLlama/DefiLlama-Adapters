@@ -1,0 +1,4 @@
+{
+  "aelinPool_purchaseToken": {"inputs":[],"name":"purchaseToken","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+  "aelinPool_aelinRewardsAddress": {"inputs":[],"name":"aelinRewardsAddress","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}
+}
