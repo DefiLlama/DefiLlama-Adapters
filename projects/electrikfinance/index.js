@@ -22,6 +22,7 @@ async function klaytn() {
       .call()
       .catch((err) => 0);
     klaytnTVL += Number(tvl);
+
   }
 
   klaytnTVL = klaytnTVL / 1e18;
@@ -32,4 +33,4 @@ module.exports = {
     tvl: klaytn,
   },
 };
-klaytn();
+
