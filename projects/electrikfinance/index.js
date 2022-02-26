@@ -161,7 +161,7 @@ async function klaytn() {
   );
   const caver = new Caver(provider);
   let klaytnTVL = 0;
-  console.log(Object.keys(klaytnVaults).length);
+  
   for (const token in klaytnVaults) {
     const poolStatContract = new caver.klay.Contract(
       poolStatAbi,
@@ -180,4 +180,4 @@ module.exports = {
     tvl: klaytn,
   },
 };
-klaytn();
+
