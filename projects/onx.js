@@ -2,6 +2,7 @@ const BigNumber = require('bignumber.js');
 const tokenAddresses = require('./config/onx/constant');
 const { getFantomTvl } = require('./config/onx/fantom');
 const { getPolygonTvl } = require('./config/onx/polygon');
+const { getAvalancheTvl } = require('./config/onx/avalanche');
 const {
   onxTokenContract,
   usdtWethPairContract,
@@ -253,5 +254,8 @@ module.exports = {
   },
   polygon: {
     tvl: getPolygonTvl,
+  },
+  avalanche: {
+    tvl: getAvalancheTvl,
   },
 }
