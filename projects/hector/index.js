@@ -107,36 +107,37 @@ async function eth() {
   return +results.ethMetrics[0].treasuryBaseRewardPool;
 }
 
-const staking = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
-  const chain = "fantom";
-  let stakingBalance,
-    totalBalance = 0;
-  const block = await getBlock(timestamp, chain, chainBlocks);
-  for (const stakings of HectorStakings) {
-    stakingBalance = await sdk.api.abi.call({
-      abi: erc20.balanceOf,
-      target: hec,
-      params: stakings,
-      chain: chain,
-      block: block,
-    });
-    totalBalance += Number(stakingBalance.output);
-  }
-  const address = `${chain}:${hec}`;
+const staking = async () => {
+  var endpoint =
+    "https://api.thegraph.com/subgraphs/name/hectordao-hec/hector-dao";
+  var graphQLClient = new GraphQLClient(endpoint);
 
-  return {
-    [address]: totalBalance,
-  };
+  var query = gql`
+    query {
+      protocolMetrics(first: 1, orderBy: timestamp, orderDirection: desc) {
+        totalValueLocked
+      }
+    }
+  `;
+  const results = await retry(
+    async (bail) => await graphQLClient.request(query)
+  );
+  return +results.protocolMetrics[0].totalValueLocked;
 };
 
 async function fetch() {
-  return (await treasury()) + (await eth());
+  const total =
+    (await treasury()) +
+    (await eth()) +
+    (await torCurveLP()) +
+    (await bank()) +
+    (await staking());
+  return total;
 }
 
 module.exports = {
-  fantom: {
-    staking,
+  staking: {
+    fetch: staking,
   },
   bank: {
     fetch: bank,
