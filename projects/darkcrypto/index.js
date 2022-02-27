@@ -62,7 +62,7 @@ async function tvl(timestamp, block, chainBlocks) {
 async function pool2(timestamp, block, chainBlocks) {
   // SKY POOL
   const farmTvl = await farmUtils.farmLocked(chainBlocks["cronos"]);
-  balances = {};
+  let balances = {};
 
   //add CRO balance in LP pool
   sdk.util.sumSingleBalance(
@@ -82,7 +82,7 @@ async function pool2(timestamp, block, chainBlocks) {
 }
 
 async function vault(timestamp, block, chainBlocks){
-  return await vaultUtils.vaultLocked(block, 'cronos')
+  return await vaultUtils.vaultLocked(chainBlocks.cronos, 'cronos')
 }
 
 module.exports = {
