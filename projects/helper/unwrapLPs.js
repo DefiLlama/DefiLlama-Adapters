@@ -308,6 +308,14 @@ const crvPools = {
           "0x985458e523db3d53125813ed68c274899e9dfab4",
           "0x3c2b8be99c50593081eaa2a724f0b8285f5aba8f"
         ]
+    },
+    // VST-FRAX Arbitrum
+    "0x59bf0545fca0e5ad48e13da269facd2e8c886ba4": {
+        swapContract: "0x59bf0545fca0e5ad48e13da269facd2e8c886ba4",
+        underlyingTokens: [
+          "0x64343594ab9b56e99087bfa6f2335db24c2d1f17",
+          "0x17FC002b466eEc40DaE837Fc4bE5c67993ddBd6F",
+        ]
     }
 }
 const yearnVaults = {
@@ -406,7 +414,7 @@ const token1Abi = {"constant":true,"inputs":[],"name":"token1","outputs":[{"inte
     token
 }[]
 */
-async function unwrapUniswapLPs(balances, lpPositions, block, chain='ethereum', transformAddress=(addr)=>addr, excludeTokensRaw = [], retry = false) {
+async function unwrapUniswapLPs(balances, lpPositions, block, chain='ethereum', transformAddress=(addr)=>addr, excludeTokensRaw = [], retry = false, uni_type = 'standard') {
     const excludeTokens = excludeTokensRaw.map(addr=>addr.toLowerCase())
     const lpTokenCalls = lpPositions.map(lpPosition=>({
         target: lpPosition.token
@@ -451,7 +459,129 @@ async function unwrapUniswapLPs(balances, lpPositions, block, chain='ethereum', 
             const token0 = (await tokens0).output.find(call=>call.input.target === lpToken).output.toLowerCase()
             const token1 = (await tokens1).output.find(call=>call.input.target === lpToken).output.toLowerCase()
             const supply = (await lpSupplies).output.find(call=>call.input.target === lpToken).output
-            const {_reserve0, _reserve1} = (await lpReserves).output.find(call=>call.input.target === lpToken).output
+            if(supply === "0"){
+                return
+            }
+
+            let _reserve0, _reserve1
+            if (uni_type === 'standard') {
+                ({_reserve0, _reserve1} = (await lpReserves).output.find(call=>call.input.target === lpToken).output)
+            }
+            else if (uni_type === 'gelato') {
+                const gelatoPools = sdk.api.abi.multiCall({
+                    block,
+                    abi: gelatoPoolsAbi,
+                    calls: lpTokenCalls,
+                    chain
+                });
+                const gelatoPool = (await gelatoPools).output.find(call=>call.input.target === lpToken).output
+                const [ {output: _reserve0_}, {output: _reserve1_} ] = (await Promise.all([
+                    sdk.api.erc20.balanceOf({
+                        target: token0,
+                        owner: gelatoPool,
+                        block,
+                        chain
+                    })
+                    ,sdk.api.erc20.balanceOf({
+                        target: token1,
+                        owner: gelatoPool,
+                        block,
+                        chain
+                    })
+                ]))
+                _reserve0 = _reserve0_
+                _reserve1 = _reserve1_
+            }
+
+            if(!excludeTokens.includes(token0)){
+                const token0Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve0)).div(BigNumber(supply))
+                sdk.util.sumSingleBalance(balances, await transformAddress(token0), token0Balance.toFixed(0))
+            }
+            if(!excludeTokens.includes(token1)){
+                const token1Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve1)).div(BigNumber(supply))
+                sdk.util.sumSingleBalance(balances, await transformAddress(token1), token1Balance.toFixed(0))
+            }
+          } catch(e){
+              console.log(`Failed to get data for LP token at ${lpPosition.token} on chain ${chain}`)
+              throw e
+          }
+      }))
+}
+
+
+// Mostly similar to unwrapGelatoLPs with only edits being gelatoToken0ABI, same for token1 and balances of tokens which are actually held by the contract which address is given by the read pool method
+/* lpPositions:{
+    balance,
+    token
+}[]
+*/
+const gelatoPoolsAbi = {"inputs":[],"name":"pool","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}
+
+async function unwrapGelatoLPs(balances, lpPositions, block, chain='ethereum', transformAddress=(addr)=>addr, excludeTokensRaw = [], retry = false) {
+    const excludeTokens = excludeTokensRaw.map(addr=>addr.toLowerCase())
+    const lpTokenCalls = lpPositions.map(lpPosition=>({
+        target: lpPosition.token
+    }))
+    const lpReserves = sdk.api.abi.multiCall({
+        block,
+        abi: lpReservesAbi,
+        calls: lpTokenCalls,
+        chain
+    })
+    const lpSupplies = sdk.api.abi.multiCall({
+        block,
+        abi: lpSuppliesAbi,
+        calls: lpTokenCalls,
+        chain
+      })
+      const tokens0 = sdk.api.abi.multiCall({
+        block,
+        abi: token0Abi,
+        calls: lpTokenCalls,
+        chain
+      })
+      const tokens1 = sdk.api.abi.multiCall({
+        block,
+        abi: token1Abi,
+        calls: lpTokenCalls,
+        chain
+      })
+
+      // Different bit
+      if(retry){
+        await Promise.all([
+            [lpReserves, lpReservesAbi],
+            [lpSupplies, lpSuppliesAbi],
+            [tokens0, token0Abi], 
+            [tokens1, token1Abi]
+        ].map(async call=>{
+            await requery(await call[0], chain, block, call[1])
+        }))
+      }
+      await Promise.all(lpPositions.map(async lpPosition => {
+        try{
+            const lpToken = lpPosition.token
+            const token0 = (await tokens0).output.find(call=>call.input.target === lpToken).output.toLowerCase()
+            const token1 = (await tokens1).output.find(call=>call.input.target === lpToken).output.toLowerCase()
+            const supply = (await lpSupplies).output.find(call=>call.input.target === lpToken).output
+
+            // Different bits
+            const gelatoPool = (await gelatoPools).output.find(call=>call.input.target === lpToken).output
+            const [ {output: _reserve0}, {output: _reserve1} ] = (await Promise.all([
+                sdk.api.erc20.balanceOf({
+                    target: token0,
+                    owner: gelatoPool,
+                    block,
+                    chain
+                })
+                ,sdk.api.erc20.balanceOf({
+                    target: token1,
+                    owner: gelatoPool,
+                    block,
+                    chain
+                })
+            ]))
+
             if(!excludeTokens.includes(token0)){
                 const token0Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve0)).div(BigNumber(supply))
                 sdk.util.sumSingleBalance(balances, await transformAddress(token0), token0Balance.toFixed(0))
@@ -574,14 +704,14 @@ async function unwrapUniswapV3LPs(balances, univ3_Positions, block, chain='ether
                 block,
                 abi: 'erc20:totalSupply',
                 target: univ3_Position.vault,
-                chain: 'ethereum'
+                chain
             })
             const {output: heldLPshares} = await sdk.api.abi.call({
                 block,
                 abi: 'erc20:balanceOf',
                 target: univ3_Position.vault,
                 params: univ3_Position.pool,
-                chain: 'ethereum'
+                chain
             })
             const sharesRatio = heldLPshares / totalSupply
 
@@ -591,7 +721,7 @@ async function unwrapUniswapV3LPs(balances, univ3_Positions, block, chain='ether
                 abi: 'erc20:balanceOf',
                 target: uniV3_nft_contract,
                 params: univ3_Position.vault,
-                chain: 'ethereum'
+                chain
             })
             */
            // Here we assume only the first nft position is retrieved
@@ -601,7 +731,7 @@ async function unwrapUniswapV3LPs(balances, univ3_Positions, block, chain='ether
                 abi: abi_staking['erc721_tokenOfOwnerByIndex'],
                 target: uniV3_nft_contract,
                 params: [univ3_Position.vault, 0], 
-                chain: 'ethereum'
+                chain
             })
 
             const positionBalances = await getUniv3PositionBalances(position_id, block)
@@ -899,5 +1029,6 @@ module.exports = {
     unwrapCreamTokens,
     sumLPWithOnlyOneToken,
     sumTokensSharedOwners,
-    sumLPWithOnlyOneTokenOtherThanKnown
+    sumLPWithOnlyOneTokenOtherThanKnown, 
+    unwrapGelatoLPs
 }

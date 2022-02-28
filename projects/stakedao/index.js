@@ -45,6 +45,15 @@ const crv_steth_vault = {
   crvToken: '0x06325440D014e39736583c165C2963BA99fAf14E',
   abi:'balance'
 }
+const angle_vault = {
+  contract: '0x79B738e404208e9607c3B4D4B3800Ed0d4A0e05F',
+  sanUsdcEurGauge: '0x51fE22abAF4a26631b2913E417c0560D547797a7',
+  usdcToken: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+  stableMasteFront: '0x5adDc89785D75C86aB939E9e15bfBBb7Fc086A87',
+  usdcPoolManager: '0xe9f183FC656656f1F17af1F2b0dF79b8fF9ad8eD',
+  abi:'balanceOf',
+  abiCM: 'collateralMap'
+}
 
 // Polygon
 const crv_3crv_vault_polygon = {
@@ -131,6 +140,20 @@ async function ethereum(timestamp, block) {
     abi: abi[crv_perpetual_vault.abi],
     params: crv_perpetual_vault.contract
   })
+  const sanUsdcEurInVault = sdk.api.abi.call({
+    target: angle_vault.sanUsdcEurGauge,
+    block,
+    abi: abi[angle_vault.abi],
+    params: angle_vault.contract
+  })
+  const collateralMap = sdk.api.abi.call({
+    target: angle_vault.stableMasteFront,
+    block,
+    abi: abi[angle_vault.abiCM],
+    params: angle_vault.usdcPoolManager
+  })
+  const sanUsdcEurRate = (await collateralMap).output.sanRate
+  const sanUsdcEurVaultBalance = (await sanUsdcEurInVault).output
   await Promise.all(vaults.map(async vault=>{
     const crvBalance = await sdk.api.abi.call({
       target: vault.contract,
@@ -140,6 +163,7 @@ async function ethereum(timestamp, block) {
     await unwrapCrv(balances, vault.crvToken, crvBalance.output, block)
   }))
   sdk.util.sumSingleBalance(balances, crvToken, (await crvInPerpetual).output.amount)
+  sdk.util.sumSingleBalance(balances, angle_vault.usdcToken, parseInt(sanUsdcEurVaultBalance * sanUsdcEurRate / 10**18))
   return balances
 }
 

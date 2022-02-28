@@ -10,6 +10,9 @@ const USDC = "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E";
 const PTP_USDCe_POOL = "0x909B0ce4FaC1A0dCa78F8Ca7430bBAfeEcA12871";
 const USDCe = "0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664";
 
+const PTP_USDT_POOL = "0x776628A5C37335608DD2a9538807b9bba3869E14";
+const USDT = "0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7";
+
 const PTP_USDTe_POOL = "0x0D26D103c91F63052Fbca88aAF01d5304Ae40015";
 const USDTe = "0xc7198437980c041c805a1edcba50c1ce5db95118";
 
@@ -33,6 +36,10 @@ async function balanceOf(owner, target, block) {
 async function tvl(timestamp, ethereumBlock, chainBlocks) {
   const block = chainBlocks["avax"];
   let balances = {};
+
+  const usdtBalance = await balanceOf(PTP_USDT_POOL, USDT, block);
+  const usdteBalance = await balanceOf(PTP_USDTe_POOL, USDTe, block);
+
   balances["dai"] = await balanceOf(PTP_DAIe_POOL, DAIe, block);
   balances["usd-coin"] = await balanceOf(PTP_USDC_POOL, USDC, block);
   balances["usd-coin-avalanche-bridged-usdc-e"] = await balanceOf(
@@ -40,7 +47,7 @@ async function tvl(timestamp, ethereumBlock, chainBlocks) {
     USDCe,
     block
   );
-  balances["tether"] = await balanceOf(PTP_USDTe_POOL, USDTe, block);
+  balances["tether"] = usdtBalance + usdteBalance;
   balances["magic-internet-money"] = await balanceOf(PTP_MIM_POOL, MIM, block);
   return balances;
 }
