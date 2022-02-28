@@ -104,5 +104,4 @@ module.exports = {
         pool2,
         staking: stakingPricedLP(masonry, share, 'cronos', pool2LPs[1], 'mmfinance', true),
     }
-
-} // node test.js projects/svn/svn2.js 
+};
