@@ -127,16 +127,12 @@ const staking = async () => {
 
 async function fetch() {
   const total =
-    (await treasury()) +
-    (await eth()) +
-    (await torCurveLP()) +
-    (await bank()) +
-    (await staking());
+    (await treasury()) + (await eth()) + (await torCurveLP()) + (await bank());
   return total;
 }
 
 module.exports = {
-  staking: {
+  fantom: {
     fetch: staking,
   },
   bank: {
