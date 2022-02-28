@@ -139,10 +139,10 @@ async function fetch() {
 module.exports = {
   fantom: {
     fetch: staking,
-    fetch: borrowed,
   },
   bank: {
     fetch: bankSupplied,
+    fetch: borrowed,
   },
   torCurveLP: {
     fetch: torCurveLP,
