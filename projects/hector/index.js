@@ -54,24 +54,6 @@ async function borrowed() {
 
   return results.protocolMetrics[0].bankBorrowed;
 }
-async function torCurveLP() {
-  var endpoint =
-    "https://api.thegraph.com/subgraphs/name/hectordao-hec/hector-dao";
-  var graphQLClient = new GraphQLClient(endpoint);
-
-  var query = gql`
-    query {
-      tors(first: 1, orderBy: timestamp, orderDirection: desc) {
-        torTVL
-      }
-    }
-  `;
-  const results = await retry(
-    async (bail) => await graphQLClient.request(query)
-  );
-
-  return +results.tors[0].torTVL;
-}
 async function eth() {
   var endpoint =
     "https://api.thegraph.com/subgraphs/name/hectordao-hec/hector-eth";
@@ -90,7 +72,6 @@ async function eth() {
 
   return +results.ethMetrics[0].treasuryBaseRewardPool;
 }
-
 const staking = async () => {
   var endpoint =
     "https://api.thegraph.com/subgraphs/name/hectordao-hec/hector-dao";
@@ -107,7 +88,7 @@ const staking = async () => {
     async (bail) => await graphQLClient.request(query)
   );
   return +results.protocolMetrics[0].totalValueLocked;
-};
+}
 // node test.js projects/hector/index.js
 module.exports = {
   staking: {
@@ -116,11 +97,5 @@ module.exports = {
   borrowed: {
     fetch: borrowed,
   },
-  ethereum: {
-    tvl: eth
-  },
-  treasury: {
-    fetch: async () => ((await eth()) + (await torCurveLP()) + (await treasury()) + (await bankLiquidity())),
-  },
-  fetch: eth
+  fetch: async () => ((await eth())  + (await treasury()) + (await bankLiquidity())),
 };
