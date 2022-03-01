@@ -1,7 +1,7 @@
 const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl");
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
-const wGLMR = "0x5f6c5C2fB289dB2228d159C69621215e354218d7"; 
+const wGLMR = "0x5f6c5C2fB289dB2228d159C69621215e354218d7";
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { transformBscAddress } = require("../helper/portedTokens");
 
@@ -30,9 +30,8 @@ async function dmodBscStakingPool(timestamp, block, chainBlocks) {
     ).output
   );
 
-  return stakingBalance.div(new BigNumber(10).pow(decimals)).toFixed(0);
+  return { 'demodyfi': stakingBalance.div(new BigNumber(10).pow(decimals)).toFixed(0) };
 }
-
 async function dmodEthereumStakingPool(timestamp, block, chainBlocks) {
   const stakingBalance = new BigNumber(
     (
@@ -56,9 +55,8 @@ async function dmodEthereumStakingPool(timestamp, block, chainBlocks) {
     ).output
   );
 
-  return stakingBalance.div(new BigNumber(10).pow(decimals)).toFixed(0);
+  return { 'demodyfi': stakingBalance.div(new BigNumber(10).pow(decimals)).toFixed(0) };
 }
-
 async function dmodBscLPPool(timestamp, block, chainBlocks) {
   const transform = await transformBscAddress();
   const balances = {};
@@ -90,7 +88,6 @@ async function dmodBscLPPool(timestamp, block, chainBlocks) {
 
   return balances;
 }
-
 async function dmodEthereumLPPool(timestamp, block, chainBlocks) {
   const balances = {};
 
@@ -120,35 +117,17 @@ async function dmodEthereumLPPool(timestamp, block, chainBlocks) {
   return balances;
 }
 
-async function bscTvl(timestamp, block, chainBlocks) {
-  const balances = {};
-  const stakingBalance = await dmodBscStakingPool(
-    timestamp,
-    block,
-    chainBlocks
-  );
-  const lpBalances = await dmodBscLPPool(timestamp, block, chainBlocks);
-  sdk.util.sumSingleBalance(balances, "demodyfi", stakingBalance);
-
-  return { ...balances, ...lpBalances };
-}
-
-async function mainnetTvl(timestamp, block) {
-  const balances = {};
-  const stakingBalance = await dmodEthereumStakingPool(timestamp, block);
-  const lpBalances = await dmodEthereumLPPool(timestamp, block);
-  sdk.util.sumSingleBalance(balances, "demodyfi", stakingBalance);
-
-  return { ...balances, ...lpBalances };
-}
-
 module.exports = {
   misrepresentedTokens: true,
   ethereum: {
-    tvl: mainnetTvl,
+    tvl: () => ({}),
+    staking: dmodEthereumStakingPool,
+    pool2: dmodEthereumLPPool
   },
   bsc: {
-    tvl: bscTvl,
+    tvl: () => ({}),
+    staking: dmodBscStakingPool,
+    pool2: dmodBscLPPool
   },
   moonbeam: {
     tvl: calculateUsdUniTvl(
@@ -160,3 +139,4 @@ module.exports = {
     ),
   },
 };
+// node test.js projects/demodyfi/index.js

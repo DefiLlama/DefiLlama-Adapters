@@ -444,7 +444,11 @@ function fixHarmonyBalances(balances) {
     }
   }
 }
-
+function fixOasisBalances(balances) {
+  if (Object.keys(balances).includes('oasis-network')) {
+      balances['oasis-network'] = balances['oasis-network'] / 10 ** 18;
+  }
+}
 async function transformIotexAddress() {
   return (addr) => {
     const dstToken = Object.keys(IOTEX_CG_MAPPING).find(token => compareAddresses(addr, token))
@@ -568,6 +572,7 @@ module.exports = {
   transformKccAddress,
   transformArbitrumAddress,
   fixHarmonyBalances,
+  fixOasisBalances,
   transformIotexAddress,
   transformMetisAddress,
   transformBobaAddress,
