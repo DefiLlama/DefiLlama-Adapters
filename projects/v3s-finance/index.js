@@ -1,6 +1,7 @@
 const { addFundsInMasterChef } = require("../helper/masterchef");
-const { stakingUnknownPricedLP } = require("../helper/staking");
+const { stakingUnknownPricedLP, stakingPricedLP } = require("../helper/staking");
 const farmUtils = require("./farm-utils");
+const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 
 const sdk = require("@defillama/sdk");
 const v3s = "0xC7e99a2f064Cf86aF91Db252a9D8Bc16e6fE7427";
@@ -9,6 +10,9 @@ const krx = "0xf0681bb7088ac68a62909929554aa22ad89a21fb";
 const krx_usdc = "0x9504a7cEd300B2C79e64FC63f368fC27011Fe916";
 const masterchefV3S = "0xEe38B8d70382c50cDD020785D0aC551d259Cec84";
 const boardroom = "0x3F728308A0fb99a8cE4F3F4F87E4e67a38F66746";
+const v3sVvspAddress = "0x57b975364140e4a8d1C96FAa00225b855BaB0E8E";
+const vShareCroAddress = "0xcb0704BC4E885384ac96F0ED22B9204C3adD91AD"
+const vShareRewardsAddr = "0x569608516A81C0B1247310A3E0CD001046dA0663";
 
 const usdc = "0xc21223249CA28397B4B6541dfFaEcC539BfF0c59";
 
@@ -23,10 +27,10 @@ async function tvl(timestamp, block, chainBlocks) {
     "cronos",
     (addr) => `cronos:${addr}`,
     undefined,
-    [krx, v3s],
+    [krx,],
     true,
     true,
-    v3s
+    vshare
   );
 
   //get staking KRX token. Have to calculate manually becase cannot get KRX price
@@ -45,48 +49,49 @@ async function tvl(timestamp, block, chainBlocks) {
   return balances;
 }
 
-async function pool2(timestamp, block, chainBlocks) {
+const pool2LPs = [
+  v3sVvspAddress,
+  vShareCroAddress,
+];
+
+async function calcPool2(masterchef, lps, block, chain) {
   let balances = {};
-  // v3s LP
-  const farmTvl = await farmUtils.farmLocked(chainBlocks.cronos);
-
-  //add VVS balance in LP pool
-  sdk.util.sumSingleBalance(
+  const lpBalances = (
+    await sdk.api.abi.multiCall({
+      calls: lps.map((p) => ({
+        target: p,
+        params: masterchef,
+      })),
+      abi: "erc20:balanceOf",
+      block,
+      chain,
+    })
+  ).output;
+  let lpPositions = [];
+  lpBalances.forEach((p) => {
+    lpPositions.push({
+      balance: p.output,
+      token: p.input.target,
+    });
+  });
+  await unwrapUniswapLPs(
     balances,
-    "cronos:0x2D03bECE6747ADC00E1a131BBA1469C15fD11e03",
-    farmTvl["cronos:0x2D03bECE6747ADC00E1a131BBA1469C15fD11e03"]
-  );
-  //add V3S balance in V3S-VVS LP pool
-  sdk.util.sumSingleBalance(
-    balances,
-    "cronos:0x2D03bECE6747ADC00E1a131BBA1469C15fD11e03",
-    farmTvl["cronos:0x2D03bECE6747ADC00E1a131BBA1469C15fD11e03"]
-  );
-
-  //add WCRO balance in LP pool
-  sdk.util.sumSingleBalance(
-    balances,
-    "cronos:0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23",
-    farmTvl["cronos:0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23"]
-  );
-  //add V3S, VSHARE balance in *-WCRO LP pool
-  sdk.util.sumSingleBalance(
-    balances,
-    "cronos:0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23",
-    farmTvl["cronos:0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23"]
+    lpPositions,
+    block,
+    chain,
+    (addr) => `${chain}:${addr}`
   );
   return balances;
+}
+
+async function v3sPool2(timestamp, block, chainBlocks) {
+  return await calcPool2(vShareRewardsAddr, pool2LPs, chainBlocks.cronos, "cronos");
 }
 
 module.exports = {
   cronos: {
     tvl: tvl,
-    pool2: pool2,
-    staking: stakingUnknownPricedLP(
-      boardroom,
-      vshare,
-      "cronos",
-      "0xcb0704bc4e885384ac96f0ed22b9204c3add91ad"
-    )
+    pool2: v3sPool2,
+    staking: stakingPricedLP(boardroom, vshare, "cronos", vShareCroAddress, "wrapped-cro")
   },
 };
