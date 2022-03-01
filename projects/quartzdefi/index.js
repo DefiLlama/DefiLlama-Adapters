@@ -17,6 +17,8 @@ const ashareRewardPool = "0x1da194F8baf85175519D92322a06b46A2638A530";
 // HARMONY ADDRESSES
 const quartz = "0xb9E05B4C168B56F73940980aE6EF366354357009";
 const qshare = "0xFa4b16b0f63F5A6D0651592620D585D308F749A4";
+const xquartz = "0xCa1dd590C3ceBa9F57E05540B91AB3F0Ed08580a";
+const singleQuartzFarm = "0x1da194F8baf85175519D92322a06b46A2638A530";
 
 const qshareRewardPool = "0x1da194f8baf85175519d92322a06b46a2638a530";
 const qshareboardroom = "0xe1e48d3476027af9dc92542b3a60f2d45a36e082";
@@ -61,11 +63,43 @@ async function harmonyPool2(timestamp, block, chainBlocks) {
     return balances;
 }
 
+async function harmonyStaking(timestamp, block, chainBlocks) {
+    let balances = {};
+    const chain = "harmony";
+    block = chainBlocks.harmony;
+
+    const tokenBalances = (await sdk.api.abi.multiCall({
+        calls: [
+            {
+                target: qshare,
+                params: qshareboardroom
+            },
+            {
+                target: quartz,
+                params: singleQuartzFarm
+            },
+            {
+                target: quartz,
+                params: xquartz
+            }
+        ],
+        abi: "erc20:balanceOf",
+        block,
+        chain
+    })).output;
+
+    tokenBalances.forEach(p => {
+        sdk.util.sumSingleBalance(balances, `harmony:${p.input.target}`, p.output);
+    })
+
+    return balances;
+}
+
 module.exports = {
     misrepresentedTokens: true,
     harmony: {
         tvl: async () => ({}),
-        staking: staking(qshareboardroom, qshare, "harmony"),
+        staking: harmonyStaking,
         pool2: harmonyPool2
     },
     bsc: {
