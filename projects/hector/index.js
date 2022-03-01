@@ -52,7 +52,7 @@ async function borrowed() {
     async (bail) => await graphQLClient.request(query)
   );
 
-  return +results.protocolMetrics[0].bankBorrowed;
+  return results.protocolMetrics[0].bankBorrowed;
 }
 async function torCurveLP() {
   var endpoint =
@@ -108,7 +108,7 @@ const staking = async () => {
   );
   return +results.protocolMetrics[0].totalValueLocked;
 };
-
+// node test.js projects/hector/index.js
 module.exports = {
   staking: {
     fetch: staking,
@@ -122,4 +122,5 @@ module.exports = {
   treasury: {
     fetch: async () => ((await eth()) + (await torCurveLP()) + (await treasury()) + (await bankLiquidity())),
   },
+  fetch: eth
 };
