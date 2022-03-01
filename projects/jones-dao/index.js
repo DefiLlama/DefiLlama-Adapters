@@ -23,7 +23,7 @@ const lpStaking = [
     "0x13f6A63867046107780Bc3fEBdeE90E7AfCdfd99", // JONES-USDC LP 
     "0xBAc58e8b57935A0B60D5Cb4cd9F6C21049595F04", // jETH-ETH LP 
     "0x7eCe38dBE9D61D0d9Bf2D804A87A7d21b5937a56", // jgOHM-gOHM LP
-    // Add jDPX-DPX LP staking
+    "0x5723be83199C9Ec68ED0Ac979e98381224870e7f" // jDPX-DPX LP
 ]
 
 const lps = [
@@ -31,7 +31,7 @@ const lps = [
     "0xa6efc26daa4bb2b9bf5d23a0bc202a2badc2b59e", // JONES-USDC LP
     "0xdf1a6dd4e5b77d7f2143ed73074be26c806754c5", // jETH-ETH LP
     "0x292d1587a6bb37e34574c9ad5993f221d8a5616c", // jgOHM-gOHM LP
-    //"0xeeb24360c8c7a87933d16b0075e10e1a30ad65b7" // jDPX-DPX LP
+    "0xeeb24360c8c7a87933d16b0075e10e1a30ad65b7" // jDPX-DPX LP
 ]
 
 async function tvl(timestamp, block, chainBlocks) {
