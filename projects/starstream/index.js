@@ -14,5 +14,7 @@ module.exports = {
   doublecounted: true,
   timetravel: false,
   misrepresentedTokens: true,
-  fetch
+  metis: {
+    fetch
+  }
 }
