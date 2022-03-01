@@ -2,7 +2,7 @@ const sdk = require('@defillama/sdk')
 const BigNumber = require('bignumber.js')
 const {getBlock} = require('../helper/getBlock')
 const {transformArbitrumAddress} = require('../helper/portedTokens')
-const {polygon, moonriver} = require('./subgraph')
+const {polygon, moonriver, fantom} = require('./subgraph')
 
 const xUniswapV2TVL = require('./xUniswapV2');
 
@@ -72,6 +72,9 @@ const chainTvls = {
   },
   moonriver: {
     tvl: moonriver.tvl
+  },
+  fantom: {
+    tvl: fantom.tvl
   },
 };
 
