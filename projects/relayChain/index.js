@@ -374,7 +374,7 @@ module.exports = {
   polygon:{
     tvl:polygonTvl,
   }, 
-  ftm:{
+  fantom:{
     tvl:fantomTvl,
   }, 
   harmony :{
