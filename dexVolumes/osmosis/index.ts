@@ -1,3 +1,6 @@
+import { DexVolumeAdapter } from "../dexVolume.type";
+import { getTimestampAtStartOfHour } from "../helper/getTimestampAtStartOfHour";
+
 const BigNumber = require("bignumber.js");
 const { fetchURL } = require("../helper/utils");
 
@@ -6,6 +9,7 @@ const historicalVolumeEndpoint =
 const dailyVolumeEndpoint = "https://api-osmosis.imperator.co/volume/v1/actual";
 
 const graphs = async () => {
+  const timestamp = getTimestampAtStartOfHour();
   const historicalVolume = (await fetchURL(historicalVolumeEndpoint))?.data;
   const dailyVolume = (await fetchURL(dailyVolumeEndpoint))?.data.value;
 
@@ -17,12 +21,20 @@ const graphs = async () => {
   return {
     totalVolume,
     dailyVolume,
+    timestamp,
   };
 };
 
-module.exports = {
+const adapter: DexVolumeAdapter = {
   volume: {
-    cosmos: graphs,
+    cosmos: {
+      fetch: graphs,
+      runAtCurrTime: true,
+      customBackfill: () => {},
+      start: 0,
+    },
     // TODO custom backfill
   },
 };
+
+export default adapter;
