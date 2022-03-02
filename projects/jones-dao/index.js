@@ -46,7 +46,6 @@ async function tvl(timestamp, block, chainBlocks) {
         block,
         chain
     })).output;
-
     if (ethManagementWindow === true) {
         const ethSnapshot = (await sdk.api.abi.call({
             target: ethVault,
@@ -66,7 +65,7 @@ async function tvl(timestamp, block, chainBlocks) {
 
     const vaultManagementWindows = (await sdk.api.abi.multiCall({
         calls: vaultandCollateral.map(p => ({
-            target: p[1]
+            target: p[0]
         })),
         abi: abi.MANAGEMENT_WINDOW_OPEN,
         block,
@@ -75,7 +74,7 @@ async function tvl(timestamp, block, chainBlocks) {
 
     const vaultSnapshots = (await sdk.api.abi.multiCall({
         calls: vaultandCollateral.map(p => ({
-            target: p[1]
+            target: p[0]
         })),
         abi: abi.snapshotVaultBalance,
         block,
