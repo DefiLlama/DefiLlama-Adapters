@@ -1,5 +1,6 @@
 const { getReserves, getStarlayTvl } = require("./starlay");
 const BigNumber = require("bignumber.js");
+const { getV2Borrowed } = require("../helper/aave");
 
 const tokens = {
   // WASTR
@@ -27,21 +28,34 @@ function asKnownAs(underlying) {
   return Object.values(tokens)[idx];
 }
 
-function astar() {
+function astar(borrowed) {
   return async (timestamp, block) => {
     const balances = {};
-    const [lTokens, reserveTokens] = await getReserves(block);
+    const [lTokens, reserveTokens, validProtocolDataHelpers] =
+      await getReserves(block);
     const transferFromAddress = (id) => asKnownAs(id);
     const chain = "astar";
 
-    await getStarlayTvl(
-      balances,
-      block,
-      chain,
-      lTokens,
-      reserveTokens,
-      transferFromAddress
-    );
+    if (borrowed) {
+      await getV2Borrowed(
+        balances,
+        block,
+        chain,
+        reserveTokens,
+        validProtocolDataHelpers,
+        transferFromAddress
+      );
+    } else {
+      await getStarlayTvl(
+        balances,
+        block,
+        chain,
+        lTokens,
+        reserveTokens,
+        transferFromAddress
+      );
+    }
+
     const res = Object.keys(balances).map((key, index) => {
       console.log("key", key);
       if (key.startsWith("0x")) return { symbol: key, balance: balances[key] };
@@ -60,6 +74,7 @@ module.exports = {
   timetravel: true,
   methodology: `Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There's multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending.`,
   astar: {
-    tvl: astar(),
+    tvl: astar(false),
+    borrowed: astar(true),
   },
 };
