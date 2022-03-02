@@ -12,7 +12,6 @@ const bshareTokenAddress = "0x49c290ff692149a4e16611c694fded42c954ab7a";
 const tombAddress = "0x6c021ae822bea943b2e66552bde1d2696a53fbb7";
 const usdcAddress = "0x04068da6c83afcfa0e13ba15a6696662335d5b75";
 const wftmAddress = "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83";
-const ethAddress = "0x74b23882a30290451a17c44f4f05243b6b58c76d";
 
 // LP Addresses
 const basedTombLpAddress = "0xab2ddcbb346327bbdf97120b0dd5ee172a9c8f9e";
@@ -34,12 +33,9 @@ const poolLPs = [
 const treasuryTokens = [
   basedTombLpAddress,
   basedBshareLpAddress,
-  stakedG3CrvAddress,
-  stakedCrv3CryptoAddress,
   tombAddress,
   usdcAddress,
   wftmAddress,
-  ethAddress,
   basedTokenAddress,
   bshareTokenAddress,
 ]
@@ -124,25 +120,7 @@ async function calcTreasury(treasury, tokens, block, chain) {
     (addr) => `${chain}:${addr}`
   );
 
-  await unwrapCrv(
-    balances,
-    g3CrvAddress, // sending address of g3Crv LP instead of receipt token. Both have same value.
-    tokenBalances[2].output,
-    block,
-    chain,
-    (addr) => `${chain}:${addr}`
-  );
-
-  await unwrapCrv(
-    balances,
-    crv3CryptoAddress, // sending address of crv3Crypto LP instead of receipt token. Both have same value.
-    tokenBalances[3].output,
-    block,
-    chain,
-    (addr) => `${chain}:${addr}`
-  );
-
-  tokenBalances.slice(4).map((balance) => {
+  tokenBalances.slice(2).map((balance) => {
     sdk.util.sumSingleBalance(balances, `${chain}:${balance.input.target}`, balance.output);
   });
 
