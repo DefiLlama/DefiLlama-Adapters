@@ -1,3 +1,5 @@
+import { DexVolumeAdapter } from "../dexVolume.type";
+
 const {
   getChainVolume,
   DEFAULT_TOTAL_VOLUME_FIELD,
@@ -27,7 +29,7 @@ const graphs = getChainVolume({
   },
 });
 
-module.exports = {
+const adapter: DexVolumeAdapter = {
   volume: {
     [ETHEREUM]: {
       fetch: graphs(ETHEREUM),
@@ -39,3 +41,5 @@ module.exports = {
     },
   },
 };
+
+export default adapter;
