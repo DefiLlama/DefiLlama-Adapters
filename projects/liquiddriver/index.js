@@ -10,9 +10,13 @@ const BigNumber = require("bignumber.js");
 const MASTERCHEF = "0x742474dae70fa2ab063ab786b1fbe5704e861a0c";
 const MINICHEF = "0x6e2ad6527901c9664f016466b8DA1357a004db0f";
 const usdtTokenAddress = "0x049d68029688eabf473097a2fc38ef61633a3c7a";
+const usdcTokenAddress = "0x04068da6c83afcfa0e13ba15a6696662335d5b75";
+const wftmTokenAddress = "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83";
 const spiritTokenAddress = "0x5Cc61A78F164885776AA610fb0FE1257df78E59B";
-const spiritLinspiritLpInBeethoven = "0x20dd72Ed959b6147912C2e529F0a0C651c33c9ce";
+const beethovenVaultAddress = "0x20dd72Ed959b6147912C2e529F0a0C651c33c9ce";
 const spiritLinspiritLpInSpirit = "0x54d5b6881b429a694712fa89875448ca8adf06f4";
+const linspiritStakingAddress = "0x1CC765cD7baDf46A215bD142846595594AD4ffe3";
+const linspiritTokenAddress = "0xc5713B6a0F26bf0fdC1c52B90cd184D950be515C";
 
 const LQDR = "0x10b620b2dbac4faa7d7ffd71da486f5d44cd86f9";
 const xLQDR = "0x3Ae658656d1C526144db371FaEf2Fff7170654eE";
@@ -37,7 +41,10 @@ const masterchefTvl = async (timestamp, ethBlock, chainBlocks) => {
 const minichefTvl = async (timestamp, ethBlock, chainBlocks) => {
   let balances = {};
   let curveTvlInUsdt;
-  let beethovenTvlInSpirit;
+  let bptLinspiritTvlInSpirit;
+  let bptQuartetTvlInUsdc;
+  let ftmOperaTvlInUsdc;
+  let linspiritPriceInSpirit;
 
   const transformAddress = await transformFantomAddress();
 
@@ -72,7 +79,7 @@ const minichefTvl = async (timestamp, ethBlock, chainBlocks) => {
     }),
   ]);
 
-  const [symbols, tokenBalances] = await Promise.all([
+  const [symbols, tokenBalances, strategyBalances] = await Promise.all([
     sdk.api.abi.multiCall({
       block: chainBlocks["fantom"],
       calls: lpTokens.output.map((p) => ({
@@ -90,21 +97,20 @@ const minichefTvl = async (timestamp, ethBlock, chainBlocks) => {
       abi: "erc20:balanceOf",
       chain: "fantom",
     }),
+    sdk.api.abi.multiCall({
+      block: chainBlocks["fantom"],
+      calls: strategies.output
+        .filter(
+          (strategy) =>
+            strategy.output !== "0x0000000000000000000000000000000000000000"
+        )
+        .map((strategy) => ({
+          target: strategy.output,
+        })),
+      abi: abi.balanceOf,
+      chain: "fantom",
+    })
   ]);
-
-  const strategyBalances = await sdk.api.abi.multiCall({
-    block: chainBlocks["fantom"],
-    calls: strategies.output
-      .filter(
-        (strategy) =>
-          strategy.output !== "0x0000000000000000000000000000000000000000"
-      )
-      .map((strategy) => ({
-        target: strategy.output,
-      })),
-    abi: abi.balanceOf,
-    chain: "fantom",
-  });
 
   const lpPositions = [];
   let i = 0;
@@ -123,7 +129,48 @@ const minichefTvl = async (timestamp, ethBlock, chainBlocks) => {
 
     const token = balance.input.target;
     if (symbols.output[idx].success) {
-      if (symbols.output[idx].output.includes("LP")) {
+      if (
+        [
+          "0x936D23C83c2469f6a14B9f5bEaec13879598A5aC", // ICE-FTM SPIRIT LP
+          "0x31c0385DDE956f95D43Dac80Bd74FEE149961f4c", // SPELL-fUSDT SPIRIT LP
+          "0x30872e4fc4edbFD7a352bFC2463eb4fAe9C09086", // SCREAM-FTM SPOOKY LP
+        ].includes(token)
+      ) {
+        const [reserves, totalSupply] = await Promise.all([
+          sdk.api.abi.call({
+            abi: abi.getReserves,
+            target: token,
+            chain: "fantom",
+            block: chainBlocks["fantom"],
+          }),
+          sdk.api.abi.call({
+            abi: abi.totalSupply,
+            target: token,
+            chain: "fantom",
+            block: chainBlocks["fantom"],
+          }),
+        ]);
+        const lpTokenRatio = new BigNumber(totalSupply.output).isZero() ? new BigNumber(0) : totalBalance.div(totalSupply.output);
+        if (token === "0x936D23C83c2469f6a14B9f5bEaec13879598A5aC") { // ICE-FTM SPIRIT LP
+          sdk.util.sumSingleBalance(
+            balances,
+            transformAddress(wftmTokenAddress),
+            new BigNumber(Number(reserves.output[0])).times(2).times(lpTokenRatio).toFixed(0)
+          );
+        } else if (token === "0x31c0385DDE956f95D43Dac80Bd74FEE149961f4c") { // SPELL-fUSDT SPIRIT LP
+          sdk.util.sumSingleBalance(
+            balances,
+            transformAddress(usdtTokenAddress),
+            new BigNumber(Number(reserves.output[0])).times(2).times(lpTokenRatio).toFixed(0)
+          );
+        } else if (token === "0x30872e4fc4edbFD7a352bFC2463eb4fAe9C09086") { // SCREAM-FTM SPOOKY LP
+          sdk.util.sumSingleBalance(
+            balances,
+            transformAddress(wftmTokenAddress),
+            new BigNumber(Number(reserves.output[0])).times(2).times(lpTokenRatio).toFixed(0)
+          );
+        }
+      } else if (symbols.output[idx].output.includes("LP") && symbols.output[idx].output != "BeetXLP_MIM_USDC_USDT") {
         lpPositions.push({
           balance: totalBalance.toString(10),
           token,
@@ -140,10 +187,10 @@ const minichefTvl = async (timestamp, ethBlock, chainBlocks) => {
           ).output;
           curveTvlInUsdt = totalBalance.times(virtual_price).div(1e30).toFixed(0);
         } else if (symbols.output[idx].output === "BPT_LINSPIRIT") {
-          const [lpBalances, reserves, totalSupply] = await Promise.all([
+          const [tokenBalances, reserves, totalSupply] = await Promise.all([
             sdk.api.abi.call({
               abi: abi.getPoolTokens,
-              target: spiritLinspiritLpInBeethoven,
+              target: beethovenVaultAddress,
               params: ["0x30a92a4eeca857445f41e4bb836e64d66920f1c0000200000000000000000071"],
               chain: "fantom",
               block: chainBlocks["fantom"],
@@ -162,8 +209,45 @@ const minichefTvl = async (timestamp, ethBlock, chainBlocks) => {
             }),
           ]);
           const lpTokenRatio = new BigNumber(totalSupply.output).isZero() ? new BigNumber(0) : totalBalance.div(totalSupply.output);
-          const linSpiritInQuoteToken = new BigNumber(Number(reserves.output[0])).div(Number(reserves.output[1])).times(Number(lpBalances.output['1'][1]))
-          beethovenTvlInSpirit = new BigNumber(Number(lpBalances.output['1'][0])).plus(linSpiritInQuoteToken).times(lpTokenRatio).toFixed(0);
+          linspiritPriceInSpirit = new BigNumber(Number(reserves.output[0])).div(Number(reserves.output[1]))
+          const linSpiritBalanceInSpirit = linspiritPriceInSpirit.times(Number(tokenBalances.output['1'][1]))
+          bptLinspiritTvlInSpirit = new BigNumber(Number(tokenBalances.output['1'][0])).plus(linSpiritBalanceInSpirit).times(lpTokenRatio).toFixed(0);
+        } else if (symbols.output[idx].output === "BPT-QUARTET") {
+          const [tokenBalances, totalSupply] = await Promise.all([
+            sdk.api.abi.call({
+              abi: abi.getPoolTokens,
+              target: beethovenVaultAddress,
+              params: ["0xf3a602d30dcb723a74a0198313a7551feaca7dac00010000000000000000005f"],
+              chain: "fantom",
+              block: chainBlocks["fantom"],
+            }),
+            sdk.api.abi.call({
+              abi: abi.totalSupply,
+              target: token,
+              chain: "fantom",
+              block: chainBlocks["fantom"],
+            }),
+          ]);
+          const lpTokenRatio = new BigNumber(totalSupply.output).isZero() ? new BigNumber(0) : totalBalance.div(totalSupply.output);
+          bptQuartetTvlInUsdc = new BigNumber(tokenBalances.output['1'][0]).times(4).times(lpTokenRatio).toFixed(0);
+        } else if (symbols.output[idx].output === "FTM-OPERA") {
+          const [tokenBalances, totalSupply] = await Promise.all([
+            sdk.api.abi.call({
+              abi: abi.getPoolTokens,
+              target: beethovenVaultAddress,
+              params: ["0xcdf68a4d525ba2e90fe959c74330430a5a6b8226000200000000000000000008"],
+              chain: "fantom",
+              block: chainBlocks["fantom"],
+            }),
+            sdk.api.abi.call({
+              abi: abi.totalSupply,
+              target: token,
+              chain: "fantom",
+              block: chainBlocks["fantom"],
+            }),
+          ]);
+          const lpTokenRatio = new BigNumber(totalSupply.output).isZero() ? new BigNumber(0) : totalBalance.div(totalSupply.output);
+          ftmOperaTvlInUsdc = new BigNumber(tokenBalances.output['1'][0]).times(100).div(30).times(lpTokenRatio).toFixed(0);
         } else {
           sdk.util.sumSingleBalance(
             balances,
@@ -175,13 +259,40 @@ const minichefTvl = async (timestamp, ethBlock, chainBlocks) => {
     }
   });
 
-  await unwrapUniswapLPs(
-    balances,
-    lpPositions,
-    chainBlocks["fantom"],
-    "fantom",
-    transformAddress
-  );
+  const beetXLP_MIM_USDC_USDT = 'fantom:0xD163415BD34EF06f57C58D2AEd5A5478AfB464cC';
+
+  if (beetXLP_MIM_USDC_USDT in balances) {
+    sdk.util.sumSingleBalance(
+      balances,
+      transformAddress(usdtTokenAddress),
+      Math.round(balances[beetXLP_MIM_USDC_USDT] / 10 ** 12)
+    );
+    delete balances[beetXLP_MIM_USDC_USDT];
+  };
+
+  const turns = Math.floor(lpPositions.length / 10);
+  let n = 0;
+
+  for (let i = 0; i < turns; i++) {
+    await unwrapUniswapLPs(
+      balances,
+      lpPositions.slice(n, n + 10),
+      chainBlocks["fantom"],
+      "fantom",
+      transformAddress
+    );
+    n += 10;
+  }
+  const linspiritStakedBalance = ((await sdk.api.abi.call({
+    chain: 'fantom',
+    block: chainBlocks['fantom'],
+    target: linspiritTokenAddress,
+    abi: 'erc20:balanceOf',
+    params: linspiritStakingAddress
+  })).output);
+
+  const linspiritTvlInSpirit = new BigNumber(linspiritStakedBalance).times(linspiritPriceInSpirit).toFixed(0);
+
   sdk.util.sumSingleBalance(
     balances,
     transformAddress(usdtTokenAddress),
@@ -190,17 +301,33 @@ const minichefTvl = async (timestamp, ethBlock, chainBlocks) => {
   sdk.util.sumSingleBalance(
     balances,
     transformAddress(spiritTokenAddress),
-    beethovenTvlInSpirit
+    bptLinspiritTvlInSpirit
   );
+  sdk.util.sumSingleBalance(
+    balances,
+    transformAddress(usdcTokenAddress),
+    bptQuartetTvlInUsdc
+  );
+  sdk.util.sumSingleBalance(
+    balances,
+    transformAddress(usdcTokenAddress),
+    ftmOperaTvlInUsdc
+  );
+  sdk.util.sumSingleBalance(
+    balances,
+    transformAddress(spiritTokenAddress),
+    linspiritTvlInSpirit
+  );
+
   return balances;
 };
 
 module.exports = {
-  staking: {
-    tvl: staking(xLQDR, LQDR, "fantom", "fantom:" + LQDR),
-  },
-  tvl: sdk.util.sumChainTvls([
-    masterchefTvl,
-    minichefTvl,
-  ]),
+  fantom: {
+    staking: staking(xLQDR, LQDR, "fantom", "fantom:" + LQDR),
+    tvl: sdk.util.sumChainTvls([
+      masterchefTvl,
+      minichefTvl,
+    ]),
+  }
 };

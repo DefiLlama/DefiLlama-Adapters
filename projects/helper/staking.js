@@ -5,15 +5,20 @@ const token0Abi = require('./abis/token0.json');
 const token1Abi = require('./abis/token1.json');
 const { default: BigNumber } = require('bignumber.js');
 
+
 function staking(stakingContract, stakingToken, chain = "ethereum", transformedTokenAddress = undefined, decimals = undefined) {
+    return stakings([stakingContract], stakingToken, chain, transformedTokenAddress, decimals)
+}
+
+function stakings(stakingContracts, stakingToken, chain = "ethereum", transformedTokenAddress = undefined, decimals = undefined) {
     return async (timestamp, _ethBlock, chainBlocks) => {
         const block = await getBlock(timestamp, chain, chainBlocks)
-        const bal = await sdk.api.erc20.balanceOf({
-            target: stakingToken,
-            owner: stakingContract,
+        const bal = (await sdk.api.abi.multiCall({
+            calls: stakingContracts.map(c => ({ target: stakingToken, params: [c] })),
             chain,
             block,
-        })
+            abi: "erc20:balanceOf"
+        })).output.reduce((total, call)=> BigNumber(total).plus(call.output).toFixed(0), "0")
         let address = stakingToken;
         if (transformedTokenAddress) {
             address = transformedTokenAddress
@@ -22,11 +27,11 @@ function staking(stakingContract, stakingToken, chain = "ethereum", transformedT
         }
         if (decimals !== undefined) {
             return {
-                [address]: Number(bal.output) / (10 ** decimals)
+                [address]: Number(bal) / (10 ** decimals)
             }
         }
         return {
-            [address]: bal.output
+            [address]: bal
         }
     }
 }
@@ -71,6 +76,7 @@ function stakingUnknownPricedLP(stakingContract, stakingToken, chain, lpContract
 
 module.exports = {
     staking,
+    stakings,
     stakingPricedLP,
     stakingUnknownPricedLP
 }

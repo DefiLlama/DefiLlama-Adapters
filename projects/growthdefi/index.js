@@ -477,22 +477,17 @@ const morAvaxTvl = (timestamp, ethBlock, chainBlocks) => {
 
 module.exports = {
   misrepresentedTokens: true,
-  staking_eth: {
-    tvl: staking(stakingContract_eth, GRO_ETH),
-  },
-  staking_bsc: {
-    tvl: staking(gRootStakingContract_bsc, GRO_BSC, "bsc"),
-  },
-  treasury_bsc: {
-    tvl: treasury,
+  ethereum: {
+    staking: staking(stakingContract_eth, GRO_ETH),
   },
   bsc: {
+    treasury,
+    staking: staking(gRootStakingContract_bsc, GRO_BSC, "bsc"),
     tvl: sdk.util.sumChainTvls([wheatBscTvl, morBscTvl]),
   },
   avax: {
     tvl: sdk.util.sumChainTvls([wheatAvaxTvl, morAvaxTvl]),
   },
-  tvl: sdk.util.sumChainTvls([wheatBscTvl, morBscTvl, wheatAvaxTvl, morAvaxTvl]),
   methodology:
     "We count liquidity on the Wheath, GRoot, Mor as products of Growthdefi Protocol through MasterChef and Staking Contracts",
 };

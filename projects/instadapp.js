@@ -10,5 +10,7 @@ async function fetch() {
 }
 
 module.exports = {
+  doublecounted: true,
+  timetravel: false,
   fetch
 }

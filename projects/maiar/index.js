@@ -3,51 +3,26 @@ const {toUSDTBalances} = require('../helper/balances')
 
 const LiquidityQuery= gql`
 {
-    totalLockedValueUSDFarms
-    totalValueLockedUSD
     farms {
-      address
-      APR
       farmingToken {
-        name
         identifier
-        decimals
-        __typename
       }
       farmTokenPriceUSD
-      farmedTokenPriceUSD
-      farmingTokenPriceUSD
       farmingTokenReserve
-      perBlockRewards
-      penaltyPercent
-      __typename
     }
     pairs {
-      address
       firstToken {
-        name
-        identifier
         decimals
-        __typename
       }
       secondToken {
-        name
-        identifier
         decimals
-        __typename
       }
-      firstTokenPrice
       firstTokenPriceUSD
-      secondTokenPrice
       secondTokenPriceUSD
-      liquidityPoolTokenPriceUSD
       info {
         reserves0
         reserves1
-        totalSupply
-        __typename
       }
-      __typename
     }
   }
   
@@ -74,6 +49,8 @@ async function staking(){
 
 
 module.exports={
+  misrepresentedTokens: true,
+  timetravel: false,
     elrond:{
         tvl,
         staking

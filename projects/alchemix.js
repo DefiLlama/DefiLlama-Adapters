@@ -70,29 +70,25 @@ async function getVirtualPriceFloat(contract) {
   virtualPrice = await weiToFloat(virtualPrice);
   return virtualPrice;
 }
+const stakingPool = "0xAB8e74017a8Cc7c15FFcCd726603790d26d7DeCa"; // Alchemix Staking Pools
+const mcv2 = "0xEF0881eC094552b2e128Cf945EF17a6752B4Ec5d"; // MasterChefV2
+const curveStakingPool = "0xb76256d1091e93976c61449d6e500d9f46d827d4"; // Curve Gauge ALCX Rewards
 
-async function fetch() {
-  const stakingPool = "0xAB8e74017a8Cc7c15FFcCd726603790d26d7DeCa"; // Alchemix Staking Pools
-  const mcv2 = "0xEF0881eC094552b2e128Cf945EF17a6752B4Ec5d"; // MasterChefV2
-  const curveStakingPool = "0xb76256d1091e93976c61449d6e500d9f46d827d4"; // Curve Gauge ALCX Rewards
-
-  const daicontract = new web3.eth.Contract(abis.abis.minABI, coins[0]);
-  const alusdcontract = new web3.eth.Contract(abis.abis.minABI, coins[1]);
-  const alcxcontract = new web3.eth.Contract(abis.abis.minABI, coins[2]);
-  const alcxlpcontract = new web3.eth.Contract(abis.abis.minABI, coins[3]);
-  const yvDAIContract = new web3.eth.Contract(abis.abis.minYvV2, coins[4]);
-  const alUSDCurveLPContract = new web3.eth.Contract(curveAbi, coins[5]);
-  const wethcontract = new web3.eth.Contract(abis.abis.minABI, coins[6]);
-  const alethContract = new web3.eth.Contract(abis.abis.minABI, coins[7]);
-  const yvWethContract = new web3.eth.Contract(abis.abis.minYvV2, coins[8]);
-  const alETHSaddleLPContract = new web3.eth.Contract(
-    abis.abis.minABI,
-    coins[9]
-  );
-
+const daicontract = new web3.eth.Contract(abis.abis.minABI, coins[0]);
+const alusdcontract = new web3.eth.Contract(abis.abis.minABI, coins[1]);
+const alcxcontract = new web3.eth.Contract(abis.abis.minABI, coins[2]);
+const alcxlpcontract = new web3.eth.Contract(abis.abis.minABI, coins[3]);
+const yvDAIContract = new web3.eth.Contract(abis.abis.minYvV2, coins[4]);
+const alUSDCurveLPContract = new web3.eth.Contract(curveAbi, coins[5]);
+const wethcontract = new web3.eth.Contract(abis.abis.minABI, coins[6]);
+const alethContract = new web3.eth.Contract(abis.abis.minABI, coins[7]);
+const yvWethContract = new web3.eth.Contract(abis.abis.minYvV2, coins[8]);
+const alETHSaddleLPContract = new web3.eth.Contract(
+  abis.abis.minABI,
+  coins[9]
+);
+async function dai(tvl) {
   let pricePerYvDai = await getPricePerShareInFloat(yvDAIContract);
-
-  let tvl = 0;
 
   // Get DAI TVL
   //Get total DAI TVL from transmuter and alchemist contracts
@@ -105,7 +101,9 @@ async function fetch() {
     let ydaibal = await getBalInFloat(yvDAIContract, yvDaiHolders[i]);
     tvl += ydaibal * pricePerYvDai;
   }
-
+  return tvl;
+}
+async function eth() {
   const pricePerYvWeth = await getPricePerShareInFloat(yvWethContract);
 
   let totalEth = 0;
@@ -121,16 +119,16 @@ async function fetch() {
     let yethbal = await getBalInFloat(yvWethContract, yvWethHolders[i]);
     totalEth += yethbal * pricePerYvWeth;
   }
-  //Get total
-  //Convert ETH to USD Via coingecko
-  const ethPriceInUsd = await getTokenPriceCoinGecko("usd")("ethereum");
-  tvl += totalEth * ethPriceInUsd;
-
+  return totalEth
+}
+async function alcx() {
   //Get total amount of ALCX staked in staking pool
   const stakedALCX = await getBalInFloat(alcxcontract, stakingPool);
   //Convert ALCX to USD Via coingecko
   const baseTokenPriceInUsd = await getTokenPriceCoinGecko("usd")("alchemix");
-  tvl += stakedALCX * baseTokenPriceInUsd;
+  return stakedALCX * baseTokenPriceInUsd;
+}
+async function lp(tvl, ethPriceInUsd) {
 /*  
   //Get total amount of SLP staked in staking contract
   const stakedLPPool = await getBalInFloat(alcxlpcontract, stakingPool);
@@ -173,7 +171,16 @@ async function fetch() {
 
   return tvl;
 }
+async function fetch() {
+  let tvl = await dai(0)
+  const ethPriceInUsd = await getTokenPriceCoinGecko("usd")("ethereum");
+  tvl += (await eth()) * ethPriceInUsd
+  tvl += (await alcx())
+  return lp(tvl, ethPriceInUsd)
+}
 
 module.exports = {
   fetch,
+  eth
 };
+// node test.js projects/alchemix.js

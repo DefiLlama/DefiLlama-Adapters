@@ -128,5 +128,4 @@ module.exports = {
   ethereum:{
     tvl: sdk.util.sumChainTvls([v1, v2("ethereum")])
   },
-  tvl: sdk.util.sumChainTvls([v1, v2("ethereum"), v2("polygon"), v2("arbitrum")])
 }

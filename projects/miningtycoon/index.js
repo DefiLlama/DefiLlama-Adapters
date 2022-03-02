@@ -40,9 +40,6 @@ module.exports = {
 	methodology: 'TVL counts USDT staked to earn NT tokens and the staking portion of TVL counts the NT tokens that are staked to earn more NT tokens',
 	heco:{
 		tvl,
+		staking
 	},
-	staking:{
-		tvl:staking
-	},
-	tvl
 }
