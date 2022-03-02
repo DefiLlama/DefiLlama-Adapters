@@ -14,6 +14,8 @@ const stETHCallVault = '0x53773E034d9784153471813dacAFF53dBBB78E8c'
 
 // Avalanche Vaults
 const avaxCallVault = '0x98d03125c62DaE2328D9d3cb32b7B969e6a87787'
+const savaxCallVault = '0x6BF686d99A4cE17798C45d09C21181fAc29A9fb3'
+const usdcAvaxPutVault = '0x9DD6be071b4292cc88B8190aB718329adEA3E3a3'
 
 // Aurora Vaults
 const wnearCallVault = '0x7796d6B1706855303655EB12F54FaE294c468a66'
@@ -30,6 +32,8 @@ const perp = '0xbC396689893D065F41bc2C6EcbeE5e0085233447'
 
 // Avalanche Assets
 const wavax = 'avax:0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7'
+const savax = 'avax:0x2b2C81e08f1Af8835a78Bb2A90AE924ACE0eA4bE'
+const usdce = 'avax:0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664'
 
 // Aurora Assets
 const wnear = 'aurora:0xC42C30aC6Cc15faC9bD938618BcaA1a1FaE8501d'
@@ -65,6 +69,8 @@ async function avaxTvl(_, block) {
     const balances = {}
     await Promise.all([
         addVault(balances, avaxCallVault, wavax, block, 'avax'),
+        addVault(balances, savaxCallVault, savax, block, 'avax'),
+        addVault(balances, usdcAvaxPutVault, usdce, block, 'avax'),
     ])
     return balances
 }
