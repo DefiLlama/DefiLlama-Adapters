@@ -1,8 +1,6 @@
-const { getChainVolume } = require("../helper/getUniSubgraphVolume");
-const { ARBITRUM, ETHEREUM, POLYGON } = require("../helper/chains");
-const { getStartTimestamp } = require("../helper/getStartTimestamp");
-const { getBlock } = require("../helper/getBlock");
-const { ethereum } = require("../../projects/balancer");
+import { DexVolumeAdapter } from "../dexVolume.type";
+import { getChainVolume } from "../helper/getUniSubgraphVolume";
+import { ARBITRUM, ETHEREUM, POLYGON } from "../helper/chains";
 
 const endpoints = {
   [ETHEREUM]: "https://api.thegraph.com/subgraphs/name/balancer-labs/balancer",
@@ -25,9 +23,7 @@ const graphs = getChainVolume({
   hasDailyVolume: false,
 });
 
-// const ethStart = getBlock(9747796, ethereum);
-
-module.exports = {
+const adapter: DexVolumeAdapter = {
   volume: {
     [ETHEREUM]: {
       fetch: graphs(ETHEREUM),
@@ -39,5 +35,7 @@ module.exports = {
     // ARBITRUM
   },
 };
+
+export default adapter;
 
 // TODO custom backfill have to get specific block at start of each day
