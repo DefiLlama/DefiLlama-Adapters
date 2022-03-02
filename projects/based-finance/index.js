@@ -16,7 +16,7 @@ const ethAddress = "0x74b23882a30290451a17c44f4f05243b6b58c76d";
 
 // LP Addresses
 const basedTombLpAddress = "0xab2ddcbb346327bbdf97120b0dd5ee172a9c8f9e";
-const bshsareFtmLpAddress = "0x6f607443dc307dcbe570d0ecff79d65838630b56";
+const bshareFtmLpAddress = "0x6f607443dc307dcbe570d0ecff79d65838630b56";
 const g3CrvAddress = "0xd02a30d33153877bc20e5721ee53dedee0422b2f";
 const stakedG3CrvAddress = "0xd4f94d0aaa640bbb72b5eec2d85f6d114d81a88e";
 const crv3CryptoAddress = "0x58e57cA18B7A47112b877E31929798Cd3D703b0f";
@@ -24,7 +24,7 @@ const stakedCrv3CryptoAddress = "0x00702BbDEaD24C40647f235F15971dB0867F6bdB";
 
 const poolLPs = [
   basedTombLpAddress,
-  bshsareFtmLpAddress,
+  bshareFtmLpAddress,
   stakedG3CrvAddress,
   stakedCrv3CryptoAddress,
 ];
