@@ -9,6 +9,7 @@ import osmosis from "./osmosis";
 import pancakeswap from "./pancakeswap";
 import quickswap from "./quickswap";
 import raydium from "./raydium";
+import saros from "./saros";
 import serum from "./serum";
 import spiritswap from "./spiritswap";
 import spookyswap from "./spookyswap";
@@ -19,6 +20,8 @@ import uniswap from "./uniswap";
 import yieldfields from "./yieldfields";
 
 export default {
+  raydium,
+  saros,
   serum,
   spiritswap,
   spookyswap,
