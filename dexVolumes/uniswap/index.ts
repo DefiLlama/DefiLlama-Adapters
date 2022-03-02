@@ -1,3 +1,5 @@
+import { DexVolumeAdapter } from "../dexVolume.type";
+
 const {
   getChainVolume,
   DEFAULT_DAILY_VOLUME_FACTORY,
@@ -62,7 +64,7 @@ const v3Graphs = getChainVolume({
   },
 });
 
-module.exports = {
+const adapter: DexVolumeAdapter = {
   breakdown: {
     v1: {
       [ETHEREUM]: {
@@ -107,3 +109,5 @@ module.exports = {
     },
   },
 };
+
+export default adapter;

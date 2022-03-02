@@ -1,3 +1,5 @@
+import { DexVolumeAdapter } from "../dexVolume.type";
+
 const {
   getChainVolume,
   DEFAULT_TOTAL_VOLUME_FIELD,
@@ -25,7 +27,7 @@ const graphs = getChainVolume({
   },
 });
 
-module.exports = {
+const adapter: DexVolumeAdapter = {
   volume: {
     [BSC]: {
       fetch: graphs(BSC),
@@ -37,3 +39,5 @@ module.exports = {
     },
   },
 };
+
+export default adapter;

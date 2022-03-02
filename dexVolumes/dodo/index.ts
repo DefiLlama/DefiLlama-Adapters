@@ -1,3 +1,5 @@
+import { DexVolumeAdapter } from "../dexVolume.type";
+
 const { getChainVolume } = require("../helper/getUniSubgraphVolume");
 const {
   ARBITRUM,
@@ -58,6 +60,7 @@ const volume = Object.keys(endpoints).reduce(
   {}
 );
 
-module.exports = {
+const adapter: DexVolumeAdapter = {
   volume,
 };
+export default adapter;

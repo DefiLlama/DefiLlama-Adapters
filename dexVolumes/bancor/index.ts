@@ -1,3 +1,6 @@
+import { DexVolumeAdapter } from "../dexVolume.type";
+import { getTimestampAtStartOfHour } from "../helper/getTimestampAtStartOfHour";
+
 const BigNumber = require("bignumber.js");
 const { fetchURL } = require("../helper/utils");
 const {
@@ -10,6 +13,8 @@ const endpoints = {
 };
 
 const graphs = (chain) => async () => {
+  const timestamp = getTimestampAtStartOfHour();
+
   let res;
   switch (chain) {
     case "ethereum":
@@ -21,18 +26,24 @@ const graphs = (chain) => async () => {
   const todayHourlyData = res?.data?.data;
 
   return {
+    totalVolume: "0", //@TODO FIX
     dailyVolume: todayHourlyData
       .reduce((acc, { usd }) => acc.plus(BigNumber(usd)), new BigNumber(0))
       .toString(),
-    hourlyVolume: new BigNumber(
-      todayHourlyData[todayHourlyData.length - 1]?.usd
-    ).toString(),
+    timestamp,
   };
 };
 
-module.exports = {
+const adapter: DexVolumeAdapter = {
   volume: {
-    ethereum: graphs("ethereum"),
+    ethereum: {
+      fetch: graphs("ethereum"),
+      runAtCurrTime: true,
+      customBackfill: () => {},
+      start: 0,
+    },
     // CUSTOM BACKFILL
   },
 };
+
+export default adapter;

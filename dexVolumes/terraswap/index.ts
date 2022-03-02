@@ -1,3 +1,6 @@
+import { DexVolumeAdapter } from "../dexVolume.type";
+import { getTimestampAtStartOfHour } from "../helper/getTimestampAtStartOfHour";
+
 const { request, gql } = require("graphql-request");
 const BigNumber = require("bignumber.js");
 const {
@@ -18,7 +21,8 @@ const historicalData = gql`
   }
 `;
 
-const terra = async () => {
+const fetch = async () => {
+  const timestamp = getTimestampAtStartOfHour();
   const todayUnix = getUniqStartOfTodayTimestamp();
   const dailyVolumeRequest = await request(endpoints.terra, historicalData, {
     from: todayUnix,
@@ -52,12 +56,20 @@ const terra = async () => {
   return {
     totalVolume: allVolume.toString(),
     dailyVolume: dailyVolumeRequest?.terraswap?.historicalData?.[0]?.volumeUST,
+    timestamp,
   };
 };
 
-module.exports = {
+const adapter: DexVolumeAdapter = {
   volume: {
-    terra,
+    terra: {
+      fetch,
+      runAtCurrTime: true,
+      customBackfill: () => {},
+      start: 0,
+    },
     // TODO custom backfill
   },
 };
+
+export default adapter;

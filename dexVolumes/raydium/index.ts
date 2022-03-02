@@ -1,3 +1,5 @@
+import { DexVolumeAdapter } from "../dexVolume.type";
+
 const { fetchURL } = require("../helper/utils");
 
 const endpoints = {
@@ -15,15 +17,23 @@ const graphs = (chain) => async () => {
 
   return {
     totalVolume: res?.data?.totalvolume,
+    timestamp: 1, // fix
   };
 };
 
-module.exports = {
+const adapter: DexVolumeAdapter = {
   volume: {
-    solana: graphs("solana"),
+    solana: {
+      fetch: graphs("solana"),
+      runAtCurrTime: true,
+      customBackfill: () => {},
+      start: 0,
+    },
     // TODO custom backfill
   },
 };
+
+export default adapter;
 
 /*
     backfill steps

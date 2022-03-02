@@ -1,3 +1,5 @@
+import { DexVolumeAdapter } from "../dexVolume.type";
+
 const { request, gql } = require("graphql-request");
 const { RONIN } = require("../helper/chains");
 const { getStartTimestamp } = require("../helper/getStartTimestamp");
@@ -48,7 +50,7 @@ const DAILY_VOLUME_FACTORY = "katanaDayData";
 
 const graphs = getChainVolume({
   graphUrls: {
-    [RONIN]: endpoints.ronin,
+    [RONIN]: endpoints[RONIN],
   },
   totalVolume: {
     factory: "katanaFactories",
@@ -61,7 +63,7 @@ const graphs = getChainVolume({
   getCustomBlock,
 });
 
-module.exports = {
+const adapter: DexVolumeAdapter = {
   volume: {
     [RONIN]: {
       fetch: graphs(RONIN),
@@ -73,3 +75,5 @@ module.exports = {
     },
   },
 };
+
+export default adapter;

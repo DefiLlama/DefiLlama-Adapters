@@ -5,6 +5,9 @@ const {
 } = require("../helper/getUniSubgraphVolume");
 const { BSC } = require("../helper/chains");
 const { getStartTimestamp } = require("../helper/getStartTimestamp");
+
+import { DexVolumeAdapter } from "../dexVolume.type";
+
 const endpoints = {
   [BSC]: "https://api.thegraph.com/subgraphs/name/sotblad/yieldfieldsexchange",
 };
@@ -25,7 +28,7 @@ const graphs = getChainVolume({
   },
 });
 
-module.exports = {
+const adapter: DexVolumeAdapter = {
   volume: {
     [BSC]: {
       fetch: graphs(BSC),
@@ -37,3 +40,5 @@ module.exports = {
     },
   },
 };
+
+export default adapter;

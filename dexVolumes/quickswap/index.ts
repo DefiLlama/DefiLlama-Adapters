@@ -1,3 +1,5 @@
+import { DexVolumeAdapter } from "../dexVolume.type";
+
 const { getChainVolume } = require("../helper/getUniSubgraphVolume");
 
 const endpoints = {
@@ -10,7 +12,7 @@ const graphs = getChainVolume({
   },
 });
 
-module.exports = {
+const adapter: DexVolumeAdapter = {
   volume: {
     polygon: {
       fetch: graphs("polygon"),
@@ -18,3 +20,5 @@ module.exports = {
     },
   },
 };
+
+export default adapter;

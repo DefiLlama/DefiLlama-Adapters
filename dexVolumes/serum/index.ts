@@ -1,3 +1,5 @@
+import { DexVolumeAdapter } from "../dexVolume.type";
+
 const { GraphQLClient, gql } = require("graphql-request");
 
 const endpoint = "https://api.vybenetwork.com/v1/graphql";
@@ -19,22 +21,31 @@ const graphQLClient = new GraphQLClient(endpoint, {
   },
 });
 
-const solana = async () => {
+const fetch = async () => {
   const data = await graphQLClient.request(query);
 
   const volumes = data.api_serum_dex_m.globalVolumeStats.v;
 
-  const dailyVolume = volumes[volumes.length - 1];
+  const dailyVolume: string = volumes[volumes.length - 1];
 
   return {
+    totalVolume: "0",
     dailyVolume,
+    timestamp: 1,
   };
 };
 
-module.exports = {
+const adapter: DexVolumeAdapter = {
   volume: {
-    solana,
+    solana: {
+      fetch,
+      start: 0,
+      runAtCurrTime: true,
+      customBackfill: () => {},
+    },
   },
 };
+
+export default adapter;
 
 // Todo Total volume and backfill
