@@ -337,8 +337,13 @@ async function fantom(timestamp, block, chainBlocks) {
       "0xD3af91f21F791F29FC664cD5cD61180edc263191",
       "0xD8dd2EA228968F7f043474Db610A20aF887866c7",
       "0xd14dd3c56d9bc306322d4cea0e1c49e9ddf045d4"
+    ],
+    [
+      "0xedF25e618E4946B05df1E33845993FfEBb427A0F",
+      "0x7345a537A975d9Ca588eE631BEFdDfEF34fD5e8f",
+      "0x44e314190d9e4ce6d4c0903459204f8e21ff940a"
     ]
-  ];
+  ];  
   await handleMooLPs(balances, chainBlocks.fantom, chain, ftmLPs);
 
   await sumTokens(
