@@ -7,6 +7,7 @@ const subgraphs = {
   'polygon': 'impermax-finance/impermax-x-uniswap-v2-polygon',
   'arbitrum': 'impermax-finance/impermax-x-uniswap-v2-arbitrum',
   'moonriver': 'impermax-finance/impermax-x-uniswap-v2-moonriver',
+  'avax': 'impermax-finance/impermax-x-uniswap-v2-avalanche',
   'fantom': 'impermax-finance/impermax-x-uniswap-v2-fantom',
 }
 
@@ -18,7 +19,7 @@ const chainTvl = getChainTvl(
 
 const subgraphChainTvls = Object.keys(subgraphs).reduce((obj, chain) => ({
   ...obj,
-  [chain === 'avax' ? 'avalanche' : chain]: {
+  [chain]: {
     tvl:chainTvl(chain)
   }
 }), {})
