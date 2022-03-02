@@ -19,6 +19,7 @@ import uniswap from "./uniswap";
 import yieldfields from "./yieldfields";
 
 export default {
+  serum,
   spiritswap,
   spookyswap,
   sushiswap,
