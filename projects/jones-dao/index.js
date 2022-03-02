@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
 const { pool2s } = require("../helper/pool2");
 const { staking } = require("../helper/staking");
+const abi = require("./abi.json");
 
 const jones = "0x10393c20975cf177a3513071bc110f7962cd67da";
 const jonesStaking = "0xf1a26cf6309a59794da29b5b2e6fabd3070d470f";
@@ -38,12 +39,48 @@ async function tvl(timestamp, block, chainBlocks) {
     let balances = {};
     block = chainBlocks.arbitrum;
     chain = "arbitrum";
-    const ethBalance = (await sdk.api.eth.getBalance({
+
+    const ethManagementWindow = (await sdk.api.abi.call({
         target: ethVault,
+        abi: abi.MANAGEMENT_WINDOW_OPEN,
         block,
         chain
     })).output;
-    sdk.util.sumSingleBalance(balances, "arbitrum:0x82af49447d8a07e3bd95bd0d56f35241523fbab1", ethBalance);
+
+    if (ethManagementWindow === true) {
+        const ethSnapshot = (await sdk.api.abi.call({
+            target: ethVault,
+            abi: abi.snapshotVaultBalance,
+            block,
+            chain
+        })).output;
+        sdk.util.sumSingleBalance(balances, "arbitrum:0x82af49447d8a07e3bd95bd0d56f35241523fbab1", ethSnapshot);
+    } else {
+        const ethBalance = (await sdk.api.eth.getBalance({
+            target: ethVault,
+            block,
+            chain
+        })).output;
+        sdk.util.sumSingleBalance(balances, "arbitrum:0x82af49447d8a07e3bd95bd0d56f35241523fbab1", ethBalance);
+    }
+
+    const vaultManagementWindows = (await sdk.api.abi.multiCall({
+        calls: vaultandCollateral.map(p => ({
+            target: p[1]
+        })),
+        abi: abi.MANAGEMENT_WINDOW_OPEN,
+        block,
+        chain
+    })).output;
+
+    const vaultSnapshots = (await sdk.api.abi.multiCall({
+        calls: vaultandCollateral.map(p => ({
+            target: p[1]
+        })),
+        abi: abi.snapshotVaultBalance,
+        block,
+        chain
+    })).output;
 
     const vaultBalances = (await sdk.api.abi.multiCall({
         calls: vaultandCollateral.map(p => ({
@@ -55,9 +92,13 @@ async function tvl(timestamp, block, chainBlocks) {
         chain
     })).output;
 
-    vaultBalances.forEach(p => {
-        sdk.util.sumSingleBalance(balances, `arbitrum:${p.input.target}`, p.output);
-    });
+    for (let i = 0; i < vaultandCollateral.length; i++) {
+        if (vaultManagementWindows[i].output === true) {
+            sdk.util.sumSingleBalance(balances, `arbitrum:${vaultandCollateral[i][1]}`, vaultSnapshots[i].output);
+        } else {
+            sdk.util.sumSingleBalance(balances, `arbitrum:${vaultandCollateral[i][1]}`, vaultBalances[i].output);
+        }
+    }
 
     return balances;
 }
