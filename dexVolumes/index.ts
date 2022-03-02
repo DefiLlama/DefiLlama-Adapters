@@ -20,6 +20,14 @@ import uniswap from "./uniswap";
 import yieldfields from "./yieldfields";
 
 export default {
+  "1inch": oneInch,
+  balancer,
+  bancor,
+  curve,
+  dodo,
+  katana,
+  klayswap,
+  osmosis,
   pancakeswap,
   quickswap,
   raydium,
