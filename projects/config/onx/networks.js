@@ -67,6 +67,7 @@ const SUPPORTED_NETWORKS = {
   },
 };
 
+const ethereumRpcUrl = SUPPORTED_NETWORKS[SupportedChainId.MAINNET].rpcUrls[0];
 const fantomRpcUrl = SUPPORTED_NETWORKS[SupportedChainId.FANTOM].rpcUrls[0];
 const polygonRpcUrl = SUPPORTED_NETWORKS[SupportedChainId.MATIC].rpcUrls[0];
 const avalancheRpcUrl = SUPPORTED_NETWORKS[SupportedChainId.AVALANCHE].rpcUrls[0];
@@ -74,6 +75,7 @@ const avalancheRpcUrl = SUPPORTED_NETWORKS[SupportedChainId.AVALANCHE].rpcUrls[0
 module.exports = {
   SupportedChainId,
   SUPPORTED_NETWORKS,
+  ethereumRpcUrl,
   fantomRpcUrl,
   polygonRpcUrl,
   avalancheRpcUrl,

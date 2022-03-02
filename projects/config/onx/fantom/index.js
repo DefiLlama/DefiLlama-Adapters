@@ -1,40 +1,13 @@
 const tokenAddresses = require('../constant');
 const BigNumber = require('bignumber.js');
 const UniswapV2PairContractAbi = require('../abis/UniswapV2Pair.json');
-const { ZERO, fromWei, createContractObject, getNetworkTokenTvlUsd, createWeb3 } = require('../utils');
+const { ZERO, fromWei, createContractObject, getVautsTvl, createWeb3, fetchPriceData } = require('../utils');
 const { fantomRpcUrl } = require('../networks');
 const { vaults } = require('./vaults');
 const { EXCHANGE_TYPE } = require('../vault');
 const { request, gql } = require("graphql-request");
 
 const web3 = createWeb3(fantomRpcUrl);
-
-const getReserves = async (pairContract) => {
-  try {
-    const { _reserve0, _reserve1, _blockTimestampLast } = await pairContract.methods.getReserves().call();
-    return { reserve0: _reserve0, reserve1: _reserve1, blockTimestampLast: _blockTimestampLast };
-  } catch {
-    return { reserve0: '0', reserve1: '0' };
-  }
-};
-
-const fetchPriceData = async (
-  contract,
-  viceVersa = false,
-  multiplier = 1,
-) => {
-  const { reserve0, reserve1 } = await getReserves(contract);
-  const isValid = !new BigNumber(reserve0).eq(ZERO) && !new BigNumber(reserve1).eq(ZERO);
-
-  if (isValid) {
-    return (viceVersa
-      ? new BigNumber(reserve0).div(new BigNumber(reserve1))
-      : new BigNumber(reserve1).div(new BigNumber(reserve0))
-    ).times(multiplier);
-  } else {
-    return ZERO;
-  }
-};
 
 const getBooPrice = async () => {
   const c = createContractObject(tokenAddresses.fantom.usdcBooPair, UniswapV2PairContractAbi, web3);
@@ -87,7 +60,7 @@ const getSpookyPoolPrice = async (vault) => {
 };
 
 const getFantomTvl = async () => {
-  return getNetworkTokenTvlUsd(vaults, getSpookyPoolPrice, web3);
+  return getVautsTvl(vaults, getSpookyPoolPrice);
 };
 
 module.exports = {

@@ -1,10 +1,7 @@
 const BigNumber = require('bignumber.js');
-const { ZERO, getNetworkTokenTvlUsd, createWeb3 } = require('../utils');
-const { polygonRpcUrl } = require('../networks');
+const { ZERO, getVautsTvl, createWeb3 } = require('../utils');
 const { vaults } = require('./vaults');
 const { request, gql } = require("graphql-request");
-
-const web3 = createWeb3(polygonRpcUrl);
 
 const getQuickQuery = (pairAddress) => gql`
   query pairs {
@@ -45,7 +42,7 @@ const getQuickPoolPrice = async (vault) => {
 };
 
 const getPolygonTvl = async () => {
-  return getNetworkTokenTvlUsd(vaults, getQuickPoolPrice, web3);
+  return getVautsTvl(vaults, getQuickPoolPrice);
 };
 
 module.exports = {

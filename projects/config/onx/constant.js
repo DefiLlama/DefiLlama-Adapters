@@ -4,7 +4,7 @@ const tokenAddresses = {
   onxFarm: "0x168f8469ac17dd39cd9a2c2ead647f814a488ce9",
   onxTripleFarm: "0x30D1A19EA928cCf46634cBC2944D2D89Be636f22",
   usdWethPair: "0x0d4a11d5eeaac28ec3f61d100daf4d40471f1852",
-  onxWethSushiPair: "0x0652687e87a4b8b5370b05bc298ff00d205d9b5f",
+  onxWethSushiPair: "0x62f22A47e5D2F8b71cC44fD85863753618312f67",
   wethAethPair: "0x6147805e1011417b93e5d693424a62a70d09d0e5",
   ankrWethPair: "0x5201883feeb05822ce25c9af8ab41fc78ca73fa9",
   pool: "0x47F3E6C1Ef0cBe69502167095b592e61de108BaA",
@@ -24,59 +24,69 @@ const tokenAddresses = {
     usdcBooPair: '0xf8cb2980120469d79958151daa45eb937c6e1ed6',
   },
   farms: [
-    {
+    {//0
       title: 'onxEthLp',
       address: '0x62f22A47e5D2F8b71cC44fD85863753618312f67',
       isLpToken: true,
-      tokens: [
-        '0xe0ad1806fd3e7edf6ff52fdb822432e847411033', // OnX
-        '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' // wETH
-      ]
+      subTokenSymbol1: 'ONX',
+      subTokenSymbol2: 'WETH',
+      subTokenAddresses1: '0xe0ad1806fd3e7edf6ff52fdb822432e847411033',
+      subTokenAddresses2: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
     },
-    {
-      title: 'onxEthSlp',
-      address: '0x0652687E87a4b8b5370b05bc298Ff00d205D9B5f',
-      isLpToken: true,
-      tokens: [
-        '0xe0ad1806fd3e7edf6ff52fdb822432e847411033', // OnX
-        '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' // wETH
-      ]
-    },
-    {
-      title: 'aEth',
+    {//1
+      title: 'aETHc',
       address: '0xE95A203B1a91a908F9B9CE46459d101078c2c3cb',
       isLpToken: false,
-      tokens: [
-        '0xE95A203B1a91a908F9B9CE46459d101078c2c3cb', // aETH
-        '0xE95A203B1a91a908F9B9CE46459d101078c2c3cb' // aETH
-      ]
+      subTokenSymbol1: 'aETHc',
+      subTokenSymbol2: 'aETHc',
+      subTokenAddresses1: '0xE95A203B1a91a908F9B9CE46459d101078c2c3cb',
+      subTokenAddresses2: '0xE95A203B1a91a908F9B9CE46459d101078c2c3cb',
     },
-    {
-      title: 'ankr',
+    {//2
+      title: 'ANKR',
       address: '0x8290333ceF9e6D528dD5618Fb97a76f268f3EDD4',
       isLpToken: false,
-      tokens: [
-        '0xE95A203B1a91a908F9B9CE46459d101078c2c3cb', // aETH
-        '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48' // USDC
-      ]
+      subTokenSymbol1: 'ANKR',
+      subTokenSymbol2: 'ANKR',
+      subTokenAddresses1: '0xE95A203B1a91a908F9B9CE46459d101078c2c3cb',
+      subTokenAddresses2: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
     },
-    {
-      title: 'xSushi',
-      address: '0x8798249c2E607446EfB7Ad49eC89dD1865Ff4272',
-      isLpToken: false,
-      tokens: [
-        '0x8798249c2E607446EfB7Ad49eC89dD1865Ff4272', // xSushi
-        '0x8798249c2E607446EfB7Ad49eC89dD1865Ff4272' // xSushi
-      ]
-    },
-    {
+    {//3
       title: 'onxEthSlpMulti',
       address: '0x0652687E87a4b8b5370b05bc298Ff00d205D9B5f',
       isLpToken: true,
-      tokens: [
-        '0xe0ad1806fd3e7edf6ff52fdb822432e847411033', // OnX
-        '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' // wETH
-      ]
+      subTokenSymbol1: 'ONX',
+      subTokenSymbol2: 'WETH',
+      subTokenAddresses1: '0xe0ad1806fd3e7edf6ff52fdb822432e847411033',
+      subTokenAddresses2: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+      isCustomFarmContract: true,
+    },
+    {//4
+      title: 'xSushi',
+      address: '0x8798249c2E607446EfB7Ad49eC89dD1865Ff4272',
+      isLpToken: false,
+      subTokenSymbol1: 'xSushi',
+      subTokenSymbol2: 'xSushi',
+      subTokenAddresses1: '0x8798249c2E607446EfB7Ad49eC89dD1865Ff4272',
+      subTokenAddresses2: '0x8798249c2E607446EfB7Ad49eC89dD1865Ff4272',
+    },
+    {//5
+      title: 'BOND',
+      address: '0x0391d2021f89dc339f60fff84546ea23e337750f',
+      isLpToken: false,
+      subTokenSymbol1: 'BOND',
+      subTokenSymbol2: 'BOND',
+      subTokenAddresses1: '0x0391d2021f89dc339f60fff84546ea23e337750f',
+      subTokenAddresses2: '0x0391d2021f89dc339f60fff84546ea23e337750f',
+    },
+    {//6
+      title: 'onxEthSlp',
+      address: '0x0652687E87a4b8b5370b05bc298Ff00d205D9B5f',
+      isLpToken: true,
+      subTokenSymbol1: 'ONX',
+      subTokenSymbol2: 'WETH',
+      subTokenAddresses1: '0xe0ad1806fd3e7edf6ff52fdb822432e847411033',
+      subTokenAddresses2: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
     },
   ],
   onePools: [

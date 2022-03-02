@@ -22,7 +22,7 @@ const createContractObject = (address, abi, web3 = require('../web3.js')) => {
   };
 }
 
-const getNetworkTokenTvlUsd = async (vaults, getPrice, web3 = require('../web3.js')) => {
+const getVautsTvl = async (vaults, getPrice) => {
   const vaultsMap = await Promise.all(vaults.map((item) => {
     return new Promise(async (resolve) => {
       const { contract: vaultContract } = item.vault;
@@ -51,12 +51,41 @@ const formatDecimal = (value, decimal = 18, numPoint = 4, precision = 2) => {
   return data.dp(numPoint, 1).toNumber();
 };
 
+const getReserves = async (pairContract) => {
+  try {
+    const { _reserve0, _reserve1, _blockTimestampLast } = await pairContract.methods.getReserves().call();
+    return { reserve0: _reserve0, reserve1: _reserve1, blockTimestampLast: _blockTimestampLast };
+  } catch {
+    return { reserve0: '0', reserve1: '0' };
+  }
+};
+
+const fetchPriceData = async (
+  contract,
+  viceVersa = false,
+  multiplier = 1,
+) => {
+  const { reserve0, reserve1 } = await getReserves(contract);
+  const isValid = !new BigNumber(reserve0).eq(ZERO) && !new BigNumber(reserve1).eq(ZERO);
+
+  if (isValid) {
+    return (viceVersa
+      ? new BigNumber(reserve0).div(new BigNumber(reserve1))
+      : new BigNumber(reserve1).div(new BigNumber(reserve0))
+    ).times(multiplier);
+  } else {
+    return ZERO;
+  }
+};
+
 module.exports = {
   ZERO,
   fromWei,
   createContractObject,
-  getNetworkTokenTvlUsd,
+  getVautsTvl,
   createWeb3,
   formatDecimal,
   numberWithCommas,
+  fetchPriceData,
+  getReserves,
 }
