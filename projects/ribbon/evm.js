@@ -1,5 +1,6 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
+const { staking } = require("../helper/staking");
 
 // Ethereum Vaults
 const ethCallVault = "0x0fabaf48bbf864a3947bdd0ba9d764791a60467a";
@@ -83,9 +84,17 @@ async function auroraTvl(_, block) {
   return balances;
 }
 
+/**
+ * STAKING
+ */
+const RBN = "0x6123B0049F904d730dB3C36a31167D9d4121fA6B";
+const veRBN = "0x19854C9A5fFa8116f48f984bDF946fB9CEa9B5f7";
+const veRBNStaking = staking(veRBN, RBN, "ethereum");
+
 module.exports = {
   ethereum: {
     tvl: ethTvl,
+    staking: veRBNStaking,
   },
   avalanche: {
     tvl: avaxTvl,
