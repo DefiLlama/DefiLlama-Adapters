@@ -1,6 +1,6 @@
-const { getChainVolume } = require("../helper/getUniSubgraphVolume");
-const { getStartTimestamp } = require("../helper/getStartTimestamp");
-const {
+import { getChainVolume } from "../helper/getUniSubgraphVolume";
+import { getStartTimestamp } from "../helper/getStartTimestamp";
+import {
   ARBITRUM,
   AVAX,
   BSC,
@@ -11,7 +11,8 @@ const {
   HECO,
   POLYGON,
   XDAI,
-} = require("../helper/chains");
+} from "../helper/chains";
+import { DexVolumeAdapter } from "../dexVolume.type";
 
 const endpoints = {
   [ARBITRUM]:
@@ -73,6 +74,8 @@ const volume = Object.keys(endpoints).reduce(
   {}
 );
 
-module.exports = {
+const adapter: DexVolumeAdapter = {
   volume,
 };
+
+export default adapter;
