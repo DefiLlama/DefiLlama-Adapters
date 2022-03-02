@@ -71,3 +71,5 @@ const adapter: DexVolumeAdapter = {
     // TODO custom backfill
   },
 };
+
+export default adapter;

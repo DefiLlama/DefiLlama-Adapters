@@ -19,5 +19,10 @@ import uniswap from "./uniswap";
 import yieldfields from "./yieldfields";
 
 export default {
+  spookyswap,
+  sushiswap,
+  terraswap,
+  traderjoe,
+  uniswap,
   yieldfields,
 };
