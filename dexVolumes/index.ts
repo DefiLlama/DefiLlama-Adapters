@@ -20,6 +20,7 @@ import uniswap from "./uniswap";
 import yieldfields from "./yieldfields";
 
 export default {
+  pancakeswap,
   quickswap,
   raydium,
   saros,
