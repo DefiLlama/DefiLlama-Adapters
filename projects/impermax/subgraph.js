@@ -7,6 +7,7 @@ const subgraphs = {
   'polygon': 'impermax-finance/impermax-x-uniswap-v2-polygon',
   'arbitrum': 'impermax-finance/impermax-x-uniswap-v2-arbitrum',
   'moonriver': 'impermax-finance/impermax-x-uniswap-v2-moonriver',
+  'fantom': 'impermax-finance/impermax-x-uniswap-v2-fantom',
 }
 
 const chainTvl = getChainTvl(
