@@ -40,6 +40,8 @@ const treasuryTokens = [
   usdcAddress,
   wftmAddress,
   ethAddress,
+  basedTokenAddress,
+  bshareTokenAddress,
 ]
 
 async function calcPool2(rewardPool, lps, block, chain) {
