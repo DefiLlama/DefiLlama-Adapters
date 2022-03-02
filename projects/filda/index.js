@@ -154,5 +154,8 @@ module.exports = {
     borrowed: ioBorrowed
   },
   bsc: compoundExports("0xF0700A310Cb14615a67EEc1A8dAd5791859f65f1", "bsc"),
-  polygon: compoundExports("0xfBE0f3A3d1405257Bd69691406Eafa73f5095723", "polygon")
+  polygon: compoundExports("0xfBE0f3A3d1405257Bd69691406Eafa73f5095723", "polygon"),
+  arbitrum: compoundExports("0xF67EF5E77B350A81DcbA5430Bc8bE876eDa8D591", "arbitrum"),
+  elastos: usdCompoundExports("0xE52792E024697A6be770e5d6F1C455550265B2CD", "elastos")
+
 };
