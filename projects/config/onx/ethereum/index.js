@@ -160,8 +160,9 @@ const getEthereumVautsTvl = async () => {
 };
 
 const getFarmsTvl = async (price) => {
-  let totalBalance = new BigNumber(0);
+  const { wethPrice, onxPrice, aethPrice, ankrPrice, bondPrice, sushiPrice } = price;
 
+  let totalBalance = new BigNumber(0);
   await Promise.all(
     farms.map(async (farm) => {
       const address = !farm.isCustomFarmContract ? tokenAddresses.onxFarm : tokenAddresses.onxTripleFarm;
@@ -170,18 +171,49 @@ const getFarmsTvl = async (price) => {
       const usdBalance = await getUsdBalance(
         balance,
         farm,
-        price.wethPrice,
-        price.onxPrice,
-        price.aethPrice,
-        price.ankrPrice,
-        price.sushiPrice,
-        price.bondPrice
+        wethPrice,
+        onxPrice,
+        aethPrice,
+        ankrPrice,
+        sushiPrice,
+        bondPrice
       );
 
       totalBalance = totalBalance.plus(usdBalance);
     })
   );
   return totalBalance;
+}
+
+const getOnxEthLpTvl = async () => {
+  const wethPrice = await getWethPrice();
+  const onxPrice = (await getOnxPrice()).times(wethPrice);
+  const aethPrice = (await getAethPrice()).times(wethPrice);
+  const ankrPrice = (await getAnkrPrice()).times(wethPrice);
+  const bondPrice = (await getBondPrice()).times(wethPrice);
+  const sushiPrice = (await getSushiPrice()).times(wethPrice);
+
+  const farm = farms.find(farm => farm.pid === 4);
+
+  const address = !farm.isCustomFarmContract ? tokenAddresses.onxFarm : tokenAddresses.onxTripleFarm;
+  const balance = await getBalanceOf(address, farm.contract);
+
+  return await getUsdBalance(
+    balance,
+    farm,
+    wethPrice,
+    onxPrice,
+    aethPrice,
+    ankrPrice,
+    sushiPrice,
+    bondPrice
+  );
+}
+
+const getEthereumPoolTvl = async () => { 
+  const onxEthLpTvl = await getOnxEthLpTvl();
+  const onxEthSLpTvl = await getVautsTvl(vaults.filter(vault => vault.title === 'OnxEthSlp'), getSushiPoolPrice);
+  return onxEthLpTvl.plus(onxEthSLpTvl);
 }
 
 const getEthereumTvl = async () => {
@@ -195,7 +227,7 @@ const getEthereumTvl = async () => {
   const bondPrice = (await getBondPrice()).times(wethPrice);
   const sushiPrice = (await getSushiPrice()).times(wethPrice);
 
-  const farmsTvl = await getFarmsTvl({ wethPrice, onxPrice, aethPrice, ankrPrice, bondPrice, sushiPrice }); //This brings +-1K$
+  const farmsTvl = await getFarmsTvl({ wethPrice, onxPrice, aethPrice, ankrPrice, bondPrice, sushiPrice });
   const stakedTvl = await getStakeTvl(onxPrice);
   const onePoolsTvl = await getOnePoolsTvl({ aethPrice, wethPrice, onxPrice });
   const onePrice = (await getOnePrice()).times(aethPrice);
@@ -217,10 +249,7 @@ const getEthereumTvl = async () => {
 }
 
 module.exports = {
-  getOnePoolsTvl,
-  getOnsPoolsTvl,
-
-  getReserves,
   getEthereumStaking,
   getEthereumTvl,
+  getEthereumPoolTvl,
 }

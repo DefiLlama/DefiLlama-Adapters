@@ -1,4 +1,4 @@
-const { getEthereumTvl, getEthereumStaking } = require('./config/onx/ethereum');
+const { getEthereumTvl, getEthereumStaking, getEthereumPoolTvl } = require('./config/onx/ethereum');
 const { getFantomTvl } = require('./config/onx/fantom');
 const { getPolygonTvl } = require('./config/onx/polygon');
 const { getAvalancheTvl } = require('./config/onx/avalanche');
@@ -9,6 +9,7 @@ module.exports = {
   ethereum: {
     tvl: getEthereumTvl,
     staking: getEthereumStaking,
+    pool: getEthereumPoolTvl,
   },
   fantom: {
     tvl: getFantomTvl,
