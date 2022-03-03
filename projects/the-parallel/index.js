@@ -65,14 +65,6 @@ async function tvl(timestamp, block) {
     const PRL_BUSD_KYBER_LP_busd_bal = await sdk.api.erc20.balanceOf({ target: coins.BUSD, owner: PRL_BUSD_KYBER_LP, block, chain: 'bsc' })
     sdk.util.sumSingleBalance(balances, transform(coins.BUSD), PRL_BUSD_KYBER_LP_busd_bal.output);
 
-    // for PRL_LOCKED
-    const PRL_LOCKED_prl_bal = await sdk.api.erc20.balanceOf({ target: coins.PRL, owner: PRL_LOCKED, block, chain: 'bsc' })
-    sdk.util.sumSingleBalance(balances, transform(coins.PRL), PRL_LOCKED_prl_bal.output);
-
-    // for PRL_MINING
-    const PRL_MINING_prl_bal = await sdk.api.erc20.balanceOf({ target: coins.PRL, owner: PRL_MINING, block, chain: 'bsc' })
-    sdk.util.sumSingleBalance(balances, transform(coins.PRL), PRL_MINING_prl_bal.output);
-
     return balances;
 }
 
