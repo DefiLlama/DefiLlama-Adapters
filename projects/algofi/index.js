@@ -16,7 +16,8 @@ const marketStrings = {
 
 const orderedAssets = ["ALGO", "STBL", "USDC", "goBTC", "goETH"]
 const fixedValueStakingContracts = ["STBL", "TINYMAN11_STBL_USDC_LP_STAKING", "ALGOFI-STBL-USDC-LP"]
-const variableValueStakingContracts = ["ALGOFI-STBL-ALGO-LP", "AF-XET-STBL-75BP-STAKING", "AF-GOBTC-STBL-25BP-STAKING", "AF-GOETH-STBL-25BP-STAKING", "AF-OPUL-STBL-75BP-STAKING"]
+const variableValueStakingContracts = ["ALGOFI-STBL-ALGO-LP", "AF-XET-STBL-75BP-STAKING", "AF-GOBTC-STBL-25BP-STAKING", "AF-GOETH-STBL-25BP-STAKING", "AF-OPUL-STBL-75BP-STAKING",
+                                        "AF-DEFLY-STBL-75BP-STAKING" ]
 const stakingContracts = fixedValueStakingContracts.concat(variableValueStakingContracts)
 
 const assetDictionary = {
