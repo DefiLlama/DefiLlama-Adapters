@@ -19,6 +19,7 @@ const treasuryTokens = [
     [PUNKWETH, true],  // PUNK-ETH SLP
 ]
 module.exports = ohmTvl(treasury, treasuryTokens, 'ethereum', stakingAddress, FLOOR)
+module.exports.methodology = 'Using ohmTvl for staking and treasury core TVL, and adding xPUNK and xPUNKWETH balances using 1:1 mapping with PUNK and PUNK-WETH sushi LP'
 
 const tvl = module.exports.ethereum.tvl 
 const transform = a => `ethereum:${a}`
@@ -45,6 +46,7 @@ module.exports.ethereum.tvl = async (time, ethBlock, chainBlocks) => {
     await unwrapUniswapLPs( balances, lpPositions, ethBlock, "ethereum", transform );
     return balances
 }
+
 
 /*
 const dao_treasury = '0xA9d93A5cCa9c98512C8C56547866b1db09090326'
