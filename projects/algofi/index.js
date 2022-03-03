@@ -88,6 +88,11 @@ const assetDictionary = {
             "poolAppId": 637801923,
             "decimals": 6
         },
+        "AF-DEFLY-STBL-75BP-STAKING" : {
+            "marketAppId" : 639747119,
+            "poolAppId": 624956175,
+            "decimals": 6
+        }
     }
 }
 
