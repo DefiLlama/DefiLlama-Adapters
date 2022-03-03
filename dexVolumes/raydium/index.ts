@@ -6,7 +6,7 @@ const endpoints = {
   solana: "https://api.raydium.io/info",
 };
 
-const graphs = (chain) => async () => {
+const graphs = (chain: string) => async () => {
   let res;
   switch (chain) {
     case "solana":

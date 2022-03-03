@@ -1,4 +1,4 @@
-import { DexVolumeAdapter } from "../dexVolume.type";
+import { DexBreakdownAdapter } from "../dexVolume.type";
 
 const {
   getChainVolume,
@@ -64,7 +64,7 @@ const v3Graphs = getChainVolume({
   },
 });
 
-const adapter: DexVolumeAdapter = {
+const adapter: DexBreakdownAdapter = {
   breakdown: {
     v1: {
       [ETHEREUM]: {

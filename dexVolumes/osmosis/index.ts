@@ -14,7 +14,11 @@ const graphs = async () => {
   const dailyVolume = (await fetchURL(dailyVolumeEndpoint))?.data.value;
 
   const totalVolume = historicalVolume
-    .reduce((acc, { value }) => acc.plus(value), new BigNumber(0))
+    .reduce(
+      (acc: typeof BigNumber, { value }: { value: string | number }) =>
+        acc.plus(value),
+      new BigNumber(0)
+    )
     .plus(dailyVolume)
     .toString();
 

@@ -33,7 +33,7 @@ const blockQuery = gql`
   }
 `;
 
-const getCustomBlock = async (timestamp) => {
+const getCustomBlock = async (timestamp: number) => {
   const block = Number(
     (
       await request(blocksGraph, blockQuery, {

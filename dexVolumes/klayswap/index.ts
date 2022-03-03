@@ -13,7 +13,11 @@ const fetch = async () => {
     .dayVolume;
 
   const totalVolume = historicalVolume
-    .reduce((acc, { amount }) => acc.plus(amount), new BigNumber(0))
+    .reduce(
+      (acc: typeof BigNumber, { amount }: { amount: string | number }) =>
+        acc.plus(amount),
+      new BigNumber(0)
+    )
     .toString();
 
   return {

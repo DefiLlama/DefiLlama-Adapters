@@ -8,11 +8,11 @@ const {
 } = require("../helper/getUniSubgraphVolume");
 
 const endpoints = {
-  ethereum: (date) =>
+  ethereum: (date: number) =>
     `https://api-v2.bancor.network/history/volume?interval=hour&start_date=${date}`,
 };
 
-const graphs = (chain) => async () => {
+const graphs = (chain: string) => async () => {
   const timestamp = getTimestampAtStartOfHour();
 
   let res;
@@ -28,7 +28,10 @@ const graphs = (chain) => async () => {
   return {
     totalVolume: "0", //@TODO FIX
     dailyVolume: todayHourlyData
-      .reduce((acc, { usd }) => acc.plus(BigNumber(usd)), new BigNumber(0))
+      .reduce(
+        (acc: any, { usd }: any) => acc.plus(BigNumber(usd)),
+        new BigNumber(0)
+      )
       .toString(),
     timestamp,
   };

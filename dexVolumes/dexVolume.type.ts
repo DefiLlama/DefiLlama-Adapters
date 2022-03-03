@@ -27,10 +27,10 @@ export type BreakdownAdapter = {
   [x: string]: VolumeAdapter;
 };
 
-export type DexVolumeAdapter =
-  | {
-      volume: VolumeAdapter;
-    }
-  | {
-      breakdown: BreakdownAdapter;
-    };
+export type DexVolumeAdapter = {
+  volume: VolumeAdapter;
+};
+
+export type DexBreakdownAdapter = {
+  breakdown: BreakdownAdapter;
+};

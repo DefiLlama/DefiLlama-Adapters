@@ -7,7 +7,8 @@ const endpoints = {
   ethereum: "https://api.curve.fi/api/getAllPoolsVolume/ethereum",
 };
 
-const graphs = (chain) => async () => {
+// type better later
+const graphs = (chain: any) => async () => {
   const timestamp = getTimestampAtStartOfHour();
   let res;
   switch (chain) {

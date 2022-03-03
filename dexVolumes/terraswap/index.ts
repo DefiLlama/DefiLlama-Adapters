@@ -42,11 +42,12 @@ const fetch = async () => {
     );
   }
 
+  // fix types when redo adapter
   const allVolume = (await Promise.all(totalVolumeRequests)).reduce(
-    (acc, graphRes) =>
+    (acc: any, graphRes) =>
       graphRes?.terraswap?.historicalData
         ?.reduce(
-          (acc, { volumeUST }) => new BigNumber(volumeUST).plus(acc),
+          (acc: any, { volumeUST }: any) => new BigNumber(volumeUST).plus(acc),
           new BigNumber(0)
         )
         .plus(acc),
