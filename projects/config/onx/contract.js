@@ -26,16 +26,6 @@ const daiTokenContract = new web3.eth.Contract(ERC20Abi, tokenAddresses.daiToken
 const fraxTokenContract = new web3.eth.Contract(ERC20Abi, tokenAddresses.fraxToken);
 const usdcTokenContract = new web3.eth.Contract(ERC20Abi, tokenAddresses.usdcToken);
 
-const farmContracts = {
-  onxEthLp: new web3.eth.Contract(UniswapV2PairContractAbi, tokenAddresses.farms[0].address),
-  aETHc: new web3.eth.Contract(ERC20Abi, tokenAddresses.farms[1].address),
-  ANKR: new web3.eth.Contract(ERC20Abi, tokenAddresses.farms[2].address),
-  onxEthSlpMulti: new web3.eth.Contract(UniswapV2PairContractAbi, tokenAddresses.farms[3].address),
-  xSushi: new web3.eth.Contract(ERC20Abi, tokenAddresses.farms[4].address),
-  BOND: new web3.eth.Contract(ERC20Abi, tokenAddresses.farms[6].address),
-  onxEthSlp: new web3.eth.Contract(UniswapV2PairContractAbi, tokenAddresses.farms[6].address),
-}
-
 const onsPoolsContracts = {
   aethPairOne: new web3.eth.Contract(UniswapV2PairContractAbi, tokenAddresses.aethPairOne),
   aethPairOns: new web3.eth.Contract(UniswapV2PairContractAbi, tokenAddresses.aethPairOns),
@@ -56,7 +46,6 @@ module.exports = {
   onsTokenContract,
   bondPairEthContract,
   sushiPairEthContract,
-  farmContracts,
   onsPoolsContracts,
   wethTokenContract,
   daiTokenContract,

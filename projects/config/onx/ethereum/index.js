@@ -1,61 +1,32 @@
 const BigNumber = require('bignumber.js');
 const { onxTokenContract,
-  usdtWethPairContract,
-  onxWethSushiPairContract,
   onxPoolContract,
-  aethPairOnsContract,
-  aethPairOneContract,
-  wethAethPairContract,
   onsTokenContract,
   aethTokenContract,
-  ankrWethPairContract,
-  bondPairEthContract,
-  sushiPairEthContract,
-  farmContracts,
   onsPoolsContracts,
   wethTokenContract,
   daiTokenContract,
   fraxTokenContract,
-  usdcTokenContract,
-  onxTripleFarmContract
-} = require('../contract');
+  usdcTokenContract } = require('../contract');
 const tokenAddresses = require('../constant');
-const { getVautsTvl } = require('../utils');
+const { getVautsTvl, getBalanceOf } = require('../utils');
 const { ZERO, vaults } = require('./vaults');
 const { request, gql } = require("graphql-request");
 const { getUsdBalance } = require('./farmTvl');
-
-const getReserves = async (pairContract) => {
-  try {
-    const {
-      _reserve0,
-      _reserve1,
-      _blockTimestampLast,
-    } = await pairContract.methods.getReserves().call();
-    return { reserve0: _reserve0, reserve1: _reserve1, blockTimestampLast: _blockTimestampLast };
-  } catch {
-    return { reserve0: '0', reserve1: '0' };
-  }
-};
-
-const getWethPrice = async () => {
-  const { reserve0, reserve1 } = await getReserves(usdtWethPairContract);
-  return new BigNumber(reserve1).times(1e12).div(new BigNumber(reserve0))
-}
-
-const getOnxPrice = async () => {
-  const { reserve0, reserve1 } = await getReserves(onxWethSushiPairContract);
-  return new BigNumber(reserve0).div(new BigNumber(reserve1))
-}
+const { getWethPrice,
+  getOnxPrice,
+  getBondPrice,
+  getAethPrice,
+  getOnePrice,
+  getOnsPrice,
+  getAnkrPrice,
+  getSushiPrice } = require('./prices');
+const { getReserves } = require('../utils');
+const { farms, farmContracts } = require('./farms');
 
 const getStakeTvl = async (onxPrice) => {
   const balance = new BigNumber(await onxTokenContract.methods.balanceOf(tokenAddresses.sOnx).call());
   return onxPrice.times(balance).div(1e18);
-}
-
-const getBondPrice = async () => {
-  const { reserve0, reserve1 } = await getReserves(bondPairEthContract);
-  return new BigNumber(reserve1).div(new BigNumber(reserve0));
 }
 
 const getEthereumStaking = async () => {
@@ -63,32 +34,6 @@ const getEthereumStaking = async () => {
   const onxPrice = (await getOnxPrice()).times(wethPrice);
   const stakedTvl = await getStakeTvl(onxPrice);
   return stakedTvl;
-}
-
-const getAethPrice = async () => {
-  const { reserve0, reserve1 } = await getReserves(wethAethPairContract);
-  return new BigNumber(reserve0).div(new BigNumber(reserve1))
-  // return new BigNumber(reserve1).div(new BigNumber(reserve0))
-}
-
-const getOnePrice = async () => {
-  const { reserve0, reserve1 } = await getReserves(aethPairOneContract);
-  return new BigNumber(reserve1).div(new BigNumber(reserve0))
-}
-
-const getOnsPrice = async () => {
-  const { reserve0, reserve1 } = await getReserves(aethPairOnsContract);
-  return new BigNumber(reserve0).div(new BigNumber(reserve1))
-}
-
-const getAnkrPrice = async () => {
-  const { reserve0, reserve1 } = await getReserves(ankrWethPairContract);
-  return new BigNumber(reserve1).div(new BigNumber(reserve0));
-}
-
-const getSushiPrice = async () => {
-  const { reserve0, reserve1 } = await getReserves(sushiPairEthContract);
-  return new BigNumber(reserve1).div(new BigNumber(reserve0));
 }
 
 const getOnePoolsTvl = async (price) => {
@@ -216,13 +161,11 @@ const getEthereumVautsTvl = async () => {
 
 const getFarmsTvl = async (price) => {
   let totalBalance = new BigNumber(0);
-  let { farms } = tokenAddresses;
 
-  farms = await Promise.all(
+  await Promise.all(
     farms.map(async (farm) => {
       const address = !farm.isCustomFarmContract ? tokenAddresses.onxFarm : tokenAddresses.onxTripleFarm;
-
-      const balance = new BigNumber(await farmContracts[farm.title].methods.balanceOf(address).call());
+      const balance = await getBalanceOf(address, farm.contract);
 
       const usdBalance = await getUsdBalance(
         balance,
@@ -251,7 +194,7 @@ const getEthereumTvl = async () => {
   const ankrPrice = (await getAnkrPrice()).times(wethPrice);
   const bondPrice = (await getBondPrice()).times(wethPrice);
   const sushiPrice = (await getSushiPrice()).times(wethPrice);
-  
+
   const farmsTvl = await getFarmsTvl({ wethPrice, onxPrice, aethPrice, ankrPrice, bondPrice, sushiPrice }); //This brings +-1K$
   const stakedTvl = await getStakeTvl(onxPrice);
   const onePoolsTvl = await getOnePoolsTvl({ aethPrice, wethPrice, onxPrice });

@@ -1,27 +1,8 @@
 const BigNumber = require('bignumber.js');
-const { farmContracts } = require('../contract');
-const { ZERO } = require('../utils');
+const { farmContracts } = require('./farms');
+const { ZERO, getTotalSupplyOf, getBalanceOf } = require('../utils');
 const ERC20Abi = require('./abis/ERC20.json');
 const web3 = require('../../web3.js');
-
-const getTotalSupplyOf = async (contract) => {
-  try {
-    const amount = await contract.methods.totalSupply().call();
-    return new BigNumber(amount);
-  } catch (error) {
-    console.log(error);
-    return new BigNumber(0);
-  }
-};
-
-const getBalanceOf = async (account, contract) => {
-  try {
-    const amount = await contract.methods.balanceOf(account).call();
-    return new BigNumber(amount);
-  } catch (error) {
-    return new BigNumber(0);
-  }
-};
 
 const getSymbolPrice = (
   symbol,
@@ -73,13 +54,13 @@ async function getUsdBalance(
       .times(getSymbolPrice(farm.title, wEthPrice, onxPrice, aEthPrice, ankrPrice, sushiPrice, bondPrice))
       .div(1e18);
   } else {
-    const totalSupply = await getTotalSupplyOf(farmContracts[farm.title]);
+    const totalSupply = await getTotalSupplyOf(farm.contract);
 
     if (!totalSupply.isZero()) {
       const subTokenContract1 = new web3.eth.Contract(ERC20Abi, farm.subTokenAddresses1);
       const subTokenContract2 = new web3.eth.Contract(ERC20Abi, farm.subTokenAddresses2);
 
-      const subBalance1 = await getBalanceOf(farm.address, subTokenContract1);   
+      const subBalance1 = await getBalanceOf(farm.address, subTokenContract1);
       const subSymbol1Price = getSymbolPrice(
         farm.subTokenSymbol1,
         wEthPrice,
@@ -101,7 +82,7 @@ async function getUsdBalance(
         bondPrice,
       );
 
-       if (farm.subTokenSymbol2 === 'USDC') {
+      if (farm.subTokenSymbol2 === 'USDC') {
         subSymbol2Decimal = 6;
       }
 

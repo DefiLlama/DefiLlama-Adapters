@@ -78,6 +78,25 @@ const fetchPriceData = async (
   }
 };
 
+const getTotalSupplyOf = async (contract) => {
+  try {
+    const amount = await contract.methods.totalSupply().call();
+    return new BigNumber(amount);
+  } catch (error) {
+    console.log(error);
+    return new BigNumber(0);
+  }
+};
+
+const getBalanceOf = async (account, contract) => {
+  try {
+    const amount = await contract.methods.balanceOf(account).call();
+    return new BigNumber(amount);
+  } catch (error) {
+    return new BigNumber(0);
+  }
+};
+
 module.exports = {
   ZERO,
   fromWei,
@@ -88,4 +107,6 @@ module.exports = {
   numberWithCommas,
   fetchPriceData,
   getReserves,
+  getTotalSupplyOf,
+  getBalanceOf,
 }
