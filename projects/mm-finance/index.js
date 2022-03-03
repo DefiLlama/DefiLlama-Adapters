@@ -30,7 +30,7 @@ pancakeDayDatas(
 }
 `
 
-const graphUrl = 'https://api.thegraph.com/subgraphs/name/pancakeswap/exchange'
+const graphUrl = graphEndpoint
 const graphQuery = gql`
 query get_tvl($block: Int) {
   uniswapFactories(
@@ -41,11 +41,12 @@ query get_tvl($block: Int) {
   }
 }
 `;
+
 async function tvl(timestamp, ethBlock, chainBlocks) {
   if (Math.abs(timestamp - Date.now() / 1000) < 3600) {
     const tvl = await request(graphEndpoint, currentQuery, {}, {
-      "referer": "https://pancakeswap.finance/",
-      "origin": "https://pancakeswap.finance",
+      "referer": "https://mm.finance/",
+      "origin": "https://mm.finance",
     })
     return toUSDTBalances(tvl.pancakeFactories[0].totalLiquidityUSD)
   } else {
@@ -56,18 +57,18 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
         closest = dayTvl
       }
     })
-    // if(Math.abs(closest.date - timestamp) > 3600*24){ // Oldest data is too recent
-    //   const {uniswapFactories} = await request(
-    //     graphUrl,
-    //     graphQuery,
-    //     {
-    //       block: chainBlocks['bsc'],
-    //     }
-    //   );
-    //   const usdTvl = Number(uniswapFactories[0].totalLiquidityUSD)
+    if(Math.abs(closest.date - timestamp) > 3600*24){ // Oldest data is too recent
+      const {uniswapFactories} = await request(
+        graphUrl,
+        graphQuery,
+        {
+          block: chainBlocks['bsc'],
+        }
+      );
+      const usdTvl = Number(uniswapFactories[0].totalLiquidityUSD)
     
-    //   return toUSDTBalances(usdTvl)
-    // }
+      return toUSDTBalances(usdTvl)
+    }
     return toUSDTBalances(closest.totalLiquidityUSD)
   }
 }
