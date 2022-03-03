@@ -15,7 +15,9 @@ const marketStrings = {
 }
 
 const orderedAssets = ["ALGO", "STBL", "USDC", "goBTC", "goETH"]
-const stakingContracts = ["STBL", "TINYMAN11_STBL_USDC_LP_STAKING", "ALGOFI-STBL-USDC-LP", "ALGOFI-STBL-ALGO-LP"]
+const fixedValueStakingContracts = ["STBL", "TINYMAN11_STBL_USDC_LP_STAKING", "ALGOFI-STBL-USDC-LP"]
+const variableValueStakingContracts = ["ALGOFI-STBL-ALGO-LP", "AF-XET-STBL-75BP-STAKING", "AF-GOBTC-STBL-25BP-STAKING", "AF-GOETH-STBL-25BP-STAKING", ]
+const stakingContracts = fixedValueStakingContracts.concat(variableValueStakingContracts)
 
 const assetDictionary = {
     "ALGO": {
@@ -65,6 +67,21 @@ const assetDictionary = {
             "poolAppId": 607645439,
             "marketAppId": 611801333,
             "decimals": 6,
+        },
+        "AF-XET-STBL-75BP-STAKING" : {
+            "marketAppId" : 635812850,
+            "poolAppId": 635256627,
+            "decimals": 6,
+        },
+        "AF-GOBTC-STBL-25BP-STAKING" : {
+            "marketAppId" : 635860537,
+            "poolAppId": 635846127,
+            "decimals": 6
+        },
+        "AF-GOETH-STBL-25BP-STAKING" : {
+            "marketAppId" : 635864509,
+            "poolAppId": 635853824,
+            "decimals": 6
         }
     }
 }
@@ -142,27 +159,30 @@ async function supply() {
 async function staking() {
     let client = new algosdk.Algodv2("", "https://algoexplorerapi.io/", "")
 
-    let algoStblLpContractState = await getGlobalMarketState(
-        client,
-        assetDictionary['STAKING_CONTRACTS']["ALGOFI-STBL-ALGO-LP"]["poolAppId"]
-    )
-    let algoStblLpCirculation = algoStblLpContractState[marketStrings.lp_circulation] / 1000000
+    let lpCirculations = {}
+
+    let prices = {
+             'STBL': 1,
+             'TINYMAN11_STBL_USDC_LP_STAKING': 2,
+             'ALGOFI-STBL-USDC-LP': 2,
+    }
+
+    for (const contractName of variableValueStakingContracts) {
+        let contractState = await getGlobalMarketState(
+            client,
+            assetDictionary['STAKING_CONTRACTS'][contractName]["poolAppId"]
+        )
+        lpCirculations[contractName] = contractState[marketStrings.lp_circulation] / 1000000
+    }
 
     let poolSnapshotsResponse = await fetch("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_pool_snapshots/?network=MAINNET")
     let poolSnapshots = await poolSnapshotsResponse.json();
-    let algoStblTvl = 0;
     for (const poolSnapshot of poolSnapshots['pool_snapshots']) {
-        if (poolSnapshot.id == assetDictionary['STAKING_CONTRACTS']["ALGOFI-STBL-ALGO-LP"]["poolAppId"]) {
-            algoStblTvl = poolSnapshot.balance_info.total_usd
-            break
+        for (const contractName of variableValueStakingContracts) {
+            if (poolSnapshot.id == assetDictionary['STAKING_CONTRACTS'][contractName]["poolAppId"]) {
+                prices[contractName] = poolSnapshot.balance_info.total_usd / lpCirculations[contractName]
+            }
         }
-    }
-
-    let prices = {
-         'STBL': 1,
-         'TINYMAN11_STBL_USDC_LP_STAKING': 2,
-         'ALGOFI-STBL-USDC-LP': 2,
-         'ALGOFI-STBL-ALGO-LP': algoStblTvl / algoStblLpCirculation,
     }
 
     staked = 0
