@@ -22,7 +22,7 @@ const { getWethPrice,
   getAnkrPrice,
   getSushiPrice } = require('./prices');
 const { getReserves } = require('../utils');
-const { farms, farmContracts } = require('./farms');
+const { farms } = require('./farms');
 
 const getStakeTvl = async (onxPrice) => {
   const balance = new BigNumber(await onxTokenContract.methods.balanceOf(tokenAddresses.sOnx).call());
@@ -30,10 +30,11 @@ const getStakeTvl = async (onxPrice) => {
 }
 
 const getEthereumStaking = async () => {
-  const wethPrice = await getWethPrice();
-  const onxPrice = (await getOnxPrice()).times(wethPrice);
-  const stakedTvl = await getStakeTvl(onxPrice);
-  return stakedTvl;
+  return new BigNumber(await onxTokenContract.methods.balanceOf(tokenAddresses.sOnx).call()).div(1e18);
+}
+
+const getEthereumBorrows = async () => {
+  return new BigNumber(await onxPoolContract.methods.totalBorrow().call()).div(1e18);
 }
 
 const getOnePoolsTvl = async (price) => {
@@ -252,4 +253,5 @@ module.exports = {
   getEthereumStaking,
   getEthereumTvl,
   getEthereumPoolTvl,
+  getEthereumBorrows,
 }
