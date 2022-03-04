@@ -416,12 +416,20 @@ const ethPool2 = async (timestamp, ethBlock, chainBlocks) => {
   ];
   const balances = {};
 
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    [["0x4a86c01d67965f8cb3d0aaa2c655705e64097c31", true]], // SYN/ETH SLP
-    ["0xd10eF2A513cEE0Db54E959eF16cAc711470B62cF"], // MiniChefV2
-    ethBlock
-  );
+  await Promise.all([
+    sumTokensAndLPsSharedOwners(
+      balances,
+      [["0x4a86c01d67965f8cb3d0aaa2c655705e64097c31", true]], // SYN/ETH SLP
+      ["0xd10eF2A513cEE0Db54E959eF16cAc711470B62cF"], // MiniChefV2
+      ethBlock
+    ),
+    sumTokensAndLPsSharedOwners(
+      balances,
+      [["0x9fAE36A18EF8Ac2B43186Ade5e2B07403dC742b1", true]], // SYN/FRAX LP
+      ["0xe59AD064E83b83259C03030AC497e8b733F25407"],
+      ethBlock
+    ),
+  ]);
 
   await sumTokens(
     balances,
@@ -466,7 +474,7 @@ module.exports = chainExports(chainTVL, [
   "fantom",
   "arbitrum",
   "harmony",
-  "boba",
+  //"boba",
   "optimism",
   "moonriver",
   "aurora",
