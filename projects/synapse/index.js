@@ -260,6 +260,8 @@ const misrepresentedTokensMap = {
     "0xd203De32170130082896b4111eDF825a4774c18E": WETH,
     // gOHM -> gOHM (ETH)
     "0xd22C0a4Af486C7FA08e282E9eB5f30F9AaA62C95": GOHM,
+    // UST -> UST (ETH)
+    "0x61A269a9506272D128d79ABfE8E8276570967f00": UST,
   },
   optimism: {
     // WETH -> WETH (ETH)
@@ -474,7 +476,7 @@ module.exports = chainExports(chainTVL, [
   "fantom",
   "arbitrum",
   "harmony",
-  "boba",
+  //"boba",
   "optimism",
   "moonriver",
   "aurora",
