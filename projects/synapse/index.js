@@ -195,6 +195,16 @@ const DATA = {
       "0xA1f8890E39b4d8E33efe296D698fe42Fb5e59cC3", // AVAX
     ],
   },
+  cronos: {
+    tokens: [
+      "0xbb0a63a6ca2071c6c4bcac11a1a317b20e3e999c", // gOHM
+    ],
+  },
+  metis: {
+    tokens: [
+      "0xfb21b70922b9f6e3c6274bcd6cb1aa8a0fe20b80", // gOHM
+    ],
+  },
 };
 
 const misrepresentedTokensMap = {
@@ -264,6 +274,10 @@ const misrepresentedTokensMap = {
   // synFXS (FTM) -> FXS (ETH)
   "0x961318Fc85475E125B99Cc9215f62679aE5200aB":
     "0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0",
+  // gOHM (CRO) -> gOHM (ETH)
+  "0xbb0a63a6ca2071c6c4bcac11a1a317b20e3e999c": GOHM,
+  // gOHM (METIS) -> gOHM (ETH)
+  "0xfb21b70922b9f6e3c6274bcd6cb1aa8a0fe20b80": GOHM,
 };
 
 const sumLegacyPools = async (balances, block, chain, transform) => {
@@ -379,6 +393,8 @@ module.exports = chainExports(chainTVL, [
   "moonriver",
   "aurora",
   "moonbeam",
+  "cronos",
+  "metis",
 ]);
 module.exports.methodology = `Tokens bridged via Synapse Bridge and Synapse AMM pools are counted as TVL`;
 module.exports.misrepresentedTokens = true;
