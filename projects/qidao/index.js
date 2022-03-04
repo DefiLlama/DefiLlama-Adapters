@@ -493,23 +493,23 @@ module.exports = {
   misrepresentedTokens: true,
   methodology:
     "TVL counts the AAVE tokens that are deposited within the Yield Instruments section of QiDao, the Vault token deposits of CRV, LINK, AAVE and WETH, as well as USDC deposited to mint MAI.",
-  // polygon: {
-  //   tvl: polygon,
-  // },
+ polygon: {
+    tvl: polygon,
+  },
   fantom: {
     tvl: fantom,
   },
-  // avalanche: {
-  //   tvl: avax,
-  // },
-  // moonriver: {
-  //   tvl: moonriver,
-  // },
-  // harmony: {
-  //   tvl: harmony,
-  // },
-  // xdai: {
-  //   tvl: xdai
-  // }
+  avalanche: { 
+    tvl: avax,
+  },
+  moonriver: { 
+    tvl: moonriver,
+  },
+  harmony: { 
+    tvl: harmony,
+  },
+  xdai: { 
+    tvl: xdai
+  },
 };
 // node test.js projects/qidao/index.js
