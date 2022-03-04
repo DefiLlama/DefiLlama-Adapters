@@ -18,11 +18,14 @@ const chains = {
   rsk: {
     uniswapFactoryAddress: "0x5Af7cba7CDfE30664ab6E06D8D2210915Ef73c2E",
     bdxTokenAddress: "0x6542a10E68cEAc1Fa0641ec0D799a7492795AAC1",
-    // If a token doesn't exist on CoinGecko, map it to the base token it wrappes
+    // If a token doesn't exist on CoinGecko, map it to another token that's equal to it / wrappes it
     coingeckoMapping: {
       prefix: "rsk",
       "0x542fda317318ebf1d3deaf76e0b632741a7e677d": "rootstock", // RSK's WRBTC
       "0x1d931bf8656d795e50ef6d639562c5bd8ac2b78f": "ethereum", // RSK's ETHs
+      "0xb450ff06d950efa9a9c0ad63790c51971c1be885": "usd-coin", // RSK's BDUS
+      "0x99ac494badd0cba26143bd423e39a088591c7b09": "tether-eurt", // RSK's BDEU
+      "0xb5999795be0ebb5bab23144aa5fd6a02d080299f": "usd-coin", // RSK's XUSD
     },
   },
 };
@@ -105,7 +108,7 @@ async function getBDStableCollateralBalances(block, chainName, bdstable) {
     bdxTokenAddress
   );
 
-  balances[coingeckoMapBdxAddress] += await getBalanceOfWithPercision(
+  balances[coingeckoMapBdxAddress] = await getBalanceOfWithPercision(
     block,
     chainName,
     formatAddressChecksum(bdstable.address, chainName),
@@ -131,6 +134,7 @@ async function getBalanceOfWithPercision(block, chainName, owner, target) {
       chainName
     )
   ).output;
+
   return balance / 10 ** decimals;
 }
 
@@ -144,8 +148,6 @@ function sumBalances(balancesArray) {
       balances[coingeckoTokenId] += amount;
     }
 
-    // console.log("=======================");
-    // console.log(balances);
     return balances;
   }, {});
 }
@@ -172,8 +174,12 @@ async function uniswapV2Tvl(block, chainName) {
       )
     ).output;
 
-    balances[mapCoingeckoAddress(chainName, currentToken)] =
-      rawBalances[currentToken] / 10 ** decimals;
+    const mappedAddress = mapCoingeckoAddress(chainName, currentToken);
+    if (!balances[mappedAddress]) {
+      balances[mappedAddress] = 0;
+    }
+
+    balances[mappedAddress] += rawBalances[currentToken] / 10 ** decimals;
   }
 
   return balances;
@@ -207,6 +213,26 @@ async function getAllBDStables(block, bdxTokenAddress, chainName) {
   return bdStables;
 }
 
+async function getBdxPriceInUSD(chainName) {
+  return 3.411;
+  // TODO: Implement!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+}
+
+// TODO: This is needed until BDX will be avilable on Coingecko
+async function convertBdxToUsdc(balances, chainName) {
+  const bdxTokenAddress = chains[chainName].bdxTokenAddress;
+  const coingeckoMapBdxAddress = mapCoingeckoAddress(
+    chainName,
+    bdxTokenAddress
+  );
+
+  balances["usd-coin"] +=
+    balances[coingeckoMapBdxAddress] * (await getBdxPriceInUSD(chainName));
+  balances[coingeckoMapBdxAddress] = 0;
+
+  return balances;
+}
+
 async function tvl(chainName, block) {
   const balancesArray = [];
 
@@ -229,8 +255,14 @@ async function tvl(chainName, block) {
     );
   }
 
-  // console.log(balancesArray);
-  return sumBalances(balancesArray);
+  let balances = sumBalances(balancesArray);
+
+  // TODO: This should be removed when BDX will be listed on Coingecko
+  balances = await convertBdxToUsdc(balances, chainName);
+
+  console.log("balances after", balances);
+
+  return balances;
 }
 
 const rsk = async function rskTvl(timestamp, ethBlock, chainblocks) {
