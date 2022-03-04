@@ -12,9 +12,9 @@ async function eth_tvl(timestamp, block) {
 
     console.log(logOutput)
 
-    tokenAddressList = []
-    poolAddressList = []
-    poolToToken = {}
+    let tokenAddressList = []
+    let poolAddressList = []
+    let poolToToken = {}
     for (const s of logOutput) {
         token0 = "0x"+s.data.slice(26, 66)
         tokenAddressList.push(token0)
@@ -64,9 +64,9 @@ async function bsc_tvl(timestamp, block, chainBlocks) {
         topic:'LPoolPairCreated(address,address,address,address,uint16,uint16,bytes)'
     })).output
 
-    tokenAddressList = []
-    poolAddressList = []
-    poolToToken = {}
+    let tokenAddressList = []
+    let poolAddressList = []
+    let poolToToken = {}
 
     console.log(logOutput)
 
