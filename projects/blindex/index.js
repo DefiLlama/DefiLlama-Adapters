@@ -213,13 +213,26 @@ async function getAllBDStables(block, bdxTokenAddress, chainName) {
   return bdStables;
 }
 
-async function getBdxPriceInUSD(chainName) {
-  return 3.411;
-  // TODO: Implement!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+async function getBdxPriceInUSD(block, chainName) {
+  const bdusAddress = formatAddressChecksum(
+    "0xb450ff06d950efa9a9c0ad63790c51971c1be885",
+    chainName
+  );
+
+  const bdxPriceInUsd_d12 = (
+    await sdk.api.abi.call({
+      target: bdusAddress,
+      abi: abi["getBDXPriceUsdD12"],
+      chain: chainName,
+      block,
+    })
+  ).output;
+
+  return bdxPriceInUsd_d12 / 10 ** 12;
 }
 
 // TODO: This is needed until BDX will be avilable on Coingecko
-async function convertBdxToUsdc(balances, chainName) {
+async function convertBdxToUsdc(block, chainName, balances) {
   const bdxTokenAddress = chains[chainName].bdxTokenAddress;
   const coingeckoMapBdxAddress = mapCoingeckoAddress(
     chainName,
@@ -227,7 +240,8 @@ async function convertBdxToUsdc(balances, chainName) {
   );
 
   balances["usd-coin"] +=
-    balances[coingeckoMapBdxAddress] * (await getBdxPriceInUSD(chainName));
+    balances[coingeckoMapBdxAddress] *
+    (await getBdxPriceInUSD(block, chainName));
   balances[coingeckoMapBdxAddress] = 0;
 
   return balances;
@@ -255,14 +269,10 @@ async function tvl(chainName, block) {
     );
   }
 
-  let balances = sumBalances(balancesArray);
+  const balances = sumBalances(balancesArray);
 
   // TODO: This should be removed when BDX will be listed on Coingecko
-  balances = await convertBdxToUsdc(balances, chainName);
-
-  console.log("balances after", balances);
-
-  return balances;
+  return await convertBdxToUsdc(block, chainName, balances);
 }
 
 const rsk = async function rskTvl(timestamp, ethBlock, chainblocks) {
