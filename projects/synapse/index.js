@@ -474,7 +474,7 @@ module.exports = chainExports(chainTVL, [
   "fantom",
   "arbitrum",
   "harmony",
-  //"boba",
+  "boba",
   "optimism",
   "moonriver",
   "aurora",
