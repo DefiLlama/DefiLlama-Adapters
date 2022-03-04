@@ -17,7 +17,9 @@ async function tvl(){
 
 
 module.exports={
+    timetravel: false,
     misrepresentedTokens: true,
+    doublecounted: true,
     solana:{
         tvl,
         staking

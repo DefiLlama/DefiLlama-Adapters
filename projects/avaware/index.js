@@ -104,14 +104,11 @@ const avaxTvl = async (timestamp, ethBlock, chainBlocks) => {
 };
 
 module.exports = {
-  misrepresentedTokens: true,
-  staking: {
-    tvl: staking,
-  },
+  timetravel: true,
   avalanche: {
+    staking,
     tvl: avaxTvl,
   },
-  tvl: sdk.util.sumChainTvls([avaxTvl]),
   methodology: `We count TVL that is on the Farms threw FarmPoolManager contract 
     and the portion of staking the native token (AVE) by treasury contract`,
 };

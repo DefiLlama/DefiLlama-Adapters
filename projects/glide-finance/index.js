@@ -2,6 +2,7 @@ const {calculateUsdUniTvl} = require('../helper/getUsdUniTvl')
 const { stakingPricedLP } = require('../helper/staking')
 
 module.exports={
+    timetravel: true,
     misrepresentedTokens: true,
     methodology: "Factory address (0xaAbe38153b25f0d4b2bDa620f67059B3a45334e5) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
     elastos: {

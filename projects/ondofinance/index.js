@@ -1,11 +1,11 @@
 const sdk = require('@defillama/sdk')
 const abi = require('./abi.json')
-const util = require('util')
 
+const oldAllPairVault = "0xeF970A111dd6c281C40Eee6c40b43f24435833c2"
+const newAllPairVault = "0x2bb8de958134afd7543d4063cafad0b7c6de08bc"
 
-const allPairVault = "0xeF970A111dd6c281C40Eee6c40b43f24435833c2"
-
-async function tvl(timestamp, block){
+function tvlForAllPair(allPairVault){
+return async (timestamp, block) =>{
     const vaults = (await sdk.api.abi.call({
         target: allPairVault,
         block,
@@ -23,8 +23,9 @@ async function tvl(timestamp, block){
     }
     return balances
 }
+}
 
 module.exports={
     methodology: "Counts all tokens resting on upcoming vaults and the ones deposited on active vaults",
-    tvl
+    tvl: sdk.util.sumChainTvls([oldAllPairVault, newAllPairVault].map(tvlForAllPair))
 }

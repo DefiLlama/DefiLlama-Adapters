@@ -13,6 +13,7 @@ async function tvl() {
 }
 
 module.exports = {
+    timetravel: false,
     misrepresentedTokens: true,
     solana: {
         tvl,

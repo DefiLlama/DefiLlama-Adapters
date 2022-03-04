@@ -71,7 +71,9 @@ const coingeckoPrice = {
         decimals: 1e8
     }
 }
-async function tvl() {
+
+function tvl(borrowed){
+return async () => {
     let balances = {};
     let markets = await getMarkets();
     let lpPositions = [];
@@ -80,7 +82,7 @@ async function tvl() {
             target: market.cToken,
         })),
         chain: chain,
-        abi: cAbis['getCash'],
+        abi: borrowed?cAbis.totalBorrows: cAbis['getCash'],
     });
     
     const symbols = await sdk.api.abi.multiCall({
@@ -91,8 +93,7 @@ async function tvl() {
         abi: "erc20:symbol",
     });
     _.each(markets, async (market, idx) => {
-        let getCash = _.find(cashInfo.output, (result) => result.input.target === market.cToken);
-        if (getCash) {
+        const getCash = _.find(cashInfo.output, (result) => result.input.target === market.cToken);
             if (getCash.output === null) {
                 throw new Error("failed")
             }
@@ -114,7 +115,6 @@ async function tvl() {
             } else {
                 sdk.util.sumSingleBalance(balances, tokenToCoinGecko.coingecko, Number(getCash.output)/tokenToCoinGecko.decimals)
             }
-        }
     });
 
     await unwrapUniswapLPs(balances, lpPositions, undefined, 'heco', addr=>{
@@ -125,8 +125,12 @@ async function tvl() {
     })
     return balances;
 }
+}
 
 module.exports = {
-    tvl,
-  };
-  
+    timetravel: false,
+    heco:{
+        tvl: tvl(false),
+        borrowed: tvl(true)
+    }
+};
