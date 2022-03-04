@@ -6,7 +6,7 @@
  *      For more information please read: https://developers.rsk.co/rsk/architecture/account-based/
  */
 function formatAddressChecksum(address, netwrokName) {
-  // Addd here more EIP-1191 networks as needed
+  // Add here more EIP-1191 networks as needed
   return ["rsk"].includes(netwrokName?.toLowerCase())
     ? address.toLowerCase()
     : address;
