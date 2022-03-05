@@ -11,5 +11,5 @@ const lps = [
 ];
 
 module.exports = {
-    ...tombTvl(code7, sevenshare, rewardPool, masonry, lps, "fantom")
+    ...tombTvl(code7, sevenshare, rewardPool, masonry, lps, "fantom", undefined, false, lps[0])
 }
