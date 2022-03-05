@@ -2,7 +2,7 @@ const { sumTokensAndLPsSharedOwners, unwrapUniswapLPs } = require("../helper/unw
 const sdk = require("@defillama/sdk");
 const allocatorAbi = require("./allocatorAbi.json");
 const pngStakingAbi = require("./stakingRewardsAbi.json");
-const joeStakingAbi = require("./masterchefAbi.json");
+const joeStakingAbi = require("./stableJoeStakingAbi.json");
 const veptpAbi = require("./veptpAbi.json");
 const qiTokenAbi = require("./qiTokenAbi.json");
 
@@ -10,7 +10,7 @@ const MaximizerStaking = "0x6d7AD602Ec2EFdF4B7d34A9A53f92F06d27b82B1";
 const Treasury = "0x22cF6c46b4E321913ec30127C2076b7b12aC6d15";
 const Deployer = "0xb2Fe117269292D41c3b5bdD6B600Fc80239AfBeC";
 const PngAllocator = "0x1ff1E60e7af648DFE7B95E025214bfCd6f3D9524";
-const JoeAllocator = "0x63FCb1d8B6B5681f8A470A8c61F6b73B3F66923a";
+const JoeAllocator = "0x7613D00f7b49E514Ce84d6369EA12Cc98219Ed40";
 const BenqiAllocator = '0x1e3834DA9a9B4d4016427554Ef31ff4e1F41d4Ed';
 
 const MAXI = "0x7C08413cbf02202a1c13643dB173f2694e0F73f0";
@@ -43,11 +43,11 @@ const QI_QITOKEN = "0x35Bd6aedA81a7E5FC7A7832490e71F757b0cD9Ce";
 const DAI_QITOKEN = "0x835866d37AFB8CB8F8334dCCdaf66cf01832Ff5D";
 
 const PngStaking = "0x88afdaE1a9F58Da3E68584421937E5F564A0135b";
-const JoeStaking = "0xd6a4F121CA35509aF06A0Be99093d08462f53052";
+const JoeStaking = "0x1a731B2299E22FbAC282E7094EdA41046343Cb51";
 
 const Allocators = [
   { allocator: PngAllocator, stakeToken: PNG, yieldToken: PNG, yieldStaking: PngStaking, abi: pngStakingAbi.balanceOf, params: [ PngAllocator ], transformResult: (result) => result.output },
-  { allocator: JoeAllocator, stakeToken: XJOE, yieldToken: JOE, yieldStaking: JoeStaking, abi: joeStakingAbi.userInfo, params: [ 24, JoeAllocator ], transformResult: (result) => result.output.amount },
+  { allocator: JoeAllocator, stakeToken: JOE, yieldToken: JOE, yieldStaking: JoeStaking, abi: joeStakingAbi.getUserInfo, params: [ JoeAllocator, USDC ], transformResult: (result) => result.output.amount },
 ];
 const Allocations = [
   { allocator: PngAllocator, token: PNG_WAVAX_PGL, pid: 0 },
@@ -189,8 +189,8 @@ async function tvl(timestamp, block, chainBlocks) {
   })).output.map(result => result.output);
 
   Allocators.forEach((allocator, index) => {
-    sdk.util.sumSingleBalance(balances, config.transformAddress(allocator.stakeToken), stakedYieldTokens[index]);
-    sdk.util.sumSingleBalance(balances, config.transformAddress(allocator.yieldToken), pendingYieldTokens[index]);
+    sdk.util.sumSingleBalance(balances, config.transformAddress(allocator.stakeToken), stakedYieldTokens[index].toString());
+    sdk.util.sumSingleBalance(balances, config.transformAddress(allocator.yieldToken), pendingYieldTokens[index].toString());
   });
 
   BenqiMarkets.forEach(async market => {
