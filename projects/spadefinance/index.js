@@ -1,7 +1,7 @@
 const abi = require("../helper/abis/masterchef.json")
 const { transformFantomAddress } = require("../helper/portedTokens");
 const { addFundsInMasterChef } = require("../helper/masterchef");
-const { staking } = require("../helper/staking");
+const { staking, stakingPricedLP } = require("../helper/staking");
 const { pool2Exports } = require('../helper/pool2')
 
 
@@ -13,7 +13,7 @@ const spadeUsdcLP = "0x8080233587CE98d6CA094823aB77AE20dA5f35Ac";
 async function tvl(timestamp, block, chainBlocks) {
   const balances = {}
   const transformAddress = await transformFantomAddress();
-  await addFundsInMasterChef(balances, spadechef, chainBlocks.fantom, "fantom", transformAddress, abi.poolInfo, [spade, spadeFtmLP, spadeUsdcLP]);
+  await addFundsInMasterChef(balances, spadechef, chainBlocks.fantom, "fantom", transformAddress, abi.poolInfo, [spade, spadeFtmLP, spadeUsdcLP], true, true, spade);
   return balances;
 }
 
@@ -21,9 +21,9 @@ module.exports = {
   methodology: "TVL includes all farms in MasterChef contract",
   fantom: {
       tvl,
-      staking: staking(spadechef, spade, "fantom"),
+      staking: stakingPricedLP(spadechef, spade, "fantom", spadeFtmLP, "fantom"),
       pool2: pool2Exports(spadechef, [spadeFtmLP, spadeUsdcLP], "fantom"),
   },
-  
+
 } 
 
