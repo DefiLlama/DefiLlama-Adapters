@@ -32,6 +32,20 @@ async function calcTvl(timestamp, ethBlock, chainBlocks) {
   return { [`fantom:${Contracts.fantom.wftm}`]: data.output };
 }
 
+async function calcStakingTvl(timestamp, ethBlock, chainBlocks) {
+  const block = chainBlocks.fantom;
+  const chain = "fantom";
+
+  const data = await sdk.api.abi.call({
+    target: Contracts.fantom.multiFeeDistribution,
+    abi: Abis.multiFeeDistribution.totalSupply,
+    chain: chain,
+    block,
+  });
+
+  return { [`fantom:${Contracts.fantom.fsm}`]: data.output };
+}
+
 async function calcPool2(masterchef, lps, block, chain) {
   let balances = {};
   const lpBalances = (
@@ -75,10 +89,6 @@ module.exports = {
   fantom: {
     tvl: calcTvl,
     pool2: ftmPool2,
-    staking: staking(
-      Contracts.fantom.multiFeeDistribution,
-      Contracts.fantom.fsm,
-      "fantom"
-    ),
+    staking: calcStakingTvl
   },
 };
