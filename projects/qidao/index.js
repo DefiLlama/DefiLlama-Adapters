@@ -364,7 +364,7 @@ async function fantom(timestamp, block, chainBlocks) {
         "0x7345a537A975d9Ca588eE631BEFdDfEF34fD5e8f",
         "0xedF25e618E4946B05df1E33845993FfEBb427A0F",
       ]
-    ], // node test.js projects/qidao/index.js
+    ],
     chainBlocks.fantom,
     "fantom",
     addr=> {
