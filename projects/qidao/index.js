@@ -205,6 +205,16 @@ async function polygon(timestamp, block, chainBlocks) {
       chain: "polygon",
     })
   ).output / 10 ** 12;
+
+  balances['0x3f382dbd960e3a9bbceae22651e88158d2791550'] = (
+    await sdk.api.erc20.balanceOf({
+      target: "0x51195e21BDaE8722B29919db56d95Ef51FaecA6C",
+      owner: "0x1f0aa72b980d65518e88841ba1da075bd43fa933",
+      block: chainBlocks.polygon,
+      chain: "polygon",
+    })
+  ).output;
+
   return balances;
 }
 
@@ -354,7 +364,7 @@ async function fantom(timestamp, block, chainBlocks) {
         "0x7345a537A975d9Ca588eE631BEFdDfEF34fD5e8f",
         "0xedF25e618E4946B05df1E33845993FfEBb427A0F",
       ]
-    ],
+    ], // node test.js projects/qidao/index.js
     chainBlocks.fantom,
     "fantom",
     addr=> {
@@ -512,4 +522,3 @@ module.exports = {
     tvl: xdai
   },
 };
-// node test.js projects/qidao/index.js
