@@ -1,8 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { ethers } = require("ethers");
 
-const IsolatedLending = "0xDc5CCAAA928De5D318605A76eEDE50f205Aa6D93";
-const StableLending = "0x079126585b0a96fD0A76B45B59be0c54F93b6424";
 const CurvePoolRewards = "0x9727D535165e19590013bdDea8Fd85dd618b9aF7";
 const account = "0x0000000000000000000000000000000000000000";
 const methodology = "";
