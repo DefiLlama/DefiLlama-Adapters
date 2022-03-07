@@ -30,11 +30,15 @@ const getStakeTvl = async (onxPrice) => {
 }
 
 const getEthereumStaking = async () => {
-  return new BigNumber(await onxTokenContract.methods.balanceOf(tokenAddresses.sOnx).call()).div(1e18);
+  const wethPrice = await getWethPrice();
+  const onxPrice = (await getOnxPrice()).times(wethPrice);
+  return getStakeTvl(onxPrice);
 }
 
 const getEthereumBorrows = async () => {
-  return new BigNumber(await onxPoolContract.methods.totalBorrow().call()).div(1e18);
+  const wethPrice = await getWethPrice();
+  const borrowsTvl = new BigNumber(await onxPoolContract.methods.totalBorrow().call()).div(1e18);
+  return wethPrice.times(borrowsTvl);
 }
 
 const getOnePoolsTvl = async (price) => {
