@@ -1,5 +1,6 @@
 const sdk = require("@defillama/sdk");
-const {transformXdaiAddress} = require('../helper/portedTokens')
+const {transformXdaiAddress} = require('../helper/portedTokens');
+const { staking } = require("../helper/staking");
 
 const insuranceFund = "0x8C29F6F7fc1999aB84b476952E986F974Acb3824"
 const clearingHouse = "0x5d9593586b4B5edBd23E7Eba8d88FD8F09D83EBd"
@@ -29,22 +30,15 @@ async function xdai(_timestamp, ethBlock, chainBlocks) {
     return balances
 }
 
-async function ethStaking(_timestamp, ethBlock, chainBlocks) {
-    return {
-        [perpToken]: (await sdk.api.erc20.balanceOf({
-            target: perpToken,
-            owner: stakingContract,
-            block: ethBlock
-        })).output
-    }
-}
-
 module.exports = {
-    staking: {
-        tvl: ethStaking
+    ethereum: {
+        staking: staking(stakingContract, perpToken)
     },
     xdai: {
         tvl: xdai
     },
-    tvl: sdk.util.sumChainTvls([xdai])
+    optimism:{
+        tvl: staking("0xAD7b4C162707E0B2b5f6fdDbD3f8538A5fbA0d60", "0x7f5c764cbc14f9669b88837ca1490cca17c31607", "optimism")
+    },
+
 }

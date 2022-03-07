@@ -5,7 +5,7 @@ const getReserves = require('./abis/getReserves.json');
 const getTotalSupply = require('./abis/totalSupply.json');
 const getTotalBalance = require('./abis/totalBalance.json');
 
-const START_BLOCK = 0;
+const START_BLOCK = 9926326;
 const FACTORY = '0x35C052bBf8338b06351782A565aa9AaD173432eA';
 
 function toAddress(str, skip = 0) {
@@ -82,6 +82,7 @@ module.exports = async function tvl(_, block, transform) {
     const collateralBalance = new BigNumber(collateralBalanceRaw);
     const totalSupply = new BigNumber(totalSupplyRaw);
 
+    if(totalSupplyRaw!=="0"){
     {
       const reserve0 = new BigNumber(reservesRaw['0']);
       const borrowable0Balance = new BigNumber(borrowable0BalanceRaw);
@@ -102,6 +103,7 @@ module.exports = async function tvl(_, block, transform) {
         .plus(borrowable1Balance)
         .plus(collateral1Balance)
         .toFixed()
+    }
     }
 
     return accumulator;

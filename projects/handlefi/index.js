@@ -1,6 +1,8 @@
 const sdk = require("@defillama/sdk")
 const BigNumber = require("bignumber.js")
 const { sumTokens, unwrapUniswapLPs } = require("../helper/unwrapLPs")
+const {pool2 } = require("../helper/pool2")
+const { getBlock } = require("../helper/getBlock")
 const abi = require("./abi.json");
 
 // Arbitrum TVL
@@ -23,39 +25,21 @@ const fxTokens = {
 
 // Arbitrum TVL: Retrieve tokens stored in treasury contract - only weth at the moment
 // https://arbiscan.io/address/0x5710B75A0aA37f4Da939A61bb53c519296627994
-async function arbitrum_tvl(timestamp, block, chainBlocks, chain) {
+async function arbitrum_tvl(timestamp, ethBlock, chainBlocks, chain) {
+  const block = await getBlock(timestamp, "arbitrum", chainBlocks)
   const balances = {}
   await sumTokens(
     balances,
     treasuryTokens.map(t => [t, treasuryContract]),
-    chainBlocks.arbitrum,
+    block,
     "arbitrum",
     transformArbitrumAddress
   )
   return balances
 }
 
-// Arbitrum Staking is sushiswap LP FOREX/WETH provided to staking contract
-async function arbitrum_staking(timestamp, ethBlock, chainBlocks, chain) {
-  const balances = {}  
-  // Sushiswap LP FOREX/WETH staking on arbitrum
-  const { output: FOREX_WETH_LP_tokens } = await sdk.api.erc20.balanceOf({
-    target: WETH_FOREX_sushi_LP,
-    owner: LP_staking_contract,
-    block: chainBlocks['arbitrum'], 
-    chain: 'arbitrum' 
-  })
-  const lpBalances = [{
-      'token': WETH_FOREX_sushi_LP, 
-      'balance': FOREX_WETH_LP_tokens
-  }]
-  console.log('Sushiswap FOREX/WETH LP staked in masterchef', FOREX_WETH_LP_tokens / 1e18)
-  await unwrapUniswapLPs(balances, lpBalances, chainBlocks['arbitrum'], 'arbitrum', transformArbitrumAddress)
-  return balances
-}
-
 // Eth-mainnet TVL is locked in RariCapital Fuse pool #72 and #116
-async function ethereum_tvl(timestamp, ethBlock, chainBlocks, chain) {
+async function ethereum_tvl(timestamp, ethBlock, chainBlocks) {
   const balances = {}  
 
   for (const fuse_pool_id of fuse_pool_ids) {
@@ -92,7 +76,7 @@ async function ethereum_tvl(timestamp, ethBlock, chainBlocks, chain) {
         chain: "ethereum",
       }),
     ])
-    console.log(`Rari Fuse pool #${fuse_pool_id}: balances of underlying of comptroller markets`, underlying.map((t, i) => t.output + ': ' + balance[i].output))
+    //console.log(`Rari Fuse pool #${fuse_pool_id}: balances of underlying of comptroller markets`, underlying.map((t, i) => t.output + ': ' + balance[i].output))
 
     underlying.forEach((t, i) => {
       balances[t.output] = (new BigNumber(balances[t.output] || "0").plus(new BigNumber(balance[i].output)) ).toString(10)
@@ -101,7 +85,7 @@ async function ethereum_tvl(timestamp, ethBlock, chainBlocks, chain) {
 
   // Set to zero balance of fxTokens, which are not collateral but are backed by the other assets of rari pools
   for (const [key, value] of Object.entries(fxTokens)) {
-    balances[value] = '0'
+    delete balances[value];
   }
   return balances
 }
@@ -109,7 +93,7 @@ async function ethereum_tvl(timestamp, ethBlock, chainBlocks, chain) {
 module.exports = {
   arbitrum: {
     tvl: arbitrum_tvl,
-    staking: arbitrum_staking
+    pool2: pool2(LP_staking_contract, WETH_FOREX_sushi_LP, "arbitrum")
   },
   ethereum: {
     tvl: ethereum_tvl,

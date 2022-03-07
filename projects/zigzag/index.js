@@ -31,6 +31,7 @@ function offers() {
 }
 
 module.exports = {
+    timetravel: false,
     zksync:{
         offers,
         tvl: async()=>({})

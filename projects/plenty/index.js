@@ -12,9 +12,11 @@ async function staking(){
 }
 
 module.exports = {
+    timetravel: false,
     misrepresentedTokens: true,
-    staking:{
-        fetch: staking
+    tezos:{
+        staking,
+        fetch
     },
     fetch
 }

@@ -18,6 +18,22 @@ const rtoke = "0xa760e26aA76747020171fCF8BdA108dFdE8Eb930"
 const toke = "0x2e9d63788249371f1dfc918a52f8d799f4a38c94"
 const sushiPool = "0xf49764c9C5d644ece6aE2d18Ffd9F1E902629777";
 const sushi = "0x6B3595068778DD592e39A122f4f5a5cF09C90fE2";
+const fraxPool = "0x94671A3ceE8C7A12Ea72602978D1Bb84E920eFB2";
+const frax = "0x853d955acef822db058eb8505911ed77f175b99e";
+const daiPool = "0x0CE34F4c26bA69158BC2eB8Bf513221e44FDfB75";
+const dai = "0x6b175474e89094c44da98b954eedeac495271d0f";
+const feiPool = "0x03DccCd17CC36eE61f9004BCfD7a85F58B2D360D";
+const fei = "0x956F47F50A910163D8BF957Cf5846D573E7f87CA";
+const lusdPool = "0x9eEe9eE0CBD35014e12E1283d9388a40f69797A3";
+const lusd = "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0";
+const wormUstPool = "0x482258099De8De2d0bda84215864800EA7e6B03D";
+const wormtust = "0xa693b19d2931d498c5b318df961919bb4aee87a5";
+const foxPool = "0x808D3E6b23516967ceAE4f17a5F9038383ED5311";
+const fox = "0xc770eefad204b5180df6a14ee197d99d808ee52d";
+const apwPool = "0xDc0b02849Bb8E0F126a216A2840275Da829709B0";
+const apw = "0x4104b135dbc9609fc1a9490e61369036497660c8";
+const snxPool = "0xeff721Eae19885e17f5B80187d6527aad3fFc8DE";
+const snx = "0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f";
 
 async function tvl(timestamp, block) {
   const balances = {}
@@ -30,7 +46,15 @@ async function tvl(timestamp, block) {
     [alcx, alcxPool],
     [fxs, fxsPool],
     [tcr, tcrPool],
-    [sushi, sushiPool]
+    [sushi, sushiPool],
+    [frax, fraxPool],
+    [dai, daiPool],
+    [fei, feiPool],
+    [lusd, lusdPool],
+    [wormtust, wormUstPool],
+    [fox, foxPool],
+    [apw, apwPool],
+    [snx, snxPool]
   ], block)
   return balances
 }
@@ -61,6 +85,5 @@ module.exports = {
     tvl,
     pool2,
     staking
-  },
-  tvl
+  }
 }

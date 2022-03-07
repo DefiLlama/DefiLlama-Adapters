@@ -30,6 +30,7 @@ async function tvl(timestamp) {
 }
 
 module.exports = {
+  timetravel: false,
   misrepresentedTokens: true,
   tvl
 }
