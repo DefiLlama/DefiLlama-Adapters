@@ -2,7 +2,9 @@ const sdk = require("@defillama/sdk");
 const {staking} = require("../helper/staking");
 const {sumTokensAndLPsSharedOwners} = require("../helper/unwrapLPs");
 const index = require('./index.json')
-const MasterChefV2 = require('./MasterChefV2.json')
+const MasterChefBeets = require('./MasterChefBeets.json')
+const BalancerVaultBeets = require('./BalancerVaultBeets.json')
+const BalancerWeightedPoolBeets = require('./BalancerWeightedPoolBeets.json')
 const {default: BigNumber} = require("bignumber.js");
 
 const fantomFhm = "0xfa1FBb8Ef55A4855E5688C0eE13aC3f202486286";
@@ -26,7 +28,6 @@ const movr_transforms = {
 	"0x748134b5f553f2bcbd78c6826de99a70274bdeb3": "ethereum:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USDC
 	"0xe936caa7f6d9f5c9e907111fcaf7c351c184cda7": "ethereum:0xdac17f958d2ee523a2206206994597c13d831ec7", // USDT
 	"0xfa1fbb8ef55a4855e5688c0ee13ac3f202486286": "fantom:0xfa1FBb8Ef55A4855E5688C0eE13aC3f202486286", // FHM
-	"0x8617f21f3751994306462e6dd118a7c02aa133fb": "0xa47c8bf37f92aBed4A126BDA807A7b7498661acD", // FHUD => UST value
 }
 
 async function moonriverTvl(timestamp, block, chainBlocks) {
@@ -36,7 +37,6 @@ async function moonriverTvl(timestamp, block, chainBlocks) {
 	await sumTokensAndLPsSharedOwners(balances, [
 				["0x748134b5f553f2bcbd78c6826de99a70274bdeb3", false], // USDC.m
 				["0xE936CAA7f6d9F5C9e907111FCAf7c351c184CDA7", false], // USDT.m
-				["0x8617f21f3751994306462e6dd118a7c02aa133fb", false], // FHUD
 				["0x0b6116bb2926d996cdeba9e1a79e44324b0401c9", true], // HB LP
 			], [moonriverTreasuryContract], block, "moonriver",
 			addr => (movr_transforms[addr.toLowerCase()] ? movr_transforms[addr.toLowerCase()] : `moonriver:${addr}`));
@@ -54,8 +54,6 @@ async function moonriverTvl(timestamp, block, chainBlocks) {
 //
 const fantom_transforms = {
 	"0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e": "0x6b175474e89094c44da98b954eedeac495271d0f", // DAI
-	"0xbb29d2a58d880af8aa5859e30470134deaf84f2b": "0x090185f2135308bad17527004364ebcc2d37e5f6", // sSPELL => SPELL
-	"0x18f7f88be24a1d1d0a4e61b6ebf564225398adb0": "0xa47c8bf37f92aBed4A126BDA807A7b7498661acD", // FHUD => UST value
 }
 
 async function fantomTvl(timestamp, block, chainBlocks) {
@@ -64,20 +62,23 @@ async function fantomTvl(timestamp, block, chainBlocks) {
 	// treasury value
 	await sumTokensAndLPsSharedOwners(balances, [
 				["0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e", false], // DAI
-				["0x82f0b8b456c1a451378467398982d4834b6829c1", false], // MIM
-				["0x18f7f88be24a1d1d0a4e61b6ebf564225398adb0", false], // FHUD
 				["0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83", false], // wFTM
-				["0xbB29D2A58d880Af8AA5859e30470134dEAf84F2B", false], // sSPELL
-				["0xd77fc9c4074b56ecf80009744391942fbfddd88b", true], // DAI/FHM
-				["0x46622913cE40c54Ec14857f72968d4BAAF963947", true] // MIM/FHM
+				["0xd77fc9c4074b56ecf80009744391942fbfddd88b", true],  // DAI/FHM
 			], [fantomTreasuryContract], block, "fantom",
 			addr => (fantom_transforms[addr.toLowerCase()] ? fantom_transforms[addr.toLowerCase()] : `fantom:${addr}`))
 
+	// treasury values
+	await Promise.all([
+		balanceOf(fantomTreasuryContract, "0x6Fc9383486c163fA48becdEC79d6058f984f62cA", "0xa47c8bf37f92aBed4A126BDA807A7b7498661acD", balances, block), // USDB => UST value
+		balanceOf(fantomTreasuryContract, "0x7799f423534c319781b1b370B69Aaf2C75Ca16A3", "0xa47c8bf37f92aBed4A126BDA807A7b7498661acD", balances, block), // USDB-DAI stable pool
+	]);
+
 	// investments
 	await Promise.all([
-		wmemo(fantomGnosisContract, balances, chainBlocks), // wMEMO
-
-		spiritLinspiritLp(fantohmDaoDeployerWallet, balances, block), // spirit/linspirit LP
+		balanceOf(fantomGnosisContract, "0x6Fc9383486c163fA48becdEC79d6058f984f62cA", "0xa47c8bf37f92aBed4A126BDA807A7b7498661acD", balances, block), // USDB
+		balanceOf(fantomGnosisContract, "0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E", "0x6b175474e89094c44da98b954eedeac495271d0f", balances, block), // DAI
+		beetsFtm_BeetsLp(fantohmDaoDeployerWallet, balances, block), // beets/wftm LP
+		lqdrFtm_BeetsLp(fantohmDaoDeployerWallet, balances, block), // lqdr/wftm LP
 	]);
 
 	return balances;
@@ -168,18 +169,15 @@ async function addInvestment(chain, target, owner, balances, block) {
 	sdk.util.sumSingleBalance(balances, chain + ":" + target, balance);
 }
 
-async function dai(owner, balances, block) {
-	const fantom_dai = "0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E"
-	const eth_dai = "0x6b175474e89094c44da98b954eedeac495271d0f"
-
+async function balanceOf(owner, ca, countAsCa, balances, block) {
 	const balance = (await sdk.api.erc20.balanceOf({
 		chain: "fantom",
 		block: block,
-		target: fantom_dai,
+		target: ca,
 		owner: owner,
 	})).output;
 
-	sdk.util.sumSingleBalance(balances, eth_dai, balance);
+	sdk.util.sumSingleBalance(balances, countAsCa, balance);
 }
 
 //
@@ -206,61 +204,106 @@ async function gohm(owner, balances, block) {
 	sdk.util.sumSingleBalance(balances, ohm, BigNumber(gohmBalance).div(1e18) * indexValue);
 }
 
-//
-// valuation wMEMO wrap token consist of amount of native (staked) token on Fantom * staking index from AVAX * market price on AVAX
-//
-async function wmemo(owner, balances, chainBlocks) {
-	const fantom_wMEMO = "0xddc0385169797937066bbd8ef409b5b3c0dfeb52"
-	const avax_wMEMO = "0x0da67235dd5787d67955420c84ca1cecd4e5bb3b"
-	const avax_time = "avax:0xb54f16fb19478766a268f172c9480f8da1a7c9c3";
+async function beetsFtm_BeetsLp(owner, balances, block) {
+	const beetsMasterChef = "0x8166994d9ebBe5829EC86Bd81258149B87faCfd3";
+	const beetsVault = "0x20dd72Ed959b6147912C2e529F0a0C651c33c9ce";
+	const beetsBalancerWeightedPool = "0xcde5a11a4acb4ee4c805352cec57e236bdbc3837";
+	const poolId = "0xcde5a11a4acb4ee4c805352cec57e236bdbc3837000200000000000000000019";
 
-	const wMemoBalance = (await sdk.api.erc20.balanceOf({
+	const beets = "0xF24Bcf4d1e507740041C9cFd2DddB29585aDCe1e";
+	const wftm = "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83";
+
+	const fBeetsBalance = (await sdk.api.abi.call({
 		chain: "fantom",
-		block: chainBlocks.fantom,
-		target: fantom_wMEMO,
+		block: block,
+		target: beetsMasterChef,
+		abi: MasterChefBeets.userInfo,
+		params: [22, owner],
+	})).output[0];
+
+	const beetsPendingBalance = (await sdk.api.abi.call({
+		chain: "fantom",
+		block: block,
+		target: beetsMasterChef,
+		abi: MasterChefBeets.pendingBeets,
+		params: [22, owner],
+	})).output;
+
+	const beetsBalance = (await sdk.api.erc20.balanceOf({
+		chain: "fantom",
+		block: block,
+		target: beets,
 		owner: owner,
 	})).output;
 
-	const timeBalance = (await sdk.api.abi.call({
-		chain: "avax",
-		block: chainBlocks.avax,
-		target: avax_wMEMO,
-		abi: {
-			"inputs": [{"internalType": "uint256", "name": "_amount", "type": "uint256"}],
-			"name": "wMEMOToMEMO",
-			"outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
-			"stateMutability": "view",
-			"type": "function"
-		},
-		params: wMemoBalance,
+	const totalSupply = (await sdk.api.abi.call({
+		chain: "fantom",
+		block: block,
+		target: beetsBalancerWeightedPool,
+		abi: BalancerWeightedPoolBeets.totalSupply,
 	})).output;
 
-	sdk.util.sumSingleBalance(balances, avax_time, timeBalance);
+	const poolTokens = (await sdk.api.abi.call({
+		chain: "fantom",
+		block: block,
+		target: beetsVault,
+		abi: BalancerVaultBeets.getPoolTokens,
+		params: [poolId],
+	})).output[1];
+
+	const bptBalance = new BigNumber(fBeetsBalance * 1.0152).toString(10);
+	const beetsFtmShare = bptBalance / totalSupply;
+
+	sdk.util.sumSingleBalance(balances, "fantom:"+beets, new BigNumber(poolTokens[1] * beetsFtmShare).plus(beetsPendingBalance).plus(beetsBalance).toString(10));
+	sdk.util.sumSingleBalance(balances, "fantom:"+wftm, new BigNumber(poolTokens[0] * beetsFtmShare).toString(10));
 }
 
-async function spiritLinspiritLp(owner, balances, block) {
-	const liquidChef = "0x6e2ad6527901c9664f016466b8DA1357a004db0f";
-	const lqdr = "fantom:0x10b620b2dbAC4Faa7D7FFD71Da486f5D44cd86f9";
-	const spirit = "fantom:0x5Cc61A78F164885776AA610fb0FE1257df78E59B";
+async function lqdrFtm_BeetsLp(owner, balances, block) {
+	const beetsMasterChef = "0x8166994d9ebBe5829EC86Bd81258149B87faCfd3";
+	const beetsVault = "0x20dd72Ed959b6147912C2e529F0a0C651c33c9ce";
+	const beetsBalancerWeightedPool = "0x5E02aB5699549675A6d3BEEb92A62782712D0509";
+	const poolId = "0x5e02ab5699549675a6d3beeb92a62782712d0509000200000000000000000138";
 
-	const spiritBalance = (await sdk.api.abi.call({
+	const lqdr = "0x10b620b2dbAC4Faa7D7FFD71Da486f5D44cd86f9";
+	const beets = "0xF24Bcf4d1e507740041C9cFd2DddB29585aDCe1e";
+	const wftm = "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83";
+
+	const lqdrFtmBalance = (await sdk.api.abi.call({
 		chain: "fantom",
 		block: block,
-		target: liquidChef,
-		abi: MasterChefV2.userInfo,
-		params: [27, owner],
+		target: beetsMasterChef,
+		abi: MasterChefBeets.userInfo,
+		params: [36, owner],
 	})).output[0];
 
-	const pendingLqdr = (await sdk.api.abi.call({
+	const beetsPendingBalance = (await sdk.api.abi.call({
 		chain: "fantom",
 		block: block,
-		target: liquidChef,
-		abi: MasterChefV2.pendingLqdr,
-		params: [27, owner],
+		target: beetsMasterChef,
+		abi: MasterChefBeets.pendingBeets,
+		params: [36, owner],
 	})).output;
 
-	sdk.util.sumSingleBalance(balances, spirit, spiritBalance);
-	sdk.util.sumSingleBalance(balances, lqdr, pendingLqdr);
+	const totalSupply = (await sdk.api.abi.call({
+		chain: "fantom",
+		block: block,
+		target: beetsBalancerWeightedPool,
+		abi: BalancerWeightedPoolBeets.totalSupply,
+	})).output;
+
+	const poolTokens = (await sdk.api.abi.call({
+		chain: "fantom",
+		block: block,
+		target: beetsVault,
+		abi: BalancerVaultBeets.getPoolTokens,
+		params: [poolId],
+	})).output[1];
+
+	const lqdrFtmShare = lqdrFtmBalance / totalSupply;
+
+	sdk.util.sumSingleBalance(balances, "fantom:"+lqdr, new BigNumber(poolTokens[0] * lqdrFtmShare).toString(10));
+	sdk.util.sumSingleBalance(balances, "fantom:"+wftm, new BigNumber(poolTokens[1] * lqdrFtmShare).toString(10));
+	sdk.util.sumSingleBalance(balances, "fantom:"+beets, beetsPendingBalance);
 }
 
 module.exports = {
