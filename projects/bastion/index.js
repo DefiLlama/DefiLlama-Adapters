@@ -1,4 +1,4 @@
-const { compoundExports } = require("./helper/compound");
+const { compoundExports } = require("../helper/compound");
 
 module.exports = {
     timetravel: true,
