@@ -5,7 +5,6 @@ const CurvePoolRewards = "0x9727D535165e19590013bdDea8Fd85dd618b9aF7";
 const account = "0x0000000000000000000000000000000000000000";
 const methodology = "";
 const BigNumber = require("bignumber.js");
-const tokenListJson = require("./tokenlist.json");
 const addresses = require("./addresses.json");
 const StrategyViewer = require("./StrategyViewer.json");
 const StrategyRegistry = require("./StrategyRegistry.json");
@@ -169,7 +168,6 @@ async function tvl(timestamp, block) {
     tokensMeta.map((token, index) => {
       return { address: token, decimals: decimals[index].output };
     }),
-    ...tokenListJson.tokens,
   ];
 
   const tvlsFarm = stakingMeta.tvl;
