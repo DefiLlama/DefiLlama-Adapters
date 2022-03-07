@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const { request, gql } = require("graphql-request"); 
-const {sumTokens} = require('../helper/unwrapLPs')
 const { BigNumber } = require('bignumber.js');
 
 const {getBlock} = require('../helper/getBlock')
@@ -31,7 +30,7 @@ query get_coffinboxes($block: Int, $tokensSkip: Int) {
      }
      totalTokens
    }
- }
+ } 
 `
 
 function underworldLending(chain, borrowed) {
@@ -57,7 +56,6 @@ function underworldLending(chain, borrowed) {
 
     // Sum all tokens
     const balances = {}
-    await sumTokens(balances, block, chain, transform)
 
     // What is retrieved before this line and stored as balances is what's left in the coffinbox, so real TVL. 
     // Now compute borrowed = supply minus tvl where supply is retrieved from thegraph
