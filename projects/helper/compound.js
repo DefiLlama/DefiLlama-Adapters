@@ -3,10 +3,9 @@ const sdk = require('@defillama/sdk');
 const abi = require('./abis/compound.json');
 const { getBlock } = require('./getBlock');
 const { unwrapUniswapLPs } = require('./unwrapLPs');
-const { fixHarmonyBalances } = require('../helper/portedTokens');
+const { fixHarmonyBalances, fixOasisBalances } = require('../helper/portedTokens');
 const agoraAbi = require("./../agora/abi.json");
 const { transformMetisAddress } = require("../helper/portedTokens");
-
 // ask comptroller for all markets array
 async function getAllCTokens(comptroller, block, chain) {
     return (await sdk.api.abi.call({
@@ -128,6 +127,8 @@ function getCompoundV2Tvl(comptroller, chain = "ethereum", transformAdress = add
         });
         if (chain == "harmony") {
             fixHarmonyBalances(balances);
+        } else if (chain == "oasis") {
+            fixOasisBalances(balances);
         }
         if (comptroller == "0x92DcecEaF4c0fDA373899FEea00032E8E8Da58Da") {
             await unwrapPuffTokens(balances, lpPositions, block)

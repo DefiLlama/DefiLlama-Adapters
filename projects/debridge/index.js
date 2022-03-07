@@ -28,7 +28,7 @@ function chainTvl(chain) {
       .map(t => [t.tokenAddress, debridgeGate]);
 
     await sumTokens(balances, tokensAndOwners, block, chain, transformAddress);
-    console.log(`${chain} ${block} - ${tokens.length} tokens`);
+    
     return balances
   };
 }

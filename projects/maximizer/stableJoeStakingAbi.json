@@ -1,0 +1,31 @@
+{
+    "getUserInfo": {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_user",
+                "type": "address"
+            },
+            {
+                "internalType": "contract IERC20Upgradeable",
+                "name": "_rewardToken",
+                "type": "address"
+            }
+        ],
+        "name": "getUserInfo",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "rewardDebt",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+}

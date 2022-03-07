@@ -1,26 +1,28 @@
 const retry = require("../helper/retry");
 const axios = require("axios");
-const BigNumber = require("bignumber.js");
+const { BigNumber, utils } = require("ethers");
 
 const tvl = async () => {
   const vault = await retry(
     async () => await axios.get("https://solana-vault.uc.r.appspot.com/tvl")
   );
 
-  let vaultBalance = 0;
-  let queuedDeposits = 0;
-  let collateralBalance = 0;
+  let vaultBalance = BigNumber.from(0);
+  let queuedDeposits = BigNumber.from(0);
+  let collateralBalance = BigNumber.from(0);
 
   if (vault.data) {
-    vaultBalance = vault.data.sol.vaultBalance;
-    queuedDeposits = vault.data.sol.queuedDeposits;
-    collateralBalance = vault.data.sol.collateralBalance;
+    vaultBalance = utils.parseUnits(vault.data.sol.vaultBalance, 9);
+    queuedDeposits = utils.parseUnits(vault.data.sol.queuedDeposits, 9);
+    collateralBalance = utils.parseUnits(vault.data.sol.collateralBalance, 9);
   }
 
   return {
-    solana: new BigNumber(vaultBalance)
-      .plus(new BigNumber(queuedDeposits))
-      .plus(new BigNumber(collateralBalance)),
+    solana:
+      parseInt(
+        vaultBalance.add(queuedDeposits).add(collateralBalance).toString()
+      ) /
+      10 ** 9,
   };
 };
 

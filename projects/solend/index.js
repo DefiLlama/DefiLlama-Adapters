@@ -39,6 +39,11 @@ async function borrowed() {
         new PublicKey("EBRtjgHJiEBYnQ5QzTGcBxTwbapEQ3bvh1BrgaGzhX9e"),
         new PublicKey("3WPYWiZtc2uJq1JiF3Z3KswicFAp5VrFgEHwP3CkuDUn"),
         new PublicKey("A3ZhKMuwHygRqjXiMDqM2PyeT35Z1LiDUqwrtjiHn89M"),
+        new PublicKey("8RX5oDxnydPPsA92epWnyXrrM26w7JgAQoVVt9kbiZwq"),
+        new PublicKey("5hVVs474TRejwwfqsecNp97riQGDtSmhTV6jiWSxJfWR"),
+        new PublicKey("29Znf6g5qmRfTdnbyRQUWvMt94Gzn2KPCzY2ixxY9Mnt"),
+        new PublicKey("5VuBkDYXcV1svRm1BKShA2wqKsszYWjPwoT4Q32YXcp3"),
+        new PublicKey("HwZSKqyo2QQ2YCzF282ZrpH4JRQWf3Qad1fWHtKCDZjx"),
       ],
       "processed"
     )
@@ -79,6 +84,11 @@ async function borrowed() {
     fidaPoolUsdcAmount,
     fidaPoolSolAmount,
     fidaPoolFidaAmount,
+    atlasPoolAtlasAmount,
+    atlasPoolUsdcAmount,
+    atlasPoolPolisAmount,
+    dogPoolUsdcAmount,
+    dogPoolSamoAmount,
   ] = parsedAccounts.map((acc) => {
     return new BigNumber(
       acc.info.liquidity.borrowedAmountWads.toString()
@@ -93,7 +103,7 @@ async function borrowed() {
 
   return {
     bitcoin: btcAmount,
-    "usd-coin": usdcAmount.plus(turboSolUsdcAmount).plus(invictusUsdcAmount).plus(stepPoolUsdcAmount).plus(fidaPoolUsdcAmount),
+    "usd-coin": usdcAmount.plus(turboSolUsdcAmount).plus(invictusUsdcAmount).plus(stepPoolUsdcAmount).plus(fidaPoolUsdcAmount).plus(atlasPoolUsdcAmount).plus(dogPoolUsdcAmount),
     ethereum: ethAmount.plus(wewethAmount),
     serum: srmAmount,
     tether: usdtAmount,
@@ -112,6 +122,9 @@ async function borrowed() {
     step: stepPoolStepAmount,
     xStep: stepPoolXstepAmount,
     fida: fidaPoolFidaAmount,
+    atlas: atlasPoolAtlasAmount,
+    polis: atlasPoolPolisAmount,
+    samo: dogPoolSamoAmount,
   };
 }
 
@@ -147,6 +160,11 @@ async function tvl() {
     fidaPoolUsdcAmount,
     fidaPoolSolAmount,
     fidaPoolFidaAmount,
+    atlasPoolAtlasAmount,
+    atlasPoolUsdcAmount,
+    atlasPoolPolisAmount,
+    dogPoolUsdcAmount,
+    dogPoolSamoAmount,
   ] = await Promise.all([
     getTokenBalance(
       "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
@@ -268,10 +286,30 @@ async function tvl() {
       "EchesyfXePKdLtoiZSL8pBe8Myagyy8ZRqsACNCFGnvp",
       "76Asux4XZYqrP61G52eRZRQ6GCUPQUmYme3hTCaNgmxv"
     ),
+    getTokenBalance(
+      "ATLASXmbPQxBUYbxPsV97usA3fPQYEqzQBUHgiFCUsXx",
+      "2vhoVMQWEc12dUEEcJ6w8j3ZnrA4Tk6w8pPFhoWfVsUy"
+    ),
+    getTokenBalance(
+      "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      "2vhoVMQWEc12dUEEcJ6w8j3ZnrA4Tk6w8pPFhoWfVsUy"
+    ),
+    getTokenBalance(
+      "poLisWXnNRwC6oBu1vHiuKQzFjGL4XDSu4g9qjz9qVk",
+      "2vhoVMQWEc12dUEEcJ6w8j3ZnrA4Tk6w8pPFhoWfVsUy"
+    ),
+    getTokenBalance(
+      "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      "DLokPHis2W5f3jQ4Kgv5PQHebkun2KQtsXcFidhR19Za"
+    ),
+    getTokenBalance(
+      "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
+      "DLokPHis2W5f3jQ4Kgv5PQHebkun2KQtsXcFidhR19Za"
+    ),
   ]);
   return {
     bitcoin: btcAmount,
-    "usd-coin": usdcAmount + turboSolUsdcAmount + invictusUsdcAmount + stepPoolUsdcAmount + fidaPoolUsdcAmount,
+    "usd-coin": usdcAmount + turboSolUsdcAmount + invictusUsdcAmount + stepPoolUsdcAmount + fidaPoolUsdcAmount + atlasPoolUsdcAmount + dogPoolUsdcAmount,
     ethereum: ethAmount + wewethAmount,
     serum: srmAmount,
     tether: usdtAmount,
@@ -289,6 +327,9 @@ async function tvl() {
     invictus: invictusLsinAmount,
     step: stepPoolStepAmount+stepPoolXstepAmount,
     fida: fidaPoolFidaAmount,
+    atlas: atlasPoolAtlasAmount,
+    polis: atlasPoolPolisAmount,
+    samo: dogPoolSamoAmount,
   };
 }
 
