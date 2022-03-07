@@ -13,7 +13,7 @@ const USDC = "0xc21223249ca28397b4b6541dffaecc539bff0c59";
 const USDC_DSHARE_meerkatLP = "0xFe0F0d50175789C1F69B41dB797cc9ABd8Ab0120";
 
 const DShareRewardPool = "0x1A4bb8E03C35e2B672A0fcE18cab920aa023d7FC";
-
+// node test.js projects/dnadollar/index.js
 const stakingContracts = [
   "0xed94536A27922e2BD0eE661abF5fB030228d9D72",
   FundDAO,
@@ -46,37 +46,32 @@ const pool2 = async (chainBlocks) => {
   const lpPositions = [];
   let poolInfoReturn = "";
   i = 0;
-  do {
-    try {
-      const token = (
-        await sdk.api.abi.call({
-          abi: abi.poolInfo,
-          target: DShareRewardPool,
-          params: i,
-          chain: "cronos",
-          block: chainBlocks["cronos"],
-        })
-      ).output.token;
+  for (let i = 0; i < 5; i++) {
+    const token = (
+      await sdk.api.abi.call({
+        abi: abi.poolInfo,
+        target: DShareRewardPool,
+        params: i,
+        chain: "cronos",
+        block: chainBlocks["cronos"],
+      })
+    ).output.token;
 
-      const getTokenBalance = (
-        await sdk.api.abi.call({
-          abi: erc20.balanceOf,
-          target: token,
-          params: DShareRewardPool,
-          chain: "cronos",
-          block: chainBlocks["cronos"],
-        })
-      ).output;
+    const getTokenBalance = (
+      await sdk.api.abi.call({
+        abi: erc20.balanceOf,
+        target: token,
+        params: DShareRewardPool,
+        chain: "cronos",
+        block: chainBlocks["cronos"],
+      })
+    ).output;
 
-      lpPositions.push({
-        token: token,
-        balance: getTokenBalance,
-      });
-    } catch (error) {
-      poolInfoReturn = error.reason;
-    }
-    i += 1;
-  } while (poolInfoReturn != "missing revert data in call exception");
+    lpPositions.push({
+      token: token,
+      balance: getTokenBalance,
+    });
+  }
 
   await unwrapUniswapLPs(
     balances,
