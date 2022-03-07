@@ -30,7 +30,7 @@ const USDT = "0xdAC17F958D2ee523a2206206994597C13D831ec7"; // Count if staked
 const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"; // Count if staked
 
 // Contract Addresses
-const GROTokenStaker = "0x001C249c09090D79Dc350A286247479F08c7aaD7";
+const GROTokenStaker = "0x2E32bAd45a1C29c1EA27cf4dD588DF9e68ED376C";
 
 async function tvl(timestamp, ethBlock) {
   let balances = {};
