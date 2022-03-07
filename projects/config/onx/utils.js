@@ -1,4 +1,5 @@
 const BigNumber = require('bignumber.js');
+const { toUSDTBalances } = require('./../../helper/balances');
 
 const createWeb3 = (rpcUrl) => {
   const Web3 = require('web3');
@@ -36,7 +37,7 @@ const getVautsTvl = async (vaults, getPrice) => {
       resolve(usd.multipliedBy(underlyingBalanceWithInvestment));
     })
   }));
-  return vaultsMap.reduce((acc, item) => acc.plus(item), new BigNumber(ZERO));
+  return toUSDTBalances(vaultsMap.reduce((acc, item) => acc.plus(item), new BigNumber(ZERO)));
 }
 
 function numberWithCommas(x) {
