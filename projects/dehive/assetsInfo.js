@@ -79,32 +79,34 @@ module.exports = {
       },
       tvl: "impulseStakingTvl"
     },
-    {//USDC/QUICK (impulse)
-      meta: {
-        stakingAddress: '0xf4feb23531EdBe471a4493D432f8BB29Bf0A3868', // ImpulseStaking
-        lpAddress: '0x1F1E4c845183EF6d50E9609F16f6f9cAE43BC9Cb', // QCK-USDC-QUICK
-        dhvToken: '0x5fCB9de282Af6122ce3518CDe28B7089c9F97b26',
-        underlying: [
-          '0x2791bca1f2de4661ed88a30c99a7a9449aa84174', // USDC
-          '0x831753DD7087CaC61aB5644b308642cc1c33Dc13', // QUICK
-        ],
-        poolId: 2
-      },
-      tvl: "impulseStakingTvl"
-    },
-    {//USDT/MAI (impulse)
-      meta: {
-        stakingAddress: '0xf4feb23531EdBe471a4493D432f8BB29Bf0A3868', // ImpulseStaking
-        lpAddress: '0xE89faE1B4AdA2c869f05a0C96C87022DaDC7709a', // QCK-MAI-USDT
-        dhvToken: '0x5fCB9de282Af6122ce3518CDe28B7089c9F97b26',
-        underlying: [
-          '0xc2132D05D31c914a87C6611C10748AEb04B58e8F', // USDT
-          '0xa3fa99a148fa48d14ed51d610c367c61876997f1', // MAI
-        ],
-        poolId: 4
-      },
-      tvl: "impulseStakingTvl"
-    },
+    // COMMENTED THIS OUT BECAUSE 'UniswapV2Library: INSUFFICIENT_INPUT_AMOUNT'
+    // {//USDC/QUICK (impulse)
+    //   meta: {
+    //     stakingAddress: '0xf4feb23531EdBe471a4493D432f8BB29Bf0A3868', // ImpulseStaking
+    //     lpAddress: '0x1F1E4c845183EF6d50E9609F16f6f9cAE43BC9Cb', // QCK-USDC-QUICK
+    //     dhvToken: '0x5fCB9de282Af6122ce3518CDe28B7089c9F97b26',
+    //     underlying: [
+    //       '0x2791bca1f2de4661ed88a30c99a7a9449aa84174', // USDC
+    //       '0x831753DD7087CaC61aB5644b308642cc1c33Dc13', // QUICK
+    //     ],
+    //     poolId: 2
+    //   },
+    //   tvl: "impulseStakingTvl"
+    // },
+    // COMMENTED THIS OUT BECAUSE 'UniswapV2Library: INSUFFICIENT_INPUT_AMOUNT'
+    // {//USDT/MAI (impulse)
+    //   meta: {
+    //     stakingAddress: '0xf4feb23531EdBe471a4493D432f8BB29Bf0A3868', // ImpulseStaking
+    //     lpAddress: '0xE89faE1B4AdA2c869f05a0C96C87022DaDC7709a', // QCK-MAI-USDT
+    //     dhvToken: '0x5fCB9de282Af6122ce3518CDe28B7089c9F97b26',
+    //     underlying: [
+    //       '0xc2132D05D31c914a87C6611C10748AEb04B58e8F', // USDT
+    //       '0xa3fa99a148fa48d14ed51d610c367c61876997f1', // MAI
+    //     ],
+    //     poolId: 4
+    //   },
+    //   tvl: "impulseStakingTvl"
+    // },
     {//AVAX/WETH (impulse)
       meta: {
         stakingAddress: '0xf4feb23531EdBe471a4493D432f8BB29Bf0A3868', // ImpulseStaking
