@@ -1,4 +1,7 @@
 const BigNumber = require('bignumber.js');
+const { toUSDTBalances } = require('./../../../helper/balances');
+const sdk = require("@defillama/sdk");
+
 const { onxTokenContract,
   onxPoolContract,
   onsTokenContract,
@@ -26,7 +29,7 @@ const { farms } = require('./farms');
 
 const getStakeTvl = async (onxPrice) => {
   const balance = new BigNumber(await onxTokenContract.methods.balanceOf(tokenAddresses.sOnx).call());
-  return onxPrice.times(balance).div(1e18);
+  return toUSDTBalances(onxPrice.times(balance).div(1e18));
 }
 
 const getEthereumStaking = async () => {
@@ -38,7 +41,7 @@ const getEthereumStaking = async () => {
 const getEthereumBorrows = async () => {
   const wethPrice = await getWethPrice();
   const borrowsTvl = new BigNumber(await onxPoolContract.methods.totalBorrow().call()).div(1e18);
-  return wethPrice.times(borrowsTvl);
+  return toUSDTBalances(wethPrice.times(borrowsTvl));
 }
 
 const getOnePoolsTvl = async (price) => {
@@ -203,7 +206,7 @@ const getOnxEthLpTvl = async () => {
   const address = !farm.isCustomFarmContract ? tokenAddresses.onxFarm : tokenAddresses.onxTripleFarm;
   const balance = await getBalanceOf(address, farm.contract);
 
-  return await getUsdBalance(
+  const tvl = await getUsdBalance(
     balance,
     farm,
     wethPrice,
@@ -213,12 +216,16 @@ const getOnxEthLpTvl = async () => {
     sushiPrice,
     bondPrice
   );
+
+  return toUSDTBalances(tvl);
 }
 
-const getEthereumPoolTvl = async () => { 
-  const onxEthLpTvl = await getOnxEthLpTvl();
-  const onxEthSLpTvl = await getVautsTvl(vaults.filter(vault => vault.title === 'OnxEthSlp'), getSushiPoolPrice);
-  return onxEthLpTvl.plus(onxEthSLpTvl);
+const getOnxEthSLpTvl = async () => {
+  return getVautsTvl(vaults.filter(vault => vault.title === 'OnxEthSlp'), getSushiPoolPrice);
+}
+
+function getEthereumPoolTvl() {
+  return sdk.util.sumChainTvls([getOnxEthLpTvl, getOnxEthSLpTvl]);
 }
 
 const getEthereumTvl = async () => {
@@ -233,29 +240,31 @@ const getEthereumTvl = async () => {
   const sushiPrice = (await getSushiPrice()).times(wethPrice);
 
   const farmsTvl = await getFarmsTvl({ wethPrice, onxPrice, aethPrice, ankrPrice, bondPrice, sushiPrice });
-  const stakedTvl = await getStakeTvl(onxPrice);
   const onePoolsTvl = await getOnePoolsTvl({ aethPrice, wethPrice, onxPrice });
   const onePrice = (await getOnePrice()).times(aethPrice);
   const onsPoolsTvl = await getOnsPoolsTvl({ aethPrice, onePrice, onsPrice, wethPrice });
   const oneVaultTvl = await getOneVaultTvl(wethPrice, aethPrice, onsPrice);
   const lendingTvl = await getLendingTvl(wethPrice);
-  const vautsTvl = await getEthereumVautsTvl();
 
   const tvl = netTvl
     .plus(farmsTvl)
-    .plus(stakedTvl)
     .plus(lendingTvl)
     .plus(oneVaultTvl)
     .plus(onePoolsTvl)
-    .plus(onsPoolsTvl)
-    .plus(vautsTvl);
+    .plus(onsPoolsTvl);
 
-  return tvl;
+  return toUSDTBalances(tvl);
+}
+
+function getEthereumTvlEx() {
+  return sdk.util.sumChainTvls([getEthereumTvl, getEthereumVautsTvl]);
 }
 
 module.exports = {
   getEthereumStaking,
   getEthereumTvl,
+  getEthereumTvlEx,
   getEthereumPoolTvl,
   getEthereumBorrows,
+  getEthereumVautsTvl
 }
