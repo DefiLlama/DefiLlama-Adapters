@@ -15,8 +15,8 @@ module.exports = {
   fantom:{
     staking: staking("0x124b06c5ce47de7a6e9efda71a946717130079e6", "0xe2fb177009ff39f52c0134e8007fa0e4baacbd07", "fantom"),
     tvl: calculateUsdSoulTvl(factory, 'fantom', ftm, whitelist, 'fantom'),
-    lending: underworldLending('fantom', true)
+    borrowed: underworldLending('fantom', true)
   },
   misrepresentedTokens: true,
-  methodology: "Counts liquidity on the exchange and lent assets.",
+  methodology: "Counts liquidity on the exchange and underworld assets.",
 }
