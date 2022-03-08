@@ -14,7 +14,7 @@ const tokenStaking = [
     {
         stakingToken: '0xc0eff7749b125444953ef89682201fb8c6a917cd',      // hzn
         rewardToken: '0xc0eff7749b125444953ef89682201fb8c6a917cd',        // hzn
-        stakingContract: '0xa1771DCfb7822C8853D7E64B86E58f7f1eB5e33E'      // stakingContract
+        stakingContract: '0x67D5a94F444DF4bBA254645065a4137fc665Bf98'      // stakingContract
     },
 ]
 const lpStaking = [
