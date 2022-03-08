@@ -1,9 +1,6 @@
-const retry = require('../helper/retry');
-const axios = require('axios')
 const pageResults = require('graph-results-pager');
 
 const graph_endpoint = 'https://graphnode.horizonprotocol.com/subgraphs/name/horizonprotocol-team/horizon'
-const price_feed_endpoint = 'https://api.coingecko.com/api/v3/simple/price?ids=horizon-protocol&vs_currencies=usd'
 
 async function fetchHoldersCollateral() {
     // Uses graph protocol to run through SNX contract. Since there is a limit of 100 results per query
@@ -55,9 +52,6 @@ async function fetchHoldersCollateral() {
 
 async function tvl() {
     const holders = await fetchHoldersCollateral();       // Get all holders and their collateral
-
-    const { data } = await retry(async bail => await axios.get(price_feed_endpoint))
-    const hznPrice = data['horizon-protocol'].usd;
     
     var totalCollateral = 0;
     for (const {
@@ -67,13 +61,13 @@ async function tvl() {
     } of holders) {
         if (!collateral || !debtEntryAtIndex || !initialDebtOwnership) continue;        // Consider wallets only who have a debtEntry
 
-        totalCollateral += Number(collateral * hznPrice)        // sum of every user's collateral
+        totalCollateral += Number(collateral)        // sum of every user's collateral
 
     }
-    console.log("Total TVL", totalCollateral);
-    return totalCollateral;
+
+    return { 'bsc:0xc0eff7749b125444953ef89682201fb8c6a917cd': totalCollateral * 10 ** 18 };
 }
 
 module.exports = {
-    tvl
+    collateral: tvl
 }

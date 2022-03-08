@@ -2,6 +2,7 @@ const sdk = require("@defillama/sdk");
 const { staking, stakingPricedLP } = require("../helper/staking");
 const { unwrapUniswapLPs } = require('../helper/unwrapLPs');
 const { transformBscAddress } = require('../helper/portedTokens');
+const { collateral } = require('./collateral.js');
 
 const hzn_bnb_LP = '0xdc9a574b9b341d4a98ce29005b614e1e27430e74'
 
@@ -63,9 +64,11 @@ module.exports = {
     misrepresentedTokens: false,
     methodology: 'Counts liquidty on the token staking and lp staking contracts',
     bsc: {
-        tvl: async () => ({}),
-        staking: staking(tokenStaking[0].stakingContract, tokenStaking[0].stakingToken, "bsc"),
-        stakingLP: stakingPricedLP(tokenStaking[1].stakingContract, tokenStaking[1].stakingToken, "bsc", hzn_bnb_LP, 'wbnb', true),
+        tvl: collateral,
+        staking: sdk.util.sumChainTvls([
+            staking(tokenStaking[0].stakingContract, tokenStaking[0].stakingToken, "bsc"), 
+            stakingPricedLP(tokenStaking[1].stakingContract, tokenStaking[1].stakingToken, "bsc", hzn_bnb_LP, 'wbnb', true)
+        ]),
         pool2: calculateLPStaking
     },
 };
