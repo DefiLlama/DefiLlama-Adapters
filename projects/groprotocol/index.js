@@ -7,7 +7,7 @@ const { getBlock } = require("../helper/getBlock");
 const { transformAvaxAddress } = require("../helper/portedTokens");
 
 const groTokenAbi = require("./abi.json");
-const { staking } = require("../helper/staking");
+const { stakings } = require("../helper/staking");
 
 // Gro Protocol Token Addresses
 const GRO = "0x3Ec8798B81485A254928B70CDA1cf0A2BB0B74D7"; // Governance Token, not counted for TVL unless staked in pools
@@ -30,7 +30,8 @@ const USDT = "0xdAC17F958D2ee523a2206206994597C13D831ec7"; // Count if staked
 const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"; // Count if staked
 
 // Contract Addresses
-const GROTokenStaker = "0x2E32bAd45a1C29c1EA27cf4dD588DF9e68ED376C";
+const GROTokenStaker1 = "0x001C249c09090D79Dc350A286247479F08c7aaD7";
+const GROTokenStaker2 = "0x2E32bAd45a1C29c1EA27cf4dD588DF9e68ED376C";
 
 async function tvl(timestamp, ethBlock) {
   let balances = {};
@@ -68,12 +69,20 @@ async function tvl(timestamp, ethBlock) {
     // P3_SS_GVT - GVT already accounted for
 
     // P4_CRV_PWRD_TCRV
-    const p4 = await sdk.api.erc20.balanceOf({
+    const p4a = await sdk.api.erc20.balanceOf({
       target: P4_CRV_PWRD_TCRV,
-      owner: GROTokenStaker,
+      owner: GROTokenStaker1,
       block: ethBlock,
     });
-    crvLpPositions.push({ token: P4_CRV_PWRD_TCRV, balance: p4.output });
+    crvLpPositions.push({ token: P4_CRV_PWRD_TCRV, balance: p4a.output });
+
+    // P4_CRV_PWRD_TCRV
+    const p4b = await sdk.api.erc20.balanceOf({
+      target: P4_CRV_PWRD_TCRV,
+      owner: GROTokenStaker2,
+      block: ethBlock,
+    });
+    crvLpPositions.push({ token: P4_CRV_PWRD_TCRV, balance: p4b.output });
 
     await unwrapCrvLPs(
       balances,
@@ -87,9 +96,12 @@ async function tvl(timestamp, ethBlock) {
 
   return balances;
 }
-
 async function pool2(timestamp, ethBlock) {
   let balances = {};
+  balances = await tokenStaker(timestamp, ethBlock, balances, GROTokenStaker1);
+  return await tokenStaker(timestamp, ethBlock, balances, GROTokenStaker2);
+}
+async function tokenStaker(timestamp, ethBlock, balances, GROTokenStaker) {
   const uniLpPositions = [];
   const balLpPositions = [];
   // P1_UNI_GRO_GVT
@@ -200,7 +212,7 @@ async function avaxTvl(timestamp, block, chainBlocks) {
 module.exports = {
   ethereum: {
     pool2,
-    staking: staking(GROTokenStaker, GRO),
+    staking: stakings([ GROTokenStaker1, GROTokenStaker2 ], GRO),
     tvl,
   },
   avalanche: {
