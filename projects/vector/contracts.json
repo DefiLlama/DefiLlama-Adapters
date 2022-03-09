@@ -1,0 +1,46 @@
+{
+    "contracts": {
+        "masterchef": "0x423D0FE33031aA4456a17b150804aA57fc157d97",
+        "pool2": "0x9EF0C12b787F90F59cBBE0b611B82D30CAB92929",
+        "mainStaking": "0x8B3d9F0017FA369cD8C164D0Cc078bf4cA588aE5",
+        "VTX": "0x5817D4F0b62A59b17f75207DA1848C2cE75e7AF4"
+    },
+    "markets": {
+        "0xC4B7121b4FC065dECd26C33FB32e42C543E8850d": {
+            "underlying": "0xC4B7121b4FC065dECd26C33FB32e42C543E8850d",
+            "isLP": true
+        },
+        "0x574679Ec54972cf6d705E0a71467Bb5BB362919D": {
+            "underlying": "0x574679Ec54972cf6d705E0a71467Bb5BB362919D",
+            "isLP": false
+        },
+        "0x5817D4F0b62A59b17f75207DA1848C2cE75e7AF4": {
+            "underlying": "0x5817D4F0b62A59b17f75207DA1848C2cE75e7AF4",
+            "isLP": false
+        },
+        "0xc641350D40256120BED47cF0AD24B5ce01D04af3": {
+            "underlying": "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664",
+            "isLP": false
+        },
+        "0xB0e2d7d733e013e9005E1fc3Be70B30c58c7359b": {
+            "underlying": "0xc7198437980c041c805A1EDcbA50c1Ce5db95118",
+            "isLP": false
+        },
+        "0x2FdC25cEc50Dab4E1ECCFa1Be40509ae049cEaE0": {
+            "underlying": "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70",
+            "isLP": false
+        },
+        "0x0ADab2F0455987098059Cfc10875C010800c659F": {
+            "underlying": "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+            "isLP": false
+        },
+        "0x3A51459e72e03c8D4213201feE9F5a2300b3D1fF": {
+            "underlying": "0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7",
+            "isLP": false
+        },
+        "0x060556209E507d30f2167a101bFC6D256Ed2f3e1": {
+            "underlying": "0x060556209E507d30f2167a101bFC6D256Ed2f3e1",
+            "isLP": false
+        }
+    }
+}
