@@ -11,7 +11,7 @@ const {
 
 const { getLockerPairAddresses, getVestInstances } = require('./cryptex-helper');
 
-
+/*
 const fetchTVLByLPLocker = async (locker, chainId, block) => {
     const chainName = chainNameById[chainId];
     let balances = {};
@@ -109,7 +109,7 @@ const fetchTVL = (chainId) => {
         
     }
 }
-
+*/
 const fetchStaking = async () => {
     let balances = {};
     
@@ -132,7 +132,7 @@ const fetchStaking = async () => {
 }
 
 // const excludedChains = [chainIds.bsc, chainIds.polygon];
-
+/*
 const chainCalcs = Object.keys(chainIds).reduce((acc, key) => {
     const chainId = chainIds[key];
     
@@ -149,8 +149,11 @@ const chainCalcs = Object.keys(chainIds).reduce((acc, key) => {
     acc[key] = calcs;
     return acc;
 }, {});
-
+*/
 module.exports = {
     methodology: "TVL includes locked LP tokens and vested team tokens",
-    ...chainCalcs,
+    bsc: {
+        tvl: ()=>({}),
+        staking: fetchStaking
+    }
 };
