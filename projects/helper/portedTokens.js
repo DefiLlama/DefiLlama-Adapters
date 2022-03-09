@@ -502,9 +502,6 @@ async function transformKccAddress() {
     "0x5801d0e1c7d977d78e4890880b8e579eb4943276": "bsc:0x5801d0e1c7d977d78e4890880b8e579eb4943276",
     "0xea32a96608495e54156ae48931a7c20f0dcc1a21": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
     "0x2692be44a6e38b698731fddf417d060f0d20a0cb": "bsc:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
-    "0xa5B55ab1dAF0F8e1EFc0eB1931a957fd89B918f4": "eth:0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599", // WBTC
-    "0xE253E0CeA0CDD43d9628567d097052B33F98D611": "avax:0xE253E0CeA0CDD43d9628567d097052B33F98D611", // AVAX
-    "0x6aB6d61428fde76768D7b45D8BFeec19c6eF91A8": "eth:0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83", // FANTOM
   }
   return (addr) => {
      if (compareAddresses(addr, "0xa5B55ab1dAF0F8e1EFc0eB1931a957fd89B918f4")) {
@@ -529,8 +526,7 @@ async function transformKccAddress() {
     if (compareAddresses(addr, "0x4b9D2923D875edF43980BF5dddDEde3Fb20fC742")) {
       return "bsc:0xcc42724c6683b7e57334c4e856f4c9965ed682bd";
     }
-    
-    return `metis:${addr}`;
+
     return map[addr.toLowerCase()] || `metis:${addr}`
   };
 } 
