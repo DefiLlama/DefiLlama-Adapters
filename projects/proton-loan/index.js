@@ -59,7 +59,7 @@ function getLendingTvl(returnBorrowed = false) {
     if (returnBorrowed) {
       return borrowed
     } else {
-      return tvl
+      return tvl - borrowed
     }
   }
 };
