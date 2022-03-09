@@ -5,6 +5,6 @@ async function proton() {
 }
 
 module.exports = {
-  methodology: `ProtonLoan TVL is achieved by querying token balances from Proton Loan smart contract.`,
+  methodology: `ProtonLoan TVL is sum of all lending deposits in Proton Loan smart contract.`,
   fetch: proton
 }
