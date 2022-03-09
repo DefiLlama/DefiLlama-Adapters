@@ -82,9 +82,13 @@ async function fetch() {
 module.exports = {
   methodology: `Proton Loan TVL is the sum of all lending deposits in the Proton Loan smart contract and single-side staked LOAN.`,
   proton: {
-    tvl: getLendingTvl(false),
-    borrowed: getLendingTvl(true),
-    staking: getTotalStaking,
+    fetch: getLendingTvl(false),
   },
-  fetch
+  borrowed: {
+    fetch: getLendingTvl(true)
+  },
+  staking: {
+    fetch: getTotalStaking
+  },
+  fetch: getLendingTvl(false)
 }
