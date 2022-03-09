@@ -1,18 +1,18 @@
 {
-    "userInfo": {
+    "getUserInfo": {
         "inputs": [
             {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
+                "internalType": "address",
+                "name": "_user",
+                "type": "address"
             },
             {
-                "internalType": "address",
-                "name": "",
+                "internalType": "contract IERC20Upgradeable",
+                "name": "_rewardToken",
                 "type": "address"
             }
         ],
-        "name": "userInfo",
+        "name": "getUserInfo",
         "outputs": [
             {
                 "internalType": "uint256",

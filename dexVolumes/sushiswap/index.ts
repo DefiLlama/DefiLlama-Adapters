@@ -20,7 +20,7 @@ const endpoints = {
   [AVAX]:
     "https://api.thegraph.com/subgraphs/name/sushiswap/avalanche-exchange",
   [BSC]: "https://api.thegraph.com/subgraphs/name/sushiswap/bsc-exchange",
-  [CELO]: "https://api.thegraph.com/subgraphs/name/sushiswap/celo-exchange",
+  // [CELO]: "https://api.thegraph.com/subgraphs/name/sushiswap/celo-exchange",
   [ETHEREUM]: "https://api.thegraph.com/subgraphs/name/sushiswap/exchange",
   [FANTOM]: "https://api.thegraph.com/subgraphs/name/sushiswap/fantom-exchange",
   [HARMONY]:
@@ -39,7 +39,7 @@ const graphs = getChainVolume({
     [ARBITRUM]: endpoints[ARBITRUM],
     [AVAX]: endpoints[AVAX],
     [BSC]: endpoints[BSC],
-    [CELO]: endpoints[CELO],
+    // [CELO]: endpoints[CELO],
     [ETHEREUM]: endpoints[ETHEREUM],
     [FANTOM]: endpoints[FANTOM],
     [HARMONY]: endpoints[HARMONY],
