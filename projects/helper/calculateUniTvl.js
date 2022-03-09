@@ -6,7 +6,9 @@ const getReserves = require('./abis/getReserves.json');
 const factoryAbi = require('./abis/factory.json');
 const {getBlock} = require('./getBlock')
 
-async function calculateUniTvl(getAddress, block, chain, FACTORY, START_BLOCK, useMulticall = false) {
+async function calculateUniTvl(getAddress, block, chain, FACTORY, START_BLOCK, useMulticall = false, abis={
+  getReserves
+}) {
   let pairAddresses;
   if (useMulticall) {
     const pairLength = (await sdk.api.abi.call({
@@ -77,7 +79,7 @@ async function calculateUniTvl(getAddress, block, chain, FACTORY, START_BLOCK, u
       .then(({ output }) => output),
     sdk.api.abi
       .multiCall({
-        abi: getReserves,
+        abi: abis.getReserves,
         chain,
         calls: pairAddresses.map((pairAddress) => ({
           target: pairAddress,
@@ -147,7 +149,7 @@ async function calculateUniTvl(getAddress, block, chain, FACTORY, START_BLOCK, u
   return balances
 };
 
-function uniTvlExport(factory, chain, transformAddressOriginal=undefined){
+function uniTvlExport(factory, chain, transformAddressOriginal=undefined, abis){
   return async (timestamp, _ethBlock, chainBlocks)=>{
     let transformAddress;
     if(transformAddressOriginal === undefined){
@@ -155,8 +157,8 @@ function uniTvlExport(factory, chain, transformAddressOriginal=undefined){
     }else{
       transformAddress = await transformAddressOriginal()
     }
-    const block = await getBlock(timestamp, chain , chainBlocks)
-    return calculateUniTvl(transformAddress, block, chain, factory, 0, true)
+    const block = await getBlock(timestamp, chain , chainBlocks, true)
+    return calculateUniTvl(transformAddress, block, chain, factory, 0, true, abis)
   }
 }
 

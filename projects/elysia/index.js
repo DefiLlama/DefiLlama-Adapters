@@ -2,6 +2,7 @@ const { default: axios } = require("axios");
 const ethers = require("ethers");
 const abi = require("./abi.json");
 const apiInfo = require("./apiInfo.json");
+const { toUSDTBalances } = require('../helper/balances');
 
 const elfiAddress = "0x4da34f8264cb33a5c9f17081b9ef5ff6091116f4";
 const elAddress = "0x2781246fe707bb15cee3e5ea354e2154a2877b16";
@@ -18,7 +19,7 @@ const elfiContract = new ethers.Contract(elfiAddress, abi, rpcProvider);
 const elContract = new ethers.Contract(elAddress, abi, rpcProvider);
 let prices;
 let uniswapV3SubgraphCacheResponse, coinGeckoCacheResponse;
-
+// node test.js projects/elysia/index.js
 (async () => {
   [uniswapV3SubgraphCacheResponse, coinGeckoCacheResponse] = await Promise.all([
     axios.post(
@@ -75,7 +76,7 @@ async function getBscTvl() {
   );
   const bscTvl = busdTotalDeposit;
   console.log(`getBscTvl bscTvl : ${bscTvl}`);
-  return bscTvl;
+  return toUSDTBalances(bscTvl);
 }
 
 async function getEthereumStaking() {
@@ -98,7 +99,7 @@ async function getEthereumStaking() {
 
   const ethereumStaking = elfiV1StakingValue + elfiV2StakingValue;
   console.log(`getEthereumStaking ethereumStaking : ${ethereumStaking}`);
-  return ethereumStaking;
+  return toUSDTBalances(ethereumStaking);
 }
 
 async function getPool2() {
@@ -132,7 +133,7 @@ async function getPool2() {
     elfiValueOfElfiEthPool +
     ethValueOfElfiEthPool;
   console.log(`getPool2 pool2 : ${pool2}`);
-  return pool2;
+  return toUSDTBalances(pool2);
 }
 
 const getEthereumTvl = async () => {
@@ -160,7 +161,7 @@ const getEthereumTvl = async () => {
   );
   const ethereumTvl = elStakingValue + daiTotalDeposit + usdtTotalDeposit;
   console.log(`getEthereumTvl ethereumTvl : ${ethereumTvl}`);
-  return ethereumTvl;
+  return toUSDTBalances(ethereumTvl);
 };
 
 module.exports = {

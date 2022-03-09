@@ -1,6 +1,6 @@
-const {calculateUsdSoulTvl} = require('./helper/getUsdSoulTvl.js')
+const { calculateUsdSoulTvl } = require('./helper/getUsdSoulTvl.js')
 const { staking } = require('../helper/staking.js');
-
+const { underworldLending } = require('./underworld-lending.js')
 
 const factory = '0x1120e150dA9def6Fe930f4fEDeD18ef57c0CA7eF'
 const ftm = '0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83'
@@ -14,8 +14,9 @@ const whitelist = [
 module.exports = {
   fantom:{
     staking: staking("0x124b06c5ce47de7a6e9efda71a946717130079e6", "0xe2fb177009ff39f52c0134e8007fa0e4baacbd07", "fantom"),
-    tvl: calculateUsdSoulTvl(factory, 'fantom', ftm, whitelist, 'fantom')
+    tvl: calculateUsdSoulTvl(factory, 'fantom', ftm, whitelist, 'fantom'),
+    borrowed: underworldLending('fantom', true)
   },
   misrepresentedTokens: true,
-  methodology: "Counts liquidity on the exchange.",
+  methodology: "Counts liquidity on the exchange and underworld assets.",
 }
