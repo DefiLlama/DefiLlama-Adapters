@@ -1,10 +1,12 @@
-const { get_table_rows, get_currency_balance, getAllOracleData } = require("../helper/proton");
+const { getTableRows, getCurrencyBalance, getAllOracleData, getTokenPriceUsd } = require("../helper/proton");
 
 const LENDING_CONTRACT = 'lending.loan';
+const LOAN_TOKEN_CONTRACT = 'loan.token';
+const STAKING_CONTRACT = 'lock.token';
 
 async function getAllMarkets(lower_bound) {
   try {
-    let { rows, more, next_key } = await get_table_rows({
+    let { rows, more, next_key } = await getTableRows({
       code: LENDING_CONTRACT,
       scope: LENDING_CONTRACT,
       table: 'markets',
@@ -40,7 +42,7 @@ function getLendingTvl(returnBorrowed = false) {
   
       // Determine pool amount
       const [, symbol] = market.underlying_symbol.sym.split(',');
-      const [cash] = await get_currency_balance(
+      const [cash] = await getCurrencyBalance(
         market.underlying_symbol.contract,
         LENDING_CONTRACT,
         symbol
@@ -62,11 +64,27 @@ function getLendingTvl(returnBorrowed = false) {
   }
 };
 
+async function getTotalStaking() {
+  const loanPrice = await getTokenPriceUsd('LOAN', LOAN_TOKEN_CONTRACT)
+  const [staked] = await getCurrencyBalance(LOAN_TOKEN_CONTRACT, STAKING_CONTRACT, 'LOAN')
+  const [stakedAmount] = staked.split(' ');
+  return stakedAmount * loanPrice
+};
+
+async function fetch() {
+  const [tvl, staked] = await Promise.all([
+    getLendingTvl(false)(),
+    getTotalStaking()
+  ])
+  return tvl + staked
+};
+
 module.exports = {
-  methodology: `ProtonLoan TVL is sum of all lending deposits in Proton Loan smart contract.`,
+  methodology: `Proton Loan TVL is the sum of all lending deposits in the Proton Loan smart contract and single-side staked LOAN.`,
   proton: {
     tvl: getLendingTvl(false),
-    borrowed: getLendingTvl(true)
+    borrowed: getLendingTvl(true),
+    staking: getTotalStaking,
   },
-  fetch: getLendingTvl(false)
+  fetch
 }
