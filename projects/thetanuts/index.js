@@ -9,8 +9,8 @@ const wbtcPutVault = '0xDCaA803Cd23cfb988DA3794B46aEDBE968ecE17a'
 const lunaPutVault = '0x49d8cde90cefdd4f8568f7d895e686fdb76b146e'
 const algoPutVault = '0xC2DD9C7F526C7465D14bbBb25991DaB35f8Ea2B4'
 const algoCallVault = '0xb8b5A6E1F300b023e9CdCa31AA94B0D66badd982'
-const bitPutVault = '0xfBeAcC9Ea393e0abd1F5cd90E8B9fFFBf0188799'
-const bitCallVault = '0xAC332bA8b1B75a7aC04964aB5fA26AE2ddCB7c38'
+const bitPutVault = '0x4Ca3e8bD2F471415b9131E35bdcEC0819a4E7a83'
+const bitCallVault = '0x9F639524db6DfD57613895b0abb49A53c11B3f0e'
 
 // Avalanche Vaults
 const avaxCallVault = '0x35e26F12a212b3a7eec8Dd215B8705Ed1AF4f39E'
