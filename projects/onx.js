@@ -1,4 +1,5 @@
-const { getEthereumTvl, getEthereumStaking, getEthereumPoolTvl, getEthereumBorrows } = require('./config/onx/ethereum');
+const sdk = require("@defillama/sdk");
+const { getEthereumTvlEx, getEthereumStaking, getEthereumPoolTvl, getEthereumBorrows, getEthereumVautsTvl } = require('./config/onx/ethereum');
 const { getFantomTvl } = require('./config/onx/fantom');
 const { getPolygonTvl } = require('./config/onx/polygon');
 const { getAvalancheTvl } = require('./config/onx/avalanche');
@@ -7,9 +8,9 @@ module.exports = {
   timetravel: false,
   doublecounted: true,
   ethereum: {
-    tvl: getEthereumTvl,
+    tvl: getEthereumTvlEx(),
     staking: getEthereumStaking,
-    pool: getEthereumPoolTvl,
+    pool: getEthereumPoolTvl(),
     borrows: getEthereumBorrows,
   },
   fantom: {
