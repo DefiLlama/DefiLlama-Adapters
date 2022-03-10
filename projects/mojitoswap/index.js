@@ -10,11 +10,11 @@ const stakeValue = getStakeLockValue();
 
 module.exports = {
   misrepresentedTokens: true,
-  methodology: "We count liquidity on the dexes, pulling data from subgraphs",
+  methodology:
+    "We count liquidity and staking on the dexes, pulling data from subgraphs",
   kcc: {
     tvl: chainTvl("kcc"),
     staking: stakeValue,
   },
   tvl: chainTvl("kcc"),
-  staking: stakeValue,
 };
