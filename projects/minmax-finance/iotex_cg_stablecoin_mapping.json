@@ -38,5 +38,49 @@
     "0x1CbAd85Aa66Ff3C12dc84C5881886EEB29C1bb9b": {
         "contract": "0x6b175474e89094c44da98b954eedeac495271d0f",
         "coingeckoId": "dai"   
+    },
+    "0xec690cdd448e3cbb51ed135df72301c3265a8f80": {
+        "contract": "0x6b175474e89094c44da98b954eedeac495271d0f",
+        "coingeckoId": "dai"  
+    },
+    "0xC35257624b01932e521bc5D9dc07e4F9ed21ED28": {
+        "contract": "0x6b175474e89094c44da98b954eedeac495271d0f",
+        "coingeckoId": "dai"  
+    },
+    "0xdFf5DC9d8dAC189324452D54e2df19d2Bdba78CE": {
+        "contract": "0x6b175474e89094c44da98b954eedeac495271d0f",
+        "coingeckoId": "dai"  
+    },
+    "0xa546b5769f3F97F93Fc90F63Fbe7423250216b98": {
+        "contract": "0x6b175474e89094c44da98b954eedeac495271d0f",
+        "coingeckoId": "dai"  
+    },
+    "0x834D27A61c7fE4F52Ad5435e59e85D64aA1375a7": {
+        "contract": "0x6b175474e89094c44da98b954eedeac495271d0f",
+        "coingeckoId": "dai"  
+    },
+    "0x69d9EAbd5b3f967BbaE9fF9b73e4dA3Ba0c46D08": {
+        "contract": "0x6b175474e89094c44da98b954eedeac495271d0f",
+        "coingeckoId": "dai"  
+    },
+    "0x89a7663c4ca176ACD8E6a054da67B0d301FC218A": {
+        "contract": "0x6b175474e89094c44da98b954eedeac495271d0f",
+        "coingeckoId": "dai"  
+    },
+    "0xDE7399eC841627bc68243832572086B9d2D41404": {
+        "contract": "0x6b175474e89094c44da98b954eedeac495271d0f",
+        "coingeckoId": "dai"
+    },
+    "0xd33f8a41e2ec9ff64fdc008e00f69f0e142948ad": {
+        "contract": "0x6b175474e89094c44da98b954eedeac495271d0f",
+        "coingeckoId": "dai"
+    },
+    "0xb581afb9c7aa567edbe6274bddc975b7926edaaf": {
+        "contract": "0x6b175474e89094c44da98b954eedeac495271d0f",
+        "coingeckoId": "dai"
+    },
+    "0xf79fd0a6d1d8ce877fc70acd321fdf1626168398": {
+        "contract": "0x6b175474e89094c44da98b954eedeac495271d0f",
+        "coingeckoId": "dai"
     }
 }

@@ -27,6 +27,9 @@ async function fetch() {
 }
 // node test.js projects/mushrooms.js
 module.exports = {
+  doublecounted: true,
+  timetravel: false,
+  misrepresentedTokens: true,
   ...chainExports,
   fetch
 }

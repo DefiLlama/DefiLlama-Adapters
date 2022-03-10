@@ -27,6 +27,13 @@ const ethContracts = [
   '0x6e1A19F235bE7ED8E3369eF73b196C07257494DE',
 
   /**
+   * WFLOW
+   *
+   * coingecko: wrapped-flow
+   */
+  '0x5c147e74d63b1d31aa3fd78eb229b65161983b2bj',
+
+  /**
    * WKDA
    *
    * coingecko: wrapped-kadena

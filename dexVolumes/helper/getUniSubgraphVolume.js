@@ -34,10 +34,10 @@ function getChainVolume({
     factory: DEFAULT_DAILY_VOLUME_FACTORY,
     field: DEFAULT_DAILY_VOLUME_FIELD,
   },
-  customDailyVolume,
+  customDailyVolume = undefined,
   hasDailyVolume = true,
   hasTotalVolume = true,
-  getCustomBlock,
+  getCustomBlock = undefined,
 }) {
   const totalVolumeQuery = gql`
   ${totalVolume.factory}(
@@ -75,6 +75,8 @@ query get_volume($block: Int, $id: Int) {
       });
 
       return {
+        timestamp,
+        block,
         totalVolume: graphRes[totalVolume.factory][0][totalVolume.field],
         dailyVolume: hasDailyVolume
           ? (graphRes?.[dailyVolume.factory]?.[dailyVolume.field] || "0") ??

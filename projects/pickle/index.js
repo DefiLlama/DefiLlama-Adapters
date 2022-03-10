@@ -3,7 +3,7 @@ const axios = require("axios");
 
 const pfcore = "https://api.pickle.finance/prod/protocol/pfcore/";
 const pickleAddress = "0x429881672B9AE42b8EbA0E26cD9C73711b891Ca5";
-
+// node test.js projects/pickle/index.js
 function fetch(chain, type) {
   return async (_timestamp, _ethBlock, chainBlocks) => {
     const response = (await axios.get(pfcore))?.data;
@@ -15,7 +15,7 @@ function fetch(chain, type) {
 
     Object.keys(response.assets).forEach((assetsType) => {
       response.assets[assetsType].forEach((asset) => {
-        if (asset.chain === chain) {
+        if (asset.chain === chain && asset.details && asset.details.harvestStats) {
           if (asset.tags && asset.tags.includes("pool2")) {
             pool2 += asset.details.harvestStats.balanceUSD;
           } else {
@@ -45,6 +45,9 @@ function fetch(chain, type) {
 }
 
 module.exports = {
+  doublecounted: true,
+  misrepresentedTokens: true,
+  timetravel: false,
   ethereum: {
     tvl: fetch("ethereum", "tvl"),
     pool2: fetch("ethereum", "pool2"),
@@ -72,5 +75,14 @@ module.exports = {
   },
   aurora: {
     tvl: fetch("aurora", "tvl"),
+  },
+  metis: {
+    tvl: fetch("metis", "tvl"),
+  },
+  moonbeam: {
+    tvl: fetch("moonbeam", "tvl"),
+  },
+  optimism: {
+    tvl: fetch("optimism", "tvl"),
   },
 };

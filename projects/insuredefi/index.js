@@ -15,7 +15,7 @@ async function underwriting(block) {
   let balanceOf;
   balanceOf = await sdk.api.abi.call({
     block,
-    target: nsure,
+    target: SURE,
     abi: abi["balanceOf"],
     params: constant.treasuryPool.address,
   });
@@ -23,7 +23,7 @@ async function underwriting(block) {
 
   return { [SURE]: balanceOf }
 }
-
+//tracking SURE contributed to the community vaults.
 async function tvl(timestamp, block) {
   let underwritingPool = await underwriting(block);
   

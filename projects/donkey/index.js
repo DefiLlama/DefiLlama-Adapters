@@ -23,7 +23,7 @@ const controllerAddress = {
 
 const mainDTokenAddress = {
   ethereum : '0xEc0D3f28D37a3393cf09ee3aD446c485b6afDaA3',
-  klaytn : '0xACC72a0cA4E85f79876eD4C5E6Ea29BE1cD26c2e' 
+  klaytn : '0xACC72a0cA4E85f79876eD4C5E6Ea29BE1cD26c2e'
 }
 
 
@@ -32,7 +32,7 @@ const stakings = [
   '0x024510151204DeC56Cc4D54ed064f62efAC264d5',
   '0x2EacD2D7cF5Cba9dA031C0a9C5d7FDeDc056216C',
   '0x8c9886Aca8B6984c10F988078C5e1D91976dFD16',
-] 
+]
 
 const VDONStakingAddress = '0x63D21dBD5A30940C605d77882D065736e8fffC94';
 
@@ -52,7 +52,7 @@ async function staking() {
   const web3 = new Web3(process.env.ETHEREUM_RPC);
   const priceOracleContract = new web3.eth.Contract(PriceOracleAbi, PriceOracleAddress.ethereum);
   const { 0 : symbols, 1 : prices} = await priceOracleContract.methods.getPrices().call();
-  
+
   const priceObj = symbols.reduce((accum, symbol, index) => {
     return {
       ...accum,
@@ -90,7 +90,7 @@ async function ethereum() {
   const web3 = new Web3(process.env.ETHEREUM_RPC);
   const priceOracleContract = new web3.eth.Contract(PriceOracleAbi, PriceOracleAddress.ethereum);
   const { 0 : symbols, 1 : prices} = await priceOracleContract.methods.getPrices().call();
-  
+
   const priceObj = symbols.reduce((accum, symbol, index) => {
     return {
       ...accum,
@@ -134,21 +134,8 @@ async function klaytn() {
   const currency = result.data[0].basePrice;
   let totalTvlKrw = 0;
 
-  const KLAYTN_ACCESS_KEY_ID = "KASK19AHMII2AZN1MAJDRFOU"
-  const KLAYTN_SECRET_ACCESS_KEY = "I1Iwgwt1C6z_jA79eh6JBJKOHTGLIK-tAozkz-bl"
-
-  const option = {
-    headers: [
-      {
-        name: 'Authorization',
-        value: `Basic ${Buffer.from(`${KLAYTN_ACCESS_KEY_ID}:${KLAYTN_SECRET_ACCESS_KEY}`).toString('base64')}`,
-      },
-      { name: 'x-chain-id', value: '8217' },
-    ],
-    keepAlive: false,
-  };
-
-  const provider = new Caver.providers.HttpProvider('https://node-api.klaytnapi.com/v1/klaytn', option);
+  const KLAYTN_RPC = "https://public-node-api.klaytnapi.com/v1/cypress"
+  const provider = new Caver.providers.HttpProvider(KLAYTN_RPC);
   const caver = new Caver(provider);
   const klaytnPriceOracleContract = new caver.klay.Contract(PriceOracleAbi, PriceOracleAddress.klaytn);
   const { 0 : klaytnSymbols, 1 : klaytnPrices} = await klaytnPriceOracleContract.methods.getPrices().call();
@@ -162,7 +149,7 @@ async function klaytn() {
 
   const donRatio = await getDonkeySwapRatio();
   const ethPrice = klaytnPriceObj['KETH'];
-  const donkeyPrice = Math.ceil(ethPrice / Math.floor(donRatio)); 
+  const donkeyPrice = Math.ceil(ethPrice / Math.floor(donRatio));
 
   klaytnPriceObj['kDON'] = donkeyPrice;
 
