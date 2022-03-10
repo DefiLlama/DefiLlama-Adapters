@@ -1,3 +1,5 @@
+/*** This Protocol seems hacked/rugged. It's a case for study and analyze ***/
+
 const utils = require("../helper/utils");
 
 const api_galatea = "https://api.galatea.cash/api";

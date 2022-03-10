@@ -31,7 +31,14 @@ async function tvl(timestamp, _ethBlock, chainBlocks) {
   const transformAddress = addr=>{
     return transforms[addr.toLowerCase()] ?? `harmony:${addr}`;
   }
-  const balances = await calculateUniTvl(transformAddress, block, "harmony", factory, 0, true)
+  const balances = await calculateUniTvl(
+      addr => { return `harmony:${addr}`; },
+      chainBlocks.harmony,
+      "harmony",
+      factory,
+      0,
+      true
+  );
   fixHarmonyBalances(balances)
 
   return balances

@@ -7,7 +7,7 @@ module.exports = {
     waves: {
         tvl: wavesAdapter(endpoint, item => {
             let tvl = 0;
-            item.meta.forEach(market => tvl += market.currentTotalDepositUsd - market.currentTotalDebtUsd)
+            item.meta.forEach(market => tvl += market.currentTotalDepositUsd - market.currentTotalDebtUsd + market.protectedSupply * market.assetPriceUsd)
             return tvl
         }),
         borrowed: wavesAdapter(endpoint, item => {

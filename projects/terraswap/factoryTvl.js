@@ -25,7 +25,6 @@ function getFactoryTvl(factory) {
         const balances = {}
         const prices = {}
         await Promise.all(pairs.map(async pair => {
-            try {
                 const { assets } = await query(`contracts/${pair}/store?query_msg={"pool":{}}`, block)
                 const [token0, amount0] = getAssetInfo(assets[0])
                 const [token1, amount1] = getAssetInfo(assets[1])
@@ -45,9 +44,6 @@ function getFactoryTvl(factory) {
                     balances[token0] = (balances[token0] ?? 0) + amount0
                     balances[token1] = (balances[token1] ?? 0) + amount1
                 }
-            } catch (e) {
-                console.log(pair)
-            }
         }))
         Object.entries(balances).map(entry => {
             const price = prices[entry[0]]

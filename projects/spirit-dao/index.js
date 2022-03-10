@@ -8,6 +8,7 @@ const mim = "0x130966628846bfd36ff31a822705796e8cb8c18d";
 const ghostMimJLP = "0x0BC14d02d04dCd6c7a73D1f89d2448F09676a849";
 
 module.exports = {
+  misrepresentedTokens: true,
   ...ohmTvl(
     treasury,
     [
