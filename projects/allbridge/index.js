@@ -142,6 +142,22 @@ const data = {
             abrAddress: "0x2BAe00C8BC1868a5F7a216E881Bae9e662630111",
             decimals: 18
         },
+    },
+    harmony: {
+        tokens: [],
+        staking: {
+            contractAddress: "0x788BA01f8E2b87c08B142DB46F82094e0bdCad4F",
+            abrAddress: "0xf80eD129002B0eE58C6d2E63D0D7Dc9Fc9f3383C",
+            decimals: 18
+        },
+    },
+    fuse: {
+        tokens: [],
+        staking: {
+            contractAddress: "0x788BA01f8E2b87c08B142DB46F82094e0bdCad4F",
+            abrAddress: "0xa21AaB22A0bAF9fff3392B0aFc5115b955664FD4",
+            decimals: 18
+        },
     }
 }
 
@@ -292,9 +308,13 @@ module.exports={
         tvl: getTVLFunction('aurora'),
         staking: getStakingFunction('aurora'),
     },
-    solana: {
-        tvl: solanaTvl,
-        staking: solanaStaking
+    harmony: {
+        tvl: getTVLFunction('harmony'),
+        staking: getStakingFunction('harmony'),
+    },
+    fuse: {
+        tvl: getTVLFunction('fuse'),
+        staking: getStakingFunction('fuse'),
     },
     solana: {
         tvl: solanaTvl,
