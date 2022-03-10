@@ -14,7 +14,7 @@ const url = "https://adminv1.knit.finance/api/tvl";
 function fetchChain(chain) {
   return async () => {
     const { data } = await utils.fetchURL(url);
-    console.log(data.data.data.info);
+    //console.log(data.data.data.info);
     let list = data.data.data.info;
 
     const protocolsInChain =
@@ -30,7 +30,7 @@ function fetchChain(chain) {
 
       total += tvl;
     });
-    return total;
+    return Number(total);
   };
 }
 
@@ -43,5 +43,22 @@ Object.keys(chains).forEach((chain) => {
 });
 
 module.exports = {
-  fetch: fetchChain(null),
+  fantom: {
+    tvl: fetchChain("fantom"),
+  },
+  ethereum: {
+    tvl: fetchChain("ethereum"),
+  },
+  bsc: {
+    tvl: fetchChain("bsc"),
+  },
+  heco: {
+    tvl: fetchChain("heco"),
+  },
+  polygon: {
+    tvl: fetchChain("polygon"),
+  },
+  harmony: {
+    tvl: fetchChain("harmony"),
+  }
 };
