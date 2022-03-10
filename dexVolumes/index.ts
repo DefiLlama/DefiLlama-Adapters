@@ -11,6 +11,7 @@ import quickswap from "./quickswap";
 import raydium from "./raydium";
 import saros from "./saros";
 import serum from "./serum";
+import soulswap from "./soulswap";
 import spiritswap from "./spiritswap";
 import spookyswap from "./spookyswap";
 import sushiswap from "./sushiswap";
@@ -33,6 +34,7 @@ export default {
   raydium,
   saros,
   serum,
+  soulswap,
   spiritswap,
   spookyswap,
   sushiswap,
