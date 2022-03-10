@@ -2,8 +2,8 @@ const {getBlock} = require('../helper/getBlock')
 const sdk = require('@defillama/sdk')
 const solana = require('../helper/solana')
 const terra = require('../helper/terra')
-const { staking } = require("../helper/staking");
-
+const { staking } = require('../helper/staking');
+const near = require('../helper/near');
 const NATIVE_ADDRESS = "NATIVE";
 
 const data = {
@@ -172,6 +172,17 @@ const terraData = {
     ]
 }
 
+const nearData = {
+    contractAddress: "bridge.a11bd.near",
+    staking: {
+        contractAddress: "staking.a11bd.near",
+        decimals: 24
+    },
+    tokens: [
+        {name: "near", address: "wrap.near", decimals: 24},
+    ]
+}
+
 const toNumber = (decimals, n) => Number(n)/Math.pow(10, decimals)
 
 function getTVLFunction(chain)
@@ -231,6 +242,21 @@ async function terraStaking() {
     return { allbridge: toNumber(terraData.staking.decimals, balance) }
 }
 
+async function nearTvl() {
+    const balances = {}
+    for (const token of nearData.tokens) {
+        const balance = await near.getTokenBalance(token.address, nearData.contractAddress);
+        sdk.util.sumSingleBalance(balances, token.name, toNumber(token.decimals, balance));
+    }
+    return balances
+}
+
+async function nearStaking() {
+    const balance = await near.call(nearData.staking.contractAddress, "get_abr_balance");
+    return { allbridge: toNumber(nearData.staking.decimals, balance) }
+}
+
+
 
 module.exports={
     methodology: "All tokens locked in Allbridge contracts.",
@@ -270,8 +296,16 @@ module.exports={
         tvl: solanaTvl,
         staking: solanaStaking
     },
+    solana: {
+        tvl: solanaTvl,
+        staking: solanaStaking
+    },
     terra: {
         tvl: terraTvl,
         staking: terraStaking
+    },
+    near: {
+        tvl: nearTvl,
+        staking: nearStaking
     }
 }
