@@ -1,3 +1,4 @@
+const BigNumber = require("bignumber.js");
 const { sumTokensAndLPsSharedOwners, unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const sdk = require("@defillama/sdk");
 const allocatorAbi = require("./allocatorAbi.json");
@@ -189,8 +190,8 @@ async function tvl(timestamp, block, chainBlocks) {
   })).output.map(result => result.output);
 
   Allocators.forEach((allocator, index) => {
-    sdk.util.sumSingleBalance(balances, config.transformAddress(allocator.stakeToken), stakedYieldTokens[index].toString());
-    sdk.util.sumSingleBalance(balances, config.transformAddress(allocator.yieldToken), pendingYieldTokens[index].toString());
+    sdk.util.sumSingleBalance(balances, config.transformAddress(allocator.stakeToken), stakedYieldTokens[index]);
+    sdk.util.sumSingleBalance(balances, config.transformAddress(allocator.yieldToken), pendingYieldTokens[index]);
   });
 
   BenqiMarkets.forEach(async market => {
@@ -199,8 +200,8 @@ async function tvl(timestamp, block, chainBlocks) {
       api.abi.call({ target: market.qiToken, abi: qiTokenAbi.balanceOf, params: [BenqiAllocator], ...config }),
       sdk.api.abi.call({ target: market.qiToken, abi: qiTokenAbi.exchangeRateStored, params: [], ...config }),
     ]);
-    const underlyingTokenBalance = Math.floor(balance.output * exchangeRate.output / 1e18);
-    sdk.util.sumSingleBalance(balances, config.transformAddress(market.underlyingToken), underlyingTokenBalance.toString());
+    const underlyingTokenBalance = new BigNumber(balance.output).times(new BigNumber(exchangeRate.output)).div(new BigNumber(1e18));
+    sdk.util.sumSingleBalance(balances, config.transformAddress(market.underlyingToken), underlyingTokenBalance.toFixed(0));
   });
 
   const stakedPtp = (await sdk.api.abi.call({
