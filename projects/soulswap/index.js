@@ -15,7 +15,7 @@ const whitelist = [
 
 module.exports = {
   fantom:{
-    staking: staking(summoner, soul, "fantom"),
+    staking: staking(summoner, soul, 'fantom'),
     tvl: calculateUsdSoulTvl(factory, 'fantom', ftm, whitelist, 'fantom'),
     borrowed: underworldLending('fantom', true)
   },
