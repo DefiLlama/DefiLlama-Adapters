@@ -1,4 +1,4 @@
-const { getTokenBalance, getTokenSupply } = require('./helper/solana')
+const { getTokenBalance, getTokenSupply } = require('../helper/solana')
 
 async function tvl() {
     const [
