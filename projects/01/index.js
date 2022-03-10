@@ -30,6 +30,8 @@ async function tvl() {
 }
 module.exports = {
     timetravel: false,
-    tvl,
+    solana: {
+        tvl,
+    },
     methodology: `To obtain the tvl we're getting the vault accounts information where user deposited collateral is stored.`,
 }
