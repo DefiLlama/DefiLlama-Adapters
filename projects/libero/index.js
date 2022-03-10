@@ -22,5 +22,5 @@ module.exports = {
         tvl: () => ({}),
         staking,
       },
-    methodology: "We count all LIBERO on deposited into LIBERO BANK, which has been locked by users in exchange for xLIBERO",
+    methodology: "We count all LIBERO deposited into LIBERO BANK, which has been locked by users in exchange for xLIBERO",
 };
