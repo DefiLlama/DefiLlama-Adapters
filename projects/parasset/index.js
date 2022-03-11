@@ -25,27 +25,6 @@ async function ethTvl() {
 
   sdk.util.sumSingleBalance(balances, ETH, ethBalance);
 
-  const PUSDbalance =
-    (
-      await sdk.api.abi.call({
-        abi: erc20.balanceOf,
-        target: PUSD,
-        params: PUSDInsPool,
-      })
-    ).output / 1e12;
-
-  sdk.util.sumSingleBalance(balances, USDT, PUSDbalance);
-
-  const PETHbalance = (
-    await sdk.api.abi.call({
-      abi: erc20.balanceOf,
-      target: PETH,
-      params: PETHInsPool,
-    })
-  ).output;
-
-  sdk.util.sumSingleBalance(balances, ETH, PETHbalance);
-
   return balances;
 }
 
@@ -56,5 +35,5 @@ module.exports = {
     staking: stakings([PUSDMorPool, PETHMorPool], NEST),
   },
   methodology:
-    "Counts liquidty on the Insurance and Mortgage Pools through their contracts",
+    "Counts liquidty on the Insurance",
 };

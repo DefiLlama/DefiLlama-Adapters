@@ -3,10 +3,9 @@ const sdk = require('@defillama/sdk');
 const abi = require('./abis/compound.json');
 const { getBlock } = require('./getBlock');
 const { unwrapUniswapLPs } = require('./unwrapLPs');
-const { fixHarmonyBalances } = require('../helper/portedTokens');
+const { fixHarmonyBalances, fixOasisBalances } = require('../helper/portedTokens');
 const agoraAbi = require("./../agora/abi.json");
 const { transformMetisAddress } = require("../helper/portedTokens");
-
 // ask comptroller for all markets array
 async function getAllCTokens(comptroller, block, chain) {
     return (await sdk.api.abi.call({
@@ -128,6 +127,8 @@ function getCompoundV2Tvl(comptroller, chain = "ethereum", transformAdress = add
         });
         if (chain == "harmony") {
             fixHarmonyBalances(balances);
+        } else if (chain == "oasis") {
+            fixOasisBalances(balances);
         }
         if (comptroller == "0x92DcecEaF4c0fDA373899FEea00032E8E8Da58Da") {
             await unwrapPuffTokens(balances, lpPositions, block)
@@ -228,6 +229,16 @@ function getCompoundUsdTvl(comptroller, chain, cether, borrowed, abis = {
                 let underlyingPrice = new BigNumber(await getUnderlyingPrice(block, chain, oracle, token, abis.underlyingPrice)).div(
                     10 ** (18 + 18 - decimals)
                 );
+                /*
+                Uncomment for debugging
+                console.log(
+                    //token, 
+                    (await sdk.api.erc20.symbol(token, chain)).output, 
+                    //locked.times(underlyingPrice).toNumber()/1e6, 
+                    underlyingPrice.toNumber(), 
+                    //amount.toNumber()
+                )
+                */
                 tvl = tvl.plus(locked.times(underlyingPrice));
             })
         );

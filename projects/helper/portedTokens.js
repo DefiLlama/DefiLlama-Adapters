@@ -63,46 +63,50 @@ async function transformAvaxAddress() {
         "https://raw.githubusercontent.com/ava-labs/avalanche-bridge-resources/main/token_list.json"
       ),
     ]);
-
-  return (addr) => {
-    if (compareAddresses(addr, "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7")) {
-      //WAVAX
-      return `avax:${addr}`;
-    }
-    if (compareAddresses(addr, "0xaf2c034c764d53005cc6cbc092518112cbd652bb")) {
-      //qiAVAX
-      return `avax:0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7`;
-    }
-    if (compareAddresses(addr, "0x57319d41F71E81F3c65F2a47CA4e001EbAFd4F33")) {
-      //xJOE
-      return `avax:0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd`;
-    }
-    if (compareAddresses(addr, "0x0000000000000000000000000000000000000000") || compareAddresses(addr, "0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")) {
-      //AVAX
-      return "avax:0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7";
-    }
-    const srcToken = bridgeTokensOld.data.find((token) =>
-      compareAddresses(token["Avalanche Token Address"], addr)
-    );
-    if (
-      srcToken !== undefined &&
-      srcToken["Ethereum Token Decimals"] ===
-        srcToken["Avalanche Token Decimals"]
-    ) {
-      return srcToken["Ethereum Token Address"];
-    }
-    const newBridgeToken = bridgeTokensNew.find((token) =>
-      compareAddresses(addr, token[1])
-    );
-    if (newBridgeToken !== undefined) {
-      const tokenName = newBridgeToken[0].split(".")[0];
-      const tokenData = bridgeTokenDetails.data[tokenName];
-      if (tokenData !== undefined) {
-        return tokenData.nativeContractAddress;
+    return (addr) => {
+      if(compareAddresses(addr, "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7")){
+        return "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"
       }
-    }
-    return `avax:${addr}`;
-  };
+      const srcToken = bridgeTokensOld.data.find((token) =>
+      compareAddresses(token["Avalanche Token Address"], addr)
+      );
+      if (
+        srcToken !== undefined &&
+        srcToken["Ethereum Token Decimals"] ===
+        srcToken["Avalanche Token Decimals"]
+      ) {
+        return srcToken["Ethereum Token Address"];
+      }
+      const newBridgeToken = bridgeTokensNew.find((token) =>
+        compareAddresses(addr, token[1])
+      );
+      if (newBridgeToken !== undefined) {
+        const tokenName = newBridgeToken[0].split(".")[0];
+        const tokenData = bridgeTokenDetails.data[tokenName];
+        if (tokenData !== undefined) {
+          return tokenData.nativeContractAddress;
+        }
+      }
+      const map = {
+        "0xaf2c034c764d53005cc6cbc092518112cbd652bb": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", 
+        "0x57319d41f71e81f3c65f2a47ca4e001ebafd4f33": "avax:0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd", 
+        "0x0000000000000000000000000000000000000000": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", 
+        "0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", 
+        "0xd45b7c061016102f9fa220502908f2c0f1add1d7": "0xffc97d72e13e01096502cb8eb52dee56f74dad7b", 
+        "0x47afa96cdc9fab46904a55a6ad4bf6660b53c38a": "0x028171bca77440897b824ca71d1c56cac55b68a3", 
+        "0x46a51127c3ce23fb7ab1de06226147f446e4a857": "0xbcca60bb61934080951369a648fb03df4f96263c", 
+        "0x532e6537fea298397212f09a61e03311686f548e": "0x3ed3b47dd13ec9a98b44e6204a523e766b225811", 
+        "0xdfe521292ece2a4f44242efbcd66bc594ca9714b": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", 
+        "0x686bef2417b6dc32c50a3cbfbcc3bb60e1e9a15d": "0x9ff58f4ffb29fa2266ab25e75e2a8b3503311656", 
+        "0x53f7c5869a859f0aec3d334ee8b4cf01e3492f21": "0x030ba81f1c18d280636f32af80b9aad02cf0854e", 
+
+        "0xd45b7c061016102f9fa220502908f2c0f1add1d7": "0xffc97d72e13e01096502cb8eb52dee56f74dad7b", 
+        "0x47afa96cdc9fab46904a55a6ad4bf6660b53c38a": "0x028171bca77440897b824ca71d1c56cac55b68a3", 
+        "0x46A51127C3ce23fb7AB1DE06226147F446e4a857": "0xbcca60bb61934080951369a648fb03df4f96263c", 
+        "0x574679Ec54972cf6d705E0a71467Bb5BB362919D": "avax:0x5817d4f0b62a59b17f75207da1848c2ce75e7af4"
+      }
+      return map[addr.toLowerCase()] || `avax:${addr}`
+  }
 }
 
 async function transformBscAddress() {
@@ -441,12 +445,16 @@ function fixHarmonyBalances(balances) {
     }
   }
 }
-
+function fixOasisBalances(balances) {
+  if (Object.keys(balances).includes('oasis-network')) {
+      balances['oasis-network'] = balances['oasis-network'] / 10 ** 18;
+  }
+}
 async function transformIotexAddress() {
   return (addr) => {
     const dstToken = Object.keys(IOTEX_CG_MAPPING).find(token => compareAddresses(addr, token))
     if (dstToken !== undefined) {
-        return IOTEX_CG_MAPPING[dstToken].contract || IOTEX_CG_MAPPING[dstToken].coingeckoId
+      return IOTEX_CG_MAPPING[dstToken].contract || IOTEX_CG_MAPPING[dstToken].coingeckoId
     }
     return `iotex:${addr}`;
   };
@@ -490,19 +498,63 @@ async function transformKccAddress() {
   };
 }
 
-function transformMetisAddress() {
+
+ function transformMetisAddress() {
   const map = {
     "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000": "0x9e32b13ce7f2e80a01932b42553652e053d6ed8e",
     "0xbb06dca3ae6887fabf931640f67cab3e3a16f4dc": "0xdac17f958d2ee523a2206206994597c13d831ec7",
     "0x420000000000000000000000000000000000000a": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
     "0x5801d0e1c7d977d78e4890880b8e579eb4943276": "bsc:0x5801d0e1c7d977d78e4890880b8e579eb4943276",
     "0xea32a96608495e54156ae48931a7c20f0dcc1a21": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-    "0x2692be44a6e38b698731fddf417d060f0d20a0cb": "bsc:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"
+    "0x2692be44a6e38b698731fddf417d060f0d20a0cb": "bsc:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
   }
   return (addr) => {
+     if (compareAddresses(addr, "0xa5B55ab1dAF0F8e1EFc0eB1931a957fd89B918f4")) {
+      return "avax:0x50b7545627a5162F82A992c33b87aDc75187B218";
+    }
+    if (compareAddresses(addr, "0xE253E0CeA0CDD43d9628567d097052B33F98D611")) {
+      return "avax:0xE253E0CeA0CDD43d9628567d097052B33F98D611";
+    }
+
+    if (compareAddresses(addr, "0x4651B38e7ec14BB3db731369BFE5B08F2466Bd0A")) {
+      return "bsc:0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3";
+    }
+
+    if (compareAddresses(addr, "0xfe282Af5f9eB59C30A3f78789EEfFA704188bdD4")) {
+      return "metis:0xfe282Af5f9eB59C30A3f78789EEfFA704188bdD4";
+    }
+
+    if (compareAddresses(addr, "0x6aB6d61428fde76768D7b45D8BFeec19c6eF91A8")) {
+      return "bsc:0xad29abb318791d579433d831ed122afeaf29dcfe";
+    }
+
+    if (compareAddresses(addr, "0x4b9D2923D875edF43980BF5dddDEde3Fb20fC742")) {
+      return "bsc:0xcc42724c6683b7e57334c4e856f4c9965ed682bd";
+    }
+
     return map[addr.toLowerCase()] || `metis:${addr}`
   };
+} 
+
+function transformBobaAddress() {
+  return (addr) => {
+    if (compareAddresses(addr, "0x0000000000000000000000000000000000000000")) {
+      return "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000"; // WETH
+    }
+    const map = {
+      "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // WETH
+      "0x66a2a913e447d6b4bf33efbec43aaef87890fbbc": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USDC
+      "0x5de1677344d3cb0d7d465c10b72a8f60699c062d": "0xdac17f958d2ee523a2206206994597c13d831ec7", // USDT
+      "0xf74195bb8a5cf652411867c5c2c5b8c2a402be35": "0x6b175474e89094c44da98b954eedeac495271d0f", // DAI
+      "0xdc0486f8bf31df57a952bcd3c1d3e166e3d9ec8b": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", // WBTC
+      "0xa18bf3994c0cc6e3b63ac420308e5383f53120d7": "0x42bbfa2e77757c645eeaad1655e0911a7553efbc", // BOBA
+      "0xe1e2ec9a85c607092668789581251115bcbd20de": "0xd26114cd6EE289AccF82350c8d8487fedB8A0C07", // OMG
+    }
+    return map[addr.toLowerCase()] || `boba:${addr}`
+  }
 }
+
+
 
 const chainTransforms = {
   celo: transformCeloAddress,
@@ -519,12 +571,14 @@ const chainTransforms = {
   kcc: transformKccAddress,
   arbitrum: transformArbitrumAddress,
   iotex: transformIotexAddress,
+  metis:transformMetisAddress
 };
 async function getChainTransform(chain) {
   if (chain === "ethereum") {
     return (id) => id;
   }
   if (chainTransforms[chain] !== undefined) {
+   
     return chainTransforms[chain]();
   }
   return (addr) => `${chain}:${addr}`;
@@ -547,6 +601,8 @@ module.exports = {
   transformKccAddress,
   transformArbitrumAddress,
   fixHarmonyBalances,
+  fixOasisBalances,
   transformIotexAddress,
-  transformMetisAddress
+  transformMetisAddress,
+  transformBobaAddress,
 };

@@ -8,7 +8,7 @@ const translateTokens = {
   "0xbf07093ccd6adfc3deb259c557b61e94c1f66945": "fantom:0xd6070ae98b8069de6b494332d1a1a81b6179d960",
   "0x1b156c5c75e9df4caab2a5cc5999ac58ff4f9090": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
   "0xa48d959ae2e88f1daa7d5f611e01908106de7598": "fantom:0x841fad6eae12c286d1fd18d1d525dffa75c7effe",
-  "0xd795d70ec3c7b990ffed7a725a18be5a9579c3b9": "avax:0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664",
+  "0xd795d70ec3c7b990ffed7a725a18be5a9579c3b9": "avax:0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
   "0xb6767518b205ea8b312d2ef4d992a2a08c2f2416": "avax:0xc7198437980c041c805a1edcba50c1ce5db95118",
   "0xaf9f33df60ca764307b17e62dde86e9f7090426c": "avax:0xd586e7f844cea2f87f50152665bcbc2c279d8d70",
   "0x808d5f0a62336917da14fa9a10e9575b1040f71c": "avax:0x60781c2586d68229fde47564546784ab3faca982",
@@ -20,7 +20,9 @@ const translateTokens = {
   "0x6dfe2aaea9daadadf0865b661b53040e842640f8": "0x514910771af9ca656af840dff83e8264ecf986ca",
   "0x920786cff2a6f601975874bb24c63f0115df7dc8": "0x6b175474e89094c44da98b954eedeac495271d0f",
   "0x49c68edb7aebd968f197121453e41b8704acde0c": "fantom:0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
-  "0x0665ef3556520b21368754fb644ed3ebf1993ad4": "0x6c3f90f043a72fa612cbac8115ee7e52bde6e490"
+  "0x0665ef3556520b21368754fb644ed3ebf1993ad4": "0x6c3f90f043a72fa612cbac8115ee7e52bde6e490",
+  // update below to binspirit when it lists on coingecko
+  "0x7345a537a975d9ca588ee631befddfef34fd5e8f": "fantom:0x5Cc61A78F164885776AA610fb0FE1257df78E59B"
 }
 
 async function handleMooTokens(balances, block, chain, tokens) {
@@ -203,6 +205,16 @@ async function polygon(timestamp, block, chainBlocks) {
       chain: "polygon",
     })
   ).output / 10 ** 12;
+
+  balances['0x3f382dbd960e3a9bbceae22651e88158d2791550'] = (
+    await sdk.api.erc20.balanceOf({
+      target: "0x51195e21BDaE8722B29919db56d95Ef51FaecA6C",
+      owner: "0x1f0aa72b980d65518e88841ba1da075bd43fa933",
+      block: chainBlocks.polygon,
+      chain: "polygon",
+    })
+  ).output;
+
   return balances;
 }
 
@@ -338,7 +350,7 @@ async function fantom(timestamp, block, chainBlocks) {
       "0xD8dd2EA228968F7f043474Db610A20aF887866c7",
       "0xd14dd3c56d9bc306322d4cea0e1c49e9ddf045d4"
     ]
-  ];
+  ];  
   await handleMooLPs(balances, chainBlocks.fantom, chain, ftmLPs);
 
   await sumTokens(
@@ -347,6 +359,10 @@ async function fantom(timestamp, block, chainBlocks) {
       [
         "0xa48d959ae2e88f1daa7d5f611e01908106de7598",
         "0xf18F4847a5Db889B966788dcbDbcBfA72f22E5A6",
+      ],
+      [
+        "0x7345a537A975d9Ca588eE631BEFdDfEF34fD5e8f",
+        "0xedF25e618E4946B05df1E33845993FfEBb427A0F",
       ]
     ],
     chainBlocks.fantom,
@@ -487,23 +503,22 @@ module.exports = {
   misrepresentedTokens: true,
   methodology:
     "TVL counts the AAVE tokens that are deposited within the Yield Instruments section of QiDao, the Vault token deposits of CRV, LINK, AAVE and WETH, as well as USDC deposited to mint MAI.",
-  polygon: {
+ polygon: {
     tvl: polygon,
   },
   fantom: {
     tvl: fantom,
   },
-  avax: {
+  avalanche: { 
     tvl: avax,
   },
-  moonriver: {
+  moonriver: { 
     tvl: moonriver,
   },
-  harmony: {
+  harmony: { 
     tvl: harmony,
   },
-  xdai: {
+  xdai: { 
     tvl: xdai
-  }
+  },
 };
-// node test.js projects/qidao/index.js
