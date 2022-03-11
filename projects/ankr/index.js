@@ -19,20 +19,20 @@ async function tvl(timestamp, block) {
 
 module.exports = {
   ethereum: {
+    tvl,
     aETHc: getaETHcTvl,
     aMATICb: getaMATICbTvl,
     aDOTb: getaDOTbTvl,
     aKSMb: getaKSMbTvl,
   },
   fantom: {
-    aFTMb: getaFTMbTvl,
+    tvl: getaFTMbTvl,
   },
   avalanche: {
-    aAVAXb: getaAVAXbTvl,
+    tvl: getaAVAXbTvl,
   },
   binance: {
-    aBNBb: getaBNBbTvl,
+    tvl: getaBNBbTvl,
   },
-  tvl,
   methodology: `We get the total supply of aETHc, the ETH staking contract and convert it to USD.`
 }

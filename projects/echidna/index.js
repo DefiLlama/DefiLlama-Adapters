@@ -82,5 +82,8 @@ async function tvl(timestamp, block, chainBlocks) {
 };
 
 module.exports = {
-    tvl
+    doublecounted: true,
+    avax: {
+        tvl
+    }
 };
