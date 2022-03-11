@@ -2,6 +2,11 @@ const {getBlock} = require('../helper/getBlock')
 const sdk = require('@defillama/sdk')
 const terra = require('../helper/terra')
 const NATIVE_ADDRESS = "NATIVE";
+const { transformAvaxAddress, 
+        transformBscAddress, 
+        transformFantomAddress,
+        transformPolygonAddress } = require('../helper/portedTokens');
+
 
 
 const data = {
@@ -10,7 +15,8 @@ const data = {
         tokens: [
             {name: "WAVAX", address: "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7", decimals: 6},
             {name: "USDC.e", address: "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664", decimals: 6},
-        ]
+        ],
+        transform: transformAvaxAddress()
     },
 
     bsc: {
@@ -20,7 +26,8 @@ const data = {
             {name: "BUSD", address: "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", decimals: 6},
             {name: "BSC-USD", address: "0x55d398326f99059fF775485246999027B3197955", decimals: 6},
             {name: "USDC", address: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d", decimals: 6},
-        ]
+        ],
+        transform: transformBscAddress()
     },
 
     ethereum: {
@@ -48,8 +55,9 @@ const data = {
     fantom: {
         contractAddress: "0x7C9Fc5741288cDFdD83CeB07f3ea7e22618D79D2",
         tokens:[
-            {name: "USDC", address: "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75", decimals: 6},
-        ]
+            {name: "USDC", address: "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75", decimals: 18},
+        ],
+        transform: transformFantomAddress()
     },
 
     polygon: {
@@ -58,7 +66,8 @@ const data = {
             {name: "WMATIC", address: "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270", decimals: 18},
             {name: "USDC", address: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174", decimals: 6},
             {name: "USDT", address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F", decimals: 6},
-        ]
+        ],
+        transform: transformPolygonAddress()
     },
 
 
@@ -77,17 +86,18 @@ const toNumber = (decimals, n) => Number(n)/Math.pow(10, decimals)
 
 function getTVLFunction(chain)
 {
-    return async function tvl(timestamp, ethBlock, chainBlocks) {
+   return async function tvl(timestamp, ethBlock, chainBlocks) {
         const balances = {}
         const chainData = data[chain];
         const block = await getBlock(timestamp, chain, chainBlocks);
+    
+        const transform = 'transform' in chainData ? await chainData.transform: false;
         for (const token of chainData.tokens) {
-            const balance = token.address === NATIVE_ADDRESS ? await sdk.api.eth.getBalance({
-                block, chain, target: chainData.contractAddress
-            }) : await sdk.api.erc20.balanceOf({
+            const balance = await sdk.api.erc20.balanceOf({
                 block, chain, target: token.address, owner: chainData.contractAddress
             });
-            sdk.util.sumSingleBalance(balances, token.name, toNumber(token.decimals, balance.output));
+            transform ? sdk.util.sumSingleBalance(balances, transform(token.address), balance.output):
+            sdk.util.sumSingleBalance(balances, token.address, balance.output);
         }
         return balances
     }
