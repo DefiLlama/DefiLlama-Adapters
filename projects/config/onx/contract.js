@@ -1,12 +1,12 @@
 const tokenAddresses = require('./constant');
-const web3 = require('../web3.js')
+const web3 = require('../web3.js');
 
-const onxContractAbi = require('./abis/OnxToken.json');
-const UniswapV2PairContractAbi = require('./abis/UniswapV2Pair.json');
-const onxPoolContractAbi = require('./abis/OnxPool.json');
-const aethTokenContractAbi = require('./abis/AethToken.json');
-const onsTokenContractAbi = require('./abis/OnsToken.json');
-const ERC20Abi = require('./abis/ERC20.json');
+const onxContractAbi = require('../../helper/ankr/abis/OnxToken.json');
+const UniswapV2PairContractAbi = require('../../helper/ankr/abis/UniswapV2Pair.json');
+const onxPoolContractAbi = require('../../helper/ankr/abis/OnxPool.json');
+const aethTokenContractAbi = require('../../helper/ankr/abis/AethToken.json');
+const onsTokenContractAbi = require('../../helper/ankr/abis/OnsToken.json');
+const ERC20Abi = require('../../helper/ankr/abis/ERC20.json');
 
 const onxTokenContract = new web3.eth.Contract(onxContractAbi, tokenAddresses.onx);
 const usdtWethPairContract = new web3.eth.Contract(UniswapV2PairContractAbi, tokenAddresses.usdWethPair);
