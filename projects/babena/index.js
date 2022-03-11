@@ -11,9 +11,8 @@ const getReserve = (tokenData) => {
 }
 
 const getTokenToKadena = async (token) => {
-  try {
-    let data = await Pact.fetch.local({
-      pactCode: `
+  let data = await Pact.fetch.local({
+    pactCode: `
           (use free.exchange)
           (let*
             (
@@ -22,18 +21,16 @@ const getTokenToKadena = async (token) => {
               (reserveB (reserve-for p coin))
             )[reserveA reserveB])
            `,
-      meta: Pact.lang.mkMeta("account", chainId, GAS_PRICE, 3000, creationTime(), 600),
-    }, network);
+    meta: Pact.lang.mkMeta("account", chainId, GAS_PRICE, 3000, creationTime(), 600),
+  }, network);
 
-    if (data.result.status === "success") {
-      const tokenReserve = getReserve(data.result.data[0]);
-      const kadenaReserve = getReserve(data.result.data[1]);
-      return kadenaReserve / tokenReserve;
-    }
-  } catch (e) {
-    console.log(e)
+  if (data.result.status === "success") {
+    const tokenReserve = getReserve(data.result.data[0]);
+    const kadenaReserve = getReserve(data.result.data[1]);
+    return kadenaReserve / tokenReserve;
   }
-  return 0;
+
+  throw new Error(`Babena fetch failed`);
 }
 
 const fetchKdaPrice = async () => {
@@ -49,41 +46,35 @@ const fetchBebePrice = async () => {
 }
 
 const getTotalLockedKda = async () => {
-  try {
-    let data = await Pact.fetch.local(
-      {
-        pactCode: '(coin.get-balance "babena-bank")',
-        keyPairs: Pact.crypto.genKeyPair(),
-        meta: Pact.lang.mkMeta('', chainId, 0.01, 1000, 28800, creationTime())
-      },
-      network
-    );
-    if (data.result.status === "success") {
-      return getReserve(data.result.data);
-    }
-  } catch (e) {
-    console.log(e);
+  let data = await Pact.fetch.local(
+    {
+      pactCode: '(coin.get-balance "babena-bank")',
+      keyPairs: Pact.crypto.genKeyPair(),
+      meta: Pact.lang.mkMeta('', chainId, 0.01, 1000, 28800, creationTime())
+    },
+    network
+  );
+  if (data.result.status === "success") {
+    return getReserve(data.result.data);
   }
-  return 0;
+
+  throw new Error("Total locked KDA fetch failed");
 }
 
 const getTotalLockedBabe = async () => {
-  try {
-    let data = await Pact.fetch.local(
-      {
-        pactCode: '(free.babena.get-balance "babena-bank")',
-        keyPairs: Pact.crypto.genKeyPair(),
-        meta: Pact.lang.mkMeta('', chainId, 0.01, 1000, 28800, creationTime())
-      },
-      network
-    );
-    if (data.result.status === "success") {
-      return getReserve(data.result.data);
-    }
-  } catch (e) {
-    console.log(e);
+  let data = await Pact.fetch.local(
+    {
+      pactCode: '(free.babena.get-balance "babena-bank")',
+      keyPairs: Pact.crypto.genKeyPair(),
+      meta: Pact.lang.mkMeta('', chainId, 0.01, 1000, 28800, creationTime())
+    },
+    network
+  );
+  if (data.result.status === "success") {
+    return getReserve(data.result.data);
   }
-  return 0;
+
+  throw new Error("Total locked BABE failed");
 }
 
 function calcTVL(kdaPrice, availableKda, babenaPrice, availableBabe) {
