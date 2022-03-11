@@ -8,6 +8,23 @@ async function query(url, block) {
     return (await axios.get(endpoint)).data.result
 }
 
+async function queryV1Beta1(url, paginationKey, block) {
+    let endpoint = `${process.env["TERRA_RPC"] ?? "https://lcd.terra.dev"}/cosmos/${url}`
+    if (block !== undefined) {
+        endpoint += `?height=${block - (block % 100)}`
+    }
+    if (paginationKey) {
+        const paginationQueryParam = `pagination.key=${paginationKey}`
+        if (block === undefined) {
+            endpoint += "?"
+        } else {
+            endpoint += "&"
+        }
+        endpoint += paginationQueryParam
+    }
+    return (await axios.get(endpoint)).data
+}
+
 
 async function getBalance(token, owner, block) {
     const data = await query(`contracts/${token}/store?query_msg={"balance":{"address":"${owner}"}}`, block)
@@ -54,5 +71,6 @@ module.exports = {
     getBalance,
     getDenomBalance,
     unwrapLp,
-    query
+    query,
+    queryV1Beta1
 }
