@@ -1,39 +1,38 @@
-const tokenAddresses = require('./tokenAddresses');
-const { aETHcTokenContract, aMATICbTokenContract, aDOTbTokenContract, aKSMbTokenContract } = require('./contracts');
-
-const wethAddress = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+const {
+  aETHcTokenContract,
+  aMATICbTokenContract,
+  aDOTbTokenContract,
+  aKSMbTokenContract,
+} = require("./contracts");
+const coinAddresses = require("../../../helper/ankr/chainAddresses");
+const { getBinancePrice } = require("../../../helper/ankr/prices/binance");
+const { toUSDTBalances } = require("../../../helper/balances");
 
 const getaETHcTvl = async () => {
   const totalSupply = await aETHcTokenContract.methods.totalSupply().call();
-  console.log(111, `aETHc ${totalSupply}`);
-  // return { [tokenAddresses.aETHc]: totalSupply };
-  return { [wethAddress]: totalSupply };
-}
+  return { [coinAddresses.weth]: totalSupply * 0.93744 };
+};
 
 const getaMATICbTvl = async () => {
   const totalSupply = await aMATICbTokenContract.methods.totalSupply().call();
-  console.log(111, `aMATICb ${totalSupply}`)
-  // return { [tokenAddresses.aMATICb]: totalSupply };
-  return { [wethAddress]: totalSupply };
-}
+  return { [coinAddresses.matic]: totalSupply };
+};
 
 const getaDOTbTvl = async () => {
   const totalSupply = await aDOTbTokenContract.methods.totalSupply().call();
-  console.log(111, `aDOTb ${totalSupply}`)
-  // return { [tokenAddresses.aDOTb]: totalSupply };
-  return { [wethAddress]: totalSupply };
-}
+  const price = await getBinancePrice("DOTUSDT");
+  return toUSDTBalances(totalSupply * price, 1e-4);
+};
 
 const getaKSMbTvl = async () => {
   const totalSupply = await aKSMbTokenContract.methods.totalSupply().call();
-  console.log(111, `aKSMb ${totalSupply}`)
-  // return { [tokenAddresses.aKSMb]: totalSupply };
-  return { [wethAddress]: totalSupply };
-}
+  const price = await getBinancePrice("KSMUSDT");
+  return toUSDTBalances(totalSupply * price, 1e-6);
+};
 
 module.exports = {
   getaETHcTvl,
   getaMATICbTvl,
   getaDOTbTvl,
   getaKSMbTvl,
-}
+};

@@ -9,6 +9,8 @@ const createWeb3 = (rpcUrl) => {
 
 const ZERO = new BigNumber(0);
 
+const ONE_COIN = 1e18;
+
 const fromWei = (v) => {
   if (v) {
     return new BigNumber(v).div(1e18);
@@ -100,6 +102,7 @@ const getBalanceOf = async (account, contract) => {
 
 module.exports = {
   ZERO,
+  ONE_COIN,
   fromWei,
   createContractObject,
   getVautsTvl,
