@@ -37,5 +37,7 @@ module.exports = {
   misrepresentedTokens: false,
   methodology: "Amount of underwriter capital inside the protocol",
   start: 5877549,
-  tvl: getTvl,
+  terra: {
+    tvl: getTvl,
+  }
 };
