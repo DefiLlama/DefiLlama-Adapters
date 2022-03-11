@@ -1,19 +1,19 @@
-const retry = require('./helper/retry');
-const axios = require('axios');
+const retry = require("./helper/retry");
+const axios = require("axios");
 
 async function fetch() {
-        const response = (
-            await retry(
-                async (bail) => await axios.get('https://api.serum-data.com/tvl')
-            )
-        ).data;
+  const response = (
+    await retry(
+      async (bail) => await axios.get("https://api.serum-data.com/tvl")
+    )
+  ).data;
 
-        const tvl = response.result.tvl;
+  const tvl = response.tvl;
 
-        return tvl
+  return tvl;
 }
 
 module.exports = {
-    timetravel: false,
-    fetch,
+  timetravel: false,
+  fetch,
 };
