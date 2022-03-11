@@ -39,7 +39,7 @@ const poolTvl = async (chain, poolAddress, block) => {
       return;
     }
     const [symbol, decimals] = getTokenId(token.toLowerCase());
-    sum[symbol] = new BigNumber(balances.output[i]).div(18 ** 9).toNumber()
+    sum[symbol] = new BigNumber(balances.output[i]).div(new BigNumber(10).pow(decimals)).toNumber()
   });
 
   return sum;
