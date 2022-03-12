@@ -190,12 +190,12 @@ async function tvl(timestamp, block, chainBlocks) {
     ...config,
   })).output.map(result => result.output);
 
-  Allocators.forEach((allocator, index) => {
+  for (const [index, allocator] of Allocators.entries()) {
     sdk.util.sumSingleBalance(balances, config.transformAddress(allocator.stakeToken), stakedYieldTokens[index]);
     sdk.util.sumSingleBalance(balances, config.transformAddress(allocator.yieldToken), pendingYieldTokens[index]);
-  });
+  };
 
-  BenqiMarkets.forEach(async market => {
+  for (const market of BenqiMarkets) {
     const [balance, exchangeRate] = await Promise.all([
       sdk.
       api.abi.call({ target: market.qiToken, abi: qiTokenAbi.balanceOf, params: [BenqiAllocator], ...config }),
@@ -203,7 +203,7 @@ async function tvl(timestamp, block, chainBlocks) {
     ]);
     const underlyingTokenBalance = new BigNumber(balance.output).times(new BigNumber(exchangeRate.output)).div(new BigNumber(1e18));
     sdk.util.sumSingleBalance(balances, config.transformAddress(market.underlyingToken), underlyingTokenBalance.toFixed(0));
-  });
+  }
 
   const stakedPtp = (await sdk.api.abi.call({
     target: VEPTP,
