@@ -1,4 +1,5 @@
 const sdk = require("@defillama/sdk");
+const { default: BigNumber } = require("bignumber.js");
 const { transformAvaxAddress } = require("../helper/portedTokens");
 const abi = require("./abi.json");
 const masterChef = '0xb0523f9f473812fb195ee49bc7d2ab9873a98044';
@@ -71,13 +72,20 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
         );
     };
 
-    balances['avax:0x22d4002028f537599be9f666d1c4fa138522f9c8'] = (await sdk.api.abi.call({
+    const vePTPRate = await sdk.api.abi.call({
+        target: '0x5857019c749147EEE22b1Fe63500F237F3c1B692',
+        abi: {"inputs":[],"name":"generationRate","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+        block: block,
+        chain: "avax"
+    })
+
+    balances['avax:0x22d4002028f537599be9f666d1c4fa138522f9c8'] = new BigNumber((await sdk.api.abi.call({
         target: '0x5857019c749147EEE22b1Fe63500F237F3c1B692',
         params: [depositor],
         abi: 'erc20:balanceOf',
         block: block,
         chain: "avax"
-    })).output;
+    })).output).div(vePTPRate.output).times(1e12).toFixed(0);
 
     return balances;
 };
