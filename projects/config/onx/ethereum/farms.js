@@ -1,7 +1,7 @@
 const web3 = require('../../web3.js');
 
-const UniswapV2PairContractAbi = require('../../../helper/ankr/abis/UniswapV2Pair.json');
-const ERC20Abi = require('../../../helper/ankr/abis/ERC20.json');
+const UniswapV2PairContractAbi = require('../abis/UniswapV2Pair.json');
+const ERC20Abi = require('../abis/ERC20.json');
 
 const rawFarms = [
   {//0
