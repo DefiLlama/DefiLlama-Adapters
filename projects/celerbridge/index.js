@@ -634,6 +634,12 @@ const tokensWithDifferentDecimals = [
   // USDC
   "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
 ];
+const peggedTokensDecimalDiffs = {
+  avax: {
+    // JADE
+    "0x80B010450fDAf6a3f8dF033Ee296E92751D603B3": 9,
+  },
+};
 
 function chainTvl(chain) {
   return async (time, _, chainBlocks) => {
@@ -680,13 +686,19 @@ function chainTvl(chain) {
     );
     await Promise.all(
       peggedTokens.map(async (token) => {
-        if (token[chain] === undefined) {
+        const peggedAddress = token[chain];
+        if (peggedAddress === undefined) {
           return;
+        }
+        let decimalDiffs;
+        if (peggedTokensDecimalDiffs[chain]) {
+          decimalDiffs = peggedTokensDecimalDiffs[chain][peggedAddress];
         }
         const supply = await sdk.api.erc20.totalSupply({
           chain,
           block: block,
-          target: token[chain],
+          target: peggedAddress,
+          decimals: decimalDiffs,
         });
         const tokenAddress = token.origin;
         if (!tokenAddress) {
