@@ -96,23 +96,24 @@ function compareToIgnoreCase(a, b) {
 };
 
 const transformAddress = (addr) => {
+  let resultantAddress = addr;
   // sMAXI -> MAXI
   if (compareToIgnoreCase(addr, SMAXI)) {
-    return `avax:${MAXI}`;
+    resultantAddress = MAXI;
   }
   // USDC -> USDC.e
   if (compareToIgnoreCase(addr, USDC)) {
-    return `avax:${USDCe}`;
+    resultantAddress = USDCe;
   }
   // MONEY -> DAI
   if (compareToIgnoreCase(addr, MONEY)) {
-    return `avax:${DAI}`;
+    resultantAddress = DAI;
   }
   // xJOE -> JOE
   if (compareToIgnoreCase(addr, XJOE)) {
-    return `avax:${JOE}`;
+    resultantAddress = JOE;
   }
-  return `avax:${addr}`;
+  return `avax:${resultantAddress.toLowerCase()}`;
 };
 
 const chainConfig = (chainBlocks) => ({
