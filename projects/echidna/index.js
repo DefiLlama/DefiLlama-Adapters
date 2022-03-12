@@ -68,7 +68,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
         sdk.util.sumSingleBalance(
             balances,
             transform(underlyingToken[i].output),
-            userInfo[i].output.amount * underlyingBalance[i].output / totalSupply[i].output
+            BigNumber(userInfo[i].output.amount).times(underlyingBalance[i].output).div(totalSupply[i].output).toFixed(0)
         );
     };
 
