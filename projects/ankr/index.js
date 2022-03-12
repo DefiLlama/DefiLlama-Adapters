@@ -19,13 +19,14 @@ async function tvl(timestamp, block) {
 
 module.exports = {
   ethereum: {
-    tvl: sdk.util.sumChainTvls([getaETHcTvl, getaDOTbTvl, getaKSMbTvl]),
+    // tvl,
+    aETHc: getaETHcTvl,
+
+    aMATICb: getaMATICbTvl,
+    aDOTb: getaDOTbTvl,
+    aKSMb: getaKSMbTvl,
+    aAVAXb: getaAVAXbTvl,
   },
-  polygon: {
-    tvl: getaMATICbTvl
-  },
-  avax: {
-    tvl: getaAVAXbTvl
-  },
+  tvl,
   methodology: `We get the total supply of aETHc, the ETH staking contract and convert it to USD.`
 }
