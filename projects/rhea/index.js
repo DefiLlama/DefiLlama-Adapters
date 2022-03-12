@@ -5,7 +5,7 @@ const BigNumber = require("bignumber.js");
 const axios = require("axios");
 const { toUSDTBalances } = require("../helper/balances");
 
-const sRHEA_ADDRESS = "0xdc8925963b94Fdc9fBE80Ac07384D83Ab75C4F70";
+const sRHEA_ADDRESS = "0xB42A35f45C5D5ef8E29fFa6AA26a16bc4C383257";
 const BOND_CALCULATOR = "0xBDcFc3C54904A84F09468f1e6fd53b27121b1332";
 const TREASURY_ADDRESS = "0x32F71263CF373d726f4e45286Bbb6935d553E8D0";
 
