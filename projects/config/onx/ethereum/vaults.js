@@ -1,6 +1,6 @@
-const { createContractObject } = require('../../../helper/ankr/utils');
-const poolAbi = require('../../../helper/ankr/abis/SushiswapPool.json');
-const vaultABI = require('../../../helper/ankr/abis/SushiswapVault.json');
+const { createContractObject } = require('../utils');
+const poolAbi = require('./abis/slp-pool-abi');
+const vaultABI = require('./abis/slp-vault-abi.json');
 
 const createVaultModel = (poolAddress, vaultAddress) => {
   return {
