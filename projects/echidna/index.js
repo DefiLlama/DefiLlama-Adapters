@@ -4,14 +4,15 @@ const abi = require("./abi.json");
 const masterChef = '0xb0523f9f473812fb195ee49bc7d2ab9873a98044';
 const depositor = '0xC204501F33eC40B8610BB2D753Dd540Ec6EA2646';
 
-async function tvl(timestamp, block, chainBlocks) {
+async function tvl(timestamp, ethBlock, chainBlocks) {
     const balances = {};
     const transform = await transformAvaxAddress();
+    const block = chainBlocks.avax
 
     const poolLength = (await sdk.api.abi.call({
         target: masterChef,
         abi: abi.poolLength,
-        block: chainBlocks.avax,
+        block,
         chain: 'avax'
     })).output;
 
