@@ -5,6 +5,7 @@ const abi = require("./abi.json");
 const masterChef = '0xb0523f9f473812fb195ee49bc7d2ab9873a98044';
 const depositor = '0xC204501F33eC40B8610BB2D753Dd540Ec6EA2646';
 const { pool2s } = require("../helper/pool2");
+const { staking } = require("../helper/staking");
 
 async function tvl(timestamp, ethBlock, chainBlocks) {
     const balances = {};
@@ -97,6 +98,7 @@ module.exports = {
     doublecounted: true,
     avax: {
         tvl,
-        pool2: pool2s(["0xc9AA91645C3a400246B9D16c8d648F5dcEC6d1c8"], pool2LPs, "avax", addr=>`avax:${addr}`)
+        pool2: pool2s(["0xc9AA91645C3a400246B9D16c8d648F5dcEC6d1c8"], pool2LPs, "avax", addr=>`avax:${addr}`),
+        staking: staking("0x721C2c768635D2b0147552861a0D8FDfde55C032","0xeb8343D5284CaEc921F035207ca94DB6BAaaCBcd", "avax")
     }
 };
