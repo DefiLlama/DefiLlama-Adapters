@@ -1,5 +1,5 @@
 const abi = require("./abi.json");
-const { getCompoundV2Tvl } = require("../helper/compound");
+const { getCompoundV2Tvl, compoundExports } = require("../helper/compound");
 const { transformBscAddress } = require("../helper/portedTokens");
 const { addFundsInMasterChef } = require("../helper/masterchef");
 
@@ -26,16 +26,14 @@ const stakingPools = async (timestamp, ethBlock, chainBlocks) => {
 };
 
 module.exports = {
-  misrepresentedTokens: true,
+  timetravel: true,
+  doublecounted: false,
   bsc: {
     staking: stakingPools,
-    tvl: getCompoundV2Tvl(
-      comptroller,
+    ...compoundExports(comptroller,
       "bsc",
-      (addr) => `bsc:${addr}`,
       cBNB,
-      WBNBEquivalent
-    ),
+      WBNBEquivalent)
   },
   methodology:
     "We count liquidity on the lending markets same as compound; and the Pools (LP Piars) through Chef Contract",

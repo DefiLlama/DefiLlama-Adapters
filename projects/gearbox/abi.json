@@ -1,0 +1,6 @@
+{
+  "getContractsRegister": {"inputs":[],"name":"getContractsRegister","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+  "getPoolsCount": {"inputs":[],"name":"getPoolsCount","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}, 
+  "getPools": {"inputs":[],"name":"getPools","outputs":[{"internalType":"address[]","name":"","type":"address[]"}],"stateMutability":"view","type":"function"}, 
+  "underlyingToken": {"inputs":[],"name":"underlyingToken","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}
+}

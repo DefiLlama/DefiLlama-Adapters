@@ -10,6 +10,7 @@ async function fetch() {
   }
 
   module.exports = {
+      timetravel: false,
       fetch,
       methodology:
         'To obtain TVL of Synthetify we must add all colaterals which was deposited.'

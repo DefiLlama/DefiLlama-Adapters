@@ -14,9 +14,14 @@ const JUNGLEPOOL = '0xD45AB9b5655D1A3d58162ed1a311df178C04ddDe'
 const nativeEndpoint = "https://gajvaultapi.herokuapp.com/native"
 const nonNativeEndpoint = "https://gajvaultapi.herokuapp.com/nonNative"
 
-async function staking(timestamp, ethBlock, chainBlocks) {
+async function stakingPolygon(timestamp, ethBlock, chainBlocks) {
   const balances = {};
   await sumTokensAndLPsSharedOwners(balances, [[GAJ_TOKEN, false]], [NFTFARM_GAJ, MASTER_GAJ, JUNGLEPOOL], chainBlocks.polygon, 'polygon', addr => `polygon:${addr}`)
+  return balances
+}
+
+async function stakingAvax(timestamp, ethBlock, chainBlocks) {
+  const balances = {};
   await sumTokensAndLPsSharedOwners(balances, [[GAJ_AVAX_TOKEN, false]], [NFTFARM_GAJ_AVAX], chainBlocks.avax, 'avax', addr => `avax:${addr}`)
   return balances
 }
@@ -64,15 +69,13 @@ module.exports = {
   methodology: "TVL comes from NFT Farming, Jungle Pools, MasterChef and Vaults",
   tvl: vaults(false),
   avalanche:{
-    tvl: vaults(false, 'avax')
+    tvl: vaults(false, 'avax'),
+    pool2: vaults(true, 'avax'),
+    staking: stakingAvax,
   },
   polygon:{
-    tvl: vaults(false, 'polygon')
+    tvl: vaults(false, 'polygon'),
+    pool2: vaults(true, 'polygon'),
+    staking: stakingPolygon,
   },
-  staking: {
-    tvl: staking
-  },
-  pool2: {
-    tvl: vaults(true)
-  }
 }

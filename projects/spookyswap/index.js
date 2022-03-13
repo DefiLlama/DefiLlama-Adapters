@@ -11,6 +11,7 @@ async function tvl(_timestamp, _ethBlock, chainBlocks){
 }
 
 module.exports = {
+  methodology: `The factory address(0x152eE697f2E276fA89E96742e9bB9aB1F2E61bE3) is used find the pairs and sum the liquidity of the AMM`,
   fantom:{
     staking: staking("0xa48d959AE2E88f1dAA7D5F611E01908106dE7598", "0x841fad6eae12c286d1fd18d1d525dffa75c7effe", "fantom"),
     tvl,
