@@ -31,7 +31,7 @@ const ethContracts = [
    *
    * coingecko: wrapped-flow
    */
-  '0x5c147e74d63b1d31aa3fd78eb229b65161983b2bj',
+  '0x5c147e74d63b1d31aa3fd78eb229b65161983b2b',
 
   /**
    * WKDA
@@ -81,14 +81,14 @@ const celoContracts = [
 
 const ethTvls = ethContracts.map((contractAddress) => {
   return async (timestamp, block) => {
-      if (contractAddress == '0x53c4871322Bb47e7A24136fce291a6dcC832a294') {
-        return {
-            litecoin: (
-              await sdk.api.erc20.totalSupply({
-                block,
-                target: contractAddress,
-              })
-            ).output / 10 ** 18,
+    if (contractAddress == '0x53c4871322Bb47e7A24136fce291a6dcC832a294') {
+      return {
+        litecoin: (
+          await sdk.api.erc20.totalSupply({
+            block,
+            target: contractAddress,
+          })
+        ).output / 10 ** 18,
       }
     }
     return {
