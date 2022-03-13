@@ -1,5 +1,6 @@
 const { MJT_GRAPH, KCC_BLOCK_GRAPH } = require("./query");
 const { getChainTvl, getStakeLockValue } = require("./utils");
+const { staking } = require("../helper/staking.js");
 
 const graphUrls = {
   kcc: MJT_GRAPH,
@@ -16,7 +17,6 @@ module.exports = {
     tvl: chainTvl("kcc"),
     staking: stakingValue(),
   },
-  tvl: chainTvl("kcc"),
   start: 3000000,
   timetravel: true,
 };
