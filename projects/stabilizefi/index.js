@@ -1,7 +1,10 @@
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
+const { getLiquityTvl } = require("../helper/liquity");
 const getEntireSystemCollAbi = require("./getEntireSystemColl.abi.json");
 const totalTokenStakedAbi = require("./totalTokenStaked.abi.json");
+const { pool2 } = require('../helper/pool2');
+const { transformAvaxAddress } = require("../helper/portedTokens");
 
 // staking
 const TOKEN_STAKING_ADDRESS = "0x4A2B73ebAc93D9233BAB10a795F04efb9C00D466";
@@ -17,18 +20,18 @@ const FARM_ADDRESS_SET_USDC = "0xAA31D7Bc8186888D9Eebb5524C47268E4bC87496"
 const LP_ADDRESS_SET_USDC = "0x31fa3838788A07607D95C9c640D041eAec649f50"
 
 // system coll
-const AVAX_ADDRESS = 'avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7';
+const AVAX_ADDRESS = '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7';
 const AVAX_TROVE_MANAGER_ADDRESS = "0x7551A127C41C85E1412EfE263Cadb49900b0668C";
 
-const ETH_ADDRESS = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
+const ETH_ADDRESS = '0x49d5c2bdffac6ce2bfdb6640f4f80f226bc10bab';
 const ETH_TROVE_MANAGER_ADDRESS = "0x7837C2dB2d004eB10E608d95B2Efe8cb57fd40b4";
 
-const BTC_ADDRESS = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599';
+const BTC_ADDRESS = '0x50b7545627a5162f82a992c33b87adc75187b218';
 const BTC_TROVE_MANAGER_ADDRESS = "0x56c194F1fB30F8cdd49E7351fC9C67d8C762a86F";
 
-const DAI_ADDRESS = '0x6B175474E89094C44Da98b954EedeAC495271d0F';
+const DAI_ADDRESS = '0xd586e7f844cea2f87f50152665bcbc2c279d8d70';
 const DAI_TROVE_MANAGER_ADDRESS = "0x54b35c002468a5Cc2BD1428C011857d26463ecbC";
-
+/*
 // stability pool
 const SUSD_ADDRESS = "avax:0xAafd2577Fb67366d3C89DB0d627C49D769ee2e5D";
 
@@ -43,7 +46,7 @@ const BTC_STABILITY_POOL_ADDRESS = "0x35d7d7Aeb582523285C56082e0A282678540f356";
 
 const U_DAI_ADDRESS = '0x9fee03160502782CeB5845e8799638AF351D1Ed5';
 const DAI_STABILITY_POOL_ADDRESS = "0x7Dd93401Df9BDe8a61d43ee99511CA658685f0BD";
-
+*/
 
 // --- staking ---
 async function stakingTvl(_, _ethBlock, chainBlocks) {
@@ -61,7 +64,7 @@ async function stakingTvl(_, _ethBlock, chainBlocks) {
 
 }
 
-
+/*
 async function tvl(_, _ethBlock, chainBlocks) {
   
  
@@ -219,10 +222,16 @@ async function tvl(_, _ethBlock, chainBlocks) {
     [BTC_ADDRESS] : BTCBalance, 
     [DAI_ADDRESS] : DAIBalance};
 }
-
+*/
 module.exports = {
   avalanche:{
-    tvl: tvl,
+    tvl: sdk.util.sumChainTvls([
+      getLiquityTvl(ETH_ADDRESS,ETH_TROVE_MANAGER_ADDRESS,"avax",transformAvaxAddress),
+      getLiquityTvl(BTC_ADDRESS,BTC_TROVE_MANAGER_ADDRESS,"avax"),
+      getLiquityTvl(AVAX_ADDRESS,AVAX_TROVE_MANAGER_ADDRESS,"avax"),
+      getLiquityTvl(DAI_ADDRESS,DAI_TROVE_MANAGER_ADDRESS,"avax"),
+    ]),
+    pool2: pool2(FARM_ADDRESS_SET_USDC,LP_ADDRESS_SET_USDC,"avax"),
     staking: stakingTvl
   }
   
