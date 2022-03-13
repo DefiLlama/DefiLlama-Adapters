@@ -1,6 +1,5 @@
 const { request, gql } = require("graphql-request");
 const dayjs = require("dayjs");
-const { getBlock } = require("../helper/getBlock");
 const { toUSDTBalances } = require("../helper/balances");
 
 const Ethers = require("ethers");
@@ -22,14 +21,14 @@ const { JsonRpcProvider } = require("@ethersproject/providers");
 
 async function getLatestBlock(timestamp) {
   //  a few blocks behind the blockchain,so we write a hack here
-  const utcCurrentTime = timestamp ?? dayjs().unix() - 300;
+  const utcCurrentTime = timestamp ?? dayjs().unix();
   const res = await request(KCC_BLOCK_GRAPH, GET_BLOCK, {
     timestampFrom: utcCurrentTime,
     timestampTo: utcCurrentTime + 600,
   });
 
   const block =
-    res?.blocks[0]?.number ?? (await getLatestBlock(dayjs().unix() - 500));
+    res?.blocks[0]?.number ?? (await getLatestBlock(dayjs().unix() - 600));
   return Number(block);
 }
 
@@ -50,11 +49,7 @@ query get_tvl($block: Int) {
 
   return (chain) => {
     return async (timestamp, ethBlock, chainBlocks) => {
-      let block = await getBlock(timestamp, chain, chainBlocks);
-      const latestBlock = await getLatestBlock();
-      if (Number(block) > latestBlock) {
-        block = latestBlock;
-      }
+      const block = await getLatestBlock(timestamp);
       const uniswapFactories = (
         await request(graphUrls[chain], graphQuery, {
           block,
@@ -71,8 +66,7 @@ const getETHPrice = async (block) => {
   return result?.bundles[0]?.ethPrice ? Number(result.bundles[0].ethPrice) : 0;
 };
 
-const getTokenPrice = async (token) => {
-  const block = await getLatestBlock();
+const getTokenPrice = async (token, block) => {
   const ethPrice = await getETHPrice(block);
 
   const tokens = await request(
@@ -90,17 +84,36 @@ const getTokenPrice = async (token) => {
   return ethPrice * tokenPrice;
 };
 
-const getStakeLockValue = async (blockTag = "latest") => {
-  const JSONProvider = new JsonRpcProvider("https://rpc-mainnet.kcc.network", {
-    name: "kcc",
-    chainId: 321,
-  });
-  const mjtContract = new Ethers.Contract(mjtAddress, erc20ABI, JSONProvider);
-  const balance = await mjtContract.balanceOf(masterchefAddress, { blockTag });
-  const MJTBalance = new BigNumber(balance.toString()).div(10 ** 18).toNumber();
-  const mjtPrice = await getTokenPrice(mjtAddress);
-  const stakeLockValue = MJTBalance * mjtPrice;
-  return stakeLockValue;
+const getStakeLockValue = () => {
+  return (chain) => {
+    return async (timestamp, ethBlock, chainBlocks) => {
+      const block = await getLatestBlock(timestamp);
+      const JSONProvider = new JsonRpcProvider(
+        "https://rpc-mainnet.kcc.network",
+        {
+          name: "kcc",
+          chainId: 321,
+        }
+      );
+
+      const mjtContract = new Ethers.Contract(
+        mjtAddress,
+        erc20ABI,
+        JSONProvider
+      );
+
+      const balance = await mjtContract.balanceOf(masterchefAddress, {
+        blockTag: block ?? "latest",
+      });
+      const MJTBalance = new BigNumber(balance.toString())
+        .div(10 ** 18)
+        .toNumber();
+
+      const mjtPrice = await getTokenPrice(mjtAddress, block);
+      const stakeLockValue = MJTBalance * mjtPrice;
+      return toUSDTBalances(stakeLockValue);
+    };
+  };
 };
 
 module.exports = {
