@@ -35,7 +35,7 @@ const terraBridgeAddresses = {
 const toNumber = (decimals, n) => Number(n)/Math.pow(10, decimals);
 
 async function terraTvl() {
-    const balances = {}
+    const balances = {};
     const decimals = 6;
     for (const [chain, contractAddress] of Object.entries(terraBridgeAddresses)) {
         for (const [tokenName, tokenAddress] of Object.entries(terraTokenAddresses)) {
@@ -45,10 +45,10 @@ async function terraTvl() {
             sdk.util.sumSingleBalance(balances, tokenName, toNumber(decimals, balance));
         }
     }
-    return balances
+    return balances;
 }
 
-module.exports={
+module.exports = {
     methodology: "Sums all token balance for Terra Bridge owned addresses.",
     tvl: terraTvl,
-}
+};
