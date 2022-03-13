@@ -1,47 +1,63 @@
-const utils = require("../helper/utils");
+const axios = require("axios");
 
-const chains = {
-  fantom: "fantom",
-  ethereum: "ethereum",
-  bsc: "bsc",
-  heco: "heco",
-  matic: "polygon",
-  harmony: "harmony",
-};
+let url = "http://127.0.0.1:3001/api/tvl";
 
-const url = "https://adminv1.knit.finance/api/tvl";
-
-function fetchChain(chain) {
-  return async () => {
-    const { data } = await utils.fetchURL(url);
-    console.log(data.data.data.info);
-    let list = data.data.data.info;
-
-    const protocolsInChain =
-      chain === null
-        ? list
-        : list.filter((p) => p.chain.toString() === chain.toString());
-
-    const coingeckoMcaps = {};
-    const counted = {};
-    let total = 0;
-    protocolsInChain.forEach((item) => {
-      const tvl = Number(item.tvl || 0);
-
-      total += tvl;
-    });
-    return total;
-  };
+async function fetchBsc() {
+  let bsc = await axios.get(`${url}/bsc`);
+  return bsc.data.data.data.tvl.bsc;
 }
 
-const chainTvls = {};
-Object.keys(chains).forEach((chain) => {
-  const chainName = chains[chain];
-  chainTvls[chainName === "matic" ? "polygon" : chainName] = {
-    fetch: fetchChain(chain),
-  };
-});
+async function fetchPoly() {
+  let poly = await axios.get(`${url}/matic`);
+  return poly.data.data.data.tvl.matic;
+}
+
+async function fetchEth() {
+  let eth = await axios.get(`${url}/eth`);
+  return eth.data.data.data.tvl.eth;
+}
+
+async function fetchFantom() {
+  let fantom = await axios.get(`${url}/fantom`);
+  return fantom.data.data.data.tvl.fantom;
+}
+
+async function fetchHeco() {
+  let heco = await axios.get(`${url}/heco`);
+  return heco.data.data.data.tvl.heco;
+}
+
+async function fetch() {
+  let poly = await axios.get(`${url}/matic`),
+    bsc = await axios.get(`${url}/bsc`),
+    eth = await axios.get(`${url}/eth`),
+    fantom = await axios.get(`${url}/fantom`),
+    heco = await axios.get(`${url}/heco`);
+  const tvl =
+    bsc.data.data.data.tvl.bsc +
+    poly.data.data.data.tvl.matic +
+    eth.data.data.data.tvl.eth +
+    fantom.data.data.data.tvl.fantom +
+    heco.data.data.data.tvl.heco;
+  return tvl;
+}
 
 module.exports = {
-  fetch: fetchChain(null),
+  polygon: {
+    fetch: fetchPoly,
+  },
+  bsc: {
+    fetch: fetchBsc,
+  },
+  ethereum: {
+    fetch: fetchEth,
+  },
+  heco: {
+    fetch: fetchHeco,
+  },
+  fantom: {
+    fetch: fetchFantom,
+  },
+
+  fetch,
 };
