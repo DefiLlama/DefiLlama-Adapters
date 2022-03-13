@@ -1,8 +1,7 @@
-const { getBlock } = require("../helper/getBlock");
-const sdk = require('@defillama/sdk')
-const terra = require('../helper/terra')
+const sdk = require('@defillama/sdk');
+const terra = require('../helper/terra');
 
-const tokenAddresses = {
+const terraTokenAddresses = {
     'terra-luna': 'uluna',
     'terrausd': 'uusd',
     'terra-krw': 'ukrw',
@@ -27,19 +26,19 @@ const tokenAddresses = {
     'mirrored-coinbase': 'terra18wayjpyq28gd970qzgjfmsjj7dmgdk039duhph',
 };
 
-const terraAddresses = {
+const terraBridgeAddresses = {
     Eth: 'terra13yxhrk08qvdf5zdc9ss5mwsg5sf7zva9xrgwgc',
     Bsc: 'terra1g6llg3zed35nd3mh9zx6n64tfw3z67w2c48tn2',
     Hmy: 'terra1rtn03a9l3qsc0a9verxwj00afs93mlm0yr7chk',
 };
 
-const toNumber = (decimals, n) => Number(n)/Math.pow(10, decimals)
+const toNumber = (decimals, n) => Number(n)/Math.pow(10, decimals);
 
 async function terraTvl() {
     const balances = {}
     const decimals = 6;
-    for (const [chain, contractAddress] of Object.entries(terraAddresses)) {
-        for (const [tokenName, tokenAddress] of Object.entries(tokenAddresses)) {
+    for (const [chain, contractAddress] of Object.entries(terraBridgeAddresses)) {
+        for (const [tokenName, tokenAddress] of Object.entries(terraTokenAddresses)) {
             const balance = tokenAddress.length > 5
               ? await terra.getBalance(tokenAddress, contractAddress)
               : await terra.getDenomBalance(tokenAddress, contractAddress);
@@ -50,8 +49,6 @@ async function terraTvl() {
 }
 
 module.exports={
-    methodology: "All tokens in Terra Bridge contracts.",
-    terra: {
-        tvl: terraTvl
-    }
+    methodology: "Sums all token balance for Terra Bridge owned addresses.",
+    tvl: terraTvl,
 }
