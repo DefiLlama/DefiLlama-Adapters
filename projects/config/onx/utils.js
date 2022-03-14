@@ -1,5 +1,5 @@
 const BigNumber = require('bignumber.js');
-const { toUSDTBalances } = require('../balances');
+const { toUSDTBalances } = require('./../../helper/balances');
 
 const createWeb3 = (rpcUrl) => {
   const Web3 = require('web3');
@@ -18,7 +18,7 @@ const fromWei = (v) => {
   return new BigNumber(0);
 };
 
-const createContractObject = (address, abi, web3 = require('../../config/web3.js')) => {
+const createContractObject = (address, abi, web3 = require('../web3.js')) => {
   return {
     address,
     contract: address && abi && new web3.eth.Contract(abi, address),

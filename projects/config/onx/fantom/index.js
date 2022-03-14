@@ -1,8 +1,8 @@
 const tokenAddresses = require('../constant');
 const BigNumber = require('bignumber.js');
-const UniswapV2PairContractAbi = require('../../../helper/ankr/abis/UniswapV2Pair.json');
-const { ZERO, fromWei, createContractObject, getVautsTvl, createWeb3, fetchPriceData } = require('../../../helper/ankr/utils');
-const { fantomRpcUrl } = require('../../../helper/ankr/networks');
+const UniswapV2PairContractAbi = require('../abis/UniswapV2Pair.json');
+const { ZERO, fromWei, createContractObject, getVautsTvl, createWeb3, fetchPriceData } = require('../utils');
+const { fantomRpcUrl } = require('../networks');
 const { vaults } = require('./vaults');
 const { EXCHANGE_TYPE } = require('../vault');
 const { request, gql } = require("graphql-request");

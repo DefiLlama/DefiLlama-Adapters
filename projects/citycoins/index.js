@@ -3,7 +3,7 @@ const axios = require('axios')
 const BigNumber = require('bignumber.js')
 const sdk = require('@defillama/sdk')
 
-const STACKS_API = 'https://stacks-node-api.blockstack.org/extended/v1/address'
+const STACKS_API = 'https://stacks-node-api.mainnet.stacks.co/extended/v1/address'
 
 const NYC_CONTRACT = 'SP2H8PY27SEZ03MWRKS5XABZYQN17ETGQS3527SA5.newyorkcitycoin-core-v1'
 const MIAMI_CONTRACT = 'SP466FNC0P7JWTNM2R9T199QRZN1MYEDTAR0KP27.miamicoin-core-v1'
@@ -80,7 +80,7 @@ function transformStacksToken(token) {
 module.exports = {
   stacks: {
     tvl,
-    treasury,
+    // treasury, Note: Treasury has been disabled upon team request since they view it as amount reserved for city governers and does not belong to team
     staking,
   },
   methodology: 'Added STX tokens in addresses marked as city wallets as treasury. Added STX in contracts as TVL, and native tokens in it as staking'
