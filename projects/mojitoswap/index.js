@@ -1,12 +1,13 @@
-const { MJT_GRAPH } = require("./query");
+const { MJT_GRAPH, KCC_BLOCK_GRAPH } = require("./query");
 const { getChainTvl, getStakeLockValue } = require("./utils");
+const { staking } = require("../helper/staking.js");
 
 const graphUrls = {
   kcc: MJT_GRAPH,
 };
 
 const chainTvl = getChainTvl(graphUrls);
-const stakeValue = getStakeLockValue();
+const stakingValue = getStakeLockValue();
 
 module.exports = {
   misrepresentedTokens: true,
@@ -14,7 +15,8 @@ module.exports = {
     "We count liquidity and staking on the dexes, pulling data from subgraphs",
   kcc: {
     tvl: chainTvl("kcc"),
-    staking: stakeValue,
+    staking: stakingValue(),
   },
-  tvl: chainTvl("kcc"),
+  start: 3000000,
+  timetravel: true,
 };

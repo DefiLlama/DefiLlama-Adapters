@@ -12,7 +12,7 @@ const { onxTokenContract,
   fraxTokenContract,
   usdcTokenContract } = require('../contract');
 const tokenAddresses = require('../constant');
-const { getVautsTvl, getBalanceOf, getReserves } = require('../../../helper/ankr/utils');
+const { getVautsTvl, getBalanceOf } = require('../utils');
 const { ZERO, vaults } = require('./vaults');
 const { request, gql } = require("graphql-request");
 const { getUsdBalance } = require('./farmTvl');
@@ -24,6 +24,7 @@ const { getWethPrice,
   getOnsPrice,
   getAnkrPrice,
   getSushiPrice } = require('./prices');
+const { getReserves } = require('../utils');
 const { farms } = require('./farms');
 
 const getStakeTvl = async (onxPrice) => {
