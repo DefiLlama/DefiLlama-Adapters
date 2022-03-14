@@ -1,5 +1,5 @@
 const BigNumber = require('bignumber.js');
-const { getReserves } = require('../utils');
+const { getReserves } = require('../../../helper/ankr/utils');
 const { usdtWethPairContract,
   onxWethSushiPairContract,
   aethPairOnsContract,
