@@ -106,10 +106,10 @@ async function tvlV2Onchain(block, chain) {
     await unwrapCreamTokens(balances, safebox.map(s=>[s.cyTokenAddress, s.safeboxAddress]), block, chain, transform)
     const pools= await getPools(poolsJsonUrl);
     const { output: masterchefLpTokens } = await sdk.api.abi.multiCall({
-        calls: pools.map((pool) => ({
-            target: pool.exchange.stakingAddress,
+        calls: pools.filter(p => p.pid !== undefined).map((pool) => ({
+            target: pool.exchange.stakingAddress ?? pool.stakingAddress,
             params: [pool.pid, pool.wTokenAddress],
-        })).filter(c => c.target !== undefined),
+        })),
         chain,
         abi: abi["userInfo"],
         block,
@@ -119,10 +119,10 @@ async function tvlV2Onchain(block, chain) {
         token: pools[i].lpTokenAddress
     }))
     const { output: stakingPoolsLpTokens } = await sdk.api.abi.multiCall({
-        calls: pools.map((pool) => ({
+        calls: pools.filter(p => p.pid === undefined).map((pool) => ({
             target: pool.stakingAddress,
             params: [pool.wTokenAddress],
-        })).filter(c => c.target !== undefined),
+        })),
         chain,
         abi: "erc20:balanceOf",
         block,

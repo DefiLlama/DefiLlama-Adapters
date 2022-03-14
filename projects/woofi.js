@@ -29,7 +29,12 @@ function fetchWooPP(network) {
 function fetchStake(network) {
     return async () => {
         let data = await fetchURL('https://fi-api.woo.org/wooracle_state?network=' + network)
-        let wooPrice = BigNumber(data.data.data.WOO.price_now)
+        let wooPrice
+        if (network == 'avax') {
+            wooPrice = BigNumber(data.data.data['WOO.e'].price_now)
+        } else {
+            wooPrice = BigNumber(data.data.data.WOO.price_now)
+        }
         data = await fetchURL('https://fi-api.woo.org/staking?network=' + network)
         return toUSDTBalances(parseFloat(BigNumber(data.data.data.woo.total_staked).times(wooPrice).div(1e36)))
     }
@@ -43,10 +48,16 @@ function fetchEarn(network) {
 }
 
 module.exports={
-    bsc:{
+    bsc: {
         tvl: fetchTVL('bsc'),
         WooPP: fetchWooPP('bsc'),
         Stake: fetchStake('bsc'),
         Earn: fetchEarn('bsc'),
+    },
+    avax: {
+        tvl: fetchTVL('avax'),
+        WooPP: fetchWooPP('avax'),
+        Stake: fetchStake('avax'),
+        Earn: fetchEarn('avax'),
     },
 }
