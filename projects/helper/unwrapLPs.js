@@ -316,6 +316,14 @@ const crvPools = {
           "0x64343594ab9b56e99087bfa6f2335db24c2d1f17",
           "0x17FC002b466eEc40DaE837Fc4bE5c67993ddBd6F",
         ]
+    },
+    // pBTC-sBTC Ethereum
+    "0xde5331ac4b3630f94853ff322b66407e0d6331e8": {
+        swapContract: "0x7F55DDe206dbAD629C080068923b36fe9D6bDBeF",
+        underlyingTokens: [
+          "0x5228a22e72ccC52d415EcFd199F99D0665E7733b",
+          "0x075b1bb99792c9e1041ba13afef80c91a1e70fb3",
+        ]
     }
 }
 const yearnVaults = {
@@ -394,6 +402,7 @@ async function unwrapCrv(balances, crvToken, balance3Crv, block, chain = "ethere
     if (crvToken.toLowerCase() === "0x06325440d014e39736583c165c2963ba99faf14e" || crvToken.toLowerCase() === "0xa3d87fffce63b53e0d54faa1cc983b7eb0b74a9c") {
         underlyingSwapTokens[0].output = underlyingSwapTokens[0].output * 2;
     }
+
     const resolvedCrvTotalSupply = (await crvTotalSupply).output
     underlyingSwapTokens.forEach(call => {
         if (excludeTokens.includes(call.input.target.toLowerCase())) {
