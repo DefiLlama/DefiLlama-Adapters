@@ -24,14 +24,12 @@ function getTVLFunction(chain) {
         const block = await getBlock(timestamp, chain, chainBlocks);
         const chainTokens = await fetchAssets(chainData.path);
 
-        const transform = 'transform' in chainData ? await chainData.transform: false;
+        const transform = 'transform' in chainData ? await chainData.transform : null;
         for (const [tokenAddress, chainAddress] of Object.entries(chainTokens.data.mainnet)) {
             const bridgedSupply = await sdk.api.erc20.totalSupply({ 
                 block, chain, target: chainAddress
             });
-            transform ? 
-                sdk.util.sumSingleBalance(balances, transform(chainAddress), bridgedSupply.output) : 
-                sdk.util.sumSingleBalance(balances, chainAddress, bridgedSupply.output);
+            sdk.util.sumSingleBalance(balances, (transform ?? (id => id))(chainAddress), bridgedSupply.output)
         }
         return balances
     }
