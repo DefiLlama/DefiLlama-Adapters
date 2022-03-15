@@ -12,14 +12,17 @@ async function tvl() {
   do {
     const pools = await call(PROJECT_CONTRACT, 'get_pools', { from_index: 0, limit: 100 })
 
-    pools
+    const promises = pools
       .filter(({ shares_total_supply }) => +shares_total_supply > 0) // Token pair must have some liquidity
-      .map(({ token_account_ids, pool_kind, amounts }) => {
+      .map(async ({ token_account_ids, pool_kind, amounts }) => {
         if (pool_kind !== 'SIMPLE_POOL') throw new Error('Unknown pool kind, add handler')
-        token_account_ids.forEach((token, index) => {
-          sumSingleBalance(balances, token, amounts[index])
+        const promises = token_account_ids.map(async (token, index) => {
+          await sumSingleBalance(balances, token, amounts[index])
         })
+        return Promise.all(promises)
       })
+
+    await Promise.all(promises)
 
     poolIndex += 100
   } while (poolIndex < numberOfPools)

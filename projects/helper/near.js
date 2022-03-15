@@ -55,8 +55,7 @@ async function addTokenBalances(tokens, account, balances = {}) {
 
 async function addAsset(token, account, balances = {}) {
   let balance = await getTokenBalance(token, account)
-  sumSingleBalance(balances, token, balance)
-  return balances
+  return sumSingleBalance(balances, token, balance)
 }
 
 async function sumSingleBalance(balances, token, balance) {
@@ -70,10 +69,10 @@ async function sumSingleBalance(balances, token, balance) {
       balances[name] = BigNumber(0)
 
     balances[name] = balances[name].plus(balance)
-    return
+    return balances
   }
 
-  sdk.util.sumSingleBalance(balances, transformAddress(token), balance)
+  await sdk.util.sumSingleBalance(balances, transformAddress(token), balance)
   return balances
 }
 
