@@ -4,14 +4,13 @@ const axios = require('axios');
 async function main() {
     const [, , log, author, repo, pr, path, token] = process.argv;
     const file = readFileSync(log, 'utf-8');
-    
+
     // only show the summary TVL cos the comments could end up long
     const summaryIndex = file.indexOf('------ TVL ------');
     if (summaryIndex == -1) {
         return;
     };
 
-    console.log('SENDING POST')
     const response = await axios.post(
         `https://api.github.com/repos/${author}/${repo}/issues/${pr}/comments`,
         {
@@ -23,6 +22,7 @@ async function main() {
             Accept: 'application/vnd.github.v3+json'
         }
     });
+    console.log(log + '\n ' + author + '\n ' + repo + '\n ' + pr + '\n ' + path + '\n ')
     console.log(response)
 };
 main();

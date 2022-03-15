@@ -27,3 +27,13 @@ jobs:
               echo ' doesnt run'
             }
           done
+          for i in $(echo ${{ steps.file_changes.outputs.files_added}} | tr  -d '[]' | tr "," "\n")
+          do 
+            { 
+              node ${{ github.workspace }}/test.js ${{ github.workspace }}/${i} > output.txt 
+              node ${{ github.workspace }}/.github/workflows/commentResult.js /home/runner/work/DefiLlama-Adapters/DefiLlama-Adapters/output.txt "${{ github.repository_owner }}" "${{ github.event.repository.name }}" "${{ github.event.number }}" ${i} $TESTER_KEY
+            } || { 
+              echo -n $i
+              echo ' doesnt run'
+            }
+          done
