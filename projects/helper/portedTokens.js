@@ -554,7 +554,15 @@ function transformBobaAddress() {
   }
 }
 
+function transformNearAddress() {
+  return (addr) => {
+    const bridgedAssetIdentifier = '.factory.bridge.near'
+    if (addr.endsWith(bridgedAssetIdentifier))
+      return `0x${addr.slice(0, addr.length - bridgedAssetIdentifier.length)}`
 
+    return addr
+  }
+}
 
 const chainTransforms = {
   celo: transformCeloAddress,
@@ -571,8 +579,10 @@ const chainTransforms = {
   kcc: transformKccAddress,
   arbitrum: transformArbitrumAddress,
   iotex: transformIotexAddress,
-  metis:transformMetisAddress
+  metis:transformMetisAddress,
+  near: transformNearAddress,
 };
+
 async function getChainTransform(chain) {
   if (chain === "ethereum") {
     return (id) => id;
@@ -605,4 +615,5 @@ module.exports = {
   transformIotexAddress,
   transformMetisAddress,
   transformBobaAddress,
+  transformNearAddress,
 };
