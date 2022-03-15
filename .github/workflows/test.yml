@@ -20,10 +20,9 @@ jobs:
           for i in $(echo ${{ steps.file_changes.outputs.files_modified}} | tr  -d '[]' | tr "," "\n")
           do 
             { 
-              echo '${{ github.workspace }}/test.js ${{ github.workspace }}/${i}'
+              echo ${i}
               node ${{ github.workspace }}/test.js ${{ github.workspace }}/${i} > output.txt 
-              ls
-              echo realpath output.txt
+              realpath output.txt
               node ${{ github.workspace }}/.github/workflows/commentResult.js /home/runner/work/testint/testint/output.txt "${{ github.repository_owner }}" "${{ github.event.repository.name }}" "${{ github.event.number }}" ${i} $TESTER_KEY
             } || { 
               echo -n $i
