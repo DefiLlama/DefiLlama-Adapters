@@ -21,7 +21,7 @@ jobs:
           do 
             { 
               node ${{ github.workspace }}/test.js ${{ github.workspace }}/${i} > output.txt 
-              node ${{ github.workspace }}/.github/workflows/commentResult.js /home/runner/work/testint/testint/output.txt "${{ github.repository_owner }}" "${{ github.event.repository.name }}" "${{ github.event.number }}" ${i} $TESTER_KEY
+              node ${{ github.workspace }}/.github/workflows/commentResult.js /home/runner/work/DefiLlama-Adapters/DefiLlama-Adapters/output.txt "${{ github.repository_owner }}" "${{ github.event.repository.name }}" "${{ github.event.number }}" ${i} $TESTER_KEY
             } || { 
               echo -n $i
               echo ' doesnt run'

@@ -4,6 +4,7 @@ const axios = require('axios');
 async function main() {
     const [, , log, author, repo, pr, path, token] = process.argv;
     const file = readFileSync(log, 'utf-8');
+    
     // only show the summary TVL cos the comments could end up long
     const summaryIndex = file.indexOf('------ TVL ------');
     if (summaryIndex == -1) {
