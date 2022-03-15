@@ -1,5 +1,6 @@
 const axios = require("axios");
 const Pact = require("pact-lang-api");
+const { toUSDTBalances } = require('../helper/balances');
 
 const chainId = "3";
 const network = `https://api.chainweb.com/chainweb/0.0/mainnet01/chain/${chainId}/pact`;
@@ -88,7 +89,21 @@ function calcTVL(kdaPrice, availableKda, babenaPrice, availableBabe) {
     totalPriceBabe = availableBabe * babenaPrice;
   }
 
-  return totalPriceKda + totalPriceBabe;
+  return toUSDTBalances(totalPriceKda) ;
+}
+
+function stakingcalcTVL(kdaPrice, availableKda, babenaPrice, availableBabe) {
+  let totalPriceKda = 0, totalPriceBabe = 0;
+
+  if (availableKda > 0 && kdaPrice > 0) {
+    totalPriceKda = availableKda * kdaPrice;
+  }
+
+  if (availableBabe > 0 && babenaPrice > 0) {
+    totalPriceBabe = availableBabe * babenaPrice;
+  }
+
+  return toUSDTBalances(totalPriceBabe) ;
 }
 
 async function fetch() {
@@ -100,7 +115,21 @@ async function fetch() {
 
   return calcTVL(kdaPrice, availableKda, babenaPrice, availableBabe);
 }
+async function stakingfetch() {
+  const kdaPrice = await fetchKdaPrice();
+  const bebePrice = await fetchBebePrice();
+  const babenaPrice = bebePrice * kdaPrice;
+  const availableKda = await getTotalLockedKda();
+  const availableBabe = await getTotalLockedBabe();
+
+  return stakingcalcTVL(kdaPrice, availableKda, babenaPrice, availableBabe);
+}
 
 module.exports = {
-  fetch
+  misrepresentedTokens: true,
+  kadena: {
+    tvl: fetch,
+    staking: stakingfetch
+  }
+  
 }
