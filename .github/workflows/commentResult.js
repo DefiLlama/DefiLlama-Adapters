@@ -10,7 +10,7 @@ async function main() {
         return;
     };
 
-    await axios.post(
+    const response = await axios.post(
         `https://api.github.com/repos/${author}/${repo}/issues/${pr}/comments`,
         {
             body: `The adapter at ${path} exports TVL: 
@@ -21,5 +21,6 @@ async function main() {
             Accept: 'application/vnd.github.v3+json'
         }
     });
+    console.log(response)
 };
 main();
