@@ -55,11 +55,10 @@ async function addTokenBalances(tokens, account, balances = {}) {
 
 async function addAsset(token, account, balances = {}) {
   let balance = await getTokenBalance(token, account)
-  sumSingleBalance(balances, token, balance)
-  return balances
+  return sumSingleBalance(balances, token, balance)
 }
 
-async function sumSingleBalance(balances, token, balance) {
+function sumSingleBalance(balances, token, balance) {
   const { name, decimals, } = tokenMapping[token] || {}
 
   if (name) {

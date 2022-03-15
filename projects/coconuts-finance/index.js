@@ -17,7 +17,7 @@ function getAvaxTvl(timestamp, block, chainBlocks) {
                 target: avaxData[i].addr,
             })).output;
 
-            await sdk.util.sumSingleBalance(balances, `avax:${token}`, balance)
+            sdk.util.sumSingleBalance(balances, `avax:${token}`, balance)
 
         }
 
@@ -44,7 +44,7 @@ function getPolygonTvl(timestamp, block, chainBlocks) {
                 target: polyData[i].addr,
             })).output;
 
-            await sdk.util.sumSingleBalance(balances, `polygon:${token}`, balance)
+            sdk.util.sumSingleBalance(balances, `polygon:${token}`, balance)
 
         }
 

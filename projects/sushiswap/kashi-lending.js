@@ -73,7 +73,7 @@ function kashiLending(chain, borrowed) {
       const borrowed_balances = {}
       bentoBoxes.forEach(box => {
         box.tokens.forEach(async token =>
-          await sdk.util.sumSingleBalance(borrowed_balances, transform(token.id), token.totalSupplyBase) 
+          sdk.util.sumSingleBalance(borrowed_balances, transform(token.id), token.totalSupplyBase) 
         )
       })
       for (const [key, value] of Object.entries(balances)) {
