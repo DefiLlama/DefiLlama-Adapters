@@ -19,25 +19,15 @@ async function tvl(block) {
 
 module.exports = {
   ethereum: {
-    tvl: getaETHcTvl,    
-  },
-  binance: {
-    tvl: getaBNBbTvl,
-  },
-  polygon: {
-    tvl: getaMATICbTvl,
-  },
-  avalanche: {
-    tvl: getaAVAXbTvl,
-  },
-  fantom: {
-    tvl: getaFTMbTvl,
-  },
-  polkadot: {
-    tvl: getaDOTbTvl,
-  },
-  kusama: {
-    tvl: getaKSMbTvl,
+    tvl: sdk.util.sumChainTvls([
+      getaETHcTvl, 
+      getaBNBbTvl,
+      getaMATICbTvl,
+      getaAVAXbTvl,
+      getaFTMbTvl,
+      getaDOTbTvl,
+      getaKSMbTvl,
+    ])
   },
   methodology: `We get the total supply of aETHc, the ETH staking contract and convert it to USD.`
 }
