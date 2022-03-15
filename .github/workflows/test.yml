@@ -1,0 +1,38 @@
+name: Test Changes
+on:
+  pull_request
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - id: file_changes
+        uses: trilom/file-changes-action@v1.2.3
+        with:
+          output: 'json'
+          fileOutput: 'json'
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Run changes files through test script
+        run: |
+          npm install
+          echo ${{ secrets.JUNK_SECRET }}
+          for i in $(echo ${{ steps.file_changes.outputs.files_modified}} | tr  -d '[]' | tr "," "\n")
+          do 
+            { 
+              node ${{ github.workspace }}/test.js ${{ github.workspace }}/${i} > output.txt 
+              node ${{ github.workspace }}/.github/workflows/commentResult.js /home/runner/work/DefiLlama-Adapters/DefiLlama-Adapters/output.txt "${{ github.repository_owner }}" "${{ github.event.repository.name }}" "${{ github.event.number }}" ${i} ${{ secrets.TESTER_KEY }}
+            } || { 
+              echo -n $i
+              echo ' doesnt run'
+            }
+          done
+          for i in $(echo ${{ steps.file_changes.outputs.files_added}} | tr  -d '[]' | tr "," "\n")
+          do 
+            { 
+              node ${{ github.workspace }}/test.js ${{ github.workspace }}/${i} > output.txt 
+              node ${{ github.workspace }}/.github/workflows/commentResult.js /home/runner/work/DefiLlama-Adapters/DefiLlama-Adapters/output.txt "${{ github.repository_owner }}" "${{ github.event.repository.name }}" "${{ github.event.number }}" ${i} ${{ secrets.TESTER_KEY }}
+            } || { 
+              echo -n $i
+              echo ' doesnt run'
+            }
+          done

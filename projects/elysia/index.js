@@ -45,21 +45,15 @@ async function getStakingValue(
 ) {
   const stakingBalance =
     (await contract.balanceOf(stakingPoolAddress)) / divisor;
-  const stakingValue = stakingBalance * price;
-  console.log(`${symbol} stakingValue : ${stakingValue}`);
-  return stakingValue;
+  return stakingBalance * price;
 }
 
 function getTotalDeposit(totalDeposit, divisor, symbol) {
-  const td = totalDeposit / divisor;
-  console.log(`${symbol} totalDeposit: ${td}`);
-  return td;
+  return totalDeposit / divisor;
 }
 
 function getValueOfPool(balance, price, symbol) {
-  const value = Number(balance) * price;
-  console.log(`${symbol} : ${value}`);
-  return value;
+  return Number(balance) * price;
 }
 
 async function getBscTvl() {
@@ -75,7 +69,6 @@ async function getBscTvl() {
     "busd"
   );
   const bscTvl = busdTotalDeposit;
-  console.log(`getBscTvl bscTvl : ${bscTvl}`);
   return toUSDTBalances(bscTvl);
 }
 
@@ -98,7 +91,6 @@ async function getEthereumStaking() {
   ]);
 
   const ethereumStaking = elfiV1StakingValue + elfiV2StakingValue;
-  console.log(`getEthereumStaking ethereumStaking : ${ethereumStaking}`);
   return toUSDTBalances(ethereumStaking);
 }
 
@@ -132,7 +124,6 @@ async function getPool2() {
     daiValueOfElfiDaiPool +
     elfiValueOfElfiEthPool +
     ethValueOfElfiEthPool;
-  console.log(`getPool2 pool2 : ${pool2}`);
   return toUSDTBalances(pool2);
 }
 

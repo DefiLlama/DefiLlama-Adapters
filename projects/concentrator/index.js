@@ -127,6 +127,7 @@ async function tvl(timestamp, block) {
   return balances
 }
 module.exports = {
+  doublecounted: true,
   ethereum: {
     tvl
   }
