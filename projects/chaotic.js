@@ -4,7 +4,6 @@ const BigNumber = require("bignumber.js");
 const { getBlock } = require("./helper/getBlock");
 
 const CollateralSystemAddress = "0x78D4664408c06F2BeDc4f108f3Fc8f0AB017a0AE";
-const RewardLockerAddress = "0xe8091cA33a5658ba01eb59bD738D1cb590493aE9";
 
 const MovrChaosPoolAddress = "0x8d341E5E955E936B45B29dbF49960b8538FCA978";
 const MovrUsdcPoolAddress = "0xe537f70a8b62204832B8Ba91940B77d3f79AEb81";
@@ -22,13 +21,6 @@ async function tvl(timestamp, block, chainBlocks) {
     moonriverBlock,
     target: tokens["CHAOS"],
     params: CollateralSystemAddress,
-    abi: "erc20:balanceOf",
-  });
-  const lockedChaos = await sdk.api.abi.call({
-    chain: "moonriver",
-    moonriverBlock,
-    target: tokens["CHAOS"],
-    params: RewardLockerAddress,
     abi: "erc20:balanceOf",
   });
 
@@ -50,9 +42,7 @@ async function tvl(timestamp, block, chainBlocks) {
     abi: getReserves,
   });
 
-  const totalChaos = new BigNumber(stakedChaos.output).plus(
-    new BigNumber(lockedChaos.output)
-  );
+  const totalChaos = new BigNumber(stakedChaos.output)
 
   // Calculate USD value of CHAOS via Solarbeam
   const totalMovrValue = totalChaos
