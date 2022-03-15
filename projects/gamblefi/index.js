@@ -58,5 +58,5 @@ module.exports = {
     staking: staking(betifystaking, betify, "cronos"),
   },
   methodology:
-    "Counts tokens on the treasury for tvl and staked MAIA for staking",
+    "Counts tokens on the treasury for tvl and staked BETIFY for staking",
 };
