@@ -1,5 +1,5 @@
 const BigNumber = require('bignumber.js');
-const { toUSDTBalances } = require('./../../helper/balances');
+const { toUSDTBalances } = require('../balances');
 
 const createWeb3 = (rpcUrl) => {
   const Web3 = require('web3');
@@ -9,6 +9,8 @@ const createWeb3 = (rpcUrl) => {
 
 const ZERO = new BigNumber(0);
 
+const ONE_COIN = 1e18;
+
 const fromWei = (v) => {
   if (v) {
     return new BigNumber(v).div(1e18);
@@ -16,7 +18,7 @@ const fromWei = (v) => {
   return new BigNumber(0);
 };
 
-const createContractObject = (address, abi, web3 = require('../web3.js')) => {
+const createContractObject = (address, abi, web3 = require('../../config/web3.js')) => {
   return {
     address,
     contract: address && abi && new web3.eth.Contract(abi, address),
@@ -100,6 +102,7 @@ const getBalanceOf = async (account, contract) => {
 
 module.exports = {
   ZERO,
+  ONE_COIN,
   fromWei,
   createContractObject,
   getVautsTvl,
