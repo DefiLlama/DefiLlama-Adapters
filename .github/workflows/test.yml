@@ -1,0 +1,29 @@
+name: Test Changes
+on:
+  pull_request
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - id: file_changes
+        uses: trilom/file-changes-action@v1.2.3
+        with:
+          output: 'json'
+          fileOutput: 'json'
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Run changes files through test script
+        env:
+          TESTER_KEY: ${{ secrets.TESTER_KEY }}
+        run: |
+          npm install
+          for i in $(echo ${{ steps.file_changes.outputs.files_modified}} | tr  -d '[]' | tr "," "\n")
+          do 
+            { 
+              node ${{ github.workspace }}/test.js ${{ github.workspace }}/${i} > output.txt 
+              node ${{ github.workspace }}/.github/workflows/commentResult.js /home/runner/work/testint/testint/output.txt "${{ github.repository_owner }}" "${{ github.event.repository.name }}" "${{ github.event.number }}" ${i} $TESTER_KEY
+            } || { 
+              echo -n $i
+              echo ' doesnt run'
+            }
+          done
