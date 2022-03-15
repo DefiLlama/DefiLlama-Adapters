@@ -8,6 +8,10 @@ async function query(url, block) {
     return (await axios.get(endpoint)).data.result
 }
 
+const fetchAssets = async (path) => {
+    return (await axios.get(`https://assets.terra.money${path}`))
+}
+
 async function queryV1Beta1(url, paginationKey, block) {
     let endpoint = `${process.env["TERRA_RPC"] ?? "https://lcd.terra.dev"}/cosmos/${url}`
     if (block !== undefined) {
@@ -72,5 +76,6 @@ module.exports = {
     getDenomBalance,
     unwrapLp,
     query,
-    queryV1Beta1
+    queryV1Beta1,
+    fetchAssets
 }
