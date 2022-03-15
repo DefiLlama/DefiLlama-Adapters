@@ -1,13 +1,13 @@
-const sdk = require('@defillama/sdk');
 const { GraphQLClient, gql } = require('graphql-request')
 const { toUSDTBalances } = require('../helper/balances');
 const { getBlock } = require('../helper/getBlock');
 const { addFundsInMasterChef } = require("../helper/masterchef");
+const { farmLPBalance } = require("./utils");
+
 const masterChef = "0x63Df75d039f7d7A8eE4A9276d6A9fE7990D7A6C5";
 const d3usd = "0x36B17c6719e09d98bB020608E9F79a0647d50A70";
-const dusd = "0x6582c738660bf0701f05b04dce3c4e5fcfcda47a";
+const ness = "0xe727240728c1a5f95437b8b50afdd0ea4ae5f0c8";
 
-const usdc = "0xc21223249ca28397b4b6541dffaecc539bff0c59";
 
 async function getLiquidity(block) {
   // delayed by around 5 mins to allow subgraph to update
@@ -42,25 +42,33 @@ async function tvl(timestamp, block, chainBlocks) {
     "cronos",
     (addr) => `cronos:${addr}`,
     undefined,
-    [dusd, d3usd], //ignore D3USD because it has been counted in liquidity
+    [d3usd, ness], //Ignore D3USD because it has been counted in liquidity. 
     true,
     true,
-    d3usd,
-  );
-
-  //Add DUSD in DUSD/USDC-LP pool
-  sdk.util.sumSingleBalance(
-    balances,
-    `cronos:${usdc}`,
-    balances[`cronos:${usdc}`],
+    ness,
   );
 
   return balances;
+}
+
+async function pool2(timestamp, block, chainBlocks) {
+  const ness_cro = "0xbfAAB211C3ea99A2Db682fbc1D9a999861dCba2D";
+  const cro = "0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23";
+
+  return farmLPBalance(
+    'cronos',
+    block,
+    masterChef,
+    ness_cro,
+    cro,
+    ness,
+  );
 }
 
 module.exports = {
   methodology: `DarkNess TVL is pulled from the DarkNess subgraph and MEERKAT-LP (on mm.finance) locked in MasterChef (0x63Df75d039f7d7A8eE4A9276d6A9fE7990D7A6C5) , excluded D3USD that has been counted in liquidity`,
   cronos: {
     tvl: tvl,
-  },
+    pool2: pool2,
+  }
 };
