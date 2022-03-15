@@ -1,30 +1,32 @@
 const sdk = require('@defillama/sdk');
 const abi = require('./abi.json');
 const usdcabi = require('./usdcabi.json');
+const sherlockV2abi = require('./sherlockV2abi.json');
+const BigNumber = require("bignumber.js");
 
-
-const AaveContract = '0xEECee260A402FE3c20e5B8301382005124bef121';
 const USDC = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
-const aUSDC = '0xBcca60bB61934080951369a648Fb03DF4F96263C';
 const SherlockContract = '0xacbBe1d537BDa855797776F969612df7bBb98215';
+const SherlockV2Contract = '0x0865a889183039689034dA55c1Fd12aF5083eabF';
 
 async function tvl(timestamp, block) {
     let balances = {};
 
-    const AaveTVL = await sdk.api.abi.call({
-      target: AaveContract,
-      abi: abi['balanceOf'],
-      block: block
-    });
     const SherlockTVL = await sdk.api.abi.call({
       target: USDC,
       abi: usdcabi['balanceOf'],
       params: SherlockContract,
       block: block
     });
+    const SherlockV2TVL = await sdk.api.abi.call({
+      target: SherlockV2Contract,
+      abi: sherlockV2abi['totalTokenBalanceStakers'],
+      block: block
+    });
 
-    balances[aUSDC] = AaveTVL.output;
-    balances[USDC] = SherlockTVL.output;
+    const sherlockBalance = new BigNumber(SherlockTVL.output);
+    const sherlockV2Balance = new BigNumber(SherlockV2TVL.output);
+
+    balances[USDC] = sherlockV2Balance.plus(sherlockBalance).toString();
 
     return balances;
 }
