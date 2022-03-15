@@ -10,6 +10,7 @@ async function main() {
         return;
     };
 
+    console.log('SENDING POST')
     const response = await axios.post(
         `https://api.github.com/repos/${author}/${repo}/issues/${pr}/comments`,
         {
