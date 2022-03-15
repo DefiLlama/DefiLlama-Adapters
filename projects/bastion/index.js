@@ -1,4 +1,5 @@
 const { compoundExports } = require("../helper/compound");
+const { bigNumberify } = require("../mobiusfinance/utilities/utilities");
 
 const mainHubExport = compoundExports(
   "0x6De54724e128274520606f038591A00C5E94a1F6",
@@ -22,17 +23,33 @@ const bastion = [mainHubExport, auroraRealmExport, multiChainRealmExport];
 module.exports = {
   timetravel: true,
   aurora: {
-    tvl: (...args) => {
-      return bastion.reduce(
-        (total, compoundExports) => (total += compoundExports.tvl(args)),
-        0
-      );
+    tvl: async (...args) => {
+      let balances = {}
+      for (const realm of bastion) {
+        const realmBalances = await realm.tvl(...args)
+        for (const underlyingAddress of Object.keys(realmBalances)) {
+          if (underlyingAddress in balances) {
+            balances[underlyingAddress] = bigNumberify(balances[underlyingAddress]).add(bigNumberify(realmBalances[underlyingAddress])).toString()
+          } else {
+            balances[underlyingAddress] = realmBalances[underlyingAddress]
+          }
+        }
+      }
+      return balances
     },
-    borrowed: (...args) => {
-      return bastion.reduce(
-        (total, compoundExports) => (total += compoundExports.borrowed(args)),
-        0
-      );
+    borrowed: async (...args) => {
+      let balances = {}
+      for (const realm of bastion) {
+        const realmBalances = await realm.borrowed(...args)
+        for (const underlyingAddress of Object.keys(realmBalances)) {
+          if (underlyingAddress in balances) {
+            balances[underlyingAddress] = bigNumberify(balances[underlyingAddress]).add(bigNumberify(realmBalances[underlyingAddress])).toString()
+          } else {
+            balances[underlyingAddress] = realmBalances[underlyingAddress]
+          }
+        }
+      }
+      return balances;
     },
   },
 };
