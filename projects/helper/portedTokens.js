@@ -103,7 +103,8 @@ async function transformAvaxAddress() {
         "0xd45b7c061016102f9fa220502908f2c0f1add1d7": "0xffc97d72e13e01096502cb8eb52dee56f74dad7b", 
         "0x47afa96cdc9fab46904a55a6ad4bf6660b53c38a": "0x028171bca77440897b824ca71d1c56cac55b68a3", 
         "0x46A51127C3ce23fb7AB1DE06226147F446e4a857": "0xbcca60bb61934080951369a648fb03df4f96263c", 
-        "0x574679Ec54972cf6d705E0a71467Bb5BB362919D": "avax:0x5817d4f0b62a59b17f75207da1848c2ce75e7af4"
+        "0x574679Ec54972cf6d705E0a71467Bb5BB362919D": "avax:0x5817d4f0b62a59b17f75207da1848c2ce75e7af4",
+        "0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7": "0xdac17f958d2ee523a2206206994597c13d831ec7"
       }
       return map[addr.toLowerCase()] || `avax:${addr}`
   }
