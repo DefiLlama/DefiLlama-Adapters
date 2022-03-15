@@ -52,7 +52,7 @@ async function fuseStaking(timestamp, ethBlock, chainBlocks) {
     const gdInDAI = await convertGoodDollarsToDai(sumGdStaked, ethBlock);
 
     const balances = {};
-    await sdk.util.sumSingleBalance(balances, tokens.DAI, Number(gdInDAI));
+    sdk.util.sumSingleBalance(balances, tokens.DAI, Number(gdInDAI));
 
     return balances;
 }
@@ -76,7 +76,7 @@ async function fuseTreasury(timestamp, ethBlock, chainBlocks) {
     let gdInDAI = await convertGoodDollarsToDai(gdTotal, ethBlock);
 
     const balances = {};
-    await sdk.util.sumSingleBalance(balances, tokens.DAI, Number(gdInDAI));
+    sdk.util.sumSingleBalance(balances, tokens.DAI, Number(gdInDAI));
 
     return balances;
 }
@@ -101,7 +101,7 @@ async function fuse(timestamp, ethBlock, chainBlocks) {
     })).output;
 
     const balances = {};
-    await sdk.util.sumSingleBalance(balances, tokens.FUSE, Number(fuseAmount));
+    sdk.util.sumSingleBalance(balances, tokens.FUSE, Number(fuseAmount));
 
     return balances;
 }

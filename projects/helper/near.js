@@ -11,6 +11,16 @@ const tokenMapping = {
   'wrap.near': { name: 'near', decimals: 24, },
   'meta-pool.near': { name: 'staked-near', decimals: 24, },
   'aurora': { name: 'ethereum', decimals: 18, },
+  'token.skyward.near': { name: 'skyward-finance', decimals: 18, },
+  'dbio.near': { name: 'debio-network', decimals: 18, },
+  // 'hak.tkn.near': { name: '', }, // Hakuna matata
+  // 'meta-token.near': { name: '', }, // $Meta
+  'v3.oin_finance.near': { name: 'oin-finance', decimals: 8, },
+  // 'gems.l2e.near': { name: '', }, // https://www.landtoempire.com/
+  // 'nd.tkn.near': { name: '', },   // nearDog
+  // 'gold.l2e.near': { name: '', }, // https://www.landtoempire.com/
+  'token.v2.ref-finance.near': { name: 'ref-finance', decimals: 18, },
+  // 'myriadcore.near': { name: '', },  // Myria
 }
 
 async function call(contract, method, args = {}) {
@@ -45,6 +55,10 @@ async function addTokenBalances(tokens, account, balances = {}) {
 
 async function addAsset(token, account, balances = {}) {
   let balance = await getTokenBalance(token, account)
+  return sumSingleBalance(balances, token, balance)
+}
+
+function sumSingleBalance(balances, token, balance) {
   const { name, decimals, } = tokenMapping[token] || {}
 
   if (name) {
@@ -65,5 +79,6 @@ async function addAsset(token, account, balances = {}) {
 module.exports = {
   call,
   addTokenBalances,
-  getTokenBalance
+  getTokenBalance,
+  sumSingleBalance,
 };
