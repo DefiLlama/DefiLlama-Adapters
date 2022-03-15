@@ -10,9 +10,9 @@ async function main() {
     if (summaryIndex == -1) {
         return;
     };
-    console.log('data:')
-    console.log(log + '\n ' + author + '\n ' + repo + '\n ' + pr + '\n ' + path + '\n ')
 
+    console.log('JUNK:')
+    console.log(token)
     const response = await axios.post(
         `https://api.github.com/repos/${author}/${repo}/issues/${pr}/comments`,
         {

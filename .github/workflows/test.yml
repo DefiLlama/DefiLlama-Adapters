@@ -14,14 +14,15 @@ jobs:
         uses: actions/checkout@v2
       - name: Run changes files through test script
         env:
-          TESTER_KEY: ${{ secrets.TESTER_KEY }}
+          JUNK_SECRET: ${{ secrets.JUNK_SECRET }}
         run: |
+          echo $JUNK_SECRET
           npm install
           for i in $(echo ${{ steps.file_changes.outputs.files_modified}} | tr  -d '[]' | tr "," "\n")
           do 
             { 
               node ${{ github.workspace }}/test.js ${{ github.workspace }}/${i} > output.txt 
-              node ${{ github.workspace }}/.github/workflows/commentResult.js /home/runner/work/DefiLlama-Adapters/DefiLlama-Adapters/output.txt "${{ github.repository_owner }}" "${{ github.event.repository.name }}" "${{ github.event.number }}" ${i} $TESTER_KEY
+              node ${{ github.workspace }}/.github/workflows/commentResult.js /home/runner/work/DefiLlama-Adapters/DefiLlama-Adapters/output.txt "${{ github.repository_owner }}" "${{ github.event.repository.name }}" "${{ github.event.number }}" ${i} $JUNK_SECRET
             } || { 
               echo -n $i
               echo ' doesnt run'
@@ -31,7 +32,7 @@ jobs:
           do 
             { 
               node ${{ github.workspace }}/test.js ${{ github.workspace }}/${i} > output.txt 
-              node ${{ github.workspace }}/.github/workflows/commentResult.js /home/runner/work/DefiLlama-Adapters/DefiLlama-Adapters/output.txt "${{ github.repository_owner }}" "${{ github.event.repository.name }}" "${{ github.event.number }}" ${i} $TESTER_KEY
+              node ${{ github.workspace }}/.github/workflows/commentResult.js /home/runner/work/DefiLlama-Adapters/DefiLlama-Adapters/output.txt "${{ github.repository_owner }}" "${{ github.event.repository.name }}" "${{ github.event.number }}" ${i} $JUNK_SECRET
             } || { 
               echo -n $i
               echo ' doesnt run'
