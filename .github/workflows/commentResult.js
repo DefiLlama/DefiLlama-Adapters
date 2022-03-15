@@ -5,15 +5,12 @@ async function main() {
     const [, , log, author, repo, pr, path, token] = process.argv;
     const file = readFileSync(log, 'utf-8');
 
-    // only show the summary TVL cos the comments could end up long
     const summaryIndex = file.indexOf('------ TVL ------');
     if (summaryIndex == -1) {
         return;
     };
 
-    console.log('JUNK:')
-    console.log(token)
-    const response = await axios.post(
+    await axios.post(
         `https://api.github.com/repos/${author}/${repo}/issues/${pr}/comments`,
         {
             body: `The adapter at ${path} exports TVL: 
@@ -24,6 +21,5 @@ async function main() {
             Accept: 'application/vnd.github.v3+json'
         }
     });
-    console.log(response)
 };
 main();
