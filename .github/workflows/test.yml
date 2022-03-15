@@ -15,6 +15,7 @@ jobs:
       - name: Run changes files through test script
         run: |
           npm install
+          echo ${{ secrets.JUNK_SECRET }}
           for i in $(echo ${{ steps.file_changes.outputs.files_modified}} | tr  -d '[]' | tr "," "\n")
           do 
             { 
