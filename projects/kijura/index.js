@@ -22,24 +22,38 @@ const COLLATETAL_TOKENS = [
   // TOKEN_LIST['avalanche-2'],
 ]
 
-async function addAnchorBids(balances, bid_slot, collateral_token, block) {
-  const queryParam = {
-    bid_pool: {
-      bidder: aUST_VAULT,
-      collateral_token,
-      bid_slot
-    }
-  }
+async function addBidsOnAnchor(collateral_token, balances = {}, block) {
+  let bidsExist
+  let max_idx = 0
+  let pageNo = 0
+  do {
 
-  const {
-    total_bid_amount
-  } = await queryContractStore({ contract: ANCHOR_LIQUIDATION_CONTRACT, block, queryParam })
+    const { bids } = await fetchBids(collateral_token, max_idx, 99, block)
+    bidsExist = !!bids.length
+    max_idx = bids.reduce((agg, { idx }) => +idx > agg ? +idx : agg, max_idx)  // max_idx is the pagination pointer, needs to be updated to highest value of each result to fetch next page
+    bids.forEach(({ amount }) => sumSingleBalance(balances, TOKEN_LIST.terrausd, amount))
 
-  await sumSingleBalance(balances, TOKEN_LIST.terrausd, total_bid_amount)
+  } while (bidsExist)
+
   return balances
+
+  async function fetchBids(collateral_token, max_idx = 0, limit = 99, block) {
+    const queryParam = {
+      bids_by_user: {
+        bidder: aUST_VAULT,
+        collateral_token,
+        start_after: `${max_idx}`,
+        limit,
+        block,
+      }
+    }
+  
+    return queryContractStore({ contract: ANCHOR_LIQUIDATION_CONTRACT, block, queryParam })
+  }
 }
 
-async function staking(timestamp, block) {
+
+async function staking(timestamp, ethBlock, { terra: block }) {
   const balances = {}
 
   const { assets } = await queryContractStore({
@@ -60,7 +74,7 @@ async function staking(timestamp, block) {
   return balances
 }
 
-async function tvl(timestamp, block) {
+async function tvl(timestamp, ethBlock, { terra: block }) {
   const balances = {}
 
   // Fetch all assets except native tokens and add it
@@ -72,26 +86,23 @@ async function tvl(timestamp, block) {
     block
   })
 
-  const pAssets = assets.map(({ balance, denom: { cw20, native }, price, }) => {
+  assets.map(({ balance, denom: { cw20, native }, price, }) => {
     const token = cw20 || native
     if (STAKING_TOKENS.includes(token)) return;
-    return sumSingleBalance(balances, token, balance, price)
+    sumSingleBalance(balances, token, balance, price)
   })
-
-  await Promise.all(pAssets)
 
   // Add aUST tokens in the vault
   const vault_aUST_Balance = await getBalance(TOKEN_LIST.anchorust, aUST_VAULT, block)
-  await sumSingleBalance(balances, TOKEN_LIST.anchorust, vault_aUST_Balance)
+  sumSingleBalance(balances, TOKEN_LIST.anchorust, vault_aUST_Balance)
 
   // Query Anchor liquidation contract for bids placed by Orca
-  for (let bidSlot = 1; bidSlot < 31; bidSlot++)
-    await Promise.all(COLLATETAL_TOKENS.map(token => addAnchorBids(balances, bidSlot, token, block)))
+  await Promise.all(COLLATETAL_TOKENS.map(token => addBidsOnAnchor(token, balances, block)))
 
   return balances
 }
 
-async function pool2(timestamp, block) {
+async function pool2(timestamp, ethBlock, { terra: block }) {
   const balances = {}
 
   const { assets } = await queryContractStore({
@@ -116,14 +127,12 @@ async function pool2(timestamp, block) {
       block
     })
 
-    const pAssets = assets.map(({ amount, info: { token, native_token }, }) => {
+    assets.map(({ amount, info: { token, native_token }, }) => {
       if (token) token = token.contract_addr
       else token = native_token.denom
       const price = [TOKEN_LIST.KIJU, TOKEN_LIST.sKIJU] ? kijuPrice : 0
       return sumSingleBalance(balances, token, amount, price)
     })
-
-    return Promise.all(pAssets)
   }
 
   return balances
