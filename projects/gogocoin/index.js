@@ -1,10 +1,13 @@
 const sdk = require('@defillama/sdk');
 const {
-	transformPolygonAddress
+    transformPolygonAddress
 } = require('../helper/portedTokens');
 const {
-	sumTokensAndLPs
-} = require('../helper/unwrapLPs');
+    pool2
+} = require('../helper/pool2');
+const {
+    sumChainTvls
+} = require('@defillama/sdk/build/generalUtil');
 
 const ORION_SINGLE_STAKING_CONTRACT = '0x7FCf0f2dcEc385FCCEd98240A8A4bEC8e91da7D1'
 const GOVERNANCE_STORAGE_CONTRACT = '0xd46206003FfB72Fe5FEB04373328C62e2bF864f9'
@@ -13,66 +16,78 @@ const STAKING_LP_CONTRACT = '0x5dc4ffc0f9c2261dcaae7f69e1a8837afbd577bc'
 const GOGOCOIN = '0xdD2AF2E723547088D3846841fbDcC6A8093313d6'
 const USDC = '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174'
 
-/**
- * Gets the Total TVL of the GOGOcoin project
- * 
- * @param {number} timestamp 
- * @param {number} block 
- * @returns {any}
- */
-async function tvl(timestamp, block) {
-	const balances = {}
-	const transform = await transformPolygonAddress();
+const chain = 'polygon'
 
-	const [totalGOGOLocked, USDCPool] = await Promise.all([sdk.api.abi.call({
-		target: GOVERNANCE_STORAGE_CONTRACT,
-		abi: {
-			"inputs": [],
-			"name": "getTotalLockedGogo",
-			"outputs": [{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}],
-			"stateMutability": "view",
-			"type": "function"
-		},
-		chain: 'polygon',
-		block
-	}), sdk.api.abi.call({
-		target: ORION_SINGLE_STAKING_CONTRACT,
-		abi: {
-			"inputs": [],
-			"name": "totalSupply",
-			"outputs": [{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}],
-			"stateMutability": "view",
-			"type": "function"
-		},
-		chain: 'polygon',
-		block
-	})])
+async function chainTVL(timestamp, block, chainBlocks) {
+    const balances = {}
+    const transform = await transformPolygonAddress();
 
-	sdk.util.sumSingleBalance(balances, transform(GOGOCOIN), totalGOGOLocked.output)
-	sdk.util.sumSingleBalance(balances, transform(USDC), USDCPool.output)
-	await sumTokensAndLPs(balances, [
-		[LP_TOKEN_USDC, STAKING_LP_CONTRACT, true],
-	], block, 'polygon', transform)
+    const USDCPool = await sdk.api.abi.call({
+        target: ORION_SINGLE_STAKING_CONTRACT,
+        abi: {
+            "inputs": [],
+            "name": "totalSupply",
+            "outputs": [{
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        chain: chain,
+        block: chainBlocks[chain]
+    })
 
-	return balances
+    sdk.util.sumSingleBalance(balances, transform(USDC), USDCPool.output)
+    return balances
 };
 
+async function stakingX(timestamp, block, chainBlocks) {
+    const balances = {}
+    const transform = await transformPolygonAddress();
+
+    const totalGOGOLocked = await sdk.api.abi.call({
+        target: GOVERNANCE_STORAGE_CONTRACT,
+        abi: {
+            "inputs": [],
+            "name": "getTotalLockedGogo",
+            "outputs": [{
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        chain: chain,
+        block: chainBlocks[chain]
+    })
+
+    sdk.util.sumSingleBalance(balances, transform(GOGOCOIN), totalGOGOLocked.output)
+
+    return balances
+};
+
+async function pool2X(...args) {
+    const transform = await transformPolygonAddress();
+    return pool2(STAKING_LP_CONTRACT, LP_TOKEN_USDC, chain, transform)(...args)
+}
+
 module.exports = {
-	name: 'GOGOcoin',
-	timeTravel: true,
-	website: 'https://app.gogocoin.io',
-	token: 'GOGO',
-	start: 1638388550,
-	polygon: {
-		tvl,
-	},
-	methodology: "We count liquidity that it is in our USDC-GOGO Liquidity Pool, we also count the total locked USDC in our USDC Staking contract and we count the numbers of GOGOs staked in our GOGO Staking contract.",
+    name: 'GOGOcoin',
+    timeTravel: true,
+    website: 'https://app.gogocoin.io',
+    token: 'GOGO',
+    start: 1638388550,
+    polygon: {
+        staking: stakingX,
+        pool2: pool2X,
+        tvl: sumChainTvls([
+            chainTVL,
+            stakingX,
+            pool2X
+        ]),
+    },
+    methodology: "We count liquidity that it is in our USDC-GOGO Liquidity Pool, we also count the total locked USDC in our USDC Staking contract and we count the numbers of GOGOs staked in our GOGO Staking contract.",
 }
