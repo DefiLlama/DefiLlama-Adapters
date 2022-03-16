@@ -37,9 +37,11 @@ module.exports = {
   methodology: "Counts PNK staked in courts",
   timeTravel: true,
   ethereum: {
-    tvl: getStakedTvl('ethereum')
+    tvl: ()=>([]),
+    staking: getStakedTvl('ethereum')
   },
   xdai: {
-    tvl: getStakedTvl('xdai')
+    tvl: ()=>([]),
+    staking: getStakedTvl('xdai')
   },
 }
