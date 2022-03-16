@@ -1,5 +1,6 @@
 const sdk = require('@defillama/sdk');
 const BigNumber = require("bignumber.js");
+const _ = require("lodash");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 
 const { pools } = require("./cronos/pools");
@@ -49,12 +50,12 @@ const transformBalance = (bal, tokenKey) => {
 }
 
 
-async function cronos_staking(timestamp, block, chainBlocks)
-{
-
+async function cronos_single_token_staking(timestamp, block, chainBlocks){
   let balances = {};
 
-  for (const pool of pools)
+  let stakingPools = _.filter(pools, (p) => !p.isLP);
+
+  for (const pool of stakingPools)
   {
 
     if(chainBlocks['cronos'] < pool.sinceBlock){
@@ -69,29 +70,55 @@ async function cronos_staking(timestamp, block, chainBlocks)
         params: pool.address
     })).output);
 
-    if(!pool.isLP)
-    {
-      
-      sdk.util.sumSingleBalance(
-        balances,
-        transformCronosAddr(pool.tokenContract),
-        lockedTokenBalance
-      );
-
-    }else{
-
-      await unwrapUniswapLPs(
-          balances,
-          [{balance: lockedTokenBalance, token: pool.tokenContract}],
-          chainBlocks['cronos'],
-          'cronos',
-          transformCronosAddr
-      );
-
-    }
+    sdk.util.sumSingleBalance(
+      balances,
+      transformCronosAddr(pool.tokenContract),
+      lockedTokenBalance
+    );
   }
 
   return balances;
+}
+
+async function cronos_lp_staking(timestamp, block, chainBlocks){
+
+  let balances = {};
+
+  let lpPools = _.filter(pools, (p) => p.isLP);
+
+  for (const pool of lpPools)
+  {
+
+    if(chainBlocks['cronos'] < pool.sinceBlock){
+      continue;
+    }
+
+    let lockedTokenBalance = ((await sdk.api.abi.call({
+        chain: 'cronos',
+        block: chainBlocks['cronos'],
+        target: pool.tokenContract,
+        abi: 'erc20:balanceOf',
+        params: pool.address
+    })).output);
+
+    await unwrapUniswapLPs(
+        balances,
+        [{balance: lockedTokenBalance, token: pool.tokenContract}],
+        chainBlocks['cronos'],
+        'cronos',
+        transformCronosAddr
+    );
+  }
+
+  return balances;
+}
+
+async function cronos_locked_staking(timestamp, block, chainBlocks)
+{
+  let staking = await cronos_single_token_staking(timestamp, block, chainBlocks);
+  let pool2 = await cronos_lp_staking(timestamp, block, chainBlocks);
+
+  return { ...staking, ...pool2 };
 }
 
 
@@ -181,7 +208,7 @@ async function cronos_tvl(timestamp, block, chainBlocks){
     lendingBalances,
     farmingBalances,
   ] = await Promise.all([
-    cronos_staking(timestamp, block, chainBlocks),
+    cronos_locked_staking(timestamp, block, chainBlocks),
     cronos_lending(timestamp, block, chainBlocks),
     cronos_farm(timestamp, block, chainBlocks)
   ]);
@@ -213,6 +240,8 @@ module.exports = {
 
   cronos: {
     tvl: cronos_tvl,
+    staking: cronos_single_token_staking,
+    pool2: cronos_lp_staking,
   },
 
 
