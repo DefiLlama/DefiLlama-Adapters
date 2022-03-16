@@ -137,7 +137,7 @@ module.exports = {
     unwrapLp,
     query,
     queryV1Beta1,
-    fetchAssets
+    fetchAssets,
     queryContractStore,
     sumSingleBalance,
     TOKEN_LIST,
