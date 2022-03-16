@@ -113,17 +113,11 @@ async function cronos_lp_staking(timestamp, block, chainBlocks){
   return balances;
 }
 
-async function cronos_locked_staking(timestamp, block, chainBlocks)
-{
-  let staking = await cronos_single_token_staking(timestamp, block, chainBlocks);
-  let pool2 = await cronos_lp_staking(timestamp, block, chainBlocks);
-
-  return { ...staking, ...pool2 };
-}
 
 
-
-
+/**
+ * All Lending vaults
+ */
 async function cronos_lending(timestamp, block, chainBlocks)
 {
 
@@ -158,13 +152,17 @@ async function cronos_lending(timestamp, block, chainBlocks)
 /**
  * All Cronos Farming positions
  */
-async function cronos_farm(timestamp, block, chainBlocks)
+async function cronos_farm(timestamp, block, chainBlocks, pool2Only = false)
 {
   let balances = {};
 
   await Promise.all(farms.map(async (farm, idx) => {
 
     if(chainBlocks['cronos'] < farm.sinceBlock){
+      return;
+    }
+
+    if(pool2Only && !farm.isPool2){
       return;
     }
 
@@ -193,9 +191,27 @@ async function cronos_farm(timestamp, block, chainBlocks)
 }
 
 
+/**
+ * Pool2 - LP staking + SINGLE/VVS farm + SINGLE/USDC farm
+ */
+async function cronos_pool2(timestamp, block, chainBlocks)
+{
+  let lpStaking = await cronos_lp_staking(timestamp, block, chainBlocks);
+
+  let singleFarms = await cronos_farm(timestamp, block, chainBlocks, true);
+
+
+  let balances = {};
+  Object.keys(lpStaking).map((t) => sdk.util.sumSingleBalance(balances, t, lpStaking[t]));
+  Object.keys(singleFarms).map((t) => sdk.util.sumSingleBalance(balances, t, singleFarms[t]));
+  return balances;
+}
 
 
 
+/**
+ * CRONOS
+ */
 async function cronos_tvl(timestamp, block, chainBlocks){
   //locked staking
   //lending available tokens
@@ -204,16 +220,19 @@ async function cronos_tvl(timestamp, block, chainBlocks){
   let balances = {}
 
   const [
-    stakingBalances,
+    singleStakingBalances,
+    lpStakingBalances,
     lendingBalances,
     farmingBalances,
   ] = await Promise.all([
-    cronos_locked_staking(timestamp, block, chainBlocks),
+    cronos_single_token_staking(timestamp, block, chainBlocks),
+    cronos_lp_staking(timestamp, block, chainBlocks),
     cronos_lending(timestamp, block, chainBlocks),
     cronos_farm(timestamp, block, chainBlocks)
   ]);
 
-  Object.keys(stakingBalances).map((t) => sdk.util.sumSingleBalance(balances, t, stakingBalances[t]));
+  Object.keys(singleStakingBalances).map((t) => sdk.util.sumSingleBalance(balances, t, singleStakingBalances[t]));
+  Object.keys(lpStakingBalances).map((t) => sdk.util.sumSingleBalance(balances, t, lpStakingBalances[t]));
   Object.keys(lendingBalances).map((t) => sdk.util.sumSingleBalance(balances, t, lendingBalances[t]));
   Object.keys(farmingBalances).map((t) => sdk.util.sumSingleBalance(balances, t, farmingBalances[t]));
 
@@ -241,7 +260,7 @@ module.exports = {
   cronos: {
     tvl: cronos_tvl,
     staking: cronos_single_token_staking,
-    pool2: cronos_lp_staking,
+    pool2: cronos_pool2,
   },
 
 

@@ -126,14 +126,16 @@ const farms = [
     lpToken: LPS['VVS-SINGLE-LP'],
     masterChef: VVS_MASTERCHEF,
     masterchefPoolId: 17,
-    sinceBlock: 1273155
+    sinceBlock: 1273155,
+    isPool2: true,
   },
   {
     name: 'SINGLE-USDC',
     lpToken: LPS['USDC-SINGLE-LP'],
     masterChef: VVS_MASTERCHEF,
     masterchefPoolId: 18,
-    sinceBlock: 1273155
+    sinceBlock: 1273155,
+    isPool2: true,
   },
 
 ];
