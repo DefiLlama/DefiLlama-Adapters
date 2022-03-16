@@ -71,10 +71,10 @@ function stakingCalcTvl(kdlPriceUsd, stakedKdl) {
     totalStakedPrice = stakedKdl * kdlPriceUsd;
   }
 
-  return toUSDTBalances(totalStakedPrice) ;
+  return toUSDTBalances(totalStakedPrice);
 }
 
-async function fetchTvl() {
+async function fetchStakingTvl() {
   const kdaPrice = await fetchKdaPrice();
   const kdlPrice = await fetchKdlPrice();
   const kdlPriceUsd = kdlPrice * kdaPrice;
@@ -86,6 +86,7 @@ async function fetchTvl() {
 module.exports = {
   misrepresentedTokens: true,
   kadena: {
-      tvl: fetchTvl
+    tvl: ()=>([]),
+    staking: fetchStakingTvl,
   }
 }
