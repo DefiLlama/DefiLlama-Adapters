@@ -4,7 +4,7 @@ const BigNumber = require("bignumber.js");
 
 async function fetch() {
   let response = await retry(async bail => await axios.get('https://izumi.finance/api/v1/farm/stat/tvl'))
-  let tvl = new BigNumber(response.data.tvl).div(10 ** 8).toFixed(2);
+  let tvl = new BigNumber(response.data.tvl).toFixed(2);
   return tvl;
 }
 
