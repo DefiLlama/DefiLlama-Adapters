@@ -6,7 +6,7 @@ const DAI = '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063'
 const treasuryAddress = '0xb495ffc5acd7e2fd909c23c30d182e6719fbe9ec'
 const daoContract = '0xb05d0da5253e77a8ad37232e8235c712e10edee8'
 
-async function polygon_tvl(timestamp, block) {
+async function polygon_tvl(timestamp, ethBlock, { polygon: block }) {
   const daoTokens = [DAI,].map(token => [token, daoContract,])
 
   const balances = {}
@@ -21,7 +21,7 @@ async function polygon_tvl(timestamp, block) {
   return balances
 }
 
-async function polygon_treasury(timestamp, block) {
+async function polygon_treasury(timestamp, ethBlock, { polygon: block }) {
 
   const DRAGON_QUICK = '0xf28164a485b0b2c90639e47b0f377b4a438a16b1'
   const CUBO_TOKEN = '0x381d168DE3991c7413d46e3459b48A5221E3dfE4'
