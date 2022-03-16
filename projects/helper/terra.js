@@ -106,7 +106,7 @@ async function queryContractStore({ contract, queryParam, block }) {
     return query(url, block)
 }
 
-async function sumSingleBalance(balances, token, balance, price) {
+function sumSingleBalance(balances, token, balance, price) {
     const { coingeckoId, label, decimals = 0, } = tokenMapping[token] || {}
 
     if (coingeckoId || (label && price)) {
@@ -127,7 +127,7 @@ async function sumSingleBalance(balances, token, balance, price) {
         return
     }
 
-    await sdk.util.sumSingleBalance(balances, token, balance)
+    sdk.util.sumSingleBalance(balances, token, balance)
     return balances
 }
 
