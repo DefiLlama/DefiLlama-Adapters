@@ -1,7 +1,7 @@
 const solana = require('@solana/web3.js');
 const pyth = require('@pythnetwork/client/lib');
 const axios = require('axios');
-const tokenConstants = require('./token_constants');
+const constants = require('./constants');
 const secret = require('./sample_secret');
 
 async function getTokenBalance(connection, publicKey) {
@@ -59,18 +59,18 @@ async function fetch() {
 	const connection = new solana.Connection(solana.clusterApiUrl("mainnet-beta"), "confirmed");
 
 	// Get balances for the Hexapool
-	const solanaUSDC = await getTokenBalance(connection, new solana.PublicKey(tokenConstants.SOLANA_USDC_ADDR));
-	const solanaUSDT = await getTokenBalance(connection, new solana.PublicKey(tokenConstants.SOLANA_USDT_ADDR));
+	const solanaUSDC = await getTokenBalance(connection, new solana.PublicKey(constants.SOLANA_USDC_ADDR));
+	const solanaUSDT = await getTokenBalance(connection, new solana.PublicKey(constants.SOLANA_USDT_ADDR));
 
-	const ethUSDC = await getTokenBalance(connection, new solana.PublicKey(tokenConstants.ETH_USDC_ADDR));
-	const ethUSDT = await getTokenBalance(connection, new solana.PublicKey(tokenConstants.ETH_USDT_ADDR));
+	const ethUSDC = await getTokenBalance(connection, new solana.PublicKey(constants.ETH_USDC_ADDR));
+	const ethUSDT = await getTokenBalance(connection, new solana.PublicKey(constants.ETH_USDT_ADDR));
 
-	const bscUSD = await getTokenBalance(connection, new solana.PublicKey(tokenConstants.BSC_USD_ADDR));
-	const bscUSDT = await getTokenBalance(connection, new solana.PublicKey(tokenConstants.BSC_USDT_ADDR));
+	const bscUSD = await getTokenBalance(connection, new solana.PublicKey(constants.BSC_USD_ADDR));
+	const bscUSDT = await getTokenBalance(connection, new solana.PublicKey(constants.BSC_USDT_ADDR));
 
 	// Get current USDC, USDT, and BSC USD
-	const usdcPrice = await getLatestPythPrice(connection, tokenConstants.USDC_PYTH_ADDR);
-	const usdtPrice = await getLatestPythPrice(connection, tokenConstants.USDT_PYTH_ADDR);
+	const usdcPrice = await getLatestPythPrice(connection, constants.USDC_PYTH_ADDR);
+	const usdtPrice = await getLatestPythPrice(connection, constants.USDT_PYTH_ADDR);
 	let bscUSDPrice = await getLatestCMCPrice("BUSD");
 
 	// sum up value of all tokens
