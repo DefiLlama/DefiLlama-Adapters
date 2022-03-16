@@ -82,11 +82,7 @@ module.exports = {
     polygon: {
         staking: stakingX,
         pool2: pool2X,
-        tvl: sumChainTvls([
-            chainTVL,
-            stakingX,
-            pool2X
-        ]),
+        tvl: chainTVL,
     },
     methodology: "We count liquidity that it is in our USDC-GOGO Liquidity Pool, we also count the total locked USDC in our USDC Staking contract and we count the numbers of GOGOs staked in our GOGO Staking contract.",
 }
