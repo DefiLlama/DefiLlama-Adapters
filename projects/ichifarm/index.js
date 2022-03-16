@@ -239,6 +239,7 @@ async function pool2(timestamp, block) {
 
 module.exports = {
   misrepresentedTokens: true,
+  doublecounted: true,
   ethereum: {
     tvl,
     pool2,
