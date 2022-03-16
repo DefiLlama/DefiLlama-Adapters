@@ -2,7 +2,6 @@ const sdk = require("@defillama/sdk");
 const { default: BigNumber } = require("bignumber.js");
 const { staking } = require("../helper/staking");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const {} = require("../helper/pool2")
 const abi = require("./abi.json");
 
 const ichi = "0x903bEF1736CDdf2A537176cf3C64579C3867A881";
@@ -24,7 +23,7 @@ const hodlVaults = [
   "0x82FF3E2eC3bDCa84CF0637402907e26C51d1d676"
 ]
 
-const unknownOneTokens = [
+const oneTokens = [
   "0xbb9e5db6f357bb4df35e8b90b37b8a3f33031d86",
   "0x5047fc5c9d7c49ab22e390d13646a6a3a2476eff",
   "0xdb0f18081b505a7de20b18ac41856bcb4ba86a1a",
@@ -32,7 +31,28 @@ const unknownOneTokens = [
   "0x78a3b2f1e7eec1073088ea4a193618743f81cef8"
 ]
 
-async function getVaultTvl (balances, vaults, block) {
+async function getVaultTvl(balances, vaults, block) {
+
+  const tokenCount = (await sdk.api.abi.call({
+    target: tokenFactory,
+    abi: abi["oneTokenCount"],
+    block
+  })).output;
+
+  const tokenAtIndex = (await sdk.api.abi.multiCall({
+    calls: Array.from({ length: Number(tokenCount) }, (_, k) => ({
+      target: tokenFactory,
+      params: k
+    })),
+    abi: abi["oneTokenAtIndex"],
+    block
+  })).output;
+
+  let allOneTokens = []
+  tokenAtIndex.map(p => {
+    allOneTokens.push(p.output.toLowerCase());
+  })
+
   const token0s = (await sdk.api.abi.multiCall({
     calls: vaults.map(p => ({
       target: p
@@ -68,9 +88,8 @@ async function getVaultTvl (balances, vaults, block) {
       totalAmounts[i].output[1]
     ]
 
-    for (let j = 0; j < 2; j++ ) {
-      if (unknownOneTokens.includes(tokens[j])) {
-        sdk.util.sumSingleBalance(balances, "0xdac17f958d2ee523a2206206994597c13d831ec7", BigNumber(bals[j]).div(1e12).toFixed(0));
+    for (let j = 0; j < 2; j++) {
+      if (allOneTokens.includes(tokens[j])) {
         break;
       }
       sdk.util.sumSingleBalance(balances, tokens[j], bals[j]);
@@ -78,7 +97,7 @@ async function getVaultTvl (balances, vaults, block) {
   }
 }
 
-async function getTreasuryTvl (balances, tokenFactory, block) {
+async function getTreasuryTvl(balances, tokenFactory, block) {
   const tokenCount = (await sdk.api.abi.call({
     target: tokenFactory,
     abi: abi["oneTokenCount"],
@@ -134,7 +153,7 @@ async function getTreasuryTvl (balances, tokenFactory, block) {
   }
 }
 
-async function getDepositTvl (balances, tokenFactory, farmContract, block) {
+async function getDepositTvl(balances, tokenFactory, farmContract, block) {
   const tokenCount = (await sdk.api.abi.call({
     target: tokenFactory,
     abi: abi["oneTokenCount"],
@@ -175,7 +194,7 @@ async function tvl(timestamp, block) {
   await getTreasuryTvl(balances, tokenFactory, block);
   await getVaultTvl(balances, angelVaults, block);
   await getVaultTvl(balances, hodlVaults, block);
-  await getDepositTvl(balances, tokenFactory, farmContract, block);
+  //await getDepositTvl(balances, tokenFactory, farmContract, block);
 
   return balances;
 }
@@ -238,8 +257,8 @@ async function pool2(timestamp, block) {
 }
 
 module.exports = {
+  methodology: "Tokens deposited to mint oneTokens, Angel and HODL vaults excluding oneTokens",
   misrepresentedTokens: true,
-  doublecounted: true,
   ethereum: {
     tvl,
     pool2,
