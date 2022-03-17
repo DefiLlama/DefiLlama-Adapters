@@ -3,7 +3,7 @@ const { unwrapUniswapLPs } = require('../helper/unwrapLPs');
 const { getChainTransform } = require('../helper/portedTokens');
 const { staking } = require("../helper/staking.js");
 const contracts = require('./contracts.json');
-
+// node test.js projects/defil/index.js
 function tvl(chain) {
     return async (timestamp, block, chainBlocks) => {
         const balances = {};
@@ -73,8 +73,7 @@ module.exports = {
         tvl: tvl('ethereum'),
         staking: staking(
             contracts.ethereum.holders.DFL,
-            contracts.ethereum.tokens.DFL.address,
-            'bsc'
+            contracts.ethereum.tokens.DFL.address
         )
     }
 };
