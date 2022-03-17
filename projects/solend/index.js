@@ -326,10 +326,10 @@ async function tvl() {
     orca: orcaAmount,
     invictus: invictusLsinAmount,
     step: stepPoolStepAmount+stepPoolXstepAmount,
-    fida: fidaPoolFidaAmount,
-    atlas: atlasPoolAtlasAmount,
+    bonfida: fidaPoolFidaAmount,
+    "star-atlas": atlasPoolAtlasAmount,
     polis: atlasPoolPolisAmount,
-    samo: dogPoolSamoAmount,
+    samoyedcoin: dogPoolSamoAmount,
   };
 }
 
