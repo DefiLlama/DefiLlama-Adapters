@@ -4,7 +4,7 @@ const abi = require('./abis/compound.json');
 const { getBlock } = require('./getBlock');
 const { unwrapUniswapLPs } = require('./unwrapLPs');
 const { fixHarmonyBalances, fixOasisBalances, transformMetisAddress, } = require('./portedTokens');
-const { getPricesfromString, } = require('./utils');
+const { usdtAddress } = require('./balances');
 const agoraAbi = require("./../agora/abi.json");
 // ask comptroller for all markets array
 async function getAllCTokens(comptroller, block, chain) {
@@ -220,7 +220,6 @@ function getCompoundUsdTvl(comptroller, chain, cether, borrowed, abis = {
 
         let allMarkets = await getAllMarkets(block, chain, comptroller);
         let oracle = await getOracle(block, chain, comptroller, abis.oracle);
-        let underlyingTokenValue = await getUnderlyingTokenValue()
         await Promise.all(
             allMarkets.map(async token => {
                 let amount = new BigNumber(await getCash(block, chain, token, borrowed));
@@ -228,7 +227,7 @@ function getCompoundUsdTvl(comptroller, chain, cether, borrowed, abis = {
                 let locked = amount.div(10 ** decimals);
                 let underlyingPrice = new BigNumber(await getUnderlyingPrice(block, chain, oracle, token, abis.underlyingPrice)).div(
                     10 ** (18 + 18 - decimals)
-                ).times(underlyingTokenValue);
+                )
                     
                 /*
                 Uncomment for debugging
@@ -244,30 +243,6 @@ function getCompoundUsdTvl(comptroller, chain, cether, borrowed, abis = {
             })
         );
         return toUSDTBalances(tvl.toNumber());
-
-        async function getUnderlyingTokenValue() {
-            const misPricedTokens = {
-                // FIlda oracle in elastos prices everything against Elastos token
-                '0xE52792E024697A6be770e5d6F1C455550265B2CD': { coingeckoId: 'elastos', underlyingToken: '0xF31AD464E61118c735E6d3C909e7a42DAA1575A3', tokenLabel: 'fELA', }
-            }
-        
-            if (!misPricedTokens[comptroller])  return 1    // Mapping is missing, we assume oracle returns correct price
-
-            const {
-                underlyingToken: token, coingeckoId
-            } = misPricedTokens[comptroller]
-            const decimals = await getUnderlyingDecimals(block, chain, token, cether)
-            const underlyingPrice = new BigNumber(await getUnderlyingPrice(block, chain, oracle, token, abis.underlyingPrice)).div(10 ** (18 + 18 - decimals))
-            const {
-                data: {
-                    [coingeckoId]: {
-                        usd: tokenPrice
-                    }
-                }
-            } = await getPricesfromString(coingeckoId)
-        
-            return BigNumber(tokenPrice).dividedBy(underlyingPrice)
-        }
     }
 }
 
@@ -310,10 +285,32 @@ function usdCompoundExports(comptroller, chain, cether, abis) {
     }
 }
 
+function compoundExportsWithDifferentBase(comptroller, chain, token) {
+    const raw = usdCompoundExports(comptroller, chain)
+    async function tvl(...params) {
+      const tvl = await raw.tvl(...params)
+      return {
+        [token]: Number(tvl[usdtAddress]) / 1e6
+      }
+    }
+  
+    async function borrowed(...params) {
+      const tvl = await raw.borrowed(...params)
+      return {
+        [token]: Number(tvl[usdtAddress]) / 1e6
+      }
+    }
+    return {
+      tvl,
+      borrowed
+    }
+  }
+
 module.exports = {
     getCompoundV2Tvl,
     compoundExports,
     compoundExportsWithAsyncTransform,
     fullCoumpoundExports,
-    usdCompoundExports
+    usdCompoundExports,
+    compoundExportsWithDifferentBase
 };
