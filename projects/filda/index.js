@@ -4,7 +4,6 @@ const abi = require('./abi.json');
 const { getBlock } = require('../helper/getBlock')
 const { unwrapUniswapLPs } = require('../helper/unwrapLPs')
 const { compoundExportsWithDifferentBase, compoundExports } = require('../helper/compound');
-const { usdtAddress } = require('../helper/balances');
 
 const comptroller = "0xb74633f2022452f377403B638167b0A135DB096d"
 
