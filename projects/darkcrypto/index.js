@@ -43,6 +43,6 @@ module.exports = {
       "cronos",
       "0xaA0845EE17e4f1D4F3A8c22cB1e8102baCf56a77"
     ),
-
+    methodology: `DarkCrypto TVL is amount staked on the platform (Farm, Vault, Boardroom) and TVL of ecosystem products (DarkNess,...)`
   },
 };
