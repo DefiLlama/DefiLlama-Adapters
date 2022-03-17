@@ -259,6 +259,7 @@ async function pool2(timestamp, block) {
 module.exports = {
   methodology: "Tokens deposited to mint oneTokens, Angel and HODL vaults excluding oneTokens",
   misrepresentedTokens: true,
+  startBlock: 11260000,
   ethereum: {
     tvl,
     pool2,
