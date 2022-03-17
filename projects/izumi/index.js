@@ -8,6 +8,13 @@ async function fetch() {
   return tvl;
 }
 
+async function pool2() {
+  let response = await retry(async bail => await axios.get('https://izumi.finance/api/v1/farm/stat/pool2tvl'))
+  let tvl = new BigNumber(response.data.data.tvl).toFixed(2);
+  return tvl;
+}
+
 module.exports = {
-  fetch
+  fetch,
+  pool2
 }
