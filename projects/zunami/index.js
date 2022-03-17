@@ -1,8 +1,6 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 
-const startBlock = 14255781;
-
 const zunamiContract = "0x2ffCC661011beC72e1A9524E12060983E74D14ce";
 const zunamiHoldingsDecimals = 18;
 
