@@ -54,15 +54,18 @@ rModules.forEach((module, i) => {
   if (Object.keys(module).some(chain => !module[chain].tvl)) return projectMissingTVLFunction.push(projectNames[i])
   Object.keys(module).forEach(chain => {
     if (!chainCount[chain]) chainCount[chain] = []
-    chainCount[chain].push(chain)
+    chainCount[chain].push(projectNames[i])
   })
 })
 
-console.log(`projectMissingChainNames count: `, projectMissingChainNames.length)
-console.log(`projectMissingTVLFunction count: `, projectMissingTVLFunction.length, projectMissingTVLFunction)
+console.log(`projectMissingChainNames count: `, projectMissingChainNames.length, projectMissingChainNames.join(', '))
+console.log(`projectMissingTVLFunction count: `, projectMissingTVLFunction.length, projectMissingTVLFunction.join(', '))
 console.log(`Chain count: `, Object.keys(chainCount).length)
 const chainCountTable = Object.keys(chainCount).map((chain) => [chain, chainCount[chain].length, chainCount[chain]]).sort((a, b) => b[1] - a[1])
 console.table(chainCountTable)
+const chainNames = chainCountTable.map(([chain]) => chain)
+
+fs.writeFileSync(path.join(__dirname, 'chains.json'), JSON.stringify(chainNames, null, 2))
 
 function checkFileExistsSync(filepath) {
   let flag = true;
