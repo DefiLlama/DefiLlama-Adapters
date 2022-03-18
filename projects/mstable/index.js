@@ -137,5 +137,4 @@ module.exports = {
   ethereum: {
     tvl: ethereumTvl,
   },
-  tvl: sdk.util.sumChainTvls([ethereumTvl, polygonTvl]),
 };

@@ -75,7 +75,6 @@ const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
     ethereum: {
       tvl: ethTvl,
     },
-    tvl: sdk.util.sumChainTvls([ethTvl]),
     methodology:
       "We count liquidity by USDC deposited on the pools threw PoolFactory contract",
   };

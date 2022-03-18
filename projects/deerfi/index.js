@@ -53,7 +53,6 @@ module.exports = {
   ethereum: {
     tvl: ethTvl,
   },
-  tvl: sdk.util.sumChainTvls([ethTvl]),
   methodology:
     "Counts tvl on all the Pools through Factory Contract",
 };
