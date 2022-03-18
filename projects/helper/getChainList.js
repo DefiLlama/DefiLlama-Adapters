@@ -37,7 +37,7 @@ function getModule(fPath, projectName) {
   let module = require(fPath)
   if (typeof module.tvl === 'function') {
     projectMissingTVLFunction.push(projectName)
-    if (module.ethereum)  console.log('I am confused:', projectName)
+    if (module.ethereum && module.ethereum.tvl)  console.log('I am confused:', projectName)
     else module.ethereum = module.tvl
     delete module.tvl
   }
