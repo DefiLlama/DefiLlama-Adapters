@@ -3,7 +3,8 @@ const { unwrapUniswapLPs } = require('../helper/unwrapLPs');
 const { getChainTransform } = require('../helper/portedTokens');
 const { staking } = require("../helper/staking.js");
 const contracts = require('./contracts.json');
-// node test.js projects/defil/index.js
+const abi = require('./abi.json');
+
 function tvl(chain) {
     return async (timestamp, block, chainBlocks) => {
         const balances = {};
@@ -58,7 +59,19 @@ function tvl(chain) {
         return balances;
     };
 };
-
+function borrowed(chain) {
+    return async (timestamp, block, chainBlocks) => {
+        return { 
+            [contracts.ethereum.tokens.eFIL.address]: (
+                await sdk.api.abi.call({
+                    target: contracts[chain].holders.eFIL,
+                    abi,
+                    chain,
+                    block: chainBlocks[chain]
+                })).output 
+            };
+    };
+};
 module.exports = {
     bsc: {
         tvl: tvl('bsc'),
@@ -67,13 +80,15 @@ module.exports = {
             contracts.bsc.tokens.DFL.address,
             'bsc',
             contracts.ethereum.tokens.DFL.address
-        )
+        ),
+        //borrowed: borrowed('bsc')
     },
     ethereum: {
         tvl: tvl('ethereum'),
         staking: staking(
             contracts.ethereum.holders.DFL,
             contracts.ethereum.tokens.DFL.address
-        )
+        ),
+        borrowed: borrowed('ethereum')
     }
 };
