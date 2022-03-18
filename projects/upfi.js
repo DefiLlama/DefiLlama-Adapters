@@ -15,7 +15,8 @@ async function pool2() {
 module.exports = {
   timetravel: false,
   methodology: 'TVL data is pulled from the UPFI API "https://api.upfi.network/tvl".',
-  pool2: {
-    tvl: pool2,
+  solana: {
+    tvl: (async) => {},
+    pool2,
   }
 };
