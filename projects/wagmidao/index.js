@@ -131,8 +131,7 @@ async function harmonyTvl(timestamp, _ethBlock, chainBlocks) {
 
 module.exports = {
   timetravel: true,
-  harmony: {
-    treasury: Treasury,
+  harmony: {    
     staking: Staking,
     tvl: sdk.util.sumChainTvls([harmonyTvl, Treasury]),
   },
