@@ -1,5 +1,6 @@
 const sdk = require('@defillama/sdk');
 const { transformBscAddress } = require('../helper/portedTokens');
+const { staking } = require("../helper/staking");
 const { pool2 } = require("../helper/pool2");
 
 const PEX_TOKEN_CONTRACT = '0x6a0b66710567b6beb81A71F7e9466450a91a384b';
@@ -25,7 +26,6 @@ async function tvl(timestamp, block, chainBlocks) {
     await sdk.util.sumSingleBalance(balances, transform(token), collateralBalance);
   }
 
-  await sumBalance(PEX_TOKEN_CONTRACT);
   await sumBalance(BUSD_TOKEN_CONTRACT);
   await sumBalance(USDT_TOKEN_CONTRACT);
   await sumBalance(USDC_TOKEN_CONTRACT);
@@ -40,6 +40,7 @@ module.exports = {
   start: 15966251, // Mar-11-2022 01:00:01 PM +UTC
   bsc: {
     tvl,
+    staking: staking(TREASURY_ADDRESS, PEX_TOKEN_CONTRACT, "bsc"),
     pool2: pool2(STAKING_POOL_CONTRACT, LP_TOKEN_CONTRACT, 'bsc')
   }
 }; 
