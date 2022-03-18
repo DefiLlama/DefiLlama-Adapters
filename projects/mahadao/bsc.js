@@ -9,7 +9,7 @@ const sdk = require("@defillama/sdk");
 const bsc = {
   arthBusdStaking: "0xE8b16cab47505708a093085926560a3eB32584B8",
   arthMahaStaking: "0x7699d230Ba47796fc2E13fba1D2D52Ecb0318c33",
-  arthu3epsStaking: "0x8fF204D06B39a19Bd8c8367302bfCB329214c14B",
+  arthu3epsStaking: "0x6398c73761a802a7db8f6418ef0a299301bc1fb0",
   arthu3epsLP: "0xB38B49bAE104BbB6A82640094fd61b341a858f78",
   arthMahaLP: "0xb955d5b120ff5b803cdb5a225c11583cd56b7040",
   arthBusdLP: "0x80342bc6125a102a33909d124a6c26CC5D7b8d56",
