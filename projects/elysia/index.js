@@ -164,13 +164,16 @@ const getEthereumTvl = async () => {
 };
 
 module.exports = {
-  ethereum: {
-    tvl: getEthereumTvl, // deposit,
-    staking: getEthereumStaking, // elfi staking
-    // lp with elfi
-    pool2: getPool2,
+  methodology:
+    "tvl : ether deposit + bsc deposit, staking : elfi staking, pool2 : lp with elfi, bsc tvl : deposit",
+  fetch: async () => (await getEthereumTvl()) + (await getBscTvl()),
+  staking: {
+    fetch: getEthereumStaking,
+  },
+  pool2: {
+    fetch: getPool2,
   },
   bsc: {
-    tvl: getBscTvl, // deposit
+    fetch: getBscTvl,
   },
 };
