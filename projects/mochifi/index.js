@@ -39,5 +39,4 @@ module.exports = {
   ethereum: {
     tvl: ethereum
   },
-  tvl: sdk.util.sumChainTvls([ethereum])
 }

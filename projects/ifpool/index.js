@@ -25,5 +25,4 @@ module.exports = {
   csc: {
     tvl: coinexTVL,
   },
-  tvl: sdk.util.sumChainTvls([coinexTVL]),
 };

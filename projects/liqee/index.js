@@ -128,5 +128,4 @@ module.exports = {
     tvl: bsc
   },
   start: 1629776276, // Aug-24-2021 11:37:56 AM +UTC
-  tvl: sdk.util.sumChainTvls([ethereum, bsc])
 }

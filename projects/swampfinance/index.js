@@ -79,5 +79,4 @@ module.exports = {
   bsc: {
     tvl: bscTvl,
   },
-  tvl: sdk.util.sumChainTvls([bscTvl]),
 };

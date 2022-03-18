@@ -46,9 +46,4 @@ module.exports = {
     harmony: {
         tvl: getTVLFunction('harmony'),
     },
-    tvl: sdk.util.sumChainTvls([
-        getTVLFunction('ethereum'),
-        getTVLFunction('bsc'),
-        getTVLFunction('harmony'),
-    ])
 };

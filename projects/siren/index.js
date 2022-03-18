@@ -145,5 +145,4 @@ query  {seriesVaults{
     ethereum: {
       tvl: calculateMainnetTVL
     },
-    tvl: sdk.util.sumChainTvls([calculatePolygonTVL, calculateMainnetTVL]),
   }
