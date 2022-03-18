@@ -69,11 +69,9 @@ const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
   
   module.exports = {
     misrepresentedTokens: true,
-    treasury: {
-      tvl: Treasury,
-    },
     ethereum: {
       tvl: ethTvl,
+      treasury: Treasury,
     },
     methodology:
       "We count liquidity by USDC deposited on the pools threw PoolFactory contract",
