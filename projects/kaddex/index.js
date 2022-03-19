@@ -76,7 +76,6 @@ const fetchKdaTotal = async (pairList) => {
   let kdaTotal = 0;
   for (let i = 0; i < pairList.length; i++) {
     let pair = pairList[i];
- 
     kdaTotal += pair.reserves[0];
   }
   return kdaTotal;
@@ -84,7 +83,6 @@ const fetchKdaTotal = async (pairList) => {
 
 async function fetch() {
   const pairList = await getPairList();
-  console.log(pairList, 'pairlist');
   const kdaPrice = await fetchKdaPrice();
   const kdaTotal = await fetchKdaTotal(pairList);
   const kdaInFluxPair = pairList[0].reserves[0];
@@ -94,7 +92,6 @@ async function fetch() {
   const tvl =
     kdaPrice *
     (kdaTotal + kdaInFluxPair);
-    console.log('x',tvl)
     return toUSDTBalances(tvl);
 }
 
