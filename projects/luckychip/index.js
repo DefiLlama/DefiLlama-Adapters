@@ -7,14 +7,14 @@ tokenHolderMap = [
     {
       tokens: [],
       holders: [
-        "0x61730d50624a89c0F8a864d32bb0eD2AaBA95bA5" // bnb table
+        "0xDF3E96a5d4A0C9AEf5F15C642Eb736E2A2f49630" // bnb table
       ],
       checkETHBalance: true,
     },
     {
       tokens: '0x55d398326f99059fF775485246999027B3197955',   // USDT
       holders: [
-        "0x9A877744DFb9fB314FF5c50d34e4F8EfD7CfcB2b" // USDT table
+        "0x682ce0e340A0248B4554E14e834969F2E421dB2D" // USDT table
       ],
     }
 ]
