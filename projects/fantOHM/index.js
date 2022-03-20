@@ -63,19 +63,19 @@ async function fantomTvl(timestamp, block, chainBlocks) {
 	await sumTokensAndLPsSharedOwners(balances, [
 				["0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e", false], // DAI
 				["0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83", false], // wFTM
+				["0x6fc9383486c163fa48becdec79d6058f984f62ca", false], // USDB
 				["0xd77fc9c4074b56ecf80009744391942fbfddd88b", true],  // DAI/FHM
 			], [fantomTreasuryContract], block, "fantom",
 			addr => (fantom_transforms[addr.toLowerCase()] ? fantom_transforms[addr.toLowerCase()] : `fantom:${addr}`))
 
 	// treasury values
 	await Promise.all([
-		balanceOf(fantomTreasuryContract, "0x6Fc9383486c163fA48becdEC79d6058f984f62cA", "0xa47c8bf37f92aBed4A126BDA807A7b7498661acD", balances, block), // USDB => UST value
-		balanceOf(fantomTreasuryContract, "0x7799f423534c319781b1b370B69Aaf2C75Ca16A3", "0xa47c8bf37f92aBed4A126BDA807A7b7498661acD", balances, block), // USDB-DAI stable pool
+		balanceOfStablePool(fantomTreasuryContract, "0x7799f423534c319781b1b370B69Aaf2C75Ca16A3", "fantom:0x6fc9383486c163fa48becdec79d6058f984f62ca", "fantom:0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e", balances, block), // USDB-DAI stable pool
 	]);
 
 	// investments
 	await Promise.all([
-		balanceOf(fantomGnosisContract, "0x6Fc9383486c163fA48becdEC79d6058f984f62cA", "0xa47c8bf37f92aBed4A126BDA807A7b7498661acD", balances, block), // USDB
+		balanceOf(fantomGnosisContract, "0x6fc9383486c163fa48becdec79d6058f984f62ca", "fantom:0x6fc9383486c163fa48becdec79d6058f984f62ca", balances, block), // USDB
 		balanceOf(fantomGnosisContract, "0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E", "0x6b175474e89094c44da98b954eedeac495271d0f", balances, block), // DAI
 		beetsFtm_BeetsLp(fantohmDaoDeployerWallet, balances, block), // beets/wftm LP
 		lqdrFtm_BeetsLp(fantohmDaoDeployerWallet, balances, block), // lqdr/wftm LP
@@ -178,6 +178,20 @@ async function balanceOf(owner, ca, countAsCa, balances, block) {
 	})).output;
 
 	sdk.util.sumSingleBalance(balances, countAsCa, balance);
+}
+
+async function balanceOfStablePool(owner, ca, countHalfAsCa1, countHalfAsCa2, balances, block) {
+	const balance = (await sdk.api.erc20.balanceOf({
+		chain: "fantom",
+		block: block,
+		target: ca,
+		owner: owner,
+	})).output;
+
+	const half = BigNumber(Math.floor(balance / 2));
+
+	sdk.util.sumSingleBalance(balances, countHalfAsCa1, half.toString(10));
+	sdk.util.sumSingleBalance(balances, countHalfAsCa2, BigNumber(balance).minus(half.toString(10)).toString(10));
 }
 
 //
