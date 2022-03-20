@@ -10,7 +10,7 @@ const {
   calculateLiquidityMiningTvl,
 } = require('./config/bella/utilities.js')
 
-const providerUrl = process.env.ETHEREUM_RPC.split(',')[0]
+const providerUrl = (process.env.ETHEREUM_RPC || '').split(',')[0]
 const provider = new ethers.providers.JsonRpcProvider(providerUrl)
 const bVaultSymbols = [ 'bUsdt', 'bUsdc', 'bArpa', 'bWbtc', 'bHbtc', 'bBusd' ]
 const liquidityMiningSymbols = [ 'arpaUsdt', 'belUsdt', 'belEth' ]

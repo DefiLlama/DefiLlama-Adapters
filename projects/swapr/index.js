@@ -52,7 +52,6 @@ module.exports = {
   arbitrum: {
     tvl: arbitrumTvl,
   },
-  tvl: sdk.util.sumChainTvls([ethereumTvl, xDaiTvl, arbitrumTvl]),
   name: "Swapr",
   category: "dexes",
 };

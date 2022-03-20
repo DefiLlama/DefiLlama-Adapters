@@ -413,6 +413,4 @@ module.exports = {
     tvl:moonriverTvl,
   },
 
-tvl: sdk.util.sumChainTvls([metisTvl, moonriverTvl, ethTvl,cronosTvl, bscTvl, avaxTvl, hecoTvl, polygonTvl, fantomTvl, harmonyTvl, ioTexTvl]),
-  
 }; 

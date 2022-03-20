@@ -281,5 +281,4 @@ module.exports = {
 	boba: {
 		tvl: bobaTvl
 	},
-	tvl: sdk.util.sumChainTvls([fantomTvl, moonriverTvl, ethTvl, bscTvl, bobaTvl])
 }
