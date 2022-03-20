@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk');
 const solana = require('../helper/solana')
-const { staking } = require('../helper/staking');
+const { stakings } = require('../helper/staking');
 
 const stakingContractRoundOne = '0x8d9Ae5a2Ecc16A66740A53Cc9080CcE29a7fD9F5';
 const stakingContractRoundTwo =  '0xa96cdb86332b105065ca99432916e631e469cf5d';
@@ -64,8 +64,7 @@ module.exports = {
   methodology: 'TVL for each network - USDC balance of the pool, in each network we have one pool and the total indicator is calculated as the sum of the balances of all pools.',
   bsc: {
     tvl: chainTvl('bsc'),
-    stakingRoundOne: staking(stakingContractRoundOne, stakingToken, 'bsc'),
-    stakingRoundTwo: staking(stakingContractRoundTwo, stakingToken, 'bsc')
+    staking: stakings([stakingContractRoundOne, stakingContractRoundTwo], stakingToken, 'bsc'),
   },
   ethereum: {
     tvl: chainTvl('ethereum')
