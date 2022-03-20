@@ -148,6 +148,9 @@ async function transformBscAddress() {
     if (addr.toLowerCase() == "0x0cf8e180350253271f4b917ccfb0accc4862f262") {
       return "0x123"; // BTCBR returns nonsense TVL
     }
+    if (addr.toLowerCase() == "0x6ded0f2c886568fb4bb6f04f179093d3d167c9d7") {
+      return "0x09ce2b746c32528b7d864a1e3979bd97d2f095ab"; // BTCBR returns nonsense TVL
+    }
     return `bsc:${addr}`;
   };
 }

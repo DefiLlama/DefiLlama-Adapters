@@ -2,7 +2,7 @@ const ABI = require("./abi.json");
 const Caver = require("caver-js");
 const { toUSDTBalances } = require("../helper/balances");
 
-const PALA_EP_URL = "https://gateway.pala.world";
+const PALA_EP_URL = "https://public-node-api.klaytnapi.com/v1/cypress";
 const VIEWER_ADDR = "0xEE50E2679E763a0a605e9c09e42a71340e4b67A3";
 const PALA_FARM_ADDR = "0xCFC140E8e3b1B05f9ACb4a42249b7aBB8c27576C";
 
