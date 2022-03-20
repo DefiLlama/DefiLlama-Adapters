@@ -1,6 +1,7 @@
 const sdk = require('@defillama/sdk')
 const abi = require('./abi.json')
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs")
+const { default: BigNumber } = require('bignumber.js')
 
 const oldAllPairVault = "0xeF970A111dd6c281C40Eee6c40b43f24435833c2"
 const newAllPairVault = "0x2bb8de958134afd7543d4063cafad0b7c6de08bc"
@@ -10,6 +11,7 @@ const STABLE_PARTNER_VAULTS = [
     "0x7EBa8a9cAcb4bFbf7e1258b402A8e7aA004ED9FD",
 ]
 
+const NEAR_TOKEN = "0x85f17cf997934a597031b2e18a9ab6ebd4b9f6a4"
 const STABLE_PARTNER_TOKENS = [
     "0x4Eb8b4C65D8430647586cf44af4Bf23dEd2Bb794", // FRAX Price Index share,
     "0x36784d3B5aa8A807698475b3437a13fA20B7E9e1",  // Timeless
@@ -22,13 +24,8 @@ const STABLE_PARTNER_TOKENS = [
     "0x0cEC1A9154Ff802e7934Fc916Ed7Ca50bDE6844e",  // Pool together
     "0x04Fa0d235C4abf4BcF4787aF4CF447DE572eF828",  // UMA
     "0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B",  // CVX
-    "0x85F17Cf997934a597031b2E18a9aB6ebD4B9f6a4",  // Near
+    NEAR_TOKEN,
 ]
-
-const transformAddresses = (addr) => {
-    if (addr === "0x85F17Cf997934a597031b2E18a9aB6ebD4B9f6a4") return "near"
-    return addr
-}
 
 async function tvl(timestamp, block, chainBlocks) {
     const balances = {};
@@ -38,9 +35,12 @@ async function tvl(timestamp, block, chainBlocks) {
         STABLE_PARTNER_TOKENS.map(i => [i, false]),
         STABLE_PARTNER_VAULTS,
         block,
-        null,
-        transformAddresses,
     );
+
+    if (balances[NEAR_TOKEN]) {
+        balances.near = BigNumber(balances[NEAR_TOKEN]).dividedBy(10 ** 24).toFixed(0)
+        delete balances[NEAR_TOKEN]
+    }
 
     return balances;
 }
