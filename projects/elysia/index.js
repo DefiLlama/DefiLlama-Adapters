@@ -2,6 +2,7 @@ const sdk = require("@defillama/sdk");
 const axios = require("axios");
 const apiInfo = require("./apiInfo.json");
 const { stakings } = require("../helper/staking");
+const { toUSDTBalances } = require("../helper/balances");
 
 const addresses = {
   elfi: "0x4da34f8264cb33a5c9f17081b9ef5ff6091116f4",
@@ -46,19 +47,22 @@ async function getEthereumTvl(timestamp, block, chainBlocks) {
     )
   ).data.data.reserves;
 
-  const elStakingValue =
-    (
-      await sdk.api.abi.call({
-        target: addresses.el,
-        params: addresses.elStaking,
-        abi: "erc20:balanceOf",
-        block,
-      })
-    ).output / 1e18;
+  const elStakingValue = (
+    await sdk.api.abi.call({
+      target: addresses.el,
+      params: addresses.elStaking,
+      abi: "erc20:balanceOf",
+      block,
+    })
+  ).output;
 
+  console.log(`elStakingValue ${elStakingValue}`);
   sdk.util.sumSingleBalance(balances, addresses.el, elStakingValue);
+  console.log(`balances ${JSON.stringify(balances)}`);
   sdk.util.sumSingleBalance(balances, addresses.dai, reserves[0].totalDeposit);
+  console.log(`balances ${JSON.stringify(balances)}`);
   sdk.util.sumSingleBalance(balances, addresses.usdt, reserves[1].totalDeposit);
+  console.log(`balances ${JSON.stringify(balances)}`);
 
   return balances;
 }
@@ -115,7 +119,7 @@ async function getPool2() {
     elfiValueOfElfiEthPool +
     ethValueOfElfiEthPool;
   console.log(`getPool2 pool2 : ${pool2}`);
-  return pool2;
+  return toUSDTBalances(pool2);
 }
 
 module.exports = {
@@ -123,11 +127,8 @@ module.exports = {
   ethereum: {
     tvl: getEthereumTvl, // el staking + dai deposit + usdt deposit
     staking: stakings(addresses.elfiStaking, addresses.elfi),
+    pool2: getPool2,
   },
-  pool2: {
-    fetch: getPool2,
-  },
-  tvl: () => ({}), // for using pool2
   bsc: {
     tvl: getBscTvl,
     staking: stakings(addresses.bscElfiStaking, addresses.bscElfi, "bsc"),
