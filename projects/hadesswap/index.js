@@ -11,5 +11,4 @@ module.exports = {
     polis: {
         tvl: chainTvl('polis')
     },
-    tvl: sdk.util.sumChainTvls([chainTvl('polis')])
 }

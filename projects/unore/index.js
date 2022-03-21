@@ -54,7 +54,6 @@ async function bsc(timestamp, ethBlock, chainBlocks) {
 
 module.exports = {
   start: 1632122867,  // Sep-20-2021 07:27:47 AM +UTC
-  tvl: sdk.util.sumChainTvls([eth, bsc]),
   ethereum: {
     tvl: eth
   },

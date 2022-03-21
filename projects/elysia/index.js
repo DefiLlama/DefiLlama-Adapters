@@ -1,168 +1,63 @@
-const { default: axios } = require("axios");
-const ethers = require("ethers");
-const abi = require("./abi.json");
+const sdk = require("@defillama/sdk");
+const axios = require("axios");
 const apiInfo = require("./apiInfo.json");
-const { toUSDTBalances } = require('../helper/balances');
+const { stakings } = require("../helper/staking");
 
-const elfiAddress = "0x4da34f8264cb33a5c9f17081b9ef5ff6091116f4";
-const elAddress = "0x2781246fe707bb15cee3e5ea354e2154a2877b16";
-const elStakingPoolAddress = "0xd804e198d25a1920522ca0094a670184a9c972d7";
-const elfyV1StakingPoolAddress = "0xb41bcd480fbd986331eeed516c52e447b50dacb4";
-const elfyV2StakingPoolAddress = "0xCD668B44C7Cf3B63722D5cE5F655De68dD8f2750";
-const infuraMainnetUrl =
-  "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161";
-const rpcProvider = new ethers.providers.JsonRpcProvider(infuraMainnetUrl, {
-  name: "ethereum",
-  chainId: 1,
-});
-const elfiContract = new ethers.Contract(elfiAddress, abi, rpcProvider);
-const elContract = new ethers.Contract(elAddress, abi, rpcProvider);
-let prices;
-let uniswapV3SubgraphCacheResponse, coinGeckoCacheResponse;
-// node test.js projects/elysia/index.js
-(async () => {
-  [uniswapV3SubgraphCacheResponse, coinGeckoCacheResponse] = await Promise.all([
-    axios.post(
-      apiInfo["uniswap-v3-subgraph"].endpoint,
-      apiInfo["uniswap-v3-subgraph"].body
-    ),
-    axios.get(apiInfo["coin-gecko"].endpoint),
-  ]);
+const addresses = {
+    elfi: "0x4da34f8264cb33a5c9f17081b9ef5ff6091116f4",
+    el: "0x2781246fe707bb15cee3e5ea354e2154a2877b16",
+    elStaking: "0xd804e198d25a1920522ca0094a670184a9c972d7",
+    dai: "0x6b175474e89094c44da98b954eedeac495271d0f",
+    usdt: "0xdac17f958d2ee523a2206206994597c13d831ec7",
+    busd: "0x4fabb145d64652a948d72533023f6e7a623c7c53",
+    elfyStaking: [
+        "0xb41bcd480fbd986331eeed516c52e447b50dacb4",
+        "0xCD668B44C7Cf3B63722D5cE5F655De68dD8f2750"
+    ]
+};
 
-  prices = coinGeckoCacheResponse.data;
-  prices.elfi = {};
-  prices.elfi.usd = Number(
-    uniswapV3SubgraphCacheResponse.data.data.daiPool.poolDayData[0].token1Price
-  );
-})();
+async function getEthereumTvl(timestamp, block, chainBlocks) {
+    const balances = {};
 
-async function getStakingValue(
-  contract,
-  stakingPoolAddress,
-  divisor,
-  price,
-  symbol
-) {
-  const stakingBalance =
-    (await contract.balanceOf(stakingPoolAddress)) / divisor;
-  return stakingBalance * price;
-}
+    const reserves = (await axios.post(
+        apiInfo["elyfi-subgraph"].endpoint,
+        apiInfo["elyfi-subgraph"].body
+      )).data.data.reserves;
 
-function getTotalDeposit(totalDeposit, divisor, symbol) {
-  return totalDeposit / divisor;
-}
+    const elStakingValue = (await sdk.api.abi.call({
+        target: addresses.el,
+        params: addresses.elStaking,
+        abi: 'erc20:balanceOf',
+        block,
+    })).output / 1e18;
 
-function getValueOfPool(balance, price, symbol) {
-  return Number(balance) * price;
-}
+    sdk.util.sumSingleBalance(balances, addresses.el, elStakingValue);
+    sdk.util.sumSingleBalance(balances, addresses.dai, reserves[0].totalDeposit);
+    sdk.util.sumSingleBalance(balances, addresses.usdt, reserves[1].totalDeposit);
 
-async function getBscTvl() {
-  const elyfiSubgraphBscCacheResponse = await axios.post(
-    apiInfo["elyfi-subgraph-bsc"].endpoint,
-    apiInfo["elyfi-subgraph-bsc"].body
-  );
-  const bscReserves = elyfiSubgraphBscCacheResponse.data.data.reserves;
+    return balances;
+};
 
-  const busdTotalDeposit = getTotalDeposit(
-    bscReserves[0].totalDeposit,
-    1e18,
-    "busd"
-  );
-  const bscTvl = busdTotalDeposit;
-  return toUSDTBalances(bscTvl);
-}
+async function getBscTvl(timestamp, block, chainBlocks) {
+    const balances = {};
 
-async function getEthereumStaking() {
-  const [elfiV1StakingValue, elfiV2StakingValue] = await Promise.all([
-    getStakingValue(
-      elfiContract,
-      elfyV1StakingPoolAddress,
-      1e18,
-      prices.elfi.usd,
-      "elfiV1"
-    ),
-    getStakingValue(
-      elfiContract,
-      elfyV2StakingPoolAddress,
-      1e18,
-      prices.elfi.usd,
-      "elfiV2"
-    ),
-  ]);
+    const reserves = (await axios.post(
+        apiInfo["elyfi-subgraph-bsc"].endpoint,
+        apiInfo["elyfi-subgraph-bsc"].body
+      )).data.data.reserves;
 
-  const ethereumStaking = elfiV1StakingValue + elfiV2StakingValue;
-  return toUSDTBalances(ethereumStaking);
-}
+    sdk.util.sumSingleBalance(balances, addresses.busd, reserves[0].totalDeposit);
 
-async function getPool2() {
-  const daiPool = uniswapV3SubgraphCacheResponse.data.data.daiPool;
-  const ethPool = uniswapV3SubgraphCacheResponse.data.data.ethPool;
-
-  const elfiValueOfElfiDaiPool = getValueOfPool(
-    daiPool.totalValueLockedToken0,
-    prices.elfi.usd,
-    "elfiValueOfElfiDaiPool"
-  );
-  const daiValueOfElfiDaiPool = getValueOfPool(
-    daiPool.totalValueLockedToken1,
-    1,
-    "daiValueOfElfiDaiPool"
-  );
-  const elfiValueOfElfiEthPool = getValueOfPool(
-    ethPool.totalValueLockedToken0,
-    prices.elfi.usd,
-    "elfiValueOfElfiEthPool"
-  );
-  const ethValueOfElfiEthPool = getValueOfPool(
-    ethPool.totalValueLockedToken1,
-    prices.ethereum.usd,
-    "ethValueOfElfiEthPool"
-  );
-
-  const pool2 =
-    elfiValueOfElfiDaiPool +
-    daiValueOfElfiDaiPool +
-    elfiValueOfElfiEthPool +
-    ethValueOfElfiEthPool;
-  return toUSDTBalances(pool2);
-}
-
-const getEthereumTvl = async () => {
-  const elyfiSubgraphCacheResponse = await axios.post(
-    apiInfo["elyfi-subgraph"].endpoint,
-    apiInfo["elyfi-subgraph"].body
-  );
-  const reserves = elyfiSubgraphCacheResponse.data.data.reserves;
-  const daiTotalDeposit = getTotalDeposit(
-    reserves[0].totalDeposit,
-    1e18,
-    "dai"
-  );
-  const usdtTotalDeposit = getTotalDeposit(
-    reserves[1].totalDeposit,
-    1e6,
-    "usdt"
-  );
-  const elStakingValue = await getStakingValue(
-    elContract,
-    elStakingPoolAddress,
-    1e18,
-    prices.elysia.usd,
-    "elysia"
-  );
-  const ethereumTvl = elStakingValue + daiTotalDeposit + usdtTotalDeposit;
-  console.log(`getEthereumTvl ethereumTvl : ${ethereumTvl}`);
-  return toUSDTBalances(ethereumTvl);
+    return balances;
 };
 
 module.exports = {
-  ethereum: {
-    tvl: getEthereumTvl, // deposit,
-    staking: getEthereumStaking, // elfi staking
-    // lp with elfi
-    pool2: getPool2,
-  },
-  bsc: {
-    tvl: getBscTvl, // deposit
-  },
-};
+    timetravel: false,
+    ethereum: {
+        tvl: getEthereumTvl,
+        staking: stakings(addresses.elfyStaking, addresses.elfi),
+    },
+    bsc: {
+      tvl: getBscTvl,
+    },
+  }; // node test.js projects/elysia/index.js

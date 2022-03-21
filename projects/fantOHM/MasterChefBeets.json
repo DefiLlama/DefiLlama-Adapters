@@ -20,15 +20,15 @@
 				"type": "uint256"
 			},
 			{
-				"internalType": "int256",
+				"internalType": "uint256",
 				"name": "rewardDebt",
-				"type": "int256"
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
 		"type": "function"
 	},
-	"pendingLqdr" : {
+	"pendingBeets" : {
 		"inputs": [
 			{
 				"internalType": "uint256",
@@ -41,7 +41,7 @@
 				"type": "address"
 			}
 		],
-		"name": "pendingLqdr",
+		"name": "pendingBeets",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -51,29 +51,5 @@
 		],
 		"stateMutability": "view",
 		"type": "function"
-	},
-	"pendingShare": {
-		"inputs":[
-			{
-				"internalType":"uint256",
-				"name":"_pid",
-				"type":"uint256"
-			},
-			{
-				"internalType":"address",
-				"name":"_user",
-				"type":"address"
-			}
-		],
-		"name":"pendingShare",
-		"outputs":[
-			{
-				"internalType":"uint256",
-				"name":"",
-				"type":"uint256"
-			}
-		],
-		"stateMutability":"view",
-		"type":"function"
 	}
 }

@@ -348,5 +348,4 @@ module.exports = {
     tvl: optimism
   },
   start: 1564165044, // Jul-27-2019 02:17:24 AM +UTC
-  tvl: sdk.util.sumChainTvls([ethereum, bsc, arbitrum, optimism])
 }

@@ -1,6 +1,5 @@
-const { MJT_GRAPH, KCC_BLOCK_GRAPH } = require("./query");
+const { MJT_GRAPH, } = require("./query");
 const { getChainTvl, getStakeLockValue } = require("./utils");
-const { staking } = require("../helper/staking.js");
 
 const graphUrls = {
   kcc: MJT_GRAPH,
