@@ -17,5 +17,4 @@ module.exports = {
     avalanche: {
         tvl,
     },
-    tvl
 }

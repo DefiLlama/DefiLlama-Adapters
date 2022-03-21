@@ -8,7 +8,10 @@ const files = fs.readdirSync(projectsFolder, { withFileTypes: true })
 const projectNames = []
 const rModules = []
 const projectMissingChainNames = []
-const projectMissingTVLFunction = []
+const keysCount = {}
+const chainCount = {}
+const whitelistedKeys = ['tvl', 'staking', 'methodology', 'pool2', 'misrepresentedTokens', 'fetch', 'timetravel', 'borrowed', 'start', 'masterchef', 'doublecounted', 'name', 'token', 'website', 'category', 'treasury', 'hallmarks' ]
+
 
 files.forEach(i => {
   if (['config', 'helper'].includes(i.name)) return;
@@ -33,36 +36,51 @@ files.forEach(i => {
   }
 })
 
+
 function getModule(fPath, projectName) {
   let module = require(fPath)
+  delete module.hallmarks
   if (typeof module.tvl === 'function') {
-    projectMissingTVLFunction.push(projectName)
-    if (module.ethereum && module.ethereum.tvl)  console.log('I am confused:', projectName)
-    else module.ethereum = module.tvl
+    const chainsWithTVL = Object.keys(module).filter(chain => typeof module[chain] === 'object' && typeof module[chain].tvl === 'function')
+    if (chainsWithTVL.length)  console.log('I am confused:', projectName, chainsWithTVL)
+    else module.ethereum = { tvl: module.tvl }
     delete module.tvl
   }
+
   Object.keys(module).filter(k => typeof module[k] !== 'object')
-    .forEach(i => delete module[i])
+    .forEach(i => {
+      addKey(i, projectName)
+      delete module[i]
+    })
+
+  Object.keys(module).forEach(chain => {
+    Object.keys(module[chain]).forEach(key => addKey(key, `${projectName}-${chain}`))
+  })
   return module
 }
 
+function addKey(key, label) {
+  if (whitelistedKeys.includes(key))  return;
+  if(!keysCount[key]) keysCount[key] = []
+  keysCount[key].push(label)
+}
 
-const chainCount = {}
+
 
 rModules.forEach((module, i) => {
   if (!Object.keys(module).length) return projectMissingChainNames.push(projectNames[i])
-  if (Object.keys(module).some(chain => !module[chain].tvl)) return projectMissingTVLFunction.push(projectNames[i])
   Object.keys(module).forEach(chain => {
     if (!chainCount[chain]) chainCount[chain] = []
     chainCount[chain].push(projectNames[i])
   })
 })
 
-console.log(`projectMissingChainNames count: `, projectMissingChainNames.length, projectMissingChainNames.join(', '))
-console.log(`projectMissingTVLFunction count: `, projectMissingTVLFunction.length, projectMissingTVLFunction.join(', '))
-console.log(`Chain count: `, Object.keys(chainCount).length)
+// console.log(`projectMissingChainNames count: `, projectMissingChainNames.length, projectMissingChainNames.join(', '))
+// console.log(`Chain count: `, Object.keys(chainCount).length)
 const chainCountTable = Object.keys(chainCount).map((chain) => [chain, chainCount[chain].length, chainCount[chain]]).sort((a, b) => b[1] - a[1])
-console.table(chainCountTable)
+const keyCountTable = Object.keys(keysCount).map((key) => [key, keysCount[key].length, keysCount[key]]).sort((a, b) => b[1] - a[1])
+// console.table(chainCountTable)
+console.table(keyCountTable)
 const chainNames = chainCountTable.map(([chain]) => chain)
 
 fs.writeFileSync(path.join(__dirname, 'chains.json'), JSON.stringify(chainNames, null, 2))
