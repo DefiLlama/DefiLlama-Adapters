@@ -131,5 +131,5 @@ module.exports = {
   bsc: {
     tvl: chainTvl('bsc')
   }, 
-  'Methodology': 'Count collateral used to mint jFIAT - in v4 it is held by liquidityPools and synthCollateralContracts, in v5 only in liquidityPools'
+  methodology: 'Count collateral used to mint jFIAT - in v4 it is held by liquidityPools and synthCollateralContracts, in v5 only in liquidityPools'
 }

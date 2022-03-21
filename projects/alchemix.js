@@ -181,6 +181,5 @@ async function fetch() {
 
 module.exports = {
   fetch,
-  eth
 };
 // node test.js projects/alchemix.js

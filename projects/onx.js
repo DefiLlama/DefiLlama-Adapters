@@ -10,8 +10,8 @@ module.exports = {
   ethereum: {
     tvl: getEthereumTvlEx(),
     staking: getEthereumStaking,
-    pool: getEthereumPoolTvl(),
-    borrows: getEthereumBorrows,
+    pool2: getEthereumPoolTvl(),
+    borrowed: getEthereumBorrows,
   },
   fantom: {
     tvl: getFantomTvl,
