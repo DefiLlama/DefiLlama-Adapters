@@ -1,21 +1,22 @@
-const { default: axios } = require("axios");
-const ethers = require("ethers");
-const abi = require("./abi.json");
+const sdk = require("@defillama/sdk");
+const axios = require("axios");
 const apiInfo = require("./apiInfo.json");
+const { stakings } = require("../helper/staking");
 
-const elfiAddress = "0x4da34f8264cb33a5c9f17081b9ef5ff6091116f4";
-const elAddress = "0x2781246fe707bb15cee3e5ea354e2154a2877b16";
-const elStakingPoolAddress = "0xd804e198d25a1920522ca0094a670184a9c972d7";
-const elfyV1StakingPoolAddress = "0xb41bcd480fbd986331eeed516c52e447b50dacb4";
-const elfyV2StakingPoolAddress = "0xCD668B44C7Cf3B63722D5cE5F655De68dD8f2750";
-const infuraMainnetUrl =
-  "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161";
-const rpcProvider = new ethers.providers.JsonRpcProvider(infuraMainnetUrl, {
-  name: "ethereum",
-  chainId: 1,
-});
-const elfiContract = new ethers.Contract(elfiAddress, abi, rpcProvider);
-const elContract = new ethers.Contract(elAddress, abi, rpcProvider);
+const addresses = {
+  elfi: "0x4da34f8264cb33a5c9f17081b9ef5ff6091116f4",
+  el: "0x2781246fe707bb15cee3e5ea354e2154a2877b16",
+  elStaking: "0xd804e198d25a1920522ca0094a670184a9c972d7",
+  dai: "0x6b175474e89094c44da98b954eedeac495271d0f",
+  usdt: "0xdac17f958d2ee523a2206206994597c13d831ec7",
+  busd: "0x4fabb145d64652a948d72533023f6e7a623c7c53",
+  elfiStaking: [
+    "0xb41bcd480fbd986331eeed516c52e447b50dacb4",
+    "0xCD668B44C7Cf3B63722D5cE5F655De68dD8f2750",
+  ],
+  bscElfi: "0x6C619006043EaB742355395690c7b42d3411E8c0",
+  bscElfiStaking: ["0x73653254ED0F28D6E5A59191bbB38B06C899fBcA"],
+};
 let prices;
 let uniswapV3SubgraphCacheResponse, coinGeckoCacheResponse;
 
@@ -35,70 +36,52 @@ let uniswapV3SubgraphCacheResponse, coinGeckoCacheResponse;
   );
 })();
 
-async function getStakingValue(
-  contract,
-  stakingPoolAddress,
-  divisor,
-  price,
-  symbol
-) {
-  const stakingBalance =
-    (await contract.balanceOf(stakingPoolAddress)) / divisor;
-  const stakingValue = stakingBalance * price;
-  console.log(`${symbol} stakingValue : ${stakingValue}`);
-  return stakingValue;
+async function getEthereumTvl(timestamp, block, chainBlocks) {
+  const balances = {};
+
+  const reserves = (
+    await axios.post(
+      apiInfo["elyfi-subgraph"].endpoint,
+      apiInfo["elyfi-subgraph"].body
+    )
+  ).data.data.reserves;
+
+  const elStakingValue =
+    (
+      await sdk.api.abi.call({
+        target: addresses.el,
+        params: addresses.elStaking,
+        abi: "erc20:balanceOf",
+        block,
+      })
+    ).output / 1e18;
+
+  sdk.util.sumSingleBalance(balances, addresses.el, elStakingValue);
+  sdk.util.sumSingleBalance(balances, addresses.dai, reserves[0].totalDeposit);
+  sdk.util.sumSingleBalance(balances, addresses.usdt, reserves[1].totalDeposit);
+
+  return balances;
 }
 
-function getTotalDeposit(totalDeposit, divisor, symbol) {
-  const td = totalDeposit / divisor;
-  console.log(`${symbol} totalDeposit: ${td}`);
-  return td;
+async function getBscTvl(timestamp, block, chainBlocks) {
+  const balances = {};
+
+  const reserves = (
+    await axios.post(
+      apiInfo["elyfi-subgraph-bsc"].endpoint,
+      apiInfo["elyfi-subgraph-bsc"].body
+    )
+  ).data.data.reserves;
+
+  sdk.util.sumSingleBalance(balances, addresses.busd, reserves[0].totalDeposit);
+
+  return balances;
 }
 
 function getValueOfPool(balance, price, symbol) {
   const value = Number(balance) * price;
   console.log(`${symbol} : ${value}`);
   return value;
-}
-
-async function getBscTvl() {
-  const elyfiSubgraphBscCacheResponse = await axios.post(
-    apiInfo["elyfi-subgraph-bsc"].endpoint,
-    apiInfo["elyfi-subgraph-bsc"].body
-  );
-  const bscReserves = elyfiSubgraphBscCacheResponse.data.data.reserves;
-
-  const busdTotalDeposit = getTotalDeposit(
-    bscReserves[0].totalDeposit,
-    1e18,
-    "busd"
-  );
-  const bscTvl = busdTotalDeposit;
-  console.log(`getBscTvl bscTvl : ${bscTvl}`);
-  return bscTvl;
-}
-
-async function getEthereumStaking() {
-  const [elfiV1StakingValue, elfiV2StakingValue] = await Promise.all([
-    getStakingValue(
-      elfiContract,
-      elfyV1StakingPoolAddress,
-      1e18,
-      prices.elfi.usd,
-      "elfiV1"
-    ),
-    getStakingValue(
-      elfiContract,
-      elfyV2StakingPoolAddress,
-      1e18,
-      prices.elfi.usd,
-      "elfiV2"
-    ),
-  ]);
-
-  const ethereumStaking = elfiV1StakingValue + elfiV2StakingValue;
-  console.log(`getEthereumStaking ethereumStaking : ${ethereumStaking}`);
-  return ethereumStaking;
 }
 
 async function getPool2() {
@@ -135,45 +118,18 @@ async function getPool2() {
   return pool2;
 }
 
-const getEthereumTvl = async () => {
-  const elyfiSubgraphCacheResponse = await axios.post(
-    apiInfo["elyfi-subgraph"].endpoint,
-    apiInfo["elyfi-subgraph"].body
-  );
-  const reserves = elyfiSubgraphCacheResponse.data.data.reserves;
-  const daiTotalDeposit = getTotalDeposit(
-    reserves[0].totalDeposit,
-    1e18,
-    "dai"
-  );
-  const usdtTotalDeposit = getTotalDeposit(
-    reserves[1].totalDeposit,
-    1e6,
-    "usdt"
-  );
-  const elStakingValue = await getStakingValue(
-    elContract,
-    elStakingPoolAddress,
-    1e18,
-    prices.elysia.usd,
-    "elysia"
-  );
-  const ethereumTvl = elStakingValue + daiTotalDeposit + usdtTotalDeposit;
-  console.log(`getEthereumTvl ethereumTvl : ${ethereumTvl}`);
-  return ethereumTvl;
-};
-
 module.exports = {
-  methodology:
-    "tvl : ether deposit + bsc deposit, staking : elfi staking, pool2 : lp with elfi, bsc tvl : deposit",
-  fetch: async () => (await getEthereumTvl()) + (await getBscTvl()),
-  staking: {
-    fetch: getEthereumStaking,
+  timetravel: false,
+  ethereum: {
+    tvl: getEthereumTvl, // el staking + dai deposit + usdt deposit
+    staking: stakings(addresses.elfiStaking, addresses.elfi),
   },
   pool2: {
     fetch: getPool2,
   },
+  tvl: () => ({}), // for using pool2
   bsc: {
-    fetch: getBscTvl,
+    tvl: getBscTvl,
+    staking: stakings(addresses.bscElfiStaking, addresses.bscElfi, "bsc"),
   },
-};
+}; // node test.js projects/elysia/index.js
