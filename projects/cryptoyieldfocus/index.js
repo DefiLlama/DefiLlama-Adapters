@@ -44,7 +44,6 @@ const pool2 = async (timestamp, ethBlock, chainBlocks) => {
     transformAddress
   );
 
-  console.log(`@@@@`, JSON.stringify(balances));
   return balances;
 };
 
