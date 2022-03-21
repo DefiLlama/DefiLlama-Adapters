@@ -1,6 +1,5 @@
 const { getBalance, unwrapLp } = require("../helper/terra");
 const { getBlock } = require("../helper/getBlock");
-const utils = require("../helper/utils");
 
 const holderToken = "terra1w6xf64nlmy3fevmmypx6w2fa34ue74hlye3chk";
 const token = "terra1dy9kmlm4anr92e42mrkjwzyvfqwz66un00rwr5";

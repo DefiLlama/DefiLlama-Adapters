@@ -1,22 +1,24 @@
 const { stakingPricedLP } = require('../helper/staking')
 const {sumTokensAndLPsSharedOwners} = require('../helper/unwrapLPs')
+const { transformArbitrumAddress } = require("../helper/portedTokens");
 
 
 
-const treasury = "0x7BFf1FC001054c4FfFF4E9117415112E07212A4E"
+const treasury = "0xB5de3f06aF62D8428a8BF7b4400Ea42aD2E0bc53"
 
-async function tvl(time, ethBlock){
-    const balances = {}
+async function tvl(time, ethBlock, chainBlocks){
+    const balances = {};
+    const transformAddress = await transformArbitrumAddress();
     await sumTokensAndLPsSharedOwners(balances, [
-        ["0x6b175474e89094c44da98b954eedeac495271d0f", false], //dai
+        ["0xda10009cbd5d07dd0cecc66161fc93d7c9000da1", false], //dai
         
-    ], [treasury], ethBlock, "ethereum")
+    ], [treasury], chainBlocks.arbitrum, "arbitrum", transformAddress)
     return balances
 }
 
 module.exports={
     methodology: `DAI reserves in the bonding curve `,
-    ethereum:{
+    arbitrum:{
         tvl,
         //staking: stakingPricedLP("0xE5Df6583eE8DAe9F532e65D7D2C30A961c442f8a", "0x5fE5E1d5D86BDD4a7D84B4cAfac1E599c180488f", "ethereum", "0xe4f157c7ca54f435fcc3bb0b4452f98d3a48f303", "dai", true )
     }

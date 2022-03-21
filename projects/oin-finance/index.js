@@ -173,14 +173,14 @@ const fetchStabilityLock = async () => {
 
 module.exports = {
   harmony: {
-    fetchHarmonyTVL
+    fetch: fetchHarmonyTVL
   },
   ethereum: {
-    fetchOinTVL
+    fetch: fetchOinTVL
   },
   near: {
-    fetchNearTVL
+    fetch: fetchNearTVL
   },
-  getTotalTVL,
+  fetch: getTotalTVL,
   methodology: "Counts TVL on multi-chain of OIN-Finance",
 };

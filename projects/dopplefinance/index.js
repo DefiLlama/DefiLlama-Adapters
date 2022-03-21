@@ -145,5 +145,4 @@ module.exports = {
   harmony: {
     tvl: harmonyTvl
   },
-  tvl: sdk.util.sumChainTvls([fantomTvl, harmonyTvl, bscTvl]),
 };

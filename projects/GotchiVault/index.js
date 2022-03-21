@@ -11,14 +11,15 @@ const VAULT_CONTRACT = "0xDd564df884Fd4e217c9ee6F65B4BA6e5641eAC63";
 
 const graphUrl = 'https://api.thegraph.com/subgraphs/name/aavegotchi/aavegotchi-core-matic'
 const graphQuery = gql`
-query GET_SUMMONED_GOTCHIS ($skip: Int, $block: Int) {
+query GET_SUMMONED_GOTCHIS ($minGotchiId: Int, $block: Int) {
   aavegotchis(
     first: 1000
-    skip: $skip
+    skip: 0
     block: { number: $block }
     where: {
       status: "3" # summoned gotchis
       gotchiId_gt: $minGotchiId
+      owner: "${VAULT_CONTRACT.toLowerCase()}"
     }
     orderBy: gotchiId
     orderDirection: asc
@@ -69,10 +70,10 @@ async function tvl(timestamp, block, chainBlocks) {
     block: chainBlocks['polygon'],
   })).output;
 
-  await sdk.util.sumSingleBalance(balances, transform(GHST_CONTRACT), collateralBalance)
+  sdk.util.sumSingleBalance(balances, transform(GHST_CONTRACT), collateralBalance)
 
-  //const gotchisBalances = await getGotchisCollateral(timestamp, chainBlocks["polygon"]);
-  //await sdk.util.sumMultiBalanceOf(balances, gotchisBalances, true, x => 'polygon:' + x);
+  const gotchisBalances = await getGotchisCollateral(timestamp, chainBlocks["polygon"]-100);
+  sdk.util.sumMultiBalanceOf(balances, gotchisBalances, true, x => 'polygon:' + x);
 
 
   return balances;
@@ -80,7 +81,7 @@ async function tvl(timestamp, block, chainBlocks) {
 
 module.exports = {
   methodology:
-    "TVL counts the total GHST tokens that are staked by the Gotchi Vault contracts",
+    "TVL counts the total GHST tokens that are staked by the Gotchi Vault vGHST contracts, as well as the collateral tokens that are locked in the Aavegotchis deposited in the Gotchi Vault contract",
     polygon: {
     tvl,
   }

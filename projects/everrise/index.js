@@ -294,8 +294,5 @@ module.exports = {
     staking: avalancheStaking,
     pool2: avaxPool2,
   },
-  tvl: totalTvl,
-  staking: totalStaking,
-  pool2: totalPool2,
   methodology: "TVL comes from the buyback reserves and cross-chain bridge vaults",
 };
