@@ -1,20 +1,18 @@
 ##### Twitter Link:
-https://twitter.com/kaddexofficial
+
 
 ##### List of audit links if any:
 
 
 ##### Website Link:
-https://kaddex.com/
+
 
 ##### Logo (High resolution, preferably in .svg and .png, for application on both white and black backgrounds. Will be shown with rounded borders):
 
 
 ##### Current TVL:
- 464.41 k 
 
 ##### Chain:
-Kadena
 
 
 ##### Coingecko ID (so your TVL can appear on Coingecko): (https://api.coingecko.com/api/v3/coins/list)
@@ -24,7 +22,7 @@ Kadena
 
 
 ##### Short Description (to be shown on DefiLlama):
-Kaddex the evolution of DeFi on Kadena
+
 
 ##### Token address and ticker if any:
 
@@ -40,4 +38,3 @@ Kaddex the evolution of DeFi on Kadena
 
 ##### methodology (what is being counted as tvl, how is tvl being calculated):
 
-TVL accounts for the liquidity on all AMM pools, with all values calculated in terms of KDA price.
