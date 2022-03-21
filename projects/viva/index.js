@@ -6,13 +6,6 @@ async function getData() {
   return res.data;
 }
 
-async function vitex() {
-  const data = await getData()
-  return data.tvlRankings.filter((i) => {
-    return i.name == 'ViteX'
-  })[0].amount
-}
-
 async function viva() {
   const data = await getData()
   return data.tvlRankings.filter((i) => {
@@ -28,11 +21,8 @@ async function fetch() {
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
-  vitex:{
-    fetch: vitex
-  },
-  viva:{
+  vive:{
     fetch: viva
   },
-  fetch
+  fetch: viva
 }
