@@ -20,7 +20,7 @@ const { tvl: agoraPlusTvl, borrowed: agoraPlusBorrowed } = compoundExports(
 );
 
 module.exports = {
-  timeTravel: true,
+  timetravel: true,
   incentivized: true,
   misrepresentedTokens: true,
   methodology: `As in Compound Finance, TVL counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are counted as "Borrowed" TVL and can be toggled towards the regular TVL.`,

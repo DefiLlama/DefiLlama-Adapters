@@ -37,5 +37,4 @@ module.exports = {
   bsc: {
     tvl,
   },
-  tvl, // tvl adapter
 };

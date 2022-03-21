@@ -14,24 +14,23 @@ query get_indexes($block: Int) {
 `;
 
 async function tvl(timestamp, block) {
-    const { indexPools } = await request(
-        graphUrl,
-        graphQuery,
-        {
-            block,
-        }
-    );
-    const usdTvl = indexPools.reduce((total, p) => total + Number(p.totalValueLockedUSD), 0)
+  const { indexPools } = await request(
+    graphUrl,
+    graphQuery,
+    {
+      block,
+    }
+  );
+  const usdTvl = indexPools.reduce((total, p) => total + Number(p.totalValueLockedUSD), 0)
 
-    return toUSDTBalances(usdTvl)
+  return toUSDTBalances(usdTvl)
 }
 
 module.exports = {
   misrepresentedTokens: true,
-    name: 'Indexed',
-    token: 'NDX',
-    category: 'Indexes',
-    eth: tvl,
-    start: 0, // WRONG!
-    tvl
+  name: 'Indexed',
+  token: 'NDX',
+  category: 'Indexes',
+  ethereum: { tvl },
+  start: 0, // WRONG!
 }

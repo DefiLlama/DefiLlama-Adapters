@@ -104,5 +104,4 @@ module.exports = {
     klaytn: {
         tvl: klaytnTvl,
     },
-    tvl: sdk.util.sumChainTvls([bscTvl, hecoTvl, klaytnTvl]),
 }
