@@ -159,7 +159,7 @@ async function uniswapV2Tvl(block, chainName) {
     block,
     chainName,
     formatAddressChecksum(chains[chainName].uniswapFactoryAddress, chainName),
-    0,
+    undefined,
     true
   );
 
