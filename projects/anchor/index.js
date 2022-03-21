@@ -60,7 +60,7 @@ async function avalancheTVL(timestamp, ethBlock, chainBlocks) {
   const block = chainBlocks[chain]
   const { output: aUSTBalance } = await sdk.api.erc20.totalSupply({ target: wormholeAnchorUST, block, chain })
   return {
-    terrausd: BigNumber(aUSTBalance).dividedBy(10 ** 6)
+    "anchorust": BigNumber(aUSTBalance).dividedBy(10 ** 6)
   }
 }
 
