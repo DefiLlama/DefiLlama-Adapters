@@ -113,7 +113,13 @@ async function getPools(poolsJsonUrl){
 
 async function tvlV2Onchain(block, chain) {
     const balances = {}
-    const transform = addr => `${chain}:${addr}`
+    const transform = addr => {
+        if (addr.toLowerCase() === '0x260bbf5698121eb85e7a74f2e45e16ce762ebe11') 
+          return 'avax:0xc7198437980c041c805a1edcba50c1ce5db95118' // Axelar wrapped UST -> USDT
+        if (addr.toLowerCase() === '0x2147efff675e4a4ee1c2f918d181cdbd7a8e208f') 
+        return '0xa1faa113cbe53436df28ff0aee54275c13b40975' // Wrapped Alpha Finance -> ALPHA (erc20)
+      return  `${chain}:${addr}`
+    }
     const { safeBoxApi, poolsJsonUrl } = chainParams[chain];
     const { data: safebox } = await axios.get(safeBoxApi);
     await unwrapCreamTokens(balances, safebox.map(s=>[s.cyTokenAddress, s.safeboxAddress]), block, chain, transform)
@@ -145,6 +151,7 @@ async function tvlV2Onchain(block, chain) {
         token: pools[i].lpTokenAddress
     }))
     await unwrapUniswapLPs(balances, lpPools, block, chain, transform)
+
     return balances
 }
 
