@@ -17,6 +17,10 @@ async function fantomTvl(timestamp, ethBlock, chainBlocks) {
   return {...lyfTvl};
 }
 
+async function ftmStaking(timestamp, ethBlock, chainBlocks) {
+  return await calxALPACAtvl('fantom', chainBlocks.fantom);
+}
+
 // node test.js projects/alpaca-finance/index.js
 module.exports = {
   name: "Alpaca Finance",
@@ -29,5 +33,6 @@ module.exports = {
   },
   fantom: {
     tvl: fantomTvl,
+    staking: ftmStaking,
   }
 };
