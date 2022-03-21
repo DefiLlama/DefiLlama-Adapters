@@ -20,6 +20,19 @@ const chainParams = {
             },
         ]
     },
+    fantom: {
+        safeBoxApi: "https://homora-api.alphafinance.io/v2/250/safeboxes",
+        latestAlphaHomoraV2GraphUrl: `https://api.thegraph.com/subgraphs/name/alphafinancelab/alpha-homora-v2-fantom`,
+        poolsJsonUrl: "https://homora-api.alphafinance.io/v2/250/pools",        
+        instances: [
+            {
+                wMasterChefAddress: "0x5FC20fCD1B50c5e1196ac790DADCfcDD416bb0C7",
+                wLiquidityGauge: "0xf1f32c8eeb06046d3cc3157b8f9f72b09d84ee5b", // wrong
+                poolsJsonUrl: "https://homora-api.alphafinance.io/v2/43114/pools",
+                graphUrl: `https://api.thegraph.com/subgraphs/name/alphafinancelab/alpha-homora-v2-fantom`,
+            },
+        ]
+    },
     ethereum: {
         safeBoxApi: "https://homora-api.alphafinance.io/v2/1/safeboxes",
         coreOracleAddress: "0x6be987c6d72e25f02f6f061f94417d83a6aa13fc",
