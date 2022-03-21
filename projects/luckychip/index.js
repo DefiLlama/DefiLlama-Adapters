@@ -2,12 +2,13 @@ const { sumTokens } = require('../helper/unwrapLPs')
 const sdk = require('@defillama/sdk')
 const { getBlock } = require('../helper/getBlock');
 const { transformBscAddress } = require('../helper/portedTokens');
+const { stakingPricedLP } = require("../helper/staking");
 
 tokenHolderMap = [
     {
       tokens: [],
       holders: [
-        "0xDF3E96a5d4A0C9AEf5F15C642Eb736E2A2f49630" // bnb table
+        "0xDF3E96a5d4A0C9AEf5F15C642Eb736E2A2f49630" // BNB table
       ],
       checkETHBalance: true,
     },
@@ -63,13 +64,15 @@ async function tvl(timestamp, block, chainBlocks) {
     return balances
 }
 
+const lcToken = '0x6012C3a742f92103d238F1c8306cF8fbcDEca8B3'
+const masterChef = '0x15D2a6FC45aF66A2952dC27c40450C1F06A1eC2b';
+
 // node test.js projects/luckychip/index.js
 module.exports={
     misrepresentedTokens: false,
     methodology: 'TVL comes from the tables of LuckyChip for now.',
     bsc: {
-        tvl
+        staking: stakingPricedLP(masterChef, lcToken, 'bsc', "0xA7610F4Ad54778f2108A6634d3cb9f8ff61923DE", "wbnb", true),
+        tvl,
     }
 }
-
-
