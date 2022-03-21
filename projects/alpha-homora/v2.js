@@ -20,6 +20,19 @@ const chainParams = {
             },
         ]
     },
+    fantom: {
+        safeBoxApi: "https://homora-api.alphafinance.io/v2/250/safeboxes",
+        latestAlphaHomoraV2GraphUrl: `https://api.thegraph.com/subgraphs/name/alphafinancelab/alpha-homora-v2-fantom`,
+        poolsJsonUrl: "https://homora-api.alphafinance.io/v2/250/pools",        
+        instances: [
+            {
+                wMasterChefAddress: "0x5FC20fCD1B50c5e1196ac790DADCfcDD416bb0C7",
+                wLiquidityGauge: "0xf1f32c8eeb06046d3cc3157b8f9f72b09d84ee5b", // wrong
+                poolsJsonUrl: "https://homora-api.alphafinance.io/v2/43114/pools",
+                graphUrl: `https://api.thegraph.com/subgraphs/name/alphafinancelab/alpha-homora-v2-fantom`,
+            },
+        ]
+    },
     ethereum: {
         safeBoxApi: "https://homora-api.alphafinance.io/v2/1/safeboxes",
         coreOracleAddress: "0x6be987c6d72e25f02f6f061f94417d83a6aa13fc",
@@ -100,7 +113,13 @@ async function getPools(poolsJsonUrl){
 
 async function tvlV2Onchain(block, chain) {
     const balances = {}
-    const transform = addr => `${chain}:${addr}`
+    const transform = addr => {
+        if (addr.toLowerCase() === '0x260bbf5698121eb85e7a74f2e45e16ce762ebe11') 
+          return 'avax:0xc7198437980c041c805a1edcba50c1ce5db95118' // Axelar wrapped UST -> USDT
+        if (addr.toLowerCase() === '0x2147efff675e4a4ee1c2f918d181cdbd7a8e208f') 
+        return '0xa1faa113cbe53436df28ff0aee54275c13b40975' // Wrapped Alpha Finance -> ALPHA (erc20)
+      return  `${chain}:${addr}`
+    }
     const { safeBoxApi, poolsJsonUrl } = chainParams[chain];
     const { data: safebox } = await axios.get(safeBoxApi);
     await unwrapCreamTokens(balances, safebox.map(s=>[s.cyTokenAddress, s.safeboxAddress]), block, chain, transform)
@@ -132,6 +151,7 @@ async function tvlV2Onchain(block, chain) {
         token: pools[i].lpTokenAddress
     }))
     await unwrapUniswapLPs(balances, lpPools, block, chain, transform)
+
     return balances
 }
 
