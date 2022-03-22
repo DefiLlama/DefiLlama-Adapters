@@ -58,9 +58,6 @@
   ==================================================*/
 
   module.exports = {
-    name: 'Nexus Mutual',
-    token: 'NXM',
-    category: 'derivatives',
     start: 1558569600, // 05/23/2019 @ 12:00am (UTC)
     tvl
   }
