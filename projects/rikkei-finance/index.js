@@ -127,5 +127,8 @@ module.exports = {
     tvl,
     borrowed,
   },
-  methodology: `TVL is calculated by getting the market addresses from comptroller and calling the getCash() on-chain method to get the amount of tokens locked in each of these addresses`,
+  methodology: `
+  Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield.
+  TVL is calculated by getting the market addresses from Cointroller and calling the getCash() method to get the amount of tokens locked in each of these addresses.
+  `,
 };
