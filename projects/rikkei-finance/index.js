@@ -37,10 +37,10 @@ const markets = [
 ];
 
 // ask Cointroller for all markets array
-async function getAllRTokens(block) {
+async function getAllRTokens(chain, block) {
   return (
     await sdk.api.abi.call({
-      chain: "bsc",
+      chain,
       block,
       target: "0x4f3e801Bd57dC3D641E72f2774280b21d31F64e4",
       params: [],
@@ -49,10 +49,10 @@ async function getAllRTokens(block) {
   ).output;
 }
 
-async function getUnderlying(block, rToken) {
+async function getUnderlying(chain, block, rToken) {
   return (
     await sdk.api.abi.call({
-      chain: "bsc",
+      chain,
       block,
       target: rToken,
       abi: abi["underlying"],
@@ -61,37 +61,33 @@ async function getUnderlying(block, rToken) {
 }
 
 // returns {[underlying]: {rToken, decimals, symbol}}
-async function getMarkets(block) {
-  if (block < 10271924) {
-    // the allMarkets getter was only added in this block.
-    return markets;
-  } else {
-    let allRTokens = await getAllRTokens(block);
+async function getMarkets(chain, block) {
+  let allRTokens = await getAllRTokens(chain, block);
 
-    await Promise.all(
-      allRTokens.map(async (rToken) => {
-        let foundMarket = false;
-        for (let market of markets) {
-          if (market.rToken.toLowerCase() === rToken.toLowerCase()) {
-            foundMarket = true;
-          }
+  await Promise.all(
+    allRTokens.map(async (rToken) => {
+      let foundMarket = false;
+      for (let market of markets) {
+        if (market.rToken.toLowerCase() === rToken.toLowerCase()) {
+          foundMarket = true;
         }
-        if (!foundMarket) {
-          let underlying = await getUnderlying(block, rToken);
-          markets.push({ underlying, rToken });
-        }
-      })
-    );
+      }
+      if (!foundMarket) {
+        let underlying = await getUnderlying(chain, block, rToken);
+        markets.push({ underlying, rToken });
+      }
+    })
+  );
 
-    return markets;
-  }
+  return markets;
 }
 
-async function tvl(balances, block, borrowed) {
-  let markets = await getMarkets(block);
+async function getTvl(chain, block, borrowed) {
+  const balances = {};
+  let markets = await getMarkets(chain, block);
 
   let locked = await sdk.api.abi.multiCall({
-    chain: "bsc",
+    chain,
     block,
     calls: _.map(markets, (market) => ({
       target: market.rToken,
@@ -105,7 +101,7 @@ async function tvl(balances, block, borrowed) {
       (result) => result.input.target === market.rToken
     );
 
-    balances["bsc:" + market.underlying] = BigNumber(
+    balances[`${chain}:${market.underlying}`] = BigNumber(
       balances[market.underlying] || 0
     )
       .plus(getCash.output)
@@ -115,17 +111,21 @@ async function tvl(balances, block, borrowed) {
   return balances;
 }
 
-async function borrowed(timestamp, block) {
-  const balances = {};
-  await tvl(balances, block, true);
-  return balances;
+async function bscTvl(timestamp, ethBlock, chainBlocks) {
+  const tvl = await getTvl("bsc", chainBlocks["bsc"], false);
+  return tvl;
+}
+
+async function bscBorrowed(timestamp, ethBlock, chainBlocks) {
+  const tvl = await getTvl("bsc", chainBlocks["bsc"], true);
+  return tvl;
 }
 
 module.exports = {
   timetravel: true,
   bsc: {
-    tvl,
-    borrowed,
+    tvl: bscTvl,
+    borrowed: bscBorrowed,
   },
   methodology: `
   Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield.
