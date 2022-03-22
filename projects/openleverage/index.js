@@ -103,10 +103,7 @@ async function getPoolFromSubgraph(chain) {
 
 
 module.exports = {
-  name: 'openleverage',
-  website: 'https://openleverage.finance',
     methodology: "get pool and token address from the openleverage subgraph",
-    token: 'OLE',
   start: 1638720000,
     ethereum: {
         tvl: eth_tvl

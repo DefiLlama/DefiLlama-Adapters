@@ -244,8 +244,6 @@ async function fetch() {
   ==================================================*/
 
 module.exports = {
-    name: 'scientix.finance',
-    token: 'SCIX',
     start: 10880500,    // 09/16/2020 @ 12:00am (UTC+8)
     fetch,
 };
