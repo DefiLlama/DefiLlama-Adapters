@@ -16,9 +16,6 @@ const apeCallVault = "0xc0cF10Dd710aefb209D9dc67bc746510ffd98A53";
 
 // Avalanche Vaults
 const avaxCallVault = "0x98d03125c62DaE2328D9d3cb32b7B969e6a87787";
-
-// Avalanche Vaults
-const avaxCallVault = "0x98d03125c62DaE2328D9d3cb32b7B969e6a87787";
 const savaxCallVault = "0x6BF686d99A4cE17798C45d09C21181fAc29A9fb3";
 const usdcAvaxPutVault = "0x9DD6be071b4292cc88B8190aB718329adEA3E3a3";
 
@@ -75,14 +72,6 @@ async function avaxTvl(_, block) {
     addVault(balances, avaxCallVault, wavax, block, "avax"),
     addVault(balances, savaxCallVault, savax, block, "avax"),
     addVault(balances, usdcAvaxPutVault, usdce, block, "avax"),
-  ]);
-  return balances;
-}
-
-async function auroraTvl(_, block) {
-  const balances = {};
-  await Promise.all([
-    addVault(balances, wnearCallVault, wnear, block, "aurora"),
   ]);
   return balances;
 }
