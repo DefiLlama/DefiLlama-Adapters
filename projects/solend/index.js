@@ -12,7 +12,7 @@ async function getCoingeckoId(contract_address) {
 }
 
 async function borrowed() {
-  const solendConfig = await fetchURL(solendConfigEndpoint);
+  const solendConfig = (await fetchURL(solendConfigEndpoint))?.data;
   const borrowed = {};
 
   for (const market of solendConfig.markets) {
@@ -42,7 +42,7 @@ async function borrowed() {
 }
 
 async function tvl() {
-  const solendConfig = await fetchURL(solendConfigEndpoint);
+  const solendConfig = await fetchURL(solendConfigEndpoint)?.data;
   const tvl = {};
 
   for (const market of solendConfig.markets) {
