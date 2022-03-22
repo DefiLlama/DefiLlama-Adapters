@@ -38,9 +38,6 @@ const ape = "0x4d224452801ACEd8B2F0aebE155379bb5D594381";
 
 // Avalanche Assets
 const wavax = "avax:0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7";
-
-// Avalanche Assets
-const wavax = "avax:0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7";
 const savax = "avax:0x2b2C81e08f1Af8835a78Bb2A90AE924ACE0eA4bE";
 const usdce = "avax:0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664";
 
