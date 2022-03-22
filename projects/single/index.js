@@ -248,8 +248,6 @@ async function cronos_tvl(timestamp, block, chainBlocks){
 
 // https://docs.llama.fi/list-your-project/how-to-write-an-sdk-adapter
 module.exports = {
-  name: "Single Finance",
-  token: "SINGLE",
   start: 1643186078,
 
   // if we can backfill data with your adapter. Most SDK adapters will allow this, but not all. For example, if you fetch a list of live contracts from an API before querying data on-chain, timetravel should be 'false'.

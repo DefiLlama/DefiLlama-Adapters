@@ -267,8 +267,6 @@ async function totalStaking(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
-  name: 'EverRise',
-  token: 'RISE',
   bsc:{
     tvl: bscTvl,
     staking: bscStaking,
