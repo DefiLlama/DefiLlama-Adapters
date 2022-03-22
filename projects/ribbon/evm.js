@@ -19,9 +19,6 @@ const avaxCallVault = "0x98d03125c62DaE2328D9d3cb32b7B969e6a87787";
 const savaxCallVault = "0x6BF686d99A4cE17798C45d09C21181fAc29A9fb3";
 const usdcAvaxPutVault = "0x9DD6be071b4292cc88B8190aB718329adEA3E3a3";
 
-// Aurora Vaults
-const wnearCallVault = "0x7796d6B1706855303655EB12F54FaE294c468a66";
-
 // Treasury Vaults
 const perpCallVault = "0xe44eDF7aD1D434Afe3397687DD0A914674F2E405";
 
@@ -91,5 +88,4 @@ module.exports = {
   avalanche: {
     tvl: avaxTvl,
   },
-  tvl: sdk.util.sumChainTvls([ethTvl, avaxTvl]),
 };
