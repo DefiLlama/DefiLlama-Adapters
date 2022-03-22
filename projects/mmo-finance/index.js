@@ -194,5 +194,4 @@ module.exports = {
     tvl: TVLPool,
     staking: singleStaking
   },
-  tvl: TVLPool,
 };

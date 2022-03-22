@@ -60,7 +60,11 @@ async function getPrices(connection) {
 	return prices;
 }
 
-async function getSolanaTVL(connection, prices) {
+async function getSolanaTVL() {
+	const connection = new solana.Connection(solana.clusterApiUrl("mainnet-beta"), "confirmed");
+
+	const prices = await getPrices(connection);
+
 	const usdcPrice = prices['usdc'];
 	const usdtPrice = prices['usdt'];
 
@@ -74,7 +78,11 @@ async function getSolanaTVL(connection, prices) {
 	return Number(tvl);
 }
 
-async function getEthTVL(connection, prices) {
+async function getEthTVL() {
+	const connection = new solana.Connection(solana.clusterApiUrl("mainnet-beta"), "confirmed");
+
+	const prices = await getPrices(connection);
+
 	const usdcPrice = prices['usdc'];
 	const usdtPrice = prices['usdt'];
 
@@ -88,7 +96,11 @@ async function getEthTVL(connection, prices) {
 	return Number(tvl);
 }
 
-async function getBNBChainTVL(connection, prices) {
+async function getBNBChainTVL() {
+	const connection = new solana.Connection(solana.clusterApiUrl("mainnet-beta"), "confirmed");
+
+	const prices = await getPrices(connection);
+
 	const bscUSDPrice = prices['bscUSD'];
 	const usdtPrice = prices['usdt'];
 
@@ -118,5 +130,14 @@ async function fetch() {
 }
 
 module.exports = {
+	ethereum: {
+		fetch: getEthTVL
+	},
+	solana: {
+		fetch: getSolanaTVL
+	},
+	bsc: {
+		fetch: getBNBChainTVL
+	},
 	fetch
-};
+}; // node test.js projects/swim/index.js
