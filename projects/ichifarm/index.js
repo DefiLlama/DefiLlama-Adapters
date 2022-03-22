@@ -202,12 +202,7 @@ async function getDepositTvl(balances, tokenFactory, farmContract, block) {
   })).output;
 
   tokenBalances.forEach(p => {
-    if (unknownOneTokens.includes(p.input.target.toLowerCase())) {
-      sdk.util.sumSingleBalance(balances, "0xdac17f958d2ee523a2206206994597c13d831ec7", BigNumber(p.output).div(1e12).toFixed(0));
-    }
-    else {
       sdk.util.sumSingleBalance(balances, p.input.target, p.output);
-    }
   });
 }
 
