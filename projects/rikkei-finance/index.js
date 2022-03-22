@@ -7,19 +7,19 @@ const markets = [
   {
     underlying: "0xe9e7cea3dedca5984780bafc599bd69add087d56",
     symbol: "BUSD",
-    decimals: 8,
+    decimals: 18,
     rToken: "0x6db6A55E57AC8c90477bBF00ce874B988666553A",
   },
   {
     underlying: "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d",
     symbol: "USDC",
-    decimals: 8,
+    decimals: 18,
     rToken: "0x916e87d16B2F3E097B9A6375DC7393cf3B5C11f5",
   },
   {
     underlying: "0x55d398326f99059ff775485246999027b3197955",
     symbol: "USDT",
-    decimals: 8,
+    decimals: 18,
     rToken: "0x383598668C025Be0798E90E7c5485Ff18D311063",
   },
   {
@@ -31,7 +31,7 @@ const markets = [
   {
     underlying: "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",
     symbol: "DAI",
-    decimals: 8,
+    decimals: 18,
     rToken: "0x9B9006cb01B1F664Ac25137D3a3a20b37d8bC078",
   },
 ];
