@@ -83,9 +83,6 @@ async function staking(timestamp, ethBlock, chainBlocks) {
 
 
 module.exports = {
-    name: 'The Parallel',
-    token: 'PRL',
-    website: 'https://theparallel.io/',
     bsc: {
         staking: staking,
         tvl: tvl,

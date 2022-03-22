@@ -28,9 +28,6 @@ async function tvl(timestamp, block) {
 
 module.exports = {
   misrepresentedTokens: true,
-  name: 'Indexed',
-  token: 'NDX',
-  category: 'Indexes',
   ethereum: { tvl },
   start: 0, // WRONG!
 }

@@ -52,6 +52,4 @@ module.exports = {
   arbitrum: {
     tvl: arbitrumTvl,
   },
-  name: "Swapr",
-  category: "dexes",
 };
