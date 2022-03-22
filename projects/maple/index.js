@@ -25,55 +25,58 @@ const Treasury = async (timestamp, ethBlock, chainBlocks) => {
 
 /*** Ethereum TVL Portions ***/
 const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
-    const balances = {};
-  
-    const poolsCreated = (
+  const balances = {};
+
+  const poolsCreated = (
+    await sdk.api.abi.call({
+      abi: abi.poolsCreated,
+      target: PoolFactory,
+      block: ethBlock
+    })
+  ).output;
+
+  for (let i = 0; i < poolsCreated; i++) {
+    const pool = (
       await sdk.api.abi.call({
-        abi: abi.poolsCreated,
+        abi: abi.pools,
         target: PoolFactory,
+        params: i,
         block: ethBlock
       })
     ).output;
-  
-    for (let i = 0; i < poolsCreated; i++) {
-      const pool = (
-        await sdk.api.abi.call({
-          abi: abi.pools,
-          target: PoolFactory,
-          params: i,
-          block: ethBlock
-        })
-      ).output;
 
-      const assetOfLiquidity = (
-        await sdk.api.abi.call({
-          abi: abi.liquidityAsset,
-          target: pool,
-          block: ethBlock
-        })
-      ).output;
+    const assetOfLiquidity = (
+      await sdk.api.abi.call({
+        abi: abi.liquidityAsset,
+        target: pool,
+        block: ethBlock
+      })
+    ).output;
 
-      const totalSupply = (
-        await sdk.api.abi.call({
-          abi: abi.totalSupply,
-          target: pool,
-          block: ethBlock,
-        })
-      ).output/(10**12);
- 
-      sdk.util.sumSingleBalance(balances, assetOfLiquidity, totalSupply);
-    }
-  
-    return balances;
-  };
-  
-  module.exports = {
-    misrepresentedTokens: true,
-    ethereum: {
-      tvl: ethTvl,
-      treasury: Treasury,
-    },
-    methodology:
-      "We count liquidity by USDC deposited on the pools threw PoolFactory contract",
-  };
-  
+    let totalSupply = (
+      await sdk.api.abi.call({
+        abi: abi.totalSupply,
+        target: pool,
+        block: ethBlock,
+      })
+    ).output;
+
+    // We have two assets USDC and WETH, USDC is off by 12 digits because it only has 6 decimals unlike WETH which has 18, so this correction is needed
+    if (assetOfLiquidity.toLowerCase() === USDC)
+      totalSupply = totalSupply/ (10 ** 12);
+
+    sdk.util.sumSingleBalance(balances, assetOfLiquidity, totalSupply);
+  }
+
+  return balances;
+};
+
+module.exports = {
+  misrepresentedTokens: true,
+  ethereum: {
+    tvl: ethTvl,
+    treasury: Treasury,
+  },
+  methodology:
+    "We count liquidity by USDC deposited on the pools threw PoolFactory contract",
+};
