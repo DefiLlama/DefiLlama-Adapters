@@ -2,7 +2,6 @@ const sdk = require("@defillama/sdk");
 const axios = require("axios");
 const apiInfo = require("./apiInfo.json");
 const { stakings } = require("../helper/staking");
-const { toUSDTBalances } = require("../helper/balances");
 const { pool2s } = require("../helper/pool2");
 
 const addresses = {
@@ -85,12 +84,6 @@ async function getBscTvl(timestamp, block, chainBlocks) {
   sdk.util.sumSingleBalance(balances, addresses.busd, reserves[0].totalDeposit);
 
   return balances;
-}
-
-function getValueOfPool(balance, price, symbol) {
-  const value = Number(balance) * price;
-  console.log(`${symbol} : ${value}`);
-  return value;
 }
 
 module.exports = {
