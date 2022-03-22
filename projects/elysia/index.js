@@ -2,7 +2,6 @@ const sdk = require("@defillama/sdk");
 const axios = require("axios");
 const apiInfo = require("./apiInfo.json");
 const { stakings } = require("../helper/staking");
-const { pool2s } = require("../helper/pool2");
 
 const addresses = {
   elfi: "0x4da34f8264cb33a5c9f17081b9ef5ff6091116f4",
@@ -17,11 +16,6 @@ const addresses = {
   ],
   bscElfi: "0x6C619006043EaB742355395690c7b42d3411E8c0",
   bscElfiStaking: ["0x73653254ED0F28D6E5A59191bbB38B06C899fBcA"],
-  ethereumLPContracts: ["0x1f98407aaB862CdDeF78Ed252D6f557aA5b0f00d"],
-  ethereumLPTokens: [
-    "0xbde484db131bd2ae80e44a57f865c1dfebb7e31f",
-    "0xc311faebe8802f9cfc91284016d1de9537ec66b7",
-  ],
 };
 let prices;
 let uniswapV3SubgraphCacheResponse, coinGeckoCacheResponse;
@@ -91,7 +85,6 @@ module.exports = {
   ethereum: {
     tvl: getEthereumTvl, // el staking + dai deposit + usdt deposit
     staking: stakings(addresses.elfiStaking, addresses.elfi),
-    pool2: pool2s(addresses.ethereumLPContracts, addresses.ethereumLPTokens),
   },
   bsc: {
     tvl: getBscTvl,
