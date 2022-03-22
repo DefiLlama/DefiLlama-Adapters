@@ -10,10 +10,12 @@ const addresses = {
     dai: "0x6b175474e89094c44da98b954eedeac495271d0f",
     usdt: "0xdac17f958d2ee523a2206206994597c13d831ec7",
     busd: "0x4fabb145d64652a948d72533023f6e7a623c7c53",
-    elfyStaking: [
+    elfiStaking: [
         "0xb41bcd480fbd986331eeed516c52e447b50dacb4",
         "0xCD668B44C7Cf3B63722D5cE5F655De68dD8f2750"
-    ]
+    ],
+    bscElfi: "0x6C619006043EaB742355395690c7b42d3411E8c0",
+    bscElfiStaking: ["0x73653254ED0F28D6E5A59191bbB38B06C899fBcA"],
 };
 
 async function getEthereumTvl(timestamp, block, chainBlocks) {
@@ -55,9 +57,10 @@ module.exports = {
     timetravel: false,
     ethereum: {
         tvl: getEthereumTvl,
-        staking: stakings(addresses.elfyStaking, addresses.elfi),
+        staking: stakings(addresses.elfiStaking, addresses.elfi),
     },
     bsc: {
       tvl: getBscTvl,
+      staking: stakings(addresses.bscElfiStaking, addresses.bscElfi, "bsc"),
     },
   }; // node test.js projects/elysia/index.js
