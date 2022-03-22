@@ -3,6 +3,7 @@ const axios = require("axios");
 const apiInfo = require("./apiInfo.json");
 const { stakings } = require("../helper/staking");
 const { toUSDTBalances } = require("../helper/balances");
+const { pool2s } = require("../helper/pool2");
 
 const addresses = {
   elfi: "0x4da34f8264cb33a5c9f17081b9ef5ff6091116f4",
@@ -17,6 +18,11 @@ const addresses = {
   ],
   bscElfi: "0x6C619006043EaB742355395690c7b42d3411E8c0",
   bscElfiStaking: ["0x73653254ED0F28D6E5A59191bbB38B06C899fBcA"],
+  ethereumLPContracts: ["0x1f98407aaB862CdDeF78Ed252D6f557aA5b0f00d"],
+  ethereumLPTokens: [
+    "0xbde484db131bd2ae80e44a57f865c1dfebb7e31f",
+    "0xc311faebe8802f9cfc91284016d1de9537ec66b7",
+  ],
 };
 let prices;
 let uniswapV3SubgraphCacheResponse, coinGeckoCacheResponse;
@@ -87,46 +93,12 @@ function getValueOfPool(balance, price, symbol) {
   return value;
 }
 
-async function getPool2() {
-  const daiPool = uniswapV3SubgraphCacheResponse.data.data.daiPool;
-  const ethPool = uniswapV3SubgraphCacheResponse.data.data.ethPool;
-
-  const elfiValueOfElfiDaiPool = getValueOfPool(
-    daiPool.totalValueLockedToken0,
-    prices.elfi.usd,
-    "elfiValueOfElfiDaiPool"
-  );
-  const daiValueOfElfiDaiPool = getValueOfPool(
-    daiPool.totalValueLockedToken1,
-    1,
-    "daiValueOfElfiDaiPool"
-  );
-  const elfiValueOfElfiEthPool = getValueOfPool(
-    ethPool.totalValueLockedToken0,
-    prices.elfi.usd,
-    "elfiValueOfElfiEthPool"
-  );
-  const ethValueOfElfiEthPool = getValueOfPool(
-    ethPool.totalValueLockedToken1,
-    prices.ethereum.usd,
-    "ethValueOfElfiEthPool"
-  );
-
-  const pool2 =
-    elfiValueOfElfiDaiPool +
-    daiValueOfElfiDaiPool +
-    elfiValueOfElfiEthPool +
-    ethValueOfElfiEthPool;
-  console.log(`getPool2 pool2 : ${pool2}`);
-  return toUSDTBalances(pool2);
-}
-
 module.exports = {
   timetravel: false,
   ethereum: {
     tvl: getEthereumTvl, // el staking + dai deposit + usdt deposit
     staking: stakings(addresses.elfiStaking, addresses.elfi),
-    pool2: getPool2,
+    pool2: pool2s(addresses.ethereumLPContracts, addresses.ethereumLPTokens),
   },
   bsc: {
     tvl: getBscTvl,
