@@ -43,5 +43,4 @@ module.exports = {
   xdai:{
     tvl: xdai
   },
-  tvl: sdk.util.sumChainTvls([xdai, celo])
 }

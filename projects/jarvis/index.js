@@ -45,7 +45,7 @@ const contracts = {
     version: 4, synthpoolRegistry: '0xaB77024DdC68A3Fe942De8dDb0014738ED01A5e5', 
   },
   bsc: { // 56
-    version: 5, synthpoolRegistry: '0x02c72Fc6C231eE0f0e313c966e2da5cb7a52B503', 
+    version: 5, synthpoolRegistry: '0x930A54D8Af945F6D1BED5AAF63b63fAb50a8197f', 
   },
   xdai: { // 100
     version: 5, synthpoolRegistry: '0x43a98e5C4A7F3B7f11080fc9D58b0B8A80cA954e', 
@@ -131,5 +131,5 @@ module.exports = {
   bsc: {
     tvl: chainTvl('bsc')
   }, 
-  'Methodology': 'Count collateral used to mint jFIAT - in v4 it is held by liquidityPools and synthCollateralContracts, in v5 only in liquidityPools'
+  methodology: 'Count collateral used to mint jFIAT - in v4 it is held by liquidityPools and synthCollateralContracts, in v5 only in liquidityPools'
 }

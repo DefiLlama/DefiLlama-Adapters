@@ -7,7 +7,7 @@ function fetchChain(chainId, staking) {
 
       let tvl = 0;
       const chain = response.data[chainId];
-      for (vault in chain) {
+      for (const vault in chain) {
         const isBIFI = vault.includes("bifi")
         if ((isBIFI && staking) || (!isBIFI && !staking)) {
           tvl += Number(chain[vault]);

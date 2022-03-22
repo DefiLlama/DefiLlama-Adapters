@@ -1,4 +1,7 @@
 const axios = require('axios')
+const { default: BigNumber } = require("bignumber.js")
+const sdk = require('@defillama/sdk')
+const { usdtAddress } = require('./balances')
 
 async function query(url, block) {
     let endpoint = `${process.env["TERRA_RPC"] ?? "https://lcd.terra.dev"}/wasm/${url}`
@@ -6,6 +9,27 @@ async function query(url, block) {
         endpoint += `&height=${block - (block % 100)}`
     }
     return (await axios.get(endpoint)).data.result
+}
+
+const fetchAssets = async (path) => {
+    return (await axios.get(`https://assets.terra.money${path}`))
+}
+
+async function queryV1Beta1(url, paginationKey, block) {
+    let endpoint = `${process.env["TERRA_RPC"] ?? "https://lcd.terra.dev"}/cosmos/${url}`
+    if (block !== undefined) {
+        endpoint += `?height=${block - (block % 100)}`
+    }
+    if (paginationKey) {
+        const paginationQueryParam = `pagination.key=${paginationKey}`
+        if (block === undefined) {
+            endpoint += "?"
+        } else {
+            endpoint += "&"
+        }
+        endpoint += paginationQueryParam
+    }
+    return (await axios.get(endpoint)).data
 }
 
 
@@ -50,9 +74,71 @@ async function unwrapLp(balances, lpToken, lpBalance, block) {
     balances[token1] = (balances[token1] ?? 0) + (amount1 * lpBalance / total_share)
 }
 
+const tokenMapping = {
+    'terra1xfsdgcemqwxp4hhnyk4rle6wr22sseq7j07dnn': { label: 'KIJU', decimals: 6, },
+    'terra188w26t95tf4dz77raftme8p75rggatxjxfeknw': { label: 'sKIJU', decimals: 6, },
+    'terra15k5r9r8dl8r7xlr29pry8a9w7sghehcnv5mgp6': { coingeckoId: 'lunaverse', decimals: 6, },
+    'terra1cl7whtrqmz5ldr553q69qahck8xvk80fm33qjx': { label: 'ALTO', decimals: 6, },
+    'terra1dy9kmlm4anr92e42mrkjwzyvfqwz66un00rwr5': { coingeckoId: 'valkyrie-protocol', decimals: 6, },
+    'terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76': { coingeckoId: 'anchor-protocol', decimals: 6, },
+    'terra15gwkyepfc6xgca5t5zefzwy42uts8l2m4g40k6': { coingeckoId: 'mirror-protocol', decimals: 6, },
+    'terra17y9qkl8dfkeg4py7n0g5407emqnemc3yqk5rup': { coingeckoId: 'stader-lunax', decimals: 6, },
+    'terra1hzh9vpxhsk8253se0vv5jj6etdvxu3nv8z07zu': { coingeckoId: 'anchorust', decimals: 6, },
+    'terra1kc87mu460fwkqte29rquh4hc20m54fxwtsx7gp': { coingeckoId: 'bonded-luna', decimals: 6, },
+    'uluna': { coingeckoId: 'terra-luna', decimals: 6, },
+    'uusd': { coingeckoId: 'terrausd', decimals: 6, },
+    'terra1dzhzukyezv0etz22ud940z7adyv7xgcjkahuun': { coingeckoId: 'anchor-beth-token', decimals: 6, },
+    'terra1z3e2e4jpk4n0xzzwlkgcfvc95pc5ldq0xcny58': { coingeckoId: 'avalanche-2', decimals: 6, },
+    'terra1nef5jf6c7js9x6gkntlehgywvjlpytm7pcgkn4': { label: 'LOOP', decimals: 6, },
+    'terra1vwz7t30q76s7xx6qgtxdqnu6vpr3ak3vw62ygk': { coingeckoId: 'luart', decimals: 6, },
+    'terra1xj49zyqrwpv5k928jwfpfy2ha668nwdgkwlrg3': { coingeckoId: 'astroport', decimals: 6, },
+}
+
+const TOKEN_LIST = Object.keys(tokenMapping).reduce((agg, key) => {
+    const { coingeckoId, label } = tokenMapping[key]
+    agg[coingeckoId || label] = key
+    return agg
+}, {})
+
+async function queryContractStore({ contract, queryParam, block }) {
+    if (typeof queryParam !== 'string') queryParam = JSON.stringify(queryParam)
+    const url = `contracts/${contract}/store?query_msg=${queryParam}`
+    return query(url, block)
+}
+
+function sumSingleBalance(balances, token, balance, price) {
+    const { coingeckoId, label, decimals = 0, } = tokenMapping[token] || {}
+
+    if (coingeckoId || (label && price)) {
+        token = coingeckoId || usdtAddress
+
+        if (decimals)
+            balance = BigNumber(balance).shiftedBy(-1 * decimals)
+
+        if (!coingeckoId)
+            balance = balance.multipliedBy(BigNumber(price)).shiftedBy(6)    // convert the value to USD
+
+        if (!balances[token])
+            balances[token] = BigNumber(0)
+        else if (typeof balances[token] === 'string')
+            balances[token] = BigNumber(balances[token]).shiftedBy(-1 * decimals)
+
+        balances[token] = balances[token].plus(balance)
+        return
+    }
+
+    sdk.util.sumSingleBalance(balances, token, balance)
+    return balances
+}
+
 module.exports = {
     getBalance,
     getDenomBalance,
     unwrapLp,
-    query
+    query,
+    queryV1Beta1,
+    fetchAssets,
+    queryContractStore,
+    sumSingleBalance,
+    TOKEN_LIST,
 }

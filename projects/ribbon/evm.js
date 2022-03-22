@@ -1,5 +1,6 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
+const { staking } = require("../helper/staking");
 
 // Ethereum Vaults
 const ethCallVault = "0x0fabaf48bbf864a3947bdd0ba9d764791a60467a";
@@ -16,6 +17,14 @@ const apeCallVault = "0xc0cF10Dd710aefb209D9dc67bc746510ffd98A53";
 // Avalanche Vaults
 const avaxCallVault = "0x98d03125c62DaE2328D9d3cb32b7B969e6a87787";
 
+// Avalanche Vaults
+const avaxCallVault = "0x98d03125c62DaE2328D9d3cb32b7B969e6a87787";
+const savaxCallVault = "0x6BF686d99A4cE17798C45d09C21181fAc29A9fb3";
+const usdcAvaxPutVault = "0x9DD6be071b4292cc88B8190aB718329adEA3E3a3";
+
+// Aurora Vaults
+const wnearCallVault = "0x7796d6B1706855303655EB12F54FaE294c468a66";
+
 // Treasury Vaults
 const perpCallVault = "0xe44eDF7aD1D434Afe3397687DD0A914674F2E405";
 
@@ -29,6 +38,11 @@ const ape = "0x4d224452801ACEd8B2F0aebE155379bb5D594381";
 
 // Avalanche Assets
 const wavax = "avax:0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7";
+
+// Avalanche Assets
+const wavax = "avax:0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7";
+const savax = "avax:0x2b2C81e08f1Af8835a78Bb2A90AE924ACE0eA4bE";
+const usdce = "avax:0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664";
 
 async function addVault(balances, vault, token, block, chain = "ethereum") {
   const totalBalance = await sdk.api.abi.call({
@@ -60,13 +74,33 @@ async function ethTvl(_, block) {
 
 async function avaxTvl(_, block) {
   const balances = {};
-  await Promise.all([addVault(balances, avaxCallVault, wavax, block, "avax")]);
+  await Promise.all([
+    addVault(balances, avaxCallVault, wavax, block, "avax"),
+    addVault(balances, savaxCallVault, savax, block, "avax"),
+    addVault(balances, usdcAvaxPutVault, usdce, block, "avax"),
+  ]);
   return balances;
 }
+
+async function auroraTvl(_, block) {
+  const balances = {};
+  await Promise.all([
+    addVault(balances, wnearCallVault, wnear, block, "aurora"),
+  ]);
+  return balances;
+}
+
+/**
+ * STAKING
+ */
+const RBN = "0x6123B0049F904d730dB3C36a31167D9d4121fA6B";
+const veRBN = "0x19854C9A5fFa8116f48f984bDF946fB9CEa9B5f7";
+const veRBNStaking = staking(veRBN, RBN, "ethereum");
 
 module.exports = {
   ethereum: {
     tvl: ethTvl,
+    staking: veRBNStaking,
   },
   avalanche: {
     tvl: avaxTvl,

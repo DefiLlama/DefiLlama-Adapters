@@ -20,7 +20,9 @@ const translateTokens = {
   "0x6dfe2aaea9daadadf0865b661b53040e842640f8": "0x514910771af9ca656af840dff83e8264ecf986ca",
   "0x920786cff2a6f601975874bb24c63f0115df7dc8": "0x6b175474e89094c44da98b954eedeac495271d0f",
   "0x49c68edb7aebd968f197121453e41b8704acde0c": "fantom:0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
-  "0x0665ef3556520b21368754fb644ed3ebf1993ad4": "0x6c3f90f043a72fa612cbac8115ee7e52bde6e490"
+  "0x0665ef3556520b21368754fb644ed3ebf1993ad4": "0x6c3f90f043a72fa612cbac8115ee7e52bde6e490",
+  // update below to binspirit when it lists on coingecko
+  "0x7345a537a975d9ca588ee631befddfef34fd5e8f": "fantom:0x5Cc61A78F164885776AA610fb0FE1257df78E59B"
 }
 
 async function handleMooTokens(balances, block, chain, tokens) {
@@ -203,6 +205,16 @@ async function polygon(timestamp, block, chainBlocks) {
       chain: "polygon",
     })
   ).output / 10 ** 12;
+
+  balances['0x3f382dbd960e3a9bbceae22651e88158d2791550'] = (
+    await sdk.api.erc20.balanceOf({
+      target: "0x51195e21BDaE8722B29919db56d95Ef51FaecA6C",
+      owner: "0x1f0aa72b980d65518e88841ba1da075bd43fa933",
+      block: chainBlocks.polygon,
+      chain: "polygon",
+    })
+  ).output;
+
   return balances;
 }
 
@@ -338,7 +350,7 @@ async function fantom(timestamp, block, chainBlocks) {
       "0xD8dd2EA228968F7f043474Db610A20aF887866c7",
       "0xd14dd3c56d9bc306322d4cea0e1c49e9ddf045d4"
     ]
-  ];
+  ];  
   await handleMooLPs(balances, chainBlocks.fantom, chain, ftmLPs);
 
   await sumTokens(
@@ -347,6 +359,10 @@ async function fantom(timestamp, block, chainBlocks) {
       [
         "0xa48d959ae2e88f1daa7d5f611e01908106de7598",
         "0xf18F4847a5Db889B966788dcbDbcBfA72f22E5A6",
+      ],
+      [
+        "0x7345a537A975d9Ca588eE631BEFdDfEF34fD5e8f",
+        "0xedF25e618E4946B05df1E33845993FfEBb427A0F",
       ]
     ],
     chainBlocks.fantom,
@@ -487,23 +503,22 @@ module.exports = {
   misrepresentedTokens: true,
   methodology:
     "TVL counts the AAVE tokens that are deposited within the Yield Instruments section of QiDao, the Vault token deposits of CRV, LINK, AAVE and WETH, as well as USDC deposited to mint MAI.",
-  polygon: {
+ polygon: {
     tvl: polygon,
   },
   fantom: {
     tvl: fantom,
   },
-  avalanche: {
+  avalanche: { 
     tvl: avax,
   },
-  moonriver: {
+  moonriver: { 
     tvl: moonriver,
   },
-  harmony: {
+  harmony: { 
     tvl: harmony,
   },
-  xdai: {
+  xdai: { 
     tvl: xdai
-  }
+  },
 };
-// node test.js projects/qidao/index.js

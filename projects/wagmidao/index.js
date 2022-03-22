@@ -30,7 +30,7 @@ const bondContracts = [
 const GMI = "0x8750f5651af49950b5419928fecefca7c82141e3";
 const FAM = "0x53cba17b4159461a8f9bc0ed5785654370549b7d";
 
-const Treasury = async (chainBlocks) => {
+const Treasury = async (timesamp, ethBlock, chainBlocks) => {
   const balances = {};
 
   const tokenAddresses = (
@@ -132,7 +132,6 @@ async function harmonyTvl(timestamp, _ethBlock, chainBlocks) {
 module.exports = {
   timetravel: true,
   harmony: {
-    treasury: Treasury,
     staking: Staking,
     tvl: sdk.util.sumChainTvls([harmonyTvl, Treasury]),
   },
