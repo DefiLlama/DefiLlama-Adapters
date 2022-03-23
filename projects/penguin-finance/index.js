@@ -34,7 +34,7 @@ const TokenSwapLayout = BufferLayout.struct([
 
 const connection = new Connection(SOLANA_API_URL);
 
-// Calculate BUD token price in relation to any coin it is paired with on the DEX that is listed on Coingecko
+// Derives BUD price as a ratio compared to another token it is paired with that has been listed on Coingecko
 function getBUDPrice(poolsTokenAccounts, tokenMap, validTokenAddresses) {
   for (tokenAccounts of poolsTokenAccounts) {
     const poolTokens = tokenAccounts.value.filter((account) =>
@@ -46,7 +46,7 @@ function getBUDPrice(poolsTokenAccounts, tokenMap, validTokenAddresses) {
     const amount1 = poolTokens[0].account.data.parsed.info.tokenAmount.uiAmount;
     const amount2 = poolTokens[1].account.data.parsed.info.tokenAmount.uiAmount;
 
-    // Return BUD at 1:1 conversion rate -- this prevents less accurate conversions in the future if BUD is added to Coingecko after the time of writing this code
+    // Checks if BUD has been added to Coingecko after the time this code was written
     if (token1.symbol === BUD_TOKEN_SYMBOL && token1.extensions.coingeckoId) {
       return { rate: amount1, symbol: token1.extensions.coingeckoId };
     }
@@ -177,7 +177,7 @@ function tvl(calculatePool2) {
     );
 
     const balances = {};
-    // Perform requests serially to avoid rate limiting
+
     filteredPools.forEach((tokenAccounts) => {
       const poolTokens = tokenAccounts.value.filter((account) =>
         validTokenAddresses.has(account.account.data.parsed.info.mint)
@@ -191,10 +191,10 @@ function tvl(calculatePool2) {
       let amount1 = poolTokens[0].account.data.parsed.info.tokenAmount.uiAmount;
       let amount2 = poolTokens[1].account.data.parsed.info.tokenAmount.uiAmount;
 
-      // Future proofing - only add this pools tokens to balances if one of the pools tokens are listed on Coingecko
-      // As of March 23, 2022 all of Penguin Finance pools have
+      // Future proofing - only add this pool's tokens to balances if one of the pool's tokens are listed on Coingecko
+      // As of March 23, 2022 all of Penguin Finance pools have at least one token listed on Coingecko
       if (symbol1 || symbol2) {
-        // If one of the pool's tokens is not on Coingecko we will double the amount of the other token to get a TVL estimation
+        // If one of the pool's tokens is not on Coingecko we will double the amount of the other token to get a pool TVL estimation
         if (!symbol1 && symbol2) {
           amount2 *= 2;
           balances[symbol2] = (balances[symbol2] ?? 0) + amount2;
