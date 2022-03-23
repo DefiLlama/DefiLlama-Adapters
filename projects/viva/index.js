@@ -21,7 +21,7 @@ async function fetch() {
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
-  vive:{
+  vite:{
     fetch: viva
   },
   fetch: viva
