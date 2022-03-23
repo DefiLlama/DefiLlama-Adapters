@@ -4,13 +4,13 @@ const path = require('path')
 const projectsFolder = path.join(__dirname, '..')
 
 const files = fs.readdirSync(projectsFolder, { withFileTypes: true })
+const whitelistedKeys = require('./whitelistedExportKeys.json')
 
 const projectNames = []
 const rModules = []
 const projectMissingChainNames = []
 const keysCount = {}
 const chainCount = {}
-const whitelistedKeys = ['tvl', 'staking', 'methodology', 'pool2', 'misrepresentedTokens', 'fetch', 'timetravel', 'borrowed', 'start', 'masterchef', 'doublecounted', 'treasury', 'hallmarks', 'incentivized' ]
 
 
 files.forEach(i => {
@@ -42,7 +42,7 @@ function getModule(fPath, projectName) {
   delete module.hallmarks
   if (typeof module.tvl === 'function') {
     const chainsWithTVL = Object.keys(module).filter(chain => typeof module[chain] === 'object' && typeof module[chain].tvl === 'function')
-    if (chainsWithTVL.length)  console.log('I am confused:', projectName, chainsWithTVL)
+    if (chainsWithTVL.length) console.log('I am confused:', projectName, chainsWithTVL)
     else module.ethereum = { tvl: module.tvl }
     delete module.tvl
   }
@@ -60,8 +60,8 @@ function getModule(fPath, projectName) {
 }
 
 function addKey(key, label) {
-  if (whitelistedKeys.includes(key))  return;
-  if(!keysCount[key]) keysCount[key] = []
+  if (whitelistedKeys.includes(key)) return;
+  if (!keysCount[key]) keysCount[key] = []
   keysCount[key].push(label)
 }
 
