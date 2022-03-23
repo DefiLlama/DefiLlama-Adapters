@@ -42,6 +42,8 @@ module.exports = {
     arbitrum: {
         fetch: fetchArbitrum,
     },
-    pool2,
+    pool2: {
+        fetch: pool2
+    },
     fetch,
 }
