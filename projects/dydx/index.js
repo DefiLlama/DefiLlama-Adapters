@@ -41,8 +41,8 @@
   }
 
   module.exports = {
-    stat: 1538179200,  // 09/29/2018 @ 12:00am (UTC)
-    etherum: { tvl },
+    start: 1538179200,  // 09/29/2018 @ 12:00am (UTC)
+    ethereum: { tvl },
    hallmarks:[
     [1611630974, "Series B $10M"],
     [1623726974, "Series C $65M"],
