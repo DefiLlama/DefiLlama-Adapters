@@ -27,14 +27,14 @@ const priceInUSD = (value, decimals, price) => {
 async function fetch(borrow) {
     const { reserves } = await request(graphUrl, graphQuery);
     const tvl = reserves.reduce((sum, reserve) => {
-        const value = borrow ? reserve.totalLiquidity - reserve.availableLiquidity : reserve.totalDeposits;
+        const value = borrow ? reserve.availableLiquidity : reserve.totalLiquidity;
         return sum + +priceInUSD(value, reserve.decimals, reserve.price.priceInEth);        
     }, 0);
     
     return toUSDTBalances(tvl);
 }
 
-async function borrow(_timestamp, _ethBlock, chainBlocks){
+async function borrowed(_timestamp, _ethBlock, chainBlocks){
     return await fetch(true);
 }
 
@@ -45,6 +45,6 @@ async function tvl(_timestamp, _ethBlock, chainBlocks){
 module.exports = {
     fantom:{
         tvl,
-        borrow,
+        borrowed,
     },
 };
