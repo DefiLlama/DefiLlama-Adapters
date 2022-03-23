@@ -220,9 +220,6 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 }
 
 module.exports = {
-  name: "Bagel Finance",
-  token: "Bagel",
-  category: "lending",
   start: 1602054167,
   tvl,
 };

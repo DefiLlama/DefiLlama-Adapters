@@ -56,11 +56,8 @@ async function getEthereumTvl(timestamp, block, chainBlocks) {
   ).output;
 
   sdk.util.sumSingleBalance(balances, addresses.el, elStakingValue);
-  console.log(`balances ${JSON.stringify(balances)}`);
   sdk.util.sumSingleBalance(balances, addresses.dai, reserves[0].totalDeposit);
-  console.log(`balances ${JSON.stringify(balances)}`);
   sdk.util.sumSingleBalance(balances, addresses.usdt, reserves[1].totalDeposit);
-  console.log(`balances ${JSON.stringify(balances)}`);
 
   return balances;
 }

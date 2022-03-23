@@ -74,10 +74,7 @@ async function pool2X(...args) {
 }
 
 module.exports = {
-    name: 'GOGOcoin',
     timetravel: true,
-    website: 'https://app.gogocoin.io',
-    token: 'GOGO',
     start: 1638388550,
     polygon: {
         staking: stakingX,
