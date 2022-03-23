@@ -115,4 +115,32 @@ module.exports = [
         },
     },
 
+    {
+        dataIndex: 38,
+        id: 'rocketpooleth',
+        name: 'rocketpooleth',
+        coins: [
+            coins.rETH,
+            coins.wstETH,
+        ],
+        addresses: {
+            swap: '0x447Ddd4960d9fdBF6af9a790560d0AF76795CB08',
+            lpToken: '0x447Ddd4960d9fdBF6af9a790560d0AF76795CB08',
+        },
+    },
+
+    {
+        dataIndex: 38,
+        id: 'ust-wormhole',
+        name: 'ust-wormhole',
+        coins: [
+            coins.ust,
+            coins.crv3pool
+        ],
+        addresses: {
+            swap: '0xCEAF7747579696A2F0bb206a14210e3c9e6fB269',
+            lpToken: '0xCEAF7747579696A2F0bb206a14210e3c9e6fB269',
+        },
+    },
+
 ];
