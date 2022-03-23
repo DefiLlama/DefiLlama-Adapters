@@ -324,7 +324,42 @@ const crvPools = {
           "0x5228a22e72ccC52d415EcFd199F99D0665E7733b",
           "0x075b1bb99792c9e1041ba13afef80c91a1e70fb3",
         ]
-    }
+    },
+    // TOKEMAKS START
+    "0x9462f2b3c9beea8afc334cdb1d1382b072e494ea": {
+        swapContract: "0x9462f2b3c9beea8afc334cdb1d1382b072e494ea",
+        underlyingTokens: ["0x6BeA7CFEF803D1e3d5f7C0103f7ded065644e197"]
+    },
+    "0x50b0d9171160d6eb8aa39e090da51e7e078e81c4": {
+        swapContract: "0x50b0d9171160d6eb8aa39e090da51e7e078e81c4",
+        underlyingTokens: ["0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F"]
+    },
+    "0xcaf8703f8664731ced11f63bb0570e53ab4600a9": {
+        swapContract: "0xcaf8703f8664731ced11f63bb0570e53ab4600a9",
+        underlyingTokens: ["0x4104b135DBC9609Fc1A9490E61369036497660c8"]
+    },
+    "0x01fe650ef2f8e2982295489ae6adc1413bf6011f": {
+        swapContract: "0x01fe650ef2f8e2982295489ae6adc1413bf6011f",
+        underlyingTokens: ["0x9C4A4204B79dd291D6b6571C5BE8BbcD0622F050"]
+    },
+    "0xc250b22d15e43d95fbe27b12d98b6098f8493eac": {
+        swapContract: "0xc250b22d15e43d95fbe27b12d98b6098f8493eac",
+        underlyingTokens: ["0xc770EEfAd204B5180dF6a14Ee197D99d808ee52d"]
+    },
+    "0x0437ac6109e8a366a1f4816edf312a36952db856": {
+        swapContract: "0x0437ac6109e8a366a1f4816edf312a36952db856",
+        underlyingTokens: ["0x6B3595068778DD592e39A122f4f5a5cF09C90fE2"]
+    },
+    "0x9001a452d39a8710d27ed5c2e10431c13f5fba74": {
+        swapContract: "0x9001a452d39a8710d27ed5c2e10431c13f5fba74",
+        underlyingTokens: ["0xdBdb4d16EdA451D0503b854CF79D55697F90c8DF"]
+    },
+    "0x961226b64ad373275130234145b96d100dc0b655": {
+        swapContract: "0x961226b64ad373275130234145b96d100dc0b655",
+        underlyingTokens: ["0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0"]
+    },
+    // TOKEMAKS END
+
 }
 const yearnVaults = {
     // yvToken: underlying, eg yvYFI:YFI
@@ -376,7 +411,7 @@ async function unwrapYearn(balances, yToken, block, chain = "ethereum", transfor
         (await sdk.api.erc20.decimals(underlying, chain)).output);
     delete balances[(chain == 'ethereum' ? yToken : `${chain}:${yToken}`)];
 };
-async function unwrapCrv(balances, crvToken, balance3Crv, block, chain = "ethereum", transformAddress=(addr)=>addr, excludeTokensRaw=[]) {
+async function unwrapCrv(balances, crvToken, lpBalance, block, chain = "ethereum", transformAddress=(addr)=>addr, excludeTokensRaw=[]) {
     const excludeTokens = excludeTokensRaw.map(addr=>addr.toLowerCase())
     if(crvPools[crvToken.toLowerCase()] === undefined){
         return
@@ -408,7 +443,7 @@ async function unwrapCrv(balances, crvToken, balance3Crv, block, chain = "ethere
         if (excludeTokens.includes(call.input.target.toLowerCase())) {
             return;
         }
-        const underlyingBalance = BigNumber(call.output).times(balance3Crv).div(resolvedCrvTotalSupply);
+        const underlyingBalance = BigNumber(call.output).times(lpBalance).div(resolvedCrvTotalSupply);
         sdk.util.sumSingleBalance(balances, transformAddress(call.input.target), underlyingBalance.toFixed(0))
     })
 }
