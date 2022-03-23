@@ -288,5 +288,4 @@ module.exports = {
   rsk: {
     tvl: rsk,
   },
-  tvl: sdk.util.sumChainTvls([rsk]),
 };
