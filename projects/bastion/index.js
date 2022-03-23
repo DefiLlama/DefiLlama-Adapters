@@ -18,34 +18,52 @@ const multiChainRealmExport = compoundExports(
   "aurora"
 );
 
-const bastion = [mainHubExport, auroraRealmExport, multiChainRealmExport];
+const stakedNearRealmExport = compoundExports(
+  "0xE550A886716241AFB7ee276e647207D7667e1E79",
+  "aurora"
+);
+
+const bastion = [
+  mainHubExport,
+  auroraRealmExport,
+  multiChainRealmExport,
+  stakedNearRealmExport,
+];
 
 module.exports = {
   timetravel: true,
   aurora: {
     tvl: async (...args) => {
-      let balances = {}
+      let balances = {};
       for (const realm of bastion) {
-        const realmBalances = await realm.tvl(...args)
+        const realmBalances = await realm.tvl(...args);
         for (const underlyingAddress of Object.keys(realmBalances)) {
           if (underlyingAddress in balances) {
-            balances[underlyingAddress] = bigNumberify(balances[underlyingAddress]).add(bigNumberify(realmBalances[underlyingAddress])).toString()
+            balances[underlyingAddress] = bigNumberify(
+              balances[underlyingAddress]
+            )
+              .add(bigNumberify(realmBalances[underlyingAddress]))
+              .toString();
           } else {
-            balances[underlyingAddress] = realmBalances[underlyingAddress]
+            balances[underlyingAddress] = realmBalances[underlyingAddress];
           }
         }
       }
-      return balances
+      return balances;
     },
     borrowed: async (...args) => {
-      let balances = {}
+      let balances = {};
       for (const realm of bastion) {
-        const realmBalances = await realm.borrowed(...args)
+        const realmBalances = await realm.borrowed(...args);
         for (const underlyingAddress of Object.keys(realmBalances)) {
           if (underlyingAddress in balances) {
-            balances[underlyingAddress] = bigNumberify(balances[underlyingAddress]).add(bigNumberify(realmBalances[underlyingAddress])).toString()
+            balances[underlyingAddress] = bigNumberify(
+              balances[underlyingAddress]
+            )
+              .add(bigNumberify(realmBalances[underlyingAddress]))
+              .toString();
           } else {
-            balances[underlyingAddress] = realmBalances[underlyingAddress]
+            balances[underlyingAddress] = realmBalances[underlyingAddress];
           }
         }
       }
