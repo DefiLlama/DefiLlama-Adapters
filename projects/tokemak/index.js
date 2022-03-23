@@ -1,5 +1,6 @@
 const sdk = require('@defillama/sdk')
-const { sumTokens, sumTokensAndLPs } = require('../helper/unwrapLPs')
+const { sumTokens, sumTokensAndLPs, unwrapCrv, unwrapUniswapLPs } = require('../helper/unwrapLPs')
+const abi = require("../pendle/abi.json");
 
 const degenesisContract = "0xc803737D3E12CC4034Dde0B2457684322100Ac38";
 const wethPool = "0xD3D13a578a53685B4ac36A1Bab31912D2B2A2F36";
@@ -34,9 +35,14 @@ const apwPool = "0xDc0b02849Bb8E0F126a216A2840275Da829709B0";
 const apw = "0x4104b135dbc9609fc1a9490e61369036497660c8";
 const snxPool = "0xeff721Eae19885e17f5B80187d6527aad3fFc8DE";
 const snx = "0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f";
+const slp = "0xd4e7a6e2d03e4e48dfc27dd3f46df1c176647e38"
+const slpStaking = "0x8858a739ea1dd3d80fe577ef4e0d03e88561faa3"
+const uni = "0x5fa464cefe8901d66c09b85d5fcdc55b3738c688"
+const uniStaking = "0x1b429e75369ea5cd84421c1cc182cee5f3192fd3"
 
 async function tvl(timestamp, block) {
   const balances = {}
+
   await sumTokens(balances, [
     [weth, degenesisContract],
     [usdc, degenesisContract],
@@ -56,7 +62,61 @@ async function tvl(timestamp, block) {
     [apw, apwPool],
     [snx, snxPool]
   ], block)
+
+  // let curveHoldings = response.exchanges.filter(
+  //   pool => pool.type == 'Curve')
+  // let uniHoldings = response.exchanges.filter(
+  //   pool => pool.type != 'Curve')
+
+  // await lpBalances(block, balances, curveHoldings)
+  // await lpBalances(block, balances, uniHoldings)
+
   return balances
+}
+
+async function lpBalances(block, balances, holdings) {
+  const manager = "0xA86e412109f77c45a3BC1c5870b880492Fb86A14"
+  let masterChef
+  switch (holdings[0].type) {
+    case 'Curve':
+      masterChef = "0x5F465e9fcfFc217c5849906216581a657cd60605"; break;
+    default:
+      masterChef = "0xc2EdaD668740f1aA35E4D8f227fB8E17dcA888Cd"; break;
+  }
+
+  let lpPositions = []
+  for (let pool of holdings) {
+    const wallet = (await sdk.api.abi.call({
+      block,
+      target: pool.pool_address,
+      abi: 'erc20:balanceOf',
+      params: [ manager ]
+    })).output;
+
+    if (wallet > 0) {
+      holdings[0].type == 'Curve' ?
+      await unwrapCrv(balances, pool.pool_address, wallet) :
+      lpPositions.push({ balance: wallet, token: pool.pool_address })
+    }
+
+    if (!pool.hasOwnProperty('staking')) {
+      continue
+    }
+
+    const staked = (await sdk.api.abi.call({
+      block,
+      target: masterChef,
+      abi: abi.userInfo,
+      params: [pool.staking.pool_id, manager]
+    })).output.amount;
+
+    if (staked > 0) {
+      holdings[0].type == 'Curve' ?
+      await unwrapCrv(balances, pool.pool_address, staked) :
+      lpPositions.push({ balance: staked, token: pool.pool_address })
+    }
+  }
+  await unwrapUniswapLPs(balances, lpPositions, block)
 }
 
 async function staking(timestamp, block) {
@@ -67,10 +127,6 @@ async function staking(timestamp, block) {
   return balances
 }
 
-const slp = "0xd4e7a6e2d03e4e48dfc27dd3f46df1c176647e38"
-const slpStaking = "0x8858a739ea1dd3d80fe577ef4e0d03e88561faa3"
-const uni = "0x5fa464cefe8901d66c09b85d5fcdc55b3738c688"
-const uniStaking = "0x1b429e75369ea5cd84421c1cc182cee5f3192fd3"
 async function pool2(timestamp, block) {
   const balances = {}
   await sumTokensAndLPs(balances, [
