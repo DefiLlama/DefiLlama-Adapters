@@ -16,7 +16,7 @@ function fetch(chainId) {
 }
 
 module.exports = {
-  methodology: "USD value of native assets currently held by Wormhole contracts. Token prices sourced from CoinGecko.",
+  methodology: "USD value of native assets currently held by Portal contracts. Token prices sourced from CoinGecko.",
   solana: {
     fetch: fetch("1")
   },
