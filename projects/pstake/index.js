@@ -118,5 +118,4 @@ module.exports = {
     tvl: eth,
     pool2: pool2,
   },
-  // tvl: sdk.util.sumChainTvls([eth]),
 };

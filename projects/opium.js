@@ -112,10 +112,4 @@ module.exports = {
   [CHAINS.ARBITRUM]: {
     tvl: arbitrumTvl
   },
-  tvl: sdk.util.sumChainTvls([
-    ethTvl,
-    polygonTvl,
-    bscTvl,
-    arbitrumTvl
-  ])
 };

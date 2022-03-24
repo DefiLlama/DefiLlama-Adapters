@@ -1,6 +1,7 @@
 const { staking } = require("../helper/staking");
 const sdk = require('@defillama/sdk')
 const {calculateUsdUniTvl} = require('../helper/getUsdUniTvl')
+const {uniTvlExport} = require('../helper/calculateUniTvl')
 
 const stakingAddresses = [
     "0x1d37f1e6f0cce814f367d2765ebad5448e59b91b",
@@ -10,18 +11,15 @@ const idia = "0x0b15ddf19d47e6a86a56148fb4afffc6929bcb89"
 
 module.exports={
     bsc:{
-        tvl: calculateUsdUniTvl(
+        tvl: sdk.util.sumChainTvls([
+            uniTvlExport(
             //factory
             "0x918d7e714243F7d9d463C37e106235dCde294ffC", 
-            "bsc", 
-            "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c", 
-            [
-                //IF
-                "0xb0e1fc65c1a741b4662b813eb787d369b8614af1",
-                //STAX
-                "0x0da6ed8b13214ff28e9ca979dd37439e8a88f6c4"
-            ], 
-            "wbnb"),
+            "bsc"),
+            uniTvlExport("0x4233ad9b8b7c1ccf0818907908a7f0796a3df85f", "bsc", ()=>addr=>`bsc:${addr}`, {
+                getReserves: {"inputs":[],"name":"getReserves","outputs":[{"internalType":"uint256","name":"_reserve0","type":"uint256"},{"internalType":"uint256","name":"_reserve1","type":"uint256"}],"stateMutability":"view","type":"function"}
+            })
+        ]),
         staking: sdk.util.sumChainTvls(stakingAddresses.map(a=>staking(a, idia, "bsc")))
     }
 }

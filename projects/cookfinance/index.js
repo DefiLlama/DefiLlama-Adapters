@@ -173,7 +173,7 @@ async function alpacaUnderlyingTokenAndBalance(component, componentBalance, bloc
   componentBalance = new BigNumber(componentBalance);
   underlyingTokenTotalSupply = new BigNumber(underlyingTokenTotalSupply);
   ibTokenTotalSupply = new BigNumber(ibTokenTotalSupply);
-  const underlyingTokenBalance = componentBalance.times(underlyingTokenTotalSupply).idiv(ibTokenTotalSupply).toString();
+  const underlyingTokenBalance = componentBalance.times(underlyingTokenTotalSupply).idiv(ibTokenTotalSupply).toNumber();
   return {
     'underlyingToken': underlyingToken,
     'underlyingTokenBalance': underlyingTokenBalance
@@ -203,7 +203,7 @@ async function venusUnderlyingTokenAndBalance(component, componentBalance, block
   });
   componentBalance = new BigNumber(componentBalance);
   exchangeRateStored = new BigNumber(exchangeRateStored);
-  const underlyingTokenBalance = componentBalance.times(exchangeRateStored).idiv(new BigNumber('1e+18')).toString();
+  const underlyingTokenBalance = componentBalance.times(exchangeRateStored).idiv(new BigNumber('1e+18')).toNumber();
   return {
     'underlyingToken': underlyingToken,
     'underlyingTokenBalance': underlyingTokenBalance

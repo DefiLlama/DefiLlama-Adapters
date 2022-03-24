@@ -115,5 +115,4 @@ module.exports = {
     polygon: {
         tvl
     },
-    tvl
 }

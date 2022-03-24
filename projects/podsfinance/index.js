@@ -25,5 +25,4 @@ module.exports = {
   arbitrum: {
     tvl: getArbitrumTVL
   },
-  tvl: sdk.util.sumChainTvls([getEthereumTVL, getPolygonTVL, getArbitrumTVL])
 }
