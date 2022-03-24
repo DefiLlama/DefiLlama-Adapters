@@ -22,5 +22,5 @@ module.exports = {
         tvl: () => ({}),
         staking,
       },
-    methodology: "We count all RING deposited into wRING contract, which has been locked by users",
+    methodology: "We count all RING deposited into wRING contract",
 };
