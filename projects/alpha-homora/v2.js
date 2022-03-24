@@ -135,7 +135,7 @@ async function tvlV2Onchain(block, chain) {
     });
     const lpPools = masterchefLpTokens.map((amount, i) => ({
         balance: amount.output.amount,
-        token: pools[i].lpTokenAddress
+        token: pools.filter(p => p.pid !== undefined)[i].lpTokenAddress
     }))
     const { output: stakingPoolsLpTokens } = await sdk.api.abi.multiCall({
         calls: pools.filter(p => p.pid === undefined).map((pool) => ({
