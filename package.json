@@ -35,6 +35,8 @@
     "graph-results-pager": "^1.0.3",
     "graphql": "^15.5.0",
     "graphql-request": "^3.6.1",
+    "inquirer": "^8.2.1",
+    "inquirer-fuzzy-path": "^2.3.0",
     "js-yaml": "^4.1.0",
     "moment": "^2.29.1",
     "node-fetch": "2.6.7",
