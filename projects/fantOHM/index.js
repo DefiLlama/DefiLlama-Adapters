@@ -327,7 +327,7 @@ module.exports = {
 	},
 	moonriver: {
 		tvl: moonriverTvl,
-		staking: staking(moonriverStaking, moonriverFhm, "moonriver", addr = "fantom:0xfa1FBb8Ef55A4855E5688C0eE13aC3f202486286")
+		staking: staking(moonriverStaking, moonriverFhm, "moonriver", "fantom:0xfa1FBb8Ef55A4855E5688C0eE13aC3f202486286")
 	},
 	ethereum: {
 		tvl: ethTvl
