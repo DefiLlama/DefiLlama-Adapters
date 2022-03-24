@@ -30,10 +30,10 @@ async function tvl() {
 
   // new contracts
   const newLiquidityPoolLocked = await getLockedLovelace(
-    "addr1zxhygvl54d7gdkvca5c7fenzqplct8458kh3yyp0f3nhyyzj2c79gy9l76sdg0xwhd7r0c0kna0tycz4y5s6mlenh8pqalueg9"
+    "addr1z8snz7c4974vzdpxu65ruphl3zjdvtxw8strf2c2tmqnxz2j2c79gy9l76sdg0xwhd7r0c0kna0tycz4y5s6mlenh8pq0xmsha"
   );
   const newBatchOrderLocked = await getLockedLovelace(
-    "addr1w864yj94neen54cyqaa5zrutfdgwg2xeq35ydssgsc04k7suzd8cr"
+    "addr1wxn9efv2f6w82hagxqtn62ju4m293tqvw0uhmdl64ch8uwc0h43gt"
   );
   const newTVL = newLiquidityPoolLocked * 2 + newBatchOrderLocked;
 
