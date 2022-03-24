@@ -77,7 +77,7 @@ function chainTvl(chain) {
 
 module.exports = {
   timetravel: true,
-  misrepresentedtokens: false,
+  misrepresentedTokens: false,
   doublecounted: false,
   methodology:
     "Biconomy TVL is the USD value of token balances in the Hyphen 2.0 contracts.",
