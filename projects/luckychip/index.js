@@ -4,7 +4,7 @@ const { getBlock } = require('../helper/getBlock');
 const { transformBscAddress } = require('../helper/portedTokens');
 const { stakingPricedLP } = require("../helper/staking");
 
-tokenHolderMap = [
+const tokenHolderMap = [
     {
       tokens: [],
       holders: [
@@ -30,9 +30,9 @@ function normalizeArray(arrayOrString){
     }
 }
 
-async function tvl(timestamp, block, chainBlocks) {
+async function tvl(timestamp, ethBlock, chainBlocks) {
     const transform = await transformBscAddress();
-    block = await getBlock(timestamp, "bsc", chainBlocks);
+    const block = await getBlock(timestamp, "bsc", chainBlocks);
 
     const tokensAndHolders = []
     let ethHolders = []
