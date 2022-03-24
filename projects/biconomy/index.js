@@ -2,7 +2,7 @@ const { getBlock } = require("../helper/getBlock");
 const sdk = require("@defillama/sdk");
 const { sumTokens } = require("../helper/unwrapLPs");
 const { returnEthBalance } = require("../helper/utils");
-const { chainToCoingeckoId } = require("@defillama/sdk/build/computeTVL");
+const { getChainTransform } = require("../helper/portedTokens");
 
 const bridgeContracts = {
   ethereum: ["0x2A5c2568b10A0E826BfA892Cf21BA7218310180b"],
@@ -31,6 +31,7 @@ const bridgeTokens = [
   {
     // BICO
     ethereum: "0xF17e65822b568B3903685a7c9F496CF7656Cc6C2",
+    polygon: "0x91c89A94567980f0e9723b487b0beD586eE96aa7",
   },
 ];
 
@@ -44,16 +45,8 @@ function chainTvl(chain) {
           return;
         }
 
-        let tokenAddress;
-        // Use the Ethereum address if possible.
-        if (token.coingecko) {
-          // Some tokens don't have the Ethereum address registered on Coingecko.
-          tokenAddress = token.coingecko;
-        } else if (!token.ethereum || chainToCoingeckoId[chain]) {
-          tokenAddress = chain + ":" + token[chain];
-        } else {
-          tokenAddress = token.ethereum;
-        }
+        const chainTransform = await getChainTransform(chain);
+        const tokenAddress = await chainTransform(token[chain]);
 
         if (bridgeContracts[chain] !== undefined) {
           await sumTokens(
