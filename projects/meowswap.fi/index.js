@@ -22,8 +22,8 @@ async function fetch(){
             const FindPair = allToken.find((obj) => {
                 return obj.firstAsset.assetId === rowSt.token1;
             });
-            rowSt.token2_lock_summ_in_usd = adaUsd * rowSt?.pair_sum_q1;
-            rowSt.token1_lock_summ_in_usd = adaUsd * rowSt?.pair_sum_q2 * FindPair?.exchange ?? 0;
+            rowSt.token2_lock_summ_in_usd = adaUsd * rowSt?.pair_sum_q2;
+            rowSt.token1_lock_summ_in_usd = adaUsd * rowSt?.pair_sum_q1 * FindPair?.exchange ?? 0;
         }
         rowSt.tvl_valid = rowSt.token1_lock_summ_in_usd + rowSt.token2_lock_summ_in_usd;
         totalLiquid += rowSt.tvl_valid;
