@@ -75,6 +75,7 @@ async function tvl(_, _ethBlock, chainBlocks) {
 }
 
 module.exports = {
+  rekt: true,
   misrepresentedTokens: true,
   methodology: 'Using the same methodology applied to other lending platforms, TVL for Mensa consists deposits made to the protocol and borrowed tokens are not counted.',
   fantom:{
