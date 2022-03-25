@@ -15,7 +15,7 @@ async function tvl(timestamp, ethBlock, { terra: block }) {
   const positions = [...Array(+next_position_id).keys()]
     .map((_value, position) => ({ chain_id: 3, position_id: `${position}` }))
 
-  const chunkSize = 100
+  const chunkSize = 50
   for (let i = 0; i < positions.length; i += chunkSize) {
     await Promise.all(positions.slice(i, i + chunkSize)
       .map(async position => {
