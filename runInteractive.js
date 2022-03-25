@@ -27,6 +27,7 @@ async function run() {
   adapterPath = response.adapterPath
 
   while (true) {
+    adapterPrompt.default = adapterPath
     await runAdapter(adapterPath, debugMode)
     const answer = await inquirer.prompt([adapterPrompt])
     adapterPath = answer.adapterPath
@@ -34,15 +35,12 @@ async function run() {
 }
 
 async function runAdapter(adapterPath, debugMode) {
-  const env = {}
-  if (debugMode)
-    env.DEBUG_MODE_ENABLED = true
   const startTime = Date.now()
   return new Promise((resolve, reject) => {
     const env = {}
 
     if (debugMode)
-      env.DEBUG_MODE_ENABLED = true
+      env.LLAMA_DEBUG_MODE = true
 
     const startTime = Date.now()
 
