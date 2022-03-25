@@ -52,6 +52,5 @@ module.exports = {
   avalanche: {
     tvl: avaxTvl,
   },
-  tvl: sdk.util.sumChainTvls([avaxTvl]),
   methodology: `We count as TVL all the assets deposited in JITU contract`,
 };

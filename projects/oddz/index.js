@@ -99,29 +99,16 @@ async function avaxStaking(timestamp, block, chainBlocks) {
   return getTotalCollateral(avaxStakingPool, "avax", chainBlocks["avax"]);
 }
 
-function mergeBalances(balances, balancesToMerge) {
-  Object.entries(balancesToMerge).forEach((balance) => {
-    sdk.util.sumSingleBalance(balances, balance[0], balance[1]);
-  });
-}
-async function tvl(timestamp, block, chainBlocks) {
-  const balances = {};
-  await Promise.all([bsc(timestamp, block, chainBlocks), avax(timestamp, block, chainBlocks)]).then((poolBalances) =>
-    poolBalances.forEach((pool) => mergeBalances(balances, pool))
-  );
-  return balances;
-}
 
 module.exports = {
   bsc: {
     tvl: bsc,
     pool2,
-    bscStaking,
+    staking: bscStaking,
   },
   avax: {
     tvl: avax,
-    pool3,
-    avaxStaking,
+    pool2: pool2,
+    staking: avaxStaking,
   },
-  tvl,
 };

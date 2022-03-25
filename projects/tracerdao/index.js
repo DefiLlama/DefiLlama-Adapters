@@ -49,7 +49,6 @@ module.exports = {
   arbitrum: {
     tvl: arbiTvl,
   },
-  tvl: sdk.util.sumChainTvls([arbiTvl]),
   methodology:
     "We count liquidity on the Leveraged Pools through PoolFactory contract",
 };

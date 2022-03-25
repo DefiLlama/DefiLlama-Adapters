@@ -1,5 +1,4 @@
-const retry = require('async-retry');
-const axios = require("axios");
+const { request, gql } = require("graphql-request");
 
 function getCoinGeckoId(apiId) {
     return {
@@ -13,30 +12,46 @@ function getCoinGeckoId(apiId) {
     }[apiId]
 };
 
+const graphUrl = `https://mantle.terra.dev/`
+const query = gql`
+query ($poolQuery: String!) {
+  markets: WasmContractsContractAddressStore(
+    ContractAddress: "terra1pcxwtrxppj9xj7pq3k95wm2zztfr9kwfkcgq0w"
+    QueryMsg: $poolQuery
+  ) {
+    Result
+  },
+}
+`
+
+async function getMarkets() {
+    const { markets: { Result } } = await request(graphUrl, query, { poolQuery: JSON.stringify({ market_lists: {} }) })
+    return Result
+}
+
 async function tvl() {
     const balances = {};
-
-    let response = (
-        await retry(
-            async bail => await axios.get('https://quicknode.edgeprotocol-finance.workers.dev/terra/wasm/v1beta1/contracts/terra1pcxwtrxppj9xj7pq3k95wm2zztfr9kwfkcgq0w/store?query_msg=eyJtYXJrZXRfbGlzdHMiOnt9fQ%3D%3D',
-                {
-                    headers: {
-                        origin: 'https://app.edgeprotocol.io',
-                        referer: 'https://app.edgeprotocol.io/'
-                    }
-                })
-            )
-        ).data.query_result;
-
-    response.forEach(m => {
-        balances[getCoinGeckoId(m.underlying)] = m.total_credit / 10 ** 6;
+    const markets = await getMarkets()
+    JSON.parse(markets).forEach(m => {
+        balances[getCoinGeckoId(m.underlying)] = (m.total_credit - m.total_insurance) / 10 ** 6;
     });
+    return balances;
+};
 
+async function borrowed() {
+    const balances = {};
+    const markets = await getMarkets()
+    JSON.parse(markets).forEach(m => {
+        balances[getCoinGeckoId(m.underlying)] = m.total_loan / 10 ** 6;
+    });
     return balances;
 };
 
 module.exports = {
+    timetravel: false,
+    methodology: `We query Edge's Genesis Pool smart contracts to get the amount of assets deposited and borrowed, we then use Coingecko to price the assets in USD.`,
     terra: {
-        tvl
+        tvl,
+        borrowed
     },
 };

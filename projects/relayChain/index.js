@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const { transformBscAddress } = require('../helper/portedTokens');
+const {getChainTransform} = require('../helper/portedTokens');
 
 const usdtEth = "0xdAC17F958D2ee523a2206206994597C13D831ec7";
 const daiEth = "0x6b175474e89094c44da98b954eedeac495271d0f";
@@ -7,7 +7,6 @@ const wbtcEth ="0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599";
 const usdcEth = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
 const wethEth = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
 const relayEth = "0x5D843Fa9495d23dE997C394296ac7B4D721E841c";
-
 
 const usdtBsc = "0x55d398326f99059fF775485246999027B3197955";
 const daiBsc = "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3";
@@ -81,9 +80,13 @@ const busdShiden = "0x65e66a61d0a8f1e686c2d6083ad611a10d84d97a";
 const usdcMetis = "0xea32a96608495e54156ae48931a7c20f0dcc1a21";
 const usdtMetis = "0xbb06dca3ae6887fabf931640f67cab3e3a16f4dc"; 
 const relayMetis = "0xfe282Af5f9eB59C30A3f78789EEfFA704188bdD4";
+const maticMetis="0x4b9D2923D875edF43980BF5dddDEde3Fb20fC742";
+const mimMetis="0x44Dd7C98885cD3086E723B8554a90c9cC4089C4C";
+const ftmMetis="0x6aB6d61428fde76768D7b45D8BFeec19c6eF91A8"
 const metis="0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000";
-
-
+const wbtcMetis="0xa5B55ab1dAF0F8e1EFc0eB1931a957fd89B918f4";
+const avaxMetis="0xE253E0CeA0CDD43d9628567d097052B33F98D611";
+const daiMetis="0x4651B38e7ec14BB3db731369BFE5B08F2466Bd0A";
 
 
 
@@ -94,7 +97,7 @@ const wbtcCronos = "0x062e66477faf219f25d27dced647bf57c3107d52";
 const wethCronos = "0xe44fd7fcb2b1581822d0c862b68222998a0c299a";
 const relayCronos = "0x9C29650a1B273A031A35F3121914aae882B144A4";
 const busdCronos = "0x6aB6d61428fde76768D7b45D8BFeec19c6eF91A8";
-const wCronos="0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23";
+const wCronos=  "0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23";
 
 
 
@@ -119,7 +122,7 @@ const ftmAddr = "0x502B4683D213C68507fc6d19417df0bB7995b23B";
 const sdnAddr = "0x074412fae37D4C3de9964980352faD07aacDd674";
 const iotexAddr = "0xEfB3E6a5cCe777AE472D1255D712407fd22A9547";
 const harmonyAddr = "0xa0026a3047bDf539f6Bf405aF576BE2038faC5A8";
-const metisAddr = "0x6A7b82e91E16934EaE0123179b1498F1f2aef45a";
+const metisAddr = "0x640b3408EaC140297136677aC0cFF13a8c82C5Ed";
 const cronosAddr = "0x3f1B059d94551c9300176ceB55FD23aF0e4E2E29";
 
 
@@ -132,7 +135,8 @@ let moonTokenAddress=[usdtMoonriver,daiMoonriver,usdcMoonriver,wbtcMoonriver,wet
 let fantomTokenAddress=[usdcFantom,usdtFantom,relayFantom,daiFantom,wFantom,btcFantom];
 let harmonyTokenAddress=[usdtHarmony,relayHarmony,daiHarmony,usdcHarmony,busdHarmony,woneOne];
 let shidenTokenAddress=[wsdnShiden,usdtShiden,usdcShiden,busdShiden];
-let metisTokenAddress=[usdcMetis,usdtMetis,relayMetis,metis]
+let metisTokenAddress=[usdcMetis,usdtMetis,metis,maticMetis,ftmMetis,mimMetis];
+let metisTotalSupply=[wbtcMetis,daiMetis,avaxMetis,relayMetis,ftmMetis,maticMetis];
 let cronosTokenAddress=[usdtCronos,daiCronos,usdcCronos,wbtcCronos,wethCronos,relayCronos,busdCronos,wCronos];
 let iotexTokenAddress=[usdtIoTex,daiIoTex,usdcIoTex,busdIoTex,wIotex]
 
@@ -150,7 +154,7 @@ async function ethTvl(timestamp, ethBlock) {
           block: ethBlock,
         })
       ).output;
-    await sdk.util.sumSingleBalance(balances, "ethereum:"+ethTokenAddress[i], tokenBalance)
+    sdk.util.sumSingleBalance(balances, "ethereum:"+ethTokenAddress[i], tokenBalance)
     }
       return balances
   };
@@ -169,7 +173,7 @@ async function bscTvl(timestamp, ethBlock, chainBlocks) {
           block: chainBlocks['bsc'],
         })
       ).output;
-    await sdk.util.sumSingleBalance(balances, "bsc:"+bscTokenAddress[i], tokenBalance)
+    sdk.util.sumSingleBalance(balances, "bsc:"+bscTokenAddress[i], tokenBalance)
 
     }
 
@@ -190,7 +194,7 @@ async function avaxTvl(timestamp, ethBlock, chainBlocks) {
           block: chainBlocks['avax'],
         })
       ).output;
-    await sdk.util.sumSingleBalance(balances, "avax:"+avaxTokenAddress[i], tokenBalance)
+    sdk.util.sumSingleBalance(balances, "avax:"+avaxTokenAddress[i], tokenBalance)
     }
     return balances
   };
@@ -208,7 +212,7 @@ async function hecoTvl(timestamp, ethBlock, chainBlocks) {
           block: chainBlocks['heco'],
         })
       ).output;
-    await sdk.util.sumSingleBalance(balances, "heco:"+hecoTokenAddress[i], tokenBalance)
+    sdk.util.sumSingleBalance(balances, "heco:"+hecoTokenAddress[i], tokenBalance)
     }
   
 
@@ -230,7 +234,7 @@ async function polygonTvl(timestamp, ethBlock, chainBlocks) {
         block: chainBlocks['polygon'],
       })
     ).output;
-  await sdk.util.sumSingleBalance(balances, "polygon:"+maticTokenAddress[i], tokenBalance)
+  sdk.util.sumSingleBalance(balances, "polygon:"+maticTokenAddress[i], tokenBalance)
   }
 
   return balances
@@ -250,7 +254,7 @@ async function fantomTvl(unixTimestamp, ethBlock, chainBlocks) {
         block: chainBlocks['fantom'],
       })
     ).output;
-    await sdk.util.sumSingleBalance(balances, "fantom:"+fantomTokenAddress[i], tokenBalance)
+    sdk.util.sumSingleBalance(balances, "fantom:"+fantomTokenAddress[i], tokenBalance)
   }
   
   return balances
@@ -271,7 +275,7 @@ async function harmonyTvl(unixTimestamp, ethBlock, chainBlocks) {
         block: chainBlocks['harmony'],
       })
     ).output;
-    await sdk.util.sumSingleBalance(balances, "harmony:"+harmonyTokenAddress[i], tokenBalance)
+    sdk.util.sumSingleBalance(balances, "harmony:"+harmonyTokenAddress[i], tokenBalance)
   }
   
   return balances
@@ -292,7 +296,23 @@ async function metisTvl(unixTimestamp, ethBlock, chainBlocks) {
         block: chainBlocks['metis'],
       })
     ).output;
-    await sdk.util.sumSingleBalance(balances, "metis:"+metisTokenAddress[i], tokenBalance)
+
+    sdk.util.sumSingleBalance(balances, "metis:"+metisTokenAddress[i], tokenBalance)
+  }
+
+
+  const transformMetisAddress = await getChainTransform('metis');
+  for(var i=0;i<metisTotalSupply.length;i++){
+    var tokenBalance1= (
+      await sdk.api.abi.call({
+        target: metisTotalSupply[i],
+        chain: 'metis',
+        abi: 'erc20:totalSupply',
+        block: chainBlocks['metis'],
+      })
+    ).output;
+    const tokenAddress = transformMetisAddress(metisTotalSupply[i]);
+    sdk.util.sumSingleBalance(balances,tokenAddress, tokenBalance1) 
   }
   return balances
 }
@@ -311,7 +331,7 @@ async function cronosTvl(timestamp, ethBlock, chainBlocks) {
         block: chainBlocks['cronos'],
       })
     ).output;
-  await sdk.util.sumSingleBalance(balances, "cronos:"+cronosTokenAddress[i], tokenBalance)
+  sdk.util.sumSingleBalance(balances, "cronos:"+cronosTokenAddress[i], tokenBalance)
   }
 
   return balances
@@ -331,7 +351,7 @@ async function ioTexTvl(timestamp, ethBlock, chainBlocks) {
         block: chainBlocks['iotex'],
       })
     ).output;
-  await sdk.util.sumSingleBalance(balances, "iotex:"+iotexTokenAddress[i], tokenBalance)
+  sdk.util.sumSingleBalance(balances, "iotex:"+iotexTokenAddress[i], tokenBalance)
   }
   
   return balances
@@ -351,7 +371,7 @@ async function moonriverTvl(timestamp, ethBlock, chainBlocks) {
         block: chainBlocks['moonriver'],
       })
     ).output;
-  await sdk.util.sumSingleBalance(balances, "moonriver:"+moonTokenAddress[i], tokenBalance)
+  sdk.util.sumSingleBalance(balances, "moonriver:"+moonTokenAddress[i], tokenBalance)
   }
 return balances
 }
@@ -393,6 +413,4 @@ module.exports = {
     tvl:moonriverTvl,
   },
 
-tvl: sdk.util.sumChainTvls([metisTvl, moonriverTvl, ethTvl, bscTvl, avaxTvl, hecoTvl, polygonTvl, fantomTvl, harmonyTvl, ioTexTvl, cronosTvl]),
-  
 }; 

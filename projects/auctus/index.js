@@ -181,9 +181,6 @@
   ==================================================*/
 
   module.exports = {
-    name: 'Auctus',
-    token: 'AUC',
-    category: 'derivatives',
     start: 1590014400,   // 05/20/2020 @ 08:10:40pm (UTC)
     tvl
   }

@@ -54,7 +54,7 @@ module.exports = {
   },
   bsc: {
     tvl: bscTvl,
-    staking: staking(bscStaking, bscGG, "bsc", addr=`avax:${gg}`)
+    staking: staking(bscStaking, bscGG, "bsc", `avax:${gg}`)
   },
   methodology:
     "Counts tokens on the treasury for tvl and staked GG for staking",

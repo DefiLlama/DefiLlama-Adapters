@@ -172,7 +172,6 @@ module.exports = {
   iotex:{
     tvl,
   },
-  tvl,
 };
 
 

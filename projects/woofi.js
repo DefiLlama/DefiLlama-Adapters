@@ -5,12 +5,11 @@ const { usdtAddress, toUSDTBalances } = require('./helper/balances')
 function fetchTVL(network) {
     return async() => {
         let wooPP = await fetchWooPP(network)()
-        let stake = await fetchStake(network)()
         let earn = await fetchEarn(network)()
 
         return {[usdtAddress]: parseFloat(
             BigNumber(wooPP[usdtAddress])
-            .plus(BigNumber(stake[usdtAddress])).plus(BigNumber(earn[usdtAddress]))
+            .plus(BigNumber(earn[usdtAddress]))
         )}
     }
 }
@@ -29,7 +28,12 @@ function fetchWooPP(network) {
 function fetchStake(network) {
     return async () => {
         let data = await fetchURL('https://fi-api.woo.org/wooracle_state?network=' + network)
-        let wooPrice = BigNumber(data.data.data.WOO.price_now)
+        let wooPrice
+        if (network == 'avax') {
+            wooPrice = BigNumber(data.data.data['WOO.e'].price_now)
+        } else {
+            wooPrice = BigNumber(data.data.data.WOO.price_now)
+        }
         data = await fetchURL('https://fi-api.woo.org/staking?network=' + network)
         return toUSDTBalances(parseFloat(BigNumber(data.data.data.woo.total_staked).times(wooPrice).div(1e36)))
     }
@@ -43,10 +47,12 @@ function fetchEarn(network) {
 }
 
 module.exports={
-    bsc:{
+    bsc: {
         tvl: fetchTVL('bsc'),
-        WooPP: fetchWooPP('bsc'),
-        Stake: fetchStake('bsc'),
-        Earn: fetchEarn('bsc'),
+        staking: fetchStake('bsc'),
+    },
+    avax: {
+        tvl: fetchTVL('avax'),
+        staking: fetchStake('avax'),
     },
 }

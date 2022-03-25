@@ -129,5 +129,4 @@ module.exports = {
   heco: {
     tvl: hecoTvl,
   },
-  tvl: sdk.util.sumChainTvls([hecoTvl]),
 };

@@ -18,6 +18,4 @@ module.exports = {
     solana: {
         tvl,
     },
-    timeTravelUnsupported: true,
-    tvl
 }

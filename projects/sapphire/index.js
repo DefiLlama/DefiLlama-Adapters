@@ -38,8 +38,8 @@ async function staking(timestamp, block, chainBlocks) {
     chain : "fantom",
     
   })
-  await sdk.util.sumSingleBalance(balances, `fantom:${sapphire}`, balance[0].output)
-  await sdk.util.sumSingleBalance(balances, `fantom:${sapphireWar}`, balance[1].output)
+  sdk.util.sumSingleBalance(balances, `fantom:${sapphire}`, balance[0].output)
+  sdk.util.sumSingleBalance(balances, `fantom:${sapphireWar}`, balance[1].output)
   return balances;
 }
 

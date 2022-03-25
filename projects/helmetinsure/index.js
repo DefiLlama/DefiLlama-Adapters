@@ -77,5 +77,4 @@ module.exports = {
   [CHAIN_BSC]:{
     tvl: fetch(CHAIN_BSC)
   },
-  tvl: sdk.util.sumChainTvls([CHAIN_POLYGON, CHAIN_BSC].map(fetch))
 }

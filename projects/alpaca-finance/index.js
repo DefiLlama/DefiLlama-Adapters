@@ -19,9 +19,6 @@ async function fantomTvl(timestamp, ethBlock, chainBlocks) {
 
 // node test.js projects/alpaca-finance/index.js
 module.exports = {
-  name: "Alpaca Finance",
-  token: "ALPACA",
-  category: "lending",
   start: 1602054167,
   bsc: {
     tvl: bscTvl,
