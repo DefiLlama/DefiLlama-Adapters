@@ -13,6 +13,7 @@ const pancakeLPs = [
 ]
 
 module.exports = {
+    rekt: true,
     bsc: {
         tvl: async () => ({}),
         staking: staking(boardroom, shares, "bsc"),

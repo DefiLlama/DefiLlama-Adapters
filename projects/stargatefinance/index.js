@@ -28,13 +28,13 @@ const CONFIG = {
 }
 
 /*** Ethereum TVL Portions ***/
-const tvl = (chain) => async (timestamp, ethBlock, chainBlocks) => {
+const tvl = (chain) => async (timestamp, _block, chainBlocks) => {
   const {
     [chain]: { router }
   } = CONFIG
 
   if (chain === 'avalanche') chain = 'avax'
-  
+
   const balances = {}
   const block = chainBlocks[chain]
   const tokens = []

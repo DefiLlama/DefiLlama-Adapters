@@ -18,6 +18,7 @@ async function tvl(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
+  rekt: true,
   methodology: "TVL includes all farms in MasterChef contract",
   fantom: {
       tvl,

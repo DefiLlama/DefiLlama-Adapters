@@ -71,5 +71,6 @@ async function tvl(timestamp, block) {
 }
 
 module.exports = {
+    rekt: true,
     tvl
 }
