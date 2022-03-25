@@ -34,7 +34,8 @@ const tvl = (chain) => async (timestamp, ethBlock, chainBlocks) => {
   } = CONFIG
 
   if (chain === 'avalanche') chain = 'avax'
-  
+
+  throw new Error('Chaos')
   const balances = {}
   const block = chainBlocks[chain]
   const tokens = []
