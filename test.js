@@ -222,13 +222,16 @@ const passedFile = path.resolve(process.cwd(), process.argv[2]);
   process.exit(0);
 })();
 
+const errorString = '------ ERROR ------';
+
 function checkExportKeys(module, filePath, chains) {
   filePath = filePath.split(path.sep)
   filePath = filePath.slice(filePath.lastIndexOf('projects') + 1)
 
-  if (filePath.length > 2)  return; 
-  if (filePath.length === 1 && !['.js', ''].includes(path.extname(filePath[0])))  return; // matches .../projects/projectXYZ.js or .../projects/projectXYZ
-  if (filePath.length === 2 && filePath[1] !== 'index.js')  return; // matches .../projects/projectXYZ/index.js
+  if (filePath.length > 2  
+    || (filePath.length === 1 && !['.js', ''].includes(path.extname(filePath[0]))) // matches .../projects/projectXYZ.js or .../projects/projectXYZ
+    || (filePath.length === 2 && filePath[1] !== 'index.js'))  // matches .../projects/projectXYZ/index.js
+    process.exit(0)
 
   const blacklistedRootExportKeys = ['tvl', 'staking', 'pool2', 'borrowed', 'treasury'];
   const rootexportKeys = Object.keys(module).filter(item => typeof module[item] !== 'object');
@@ -238,7 +241,6 @@ function checkExportKeys(module, filePath, chains) {
   exportKeys.push(...rootexportKeys)
   exportKeys = Object.keys(exportKeys.reduce((agg, key) => ({...agg, [key]: 1}), {})) // get unique keys
   const unknownKeys = exportKeys.filter(key => !whitelistedExportKeys.includes(key))
-  const errorString = '------ ERROR ------';
 
 
   if (unknownChains.length) {
@@ -285,3 +287,12 @@ function checkExportKeys(module, filePath, chains) {
     process.exit(1)
   }
 }
+
+function handleError(error){
+  console.log('\n',errorString, '\n\n')
+  console.error(error)
+  process.exit(1)
+}
+
+process.on('unhandledRejection', handleError)
+process.on('uncaughtException', handleError)
