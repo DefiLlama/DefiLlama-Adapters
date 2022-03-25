@@ -18,7 +18,7 @@ jobs:
           for i in $(echo ${{ steps.file_changes.outputs.files_modified}} | tr  -d '[]' | tr "," "\n")
           do 
             { 
-              node ${{ github.workspace }}/test.js ${{ github.workspace }}/${i} > output.txt 2>&1
+              node ${{ github.workspace }}/test.js ${{ github.workspace }}/${i} 2>&1 | tee output.txt
               node ${{ github.workspace }}/.github/workflows/commentResult.js /home/runner/work/DefiLlama-Adapters/DefiLlama-Adapters/output.txt "${{ github.repository_owner }}" "${{ github.event.repository.name }}" "${{ github.event.number }}" ${i}
               if grep -q "\-\-\-\- ERROR \-\-\-\-" output.txt; then
                 exit 1;
@@ -31,7 +31,7 @@ jobs:
           for i in $(echo ${{ steps.file_changes.outputs.files_added}} | tr  -d '[]' | tr "," "\n")
           do 
             { 
-              node ${{ github.workspace }}/test.js ${{ github.workspace }}/${i} > output.txt 2>&1
+              node ${{ github.workspace }}/test.js ${{ github.workspace }}/${i} 2>&1 | tee output.txt
               node ${{ github.workspace }}/.github/workflows/commentResult.js /home/runner/work/DefiLlama-Adapters/DefiLlama-Adapters/output.txt "${{ github.repository_owner }}" "${{ github.event.repository.name }}" "${{ github.event.number }}" ${i}
               if grep -q "\-\-\-\- ERROR \-\-\-\-" output.txt; then
                 exit 1;
