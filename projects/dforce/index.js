@@ -96,9 +96,69 @@ let yieldUnderlyingTokens = {
   }
 }
 
+const excludeAlliTokens = {
+  "ethereum": [
+    "0x1adc34af68e970a93062b67344269fd341979eb0", // General pool USX
+    "0x44c324970e5cbc5d4c3f3b7604cbc6640c2dcfbf", // General pool EUX
+    "0xf54954ba7e3cdfda23941753b48039ab5192aea0", // Stock pool USX
+    "0xab9c8c81228abd4687078ebda5ae236789b08673", // Stock pool EUX
+    "0xa5d65e3bd7411d409ec2ccfa30c6511ba8a99d2b", // Liqee qUSX
+    "0x4c3f88a792325ad51d8c446e1815da10da3d184c", // Liqee iMUSX
+  ],
+  // Optimism
+  "optimism": [
+    "0x7e7e1d8757b241aa6791c089314604027544ce43",  // iUSX
+  ],
+  // BNB-Chain
+  "bsc": [
+    "0x7b933e1c1f44be9fb111d87501baada7c8518abe", // General pool USX
+    "0x983a727aa3491ab251780a13acb5e876d3f2b1d8", // General pool EUX
+    "0x911f90e98d5c5c3a3b0c6c37bf6ea46d15ea6466", // Stock pool USX
+    "0x8af4f25019e00c64b5c9d4a49d71464d411c2199", // Stock pool EUX
+    "0x450e09a303aa4bcc518b5f74dd00433bd9555a77", // Liqee qUSX
+    "0xee0d3450b577743eee2793c0ec6d59361eb9a454", // Liqee iMUSX
+
+  ],
+  // Polygon
+  "polygon": [
+    "0xc171ebe1a2873f042f1dddd9327d00527ca29882", // iUSX
+  ],
+  // Arbitrum
+  "arbitrum": [
+    "0x0385f851060c09a552f1a28ea3f612660256cbaa", // iUSX
+    "0x5675546eb94c2c256e6d7c3f7dcab59bea3b0b8b", // iEUX
+  ]
+}
+
+const escrowPools = [
+  "0x9e8b68e17441413b26c2f18e741eaba69894767c", // Arbitrum
+  "0x40be37096ce3b8a2e9ec002468ab91071501c499", // Optimism
+];
+
+const polygonUSX = "0xCf66EB3D546F0415b368d98A95EAF56DeD7aA752";
+
 /*==================================================
   TVL
   ==================================================*/
+
+async function getLockedUSXValueForL2(block) {
+  let lockedUSX = BigNumber("0");
+
+  await Promise.all(
+    escrowPools.map(async escrowPool => {
+      let { output: usxAmount } = await sdk.api.abi.call({
+        block,
+        target: "0x0a5e677a6a24b2f1a2bf4f3bffc443231d2fdec8", // Mainnet USX
+        params: escrowPool,
+        abi: 'erc20:balanceOf',
+        chain: 'ethereum'
+      });
+      lockedUSX = lockedUSX.plus(BigNumber(usxAmount));
+    })
+  );
+  // the price of USX is always 1.
+  return lockedUSX.div(BASE);
+}
 
 async function getTVLByTotalSupply(chain, token, block) {
   let balances = {}
@@ -145,36 +205,31 @@ async function getTVLByBalanceOf(chain, token, pool, block) {
 
 async function getCurrentCash(chain, token, block) {
   let cash;
-  const { output: isiToken } = await sdk.api.abi.call({
-    block,
-    target: token,
-    abi: abi['isiToken'],
-    chain: chain
-  });
-
-  if (isiToken) {
-    const { output: iTokenTotalSupply } = await sdk.api.abi.call({
+  let excludeiTokens = excludeAlliTokens[chain];
+  if (!excludeiTokens.includes(token.toLowerCase())) {
+    const { output: isiToken } = await sdk.api.abi.call({
       block,
       target: token,
-      abi: abi['totalSupply'],
+      abi: abi['isiToken'],
       chain: chain
     });
+    if (isiToken) {
+      const { output: iTokenTotalSupply } = await sdk.api.abi.call({
+        block,
+        target: token,
+        abi: abi['totalSupply'],
+        chain: chain
+      });
 
-    const { output: iTokenExchangeRate } = await sdk.api.abi.call({
-      block,
-      target: token,
-      abi: abi['exchangeRateCurrent'],
-      chain: chain
-    });
+      const { output: iTokenExchangeRate } = await sdk.api.abi.call({
+        block,
+        target: token,
+        abi: abi['exchangeRateCurrent'],
+        chain: chain
+      });
 
-    cash = BigNumber(iTokenTotalSupply).times(BigNumber(iTokenExchangeRate)).div(BigNumber(10 ** 18));
-  } else {
-    if (
-      // Exclude iMUSX of Liqee on BSC
-      token != "0xee0D3450b577743Eee2793C0Ec6d59361eB9a454"
-      // Exclude iMUSX of Liqee on Ethereum mainnet
-      && token != "0x4c3F88A792325aD51d8c446e1815DA10dA3D184c"
-    ) {
+      cash = BigNumber(iTokenTotalSupply).times(BigNumber(iTokenExchangeRate)).div(BigNumber(10 ** 18));
+    } else {
       let { output: underlying } = await sdk.api.abi.call({
         block,
         target: token,
@@ -190,10 +245,11 @@ async function getCurrentCash(chain, token, block) {
         chain: chain
       });
       cash = BigNumber(iMtokenSupply);
-    } else {
-      cash = BigNumber("0");
     }
+  } else {
+    cash = BigNumber("0");
   }
+
   return cash;
 }
 
@@ -316,6 +372,19 @@ async function getTVLByChain(chain, block) {
   } = await getLendingTVLByChain(chain, block);
 
   tvl = tvl.plus(lendingTVL);
+
+  // For ethereum mainnet, should exclude locked USX for L2.
+  if (chain == 'ethereum') {
+    let lockedUSXValue = await getLockedUSXValueForL2(block);
+    tvl = tvl.minus(lockedUSXValue);
+  }
+
+  // For Polygon, USX is the original token.
+  // we do not trafer USX from mainnet to polygon.
+  if (chain == 'polygon') {
+    let { tvl: usxTVL } = await getTVLByTotalSupply(chain, polygonUSX, block);
+    tvl = tvl.plus(usxTVL);
+  }
 
   return toUSDTBalances(tvl.toNumber());
 }
