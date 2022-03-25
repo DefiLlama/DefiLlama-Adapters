@@ -9,6 +9,7 @@ const treasuryTokens = [
 ];
 
 module.exports = {
+    rekt: true,
     misrepresentedTokens: true,
     ...ohmTvl(treasury, treasuryTokens, "avax", tokenStaking, token, undefined, undefined, false)
 }
