@@ -1,36 +1,38 @@
-const sdk = require('@defillama/sdk');
-const { transformBscAddress } = require('../helper/portedTokens');
-const { staking } = require("../helper/staking.js");
-const {getLiquityTvl} = require('../helper/liquity')
-const {pool2Exports} = require("../helper/pool2");
+const sdk = require("@defillama/sdk");
+const { transformBscAddress } = require("../helper/portedTokens");
+const abi = require("./abi.json");
+const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 
-const TOKEN_CONTRACT = '0xCA1aCAB14e85F30996aC83c64fF93Ded7586977C';
-const DEX_ADDRESS_PAIR_CONTRACT = '0x39B8A10735D1055C8313B1b0732A1c205f4E7635';
-
+const DEX_ADDRESS_PAIR_CONTRACT = "0x39B8A10735D1055C8313B1b0732A1c205f4E7635";
 
 async function tvl(timestamp, block, chainBlocks) {
   const balances = {};
   const transform = await transformBscAddress();
 
-  const collateralBalance = (await sdk.api.abi.call({
-    abi: 'erc20:balanceOf',
-    chain: 'bsc',
-    target: TOKEN_CONTRACT,
-    params: [DEX_ADDRESS_PAIR_CONTRACT],
-    block: chainBlocks['bsc'],
-  })).output;
+  const lpBalance = (
+    await sdk.api.abi.call({
+      abi: abi.totalSupplyLP,
+      chain: "bsc",
+      target: DEX_ADDRESS_PAIR_CONTRACT,
+      block: chainBlocks["bsc"],
+    })
+  ).output;
 
-  await sdk.util.sumSingleBalance(balances, transform(TOKEN_CONTRACT), collateralBalance)
+  await unwrapUniswapLPs(
+    balances,
+    [{ token: DEX_ADDRESS_PAIR_CONTRACT, balance: lpBalance }],
+    chainBlocks["bsc"],
+    "bsc",
+    transform
+  );
 
   return balances;
 }
-
 
 module.exports = {
   timetravel: false,
   misrepresentedTokens: false,
   bsc: {
     tvl,
-  }
-}; 
-
+  },
+};
