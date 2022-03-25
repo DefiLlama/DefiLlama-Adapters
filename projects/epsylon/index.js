@@ -28,7 +28,10 @@ async function tvl() {
     chain: "fantom",
   });
 
-  balances[USDC] = usdcVaultTVL.output + usdcVault2TVL.output;
+  balances[USDC] = sdk.util.sumMultiBalanceOf(
+    usdcVaultTVL.output,
+    usdcVault2TVL.output
+  );
   balances[WFTM] = wftmVaultTVL.output;
 
   return balances;
