@@ -1,5 +1,6 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
+const { default: BigNumber } = require("bignumber.js");
 
 const USDC_VAULT = "0x756d09263483dC5A6A0023bb80933db2C680703E";
 const USDC_2_VAULT = "0x69e475b67052987707E953b684c7d437e15AC511";
@@ -28,9 +29,8 @@ async function tvl() {
     chain: "fantom",
   });
 
-  balances[USDC] = sdk.util.sumMultiBalanceOf(
-    usdcVaultTVL.output,
-    usdcVault2TVL.output
+  balances[USDC] = new BigNumber(usdcVaultTVL.output).plus(
+    new BigNumber(usdcVault2TVL.output)
   );
   balances[WFTM] = wftmVaultTVL.output;
 
