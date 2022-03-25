@@ -10,6 +10,7 @@ const lps = [
 ]
 
 module.exports = {
+    rekt: true,
     misrepresentedTokens: true,
     ...tombTvl(pld, pshare, rewardPool, boardroom, lps, "fantom", undefined, false, lps[1])
 } 
