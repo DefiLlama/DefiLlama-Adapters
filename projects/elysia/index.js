@@ -17,24 +17,6 @@ const addresses = {
   bscElfi: "0x6C619006043EaB742355395690c7b42d3411E8c0",
   bscElfiStaking: ["0x73653254ED0F28D6E5A59191bbB38B06C899fBcA"],
 };
-let prices;
-let uniswapV3SubgraphCacheResponse, coinGeckoCacheResponse;
-
-(async () => {
-  [uniswapV3SubgraphCacheResponse, coinGeckoCacheResponse] = await Promise.all([
-    axios.post(
-      apiInfo["uniswap-v3-subgraph"].endpoint,
-      apiInfo["uniswap-v3-subgraph"].body
-    ),
-    axios.get(apiInfo["coin-gecko"].endpoint),
-  ]);
-
-  prices = coinGeckoCacheResponse.data;
-  prices.elfi = {};
-  prices.elfi.usd = Number(
-    uniswapV3SubgraphCacheResponse.data.data.daiPool.poolDayData[0].token1Price
-  );
-})();
 
 async function getEthereumTvl(timestamp, block, chainBlocks) {
   const balances = {};
