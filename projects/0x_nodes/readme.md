@@ -13,4 +13,4 @@ Token address and ticker if any: 0xAACa86B876ca011844b5798ECA7a67591A9743C8 (BIO
 Category: 13 Cross Chain or 7 Yield Aggregator?
 Oracle used (Chainlink/Band/API3/TWAP or any other that you are using):
 forkedFrom (Does your project originate from another project): No
-methodology (what is being counted as tvl, how is tvl being calculated):
+methodology (what is being counted as tvl, how is tvl being calculated): 'TVL based on Treasury, staking assets (PFA), {{ nubmer_of_strategies }} yield strategies and a total of {{ number_of_chains }} chains'
