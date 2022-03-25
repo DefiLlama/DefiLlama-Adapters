@@ -99,7 +99,10 @@ if (process.argv.length < 3) {
 const passedFile = path.resolve(process.cwd(), process.argv[2]);
 
 (async () => {
-  const module = require(passedFile);
+  let module = {};
+  try {
+    module = require(passedFile)
+  } catch(e) {}
   const chains = Object.keys(module).filter(item => typeof module[item] === 'object' && item !== 'hallmarks');
   checkExportKeys(module, passedFile, chains)
   const unixTimestamp = Math.round(Date.now() / 1000) - 60;
