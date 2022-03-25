@@ -67,6 +67,7 @@ async function Staking(chainBlocks) {
 }
 
 module.exports = {
+  rekt: true,
   avax: {
     staking: Staking,
     pool2: pool2s(pool2Contracts, pool2Lps, "avax"),
