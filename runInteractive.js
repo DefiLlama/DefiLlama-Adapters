@@ -11,7 +11,7 @@ const adapterPrompt = {
   rootPath: 'projects',
   message: 'Select an adapter to run:',
   suggestOnly: false,
-  depthLimit: 1,
+  depthLimit: 0,
 }
 const enableDebugPrompt = {
   type: 'confirm',
