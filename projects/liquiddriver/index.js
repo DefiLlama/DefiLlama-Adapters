@@ -132,13 +132,7 @@ const minichefTvl = async (timestamp, ethBlock, chainBlocks) => {
 
     const token = balance.input.target;
     if (symbols.output[idx].success) {
-      if (
-        [
-          "0x936D23C83c2469f6a14B9f5bEaec13879598A5aC", // ICE-FTM SPIRIT LP
-          "0x31c0385DDE956f95D43Dac80Bd74FEE149961f4c", // SPELL-fUSDT SPIRIT LP
-          "0x30872e4fc4edbFD7a352bFC2463eb4fAe9C09086", // SCREAM-FTM SPOOKY LP
-        ].includes(token)
-      ) {
+      if (token === "0x936D23C83c2469f6a14B9f5bEaec13879598A5aC") { // ICE-FTM SPIRIT LP
         const [reserves, totalSupply] = await Promise.all([
           sdk.api.abi.call({
             abi: abi.getReserves,
@@ -154,25 +148,11 @@ const minichefTvl = async (timestamp, ethBlock, chainBlocks) => {
           }),
         ]);
         const lpTokenRatio = new BigNumber(totalSupply.output).isZero() ? new BigNumber(0) : totalBalance.div(totalSupply.output);
-        if (token === "0x936D23C83c2469f6a14B9f5bEaec13879598A5aC") { // ICE-FTM SPIRIT LP
-          sdk.util.sumSingleBalance(
-            balances,
-            transformAddress(wftmTokenAddress),
-            new BigNumber(Number(reserves.output[0])).times(2).times(lpTokenRatio).toFixed(0)
-          );
-        } else if (token === "0x31c0385DDE956f95D43Dac80Bd74FEE149961f4c") { // SPELL-fUSDT SPIRIT LP
-          sdk.util.sumSingleBalance(
-            balances,
-            transformAddress(usdtTokenAddress),
-            new BigNumber(Number(reserves.output[0])).times(2).times(lpTokenRatio).toFixed(0)
-          );
-        } else if (token === "0x30872e4fc4edbFD7a352bFC2463eb4fAe9C09086") { // SCREAM-FTM SPOOKY LP
-          sdk.util.sumSingleBalance(
-            balances,
-            transformAddress(wftmTokenAddress),
-            new BigNumber(Number(reserves.output[0])).times(2).times(lpTokenRatio).toFixed(0)
-          );
-        }
+        sdk.util.sumSingleBalance(
+          balances,
+          transformAddress(wftmTokenAddress),
+          new BigNumber(Number(reserves.output[0])).times(2).times(lpTokenRatio).toFixed(0)
+        );
       } else if (symbols.output[idx].output.includes("LP") && symbols.output[idx].output != "BeetXLP_MIM_USDC_USDT") {
         lpPositions.push({
           balance: totalBalance.toString(10),
