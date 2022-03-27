@@ -81,5 +81,4 @@ module.exports = {
         tvl: bscTvl,
         staking: bscStaking
     },
-    tvl: sdk.util.sumChainTvls([hecoTvl, bscTvl])
 }

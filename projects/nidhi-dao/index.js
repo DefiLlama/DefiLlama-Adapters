@@ -10,5 +10,6 @@ const treasuryContracts = [
 ]
 
 module.exports = {
+    rekt: true,
     ...ohmTvl(treasury, treasuryContracts, "polygon", stakingContract, token)
 }

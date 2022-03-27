@@ -50,5 +50,4 @@ module.exports = {
     tvl: getChainData("ethereum", "tvl"),
     staking: getChainData("ethereum", "staking"),
   },
-  name: "Flux Project",
 };

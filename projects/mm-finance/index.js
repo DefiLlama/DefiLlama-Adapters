@@ -1,17 +1,100 @@
-const {calculateUsdUniTvl} = require('../helper/getUsdUniTvl')
+const { request, gql } = require("graphql-request");
+const sdk = require('@defillama/sdk')
+const { toUSDTBalances } = require('../helper/balances')
 
-module.exports={
-    misrepresentedTokens: true,
-    methodology: "Factory address (0xd590cC180601AEcD6eeADD9B7f2B7611519544f4) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
-    cronos: {
-        tvl:calculateUsdUniTvl("0xd590cC180601AEcD6eeADD9B7f2B7611519544f4", "cronos", "0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23", 
-        [
-            "0xbA452A1c0875D33a440259B1ea4DcA8f5d86D9Ae", //mmf
-            "0xc21223249ca28397b4b6541dffaecc539bff0c59", //usdc
-            "0xe44fd7fcb2b1581822d0c862b68222998a0c299a", //weth
-            "0x66e428c3f67a68878562e79a0234c1f83c208770", //usdt
-            "0x062E66477Faf219F25D27dCED647BF57C3107d52", //wbtc
-        ]
-        , "crypto-com-chain")
+async function fetch() {
+  let response = await utils.fetchURL('https://api.pancakeswap.finance/api/v1/stat')
+  return response.data.total_value_locked_all;
+}
+
+const graphEndpoint = 'https://graph.mm.finance/subgraphs/name/madmeerkat-finance/exchange'
+const currentQuery = gql`
+query pancakeFactories {
+  pancakeFactories(first: 1) {
+    totalLiquidityUSD
+  }
+}
+`
+const historicalQuery = gql`
+query pancakeDayDatas {
+pancakeDayDatas(
+  first: 1000
+  orderBy: date
+  orderDirection: asc
+  ) {
+    date
+    dailyVolumeUSD
+    totalLiquidityUSD
+    __typename
+  }
+}
+`
+
+const graphUrl = graphEndpoint
+const graphQuery = gql`
+query get_tvl($block: Int) {
+  uniswapFactories(
+    block: { number: $block }
+  ) {
+    totalVolumeUSD
+    totalLiquidityUSD
+  }
+}
+`;
+
+async function tvl(timestamp, ethBlock, chainBlocks) {
+  if (Math.abs(timestamp - Date.now() / 1000) < 3600) {
+    const tvl = await request(graphEndpoint, currentQuery, {}, {
+      "referer": "https://mm.finance/",
+      "origin": "https://mm.finance",
+    })
+    return toUSDTBalances(tvl.pancakeFactories[0].totalLiquidityUSD)
+  } else {
+    const tvl = (await request(graphEndpoint, historicalQuery)).pancakeDayDatas
+    let closest = tvl[0]
+    tvl.forEach(dayTvl => {
+      if (Math.abs(dayTvl.date - timestamp) < Math.abs(closest.date - timestamp)) {
+        closest = dayTvl
+      }
+    })
+    if(Math.abs(closest.date - timestamp) > 3600*24){ // Oldest data is too recent
+      const {uniswapFactories} = await request(
+        graphUrl,
+        graphQuery,
+        {
+          block: chainBlocks['bsc'],
+        }
+      );
+      const usdTvl = Number(uniswapFactories[0].totalLiquidityUSD)
+    
+      return toUSDTBalances(usdTvl)
     }
+    return toUSDTBalances(closest.totalLiquidityUSD)
+  }
+}
+
+const factory = '0xd590cC180601AEcD6eeADD9B7f2B7611519544f4'
+const mmfToken = '0x97749c9B61F878a880DfE312d2594AE07AEd7656'
+const masterChef = '0x6bE34986Fdd1A91e4634eb6b9F8017439b7b5EDc'
+async function staking(timestamp, ethBlock, chainBlocks) {
+  const balances = {}
+  const stakedMMF = sdk.api.erc20.balanceOf({
+    target: mmfToken,
+    owner: masterChef,
+    chain: 'cronos',
+    block: chainBlocks.cronos
+  })
+
+  sdk.util.sumSingleBalance(balances, 'cronos:' + mmfToken, (await stakedMMF).output)
+  return balances
+}
+
+module.exports = {
+  timetravel: true,
+  misrepresentedTokens: true,
+  methodology: 'TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://mm.finance as the source. Staking accounts for the MMF locked in MasterChef (0x6bE34986Fdd1A91e4634eb6b9F8017439b7b5EDc)',
+  cronos: {
+    staking,
+    tvl
+  },
 }

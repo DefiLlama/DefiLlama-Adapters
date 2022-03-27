@@ -103,6 +103,8 @@ async function transformAvaxAddress() {
         "0xd45b7c061016102f9fa220502908f2c0f1add1d7": "0xffc97d72e13e01096502cb8eb52dee56f74dad7b", 
         "0x47afa96cdc9fab46904a55a6ad4bf6660b53c38a": "0x028171bca77440897b824ca71d1c56cac55b68a3", 
         "0x46A51127C3ce23fb7AB1DE06226147F446e4a857": "0xbcca60bb61934080951369a648fb03df4f96263c", 
+        "0x574679Ec54972cf6d705E0a71467Bb5BB362919D": "avax:0x5817d4f0b62a59b17f75207da1848c2ce75e7af4",
+        "0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7": "0xdac17f958d2ee523a2206206994597c13d831ec7"
       }
       return map[addr.toLowerCase()] || `avax:${addr}`
   }
@@ -145,6 +147,9 @@ async function transformBscAddress() {
     }
     if (addr.toLowerCase() == "0x0cf8e180350253271f4b917ccfb0accc4862f262") {
       return "0x123"; // BTCBR returns nonsense TVL
+    }
+    if (addr.toLowerCase() == "0x6ded0f2c886568fb4bb6f04f179093d3d167c9d7") {
+      return "0x09ce2b746c32528b7d864a1e3979bd97d2f095ab"; // BTCBR returns nonsense TVL
     }
     return `bsc:${addr}`;
   };
@@ -389,6 +394,33 @@ async function transformMoonriverAddress() {
   };
 }
 
+async function transformMoonbeamAddress() {
+  return (addr) => {
+    if (compareAddresses(addr, "0x8f552a71EFE5eeFc207Bf75485b356A0b3f01eC9")) { //usdc
+      return "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
+    }
+    if (compareAddresses(addr, "0x8e70cD5B4Ff3f62659049e74b6649c6603A0E594")) { //usdt
+      return "0xdac17f958d2ee523a2206206994597c13d831ec7";
+    }
+    if (compareAddresses(addr, "0x30D2a9F5FDf90ACe8c17952cbb4eE48a55D916A7")) { //eth
+      return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+    }
+    if (compareAddresses(addr, "0x1DC78Acda13a8BC4408B207c9E48CDBc096D95e0")) { // wtbc
+      return "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599";
+    }
+    if (compareAddresses(addr, "0xc234A67a4F840E61adE794be47de455361b52413")) { // dai
+      return "0x6b175474e89094c44da98b954eedeac495271d0f";
+    }
+    if (compareAddresses(addr, "0x1d4C2a246311bB9f827F4C768e277FF5787B7D7E")) { //movr
+       return "moonriver:0x98878b06940ae243284ca214f92bb71a2b032b8a";
+    }
+    // if (compareAddresses(addr, "0x0000000000000000000000000000000000000802")) { //GLMR
+    //    return "moonbeam";
+    // }
+    return `moonbeam:${addr}`; //`optimism:${addr}` // TODO: Fix
+  };
+}
+
 async function transformArbitrumAddress() {
   const bridge = (
     await utils.fetchURL("https://bridge.arbitrum.io/token-list-42161.json")
@@ -444,7 +476,11 @@ function fixHarmonyBalances(balances) {
     }
   }
 }
-
+function fixOasisBalances(balances) {
+  if (Object.keys(balances).includes('oasis-network')) {
+      balances['oasis-network'] = balances['oasis-network'] / 10 ** 18;
+  }
+}
 async function transformIotexAddress() {
   return (addr) => {
     const dstToken = Object.keys(IOTEX_CG_MAPPING).find(token => compareAddresses(addr, token))
@@ -493,19 +529,43 @@ async function transformKccAddress() {
   };
 }
 
-function transformMetisAddress() {
+
+ function transformMetisAddress() {
   const map = {
     "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000": "0x9e32b13ce7f2e80a01932b42553652e053d6ed8e",
     "0xbb06dca3ae6887fabf931640f67cab3e3a16f4dc": "0xdac17f958d2ee523a2206206994597c13d831ec7",
     "0x420000000000000000000000000000000000000a": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
     "0x5801d0e1c7d977d78e4890880b8e579eb4943276": "bsc:0x5801d0e1c7d977d78e4890880b8e579eb4943276",
     "0xea32a96608495e54156ae48931a7c20f0dcc1a21": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-    "0x2692be44a6e38b698731fddf417d060f0d20a0cb": "bsc:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"
+    "0x2692be44a6e38b698731fddf417d060f0d20a0cb": "bsc:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
   }
   return (addr) => {
+     if (compareAddresses(addr, "0xa5B55ab1dAF0F8e1EFc0eB1931a957fd89B918f4")) {
+      return "avax:0x50b7545627a5162F82A992c33b87aDc75187B218";
+    }
+    if (compareAddresses(addr, "0xE253E0CeA0CDD43d9628567d097052B33F98D611")) {
+      return "avax:0xE253E0CeA0CDD43d9628567d097052B33F98D611";
+    }
+
+    if (compareAddresses(addr, "0x4651B38e7ec14BB3db731369BFE5B08F2466Bd0A")) {
+      return "bsc:0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3";
+    }
+
+    if (compareAddresses(addr, "0xfe282Af5f9eB59C30A3f78789EEfFA704188bdD4")) {
+      return "metis:0xfe282Af5f9eB59C30A3f78789EEfFA704188bdD4";
+    }
+
+    if (compareAddresses(addr, "0x6aB6d61428fde76768D7b45D8BFeec19c6eF91A8")) {
+      return "bsc:0xad29abb318791d579433d831ed122afeaf29dcfe";
+    }
+
+    if (compareAddresses(addr, "0x4b9D2923D875edF43980BF5dddDEde3Fb20fC742")) {
+      return "bsc:0xcc42724c6683b7e57334c4e856f4c9965ed682bd";
+    }
+
     return map[addr.toLowerCase()] || `metis:${addr}`
   };
-}
+} 
 
 function transformBobaAddress() {
   return (addr) => {
@@ -525,6 +585,16 @@ function transformBobaAddress() {
   }
 }
 
+function transformNearAddress() {
+  return (addr) => {
+    const bridgedAssetIdentifier = '.factory.bridge.near'
+    if (addr.endsWith(bridgedAssetIdentifier))
+      return `0x${addr.slice(0, addr.length - bridgedAssetIdentifier.length)}`
+
+    return addr
+  }
+}
+
 const chainTransforms = {
   celo: transformCeloAddress,
   fantom: transformFantomAddress,
@@ -540,12 +610,17 @@ const chainTransforms = {
   kcc: transformKccAddress,
   arbitrum: transformArbitrumAddress,
   iotex: transformIotexAddress,
+  metis:transformMetisAddress,
+  near: transformNearAddress,
+  moonbeam: transformMoonbeamAddress,
 };
+
 async function getChainTransform(chain) {
   if (chain === "ethereum") {
     return (id) => id;
   }
   if (chainTransforms[chain] !== undefined) {
+   
     return chainTransforms[chain]();
   }
   return (addr) => `${chain}:${addr}`;
@@ -568,7 +643,10 @@ module.exports = {
   transformKccAddress,
   transformArbitrumAddress,
   fixHarmonyBalances,
+  fixOasisBalances,
   transformIotexAddress,
   transformMetisAddress,
   transformBobaAddress,
+  transformNearAddress,
+  transformMoonbeamAddress,
 };

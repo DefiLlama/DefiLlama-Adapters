@@ -55,13 +55,6 @@ async function avaxTVL(time, block) {
   return balances;
 }
 
-function sumTvl(tvlList = []) {
-  return async (...args) => {
-    const results = await Promise.all(tvlList.map((fn) => fn(...args)));
-    return results.reduce((a, c) => Object.assign(a, c), {});
-  };
-}
-
 async function calculateTVL(
   tokenRes,
   balances,
@@ -115,5 +108,4 @@ module.exports = {
   avalanche: {
     tvl: avaxTVL,
   },
-  tvl: sumTvl([mainnetTVL, polygonTVL, fantomTVL, avaxTVL]),
 };

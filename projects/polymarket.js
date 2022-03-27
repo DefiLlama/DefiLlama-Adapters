@@ -116,6 +116,5 @@ module.exports = {
   polygon: {
     tvl: polygon
   },
-  tvl: polygon,
   methodology: `TVL is the total quantity of USDC held in the conditional tokens contract as well as USDC collateral submitted to every polymarket' markets ever opened - once the markets resolve, participants can withdraw theire share given the redeption rate and their input stake, but they do not all do it.`
 }

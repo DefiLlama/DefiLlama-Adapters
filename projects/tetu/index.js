@@ -11,7 +11,8 @@ const FTM_CONTRACT_READER = "0xa4EB2E1284D9E30fb656Fe6b34c1680Ef5d4cBFC";
 const FTM_USDC = "fantom:0x04068da6c83afcfa0e13ba15a6696662335d5b75";
 
 const EXCLUDED_PLATFORMS = {
-  "12": true
+  "12": true, // TETU_SWAP
+  "29": true // TETU_SF
 }
 
 const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
@@ -153,5 +154,4 @@ module.exports = {
   fantom: {
     tvl: fantomTvl,
   },
-  tvl: sdk.util.sumChainTvls([polygonTvl, fantomTvl]),
 };

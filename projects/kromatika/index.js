@@ -4,15 +4,18 @@ const BigNumber = require('bignumber.js');
 const {transformOptimismAddress} = require('../helper/portedTokens')
 const abi = require('./abi.json')
 
-const KROM_mainnet = '0x3af33bef05c2dcb3c7288b77fe1c8d2aeba4d789';
 const contracts = {
   optimism: {
     KROM: '0xf98dcd95217e15e05d8638da4c91125e59590b07',
     position: '0x7314Af7D05e054E96c44D7923E68d66475FfaAb8'
+  },
+  ethereum: {
+    KROM: '0x3af33bef05c2dcb3c7288b77fe1c8d2aeba4d789',
+    position: '0xd1fdf0144be118c30a53e1d08cc1e61d600e508e'
   }
 };
 
-tvl = (chain) => async function (timestamp, ethBlock, chainBlocks) {
+const tvl = (chain) => async function (timestamp, ethBlock, chainBlocks) {
   const krom = contracts[chain].KROM;
   const krom_position = contracts[chain].position;
   
@@ -65,7 +68,10 @@ module.exports = {
   methodology: "Kromatika handles Uniswap-v3 positions for their users who submit limit orders - TVL is amounts of tokens of each LP as well as KROM held by the contract to pay for fees",
   optimism: {
     tvl: tvl('optimism')
-  }
+  },
+  // ethereum: {
+  //   tvl: tvl('ethereum')
+  // }
 };
 
 // UniswapV3Pool NonfungiblePositionManager has a low level mint method
