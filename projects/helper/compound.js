@@ -3,10 +3,9 @@ const sdk = require('@defillama/sdk');
 const abi = require('./abis/compound.json');
 const { getBlock } = require('./getBlock');
 const { unwrapUniswapLPs } = require('./unwrapLPs');
-const { fixHarmonyBalances } = require('../helper/portedTokens');
+const { fixHarmonyBalances, fixOasisBalances, transformMetisAddress, } = require('./portedTokens');
+const { usdtAddress } = require('./balances');
 const agoraAbi = require("./../agora/abi.json");
-const { transformMetisAddress } = require("../helper/portedTokens");
-
 // ask comptroller for all markets array
 async function getAllCTokens(comptroller, block, chain) {
     return (await sdk.api.abi.call({
@@ -128,6 +127,8 @@ function getCompoundV2Tvl(comptroller, chain = "ethereum", transformAdress = add
         });
         if (chain == "harmony") {
             fixHarmonyBalances(balances);
+        } else if (chain == "oasis") {
+            fixOasisBalances(balances);
         }
         if (comptroller == "0x92DcecEaF4c0fDA373899FEea00032E8E8Da58Da") {
             await unwrapPuffTokens(balances, lpPositions, block)
@@ -219,7 +220,6 @@ function getCompoundUsdTvl(comptroller, chain, cether, borrowed, abis = {
 
         let allMarkets = await getAllMarkets(block, chain, comptroller);
         let oracle = await getOracle(block, chain, comptroller, abis.oracle);
-
         await Promise.all(
             allMarkets.map(async token => {
                 let amount = new BigNumber(await getCash(block, chain, token, borrowed));
@@ -227,7 +227,8 @@ function getCompoundUsdTvl(comptroller, chain, cether, borrowed, abis = {
                 let locked = amount.div(10 ** decimals);
                 let underlyingPrice = new BigNumber(await getUnderlyingPrice(block, chain, oracle, token, abis.underlyingPrice)).div(
                     10 ** (18 + 18 - decimals)
-                );
+                )
+                    
                 /*
                 Uncomment for debugging
                 console.log(
@@ -284,10 +285,32 @@ function usdCompoundExports(comptroller, chain, cether, abis) {
     }
 }
 
+function compoundExportsWithDifferentBase(comptroller, chain, token) {
+    const raw = usdCompoundExports(comptroller, chain)
+    async function tvl(...params) {
+      const tvl = await raw.tvl(...params)
+      return {
+        [token]: Number(tvl[usdtAddress]) / 1e6
+      }
+    }
+  
+    async function borrowed(...params) {
+      const tvl = await raw.borrowed(...params)
+      return {
+        [token]: Number(tvl[usdtAddress]) / 1e6
+      }
+    }
+    return {
+      tvl,
+      borrowed
+    }
+  }
+
 module.exports = {
     getCompoundV2Tvl,
     compoundExports,
     compoundExportsWithAsyncTransform,
     fullCoumpoundExports,
-    usdCompoundExports
+    usdCompoundExports,
+    compoundExportsWithDifferentBase
 };

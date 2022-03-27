@@ -7,7 +7,7 @@ function fetchChain(chainId, staking) {
 
       let tvl = 0;
       const chain = response.data[chainId];
-      for (vault in chain) {
+      for (const vault in chain) {
         const isBIFI = vault.includes("bifi")
         if ((isBIFI && staking) || (!isBIFI && !staking)) {
           tvl += Number(chain[vault]);
@@ -29,6 +29,7 @@ const chains = {
   polygon: 137,
   fantom: 250,
   metis: 1088,
+  moonbeam: 1284,
   moonriver: 1285,
   arbitrum: 42161,
   celo: 42220,

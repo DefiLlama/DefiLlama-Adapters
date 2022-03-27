@@ -10,7 +10,7 @@ async function ethTvl(timestamp, block) {
 module.exports = {
     start: 1621220505, //2021-05-17 00:00:00 +UTC
     misrepresentedTokens: true,
-    timeTravel: true,
+    timetravel: true,
     ethereum: {
       tvl: ethTvl
     },

@@ -186,7 +186,4 @@ module.exports = {
   klaytn: {
     tvl: klaytn
   },
-  staking : {
-    tvl: staking
-  },
 }

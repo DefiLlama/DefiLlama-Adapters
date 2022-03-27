@@ -227,7 +227,7 @@ const liquidityBridgeTokens = [
   },
   {
     // USX
-    coingecko: "bsc:0x0a5e677a6a24b2f1a2bf4f3bffc443231d2fdec8",
+    coingecko: "bsc:0xb5102cee1528ce2c760893034a4603663495fd72",
     arbitrum: "0x641441c631e2F909700d2f41FD87F0aA6A6b4EDb",
     bsc: "0xb5102cee1528ce2c760893034a4603663495fd72",
     ethereum: "0x0a5e677a6a24b2f1a2bf4f3bffc443231d2fdec8",
@@ -260,8 +260,8 @@ const liquidityBridgeTokens = [
   {
     // ZLK
     coingecko: "moonriver:0x0f47ba9d9bde3442b42175e51d6a367928a1173b",
-    moonriver: "0x0f47ba9d9bde3442b42175e51d6a367928a1173b",
     moonbeam: "0x3fd9b6c9a24e09f67b7b706d72864aebb439100c",
+    moonriver: "0x0f47ba9d9bde3442b42175e51d6a367928a1173b",
   },
   {
     // PERL
@@ -276,8 +276,24 @@ const liquidityBridgeTokens = [
   },
   {
     // JPEG
+    avax: "0x6241af3817Db48a7F9E19FD9446d78E50936d275",
     bsc: "0x4bfce5a1acc3b847afa9579ba91da33b08e66fb7",
     ethereum: "0x4bfce5a1acc3b847afa9579ba91da33b08e66fb7",
+  },
+  {
+    // MASK
+    bsc: "0x2eD9a5C8C13b93955103B9a7C167B67Ef4d568a3",
+    ethereum: "0x69af81e73A73B40adF4f3d4223Cd9b1ECE623074",
+  },
+  {
+    // REEF
+    bsc: "0xF21768cCBC73Ea5B6fd3C687208a7c2def2d966e",
+    ethereum: "0xFE3E6a25e6b192A42a44ecDDCd13796471735ACf",
+  },
+  {
+    // THALES
+    ethereum: "0x8947da500Eb47F82df21143D0C01A29862a8C3c5",
+    optimism: "0x217D47011b23BB961eB6D93cA9945B7501a5BB11",
   },
 ];
 
@@ -296,12 +312,12 @@ const peggedTokens = [
   {
     // USDC
     origin: "ethereum:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-    astar: "0x3795C36e7D12A8c252A20C5a7B455f7c57b60283",
-    celo: "0xB0d8cF9560EF31B8Fe6D9727708D19b31F7C90Dc",
-    moonbeam: "0x81ECac0D6Be0550A00FF064a4f9dd2400585FE9c",
-    moonriver: "0xb74527786818aE18B69B6A823960bfAF3906182F",
-    oasis: "0x4Bf769b05E832FCdc9053fFFBC78Ca889aCb5E1E",
-    syscoin: "0x6de33698e9e9b787e09d3bd7771ef63557e148bb",
+    astar: "0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98",
+    celo: "0x48421FF1c6B93988138130865C4B7Cce10358271",
+    moonbeam: "0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98",
+    moonriver: "0x693B47a7fC3d33AE9eBec15e5F42f2dB480066f3",
+    oasis: "0x81ECac0D6Be0550A00FF064a4f9dd2400585FE9c",
+    syscoin: "0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98",
   },
   {
     // BUSD
@@ -575,6 +591,39 @@ const peggedTokens = [
     optimism: "0x23C748FeF17518B8DE55065338d7Fa20327472eB",
     polygon: "0x7C83CaEB3166a53aEE0681549E6452a1f5D94107",
   },
+  {
+    // IMX
+    origin: "ethereum:0x7b35ce522cb72e4077baeb96cb923a5529764a00",
+    fantom: "0xeA38F1CCF77Bf43F352636241b05dd8f6F5f52B2",
+  },
+  {
+    // WAGMIv1
+    origin: "boba:0xCe055Ea4f29fFB8bf35E852522B96aB67Cbe8197",
+    ethereum: "0x15EEf5ad78C4d9E5f247e68978ca32b5D25cA524",
+  },
+  {
+    // LUSD
+    origin: "ethereum:0x5f98805A4E8be255a32880FDeC7F6728C6568bA0",
+    avax: "0xDA0019E7e50Ee4990440b1aa5dFFCAC6E27Ee27B",
+    bsc: "0x181002D60d504d30a39601Ae13Af3191cb102580",
+    fantom: "0x16365b45EB269B5B5dACB34B4a15399Ec79b95eB",
+  },
+  {
+    // JONES
+    origin: "arbitrum:0x10393c20975cF177a3513071bC110f7962CD67da",
+    avax: "0x746Ba48fC973596d0077573BDa6185cA3BB9c3dC",
+    polygon: "0xB657457141Db5D3eC564BDf778a2F5d367e7af28",
+  },
+  {
+    // SWAY
+    origin: "polygon:0x262B8AA7542004f023B0eB02bc6b96350A02b728",
+    bsc: "0x262B8AA7542004f023B0eB02bc6b96350A02b728",
+  },
+  {
+    // JADE
+    origin: "bsc:0x7ad7242A99F21aa543F9650A56D141C57e4F6081",
+    avax: "0x80B010450fDAf6a3f8dF033Ee296E92751D603B3",
+  },
 ];
 
 // Some tokens have different decimals on certain chains.
@@ -585,6 +634,12 @@ const tokensWithDifferentDecimals = [
   // USDC
   "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
 ];
+const peggedTokensDecimalDiffs = {
+  avax: {
+    // JADE
+    "0x80B010450fDAf6a3f8dF033Ee296E92751D603B3": 9,
+  },
+};
 
 function chainTvl(chain) {
   return async (time, _, chainBlocks) => {
@@ -631,13 +686,19 @@ function chainTvl(chain) {
     );
     await Promise.all(
       peggedTokens.map(async (token) => {
-        if (token[chain] === undefined) {
+        const peggedAddress = token[chain];
+        if (peggedAddress === undefined) {
           return;
+        }
+        let decimalDiffs;
+        if (peggedTokensDecimalDiffs[chain]) {
+          decimalDiffs = peggedTokensDecimalDiffs[chain][peggedAddress];
         }
         const supply = await sdk.api.erc20.totalSupply({
           chain,
           block: block,
-          target: token[chain],
+          target: peggedAddress,
+          decimals: decimalDiffs,
         });
         const tokenAddress = token.origin;
         if (!tokenAddress) {

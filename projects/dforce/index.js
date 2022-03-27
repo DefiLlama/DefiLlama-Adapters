@@ -47,6 +47,7 @@ let oracles = {
   "bsc": "0x7DC17576200590C4d0D8d46843c41f324da2046C",
   "arbitrum": "0xc3FeD5f21EB8218394f968c86CDafc66e30e259A",
   "optimism": "0x4f9312A21F8853384E0f6141F3F9fB855d860161",
+  "polygon": "0x9E8B68E17441413b26C2f18e741EAba69894767c",
 }
 
 let allControllers = {
@@ -62,6 +63,7 @@ let allControllers = {
   ],
   "arbitrum": ["0x8E7e9eA9023B81457Ae7E6D2a51b003D421E5408"],
   "optimism": ["0xA300A84D8970718Dac32f54F61Bd568142d8BCF4"],
+  "polygon": ["0x52eaCd19E38D501D006D2023C813d7E37F025f37"],
 }
 
 let yieldMarkets = {
@@ -334,6 +336,10 @@ async function optimism(timestamp, ethBlock, chainBlocks) {
   return getTVLByChain('optimism', chainBlocks['optimism']);
 }
 
+async function polygon(timestamp, ethBlock, chainBlocks) {
+  return getTVLByChain('polygon', chainBlocks['polygon']);
+}
+
 module.exports = {
   ethereum:{
     tvl: ethereum
@@ -347,6 +353,8 @@ module.exports = {
   optimism: {
     tvl: optimism
   },
+  polygon: {
+    tvl: polygon
+  },
   start: 1564165044, // Jul-27-2019 02:17:24 AM +UTC
-  tvl: sdk.util.sumChainTvls([ethereum, bsc, arbitrum, optimism])
 }

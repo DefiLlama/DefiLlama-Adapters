@@ -24,5 +24,4 @@ module.exports = {
         tvl
     },
     historical: false,
-    tvl
 }

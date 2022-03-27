@@ -104,6 +104,5 @@ module.exports = {
     tvl: harmonyTvl,
     staking: harmonyStaking
   },
-  tvl: sdk.util.sumChainTvls([bscTvl, harmonyTvl])
   
 }

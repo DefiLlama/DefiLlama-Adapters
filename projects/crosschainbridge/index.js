@@ -3,7 +3,7 @@ const BigNumber = require("bignumber.js");
 
 const getBridgeContract = (chain) => {
   switch (chain) {
-    case 'avalanche':
+    case 'avax':
       return '0x46325c7005F04900F8D74cD0eAB903597b6EFFFF';
     default:
       return '0xCBCe172d7af2616804ab5b2494102dAeC47B2635';
@@ -12,7 +12,7 @@ const getBridgeContract = (chain) => {
 
 const getRewardPools = (chain) => {
   switch (chain) {
-    case 'avalanche':
+    case 'avax':
       return '0xbAb537b7AE2Fcb00eeA7e91Fa4782EEbaD3B6d10';
     case 'fantom':
       return '0x6eBC0D4Ae955218195E6D016Fb9D4358Ee34d1F9';
@@ -102,7 +102,7 @@ const tokens = {
     PMON: "0x1796ae0b0fa4862485106a0de9b654efe301d0b2",
     ULTI: "0xa6516f07c5fc7169fca3149b188c37ca617f1d41",
   },
-  avalanche: {
+  avax: {
     // Project tokens
     BRIDGE: "0xC0367f9b1f84Ca8DE127226AC2A994EA4bf1e41b",
     // Stablecoins
@@ -128,7 +128,7 @@ const tokens = {
 
 const getAddrPrefix = (chain) => (chain === "ethereum" ? "" : `${chain}:`);
 
-const createTvlFunction = (chain) => async (timestamp, block) => {
+const createTvlFunction = (chain) => async (timestamp, block, chainBlocks) => {
   const balances = {};
   const bridgeContract = getBridgeContract(chain);
 
@@ -139,7 +139,7 @@ const createTvlFunction = (chain) => async (timestamp, block) => {
       target: address,
       owner: bridgeContract,
       chain,
-      block,
+      block: chainBlocks[chain],
     });
     tokenBalance = tokenBalance.plus(result.output);
 
@@ -148,7 +148,7 @@ const createTvlFunction = (chain) => async (timestamp, block) => {
   return balances;
 };
 
-const createRewardPoolsTvlFunction = (chain) => async (timestamp, block) => {
+const createRewardPoolsTvlFunction = (chain) => async (timestamp, block, chainBlocks) => {
   const bridgeTokenAddress = tokens[chain].BRIDGE;
   const rewardPoolsContract = getRewardPools(chain);
 
@@ -160,12 +160,11 @@ const createRewardPoolsTvlFunction = (chain) => async (timestamp, block) => {
     target: bridgeTokenAddress,
     owner: rewardPoolsContract,
     chain,
-    block,
+    block: chainBlocks[chain],
   });
-
   tokenBalance = tokenBalance.plus(resultRewardPools.output);
 
-  return tokenBalance.toFixed();
+  return { [`${getAddrPrefix(chain)}${bridgeTokenAddress}`] : tokenBalance.toFixed() };
 };
 
 const toExport = {};
@@ -177,3 +176,4 @@ for (const network of Object.keys(tokens)) {
 }
 
 module.exports = toExport;
+// node test.js projects/crosschainbridge/index.js
