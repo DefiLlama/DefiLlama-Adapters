@@ -362,12 +362,71 @@ const minichefTvl = async (timestamp, ethBlock, chainBlocks) => {
   return balances;
 };
 
+const hundredchefTvl = async (timestamp, ethBlock, chainBlocks) => {
+  const balances = {};
+  const transformAddress = await transformFantomAddress();
+
+  const hdaiChefAddress = "0x79364E45648Db09eE9314E47b2fD31c199Eb03B9";
+  const husdcChefAddress = "0x9A07fB107b9d8eA8B82ECF453Efb7cFb85A66Ce9";
+  const hmimChefAddress = "0xeD566B089Fc80Df0e8D3E0AD3aD06116433Bf4a7";
+  const hfraxChefAddress = "0x669F5f289A5833744E830AD6AB767Ea47A3d6409";
+
+  const chefAddressess = [
+    hdaiChefAddress,
+    husdcChefAddress,
+    hmimChefAddress,
+    hfraxChefAddress,
+  ];
+
+  for (let index = 0; index < chefAddressess.length; index++) {
+    const chefAddress = chefAddressess[index];
+    const token = ((await sdk.api.abi.call({
+      chain: 'fantom',
+      block: chainBlocks['fantom'],
+      target: chefAddress,
+      abi: abi.lpToken,
+      params: 0
+    })).output);
+
+    const exchangeRateStored = ((await sdk.api.abi.call({
+      chain: 'fantom',
+      block: chainBlocks['fantom'],
+      target: token,
+      abi: abi.exchangeRateStored,
+    })).output);
+
+    const strategyAddress = ((await sdk.api.abi.call({
+      chain: 'fantom',
+      block: chainBlocks['fantom'],
+      target: chefAddress,
+      abi: abi.strategies,
+      params: 0
+    })).output);
+
+    const strategyBalanace = ((await sdk.api.abi.call({
+      chain: 'fantom',
+      block: chainBlocks['fantom'],
+      target: strategyAddress,
+      abi: abi.balanceOf,
+    })).output);
+
+    sdk.util.sumSingleBalance(
+      balances,
+      transformAddress(usdcTokenAddress),
+      new BigNumber(Number(strategyBalanace)).times(exchangeRateStored).div(chefAddress === husdcChefAddress ? 1e18 : 1e30).toFixed(0)
+    );
+  };
+
+  return balances;
+};
+
 module.exports = {
   fantom: {
     staking: staking(xLQDR, LQDR, "fantom", "fantom:" + LQDR),
     tvl: sdk.util.sumChainTvls([
       masterchefTvl,
       minichefTvl,
+      hundredchefTvl,
     ]),
   }
 };
