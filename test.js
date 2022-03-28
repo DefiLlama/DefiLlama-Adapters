@@ -10,6 +10,7 @@ const {
 const { util } = require("@defillama/sdk");
 const whitelistedExportKeys = require('./projects/helper/whitelistedExportKeys.json')
 const chainList = require('./projects/helper/chains.json')
+const errorString = '------ ERROR ------'
 
 async function getLatestBlockRetry(chain) {
   for (let i = 0; i < 5; i++) {
@@ -227,7 +228,6 @@ const passedFile = path.resolve(process.cwd(), process.argv[2]);
   process.exit(0);
 })();
 
-const errorString = '------ ERROR ------';
 
 function checkExportKeys(module, filePath, chains) {
   filePath = filePath.split(path.sep)
