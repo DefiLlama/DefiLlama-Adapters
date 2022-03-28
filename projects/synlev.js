@@ -19,5 +19,6 @@ async function fetch() {
 
 
 module.exports = {
+  rekt: true,
   fetch
 }

@@ -24,6 +24,7 @@ async function avaxTvl(time, ethBlock, chainBlocks){
 }
 
 module.exports={
+    rekt: true,
     misrepresentedTokens: true,
     avalanche:{
         tvl: avaxTvl,
