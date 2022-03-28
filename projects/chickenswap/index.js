@@ -67,9 +67,8 @@ module.exports = {
     ethereum: {
         staking: staking(chickenChefContract, KFC),
         pool2: pool2(chickenChefContract, WETH_KFC_UNIV2),
-        masterchef: ethTvl,
+        tvl: sdk.util.sumChainTvls([ethTvl, ethChainTvl('ethereum')]),
     },
-    tvl: sdk.util.sumChainTvls([ethTvl, ethChainTvl('ethereum')]),
     methodology:
         `We count liquidity on the Vaults (only single tokens) through ChickenChef Contract and the liquuidity on the AMM Pools (only pairs) 
         pulling data from the subgraph at https://api.thegraph.com/subgraphs/name/chickenswap/graph`,
