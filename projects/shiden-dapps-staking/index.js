@@ -21,6 +21,6 @@ async function tvl() {
 
 module.exports = {
   methodology:
-    'TVL considers SDN tokens deposited to the Dapps-Staking program',
-  tvl,
+    'TVL considers SDN tokens deposited to the Dapps-Staking program',	
+  polkadot: { tvl },
 };
