@@ -10,7 +10,7 @@ async function tvl() {
 
   await api.isReady;
   const era = await api.query.dappsStaking.currentEra();
-  const result = await api.query.dappsStaking.eraRewardsAndStakes(era);
+  const result = await api.query.dappsStaking.generalEraInfo(era);
   const tvl = result.unwrap().staked.valueOf();
   const SDNLocked = tvl / 10 ** SDN_DECIMALS;
 
@@ -21,6 +21,8 @@ async function tvl() {
 
 module.exports = {
   methodology:
-    'TVL considers SDN tokens deposited to the Dapps-Staking program',	
-  polkadot: { tvl },
+    'TVL considers SDN tokens deposited to the Dapps-Staking program',
+  shiden: {
+    tvl,
+  }
 };
