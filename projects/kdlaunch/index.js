@@ -56,7 +56,7 @@ const getTotalStakedKdl = async () => {
     },
     network(chainId)
   );
-  
+
   if (data.result.status === "success") {
     return getReserve(data.result.data.totalStaked);
   }
@@ -86,7 +86,7 @@ async function fetchStakingTvl() {
 module.exports = {
   misrepresentedTokens: true,
   kadena: {
-    tvl: ()=>([]),
+    tvl: fetchStakingTvl,
     staking: fetchStakingTvl,
   }
 }
