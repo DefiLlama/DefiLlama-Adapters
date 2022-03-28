@@ -88,5 +88,4 @@ module.exports = {
     fantom: {
         tvl: fantomTVL
     },
-    tvl: sdk.util.sumChainTvls([bscTvl, fantomTVL]),
 };

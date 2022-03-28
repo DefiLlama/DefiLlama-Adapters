@@ -98,6 +98,8 @@ if (process.argv.length < 3) {
 }
 const passedFile = path.resolve(process.cwd(), process.argv[2]);
 
+const errorString = '------ ERROR ------';
+
 (async () => {
   let module = {};
   try {
@@ -226,8 +228,6 @@ const passedFile = path.resolve(process.cwd(), process.argv[2]);
 
   process.exit(0);
 })();
-
-const errorString = '------ ERROR ------';
 
 function checkExportKeys(module, filePath, chains) {
   filePath = filePath.split(path.sep)
