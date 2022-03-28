@@ -22,7 +22,7 @@ const ethChainTvl = getChainTvl({
 });
 
 /*** Vaults TVL Portion ***/
-const ethTvl = async (chainBlocks) => {
+const ethTvl = async (timestamp, block, chainBlocks) => {
     const balances = {};
 
     await addFundsInMasterChef(
@@ -40,7 +40,8 @@ const ethTvl = async (chainBlocks) => {
             abi: abi.token,
             calls: kfcVaults.map(vault => ({
                 target: vault,
-            }))
+            })),
+            block 
         })
     ).output.map(tokens => tokens.output);
 
@@ -49,7 +50,8 @@ const ethTvl = async (chainBlocks) => {
             abi: abi.balance,
             calls: kfcVaults.map(vault => ({
                 target: vault,
-            }))
+            })),
+            block
         })
     ).output.map(bals => bals.output);
 

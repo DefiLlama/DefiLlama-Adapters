@@ -15,6 +15,7 @@ function getAvaxTvl(timestamp, block, chainBlocks) {
                 abi: abi.totalAssets,
                 chain: 'avax',
                 target: avaxData[i].addr,
+                block: chainBlocks.avax
             })).output;
 
             sdk.util.sumSingleBalance(balances, `avax:${token}`, balance)
@@ -42,6 +43,7 @@ function getPolygonTvl(timestamp, block, chainBlocks) {
                 abi: abi.totalAssets,
                 chain: 'polygon',
                 target: polyData[i].addr,
+                block
             })).output;
 
             sdk.util.sumSingleBalance(balances, `polygon:${token}`, balance)
