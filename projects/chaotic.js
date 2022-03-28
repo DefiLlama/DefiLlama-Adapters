@@ -18,7 +18,7 @@ async function tvl(timestamp, block, chainBlocks) {
 
   const stakedChaos = await sdk.api.abi.call({
     chain: "moonriver",
-    moonriverBlock,
+    block: moonriverBlock,
     target: tokens["CHAOS"],
     params: CollateralSystemAddress,
     abi: "erc20:balanceOf",
@@ -27,7 +27,7 @@ async function tvl(timestamp, block, chainBlocks) {
   // token0: WMOVR. token1: CHAOS
   const movrChaosPoolReserves = await sdk.api.abi.call({
     chain: "moonriver",
-    moonriverBlock,
+    block: moonriverBlock,
     target: MovrChaosPoolAddress,
     params: [],
     abi: getReserves,
@@ -36,7 +36,7 @@ async function tvl(timestamp, block, chainBlocks) {
   // token0: WMOVR. token1: USDC
   const movrUsdcPoolReserves = await sdk.api.abi.call({
     chain: "moonriver",
-    moonriverBlock,
+    block: moonriverBlock,
     target: MovrUsdcPoolAddress,
     params: [],
     abi: getReserves,
