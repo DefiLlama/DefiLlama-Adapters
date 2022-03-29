@@ -7,4 +7,10 @@ module.exports = {
       UNDERLYING: USDC,
     },
   ],
+  fantom: [
+    {
+      ADDRESS: "0x3938411fd77A5458721aF6B080b51008394568ef",
+      UNDERLYING: USDC,
+    },
+  ],
 };
