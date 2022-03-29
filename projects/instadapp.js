@@ -1,5 +1,6 @@
 const retry = require("./helper/retry");
 const axios = require("axios");
+const {toUSDTBalances} = require('./helper/balances')
 
 async function fetch() {
   const stats = (
@@ -9,15 +10,16 @@ async function fetch() {
     )
   ).data.stats[0];
 
-  return stats.totalSupplied;
+  return toUSDTBalances(stats.totalSupplied);
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   doublecounted: true,
   timetravel: false,
   ethereum: {
-    fetch
+    tvl: fetch,
   },
-  fetch
+  
 }
 // node test.js projects/instadapp.js
