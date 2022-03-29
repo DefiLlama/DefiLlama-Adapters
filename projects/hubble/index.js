@@ -1,7 +1,7 @@
 const axios = require("axios");
 const BigNumber = require('bignumber.js');
 const {toUSDTBalances} = require('../helper/balances');
-const HUBBLE_API = "https://new-api.hubbleprotocol.io";
+const HUBBLE_API = "https://api.hubbleprotocol.io";
 
 const client = axios.create({
   baseURL: HUBBLE_API,
