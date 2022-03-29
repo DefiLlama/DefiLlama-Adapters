@@ -1,24 +1,14 @@
-const { GraphQLClient, gql } = require("graphql-request");
-
-async function fetch() {
-  const endpoint =
-    "http://laserswap.finance:8000/subgraphs/name/laserswap/exchange";
-  const graphQLClient = new GraphQLClient(endpoint);
-
-  const query = gql`
-    query pancakeFactories {
-      pancakeFactories {
-        totalLiquidityUSD
-      }
-    }
-  `;
-
-  const data = await graphQLClient.request(query);
-
-  return data.pancakeFactories[0].totalLiquidityUSD;
-}
+const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl");
 
 module.exports = {
-  methodology: `Finds TotalLiquidityUSD using the LaserSwap subgraph "http://laserswap.finance:8000/subgraphs/name/laserswap/exchange".`,
-  fetch,
+  methodology: `Uses factory(0x23c7FA9A9f81B322684F25b8079e22C37e00b46b) address and whitelisted tokens address to find and price Liquidity Pool pairs`,
+  thundercore: {
+    tvl: calculateUsdUniTvl(
+      "0x23c7FA9A9f81B322684F25b8079e22C37e00b46b",
+      "thundercore",
+      "0x413cEFeA29F2d07B8F2acFA69d92466B9535f717",
+      [""],
+      "thunder-token"
+    ),
+  },
 };
