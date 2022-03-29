@@ -1,6 +1,6 @@
 const { calculateUsdUniTvl } = require('./helper/getUsdUniTvl');
 module.exports = {
-    milkomdea: {
+    milkomeda: {
         tvl: calculateUsdUniTvl(
             '0x2ef06A90b0E7Ae3ae508e83Ea6628a3987945460',
             'milkomeda',
