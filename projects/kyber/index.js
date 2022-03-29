@@ -128,6 +128,10 @@ const { getBlock } = require('../helper/getBlock');
     const transform = await transformArbitrumAddress()
     return calcTvl(transform, chainBlocks['arbitrum'], 'arbitrum', '0x51E8D106C646cA58Caf32A47812e95887C071a62', 0, true);
   }
+  // tracking TVL for KyberDMM Velas
+  async function oasisTVL(timestamp, ethBlock, chainBlocks) {
+    return calcTvl(addr => `oasis:${addr}`, chainBlocks['oasis'], 'oasis', '0x51E8D106C646cA58Caf32A47812e95887C071a62', 0, true);
+  }
   // node test.js projects/kyber/index.js
 /*==================================================
   Exports
@@ -153,13 +157,16 @@ const { getBlock } = require('../helper/getBlock');
    cronos:{
      tvl: croTVL
    },
-  //  aurora:{
-  //   tvl: aurTVL,
-  // },
+   aurora:{
+    tvl: aurTVL,
+  },
   arbitrum:{
     tvl: arbTVL
   },
   // velas:{
   //   tvl: vlsTVL
+  // },
+  // oasis:{
+  //   tvl: oasisTVL
   // }
   };
