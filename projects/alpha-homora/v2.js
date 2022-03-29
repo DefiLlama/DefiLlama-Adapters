@@ -133,7 +133,7 @@ async function tvlV2Onchain(block, chain) {
         abi: abi["userInfo"],
         block,
     });
-    const lpPools = masterchefLpTokens.map((amount, i) => ({
+    let lpPools = masterchefLpTokens.map((amount, i) => ({
         balance: amount.output.amount,
         token: pools.filter(p => p.pid !== undefined)[i].lpTokenAddress
     }))
@@ -150,6 +150,7 @@ async function tvlV2Onchain(block, chain) {
         balance: amount.output,
         token: pools[i].lpTokenAddress
     }))
+    lpPools = lpPools.filter(p => p.token != '0x2a8a315e82f85d1f0658c5d66a452bbdd9356783')
     await unwrapUniswapLPs(balances, lpPools, block, chain, transform)
 
     return balances
