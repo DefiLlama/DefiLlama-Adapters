@@ -1,5 +1,6 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
+const { getChainTransform } = require("../helper/portedTokens")
 const { request, gql } = require("graphql-request");
 
 const GRAPH_URLS = {
@@ -21,13 +22,8 @@ const query = gql`
 ;
 
 const getTokensInChain = async (chain) => {
-  try {
-    const result = await request(GRAPH_URLS[chain], query);
-    return result.tokens.map(({ id }) => id)
-  } catch (e) {
-    console.error(e);
-  }
-  return [];
+  const result = await request(GRAPH_URLS[chain], query);
+  return result.tokens.map(({ id }) => id)
 };
 
 function getV2TvlObject(chain) {
@@ -39,6 +35,7 @@ function getV2TvlObject(chain) {
 async function getV2TVL(chain, block) {
   const balances = {};
   const tokens = await getTokensInChain(chain)
+  const chainTransform = await getChainTransform(chain)
   const hubAddress = DCA_HUB_ADDRESSES[chain]
   for (const token of tokens) {
     const balance = await sdk.api.erc20.balanceOf({
@@ -47,7 +44,7 @@ async function getV2TVL(chain, block) {
       block,
       chain
     })
-    sdk.util.sumSingleBalance(balances, `${chain}:${token}`, balance.output);
+    sdk.util.sumSingleBalance(balances, chainTransform(token), balance.output);
   }
   return balances
 }
