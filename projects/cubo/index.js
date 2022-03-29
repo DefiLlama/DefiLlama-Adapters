@@ -4,10 +4,14 @@ const chain = 'polygon'
 const DAI = '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063'
 
 const treasuryAddress = '0xb495ffc5acd7e2fd909c23c30d182e6719fbe9ec'
-const daoContract = '0xb05d0da5253e77a8ad37232e8235c712e10edee8'
+const oldDaoContract = '0xb05d0da5253e77a8ad37232e8235c712e10edee8'
+const daoContract = '0xb8dc6634b7ac8ad3ae352ab92de51349e7b5e71c'
 
 async function polygon_tvl(timestamp, ethBlock, { polygon: block }) {
-  const daoTokens = [DAI,].map(token => [token, daoContract,])
+  const daoTokens = [DAI,].map(token => [
+    [token, oldDaoContract,],
+    [token, daoContract,],
+  ]).flat()
 
   const balances = {}
   const transformPolygonAddress = addr => `${chain}:${addr}`
