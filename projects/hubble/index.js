@@ -1,5 +1,6 @@
 const axios = require("axios");
-const HUBBLE_API = "https://api.hubbleprotocol.io";
+const BigNumber = require('bignumber.js');
+const HUBBLE_API = "https://new-api.hubbleprotocol.io";
 
 const client = axios.create({
   baseURL: HUBBLE_API,
@@ -7,12 +8,14 @@ const client = axios.create({
 
 async function tvl() {
   const metrics = await client.get("/metrics");
-  return metrics.data.totalValueLocked - metrics.data.hbb.staked * metrics.data.hbb.price;
+  const tvl = new BigNumber(metrics.data.totalValueLocked);
+  const staking = new BigNumber(metrics.data.hbb.staked).multipliedBy( metrics.data.hbb.price);
+  return tvl.minus(staking);
 }
 
 async function staking() {
   const metrics = await client.get("/metrics");
-  return metrics.data.hbb.staked * metrics.data.hbb.price;
+  return new BigNumber(metrics.data.hbb.staked).multipliedBy(metrics.data.hbb.price);
 }
 
 module.exports = {
