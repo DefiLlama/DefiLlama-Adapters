@@ -458,7 +458,10 @@ const token1Abi = {"constant":true,"inputs":[],"name":"token1","outputs":[{"inte
     token
 }[]
 */
-async function unwrapUniswapLPs(balances, lpPositions, block, chain='ethereum', transformAddress=(addr)=>addr, excludeTokensRaw = [], retry = false, uni_type = 'standard') {
+async function unwrapUniswapLPs(balances, lpPositions, block, chain='ethereum', transformAddress=(addr)=>addr, excludeTokensRaw = [], retry = false, uni_type = 'standard', options = {}) {
+    const {
+        skipFailingLPs = false
+    } = options
     const excludeTokens = excludeTokensRaw.map(addr=>addr.toLowerCase())
     const lpTokenCalls = lpPositions.map(lpPosition=>({
         target: lpPosition.token
@@ -499,10 +502,28 @@ async function unwrapUniswapLPs(balances, lpPositions, block, chain='ethereum', 
       }
       await Promise.all(lpPositions.map(async lpPosition => {
         try{
+            let token0, token1, supply
             const lpToken = lpPosition.token
-            const token0 = (await tokens0).output.find(call=>call.input.target === lpToken).output.toLowerCase()
-            const token1 = (await tokens1).output.find(call=>call.input.target === lpToken).output.toLowerCase()
-            const supply = (await lpSupplies).output.find(call=>call.input.target === lpToken).output
+            const token0_ = (await tokens0).output.find(call=>call.input.target === lpToken)
+            const token1_ = (await tokens1).output.find(call=>call.input.target === lpToken)
+            const supply_ = (await lpSupplies).output.find(call=>call.input.target === lpToken)
+            const callFailed = [token0_, token1_, supply_].some(response => !response || !response.success)
+
+            if (skipFailingLPs && callFailed) {
+                console.log(`Call failed for LP token: ${lpToken}... `)
+                return
+            }
+            try {
+                token0 = token0_.output.toLowerCase()
+                token1 = token1_.output.toLowerCase()
+                supply = supply_.output
+                // console.log(token0_, supply_, token1_, lpToken)
+
+            } catch(e) {
+                // console.log(token0_, supply_, token1_, lpToken)
+                // return;
+                throw e
+            }
             if(supply === "0"){
                 return
             }

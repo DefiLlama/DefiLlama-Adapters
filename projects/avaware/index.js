@@ -31,6 +31,7 @@ const staking = async (timestamp, ethBlock, chainBlocks) => {
 /*** farms TVL portion ***/
 const avaxTvl = async (timestamp, ethBlock, chainBlocks) => {
   const balances = {};
+  const transformAddress = await transformAvaxAddress();
 
   const CountOfPools = (
     await sdk.api.abi.call({
@@ -42,62 +43,71 @@ const avaxTvl = async (timestamp, ethBlock, chainBlocks) => {
   ).output;
 
   const lpPositions = [];
+  const promises = []
 
   for (let index = 0; index < CountOfPools; index++) {
     if (index == 14) {
       continue // 14 isn't a normal pool, it's NFT staking rewards
     }
-    const getPoolAddress = (
-      await sdk.api.abi.call({
-        abi: abi.getPool,
-        target: FarmPoolManager,
-        params: index,
-        chain: "avax",
-        block: chainBlocks["avax"],
-      })
-    ).output.pool;
-
-    const stakingLpOrTokens = (
-      await sdk.api.abi.call({
-        abi: abi.stakingToken,
-        target: getPoolAddress,
-        chain: "avax",
-        block: chainBlocks["avax"],
-      })
-    ).output;
-
-    const balanceOfLpoOrToken = (
-      await sdk.api.abi.call({
-        abi: erc20.balanceOf,
-        target: stakingLpOrTokens,
-        params: getPoolAddress,
-        chain: "avax",
-        block: chainBlocks["avax"],
-      })
-    ).output;
-
-    if (index == 8) {
-      sdk.util.sumSingleBalance(
-        balances,
-        `avax:${stakingLpOrTokens}`,
-        balanceOfLpoOrToken
-      );
-    } else {
-      lpPositions.push({
-        token: stakingLpOrTokens,
-        balance: balanceOfLpoOrToken,
-      });
-    }
+    
+    promises.push((async () => {
+      const getPoolAddress = (
+        await sdk.api.abi.call({
+          abi: abi.getPool,
+          target: FarmPoolManager,
+          params: index,
+          chain: "avax",
+          block: chainBlocks["avax"],
+        })
+      ).output.pool;
+  
+      const stakingLpOrTokens = (
+        await sdk.api.abi.call({
+          abi: abi.stakingToken,
+          target: getPoolAddress,
+          chain: "avax",
+          block: chainBlocks["avax"],
+        })
+      ).output;
+  
+      const balanceOfLpoOrToken = (
+        await sdk.api.abi.call({
+          abi: erc20.balanceOf,
+          target: stakingLpOrTokens,
+          params: getPoolAddress,
+          chain: "avax",
+          block: chainBlocks["avax"],
+        })
+      ).output;
+  
+      if (index == 8) {
+        sdk.util.sumSingleBalance(
+          balances,
+          transformAddress(stakingLpOrTokens),
+          balanceOfLpoOrToken
+        );
+      } else {
+        lpPositions.push({
+          token: stakingLpOrTokens,
+          balance: balanceOfLpoOrToken,
+        });
+      }
+    })())
   }
 
-  const transformAddress = await transformAvaxAddress();
+  await Promise.all(promises)
+
 
   await unwrapUniswapLPs(
     balances,
     lpPositions,
     chainBlocks["avax"],
     "avax",
-    transformAddress
+    transformAddress,
+    undefined,
+    undefined,
+    undefined,
+    { skipFailingLPs: true }
   );
 
   return balances;
