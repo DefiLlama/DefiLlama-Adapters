@@ -17,6 +17,7 @@ async function tvl(){
 
 
 module.exports={
+    rekt: true,
     timetravel: false,
     misrepresentedTokens: true,
     doublecounted: true,
