@@ -20,6 +20,7 @@ const UST = "0xa47c8bf37f92aBed4A126BDA807A7b7498661acD";
 const SDT = "0x73968b9a57c6e53d41345fd57a6e6ae27d6cdb2f";
 const SOLAR = "moonriver:0x6bd193ee6d2104f14f94e2ca6efefae561a4334b";
 const LUNA = "terra-luna";
+const NEWO = "0x98585dfc8d9e7d48f0b1ae47ce33332cf4237d96";
 
 const DATA = {
   bsc: {
@@ -41,6 +42,7 @@ const DATA = {
       "0x0fe9778c005a5a6115cbe12b0568a2d50b765a51", // NFD
       "0x88918495892BAF4536611E38E75D771Dc6Ec0863", // gOHM
       "0xb7A6c5f0cc98d24Cf4B2011842e64316Ff6d042c", // UST
+      "0xc8699abbba90c7479dedccef19ef78969a2fc608", // USDB
     ],
   },
   harmony: {
@@ -94,6 +96,7 @@ const DATA = {
       "0xeee3371b89fc43ea970e908536fcddd975135d8a", // DOG
       "0x48a34796653afdaa1647986b33544c911578e767", // synFRAX
       "0x565098CBa693b3325f9fe01D41b7A1cd792Abab1", // UST
+      "0xfa1fbb8ef55a4855e5688c0ee13ac3f202486286", // USDB
     ],
   },
   avax: {
@@ -119,6 +122,8 @@ const DATA = {
       "0x62edc0692bd897d2295872a9ffcac5425011c661", // GMX
       "0xE97097dE8d6A17Be3c39d53AE63347706dCf8f43", // UST
       "0xccbf7c451f81752f7d2237f2c18c371e6e089e69", // SDT
+      "0x5ab7084cb9d270c2cb052dd30dbecbca42f8620c", // USDB
+      "0x4bfc90322dd638f81f034517359bd447f8e0235a", // NEWO
     ],
   },
   fantom: {
@@ -143,6 +148,7 @@ const DATA = {
       "0x961318Fc85475E125B99Cc9215f62679aE5200aB", // synFXS
       "0xa0554607e477cdC9d0EE2A6b087F4b2DC2815C22", // UST
       "0xe3c82a836ec85311a433fbd9486efaf4b1afbf48", // SDT
+      "0x6fc9383486c163fa48becdec79d6058f984f62ca", // USDB
     ],
   },
   arbitrum: {
@@ -166,6 +172,7 @@ const DATA = {
       "0x85662fd123280827e11c59973ac9fcbe838dc3b4", // synFRAX
       "0x13780E6d5696DD91454F6d3BbC2616687fEa43d0", // UST
       "0x1a4da80967373fd929961e976b4b53ceec063a15", // LUNA
+      "0x0877154a755b24d499b8e2bd7ecd54d3c92ba433", // NEWO
     ],
   },
   boba: {
@@ -199,6 +206,7 @@ const DATA = {
       "0xe96ac70907fff3efee79f502c985a7a21bce407d", // synFRAX
       "0x3bf21ce864e58731b6f28d68d5928bcbeb0ad172", // gOHM
       "0xa9D0C0E124F53f4bE1439EBc35A9C73c0e8275fB", // UST
+      "0x3e193c39626bafb41ebe8bdd11ec7cca9b3ec0b2", // USDB
     ],
   },
   aurora: {
@@ -297,6 +305,8 @@ const misrepresentedTokensMap = {
     "0x88918495892BAF4536611E38E75D771Dc6Ec0863": GOHM,
     // UST -> UST (ETH)
     "0xb7A6c5f0cc98d24Cf4B2011842e64316Ff6d042c": UST,
+    // USDB -> TUSD (ETH)
+    "0xc8699abbba90c7479dedccef19ef78969a2fc608": TUSD,
   },
   polygon: {
     // NFD -> NFD (ETH)
@@ -305,6 +315,8 @@ const misrepresentedTokensMap = {
     "0x48a34796653afdaa1647986b33544c911578e767": FRAX,
     // UST -> UST (ETH)
     "0x565098CBa693b3325f9fe01D41b7A1cd792Abab1": UST,
+    // USDB -> TUSD (ETH)
+    "0xfa1fbb8ef55a4855e5688c0ee13ac3f202486286": TUSD,
   },
   avax: {
     // NFD -> NFD (ETH)
@@ -320,6 +332,10 @@ const misrepresentedTokensMap = {
     "0xE97097dE8d6A17Be3c39d53AE63347706dCf8f43": UST,
     // SDT -> SDT (ETH)
     "0xccbf7c451f81752f7d2237f2c18c371e6e089e69": SDT,
+    // USDB -> TUSD (ETH)
+    "0x5ab7084cb9d270c2cb052dd30dbecbca42f8620c": TUSD,
+    // NEWO -> NEWO (ETH)
+    "0x4bfc90322dd638f81f034517359bd447f8e0235a": NEWO,
   },
   moonriver: {
     // synFRAX -> FRAX (ETH)
@@ -330,6 +346,8 @@ const misrepresentedTokensMap = {
     "0x76906411d07815491a5e577022757ad941fb5066": SOLAR,
     // UST -> UST (ETH)
     "0xa9D0C0E124F53f4bE1439EBc35A9C73c0e8275fB": UST,
+    // USDB -> TUSD (ETH)
+    "0x3e193c39626bafb41ebe8bdd11ec7cca9b3ec0b2": TUSD,
   },
   aurora: {
     // USDC -> USDC (ETH)
@@ -370,6 +388,8 @@ const misrepresentedTokensMap = {
     "0x13780E6d5696DD91454F6d3BbC2616687fEa43d0": UST,
     // LUNA -> LUNA (ETH)
     "0x1a4da80967373fd929961e976b4b53ceec063a15": LUNA,
+    // NEWO -> NEWO (ETH)
+    "0x0877154a755b24d499b8e2bd7ecd54d3c92ba433": NEWO,
   },
   cronos: {
     // gOHM -> gOHM (ETH)
