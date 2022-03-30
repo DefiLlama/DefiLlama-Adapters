@@ -14,7 +14,7 @@ const marketStrings = {
     lp_circulation: "lc"
 }
 
-const orderedAssets = ["ALGO", "STBL", "USDC", "goBTC", "goETH"]
+const orderedAssets = ["ALGO", "STBL", "USDC", "goBTC", "goETH", "vALGO"]
 const fixedValueStakingContracts = ["TINYMAN11_STBL_USDC_LP_STAKING", "ALGOFI-STBL-USDC-LP"]
 const singleSideStakingContracts = ["DEFLY", "STBL"]
 const variableValueStakingContracts = ["ALGOFI-STBL-ALGO-LP", "AF-XET-STBL-75BP-STAKING", "AF-GOBTC-STBL-25BP-STAKING", "AF-GOETH-STBL-25BP-STAKING", "AF-OPUL-STBL-75BP-STAKING",
@@ -52,6 +52,12 @@ const assetDictionary = {
         "marketAppId": 465814278,
         "oracleAppId": 451327550,
         "oracleFieldName": "price"
+    },
+    "vALGO": {
+        "decimals": 6,
+        "marketAppId": 465814318,
+        "oracleAppId": 531724540,
+        "oracleFieldName": "latest_twap_price",
     },
     "STAKING_CONTRACTS": {
         "STBL": {
