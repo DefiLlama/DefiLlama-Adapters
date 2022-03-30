@@ -29,11 +29,18 @@ async function moonriver(timestamp, block, chainBlocks) {
   return getVaultBalance(timestamp, chainBlocks, "moonriver");
 }
 
+async function fantom(timestamp, block, chainBlocks) {
+  return getVaultBalance(timestamp, chainBlocks, "fantom");
+}
+
 module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
   methodology: "Measures the total value deposited in Scion vault contracts",
   moonriver: {
     tvl: moonriver,
+  },
+  fantom: {
+    tvl: fantom,
   },
 };
