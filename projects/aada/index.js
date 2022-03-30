@@ -21,6 +21,7 @@ module.exports={
     methodology: 'Counts amount of AADA staked; by a price of ADA sitting in the orderbook.',
     timetravel: false,
     cardano:{
-        staking
+        staking,
+        tvl:()=>({}),
     }
 }
