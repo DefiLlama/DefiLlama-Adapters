@@ -6,19 +6,11 @@ function ohmTvlMultiTreasuries(treasuries, treasuryTokens, chain, stakingAddress
     const tvl_per_treasury = treasuries.map(treasury => 
         ohmTvl(treasury, treasuryTokens, chain, stakingAddress, stakingToken, transformOriginal, fix, tokenOnCoingecko)
     )
-    const tvls = tvl_per_treasury.map(o => o[chain === "avax"?"avalanche":chain].tvl)
-    const cumulative_tvl = sdk.util.sumChainTvls(tvls)
-
-    // Remove SPHERE token from balances
-    const tvl = async (time, ethBlock, chainBlocks) => {
-        const balances = await cumulative_tvl(time, ethBlock, chainBlocks)
-        // balances[`${chain}:${sphere_token.toLowerCase()}`] = '0'
-        return balances
-    }
-
+    
     // Edit TVL of object to be the cumulative tvl
     const tvl_object = tvl_per_treasury[0]
-    tvl_object[chain === "avax"?"avalanche":chain].tvl = tvl
+    const tvls = tvl_per_treasury.map(o => o[chain === "avax"?"avalanche":chain].tvl)
+    tvl_object[chain === "avax"?"avalanche":chain].tvl = sdk.util.sumChainTvls(tvls)
     return tvl_object
 }
 
