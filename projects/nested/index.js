@@ -45,8 +45,9 @@ function chainTvl_graphql(chain) {
     const limit = 15
     const chainId = chain == 'polygon'? 'poly' : chain // avax and bsc as-is
     const allNestedNFTs = [];
+    const nft_ids = []
     let offset = 0;
-    while ((offset !== -1) && offset <= 100) {
+    while ((offset !== -1) && offset <= 30) {
       console.log('yo')
       const { nfts: nestedNFTs_i } = await request(
       // const nfts = await request(
@@ -54,10 +55,11 @@ function chainTvl_graphql(chain) {
         graphQuery, 
         {chainId, offset, limit}
       );
-      console.log(offset, 'nfts', nestedNFTs_i.length, nestedNFTs_i)
+      console.log(offset, 'nfts', nestedNFTs_i.length) // , nestedNFTs_i)
       offset += limit
       if (nestedNFTs_i && nestedNFTs_i.length > 0) {
         allNestedNFTs.push(...nestedNFTs_i);
+        nft_ids.push(...allNestedNFTs.map(nft => nft.id))
         // Could add another check on nestedNFTs_i.length to be == limit otherwise stop condition 
       } else {
         offset = -1;
@@ -67,11 +69,13 @@ function chainTvl_graphql(chain) {
     let recordsTokens = allNestedNFTs.map(nft => nft.holdings.map(
       t => t.token.id
     )).flat()
-    console.log('recordsTokens', recordsTokens)
     recordsTokens = recordsTokens.map(t => t.substring(t.indexOf(':') + 1))
-    console.log('recordsTokens', recordsTokens)
     const reserveTokens = [...new Set(recordsTokens)]
     console.log('reserveTokens', reserveTokens)
+    
+    console.log('nft_ids', nft_ids)
+
+    
 
     const tokenBalances = await sdk.api.abi.multiCall({
       calls: reserveTokens.map(t => ({
@@ -132,5 +136,5 @@ function chainTvl_onchain(chain) {
 }
 
 // module.exports = chainExports(chainTvl_graphql, ['polygon', 'bsc', 'avax'])
-module.exports = chainExports(chainTvl_onchain, ['bsc'])
+module.exports = chainExports(chainTvl_graphql, ['bsc'])
 module.exports.methodology = 'Nested TVL consists of tokens held by NestedReserve, for which we can get the address using the nestedRecords contract'
