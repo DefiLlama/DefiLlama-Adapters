@@ -88,23 +88,25 @@ async function transformAvaxAddress() {
         }
       }
       const map = {
-        "0xaf2c034c764d53005cc6cbc092518112cbd652bb": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", 
-        "0x57319d41f71e81f3c65f2a47ca4e001ebafd4f33": "avax:0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd", 
-        "0x0000000000000000000000000000000000000000": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", 
-        "0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", 
-        "0xd45b7c061016102f9fa220502908f2c0f1add1d7": "0xffc97d72e13e01096502cb8eb52dee56f74dad7b", 
-        "0x47afa96cdc9fab46904a55a6ad4bf6660b53c38a": "0x028171bca77440897b824ca71d1c56cac55b68a3", 
-        "0x46a51127c3ce23fb7ab1de06226147f446e4a857": "0xbcca60bb61934080951369a648fb03df4f96263c", 
-        "0x532e6537fea298397212f09a61e03311686f548e": "0x3ed3b47dd13ec9a98b44e6204a523e766b225811", 
-        "0xdfe521292ece2a4f44242efbcd66bc594ca9714b": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", 
-        "0x686bef2417b6dc32c50a3cbfbcc3bb60e1e9a15d": "0x9ff58f4ffb29fa2266ab25e75e2a8b3503311656", 
-        "0x53f7c5869a859f0aec3d334ee8b4cf01e3492f21": "0x030ba81f1c18d280636f32af80b9aad02cf0854e", 
+        "0xaf2c034c764d53005cc6cbc092518112cbd652bb": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+        "0x57319d41f71e81f3c65f2a47ca4e001ebafd4f33": "avax:0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd",
+        "0x0000000000000000000000000000000000000000": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+        "0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+        "0xd45b7c061016102f9fa220502908f2c0f1add1d7": "0xffc97d72e13e01096502cb8eb52dee56f74dad7b",
+        "0x47afa96cdc9fab46904a55a6ad4bf6660b53c38a": "0x028171bca77440897b824ca71d1c56cac55b68a3",
+        "0x46a51127c3ce23fb7ab1de06226147f446e4a857": "0xbcca60bb61934080951369a648fb03df4f96263c",
+        "0x532e6537fea298397212f09a61e03311686f548e": "0x3ed3b47dd13ec9a98b44e6204a523e766b225811",
+        "0xdfe521292ece2a4f44242efbcd66bc594ca9714b": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+        "0x686bef2417b6dc32c50a3cbfbcc3bb60e1e9a15d": "0x9ff58f4ffb29fa2266ab25e75e2a8b3503311656",
+        "0x53f7c5869a859f0aec3d334ee8b4cf01e3492f21": "0x030ba81f1c18d280636f32af80b9aad02cf0854e",
 
-        "0xd45b7c061016102f9fa220502908f2c0f1add1d7": "0xffc97d72e13e01096502cb8eb52dee56f74dad7b", 
-        "0x47afa96cdc9fab46904a55a6ad4bf6660b53c38a": "0x028171bca77440897b824ca71d1c56cac55b68a3", 
-        "0x46A51127C3ce23fb7AB1DE06226147F446e4a857": "0xbcca60bb61934080951369a648fb03df4f96263c", 
+        "0xd45b7c061016102f9fa220502908f2c0f1add1d7": "0xffc97d72e13e01096502cb8eb52dee56f74dad7b",
+        "0x47afa96cdc9fab46904a55a6ad4bf6660b53c38a": "0x028171bca77440897b824ca71d1c56cac55b68a3",
+        "0x46A51127C3ce23fb7AB1DE06226147F446e4a857": "0xbcca60bb61934080951369a648fb03df4f96263c",
         "0x574679Ec54972cf6d705E0a71467Bb5BB362919D": "avax:0x5817d4f0b62a59b17f75207da1848c2ce75e7af4",
-        "0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7": "0xdac17f958d2ee523a2206206994597c13d831ec7"
+        "0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        "0x2f28add68e59733d23d5f57d94c31fb965f835d0": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",// sUSDC(Avalanche) -> USDC(Ethereum)
+        "0xf04d3a8eb17b832fbebf43610e94bdc4fd5cf2dd": "bsc:0xe9e7cea3dedca5984780bafc599bd69add087d56", // sBUSD(Avalanche) -> BUSD(BSC)
       }
       return map[addr.toLowerCase()] || `avax:${addr}`
   }
@@ -151,6 +153,9 @@ async function transformBscAddress() {
     if (addr.toLowerCase() == "0x6ded0f2c886568fb4bb6f04f179093d3d167c9d7") {
       return "0x09ce2b746c32528b7d864a1e3979bd97d2f095ab"; // BTCBR returns nonsense TVL
     }
+    if (addr.toLowerCase() === "0x2f28add68e59733d23d5f57d94c31fb965f835d0".toLowerCase()) {
+      return "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"; // sUSDC(BSC) -> USDC(Ethereum)
+    }
     return `bsc:${addr}`;
   };
 }
@@ -179,6 +184,15 @@ async function transformPolygonAddress() {
     }
     if (addr.toLowerCase() === "0x0000000000000000000000000000000000000000") {
       return "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0";
+    }
+    if (addr.toLowerCase() === "0x2f28Add68e59733D23D5F57d94c31fb965f835D0".toLowerCase()) {
+      return "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"; // sUSDC(Polygon) -> USDC(Ethereum)
+    }
+    if (addr.toLowerCase() === "0xf04d3A8Eb17B832Fbebf43610e94BdC4fD5Cf2dd".toLowerCase()) {
+      return "bsc:0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56";// sBUSD(Polygon) -> BUSD(BSC)
+    }
+    if (addr.toLowerCase() === "0x8Eb3771A43a8C45AaBE6d61ED709eCe652281DC9".toLowerCase()) {
+      return "avax:0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664";// sUSDC.e(Polygon) -> USDC.e(Avalanche)
     }
     return tokens[addr.toLowerCase()] || `polygon:${addr}`;
   };
@@ -538,7 +552,7 @@ async function transformKccAddress() {
 
     return map[addr.toLowerCase()] || `metis:${addr}`
   };
-} 
+}
 
 function transformBobaAddress() {
   return (addr) => {
@@ -592,7 +606,7 @@ async function getChainTransform(chain) {
     return (id) => id;
   }
   if (chainTransforms[chain] !== undefined) {
-   
+
     return chainTransforms[chain]();
   }
   return (addr) => `${chain}:${addr}`;
