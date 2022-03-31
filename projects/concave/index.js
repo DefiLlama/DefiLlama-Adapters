@@ -1,6 +1,9 @@
 const { ohmTvl } = require('../helper/ohm')
 const abi = require('./abi.json')
 const sdk = require('@defillama/sdk')
+const {unwrapCrv} = require('../helper/unwrapLPs')
+const BigNumber = require("bignumber.js");
+
 
 const treasury = '0x226e7af139a0f34c6771deb252f9988876ac1ced' 
 const cnv_token = '0xdea1fc87b6f4536e852aea73aeb8f4ac0cf843c3'
@@ -18,7 +21,50 @@ module.exports = ohmTvl(treasury, treasuryTokens, 'ethereum', stakingAddress, cn
 const cvxUST_whv23CRV_BaseRewardPool = '0x7e2b9b5244bcfa5108a76d5e7b507cfd5581ad4a'
 const cvxUST_whv23CRV_f = '0x2d2006135e682984a8a2eb74f5c87c2251cc71e9' // CVX LP, base reward pool holds 100% of that token plus some crv. Can be queried via stakingToken method on baseRewardPool
 const UST_whv23CRV_f = '0xceaf7747579696a2f0bb206a14210e3c9e6fb269' // Crv LP, Best would be to derive it from the baseRewardPool or cvx contract
-const abi_crvLP_coins = {"stateMutability":"view","type":"function","name":"coins","inputs":[{"name":"arg0","type":"uint256"}],"outputs":[{"name":"","type":"address"}],"gas":3123}
+const abi_crvLP_coins = {'stateMutability':'view','type':'function','name':'coins','inputs':[{'name':'arg0','type':'uint256'}],'outputs':[{'name':'','type':'address'}],'gas':3123}
+
+async function genericUnwrapCrv(balances, crvToken, lpBalance, block, chain) {
+  const {output: resolvedCrvTotalSupply} = await sdk.api.abi.call({
+    abi: 'erc20:totalSupply', 
+    target: crvToken,
+    chain,
+    block
+  })
+
+  // Get Curve LP token balances
+  // A while-loop would need a try-catch because sending error when idx > tokens_count
+  const {output: crv_symbol} = await sdk.api.abi.call({
+    abi: 'erc20:symbol', 
+    target: crvToken,
+    chain,
+    block
+  })
+  const LP_tokens_count = 1 + (crv_symbol.match(/_/g) || []).length
+  const coins_indices = Array.from(Array(LP_tokens_count).keys())
+  const coins = (await sdk.api.abi.multiCall({
+    abi: abi_crvLP_coins, 
+    calls: coins_indices.map(i => ({params: [i]})),
+    target: crvToken,
+    chain,
+    block
+  })).output.map(c => c.output)
+  const crvLP_token_balances = await sdk.api.abi.multiCall({
+    abi: 'erc20:balanceOf', 
+    calls: coins.map(c => ({
+      target: c,
+      params: crvToken,
+    })),
+    chain,
+    block
+  })
+  console.log('crvLP_token_balances', crvLP_token_balances)
+
+  // Edit the balances to weigh with respect to the wallet holdings of the crv LP token
+  crvLP_token_balances.output.forEach(call => 
+    call.output = BigNumber(call.output).times(lpBalance).div(resolvedCrvTotalSupply).toFixed(0)
+  )
+  sdk.util.sumMultiBalanceOf(balances, crvLP_token_balances);
+}
 
 async function testConvexTvl(timestamp, ethBlock, chainBlocks) {
   const balances = {}
@@ -32,70 +78,8 @@ async function testConvexTvl(timestamp, ethBlock, chainBlocks) {
   })
   console.log(cvx_LP_bal)
 
-  const {output: crv_supply} = await sdk.api.abi.call({
-    abi: 'erc20:totalSupply', 
-    target: UST_whv23CRV_f,
-    chain,
-    block: ethBlock,
-  })
-  
-  // const coins = []
-  // let coins_idx = 0
-  // A while-loop would need a try-catch because sending error when idx > tokens_count
-  // while (coins_idx >= 0) {
-  //   console.log(coins_idx)
-  //   try {
-  //     const coins_i_response = await sdk.api.abi.call({
-  //       abi: abi_crvLP_coins, 
-  //       params: [coins_idx],
-  //       target: UST_whv23CRV_f,
-  //       chain,
-  //       block: ethBlock,
-  //     })
-  //     console.log(coins_i_response)
-  //     if (coins_i_response && coins_i_response.output) {
-  //       coins.push(coins_i_response.output)
-  //       coins_idx ++;
-  //     } else {
-  //       coins_idx = -1
-  //     }
-  //   } catch {
-  //     break
-  //   }
-  // }
-  const {output: crv_symbol} = await sdk.api.abi.call({
-    abi: 'erc20:symbol', 
-    target: UST_whv23CRV_f,
-    chain,
-    block: ethBlock,
-  })
-  const LP_tokens_count = 1 + (crv_symbol.match(/_/g) || []).length
-  const coins_indices = Array.from(Array(LP_tokens_count).keys())
-  console.log(coins_indices)
-  const {output: coins_response} = await sdk.api.abi.multiCall({
-    abi: abi_crvLP_coins, 
-    calls: coins_indices.map(i => ({params: [i]})),
-    target: UST_whv23CRV_f,
-    chain,
-    block: ethBlock,
-  })
-  const coins = coins_response.map(c => c.output)
-  console.log(coins)
-  const crvLP_token_balances = await sdk.api.abi.multiCall({
-    abi: 'erc20:balanceOf', 
-    calls: coins.map(c => ({
-      target: c,
-      params: UST_whv23CRV_f,
-    })),
-    chain,
-    block: ethBlock,
-  })
-  console.log('crvLP_token_balances', crvLP_token_balances)
-
-  // Edit the balances to weigh with respect to the wallet holdings of the crv LP token
-
-  sdk.util.sumMultiBalanceOf(balances, crvLP_token_balances);
-
+  // unwrapCrv(balances, crvToken, lpBalance, block, chain = 'ethereum', transformAddress=(addr)=>addr, excludeTokensRaw=[])
+  await genericUnwrapCrv(balances, UST_whv23CRV_f, cvx_LP_bal, ethBlock, chain)
   
 
   return balances
