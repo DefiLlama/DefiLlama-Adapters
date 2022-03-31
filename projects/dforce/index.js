@@ -130,10 +130,14 @@ const excludeAlliTokens = {
   ]
 }
 
+// Lock USX to cross chain to L2.
 const escrowPools = [
   "0x9e8b68e17441413b26c2f18e741eaba69894767c", // Arbitrum
   "0x40be37096ce3b8a2e9ec002468ab91071501c499", // Optimism
 ];
+
+// DF staking pool: sDF
+const dfStakingPools = "0x41602ccf9b1F63ea1d0Ab0F0A1D2F4fd0da53f60";
 
 const polygonUSX = "0xCf66EB3D546F0415b368d98A95EAF56DeD7aA752";
 
@@ -158,6 +162,31 @@ async function getLockedUSXValueForL2(block) {
   );
   // the price of USX is always 1.
   return lockedUSX.div(BASE);
+}
+
+async function getDFStakingValue(block) {
+  // Mainnet DF
+  const DF = "0x431ad2ff6a9C365805eBaD47Ee021148d6f7DBe0";
+
+  const { output: stakingExchangeRate }  = await sdk.api.abi.call({
+    block,
+    target: dfStakingPools,
+    abi: abi['getCurrentExchangeRate'],
+    chain: 'ethereum'
+  });
+
+  const { output: stakingTotalSupply }  = await sdk.api.abi.call({
+    block,
+    target: dfStakingPools,
+    abi: abi['totalSupply'],
+    chain: 'ethereum'
+  });
+
+  let lockedDF = BigNumber(stakingExchangeRate.toString()).times(BigNumber(stakingTotalSupply.toString())).div(BASE);
+
+  let dfPrice = await getUnderlyingPrice('ethereum', DF, block);
+
+  return lockedDF.times(dfPrice).div(Double);
 }
 
 async function getTVLByTotalSupply(chain, token, block) {
@@ -409,9 +438,15 @@ async function polygon(timestamp, ethBlock, chainBlocks) {
   return getTVLByChain('polygon', chainBlocks['polygon']);
 }
 
+async function staking(timestamp, ethBlock, chainBlocks) {
+  let dfStakingValue = await getDFStakingValue(ethBlock);
+  return toUSDTBalances(dfStakingValue.toNumber());
+}
+
 module.exports = {
-  ethereum:{
-    tvl: ethereum
+  ethereum: {
+    tvl: ethereum,
+    staking,
   },
   bsc: {
     tvl: bsc

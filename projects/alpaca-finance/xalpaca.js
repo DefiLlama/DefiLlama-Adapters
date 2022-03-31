@@ -11,7 +11,15 @@ async function getProcolXAlpacaAddresses(chain) {
       )
     ).data;
   }
+  if (chain == "fantom") {
+    return (
+      await axios.get(
+        "https://raw.githubusercontent.com/alpaca-finance/xALPACA-contract/main/.fantom_mainnet.json"
+      )
+    ).data;
+  }
 }
+  
 
 async function calxALPACAtvl(chain, block) {
   const xalpacaAddresses = await getProcolXAlpacaAddresses(chain);

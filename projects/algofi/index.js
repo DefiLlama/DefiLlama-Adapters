@@ -14,7 +14,7 @@ const marketStrings = {
     lp_circulation: "lc"
 }
 
-const orderedAssets = ["ALGO", "STBL", "USDC", "goBTC", "goETH"]
+const orderedAssets = ["ALGO", "STBL", "USDC", "goBTC", "goETH", "vALGO"]
 const fixedValueStakingContracts = ["TINYMAN11_STBL_USDC_LP_STAKING", "ALGOFI-STBL-USDC-LP"]
 const singleSideStakingContracts = ["DEFLY", "STBL"]
 const variableValueStakingContracts = ["ALGOFI-STBL-ALGO-LP", "AF-XET-STBL-75BP-STAKING", "AF-GOBTC-STBL-25BP-STAKING", "AF-GOETH-STBL-25BP-STAKING", "AF-OPUL-STBL-75BP-STAKING",
@@ -52,6 +52,12 @@ const assetDictionary = {
         "marketAppId": 465814278,
         "oracleAppId": 451327550,
         "oracleFieldName": "price"
+    },
+    "vALGO": {
+        "decimals": 6,
+        "marketAppId": 465814318,
+        "oracleAppId": 531724540,
+        "oracleFieldName": "latest_twap_price",
     },
     "STAKING_CONTRACTS": {
         "STBL": {
@@ -131,10 +137,10 @@ const assetDictionary = {
 }
 
 
-async function getGlobalMarketState(algodClient, marketId) {
-  let response = await algodClient.getApplicationByID(marketId).do()
+async function getGlobalMarketState(indexerClient, marketId) {
+  let response = await indexerClient.lookupApplications(marketId).do();
   let results = {}
-  response.params["global-state"].forEach(x => {
+  response.application.params["global-state"].forEach(x => {
     let decodedKey =  Buffer.from(x.key, 'base64').toString('binary')
     results[decodedKey] = x.value.uint
   })
@@ -142,11 +148,11 @@ async function getGlobalMarketState(algodClient, marketId) {
   return results
 }
 
-async function getPrices(algodClient, assetDictionary, orderedAssets) {
+async function getPrices(indexerClient, assetDictionary, orderedAssets) {
   let prices = {}
   for (const assetName of orderedAssets) {
-    let response = await algodClient.getApplicationByID(assetDictionary[assetName]["oracleAppId"]).do()
-    for (const y of response.params["global-state"]) {
+    let response = await indexerClient.lookupApplications(assetDictionary[assetName]["oracleAppId"]).do()
+    for (const y of response.application.params["global-state"]) {
       let decodedKey = Buffer.from(y.key, 'base64').toString('binary')
       if (decodedKey === assetDictionary[assetName]["oracleFieldName"]) {
         prices[assetName] = y.value.uint / 1000000
@@ -173,7 +179,7 @@ function getMarketBorrow(assetName, marketGlobalState, prices) {
 }
 
 async function borrowed() {
-    let client = new algosdk.Algodv2("", "https://algoexplorerapi.io/", "")
+    let client = new algosdk.Indexer("", "https://algoindexer.algoexplorerapi.io/", "")
     let prices = await getPrices(client, assetDictionary, orderedAssets)
 
     borrow = 0
@@ -187,7 +193,7 @@ async function borrowed() {
 }
 
 async function supply() {
-    let client = new algosdk.Algodv2("", "https://algoexplorerapi.io/", "")
+    let client = new algosdk.Indexer("", "https://algoindexer.algoexplorerapi.io/", "")
     let prices = await getPrices(client, assetDictionary, orderedAssets)
 
     supply = 0
@@ -201,7 +207,7 @@ async function supply() {
 }
 
 async function staking() {
-    let client = new algosdk.Algodv2("", "https://algoexplorerapi.io/", "")
+    let client = new algosdk.Indexer("", "https://algoindexer.algoexplorerapi.io/", "")
 
     let lpCirculations = {}
 
@@ -221,7 +227,7 @@ async function staking() {
     let poolSnapshotsResponse = await fetch("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_pool_snapshots/?network=MAINNET")
     let assetSnapshotsResponse = await fetch("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_asset_snapshots/?network=MAINNET")
 
-    let poolSnapshots = await poolSnapshotsResponse.json();
+    let poolSnapshots = await poolSnapshotsResponse.json()
     for (const poolSnapshot of poolSnapshots.pool_snapshots) {
         for (const contractName of variableValueStakingContracts) {
             if (poolSnapshot.id == assetDictionary['STAKING_CONTRACTS'][contractName]["poolAppId"]) {
@@ -230,7 +236,7 @@ async function staking() {
         }
     }
 
-    let assetSnapshots = await assetSnapshotsResponse.json();
+    let assetSnapshots = await assetSnapshotsResponse.json()
     for (const assetSnapshot of assetSnapshots.asset_snapshots) {
         for (const contractName of singleSideStakingContracts) {
             if (assetSnapshot.id == assetDictionary['STAKING_CONTRACTS'][contractName]["assetId"]) {
