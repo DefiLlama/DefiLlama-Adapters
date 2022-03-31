@@ -116,7 +116,7 @@ async function handlePool2(timestamp, _ethBlock, chainBlocks) {
 }
 
 module.exports = {
-	rekt: true,
+	deadFrom: 1648765747,
 	methodology: "TVL includes all farms in MasterChef contract",
 	fantom: {
 		tvl,

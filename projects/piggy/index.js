@@ -13,7 +13,7 @@ const STABILITY_POOL_ADDRESS = "0xD4F3B638dFe1509DD06B9c8Fcf45a4C87179f03F";
 const TROVE_MANAGER_ADDRESS = "0xb283466d09177c5C6507785d600caFDFa538C65C";
 
 module.exports = {
-  rekt: true,
+  deadFrom: 1648765747,
   start: 1623145388,
   bsc: {
     tvl: getLiquityTvl(BNB_ADDRESS, TROVE_MANAGER_ADDRESS, "bsc")

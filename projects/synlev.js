@@ -19,6 +19,6 @@ async function fetch() {
 
 
 module.exports = {
-  rekt: true,
+  deadFrom: 1648765747,
   fetch
 }
