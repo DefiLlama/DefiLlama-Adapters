@@ -1,7 +1,7 @@
 const retry = require("async-retry");
 const axios = require("axios");
 const BigNumber = require("bignumber.js");
-
+const { toUSDTBalances } = require('../helper/balances');
 const GODWOKEN_RPC = "https://mainnet.godwoken.io/rpc";
 
 async function getDRMPrice() {
@@ -53,12 +53,13 @@ async function fetch() {
   const drmPrice = await getDRMPrice();
   const sdrmSupply = await getSDRMSupply();
 
-  return drmPrice * sdrmSupply;
+  return toUSDTBalances(drmPrice * sdrmSupply);
 }
 
 module.exports = {
+  mirepresentedTokens: true,
   methodology: `Finds TVL by querying DRM contract for sDRM (Staked DRM) supply and the DRM price. TVL = sdrmSupply * drmPrice`,
   godwoken: {
-    fetch
+    tvl: fetch
   }
 };
