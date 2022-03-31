@@ -58,5 +58,7 @@ async function fetch() {
 
 module.exports = {
   methodology: `Finds TVL by querying DRM contract for sDRM (Staked DRM) supply and the DRM price. TVL = sdrmSupply * drmPrice`,
-  fetch,
+  godwoken: {
+    fetch
+  }
 };
