@@ -2,9 +2,11 @@ const {
   sumTokensAndLPsSharedOwners,
   sumTokens,
 } = require("../helper/unwrapLPs");
+const { getPricesfromString } = require("../helper/utils");
 const { chainExports } = require("../helper/exports");
 const { getBlock } = require("../helper/getBlock");
 const { requery } = require("../helper/requery");
+const BigNumber = require("bignumber.js");
 const sdk = require("@defillama/sdk");
 
 // Used to represent nUSD.
@@ -21,6 +23,7 @@ const SDT = "0x73968b9a57c6e53d41345fd57a6e6ae27d6cdb2f";
 const SOLAR = "moonriver:0x6bd193ee6d2104f14f94e2ca6efefae561a4334b";
 const LUNA = "terra-luna";
 const NEWO = "0x98585dfc8d9e7d48f0b1ae47ce33332cf4237d96";
+const WAVAX = "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7";
 
 const DATA = {
   bsc: {
@@ -250,6 +253,12 @@ const DATA = {
       "0x0b5740c6b4a97f90eF2F0220651Cca420B868FfB", // UST
     ],
   },
+  dfk: {
+    tokens: [
+      "0xCCb93dABD71c8Dad03Fc4CE5559dC3D89F67a260", // WJEWEL
+      "0xB57B60DeBDB0b8172bb6316a9164bd3C695F133a", // AVAX
+    ],
+  },
 };
 
 const misrepresentedTokensMap = {
@@ -366,8 +375,7 @@ const misrepresentedTokensMap = {
     "0x1d4C2a246311bB9f827F4C768e277FF5787B7D7E":
       "moonriver:0x98878b06940ae243284ca214f92bb71a2b032b8a",
     // AVAX -> WAVAX (AVAX)
-    "0xA1f8890E39b4d8E33efe296D698fe42Fb5e59cC3":
-      "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+    "0xA1f8890E39b4d8E33efe296D698fe42Fb5e59cC3": WAVAX,
     // UST -> UST (ETH)
     "0x5CF84397944B9554A278870B510e86667681ff8D": UST,
   },
@@ -403,6 +411,13 @@ const misrepresentedTokensMap = {
     // UST -> UST (ETH)
     "0x0b5740c6b4a97f90eF2F0220651Cca420B868FfB": UST,
   },
+  dfk: {
+    // WJEWEL -> WJEWEL (ONE)
+    "0xCCb93dABD71c8Dad03Fc4CE5559dC3D89F67a260":
+      "harmony:0x72cb10c6bfa5624dd07ef608027e366bd690048f",
+    // AVAX -> WAVAX (AVAX)
+    "0xB57B60DeBDB0b8172bb6316a9164bd3C695F133a": WAVAX,
+  },
 };
 
 const sumLegacyPools = async (balances, block, chain, transform) => {
@@ -429,6 +444,38 @@ const mapStables = (data) => {
     stables.push([data.neth, data.ethPool], [data.weth, data.ethPool]);
 
   return stables;
+};
+
+const xJEWELPriceUSD = async (block) => {
+  const LPContract = "0x6AC38A4C112F125eac0eBDbaDBed0BC8F4575d0d";
+  const chain = "dfk";
+  const tokens = [
+    "0xCCb93dABD71c8Dad03Fc4CE5559dC3D89F67a260", // WJEWEL
+    "0x77f2656d04E158f915bC22f07B779D94c1DC47Ff", // xJEWEL
+  ];
+
+  const { output: ret0 } = await sdk.api.abi.call({
+    params: LPContract,
+    target: tokens[0],
+    abi: "erc20:balanceOf",
+    block,
+    chain,
+  });
+
+  const { output: ret1 } = await sdk.api.abi.call({
+    params: LPContract,
+    target: tokens[1],
+    abi: "erc20:balanceOf",
+    block,
+    chain,
+  });
+
+  // TODO: The above works for historical data, but this price fetching is not.
+  const cgid = "defi-kingdoms";
+  const jewelPrice = (await getPricesfromString(cgid)).data[cgid].usd;
+  const ratio = BigNumber(ret0).div(ret1);
+
+  return ratio.times(jewelPrice);
 };
 
 const bridgeTVL = async (balances, data, block, chain, transform) => {
@@ -509,6 +556,21 @@ const chainTVL = (chain) => {
     if (chain !== "ethereum")
       await sumLegacyPools(balances, block, chain, transform);
 
+    if (chain === "dfk") {
+      const price = await xJEWELPriceUSD(block);
+
+      const { output } = await sdk.api.abi.call({
+        target: "0x77f2656d04E158f915bC22f07B779D94c1DC47Ff", // xJEWEL
+        abi: "erc20:totalSupply",
+        block,
+        chain,
+      });
+
+      // Map xJEWEL to its USD value.
+      const xjewel = BigNumber(output);
+      sdk.util.sumSingleBalance(balances, TUSD, price.times(xjewel).toFixed(0));
+    }
+
     return balances;
   };
 };
@@ -528,6 +590,7 @@ module.exports = chainExports(chainTVL, [
   "moonbeam",
   "cronos",
   "metis",
+  "dfk",
 ]);
 module.exports.methodology = `Tokens bridged via Synapse Bridge and Synapse AMM pools are counted as TVL`;
 module.exports.misrepresentedTokens = true;
