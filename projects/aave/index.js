@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk');
-const { getV2Reserves, getV2Tvl, aaveExports, getV2Borrowed, aaveChainTvl } = require('../helper/aave');
+const { getV2Reserves, getV2Tvl, getV2Borrowed, aaveChainTvl } = require('../helper/aave');
 const { staking } = require('../helper/staking');
 const { singleAssetV1Market,uniswapV1Market } = require('./v1');
 const { ammMarket } = require('./amm');
@@ -75,12 +75,9 @@ async function stakingBalancerTvl(timestamp, block) {
 
 const aaveStakingContract = "0x4da27a545c0c5b758a6ba100e3a049001de870f5";
 
-const v3params = ["0x770ef9f4fe897e59daCc474EF11238303F9552b6", undefined, ["0x69FA688f1Dc47d4B5d8029D5a35FB7a548310654"]]
-
-function v2andV3(chain, v2Registry){
+function v2(chain, v2Registry){
   const section = borrowed => sdk.util.sumChainTvls([
     aaveChainTvl(chain, v2Registry, undefined, undefined, borrowed),
-    aaveChainTvl(chain, ...v3params, borrowed),
   ])
   return {
     tvl: section(false),
@@ -97,7 +94,7 @@ module.exports = {
     tvl: ethereum(false),
     borrowed: ethereum(true),
   },
-  avalanche: v2andV3("avax", "0x4235E22d9C3f28DCDA82b58276cb6370B01265C2"),
-  polygon: v2andV3("polygon", "0x3ac4e9aa29940770aeC38fe853a4bbabb2dA9C19"),
-  ...["optimism", "fantom", "harmony", "arbitrum"].reduce((t, c)=>({...t, [c]:aaveExports(c, ...v3params)}), {})
+  avalanche: v2("avax", "0x4235E22d9C3f28DCDA82b58276cb6370B01265C2"),
+  polygon: v2("polygon", "0x3ac4e9aa29940770aeC38fe853a4bbabb2dA9C19"),
 };
+// node test.js projects/aave/index.js
