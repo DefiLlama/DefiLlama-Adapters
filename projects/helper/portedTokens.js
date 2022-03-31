@@ -609,6 +609,19 @@ function transformNearAddress() {
   }
 }
 
+function transformVelasAddress() {
+  return (addr) => {
+    const map = {
+      "0x85219708c49aa701871ad330a94ea0f41dff24ca": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // WETH
+      "0xe2c120f188ebd5389f71cf4d9c16d05b62a58993": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USDC
+      "0x01445c31581c354b7338ac35693ab2001b50b9ae": "0xdac17f958d2ee523a2206206994597c13d831ec7", // USDT
+      "0xc111c29a988ae0c0087d97b33c6e6766808a3bd3": "bsc:0xe9e7cea3dedca5984780bafc599bd69add087d56", // BUSD
+      "0x300a8be53b4b5557f48620d578e7461e3b927dd0": "0xf56842af3b56fd72d17cb103f92d027bba912e89", // BAMBOO
+    }
+    return map[addr.toLowerCase()] || `velas:${addr}`
+  }
+}
+
 const chainTransforms = {
   celo: transformCeloAddress,
   fantom: transformFantomAddress,
@@ -627,6 +640,7 @@ const chainTransforms = {
   metis:transformMetisAddress,
   near: transformNearAddress,
   moonbeam: transformMoonbeamAddress,
+  velas: transformVelasAddress,
 };
 
 async function getChainTransform(chain) {
@@ -663,4 +677,5 @@ module.exports = {
   transformBobaAddress,
   transformNearAddress,
   transformMoonbeamAddress,
+  transformVelasAddress,
 };
