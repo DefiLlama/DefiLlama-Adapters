@@ -1,4 +1,3 @@
-const { staking } = require("../helper/staking");
 const utils = require("../helper/utils");
 
 async function astar() {
