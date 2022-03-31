@@ -34,6 +34,7 @@ const replacements = {
 
 async function tvl(timestamp, block) {
     const balances = {}
+    return balances
     const data = await axios.get('https://api.rulerprotocol.com/backend_data/production')
     const balancesOnCore = await sdk.api.abi.multiCall({
         abi: 'erc20:balanceOf',
@@ -72,5 +73,5 @@ async function tvl(timestamp, block) {
 
 module.exports = {
     rekt: true,
-    tvl
+    ethereum: { tvl },
 }
