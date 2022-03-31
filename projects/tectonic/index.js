@@ -126,16 +126,13 @@ async function borrowed(timestamp, block, chainBlocks) {
         "0xeAdf7c01DA7E93FdB5f16B0aa9ee85f978e89E95".toLowerCase()
       ) {
         return "crypto-com-chain";
-
-    
       }
-        if (
+      if (
         addr.toLowerCase() ===
-        "0x87EFB3ec1576Dec8ED47e58B832bEdCd86eE186e".toLowerCase()
+        "0x4bD41f188f6A05F02b46BB2a1f8ba776e528F9D2".toLowerCase()
       ) {
         return "0x0000000000085d4780B73119b644AE5ecd22b376";
       }
-
       return `cronos:${tokenName[addr]}`;
     }, 
     (addr, amount)=>{
