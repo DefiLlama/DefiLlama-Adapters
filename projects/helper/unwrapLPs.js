@@ -458,10 +458,7 @@ const token1Abi = {"constant":true,"inputs":[],"name":"token1","outputs":[{"inte
     token
 }[]
 */
-async function unwrapUniswapLPs(balances, lpPositions, block, chain='ethereum', transformAddress=(addr)=>addr, excludeTokensRaw = [], retry = false, uni_type = 'standard', options = {}) {
-    const {
-        skipFailingLPs = false
-    } = options
+async function unwrapUniswapLPs(balances, lpPositions, block, chain='ethereum', transformAddress=(addr)=>addr, excludeTokensRaw = [], retry = false, uni_type = 'standard',) {
     const excludeTokens = excludeTokensRaw.map(addr=>addr.toLowerCase())
     const lpTokenCalls = lpPositions.map(lpPosition=>({
         target: lpPosition.token
@@ -507,12 +504,7 @@ async function unwrapUniswapLPs(balances, lpPositions, block, chain='ethereum', 
             const token0_ = (await tokens0).output.find(call=>call.input.target === lpToken)
             const token1_ = (await tokens1).output.find(call=>call.input.target === lpToken)
             const supply_ = (await lpSupplies).output.find(call=>call.input.target === lpToken)
-            const callFailed = [token0_, token1_, supply_].some(response => !response || !response.success)
 
-            if (skipFailingLPs && callFailed) {
-                console.log(`Call failed for LP token: ${lpToken}... `)
-                return
-            }
             try {
                 token0 = token0_.output.toLowerCase()
                 token1 = token1_.output.toLowerCase()
