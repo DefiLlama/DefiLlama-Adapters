@@ -215,9 +215,6 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
   ==================================================*/
 
 module.exports = {
-  name: "Mobius", // project name
-  website: "https://mobius.money",
-  category: "DEXes", // allowed values as shown on DefiPulse:
   start: 8606077, // January 19, 2021 11:51:30 AM
   tvl, // tvl adapter
 };

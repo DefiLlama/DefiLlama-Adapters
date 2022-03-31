@@ -1,0 +1,28 @@
+{
+	"currentPriceDAI": {
+		"inputs": [],
+		"name": "currentPriceDAI",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	"totalDelegated": {
+		"type": "function",
+		"stateMutability": "view",
+		"outputs": [
+			{
+				"type": "uint256",
+				"name": "",
+				"internalType": "uint256"
+			}
+		],
+		"name": "totalDelegated",
+		"inputs": []
+	}
+} 

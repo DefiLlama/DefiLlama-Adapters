@@ -45,6 +45,15 @@ const crv_steth_vault = {
   crvToken: '0x06325440D014e39736583c165C2963BA99fAf14E',
   abi:'balance'
 }
+const angle_vault = {
+  contract: '0x79B738e404208e9607c3B4D4B3800Ed0d4A0e05F',
+  sanUsdcEurGauge: '0x51fE22abAF4a26631b2913E417c0560D547797a7',
+  usdcToken: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+  stableMasteFront: '0x5adDc89785D75C86aB939E9e15bfBBb7Fc086A87',
+  usdcPoolManager: '0xe9f183FC656656f1F17af1F2b0dF79b8fF9ad8eD',
+  abi:'balanceOf',
+  abiCM: 'collateralMap'
+}
 
 // Polygon
 const crv_3crv_vault_polygon = {
@@ -62,6 +71,13 @@ const crv_btc_vault_polygon = {
 const crv_3crv_vault_avalanche = {
   contract: '0x0665eF3556520B21368754Fb644eD3ebF1993AD4',
   crvToken: '0x1337BedC9D22ecbe766dF105c9623922A27963EC',
+  abi: 'balance'
+}
+
+// Harmony
+const crv_3crv_vault_harmony = {
+  contract: '0x787C95Fb37FFc32e36121aD49CA27b7E3D45b77e',
+  crvToken: '0xC5cfaDA84E902aD92DD40194f0883ad49639b023',
   abi: 'balance'
 }
 
@@ -101,6 +117,10 @@ const vaultsAvalanche = [
   crv_3crv_vault_avalanche
 ]
 
+const vaultsHarmony = [
+  crv_3crv_vault_harmony
+]
+
 const vaultsBsc = [
   btcEPS_vault_bsc,
   EPS3_vault_bsc,
@@ -120,6 +140,20 @@ async function ethereum(timestamp, block) {
     abi: abi[crv_perpetual_vault.abi],
     params: crv_perpetual_vault.contract
   })
+  const sanUsdcEurInVault = sdk.api.abi.call({
+    target: angle_vault.sanUsdcEurGauge,
+    block,
+    abi: abi[angle_vault.abi],
+    params: angle_vault.contract
+  })
+  const collateralMap = sdk.api.abi.call({
+    target: angle_vault.stableMasteFront,
+    block,
+    abi: abi[angle_vault.abiCM],
+    params: angle_vault.usdcPoolManager
+  })
+  const sanUsdcEurRate = (await collateralMap).output.sanRate
+  const sanUsdcEurVaultBalance = (await sanUsdcEurInVault).output
   await Promise.all(vaults.map(async vault=>{
     const crvBalance = await sdk.api.abi.call({
       target: vault.contract,
@@ -129,6 +163,7 @@ async function ethereum(timestamp, block) {
     await unwrapCrv(balances, vault.crvToken, crvBalance.output, block)
   }))
   sdk.util.sumSingleBalance(balances, crvToken, (await crvInPerpetual).output.amount)
+  sdk.util.sumSingleBalance(balances, angle_vault.usdcToken, parseInt(sanUsdcEurVaultBalance * sanUsdcEurRate / 10**18))
   return balances
 }
 
@@ -178,7 +213,6 @@ async function avax(timestamp, ethBlock, chainBlocks) {
       abi: abi[vault.abi], 
       chain: 'avax'
     })  
-    //console.log(crvBalance)
     await unwrapCrv(balances, vault.crvToken, crvBalance.output, block, 'avax', addr=>`avax:${addr}`)
   }))
 
@@ -199,6 +233,22 @@ async function avax(timestamp, ethBlock, chainBlocks) {
   const avUSDT = 'avax:0x532E6537FEA298397212F09A61e03311686f548e'
   balances[usdt_eth_address] = balances[avUSDT]
   delete balances[avUSDT]
+
+  return balances
+}
+
+async function harmony(timestamp, ethBlock, chainBlocks) {
+  let balances = {};
+  const block = chainBlocks.harmony
+  await Promise.all(vaultsHarmony.map(async vault=>{
+    const crvBalance = await sdk.api.abi.call({
+      target: vault.contract,
+      block,
+      abi: abi[vault.abi], 
+      chain: 'harmony'
+    })
+    await unwrapCrv(balances, vault.crvToken, crvBalance.output, block, 'harmony', addr=>`harmony:${addr}`)
+  }))
 
   return balances
 }
@@ -227,7 +277,7 @@ async function bsc(timestamp, ethBlock, chainBlocks) {
   }))
   return balances
 }
-
+// node test.js projects/stakedao/index.js
 module.exports = {
   ethereum:{
     tvl: ethereum,
@@ -238,6 +288,9 @@ module.exports = {
   },
   avalanche: {
     tvl: avax
+  },
+  harmony: {
+    tvl: harmony
   },
   bsc: {
     tvl: bsc

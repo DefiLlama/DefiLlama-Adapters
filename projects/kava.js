@@ -49,6 +49,8 @@ function convertSymbol(symbol) {
       return {id: 'kava', decimals: 6};
     case 'xrpb':
       return {id: 'ripple', decimals: 8};
+    case 'ibc/B448C0CA358B958301D328CCDC5D5AD642FC30A6D3AE106FF721DB315F3DDE5C':
+      return {id: 'terra-usd', decimals: 6};
     default:
       console.log(symbol);
   };

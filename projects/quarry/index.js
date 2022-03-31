@@ -67,7 +67,6 @@ async function tvl() {
   const coder = new Coder(QuarryMineIDL);
 
   for (const [stakedMint, quarryKeys] of Object.entries(quarriesByStakedMint)) {
-    console.log(`Fetching ${stakedMint}`);
     const coingeckoID = coingeckoIDs[stakedMint];
     const saberPool = coingeckoID
       ? null
@@ -134,8 +133,9 @@ async function tvl() {
 }
 
 module.exports = {
+  doublecounted: true,
   timetravel: false,
   methodology:
     "TVL counts deposits made to Quarry Protocol. CoinGecko is used to find the price of tokens in USD.",
-  tvl,
+  solana: { tvl },
 };

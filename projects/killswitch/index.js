@@ -31,11 +31,17 @@ async function fetch() {
 }
 
 module.exports = {
+  doublecounted: true,
+  timetravel: false,
+  misrepresentedTokens: true,
   bsc: {
     fetch: fetchChain("bsc"),
   },
   kcc: {
     fetch: fetchChain("kcc"),
+  },
+  aurora: {
+    fetch: fetchChain("aurora"),
   },
   fetch,
 };

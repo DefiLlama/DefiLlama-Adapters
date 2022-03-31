@@ -51,24 +51,10 @@ async function eth(_timestamp, block, chainBlocks) {
   return getTotal(ethPools, "ethereum", block);
 }
 
-function mergeBalances(balances, balancesToMerge) {
-  Object.entries(balancesToMerge).forEach((balance) => {
-    sdk.util.sumSingleBalance(balances, balance[0], balance[1]);
-  });
-}
-
-async function tvl(timestamp, block, chainBlocks) {
-  const balances = {};
-  await Promise.all([eth(timestamp, block, chainBlocks)]).then((poolBalances) =>
-    poolBalances.forEach((pool) => mergeBalances(balances, pool))
-  );
-  return balances;
-}
-
 module.exports = {
+  methodology: `TVL comes from the Staking Vaults and Launchpad Tiers`,
   ethereum: {
     tvl: eth,
     staking: stakings(ethStaking, token, "ethereum"),
   },
-  tvl,
 };
