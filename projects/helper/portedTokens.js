@@ -595,6 +595,30 @@ function transformNearAddress() {
   }
 }
 
+async function transformKlaytnAddress() {
+  return addr => {
+    if (compareAddresses(addr, '0x5388Ce775De8F7A69d17Fd5CAA9f7dbFeE65Dfce')) // Donkey token
+      return '0x4576E6825B462b6916D2a41E187626E9090A92c6'
+    if (compareAddresses(addr, '0x9eaeFb09fe4aABFbE6b1ca316a3c36aFC83A393F')) // XRP
+      return 'ripple'
+    if (compareAddresses(addr, '0x02cbE46fB8A1F579254a9B485788f2D86Cad51aa')) // bora
+      return '0x26fb86579e371c7aedc461b2ddef0a8628c93d3b'
+    if (compareAddresses(addr, '0x5c74070FDeA071359b86082bd9f9b3dEaafbe32b')) // dai
+      return '0x6b175474e89094c44da98b954eedeac495271d0f'
+    if (compareAddresses(addr, '0x754288077D0fF82AF7a5317C7CB8c444D421d103')) // USDC
+      return '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
+    if (compareAddresses(addr, '0x0268dbed3832b87582B1FA508aCF5958cbb1cd74')) // IJM
+      return 'bsc:0xf258f061ae2d68d023ea6e7cceef97962785c6c1'
+    if (compareAddresses(addr, '0xceE8FAF64bB97a73bb51E115Aa89C17FfA8dD167')) // USDT
+      return '0xdac17f958d2ee523a2206206994597c13d831ec7'
+    if (compareAddresses(addr, '0x16D0e1fBD024c600Ca0380A4C5D57Ee7a2eCBf9c')) // WBTC
+      return '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599'
+    if (compareAddresses(addr, '0x34d21b1e550D73cee41151c77F3c73359527a396')) // WETH
+      return '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+    return `klaytn:${addr}`
+  }
+}
+
 const chainTransforms = {
   celo: transformCeloAddress,
   fantom: transformFantomAddress,
@@ -613,6 +637,7 @@ const chainTransforms = {
   metis:transformMetisAddress,
   near: transformNearAddress,
   moonbeam: transformMoonbeamAddress,
+  klaytn: transformKlaytnAddress,
 };
 
 async function getChainTransform(chain) {
@@ -649,4 +674,5 @@ module.exports = {
   transformBobaAddress,
   transformNearAddress,
   transformMoonbeamAddress,
+  transformKlaytnAddress,
 };
