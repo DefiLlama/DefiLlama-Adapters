@@ -4,8 +4,8 @@ const { toUSDTBalances } = require("./helper/balances");
 
 async function tvl(timestamp) {
     const lockedAssets = (await retry(async bail => 
-        await axios.get('http://51.158.191.108:8002/api/v1/history/puzzle')
-    )).data.filter(a => a.createdAt / 1000 < timestamp - 43200);
+        await axios.get(`http://51.158.191.108:8002/api/v1/history/puzzle?since=${(timestamp - 6000) * 1000}`)
+    )).data;
     const current = lockedAssets.pop();
 
     return toUSDTBalances(current.totalLocked);
