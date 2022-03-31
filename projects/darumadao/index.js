@@ -57,7 +57,7 @@ async function fetch() {
 }
 
 module.exports = {
-  mirepresentedTokens: true,
+  misrepresentedTokens: true,
   methodology: `Finds TVL by querying DRM contract for sDRM (Staked DRM) supply and the DRM price. TVL = sdrmSupply * drmPrice`,
   godwoken: {
     tvl: fetch
