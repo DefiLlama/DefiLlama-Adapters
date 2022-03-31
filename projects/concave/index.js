@@ -3,6 +3,7 @@ const BigNumber = require("bignumber.js");
 const { ohmTvl } = require('../helper/ohm')
 const cvx_abi = require('./cvx_abi.json')
 const crv_abi = require('./crv_abi.json')
+const cvxBoosterAddress = "0xF403C135812408BFbE8713b5A23a04b3D48AAE31";
 
 // Treasury backing the CNV price, similar to OHM so using the ohm wrapper
 const treasury = '0x226e7af139a0f34c6771deb252f9988876ac1ced' 
@@ -15,13 +16,10 @@ const treasuryTokens = [
 ]
 
 // Generic CRV position unwrapping, useful for a CVX position unwrapping
-const cvxBoosterAddress = "0xF403C135812408BFbE8713b5A23a04b3D48AAE31";
 // CVX treasury position parameters
 const cvxUST_whv23CRV_BaseRewardPool = '0x7e2b9b5244bcfa5108a76d5e7b507cfd5581ad4a'
-const cvxUST_whv23CRV_f = '0x2d2006135e682984a8a2eb74f5c87c2251cc71e9' // CVX LP, base reward pool holds 100% of that token plus some crv. Can be queried via stakingToken method on baseRewardPool
-const UST_whv23CRV_f = '0xceaf7747579696a2f0bb206a14210e3c9e6fb269' // Crv LP, Best would be to derive it from the baseRewardPool or cvx contract
-
-
+// const cvxUST_whv23CRV_f = '0x2d2006135e682984a8a2eb74f5c87c2251cc71e9' // CVX LP, queried via stakingToken method on baseRewardPool
+// const UST_whv23CRV_f = '0xceaf7747579696a2f0bb206a14210e3c9e6fb269' // Crv LP, Derived  from the poolInfo method on the convex booster contract, using pool_id
 
 async function genericUnwrapCrv(balances, crvToken, lpBalance, block, chain) {
   const {output: resolvedCrvTotalSupply} = await sdk.api.erc20.totalSupply({
@@ -64,33 +62,31 @@ async function genericUnwrapCrv(balances, crvToken, lpBalance, block, chain) {
 
 async function genericUnwrapCvx(balances, holder, cvx_BaseRewardPool, block, chain)  {
     // Compute the balance of the treasury of the CVX position and unwrap
-  const {output: cvx_LP_bal} = await sdk.api.abi.call({
-    abi: cvx_abi['cvxBRP_balanceOf'], // cvx_balanceOf cvx_earned cvx_rewards cvx_userRewardPerTokenPaid
-    target: cvx_BaseRewardPool,
-    params: [holder],
+  const [
+    {output: cvx_LP_bal}, 
+    {output: pool_id}
+  ] = await Promise.all([
+    sdk.api.abi.call({
+      abi: cvx_abi['cvxBRP_balanceOf'], // cvx_balanceOf cvx_earned cvx_rewards cvx_userRewardPerTokenPaid
+      target: cvx_BaseRewardPool,
+      params: [holder],
+      chain, block
+    }),
+    // const {output: pool_id} = await 
+    sdk.api.abi.call({
+      abi: cvx_abi['cvxBRP_pid'], 
+      target: cvx_BaseRewardPool,
+      chain, block
+    })
+  ])
+  const {output: crvPoolInfo} = await sdk.api.abi.call({
+    abi: cvx_abi['cvxBooster_poolInfo'],
+    target: cvxBoosterAddress,
+    params: [pool_id],
     chain,
     block: block,
   })
-  const {output: stakingToken} = await sdk.api.abi.call({
-    abi: cvx_abi['cvxBRP_stakingToken'], 
-    target: cvx_BaseRewardPool,
-    chain,
-    block: block,
-  })
-  console.log('stakingToken', stakingToken)
-  // const {output: crvPool} = await sdk.api.abi.call({
-  //   abi: cvx_abi['cvxBooster_poolInfo'],
-  //   target: cvxBoosterAddress,
-  //   params: [stakingToken],
-  //   chain,
-  //   block: block,
-  // })
-  // console.log(crvPool)
-
-  await genericUnwrapCrv(balances, UST_whv23CRV_f, cvx_LP_bal, block, chain)
-  // TODO: replace by crvPool queried on-chain
-  // await genericUnwrapCrv(balances, crvPool, cvx_LP_bal, block, chain) 
-  
+  await genericUnwrapCrv(balances, crvPoolInfo.lptoken, cvx_LP_bal, block, chain)
 }
 
 
