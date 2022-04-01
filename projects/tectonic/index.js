@@ -93,7 +93,7 @@ async function sumBorrowed(
   block,
   chain = "ethereum",
   transformAddress = (id) => id, 
-  transformAmount =(amt)=amt,
+  transformAmount =(amt)=>amt,
 ) {
   const borrowedTokens = await sdk.api.abi.multiCall({
     calls: tokensAndOwners.map((t) => ({
