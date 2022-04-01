@@ -590,7 +590,7 @@ module.exports = chainExports(chainTVL, [
   "moonbeam",
   "cronos",
   "metis",
-  "dfk",
+  //"dfk",
 ]);
 module.exports.methodology = `Tokens bridged via Synapse Bridge and Synapse AMM pools are counted as TVL`;
 module.exports.misrepresentedTokens = true;
