@@ -5,7 +5,7 @@ const utils = require("../helper/utils");
 const api_galatea = "https://api.galatea.cash/api";
 
 async function fetch() {
-  var tvl = (await utils.fetchURL(api_galatea)).data.tvl;
+  // var tvl = (await utils.fetchURL(api_galatea)).data.tvl;
   return 0;
 }
 
@@ -25,11 +25,11 @@ async function staking() {
 
 module.exports = {
   deadFrom: 1648765747,
-  pool2: {
-    fetch: pool2,
-  },
-  staking: {
-    fetch: staking,
-  },
+  // pool2: {
+  //   fetch: pool2,
+  // },
+  // staking: {
+  //   fetch: staking,
+  // },
   fetch,
 };
