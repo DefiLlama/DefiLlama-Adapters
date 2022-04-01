@@ -76,6 +76,7 @@ module.exports = {
   ethereum: {
     staking: staking(vaultStakingContract, DELTA),
     pool2: Pool2,
+    tvl: async () => ({})
   },
   methodology: "Counts liquidty on the Staking and Pool2",
 };
