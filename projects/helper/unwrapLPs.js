@@ -631,7 +631,7 @@ tokensAndOwners [
     [token, owner] - eg ["0xaaa", "0xbbb"]
 ]
 */
-async function sumTokens(balances, tokensAndOwners, block, chain = "ethereum", transformAddress=id=>id){
+async function sumTokens(balances, tokensAndOwners, block, chain = "ethereum", transformAddress=id=>id, { resolveCrv = false, resolveLP = false, } = {}){
     const balanceOfTokens = await sdk.api.abi.multiCall({
         calls: tokensAndOwners.map(t=>({
             target: t[0],
@@ -646,8 +646,12 @@ async function sumTokens(balances, tokensAndOwners, block, chain = "ethereum", t
         const balance = result.output
         sdk.util.sumSingleBalance(balances, transformAddress(token), balance);
     })
-    console.log('pre resolve csvTokens', balances)
-    return resolveCrvTokens(balances, block, chain, transformAddress)
+    
+    if (resolveLP)
+        await unwrapLPsAuto(balances, block, chain, transformAddress)
+
+    if (resolveCrv)
+        return resolveCrvTokens(balances, block, chain, transformAddress)
 }
 
 async function unwrapCreamTokens(balances, tokensAndOwners, block, chain = "ethereum", transformAddress=id=>id){
@@ -683,6 +687,25 @@ async function unwrapCreamTokens(balances, tokensAndOwners, block, chain = "ethe
         const balance = BigNumber(balanceCall.output).times(exchangeRates.output[i].output).div(1e18).toFixed(0)
         sdk.util.sumSingleBalance(balances, transformAddress(underlying), balance)
     })
+}
+
+async function unwrapLPsAuto(balances, block, chain, transformAddress) {
+    const tokens = []
+    const amounts = []
+
+    Object.keys(balances).forEach(key => {
+        const token = stripTokenHeader(key)
+        if (!/^0x/.test(token)) return;     // if token is not an eth address, we ignore it
+        tokens.push({ output: token })
+        amounts.push({ output: balances[key] })
+        delete balances[key]
+    })
+    
+    return addTokensAndLPs(balances, { output: tokens}, { output: amounts }, block, chain, transformAddress)
+
+    function stripTokenHeader(token) {
+        return token.indexOf(':') > -1 ? token.split(':')[1] : token
+    }
 }
 
 module.exports = {
