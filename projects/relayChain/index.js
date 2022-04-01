@@ -158,6 +158,7 @@ async function ethTvl(timestamp, ethBlock) {
           block: ethBlock,
         })
       ).output;
+
       await sdk.util.sumSingleBalance(balances, "ethereum:"+ethTokenAddress[i], tokenBalance)
 
       tokenBalance  = (
