@@ -14,6 +14,10 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     for (let pool of response.data.result) {
         for (let coin of pool.coins) {
             let tokenInfo = generic(coin.denom);
+            if(!tokenInfo) {
+                console.log('unknown token', coin.denom)
+                continue;
+            }
             if (balances[tokenInfo[0]]) {
                 balances[tokenInfo[0]] += coin.amount / 10**tokenInfo[1];
             } else {
@@ -37,5 +41,5 @@ function generic(ticker) {
 };
 
 module.exports = {
-    tvl
+    kava: { tvl }
 }
