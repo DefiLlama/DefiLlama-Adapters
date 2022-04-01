@@ -115,20 +115,22 @@ const { getBlock } = require('../helper/getBlock');
     return calcTvl(addr => `cronos:${addr}`, chainBlocks['cronos'], 'cronos', '0xD9bfE9979e9CA4b2fe84bA5d4Cf963bBcB376974', 0, true);
   }
   // tracking TVL for KyberDMM Aurora
-  // waiting for address
   async function aurTVL(timestamp, ethBlock, chainBlocks) {
-    return calcTvl(addr => `cronos:${addr}`, chainBlocks['aurora'], 'aurora', '0xD9bfE9979e9CA4b2fe84bA5d4Cf963bBcB376974', 0, true);
+    return calcTvl(addr => `aurora:${addr}`, chainBlocks['aurora'], 'aurora', '0xD9bfE9979e9CA4b2fe84bA5d4Cf963bBcB376974', 0, true);
   }
   // tracking TVL for KyberDMM Velas
-  // doesnt work
   async function vlsTVL(timestamp, block, chainBlocks) {
     block = await getBlock(timestamp, 'velas', chainBlocks)
-    return calcTvl(addr => `velas:${addr}`, block, 'velas', '0xEaE47c5D99f7B31165a7f0c5f7E0D6afA25CFd55', 0, true);
+    return calcTvl(addr => `velas:${addr}`, block, 'velas', '0xD9bfE9979e9CA4b2fe84bA5d4Cf963bBcB376974', 0, true);
   }
   // tracking TVL for KyberDMM Arbitrum
   async function arbTVL(timestamp, ethBlock, chainBlocks) {
     const transform = await transformArbitrumAddress()
     return calcTvl(transform, chainBlocks['arbitrum'], 'arbitrum', '0x51E8D106C646cA58Caf32A47812e95887C071a62', 0, true);
+  }
+  // tracking TVL for KyberDMM Velas
+  async function oasisTVL(timestamp, ethBlock, chainBlocks) {
+    return calcTvl(addr => `oasis:${addr}`, chainBlocks['oasis'], 'oasis', '0x51E8D106C646cA58Caf32A47812e95887C071a62', 0, true);
   }
   // node test.js projects/kyber/index.js
 /*==================================================
@@ -155,13 +157,16 @@ const { getBlock } = require('../helper/getBlock');
    cronos:{
      tvl: croTVL
    },
-  //  aurora:{
-  //   tvl: aurTVL,
-  // },
+   aurora:{
+    tvl: aurTVL,
+  },
   arbitrum:{
     tvl: arbTVL
   },
   // velas:{
   //   tvl: vlsTVL
+  // },
+  // oasis:{
+  //   tvl: oasisTVL
   // }
   };

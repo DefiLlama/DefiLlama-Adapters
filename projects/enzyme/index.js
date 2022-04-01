@@ -3,16 +3,20 @@ const { toUSDTBalances } = require('../helper/balances')
 
 
 async function tvl() {
-  let response = await axios.post('https://app.enzyme.finance/api/graphql' ,{
-    'operationName': 'NetworkLatestStats',
-    'variables': {
-      'currency': 'usd',
-      'network': 'ethereum'
+  let networkAssetBalances = (await axios.post('https://app.enzyme.finance/api/graphql' ,{
+    "operationName": "NetworkAssetBalances",
+    "variables": {
+      "currency": "usd",
+      "network": "ethereum"
     },
-    'query': 'query NetworkLatestStats($currency: Currency!, $network: Network!) {\n  networkLatestStats(currency: $currency, network: $network) {\n    gav\n    vaults\n    deposits\n    __typename\n  }\n}'
-  })
+    "query": "query NetworkAssetBalances($currency: Currency!, $network: Deployment!) {\n  networkAssetBalances(currency: $currency, network: $network) {\n    assetAddress\n    numberOfVaults\n    balance\n    balanceChange24h\n    price\n    priceChange24h\n    value\n    __typename\n  }\n}"
+  })).data.data.networkAssetBalances
 
-  return toUSDTBalances(response.data.data.networkLatestStats.gav)
+  const sumTVL = networkAssetBalances.reduce((agg, {balance, price }) => {
+    return agg + balance * price
+  }, 0)
+
+  return toUSDTBalances(sumTVL)
 }
 
 module.exports = {

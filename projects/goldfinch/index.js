@@ -61,7 +61,7 @@ const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
 };
 
 module.exports = {
-  timeTravel: true,
+  timetravel: true,
   misrepresentedTokens: true,
   ethereum: {
     tvl: ethTvl,

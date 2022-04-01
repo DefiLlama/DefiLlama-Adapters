@@ -75,6 +75,5 @@ module.exports = {
     avalanche: {
         tvl: avaxTvl,
     },
-    tvl: sdk.util.sumChainTvls([bscTvl, polygonTvl, fantomTvl, avaxTvl]),
 };
 // node test.js projects/multichainMiner.js

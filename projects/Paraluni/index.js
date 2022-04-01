@@ -134,8 +134,6 @@ async function pool2(time, ethBlock, chainBlocks) {
 }
 
 module.exports = {
-    name: "Paraluni",
-	token: "T42",
 	start: 1639400400,
 	bsc: {
         tvl: tvl,

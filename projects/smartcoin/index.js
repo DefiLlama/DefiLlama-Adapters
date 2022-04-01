@@ -9,5 +9,4 @@ module.exports = {
     tvl: async () => ({}),
     pool2: pool2(masterchef, pool2JLP, "avax", (addr) => `avax:${addr}`),
   },
-  tvl: async () => ({}),
 };

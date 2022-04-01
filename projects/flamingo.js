@@ -9,6 +9,6 @@ async function fetch() {
 module.exports = {
   methodology: `TVL is obtained by making calls to the Flamingo Finance API "https://api.flamingo.finance/token-info/tvl".`,
   misrepresentedTokens: true,
-  timeTravel: false,
+  timetravel: false,
   fetch
 }

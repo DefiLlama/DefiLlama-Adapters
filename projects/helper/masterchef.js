@@ -57,7 +57,7 @@ async function getSymbolsAndBalances(masterChef, block, chain, poolInfo) {
 }
 
 function isLP(symbol) {
-    return symbol.includes('LP') || symbol.includes('PGL') || symbol.includes('UNI-V2') ||  symbol === "PNDA-V2"
+    return symbol.includes('LP') || symbol.includes('PGL') || symbol.includes('UNI-V2') ||  symbol === "PNDA-V2" || symbol.includes('GREEN-V2')
 }
 
 function isYV(symbol) {

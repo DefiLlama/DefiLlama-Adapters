@@ -151,7 +151,7 @@ const keys = [
   },
 ];
 
-let web3RpcUrl = process.env.ETHEREUM_RPC.split(",")[0];
+let web3RpcUrl = (process.env.ETHEREUM_RPC || '').split(",")[0];
 
 // Utils
 const aggregate = (calls) =>

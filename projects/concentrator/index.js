@@ -96,7 +96,8 @@ async function tvl(timestamp, block) {
       calls: coins.output.map(coin => ({
         target: coin.output,
         params: [swapAddress]
-      }))
+      })),
+      block
     })
 
     const resolvedLPSupply = lpTokenSupply.output;
@@ -108,7 +109,8 @@ async function tvl(timestamp, block) {
       }
       if (coinBalance.input.target === "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE") {
         coinBalance = await sdk.api.eth.getBalance({
-          target: coinBalance.input.params[0]
+          target: coinBalance.input.params[0],
+          block
         })
         coinAddress = '0x0000000000000000000000000000000000000000'
       }

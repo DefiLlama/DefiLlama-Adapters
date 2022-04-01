@@ -25,9 +25,6 @@ async function tvl(timestamp, block, chainBlocks) {
 };
 
 module.exports = {
-  name: 'Elephant Money',
-  token: 'ELEPHANT',
-  website: 'https://elephant.money/',
   bsc: {
     pool2: pool2s([contracts.TRUNK, contracts.ELEPHANT], LPs, "bsc"),
     tvl: tvl,

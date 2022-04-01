@@ -23,7 +23,7 @@ const staking = async (timestamp, ethBlock, chainBlocks) => {
       abi: erc20.balanceOf,
       target: ASG,
       params: AsgardStaking,
-      ethBlock,
+      block: ethBlock,
     })
   ).output;
 

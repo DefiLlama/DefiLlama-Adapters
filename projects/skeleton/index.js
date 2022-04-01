@@ -89,7 +89,6 @@ module.exports = {
   fantom: {
     tvl: ftmTvl,
   },
-  tvl: sdk.util.sumChainTvls([ftmTvl]),
   methodology:
     "We count liquidity on all the Vaults through MasterChef Contract",
 };

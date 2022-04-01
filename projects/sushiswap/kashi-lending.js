@@ -87,7 +87,7 @@ function kashiLending(chain, borrowed) {
 }
 
 // Handle Kashi Lending on fantom differently for unwrapping correctly most important tokens like yvWFTM and wsSPA
-const { handleYearnTokens } = require("../creditum/index.js");
+const { handleYearnTokens } = require("../creditum/helper.js");
 const { transformFantomAddress } = require("../helper/portedTokens");
 async function kashiLendingFantom(timestamp, ethBlock, chainBlocks) {
   const transform = await transformFantomAddress()
