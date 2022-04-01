@@ -72,6 +72,6 @@ async function tvl(timestamp, block) {
 }
 
 module.exports = {
-    rekt: true,
+    deadFrom: 1648765747,
     ethereum: { tvl },
 }
