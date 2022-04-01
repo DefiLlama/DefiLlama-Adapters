@@ -219,5 +219,5 @@ module.exports = {
   polygon: {
     tvl: fetchPolygon,
   },
-  methodology: `TVL includes deposits made to the available strategies at xToken Markets.`,
+  methodology: `TVL includes deposits made to xToken Terminal and xToken Market.`,
 };
