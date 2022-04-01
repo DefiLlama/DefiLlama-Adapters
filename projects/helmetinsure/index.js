@@ -47,7 +47,7 @@ function fetch(chain) {
     }
     `;
     const results = await retry(async bail => await graphQLClient.request(query, {
-      block: chainBlocks[chain]
+      block: chainBlocks[chain] ? chainBlocks[chain] - 400 : chainBlocks[chain]
     }))
     const { options } = results
 
