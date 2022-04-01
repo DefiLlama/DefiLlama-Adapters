@@ -24,6 +24,7 @@ async function staking() {
   }
 
 module.exports = {
+  deadFrom: 1648765747,
   pool2: {
     fetch: pool2,
   },

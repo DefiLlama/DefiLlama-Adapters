@@ -158,7 +158,6 @@ async function ethTvl(timestamp, ethBlock) {
           block: ethBlock,
         })
       ).output;
-
       await sdk.util.sumSingleBalance(balances, "ethereum:"+ethTokenAddress[i], tokenBalance)
 
       tokenBalance  = (
@@ -178,6 +177,7 @@ async function ethTvl(timestamp, ethBlock) {
       return balances
   };
 
+
 async function bscTvl(timestamp, ethBlock, chainBlocks) {
     let balances = {};
     let tokenBalance;
@@ -192,7 +192,7 @@ async function bscTvl(timestamp, ethBlock, chainBlocks) {
           block: chainBlocks['bsc'],
         })
       ).output;
-    await sdk.util.sumSingleBalance(balances, "bsc:"+bscTokenAddress[i], tokenBalance)
+    sdk.util.sumSingleBalance(balances, "bsc:"+bscTokenAddress[i], tokenBalance)
 
     }
 
@@ -213,7 +213,7 @@ async function avaxTvl(timestamp, ethBlock, chainBlocks) {
           block: chainBlocks['avax'],
         })
       ).output;
-    await sdk.util.sumSingleBalance(balances, "avax:"+avaxTokenAddress[i], tokenBalance)
+    sdk.util.sumSingleBalance(balances, "avax:"+avaxTokenAddress[i], tokenBalance)
     }
     return balances
   };
@@ -231,7 +231,7 @@ async function hecoTvl(timestamp, ethBlock, chainBlocks) {
           block: chainBlocks['heco'],
         })
       ).output;
-    await sdk.util.sumSingleBalance(balances, "heco:"+hecoTokenAddress[i], tokenBalance)
+    sdk.util.sumSingleBalance(balances, "heco:"+hecoTokenAddress[i], tokenBalance)
     }
   
 
@@ -253,7 +253,7 @@ async function polygonTvl(timestamp, ethBlock, chainBlocks) {
         block: chainBlocks['polygon'],
       })
     ).output;
-  await sdk.util.sumSingleBalance(balances, "polygon:"+maticTokenAddress[i], tokenBalance)
+  sdk.util.sumSingleBalance(balances, "polygon:"+maticTokenAddress[i], tokenBalance)
   }
 
   return balances
@@ -273,7 +273,7 @@ async function fantomTvl(unixTimestamp, ethBlock, chainBlocks) {
         block: chainBlocks['fantom'],
       })
     ).output;
-    await sdk.util.sumSingleBalance(balances, "fantom:"+fantomTokenAddress[i], tokenBalance)
+    sdk.util.sumSingleBalance(balances, "fantom:"+fantomTokenAddress[i], tokenBalance)
   }
   
   return balances
@@ -294,7 +294,7 @@ async function harmonyTvl(unixTimestamp, ethBlock, chainBlocks) {
         block: chainBlocks['harmony'],
       })
     ).output;
-    await sdk.util.sumSingleBalance(balances, "harmony:"+harmonyTokenAddress[i], tokenBalance)
+    sdk.util.sumSingleBalance(balances, "harmony:"+harmonyTokenAddress[i], tokenBalance)
   }
   
   return balances
@@ -316,7 +316,7 @@ async function metisTvl(unixTimestamp, ethBlock, chainBlocks) {
       })
     ).output;
 
-    await sdk.util.sumSingleBalance(balances, "metis:"+metisTokenAddress[i], tokenBalance)
+    sdk.util.sumSingleBalance(balances, "metis:"+metisTokenAddress[i], tokenBalance)
   }
 
 
@@ -331,7 +331,7 @@ async function metisTvl(unixTimestamp, ethBlock, chainBlocks) {
       })
     ).output;
     const tokenAddress = transformMetisAddress(metisTotalSupply[i]);
-    await sdk.util.sumSingleBalance(balances,tokenAddress, tokenBalance1) 
+    sdk.util.sumSingleBalance(balances,tokenAddress, tokenBalance1) 
   }
   return balances
 }
@@ -350,7 +350,7 @@ async function cronosTvl(timestamp, ethBlock, chainBlocks) {
         block: chainBlocks['cronos'],
       })
     ).output;
-  await sdk.util.sumSingleBalance(balances, "cronos:"+cronosTokenAddress[i], tokenBalance)
+  sdk.util.sumSingleBalance(balances, "cronos:"+cronosTokenAddress[i], tokenBalance)
   }
 
   return balances
@@ -370,7 +370,7 @@ async function ioTexTvl(timestamp, ethBlock, chainBlocks) {
         block: chainBlocks['iotex'],
       })
     ).output;
-  await sdk.util.sumSingleBalance(balances, "iotex:"+iotexTokenAddress[i], tokenBalance)
+  sdk.util.sumSingleBalance(balances, "iotex:"+iotexTokenAddress[i], tokenBalance)
   }
   
   return balances
@@ -390,7 +390,7 @@ async function moonriverTvl(timestamp, ethBlock, chainBlocks) {
         block: chainBlocks['moonriver'],
       })
     ).output;
-  await sdk.util.sumSingleBalance(balances, "moonriver:"+moonTokenAddress[i], tokenBalance)
+  sdk.util.sumSingleBalance(balances, "moonriver:"+moonTokenAddress[i], tokenBalance)
   }
 return balances
 }
@@ -413,7 +413,7 @@ module.exports = {
   polygon:{
     tvl:polygonTvl,
   }, 
-  ftm:{
+  fantom:{
     tvl:fantomTvl,
   }, 
   harmony :{
@@ -432,6 +432,4 @@ module.exports = {
     tvl:moonriverTvl,
   },
 
-tvl: sdk.util.sumChainTvls([metisTvl, moonriverTvl, ethTvl,cronosTvl, bscTvl, avaxTvl, hecoTvl, polygonTvl, fantomTvl, harmonyTvl, ioTexTvl]),
-  
 }; 

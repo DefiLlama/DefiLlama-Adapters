@@ -1,7 +1,7 @@
 const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl");
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
-const wGLMR = "0x5f6c5C2fB289dB2228d159C69621215e354218d7"; 
+const wGLMR = "0x5f6c5C2fB289dB2228d159C69621215e354218d7";
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { transformBscAddress } = require("../helper/portedTokens");
 
@@ -30,9 +30,8 @@ async function dmodBscStakingPool(timestamp, block, chainBlocks) {
     ).output
   );
 
-  return stakingBalance.div(new BigNumber(10).pow(decimals)).toFixed(0);
+  return { 'demodyfi': stakingBalance.div(new BigNumber(10).pow(decimals)).toFixed(0) };
 }
-
 async function dmodEthereumStakingPool(timestamp, block, chainBlocks) {
   const stakingBalance = new BigNumber(
     (
@@ -41,6 +40,7 @@ async function dmodEthereumStakingPool(timestamp, block, chainBlocks) {
         chain: "ethereum",
         target: "0x5f6c5c2fb289db2228d159c69621215e354218d7",
         params: ["0x024D59Ac0Bb03dEd28B9A16cd50B3d242B43a683"],
+        block
       })
     ).output
   );
@@ -52,13 +52,13 @@ async function dmodEthereumStakingPool(timestamp, block, chainBlocks) {
         chain: "ethereum",
         target: "0x5f6c5c2fb289db2228d159c69621215e354218d7",
         params: [],
+        block
       })
     ).output
   );
 
-  return stakingBalance.div(new BigNumber(10).pow(decimals)).toFixed(0);
+  return { 'demodyfi': stakingBalance.div(new BigNumber(10).pow(decimals)).toFixed(0) };
 }
-
 async function dmodBscLPPool(timestamp, block, chainBlocks) {
   const transform = await transformBscAddress();
   const balances = {};
@@ -83,14 +83,13 @@ async function dmodBscLPPool(timestamp, block, chainBlocks) {
         token: "0x0f35d854C267D29C0E418F561b75aE09B9E413D4",
       },
     ],
-    block,
-    (chain = "bsc"),
+    chainBlocks["bsc"],
+    "bsc",
     transform
   );
 
   return balances;
 }
-
 async function dmodEthereumLPPool(timestamp, block, chainBlocks) {
   const balances = {};
 
@@ -101,6 +100,7 @@ async function dmodEthereumLPPool(timestamp, block, chainBlocks) {
         chain: "ethereum",
         target: "0xD5B1Cd8D245A93E0697707AEe82497388508b132",
         params: ["0x024D59Ac0Bb03dEd28B9A16cd50B3d242B43a683"],
+        block
       })
     ).output
   );
@@ -114,41 +114,23 @@ async function dmodEthereumLPPool(timestamp, block, chainBlocks) {
       },
     ],
     block,
-    (chain = "ethereum")
+    "ethereum"
   );
 
   return balances;
 }
 
-async function bscTvl(timestamp, block, chainBlocks) {
-  const balances = {};
-  const stakingBalance = await dmodBscStakingPool(
-    timestamp,
-    block,
-    chainBlocks
-  );
-  const lpBalances = await dmodBscLPPool(timestamp, block, chainBlocks);
-  sdk.util.sumSingleBalance(balances, "demodyfi", stakingBalance);
-
-  return { ...balances, ...lpBalances };
-}
-
-async function mainnetTvl(timestamp, block) {
-  const balances = {};
-  const stakingBalance = await dmodEthereumStakingPool(timestamp, block);
-  const lpBalances = await dmodEthereumLPPool(timestamp, block);
-  sdk.util.sumSingleBalance(balances, "demodyfi", stakingBalance);
-
-  return { ...balances, ...lpBalances };
-}
-
 module.exports = {
   misrepresentedTokens: true,
   ethereum: {
-    tvl: mainnetTvl,
+    tvl: () => ({}),
+    staking: dmodEthereumStakingPool,
+    pool2: dmodEthereumLPPool
   },
   bsc: {
-    tvl: bscTvl,
+    tvl: () => ({}),
+    staking: dmodBscStakingPool,
+    pool2: dmodBscLPPool
   },
   moonbeam: {
     tvl: calculateUsdUniTvl(
@@ -160,3 +142,4 @@ module.exports = {
     ),
   },
 };
+// node test.js projects/demodyfi/index.js

@@ -196,5 +196,4 @@ module.exports = {
     avalanche: {
         tvl: avaxTvl
     },
-    tvl: sumTvl([mainnetTvl, polygonTvl, avaxTvl]),
 };

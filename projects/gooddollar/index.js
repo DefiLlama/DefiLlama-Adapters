@@ -13,10 +13,11 @@ const tokens = {
 
 const FUSE_STAKING = '0xA199F0C353E25AdF022378B0c208D600f39a6505';
 const GOV_STAKING = '0xFAF457Fb4A978Be059506F6CD41f9B30fCa753b0';
-const RESERVE_ADDRESS = '0x6C35677206ae7FF1bf753877649cF57cC30D1c42';
-const AAVE_STAKING_V2 = '0xF4c34BED7Dd779485692bB1857aCf9c561B45010';
+const GOV_STAKING_V2 = '0xB7C3e738224625289C573c54d402E9Be46205546';
+const RESERVE_ADDRESS = '0xa150a825d425B36329D8294eeF8bD0fE68f8F6E0';
+const AAVE_STAKING_V2 = '0x3ff2d8eb2573819a9ef7167d2ba6fd6d31b17f4f';
 const COMPOUND_STAKING = '0xD33bA17C8A644C585089145e86E282fada6F3bfd';
-const COMPOUND_STAKING_V2 = '0x02416eb83CFf1f19163F21010149C3867f3261e1';
+const COMPOUND_STAKING_V2 = '0x7b7246c78e2f900d17646ff0cb2ec47d6ba10754';
 const COMMUNITY_SAFE = '0x5Eb5f5fE13d1D5e6440DbD5913412299Bc5B5564';
 const GOODDOLLAR_DECIMALS = 2;
 
@@ -40,10 +41,18 @@ async function fuseStaking(timestamp, ethBlock, chainBlocks) {
         block: chainBlocks['fuse'],
     })).output;
 
-    let gdInDAI = await convertGoodDollarsToDai(gdStaked, ethBlock);
+    const gdStakedV2 = (await sdk.api.erc20.balanceOf({
+        target: tokens.Gfuse,
+        chain: 'fuse',
+        owner: GOV_STAKING_V2,
+        block: chainBlocks['fuse'],
+    })).output;
+
+    const sumGdStaked = BigNumber(gdStaked).plus(gdStakedV2);
+    const gdInDAI = await convertGoodDollarsToDai(sumGdStaked, ethBlock);
 
     const balances = {};
-    await sdk.util.sumSingleBalance(balances, tokens.DAI, Number(gdInDAI));
+    sdk.util.sumSingleBalance(balances, tokens.DAI, Number(gdInDAI));
 
     return balances;
 }
@@ -67,7 +76,7 @@ async function fuseTreasury(timestamp, ethBlock, chainBlocks) {
     let gdInDAI = await convertGoodDollarsToDai(gdTotal, ethBlock);
 
     const balances = {};
-    await sdk.util.sumSingleBalance(balances, tokens.DAI, Number(gdInDAI));
+    sdk.util.sumSingleBalance(balances, tokens.DAI, Number(gdInDAI));
 
     return balances;
 }
@@ -92,7 +101,7 @@ async function fuse(timestamp, ethBlock, chainBlocks) {
     })).output;
 
     const balances = {};
-    await sdk.util.sumSingleBalance(balances, tokens.FUSE, Number(fuseAmount));
+    sdk.util.sumSingleBalance(balances, tokens.FUSE, Number(fuseAmount));
 
     return balances;
 }

@@ -2,7 +2,8 @@ const axios = require('axios');
 const abis = require('./abis.json')
 const sdk = require('@defillama/sdk')
 const { Connection } = require('@solana/web3.js');
-const sol = require('./sol-helpers')
+const sol = require('./sol-helpers');
+const { getBlock } = require('../helper/getBlock');
 
 const ethContract = '0xae7ab96520de3a18e5e111b5eaab095312d7fe84';
 
@@ -30,8 +31,30 @@ async function eth(timestamp, ethBlock, chainBlocks) {
     abi: abis.find(abi => abi.name === "getTotalPooledEther")
   })
 
+  const pooledMatic = await sdk.api.abi.call({
+    block: ethBlock,
+    target: "0x9ee91F9f426fA633d227f7a9b000E28b9dfd8599",
+    abi: {"inputs":[],"name":"getTotalPooledMatic","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+  })
+
   return {
-    '0x0000000000000000000000000000000000000000': pooledETH.output
+    '0x0000000000000000000000000000000000000000': pooledETH.output,
+    "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0": pooledMatic.output,
+  }
+}
+
+async function ksm(timestamp, ethBlock, chainBlocks) {
+  const chain = "moonriver"
+  const block = await getBlock(timestamp, chain, chainBlocks, true)
+  const pooledCoin = await sdk.api.abi.call({
+    block,
+    chain,
+    target: "0xffc7780c34b450d917d557e728f033033cb4fa8c",
+    abi: {"inputs":[],"name":"getTotalPooledKSM","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+  })
+
+  return {
+    'kusama': Number(pooledCoin.output)/1e12,
   }
 }
 
@@ -48,7 +71,8 @@ async function solana(timestamp, ethBlock, chainBlocks) {
 
 module.exports = {
   methodology: 'Counts staked ETH tokens.',
-  cantRefill: true,
+  timetravel: false, // solana
+  doublecounted: true,
   solana: {
     tvl: solana
   },
@@ -58,5 +82,7 @@ module.exports = {
   terra: {
     tvl: terra
   },
-  tvl: sdk.util.sumChainTvls([eth, terra, solana])
+  moonriver:{
+    tvl: ksm
+  },
 }

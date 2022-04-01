@@ -46,26 +46,6 @@ const tvlByChain = (chain) => async (timestamp, block) => {
   };
 };
 
-async function tvl(timestamp, block) {
-  const tvlArr = [ethereum, bsc, polygon].map((chain) =>
-    tvlByChain(chain)(timestamp, block)
-  );
-
-  const fetchedTvlArr = await Promise.all(tvlArr);
-
-  const tvl = fetchedTvlArr.reduce(
-    (prev, { [tokenKey]: tvl }) => BigNumber(tvl).plus(prev),
-    BigNumber(0)
-  );
-
-  console.log("totalValueLocked : ", tvl.toFixed(0));
-
-  // toFixed(0) just converts the numbers into strings
-  return {
-    [tokenKey]: tvl.toFixed(0),
-  };
-}
-
 module.exports = {
   ethereum: {
     tvl: tvlByChain(ethereum),
@@ -76,5 +56,4 @@ module.exports = {
   polygon: {
     tvl: tvlByChain(polygon),
   },
-  tvl,
 };

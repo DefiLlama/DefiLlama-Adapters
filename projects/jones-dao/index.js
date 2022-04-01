@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
 const { pool2s } = require("../helper/pool2");
 const { staking } = require("../helper/staking");
+const abi = require("./abi.json");
 
 const jones = "0x10393c20975cf177a3513071bc110f7962cd67da";
 const jonesStaking = "0xf1a26cf6309a59794da29b5b2e6fabd3070d470f";
@@ -23,7 +24,7 @@ const lpStaking = [
     "0x13f6A63867046107780Bc3fEBdeE90E7AfCdfd99", // JONES-USDC LP 
     "0xBAc58e8b57935A0B60D5Cb4cd9F6C21049595F04", // jETH-ETH LP 
     "0x7eCe38dBE9D61D0d9Bf2D804A87A7d21b5937a56", // jgOHM-gOHM LP
-    // Add jDPX-DPX LP staking
+    "0x5723be83199C9Ec68ED0Ac979e98381224870e7f" // jDPX-DPX LP
 ]
 
 const lps = [
@@ -31,19 +32,54 @@ const lps = [
     "0xa6efc26daa4bb2b9bf5d23a0bc202a2badc2b59e", // JONES-USDC LP
     "0xdf1a6dd4e5b77d7f2143ed73074be26c806754c5", // jETH-ETH LP
     "0x292d1587a6bb37e34574c9ad5993f221d8a5616c", // jgOHM-gOHM LP
-    //"0xeeb24360c8c7a87933d16b0075e10e1a30ad65b7" // jDPX-DPX LP
+    "0xeeb24360c8c7a87933d16b0075e10e1a30ad65b7" // jDPX-DPX LP
 ]
 
 async function tvl(timestamp, block, chainBlocks) {
     let balances = {};
     block = chainBlocks.arbitrum;
     chain = "arbitrum";
-    const ethBalance = (await sdk.api.eth.getBalance({
+
+    const ethManagementWindow = (await sdk.api.abi.call({
         target: ethVault,
+        abi: abi.MANAGEMENT_WINDOW_OPEN,
         block,
         chain
     })).output;
-    sdk.util.sumSingleBalance(balances, "arbitrum:0x82af49447d8a07e3bd95bd0d56f35241523fbab1", ethBalance);
+    if (ethManagementWindow === true) {
+        const ethSnapshot = (await sdk.api.abi.call({
+            target: ethVault,
+            abi: abi.snapshotVaultBalance,
+            block,
+            chain
+        })).output;
+        sdk.util.sumSingleBalance(balances, "arbitrum:0x82af49447d8a07e3bd95bd0d56f35241523fbab1", ethSnapshot);
+    } else {
+        const ethBalance = (await sdk.api.eth.getBalance({
+            target: ethVault,
+            block,
+            chain
+        })).output;
+        sdk.util.sumSingleBalance(balances, "arbitrum:0x82af49447d8a07e3bd95bd0d56f35241523fbab1", ethBalance);
+    }
+
+    const vaultManagementWindows = (await sdk.api.abi.multiCall({
+        calls: vaultandCollateral.map(p => ({
+            target: p[0]
+        })),
+        abi: abi.MANAGEMENT_WINDOW_OPEN,
+        block,
+        chain
+    })).output;
+
+    const vaultSnapshots = (await sdk.api.abi.multiCall({
+        calls: vaultandCollateral.map(p => ({
+            target: p[0]
+        })),
+        abi: abi.snapshotVaultBalance,
+        block,
+        chain
+    })).output;
 
     const vaultBalances = (await sdk.api.abi.multiCall({
         calls: vaultandCollateral.map(p => ({
@@ -55,9 +91,13 @@ async function tvl(timestamp, block, chainBlocks) {
         chain
     })).output;
 
-    vaultBalances.forEach(p => {
-        sdk.util.sumSingleBalance(balances, `arbitrum:${p.input.target}`, p.output);
-    });
+    for (let i = 0; i < vaultandCollateral.length; i++) {
+        if (vaultManagementWindows[i].output === true) {
+            sdk.util.sumSingleBalance(balances, `arbitrum:${vaultandCollateral[i][1]}`, vaultSnapshots[i].output);
+        } else {
+            sdk.util.sumSingleBalance(balances, `arbitrum:${vaultandCollateral[i][1]}`, vaultBalances[i].output);
+        }
+    }
 
     return balances;
 }

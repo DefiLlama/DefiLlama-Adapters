@@ -16,5 +16,6 @@ module.exports = {
   misrepresentedTokens: true,
   metis: {
     fetch
-  }
+  },
+  fetch
 }

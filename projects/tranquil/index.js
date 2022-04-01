@@ -106,7 +106,7 @@ async function tvl(timestamp, chain, chainBlocks) {
       abi: 'erc20:totalSupply',
       chain: 'harmony'
     })).output;
-    sdk.util.sumSingleBalance(balances, `harmony:${stONEAddr}`, stoneBalance);
+    balances[`harmony:${stONEAddr}`]= stoneBalance;
 
     return balances;
 }
