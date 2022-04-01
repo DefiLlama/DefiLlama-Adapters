@@ -73,7 +73,7 @@ async function getTVL(subgraphName, block) {
         }
     `;
     const results = await graphQLClient.request(query, {
-        block
+        block: block ? block - 400 : block
     })
     return results.factories[0].totalValueLockedUSD;
 }
