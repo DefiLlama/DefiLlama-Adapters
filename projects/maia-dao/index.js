@@ -17,7 +17,7 @@ async function tvl(timestamp, block, chainBlocks) {
     
     const hermesBalance = (await sdk.api.abi.multiCall({
       target: '0xa4C546c8F3ca15aa537D2ac3f62EE808d915B65b',
-      calls: Array.from({ length: Number(43) }, (_, k) => ({
+      calls: Array.from({ length: Number(40) }, (_, k) => ({
           params: [k],
       })),
       abi: abis.locked,
@@ -26,7 +26,7 @@ async function tvl(timestamp, block, chainBlocks) {
     })).output;
 
     var sum = 0;
-    for (let i = 1; i < 43; i++) {
+    for (let i = 1; i < 40; i++) {
       sum += Number(hermesBalance[i].output.amount);
     }
 
