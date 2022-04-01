@@ -1,5 +1,6 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
+const terminal = require("./terminal");
 const {
   kncAddr,
   xaaveaAddr,
@@ -31,6 +32,7 @@ const {
   inchAddr,
   usdcAddr,
   aaveAddr,
+  usdtAddress
 } = require("./constants");
 const xu3lps = [
   xu3lpaAddr,
@@ -177,12 +179,45 @@ async function tvl(timestamp, block) {
       xsnxaSusdRaw
   );
 
+  let terminalMainnetTvl = await fetchMainnet();
+  sdk.util.sumSingleBalance(
+      balances,
+      usdtAddress,
+      terminalMainnetTvl
+  );
+
   return balances;
 };
+
+async function fetchMainnet() {
+  let data = await terminal.fetchChain("mainnet");
+  return data[usdtAddress];
+}
+
+async function fetchOptimism() {
+  return terminal.fetchChain("optimism");
+}
+
+async function fetchArbitrum() {
+  return terminal.fetchChain("arbitrum");
+}
+
+async function fetchPolygon() {
+  return terminal.fetchChain("polygon");
+}
 
 module.exports = {
   ethereum:{
     tvl
+  },
+  arbitrum: {
+    tvl: fetchArbitrum,
+  },
+  optimism: {
+    tvl: fetchOptimism,
+  },
+  polygon: {
+    tvl: fetchPolygon,
   },
   methodology: `TVL includes deposits made to the available strategies at xToken Markets.`,
 };
