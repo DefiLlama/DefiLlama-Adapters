@@ -2,7 +2,8 @@ const sdk = require('@defillama/sdk');
 const {
   transformBscAddress,
   transformAvaxAddress,
-  transformPolygonAddress
+  transformPolygonAddress,
+  transformBobaAddress
 } = require('../helper/portedTokens');
 
 const getTokenAbi = require("./abi/getToken.json");
@@ -48,6 +49,16 @@ const config = {
         '0x3F1bfa6FA3B6D03202538Bf0cdE92BbE551104ac', // USDC + sUSDC.e from Avalanche
       ]
     },
+    {
+      id: 288,
+      name: 'boba',
+      portal: '0xD7F9989bE0d15319d13d6FA5d468211C89F0b147',
+      stable: '0x66a2A913e447d6b4BF33EFbec43aAeF87890FBbc', // USDC
+      pools: [
+        '0xab0738320A21741f12797Ee921461C691673E276', // USDC + sUSDC from Ethereum,
+        '0xe0ddd7afC724BD4B320472B5C954c0abF8192344', // USDC + sBUSD from BSC,
+      ]
+    },
   ]
 }
 
@@ -61,6 +72,8 @@ async function getTransform(chainName) {
     transform = await transformAvaxAddress();
   } else if (chainName === 'polygon') {
     transform = await transformPolygonAddress();
+  } else if (chainName === 'boba') {
+    transform = await transformBobaAddress();
   }
   return transform
 }
@@ -71,8 +84,14 @@ async function tvl(chainName, timestamp, block, chainBlocks) {
   const chain = config.chains.find((chain) => chain.name === chainName)
   if (!chain) throw new Error('Chain config not found')
 
-  const chainBlock = chainBlocks[chainName]
-  if (!chainBlock) throw new Error('Cannot get block by chainName')
+  let chainBlock = chainBlocks[chainName]
+  if (!chainBlock) {
+    const block = await sdk.api.util.getLatestBlock(chainName)
+    chainBlock = block.number
+    if (!chainBlock) {
+      throw new Error('Cannot get block by chainName')
+    }
+  }
 
   const params = {
     abi: 'erc20:balanceOf',
@@ -160,6 +179,11 @@ module.exports = {
   polygon: {
     tvl: (...params) => {
       return tvl('polygon', ...params)
+    },
+  },
+  boba: {
+    tvl: (...params) => {
+      return tvl('boba', ...params)
     },
   },
 };
