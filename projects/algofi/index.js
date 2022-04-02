@@ -261,7 +261,7 @@ async function dex() {
           async (bail) =>
             await axios.get("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_protocol_snapshot/?network=MAINNET")
         )
-      ).data.asset_snapshots[0].tvl;
+      ).data.protocol_snapshot.tvl.total_usd
     return toUSDTBalances(response)
 }
 module.exports = {
