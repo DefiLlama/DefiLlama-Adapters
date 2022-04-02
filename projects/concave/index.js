@@ -35,4 +35,4 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 
 module.exports = ohmTvl(treasury, treasuryTokens, 'ethereum', stakingAddress, cnv_token, undefined, undefined, true)
 module.exports.ethereum.tvl = sdk.util.sumChainTvls([tvl, module.exports.ethereum.tvl])
-module.exports.methodology = 'Count the treasury assets (cvx position, ohm etc) baackin the CNV price'
+module.exports.methodology = 'Count the treasury assets (cvx position, ohm etc) backing the CNV price + tokens in the gemswap AMM, a uni-v2 fork'
