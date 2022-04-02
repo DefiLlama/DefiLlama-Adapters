@@ -75,6 +75,10 @@ async function pool2(timestamp, block, chainBlocks) {
   return balances;
 }
 module.exports = {
+  timetravel: true,
+  misrepresentedTokens: false,
+  methodology:
+    "Pool2 TVL accounts for all LPs staked in Dawn, Staking TVL accounts for all tokens staked in Sunrise.",
   aurora: {
     tvl,
     pool2,
