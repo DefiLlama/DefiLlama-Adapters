@@ -1,5 +1,5 @@
 const abi = require("../helper/abis/masterchef.json")
-const { transformMilkomedaAddress } = require("../helper/portedTokens");
+const { transformFantomAddress } = require("../helper/portedTokens");
 const { addFundsInMasterChef } = require("../helper/masterchef");
 const { staking } = require("../helper/staking");
 const { pool2Exports } = require('../helper/pool2')
@@ -11,7 +11,7 @@ const milkoUsdcLP = "0xd0394c4AE0a3BC079dcCe6E971CBF2eA57dbC063";
 
 async function tvl(timestamp, block, chainBlocks) {
   const balances = {}
-  const transformAddress = await transformMilkomedaAddress();
+  const transformAddress = await transformFantomAddress();
   await addFundsInMasterChef(balances, milkochef, chainBlocks.milkomeda, "milkomeda", transformAddress, abi.poolInfo, [milko, milkoAdaLP, milkoUsdcLP]);
   return balances;
 }
