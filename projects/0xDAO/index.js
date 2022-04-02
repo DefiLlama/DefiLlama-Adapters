@@ -140,7 +140,6 @@ async function tvl(time, ethBlock, chainBlocks) {
         
     // Add TVL from pools to balances
     const addBalance = (tokenAddress, amount) => {
-        console.log('adding', tokenAddress, amount)
         const fantomTokenAddress = `fantom:${tokenAddress}`
         const existingBalance = balances[fantomTokenAddress];
         if (existingBalance) {

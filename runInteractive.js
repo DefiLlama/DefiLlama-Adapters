@@ -37,7 +37,9 @@ async function run() {
 async function runAdapter(adapterPath, debugMode) {
   const startTime = Date.now()
   return new Promise((resolve, reject) => {
-    const env = {}
+    const env = {
+      LLAMA_SDK_MAX_PARALLEL: 100,
+    }
 
     if (debugMode)
       env.LLAMA_DEBUG_MODE = true
