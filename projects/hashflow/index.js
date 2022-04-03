@@ -1,5 +1,7 @@
 const axios = require("axios");
 const retry = require('../helper/retry');
+const sdk = require("@defillama/sdk");
+const { getChainTransform } = require('../helper/portedTokens')
 const { chainExports } = require('../helper/exports');
 const { sumTokens } = require("../helper/unwrapLPs");
 const { getBlock } = require('../helper/getBlock');
@@ -18,9 +20,9 @@ function chainTvl(chain) {
   return async (timestamp, ethBlock, chainBlocks) => {
     const balances = {};
     const block = await getBlock(timestamp, chain, chainBlocks);
-    const transformAddress = id=>`${chain}:${id}`;
+    const transformAddress = await getChainTransform(chain);
 
-    const url = `${http_api_url}?networkId=${chainIds[chain]}`;
+    const url = `${http_api_url}?networkId=${chainIds[chain]}&lp=${null_addr}`;
     const pools_response = await retry(async () => await axios.get(url));
     const pools = pools_response.data.pools.map(pool => 
       ({
@@ -33,7 +35,22 @@ function chainTvl(chain) {
       .reduce((a, b) => a.concat(b), []) // flatten
       .filter(x => x[0] !== null_addr);  // remove 0x000 from tokens
     await sumTokens(balances, tokensAndOwners, block, chain, transformAddress);
-    console.log(`${chain} ${block} - ${pools.length} pools and ${tokensAndOwners.length} tokensAndOwners`);
+
+    for (const pool of pools) {
+      const ethBalPool = (
+        await sdk.api.eth.getBalance({
+          target: pool.pool,
+          block: ethBlock,
+        })
+      ).output;
+    
+      sdk.util.sumSingleBalance(
+        balances,
+        transformAddress("0x0000000000000000000000000000000000000000"),
+        ethBalPool
+      );
+    }
+
     return balances
   };
 }
