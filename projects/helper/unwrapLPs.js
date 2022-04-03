@@ -141,7 +141,10 @@ async function unwrapUniswapLPs(balances, lpPositions, block, chain='ethereum', 
 
             } catch(e) {
                 // console.log(token0_, supply_, token1_, lpToken)
-                // return;
+                if (token1_?.input.target?.toLowerCase() === lpToken.toLowerCase()) {
+                    console.log(`Not LP token: ${lpToken}, ignoring token`)
+                    return
+                }
                 throw e
             }
             if(supply === "0"){
@@ -659,9 +662,15 @@ async function sumTokens(balances, tokensAndOwners, block, chain = "ethereum", t
         chain
     })
     balanceOfTokens.output.forEach((result, idx)=>{
-        const token = result.input.target
-        const balance = result.output
-        sdk.util.sumSingleBalance(balances, transformAddress(token), balance);
+        const token = transformAddress(result.input.target)
+        const balance = BigNumber(result.output)
+        try{
+
+        balances[token] = BigNumber(balances[token] || 0).plus(balance).toFixed(0)
+        } catch(e) {
+            console.log(token, balance, balances[token])
+            throw e
+        }
     })
     
     if (resolveLP)
