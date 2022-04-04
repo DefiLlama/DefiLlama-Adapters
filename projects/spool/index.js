@@ -15,15 +15,16 @@ const chain = 'ethereum'
 // TVL is asset holdings of the masterSpool + all capital deployed via each strategy
 async function tvl (timestamp, ethBlock, chainBlocks) {
     const balances = {}
-    const block = await getBlock(timestamp, chain, chainBlocks)
+    const block = 14501309 // await getBlock(timestamp, chain, chainBlocks)
 
     // Get strategies contract addresses and underlying tokens
-    const {output: strategies} = await sdk.api.abi.call({
+    let {output: strategies} = await sdk.api.abi.call({
         abi: abi['spoolController_getAllStrategies'],
         target: spoolController,
         block,
         chain,
       })
+    // strategies = ['0x854DB91E371e42818936E646361452c3060ec9dd']
     const {output: underlyings_nonunique} = await sdk.api.abi.multiCall({
         abi: abi['strategy_underlying'],
         calls:  strategies.map(s => ({target: s})),
@@ -31,14 +32,14 @@ async function tvl (timestamp, ethBlock, chainBlocks) {
         chain,
       })
     const underlyings = [... new Set(underlyings_nonunique.map(u => u.output))]; 
-    console.log(underlyings)
+    console.log('strategies', strategies, 'underlyings', underlyings)
 
     // Balances of tokens pending to be deployed in strategies
     const tokensAndOwners = underlyings.map(t => [t, masterSpool])
     await sumTokens(balances, tokensAndOwners, block, chain) 
     
     const {output: underlyingBalances} = await sdk.api.abi.multiCall({
-      abi: abi['masterSpool_getUnderlying'],
+      abi: abi['masterSpool_getStratUnderlying'],
       calls: strategies.map(strat => ({
         target: masterSpool,
         params: strat
