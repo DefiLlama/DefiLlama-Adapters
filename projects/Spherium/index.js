@@ -7,7 +7,9 @@ async function tvlBSC() {
     "https://app.spherium.finance/api/v1/amountLocked?network=BSC&includeMeta=true",
     {
       headers: {
-        apikey: publicAPIKey,
+        "Access-Control-Allow-Origin": "*",
+        "Content-type": "Application/json",
+        Authorization: `Bearer ${publicAPIKey}`,
       },
     }
   );
@@ -23,7 +25,9 @@ async function tvlETH() {
     "https://app.spherium.finance/api/v1/amountLocked?network=ETH&includeMeta=true",
     {
       headers: {
-        apikey: publicAPIKey,
+        "Access-Control-Allow-Origin": "*",
+        "Content-type": "Application/json",
+        Authorization: `Bearer ${publicAPIKey}`,
       },
     }
   );
