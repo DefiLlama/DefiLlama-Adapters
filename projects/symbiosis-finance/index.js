@@ -104,7 +104,7 @@ async function tvl(chainName, timestamp, block, chainBlocks) {
   const collateralBalance = (await sdk.api.abi.call(params)).output;
 
   const portalBalances = {};
-  await sdk.util.sumSingleBalance(portalBalances, chain.stable, collateralBalance)
+  sdk.util.sumSingleBalance(portalBalances, chain.stable, collateralBalance)
 
   const poolIndexes = [0, 1] // every stable pool consists of 2 assets
   const poolBalancePromises = chain.pools.map(async (pool) => {
@@ -140,13 +140,7 @@ async function tvl(chainName, timestamp, block, chainBlocks) {
   const allBalances = poolBalances
     .reduce((acc, items) => {
       items.forEach((item) => {
-        if (!acc[item.address]) {
-          acc[item.address] = item.balance
-        } else {
-          const itemBalance = new BigNumber(item.balance)
-          const accBalance = new BigNumber(acc[item.address])
-          acc[item.address] = itemBalance.plus(accBalance)
-        }
+        sdk.util.sumSingleBalance(acc, item.address, item.balance)
       })
       return acc
     }, portalBalances)
