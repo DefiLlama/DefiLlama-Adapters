@@ -129,7 +129,7 @@ module.exports = {
   misrepresentedTokens: true,
   cronos: {
     pool2: pool2,
-    tvl: pool2,
+    tvl: () => ({}),
   },
   methodology: "Counts liquidity of the tokens deposited in PESRewardPool and SPESRewardPool.",
 };
