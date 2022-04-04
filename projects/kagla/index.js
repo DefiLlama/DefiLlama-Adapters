@@ -1,19 +1,18 @@
-const utils = require("../helper/utils");
+const { getBalances } = require("./pools");
 
-async function astar() {
-  let staked = await utils.fetchURL("https://api.kagla.finance/api/kagla/tvl"); //stable pools
-  return staked.data.tvl;
-}
+const START_BLOCK = 724359
 
-function fetch() {
-  return astar();
+async function astar(_timestamp, block) {
+  const chain = "astar"
+  const balances = await getBalances(chain, block)
+  return balances
 }
 
 module.exports = {
-  timetravel: false,
+  timetravel: true,
   misrepresentedTokens: true,
+  start: START_BLOCK,
   astar: {
-    fetch: astar,
+    tvl: astar,
   },
-  fetch,
 };
