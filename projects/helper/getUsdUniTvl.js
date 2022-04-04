@@ -169,4 +169,7 @@ function calculateUsdUniTvl(FACTORY, chain, coreAssetRaw, whitelistRaw, coreAsse
 
 module.exports = {
     calculateUsdUniTvl,
+    requery,
+    setPrice,
+    sum
 };
