@@ -136,7 +136,8 @@ async function tvl(chainName, timestamp, block, chainBlocks) {
     })
   })
 
-  const poolBalances = (await Promise.all(poolBalancePromises))
+  const poolBalances = await Promise.all(poolBalancePromises)
+  const allBalances = poolBalances
     .reduce((acc, items) => {
       items.forEach((item) => {
         if (!acc[item.address]) {
@@ -144,13 +145,12 @@ async function tvl(chainName, timestamp, block, chainBlocks) {
         } else {
           const itemBalance = new BigNumber(item.balance)
           const accBalance = new BigNumber(acc[item.address])
-          acc[item.address] = itemBalance.plus(accBalance).toString()
+          acc[item.address] = itemBalance.plus(accBalance)
         }
       })
       return acc
-    }, {})
+    }, portalBalances)
 
-  const allBalances = Object.assign(portalBalances, poolBalances)
   return Object.keys(allBalances).reduce((acc, address) => {
     acc[transform(address)] = allBalances[address]
     return acc
