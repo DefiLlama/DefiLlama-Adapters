@@ -205,7 +205,6 @@ const polygonTvl = ({ include, exclude }) => async (
     }
   })
 
-  console.log(crvPositions)
   const transformAddress = transformAddressKF()
 
   await unwrapUniswapLPs(
