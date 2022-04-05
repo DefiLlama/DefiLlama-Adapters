@@ -5,7 +5,7 @@ const abi = require('./abi');
 const utils = require('../helper/utils')
 const web3 = require('../config/web3.js');
 const { calcTvl } = require('./tvl.js')
-const { transformAvaxAddress, fixAvaxBalances, transformFantomAddress, transformArbitrumAddress } = require('../helper/portedTokens');
+const { transformAvaxAddress, fixAvaxBalances, transformFantomAddress, transformArbitrumAddress, getChainTransform } = require('../helper/portedTokens');
 const { getBlock } = require('../helper/getBlock');
 
 // tracking TVL for Kyber Network
@@ -130,7 +130,7 @@ const { getBlock } = require('../helper/getBlock');
   }
   // tracking TVL for KyberDMM Velas
   async function oasisTVL(timestamp, ethBlock, chainBlocks) {
-    return calcTvl(addr => `oasis:${addr}`, chainBlocks['oasis'], 'oasis', '0x51E8D106C646cA58Caf32A47812e95887C071a62', 0, true);
+    return calcTvl(await getChainTransform('oasis'), chainBlocks['oasis'], 'oasis', '0xD9bfE9979e9CA4b2fe84bA5d4Cf963bBcB376974', 0, true);
   }
   // node test.js projects/kyber/index.js
 /*==================================================
@@ -166,7 +166,7 @@ const { getBlock } = require('../helper/getBlock');
   // velas:{
   //   tvl: vlsTVL
   // },
-  // oasis:{
-  //   tvl: oasisTVL
-  // }
+  oasis:{
+    tvl: oasisTVL
+  },
   };
