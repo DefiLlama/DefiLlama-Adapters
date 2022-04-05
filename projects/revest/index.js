@@ -10,12 +10,20 @@ const {
 } = require("../helper/portedTokens.js");
 
 const { ethers } = require("ethers");
+const { utils } = require("@project-serum/anchor");
 
 const HOLDERS = {
   ethereum: "0xA81bd16Aa6F6B25e66965A2f842e9C806c0AA11F",
   polygon: "0x3cCc20d960e185E863885913596b54ea666b2fe7",
   fantom: "0x3923E7EdBcb3D0cE78087ac58273E732ffFb82cf",
   avax: "0x955a88c27709a1EEf4ACa0df0712c67B48240919",
+};
+
+const MIN_BLOCK = {
+  ethereum: 0,
+  polygon: 0,
+  fantom: 32894036,
+  avax: 0,
 };
 
 async function mainnetTVL(time, block) {
@@ -48,16 +56,37 @@ async function fantomTVL(time, block) {
 
   console.log(balances);
 
-  const provider = new ethers.providers.JsonRpcProvider(process.env.FANTOM_RPC);
+  const provider = new ethers.providers.JsonRpcProvider(
+    "https://rpc.ftm.tools/"
+  );
 
-  tokenAddress = process.env.TOKENADDRESS; //requires .env file updates
+  let tokenAddress = "0xb80f5a586BC247D993E6dbaCD8ADD211ec6b0cA5"; //requires .env file updates
 
-  abi = [
-    "event DepositERC20OutputReceiver(address caller, address token, uint256 amountTokens, uint256 fnftId, bytes extraData)",
-    "event WithdrawERC20OutputReceiver(address mintTo,  address token, uint256 amountTokens, uint256 fnftId, bytes extraData)",
+  let abi = [
+    "event DepositERC20OutputReceiver(address indexed mintTo, address indexed token, uint amountTokens, uint indexed fnftId, bytes extraData)",
+    "event WithdrawERC20OutputReceiver(address indexed caller, address indexed token, uint amountTokens, uint indexed fnftId, bytes extraData)",
   ];
 
-  deposit_contract = new ethers.Contract(tokenAddress, abi, provider);
+  let deposit_contract = new ethers.Contract(tokenAddress, abi, provider);
+
+  let DepositFilter = deposit_contract.filters.DepositERC20OutputReceiver();
+  let WithdrawFilter = deposit_contract.filters.WithdrawERC20OutputReceiver();
+
+  DepositFilter.fromBlock = WithdrawFilter.fromBlock = MIN_BLOCK["fantom"];
+  DepositFilter.toBlock = WithdrawFilter.toBlock = "latest";
+
+  let deposits = await provider.getLogs(DepositFilter);
+
+  let events = deposits.map((log) => deposit_contract.interface.parseLog(log));
+  console.log(events);
+
+  for (let i in events) {
+    let txn = events[i];
+    console.log(txn);
+    console.log(ethers.utils.formatEther(txn.args.amountTokens));
+  }
+
+  console.log("CALLED!!!");
 
   const deposit_event =
     deposit_contract.interface.events.DepositERC20OutputReceiver;
