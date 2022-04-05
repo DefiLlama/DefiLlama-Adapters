@@ -11,6 +11,9 @@ const factoryABI = require('./factory.abi');
 // Delta.theta Factory Address (On all chains)
 const FACTORY_ADDRESS = '0x000000000092126dc1bcec881165f92169733106';
 
+// Idk why, but convenient [...Array(10).keys()] method is not working in adapter testing
+const range = (n) => Array.from({ length: n }, (_, i) => i);
+
 // TVL function generator (for BSC & POLYGON chains)
 function tvl(chain) {
   const balances = {};
@@ -32,42 +35,44 @@ function tvl(chain) {
       block: chainBlocks[chain],
     })).output;
 
-    // Parse addresses of the pairs
-    const pairs = [];
-    for (let i = 0; i < pairsLength; i++) {
-      pairs.push((await sdk.api.abi.call({
-        abi: factoryABI.pairsList,
-        chain,
+    const pairsOutput = (await sdk.api.abi.multiCall({
+      abi: factoryABI.pairsList,
+      chain,
+      calls: range(pairsLength).map((index) => ({
         target: FACTORY_ADDRESS,
-        params: [i],
-        block: chainBlocks[chain],
-      })).output);
-    }
+        params: [index]
+      })),
+      block: chainBlocks[chain],
+      requery: true
+    })).output
+    const pairs = pairsOutput.map(result => result.output.toLowerCase())
 
-    for (let i = 0; i < pairsLength; i++) {
-      // Parse tokens list for each of pair addresses
-      const tokens = await getTokens(pairs[i], chain);
+    await Promise.all(range(pairsLength).map(
+      async (i) => {
+        // Parse tokens list for each of pair addresses
+        const tokens = await getTokens(pairs[i], chain);
 
-      await Promise.all(
-        tokens.map(async (token) => {
-          // Get token balance for each of tokens
-          const tokenBalance = (await sdk.api.abi.call({
-            abi: 'erc20:balanceOf',
-            chain,
+        // Parse all balances
+        const balancesOutput = (await sdk.api.abi.multiCall({
+          abi: 'erc20:balanceOf',
+          chain,
+          calls: tokens.map((token) => ({
             target: token,
-            params: [pairs[i]],
-            block: chainBlocks[chain],
-          })).output;
-        
-          // Add a parsed balance to our TVL
-          await sdk.util.sumSingleBalance(
-            balances,
-            transform(token),
-            tokenBalance,
-          );
-        }),
-      );
-    }
+            params: [pairs[i]]
+          })),
+          block: chainBlocks[chain],
+          requery: true,
+        }));
+
+        // Sum all balances
+        await sdk.util.sumMultiBalanceOf(
+          balances,
+          balancesOutput,
+          true,
+          transform,
+        );
+      }
+    ));
 
     return balances;
   };
