@@ -7,8 +7,8 @@ async function tvl(timestamp, block, chainBlocks) {
     const borrow = await convexBooster.tvl()
     const supply = await supplyBooster.tvl()
 
-    // console.log(`borrow ${borrow.toString()}`)
-    // console.log(`supply ${supply.toString()}`)
+    console.log(`borrow ${borrow.toString()}`)
+    console.log(`supply ${supply.toString()}`)
 
     return toUSDTBalances(borrow.plus(supply))
 }
