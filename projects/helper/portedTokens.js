@@ -99,11 +99,12 @@ async function transformAvaxAddress() {
         "0x686bef2417b6dc32c50a3cbfbcc3bb60e1e9a15d": "0x9ff58f4ffb29fa2266ab25e75e2a8b3503311656",
         "0x53f7c5869a859f0aec3d334ee8b4cf01e3492f21": "0x030ba81f1c18d280636f32af80b9aad02cf0854e",
         "0x47afa96cdc9fab46904a55a6ad4bf6660b53c38a": "0x028171bca77440897b824ca71d1c56cac55b68a3",
-        "0x46A51127C3ce23fb7AB1DE06226147F446e4a857": "0xbcca60bb61934080951369a648fb03df4f96263c",
-        "0x574679Ec54972cf6d705E0a71467Bb5BB362919D": "avax:0x5817d4f0b62a59b17f75207da1848c2ce75e7af4",
+        "0x574679ec54972cf6d705e0a71467bb5bb362919d": "avax:0x5817d4f0b62a59b17f75207da1848c2ce75e7af4",
         "0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7": "0xdac17f958d2ee523a2206206994597c13d831ec7",
         "0x2f28add68e59733d23d5f57d94c31fb965f835d0": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",// sUSDC(Avalanche) -> USDC(Ethereum)
         "0xf04d3a8eb17b832fbebf43610e94bdc4fd5cf2dd": "bsc:0xe9e7cea3dedca5984780bafc599bd69add087d56", // sBUSD(Avalanche) -> BUSD(BSC)
+        "0xb0a8e082e5f8d2a04e74372c1be47737d85a0e73": "polygon:0xac63686230f64bdeaf086fe6764085453ab3023f", // USV
+        "0x02bfd11499847003de5f0f5aa081c43854d48815": "0x7a5d3A9Dcd33cb8D527f7b5F96EB4Fef43d55636", // Radioshack
       }
       return map[addr.toLowerCase()] || `avax:${addr}`
   }
@@ -116,44 +117,31 @@ async function transformBscAddress() {
     )
   ).data.data.tokens;
 
+  const mapping = {
+    '0x0000000000000000000000000000000000000000': 'bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // BNB -> WBNB
+    '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee': 'bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // BNB -> WBNB
+    '0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c': 'avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c',  // ELK
+    '0x2170ed0880ac9a755fd29b2688956bd959f933f8': '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',  // WETH
+    '0xa35d95872d8eb056eb2cbd67d25124a6add7455e': '0x123',  // 2030FLOKI returns nonsense TVL
+    '0x0cf8e180350253271f4b917ccfb0accc4862f262': '0x123',  // BTCBR returns nonsense TVL
+    '0x6ded0f2c886568fb4bb6f04f179093d3d167c9d7': '0x09ce2b746c32528b7d864a1e3979bd97d2f095ab',  // DFL
+    '0x2f28add68e59733d23d5f57d94c31fb965f835d0': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',  // sUSDC(BSC) -> USDC(Ethereum)
+    '0xaf6162dc717cfc8818efc8d6f46a41cf7042fcba': 'polygon:0xac63686230f64bdeaf086fe6764085453ab3023f',  // USV Token
+    '0x30807d3b851a31d62415b8bb7af7dca59390434a': '0x7a5d3A9Dcd33cb8D527f7b5F96EB4Fef43d55636',  // Radio Token
+  }
+
   return (addr) => {
+    addr = addr.toLowerCase()
     const srcToken = binanceBridge.find(
       (token) =>
         token.ethContractAddress !== "" &&
-        token.bscContractAddress.toLowerCase() === addr.toLowerCase()
+        token.bscContractAddress.toLowerCase() === addr
     );
-    if (
-      srcToken !== undefined &&
-      srcToken.bscContractDecimal === srcToken.ethContractDecimal
-    ) {
+    if (srcToken && srcToken.bscContractDecimal === srcToken.ethContractDecimal) {
       return srcToken.ethContractAddress;
     }
-    // BNB
-    if (
-      addr.toLowerCase() == "0x0000000000000000000000000000000000000000" ||
-      addr.toLowerCase() == "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
-    ) {
-      return "bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
-    }
-    if (addr.toLowerCase() == "0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c") {
-      return "avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c";
-    }
-    if (addr.toLowerCase() == "0x2170ed0880ac9a755fd29b2688956bd959f933f8") {
-      return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-    }
-    if (addr.toLowerCase() == "0xa35d95872d8eb056eb2cbd67d25124a6add7455e") {
-      return "0x123"; // 2030FLOKI returns nonsense TVL
-    }
-    if (addr.toLowerCase() == "0x0cf8e180350253271f4b917ccfb0accc4862f262") {
-      return "0x123"; // BTCBR returns nonsense TVL
-    }
-    if (addr.toLowerCase() == "0x6ded0f2c886568fb4bb6f04f179093d3d167c9d7") {
-      return "0x09ce2b746c32528b7d864a1e3979bd97d2f095ab"; // BTCBR returns nonsense TVL
-    }
-    if (addr.toLowerCase() === "0x2f28add68e59733d23d5f57d94c31fb965f835d0".toLowerCase()) {
-      return "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"; // sUSDC(BSC) -> USDC(Ethereum)
-    }
-    return `bsc:${addr}`;
+    
+    return mapping[addr] || `bsc:${addr}`;
   };
 }
 
@@ -171,27 +159,19 @@ async function transformPolygonAddress() {
       tokenMap[token.childToken.toLowerCase()] = token.rootToken.toLowerCase();
       return tokenMap;
     }, {});
+  const mapping =  {
+    '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee': '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0',  // 
+    '0x0000000000000000000000000000000000000000': '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0',  // 
+    '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': '0x0000000000000000000000000000000000000000',  // 
+    '0x2f28add68e59733d23d5f57d94c31fb965f835d0': '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',  // sUSDC(Polygon) -> USDC(Ethereum)
+    '0xf04d3a8eb17b832fbebf43610e94bdc4fd5cf2dd': '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',  // sBUSD(Polygon) -> BUSD(BSC)
+    '0x8eb3771a43a8c45aabe6d61ed709ece652281dc9': 'avax:0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664',  // sUSDC.e(Polygon) -> USDC.e(Avalanche)
+    '0x613a489785c95afeb3b404cc41565ccff107b6e0': '0x7a5d3A9Dcd33cb8D527f7b5F96EB4Fef43d55636',  // radioshack
+  }
 
   return (addr) => {
-    if (addr.toLowerCase() == '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
-      return "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0";
-    }
-    if (addr.toLowerCase() === "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619") {
-      return "0x0000000000000000000000000000000000000000";
-    }
-    if (addr.toLowerCase() === "0x0000000000000000000000000000000000000000") {
-      return "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0";
-    }
-    if (addr.toLowerCase() === "0x2f28Add68e59733D23D5F57d94c31fb965f835D0".toLowerCase()) {
-      return "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"; // sUSDC(Polygon) -> USDC(Ethereum)
-    }
-    if (addr.toLowerCase() === "0xf04d3A8Eb17B832Fbebf43610e94BdC4fD5Cf2dd".toLowerCase()) {
-      return "bsc:0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56";// sBUSD(Polygon) -> BUSD(BSC)
-    }
-    if (addr.toLowerCase() === "0x8Eb3771A43a8C45AaBE6d61ED709eCe652281DC9".toLowerCase()) {
-      return "avax:0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664";// sUSDC.e(Polygon) -> USDC.e(Avalanche)
-    }
-    return tokens[addr.toLowerCase()] || `polygon:${addr}`;
+    addr = addr.toLowerCase()
+    return mapping[addr] || tokens[addr] || `polygon:${addr}`;
   };
 }
 
@@ -665,7 +645,18 @@ const chainTransforms = {
   moonbeam: transformMoonbeamAddress,
   klaytn: transformKlaytnAddress,
   velas: transformVelasAddress,
+  ethereum: transformEthereumAddress,
 };
+
+async function transformEthereumAddress() {
+  const mapping = {
+    '0x88536c9b2c4701b8db824e6a16829d5b5eb84440': 'polygon:0xac63686230f64bdeaf086fe6764085453ab3023f' // USV token
+  } 
+  return addr => {
+    addr = addr.toLowerCase()
+    return mapping[addr] || addr
+  }
+}
 
 async function getChainTransform(chain) {
   if (chain === "ethereum") {
@@ -703,4 +694,5 @@ module.exports = {
   transformMoonbeamAddress,
   transformKlaytnAddress,
   transformVelasAddress,
+  transformEthereumAddress,
 };
