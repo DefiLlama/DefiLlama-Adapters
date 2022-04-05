@@ -7,16 +7,41 @@ const { config } = require("@defillama/sdk/build/api");
 const { getProvider } = require("@defillama/sdk/build/general");
 const { chainToCoingeckoId } = require("@defillama/sdk/build/computeTVL");
 
-// Patch for astar
+// Override Shiden provider
 // TODO: Remove when no longer needed
-if (!getProvider("astar")) {
+config.setProvider(
+  "shiden",
+  new ethers.providers.StaticJsonRpcProvider(
+    "https://evm.shiden.astar.network",
+    {
+      name: "shiden",
+      chainId: 336,
+    }
+  )
+);
+
+// Add REI Network
+// TODO: Remove when no longer needed
+if (!getProvider("rei")) {
   config.setProvider(
-    "astar",
+    "rei",
+    new ethers.providers.StaticJsonRpcProvider("https://rpc.rei.network", {
+      name: "rei",
+      chainId: 47805,
+    })
+  );
+}
+
+// Add Clover Network
+// TODO: Remove when no longer needed
+if (!getProvider("clover")) {
+  config.setProvider(
+    "clover",
     new ethers.providers.StaticJsonRpcProvider(
-      "https://rpc.astar.network:8545",
+      "https://api-para.clover.finance",
       {
-        name: "astar",
-        chainId: 592,
+        name: "clover",
+        chainId: 1024,
       }
     )
   );
@@ -27,48 +52,52 @@ const bridgeContractV1 = "0x841ce48F9446C8E281D3F1444cB859b4A6D0738C";
 // Bridge and token contract addresses are taken from https://cbridge-docs.celer.network/reference/contract-addresses
 const liquidityBridgeContractsV2 = {
   // NOTE: Some chains have addresses before and after the liquidity bridge upgrade / migration
-  ethereum: [
-    "0xc578Cbaf5a411dFa9F0D227F97DaDAa4074aD062",
-    "0x5427FEFA711Eff984124bFBB1AB6fbf5E3DA1820",
-  ],
-  bsc: [
-    "0x5d96d4287D1ff115eE50faC0526cf43eCf79bFc6",
-    "0xdd90E5E87A2081Dcf0391920868eBc2FFB81a1aF",
-  ],
   arbitrum: [
     "0xdd90E5E87A2081Dcf0391920868eBc2FFB81a1aF",
     "0x1619DE6B6B20eD217a58d00f37B9d47C7663feca",
   ],
-  polygon: [
-    "0xa251c4691C1ffd7d9b128874C023427513D8Ac5C",
-    "0x88DCDC47D2f83a99CF0000FDF667A468bB958a78",
-  ],
+  astar: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C"],
+  aurora: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C"],
   avax: [
     "0xBB7684Cc5408F4DD0921E5c2Cadd547b8f1AD573",
     "0xef3c714c9425a8F3697A9C969Dc1af30ba82e5d4",
+  ],
+  boba: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C"],
+  bsc: [
+    "0x5d96d4287D1ff115eE50faC0526cf43eCf79bFc6",
+    "0xdd90E5E87A2081Dcf0391920868eBc2FFB81a1aF",
+  ],
+  celo: ["0xBB7684Cc5408F4DD0921E5c2Cadd547b8f1AD573"],
+  clover: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C"],
+  conflux: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C"],
+  ethereum: [
+    "0xc578Cbaf5a411dFa9F0D227F97DaDAa4074aD062",
+    "0x5427FEFA711Eff984124bFBB1AB6fbf5E3DA1820",
   ],
   fantom: [
     "0x3795C36e7D12A8c252A20C5a7B455f7c57b60283",
     "0x374B8a9f3eC5eB2D97ECA84Ea27aCa45aa1C57EF",
   ],
+  harmony: ["0x78a21C1D3ED53A82d4247b9Ee5bF001f4620Ceec"],
+  heco: ["0xBB7684Cc5408F4DD0921E5c2Cadd547b8f1AD573"],
+  metis: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C"],
+  milkomeda: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C"],
+  moonbeam: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C"],
+  moonriver: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C"],
+  oasis: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C"],
+  okexchain: ["0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98"],
   optimism: [
     "0x6De33698e9e9b787e09d3Bd7771ef63557E148bb",
     "0x9D39Fc627A6d9d9F8C831c16995b209548cc3401",
   ],
-  boba: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C"],
-  harmony: ["0x78a21C1D3ED53A82d4247b9Ee5bF001f4620Ceec"],
-  moonbeam: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C"],
-  moonriver: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C"],
-  celo: ["0xBB7684Cc5408F4DD0921E5c2Cadd547b8f1AD573"],
-  metis: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C"],
-  aurora: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C"],
-  xdai: ["0x3795C36e7D12A8c252A20C5a7B455f7c57b60283"],
-  okexchain: ["0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98"],
-  heco: ["0xBB7684Cc5408F4DD0921E5c2Cadd547b8f1AD573"],
-  oasis: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C"],
-  astar: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C"],
+  polygon: [
+    "0xa251c4691C1ffd7d9b128874C023427513D8Ac5C",
+    "0x88DCDC47D2f83a99CF0000FDF667A468bB958a78",
+  ],
+  rei: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C"],
   shiden: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C"],
   syscoin: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C"],
+  xdai: ["0x3795C36e7D12A8c252A20C5a7B455f7c57b60283"],
 };
 
 // Tokens added to the liquidity bridges, excluding Celer-Pegged tokens.
@@ -224,6 +253,7 @@ const liquidityBridgeTokens = [
     bsc: "0x4a9a2b2b04549c3927dd2c9668a5ef3fca473623",
     ethereum: "0x431ad2ff6a9c365805ebad47ee021148d6f7dbe0",
     optimism: "0x9e5AAC1Ba1a2e6aEd6b32689DFcF62A509Ca96f3",
+    polygon: "0x08C15FA26E519A78a666D19CE5C646D55047e0a3",
   },
   {
     // USX
@@ -232,6 +262,7 @@ const liquidityBridgeTokens = [
     bsc: "0xb5102cee1528ce2c760893034a4603663495fd72",
     ethereum: "0x0a5e677a6a24b2f1a2bf4f3bffc443231d2fdec8",
     optimism: "0xbfD291DA8A403DAAF7e5E9DC1ec0aCEaCd4848B9",
+    polygon: "0xCf66EB3D546F0415b368d98A95EAF56DeD7aA752",
   },
   {
     // PERP
@@ -295,6 +326,47 @@ const liquidityBridgeTokens = [
     ethereum: "0x8947da500Eb47F82df21143D0C01A29862a8C3c5",
     optimism: "0x217D47011b23BB961eB6D93cA9945B7501a5BB11",
   },
+  {
+    // TORN
+    bsc: "0x1ba8d3c4c219b124d351f603060663bd1bcd9bbf",
+    ethereum: "0x77777FeDdddFfC19Ff86DB637967013e6C6A116C",
+  },
+  {
+    // HUH
+    bsc: "0xc15e89f2149bCC0cBd5FB204C9e77fe878f1e9b2",
+    ethereum: "0x86D49fbD3B6f989d641E700a15599d3b165002AB",
+    polygon: "0x08648471B5AAd25fEEeb853d6829048f3Fc37786",
+  },
+  {
+    // iZi
+    arbitrum: "0x60D01EC2D5E98Ac51C8B4cF84DfCCE98D527c747",
+    bsc: "0x60D01EC2D5E98Ac51C8B4cF84DfCCE98D527c747",
+    ethereum: "0x9ad37205d608B8b219e6a2573f922094CEc5c200",
+  },
+  {
+    // ESW
+    astar: "0xb361DAD0Cc1a03404b650A69d9a5ADB5aF8A531F",
+    aurora: "0xd2Fa7C9386040f260e3Ec934601982aD4Cd7902B",
+    ethereum: "0x5a75A093747b72a0e14056352751eDF03518031d",
+    polygon: "0xd2A2a353D28e4833FAFfC882f6649c9c884a7D8f",
+    shiden: "0xb4BcA5955F26d2fA6B57842655d7aCf2380Ac854",
+  },
+  {
+    // ASVA
+    bsc: "0xF7b6d7E3434cB9441982F9534E6998C43eEF144a",
+    polygon: "0xE7E0bA6f84D843d17Cb8410810Bf3E8Bcda0caA1",
+  },
+  {
+    // ANML
+    ethereum: "0x38B0e3A59183814957D83dF2a97492AED1F003e2",
+    polygon: "0xEcc4176B90613Ed78185f01bd1E42C5640C4F09d",
+  },
+  {
+    // GOVI
+    arbitrum: "0x07E49d5dE43DDA6162Fa28D24d5935C151875283",
+    ethereum: "0xeEAA40B28A2d1b0B08f6f97bB1DD4B75316c6107",
+    polygon: "0x43Df9c0a1156c96cEa98737b511ac89D0e2A1F46",
+  },
 ];
 
 // Celer-Pegged tokens. totalSupply will be used to count TVL.
@@ -304,9 +376,13 @@ const peggedTokens = [
     origin: "ethereum:0xdac17f958d2ee523a2206206994597c13d831ec7",
     astar: "0x3795C36e7D12A8c252A20C5a7B455f7c57b60283",
     celo: "0xB0d8cF9560EF31B8Fe6D9727708D19b31F7C90Dc",
+    clover: "0x3795C36e7D12A8c252A20C5a7B455f7c57b60283",
+    conflux: "0xfe97E85d13ABD9c1c33384E796F10B73905637cE",
+    milkomeda: "0x3795C36e7D12A8c252A20C5a7B455f7c57b60283",
     moonbeam: "0x81ECac0D6Be0550A00FF064a4f9dd2400585FE9c",
     moonriver: "0xb74527786818aE18B69B6A823960bfAF3906182F",
     oasis: "0x4Bf769b05E832FCdc9053fFFBC78Ca889aCb5E1E",
+    rei: "0x988a631Caf24E14Bb77EE0f5cA881e8B5dcfceC7",
     syscoin: "0x6de33698e9e9b787e09d3bd7771ef63557e148bb",
   },
   {
@@ -314,9 +390,13 @@ const peggedTokens = [
     origin: "ethereum:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
     astar: "0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98",
     celo: "0x48421FF1c6B93988138130865C4B7Cce10358271",
+    clover: "0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98",
+    conflux: "0x6963EfED0aB40F6C3d7BdA44A05dcf1437C44372",
+    milkomeda: "0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98",
     moonbeam: "0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98",
     moonriver: "0x693B47a7fC3d33AE9eBec15e5F42f2dB480066f3",
     oasis: "0x81ECac0D6Be0550A00FF064a4f9dd2400585FE9c",
+    rei: "0x8d5E1225981359E2E09A3AB8F599A51486f53314",
     syscoin: "0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98",
   },
   {
@@ -324,13 +404,18 @@ const peggedTokens = [
     origin: "bsc:0xe9e7cea3dedca5984780bafc599bd69add087d56",
     astar: "0x4Bf769b05E832FCdc9053fFFBC78Ca889aCb5E1E",
     aurora: "0x3b40D173b5802733108E047CF538Be178646b2e4",
+    milkomeda: "0x4Bf769b05E832FCdc9053fFFBC78Ca889aCb5E1E",
     moonbeam: "0xCb4A7569a61300C50Cf80A2be16329AD9F5F8F9e",
   },
   {
     // DAI
     origin: "ethereum:0x6b175474e89094c44da98b954eedeac495271d0f",
     astar: "0x6De33698e9e9b787e09d3Bd7771ef63557E148bb",
+    clover: "0x6De33698e9e9b787e09d3Bd7771ef63557E148bb",
+    conflux: "0x74eaE367d018A5F29be559752e4B67d01cc6b151",
+    milkomeda: "0x6De33698e9e9b787e09d3Bd7771ef63557E148bb",
     oasis: "0x5a4Ba16C2AeB295822A95280A7c7149E87769E6A",
+    rei: "0x0ba85980B122353D77fBb494222a10a46E4FB1f6",
     syscoin: "0x8D982783040e3ccC0C04cC7B88B9637ce7286C50",
   },
   {
@@ -338,22 +423,31 @@ const peggedTokens = [
     origin: "ethereum:0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
     astar: "0x81ECac0D6Be0550A00FF064a4f9dd2400585FE9c",
     celo: "0x1FBD282fdcF0C6FA9c77Eb61f95535dE3CCB8B78",
+    clover: "0x81ECac0D6Be0550A00FF064a4f9dd2400585FE9c",
+    conflux: "0xa47f43DE2f9623aCb395CA4905746496D2014d57",
+    milkomeda: "0x81ECac0D6Be0550A00FF064a4f9dd2400585FE9c",
     moonbeam: "0x6959027f7850Adf4916ff5Fdc898d958819E5375",
     moonriver: "0xf6a939e773fa4A63fd53f86bbbB279CaAD955035",
     oasis: "0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98",
+    rei: "0x7a5313468c1C1a3Afb2Cf5ec46558A7D0fc2884A",
     syscoin: "0x81ecac0d6be0550a00ff064a4f9dd2400585fe9c",
   },
   {
     // WBTC
     origin: "ethereum:0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
     astar: "0xad543f18cFf85c77E140E3E5E3c3392f6Ba9d5CA",
+    clover: "0x7f27352D5F83Db87a5A3E00f4B07Cc2138D8ee52",
+    conflux: "0x1F545487c62e5ACfEa45dcAdd9c627361d1616D8",
     metis: "0x75364D4F779d0Bd0facD9a218c67f87dD9Aff3b4",
+    milkomeda: "0x8d50a024B2F5593605d3cE8183Ca8969226Fcbf8",
     moonbeam: "0x8a4B4C2aCAdeAa7206Df96F00052e41d74a015CE",
+    rei: "0x8059E671Be1e76f8db5155bF4520f86ACfDc5561",
     syscoin: "0x86c28C9a6f2DC3C156AA2ad450F0F9d3A5Dec12e",
   },
   {
     // DODO
     origin: "ethereum:0x43Dfc4159D86F3A37A5A4B3D4580b888ad7d4DDd",
+    avax: "0xAEDB70D42161e6e135250150EA561dD77a694798",
     moonriver: "0xE9460BD2FFB12b668fA32919C785C239f974D37C",
   },
   {
@@ -483,6 +577,7 @@ const peggedTokens = [
     origin: "bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
     astar: "0x7f27352D5F83Db87a5A3E00f4B07Cc2138D8ee52",
     aurora: "0xc6bc09a723F2314ad22642B6e33AD2ed6BbA3C9C",
+    milkomeda: "0x7f27352D5F83Db87a5A3E00f4B07Cc2138D8ee52",
     oasis: "0x3795C36e7D12A8c252A20C5a7B455f7c57b60283",
     syscoin: "0xc6bc09a723F2314ad22642B6e33AD2ed6BbA3C9C",
   },
@@ -490,12 +585,14 @@ const peggedTokens = [
     // AVAX
     origin: "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
     aurora: "0xef3c714c9425a8F3697A9C969Dc1af30ba82e5d4",
+    milkomeda: "0x86c28C9a6f2DC3C156AA2ad450F0F9d3A5Dec12e",
     oasis: "0x6De33698e9e9b787e09d3Bd7771ef63557E148bb",
   },
   {
     // FTM
     origin: "fantom:0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
     aurora: "0x1fE622E91e54D6AD00B01917351Ea6081426764A",
+    milkomeda: "0xc3FEc6F18dDb7583DA572374Ca8d11c6F0590dAe",
     oasis: "0x7f27352D5F83Db87a5A3E00f4B07Cc2138D8ee52",
   },
   {
@@ -554,6 +651,7 @@ const peggedTokens = [
     // MATIC
     origin: "polygon:0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
     astar: "0xdd90E5E87A2081Dcf0391920868eBc2FFB81a1aF",
+    milkomeda: "0x8006320739fC281da67Ee62eB9b4Ef8ADD5C903a",
   },
   {
     // AAVE
@@ -624,6 +722,41 @@ const peggedTokens = [
     origin: "bsc:0x7ad7242A99F21aa543F9650A56D141C57e4F6081",
     avax: "0x80B010450fDAf6a3f8dF033Ee296E92751D603B3",
   },
+  {
+    // MELOS
+    origin: "ethereum:0x1afb69DBC9f54d08DAB1bD3436F8Da1af819E647",
+    bsc: "0x3CC194Cb21E3B9d86dD516b4d870B82fAfb4C02E",
+  },
+  {
+    // MSU
+    origin: "ethereum:0xdfD8D604951eBF1b2297285F1B68de140C43992b",
+    bsc: "0xD6705C0740E6002cE196B08129b2F0f23F24722E",
+  },
+  {
+    // UCG
+    origin: "ethereum:0x7D92a06808B4c4833623F809218ed403e4A85FE1",
+    bsc: "0xFef17032D5E87523ACeBFDE6B3A8978B2BEdaD1f",
+  },
+  {
+    // MGH
+    origin: "ethereum:0x8765b1A0eb57ca49bE7EACD35b24A574D0203656",
+    bsc: "0x318dA5dcDB9Cb8638ed5d1824dB7Ab042Fc641AD",
+  },
+  {
+    // ASTR
+    // origin: "astar:0xAeaaf0e2c81Af264101B9129C00F4440cCF0F720",
+    ethereum: "0xe593F3509eb2a620DC61078bcdEDbA355F083E8B",
+  },
+  {
+    // ANML
+    origin: "ethereum:0x38B0e3A59183814957D83dF2a97492AED1F003e2",
+    bsc: "0x06FDA0758c17416726f77Cb11305EAC94C074Ec0",
+  },
+  {
+    // BLANK
+    origin: "ethereum:0x41A3Dba3D677E573636BA691a70ff2D606c29666",
+    fantom: "0x09aB991d898713FB8e9B6d949DcB6e846076d765",
+  },
 ];
 
 // Some tokens have different decimals on certain chains.
@@ -638,6 +771,14 @@ const peggedTokensDecimalDiffs = {
   avax: {
     // JADE
     "0x80B010450fDAf6a3f8dF033Ee296E92751D603B3": 9,
+  },
+  conflux: {
+    // USDC
+    "0x6963EfED0aB40F6C3d7BdA44A05dcf1437C44372": 12,
+    // USDT
+    "0xfe97E85d13ABD9c1c33384E796F10B73905637cE": 12,
+    // WBTC
+    "0x1F545487c62e5ACfEa45dcAdd9c627361d1616D8": 10,
   },
 };
 
