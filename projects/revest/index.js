@@ -26,6 +26,18 @@ const MIN_BLOCK = {
   avax: 0,
 };
 
+const eventLog_addresses = {
+  fantom: ["0xb80f5a586BC247D993E6dbaCD8ADD211ec6b0cA5"],
+};
+
+const tokenAddresses = {
+  fantom: { LQDR: "0x10b620b2dbAC4Faa7D7FFD71Da486f5D44cd86f9" },
+};
+
+const providers = {
+  fantom: "https://rpc.ftm.tools/",
+};
+
 async function mainnetTVL(time, block) {
   const tokenRes = await axios.get(
     "https://defi-llama-feed.vercel.app/api/address"
@@ -54,24 +66,53 @@ async function fantomTVL(time, block) {
   const transform = await transformFantomAddress();
   await calculateTVL(tokenRes, balances, block, "fantom", transform);
 
-  console.log(balances);
+  for (var x = 0; x < eventLog_addresses["fantom"].length; x++) {
+    let event_balance = await parse_event_logs_for_balance(
+      "fantom",
+      eventLog_addresses["fantom"][x]
+    );
 
-  const provider = new ethers.providers.JsonRpcProvider(
-    "https://rpc.ftm.tools/"
-  );
+    //TBH i'm not sure this is the intended solution but i'm rolling with it anyways
+    balances["fantom:" + eventLog_addresses["fantom"][x]] = ethers.utils
+      .parseEther(event_balance.toString())
+      .toString();
 
-  let contractAddress = "0xb80f5a586BC247D993E6dbaCD8ADD211ec6b0cA5"; //requires .env file updates
-  let tokenAddress = "0x10b620b2dbAC4Faa7D7FFD71Da486f5D44cd86f9";
+    console.log(balances);
+  }
+
+  return balances;
+}
+
+async function parse_event_logs_for_balance(
+  network,
+  deposit_address,
+  token = null
+) {
+  const provider = new ethers.providers.JsonRpcProvider(providers[network]);
 
   let abi = [
     "event DepositERC20OutputReceiver(address indexed mintTo, address indexed token, uint amountTokens, uint indexed fnftId, bytes extraData)",
     "event WithdrawERC20OutputReceiver(address indexed caller, address indexed token, uint amountTokens, uint indexed fnftId, bytes extraData)",
   ];
 
-  let deposit_contract = new ethers.Contract(contractAddress, abi, provider);
+  let balance = 0;
 
-  let DepositFilter = deposit_contract.filters.DepositERC20OutputReceiver();
-  let WithdrawFilter = deposit_contract.filters.WithdrawERC20OutputReceiver();
+  let deposit_contract = new ethers.Contract(deposit_address, abi, provider);
+
+  let DepositFilter = deposit_contract.filters.DepositERC20OutputReceiver(
+    null,
+    token,
+    null,
+    null,
+    null
+  );
+  let WithdrawFilter = deposit_contract.filters.WithdrawERC20OutputReceiver(
+    null,
+    token,
+    null,
+    null,
+    null
+  );
 
   DepositFilter.fromBlock = WithdrawFilter.fromBlock = MIN_BLOCK["fantom"];
   DepositFilter.toBlock = WithdrawFilter.toBlock = "latest";
@@ -81,11 +122,9 @@ async function fantomTVL(time, block) {
 
   let events = deposits.map((log) => deposit_contract.interface.parseLog(log));
 
-  let balance = 0;
   for (let i in events) {
     let txn = events[i];
     balance += Number(ethers.utils.formatEther(txn.args.amountTokens));
-    console.log(balance.toString());
   }
 
   events = withdrawals.map((log) => deposit_contract.interface.parseLog(log));
@@ -94,15 +133,9 @@ async function fantomTVL(time, block) {
     balance -= Number(ethers.utils.formatEther(txn.args.amountTokens));
   }
 
-  console.log("TOTAL BALANCE OF LQDR: ", balance);
+  console.log("TOTAL BALANCE: ", balance);
 
-  //TBH i'm not sure this is the intended solution but i'm rolling with it anyways
-  balances["fantom:" + tokenAddress] = ethers.utils
-    .parseEther(balance.toString())
-    .toString();
-  console.log(balances);
-
-  return balances;
+  return balance;
 }
 
 async function avaxTVL(time, block) {
