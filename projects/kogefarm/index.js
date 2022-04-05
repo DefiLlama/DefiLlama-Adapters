@@ -377,6 +377,59 @@ const fantomTvl = async (timestamp, block, chainBlocks) => {
     balances[sSpell] = Math.floor(balances[sSpell] * spellPersSpell);
   }
 
+  // Convert sUSDT into USDT by multiplying by the appropriate ratio
+  const sUSDT = 'polygon:0x29e38769f23701a2e4a8ef0492e19da4604be62c';
+  if (sUSDT in balances){
+    // First, find the spell to staked spell ratio by looking at the total supply of staked spell divided by the spell locked
+    const sUSDTSupply = (
+      await sdk.api.abi.call({
+        chain: 'polygon',
+        block: chainBlocks['polygon'],
+        target: "0x29e38769f23701A2e4A8Ef0492e19dA4604Be62c",
+        abi: abi.totalSupply,
+      })
+    ).output
+    const sUSDTLiquidity = (
+      await sdk.api.abi.call({
+        chain: 'polygon',
+        block: chainBlocks['polygon'],
+        target: "0x29e38769f23701A2e4A8Ef0492e19dA4604Be62c",
+        abi: abi.totalLiquidity,
+      })
+    ).output
+    const usdtPersUSDT = sUSDTLiquidity / sUSDTSupply
+
+    // Then, multiply the staked spell balance by spell to staked spell ratio
+    balances[sUSDT] = Math.floor(balances[sUSDT] * usdtPersUSDT);
+  }
+
+  // Convert sUSDC into USDC by multiplying by the appropriate ratio
+  const sUSDC = 'polygon:0x1205f31718499dbf1fca446663b532ef87481fe1';
+  if (sUSDC in balances){
+    // First, find the spell to staked spell ratio by looking at the total supply of staked spell divided by the spell locked
+    const sUSDCSupply = (
+      await sdk.api.abi.call({
+        chain: 'polygon',
+        block: chainBlocks['polygon'],
+        target: "0x1205f31718499dBf1fCa446663B532Ef87481fe1",
+        abi: abi.totalSupply,
+      })
+    ).output
+    const sUSDCLiquidity = (
+      await sdk.api.abi.call({
+        chain: 'polygon',
+        block: chainBlocks['polygon'],
+        target: "0x1205f31718499dBf1fCa446663B532Ef87481fe1",
+        abi: abi.totalLiquidity,
+      })
+    ).output
+    const usdcPersUSDC = sUSDCLiquidity / sUSDCSupply
+
+    // Then, multiply the staked spell balance by spell to staked spell ratio
+    balances[sUSDC] = Math.floor(balances[sUSDC] * usdcPersUSDC);
+  }
+
+
   return balances
 }
 

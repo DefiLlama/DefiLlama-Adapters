@@ -135,6 +135,18 @@ function transformAddressKF(chain = 'polygon') {
         addr.toLowerCase() === '0x2c89bbc92bd86f8075d1decc58c7f4e0107f286b') {
         return `avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7`
       }
+      // Special case for sUSDT, since coingecko doesn't find
+      if (
+        chain === 'polygon' &&
+        addr.toLowerCase() === '0x29e38769f23701a2e4a8ef0492e19da4604be62c') {
+        return `polygon:0xc2132d05d31c914a87c6611c10748aeb04b58e8f`
+      }
+      // Special case for sUSDC, since coingecko doesn't find
+      if (
+        chain === 'polygon' &&
+        addr.toLowerCase() === '0x1205f31718499dbf1fca446663b532ef87481fe1') {
+        return `polygon:0x2791bca1f2de4661ed88a30c99a7a9449aa84174`
+      }
     }
 
     return `${chain}:${addr}`
