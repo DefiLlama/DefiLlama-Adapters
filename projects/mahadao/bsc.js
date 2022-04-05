@@ -120,9 +120,12 @@ module.exports = {
     ],
     [
       // collaterals
-      "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c", // wbnb
-      "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", // busd
-      "0xCE86F7fcD3B40791F63B86C3ea3B8B355Ce2685b", // maha
+      // { "wbnb": ["0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"] }, // wbnb
+      // { "busd": ["0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"] }, // busd
+      { "maha": ["0xCE86F7fcD3B40791F63B86C3ea3B8B355Ce2685b"] }, // maha
+      { "busdusdc-ape-lps": ["0xbb9858603b1fb9375f6df972650343e985186ac5", '0xc087c78abac4a0e900a327444193dbf9ba69058e', '0x5c8d727b265dbafaba67e050f2f739caeeb4a6f9'] },//busdusdc-ape-lps
+      // { "busdusdt-ape-lps": ["0xc5fb6476a6518dd35687e0ad2670cb8ab5a0d4c5"] },//busdusdt-ape-lps
+
     ],
     "bsc",
     [undefined, undefined, "mahadao"],
