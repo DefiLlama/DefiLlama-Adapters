@@ -60,14 +60,15 @@ async function fantomTVL(time, block) {
     "https://rpc.ftm.tools/"
   );
 
-  let tokenAddress = "0xb80f5a586BC247D993E6dbaCD8ADD211ec6b0cA5"; //requires .env file updates
+  let contractAddress = "0xb80f5a586BC247D993E6dbaCD8ADD211ec6b0cA5"; //requires .env file updates
+  let tokenAddress = "0x10b620b2dbAC4Faa7D7FFD71Da486f5D44cd86f9";
 
   let abi = [
     "event DepositERC20OutputReceiver(address indexed mintTo, address indexed token, uint amountTokens, uint indexed fnftId, bytes extraData)",
     "event WithdrawERC20OutputReceiver(address indexed caller, address indexed token, uint amountTokens, uint indexed fnftId, bytes extraData)",
   ];
 
-  let deposit_contract = new ethers.Contract(tokenAddress, abi, provider);
+  let deposit_contract = new ethers.Contract(contractAddress, abi, provider);
 
   let DepositFilter = deposit_contract.filters.DepositERC20OutputReceiver();
   let WithdrawFilter = deposit_contract.filters.WithdrawERC20OutputReceiver();
@@ -76,61 +77,29 @@ async function fantomTVL(time, block) {
   DepositFilter.toBlock = WithdrawFilter.toBlock = "latest";
 
   let deposits = await provider.getLogs(DepositFilter);
+  let withdrawals = await provider.getLogs(WithdrawFilter);
 
   let events = deposits.map((log) => deposit_contract.interface.parseLog(log));
-  console.log(events);
 
+  let balance = 0;
   for (let i in events) {
     let txn = events[i];
-    console.log(txn);
-    console.log(ethers.utils.formatEther(txn.args.amountTokens));
+    balance += Number(ethers.utils.formatEther(txn.args.amountTokens));
+    console.log(balance.toString());
   }
 
-  console.log("CALLED!!!");
+  events = withdrawals.map((log) => deposit_contract.interface.parseLog(log));
+  for (let i in events) {
+    let txn = events[i];
+    balance -= Number(ethers.utils.formatEther(txn.args.amountTokens));
+  }
 
-  const deposit_event =
-    deposit_contract.interface.events.DepositERC20OutputReceiver;
-  const withdraw_event =
-    deposit_contract.interface.events.WithdrawERC20OutputReceiver;
-
-  //Acquire logs from tokenAddress based on event signature
-  const logs = await provider.getLogs({
-    fromBlock: 0,
-    toBlock: "latest",
-    address: tokenAddress,
-    topic: [deposit_event, withdraw_event],
-  });
-
-  deposit_balance = 0;
-  withdrawal_balance = 0;
-
-  logs.forEach((element) => {
-    if (
-      element["topics"][0] ==
-      "0x5bed1f834b92cc21cec09497afa47d36952b8a037e988eca6e9ecffeb497b227"
-    ) {
-      tokenVal = parseInt(element["data"].substring(2, 66), 16) / 10 ** 18; //convert to whole-tokens
-      deposit_balance += tokenVal;
-    }
-
-    //withdrawal-topic-signature
-    else if (
-      element["topics"][0] ==
-      "0xf2b6e7f64080f438239b56473f2cd92b33165c88688fd898e1d99082bd0eb954"
-    ) {
-      tokenVal = parseInt(element["data"].substring(2, 66), 16) / 10 ** 18; //convert to whole-tokens
-      withdrawal_balance += tokenVal;
-    }
-  });
-
-  tvl = Number(deposit_balance - withdrawal_balance).toString();
-  balance = ethers.BigNumber.from(
-    Math.ceil(deposit_balance - withdrawal_balance)
-  ).toString();
+  console.log("TOTAL BALANCE OF LQDR: ", balance);
 
   //TBH i'm not sure this is the intended solution but i'm rolling with it anyways
-  balances["fantom:" + tokenAddress] = balance;
-
+  balances["fantom:" + tokenAddress] = ethers.utils
+    .parseEther(balance.toString())
+    .toString();
   console.log(balances);
 
   return balances;
