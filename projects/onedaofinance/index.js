@@ -6,7 +6,7 @@ const replacements = {
 }
 
 module.exports= {
-    rekt: true,
+    deadFrom: 1648765747,
     
     ...ohmTvl("0xcdC825e5Fc3D5af362dAF887D4EDc4c73c072EdE", [
     ["0xe176ebe47d621b984a73036b9da5d834411ef734", false], // BUSD

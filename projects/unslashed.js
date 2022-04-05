@@ -1,22 +1,19 @@
-const utils = require('./helper/utils');
+const sdk = require("@defillama/sdk")
+const retry = require('async-retry')
+const axios = require("axios")
+const { sumTokens } = require('./helper/unwrapLPs')
 
-async function fetch() {
+const ENZYME_VAULT = '0x86fb84e92c1eedc245987d28a42e123202bd6701'.toLowerCase()
 
-  let tvl = 0;
-  let price_feed = await utils.getPricesfromString('ethereum');
-
-  let stake = '0x3b6c03b232f87aee2ea6561ec7bf080a7710d667';
-  let ethBalance = await utils.returnEthBalance(stake);
-
-  const enzymeFund = await utils.fetchURL("https://data.enzyme.finance/api/fund/metrics/current?address=0x86fb84e92c1eedc245987d28a42e123202bd6701")
-  ethBalance += enzymeFund.data.data.calculations.ETH.gav
-
-  tvl += (ethBalance * price_feed.data.ethereum.usd);
-  return tvl;
-
+async function tvl(ts, block) {
+  const response = (await retry(async bail => await axios.get('https://app.enzyme.finance/api/v1/network-asset-balances?network=ethereum'))).data
+  const tokens = response.filter(d => d.vaults.includes(ENZYME_VAULT)).map(d => d.id)
+  const balances = {}
+  await sumTokens(balances, tokens.map(token => [token, ENZYME_VAULT]), block, undefined, undefined, { resolveCrv: true, resolveLP: true })
+  return balances
 }
 
-
 module.exports = {
-  fetch
+  ethereum: { tvl },
+  doublecounted: true,
 }

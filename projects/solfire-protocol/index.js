@@ -280,7 +280,7 @@ async function tvl()
 }
 
 module.exports = {
-  rekt: true,
+  deadFrom: 1648765747,
   solana: {
     pool2: lpTvl,
     tvl,

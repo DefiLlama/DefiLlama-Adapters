@@ -7,6 +7,9 @@ const wbtcEth ="0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599";
 const usdcEth = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
 const wethEth = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
 const relayEth = "0x5D843Fa9495d23dE997C394296ac7B4D721E841c";
+const xcasEth="0x7659CE147D0e714454073a5dd7003544234b6Aa0";
+const trueUSDEth="0x0000000000085d4780B73119b644AE5ecd22b376";
+const zeroEth="0xF0939011a9bb95c3B791f0cb546377Ed2693a574";
 
 const usdtBsc = "0x55d398326f99059fF775485246999027B3197955";
 const daiBsc = "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3";
@@ -113,6 +116,7 @@ const wIotex="0xa00744882684c3e4747faefd68d283ea44099d03";
 
 
 const ethAddr = "0xF687e1481d85F8b9F4D1f4D4C15348CeF8E5a762";
+const eth1Addr="0xc4DC891d5B5171f789829D6050D5eB64c447e0FE";
 const bscAddr = "0x3Ea1f65cf49297eA6d265291a2b09D0f2AE649D6";
 const avaxAddr ="0x43BEddB3199F2a635C85FfC4f1af228198D268Ab";
 const hecoAddr ="0xA21D529B86ef6B71C0caaE4669726755876a0Dc0";
@@ -126,7 +130,7 @@ const metisAddr = "0x640b3408EaC140297136677aC0cFF13a8c82C5Ed";
 const cronosAddr = "0x3f1B059d94551c9300176ceB55FD23aF0e4E2E29";
 
 
-let ethTokenAddress =[usdtEth,daiEth,wbtcEth,usdcEth,wethEth,relayEth];
+let ethTokenAddress =[usdtEth,daiEth,wbtcEth,usdcEth,wethEth,relayEth,xcasEth,trueUSDEth,zeroEth];
 let bscTokenAddress=[usdtBsc,daiBsc,usdcBsc,busdBsc,ethBsc,wbnbBsc,relayBsc];
 let avaxTokenAddress=[daiAvax,wavax,wbtcAvax,usdcAvax,usdtAvax];
 let hecoTokenAddress=[wHeco,wbtcHeco,ethHeco,usdcHeco,daiHeco,husdHeco];
@@ -154,10 +158,25 @@ async function ethTvl(timestamp, ethBlock) {
           block: ethBlock,
         })
       ).output;
-    sdk.util.sumSingleBalance(balances, "ethereum:"+ethTokenAddress[i], tokenBalance)
+      await sdk.util.sumSingleBalance(balances, "ethereum:"+ethTokenAddress[i], tokenBalance)
+
+      tokenBalance  = (
+        await sdk.api.abi.call({
+          target: ethTokenAddress[i],
+          abi: 'erc20:balanceOf',
+          params: eth1Addr,
+          block: ethBlock,
+        })
+      ).output;
+      await sdk.util.sumSingleBalance(balances, "ethereum:"+ethTokenAddress[i], tokenBalance)
     }
+
+    tokenBalance=(await sdk.api.eth.getBalance({target:eth1Addr})).output;
+    await sdk.util.sumSingleBalance(balances, "ethereum:"+"0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", tokenBalance)
+
       return balances
   };
+
 
 async function bscTvl(timestamp, ethBlock, chainBlocks) {
     let balances = {};
