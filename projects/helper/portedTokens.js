@@ -659,13 +659,9 @@ async function transformEthereumAddress() {
 }
 
 async function getChainTransform(chain) {
-  if (chain === "ethereum") {
-    return (id) => id;
-  }
-  if (chainTransforms[chain] !== undefined) {
-
+  if (chainTransforms[chain])
     return chainTransforms[chain]();
-  }
+
   return (addr) => `${chain}:${addr}`;
 }
 
