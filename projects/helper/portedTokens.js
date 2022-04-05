@@ -93,7 +93,6 @@ async function transformAvaxAddress() {
         "0x0000000000000000000000000000000000000000": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
         "0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
         "0xd45b7c061016102f9fa220502908f2c0f1add1d7": "0xffc97d72e13e01096502cb8eb52dee56f74dad7b",
-        "0x47afa96cdc9fab46904a55a6ad4bf6660b53c38a": "0x028171bca77440897b824ca71d1c56cac55b68a3",
         "0x46a51127c3ce23fb7ab1de06226147f446e4a857": "0xbcca60bb61934080951369a648fb03df4f96263c",
         "0x532e6537fea298397212f09a61e03311686f548e": "0x3ed3b47dd13ec9a98b44e6204a523e766b225811",
         "0xdfe521292ece2a4f44242efbcd66bc594ca9714b": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
@@ -488,10 +487,31 @@ function fixHarmonyBalances(balances) {
     }
   }
 }
-function fixOasisBalances(balances) {
-  if (Object.keys(balances).includes('oasis-network')) {
-      balances['oasis-network'] = balances['oasis-network'] / 10 ** 18;
+
+function transformOasisAddressBase(addr) {
+  const map = {
+    '0x21c718c22d52d0f3a789b752d4c2fd5908a8a733':'oasis-network',
+    '0x3223f17957ba502cbe71401d55a0db26e5f7c68f':'0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',  //WETH
+    '0xe8a638b3b7565ee7c5eb9755e58552afc87b94dd': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC
+    '0x4bf769b05e832fcdc9053fffbc78ca889acb5e1e': '0xdac17f958d2ee523a2206206994597c13d831ec7', // USDT
+    '0x6cb9750a92643382e020ea9a170abb83df05f30b': '0xdac17f958d2ee523a2206206994597c13d831ec7', // USDT
+    '0xdc19a122e268128b5ee20366299fc7b5b199c8e3': '0xdac17f958d2ee523a2206206994597c13d831ec7', // USDT wormhole
+    '0x81ecac0d6be0550a00ff064a4f9dd2400585fe9c': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC celer
+    '0x94fbffe5698db6f54d6ca524dbe673a7729014be': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',  // USDC
+    '0x21c718c22d52d0f3a789b752d4c2fd5908a8a733': 'wrapped-rose',
   }
+  return map[addr.toLowerCase()] || `${addr}`
+}
+
+async function transformOasisAddress() {
+  return transformOasisAddressBase
+}
+
+function fixOasisBalances(balances) {
+  ['oasis-network', 'wrapped-rose'].forEach(key => {
+    if (balances[key])
+        balances[key] = balances[key] / 10 ** 18;
+  })
 }
 async function transformIotexAddress() {
   return (addr) => {
@@ -666,6 +686,7 @@ const chainTransforms = {
   moonbeam: transformMoonbeamAddress,
   klaytn: transformKlaytnAddress,
   velas: transformVelasAddress,
+  oasis: transformOasisAddress,
 };
 
 async function getChainTransform(chain) {
@@ -704,4 +725,6 @@ module.exports = {
   transformMoonbeamAddress,
   transformKlaytnAddress,
   transformVelasAddress,
+  transformOasisAddress,
+  transformOasisAddressBase,
 };

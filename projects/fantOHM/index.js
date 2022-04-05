@@ -70,7 +70,7 @@ async function fantomTvl(timestamp, block, chainBlocks) {
 
 	// treasury values
 	await Promise.all([
-		balanceOfStablePool(fantomTreasuryContract, "0x7799f423534c319781b1b370B69Aaf2C75Ca16A3", "fantom:0x6fc9383486c163fa48becdec79d6058f984f62ca", "fantom:0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e", balances, block), // USDB-DAI stable pool
+		balanceOfStablePool(fantomTreasuryContract, "0xD5E946b5619fFf054c40D38c976f1d06C1e2fA82", "fantom:0x6fc9383486c163fa48becdec79d6058f984f62ca", "fantom:0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e", balances, block), // USDB-DAI stable pool
 	]);
 
 	// investments
@@ -96,12 +96,7 @@ async function ethTvl(timestamp, block, chainBlocks) {
 		addInvestment("ethereum", "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", ethGnosisContract, balances, chainBlocks.eth), // wETH
 		addInvestment("ethereum", "0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0", ethGnosisContract, balances, chainBlocks.eth), // MATIC
 		addInvestment("ethereum", "0x940a2db1b7008b6c776d4faaca729d6d4a4aa551", ethGnosisContract, balances, chainBlocks.eth), // DUSK
-		addInvestment("ethereum", "0x4a220E6096B25EADb88358cb44068A3248254675", ethGnosisContract, balances, chainBlocks.eth), // QNT
-		addInvestment("ethereum", "0xbA8A621b4a54e61C442F5Ec623687e2a942225ef", ethGnosisContract, balances, chainBlocks.eth), // QUARTZ
-
-		xvader(fantohmDaoDeployerWallet, balances, chainBlocks.eth), // xVADER
-		gohm(ethGnosisContract, balances, chainBlocks.eth), // gOHM
-	])
+	]);
 
 	return balances;
 }
@@ -143,21 +138,6 @@ async function bscTvl(timestamp, block, chainBlocks) {
 	return balances;
 }
 
-async function xvader(owner, balances, block) {
-	const xVaderCa = "0x665ff8fAA06986Bd6f1802fA6C1D2e7d780a7369"
-	const vaderCa = "0x2602278EE1882889B946eb11DC0E810075650983"
-	const vaderRate = 1.00707;
-
-	let balance = await sdk.api.erc20.balanceOf({
-		chain: "ethereum",
-		block: block,
-		target: xVaderCa,
-		owner: owner,
-	});
-
-	sdk.util.sumSingleBalance(balances, vaderCa, balance.output * vaderRate);
-}
-
 async function addInvestment(chain, target, owner, balances, block) {
 	const balance = (await sdk.api.erc20.balanceOf({
 		chain: chain,
@@ -192,30 +172,6 @@ async function balanceOfStablePool(owner, ca, countHalfAsCa1, countHalfAsCa2, ba
 
 	sdk.util.sumSingleBalance(balances, countHalfAsCa1, half.toString(10));
 	sdk.util.sumSingleBalance(balances, countHalfAsCa2, BigNumber(balance).minus(half.toString(10)).toString(10));
-}
-
-//
-// valuation OHM governance token consist of amount of native (staked) token * staking index * market price
-//
-async function gohm(owner, balances, block) {
-	const gohm = "0x0ab87046fBb341D058F17CBC4c1133F25a20a52f";
-	const ohm = "0x64aa3364f17a4d01c6f1751fd97c2bd3d7e7f1d5";
-
-	const gohmBalance = (await sdk.api.erc20.balanceOf({
-		chain: "ethereum",
-		block: block,
-		target: gohm,
-		owner: owner,
-	})).output;
-
-	const indexValue = (await sdk.api.abi.call({
-		chain: "ethereum",
-		block: block,
-		target: gohm,
-		abi: index.index
-	})).output;
-
-	sdk.util.sumSingleBalance(balances, ohm, BigNumber(gohmBalance).div(1e18) * indexValue);
 }
 
 async function beetsFtm_BeetsLp(owner, balances, block) {

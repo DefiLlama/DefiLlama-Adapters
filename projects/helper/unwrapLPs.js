@@ -720,6 +720,87 @@ async function unwrapCreamTokens(balances, tokensAndOwners, block, chain = "ethe
     })
 }
 
+const crv_abi = {
+    "crvLP_coins": {"stateMutability":"view","type":"function","name":"coins","inputs":[{"name":"arg0","type":"uint256"}],"outputs":[{"name":"","type":"address"}],"gas":3123}
+}
+async function genericUnwrapCrv(balances, crvToken, lpBalance, block, chain) {
+    const {output: resolvedCrvTotalSupply} = await sdk.api.erc20.totalSupply({
+      target: crvToken,
+      chain, block })
+  
+    // Get Curve LP token balances
+    // A while-loop would need a try-catch because sending error when idx > tokens_count
+    const {output: crv_symbol} = await sdk.api.abi.call({
+      abi: 'erc20:symbol', 
+      target: crvToken,
+      chain,
+      block
+    })
+    const LP_tokens_count = 1 + (crv_symbol.match(/_/g) || []).length
+    const coins_indices = Array.from(Array(LP_tokens_count).keys())
+    const coins = (await sdk.api.abi.multiCall({
+      abi: crv_abi['crvLP_coins'], 
+      calls: coins_indices.map(i => ({params: [i]})),
+      target: crvToken,
+      chain,
+      block
+    })).output.map(c => c.output)
+    const crvLP_token_balances = await sdk.api.abi.multiCall({
+      abi: 'erc20:balanceOf', 
+      calls: coins.map(c => ({
+        target: c,
+        params: crvToken,
+      })),
+      chain,
+      block
+    })
+  
+    // Edit the balances to weigh with respect to the wallet holdings of the crv LP token
+    crvLP_token_balances.output.forEach(call => 
+      call.output = BigNumber(call.output).times(lpBalance).div(resolvedCrvTotalSupply).toFixed(0)
+    )
+    sdk.util.sumMultiBalanceOf(balances, crvLP_token_balances);
+  }
+  
+const cvx_abi = {
+    "cvxBRP_pid": {"inputs":[],"name":"pid","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}, 
+    "cvxBRP_balanceOf": {"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}, 
+    "cvxBRP_earned": {"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"earned","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}, 
+    "cvxBRP_rewards": {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"rewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}, 
+    "cvxBRP_userRewardPerTokenPaid": {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"userRewardPerTokenPaid","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}, 
+    "cvxBRP_stakingToken": {"inputs": [],"name": "stakingToken","outputs": [ { "internalType": "address", "name": "stakingToken", "type": "address" } ],"stateMutability": "view","type": "function"},
+    "cvxBooster_poolInfo": {"inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],"name": "poolInfo","outputs": [ { "internalType": "address", "name": "lptoken", "type": "address" }, { "internalType": "address", "name": "token", "type": "address" }, { "internalType": "address", "name": "gauge", "type": "address" }, { "internalType": "address", "name": "crvRewards", "type": "address" }, { "internalType": "address", "name": "stash", "type": "address" }, { "internalType": "bool", "name": "shutdown", "type": "bool" } ],"stateMutability": "view","type": "function"}
+}
+const cvxBoosterAddress = "0xF403C135812408BFbE8713b5A23a04b3D48AAE31";
+  async function genericUnwrapCvx(balances, holder, cvx_BaseRewardPool, block, chain)  {
+      // Compute the balance of the treasury of the CVX position and unwrap
+    const [
+      {output: cvx_LP_bal}, 
+      {output: pool_id}
+    ] = await Promise.all([
+      sdk.api.abi.call({
+        abi: cvx_abi['cvxBRP_balanceOf'], // cvx_balanceOf cvx_earned cvx_rewards cvx_userRewardPerTokenPaid
+        target: cvx_BaseRewardPool,
+        params: [holder],
+        chain, block
+      }),
+      // const {output: pool_id} = await 
+      sdk.api.abi.call({
+        abi: cvx_abi['cvxBRP_pid'], 
+        target: cvx_BaseRewardPool,
+        chain, block
+      })
+    ])
+    const {output: crvPoolInfo} = await sdk.api.abi.call({
+      abi: cvx_abi['cvxBooster_poolInfo'],
+      target: cvxBoosterAddress,
+      params: [pool_id],
+      chain,
+      block: block,
+    })
+    await genericUnwrapCrv(balances, crvPoolInfo.lptoken, cvx_LP_bal, block, chain)
+  }
+  
 async function unwrapLPsAuto(balances, block, chain, transformAddress) {
     const tokens = []
     const amounts = []
@@ -754,5 +835,8 @@ module.exports = {
     sumLPWithOnlyOneToken,
     sumTokensSharedOwners,
     sumLPWithOnlyOneTokenOtherThanKnown, 
-    unwrapGelatoLPs
+    unwrapGelatoLPs, 
+    genericUnwrapCrv, 
+    genericUnwrapCvx,
+    unwrapLPsAuto
 }

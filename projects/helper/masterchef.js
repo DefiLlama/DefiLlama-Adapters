@@ -296,6 +296,7 @@ function masterChefExportsUnknownLP(masterChef, chain, stakingTokenRaw, coreAsse
     const stakingToken = stakingTokenRaw.toLowerCase();
     const coreAsset = coreAssetRaw.toLowerCase();
     const whitelist = whitelistRaw.map(t => t.toLowerCase());
+    let balanceResolve;
     if (!whitelist.includes(stakingToken)) {
         whitelistRaw.push(stakingToken)
     }
@@ -438,19 +439,28 @@ function masterChefExportsUnknownLP(masterChef, chain, stakingTokenRaw, coreAsse
             }
         })
 
-        balanceResolve(whitelistBalances)
+        // balanceResolve(whitelistBalances)
 
-        return {
+        const allBalances =  {
             staking: { [coreAssetName]: stakingBalance / 10 ** decimals },
             pool2: { [coreAssetName]: pool2Balance / 10 ** decimals },
             masterchef: { [coreAssetName]: coreBalance / 10 ** decimals },
             tvl: { [coreAssetName]: coreBalance / 10 ** decimals }
         };
+
+        balanceResolve(allBalances)
+        return allBalances.tvl
     };
     
+
     return {
         methodology: "TVL includes all farms in MasterChef contract",
-        [chain]: tvl
+        [chain]: {
+            staking: awaitBalanceUpdate(balancePromise, "staking"),
+            pool2: awaitBalanceUpdate(balancePromise, "pool2"),
+            masterchef: awaitBalanceUpdate(balancePromise, "masterchef"),
+            tvl
+        }
     };
 }
 
