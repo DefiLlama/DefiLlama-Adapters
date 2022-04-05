@@ -646,6 +646,14 @@ function transformVelasAddress() {
   }
 }
 
+async function transformDfkAddress() {
+  const mapping = {
+    '0xb57b60debdb0b8172bb6316a9164bd3c695f133a': 'avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7', // AVAX
+    '0x3ad9dfe640e1a9cc1d9b0948620820d975c3803a': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC
+  }
+  return (addr) => mapping[addr.toLowerCase()] || `dfk:${addr.toLowerCase()}`
+}
+
 const chainTransforms = {
   celo: transformCeloAddress,
   fantom: transformFantomAddress,
@@ -668,6 +676,7 @@ const chainTransforms = {
   velas: transformVelasAddress,
   ethereum: transformEthereumAddress,
   oasis: transformOasisAddress,
+  dfk: transformDfkAddress,
 };
 
 async function transformEthereumAddress() {
@@ -715,4 +724,5 @@ module.exports = {
   transformEthereumAddress,
   transformOasisAddress,
   transformOasisAddressBase,
+  transformDfkAddress,
 };
