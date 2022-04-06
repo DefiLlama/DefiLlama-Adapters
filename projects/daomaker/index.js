@@ -4,6 +4,7 @@ const { getChainTransform } = require("../helper/portedTokens");
 const contracts = require("./contracts.json");
 const DAO = "0x0f51bb10119727a7e5eA3538074fb341F56B09Ad";
 const aUST = "0xa8De3e3c934e2A1BB08B010104CcaBBD4D6293ab";
+const axios = require("axios");
 
 async function fetchBalances(exports, contracts, transform, chainBlocks, chain) {
   const balances = await sdk.api.abi.multiCall({
@@ -24,9 +25,21 @@ function tvl(chain) {
     const balances = {};
     const transform = await getChainTransform(chain);
 
+    const vestingContracts = (await axios.get("https://api.daomaker.com/get-all-vesting-contracts")).data;
+    const clientVesting = {};
+    for (const vestingContract of vestingContracts) {
+        if (!clientVesting[vestingContract.chain_name]) {
+            clientVesting[vestingContract.chain_name] = {};
+        }
+        clientVesting[vestingContract.chain_name][vestingContract.vesting_smart_contract_address] = {
+            tokenHolder: vestingContract.vesting_smart_contract_address,
+            tokenAddress: vestingContract.token_address
+        };
+    }
+
     await fetchBalances(
       balances, 
-      contracts.clientVesting, 
+      clientVesting, 
       transform, 
       chainBlocks, 
       chain
@@ -63,12 +76,12 @@ function tvl(chain) {
   };
 };
 
-const chainTVLObject = Object.keys(contracts.clientVesting).reduce(
+const chainTVLObject = contracts.chains.reduce(
   (agg, chain) => ({ ...agg, [chain]: {tvl: tvl(chain) }}), {}
 );
 
 chainTVLObject.ethereum.staking = stakings(
-  [ contracts.clientVesting.ethereum.Staking.tokenHolder ], 
+  [ contracts.stakingContractEth ], 
   DAO
 );
 
