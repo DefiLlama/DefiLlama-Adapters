@@ -27,6 +27,7 @@ const astarTvl = calculateUsdUniTvl(
     ], "astar")
 
 module.exports = {
+    timetravel: true,
     methodology: "Astar Exchange Tvl Calculation",
     astar: {
         tvl: astarTvl
