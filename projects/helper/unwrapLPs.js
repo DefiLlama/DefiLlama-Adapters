@@ -7,6 +7,9 @@ const {requery} = require('./requery')
 const creamAbi = require('./abis/cream.json')
 const { request, gql } = require("graphql-request");
 const { unwrapCrv, resolveCrvTokens } = require('./resolveCrvTokens')
+const activePoolAbi = require('./ankr/abis/activePool.json')
+const wethAddressAbi = require('./ankr/abis/wethAddress.json');
+const { getChainTransform } = require("./portedTokens");
 
 const yearnVaults = {
     // yvToken: underlying, eg yvYFI:YFI
@@ -806,6 +809,8 @@ async function unwrapLPsAuto(balances, block, chain, transformAddress) {
     const amounts = []
 
     Object.keys(balances).forEach(key => {
+        if (chain === 'ethereum' && key.indexOf(':') > -1) return;  // token is transformed, probably not an LP
+        if (chain !== 'ethereum' && !key.startsWith(chain+':')) return;  // token is transformed, probably not an LP
         const token = stripTokenHeader(key)
         if (!/^0x/.test(token)) return;     // if token is not an eth address, we ignore it
         tokens.push({ output: token })
@@ -818,6 +823,36 @@ async function unwrapLPsAuto(balances, block, chain, transformAddress) {
 
 function stripTokenHeader(token) {
     return token.indexOf(':') > -1 ? token.split(':')[1] : token
+}
+
+async function unwrapTroves({ balances = {}, chain = 'ethereum', block, troves = [], transformAddress }) {
+    const troveCalls = troves.map(target=>({ target }))
+    if (!transformAddress)
+        transformAddress = await getChainTransform(chain)
+    const [{ output: activePools }, { output: tokens } ] = await Promise.all([
+        sdk.api.abi.multiCall({
+            block,
+            abi: activePoolAbi,
+            calls: troveCalls,
+            chain
+        }),
+        sdk.api.abi.multiCall({
+            block,
+            abi: wethAddressAbi,
+            calls: troveCalls,
+            chain
+        })
+    ])
+
+    const tokensAndOwners = []
+
+    for(let i = 0;i< troves.length;i++) {
+        if (activePools[i].success && tokens[i].success)
+            tokensAndOwners.push([tokens[i].output, activePools[i].output])
+    }
+
+    await sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { resolveCrv: true, resolveLP: true, resolveYearn: true })
+    return balances
 }
 
 module.exports = {
@@ -838,5 +873,6 @@ module.exports = {
     unwrapGelatoLPs, 
     genericUnwrapCrv, 
     genericUnwrapCvx,
-    unwrapLPsAuto
+    unwrapLPsAuto,
+    unwrapTroves,
 }
