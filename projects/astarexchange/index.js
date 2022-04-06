@@ -1,6 +1,6 @@
 const { calculateUsdUniTvl } = require('../helper/getUsdUniTvl')
 
-const WASTAR = "0xEcC867DE9F5090F55908Aaa1352950b9eed390cD" // their own barely used version
+const WASTR = "0xEcC867DE9F5090F55908Aaa1352950b9eed390cD" // their own barely used version
 
 module.exports = {
     misrepresentedTokens: true,
