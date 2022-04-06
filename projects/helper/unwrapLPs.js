@@ -10,7 +10,6 @@ const { request, gql } = require("graphql-request");
 const { unwrapCrv, resolveCrvTokens } = require('./resolveCrvTokens')
 const activePoolAbi = require('./ankr/abis/activePool.json')
 const wethAddressAbi = require('./ankr/abis/wethAddress.json');
-const { getChainTransform } = require("./portedTokens");
 
 const yearnVaults = {
 	// yvToken: underlying, eg yvYFI:YFI
