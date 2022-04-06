@@ -2,7 +2,10 @@ const { calculateHodltreeBalancesEth, calculateHodltreeBalancesPolygon } = requi
 
 module.exports = {
     methodology:
-        "Only staked LP is counted as TVL. Excluded in TVL : Locked BEE in the RoyalJelly, NFT Jelly, value of BNB & xJOE which aren't on CoinGecko yet.",
+        `Flashloan pools: sum of all available liquidity
+         Lend-borrow contracts: sum of tokens provided as collateral and tokens provided by lenders
+         Elastic-Modules: sum of tokens provided by hedgers and amount of tokens to hedge
+        `,
     ethereum: {
         tvl: calculateHodltreeBalancesEth
     },
