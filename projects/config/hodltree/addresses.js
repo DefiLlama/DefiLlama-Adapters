@@ -29,22 +29,22 @@ const eth = [
     {
         dexType: dexType.lendBorrow,
         contracts: [{
+            contractType: lendBorrow.lender,
+            address: '0xb3e1912fa5d9d219da8c65cda407cc998849428b',
+            miscInfo: {
+                tokenIn: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
+            }
+        }, {
             contractType: lendBorrow.borrower,
             address: '0x8ac9425260b6da02db07da7980b09525ebf3b6a0',
             miscInfo: {
-                tokenIn: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
+                tokenIn: '0xBcca60bB61934080951369a648Fb03DF4F96263C'
             }
         }, {
             contractType: lendBorrow.borrower,
             address: '0x45d5a790da3bfa305efca81eac652678ae3a90a6',
             miscInfo: {
-                tokenIn: '0x6B175474E89094C44Da98b954EedeAC495271d0F'
-            }
-        }, {
-            contractType: lendBorrow.lender,
-            address: '0xb3e1912fa5d9d219da8c65cda407cc998849428b',
-            miscInfo: {
-                tokenIn: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
+                tokenIn: '0x028171bCA77440897B824Ca71D1c56caC55b68A3'
             }
         }]
     },
@@ -74,7 +74,7 @@ const eth = [
             }
         }, {
             contractType: em.rp,
-            address: '0x87B46E49681E08E3adDF8A90F6a1fb5183079033',
+            address: '0xce596bf99d21e46fa91143c03d7a356682b67859',
             miscInfo: {
                 token: '0x57Ab1ec28D129707052df4dF418D58a2D46d5f51'
             }
@@ -102,7 +102,7 @@ const eth = [
             contractType: em.vps,
             address: '0xcB72e764Ab46535aAD13cbF55b1F06cB15347A95',
             miscInfo: {
-                token: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
+                token: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
             }
         }]
     }
@@ -124,13 +124,13 @@ const polygon = [
             contractType: lendBorrow.borrower,
             address: '0xbfb5215aD157Cd6C8B22494dC54Ff4B74bA18C09',
             miscInfo: {
-                tokenIn: '0x2791bca1f2de4661ed88a30c99a7a9449aa84174'
+                tokenIn: '0x1a13f4ca1d028320a707d99520abfefca3998b7f'
             }
         }, {
             contractType: lendBorrow.borrower,
             address: '0x0Cf91744D15684b91E6705e56f6dC820647B3067',
             miscInfo: {
-                tokenIn: '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063'
+                tokenIn: '0x27f8d03b3a2196956ed754badc28d73be8830a6e'
             }
         }]
     },
