@@ -12,7 +12,6 @@
 
 ##### Current TVL:
 
-
 ##### Chain:
 
 
@@ -28,7 +27,7 @@
 ##### Token address and ticker if any:
 
 
-##### Category (Yield/Dexes/Lending/Minting/Assets/Insurance/Options/Indexes/Staking) *Please choose only one:
+##### Category (full list at https://defillama.com/categories) *Please choose only one:
 
 
 ##### Oracle used (Chainlink/Band/API3/TWAP or any other that you are using):
@@ -38,5 +37,4 @@
 
 
 ##### methodology (what is being counted as tvl, how is tvl being calculated):
-
 

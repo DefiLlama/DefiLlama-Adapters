@@ -90,5 +90,4 @@ module.exports = {
     tvl,
     pool2: stakingPricedLP(masterchef, squidToken, "bsc", squidBnbLP, "wbnb", true),
   },
-  tvl,
 };

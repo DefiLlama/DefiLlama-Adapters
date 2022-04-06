@@ -1,11 +1,11 @@
 const sdk = require("@defillama/sdk");
-const { staking } = require("../helper/staking");
+const { stakings } = require("../helper/staking");
 const Caver = require('caver-js');
 const OracleAbi = require('./abi/oracle.json');
 const TokenAbi = require('./abi/token.json');
 const { toUSDTBalances } = require("../helper/balances");
 
-const stakingPool = '0x488933457E89656D7eF7E69C10F2f80C7acA19b5';
+const stakingPool = ['0x488933457E89656D7eF7E69C10F2f80C7acA19b5', '0x4b1791422dE4807B2999Eeb65359F3E13fa9d11d'];
 const bfcAddr = '0x0c7D5ae016f806603CB1782bEa29AC69471CAb9c';
 
 const ethPool = '0x13000c4a215efe7e414bb329b2f11c39bcf92d78';
@@ -91,10 +91,6 @@ const klaytnTokenPools = {
     'keth': {
         'pool': '0x07970F9D979D8594B394fE12345211C376aDfF89',
         'token': '0x34d21b1e550d73cee41151c77f3c73359527a396'
-    },
-    'kusdt': {
-        'pool': '0xe0e67b991d6b5CF73d8A17A10c3DE74616C1ec11',
-        'token': '0xcee8faf64bb97a73bb51e115aa89c17ffa8dd167'
     },
     'kusdt': {
         'pool': '0xe0e67b991d6b5CF73d8A17A10c3DE74616C1ec11',
@@ -258,7 +254,7 @@ async function klaytn() {
 module.exports = {
     ethereum: {
         tvl: eth,
-        staking: staking(stakingPool, bfcAddr)
+        staking: stakings(stakingPool, bfcAddr)
     },
     bsc: {
         tvl: bsc
