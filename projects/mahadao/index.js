@@ -5,6 +5,6 @@ module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
   methodology: "Deposited collateral in loans used to mint ARTH",
-  // polygon,
+  polygon,
   bsc,
 };

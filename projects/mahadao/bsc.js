@@ -116,15 +116,17 @@ module.exports = {
       // troves
       "0x8F2C37D2F8AE7Bce07aa79c768CC03AB0E5ae9aE", // wbnb
       "0x1Beb8b4911365EabEC68459ecfe9172f174BF0DB", // busd
-      "0xD31AC58374D4a0b3C58dFF36f2F59A22348159DB", // maha
+      "0x0F7e695770E1bC16a9A899580828e22B16d93314", // maha
+      "0xD31AC58374D4a0b3C58dFF36f2F59A22348159DB", //busd-usdc-lp-s
+      "0x7A535496c5a0eF6A9B014A01e1aB9d7493F503ea", //busd-usdt-lp-s
     ],
     [
       // collaterals
-      // { "wbnb": ["0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"] }, // wbnb
-      // { "busd": ["0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"] }, // busd
+      { "wbnb": ["0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"] }, // wbnb
+      { "busd": ["0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"] }, // busd
       { "maha": ["0xCE86F7fcD3B40791F63B86C3ea3B8B355Ce2685b"] }, // maha
-      { "busdusdc-ape-lps": ["0xbb9858603b1fb9375f6df972650343e985186ac5", '0xc087c78abac4a0e900a327444193dbf9ba69058e', '0x5c8d727b265dbafaba67e050f2f739caeeb4a6f9'] },//busdusdc-ape-lps
-      // { "busdusdt-ape-lps": ["0xc5fb6476a6518dd35687e0ad2670cb8ab5a0d4c5"] },//busdusdt-ape-lps
+      { "busdusdc-ape-lps": ["0xbb9858603b1fb9375f6df972650343e985186ac5", "0xc087c78abac4a0e900a327444193dbf9ba69058e", "0x5c8d727b265dbafaba67e050f2f739caeeb4a6f9"] },//busdusdc-ape-lps
+      { "busdusdt-ape-lps": ["0xc5FB6476a6518dd35687e0Ad2670CB8Ab5a0D4C5", "0x2e707261d086687470B515B320478Eb1C88D49bb", "0x5c8D727b265DBAfaba67E050f2f739cAeEB4A6F9"] },//busdusdt-ape-lps
 
     ],
     "bsc",
