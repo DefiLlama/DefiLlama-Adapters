@@ -1,5 +1,5 @@
-const polygon = require("./polygon");
-const bsc = require("./bsc");
+const polygon = require("./polygon")
+const bsc = require("./bsc")
 
 module.exports = {
   timetravel: false,
@@ -7,4 +7,4 @@ module.exports = {
   methodology: "Deposited collateral in loans used to mint ARTH",
   polygon,
   bsc,
-};
+}

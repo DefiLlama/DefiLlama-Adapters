@@ -4,6 +4,8 @@ const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs.js");
 const BigNumber = require("bignumber.js");
 const getEntireSystemCollAbi = require("../helper/abis/getEntireSystemColl.abi.json");
 const sdk = require("@defillama/sdk");
+const { unwrapTroves, sumTokens } = require('../helper/unwrapLPs')
+const { getChainTransform } = require('../helper/portedTokens')
 
 const chain = "polygon";
 
@@ -73,52 +75,15 @@ async function getBalanceOfStakedCurveLP(
 
 async function getTVLv2(ret, troves, collaterals, chainBlocks) {
   const block = chainBlocks[chain];
-
-  const tvls = await Promise.all(
-    troves.map((trove) =>
-      sdk.api.abi.call({
-        target: trove,
-        abi: getEntireSystemCollAbi,
-        block,
-        chain,
-      })
-    )
-  );
-
-  collaterals.forEach((collateral, index) => {
-    let key = chain + ":" + collateral;
-    let val = tvls[index].output;
-
-    if (ret[key] == undefined) ret[key] = BigNumber(0);
-    ret[key] = ret[key].plus(BigNumber(val));
-  });
-
+  await unwrapTroves({ balances: ret, troves, chain, block })
   return ret;
 }
 
 async function getTVLv1(ret, pools, collaterals, chainBlocks) {
   const block = chainBlocks[chain];
-
-  const tvls = await Promise.all(
-    pools.map((pool, index) =>
-      sdk.api.abi.call({
-        target: collaterals[index],
-        params: pool,
-        abi: "erc20:balanceOf",
-        block,
-        chain,
-      })
-    )
-  );
-
-  collaterals.forEach((collateral, index) => {
-    let key = chain + ":" + collateral;
-    let val = tvls[index].output;
-
-    if (ret[key] == undefined) ret[key] = BigNumber(0);
-    ret[key] = ret[key].plus(BigNumber(val));
-  });
-
+  const tokensAndOwners = pools.map((owner, i) => [collaterals[i], owner])
+  const transformAddress = await getChainTransform(chain)
+  await sumTokens(ret, tokensAndOwners, block, chain, transformAddress) 
   return ret;
 }
 

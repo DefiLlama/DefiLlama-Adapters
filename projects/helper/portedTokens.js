@@ -129,6 +129,9 @@ async function transformBscAddress() {
     '0x2f28add68e59733d23d5f57d94c31fb965f835d0': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',  // sUSDC(BSC) -> USDC(Ethereum)
     '0xaf6162dc717cfc8818efc8d6f46a41cf7042fcba': 'polygon:0xac63686230f64bdeaf086fe6764085453ab3023f',  // USV Token
     '0x30807d3b851a31d62415b8bb7af7dca59390434a': '0x7a5d3A9Dcd33cb8D527f7b5F96EB4Fef43d55636',  // Radio Token
+    '0xce86f7fcd3b40791f63b86c3ea3b8b355ce2685b': '0xb4d930279552397bba2ee473229f89ec245bc365',  // MahaDao
+    '0xbb9858603b1fb9375f6df972650343e985186ac5': 'bsc:0xc087c78abac4a0e900a327444193dbf9ba69058e',  // Treat staked  BUSD-USDC Staked APE-LP as LP Token
+    '0xc5fb6476a6518dd35687e0ad2670cb8ab5a0d4c5': 'bsc:0x2e707261d086687470b515b320478eb1c88d49bb',  // Treat staked  BUSD-USDT Staked APE-LP as LP Token
   }
 
   return (addr) => {
