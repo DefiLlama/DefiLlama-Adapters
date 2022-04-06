@@ -4,7 +4,7 @@ const WASTR = "0xEcC867DE9F5090F55908Aaa1352950b9eed390cD" // their own barely u
 
 module.exports = {
     misrepresentedTokens: true,
-    moonriver: {
+    astar: {
         tvl: calculateUsdUniTvl("0x95f506E72777efCB3C54878bB4160b00Cd11cd84", "astar", WASTR,
             [
                 '0xEcC867DE9F5090F55908Aaa1352950b9eed390cD', // ASTAR
