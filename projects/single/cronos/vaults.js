@@ -28,6 +28,22 @@ const vaults = [
     token: '0x2D03bECE6747ADC00E1a131BBA1469C15fD11e03',
     sinceBlock: 1273023,
   },
+
+  {
+    name: 'ibUSDT',
+    decimals: 6,
+    address: '0x467dFF5B14B4DD40a52bE338B75C9B58EaD4Add0',
+    token: '0x66e428c3f67a68878562e79a0234c1f83c208770',
+    sinceBlock: 2134954,
+  },
+
+  {
+    name: 'ibMMF',
+    decimals: 18,
+    address: '0x14aE2E848B2cfac47a5E0c63FFd74fD671A5c3Db',
+    token: '0x97749c9B61F878a880DfE312d2594AE07AEd7656',
+    sinceBlock: 2135105,
+  },
     
 ];
   
