@@ -5,7 +5,7 @@ const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 
 const { pools } = require("./cronos/pools");
 const { vaults } = require("./cronos/vaults");
-const { farms, WMASTERCHEF_ADDR } = require("./cronos/farms");
+const { farms } = require("./cronos/farms");
 
 const abi = require("./abi.json");
 
@@ -19,7 +19,7 @@ const TEN = new BigNumber(10);
 const tokenDecimals = {
   'shiba-inu': 18,//SHIBA
   'dogecoin': 8,//DOGE
-  'cosmos-hub': 6,//ATOM
+  'cosmos': 6,//ATOM
   'dogelon-mars': 18//ELON
 }
 
@@ -32,7 +32,7 @@ const transformCronosAddr = (addr) => {
     return 'dogecoin'
   }
   if(compareAddresses(addr, '0xB888d8Dd1733d72681b30c00ee76BDE93ae7aa93')){
-    return 'cosmos-hub'
+    return 'cosmos'
   }
   if(compareAddresses(addr, '0x02DCcaf514C98451320a9365C5b46C61d3246ff3')){
     return 'dogelon-mars'
@@ -138,6 +138,8 @@ async function cronos_lending(timestamp, block, chainBlocks)
         params: vault.address
     })).output);
 
+    // console.log(`[Vault] ${vault.name} has ${lendingPoolTokenBalance}`);
+
     sdk.util.sumSingleBalance(
       balances,
       transformCronosAddr(vault.token),
@@ -154,16 +156,15 @@ async function cronos_lending(timestamp, block, chainBlocks)
  */
 async function cronos_farm(timestamp, block, chainBlocks, pool2Only = false)
 {
-  let balances = {};
-
-  await Promise.all(farms.map(async (farm, idx) => {
+  let farmBalances = await Promise.all(farms.map(async (farm, idx) => {
+    let balances = {};
 
     if(chainBlocks['cronos'] < farm.sinceBlock){
-      return;
+      return {};
     }
 
     if(pool2Only && !farm.isPool2){
-      return;
+      return {};
     }
 
     let userInfo = (await sdk.api.abi.call({
@@ -171,10 +172,16 @@ async function cronos_farm(timestamp, block, chainBlocks, pool2Only = false)
       block: chainBlocks['cronos'],
       abi: abi.userInfo,
       target: farm.masterChef,
-      params: [farm.masterchefPoolId, WMASTERCHEF_ADDR]
+      params: [farm.masterchefPoolId, farm.wmasterchef]
     })).output;
 
     let balance = userInfo.amount.toString();
+
+    // if(farm.name == 'CRO-ATOM'){
+    //   console.log("HIHI");
+    //   console.log("balance = ", balance);
+    //   console.log("Before balances = ", balances)
+    // }
 
     await unwrapUniswapLPs(
         balances,
@@ -184,7 +191,22 @@ async function cronos_farm(timestamp, block, chainBlocks, pool2Only = false)
         transformCronosAddr
     );
 
+    // const balNum = Object.values(balances);
+    // if(balNum[0] == 0 || balNum[1] == 0){
+    //   console.log("Farm " + farm.name + " has zero TVL");
+    // }
+
+    return balances;
+
   }));
+
+  // merge balances
+  let balances = {};
+  Object.keys(farmBalances).map((i) => {
+    let collection = farmBalances[i];
+    Object.keys(collection).map((t) => sdk.util.sumSingleBalance(balances, t, collection[t]));
+  });
+  
 
   // console.log("cronos_farm balances = ", balances);
   return balances;
