@@ -7,7 +7,7 @@ const { genericUnwrapCvx } = require('../helper/unwrapLPs');
 // Treasury backing the CNV price, similar to OHM so using the ohm wrapper
 const treasury = '0x226e7af139a0f34c6771deb252f9988876ac1ced' 
 const etherAddress = '0x0000000000000000000000000000000000000000'
-const cnv_token = '0xdea1fc87b6f4536e852aea73aeb8f4ac0cf843c3'
+const cnv_token = '0x000000007a58f5f58e697e51ab0357bc9e260a04'
 const stakingAddress = '0x0000000000000000000000000000000000000000'
 const treasuryTokens = [
     ['0x6b175474e89094c44da98b954eedeac495271d0f', false], //DAI
@@ -35,4 +35,5 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 
 module.exports = ohmTvl(treasury, treasuryTokens, 'ethereum', stakingAddress, cnv_token, undefined, undefined, true)
 module.exports.ethereum.tvl = sdk.util.sumChainTvls([tvl, module.exports.ethereum.tvl])
-module.exports.methodology = 'Count the treasury assets (cvx position, ohm etc) backing the CNV price + tokens in the gemswap AMM, a uni-v2 fork'
+delete module.exports.ethereum.staking
+module.exports.methodology = 'Count the treasury assets backing the CNV price + LP assets in the AMM Gemswap'
