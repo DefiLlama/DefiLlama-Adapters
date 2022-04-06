@@ -11,7 +11,7 @@ const {
 } = require('./helper.js')
 
 const current_polygon_vaults_url =
-  'https://raw.githubusercontent.com/kogecoin/vault-contracts/main/polygon_vault_addresses.json'
+  'https://raw.githubusercontent.com/kogecoin/vault-contracts/main/vaultaddresses'
 const current_fantom_vaults_url =
   'https://raw.githubusercontent.com/kogecoin/vault-contracts/main/ftm_vault_addresses.json'
 const current_moonriver_vaults_url =
@@ -123,8 +123,9 @@ const polygonTvl = ({ include, exclude }) => async (
 ) => {
   const balances = {}
 
-  const vaults_full = (await utils.fetchURL(current_polygon_vaults_url)).data
-  let vaults = vaults_full.map( v => v['vault'])
+/*  const vaults_full = (await utils.fetchURL(current_polygon_vaults_url)).data
+  let vaults = vaults_full.map( v => v['vault']) */
+  let vaults = (await utils.fetchURL(current_polygon_vaults_url)).data
 
   if (!!include) {
     vaults = include
