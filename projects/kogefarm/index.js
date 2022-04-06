@@ -379,9 +379,9 @@ const fantomTvl = async (timestamp, block, chainBlocks) => {
   }
 
   // Convert sUSDT into USDT by multiplying by the appropriate ratio
-  const sUSDT = 'polygon:0x29e38769f23701a2e4a8ef0492e19da4604be62c';
+  const sUSDT = 'polygon:0x29e38769f23701A2e4A8Ef0492e19dA4604Be62c';
   if (sUSDT in balances){
-    // First, find the spell to staked spell ratio by looking at the total supply of staked spell divided by the spell locked
+    // First, find the USDT to staked USDT ratio by looking at the total supply of staked usdt divided by the s*usdt issued
     const sUSDTSupply = (
       await sdk.api.abi.call({
         chain: 'polygon',
@@ -399,15 +399,15 @@ const fantomTvl = async (timestamp, block, chainBlocks) => {
       })
     ).output
     const usdtPersUSDT = sUSDTLiquidity / sUSDTSupply
-
+    console.log(usdtPersUSDT)
     // Then, multiply the staked spell balance by spell to staked spell ratio
     balances[sUSDT] = Math.floor(balances[sUSDT] * usdtPersUSDT);
   }
 
   // Convert sUSDC into USDC by multiplying by the appropriate ratio
-  const sUSDC = 'polygon:0x1205f31718499dbf1fca446663b532ef87481fe1';
+  const sUSDC = 'polygon:0x1205f31718499dBf1fCa446663B532Ef87481fe1';
   if (sUSDC in balances){
-    // First, find the spell to staked spell ratio by looking at the total supply of staked spell divided by the spell locked
+    // First, find the USDC to staked USDC ratio by looking at the total supply of staked usdc divided by the s*usdc issued
     const sUSDCSupply = (
       await sdk.api.abi.call({
         chain: 'polygon',
@@ -425,6 +425,7 @@ const fantomTvl = async (timestamp, block, chainBlocks) => {
       })
     ).output
     const usdcPersUSDC = sUSDCLiquidity / sUSDCSupply
+    console.log(usdcPersUSDC)
 
     // Then, multiply the staked spell balance by spell to staked spell ratio
     balances[sUSDC] = Math.floor(balances[sUSDC] * usdcPersUSDC);
