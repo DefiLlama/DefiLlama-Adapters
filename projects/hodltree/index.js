@@ -6,11 +6,13 @@ module.exports = {
          Lend-borrow contracts: sum of tokens provided as collateral and tokens provided by lenders
          Elastic-Modules: sum of tokens provided by hedgers and amount of tokens to hedge
         `,
+    timetravel: true,
+    misrepresentedTokens: false,
     ethereum: {
         tvl: calculateHodltreeBalancesEth
     },
     polygon: {
         tvl: calculateHodltreeBalancesPolygon
     }
-}; // node test.js projects/HoneyFarm/index.js
+};
   
