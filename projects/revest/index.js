@@ -10,7 +10,6 @@ const {
 } = require("../helper/portedTokens.js");
 
 const { ethers } = require("ethers");
-const { utils } = require("@project-serum/anchor");
 
 const HOLDERS = {
   ethereum: "0xA81bd16Aa6F6B25e66965A2f842e9C806c0AA11F",
