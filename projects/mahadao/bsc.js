@@ -1,10 +1,8 @@
-const { getArthTvl } = require("../helper/arth");
 const { balanceOf, totalSupply } = require("@defillama/sdk/build/erc20");
-const { staking } = require("../helper/staking");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs.js");
 const BigNumber = require("bignumber.js");
-const getEntireSystemCollAbi = require("../helper/abis/getEntireSystemColl.abi.json");
 const sdk = require("@defillama/sdk");
+const { unwrapTroves, } = require('../helper/unwrapLPs')
 
 const bsc = {
   arthBusdStaking: "0xE8b16cab47505708a093085926560a3eB32584B8",
@@ -109,23 +107,22 @@ function pool2s() {
   };
 }
 
+async function tvl(ts, _block, chainBlocks) {
+  const balances = {}
+  const chain = 'bsc'
+  const block = chainBlocks[chain];
+  const troves = [
+    // troves
+    "0x8F2C37D2F8AE7Bce07aa79c768CC03AB0E5ae9aE", // wbnb
+    "0x1Beb8b4911365EabEC68459ecfe9172f174BF0DB", // busd
+    "0xD31AC58374D4a0b3C58dFF36f2F59A22348159DB", // maha
+    "0x0f7e695770e1bc16a9a899580828e22b16d93314", // BUSDUSDC-APE-LP
+  ]
+  await unwrapTroves({ balances, troves, chain, block })
+  return balances;
+}
+
 module.exports = {
   pool2: pool2s(),
-  tvl: getArthTvl(
-    [
-      // troves
-      "0x8F2C37D2F8AE7Bce07aa79c768CC03AB0E5ae9aE", // wbnb
-      "0x1Beb8b4911365EabEC68459ecfe9172f174BF0DB", // busd
-      "0xD31AC58374D4a0b3C58dFF36f2F59A22348159DB", // maha
-    ],
-    [
-      // collaterals
-      "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c", // wbnb
-      "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", // busd
-      "0xCE86F7fcD3B40791F63B86C3ea3B8B355Ce2685b", // maha
-    ],
-    "bsc",
-    [undefined, undefined, "mahadao"],
-    [undefined, undefined, 18]
-  ),
+  tvl,
 };
