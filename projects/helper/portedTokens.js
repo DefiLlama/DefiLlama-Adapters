@@ -1,6 +1,7 @@
 const utils = require("../helper/utils");
 const sdk = require("@defillama/sdk");
 const IOTEX_CG_MAPPING = require("./../xdollar-finance/iotex_cg_mapping.json")
+const BigNumber = require("bignumber.js");
 
 async function transformFantomAddress() {
   const multichainTokens = (
@@ -646,6 +647,29 @@ function transformVelasAddress() {
   }
 }
 
+async function transformCronosAddress() {
+  const mapping = {
+    '0xbed48612bc69fa1cab67052b42a95fb30c1bcfee': 'shiba-inu',
+    '0x1a8e39ae59e5556b56b76fcba98d22c9ae557396': 'dogecoin',
+    '0xb888d8dd1733d72681b30c00ee76bde93ae7aa93': 'cosmos',
+    '0x02dccaf514c98451320a9365c5b46c61d3246ff3': 'dogelon-mars',
+  }
+  return (addr) => mapping[addr.toLowerCase()] || `cronos:${addr.toLowerCase()}`
+}
+
+function fixCronosBalances(balances) {
+  const tokenDecimals = {
+    'shiba-inu': 18,//SHIBA
+    'dogecoin': 8,//DOGE
+    'cosmos': 6,//ATOM
+    'dogelon-mars': 18//ELON
+  }
+  Object.keys(tokenDecimals).forEach(key => {
+    if (balances[key])
+      balances[key] = BigNumber(balances[key]).div( 10 ** tokenDecimals[key]).toFixed(0)
+  })
+}
+
 async function transformDfkAddress() {
   const mapping = {
     '0xb57b60debdb0b8172bb6316a9164bd3c695f133a': 'avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7', // AVAX
@@ -654,8 +678,21 @@ async function transformDfkAddress() {
   return (addr) => mapping[addr.toLowerCase()] || `dfk:${addr.toLowerCase()}`
 }
 
+function getFixBalances(chain) {
+  const dummyFn = () => {}
+  return fixBalancesMapping[chain] || dummyFn
+}
+
+const fixBalancesMapping = {
+  avax: fixAvaxBalances,
+  cronos: fixCronosBalances,
+  harmony: fixHarmonyBalances,
+  oasis: fixOasisBalances,
+}
+
 const chainTransforms = {
   celo: transformCeloAddress,
+  cronos: transformCronosAddress,
   fantom: transformFantomAddress,
   bsc: transformBscAddress,
   polygon: transformPolygonAddress,
@@ -698,7 +735,10 @@ async function getChainTransform(chain) {
 
 module.exports = {
   getChainTransform,
+  getFixBalances,
   transformCeloAddress,
+  transformCronosAddress,
+  fixCronosBalances,
   transformFantomAddress,
   transformBscAddress,
   transformPolygonAddress,

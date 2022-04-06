@@ -1,10 +1,11 @@
 const sdk = require('@defillama/sdk');
 const abi = require('./abis/masterchef.json')
-const { unwrapUniswapLPs } = require('./unwrapLPs')
+const { unwrapUniswapLPs, unwrapLPsAuto, } = require('./unwrapLPs')
 const tokenAbi = require("./abis/token.json");
 const token0Abi = require("./abis/token0.json");
 const token1Abi = require("./abis/token1.json");
 const getReservesAbi = require("./abis/getReserves.json");
+const userInfoAbi = require("./abis/userInfo.json");
 const { getBlock } = require('./getBlock');
 const { default: BigNumber } = require('bignumber.js');
 const { getChainTransform } = require('../helper/portedTokens');
@@ -441,7 +442,7 @@ function masterChefExportsUnknownLP(masterChef, chain, stakingTokenRaw, coreAsse
 
         // balanceResolve(whitelistBalances)
 
-        const allBalances =  {
+        const allBalances = {
             staking: { [coreAssetName]: stakingBalance / 10 ** decimals },
             pool2: { [coreAssetName]: pool2Balance / 10 ** decimals },
             masterchef: { [coreAssetName]: coreBalance / 10 ** decimals },
@@ -451,7 +452,7 @@ function masterChefExportsUnknownLP(masterChef, chain, stakingTokenRaw, coreAsse
         balanceResolve(allBalances)
         return allBalances.tvl
     };
-    
+
 
     return {
         methodology: "TVL includes all farms in MasterChef contract",
@@ -466,6 +467,33 @@ function masterChefExportsUnknownLP(masterChef, chain, stakingTokenRaw, coreAsse
 
 const standardPoolInfoAbi = { "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "name": "poolInfo", "outputs": [{ "internalType": "contract IERC20", "name": "lpToken", "type": "address" }, { "internalType": "uint256", "name": "allocPoint", "type": "uint256" }, { "internalType": "uint256", "name": "lastRewardBlock", "type": "uint256" }, { "internalType": "uint256", "name": "accWeVEPerShare", "type": "uint256" }], "stateMutability": "view", "type": "function" }
 
+async function getUserMasterChefBalances({ balances = {}, masterChefAddress, userAddres, block, chain = 'ethereum', transformAddress, excludePool2 = false, onlyPool2 = false, pool2Tokens= [], poolInfoABI = abi.poolInfo }) {
+    if (!transformAddress)
+        transformAddress = await getChainTransform(chain)
+
+    const tempBalances = {}
+    const poolLength = (await sdk.api.abi.call({ abi: abi.poolLength, target: masterChefAddress, block, chain, })).output
+    const dummyArray = Array.from(Array(Number(poolLength)).keys())
+    const poolInfoCalls = dummyArray.map(i => ({ target: masterChefAddress, params: i, }))
+    const userInfoCalls = dummyArray.map(i => ({ target: masterChefAddress, params: [i, userAddres], }))
+    const lpTokens = (await sdk.api.abi.multiCall({ block, calls: poolInfoCalls, abi: poolInfoABI, chain, })).output
+        .map(a => a.output && a.output[0])
+    const userBalances = (await sdk.api.abi.multiCall({ block, calls: userInfoCalls, abi: userInfoAbi, chain, })).output
+        .map(a => a.output[0])
+
+    userBalances.forEach((balance, idx) => {
+        if (isNaN(+balance) || +balance <= 0) return;
+        tempBalances[transformAddress(lpTokens[idx])] = balance
+    })
+
+    await unwrapLPsAuto({ balances: tempBalances, chain, block, transformAddress, excludePool2, onlyPool2, pool2Tokens })
+
+    Object.keys(tempBalances).forEach(key => sdk.util.sumSingleBalance(balances, key, tempBalances[key]))
+
+    return balances
+}
+
+
 module.exports = {
     addFundsInMasterChef,
     masterChefExports,
@@ -474,5 +502,6 @@ module.exports = {
     isLP,
     standardPoolInfoAbi,
     getSymbolsAndBalances,
-    isYV
+    isYV,
+    getUserMasterChefBalances,
 }
