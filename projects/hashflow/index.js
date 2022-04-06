@@ -25,14 +25,14 @@ function chainTvl(chain) {
     const chainId = chainIds[chain]
     const chainFile = `${__dirname}/${chainId}.json`
     const url = `${http_api_url}?networkId=${chainId}&lp=${null_addr}`;
-    let pools_response
+    let pools_response = require(chainFile)
 
-    try {
-      pools_response = (await retry(async () => await axios.get(url))).data
-    } catch (e) {
-      console.log('Unable to fetch pools from server, using backup data')
-      pools_response = require(chainFile)
-    }
+    // try {
+    //   pools_response = (await retry(async () => await axios.get(url))).data
+    // } catch (e) {
+    //   console.log('Unable to fetch pools from server, using backup data')
+    //   pools_response
+    // }
     // fs.writeFileSync(chainFile, JSON.stringify(pools_response, null, 2))
     const pools = pools_response.pools.map(pool => 
       ({
