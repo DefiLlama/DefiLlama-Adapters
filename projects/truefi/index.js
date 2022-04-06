@@ -5,6 +5,13 @@ const { staking } = require('../helper/staking')
 
 const stkTRU = '0x23696914Ca9737466D8553a2d619948f548Ee424'
 const TRU = '0x4C19596f5aAfF459fA38B0f7eD92F11AE6543784'
+const BUSD = '0x4Fabb145d64652a948d72533023f6E7A623C7C53'
+const TUSD = '0x0000000000085d4780B73119b644AE5ecd22b376'
+const USDC = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'
+const USDT = "0xdac17f958d2ee523a2206206994597c13d831ec7"
+const managedPortfolioFactory = '0x17b7b75FD4288197cFd99D20e13B0dD9da1FF3E7'
+
+const stablecoins = [BUSD, TUSD, USDC, USDT,]
 
 async function tvl(ts, block) {
   const pools = [
@@ -20,15 +27,22 @@ async function tvl(ts, block) {
     block: block
   })).output
 
+  const portfolios = (await sdk.api.abi.call({
+    target: managedPortfolioFactory,
+    abi: abi.getPortfolios,
+    block
+  })).output;
+
   const balances = {}
   const tokensAndOwners = pools.map((owner, i) => [tokens[i].output, owner])
+  stablecoins.map(token => portfolios.map(owner => tokensAndOwners.push([token, owner])))
   await sumTokens(balances, tokensAndOwners, block)
   return balances
 }
 
 module.exports = {
   start: 1605830400,            // 11/20/2020 @ 12:00am (UTC)
-  ethereum: { 
+  ethereum: {
     tvl,
     staking: staking(stkTRU, TRU, 'ethereum')
   }
