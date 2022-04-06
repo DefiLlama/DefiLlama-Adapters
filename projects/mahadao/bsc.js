@@ -117,6 +117,7 @@ async function tvl(ts, _block, chainBlocks) {
     "0x1Beb8b4911365EabEC68459ecfe9172f174BF0DB", // busd
     "0xD31AC58374D4a0b3C58dFF36f2F59A22348159DB", // maha
     "0x0f7e695770e1bc16a9a899580828e22b16d93314", // BUSDUSDC-APE-LP
+    "0x7A535496c5a0eF6A9B014A01e1aB9d7493F503ea", // BUSDUSDT-APE-LP
   ]
   await unwrapTroves({ balances, troves, chain, block })
   return balances;
