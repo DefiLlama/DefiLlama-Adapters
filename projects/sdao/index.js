@@ -7,8 +7,7 @@ const fetchTvl = async function () {
 
   const slices = tvl.split(".");
 
-  return await slices[0];
-  console.log(slices[0]);
+  return slices[0];
 };
 
 fetchTvl();
