@@ -1,18 +1,25 @@
 const sdk = require("@defillama/sdk")
 const abi = require('./abi.json')
-const { networks: contracts } = require('./contracts.json')
 const { getChainTransform } = require('../helper/portedTokens')
+const http = require('../helper/http')
 
 const chainConfig = {
   ethereum: {
     controller: '0xa4F1671d3Aee73C05b552d57f2d16d3cfcBd0217',
     stakingPool: '0xbA4cFE5741b357FA371b506e5db0774aBFeCf8Fc',
     VSP: '0x1b40183efb4dd766f11bda7a7c3ad8982e998421',
-  }
+    api: 'https://api.vesper.finance/pools?stages=prod',
+  },
+  avax: {
+    api: 'https://api-avalanche.vesper.finance/pools?stages=prod',
+  },
+  polygon: {
+    api: 'https://api-polygon.vesper.finance/pools?stages=prod',
+  },
 }
 
 function getChainExports(chain) {
-  const { controller, stakingPool, VSP } = chainConfig[chain] || {}
+  const { controller, stakingPool, VSP, api } = chainConfig[chain] || {}
 
   async function tvl(timestamp, _block, chainBlocks) {
     const block = chainBlocks[chain]
@@ -36,9 +43,12 @@ function getChainExports(chain) {
       pools.forEach(p => poolSet.add(p.output))
     }
 
-    Object.values(contracts[network]).forEach(i => poolSet.add(i.pool.proxy)) // add pools from our contracts list
+    (await http.get(api)).forEach(pool => poolSet.add(pool.address)) // add pools from our contracts list
     if (stakingPool)  poolSet.delete(stakingPool)
     const poolList = [...poolSet]
+    console.log(chain, poolList)
+
+    if (!poolList.length) return balances
 
     // Get collateral token
     calls = poolList.map(target => ({ target }))
