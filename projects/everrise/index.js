@@ -1,43 +1,42 @@
 const sdk = require('@defillama/sdk');
-const abi = require('./abi.json');
+const fetch = require('node-fetch');
 const BigNumber = require("bignumber.js");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 
-const STATS ='0xC4DD716a29357317BdC66d9D9cF2ec02fD995742';
 const BRIDGE_CONTROLLER = '0x0Dd4A86077dC53D5e4eAE6332CB3C5576Da51281';
-const TOKEN ='0x0cD022ddE27169b20895e0e2B2B8A33B25e63579';
-const TOKEN_AVAX ='0xC3A8d300333BFfE3ddF6166F2Bc84E6d38351BED';
-const STAKING ='0x1490EaA0De0b2D4F9fE0E354A7D99d6C6532be84';
+const TOKEN ='0xC17c30e98541188614dF99239cABD40280810cA3';
+const NFTSTAKES = '0x23cD2E6b283754Fd2340a75732f9DdBb5d11807e';
+const STAKE_HOLDING_API = 'https://app.everrise.com/bridge/api/v1/stats'
 
 const ethPool2LPs = [
   {
-    owner: "0xA366820f4781049E0f183697252bc6cbc4fcD9e1",
-    pool: "0x9295c3289a0d924c0437436fa9fca5e34cb8acb3",
+    owner: "0x33280d3a65b96eb878dd711abe9b2c0dbf740579",
+    pool: "0x7250f7e97a4338d2bd72abc4b010d7a8477dc1f9",
   }, // RISE-ETH
 ];
 const bscPool2LPs = [
   {
-    owner: "0xA366820f4781049E0f183697252bc6cbc4fcD9e1",
-    pool: "0xe880A0be3513B92FFe3563D8ee9F6f7b954E4415",
-  }, // RISE-ETH
+    owner: "0x89dd305ffbd8e684c77758288c48cdf4f4abe0f4",
+    pool: "0x10dA269F5808f934326D3Dd1E04B7E7Ca78bb804",
+  }, // RISE-BNB
 ];
 const polygonPool2LPs = [
   {
-    owner: "0xA366820f4781049E0f183697252bc6cbc4fcD9e1",
-    pool: "0xb24A550E8E764CAE3fCe91c333B5B17CccfFf438",
-  }, // RISE-ETH
+    owner: "0x33280d3a65b96eb878dd711abe9b2c0dbf740579",
+    pool: "0xf3c62dbbfec92a2e73d676d62ebec06a6bc224e2",
+  }, // RISE-MATIC
 ];
 const avaxPool2LPs = [
   {
-    owner: "0xA366820f4781049E0f183697252bc6cbc4fcD9e1",
-    pool: "0xB7395899318b2DF8EedeF9bBfe840bA99932aA13",
-  }, // RISE-ETH
+    owner: "0x33280d3a65b96eb878dd711abe9b2c0dbf740579",
+    pool: "0x5472e98d22b0fb7ec5c3e360788b8700419370b5",
+  }, // RISE-AVAX
 ];
 const fantomPool2LPs = [
   {
-    owner: "0xA366820f4781049E0f183697252bc6cbc4fcD9e1",
-    pool: "0x70d1894747aed5090539baDA0E9eD1A67D7e31d7",
-  }, // RISE-ETH
+    owner: "0x33280d3a65b96eb878dd711abe9b2c0dbf740579",
+    pool: "0xde62a6cdd8d5a3988495317cffac9f3fed299383",
+  }, // RISE-FTM
 ];
 
 function bscTvl(timestamp, block) {
@@ -56,20 +55,34 @@ function fantomTvl(timestamp, block) {
   return tvl(timestamp, block, 'fantom');
 }
 
-function polygonStaking(timestamp, block) {
-  return staking(timestamp, block, 'polygon', TOKEN);
+async function ethStaking(timestamp, block) {
+  let balances = {};
+  balances[TOKEN] = await staking(timestamp, block, '1', undefined, TOKEN);
+  return balances;
 }
 
-function bscStaking(timestamp, block) {
-  return staking(timestamp, block, 'bsc', TOKEN);
+async function bscStaking(timestamp, block) {
+  let balances = {};
+  balances['bsc:' + TOKEN] = await staking(timestamp, block, '56', 'bsc', TOKEN);
+  return balances;
 }
 
-function avalancheStaking(timestamp, block) {
-  return staking(timestamp, block, 'avax', TOKEN_AVAX);
+async function polygonStaking(timestamp, block) {
+  let balances = {};
+  balances['polygon:' + TOKEN] = await staking(timestamp, block, '137', 'polygon', TOKEN);
+  return balances;
 }
 
-function fantomStaking(timestamp, block) {
-  return staking(timestamp, block, 'fantom', TOKEN);
+async function fantomStaking(timestamp, block) {
+  let balances = {};
+  balances['fantom:' + TOKEN] = await staking(timestamp, block, '250', 'fantom', TOKEN);
+  return balances;
+}
+
+async function avalancheStaking(timestamp, block) {
+  let balances = {};
+  balances['avax:' + TOKEN] = await staking(timestamp, block, '43114', 'avax', TOKEN);
+  return balances;
 }
 
 function coin(chain){
@@ -85,55 +98,61 @@ function coin(chain){
   }
 }
 
-async function staking(timestamp, block, chain, token) {
-  let balances = {};
-
-  const stats = (await sdk.api.abi.call({
-    target: STATS,
-    abi: abi['getStats'],
-    block: block,
-    chain: chain
-  })).output;
-
-  let staking = BigNumber(stats.staked)
-                .minus(BigNumber(stats.rewards));
-
-  const balance = (await sdk.api.erc20.balanceOf({
-    target: token,
-    owner: STAKING,
-    block: block,
-    chain: chain
-  })).output;
-
-  staking = staking.plus(BigNumber(balance));
-
-  balances[chain+':'+token] = staking;
-  
-  return balances;
+const START_BLOCKS =
+{
+    "1": 14501731,
+    "56": 16572075,
+    "137": 26624236,
+    "250": 34977434,
+    "43114": 12864176,
 }
 
-async function ethStaking(timestamp, block) {
-  let balances = {};
+async function staking(timestamp, block, chainId, chain, token) {
+    /*
+    var logsPromises = await Promise.all([
+        sdk.api.util.getLogs({
+            keys: [],
+            toBlock: 'latest',
+            target: TOKEN,
+            fromBlock: START_BLOCKS[chainId],
+            topic: 'StakingIncreased(address,uint256,uint8)',
+            chain: chain
+        }),
+        sdk.api.util.getLogs({
+            keys: [],
+            toBlock: 'latest',
+            target: TOKEN,
+            fromBlock: START_BLOCKS[chainId],
+            topic: 'StakingDecreased(address,uint256)',
+            chain: chain
+        })
+    ]);
 
-  const stats = (await sdk.api.abi.call({
-    target: STATS,
-    abi: abi['getStats'],
-    block: block
-  })).output;
+    const increaseLogs = logsPromises[0].output;
+    const decreaseLogs = logsPromises[1].output;
 
-  let staking = BigNumber(stats.staked)
-                .minus(BigNumber(stats.rewards));
+    const stakedAmount = new BigNumber(0);
 
-  const balance = (await sdk.api.erc20.balanceOf({
-    target: TOKEN,
-    owner: STAKING
-  })).output;
+    for (let log of increaseLogs) {
+        stakedAmount.plus(`0x${log.data.substr(-64)}`.toLowerCase());
+    }
+    for (let log of decreaseLogs) {
+        stakedAmount.minus(`0x${log.data.substr(-64)}`.toLowerCase());
+    }
 
-  staking = staking.plus(BigNumber(balance));
+    return stakedAmount;
+    */
 
-  balances[TOKEN] = staking;
-  
-  return balances;
+    const stakedAmounts = await ((await fetch(STAKE_HOLDING_API)).json());
+
+    let stakedAmount = 0;
+    for (let i = 0, ul = stakedAmounts.length; i < ul; i++) {
+       if (stakedAmounts[i].id === chainId) {
+          stakedAmount = BigNumber(stakedAmounts[i].amount).multipliedBy(BigNumber(10).pow(18));
+       }
+    }
+
+    return stakedAmount;
 }
 
 async function tvl(timestamp, block, chain) {
@@ -292,5 +311,5 @@ module.exports = {
     staking: avalancheStaking,
     pool2: avaxPool2,
   },
-  methodology: "TVL comes from the buyback reserves and cross-chain bridge vaults",
+  methodology: "TVL comes from the buyback reserves, other token migration vaults and cross-chain bridge vaults",
 };
