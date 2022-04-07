@@ -68,5 +68,7 @@ async function tvl(timestamp, ethBlock){
 
 module.exports = {
     methodology: `Counts the tokens on ${deversifiStarkAddr}`,
-    tvl
+    ethereum: {
+      tvl
+    }
 }
