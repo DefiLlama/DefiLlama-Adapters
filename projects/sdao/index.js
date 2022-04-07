@@ -11,5 +11,5 @@ const fetchTvl = async function () {
 };
 
 module.exports = {
-  fetchTvl,
+  fetch: fetchTvl,
 };
