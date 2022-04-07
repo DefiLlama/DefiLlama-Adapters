@@ -1,6 +1,7 @@
 const utils = require("../helper/utils");
 const sdk = require("@defillama/sdk");
 const IOTEX_CG_MAPPING = require("./../xdollar-finance/iotex_cg_mapping.json")
+const BigNumber = require("bignumber.js");
 
 async function transformFantomAddress() {
   const multichainTokens = (
@@ -128,6 +129,9 @@ async function transformBscAddress() {
     '0x2f28add68e59733d23d5f57d94c31fb965f835d0': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',  // sUSDC(BSC) -> USDC(Ethereum)
     '0xaf6162dc717cfc8818efc8d6f46a41cf7042fcba': 'polygon:0xac63686230f64bdeaf086fe6764085453ab3023f',  // USV Token
     '0x30807d3b851a31d62415b8bb7af7dca59390434a': '0x7a5d3A9Dcd33cb8D527f7b5F96EB4Fef43d55636',  // Radio Token
+    '0xce86f7fcd3b40791f63b86c3ea3b8b355ce2685b': '0xb4d930279552397bba2ee473229f89ec245bc365',  // MahaDao
+    '0xbb9858603b1fb9375f6df972650343e985186ac5': 'bsc:0xc087c78abac4a0e900a327444193dbf9ba69058e',  // Treat staked  BUSD-USDC Staked APE-LP as LP Token
+    '0xc5fb6476a6518dd35687e0ad2670cb8ab5a0d4c5': 'bsc:0x2e707261d086687470b515b320478eb1c88d49bb',  // Treat staked  BUSD-USDT Staked APE-LP as LP Token
   }
 
   return (addr) => {
@@ -646,8 +650,52 @@ function transformVelasAddress() {
   }
 }
 
+async function transformCronosAddress() {
+  const mapping = {
+    '0xbed48612bc69fa1cab67052b42a95fb30c1bcfee': 'shiba-inu',
+    '0x1a8e39ae59e5556b56b76fcba98d22c9ae557396': 'dogecoin',
+    '0xb888d8dd1733d72681b30c00ee76bde93ae7aa93': 'cosmos',
+    '0x02dccaf514c98451320a9365c5b46c61d3246ff3': 'dogelon-mars',
+  }
+  return (addr) => mapping[addr.toLowerCase()] || `cronos:${addr.toLowerCase()}`
+}
+
+function fixCronosBalances(balances) {
+  const tokenDecimals = {
+    'shiba-inu': 18,//SHIBA
+    'dogecoin': 8,//DOGE
+    'cosmos': 6,//ATOM
+    'dogelon-mars': 18//ELON
+  }
+  Object.keys(tokenDecimals).forEach(key => {
+    if (balances[key])
+      balances[key] = BigNumber(balances[key]).div( 10 ** tokenDecimals[key]).toFixed(0)
+  })
+}
+
+async function transformDfkAddress() {
+  const mapping = {
+    '0xb57b60debdb0b8172bb6316a9164bd3c695f133a': 'avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7', // AVAX
+    '0x3ad9dfe640e1a9cc1d9b0948620820d975c3803a': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC
+  }
+  return (addr) => mapping[addr.toLowerCase()] || `dfk:${addr.toLowerCase()}`
+}
+
+function getFixBalances(chain) {
+  const dummyFn = () => {}
+  return fixBalancesMapping[chain] || dummyFn
+}
+
+const fixBalancesMapping = {
+  avax: fixAvaxBalances,
+  cronos: fixCronosBalances,
+  harmony: fixHarmonyBalances,
+  oasis: fixOasisBalances,
+}
+
 const chainTransforms = {
   celo: transformCeloAddress,
+  cronos: transformCronosAddress,
   fantom: transformFantomAddress,
   bsc: transformBscAddress,
   polygon: transformPolygonAddress,
@@ -668,6 +716,7 @@ const chainTransforms = {
   velas: transformVelasAddress,
   ethereum: transformEthereumAddress,
   oasis: transformOasisAddress,
+  dfk: transformDfkAddress,
 };
 
 async function transformEthereumAddress() {
@@ -689,7 +738,10 @@ async function getChainTransform(chain) {
 
 module.exports = {
   getChainTransform,
+  getFixBalances,
   transformCeloAddress,
+  transformCronosAddress,
+  fixCronosBalances,
   transformFantomAddress,
   transformBscAddress,
   transformPolygonAddress,
@@ -715,4 +767,5 @@ module.exports = {
   transformEthereumAddress,
   transformOasisAddress,
   transformOasisAddressBase,
+  transformDfkAddress,
 };

@@ -11,7 +11,10 @@ module.exports = {
       "0x794C07912474351b3134E6D6B3B7b3b4A07cbAAa",
       "dfk",
       "0xCCb93dABD71c8Dad03Fc4CE5559dC3D89F67a260",
-      [],
+      [
+        "0xb57b60debdb0b8172bb6316a9164bd3c695f133a", // AVAX
+        "0x3ad9dfe640e1a9cc1d9b0948620820d975c3803a", // USDC
+      ],
       "defi-kingdoms"
     ),
   },
