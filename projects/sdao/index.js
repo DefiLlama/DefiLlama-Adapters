@@ -1,4 +1,4 @@
-async function fetch() {
+const fetchTvl = async function () {
   const response = await fetch(
     "https://api.singularitydao.ai/value/totalValueLocked"
   );
@@ -7,9 +7,12 @@ async function fetch() {
 
   const slices = tvl.split(".");
 
-  return slices[0];
-}
+  return await slices[0];
+  console.log(slices[0]);
+};
+
+fetchTvl();
 
 module.exports = {
-  fetch,
+  fetchTvl,
 };
