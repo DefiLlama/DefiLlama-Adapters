@@ -1,23 +1,20 @@
-const sdk = require('@defillama/sdk');
 const convexBooster = require('./convexBooster.js');
 const supplyBooster = require('./supplyBooster.js');
-const uniswap = require('./uniswap.js');
 const { toUSDTBalances } = require('./utils.js');
 
 async function tvl(timestamp, block, chainBlocks) {
-    const borrow = await convexBooster.tvl()
-    const supply = await supplyBooster.tvl()
+    const borrow = await convexBooster.tvl(timestamp, block, chainBlocks);
+    const supply = await supplyBooster.tvl(timestamp, block, chainBlocks);
 
-    console.log(`borrow ${borrow.toString()}`)
-    console.log(`supply ${supply.toString()}`)
+    console.log(`borrow ${borrow.toString()}`);
+    console.log(`supply ${supply.toString()}`);
 
-    return toUSDTBalances(borrow.plus(supply))
+    return toUSDTBalances(borrow.plus(supply));
 }
 
 module.exports = {
     timetravel: true,
     ethereum: {
         tvl,
-        // reserveUSD: uniswap.tvl
     }
 };

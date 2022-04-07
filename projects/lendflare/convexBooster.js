@@ -61,8 +61,10 @@ const convexPools = {
     27: { lpToken: "0xDE5331AC4B3630f94853Ff322B66407e0D6331E8", virtualBalance: "0x0D66b49A68AffdDcDaDDdfE06CD6369307B2BA46", coinId: 2, coinName: "wrapped-bitcoin", decimals: 8 }
 }
 
-async function getTotalSupply(pools) {
+async function getTotalSupply(pools, timestamp, block, chainBlocks) {
     const output = (await sdk.api.abi.multiCall({
+        block: chainBlocks.ethereum,
+        chain: "ethereum",
         abi: 'erc20:totalSupply',
         calls: Object.keys(pools).map((pid, _) => {
             return {
@@ -81,9 +83,11 @@ async function getTotalSupply(pools) {
     return pools;
 }
 
-async function calculateTokenAmount(pools) {
+async function calculateTokenAmount(pools, timestamp, block, chainBlocks) {
     for (pid of Object.keys(pools)) {
         await sdk.api.abi.call({
+            block: chainBlocks.ethereum,
+            chain: "ethereum",
             abi: { "inputs": [{ "internalType": "uint256", "name": "_pid", "type": "uint256" }, { "internalType": "uint256", "name": "_tokens", "type": "uint256" }, { "internalType": "int128", "name": "_curveCoinId", "type": "int128" }], "name": "calculateTokenAmount", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
             target: CONVEX_BOOSTER_PROXY,
             params: [pid, pools[pid].totalSupplyString, pools[pid].coinId]
@@ -97,11 +101,11 @@ async function calculateTokenAmount(pools) {
     return pools;
 }
 
-async function tvl() {
+async function tvl(timestamp, block, chainBlocks) {
     let tvl = new BN(0);
 
-    const pools = await getTotalSupply(convexPools).then(pools => {
-        return calculateTokenAmount(pools);
+    const pools = await getTotalSupply(convexPools, timestamp, block, chainBlocks).then(pools => {
+        return calculateTokenAmount(pools, timestamp, block, chainBlocks);
     });
     const prices = await utils.getPricesfromString().then(result => {
         return result.data;

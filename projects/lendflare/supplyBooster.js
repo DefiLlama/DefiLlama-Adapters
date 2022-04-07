@@ -15,6 +15,8 @@ const supplyPools = [
 
 async function getTotalSupply(pools) {
     const output = (await sdk.api.abi.multiCall({
+        block: chainBlocks.ethereum,
+        chain: "ethereum",
         abi: 'erc20:totalSupply',
         calls: pools.map((pool, i) => {
             return {
@@ -33,10 +35,10 @@ async function getTotalSupply(pools) {
     return pools;
 }
 
-async function tvl() {
+async function tvl(timestamp, block, chainBlocks) {
     let tvl = new BN(0);
 
-    const pools = await getTotalSupply(supplyPools);
+    const pools = await getTotalSupply(supplyPools, timestamp, block, chainBlocks);
     const prices = await utils.getPricesfromString().then(result => {
         return result.data;
     });
