@@ -1,9 +1,15 @@
-const fetchTvl = async function () {
-  const response = await fetch(
+const { default: axios } = require("axios");
+const utils = require("../helper/utils");
+
+const fetch = async function () {
+  const data = await axios.get(
     "https://api.singularitydao.ai/value/totalValueLocked"
   );
-  const data = await response.json();
-  const tvl = Number(data.totalValueLockedUSD.TotalValueLockedUSD).toFixed(2);
+  const response = data.data;
+  console.log(response);
+  const tvl = Number(response.totalValueLockedUSD.TotalValueLockedUSD).toFixed(
+    2
+  );
 
   const slices = tvl.split(".");
 
@@ -11,5 +17,5 @@ const fetchTvl = async function () {
 };
 
 module.exports = {
-  fetch: fetchTvl,
+  fetch,
 };
