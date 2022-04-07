@@ -10,8 +10,6 @@ const fetchTvl = async function () {
   return slices[0];
 };
 
-fetchTvl();
-
 module.exports = {
   fetchTvl,
 };
