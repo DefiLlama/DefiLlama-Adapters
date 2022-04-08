@@ -4,7 +4,6 @@ const getReserves = require("./abis/getReserves.json");
 const token0 = require("./abis/token0.json");
 const contracts = require("./contracts.json");
 const { default: BigNumber } = require("bignumber.js");
-const { getBlock } = require("../helper/getBlock");
 
 const getETHPrice = async (block) => {
   const reserves = (
@@ -48,7 +47,6 @@ const getPrice = async (tokenAddress, block) => {
         target: tokenAddress,
         abi: "erc20:symbol",
         chain: "arbitrum",
-        block
       })
     ).output;
 
@@ -93,7 +91,6 @@ const getPrice = async (tokenAddress, block) => {
         target: tokenAddress,
         abi: "erc20:decimals",
         chain: "arbitrum",
-        block
       })
     ).output;
 
@@ -114,7 +111,6 @@ const getPrice = async (tokenAddress, block) => {
           target: tokenAddress,
           abi: "erc20:totalSupply",
           chain: "arbitrum",
-          block
         })
       ).output;
 

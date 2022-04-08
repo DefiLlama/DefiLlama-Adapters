@@ -79,6 +79,7 @@ function chainTvl(chain) {
         } else {
           transformedAssetId = await chainTransform(assetId);
         }
+
         sdk.util.sumSingleBalance(balances, transformedAssetId, balance.output);
       })
     );
@@ -88,7 +89,7 @@ function chainTvl(chain) {
 
 const chains = [
   "ethereum",
-  "bsc",
+  //"bsc",
   "polygon",
   "moonriver",
   "fantom",
@@ -96,16 +97,16 @@ const chains = [
   "avax",
   "optimism",
   "arbitrum",
-  "moonbeam",
-  "fuse",
   /*
   "okexchain",
   "metis",
   "harmony",
+  "fuse",
   "cronos",
   "heco",
   "aurora",
   "boba",
   */
 ];
+
 module.exports = chainExports(chainTvl, Array.from(chains));

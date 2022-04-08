@@ -81,6 +81,7 @@ module.exports = {
     staking: stakingPOP,
     tvl: ethTvl,
   },
+  tvl: sdk.util.sumChainTvls([ethTvl]),
   methodology:
     "We count liquidity on the Marketplace and CandyFarms through Proxy and CandyFarm Contracts",
 };

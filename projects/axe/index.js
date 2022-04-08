@@ -14,30 +14,28 @@ const AXE_DAI_POOL = "0xd34d3b648db688bee383022dd26a9027592b82d5";
 /*** Bonds TVL Portion (Treasury) ***
  * Treasury TVL consists of DAI and UNI-V2 balances
  ***/
- async function ethTvl(timestamp, block) {
-    const balances = {};
-  
-    await sumTokensAndLPsSharedOwners(
-      balances,
-      [
-        [DAI, false],
-        [USDC, false],
-        [AXE_DAI_POOL, true]
-      ],
-      treasuryAddresses,
-      block
-    );
-  
-    return balances;
+async function ethTvl(timestamp, block) {
+  const balances = {};
+
+  await sumTokensAndLPsSharedOwners(
+    balances,
+    [
+      [DAI, false],
+      [USDC, false],
+      [AXE_DAI_POOL, true],
+    ],
+    treasuryAddresses,
+    block
+  );
+
+  return balances;
 }
 
 module.exports = {
-    deadFrom: 1648765747,
-    start: 1637036516, // 16 Nov 2021
-    ethereum: {
-      tvl: ethTvl,
-      staking: staking(AXEStaking, AXE, "ethereum"),
-    },
-    methodology:
-      "Counts DAI, USDC and DAI SLP (AXE-DAI) on the treasury",
+  start: 1637036516, // 16 Nov 2021
+  ethereum: {
+    tvl: ethTvl,
+    staking: staking(AXEStaking, AXE, "ethereum"),
+  },
+  methodology: "Counts DAI, USDC and DAI SLP (AXE-DAI) on the treasury",
 };

@@ -39,4 +39,5 @@ module.exports = {
     staking,
     pool2: pool2(masterchef, pool2LP, "bsc", (addr) => `bsc:${addr}`),
   },
+  tvl: async () => ({}),
 };

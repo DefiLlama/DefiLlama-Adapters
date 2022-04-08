@@ -113,12 +113,12 @@ const stakedTVL = async () => {
 
 const fetch = async () => {
   var res = await utils.fetchURL("https://drops.co/status");
-  return new BigNumber(res.data.TVL);
+  return res.data ? new BigNumber(res.data.TVL) : 0;
 };
 
 const borrowed = async () => {
   var res = await utils.fetchURL("https://drops.co/status");
-  return new BigNumber(res.data.totalBorrow);
+  return res.data ? new BigNumber(res.data.totalBorrow) : 0;
 };
 
 const staking = async () => {

@@ -24,6 +24,9 @@ async function tvl(timestamp, block) {
 }
 
 module.exports = {
+  name: "DeFi Swap",
+  token: "CRO",
+  category: "dexes",
   start: DEFI_SWAP_LAUNCH_DATE,
   tvl,
 };

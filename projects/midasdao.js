@@ -1,53 +1,54 @@
 const { sumTokensAndLPsSharedOwners } = require("./helper/unwrapLPs");
-const sdk = require('@defillama/sdk');
+const sdk = require("@defillama/sdk");
 
-const TimeStaking = "0x9619BC1306B94130FBC70CF07e311E69949f07D4";
-const CROWN = "0x39912d83acb4a373321387300f4fbe88aa5d6f14";
+const TimeStaking = "0x5B92738B2De8331Bee366378f27d146DcBaD85c5";
+const CROWN = "0xed46443C18E38064523180Fc364C6180b35803d3";
 
-const JoePair = "0x089a9BF16453b519Fab02e40d143C0dcF9083778";
-const TREASURY = "0x6D9Cfb705C7b7A5ca1C4565A47Fa1b26FC1bE3d0";
+const JoePair = "0x3f0DE4Ec592e4376aA6925C3B3dc33D5ffBCDcc3";
+const TREASURY = "0x820885fCA68fB49d29D40AbF920362FC3e9865C6";
 const MIM = "0x130966628846BFd36ff31a822705796e8cb8C18D";
-const WAVAX = "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"
+const WAVAX = "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7";
 
 const staking = async (timestamp, ethBlock, chainBlocks) => {
-    const balances = {};
+  const balances = {};
 
-    const stakingBalance = await sdk.api.abi.call({
-        abi: 'erc20:balanceOf',
-        target: CROWN,
-        params: TimeStaking,
-        block: chainBlocks.avax,
-        chain: 'avax'
-    });
+  const stakingBalance = await sdk.api.abi.call({
+    abi: "erc20:balanceOf",
+    target: CROWN,
+    params: TimeStaking,
+    block: chainBlocks.avax,
+    chain: "avax",
+  });
 
-    sdk.util.sumSingleBalance(balances, 'avax:'+CROWN, stakingBalance.output);
+  sdk.util.sumSingleBalance(balances, "avax:" + CROWN, stakingBalance.output);
 
-    return balances;
+  return balances;
 };
 
 async function tvl(timestamp, block, chainBlocks) {
-    const balances = {};
+  const balances = {};
 
-    await sumTokensAndLPsSharedOwners(
-        balances,
-        [
-            [MIM, false],
-            [WAVAX, false],
-            [JoePair, true],
-        ],
-        [TREASURY],
-        chainBlocks.avax,
-        'avax',
-        addr=>`avax:${addr}`
-    );
+  await sumTokensAndLPsSharedOwners(
+    balances,
+    [
+      [MIM, false],
+      [WAVAX, false],
+      [JoePair, true],
+    ],
+    [TREASURY],
+    chainBlocks.avax,
+    "avax",
+    (addr) => `avax:${addr}`
+  );
 
-    return balances;
-};
+  return balances;
+}
 
 module.exports = {
-    avalanche: {
-        tvl,
-        staking
-    },
-    methodology: "Counts tokens on the treasury for tvl and staked CROWN for staking",
+  avalanche: {
+    tvl,
+    staking,
+  },
+  methodology:
+    "Counts tokens on the treasury for tvl and staked CROWN for staking",
 };

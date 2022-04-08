@@ -1,9 +1,0 @@
-{
-  "get_registry": {
-    "inputs": [],
-    "name": "get_registry",
-    "outputs": [{ "name": "", "type": "address" }],
-    "stateMutability": "view",
-    "type": "function"
-  }
-}

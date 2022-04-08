@@ -1,0 +1,612 @@
+[
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  { "payable": true, "stateMutability": "payable", "type": "fallback" },
+  {
+    "constant": false,
+    "inputs": [
+      { "internalType": "address", "name": "tokenAddress", "type": "address" }
+    ],
+    "name": "approveCurve",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      { "internalType": "address", "name": "tokenAddress", "type": "address" }
+    ],
+    "name": "approveKyber",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "calculateAssetChangesForRebalanceToSnx",
+    "outputs": [
+      { "internalType": "uint256", "name": "setToSell", "type": "uint256" }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      { "internalType": "uint256", "name": "weiPerOneSnx", "type": "uint256" },
+      {
+        "internalType": "uint256",
+        "name": "snxBalanceBefore",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "nonSnxAssetValue",
+        "type": "uint256"
+      },
+      { "internalType": "uint256", "name": "totalSupply", "type": "uint256" }
+    ],
+    "name": "calculateIssueTokenPrice",
+    "outputs": [
+      { "internalType": "uint256", "name": "pricePerToken", "type": "uint256" }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      { "internalType": "uint256", "name": "totalSupply", "type": "uint256" },
+      {
+        "internalType": "uint256",
+        "name": "snxBalanceOwned",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "contractDebtValue",
+        "type": "uint256"
+      }
+    ],
+    "name": "calculateRedeemTokenPrice",
+    "outputs": [
+      { "internalType": "uint256", "name": "pricePerToken", "type": "uint256" }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      { "internalType": "uint256", "name": "totalSupply", "type": "uint256" },
+      { "internalType": "uint256", "name": "tokensToRedeem", "type": "uint256" }
+    ],
+    "name": "calculateRedemptionValue",
+    "outputs": [
+      { "internalType": "uint256", "name": "valueToRedeem", "type": "uint256" }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "calculateSetIssuanceQuantity",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "rebalancingSetIssuable",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "componentQuantity",
+        "type": "uint256"
+      }
+    ],
+    "name": "calculateSetQuantity",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "rebalancingSetQuantity",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "totalSusdToBurn",
+        "type": "uint256"
+      }
+    ],
+    "name": "calculateSetRedemptionQuantity",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "rebalancingSetRedeemable",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "calculateSetToSellForRebalanceSetToEth",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "setQuantityToSell",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokensToRedeem",
+        "type": "uint256"
+      },
+      { "internalType": "uint256", "name": "totalSupply", "type": "uint256" },
+      {
+        "internalType": "uint256",
+        "name": "contractDebtValue",
+        "type": "uint256"
+      },
+      { "internalType": "uint256", "name": "issuanceRatio", "type": "uint256" }
+    ],
+    "name": "calculateSusdToBurnForRedemption",
+    "outputs": [
+      { "internalType": "uint256", "name": "susdToBurn", "type": "uint256" }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      { "internalType": "uint256", "name": "issuanceRatio", "type": "uint256" }
+    ],
+    "name": "calculateSusdToBurnToEclipseEscrowed",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "calculateSusdToBurnToFixRatioExternal",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "snxBalanceBefore",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "ethContributed",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "nonSnxAssetValue",
+        "type": "uint256"
+      },
+      { "internalType": "uint256", "name": "totalSupply", "type": "uint256" }
+    ],
+    "name": "calculateTokensToMintWithEth",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "snxBalanceBefore",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "snxAddedToBalance",
+        "type": "uint256"
+      },
+      { "internalType": "uint256", "name": "totalSupply", "type": "uint256" }
+    ],
+    "name": "calculateTokensToMintWithSnx",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_nextCurveAddress",
+        "type": "address"
+      }
+    ],
+    "name": "confirmCurveAddress",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getActiveSetAssetBalance",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getAssetCurrentlyActiveInSet",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      { "internalType": "uint256", "name": "susdBal", "type": "uint256" }
+    ],
+    "name": "getEthAllocationOnHedge",
+    "outputs": [
+      { "internalType": "uint256", "name": "ethAllocation", "type": "uint256" }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getEthBalance",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      { "internalType": "uint256", "name": "totalSupply", "type": "uint256" }
+    ],
+    "name": "getMintWithEthUtils",
+    "outputs": [
+      { "internalType": "bool", "name": "allocateToEth", "type": "bool" },
+      {
+        "internalType": "uint256",
+        "name": "nonSnxAssetValue",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getRebalanceTowardsHedgeUtils",
+    "outputs": [
+      { "internalType": "uint256", "name": "", "type": "uint256" },
+      { "internalType": "uint256", "name": "", "type": "uint256" },
+      { "internalType": "address", "name": "", "type": "address" }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getRebalanceTowardsSnxUtils",
+    "outputs": [
+      { "internalType": "uint256", "name": "setToSell", "type": "uint256" },
+      { "internalType": "address", "name": "activeAsset", "type": "address" }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getRebalanceUtils",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "debtValueInWei",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "hedgeAssetsBalance",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getSetHoldingsValueInWei",
+    "outputs": [
+      { "internalType": "uint256", "name": "setValInWei", "type": "uint256" }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getSnxBalance",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getSusdBalance",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      { "internalType": "address", "name": "_setAddress", "type": "address" },
+      {
+        "internalType": "address",
+        "name": "_kyberProxyAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_addressResolver",
+        "type": "address"
+      },
+      { "internalType": "address", "name": "_susdAddress", "type": "address" },
+      { "internalType": "address", "name": "_usdcAddress", "type": "address" },
+      {
+        "internalType": "address",
+        "name": "_addressValidator",
+        "type": "address"
+      },
+      {
+        "internalType": "bytes32[2]",
+        "name": "_synthSymbols",
+        "type": "bytes32[2]"
+      },
+      {
+        "internalType": "address[2]",
+        "name": "_setComponentAddresses",
+        "type": "address[2]"
+      },
+      { "internalType": "address", "name": "_ownerAddress", "type": "address" }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      { "internalType": "address", "name": "sender", "type": "address" }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "isOwner",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "isRebalanceTowardsHedgeRequired",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "isRebalanceTowardsSnxRequired",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "owner",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_xSNXAdminInstance",
+        "type": "address"
+      }
+    ],
+    "name": "setAdminInstanceAddress",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "curvePoolAddress",
+        "type": "address"
+      },
+      { "internalType": "int128", "name": "_usdcIndex", "type": "int128" },
+      { "internalType": "int128", "name": "_susdIndex", "type": "int128" }
+    ],
+    "name": "setCurve",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "setHoldingsInWei",
+        "type": "uint256"
+      },
+      { "internalType": "uint256", "name": "ethBalBefore", "type": "uint256" },
+      { "internalType": "uint256", "name": "totalSupply", "type": "uint256" }
+    ],
+    "name": "shouldAllocateEthToEthReserve",
+    "outputs": [
+      { "internalType": "bool", "name": "allocateToEth", "type": "bool" }
+    ],
+    "payable": false,
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      { "internalType": "address", "name": "fromToken", "type": "address" },
+      { "internalType": "uint256", "name": "amount", "type": "uint256" },
+      { "internalType": "uint256", "name": "minKyberRate", "type": "uint256" },
+      { "internalType": "uint256", "name": "minCurveReturn", "type": "uint256" }
+    ],
+    "name": "swapTokenToEther",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      { "internalType": "address", "name": "fromToken", "type": "address" },
+      { "internalType": "uint256", "name": "amount", "type": "uint256" },
+      { "internalType": "address", "name": "toToken", "type": "address" },
+      { "internalType": "uint256", "name": "minKyberRate", "type": "uint256" },
+      { "internalType": "uint256", "name": "minCurveReturn", "type": "uint256" }
+    ],
+    "name": "swapTokenToToken",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      { "internalType": "address", "name": "newOwner", "type": "address" }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

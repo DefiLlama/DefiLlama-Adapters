@@ -1,9 +1,7 @@
 const sdk = require("@defillama/sdk");
 const { request, gql } = require("graphql-request");
 const { BigNumber } = require("bignumber.js");
-const { getChainTvl } = require('../helper/getUniSubgraphTvl');
-
-
+const { getChainTvl } = require("../helper/getUniSubgraphTvl");
 
 const queryUrl = "https://api.thegraph.com/subgraphs/name/emiswap/emiswap";
 
@@ -45,22 +43,21 @@ async function ethStaking(timestamp, block) {
   return balances;
 }
 
-const chainTvl = getChainTvl({
-  
-  kcc: 'https://thegraph.kcc.network/subgraphs/name/emiswap/emiswap1',
-  polygon: 'https://api.thegraph.com/subgraphs/name/lombardi22/polygon'
-}, 'emiswapFactories');
+const chainTvl = getChainTvl(
+  {
+    kcc: "https://thegraph.kcc.network/subgraphs/name/emiswap/emiswap1",
+  },
+  "emiswapFactories"
+);
 
 module.exports = {
-  methodology: "ETH and KCC TVL are the total liquidity from the LPs according to the subgraph. Staking TVL would be ESW value in the staking pool.",
+  methodology:
+    "ETH and KCC TVL are the total liquidity from the LPs according to the subgraph. Staking TVL would be ESW value in the staking pool.",
   ethereum: {
     tvl: ethTvl,
     staking: ethStaking,
   },
   kcc: {
-    tvl: chainTvl('kcc'),
+    tvl: chainTvl("kcc"),
   },
-  polygon: {
-    tvl: chainTvl('polygon'),
-  }
 };

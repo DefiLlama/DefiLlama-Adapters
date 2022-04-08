@@ -49,12 +49,5 @@
     ],
     "stateMutability": "view",
     "type": "function"
-  },
-  "v3Liquidity": {
-    "inputs": [],
-    "name": "liquidity",
-    "outputs": [{ "internalType": "int256", "name": "", "type": "int256" }],
-    "stateMutability": "view",
-    "type": "function"
   }
 }

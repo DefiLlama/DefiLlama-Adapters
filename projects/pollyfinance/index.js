@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const {unwrapUniswapLPs} = require("../helper/unwrapLPs");
+const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 
 const polly = "0x4C392822D4bE8494B798cEA17B43d48B2308109C";
 const masterchef = "0x850161bF73944a8359Bd995976a34Bb9fe30d398";
@@ -10,7 +10,7 @@ const pool2LPs = [
   "0xf27c14aedad4c1cfa7207f826c64ade3d5c741c3",
   "0x095fc71521668d5bcc0fc3e3a9848e8911af21d9",
   "0xf70b37a372befe8c274a84375c233a787d0d4dfa",
-  "0x0c98d36908dfbe11C9A4d1F3CD8A9b94bAbA7521"
+  "0x0c98d36908dfbe11C9A4d1F3CD8A9b94bAbA7521",
 ];
 
 const sushiLPs = [
@@ -48,77 +48,82 @@ const nDefiUnderLying = [
   "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
   "0x3066818837c5e6ed6601bd5a91b0762877a6b731",
   "0xb33eaad8d922b1083446dc23f610c2567fb5180f",
-  "0x3AE490db48d74B1bC626400135d4616377D0109f"
-]
+  "0x3AE490db48d74B1bC626400135d4616377D0109f",
+];
 
 const nStbl = "0x9Bf320bd1796a7495BB6187f9EB4Db2679b74eD3";
 const nStblUnderLying = [
   "0x00e5646f60AC6Fb446f621d146B6E1886f002905",
   "0x27F8D03b3a2196956ED754baDc28D73be8830A6e",
   "0x60D55F02A771d515e077c9C2403a1ef324885CeC",
-  "0x1a13F4Ca1d028320A707D99520AbFefca3998b7F"
-]
+  "0x1a13F4Ca1d028320A707D99520AbFefca3998b7F",
+];
 
 async function lpTvl(balances, chainBlocks, pools) {
-  let LPBalance = (await sdk.api.abi.multiCall({
-    calls: pools.map(p => ({
-      target: p,
-      params: masterchef
-    })),
-    abi: "erc20:balanceOf",
-    block: chainBlocks,
-    chain: "polygon"
-  })).output;
+  let LPBalance = (
+    await sdk.api.abi.multiCall({
+      calls: pools.map((p) => ({
+        target: p,
+        params: masterchef,
+      })),
+      abi: "erc20:balanceOf",
+      block: chainBlocks,
+      chain: "polygon",
+    })
+  ).output;
   let lpPositions = [];
-  LPBalance.forEach(i => {
+  LPBalance.forEach((i) => {
     lpPositions.push({
       balance: i.output,
-      token: i.input.target
+      token: i.input.target,
     });
   });
-  await unwrapUniswapLPs(balances, lpPositions, chainBlocks, "polygon", addr=>{
-    if (addr === "0x4257ea7637c355f81616050cbb6a9b709fd72683") {
-      return "0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b";
+  await unwrapUniswapLPs(
+    balances,
+    lpPositions,
+    chainBlocks,
+    "polygon",
+    (addr) => {
+      if (addr === "0x4257ea7637c355f81616050cbb6a9b709fd72683") {
+        return "0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b";
+      } else if (addr === "0x3ae490db48d74b1bc626400135d4616377d0109f") {
+        return "0xa1faa113cbe53436df28ff0aee54275c13b40975";
+      } else if (addr === "0x3066818837c5e6ed6601bd5a91b0762877a6b731") {
+        return "0x04fa0d235c4abf4bcf4787af4cf447de572ef828";
+      }
+      return `polygon:${addr}`;
     }
-    else if(addr === "0x3ae490db48d74b1bc626400135d4616377d0109f") {
-      return "0xa1faa113cbe53436df28ff0aee54275c13b40975";
-    }
-    else if(addr === "0x3066818837c5e6ed6601bd5a91b0762877a6b731") {
-      return "0x04fa0d235c4abf4bcf4787af4cf447de572ef828";
-    }
-    return `polygon:${addr}`;
-  });
+  );
 }
 
 async function underlyingTvl(balances, chainBlocks, token, underlying) {
-  let underBals = (await sdk.api.abi.multiCall({
-    calls: underlying.map(p => ({
-      target: p,
-      params: token
-    })),
-    abi: "erc20:balanceOf",
-    block: chainBlocks,
-    chain: "polygon"
-  })).output;
-  underBals.forEach(i => {
+  let underBals = (
+    await sdk.api.abi.multiCall({
+      calls: underlying.map((p) => ({
+        target: p,
+        params: token,
+      })),
+      abi: "erc20:balanceOf",
+      block: chainBlocks,
+      chain: "polygon",
+    })
+  ).output;
+  underBals.forEach((i) => {
     let addr = i.input.target.toLowerCase();
     let balance = i.output;
     if (addr === "0x4257ea7637c355f81616050cbb6a9b709fd72683") {
       addr = "0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b";
-    }
-    else if(addr === "0x3ae490db48d74b1bc626400135d4616377d0109f") {
+    } else if (addr === "0x3ae490db48d74b1bc626400135d4616377d0109f") {
       addr = "0xa1faa113cbe53436df28ff0aee54275c13b40975";
-    }
-    else if(addr === "0x3066818837c5e6ed6601bd5a91b0762877a6b731") {
+    } else if (addr === "0x3066818837c5e6ed6601bd5a91b0762877a6b731") {
       addr = "0x04fa0d235c4abf4bcf4787af4cf447de572ef828";
-    }
-    else {
+    } else {
       addr = `polygon:${addr}`;
     }
     sdk.util.sumSingleBalance(balances, addr, balance);
-  })
+  });
 }
-  
+
 async function tvl(timestamp, block, chainBlocks) {
   let balances = {};
   await lpTvl(balances, chainBlocks.polygon, sushiLPs);
@@ -134,9 +139,11 @@ async function pool2(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
-  methodology: "TVL includes tokens staked in farms and tokens used as collateral for nDEFI and nSTBL",
+  methodology:
+    "TVL includes tokens staked in farms and tokens used as collateral for nDEFI and nSTBL",
   polygon: {
     tvl,
-    pool2
+    pool2,
   },
-}
+  tvl,
+};

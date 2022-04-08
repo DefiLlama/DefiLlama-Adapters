@@ -1,45 +1,43 @@
-const sdk = require('@defillama/sdk');
-const { blockQuery } = require('../helper/graph')
-const { toUSDTBalances } = require('../helper/balances');
-const { gql } = require('graphql-request');
+const sdk = require("@defillama/sdk");
+const { toUSDTBalances } = require("../helper/balances");
+const { GraphQLClient, gql } = require("graphql-request");
 
 const endpoints = {
-  bsc: 'https://api.thegraph.com/subgraphs/name/yogi-fi/bsc',
-  polygon: 'https://api.thegraph.com/subgraphs/name/yogi-fi/polygon',
-}
+  bsc: "https://api.thegraph.com/subgraphs/name/yogi-fi/bsc",
+  polygon: "https://api.thegraph.com/subgraphs/name/yogi-fi/polygon",
+};
 
 const query = gql`
-query get_tvl($block: Int) {
-    balancers(
-      first: 5,
-      block: { number: $block }
-    ) {
-      totalLiquidity,
+  query get_tvl($block: Int) {
+    balancers(first: 5, block: { number: $block }) {
+      totalLiquidity
       totalSwapVolume
     }
   }
 `;
 
 async function getChainTvl(chain, block) {
-  const results = await blockQuery(endpoints[chain], query, block, 800)
+  const graphQLClient = new GraphQLClient(endpoints[chain]);
+  const results = await graphQLClient.request(query, { block });
 
   return toUSDTBalances(results.balancers[0].totalLiquidity);
 }
 
 async function bsc(timestamp, block, chainBlocks) {
-  return getChainTvl('bsc', chainBlocks['bsc']);
+  return getChainTvl("bsc", chainBlocks["bsc"]);
 }
 
 async function polygon(timestamp, block, chainBlocks) {
-  return getChainTvl('polygon', chainBlocks['polygon']);
+  return getChainTvl("polygon", chainBlocks["polygon"]);
 }
 
 module.exports = {
   misrepresentedTokens: true,
   bsc: {
-    tvl: bsc
+    tvl: bsc,
   },
   polygon: {
-    tvl: polygon
+    tvl: polygon,
   },
-}
+  tvl: sdk.util.sumChainTvls([polygon, bsc]),
+};

@@ -140,4 +140,5 @@ module.exports = {
     tvl: polygonTvl,
     staking: staking(wrnbwPolyPool, wrnbwPolyToken, "polygon"),
   },
+  tvl: sdk.util.sumChainTvls([ethTvl, polygonTvl]),
 };

@@ -1,29 +1,23 @@
 const { ApiPromise, WsProvider } = require("@polkadot/api");
 const { options } = require("@acala-network/api");
-const lksmToKsm = require("./lksmToKsm.js");
+
+const KSM_DECIMALS = 12;
 
 async function tvl() {
   const provider = new WsProvider("wss://karura-rpc-1.aca-api.network");
   const api = await ApiPromise.create(options({ provider }));
 
-  const ksmLocked = await lksmToKsm(
-    api,
-    Number(
-      await api.query.tokens.totalIssuance({
-        Token: "LKSM",
-      })
-    )
-  );
+  const ksmLocked =
+    (await api.query.homaLite.totalStakingCurrency()).toJSON() /
+    10 ** KSM_DECIMALS;
 
   return {
-    kusama: ksmLocked / 1e12,
+    kusama: ksmLocked,
   };
 }
 
 module.exports = {
   methodology:
     "TVL considers KSM tokens deposited to the Liquid-Staking program",
-  kusuma: {
-    tvl,
-  },
+  tvl,
 };

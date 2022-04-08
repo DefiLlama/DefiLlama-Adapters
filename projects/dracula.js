@@ -6,17 +6,8 @@ const utils = require("./helper/utils");
  *****************/
 async function fetch() {
   var tvl = 0;
-  var staked = await utils.fetchURL("https://dracula.sucks/api-v2.1/stats");
+  var staked = await utils.fetchURL("https://dracula.sucks/api/stats");
   staked.data.victimPools.map((pool) => {
-    tvl += pool.tvl;
-  });
-  return tvl;
-}
-
-async function staking() {
-  var tvl = 0;
-  var staked = await utils.fetchURL("https://dracula.sucks/api-v2.1/stats");
-  staked.data.stakingPools.map((pool) => {
     tvl += pool.tvl;
   });
   return tvl;
@@ -24,7 +15,4 @@ async function staking() {
 
 module.exports = {
   fetch,
-  staking: {
-    fetch: staking,
-  },
 };

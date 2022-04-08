@@ -2,18 +2,18 @@
   Modules
   ==================================================*/
 
-const sdk = require('@defillama/sdk');
-const _ = require('underscore');
-const axios = require('axios');
-const BigNumber = require('bignumber.js');
-const ddexMarginContractAddress = '0x241e82c79452f51fbfc89fac6d912e021db1a3b7'
+const sdk = require("@defillama/sdk");
+const _ = require("underscore");
+const axios = require("axios");
+const BigNumber = require("bignumber.js");
+const ddexMarginContractAddress = "0x241e82c79452f51fbfc89fac6d912e021db1a3b7";
 
 /*==================================================
   Helper Functions
   ==================================================*/
 
 async function GenerateCallList() {
-  let assets = await axios.get('https://api.ddex.io/v4/assets');
+  let assets = await axios.get("https://api.ddex.io/v4/assets");
   assets = assets.data.data.assets;
   assets = _.filter(assets, (asset) => {
     let symbol = asset.symbol;
@@ -24,8 +24,8 @@ async function GenerateCallList() {
   _.each(assets, (asset) => {
     calls.push({
       target: asset.address,
-      params: ddexMarginContractAddress
-    })
+      params: ddexMarginContractAddress,
+    });
   });
 
   return calls;
@@ -37,13 +37,15 @@ async function GenerateCallList() {
 
 async function tvl(timestamp, block) {
   let balances = {
-    '0x0000000000000000000000000000000000000000': (await sdk.api.eth.getBalance({target: ddexMarginContractAddress, block})).output
+    "0x0000000000000000000000000000000000000000": (
+      await sdk.api.eth.getBalance({ target: ddexMarginContractAddress, block })
+    ).output,
   };
 
   let balanceOfResults = await sdk.api.abi.multiCall({
     block,
     calls: await GenerateCallList(),
-    abi: 'erc20:balanceOf'
+    abi: "erc20:balanceOf",
   });
 
   await sdk.util.sumMultiBalanceOf(balances, balanceOfResults);
@@ -56,6 +58,8 @@ async function tvl(timestamp, block) {
   ==================================================*/
 
 module.exports = {
+  name: "DDEX",
+  category: "lending",
   start: 1566470505, // 2019-08-22T18:41:45+08:00
-  tvl
-}
+  tvl,
+};

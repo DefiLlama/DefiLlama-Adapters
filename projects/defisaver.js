@@ -74,7 +74,6 @@ const coins = {
   BAL: 18,
   GUSD: 2,
   RENBTC: 18,
-  MATIC: 18,
 };
 
 const keys = [
@@ -146,12 +145,10 @@ const keys = [
     BAL: "balancer",
     GUSD: "gemini-dollar",
     RENBTC: "renbtc",
-    WSTETH: "staked-ether",
-    MATIC: "matic-network",
   },
 ];
 
-let web3RpcUrl = (process.env.ETHEREUM_RPC || '').split(",")[0];
+let web3RpcUrl = process.env.ETHEREUM_RPC.split(",")[0];
 
 // Utils
 const aggregate = (calls) =>
@@ -225,7 +222,7 @@ const initContracts = (web3) => {
     ),
   };
 };
-// node test.js projects/defisaver.js
+
 // Volume data getters
 const getMakerData = async (contracts, prices) => {
   let makerSubs = await contracts.mcdSubscriptions.methods

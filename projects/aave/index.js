@@ -1,47 +1,61 @@
-const sdk = require('@defillama/sdk');
-const { getV2Reserves, getV2Tvl, getV2Borrowed, aaveChainTvl } = require('../helper/aave');
-const { staking } = require('../helper/staking');
-const { singleAssetV1Market,uniswapV1Market } = require('./v1');
-const { ammMarket } = require('./amm');
+const sdk = require("@defillama/sdk");
+const {
+  getV2Reserves,
+  getV2Tvl,
+  aaveExports,
+  getV2Borrowed,
+} = require("../helper/aave");
+const { staking } = require("../helper/staking");
+const { singleAssetV1Market, uniswapV1Market } = require("./v1");
+const { ammMarket } = require("./amm");
 
-
-const addressesProviderRegistryETH = "0x52D306e36E3B6B02c153d0266ff0f85d18BCD413";
+const addressesProviderRegistryETH =
+  "0x52D306e36E3B6B02c153d0266ff0f85d18BCD413";
 
 // v1
 const aaveLendingPoolCore = "0x3dfd23A6c5E8BbcFc9581d2E864a68feb6a076d3";
 const uniswapLendingPoolCore = "0x1012cfF81A1582ddD0616517eFB97D02c5c17E25";
 
 function ethereum(borrowed) {
-  return async (timestamp, block)=> {
-    const balances = {}
+  return async (timestamp, block) => {
+    const balances = {};
 
-    await singleAssetV1Market(balances, aaveLendingPoolCore, block, borrowed)
-    await uniswapV1Market(balances, uniswapLendingPoolCore, block, borrowed)
+    await singleAssetV1Market(balances, aaveLendingPoolCore, block, borrowed);
+    await uniswapV1Market(balances, uniswapLendingPoolCore, block, borrowed);
 
     // V2 TVLs
     if (block >= 11360925) {
-      const [v2Atokens, v2ReserveTokens, dataHelper] = await getV2Reserves(block, addressesProviderRegistryETH, 'ethereum')
-      if(borrowed){
-        await getV2Borrowed(balances, block, "ethereum", v2ReserveTokens, dataHelper, id=>id);
+      const [v2Atokens, v2ReserveTokens, dataHelper] = await getV2Reserves(
+        block,
+        addressesProviderRegistryETH,
+        "ethereum"
+      );
+      if (borrowed) {
+        await getV2Borrowed(
+          balances,
+          block,
+          "ethereum",
+          v2ReserveTokens,
+          dataHelper,
+          (id) => id
+        );
       } else {
-        await getV2Tvl(balances, block, 'ethereum', v2Atokens, v2ReserveTokens, id => id);
+        await getV2Tvl(
+          balances,
+          block,
+          "ethereum",
+          v2Atokens,
+          v2ReserveTokens,
+          (id) => id
+        );
       }
     }
     if (block >= 11998773) {
-      await ammMarket(balances, block, borrowed)
-    }
-    // Permissioned TVLs
-    if (block >= 13431423) {
-      const [v2Atokens, v2ReserveTokens, dataHelper] = await getV2Reserves(block, "0x6FdfafB66d39cD72CFE7984D3Bbcc76632faAb00", 'ethereum', ["0x71B53fC437cCD988b1b89B1D4605c3c3d0C810ea"])
-      if(borrowed){
-        await getV2Borrowed(balances, block, "ethereum", v2ReserveTokens, dataHelper, id=>id);
-      } else {
-        await getV2Tvl(balances, block, 'ethereum', v2Atokens, v2ReserveTokens, id => id);
-      }
+      await ammMarket(balances, block, borrowed);
     }
 
     return balances;
-  }
+  };
 }
 
 const aaveBalancerContractImp = "0xC697051d1C6296C24aE3bceF39acA743861D9A81";
@@ -75,16 +89,6 @@ async function stakingBalancerTvl(timestamp, block) {
 
 const aaveStakingContract = "0x4da27a545c0c5b758a6ba100e3a049001de870f5";
 
-function v2(chain, v2Registry){
-  const section = borrowed => sdk.util.sumChainTvls([
-    aaveChainTvl(chain, v2Registry, undefined, undefined, borrowed),
-  ])
-  return {
-    tvl: section(false),
-    borrowed: section(true)
-  }
-}
-
 module.exports = {
   timetravel: true,
   methodology: `Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There's multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending`,
@@ -94,7 +98,6 @@ module.exports = {
     tvl: ethereum(false),
     borrowed: ethereum(true),
   },
-  avalanche: v2("avax", "0x4235E22d9C3f28DCDA82b58276cb6370B01265C2"),
-  polygon: v2("polygon", "0x3ac4e9aa29940770aeC38fe853a4bbabb2dA9C19"),
+  avalanche: aaveExports("avax", "0x4235E22d9C3f28DCDA82b58276cb6370B01265C2"),
+  polygon: aaveExports("polygon", "0x3ac4e9aa29940770aeC38fe853a4bbabb2dA9C19"),
 };
-// node test.js projects/aave/index.js

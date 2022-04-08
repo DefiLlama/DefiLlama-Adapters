@@ -1,13 +1,4 @@
-const BigNumber = require("bignumber.js");
 const axios = require("axios");
-
-const solscan_base = "https://public-api.solscan.io/account/";
-async function getSolBalance(account) {
-  const solBalance = await axios
-    .get(solscan_base + account)
-    .then((r) => r.data.lamports);
-  return new BigNumber(solBalance).div(1e9).toString(10);
-}
 
 const endpoint = "https://solana-api.projectserum.com/";
 
@@ -166,5 +157,4 @@ module.exports = {
   getMultipleAccountsRaw,
   getMultipleAccountBuffers,
   sumOrcaLPs,
-  getSolBalance,
 };

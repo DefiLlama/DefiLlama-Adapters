@@ -1,13 +1,14 @@
-const { getChainTvl } = require('../helper/getUniSubgraphTvl');
-const sdk = require('@defillama/sdk')
+const { getChainTvl } = require("../helper/getUniSubgraphTvl");
+const sdk = require("@defillama/sdk");
 
 const graphUrls = {
-  avax: 'https://api.thegraph.com/subgraphs/name/complusnetwork/subgraph-ava',
-  bsc: 'https://api.thegraph.com/subgraphs/name/complusnetwork/bsc-subgraph',
-  polygon: 'https://api.thegraph.com/subgraphs/name/complusnetwork/subgraph-matic',
-  heco: 'https://hg2.bitcv.net/subgraphs/name/complusnetwork/subgraph-heco'
-}
-const chainTvl = getChainTvl(graphUrls, "complusFactories")
+  avax: "https://api.thegraph.com/subgraphs/name/complusnetwork/subgraph-ava",
+  bsc: "https://api.thegraph.com/subgraphs/name/complusnetwork/bsc-subgraph",
+  polygon:
+    "https://api.thegraph.com/subgraphs/name/complusnetwork/subgraph-matic",
+  heco: "https://hg2.bitcv.net/subgraphs/name/complusnetwork/subgraph-heco",
+};
+const chainTvl = getChainTvl(graphUrls, "complusFactories");
 
 module.exports = {
   misrepresentedTokens: true,
@@ -24,6 +25,7 @@ module.exports = {
   },
   */
   avalanche: {
-    tvl: chainTvl('avax'),
+    tvl: chainTvl("avax"),
   },
-}
+  tvl: sdk.util.sumChainTvls(["avax"].map(chainTvl)),
+};

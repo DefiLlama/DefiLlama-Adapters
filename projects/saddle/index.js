@@ -5,13 +5,11 @@ const axios = require("axios");
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 const _ = require("underscore");
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
-const {
-  transformArbitrumAddress,
-  transformOptimismAddress,
-} = require("../helper/portedTokens");
 
-/*** Ethereum Addresses ***/
+/*==================================================
+  Addresses
+  ==================================================*/
+
 const btcPoolAddress = "0x4f6A43Ad7cba042606dECaCA730d4CE0A57ac62e";
 const usdPoolAddress = "0x3911f80530595fbd01ab1516ab61255d75aeb066";
 const veth2PoolAddress = "0xdec2157831D6ABC3Ec328291119cc91B337272b5";
@@ -73,41 +71,6 @@ const tokens = {
   // WCUSD
   "0xad3e3fc59dff318beceaab7d00eb4f68b1ecf195": [wcusdMetapoolAddress],
 };
-
-/*** Fantom Addresses ***/
-const fantom_usdPoolAddress = "0xBea9F78090bDB9e662d8CB301A00ad09A5b756e9";
-const fantom_usdc = "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75";
-const fantom_frax = "0xdc301622e621166BD8E82f2cA0A26c13Ad0BE355";
-
-const fantom_tokens = {
-  [fantom_usdc]: [fantom_usdPoolAddress],
-  [fantom_frax]: [fantom_usdPoolAddress],
-};
-
-/*** Arbitrum Addresses ***/
-const poolAddresses_arb = [
-  //ArbUSDPoolAddress
-  "0xBea9F78090bDB9e662d8CB301A00ad09A5b756e9",
-  //ArbFRAXPoolContract
-  "0xfeEa4D1BacB0519E8f952460A70719944fe56Ee0",
-];
-const MIM_arb = "0xfea7a6a0b346362bf88a9e4a88416b77a57d6c2a";
-const USDT_arb = "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9";
-const USDC_arb = "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8";
-const nUSD_arb = "0x2913e812cf0dcca30fb28e6cac3d2dcff4497688";
-const FRAX_arb = "0x17fc002b466eec40dae837fc4be5c67993ddbd6f";
-
-/*** Optimism Addresses ***/
-const poolAddresses_opt = [
-  //OptUSDPoolAddress
-  "0x5847f8177221268d279Cf377D0E01aB3FD993628",
-  //OptFRAXPoolContract
-  "0xc55E8C79e5A6c3216D4023769559D06fa9A7732e",
-];
-const DAI_opt = "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1";
-const USDT_opt = "0x94b008aa00579c1307b0ef2c499ad98a8ce58e58";
-const USDC_opt = "0x7f5c764cbc14f9669b88837ca1490cca17c31607";
-const FRAX_opt = "0x2e3d870790dc77a83dd1d18184acc7439a53f475";
 
 /*==================================================
   TVL
@@ -174,111 +137,11 @@ async function tvl(timestamp, block) {
   return balances;
 }
 
-async function tvlFantom(timestamp, block) {
-  let balances = {};
-  let rawBalances = {};
-  let calls = [];
-
-  for (const token in fantom_tokens) {
-    for (const poolAddress of fantom_tokens[token])
-      calls.push({
-        target: token,
-        params: poolAddress,
-      });
-  }
-
-  // Pool Balances
-  let balanceOfResults = await sdk.api.abi.multiCall({
-    block,
-    calls: calls,
-    abi: "erc20:balanceOf",
-    chain: "fantom",
-  });
-
-  // Compute Balances
-  _.each(balanceOfResults.output, (balanceOf) => {
-    let address = balanceOf.input.target;
-    let amount = balanceOf.output;
-    rawBalances[address] = BigNumber(rawBalances[address] || 0)
-      .plus(amount)
-      .toFixed();
-  });
-
-  // NB: Treat both tokens as USDC since prices aren't tracked for Fantom tokens
-  // [3:52 AM] 0xngmi: the issue is that atm we don't track price for solana tokens
-  // [3:52 AM] 0xngmi: you can just use "usd-coin" and it'll work
-  let combinedBalance =
-    rawBalances["0x04068DA6C83AFCFA0e13ba15A6696662335D5B75"] / 1e6 +
-    rawBalances["0xdc301622e621166BD8E82f2cA0A26c13Ad0BE355"] / 1e18;
-
-  sdk.util.sumSingleBalance(balances, "usd-coin", combinedBalance);
-
-  return balances;
-}
-
-async function arbTvl(timestamp, chainBlocks) {
-  const balances = {};
-
-  const transformAddress = await transformArbitrumAddress();
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    [
-      [USDC_arb, false],
-      [USDT_arb, false],
-      [MIM_arb, false],
-      [FRAX_arb, false],
-      [nUSD_arb, false],
-    ],
-    poolAddresses_arb,
-    chainBlocks["arbitrum"],
-    "arbitrum",
-    transformAddress
-  );
-
-  return balances;
-}
-
-async function optTvl(timestamp, chainBlocks) {
-  const balances = {};
-
-  const transformAddress = await transformOptimismAddress();
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    [
-      [USDC_opt, false],
-      [USDT_opt, false],
-      [DAI_opt, false],
-      [FRAX_opt, false],
-    ],
-    poolAddresses_opt,
-    chainBlocks["optimism"],
-    "optimism",
-    transformAddress
-  );
-
-  return balances;
-}
-
 /*==================================================
   Exports
   ==================================================*/
 
 module.exports = {
-  misrepresentedTokens: true,
-  ethereum: {
-    start: 1611057090, // January 19, 2021 11:51:30 AM
-    tvl, // tvl adapter
-  },
-  fantom: {
-    start: 1642723200, // Friday, January 21, 2022 12:00:00 AM UTC
-    tvl: tvlFantom,
-  },
-  arbitrum: {
-    tvl: arbTvl,
-  },
-  optimism: {
-    tvl: optTvl,
-  },
-  methodology:
-    "Counts as TVL all the Assets deposited on each chain through different Pool Contracts",
+  start: 1611057090, // January 19, 2021 11:51:30 AM
+  tvl, // tvl adapter
 };

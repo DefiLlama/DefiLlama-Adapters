@@ -89,7 +89,6 @@ const calcTvl = async (
       );
     }
   } else {
-
     /*** Joins TVL Portion ***/
     const joinsAsset = (
       await sdk.api.abi.multiCall({
@@ -128,12 +127,7 @@ const ethTvl = async (timestamp, ethBlock) => {
     "address,address"
   );
 
-  await calcTvl(
-    balances,
-    ethBlock,
-    join_factory,
-    "JoinCreated"
-  );
+  await calcTvl(balances, ethBlock, join_factory, "JoinCreated");
 
   return balances;
 };
@@ -143,6 +137,7 @@ module.exports = {
   ethereum: {
     tvl: ethTvl,
   },
+  tvl: sdk.util.sumChainTvls([ethTvl]),
   methodology:
     "Counts tvl on the Pools and Joins through PoolFactory and Joinfactory Contracts",
 };

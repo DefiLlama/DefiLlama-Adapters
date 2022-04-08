@@ -1,0 +1,692 @@
+{
+  "contractName": "VDONStaking",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "freshProductInfoId",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "getProductInfoById",
+      "outputs": [
+        {
+          "name": "isActivate",
+          "type": "bool"
+        },
+        {
+          "name": "lockupTerm",
+          "type": "uint256"
+        },
+        {
+          "name": "VDONExchangeRate",
+          "type": "uint256"
+        },
+        {
+          "components": [
+            {
+              "name": "interestLimitAmount",
+              "type": "uint256"
+            },
+            {
+              "name": "interestRate",
+              "type": "uint256"
+            },
+            {
+              "name": "paidInterestAmount",
+              "type": "uint256"
+            }
+          ],
+          "name": "DONInfo",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "name": "interestLimitAmount",
+              "type": "uint256"
+            },
+            {
+              "name": "interestRate",
+              "type": "uint256"
+            },
+            {
+              "name": "paidInterestAmount",
+              "type": "uint256"
+            }
+          ],
+          "name": "ecoCNGInfo",
+          "type": "tuple"
+        },
+        {
+          "name": "totalPrincipalAmount",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "freshProductId",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "",
+          "type": "address"
+        },
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "productOf",
+      "outputs": [
+        {
+          "name": "productInfoId",
+          "type": "uint256"
+        },
+        {
+          "name": "releaseTime",
+          "type": "uint256"
+        },
+        {
+          "name": "principal",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "",
+          "type": "address"
+        },
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "allProductsIdOf",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "admin",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "minter",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "mintAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Mint",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "redeemer",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "DONRedeemAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "name": "ecoCNGRedeemAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Redeem",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "withdrawer",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "withdrawAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "name": "tokenAddress",
+          "type": "address"
+        }
+      ],
+      "name": "Withdraw",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "oldAdmin",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "newAdmin",
+          "type": "address"
+        }
+      ],
+      "name": "UpdateAdmin",
+      "type": "event"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "DONAddress_",
+          "type": "address"
+        },
+        {
+          "name": "ecoCNGAddress_",
+          "type": "address"
+        },
+        {
+          "name": "VDONAddress_",
+          "type": "address"
+        }
+      ],
+      "name": "initialize",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "productInfoId",
+          "type": "uint256"
+        },
+        {
+          "name": "mintAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "mint",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "redeemProductId",
+          "type": "uint256"
+        }
+      ],
+      "name": "redeem",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "isActivate_",
+          "type": "bool"
+        },
+        {
+          "name": "lockupTerm_",
+          "type": "uint256"
+        },
+        {
+          "name": "VDONExchangeRate_",
+          "type": "uint256"
+        },
+        {
+          "name": "interestLimitAmountOfDON_",
+          "type": "uint256"
+        },
+        {
+          "name": "interestRateOfDON_",
+          "type": "uint256"
+        },
+        {
+          "name": "interestLimitAmountOfecoCNG_",
+          "type": "uint256"
+        },
+        {
+          "name": "interestRateOfecoCNG_",
+          "type": "uint256"
+        }
+      ],
+      "name": "createProductInfo",
+      "outputs": [
+        {
+          "components": [
+            {
+              "name": "isActivate",
+              "type": "bool"
+            },
+            {
+              "name": "lockupTerm",
+              "type": "uint256"
+            },
+            {
+              "name": "VDONExchangeRate",
+              "type": "uint256"
+            },
+            {
+              "components": [
+                {
+                  "name": "interestLimitAmount",
+                  "type": "uint256"
+                },
+                {
+                  "name": "interestRate",
+                  "type": "uint256"
+                },
+                {
+                  "name": "paidInterestAmount",
+                  "type": "uint256"
+                }
+              ],
+              "name": "DONInfo",
+              "type": "tuple"
+            },
+            {
+              "components": [
+                {
+                  "name": "interestLimitAmount",
+                  "type": "uint256"
+                },
+                {
+                  "name": "interestRate",
+                  "type": "uint256"
+                },
+                {
+                  "name": "paidInterestAmount",
+                  "type": "uint256"
+                }
+              ],
+              "name": "ecoCNGInfo",
+              "type": "tuple"
+            },
+            {
+              "name": "totalPrincipalAmount",
+              "type": "uint256"
+            }
+          ],
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "isActivate_",
+          "type": "bool"
+        },
+        {
+          "name": "productInfoId",
+          "type": "uint256"
+        },
+        {
+          "name": "newLockupTerm",
+          "type": "uint256"
+        },
+        {
+          "name": "newVDONExchangeRate",
+          "type": "uint256"
+        },
+        {
+          "name": "newInterestLimitAmountOfDON",
+          "type": "uint256"
+        },
+        {
+          "name": "newInterestRateOfDON",
+          "type": "uint256"
+        },
+        {
+          "name": "newInterestLimitAmountOfecoCNG",
+          "type": "uint256"
+        },
+        {
+          "name": "newInterestRateOfecoCNG",
+          "type": "uint256"
+        }
+      ],
+      "name": "updateProductInfo",
+      "outputs": [
+        {
+          "components": [
+            {
+              "name": "isActivate",
+              "type": "bool"
+            },
+            {
+              "name": "lockupTerm",
+              "type": "uint256"
+            },
+            {
+              "name": "VDONExchangeRate",
+              "type": "uint256"
+            },
+            {
+              "components": [
+                {
+                  "name": "interestLimitAmount",
+                  "type": "uint256"
+                },
+                {
+                  "name": "interestRate",
+                  "type": "uint256"
+                },
+                {
+                  "name": "paidInterestAmount",
+                  "type": "uint256"
+                }
+              ],
+              "name": "DONInfo",
+              "type": "tuple"
+            },
+            {
+              "components": [
+                {
+                  "name": "interestLimitAmount",
+                  "type": "uint256"
+                },
+                {
+                  "name": "interestRate",
+                  "type": "uint256"
+                },
+                {
+                  "name": "paidInterestAmount",
+                  "type": "uint256"
+                }
+              ],
+              "name": "ecoCNGInfo",
+              "type": "tuple"
+            },
+            {
+              "name": "totalPrincipalAmount",
+              "type": "uint256"
+            }
+          ],
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "tokenAddress",
+          "type": "address"
+        },
+        {
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "withdraw",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "newAdmin",
+          "type": "address"
+        }
+      ],
+      "name": "setAdmin",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "productInfoId",
+          "type": "uint256"
+        }
+      ],
+      "name": "currentUsedRateOfInterestLimit",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "enteredProductOf",
+      "outputs": [
+        {
+          "components": [
+            {
+              "name": "startTime",
+              "type": "uint256"
+            },
+            {
+              "name": "releaseTime",
+              "type": "uint256"
+            },
+            {
+              "name": "principal",
+              "type": "uint256"
+            },
+            {
+              "name": "lockupTerm",
+              "type": "uint256"
+            },
+            {
+              "name": "interestRateOfDON",
+              "type": "uint256"
+            },
+            {
+              "name": "interestRateofEcoCNG",
+              "type": "uint256"
+            },
+            {
+              "name": "vDONExchangeRate",
+              "type": "uint256"
+            },
+            {
+              "name": "productInfoId",
+              "type": "uint256"
+            },
+            {
+              "name": "productId",
+              "type": "uint256"
+            }
+          ],
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "productInfoList",
+      "outputs": [
+        {
+          "components": [
+            {
+              "name": "isActivate",
+              "type": "bool"
+            },
+            {
+              "name": "lockupTerm",
+              "type": "uint256"
+            },
+            {
+              "name": "VDONExchangeRate",
+              "type": "uint256"
+            },
+            {
+              "components": [
+                {
+                  "name": "interestLimitAmount",
+                  "type": "uint256"
+                },
+                {
+                  "name": "interestRate",
+                  "type": "uint256"
+                },
+                {
+                  "name": "paidInterestAmount",
+                  "type": "uint256"
+                }
+              ],
+              "name": "DONInfo",
+              "type": "tuple"
+            },
+            {
+              "components": [
+                {
+                  "name": "interestLimitAmount",
+                  "type": "uint256"
+                },
+                {
+                  "name": "interestRate",
+                  "type": "uint256"
+                },
+                {
+                  "name": "paidInterestAmount",
+                  "type": "uint256"
+                }
+              ],
+              "name": "ecoCNGInfo",
+              "type": "tuple"
+            },
+            {
+              "name": "totalPrincipalAmount",
+              "type": "uint256"
+            },
+            {
+              "name": "productInfoId",
+              "type": "uint256"
+            },
+            {
+              "name": "currentUsedRateOfInterest",
+              "type": "uint256"
+            }
+          ],
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ]
+}

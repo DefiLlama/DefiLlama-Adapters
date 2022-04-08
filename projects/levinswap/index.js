@@ -1,17 +1,44 @@
-const { calculateUniTvl } = require("../helper/calculateUniTvl");
-const { staking } = require("../helper/staking");
+const { request, gql } = require("graphql-request");
+const sdk = require("@defillama/sdk");
+const { toUSDTBalances } = require("../helper/balances");
 
-const factory = "0x965769C9CeA8A7667246058504dcdcDb1E2975A5";
-const levin = "0x1698cD22278ef6E7c0DF45a8dEA72EDbeA9E42aa";
-const xlevin = "0xafa57Fb9d8D63Ff8124E17c1495C73bc3a7678D0";
+const graphUrl = "https://api.thegraph.com/subgraphs/name/levinswap/uniswap-v2";
+const graphQuery = gql`
+  query get_tvl($block: Int) {
+    uniswapFactory(
+      id: "0x965769C9CeA8A7667246058504dcdcDb1E2975A5"
+      block: { number: $block }
+    ) {
+      totalVolumeUSD
+      totalLiquidityUSD
+    }
+  }
+`;
 
-async function tvl (timestamp, block, chainBlocks) {
-  return await calculateUniTvl(addr=>`xdai:${addr}`, chainBlocks.xdai, "xdai", factory, 0, true);
+async function tvl(timestamp) {
+  const { block } = await sdk.api.util.lookupBlock(timestamp, {
+    chain: "xdai",
+  });
+  const { uniswapFactory } = await request(graphUrl, graphQuery, {
+    block,
+  });
+  const usdTvl = Number(uniswapFactory.totalLiquidityUSD);
+
+  return toUSDTBalances(usdTvl);
 }
+
+/*==================================================
+  Exports
+  ==================================================*/
 
 module.exports = {
+  misrepresentedTokens: true,
   xdai: {
     tvl,
-    staking: staking(xlevin, levin, "xdai")
-  }
-}
+  },
+  name: "Levinswap", // Project name
+  token: "LEVIN", // LEVIN governance token
+  category: "dexes", // AMM DEX on xDai
+  start: 14000780, // Start block January-13-2021 03:01:30 AM +4 UTC
+  tvl,
+};

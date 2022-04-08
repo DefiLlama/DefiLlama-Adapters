@@ -1,62 +1,29 @@
 {
-  "currentEpoch": {
-    "inputs": [],
-    "name": "currentEpoch",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "totalEpochDeposits": {
+  "balanceOf": {
+    "constant": true,
     "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
+      { "internalType": "address", "name": "account", "type": "address" }
     ],
-    "name": "totalEpochDeposits",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "payable": false,
+    "name": "balanceOf",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
-  "getLpPrice": {
-    "inputs": [],
-    "name": "getLpPrice",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "vbnbToBnb": {
+  "earned": {
     "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "vbnbAmount",
-        "type": "uint256"
-      }
+      { "internalType": "address", "name": "account", "type": "address" }
     ],
-    "name": "vbnbToBnb",
+    "name": "earned",
     "outputs": [
       {
         "internalType": "uint256",
-        "name": "",
+        "name": "DPXtokensEarned",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "RDPXtokensEarned",
         "type": "uint256"
       }
     ],

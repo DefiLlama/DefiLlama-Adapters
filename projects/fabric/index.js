@@ -22,6 +22,7 @@ module.exports = {
   solana: {
     tvl: solonaTvl,
   },
+  tvl: sdk.util.sumChainTvls([solonaTvl]),
   methodology:
     "We count the liquidity of all Fabric Yield Pools on the Solana Chain. Metrics come from https://stake.fsynth.io/",
 };

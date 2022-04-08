@@ -118,6 +118,6 @@ module.exports = {
   bsc: {
     tvl: bscTvl,
   },
-  methodology:
-    "We count liquidity on the Farms through Farm Contract",
+  tvl: sdk.util.sumChainTvls([bscTvl]),
+  methodology: "We count liquidity on the Farms through Farm Contract",
 };

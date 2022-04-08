@@ -1,85 +1,81 @@
-const sdk = require("@defillama/sdk")
-const abi = require('./abi.json')
-const { getChainTransform } = require('../helper/portedTokens')
-const http = require('../helper/http')
+const sdk = require("@defillama/sdk");
+const abi = require("./abi.json");
+const _ = require("underscore");
 
-const chainConfig = {
-  ethereum: {
-    controller: '0xa4F1671d3Aee73C05b552d57f2d16d3cfcBd0217',
-    stakingPool: '0xbA4cFE5741b357FA371b506e5db0774aBFeCf8Fc',
-    VSP: '0x1b40183efb4dd766f11bda7a7c3ad8982e998421',
-    api: 'https://api.vesper.finance/pools?stages=prod',
-  },
-  avax: {
-    api: 'https://api-avalanche.vesper.finance/pools?stages=prod',
-  },
-  polygon: {
-    api: 'https://api-polygon.vesper.finance/pools?stages=prod',
-  },
-}
+async function tvl(timestamp, block) {
+  const vesperPoolAddresses = [];
+  const balances = {};
+  const collateralToken = {};
+  const controller = "0xa4F1671d3Aee73C05b552d57f2d16d3cfcBd0217";
 
-function getChainExports(chain) {
-  const { controller, stakingPool, VSP, api } = chainConfig[chain] || {}
+  // Get pool list
+  let poolAddressListResponse = await sdk.api.abi.call({
+    target: controller,
+    abi: abi["pools"],
+  });
 
-  async function tvl(timestamp, _block, chainBlocks) {
-    const block = chainBlocks[chain]
-    const transformAddress = await getChainTransform(chain)
-    const balances = {}
-    let network = chain === 'ethereum' ? 'mainnet' : chain
-    if (network === 'avax') network = 'avalanche'
+  let poolsCountResponse = await sdk.api.abi.call({
+    target: poolAddressListResponse.output,
+    abi: abi["length"],
+  });
 
-    const poolSet = new Set()
-
-    if (controller) {
-      // Get pool list from controller
-      const { output: poolsAddress } = await sdk.api.abi.call({ target: controller, abi: abi.pools, block, chain, })
-      const { output: poolLength } = await sdk.api.abi.call({ target: poolsAddress, abi: abi.length, block, chain, })
-
-      let calls = []
-      for (let i = 0; i < +poolLength; i++)
-        calls.push({ params: i })
-
-      let { output: pools } = await sdk.api.abi.multiCall({ calls, target: poolsAddress, abi: abi.at, block, chain, })
-      pools.forEach(p => poolSet.add(p.output))
-    }
-
-    (await http.get(api)).forEach(pool => poolSet.add(pool.address)) // add pools from our contracts list
-    if (stakingPool)  poolSet.delete(stakingPool)
-    const poolList = [...poolSet]
-    console.log(chain, poolList)
-
-    if (!poolList.length) return balances
-
-    // Get collateral token
-    calls = poolList.map(target => ({ target }))
-    const { output: tokens } = await sdk.api.abi.multiCall({ calls, abi: abi.token, chain, block, })
-    const { output: totalValue } = await sdk.api.abi.multiCall({ calls, abi: abi.totalValue, chain, block, })
-    tokens.forEach((token, index) => sdk.util.sumSingleBalance(balances, transformAddress(token.output), totalValue[index].output))
-    return balances
+  const calls = [];
+  let i = 0;
+  while (i < parseInt(poolsCountResponse.output)) {
+    calls.push({
+      target: poolAddressListResponse.output,
+      params: i,
+    });
+    i++;
   }
+  const poolListResponse = await sdk.api.abi.multiCall({
+    calls,
+    abi: abi["at"],
+  });
 
-  let staking
+  _.each(poolListResponse.output, (response) => {
+    vesperPoolAddresses.push(response.output);
+  });
 
-  if (stakingPool)
-    staking = async (timestamp, _block, chainBlocks) => {
-      const block = chainBlocks[chain]
-      const transformAddress = await getChainTransform(chain)
-      const balances = {}
-      const vspBalance = (await sdk.api.erc20.balanceOf({
-        block, chain,
-        target: VSP,
-        owner: stakingPool
-      })).output;
-      sdk.util.sumSingleBalance(balances, transformAddress(VSP), vspBalance)
-      return balances
+  // Get collateral token
+  const collateralTokenResponse = await sdk.api.abi.multiCall({
+    calls: _.map(vesperPoolAddresses, (poolAddress) => ({
+      target: poolAddress,
+    })),
+    abi: abi["token"],
+  });
+
+  _.each(collateralTokenResponse.output, (response) => {
+    const collateralTokenAddress = response.output;
+    const poolAddress = response.input.target;
+    collateralToken[poolAddress] = collateralTokenAddress;
+    if (!balances.hasOwnProperty(collateralTokenAddress)) {
+      balances[collateralTokenAddress] = 0;
     }
+  });
 
-  return {
-    [chain]: { tvl, staking }
-  }
+  //Get TVL
+  const totalValueResponse = await sdk.api.abi.multiCall({
+    block,
+    calls: _.map(vesperPoolAddresses, (poolAddress) => ({
+      target: poolAddress,
+    })),
+    abi: abi["totalValue"],
+  });
+
+  _.each(totalValueResponse.output, (response) => {
+    const totalValue = response.output;
+    const poolAddress = response.input.target;
+    sdk.util.sumSingleBalance(
+      balances,
+      collateralToken[poolAddress],
+      totalValue
+    );
+  });
+  return balances;
 }
 
 module.exports = {
   start: 1608667205, // December 22 2020 at 8:00 PM UTC
-  ...['ethereum', 'avax', 'polygon'].reduce((acc, chain) => ({ ...acc, ...getChainExports(chain) }), {})
+  tvl,
 };

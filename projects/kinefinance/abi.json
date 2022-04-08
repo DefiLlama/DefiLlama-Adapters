@@ -1,45 +1,73 @@
 {
-  "getAllMarkets": {
-    "constant": true,
-    "inputs": [],
-    "name": "getAllMarkets",
-    "outputs": [
-      {
-        "internalType": "contract KToken[]",
-        "name": "",
-        "type": "address[]"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
   "underlying": {
     "constant": true,
     "inputs": [],
     "name": "underlying",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "balanceOf": {
+    "constant": true,
+    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "name": "balanceOf",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "stakingToken": {
+    "constant": true,
+    "inputs": [],
+    "name": "stakingToken",
     "outputs": [
+      { "internalType": "contract IERC20", "name": "", "type": "address" }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "getReserves": {
+    "constant": true,
+    "inputs": [],
+    "name": "getReserves",
+    "outputs": [
+      { "internalType": "uint112", "name": "_reserve0", "type": "uint112" },
+      { "internalType": "uint112", "name": "_reserve1", "type": "uint112" },
       {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
+        "internalType": "uint32",
+        "name": "_blockTimestampLast",
+        "type": "uint32"
       }
     ],
     "payable": false,
     "stateMutability": "view",
     "type": "function"
   },
-  "totalBorrows": {
+  "totalSupply": {
     "constant": true,
     "inputs": [],
-    "name": "totalBorrows",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "name": "totalSupply",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "token0": {
+    "constant": true,
+    "inputs": [],
+    "name": "token0",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "token1": {
+    "constant": true,
+    "inputs": [],
+    "name": "token1",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "payable": false,
     "stateMutability": "view",
     "type": "function"

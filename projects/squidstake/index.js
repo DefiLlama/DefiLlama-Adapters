@@ -88,6 +88,14 @@ async function tvl(timestamp, chain, chainBlocks) {
 module.exports = {
   bsc: {
     tvl,
-    pool2: stakingPricedLP(masterchef, squidToken, "bsc", squidBnbLP, "wbnb", true),
+    pool2: stakingPricedLP(
+      masterchef,
+      squidToken,
+      "bsc",
+      squidBnbLP,
+      "wbnb",
+      true
+    ),
   },
+  tvl,
 };

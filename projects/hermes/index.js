@@ -422,9 +422,12 @@ module.exports = {
   misrepresentedTokens: true,
   methodology:
     "Hermes TVL is calculated from our vaults, which are not native tokens. Pool 2 is based on the TVL of native tokens hosted in our masterchef.",
-  polygon: {
-    pool2: sdk.util.sumChainTvls([masterchefTVL, tvlBalancer]),
-    tvl: tvlVaults
+  pool2: {
+    masterchefTVL,
+    tvlBalancer,
   },
-   
+  vault: {
+    tvlVaults,
+  },
+  tvl: sdk.util.sumChainTvls([masterchefTVL, tvlBalancer, tvlVaults]),
 };

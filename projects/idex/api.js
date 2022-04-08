@@ -1,11 +1,11 @@
-const axios = require('axios');
+const axios = require("axios");
 
 const client = axios.create({
-  baseURL: 'https://api-matic.idex.io/v1',
+  baseURL: "https://api.idex.io/v1",
   headers: {
-    'User-Agent': 'defi-pulse-adapter'
-  }
-})
+    "User-Agent": "defi-pulse-adapter",
+  },
+});
 
 /**
  * Capture the assets from the IDEX v2 API
@@ -13,11 +13,11 @@ const client = axios.create({
  * @see https://docs.idex.io/#get-assets
  */
 async function getAssets() {
-  const { data } = await client.get('assets');
+  const { data } = await client.get("assets");
 
-  return data
+  return data;
 }
 
 module.exports = {
-  getAssets
-}
+  getAssets,
+};

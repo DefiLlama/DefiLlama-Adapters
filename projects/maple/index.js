@@ -17,7 +17,7 @@ const Treasury = async (timestamp, ethBlock, chainBlocks) => {
     [MapleTreasury],
     chainBlocks["ethereum"],
     "ethereum",
-    addr => addr
+    (addr) => addr
   );
 
   return balances;
@@ -31,7 +31,7 @@ const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
     await sdk.api.abi.call({
       abi: abi.poolsCreated,
       target: PoolFactory,
-      block: ethBlock
+      block: ethBlock,
     })
   ).output;
 
@@ -41,7 +41,7 @@ const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
         abi: abi.pools,
         target: PoolFactory,
         params: i,
-        block: ethBlock
+        block: ethBlock,
       })
     ).output;
 
@@ -49,27 +49,21 @@ const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
       await sdk.api.abi.call({
         abi: abi.liquidityAsset,
         target: pool,
-        block: ethBlock
-      })
-    ).output;
-
-    const locker = (
-      await sdk.api.abi.call({
-        abi: abi.liquidityLocker,
-        target: pool,
-        block: ethBlock
-      })
-    ).output;
-
-    let locked = (
-      await sdk.api.erc20.balanceOf({
-        owner: locker,
-        target: assetOfLiquidity,
         block: ethBlock,
       })
     ).output;
 
-    sdk.util.sumSingleBalance(balances, assetOfLiquidity, locked);
+    const totalSupply =
+      (
+        await sdk.api.abi.call({
+          abi: abi.totalSupply,
+          target: pool,
+          block: ethBlock,
+        })
+      ).output /
+      10 ** 12;
+
+    sdk.util.sumSingleBalance(balances, assetOfLiquidity, totalSupply);
   }
 
   return balances;
@@ -77,10 +71,13 @@ const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
 
 module.exports = {
   misrepresentedTokens: true,
+  treasury: {
+    tvl: Treasury,
+  },
   ethereum: {
     tvl: ethTvl,
-    treasury: Treasury,
   },
+  tvl: sdk.util.sumChainTvls([ethTvl]),
   methodology:
-    "We count liquidity by USDC deposited on the pools through PoolFactory contract",
+    "We count liquidity by USDC deposited on the pools threw PoolFactory contract",
 };

@@ -1,23 +1,10 @@
-const utils = require('../helper/utils');
-
-function fetchForNetwork(network) {
-  return async () => {
-    const response = await utils.fetchURL('https://api.moonpot.com/v2/tvl/' + network);
-    return response.data.total;
-  }
-}
+const utils = require("../helper/utils");
 
 async function fetch() {
-  const response = await utils.fetchURL('https://api.moonpot.com/v2/tvl');
-  return response.data.total;
+  const response = await utils.fetchURL("https://api.moonpot.com/tvl");
+  return response.data.data.total.tvlUsd;
 }
 
 module.exports = {
-  bsc: {
-    fetch: fetchForNetwork('bsc')
-  },
-  fantom:{
-    fetch: fetchForNetwork('fantom')
-  },
-  fetch
-}
+  fetch,
+};

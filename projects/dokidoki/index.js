@@ -54,28 +54,28 @@ const ethPools = [
 const polyPool2LPs = [
   {
     owner: "0xc0a1dFb85734E465C5dadc5683DE58358C906598",
-    pool: "0xd0985A2E8410c03B3bB0D7997DA433428D58342f"
+    pool: "0xd0985A2E8410c03B3bB0D7997DA433428D58342f",
   }, // AZUKI-MUST
   {
     owner: "0x69Cb6f98E45c13A230d292bE0a6aF93a6521c39B",
-    pool: "0x92Bb3233F59561FC1fEC53EfC3339E4Af8E917F4"
+    pool: "0x92Bb3233F59561FC1fEC53EfC3339E4Af8E917F4",
   }, // AZUKI-ETH
   {
     owner: "0x2146baC214D9BF2Da56c3d4A69b9149e457F9d8c",
-    pool: "0x9cb31B03089eca4C0f42554256d0217326D15AE7"
+    pool: "0x9cb31B03089eca4C0f42554256d0217326D15AE7",
   }, // DOKI-MUST
   {
     owner: "0xBbDC1681e43549d3871CF1953D1dD9afF320feF0",
-    pool: "0xcCeD5cB001D6081c4561bf7911F11Ccd9aAA1474"
-  } // DOKI-ETH
+    pool: "0xcCeD5cB001D6081c4561bf7911F11Ccd9aAA1474",
+  }, // DOKI-ETH
 ];
 
 const polyStakingPools = [
   {
     pool: "0xE699FFCeD532BB43BD2A84C82c73C858758d12cC",
-    token: "0x5C7F7Fe4766fE8f0fa9b41E2E4194d939488ff1C"
-  } // DOKI
-]
+    token: "0x5C7F7Fe4766fE8f0fa9b41E2E4194d939488ff1C",
+  }, // DOKI
+];
 
 async function calcTvl(balances, chainBlocks, chain, pool) {
   let tokenBalance = (
@@ -86,12 +86,16 @@ async function calcTvl(balances, chainBlocks, chain, pool) {
       })),
       abi: "erc20:balanceOf",
       block: chainBlocks[chain],
-      chain: chain
+      chain: chain,
     })
   ).output;
   tokenBalance.forEach((i) => {
     if (chain !== "ethereum") {
-      sdk.util.sumSingleBalance(balances, `${chain}:${i.input.target}`, i.output);
+      sdk.util.sumSingleBalance(
+        balances,
+        `${chain}:${i.input.target}`,
+        i.output
+      );
     } else {
       sdk.util.sumSingleBalance(balances, i.input.target, i.output);
     }
@@ -109,7 +113,7 @@ async function pool2(balances, chainBlocks, chain, pool) {
       })),
       abi: "erc20:balanceOf",
       block: chainBlocks[chain],
-      chain: chain
+      chain: chain,
     })
   ).output;
   lpBalances.forEach((i) => {
@@ -118,7 +122,13 @@ async function pool2(balances, chainBlocks, chain, pool) {
       token: i.input.target,
     });
   });
-  await unwrapUniswapLPs(balances, lpPositions, chainBlocks[chain], chain, addr=>`${chain}:${addr}`);
+  await unwrapUniswapLPs(
+    balances,
+    lpPositions,
+    chainBlocks[chain],
+    chain,
+    (addr) => `${chain}:${addr}`
+  );
   return balances;
 }
 
@@ -130,7 +140,7 @@ async function ethTvl(timestamp, block) {
 
 async function ethStaking(timestamp, block) {
   let balances = {};
-  await calcTvl(balances, block ,"ethereum", ethStakingPools);
+  await calcTvl(balances, block, "ethereum", ethStakingPools);
   return balances;
 }
 
@@ -152,16 +162,16 @@ async function polygonPool2(timestamp, block, chainBlocks) {
   return balances;
 }
 
-
 module.exports = {
   ethereum: {
     tvl: ethTvl,
     staking: ethStaking,
-    pool2: ethPool2
+    pool2: ethPool2,
   },
   polygon: {
     tvl: async () => ({}),
     staking: polygonStaking,
-    pool2: polygonPool2
+    pool2: polygonPool2,
   },
+  tvl: sdk.util.sumChainTvls([ethTvl]),
 };

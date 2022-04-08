@@ -14,7 +14,7 @@ async function bscTvl(timestamp, block, chainBlocks) {
     chainBlocks["bsc"],
     "bsc",
     transformAddress,
-    abi.poolInfo,
+    abi.poolInfo
   );
   return balances;
 }
@@ -22,4 +22,5 @@ module.exports = {
   bsc: {
     tvl: bscTvl,
   },
+  tvl: bscTvl,
 };

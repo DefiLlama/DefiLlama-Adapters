@@ -52,4 +52,5 @@ module.exports = {
     tvl,
     staking,
   },
+  tvl,
 };

@@ -40,7 +40,7 @@ const bscTvl = async (chainBlocks) => {
         block: chainBlocks["bsc"],
       })
     ).output.lpToken;
-    
+
     const strat_bal = (
       await sdk.api.abi.call({
         abi: erc20.balanceOf,
@@ -50,7 +50,7 @@ const bscTvl = async (chainBlocks) => {
         block: chainBlocks["bsc"],
       })
     ).output;
-    
+
     const symbol = (
       await sdk.api.abi.call({
         abi: abi.symbol,
@@ -86,6 +86,7 @@ module.exports = {
   bsc: {
     tvl: bscTvl,
   },
+  tvl: sdk.util.sumChainTvls([bscTvl]),
   methodology:
     "We count liquidity on the Strategies (Vaults) through MasterChef contracts",
 };

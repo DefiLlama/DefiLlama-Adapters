@@ -2,7 +2,11 @@ const sdk = require("@defillama/sdk");
 const utils = require("../helper/utils");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { getCompoundV2Tvl, compoundExports } = require("../helper/compound");
-const {  transformBscAddress } = require('../helper/portedTokens')
+const {
+  transformFantomAddress,
+  transformBscAddress,
+} = require("../helper/portedTokens");
+const { GraphQLClient, gql } = require("graphql-request");
 
 const abiCerc20 = require("./cerc20.json");
 const abiCereth2 = require("./creth2.json");
@@ -75,6 +79,53 @@ async function ethereumTvl(timestamp, block) {
   });
   await unwrapUniswapLPs(balances, lpPositions, block);
 
+  let iron_bank_tokens = (
+    await utils.fetchURL(
+      "https://api.cream.finance/api/v1/crtoken?comptroller=ironbank"
+    )
+  ).data;
+  // --- Grab all the getCash values of cyERC20 (Iron Bank)---
+  const ironBankCalls = iron_bank_tokens.map((token) => ({
+    target: token.token_address,
+  }));
+  let [
+    cashValuesIronBank,
+    totalBorrowsIB,
+    totalReservesIB,
+    underlyingsIronBank,
+  ] = await Promise.all([
+    sdk.api.abi.multiCall({
+      block,
+      calls: ironBankCalls,
+      abi: abiCerc20["getCash"],
+    }),
+    sdk.api.abi.multiCall({
+      block,
+      calls: ironBankCalls,
+      abi: abiCerc20["totalBorrows"],
+    }),
+    sdk.api.abi.multiCall({
+      block,
+      calls: ironBankCalls,
+      abi: abiCerc20["totalReserves"],
+    }),
+    sdk.api.abi.multiCall({
+      block,
+      calls: ironBankCalls,
+      abi: abiCerc20["underlying"],
+    }),
+  ]);
+
+  cashValuesIronBank.output.map((cashVal, idx) => {
+    const token =
+      replacements[underlyingsIronBank.output[idx].output] ||
+      underlyingsIronBank.output[idx].output;
+    const amount = BigNumber(cashVal.output)
+      .plus(totalBorrowsIB.output[idx].output)
+      .minus(totalReservesIB.output[idx].output);
+    sdk.util.sumSingleBalance(balances, token, amount.toFixed(0));
+  });
+
   // --- Grab the accumulated on CRETH2 (ETH balance and update proper balances key) ---
   const accumCRETH2 = (
     await sdk.api.abi.call({
@@ -91,15 +142,20 @@ async function ethereumTvl(timestamp, block) {
     twice. Only certain portion can be considered "idle" in the eth deposit contract to account again as extra
     eth tvl
   */
-  const iddleInETHDepositContract =
-    BigNumber(accumCRETH2).minus(balances[CRETH2]);
+  const iddleInETHDepositContract = BigNumber(accumCRETH2).minus(
+    balances[CRETH2]
+  );
 
-  balances["0x0000000000000000000000000000000000000000"] = BigNumber(balances["0x0000000000000000000000000000000000000000"]).plus(iddleInETHDepositContract).toFixed(0);
+  balances["0x0000000000000000000000000000000000000000"] = BigNumber(
+    balances["0x0000000000000000000000000000000000000000"]
+  )
+    .plus(iddleInETHDepositContract)
+    .toFixed(0);
 
   return balances;
 }
 
-async function lending(block, chain, borrowed){
+async function lending(block, chain, borrowed) {
   let balances = {};
 
   let tokens_bsc = (
@@ -112,7 +168,7 @@ async function lending(block, chain, borrowed){
     await sdk.api.abi.multiCall({
       block,
       calls: tokens_bsc.map((token) => ({ target: token.token_address })),
-      abi: borrowed? abiCerc20.totalBorrows: abiCerc20["getCash"],
+      abi: borrowed ? abiCerc20.totalBorrows : abiCerc20["getCash"],
       chain,
     })
   ).output;
@@ -126,7 +182,7 @@ async function lending(block, chain, borrowed){
     })
   ).output;
 
-  const transformAdress = await transformBscAddress()
+  const transformAdress = await transformBscAddress();
   const lpPositions = [];
   cashValues.map((cashVal, idx) => {
     if (tokens_bsc[idx].underlying_symbol === "Cake-LP") {
@@ -134,7 +190,7 @@ async function lending(block, chain, borrowed){
         token: underlyings[idx].output,
         balance: cashVal.output,
       });
-    } else if (tokens_bsc[idx].symbol==="crBNB") {
+    } else if (tokens_bsc[idx].symbol === "crBNB") {
       sdk.util.sumSingleBalance(
         balances,
         "bsc:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
@@ -142,16 +198,20 @@ async function lending(block, chain, borrowed){
       ); // BNB
     } else {
       const tokenAddr = underlyings[idx].output;
-      sdk.util.sumSingleBalance(balances, transformAdress(tokenAddr), cashVal.output);
+      sdk.util.sumSingleBalance(
+        balances,
+        transformAdress(tokenAddr),
+        cashVal.output
+      );
     }
   });
-  await unwrapUniswapLPs(balances, lpPositions, block, 'bsc', transformAdress);
-  return balances
+  await unwrapUniswapLPs(balances, lpPositions, block, "bsc", transformAdress);
+  return balances;
 }
 
 const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
   const block = chainBlocks["bsc"]; // req for the block type
-  const balances = await lending(block, "bsc", false)
+  const balances = await lending(block, "bsc", false);
 
   // --- Staking bsc service ---
   const bsc_staking_service = await utils.fetchURL(
@@ -171,8 +231,89 @@ const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
 
 const bscBorrowed = async (timestamp, ethBlock, chainBlocks) => {
   const block = chainBlocks["bsc"]; // req for the block type
-  return lending(block, "bsc", true)
-}
+  return lending(block, "bsc", true);
+};
+
+const fantomToken = "0x4e15361fd6b4bb609fa63c81a2be19d873717870";
+const fantomTvl = async (timestamp, ethBlock, chainBlocks) => {
+  const block = chainBlocks["fantom"]; // req for the block type
+  let balances = {};
+
+  let tokens_fantom = (
+    await utils.fetchURL(
+      "https://api.cream.finance/api/v1/crtoken?comptroller=fantom"
+    )
+  ).data;
+
+  let cashValues = (
+    await sdk.api.abi.multiCall({
+      block,
+      calls: tokens_fantom.map((token) => ({ target: token.token_address })),
+      abi: abiCerc20["getCash"],
+      chain: "fantom",
+    })
+  ).output;
+
+  let underlyings = (
+    await sdk.api.abi.multiCall({
+      block,
+      calls: tokens_fantom.map((token) => ({ target: token.token_address })),
+      abi: abiCerc20["underlying"],
+      chain: "fantom",
+    })
+  ).output;
+
+  const fantomAddr = await transformFantomAddress();
+  cashValues.map((cashVal, idx) => {
+    const tokenAddr =
+      underlyings[idx].output === "0x924828a9Fb17d47D0eb64b57271D10706699Ff11"
+        ? "0xb753428af26e81097e7fd17f40c88aaa3e04902c"
+        : fantomAddr(underlyings[idx].output); //SFI
+    sdk.util.sumSingleBalance(balances, tokenAddr, cashVal.output);
+  });
+
+  const stakerCreamAddressInFantom =
+    "0x0abad588c5490eee5850693e16bb6de9d60bdb6c";
+  const fantom_staking_service_endpoint = "https://xapi3.fantom.network/api";
+  const graphQLClient = new GraphQLClient(fantom_staking_service_endpoint);
+
+  const query = gql`
+    query StakerByAddress($address: Address!) {
+      staker(address: $address) {
+        id
+        stakerAddress
+        totalStake
+        stake
+        delegatedMe
+        createdEpoch
+        createdTime
+        downtime
+        lockedUntil
+        isActive
+        isOffline
+        stakerInfo {
+          name
+          website
+          contact
+          logoUrl
+          __typename
+        }
+        __typename
+      }
+    }
+  `;
+
+  const fantomStakingData = await graphQLClient.request(query, {
+    address: stakerCreamAddressInFantom,
+  });
+  sdk.util.sumSingleBalance(
+    balances,
+    fantomToken,
+    fantomStakingData.staker.totalStake
+  );
+
+  return balances;
+};
 
 module.exports = {
   timetravel: false, // bsc and fantom api's for staked coins can't be queried at historical points
@@ -182,8 +323,26 @@ module.exports = {
   },
   bsc: {
     tvl: bscTvl,
-    borrowed: bscBorrowed
+    borrowed: bscBorrowed,
     //getCompoundV2Tvl("0x589de0f0ccf905477646599bb3e5c622c84cc0ba", "bsc", addr=>`bsc:${addr}`,  "0x1Ffe17B99b439bE0aFC831239dDECda2A790fF3A", "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c", true),
   },
-  polygon:compoundExports("0x20ca53e2395fa571798623f1cfbd11fe2c114c24", "polygon"),
+  fantom: {
+    tvl: fantomTvl,
+    borrowed: getCompoundV2Tvl(
+      "0x4250a6d3bd57455d7c6821eecb6206f507576cd2",
+      "fantom",
+      (addr) => `fantom:${addr}`,
+      undefined,
+      undefined,
+      true
+    ),
+  },
+  polygon: compoundExports(
+    "0x20ca53e2395fa571798623f1cfbd11fe2c114c24",
+    "polygon"
+  ),
+  avalanche: compoundExports(
+    "0x2eE80614Ccbc5e28654324a66A396458Fa5cD7Cc",
+    "avax"
+  ),
 };

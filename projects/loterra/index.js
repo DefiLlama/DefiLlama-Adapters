@@ -1,36 +1,38 @@
-const { sumSingleBalance, TOKEN_LIST, getBalance, } = require('../helper/terra')
+const { fetchURL } = require("../helper/utils");
 
 // Source: https://docs.loterra.io/resources/contract-addresses
-const contracts = {
-	multiSig: 'terra1s4twvkqy0eel5saah64wxezpckm7v9535jjshy',
-	dogether: 'terra19h4xk8xxxew0ne6fuw0mvuf7ltmjmxjxssj5ts'
-}
+const contracts = [
+  "terra1e7hzp3tnsswpfcu6gt4wlgfm20lcsqqywhaagu",
+  "terra1zcf0d95z02u2r923sgupp28mqrdwmt930gn8x5",
+  "terra14mevcmeqt0n4myggt7c56l5fl0xw2hwa2mhlg0",
+  "terra1q2k29wwcz055q4ftx4eucsq6tg9wtulprjg75w",
+];
 
-async function tvl(timestamp, ethBlock, { terra: block }) {
-	const balances = {}
+async function tvl() {
+  const tokens = await Promise.all(
+    contracts.map((contract) =>
+      fetchURL(`https://fcd.terra.dev/v1/bank/${contract}`)
+    )
+  );
+  const total = tokens.map((data) => {
+    const ust = data.data.balance.find((t) => t.denom === "uusd");
+    if (ust === undefined) {
+      return 0;
+    }
+    return Number(ust.available);
+  });
 
-	// Add aUST tokens in the multi-sig
-	const aUSTBalance = await getBalance(TOKEN_LIST.anchorust, contracts.dogether, block)
-	sumSingleBalance(balances, TOKEN_LIST.anchorust, aUSTBalance)
-
-	return balances
-}
-
-async function treasury(timestamp, ethBlock, { terra: block }) {
-	const balances = {}
-
-	// Add aUST tokens in the multi-sig
-	const aUSTBalance = await getBalance(TOKEN_LIST.anchorust, contracts.multiSig, block)
-	sumSingleBalance(balances, TOKEN_LIST.anchorust, aUSTBalance)
-
-	return balances
+  return {
+    terrausd: total.reduce((t, c) => c + t) / 1e6,
+  };
 }
 
 module.exports = {
-	methodology: 'TVL counts the UST that is available as a prize on the protocol.',
-	terra: {
-		tvl,
-		treasury,
-	},
-	timetravel: false,
-}
+  methodology:
+    "TVL counts the UST that is available as a prize on the protocol.",
+  terra: {
+    tvl,
+  },
+  historical: false,
+  tvl,
+};

@@ -19,7 +19,7 @@ async function ethTvl() {
     await sumTokensAndLPsSharedOwners(
       balances,
       [[token, false]],
-      [multiMerkleStashContracts, votiumBribeContract],
+      [multiMerkleStashContracts, votiumBribeContract]
     );
   }
 
@@ -30,5 +30,7 @@ module.exports = {
   ethereum: {
     tvl: ethTvl,
   },
-  methodology: "Counts tvl of Tokens used for Delegating on Convex Snapshot through MultiMerkleStash Contract",
+  tvl: sdk.util.sumChainTvls([ethTvl]),
+  methodology:
+    "Counts tvl of Tokens used for Delegating on Convex Snapshot through MultiMerkleStash Contract",
 };

@@ -1,17 +1,22 @@
-const sdk = require('@defillama/sdk');
-const { default: BigNumber } = require('bignumber.js');
-const abi = require('./abis/aave.json');
-const { getBlock } = require('./getBlock');
+const sdk = require("@defillama/sdk");
+const { default: BigNumber } = require("bignumber.js");
+const abi = require("./abis/aave.json");
+const { getBlock } = require("./getBlock");
 
-async function getV2Reserves(block, addressesProviderRegistry, chain, dataHelperAddress) {
-  let validProtocolDataHelpers
+async function getV2Reserves(
+  block,
+  addressesProviderRegistry,
+  chain,
+  dataHelperAddress
+) {
+  let validProtocolDataHelpers;
   if (dataHelperAddress === undefined) {
     const addressesProviders = (
       await sdk.api.abi.call({
         target: addressesProviderRegistry,
         abi: abi["getAddressesProvidersList"],
         block,
-        chain
+        chain,
       })
     ).output;
 
@@ -19,20 +24,23 @@ async function getV2Reserves(block, addressesProviderRegistry, chain, dataHelper
       await sdk.api.abi.multiCall({
         calls: addressesProviders.map((provider) => ({
           target: provider,
-          params: "0x0100000000000000000000000000000000000000000000000000000000000000",
+          params:
+            "0x0100000000000000000000000000000000000000000000000000000000000000",
         })),
         abi: abi["getAddress"],
         block,
-        chain
+        chain,
       })
     ).output;
 
-    validProtocolDataHelpers = protocolDataHelpers.filter(
-      (helper) =>
-        helper.output !== "0x0000000000000000000000000000000000000000"
-    ).map(p => p.output);
+    validProtocolDataHelpers = protocolDataHelpers
+      .filter(
+        (helper) =>
+          helper.output !== "0x0000000000000000000000000000000000000000"
+      )
+      .map((p) => p.output);
   } else {
-    validProtocolDataHelpers = dataHelperAddress
+    validProtocolDataHelpers = dataHelperAddress;
   }
 
   const aTokenMarketData = (
@@ -42,7 +50,7 @@ async function getV2Reserves(block, addressesProviderRegistry, chain, dataHelper
       })),
       abi: abi["getAllATokens"],
       block,
-      chain
+      chain,
     })
   ).output;
 
@@ -61,62 +69,128 @@ async function getV2Reserves(block, addressesProviderRegistry, chain, dataHelper
       })),
       abi: abi["getUnderlying"],
       block,
-      chain
+      chain,
     })
   ).output;
 
-  const reserveAddresses = underlyingAddressesData.map((reserveData) => reserveData.output);
+  const reserveAddresses = underlyingAddressesData.map(
+    (reserveData) => reserveData.output
+  );
 
-  return [aTokenAddresses, reserveAddresses, validProtocolDataHelpers[0]]
+  return [aTokenAddresses, reserveAddresses, validProtocolDataHelpers[0]];
 }
 
-async function getV2Tvl(balances, block, chain, v2Atokens, v2ReserveTokens, transformAddress) {
+async function getV2Tvl(
+  balances,
+  block,
+  chain,
+  v2Atokens,
+  v2ReserveTokens,
+  transformAddress
+) {
   const balanceOfUnderlying = await sdk.api.abi.multiCall({
-      calls: v2Atokens.map((aToken, index) => ({
-        target: v2ReserveTokens[index],
-        params: aToken,
-      })),
-      abi: "erc20:balanceOf",
-      block,
-      chain
-    });
-  sdk.util.sumMultiBalanceOf(balances, balanceOfUnderlying, true, transformAddress)
+    calls: v2Atokens.map((aToken, index) => ({
+      target: v2ReserveTokens[index],
+      params: aToken,
+    })),
+    abi: "erc20:balanceOf",
+    block,
+    chain,
+  });
+  sdk.util.sumMultiBalanceOf(
+    balances,
+    balanceOfUnderlying,
+    true,
+    transformAddress
+  );
 }
 
-async function getV2Borrowed(balances, block, chain, v2ReserveTokens, dataHelper, transformAddress) {
+async function getV2Borrowed(
+  balances,
+  block,
+  chain,
+  v2ReserveTokens,
+  dataHelper,
+  transformAddress
+) {
   const reserveData = await sdk.api.abi.multiCall({
-      calls: v2ReserveTokens.map((token) => ({
-        target: dataHelper,
-        params: [token],
-      })),
-      abi: abi.getHelperReserveData,
-      block,
-      chain
-    });
-    reserveData.output.forEach((data, idx)=>{
-      sdk.util.sumSingleBalance(balances, transformAddress(data.input.params[0]), BigNumber(data.output.totalVariableDebt).plus(data.output.totalStableDebt).toFixed(0))
-    })
+    calls: v2ReserveTokens.map((token) => ({
+      target: dataHelper,
+      params: [token],
+    })),
+    abi: abi.getHelperReserveData,
+    block,
+    chain,
+  });
+  reserveData.output.forEach((data, idx) => {
+    sdk.util.sumSingleBalance(
+      balances,
+      transformAddress(data.input.params[0]),
+      BigNumber(data.output.totalVariableDebt)
+        .plus(data.output.totalStableDebt)
+        .toFixed(0)
+    );
+  });
 }
 
-function aaveChainTvl(chain, addressesProviderRegistry, transformAddressRaw, dataHelperAddresses, borrowed) {
-  const transformAddress = transformAddressRaw ? transformAddressRaw : addr=>`${chain}:${addr}`
+function aaveChainTvl(
+  chain,
+  addressesProviderRegistry,
+  transformAddressRaw,
+  dataHelperAddresses,
+  borrowed
+) {
+  const transformAddress = transformAddressRaw
+    ? transformAddressRaw
+    : (addr) => `${chain}:${addr}`;
   return async (timestamp, ethBlock, chainBlocks) => {
-    const balances = {}
+    const balances = {};
     const block = await getBlock(timestamp, chain, chainBlocks, true);
-    const [v2Atokens, v2ReserveTokens, dataHelper] = await getV2Reserves(block, addressesProviderRegistry, chain, dataHelperAddresses)
-    if(borrowed){
-      await getV2Borrowed(balances, block, chain, v2ReserveTokens, dataHelper, transformAddress);
+    const [v2Atokens, v2ReserveTokens, dataHelper] = await getV2Reserves(
+      block,
+      addressesProviderRegistry,
+      chain,
+      dataHelperAddresses
+    );
+    if (borrowed) {
+      await getV2Borrowed(
+        balances,
+        block,
+        chain,
+        v2ReserveTokens,
+        dataHelper,
+        transformAddress
+      );
     } else {
-      await getV2Tvl(balances, block, chain, v2Atokens, v2ReserveTokens, transformAddress);
+      await getV2Tvl(
+        balances,
+        block,
+        chain,
+        v2Atokens,
+        v2ReserveTokens,
+        transformAddress
+      );
     }
-    return balances
-  }
+    return balances;
+  };
 }
-function aaveExports(chain, addressesProviderRegistry, transform = undefined, dataHelpers = undefined){
+function aaveExports(chain, addressesProviderRegistry) {
   return {
-    tvl: aaveChainTvl(chain, addressesProviderRegistry, transform, dataHelpers, false),
-    borrowed: aaveChainTvl(chain, addressesProviderRegistry, transform, dataHelpers, true)
-  }
+    tvl: aaveChainTvl(
+      chain,
+      addressesProviderRegistry,
+      undefined,
+      undefined,
+      false
+    ),
+    borrowed: aaveChainTvl(
+      chain,
+      addressesProviderRegistry,
+      undefined,
+      undefined,
+      true
+    ),
+  };
 }
 module.exports = {
   aaveChainTvl,
@@ -124,4 +198,4 @@ module.exports = {
   getV2Tvl,
   aaveExports,
   getV2Borrowed,
-}
+};

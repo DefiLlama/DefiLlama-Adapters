@@ -65,7 +65,11 @@ const ftmTvl = async (chainBlocks) => {
         balance: strat_bal,
       });
     } else if (symbol.includes("DAI+USDC")) {
-      sdk.util.sumSingleBalance(balances, `fantom:${USDC}`, strat_bal/10**12);
+      sdk.util.sumSingleBalance(
+        balances,
+        `fantom:${USDC}`,
+        strat_bal / 10 ** 12
+      );
     } else {
       sdk.util.sumSingleBalance(balances, `fantom:${want}`, strat_bal);
     }
@@ -89,6 +93,7 @@ module.exports = {
   fantom: {
     tvl: ftmTvl,
   },
+  tvl: sdk.util.sumChainTvls([ftmTvl]),
   methodology:
     "We count liquidity on all the Vaults through MasterChef Contract",
 };

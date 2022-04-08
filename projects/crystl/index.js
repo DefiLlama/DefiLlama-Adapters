@@ -6,9 +6,6 @@ const apePriceGetterAbi = require("./apePriceGetter.json");
 const { fetchURL } = require("../helper/utils");
 const { default: BigNumber } = require("bignumber.js");
 
-let p;
-let c;
-
 const CHAIN_DATA = {
   polygon: {
     name: "polygon",
@@ -51,14 +48,13 @@ const getBalanceNumber = (balance, decimals = 18) => {
   return getBalanceAmount(balance, decimals).toNumber();
 };
 
-async function getLPPrice(lpList, lpPrices, chain, block) {
+async function getLPPrice(lpList, lpPrices, chain) {
   let prices = (
     await sdk.api.abi.call({
       abi: apePriceGetterAbi.getLPPrices,
       target: chain.apeprice_getter,
       params: [lpList, 18],
       chain: chain.name,
-      block
     })
   ).output.map((price) => getBalanceNumber(Number(price)));
 
@@ -67,7 +63,7 @@ async function getLPPrice(lpList, lpPrices, chain, block) {
   }
 }
 
-async function getFarmBalance(lpShares, lpList, chain, block) {
+async function getFarmBalance(lpShares, lpList, chain) {
   if (chain.masterhealer === "") {
     return;
   }
@@ -77,7 +73,6 @@ async function getFarmBalance(lpShares, lpList, chain, block) {
       abi: abi.poolLength,
       target: chain.masterhealer,
       chain: chain.name,
-      block
     })
   ).output;
 
@@ -88,7 +83,6 @@ async function getFarmBalance(lpShares, lpList, chain, block) {
         target: chain.masterhealer,
         params: index,
         chain: chain.name,
-        block
       })
     ).output.lpToken;
 
@@ -99,7 +93,6 @@ async function getFarmBalance(lpShares, lpList, chain, block) {
           target: lpsOrTokens,
           params: chain.masterhealer,
           chain: chain.name,
-          block
         })
       ).output
     );
@@ -115,7 +108,7 @@ async function getFarmBalance(lpShares, lpList, chain, block) {
   }
 }
 
-async function getVaultBalance(lpShares, lpList, vaultHealer, chain, block) {
+async function getVaultBalance(lpShares, lpList, vaultHealer, chain) {
   if (vaultHealer === "") {
     return;
   }
@@ -125,7 +118,6 @@ async function getVaultBalance(lpShares, lpList, vaultHealer, chain, block) {
       abi: vaultAbi.poolLength,
       target: vaultHealer,
       chain: chain.name,
-      block
     })
   ).output;
 
@@ -136,7 +128,6 @@ async function getVaultBalance(lpShares, lpList, vaultHealer, chain, block) {
         target: vaultHealer,
         params: index,
         chain: chain.name,
-        block
       })
     ).output;
 
@@ -146,7 +137,6 @@ async function getVaultBalance(lpShares, lpList, vaultHealer, chain, block) {
           abi: vaultAbi.vaultSharesTotal,
           target: vault.strat,
           chain: chain.name,
-          block
         })
       ).output
     );
@@ -162,7 +152,7 @@ async function getVaultBalance(lpShares, lpList, vaultHealer, chain, block) {
   }
 }
 
-async function poolsTvl(chain, block) {
+async function poolsTvl(chain) {
   const pools = await getPools(chain);
 
   const poolLength = pools.length;
@@ -176,7 +166,6 @@ async function poolsTvl(chain, block) {
           abi: abi.totalStaked,
           target: pools[index],
           chain: chain.name,
-          block
         })
       ).output
     );
@@ -190,7 +179,6 @@ async function poolsTvl(chain, block) {
         target: chain.apeprice_getter,
         params: [chain.crystl_token, 18],
         chain: chain.name,
-        block
       })
     ).output
   );
@@ -207,7 +195,7 @@ function calculateLpBalancePrice(lpShares, balances, lpPrices) {
   return balances;
 }
 
-async function fetchChain(chain, block) {
+async function fetchChain(chain) {
   let balances = 0;
 
   let lpShares = [];
@@ -215,18 +203,15 @@ async function fetchChain(chain, block) {
   let lpPrices = [];
 
   let [poolBalance] = await Promise.all([
-    poolsTvl(chain, block),
-    getFarmBalance(lpShares, lpList, chain, block),
-  ]);
-
-  await Promise.all([
-    getVaultBalance(lpShares, lpList, chain.vaulthealer_v1, chain, block),
-    getVaultBalance(lpShares, lpList, chain.vaulthealer_v2, chain, block),
+    poolsTvl(chain),
+    getFarmBalance(lpShares, lpList, chain),
+    getVaultBalance(lpShares, lpList, chain.vaulthealer_v1, chain),
+    getVaultBalance(lpShares, lpList, chain.vaulthealer_v2, chain),
   ]);
 
   balances += poolBalance;
 
-  await getLPPrice(lpList, lpPrices, chain, block);
+  await getLPPrice(lpList, lpPrices, chain);
 
   balances = calculateLpBalancePrice(lpShares, balances, lpPrices);
 
@@ -236,18 +221,15 @@ async function fetchChain(chain, block) {
 }
 
 async function fetch() {
-  let [a, b] = await Promise.all([p, c])
-  return a + b
+  return (await polygon()) + (await cronos());
 }
 
-async function polygon(timestamp, block, chainBlocks) {
-  p = fetchChain(CHAIN_DATA.polygon, chainBlocks.polygon);
-  return p
+async function polygon() {
+  return fetchChain(CHAIN_DATA.polygon);
 }
 
-async function cronos(timestamp, block, chainBlocks) {
-  c = fetchChain(CHAIN_DATA.cronos, chainBlocks.cronos);
-  return c
+async function cronos() {
+  return fetchChain(CHAIN_DATA.cronos);
 }
 
 module.exports = {

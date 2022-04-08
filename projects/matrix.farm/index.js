@@ -2,7 +2,7 @@ const axios = require("axios");
 const MATRIX_API = "https://api.matrix.farm/";
 
 const client = axios.create({
-  baseURL: MATRIX_API
+  baseURL: MATRIX_API,
 });
 
 async function fetch() {
@@ -12,9 +12,7 @@ async function fetch() {
 }
 
 module.exports = {
-  doublecounted: true,
-  timetravel: false,
-  misrepresentedTokens: true,
-  methodology: "The TVL is calculated using a google cloud function that runs every 30 minutes, it checks the value of all the LPs staked in our vaults and returns the total",
-  fetch
-}
+  methodology:
+    "The TVL is calculated using a google cloud function that runs every 30 minutes, it checks the value of all the LPs staked in our vaults and returns the total",
+  fetch,
+};

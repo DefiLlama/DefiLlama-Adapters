@@ -43,17 +43,11 @@ const MINT_DATA_ARRAY = [
     BOND: "0x16DC360812d3d07D27bA35eca4CFC01b6E1C947f",
     TYPE: "LP_UNSTABLE",
   },
-  {
-    NAME: "KRNO_KSP_LP",
-    TOKEN: "0x2febbaed702b9a1d9f6ffccd67701550ac546115",
-    BOND: "0xFA3A46Bc0E1587CE4ae26298B5c89B5b85Ca7786",
-    TYPE: "LP_UNSTABLE",
-  },
 ];
 
 const loadTokenPrices = async () => {
   const url =
-    "https://api.coingecko.com/api/v3/simple/price?ids=avalanche-2,olympus,magic-internet-money,dai,klay-token,klayswap-protocol&vs_currencies=usd";
+    "https://api.coingecko.com/api/v3/simple/price?ids=avalanche-2,olympus,magic-internet-money,dai,klay-token&vs_currencies=usd";
   const { data } = await axios.get(url);
   const result = {};
   result["AVAX"] = data["avalanche-2"].usd;
@@ -61,7 +55,6 @@ const loadTokenPrices = async () => {
   result["OHM"] = data["olympus"].usd;
   result["OHM"] = data["olympus"].usd;
   result["KLAY"] = data["klay-token"].usd;
-  result["KSP"] = data["klayswap-protocol"].usd;
   return result;
 };
 
@@ -85,9 +78,6 @@ async function getMintVolume(caver, mintData) {
     if (mintData.NAME === "KRNO_KLAY_LP") {
       const klayPrice = (await loadTokenPrices()).KLAY;
       volume *= klayPrice;
-    } else if (mintData.NAME === "KRNO_KSP_LP") {
-      const kspPrice = (await loadTokenPrices()).KSP;
-      volume *= kspPrice;
     }
   } else {
     volume = marketPrice * amount;

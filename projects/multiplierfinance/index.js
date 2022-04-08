@@ -8,9 +8,9 @@ const ETH = "0x0000000000000000000000000000000000000000";
 const LendingPool = "0xbc3534b076EDB8E8Ef254D81b81DC193c53057F7";
 
 /*** ETH TVL Portion ***
-* Yield Contract is in ethereum network, neither at the protocol web nor at their docs, 
-* they didn't mentioned anything about that.
-*/
+ * Yield Contract is in ethereum network, neither at the protocol web nor at their docs,
+ * they didn't mentioned anything about that.
+ */
 const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
   const balances = {};
 
@@ -110,4 +110,5 @@ module.exports = {
   bsc: {
     tvl: bscTvl,
   },
+  tvl: sdk.util.sumChainTvls([ethTvl, bscTvl]),
 };

@@ -78,4 +78,5 @@ module.exports = {
     tvl: fantomTvl,
     staking: staking(MASTER_FANTOM, WINGS_TOKEN_FANTOM, "fantom"),
   },
+  tvl: sdk.util.sumChainTvls([bscTvl, polygonTvl, fantomTvl]),
 };

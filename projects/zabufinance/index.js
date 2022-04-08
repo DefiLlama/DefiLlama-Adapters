@@ -76,6 +76,7 @@ module.exports = {
   avalanche: {
     tvl: avaxTvl,
   },
+  tvl: sdk.util.sumChainTvls([avaxTvl]),
   methodology:
-  'The Zabu Farm Contract Address is used to obtain the balance held in every LP pair and single assets.',
+    "The Zabu Farm Contract Address is used to obtain the balance held in every LP pair and single assets.",
 };

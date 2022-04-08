@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const BigNumber = require('bignumber.js')
+const BigNumber = require("bignumber.js");
 const erc20 = require("../helper/abis/erc20.json");
 const { pool2s } = require("../helper/pool2");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
@@ -59,7 +59,7 @@ async function Staking(chainBlocks) {
     })
   ).output;
 
-  const totalBalance = BigNumber(balancepEVRT * 1.3403).toFixed(0)
+  const totalBalance = BigNumber(balancepEVRT * 1.3403).toFixed(0);
 
   sdk.util.sumSingleBalance(balances, `avax:${EVRT}`, totalBalance);
 
@@ -67,12 +67,10 @@ async function Staking(chainBlocks) {
 }
 
 module.exports = {
-  deadFrom: 1648765747,
   avax: {
     staking: Staking,
     pool2: pool2s(pool2Contracts, pool2Lps, "avax"),
     tvl: async () => ({}),
   },
-  methodology:
-    "Counts liquidity on the Farms through their Contracts",
+  methodology: "Counts liquidity on the Farms through their Contracts",
 };

@@ -47,7 +47,7 @@ const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
 
   await sumTokensAndLPsSharedOwners(
     balances,
-    erc20Tokens.map(token => [token, false]),
+    erc20Tokens.map((token) => [token, false]),
     vaults,
     chainBlocks["ethereum"]
   );
@@ -60,6 +60,7 @@ module.exports = {
   ethereum: {
     tvl: ethTvl,
   },
+  tvl: sdk.util.sumChainTvls([ethTvl]),
   methodology:
     "We count liquidity of NXM/WNXM deposited on the vaults (iNXM and sNXM) threw their contracts and the staking of other tokens within these vaults",
 };

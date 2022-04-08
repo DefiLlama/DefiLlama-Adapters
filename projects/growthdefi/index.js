@@ -1,15 +1,16 @@
 const sdk = require("@defillama/sdk");
-const BigNumber = require('bignumber.js');
+const BigNumber = require("bignumber.js");
 const abi = require("./abi.json");
 const erc20 = require("../helper/abis/erc20.json");
 const beltAbi = require("./abis/belt.json");
 const { transformBscAddress } = require("../helper/portedTokens");
-const {staking} = require('../helper/staking');
+const { staking } = require("../helper/staking");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 
 const stakingContract_eth = "0xD93f98b483CC2F9EFE512696DF8F5deCB73F9497";
-const GRO_ETH = "0x09e64c2B61a5f1690Ee6fbeD9baf5D6990F8dFd0"; /* it's not on coingecko yet!! */
+const GRO_ETH =
+  "0x09e64c2B61a5f1690Ee6fbeD9baf5D6990F8dFd0"; /* it's not on coingecko yet!! */
 
 const gRootStakingContract_bsc = "0xDA2AE62e2B71ad3000BB75acdA2F8f68DC88aCE4";
 
@@ -18,7 +19,7 @@ const GRO_BSC = "0x336ed56d8615271b38ecee6f4786b55d0ee91b96";
 const gROOT_BSC = "0x8b571fe684133aca1e926beb86cb545e549c832d";
 const WBNB_BSC = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
 
-const BELT_4POOL_SWAP_BSC = "0xAEA4f7dcd172997947809CE6F12018a6D5c1E8b6"
+const BELT_4POOL_SWAP_BSC = "0xAEA4f7dcd172997947809CE6F12018a6D5c1E8b6";
 
 const wheatChains = {
   bsc: {
@@ -26,13 +27,13 @@ const wheatChains = {
     ignoreAddresses: [
       "0xC8216C4ac63F3cAC4f7e74A82d2252B7658FA8b1",
       "0x87BAde473ea0513D4aA7085484aEAA6cB6EBE7e3",
-    ]
+    ],
   },
   avax: {
     masterChefContract: "0x995eeDB14d5ecF3c7C44D7186fA013f3C12fA994",
-    ignoreAddresses: []
-  }
-}
+    ignoreAddresses: [],
+  },
+};
 
 const morChains = {
   bsc: {
@@ -48,9 +49,9 @@ const morChains = {
       "0xFA6388B7980126C2d7d0c5FC02949a2fF40F95DE",
       "0x9FDD69a473d2216c5D232510DDF2328272bC6847",
       "0xcAD2E1b2257795f0D580d49520741E93654fAaB5",
-      "0xC2E8C3c427E0a5BaaF512A013516aECB65Bd75CB"
+      "0xC2E8C3c427E0a5BaaF512A013516aECB65Bd75CB",
     ],
-    ignoreAddresses: []
+    ignoreAddresses: [],
   },
   avax: {
     pools: [
@@ -65,9 +66,9 @@ const morChains = {
       "0x691e486b5F7E39e90d37485164fAbDDd93aE43cD",
       "0xB1429FB053242fd5b8483Ed452E22c688E405CB5",
     ],
-    ignoreAddresses: []
-  }
-}
+    ignoreAddresses: [],
+  },
+};
 
 const treasury = async (timestamp, ethBlock, chainBlocks) => {
   const balances = {};
@@ -90,7 +91,13 @@ const treasury = async (timestamp, ethBlock, chainBlocks) => {
 };
 
 //*** Wheat tvl portion as product of GrowthDefi Protocol ***//
-const fetchWheatChainTvl = async (timestamp, ethBlock, chainBlocks, chain, chainCustomProcessor) => {
+const fetchWheatChainTvl = async (
+  timestamp,
+  ethBlock,
+  chainBlocks,
+  chain,
+  chainCustomProcessor
+) => {
   const chainConfig = wheatChains[chain];
 
   const balances = {};
@@ -150,7 +157,9 @@ const fetchWheatChainTvl = async (timestamp, ethBlock, chainBlocks, chain, chain
     symbol.map(async (symbol, idx) => {
       const token = symbol.input.target;
       if (
-        chainConfig.ignoreAddresses.some((addr) => addr.toLowerCase() === token.toLowerCase())
+        chainConfig.ignoreAddresses.some(
+          (addr) => addr.toLowerCase() === token.toLowerCase()
+        )
       ) {
         return;
       } else if (symbol.output.includes("-LP")) {
@@ -168,7 +177,7 @@ const fetchWheatChainTvl = async (timestamp, ethBlock, chainBlocks, chain, chain
           lpToken_bal[idx],
           symbol.output,
           chainBlocks
-        )
+        );
 
         processedTokens.map(({ tokenAddress, tokenBalance }) => {
           sdk.util.sumSingleBalance(
@@ -176,7 +185,7 @@ const fetchWheatChainTvl = async (timestamp, ethBlock, chainBlocks, chain, chain
             `${chain}:${tokenAddress}`,
             tokenBalance
           );
-        })
+        });
       }
     })
   );
@@ -227,7 +236,7 @@ const fetchWheatChainTvl = async (timestamp, ethBlock, chainBlocks, chain, chain
           stakeLpTokens_bal[idx],
           symbol.output,
           chainBlocks
-        )
+        );
 
         processedTokens.map(({ tokenAddress, tokenBalance }) => {
           sdk.util.sumSingleBalance(
@@ -235,7 +244,7 @@ const fetchWheatChainTvl = async (timestamp, ethBlock, chainBlocks, chain, chain
             `${chain}:${tokenAddress}`,
             tokenBalance
           );
-        })
+        });
       }
     })
   );
@@ -254,7 +263,13 @@ const fetchWheatChainTvl = async (timestamp, ethBlock, chainBlocks, chain, chain
 };
 
 //*** MOR tvl portion as product of GrowthDefi Protocol ***//
-const fetchMorChainTvl = async (timestamp, ethBlock, chainBlocks, chain, chainCustomProcessor) => {
+const fetchMorChainTvl = async (
+  timestamp,
+  ethBlock,
+  chainBlocks,
+  chain,
+  chainCustomProcessor
+) => {
   const chainConfig = morChains[chain];
 
   const balances = {};
@@ -307,7 +322,7 @@ const fetchMorChainTvl = async (timestamp, ethBlock, chainBlocks, chain, chainCu
           stakeLpTokens_bal[idx],
           symbol.output,
           chainBlocks
-        )
+        );
 
         processedTokens.map(({ tokenAddress, tokenBalance }) => {
           sdk.util.sumSingleBalance(
@@ -315,7 +330,7 @@ const fetchMorChainTvl = async (timestamp, ethBlock, chainBlocks, chain, chainCu
             `${chain}:${tokenAddress}`,
             tokenBalance
           );
-        })
+        });
       }
     })
   );
@@ -331,7 +346,7 @@ const fetchMorChainTvl = async (timestamp, ethBlock, chainBlocks, chain, chainCu
   );
 
   return balances;
-}
+};
 
 /**
  * BSC-specific tokens processing logic
@@ -347,20 +362,20 @@ const bscTokensProcessor = async (address, balance, symbol, chainBlocks) => {
   let tokenBalance = balance;
 
   // Replace govGRO token with GRO (as it's pegged 1:1)
-  if (symbol === 'govGRO') {
+  if (symbol === "govGRO") {
     tokenAddress = GRO_BSC;
   }
 
   // Unwrap belt-tokens
-  if (symbol.startsWith('belt') && symbol.length > 4) {
+  if (symbol.startsWith("belt") && symbol.length > 4) {
     tokenAddress = (
       await sdk.api.abi.call({
         abi: beltAbi.token,
         target: address,
         chain: "bsc",
-        block: chainBlocks["bsc"]
+        block: chainBlocks["bsc"],
       })
-    ).output
+    ).output;
 
     tokenBalance = (
       await sdk.api.abi.call({
@@ -368,31 +383,33 @@ const bscTokensProcessor = async (address, balance, symbol, chainBlocks) => {
         target: address,
         params: balance,
         chain: "bsc",
-        block: chainBlocks["bsc"]
+        block: chainBlocks["bsc"],
       })
-    ).output
+    ).output;
   }
 
   // Unwrap 4Belt
-  if (symbol === '4Belt') {
+  if (symbol === "4Belt") {
     const tokensIndexes = [0, 1, 2, 3];
 
     const lpBalance = new BigNumber(balance);
-    const totalSupply = new BigNumber((
-      await sdk.api.abi.call({
-        abi: beltAbi.totalSupply,
-        target: address,
-        chain: "bsc",
-        block: chainBlocks["bsc"]
-      })
-    ).output)
+    const totalSupply = new BigNumber(
+      (
+        await sdk.api.abi.call({
+          abi: beltAbi.totalSupply,
+          target: address,
+          chain: "bsc",
+          block: chainBlocks["bsc"],
+        })
+      ).output
+    );
 
     const coins = (
       await sdk.api.abi.multiCall({
         abi: beltAbi.coins,
         calls: tokensIndexes.map((idx) => ({
           target: BELT_4POOL_SWAP_BSC,
-          params: idx
+          params: idx,
         })),
         chain: "bsc",
         block: chainBlocks["bsc"],
@@ -404,19 +421,21 @@ const bscTokensProcessor = async (address, balance, symbol, chainBlocks) => {
         abi: beltAbi.balances,
         calls: tokensIndexes.map((idx) => ({
           target: BELT_4POOL_SWAP_BSC,
-          params: idx
+          params: idx,
         })),
         chain: "bsc",
         block: chainBlocks["bsc"],
       })
     ).output.map((bal) => new BigNumber(bal.output));
 
-    const shares = balances.map((balance) => balance.times(lpBalance.div(totalSupply)).toFixed(0));
+    const shares = balances.map((balance) =>
+      balance.times(lpBalance.div(totalSupply)).toFixed(0)
+    );
 
     const underlyingTokens = (
       await sdk.api.abi.multiCall({
         abi: beltAbi.token,
-        calls: coins.map(coin => ({ target: coin })),
+        calls: coins.map((coin) => ({ target: coin })),
         chain: "bsc",
         block: chainBlocks["bsc"],
       })
@@ -427,7 +446,7 @@ const bscTokensProcessor = async (address, balance, symbol, chainBlocks) => {
         abi: beltAbi.sharesToAmount,
         calls: coins.map((coin, idx) => ({
           target: coin,
-          params: shares[idx]
+          params: shares[idx],
         })),
         chain: "bsc",
         block: chainBlocks["bsc"],
@@ -436,12 +455,12 @@ const bscTokensProcessor = async (address, balance, symbol, chainBlocks) => {
 
     return underlyingTokens.map((token, idx) => ({
       tokenAddress: token,
-      tokenBalance: underlyingBalances[idx]
-    }))
+      tokenBalance: underlyingBalances[idx],
+    }));
   }
 
-  return [{ tokenAddress, tokenBalance }]
-}
+  return [{ tokenAddress, tokenBalance }];
+};
 
 /**
  * Avax-specific tokens processing logic
@@ -456,24 +475,48 @@ const avaxTokensProcessor = async (address, balance, symbol, chainBlocks) => {
   let tokenAddress = address;
   let tokenBalance = balance;
 
-  return [{ tokenAddress, tokenBalance }]
-}
+  return [{ tokenAddress, tokenBalance }];
+};
 
 const wheatBscTvl = (timestamp, ethBlock, chainBlocks) => {
-  return fetchWheatChainTvl(timestamp, ethBlock, chainBlocks, 'bsc', bscTokensProcessor)
-}
+  return fetchWheatChainTvl(
+    timestamp,
+    ethBlock,
+    chainBlocks,
+    "bsc",
+    bscTokensProcessor
+  );
+};
 
 const wheatAvaxTvl = (timestamp, ethBlock, chainBlocks) => {
-  return fetchWheatChainTvl(timestamp, ethBlock, chainBlocks, 'avax', avaxTokensProcessor)
-}
+  return fetchWheatChainTvl(
+    timestamp,
+    ethBlock,
+    chainBlocks,
+    "avax",
+    avaxTokensProcessor
+  );
+};
 
 const morBscTvl = (timestamp, ethBlock, chainBlocks) => {
-  return fetchMorChainTvl(timestamp, ethBlock, chainBlocks, 'bsc', bscTokensProcessor)
-}
+  return fetchMorChainTvl(
+    timestamp,
+    ethBlock,
+    chainBlocks,
+    "bsc",
+    bscTokensProcessor
+  );
+};
 
 const morAvaxTvl = (timestamp, ethBlock, chainBlocks) => {
-  return fetchMorChainTvl(timestamp, ethBlock, chainBlocks, 'avax', avaxTokensProcessor)
-}
+  return fetchMorChainTvl(
+    timestamp,
+    ethBlock,
+    chainBlocks,
+    "avax",
+    avaxTokensProcessor
+  );
+};
 
 module.exports = {
   misrepresentedTokens: true,
@@ -489,5 +532,5 @@ module.exports = {
     tvl: sdk.util.sumChainTvls([wheatAvaxTvl, morAvaxTvl]),
   },
   methodology:
-    "We count liquidity on MOR through MasterChef and Staking Contracts",
+    "We count liquidity on the Wheath, GRoot, Mor as products of Growthdefi Protocol through MasterChef and Staking Contracts",
 };

@@ -1,7 +1,6 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const utils = require("../helper/utils");
-const { stakings } = require("../helper/staking");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const {
   transformPolygonAddress,
@@ -9,152 +8,20 @@ const {
 } = require("../helper/portedTokens");
 const { getBlock } = require("../helper/getBlock");
 const BigNumber = require("bignumber.js");
-
 const vaultsUrl = {
   polygon:
     "https://raw.githubusercontent.com/eepdev/vaults/main/current_vaults.json",
   arbitrum:
     "https://raw.githubusercontent.com/eepdev/vaults/main/arbitrum_vaults.json",
-  cronos:
-    "https://raw.githubusercontent.com/eepdev/vaults/main/cronos_vaults.json",
 };
-
-/*** Polygon Addresses ***/
-const stakingContracts_polygon = [
-  "0x2ac4569854e62f78f9c3dDF98f9f41961089935c",
-  "0xC5bCD23f21B6288417eB6C760F8AC0fBb4bb8a56",
-  "0xfFD82F81513b207fB9D7D7835e178B6193f2cA96",
-];
-
-const vaultAddresses_polygon = ["0x6959D03be3858c41aAa6A86F7411d2f8746dEC5c"];
-
-const lpAddresses_polygon = [
-  "0x5fcb390B4422f4FF7940c23618A62BF5f69658A8",
-  "0xa172bbbfe57fa8e7326bc5598be700c5a16d72c7",
-];
-
-const ADDY = "0xc3fdbadc7c795ef1d6ba111e06ff8f16a20ea539";
-
-/*** Arbitrum Addresses ***/
-const stakingContracts_Arbitrum = [
-  "0x097b15dC3Bcfa7D08ea246C09B6A9a778e5b007B",
-  "0xc5fFd083B983AAF823a9b485b207F898ed2f32DC",
-  "0x9d5d0cb1B1210d4bf0e0FdCC6aCA1583fA48f0fD",
-];
-
-const lpAddresses_arbitrum = [];
-const ARBY = "0x09ad12552ec45f82bE90B38dFE7b06332A680864"
-
-/*** Cronos Addresses ***/
-const stakingContracts_cronos = [
-  "0x3f04D6bD50A79c854EF42965471D34E389eB5CDd",
-  "0xD4bcCf04a7CA546D3cfC46205AA7C58EB98c7495",
-  "0x323663B759567BAf744C182634585F7164c3c442",
-];
-const CADDY = "0x09ad12552ec45f82be90b38dfe7b06332a680864";
-
-const vaultAddresses_cronos = [
-  "0x3a9645ee664DCE6529Af678aaB4fE3AD9d68323f",
-  "0x6681EDBf50C0758C719F3024C282de1694807CcB",
-];
-
-const lpAddresses_cronos = [
-  "0x332937463df26f46a1a715a41205765774beef80", //CADDY-WCRO Cronos
-  "0x2a008ef8ec3ef6b03eff10811054e989aad1cf71", //CADDY-WCRO Cronos
-];
-
-async function calcPool2(
-  balances,
-  uniVaults,
-  lpAddress,
-  chain,
-  transformAddress = (addr) => addr
-) {
-  let chainBlocks = {};
-
-  const vault_balances = (
-    await sdk.api.abi.multiCall({
-      chain: chain,
-      block: chainBlocks[chain],
-      calls: uniVaults.map((vault) => ({
-        target: vault,
-      })),
-      abi: abi.balance,
-    })
-  ).output.map((val) => val.output);
-
-  const lpPositions = [];
-
-  lpAddress.forEach((lp, idx) => {
-    lpPositions.push({
-      balance: vault_balances[idx],
-      token: lp,
-    });
-  });
-
-  await unwrapUniswapLPs(
-    balances,
-    lpPositions,
-    chainBlocks[chain],
-    chain,
-    transformAddress
-  );
-}
-
-async function pool2Polygon(timestamp, block, chainBlocks) {
-  const balances = {};
-
-  const transformAddress = await transformPolygonAddress();
-  await calcPool2(
-    balances,
-    vaultAddresses_polygon,
-    [lpAddresses_polygon[0]],
-    "polygon",
-    transformAddress
-  );
-  return balances;
-}
-
-async function pool2Cronos(timestamp, block, chainBlocks) {
-  const balances = {};
-  await calcPool2(
-    balances,
-    vaultAddresses_cronos,
-    lpAddresses_cronos,
-    "cronos",
-    (addr) => `cronos:${addr}`
-  );
-  return balances;
-}
 
 async function polygonTvl(timestamp, block, chainBlocks) {
   const transformAddress = await transformPolygonAddress();
-  return await tvl(
-    timestamp,
-    "polygon",
-    chainBlocks,
-    lpAddresses_polygon,
-    transformAddress
-  );
+  return await tvl(timestamp, "polygon", chainBlocks, transformAddress);
 }
 async function arbitrumTvl(timestamp, block, chainBlocks) {
   const transformAddress = await transformArbitrumAddress();
-  return await tvl(
-    timestamp,
-    "arbitrum",
-    chainBlocks,
-    lpAddresses_arbitrum,
-    transformAddress
-  );
-}
-async function cronosTvl(timestamp, block, chainBlocks) {
-  return await tvl(
-    timestamp,
-    "cronos",
-    chainBlocks,
-    lpAddresses_cronos,
-    (addr) => `cronos:${addr}`
-  );
+  return await tvl(timestamp, "arbitrum", chainBlocks, transformAddress);
 }
 async function valueInGauge(
   chain,
@@ -450,7 +317,6 @@ async function uniTvl(
   chain,
   block,
   uniVaults,
-  lpAddressesIgnored,
   transformAddress = (a) => a
 ) {
   const vault_balances = (
@@ -467,17 +333,10 @@ async function uniTvl(
   const lpPositions = [];
 
   uniVaults.forEach((v, idx) => {
-    if (
-      lpAddressesIgnored.some(
-        (addr) => addr.toLowerCase() === v.lpAddress.toLowerCase()
-      )
-    ) {
-    } else {
-      lpPositions.push({
-        balance: vault_balances[idx],
-        token: v.lpAddress,
-      });
-    }
+    lpPositions.push({
+      balance: vault_balances[idx],
+      token: v.lpAddress,
+    });
   });
 
   await unwrapUniswapLPs(balances, lpPositions, block, chain, transformAddress);
@@ -487,7 +346,6 @@ const tvl = async (
   timestamp,
   chain,
   chainBlocks,
-  lpAddressesIgnored,
   transformAddress = (a) => a
 ) => {
   const block = await getBlock(timestamp, chain, chainBlocks);
@@ -496,7 +354,7 @@ const tvl = async (
   let resp = await utils.fetchURL(vaultsUrl[chain]);
 
   let curveVaults = resp.data
-    .filter((vault) => vault.platform.toLowerCase() == "curve" || vault.poolName.toLowerCase() === 'mai-3crv')
+    .filter((vault) => vault.platform.toLowerCase() == "curve")
     .map((vault) => ({
       vaultAddress: vault.vaultAddress,
       lpAddress: vault.lpAddress,
@@ -515,39 +373,24 @@ const tvl = async (
       (vault) =>
         vault.token0 !== vault.token1 &&
         vault.vaultAddress !== "" &&
-        vault.platform !== "dodo" &&
-        vault.poolName.toLowerCase() !== 'mai-3crv'
+        vault.platform !== "dodo"
     )
     .map((vault) => ({
       vaultAddress: vault.vaultAddress,
       lpAddress: vault.lpAddress,
     }));
-  balances = await uniTvl(
-    balances,
-    chain,
-    block,
-    uniVaults,
-    lpAddressesIgnored,
-    transformAddress
-  );
+  balances = await uniTvl(balances, chain, block, uniVaults, transformAddress);
 
   return balances;
 };
 module.exports = {
   polygon: {
-    staking: stakings(stakingContracts_polygon, ADDY, "polygon"),
-    pool2: pool2Polygon,
     tvl: polygonTvl,
   },
   arbitrum: {
-    staking: stakings(stakingContracts_Arbitrum, ARBY, "arbitrum"),
     tvl: arbitrumTvl,
   },
-  cronos: {
-    staking: stakings(stakingContracts_cronos, CADDY, "cronos"),
-    pool2: pool2Cronos,
-    tvl: cronosTvl,
-  },
+  tvl: sdk.util.sumChainTvls([polygonTvl, arbitrumTvl]),
   methodology:
     "The current vaults on Adamant Finance are found on the Github. Once we have the vaults, we filter out the LP addresses of each vault and unwrap the LPs so that each token can be accounted for. Coingecko is used to price the tokens and the sum of all tokens is provided as the TVL",
 };

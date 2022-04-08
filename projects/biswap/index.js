@@ -1,15 +1,17 @@
-const {getChainTvl} = require("../helper/getUniSubgraphTvl");
-const {uniTvlExport} = require("../helper/calculateUniTvl");
-const {sumTokens} = require("../helper/unwrapLPs");
-const { transformBscAddress } = require("../helper/portedTokens");
+const { getChainTvl } = require("../helper/getUniSubgraphTvl");
+const { uniTvlExport } = require("../helper/calculateUniTvl");
+const { sumTokens } = require("../helper/unwrapLPs");
 
 const factory = "0x858e3312ed3a876947ea49d572a7c42de08af7ee";
 
-const subgraphTvl = getChainTvl({
-  "bsc": "https://api.thegraph.com/subgraphs/name/biswapcom/exchange5"
-}, "pancakeFactories")('bsc')
+const subgraphTvl = getChainTvl(
+  {
+    bsc: "https://api.thegraph.com/subgraphs/name/biswapcom/exchange5",
+  },
+  "pancakeFactories"
+)("bsc");
 
-const BSW = "0x965f527d9159dce6288a2219db51fc6eef120dd1"
+const BSW = "0x965f527d9159dce6288a2219db51fc6eef120dd1";
 
 const stakingPools = [
   // Staking pool
@@ -37,17 +39,23 @@ const stakingPools = [
   "0xf31F62A6Afb0546771a821e0F98FD187Ee7f7d4C",
   "0x2792Ccd3F02a22beBa49F28F3ab0B52dF18BD280",
   "0x109eAA8b5Ea469fb5aCe0647A93695D8DCD5e836",
-]
+];
 
-async function staking(time, ethBlock, chainBlocks){
-  const balances = {}
-  await sumTokens(balances, stakingPools.map(pool=>[BSW, pool]), chainBlocks.bsc, "bsc", addr=>`bsc:${addr}`)
-  return balances
+async function staking(time, ethBlock, chainBlocks) {
+  const balances = {};
+  await sumTokens(
+    balances,
+    stakingPools.map((pool) => [BSW, pool]),
+    chainBlocks.bsc,
+    "bsc",
+    (addr) => `bsc:${addr}`
+  );
+  return balances;
 }
 
 module.exports = {
   bsc: {
     staking,
-    tvl: uniTvlExport(factory, "bsc", transformBscAddress)
+    tvl: uniTvlExport(factory, "bsc"),
   },
 };

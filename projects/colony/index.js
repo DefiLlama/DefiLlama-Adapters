@@ -28,4 +28,5 @@ module.exports = {
     tvl: async () => ({}),
     staking,
   },
+  tvl: async () => ({}),
 };

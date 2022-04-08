@@ -14,12 +14,6 @@ const contracts = {
     SAVINGS_ADDRESS: "0xF3c87c005B04a07Dc014e1245f4Cff7A77b6697b",
     CETH: "0x621CE6596E0B9CcF635316BFE7FdBC80C3029Bec",
   },
-  polygon: {
-    DEPLOY_BLOCK: 22745105,
-    GLOBAL_CONFIG_ADDRESS: "0x8dceE8E1555e1881fB16a546E86310aB573a6808",
-    SAVINGS_ADDRESS: "0x7C6e294E6555cD70D02D53735C6860AD03A6b34F",
-    CETH: "0xC1B02E52e9512519EDF99671931772E452fb4399",
-  },
 };
 
 const utility = {
@@ -170,8 +164,8 @@ const utility = {
 
     let zeroCTokenAddress = "0x0000000000000000000000000000000000000000";
     cToken.forEach((item) => {
-        allTokenObj[item.input.params[0]] =
-          item.output === zeroCTokenAddress ? "" : item.output;
+      allTokenObj[item.input.params[0]] =
+        item.output === zeroCTokenAddress ? "" : item.output;
     });
     return allTokenObj;
   },
@@ -188,12 +182,6 @@ async function okexchainTvl(timestamp, blockETH, chainBlocks) {
   const chain = "okexchain";
   return await getTvlByChain(timestamp, block, chain);
 }
-async function polygonTvl(timestamp, blockETH, chainBlocks) {
-  const block = chainBlocks["polygon"];
-  const chain = "polygon";
-  return await getTvlByChain(timestamp, block, chain);
-}
-
 async function getTvlByChain(timestamp, block, chain) {
   let config = contracts[chain];
 
@@ -210,7 +198,7 @@ async function getTvlByChain(timestamp, block, chain) {
       chain
     );
     banksPoolAmounts.forEach((result) => {
-        balances[networkAddressSymbol + result.input.params] = result.output;
+      balances[networkAddressSymbol + result.input.params] = result.output;
     });
 
     // cETH value
@@ -229,8 +217,5 @@ module.exports = {
   },
   okexchain: {
     tvl: okexchainTvl,
-  },
-  polygon: {
-    tvl: polygonTvl,
   },
 };

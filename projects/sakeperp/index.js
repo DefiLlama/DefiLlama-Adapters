@@ -121,4 +121,5 @@ module.exports = {
     tvl: sdk.util.sumChainTvls([bscTvl, perpVaultTvl]),
     staking: bscStaking,
   },
+  tvl: sdk.util.sumChainTvls([ethTvl, bscTvl, perpVaultTvl]),
 };

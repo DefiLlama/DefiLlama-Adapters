@@ -1,28 +1,33 @@
-const sdk = require('@defillama/sdk')
+const sdk = require("@defillama/sdk");
 
-const { NETWORK_POLYGON, NETWORK_MAINNET, NETWORK_ARBITRUM } = require('./constants.js')
-const { getTVL } = require('./queries.js')
+const {
+  NETWORK_POLYGON,
+  NETWORK_MAINNET,
+  NETWORK_ARBITRUM,
+} = require("./constants.js");
+const { getTVL } = require("./queries.js");
 
-async function getEthereumTVL (time, ethBlock, chainBlocks) {
-  return getTVL(NETWORK_MAINNET, ethBlock)
+async function getEthereumTVL(time, ethBlock, chainBlocks) {
+  return getTVL(NETWORK_MAINNET, ethBlock);
 }
 
-async function getPolygonTVL (time, ethBlock, chainBlocks) {
-  return getTVL(NETWORK_POLYGON, chainBlocks[NETWORK_POLYGON.name])
+async function getPolygonTVL(time, ethBlock, chainBlocks) {
+  return getTVL(NETWORK_POLYGON, chainBlocks[NETWORK_POLYGON.name]);
 }
 
-async function getArbitrumTVL (time, ethBlock, chainBlocks) {
-  return getTVL(NETWORK_ARBITRUM, chainBlocks[NETWORK_ARBITRUM.name])
+async function getArbitrumTVL(time, ethBlock, chainBlocks) {
+  return getTVL(NETWORK_ARBITRUM, chainBlocks[NETWORK_ARBITRUM.name]);
 }
 
 module.exports = {
   ethereum: {
-    tvl: getEthereumTVL
+    tvl: getEthereumTVL,
   },
   polygon: {
-    tvl: getPolygonTVL
+    tvl: getPolygonTVL,
   },
   arbitrum: {
-    tvl: getArbitrumTVL
+    tvl: getArbitrumTVL,
   },
-}
+  tvl: sdk.util.sumChainTvls([getEthereumTVL, getPolygonTVL, getArbitrumTVL]),
+};

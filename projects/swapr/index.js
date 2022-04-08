@@ -30,7 +30,9 @@ async function getTvl(timestamp) {
     }`,
     QUERY,
     {
-      block: await getBlock(timestamp, this.chain, {}) - (this.chain==="arbitrum"? 450:10), // ~10 minutes
+      block:
+        (await getBlock(timestamp, this.chain, {})) -
+        (this.chain === "arbitrum" ? 450 : 10), // ~10 minutes
       factory: FACTORY_ADDRESS[this.chain],
     }
   );
@@ -52,4 +54,7 @@ module.exports = {
   arbitrum: {
     tvl: arbitrumTvl,
   },
+  tvl: sdk.util.sumChainTvls([ethereumTvl, xDaiTvl, arbitrumTvl]),
+  name: "Swapr",
+  category: "dexes",
 };
