@@ -32,6 +32,12 @@ const pools = [
     assetDecimals: 8,
   },
   {
+    // goETH
+    appId: 694405065,
+    assetId: 386195940,
+    assetDecimals: 8,
+  },
+  {
     // gAlgo3
     appId: 694464549,
     assetId: 694432641,
@@ -120,7 +126,10 @@ async function tvl() {
     const state = await getAppState(pool.appId);
 
     const totalDeposits = getParsedValueFromState(state, "total_deposits");
-    const depositAmountUsd = Number(totalDeposits) * prices[pool.assetId];
+    const numericDeposits = isNaN(Number(totalDeposits))
+      ? 0
+      : Number(totalDeposits);
+    const depositAmountUsd = numericDeposits * prices[pool.assetId];
 
     totalDeposit += depositAmountUsd;
   }
