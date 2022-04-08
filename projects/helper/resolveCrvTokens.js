@@ -131,8 +131,6 @@ async function unwrapCrv(balances, crvToken, lpBalance, block, chain = 'ethereum
       coinAddress = '0x0000000000000000000000000000000000000000'
     }
 
-    console.log({ totalSupply })
-
     const balance = BigNumber(lpBalance).times(coinBalance.output).div(totalSupply)
     if (!balance.isZero()) {
       sdk.util.sumSingleBalance(balances, transformAddress(coinAddress), balance.toFixed(0))
@@ -153,14 +151,7 @@ function getCrvTokens(balances) {
     .map(token => ({ token, balance: balances[token] }))
 
   function isCrvToken(token) {
-    let token1
-    try {
-      token1 = token
-      token = stripChainHeader(token).toLowerCase()
-    } catch (e) {
-      console.log(token, token1)
-      throw e
-    }
+    token = stripChainHeader(token).toLowerCase()
     return crvPools[token] || curveLPMapping[token]
   }
 }

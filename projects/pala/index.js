@@ -49,6 +49,7 @@ const calcStakedLPToken = async (caver, poolInfo) => {
     const sc = caver.contract.create([ABI.balanceOf, ABI.totalSupply], poolInfo.pool);
     const totalLPSupply = await sc.methods.totalSupply().call();
     const liquidityVolume = await calcPoolLiquidityVolume(caver, poolInfo)
+    if (isNaN(+totalLPSupply) || +totalLPSupply === 0)  return 0
 
     const stakedLP = await sc.methods. balanceOf(PALA_FARM_ADDR).call();
     const stakedLPRatio = stakedLP / totalLPSupply;
@@ -64,7 +65,7 @@ const fetchStakedToken = async () => {
         poolInfos.map((poolInfo) => { return calcStakedLPToken(caver, poolInfo)})        
     );
     const totalLpStaked = totalLPStakeds.reduce((acc, cur) => acc + cur );
-
+    
     const farmInfos = await getFarmInfos(caver, PALA_FARM_ADDR);
     const palaFarmInfo = farmInfos.farmInfoList[0];
     const palaInfoDetail = await getTokenInfoDetail(caver, palaFarmInfo.pool);

@@ -23,12 +23,15 @@ const enableDebugPrompt = {
 
 async function run() {
   let adapterPath
-  const { debugMode, ...response } = await inquirer.prompt([enableDebugPrompt, adapterPrompt])
+  const { debugMode, ...response } = await inquirer.prompt([
+    // enableDebugPrompt, 
+    adapterPrompt,
+  ])
   adapterPath = response.adapterPath
 
   while (true) {
     adapterPrompt.default = adapterPath
-    await runAdapter(adapterPath, debugMode)
+    await runAdapter(adapterPath, true)
     const answer = await inquirer.prompt([adapterPrompt])
     adapterPath = answer.adapterPath
   }
@@ -37,10 +40,10 @@ async function run() {
 async function runAdapter(adapterPath, debugMode) {
   const startTime = Date.now()
   return new Promise((resolve, reject) => {
-    const env = {}
-
-    if (debugMode)
-      env.LLAMA_DEBUG_MODE = true
+    const env = {
+      LLAMA_SDK_MAX_PARALLEL: 100,
+      LLAMA_DEBUG_MODE: !!debugMode
+    }
 
     const startTime = Date.now()
 

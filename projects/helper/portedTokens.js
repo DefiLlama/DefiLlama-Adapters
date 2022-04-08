@@ -1,6 +1,7 @@
 const utils = require("../helper/utils");
 const sdk = require("@defillama/sdk");
 const IOTEX_CG_MAPPING = require("./../xdollar-finance/iotex_cg_mapping.json")
+const BigNumber = require("bignumber.js");
 
 async function transformFantomAddress() {
   const multichainTokens = (
@@ -93,20 +94,18 @@ async function transformAvaxAddress() {
         "0x0000000000000000000000000000000000000000": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
         "0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
         "0xd45b7c061016102f9fa220502908f2c0f1add1d7": "0xffc97d72e13e01096502cb8eb52dee56f74dad7b",
-        "0x47afa96cdc9fab46904a55a6ad4bf6660b53c38a": "0x028171bca77440897b824ca71d1c56cac55b68a3",
         "0x46a51127c3ce23fb7ab1de06226147f446e4a857": "0xbcca60bb61934080951369a648fb03df4f96263c",
         "0x532e6537fea298397212f09a61e03311686f548e": "0x3ed3b47dd13ec9a98b44e6204a523e766b225811",
         "0xdfe521292ece2a4f44242efbcd66bc594ca9714b": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
         "0x686bef2417b6dc32c50a3cbfbcc3bb60e1e9a15d": "0x9ff58f4ffb29fa2266ab25e75e2a8b3503311656",
         "0x53f7c5869a859f0aec3d334ee8b4cf01e3492f21": "0x030ba81f1c18d280636f32af80b9aad02cf0854e",
-
-        "0xd45b7c061016102f9fa220502908f2c0f1add1d7": "0xffc97d72e13e01096502cb8eb52dee56f74dad7b",
         "0x47afa96cdc9fab46904a55a6ad4bf6660b53c38a": "0x028171bca77440897b824ca71d1c56cac55b68a3",
-        "0x46A51127C3ce23fb7AB1DE06226147F446e4a857": "0xbcca60bb61934080951369a648fb03df4f96263c",
-        "0x574679Ec54972cf6d705E0a71467Bb5BB362919D": "avax:0x5817d4f0b62a59b17f75207da1848c2ce75e7af4",
+        "0x574679ec54972cf6d705e0a71467bb5bb362919d": "avax:0x5817d4f0b62a59b17f75207da1848c2ce75e7af4",
         "0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7": "0xdac17f958d2ee523a2206206994597c13d831ec7",
         "0x2f28add68e59733d23d5f57d94c31fb965f835d0": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",// sUSDC(Avalanche) -> USDC(Ethereum)
         "0xf04d3a8eb17b832fbebf43610e94bdc4fd5cf2dd": "bsc:0xe9e7cea3dedca5984780bafc599bd69add087d56", // sBUSD(Avalanche) -> BUSD(BSC)
+        "0xb0a8e082e5f8d2a04e74372c1be47737d85a0e73": "polygon:0xac63686230f64bdeaf086fe6764085453ab3023f", // USV
+        "0x02bfd11499847003de5f0f5aa081c43854d48815": "0x7a5d3A9Dcd33cb8D527f7b5F96EB4Fef43d55636", // Radioshack
       }
       return map[addr.toLowerCase()] || `avax:${addr}`
   }
@@ -119,44 +118,34 @@ async function transformBscAddress() {
     )
   ).data.data.tokens;
 
+  const mapping = {
+    '0x0000000000000000000000000000000000000000': 'bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // BNB -> WBNB
+    '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee': 'bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // BNB -> WBNB
+    '0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c': 'avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c',  // ELK
+    '0x2170ed0880ac9a755fd29b2688956bd959f933f8': '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',  // WETH
+    '0xa35d95872d8eb056eb2cbd67d25124a6add7455e': '0x123',  // 2030FLOKI returns nonsense TVL
+    '0x0cf8e180350253271f4b917ccfb0accc4862f262': '0x123',  // BTCBR returns nonsense TVL
+    '0x6ded0f2c886568fb4bb6f04f179093d3d167c9d7': '0x09ce2b746c32528b7d864a1e3979bd97d2f095ab',  // DFL
+    '0x2f28add68e59733d23d5f57d94c31fb965f835d0': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',  // sUSDC(BSC) -> USDC(Ethereum)
+    '0xaf6162dc717cfc8818efc8d6f46a41cf7042fcba': 'polygon:0xac63686230f64bdeaf086fe6764085453ab3023f',  // USV Token
+    '0x30807d3b851a31d62415b8bb7af7dca59390434a': '0x7a5d3A9Dcd33cb8D527f7b5F96EB4Fef43d55636',  // Radio Token
+    '0xce86f7fcd3b40791f63b86c3ea3b8b355ce2685b': '0xb4d930279552397bba2ee473229f89ec245bc365',  // MahaDao
+    '0xbb9858603b1fb9375f6df972650343e985186ac5': 'bsc:0xc087c78abac4a0e900a327444193dbf9ba69058e',  // Treat staked  BUSD-USDC Staked APE-LP as LP Token
+    '0xc5fb6476a6518dd35687e0ad2670cb8ab5a0d4c5': 'bsc:0x2e707261d086687470b515b320478eb1c88d49bb',  // Treat staked  BUSD-USDT Staked APE-LP as LP Token
+  }
+
   return (addr) => {
+    addr = addr.toLowerCase()
     const srcToken = binanceBridge.find(
       (token) =>
         token.ethContractAddress !== "" &&
-        token.bscContractAddress.toLowerCase() === addr.toLowerCase()
+        token.bscContractAddress.toLowerCase() === addr
     );
-    if (
-      srcToken !== undefined &&
-      srcToken.bscContractDecimal === srcToken.ethContractDecimal
-    ) {
+    if (srcToken && srcToken.bscContractDecimal === srcToken.ethContractDecimal) {
       return srcToken.ethContractAddress;
     }
-    // BNB
-    if (
-      addr.toLowerCase() == "0x0000000000000000000000000000000000000000" ||
-      addr.toLowerCase() == "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
-    ) {
-      return "bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
-    }
-    if (addr.toLowerCase() == "0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c") {
-      return "avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c";
-    }
-    if (addr.toLowerCase() == "0x2170ed0880ac9a755fd29b2688956bd959f933f8") {
-      return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-    }
-    if (addr.toLowerCase() == "0xa35d95872d8eb056eb2cbd67d25124a6add7455e") {
-      return "0x123"; // 2030FLOKI returns nonsense TVL
-    }
-    if (addr.toLowerCase() == "0x0cf8e180350253271f4b917ccfb0accc4862f262") {
-      return "0x123"; // BTCBR returns nonsense TVL
-    }
-    if (addr.toLowerCase() == "0x6ded0f2c886568fb4bb6f04f179093d3d167c9d7") {
-      return "0x09ce2b746c32528b7d864a1e3979bd97d2f095ab"; // BTCBR returns nonsense TVL
-    }
-    if (addr.toLowerCase() === "0x2f28add68e59733d23d5f57d94c31fb965f835d0".toLowerCase()) {
-      return "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"; // sUSDC(BSC) -> USDC(Ethereum)
-    }
-    return `bsc:${addr}`;
+    
+    return mapping[addr] || `bsc:${addr}`;
   };
 }
 
@@ -174,27 +163,19 @@ async function transformPolygonAddress() {
       tokenMap[token.childToken.toLowerCase()] = token.rootToken.toLowerCase();
       return tokenMap;
     }, {});
+  const mapping =  {
+    '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee': '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0',  // 
+    '0x0000000000000000000000000000000000000000': '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0',  // 
+    '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': '0x0000000000000000000000000000000000000000',  // 
+    '0x2f28add68e59733d23d5f57d94c31fb965f835d0': '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',  // sUSDC(Polygon) -> USDC(Ethereum)
+    '0xf04d3a8eb17b832fbebf43610e94bdc4fd5cf2dd': '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',  // sBUSD(Polygon) -> BUSD(BSC)
+    '0x8eb3771a43a8c45aabe6d61ed709ece652281dc9': 'avax:0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664',  // sUSDC.e(Polygon) -> USDC.e(Avalanche)
+    '0x613a489785c95afeb3b404cc41565ccff107b6e0': '0x7a5d3A9Dcd33cb8D527f7b5F96EB4Fef43d55636',  // radioshack
+  }
 
   return (addr) => {
-    if (addr.toLowerCase() == '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
-      return "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0";
-    }
-    if (addr.toLowerCase() === "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619") {
-      return "0x0000000000000000000000000000000000000000";
-    }
-    if (addr.toLowerCase() === "0x0000000000000000000000000000000000000000") {
-      return "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0";
-    }
-    if (addr.toLowerCase() === "0x2f28Add68e59733D23D5F57d94c31fb965f835D0".toLowerCase()) {
-      return "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"; // sUSDC(Polygon) -> USDC(Ethereum)
-    }
-    if (addr.toLowerCase() === "0xf04d3A8Eb17B832Fbebf43610e94BdC4fD5Cf2dd".toLowerCase()) {
-      return "bsc:0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56";// sBUSD(Polygon) -> BUSD(BSC)
-    }
-    if (addr.toLowerCase() === "0x8Eb3771A43a8C45AaBE6d61ED709eCe652281DC9".toLowerCase()) {
-      return "avax:0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664";// sUSDC.e(Polygon) -> USDC.e(Avalanche)
-    }
-    return tokens[addr.toLowerCase()] || `polygon:${addr}`;
+    addr = addr.toLowerCase()
+    return mapping[addr] || tokens[addr] || `polygon:${addr}`;
   };
 }
 
@@ -490,10 +471,31 @@ function fixHarmonyBalances(balances) {
     }
   }
 }
-function fixOasisBalances(balances) {
-  if (Object.keys(balances).includes('oasis-network')) {
-      balances['oasis-network'] = balances['oasis-network'] / 10 ** 18;
+
+function transformOasisAddressBase(addr) {
+  const map = {
+    '0x21c718c22d52d0f3a789b752d4c2fd5908a8a733':'oasis-network',
+    '0x3223f17957ba502cbe71401d55a0db26e5f7c68f':'0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',  //WETH
+    '0xe8a638b3b7565ee7c5eb9755e58552afc87b94dd': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC
+    '0x4bf769b05e832fcdc9053fffbc78ca889acb5e1e': '0xdac17f958d2ee523a2206206994597c13d831ec7', // USDT
+    '0x6cb9750a92643382e020ea9a170abb83df05f30b': '0xdac17f958d2ee523a2206206994597c13d831ec7', // USDT
+    '0xdc19a122e268128b5ee20366299fc7b5b199c8e3': '0xdac17f958d2ee523a2206206994597c13d831ec7', // USDT wormhole
+    '0x81ecac0d6be0550a00ff064a4f9dd2400585fe9c': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC celer
+    '0x94fbffe5698db6f54d6ca524dbe673a7729014be': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',  // USDC
+    '0x21c718c22d52d0f3a789b752d4c2fd5908a8a733': 'wrapped-rose',
   }
+  return map[addr.toLowerCase()] || `${addr}`
+}
+
+async function transformOasisAddress() {
+  return transformOasisAddressBase
+}
+
+function fixOasisBalances(balances) {
+  ['oasis-network', 'wrapped-rose'].forEach(key => {
+    if (balances[key])
+        balances[key] = balances[key] / 10 ** 18;
+  })
 }
 async function transformIotexAddress() {
   return (addr) => {
@@ -594,6 +596,8 @@ function transformBobaAddress() {
       "0xdc0486f8bf31df57a952bcd3c1d3e166e3d9ec8b": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", // WBTC
       "0xa18bf3994c0cc6e3b63ac420308e5383f53120d7": "0x42bbfa2e77757c645eeaad1655e0911a7553efbc", // BOBA
       "0xe1e2ec9a85c607092668789581251115bcbd20de": "0xd26114cd6EE289AccF82350c8d8487fedB8A0C07", // OMG
+      "0x2f28add68e59733d23d5f57d94c31fb965f835d0": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // sUSDC(Boba) -> USDC(Ethereum)
+      "0xf04d3a8eb17b832fbebf43610e94bdc4fd5cf2dd": "bsc:0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", // sBUSD(Boba) -> BUSD(BSC)
     }
     return map[addr.toLowerCase()] || `boba:${addr}`
   }
@@ -646,8 +650,52 @@ function transformVelasAddress() {
   }
 }
 
+async function transformCronosAddress() {
+  const mapping = {
+    '0xbed48612bc69fa1cab67052b42a95fb30c1bcfee': 'shiba-inu',
+    '0x1a8e39ae59e5556b56b76fcba98d22c9ae557396': 'dogecoin',
+    '0xb888d8dd1733d72681b30c00ee76bde93ae7aa93': 'cosmos',
+    '0x02dccaf514c98451320a9365c5b46c61d3246ff3': 'dogelon-mars',
+  }
+  return (addr) => mapping[addr.toLowerCase()] || `cronos:${addr.toLowerCase()}`
+}
+
+function fixCronosBalances(balances) {
+  const tokenDecimals = {
+    'shiba-inu': 18,//SHIBA
+    'dogecoin': 8,//DOGE
+    'cosmos': 6,//ATOM
+    'dogelon-mars': 18//ELON
+  }
+  Object.keys(tokenDecimals).forEach(key => {
+    if (balances[key])
+      balances[key] = BigNumber(balances[key]).div( 10 ** tokenDecimals[key]).toFixed(0)
+  })
+}
+
+async function transformDfkAddress() {
+  const mapping = {
+    '0xb57b60debdb0b8172bb6316a9164bd3c695f133a': 'avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7', // AVAX
+    '0x3ad9dfe640e1a9cc1d9b0948620820d975c3803a': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC
+  }
+  return (addr) => mapping[addr.toLowerCase()] || `dfk:${addr.toLowerCase()}`
+}
+
+function getFixBalances(chain) {
+  const dummyFn = () => {}
+  return fixBalancesMapping[chain] || dummyFn
+}
+
+const fixBalancesMapping = {
+  avax: fixAvaxBalances,
+  cronos: fixCronosBalances,
+  harmony: fixHarmonyBalances,
+  oasis: fixOasisBalances,
+}
+
 const chainTransforms = {
   celo: transformCeloAddress,
+  cronos: transformCronosAddress,
   fantom: transformFantomAddress,
   bsc: transformBscAddress,
   polygon: transformPolygonAddress,
@@ -666,22 +714,34 @@ const chainTransforms = {
   moonbeam: transformMoonbeamAddress,
   klaytn: transformKlaytnAddress,
   velas: transformVelasAddress,
+  ethereum: transformEthereumAddress,
+  oasis: transformOasisAddress,
+  dfk: transformDfkAddress,
 };
 
-async function getChainTransform(chain) {
-  if (chain === "ethereum") {
-    return (id) => id;
+async function transformEthereumAddress() {
+  const mapping = {
+    '0x88536c9b2c4701b8db824e6a16829d5b5eb84440': 'polygon:0xac63686230f64bdeaf086fe6764085453ab3023f' // USV token
+  } 
+  return addr => {
+    addr = addr.toLowerCase()
+    return mapping[addr] || addr
   }
-  if (chainTransforms[chain] !== undefined) {
+}
 
+async function getChainTransform(chain) {
+  if (chainTransforms[chain])
     return chainTransforms[chain]();
-  }
+
   return (addr) => `${chain}:${addr}`;
 }
 
 module.exports = {
   getChainTransform,
+  getFixBalances,
   transformCeloAddress,
+  transformCronosAddress,
+  fixCronosBalances,
   transformFantomAddress,
   transformBscAddress,
   transformPolygonAddress,
@@ -704,4 +764,8 @@ module.exports = {
   transformMoonbeamAddress,
   transformKlaytnAddress,
   transformVelasAddress,
+  transformEthereumAddress,
+  transformOasisAddress,
+  transformOasisAddressBase,
+  transformDfkAddress,
 };

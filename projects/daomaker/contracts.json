@@ -27,32 +27,10 @@
             }
         }
     },
-    "clientVesting": {
-        "ethereum": {
-            "Yin-Finance": {
-                "tokenHolder": "0xBE5C6B1288DcA109C8FC8178368D194DF4f3F428",
-                "tokenAddress": "0x794Baab6b878467F93EF17e2f2851ce04E3E34C8"
-            },
-            "1SOL": {
-                "tokenHolder": "0x3E985955a27bFab6AF23F64eb87eB0C4176737ea",
-                "tokenAddress": "0x009178997aFf09A67D4cACcFeB897Fb79d036214"
-            },
-            "Staking": {
-                "tokenHolder": "0xd07e86f68C7B9f9B215A3ca3E79E74Bf94D6A847",
-                "tokenAddress": "0x6b175474e89094c44da98b954eedeac495271d0f"
-            }
-        },
-        "polygon": {
-            "Meta-Soccer": {
-                "tokenHolder": "0xBE5C6B1288DcA109C8FC8178368D194DF4f3F428",
-                "tokenAddress": "0xe8377A076adAbb3F9838afB77Bee96Eac101ffB1"
-            }
-        },
-        "bsc": {
-            "DragonSB": {
-                "tokenHolder": "0xd33659AC57f4d72a9a902949DA14F7B1cBF1f0bc",
-                "tokenAddress": "0x69fe69047f0369D4E075B7923ccf09cBc522F22c"
-            }
-        }
-    }
+    "chains": [
+        "ethereum",
+        "bsc",
+        "polygon"
+    ],
+    "stakingContractEth": "0xd07e86f68C7B9f9B215A3ca3E79E74Bf94D6A847"
 }

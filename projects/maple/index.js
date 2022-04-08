@@ -53,19 +53,23 @@ const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
       })
     ).output;
 
-    let totalSupply = (
+    const locker = (
       await sdk.api.abi.call({
-        abi: abi.totalSupply,
+        abi: abi.liquidityLocker,
         target: pool,
+        block: ethBlock
+      })
+    ).output;
+
+    let locked = (
+      await sdk.api.erc20.balanceOf({
+        owner: locker,
+        target: assetOfLiquidity,
         block: ethBlock,
       })
     ).output;
 
-    // We have two assets USDC and WETH, USDC is off by 12 digits because it only has 6 decimals unlike WETH which has 18, so this correction is needed
-    if (assetOfLiquidity.toLowerCase() === USDC)
-      totalSupply = totalSupply/ (10 ** 12);
-
-    sdk.util.sumSingleBalance(balances, assetOfLiquidity, totalSupply);
+    sdk.util.sumSingleBalance(balances, assetOfLiquidity, locked);
   }
 
   return balances;
@@ -78,5 +82,5 @@ module.exports = {
     treasury: Treasury,
   },
   methodology:
-    "We count liquidity by USDC deposited on the pools threw PoolFactory contract",
+    "We count liquidity by USDC deposited on the pools through PoolFactory contract",
 };
