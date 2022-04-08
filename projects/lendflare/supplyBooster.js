@@ -13,7 +13,7 @@ const supplyPools = [
     { virtualBalance: "0x6d18E830A938F0eAF206f1BD80b79a851E5f37A3", decimals: 18, coinName: "ethereum" },
 ]
 
-async function getTotalSupply(pools) {
+async function getTotalSupply(pools, timestamp, block, chainBlocks) {
     const output = (await sdk.api.abi.multiCall({
         block: chainBlocks.ethereum,
         chain: "ethereum",
