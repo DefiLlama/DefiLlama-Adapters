@@ -31,6 +31,12 @@ const pools = [
     assetId: 386192725,
     assetDecimals: 8,
   },
+  {
+    // gAlgo3
+    appId: 694464549,
+    assetId: 694432641,
+    assetDecimals: 6,
+  },
 ];
 
 const liquidGovernanceAppId = 694427622;
@@ -136,7 +142,10 @@ async function borrowed() {
     const state = await getAppState(pool.appId);
 
     const borrowAmount = getParsedValueFromState(state, "total_borrows");
-    const borrowAmountUsd = Number(borrowAmount) * prices[pool.assetId];
+    const numericBorrowAmount = isNaN(Number(borrowAmount))
+      ? 0
+      : Number(borrowAmount);
+    const borrowAmountUsd = numericBorrowAmount * prices[pool.assetId];
 
     totalBorrow += borrowAmountUsd;
   }
