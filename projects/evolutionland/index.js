@@ -264,5 +264,4 @@ module.exports = {
   crab: {
     tvl: crabTvl
   },
-  tvl: sdk.util.sumChainTvls([ethTvl, hecoTvl, polygonTvl, crabTvl])
 }
