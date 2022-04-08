@@ -1,6 +1,6 @@
 import { getTVL } from './src/tvl/tvl.service.js';
 
-export async function main() {
+export async function fetch() {
     return await getTVL();
 }
-main();
+fetch();
