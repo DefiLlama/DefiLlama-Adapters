@@ -134,9 +134,9 @@ async function getTotalPoolDepositsUsd(prices) {
   });
 
   const depositsAmountUsd = await Promise.all(promises);
-  const getTotalDepositsUsd = depositsAmountUsd.reduce((a, b) => a + b, 0);
+  const totalDepositsUsd = depositsAmountUsd.reduce((a, b) => a + b, 0);
 
-  return getTotalDepositsUsd;
+  return totalDepositsUsd;
 }
 
 /* Get total deposits */
