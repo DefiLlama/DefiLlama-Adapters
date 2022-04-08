@@ -15,6 +15,7 @@ const v3Graphs = getChainTvl({
   ethereum: "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3",
   optimism: "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-optimism-dev",
   arbitrum: 'https://api.thegraph.com/subgraphs/name/ianlapham/arbitrum-minimal',
+  polygon: "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-v3-polygon",
 }, "factories", "totalValueLockedUSD")
 
 module.exports = {
@@ -26,6 +27,9 @@ module.exports = {
   },
   arbitrum:{
     tvl: v3Graphs('arbitrum')
+  },
+  polygon:{
+    tvl: v3Graphs('polygon')
   },
   optimism,
   hallmarks:[

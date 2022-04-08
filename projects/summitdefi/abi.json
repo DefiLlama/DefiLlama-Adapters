@@ -1,143 +1,99 @@
 {
-    "poolsCount": {
+    "getPools": {
         "inputs": [],
-        "name": "poolsCount",
+        "name": "getPools",
         "outputs": [
             {
-                "internalType": "uint256",
+                "internalType": "address[]",
                 "name": "",
-                "type": "uint256"
+                "type": "address[]"
             }
         ],
         "stateMutability": "view",
         "type": "function"
     },
-    "oasisPoolInfo": {
+    "tokensWithAllocation": {
+        "inputs": [],
+        "name": "tokensWithAllocation",
+        "outputs": [
+            {
+                "internalType": "address[]",
+                "name": "",
+                "type": "address[]"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "supply": {
         "inputs": [
             {
-                "internalType": "uint16",
-                "name": "",
-                "type": "uint16"
+                "internalType": "address",
+                "name": "_token",
+                "type": "address"
             }
         ],
-        "name": "oasisPoolInfo",
+        "name": "supply",
         "outputs": [
             {
-                "internalType": "uint16",
-                "name": "pid",
-                "type": "uint16"
-            },
-            {
-                "internalType": "contract IBEP20",
-                "name": "token",
-                "type": "address"
-            },
-            {
                 "internalType": "uint256",
-                "name": "supply",
+                "name": "",
                 "type": "uint256"
-            },
-            {
-                "internalType": "bool",
-                "name": "live",
-                "type": "bool"
-            },
-            {
-                "internalType": "uint256",
-                "name": "lastRewardTimestamp",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "accSummitPerShare",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint16",
-                "name": "feeBP",
-                "type": "uint16"
             }
         ],
         "stateMutability": "view",
         "type": "function"
     },
-    "elevationPoolInfo":{
+    "getVault": {
+        "inputs": [],
+        "name": "getVault",
+        "outputs": [
+            {
+                "internalType": "contract IVault",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "getPoolId": {
+        "inputs": [],
+        "name": "getPoolId",
+        "outputs": [
+            {
+                "internalType": "bytes32",
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "getPoolTokens": {
         "inputs": [
             {
-                "internalType": "uint16",
-                "name": "",
-                "type": "uint16"
+                "internalType": "bytes32",
+                "name": "poolId",
+                "type": "bytes32"
             }
         ],
-        "name": "elevationPoolInfo",
+        "name": "getPoolTokens",
         "outputs": [
             {
-                "internalType": "uint16",
-                "name": "pid",
-                "type": "uint16"
+                "internalType": "contract IERC20[]",
+                "name": "tokens",
+                "type": "address[]"
             },
             {
-                "internalType": "bool",
-                "name": "launched",
-                "type": "bool"
-            },
-            {
-                "internalType": "bool",
-                "name": "live",
-                "type": "bool"
-            },
-            {
-                "internalType": "bool",
-                "name": "active",
-                "type": "bool"
-            },
-            {
-                "internalType": "contract IBEP20",
-                "name": "token",
-                "type": "address"
+                "internalType": "uint256[]",
+                "name": "balances",
+                "type": "uint256[]"
             },
             {
                 "internalType": "uint256",
-                "name": "supply",
+                "name": "lastChangeBlock",
                 "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "lastRewardTimestamp",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "accSummitPerShare",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint16",
-                "name": "feeBP",
-                "type": "uint16"
-            },
-            {
-                "internalType": "uint8",
-                "name": "elevation",
-                "type": "uint8"
-            },
-            {
-                "internalType": "uint256",
-                "name": "roundRewards",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    "symbol": {
-        "inputs": [],
-        "name": "symbol",
-        "outputs": [
-            {
-                "internalType": "string",
-                "name": "",
-                "type": "string"
             }
         ],
         "stateMutability": "view",

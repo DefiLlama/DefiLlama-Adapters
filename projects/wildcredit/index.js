@@ -1,106 +1,198 @@
 const sdk = require("@defillama/sdk");
-const erc20 = require("../helper/abis/erc20.json");
+const { default: BigNumber } = require("bignumber.js");
 const abi = require("./abi.json");
 
-const pair_factory = "0x23B74796b72f995E14a5e3FF2156Dad9653256Cf";
-const toAddr= d=>"0x"+d.substr(26)
+BigNumber.config({ EXPONENTIAL_AT: 100 })
 
-const calcTvl = async (balances, block, token, balance) => {
-  const START_BLOCK = 12867493;
-  const END_BLOCK = block;
-  const events = await sdk.api.util.getLogs({
-    target: pair_factory,
+const PAIR_FACTORY = "0x0fC7e80090bbc1740595b1fcCd33E0e82547212F";
+const UNI_V3_POSITION_MANAGER = "0xC36442b4a4522E871399CD717aBDD847Ab11FE88"
+const UNI_V3_FACTORY = "0x1F98431c8aD98523631AE4a59f267346ea31F984"
+const START_BLOCK = 13847198
+
+const calculateTokenTotal = async (balances, block, pairs, abi) => {
+  const pairsTokenBalances = (await sdk.api.abi.multiCall({
+    calls: pairs.map(pair => ({
+      target: pair.pair,
+      params: pair.token
+    })),
+    abi,
+    block
+  })).output.map(result => result.output);
+
+  for (let index = 0; index < pairs.length; index++) {
+    sdk.util.sumSingleBalance(
+      balances,
+      pairs[index].token,
+      pairsTokenBalances[index]
+    );
+  }
+}
+
+const getPairs = async (toBlock) => {
+  const logs = (await sdk.api.util.getLogs({
+    target: PAIR_FACTORY,
     topic: 'PairCreated(address,address,address)',
     keys: [],
     fromBlock: START_BLOCK,
-    toBlock: END_BLOCK,
+    toBlock,
+  })).output
+
+  return logs.map(log => {
+    return {
+      pair: `0x${log.topics[1].substr(-40).toLowerCase()}`,
+      tokenA: `0x${log.topics[2].substr(-40).toLowerCase()}`,
+      tokenB: `0x${log.topics[3].substr(-40).toLowerCase()}`
+    }
   })
-  const pairs = events.output.map(el => toAddr(el.topics[1]));
+}
 
-  const tokens = (await sdk.api.abi.multiCall({
-    abi: token,
-    calls: pairs.map(pair => ({
-      target: pair
-    })),
-    block
-  })).output.map(t => t.output);
+const getUniV3PositionBalances = async (positionId, ethBlock) => {
 
-  if (balance == erc20.balanceOf) {
-    const balancePairs = (await sdk.api.abi.multiCall({
-      abi: balance,
-      calls: pairs.map((pair, idx) => ({
-        target: tokens[idx],
-        params: pair
-      })),
-      block
-    })).output.map(bp => bp.output);
+  const tickToPrice = (tick) => new BigNumber(1.0001).pow(tick)
+ 
+  const { output: position } = await sdk.api.abi.call({
+    block: ethBlock,
+    abi: abi.positions,
+    target: UNI_V3_POSITION_MANAGER,
+    params: [positionId]
+  })
 
-    for (let index = 0; index < pairs.length; index++) {
-      sdk.util.sumSingleBalance(
-        balances,
-        tokens[index],
-        balancePairs[index]
-      );
-    }
+  const token0 = position.token0
+  const token1 = position.token1
+  const fee = position.fee
+  const liquidity = position.liquidity
+  const bottomTick = position.tickLower
+  const topTick = position.tickUpper
+
+  const { output: pool } = await sdk.api.abi.call({
+    block: ethBlock,
+    abi: abi.getPool,
+    target: UNI_V3_FACTORY,
+    params: [token0, token1, fee]
+  })
+
+  const { output: slot0 } = await sdk.api.abi.call({
+    block: ethBlock,
+    abi: abi.slot0,
+    target: pool
+  })
+
+  const tick = slot0.tick
+
+  let amount0 = 0
+  let amount1 = 0
+
+  if (Number(tick) < Number(bottomTick)) {
+    const sa = tickToPrice(new BigNumber(bottomTick).div(2).integerValue(BigNumber.ROUND_DOWN))
+    const sb = tickToPrice(new BigNumber(topTick).div(2).integerValue(BigNumber.ROUND_DOWN))
+  
+    amount0 = new BigNumber(liquidity).times(new BigNumber(sb.minus(sa)).div(sa.times(sb))).integerValue(BigNumber.ROUND_DOWN)
+  } else if (Number(tick) < Number(topTick)) {
+    const sa = tickToPrice(Math.floor(bottomTick / 2))
+    const sb = tickToPrice(Math.floor(topTick / 2))
+    const price = tickToPrice(tick)
+    const sp = price ** 0.5
+  
+    amount0 = new BigNumber(liquidity * (sb - sp) / (sp * sb)).integerValue(BigNumber.ROUND_DOWN)
+    amount1 = new BigNumber(liquidity * (sp - sa)).integerValue(BigNumber.ROUND_DOWN)
   } else {
-    const totalDebt = (await sdk.api.abi.multiCall({
-      abi: balance,
-      calls: pairs.map((pair, idx) => ({
-        target: pair,
-        params: tokens[idx]
-      })),
-      block,
-    })).output.map(td => td.output);
+    const sa = tickToPrice(new BigNumber(bottomTick).div(2)).integerValue(BigNumber.ROUND_DOWN)
+    const sb = tickToPrice(new BigNumber(topTick).div(2)).integerValue(BigNumber.ROUND_DOWN)
 
-    for (let index = 0; index < pairs.length; index++) {
-      sdk.util.sumSingleBalance(
-        balances,
-        tokens[index],
-        totalDebt[index]
-      );
-    }
+    amount1 = new BigNumber(liquidity).times(new BigNumber(sb.minus(sa))).integerValue(BigNumber.ROUND_DOWN)
   }
+
+  return {
+    [token0]: amount0.toString(),
+    [token1]: amount1.toString()
+  }
+}
+
+const calculateUniV3LPTotal = async (balances, ethBlock, pairs) => {
+  await Promise.all(pairs.map(async pair => {
+    try {
+      const { output: pairUniPositionsCount } = await sdk.api.abi.call({
+        block: ethBlock,
+        abi: abi.balanceOf,
+        target: UNI_V3_POSITION_MANAGER,
+        params: [pair]
+      })
+
+      const positionIds = (await sdk.api.abi.multiCall({
+        block: ethBlock,
+        calls: Array(Number(pairUniPositionsCount)).fill(0).map((_, index) => ({
+          target: UNI_V3_POSITION_MANAGER,
+          params: [pair, index]
+        })),
+        abi: abi.tokenOfOwnerByIndex
+      })).output.map(positionIdCall => positionIdCall.output)
+
+      await Promise.all(positionIds.map(async positionId => {
+        const positionBalances = await getUniV3PositionBalances(positionId, ethBlock)
+        Object.keys(positionBalances).forEach(key => {
+          sdk.util.sumSingleBalance(balances, key, positionBalances[key])
+        })
+      }))
+
+    } catch (e) {
+      console.log(`Failed to get uniV3LP data for pair: ${pair.pair}`, e)
+    }
+  }))
 }
 
 const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
   const balances = {};
 
-  //  --- Total of TVL's pairs without using ---
-  await calcTvl(
-    balances,
-    ethBlock,
-    abi.tokenA,
-    erc20.balanceOf
-  );
+  const pairs = await getPairs(ethBlock)
 
-  await calcTvl(
-    balances,
-    ethBlock,
-    abi.tokenB,
-    erc20.balanceOf
-  );
+  await calculateTokenTotal(
+    balances, 
+    ethBlock, 
+    pairs.map(({ pair, tokenA }) => ({ pair, token: tokenA })),
+    abi.totalSupplyAmount
+  )
 
-  //  --- Total of TVL's pairs with using ---
-  await calcTvl(
-    balances,
-    ethBlock,
-    abi.tokenA,
-    abi.totalDebt,
-  );
+  await calculateTokenTotal(
+    balances, 
+    ethBlock, 
+    pairs.map(({ pair, tokenB }) => ({ pair, token: tokenB })),
+    abi.totalSupplyAmount
+  )
 
-  await calcTvl(
+  await calculateUniV3LPTotal(
     balances,
     ethBlock,
-    abi.tokenB,
-    abi.totalDebt,
-  );
+    pairs.map(({ pair }) => pair)
+  )
 
   return balances;
 };
 
+const borrowed = async (timestamp, ethBlock, chainBlocks) => {
+  const balances = {};
+
+  const pairs = await getPairs(ethBlock)
+
+  await calculateTokenTotal(
+    balances,
+    ethBlock,
+    pairs.map(({ pair, tokenA }) => ({ pair, token: tokenA })),
+    abi.totalDebtAmount
+  )
+
+  await calculateTokenTotal(
+    balances,
+    ethBlock,
+    pairs.map(({ pair, tokenB }) => ({ pair, token: tokenB })),
+    abi.totalDebtAmount
+  )
+
+  return balances
+}
+
 module.exports = {
   ethereum: {
     tvl: ethTvl,
+    borrowed
   },
-  tvl: sdk.util.sumChainTvls([ethTvl]),
 };

@@ -1,141 +1,80 @@
 const sdk = require('@defillama/sdk');
 const abi = require('./abi.json');
 const axios = require("axios");
+const { getBlock } = require("../helper/getBlock");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
+const { getChainTransform } = require('../helper/portedTokens')
 
 async function getConfig(network) {
-  return await axios.get('https://appv2.rampdefi.com/config/appv2').then(response => response.data[network]);
+  return await axios.get('https://config.rampdefi.com/config/appv2/priceInfo').then(response => response.data[network]);
 }
 
-async function ethereumTVL(timestamp, block) {
-  let balances = {};
-  let lpPositions = []
-  const config = await getConfig('eth')
-  const tokens = config.tokens;
-
-  for (const [tokenName, token] of Object.entries(tokens)) {
-    if (token?.strategy?.type === undefined) continue
-
-    const tokenAddress = token.address.toLowerCase();
-
-    const tokenTVL = await sdk.api.erc20.balanceOf({
-      target: tokenAddress,
-      owner: token.strategy.address,
-      block
-    })
-
-    balances[tokenAddress] = tokenTVL.output
-
-    if (tokenName.includes('UNIV2')) {
-      lpPositions.push({
-        token: tokenAddress,
-        balance: balances[tokenAddress]
-      })
-      delete balances[tokenAddress]
-    }
-  }
-
-  await unwrapUniswapLPs(balances, lpPositions, block)
-  return balances
+function isLPToken(token, chain) {
+  if (chain === 'bsc') return token.includes('CAKELP')
+  if (chain === 'ethereum') return token.includes('UNIV2')
+  if (chain === 'polygon') return token.includes('UNIV2')
 }
 
-async function bscTVL(timestamp, block) {
-  let balances = {};
-  let lpPositions = []
-  const config = await getConfig('bsc');
-  const tokens = config.tokens;
+function getChainTVL(chain) {
+  return async (timestamp, ethBlock, chainBlocks) => {
+    let balances = {};
+    let lpPositions = []
+    const block = await getBlock(timestamp, chain, chainBlocks);
+    const config = await getConfig(chain === 'ethereum' ? 'eth' : chain);
+    const tokens = config.tokens;
+    const transform = await getChainTransform(chain)
+    const promises = []
 
-  for (const [tokenName, token] of Object.entries(tokens)) {
-    if (token?.strategy?.type === undefined) continue
+    for (const [tokenName, token] of Object.entries(tokens)) {
+      if (token?.strategy?.type === undefined) continue
+      const tokenAddress = token.address.toLowerCase();
 
-    let tokenTVL = 0
-    const tokenAddress = token.address.toLowerCase();
+      promises.push((async () => {
+        const tokenTVL = await sdk.api.abi.call({
+          abi: abi.getPoolAmount,
+          target: token.strategy.address,
+          params: tokenAddress,
+          chain: chain,
+          block,
+        })
 
-    if (tokenName === "CAKE" || token.strategy.type === 1) {
-      tokenTVL = await sdk.api.abi.call({
-        abi: abi.getPoolAmount,
-        target: token.strategy.address,
-        params: tokenAddress,
-        chain: 'bsc',
-        block,
-      })
-    } else if (token.strategy.type === 2 || token.strategy.type === 0) {
-      tokenTVL = await sdk.api.abi.call({
-        abi: abi.getPoolBalance,
-        target: config.contracts.Vault.address,
-        params: tokenAddress,
-        chain: 'bsc',
-        block,
-      })
+        const prefixedTokenAddress = transform(tokenAddress)
+        sdk.util.sumSingleBalance(balances, prefixedTokenAddress, tokenTVL.output)
+
+        if (isLPToken(tokenName, chain)) {
+          lpPositions.push({
+            token: tokenAddress,
+            balance: balances[prefixedTokenAddress]
+          })
+          delete balances[prefixedTokenAddress]
+        }
+      })())
     }
 
-    const prefixedTokenAddress = "bsc:" + tokenAddress;
-    balances[prefixedTokenAddress] = tokenTVL.output
+    await Promise.all(promises)
 
-    if (tokenName.includes('CAKELP') || tokenName.includes('UNIV2')) {
-      lpPositions.push({
-        token: tokenAddress,
-        balance: balances[prefixedTokenAddress]
-      })
-      delete balances[prefixedTokenAddress]
+    await unwrapUniswapLPs(balances, lpPositions, block, chain, transform)
+
+    // Workaround for rUSD (price not being found)
+    // Use coingecko id
+    if (chain === 'polygon') {
+      const rUSD = 'polygon:0xfc40a4f89b410a1b855b5e205064a38fc29f5eb5'
+      balances['RUSD'] = parseFloat(balances[rUSD]) / (10 ** 18)
+      delete balances[rUSD]
     }
+
+    return balances
   }
-
-  await unwrapUniswapLPs(balances, lpPositions, block, 'bsc', (address) => 'bsc:' + address)
-  return balances
-}
-
-async function polygonTVL(timestamp, block) {
-  let balances = {};
-  let lpPositions = []
-  const config = await getConfig('polygon');
-  const tokens = config.tokens;
-
-  for (const [tokenName, token] of Object.entries(tokens)) {
-    if (token?.strategy?.type === undefined) continue
-    let tokenTVL = 0
-    const tokenAddress = token.address.toLowerCase();
-
-    tokenTVL = await sdk.api.abi.call({
-      abi: abi.getPoolAmount,
-      target: token.strategy.address,
-      params: tokenAddress,
-      chain: 'polygon',
-      block,
-    })
-
-    const prefixedTokenAddress = "polygon:" + tokenAddress
-    balances[prefixedTokenAddress] = tokenTVL.output
-
-    if (tokenName.includes('UNIV2')) {
-      lpPositions.push({
-        token: tokenAddress,
-        balance: balances[prefixedTokenAddress]
-      })
-      delete balances[prefixedTokenAddress]
-    }
-  }
-
-  await unwrapUniswapLPs(balances, lpPositions, block, 'polygon', (address) => 'polygon:' + address)
-
-  // Workaround for rUSD (price not being found)
-  // Use coingecko id
-  const rUSD = 'polygon:0xfc40a4f89b410a1b855b5e205064a38fc29f5eb5'
-  balances['RUSD'] = parseFloat(balances[rUSD])  / (10 ** 18)
-  delete balances[rUSD]
-
-  return balances
 }
 
 module.exports = {
   ethereum: {
-    tvl: ethereumTVL
+    tvl: getChainTVL('ethereum')
   },
   bsc: {
-    tvl: bscTVL
+    tvl: getChainTVL('bsc')
   },
   polygon: {
-    tvl: polygonTVL
+    tvl: getChainTVL('polygon')
   },
-  tvl: sdk.util.sumChainTvls([ethereumTVL, bscTVL, polygonTVL])
 }

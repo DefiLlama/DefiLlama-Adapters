@@ -1,6 +1,7 @@
 const { ApiPromise, WsProvider } = require("@polkadot/api");
 const { options } = require("@acala-network/api");
-
+const lksmToKsm = require("../karura-staking/lksmToKsm.js");
+// node test.js projects/karura-dex/index.js
 function formatTokenAmount(amount, tokenSymbol) {
   let decimals = 12;
 
@@ -26,24 +27,6 @@ const tokenToCoingecko = {
   KUSD: "tether",
   BNC: "bifrost-native-coin",
 };
-
-async function lksmToksm(api, lksmAmount) {
-  const totalStaked = Number(
-    (await api.query.homaLite.totalStakingCurrency()).toString()
-  );
-
-  const totalLksmIssued = Number(
-    (
-      await api.query.tokens.totalIssuance({
-        Token: "LKSM",
-      })
-    ).toString()
-  );
-
-  const ratio = totalStaked / totalLksmIssued;
-
-  return lksmAmount * ratio;
-}
 
 async function tvl() {
   const provider = new WsProvider("wss://karura-rpc-1.aca-api.network");
@@ -71,7 +54,7 @@ async function tvl() {
       let amount = amounts[i];
       if (Token === "LKSM") {
         Token = "KSM";
-        amount = await lksmToksm(api, amount);
+        amount = await lksmToKsm(api, amount);
       }
 
       if (totalLiquidity[Token]) {
@@ -97,5 +80,5 @@ async function tvl() {
 
 module.exports = {
   methodology: "Counts all liquidity on DEX pools. KUSD is counted as USDT",
-  tvl,
+  kusuma: { tvl },
 };

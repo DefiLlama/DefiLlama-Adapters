@@ -1,6 +1,6 @@
 const retry = require("./helper/retry");
 const axios = require("axios");
-
+// node test.js projects/arkadiko.js
 async function tvl() {
   let balances = {};
   const dikoPrice = (
@@ -36,6 +36,8 @@ async function tvl() {
     Number(balances["usd-coin"]) +
     Number(balances["arkadiko-token"] / 10 ** 8) * dikoPrice;
   delete balances["arkadiko-token"];
+  balances["wrapped-bitcoin"] = balances["Wrapped-Bitcoin"] / 10 ** 8;
+  delete balances["Wrapped-Bitcoin"]
 
   return balances;
 }

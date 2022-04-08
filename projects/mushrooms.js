@@ -12,7 +12,8 @@ const chains = {
   "ethereum": 1,
   "bsc": 56,
   "fantom": 250,
-  "polygon": 137
+  "polygon": 137,
+  "avax": 43114
 }
 
 const chainExports = Object.entries(chains).reduce((t,chain)=>({
@@ -27,6 +28,9 @@ async function fetch() {
 }
 // node test.js projects/mushrooms.js
 module.exports = {
+  doublecounted: true,
+  timetravel: false,
+  misrepresentedTokens: true,
   ...chainExports,
   fetch
 }

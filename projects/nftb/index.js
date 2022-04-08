@@ -100,6 +100,36 @@ const bscPools = [
     "0x22168882276e5d5e1da694343b41dd7726eeb288",
     "bsc:0x22168882276e5d5e1da694343b41dd7726eeb288",
   ], //1-Month WSB Vault
+  [
+    "0x40F75a74D725e31aD2E609c11068931B64e30b8D",
+    "0xE69cAef10A488D7AF31Da46c89154d025546e990",
+    "bsc:0xE69cAef10A488D7AF31Da46c89154d025546e990",
+  ], //6-Month DPT Vault
+  [
+    "0x8040ddeAf7f5F961e1F7B82d434541EA4215c42E",
+    "0xE69cAef10A488D7AF31Da46c89154d025546e990",
+    "bsc:0xE69cAef10A488D7AF31Da46c89154d025546e990",
+  ], //3-Month DPT Vault
+  [
+    "0xe88933A9F3aeBf01eB2EEb6E77040DbB924f2698",
+    "0xE69cAef10A488D7AF31Da46c89154d025546e990",
+    "bsc:0xE69cAef10A488D7AF31Da46c89154d025546e990",
+  ], //1-Month DPT Vault
+  [
+    "0xD260D4Ca6d00386a23acA47ACE37217b23F37582",
+    "0x205f93cd558aac99c4609d0511829194b5405533",
+    "bsc:0x205f93cd558aac99c4609d0511829194b5405533",
+  ], //6-Month ANGEL Vault
+  [
+    "0x1Aa2E43Ff8591865b0575E905331da2Bb6C0FfEE",
+    "0x205f93cd558aac99c4609d0511829194b5405533",
+    "bsc:0x205f93cd558aac99c4609d0511829194b5405533",
+  ], //3-Month ANGEL Vault
+  [
+    "0x4915B0b43a0B8ccbec1cB8EE4112EF3644F75Df6",
+    "0x205f93cd558aac99c4609d0511829194b5405533",
+    "bsc:0x205f93cd558aac99c4609d0511829194b5405533",
+  ], //1-Month ANGEL Vault
 ];
 
 async function bsc(_timestamp, block, chainBlocks) {
@@ -120,8 +150,8 @@ async function tvl(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
+  methodology: `TVL comes from the Staking Vaults and Launchpad Tiers`,
   bsc: {
     tvl: bsc,
   },
-  tvl,
 };

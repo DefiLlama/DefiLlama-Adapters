@@ -3,8 +3,32 @@ const {calculateUsdUniTvl} = require('../helper/getUsdUniTvl');
 const { getBlock } = require('../helper/getBlock');
 const { chainExports: getChainExports } = require('../helper/exports');
 
-const elkAddress = '0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c';
+function elkAddress(chain) {
+  switch(chain) {
+    case 'iotex': 
+    return '0xa00744882684c3e4747faefd68d283ea44099d03';
+    default:
+      return '0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c';
+  }
+} 
 
+function geckoId(chain) {
+  switch(chain) {
+    case 'iotex': 
+    return 'iotex';
+    default:
+      return 'elk-finance';
+  }
+}
+
+function whitelist(chain) {
+  switch(chain) {
+    case 'iotex': 
+    return ["0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c", "0x3b2bf2b523f54c4e454f08aa286d03115aff326c"];
+    default:
+      return [];
+  }
+}
 const stakingContracts = {
   "heco": "0xdE16c49fA4a4B78071ae0eF04B2E496dF584B2CE",
   "polygon": "0xB8CBce256a713228F690AC36B6A0953EEd58b957",
@@ -20,6 +44,7 @@ const stakingContracts = {
   "harmony": "0xf4f3495a35c0a73268eEa08b258C7968E976F5D4",
   "cronos": "0x7D4fB4BFf1EE561a97394e29B7Fa5FdE96f6d44E",
   "telos": "0xB61b4ee3A00A8D01039625c13bd93A066c85EF2C",
+  "fuse": "0xA83FF3b61c7b5812d6f0B39d5C7dDD920B2bDa61",
 };
 // node test.js projects/elkfinance/index.js
 function chainStaking(chain, contract){
@@ -28,7 +53,7 @@ function chainStaking(chain, contract){
     const block = await getBlock(timestamp, chain, chainBlocks, true);
 
     balance += Number((await sdk.api.erc20.balanceOf({
-      target: elkAddress,
+      target: elkAddress(chain),
       owner: contract,
       block: block,
       chain
@@ -53,15 +78,17 @@ const factories = {
   //telos: "0x47c3163e691966f8c1b93B308A236DDB3C1C592d",
   hoo: "0x9c03E724455306491BfD2CE0805fb872727313eA",
   elastos: "0x440a1B8b8e968D6765D41E6b92DF3cBb0e9D2b1e",
+  fuse: "0x779407e40Dad9D70Ba5ADc30E45cC3494ec71ad2",
+  iotex: "0xF96bE66DA0b9bC9DFD849827b4acfA7e8a6F3C42"
 }
 
 function chainTvl(chain){
   return calculateUsdUniTvl(
     factories[chain], 
     chain, 
-    elkAddress, 
-    [], 
-    "elk-finance",
+    elkAddress(chain), 
+    whitelist(chain),
+    geckoId(chain),
     18,
     true
   )

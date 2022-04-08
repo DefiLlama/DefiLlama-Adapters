@@ -21,8 +21,13 @@ async function avaxTvl(timestamp, block, chainBlocks) {
   return tvlV2Onchain(chainBlocks.avax, "avax")
 }
 
+async function fantomTvl(timestamp, block, chainBlocks) {
+  return tvlV2Onchain(chainBlocks.fantom, "fantom")
+}
+
 module.exports = {
   misrepresentedTokens: true,
+  doublecounted: true,
   ethereum:{
     tvl: ethTvl
   },
@@ -31,6 +36,9 @@ module.exports = {
   },
   avalanche:{
     tvl: avaxTvl
+  },
+  fantom:{
+    tvl: fantomTvl
   },
   start: 1602054167, // unix timestamp (utc 0) specifying when the project began, or where live data begins
 };
