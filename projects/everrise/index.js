@@ -8,7 +8,6 @@ const zeroAddress = '0x0000000000000000000000000000000000000000'
 const BRIDGE_CONTROLLER = '0x0Dd4A86077dC53D5e4eAE6332CB3C5576Da51281';
 const TOKEN = '0xC17c30e98541188614dF99239cABD40280810cA3';
 const STAKE_HOLDING_API = 'https://app.everrise.com/bridge/api/v1/stats'
-const EVERRISE_TOKEN = '0x0cd022dde27169b20895e0e2b2b8a33b25e63579'
 const chainConfig = {
   ethereum: {
     chainId: '1',
@@ -122,10 +121,9 @@ Object.keys(chainConfig).forEach(chain => {
     const { chainId } = chainConfig[chain]
     const stakedAmounts = await http.get(STAKE_HOLDING_API)
     let stakedAmount = stakedAmounts.find(({ id }) => id === chainId)
-    stakedAmount = stakedAmount ? stakedAmount.amount : 0
 
     return {
-      [EVERRISE_TOKEN]: BigNumber(stakedAmount).multipliedBy(10 ** 18)
+      'everrise': stakedAmount ? stakedAmount.amount : 0
     }
   }
 
