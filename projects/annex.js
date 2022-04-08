@@ -2,12 +2,12 @@ const axios = require("axios");
 
 async function bsc() {
   const lending = await axios.get("https://api.annex.finance/api/v1/governance/annex");
-  return lending.data.data.totalLiquidity;
+  return Number(lending.data.data.totalLiquidity);
 }
 // https://api.annex.finance/api/v1/pools
 async function cronos() {
   const lending = await axios.get("https://cronosapi.annex.finance/api/v1/governance/annex");
-  return lending.data.data.totalLiquidity;
+  return Number(lending.data.data.totalLiquidity);
 }
 
 module.exports = {
