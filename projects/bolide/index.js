@@ -38,6 +38,6 @@ async function fetch() {
 
 module.exports = {
     timetravel: true,
-    methodology: '',
+    methodology: 'Total value locked is a sum of all deposits people do',
     fetch,
 };
