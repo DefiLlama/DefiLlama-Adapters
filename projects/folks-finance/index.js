@@ -120,19 +120,24 @@ async function getAlgoLiquidGovernanceDeposit() {
 /* Get total deposits */
 async function tvl() {
   const prices = await getPrices();
-  let totalDeposit = 0;
 
-  for (const pool of pools) {
-    const state = await getAppState(pool.appId);
+  const promises = pools.map(async (pool) => {
+    try {
+      const state = await getAppState(pool.appId);
+      const totalDeposits = getParsedValueFromState(state, "total_deposits");
+      const numericDeposits = isNaN(Number(totalDeposits))
+        ? 0
+        : Number(totalDeposits);
+      const depositAmountUsd = numericDeposits * prices[pool.assetId];
 
-    const totalDeposits = getParsedValueFromState(state, "total_deposits");
-    const numericDeposits = isNaN(Number(totalDeposits))
-      ? 0
-      : Number(totalDeposits);
-    const depositAmountUsd = numericDeposits * prices[pool.assetId];
+      return depositAmountUsd;
+    } catch (e) {
+      return 0;
+    }
+  });
 
-    totalDeposit += depositAmountUsd;
-  }
+  const depositsAmountUsd = await Promise.all(promises);
+  const totalDeposit = depositsAmountUsd.reduce((a, b) => a + b, 0);
 
   const algoLiquidGovernanceDeposit = await getAlgoLiquidGovernanceDeposit();
   const algoLiquidGovernanceDepositUsd =
