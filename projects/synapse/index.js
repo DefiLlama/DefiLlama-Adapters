@@ -21,6 +21,8 @@ const SDT = "0x73968b9a57c6e53d41345fd57a6e6ae27d6cdb2f";
 const SOLAR = "moonriver:0x6bd193ee6d2104f14f94e2ca6efefae561a4334b";
 const LUNA = "terra-luna";
 const NEWO = "0x98585dfc8d9e7d48f0b1ae47ce33332cf4237d96";
+const WAVAX = "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7";
+const JEWEL = "harmony:0x72cb10c6bfa5624dd07ef608027e366bd690048f";
 
 const DATA = {
   bsc: {
@@ -62,6 +64,8 @@ const DATA = {
       basepool: "0x080f6aed32fc474dd5717105dba5ea57268f46eb",
     },
     tokens: [
+      "0xD9eAA386cCD65F30b77FF175F6b52115FE454fD6", // synAVAX
+      "0x28b42698Caf46B4B012CF38b6C75867E0762186D", // synJEWEL
       "0x1852f70512298d56e9c8fdd905e02581e04ddb2a", // synFRAX
       "0x67c10c397dd0ba417329543c1a40eb48aaa7cd00", // gOHM
       "0xa0554607e477cdC9d0EE2A6b087F4b2DC2815C22", // UST
@@ -124,6 +128,7 @@ const DATA = {
       "0xccbf7c451f81752f7d2237f2c18c371e6e089e69", // SDT
       "0x5ab7084cb9d270c2cb052dd30dbecbca42f8620c", // USDB
       "0x4bfc90322dd638f81f034517359bd447f8e0235a", // NEWO
+      "0x997Ddaa07d716995DE90577C123Db411584E5E46", // synJEWEL
     ],
   },
   fantom: {
@@ -336,6 +341,8 @@ const misrepresentedTokensMap = {
     "0x5ab7084cb9d270c2cb052dd30dbecbca42f8620c": TUSD,
     // NEWO -> NEWO (ETH)
     "0x4bfc90322dd638f81f034517359bd447f8e0235a": NEWO,
+    // synJEWEL -> JEWEL (ONE)
+    "0x997Ddaa07d716995DE90577C123Db411584E5E46": JEWEL,
   },
   moonriver: {
     // synFRAX -> FRAX (ETH)
@@ -366,8 +373,7 @@ const misrepresentedTokensMap = {
     "0x1d4C2a246311bB9f827F4C768e277FF5787B7D7E":
       "moonriver:0x98878b06940ae243284ca214f92bb71a2b032b8a",
     // AVAX -> WAVAX (AVAX)
-    "0xA1f8890E39b4d8E33efe296D698fe42Fb5e59cC3":
-      "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+    "0xA1f8890E39b4d8E33efe296D698fe42Fb5e59cC3": WAVAX,
     // UST -> UST (ETH)
     "0x5CF84397944B9554A278870B510e86667681ff8D": UST,
   },
@@ -380,6 +386,12 @@ const misrepresentedTokensMap = {
     "0xa0554607e477cdC9d0EE2A6b087F4b2DC2815C22": UST,
     // SDT -> SDT (ETH)
     "0xe3c82a836ec85311a433fbd9486efaf4b1afbf48": SDT,
+    // synJEWEL -> JEWEL (ONE)
+    "0x28b42698Caf46B4B012CF38b6C75867E0762186D": JEWEL,
+    // synAVAX -> WAVAX (AVAX)
+    "0xD9eAA386cCD65F30b77FF175F6b52115FE454fD6": WAVAX,
+    // multiAVAX -> WAVAX (AVAX)
+    "0xb12c13e66ade1f72f71834f2fc5082db8c091358": WAVAX,
   },
   arbitrum: {
     // synFRAX -> FRAX (ETH)
@@ -508,6 +520,20 @@ const chainTVL = (chain) => {
 
     if (chain !== "ethereum")
       await sumLegacyPools(balances, block, chain, transform);
+
+    if (chain === "harmony") {
+      const AVAX_POOL = "0x00A4F57D926781f62D09bb05ec76e6D8aE4268da";
+      await sumTokens(
+        balances,
+        [
+          "0xD9eAA386cCD65F30b77FF175F6b52115FE454fD6", // synAVAX
+          "0xb12c13e66ade1f72f71834f2fc5082db8c091358", // multiAVAX
+        ].map((x) => [x, AVAX_POOL]),
+        block,
+        chain,
+        transform
+      );
+    }
 
     return balances;
   };
