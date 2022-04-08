@@ -1,5 +1,4 @@
 const algosdk = require("algosdk");
-const { toUSDTBalances } = require("../helper/balances");
 
 const client = new algosdk.Indexer(
   "",
@@ -33,6 +32,8 @@ const pools = [
     assetDecimals: 8,
   },
 ];
+
+const liquidGovernanceAppId = 694427622;
 
 const oracleAppId = 687039379;
 const oracleDecimals = 14;
@@ -82,6 +83,28 @@ async function getPrices() {
   return prices;
 }
 
+async function getAlgoLiquidGovernanceDeposit() {
+  const [app, acc] = await Promise.all([
+    client.lookupApplications(liquidGovernanceAppId).do(),
+    client
+      .lookupAccountByID(algosdk.getApplicationAddress(liquidGovernanceAppId))
+      .do(),
+  ]);
+  const state = app.application.params["global-state"];
+
+  const gAlgoId = Number(getParsedValueFromState(state, "g_algo_id") || 0);
+  const gAlgoBalance =
+    acc.account.assets?.find((asset) => asset["asset-id"] === gAlgoId)
+      ?.amount || 10e15;
+
+  // 10e15 is the amount of gAlgo preminted by the governance contract (not in circulation)
+  // gAlgoBalance is the amount still locked in the governance contract
+  // totalMinted is the amount of gAlgo in circulation, and since gAlgo is 1:1 with Algo,
+  // it represents the amount of Algo deposited and locked in the governance contract
+  const totalMinted = 10e15 - gAlgoBalance;
+  return totalMinted;
+}
+
 /* Get total deposits */
 async function tvl() {
   const prices = await getPrices();
@@ -96,7 +119,11 @@ async function tvl() {
     totalDeposit += depositAmountUsd;
   }
 
-  return totalDeposit;
+  const algoLiquidGovernanceDeposit = await getAlgoLiquidGovernanceDeposit();
+  const algoLiquidGovernanceDepositUsd =
+    algoLiquidGovernanceDeposit * prices[0];
+
+  return totalDeposit + algoLiquidGovernanceDepositUsd;
 }
 
 /* Get total borrows */
