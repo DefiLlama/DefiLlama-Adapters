@@ -95,7 +95,7 @@ async function getPrices() {
   return prices;
 }
 
-async function getAlgoLiquidGovernanceDeposit() {
+async function getAlgoLiquidGovernanceDepositUsd(prices) {
   const [app, acc] = await Promise.all([
     client.lookupApplications(liquidGovernanceAppId).do(),
     client
@@ -114,13 +114,10 @@ async function getAlgoLiquidGovernanceDeposit() {
   // totalMinted is the amount of gAlgo in circulation, and since gAlgo is 1:1 with Algo,
   // it represents the amount of Algo deposited and locked in the governance contract
   const totalMinted = 10e15 - gAlgoBalance;
-  return totalMinted;
+  return totalMinted * prices[0];
 }
 
-/* Get total deposits */
-async function tvl() {
-  const prices = await getPrices();
-
+async function getTotalPoolDepositsUsd(prices) {
   const promises = pools.map(async (pool) => {
     try {
       const state = await getAppState(pool.appId);
@@ -137,13 +134,20 @@ async function tvl() {
   });
 
   const depositsAmountUsd = await Promise.all(promises);
-  const totalDeposit = depositsAmountUsd.reduce((a, b) => a + b, 0);
+  const getTotalDepositsUsd = depositsAmountUsd.reduce((a, b) => a + b, 0);
 
-  const algoLiquidGovernanceDeposit = await getAlgoLiquidGovernanceDeposit();
-  const algoLiquidGovernanceDepositUsd =
-    algoLiquidGovernanceDeposit * prices[0];
+  return getTotalDepositsUsd;
+}
 
-  return totalDeposit + algoLiquidGovernanceDepositUsd;
+/* Get total deposits */
+async function tvl() {
+  const prices = await getPrices();
+
+  const [depositsAmountUsd, algoLiquidGovernanceDepositUsd] = await Promise.all(
+    [getTotalPoolDepositsUsd(prices), getAlgoLiquidGovernanceDepositUsd(prices)]
+  );
+
+  return depositsAmountUsd + algoLiquidGovernanceDepositUsd;
 }
 
 /* Get total borrows */
