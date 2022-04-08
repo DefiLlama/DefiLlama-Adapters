@@ -154,21 +154,25 @@ async function tvl() {
 async function borrowed() {
   const prices = await getPrices();
 
-  let totalBorrow = 0;
+  const promises = pools.map(async (pool) => {
+    try {
+      const state = await getAppState(pool.appId);
+      const borrowAmount = getParsedValueFromState(state, "total_borrows");
+      const numericBorrowAmount = isNaN(Number(borrowAmount))
+        ? 0
+        : Number(borrowAmount);
+      const borrowAmountUsd = numericBorrowAmount * prices[pool.assetId];
 
-  for (const pool of pools) {
-    const state = await getAppState(pool.appId);
+      return borrowAmountUsd;
+    } catch (e) {
+      return 0;
+    }
+  });
 
-    const borrowAmount = getParsedValueFromState(state, "total_borrows");
-    const numericBorrowAmount = isNaN(Number(borrowAmount))
-      ? 0
-      : Number(borrowAmount);
-    const borrowAmountUsd = numericBorrowAmount * prices[pool.assetId];
+  const borrowsAmountUsd = await Promise.all(promises);
+  const totalBorrowsUsd = borrowsAmountUsd.reduce((a, b) => a + b, 0);
 
-    totalBorrow += borrowAmountUsd;
-  }
-
-  return totalBorrow;
+  return totalBorrowsUsd;
 }
 
 module.exports = {
