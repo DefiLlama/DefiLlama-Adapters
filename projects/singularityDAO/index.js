@@ -49,6 +49,7 @@ async function staking(ts, block) {
 
 
 module.exports = {
+  doublecounted: false,
   ethereum: {
     tvl,
     staking,
