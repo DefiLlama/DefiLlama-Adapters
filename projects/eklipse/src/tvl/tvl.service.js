@@ -1,20 +1,20 @@
-import { CaverService } from "../core/service/caver/caver.service.js";
-import BigNumber from "bignumber.js";
-import { GAUGE_ADDRESS } from "../constants/gauge-address.constant.js";
-import { abi_erc_20 } from "../../resources/abis/erc_20.js";
-import { TOKEN_ADDRESS } from "../constants/token-address.constant.js";
-import { LOCK_ADDRESS } from "../constants/common.constant.js";
-import { abi_klaywap_lp } from "../../resources/abis/klayswap.js";
-import { EKL_FARM_ADDRESS } from "../constants/ekl-farm.constant.js";
-import { abi_eklipse_lp_3moon } from "../../resources/abis/eklipse_lp_3moon.js";
-import { SWAP_ADDRESS } from "../constants/swap-address.constant.js";
-import { abi_eklipse_lp_4moon } from "../../resources/abis/eklipse_lp_4moon.js";
-import { LPTOKEN_ADDRESS } from "../constants/lptoken-address.constant.js";
+const CaverService = require("../core/service/caver/caver.service.js");
+const BigNumber = require("bignumber.js");
+const GAUGE_ADDRESS = require("../constants/gauge-address.constant.js");
+const abi_erc_20 = require("../../resources/abis/erc_20.js");
+const TOKEN_ADDRESS = require("../constants/token-address.constant.js");
+const LOCK_ADDRESS = require("../constants/common.constant.js");
+const abi_klaywap_lp = require("../../resources/abis/klayswap.js");
+const EKL_FARM_ADDRESS = require("../constants/ekl-farm.constant.js");
+const abi_eklipse_lp_3moon = require("../../resources/abis/eklipse_lp_3moon.js");
+const SWAP_ADDRESS = require("../constants/swap-address.constant.js");
+const abi_eklipse_lp_4moon = require("../../resources/abis/eklipse_lp_4moon.js");
+const LPTOKEN_ADDRESS = require("../constants/lptoken-address.constant.js");
 
 const caverService = new CaverService();
 const eighteenD = new BigNumber(10).exponentiatedBy(18);
 
-export async function getTVL() {
+async function getTVL() {
   const tvl = await calculateTVL();
   return tvl.toFixed(2);
 }
@@ -166,3 +166,5 @@ async function getTotalLockEKLValue() {
   const eklPrice = await getEKLPrice();
   return totalEkl.toNumber() * eklPrice.toNumber();
 }
+
+module.exports = getTVL 

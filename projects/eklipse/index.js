@@ -1,6 +1,7 @@
-import { getTVL } from './src/tvl/tvl.service.js';
+const getTVL = require('./src/tvl/tvl.service.js');
 
-export async function fetch() {
-    return await getTVL();
-}
-fetch();
+module.exports = {
+    klaytn: {
+        tvl: getTVL
+    }
+} 

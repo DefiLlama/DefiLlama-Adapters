@@ -1,8 +1,8 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 
-import Caver from "caver-js";
+const Caver = require("caver-js");
 
-export class CaverService {
+class CaverService {
   caver;
 
   constructor() {
@@ -19,3 +19,5 @@ export class CaverService {
     return new this.caver.klay.Contract(abi, address);
   }
 }
+
+module.exports = CaverService 
