@@ -1,4 +1,4 @@
-export const abi_erc_20 = [
+const abi_erc_20 = [
   {
     constant: true,
     inputs: [],
@@ -220,3 +220,5 @@ export const abi_erc_20 = [
     type: 'event',
   },
 ];
+
+module.exports = abi_erc_20;
