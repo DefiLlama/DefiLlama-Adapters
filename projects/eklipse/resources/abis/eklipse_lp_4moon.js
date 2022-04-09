@@ -1,4 +1,4 @@
-export const abi_eklipse_lp_4moon = [
+const abi_eklipse_lp_4moon = [
   {
     inputs: [],
     name: 'getVirtualPrice',
@@ -28,3 +28,5 @@ export const abi_eklipse_lp_4moon = [
     constant: true,
   }
 ];
+
+module.exports = abi_eklipse_lp_4moon; 
