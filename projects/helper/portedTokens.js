@@ -705,6 +705,7 @@ const chainTransforms = {
   harmony: transformHarmonyAddress,
   optimism: transformOptimismAddress,
   moonriver: transformMoonriverAddress,
+  milkomeda: transformMilkomedaAddress,
   okex: transformOkexAddress,
   kcc: transformKccAddress,
   arbitrum: transformArbitrumAddress,
@@ -726,6 +727,15 @@ async function transformEthereumAddress() {
   return addr => {
     addr = addr.toLowerCase()
     return mapping[addr] || addr
+  }
+}
+async function transformMilkomedaAddress() {
+  const mapping = {
+    '0x7f27352d5f83db87a5a3e00f4b07cc2138d8ee52': 'bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c' // BNB token
+  } 
+  return addr => {
+    addr = addr.toLowerCase()
+    return mapping[addr] || `milkomeda:${addr}`
   }
 }
 
@@ -767,5 +777,6 @@ module.exports = {
   transformEthereumAddress,
   transformOasisAddress,
   transformOasisAddressBase,
+  transformMilkomedaAddress,
   transformDfkAddress,
 };
