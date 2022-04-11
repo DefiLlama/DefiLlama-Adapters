@@ -201,8 +201,8 @@ async function polygonPool2(timestamp, block, chainBlocks) {
       },
     ],
     abi: "erc20:balanceOf",
-    block: chainBlocks["aurora"],
-    chain: "aurora",
+    block: chainBlocks.polygon,
+    chain: "polygon",
   });
 
   sdk.util.sumMultiBalanceOf(balances, output);
