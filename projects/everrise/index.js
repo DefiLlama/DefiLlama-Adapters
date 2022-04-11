@@ -136,5 +136,6 @@ Object.keys(chainConfig).forEach(chain => {
 
 module.exports = {
   ...chainExports,
+  timetravel: false,
   methodology: "TVL comes from the buyback reserves, other token migration vaults and cross-chain bridge vaults",
 };
