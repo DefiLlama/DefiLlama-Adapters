@@ -42,6 +42,8 @@ const polyUSDT = {addr: "0xc2132d05d31c914a87c6611c10748aeb04b58e8f", dec: 6, ge
 
 const snow = {addr: '0xfe9a29ab92522d14fc65880d817214261d8479ae', dec: 18, get getPrice(){return this.addr}} ///Frosty
 
+const polySnow = {addr: "0x33c9f7c0afe2722cb9e426360c261fb755b4483d", dec: 18, getPrice: snow.getPrice}; /// Olaf's
+
 let swaps = [
   {
     'name': 'yv',
@@ -99,6 +101,12 @@ const pools = [
     'addr': '0x6852E7399C6cC73256Ca46A4921e1c7b2682D912',
     'coins': [polyDai, polyUsdc, polyUSDT],
     'chain': 'polygon'
+  },
+  {
+    'name': `Olaf's`,
+    'addr': "0x4f3B8FD5617287d1073cd3275c3d040265624575",
+    'coins': [polyUsdc, polySnow],
+    'chain': "polygon",
   }
 ]
 

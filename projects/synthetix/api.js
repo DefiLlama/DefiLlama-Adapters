@@ -5,6 +5,7 @@ const abi = require('./abi');
 const { getBlock } = require('../helper/getBlock');
 const { requery } = require('../helper/requery');
 const { request, gql } = require("graphql-request");
+const oldOptimismHolders = require('./oldOptimismHolders')
 
 const QUERY = gql`
 query manyHolders($lastID: String, $block: Int) {
@@ -38,7 +39,7 @@ const synthetixs = {
 }
 const snxGraphEndpoints = {
   ethereum: 'https://api.thegraph.com/subgraphs/name/0xngmi/snx-lite-ethereum',
-  optimism: 'https://api.thegraph.com/subgraphs/name/0xngmi/snx-lite-optimism'
+  optimism: 'https://api.thegraph.com/subgraphs/name/0xngmi/snx-lite-optimism-regenesis'
 }
 const ethStaking = "0xc1aae9d18bbe386b102435a8632c8063d31e747c"
 const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
@@ -66,13 +67,13 @@ function chainTvl(chain) {
         block,
         chain,
         abi: abi['collateralisationRatio'],
-        calls: _.map(holders, holder => ({ target: synthetix, params: holder.id }))
+        calls: _.map(holders, holder => ({ target: synthetix, params: holder }))
       }),
       sdk.api.abi.multiCall({
         block,
         chain,
         abi: abi['collateral'],
-        calls: _.map(holders, holder => ({ target: synthetix, params: holder.id }))
+        calls: _.map(holders, holder => ({ target: synthetix, params: holder }))
       })
     ]);
     await requery(ratio, chain, block, abi['collateralisationRatio'])
@@ -83,10 +84,10 @@ function chainTvl(chain) {
     collateral.output.forEach(r => collaterals[r.input.params[0]] = r.output)
 
     _.forEach(holders, (holder) => {
-      let _collateral = collaterals[holder.id];
-      let _ratio = ratios[holder.id];
+      let _collateral = collaterals[holder];
+      let _ratio = ratios[holder];
       if(_collateral === null || _ratio === null){
-        throw new Error(`Failed request for collateral/ratio of holder ${holder.id}`)
+        throw new Error(`Failed request for collateral/ratio of holder ${holder}`)
       }
       let locked = _collateral * Math.min(1, _ratio / issuanceRatio);
       totalTopStakersSNX = totalTopStakersSNX.plus(_collateral)
@@ -124,7 +125,10 @@ function chainTvl(chain) {
 // Uses graph protocol to run through SNX contract. Since there is a limit of 100 results per query
 // we can use graph-results-pager library to increase the limit.
 async function SNXHolders(snxGraphEndpoint, block, chain) {
-  let holders = []
+  let holders = new Set()
+  if(chain === "optimism"){
+    holders = oldOptimismHolders;
+  }
   let lastID = ""
   let holdersPage;
   do {
@@ -132,10 +136,10 @@ async function SNXHolders(snxGraphEndpoint, block, chain) {
       block,
       lastID
     })).holders
-    holders = holders.concat(holdersPage)
+    holdersPage.forEach(h=>holders.add(h.id))
     lastID = holdersPage[holdersPage.length - 1]?.id
   } while (holdersPage.length === 1e3);
-  return holders
+  return Array.from(holders)
 }
 
 module.exports = {
@@ -146,5 +150,4 @@ module.exports = {
   ethereum: {
     tvl: chainTvl("ethereum"),
   },
-  tvl: sdk.util.sumChainTvls(["ethereum", "optimism"].map(chainTvl))
 };

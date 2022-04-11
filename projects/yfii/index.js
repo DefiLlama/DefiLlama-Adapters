@@ -49,14 +49,12 @@ async function tvl(timestamp, block) {
   });
 
   _.each(underlyingIVaultAddressResults.output, (token) => {
-    if(token.success) {
       const underlyingTokenAddress = token.output;
       const iVaultAddress = token.input.target;
       iVaultToUnderlyingToken[iVaultAddress] = underlyingTokenAddress;
       if (!balances.hasOwnProperty(underlyingTokenAddress)) {
         balances[underlyingTokenAddress] = 0;
       }
-    }
   });
 
   // Get iVault's balances in underlying token
@@ -69,11 +67,9 @@ async function tvl(timestamp, block) {
   });
 
   _.each(iVaultBalanceResults.output, (tokenBalanceResult) => {
-    if(tokenBalanceResult.success) {
       const valueInToken = tokenBalanceResult.output;
       const iVaultAddress = tokenBalanceResult.input.target;
       balances[iVaultToUnderlyingToken[iVaultAddress]] = BigNumber(balances[iVaultToUnderlyingToken[iVaultAddress]]).plus(valueInToken);
-    }
   });
 
 
@@ -89,12 +85,10 @@ async function tvl(timestamp, block) {
   
   balances[yfii] = new BigNumber(0);
   _.each(yfiiRewardBalanceResults.output, (tokenBalanceResult) => {
-    if(tokenBalanceResult.success) {
       const target = tokenBalanceResult.input.target;
       const output = tokenBalanceResult.output;
     
       balances[target] = balances[target].plus(BigNumber(output)); 
-    }
   });
   
 
@@ -110,9 +104,7 @@ async function tvl(timestamp, block) {
   ==================================================*/
 
 module.exports = {
-  name: 'dfi.money',
-  token: 'YFII',
-  category: 'assets',
+  doublecounted: true,
   start: 1600185600,    // 09/16/2020 @ 12:00am (UTC+8)
   tvl,
 };

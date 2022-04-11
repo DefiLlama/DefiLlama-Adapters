@@ -104,18 +104,12 @@
 
     // sum token balances across contracts
     _.each(balanceOfResults.output, balanceOf => {
-      if (balanceOf.success) {
         let balance = balanceOf.output;
         let address = balanceOf.input.target;
-
-        if (BigNumber(balance).toNumber() <= 0) {
-          return;
-        }
 
         balances[address] = BigNumber(balances[address] || 0)
           .plus(balance)
           .toFixed();
-      }
     });
 
     return balances;
@@ -126,9 +120,6 @@
   ==================================================*/
 
   module.exports = {
-    name: "Erasure",
-    token: "NMR",
-    category: "derivatives",
     start: 1566518400, // 08/23/2019 @ 12:00am (UTC)
     tvl
   };

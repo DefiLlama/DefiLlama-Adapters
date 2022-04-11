@@ -11,5 +11,4 @@ module.exports = {
   kcc: {
     tvl: chainTvl('kcc'),
   },
-  tvl: chainTvl('kcc'),
 }

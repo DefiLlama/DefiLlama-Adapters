@@ -1,0 +1,7 @@
+{
+  "getLockedByGovernance": {"inputs":[],"name":"getLockedByGovernance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  "getLockedRewards": {"inputs":[],"name":"getLockedRewards","outputs":[{"internalType":"uint256","name":"totalLockedRewards","type":"uint256"}],"stateMutability":"view","type":"function"},
+  "getLockedVestings": {"inputs":[],"name":"getLockedVestings","outputs":[{"internalType":"uint256","name":"totalLockedVestings","type":"uint256"}],"stateMutability":"view","type":"function"},
+  "getTimelocked": {"inputs":[],"name":"getTimelocked","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  "getTotalLocked": {"inputs":[],"name":"getTotalLocked","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+}

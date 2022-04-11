@@ -44,8 +44,9 @@ async function tvl(timestamp, ethereumBlock, chainBlocks) {
 
       sdk.api.abi.call({
         target: DAOvault.Metaverse, // contract address
-        abi: abi.getAllPoolInUSD, // erc20:methodName
+        abi: abi.getAllPoolInUSDProxy, // erc20:methodName
         block: block[block], // Current block number
+        params: [false],
       }),
     ]);
 
@@ -80,8 +81,28 @@ async function final() {
 
 final();
 */
+// node test.js projects/daoventures/index.js
+async function stakingTvl(timestamp, block) {
+  let balances = {};
+  let { output: balance } = await sdk.api.erc20.balanceOf({
+    target: "0x77dce26c03a9b833fc2d7c31c22da4f42e9d9582",
+    owner: "0x1193c036833B0010fF80a3617BBC94400A284338",
+    block,
+  });
+
+  sdk.util.sumSingleBalance(
+    balances,
+    "0x77dce26c03a9b833fc2d7c31c22da4f42e9d9582",
+    balance
+  );
+
+  return balances;
+}
 
 module.exports = {
-  tvl,
   misrepresentedTokens: true,
+  ethereum: {
+    tvl: tvl,
+    staking: stakingTvl,
+  },
 };

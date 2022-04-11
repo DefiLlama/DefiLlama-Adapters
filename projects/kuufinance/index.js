@@ -48,10 +48,10 @@ const avaxTvl = async (timestamp, ethBlock, chainBlocks) => {
 };
 
 module.exports = {
+  deadFrom: 1648765747,
   misrepresentedTokens: true,
   avalanche: {
     tvl: avaxTvl,
   },
-  tvl: sdk.util.sumChainTvls([avaxTvl]),
   methodology: `We count as TVL all the assets deposited in JITU contract`,
 };

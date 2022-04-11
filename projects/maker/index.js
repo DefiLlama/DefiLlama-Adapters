@@ -35,7 +35,8 @@ async function getJoins(block) {
     })),
     block
   });
-  await requery(ilks, "ethereum", block, MakerMCDConstants.ilk) // make sure that failed calls actually fail
+  await requery(ilks, "ethereum", block, MakerMCDConstants.ilk)
+  await requery(ilks, "ethereum", block, MakerMCDConstants.ilk)  // make sure that failed calls actually fail
 
   for (let ilk of ilks.output) {
     if (ilk.output) {
@@ -70,7 +71,7 @@ async function tvl(timestamp, block) {
           block
         })).output;
 
-        const symbol = await sdk.api.erc20.symbol(gem)
+        const symbol = join === "0xad37fd42185ba63009177058208dd1be4b136e6b"?"SAI": await sdk.api.erc20.symbol(gem)
         if (symbol.output === "UNI-V2") {
           await unwrapUniswapLPs(balances, [{
             token: gem,
@@ -81,24 +82,28 @@ async function tvl(timestamp, block) {
           sdk.util.sumSingleBalance(balances, gem, balance);
         }
       } catch (e) {
-        return
+        try{
+          if(join !== "0x7b3799b30f268ba55f926d7f714a3001af89d359"){
+            await sdk.api.abi.call({
+              block,
+              target: join,
+              abi: MakerMCDConstants.dog
+            })
+          }
+          return
+        } catch(e){
+          throw new Error("failed gem() and dog() on "+join)
+        }
       }
     }))
-
-    let pie = (await sdk.api.abi.call({
-      block,
-      target: MakerMCDConstants.POT,
-      abi: MakerMCDConstants.Pie
-    })).output;
-
-    sdk.util.sumSingleBalance(balances, MakerMCDConstants.DAI, pie);
   }
 
   return balances;
 }
 
 module.exports = {
-  methodology: `Counts all the tokens being used as collateral of CDPs and the DAI locked in the DSR (Dai Savings Rate) contract.
+  timetravel: true,
+  methodology: `Counts all the tokens being used as collateral of CDPs.
   
   On the technical level, we get all the collateral tokens by fetching events, get the amounts locked by calling balanceOf() directly, unwrap any uniswap LP tokens and then get the price of each token from coingecko`,
   start: 1513566671, // 12/18/2017 @ 12:00am (UTC)

@@ -5,6 +5,7 @@ const token1 = require('./abis/token1.json');
 const getReserves = require('./abis/getReserves.json');
 const factoryAbi = require('./abis/factory.json');
 const { getBlock } = require('./getBlock');
+const { getChainTransform } = require('./portedTokens')
 
 async function requery(results, chain, block, abi) {
     if (results.some(r => !r.success)) {
@@ -39,11 +40,12 @@ function setPrice(prices, address, coreAmount, tokenAmount) {
     prices[address] = [Number(coreAmount), Number(coreAmount) / Number(tokenAmount)]
 }
 
-function calculateUsdUniTvl(FACTORY, chain, coreAssetRaw, whitelistRaw, coreAssetName, decimals = 18) {
+function calculateUsdUniTvl(FACTORY, chain, coreAssetRaw, whitelistRaw, coreAssetName, decimals = 18, allowUndefinedBlock = true) {
     const whitelist = whitelistRaw.map(t => t.toLowerCase())
     const coreAsset = coreAssetRaw.toLowerCase()
     return async (timestamp, ethBlock, chainBlocks) => {
-        const block = await getBlock(timestamp, chain, chainBlocks)
+        const block = await getBlock(timestamp, chain, chainBlocks, allowUndefinedBlock)
+        const transformAddress = await getChainTransform(chain)
 
         let pairAddresses;
         const pairLength = (await sdk.api.abi.call({
@@ -129,7 +131,6 @@ function calculateUsdUniTvl(FACTORY, chain, coreAssetRaw, whitelistRaw, coreAsse
         const balances = {}
         let coreBalance = 0
         const prices = {}
-        const list = []
         for (let i = 0; i < reserves.length; i++) {
             const pairAddress = reserves[i].input.target.toLowerCase();
             const pair = pairs[pairAddress];
@@ -141,7 +142,6 @@ function calculateUsdUniTvl(FACTORY, chain, coreAssetRaw, whitelistRaw, coreAsse
                 if (whitelist.includes(token1Address)) {
                     setPrice(prices, token1Address, reserveAmounts[0], reserveAmounts[1])
                 }
-                list.push([pairAddress, Number(reserveAmounts[0]), reserveAmounts])
             } else if (token1Address === coreAsset) {
                 coreBalance += Number(reserveAmounts[1]) * 2
                 if (whitelist.includes(token0Address)) {
@@ -157,18 +157,23 @@ function calculateUsdUniTvl(FACTORY, chain, coreAssetRaw, whitelistRaw, coreAsse
                 }
             }
         }
+        const finalBalances = {}
         Object.entries(balances).forEach(([address, amount]) => {
             const price = prices[address];
             if (price !== undefined) {
                 coreBalance += price[1] * (amount ?? 0)
+            } else {
+                finalBalances[transformAddress(address)] = amount
             }
         })
-        return {
-            [coreAssetName]: (coreBalance) / (10 ** decimals)
-        }
+        finalBalances[coreAssetName] = (coreBalance) / (10 ** decimals)
+        return finalBalances
     }
 };
 
 module.exports = {
     calculateUsdUniTvl,
+    requery,
+    setPrice,
+    sum
 };

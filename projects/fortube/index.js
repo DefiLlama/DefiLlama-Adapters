@@ -41,7 +41,7 @@
       abi: abi["collateralTokens"],
     });
     _.each(erc20AssetResults.output, (result) => {
-      if (result.success && result.output != EthAddress) {
+      if (result.output != EthAddress) {
         erc20Assets.push(result.output);
       }
     });
@@ -62,7 +62,7 @@
     });
 
     _.each(underlyings.output, (result) => {
-      if (result.success && result.output != EthAddressV2) {
+      if (result.output != EthAddressV2) {
         erc20AssetsV2.push(result.output);
       }
     });
@@ -196,7 +196,17 @@
   */
   async function okexchain(_timestamp, _ethBlock, chainBlocks){
     const markets = await axios.get("https://api.for.tube/api/v1/bank/public/chain/OEC-Inno/markets")
-    const usdCollateral = markets.data.data.reduce((acc, val)=>acc+val.token_price*val.balance_in_cheque, 0)
+    const usdCollateral = markets.data.data.reduce((acc, val)=> acc + val.token_price * val.global_token_reserved, 0)
+    return toUSDTBalances(usdCollateral)
+  }
+  async function iotexchain(_timestamp, _ethBlock, chainBlocks){
+    const markets = await axios.get("https://api.for.tube/api/v1/bank/public/chain/IoTeX-Inno/markets")
+    const usdCollateral = markets.data.data.reduce((acc, val)=> acc + val.token_price * val.global_token_reserved, 0)
+    return toUSDTBalances(usdCollateral)
+  }
+  async function polygonchain(_timestamp, _ethBlock, chainBlocks){
+    const markets = await axios.get("https://api.for.tube/api/v1/bank/public/chain/Polygon-Inno/markets")
+    const usdCollateral = markets.data.data.reduce((acc, val)=> acc + val.token_price * val.global_token_reserved, 0)
     return toUSDTBalances(usdCollateral)
   }
   
@@ -212,6 +222,12 @@
     okexchain: {
       tvl: okexchain
     },
-    tvl: sdk.util.sumChainTvls([eth, bsc, okexchain])
+    iotex: {
+      tvl: iotexchain
+    },
+    polygon: {
+      tvl: polygonchain
+    },
+    
   };
   

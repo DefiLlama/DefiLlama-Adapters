@@ -1,6 +1,7 @@
 const sdk = require('@defillama/sdk')
 const abi = require('./abi.json')
 const potABI = require('./pot_abi.json')
+const leverageABI = require('./leverage_abi.json')
 const BigNumber = require('bignumber.js')
 
 const dashboard = '0xb3C96d3C3d643c2318E4CDD0a9A48aF53131F5f4'
@@ -52,22 +53,39 @@ const pools = [
     '0xFeED0bb79035c61CF6519795a02a6a2A69A11aAC',
     '0xD2220455E760Fb27ED8aaA6F9C7E143A687BB0aD',
     '0xBdd478cF8313240EfDC54108A2ed389d450cD702',
-    
-    '0xDe80CE223C9f1D1db0BC8D5bDD88E03f6882eEA3',
-    '0x67c42b3dAC9526efCBFeeb2FC1C56Cf77F494e46',
-    '0x4FC359E39A99acFDF44c794eF702fab93067B2A6',
-    '0x53fd20bc5D4d222764B70817810494F1D06f3403',
-    '0x401c22395200Caaae87f8aB9f9446636Dde38c9A',
-    '0xEe3Ee0BEb7919eDD31a4506d7d4C93940f2ACED6',
-    '0xB9Cf0d36e82C2a1b46eD51e44dC0a4B0100D6d74',
-    '0x4b107b794c9Bbfd83E5Ac9E8Dd59F918510C5729',
-    '0x33F93897e914a7482A262Ef10A94319840EB8D05',
-    '0xE6b3fb8E6c7B9d7fBf3BFD1a50ac8201c2fa5a8F',
+
+    // qSAV
+    '0xDe80CE223C9f1D1db0BC8D5bDD88E03f6882eEA3',   // CAKE
+    '0x67c42b3dAC9526efCBFeeb2FC1C56Cf77F494e46',   // BNB
+    '0x4FC359E39A99acFDF44c794eF702fab93067B2A6',   // BUSD
+    '0x53fd20bc5D4d222764B70817810494F1D06f3403',   // USDT
+    '0x401c22395200Caaae87f8aB9f9446636Dde38c9A',   // DAI
+    '0xEe3Ee0BEb7919eDD31a4506d7d4C93940f2ACED6',   // USDC
+    '0xB9Cf0d36e82C2a1b46eD51e44dC0a4B0100D6d74',   // BTCB
+    '0x4b107b794c9Bbfd83E5Ac9E8Dd59F918510C5729',   // ETH
+    '0x33F93897e914a7482A262Ef10A94319840EB8D05',   // bQBT
+    '0xE6b3fb8E6c7B9d7fBf3BFD1a50ac8201c2fa5a8F',   // bQBT-BNB
+
+    // vSAV v2
+    '0xA555443A5eE77f334648eF4F557C0B5070fcb4de',
+    '0xf70e331AcDDfC2a5cd169B8B3D1cC02951E8dE85',
+    '0xa08a2664BD2124dD011224E1cb4fd6E263E3A208',
+    '0x7cD22bd5B7a45F952a4f375AA6d5bf08538ed03C',
+    '0x7d2De1362dc32c1974d3A7CBBbd6Ad898E7B3EE7',
 ]
 
 const pots = [
     '0xa9b005d891414E0d6E0353490e099D0CA4C778Fc',
     '0xD601966588E812218a45f3ec06D3A89602348183'
+]
+
+const leveragedPools = [
+    '0xfb8358f34133c275B0393E3883BDd8764Cb610DE',
+    '0xD75f3E4e8ed51ec98ED57386Cb47DF457308Ad08',
+    '0xb04D1A8266Ff97Ee9f48d48Ad2F2868b77F1C668',
+    '0x12B7b4BEc740A7F438367ff3117253507eF605A7',
+    '0xe0fB5Cd342BCA2229F413DA7a2684506b0397fF3',
+    '0x8626Af388F0B69BB15C36422cE67f9638BA2B800'
 ]
 
 const dashboardPolygon = '0xFA71FD547A6654b80c47DC0CE16EA46cECf93C02'
@@ -126,10 +144,17 @@ async function bsc(timestamp, ethBlock, chainBlock) {
         chain: 'bsc'
     })).output.reduce((tvl, call) => tvl.plus(new BigNumber(call.output)), ZERO)
     
-
+    const leverage_total = (await sdk.api.abi.multiCall({
+        calls: leveragedPools.map( address => ({
+            target: address
+        })),
+        block,
+        abi: leverageABI,
+        chain: 'bsc'
+    })).output.reduce((tvl, call) => tvl.plus(new BigNumber(call.output[1])), ZERO)
         
     return {
-        'tether': total.plus(pot_total).dividedBy(ETHER).toNumber()
+        'tether': total.plus(pot_total).plus(leverage_total).dividedBy(ETHER).toNumber()
     }
 }
 
@@ -159,5 +184,4 @@ module.exports = {
     polygon:{
         tvl:polygon
     },
-    tvl: sdk.util.sumChainTvls([bsc, polygon])
 }

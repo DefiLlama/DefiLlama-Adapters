@@ -1,0 +1,61 @@
+{
+  "usdc": {
+    "ethereum": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    "polygon": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174"
+  },
+  "ethereum": [
+    {
+      "address": "0xa6c0cbcaebd93ad3c6c94412ec06aaa37870216d",
+      "token": "0xcadc0acd4b445166f12d2c07eac6e2544fbe2eef"
+    },
+    {
+      "address": "0x1a4ffe0dcbdb4d551cfca61a5626afd190731347",
+      "token": "0xdb25f211ab05b1c97d595516f45794528a807ad8"
+    },
+    {
+      "address": "0x2bab29a12a9527a179da88f422cdaaa223a90bd5",
+      "token": "0x70e8de73ce538da2beed35d14187f6959a8eca96"
+    },
+    {
+      "address": "0xdD39379AB7C93b9bAAE29E6eC03795d0bC99a889",
+      "token": "0xebf2096e01455108badcbaf86ce30b6e5a72aa52"
+    },
+    {
+      "address": "0xE9669516e09f5710023566458F329cCE6437AaaC",
+      "token": "0xda446fad08277b4d2591536f204e018f32b6831c",
+      "currency": "NZDS"
+    },
+    {
+      "address": "0xC574A613A3900e4314da13eB2287f13689A5b64D",
+      "token": "0x2c537e5624e4af88a7ae4060c022609376c8d0eb",
+      "currency": "TRYb"
+    }
+  ],
+  "polygon": [
+    {
+      "address": "0x288Ab1b113C666Abb097BB2bA51B8f3759D7729e",
+      "token": "0x5d146d8b1dacb1ebba5cb005ae1059da8a1fbf57",
+      "currency": "CADC"
+    },
+    {
+      "address": "0xB72d390E07F40D37D42dfCc43E954Ae7c738Ad44",
+      "token": "0xe111178a87a3bff0c8d18decba5798827539ae99",
+      "currency": "EURS"
+    },
+    {
+      "address": "0x8e3e9cB46E593Ec0CaF4a1Dcd6DF3A79a87b1fd7",
+      "token": "0x769434dca303597c8fc4997bf3dab233e961eda2",
+      "currency": "XSGD"
+    },
+    {
+      "address": "0xea75cd0b12a8b48f5bddad37ceb15f8cb3d2cc75",
+      "token": "0x4fb71290ac171e1d144f7221d882becac7196eb5",
+      "currency": "TRYb"
+    },
+    {
+      "address": "0x931d6a6cc3f992beee80a1a14a6530d34104b000",
+      "token": "0xeafe31cd9e8e01c8f0073a2c974f728fb80e9dce",
+      "currency": "NZDs"
+    }
+  ]
+}

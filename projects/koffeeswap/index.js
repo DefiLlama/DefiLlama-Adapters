@@ -89,13 +89,10 @@ const kccTvl = async (timestamp, ethBlock, chainBlocks) => {
 
 module.exports = {
   misrepresentedTokens: true,
-  staking: {
-    tvl: staking,
-  },
   kcc: {
+    staking,
     tvl: kccTvl,
   },
-  tvl: sdk.util.sumChainTvls([kccTvl]),
   methodology:
     "We count liquidity on the brews threw their contracts and the portion TVL staking the native token (KOFFEE) by FeatureStaking contract",
 };

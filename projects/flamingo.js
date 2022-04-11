@@ -1,16 +1,14 @@
 const utils = require('./helper/utils');
 
 async function fetch() {
-  var data = await utils.fetchURL('https://fapi.ngd.network/api/web/analytics/current');
-  let tvl = 0;
-  const prices = data.data.pricesData;
-  data.data.tokensData.forEach(token=>{
-      const price = prices.find(t=>t.symbol === token.priceSymbol)?.price || 0
-      tvl += price * Number(token.liquidity)
-  })
+  const data = await utils.fetchURL('https://api.flamingo.finance/token-info/tvl');
+  const tvl = data.data;
   return tvl
 }
 
 module.exports = {
+  methodology: `TVL is obtained by making calls to the Flamingo Finance API "https://api.flamingo.finance/token-info/tvl".`,
+  misrepresentedTokens: true,
+  timetravel: false,
   fetch
 }
