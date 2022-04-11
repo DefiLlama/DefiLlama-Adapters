@@ -43,5 +43,14 @@ module.exports = {
   ontology: {
     fetch: fetchChain('ONT')
   },
+  iotex: {
+    fetch: fetchChain('IOTX')
+  },
+  bittorrent: {
+    fetch: fetchChain('BTT')
+  },
+  avalanche: {
+    fetch: fetchChain('AVAX')
+  },
   fetch: fetchTvl
 }

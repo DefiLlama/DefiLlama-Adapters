@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
-const erc20 = require("../helper/abis/erc20.json");
 const abi = require("./abi.json");
+const BigNumber = require('bignumber.js')
 
 const liquidityContracts = [
   // DAI Liquidity
@@ -26,17 +26,16 @@ const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
 
   const balance = (
     await sdk.api.abi.multiCall({
-      abi: erc20.balanceOf,
+      abi: abi.getPoolTotalValue,
       calls: underlyers.map((nd, idx) => ({
-        target: nd,
-        params: liquidityContracts[idx],
+        target: liquidityContracts[idx],
       })),
       block: ethBlock,
     })
   ).output.map((bal) => bal.output);
 
   for (let index = 0; index < underlyers.length; index++) {
-    sdk.util.sumSingleBalance(balances, `${underlyers[index]}`, balance[index]);
+    sdk.util.sumSingleBalance(balances, `${underlyers[1]}`, BigNumber(balance[index]).div(10**2).toFixed(0));
   }
 
   return balances;
@@ -46,6 +45,5 @@ module.exports = {
   ethereum: {
     tvl: ethTvl,
   },
-  tvl: sdk.util.sumChainTvls([ethTvl]),
   methodology: `The TVL for APY.Finance can be found in three contract addresses. Each address corresponds to the type of token that can be deposited, DAI, USDC, and USDT. After having the balance for each address, they are simply added together to get the total TVL.`
 };

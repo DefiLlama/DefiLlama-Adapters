@@ -156,5 +156,4 @@ module.exports = {
     avalanche:{
         tvl: avax
     },
-    tvl: sdk.util.sumChainTvls([eth, bsc, polygon, avax])
 }

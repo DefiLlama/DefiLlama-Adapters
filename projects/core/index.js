@@ -168,9 +168,6 @@ async function tvl(timestamp, block) {
 }
 
 module.exports = {
-  name: 'cvault.finance',
-  token: 'CORE',
-  category: 'assets',
   start: 1601142406,    // 2020-09-26 17:46:46 (UTC)
   tvl
 };

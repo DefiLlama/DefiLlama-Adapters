@@ -1,0 +1,28 @@
+{
+    "_BASE_TOKEN_": {
+        "inputs": [],
+        "name": "_BASE_TOKEN_",
+        "outputs": [
+            {
+                "internalType": "contract IERC20",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "_QUOTE_TOKEN_": {
+        "inputs": [],
+        "name": "_QUOTE_TOKEN_",
+        "outputs": [
+            {
+                "internalType": "contract IERC20",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+}

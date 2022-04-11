@@ -1,0 +1,83 @@
+{
+    "totalSupply": {
+        "name": "totalSupply",
+        "outputs": [
+            {
+                "type": "uint256",
+                "name": "out"
+            }
+        ],
+        "inputs": [],
+        "constant": true,
+        "payable": false,
+        "type": "function"
+    },
+    "balances": {
+        "name": "balances",
+        "outputs": [
+            {
+                "type": "uint256",
+                "name": "out"
+            }
+        ],
+        "inputs": [
+            {
+                "type": "int128",
+                "name": "arg0"
+            }
+        ],
+        "constant": true,
+        "payable": false,
+        "type": "function"
+    },
+    "coins": {
+        "name": "coins",
+        "outputs": [
+            {
+                "type": "address",
+                "name": "out"
+            }
+        ],
+        "inputs": [
+            {
+                "type": "int128",
+                "name": "arg0"
+            }
+        ],
+        "constant": true,
+        "payable": false,
+        "type": "function"
+    },
+    "sharesToAmount": {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_shares",
+                "type": "uint256"
+            }
+        ],
+        "name": "sharesToAmount",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "token": {
+        "inputs": [],
+        "name": "token",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+}

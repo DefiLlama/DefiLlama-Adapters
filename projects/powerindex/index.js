@@ -15,6 +15,8 @@ async function getBscTvl(time, ethBlock, chainBlocks) {
   let bscBalances = {}
   const block = chainBlocks.bsc
 
+  const poolAddress = "0x40E46dE174dfB776BB89E04dF1C47d8a66855EB3"
+  /*
   const poolAddress = await sdk.api.util.getLogs({
     keys: ['topics'],
     toBlock: block,
@@ -23,6 +25,7 @@ async function getBscTvl(time, ethBlock, chainBlocks) {
     topic: 'LOG_NEW_POOL(address,address,address)',
     chain: 'bsc'
   }).then(r => `0x${r.output[0][2].slice(26)}`);
+  */
   
   let poolTokens = await sdk.api.abi.call({
     chain: 'bsc',
@@ -143,6 +146,5 @@ module.exports = {
   },
   ethereum:{
     tvl: eth
-  },
-  tvl: sdk.util.sumChainTvls([getBscTvl, eth])
+  }
 }
