@@ -41,7 +41,7 @@
     "inquirer-fuzzy-path": "^2.3.0",
     "js-yaml": "^4.1.0",
     "moment": "^2.29.1",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "2.6.7",
     "node-html-parser": "^5.0.0",
     "pact-lang-api": "^4.3.3",
     "papaparse": "^5.3.1",
