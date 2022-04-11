@@ -6,8 +6,13 @@ const DATA_PROVIDERS = {
     ETHEREUM: '0x8F5273c5aa638e946BC5dD2171Ae9E9184C75228',
     BSC: '0xa450547F27F0947760C9C818d9fd2CD51DFA7441',
     AVALANCHE: '0x483B76b13B14DB4fF49359aF9DF3A51F25FaB6a0',
+    GNOSIS: '0x75e5cF901f3A576F72AB6bCbcf7d81F1619C6a12',
 };
 
+/**
+ * Get TVL for chain
+ * Available chains: arbitrum, avax, fantom, polygon, xdai, bsc, ethereum
+ */
 function _tvlByChain(chainName, dataProviderAddress) {
     return async function tvl(timestamp, ethBlock, chainBlocks) {
         const block = chainBlocks[chainName];
@@ -44,6 +49,7 @@ function _tvlByChain(chainName, dataProviderAddress) {
 const ethereum = _tvlByChain('ethereum', DATA_PROVIDERS.ETHEREUM);
 const bsc = _tvlByChain('bsc', DATA_PROVIDERS.BSC);
 const avalanche = _tvlByChain('avax', DATA_PROVIDERS.AVALANCHE);
+const gnosis = _tvlByChain('xdai', DATA_PROVIDERS.GNOSIS);
 
 module.exports = {
     name: 'Augmented Finance',
@@ -60,6 +66,9 @@ module.exports = {
     avalanche: {
         tvl: avalanche,
     },
+    gnosis: {
+        tvl: gnosis,
+    },
     methodology: "Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There's multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending.",
-    tvl: sdk.util.sumChainTvls([ethereum, bsc, avalanche])
+    tvl: sdk.util.sumChainTvls([ethereum, bsc, avalanche, gnosis])
 }
