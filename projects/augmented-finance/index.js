@@ -16,7 +16,7 @@ const DATA_PROVIDERS = {
 function _tvlByChain(chainName, dataProviderAddress) {
     return async function tvl(timestamp, ethBlock, chainBlocks) {
         const block = chainBlocks[chainName];
-
+        const transform = address => `${chainName}:${address}`
         const {output: reservesData} = await sdk.api.abi.call({
             target: dataProviderAddress,
             abi: abi.find(abi => abi.name === 'getReservesData'),
@@ -38,9 +38,17 @@ function _tvlByChain(chainName, dataProviderAddress) {
             const tokenAddress = reserves[index].underlyingAsset;
             const tokenBalance = call.output;
 
-            const formattedAddress = chainName === 'ethereum' ? tokenAddress : `${chainName}:${tokenAddress}`;
-            sdk.util.sumSingleBalance(balances, formattedAddress, tokenBalance);
+            sdk.util.sumSingleBalance(balances, transform(tokenAddress), tokenBalance);
         })
+
+        if ('bsc:0x85EAC5Ac2F758618dFa09bDbe0cf174e7d574D5B' in balances) {
+            balances['tron'] = balances['bsc:0x85EAC5Ac2F758618dFa09bDbe0cf174e7d574D5B'] / 10 ** 18;
+            delete balances['bsc:0x85EAC5Ac2F758618dFa09bDbe0cf174e7d574D5B'];
+        }
+        if ('0x8E16bf47065Fe843A82f4399bAF5aBac4E0822B7' in balances) {
+            balances['filecoin'] = balances['0x8E16bf47065Fe843A82f4399bAF5aBac4E0822B7'] / 10 ** 18;
+            delete balances['0x8E16bf47065Fe843A82f4399bAF5aBac4E0822B7'];
+        }
 
         return balances;
     }
@@ -52,10 +60,6 @@ const avalanche = _tvlByChain('avax', DATA_PROVIDERS.AVALANCHE);
 const gnosis = _tvlByChain('xdai', DATA_PROVIDERS.GNOSIS);
 
 module.exports = {
-    name: 'Augmented Finance',
-    website: 'https://augmented.finance',
-    token: 'AGF',
-    category: 'lending',
     start: 13339609, // Oct-02-2021 11:33:05 AM +UTC
     ethereum: {
         tvl: ethereum,
@@ -70,5 +74,4 @@ module.exports = {
         tvl: gnosis,
     },
     methodology: "Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There's multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending.",
-    tvl: sdk.util.sumChainTvls([ethereum, bsc, avalanche, gnosis])
 }
