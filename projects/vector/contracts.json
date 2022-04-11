@@ -12,11 +12,13 @@
         },
         "0x574679Ec54972cf6d705E0a71467Bb5BB362919D": {
             "underlying": "0x574679Ec54972cf6d705E0a71467Bb5BB362919D",
-            "isLP": false
+            "isLP": false,
+            "noUnderlying": true
         },
         "0x5817D4F0b62A59b17f75207DA1848C2cE75e7AF4": {
             "underlying": "0x5817D4F0b62A59b17f75207DA1848C2cE75e7AF4",
-            "isLP": false
+            "isLP": false,
+            "noUnderlying": true
         },
         "0xc641350D40256120BED47cF0AD24B5ce01D04af3": {
             "underlying": "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664",
@@ -64,7 +66,8 @@
         },
         "0x6D46346250A46516c0c1f51709c0330476069b41": {
             "underlying": "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
-            "isLP": false
+            "isLP": false,
+            "noUnderlying": true
         }
     }
 }

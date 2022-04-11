@@ -37,14 +37,8 @@ async function tvl(timestamp, block, chainBlocks) {
   ).output;
 
   for (let i = 0; i < underlyingBalances.length; i++) {
-    if (underlyingBalances[i].success) {
-      sdk.util.sumSingleBalance(
-        balances,
-        transform(underlyingBalances[i].input.params[1]),
-        underlyingBalances[i].output
-      );
-    } else {
-      if (Object.values(contracts.markets)[i].isLP) {
+      const info = Object.values(contracts.markets)[i]
+      if (info.isLP) {
         await unwrapUniswapLPs(
           balances,
           [
@@ -57,15 +51,20 @@ async function tvl(timestamp, block, chainBlocks) {
           "avax",
           transform
         );
-      } else {
+      } else if(info.noUnderlying) {
         sdk.util.sumSingleBalance(
           balances,
           transform(Object.keys(contracts.markets)[i]),
           masterChefBalances[i].output
         );
+      } else {
+        sdk.util.sumSingleBalance(
+          balances,
+          transform(underlyingBalances[i].input.params[1]),
+          underlyingBalances[i].output
+        );
       }
-    }
-  }
+  };
   return balances;
 }
 
