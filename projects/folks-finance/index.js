@@ -1,54 +1,16 @@
 const algosdk = require("algosdk");
+const {
+  pools,
+  liquidGovernanceAppId,
+  oracleAppId,
+  oracleDecimals,
+} = require("./constants");
 
-const client = new algosdk.Indexer(
+const indexer = new algosdk.Indexer(
   "",
   "https://algoindexer.algoexplorerapi.io/",
   ""
 );
-
-const pools = [
-  {
-    // Algo
-    appId: 686498781,
-    assetId: 0,
-    assetDecimals: 6,
-  },
-  {
-    // USDC
-    appId: 686500029,
-    assetId: 31566704,
-    assetDecimals: 6,
-  },
-  {
-    // USDt
-    appId: 686500844,
-    assetId: 312769,
-    assetDecimals: 6,
-  },
-  {
-    // goBTC
-    appId: 686501760,
-    assetId: 386192725,
-    assetDecimals: 8,
-  },
-  {
-    // goETH
-    appId: 694405065,
-    assetId: 386195940,
-    assetDecimals: 8,
-  },
-  {
-    // gAlgo3
-    appId: 694464549,
-    assetId: 694432641,
-    assetDecimals: 6,
-  },
-];
-
-const liquidGovernanceAppId = 694427622;
-
-const oracleAppId = 687039379;
-const oracleDecimals = 14;
 
 function fromIntToBytes8Hex(num) {
   return num.toString(16).padStart(16, "0");
@@ -75,7 +37,7 @@ function getParsedValueFromState(state, key, encoding = "utf8") {
 }
 
 async function getAppState(appId) {
-  const res = await client.lookupApplications(appId).do();
+  const res = await indexer.lookupApplications(appId).do();
   return res.application.params["global-state"];
 }
 
@@ -97,8 +59,8 @@ async function getPrices() {
 
 async function getAlgoLiquidGovernanceDepositUsd(prices) {
   const [app, acc] = await Promise.all([
-    client.lookupApplications(liquidGovernanceAppId).do(),
-    client
+    indexer.lookupApplications(liquidGovernanceAppId).do(),
+    indexer
       .lookupAccountByID(algosdk.getApplicationAddress(liquidGovernanceAppId))
       .do(),
   ]);
