@@ -654,27 +654,37 @@ function transformNearAddress() {
 }
 
 async function transformKlaytnAddress() {
-  return addr => {
-    if (compareAddresses(addr, '0x5388Ce775De8F7A69d17Fd5CAA9f7dbFeE65Dfce')) // Donkey token
-      return '0x4576E6825B462b6916D2a41E187626E9090A92c6'
-    if (compareAddresses(addr, '0x9eaeFb09fe4aABFbE6b1ca316a3c36aFC83A393F')) // XRP
-      return 'ripple'
-    if (compareAddresses(addr, '0x02cbE46fB8A1F579254a9B485788f2D86Cad51aa')) // bora
-      return '0x26fb86579e371c7aedc461b2ddef0a8628c93d3b'
-    if (compareAddresses(addr, '0x5c74070FDeA071359b86082bd9f9b3dEaafbe32b')) // dai
-      return '0x6b175474e89094c44da98b954eedeac495271d0f'
-    if (compareAddresses(addr, '0x754288077D0fF82AF7a5317C7CB8c444D421d103')) // USDC
-      return '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
-    if (compareAddresses(addr, '0x0268dbed3832b87582B1FA508aCF5958cbb1cd74')) // IJM
-      return 'bsc:0xf258f061ae2d68d023ea6e7cceef97962785c6c1'
-    if (compareAddresses(addr, '0xceE8FAF64bB97a73bb51E115Aa89C17FfA8dD167')) // USDT
-      return '0xdac17f958d2ee523a2206206994597c13d831ec7'
-    if (compareAddresses(addr, '0x16D0e1fBD024c600Ca0380A4C5D57Ee7a2eCBf9c')) // WBTC
-      return '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599'
-    if (compareAddresses(addr, '0x34d21b1e550D73cee41151c77F3c73359527a396')) // WETH
-      return '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
-    return `klaytn:${addr}`
+  const mapping = {
+    '0x5388ce775de8f7a69d17fd5caa9f7dbfee65dfce': '0x4576E6825B462b6916D2a41E187626E9090A92c6', //  Donkey
+    '0x9eaefb09fe4aabfbe6b1ca316a3c36afc83a393f': 'ripple', //  XRP
+    '0x02cbe46fb8a1f579254a9b485788f2d86cad51aa': '0x26fb86579e371c7aedc461b2ddef0a8628c93d3b', //  bora
+    '0x5c74070fdea071359b86082bd9f9b3deaafbe32b': '0x6b175474e89094c44da98b954eedeac495271d0f', //  dai
+    '0x754288077d0ff82af7a5317c7cb8c444d421d103': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', //  USDC
+    '0x0268dbed3832b87582b1fa508acf5958cbb1cd74': 'bsc:0xf258f061ae2d68d023ea6e7cceef97962785c6c1', //  IJM
+    '0xcee8faf64bb97a73bb51e115aa89c17ffa8dd167': '0xdac17f958d2ee523a2206206994597c13d831ec7', //  USDT
+    '0x168439b5eebe8c83db9eef44a0d76c6f54767ae4': '0x6b175474e89094c44da98b954eedeac495271d0f', //  pUSD
+    '0x4fa62f1f404188ce860c8f0041d6ac3765a72e67': '0x6b175474e89094c44da98b954eedeac495271d0f', //  KSD
+    '0xce40569d65106c32550626822b91565643c07823': '0x6b175474e89094c44da98b954eedeac495271d0f', //  KASH
+    '0x210bc03f49052169d5588a52c317f71cf2078b85': 'bsc:0xe9e7cea3dedca5984780bafc599bd69add087d56', //  kBUSD
+    '0x16d0e1fbd024c600ca0380a4c5d57ee7a2ecbf9c': '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', //  WBTC
+    '0x34d21b1e550d73cee41151c77f3c73359527a396': '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', //  WETH
+    '0x0000000000000000000000000000000000000000': 'klay-token', //  Klaytn
   }
+
+  return addr => {
+    addr = addr.toLowerCase()
+    return  mapping[addr] || `klaytn:${addr}`
+  }
+}
+
+function fixKlaytnBalances(balances) {
+  const tokenDecimals = {
+    'klay-token': 18,
+  }
+  Object.keys(tokenDecimals).forEach(key => {
+    if (balances[key])
+      balances[key] = BigNumber(balances[key]).div(10 ** tokenDecimals[key]).toFixed(0)
+  })
 }
 
 function transformVelasAddress() {
@@ -721,7 +731,7 @@ async function transformDfkAddress() {
   return (addr) => mapping[addr.toLowerCase()] || `dfk:${addr.toLowerCase()}`
 }
 
-function getFixBalances(chain) {
+async function getFixBalances(chain) {
   const dummyFn = () => { }
   return fixBalancesMapping[chain] || dummyFn
 }
@@ -730,6 +740,7 @@ const fixBalancesMapping = {
   avax: fixAvaxBalances,
   cronos: fixCronosBalances,
   harmony: fixHarmonyBalances,
+  klaytn: fixKlaytnBalances,
   oasis: fixOasisBalances,
 }
 
@@ -772,7 +783,7 @@ async function transformEthereumAddress() {
 async function transformMilkomedaAddress() {
   const mapping = {
     '0x7f27352d5f83db87a5a3e00f4b07cc2138d8ee52': 'bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c' // BNB token
-  } 
+  }
   return addr => {
     addr = addr.toLowerCase()
     return mapping[addr] || `milkomeda:${addr}`

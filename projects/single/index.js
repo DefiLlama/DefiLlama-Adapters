@@ -15,7 +15,7 @@ const SINGLE_TOKEN = '0x0804702a4e749d39a35fde73d1df0b1f1d6b8347'
 async function staking(timestamp, _block, chainBlocks) {
   let balances = {}
   const transformAddress = await getChainTransform(chain)
-  const fixBalances = getFixBalances(chain)
+  const fixBalances = await getFixBalances(chain)
   const block = chainBlocks[chain]
   const tokenAndOwners= pools.filter(pool => !pool.isLP).map(pool => [pool.tokenContract, pool.address])
   await sumTokens(balances, tokenAndOwners, block, chain, transformAddress)
@@ -26,7 +26,7 @@ async function staking(timestamp, _block, chainBlocks) {
 async function tvl(tx, _block, chainBlocks) {
   const balances = {}
   const block = chainBlocks[chain]
-  const fixBalances = getFixBalances(chain)
+  const fixBalances = await getFixBalances(chain)
   await getUserMasterChefBalances({ balances, masterChefAddress:VVS_MASTERCHEF, userAddres: VVS_WMASTERCHEF_ADDR, block, chain, poolInfoABI: vvsPoolInfoABI, excludePool2: true, pool2Tokens: [ SINGLE_TOKEN ] })
   await getUserMasterChefBalances({ balances, masterChefAddress:MMF_MASTERCHEF, userAddres: MMF_WMASTERCHEF_ADDR, block, chain, poolInfoABI: vvsPoolInfoABI, excludePool2: true, pool2Tokens: [ SINGLE_TOKEN ] })
   const tokenAndOwners = vaults.map(({token, address}) => [token, address])
@@ -38,7 +38,7 @@ async function tvl(tx, _block, chainBlocks) {
 async function pool2(tx, _block, chainBlocks) {
   const balances = {}
   const block = chainBlocks[chain]
-  const fixBalances = getFixBalances(chain)
+  const fixBalances = await getFixBalances(chain)
   const tokenAndOwners = pools.filter(pool => pool.isLP).map(pool => [pool.tokenContract, pool.address])
   await sumTokens(balances, tokenAndOwners, block, chain, undefined, { resolveLP: true }) // Add staked lp tokens to balances
   await getUserMasterChefBalances({ balances, masterChefAddress:VVS_MASTERCHEF, userAddres: VVS_WMASTERCHEF_ADDR, block, chain, poolInfoABI: vvsPoolInfoABI, onlyPool2: true, pool2Tokens: [ SINGLE_TOKEN ] })
