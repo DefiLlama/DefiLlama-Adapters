@@ -57,4 +57,4 @@ function chainTvl(chain) {
         return balances
     }
 }
-module.exports = chainExports(chainTvl, ['ethereum', 'polygon', 'fantom', 'bsc', 'avax'])
+module.exports = chainExports(chainTvl, ['ethereum', 'polygon', 'fantom', 'bsc', 'avax', 'metis'])
