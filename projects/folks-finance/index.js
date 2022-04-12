@@ -105,11 +105,14 @@ async function getTotalPoolDepositsUsd(prices) {
 async function tvl() {
   const prices = await getPrices();
 
-  const [depositsAmountUsd, algoLiquidGovernanceDepositUsd] = await Promise.all(
-    [getTotalPoolDepositsUsd(prices), getAlgoLiquidGovernanceDepositUsd(prices)]
-  );
+  const [depositsAmountUsd, algoLiquidGovernanceDepositUsd, borrowsAmountUsd] =
+    await Promise.all([
+      getTotalPoolDepositsUsd(prices),
+      getAlgoLiquidGovernanceDepositUsd(prices),
+      borrowed(),
+    ]);
 
-  return depositsAmountUsd + algoLiquidGovernanceDepositUsd;
+  return depositsAmountUsd + algoLiquidGovernanceDepositUsd - borrowsAmountUsd;
 }
 
 /* Get total borrows */
