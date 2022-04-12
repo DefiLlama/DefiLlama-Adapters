@@ -9,7 +9,6 @@ const userInfoAbi = require("./abis/userInfo.json");
 const { getBlock } = require('./getBlock');
 const { default: BigNumber } = require('bignumber.js');
 const { getChainTransform } = require('../helper/portedTokens');
-const { requery, setPrice, sum } = require('./getUsdUniTvl');
 
 async function getPoolInfo(masterChef, block, chain, poolInfoAbi) {
     const poolLength = (
@@ -67,8 +66,9 @@ function isYV(symbol) {
     return symbol.includes('yv')
 }
 
-async function addFundsInMasterChef(balances, masterChef, block, chain = 'ethereum', transformAddress = id => id, poolInfoAbi = abi.poolInfo, ignoreAddresses = [], includeLPs = true, excludePool2 = false, stakingToken = undefined) {
+async function addFundsInMasterChef(balances, masterChef, block, chain = 'ethereum', transformAddress = undefined, poolInfoAbi = abi.poolInfo, ignoreAddresses = [], includeLPs = true, excludePool2 = false, stakingToken = undefined) {
     const poolInfo = await getPoolInfo(masterChef, block, chain, poolInfoAbi)
+    if (!transformAddress) transformAddress = await getChainTransform(chain)
     const [symbols, tokenBalances] = await getSymbolsAndBalances(masterChef, block, chain, poolInfo);
 
     const lpPositions = [];
