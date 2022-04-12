@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk');
 const abi = require('./abis/masterchef.json')
-const { unwrapUniswapLPs, unwrapLPsAuto } = require('./unwrapLPs.js')
+const { unwrapUniswapLPs, unwrapLPsAuto, isLP } = require('./unwrapLPs')
 const tokenAbi = require("./abis/token.json");
 const token0Abi = require("./abis/token0.json");
 const token1Abi = require("./abis/token1.json");
@@ -57,10 +57,6 @@ async function getSymbolsAndBalances(masterChef, block, chain, poolInfo) {
         })
     ])
     return [symbols, tokenBalances]
-}
-
-function isLP(symbol) {
-    return symbol.includes('LP') || symbol.includes('PGL') || symbol.includes('UNI-V2') || symbol === "PNDA-V2" || symbol.includes('GREEN-V2')
 }
 
 function isYV(symbol) {
