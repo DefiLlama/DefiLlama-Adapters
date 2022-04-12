@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 const token0 = require('./abis/token0.json')
+const symbol = require('./abis/symbol.json')
 const { getPoolTokens, getPoolId } = require('./abis/balancer.json')
 const getPricePerShare = require('./abis/getPricePerShare.json')
 const { requery } = require('./requery')
@@ -840,11 +841,14 @@ async function unwrapLPsAuto({ balances, block, chain = "ethereum", transformAdd
 		const tokens0 = await sdk.api.abi.multiCall({
 			calls: tokens.map(t => ({ target: t.output })), abi: token0, block, chain
 		})
+		const symbols = (await sdk.api.abi.multiCall({
+			calls: tokens.map(t => ({ target: t.output })), abi: symbol, block, chain
+		})).output
 		const lpBalances = []
 		tokens0.output.forEach((result, idx) => {
 			const token = tokens[idx].output
 			const balance = amounts[idx].output
-			if (result.success)
+			if (isLP(symbols[idx].output))
 				lpBalances.push({ token, balance })
 			else
 				sdk.util.sumSingleBalance(balances, transformAddress(token), balance);
@@ -960,6 +964,10 @@ async function unwrapTroves({ balances = {}, chain = 'ethereum', block, troves =
 	return balances
 }
 
+function isLP(symbol) {
+    return symbol.includes('LP') || symbol.includes('PGL') || symbol.includes('UNI-V2') || symbol === "PNDA-V2" || symbol.includes('GREEN-V2')
+}
+
 module.exports = {
 	unwrapYearn,
 	unwrapCrv,
@@ -980,4 +988,5 @@ module.exports = {
 	genericUnwrapCvx,
 	unwrapLPsAuto,
 	unwrapTroves,
+	isLP
 }
