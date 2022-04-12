@@ -731,6 +731,36 @@ async function transformDfkAddress() {
   return (addr) => mapping[addr.toLowerCase()] || `dfk:${addr.toLowerCase()}`
 }
 
+function fixTezosBalances(balances) {
+  const mapping = {
+    'KT1PWx2mnDueood7fEmfbBDKx1D9BAnnXitn': { coingeckoId: 'tzbtc', decimals: 8, },
+    'tezos': { coingeckoId: 'tezos', decimals: 0, },
+    'KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-19': { coingeckoId: 'wrapped-bitcoin', decimals: 8, },
+    'KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-17': { coingeckoId: 'usd-coin', decimals: 6, },
+    'KT1K9gCRgaLRFKTErYt1wVxA3Frb9FjasjTV': { coingeckoId: 'kolibri-usd', decimals: 18, },
+    'KT1LN4LPSqTMS7Sd2CJw4bbDGRkMv2t68Fy9': { coingeckoId: 'usdtez', decimals: 6, },
+    'KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW': { coingeckoId: 'youves-uusd', decimals: 12, },
+    // 'KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW-1': { coingeckoId: 'youves-you-defi', decimals: 12, },  //uDEFI token - update gecko id here after adding in coin geckp
+    'KT1Xobej4mc6XgEjDoJoHtTKgbD1ELMvcQuL': { coingeckoId: 'youves-you-governance', decimals: 12, },
+    'KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW-2': { coingeckoId: 'wrapped-bitcoin', decimals: 12, }, // youves BTC
+  }
+
+  Object.keys(balances).forEach(token => {
+    const tokenKey = stripTokenHeader(token)
+    const { coingeckoId, decimals } = mapping[tokenKey] || {}
+    if (!coingeckoId) return;
+    const currentBalance = balances[token]
+    delete balances[token]
+    sdk.util.sumSingleBalance(balances, coingeckoId, +BigNumber(currentBalance).shiftedBy(-1 * decimals))
+  })
+
+  return balances
+}
+
+function stripTokenHeader(token) {
+	return token.indexOf(':') > -1 ? token.split(':')[1] : token
+}
+
 async function getFixBalances(chain) {
   const dummyFn = () => { }
   return fixBalancesMapping[chain] || dummyFn
@@ -739,6 +769,7 @@ async function getFixBalances(chain) {
 const fixBalancesMapping = {
   avax: fixAvaxBalances,
   cronos: fixCronosBalances,
+  tezos: fixTezosBalances,
   harmony: fixHarmonyBalances,
   klaytn: fixKlaytnBalances,
   oasis: fixOasisBalances,
