@@ -22,7 +22,7 @@ const CONFIG = {
     uri: 'https://api.thegraph.com/subgraphs/name/0xnodes/system11-fantom',
     token: '0x4e15361fd6b4bb609fa63c81a2be19d873717870'
   },
-  avalanche: {
+  avax: {
     uri: 'https://api.thegraph.com/subgraphs/name/0xnodes/system11-avalanche',
     token: '0x85f138bfEE4ef8e540890CFb48F620571d67Eda3',
   },
@@ -37,7 +37,7 @@ function chainTvl(chain) {
         var endpoint =uri;
         var graphQLClient = new GraphQLClient(endpoint)
         let block = await getBlock(timestamp, chain, chainBlocks)
-        console.log(chain+": "+block)
+        console.log(chain+": blockheight= "+block)
         if (chain == 'bsc'){
           block = block-1000
           console.log('new bsc blockheight: '+block)
@@ -57,4 +57,4 @@ function chainTvl(chain) {
         return balances
     }
 }
-module.exports = chainExports(chainTvl, ['ethereum', 'polygon', 'fantom', 'bsc'])
+module.exports = chainExports(chainTvl, ['ethereum', 'polygon', 'fantom', 'bsc', 'avax'])
