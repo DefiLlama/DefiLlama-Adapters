@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk');
 const abi = require('./abis/masterchef.json')
-const { unwrapUniswapLPs, unwrapLPsAuto, } = require('./unwrapLPs')
+const { unwrapUniswapLPs, unwrapLPsAuto } = require('./unwrapLPs.js')
 const tokenAbi = require("./abis/token.json");
 const token0Abi = require("./abis/token0.json");
 const token1Abi = require("./abis/token1.json");
