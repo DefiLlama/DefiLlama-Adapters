@@ -8,7 +8,29 @@ async function transformFantomAddress() {
     await utils.fetchURL("https://netapi.anyswap.net/bridge/v2/info")
   ).data.bridgeList;
 
+  const mapping = {
+    "0xbf07093ccd6adfc3deb259c557b61e94c1f66945": "fantom:0xd6070ae98b8069de6b494332d1a1a81b6179d960",
+    "0x1b156c5c75e9df4caab2a5cc5999ac58ff4f9090": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+    "0xa48d959ae2e88f1daa7d5f611e01908106de7598": "fantom:0x841fad6eae12c286d1fd18d1d525dffa75c7effe",
+    "0xd795d70ec3c7b990ffed7a725a18be5a9579c3b9": "avax:0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
+    "0xb6767518b205ea8b312d2ef4d992a2a08c2f2416": "avax:0xc7198437980c041c805a1edcba50c1ce5db95118",
+    "0xaf9f33df60ca764307b17e62dde86e9f7090426c": "avax:0xd586e7f844cea2f87f50152665bcbc2c279d8d70",
+    "0x808d5f0a62336917da14fa9a10e9575b1040f71c": "avax:0x60781c2586d68229fde47564546784ab3faca982",
+    "0x0dec85e74a92c52b7f708c4b10207d9560cefaf0": "fantom:0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
+    "0x637ec617c86d24e421328e6caea1d92114892439": "0x6b175474e89094c44da98b954eedeac495271d0f",
+    "0xb3654dc3d10ea7645f8319668e8f54d2574fbdc8": "0x514910771af9ca656af840dff83e8264ecf986ca",
+    "0x0a03d2c1cfca48075992d810cc69bd9fe026384a": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+    "0x97927abfe1abbe5429cbe79260b290222fc9fbba": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+    "0x6dfe2aaea9daadadf0865b661b53040e842640f8": "0x514910771af9ca656af840dff83e8264ecf986ca",
+    "0x920786cff2a6f601975874bb24c63f0115df7dc8": "0x6b175474e89094c44da98b954eedeac495271d0f",
+    "0x49c68edb7aebd968f197121453e41b8704acde0c": "fantom:0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
+    "0x0665ef3556520b21368754fb644ed3ebf1993ad4": "0x6c3f90f043a72fa612cbac8115ee7e52bde6e490",
+    // update below to binspirit when it lists on coingecko
+    "0x7345a537a975d9ca588ee631befddfef34fd5e8f": "fantom:0x5Cc61A78F164885776AA610fb0FE1257df78E59B",
+  }
+
   return (addr) => {
+    addr = addr.toLowerCase()
     // WFTM && FTM
     if (
       compareAddresses(addr, "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83") ||
@@ -41,7 +63,7 @@ async function transformFantomAddress() {
         return `bsc:${srcToken.srcToken}`;
       }
     }
-    return `fantom:${addr}`;
+    return mapping[addr] || `fantom:${addr}`;
   };
 }
 
@@ -64,50 +86,68 @@ async function transformAvaxAddress() {
         "https://raw.githubusercontent.com/ava-labs/avalanche-bridge-resources/main/token_list.json"
       ),
     ]);
-    return (addr) => {
-      if(compareAddresses(addr, "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7")){
-        return "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"
-      }
-      const srcToken = bridgeTokensOld.data.find((token) =>
+  return (addr) => {
+    if (compareAddresses(addr, "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7")) {
+      return "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"
+    }
+    const srcToken = bridgeTokensOld.data.find((token) =>
       compareAddresses(token["Avalanche Token Address"], addr)
-      );
-      if (
-        srcToken !== undefined &&
-        srcToken["Ethereum Token Decimals"] ===
-        srcToken["Avalanche Token Decimals"]
-      ) {
-        return srcToken["Ethereum Token Address"];
+    );
+    if (
+      srcToken !== undefined &&
+      srcToken["Ethereum Token Decimals"] ===
+      srcToken["Avalanche Token Decimals"]
+    ) {
+      return srcToken["Ethereum Token Address"];
+    }
+    const newBridgeToken = bridgeTokensNew.find((token) =>
+      compareAddresses(addr, token[1])
+    );
+    if (newBridgeToken !== undefined) {
+      const tokenName = newBridgeToken[0].split(".")[0];
+      const tokenData = bridgeTokenDetails.data[tokenName];
+      if (tokenData !== undefined) {
+        return tokenData.nativeContractAddress;
       }
-      const newBridgeToken = bridgeTokensNew.find((token) =>
-        compareAddresses(addr, token[1])
-      );
-      if (newBridgeToken !== undefined) {
-        const tokenName = newBridgeToken[0].split(".")[0];
-        const tokenData = bridgeTokenDetails.data[tokenName];
-        if (tokenData !== undefined) {
-          return tokenData.nativeContractAddress;
-        }
-      }
-      const map = {
-        "0xaf2c034c764d53005cc6cbc092518112cbd652bb": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
-        "0x57319d41f71e81f3c65f2a47ca4e001ebafd4f33": "avax:0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd",
-        "0x0000000000000000000000000000000000000000": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
-        "0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
-        "0xd45b7c061016102f9fa220502908f2c0f1add1d7": "0xffc97d72e13e01096502cb8eb52dee56f74dad7b",
-        "0x46a51127c3ce23fb7ab1de06226147f446e4a857": "0xbcca60bb61934080951369a648fb03df4f96263c",
-        "0x532e6537fea298397212f09a61e03311686f548e": "0x3ed3b47dd13ec9a98b44e6204a523e766b225811",
-        "0xdfe521292ece2a4f44242efbcd66bc594ca9714b": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
-        "0x686bef2417b6dc32c50a3cbfbcc3bb60e1e9a15d": "0x9ff58f4ffb29fa2266ab25e75e2a8b3503311656",
-        "0x53f7c5869a859f0aec3d334ee8b4cf01e3492f21": "0x030ba81f1c18d280636f32af80b9aad02cf0854e",
-        "0x47afa96cdc9fab46904a55a6ad4bf6660b53c38a": "0x028171bca77440897b824ca71d1c56cac55b68a3",
-        "0x574679ec54972cf6d705e0a71467bb5bb362919d": "avax:0x5817d4f0b62a59b17f75207da1848c2ce75e7af4",
-        "0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7": "0xdac17f958d2ee523a2206206994597c13d831ec7",
-        "0x2f28add68e59733d23d5f57d94c31fb965f835d0": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",// sUSDC(Avalanche) -> USDC(Ethereum)
-        "0xf04d3a8eb17b832fbebf43610e94bdc4fd5cf2dd": "bsc:0xe9e7cea3dedca5984780bafc599bd69add087d56", // sBUSD(Avalanche) -> BUSD(BSC)
-        "0xb0a8e082e5f8d2a04e74372c1be47737d85a0e73": "polygon:0xac63686230f64bdeaf086fe6764085453ab3023f", // USV
-        "0x02bfd11499847003de5f0f5aa081c43854d48815": "0x7a5d3A9Dcd33cb8D527f7b5F96EB4Fef43d55636", // Radioshack
-      }
-      return map[addr.toLowerCase()] || `avax:${addr}`
+    }
+    const map = {
+      "0xaf2c034c764d53005cc6cbc092518112cbd652bb": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+      "0x57319d41f71e81f3c65f2a47ca4e001ebafd4f33": "avax:0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd",
+      "0x0000000000000000000000000000000000000000": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+      "0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+      "0xd45b7c061016102f9fa220502908f2c0f1add1d7": "0xffc97d72e13e01096502cb8eb52dee56f74dad7b",
+      "0x46a51127c3ce23fb7ab1de06226147f446e4a857": "0xbcca60bb61934080951369a648fb03df4f96263c",
+      "0x532e6537fea298397212f09a61e03311686f548e": "0x3ed3b47dd13ec9a98b44e6204a523e766b225811",
+      "0xdfe521292ece2a4f44242efbcd66bc594ca9714b": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+      "0x686bef2417b6dc32c50a3cbfbcc3bb60e1e9a15d": "0x9ff58f4ffb29fa2266ab25e75e2a8b3503311656",
+      "0x53f7c5869a859f0aec3d334ee8b4cf01e3492f21": "0x030ba81f1c18d280636f32af80b9aad02cf0854e",
+      "0x47afa96cdc9fab46904a55a6ad4bf6660b53c38a": "0x028171bca77440897b824ca71d1c56cac55b68a3",
+      "0x574679ec54972cf6d705e0a71467bb5bb362919d": "avax:0x5817d4f0b62a59b17f75207da1848c2ce75e7af4",
+      "0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+      "0x2f28add68e59733d23d5f57d94c31fb965f835d0": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",// sUSDC(Avalanche) -> USDC(Ethereum)
+      "0xf04d3a8eb17b832fbebf43610e94bdc4fd5cf2dd": "bsc:0xe9e7cea3dedca5984780bafc599bd69add087d56", // sBUSD(Avalanche) -> BUSD(BSC)
+      "0xb0a8e082e5f8d2a04e74372c1be47737d85a0e73": "polygon:0xac63686230f64bdeaf086fe6764085453ab3023f", // USV
+      "0x02bfd11499847003de5f0f5aa081c43854d48815": "0x7a5d3A9Dcd33cb8D527f7b5F96EB4Fef43d55636", // Radioshack
+      "0xbf07093ccd6adfc3deb259c557b61e94c1f66945": "fantom:0xd6070ae98b8069de6b494332d1a1a81b6179d960",
+      "0x1b156c5c75e9df4caab2a5cc5999ac58ff4f9090": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+      "0xa48d959ae2e88f1daa7d5f611e01908106de7598": "fantom:0x841fad6eae12c286d1fd18d1d525dffa75c7effe",
+      "0xd795d70ec3c7b990ffed7a725a18be5a9579c3b9": "avax:0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
+      "0xb6767518b205ea8b312d2ef4d992a2a08c2f2416": "avax:0xc7198437980c041c805a1edcba50c1ce5db95118",
+      "0xaf9f33df60ca764307b17e62dde86e9f7090426c": "avax:0xd586e7f844cea2f87f50152665bcbc2c279d8d70",
+      "0x808d5f0a62336917da14fa9a10e9575b1040f71c": "avax:0x60781c2586d68229fde47564546784ab3faca982",
+      "0x0dec85e74a92c52b7f708c4b10207d9560cefaf0": "fantom:0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
+      "0x637ec617c86d24e421328e6caea1d92114892439": "0x6b175474e89094c44da98b954eedeac495271d0f",
+      "0xb3654dc3d10ea7645f8319668e8f54d2574fbdc8": "0x514910771af9ca656af840dff83e8264ecf986ca",
+      "0x0a03d2c1cfca48075992d810cc69bd9fe026384a": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+      "0x97927abfe1abbe5429cbe79260b290222fc9fbba": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+      "0x6dfe2aaea9daadadf0865b661b53040e842640f8": "0x514910771af9ca656af840dff83e8264ecf986ca",
+      "0x920786cff2a6f601975874bb24c63f0115df7dc8": "0x6b175474e89094c44da98b954eedeac495271d0f",
+      "0x49c68edb7aebd968f197121453e41b8704acde0c": "fantom:0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
+      "0x0665ef3556520b21368754fb644ed3ebf1993ad4": "0x6c3f90f043a72fa612cbac8115ee7e52bde6e490",
+      // update below to binspirit when it lists on coingecko
+      "0x7345a537a975d9ca588ee631befddfef34fd5e8f": "fantom:0x5Cc61A78F164885776AA610fb0FE1257df78E59B",
+    }
+    return map[addr.toLowerCase()] || `avax:${addr}`
   }
 }
 
@@ -144,7 +184,7 @@ async function transformBscAddress() {
     if (srcToken && srcToken.bscContractDecimal === srcToken.ethContractDecimal) {
       return srcToken.ethContractAddress;
     }
-    
+
     return mapping[addr] || `bsc:${addr}`;
   };
 }
@@ -163,7 +203,7 @@ async function transformPolygonAddress() {
       tokenMap[token.childToken.toLowerCase()] = token.rootToken.toLowerCase();
       return tokenMap;
     }, {});
-  const mapping =  {
+  const mapping = {
     '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee': '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0',  // 
     '0x0000000000000000000000000000000000000000': '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0',  // 
     '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': '0x0000000000000000000000000000000000000000',  // 
@@ -407,7 +447,7 @@ async function transformMoonbeamAddress() {
       return "0x6b175474e89094c44da98b954eedeac495271d0f";
     }
     if (compareAddresses(addr, "0x1d4C2a246311bB9f827F4C768e277FF5787B7D7E")) { //movr
-       return "moonriver:0x98878b06940ae243284ca214f92bb71a2b032b8a";
+      return "moonriver:0x98878b06940ae243284ca214f92bb71a2b032b8a";
     }
     // if (compareAddresses(addr, "0x0000000000000000000000000000000000000802")) { //GLMR
     //    return "moonbeam";
@@ -474,8 +514,8 @@ function fixHarmonyBalances(balances) {
 
 function transformOasisAddressBase(addr) {
   const map = {
-    '0x21c718c22d52d0f3a789b752d4c2fd5908a8a733':'oasis-network',
-    '0x3223f17957ba502cbe71401d55a0db26e5f7c68f':'0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',  //WETH
+    '0x21c718c22d52d0f3a789b752d4c2fd5908a8a733': 'oasis-network',
+    '0x3223f17957ba502cbe71401d55a0db26e5f7c68f': '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',  //WETH
     '0xe8a638b3b7565ee7c5eb9755e58552afc87b94dd': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC
     '0x4bf769b05e832fcdc9053fffbc78ca889acb5e1e': '0xdac17f958d2ee523a2206206994597c13d831ec7', // USDT
     '0x6cb9750a92643382e020ea9a170abb83df05f30b': '0xdac17f958d2ee523a2206206994597c13d831ec7', // USDT
@@ -494,7 +534,7 @@ async function transformOasisAddress() {
 function fixOasisBalances(balances) {
   ['oasis-network', 'wrapped-rose'].forEach(key => {
     if (balances[key])
-        balances[key] = balances[key] / 10 ** 18;
+      balances[key] = balances[key] / 10 ** 18;
   })
 }
 async function transformIotexAddress() {
@@ -546,7 +586,7 @@ async function transformKccAddress() {
 }
 
 
- function transformMetisAddress() {
+function transformMetisAddress() {
   const map = {
     "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000": "0x9e32b13ce7f2e80a01932b42553652e053d6ed8e",
     "0xbb06dca3ae6887fabf931640f67cab3e3a16f4dc": "0xdac17f958d2ee523a2206206994597c13d831ec7",
@@ -556,7 +596,7 @@ async function transformKccAddress() {
     "0x2692be44a6e38b698731fddf417d060f0d20a0cb": "bsc:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
   }
   return (addr) => {
-     if (compareAddresses(addr, "0xa5B55ab1dAF0F8e1EFc0eB1931a957fd89B918f4")) {
+    if (compareAddresses(addr, "0xa5B55ab1dAF0F8e1EFc0eB1931a957fd89B918f4")) {
       return "avax:0x50b7545627a5162F82A992c33b87aDc75187B218";
     }
     if (compareAddresses(addr, "0xE253E0CeA0CDD43d9628567d097052B33F98D611")) {
@@ -614,27 +654,37 @@ function transformNearAddress() {
 }
 
 async function transformKlaytnAddress() {
-  return addr => {
-    if (compareAddresses(addr, '0x5388Ce775De8F7A69d17Fd5CAA9f7dbFeE65Dfce')) // Donkey token
-      return '0x4576E6825B462b6916D2a41E187626E9090A92c6'
-    if (compareAddresses(addr, '0x9eaeFb09fe4aABFbE6b1ca316a3c36aFC83A393F')) // XRP
-      return 'ripple'
-    if (compareAddresses(addr, '0x02cbE46fB8A1F579254a9B485788f2D86Cad51aa')) // bora
-      return '0x26fb86579e371c7aedc461b2ddef0a8628c93d3b'
-    if (compareAddresses(addr, '0x5c74070FDeA071359b86082bd9f9b3dEaafbe32b')) // dai
-      return '0x6b175474e89094c44da98b954eedeac495271d0f'
-    if (compareAddresses(addr, '0x754288077D0fF82AF7a5317C7CB8c444D421d103')) // USDC
-      return '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
-    if (compareAddresses(addr, '0x0268dbed3832b87582B1FA508aCF5958cbb1cd74')) // IJM
-      return 'bsc:0xf258f061ae2d68d023ea6e7cceef97962785c6c1'
-    if (compareAddresses(addr, '0xceE8FAF64bB97a73bb51E115Aa89C17FfA8dD167')) // USDT
-      return '0xdac17f958d2ee523a2206206994597c13d831ec7'
-    if (compareAddresses(addr, '0x16D0e1fBD024c600Ca0380A4C5D57Ee7a2eCBf9c')) // WBTC
-      return '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599'
-    if (compareAddresses(addr, '0x34d21b1e550D73cee41151c77F3c73359527a396')) // WETH
-      return '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
-    return `klaytn:${addr}`
+  const mapping = {
+    '0x5388ce775de8f7a69d17fd5caa9f7dbfee65dfce': '0x4576E6825B462b6916D2a41E187626E9090A92c6', //  Donkey
+    '0x9eaefb09fe4aabfbe6b1ca316a3c36afc83a393f': 'ripple', //  XRP
+    '0x02cbe46fb8a1f579254a9b485788f2d86cad51aa': '0x26fb86579e371c7aedc461b2ddef0a8628c93d3b', //  bora
+    '0x5c74070fdea071359b86082bd9f9b3deaafbe32b': '0x6b175474e89094c44da98b954eedeac495271d0f', //  dai
+    '0x754288077d0ff82af7a5317c7cb8c444d421d103': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', //  USDC
+    '0x0268dbed3832b87582b1fa508acf5958cbb1cd74': 'bsc:0xf258f061ae2d68d023ea6e7cceef97962785c6c1', //  IJM
+    '0xcee8faf64bb97a73bb51e115aa89c17ffa8dd167': '0xdac17f958d2ee523a2206206994597c13d831ec7', //  USDT
+    '0x168439b5eebe8c83db9eef44a0d76c6f54767ae4': '0x6b175474e89094c44da98b954eedeac495271d0f', //  pUSD
+    '0x4fa62f1f404188ce860c8f0041d6ac3765a72e67': '0x6b175474e89094c44da98b954eedeac495271d0f', //  KSD
+    '0xce40569d65106c32550626822b91565643c07823': '0x6b175474e89094c44da98b954eedeac495271d0f', //  KASH
+    '0x210bc03f49052169d5588a52c317f71cf2078b85': 'bsc:0xe9e7cea3dedca5984780bafc599bd69add087d56', //  kBUSD
+    '0x16d0e1fbd024c600ca0380a4c5d57ee7a2ecbf9c': '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', //  WBTC
+    '0x34d21b1e550d73cee41151c77f3c73359527a396': '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', //  WETH
+    '0x0000000000000000000000000000000000000000': 'klay-token', //  Klaytn
   }
+
+  return addr => {
+    addr = addr.toLowerCase()
+    return  mapping[addr] || `klaytn:${addr}`
+  }
+}
+
+function fixKlaytnBalances(balances) {
+  const tokenDecimals = {
+    'klay-token': 18,
+  }
+  Object.keys(tokenDecimals).forEach(key => {
+    if (balances[key])
+      balances[key] = BigNumber(balances[key]).div(10 ** tokenDecimals[key]).toFixed(0)
+  })
 }
 
 function transformVelasAddress() {
@@ -669,7 +719,7 @@ function fixCronosBalances(balances) {
   }
   Object.keys(tokenDecimals).forEach(key => {
     if (balances[key])
-      balances[key] = BigNumber(balances[key]).div( 10 ** tokenDecimals[key]).toFixed(0)
+      balances[key] = BigNumber(balances[key]).div(10 ** tokenDecimals[key]).toFixed(0)
   })
 }
 
@@ -681,8 +731,8 @@ async function transformDfkAddress() {
   return (addr) => mapping[addr.toLowerCase()] || `dfk:${addr.toLowerCase()}`
 }
 
-function getFixBalances(chain) {
-  const dummyFn = () => {}
+async function getFixBalances(chain) {
+  const dummyFn = () => { }
   return fixBalancesMapping[chain] || dummyFn
 }
 
@@ -690,6 +740,7 @@ const fixBalancesMapping = {
   avax: fixAvaxBalances,
   cronos: fixCronosBalances,
   harmony: fixHarmonyBalances,
+  klaytn: fixKlaytnBalances,
   oasis: fixOasisBalances,
 }
 
@@ -705,11 +756,12 @@ const chainTransforms = {
   harmony: transformHarmonyAddress,
   optimism: transformOptimismAddress,
   moonriver: transformMoonriverAddress,
+  milkomeda: transformMilkomedaAddress,
   okex: transformOkexAddress,
   kcc: transformKccAddress,
   arbitrum: transformArbitrumAddress,
   iotex: transformIotexAddress,
-  metis:transformMetisAddress,
+  metis: transformMetisAddress,
   near: transformNearAddress,
   moonbeam: transformMoonbeamAddress,
   klaytn: transformKlaytnAddress,
@@ -722,10 +774,19 @@ const chainTransforms = {
 async function transformEthereumAddress() {
   const mapping = {
     '0x88536c9b2c4701b8db824e6a16829d5b5eb84440': 'polygon:0xac63686230f64bdeaf086fe6764085453ab3023f' // USV token
-  } 
+  }
   return addr => {
     addr = addr.toLowerCase()
     return mapping[addr] || addr
+  }
+}
+async function transformMilkomedaAddress() {
+  const mapping = {
+    '0x7f27352d5f83db87a5a3e00f4b07cc2138d8ee52': 'bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c' // BNB token
+  }
+  return addr => {
+    addr = addr.toLowerCase()
+    return mapping[addr] || `milkomeda:${addr}`
   }
 }
 
@@ -767,5 +828,6 @@ module.exports = {
   transformEthereumAddress,
   transformOasisAddress,
   transformOasisAddressBase,
+  transformMilkomedaAddress,
   transformDfkAddress,
 };
