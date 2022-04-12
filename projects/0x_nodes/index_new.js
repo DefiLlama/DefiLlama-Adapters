@@ -26,26 +26,25 @@ const CONFIG = {
     uri: 'https://api.thegraph.com/subgraphs/name/0xnodes/system11-avalanche',
     token: '0x85f138bfEE4ef8e540890CFb48F620571d67Eda3',
   },
-  andromeda: {
-    uri: 'https://andromeda-graph.metis.io/subgraphs/name/0xnodes/System11-metis/graphql',
+  metis: {
+    uri: 'https://andromeda-graph.metis.io/subgraphs/name/0xnodes/System11-metis',
     token: '0x9E32b13ce7f2E80A01932B42553652E053D6ed8e',
   },
 }
 function chainTvl(chain) {
     return async (timestamp, ethBlock, chainBlocks) => {
         const { [chain]:{ uri }} = CONFIG
-        var endpoint =uri;
-        var graphQLClient = new GraphQLClient(endpoint)
+        var graphQLClient = new GraphQLClient(uri)
         let block = await getBlock(timestamp, chain, chainBlocks)
         console.log(chain+": blockheight= "+block)
         if (chain == 'bsc'){
           block = block-1000
-          console.log('new bsc blockheight: '+block)
+          // console.log('new bsc blockheight: '+block)
         }
-        var query = gql`{strategyTokenBalances(block: {number: `+block+`})
-        {amount}
-        }`
+        var query = gql`{strategyTokenBalances(block: {number: `+block+`}){amount}}`
+        console.log('querying....')
         const results = await retry(async bail => await graphQLClient.request(query))
+        console.log('querying finished. Here is result')
         amount = 0
         for (i = 0; i < results.strategyTokenBalances.length; i++) {  //loop through the array
           amount += Number(results.strategyTokenBalances[i].amount); //Do the math!
@@ -53,7 +52,7 @@ function chainTvl(chain) {
         const balances = {}
         const { [chain]:{ token }} = CONFIG
         sdk.util.sumSingleBalance(balances, token, amount)
-        console.log(balances)
+        // console.log(balances)
         return balances
     }
 }
