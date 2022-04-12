@@ -26,19 +26,25 @@ const CONFIG = {
     uri: 'https://api.thegraph.com/subgraphs/name/0xnodes/system11-avalanche',
     token: '0x85f138bfEE4ef8e540890CFb48F620571d67Eda3',
   },
+  andromeda: {
+    uri: 'https://andromeda-graph.metis.io/subgraphs/name/0xnodes/System11-metis/graphql',
+    token: '0x9E32b13ce7f2E80A01932B42553652E053D6ed8e',
+  },
 }
-
 function chainTvl(chain) {
     return async (timestamp, ethBlock, chainBlocks) => {
-
         const { [chain]:{ uri }} = CONFIG
         var endpoint =uri;
         var graphQLClient = new GraphQLClient(endpoint)
-        const block = await getBlock(timestamp, chain, chainBlocks)
-
+        let block = await getBlock(timestamp, chain, chainBlocks)
+        console.log(chain+": "+block)
+        if (chain == 'bsc'){
+          block = block-1000
+          console.log('new bsc blockheight: '+block)
+        }
         var query = gql`{strategyTokenBalances(block: {number: `+block+`})
-    {token amount}
-  }`
+        {amount}
+        }`
         const results = await retry(async bail => await graphQLClient.request(query))
         amount = 0
         for (i = 0; i < results.strategyTokenBalances.length; i++) {  //loop through the array
@@ -47,8 +53,8 @@ function chainTvl(chain) {
         const balances = {}
         const { [chain]:{ token }} = CONFIG
         sdk.util.sumSingleBalance(balances, token, amount)
+        console.log(balances)
         return balances
     }
 }
-
-module.exports = chainExports(chainTvl, ['ethereum', 'polygon', 'fantom'])
+module.exports = chainExports(chainTvl, ['ethereum', 'polygon', 'fantom', 'bsc'])
