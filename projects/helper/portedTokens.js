@@ -731,6 +731,19 @@ async function transformDfkAddress() {
   return (addr) => mapping[addr.toLowerCase()] || `dfk:${addr.toLowerCase()}`
 }
 
+function fixGodwokenBalances(balances) {
+  const mapping = {
+    '0xC3b946c53E2e62200515d284249f2a91d9DF7954': { coingeckoId: 'usd-coin', decimals: 6, },  // Wrapped USDC (ForceBridge from Ethereum)
+    '0xA21B19d660917C1DE263Ad040Ba552737cfcEf50': { coingeckoId: 'usd-coin', decimals: 18, },  // Wrapped USDC (ForceBridge from BSC)
+    '0x07a388453944bB54BE709AE505F14aEb5d5cbB2C': { coingeckoId: 'tether', decimals: 6, },  // Wrapped USDT (ForceBridge from Ethereum)
+    '0x5C30d9396a97f2279737E63B2bf64CC823046591': { coingeckoId: 'tether', decimals: 18, },  // Wrapped USDT (ForceBridge from BSC)
+    '0x7818FA4C71dC3b60049FB0b6066f18ff8c720f33': { coingeckoId: 'bitcoin', decimals: 8, },  // Wrapped BTC (ForceBridge from Ethereum)
+    '0x3f8d2b24C6fa7b190f368C3701FfCb2bd919Af37': { coingeckoId: 'bitcoin', decimals: 18, },  // Wrapped BTC (ForceBridge from BSC)
+  }
+
+  return fixBalances(balances, mapping)
+}
+
 function fixTezosBalances(balances) {
   const mapping = {
     'KT1PWx2mnDueood7fEmfbBDKx1D9BAnnXitn': { coingeckoId: 'tzbtc', decimals: 8, },
@@ -745,8 +758,18 @@ function fixTezosBalances(balances) {
     'KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW-2': { coingeckoId: 'wrapped-bitcoin', decimals: 12, }, // youves BTC
   }
 
+  return fixBalances(balances, mapping)
+}
+
+function normalizeMapping(mapping) {
+  Object.keys(mapping).forEach(key => mapping[key.toLowerCase()] = mapping[key])
+}
+
+function fixBalances(balances, mapping) {
+  normalizeMapping(mapping)
+
   Object.keys(balances).forEach(token => {
-    const tokenKey = stripTokenHeader(token)
+    const tokenKey = stripTokenHeader(token).toLowerCase()
     const { coingeckoId, decimals } = mapping[tokenKey] || {}
     if (!coingeckoId) return;
     const currentBalance = balances[token]
@@ -771,6 +794,7 @@ const fixBalancesMapping = {
   cronos: fixCronosBalances,
   tezos: fixTezosBalances,
   harmony: fixHarmonyBalances,
+  godwoken: fixGodwokenBalances,
   klaytn: fixKlaytnBalances,
   oasis: fixOasisBalances,
 }
