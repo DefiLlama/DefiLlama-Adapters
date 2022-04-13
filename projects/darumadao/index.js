@@ -9,27 +9,29 @@ const USDC_ADDRESS = '0xc3b946c53e2e62200515d284249f2a91d9df7954'
 const DRM_USDC_LP_ADDRESS = '0x268aaeed47d031751db1cbba50930fe2991f0ed0'
 
 async function tvl(ts, _block, chainBlocks) {
-	const block = chainBlocks[chain]
-	const [
-		{ output: drmTokensStaked },
-		{ output: drmTokensLP },
-		{ output: usdcTokensLP },
-		{ output: usdcDecimals },
-		{ output: drmDecimals },
-	] = await Promise.all([
-		await sdk.api.erc20.balanceOf({ owner: STAKING_ADDRESS, target: DRM_ADDRESS, block, chain }),
-		await sdk.api.erc20.balanceOf({ owner: DRM_USDC_LP_ADDRESS, target: DRM_ADDRESS, block, chain }),
-		await sdk.api.erc20.balanceOf({ owner: DRM_USDC_LP_ADDRESS, target: USDC_ADDRESS, block, chain }),
-		await sdk.api.erc20.decimals(USDC_ADDRESS, chain),
-		await sdk.api.erc20.decimals(DRM_ADDRESS, chain),
-	])
+  const block = chainBlocks[chain]
+  const [
+    { output: drmTokensStaked },
+    { output: drmTokensLP },
+    { output: usdcTokensLP },
+    { output: usdcDecimals },
+    { output: drmDecimals },
+  ] = await Promise.all([
+    await sdk.api.erc20.balanceOf({ owner: STAKING_ADDRESS, target: DRM_ADDRESS, block, chain }),
+    await sdk.api.erc20.balanceOf({ owner: DRM_USDC_LP_ADDRESS, target: DRM_ADDRESS, block, chain }),
+    await sdk.api.erc20.balanceOf({ owner: DRM_USDC_LP_ADDRESS, target: USDC_ADDRESS, block, chain }),
+    await sdk.api.erc20.decimals(USDC_ADDRESS, chain),
+    await sdk.api.erc20.decimals(DRM_ADDRESS, chain),
+  ])
 
-	const tokenPrice = BigNumber(usdcTokensLP).dividedBy(10 ** usdcDecimals).multipliedBy(10 ** drmDecimals).dividedBy(drmTokensLP)
-	return toUSDTBalances(BigNumber(drmTokensStaked).multipliedBy(tokenPrice).dividedBy(10 ** drmDecimals).toFixed(0))
+  const tokenPrice = BigNumber(usdcTokensLP).dividedBy(10 ** usdcDecimals).multipliedBy(10 ** drmDecimals).dividedBy(drmTokensLP)
+  return toUSDTBalances(BigNumber(drmTokensStaked).multipliedBy(tokenPrice).dividedBy(10 ** drmDecimals).toFixed(0))
 }
 
 module.exports = {
-	godwoken: {
-		tvl
-	}
+  misrepresentedTokens: true,
+  methodology: `Finds TVL by querying DRM contract for sDRM (Staked DRM) supply and the DRM price. TVL = sdrmSupply * drmPrice`,
+  godwoken: {
+    tvl
+  }
 }
