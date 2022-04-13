@@ -42,7 +42,8 @@
         },
         "0x060556209E507d30f2167a101bFC6D256Ed2f3e1": {
             "underlying": "0x22d4002028f537599bE9f666d1c4Fa138522f9c8",
-            "isLP": false
+            "isLP": false,
+            "noUnderlying": true
         },
         "0x245260481a824A6C0103B0d840EB87B8c6cA0e72": {
             "underlying": "0xD24C2Ad096400B6FBcd2ad8B24E7acBc21A1da64",
