@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk")
 const { default: BigNumber } = require("bignumber.js")
-const { toUSDTBalances } = require('./helper/balances')
+const { toUSDTBalances } = require('../helper/balances')
 
 const chain = 'godwoken'
 const STAKING_ADDRESS = '0x31A7D9c604C87F7aA490A350Ef8DF170dC2233AA'
