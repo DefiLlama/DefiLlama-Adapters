@@ -69,12 +69,13 @@ const CVOL_USDC_QLP = "0x1dd0095a169e8398448A8e72f15A1868d99D9348";
 const stakingContract_arbitrum = "0xDb3e7deAb380B43189A7Bc291fa2AFeAA938dCc3";
 const GOVI_arbitrum = "0x07e49d5de43dda6162fa28d24d5935c151875283";
 
-async function ethTvl() {
+async function ethTvl(timestamp, block) {
   const balances = {};
 
   const ethBalance = (
     await sdk.api.eth.getBalance({
       target: ETHPlatform,
+      block
     })
   ).output;
 
@@ -88,13 +89,14 @@ async function ethTvl() {
       [ETHVOL_USDC_UNIV2, true],
       [WETH_COTI_UNIV2, true],
     ],
-    platformLiquidityContracts
+    platformLiquidityContracts,
+    block
   );
 
   return balances;
 }
 
-async function polygonTvl(chainBlocks) {
+async function polygonTvl(timestamp, block, chainBlocks) {
   const balances = {};
 
   const transformAddress = await transformPolygonAddress();

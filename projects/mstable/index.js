@@ -127,9 +127,6 @@ const ethereumTvl = tvlForChain('ethereum')
 const polygonTvl = tvlForChain('polygon')
 
 module.exports = {
-  name: 'mStable',
-  token: 'MTA',
-  category: 'assets',
   start: 1590624000, // May-28-2020 00:00:00
   polygon: {
     tvl: polygonTvl,
@@ -137,5 +134,4 @@ module.exports = {
   ethereum: {
     tvl: ethereumTvl,
   },
-  tvl: sdk.util.sumChainTvls([ethereumTvl, polygonTvl]),
 };

@@ -1,5 +1,6 @@
 const sdk = require("@defillama/sdk");
 const abi = require("../helper/abis/blindex.json");
+const { getBlock } = require("../helper/getBlock");
 const { calculateUniTvl } = require("../helper/calculateUniTvl.js");
 const { formatAddressChecksum } = require("../helper/formatAddressChecksum.js");
 
@@ -158,7 +159,7 @@ async function uniswapV2Tvl(block, chainName) {
     block,
     chainName,
     formatAddressChecksum(chains[chainName].uniswapFactoryAddress, chainName),
-    0,
+    undefined,
     true
   );
 
@@ -276,7 +277,8 @@ async function tvl(chainName, block) {
 }
 
 const rsk = async function rskTvl(timestamp, ethBlock, chainblocks) {
-  return tvl("rsk", chainblocks["rsk"]);
+  const block = await getBlock(timestamp, "rsk", chainblocks);
+  return tvl("rsk", block);
 };
 
 module.exports = {
@@ -286,5 +288,4 @@ module.exports = {
   rsk: {
     tvl: rsk,
   },
-  tvl: sdk.util.sumChainTvls([rsk]),
 };

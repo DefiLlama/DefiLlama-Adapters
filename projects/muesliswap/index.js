@@ -58,5 +58,22 @@ module.exports={
     cardano:{
         tvl: adaTvl,
         staking
+    },
+    milkomeda: {
+        tvl: calculateUsdUniTvl(
+            '0x57A8C24B2B0707478f91D3233A264eD77149D408',
+            'milkomeda',
+            '0xAE83571000aF4499798d1e3b0fA0070EB3A3E3F9',
+            [
+                '0x80A16016cC4A2E6a2CACA8a4a498b1699fF0f844', //TETHER
+                '0xb44a9b6905af7c801311e8f4e76932ee959c663c', //USDC
+                '0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D', //ETH
+                '0x81ECac0D6Be0550A00FF064a4f9dd2400585FE9c', //ceETH
+                '0x65e66a61D0a8F1e686C2D6083ad611a10D84D97A', //AVAX
+                '0x6aB6d61428fde76768D7b45D8BFeec19c6eF91A8', //BTC
+                '0x7f27352D5F83Db87a5A3E00f4B07Cc2138D8ee52', //BNB
+            ],
+            'cardano'
+        )
     }
 }

@@ -1,18 +1,19 @@
-const { getChainTvl } = require("../helper/getUniSubgraphTvl");
+const { getChainTvlBuffered } = require("../helper/getUniSubgraphTvl");
 const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl");
 const { staking } = require("../helper/staking.js");
 
-const v1graph = getChainTvl(
+const v1graph = getChainTvlBuffered(
   {
     ethereum:
       "https://api.thegraph.com/subgraphs/name/kwikswap/kwikswap-subgraph",
     bsc: "https://api.thegraph.com/subgraphs/name/kwikswap/kwikswap-bsc-subgraph",
     polygon: "https://api.thegraph.com/subgraphs/name/kwikswap/matic-exchange",
   },
+  600,
   "kwikswapFactories",
   "totalLiquidityUSD"
 );
-
+// node test.js projects/kwikswap/index.js
 const KWIK_TOKEN_ADDRESSES = {
   ethereum: "0x286c0936c7eaf6651099ab5dab9ee5a6cb5d229d",
   shiden: "0xd67de0e0a0fd7b15dc8348bb9be742f3c5850454",

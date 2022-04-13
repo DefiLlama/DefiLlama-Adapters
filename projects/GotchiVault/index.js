@@ -70,7 +70,7 @@ async function tvl(timestamp, block, chainBlocks) {
     block: chainBlocks['polygon'],
   })).output;
 
-  await sdk.util.sumSingleBalance(balances, transform(GHST_CONTRACT), collateralBalance)
+  sdk.util.sumSingleBalance(balances, transform(GHST_CONTRACT), collateralBalance)
 
   const gotchisBalances = await getGotchisCollateral(timestamp, chainBlocks["polygon"]-100);
   sdk.util.sumMultiBalanceOf(balances, gotchisBalances, true, x => 'polygon:' + x);

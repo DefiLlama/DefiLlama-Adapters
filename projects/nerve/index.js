@@ -42,9 +42,7 @@ const tokens = {
   // 3NRV-LP
   '0xf2511b5e4fb0e5e2d123004b672ba14850478c14': [fusdtPoolAddress],
   // UST
-  '0x23396cf899ca06c4472205fc903bdb4de249d6fc': [ustPoolAddress],
-    // 3NRV-LP
-  '0xf2511b5e4fb0e5e2d123004b672ba14850478c14': [ustPoolAddress],  
+  '0x23396cf899ca06c4472205fc903bdb4de249d6fc': [ustPoolAddress],  
 }
 
 async function tvl(timestamp, block, chainBlocks) {

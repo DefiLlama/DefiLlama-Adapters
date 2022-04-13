@@ -96,10 +96,6 @@ const klaytnTokenPools = {
         'pool': '0xe0e67b991d6b5CF73d8A17A10c3DE74616C1ec11',
         'token': '0xcee8faf64bb97a73bb51e115aa89c17ffa8dd167'
     },
-    'kusdt': {
-        'pool': '0xe0e67b991d6b5CF73d8A17A10c3DE74616C1ec11',
-        'token': '0xcee8faf64bb97a73bb51e115aa89c17ffa8dd167'
-    },
     'kdai': {
         'pool': '0xE03487927e137526a2dB796A9B3b4048ab615043',
         'token': '0x5c74070fdea071359b86082bd9f9b3deaafbe32b'
