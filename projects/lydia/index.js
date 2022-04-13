@@ -41,5 +41,4 @@ module.exports = {
     tvl,
   },
   start: 0,
-  tvl
 }

@@ -26,9 +26,6 @@ async function tvl(timestamp, block) {
 }
 
 module.exports = {
-  name: "Lien",
-  token: "LIEN",
-  category: "Derivatives",
   start: 1619798400, // 30/4/2021 @ 04:00PM (UTC)
   tvl,
 };

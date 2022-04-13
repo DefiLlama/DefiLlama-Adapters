@@ -280,11 +280,10 @@ async function tvl()
 }
 
 module.exports = {
+  deadFrom: 1648765747,
   solana: {
-    pools,
-    firepool,
-    lpTvl
+    pool2: lpTvl,
+    tvl,
   },
-  tvl,
   methodology: 'TVL consists of deposits made to the protocol',
 }

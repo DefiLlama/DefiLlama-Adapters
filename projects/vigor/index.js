@@ -21,9 +21,6 @@ async function fetch() {
 
 module.exports = {
   methodology: `${lendingMarket}. Vigor TVL is achieved by querying token balances from Vigor's lending smart contract via https://eosflare.io/api.`,
-  name: 'Vigor',
-  token: 'VIG',
-  category: 'lending',
   eos: {
     fetch: eos
   },
