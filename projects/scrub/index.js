@@ -115,7 +115,6 @@ function sumTvl(tvlList = []) {
 }
 
 module.exports = {
-	misrepresentedTokens: true,
 	cronos: {
 		staking: scrubTvl,
 		pool2: pool2,
