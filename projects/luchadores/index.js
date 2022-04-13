@@ -54,7 +54,7 @@ module.exports={
         staking: staking(luchaStk, LUCHA_polygon, "polygon"),
         pool2: pool2s([luchaMaticStk, luchaMustStk], [LUCHA_MATIC_comethLp, LUCHA_MUST_comethLp], "polygon")
     },
-    methodology: `- Staking : Players can stake their $LUCHA to earn $MASK and access in-game services or equipment.
-    - Treasury : 100% of the funds collected during the first raffle (purchase of wearable) have been kept in treasury to build a long term economic strategy. Luchadores.io own 60% of LP token to improve liquidity and facilitate user swaps.
-    - Reward Pool : 90% of the revenues generated in the game are redistributed to the players in this wallet (the 10% is shared between treasury and dev)`
+    methodology: `- Staking : Players can stake their $LUCHA to earn $MASK and access in-game services or equipment.\r
+    - Treasury : 100% of the funds collected during the first raffle (purchase of wearable) have been kept in treasury to build a long term economic strategy. Luchadores.io own 60% of LP token to improve liquidity and facilitate user swaps.\r
+    - Reward Pool : 90% of the revenues generated in the game are redistributed to the players in this wallet (the 10% is shared between treasury and dev)\r`
 }
