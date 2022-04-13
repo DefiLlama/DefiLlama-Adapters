@@ -6,7 +6,7 @@ module.exports = {
     doublecounted: false,
     timetravel: true,
     incentivized: true,
-    moonriver: {
+    bsc: {
         tvl: calculateUsdUniTvl(
             "0xb5737A06c330c22056C77a4205D16fFD1436c81b",
             "bsc",
