@@ -19,7 +19,6 @@ async function pool2(ts, _, chainBlocks) {
 }
 
 module.exports = {
-  misrepresentedTokens: true,
   cronos: {
     pool2,
     treasury: staking(treasury, share, 'cronos'),
