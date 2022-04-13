@@ -1,59 +1,113 @@
-const sdk = require('@defillama/sdk')
-const { getBlock } = require('../helper/getBlock')
-const { chainExports } = require('../helper/exports')
-const utils = require('../helper/utils')
-const retry = require('async-retry')
 const { getChainTransform } = require("../helper/portedTokens")
 const { GraphQLClient, gql } = require('graphql-request')
+const { chainExports } = require('../helper/exports')
+const { getBlock } = require('../helper/getBlock')
+const { staking } = require('../helper/staking')
+const utils = require('../helper/utils')
+const retry = require('async-retry')
+const sdk = require('@defillama/sdk')
+
+function offset(chain) {
+  switch (chain) {
+    case 'ethereum':
+      return 1000
+    case 'polygon':
+      return 1000
+    case 'bsc':
+      return 1000
+    case 'metis':
+      return 1000
+    case 'avax':
+      return 1000
+    case 'fantom':
+      return 1500
+  };
+};
+
 const CONFIG = {
   ethereum: {
     uri: 'https://api.thegraph.com/subgraphs/name/0xnodes/system11',
-    token: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+    strategy_token: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+    bios_token: '0xAACa86B876ca011844b5798ECA7a67591A9743C8',
+    kernel_addr: '0xcfcff4eb4799cda732e5b27c3a36a9ce82dbabe0'
   },
   bsc: {
     uri: 'https://api.thegraph.com/subgraphs/name/0xnodes/system11-bsc',
-    token: '0x418D75f65a02b3D53B2418FB8E1fe493759c7605',
+    strategy_token: '0x418D75f65a02b3D53B2418FB8E1fe493759c7605',
+    bios_token: '0xcf87d3d50a98a7832f5cfdf99ae1b88c7cfba4a7',
+    kernel_addr: '0x37c12de5367fa61ad05e2bf2d032d7ce5dd31793'
   },
   polygon: {
     uri: 'https://api.thegraph.com/subgraphs/name/0xnodes/system11-polygon',
-    token: '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0',
+    strategy_token: '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0',
+    bios_token: '0xe20d2df5041f8ed06976846470f727295cdd4d23',
+    kernel_addr: '0x267720b5d8dcbdb847fc333ccc68cb284648b816'
   },
   fantom: {
     uri: 'https://api.thegraph.com/subgraphs/name/0xnodes/system11-fantom',
-    token: '0x4e15361fd6b4bb609fa63c81a2be19d873717870'
+    strategy_token: '0x4e15361fd6b4bb609fa63c81a2be19d873717870',
+    bios_token: '0x75e0eb8e6d92ab832bb11e46c041d06a89ac5f0d',
+    kernel_addr: '0x9db0e84ea53c5a3c000a721bb4295a6053b3de78'
   },
   avax: {
     uri: 'https://api.thegraph.com/subgraphs/name/0xnodes/system11-avalanche',
-    token: '0x85f138bfEE4ef8e540890CFb48F620571d67Eda3',
+    strategy_token: '0x85f138bfEE4ef8e540890CFb48F620571d67Eda3',
+    bios_token: '0xd7783a275e53fc6746dedfbad4a06059937502a4',
+    kernel_addr: '0x479ea3715682e6255234e788875bdbded6faae41'
   },
   metis: {
     uri: 'https://andromeda-graph.metis.io/subgraphs/name/0xnodes/System11-metis',
-    token: '0x9E32b13ce7f2E80A01932B42553652E053D6ed8e',
+    strategy_token: '0x9E32b13ce7f2E80A01932B42553652E053D6ed8e',
+    bios_token: '0x3405a1bd46b85c5c029483fbecf2f3e611026e45',
+    kernel_addr: '0xa1DA47F6563e7B17075FcA61DeDC4622aE2F3912'
   },
 }
 function chainTvl(chain) {
     return async (timestamp, ethBlock, chainBlocks) => {
         const { [chain]:{ uri }} = CONFIG
+        const { [chain]:{ strategy_token }} = CONFIG
         var graphQLClient = new GraphQLClient(uri)
-        let block = await getBlock(timestamp, chain, chainBlocks)
-        console.log(chain+": blockheight= "+block)
-        if (chain == 'bsc'){
-          block = block-1000
-          // console.log('new bsc blockheight: '+block)
-        }
+        const block = (await getBlock(timestamp, chain, chainBlocks)) - offset(chain);
         var query = gql`{strategyTokenBalances(block: {number: `+block+`}){amount}}`
-        console.log('querying....')
         const results = await retry(async bail => await graphQLClient.request(query))
-        console.log('querying finished. Here is result')
         amount = 0
         for (i = 0; i < results.strategyTokenBalances.length; i++) {  //loop through the array
           amount += Number(results.strategyTokenBalances[i].amount); //Do the math!
         }
         const balances = {}
-        const { [chain]:{ token }} = CONFIG
-        sdk.util.sumSingleBalance(balances, token, amount)
-        // console.log(balances)
+        sdk.util.sumSingleBalance(balances, strategy_token, amount)
         return balances
     }
 }
-module.exports = chainExports(chainTvl, ['ethereum', 'polygon', 'fantom', 'bsc', 'avax', 'metis'])
+function stakingTvl(chain) {
+      const { [chain]:{ bios_token }} = CONFIG
+      const { [chain]:{ kernel_addr }} = CONFIG
+      return staking(kernel_addr, bios_token, chain)
+
+}
+module.exports = {
+  ethereum: {
+    tvl: chainTvl('ethereum'),
+    staking: stakingTvl('ethereum')
+  },
+  polygon: {
+    tvl: chainTvl('polygon'),
+    staking: stakingTvl('polygon')
+  },
+  fantom: {
+    tvl: chainTvl('fantom'),
+    staking: stakingTvl('fantom')
+  },
+  bsc: {
+    tvl: chainTvl('bsc'),
+    staking: stakingTvl('bsc')
+  },
+  avalanche: {
+    tvl: chainTvl('avax'),
+    staking: stakingTvl('avax')
+  },
+  andromeda: {
+    tvl: chainTvl('metis'),
+    staking: stakingTvl('metis')
+  },
+};
