@@ -33,6 +33,7 @@ async function getNakedStakingInfo(chain, asset, block) {
   });
 
   const { output: decimals } = await sdk.api.abi.call({
+    block,
     abi: "erc20:decimals",
     target: asset.contract,
     chain: chain,

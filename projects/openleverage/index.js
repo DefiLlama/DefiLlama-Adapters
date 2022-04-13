@@ -3,12 +3,12 @@ const erc20 = require("../helper/abis/erc20.json");
 const {gql, GraphQLClient} = require("graphql-request");
 const retry = require("../helper/retry");
 
-openleve_address = {
+const openleve_address = {
     "eth" : '0x03bf707deb2808f711bb0086fc17c5cafa6e8aaf',
     "bsc" : '0x6A75aC4b8d8E76d15502E69Be4cb6325422833B4',
     "kcc" : '0xEF6890d740E1244fEa42E3D1B9Ff515C24c004Ce'
 }
-subgraph_endpoint = {
+const subgraph_endpoint = {
     "eth" : 'https://api.thegraph.com/subgraphs/name/openleveragedev/openleverage',
     "bsc" : 'https://api.thegraph.com/subgraphs/name/openleveragedev/openleverage-bsc'
 }
@@ -86,9 +86,9 @@ async function getPoolFromSubgraph(chain) {
   `;
     var graphQLClient = new GraphQLClient(subgraph_endpoint[chain])
     const results = await retry(async bail => await graphQLClient.request(sql))
-    tokenAddressList = []
-    poolAddressList = []
-    poolToken = {}
+    const tokenAddressList = []
+    const poolAddressList = []
+    const poolToken = {}
     for (const s of results["pairs"]) {
         tokenAddressList.push(s["token0"]["id"])
         poolAddressList.push(s["pool0"])
@@ -167,6 +167,5 @@ module.exports = {
     },
     kcc: {
         tvl: kcc_tvl
-    }
-
+    } 
 }

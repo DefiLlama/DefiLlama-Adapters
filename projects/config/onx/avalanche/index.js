@@ -1,5 +1,5 @@
 const BigNumber = require('bignumber.js');
-const { ZERO, getVautsTvl, createWeb3 } = require('../utils');
+const { ZERO, getVautsTvl, createWeb3 } = require('../../../helper/ankr/utils');
 const { vaults } = require('./vaults');
 const { request, gql } = require("graphql-request");
 

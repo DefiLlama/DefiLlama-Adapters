@@ -14,11 +14,13 @@ const marketStrings = {
     lp_circulation: "lc"
 }
 
-const orderedAssets = ["ALGO", "STBL", "USDC", "goBTC", "goETH"]
-const fixedValueStakingContracts = ["STBL", "TINYMAN11_STBL_USDC_LP_STAKING", "ALGOFI-STBL-USDC-LP"]
+const orderedAssets = ["ALGO", "STBL", "USDC", "goBTC", "goETH", "vALGO"]
+const fixedValueStakingContracts = ["TINYMAN11_STBL_USDC_LP_STAKING", "ALGOFI-STBL-USDC-LP"]
+const singleSideStakingContracts = ["DEFLY", "STBL", "OPUL"]
 const variableValueStakingContracts = ["ALGOFI-STBL-ALGO-LP", "AF-XET-STBL-75BP-STAKING", "AF-GOBTC-STBL-25BP-STAKING", "AF-GOETH-STBL-25BP-STAKING", "AF-OPUL-STBL-75BP-STAKING",
-                                        "AF-DEFLY-STBL-75BP-STAKING" ]
-const stakingContracts = fixedValueStakingContracts.concat(variableValueStakingContracts)
+                                        "AF-DEFLY-STBL-75BP-STAKING", "AF-NANO-USDC-STBL-5BP-STAKING", "AF-NANO-USDT-STBL-5BP-STAKING", "AF-NANO-USDT-USDC-5BP-STAKING",
+                                        "AF-ZONE-STBL-75BP-STAKING", "AF-TINY-STBL-75BP-STAKING" ]
+const stakingContracts = fixedValueStakingContracts.concat(variableValueStakingContracts).concat(singleSideStakingContracts)
 
 const assetDictionary = {
     "ALGO": {
@@ -51,9 +53,16 @@ const assetDictionary = {
         "oracleAppId": 451327550,
         "oracleFieldName": "price"
     },
+    "vALGO": {
+        "decimals": 6,
+        "marketAppId": 465814318,
+        "oracleAppId": 531724540,
+        "oracleFieldName": "latest_twap_price",
+    },
     "STAKING_CONTRACTS": {
         "STBL": {
             "decimals": 6,
+            "assetId": 465865291,
             "marketAppId": 482608867,
         },
         "TINYMAN11_STBL_USDC_LP_STAKING" : {
@@ -93,15 +102,50 @@ const assetDictionary = {
             "marketAppId" : 639747119,
             "poolAppId": 624956175,
             "decimals": 6
+        },
+        "AF-NANO-USDC-STBL-5BP-STAKING" : {
+            "marketAppId" : 661192413,
+            "poolAppId": 658337046,
+            "decimals": 6
+        },
+        "AF-NANO-USDT-STBL-5BP-STAKING" : {
+            "marketAppId" : 661199805,
+            "poolAppId": 659677335,
+            "decimals": 6
+        },
+        "AF-NANO-USDT-USDC-5BP-STAKING" : {
+            "marketAppId" : 661207804,
+            "poolAppId": 659678644,
+            "decimals": 6
+        },
+        "AF-TINY-STBL-75BP-STAKING" : {
+            "marketAppId" : 647757513,
+            "poolAppId": 624950291,
+            "decimals": 6
+        },
+        "AF-ZONE-STBL-75BP-STAKING" : {
+            "marketAppId" : 647785158,
+            "poolAppId": 647799801,
+            "decimals": 6
+        },
+        "DEFLY" : {
+            "marketAppId" : 641499935,
+            "assetId": 470842789,
+            "decimals": 6
+        },
+        "OPUL" : {
+            "marketAppId" : 674526408,
+            "assetId": 287867876,
+            "decimals": 10
         }
     }
 }
 
 
-async function getGlobalMarketState(algodClient, marketId) {
-  let response = await algodClient.getApplicationByID(marketId).do()
+async function getGlobalMarketState(indexerClient, marketId) {
+  let response = await indexerClient.lookupApplications(marketId).do();
   let results = {}
-  response.params["global-state"].forEach(x => {
+  response.application.params["global-state"].forEach(x => {
     let decodedKey =  Buffer.from(x.key, 'base64').toString('binary')
     results[decodedKey] = x.value.uint
   })
@@ -109,11 +153,11 @@ async function getGlobalMarketState(algodClient, marketId) {
   return results
 }
 
-async function getPrices(algodClient, assetDictionary, orderedAssets) {
+async function getPrices(indexerClient, assetDictionary, orderedAssets) {
   let prices = {}
   for (const assetName of orderedAssets) {
-    let response = await algodClient.getApplicationByID(assetDictionary[assetName]["oracleAppId"]).do()
-    for (const y of response.params["global-state"]) {
+    let response = await indexerClient.lookupApplications(assetDictionary[assetName]["oracleAppId"]).do()
+    for (const y of response.application.params["global-state"]) {
       let decodedKey = Buffer.from(y.key, 'base64').toString('binary')
       if (decodedKey === assetDictionary[assetName]["oracleFieldName"]) {
         prices[assetName] = y.value.uint / 1000000
@@ -140,7 +184,7 @@ function getMarketBorrow(assetName, marketGlobalState, prices) {
 }
 
 async function borrowed() {
-    let client = new algosdk.Algodv2("", "https://algoexplorerapi.io/", "")
+    let client = new algosdk.Indexer("", "https://algoindexer.algoexplorerapi.io/", "")
     let prices = await getPrices(client, assetDictionary, orderedAssets)
 
     borrow = 0
@@ -154,7 +198,7 @@ async function borrowed() {
 }
 
 async function supply() {
-    let client = new algosdk.Algodv2("", "https://algoexplorerapi.io/", "")
+    let client = new algosdk.Indexer("", "https://algoindexer.algoexplorerapi.io/", "")
     let prices = await getPrices(client, assetDictionary, orderedAssets)
 
     supply = 0
@@ -168,12 +212,11 @@ async function supply() {
 }
 
 async function staking() {
-    let client = new algosdk.Algodv2("", "https://algoexplorerapi.io/", "")
+    let client = new algosdk.Indexer("", "https://algoindexer.algoexplorerapi.io/", "")
 
     let lpCirculations = {}
 
     let prices = {
-             'STBL': 1,
              'TINYMAN11_STBL_USDC_LP_STAKING': 2,
              'ALGOFI-STBL-USDC-LP': 2,
     }
@@ -187,11 +230,22 @@ async function staking() {
     }
 
     let poolSnapshotsResponse = await fetch("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_pool_snapshots/?network=MAINNET")
-    let poolSnapshots = await poolSnapshotsResponse.json();
-    for (const poolSnapshot of poolSnapshots['pool_snapshots']) {
+    let assetSnapshotsResponse = await fetch("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_asset_snapshots/?network=MAINNET")
+
+    let poolSnapshots = await poolSnapshotsResponse.json()
+    for (const poolSnapshot of poolSnapshots.pool_snapshots) {
         for (const contractName of variableValueStakingContracts) {
             if (poolSnapshot.id == assetDictionary['STAKING_CONTRACTS'][contractName]["poolAppId"]) {
                 prices[contractName] = poolSnapshot.balance_info.total_usd / lpCirculations[contractName]
+            }
+        }
+    }
+
+    let assetSnapshots = await assetSnapshotsResponse.json()
+    for (const assetSnapshot of assetSnapshots.asset_snapshots) {
+        for (const contractName of singleSideStakingContracts) {
+            if (assetSnapshot.id == assetDictionary['STAKING_CONTRACTS'][contractName]["assetId"]) {
+                prices[contractName] = assetSnapshot.price
             }
         }
     }
@@ -212,7 +266,7 @@ async function dex() {
           async (bail) =>
             await axios.get("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_protocol_snapshot/?network=MAINNET")
         )
-      ).data.asset_snapshots[0].tvl;
+      ).data.protocol_snapshot.tvl.total_usd
     return toUSDTBalances(response)
 }
 module.exports = {

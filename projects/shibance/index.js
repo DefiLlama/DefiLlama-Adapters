@@ -21,5 +21,4 @@ module.exports = {
   bsc:{
     tvl: bsc
   },
-  tvl: sdk.util.sumChainTvls([chainTvl('kcc'), bsc])
 }

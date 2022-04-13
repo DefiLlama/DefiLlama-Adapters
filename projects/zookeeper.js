@@ -13,7 +13,7 @@ module.exports = {
   fetch,
   methodology: `Zookeeper's TVL is achieved by making a call to it's API: https://rpc.zookeeper.finance/api/v1/tvl.`,
   misrepresentedTokens: true,
-  doublecounting: false,
-  timeTravel: false,
+  doublecounted: false,
+  timetravel: false,
   incentivized: true,
 }

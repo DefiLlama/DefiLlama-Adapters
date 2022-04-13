@@ -67,14 +67,12 @@ const chainTvl = getChainTvl(
 );
 
 module.exports = {
-  staking: {
-    tvl: staking(xIMX, IMX, 'ethereum')
-  },
   arbitrum: {
     tvl: chainTvl('arbitrum')
   },
   ethereum: {
-    tvl: chainTvl('ethereum')
+    tvl: chainTvl('ethereum'),
+    staking: staking(xIMX, IMX, 'ethereum')
   },
   avax: {
     tvl: chainTvl('avax')
