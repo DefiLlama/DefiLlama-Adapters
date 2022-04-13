@@ -1,0 +1,96 @@
+{
+  "contractName": "Dashboard",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "contract IPriceCalculator",
+          "name": "_priceCalculator",
+          "type": "address"
+        },
+        {
+          "internalType": "contract IFountain",
+          "name": "_fountain",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_bldTokenAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_vaultAddress",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "bldTokenAddress",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "fountain",
+      "outputs": [
+        {
+          "internalType": "contract IFountain",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "priceCalculator",
+      "outputs": [
+        {
+          "internalType": "contract IPriceCalculator",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "vaultAddress",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "tvl",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ]
+}
