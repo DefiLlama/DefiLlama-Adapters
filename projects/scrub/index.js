@@ -1,4 +1,4 @@
-const { tombTvl } = require("./helper/tomb")
+const { tombTvl } = require("../helper/tomb")
 
 const lion = '0x49fB98F9b4a3183Cd88e7a115144fdf00fa6fB95'
 const share = "0xD6597AA36DD90d7fCcBd7B8A228F2d5CdC88eAd0";
