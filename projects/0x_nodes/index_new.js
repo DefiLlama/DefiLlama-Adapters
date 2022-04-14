@@ -47,16 +47,16 @@ function offset(chain) {
   switch (chain) {
     case 'ethereum':
       return 100
-    case 'polygon':
-      return 600
     case 'bsc':
       return 400
+    case 'polygon':
+      return 600
+    case 'fantom':
+      return 1200
     case 'metis':
       return 150
     case 'avax':
       return 600
-    case 'fantom':
-      return 1200
   };
 };
 function chainTvl(chain) {
@@ -91,7 +91,7 @@ function chainExports(chainTvl, stakingTvl, chains){
   }), {})
   return chainTvls
 }
-const tvlExports = chainExports(chainTvl, stakingTvl , ['ethereum', 'polygon', 'fantom', 'bsc', 'avax', 'metis'])
+const tvlExports = chainExports(chainTvl, stakingTvl , ['ethereum', 'bsc', 'polygon', 'fantom', 'metis', 'avax'])
 module.exports = {
   methodology: ` Counts the number of wrapped native tokens in all yield strategies across all the chains the protocol is deployed on
   + staking counts the number of BIOS tokens staked in the kernels across all the chains (PFA: Protocol Fee Accruals by staking assets)`,
