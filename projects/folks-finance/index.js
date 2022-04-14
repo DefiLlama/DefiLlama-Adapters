@@ -1,4 +1,5 @@
 const algosdk = require("algosdk");
+const { toUSDTBalances } = require("../helper/balances");
 const {
   pools,
   liquidGovernanceAppId,
@@ -112,7 +113,7 @@ async function tvl() {
       borrowed(),
     ]);
 
-  return depositsAmountUsd + algoLiquidGovernanceDepositUsd - borrowsAmountUsd;
+  return toUSDTBalances(depositsAmountUsd + algoLiquidGovernanceDepositUsd - borrowsAmountUsd);
 }
 
 /* Get total borrows */
@@ -140,9 +141,15 @@ async function borrowed() {
   return totalBorrowsUsd;
 }
 
+async function borrowedBalances(){
+  return toUSDTBalances(await borrowed())
+}
+
 module.exports = {
-  fetch: tvl,
-  borrowed: {
-    fetch: borrowed,
-  },
+  timetravel: false,
+  misrepresentedTokens: true,
+  algorand:{
+    tvl,
+    borrowed: borrowedBalances,
+  }
 };
