@@ -93,7 +93,8 @@ function chainExports(chainTvl, stakingTvl, chains){
 }
 const tvlExports = chainExports(chainTvl, stakingTvl , ['ethereum', 'polygon', 'fantom', 'bsc', 'avax', 'metis'])
 module.exports = {
-  methodology: ``,
+  methodology: ` Counts the number of wrapped native tokens in all yield strategies across all the chains the protocol is deployed on
+  + staking counts the number of BIOS tokens staked in the kernels across all the chains (PFA: Protocol Fee Accruals by staking assets)`,
   start: 1633046400, // Friday 1. October 2021 00:00:00 GMT
   ...tvlExports
 }
