@@ -11,16 +11,16 @@ const TOKENS = {
     BUSD: "0x4Bf769b05E832FCdc9053fFFBC78Ca889aCb5E1E",
 }
 
-const versaTvl = calculateUsdUniTvl(
+const astarTvl = calculateUsdUniTvl(
     FACTORIES,
-    "versa",
+    "astar",
     NATIVE_TOKEN_WASTAR,
     [
         ...Object.values(TOKENS)
-    ], "versa")
+    ], "astar")
 
 module.exports = {
     timetravel: true,
     methodology: "Versa Tvl Calculation",
-    tvl: versaTvl
+    tvl: astarTvl
 }
