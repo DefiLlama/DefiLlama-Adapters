@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
 const retry = require("./helper/retry");
 const axios = require("axios");
+const { PromisePool } = require('@supercharge/promise-pool')
 const {
   transformBscAddress,
   transformAvaxAddress,
@@ -89,7 +90,14 @@ function tvl(chain, gasToken) {
       })
     ).output;
 
-    for (const dao of daos) {
+    await PromisePool
+      .withConcurrency(31)
+      .for(daos)
+      .process(addDao)
+
+    return balances;
+
+    async function addDao(dao) {
       let tokens = await getTokens(chain, dao);
 
       if (tokens.includes(gasToken)) {
@@ -122,8 +130,6 @@ function tvl(chain, gasToken) {
 
       sdk.util.sumMultiBalanceOf(balances, daoBalances, true, transform);
     }
-
-    return balances;
   };
 }
 

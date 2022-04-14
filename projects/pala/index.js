@@ -2,8 +2,8 @@ const ABI = require("./abi.json");
 const Caver = require("caver-js");
 const { toUSDTBalances } = require("../helper/balances");
 
-const PALA_EP_URL = "https://gateway.pala.world";
-const VIEWER_ADDR = "0xEE50E2679E763a0a605e9c09e42a71340e4b67A3";
+const PALA_EP_URL = "https://public-node-api.klaytnapi.com/v1/cypress";
+const VIEWER_ADDR = "0x2B16648ddD1559fc86e0c0617213Ab5dd2Ea01B9";
 const PALA_FARM_ADDR = "0xCFC140E8e3b1B05f9ACb4a42249b7aBB8c27576C";
 
 const getPoolsInfo = async (caver) => {
@@ -49,6 +49,7 @@ const calcStakedLPToken = async (caver, poolInfo) => {
     const sc = caver.contract.create([ABI.balanceOf, ABI.totalSupply], poolInfo.pool);
     const totalLPSupply = await sc.methods.totalSupply().call();
     const liquidityVolume = await calcPoolLiquidityVolume(caver, poolInfo)
+    if (isNaN(+totalLPSupply) || +totalLPSupply === 0)  return 0
 
     const stakedLP = await sc.methods. balanceOf(PALA_FARM_ADDR).call();
     const stakedLPRatio = stakedLP / totalLPSupply;
@@ -64,7 +65,7 @@ const fetchStakedToken = async () => {
         poolInfos.map((poolInfo) => { return calcStakedLPToken(caver, poolInfo)})        
     );
     const totalLpStaked = totalLPStakeds.reduce((acc, cur) => acc + cur );
-
+    
     const farmInfos = await getFarmInfos(caver, PALA_FARM_ADDR);
     const palaFarmInfo = farmInfos.farmInfoList[0];
     const palaInfoDetail = await getTokenInfoDetail(caver, palaFarmInfo.pool);

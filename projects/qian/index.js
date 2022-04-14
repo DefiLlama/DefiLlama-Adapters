@@ -53,9 +53,6 @@ async function tvl(timestamp, block) {
 }
 
 module.exports = {
-  name: "QIAN",
-  token: "KUN",
-  category: "lending",
   start: 1513566671, // 2020/10/21 6:34:47 (+UTC)
   tvl,
 };

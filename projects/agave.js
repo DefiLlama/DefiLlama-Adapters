@@ -13,6 +13,6 @@ module.exports = {
   xdai:{
     tvl: aaveChainTvl("xdai", addressesProviderRegistryXDAI, addr=>`xdai:${addr}`, [protocolDataHelper], false),
     borrowed: aaveChainTvl("xdai", addressesProviderRegistryXDAI, addr=>`xdai:${addr}`, [protocolDataHelper], true),
-    staking: staking(agaveStakingContract, agaveTokenAddress, chain="xdai")
+    staking: staking(agaveStakingContract, agaveTokenAddress, "xdai")
   }
 };

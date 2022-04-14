@@ -53,5 +53,4 @@ module.exports = {
   bsc: {
     tvl: chainTvl('bsc'),
   },
-  tvl: sdk.util.sumChainTvls(['ethereum', 'bsc', 'heco'].map(chainTvl))
 }
