@@ -1,28 +1,10 @@
 const { getChainTransform } = require("../helper/portedTokens")
 const { GraphQLClient, gql } = require('graphql-request')
-// const { chainExports } = require('../helper/exports')
 const { getBlock } = require('../helper/getBlock')
 const { staking } = require('../helper/staking')
 const utils = require('../helper/utils')
 const retry = require('async-retry')
 const sdk = require('@defillama/sdk')
-
-function offset(chain) {
-  switch (chain) {
-    case 'ethereum':
-      return 200
-    case 'polygon':
-      return 1200
-    case 'bsc':
-      return 800
-    case 'metis':
-      return 300
-    case 'avax':
-      return 1200
-    case 'fantom':
-      return 2400
-  };
-};
 const CONFIG = {
   ethereum: {
     uri: 'https://api.thegraph.com/subgraphs/name/0xnodes/system11',
@@ -61,6 +43,22 @@ const CONFIG = {
     kernel_addr: '0xa1DA47F6563e7B17075FcA61DeDC4622aE2F3912'
   },
 }
+function offset(chain) {
+  switch (chain) {
+    case 'ethereum':
+      return 100
+    case 'polygon':
+      return 600
+    case 'bsc':
+      return 400
+    case 'metis':
+      return 150
+    case 'avax':
+      return 600
+    case 'fantom':
+      return 1200
+  };
+};
 function chainTvl(chain) {
     return async (timestamp, ethBlock, chainBlocks) => {
         const { [chain]:{ uri }} = CONFIG
