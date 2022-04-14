@@ -1,6 +1,5 @@
-const sdk = require('@defillama/sdk');
 const { GraphQLClient, gql } = require('graphql-request');
-
+// node test.js projects/mochifi/index.js
 const BLOCK_SHIFT = 10
 
 const endpoints = {
@@ -31,6 +30,7 @@ async function ethereum(timestamp, block, chainBlocks) {
       acc[v.asset] = v.deposits
       return acc
     }, {})
+  delete results['0x60ef10edff6d600cd91caeca04caed2a2e605fe5']
   return results
 }
 
@@ -39,5 +39,4 @@ module.exports = {
   ethereum: {
     tvl: ethereum
   },
-  tvl: sdk.util.sumChainTvls([ethereum])
 }

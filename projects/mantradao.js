@@ -33,6 +33,7 @@ async function getNakedStakingInfo(chain, asset, block) {
   });
 
   const { output: decimals } = await sdk.api.abi.call({
+    block,
     abi: "erc20:decimals",
     target: asset.contract,
     chain: chain,
@@ -135,7 +136,7 @@ async function calculateZenSupplyBorrow(
   return [totalSupplyETH.plus(totalBorrowsETH), totalBorrowsETH];
 }
 
-async function ethereumTVL(ethBlock, chainBlocks) {
+async function ethereumTVL(timestamp, ethBlock, chainBlocks) {
   let balances = {};
 
   await Promise.all(
@@ -176,7 +177,7 @@ async function ethereumTVL(ethBlock, chainBlocks) {
   return balances;
 }
 
-async function bscTVL(ethBlock, chainBlocks) {
+async function bscTVL(timestamp,ethBlock, chainBlocks) {
   let balances = {};
 
   await Promise.all(
@@ -193,7 +194,7 @@ async function bscTVL(ethBlock, chainBlocks) {
 
   const lpPositions = await getLPStakingPositions(
     lpStakingAssetsBSC,
-    ethBlock,
+    chainBlocks.bsc,
     "bsc"
   );
   await unwrapUniswapLPs(
@@ -207,7 +208,7 @@ async function bscTVL(ethBlock, chainBlocks) {
   return balances;
 }
 
-async function polygonTVL(ethBlock, chainBlocks) {
+async function polygonTVL(timestamp, ethBlock, chainBlocks) {
   let balances = {};
 
   await Promise.all(
@@ -223,7 +224,7 @@ async function polygonTVL(ethBlock, chainBlocks) {
 
   const lpPositions = await getLPStakingPositions(
     lpStakingAssetsPOLYGON,
-    ethBlock,
+    chainBlocks.polygon,
     "polygon"
   );
 
@@ -238,7 +239,7 @@ async function polygonTVL(ethBlock, chainBlocks) {
   return balances;
 }
 
-async function borrowed(ethBlock, chainBlocks) {
+async function borrowed(timestamp, ethBlock, chainBlocks) {
   let borrows = {};
   const [tokensMetadata, tokensUnderlyingPrices] = await getZENTERESTInfo(
     "ethereum",

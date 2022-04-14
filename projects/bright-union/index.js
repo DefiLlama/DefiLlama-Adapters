@@ -33,7 +33,7 @@ async function staking (timestamp, block) {
         })
     ).output;
 
-    await sdk.util.sumSingleBalance(balances, BRIGHT, stakingBright)
+    sdk.util.sumSingleBalance(balances, BRIGHT, stakingBright)
 
     return balances;
 }

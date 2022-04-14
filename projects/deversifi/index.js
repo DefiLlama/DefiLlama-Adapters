@@ -46,6 +46,7 @@ const listedTokens = [
   '0xdddd0e38d30dd29c683033fa0132f868597763ab'
 ];
 const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+const aust = "0xa8De3e3c934e2A1BB08B010104CcaBBD4D6293ab"
 
 async function tvl(timestamp, ethBlock){
     const balances = {}
@@ -54,11 +55,20 @@ async function tvl(timestamp, ethBlock){
         target: deversifiStarkAddr,
         block: ethBlock
     })
+    const austBalance = await sdk.api.abi.call({
+        target: aust,
+        params: deversifiStarkAddr,
+        abi: 'erc20:balanceOf',
+        block: ethBlock
+    })
     sdk.util.sumSingleBalance(balances, weth, eth.output)
+    sdk.util.sumSingleBalance(balances, 'anchorust', austBalance.output / 1e18)
     return balances
 }
 
 module.exports = {
     methodology: `Counts the tokens on ${deversifiStarkAddr}`,
-    tvl
+    ethereum: {
+      tvl
+    }
 }

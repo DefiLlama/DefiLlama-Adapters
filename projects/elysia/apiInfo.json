@@ -1,21 +1,10 @@
 {
-  "uniswap-v3-subgraph": {
-    "method": "POST",
-    "endpoint": "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3",
-    "body": {
-      "query": "{\n    daiPool: pool(id: \"0xbde484db131bd2ae80e44a57f865c1dfebb7e31f\"){\n    totalValueLockedUSD,\n    totalValueLockedToken0,\n    totalValueLockedToken1,\n    liquidity,\n    sqrtPrice,\n    poolDayData(orderBy: date, orderDirection: desc) {\n        date,\n        token1Price,\n    },\n    }\n    ethPool: pool(id: \"0xc311faebe8802f9cfc91284016d1de9537ec66b7\"){\n    totalValueLockedUSD,\n    totalValueLockedToken0,\n    totalValueLockedToken1,\n    liquidity,\n    sqrtPrice,\n    poolDayData(orderBy: date, orderDirection: desc) {\n        date,\n        token1Price,\n    },\n    }\n    stakedDaiPositions: positions(where: {pool: \"0xbde484db131bd2ae80e44a57f865c1dfebb7e31f\", owner: \"0x1f98407aaB862CdDeF78Ed252D6f557aA5b0f00d\"}){\n    id,\n    liquidity,\n    depositedToken0,\n    depositedToken1,\n    }\n    stakedEthPositions: positions(where: {pool: \"0xc311faebe8802f9cfc91284016d1de9537ec66b7\", owner: \"0x1f98407aaB862CdDeF78Ed252D6f557aA5b0f00d\"}){\n    id,\n    liquidity,\n    depositedToken0,\n    depositedToken1,\n    }\n  }"
-    }
-  },
   "elyfi-subgraph": {
     "method": "POST",
     "endpoint": "https://api.studio.thegraph.com/query/862/elyfi/v0.0.4",
     "body": {
       "query": "{\n    reserves {\n      id\n      lTokenInterestIndex\n      lastUpdateTimestamp\n      borrowAPY\n      depositAPY\n      totalBorrow\n      totalDeposit\n      lTokenUserBalanceCount\n      dTokenUserBalanceCount\n      deposit {\n        id\n      }\n      incentivePool {\n        id\n      }\n      borrow {\n        id\n        amount\n        timestamp\n        tokenId\n      }\n      repay {\n        id\n        userDTokenBalance\n        feeOnCollateralServiceProvider\n        timestamp\n        tokenId\n      }\n      reserveHistory(orderBy: timestamp) {\n        id\n        timestamp\n        borrowAPY\n        depositAPY\n        totalBorrow\n        totalDeposit\n      }\n      lToken {\n        id\n      }\n    }\n  }"
     }
-  },
-  "coin-gecko": {
-    "method": "GET",
-    "endpoint": "https://api.coingecko.com/api/v3/simple/price?ids=elysia,dai,ethereum,tether&vs_currencies=usd"
   },
   "elyfi-subgraph-bsc": {
     "method": "POST",

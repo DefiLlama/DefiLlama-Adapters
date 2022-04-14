@@ -42,6 +42,7 @@ async function staking(timestamp, chain, chainBlocks) {
 }
 
 module.exports = {
+  deadFrom: 1648765747,
   methodology:
     "TVL is calculated by the value locked in the masterchef contracts exluding the staked KRILL and the KRILL-USDC LP",
   polygon: {
@@ -54,5 +55,4 @@ module.exports = {
       (addr) => `polygon:${addr}`
     ),
   },
-  tvl,
 };

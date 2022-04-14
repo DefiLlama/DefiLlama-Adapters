@@ -10,7 +10,7 @@ const DELTA_WETH_SLP = "0x1498bd576454159Bb81B5Ce532692a8752D163e8";
 const DELTA = "0x9EA3b5b4EC044b70375236A281986106457b20EF";
 const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 
-async function Pool2() {
+async function Pool2(timestamp, block) {
   const balances = {};
 
   const totalSupply_slp = (
@@ -30,6 +30,7 @@ async function Pool2() {
       abi: erc20.balanceOf,
       target: DELTA_WETH_SLP,
       params: rebasingContract,
+      block
     })
   ).output;
 
@@ -38,6 +39,7 @@ async function Pool2() {
       abi: erc20.balanceOf,
       target: rebasingContract,
       params: vaultStakingContract,
+      block
     })
   ).output;
 
@@ -48,6 +50,7 @@ async function Pool2() {
         params: DELTA_WETH_SLP,
       })),
       abi: erc20.balanceOf,
+      block
     })
   ).output;
 
@@ -73,7 +76,7 @@ module.exports = {
   ethereum: {
     staking: staking(vaultStakingContract, DELTA),
     pool2: Pool2,
+    tvl: async () => ({})
   },
-  tvl: (async) => ({}),
   methodology: "Counts liquidty on the Staking and Pool2",
 };

@@ -122,8 +122,8 @@ async function calLyfTvl(chain, block) {
   ).output;
 
   unusedBTOKEN.forEach((u) => {
-    balances[`${chain}:${u.input.target}`] = BigNumber(
-      balances[`${chain}:${u.input.target}`] || 0
+    balances[`${chain}:${u.input.target.toLowerCase()}`] = BigNumber(
+      balances[`${chain}:${u.input.target.toLowerCase()}`] || 0
     )
       .plus(BigNumber(u.output))
       .toFixed(0);
