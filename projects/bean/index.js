@@ -1,9 +1,7 @@
 const sdk = require('@defillama/sdk');
 const utils = require('../helper/utils')
-const { unwrapCrv } = require('../helper/resolveCrvTokens');
-const { unwrapUniswapLPs, sumTokens } = require('../helper/unwrapLPs');
+const { unwrapUniswapLPs } = require('../helper/unwrapLPs');
 const { bean_abi, unwrapCrvSimple } = require ("./bean-utils.js");
-// const { getChainTransform } = require('../portedTokens')
 
 const BEAN_DIA_ADDR = "0xC1E088fC1323b20BCBee9bd1B9fC9546db5624C5";
 
@@ -45,9 +43,9 @@ async function tvl(time, block){
     // add balance of siloed BEAN:ETH from uniswap pool
     await unwrapUniswapLPs(balances, lpPositions, block);
 
+    // add balances of all siloed curve pools
     // this is the block when SiloV2Facet with getTotalDeposited() was introduced
     if (block >= 14218934) {
-        // add balances of all siloed curve pools
         await Promise.all(BEAN_CRV_POOLS.map(async (pool) => {
             const lpBalance = (await sdk.api.abi.call({
                 abi: bean_abi["getTotalDeposited"],
