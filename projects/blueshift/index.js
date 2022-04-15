@@ -48,7 +48,7 @@ async function tvl(timestamp, block, chainBlocks) {
 module.exports = {
   timetravel: true,
   misrepresentedTokens: true,
-  methodology: 'Blueshift TVL accumulates tokens of all portfolios in base tokens. Staking includes only manual yield pool.',
+  methodology: 'Accumulates TVL of all Blueshift portfolios calculated in base tokens. Adds TVL of BLUES tokens staked in Blueshift yield pools.',
   start: 2023331,
   milkomeda: {
     staking,
