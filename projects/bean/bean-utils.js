@@ -63,6 +63,10 @@ async function unwrapCrvSimple(balances, crvToken, lpBalance, block, chain, numT
 		target: crvToken,
 		chain, block
 	})
+    
+    // don't add any balances if total supply of curve pool is 0
+    // avoids error later when dividing by it
+    if(resolvedCrvTotalSupply === "0") return;
 
 	const LP_tokens_count = numTokens;
 	const coins_indices = Array.from(Array(LP_tokens_count).keys())
