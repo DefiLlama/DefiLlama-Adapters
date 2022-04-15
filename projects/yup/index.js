@@ -24,7 +24,7 @@ module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
   methodology: ''
-  start: 1000235,
+  start: 1590624000,
   bsc: {
     tvl,
   }
