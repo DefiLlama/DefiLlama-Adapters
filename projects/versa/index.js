@@ -11,7 +11,7 @@ const TOKENS = {
     BUSD: "0x4Bf769b05E832FCdc9053fFFBC78Ca889aCb5E1E",
 }
 
-const astarTvl = calculateUsdUniTvl(
+const tvl = calculateUsdUniTvl(
     FACTORIES,
     "astar",
     NATIVE_TOKEN_WASTAR,
@@ -22,5 +22,5 @@ const astarTvl = calculateUsdUniTvl(
 module.exports = {
     timetravel: true,
     methodology: "Versa Tvl Calculation",
-    astar: { tvl: versaTvl }
+    astar: { tvl }
 }
