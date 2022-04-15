@@ -1,31 +1,50 @@
-const sdk = require('@defillama/sdk');
-const { transformPolygonAddress } = require('../helper/portedTokens');
-const TOKEN_CONTRACT = '0x69bbc3f8787d573f1bbdd0a5f40c7ba0aee9bcc9';
-//const MINT_CLUB_BOND_CONTRACT = '0x8BBac0C7583Cc146244a18863E708bFFbbF19975';
+const sdk = require("@defillama/sdk");
+const { transformPolygonAddress } = require("../helper/portedTokens");
+const contracts = require('./contracts.json');
 
-async function tvl(timestamp, block, chainBlocks) {
-  const balances = {};
-  const transform = await transformPolygonAddress();
+// node test.js projects/dfx/index.js
+function tvl(chain) {
+  return async (timestamp, block, chainBlocks) => {
+    const transform =
+      chain == "polygon" ? await transformPolygonAddress() : (a) => a;
+    const balances = {};
 
-  const collateralBalance = (await sdk.api.abi.call({
-    abi: 'erc20:balanceOf',
-    chain: 'polygon',
-    target: TOKEN_CONTRACT,
-    //params: [MINT_CLUB_BOND_CONTRACT],
-    block: chainBlocks['polygon'],
-  })).output;
+    const [tokenBalances, usdcBalances] = await Promise.all([
+      sdk.api.abi.multiCall({
+        calls: contracts[chain].map((c) => ({
+          target: c.token,
+          params: [c.address],
+        })),
+        abi: "erc20:balanceOf",
+        block: chainBlocks[chain],
+        chain,
+      }),
 
-  await sdk.util.sumSingleBalance(balances, transform(TOKEN_CONTRACT), collateralBalance)
+      sdk.api.abi.multiCall({
+        calls: contracts[chain].map((c) => ({
+          target: contracts.usdc[chain],
+          params: [c.address],
+        })),
+        abi: "erc20:balanceOf",
+        block: chainBlocks[chain],
+        chain,
+      }),
+    ]);
 
-  return balances;
-}
+    await Promise.all([
+      sdk.util.sumMultiBalanceOf(balances, tokenBalances, true, transform),
+      sdk.util.sumMultiBalanceOf(balances, usdcBalances, true, transform),
+    ]);
+
+    return balances;
+  };
+};
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
-  methodology: ''
-  start: 1590624000,
-  bsc: {
-    tvl,
-  }
-}; 
+  ethereum: {
+    tvl: tvl("ethereum"),
+  },
+  polygon: {
+    tvl: tvl("polygon"),
+  },
+};
