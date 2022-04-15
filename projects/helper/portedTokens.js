@@ -711,6 +711,22 @@ async function transformCronosAddress() {
   return (addr) => mapping[addr.toLowerCase()] || `cronos:${addr.toLowerCase()}`
 }
 
+
+function fixAstarBalances(balances) {
+  const mapping = {
+    '0x3795C36e7D12A8c252A20C5a7B455f7c57b60283': { coingeckoId: 'tether', decimals: 6, },
+    '0x6B175474E89094C44Da98b954EedeAC495271d0F': { coingeckoId: 'astar', decimals: 18, },
+    '0xb361DAD0Cc1a03404b650A69d9a5ADB5aF8A531F': { coingeckoId: 'emiswap', decimals: 18, },
+    '0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98': { coingeckoId: 'usdc', decimals: 6, },
+  }
+
+  return fixBalances(balances, mapping)
+}
+
+async function transformAstarAddress() {
+  return (addr) => addr // we use fix balances instead
+}
+
 function fixCronosBalances(balances) {
   const tokenDecimals = {
     'shiba-inu': 18,//SHIBA
@@ -792,6 +808,7 @@ async function getFixBalances(chain) {
 
 const fixBalancesMapping = {
   avax: fixAvaxBalances,
+  astar: fixAstarBalances,
   cronos: fixCronosBalances,
   tezos: fixTezosBalances,
   harmony: fixHarmonyBalances,
@@ -801,6 +818,7 @@ const fixBalancesMapping = {
 }
 
 const chainTransforms = {
+  astar: transformAstarAddress,
   celo: transformCeloAddress,
   cronos: transformCronosAddress,
   fantom: transformFantomAddress,
@@ -829,8 +847,12 @@ const chainTransforms = {
 
 async function transformEthereumAddress() {
   const mapping = {
-    '0x88536c9b2c4701b8db824e6a16829d5b5eb84440': 'polygon:0xac63686230f64bdeaf086fe6764085453ab3023f' // USV token
+    '0x88536c9b2c4701b8db824e6a16829d5b5eb84440': 'polygon:0xac63686230f64bdeaf086fe6764085453ab3023f', // USV token
+    '0xFEEf77d3f69374f66429C91d732A244f074bdf74': '0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0', // CVX FXS token
   }
+
+  normalizeMapping(mapping)
+
   return addr => {
     addr = addr.toLowerCase()
     return mapping[addr] || addr
