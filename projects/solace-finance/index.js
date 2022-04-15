@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const { stakings } = require("../helper/staking");
+const { staking } = require("../helper/staking");
 const { pool2s } = require("../helper/pool2");
 const _ = require("underscore");
 const BigNumber = require("bignumber.js");
@@ -7,11 +7,8 @@ const BigNumber = require("bignumber.js");
 // Ethereum
 const ETHEREUM_UWP_ADDRESS = "0x5efC0d9ee3223229Ce3b53e441016efC5BA83435"; // underwriting pool address
 const SOLACE_USDC_POOL = "0x9C051F8A6648a51eF324D30C235da74D060153aC"; // sushi solace-usdc pool
+const SOLACE = "0x501acE9c35E60f03A2af4d484f49F9B1EFde9f40"
 const ETHEREUM_TOKENS = [
-  {
-    PoolToken: "0x501acE9c35E60f03A2af4d484f49F9B1EFde9f40",
-    TokenTicker: "SOLACE",
-  },
   {
     PoolToken: "0x853d955aCEf822Db058eb8505911ED77F175b99e",
     TokenTicker: "FRAX",
@@ -70,10 +67,6 @@ const POLYGON_UWP_ADDRESS = "0xd1108a800363C262774B990e9DF75a4287d5c075";
 const SOLACE_FRAX_POOL = "0x85Efec4ee18a06CE1685abF93e434751C3cb9bA9"; // solace-frax uni pool
 const POLYGON_TOKENS = [
   {
-    PoolToken: "0x501acE9c35E60f03A2af4d484f49F9B1EFde9f40",
-    TokenTicker: "SOLACE",
-  },
-  {
     PoolToken: "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
     TokenTicker: "WMATIC",
   },
@@ -127,10 +120,6 @@ async function polygon(timestamp, block, chainBlocks) {
 const AURORA_UWP_ADDRESS = "0x4A6B0f90597e7429Ce8400fC0E2745Add343df78";
 const SOLACE_WNEAR_POOL = "0x85Efec4ee18a06CE1685abF93e434751C3cb9bA9"; // trisolaris solace-wnear
 const AURORA_TOKENS = [
-  {
-    PoolToken: "0x501acE9c35E60f03A2af4d484f49F9B1EFde9f40",
-    TokenTicker: "SOLACE",
-  },
   {
     PoolToken: "0xC42C30aC6Cc15faC9bD938618BcaA1a1FaE8501d",
     TokenTicker: "WNEAR",
@@ -197,18 +186,45 @@ async function aurora(timestamp, block, chainBlocks) {
   return balances;
 }
 
+async function polygonPool2(timestamp, block, chainBlocks) {
+  const balances = {};
+
+  const output = await sdk.api.abi.multiCall({
+    calls: [
+      {
+        target: '0x45c32fA6DF82ead1e2EF74d17b76547EDdFaFF89',
+        params: [ SOLACE_FRAX_POOL ]
+      },
+      {
+        target: SOLACE,
+        params: [ SOLACE_FRAX_POOL ]
+      },
+    ],
+    abi: "erc20:balanceOf",
+    block: chainBlocks.polygon,
+    chain: "polygon",
+  });
+
+  sdk.util.sumMultiBalanceOf(balances, output);
+
+  return balances;
+}
 module.exports = {
   timetravel: true,
   ethereum: {
     pool2: pool2s([ETHEREUM_UWP_ADDRESS], [SOLACE_USDC_POOL]),
     tvl: ethereum,
+    staking: staking(ETHEREUM_UWP_ADDRESS, SOLACE, "ethereum")
   },
   polygon: {
     tvl: polygon,
-    // pool2: pool2s([POLYGON_UWP_ADDRESS], [SOLACE_FRAX_POOL], "polygon"),
+    pool2: polygonPool2,
+    staking: staking(POLYGON_UWP_ADDRESS, SOLACE, "polygon")
+
   },
   aurora: {
     tvl: aurora,
-    // pool2: pool2s([AURORA_UWP_ADDRESS], [SOLACE_WNEAR_POOL], "aurora"),
+    staking: staking(AURORA_UWP_ADDRESS, SOLACE, "aurora")
+
   },
 };

@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk');
 const abi = require('./abis/masterchef.json')
-const { unwrapUniswapLPs, unwrapLPsAuto, } = require('./unwrapLPs')
+const { unwrapUniswapLPs, unwrapLPsAuto, isLP } = require('./unwrapLPs')
 const tokenAbi = require("./abis/token.json");
 const token0Abi = require("./abis/token0.json");
 const token1Abi = require("./abis/token1.json");
@@ -9,7 +9,6 @@ const userInfoAbi = require("./abis/userInfo.json");
 const { getBlock } = require('./getBlock');
 const { default: BigNumber } = require('bignumber.js');
 const { getChainTransform } = require('../helper/portedTokens');
-const { requery, setPrice, sum } = require('./getUsdUniTvl');
 
 async function getPoolInfo(masterChef, block, chain, poolInfoAbi) {
     const poolLength = (
@@ -59,16 +58,13 @@ async function getSymbolsAndBalances(masterChef, block, chain, poolInfo) {
     return [symbols, tokenBalances]
 }
 
-function isLP(symbol) {
-    return symbol.includes('LP') || symbol.includes('PGL') || symbol.includes('UNI-V2') || symbol === "PNDA-V2" || symbol.includes('GREEN-V2')
-}
-
 function isYV(symbol) {
     return symbol.includes('yv')
 }
 
-async function addFundsInMasterChef(balances, masterChef, block, chain = 'ethereum', transformAddress = id => id, poolInfoAbi = abi.poolInfo, ignoreAddresses = [], includeLPs = true, excludePool2 = false, stakingToken = undefined) {
+async function addFundsInMasterChef(balances, masterChef, block, chain = 'ethereum', transformAddress = undefined, poolInfoAbi = abi.poolInfo, ignoreAddresses = [], includeLPs = true, excludePool2 = false, stakingToken = undefined) {
     const poolInfo = await getPoolInfo(masterChef, block, chain, poolInfoAbi)
+    if (!transformAddress) transformAddress = await getChainTransform(chain)
     const [symbols, tokenBalances] = await getSymbolsAndBalances(masterChef, block, chain, poolInfo);
 
     const lpPositions = [];
