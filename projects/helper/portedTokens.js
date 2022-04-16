@@ -679,13 +679,12 @@ async function transformKlaytnAddress() {
 }
 
 function fixKlaytnBalances(balances) {
-  const tokenDecimals = {
-    'klay-token': 18,
+  const mapping = {
+    'klay-token': { coingeckoId: 'klay-token', decimals: 18, },
+    '0xd7a4d10070a4f7bc2a015e78244ea137398c3b74': { coingeckoId: 'klay-token', decimals: 18, }, // Wrapped KLAY
   }
-  Object.keys(tokenDecimals).forEach(key => {
-    if (balances[key])
-      balances[key] = BigNumber(balances[key]).div(10 ** tokenDecimals[key]).toFixed(0)
-  })
+
+  return fixBalances(balances, mapping)
 }
 
 function transformVelasAddress() {
