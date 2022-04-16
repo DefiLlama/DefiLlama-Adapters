@@ -7,6 +7,9 @@ const SCNR = {
     KLAY: "0xe1783a85616ad7dbd2b326255d38c568c77ffa26",
   },
 };
+const KLAY = {
+  decimals: 18,
+};
 
 const ABIs = {
   LP: [
@@ -18,6 +21,12 @@ const ABIs = {
         { internalType: "uint112", name: "_reserve1", type: "uint112" },
         { internalType: "uint32", name: "_blockTimestampLast", type: "uint32" },
       ],
+      type: "function",
+    },
+    {
+      inputs: [],
+      name: "totalSupply",
+      outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
       type: "function",
     },
   ],
@@ -34,5 +43,6 @@ const ABIs = {
 module.exports = {
   RPC_ENDPOINT_URL,
   SCNR,
+  KLAY,
   ABIs,
 };
