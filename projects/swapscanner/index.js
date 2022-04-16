@@ -61,5 +61,7 @@ module.exports = {
   klaytn: {
     tvl,
     staking,
+    methodology:
+      "TVL of Swapscanner consists of the SCNR tokens held in governance staking and SCNR/KLAY LP",
   },
 };
