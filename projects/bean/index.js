@@ -13,9 +13,9 @@ const BEAN_ETH_ADDR = "0x87898263B6C5BABe34b4ec53F22d98430b91e371";
 const BEAN_CRV_POOLS = [
     { addr: "0xD652c40fBb3f06d6B58Cb9aa9CFF063eE63d465D", numToken: 2 },
     { addr: "0x3a70DfA7d2262988064A2D051dd47521E43c9BdD", numToken: 2 },
-]
+];
 
-async function tvl(time, block){
+async function staking(time, block) {
     const balances = {};
 
     const beanBalance = (await sdk.api.abi.call({
@@ -25,22 +25,22 @@ async function tvl(time, block){
         block: block,
     })).output;
 
+    // add balance of siloed Beans
+    await sdk.util.sumSingleBalance(balances, BEAN_TOKEN_ADDR, beanBalance);
+
+    return balances;
+}
+
+async function pool2(time, block) {
+    const balances = {};
+
+    // add balance of siloed BEAN:ETH from uniswap pool
     const beanEthLpBalance = (await sdk.api.abi.call({
         abi: bean_abi["totalDepositedLP"],
         target: BEAN_DIA_ADDR,
         block: block,
     })).output;
-
-    const lpPositions = [
-        {
-            balance: beanEthLpBalance,
-            token: BEAN_ETH_ADDR,
-        }
-    ]
-
-    // add balance of siloed Beans
-    await sdk.util.sumSingleBalance(balances, BEAN_TOKEN_ADDR, beanBalance);
-    // add balance of siloed BEAN:ETH from uniswap pool
+    const lpPositions = [{ balance: beanEthLpBalance, token: BEAN_ETH_ADDR }];
     await unwrapUniswapLPs(balances, lpPositions, block);
 
     // add balances of all siloed curve pools
@@ -60,7 +60,6 @@ async function tvl(time, block){
         }));
     }
 
-    console.log(balances)
     return balances;
 }
 
@@ -69,6 +68,8 @@ module.exports={
     methodology: "Counts all beans and current LPs in the silo.",
     start: 12974077,
     ethereum: {
-        tvl,
+        tvl: async () => ({}),
+        pool2,
+        staking,
     },
-}
+};
