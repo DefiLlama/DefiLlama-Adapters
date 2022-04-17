@@ -1,7 +1,7 @@
 const sdk = require('@defillama/sdk');
 const utils = require('../helper/utils')
-const { unwrapUniswapLPs } = require('../helper/unwrapLPs');
-const { bean_abi, unwrapCrvSimple } = require ("./bean-utils.js");
+const { sumTokens } = require('../helper/unwrapLPs');
+const { unwrapCrvSimple } = require ("./bean-utils.js");
 
 const BEAN_DIA_ADDR = "0xC1E088fC1323b20BCBee9bd1B9fC9546db5624C5";
 
@@ -17,16 +17,8 @@ const BEAN_CRV_POOLS = [
 
 async function staking(time, block) {
     const balances = {};
-
-    const beanBalance = (await sdk.api.abi.call({
-        abi: bean_abi["totalDepositedBeans"],
-        chain: 'ethereum',
-        target: BEAN_DIA_ADDR,
-        block: block,
-    })).output;
-
     // add balance of siloed Beans
-    await sdk.util.sumSingleBalance(balances, BEAN_TOKEN_ADDR, beanBalance);
+    await sumTokens(balances, [[BEAN_TOKEN_ADDR, BEAN_DIA_ADDR]], block)
 
     return balances;
 }
@@ -35,22 +27,17 @@ async function pool2(time, block) {
     const balances = {};
 
     // add balance of siloed BEAN:ETH from uniswap pool
-    const beanEthLpBalance = (await sdk.api.abi.call({
-        abi: bean_abi["totalDepositedLP"],
-        target: BEAN_DIA_ADDR,
-        block: block,
-    })).output;
-    const lpPositions = [{ balance: beanEthLpBalance, token: BEAN_ETH_ADDR }];
-    await unwrapUniswapLPs(balances, lpPositions, block);
+    await sumTokens(balances, [[BEAN_ETH_ADDR, BEAN_DIA_ADDR]], block, undefined, undefined, { resolveLP: true  })
 
     // add balances of all siloed curve pools
     // this is the block when SiloV2Facet with getTotalDeposited() was introduced
     if (block >= 14218934) {
         await Promise.all(BEAN_CRV_POOLS.map(async (pool) => {
             const lpBalance = (await sdk.api.abi.call({
-                abi: bean_abi["getTotalDeposited"],
-                target: BEAN_DIA_ADDR,
-                params: pool.addr,
+                abi: 'erc20:balanceOf',
+                chain: 'ethereum',
+                target: pool.addr,
+                params: BEAN_DIA_ADDR,
                 block: block,
             })).output;
             // skip if there's a balance of 0 to avoid errors when curve pool doesn't exist yet in a block number
