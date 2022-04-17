@@ -54,8 +54,6 @@ async function tvl(timestamp, block) {
     chain: "astar"
   });
 
-  // console.log("Out:", balanceOfResults.output[0]);
-
   // Compute Balances
   _.each(balanceOfResults.output, (balanceOf) => {
     let address = balanceOf.input.target;
@@ -64,7 +62,6 @@ async function tvl(timestamp, block) {
     balances[address] = BigNumber(balances[address] || 0)
       .plus(amount)
       .toFixed();
-    console.log("Balance ***:", balances);
     
   });
 
