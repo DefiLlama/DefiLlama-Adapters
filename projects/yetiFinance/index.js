@@ -121,7 +121,7 @@ async function tvl(_, block) {
 
 module.exports = {
   misrepresentedTokens: true,
-  methodology: true,
+  methodology: "Total System Collateral Deposits + Stability Pool Deposits + YUSDCurve LP Token Farm Staking",
   // first trove opened
   start: 1650027587,
   avalanche:{
