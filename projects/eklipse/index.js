@@ -45,6 +45,10 @@ const TOKENS = {
   pUSD: {
     decimal: 18,
     address: '0x168439b5eebe8c83db9eef44a0d76c6f54767ae4'
+  },
+  USDK: {
+    decimal: 18,
+    address: '0xd2137fdf10bd9e4e850c17539eb24cfe28777753'
   }
 }
 
