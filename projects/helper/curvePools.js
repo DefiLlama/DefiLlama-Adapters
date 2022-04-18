@@ -3,10 +3,6 @@ module.exports = {
     swapContract: '0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7',
     underlyingTokens: ['0xdac17f958d2ee523a2206206994597c13d831ec7', '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', '0x6b175474e89094c44da98b954eedeac495271d0f'],
   },
-  '0x194ebd173f6cdace046c53eacce9b953f28411d1': {
-    swapContract: '0x0Ce6a5fF5217e38315f87032CF90686C96627CAA',
-    underlyingTokens: ['0xdb25f211ab05b1c97d595516f45794528a807ad8', '0xd71ecff9342a5ced620049e616c5035f1db98620'],
-  },
   '0x075b1bb99792c9e1041ba13afef80c91a1e70fb3': {
     swapContract: '0x7fC77b5c7614E1533320Ea6DDc2Eb61fa00A9714',
     underlyingTokens: ['0xeb4c2781e4eba804ce9a9803c67d0893436bb27d', '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', '0xfe18be6b3bd88a2d2a7f928d00292e7a9963cfc6'],

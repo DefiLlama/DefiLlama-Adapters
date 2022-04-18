@@ -20,7 +20,8 @@ const sexAddress = "0xD31Fcd1f7Ba190dBc75354046F6024A9b86014d7";
 const basedTombLpAddress = "0xab2ddcbb346327bbdf97120b0dd5ee172a9c8f9e";
 const bshareFtmLpAddress = "0x6f607443dc307dcbe570d0ecff79d65838630b56";
 const basedBshareLpAddress = "0x5748b5Dd1f59342f85d170c48C427959c2f9f262";
-const basedMaiLpAddress = "0x7B5B3751550be4FF87aC6bda89533F7A0c9825B3";
+const basedMaiTSwapLpAddress = "0x7B5B3751550be4FF87aC6bda89533F7A0c9825B3";
+const basedTombTSwapLpAddress = "0x172BFaA8991A54ABD0b3EE3d4F8CBDab7046FF79";
 const g3CrvAddress = "0xd02a30d33153877bc20e5721ee53dedee0422b2f";
 const stakedG3CrvAddress = "0xd4f94d0aaa640bbb72b5eec2d85f6d114d81a88e";
 const crv3CryptoAddress = "0x58e57cA18B7A47112b877E31929798Cd3D703b0f";
@@ -30,14 +31,16 @@ const poolLPs = [
   basedTombLpAddress,
   bshareFtmLpAddress,
   basedBshareLpAddress,
-  basedMaiLpAddress,
+  basedMaiTSwapLpAddress,
+  basedTombTSwapLpAddress,
   stakedG3CrvAddress,
   stakedCrv3CryptoAddress,
 ];
 
 const treasuryTokens = [
   basedBshareLpAddress,
-  basedMaiLpAddress,
+  basedMaiTSwapLpAddress,
+  basedTombTSwapLpAddress,
   tombAddress,
   usdcAddress,
   wftmAddress,
@@ -63,7 +66,7 @@ async function calcPool2(rewardPool, lps, block, chain) {
   ).output;
 
   let lpPositions = [];
-  lpBalances.slice(0, 4).forEach((p) => {
+  lpBalances.slice(0, 5).forEach((p) => {
     lpPositions.push({
       balance: p.output,
       token: p.input.target,
@@ -80,7 +83,7 @@ async function calcPool2(rewardPool, lps, block, chain) {
   await unwrapCrv(
     balances,
     g3CrvAddress, // sending address of g3Crv LP instead of receipt token. Both have same value.
-    lpBalances[4].output,
+    lpBalances[5].output,
     block,
     chain,
     (addr) => `${chain}:${addr}`
@@ -89,7 +92,7 @@ async function calcPool2(rewardPool, lps, block, chain) {
   await unwrapCrv(
     balances,
     crv3CryptoAddress, // sending address of crv3Crypto LP instead of receipt token. Both have same value.
-    lpBalances[5].output,
+    lpBalances[6].output,
     block,
     chain,
     (addr) => `${chain}:${addr}`
@@ -114,7 +117,7 @@ async function calcTreasury(treasury, tokens, block, chain) {
   ).output;
 
   let lpPositions = [];
-  tokenBalances.slice(0, 2).forEach((p) => {
+  tokenBalances.slice(0, 3).forEach((p) => {
     lpPositions.push({
       balance: p.output,
       token: p.input.target,
@@ -128,7 +131,7 @@ async function calcTreasury(treasury, tokens, block, chain) {
     (addr) => `${chain}:${addr}`
   );
 
-  tokenBalances.slice(2).map((balance) => {
+  tokenBalances.slice(3).forEach((balance) => {
     sdk.util.sumSingleBalance(balances, `${chain}:${balance.input.target}`, balance.output);
   });
 

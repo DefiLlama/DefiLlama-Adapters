@@ -78,11 +78,11 @@ const bscTvl = async (chainBlocks) => {
     transformAddress
   );
 
+  delete balances["bsc:0x95e7c70b58790a1cbd377bc403cd7e9be7e0afb1"]
   return balances;
 };
 
 module.exports = {
-  misrepresentedTokens: true,
   bsc: {
     tvl: bscTvl,
   },

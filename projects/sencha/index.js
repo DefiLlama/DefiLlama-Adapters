@@ -1,12 +1,12 @@
 const utils = require('../helper/utils')
 const {getTokenAccountBalance} = require('../helper/solana');
-const { abi } = require('@defillama/sdk/build/api');
-const abi = require("../sencha/abi.json")
 
 async function tvl() {
   // this is a list of token accounts that are reserves of a swap
   // more details: https://github.com/senchahq/sencha-registry
-  const { data: senchaTokenAccounts } = abi;
+  const { data: senchaTokenAccounts } = await utils.fetchURL(
+    "https://raw.githubusercontent.com/SenchaHQ/sencha-registry/master/data/known-accounts.json"
+  );
 
   const tvlResult = {};
   await Promise.all(
