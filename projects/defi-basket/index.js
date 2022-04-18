@@ -59,6 +59,12 @@ function polygonTVL() {
               token.asset.type === "IAaveV2Deposit"
             ) {
               tokens.push(token.asset.address);
+            } else if (token.asset.type === "IAaveRewards") {
+              let aTokenToAdd = token.asset.callParams.aToken;
+              tokens = [
+                aTokenToAdd,
+                ...tokens.filter((aToken) => aToken != aTokenToAdd),
+              ];
             }
           }
         }
