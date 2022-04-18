@@ -1,4 +1,5 @@
 const sdk = require('@defillama/sdk');
+const { default: BigNumber } = require('bignumber.js');
 const { transformMilkomedaAddress } = require('../helper/portedTokens');
 
 const abi = require('./abi.json');
@@ -6,6 +7,8 @@ const abi = require('./abi.json');
 
 const REGISTRY_CONTRACT = '0xf7B767D4817a912b5dB7De7747DE2E2960BEF86f';
 const MANUAL_POOL_CONTRACT = '0xA4f0e3C80C77b347250B9D3999478E305FF814A4';
+// temporary solution using BLUES/ADA price
+const BLUESHIFT_INDEX_PORTFOLIO = '0xB2A76Ce2D5eD32aD7F8B93a1098C1Fee473e27bA';
 
 
 async function staking(timestamp, block, chainBlocks) {
@@ -28,7 +31,31 @@ async function staking(timestamp, block, chainBlocks) {
     block: chainBlocks['milkomeda'],
   })).output;
 
-  await sdk.util.sumSingleBalance(balances, transform(tokenAddress), value);
+
+  // temporary solution using BLUES/ADA price
+  const portfolios = (await sdk.api.abi.call({
+    abi: abi.BlueshiftRegistry.getPortfolios,
+    chain: 'milkomeda',
+    target: REGISTRY_CONTRACT,
+    params: [],
+    block: chainBlocks['milkomeda'],
+  })).output;
+
+  const bluesPortfolio = portfolios.filter(portfolio => portfolio.contractAddress === BLUESHIFT_INDEX_PORTFOLIO)[0];
+  if (!bluesPortfolio) {
+    return balances;
+  }
+
+  const baseTokenAddress = bluesPortfolio.baseTokenAddress;
+  const baseTokenPrice = bluesPortfolio.tokens.filter(token => token.tokenAddress === baseTokenAddress)[0].price;
+  const tokenPrice = bluesPortfolio.tokens.filter(token => token.tokenAddress === tokenAddress)[0].price;
+  const valueInBaseToken = BigNumber(value).multipliedBy(tokenPrice).div(baseTokenPrice);
+
+  await sdk.util.sumSingleBalance(balances, transform(baseTokenAddress), valueInBaseToken.toNumber());
+  // ----------------------------------------
+
+  // CoinGecko solution
+  // await sdk.util.sumSingleBalance(balances, transform(tokenAddress), value);
 
   return balances;
 }
