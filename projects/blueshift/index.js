@@ -4,8 +4,8 @@ const { transformMilkomedaAddress } = require('../helper/portedTokens');
 const abi = require('./abi.json');
 
 
-const MILKOMEDA_BLUES_ADDRESS = '0x8c008BBA2Dd56b99f4A6aB276bE3a478cB075F0C';
-const REGISTRY_COTRACT = '0xf7B767D4817a912b5dB7De7747DE2E2960BEF86f';
+const REGISTRY_CONTRACT = '0xf7B767D4817a912b5dB7De7747DE2E2960BEF86f';
+const MANUAL_POOL_CONTRACT = '0xA4f0e3C80C77b347250B9D3999478E305FF814A4';
 
 
 async function staking(timestamp, block, chainBlocks) {
@@ -13,14 +13,22 @@ async function staking(timestamp, block, chainBlocks) {
   const transform = await transformMilkomedaAddress();
 
   const value = (await sdk.api.abi.call({
-    abi: abi.BlueshiftRegistry.getManualYieldPoolTotalStaked,
+    abi: abi.BlueshiftEarning.getAccDeposit,
     chain: 'milkomeda',
-    target: REGISTRY_COTRACT,
+    target: MANUAL_POOL_CONTRACT,
     params: [],
     block: chainBlocks['milkomeda'],
   })).output;
 
-  await sdk.util.sumSingleBalance(balances, transform(MILKOMEDA_BLUES_ADDRESS), value);
+  const tokenAddress = (await sdk.api.abi.call({
+    abi: abi.BlueshiftEarning.getToken,
+    chain: 'milkomeda',
+    target: MANUAL_POOL_CONTRACT,
+    params: [],
+    block: chainBlocks['milkomeda'],
+  })).output;
+
+  await sdk.util.sumSingleBalance(balances, transform(tokenAddress), value);
 
   return balances;
 }
@@ -32,7 +40,7 @@ async function tvl(timestamp, block, chainBlocks) {
   const portfolios = (await sdk.api.abi.call({
     abi: abi.BlueshiftRegistry.getPortfolios,
     chain: 'milkomeda',
-    target: REGISTRY_COTRACT,
+    target: REGISTRY_CONTRACT,
     params: [],
     block: chainBlocks['milkomeda'],
   })).output;

@@ -96,15 +96,30 @@
       ],
       "stateMutability": "view",
       "type": "function"
-    },
-    "getManualYieldPoolTotalStaked": {
+    }
+  },
+  "BlueshiftEarning": {
+    "getAccDeposit": {
       "inputs": [],
-      "name": "getManualYieldPoolTotalStaked",
+      "name": "getAccDeposit",
       "outputs": [
         {
           "internalType": "uint256",
           "name": "",
           "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    "getToken": {
+      "inputs": [],
+      "name": "getToken",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
         }
       ],
       "stateMutability": "view",
