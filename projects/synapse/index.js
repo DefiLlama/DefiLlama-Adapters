@@ -222,6 +222,11 @@ const DATA = {
     ],
   },
   metis: {
+    stables: [
+      "0xea32a96608495e54156ae48931a7c20f0dcc1a21", // USDC
+    ],
+    nusd: "0x961318fc85475e125b99cc9215f62679ae5200ab",
+    pool: "0x555982d2e211745b96736665e19d9308b615f78e",
     tokens: [
       "0xfb21b70922b9f6e3c6274bcd6cb1aa8a0fe20b80", // gOHM
       "0x0b5740c6b4a97f90eF2F0220651Cca420B868FfB", // UST

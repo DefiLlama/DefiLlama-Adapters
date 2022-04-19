@@ -34,3 +34,5 @@ export type DexVolumeAdapter = {
 export type DexBreakdownAdapter = {
   breakdown: BreakdownAdapter;
 };
+
+export type DexAdapter = DexVolumeAdapter | DexBreakdownAdapter;
