@@ -965,7 +965,8 @@ async function unwrapTroves({ balances = {}, chain = 'ethereum', block, troves =
 }
 
 function isLP(symbol) {
-    return symbol.includes('LP') || symbol.includes('PGL') || symbol.includes('UNI-V2') || symbol === "PNDA-V2" || symbol.includes('GREEN-V2')
+	if (!symbol) return false
+  return symbol.includes('LP') || symbol.includes('PGL') || symbol.includes('UNI-V2') || symbol === "PNDA-V2" || symbol.includes('GREEN-V2')
 }
 
 module.exports = {
