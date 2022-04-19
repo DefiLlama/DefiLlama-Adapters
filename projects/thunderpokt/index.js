@@ -1,15 +1,15 @@
 const sdk = require('@defillama/sdk');
+const { getBlock } = require('../helper/getBlock');
 
 const tPOKT = '0x5430a0B6C11f870571ffA891d59dec8C4608Ea9A'
 
-
-async function tvl(timestamp, block, chainBlocks) {
-    
+async function tvl(timestamp, ethBlock, chainBlocks) {
+    const block = await getBlock(timestamp, "polygon", chainBlocks)
     const tPOKTSupply = (
       await sdk.api.abi.call({
         target: tPOKT,
         abi: 'erc20:totalSupply',
-        chainBlocks,
+        block,
         chain: 'polygon'
       })
     ).output
