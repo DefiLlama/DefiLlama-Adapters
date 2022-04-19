@@ -60,4 +60,4 @@ const chainTVLObject = Object.keys(contracts)
 
 module.exports = {
     ...chainTVLObject,
-}; // node test.js projects/boringdao/index.js
+};
