@@ -24,25 +24,25 @@ const FARM_ADDRESS = "0xfffFffFFfFe8aA117FE603a37188E666aF110F39";
 const YUSDCURVE_POOL_ADDRESS = "0x1da20ac34187b2d9c74f729b85acb225d3341b25"
 
 async function tvl(_, block) {
-  const YUSDInStabilityPool = (
-    await sdk.api.erc20.balanceOf({
-      target: YUSD_TOKEN_ADDRESS,
-      owner: STABILITY_POOL_ADDRESS,
-      block,
-      chain:"avax"
-    })
-  ).output;
+  // const YUSDInStabilityPool = (
+  //   await sdk.api.erc20.balanceOf({
+  //     target: YUSD_TOKEN_ADDRESS,
+  //     owner: STABILITY_POOL_ADDRESS,
+  //     block,
+  //     chain:"avax"
+  //   })
+  // ).output;
 
-  const YUSDPrice = (
-    await sdk.api.abi.call({
-      target: YUSD_PRICEFEED_ADDRESS,
-      abi: fetchPrice_vAbi,
-      block,
-      chain: "avax"
-    })
-  ).output
+  // const YUSDPrice = (
+  //   await sdk.api.abi.call({
+  //     target: YUSD_PRICEFEED_ADDRESS,
+  //     abi: fetchPrice_vAbi,
+  //     block,
+  //     chain: "avax"
+  //   })
+  // ).output
   
-  const stabilityPoolYUSDTvl = +YUSDInStabilityPool * +YUSDPrice / (10 ** 18)
+  // const stabilityPoolYUSDTvl = +YUSDInStabilityPool * +YUSDPrice / (10 ** 18)
 
   const activePoolCollaterals = (
     await sdk.api.abi.call({
@@ -111,7 +111,7 @@ async function tvl(_, block) {
 
   const farmTvl = +curveFarmAmount * +YUSDCurvPrice / (10 ** 18)
 
-  const total = stabilityPoolYUSDTvl + systemCollateralTvl + farmTvl
+  const total =  systemCollateralTvl + farmTvl
 
   return {
     // In USDC, USDC has decimal of 6
