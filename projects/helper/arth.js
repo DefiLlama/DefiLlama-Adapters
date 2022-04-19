@@ -78,7 +78,6 @@ function getArthTvl(TROVE_ADDRESSES, COLLATERAL_ADDRESSES, chain, coingeckoIds =
         let amountStaked = balanceOf.output// balanceOf lp token for lp-s in masterchef
 
         let percentageStaked = amountStaked.amount / totalSupply
-        console.log('percentageStaked', percentageStaked);
 
         if (ret[keyA] == undefined) ret[keyA] = BigNumber(0);
         ret[keyA] = ret[keyA].plus(BigNumber(Math.floor(Number(reserveA) * percentageStaked)));

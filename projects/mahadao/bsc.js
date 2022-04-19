@@ -11,6 +11,8 @@ const bsc = {
   arthMahaStaking: "0x7699d230Ba47796fc2E13fba1D2D52Ecb0318c33",
   arthu3epsStaking: "0x6398c73761a802a7db8f6418ef0a299301bc1fb0",
   arthu3epsLP: "0xB38B49bAE104BbB6A82640094fd61b341a858f78",
+  arthuval3ps: "0x1d4B4796853aEDA5Ab457644a18B703b6bA8b4aB", //
+  arthMahaApeLP: "0x84020eefe28647056eac16cb16095da2ccf25665", //
   arthMahaLP: "0xb955d5b120ff5b803cdb5a225c11583cd56b7040",
   arthBusdLP: "0x80342bc6125a102a33909d124a6c26CC5D7b8d56",
   busd: "0xe9e7cea3dedca5984780bafc599bd69add087d56",
@@ -52,6 +54,7 @@ async function getBalanceOfStakedEllipsisLP(
     chain,
   });
 
+
   const token2Balance = await balanceOf({
     target: tokens[1],
     owner: stableSwapAddress,
@@ -76,6 +79,42 @@ const replaceMAHAonBSCTransform = (addr) => {
     return "mahadao";
   return `bsc:${addr}`;
 };
+
+const getBalanceOfPoolToken = async (
+  balances,
+  arthMahaApeLP,
+  maha,
+  arth,
+  block,
+  chain,
+) => {
+  const e18 = new BigNumber(10).pow(18);
+
+  const mahaBalance = await balanceOf({
+    target: maha,
+    owner: arthMahaApeLP,
+    block,
+    chain,
+  })
+  const arthBalance = await balanceOf({
+    target: arth,
+    owner: arthMahaApeLP,
+    block,
+    chain,
+  })
+
+  const mahaAmount = new BigNumber(
+    mahaBalance.output
+  ).dividedBy(e18);
+
+  const arthAmount = new BigNumber(
+    arthBalance.output
+  ).dividedBy(e18);
+
+  balances['mahadao'] = balances.mahadao / 1e18 + mahaBalance.output / 1e18
+  balances['arth'] = arthBalance.output / 1e18
+
+}
 
 function pool2s() {
   return async (_timestamp, _ethBlock, chainBlocks) => {
@@ -104,7 +143,18 @@ function pool2s() {
       "bsc"
     );
 
-    if (balances.mahadao) balances.mahadao = balances.mahadao / 1e18;
+
+    await getBalanceOfPoolToken(
+      balances,
+      bsc.arthMahaApeLP,
+      bsc.maha,
+      bsc.arth,
+      chainBlocks.bsc,
+      "bsc"
+    )
+
+    // if (balances.mahadao) balances.mahadao = balances.mahadao / 1e18;
+    console.log(balances);
     return balances;
   };
 }
