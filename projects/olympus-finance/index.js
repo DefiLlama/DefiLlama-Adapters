@@ -8,7 +8,7 @@ const { pool2Exports } = require("../helper/pool2");
 
 const token = "0xd83971F0122916B383548C6788498c8058D1D247";
 const shares = "0x75C8240E3A857141a42AE4febd9452a8517bD66a";
-const masonry = "0x7e06C95FA5fBEe22d64DF7a150af730594eAEf1e";
+const masonry = "0x6C84A08B12505E2fa121d74d18E1dc5c1A68ad19";
 const rewardPool = "0x74b0Eb42724e5FE598898cdF4896F087b6Ea51E4";
 const HermesGenesisRewardPool =
   "0x2b93dc5497D4C544aeA4d06AC8e758cdbfc3cc9B";
