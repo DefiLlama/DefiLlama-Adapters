@@ -5,7 +5,8 @@
             "NBridge": "0xdBe43C732080271Fd7588aa5fe71bd07456D9173",
             "BoringChef": "0x637ca32056146Ef2bFE72312EcBB97A890C0B02F",
             "BoringChefSatellite": "0x204c87CDA5DAAC87b2Fc562bFb5371a0B066229C",
-            "TwoWayV2": "0xecaD1ab3464ECcC7536af6aFeE414dF873495616"
+            "TwoWayV2": "0xecaD1ab3464ECcC7536af6aFeE414dF873495616",
+            "tuneel": "0x258a1eb6537ae84cf612f06b557b6d53f49cc9a1"
         },
         "tokens": {
             "BORING": "0xBC19712FEB3a26080eBf6f2F7849b417FdD792CA",
