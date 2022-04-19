@@ -1,6 +1,6 @@
 const axios = require("axios");
 
-let url = "http://127.0.0.1:3001/api/tvl";
+let url = "https://adminv1.knit.finance/api/tvl";
 
 async function fetchBsc() {
   let bsc = await axios.get(`${url}/bsc`);
