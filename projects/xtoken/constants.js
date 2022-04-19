@@ -45,9 +45,21 @@ const WETH = "weth";
 const QUOTER_ADDRESS = '0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6'
 const usdcAddress = '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8'
 const wethAddress = '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1'
-
-const TERMINALAPI = 'https://terminal.xtokenapi.link/api/pools';
 const usdtAddress = '0xdac17f958d2ee523a2206206994597c13d831ec7';
+const COINGECKO_API_URL = 'https://api.coingecko.com/api/v3/coins';
+const urls = {
+    "mainnet": "https://api.thegraph.com/subgraphs/name/miracle-arrow/terminal-mainnet",
+    "arbitrum": "https://api.thegraph.com/subgraphs/name/miracle-arrow/terminal-arbitrum",
+    "optimism": "https://api.thegraph.com/subgraphs/name/miracle-arrow/terminal-optimism",
+    "polygon": "https://api.thegraph.com/subgraphs/name/miracle-arrow/terminal-polygon",
+};
+const networks = {
+    "mainnet": "ethereum",
+    "homestead": "ethereum",
+    "optimism": "optimistic-ethereum",
+    "arbitrum": "arbitrum-one",
+    "polygon": "polygon-pos",
+};
 
 module.exports = {
   DEC_18,
@@ -95,6 +107,8 @@ module.exports = {
   QUOTER_ADDRESS,
   usdcAddress,
   wethAddress,
-  TERMINALAPI,
-  usdtAddress
+  usdtAddress,
+  COINGECKO_API_URL,
+  urls,
+  networks
 };

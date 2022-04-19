@@ -190,20 +190,20 @@ async function tvl(timestamp, block) {
 };
 
 async function fetchMainnet() {
-  let data = await terminal.fetchChain("mainnet");
-  return data[usdtAddress];
+  let poolTotalTVL = await terminal.getData("mainnet");
+  return poolTotalTVL[usdtAddress];
 }
 
 async function fetchOptimism() {
-  return terminal.fetchChain("optimism");
+  return await terminal.getData("optimism");
 }
 
 async function fetchArbitrum() {
-  return terminal.fetchChain("arbitrum");
+  return await terminal.getData("arbitrum");
 }
 
 async function fetchPolygon() {
-  return terminal.fetchChain("polygon");
+  return await terminal.getData("polygon");
 }
 
 module.exports = {
