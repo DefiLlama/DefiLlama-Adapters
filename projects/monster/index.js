@@ -8,7 +8,7 @@ const LP_STAKING_1 = "0x06bFdfF7366DE711F363105F446f8399663db749";
 const LP_POOL_2 = "0x1f5c5b104d6246B3d096135806cd6C6e53e206F1";
 const LP_STAKING_2 = "0xc13926C5CB2636a29381Da874b1e2686163DC226";
 
-async function tvl(timestamp, block, chainBlocks) {
+async function staking(timestamp, block, chainBlocks) {
   const balances = {};
   const transform = await transformFantomAddress();
 
@@ -27,6 +27,13 @@ async function tvl(timestamp, block, chainBlocks) {
     transform(MST_TOKEN_CONTRACT),
     collateralBalance
   );
+
+  return balances;
+}
+
+async function pool2(timestamp, block, chainBlocks) {
+  const balances = {};
+  const transform = await transformFantomAddress();
 
   const balance1 = (
     await sdk.api.abi.call({
@@ -84,6 +91,8 @@ module.exports = {
     "counts the number of MST tokens in the ve contract and the pairs in the staking pool",
   start: 22569995,
   fantom: {
-    tvl,
+    tvl: async () => ({}),
+    pool2: pool2,
+    staking: staking,
   },
 };
