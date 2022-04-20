@@ -1,3 +1,4 @@
+const sdk = require("@defillama/sdk");
 const axios = require('axios');
 const BigNumber = require("bignumber.js");
 const burl = 'https://token-indexer.broxus.com/v1/root_contract/root_address/0:';
@@ -33,9 +34,26 @@ async function tvl() {
     return balances;
 };
 
+function evm(chain, target) {
+    return async (timestamp, block, chainBlocks) => {
+        return { everscale: (await sdk.api.abi.call({
+            target,
+            abi: 'erc20:totalSupply',
+            block: chainBlocks[chain],
+            chain
+        })).output / 10 ** 9 };
+    };
+};
+
 module.exports = {
     timetravel: false,
     everscale: {
         tvl
+    },
+    bsc: {
+        tvl: evm('bsc', '0x0A7e7D210C45c4abBA183C1D0551B53AD1756ecA')
+    },
+    ethereum: {
+        tvl: evm('ethereum', '0x29d578CEc46B50Fa5C88a99C6A4B70184C062953')
     }
 };

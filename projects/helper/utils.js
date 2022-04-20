@@ -95,7 +95,16 @@ async function postURL(url, data) {
   })
 }
 
+function createIncrementArray(length) {
+  const arr = []
+  for (let i = 0; i < length; i++) 
+    arr.push(i)
+  
+  return arr
+}
+
 module.exports = {
+  createIncrementArray,
   fetchURL,
   postURL,
   getPricesfromString,
