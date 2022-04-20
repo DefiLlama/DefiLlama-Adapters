@@ -1,4 +1,4 @@
-const sdk = require('@defillama/sdk');
+const { sumTokens, } = require('../helper/unwrapLPs')
 const axios = require('axios')
 const { transformBscAddress, transformEthereumAddress, transformPolygonAddress, transformArbitrumAddress } = require("../helper/portedTokens");
 
@@ -28,18 +28,16 @@ const bscTVL = async (timestamp, block, chainBlocks) => {
 async function tvl(timestamp, block, chainBlocks, network, chainId, transform) {
     let balances = {}; // Setup the balances object
     const tokens = await tokenList(chainId);
-    console.log(tokens)
+    let tokenPairs = []
     for (let i = 0; i < tokens.length; i++) {
         const token = tokens[i];
-        const tokenBal = sdk.api.erc20.balanceOf({
-            target: token.address,
-            owner: token.pool,
-            chain: network,
-            block: chainBlocks[network],
-        }); // Pool's token balance
-
-        sdk.util.sumSingleBalance(balances, transform(token.address), (await tokenBal).output)
+        tokenPairs.push([
+            token.address,
+            token.pool
+        ])
     }
+
+    await sumTokens(balances, tokenPairs, block, network, transform)
 
     return balances;
 }
