@@ -46,17 +46,17 @@ const CONFIG = {
 function offset(chain) {
   switch (chain) {
     case 'ethereum':
-      return 100
+      return 110
     case 'bsc':
-      return 400
+      return 600
     case 'polygon':
-      return 600
+      return 750
     case 'fantom':
-      return 1200
+      return 1500
     case 'metis':
-      return 150
+      return 500
     case 'avax':
-      return 600
+      return 750
   };
 };
 function chainTvl(chain) {
