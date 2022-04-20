@@ -19,4 +19,4 @@ module.exports = {
       "cardano"
     ),
   },
-}; // node test.js projects/milkydex/index.js
+};
