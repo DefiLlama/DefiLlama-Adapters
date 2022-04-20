@@ -1,53 +1,49 @@
 const utils = require('../helper/utils');
-
+const { toUSDTBalances } = require('../helper/balances');
 const STATS_URL = 'https://api.nordfinance.io/tvl/statistics';
 
-async function fetch() {
-  var totalTvl = await utils.fetchURL(STATS_URL);
-  return totalTvl.data.tvl.totalTvl - totalTvl.data.tvl.lpStaking.totalLpStaking - totalTvl.data.tvl.staking.totalStaking;
-}  
+function core(chain) {
+  return async () => {
+    var totalTvl = await utils.fetchURL(STATS_URL);
+    return toUSDTBalances(
+      totalTvl.data.tvl[chain] 
+      - totalTvl.data.tvl.lpStaking[chain] 
+      - totalTvl.data.tvl.staking[chain]
+      );
+  };
+};
 
-async function ethereum() {
-  var totalTvl = await utils.fetchURL(STATS_URL);
-  return totalTvl.data.tvl.ethereum - totalTvl.data.tvl.lpStaking.ethereum - totalTvl.data.tvl.staking.ethereum;
-}
+function pool2(chain) {
+  return async () => {
+    var totalTvl = await utils.fetchURL(STATS_URL);
+    return toUSDTBalances(totalTvl.data.tvl.lpStaking[chain]);
+  };
+};
 
-async function polygon() {
-  var totalTvl = await utils.fetchURL(STATS_URL);
-  return totalTvl.data.tvl.polygon - totalTvl.data.tvl.lpStaking.polygon - totalTvl.data.tvl.staking.polygon;
-}
-
-async function avalanche() {
-  var totalTvl = await utils.fetchURL(STATS_URL);
-  return totalTvl.data.tvl.avalanche - totalTvl.data.tvl.lpStaking.avalanche - totalTvl.data.tvl.staking.avalanche;
-}
-
-async function pool2() {
-  var totalTvl = await utils.fetchURL(STATS_URL);
-  return totalTvl.data.tvl.lpStaking.totalLpStaking;
-}
-
-async function staking() {
-  var totalTvl = await utils.fetchURL(STATS_URL);
-  return totalTvl.data.tvl.staking.totalStaking;
-}
+function staking(chain) {
+  return async () => {
+    var totalTvl = await utils.fetchURL(STATS_URL);
+    return toUSDTBalances(totalTvl.data.tvl.staking[chain]);
+  };
+};
 
 module.exports = {
+  misrepresentedTokens: true,
+  timetravel: false,
   methodology: `TVL is obtained by making calls to the Nord Finance API "https://api.nordfinance.io/tvl/statistics".`,
-  fetch,
   ethereum: {
-    fetch: ethereum,
-  },
-  polygon: {
-    fetch: polygon,
+    tvl: core('ethereum'),
+    staking: staking('ethereum'),
+    pool2: pool2('ethereum')
   },
   avalanche: {
-    fetch: avalanche,
+    tvl: core('avalanche'),
+    staking: staking('avalanche'),
+    pool2: pool2('avalanche')
   },
-  pool2: {
-    fetch: pool2
-  },
-  staking: {
-    fetch: staking
+  polygon: {
+    tvl: core('polygon'),
+    staking: staking('polygon'),
+    pool2: pool2('polygon')
   }
-}; // node test.js projects/nord-finance/index.js
+};
