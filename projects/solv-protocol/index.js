@@ -1,9 +1,16 @@
 const { sumTokens, } = require('../helper/unwrapLPs')
 const axios = require('axios')
+const { staking } = require('../helper/staking');
 const { transformBscAddress, transformEthereumAddress, transformPolygonAddress, transformArbitrumAddress } = require("../helper/portedTokens");
 
 // token list
 const tokenListsApiEndpoint = "https://token-list.solv.finance/vouchers-prod.json"
+
+// Staking Tvls
+const solvEthereumTokenAddress = '0x256F2d67e52fE834726D2DDCD8413654F5Eb8b53'
+const solvEthereumPoolAddress = '0x7D0C93DcAD6f6B38C81431d7262CF0E48770B81a'
+const solvBscTokenAddress = '0xC073c4eD65622A9423b5e5BDe2BFC8B81EBC471c'
+const solvBscPoolAddress = '0xE5742912EDb4599779ACC1CE2acB6a06E01f1089'
 
 const ethereumTVL = async (timestamp, block, chainBlocks) => {
     const transform = await transformEthereumAddress();
@@ -47,10 +54,12 @@ async function tokenList(chainId) {
     const allTokens = (await axios.get(tokenListsApiEndpoint)).data.tokens;
     for (let token of allTokens) {
         if (chainId == token.chainId) {
-            tokens.push({
-                address: token.extensions.voucher.underlyingToken.address,
-                pool: token.extensions.voucher.vestingPool
-            })
+            if (token.extensions.voucher.underlyingToken.symbol != "SOLV") {
+                tokens.push({
+                    address: token.extensions.voucher.underlyingToken.address,
+                    pool: token.extensions.voucher.vestingPool
+                })
+            }
         }
     }
 
@@ -59,10 +68,12 @@ async function tokenList(chainId) {
 // node test.js projects/solv-protocol/index.js
 module.exports = {
     ethereum: {
-        tvl: ethereumTVL
+        tvl: ethereumTVL,
+        staking: staking(solvEthereumPoolAddress, solvEthereumTokenAddress)
     },
     bsc: {
-        tvl: bscTVL
+        tvl: bscTVL,
+        staking: staking(solvBscPoolAddress, solvBscTokenAddress, "bsc")
     },
     polygon: {
         tvl: polygonTVL
