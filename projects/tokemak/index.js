@@ -15,7 +15,9 @@ const fxsPool = "0xADF15Ec41689fc5b6DcA0db7c53c9bFE7981E655";
 const fxs = "0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0";
 const tcrPool = "0x15A629f0665A3Eb97D7aE9A7ce7ABF73AeB79415";
 const tcr = "0x9C4A4204B79dd291D6b6571C5BE8BbcD0622F050";
-const rtoke = "0xa760e26aA76747020171fCF8BdA108dFdE8Eb930";
+const rtoke1 = "0xa760e26aA76747020171fCF8BdA108dFdE8Eb930";
+const rtoke2 = "0x96f98ed74639689c3a11daf38ef86e59f43417d3";
+const vestedToke = 57238445.43
 const toke = "0x2e9d63788249371f1dfc918a52f8d799f4a38c94";
 const sushiPool = "0xf49764c9C5d644ece6aE2d18Ffd9F1E902629777";
 const sushi = "0x6B3595068778DD592e39A122f4f5a5cF09C90fE2";
@@ -122,7 +124,8 @@ async function lpBalances(block, balances, holdings) {
 async function staking(timestamp, block) {
   const balances = {}
   await sumTokens(balances, [
-    [toke, rtoke]
+    [toke, rtoke1]
+    [toke, rtoke2 - vestedToke]
   ], block)
   return balances
 }
