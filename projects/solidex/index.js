@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { transformFantomAddress } = require('../helper/portedTokens');
-const { unwrapUniswapLPs } = require('../helper/unwrapLPs');
+const { unwrapUniswapLPs, sumTokens } = require('../helper/unwrapLPs');
 const abis = require("./abis.json");
 
 const SOLID = '0x888EF71766ca594DED1F0FA3AE64eD2941740A20';
@@ -40,42 +40,29 @@ async function tvl(timestamp, block, chainBlocks) {
         chain: 'fantom'
     })).output;
 
-    let pairBalances = (await sdk.api.abi.multiCall({
-        target: '0x26E1A0d851CF28E697870e1b7F053B605C8b060F',
+    let pairTokens = (await sdk.api.abi.multiCall({
         calls: pairAddresses.map(a => ({
-            params: a.output
+            target: a.output
         })),
-        abi: abis.totalBalances,
+        abi: abis.tokens,
         block: chainBlocks.fantom,
         chain: 'fantom'
     })).output;
 
-    let lpPositions = [];
-    for (let i = 0; i < pairBalances.length; i++) {
-        if (
-            pairAddresses[i].output &&
-            excludedTokens.includes(pairAddresses[i].output.toLowerCase())
-        ) {
-            continue;
-        };
-        lpPositions.push({
-            balance: pairBalances[i].output,
-            token: pairAddresses[i].output
-        });
+    let tokensAndOwners = [];
+    for (let i = 0; i < pairTokens.length; i++) {
+        const owner = pairAddresses[i].output;
+        (pairTokens[i].output || []).forEach(token => tokensAndOwners.push([token, owner]))
     };
 
-    await unwrapUniswapLPs(
-        balances,
-        lpPositions,
-        chainBlocks.fantom,
-        'fantom',
-        transform
-    );
+    await sumTokens(balances, tokensAndOwners, chainBlocks.fantom, 'fantom', );
 
     return balances;
 };
 
 module.exports = {
     doublecounted:true,
-    tvl
+    fantom: {
+        tvl
+    }
 };
