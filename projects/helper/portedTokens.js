@@ -27,7 +27,10 @@ async function transformFantomAddress() {
     "0x0665ef3556520b21368754fb644ed3ebf1993ad4": "0x6c3f90f043a72fa612cbac8115ee7e52bde6e490",
     // update below to binspirit when it lists on coingecko
     "0x7345a537a975d9ca588ee631befddfef34fd5e8f": "fantom:0x5Cc61A78F164885776AA610fb0FE1257df78E59B",
+    "0xDBf31dF14B66535aF65AaC99C32e9eA844e14501": "0xeb4c2781e4eba804ce9a9803c67d0893436bb27d", // RenBTC
   }
+
+  normalizeMapping(mapping)
 
   return (addr) => {
     addr = addr.toLowerCase()
