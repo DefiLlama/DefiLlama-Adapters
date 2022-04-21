@@ -16,11 +16,15 @@ const bsc = {
   arthMahaLP: "0xb955d5b120ff5b803cdb5a225c11583cd56b7040",
   arthBusdLP: "0x80342bc6125a102a33909d124a6c26CC5D7b8d56",
   busd: "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+  usdc: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
+  usdt: "0x55d398326f99059fF775485246999027B3197955",
   arth: "0xb69a424df8c737a122d0e60695382b3eec07ff4b",
   maha: "0xCE86F7fcD3B40791F63B86C3ea3B8B355Ce2685b",
   epsStableswap: "0x98245Bfbef4e3059535232D68821a58abB265C45",
-  "arth.usd": "0x88fd584dF3f97c64843CD474bDC6F78e398394f4",
-  "bsc.3eps": "0xaf4de8e872131ae328ce21d909c74705d3aaf452",
+  "bsc.3eps": "0xaF4dE8E872131AE328Ce21D909C74705d3Aaf452",
+  "arth.usd.token": "0x88fd584dF3f97c64843CD474bDC6F78e398394f4",
+  "bsc.3eps.token": "0x5b5bD8913D766D005859CE002533D4838B0Ebbb5",
+  "bsc.3eps.pool": "0x160CAed03795365F3A589f10C379FfA7d75d4E76",
 };
 
 async function getBalanceOfStakedEllipsisLP(
@@ -88,7 +92,6 @@ const getBalanceOfPoolToken = async (
   block,
   chain,
 ) => {
-  const e18 = new BigNumber(10).pow(18);
 
   const mahaBalance = await balanceOf({
     target: maha,
@@ -103,16 +106,102 @@ const getBalanceOfPoolToken = async (
     chain,
   })
 
-  const mahaAmount = new BigNumber(
-    mahaBalance.output
-  ).dividedBy(e18);
-
-  const arthAmount = new BigNumber(
-    arthBalance.output
-  ).dividedBy(e18);
 
   balances['mahadao'] = balances.mahadao / 1e18 + mahaBalance.output / 1e18
   balances['arth'] = arthBalance.output / 1e18
+
+}
+
+const get3epsBalance = async (
+  balances,
+  percentage,
+  pool3eps,
+  usdcToken,
+  usdtToken,
+  busdToken,
+  block,
+  chain,
+) => {
+  const e18 = new BigNumber(10).pow(18);
+  console.log('125', percentage);
+
+  const usdcBalance = await balanceOf({
+    target: usdcToken,
+    owner: pool3eps,
+    block,
+    chain
+  })
+  console.log('usdc', usdcBalance);
+  const usdtBalance = await balanceOf({
+    target: usdtToken,
+    owner: pool3eps,
+    block,
+    chain
+  })
+
+  console.log('usdt', usdtBalance);
+
+  const busdBalance = await balanceOf({
+    target: busdToken,
+    owner: pool3eps,
+    block,
+    chain
+  })
+
+  console.log('busd', busdBalance);
+
+  sdk.util.sumSingleBalance(balances, "usd-coin", (usdcBalance.output * percentage) / e18);
+  sdk.util.sumSingleBalance(balances, "tether", (usdtBalance.output * percentage) / e18);
+  sdk.util.sumSingleBalance(balances, "binance-usd", (busdBalance.output * percentage) / e18);
+
+
+  console.log('after', balances);
+}
+
+const getTVLOfarthuval3ps = async (
+  balances,
+  arthuval3psLP,
+  token3eps,
+  tokenARTHUSDC,
+  BSC3eps,
+  pool3eps,
+  block,
+  chain,
+) => {
+
+  const arthUSDBalance = await balanceOf({
+    target: tokenARTHUSDC,
+    owner: arthuval3psLP,
+    block,
+    chain,
+  })
+  balances['arth'] = balances['arth'] ? balances['arth'] + (arthUSDBalance.output / 1e18) / 2 : (arthUSDBalance.output / 1e18) / 2
+
+  const balance3ps = await balanceOf({
+    target: token3eps,
+    owner: arthuval3psLP,
+    block,
+    chain,
+  })
+
+  const totalSupply3eps = await totalSupply({
+    target: BSC3eps,
+    block,
+    chain,
+  })
+
+  const percentage = balance3ps.output / totalSupply3eps.output
+
+  await get3epsBalance(
+    balances,
+    percentage,
+    pool3eps,
+    bsc.usdc,
+    bsc.usdt,
+    bsc.busd,
+    block,
+    chain
+  )
 
 }
 
@@ -138,7 +227,7 @@ function pool2s() {
       bsc.epsStableswap,
       bsc.arthu3epsStaking, // staked
       bsc.arthu3epsLP, // lp token
-      [bsc["arth.usd"], bsc["bsc.3eps"]],
+      [bsc["arth.usd.token"], bsc["bsc.3eps.token"]],
       chainBlocks.bsc,
       "bsc"
     );
@@ -153,8 +242,19 @@ function pool2s() {
       "bsc"
     )
 
+    await getTVLOfarthuval3ps(
+      balances,
+      bsc.arthuval3ps,
+      bsc['bsc.3eps.token'],
+      bsc['arth.usd.token'],
+      bsc['bsc.3eps'],
+      bsc['bsc.3eps.pool'],
+      chainBlocks.bsc,
+      "bsc"
+    )
+
     // if (balances.mahadao) balances.mahadao = balances.mahadao / 1e18;
-    console.log(balances);
+    // console.log(balances);
     return balances;
   };
 }

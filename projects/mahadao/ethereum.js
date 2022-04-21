@@ -19,23 +19,6 @@ const eth = {
   frxArthStaking: "0x7B2F31Fe97f32760c5d6A4021eeA132d44D22039"
 }
 
-const tokenDecimals = {
-  ARTH: 18,
-  WBTC: 18,
-  "ARTH.usd": 18,
-  BUSD: 18,
-  DAI: 18,
-  WETH: 18,
-  USDT: 6,
-  MAHA: 18,
-  SCLP: 18,
-  USDC: 6,
-  BANNANA: 18,
-  BSCUSDC: 18,
-  BSCUSDT: 18,
-  FRAX: 18
-};
-
 const getBalanceOfLP = async (
   balances,
   lpAddress,
