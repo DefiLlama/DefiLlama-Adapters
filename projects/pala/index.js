@@ -56,7 +56,6 @@ const fetchLiquidity = async (ts, _block, chainBlocks) => {
 
 
 module.exports = {
-	timetravel: false,
 	klaytn: {
 		tvl: fetchLiquidity
 	},
