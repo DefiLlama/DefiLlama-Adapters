@@ -3,6 +3,7 @@ const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { BigNumber } = require("bignumber.js");
 const { fixHarmonyBalances, getChainTransform } = require("../helper/portedTokens");
+const { handleYearnTokens } = require("../creditum/helper.js");
 
 async function handleMooTokens(balances, block, chain, tokens) {
   const transformAddress = await getChainTransform(chain)
@@ -364,6 +365,31 @@ async function fantom(timestamp, block, chainBlocks) {
     "fantom",
     transformAddress
   )
+
+  await Promise.all([
+    handleYearnTokens(balances, [
+      "0xCe2Fc0bDc18BD6a4d9A725791A3DEe33F3a23BB7",
+    ],
+    "0x7aE52477783c4E3e5c1476Bbb29A8D029c920676",
+    chainBlocks.fantom,
+    'fantom',
+    transformAddress),
+    handleYearnTokens(balances, [
+      "0xd817A100AB8A29fE3DBd925c2EB489D67F758DA9",
+    ], 
+    "0x571F42886C31f9b769ad243e81D06D0D144BE7B4",
+    chainBlocks.fantom,
+    'fantom',
+    transformAddress),
+    handleYearnTokens(balances, [
+      "0x2C850cceD00ce2b14AA9D658b7Cad5dF659493Db"
+    ],
+    "0x6d6029557a06961aCC5F81e1ffF5A474C54e32Fd",
+    chainBlocks.fantom,
+    'fantom',
+    transformAddress)
+  ]);
+
   return balances;
 }
 
@@ -487,7 +513,7 @@ module.exports = {
   misrepresentedTokens: true,
   methodology:
     "TVL counts the AAVE tokens that are deposited within the Yield Instruments section of QiDao, the Vault token deposits of CRV, LINK, AAVE and WETH, as well as USDC deposited to mint MAI.",
- polygon: {
+  polygon: {
     tvl: polygon,
   },
   fantom: {
