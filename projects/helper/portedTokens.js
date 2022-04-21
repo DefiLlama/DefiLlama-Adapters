@@ -840,6 +840,7 @@ const chainTransforms = {
   ethereum: transformEthereumAddress,
   oasis: transformOasisAddress,
   dfk: transformDfkAddress,
+  findora: transformFindoraAddress,
 };
 
 async function transformEthereumAddress() {
@@ -847,7 +848,6 @@ async function transformEthereumAddress() {
     '0x88536c9b2c4701b8db824e6a16829d5b5eb84440': 'polygon:0xac63686230f64bdeaf086fe6764085453ab3023f', // USV token
     '0xFEEf77d3f69374f66429C91d732A244f074bdf74': '0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0', // CVX FXS token
   }
-
   normalizeMapping(mapping)
 
   return addr => {
@@ -859,9 +859,29 @@ async function transformMilkomedaAddress() {
   const mapping = {
     '0x7f27352d5f83db87a5a3e00f4b07cc2138d8ee52': 'bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c' // BNB token
   }
+
+  return transformChainAddress(mapping, 'milkomeda')
+}
+
+async function transformFindoraAddress() {
+  const mapping = {
+    '0xABc979788c7089B516B8F2f1b5cEaBd2E27Fd78b': 'bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // BNB token
+    '0x008A628826E9470337e0Cd9c0C944143A83F32f3': 'bsc:0x2170ed0880ac9a755fd29b2688956bd959f933f8', // ETH token
+    '0x93EDFa31D7ac69999E964DAC9c25Cd6402c75DB3': 'bsc:0x55d398326f99059ff775485246999027b3197955', // USDT token
+    '0xdA33eF1A7b48beBbF579eE86DFA735a9529C4950': 'bsc:0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d', // USDC token
+    '0xE80EB4a234f718eDc5B76Bb442653827D20Ebb2d': 'bsc:0xe9e7cea3dedca5984780bafc599bd69add087d56', // BUSD token
+    '0x07EfA82E00E458ca3D53f2CD5B162e520F46d911': 'bsc:0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c' //  WBTC token
+  }
+
+  return transformChainAddress(mapping, 'findora')
+}
+
+function transformChainAddress(mapping, chain) {
+  normalizeMapping(mapping)
+
   return addr => {
     addr = addr.toLowerCase()
-    return mapping[addr] || `milkomeda:${addr}`
+    return mapping[addr] || `${chain}:${addr}`
   }
 }
 
@@ -905,4 +925,5 @@ module.exports = {
   transformOasisAddressBase,
   transformMilkomedaAddress,
   transformDfkAddress,
+  transformFindoraAddress,
 };
