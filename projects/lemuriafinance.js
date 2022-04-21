@@ -20,5 +20,8 @@ const utils = require("./helper/utils");
  module.exports = {
    methodology:
      'TVL data is pulled from the Lemuria Financial API "https://api.lemuria.finance/tvl".',
+   milkomeda: {
+     fetch
+   },
    fetch,
  };
