@@ -77,6 +77,11 @@ async function fetchMoonbeam() {
   return moonbeam?.data?.data?.data?.tvl?.moonbeam;
 }
 
+async function fetchBitgert() {
+  let bitgert = await axios.get(`${url}/bitgert`);
+  return bitgert?.data?.data?.data?.tvl?.bitgert;
+}
+
 async function fetch() {
   let poly = await axios.get(`${url}/matic`),
     bsc = await axios.get(`${url}/bsc`),
@@ -92,7 +97,8 @@ async function fetch() {
     tlos = await axios.get(`${url}/telos`),
     moonriver = await axios.get(`${url}/moonriver`),
     milkomeda = await axios.get(`${url}/milkomeda`),
-    moonbeam = await axios.get(`${url}/moonbeam`);
+    moonbeam = await axios.get(`${url}/moonbeam`),
+    bitgert = await axios.get(`${url}/bitgert`);
   const tvl =
     bsc?.data?.data?.data?.tvl?.bsc +
     poly?.data?.data?.data?.tvl?.matic +
@@ -108,7 +114,8 @@ async function fetch() {
     tlos?.data?.data?.data?.tvl?.telos +
     moonriver?.data?.data?.data?.tvl?.moonriver +
     milkomeda?.data?.data?.data?.tvl?.milkomeda +
-    moonbeam?.data?.data?.data?.tvl?.moonbeam;
+    moonbeam?.data?.data?.data?.tvl?.moonbeam +
+    bitgert?.data?.data?.data?.tvl?.bitgert;
 
   return tvl;
 }
@@ -158,6 +165,9 @@ module.exports = {
   },
   moonbeam: {
     fetch: fetchMoonbeam,
+  },
+  bitgert: {
+    fetch: fetchBitgert,
   },
 
   fetch,
