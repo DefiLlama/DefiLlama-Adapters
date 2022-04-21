@@ -24,5 +24,6 @@ module.exports = {
     borrowed: tvl(true)
   },
   misrepresentedTokens: true,
+  timetravel: false,
   methodology: 'Summed up all the tokens deposited in their main lending contract'
 };
