@@ -22,6 +22,10 @@ const nested = {
     'prefix': 'eth', 
     'nestReserve_contract': '0x0535f1f43ee274123291bbab284948caed46c65d'
   }, 
+  'optimism': {
+    'prefix': 'opti', 
+    'nestReserve_contract': '0x150fb0Cfa5bF3D4023bA198C725b6DCBc1577f21'
+  }, 
 }
 // const nestRecords_contract = '0x3Ee96E771D5E56b34245b023E8B31ffDf36dFafd'
 // const graphUrl = 'https://api.nested.finance/graphql'
@@ -56,5 +60,5 @@ function chainTvl_onchain(chain) {
   }
 }
 
-module.exports = chainExports(chainTvl_onchain, ['ethereum', 'polygon', 'avax', 'bsc'])
+module.exports = chainExports(chainTvl_onchain, Object.keys(nested))
 module.exports.methodology = 'Nested TVL consists of tokens held by NestedReserve contracts on each chain, for which we can get the address using a rest api endpoint'
