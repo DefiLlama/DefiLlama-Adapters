@@ -2,6 +2,7 @@ const sdk = require('@defillama/sdk')
 const { sumTokens, sumTokensAndLPs, unwrapCrv, unwrapUniswapLPs } = require('../helper/unwrapLPs')
 const abi = require("../pendle/abi.json");
 const BigNumber = require('bignumber.js')
+const positions = require('./positions.json');
 
 const degenesisContract = "0xc803737D3E12CC4034Dde0B2457684322100Ac38";
 const wethPool = "0xD3D13a578a53685B4ac36A1Bab31912D2B2A2F36";
@@ -74,13 +75,13 @@ async function tvl(timestamp, block) {
     [gamma, gammaPool]
   ], block)
 
-  // let curveHoldings = response.exchanges.filter(
-  //   pool => pool.type == 'Curve')
-  // let uniHoldings = response.exchanges.filter(
-  //   pool => pool.type != 'Curve')
+  let curveHoldings = positions.exchanges.filter(
+    pool => pool.type == 'Curve')
+  let uniHoldings = positions.exchanges.filter(
+    pool => pool.type != 'Curve')
 
-  // await lpBalances(block, balances, curveHoldings)
-  // await lpBalances(block, balances, uniHoldings)
+  await lpBalances(block, balances, curveHoldings)
+  await lpBalances(block, balances, uniHoldings)
 
   return balances
 }
@@ -106,7 +107,7 @@ async function lpBalances(block, balances, holdings) {
 
     if (wallet > 0) {
       holdings[0].type == 'Curve' ?
-      await unwrapCrv(balances, pool.pool_address, wallet) :
+      await unwrapCrv(balances, pool.pool_address, wallet, block) :
       lpPositions.push({ balance: wallet, token: pool.pool_address })
     }
 
@@ -123,7 +124,7 @@ async function lpBalances(block, balances, holdings) {
 
     if (staked > 0) {
       holdings[0].type == 'Curve' ?
-      await unwrapCrv(balances, pool.pool_address, staked) :
+      await unwrapCrv(balances, pool.pool_address, staked, block) :
       lpPositions.push({ balance: staked, token: pool.pool_address })
     }
   }
