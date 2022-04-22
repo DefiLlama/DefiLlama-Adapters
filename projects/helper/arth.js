@@ -81,11 +81,11 @@ function getArthTvl(TROVE_ADDRESSES, COLLATERAL_ADDRESSES, chain, coingeckoIds =
 
         if (ret[keyA] == undefined) ret[keyA] = BigNumber(0);
         ret[keyA] = ret[keyA].plus(BigNumber(Math.floor(Number(reserveA) * percentageStaked)));
-        console.log(ret);
+        // console.log(ret);
 
         if (ret[keyB] == undefined) ret[keyB] = BigNumber(0);
         ret[keyB] = ret[keyB].plus(BigNumber(Math.floor(Number(reserveB) * percentageStaked)));
-        console.log(ret);
+        // console.log(ret);
       }
 
       else {

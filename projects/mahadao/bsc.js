@@ -6,6 +6,8 @@ const BigNumber = require("bignumber.js");
 const getEntireSystemCollAbi = require("../helper/abis/getEntireSystemColl.abi.json");
 const sdk = require("@defillama/sdk");
 
+const chain = 'bsc'
+
 const bsc = {
   arthBusdStaking: "0xE8b16cab47505708a093085926560a3eB32584B8",
   arthMahaStaking: "0x7699d230Ba47796fc2E13fba1D2D52Ecb0318c33",
@@ -20,12 +22,33 @@ const bsc = {
   usdt: "0x55d398326f99059fF775485246999027B3197955",
   arth: "0xb69a424df8c737a122d0e60695382b3eec07ff4b",
   maha: "0xCE86F7fcD3B40791F63B86C3ea3B8B355Ce2685b",
+  valusdc: "0xA6fDEa1655910C504E974f7F1B520B74be21857B",
+  valusdt: "0x5f7f6cB266737B89f7aF86b30F03Ae94334b83e9",
+  valbusd: "0xaeD19DAB3cd68E4267aec7B2479b1eD2144Ad77f",
   epsStableswap: "0x98245Bfbef4e3059535232D68821a58abB265C45",
   "bsc.3eps": "0xaF4dE8E872131AE328Ce21D909C74705d3Aaf452",
   "arth.usd.token": "0x88fd584dF3f97c64843CD474bDC6F78e398394f4",
   "bsc.3eps.token": "0x5b5bD8913D766D005859CE002533D4838B0Ebbb5",
   "bsc.3eps.pool": "0x160CAed03795365F3A589f10C379FfA7d75d4E76",
+  "bsc.val3eps.pool": "0x19EC9e3F7B21dd27598E7ad5aAe7dC0Db00A806d"
 };
+
+const getBalance = async (target, owner, block) => {
+  return await balanceOf({
+    target: target,
+    owner: owner,
+    block,
+    chain
+  })
+}
+
+const getTotalSupply = async (target, block) => {
+  return await totalSupply({
+    target: target,
+    block,
+    chain
+  })
+}
 
 async function getBalanceOfStakedEllipsisLP(
   balances,
@@ -33,38 +56,16 @@ async function getBalanceOfStakedEllipsisLP(
   stakingContract,
   lpToken,
   tokens,
-  block,
-  chain
+  block
 ) {
-  const stakedLpTokens = await balanceOf({
-    target: lpToken,
-    owner: stakingContract,
-    block,
-    chain,
-  });
+  const stakedLpTokens = await getBalance(lpToken, stakingContract, block);
 
-  const totalLPSupply = await totalSupply({
-    target: lpToken,
-    block,
-    chain,
-  });
+  const totalLPSupply = await getTotalSupply(lpToken, block);
 
   const percentage = stakedLpTokens.output / totalLPSupply.output;
 
-  const token1Balance = await balanceOf({
-    target: tokens[0],
-    owner: stableSwapAddress,
-    block,
-    chain,
-  });
-
-
-  const token2Balance = await balanceOf({
-    target: tokens[1],
-    owner: stableSwapAddress,
-    block,
-    chain,
-  });
+  const token1Balance = await getBalance(tokens[0], stableSwapAddress, block);
+  const token2Balance = await getBalance(tokens[1], stableSwapAddress, block);
 
   const e18 = new BigNumber(10).pow(18);
   const token1Amount = new BigNumber(
@@ -84,78 +85,46 @@ const replaceMAHAonBSCTransform = (addr) => {
   return `bsc:${addr}`;
 };
 
-const getBalanceOfPoolToken = async (
-  balances,
-  arthMahaApeLP,
-  maha,
-  arth,
-  block,
-  chain,
-) => {
-
-  const mahaBalance = await balanceOf({
-    target: maha,
-    owner: arthMahaApeLP,
-    block,
-    chain,
-  })
-  const arthBalance = await balanceOf({
-    target: arth,
-    owner: arthMahaApeLP,
-    block,
-    chain,
-  })
-
+const getBalanceOfPoolToken = async (balances, arthMahaApeLP, maha, arth, block) => {
+  const mahaBalance = await getBalance(maha, arthMahaApeLP, block)
+  const arthBalance = await getBalance(arth, arthMahaApeLP, block)
 
   balances['mahadao'] = balances.mahadao / 1e18 + mahaBalance.output / 1e18
   balances['arth'] = arthBalance.output / 1e18
-
 }
 
-const get3epsBalance = async (
+
+
+const getVal3epsBalance = async (
   balances,
-  percentage,
+  valEpsPercentage,
   pool3eps,
-  usdcToken,
-  usdtToken,
-  busdToken,
-  block,
-  chain,
+  valusdcToken,
+  valusdtToken,
+  valbusdToken,
+  block
 ) => {
+
   const e18 = new BigNumber(10).pow(18);
-  console.log('125', percentage);
+  const valUSDCBalance = await getBalance(valusdcToken, pool3eps, block)
+  const valBUSDBalance = await getBalance(valbusdToken, pool3eps, block)
+  const valUSDTBalance = await getBalance(valusdtToken, pool3eps, block,)
 
-  const usdcBalance = await balanceOf({
-    target: usdcToken,
-    owner: pool3eps,
-    block,
-    chain
-  })
-  console.log('usdc', usdcBalance);
-  const usdtBalance = await balanceOf({
-    target: usdtToken,
-    owner: pool3eps,
-    block,
-    chain
-  })
+  const totalValUSDCSupply = await getTotalSupply(valusdcToken, block)
+  const totalValUSDTSupply = await getTotalSupply(valusdtToken, block)
+  const totalValBUSDSupply = await getTotalSupply(valbusdToken, block)
 
-  console.log('usdt', usdtBalance);
+  const valUSDCPercentage = valUSDCBalance.output * valEpsPercentage / totalValUSDCSupply.output
+  const valUSDTPercentage = valUSDTBalance.output * valEpsPercentage / totalValUSDTSupply.output
+  const valBUSDPercentage = valBUSDBalance.output * valEpsPercentage / totalValBUSDSupply.output
 
-  const busdBalance = await balanceOf({
-    target: busdToken,
-    owner: pool3eps,
-    block,
-    chain
-  })
+  const busdBalance = await getBalance(bsc.busd, valbusdToken, block)
+  const usdcBalance = await getBalance(bsc.usdc, valusdcToken, block)
+  const usdtBalance = await getBalance(bsc.usdt, valusdtToken, block)
 
-  console.log('busd', busdBalance);
-
-  sdk.util.sumSingleBalance(balances, "usd-coin", (usdcBalance.output * percentage) / e18);
-  sdk.util.sumSingleBalance(balances, "tether", (usdtBalance.output * percentage) / e18);
-  sdk.util.sumSingleBalance(balances, "binance-usd", (busdBalance.output * percentage) / e18);
-
-
-  console.log('after', balances);
+  sdk.util.sumSingleBalance(balances, "usd-coin", (usdcBalance.output * valUSDCPercentage) / e18);
+  sdk.util.sumSingleBalance(balances, "tether", (usdtBalance.output * valUSDTPercentage) / e18);
+  sdk.util.sumSingleBalance(balances, "binance-usd", (busdBalance.output * valBUSDPercentage) / e18);
 }
 
 const getTVLOfarthuval3ps = async (
@@ -166,42 +135,27 @@ const getTVLOfarthuval3ps = async (
   BSC3eps,
   pool3eps,
   block,
-  chain,
 ) => {
+  const arthUSDBalance = await getBalance(tokenARTHUSDC, arthuval3psLP, block)
 
-  const arthUSDBalance = await balanceOf({
-    target: tokenARTHUSDC,
-    owner: arthuval3psLP,
-    block,
-    chain,
-  })
   balances['arth'] = balances['arth'] ? balances['arth'] + (arthUSDBalance.output / 1e18) / 2 : (arthUSDBalance.output / 1e18) / 2
 
-  const balance3ps = await balanceOf({
-    target: token3eps,
-    owner: arthuval3psLP,
-    block,
-    chain,
-  })
+  const balance3ps = await getBalance(token3eps, arthuval3psLP, block)
 
-  const totalSupply3eps = await totalSupply({
-    target: BSC3eps,
-    block,
-    chain,
-  })
+  const totalSupply3eps = await getTotalSupply(BSC3eps, block)
 
-  const percentage = balance3ps.output / totalSupply3eps.output
+  const valEpsPercentage = balance3ps.output / totalSupply3eps.output
 
-  await get3epsBalance(
+  await getVal3epsBalance(
     balances,
-    percentage,
+    valEpsPercentage,
     pool3eps,
-    bsc.usdc,
-    bsc.usdt,
-    bsc.busd,
+    bsc.valusdc,
+    bsc.valusdt,
+    bsc.valbusd,
     block,
-    chain
   )
+  console.log('balances', balances);
 
 }
 
@@ -248,7 +202,7 @@ function pool2s() {
       bsc['bsc.3eps.token'],
       bsc['arth.usd.token'],
       bsc['bsc.3eps'],
-      bsc['bsc.3eps.pool'],
+      bsc['bsc.val3eps.pool'],
       chainBlocks.bsc,
       "bsc"
     )
