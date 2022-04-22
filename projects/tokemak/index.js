@@ -48,6 +48,8 @@ const slp = "0xd4e7a6e2d03e4e48dfc27dd3f46df1c176647e38";
 const slpStaking = "0x8858a739ea1dd3d80fe577ef4e0d03e88561faa3";
 const uni = "0x5fa464cefe8901d66c09b85d5fcdc55b3738c688";
 const uniStaking = "0x1b429e75369ea5cd84421c1cc182cee5f3192fd3";
+const alusd = "0xBC6DA0FE9aD5f3b0d58160288917AA56653660E9";
+const alusdPool = "0x7211508D283353e77b9A7ed2f22334C219AD4b4C";
 
 async function tvl(timestamp, block) {
   const balances = {}
@@ -72,7 +74,8 @@ async function tvl(timestamp, block) {
     [snx, snxPool],
     [gohm, gohmPool],
     [mim, mimPool],
-    [gamma, gammaPool]
+    [gamma, gammaPool],
+    [alusd, alusdPool]
   ], block)
 
   let curveHoldings = positions.exchanges.filter(
