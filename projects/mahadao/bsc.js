@@ -85,7 +85,7 @@ const replaceMAHAonBSCTransform = (addr) => {
   return `bsc:${addr}`;
 };
 
-const getBalanceOfPoolToken = async (balances, arthMahaApeLP, maha, arth, block) => {
+const getTVLOfarthmahaPoolToken = async (balances, arthMahaApeLP, maha, arth, block) => {
   const mahaBalance = await getBalance(maha, arthMahaApeLP, block)
   const arthBalance = await getBalance(arth, arthMahaApeLP, block)
 
@@ -155,8 +155,6 @@ const getTVLOfarthuval3ps = async (
     bsc.valbusd,
     block,
   )
-  console.log('balances', balances);
-
 }
 
 function pool2s() {
@@ -187,7 +185,7 @@ function pool2s() {
     );
 
 
-    await getBalanceOfPoolToken(
+    await getTVLOfarthmahaPoolToken(
       balances,
       bsc.arthMahaApeLP,
       bsc.maha,
