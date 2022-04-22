@@ -61,18 +61,29 @@ async function addEthBalances(addresses, block, balances) {
 
 async function tvl(timestamp, block, chainBlocks) {
     const balances = {};
+    let partner_tokens = STABLE_PARTNER_TOKENS
+    let ondo_multisigs = STABLE_PARTNER_VAULTS
+    let ondo_lps = PARTNER_LPS
+    try {
+        const data = await (await fetch("https://data.ondo.finance/v1/addresses")).json()
+        partner_tokens = data["supported_tokens"]
+        ondo_multisigs = data["ondo_multisigs"]
+        ondo_lps = data["ondo_lps"]
+    } catch {
+        console.log("Failed to data from Ondo Finance, resorting to defaults")
+    }
 
-    await addEthBalances(STABLE_PARTNER_VAULTS, block, balances)
+    await addEthBalances(ondo_multisigs, block, balances)
 
     const tokens = [
-        ...STABLE_PARTNER_TOKENS.map(i => [i, false]),
-        ...PARTNER_LPS.map(i => [i, true]),
+        ...partner_tokens.map(i => [i, false]),
+        ...ondo_lps.map(i => [i, true]),
     ];
 
     await sumTokensAndLPsSharedOwners(
         balances,
         tokens,
-        STABLE_PARTNER_VAULTS,
+        ondo_multisigs,
         block,
     );
 
@@ -84,30 +95,39 @@ async function tvl(timestamp, block, chainBlocks) {
     return balances;
 }
 
-function tvlForAllPair(allPairVault) {
-    return async (timestamp, block) => {
+function tvlForAllPairs(timestamp, block, chainBlocks) {
+    let ondoAllPairVaults = [oldAllPairVault, newAllPairVault]
+    try {
+        const data = await (await fetch("https://data.ondo.finance/v1/addresses")).json()
+        ondoAllPairVaults = data["ondo_all_pair_vaults"]
+    } catch {
+        console.log("Failed to data from Ondo Finance, resorting to defaults")
+    }
+    let vaults = await Promise.all(ondoAllPairVaults.map( async () => {
         const vaults = (await sdk.api.abi.call({
             target: allPairVault,
             block,
             abi: abi.getVaults,
             params: [0, 9999] // It cuts at max length
         })).output
-
-        const balances = {}
-        for (const vault of vaults) {
-            if (timestamp > Number(vault.startAt) && timestamp < Number(vault.redeemAt)) {
-                vault.assets.forEach(asset => {
-                    sdk.util.sumSingleBalance(balances, asset.token, asset.deposited)
-                })
-            }
+        return vaults
+    }))
+    vaults = vaults.flat()
+    const balances = {}
+    for (const vault of vaults) {
+        if (timestamp > Number(vault.startAt) && timestamp < Number(vault.redeemAt)) {
+            vault.assets.forEach(asset => {
+                sdk.util.sumSingleBalance(balances, asset.token, asset.deposited)
+            })
         }
-        return balances
     }
+    return balances
 }
 
 module.exports = {
     methodology: "Counts all tokens in deployed vaults as well as Ondo's LaaS multi-sigs",
     ethereum: {
-        tvl: sdk.util.sumChainTvls([...[oldAllPairVault, newAllPairVault].map(tvlForAllPair), tvl,])
+        tvl: sdk.util.sumChainTvls([tvlForAllPairs, tvl])
     },
 }
+
