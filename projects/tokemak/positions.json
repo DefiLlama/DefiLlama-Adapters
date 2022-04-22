@@ -114,6 +114,14 @@
     },
     {
       "type": "Curve",
+      "pool_address": "0x06325440D014e39736583c165C2963BA99fAf14E",
+      "staking": {
+        "type": "Convex",
+        "pool_id": "25"
+      }
+    },
+    {
+      "type": "Curve",
       "pool_address": "0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c",
       "staking": {
         "type": "Convex",
