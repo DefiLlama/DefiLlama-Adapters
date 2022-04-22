@@ -9,6 +9,7 @@ async function tvl(timestamp, block) {
 };
 
 module.exports = {
+    methodology: "Tracks funds locked in the ERC20Peg contract on Ethereum",
     ethereum: {
         tvl
     }

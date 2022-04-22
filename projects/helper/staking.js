@@ -4,6 +4,7 @@ const getReserves = require('./abis/getReserves.json');
 const token0Abi = require('./abis/token0.json');
 const token1Abi = require('./abis/token1.json');
 const { default: BigNumber } = require('bignumber.js');
+const { getChainTransform } = require('./portedTokens')
 
 
 function staking(stakingContract, stakingToken, chain = "ethereum", transformedTokenAddress = undefined, decimals = undefined) {
@@ -22,8 +23,8 @@ function stakings(stakingContracts, stakingToken, chain = "ethereum", transforme
         let address = stakingToken;
         if (transformedTokenAddress) {
             address = transformedTokenAddress
-        } else if (chain !== "ethereum") {
-            address = `${chain}:${stakingToken}`
+        } else {
+            address = (await getChainTransform(chain))(stakingToken)
         }
         if (decimals !== undefined) {
             return {
