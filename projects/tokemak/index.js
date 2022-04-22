@@ -85,6 +85,36 @@ async function tvl(timestamp, block) {
 
   await lpBalances(block, balances, curveHoldings)
   await lpBalances(block, balances, uniHoldings)
+  
+  const cvxUSTBaseRewardPool = "0x7e2b9b5244bcfa5108a76d5e7b507cfd5581ad4a";
+  const cvxFRAXPool = "0xd632f22692FaC7611d2AA1C0D552930D43CAEd3B";
+  const cvxstETHPool = "0x06325440D014e39736583c165C2963BA99fAf14E";
+  const cvxUSDPool = "0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c";
+  let tokeManager = "0xA86e412109f77c45a3BC1c5870b880492Fb86A14";
+  
+  //UST CVX Pool
+  await genericUnwrapCvx(
+    balances,
+    tokeManager,
+    cvxUSTBaseRewardPool,
+    block,
+    "ethereum"
+  );
+
+  // //FRAX CVX Pool
+  // await genericUnwrapCvx(balances, tokeManager, cvxFRAXPool, block, "ethereum");
+
+  // //ETHstETH CVX Pool
+  // await genericUnwrapCvx(
+  //   balances,
+  //   tokeManager,
+  //   cvxstETHPool,
+  //   block,
+  //   "ethereum"
+  // );
+
+  // //ETHstETH CVX Pool
+  // await genericUnwrapCvx(balances, tokeManager, cvxUSDPool, block, "ethereum");
 
   return balances
 }
