@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk')
-const { sumTokens, sumTokensAndLPs, unwrapCrv, unwrapUniswapLPs } = require('../helper/unwrapLPs')
+const { sumTokens, sumTokensAndLPs, unwrapCrv, unwrapUniswapLPs, genericUnwrapCvx, } = require('../helper/unwrapLPs')
 const abi = require("../pendle/abi.json");
 const BigNumber = require('bignumber.js')
 const positions = require('./positions.json');
@@ -77,6 +77,25 @@ async function tvl(timestamp, block) {
     [gamma, gammaPool],
     [alusd, alusdPool]
   ], block)
+  const cvxUSTWPool = "0x7e2b9b5244bcfa5108a76d5e7b507cfd5581ad4a";
+  const cvxFRAXPool = "0xB900EF131301B307dB5eFcbed9DBb50A3e209B2e";
+  const cvxalUSDPool = "0x02E2151D4F351881017ABdF2DD2b51150841d5B3";
+  let tokeManager = "0xA86e412109f77c45a3BC1c5870b880492Fb86A14";
+
+  //UST CVX Wormhole Pool
+  await genericUnwrapCvx(balances, tokeManager, cvxUSTWPool, block, "ethereum");
+
+  //FRAX CVX Pool
+  await genericUnwrapCvx(balances, tokeManager, cvxFRAXPool, block, "ethereum");
+
+  //CVX alUSD Pool
+  await genericUnwrapCvx(
+    balances,
+    tokeManager,
+    cvxalUSDPool,
+    block,
+    "ethereum"
+  );
 
   let curveHoldings = positions.exchanges.filter(
     pool => pool.type == 'Curve')
