@@ -98,5 +98,4 @@ module.exports = {
   start: 1633046400, // Friday 1. October 2021 00:00:00 GMT
   ...tvlExports
 }
-//test:
-// node test.js projects/0x_nodes/index.new.js
+
