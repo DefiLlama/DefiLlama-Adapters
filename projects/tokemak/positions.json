@@ -66,6 +66,10 @@
     },
     {
       "type": "Curve",
+      "pool_address": "0x06d39e95977349431E3d800d49C63B4D472e10FB"
+    },
+    {
+      "type": "Curve",
       "pool_address": "0x9462F2b3C9bEeA8afc334Cdb1D1382B072e494eA"
     },
     {
