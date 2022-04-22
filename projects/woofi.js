@@ -60,4 +60,10 @@ module.exports={
         Stake: fetchStake('avax'),
         Earn: fetchEarn('avax'),
     },
+    fantom: {
+        tvl: fetchTVL('fantom'),
+        WooPP: fetchWooPP('fantom'),
+        Stake: fetchStake('fantom'),
+        Earn: fetchEarn('fantom'),
+    },
 }
