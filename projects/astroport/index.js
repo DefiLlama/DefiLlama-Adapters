@@ -6,5 +6,7 @@ module.exports = {
     timetravel: true,
     misrepresentedTokens: true,
     methodology: "Liquidity on the DEX",
-    tvl: getFactoryTvl(factory)
+    terra: {
+        tvl: getFactoryTvl(factory)
+    },
 }

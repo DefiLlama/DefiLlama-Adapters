@@ -22,5 +22,5 @@ async function tvl() {
 module.exports = {
   methodology:
     "TVL considers ASTR tokens deposited to the Dapps-Staking program",
-  tvl,
+  astar: { tvl },
 };

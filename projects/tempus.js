@@ -21,6 +21,14 @@ const CHAIN_DATA = {
       {
         address: "0xc58b8DD0075f7ae7B1CF54a56F899D8b25a7712E",
         token: USDC
+      },
+      {
+        address: "0x443297DE16C074fDeE19d2C9eCF40fdE2f5F62C2",
+        token: USDC
+      },
+      {
+        address: "0x7e0fc07280f47bac3D55815954e0f904c86f642E",
+        token: DAI
       }
     ]
   },

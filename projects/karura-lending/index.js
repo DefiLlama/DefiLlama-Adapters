@@ -29,5 +29,5 @@ async function tvl() {
 
 module.exports = {
   methodology: "Counts collateral in lending market",
-  tvl,
+  kusuma: { tvl },
 };

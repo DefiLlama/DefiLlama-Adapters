@@ -59,5 +59,4 @@ module.exports={
     iotex: {
         tvl: iotexTvl
     },
-    tvl: sdk.util.sumChainTvls([arbitrumTvl, iotexTvl]),
 }

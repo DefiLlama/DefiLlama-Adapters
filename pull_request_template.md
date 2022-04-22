@@ -12,7 +12,6 @@
 
 ##### Current TVL:
 
-
 ##### Chain:
 
 
@@ -38,5 +37,4 @@
 
 
 ##### methodology (what is being counted as tvl, how is tvl being calculated):
-
 

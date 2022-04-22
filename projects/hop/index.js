@@ -51,7 +51,6 @@ function chainTvl(chain) {
                         if (contractList.includes(j.toLowerCase())) {
                             continue;
                         } else {
-                            console.log(j)
                             contractList.push(j.toLowerCase())
                         }
                     }
