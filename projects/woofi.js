@@ -1,58 +1,49 @@
-const BigNumber = require('bignumber.js');
-const { fetchURL } = require('./helper/utils')
-const { usdtAddress, toUSDTBalances } = require('./helper/balances')
+const { get } = require('./helper/http')
+const { toUSDTBalances } = require('./helper/balances')
+const { staking } = require('./helper/staking')
 
-function fetchTVL(network) {
-    return async() => {
-        let wooPP = await fetchWooPP(network)()
-        let earn = await fetchEarn(network)()
-
-        return {[usdtAddress]: parseFloat(
-            BigNumber(wooPP[usdtAddress])
-            .plus(BigNumber(earn[usdtAddress]))
-        )}
-    }
+const chainConfig = {
+	fantom: {
+		woo: '0x6626c47c00f1d87902fc13eecfac3ed06d5e8d8a',
+		stakingContract: '0x2Fe5E5D341cFFa606a5d9DA1B6B646a381B0f7ec',
+	},
+	bsc: {
+		woo: '0x4691937a7508860f876c9c0a2a617e7d9e945d4b',
+		stakingContract: '0x2AEab1a338bCB1758f71BD5aF40637cEE2085076',
+	},
+	avax: {
+		woo: '0xabc9547b534519ff73921b1fba6e672b5f58d083',
+		stakingContract: '0xcd1B9810872aeC66d450c761E93638FB9FE09DB0',
+	}
 }
 
-function fetchWooPP(network) {
-    return async () => {
-        let tvl = 0
-        let data = await fetchURL('https://fi-api.woo.org/wooracle_state?network=' + network)
-        Object.entries(data.data.data).forEach(([_, tokenInfo]) => {
-            tvl += parseFloat(BigNumber(tokenInfo.balance).times(BigNumber(tokenInfo.price_now)).div(1e36))
-        })
-        return toUSDTBalances(tvl)
-    }
+const moduleExports = {}
+
+Object.keys(chainConfig).forEach(chain => {
+	const { woo, stakingContract } = chainConfig[chain]
+	moduleExports[chain] = {
+		staking: staking(stakingContract, woo, chain),
+		tvl: fetchTVL(chain),
+		pool2: fetchTVL(chain, true),
+	}
+})
+
+function fetchTVL(network, pool2 = false) {
+	return async () => {
+		let data = await get('https://fi-api.woo.org/yield?network=' + network)
+		data = Object.values(data.data.auto_compounding).filter(data => {
+			const isWooLP = /LP/i.test(data.symbol) && /WOO/i.test(data.symbol)
+			return pool2 ? isWooLP : !isWooLP
+		})
+		let tvl = 0
+		data.forEach(item => {
+			tvl += +item.tvl / 10 ** item.decimals
+		})
+		return toUSDTBalances(tvl)
+	}
 }
 
-function fetchStake(network) {
-    return async () => {
-        let data = await fetchURL('https://fi-api.woo.org/wooracle_state?network=' + network)
-        let wooPrice
-        if (network == 'avax') {
-            wooPrice = BigNumber(data.data.data['WOO.e'].price_now)
-        } else {
-            wooPrice = BigNumber(data.data.data.WOO.price_now)
-        }
-        data = await fetchURL('https://fi-api.woo.org/staking?network=' + network)
-        return toUSDTBalances(parseFloat(BigNumber(data.data.data.woo.total_staked).times(wooPrice).div(1e36)))
-    }
-}
-
-function fetchEarn(network) {
-    return async () => {
-        let data = await fetchURL('https://fi-api.woo.org/yield?network=' + network)
-        return toUSDTBalances(parseFloat(BigNumber(data.data.data.total_deposit).div(1e18)))
-    }
-}
-
-module.exports={
-    bsc: {
-        tvl: fetchTVL('bsc'),
-        staking: fetchStake('bsc'),
-    },
-    avax: {
-        tvl: fetchTVL('avax'),
-        staking: fetchStake('avax'),
-    },
+module.exports = {
+	timetravel: false,
+	...moduleExports,
 }
