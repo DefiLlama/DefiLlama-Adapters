@@ -70,5 +70,15 @@
                 "isLP": false
             }
         }
+    },
+    "arbitrum": {
+        "tokens": {
+            "DFL": {
+                "address": "0x31635A2a3892dAeC7C399102676E344F55d20Da7"
+            },
+            "eFIL": {
+                "address": "0x66ba30d5D7c66aFd4ed41c3498eC9e20a03a1368"
+            }
+        }
     }
 }

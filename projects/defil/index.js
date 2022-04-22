@@ -72,6 +72,54 @@ function borrowed(chain) {
             };
     };
 };
+function tvlArbitrum(timestamp, block, chainBlocks) {
+    const chain = 'arbitrum';
+    const USDT_ADDRESS = '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9';
+
+    const EFIL_USDT_POOL_ADDRESS = '0xF8E5a77a4f187cFb455663B37619257565439F6A';
+    const DFL_USDT_POOL_ADDRESS = '0x27a664dFBcBAe7E7DFec8B489473392fCe2b0C2C';
+
+    // Uniswap V3 eFIL-USDT pool
+    let eFilUsdtPoolEFILBalance = (await sdk.api.abi.call({
+        target: contracts.arbitrum.tokens.eFIL,
+        params: EFIL_USDT_POOL_ADDRESS,
+        abi: "erc20:balanceOf",
+        chain: chain,
+        block: chainBlocks[chain]
+    })).output;
+
+    const eFilUsdtPoolUsdtBalance = (await sdk.api.abi.call({
+        target: USDT_ADDRESS,
+        params: EFIL_USDT_POOL_ADDRESS,
+        abi: "erc20:balanceOf",
+        chain: chain,
+        block: chainBlocks[chain]
+    })).output;
+
+    // Uniswap V3 DFL-USDT pool
+    const dflUsdtPoolDflBalance = (await sdk.api.abi.call({
+        target: contracts.arbitrum.tokens.DFL,
+        params: DFL_USDT_POOL_ADDRESS,
+        abi: "erc20:balanceOf",
+        chain: chain,
+        block: chainBlocks[chain]
+    })).output;
+
+    const dflUsdtPoolUsdtBalance = (await sdk.api.abi.call({
+        target: USDT_ADDRESS,
+        params: DFL_USDT_POOL_ADDRESS,
+        abi: "erc20:balanceOf",
+        chain: chain,
+        block: chainBlocks[chain]
+    })).output;
+
+    // i dont know how to calculate it
+    let dflUsdtPrice = 0;
+    let eFilUsdtPrice = 0;
+
+    return (eFilUsdtPoolEFILBalance * eFilUsdtPrice + eFilUsdtPoolUsdtBalance) + (dflUsdtPoolDflBalance * dflUsdtPrice + dflUsdtPoolUsdtBalance)
+    
+};
 module.exports = {
     bsc: {
         tvl: tvl('bsc'),
@@ -90,5 +138,8 @@ module.exports = {
             contracts.ethereum.tokens.DFL.address
         ),
         borrowed: borrowed('ethereum')
+    },
+    arbitrum: {
+        tvl: tvlArbitrum
     }
 };
