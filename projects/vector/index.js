@@ -37,34 +37,36 @@ async function tvl(timestamp, block, chainBlocks) {
   ).output;
 
   for (let i = 0; i < underlyingBalances.length; i++) {
-      const info = Object.values(contracts.markets)[i]
-      if (info.isLP) {
-        await unwrapUniswapLPs(
-          balances,
-          [
-            {
-              balance: masterChefBalances[i].output,
-              token: Object.keys(contracts.markets)[i],
-            },
-          ],
-          chainBlocks.avax,
-          "avax",
-          transform
-        );
-      } else if(info.noUnderlying) {
-        sdk.util.sumSingleBalance(
-          balances,
-          transform(Object.keys(contracts.markets)[i]),
-          masterChefBalances[i].output
-        );
-      } else {
-        sdk.util.sumSingleBalance(
-          balances,
-          transform(underlyingBalances[i].input.params[1]),
-          underlyingBalances[i].output
-        );
-      }
-  };
+    const info = Object.values(contracts.markets)[i];
+    if (info.isLP) {
+      await unwrapUniswapLPs(
+        balances,
+        [
+          {
+            balance: masterChefBalances[i].output,
+            token: info.isJoeLP
+              ? info.underlying
+              : Object.keys(contracts.markets)[i],
+          },
+        ],
+        chainBlocks.avax,
+        "avax",
+        transform
+      );
+    } else if (info.noUnderlying) {
+      sdk.util.sumSingleBalance(
+        balances,
+        transform(Object.keys(contracts.markets)[i]),
+        masterChefBalances[i].output
+      );
+    } else {
+      sdk.util.sumSingleBalance(
+        balances,
+        transform(underlyingBalances[i].input.params[1]),
+        underlyingBalances[i].output
+      );
+    }
+  }
   return balances;
 }
 
