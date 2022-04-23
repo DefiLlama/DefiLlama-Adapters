@@ -1,7 +1,8 @@
 const sdk = require('@defillama/sdk')
-const { sumTokens, sumTokensAndLPs, unwrapCrv, unwrapUniswapLPs } = require('../helper/unwrapLPs')
+const { sumTokens, sumTokensAndLPs, unwrapCrv, unwrapUniswapLPs, genericUnwrapCvx, } = require('../helper/unwrapLPs')
 const abi = require("../pendle/abi.json");
 const BigNumber = require('bignumber.js')
+const positions = require('./positions.json');
 
 const degenesisContract = "0xc803737D3E12CC4034Dde0B2457684322100Ac38";
 const wethPool = "0xD3D13a578a53685B4ac36A1Bab31912D2B2A2F36";
@@ -47,6 +48,8 @@ const slp = "0xd4e7a6e2d03e4e48dfc27dd3f46df1c176647e38";
 const slpStaking = "0x8858a739ea1dd3d80fe577ef4e0d03e88561faa3";
 const uni = "0x5fa464cefe8901d66c09b85d5fcdc55b3738c688";
 const uniStaking = "0x1b429e75369ea5cd84421c1cc182cee5f3192fd3";
+const alusd = "0xBC6DA0FE9aD5f3b0d58160288917AA56653660E9";
+const alusdPool = "0x7211508D283353e77b9A7ed2f22334C219AD4b4C";
 
 async function tvl(timestamp, block) {
   const balances = {}
@@ -71,16 +74,36 @@ async function tvl(timestamp, block) {
     [snx, snxPool],
     [gohm, gohmPool],
     [mim, mimPool],
-    [gamma, gammaPool]
+    [gamma, gammaPool],
+    [alusd, alusdPool]
   ], block)
+  const cvxUSTWPool = "0x7e2b9b5244bcfa5108a76d5e7b507cfd5581ad4a";
+  const cvxFRAXPool = "0xB900EF131301B307dB5eFcbed9DBb50A3e209B2e";
+  const cvxalUSDPool = "0x02E2151D4F351881017ABdF2DD2b51150841d5B3";
+  let tokeManager = "0xA86e412109f77c45a3BC1c5870b880492Fb86A14";
 
-  // let curveHoldings = response.exchanges.filter(
-  //   pool => pool.type == 'Curve')
-  // let uniHoldings = response.exchanges.filter(
-  //   pool => pool.type != 'Curve')
+  //UST CVX Wormhole Pool
+  await genericUnwrapCvx(balances, tokeManager, cvxUSTWPool, block, "ethereum");
 
-  // await lpBalances(block, balances, curveHoldings)
-  // await lpBalances(block, balances, uniHoldings)
+  //FRAX CVX Pool
+  await genericUnwrapCvx(balances, tokeManager, cvxFRAXPool, block, "ethereum");
+
+  //CVX alUSD Pool
+  await genericUnwrapCvx(
+    balances,
+    tokeManager,
+    cvxalUSDPool,
+    block,
+    "ethereum"
+  );
+
+  let curveHoldings = positions.exchanges.filter(
+    pool => pool.type == 'Curve')
+  let uniHoldings = positions.exchanges.filter(
+    pool => pool.type != 'Curve')
+
+  await lpBalances(block, balances, curveHoldings)
+  await lpBalances(block, balances, uniHoldings)
 
   return balances
 }
@@ -106,7 +129,7 @@ async function lpBalances(block, balances, holdings) {
 
     if (wallet > 0) {
       holdings[0].type == 'Curve' ?
-      await unwrapCrv(balances, pool.pool_address, wallet) :
+      await unwrapCrv(balances, pool.pool_address, wallet, block) :
       lpPositions.push({ balance: wallet, token: pool.pool_address })
     }
 
@@ -123,7 +146,7 @@ async function lpBalances(block, balances, holdings) {
 
     if (staked > 0) {
       holdings[0].type == 'Curve' ?
-      await unwrapCrv(balances, pool.pool_address, staked) :
+      await unwrapCrv(balances, pool.pool_address, staked, block) :
       lpPositions.push({ balance: staked, token: pool.pool_address })
     }
   }
