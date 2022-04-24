@@ -103,6 +103,11 @@ function createIncrementArray(length) {
   return arr
 }
 
+function isLP(symbol) {
+	if (!symbol) return false
+  return symbol.includes('LP') || symbol.includes('PGL') || symbol.includes('UNI-V2') || symbol === "PNDA-V2" || symbol.includes('GREEN-V2')
+}
+
 module.exports = {
   createIncrementArray,
   fetchURL,
@@ -115,5 +120,6 @@ module.exports = {
   returnBlock,
   returnDecimals,
   returnEthBalance,
-  getPricesFromContract
+  getPricesFromContract,
+  isLP,
 }
