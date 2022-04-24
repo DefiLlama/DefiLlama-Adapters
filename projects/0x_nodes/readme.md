@@ -12,9 +12,9 @@ Current TVL: total 4.50 M + staking 1.69 M
 
 Chain: Ethereum, BSC, Polygon, Fantom, Andromeda, Avalanche
 
-Coingecko ID (so your TVL can appear on Coingecko): 10139
+Coingecko ID (so your TVL can appear on Coingecko): (https://api.coingecko.com/api/v3/coins/list): 10139
 
-Coinmarketcap ID (so your TVL can appear on Coinmarketcap): bios
+Coinmarketcap ID (so your TVL can appear on Coinmarketcap): (https://api.coinmarketcap.com/data-api/v3/map/all?listing_status=active,inactive,untracked&start=1&limit=10000): bios
 
 Short Description (to be shown on DefiLlama): 0xNODES is a modularized cross chain yield aggregation protocol utilizing collateralized assets through synthetic swaps.
 
