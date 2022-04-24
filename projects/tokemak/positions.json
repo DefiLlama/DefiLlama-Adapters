@@ -102,34 +102,10 @@
     },
     {
       "type": "Curve",
-      "pool_address": "0xceaf7747579696a2f0bb206a14210e3c9e6fb269",
-      "staking": {
-        "type": "Convex",
-        "pool_id": "59"
-      }
-    },
-    {
-      "type": "Curve",
-      "pool_address": "0xd632f22692FaC7611d2AA1C0D552930D43CAEd3B",
-      "staking": {
-        "type": "Convex",
-        "pool_id": "32"
-      }
-    },
-    {
-      "type": "Curve",
       "pool_address": "0x06325440D014e39736583c165C2963BA99fAf14E",
       "staking": {
         "type": "Convex",
         "pool_id": "25"
-      }
-    },
-    {
-      "type": "Curve",
-      "pool_address": "0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c",
-      "staking": {
-        "type": "Convex",
-        "pool_id": "36"
       }
     }
   ]
