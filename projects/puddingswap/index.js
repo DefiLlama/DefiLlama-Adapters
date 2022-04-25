@@ -1,6 +1,7 @@
 const { request, gql } = require('graphql-request');
 const BigNumber = require('bignumber.js');
 
+const factoryAddress = '0x6168D508ad65D87f8F5916986B55d134Af7153bb'
 const usdtAddress = '0xdac17f958d2ee523a2206206994597c13d831ec7';
 const toUSDT = (value, times = 1e6) => BigNumber(value).times(times).toFixed(0);
 const toUSDTBalances = (value, times = 1e6) => ({
