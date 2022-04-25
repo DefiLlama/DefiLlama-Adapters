@@ -325,6 +325,20 @@ async function transformHecoAddress() {
   };
 }
 
+async function transformHooAddress() {
+  const mapping = {
+    '0xd16babe52980554520f6da505df4d1b124c815a7': '0x6b175474e89094c44da98b954eedeac495271d0f', // USDT
+    '0x3eff9d389d13d6352bfb498bcf616ef9b1beac87': '0x6f259637dcd74c767781e37bc6133cd6a68aa161', // wHOO
+  }
+  normalizeMapping(mapping)
+
+  return (addr) => {
+    addr = addr.toLowerCase()
+    return mapping[addr] || `hoo:${addr}`;
+  };
+}
+
+
 async function transformCeloAddress() {
   return (addr) => {
     if (addr.toLowerCase() === "0xd8763cba276a3738e6de85b4b3bf5fded6d6ca73") {
@@ -880,6 +894,7 @@ const chainTransforms = {
   xdai: transformXdaiAddress,
   avax: transformAvaxAddress,
   heco: transformHecoAddress,
+  hoo: transformHooAddress,
   harmony: transformHarmonyAddress,
   optimism: transformOptimismAddress,
   moonriver: transformMoonriverAddress,
