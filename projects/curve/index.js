@@ -2,9 +2,12 @@ const { staking } = require('../helper/staking');
 const utils = require('../helper/utils');
 
 async function eth() {
-  let staked = await utils.fetchURL('https://api.curve.fi/api/getTVL')
-  let factory = await utils.fetchURL('https://api.curve.fi/api/getFactoryTVL')
-  return staked.data.data.tvl + factory.data.data.factoryBalances;
+  let staked = await utils.fetchURL('https://api.curve.fi/api/getTVL') //base stable pools
+  let factory = await utils.fetchURL('https://api.curve.fi/api/getPools/ethereum/factory') //stable facto pools
+  let factoryCrypto = await utils.fetchURL('https://api.curve.fi/api/getFactoryCryptoPools/ethereum') //facto crypto pools
+  let baseCrypto = await utils.fetchURL('https://api.curve.fi/api/getTVLCrypto') //base crypto pools
+
+  return staked.data.data.tvl + factory.data.data.tvl + factoryCrypto.data.data.tvl + baseCrypto.data.data.tvl;
 }
 
 async function polygon() {
@@ -42,6 +45,11 @@ async function optimism() {
   return tvl.data.data.tvl
 }
 
+async function moonbeam() {
+  const tvl = await utils.fetchURL('https://api.curve.fi/api/getTVLMoonbeam')
+  return tvl.data.data.tvl
+}
+
 async function fetch() {
   return (await eth())+(await polygon()) + (await fantom()) + (await xdai())+(await arbitrum())+(await avax()) + (await harmony())+(await optimism())
 }
@@ -69,6 +77,9 @@ module.exports = {
   },
   avalanche:{
     fetch: avax
+  },
+  moonbeam: {
+    fetch: moonbeam
   },
   harmony:{
     fetch: harmony

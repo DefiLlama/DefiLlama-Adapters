@@ -64,9 +64,6 @@
   ==================================================*/
 
   module.exports = {
-    name: 'Loopring',
-    token: 'LRC',
-    category: 'dexes',
     start: 1574241665, // 11/20/2019 @ 09:21AM (UTC)
     tvl
   }

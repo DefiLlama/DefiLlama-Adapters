@@ -15,7 +15,7 @@ async function tvl(timestamp, block, chainBlocks){
         block: chainBlocks['bsc'],
       })).output;
 
-      await sdk.util.sumSingleBalance(balances, transform(ARI_TOKEN_CONTRACT), collateralBalance)
+      sdk.util.sumSingleBalance(balances, transform(ARI_TOKEN_CONTRACT), collateralBalance)
       return balances;
 }
 

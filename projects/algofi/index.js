@@ -16,7 +16,7 @@ const marketStrings = {
 
 const orderedAssets = ["ALGO", "STBL", "USDC", "goBTC", "goETH", "vALGO"]
 const fixedValueStakingContracts = ["TINYMAN11_STBL_USDC_LP_STAKING", "ALGOFI-STBL-USDC-LP"]
-const singleSideStakingContracts = ["DEFLY", "STBL"]
+const singleSideStakingContracts = ["DEFLY", "STBL", "OPUL"]
 const variableValueStakingContracts = ["ALGOFI-STBL-ALGO-LP", "AF-XET-STBL-75BP-STAKING", "AF-GOBTC-STBL-25BP-STAKING", "AF-GOETH-STBL-25BP-STAKING", "AF-OPUL-STBL-75BP-STAKING",
                                         "AF-DEFLY-STBL-75BP-STAKING", "AF-NANO-USDC-STBL-5BP-STAKING", "AF-NANO-USDT-STBL-5BP-STAKING", "AF-NANO-USDT-USDC-5BP-STAKING",
                                         "AF-USDC-STBL-NANO-SUPER-STAKING", "AF-ZONE-STBL-75BP-STAKING", "AF-TINY-STBL-75BP-STAKING" ]
@@ -137,6 +137,11 @@ const assetDictionary = {
             "marketAppId" : 641499935,
             "assetId": 470842789,
             "decimals": 6
+        },
+        "OPUL" : {
+            "marketAppId" : 674526408,
+            "assetId": 287867876,
+            "decimals": 10
         }
     }
 }

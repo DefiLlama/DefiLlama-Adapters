@@ -1,10 +1,15 @@
-const utils = require('../helper/utils');
+const utils = require('../helper/utils')
 
-async function fetch() {
-  let data = await utils.fetchURL('https://api.beluga.fi/tvl')
-  return data.data.tvl;
+function fetch(chain) {
+  return async () => utils.fetchURL('https://api.beluga.fi/tvl').then(d => ({ 'usd-coin':  d.data[chain] }))
 }
 
 module.exports = {
-  fetch
+  timetravel: false,
+  polygon: {
+    tvl: fetch('Polygon')
+  },
+  fantom: {
+    tvl: fetch('Fantom')
+  },
 }

@@ -15,7 +15,7 @@ const contracts = {
   }
 };
 
-tvl = (chain) => async function (timestamp, ethBlock, chainBlocks) {
+const tvl = (chain) => async function (timestamp, ethBlock, chainBlocks) {
   const krom = contracts[chain].KROM;
   const krom_position = contracts[chain].position;
   

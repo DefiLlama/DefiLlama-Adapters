@@ -10,6 +10,7 @@ function getChainData(chain, type) {
     const info = (data?.data?.data?.detail || []).find(
       (item) => item.chain === chain
     );
+    if (!info)  return toUSDTBalances(0)
 
     switch (type) {
       case "tvl":
@@ -50,5 +51,4 @@ module.exports = {
     tvl: getChainData("ethereum", "tvl"),
     staking: getChainData("ethereum", "staking"),
   },
-  name: "Flux Project",
 };
