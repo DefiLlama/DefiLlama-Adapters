@@ -1,7 +1,6 @@
 const BigNumber = require('bignumber.js');
-const { farmContracts } = require('./farms');
-const { ZERO, getTotalSupplyOf, getBalanceOf } = require('../utils');
-const ERC20Abi = require('./abis/ERC20.json');
+const { ZERO, getTotalSupplyOf, getBalanceOf } = require('../../../helper/ankr/utils');;
+const ERC20Abi = require('../../../helper/ankr/abis/ERC20.json');
 const web3 = require('../../web3.js');
 
 const getSymbolPrice = (

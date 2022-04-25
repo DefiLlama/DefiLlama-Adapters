@@ -21,9 +21,9 @@ const v2Endpoints = {
 const v3Endpoints = {
   [ETHEREUM]: "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3",
   [OPTIMISM]:
-    "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-optimism-dev",
+    "https://api.thegraph.com/subgraphs/name/ianlapham/optimism-post-regenesis",
   [ARBITRUM]:
-    "https://api.thegraph.com/subgraphs/name/ianlapham/arbitrum-minimal",
+    "https://api.thegraph.com/subgraphs/name/ianlapham/arbitrum-dev",
   [POLYGON]:
     "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-v3-polygon",
 };

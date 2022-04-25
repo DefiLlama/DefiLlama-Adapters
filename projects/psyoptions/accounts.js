@@ -156,4 +156,4 @@ const deserializeMint = (data) => {
   return mintInfo;
 };
 
-module.exports={ getMultipleAccountInfo, getMultipleMintInfo }
+module.exports={ getMultipleAccountInfo, getMultipleMintInfo, deserializeAccount }

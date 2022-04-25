@@ -1,7 +1,7 @@
-const { createWeb3, createContractObject } = require('../utils');
-const { polygonRpcUrl } = require('../networks');
-const poolABIPolygon = require('./abis/quickswap-pool-abi.json');
-const vaultABIPolygon = require('./abis/quickswap-vault-abi.json');
+const { createWeb3, createContractObject } = require('../../../helper/ankr/utils');
+const { polygonRpcUrl } = require('../../../helper/ankr/networks');
+const poolABIPolygon = require('../../../helper/ankr/abis/QuickswapPool.json');
+const vaultABIPolygon = require('../../../helper/ankr/abis/QuickswapVault.json');
 const web3 = createWeb3(polygonRpcUrl);
 
 const createVaultModel = (poolAddress, vaultAddress) => {

@@ -2,16 +2,11 @@ const sdk = require("@defillama/sdk");
 const { default: BigNumber } = require("bignumber.js");
 const { transformAvaxAddress } = require("../helper/portedTokens");
 const abi = require("./abi.json");
-const masterChef = '0xb0523f9f473812fb195ee49bc7d2ab9873a98044';
 const depositor = '0xC204501F33eC40B8610BB2D753Dd540Ec6EA2646';
 const { pool2s } = require("../helper/pool2");
 const { staking } = require("../helper/staking");
 
-async function tvl(timestamp, ethBlock, chainBlocks) {
-    const balances = {};
-    const transform = await transformAvaxAddress();
-    const block = chainBlocks.avax
-
+async function addMasterchefFunds(balances, masterChef, block, transform){
     const poolLength = (await sdk.api.abi.call({
         target: masterChef,
         abi: abi.poolLength,
@@ -73,6 +68,14 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
             BigNumber(userInfo[i].output.amount).times(underlyingBalance[i].output).div(totalSupply[i].output).toFixed(0)
         );
     };
+}
+
+async function tvl(timestamp, ethBlock, chainBlocks) {
+    const balances = {};
+    const transform = await transformAvaxAddress();
+    const block = chainBlocks.avax
+    await addMasterchefFunds(balances, "0xb0523f9f473812fb195ee49bc7d2ab9873a98044", block, transform)
+    await addMasterchefFunds(balances, "0x68c5f4374228BEEdFa078e77b5ed93C28a2f713E", block, transform)
 
     const vePTPRate = await sdk.api.abi.call({
         target: '0x5857019c749147EEE22b1Fe63500F237F3c1B692',

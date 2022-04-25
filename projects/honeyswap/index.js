@@ -15,5 +15,4 @@ module.exports = {
   polygon: {
     tvl: chainTvl('polygon')
   },
-  tvl: sdk.util.sumChainTvls([chainTvl('xdai'), chainTvl('polygon')])
 }

@@ -4,11 +4,11 @@ const axios = require('axios');
 async function fetch() {
         const response = (
             await retry(
-                async (bail) => await axios.get('https://auction-service-prod.parallel.fi/crowdloan/total-value')
+                async (bail) => await axios.get('https://analytics.parallel.fi/api/tvl')
             )
         ).data;
 
-        const tvl = response.totalValue;
+        const tvl = response.total;
 
         return tvl
 }

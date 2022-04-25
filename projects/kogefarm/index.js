@@ -123,6 +123,8 @@ const polygonTvl = ({ include, exclude }) => async (
 ) => {
   const balances = {}
 
+/*  const vaults_full = (await utils.fetchURL(current_polygon_vaults_url)).data
+  let vaults = vaults_full.map( v => v['vault']) */
   let vaults = (await utils.fetchURL(current_polygon_vaults_url)).data
 
   if (!!include) {
@@ -195,7 +197,7 @@ const polygonTvl = ({ include, exclude }) => async (
         balance: vault_balances[idx],
         token: lp_addresses[idx],
       })
-    } else if ((vaults[idx] !== '') & (lp_addresses[idx] !== null)) {
+    } else if (vaults[idx] !== '') {
       singlePositions.push({
         vaultAddr: vaults[idx],
         balance: vault_balances[idx],
@@ -203,7 +205,6 @@ const polygonTvl = ({ include, exclude }) => async (
       })
     }
   })
-
 
   const transformAddress = transformAddressKF()
 
@@ -251,7 +252,6 @@ const fantomTvl = async (timestamp, block, chainBlocks) => {
   ).output.map((val) => val.output)
 
   vaults = vaults.map((e, idx) => ({ ...e, lp_address: lp_addresses[idx] }))
-  vaults = vaults.filter(item => item.lp_address !== null)
 
   const vault_balances = (
     await sdk.api.abi.multiCall({
@@ -377,6 +377,60 @@ const fantomTvl = async (timestamp, block, chainBlocks) => {
     balances[sSpell] = Math.floor(balances[sSpell] * spellPersSpell);
   }
 
+  // Convert sUSDT into USDT by multiplying by the appropriate ratio
+  const sUSDT = 'polygon:0x29e38769f23701A2e4A8Ef0492e19dA4604Be62c';
+  if (sUSDT in balances){
+    // First, find the USDT to staked USDT ratio by looking at the total supply of staked usdt divided by the s*usdt issued
+    const sUSDTSupply = (
+      await sdk.api.abi.call({
+        chain: 'polygon',
+        block: chainBlocks['polygon'],
+        target: "0x29e38769f23701A2e4A8Ef0492e19dA4604Be62c",
+        abi: abi.totalSupply,
+      })
+    ).output
+    const sUSDTLiquidity = (
+      await sdk.api.abi.call({
+        chain: 'polygon',
+        block: chainBlocks['polygon'],
+        target: "0x29e38769f23701A2e4A8Ef0492e19dA4604Be62c",
+        abi: abi.totalLiquidity,
+      })
+    ).output
+    const usdtPersUSDT = sUSDTLiquidity / sUSDTSupply
+    console.log(usdtPersUSDT)
+    // Then, multiply the staked spell balance by spell to staked spell ratio
+    balances[sUSDT] = Math.floor(balances[sUSDT] * usdtPersUSDT);
+  }
+
+  // Convert sUSDC into USDC by multiplying by the appropriate ratio
+  const sUSDC = 'polygon:0x1205f31718499dBf1fCa446663B532Ef87481fe1';
+  if (sUSDC in balances){
+    // First, find the USDC to staked USDC ratio by looking at the total supply of staked usdc divided by the s*usdc issued
+    const sUSDCSupply = (
+      await sdk.api.abi.call({
+        chain: 'polygon',
+        block: chainBlocks['polygon'],
+        target: "0x1205f31718499dBf1fCa446663B532Ef87481fe1",
+        abi: abi.totalSupply,
+      })
+    ).output
+    const sUSDCLiquidity = (
+      await sdk.api.abi.call({
+        chain: 'polygon',
+        block: chainBlocks['polygon'],
+        target: "0x1205f31718499dBf1fCa446663B532Ef87481fe1",
+        abi: abi.totalLiquidity,
+      })
+    ).output
+    const usdcPersUSDC = sUSDCLiquidity / sUSDCSupply
+    console.log(usdcPersUSDC)
+
+    // Then, multiply the staked spell balance by spell to staked spell ratio
+    balances[sUSDC] = Math.floor(balances[sUSDC] * usdcPersUSDC);
+  }
+
+
   return balances
 }
 
@@ -397,7 +451,6 @@ const moonriverTvl = async (timestamp, block, chainBlocks) => {
   ).output.map((val) => val.output)
 
   vaults = vaults.map((e, idx) => ({ ...e, lp_address: lp_addresses[idx] }))
-  vaults = vaults.filter(item => item.lp_address !== null)
 
   const vault_balances = (
     await sdk.api.abi.multiCall({
@@ -483,11 +536,23 @@ const _polygonStaking = polygonMasterChef(kogeMasterChefAddr, 1)
 const kogecoinVaultAddr = '0x992Ae1912CE6b608E0c0d2BF66259ab1aE62A657'
 const kogecoinMaticVaultAddr = '0xb7D3e1C5cb26D088d619525c6fD5D8DDC1B543d1'
 const kogecoinSageVaultAddr = '0x4792b5943a05fc6AF3B20B5F1D1d7dDe33C42980'
+const kogecoinIrisVaultAddr = '0x55A2FedB176C09488102596Db21937A753025466'
+const kogecoinCollarVaultAddr = '0x64c20BB3D9aCD870f748fe73B6541D500643e490'
+const kogecoinShieldVaultAddr = '0x7a9be7CdF26C8311625ed97c174869fcA9b791eC'
+const kogecoinBetaVaultAddr = '0xEab5DAC8E6E3da7679b2a01FCD17DBE1Ed519904'
+const kogecoinAlphaVaultAddr = '0xD02064bEd4126ACCCe79431A52F206C558479648'
+const kogecoinTamagoVaultAddr = '0xA838F1e986b27d7AC5a977c7d0eCbADFFCDC7Bb5'
 
 const _kogePool2 = [
   kogecoinVaultAddr,
   kogecoinMaticVaultAddr,
   kogecoinSageVaultAddr,
+  kogecoinIrisVaultAddr,
+  kogecoinCollarVaultAddr,
+  kogecoinShieldVaultAddr,
+  kogecoinBetaVaultAddr,
+  kogecoinAlphaVaultAddr,
+  kogecoinTamagoVaultAddr
 ]
 const _polygonPool2 = async (timestamp, block, chainBlocks) => {
   return {
@@ -518,5 +583,4 @@ module.exports = {
   moonriver: {
     tvl: moonriverTvl,
   },
-  tvl: sdk.util.sumChainTvls([moonriverTvl, fantomTvl, _polygonTvl]),
 }

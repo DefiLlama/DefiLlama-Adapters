@@ -95,7 +95,21 @@ async function postURL(url, data) {
   })
 }
 
+function createIncrementArray(length) {
+  const arr = []
+  for (let i = 0; i < length; i++) 
+    arr.push(i)
+  
+  return arr
+}
+
+function isLP(symbol) {
+	if (!symbol) return false
+  return symbol.includes('LP') || symbol.includes('PGL') || symbol.includes('UNI-V2') || symbol === "PNDA-V2" || symbol.includes('GREEN-V2')
+}
+
 module.exports = {
+  createIncrementArray,
   fetchURL,
   postURL,
   getPricesfromString,
@@ -106,5 +120,6 @@ module.exports = {
   returnBlock,
   returnDecimals,
   returnEthBalance,
-  getPricesFromContract
+  getPricesFromContract,
+  isLP,
 }
