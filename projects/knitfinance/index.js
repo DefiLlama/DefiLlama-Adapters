@@ -1,6 +1,6 @@
 const axios = require("axios");
 
-let url = "https://adminv1.knit.finance/api/tvl";
+let url = "https://adminv1.knit.finance/api/public/tvl";
 
 async function fetchBsc() {
   let bsc = await axios.get(`${url}/bsc`);
