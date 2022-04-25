@@ -40,7 +40,7 @@ function setPrice(prices, address, coreAmount, tokenAmount) {
     prices[address] = [Number(coreAmount), Number(coreAmount) / Number(tokenAmount)]
 }
 
-function calculateUsdUniTvl(FACTORY, chain, coreAssetRaw, whitelistRaw, coreAssetName, decimals = 18, allowUndefinedBlock = true) {
+function calculateUsdUniTvl(FACTORY, chain, coreAssetRaw, whitelistRaw, coreAssetName = undefined, decimals = 18, allowUndefinedBlock = true) {
     const whitelist = whitelistRaw.map(t => t.toLowerCase())
     const coreAsset = coreAssetRaw.toLowerCase()
     return async (timestamp, ethBlock, chainBlocks) => {
@@ -166,7 +166,10 @@ function calculateUsdUniTvl(FACTORY, chain, coreAssetRaw, whitelistRaw, coreAsse
                 finalBalances[transformAddress(address)] = amount
             }
         })
-        finalBalances[coreAssetName] = (coreBalance) / (10 ** decimals)
+        if (coreAssetName)
+            sdk.util.sumSingleBalance(finalBalances, coreAssetName, (coreBalance) / (10 ** decimals))
+        else
+            sdk.util.sumSingleBalance(finalBalances, transformAddress(coreAsset), coreBalance)
         return finalBalances
     }
 };
