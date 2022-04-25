@@ -47,7 +47,7 @@ async function fetchOkx() {
   return okx?.data?.data?.data?.tvl?.okexchain;
 }
 
-async function fetchGc() {
+async function fetchGNO() {
   let gc = await axios.get(`${url}/gnosis`);
   return gc?.data?.data?.data?.tvl?.gnosis;
 }
@@ -82,6 +82,11 @@ async function fetchBitgert() {
   return bitgert?.data?.data?.data?.tvl?.bitgert;
 }
 
+async function fetchReef() {
+  let reef = await axios.get(`${url}/reef`);
+  return reef?.data?.data?.data?.tvl?.reef;
+}
+
 async function fetch() {
   let poly = await axios.get(`${url}/matic`),
     bsc = await axios.get(`${url}/bsc`),
@@ -98,7 +103,8 @@ async function fetch() {
     moonriver = await axios.get(`${url}/moonriver`),
     milkomeda = await axios.get(`${url}/milkomeda`),
     moonbeam = await axios.get(`${url}/moonbeam`),
-    bitgert = await axios.get(`${url}/bitgert`);
+    bitgert = await axios.get(`${url}/bitgert`),
+    reef = await axios.get(`${url}/reef`);
   const tvl =
     bsc?.data?.data?.data?.tvl?.bsc +
     poly?.data?.data?.data?.tvl?.matic +
@@ -115,7 +121,8 @@ async function fetch() {
     moonriver?.data?.data?.data?.tvl?.moonriver +
     milkomeda?.data?.data?.data?.tvl?.milkomeda +
     moonbeam?.data?.data?.data?.tvl?.moonbeam +
-    bitgert?.data?.data?.data?.tvl?.bitgert;
+    bitgert?.data?.data?.data?.tvl?.bitgert +
+    reef?.data?.data?.data?.tvl?.reef;
 
   return tvl;
 }
@@ -148,9 +155,6 @@ module.exports = {
   okexchain: {
     fetch: fetchOkx,
   },
-  gnosis: {
-    fetch: fetchGc,
-  },
   syscoin: {
     fetch: fetchSysCoin,
   },
@@ -169,6 +173,11 @@ module.exports = {
   bitgert: {
     fetch: fetchBitgert,
   },
-
+  xdai: {
+    fetch: fetchGNO,
+  },
+  reef: {
+    fetch: fetchReef,
+  },
   fetch,
 };
