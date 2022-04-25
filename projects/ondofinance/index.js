@@ -2,45 +2,10 @@ const sdk = require('@defillama/sdk')
 const abi = require('./abi.json')
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs")
 const { default: BigNumber } = require('bignumber.js')
-
-const oldAllPairVault = "0xeF970A111dd6c281C40Eee6c40b43f24435833c2"
-const newAllPairVault = "0x2bb8de958134afd7543d4063cafad0b7c6de08bc"
-const STABLE_PARTNER_VAULTS = [
-    "0xBD9495E42ec4a2F5DF1370A6DA42Ec9a4656E963",
-    "0xb230B535D2cf009Bdc9D7579782DE160b795d5E8",
-    "0x7EBa8a9cAcb4bFbf7e1258b402A8e7aA004ED9FD",
-    "0x5A16e6dD9aB0bEa9a247f92c5aa0b349f2A4E4c6",
-]
+const fetch = require('node-fetch');
 
 const NEAR_TOKEN = "0x85f17cf997934a597031b2e18a9ab6ebd4b9f6a4"
 const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
-const STABLE_PARTNER_TOKENS = [
-    "0x4Eb8b4C65D8430647586cf44af4Bf23dEd2Bb794",  // FRAX Price Index share,
-    "0x36784d3B5aa8A807698475b3437a13fA20B7E9e1",  // Timeless
-    "0x853d955aCEf822Db058eb8505911ED77F175b99e",  // Frax
-    "0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0",  // FXS
-    "0x956F47F50A910163D8BF957Cf5846D573E7f87CA",  // FEI
-    "0x0f2D719407FdBeFF09D87557AbB7232601FD9F29",  // Synapse
-    "0x3Ec8798B81485A254928B70CDA1cf0A2BB0B74D7",  // Gro
-    "0x67B6D479c7bB412C54e03dCA8E1Bc6740ce6b99C",  // Kylin
-    "0x0cEC1A9154Ff802e7934Fc916Ed7Ca50bDE6844e",  // Pool together
-    "0x04Fa0d235C4abf4BcF4787aF4CF447DE572eF828",  // UMA
-    "0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B",  // CVX
-    "0xff20817765cb7f73d4bde2e66e067e58d11095c2",  // AMP
-    "0xa3BeD4E1c75D00fa6f4E5E6922DB7261B5E9AcD2",  // MTA
-    "0x470ebf5f030ed85fc1ed4c2d36b9dd02e77cf1b7",  // TEMPLE
-    "0x758b4684be769e92eefea93f60dda0181ea303ec",  // PHONON
-    "0xc770eefad204b5180df6a14ee197d99d808ee52d",  // FOX
-    "0xc7283b66eb1eb5fb86327f08e1b5816b0720212b",  // TRIBE
-    "0xa693B19d2931d498c5B318dF961919BB4aee87a5",  // Wormhole UST
-    WETH,
-    NEAR_TOKEN,
-]
-
-const PARTNER_LPS = [
-    "0x9241943c29eb0B1Fc0f8E5B464fbc14915Da9A57", // Uniswap V2: FEI-MTA
-    "0x5d62134DBD7D56faE9Bc0b7DF3788f5f8DADE62d", // Uniswap V2: POOL-FEI
-]
 
 async function addEthBalances(addresses, block, balances) {
     await Promise.all(addresses.map(async (target) => {
@@ -61,17 +26,11 @@ async function addEthBalances(addresses, block, balances) {
 
 async function tvl(timestamp, block, chainBlocks) {
     const balances = {};
-    let partner_tokens = STABLE_PARTNER_TOKENS
-    let ondo_multisigs = STABLE_PARTNER_VAULTS
-    let ondo_lps = PARTNER_LPS
-    try {
-        const data = await (await fetch("https://data.ondo.finance/v1/addresses")).json()
-        partner_tokens = data["supported_tokens"]
-        ondo_multisigs = data["ondo_multisigs"]
-        ondo_lps = data["ondo_lps"]
-    } catch {
-        console.log("Failed to data from Ondo Finance, resorting to defaults")
-    }
+    const info = await fetch("https://data.ondo.finance/v1/addresses")
+    const data = await info.json()
+    partner_tokens = data["supported_tokens"]
+    ondo_multisigs = data["ondo_multisigs"]
+    ondo_lps = data["ondo_lps"]
 
     await addEthBalances(ondo_multisigs, block, balances)
 
@@ -95,15 +54,11 @@ async function tvl(timestamp, block, chainBlocks) {
     return balances;
 }
 
-function tvlForAllPairs(timestamp, block, chainBlocks) {
-    let ondoAllPairVaults = [oldAllPairVault, newAllPairVault]
-    try {
-        const data = await (await fetch("https://data.ondo.finance/v1/addresses")).json()
-        ondoAllPairVaults = data["ondo_all_pair_vaults"]
-    } catch {
-        console.log("Failed to data from Ondo Finance, resorting to defaults")
-    }
-    let vaults = await Promise.all(ondoAllPairVaults.map( async () => {
+async function tvlForAllPairs(timestamp, block, chainBlocks) {
+    const info = await fetch("https://data.ondo.finance/v1/addresses")
+    const data = await info.json()
+    ondoAllPairVaults = data["ondo_all_pair_vaults"]
+    let vaults = await Promise.all(ondoAllPairVaults.map( async (allPairVault) => {
         const vaults = (await sdk.api.abi.call({
             target: allPairVault,
             block,
