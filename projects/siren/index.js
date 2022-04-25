@@ -135,9 +135,6 @@ query  {seriesVaults{
   ==================================================*/
 
   module.exports = {
-    name: 'Siren',
-    token: 'SI',
-    category: 'derivatives',
     start: 1605574800, // Nov-17-2020 01:00:00 AM +UTC
     polygon: {
       tvl: calculatePolygonTVL,

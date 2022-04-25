@@ -1,13 +1,15 @@
 const { GraphQLClient, gql } = require('graphql-request')
 const { toUSDTBalances } = require('../helper/balances');
 const { getBlock } = require('../helper/getBlock');
+const { stakingPricedLP } = require("../helper/staking");
 const { addFundsInMasterChef } = require("../helper/masterchef");
 const { farmLPBalance } = require("./utils");
 
 const masterChef = "0x63Df75d039f7d7A8eE4A9276d6A9fE7990D7A6C5";
 const d3usd = "0x36B17c6719e09d98bB020608E9F79a0647d50A70";
 const ness = "0xe727240728c1a5f95437b8b50afdd0ea4ae5f0c8";
-
+const nessroom = "0xA93248C548Ac26152F3b4F201C9101f4e032074e";
+const ness_cro = "0xbfAAB211C3ea99A2Db682fbc1D9a999861dCba2D";
 
 async function getLiquidity(block) {
   // delayed by around 5 mins to allow subgraph to update
@@ -42,7 +44,7 @@ async function tvl(timestamp, block, chainBlocks) {
     "cronos",
     (addr) => `cronos:${addr}`,
     undefined,
-    [d3usd, ness], //Ignore D3USD because it has been counted in liquidity. 
+    [d3usd, ness], //Ignore D3USD because it has been counted in liquidity.
     true,
     true,
     ness,
@@ -52,7 +54,6 @@ async function tvl(timestamp, block, chainBlocks) {
 }
 
 async function pool2(timestamp, block, chainBlocks) {
-  const ness_cro = "0xbfAAB211C3ea99A2Db682fbc1D9a999861dCba2D";
   const cro = "0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23";
 
   return farmLPBalance(
@@ -70,5 +71,12 @@ module.exports = {
   cronos: {
     tvl: tvl,
     pool2: pool2,
+    staking: stakingPricedLP(
+      nessroom,
+      ness,
+      "cronos",
+      ness_cro,
+      "darkness-share"
+    ),
   }
 };

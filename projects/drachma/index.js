@@ -49,7 +49,7 @@ function tvl(chain) {
 };
 
 module.exports = {
-  timeTravel: true,
+  timetravel: true,
   incentivized: true,
   misrepresentedTokens: true,
   metis: {

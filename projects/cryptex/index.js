@@ -110,19 +110,21 @@ const fetchTVL = (chainId) => {
     }
 }
 */
-const fetchStaking = async () => {
+const fetchStaking = async (timestamp, block, chainBlocks) => {
     let balances = {};
     
     const v1Balance = (await sdk.api.erc20.balanceOf({
         target: cryptexConfig.crxToken,
         owner: cryptexConfig.staking.V1,
-        chain: "bsc"
+        chain: "bsc",
+        block: chainBlocks.bsc
     })).output;
 
     const v2Balance = (await sdk.api.erc20.balanceOf({
         target: cryptexConfig.crxToken,
         owner: cryptexConfig.staking.V2,
-        chain: "bsc"
+        chain: "bsc",
+        block: chainBlocks.bsc
     })).output;
 
     sdk.util.sumSingleBalance(balances, `bsc:${cryptexConfig.crxToken}`, v1Balance);

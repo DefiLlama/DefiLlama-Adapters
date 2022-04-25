@@ -21,7 +21,7 @@ module.exports = {
   ethereum: {
     tvl: getaETHcTvl,    
   },
-  binance: {
+  bsc: {
     tvl: getaBNBbTvl,
   },
   polygon: {

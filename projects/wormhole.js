@@ -15,24 +15,18 @@ function fetch(chainId) {
   }
 }
 
-async function fetchAll() {
-    const url = 'https://europe-west3-wormhole-315720.cloudfunctions.net/mainnet-notionaltvl'
-    const res = await retry(async bail => await axios.get(url))
-    return Number(res.data.AllTime["*"]["*"].Notional)
-}
-
 module.exports = {
-  methodology: "USD value of native assets currently held by Wormhole contracts. Token prices sourced from CoinGecko.",
+  methodology: "USD value of native assets currently held by Portal contracts. Token prices sourced from CoinGecko.",
   solana: {
     fetch: fetch("1")
   },
   ethereum: {
     fetch: fetch("2")
   },
-  bsc: {
+  terra: {
     fetch: fetch("3")
   },
-  terra: {
+  bsc: {
     fetch: fetch("4")
   },
   polygon: {
@@ -47,5 +41,5 @@ module.exports = {
   fantom: {
     fetch: fetch("10")
   },
-  fetch: fetchAll
+  fetch: fetch("*")
 }

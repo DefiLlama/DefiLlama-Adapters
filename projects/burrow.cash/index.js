@@ -1,23 +1,29 @@
-const { call, addTokenBalances, } = require('../helper/near')
+const { call, sumSingleBalance } = require('../helper/near')
+const BURROW_CONTRACT = 'contract.main.burrow.near'
 
-const BURROW_BETA_CONTRACT = 'contract.beta.burrow.near'
+function tvl(borrowed = false) {
+  return async () => {
+    const balances = {};
+    const assetsCallResponse = await call(BURROW_CONTRACT, 'get_assets_paged', {});
 
-async function tvl() {
-  const balances = {}
+    const assets = assetsCallResponse.map(([asset]) => asset);
+    const amount = borrowed ? assetsCallResponse.map(a => a[1].borrowed.balance) 
+      : assetsCallResponse.map(a => a[1].supplied.balance - a[1].borrowed.balance);
 
-  const assetsCallResponse = await call(BURROW_BETA_CONTRACT, 'get_assets_paged', {})
-  const assets = assetsCallResponse
-    .map(([asset]) => asset)
-    .filter(asset => !/\.burrow\./.test(asset))  // Ignore all assets that can be considered native tokens
-  await addTokenBalances(assets, BURROW_BETA_CONTRACT, balances)
-  return balances
-}
+    for (let asset of assets) {
+      sumSingleBalance(balances, asset, amount[assets.indexOf(asset)]);
+    };
 
+    return balances;
+  };
+};
 
 module.exports = {
   near: {
-    tvl,
+    tvl: tvl(),
+    borrowed: tvl(true)
   },
   misrepresentedTokens: true,
-  methodology: 'Summed up all the tokens deposited in their beta lending contract'
+  timetravel: false,
+  methodology: 'Summed up all the tokens deposited in their main lending contract'
 };
