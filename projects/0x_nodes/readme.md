@@ -1,12 +1,10 @@
-TODO: This is not finished, need public url to bios_icon.svg, agree on 'methodology'
-
 Twitter Link: https://twitter.com/0x_nodes
 
 List of audit links if any: https://github.com/0xNODES/_audits/tree/main/Halborn
 
 Website Link: https://0xnodes.io/
 
-Logo (High resolution, preferably in .svg and .png, for application on both white and black backgrounds. Will be shown with rounded borders): https://github.com/0xNODES/platform/blob/main/packages/app/src/assets/icons/assets/bios_icon.svg (?)
+Logo (High resolution, preferably in .svg and .png, for application on both white and black backgrounds. Will be shown with rounded borders): https://github.com/0xNODES/DefiLlama-Adapters/blob/0x_nodes-adapter/projects/0x_nodes/0x_nodes_v.png
 
 Current TVL: total 4.50 M + staking 1.69 M
 
