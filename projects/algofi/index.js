@@ -19,7 +19,7 @@ const fixedValueStakingContracts = ["TINYMAN11_STBL_USDC_LP_STAKING", "ALGOFI-ST
 const singleSideStakingContracts = ["DEFLY", "STBL", "OPUL"]
 const variableValueStakingContracts = ["ALGOFI-STBL-ALGO-LP", "AF-XET-STBL-75BP-STAKING", "AF-GOBTC-STBL-25BP-STAKING", "AF-GOETH-STBL-25BP-STAKING", "AF-OPUL-STBL-75BP-STAKING",
                                         "AF-DEFLY-STBL-75BP-STAKING", "AF-NANO-USDC-STBL-5BP-STAKING", "AF-NANO-USDT-STBL-5BP-STAKING", "AF-NANO-USDT-USDC-5BP-STAKING",
-                                        "AF-ZONE-STBL-75BP-STAKING", "AF-TINY-STBL-75BP-STAKING" ]
+                                        "AF-USDC-STBL-NANO-SUPER-STAKING", "AF-ZONE-STBL-75BP-STAKING", "AF-TINY-STBL-75BP-STAKING" ]
 const stakingContracts = fixedValueStakingContracts.concat(variableValueStakingContracts).concat(singleSideStakingContracts)
 
 const assetDictionary = {
@@ -64,6 +64,11 @@ const assetDictionary = {
             "decimals": 6,
             "assetId": 465865291,
             "marketAppId": 482608867,
+        },
+        "AF-USDC-STBL-NANO-SUPER-STAKING" : {
+            "decimals": 6,
+            "marketAppId" : 705657303,
+            "poolAppId": 658337046,
         },
         "TINYMAN11_STBL_USDC_LP_STAKING" : {
             "decimals": 6,
@@ -266,7 +271,7 @@ async function dex() {
           async (bail) =>
             await axios.get("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_protocol_snapshot/?network=MAINNET")
         )
-      ).data.protocol_snapshot.tvl.total_usd
+      ).data.protocol_snapshot.tvl.total_usd;
     return toUSDTBalances(response)
 }
 module.exports = {
