@@ -10,7 +10,7 @@ const { chainExports } = require("../helper/exports");
 const HOME_CHAINS = {
   'ethereum': '0x88A69B4E698A4B090DF6CF5Bd7B2D47325Ad30A3', 
   'moonbeam': '0xD3dfD3eDe74E0DCEBC1AA685e151332857efCe2d', 
-  'milkomedaC1': '0x9faF7f27c46ACdeCEe58Eb4B0Ab6489E603EC251'
+  'milkomeda': '0x9faF7f27c46ACdeCEe58Eb4B0Ab6489E603EC251'
 };
 
 const TOKEN_ADDRESSES = [
