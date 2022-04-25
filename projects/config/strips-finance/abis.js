@@ -1,4 +1,4 @@
-let stripFinanceABI = [
+let stripsFinanceABI = [
     {
         "inputs": [],
         "name": "getLiquidity",
@@ -43,6 +43,6 @@ let minRouter = [
 ]
 
 module.exports = {
-    stripFinanceABI,
+    stripsFinanceABI,
     minRouter
 }
