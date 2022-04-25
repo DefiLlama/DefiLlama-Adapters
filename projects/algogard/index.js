@@ -110,7 +110,6 @@ async function tvl() {
 
 module.exports = {
     algorand: {
-        tvl: tvl,
-        borrowed: gardBorrowed
+        tvl: tvl
     }
 };
