@@ -325,6 +325,20 @@ async function transformHecoAddress() {
   };
 }
 
+async function transformHooAddress() {
+  const mapping = {
+    '0xd16babe52980554520f6da505df4d1b124c815a7': '0xdac17f958d2ee523a2206206994597c13d831ec7', // USDT
+    '0x3eff9d389d13d6352bfb498bcf616ef9b1beac87': '0x6f259637dcd74c767781e37bc6133cd6a68aa161', // wHOO
+  }
+  normalizeMapping(mapping)
+
+  return (addr) => {
+    addr = addr.toLowerCase()
+    return mapping[addr] || `hoo:${addr}`;
+  };
+}
+
+
 async function transformCeloAddress() {
   return (addr) => {
     if (addr.toLowerCase() === "0xd8763cba276a3738e6de85b4b3bf5fded6d6ca73") {
@@ -714,7 +728,8 @@ function fixAstarBalances(balances) {
     '0x3795C36e7D12A8c252A20C5a7B455f7c57b60283': { coingeckoId: 'tether', decimals: 6, },
     '0x6B175474E89094C44Da98b954EedeAC495271d0F': { coingeckoId: 'astar', decimals: 18, },
     '0xb361DAD0Cc1a03404b650A69d9a5ADB5aF8A531F': { coingeckoId: 'emiswap', decimals: 18, },
-    '0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98': { coingeckoId: 'usdc', decimals: 6, },
+    '0xC404E12D3466acCB625c67dbAb2E1a8a457DEf3c': { coingeckoId: 'usd-coin', decimals: 6, },  // interest bearing USDC
+    '0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98': { coingeckoId: 'usd-coin', decimals: 6, },
   }
 
   return fixBalances(balances, mapping)
@@ -758,6 +773,59 @@ function fixGodwokenBalances(balances) {
   return fixBalances(balances, mapping)
 }
 
+
+const wavesMapping = {
+  '5UYBPpq4WoU5n4MwpFkgJnW3Fq4B1u3ukpK33ik4QerR': { coingeckoId: 'binancecoin', decimals: 8, },
+  'DG2xFkPdDwKUoBkzGAhQtLpSGzfXLiCYPEzeKH2Ad24p': { coingeckoId: 'neutrino', decimals: 6, },
+  'Atqv59EYzjFGuitKVnMRk6H8FukjoV3ktPorbEys25on': { coingeckoId: 'waves-exchange', decimals: 8, },
+  '474jTeYx2r2Va35794tCScAXWJG9hU2HcgxzMowaZUnu': { coingeckoId: 'ethereum', decimals: 8, },
+  '34N9YcEETLWn93qYQ64EsP1x89tSruJU44RrEMSXXEPJ': { coingeckoId: 'tether', decimals: 6, },
+  '8LQW8f7P5d5PZM7GtZEBgaqRPGSzS3DfPuiXrURJ4AJS': { coingeckoId: 'bitcoin', decimals: 8, },
+  'WAVES': { coingeckoId: 'waves', decimals: 8, },
+  '2Fh9m3dNQXycHdnytEaETN3P1gDT7ij5U4HjMqQBeaqN': { coingeckoId: 'ftx-token', decimals: 8, },
+  '4GZH8rk5vDmMXJ81Xqfm3ovFaczqMnQ11r7aELiNxWBV': { coingeckoId: 'fantom', decimals: 8, },
+  '3KhNcHo4We1G5EWps7b1e5DTdLgWDzctc8S6ynu37KAb': { coingeckoId: 'curve-dao-token', decimals: 8, },
+  'GVxGPBtgVWMW1wHiFnfaCakbJ6sKgZgowJgW5Dqrd7JH': { coingeckoId: 'shiba-inu', decimals: 2, },
+  'HcHacFH51pY91zjJa3ZiUVWBww54LnsL4EP3s7hVGo9L': { coingeckoId: 'matic-network', decimals: 8, },
+  '4YmM7mj3Av4DPvpNpbtK4jHbpzYDcZuY6UUnYpqTbzLj': { coingeckoId: 'uniswap', decimals: 8, },
+  '6QUVF8nVVVvM7do7JT2eJ5o5ehnZgXUg13ysiB9JiQrZ': { coingeckoId: 'terra-luna', decimals: 8, },
+  '7TMu26hAs7B2oW6c5sfx45KSZT7GQA3TZNYuCav8Dcqt': { coingeckoId: 'aave', decimals: 8, },
+  'E4rss7qLUcawCvD2uMrbLeTMPGkX15kS3okWCbUhLNKL': { coingeckoId: 'maker', decimals: 8, },
+  'HLckRcg7hJ3Syf3PrGftFijKqQMJipf81WY3fwvHCJbe': { coingeckoId: 'crypto-com-chain', decimals: 8, },
+  '8zUYbdB8Q6mDhpcXYv52ji8ycfj4SDX4gJXS7YY3dA4R': { coingeckoId: 'dai', decimals: 6, },
+  '8DLiYZjo3UUaRBTHU7Ayoqg4ihwb6YH1AfXrrhdjQ7K1': { coingeckoId: 'binance-usd', decimals: 6, },
+  '47cyc68FWJszCWEwMWVsD9CadjS2M1XtgANuRGbEW8UH': { coingeckoId: 'cosmos', decimals: 8, },
+  '2bbGhKo5C31iEiB4CwGuqMYwjD7gCA9eXmm51fe2v8vT': { coingeckoId: 'chainlink', decimals: 8, },
+  'BLRxWVJWaVuR2CsCoTvTw2bDZ3sQLeTbCofcJv7dP5J4': { coingeckoId: 'yearn-finance', decimals: 8, },
+  'A1uMqYTzBdakuSNDv7CruWXP8mRZ4EkHwmip2RCauyZH': { coingeckoId: 'the-graph', decimals: 8, },
+  '2thtesXvnVMcCnih9iZbJL3d2NQZMfzENJo8YFj6r5jU': { coingeckoId: 'terrausd', decimals: 6, },
+  '2GBgdhqMjUPqreqPziXvZFSmDiQVrxNuGxR1z7ZVsm4Z': { coingeckoId: 'apecoin', decimals: 8, },
+  'Aug9ccbPApb1hxXSue8fHuvbyMf1FV1BYBtLUuS5LZnU': { coingeckoId: 'decentraland', decimals: 8, },
+  'ATQdLbehsMrmHZLNFhUm1r6s14NBT5JCFcSJGpaMrkAr': { coingeckoId: 'axie-infinity', decimals: 8, },
+  '8YyrMfuBdZ5gtMWkynLTveRvGb6LJ4Aff9rpz46UUMW': { coingeckoId: 'the-sandbox', decimals: 8, },
+  'EfwRV6MuUCGgAUchdsF4dDFnSpKrDW3UYshdaDy4VBeB': { coingeckoId: 'enjincoin', decimals: 8, },
+  '5zoDNRdwVXwe7DveruJGxuJnqo7SYhveDeKb8ggAuC34': { coingeckoId: 'wrapped-bitcoin', decimals: 8, },
+  'DSbbhLsSTeDg5Lsiufk2Aneh3DjVqJuPr2M9uU1gwy5p': { coingeckoId: 'vires-finance', decimals: 8, },
+  // 'C1iWsKGqLwjHUndiQ7iXpdmPum9PeCDFfyXBdJJosDRS': { coingeckoId: 'duck-egg', decimals: 8, },  // fix this with right coin gecko id
+  '4LHHvYGNKJUg5hj65aGD5vgScvCBmLpdRFtjokvCjSL8': { coingeckoId: 'waves-enterprise', decimals: 8, },
+  // 'HEB8Qaw9xrWpWs8tHsiATYGBWDBtP2S7kcPALrMu43AS': { coingeckoId: 'puzzle', decimals: 8, },  // fix this with right coin gecko id
+  // 'D4TPjtzpsDEJFS1pUAkvh1tJJJMNWGcSrds9sveBoQka': { coingeckoId: 'race', decimals: 8, },
+  // '3UHgFQECoynwC3iunYBnbhzmcCzC5gVnVZMv8Yw1bneK': { coingeckoId: 'east', decimals: 8, },
+  '6nSpVyNH7yM69eg446wrQR94ipbbcmZMU1ENPwanC97g': { coingeckoId: 'neutrino-system-base-token', decimals: 8, },
+  // 'DUk2YTxhRoAqMJLus4G2b3fR8hMHVh6eiyFx5r29VR6t': { coingeckoId: 'neutrino eur', decimals: 8, },
+  'Ehie5xYpeN8op1Cctc6aGUrqx8jq3jtf1DSjXDbfm7aT': { coingeckoId: 'swop', decimals: 6, },
+  '7LMV3s1J4dKpMQZqge5sKYoFkZRLojnnU49aerqos4yg': { coingeckoId: 'enno-cash', decimals: 8, },
+  '9sQutD5HnRvjM1uui5cVC4w9xkMPAfYEV8ymug3Mon2Y': { coingeckoId: 'signaturechain', decimals: 8, },
+  'DHgwrRvVyqJsepd32YbBqUeDH4GJ1N984X8QoekjgH8J': { coingeckoId: 'waves-community-token', decimals: 2, },
+  // 'AbunLGErT5ctzVN8MVjb4Ad9YgjpubB8Hqb17VxzfAck': { coingeckoId: 'Waves World', decimals: 0, },
+  'HZk1mbfuJpmxU1Fs4AX5MWLVYtctsNcg6e2C6VKqK8zk': { coingeckoId: 'litecoin', decimals: 8, },
+  '6XtHjpXbs9RRJP2Sr9GUyVqzACcby9TkThHXnjVC5CDJ': { coingeckoId: 'usd-coin', decimals: 6, },
+}
+
+function fixWavesBalances(balances) {
+  return fixBalances(balances, wavesMapping)
+}
+
 function fixTezosBalances(balances) {
   const mapping = {
     'KT1PWx2mnDueood7fEmfbBDKx1D9BAnnXitn': { coingeckoId: 'tzbtc', decimals: 8, },
@@ -795,6 +863,7 @@ function fixBalances(balances, mapping) {
 }
 
 function stripTokenHeader(token) {
+  token = token.toLowerCase()
 	return token.indexOf(':') > -1 ? token.split(':')[1] : token
 }
 
@@ -811,6 +880,7 @@ const fixBalancesMapping = {
   harmony: fixHarmonyBalances,
   godwoken: fixGodwokenBalances,
   klaytn: fixKlaytnBalances,
+  waves: fixWavesBalances,
   oasis: fixOasisBalances,
 }
 
@@ -824,6 +894,7 @@ const chainTransforms = {
   xdai: transformXdaiAddress,
   avax: transformAvaxAddress,
   heco: transformHecoAddress,
+  hoo: transformHooAddress,
   harmony: transformHarmonyAddress,
   optimism: transformOptimismAddress,
   moonriver: transformMoonriverAddress,
@@ -926,4 +997,6 @@ module.exports = {
   transformMilkomedaAddress,
   transformDfkAddress,
   transformFindoraAddress,
+  wavesMapping,
+  stripTokenHeader,
 };

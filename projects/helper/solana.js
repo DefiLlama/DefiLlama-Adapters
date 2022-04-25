@@ -59,6 +59,16 @@ async function getTokenAccountBalance(account) {
   return tokenBalance.data.result?.value?.uiAmount;
 }
 
+async function getCoingeckoId(){
+  const tokenlist = await axios
+    .get(
+      "https://cdn.jsdelivr.net/gh/solana-labs/token-list@main/src/tokens/solana.tokenlist.json"
+    )
+    .then((r) => r.data.tokens);
+  return address => tokenlist.find((t) => t.address === address)?.extensions
+  ?.coingeckoId;
+}
+
 // Example: [[token1, account1], [token2, account2], ...]
 async function sumTokens(tokensAndAccounts) {
   const tokenlist = await axios
@@ -167,4 +177,5 @@ module.exports = {
   getMultipleAccountBuffers,
   sumOrcaLPs,
   getSolBalance,
+  getCoingeckoId
 };
