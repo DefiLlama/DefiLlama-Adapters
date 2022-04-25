@@ -11,6 +11,7 @@ const { request, gql } = require("graphql-request");
 const { unwrapCrv, resolveCrvTokens } = require('./resolveCrvTokens')
 const activePoolAbi = require('./ankr/abis/activePool.json')
 const wethAddressAbi = require('./ankr/abis/wethAddress.json');
+const { isLP } = require('./utils')
 
 const yearnVaults = {
 	// yvToken: underlying, eg yvYFI:YFI
@@ -964,10 +965,6 @@ async function unwrapTroves({ balances = {}, chain = 'ethereum', block, troves =
 	return balances
 }
 
-function isLP(symbol) {
-	if (!symbol) return false
-  return symbol.includes('LP') || symbol.includes('PGL') || symbol.includes('UNI-V2') || symbol === "PNDA-V2" || symbol.includes('GREEN-V2')
-}
 
 module.exports = {
 	unwrapYearn,

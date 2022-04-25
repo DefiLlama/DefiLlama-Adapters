@@ -10,7 +10,7 @@ const { getBlock } = require('./getBlock');
 const { default: BigNumber } = require('bignumber.js');
 const { getChainTransform } = require('../helper/portedTokens');
 
-async function getPoolInfo(masterChef, block, chain, poolInfoAbi) {
+async function getPoolInfo(masterChef, block, chain, poolInfoAbi = abi.poolInfo) {
     const poolLength = (
         await sdk.api.abi.call({
             abi: abi.poolLength,
