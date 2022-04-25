@@ -327,7 +327,7 @@ async function transformHecoAddress() {
 
 async function transformHooAddress() {
   const mapping = {
-    '0xd16babe52980554520f6da505df4d1b124c815a7': '0x6b175474e89094c44da98b954eedeac495271d0f', // USDT
+    '0xd16babe52980554520f6da505df4d1b124c815a7': '0xdac17f958d2ee523a2206206994597c13d831ec7', // USDT
     '0x3eff9d389d13d6352bfb498bcf616ef9b1beac87': '0x6f259637dcd74c767781e37bc6133cd6a68aa161', // wHOO
   }
   normalizeMapping(mapping)
