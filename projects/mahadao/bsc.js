@@ -12,25 +12,32 @@ const bsc = {
   arthBusdStaking: "0xE8b16cab47505708a093085926560a3eB32584B8",
   arthMahaStaking: "0x7699d230Ba47796fc2E13fba1D2D52Ecb0318c33",
   arthu3epsStaking: "0x6398c73761a802a7db8f6418ef0a299301bc1fb0",
-  arthu3epsLP: "0xB38B49bAE104BbB6A82640094fd61b341a858f78",
-  arthuval3ps: "0x1d4B4796853aEDA5Ab457644a18B703b6bA8b4aB", //
+
   arthMahaApeLP: "0x84020eefe28647056eac16cb16095da2ccf25665", //
   arthMahaLP: "0xb955d5b120ff5b803cdb5a225c11583cd56b7040",
   arthBusdLP: "0x80342bc6125a102a33909d124a6c26CC5D7b8d56",
+
   busd: "0xe9e7cea3dedca5984780bafc599bd69add087d56",
   usdc: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
   usdt: "0x55d398326f99059fF775485246999027B3197955",
   arth: "0xb69a424df8c737a122d0e60695382b3eec07ff4b",
   maha: "0xCE86F7fcD3B40791F63B86C3ea3B8B355Ce2685b",
+
   valusdc: "0xA6fDEa1655910C504E974f7F1B520B74be21857B",
   valusdt: "0x5f7f6cB266737B89f7aF86b30F03Ae94334b83e9",
   valbusd: "0xaeD19DAB3cd68E4267aec7B2479b1eD2144Ad77f",
-  epsStableswap: "0x98245Bfbef4e3059535232D68821a58abB265C45",
-  "bsc.3eps": "0xaF4dE8E872131AE328Ce21D909C74705d3Aaf452",
+
+  "ellipsis.arthu3eps.token": "0xB38B49bAE104BbB6A82640094fd61b341a858f78",
+  "ellipsis.arthu3eps.pool": "0x98245Bfbef4e3059535232D68821a58abB265C45",
+  "ellipsis.arthuval3ps.token": "0x4cfaabd5920021359bb22bb6924cce708773b6ac",
+  "ellipsis.arthuval3ps.pool": "0x1d4B4796853aEDA5Ab457644a18B703b6bA8b4aB",
+
   "arth.usd.token": "0x88fd584dF3f97c64843CD474bDC6F78e398394f4",
-  "bsc.3eps.token": "0x5b5bD8913D766D005859CE002533D4838B0Ebbb5",
-  "bsc.3eps.pool": "0x160CAed03795365F3A589f10C379FfA7d75d4E76",
-  "bsc.val3eps.pool": "0x19EC9e3F7B21dd27598E7ad5aAe7dC0Db00A806d"
+
+  "ellipsis.3eps.token": "0xaF4dE8E872131AE328Ce21D909C74705d3Aaf452",
+  "ellipsis.val3eps.token": "0x5b5bD8913D766D005859CE002533D4838B0Ebbb5",
+  "ellipsis.3eps.pool": "0x160CAed03795365F3A589f10C379FfA7d75d4E76",
+  "ellipsis.val3eps.pool": "0x19EC9e3F7B21dd27598E7ad5aAe7dC0Db00A806d"
 };
 
 const getBalance = async (target, owner, block) => {
@@ -85,15 +92,37 @@ const replaceMAHAonBSCTransform = (addr) => {
   return `bsc:${addr}`;
 };
 
-const getTVLOfarthmahaPoolToken = async (balances, arthMahaApeLP, maha, arth, block) => {
-  const mahaBalance = await getBalance(maha, arthMahaApeLP, block)
-  const arthBalance = await getBalance(arth, arthMahaApeLP, block)
+const getTVLOfArthMahaPoolToken = async (balances, arthMahaLP, maha, arth, block) => {
+  const mahaBalance = await getBalance(maha, arthMahaLP, block)
+  console.log(mahaBalance);
+  const arthBalance = await getBalance(arth, arthMahaLP, block)
+  console.log(arthBalance);
+  balances['mahadao'] = balances.mahadao ? balances.mahadao + mahaBalance.output / 1e18 : mahaBalance.output / 1e18
+  balances['arth'] = balances.arth ? balances.arth + (arthBalance.output / 1e18) / 2 : (arthBalance.output / 1e18) / 2
 
-  balances['mahadao'] = balances.mahadao / 1e18 + mahaBalance.output / 1e18
-  balances['arth'] = arthBalance.output / 1e18
+  console.log('getTVLOfArthMahaPoolToken', balances);
+}
+const getTVLOfArthMahaApePoolToken = async (balances, arthMahaApeLP, maha, arth, block) => {
+  const mahaBalance = await getBalance(maha, arthMahaApeLP, block)
+  console.log(mahaBalance);
+  const arthBalance = await getBalance(arth, arthMahaApeLP, block)
+  console.log(arthBalance);
+  balances['mahadao'] = balances.mahadao ? balances.mahadao + mahaBalance.output / 1e18 : mahaBalance.output / 1e18
+  balances['arth'] = balances.arth ? balances.arth + (arthBalance.output / 1e18) / 2 : (arthBalance.output / 1e18) / 2
+
+  console.log('getTVLOfArthMahaApePoolToken', balances);
 }
 
+const getTVLOfArthBusdPoolToken = async (balances, arthbusdLP, arth, busd, block) => {
+  const arthBalance = await getBalance(arth, arthbusdLP, block)
+  console.log(arthBalance);
+  const busdBalance = await getBalance(busd, arthbusdLP, block)
 
+  balances['arth'] = balances.arth ? balances.arth + arthBalance.output / 1e18 : arthBalance.output / 1e18
+  balances['binance-usd'] = balances['binance-usd'] ? balances['binance-usd'] + busdBalance.output / 1e18 : busdBalance.output / 1e18
+
+  console.log('2123', balances);
+}
 
 const getVal3epsBalance = async (
   balances,
@@ -106,21 +135,30 @@ const getVal3epsBalance = async (
 ) => {
 
   const e18 = new BigNumber(10).pow(18);
-  const valUSDCBalance = await getBalance(valusdcToken, pool3eps, block)
+  //get balances of valas BUSD, USDC, USDT
   const valBUSDBalance = await getBalance(valbusdToken, pool3eps, block)
+  console.log(valbusdToken, pool3eps);
+  const valUSDCBalance = await getBalance(valusdcToken, pool3eps, block)
   const valUSDTBalance = await getBalance(valusdtToken, pool3eps, block,)
 
+  console.log('121', valBUSDBalance, valUSDCBalance, valUSDTBalance);
+
+  const totalValBUSDSupply = await getTotalSupply(valbusdToken, block)
   const totalValUSDCSupply = await getTotalSupply(valusdcToken, block)
   const totalValUSDTSupply = await getTotalSupply(valusdtToken, block)
-  const totalValBUSDSupply = await getTotalSupply(valbusdToken, block)
+
+  console.log('127', totalValBUSDSupply, totalValUSDCSupply, totalValUSDTSupply);
 
   const valUSDCPercentage = valUSDCBalance.output * valEpsPercentage / totalValUSDCSupply.output
   const valUSDTPercentage = valUSDTBalance.output * valEpsPercentage / totalValUSDTSupply.output
   const valBUSDPercentage = valBUSDBalance.output * valEpsPercentage / totalValBUSDSupply.output
 
+  // get balances of busd, usdc , usdt
   const busdBalance = await getBalance(bsc.busd, valbusdToken, block)
   const usdcBalance = await getBalance(bsc.usdc, valusdcToken, block)
   const usdtBalance = await getBalance(bsc.usdt, valusdtToken, block)
+
+  console.log('138', busdBalance, usdcBalance, usdtBalance);
 
   sdk.util.sumSingleBalance(balances, "usd-coin", (usdcBalance.output * valUSDCPercentage) / e18);
   sdk.util.sumSingleBalance(balances, "tether", (usdtBalance.output * valUSDTPercentage) / e18);
@@ -136,15 +174,20 @@ const getTVLOfarthuval3ps = async (
   pool3eps,
   block,
 ) => {
+  //get balance of arth-usd of arth-usd+val3eps
   const arthUSDBalance = await getBalance(tokenARTHUSDC, arthuval3psLP, block)
-
+  console.log('arthUSDBalance', arthUSDBalance);
   balances['arth'] = balances['arth'] ? balances['arth'] + (arthUSDBalance.output / 1e18) / 2 : (arthUSDBalance.output / 1e18) / 2
 
+  //get balance of val3eps of arth-usd+val3eps
   const balance3ps = await getBalance(token3eps, arthuval3psLP, block)
+  console.log('balance3ps', balance3ps);
 
   const totalSupply3eps = await getTotalSupply(BSC3eps, block)
 
   const valEpsPercentage = balance3ps.output / totalSupply3eps.output
+
+  console.log(valEpsPercentage);
 
   await getVal3epsBalance(
     balances,
@@ -164,28 +207,45 @@ function pool2s() {
     // calculate tvl for regular uniswap lp tokens
     const stakingContracts = [bsc.arthBusdStaking, bsc.arthMahaStaking];
     const lpTokens = [bsc.arthBusdLP, bsc.arthMahaLP];
-    await sumTokensAndLPsSharedOwners(
-      balances,
-      lpTokens.map((token) => [token, true]),
-      stakingContracts,
-      chainBlocks.bsc,
-      "bsc",
-      replaceMAHAonBSCTransform
-    );
+    // await sumTokensAndLPsSharedOwners(
+    //   balances,
+    //   lpTokens.map((token) => [token, true]),
+    //   stakingContracts,
+    //   chainBlocks.bsc,
+    //   "bsc",
+    //   replaceMAHAonBSCTransform
+    // );
 
     // calculate tvl for curve lp tokens
     await getBalanceOfStakedEllipsisLP(
       balances,
-      bsc.epsStableswap,
+      bsc["ellipsis.arthu3eps.pool"],
       bsc.arthu3epsStaking, // staked
-      bsc.arthu3epsLP, // lp token
-      [bsc["arth.usd.token"], bsc["bsc.3eps.token"]],
+      bsc["ellipsis.arthu3eps.token"], // lp token
+      [bsc["arth.usd.token"], bsc["ellipsis.val3eps.token"]],
       chainBlocks.bsc,
       "bsc"
     );
 
+    await getTVLOfArthMahaPoolToken(
+      balances,
+      bsc.arthMahaLP,
+      bsc.maha,
+      bsc.arth,
+      chainBlocks.bsc,
+      "bsc"
+    )
 
-    await getTVLOfarthmahaPoolToken(
+    await getTVLOfArthBusdPoolToken(
+      balances,
+      bsc.arthBusdLP,
+      bsc.arth,
+      bsc.busd,
+      chainBlocks.bsc,
+      "bsc"
+    )
+
+    await getTVLOfArthMahaApePoolToken(
       balances,
       bsc.arthMahaApeLP,
       bsc.maha,
@@ -196,11 +256,11 @@ function pool2s() {
 
     await getTVLOfarthuval3ps(
       balances,
-      bsc.arthuval3ps,
-      bsc['bsc.3eps.token'],
+      bsc['ellipsis.arthuval3ps.pool'],
+      bsc['ellipsis.val3eps.token'],
       bsc['arth.usd.token'],
-      bsc['bsc.3eps'],
-      bsc['bsc.val3eps.pool'],
+      bsc['ellipsis.3eps.token'],
+      bsc['ellipsis.val3eps.pool'],
       chainBlocks.bsc,
       "bsc"
     )
