@@ -1,11 +1,9 @@
 const { staking, stakingUnknownPricedLP } = require('./staking')
 const { sumTokensAndLPsSharedOwners, sumLPWithOnlyOneTokenOtherThanKnown } = require('./unwrapLPs')
+const { getFixBalances } = require('./portedTokens')
 
-function ohmTvl(treasury, treasuryTokens, chain, stakingAddress, stakingToken, transformOriginal, fix = id=>id, tokenOnCoingecko = true) {
+function ohmTvl(treasury, treasuryTokens, chain = 'ethereum', stakingAddress, stakingToken, transformOriginal = undefined, fix, tokenOnCoingecko = true) {
     let transform = transformOriginal
-    if(transform === undefined){
-        transform = addr => `${chain}:${addr}`
-    }
     const tvl = async (time, ethBlock, chainBlocks) => {
         const block = chainBlocks[chain]
         const balances = {}
@@ -15,6 +13,7 @@ function ohmTvl(treasury, treasuryTokens, chain, stakingAddress, stakingToken, t
                 sumLPWithOnlyOneTokenOtherThanKnown(balances, t[0], treasury, stakingToken, block, chain, transform)
             ))
         }
+        if (!fix) fix = await getFixBalances(chain)
         fix(balances)
         return balances
     }
@@ -22,7 +21,7 @@ function ohmTvl(treasury, treasuryTokens, chain, stakingAddress, stakingToken, t
         [chain === "avax"?"avalanche":chain]: {
             tvl,
             staking: tokenOnCoingecko?
-                staking(stakingAddress, stakingToken, chain, transform(stakingToken))
+                staking(stakingAddress, stakingToken, chain, transform ? transform(stakingToken) : undefined)
                 : stakingUnknownPricedLP(stakingAddress, stakingToken, chain, treasuryTokens.find(t=>t[1]===true)[0], transform)
         }
     }
