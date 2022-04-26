@@ -98,10 +98,13 @@ async function Lend() {
         });
         const underlying_asset = await queryClient.queryContractSmart(market.contract.address, { underlying_asset: {} });
         const token = await TokenInfo(underlying_asset.address);
+
+        const tokens_borrowed = new BigNumber(marketState.total_borrows).div(new BigNumber(10).pow(token.decimals).toNumber());
+        const tokens_supplied = new BigNumber(marketState.total_supply).times(exchange_rate).div(new BigNumber(10).pow(token.decimals));
+
         return {
             symbol: token.symbol,
-            tokens_supplied: new BigNumber(marketState.total_supply).times(exchange_rate).div(new BigNumber(10).pow(token.decimals)).toNumber(),
-            tokens_borrowed: new BigNumber(marketState.total_borrows).div(new BigNumber(10).pow(token.decimals).toNumber()).toNumber(),
+            tokens: new BigNumber(tokens_supplied).minus(tokens_borrowed).toNumber()
         };
     }));
 }
@@ -136,7 +139,7 @@ async function TVL() {
     const lend_data = await Lend();
 
     await Promise.all(lend_data.map(async volume => {
-        if (utils.symbolsMap[volume.symbol]) await sdk.util.sumSingleBalance(balances, utils.symbolsMap[volume.symbol], volume.tokens_supplied);
+        if (utils.symbolsMap[volume.symbol]) await sdk.util.sumSingleBalance(balances, utils.symbolsMap[volume.symbol], volume.tokens);
     }));
 
     return balances;
