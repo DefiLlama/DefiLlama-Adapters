@@ -1,12 +1,11 @@
-const Caver = require("caver-js");
 const abi = require("./abi.json");
 const BigNumber = require("bignumber.js");
+const sdk = require('@defillama/sdk')
 const { toUSDTBalances } = require("../helper/balances");
+const chain = 'klaytn'
 
-const sTINDER_ADDRESS = "0x710B009307e7344Cbd455cAdAbc1e4bb1C346a55";
-
-const PUBLIC_RPC_URL = "https://klaytn05.fandom.finance";
-
+const TINDER_ADDRESS = "0x7cd4a64946e91989a21548362c18052704fe5ed6";
+const TREASURY = "0xd5EFfEC94D1E0E099277C3723Eb8cc9343738fb5"
 const BOND_DATA = {
   NAME: "KDAI_TINDER_LP",
   TOKEN: "0x14E180985BC510628F36a4A129FB57A5Fcb2eE33",
@@ -14,42 +13,29 @@ const BOND_DATA = {
   TYPE: "LP",
 };
 
-async function getBondMarketPrice(caver, bondData) {
-  let marketPrice;
-  let contract;
-
-  contract = caver.contract.create([abi.getCurrentPool], bondData.TOKEN);
-  const reserves = await contract.methods.getCurrentPool().call();
-  marketPrice = new BigNumber(reserves[0])
+async function getBondMarketPrice(block) {
+  const reserves = (await sdk.api.abi.call({ target: BOND_DATA.TOKEN, abi: abi.getCurrentPool, chain, block })).output;
+  return new BigNumber(reserves[0])
     .div(reserves[1])
     .div(10 ** 9)
-    .toString();
-
-  return marketPrice;
+    .toFixed(5);
 }
 
-async function tvl() {
-  const caver = new Caver(PUBLIC_RPC_URL);
+async function staking(ts, _block, chainBlocks) {
+  const block = chainBlocks[chain]
+  const sTINDERCirculatingSupply = (await sdk.api.erc20.balanceOf({ target: TINDER_ADDRESS, owner: TREASURY, block, chain })).output
+  const  marketPrice = await getBondMarketPrice(block)
 
-  const sTINDER = caver.contract.create(
-    [abi.circulatingSupply],
-    sTINDER_ADDRESS
-  );
-
-  const [sTINDERCirculatingSupply, marketPrice] = await Promise.all([
-    sTINDER.methods.circulatingSupply().call(),
-    getBondMarketPrice(caver, BOND_DATA),
-  ]);
   return toUSDTBalances(
-    (sTINDERCirculatingSupply * marketPrice) / Math.pow(10, 9).toFixed(2)
+    (sTINDERCirculatingSupply * marketPrice) / 10 ** 9
   );
 }
 
 module.exports = {
-  timetravel: false,
   misrepresentedTokens: true,
   klaytn: {
-    tvl: tvl,
+    tvl: async () => ({}),
+    staking,
   },
   methodology: "Counts tokens on the staking for tvl",
 };
