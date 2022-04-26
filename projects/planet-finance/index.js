@@ -5,6 +5,19 @@ const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const aquaFarmAddress = "0x0ac58Fd25f334975b1B61732CF79564b6200A933";
 const newFarmAddress = "0xB87F7016585510505478D1d160BDf76c1f41b53d";
 
+const abis = {
+  oracle: {"constant":true,"inputs":[],"name":"getRegistry","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},
+  underlyingPrice: {
+    "constant": true,
+    "inputs": [{ "internalType": 'contract CToken', "name": 'gToken', "type": 'address' }],
+    "name": 'getUnderlyingPrice',
+    "outputs": [{ "internalType": 'uint256', "name": '', "type": 'uint256' }],
+    "payable": false,
+    "stateMutability": 'view',
+    "type": 'function',
+  },
+}
+
 const replacements = {
   "0xa8Bb71facdd46445644C277F9499Dd22f6F0A30C":
     "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c", //beltBNB -> wbnb
@@ -20,11 +33,13 @@ const greenMarkets = {
   "0x24664791B015659fcb71aB2c9C0d56996462082F":
     "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c", //BNB
   "0xF701A48e5C751A213b7c540F84B64b5A6109962E":
-    "0xb3Cb6d2f8f2FDe203a022201C81a96c167607F15", //GAMMA
+    "0xb3Cb6d2f8f2FDe203a022201C81a96c167607F15", //GAMMA OLD
+  "0x0c6dd143F4b86567d6c21E8ccfD0300f00896442":
+    "0xb3Cb6d2f8f2FDe203a022201C81a96c167607F15", //NEW GAMMA
   "0x928fa017eBf781947102690c9b176996B2E00f22":
     "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", //BUSD
   "0xB3A4ce0654524dCF4B5165cee280EbE69a6E8133":
-    "0x72B7D61E8fC8cF971960DD9cfA59B8C829D91991", //AQUA
+    "0x72B7D61E8fC8cF971960DD9cfA59B8C829D91991", //AQUA OLD
   "0xa5ae8459e710F95ca0C93d73F63a66d9996F1ACE":
     "0x23396cF899Ca06c4472205fC903bDB4de249D6fC", //UST
   "0xcfa5b884689dc09e4503e84f7877d3A583fcceef":
@@ -57,20 +72,24 @@ const greenMarkets = {
     "0x0Eb3a705fc54725037CC9e008bDede697f62F335",   //ATOM
   "0x2aCAf66E67876d18CC5a27EB90Aa32b06Ab4785B":
     "0x1d2f0da169ceb9fc7b3144628db156f3f6c60dbe",   //XRP
+  "0x5e11eC8Ec1a57A93E5ddc8AD950cea60EAd9014b":
+    "0xf8a0bf9cf54bb92f17374d9e9a321e6a111a51bd",   //LINK
+  "0xb3A350f549113c60d074587dC40cD25c83d4D3b0":
+    "0xad29abb318791d579433d831ed122afeaf29dcfe",   //FTM
+  "0x6bD50dFb39699D2135D987734F4984cd59eD6b53": 
+   "0xb3Cb6d2f8f2FDe203a022201C81a96c167607F15",    //iGamma
+  "0x6E7a174836b2Df12599ecB2Dc64C1F9e1576aC45":
+    "0x72B7D61E8fC8cF971960DD9cfA59B8C829D91991"    //iAqua
+
   
 };
 
 const stakings = {
-  "0x0c6dd143F4b86567d6c21E8ccfD0300f00896442":
-    "0xb3Cb6d2f8f2FDe203a022201C81a96c167607F15", //GAMMA
   "0xb7eD4A5AF620B52022fb26035C565277035d4FD7":
     "0x72B7D61E8fC8cF971960DD9cfA59B8C829D91991", //AQUA
-  "0x6bD50dFb39699D2135D987734F4984cd59eD6b53": 
-   "0xb3Cb6d2f8f2FDe203a022201C81a96c167607F15", //iGamma
-  "0x6E7a174836b2Df12599ecB2Dc64C1F9e1576aC45":
-    "0x72B7D61E8fC8cF971960DD9cfA59B8C829D91991" //iAqua
 };
 
+//gGamma, gAqua, iAqua and iGamma
 async function staking(timestamp, ethBlock, chainBlocks) {
   let balances = {};
   let marketLength = Object.keys(stakings).length;
@@ -87,55 +106,12 @@ async function staking(timestamp, ethBlock, chainBlocks) {
     ).output;
 
     let exchangeRateStored = 0;
-    if(Object.keys(stakings)[i] == "0x0c6dd143F4b86567d6c21E8ccfD0300f00896442" || 
-    Object.keys(stakings)[i] == "0xb7eD4A5AF620B52022fb26035C565277035d4FD7")
+    if(Object.keys(stakings)[i] == "0xb7eD4A5AF620B52022fb26035C565277035d4FD7")
     {
       // normal aqua and gamma staking
       exchangeRateStored = (
         await sdk.api.abi.call({
           target: Object.keys(stakings)[i],
-          abi: abi["exchangeRateStored"],
-          chain: "bsc",
-          block: chainBlocks.bsc,
-        })
-      ).output;
-    }
-
-    if(Object.keys(stakings)[i] == "0x6bD50dFb39699D2135D987734F4984cd59eD6b53")
-    {
-      //infinity gamma staking
-      //getting gGamma locked from infinity vaults
-      totalSupply = ( await sdk.api.abi.call({
-        target: Object.keys(stakings)[i],
-        abi: abi["balanceOfGtoken"],
-        chain: "bsc",
-        block: chainBlocks.bsc,
-      })).output;
-      //gettting exchange rate between Gamma and gGamma
-      exchangeRateStored = (
-        await sdk.api.abi.call({
-          target: "0x0c6dd143F4b86567d6c21E8ccfD0300f00896442",
-          abi: abi["exchangeRateStored"],
-          chain: "bsc",
-          block: chainBlocks.bsc,
-        })
-      ).output;
-    }
-
-    if(Object.keys(stakings)[i] == "0x6E7a174836b2Df12599ecB2Dc64C1F9e1576aC45")
-    {
-      //infinity aqua staking
-      //getting gAqua locked from infinity vaults
-      totalSupply = ( await sdk.api.abi.call({
-        target: Object.keys(stakings)[i],
-        abi: abi["balanceOfGtoken"],
-        chain: "bsc",
-        block: chainBlocks.bsc,
-      })).output;
-      //gettting exchange rate between Aqua and gAqua
-      exchangeRateStored = (
-        await sdk.api.abi.call({
-          target: "0xb7eD4A5AF620B52022fb26035C565277035d4FD7",
           abi: abi["exchangeRateStored"],
           chain: "bsc",
           block: chainBlocks.bsc,
@@ -149,22 +125,11 @@ async function staking(timestamp, ethBlock, chainBlocks) {
     ).toLocaleString("fullwide", { useGrouping: false });
     
     let addr = stakings[Object.keys(stakings)[i]];
-    if(Object.keys(stakings)[i] == "0x6bD50dFb39699D2135D987734F4984cd59eD6b53")
-    {
-      //for adding marketTvl from Gamma infinity (iGamma) to gGamma staking
-      addr = "0xb3Cb6d2f8f2FDe203a022201C81a96c167607F15";
-    }
-
-    if(Object.keys(stakings)[i] == "0x6E7a174836b2Df12599ecB2Dc64C1F9e1576aC45")
-    {
-      //for adding marketTvl from Aqua infinity (iAqua) to gAqua staking
-      addr = "0x72B7D61E8fC8cF971960DD9cfA59B8C829D91991";
-    }
-
+    
     if(balanceObjArray["bsc:" + addr])
-      balanceObjArray["bsc:" + addr] += parseInt(marketTvl)
+      balanceObjArray["bsc:" + addr] += parseFloat(marketTvl)
     else
-      balanceObjArray["bsc:" + addr] = parseInt(marketTvl)
+      balanceObjArray["bsc:" + addr] = parseFloat(marketTvl)
   }
 
   k = Object.keys(balanceObjArray);
@@ -177,6 +142,7 @@ async function staking(timestamp, ethBlock, chainBlocks) {
   return balances;
 };
 
+//all pools from both new and old farm address, all markets tvl
 async function tvl(timestamp, ethBlock, chainBlocks) {
   let balances = {};
   const lps = [];
@@ -271,47 +237,100 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     }
   }
 
-  //Green Planet
-
+  //green markets tvl -- starts
   let a = Object.keys(greenMarkets)
   let marketLength = Object.keys(greenMarkets).length;
 
   for (var i = 0; i < marketLength; i++) {
-    let totalSupply = (
-      await sdk.api.abi.call({
+    let totalSupply = 0;
+    let exchangeRateStored = 0;
+    if(Object.keys(greenMarkets)[i] == "0x6bD50dFb39699D2135D987734F4984cd59eD6b53" || Object.keys(greenMarkets)[i] == "0x6E7a174836b2Df12599ecB2Dc64C1F9e1576aC45")
+    {
+      let targetObjectArr = {
+        "0x6bD50dFb39699D2135D987734F4984cd59eD6b53" :  
+          "0x0c6dd143F4b86567d6c21E8ccfD0300f00896442", // iGamma to Gamma
+        "0x6E7a174836b2Df12599ecB2Dc64C1F9e1576aC45":
+          "0xb7eD4A5AF620B52022fb26035C565277035d4FD7"  //  iAqua to Aqua
+      }
+      //console.log(targetObjectArr);
+      //infinity gamma staking
+      //getting gGamma locked from infinity vaults
+      totalSupply = ( await sdk.api.abi.call({
         target: Object.keys(greenMarkets)[i],
-        abi: abi["totalSupply"],
+        abi: abi["balanceOfGtoken"],
         chain: "bsc",
         block: chainBlocks.bsc,
-      })
-    ).output;
+      })).output;
 
-    const exchangeRateStored = (
-      await sdk.api.abi.call({
-        target: Object.keys(greenMarkets)[i],
-        abi: abi["exchangeRateStored"],
-        chain: "bsc",
-        block: chainBlocks.bsc,
-      })
-    ).output;
-      
+      //gettting exchange rate between Gamma and gGamma
+      exchangeRateStored = (
+        await sdk.api.abi.call({
+          target: targetObjectArr[Object.keys(greenMarkets)[i]],
+          abi: abi["exchangeRateStored"],
+          chain: "bsc",
+          block: chainBlocks.bsc,
+        })
+      ).output;
+    }
+    else
+    {
+      totalSupply = (
+        await sdk.api.abi.call({
+          target: Object.keys(greenMarkets)[i],
+          abi: abi["totalSupply"],
+          chain: "bsc",
+          block: chainBlocks.bsc,
+        })
+      ).output;
+
+      exchangeRateStored = (
+        await sdk.api.abi.call({
+          target: Object.keys(greenMarkets)[i],
+          abi: abi["exchangeRateStored"],
+          chain: "bsc",
+          block: chainBlocks.bsc,
+        })
+      ).output;
+    }
+
     let exchangeRateDecimal = 1e18;
     if(Object.keys(greenMarkets)[i] == "0x8b04e56a8cd5f4d465b784ccf564899f30aaf88c")
     {
       exchangeRateDecimal = 1e15
     }
 
+    let addr = greenMarkets[Object.keys(greenMarkets)[i]];
+
+    if(Object.keys(greenMarkets)[i] == "0x6bD50dFb39699D2135D987734F4984cd59eD6b53")
+    {
+      //for adding marketTvl from Gamma infinity (iGamma) to gGamma staking
+      addr = "0xb3Cb6d2f8f2FDe203a022201C81a96c167607F15";
+    }
+
+    if(Object.keys(greenMarkets)[i] == "0x6E7a174836b2Df12599ecB2Dc64C1F9e1576aC45")
+    {
+      //for adding marketTvl from Aqua infinity (iAqua) to gAqua staking
+      addr = "0x72B7D61E8fC8cF971960DD9cfA59B8C829D91991";
+    }
+
+    // if(Object.keys(greenMarkets)[i] == "0x45646b30c3Bb8c02bCfE10314308a8055E705ebF")
+    // {
+    //   //for adding marketTvl from Aqua infinity (iAqua) to gAqua staking
+    //   addr = "0xfa54ff1a158b5189ebba6ae130ced6bbd3aea76e";
+    // }
+
+
+
     let marketTvl = (
       (totalSupply * exchangeRateStored) /
       exchangeRateDecimal
     ).toLocaleString("fullwide", { useGrouping: false });
-    marketTvl = marketTvl.replace('.','')
-    let addr = greenMarkets[Object.keys(greenMarkets)[i]];
-
-    //console.log('addr', addr)
-    //console.log('marketTvl', marketTvl)
+    marketTvl = marketTvl.replace('.','');
+    console.log("bsc:" + addr, marketTvl);
     sdk.util.sumSingleBalance(balances, "bsc:" + addr, marketTvl);
   }
+
+  // green markets tvl -- ends
 
   await unwrapUniswapLPs(
     balances,
@@ -322,6 +341,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
   );
   return balances;
 };
+
 // node test.js projects/planet-finance/index.js
 module.exports = {
   bsc: {
