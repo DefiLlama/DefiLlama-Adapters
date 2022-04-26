@@ -738,6 +738,14 @@ function fixAstarBalances(balances) {
   return fixBalances(balances, mapping)
 }
 
+function fixHPBBalances(balances) {
+  const mapping = {
+    '0xBE05Ac1FB417c9EA435b37a9Cecd39Bc70359d31': { coingeckoId: 'high-performance-blockchain', decimals: 18, },
+  }
+
+  return fixBalances(balances, mapping, { removeUnmapped: true })
+}
+
 async function transformAstarAddress() {
   return (addr) => addr // we use fix balances instead
 }
@@ -850,13 +858,16 @@ function normalizeMapping(mapping) {
   Object.keys(mapping).forEach(key => mapping[key.toLowerCase()] = mapping[key])
 }
 
-function fixBalances(balances, mapping) {
+function fixBalances(balances, mapping, { removeUnmapped = false }) {
   normalizeMapping(mapping)
 
   Object.keys(balances).forEach(token => {
     const tokenKey = stripTokenHeader(token).toLowerCase()
     const { coingeckoId, decimals } = mapping[tokenKey] || {}
-    if (!coingeckoId) return;
+    if (!coingeckoId) {
+      if (removeUnmapped) delete balances[token]
+      return;
+    }
     const currentBalance = balances[token]
     delete balances[token]
     sdk.util.sumSingleBalance(balances, coingeckoId, +BigNumber(currentBalance).shiftedBy(-1 * decimals))
@@ -871,7 +882,7 @@ function stripTokenHeader(token) {
 }
 
 async function getFixBalances(chain) {
-  const dummyFn = () => { }
+  const dummyFn = i => i
   return fixBalancesMapping[chain] || dummyFn
 }
 
@@ -881,6 +892,7 @@ const fixBalancesMapping = {
   cronos: fixCronosBalances,
   tezos: fixTezosBalances,
   harmony: fixHarmonyBalances,
+  hpb: fixHPBBalances,
   godwoken: fixGodwokenBalances,
   klaytn: fixKlaytnBalances,
   waves: fixWavesBalances,
