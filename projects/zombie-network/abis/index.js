@@ -1,9 +1,9 @@
 const BloodToken = require("./BloodToken.json");
 const Fountain = require("./Fountain.json");
-const PriceCalculator = require("./PriceCalculator.json");
+const Pair = require("./Pair.json");
 
 module.exports = {
   BloodToken: BloodToken.abi,
   Fountain: Fountain.abi,
-  PriceCalculator: PriceCalculator.abi,
+  Pair: Pair.abi,
 };
