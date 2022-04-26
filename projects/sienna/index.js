@@ -2,6 +2,7 @@ const { CosmWasmClient } = require("secretjs");
 const BigNumber = require("bignumber.js");
 const sdk = require('@defillama/sdk');
 const utils = require("./utils");
+const { eachLimit, mapLimit } = require("async");
 
 const factoryContract = "secret1zvk7pvhtme6j8yw3ryv0jdtgg937w0g0ggu8yy";
 const pairCodeId = 111;
@@ -15,8 +16,10 @@ const SIENNA_SINGLE_SIDED_POOLS = [
 const SIENNA_TOKEN_ADDRESS = "secret1rgm2m5t530tdzyd99775n6vzumxa5luxcllml4";
 const LEND_OVERSEER_CONTRACT = null;
 
-const SECRET_NODE_URL = "https://bridgeapi.azure-api.net/proxy/";
+const SECRET_NODE_URL = "https://bridgeapi.azure-api.net/";
 const queryClient = new CosmWasmClient(SECRET_NODE_URL);
+
+const CACHED_TOKENS = {};
 
 async function Pairs() {
     return (await PairsV1()).concat(await PairsV2());
@@ -33,7 +36,9 @@ async function PairsV2() {
 }
 
 async function TokenInfo(tokenAddress) {
+    if (CACHED_TOKENS[tokenAddress]) return CACHED_TOKENS[tokenAddress];
     const result = await queryClient.queryContractSmart(tokenAddress, { token_info: {} });
+    CACHED_TOKENS[tokenAddress] = result.token_info;
     return result.token_info;
 }
 
@@ -42,21 +47,25 @@ async function PairsVolumes() {
 
     const pairs = await Pairs();
 
-    await Promise.all(pairs.map(async contract => {
-        const pair_info = (await queryClient.queryContractSmart(contract.address, "pair_info")).pair_info;
+    await new Promise((resolve) => {
+        eachLimit(pairs, 3, async (contract) => {
+            const pair_info = (await queryClient.queryContractSmart(contract.address, "pair_info")).pair_info;
 
-        const token1 = await TokenInfo(pair_info.pair.token_0.custom_token.contract_addr);
-        volumes.push({
-            tokens: new BigNumber(pair_info.amount_0).div(new BigNumber(10).pow(token1.decimals)).toNumber(),
-            symbol: token1.symbol
-        });
+            const token1 = await TokenInfo(pair_info.pair.token_0.custom_token.contract_addr);
+            volumes.push({
+                tokens: new BigNumber(pair_info.amount_0).div(new BigNumber(10).pow(token1.decimals)).toNumber(),
+                symbol: token1.symbol
+            });
 
-        const token2 = await TokenInfo(pair_info.pair.token_1.custom_token.contract_addr);
-        volumes.push({
-            tokens: new BigNumber(pair_info.amount_1).div(new BigNumber(10).pow(token2.decimals)).toNumber(),
-            symbol: token2.symbol
+            const token2 = await TokenInfo(pair_info.pair.token_1.custom_token.contract_addr);
+            volumes.push({
+                tokens: new BigNumber(pair_info.amount_1).div(new BigNumber(10).pow(token2.decimals)).toNumber(),
+                symbol: token2.symbol
+            });
+        }, () => {
+            resolve();
         });
-    }));
+    });
     return volumes;
 }
 
@@ -85,44 +94,54 @@ async function getLendMarkets() {
 async function Lend() {
     const markets = await getLendMarkets();
     const block = await queryClient.getHeight();
-    return Promise.all(markets.map(async (market) => {
-        const marketState = await queryClient.queryContractSmart(market.contract.address, {
-            state: {
-                block
-            }
-        });
-        const exchange_rate = await queryClient.queryContractSmart(market.contract.address, {
-            exchange_rate: {
-                block
-            }
-        });
-        const underlying_asset = await queryClient.queryContractSmart(market.contract.address, { underlying_asset: {} });
-        const token = await TokenInfo(underlying_asset.address);
 
-        const tokens_borrowed = new BigNumber(marketState.total_borrows).div(new BigNumber(10).pow(token.decimals).toNumber());
-        const tokens_supplied = new BigNumber(marketState.total_supply).times(exchange_rate).div(new BigNumber(10).pow(token.decimals));
+    return await new Promise((resolve) => {
+        mapLimit(markets, 1, async (market) => {
+            const marketState = await queryClient.queryContractSmart(market.contract.address, {
+                state: {
+                    block
+                }
+            });
+            const exchange_rate = await queryClient.queryContractSmart(market.contract.address, {
+                exchange_rate: {
+                    block
+                }
+            });
+            const underlying_asset = await queryClient.queryContractSmart(market.contract.address, { underlying_asset: {} });
+            const token = await TokenInfo(underlying_asset.address);
 
-        return {
-            symbol: token.symbol,
-            tokens: new BigNumber(tokens_supplied).minus(tokens_borrowed).toNumber()
-        };
-    }));
+            const tokens_borrowed = new BigNumber(marketState.total_borrows).div(new BigNumber(10).pow(token.decimals).toNumber());
+            const tokens_supplied = new BigNumber(marketState.total_supply).times(exchange_rate).div(new BigNumber(10).pow(token.decimals));
+
+            return Promise.resolve({
+                symbol: token.symbol,
+                tokens: new BigNumber(tokens_supplied).minus(tokens_borrowed).toNumber()
+            });
+        }, (err, data) => {
+            resolve(data);
+        })
+    })
 }
 
 async function StakedTokens() {
     const siennaToken = await TokenInfo(SIENNA_TOKEN_ADDRESS);
-    const stakedTokens = await Promise.all(SIENNA_SINGLE_SIDED_POOLS.map(async (pool) => {
-        let total_locked;
-        if (pool.version === 3) {
-            const fetchedPool = await queryClient.queryContractSmart(pool.address, { rewards: { pool_info: { at: new Date().getTime() } } });
-            total_locked = fetchedPool.rewards.pool_info.staked;
-        } else {
-            const fetchedPool = await queryClient.queryContractSmart(pool.address, { pool_info: { at: new Date().getTime() } });
-            total_locked = fetchedPool.pool_info.pool_locked;
-        }
-        return new BigNumber(total_locked).div(new BigNumber(10).pow(siennaToken.decimals)).toNumber();
-    }));
-    return stakedTokens.reduce((total, value) => total + value, 0);
+    return new Promise(async (resolve) => {
+        mapLimit(SIENNA_SINGLE_SIDED_POOLS, 1, async (pool) => {
+            let total_locked;
+            if (pool.version === 3) {
+                const fetchedPool = await queryClient.queryContractSmart(pool.address, { rewards: { pool_info: { at: new Date().getTime() } } });
+                total_locked = fetchedPool.rewards.pool_info.staked;
+            } else {
+                const fetchedPool = await queryClient.queryContractSmart(pool.address, { pool_info: { at: new Date().getTime() } });
+                total_locked = fetchedPool.pool_info.pool_locked;
+            }
+            const tokens = new BigNumber(total_locked).div(new BigNumber(10).pow(siennaToken.decimals)).toNumber();
+            return Promise.resolve(tokens);
+        }, (err, data) => {
+            resolve(data.reduce((total, value) => total + value, 0));
+        });
+    });
+
 }
 
 async function TVL() {
