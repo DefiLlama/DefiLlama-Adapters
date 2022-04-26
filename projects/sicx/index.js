@@ -33,10 +33,8 @@ async function getTotalSupply() {
 
 async function fetch() {
 
-    let icxPrice = await getIcxUsdPrice();
     let totalClaimableIcx = await getTotalClaimableIcx();
     let totalSupply = await getTotalSupply();
-    let todayRate = await getTodayRate();
     // tvl = ICX/USD Price * (totalClaimableIcx + totalSupply from sICX token SCORE * getTodayRate)
     const tvl = totalClaimableIcx + totalSupply;
     return { 'icon': tvl }
