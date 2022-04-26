@@ -133,9 +133,6 @@ async function TVL() {
         if (utils.symbolsMap[volume.symbol]) await sdk.util.sumSingleBalance(balances, utils.symbolsMap[volume.symbol], volume.tokens);
     }));
 
-    const staked_tokens = await StakedTokens();
-    if (staked_tokens) await sdk.util.sumSingleBalance(balances, "sienna", staked_tokens);
-
     const lend_data = await Lend();
 
     await Promise.all(lend_data.map(async volume => {
@@ -145,11 +142,19 @@ async function TVL() {
     return balances;
 }
 
+async function Staked() {
+    const balances = {};
+    const staked_tokens = await StakedTokens();
+    if (staked_tokens) await sdk.util.sumSingleBalance(balances, "sienna", staked_tokens);
+    return balances;
+}
+
 module.exports = {
     misrepresentedTokens: true,
     timetravel: false,
     methodology: 'All tokens locked in SIENNA Network pairs + All the supplied tokens to Sienna Lend Markets + Staked Sienna;',
     secret: {
-        tvl: TVL
+        tvl: TVL,
+        staking: Staked
     }
 };
