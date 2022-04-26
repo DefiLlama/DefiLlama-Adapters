@@ -477,20 +477,20 @@ async function transformArbitrumAddress() {
   const bridge = (
     await utils.fetchURL("https://bridge.arbitrum.io/token-list-42161.json")
   ).data.tokens;
+  const mapping = {
+    '0x0000000000000000000000000000000000000000': '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',  // WETH
+    '0xFEa7a6a0B346362BF88A9e4A88416B77a57D6c2A': '0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3',  // MIM
+    '0xDBf31dF14B66535aF65AaC99C32e9eA844e14501': '0xeb4c2781e4eba804ce9a9803c67d0893436bb27d',  // renBTC
+    '0x9ef758ac000a354479e538b8b2f01b917b8e89e7': 'polygon:0x3dc7b06dd0b1f08ef9acbbd2564f8605b4868eea',  // XDO
+    '0x31635A2a3892dAeC7C399102676E344F55d20Da7': '0x09ce2b746c32528b7d864a1e3979bd97d2f095ab',  //  DeFIL
+  }
+
+  normalizeMapping(mapping)
 
   return (addr) => {
-    if (compareAddresses(addr, "0x0000000000000000000000000000000000000000")) {
-      return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"; // WETH
-    }
-    if (compareAddresses(addr, "0xFEa7a6a0B346362BF88A9e4A88416B77a57D6c2A")) {
-      return "0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3"; // MIM
-    }
-    if (compareAddresses(addr, "0xDBf31dF14B66535aF65AaC99C32e9eA844e14501")) {
-      return "0xeb4c2781e4eba804ce9a9803c67d0893436bb27d"; // renBTC
-    }
-    if (compareAddresses(addr, "0x9ef758ac000a354479e538b8b2f01b917b8e89e7")) {
-      return "polygon:0x3dc7b06dd0b1f08ef9acbbd2564f8605b4868eea"; // XDO
-    }
+
+    addr = addr.toLowerCase()
+    if (mapping[addr])  return mapping[addr]
     const dstToken = bridge.find((token) =>
       compareAddresses(addr, token.address)
     );
