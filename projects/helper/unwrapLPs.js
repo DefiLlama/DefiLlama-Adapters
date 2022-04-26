@@ -420,8 +420,6 @@ async function unwrapUniswapV3NFTs({ balances, nftsAndOwners, block, chain, tran
   return balances
 }
 
-const tickMapping = {}
-
 async function unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain = 'ethereum', transformAddress }) {
   if (!transformAddress)
     transformAddress = await getChainTransform(chain)
@@ -463,21 +461,7 @@ async function unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain = 
   }
 
   function addV3PositionBalances(position) {
-    const tickToPrice = (tick) => {
-      if (tickMapping[tick]) return tickMapping[tick]
-      const keys = Object.keys(tickMapping)
-
-      if (!keys.length)
-        tickMapping[tick] = new BigNumber(1.0001).pow(tick)
-      else {
-        const closestTick = keys.reduce((closest, currentTick) => {
-          return (Math.abs(+currentTick - +tick) < Math.abs(+closest - +tick)) ? currentTick : closest
-        }, keys[0])
-        tickMapping[tick] = new BigNumber(1.0001).pow( +tick - +closestTick).times(tickMapping[closestTick])
-
-      }
-      return tickMapping[tick]
-    }
+    const tickToPrice = (tick) => new BigNumber(1.0001 ** +tick)
 
     const token0 = position.token0
     const token1 = position.token1
