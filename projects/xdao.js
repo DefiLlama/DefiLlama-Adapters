@@ -23,38 +23,71 @@ const getDaos = {
 
 async function getTokens(chain, address) {
   let chainId;
+  let method;
+  let gasToken;
 
   switch (chain) {
     case "ethereum":
       chainId = 1;
+      method = "covalent";
       break;
     case "bsc":
       chainId = 56;
+      method = "covalent";
       break;
     case "polygon":
       chainId = 137;
+      method = "covalent";
       break;
     case "avax":
       chainId = 43114;
+      method = "covalent";
       break;
     case "fantom":
       chainId = 250;
+      method = "covalent";
       break;
     case "heco":
       chainId = 128;
+      method = "covalent";
+      break;
+    case "astar":
+      chainId = "astar";
+      gasToken = "astar";
+      method = "debank";
       break;
   }
 
-  const allTokens = (
-    await retry(
-      async (bail) =>
-        await axios.get(
-          `https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/?&key=ckey_72cd3b74b4a048c9bc671f7c5a6`
-        )
-    )
-  ).data.data.items.map((t) => t.contract_address);
+  if (method === "covalent") {
+    const allTokens = (
+      await retry(
+        async (bail) =>
+          await axios.get(
+            `https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/?&key=ckey_72cd3b74b4a048c9bc671f7c5a6`
+          )
+      )
+    ).data.data.items.map((t) => t.contract_address);
 
-  return allTokens;
+    return allTokens;
+  }
+  if (method === "debank") {
+    const allTokensRaw = (
+      await retry(
+        async (bail) =>
+          await axios.get(
+            `https://openapi.debank.com/v1/user/token_list?id=${address}&chain_id=${chainId}&is_all=true&has_balance=true`
+          )
+      )
+    );
+
+    const allTokens = allTokensRaw.data.map((t) => t.id);
+    const gasTokenRaw = allTokensRaw.data.find((t) => (t.id === gasToken));
+    const gasBalance = gasTokenRaw ? gasTokenRaw.amount : "0";
+
+    return [allTokens, gasBalance];
+  }
+
+  return [];
 }
 
 async function getTransform(chain) {
@@ -71,10 +104,13 @@ async function getTransform(chain) {
       return await transformFantomAddress();
     case "heco":
       return await transformHecoAddress();
+    case "astar":
+      return (a) => a;
   }
 }
+
 // node test.js projects/xdao.js
-function tvl(chain, gasToken) {
+function tvl(chain, gasToken, method) {
   return async (timestamp, block, chainBlocks) => {
     block = chainBlocks[chain];
     let balances = {};
@@ -99,15 +135,26 @@ function tvl(chain, gasToken) {
 
     async function addDao(dao) {
       let tokens = await getTokens(chain, dao);
+      let gasBalanceDebank = "0";
+
+      if (method === "debank") {
+        gasBalanceDebank = tokens[1];
+        tokens = tokens[0];
+      }
 
       if (tokens.includes(gasToken)) {
-        const gasBalance = (
-          await sdk.api.eth.getBalance({
-            target: dao,
-            block,
-            chain,
-          })
-        ).output;
+        let gasBalance;
+        if (method === "debank") {
+          gasBalance = gasBalanceDebank;
+        } else {
+          gasBalance = (
+            await sdk.api.eth.getBalance({
+              target: dao,
+              block,
+              chain,
+            })
+          ).output;
+        }
 
         sdk.util.sumSingleBalance(
           balances,
@@ -135,21 +182,24 @@ function tvl(chain, gasToken) {
 
 module.exports = {
   ethereum: {
-    tvl: tvl("ethereum", "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"),
+    tvl: tvl("ethereum", "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "covalent"),
   },
   bsc: {
-    tvl: tvl("bsc", "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"),
+    tvl: tvl("bsc", "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "covalent"),
   },
   polygon: {
-    tvl: tvl("polygon", "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"),
+    tvl: tvl("polygon", "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "covalent"),
   },
   avax: {
-    tvl: tvl("avax", "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"),
+    tvl: tvl("avax", "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "covalent"),
   },
   fantom: {
-    tvl: tvl("fantom", "0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"),
+    tvl: tvl("fantom", "0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", "covalent"),
   },
   heco: {
-    tvl: tvl("heco", "0xhecozzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"),
+    tvl: tvl("heco", "0xhecozzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz", "covalent"),
+  },
+  astar: {
+    tvl: tvl("astar", "astar", "debank"),
   },
 };

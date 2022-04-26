@@ -5,6 +5,7 @@ const { toUSDTBalances } = require("../helper/balances");
 const Ethers = require("ethers");
 const MasterchefABI = require("./abi/masterchef.json");
 const masterchefAddress = "0x25c6d6a65c3ae5d41599ba2211629b24604fea4f";
+const masterchefV2Address = "0xfdfcE767aDD9dCF032Cbd0DE35F0E57b04495324";
 const mjtAddress = "0x2ca48b4eea5a731c2b54e7c3944dbdb87c0cfb6f";
 const erc20ABI = require("./abi/erc20.json");
 const BigNumber = require("bignumber.js");
@@ -102,15 +103,24 @@ const getStakeLockValue = () => {
         JSONProvider
       );
 
-      const balance = await mjtContract.balanceOf(masterchefAddress, {
+      const v1Balance = await mjtContract.balanceOf(masterchefAddress, {
         blockTag: block ?? "latest",
       });
-      const MJTBalance = new BigNumber(balance.toString())
+
+      const v2Balance = await mjtContract.balanceOf(masterchefV2Address, {
+        blockTag: block ?? "latest",
+      });
+
+      const v1MJTBalance = new BigNumber(v1Balance.toString())
+        .div(10 ** 18)
+        .toNumber();
+
+      const v2MJTBalance = new BigNumber(v2Balance.toString())
         .div(10 ** 18)
         .toNumber();
 
       const mjtPrice = await getTokenPrice(mjtAddress, block);
-      const stakeLockValue = MJTBalance * mjtPrice;
+      const stakeLockValue = (v1MJTBalance + v2MJTBalance) * mjtPrice;
       return toUSDTBalances(stakeLockValue);
     };
   };

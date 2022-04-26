@@ -27,7 +27,10 @@ async function transformFantomAddress() {
     "0x0665ef3556520b21368754fb644ed3ebf1993ad4": "0x6c3f90f043a72fa612cbac8115ee7e52bde6e490",
     // update below to binspirit when it lists on coingecko
     "0x7345a537a975d9ca588ee631befddfef34fd5e8f": "fantom:0x5Cc61A78F164885776AA610fb0FE1257df78E59B",
+    "0xDBf31dF14B66535aF65AaC99C32e9eA844e14501": "0xeb4c2781e4eba804ce9a9803c67d0893436bb27d", // RenBTC
   }
+
+  normalizeMapping(mapping)
 
   return (addr) => {
     addr = addr.toLowerCase()
@@ -474,20 +477,20 @@ async function transformArbitrumAddress() {
   const bridge = (
     await utils.fetchURL("https://bridge.arbitrum.io/token-list-42161.json")
   ).data.tokens;
+  const mapping = {
+    '0x0000000000000000000000000000000000000000': '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',  // WETH
+    '0xFEa7a6a0B346362BF88A9e4A88416B77a57D6c2A': '0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3',  // MIM
+    '0xDBf31dF14B66535aF65AaC99C32e9eA844e14501': '0xeb4c2781e4eba804ce9a9803c67d0893436bb27d',  // renBTC
+    '0x9ef758ac000a354479e538b8b2f01b917b8e89e7': 'polygon:0x3dc7b06dd0b1f08ef9acbbd2564f8605b4868eea',  // XDO
+    '0x31635A2a3892dAeC7C399102676E344F55d20Da7': '0x09ce2b746c32528b7d864a1e3979bd97d2f095ab',  //  DeFIL
+  }
+
+  normalizeMapping(mapping)
 
   return (addr) => {
-    if (compareAddresses(addr, "0x0000000000000000000000000000000000000000")) {
-      return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"; // WETH
-    }
-    if (compareAddresses(addr, "0xFEa7a6a0B346362BF88A9e4A88416B77a57D6c2A")) {
-      return "0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3"; // MIM
-    }
-    if (compareAddresses(addr, "0xDBf31dF14B66535aF65AaC99C32e9eA844e14501")) {
-      return "0xeb4c2781e4eba804ce9a9803c67d0893436bb27d"; // renBTC
-    }
-    if (compareAddresses(addr, "0x9ef758ac000a354479e538b8b2f01b917b8e89e7")) {
-      return "polygon:0x3dc7b06dd0b1f08ef9acbbd2564f8605b4868eea"; // XDO
-    }
+
+    addr = addr.toLowerCase()
+    if (mapping[addr])  return mapping[addr]
     const dstToken = bridge.find((token) =>
       compareAddresses(addr, token.address)
     );
@@ -735,6 +738,14 @@ function fixAstarBalances(balances) {
   return fixBalances(balances, mapping)
 }
 
+function fixHPBBalances(balances) {
+  const mapping = {
+    '0xBE05Ac1FB417c9EA435b37a9Cecd39Bc70359d31': { coingeckoId: 'high-performance-blockchain', decimals: 18, },
+  }
+
+  return fixBalances(balances, mapping, { removeUnmapped: true })
+}
+
 async function transformAstarAddress() {
   return (addr) => addr // we use fix balances instead
 }
@@ -847,13 +858,16 @@ function normalizeMapping(mapping) {
   Object.keys(mapping).forEach(key => mapping[key.toLowerCase()] = mapping[key])
 }
 
-function fixBalances(balances, mapping) {
+function fixBalances(balances, mapping, { removeUnmapped = false }) {
   normalizeMapping(mapping)
 
   Object.keys(balances).forEach(token => {
     const tokenKey = stripTokenHeader(token).toLowerCase()
     const { coingeckoId, decimals } = mapping[tokenKey] || {}
-    if (!coingeckoId) return;
+    if (!coingeckoId) {
+      if (removeUnmapped) delete balances[token]
+      return;
+    }
     const currentBalance = balances[token]
     delete balances[token]
     sdk.util.sumSingleBalance(balances, coingeckoId, +BigNumber(currentBalance).shiftedBy(-1 * decimals))
@@ -868,7 +882,7 @@ function stripTokenHeader(token) {
 }
 
 async function getFixBalances(chain) {
-  const dummyFn = () => { }
+  const dummyFn = i => i
   return fixBalancesMapping[chain] || dummyFn
 }
 
@@ -878,6 +892,7 @@ const fixBalancesMapping = {
   cronos: fixCronosBalances,
   tezos: fixTezosBalances,
   harmony: fixHarmonyBalances,
+  hpb: fixHPBBalances,
   godwoken: fixGodwokenBalances,
   klaytn: fixKlaytnBalances,
   waves: fixWavesBalances,
