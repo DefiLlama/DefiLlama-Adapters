@@ -27,7 +27,10 @@ async function transformFantomAddress() {
     "0x0665ef3556520b21368754fb644ed3ebf1993ad4": "0x6c3f90f043a72fa612cbac8115ee7e52bde6e490",
     // update below to binspirit when it lists on coingecko
     "0x7345a537a975d9ca588ee631befddfef34fd5e8f": "fantom:0x5Cc61A78F164885776AA610fb0FE1257df78E59B",
+    "0xDBf31dF14B66535aF65AaC99C32e9eA844e14501": "0xeb4c2781e4eba804ce9a9803c67d0893436bb27d", // RenBTC
   }
+
+  normalizeMapping(mapping)
 
   return (addr) => {
     addr = addr.toLowerCase()
@@ -324,6 +327,20 @@ async function transformHecoAddress() {
     return `heco:${addr}`;
   };
 }
+
+async function transformHooAddress() {
+  const mapping = {
+    '0xd16babe52980554520f6da505df4d1b124c815a7': '0xdac17f958d2ee523a2206206994597c13d831ec7', // USDT
+    '0x3eff9d389d13d6352bfb498bcf616ef9b1beac87': '0x6f259637dcd74c767781e37bc6133cd6a68aa161', // wHOO
+  }
+  normalizeMapping(mapping)
+
+  return (addr) => {
+    addr = addr.toLowerCase()
+    return mapping[addr] || `hoo:${addr}`;
+  };
+}
+
 
 async function transformCeloAddress() {
   return (addr) => {
@@ -721,6 +738,14 @@ function fixAstarBalances(balances) {
   return fixBalances(balances, mapping)
 }
 
+function fixHPBBalances(balances) {
+  const mapping = {
+    '0xBE05Ac1FB417c9EA435b37a9Cecd39Bc70359d31': { coingeckoId: 'high-performance-blockchain', decimals: 18, },
+  }
+
+  return fixBalances(balances, mapping, { removeUnmapped: true })
+}
+
 async function transformAstarAddress() {
   return (addr) => addr // we use fix balances instead
 }
@@ -833,13 +858,16 @@ function normalizeMapping(mapping) {
   Object.keys(mapping).forEach(key => mapping[key.toLowerCase()] = mapping[key])
 }
 
-function fixBalances(balances, mapping) {
+function fixBalances(balances, mapping, { removeUnmapped = false }) {
   normalizeMapping(mapping)
 
   Object.keys(balances).forEach(token => {
     const tokenKey = stripTokenHeader(token).toLowerCase()
     const { coingeckoId, decimals } = mapping[tokenKey] || {}
-    if (!coingeckoId) return;
+    if (!coingeckoId) {
+      if (removeUnmapped) delete balances[token]
+      return;
+    }
     const currentBalance = balances[token]
     delete balances[token]
     sdk.util.sumSingleBalance(balances, coingeckoId, +BigNumber(currentBalance).shiftedBy(-1 * decimals))
@@ -854,7 +882,7 @@ function stripTokenHeader(token) {
 }
 
 async function getFixBalances(chain) {
-  const dummyFn = () => { }
+  const dummyFn = i => i
   return fixBalancesMapping[chain] || dummyFn
 }
 
@@ -864,6 +892,7 @@ const fixBalancesMapping = {
   cronos: fixCronosBalances,
   tezos: fixTezosBalances,
   harmony: fixHarmonyBalances,
+  hpb: fixHPBBalances,
   godwoken: fixGodwokenBalances,
   klaytn: fixKlaytnBalances,
   waves: fixWavesBalances,
@@ -880,6 +909,7 @@ const chainTransforms = {
   xdai: transformXdaiAddress,
   avax: transformAvaxAddress,
   heco: transformHecoAddress,
+  hoo: transformHooAddress,
   harmony: transformHarmonyAddress,
   optimism: transformOptimismAddress,
   moonriver: transformMoonriverAddress,
