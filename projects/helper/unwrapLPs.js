@@ -11,6 +11,7 @@ const { request, gql } = require("graphql-request");
 const { unwrapCrv, resolveCrvTokens } = require('./resolveCrvTokens')
 const activePoolAbi = require('./ankr/abis/activePool.json')
 const wethAddressAbi = require('./ankr/abis/wethAddress.json');
+const { isLP } = require('./utils')
 
 const yearnVaults = {
 	// yvToken: underlying, eg yvYFI:YFI
@@ -492,7 +493,8 @@ tokens [
 		[token, isLP] - eg ["0xaaa", true]
 ]
 */
-async function sumTokensAndLPsSharedOwners(balances, tokens, owners, block, chain = "ethereum", transformAddress = id => id) {
+async function sumTokensAndLPsSharedOwners(balances, tokens, owners, block, chain = "ethereum", transformAddress) {
+	if (!transformAddress) transformAddress = await getChainTransform(chain)
 	const balanceOfTokens = await sdk.api.abi.multiCall({
 		calls: tokens.map(t => owners.map(o => ({
 			target: t[0],
@@ -557,7 +559,8 @@ async function sumLPWithOnlyOneToken(balances, lpToken, owner, listedToken, bloc
 	)
 }
 
-async function sumLPWithOnlyOneTokenOtherThanKnown(balances, lpToken, owner, tokenNotToUse, block, chain = "ethereum", transformAddress = id => id) {
+async function sumLPWithOnlyOneTokenOtherThanKnown(balances, lpToken, owner, tokenNotToUse, block, chain = "ethereum", transformAddress) {
+	if (!transformAddress) transformAddress = await getChainTransform(chain)
 	const [token0, token1] = await Promise.all([token0Abi, token1Abi]
 		.map(abi => sdk.api.abi.call({
 			target: lpToken,
@@ -579,7 +582,8 @@ tokens [
 		[token, owner, isLP] - eg ["0xaaa", "0xbbb", true]
 ]
 */
-async function sumTokensAndLPs(balances, tokens, block, chain = "ethereum", transformAddress = id => id) {
+async function sumTokensAndLPs(balances, tokens, block, chain = "ethereum", transformAddress) {
+	if (!transformAddress) transformAddress = await getChainTransform(chain)
 	const balanceOfTokens = await sdk.api.abi.multiCall({
 		calls: tokens.map(t => ({
 			target: t[0],
@@ -607,6 +611,7 @@ async function sumTokensAndLPs(balances, tokens, block, chain = "ethereum", tran
 
 const balancerVault = "0xBA12222222228d8Ba445958a75a0704d566BF2C8"
 async function sumBalancerLps(balances, tokensAndOwners, block, chain, transformAddress) {
+	if (!transformAddress) transformAddress = await getChainTransform(chain)
 	const poolIds = sdk.api.abi.multiCall({
 		calls: tokensAndOwners.map(t => ({
 			target: t[0]
@@ -964,10 +969,6 @@ async function unwrapTroves({ balances = {}, chain = 'ethereum', block, troves =
 	return balances
 }
 
-function isLP(symbol) {
-	if (!symbol) return false
-  return symbol.includes('LP') || symbol.includes('PGL') || symbol.includes('UNI-V2') || symbol === "PNDA-V2" || symbol.includes('GREEN-V2')
-}
 
 module.exports = {
 	unwrapYearn,

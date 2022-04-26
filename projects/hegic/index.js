@@ -15,7 +15,7 @@ const tokens = {
     USDC: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
 };
 
-async function tvl(_timestamp, ethBlock) {
+async function ethTvl(_timestamp, ethBlock) {
     const ethV1 = (await sdk.api.eth.getBalance({
         target: '0x878f15ffc8b894a1ba7647c7176e4c01f74e140b',
         block: ethBlock,
@@ -42,8 +42,40 @@ async function tvl(_timestamp, ethBlock) {
     return balances
 };
 
+async function arbiTvl(timestamp, block, chainBlocks) {
+    const balances = {};
+    const tokenHolders = [
+        '0xB0F9F032158510cd4a926F9263Abc86bAF7b4Ab3',
+        '0x60898dfA3C6e8Ba4998B5f3be25Fb0b0b69d5D5d'
+    ];
+    const USDC = '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8';
 
+    const usdcBalances = await sdk.api.abi.multiCall({
+          calls: tokenHolders.map(t => ({
+              target: USDC,
+              params: t
+          })),
+          abi: 'erc20:balanceOf',
+          block: chainBlocks.arbitrum,
+          chain: 'arbitrum'
+        })
+
+    sdk.util.sumMultiBalanceOf(
+        balances, 
+        usdcBalances, 
+        true, 
+        a => '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
+        );
+
+    return balances;
+};
+// node test.js projects/hegic/index.js
 module.exports = {
-    tvl,
+    ethereum: {
+        tvl: ethTvl
+    },
+    arbitrum: {
+        tvl: arbiTvl
+    },
     methodology: `TVL for Hegic is calculated using the Eth and WBTC deposited for liquidity`
-}
+};
