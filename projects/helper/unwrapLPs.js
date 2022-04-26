@@ -749,7 +749,8 @@ async function genericUnwrapCrv(balances, crvToken, lpBalance, block, chain) {
 		chain,
 		block
 	})
-	const LP_tokens_count = 1 + (crv_symbol.match(/_/g) || []).length
+
+	const LP_tokens_count = ['3Crv'].includes(crv_symbol) ? 3 : 2
 	const coins_indices = Array.from(Array(LP_tokens_count).keys())
 	const coins = (await sdk.api.abi.multiCall({
 		abi: crv_abi['crvLP_coins'],
