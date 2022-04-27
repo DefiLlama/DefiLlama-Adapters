@@ -129,6 +129,15 @@
             "underlying": "0xeb8eb6300c53c3addbb7382ff6c6fbc4165b0742",
             "isLP": true,
             "isJoeLP": true
+        },
+        "0x25DD42103b7DA808e68A2bae5e14F48871488a85": {
+            "underlying": "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+            "isLP": false
+        },
+        "0x8Aa347D9A2Bb8e32342f50939236251853604C79": {
+            "underlying": "0x2b2C81e08f1Af8835a78Bb2A90AE924ACE0eA4bE",
+            "isLP": false
         }
+        
     }
 }
