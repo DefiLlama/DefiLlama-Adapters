@@ -1,5 +1,3 @@
-const sdk = require("@defillama/sdk");
-const { ApiPromise, WsProvider } = require("@polkadot/api");
 const Web3 = require("web3");
 const abi = require("./abi.json");
 
@@ -7,14 +5,8 @@ const web3 = new Web3(
   new Web3.providers.HttpProvider(`https://astar.api.onfinality.io/public`)
 );
 
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
-// const { staking } = require("../helper/staking");
-const { getChainTransform } = require("../helper/portedTokens");
-
 const ADAOTreasuryAddress = "0x9E5A8BB92C3E5A8bf5bad9c40a807dE4151311d1";
 const ADAOStakingContract = "0x3BFcAE71e7d5ebC1e18313CeCEbCaD8239aA386c";
-
-const ASTR_DECIMALS = 18;
 
 async function treasury(timestamp, block, chainBlocks) {
   const balances = {};
