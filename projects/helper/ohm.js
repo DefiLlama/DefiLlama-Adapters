@@ -7,7 +7,7 @@ function ohmTvl(treasury, treasuryTokens, chain = 'ethereum', stakingAddress, st
     const tvl = async (time, ethBlock, chainBlocks) => {
         const block = chainBlocks[chain]
         const balances = {}
-        await sumTokensAndLPsSharedOwners(balances, tokenOnCoingecko?treasuryTokens:treasuryTokens.filter(t=>t[1]===false), [treasury], block, chain, transform)
+        await sumTokensAndLPsSharedOwners(balances, tokenOnCoingecko?treasuryTokens:treasuryTokens.filter(t=>t[1]===false), [treasury], block, chain, transform || (addr => `${chain}:${addr}`))
         if(!tokenOnCoingecko){
             await Promise.all(treasuryTokens.filter(t=>t[1]===true).map(t=>
                 sumLPWithOnlyOneTokenOtherThanKnown(balances, t[0], treasury, stakingToken, block, chain, transform)
