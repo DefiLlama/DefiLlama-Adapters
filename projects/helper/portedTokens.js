@@ -866,6 +866,12 @@ function fixTezosBalances(balances) {
   return fixBalances(balances, mapping)
 }
 
+const songbirdFixMapping = {
+  '0x02f0826ef6aD107Cfc861152B32B52fD11BaB9ED': { coingeckoId: 'songbird', decimals: 18, },
+  '0xC348F894d0E939FE72c467156E6d7DcbD6f16e21': { coingeckoId: 'flare-finance', decimals: 18, },
+  '0x70Ad7172EF0b131A1428D0c1F66457EB041f2176': { coingeckoId: 'usd-coin', decimals: 18, },
+}
+
 function normalizeMapping(mapping) {
   Object.keys(mapping).forEach(key => mapping[key.toLowerCase()] = mapping[key])
 }
@@ -877,7 +883,10 @@ function fixBalances(balances, mapping, { removeUnmapped = false } = {}) {
     const tokenKey = stripTokenHeader(token).toLowerCase()
     const { coingeckoId, decimals } = mapping[tokenKey] || {}
     if (!coingeckoId) {
-      if (removeUnmapped) delete balances[token]
+      if (removeUnmapped) {
+        console.log(`Removing token from balances, it is not part of whitelist: ${tokenKey}`)
+        delete balances[token]
+      }
       return;
     }
     const currentBalance = balances[token]
@@ -909,6 +918,7 @@ const fixBalancesMapping = {
   godwoken: fixGodwokenBalances,
   klaytn: fixKlaytnBalances,
   waves: fixWavesBalances,
+  songbird: b => fixBalances(b, songbirdFixMapping, { removeUnmapped: true }),
   oasis: fixOasisBalances,
 }
 
