@@ -727,6 +727,16 @@ async function transformCronosAddress() {
   return (addr) => mapping[addr.toLowerCase()] || `cronos:${addr.toLowerCase()}`
 }
 
+function fixShidenBalances(balances) {
+  const mapping = {
+    '0x765277EebeCA2e31912C9946eAe1021199B39C61': { coingeckoId: 'ethereum', decimals: 18, },
+    '0x332730a4f6e03d9c55829435f10360e13cfa41ff': { coingeckoId: 'binancecoin', decimals: 18, },
+    '0x65e66a61d0a8f1e686c2d6083ad611a10d84d97a': { coingeckoId: 'binance-usd', decimals: 18, },
+    '0x722377a047e89ca735f09eb7cccab780943c4cb4': { coingeckoId: 'standard-protocol', decimals: 18, },
+  }
+
+  return fixBalances(balances, mapping, { removeUnmapped: true })
+}
 
 function fixAstarBalances(balances) {
   const mapping = {
@@ -860,7 +870,7 @@ function normalizeMapping(mapping) {
   Object.keys(mapping).forEach(key => mapping[key.toLowerCase()] = mapping[key])
 }
 
-function fixBalances(balances, mapping, { removeUnmapped = false }) {
+function fixBalances(balances, mapping, { removeUnmapped = false } = {}) {
   normalizeMapping(mapping)
 
   Object.keys(balances).forEach(token => {
@@ -891,6 +901,7 @@ async function getFixBalances(chain) {
 const fixBalancesMapping = {
   avax: fixAvaxBalances,
   astar: fixAstarBalances,
+  shiden: fixShidenBalances,
   cronos: fixCronosBalances,
   tezos: fixTezosBalances,
   harmony: fixHarmonyBalances,
