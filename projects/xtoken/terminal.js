@@ -158,3 +158,29 @@ exports.getData = async (network) => {
 
   return toUSDTBalances(Math.round(poolTotalTVL));
 }
+
+exports.getTokenData = async (network, tokenAddress) => {
+    let poolsInfo = await getPoolData(network);
+    // Empty response in case there's no data
+    if(Object.entries(poolsInfo).length === 0) {
+        return toUSDTBalances(Math.round(0));
+    }
+
+    let pools = [];
+    for(address of Object.keys(poolsInfo)) {
+        pools.push(address);
+    }
+
+    // Calculate TVL:
+    let poolTVL = {};
+    for(let i = 0 ; i < pools.length ; ++i) {
+        let poolInfo = poolsInfo[pools[i]]
+        let poolBalances = poolsInfo[pools[i]].poolBalances;
+        delete poolsInfo[pools[i]].poolBalances;
+        if(poolInfo.token0.address == tokenAddress){
+            let values = await calculateTVL(poolInfo.token0.price, poolInfo.token1.price, poolBalances);
+            return toUSDTBalances(Number(ethers.utils.formatEther(values.tvl)));
+        }
+    }
+    return null;
+}

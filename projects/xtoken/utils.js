@@ -60,7 +60,7 @@ async function getPriceFromUniswapForToken0(token1Price, poolPrice) {
     let poolPriceBn = await ethers.BigNumber.from(poolPrice);
     let token1PriceBn = await ethers.BigNumber.from((token1Price * 1e8).toFixed(0));
     let dividerBn = await ethers.BigNumber.from(10);
-    let token0PriceInUSD = poolPriceBn.mul(token1PriceBn.div(dividerBn.pow(8))) / 1e12;
+    let token0PriceInUSD = poolPriceBn.mul(token1PriceBn).div(dividerBn.pow(8)) / 1e12;
     return token0PriceInUSD;
 }
 

@@ -32,7 +32,8 @@ const {
   inchAddr,
   usdcAddr,
   aaveAddr,
-  usdtAddress
+  usdtAddress,
+  xtkAddress
 } = require("./constants");
 const xu3lps = [
   xu3lpaAddr,
@@ -206,9 +207,26 @@ async function fetchPolygon() {
   return await terminal.getData("polygon");
 }
 
+async function fetchMainnetPool2() {
+  let pool2TotalTVL = await terminal.getTokenData("mainnet", xtkAddress);
+  return pool2TotalTVL;
+}
+
+async function pool2() {
+  let balance = {};
+  let terminalXTKTvl = await fetchMainnetPool2();
+  sdk.util.sumSingleBalance(
+      balance,
+      usdtAddress,
+      terminalXTKTvl ? terminalXTKTvl[usdtAddress] : 0
+  );
+  return balance;
+}
+
 module.exports = {
   ethereum:{
-    tvl
+    tvl,
+    pool2
   },
   arbitrum: {
     tvl: fetchArbitrum,

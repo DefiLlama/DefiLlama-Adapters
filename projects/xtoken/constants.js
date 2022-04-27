@@ -30,6 +30,7 @@ const snxTokenAddr = "0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f";
 const inchAddr = "0x111111111117dc0aa78b770fa6a738034120c302";
 const usdcAddr = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
 const aaveAddr = "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9";
+const xtkAddress = "0x7F3EDcdD180Dbe4819Bd98FeE8929b5cEdB3AdEB";
 
 const xu3lpaAddrArbitrum = "0x9F8cFc08f781e1576A05d4d3669b3E6FF22913FF";
 const xu3lpbAddrArbitrum = "0x216D135926f5EC9E5924564A342580B0b5A3bdc6";
@@ -110,5 +111,6 @@ module.exports = {
   usdtAddress,
   COINGECKO_API_URL,
   urls,
-  networks
+  networks,
+  xtkAddress
 };
