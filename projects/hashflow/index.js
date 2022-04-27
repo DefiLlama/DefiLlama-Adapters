@@ -73,3 +73,4 @@ module.exports = chainExports(chainTvl, [
   'avax'
 ]),
 module.exports.methodology = 'Hashflow TVL is made of all pools token balances. Pools and their tokens are retrieved by Hashflow HTTP REST API.'
+module.exports.broken = 'Server IP is blocked, so api call fails'

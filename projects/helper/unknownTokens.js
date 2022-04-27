@@ -10,14 +10,14 @@ const { isLP, parallelAbiCall } = require('./utils')
 const factoryAbi = require('./abis/factory.json');
 const { getBlock } = require('./getBlock');
 
-async function getTokenPrices({ block, chain = 'ethereum', coreAssets = [], blacklist = [], whitelist = [], lps = [], transformAddress, maxParallel }) {
+async function getTokenPrices({ block, chain = 'ethereum', coreAssets = [], blacklist = [], whitelist = [], lps = [], transformAddress, maxParallel, allLps = false }) {
   if (!transformAddress)
     transformAddress = await getChainTransform(chain)
 
   coreAssets = coreAssets.map(i => i.toLowerCase())
   blacklist = blacklist.map(i => i.toLowerCase())
   whitelist = whitelist.map(i => i.toLowerCase())
-  const pairAddresses = await getLPList(lps)
+  const pairAddresses = allLps ? lps : await getLPList(lps)
   const pairCalls = pairAddresses.map((pairAddress) => ({ target: pairAddress, }))
   let token0Addresses, token1Addresses, reserves
 
@@ -189,8 +189,7 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
 
     pairAddresses = pairs.map(result => result.output.toLowerCase())
 
-    const { balances } = await getTokenPrices({ block, chain, coreAssets, blacklist, lps: pairAddresses, transformAddress, maxParallel, whitelist })
-    console.log(balances)
+    const { balances } = await getTokenPrices({ block, chain, coreAssets, blacklist, lps: pairAddresses, transformAddress, maxParallel, whitelist, allLps: true })
     return balances
   }
 }
