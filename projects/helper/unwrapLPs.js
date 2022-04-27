@@ -659,43 +659,44 @@ const crv_abi = {
   "crvLP_coins": { "stateMutability": "view", "type": "function", "name": "coins", "inputs": [{ "name": "arg0", "type": "uint256" }], "outputs": [{ "name": "", "type": "address" }], "gas": 3123 }
 }
 async function genericUnwrapCrv(balances, crvToken, lpBalance, block, chain) {
-  const { output: resolvedCrvTotalSupply } = await sdk.api.erc20.totalSupply({
-    target: crvToken,
-    chain, block
-  })
+	const { output: resolvedCrvTotalSupply } = await sdk.api.erc20.totalSupply({
+		target: crvToken,
+		chain, block
+	})
 
-  // Get Curve LP token balances
-  // A while-loop would need a try-catch because sending error when idx > tokens_count
-  const { output: crv_symbol } = await sdk.api.abi.call({
-    abi: 'erc20:symbol',
-    target: crvToken,
-    chain,
-    block
-  })
-  const LP_tokens_count = 1 + (crv_symbol.match(/_/g) || []).length
-  const coins_indices = Array.from(Array(LP_tokens_count).keys())
-  const coins = (await sdk.api.abi.multiCall({
-    abi: crv_abi['crvLP_coins'],
-    calls: coins_indices.map(i => ({ params: [i] })),
-    target: crvToken,
-    chain,
-    block
-  })).output.map(c => c.output)
-  const crvLP_token_balances = await sdk.api.abi.multiCall({
-    abi: 'erc20:balanceOf',
-    calls: coins.map(c => ({
-      target: c,
-      params: crvToken,
-    })),
-    chain,
-    block
-  })
+	// Get Curve LP token balances
+	// A while-loop would need a try-catch because sending error when idx > tokens_count
+	const { output: crv_symbol } = await sdk.api.abi.call({
+		abi: 'erc20:symbol',
+		target: crvToken,
+		chain,
+		block
+	})
 
-  // Edit the balances to weigh with respect to the wallet holdings of the crv LP token
-  crvLP_token_balances.output.forEach(call =>
-    call.output = BigNumber(call.output).times(lpBalance).div(resolvedCrvTotalSupply).toFixed(0)
-  )
-  sdk.util.sumMultiBalanceOf(balances, crvLP_token_balances);
+	const LP_tokens_count = ['3Crv'].includes(crv_symbol) ? 3 : 2
+	const coins_indices = Array.from(Array(LP_tokens_count).keys())
+	const coins = (await sdk.api.abi.multiCall({
+		abi: crv_abi['crvLP_coins'],
+		calls: coins_indices.map(i => ({ params: [i] })),
+		target: crvToken,
+		chain,
+		block
+	})).output.map(c => c.output)
+	const crvLP_token_balances = await sdk.api.abi.multiCall({
+		abi: 'erc20:balanceOf',
+		calls: coins.map(c => ({
+			target: c,
+			params: crvToken,
+		})),
+		chain,
+		block
+	})
+
+	// Edit the balances to weigh with respect to the wallet holdings of the crv LP token
+	crvLP_token_balances.output.forEach(call =>
+		call.output = BigNumber(call.output).times(lpBalance).div(resolvedCrvTotalSupply).toFixed(0)
+	)
+	sdk.util.sumMultiBalanceOf(balances, crvLP_token_balances);
 }
 
 const cvx_abi = {
