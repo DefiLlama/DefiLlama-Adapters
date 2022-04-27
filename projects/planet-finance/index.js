@@ -1,22 +1,23 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
+const axios = require('axios')
 
 const aquaFarmAddress = "0x0ac58Fd25f334975b1B61732CF79564b6200A933";
 const newFarmAddress = "0xB87F7016585510505478D1d160BDf76c1f41b53d";
 
-const abis = {
-  oracle: {"constant":true,"inputs":[],"name":"getRegistry","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},
-  underlyingPrice: {
-    "constant": true,
-    "inputs": [{ "internalType": 'contract CToken', "name": 'gToken', "type": 'address' }],
-    "name": 'getUnderlyingPrice',
-    "outputs": [{ "internalType": 'uint256', "name": '', "type": 'uint256' }],
-    "payable": false,
-    "stateMutability": 'view',
-    "type": 'function',
-  },
-}
+// const abis = {
+//   oracle: {"constant":true,"inputs":[],"name":"getRegistry","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},
+//   underlyingPrice: {
+//     "constant": true,
+//     "inputs": [{ "internalType": 'contract CToken', "name": 'gToken', "type": 'address' }],
+//     "name": 'getUnderlyingPrice',
+//     "outputs": [{ "internalType": 'uint256', "name": '', "type": 'uint256' }],
+//     "payable": false,
+//     "stateMutability": 'view',
+//     "type": 'function',
+//   },
+// }
 
 const replacements = {
   "0xa8Bb71facdd46445644C277F9499Dd22f6F0A30C":
@@ -80,8 +81,6 @@ const greenMarkets = {
    "0xb3Cb6d2f8f2FDe203a022201C81a96c167607F15",    //iGamma
   "0x6E7a174836b2Df12599ecB2Dc64C1F9e1576aC45":
     "0x72B7D61E8fC8cF971960DD9cfA59B8C829D91991"    //iAqua
-
-  
 };
 
 const stakings = {
@@ -146,8 +145,9 @@ async function staking(timestamp, ethBlock, chainBlocks) {
 async function tvl(timestamp, ethBlock, chainBlocks) {
   let balances = {};
   const lps = [];
-
-  let poolLength = (
+  let poolLength = 0;
+  //Old Farm Address - Aqua
+  poolLength = (
     await sdk.api.abi.call({
       target: aquaFarmAddress,
       abi: abi["poolLength"],
@@ -191,8 +191,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     }
   }
 
-  //New Farm
-
+  //New Farm - Gamma
   poolLength = (
     await sdk.api.abi.call({
       target: newFarmAddress,
@@ -238,9 +237,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
   }
 
   //green markets tvl -- starts
-  let a = Object.keys(greenMarkets)
   let marketLength = Object.keys(greenMarkets).length;
-
   for (var i = 0; i < marketLength; i++) {
     let totalSupply = 0;
     let exchangeRateStored = 0;
@@ -294,12 +291,12 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     }
 
     let exchangeRateDecimal = 1e18;
-    if(Object.keys(greenMarkets)[i] == "0x8b04e56a8cd5f4d465b784ccf564899f30aaf88c")
-    {
-      exchangeRateDecimal = 1e15
-    }
-
     let addr = greenMarkets[Object.keys(greenMarkets)[i]];
+    if(Object.keys(greenMarkets)[i] == "0x4Bdde0904aBB1695775Cc79c69Dd0d61507232e4")
+    {
+      //aUST adjustment
+      exchangeRateDecimal = 1e21
+    }
 
     if(Object.keys(greenMarkets)[i] == "0x6bD50dFb39699D2135D987734F4984cd59eD6b53")
     {
@@ -313,25 +310,33 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
       addr = "0x72B7D61E8fC8cF971960DD9cfA59B8C829D91991";
     }
 
-    // if(Object.keys(greenMarkets)[i] == "0x45646b30c3Bb8c02bCfE10314308a8055E705ebF")
-    // {
-    //   //for adding marketTvl from Aqua infinity (iAqua) to gAqua staking
-    //   addr = "0xfa54ff1a158b5189ebba6ae130ced6bbd3aea76e";
-    // }
-
-
+    if(Object.keys(greenMarkets)[i] == "0x45646b30c3Bb8c02bCfE10314308a8055E705ebF")
+    {
+      //SOL adjustment
+      addr = "0xfa54ff1a158b5189ebba6ae130ced6bbd3aea76e";
+      exchangeRateDecimal = 1e30
+    }
 
     let marketTvl = (
       (totalSupply * exchangeRateStored) /
       exchangeRateDecimal
     ).toLocaleString("fullwide", { useGrouping: false });
     marketTvl = marketTvl.replace('.','');
-    console.log("bsc:" + addr, marketTvl);
+    //console.log("bsc:" + addr, marketTvl);    
+
+    if(Object.keys(greenMarkets)[i] == "0x4Bdde0904aBB1695775Cc79c69Dd0d61507232e4")
+    {
+      //aUST adjustment. As aUST is not listed on CoinGecko
+      let austprice = await axios('https://api.coingecko.com/api/v3/simple/price?ids=anchorust&vs_currencies=usd')
+      austprice = austprice.data.anchorust.usd
+      marketTvl = austprice * (marketTvl);
+      addr = "0x3d4350cd54aef9f9b2c29435e0fa809957b3f30a";
+    }
+
     sdk.util.sumSingleBalance(balances, "bsc:" + addr, marketTvl);
   }
 
   // green markets tvl -- ends
-
   await unwrapUniswapLPs(
     balances,
     lps,
@@ -339,6 +344,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     "bsc",
     (addr) => `bsc:${addr}`
   );
+  //console.log("balances:" ,balances);
   return balances;
 };
 
