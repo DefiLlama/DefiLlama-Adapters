@@ -4,27 +4,37 @@ const symbol = require('./abis/symbol.json')
 const token0 = require('./abis/token0.json');
 const token1 = require('./abis/token1.json');
 const getReserves = require('./abis/getReserves.json');
-const { getChainTransform, stripTokenHeader, } = require('./portedTokens')
+const { getChainTransform, stripTokenHeader, getFixBalances, } = require('./portedTokens')
 const { requery, } = require('./getUsdUniTvl')
-const { isLP } = require('./utils')
+const { isLP, parallelAbiCall } = require('./utils')
+const factoryAbi = require('./abis/factory.json');
+const { getBlock } = require('./getBlock');
 
-async function getTokenPrices({ block, chain = 'ethereum', coreAssets = [], blacklist = [], lps = [], transformAddress }) {
+async function getTokenPrices({ block, chain = 'ethereum', coreAssets = [], blacklist = [], whitelist = [], lps = [], transformAddress, maxParallel, allLps = false }) {
   if (!transformAddress)
     transformAddress = await getChainTransform(chain)
 
   coreAssets = coreAssets.map(i => i.toLowerCase())
   blacklist = blacklist.map(i => i.toLowerCase())
-  const pairAddresses = await getLPList(lps)
+  whitelist = whitelist.map(i => i.toLowerCase())
+  const pairAddresses = allLps ? lps : await getLPList(lps)
   const pairCalls = pairAddresses.map((pairAddress) => ({ target: pairAddress, }))
+  let token0Addresses, token1Addresses, reserves
 
-  const [token0Addresses, token1Addresses, reserves] = await Promise.all([
-    sdk.api.abi.multiCall({ abi: token0, chain, calls: pairCalls, block, }).then(({ output }) => output),
-    sdk.api.abi.multiCall({ abi: token1, chain, calls: pairCalls, block, }).then(({ output }) => output),
-    sdk.api.abi.multiCall({ abi: getReserves, chain, calls: pairCalls, block, }).then(({ output }) => output),
-  ]);
-  await requery(token0Addresses, chain, block, token0);
-  await requery(token1Addresses, chain, block, token1);
-  await requery(reserves, chain, block, getReserves);
+  if (!maxParallel) {
+    [token0Addresses, token1Addresses, reserves] = await Promise.all([
+      sdk.api.abi.multiCall({ abi: token0, chain, calls: pairCalls, block, }).then(({ output }) => output),
+      sdk.api.abi.multiCall({ abi: token1, chain, calls: pairCalls, block, }).then(({ output }) => output),
+      sdk.api.abi.multiCall({ abi: getReserves, chain, calls: pairCalls, block, }).then(({ output }) => output),
+    ]);
+    await requery(token0Addresses, chain, block, token0);
+    await requery(token1Addresses, chain, block, token1);
+    await requery(reserves, chain, block, getReserves);
+  } else {
+    token0Addresses = await parallelAbiCall({ block, chain, abi: token0, items: pairCalls, maxParallel, })
+    token1Addresses = await parallelAbiCall({ block, chain, abi: token1, items: pairCalls, maxParallel, })
+    reserves = await parallelAbiCall({ block, chain, abi: getReserves, items: pairCalls, maxParallel, })
+  }
 
   const pairs = {};
   // add token0Addresses
@@ -62,12 +72,12 @@ async function getTokenPrices({ block, chain = 'ethereum', coreAssets = [], blac
       sdk.util.sumSingleBalance(pairBalances[pairAddress], token0Address, Number(reserveAmounts[1]))
     } else if (coreAssets.includes(token0Address)) {
       sdk.util.sumSingleBalance(pairBalances[pairAddress], token0Address, Number(reserveAmounts[0]) * 2)
-      if (!blacklist.includes(token1Address)) {
+      if (!blacklist.includes(token1Address) && (!whitelist.length || whitelist.includes(token1Address))) {
         setPrice(prices, token1Address, reserveAmounts[0], reserveAmounts[1], token0Address)
       }
     } else if (coreAssets.includes(token1Address)) {
       sdk.util.sumSingleBalance(pairBalances[pairAddress], token1Address, Number(reserveAmounts[1]) * 2)
-      if (!blacklist.includes(token1Address)) {
+      if (!blacklist.includes(token0Address) && (!whitelist.length || whitelist.includes(token0Address))) {
         setPrice(prices, token0Address, reserveAmounts[1], reserveAmounts[0], token1Address)
       }
     } else {
@@ -84,16 +94,25 @@ async function getTokenPrices({ block, chain = 'ethereum', coreAssets = [], blac
     }
   }
 
+  const balances = {}
+  Object.values(pairBalances).forEach(pb => addBalances(pb, balances))
+  const fixBalances = await getFixBalances(chain)
+  fixBalances(balances)
+
   return {
+    updateBalances,
     pairBalances,
     prices,
-    updateBalances,
+    balances,
   }
 
   async function getLPList(lps) {
-    const symbols = (await sdk.api.abi.multiCall({
-      calls: lps.map(t => ({ target: t })), abi: symbol, block, chain
-    })).output
+    let symbols
+    const callArgs = lps.map(t => ({ target: t }))
+    if (!maxParallel)
+      symbols = (await sdk.api.abi.multiCall({ calls: callArgs, abi: symbol, block, chain })).output
+    else
+      symbols = await parallelAbiCall({ block, chain, abi: symbol, items: callArgs, maxParallel, })
     return symbols.filter(item => isLP(item.output)).map(item => item.input.target.toLowerCase())
   }
 
@@ -151,6 +170,31 @@ async function getTokenPrices({ block, chain = 'ethereum', coreAssets = [], blac
   }
 }
 
+function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitelist = [], factory, transformAddress, maxParallel, allowUndefinedBlock = true }) {
+  return async (ts, _block, chainBlocks) => {
+    let pairAddresses;
+    const block = await getBlock(ts, chain, chainBlocks, allowUndefinedBlock)
+    const pairLength = (await sdk.api.abi.call({ target: factory, abi: factoryAbi.allPairsLength, chain, block })).output
+    if (pairLength === null)
+      throw new Error("allPairsLength() failed")
+
+    const pairNums = Array.from(Array(Number(pairLength)).keys())
+    let pairs
+
+    if (!maxParallel) {
+      pairs = (await sdk.api.abi.multiCall({ abi: factoryAbi.allPairs, chain, calls: pairNums.map(num => ({ target: factory, params: [num] })), block })).output
+      await requery(pairs, chain, block, factoryAbi.allPairs);
+    } else
+      pairs = await parallelAbiCall({ block, chain, abi: factoryAbi.allPairs, items: pairNums, maxParallel, getCallArgs: num => ({ params: [num], target: factory }) })
+
+    pairAddresses = pairs.map(result => result.output.toLowerCase())
+
+    const { balances } = await getTokenPrices({ block, chain, coreAssets, blacklist, lps: pairAddresses, transformAddress, maxParallel, whitelist, allLps: true })
+    return balances
+  }
+}
+
 module.exports = {
   getTokenPrices,
+  getUniTVL,
 };

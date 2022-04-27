@@ -1,4 +1,4 @@
-const {compoundExports} = require('../helper/compound')
+const {compoundExports} = require('./helper/compound')
 
 const wBNB = "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c";
 const cBNB = "0xC5a83aD9f3586e143D2C718E8999206887eF9dDc";
@@ -27,4 +27,4 @@ module.exports = {
         addr => `cronos:${addr}`,
     ),
   },
-};
+}; // node test.js projects/annex.js

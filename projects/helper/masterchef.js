@@ -8,7 +8,7 @@ const getReservesAbi = require("./abis/getReserves.json");
 const userInfoAbi = require("./abis/userInfo.json");
 const { getBlock } = require('./getBlock');
 const { default: BigNumber } = require('bignumber.js');
-const { getChainTransform } = require('../helper/portedTokens');
+const { getChainTransform, getFixBalances } = require('../helper/portedTokens');
 
 async function getPoolInfo(masterChef, block, chain, poolInfoAbi = abi.poolInfo) {
     const poolLength = (
@@ -274,6 +274,10 @@ function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingeck
             })
         }
 
+        if (chain === 'cronos') {
+            const fixBalances = await getFixBalances(chain)
+            Object.values(balances).map(fixBalances)
+        }
         balanceResolve(balances)
         return balances.tvl
     };

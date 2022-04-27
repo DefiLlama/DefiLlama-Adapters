@@ -65,5 +65,5 @@ module.exports = {
     polygon: {
         tvl: getPolygonTvl()
     },
-
+    broken: 'Api is down'
 }; 
