@@ -5,7 +5,7 @@ const token1 = require('./abis/token1.json');
 const getReserves = require('./abis/getReserves.json');
 const factoryAbi = require('./abis/factory.json');
 const { getBlock } = require('./getBlock');
-const { getChainTransform } = require('./portedTokens')
+const { getChainTransform, getFixBalances } = require('./portedTokens')
 
 async function requery(results, chain, block, abi) {
     if (results.some(r => !r.success)) {
@@ -170,6 +170,9 @@ function calculateUsdUniTvl(FACTORY, chain, coreAssetRaw, whitelistRaw, coreAsse
             sdk.util.sumSingleBalance(finalBalances, coreAssetName, (coreBalance) / (10 ** decimals))
         else
             sdk.util.sumSingleBalance(finalBalances, transformAddress(coreAsset), coreBalance)
+
+        const fixBalances = await getFixBalances(chain)
+        fixBalances(finalBalances)
         return finalBalances
     }
 };
