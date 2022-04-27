@@ -78,5 +78,4 @@ module.exports = {
       factory: '0x64eBD6CaCece790e9C4DDeA1a24952Ddb2715279',
     }),
   },
-  broken: 'shiden rugged, check if factory address is correct (it seems correct), shiden-staking is also returning NaN'
 };
