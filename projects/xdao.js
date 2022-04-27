@@ -8,6 +8,12 @@ const {
   transformHecoAddress,
   transformPolygonAddress,
   transformFantomAddress,
+  transformOptimismAddress,
+  transformMoonriverAddress,
+  transformMoonbeamAddress,
+  transformOkexAddress,
+  transformMetisAddress,
+  transformBobaAddress,
 } = require("./helper/portedTokens");
 
 const factoryAddress = "0x72cc6E4DE47f673062c41C67505188144a0a3D84";
@@ -29,36 +35,60 @@ async function getTokens(chain, address) {
   switch (chain) {
     case "ethereum":
       chainId = 1;
-      method = "covalent";
+      method = "covalentWithCoingecko";
       break;
     case "bsc":
       chainId = 56;
-      method = "covalent";
+      method = "covalentWithCoingecko";
       break;
     case "polygon":
       chainId = 137;
-      method = "covalent";
+      method = "covalentWithCoingecko";
       break;
     case "avax":
       chainId = 43114;
-      method = "covalent";
+      method = "covalentWithCoingecko";
       break;
     case "fantom":
       chainId = 250;
-      method = "covalent";
+      method = "covalentWithCoingecko";
       break;
     case "heco":
       chainId = 128;
-      method = "covalent";
+      method = "covalentWithCoingecko";
+      break;
+    case "moonbeam":
+      chainId = 1284;
+      method = "covalentWithCoingecko";
+      break;
+    case "moonriver":
+      chainId = 1285;
+      method = "covalentWithCoingecko";
       break;
     case "astar":
       chainId = "astar";
       gasToken = "astar";
       method = "debank";
       break;
+    case "optimism":
+      chainId = "op";
+      method = "debankWithCoingecko";
+      break;
+    case "okexchain":
+      chainId = "okt";
+      method = "debankWithCoingecko";
+      break;
+    case "metis":
+      chainId = "metis";
+      method = "debankWithCoingecko";
+      break;
+    case "boba":
+      chainId = "boba";
+      method = "debankWithCoingecko";
+      break;
   }
 
-  if (method === "covalent") {
+  if (method === "covalentWithCoingecko") {
     const allTokens = (
       await retry(
         async (bail) =>
@@ -69,8 +99,8 @@ async function getTokens(chain, address) {
     ).data.data.items.map((t) => t.contract_address);
 
     return allTokens;
-  }
-  if (method === "debank") {
+  } 
+  if (method === "debank") {  
     const allTokensRaw = (
       await retry(
         async (bail) =>
@@ -83,9 +113,21 @@ async function getTokens(chain, address) {
     const allTokens = allTokensRaw.data.map((t) => t.id);
     const gasTokenRaw = allTokensRaw.data.find((t) => (t.id === gasToken));
     const gasBalance = gasTokenRaw ? gasTokenRaw.amount : "0";
-
+    
     return [allTokens, gasBalance];
-  }
+  } 
+  if (method === "debankWithCoingecko") {  
+    const allTokens = (
+      await retry(
+        async (bail) =>
+          await axios.get(
+            `https://openapi.debank.com/v1/user/token_list?id=${address}&chain_id=${chainId}&is_all=true&has_balance=true`
+          )
+      )
+    ).data.map((t) => t.id);
+    
+    return allTokens;
+  } 
 
   return [];
 }
@@ -104,6 +146,38 @@ async function getTransform(chain) {
       return await transformFantomAddress();
     case "heco":
       return await transformHecoAddress();
+    case "moonbeam":
+      return await transformMoonbeamAddress();
+    case "moonriver":
+      return await transformMoonriverAddress();
+    case "okexchain":
+      return async (a) => {
+        if (a === "okt") {
+          return "0x75231f58b43240c9718dd58b4967c5114342a86c"
+        }
+        return await transformOkexAddress(a);
+      }
+    case "optimism": 
+      return async (a) => {
+        if (a === "op") {
+          return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+        }
+        return await transformOptimismAddress(a);
+      } 
+    case "metis": 
+      return async (a) => {
+        if (a === "metis") {
+          return "0x9e32b13ce7f2e80a01932b42553652e053d6ed8e"
+        }
+        return await transformMetisAddress(a);
+      } 
+    case "boba": 
+      return async (a) => {
+        if (a === "boba") {
+          return "0x42bbfa2e77757c645eeaad1655e0911a7553efbc"
+        }
+        return await transformMetisAddress(a);
+      } 
     case "astar":
       return (a) => a;
   }
@@ -124,8 +198,8 @@ function tvl(chain, gasToken, method) {
         target: factoryAddress,
         abi: getDaos,
       })
-    ).output;
-
+    ).output
+    
     await PromisePool
       .withConcurrency(31)
       .for(daos)
@@ -146,7 +220,7 @@ function tvl(chain, gasToken, method) {
         let gasBalance;
         if (method === "debank") {
           gasBalance = gasBalanceDebank;
-        } else {
+        } else if (method === "coingecko") {
           gasBalance = (
             await sdk.api.eth.getBalance({
               target: dao,
@@ -154,8 +228,10 @@ function tvl(chain, gasToken, method) {
               chain,
             })
           ).output;
+        } else {
+          gasBalance = "0"
         }
-
+        
         sdk.util.sumSingleBalance(
           balances,
           chain == "ethereum" ? wethAddress : transform(gasToken),
@@ -182,24 +258,42 @@ function tvl(chain, gasToken, method) {
 
 module.exports = {
   ethereum: {
-    tvl: tvl("ethereum", "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "covalent"),
+    tvl: tvl("ethereum", "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "coingecko"),
   },
   bsc: {
-    tvl: tvl("bsc", "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "covalent"),
+    tvl: tvl("bsc", "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "coingeko"),
   },
   polygon: {
-    tvl: tvl("polygon", "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "covalent"),
+    tvl: tvl("polygon", "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "coingecko"),
   },
   avax: {
-    tvl: tvl("avax", "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "covalent"),
+    tvl: tvl("avax", "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "coingecko"),
   },
   fantom: {
-    tvl: tvl("fantom", "0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", "covalent"),
+    tvl: tvl("fantom", "0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", "coingecko"),
   },
   heco: {
-    tvl: tvl("heco", "0xhecozzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz", "covalent"),
+    tvl: tvl("heco", "0xhecozzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz", "coingecko"),
   },
   astar: {
     tvl: tvl("astar", "astar", "debank"),
+  },
+  optimism: {
+    tvl: tvl("optimism", "op", "coingecko"),
+  },
+  okexchain: {
+    tvl: tvl("okexchain", "okt", "coingecko"),
+  },
+  moonbeam: {
+    tvl: tvl("moonbeam", "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "coingecko"),
+  },
+  moonriver: {
+    tvl: tvl("moonriver", "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", "coingecko"),
+  },
+  metis: {
+    tvl: tvl("metis", "metis", "coingecko"),
+  },
+  boba: {
+    tvl: tvl("boba", "boba", "coingecko"),
   },
 };
