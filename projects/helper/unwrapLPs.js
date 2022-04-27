@@ -294,18 +294,9 @@ async function unwrapGelatoLPs(balances, lpPositions, block, chain = 'ethereum',
   }))
 }
 
-
-async function addBalanceOfTokensAndLPs(balances, balanceResult, block) {
-  await addTokensAndLPs(balances, {
-    output: balanceResult.output.map(t => ({ output: t.input.target }))
-  },
-    balanceResult,
-    block)
-}
-
 // Unwrap the tokens that are LPs and directly add the others
 // To be used when you don't know which tokens are LPs and which are not
-async function addTokensAndLPs(balances, tokens, amounts, block, chain = "ethereum", transformAddress = id => id, { excludePool2 = false, onlyPool2 = false, stakingTokenRaw }) {
+async function addTokensAndLPs(balances, tokens, amounts, block, chain = "ethereum", transformAddress = id => id) {
   const tokens0 = await sdk.api.abi.multiCall({
     calls: tokens.output.map(t => ({
       target: t.output
@@ -897,7 +888,6 @@ module.exports = {
   unwrapUniswapV3NFTs,
   addTokensAndLPs,
   sumTokensAndLPsSharedOwners,
-  addBalanceOfTokensAndLPs,
   sumTokensAndLPs,
   sumTokens,
   sumBalancerLps,
