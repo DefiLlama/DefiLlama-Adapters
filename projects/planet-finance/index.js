@@ -2,22 +2,10 @@ const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const axios = require('axios')
+const { compoundExports } = require("../helper/compound");
 
 const aquaFarmAddress = "0x0ac58Fd25f334975b1B61732CF79564b6200A933";
 const newFarmAddress = "0xB87F7016585510505478D1d160BDf76c1f41b53d";
-
-// const abis = {
-//   oracle: {"constant":true,"inputs":[],"name":"getRegistry","outputs":[{"internalType":"address","name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},
-//   underlyingPrice: {
-//     "constant": true,
-//     "inputs": [{ "internalType": 'contract CToken', "name": 'gToken', "type": 'address' }],
-//     "name": 'getUnderlyingPrice',
-//     "outputs": [{ "internalType": 'uint256', "name": '', "type": 'uint256' }],
-//     "payable": false,
-//     "stateMutability": 'view',
-//     "type": 'function',
-//   },
-// }
 
 const replacements = {
   "0xa8Bb71facdd46445644C277F9499Dd22f6F0A30C":
@@ -352,6 +340,12 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 module.exports = {
   bsc: {
     tvl,
-    staking
+    staking,
+    borrowed: compoundExports(
+      '0xF54f9e7070A1584532572A6F640F09c606bb9A83',
+      'bsc',
+      '0x24664791B015659fcb71aB2c9C0d56996462082F',
+      '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'
+    ).borrowed
   },
 };
