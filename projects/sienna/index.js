@@ -4,10 +4,14 @@ const sdk = require('@defillama/sdk');
 const utils = require("./utils");
 const { eachLimit, mapLimit } = require("async");
 
-const factoryContract = "secret1zvk7pvhtme6j8yw3ryv0jdtgg937w0g0ggu8yy";
-const pairCodeId = 111;
-const factoryContractV2 = "secret18sq0ux28kt2z7dlze2mu57d3ua0u5ayzwp6v2r";
-const pairCodeIdV2 = 361;
+const factories = [{
+    address: "secret1zvk7pvhtme6j8yw3ryv0jdtgg937w0g0ggu8yy",
+    code: 111
+}, {
+    address: "secret18sq0ux28kt2z7dlze2mu57d3ua0u5ayzwp6v2r",
+    code: 361
+}];
+
 const SIENNA_SINGLE_SIDED_POOLS = [
     { address: "secret1ja57vrpqusx99rgvxacvej3vhzhh4rhlkdkd7w", version: 1 },
     { address: "secret109g22wm3q3nfys0v6uh7lqg68cn6244n2he4t6", version: 2 },
@@ -16,23 +20,25 @@ const SIENNA_SINGLE_SIDED_POOLS = [
 const SIENNA_TOKEN_ADDRESS = "secret1rgm2m5t530tdzyd99775n6vzumxa5luxcllml4";
 const LEND_OVERSEER_CONTRACT = null;
 
-const SECRET_NODE_URL = "https://bridgeapi.azure-api.net/";
+const SECRET_NODE_URL = "https://bridgeapi.azure-api.net/proxy/";
 const queryClient = new CosmWasmClient(SECRET_NODE_URL);
 
 const CACHED_TOKENS = {};
 
 async function Pairs() {
-    return (await PairsV1()).concat(await PairsV2());
-}
-
-async function PairsV1() {
-    const pairs = await queryClient.getContracts(pairCodeId);
-    return pairs.filter((p) => p.label.endsWith(`${factoryContract}-${pairCodeId}`));
-}
-
-async function PairsV2() {
-    const pairs = await queryClient.getContracts(pairCodeIdV2);
-    return pairs.filter((p) => p.label.endsWith(`${factoryContractV2}-${pairCodeIdV2}`));
+    return new Promise((resolve) => {
+        mapLimit(factories, 1, async (factory) => {
+            try {
+                const result = await queryClient.getContracts(factory.code);
+                const pairs = result.filter((p) => p.label.endsWith(`${factory.address}-${factory.code}`));
+                return Promise.resolve(pairs);
+            } catch (e) {
+                return Promise.resolve([]);
+            }
+        }, (_err, pairs) => {
+            resolve(pairs.flat());
+        });
+    });
 }
 
 async function TokenInfo(tokenAddress) {
@@ -46,27 +52,27 @@ async function PairsVolumes() {
     const volumes = []
 
     const pairs = await Pairs();
-
-    await new Promise((resolve) => {
+    return new Promise((resolve) => {
         eachLimit(pairs, 3, async (contract) => {
-            const pair_info = (await queryClient.queryContractSmart(contract.address, "pair_info")).pair_info;
+            try {
+                const pair_info = (await queryClient.queryContractSmart(contract.address, "pair_info")).pair_info;
 
-            const token1 = await TokenInfo(pair_info.pair.token_0.custom_token.contract_addr);
-            volumes.push({
-                tokens: new BigNumber(pair_info.amount_0).div(new BigNumber(10).pow(token1.decimals)).toNumber(),
-                symbol: token1.symbol
-            });
+                const token1 = await TokenInfo(pair_info.pair.token_0.custom_token.contract_addr);
+                volumes.push({
+                    tokens: new BigNumber(pair_info.amount_0).div(new BigNumber(10).pow(token1.decimals)).toNumber(),
+                    symbol: token1.symbol
+                });
 
-            const token2 = await TokenInfo(pair_info.pair.token_1.custom_token.contract_addr);
-            volumes.push({
-                tokens: new BigNumber(pair_info.amount_1).div(new BigNumber(10).pow(token2.decimals)).toNumber(),
-                symbol: token2.symbol
-            });
+                const token2 = await TokenInfo(pair_info.pair.token_1.custom_token.contract_addr);
+                volumes.push({
+                    tokens: new BigNumber(pair_info.amount_1).div(new BigNumber(10).pow(token2.decimals)).toNumber(),
+                    symbol: token2.symbol
+                });
+            } catch (e) { }
         }, () => {
-            resolve();
+            resolve(volumes);
         });
     });
-    return volumes;
 }
 
 async function getLendMarkets() {
@@ -95,7 +101,7 @@ async function Lend() {
     const markets = await getLendMarkets();
     const block = await queryClient.getHeight();
 
-    return await new Promise((resolve) => {
+    return new Promise((resolve) => {
         mapLimit(markets, 1, async (market) => {
             const marketState = await queryClient.queryContractSmart(market.contract.address, {
                 state: {
@@ -127,17 +133,21 @@ async function StakedTokens() {
     const siennaToken = await TokenInfo(SIENNA_TOKEN_ADDRESS);
     return new Promise(async (resolve) => {
         mapLimit(SIENNA_SINGLE_SIDED_POOLS, 1, async (pool) => {
-            let total_locked;
-            if (pool.version === 3) {
-                const fetchedPool = await queryClient.queryContractSmart(pool.address, { rewards: { pool_info: { at: new Date().getTime() } } });
-                total_locked = fetchedPool.rewards.pool_info.staked;
-            } else {
-                const fetchedPool = await queryClient.queryContractSmart(pool.address, { pool_info: { at: new Date().getTime() } });
-                total_locked = fetchedPool.pool_info.pool_locked;
+            try {
+                let total_locked;
+                if (pool.version === 3) {
+                    const fetchedPool = await queryClient.queryContractSmart(pool.address, { rewards: { pool_info: { at: new Date().getTime() } } });
+                    total_locked = fetchedPool.rewards.pool_info.staked;
+                } else {
+                    const fetchedPool = await queryClient.queryContractSmart(pool.address, { pool_info: { at: new Date().getTime() } });
+                    total_locked = fetchedPool.pool_info.pool_locked;
+                }
+                const tokens = new BigNumber(total_locked).div(new BigNumber(10).pow(siennaToken.decimals)).toNumber();
+                return Promise.resolve(tokens);
+            } catch (e) {
+                return Promise.resolve(0);
             }
-            const tokens = new BigNumber(total_locked).div(new BigNumber(10).pow(siennaToken.decimals)).toNumber();
-            return Promise.resolve(tokens);
-        }, (err, data) => {
+        }, (_err, data) => {
             resolve(data.reduce((total, value) => total + value, 0));
         });
     });
