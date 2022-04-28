@@ -196,6 +196,31 @@ async function staking(_, block) {
   }
 }
 
+async function borrowed(_, block) {
+  const YUSDSupply = (
+    await sdk.api.erc20.totalSupply({
+      target: YUSD_TOKEN_ADDRESS,
+      block,
+      chain:"avax"
+    })
+  ).output;
+
+  const YUSDPrice = (
+    await sdk.api.abi.call({
+      target: YUSD_PRICEFEED_ADDRESS,
+      abi: fetchPrice_vAbi,
+      block,
+      chain: "avax"
+    })
+  ).output
+
+  const borrowedUSD = YUSDSupply * YUSDPrice / (10 ** 18)
+  return {
+    // In USDC, USDC has decimal of 6
+    ["avax:0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E"]: borrowedUSD / (10 ** 12)
+  }
+}
+
 module.exports = {
   misrepresentedTokens: true,
   methodology: true,
@@ -204,6 +229,7 @@ module.exports = {
   avalanche:{
     tvl,
     pool2,
-    staking
+    staking,
+    borrowed
   },
 };
