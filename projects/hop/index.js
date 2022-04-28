@@ -40,7 +40,7 @@ function chainTvl(chain) {
                     chain
                 })
             }
-            sdk.util.sumSingleBalance(balances, await transform(token), amount.output)
+            sdk.util.sumSingleBalance(balances, transform(token), amount.output)
         }
         if (chain === "ethereum") {
             for (const bonder of Object.entries(tokens.data.bonders)) {
