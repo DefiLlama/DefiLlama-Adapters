@@ -4,7 +4,7 @@ module.exports = {
   misrepresentedTokens: true,
   methodology:
     "Factory address (0x6abdda34fb225be4610a2d153845e09429523cd2) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
-  cronos: {
+  evmos: {
     tvl: calculateUsdUniTvl(
       "0x6abdda34fb225be4610a2d153845e09429523cd2",
       "evmos",
