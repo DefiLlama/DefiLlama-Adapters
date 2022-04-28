@@ -5,25 +5,25 @@ const { routerAbi } = require("./router-abi");
 
 const supportedChains = ["fantom"];
 
-async function getTotalBalance(balances, yields, chainBlocks, transform) {
-  for (const yield of yields) {
-    await getBalance(balances, yield, chainBlocks, transform);
+async function getTotalBalance(balances, fyields, chainBlocks, transform) {
+  for (const fyield of fyields) {
+    await getBalance(balances, fyield, chainBlocks, transform);
   }
 }
 
-async function getBalance(balances, yield, chainBlocks, transform) {
+async function getBalance(balances, fyield, chainBlocks, transform) {
   const collateralBalance = (
     await sdk.api.abi.call({
       abi: routerAbi,
-      chain: yield.chain,
-      target: yield.router,
-      params: [yield.yieldBearingAsset, yield.yieldProxy],
-      block: chainBlocks[yield.chain],
+      chain: fyield.chain,
+      target: fyield.router,
+      params: [fyield.yieldBearingAsset, fyield.yieldProxy],
+      block: chainBlocks[fyield.chain],
     })
   ).output;
   await sdk.util.sumSingleBalance(
     balances,
-    transform(yield.yieldBearingAsset),
+    transform(fyield.yieldBearingAsset),
     collateralBalance
   );
 }
@@ -31,8 +31,8 @@ async function getBalance(balances, yield, chainBlocks, transform) {
 async function getBalanceIn(chainBlocks, balances, chainName) {
   if (chainName == "fantom") {
     const transform = await transformFantomAddress();
-    const { yields } = fantomYields;
-    await getTotalBalance(balances, yields, chainBlocks, transform);
+    const { fyields } = fantomYields;
+    await getTotalBalance(balances, fyields, chainBlocks, transform);
   }
 }
 
