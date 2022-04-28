@@ -1,4 +1,4 @@
-const { getChainTransform } = require("../helper/portedTokens");
+const { getChainTransform, getFixBalances } = require("../helper/portedTokens");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const contracts = require("./contracts.json");
 
@@ -24,6 +24,7 @@ function coreTvl(chain) {
         if (chain == 'kcc' && balances[contracts.ethereum.tokens.USDT]) {
             balances[contracts.ethereum.tokens.USDT] /= 10 ** 12;
         };
+        (await getFixBalances(chain))(balances)
         return balances;
     };
 };

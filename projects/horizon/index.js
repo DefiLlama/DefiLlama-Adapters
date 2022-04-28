@@ -39,7 +39,7 @@ async function calculateLPStaking(timestamp, _block, chainBlocks) {
 }
 
 module.exports = {
-    timetravel: false,
+    timetravel: true,
     misrepresentedTokens: false,
     methodology: 'Counts liquidty on the token staking and lp staking contracts',
     bsc: {
