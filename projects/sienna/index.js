@@ -28,13 +28,9 @@ const CACHED_TOKENS = {};
 async function Pairs() {
     return new Promise((resolve) => {
         mapLimit(factories, 1, async (factory) => {
-            try {
-                const result = await queryClient.getContracts(factory.code);
-                const pairs = result.filter((p) => p.label.endsWith(`${factory.address}-${factory.code}`));
-                return Promise.resolve(pairs);
-            } catch (e) {
-                return Promise.resolve([]);
-            }
+            const result = await queryClient.getContracts(factory.code);
+            const pairs = result.filter((p) => p.label.endsWith(`${factory.address}-${factory.code}`));
+            return Promise.resolve(pairs);
         }, (_err, pairs) => {
             resolve(pairs.flat());
         });
@@ -54,21 +50,19 @@ async function PairsVolumes() {
     const pairs = await Pairs();
     return new Promise((resolve) => {
         eachLimit(pairs, 3, async (contract) => {
-            try {
-                const pair_info = (await queryClient.queryContractSmart(contract.address, "pair_info")).pair_info;
+            const pair_info = (await queryClient.queryContractSmart(contract.address, "pair_info")).pair_info;
 
-                const token1 = await TokenInfo(pair_info.pair.token_0.custom_token.contract_addr);
-                volumes.push({
-                    tokens: new BigNumber(pair_info.amount_0).div(new BigNumber(10).pow(token1.decimals)).toNumber(),
-                    symbol: token1.symbol
-                });
+            const token1 = await TokenInfo(pair_info.pair.token_0.custom_token.contract_addr);
+            volumes.push({
+                tokens: new BigNumber(pair_info.amount_0).div(new BigNumber(10).pow(token1.decimals)).toNumber(),
+                symbol: token1.symbol
+            });
 
-                const token2 = await TokenInfo(pair_info.pair.token_1.custom_token.contract_addr);
-                volumes.push({
-                    tokens: new BigNumber(pair_info.amount_1).div(new BigNumber(10).pow(token2.decimals)).toNumber(),
-                    symbol: token2.symbol
-                });
-            } catch (e) { }
+            const token2 = await TokenInfo(pair_info.pair.token_1.custom_token.contract_addr);
+            volumes.push({
+                tokens: new BigNumber(pair_info.amount_1).div(new BigNumber(10).pow(token2.decimals)).toNumber(),
+                symbol: token2.symbol
+            });
         }, () => {
             resolve(volumes);
         });
@@ -133,20 +127,16 @@ async function StakedTokens() {
     const siennaToken = await TokenInfo(SIENNA_TOKEN_ADDRESS);
     return new Promise(async (resolve) => {
         mapLimit(SIENNA_SINGLE_SIDED_POOLS, 1, async (pool) => {
-            try {
-                let total_locked;
-                if (pool.version === 3) {
-                    const fetchedPool = await queryClient.queryContractSmart(pool.address, { rewards: { pool_info: { at: new Date().getTime() } } });
-                    total_locked = fetchedPool.rewards.pool_info.staked;
-                } else {
-                    const fetchedPool = await queryClient.queryContractSmart(pool.address, { pool_info: { at: new Date().getTime() } });
-                    total_locked = fetchedPool.pool_info.pool_locked;
-                }
-                const tokens = new BigNumber(total_locked).div(new BigNumber(10).pow(siennaToken.decimals)).toNumber();
-                return Promise.resolve(tokens);
-            } catch (e) {
-                return Promise.resolve(0);
+            let total_locked;
+            if (pool.version === 3) {
+                const fetchedPool = await queryClient.queryContractSmart(pool.address, { rewards: { pool_info: { at: new Date().getTime() } } });
+                total_locked = fetchedPool.rewards.pool_info.staked;
+            } else {
+                const fetchedPool = await queryClient.queryContractSmart(pool.address, { pool_info: { at: new Date().getTime() } });
+                total_locked = fetchedPool.pool_info.pool_locked;
             }
+            const tokens = new BigNumber(total_locked).div(new BigNumber(10).pow(siennaToken.decimals)).toNumber();
+            return Promise.resolve(tokens);
         }, (_err, data) => {
             resolve(data.reduce((total, value) => total + value, 0));
         });
