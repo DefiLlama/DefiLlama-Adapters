@@ -43,6 +43,8 @@ function stakingPricedLP(stakingContract, stakingToken, chain, lpContract, coing
 
 function stakingUnknownPricedLP(stakingContract, stakingToken, chain, lpContract, transform, decimals) {
     return async (timestamp, _ethBlock, chainBlocks) => {
+        if (!transform)   transform = await getChainTransform(chain)
+
         const block = await getBlock(timestamp, chain, chainBlocks, true)
         const [bal, reserveAmounts, token0, token1] = await Promise.all([
             sdk.api.erc20.balanceOf({
@@ -70,7 +72,7 @@ function stakingUnknownPricedLP(stakingContract, stakingToken, chain, lpContract
             stakedBal = Number(stakedBal)/(10**decimals)
         }
         return {
-            [transform?transform(token):`${chain}:${token}`]: stakedBal
+            [transform(token)]: stakedBal
         }
     }
 }

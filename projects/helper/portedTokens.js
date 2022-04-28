@@ -27,7 +27,10 @@ async function transformFantomAddress() {
     "0x0665ef3556520b21368754fb644ed3ebf1993ad4": "0x6c3f90f043a72fa612cbac8115ee7e52bde6e490",
     // update below to binspirit when it lists on coingecko
     "0x7345a537a975d9ca588ee631befddfef34fd5e8f": "fantom:0x5Cc61A78F164885776AA610fb0FE1257df78E59B",
+    "0xDBf31dF14B66535aF65AaC99C32e9eA844e14501": "0xeb4c2781e4eba804ce9a9803c67d0893436bb27d", // RenBTC
   }
+
+  normalizeMapping(mapping)
 
   return (addr) => {
     addr = addr.toLowerCase()
@@ -325,6 +328,20 @@ async function transformHecoAddress() {
   };
 }
 
+async function transformHooAddress() {
+  const mapping = {
+    '0xd16babe52980554520f6da505df4d1b124c815a7': '0xdac17f958d2ee523a2206206994597c13d831ec7', // USDT
+    '0x3eff9d389d13d6352bfb498bcf616ef9b1beac87': '0x6f259637dcd74c767781e37bc6133cd6a68aa161', // wHOO
+  }
+  normalizeMapping(mapping)
+
+  return (addr) => {
+    addr = addr.toLowerCase()
+    return mapping[addr] || `hoo:${addr}`;
+  };
+}
+
+
 async function transformCeloAddress() {
   return (addr) => {
     if (addr.toLowerCase() === "0xd8763cba276a3738e6de85b4b3bf5fded6d6ca73") {
@@ -460,20 +477,20 @@ async function transformArbitrumAddress() {
   const bridge = (
     await utils.fetchURL("https://bridge.arbitrum.io/token-list-42161.json")
   ).data.tokens;
+  const mapping = {
+    '0x0000000000000000000000000000000000000000': '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',  // WETH
+    '0xFEa7a6a0B346362BF88A9e4A88416B77a57D6c2A': '0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3',  // MIM
+    '0xDBf31dF14B66535aF65AaC99C32e9eA844e14501': '0xeb4c2781e4eba804ce9a9803c67d0893436bb27d',  // renBTC
+    '0x9ef758ac000a354479e538b8b2f01b917b8e89e7': 'polygon:0x3dc7b06dd0b1f08ef9acbbd2564f8605b4868eea',  // XDO
+    '0x31635A2a3892dAeC7C399102676E344F55d20Da7': '0x09ce2b746c32528b7d864a1e3979bd97d2f095ab',  //  DeFIL
+  }
+
+  normalizeMapping(mapping)
 
   return (addr) => {
-    if (compareAddresses(addr, "0x0000000000000000000000000000000000000000")) {
-      return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"; // WETH
-    }
-    if (compareAddresses(addr, "0xFEa7a6a0B346362BF88A9e4A88416B77a57D6c2A")) {
-      return "0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3"; // MIM
-    }
-    if (compareAddresses(addr, "0xDBf31dF14B66535aF65AaC99C32e9eA844e14501")) {
-      return "0xeb4c2781e4eba804ce9a9803c67d0893436bb27d"; // renBTC
-    }
-    if (compareAddresses(addr, "0x9ef758ac000a354479e538b8b2f01b917b8e89e7")) {
-      return "polygon:0x3dc7b06dd0b1f08ef9acbbd2564f8605b4868eea"; // XDO
-    }
+
+    addr = addr.toLowerCase()
+    if (mapping[addr])  return mapping[addr]
     const dstToken = bridge.find((token) =>
       compareAddresses(addr, token.address)
     );
@@ -624,22 +641,24 @@ function transformMetisAddress() {
 }
 
 function transformBobaAddress() {
+  const map = {
+    "0x0000000000000000000000000000000000000000": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // WETH
+    "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // WETH
+    "0x66a2a913e447d6b4bf33efbec43aaef87890fbbc": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USDC
+    "0x5de1677344d3cb0d7d465c10b72a8f60699c062d": "0xdac17f958d2ee523a2206206994597c13d831ec7", // USDT
+    "0xf74195bb8a5cf652411867c5c2c5b8c2a402be35": "0x6b175474e89094c44da98b954eedeac495271d0f", // DAI
+    "0x461d52769884ca6235B685EF2040F47d30C94EB5": "bsc:0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", // BUSD
+    "0xdc0486f8bf31df57a952bcd3c1d3e166e3d9ec8b": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", // WBTC
+    "0xa18bf3994c0cc6e3b63ac420308e5383f53120d7": "0x42bbfa2e77757c645eeaad1655e0911a7553efbc", // BOBA
+    "0xe1e2ec9a85c607092668789581251115bcbd20de": "0xd26114cd6EE289AccF82350c8d8487fedB8A0C07", // OMG
+    "0x7562f525106f5d54e891e005867bf489b5988cd9": "0x853d955acef822db058eb8505911ed77f175b99e", // FRAX
+    "0x2f28add68e59733d23d5f57d94c31fb965f835d0": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // sUSDC(Boba) -> USDC(Ethereum)
+    "0xf04d3a8eb17b832fbebf43610e94bdc4fd5cf2dd": "bsc:0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", // sBUSD(Boba) -> BUSD(BSC)
+  }
+
+  normalizeMapping(map)
+
   return (addr) => {
-    if (compareAddresses(addr, "0x0000000000000000000000000000000000000000")) {
-      return "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000"; // WETH
-    }
-    const map = {
-      "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // WETH
-      "0x66a2a913e447d6b4bf33efbec43aaef87890fbbc": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USDC
-      "0x5de1677344d3cb0d7d465c10b72a8f60699c062d": "0xdac17f958d2ee523a2206206994597c13d831ec7", // USDT
-      "0xf74195bb8a5cf652411867c5c2c5b8c2a402be35": "0x6b175474e89094c44da98b954eedeac495271d0f", // DAI
-      "0xdc0486f8bf31df57a952bcd3c1d3e166e3d9ec8b": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", // WBTC
-      "0xa18bf3994c0cc6e3b63ac420308e5383f53120d7": "0x42bbfa2e77757c645eeaad1655e0911a7553efbc", // BOBA
-      "0xe1e2ec9a85c607092668789581251115bcbd20de": "0xd26114cd6EE289AccF82350c8d8487fedB8A0C07", // OMG
-      "0x7562f525106f5d54e891e005867bf489b5988cd9": "0x853d955acef822db058eb8505911ed77f175b99e", // FRAX
-      "0x2f28add68e59733d23d5f57d94c31fb965f835d0": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // sUSDC(Boba) -> USDC(Ethereum)
-      "0xf04d3a8eb17b832fbebf43610e94bdc4fd5cf2dd": "bsc:0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", // sBUSD(Boba) -> BUSD(BSC)
-    }
     return map[addr.toLowerCase()] || `boba:${addr}`
   }
 }
@@ -708,16 +727,35 @@ async function transformCronosAddress() {
   return (addr) => mapping[addr.toLowerCase()] || `cronos:${addr.toLowerCase()}`
 }
 
+function fixShidenBalances(balances) {
+  const mapping = {
+    '0x765277EebeCA2e31912C9946eAe1021199B39C61': { coingeckoId: 'ethereum', decimals: 18, },
+    '0x332730a4f6e03d9c55829435f10360e13cfa41ff': { coingeckoId: 'binancecoin', decimals: 18, },
+    '0x65e66a61d0a8f1e686c2d6083ad611a10d84d97a': { coingeckoId: 'binance-usd', decimals: 18, },
+    '0x722377a047e89ca735f09eb7cccab780943c4cb4': { coingeckoId: 'standard-protocol', decimals: 18, },
+  }
+
+  return fixBalances(balances, mapping, { removeUnmapped: true })
+}
 
 function fixAstarBalances(balances) {
   const mapping = {
     '0x3795C36e7D12A8c252A20C5a7B455f7c57b60283': { coingeckoId: 'tether', decimals: 6, },
     '0x6B175474E89094C44Da98b954EedeAC495271d0F': { coingeckoId: 'astar', decimals: 18, },
     '0xb361DAD0Cc1a03404b650A69d9a5ADB5aF8A531F': { coingeckoId: 'emiswap', decimals: 18, },
-    '0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98': { coingeckoId: 'usdc', decimals: 6, },
+    '0xC404E12D3466acCB625c67dbAb2E1a8a457DEf3c': { coingeckoId: 'usd-coin', decimals: 6, },  // interest bearing USDC
+    '0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98': { coingeckoId: 'usd-coin', decimals: 6, },
   }
 
   return fixBalances(balances, mapping)
+}
+
+function fixHPBBalances(balances) {
+  const mapping = {
+    '0xBE05Ac1FB417c9EA435b37a9Cecd39Bc70359d31': { coingeckoId: 'high-performance-blockchain', decimals: 18, },
+  }
+
+  return fixBalances(balances, mapping, { removeUnmapped: true })
 }
 
 async function transformAstarAddress() {
@@ -828,17 +866,29 @@ function fixTezosBalances(balances) {
   return fixBalances(balances, mapping)
 }
 
+const songbirdFixMapping = {
+  '0x02f0826ef6aD107Cfc861152B32B52fD11BaB9ED': { coingeckoId: 'songbird', decimals: 18, },
+  '0xC348F894d0E939FE72c467156E6d7DcbD6f16e21': { coingeckoId: 'flare-finance', decimals: 18, },
+  '0x70Ad7172EF0b131A1428D0c1F66457EB041f2176': { coingeckoId: 'usd-coin', decimals: 18, },
+}
+
 function normalizeMapping(mapping) {
   Object.keys(mapping).forEach(key => mapping[key.toLowerCase()] = mapping[key])
 }
 
-function fixBalances(balances, mapping) {
+function fixBalances(balances, mapping, { removeUnmapped = false } = {}) {
   normalizeMapping(mapping)
 
   Object.keys(balances).forEach(token => {
     const tokenKey = stripTokenHeader(token).toLowerCase()
     const { coingeckoId, decimals } = mapping[tokenKey] || {}
-    if (!coingeckoId) return;
+    if (!coingeckoId) {
+      if (removeUnmapped) {
+        console.log(`Removing token from balances, it is not part of whitelist: ${tokenKey}`)
+        delete balances[token]
+      }
+      return;
+    }
     const currentBalance = balances[token]
     delete balances[token]
     sdk.util.sumSingleBalance(balances, coingeckoId, +BigNumber(currentBalance).shiftedBy(-1 * decimals))
@@ -848,23 +898,27 @@ function fixBalances(balances, mapping) {
 }
 
 function stripTokenHeader(token) {
+  token = token.toLowerCase()
 	return token.indexOf(':') > -1 ? token.split(':')[1] : token
 }
 
 async function getFixBalances(chain) {
-  const dummyFn = () => { }
+  const dummyFn = i => i
   return fixBalancesMapping[chain] || dummyFn
 }
 
 const fixBalancesMapping = {
   avax: fixAvaxBalances,
   astar: fixAstarBalances,
+  shiden: fixShidenBalances,
   cronos: fixCronosBalances,
   tezos: fixTezosBalances,
   harmony: fixHarmonyBalances,
+  hpb: fixHPBBalances,
   godwoken: fixGodwokenBalances,
   klaytn: fixKlaytnBalances,
   waves: fixWavesBalances,
+  songbird: b => fixBalances(b, songbirdFixMapping, { removeUnmapped: true }),
   oasis: fixOasisBalances,
 }
 
@@ -874,10 +928,12 @@ const chainTransforms = {
   cronos: transformCronosAddress,
   fantom: transformFantomAddress,
   bsc: transformBscAddress,
+  boba: transformBobaAddress,
   polygon: transformPolygonAddress,
   xdai: transformXdaiAddress,
   avax: transformAvaxAddress,
   heco: transformHecoAddress,
+  hoo: transformHooAddress,
   harmony: transformHarmonyAddress,
   optimism: transformOptimismAddress,
   moonriver: transformMoonriverAddress,
@@ -981,4 +1037,5 @@ module.exports = {
   transformDfkAddress,
   transformFindoraAddress,
   wavesMapping,
+  stripTokenHeader,
 };
