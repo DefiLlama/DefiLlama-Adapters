@@ -166,13 +166,15 @@ function calculateUsdUniTvl(FACTORY, chain, coreAssetRaw, whitelistRaw, coreAsse
                 finalBalances[transformAddress(address)] = amount
             }
         })
+        
+        const fixBalances = await getFixBalances(chain)
+        fixBalances(finalBalances)
+
         if (coreAssetName)
             sdk.util.sumSingleBalance(finalBalances, coreAssetName, (coreBalance) / (10 ** decimals))
         else
             sdk.util.sumSingleBalance(finalBalances, transformAddress(coreAsset), coreBalance)
 
-        const fixBalances = await getFixBalances(chain)
-        fixBalances(finalBalances)
         return finalBalances
     }
 };
