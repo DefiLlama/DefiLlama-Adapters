@@ -1,8 +1,9 @@
 const { balanceOf, totalSupply } = require("@defillama/sdk/build/erc20");
 const { sumTokens } = require("../helper/unwrapLPs.js");
-const BigNumber = require("bignumber.js");
-const sdk = require("@defillama/sdk");
 const { unwrapTroves } = require("../helper/unwrapLPs");
+const BigNumber = require("bignumber.js");
+const getEntireSystemCollAbi = require("../helper/abis/getEntireSystemColl.abi.json");
+const sdk = require("@defillama/sdk");
 
 const chain = "bsc";
 const e18 = new BigNumber(10).pow(18);
