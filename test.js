@@ -10,7 +10,7 @@ const {
 const { util } = require("@defillama/sdk");
 const whitelistedExportKeys = require('./projects/helper/whitelistedExportKeys.json')
 const chainList = require('./projects/helper/chains.json')
-const errorString = '------ ERROR ------'
+const handleError = require('./utils/handleError')
 
 async function getLatestBlockRetry(chain) {
   for (let i = 0; i < 5; i++) {
@@ -249,19 +249,14 @@ function checkExportKeys(module, filePath, chains) {
 
 
   if (unknownChains.length) {
-    console.log(`
-    ${errorString}
-
+    throw new Error(`
     Unknown chain(s): ${unknownChains.join(', ')}
     Note: if you think that the chain is correct but missing from our list, please add it to 'projects/helper/chains.json' file
     `)
-    process.exit(1);
   }
 
   if (blacklistedKeysFound.length) {
-    console.log(`
-    ${errorString}
-
+    throw new Error(`
     Please move the following keys into the chain: ${blacklistedKeysFound.join(', ')}
 
     We have a new adapter export specification now where tvl and other chain specific information are moved inside chain export.
@@ -276,28 +271,17 @@ function checkExportKeys(module, filePath, chains) {
         }
 
     `)
-
-    process.exit(1);
   }
 
   if (unknownKeys.length) {
-    console.log(`
-    ${errorString}
-
+    throw new Error(`
     Found export keys that were not part of specification: ${unknownKeys.join(', ')}
 
     List of valid keys: ${['', '', ...whitelistedExportKeys].join('\n\t\t\t\t')}
     `)
-
-    process.exit(1)
   }
 }
 
-function handleError(error){
-  console.log('\n',errorString, '\n\n')
-  console.error(error)
-  process.exit(1)
-}
 
 process.on('unhandledRejection', handleError)
 process.on('uncaughtException', handleError)
