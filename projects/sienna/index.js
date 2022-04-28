@@ -26,12 +26,13 @@ const queryClient = new CosmWasmClient(SECRET_NODE_URL);
 const CACHED_TOKENS = {};
 
 async function Pairs() {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         mapLimit(factories, 1, async (factory) => {
             const result = await queryClient.getContracts(factory.code);
             const pairs = result.filter((p) => p.label.endsWith(`${factory.address}-${factory.code}`));
             return Promise.resolve(pairs);
-        }, (_err, pairs) => {
+        }, (err, pairs) => {
+            if (err) return reject(err);
             resolve(pairs.flat());
         });
     });
@@ -48,7 +49,7 @@ async function PairsVolumes() {
     const volumes = []
 
     const pairs = await Pairs();
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         eachLimit(pairs, 3, async (contract) => {
             const pair_info = (await queryClient.queryContractSmart(contract.address, "pair_info")).pair_info;
 
@@ -63,7 +64,8 @@ async function PairsVolumes() {
                 tokens: new BigNumber(pair_info.amount_1).div(new BigNumber(10).pow(token2.decimals)).toNumber(),
                 symbol: token2.symbol
             });
-        }, () => {
+        }, (err) => {
+            if (err) return reject(err);
             resolve(volumes);
         });
     });
@@ -95,7 +97,7 @@ async function Lend() {
     const markets = await getLendMarkets();
     const block = await queryClient.getHeight();
 
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         mapLimit(markets, 1, async (market) => {
             const marketState = await queryClient.queryContractSmart(market.contract.address, {
                 state: {
@@ -118,6 +120,7 @@ async function Lend() {
                 tokens: new BigNumber(tokens_supplied).minus(tokens_borrowed).toNumber()
             });
         }, (err, data) => {
+            if (err) return reject(err);
             resolve(data);
         })
     })
@@ -125,7 +128,7 @@ async function Lend() {
 
 async function StakedTokens() {
     const siennaToken = await TokenInfo(SIENNA_TOKEN_ADDRESS);
-    return new Promise(async (resolve) => {
+    return new Promise(async (resolve, reject) => {
         mapLimit(SIENNA_SINGLE_SIDED_POOLS, 1, async (pool) => {
             let total_locked;
             if (pool.version === 3) {
@@ -137,7 +140,8 @@ async function StakedTokens() {
             }
             const tokens = new BigNumber(total_locked).div(new BigNumber(10).pow(siennaToken.decimals)).toNumber();
             return Promise.resolve(tokens);
-        }, (_err, data) => {
+        }, (err, data) => {
+            if (err) return reject(err);
             resolve(data.reduce((total, value) => total + value, 0));
         });
     });
