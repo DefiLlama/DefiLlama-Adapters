@@ -16,7 +16,7 @@ const v3Graphs = getChainTvl({
   optimism: "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-optimism-dev",
   arbitrum: 'https://api.thegraph.com/subgraphs/name/ianlapham/arbitrum-minimal',
   polygon: "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-v3-polygon",
-}, "factories", "totalValueLockedUSD")
+}, "factories", "totalValueLockedUSD", 500)
 
 module.exports = {
   timetravel: true,
