@@ -18,4 +18,4 @@ module.exports = {
       "evmos"
     ),
   },
-}; // node test.js projects/diffusion-fi/index.js
+}; // node test.js projects/diffusionfi/index.js
