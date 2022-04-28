@@ -1,115 +1,106 @@
-const algosdk = require("algosdk")
-const sdk = require('@defillama/sdk')
-const { toUSDTBalances } = require('../helper/balances')
+const algosdk = require("algosdk");
+const { toUSDTBalances } = require("../helper/balances");
 
+const reserveAddress = "J2E2XXS4FTW3POVNZIHRIHTFRGOWEWX65NFYIVYIA27HUK63NWT65OLB2Y"
+const treasuryAddress = "MTMJ5ADRK3CFG3HGUI7FS4Y55WGCUO5CRUMVNBZ7FW5IIG6T3IU2VJHUMM"
+
+const oracleAppId = 673925841
+const gardId = 684649988
 const gardPriceValidatorId = 684650147
-const algoPriceOracleId = 673925841
 
-const localStateStrings = {
-    gardDebt : "GARD_DEBT",
-    unixStart : "UNIX_START",
-    externalApps : "EXTERNAL_APPCOUNT"
-}
+const indexer = new algosdk.Indexer(
+  "",
+  "https://algoindexer.algoexplorerapi.io/",
+  ""
+);
 
-const assetDictionary = {
-    "ALGO": {
-        "decimals": 6,
-    },
-    "GARD": {
-        "decimals": 6,
-        "id": 684649988
-    },
-    "GAIN": {
-        "decimals": 8,
-        "id": 684649672
-    }
-}
-
-async function gardBorrowed() {
-    let client = new algosdk.Indexer("", "https://algoindexer.algoexplorerapi.io/", "")
-    let nexttoken = ""
-    let repsonse = null
-    borrow = 0
-    do {
-        // Find accounts that are opted into the GARD price validator application
-        // These accounts correspond to CDP opened on the GARD protocol
-       response = await client.searchAccounts()
-        .applicationID(gardPriceValidatorId)
-        .limit(1000)
-        .nextToken(nexttoken).do();
-        for (const account of response['accounts']) {
-
-            user_local_state = account["apps-local-state"]
-            
-            for( const  app_local_state of user_local_state )
-            {
-                if( app_local_state["id"] == gardPriceValidatorId )
-                {
-                    key_vals = app_local_state["key-value"]
-                      
-                    if( key_vals)
-                    {
-                        for (const x of key_vals) {
-                            let decodedKey = Buffer.from(x.key, 'base64').toString('binary')
-                            if (decodedKey === localStateStrings.gardDebt ) {
-                                borrow += ( x.value.uint / Math.pow(10,assetDictionary['GARD'].decimals))
-                            }
-                       }
-                    }                   
-                }
-            }            
+function getStateUint(state, key) {
+    const val = state.find((entry) => {
+        if(entry.key === key) { 
+            return entry;
         }
-        nexttoken = response['next-token']
-    } while( nexttoken != null );
-
-    // The value of GARD by design of the protocol is 1 USD.  Maybe should consider 
-    // getting prices from DEX on Algorand.
-
-    return toUSDTBalances( borrow )
+    })
+    return val.value.uint
 }
 
-async function getAlgoSupplied( client ) {
+async function getAppState(appId) {
+  const res = await indexer.lookupApplications(appId).do();
+  return res.application.params["global-state"];
+}
+
+/* Get Algo/USD price from oracle */
+async function getAlgoPrice() {
+    const state = await getAppState(oracleAppId);
+    const price = getStateUint(state, 'cHJpY2U=')
+    const oracleDecimals = getStateUint(state, 'ZGVjaW1hbHM=')
+    return price / (10 ** oracleDecimals);
+}
+
+/* Get value locked in user-controlled smart contracts */
+async function getAlgoGovernanceAccountBalsUsd(price) {
+
     let nexttoken = ""
-    let repsonse = null
-    supply = 0
+    let response = null
+    let totalContractAlgo = 0
     do {
         // Find accounts that are opted into the GARD price validator application
         // These accounts correspond to CDP opened on the GARD protocol
-       response = await client.searchAccounts()
+       response = await indexer.searchAccounts()
         .applicationID(gardPriceValidatorId)
         .limit(1000)
         .nextToken(nexttoken).do();
         for (const account of response['accounts']) {
-            supply += (account['amount']/ Math.pow(10,assetDictionary['ALGO'].decimals))
+          totalContractAlgo += (account['amount']/ Math.pow(10, 6))
         }
         nexttoken = response['next-token']
     } while( nexttoken != null );
   
-    return supply
+    return totalContractAlgo*price
 }
 
+/* Get value locked in treasury */
+async function getTreasuryBalUsd(price) {
+
+    const info = await indexer.lookupAccountByID(treasuryAddress).do()
+    const treasuryBal = info.account.amount;
+    return treasuryBal*price/1e6 // 1e6 comes from converting from microAlgos to Algos 
+}
+
+/* Get total deposits */
 async function tvl() {
-    let client = new algosdk.Indexer("", "https://algoindexer.algoexplorerapi.io/", "")
-    let repsonse = null
-    let oracleResults = {}
-    
-    let supply = await getAlgoSupplied( client )
-    
-    // Get ALGO price in USD from the block chaain
-    response = await client.lookupApplications(algoPriceOracleId).do();   
-    response.application.params["global-state"].forEach(x => {
-      let decodedKey =  Buffer.from(x.key, 'base64').toString('binary')
-      oracleResults[decodedKey] = x.value.uint
-    })
-    algoUSD =  oracleResults['price'] / Math.pow(10,oracleResults['decimals'])
+    const price = await getAlgoPrice();
 
-    supplyUSD = supply * algoUSD
+    const [treasuryBal, algoGovernanceDepositUsd] =
+    await Promise.all([
+        getTreasuryBalUsd(price),
+        getAlgoGovernanceAccountBalsUsd(price),
+    ]);
 
-    return toUSDTBalances(supplyUSD)
+    return toUSDTBalances(treasuryBal + algoGovernanceDepositUsd);
+}
+
+/* Get total borrows */
+async function borrowed() {
+
+    const info = await indexer.lookupAccountByID(reserveAddress).do()
+    const gardBalance = info.account.assets?.find((asset) => asset["asset-id"] === gardId).amount;
+    return (92e17 - gardBalance)/1e6 
+    // Contract is initialized with 9.2 quintillion microGARD. Each GARD is pegged to $1
+}
+
+async function borrowedBalances(){
+  return toUSDTBalances(await borrowed())
+}
+
+async function treasuryBalances() {
+    const price = await getAlgoPrice();
+    return toUSDTBalances(await getTreasuryBalUsd(price))
 }
 
 module.exports = {
-    algorand: {
-        tvl: tvl
-    }
-};
+  algorand:{
+    tvl,
+    borrowed: borrowedBalances,
+    treasury: treasuryBalances,
+  }
+}

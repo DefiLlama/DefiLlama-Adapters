@@ -77,7 +77,7 @@ async function fantomTvl(timestamp, block, chainBlocks) {
 module.exports = {
   methodology: "TVL includes all farms in MasterChef contract",
   avalanche: {
-    tvl: avaxTvl,
+    tvl: avaxTvl
   },
   bsc: {
     tvl: bscTvl,
