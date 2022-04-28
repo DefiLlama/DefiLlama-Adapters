@@ -55,6 +55,11 @@ async function pool2(balances, chainBlocks, chain, pool) {
 async function polygonPool2(timestamp, block, chainBlocks) {
   let balances = {};
   await pool2(balances, chainBlocks["polygon"], "polygon", polyPool2LPs);
+  return balances;
+}
+
+async function ethPool2(timestamp, block, chainBlocks) {
+  let balances = {};
   await pool2(balances, block, "ethereum", ethPool2LPs);
   return balances;
 }
@@ -64,4 +69,8 @@ module.exports = {
     tvl: async () => ({}),
     pool2: polygonPool2,
   },
+  ethereum: {
+    tvl: ()=>({}),
+    pool2: ethPool2,
+  }
 };
