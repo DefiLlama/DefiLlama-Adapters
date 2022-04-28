@@ -1,70 +1,27 @@
-const sdk = require("@defillama/sdk");
-async function getTotalCollateral(pools, chain, block) {
-  const balances = {};
-  await Promise.all(
-    pools.map((pool) =>
-      sdk.api.erc20
-        .balanceOf({
-          target: pool[1],
-          owner: pool[0],
-          chain,
-          block,
-        })
-        .then((result) => {
-            sdk.util.sumSingleBalance(balances, pool[2], result.output)
-        }
+const sdk = require('@defillama/sdk');
+const abi = require('./abi.json')
 
-        )
-    )
-  );
-  return balances;
-}
-
-const avaxLpPools = [
-    [
-      "0x332f909F6bBa8c1B124202F9FEC5d515c7635500",
-      "0xD0755413bfE2e08dB6bE72761cdD56d77d4B60f1",
-      "avax:0xD0755413bfE2e08dB6bE72761cdD56d77d4B60f1",
-    ], // north
-];
+async function tvl(timestamp, ethBlock, chainBlocks) {
 
 
+  let tvl = (await sdk.api.abi.multiCall({
+    block: chainBlocks.avax,
+    calls: [{
+      target: '0x6dda10d81F374438F024Ef4aCB894f23d3d6894A'
+      // params: ['']
+    }],
+    abi: abi.totalTVL,
+    chain: 'avax'
+  })).output.map(t => t.output);
 
-const avaxStakingPool = [
-  [
-    "0xe40EddA6d49d935D03eC8F7FAFd84DE14d99D2a1",
-    "0xD0755413bfE2e08dB6bE72761cdD56d77d4B60f1",
-    "avax:0xD0755413bfE2e08dB6bE72761cdD56d77d4B60f1",
-  ], // sNORTH
-];
-
-
-async function lp(timestamp, block, chainBlocks) {
-  return await getTotalCollateral(avaxLpPools, "avax", chainBlocks["avax"]);
-}
-
-async function northStaking(timestamp, block, chainBlocks) {
-  return await getTotalCollateral(avaxStakingPool, "avax", chainBlocks["avax"]);
-}
-
-function mergeBalances(balances, balancesToMerge) {
-  Object.entries(balancesToMerge).forEach((balance) => {
-    sdk.util.sumSingleBalance(balances, balance[0], balance[1]);
-  });
-}
-async function tvl(timestamp, block, chainBlocks) {
-  const balances = {};
-  await Promise.all([lp(timestamp, block, chainBlocks)]).then((poolBalances) =>
-    poolBalances.forEach((pool) => mergeBalances(balances, pool))
-  );
-  return balances;
+  return {
+    "0xdac17f958d2ee523a2206206994597c13d831ec7": Number(tvl) / 10 ** 12
+  }
 }
 
 module.exports = {
-
-  avax: {
-    tvl: lp,
-    northStaking,
+  methodology: 'The cumulative market value of each vault collateral is TVL',
+  avalanche: {
+    tvl,
   },
-  tvl,
-};
+}
