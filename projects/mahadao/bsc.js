@@ -1,272 +1,211 @@
-const { getArthTvl } = require("../helper/arth");
 const { balanceOf, totalSupply } = require("@defillama/sdk/build/erc20");
-const { staking } = require("../helper/staking");
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs.js");
+const { sumTokens } = require("../helper/unwrapLPs.js");
 const BigNumber = require("bignumber.js");
 const getEntireSystemCollAbi = require("../helper/abis/getEntireSystemColl.abi.json");
 const sdk = require("@defillama/sdk");
 
-const chain = 'bsc'
+const chain = "bsc";
+const e18 = new BigNumber(10).pow(18);
 
 const bsc = {
-  arthBusdStaking: "0xE8b16cab47505708a093085926560a3eB32584B8",
-  arthMahaStaking: "0x7699d230Ba47796fc2E13fba1D2D52Ecb0318c33",
-  arthu3epsStaking: "0x6398c73761a802a7db8f6418ef0a299301bc1fb0",
+  "apeswap.arthMahaLP": "0x84020eefe28647056eac16cb16095da2ccf25665",
+  "apeswap.bnbMahaLP": "0x0a1ba34833798a3d160a8958f39e46fef3fe7f4e",
 
-  arthMahaApeLP: "0x84020eefe28647056eac16cb16095da2ccf25665", //
-  arthMahaLP: "0xb955d5b120ff5b803cdb5a225c11583cd56b7040",
-  arthBusdLP: "0x80342bc6125a102a33909d124a6c26CC5D7b8d56",
+  "pcs.arthMahaLP": "0xb955d5b120ff5b803cdb5a225c11583cd56b7040",
+  "pcs.arthBusdLP": "0x80342bc6125a102a33909d124a6c26CC5D7b8d56",
 
   busd: "0xe9e7cea3dedca5984780bafc599bd69add087d56",
   usdc: "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d",
   usdt: "0x55d398326f99059fF775485246999027B3197955",
   arth: "0xb69a424df8c737a122d0e60695382b3eec07ff4b",
+  wbnb: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
   maha: "0xCE86F7fcD3B40791F63B86C3ea3B8B355Ce2685b",
 
-  valusdc: "0xA6fDEa1655910C504E974f7F1B520B74be21857B",
-  valusdt: "0x5f7f6cB266737B89f7aF86b30F03Ae94334b83e9",
-  valbusd: "0xaeD19DAB3cd68E4267aec7B2479b1eD2144Ad77f",
+  valUsdc: "0xA6fDEa1655910C504E974f7F1B520B74be21857B",
+  valUsdt: "0x5f7f6cB266737B89f7aF86b30F03Ae94334b83e9",
+  valBusd: "0xaeD19DAB3cd68E4267aec7B2479b1eD2144Ad77f",
 
   "ellipsis.arthu3eps.token": "0xB38B49bAE104BbB6A82640094fd61b341a858f78",
   "ellipsis.arthu3eps.pool": "0x98245Bfbef4e3059535232D68821a58abB265C45",
   "ellipsis.arthuval3ps.token": "0x4cfaabd5920021359bb22bb6924cce708773b6ac",
   "ellipsis.arthuval3ps.pool": "0x1d4B4796853aEDA5Ab457644a18B703b6bA8b4aB",
 
-  "arth.usd.token": "0x88fd584dF3f97c64843CD474bDC6F78e398394f4",
+  "arth.usd": "0x88fd584dF3f97c64843CD474bDC6F78e398394f4",
 
   "ellipsis.3eps.token": "0xaF4dE8E872131AE328Ce21D909C74705d3Aaf452",
-  "ellipsis.val3eps.token": "0x5b5bD8913D766D005859CE002533D4838B0Ebbb5",
   "ellipsis.3eps.pool": "0x160CAed03795365F3A589f10C379FfA7d75d4E76",
-  "ellipsis.val3eps.pool": "0x19EC9e3F7B21dd27598E7ad5aAe7dC0Db00A806d"
+  "ellipsis.val3eps.token": "0x5b5bD8913D766D005859CE002533D4838B0Ebbb5",
+  "ellipsis.val3eps.pool": "0x19EC9e3F7B21dd27598E7ad5aAe7dC0Db00A806d",
 };
 
-const getBalance = async (target, owner, block) => {
-  return await balanceOf({
-    target: target,
-    owner: owner,
-    block,
-    chain
-  })
+const getResponse = async (target, abi, block, chain, params = []) => {
+  if (params.length < 0)
+    return await sdk.api.abi.call({
+      target: target,
+      abi: abi,
+      block,
+      chain,
+    });
+  else
+    return await sdk.api.abi.call({
+      target: target,
+      abi: abi,
+      block,
+      params,
+      chain,
+    });
+};
+
+function getArthTvl(
+  TROVE_ADDRESSES,
+  COLLATERAL_ADDRESSES,
+  chain,
+  coingeckoIds = [],
+  decimals = [],
+  symbols = []
+) {
+  return async (_, ethBlock, chainBlocks) => {
+    const block = chainBlocks[chain];
+
+    const ret = {};
+    const tvls = await Promise.all(
+      TROVE_ADDRESSES.map((trove) =>
+        sdk.api.abi.call({
+          target: trove,
+          abi: getEntireSystemCollAbi,
+          block,
+          chain,
+        })
+      )
+    );
+
+    COLLATERAL_ADDRESSES.forEach(async (collateral, index) => {
+      const collateralKeys = Object.keys(collateral);
+      let key = chain + ":" + collateral[collateralKeys[0]][0];
+      let val = tvls[index].output;
+
+      if (coingeckoIds[index]) key = coingeckoIds[index];
+
+      if (ret[key] == undefined) ret[key] = BigNumber(0);
+
+      if (decimals[index] !== undefined)
+        val = Number(val) / 10 ** decimals[index];
+
+      ret[key] = ret[key].plus(BigNumber(val));
+    });
+
+    return ret;
+  };
 }
+
+const getBalance = async (target, owner, block) => {
+  return (
+    await balanceOf({
+      target: target,
+      owner: owner,
+      block,
+      chain,
+    })
+  ).output;
+};
 
 const getTotalSupply = async (target, block) => {
-  return await totalSupply({
-    target: target,
-    block,
-    chain
-  })
-}
+  return (
+    await totalSupply({
+      target: target,
+      block,
+      chain,
+    })
+  ).output;
+};
 
-async function getBalanceOfStakedEllipsisLP(
-  balances,
-  stableSwapAddress,
-  stakingContract,
-  lpToken,
-  tokens,
-  block
-) {
-  const stakedLpTokens = await getBalance(lpToken, stakingContract, block);
+async function getTVLOfarthu3ps(balances, block) {
+  const arthuBal = await getBalance(
+    bsc["arth.usd"],
+    bsc["ellipsis.arthu3eps.pool"],
+    block
+  );
+  const epsBal = await getBalance(
+    bsc["ellipsis.3eps.token"],
+    bsc["ellipsis.arthu3eps.pool"],
+    block
+  );
 
-  const totalLPSupply = await getTotalSupply(lpToken, block);
+  const token2Amount = new BigNumber(epsBal).dividedBy(e18);
 
-  const percentage = stakedLpTokens.output / totalLPSupply.output;
-
-  const token1Balance = await getBalance(tokens[0], stableSwapAddress, block);
-  const token2Balance = await getBalance(tokens[1], stableSwapAddress, block);
-
-  const e18 = new BigNumber(10).pow(18);
-  const token1Amount = new BigNumber(
-    token1Balance.output * percentage
-  ).dividedBy(e18);
-  const token2Amount = new BigNumber(
-    token2Balance.output * percentage
-  ).dividedBy(e18);
-
-  sdk.util.sumSingleBalance(balances, "usd-coin", token1Amount.toNumber());
-  sdk.util.sumSingleBalance(balances, "usd-coin", token2Amount.toNumber());
+  sdk.util.sumSingleBalance(balances, "arth.usd", arthuBal);
+  sdk.util.sumSingleBalance(balances, "usd-coin", token2Amount.toNumber()); // todo: need to break this down
 }
 
 const replaceMAHAonBSCTransform = (addr) => {
   if (addr.toLowerCase() === "0xce86f7fcd3b40791f63b86c3ea3b8b355ce2685b")
     return "mahadao";
+
+  if (addr.toLowerCase() === "0xb69a424df8c737a122d0e60695382b3eec07ff4b")
+    return "arth";
   return `bsc:${addr}`;
 };
 
-const getTVLOfArthMahaPoolToken = async (balances, arthMahaLP, maha, arth, block) => {
-  const mahaBalance = await getBalance(maha, arthMahaLP, block)
-  console.log(mahaBalance);
-  const arthBalance = await getBalance(arth, arthMahaLP, block)
-  console.log(arthBalance);
-  balances['mahadao'] = balances.mahadao ? balances.mahadao + mahaBalance.output / 1e18 : mahaBalance.output / 1e18
-  balances['arth'] = balances.arth ? balances.arth + (arthBalance.output / 1e18) / 2 : (arthBalance.output / 1e18) / 2
-
-  console.log('getTVLOfArthMahaPoolToken', balances);
-}
-const getTVLOfArthMahaApePoolToken = async (balances, arthMahaApeLP, maha, arth, block) => {
-  const mahaBalance = await getBalance(maha, arthMahaApeLP, block)
-  console.log(mahaBalance);
-  const arthBalance = await getBalance(arth, arthMahaApeLP, block)
-  console.log(arthBalance);
-  balances['mahadao'] = balances.mahadao ? balances.mahadao + mahaBalance.output / 1e18 : mahaBalance.output / 1e18
-  balances['arth'] = balances.arth ? balances.arth + (arthBalance.output / 1e18) / 2 : (arthBalance.output / 1e18) / 2
-
-  console.log('getTVLOfArthMahaApePoolToken', balances);
-}
-
-const getTVLOfArthBusdPoolToken = async (balances, arthbusdLP, arth, busd, block) => {
-  const arthBalance = await getBalance(arth, arthbusdLP, block)
-  console.log(arthBalance);
-  const busdBalance = await getBalance(busd, arthbusdLP, block)
-
-  balances['arth'] = balances.arth ? balances.arth + arthBalance.output / 1e18 : arthBalance.output / 1e18
-  balances['binance-usd'] = balances['binance-usd'] ? balances['binance-usd'] + busdBalance.output / 1e18 : busdBalance.output / 1e18
-
-  console.log('2123', balances);
-}
-
-const getVal3epsBalance = async (
-  balances,
-  valEpsPercentage,
-  pool3eps,
-  valusdcToken,
-  valusdtToken,
-  valbusdToken,
-  block
-) => {
-
-  const e18 = new BigNumber(10).pow(18);
-  //get balances of valas BUSD, USDC, USDT
-  const valBUSDBalance = await getBalance(valbusdToken, pool3eps, block)
-  console.log(valbusdToken, pool3eps);
-  const valUSDCBalance = await getBalance(valusdcToken, pool3eps, block)
-  const valUSDTBalance = await getBalance(valusdtToken, pool3eps, block,)
-
-  console.log('121', valBUSDBalance, valUSDCBalance, valUSDTBalance);
-
-  const totalValBUSDSupply = await getTotalSupply(valbusdToken, block)
-  const totalValUSDCSupply = await getTotalSupply(valusdcToken, block)
-  const totalValUSDTSupply = await getTotalSupply(valusdtToken, block)
-
-  console.log('127', totalValBUSDSupply, totalValUSDCSupply, totalValUSDTSupply);
-
-  const valUSDCPercentage = valUSDCBalance.output * valEpsPercentage / totalValUSDCSupply.output
-  const valUSDTPercentage = valUSDTBalance.output * valEpsPercentage / totalValUSDTSupply.output
-  const valBUSDPercentage = valBUSDBalance.output * valEpsPercentage / totalValBUSDSupply.output
-
-  // get balances of busd, usdc , usdt
-  const busdBalance = await getBalance(bsc.busd, valbusdToken, block)
-  const usdcBalance = await getBalance(bsc.usdc, valusdcToken, block)
-  const usdtBalance = await getBalance(bsc.usdt, valusdtToken, block)
-
-  console.log('138', busdBalance, usdcBalance, usdtBalance);
-
-  sdk.util.sumSingleBalance(balances, "usd-coin", (usdcBalance.output * valUSDCPercentage) / e18);
-  sdk.util.sumSingleBalance(balances, "tether", (usdtBalance.output * valUSDTPercentage) / e18);
-  sdk.util.sumSingleBalance(balances, "binance-usd", (busdBalance.output * valBUSDPercentage) / e18);
-}
-
-const getTVLOfarthuval3ps = async (
-  balances,
-  arthuval3psLP,
-  token3eps,
-  tokenARTHUSDC,
-  BSC3eps,
-  pool3eps,
-  block,
-) => {
+const getTVLOfarthuval3ps = async (balances, block) => {
   //get balance of arth-usd of arth-usd+val3eps
-  const arthUSDBalance = await getBalance(tokenARTHUSDC, arthuval3psLP, block)
-  console.log('arthUSDBalance', arthUSDBalance);
-  balances['arth'] = balances['arth'] ? balances['arth'] + (arthUSDBalance.output / 1e18) / 2 : (arthUSDBalance.output / 1e18) / 2
+  const arthUSDBalance = await getBalance(
+    bsc["arth.usd"],
+    bsc["ellipsis.arthuval3ps.pool"],
+    block
+  );
 
-  //get balance of val3eps of arth-usd+val3eps
-  const balance3ps = await getBalance(token3eps, arthuval3psLP, block)
-  console.log('balance3ps', balance3ps);
+  sdk.util.sumSingleBalance(balances, "arth.usd", arthUSDBalance);
 
-  const totalSupply3eps = await getTotalSupply(BSC3eps, block)
+  // get balance of val3eps of arth-usd+val3eps
+  const val3EPSowned = await getBalance(
+    bsc["ellipsis.val3eps.token"],
+    bsc["ellipsis.arthuval3ps.pool"],
+    block
+  );
 
-  const valEpsPercentage = balance3ps.output / totalSupply3eps.output
-
-  console.log(valEpsPercentage);
-
-  await getVal3epsBalance(
-    balances,
-    valEpsPercentage,
-    pool3eps,
-    bsc.valusdc,
-    bsc.valusdt,
-    bsc.valbusd,
-    block,
-  )
-}
+  // todo hack for now
+  sdk.util.sumSingleBalance(balances, "usd-coin", val3EPSowned / e18);
+  return;
+};
 
 function pool2s() {
   return async (_timestamp, _ethBlock, chainBlocks) => {
     const balances = {};
 
-    // calculate tvl for regular uniswap lp tokens
-    const stakingContracts = [bsc.arthBusdStaking, bsc.arthMahaStaking];
-    const lpTokens = [bsc.arthBusdLP, bsc.arthMahaLP];
-    // await sumTokensAndLPsSharedOwners(
-    //   balances,
-    //   lpTokens.map((token) => [token, true]),
-    //   stakingContracts,
-    //   chainBlocks.bsc,
-    //   "bsc",
-    //   replaceMAHAonBSCTransform
-    // );
-
-    // calculate tvl for curve lp tokens
-    await getBalanceOfStakedEllipsisLP(
+    await sumTokens(
       balances,
-      bsc["ellipsis.arthu3eps.pool"],
-      bsc.arthu3epsStaking, // staked
-      bsc["ellipsis.arthu3eps.token"], // lp token
-      [bsc["arth.usd.token"], bsc["ellipsis.val3eps.token"]],
+      [
+        // apeswap ARTH/MAHA
+        [bsc.arth, bsc["apeswap.arthMahaLP"]],
+        [bsc.maha, bsc["apeswap.arthMahaLP"]],
+
+        // apeswap MAHA/BNB
+        [bsc.wbnb, bsc["apeswap.bnbMahaLP"]],
+        [bsc.maha, bsc["apeswap.bnbMahaLP"]],
+
+        // pcs MAHA/ARTH
+        [bsc.arth, bsc["pcs.arthMahaLP"]],
+        [bsc.maha, bsc["pcs.arthMahaLP"]],
+
+        // pcs ARTH/BUSD
+        [bsc.arth, bsc["pcs.arthBusdLP"]],
+        [bsc.busd, bsc["pcs.arthBusdLP"]],
+      ],
       chainBlocks.bsc,
-      "bsc"
+      "bsc",
+      replaceMAHAonBSCTransform
     );
 
-    await getTVLOfArthMahaPoolToken(
-      balances,
-      bsc.arthMahaLP,
-      bsc.maha,
-      bsc.arth,
-      chainBlocks.bsc,
-      "bsc"
-    )
+    // todo not accurate
+    await getTVLOfarthuval3ps(balances, chainBlocks.bsc);
+    await getTVLOfarthu3ps(balances, chainBlocks.bsc);
 
-    await getTVLOfArthBusdPoolToken(
-      balances,
-      bsc.arthBusdLP,
-      bsc.arth,
-      bsc.busd,
-      chainBlocks.bsc,
-      "bsc"
-    )
+    balances.arth = balances.arth / 1e18;
+    balances.mahadao = balances.mahadao / 1e18;
 
-    await getTVLOfArthMahaApePoolToken(
-      balances,
-      bsc.arthMahaApeLP,
-      bsc.maha,
-      bsc.arth,
-      chainBlocks.bsc,
-      "bsc"
-    )
+    balances.arth = balances["arth.usd"] / 2 / 1e18 + balances.arth;
+    delete balances["arth.usd"];
 
-    await getTVLOfarthuval3ps(
-      balances,
-      bsc['ellipsis.arthuval3ps.pool'],
-      bsc['ellipsis.val3eps.token'],
-      bsc['arth.usd.token'],
-      bsc['ellipsis.3eps.token'],
-      bsc['ellipsis.val3eps.pool'],
-      chainBlocks.bsc,
-      "bsc"
-    )
-
-    // if (balances.mahadao) balances.mahadao = balances.mahadao / 1e18;
-    // console.log(balances);
     return balances;
   };
 }
@@ -278,18 +217,29 @@ module.exports = {
       // troves
       "0x8F2C37D2F8AE7Bce07aa79c768CC03AB0E5ae9aE", // wbnb
       "0x1Beb8b4911365EabEC68459ecfe9172f174BF0DB", // busd
-      "0x0F7e695770E1bC16a9A899580828e22B16d93314", // maha
-      "0xD31AC58374D4a0b3C58dFF36f2F59A22348159DB", //busd-usdc-lp-s
-      "0x7A535496c5a0eF6A9B014A01e1aB9d7493F503ea", //busd-usdt-lp-s
+      "0xD31AC58374D4a0b3C58dFF36f2F59A22348159DB", // maha
+      // "0xD31AC58374D4a0b3C58dFF36f2F59A22348159DB", // busd-usdc-lp-s
+      // "0x7A535496c5a0eF6A9B014A01e1aB9d7493F503ea", // busd-usdt-lp-s
     ],
     [
       // collaterals
-      { "wbnb": ["0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"] }, // wbnb
-      { "busd": ["0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"] }, // busd
-      { "maha": ["0xCE86F7fcD3B40791F63B86C3ea3B8B355Ce2685b"] }, // maha
-      { "busdusdc-ape-lps": ["0xbb9858603b1fb9375f6df972650343e985186ac5", "0xc087c78abac4a0e900a327444193dbf9ba69058e", "0x5c8d727b265dbafaba67e050f2f739caeeb4a6f9"] },//busdusdc-ape-lps
-      { "busdusdt-ape-lps": ["0xc5FB6476a6518dd35687e0Ad2670CB8Ab5a0D4C5", "0x2e707261d086687470B515B320478Eb1C88D49bb", "0x5c8D727b265DBAfaba67E050f2f739cAeEB4A6F9"] },//busdusdt-ape-lps
-
+      { wbnb: ["0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"] }, // wbnb
+      { busd: ["0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"] }, // busd
+      { maha: ["0xCE86F7fcD3B40791F63B86C3ea3B8B355Ce2685b"] }, // maha
+      // {
+      //   "busdusdc-ape-lps": [
+      //     "0xbb9858603b1fb9375f6df972650343e985186ac5",
+      //     "0xc087c78abac4a0e900a327444193dbf9ba69058e",
+      //     "0x5c8d727b265dbafaba67e050f2f739caeeb4a6f9",
+      //   ],
+      // }, //busdusdc-ape-lps
+      // {
+      //   "busdusdt-ape-lps": [
+      //     "0xc5FB6476a6518dd35687e0Ad2670CB8Ab5a0D4C5",
+      //     "0x2e707261d086687470B515B320478Eb1C88D49bb",
+      //     "0x5c8D727b265DBAfaba67E050f2f739cAeEB4A6F9",
+      //   ],
+      // }, //busdusdt-ape-lps
     ],
     "bsc",
     [undefined, undefined, "mahadao"],
