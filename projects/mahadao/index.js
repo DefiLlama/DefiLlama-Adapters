@@ -10,5 +10,3 @@ module.exports = {
   bsc,
   ethereum,
 };
-
-throw new Error('wip')

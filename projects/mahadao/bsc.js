@@ -2,7 +2,6 @@ const { balanceOf, totalSupply } = require("@defillama/sdk/build/erc20");
 const { sumTokens } = require("../helper/unwrapLPs.js");
 const { unwrapTroves } = require("../helper/unwrapLPs");
 const BigNumber = require("bignumber.js");
-const getEntireSystemCollAbi = require("../helper/abis/getEntireSystemColl.abi.json");
 const sdk = require("@defillama/sdk");
 
 const chain = "bsc";
@@ -39,81 +38,11 @@ const bsc = {
   "ellipsis.val3eps.pool": "0x19EC9e3F7B21dd27598E7ad5aAe7dC0Db00A806d",
 };
 
-const getResponse = async (target, abi, block, chain, params = []) => {
-  if (params.length < 0)
-    return await sdk.api.abi.call({
-      target: target,
-      abi: abi,
-      block,
-      chain,
-    });
-  else
-    return await sdk.api.abi.call({
-      target: target,
-      abi: abi,
-      block,
-      params,
-      chain,
-    });
-};
-
-function getArthTvl(
-  TROVE_ADDRESSES,
-  COLLATERAL_ADDRESSES,
-  chain,
-  coingeckoIds = [],
-  decimals = [],
-  symbols = []
-) {
-  return async (_, ethBlock, chainBlocks) => {
-    const block = chainBlocks[chain];
-
-    const ret = {};
-    const tvls = await Promise.all(
-      TROVE_ADDRESSES.map((trove) =>
-        sdk.api.abi.call({
-          target: trove,
-          abi: getEntireSystemCollAbi,
-          block,
-          chain,
-        })
-      )
-    );
-
-    COLLATERAL_ADDRESSES.forEach(async (collateral, index) => {
-      const collateralKeys = Object.keys(collateral);
-      let key = chain + ":" + collateral[collateralKeys[0]][0];
-      let val = tvls[index].output;
-
-      if (coingeckoIds[index]) key = coingeckoIds[index];
-
-      if (ret[key] == undefined) ret[key] = BigNumber(0);
-
-      if (decimals[index] !== undefined)
-        val = Number(val) / 10 ** decimals[index];
-
-      ret[key] = ret[key].plus(BigNumber(val));
-    });
-
-    return ret;
-  };
-}
-
 const getBalance = async (target, owner, block) => {
   return (
     await balanceOf({
       target: target,
       owner: owner,
-      block,
-      chain,
-    })
-  ).output;
-};
-
-const getTotalSupply = async (target, block) => {
-  return (
-    await totalSupply({
-      target: target,
       block,
       chain,
     })
@@ -138,15 +67,6 @@ async function getTVLOfarthu3ps(balances, block) {
   sdk.util.sumSingleBalance(balances, "usd-coin", token2Amount.toNumber()); // todo: need to break this down
 }
 
-const replaceMAHAonBSCTransform = (addr) => {
-  if (addr.toLowerCase() === "0xce86f7fcd3b40791f63b86c3ea3b8b355ce2685b")
-    return "mahadao";
-
-  if (addr.toLowerCase() === "0xb69a424df8c737a122d0e60695382b3eec07ff4b")
-    return "arth";
-  return `bsc:${addr}`;
-};
-
 const getTVLOfarthuval3ps = async (balances, block) => {
   //get balance of arth-usd of arth-usd+val3eps
   const arthUSDBalance = await getBalance(
@@ -169,46 +89,40 @@ const getTVLOfarthuval3ps = async (balances, block) => {
   return;
 };
 
-function pool2s() {
-  return async (_timestamp, _ethBlock, chainBlocks) => {
-    const balances = {};
+async function pool2(_timestamp, _ethBlock, chainBlocks) {
+  const balances = {};
+  const block = chainBlocks[chain]
+  const tokensAndOwners = [
+    // apeswap ARTH/MAHA
+    [bsc.arth, bsc["apeswap.arthMahaLP"]],
+    [bsc.maha, bsc["apeswap.arthMahaLP"]],
 
-    await sumTokens(
-      balances,
-      [
-        // apeswap ARTH/MAHA
-        [bsc.arth, bsc["apeswap.arthMahaLP"]],
-        [bsc.maha, bsc["apeswap.arthMahaLP"]],
+    // apeswap MAHA/BNB
+    [bsc.wbnb, bsc["apeswap.bnbMahaLP"]],
+    [bsc.maha, bsc["apeswap.bnbMahaLP"]],
 
-        // apeswap MAHA/BNB
-        [bsc.wbnb, bsc["apeswap.bnbMahaLP"]],
-        [bsc.maha, bsc["apeswap.bnbMahaLP"]],
+    // pcs MAHA/ARTH
+    [bsc.arth, bsc["pcs.arthMahaLP"]],
+    [bsc.maha, bsc["pcs.arthMahaLP"]],
 
-        // pcs MAHA/ARTH
-        [bsc.arth, bsc["pcs.arthMahaLP"]],
-        [bsc.maha, bsc["pcs.arthMahaLP"]],
+    // pcs ARTH/BUSD
+    [bsc.arth, bsc["pcs.arthBusdLP"]],
+    [bsc.busd, bsc["pcs.arthBusdLP"]],
+  ]
 
-        // pcs ARTH/BUSD
-        [bsc.arth, bsc["pcs.arthBusdLP"]],
-        [bsc.busd, bsc["pcs.arthBusdLP"]],
-      ],
-      chainBlocks.bsc,
-      "bsc",
-      replaceMAHAonBSCTransform
-    );
+  await sumTokens(balances, tokensAndOwners, block, chain)
 
-    // todo not accurate
-    await getTVLOfarthuval3ps(balances, chainBlocks.bsc);
-    await getTVLOfarthu3ps(balances, chainBlocks.bsc);
+  // // todo not accurate
+  // await getTVLOfarthuval3ps(balances, chainBlocks.bsc);
+  // await getTVLOfarthu3ps(balances, chainBlocks.bsc);
 
-    balances.arth = balances.arth / 1e18;
-    balances.mahadao = balances.mahadao / 1e18;
+  // balances.arth = balances.arth / 1e18;
+  // balances.mahadao = balances.mahadao / 1e18;
 
-    balances.arth = balances["arth.usd"] / 2 / 1e18 + balances.arth;
-    delete balances["arth.usd"];
+  // balances.arth = balances["arth.usd"] / 2 / 1e18 + balances.arth;
+  // delete balances["arth.usd"];
 
-    return balances;
-  };
+  return balances;
 }
 
 async function tvl(ts, _block, chainBlocks) {
@@ -222,44 +136,15 @@ async function tvl(ts, _block, chainBlocks) {
     "0xD31AC58374D4a0b3C58dFF36f2F59A22348159DB", // maha
     "0x0f7e695770e1bc16a9a899580828e22b16d93314", // BUSDUSDC-APE-LP
     "0x7A535496c5a0eF6A9B014A01e1aB9d7493F503ea", // BUSDUSDT-APE-LP
+    "0x3a00861B7040386b580A4168Db9eD5D4D9dDa7BF", // BUSDUSDC-APE-LP-S
+    "0x45Bc65D7Bb6d26676D12aC4646c8cC344DCe4e60", // BUSDUSDT-APE-LP-S
+    "0x7cce62085AdEFa3fE9572546fD77fF1aA1088BEc", // BUSD-A
   ];
   await unwrapTroves({ balances, troves, chain, block });
   return balances;
 }
 
 module.exports = {
-  pool2: pool2s(),
-  tvl: getArthTvl(
-    [
-      // troves
-      "0x8F2C37D2F8AE7Bce07aa79c768CC03AB0E5ae9aE", // wbnb
-      "0x1Beb8b4911365EabEC68459ecfe9172f174BF0DB", // busd
-      "0xD31AC58374D4a0b3C58dFF36f2F59A22348159DB", // maha
-      // "0xD31AC58374D4a0b3C58dFF36f2F59A22348159DB", // busd-usdc-lp-s
-      // "0x7A535496c5a0eF6A9B014A01e1aB9d7493F503ea", // busd-usdt-lp-s
-    ],
-    [
-      // collaterals
-      { wbnb: ["0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"] }, // wbnb
-      { busd: ["0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"] }, // busd
-      { maha: ["0xCE86F7fcD3B40791F63B86C3ea3B8B355Ce2685b"] }, // maha
-      // {
-      //   "busdusdc-ape-lps": [
-      //     "0xbb9858603b1fb9375f6df972650343e985186ac5",
-      //     "0xc087c78abac4a0e900a327444193dbf9ba69058e",
-      //     "0x5c8d727b265dbafaba67e050f2f739caeeb4a6f9",
-      //   ],
-      // }, //busdusdc-ape-lps
-      // {
-      //   "busdusdt-ape-lps": [
-      //     "0xc5FB6476a6518dd35687e0Ad2670CB8Ab5a0D4C5",
-      //     "0x2e707261d086687470B515B320478Eb1C88D49bb",
-      //     "0x5c8D727b265DBAfaba67E050f2f739cAeEB4A6F9",
-      //   ],
-      // }, //busdusdt-ape-lps
-    ],
-    "bsc",
-    [undefined, undefined, "mahadao"],
-    [undefined, undefined, 18]
-  ),
+  pool2,
+  tvl,
 };
