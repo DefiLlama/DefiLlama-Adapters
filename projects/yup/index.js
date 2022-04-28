@@ -1,76 +1,25 @@
-const sdk = require("@defillama/sdk");
+const { pool2 } = require("../helper/pool2");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-
-/*
- * Using the ETH POOL2 LPs as I did is INCORRECT.
- * It is calculating the total LPs bridged to Polygon, not the total staked on Polygon.
- * I wasn't sure how to unwrap the LPs that are staked on Polygon.
- */
-
-// ETH POOL2 LPS
-const ethPool2LPs = [
-  {
-    owner: "0x40ec5b33f54e0e8a33a975908c5ba1c14e5bbbdf",
-    pool: "0x916560C92f423BF7d20f34591a6B27a254c3bD7A",
-  },
-]; // ETH-YUP LP
-
-// POLYGON POOL2 LPS
-const polyPool2LPs = [
-  {
-    owner: "0xabc4250b8813D40c8C42290384C3C8c8BA33dBE6",
-    pool: "0xfe8bacb45a5ce5cf0746f33d3a792c98fbd358e0",
-  }, // POLY-YUP LP
-];
-
-async function pool2(balances, chainBlocks, chain, pool) {
-  let lpPositions = [];
-  let lpBalances = (
-    await sdk.api.abi.multiCall({
-      calls: pool.map((p) => ({
-        target: p.pool,
-        params: p.owner,
-      })),
-      abi: "erc20:balanceOf",
-      block: chainBlocks[chain],
-      chain: chain,
-    })
-  ).output;
-  lpBalances.forEach((i) => {
-    lpPositions.push({
-      balance: i.output,
-      token: i.input.target,
-    });
-  });
-  await unwrapUniswapLPs(
-    balances,
-    lpPositions,
-    chainBlocks[chain],
-    chain,
-    (addr) => `${chain}:${addr}`
-  );
-  return balances;
-}
-
-async function polygonPool2(timestamp, block, chainBlocks) {
-  let balances = {};
-  await pool2(balances, chainBlocks["polygon"], "polygon", polyPool2LPs);
-  return balances;
-}
-
-async function ethPool2(timestamp, block, chainBlocks) {
-  let balances = {};
-  await pool2(balances, block, "ethereum", ethPool2LPs);
-  return balances;
-}
+const sdk = require('@defillama/sdk')
+const POLY_LP = '0xfe8bacb45a5ce5cf0746f33d3a792c98fbd358e0'
+const POLY_MASTERCHEF = '0xabc4250b8813D40c8C42290384C3C8c8BA33dBE6'
+const ETH_LP = '0x916560c92f423bf7d20f34591a6b27a254c3bd7a'
+const ETH_LP_BRIDGED = '0x5b51f8a6651e4d45d0e3d0131e73b30b7e3443f4'
+const POLY_ETH_MASTERCHEF = '0xa378721517B5030D9D17CaF68623bB1f2CcF5c2e'
 
 module.exports = {
+  timetravel: true,
   polygon: {
     tvl: async () => ({}),
-    pool2: polygonPool2,
+    pool2: pool2(POLY_MASTERCHEF, POLY_LP, 'polygon'),
   },
   ethereum: {
-    tvl: ()=>({}),
-    pool2: ethPool2,
-  }
+    tvl: async () => ({}),
+    pool2: async (ts, block, chainBlocks) => {
+      const { output: LPbalance } = await sdk.api.erc20.balanceOf({ target: ETH_LP_BRIDGED, owner: POLY_ETH_MASTERCHEF, block: chainBlocks.polygon, chain: 'polygon' })
+      const balances = {}
+      await unwrapUniswapLPs(balances, [{ balance: LPbalance, token: ETH_LP }])
+      return balances
+    }
+  },
 };
