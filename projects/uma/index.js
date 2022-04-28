@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const { sumTokens } = require("../helper/unwrapLPs");
 const { requery } = require("../helper/requery");
-const { transformPolygonAddress } = require("../helper/portedTokens");
+const { transformPolygonAddress, transformBobaAddress } = require("../helper/portedTokens");
 const { getBlock } = require("../helper/getBlock");
 const abi = require("./abi");
 
@@ -17,6 +17,9 @@ const polygonLspCreators = [
   "0x62410e96a2ceB4d66824346e3264d1D9107a0aBE",
   "0x5Fd7FFF20Ee851cD7bEE72fB3C6d324e4C104c9f",
   "0x4FbA8542080Ffb82a12E3b596125B1B02d213424",
+];
+const bobaLspCreators = [
+  "0xC064b1FE8CE7138dA4C07BfCA1F8EEd922D41f68",
 ];
 const ethEmpCreators = [
   "0xad8fD1f418FB860A383c9D4647880af7f043Ef39",
@@ -120,11 +123,56 @@ async function polygonLsp(timestamp, block, chainBlocks) {
   return balances;
 }
 
+// Captures TVL for LSP contracts on Boba
+async function bobaLsp(timestamp, block, chainBlocks) {
+  const chain = "boba";
+  const balances = {};
+  const transform = transformBobaAddress();
+
+  for (let i = 0; i < bobaLspCreators.length; i++) {
+    const lspCreatorAddress = bobaLspCreators[i];
+    block = await getBlock(timestamp, chain, chainBlocks);
+    const logs = await sdk.api.util.getLogs({
+      target: lspCreatorAddress,
+      topic: "CreatedLongShortPair(address,address,address,address)",
+      keys: ["topics"],
+      fromBlock: 291475,
+      toBlock: block,
+      chain,
+    });
+
+    const collaterals = await sdk.api.abi.multiCall({
+      calls: logs.output.map((poolLog) => ({
+        target: `0x${poolLog[1].slice(26)}`,
+      })),
+      block,
+      abi: abi.collateralToken,
+      chain,
+    });
+    
+    await requery(collaterals, chain, block, abi);
+    await sumTokens(
+      balances,
+      collaterals.output
+        .filter((t) => t.output !== null)
+        .map((c) => [c.output, c.input.target]),
+      block,
+      chain,
+      transform
+    );
+  }
+  
+  return balances;
+}
+
 module.exports = {
   ethereum: {
     tvl: sdk.util.sumChainTvls([ethEmp, ethLsp]),
   },
   polygon: {
     tvl: sdk.util.sumChainTvls([polygonLsp]),
+  },
+  boba: {
+    tvl: sdk.util.sumChainTvls([bobaLsp]),
   },
 };

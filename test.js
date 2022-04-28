@@ -8,6 +8,9 @@ const {
   humanizeNumber,
 } = require("@defillama/sdk/build/computeTVL/humanizeNumber");
 const { util } = require("@defillama/sdk");
+const whitelistedExportKeys = require('./projects/helper/whitelistedExportKeys.json')
+const chainList = require('./projects/helper/chains.json')
+const handleError = require('./utils/handleError')
 
 async function getLatestBlockRetry(chain) {
   for (let i = 0; i < 5; i++) {
@@ -97,10 +100,17 @@ if (process.argv.length < 3) {
 const passedFile = path.resolve(process.cwd(), process.argv[2]);
 
 (async () => {
-  const module = require(passedFile);
+  let module = {};
+  try {
+    module = require(passedFile)
+  } catch(e) {
+    console.log(e)
+  }
+  const chains = Object.keys(module).filter(item => typeof module[item] === 'object' && item !== 'hallmarks');
+  checkExportKeys(module, passedFile, chains)
   const unixTimestamp = Math.round(Date.now() / 1000) - 60;
   const chainBlocks = {};
-  const chains = Object.keys(module);
+
   if (!chains.includes("ethereum")) {
     chains.push("ethereum");
   }
@@ -217,3 +227,61 @@ const passedFile = path.resolve(process.cwd(), process.argv[2]);
 
   process.exit(0);
 })();
+
+
+function checkExportKeys(module, filePath, chains) {
+  filePath = filePath.split(path.sep)
+  filePath = filePath.slice(filePath.lastIndexOf('projects') + 1)
+
+  if (filePath.length > 2  
+    || (filePath.length === 1 && !['.js', ''].includes(path.extname(filePath[0]))) // matches .../projects/projectXYZ.js or .../projects/projectXYZ
+    || (filePath.length === 2 && filePath[1] !== 'index.js'))  // matches .../projects/projectXYZ/index.js
+    process.exit(0)
+
+  const blacklistedRootExportKeys = ['tvl', 'staking', 'pool2', 'borrowed', 'treasury'];
+  const rootexportKeys = Object.keys(module).filter(item => typeof module[item] !== 'object');
+  const unknownChains = chains.filter(chain => !chainList.includes(chain));
+  const blacklistedKeysFound = rootexportKeys.filter(key => blacklistedRootExportKeys.includes(key));
+  let exportKeys = chains.map(chain => Object.keys(module[chain])).flat()
+  exportKeys.push(...rootexportKeys)
+  exportKeys = Object.keys(exportKeys.reduce((agg, key) => ({...agg, [key]: 1}), {})) // get unique keys
+  const unknownKeys = exportKeys.filter(key => !whitelistedExportKeys.includes(key))
+
+
+  if (unknownChains.length) {
+    throw new Error(`
+    Unknown chain(s): ${unknownChains.join(', ')}
+    Note: if you think that the chain is correct but missing from our list, please add it to 'projects/helper/chains.json' file
+    `)
+  }
+
+  if (blacklistedKeysFound.length) {
+    throw new Error(`
+    Please move the following keys into the chain: ${blacklistedKeysFound.join(', ')}
+
+    We have a new adapter export specification now where tvl and other chain specific information are moved inside chain export.
+    For example if your protocol is on ethereum and has tvl and pool2, the export file would look like:
+    
+        module.exports = {
+          methodlogy: '...',
+          ethereum: {
+            tvl: 
+            pool2:
+          }
+        }
+
+    `)
+  }
+
+  if (unknownKeys.length) {
+    throw new Error(`
+    Found export keys that were not part of specification: ${unknownKeys.join(', ')}
+
+    List of valid keys: ${['', '', ...whitelistedExportKeys].join('\n\t\t\t\t')}
+    `)
+  }
+}
+
+
+process.on('unhandledRejection', handleError)
+process.on('uncaughtException', handleError)

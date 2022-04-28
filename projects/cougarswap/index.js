@@ -24,6 +24,11 @@ const CGS_Avax = "0x727C43b707C6Fe3ACD92f17EFAC8e05476DFa81c";
 const MasterChefContractCronos = "0x07586393ed706e5dBf637195d8cf22F5844F234e";
 const CGS_Cronos = "0x4e57e27e4166275Eb7f4966b42A201d76e481B03";
 
+// --- Moonbeam Addresses ---
+const MasterChefContractMoonbeam = "0xc5C772e21A39f88f0960172016Cf455Da6fF52Af";
+const CGS_Moonbeam = "0x2Dfc76901bB2ac2A5fA5fc479590A490BBB10a5F";
+
+
 module.exports = {
   misrepresentedTokens: true,
   ...masterChefExports(MasterChefContractBsc, "bsc", CGS_Bsc),
@@ -32,6 +37,7 @@ module.exports = {
   ...masterChefExports(MasterChefContractHarmony, "harmony", CGS_Harmony),
   ...masterChefExports(MasterChefContractAvax, "avax", CGS_Avax),
   ...masterChefExports(MasterChefContractCronos, "cronos", CGS_Cronos, false),
+  ...masterChefExports(MasterChefContractMoonbeam, "moonbeam", CGS_Moonbeam, false),
   methodology:
-    "TVL includes all Farms and Pools seccion through MasterChef Contracts",
+    "TVL includes all Farms and Pools seccion through MasterChef Contracts"
 };

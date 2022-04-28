@@ -5,6 +5,7 @@ const token1 = require('./abis/token1.json');
 const getReserves = require('./abis/getReserves.json');
 const factoryAbi = require('./abis/factory.json');
 const { getBlock } = require('./getBlock');
+const { getChainTransform, getFixBalances } = require('./portedTokens')
 
 async function requery(results, chain, block, abi) {
     if (results.some(r => !r.success)) {
@@ -39,11 +40,12 @@ function setPrice(prices, address, coreAmount, tokenAmount) {
     prices[address] = [Number(coreAmount), Number(coreAmount) / Number(tokenAmount)]
 }
 
-function calculateUsdUniTvl(FACTORY, chain, coreAssetRaw, whitelistRaw, coreAssetName, decimals = 18, allowUndefinedBlock = true) {
+function calculateUsdUniTvl(FACTORY, chain, coreAssetRaw, whitelistRaw, coreAssetName = undefined, decimals = 18, allowUndefinedBlock = true) {
     const whitelist = whitelistRaw.map(t => t.toLowerCase())
     const coreAsset = coreAssetRaw.toLowerCase()
     return async (timestamp, ethBlock, chainBlocks) => {
         const block = await getBlock(timestamp, chain, chainBlocks, allowUndefinedBlock)
+        const transformAddress = await getChainTransform(chain)
 
         let pairAddresses;
         const pairLength = (await sdk.api.abi.call({
@@ -155,18 +157,31 @@ function calculateUsdUniTvl(FACTORY, chain, coreAssetRaw, whitelistRaw, coreAsse
                 }
             }
         }
+        const finalBalances = {}
         Object.entries(balances).forEach(([address, amount]) => {
             const price = prices[address];
             if (price !== undefined) {
                 coreBalance += price[1] * (amount ?? 0)
+            } else {
+                finalBalances[transformAddress(address)] = amount
             }
         })
-        return {
-            [coreAssetName]: (coreBalance) / (10 ** decimals)
-        }
+        
+        const fixBalances = await getFixBalances(chain)
+        fixBalances(finalBalances)
+
+        if (coreAssetName)
+            sdk.util.sumSingleBalance(finalBalances, coreAssetName, (coreBalance) / (10 ** decimals))
+        else
+            sdk.util.sumSingleBalance(finalBalances, transformAddress(coreAsset), coreBalance)
+
+        return finalBalances
     }
 };
 
 module.exports = {
     calculateUsdUniTvl,
+    requery,
+    setPrice,
+    sum
 };

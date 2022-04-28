@@ -3,6 +3,22 @@ const abis = require('../config/abis.js').abis
 const BigNumber = require("bignumber.js");
 const retry = require('async-retry')
 const axios = require("axios");
+const { PromisePool } = require('@supercharge/promise-pool')
+const sdk = require('@defillama/sdk')
+
+async function parallelAbiCall({ block, chain = 'ethereum', abi, getCallArgs = i => i, items, maxParallel = 1 }) {
+  const { results } = await PromisePool.withConcurrency(maxParallel)
+    .for(items)
+    .process(async item => {
+      const input = getCallArgs(item)
+      const response = await sdk.api.abi.call({ abi, block, chain, ...input })
+      response.input = input
+      response.success = true
+      return response
+    })
+
+  return results
+}
 
 async function returnBalance(token, address) {
   let contract = new web3.eth.Contract(abis.minABI, token);
@@ -29,17 +45,17 @@ async function returnEthBalance(address) {
 }
 
 async function getPrices(object) {
-    var stringFetch = '';
-    for (var key in object[0]) {
-      if (object[0][key] != 'stable') {
-        if (stringFetch.length > 0) {
-          stringFetch = stringFetch + ',' + object[0][key];
-        } else {
-          stringFetch = object[0][key];
-        }
+  var stringFetch = '';
+  for (var key in object[0]) {
+    if (object[0][key] != 'stable') {
+      if (stringFetch.length > 0) {
+        stringFetch = stringFetch + ',' + object[0][key];
+      } else {
+        stringFetch = object[0][key];
       }
     }
-    return await fetchURL(`https://api.coingecko.com/api/v3/simple/price?ids=${stringFetch}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`)
+  }
+  return await fetchURL(`https://api.coingecko.com/api/v3/simple/price?ids=${stringFetch}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`)
 }
 
 async function getPricesFromContract(object) {
@@ -95,7 +111,25 @@ async function postURL(url, data) {
   })
 }
 
+function createIncrementArray(length) {
+  const arr = []
+  for (let i = 0; i < length; i++)
+    arr.push(i)
+
+  return arr
+}
+
+function isLP(symbol) {
+  if (!symbol) return false
+  if (symbol.startsWith('ZLK-LP')) {
+    console.log('Blacklisting Zenlink LP because they have different abi for get reservers', symbol)
+    return false
+  }
+  return symbol.includes('LP') || symbol.includes('PGL') || symbol.includes('UNI-V2') || symbol === "PNDA-V2" || symbol.includes('GREEN-V2')
+}
+
 module.exports = {
+  createIncrementArray,
   fetchURL,
   postURL,
   getPricesfromString,
@@ -106,5 +140,7 @@ module.exports = {
   returnBlock,
   returnDecimals,
   returnEthBalance,
-  getPricesFromContract
+  getPricesFromContract,
+  isLP,
+  parallelAbiCall,
 }

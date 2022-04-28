@@ -1,18 +1,5 @@
 const { calculateUsdUniTvl } = require('../helper/getUsdUniTvl')
 const { stakings } = require("../helper/staking");
-const sdk = require("@defillama/sdk");
-const ethers = require("ethers")
-const { config } = require('@defillama/sdk/build/api');
-const { getProvider } = require("@defillama/sdk/build/general")
-
-if (!getProvider("astar"))
-    config.setProvider("astar", new ethers.providers.StaticJsonRpcProvider(
-        "https://rpc.astar.network:8545",
-        {
-            name: "astar",
-            chainId: 592,
-        }
-    ));
 
 const FACTORIES = {
     astar: "0x1E66b3e7141bDF8c414F91269a3A99d098D2d356",
@@ -163,5 +150,4 @@ module.exports = {
     ethereum: {
         tvl: tvls.ethereum
     },
-    tvl: sdk.util.sumChainTvls(Object.values(tvls))
 }

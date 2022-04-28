@@ -1,6 +1,7 @@
 const BigNumber = require('bignumber.js');
 const sdk = require('@defillama/sdk');
 const abi = require('./abi.json');
+const { fixOasisBalances } = require('../helper/portedTokens')
 
 async function requery(results, chain, block, abi){
   if(results.some(r=>!r.success)){
@@ -155,6 +156,8 @@ async function calcTvl(getAddress, block, chain, FACTORY, START_BLOCK, useMultic
 
     return accumulator
   }, {})
+
+  if (chain === 'oasis')  fixOasisBalances(balances)
 
   return balances
 };

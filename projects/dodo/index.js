@@ -63,13 +63,16 @@ async function getChainTvl(chain, block, transformAddr) {
         }]
     }).filter(pair => pair !== null).flat()
 
-    const balanceResults = await sdk.api.abi.multiCall({
+    let balanceResults = await sdk.api.abi.multiCall({
         abi: 'erc20:balanceOf',
         calls: balanceCalls,
         block,
         chain
     })
     const balances = {}
+
+    balanceResults.output = balanceResults.output.filter(
+        b => b.input.target != '0xd79d32a4722129a4d9b90d52d44bf5e91bed430c')
     sdk.util.sumMultiBalanceOf(balances, balanceResults, true, transformAddr)
 
     return balances
@@ -113,9 +116,6 @@ module.exports = {
     },
     arbitrum:{
         tvl: arbitrum
-    },
-    aurora:{
-        tvl: aurora
-    },
-    // We don't include heco because their subgraph is outdated
+    }
+    // We don't include heco、aurora because their subgraph is outdated
 }

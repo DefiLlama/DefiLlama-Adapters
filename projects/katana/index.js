@@ -11,5 +11,8 @@ async function tvl() {
 module.exports = {
   timetravel: false,
   methodology: "Snapshots of the TVL from app.katana.so are saved periodically into the statistics repo",
-  tvl,  
+  solana: {
+    tvl,  
+  }
 };
+// node test.js projects/katana/index.js

@@ -77,7 +77,7 @@ async function ethTvl(timestamp, ethBlock, chainBlocks) {
 
     // AI USDT Vault
     const usdtBalance = (await sdk.api.erc20.balanceOf({
-        ethBlock,
+        block: ethBlock,
         target: usdtAddress,
         owner: stakingAddresses['tether']
     })).output;

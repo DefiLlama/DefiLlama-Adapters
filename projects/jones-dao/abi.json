@@ -1,4 +1,17 @@
 {
+    "MANAGEMENT_WINDOW_OPEN": {
+        "inputs": [],
+        "name": "MANAGEMENT_WINDOW_OPEN",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
     "snapshotVaultBalance": {
         "inputs": [],
         "name": "snapshotVaultBalance",

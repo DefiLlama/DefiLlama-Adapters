@@ -1,12 +1,16 @@
 const axios = require("axios");
+const { toUSDTBalances } = require('../helper/balances');
 
 const api = "https://api.uxd.fi/api/uxd-circulating-supply";
 
-async function fetch() {
+async function tvl() {
     const result = (await axios.get(api)).data;
-    return result;
+    return toUSDTBalances(result);
 }
 
 module.exports = {
-    fetch
+    misrepresentedTokens: true,
+    solana: {
+        tvl
+    }
 }

@@ -277,7 +277,7 @@ async function bsc(timestamp, ethBlock, chainBlocks) {
   }))
   return balances
 }
-
+// node test.js projects/stakedao/index.js
 module.exports = {
   ethereum:{
     tvl: ethereum,
@@ -293,6 +293,6 @@ module.exports = {
     tvl: harmony
   },
   bsc: {
-    tvl: bsc
+    tvl: bsc,
   }
 }

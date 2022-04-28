@@ -10,7 +10,7 @@ const {
   calculateLiquidityMiningTvl,
 } = require('./config/bella/utilities.js')
 
-const providerUrl = process.env.ETHEREUM_RPC.split(',')[0]
+const providerUrl = (process.env.ETHEREUM_RPC || '').split(',')[0]
 const provider = new ethers.providers.JsonRpcProvider(providerUrl)
 const bVaultSymbols = [ 'bUsdt', 'bUsdc', 'bArpa', 'bWbtc', 'bHbtc', 'bBusd' ]
 const liquidityMiningSymbols = [ 'arpaUsdt', 'belUsdt', 'belEth' ]
@@ -56,7 +56,6 @@ const sumTvls = (bVaultSymbols) => (coinGeckoIdMap) => (precision) =>
     (symbol) => {
       const baseTokenPriceInUsd = getTokenPriceCoinGecko('usd')(coinGeckoIdMap[symbol])
       const tvl = getBVaultTvl(baseTokenPriceInUsd)(symbol)(18)(precision)
-      tvl.then((tvl) => console.log(symbol + ' TVL: ' + tvl))
       return tvl
     }      
   )
@@ -74,7 +73,6 @@ const sumLiquidityMiningTvls = (liquidityMiningSymbols) => (coinGeckoIdMap) => (
       const baseTokenPriceInUsd = getTokenPriceCoinGecko('usd')(coinGeckoIdMap[symbol])
       const balance = getErc20TokenBalance(coinGeckoIdMap[symbol].split('-')[0])(symbol)(precision)    
       const tvl = calculateLiquidityMiningTvl(baseTokenPriceInUsd)(balance)
-      tvl.then((tvl) => console.log(symbol + ' TVL: ' + tvl))
       return tvl
     }
   )
@@ -91,5 +89,5 @@ const fetch = async () => {
   return Promise.all([fsTvl, lmTvl]).then(([fsTvl, lmTvl]) => fsTvl + lmTvl)
 }
 
-module.exports = { fetch, getErc20TokenBalance }
+module.exports = { fetch, }
 

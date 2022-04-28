@@ -2,28 +2,11 @@ const { sumTokens, unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { BigNumber } = require("bignumber.js");
-const { fixHarmonyBalances } = require("../helper/portedTokens");
-
-const translateTokens = {
-  "0xbf07093ccd6adfc3deb259c557b61e94c1f66945": "fantom:0xd6070ae98b8069de6b494332d1a1a81b6179d960",
-  "0x1b156c5c75e9df4caab2a5cc5999ac58ff4f9090": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
-  "0xa48d959ae2e88f1daa7d5f611e01908106de7598": "fantom:0x841fad6eae12c286d1fd18d1d525dffa75c7effe",
-  "0xd795d70ec3c7b990ffed7a725a18be5a9579c3b9": "avax:0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
-  "0xb6767518b205ea8b312d2ef4d992a2a08c2f2416": "avax:0xc7198437980c041c805a1edcba50c1ce5db95118",
-  "0xaf9f33df60ca764307b17e62dde86e9f7090426c": "avax:0xd586e7f844cea2f87f50152665bcbc2c279d8d70",
-  "0x808d5f0a62336917da14fa9a10e9575b1040f71c": "avax:0x60781c2586d68229fde47564546784ab3faca982",
-  "0x0dec85e74a92c52b7f708c4b10207d9560cefaf0": "fantom:0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
-  "0x637ec617c86d24e421328e6caea1d92114892439": "0x6b175474e89094c44da98b954eedeac495271d0f",
-  "0xb3654dc3d10ea7645f8319668e8f54d2574fbdc8": "0x514910771af9ca656af840dff83e8264ecf986ca",
-  "0x0a03d2c1cfca48075992d810cc69bd9fe026384a": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-  "0x97927abfe1abbe5429cbe79260b290222fc9fbba": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
-  "0x6dfe2aaea9daadadf0865b661b53040e842640f8": "0x514910771af9ca656af840dff83e8264ecf986ca",
-  "0x920786cff2a6f601975874bb24c63f0115df7dc8": "0x6b175474e89094c44da98b954eedeac495271d0f",
-  "0x49c68edb7aebd968f197121453e41b8704acde0c": "fantom:0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
-  "0x0665ef3556520b21368754fb644ed3ebf1993ad4": "0x6c3f90f043a72fa612cbac8115ee7e52bde6e490"
-}
+const { fixHarmonyBalances, getChainTransform } = require("../helper/portedTokens");
+const { handleYearnTokens } = require("../creditum/helper.js");
 
 async function handleMooTokens(balances, block, chain, tokens) {
+  const transformAddress = await getChainTransform(chain)
   let balance = (
     await sdk.api.abi.multiCall({
       calls: tokens.map((p) => ({
@@ -47,14 +30,9 @@ async function handleMooTokens(balances, block, chain, tokens) {
   ).output;
   for (let i = 0; i < balance.length; i++) {
     let addr = balance[i].input.target.toLowerCase();
-    if (translateTokens[addr] !== null) {
-      addr =  translateTokens[addr];
-    } else {
-      addr = `${chain}:${addr}`;
-    }
     sdk.util.sumSingleBalance(
       balances,
-      addr,
+      transformAddress(addr),
       BigNumber(balance[i].output)
         .times(pricePerShare[i].output).div(1e18)
         .toFixed(0)
@@ -182,6 +160,18 @@ async function polygon(timestamp, block, chainBlocks) {
         "0x1a3acf6d19267e2d3e7f898f42803e90c9219062",
         "0xff2c44fb819757225a176e825255a01b3b8bb051",
       ],
+      [
+        "0xD85d1e945766Fea5Eda9103F918Bd915FbCa63E6",
+        "0x178f1c95c85fe7221c7a6a3d6f12b7da3253eeae",
+      ],  // CEL
+      [
+        "0xBbba073C31bF03b8ACf7c28EF0738DeCF3695683",
+        "0x1dcc1f864a4bd0b8f4ad33594b758b68e9fa872c",
+      ],  // SAND
+      [
+        "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+        "0x305f113ff78255d4f8524c8f50c7300b91b10f6a",
+      ],  // WMATIC
     ],
     chainBlocks.polygon,
     "polygon",
@@ -203,12 +193,23 @@ async function polygon(timestamp, block, chainBlocks) {
       chain: "polygon",
     })
   ).output / 10 ** 12;
+
+  balances['0x3f382dbd960e3a9bbceae22651e88158d2791550'] = (
+    await sdk.api.erc20.balanceOf({
+      target: "0x51195e21BDaE8722B29919db56d95Ef51FaecA6C",
+      owner: "0x1f0aa72b980d65518e88841ba1da075bd43fa933",
+      block: chainBlocks.polygon,
+      chain: "polygon",
+    })
+  ).output;
+
   return balances;
 }
 
 async function fantom(timestamp, block, chainBlocks) {
   const balances = {};
   const chain = "fantom";
+  const transformAddress = await getChainTransform(chain)
   await sumTokens(
     balances,
     [
@@ -275,19 +276,26 @@ async function fantom(timestamp, block, chainBlocks) {
       [
         "0x5cc61a78f164885776aa610fb0fe1257df78e59b",
         "0xCB99178C671761482097F32595cb79fb28a49Fd8"
+      ],
+      [
+        "0xCe2Fc0bDc18BD6a4d9A725791A3DEe33F3a23BB7",
+        "0x7aE52477783c4E3e5c1476Bbb29A8D029c920676",
+      ],
+      [
+        "0xd817A100AB8A29fE3DBd925c2EB489D67F758DA9",
+        "0x571F42886C31f9b769ad243e81D06D0D144BE7B4",
+      ],
+      [
+        "0x2C850cceD00ce2b14AA9D658b7Cad5dF659493Db",
+        "0x6d6029557a06961aCC5F81e1ffF5A474C54e32Fd",
       ]
       //[t,p],
       
     ],
     chainBlocks[chain],
     chain,
-    (addr) => {
-      addr = addr.toLowerCase();
-      if (translateTokens[addr] !== undefined) {
-        return translateTokens[addr];
-      }
-      return `${chain}:${addr}`;
-    }
+    transformAddress,
+    { resolveYearn: true },
   );
   const ftmMooTokens = [
     [
@@ -338,7 +346,7 @@ async function fantom(timestamp, block, chainBlocks) {
       "0xD8dd2EA228968F7f043474Db610A20aF887866c7",
       "0xd14dd3c56d9bc306322d4cea0e1c49e9ddf045d4"
     ]
-  ];
+  ];  
   await handleMooLPs(balances, chainBlocks.fantom, chain, ftmLPs);
 
   await sumTokens(
@@ -347,24 +355,48 @@ async function fantom(timestamp, block, chainBlocks) {
       [
         "0xa48d959ae2e88f1daa7d5f611e01908106de7598",
         "0xf18F4847a5Db889B966788dcbDbcBfA72f22E5A6",
+      ],
+      [
+        "0x7345a537A975d9Ca588eE631BEFdDfEF34fD5e8f",
+        "0xedF25e618E4946B05df1E33845993FfEBb427A0F",
       ]
     ],
     chainBlocks.fantom,
     "fantom",
-    addr=> {
-      addr = addr.toLowerCase();
-      if (translateTokens[addr] !== undefined) {
-        return translateTokens[addr];
-      }
-      return `fantom:${addr}`
-    }
+    transformAddress
   )
+
+  await Promise.all([
+    handleYearnTokens(balances, [
+      "0xCe2Fc0bDc18BD6a4d9A725791A3DEe33F3a23BB7",
+    ],
+    "0x7aE52477783c4E3e5c1476Bbb29A8D029c920676",
+    chainBlocks.fantom,
+    'fantom',
+    transformAddress),
+    handleYearnTokens(balances, [
+      "0xd817A100AB8A29fE3DBd925c2EB489D67F758DA9",
+    ], 
+    "0x571F42886C31f9b769ad243e81D06D0D144BE7B4",
+    chainBlocks.fantom,
+    'fantom',
+    transformAddress),
+    handleYearnTokens(balances, [
+      "0x2C850cceD00ce2b14AA9D658b7Cad5dF659493Db"
+    ],
+    "0x6d6029557a06961aCC5F81e1ffF5A474C54e32Fd",
+    chainBlocks.fantom,
+    'fantom',
+    transformAddress)
+  ]);
+
   return balances;
 }
 
 async function avax(timestamp, block, chainBlocks) {
   const balances = {};
   const chain = "avax";
+  const transformAddress = await getChainTransform(chain)
   const avaxMooTokens = [
     [
       "0x1B156C5c75E9dF4CAAb2a5cc5999aC58ff4F9090",
@@ -403,13 +435,7 @@ async function avax(timestamp, block, chainBlocks) {
     ],
     chainBlocks.avax,
     "avax",
-    addr=> {
-      addr = addr.toLowerCase();
-      if (translateTokens[addr] !== undefined) {
-        return translateTokens[addr];
-      }
-      return `avax:${addr}`
-    }
+    transformAddress
   );
   return balances;
 }
@@ -493,17 +519,16 @@ module.exports = {
   fantom: {
     tvl: fantom,
   },
-  avalanche: {
+  avalanche: { 
     tvl: avax,
   },
-  moonriver: {
+  moonriver: { 
     tvl: moonriver,
   },
-  harmony: {
+  harmony: { 
     tvl: harmony,
   },
-  xdai: {
+  xdai: { 
     tvl: xdai
-  }
+  },
 };
-// node test.js projects/qidao/index.js

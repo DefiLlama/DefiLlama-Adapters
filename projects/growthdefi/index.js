@@ -489,5 +489,5 @@ module.exports = {
     tvl: sdk.util.sumChainTvls([wheatAvaxTvl, morAvaxTvl]),
   },
   methodology:
-    "We count liquidity on the Wheath, GRoot, Mor as products of Growthdefi Protocol through MasterChef and Staking Contracts",
+    "We count liquidity on MOR through MasterChef and Staking Contracts",
 };

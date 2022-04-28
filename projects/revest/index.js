@@ -1,119 +1,81 @@
 const { default: axios } = require("axios");
 const {
-  sumTokensAndLPsSharedOwners,
-  addTokensAndLPs,
+  sumTokens,
 } = require("../helper/unwrapLPs");
 const {
-  transformFantomAddress,
-  transformAvaxAddress,
-  transformPolygonAddress,
+  getChainTransform
 } = require("../helper/portedTokens.js");
 
-const HOLDERS = {
-  ethereum: "0xA81bd16Aa6F6B25e66965A2f842e9C806c0AA11F",
-  polygon: "0x3cCc20d960e185E863885913596b54ea666b2fe7",
-  fantom: "0x3923E7EdBcb3D0cE78087ac58273E732ffFb82cf",
-  avax: "0x955a88c27709a1EEf4ACa0df0712c67B48240919",
-};
-
-async function mainnetTVL(time, block) {
-  const tokenRes = await axios.get(
-    "https://defi-llama-feed.vercel.app/api/address"
-  );
-  const balances = {};
-  await calculateTVL(tokenRes, balances, block);
-  return balances;
+const chainConfig = {
+  ethereum: {
+    owner: ['0xA81bd16Aa6F6B25e66965A2f842e9C806c0AA11F',],
+    rvst: '0x120a3879da835a5af037bb2d1456bebd6b54d4ba',
+    pool2Token: '0x6490828bd87be38279a36f029f3b9af8b4e14b49',
+    chainId: 1,
+  },
+  polygon: {
+    owner: ['0x3cCc20d960e185E863885913596b54ea666b2fe7',],
+    chainId: 137,
+  },
+  fantom: {
+    owner: ['0x3923E7EdBcb3D0cE78087ac58273E732ffFb82cf',],
+    chainId: 250,
+  },
+  avax: {
+    owner: ['0x955a88c27709a1EEf4ACa0df0712c67B48240919',],
+    chainId: 43114,
+  },
 }
 
-async function polygonTVL(time, block) {
-  const tokenRes = await axios.get(
-    "https://defi-llama-feed.vercel.app/api/address?chainId=137"
-  );
-  const balances = {};
-  const transform = await transformPolygonAddress();
-  await calculateTVL(tokenRes, balances, block, "polygon", transform);
-  return balances;
+const getTokens = async chainId => {
+  let url = 'https://defi-llama-feed.vercel.app/api/address'
+  if (chainId) url = `${url}?chainId=${chainId}`
+  return (await axios.get(url)).data.body
 }
 
-async function fantomTVL(time, block) {
-  const tokenRes = await axios.get(
-    "https://defi-llama-feed.vercel.app/api/address?chainId=250"
-  );
-  const balances = {};
-  const transform = await transformFantomAddress();
-  await calculateTVL(tokenRes, balances, block, "fantom", transform);
-  return balances;
-}
+const moduleExports = Object.keys(chainConfig).reduce((agg, chain) => {
+  const { chainId, owner, pool2Token, rvst } = chainConfig[chain]
 
-async function avaxTVL(time, block) {
-  const tokenRes = await axios.get(
-    "https://defi-llama-feed.vercel.app/api/address?chainId=43114"
-  );
-  const balances = {};
-  const transform = await transformAvaxAddress();
-  await calculateTVL(tokenRes, balances, block, "avax", transform);
-  return balances;
-}
+  let staking, pool2
+  async function tvl(ts, _block, chainBlocks) {
+    const block = chainBlocks[chain]
+    const transformAddress = await getChainTransform(chain)
+    const tokens = (await getTokens(chainId)).map(token => token.toLowerCase()).filter(token => ![rvst, pool2Token].includes(token))
 
-function sumTvl(tvlList = []) {
-  return async (...args) => {
-    const results = await Promise.all(tvlList.map((fn) => fn(...args)));
-    return results.reduce((a, c) => Object.assign(a, c), {});
-  };
-}
+    const balances = {}
+    const tokensAndOwners = []
+    tokens.map(token => owner.map(o => tokensAndOwners.push([token, o])))
+    await sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { resolveCrv: true, resolveLP: true, resolveYearn: true })
+    return balances
+  }
 
-async function calculateTVL(
-  tokenRes,
-  balances,
-  block,
-  network = "ethereum",
-  transform = (id) => id
-) {
-  let amountPrim = {};
-  let holder = HOLDERS[network];
-  await sumTokensAndLPsSharedOwners(
-    amountPrim,
-    tokenRes.data.body.map((t) => [t, false]),
-    [holder],
-    block[network],
-    network,
-    transform
-  );
-  amountPrim = Object.entries(amountPrim);
-  const amounts = {
-    output: amountPrim.map((element) => {
-      return { output: element[1] };
-    }),
-  };
-  const tokens = {
-    output: tokenRes.data.body.map((element) => {
-      return { output: element };
-    }),
-  };
-  await addTokensAndLPs(
-    balances,
-    tokens,
-    amounts,
-    block[network],
-    network,
-    transform
-  );
-}
+  if (rvst)
+    staking = async (ts, _block, chainBlocks) => {
+      const block = chainBlocks[chain]
+      const transformAddress = await getChainTransform(chain)
+      const balances = {}
+      const tokensAndOwners = owner.map(o => [rvst, o])
+      await sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { resolveCrv: true, resolveLP: true, resolveYearn: true })
+      return balances
+    }
+
+  if (pool2Token)
+    pool2 = async (ts, _block, chainBlocks) => {
+      const block = chainBlocks[chain]
+      const transformAddress = await getChainTransform(chain)
+      const balances = {}
+      const tokensAndOwners = owner.map(o => [pool2Token, o])
+      await sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { resolveCrv: true, resolveLP: true, resolveYearn: true })
+      return balances
+    }
+
+  agg[chain] = { tvl, staking, pool2 }
+
+  return agg
+}, {})
 
 module.exports = {
   methodology: "We list all tokens in our vault and sum them together",
 
-  ethereum: {
-    tvl: mainnetTVL,
-  },
-  polygon: {
-    tvl: polygonTVL,
-  },
-  fantom: {
-    tvl: fantomTVL,
-  },
-  avalanche: {
-    tvl: avaxTVL,
-  },
-  tvl: sumTvl([mainnetTVL, polygonTVL, fantomTVL, avaxTVL]),
+  ...moduleExports
 };

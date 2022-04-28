@@ -80,5 +80,5 @@ async function tvl() {
 
 module.exports = {
   methodology: "Counts all liquidity on DEX pools. KUSD is counted as USDT",
-  tvl,
+  kusuma: { tvl },
 };

@@ -88,5 +88,4 @@ module.exports = {
   heco: {
     tvl: hecoTvl, //  individually outputs >1B    ---   simply using graphql endpoint   (OK)
   },
-  tvl: sdk.util.sumChainTvls([hecoTvl, bscTvl]),
 };

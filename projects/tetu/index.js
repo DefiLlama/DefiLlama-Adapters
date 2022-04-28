@@ -154,5 +154,4 @@ module.exports = {
   fantom: {
     tvl: fantomTvl,
   },
-  tvl: sdk.util.sumChainTvls([polygonTvl, fantomTvl]),
 };

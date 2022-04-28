@@ -94,5 +94,4 @@ module.exports = {
     fantom: {
         tvl: ftmTvl
     },
-    tvl: sdk.util.sumChainTvls([ethTvl, arbiTvl, avaxTvl, ftmTvl]),
 }

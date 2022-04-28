@@ -3,7 +3,7 @@ const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl");
 module.exports = {
   misrepresentedTokens: true,
   methodology: 'The YieldFields subgraph and the YieldFields factory contract address are used to obtain the balance held in every LP pair.',
-  binance: {
+  bsc: {
     tvl: calculateUsdUniTvl(
       "0x0A376eE063184B444ff66a9a22AD91525285FE1C",
       'bsc',

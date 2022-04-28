@@ -21,9 +21,8 @@ async function coinexTVL(timestamp, block, chainBlocks) {
 
 module.exports = {
   methodology: "Counts staked CET tokens.",
-  cantRefill: true,
+  timetravel: false,
   csc: {
     tvl: coinexTVL,
   },
-  tvl: sdk.util.sumChainTvls([coinexTVL]),
 };

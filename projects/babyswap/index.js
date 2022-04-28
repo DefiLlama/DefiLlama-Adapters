@@ -44,8 +44,8 @@ const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl");
 module.exports = {
     methodology: `Uses factory(0x86407bEa2078ea5f5EB5A52B2caA963bC1F889Da) address and whitelisted tokens address to find and price Liquidity Pool pairs`,
     misrepresentedTokens: true,
-    doublecounting: false,
-    timeTravel: true,
+    doublecounted: false,
+    timetravel: true,
     incentivized: true,
     bsc: {
         tvl: calculateUsdUniTvl(

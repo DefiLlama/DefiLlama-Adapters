@@ -87,5 +87,4 @@ module.exports = {
         tvl: harmonyTvl,
         staking: staking(harmonyStaking, harmonyTem, "harmony", "bsc:0x19e6BfC1A6e4B042Fb20531244D47E252445df01")
     },
-    tvl: sdk.util.sumChainTvls([bscTvl, moonriverTvl, harmonyTvl])
 }

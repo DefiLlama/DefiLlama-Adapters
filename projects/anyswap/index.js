@@ -15,6 +15,7 @@ const chains = {
   42161: 'arbitrum',
   43114: 'avax',
   1666600000: 'harmony',
+  2001: 'milkomeda'
 }
 
 const url = 'https://netapi.anyswap.net/bridge/v2/info'

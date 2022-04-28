@@ -82,5 +82,4 @@ module.exports = {
     tvl,
     staking,
   },
-  tvl: sdk.util.sumChainTvls([tvl]),
 };

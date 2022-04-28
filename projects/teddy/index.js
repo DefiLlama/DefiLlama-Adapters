@@ -2,6 +2,7 @@ const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
 const { pool2 } = require("../helper/pool2");
 const getEntireSystemCollAbi = require("./getEntireSystemColl.abi.json");
+const {getLiquityTvl} = require('../helper/liquity')
 
 const treasuryContract = "0xb4Fbc7839ce88029c8c1c6274660118e27B6f982";
 
@@ -42,10 +43,10 @@ module.exports = {
     treasury: staking(treasuryContract, TEDDY, "avax"),
     staking: sdk.util.sumChainTvls([
       staking(stakingContract, TEDDY, "avax"),
-      staking(STABILITY_POOL_ADDRESS, TSD, "avax"),
+      //staking(STABILITY_POOL_ADDRESS, TSD, "avax"),
     ]),
     pool2: pool2(stakingPool2Contract, WAVAX_TSD_PGL, "avax"),
-    tvl: avaxTvl,
+    tvl: getLiquityTvl(NATIVE_ADDRESS,TROVE_MANAGER_ADDRESS,"avax"),
   },
   methodology:
     "Get tokens on stability pool and troves, TSD has been replaced by LUSD",
