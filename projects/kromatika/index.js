@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const { getBlock } = require('../helper/getBlock');
 const BigNumber = require('bignumber.js');
-const {transformOptimismAddress} = require('../helper/portedTokens')
+const {transformOptimismAddress, transformArbitrumAddress} = require('../helper/portedTokens')
 const abi = require('./abi.json')
 
 const contracts = {
@@ -12,6 +12,10 @@ const contracts = {
   ethereum: {
     KROM: '0x3af33bef05c2dcb3c7288b77fe1c8d2aeba4d789',
     position: '0xd1fdf0144be118c30a53e1d08cc1e61d600e508e'
+  },
+  arbitrum: {
+    KROM: '0x55ff62567f09906a85183b866df84bf599a4bf70',
+    position: '0x02c282f60fb2f3299458c2b85eb7e303b25fc6f0'
   }
 };
 
@@ -23,6 +27,9 @@ const tvl = (chain) => async function (timestamp, ethBlock, chainBlocks) {
   if(chain === "optimism"){
     transform = await transformOptimismAddress();
   } 
+  if(chain == 'arbitrum'){
+    transform = await transformArbitrumAddress();
+  }
 
   // Get Kroma deposited by users to pay for their fees
   const block = await getBlock(timestamp, chain, chainBlocks, false);
@@ -68,6 +75,9 @@ module.exports = {
   methodology: "Kromatika handles Uniswap-v3 positions for their users who submit limit orders - TVL is amounts of tokens of each LP as well as KROM held by the contract to pay for fees",
   optimism: {
     tvl: tvl('optimism')
+  },
+  arbitrum: {
+    tvl: tvl('arbitrum')
   },
   // ethereum: {
   //   tvl: tvl('ethereum')
