@@ -6,6 +6,7 @@ const tvl = async () => {
 };
 const staking = async () => {
   return toUSDTBalances(await VortexAPI.getTotalStakingTvl());
+
 };
 
 module.exports = {

@@ -320,6 +320,9 @@ async function transformHarmonyAddress() {
     if (compareAddresses(addr, "0x6983D1E6DEf3690C4d616b13597A09e6193EA013")) {
       return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
     }
+    if (compareAddresses(addr, "0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a")) {
+      return "harmony:0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a";
+    }
     if (compareAddresses(addr, "0x224e64ec1bdce3870a6a6c777edd450454068fec")) {
       return "0xa47c8bf37f92abed4a126bda807a7b7498661acd";
     }
@@ -691,7 +694,8 @@ function fixShidenBalances(balances) {
 function fixAstarBalances(balances) {
   const mapping = {
     '0x3795C36e7D12A8c252A20C5a7B455f7c57b60283': { coingeckoId: 'tether', decimals: 6, },
-    '0x6B175474E89094C44Da98b954EedeAC495271d0F': { coingeckoId: 'astar', decimals: 18, },
+    '0x19574c3c8fafc875051b665ec131b7e60773d2c9': { coingeckoId: 'astar', decimals: 18, },
+    '0xAeaaf0e2c81Af264101B9129C00F4440cCF0F720': { coingeckoId: 'astar', decimals: 18, },
     '0xb361DAD0Cc1a03404b650A69d9a5ADB5aF8A531F': { coingeckoId: 'emiswap', decimals: 18, },
     '0xC404E12D3466acCB625c67dbAb2E1a8a457DEf3c': { coingeckoId: 'usd-coin', decimals: 6, },  // interest bearing USDC
     '0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98': { coingeckoId: 'usd-coin', decimals: 6, },
