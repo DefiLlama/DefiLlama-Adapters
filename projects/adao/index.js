@@ -28,7 +28,7 @@ module.exports = {
   methodology:
     "A-DAO will be based on dApp staking of Astar Network. Users will get some of the developer rewards while participating and gaining basic rewards. At present, A-DAO divides the developer rewards into: Revenue Reward, On-chain Treasury, Incubation Fund, any rewards of which can be adjusted by DAO governance.",
   astar: {
-    tvl: staking,
+    tvl: () => ({}),
     treasury,
     staking,
   },
