@@ -476,7 +476,7 @@ function fixHarmonyBalances(balances) {
     "bsc:0xde976f3344cd9f06e451af3a94a324afc3e154f4",
   ]) {
     if (balances[representation] !== undefined) {
-      balances["harmony"] = Number(balances[representation]) / 1e18;
+      sdk.util.sumSingleBalance(balances, 'harmony', Number(balances[representation]) / 1e18)
       delete balances[representation];
     }
   }
