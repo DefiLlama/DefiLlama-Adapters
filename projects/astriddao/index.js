@@ -1,18 +1,8 @@
-const sdk = require("@defillama/sdk");
-// In case BigInt is not available.
-const BN = require("bn.js");
+const { sumTokens } = require('../helper/unwrapLPs')
+const { getFixBalances } = require('../helper/portedTokens')
 
-const ActivePoolABI = require("./abi/ActivePool.abi.json");
-const DefaultPoolABI = require("./abi/ActivePool.abi.json");
-
-const DECIMAL_PRECISION = new BN("1000000000000000000");
-
-function getBNFromCallResponse(response) {
-  if ("output" in response) {
-    return new BN(response.output);
-  }
-  return new BN(0);
-}
+const WASTAR = "0x19574c3c8fafc875051b665ec131b7e60773d2c9"
+const chain = 'astar'
 
 const CONTRACT_ADDRESSES = {
   // Pools holding ASTR.
@@ -20,38 +10,13 @@ const CONTRACT_ADDRESSES = {
   DEFAULT_POOL: "0x2fE3FDf91786f75C92e8AB3B861588D3D051D83F",
 };
 
-const CHAIN = "astar";
-
-// Once BAI is listed on CoinGecko, add locked BAIs into the system as TVL.
-async function getTotalASTRCollateralLockedInEthers(block) {
-  const [
-    activePoolASTRCollateralResponse,
-    defaultPoolASTRCollateralResponse
-  ] = await Promise.all([
-    sdk.api.abi.call({
-      chain: CHAIN,
-      target: CONTRACT_ADDRESSES.ACTIVE_POOL,
-      abi: ActivePoolABI.getCOL,
-      block,
-    }),
-    sdk.api.abi.call({
-      chain: CHAIN,
-      target: CONTRACT_ADDRESSES.DEFAULT_POOL,
-      abi: DefaultPoolABI.getCOL,
-      block,
-    })
-  ]);
-  let activePoolASTRCollateral = getBNFromCallResponse(activePoolASTRCollateralResponse);
-  let defaultPoolASTRCollateral = getBNFromCallResponse(defaultPoolASTRCollateralResponse);
-  return activePoolASTRCollateral.add(defaultPoolASTRCollateral).div(DECIMAL_PRECISION);
-}
-
-async function tvl(timestamp, block, chainBlocks) {
-  const balances = {
-    astar: (await getTotalASTRCollateralLockedInEthers(block)).toString()
-  };
-
-  return balances;
+async function tvl(ts, _block, chainBlocks ) {
+  const block = chainBlocks[chain]
+  const balances = {}
+  const tokensAndOwners = Object.values(CONTRACT_ADDRESSES).map(owner => [WASTAR, owner])
+  await sumTokens(balances, tokensAndOwners, block, chain);
+  (await getFixBalances(chain))(balances)
+  return balances
 }
 
 module.exports = {
