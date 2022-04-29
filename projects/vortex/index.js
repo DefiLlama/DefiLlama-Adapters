@@ -1,22 +1,27 @@
 const VortexAPI = require("./vortex.api");
-const TzktAPI = require("./tzkt.api");
+const {toUSDTBalances} = require('../helper/balances')
 
 const tvl = async () => {
-  const [stakingTvlUsd, farmsTvl, dexTvlUsd, xtzPrices] = await Promise.all([
-    VortexAPI.getTotalStakingTvl(),
-    VortexAPI.getFarmsTvl(),
+  const [dexTvlUsd] = await Promise.all([
     VortexAPI.getDexTvl(),
-    TzktAPI.getXtzPrice(),
   ]);
 
-  const farmsTvlUsd = farmsTvl * xtzPrices.usd;
+  return toUSDTBalances( dexTvlUsd); 
+}
 
-  return stakingTvlUsd + farmsTvlUsd + dexTvlUsd;
+const staking = async () => {
+  const [stakingTvlUsd] = await Promise.all([
+    VortexAPI.getTotalStakingTvl(),
+  ]);
+
+  return toUSDTBalances( stakingTvlUsd);
 };
 
 module.exports = {
+  misrepresentedTokens: true,
   timetravel: false,
   tezos: {
     tvl,
+    staking
   },
 };
