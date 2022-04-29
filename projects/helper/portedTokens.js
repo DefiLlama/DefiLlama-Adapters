@@ -320,6 +320,9 @@ async function transformHarmonyAddress() {
     if (compareAddresses(addr, "0x6983D1E6DEf3690C4d616b13597A09e6193EA013")) {
       return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
     }
+    if (compareAddresses(addr, "0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a")) {
+      return "harmony:0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a";
+    }
     if (compareAddresses(addr, "0x224e64ec1bdce3870a6a6c777edd450454068fec")) {
       return "0xa47c8bf37f92abed4a126bda807a7b7498661acd";
     }
