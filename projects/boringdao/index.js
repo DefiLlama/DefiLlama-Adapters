@@ -1,6 +1,7 @@
 const { getChainTransform, getFixBalances } = require("../helper/portedTokens");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const contracts = require("./contracts.json");
+const sdk = require("@defillama/sdk");
 
 function coreTvl(chain) {
     return async (timestamp, ethBlock, chainBlocks) => {
@@ -25,6 +26,16 @@ function coreTvl(chain) {
             balances[contracts.ethereum.tokens.USDT] /= 10 ** 12;
         };
         (await getFixBalances(chain))(balances)
+
+        if (chain == "ethereum") {
+            const bridgedAssets = await sdk.api.abi.multiCall({
+                calls: Object.values(contracts[chain].oTokens).map((o) => ({target: o})),
+                abi: "erc20:totalSupply",
+                block: chainBlocks[chain],
+              });
+            sdk.util.sumMultiBalanceOf(balances, bridgedAssets, true);
+        };
+
         return balances;
     };
 };
