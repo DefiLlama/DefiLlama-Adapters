@@ -24,11 +24,19 @@ async function staking(timestamp, block, chainBlocks) {
   balances[`astar`] = Number(balance);
   return balances;
 }
+async function tvl(timestamp, block, chainBlocks) {
+  const balances = {};
+  var dappContract = new web3.eth.Contract(abi, ADAOStakingContract);
+  let balance = await dappContract.methods.totalSupply().call();
+  balance = web3.utils.fromWei(balance, "ether");
+  balances[`astar`] = Number(balance);
+  return balances;
+}
 module.exports = {
   methodology:
     "A-DAO will be based on dApp staking of Astar Network. Users will get some of the developer rewards while participating and gaining basic rewards. At present, A-DAO divides the developer rewards into: Revenue Reward, On-chain Treasury, Incubation Fund, any rewards of which can be adjusted by DAO governance.",
   astar: {
-    tvl: () => ({}),
+    tvl: tvl,
     treasury,
     staking,
   },
