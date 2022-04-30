@@ -293,6 +293,6 @@ module.exports = {
     tvl: harmony
   },
   bsc: {
-    tvl: bsc
+    tvl: bsc,
   }
 }

@@ -43,6 +43,26 @@ async function adaTvl(){
         const totalSell = totalAmountOtherToken * topPrice
         totalAda += totalBuy + totalSell
     }))
+    const orderbooksv2 = (await fetchURL("https://orderbookv2.muesliswap.com/all-orderbooks")).data
+    await Promise.all(orderbooksv2.map(async orders=>{
+        if(orders.fromToken !== "."){
+            throw new Error("Tokens paired against something other than ADA")
+        }
+        let totalBuy= 0;
+        orders.buy.forEach(o=>{
+            totalBuy += (o.totalLvl / 1e6)
+        })
+        if(orders.buy.length === 0 || orders.sell.length === 0){
+            return
+        }
+        const topPrice = (orders.buy[0].lvlPerToken / 1e6)
+        let totalAmountOtherToken = 0
+        orders.sell.forEach(o=>{
+            totalAmountOtherToken += o.amount
+        })
+        const totalSell = totalAmountOtherToken * topPrice
+        totalAda += totalBuy + totalSell
+    }))
     return {
         cardano: totalAda
     }

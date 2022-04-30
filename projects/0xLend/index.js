@@ -220,14 +220,3 @@ async function borrowed(timestamp, block, chainBlocks) {
 
   return toUSDTBalances(borrowed.toNumber());
 }
-
-module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
-  methodology: "counts the number in the KCC contract.",
-  start: 9161067,
-  kcc: {
-    tvl,
-    borrowed,
-  },
-};

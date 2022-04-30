@@ -36,6 +36,7 @@ function isLP(symbol) {
 
 
 module.exports = {
+    deadFrom: 1650564340,
     harmony: {
         tvl
     }

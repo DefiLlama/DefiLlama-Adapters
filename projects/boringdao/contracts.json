@@ -5,11 +5,11 @@
             "NBridge": "0xdBe43C732080271Fd7588aa5fe71bd07456D9173",
             "BoringChef": "0x637ca32056146Ef2bFE72312EcBB97A890C0B02F",
             "BoringChefSatellite": "0x204c87CDA5DAAC87b2Fc562bFb5371a0B066229C",
-            "TwoWayV2": "0xecaD1ab3464ECcC7536af6aFeE414dF873495616"
+            "TwoWayV2": "0xecaD1ab3464ECcC7536af6aFeE414dF873495616",
+            "tunnel": "0x258a1eb6537ae84cf612f06b557b6d53f49cc9a1"
         },
         "tokens": {
-            "BORING": "0xBC19712FEB3a26080eBf6f2F7849b417FdD792CA",
-            "oBTC": "0x8064d9Ae6cDf087b1bcd5BDf3531bD5d8C537a68",
+            "BORING": "0xbc19712feb3a26080ebf6f2f7849b417fdd792ca",
             "VEMP": "0xcFEB09C3c5F0f78aD72166D55f9e6E9A60e96eEC",
             "xVEMP": "0x4a4e2d4859af854d2a3fc6df295843d21e70cc78",
             "FIN": "0x054f76beed60ab6dbeb23502178c52d6c5debe40",
@@ -24,7 +24,13 @@
             "METIS": "0x9E32b13ce7f2E80A01932B42553652E053D6ed8e",
             "PBTC": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
             "AAC": "0xe75ad3aAB14E4B0dF8c5da4286608DaBb21Bd864",
-            "NODE": "0x0C3eF32f802967DB75B9D49fE1e76620151cCB81"
+            "NODE": "0x0C3eF32f802967DB75B9D49fE1e76620151cCB81",
+            "BOR": "0x3c9d6c1c73b31c837832c72e04d3152f051fc1a9"
+        },
+        "oTokens": {
+            "oBTC": "0x8064d9Ae6cDf087b1bcd5BDf3531bD5d8C537a68",
+            "oLTC": "0x07C44B5Ac257C2255AA0933112c3b75A6BFf3Cb1", 
+            "oDoge": "0x9c306A78b1a904e83115c05Ac67c1Ef07C653651"
         }
     },
     "optimism": {
@@ -266,5 +272,5 @@
             "ONE": "0x731203A6E33001d76AF6da49096fC8753b9E4932",
             "ETH": "0xC9BdeEd33CD01541e1eeD10f90519d2C06Fe3feB"
         }
-    }    
+    }
 }

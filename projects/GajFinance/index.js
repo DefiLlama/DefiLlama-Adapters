@@ -66,6 +66,7 @@ function vaults(pool2, selectedChain) {
 }
 
 module.exports = {
+  broken: 'Api is no longer reachable',
   methodology: "TVL comes from NFT Farming, Jungle Pools, MasterChef and Vaults",
   avalanche:{
     tvl: vaults(false, 'avax'),
