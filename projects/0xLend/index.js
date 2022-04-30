@@ -188,6 +188,7 @@ async function tvl(timestamp, block, chainBlocks) {
 
     totalCash = totalCash.plus(
       new BigNumber(market.totalCash)
+        .plus(market.totalBorrows)
         .div(new BigNumber(10).pow(new BigNumber(market.underlyingDecimals)))
         .times(price)
     );
