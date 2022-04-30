@@ -1,6 +1,7 @@
 const {compoundExports, compoundExportsWithAsyncTransform} = require('../helper/compound')
 const {transformArbitrumAddress, transformFantomAddress, transformHarmonyAddress, 
-    transformMoonriverAddress, transformXdaiAddress, transformPolygonAddress } = require('../helper/portedTokens')
+    transformMoonriverAddress, transformXdaiAddress, transformPolygonAddress,
+    transformOptimismAddress } = require('../helper/portedTokens')
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 const comptroller = "0x0f390559f258eb8591c8e31cf0905e97cf36ace2"
@@ -68,4 +69,5 @@ module.exports={
     moonriver:compoundExportsWithAsyncTransform("0x7d166777bd19a916c2edf5f1fc1ec138b37e7391", "moonriver", "0xd6fcBCcfC375c2C61d7eE2952B329DcEbA2D4e10", "0x98878b06940ae243284ca214f92bb71a2b032b8a", transformMoonriverAddress),
     xdai:compoundExportsWithAsyncTransform(comptroller, "xdai", "0x090a00A2De0EA83DEf700B5e216f87a5D4F394FE", "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d", transformXdaiAddress),
     polygon:compoundExportsWithAsyncTransform("0xedba32185baf7fef9a26ca567bc4a6cbe426e499", "polygon", "0xEbd7f3349AbA8bB15b897e03D6c1a4Ba95B55e31", "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270", transformPolygonAddress),
+    optimism:compoundExportsWithAsyncTransform(comptroller, "optimism", "0xE8F12f5492Ec28609D2932519456b7436d6c93bD", "0x4200000000000000000000000000000000000006", transformOptimismAddress),
 }

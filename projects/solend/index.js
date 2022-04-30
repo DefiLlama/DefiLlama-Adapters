@@ -1,7 +1,7 @@
 const BigNumber = require("bignumber.js");
 const { PublicKey, Connection } = require("@solana/web3.js");
 const { parseReserve } = require("./utils");
-const { getTokenBalance } = require("../helper/solana");
+const { getTokenBalance, getCoingeckoId } = require("../helper/solana");
 const { fetchURL } = require('../helper/utils')
 
 const connection = new Connection("https://solana-api.projectserum.com/");
@@ -18,10 +18,7 @@ const assetToCoinGeckoIdMap = {
   "cashio-dollar": "usd-coin",
   "uxd-stablecoin": "usd-coin",
   "usdh": "usd-coin",
-}
-
-async function getCoingeckoId(contract_address) {
-  return (await fetchURL(`https://api.coingecko.com/api/v3/coins/solana/contract/${contract_address}`))?.data?.id;
+  "stSOL": "lido-staked-sol",
 }
 
 // v3/coins/solana/contract/${contract_address} sometime fails to return certain assets
@@ -31,15 +28,15 @@ function getAssetToCoingeckoIDFallback(asset) {
 
 async function borrowed() {
   const solendConfig = (await fetchURL(solendConfigEndpoint))?.data;
+  const getCg = await getCoingeckoId();
   const borrowed = {};
   for (const market of solendConfig.markets) {
     for (const reserve of market.reserves) {
       const asset = solendConfig.assets.find(asset => asset.symbol === reserve.asset);
       const { mintAddress } = asset;
       let coingeckoId = reserve.asset
-      try {
-        coingeckoId = await getCoingeckoId(mintAddress);
-      } catch (e) {
+        coingeckoId = getCg(mintAddress);
+      if(coingeckoId === undefined){
         coingeckoId = getAssetToCoingeckoIDFallback(reserve.asset);
       }
       const accountInfo = await connection.getAccountInfo(new PublicKey(reserve.address), "processed");
@@ -66,6 +63,7 @@ async function borrowed() {
 
 async function tvl() {
   const solendConfig = (await fetchURL(solendConfigEndpoint))?.data;
+  const getCg = await getCoingeckoId();
   const tvl = {};
 
   for (const market of solendConfig.markets) {
@@ -73,9 +71,9 @@ async function tvl() {
       const asset = solendConfig.assets.find(asset => asset.symbol === reserve.asset);
       const { mintAddress } = asset;
       let coingeckoId = reserve.asset
-      try {
-        coingeckoId = await getCoingeckoId(mintAddress);
-      } catch (e) {
+      
+        coingeckoId = getCg(mintAddress);
+      if(coingeckoId === undefined){
         coingeckoId = getAssetToCoingeckoIDFallback(reserve.asset);
       }
       const amount = await getTokenBalance(mintAddress, market.authorityAddress);

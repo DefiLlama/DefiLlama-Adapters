@@ -50,15 +50,19 @@ function polygonTVL() {
         let tokens = [];
         for (token of walletTokens) {
           if (token.asset !== undefined) {
-            /*
-             * multiCall fails when token type is not token or IAaveV2Deposit,
-             * so other token types are skipped and not counted in TVL
-             */
             if (
               token.asset.type === "token" ||
               token.asset.type === "IAaveV2Deposit"
             ) {
-              tokens.push(token.asset.address);
+              let tokenToAdd = token.asset.address;
+              if (!tokens.includes(tokenToAdd)) {
+                tokens.push(tokenToAdd);
+              }
+            } else if (token.asset.type === "IAaveRewards") {
+              let aTokenToAdd = token.asset.callParams.aToken;
+              if (!tokens.includes(aTokenToAdd)) {
+                tokens.push(aTokenToAdd);
+              }
             }
           }
         }

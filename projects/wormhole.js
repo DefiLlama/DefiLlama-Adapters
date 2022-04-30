@@ -38,6 +38,9 @@ module.exports = {
   oasis: {
     fetch: fetch("7")
   },
+  aurora: {
+    fetch: fetch("9")
+  },
   fantom: {
     fetch: fetch("10")
   },
