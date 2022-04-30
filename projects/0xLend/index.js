@@ -191,7 +191,7 @@ async function tvl(timestamp, block, chainBlocks) {
         .plus(market.totalBorrows)
         .div(new BigNumber(10).pow(new BigNumber(market.underlyingDecimals)))
         .times(price)
-    );
+    )
   });
 
   return toUSDTBalances(totalCash.toNumber());
