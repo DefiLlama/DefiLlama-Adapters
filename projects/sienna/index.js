@@ -18,9 +18,9 @@ const SIENNA_SINGLE_SIDED_POOLS = [
     { address: "secret1uta9zf3prn7lvc6whp8sqv7ynxmtz3jz9xkyu7", version: 3 }
 ];
 const SIENNA_TOKEN_ADDRESS = "secret1rgm2m5t530tdzyd99775n6vzumxa5luxcllml4";
-const LEND_OVERSEER_CONTRACT = null;
+const LEND_OVERSEER_CONTRACT = "secret1pf88n9hm64mn58aw48jxfs2fsvzr07svnrrdlv";
 
-const SECRET_NODE_URL = "https://bridgeapi.azure-api.net/proxy/";
+const SECRET_NODE_URL = "https://bridgeapi.azure-api.net/node10";
 const queryClient = new CosmWasmClient(SECRET_NODE_URL);
 
 const CACHED_TOKENS = {};
@@ -172,12 +172,51 @@ async function Staked() {
     return balances;
 }
 
+async function LendBorrowed() {
+    const markets = await getLendMarkets();
+    const block = await queryClient.getHeight();
+    return new Promise((resolve, reject) => {
+        mapLimit(markets, 2, async (market) => {
+            const marketState = await queryClient.queryContractSmart(market.contract.address, {
+                state: {
+                    block
+                }
+            });
+            const underlying_asset = await queryClient.queryContractSmart(market.contract.address, { underlying_asset: {} });
+            const token = await TokenInfo(underlying_asset.address);
+
+            const tokens_borrowed = new BigNumber(marketState.total_borrows).div(new BigNumber(10).pow(token.decimals).toNumber());
+
+            return Promise.resolve({
+                symbol: token.symbol,
+                tokens: new BigNumber(tokens_borrowed).toNumber()
+            });
+        }, (err, data) => {
+            if (err) return reject(err);
+            resolve(data);
+        })
+    })
+}
+
+async function Borrowed() {
+    const balances = {}
+
+    const lend_data = await LendBorrowed();
+
+    await Promise.all(lend_data.map(async volume => {
+        if (utils.symbolsMap[volume.symbol]) await sdk.util.sumSingleBalance(balances, utils.symbolsMap[volume.symbol], volume.tokens);
+    }));
+
+    return balances;
+}
+
 module.exports = {
     misrepresentedTokens: true,
     timetravel: false,
     methodology: 'All tokens locked in SIENNA Network pairs + All the supplied tokens to Sienna Lend Markets + Staked Sienna;',
     secret: {
         tvl: TVL,
-        staking: Staked
+        staking: Staked,
+        borrowed: Borrowed
     }
 };
