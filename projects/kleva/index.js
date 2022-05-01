@@ -9,10 +9,6 @@ async function fetchLiquidity() {
   return toUSDTBalances(tvl.data)
 }
 
-(async() => {
-  await fetchLiquidity()
-})()
-
 module.exports = {
   klaytn: {
     tvl: fetchLiquidity,
