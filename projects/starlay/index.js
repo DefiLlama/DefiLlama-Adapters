@@ -24,6 +24,10 @@ const tokens = {
     "0x6b175474e89094c44da98b954eedeac495271d0f",
   // BUSD
   "0x4Bf769b05E832FCdc9053fFFBC78Ca889aCb5E1E": "binance-usd",
+  // MATIC
+  "0xdd90E5E87A2081Dcf0391920868eBc2FFB81a1aF": "matic-network",
+  // BNB
+  "0x7f27352D5F83Db87a5A3E00f4B07Cc2138D8ee52": "binancecoin",
   // LAY
   "0xc4335B1b76fA6d52877b3046ECA68F6E708a27dd": "LAY",
 };
