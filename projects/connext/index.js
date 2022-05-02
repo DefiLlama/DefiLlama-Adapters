@@ -48,10 +48,13 @@ async function getDeployedContractAddress(chainId) {
   return contract ? contract.address : undefined;
 }
 
+let getAssetsPromise
 // Taken from @connext/nxtp-utils
 async function getAssetIds(chainId) {
   const url = "https://raw.githubusercontent.com/connext/chaindata/main/crossChain.json"
-  const data = await get(url)
+  if (!getAssetsPromise)
+    getAssetsPromise = get(url)
+  const data = await getAssetsPromise
   const chainData = data.find(item => item.chainId === chainId)
   return Object.keys(chainData.assetId).map(id => id.toLowerCase())
 }
