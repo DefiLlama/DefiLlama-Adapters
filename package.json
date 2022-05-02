@@ -13,8 +13,6 @@
   "license": "ISC",
   "dependencies": {
     "@acala-network/api": "^4.0.0",
-    "@connext/nxtp-contracts": "^0.1.17",
-    "@connext/nxtp-utils": "^0.1.17",
     "@defillama/sdk": "^2.3.61",
     "@makerdao/multicall": "^0.12.0",
     "@polkadot/api": "^7.0.0",
@@ -23,7 +21,6 @@
     "@pythnetwork/client": "^2.6.1",
     "@solana/web3.js": "^1.36.0",
     "@supercharge/promise-pool": "^2.1.0",
-    "@terra-money/terra.js": "^3.0.3",
     "@vechain/connex-driver": "^2.0.7",
     "@vechain/connex-framework": "^2.0.7",
     "algosdk": "^1.12.0",

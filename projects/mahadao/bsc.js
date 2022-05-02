@@ -19,11 +19,7 @@ async function pool2(_timestamp, _ethBlock, chainBlocks) {
     // [bscTokens['ARTHuval3PS'], bscTokens['ARTHuval3PSDotBasicStaking']], // ellipsis masterchef?
   ]
 
-  await sumTokens(balances, tokensAndOwners, block, chain, undefined, { resolveLP: true, resolveCrv: true })
-
-  console.log(balances)
-
-  return balances;
+  return sumTokens(balances, tokensAndOwners, block, chain, undefined, { resolveLP: true, resolveCrv: true })
 }
 
 async function tvl(ts, _block, chainBlocks) {
