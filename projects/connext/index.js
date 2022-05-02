@@ -33,7 +33,7 @@ let getContractsPromise
 // Taken from @connext/nxtp-contracts
 async function getContracts() {
   if (!getContractsPromise)
-    getContractsPromise = get('https://raw.githubusercontent.com/connext/nxtp/main/packages/contracts/deployments.json')
+    getContractsPromise = get('https://raw.githubusercontent.com/connext/nxtp/v0.1.36/packages/contracts/deployments.json')
   return getContractsPromise
 }
 

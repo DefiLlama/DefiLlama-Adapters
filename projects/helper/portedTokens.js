@@ -179,6 +179,7 @@ async function transformBscAddress() {
     '0xaed19dab3cd68e4267aec7b2479b1ed2144ad77f': 'bsc:0xe9e7cea3dedca5984780bafc599bd69add087d56',  // valas BUSD -> BUSD
     '0xa6fdea1655910c504e974f7f1b520b74be21857b': 'bsc:0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d',  // valas USDC -> BUSD
     '0x5f7f6cb266737b89f7af86b30f03ae94334b83e9': 'bsc:0x55d398326f99059ff775485246999027b3197955',  // valas USDT -> BUSD
+    '0x532197ec38756b9956190b845d99b4b0a88e4ca9': '0x1614f18fc94f47967a3fbe5ffcd46d4e7da3d787',  // PAID
   }
 
   return (addr) => {
@@ -375,6 +376,10 @@ async function transformOptimismAddress() {
     if (compareAddresses(addr, "0x0000000000000000000000000000000000000000")) {
       return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
     }
+    // FEI
+    if (compareAddresses(addr, "0x35D48A789904E9b15705977192e5d95e2aF7f1D3")) {
+      return "0x956f47f50a910163d8bf957cf5846d573e7f87ca";
+    }
     const possibleSynth = optimismSynths[addr.toLowerCase()];
     if (possibleSynth !== undefined) {
       return possibleSynth;
@@ -429,6 +434,9 @@ async function transformMoonbeamAddress() {
     // if (compareAddresses(addr, "0x0000000000000000000000000000000000000802")) { //GLMR
     //    return "moonbeam";
     // }
+    if (compareAddresses(addr, "0x0000000000000000000000000000000000000000")) { //GLMR -> WGLMR
+       return "moonbeam:0xacc15dc74880c9944775448304b263d191c6077f";
+    }
     return `moonbeam:${addr}`; //`optimism:${addr}` // TODO: Fix
   };
 }
@@ -443,6 +451,7 @@ async function transformArbitrumAddress() {
     '0xDBf31dF14B66535aF65AaC99C32e9eA844e14501': '0xeb4c2781e4eba804ce9a9803c67d0893436bb27d',  // renBTC
     '0x9ef758ac000a354479e538b8b2f01b917b8e89e7': 'polygon:0x3dc7b06dd0b1f08ef9acbbd2564f8605b4868eea',  // XDO
     '0x31635A2a3892dAeC7C399102676E344F55d20Da7': '0x09ce2b746c32528b7d864a1e3979bd97d2f095ab',  //  DeFIL
+    '0x4a717522566c7a09fd2774ccedc5a8c43c5f9fd2': '0x956f47f50a910163d8bf957cf5846d573e7f87ca',  //  FEI
   }
 
   normalizeMapping(mapping)
@@ -951,6 +960,7 @@ async function transformEthereumAddress() {
   const mapping = {
     '0x88536c9b2c4701b8db824e6a16829d5b5eb84440': 'polygon:0xac63686230f64bdeaf086fe6764085453ab3023f', // USV token
     '0xFEEf77d3f69374f66429C91d732A244f074bdf74': '0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0', // CVX FXS token
+    '0xb8c77482e45f1f44de1745f52c74426c631bdd52': 'bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // BNB
   }
   normalizeMapping(mapping)
 
