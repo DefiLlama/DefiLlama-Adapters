@@ -12,7 +12,10 @@ const bscTokens = ['0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d'] // BUSD
 const ethTokens = ['0x474021845c4643113458ea4414bdb7fb74a01a77'] // UNO
 
 // UNO SSRP, SSIP pools on ethereum
-const ethRiskPools = ['0x1eECc8C8298ed9Bd46c147D44E2D7A7BfACE2034', '0xbd3E70819A8Add92B06d6d92A06DcdA9249DF2a3']
+const ethRiskPools = [
+  '0x1eECc8C8298ed9Bd46c147D44E2D7A7BfACE2034', // SSRP
+  '0xbd3E70819A8Add92B06d6d92A06DcdA9249DF2a3'  // SSIP
+]
 const ethSSIPEth = '0x29B4b8674D93b36Bf651d0b86A8e5bE3c378aCF4'
 
 function constructBalanceOfCalls(tokens, useAddressProp, pools) {
