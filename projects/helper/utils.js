@@ -7,7 +7,7 @@ const { PromisePool } = require('@supercharge/promise-pool')
 const sdk = require('@defillama/sdk')
 
 async function parallelAbiCall({ block, chain = 'ethereum', abi, getCallArgs = i => i, items, maxParallel = 1 }) {
-  const { results } = await PromisePool.withConcurrency(maxParallel)
+  const { results, errors } = await PromisePool.withConcurrency(maxParallel)
     .for(items)
     .process(async item => {
       const input = getCallArgs(item)
@@ -16,6 +16,9 @@ async function parallelAbiCall({ block, chain = 'ethereum', abi, getCallArgs = i
       response.success = true
       return response
     })
+
+  if (errors && errors.length)
+    throw errors[0]
 
   return results
 }

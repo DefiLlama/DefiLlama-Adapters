@@ -73,10 +73,6 @@ function chainTvl(chain) {
     const balances = {};
 
     let assetIds = await getAssetIds(chainId)
-    if (chain === 'harmony') {
-      // Removing DAI value because it is returning NaN
-      assetIds = assetIds.filter(id => id !== '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1'.toLowerCase())
-    }
     if (assetIds.includes(nullAddress)) {
       const balance = await sdk.api.eth.getBalance({ chain, block, target: contractAddress, })
       sdk.util.sumSingleBalance(balances, chainTransform(nullAddress), balance.output)
