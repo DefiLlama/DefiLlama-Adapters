@@ -21,3 +21,5 @@ module.exports = {
     tvl: (async) => ({}),
   },
   methodology: "Counts liquidty on the staking and pool2s only",
+
+};
