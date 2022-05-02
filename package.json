@@ -21,7 +21,6 @@
     "@pythnetwork/client": "^2.6.1",
     "@solana/web3.js": "^1.36.0",
     "@supercharge/promise-pool": "^2.1.0",
-    "@terra-money/terra.js": "^3.0.3",
     "@vechain/connex-driver": "^2.0.7",
     "@vechain/connex-framework": "^2.0.7",
     "algosdk": "^1.12.0",
