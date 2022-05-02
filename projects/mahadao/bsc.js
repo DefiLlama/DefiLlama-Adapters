@@ -126,16 +126,31 @@ async function getTVLOfarthu3ps(balances, block) {
     bsc["ellipsis.arthu3eps.pool"],
     block
   );
-  const epsBal = await getBalance(
-    bsc["ellipsis.3eps.token"],
-    bsc["ellipsis.arthu3eps.pool"],
-    block
-  );
-
-  const token2Amount = new BigNumber(epsBal).dividedBy(e18);
-
   sdk.util.sumSingleBalance(balances, "arth.usd", arthuBal);
-  sdk.util.sumSingleBalance(balances, "usd-coin", token2Amount.toNumber()); // todo: need to break this down
+
+  // const epsBal = await getBalance(
+  //   bsc["ellipsis.3eps.token"],
+  //   bsc["ellipsis.arthu3eps.pool"],
+  //   block
+  // );
+
+  const busdBalance = await getBalance(bsc.busd, bsc['ellipsis.3eps.pool'], block)
+  // console.log('busdBalance', busdBalance);
+  const busdAmount = new BigNumber(busdBalance).dividedBy(e18);
+
+  const usdcBalance = await getBalance(bsc.usdc, bsc['ellipsis.3eps.pool'], block)
+  // console.log('usdcBalance', usdcBalance);
+  const usdcAmount = new BigNumber(usdcBalance).dividedBy(e18);
+
+
+  const usdtBalance = await getBalance(bsc.usdt, bsc['ellipsis.3eps.pool'], block)
+  // console.log('usdtBalance', usdtBalance);
+  const usdtAmount = new BigNumber(usdtBalance).dividedBy(e18);
+
+
+  sdk.util.sumSingleBalance(balances, "binance-usd", busdAmount.toNumber()); // todo: need to break this down
+  sdk.util.sumSingleBalance(balances, "tether", usdtAmount.toNumber());
+  sdk.util.sumSingleBalance(balances, "usd-coin", usdcAmount.toNumber());
 }
 
 const replaceMAHAonBSCTransform = (addr) => {
@@ -158,14 +173,40 @@ const getTVLOfarthuval3ps = async (balances, block) => {
   sdk.util.sumSingleBalance(balances, "arth.usd", arthUSDBalance);
 
   // get balance of val3eps of arth-usd+val3eps
-  const val3EPSowned = await getBalance(
+  const balanceval3ps = await getBalance(
     bsc["ellipsis.val3eps.token"],
     bsc["ellipsis.arthuval3ps.pool"],
     block
   );
 
+  const totalSupply3eps = await getTotalSupply(bsc["ellipsis.val3eps.token"], block)
+
+  const valEpsPercentage = balanceval3ps / totalSupply3eps
+
+  const valBUSDBalance = await getBalance(bsc.valBusd, bsc['ellipsis.val3eps.pool'], block)
+  const valUSDCBalance = await getBalance(bsc.valUsdc, bsc['ellipsis.val3eps.pool'], block)
+  const valUSDTBalance = await getBalance(bsc.valUsdt, bsc['ellipsis.val3eps.pool'], block,)
+
+  const totalValBUSDSupply = await getTotalSupply(bsc.valBusd, block)
+  const totalValUSDCSupply = await getTotalSupply(bsc.valUsdc, block)
+  const totalValUSDTSupply = await getTotalSupply(bsc.valUsdt, block)
+
+
+  const valUSDCPercentage = valUSDCBalance * valEpsPercentage / totalValUSDCSupply
+  const valUSDTPercentage = valUSDTBalance * valEpsPercentage / totalValUSDTSupply
+  const valBUSDPercentage = valBUSDBalance * valEpsPercentage / totalValBUSDSupply
+
+  const busdBalance = await getBalance(bsc.busd, bsc.valBusd, block)
+  const usdcBalance = await getBalance(bsc.usdc, bsc.valUsdc, block)
+  const usdtBalance = await getBalance(bsc.usdt, bsc.valUsdt, block)
+
+
+  sdk.util.sumSingleBalance(balances, "usd-coin", (usdcBalance * valUSDCPercentage) / e18);
+  sdk.util.sumSingleBalance(balances, "tether", (usdtBalance * valUSDTPercentage) / e18);
+  sdk.util.sumSingleBalance(balances, "binance-usd", (busdBalance * valBUSDPercentage) / e18);
+
   // todo hack for now
-  sdk.util.sumSingleBalance(balances, "usd-coin", val3EPSowned / e18);
+  // sdk.util.sumSingleBalance(balances, "usd-coin", val3EPSowned / e18);
   return;
 };
 
@@ -201,10 +242,16 @@ function pool2s() {
     await getTVLOfarthuval3ps(balances, chainBlocks.bsc);
     await getTVLOfarthu3ps(balances, chainBlocks.bsc);
 
-    balances.arth = balances.arth / 1e18;
-    balances.mahadao = balances.mahadao / 1e18;
+    console.log(245);
 
-    balances.arth = balances["arth.usd"] / 2 / 1e18 + balances.arth;
+    if (balances.arth && balances.mahadao) {
+      balances.arth = balances.arth / 1e18;
+      balances.mahadao = balances.mahadao / 1e18;
+    }
+
+    console.log(252, balances["arth.usd"] / 2 / 1e18, balances.arth);
+
+    balances.arth = balances["arth.usd"] ? balances["arth.usd"] / 2 / 1e18 : balances["arth.usd"] / 2 / 1e18 + balances.arth;
     delete balances["arth.usd"];
 
     return balances;
