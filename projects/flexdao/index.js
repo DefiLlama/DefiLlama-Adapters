@@ -15,6 +15,7 @@ module.exports = {
   methodology: 'Counting all FLEX tokens staked in the DAO',
   start: 2153800,
   [chain]: {
-    tvl: staking(veFLEX, FLEX, chain, coingeckoId, decimals)
+    tvl: ()=>({}),
+    staking: staking(veFLEX, FLEX, chain, coingeckoId, decimals)
   },
 };
