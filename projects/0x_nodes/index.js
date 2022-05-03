@@ -67,8 +67,8 @@ function chainTvl(chain) {
         const block = (await getBlock(timestamp, chain, chainBlocks)) - offset(chain)
         var query = gql`{strategyTokenBalances(block: {number: `+block+`}){amount}}`
         const results = await retry(async bail => await graphQLClient.request(query))
-        amount = 0
-        for (i = 0; i < results.strategyTokenBalances.length; i++) {  //loop through the array
+        let amount = 0
+        for (let i = 0; i < results.strategyTokenBalances.length; i++) {  //loop through the array
           amount += Number(results.strategyTokenBalances[i].amount); //Do the math!
         }
         const balances = {}
