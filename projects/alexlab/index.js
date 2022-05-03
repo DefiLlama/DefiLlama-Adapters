@@ -32,11 +32,11 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
   )};
   sdk.util.sumMultiBalanceOf(balances, tokenBalances, true, transformAddress)
 
-  console.log(balances)
   return balances
 }
 
 module.exports = {
+  timetravel: false,
   'stacks': {
     tvl
   }, 
