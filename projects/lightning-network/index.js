@@ -3,12 +3,12 @@ const moment = require("moment");
 const _ = require("underscore");
 
 let historyTimestamp = 0;
+const dayHistory = {};
 
 async function GetDailyHistory() {
   let timestamp = moment().startOf('day').unix();
   if (timestamp == historyTimestamp) return;
 
-  dayHistory = {};
   let { data } = await axios.get('https://bitcoinvisuals.com/static/data/data_daily.csv');
   data = parseCSV(data);
 
@@ -26,6 +26,7 @@ async function get1MLCapacity() {
     const { data } = await axios.get('https://1ml.com/statistics?json=true')
     return data.networkcapacity / 1e8
   } catch (e) {
+    console.error(e)
     return getFromTxStat()
   }
 }
@@ -38,12 +39,19 @@ async function getFromTxStat() {
 async function getChannelCapacity(timestamp) {
   if (dayHistory[timestamp] && moment().utcOffset(0).startOf('hour').unix() != timestamp)
     return dayHistory[timestamp];
-  return get1MLCapacity()
 }
 
 async function tvl(timestamp) {
-  await GetDailyHistory();
-  let channelCapacity = await getChannelCapacity(timestamp);
+  const getCurrentTVL = (Date.now() / 1000 - timestamp) < 24 * 3600 // if the time difference is under 24 hours i.e we are not refilling old data
+  
+  let channelCapacity
+
+  if (getCurrentTVL) {
+    channelCapacity = await get1MLCapacity()
+  } else {
+    await GetDailyHistory();
+    channelCapacity = await getChannelCapacity(timestamp)
+  }
 
   // if none of our scrape targets worked then throw an error
   if (channelCapacity == null)
