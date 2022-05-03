@@ -16,14 +16,6 @@ async function treasury(timestamp, block, chainBlocks) {
   return balances;
 }
 
-async function staking(timestamp, block, chainBlocks) {
-  const balances = {};
-  var dappContract = new web3.eth.Contract(abi, ADAOStakingContract);
-  let balance = await dappContract.methods.totalSupply().call();
-  balance = web3.utils.fromWei(balance, "ether");
-  balances[`astar`] = Number(balance);
-  return balances;
-}
 async function tvl(timestamp, block, chainBlocks) {
   const balances = {};
   var dappContract = new web3.eth.Contract(abi, ADAOStakingContract);
@@ -38,6 +30,5 @@ module.exports = {
   astar: {
     tvl: tvl,
     treasury,
-    staking,
   },
 };
