@@ -39,8 +39,7 @@ async function tvl(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
-  methodology:
-    "WETH in left over in treasury + Amount supplied to liquidity pool",
+  methodology: "WETH supplied to liquidity pool + leftover weth in treasury",
   optimism: {
     tvl,
   },
