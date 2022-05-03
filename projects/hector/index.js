@@ -115,9 +115,10 @@ async function borrowedTvl() {
 }
 // node test.js projects/hector/index.js
 module.exports = {
+  misrepresentedTokens: true,
   fantom: {
     tvl: tvl,
     staking: staking,
     borrowed: borrowedTvl,
-    },
+    },  
 };
