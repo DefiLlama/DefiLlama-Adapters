@@ -26,15 +26,18 @@ async function tvl(timestamp, ethBlock, chainBlocks){
             params: [id]
         }))
     })
+
     const tokens = new Set()
     poolTokens.output.forEach(call=>call.output.tokens.forEach(t=>tokens.add(t)))
     const balances = {}
     await sumTokensSharedOwners(balances, Array.from(tokens), [vault], block, chain, addr=>`${chain}:${addr}`)
+
     return balances
 }
 
-module.exports={
+module.exports = {
     avalanche:{
-        tvl
+        tvl: tvl
     }
+    
 }
