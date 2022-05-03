@@ -49,8 +49,8 @@ async function madaPool2(timestamp, block, chainBlocks) {
 
 async function treasury(timestamp, block, chainBlocks) {
   let balance = (await sdk.api.erc20.balanceOf({
-    target: ravTokenAddress,
-    owner: treasuryAddress, 
+    target: "0x9B7c74Aa737FE278795fAB2Ad62dEFDbBAedFBCA",
+    owner: "0x351bDAC12449974e98C9bd2FBa572EdE21C1b7C4", 
     block: chainBlocks['milkomeda'],
     chain: 'milkomeda'
   })).output;
@@ -62,7 +62,7 @@ module.exports = {
   milkomeda: {
     tvl: async () => ({}),
     pool2: madaPool2,
-    staking: staking(boardroomAddress, rshareTokenAddress, "milkomeda"),
+    staking: staking("0x618C166262282DcB6Cdc1bFAB3808e2fa4ADFEc2", "0xD81E377E9cd5093CE752366758207Fc61317fC70", "milkomeda"),
     treasury
   },
   
