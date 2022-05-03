@@ -8,6 +8,7 @@ async function fetch() {
 }
 
 module.exports = {
-  methodology: "TVL is the total amount SCRT deposited to the staking contract. It is calculatd by checking our contract balance.",
-  fetch
+  secret: {
+    fetch
+  }
 }
