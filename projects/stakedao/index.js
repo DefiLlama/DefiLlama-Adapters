@@ -163,7 +163,7 @@ async function ethereum(timestamp, block) {
     await unwrapCrv(balances, vault.crvToken, crvBalance.output, block)
   }))
   sdk.util.sumSingleBalance(balances, crvToken, (await crvInPerpetual).output.amount)
-  sdk.util.sumSingleBalance(balances, angle_vault.usdcToken, parseInt(sanUsdcEurVaultBalance * sanUsdcEurRate / 10**18))
+  sdk.util.sumSingleBalance(balances, angle_vault.usdcToken, (sanUsdcEurVaultBalance * sanUsdcEurRate / 10**18).toFixed(0))
   return balances
 }
 
