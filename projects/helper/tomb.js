@@ -81,7 +81,7 @@ function tombTvl(token, share, rewardPool, masonry, pool2LPs, chain = "ethereum"
         return {
             [chain === "avax" ? "avalanche" : chain]: {
                 tvl: async () => ({}),
-                staking: stakingUnknownPricedLP(masonry, share, chain, lpWithShare, transform),
+                staking: stakingUnknownPricedLP(masonry, share, chain, lpWithShare),
                 pool2
             }
         }
