@@ -41,6 +41,8 @@ async function staking() {
 
 module.exports = {
   methodology: "meshswap is an AMM-based Instant Swap Protocol",
+  timetravel: false,
+  misrepresentedTokens: true,
   polygon: {
     staking,
     tvl
