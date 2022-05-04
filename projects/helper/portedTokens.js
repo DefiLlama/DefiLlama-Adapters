@@ -736,6 +736,10 @@ function fixShidenBalances(balances) {
 
 function fixAstarBalances(balances) {
   const mapping = {
+    '0x81ECac0D6Be0550A00FF064a4f9dd2400585FE9c': { coingeckoId: 'ethereum', decimals: 18, },
+    '0x7f27352d5f83db87a5a3e00f4b07cc2138d8ee52': { coingeckoId: 'binancecoin', decimals: 18, },
+    '0x75364D4F779d0Bd0facD9a218c67f87dD9Aff3b4': { coingeckoId: 'shiden', decimals: 18, },
+    '0xad543f18cff85c77e140e3e5e3c3392f6ba9d5ca': { coingeckoId: 'bitcoin', decimals: 8, },
     '0x3795C36e7D12A8c252A20C5a7B455f7c57b60283': { coingeckoId: 'tether', decimals: 6, },
     '0x19574c3c8fafc875051b665ec131b7e60773d2c9': { coingeckoId: 'astar', decimals: 18, },
     '0xAeaaf0e2c81Af264101B9129C00F4440cCF0F720': { coingeckoId: 'astar', decimals: 18, },
