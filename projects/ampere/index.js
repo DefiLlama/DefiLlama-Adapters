@@ -19,6 +19,7 @@ const transform = (addr) => {
 };
 
 module.exports = {
+  methodology: "Pool2 deposits consist of AMP/FUSE and CURRENT/FUSE LP tokens deposits while the staking TVL consists of the CURRENT tokens locked within the Masonry contract, priced using Fuse on Ethereum mainnet.",
   start: genesisBlock,
   ...tombTvl(
     AMP,
