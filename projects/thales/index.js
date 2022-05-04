@@ -84,4 +84,4 @@ module.exports={
         staking: staking(opThalesStaking, opThalesToken, "optimism", ETH_THALES), 
         pool2: guniPool2()
     }
-} // node test.js projects/thales/index.js
+}
