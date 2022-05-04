@@ -42,6 +42,7 @@ const HEC_WAVAX_JLP = "0x4dc5291cdc7ad03342994e35d0ccc76de065a566";
 const AVAX_QITOKEN = "0x5C0401e81Bc07Ca70fAD469b451682c0d747Ef1c";
 const QI_QITOKEN = "0x35Bd6aedA81a7E5FC7A7832490e71F757b0cD9Ce";
 const DAI_QITOKEN = "0x835866d37AFB8CB8F8334dCCdaf66cf01832Ff5D";
+const USDC_QITOKEN = "0xB715808a78F6041E46d61Cb123C9B4A27056AE9C";
 
 const PngStaking = "0x88afdaE1a9F58Da3E68584421937E5F564A0135b";
 const JoeStaking = "0x1a731B2299E22FbAC282E7094EdA41046343Cb51";
@@ -64,6 +65,7 @@ const BenqiMarkets = [
   { qiToken: AVAX_QITOKEN, underlyingToken: WAVAX },
   { qiToken: QI_QITOKEN, underlyingToken: QI },
   { qiToken: DAI_QITOKEN, underlyingToken: DAI },
+  { qiToken: USDC_QITOKEN, underlyingToken: USDC },
 ];
 
 const Tokens = [
