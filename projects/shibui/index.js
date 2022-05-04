@@ -1,4 +1,3 @@
-const { chainExports } = require("../helper/exports");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const { getBlock } = require("../helper/getBlock");
 const { staking } = require("../helper/staking");
@@ -29,27 +28,22 @@ const CHAIN_ORGANISED_DATA = {
   },
 };
 
-const chainTVL = (chain) => {
-  return async (timestamp, _ethBlock, chainBlocks) => {
-    const balances = {};
+const chain = 'boba'
 
-    const block = await getBlock(timestamp, chain, chainBlocks);
-    const [data, transform] = CHAIN_ORGANISED_DATA[chain]();
+module.exports = {
+  start: 394825,
+  boba: {
+    tvl: () => ({}),
+    staking: staking("0xabAF0A59Bd6E937F852aC38264fda35EC239De82", Boba_SHIBUI, 'boba'),
+    treasury: async (timestamp, _ethBlock, chainBlocks) => {
+      const balances = {};
 
-    await sumTokensAndLPsSharedOwners(
-      balances,
-      data.treasuryTokens,
-      data.treasuryAddresses,
-      block,
-      chain,
-      transform
-    );
+      const block = await getBlock(timestamp, chain, chainBlocks);
+      const [data, transform] = CHAIN_ORGANISED_DATA[chain]();
 
-    return balances;
-  };
+      await sumTokensAndLPsSharedOwners(balances, data.treasuryTokens, data.treasuryAddresses, block, chain, transform);
+
+      return balances;
+    }
+  }
 };
-
-module.exports = chainExports(chainTVL, ["boba"]);
-module.exports.boba.staking = staking("0xabAF0A59Bd6E937F852aC38264fda35EC239De82", Boba_SHIBUI, 'boba');
-
-module.exports.start = 394825;
