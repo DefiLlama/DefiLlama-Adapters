@@ -60,7 +60,7 @@ const flexUSDTVLs = calculateUsdUniTvlPairs(FLEXUSDPAIRS, CHAIN, FLEXUSD, [lawUS
 
 // todo: query data from api
 // punksTVL in BCH = PunkFloor * TotalPunks * (StakedHash / TotalHash)
-const punksTVL = () => ({ "bitcoin-cash": 0.73 * 10000 * (110665.166 / 145279.572) })
+// const punksTVL = () => ({ "bitcoin-cash": 0.73 * 10000 * (110665.166 / 145279.572) })
 
 const BENTOBOX = "0xDFD09C4A1Fd999F6e8518398216c53fcEa6f4020"
 const bentoAssets = [
@@ -69,7 +69,7 @@ const bentoAssets = [
 ]
 const bentoTVLs = bentoAssets.map(asset => staking(BENTOBOX, asset[0], CHAIN, asset[1], 18))
 
-const totalTVLs = sdk.util.sumChainTvls([lawTVLs, bchTVLs, flexUSDTVLs, bchPool, lawEtpPool, daiquiriPool, punksTVL, ...bentoTVLs])
+const totalTVLs = sdk.util.sumChainTvls([lawTVLs, bchTVLs, flexUSDTVLs, bchPool, lawEtpPool, daiquiriPool, ...bentoTVLs])
 
 // staking
 const LAW_RIGHTS = "0xe24Ed1C92feab3Bb87cE7c97Df030f83E28d9667" // DAO address
