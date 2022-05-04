@@ -16,7 +16,7 @@ const BenqiAllocator = '0x1e3834DA9a9B4d4016427554Ef31ff4e1F41d4Ed';
 
 const MAXI = "0x7C08413cbf02202a1c13643dB173f2694e0F73f0";
 const SMAXI = "0xEcE4D1b3C2020A312Ec41A7271608326894076b4";
-const DAI = "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70";
+const DAIe = "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70";
 const USDC = "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E";
 const USDCe = "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664";
 const WAVAX = "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7";
@@ -66,7 +66,7 @@ const Allocations = [
 const BenqiMarkets = [
   { qiToken: AVAX_QITOKEN, underlyingToken: WAVAX },
   { qiToken: QI_QITOKEN, underlyingToken: QI },
-  { qiToken: DAI_QITOKEN, underlyingToken: DAI },
+  { qiToken: DAI_QITOKEN, underlyingToken: DAIe },
   { qiToken: USDC_QITOKEN, underlyingToken: USDC },
   { qiToken: SAVAX_QITOKEN, underlyingToken: SAVAX },
 ];
@@ -74,7 +74,7 @@ const BenqiMarkets = [
 const Tokens = [
   [MAXI, false],
   [SMAXI, false],
-  [DAI, false],
+  [DAIe, false],
   [USDC, false],
   [WAVAX, false],
   [PNG, false],
@@ -112,7 +112,7 @@ const transformAddress = (addr) => {
   }
   // MONEY -> DAI
   if (compareToIgnoreCase(addr, MONEY)) {
-    resultantAddress = DAI;
+    resultantAddress = DAIe;
   }
   // xJOE -> JOE
   if (compareToIgnoreCase(addr, XJOE)) {
