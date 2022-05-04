@@ -24,7 +24,7 @@ const chainConfig = {
 }
 
 module.exports = {
-  timetravel: false,
+  timetravel: false
 }
 
 function addChain(chain){
