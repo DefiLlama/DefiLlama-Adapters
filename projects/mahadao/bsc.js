@@ -128,29 +128,28 @@ async function getTVLOfarthu3ps(balances, block) {
   );
   sdk.util.sumSingleBalance(balances, "arth.usd", arthuBal);
 
-  // const epsBal = await getBalance(
-  //   bsc["ellipsis.3eps.token"],
-  //   bsc["ellipsis.arthu3eps.pool"],
-  //   block
-  // );
+  const epsBal = await getBalance(
+    bsc["ellipsis.3eps.token"],
+    bsc["ellipsis.arthu3eps.pool"],
+    block
+  );
+  const epsTotalSupply = await getTotalSupply(bsc["ellipsis.3eps.token"], block)
+
+  const epsPercentage = epsBal / epsTotalSupply
 
   const busdBalance = await getBalance(bsc.busd, bsc['ellipsis.3eps.pool'], block)
-  // console.log('busdBalance', busdBalance);
-  const busdAmount = new BigNumber(busdBalance).dividedBy(e18);
+  // const busdAmount = new BigNumber(busdBalance).dividedBy(e18);
 
   const usdcBalance = await getBalance(bsc.usdc, bsc['ellipsis.3eps.pool'], block)
-  // console.log('usdcBalance', usdcBalance);
-  const usdcAmount = new BigNumber(usdcBalance).dividedBy(e18);
+  // const usdcAmount = new BigNumber(usdcBalance).dividedBy(e18);
 
 
   const usdtBalance = await getBalance(bsc.usdt, bsc['ellipsis.3eps.pool'], block)
-  // console.log('usdtBalance', usdtBalance);
-  const usdtAmount = new BigNumber(usdtBalance).dividedBy(e18);
+  // const usdtAmount = new BigNumber(usdtBalance).dividedBy(e18);
 
-
-  sdk.util.sumSingleBalance(balances, "binance-usd", busdAmount.toNumber()); // todo: need to break this down
-  sdk.util.sumSingleBalance(balances, "tether", usdtAmount.toNumber());
-  sdk.util.sumSingleBalance(balances, "usd-coin", usdcAmount.toNumber());
+  sdk.util.sumSingleBalance(balances, "binance-usd", (busdBalance * epsPercentage) / 1e18); // todo: need to break this down
+  sdk.util.sumSingleBalance(balances, "tether", (usdtBalance * epsPercentage) / 1e18);
+  sdk.util.sumSingleBalance(balances, "usd-coin", (usdcBalance * epsPercentage) / 1e18);
 }
 
 const replaceMAHAonBSCTransform = (addr) => {
@@ -242,14 +241,10 @@ function pool2s() {
     await getTVLOfarthuval3ps(balances, chainBlocks.bsc);
     await getTVLOfarthu3ps(balances, chainBlocks.bsc);
 
-    console.log(245);
-
     if (balances.arth && balances.mahadao) {
       balances.arth = balances.arth / 1e18;
       balances.mahadao = balances.mahadao / 1e18;
     }
-
-    console.log(252, balances["arth.usd"] / 2 / 1e18, balances.arth);
 
     balances.arth = balances["arth.usd"] ? balances["arth.usd"] / 2 / 1e18 : balances["arth.usd"] / 2 / 1e18 + balances.arth;
     delete balances["arth.usd"];
