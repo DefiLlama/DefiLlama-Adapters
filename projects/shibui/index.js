@@ -1,7 +1,8 @@
 const { chainExports } = require("../helper/exports");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const { getBlock } = require("../helper/getBlock");
-const { staking } = require('../helper/staking');
+const { staking } = require("../helper/staking");
+const { transformBobaAddress } = require("../helper/portedTokens");
 
 const Boba_SHIBUI = "0xf08ad7c3f6b1c6843ba027ad54ed8ddb6d71169b";
 
@@ -11,16 +12,20 @@ const Boba_SHIBUI_WETH = "0xcE9F38532B3d1e00a88e1f3347601dBC632E7a82";
 const Boba_SHIBUI_USDT = "0x3f714fe1380ee2204ca499d1d8a171cbdfc39eaa";
 
 const CHAIN_ORGANISED_DATA = {
-  boba: {
-    treasuryTokens: [
-      [Boba_BOBA, false],
-      [Boba_USDT, false],
-      [Boba_SHIBUI_WETH, true],
-      [Boba_SHIBUI_USDT, true]
-    ],
-    treasuryAddresses: [
-      "0x9596E01Ad72d2B0fF13fe473cfcc48D3e4BB0f70" // Hot treasury
-    ],
+  boba: () => {
+    const transform = transformBobaAddress();
+
+    return [{
+      treasuryTokens: [
+        [Boba_BOBA, false],
+        [Boba_USDT, false],
+        [Boba_SHIBUI_WETH, true],
+        [Boba_SHIBUI_USDT, true]
+      ],
+      treasuryAddresses: [
+        "0x9596E01Ad72d2B0fF13fe473cfcc48D3e4BB0f70", // Hot treasury
+      ],
+    }, transform];
   },
 };
 
@@ -29,14 +34,15 @@ const chainTVL = (chain) => {
     const balances = {};
 
     const block = await getBlock(timestamp, chain, chainBlocks);
-    const data = CHAIN_ORGANISED_DATA[chain];
+    const [data, transform] = CHAIN_ORGANISED_DATA[chain]();
 
     await sumTokensAndLPsSharedOwners(
       balances,
       data.treasuryTokens,
       data.treasuryAddresses,
       block,
-      chain
+      chain,
+      transform
     );
 
     return balances;
@@ -44,6 +50,6 @@ const chainTVL = (chain) => {
 };
 
 module.exports = chainExports(chainTVL, ["boba"]);
-module.exports.boba.staking = staking("0xabAF0A59Bd6E937F852aC38264fda35EC239De82", Boba_SHIBUI);
+module.exports.boba.staking = staking("0xabAF0A59Bd6E937F852aC38264fda35EC239De82", Boba_SHIBUI, 'boba');
 
 module.exports.start = 394825;
