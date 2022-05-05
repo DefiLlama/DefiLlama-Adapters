@@ -200,7 +200,7 @@ async function aurora(timestamp, block, chainBlocks) {
 module.exports = {
   timetravel: true,
   ethereum: {
-    pool2: pool2s([ETHEREUM_UWP_ADDRESS], [SOLACE_USDC_POOL]),
+   // pool2: pool2s([ETHEREUM_UWP_ADDRESS], [SOLACE_USDC_POOL]),
     tvl: ethereum,
   },
   polygon: {
