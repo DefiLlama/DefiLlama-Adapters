@@ -3,6 +3,7 @@ const { getBlock } = require('../helper/getBlock');
 const { calculateUsdUniTvlPairs } = require('../helper/getUsdUniTvl')
 const { stakingPricedLP, staking } = require('../helper/staking')
 const { default: BigNumber } = require('bignumber.js');
+const utils = require('../helper/utils');
 const kashipairABI = require('../helper/abis/kashipair.json');
 const totalBorrow = kashipairABI.find(val => val.name === "totalBorrow");
 
@@ -58,9 +59,12 @@ const lawTVLs = calculateUsdUniTvlPairs(LAWPAIRS, CHAIN, LAW, [lawETP, WBCH, law
 const bchTVLs = calculateUsdUniTvlPairs(BCHPAIRS, CHAIN, WBCH, [lawUSD], "bitcoin-cash", 18)
 const flexUSDTVLs = calculateUsdUniTvlPairs(FLEXUSDPAIRS, CHAIN, FLEXUSD, [lawUSD], "flex-usd", 18)
 
-// todo: query data from api
-// punksTVL in BCH = PunkFloor * TotalPunks * (StakedHash / TotalHash)
-// const punksTVL = () => ({ "bitcoin-cash": 0.73 * 10000 * (110665.166 / 145279.572) })
+// fetch punksTVL from an api endpoint, data is updated every 15 minutes
+const punksTVL = async () => {
+    const response = await utils.fetchURL(`https://raw.githubusercontent.com/BlockNG-Foundation/LawPunkMetaverse/master/punksTVL.json`)
+    const tvl = Number(response.data.totalPunkValueLockedInBch) / 1e18
+    return { "bitcoin-cash": tvl }
+}
 
 const BENTOBOX = "0xDFD09C4A1Fd999F6e8518398216c53fcEa6f4020"
 const bentoAssets = [
@@ -69,7 +73,7 @@ const bentoAssets = [
 ]
 const bentoTVLs = bentoAssets.map(asset => staking(BENTOBOX, asset[0], CHAIN, asset[1], 18))
 
-const totalTVLs = sdk.util.sumChainTvls([lawTVLs, bchTVLs, flexUSDTVLs, bchPool, lawEtpPool, daiquiriPool, ...bentoTVLs])
+const totalTVLs = sdk.util.sumChainTvls([lawTVLs, bchTVLs, flexUSDTVLs, bchPool, lawEtpPool, daiquiriPool, punksTVL, ...bentoTVLs])
 
 // staking
 const LAW_RIGHTS = "0xe24Ed1C92feab3Bb87cE7c97Df030f83E28d9667" // DAO address
