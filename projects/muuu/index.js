@@ -1,9 +1,12 @@
+const { tvl,staking } = require("./tvl");
+
 const START_BLOCK = 903029
 
 module.exports = {
+  timetravel: true,
+  start: START_BLOCK,
   astar: {
-    timetravel: true,
-    start: START_BLOCK,
-    tvl: async () => (0)
+    tvl,
+    staking
   }
 }
