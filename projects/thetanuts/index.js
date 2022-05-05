@@ -42,6 +42,10 @@ const wooSynVault = '0x91FDBdB3E031F0Ac57aCe6F393b247192A7265b4'
 const wMaticCallVault = '0x156d422436f4441dde6ac0ab41ff58c9258c438b'
 const wMaticPutVault = '0x47831E1ff871f6D79CFb72956f5Aca65ec244733'
 
+// Polygon - Stronghold IndexUST vaults
+const indexUST_LUNA_2wk_a = "0x400f7569AfCF3E756A427DD7522DFE2De4664717"
+const indexUST_LUNA_2wk_b = "0x112AdEC687FA605CE3221943C301Ed99B7C33Ed7"
+
 //Aurora Vaults
 const nearCallVault = '0x6d31e1126b4abf8502fc80a1f61f1e930862b075'
 
@@ -78,6 +82,7 @@ const woo = '0x4691937a7508860F876c9c0a2a617E7d9E945D4B'
 // Polygon Assets
 const wmatic = '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270'
 const pousdc = '0x2791bca1f2de4661ed88a30c99a7a9449aa84174'
+const ust_matic_wormhole = '0xE6469Ba6D2fD6130788E0eA9C0a0515900563b59'
 
 // Aurora Assets
 const near = '0xC42C30aC6Cc15faC9bD938618BcaA1a1FaE8501d'
@@ -188,6 +193,8 @@ async function polygonTvl(timestamp, ethblocks, chainBlocks) {
     await Promise.all([
         addVault(balances, wMaticCallVault, wmatic, chainBlocks["polygon"], 'polygon'),
         addVault(balances, wMaticPutVault, pousdc, chainBlocks["polygon"], 'polygon'),
+        addVault(balances, indexUST_LUNA_2wk_a, ust_matic_wormhole, chainBlocks["polygon"], 'polygon'),
+        addVault(balances, indexUST_LUNA_2wk_b, ust_matic_wormhole, chainBlocks["polygon"], 'polygon'),
     ])
     return balances
 }
@@ -235,4 +242,3 @@ module.exports = {
         tvl: auroraTvl
     },
 }
-
