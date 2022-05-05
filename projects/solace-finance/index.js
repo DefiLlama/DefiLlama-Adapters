@@ -7,6 +7,10 @@ const BigNumber = require("bignumber.js");
 // Ethereum
 const ETHEREUM_UWP_ADDRESS = "0x5efC0d9ee3223229Ce3b53e441016efC5BA83435"; // underwriting pool address
 const SOLACE_USDC_POOL = "0x9C051F8A6648a51eF324D30C235da74D060153aC"; // sushi solace-usdc pool
+const ETHEREUM_LP_TOKENS = {
+  "SOLACE": "0x501acE9c35E60f03A2af4d484f49F9B1EFde9f40",
+  "USDC": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+}
 const ETHEREUM_TOKENS = [
   {
     PoolToken: "0x501acE9c35E60f03A2af4d484f49F9B1EFde9f40",
@@ -38,36 +42,78 @@ const ETHEREUM_TOKENS = [
   },
 ];
 
-async function ethereum(timestamp, block, chainBlocks) {
+async function fetchBalances(contract, tokens, chain, block) {
   const balances = {};
+
   const { output: _tvlList } = await sdk.api.abi.multiCall({
-    calls: ETHEREUM_TOKENS.map((token) => ({
+    calls: tokens.map((token) => ({
       target: token.PoolToken,
-      params: [ETHEREUM_UWP_ADDRESS],
+      params: [contract],
     })),
     abi: "erc20:balanceOf",
-    block: chainBlocks["ethereum"],
-    chain: "ethereum",
+    block: block,
+    chain: chain,
   });
 
-  _.each(_tvlList, async (element) => {
-    let address = element.input.target;
-    let balance = element.output;
+  if (chain === "ethereum") {
+    _.each(_tvlList, async (element) => {
+      let address = element.input.target;
+      let balance = element.output;
 
-    if (BigNumber(balance).toNumber() <= 0) {
-      return;
-    }
+      if (BigNumber(balance).toNumber() <= 0) {
+        return;
+      }
 
-    balances[address] = BigNumber(balances[address] || 0)
-      .plus(balance)
-      .toFixed();
-  });
+      balances[address] = BigNumber(balances[address] || 0)
+        .plus(balance)
+        .toFixed();
+    });
+  } else if (chain === "polygon") {
+    _.each(_tvlList, async (element) => {
+      let address = element.input.target;
+      let balance = element.output;
+      sdk.util.sumSingleBalance(balances, "polygon:" + address, balance);
+    });
+  } else if (chain === "aurora") {
+    _.each(_tvlList, async (element) => {
+      let address = element.input.target;
+      let balance = element.output;
+  
+      if (address == "0xDA2585430fEf327aD8ee44Af8F1f989a2A91A3d2") {
+        balance = (
+          await sdk.api.abi.call({
+            abi: "erc20:balanceOf",
+            chain: chain,
+            target: "0xDA2585430fEf327aD8ee44Af8F1f989a2A91A3d2",
+            params: [AURORA_UWP_ADDRESS],
+            block: block,
+          })
+        ).output;
+      }
+      if (BigNumber(balance).toNumber() <= 0) {
+        return;
+      }
+      sdk.util.sumSingleBalance(balances, "aurora:" + address, balance);
+    });
+  }
   return balances;
+}
+
+async function ethereum(timestamp, block, chainBlocks) {
+  let result = await fetchBalances(ETHEREUM_UWP_ADDRESS, ETHEREUM_TOKENS,  "ethereum", chainBlocks["ethereum"]);
+  const lpBalances = await fetchBalances(SOLACE_USDC_POOL, ETHEREUM_TOKENS,  "ethereum", chainBlocks["ethereum"]);
+  result[ETHEREUM_LP_TOKENS.SOLACE] = BigNumber(result[ETHEREUM_LP_TOKENS.SOLACE] || 0).plus(lpBalances[ETHEREUM_LP_TOKENS.SOLACE] || 0).toFixed();
+  result[ETHEREUM_LP_TOKENS.USDC] =   BigNumber(result[ETHEREUM_LP_TOKENS.USDC]   || 0).plus(lpBalances[ETHEREUM_LP_TOKENS.USDC]   || 0).toFixed();
+  return result;
 }
 
 // Polygon
 const POLYGON_UWP_ADDRESS = "0xd1108a800363C262774B990e9DF75a4287d5c075";
 const SOLACE_FRAX_POOL = "0x85Efec4ee18a06CE1685abF93e434751C3cb9bA9"; // solace-frax uni pool
+const POLYGON_LP_TOKENS = {
+  "SOLACE": "polygon:0x501acE9c35E60f03A2af4d484f49F9B1EFde9f40",
+  "FRAX": "polygon:0x45c32fA6DF82ead1e2EF74d17b76547EDdFaFF89"
+}
 const POLYGON_TOKENS = [
   {
     PoolToken: "0x501acE9c35E60f03A2af4d484f49F9B1EFde9f40",
@@ -104,28 +150,20 @@ const POLYGON_TOKENS = [
 ];
 
 async function polygon(timestamp, block, chainBlocks) {
-  const balances = {};
-  const { output: _tvlList } = await sdk.api.abi.multiCall({
-    calls: POLYGON_TOKENS.map((token) => ({
-      target: token.PoolToken,
-      params: [POLYGON_UWP_ADDRESS],
-    })),
-    abi: "erc20:balanceOf",
-    block: chainBlocks["polygon"],
-    chain: "polygon",
-  });
-
-  _.each(_tvlList, async (element) => {
-    let address = element.input.target;
-    let balance = element.output;
-    sdk.util.sumSingleBalance(balances, "polygon:" + address, balance);
-  });
-  return balances;
+  let result = await fetchBalances(POLYGON_UWP_ADDRESS, POLYGON_TOKENS,  "polygon", chainBlocks["polygon"]);
+  const lpBalances = await fetchBalances(SOLACE_FRAX_POOL, POLYGON_TOKENS,  "polygon", chainBlocks["polygon"]);
+  result[ POLYGON_LP_TOKENS.SOLACE] = BigNumber(result[POLYGON_LP_TOKENS.SOLACE] || 0).plus(lpBalances[POLYGON_LP_TOKENS.SOLACE] || 0).toFixed();
+  result[ POLYGON_LP_TOKENS.FRAX] =   BigNumber(result[POLYGON_LP_TOKENS.FRAX]   || 0).plus(lpBalances[POLYGON_LP_TOKENS.FRAX]   || 0).toFixed();
+  return result;
 }
 
 // Aurora
 const AURORA_UWP_ADDRESS = "0x4A6B0f90597e7429Ce8400fC0E2745Add343df78";
 const SOLACE_WNEAR_POOL = "0x85Efec4ee18a06CE1685abF93e434751C3cb9bA9"; // trisolaris solace-wnear
+const AURORA_LP_TOKENS = {
+  "SOLACE": "aurora:0x501acE9c35E60f03A2af4d484f49F9B1EFde9f40",
+  "WNEAR": "aurora:0xC42C30aC6Cc15faC9bD938618BcaA1a1FaE8501d"
+}
 const AURORA_TOKENS = [
   {
     PoolToken: "0x501acE9c35E60f03A2af4d484f49F9B1EFde9f40",
@@ -166,49 +204,22 @@ const AURORA_TOKENS = [
 ];
 
 async function aurora(timestamp, block, chainBlocks) {
-  const balances = {};
-  const { output: _tvlList } = await sdk.api.abi.multiCall({
-    calls: AURORA_TOKENS.map((token) => ({
-      target: token.PoolToken,
-      params: [AURORA_UWP_ADDRESS],
-    })),
-    abi: "erc20:balanceOf",
-    block: chainBlocks["aurora"],
-    chain: "aurora",
-  });
-
-  _.each(_tvlList, async (element) => {
-    let address = element.input.target;
-    let balance = element.output;
-
-    if (address == "0xDA2585430fEf327aD8ee44Af8F1f989a2A91A3d2") {
-      balance = (
-        await sdk.api.abi.call({
-          abi: "erc20:balanceOf",
-          chain: "aurora",
-          target: "0xDA2585430fEf327aD8ee44Af8F1f989a2A91A3d2",
-          params: [AURORA_UWP_ADDRESS],
-          block: chainBlocks["aurora"],
-        })
-      ).output;
-    }
-    sdk.util.sumSingleBalance(balances, "aurora:" + address, balance);
-  });
-  return balances;
+  let result = await fetchBalances(AURORA_UWP_ADDRESS, AURORA_TOKENS,  "aurora", chainBlocks["aurora"]);
+  const lpBalances = await fetchBalances(SOLACE_WNEAR_POOL, AURORA_TOKENS,  "aurora", chainBlocks["aurora"]);
+  result[AURORA_LP_TOKENS.SOLACE] = BigNumber(result[AURORA_LP_TOKENS.SOLACE] || 0).plus(lpBalances[AURORA_LP_TOKENS.SOLACE] || 0).toFixed();
+  result[AURORA_LP_TOKENS.WNEAR]  = BigNumber(result[AURORA_LP_TOKENS.WNEAR]  || 0).plus(lpBalances[AURORA_LP_TOKENS.WNEAR]  || 0).toFixed();
+  return result;
 }
 
 module.exports = {
   timetravel: true,
   ethereum: {
-   // pool2: pool2s([ETHEREUM_UWP_ADDRESS], [SOLACE_USDC_POOL]),
     tvl: ethereum,
   },
   polygon: {
     tvl: polygon,
-    // pool2: pool2s([POLYGON_UWP_ADDRESS], [SOLACE_FRAX_POOL], "polygon"),
   },
   aurora: {
     tvl: aurora,
-    // pool2: pool2s([AURORA_UWP_ADDRESS], [SOLACE_WNEAR_POOL], "aurora"),
   },
 };
