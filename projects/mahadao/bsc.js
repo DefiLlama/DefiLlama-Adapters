@@ -133,23 +133,49 @@ async function getTVLOfarthu3ps(balances, block) {
     bsc["ellipsis.arthu3eps.pool"],
     block
   );
-  const epsTotalSupply = await getTotalSupply(bsc["ellipsis.3eps.token"], block)
+  const epsTotalSupply = await getTotalSupply(
+    bsc["ellipsis.3eps.token"],
+    block
+  );
 
-  const epsPercentage = epsBal / epsTotalSupply
+  const epsPercentage = epsBal / epsTotalSupply;
 
-  const busdBalance = await getBalance(bsc.busd, bsc['ellipsis.3eps.pool'], block)
+  const busdBalance = await getBalance(
+    bsc.busd,
+    bsc["ellipsis.3eps.pool"],
+    block
+  );
   // const busdAmount = new BigNumber(busdBalance).dividedBy(e18);
 
-  const usdcBalance = await getBalance(bsc.usdc, bsc['ellipsis.3eps.pool'], block)
+  const usdcBalance = await getBalance(
+    bsc.usdc,
+    bsc["ellipsis.3eps.pool"],
+    block
+  );
   // const usdcAmount = new BigNumber(usdcBalance).dividedBy(e18);
 
-
-  const usdtBalance = await getBalance(bsc.usdt, bsc['ellipsis.3eps.pool'], block)
+  const usdtBalance = await getBalance(
+    bsc.usdt,
+    bsc["ellipsis.3eps.pool"],
+    block
+  );
   // const usdtAmount = new BigNumber(usdtBalance).dividedBy(e18);
 
-  sdk.util.sumSingleBalance(balances, "binance-usd", (busdBalance * epsPercentage) / 1e18); // todo: need to break this down
-  sdk.util.sumSingleBalance(balances, "tether", (usdtBalance * epsPercentage) / 1e18);
-  sdk.util.sumSingleBalance(balances, "usd-coin", (usdcBalance * epsPercentage) / 1e18);
+  sdk.util.sumSingleBalance(
+    balances,
+    "binance-usd",
+    (busdBalance * epsPercentage) / 1e18
+  ); // todo: need to break this down
+  sdk.util.sumSingleBalance(
+    balances,
+    "tether",
+    (usdtBalance * epsPercentage) / 1e18
+  );
+  sdk.util.sumSingleBalance(
+    balances,
+    "usd-coin",
+    (usdcBalance * epsPercentage) / 1e18
+  );
 }
 
 const replaceMAHAonBSCTransform = (addr) => {
@@ -178,35 +204,59 @@ const getTVLOfarthuval3ps = async (balances, block) => {
     block
   );
 
-  const totalSupply3eps = await getTotalSupply(bsc["ellipsis.val3eps.token"], block)
+  const totalSupply3eps = await getTotalSupply(
+    bsc["ellipsis.val3eps.token"],
+    block
+  );
 
-  const valEpsPercentage = balanceval3ps / totalSupply3eps
+  const valEpsPercentage = balanceval3ps / totalSupply3eps;
 
-  const valBUSDBalance = await getBalance(bsc.valBusd, bsc['ellipsis.val3eps.pool'], block)
-  const valUSDCBalance = await getBalance(bsc.valUsdc, bsc['ellipsis.val3eps.pool'], block)
-  const valUSDTBalance = await getBalance(bsc.valUsdt, bsc['ellipsis.val3eps.pool'], block,)
+  const valBUSDBalance = await getBalance(
+    bsc.valBusd,
+    bsc["ellipsis.val3eps.pool"],
+    block
+  );
+  const valUSDCBalance = await getBalance(
+    bsc.valUsdc,
+    bsc["ellipsis.val3eps.pool"],
+    block
+  );
+  const valUSDTBalance = await getBalance(
+    bsc.valUsdt,
+    bsc["ellipsis.val3eps.pool"],
+    block
+  );
 
-  const totalValBUSDSupply = await getTotalSupply(bsc.valBusd, block)
-  const totalValUSDCSupply = await getTotalSupply(bsc.valUsdc, block)
-  const totalValUSDTSupply = await getTotalSupply(bsc.valUsdt, block)
+  const totalValBUSDSupply = await getTotalSupply(bsc.valBusd, block);
+  const totalValUSDCSupply = await getTotalSupply(bsc.valUsdc, block);
+  const totalValUSDTSupply = await getTotalSupply(bsc.valUsdt, block);
 
+  const valUSDCPercentage =
+    (valUSDCBalance * valEpsPercentage) / totalValUSDCSupply;
+  const valUSDTPercentage =
+    (valUSDTBalance * valEpsPercentage) / totalValUSDTSupply;
+  const valBUSDPercentage =
+    (valBUSDBalance * valEpsPercentage) / totalValBUSDSupply;
 
-  const valUSDCPercentage = valUSDCBalance * valEpsPercentage / totalValUSDCSupply
-  const valUSDTPercentage = valUSDTBalance * valEpsPercentage / totalValUSDTSupply
-  const valBUSDPercentage = valBUSDBalance * valEpsPercentage / totalValBUSDSupply
+  const busdBalance = await getBalance(bsc.busd, bsc.valBusd, block);
+  const usdcBalance = await getBalance(bsc.usdc, bsc.valUsdc, block);
+  const usdtBalance = await getBalance(bsc.usdt, bsc.valUsdt, block);
 
-  const busdBalance = await getBalance(bsc.busd, bsc.valBusd, block)
-  const usdcBalance = await getBalance(bsc.usdc, bsc.valUsdc, block)
-  const usdtBalance = await getBalance(bsc.usdt, bsc.valUsdt, block)
-
-
-  sdk.util.sumSingleBalance(balances, "usd-coin", (usdcBalance * valUSDCPercentage) / e18);
-  sdk.util.sumSingleBalance(balances, "tether", (usdtBalance * valUSDTPercentage) / e18);
-  sdk.util.sumSingleBalance(balances, "binance-usd", (busdBalance * valBUSDPercentage) / e18);
-
-  // todo hack for now
-  // sdk.util.sumSingleBalance(balances, "usd-coin", val3EPSowned / e18);
-  return;
+  sdk.util.sumSingleBalance(
+    balances,
+    "usd-coin",
+    (usdcBalance * valUSDCPercentage) / e18
+  );
+  sdk.util.sumSingleBalance(
+    balances,
+    "tether",
+    (usdtBalance * valUSDTPercentage) / e18
+  );
+  sdk.util.sumSingleBalance(
+    balances,
+    "binance-usd",
+    (busdBalance * valBUSDPercentage) / e18
+  );
 };
 
 function pool2s() {
@@ -246,7 +296,9 @@ function pool2s() {
       balances.mahadao = balances.mahadao / 1e18;
     }
 
-    balances.arth = balances["arth.usd"] ? balances["arth.usd"] / 2 / 1e18 : balances["arth.usd"] / 2 / 1e18 + balances.arth;
+    balances.arth = balances["arth.usd"]
+      ? balances["arth.usd"] / 2 / 1e18
+      : balances["arth.usd"] / 2 / 1e18 + balances.arth;
     delete balances["arth.usd"];
 
     return balances;
@@ -271,37 +323,5 @@ async function tvl(ts, _block, chainBlocks) {
 
 module.exports = {
   pool2: pool2s(),
-  tvl: getArthTvl(
-    [
-      // troves
-      "0x8F2C37D2F8AE7Bce07aa79c768CC03AB0E5ae9aE", // wbnb
-      "0x1Beb8b4911365EabEC68459ecfe9172f174BF0DB", // busd
-      "0xD31AC58374D4a0b3C58dFF36f2F59A22348159DB", // maha
-      // "0xD31AC58374D4a0b3C58dFF36f2F59A22348159DB", // busd-usdc-lp-s
-      // "0x7A535496c5a0eF6A9B014A01e1aB9d7493F503ea", // busd-usdt-lp-s
-    ],
-    [
-      // collaterals
-      { wbnb: ["0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"] }, // wbnb
-      { busd: ["0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"] }, // busd
-      { maha: ["0xCE86F7fcD3B40791F63B86C3ea3B8B355Ce2685b"] }, // maha
-      // {
-      //   "busdusdc-ape-lps": [
-      //     "0xbb9858603b1fb9375f6df972650343e985186ac5",
-      //     "0xc087c78abac4a0e900a327444193dbf9ba69058e",
-      //     "0x5c8d727b265dbafaba67e050f2f739caeeb4a6f9",
-      //   ],
-      // }, //busdusdc-ape-lps
-      // {
-      //   "busdusdt-ape-lps": [
-      //     "0xc5FB6476a6518dd35687e0Ad2670CB8Ab5a0D4C5",
-      //     "0x2e707261d086687470B515B320478Eb1C88D49bb",
-      //     "0x5c8D727b265DBAfaba67E050f2f739cAeEB4A6F9",
-      //   ],
-      // }, //busdusdt-ape-lps
-    ],
-    "bsc",
-    [undefined, undefined, "mahadao"],
-    [undefined, undefined, 18]
-  ),
+  tvl: tvl,
 };
