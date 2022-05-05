@@ -55,47 +55,21 @@ async function fetchBalances(contract, tokens, chain, block) {
     chain: chain,
   });
 
-  if (chain === "ethereum") {
-    _.each(_tvlList, async (element) => {
-      let address = element.input.target;
-      let balance = element.output;
+  _.each(_tvlList, async (element) => {
+    let address = element.input.target;
+    let balance = element.output;
 
-      if (BigNumber(balance).toNumber() <= 0) {
-        return;
+    if (chain === "polygon" || chain === "aurora") {
+      if (address === "0xDA2585430fEf327aD8ee44Af8F1f989a2A91A3d2") {
+        // Frax token on aurora network is not working with adapter.
+        // So, Frax balance is added to DAI.
+        address = "0xe3520349F477A5F6EB06107066048508498A291b";
       }
-
-      balances[address] = BigNumber(balances[address] || 0)
-        .plus(balance)
-        .toFixed();
-    });
-  } else if (chain === "polygon") {
-    _.each(_tvlList, async (element) => {
-      let address = element.input.target;
-      let balance = element.output;
-      sdk.util.sumSingleBalance(balances, "polygon:" + address, balance);
-    });
-  } else if (chain === "aurora") {
-    _.each(_tvlList, async (element) => {
-      let address = element.input.target;
-      let balance = element.output;
-  
-      if (address == "0xDA2585430fEf327aD8ee44Af8F1f989a2A91A3d2") {
-        balance = (
-          await sdk.api.abi.call({
-            abi: "erc20:balanceOf",
-            chain: chain,
-            target: "0xDA2585430fEf327aD8ee44Af8F1f989a2A91A3d2",
-            params: [AURORA_UWP_ADDRESS],
-            block: block,
-          })
-        ).output;
-      }
-      if (BigNumber(balance).toNumber() <= 0) {
-        return;
-      }
-      sdk.util.sumSingleBalance(balances, "aurora:" + address, balance);
-    });
-  }
+      address = chain + ":" + address;
+    }
+    
+    sdk.util.sumSingleBalance(balances, address, balance);
+  });
   return balances;
 }
 
@@ -159,7 +133,7 @@ async function polygon(timestamp, block, chainBlocks) {
 
 // Aurora
 const AURORA_UWP_ADDRESS = "0x4A6B0f90597e7429Ce8400fC0E2745Add343df78";
-const SOLACE_WNEAR_POOL = "0x85Efec4ee18a06CE1685abF93e434751C3cb9bA9"; // trisolaris solace-wnear
+const SOLACE_WNEAR_POOL = "0xdDAdf88b007B95fEb42DDbd110034C9a8e9746F2"; // trisolaris solace-wnear
 const AURORA_LP_TOKENS = {
   "SOLACE": "aurora:0x501acE9c35E60f03A2af4d484f49F9B1EFde9f40",
   "WNEAR": "aurora:0xC42C30aC6Cc15faC9bD938618BcaA1a1FaE8501d"
