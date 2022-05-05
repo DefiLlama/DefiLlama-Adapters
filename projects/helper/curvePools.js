@@ -1,4 +1,24 @@
 module.exports = {
+  // ARTHuval3PS
+ '0x4cfaabd5920021359bb22bb6924cce708773b6ac': {
+   swapContract: '0x1d4b4796853aeda5ab457644a18b703b6ba8b4ab',
+   underlyingTokens: ['0x88fd584dF3f97c64843CD474bDC6F78e398394f4', '0x5b5bd8913d766d005859ce002533d4838b0ebbb5'],
+ },
+ // val3PS
+'0x5b5bd8913d766d005859ce002533d4838b0ebbb5': {
+  swapContract: '0x19ec9e3f7b21dd27598e7ad5aae7dc0db00a806d',
+  underlyingTokens: ['0xaed19dab3cd68e4267aec7b2479b1ed2144ad77f', '0xa6fdea1655910c504e974f7f1b520b74be21857b', '0x5f7f6cb266737b89f7af86b30f03ae94334b83e9'],
+},
+   // ARTHu3PS
+  '0xb38b49bae104bbb6a82640094fd61b341a858f78': {
+    swapContract: '0x98245bfbef4e3059535232d68821a58abb265c45',
+    underlyingTokens: ['0x88fd584dF3f97c64843CD474bDC6F78e398394f4', '0xaf4de8e872131ae328ce21d909c74705d3aaf452'],
+  },
+  // 3EPS
+ '0xaf4de8e872131ae328ce21d909c74705d3aaf452': {
+   swapContract: '0x160caed03795365f3a589f10c379ffa7d75d4e76',
+   underlyingTokens: ['0xe9e7cea3dedca5984780bafc599bd69add087d56', '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d', '0x55d398326f99059ff775485246999027b3197955'],
+ },
   '0x6c3f90f043a72fa612cbac8115ee7e52bde6e490': {
     swapContract: '0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7',
     underlyingTokens: ['0xdac17f958d2ee523a2206206994597c13d831ec7', '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', '0x6b175474e89094c44da98b954eedeac495271d0f'],

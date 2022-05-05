@@ -231,8 +231,8 @@ function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingeck
             transformAddress
         )]);
 
-        if (!tokenIsOnCoingecko) {
-            const maxPool2ByToken = (await sdk.api.abi.multiCall({
+        if (!tokenIsOnCoingecko && pool2LpPositions.length) {
+            const response = (await sdk.api.abi.multiCall({
                 calls: pool2LpPositions.map(p => ({
                     target: stakingToken,
                     params: [p.token]
@@ -240,7 +240,8 @@ function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingeck
                 abi: "erc20:balanceOf",
                 block,
                 chain
-            })).output.reduce((max, curr) => {
+            })).output
+            const maxPool2ByToken = response.reduce((max, curr) => {
                 if (BigNumber(curr.output).gt(max.output)) {
                     return curr
                 }
