@@ -1,70 +1,178 @@
 const sdk = require("@defillama/sdk");
 const BigNumberJs = require("bignumber.js");
-const REGISTRY_ABI = require("./abi/registry.json");
+const ABI = require("./abi.json");
 
-const REGISTRY_ADDRESS = "0xDA820e20A89928e43794645B9A9770057D65738B"
-const POOLS = [
-  {
-    lptoken: "0x18BDb86E835E9952cFaA844EB923E470E832Ad58",
-    kglRewards: "0xA4A8163D0C9C41a918E4218b70e7B0BE4ac81983",
-  },
-  {
-    lptoken: "0x60811F3d54e860cDf01D72ED422a700e9cf010a9",
-    kglRewards: "0x48611e9B924474F2a13b1C18E38B082099CBEF58",
-  },
-  {
-    lptoken: "0x11baa439EFf75B80a72b889e171d6E95FB39ee11",
-    kglRewards: "0x8B23ca8D0cE64e570781428a5BAb241911077934",
-  },
-  {
-    lptoken: "0x00D41391B0d455fDAD49Bc6Fb8F590DB844403B6",
-    kglRewards: "0xfe1Facac14b67685851FB5186B08d17108BC960b",
-  }
-];
+const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+const REGISTRY_ADDRESS = "0xDA820e20A89928e43794645B9A9770057D65738B";
+const BOOSTER_ADDRESS = "0x6d12e3dE6dAcDBa2779C4947c0F718E13b78cfF4";
+const TOKENS = {
+  // USDC
+  "0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98":
+    "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+  // USDT
+  "0x3795C36e7D12A8c252A20C5a7B455f7c57b60283":
+    "0xdac17f958d2ee523a2206206994597c13d831ec7",
+  // DAI
+  "0x6De33698e9e9b787e09d3Bd7771ef63557E148bb":
+    "0x6b175474e89094c44da98b954eedeac495271d0f",
+  // Starlay lUSDC -> USDC
+  "0xC404E12D3466acCB625c67dbAb2E1a8a457DEf3c":
+    "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+  // Starlay lUSDT -> USDT
+  "0x430D50963d9635bBef5a2fF27BD0bDDc26ed691F":
+    "0xdac17f958d2ee523a2206206994597c13d831ec7",
+  // Starlay lDAI -> DAI
+  "0x4dd9c468A44F3FEF662c35c1E9a6108B70415C2c":
+    "0x6b175474e89094c44da98b954eedeac495271d0f",
+  // BUSD
+  "0x4Bf769b05E832FCdc9053fFFBC78Ca889aCb5E1E":
+    "0x4fabb145d64652a948d72533023f6e7a623c7c53",
+  // 3KGL -> DAI(TMP)
+  "0x18BDb86E835E9952cFaA844EB923E470E832Ad58":
+    "0x6b175474e89094c44da98b954eedeac495271d0f",
+  // BAI -> DAI(TMP)
+  "0x733ebcC6DF85f8266349DEFD0980f8Ced9B45f35":
+    "0x6b175474e89094c44da98b954eedeac495271d0f",
+};
 
-BigNumberJs.config({ EXPONENTIAL_AT: 1e9 })
+const transformTokenAddress = (address) => TOKENS[address];
 
-async function tvl(timestamp, block,chainBlocks) {
-  let balances = {}
-  for (let i=0; i < POOLS.length; i++) {
-    console.log(POOLS[i])
-    const { lptoken, kglRewards } = POOLS[i]
-    const stakedLPTokenSupply = await sdk.api.erc20.totalSupply({
-      target: kglRewards,
-      block: chainBlocks['astar'],
-      chain: 'astar'
+async function tvl(timestamp, block, chainBlocks) {
+  let allCoins = {};
+
+  const poolLength = (
+    await sdk.api.abi.call({
+      target: BOOSTER_ADDRESS,
+      abi: ABI.poolLength,
+      block: chainBlocks["astar"],
+      chain: "astar",
+    })
+  ).output;
+  const poolInfo = [];
+  const calldata = [];
+  for (let i = 0; i < poolLength; i++) {
+    calldata.push({
+      target: BOOSTER_ADDRESS,
+      params: [i],
     });
-    console.log(stakedLPTokenSupply)
-    const virtualPrice = (await sdk.api.abi.call({
-      target: REGISTRY_ADDRESS, // registry address
-      abi: REGISTRY_ABI["get_virtual_price_from_lp_token"],
-      block: chainBlocks['astar'],
-      params: lptoken,
-      chain: 'astar'
-    })).output
-    console.log(virtualPrice)
-    const balance = new BigNumberJs(stakedLPTokenSupply.output).multipliedBy(new BigNumberJs(virtualPrice))
-    balances = Object.assign({ [lptoken]: balance.toString() }, balances)
   }
-  // shift by decimals?
-  console.log(balances)
+  const returnData = await sdk.api.abi.multiCall({
+    abi: ABI.poolInfo,
+    calls: calldata,
+    block: chainBlocks["astar"],
+    chain: "astar",
+  });
+  for (let i = 0; i < poolLength; i++) {
+    const pdata = returnData.output[i].output;
+    if (pdata.shutdown) continue;
+    poolInfo.push(pdata);
+  }
+  await Promise.all(
+    [...Array(Number(poolInfo.length)).keys()].map(async (i) => {
+      const supplyFromMuuuFinance = (
+        await sdk.api.erc20.totalSupply({
+          target: poolInfo[i].token,
+          block: chainBlocks["astar"],
+          chain: "astar",
+        })
+      ).output;
 
-  return balances
+      const totalsupply = (
+        await sdk.api.erc20.totalSupply({
+          target: poolInfo[i].lptoken,
+          block: chainBlocks["astar"],
+          chain: "astar",
+        })
+      ).output;
+
+      const muuuFinanceShare = BigNumberJs(supplyFromMuuuFinance)
+        .times(1e18)
+        .div(totalsupply)
+        .toFixed(6);
+
+      const pool = (
+        await sdk.api.abi.call({
+          target: REGISTRY_ADDRESS,
+          block: chainBlocks["astar"],
+          chain: "astar",
+          abi: ABI.get_pool_from_lp_token,
+          params: poolInfo[i].lptoken,
+        })
+      ).output;
+
+      const maincoins = (
+        await sdk.api.abi.call({
+          target: REGISTRY_ADDRESS,
+          block: chainBlocks["astar"],
+          chain: "astar",
+          abi: ABI.get_coins,
+          params: pool,
+        })
+      ).output;
+
+      const coins = [];
+
+      for (let coinlist = 0; coinlist < maincoins.length; coinlist++) {
+        let coin = maincoins[coinlist];
+        if (coin == ZERO_ADDRESS) {
+          continue;
+        }
+
+        const bal = await sdk.api.erc20.balanceOf({
+          target: coin,
+          owner: pool,
+          block: chainBlocks["astar"],
+          chain: "astar",
+        });
+        coins.push({ coin: coin, balance: bal.output });
+      }
+
+      for (var c = 0; c < coins.length; c++) {
+        const balanceShare = BigNumberJs(coins[c].balance.toString())
+          .times(muuuFinanceShare)
+          .div(1e18)
+          .toFixed(0);
+
+        const coinAddress = coins[c].coin;
+
+        // convert 3KGL tokens to DAI. This is temp and should convert using virtual price
+        // as the tokens have accrued interest, this means current tvl is under reporting
+        sdk.util.sumSingleBalance(
+          allCoins,
+          transformTokenAddress(coinAddress),
+          balanceShare
+        );
+      }
+    })
+  );
+
+  // When KGL's price is determined, we can count muKGL's TVL
+  // const muKGL = await sdk.api.erc20.totalSupply({
+  //   target: MUKGL_ADDRESS,
+  //   block
+  // });
+  // sdk.util.sumSingleBalance(allCoins, MUKGL_ADDRESS, muKGL.output)
+
+  return allCoins;
 }
 
-async function staking(timestamp, block, chainBlocks){
-  const allCoins = {}
-    const muuuStakedSupply = await sdk.api.erc20.totalSupply({
-      target: "0xB2ae0CF4819f2BE89574D3dc46D481cf80C7a255", // muuuRewardsAddress,
-      block: chainBlocks['astar'],
-      chain: 'astar'
-    });
+// When MUUU's price is determined, we can count MUUU's TVL
+// async function staking(timestamp, block, chainBlocks) {
+//   const balances = {};
+//   const muuuStakedSupply = await sdk.api.erc20.totalSupply({
+//     target: "0xB2ae0CF4819f2BE89574D3dc46D481cf80C7a255", // muuuRewardsAddress,
+//     block: chainBlocks["astar"],
+//     chain: "astar",
+//   });
 
-    sdk.util.sumSingleBalance(allCoins, "0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98", muuuStakedSupply.output)
-    return allCoins
-}
+//   sdk.util.sumSingleBalance(
+//     balances,
+//     "0x6b175474e89094c44da98b954eedeac495271d0f", // ≈ $1 DAI at mainnet(decimal:18)
+//     muuuStakedSupply.output
+//   );
+//   return balances;
+// }
 
 module.exports = {
   tvl,
-  // staking
-}
+};
