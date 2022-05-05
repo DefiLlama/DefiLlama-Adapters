@@ -26,12 +26,14 @@ const lawPoolTVL = staking(LAW_POOL, LAW, CHAIN, "law", 18)
 const BPAD_WBCH_PAIR = "0x8221d04a71fcd0dd3d096cb3b49e22918095933f"
 const bpadWbchPairTVL = calculateUsdUniTvlPairs([BPAD_WBCH_PAIR], CHAIN, WBCH, [BPAD], "bitcoin-cash", 18)
 
-const totalTVLs = sdk.util.sumChainTvls([bpadPoolTVL, catsPoolTVL, mistPoolTVL, lawPoolTVL, bpadWbchPairTVL])
+const totalTVLs = sdk.util.sumChainTvls([lawPoolTVL, bpadWbchPairTVL])
+const totalStaking = sdk.util.sumChainTvls([bpadPoolTVL, catsPoolTVL, mistPoolTVL])
 
 module.exports = {
     misrepresentedTokens: true,
     methodology: "BCHPad uses LP pools created on other dexes and single asset pools of non-native tokens for their liquidity mining, these pools are used for TVL calculation.",
     smartbch: {
         tvl: totalTVLs,
+        staking: totalStaking
     },
 }
