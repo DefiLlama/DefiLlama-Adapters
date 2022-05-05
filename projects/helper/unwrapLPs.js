@@ -142,20 +142,11 @@ async function unwrapUniswapLPs(balances, lpPositions, block, chain = 'ethereum'
       const token1_ = (await tokens1).output.find(call => call.input.target === lpToken)
       const supply_ = (await lpSupplies).output.find(call => call.input.target === lpToken)
 
-      try {
         token0 = token0_.output.toLowerCase()
         token1 = token1_.output.toLowerCase()
         supply = supply_.output
         // console.log(token0_, supply_, token1_, lpToken)
 
-      } catch (e) {
-        // console.log(token0_, supply_, token1_, lpToken)
-        if (token1_?.input.target?.toLowerCase() === lpToken.toLowerCase()) {
-          console.log(`Not LP token: ${lpToken}, ignoring token`)
-          return
-        }
-        throw e
-      }
       if (supply === "0") {
         return
       }
@@ -294,18 +285,9 @@ async function unwrapGelatoLPs(balances, lpPositions, block, chain = 'ethereum',
   }))
 }
 
-
-async function addBalanceOfTokensAndLPs(balances, balanceResult, block) {
-  await addTokensAndLPs(balances, {
-    output: balanceResult.output.map(t => ({ output: t.input.target }))
-  },
-    balanceResult,
-    block)
-}
-
 // Unwrap the tokens that are LPs and directly add the others
 // To be used when you don't know which tokens are LPs and which are not
-async function addTokensAndLPs(balances, tokens, amounts, block, chain = "ethereum", transformAddress = id => id, { excludePool2 = false, onlyPool2 = false, stakingTokenRaw }) {
+async function addTokensAndLPs(balances, tokens, amounts, block, chain = "ethereum", transformAddress = id => id) {
   const tokens0 = await sdk.api.abi.multiCall({
     calls: tokens.output.map(t => ({
       target: t.output
@@ -583,7 +565,7 @@ tokensAndOwners [
     [token, owner] - eg ["0xaaa", "0xbbb"]
 ]
 */
-async function sumTokens(balances, tokensAndOwners, block, chain = "ethereum", transformAddress, { resolveCrv = false, resolveLP = false, resolveYearn = false, unwrapAll = false, } = {}) {
+async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereum", transformAddress, { resolveCrv = false, resolveLP = false, resolveYearn = false, unwrapAll = false, } = {}) {
   if (!transformAddress)
     transformAddress = await getChainTransform(chain)
 
@@ -600,7 +582,6 @@ async function sumTokens(balances, tokensAndOwners, block, chain = "ethereum", t
     const token = transformAddress(result.input.target)
     const balance = BigNumber(result.output)
     try {
-
       balances[token] = BigNumber(balances[token] || 0).plus(balance).toFixed(0)
     } catch (e) {
       console.log(token, balance, balances[token])
@@ -618,6 +599,8 @@ async function sumTokens(balances, tokensAndOwners, block, chain = "ethereum", t
     await Promise.all(Object.keys(balances).map(token => unwrapYearn(balances, stripTokenHeader(token), block, chain, transformAddress)))
     await resolveCrvTokens(balances, block, chain, transformAddress)
   }
+
+  return balances
 }
 
 async function unwrapCreamTokens(balances, tokensAndOwners, block, chain = "ethereum", transformAddress = id => id) {
@@ -897,7 +880,6 @@ module.exports = {
   unwrapUniswapV3NFTs,
   addTokensAndLPs,
   sumTokensAndLPsSharedOwners,
-  addBalanceOfTokensAndLPs,
   sumTokensAndLPs,
   sumTokens,
   sumBalancerLps,

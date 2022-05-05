@@ -1,5 +1,5 @@
 module.exports = {
-  yields: [
+  fyields: [
     {
       yieldBearingAsset: "0x82f0B8B456c1A451378467398982d4834b6829c1", //MIM
       yieldProxy: "0xf730167FC2aF7a02db63d3e8CE54179A70Ea72b7",

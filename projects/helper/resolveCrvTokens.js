@@ -33,7 +33,7 @@ const curveLPMapping = curvePoolsPartial.reduce((accum, poolData) => {
 
 
 async function unwrapCrvKnown(balances, crvToken, lpBalance, block, chain = 'ethereum', transformAddress = (addr) => addr, excludeTokensRaw = []) {
-  crvToken = crvToken.toLowerCase()
+  crvToken = stripChainHeader(crvToken).toLowerCase()
   const excludeTokens = excludeTokensRaw.map(addr => addr.toLowerCase())
   if (crvPools[crvToken] === undefined)
     return;

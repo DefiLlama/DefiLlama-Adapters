@@ -33,11 +33,12 @@ const AVAX_PRICEFEED = "0x45F7260f7Cc47b15eB5cB6ac0dAaBd8Efb2A0edB"
 const YETI_TOKEN_ADDRESS = "0x77777777777d4554c39223C354A05825b2E8Faa3"
 
 const VEYETI_ADDRESS = "0x88888888847DF39Cf1dfe1a05c904b4E603C9416"
-
+const chain = 'avax'
 /**
  * Get TVL of YETI FInance
  */
-async function tvl(_, block) {
+async function tvl(_, _block, chainBlocks) {
+  const block = chainBlocks[chain]
   // const YUSDInStabilityPool = (
   //   await sdk.api.erc20.balanceOf({
   //     target: YUSD_TOKEN_ADDRESS,
@@ -133,7 +134,8 @@ async function tvl(_, block) {
   }
 }
 
-async function pool2(_, block) {
+async function pool2(_, _block, chainBlocks) {
+  const block = chainBlocks[chain]
   const reserves = (
     await sdk.api.abi.call({
       target: YETIAVAX_POOL2_ADDRESS,
@@ -170,7 +172,8 @@ async function pool2(_, block) {
   }
 }
 
-async function staking(_, block) {
+async function staking(_, _block, chainBlocks) {
+  const block = chainBlocks[chain]
   const veYETIBalance = (
     await sdk.api.erc20.balanceOf({
       target: YETI_TOKEN_ADDRESS,
