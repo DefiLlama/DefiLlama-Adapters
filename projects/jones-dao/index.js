@@ -1,16 +1,25 @@
 const sdk = require("@defillama/sdk");
 const { pool2s } = require("../helper/pool2");
-const { staking } = require("../helper/staking");
+const { stakings } = require("../helper/staking");
 const abi = require("./abi.json");
 
 const jones = "0x10393c20975cf177a3513071bc110f7962cd67da";
-const jonesStaking = "0xf1a26cf6309a59794da29b5b2e6fabd3070d470f";
+const jonesStaking = [
+    "0xf1a26cf6309a59794da29b5b2e6fabd3070d470f", 
+    "0xb94d1959084081c5a11C460012Ab522F5a0FD756",
+    "0x808A84063a586E680b7699be20a4Ec958ADfdF86"
+];
 
 const ethVault = "0x6be861aA87009331bF62E22D418Ab666e88B1354";
 
 const vaultandCollateral = [
     ["0x9a62E407028961EaC4538453Cb5D97038b69C814", "0x8d9ba570d6cb60c7e3e0f31343efe75ab8e65fb1"],// gOHM
-    ["0xBa3386D94FC593a1e9A5b57fF02524396080f7b4", "0x6c2c06790b3e3e3c38e12ee22f8183b37a13ee55"] // DPX 
+    ["0xBa3386D94FC593a1e9A5b57fF02524396080f7b4", "0x6c2c06790b3e3e3c38e12ee22f8183b37a13ee55"],// DPX
+
+    ["0xF46Ce0C13577232D5F29D9Bd78a9Cab278755346", "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1"],// WETH
+    ["0x8883E5bb2920bBE766A2c9e86ad9aA45a573f3F5", "0x8d9ba570d6cb60c7e3e0f31343efe75ab8e65fb1"],// gOHM
+    ["0x5BA98Ad75AB87eB90fFc2b680bCfC6b9030E1246", "0x32Eb7902D4134bf98A28b963D26de779AF92A212"],// rDPX
+    ["0x42448fDDCec02124cf6dB19a9f91Dea7bB0e88e5", "0x32Eb7902D4134bf98A28b963D26de779AF92A212"],// DPX 
 ]
 
 const jTokenToToken = {
@@ -45,7 +54,7 @@ async function tvl(timestamp, block, chainBlocks) {
         abi: abi.MANAGEMENT_WINDOW_OPEN,
         block,
         chain
-    })).output;
+    })).output; // node test.js projects/jones-dao/index.js
     if (ethManagementWindow === true) {
         const ethSnapshot = (await sdk.api.abi.call({
             target: ethVault,
@@ -91,9 +100,20 @@ async function tvl(timestamp, block, chainBlocks) {
         chain
     })).output;
 
+    const vaultAssetBalances = (await sdk.api.abi.multiCall({
+        calls: vaultandCollateral.map(p => ({
+            target: p[0]
+        })),
+        abi: abi.snapshotAssetBalance,
+        block,
+        chain
+    })).output;
+
     for (let i = 0; i < vaultandCollateral.length; i++) {
         if (vaultManagementWindows[i].output === true) {
             sdk.util.sumSingleBalance(balances, `arbitrum:${vaultandCollateral[i][1]}`, vaultSnapshots[i].output);
+        } else if (vaultAssetBalances[i].success === true) {
+            sdk.util.sumSingleBalance(balances, `arbitrum:${vaultandCollateral[i][1]}`, vaultAssetBalances[i].output);
         } else {
             sdk.util.sumSingleBalance(balances, `arbitrum:${vaultandCollateral[i][1]}`, vaultBalances[i].output);
         }
@@ -113,6 +133,6 @@ module.exports = {
             }
             return `arbitrum:${addr}`;
         }),
-        staking: staking(jonesStaking, jones, "arbitrum")
+        staking: stakings(jonesStaking, jones, "arbitrum")
     }
 }
