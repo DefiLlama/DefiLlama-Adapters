@@ -57,14 +57,23 @@ async function tvl (timestamp, ethBlock, chainBlocks) {
       chain, block,
     })
   ]) 
-  // console.log(pendingDeposits, totalFunds, premiumCollected, collat_or_underlying_reordered)
-
+  
   // Count these as balances
   const tokens_balances_pairs = collat_or_underlying_reordered.map((collat, idx) => [
     transform(collat.output), 
     BigNumber(totalFunds[idx].output).plus(BigNumber(pendingDeposits[idx].output)).plus(BigNumber(premiumCollected[idx].output)).toFixed(0)
   ])
-  const balances = Object.fromEntries(tokens_balances_pairs)
+  
+  // Cnovert token_balances_pairs to object and aggregate similar tokens
+  var balances ={};
+  tokens_balances_pairs.forEach( e => {
+    if( balances.hasOwnProperty(e[0]) ){
+      balances[e[0]] = BigNumber(balances[e[0]]).plus( BigNumber(e[1]) ).toFixed(0);
+    } else{
+      balances[e[0]] = e[1];
+    }
+  })
+
   return balances
 }
 
