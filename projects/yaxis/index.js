@@ -3,7 +3,7 @@ const BigNumber = require("bignumber.js");
 const { unwrapCrv, unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { abi } = require("../yaxis/abi.js");
 const constants = require("../yaxis/constants.js");
-const { eth } = require('../helper/alchemixHelper.js')
+const { eth } = require('./alchemixHelper.js')
 
 async function tvl(timestamp, block) {
   const balances = {};
