@@ -9,19 +9,19 @@ const pool2s = [
 const endpoint = "https://crucible.alchemist.wtf/api/get-program-staked-usd?network=1"
 
 function get(includePool2){
-return async function() {
-    const rewardPrograms = await utils.fetchURL(endpoint)
-    return Object.entries(rewardPrograms.data).reduce((t, c)=>{
-        let isPool2 = pool2s.some(p=>p.toLowerCase()===c[0].toLowerCase())
-        if(includePool2){
-            isPool2 = !isPool2 
-        }
-        if(isPool2){
-            return t
-        }
-        return t+c[1]
-    }, 0)
-}
+    return async function() {
+        const rewardPrograms = await utils.fetchURL(endpoint)
+        return Object.entries(rewardPrograms.data).reduce((t, c)=>{
+            let isPool2 = pool2s.some(p=>p.toLowerCase()===c[0].toLowerCase())
+            if(includePool2){
+                isPool2 = !isPool2 
+            }
+            if(isPool2){
+                return t
+            }
+            return t+c[1]
+        }, 0)
+    }
 }
 
 module.exports={
