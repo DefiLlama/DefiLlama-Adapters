@@ -324,6 +324,7 @@ async function transformHarmonyAddress() {
   const mapping = {
     '0x6983D1E6DEf3690C4d616b13597A09e6193EA013': '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
     '0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a': 'harmony:0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a',
+    "0xb12c13e66ade1f72f71834f2fc5082db8c091358": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", //avax
     '0x224e64ec1bdce3870a6a6c777edd450454068fec': '0xa47c8bf37f92abed4a126bda807a7b7498661acd',
     '0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c': '0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c',
     '0xd754ae7bb55feb0c4ba6bc037b4a140f14ebe018': '0x19e6bfc1a6e4b042fb20531244d47e252445df01',
@@ -374,6 +375,10 @@ async function transformOptimismAddress() {
     }
     // OETH -> WETH
     if (compareAddresses(addr, "0x0000000000000000000000000000000000000000")) {
+      return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+    }
+    // synapse WETH -> WETH
+    if (compareAddresses(addr, "0x121ab82b49B2BC4c7901CA46B8277962b4350204")) {
       return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
     }
     // FEI
@@ -638,6 +643,7 @@ function transformMetisAddress() {
 function transformBobaAddress() {
   const map = {
     "0x0000000000000000000000000000000000000000": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // WETH
+    "0xd203De32170130082896b4111eDF825a4774c18E": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // synapse wETH
     "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // WETH
     "0x66a2a913e447d6b4bf33efbec43aaef87890fbbc": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USDC
     "0x5de1677344d3cb0d7d465c10b72a8f60699c062d": "0xdac17f958d2ee523a2206206994597c13d831ec7", // USDT
