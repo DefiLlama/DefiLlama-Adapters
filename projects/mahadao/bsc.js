@@ -16,7 +16,7 @@ async function pool2(_timestamp, _ethBlock, chainBlocks) {
     [bscTokens.ARTHMAHAApeLP, bscTokens.ARTHMAHAApeLPStaking],
     [bscTokens.ARTHMAHALP, bscTokens.ARTHMAHABasicStaking],
     [bscTokens.ARTHuval3PS, bscTokens.ARTHuval3PSBasicStaking],
-    [bscTokens.ARTHuval3PS, bscTokens.ARTHu3PXBasicStakingV2], // ellipsis masterchef, tvl belongs to them? SE: contains ARTH our stablecoin
+    [bscTokens.ARTHuval3PS, bscTokens.ARTHu3PXBasicStakingV2], // ellipsis masterchef, tvl belongs to them? SE: contains ARTH our stablecoin; we pay bribes for this tvl
     [bscTokens.ARTHu3PS, bscTokens.ARTHu3PSBasicStakingV2],
     [bscTokens.ARTHuval3PS, bscTokens.ARTHuval3PSDotBasicStaking], // ellipsis masterchef? SE: contains ARTH our stablecoin
   ];
