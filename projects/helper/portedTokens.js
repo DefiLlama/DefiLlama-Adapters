@@ -324,6 +324,8 @@ async function transformHarmonyAddress() {
   const mapping = {
     '0x6983D1E6DEf3690C4d616b13597A09e6193EA013': '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
     '0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a': 'harmony:0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a',
+    '0x72cb10c6bfa5624dd07ef608027e366bd690048f': 'harmony:0x72cb10c6bfa5624dd07ef608027e366bd690048f',
+    '0xa9ce83507d872c5e1273e745abcfda849daa654f': 'harmony:0xa9ce83507d872c5e1273e745abcfda849daa654f',
     "0xb12c13e66ade1f72f71834f2fc5082db8c091358": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", //avax
     '0x224e64ec1bdce3870a6a6c777edd450454068fec': '0xa47c8bf37f92abed4a126bda807a7b7498661acd',
     '0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c': '0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c',
@@ -526,6 +528,11 @@ function fixHarmonyBalances(balances) {
       sdk.util.sumSingleBalance(balances, 'harmony', Number(balances[representation]) / 1e18)
       delete balances[representation];
     }
+  }
+  const xJewel = 'harmony:0xa9ce83507d872c5e1273e745abcfda849daa654f'
+  if (balances[xJewel]) {
+    sdk.util.sumSingleBalance(balances, 'xjewel', Number(balances[xJewel]) / 1e18)
+    delete balances[xJewel]
   }
 }
 
