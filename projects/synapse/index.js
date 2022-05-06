@@ -197,9 +197,14 @@ const DATA = {
     ],
   },
   optimism: {
+    stables: [
+      "0x7F5c764cBc14f9669B88837ca1490cCa17c31607", // USDC
+    ],
     neth: "0x809DC529f07651bD43A172e8dB6f4a7a0d771036",
     weth: "0x121ab82b49B2BC4c7901CA46B8277962b4350204",
     ethPool: "0xE27BFf97CE92C3e1Ff7AA9f86781FDd6D48F5eE9",
+    pool: "0xf44938b0125a6662f9536281ad2cd6c499f22004",
+    nusd: "0x67C10C397dD0Ba417329543c1a40eb48AAa7cd00",
     tokens: [
       "0x0b5740c6b4a97f90eF2F0220651Cca420B868FfB", // gOHM
       "0xFB21B70922B9f6e3C6274BcD6CB1aa8A0fe20B80", // UST
@@ -236,6 +241,11 @@ const DATA = {
     ],
   },
   cronos: {
+    stables: [
+      "0xc21223249CA28397B4B6541dfFaEcC539BfF0c59", // USDC
+    ],
+    nusd: "0x396c9c192dd323995346632581BEF92a31AC623b",
+    pool: "0xcb6674548586f20ca39c97a52a0ded86f48814de",
     tokens: [
       "0xbb0a63a6ca2071c6c4bcac11a1a317b20e3e999c", // gOHM
       "0x7Bb5c7e3bF0B2a28fA26359667110bB974fF9359", // UST
