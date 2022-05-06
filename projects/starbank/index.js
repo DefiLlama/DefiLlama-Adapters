@@ -7,25 +7,7 @@ const graphUrl =
 
 
 const graphQuery = gql`
-  query {
-    pools(
-      first: 1000
-      orderBy: "totalLiquidity"
-      orderDirection: "desc"
-      where: {
-        totalShares_gt: 0.01
-        id_not_in: [
-          "0x8be1881b9b95ce2c267be6cdfa6c18b7d07e6188000200000000000000000000"
-        ]
-        id_in: [
-          "0x76b2250ce870f83240d3e97802c44204d182efb8000000000000000000000000"
-        ]
-      }
-      block: { number: 964331 }
-    ) {
-      totalLiquidity
-    }
-  }
+  query { pools { totalLiquidity } }
 `;
 
 async function tvl() {
