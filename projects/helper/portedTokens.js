@@ -324,6 +324,7 @@ async function transformHarmonyAddress() {
   const mapping = {
     '0x6983D1E6DEf3690C4d616b13597A09e6193EA013': '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
     '0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a': 'harmony:0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a',
+    "0xb12c13e66ade1f72f71834f2fc5082db8c091358": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", //avax
     '0x224e64ec1bdce3870a6a6c777edd450454068fec': '0xa47c8bf37f92abed4a126bda807a7b7498661acd',
     '0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c': '0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c',
     '0xd754ae7bb55feb0c4ba6bc037b4a140f14ebe018': '0x19e6bfc1a6e4b042fb20531244d47e252445df01',
@@ -374,6 +375,10 @@ async function transformOptimismAddress() {
     }
     // OETH -> WETH
     if (compareAddresses(addr, "0x0000000000000000000000000000000000000000")) {
+      return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+    }
+    // synapse WETH -> WETH
+    if (compareAddresses(addr, "0x121ab82b49B2BC4c7901CA46B8277962b4350204")) {
       return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
     }
     // FEI
@@ -471,6 +476,7 @@ async function transformArbitrumAddress() {
 async function transformFuseAddress() {
   const mapping = {
     '0x0000000000000000000000000000000000000000': '0x970b9bb2c0444f5e81e9d0efb84c8ccdcdcaf84d',  // FUSE
+    '0x0be9e53fd7edac9f859882afdda116645287c629': '0x970b9bb2c0444f5e81e9d0efb84c8ccdcdcaf84d',  // FUSE
     '0x620fd5fa44BE6af63715Ef4E65DDFA0387aD13F5': '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',  // USDC
     '0x94Ba7A27c7A95863d1bdC7645AC2951E0cca06bA': '0x6B175474E89094C44Da98b954EedeAC495271d0F',  // DAI
     '0xFaDbBF8Ce7D5b7041bE672561bbA99f79c532e10': '0xdAC17F958D2ee523a2206206994597C13D831ec7',  // USDT
@@ -637,6 +643,7 @@ function transformMetisAddress() {
 function transformBobaAddress() {
   const map = {
     "0x0000000000000000000000000000000000000000": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // WETH
+    "0xd203De32170130082896b4111eDF825a4774c18E": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // synapse wETH
     "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // WETH
     "0x66a2a913e447d6b4bf33efbec43aaef87890fbbc": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USDC
     "0x5de1677344d3cb0d7d465c10b72a8f60699c062d": "0xdac17f958d2ee523a2206206994597c13d831ec7", // USDT
@@ -735,6 +742,10 @@ function fixShidenBalances(balances) {
 
 function fixAstarBalances(balances) {
   const mapping = {
+    '0x81ECac0D6Be0550A00FF064a4f9dd2400585FE9c': { coingeckoId: 'ethereum', decimals: 18, },
+    '0x7f27352d5f83db87a5a3e00f4b07cc2138d8ee52': { coingeckoId: 'binancecoin', decimals: 18, },
+    '0x75364D4F779d0Bd0facD9a218c67f87dD9Aff3b4': { coingeckoId: 'shiden', decimals: 18, },
+    '0xad543f18cff85c77e140e3e5e3c3392f6ba9d5ca': { coingeckoId: 'bitcoin', decimals: 8, },
     '0x3795C36e7D12A8c252A20C5a7B455f7c57b60283': { coingeckoId: 'tether', decimals: 6, },
     '0x19574c3c8fafc875051b665ec131b7e60773d2c9': { coingeckoId: 'astar', decimals: 18, },
     '0xAeaaf0e2c81Af264101B9129C00F4440cCF0F720': { coingeckoId: 'astar', decimals: 18, },

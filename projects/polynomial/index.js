@@ -3,12 +3,14 @@ const BigNumber = require('bignumber.js')
 const { getBlock } = require('../helper/getBlock')
 const abi = require('./abi.json')
 const chain = 'optimism'
-transform = t => `${chain}:${t}`
+const transform = t => `${chain}:${t}`
 
 // Polynomial contract addresses
 const polynomial_contracts = [
   '0xfa923aa6b4df5bea456df37fa044b37f0fddcdb4', 
-  '0x331cf6e3e59b18a8bc776a0f652af9e2b42781c5'
+  '0x331cf6e3e59b18a8bc776a0f652af9e2b42781c5',
+  '0xea48dD74BA1Ff41B705ba5Cf993B2D558e12D860',
+  '0x23CB080dd0ECCdacbEB0BEb2a769215280B5087D'
 ]
 
 async function tvl (timestamp, ethBlock, chainBlocks) {
