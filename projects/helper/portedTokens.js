@@ -547,7 +547,12 @@ function transformOasisAddressBase(addr) {
 async function transformOasisAddress() {
   return transformOasisAddressBase
 }
-
+function fixBscBalances(balances) {
+  if (balances['bsc:0x8b04E56A8cd5f4D465b784ccf564899F30Aaf88C']) {
+    sdk.util.sumSingleBalance(balances, 'anchorust', 
+      Number(balances['bsc:0x8b04E56A8cd5f4D465b784ccf564899F30Aaf88C']) / 10 ** 6)
+  }
+}
 function fixOasisBalances(balances) {
   ['oasis-network', 'wrapped-rose'].forEach(key => {
     if (balances[key])
@@ -1048,6 +1053,7 @@ module.exports = {
   transformKccAddress,
   transformArbitrumAddress,
   fixHarmonyBalances,
+  fixBscBalances,
   fixOasisBalances,
   transformIotexAddress,
   transformMetisAddress,
