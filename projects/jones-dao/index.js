@@ -26,6 +26,7 @@ const jTokenToToken = {
     "0x662d0f9ff837a51cf89a1fe7e0882a906dac08a3": "arbitrum:0x82af49447d8a07e3bd95bd0d56f35241523fbab1", // jETH
     "0x5375616bb6c52a90439ff96882a986d8fcdce421": "arbitrum:0x8d9ba570d6cb60c7e3e0f31343efe75ab8e65fb1", // jgOHM,
     "0xf018865b26ffab9cd1735dcca549d95b0cb9ea19": "arbitrum:0x6c2c06790b3e3e3c38e12ee22f8183b37a13ee55", // jDPX
+    "0x1f6fa7a58701b3773b08a1a16d06b656b0eccb23": "arbitrum:0x32eb7902d4134bf98a28b963d26de779af92a212" // jrdpx
 }
 
 const lpStaking = [
@@ -33,7 +34,8 @@ const lpStaking = [
     "0x13f6A63867046107780Bc3fEBdeE90E7AfCdfd99", // JONES-USDC LP 
     "0xBAc58e8b57935A0B60D5Cb4cd9F6C21049595F04", // jETH-ETH LP 
     "0x7eCe38dBE9D61D0d9Bf2D804A87A7d21b5937a56", // jgOHM-gOHM LP
-    "0x5723be83199C9Ec68ED0Ac979e98381224870e7f" // jDPX-DPX LP
+    "0x5723be83199C9Ec68ED0Ac979e98381224870e7f", // jDPX-DPX LP
+    "0xb94d1959084081c5a11C460012Ab522F5a0FD756" // Masterchef
 ]
 
 const lps = [
@@ -41,7 +43,8 @@ const lps = [
     "0xa6efc26daa4bb2b9bf5d23a0bc202a2badc2b59e", // JONES-USDC LP
     "0xdf1a6dd4e5b77d7f2143ed73074be26c806754c5", // jETH-ETH LP
     "0x292d1587a6bb37e34574c9ad5993f221d8a5616c", // jgOHM-gOHM LP
-    "0xeeb24360c8c7a87933d16b0075e10e1a30ad65b7" // jDPX-DPX LP
+    "0xeeb24360c8c7a87933d16b0075e10e1a30ad65b7", // jDPX-DPX LP
+    "0x110a0f39b15D04f2F348B61Bd741429C7d188d3F", // RDPX-jRDPX LP
 ]
 
 async function tvl(timestamp, block, chainBlocks) {
