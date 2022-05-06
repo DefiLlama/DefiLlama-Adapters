@@ -3,7 +3,25 @@ const BigNumber = require("bignumber.js");
 const { unwrapCrv, unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { abi } = require("../yaxis/abi.js");
 const constants = require("../yaxis/constants.js");
-const { eth } = require('../helper/alchemixHelper.js')
+
+async function eth() {
+  const pricePerYvWeth = await getPricePerShareInFloat(yvWethContract);
+
+  let totalEth = 0;
+
+  // Get ETH TVL
+  //Get total ETH TVL from transmuter and alchemist contracts
+  for (let i = 0; i < wethHolders.length; i++) {
+    let ethbal = await getBalInFloat(wethcontract, wethHolders[i]);
+    totalEth += ethbal;
+  }
+  //Get total ETH TVL from yvWETH holders
+  for (let i = 0; i < yvWethHolders.length; i++) {
+    let yethbal = await getBalInFloat(yvWethContract, yvWethHolders[i]);
+    totalEth += yethbal * pricePerYvWeth;
+  }
+  return totalEth
+}
 
 async function tvl(timestamp, block) {
   const balances = {};
