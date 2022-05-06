@@ -6,8 +6,7 @@ const chain = "ethereum";
 
 const eth = {
   ethMahaSLP: "0xB73160F333b563f0B8a0bcf1a25ac7578A10DE96",
-  ethMahaSLP2: "0xC0897d6Ba893E31F42F658eeAD777AA15B8f824d",
-  ethMahaSushiStaking: "0x20257283d7B8Aa42FC00bcc3567e756De1E7BF5a",
+  ethMahaUniV2LP: "0xC0897d6Ba893E31F42F658eeAD777AA15B8f824d",
   maha: "0xb4d930279552397bba2ee473229f89ec245bc365",
   weth: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
   frax: "0x853d955acef822db058eb8505911ed77f175b99e",
@@ -21,7 +20,24 @@ Object.keys(eth).forEach((k) => (eth[k] = eth[k].toLowerCase()));
 
 async function pool2(_, block) {
   const balances = {};
-  const tokensAndOwners = [[eth.ethMahaSLP, eth.ethMahaSushiStaking]];
+
+  // lp with the gov token inside
+  await sumTokens(
+    balances,
+    [
+      // uniswap ETH/MAHA
+      [eth.weth, eth.ethMahaUniV2LP],
+      [eth.maha, eth.ethMahaUniV2LP],
+
+      // sushiswap ETH/MAHA
+      [eth.weth, eth.ethMahaSLP],
+      [eth.maha, eth.ethMahaSLP],
+    ],
+    block,
+    chain
+  );
+
+  // lp with the stablecoin inside
   const fraxArthbalances = {};
   const fraxArthTokensAndOwners = [
     [eth.frxArthLP, eth.frxArthStaking],
@@ -29,9 +45,6 @@ async function pool2(_, block) {
     // [eth["arth.usd"], eth.frxArthLP,],
   ];
 
-  await sumTokens(balances, tokensAndOwners, block, chain, undefined, {
-    resolveLP: true,
-  });
   await sumTokens(
     fraxArthbalances,
     fraxArthTokensAndOwners,
