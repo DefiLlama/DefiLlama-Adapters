@@ -59,6 +59,16 @@ async function getTokenAccountBalance(account) {
   return tokenBalance.data.result?.value?.uiAmount;
 }
 
+async function getCoingeckoId() {
+  const tokenlist = await axios
+    .get(
+      "https://cdn.jsdelivr.net/gh/solana-labs/token-list@main/src/tokens/solana.tokenlist.json"
+    )
+    .then((r) => r.data.tokens);
+  return address => tokenlist.find((t) => t.address === address)?.extensions
+    ?.coingeckoId;
+}
+
 // Example: [[token1, account1], [token2, account2], ...]
 async function sumTokens(tokensAndAccounts) {
   const tokenlist = await axios
@@ -83,6 +93,36 @@ async function sumTokens(tokensAndAccounts) {
       }
     }
     balances[coingeckoId] = (balances[coingeckoId] || 0) + tokenBalances[i];
+  }
+  return balances;
+}
+
+// Example: [[token1, account1], [token2, account2], ...]
+async function sumTokensUnknown(tokensAndAccounts) {
+  const tokenlist = await axios
+    .get(
+      "https://cdn.jsdelivr.net/gh/solana-labs/token-list@main/src/tokens/solana.tokenlist.json"
+    )
+    .then((r) => r.data.tokens);
+  const tokenBalances = await Promise.all(
+    tokensAndAccounts.map((t) => getTokenBalance(...t))
+  );
+  const balances = {};
+  for (let i = 0; i < tokensAndAccounts.length; i++) {
+    const token = tokensAndAccounts[i][0];
+    let coingeckoId = tokenlist.find((t) => t.address === token)?.extensions?.coingeckoId;
+    const replacementCoingeckoId = tokensAndAccounts[i][2];
+    if (coingeckoId === undefined) {
+      if (replacementCoingeckoId !== undefined) {
+        coingeckoId = replacementCoingeckoId;
+        balances[coingeckoId] = (balances[coingeckoId] || 0) + tokenBalances[i];
+      } else {
+        balances[token] = (balances[token] || 0) + tokenBalances[i];
+        console.log(`Solana token ${token} has no coingecko id`);
+      }
+    } else {
+      balances[coingeckoId] = (balances[coingeckoId] || 0) + tokenBalances[i];
+    }
   }
   return balances;
 }
@@ -167,4 +207,6 @@ module.exports = {
   getMultipleAccountBuffers,
   sumOrcaLPs,
   getSolBalance,
+  getCoingeckoId,
+  sumTokensUnknown
 };

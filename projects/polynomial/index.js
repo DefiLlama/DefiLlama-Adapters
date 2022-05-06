@@ -3,7 +3,7 @@ const BigNumber = require('bignumber.js')
 const { getBlock } = require('../helper/getBlock')
 const abi = require('./abi.json')
 const chain = 'optimism'
-transform = t => `${chain}:${t}`
+const transform = t => `${chain}:${t}`
 
 // Polynomial contract addresses
 const polynomial_contracts = [

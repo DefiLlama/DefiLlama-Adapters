@@ -43,6 +43,26 @@ async function adaTvl(){
         const totalSell = totalAmountOtherToken * topPrice
         totalAda += totalBuy + totalSell
     }))
+    const orderbooksv2 = (await fetchURL("https://orderbookv2.muesliswap.com/all-orderbooks")).data
+    await Promise.all(orderbooksv2.map(async orders=>{
+        if(orders.fromToken !== "."){
+            throw new Error("Tokens paired against something other than ADA")
+        }
+        let totalBuy= 0;
+        orders.buy.forEach(o=>{
+            totalBuy += (o.totalLvl / 1e6)
+        })
+        if(orders.buy.length === 0 || orders.sell.length === 0){
+            return
+        }
+        const topPrice = (orders.buy[0].lvlPerToken / 1e6)
+        let totalAmountOtherToken = 0
+        orders.sell.forEach(o=>{
+            totalAmountOtherToken += o.amount
+        })
+        const totalSell = totalAmountOtherToken * topPrice
+        totalAda += totalBuy + totalSell
+    }))
     return {
         cardano: totalAda
     }
@@ -51,7 +71,7 @@ async function adaTvl(){
 module.exports={
     misrepresentedTokens: true,
     timetravel: false,
-    methodology: "Factory address (0x72cd8c0B5169Ff1f337E2b8F5b121f8510b52117) is used to find the LP pairs. TVL is equal to the liquidity on the AMM. For cardano we calculate the tokens on resting orders",
+    methodology: "The factory addresses are used to find the LP pairs on Smart BCH and Milkomeda. For Cardano we calculate the tokens on resting orders on the order book contracts. TVL is equal to the liquidity on the AMM plus the open orders in the order book",
     smartbch: {
         tvl:calculateUsdUniTvl("0x72cd8c0B5169Ff1f337E2b8F5b121f8510b52117", "smartbch", "0x3743eC0673453E5009310C727Ba4eaF7b3a1cc04", ["0xc8E09AEdB3c949a875e1FD571dC4b3E48FB221f0"], "bitcoin-cash")
     },

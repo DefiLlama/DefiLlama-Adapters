@@ -56,6 +56,7 @@ async function resolveLPPosition({ balances = {}, owner, lpToken, transformAddre
 }
 
 module.exports = {
+  RPC_ENDPOINT,
   getTokenBalances,
   addDexPosition,
   resolveLPPosition,

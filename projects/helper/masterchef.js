@@ -8,9 +8,9 @@ const getReservesAbi = require("./abis/getReserves.json");
 const userInfoAbi = require("./abis/userInfo.json");
 const { getBlock } = require('./getBlock');
 const { default: BigNumber } = require('bignumber.js');
-const { getChainTransform } = require('../helper/portedTokens');
+const { getChainTransform, getFixBalances } = require('../helper/portedTokens');
 
-async function getPoolInfo(masterChef, block, chain, poolInfoAbi) {
+async function getPoolInfo(masterChef, block, chain, poolInfoAbi = abi.poolInfo) {
     const poolLength = (
         await sdk.api.abi.call({
             abi: abi.poolLength,
@@ -231,8 +231,8 @@ function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingeck
             transformAddress
         )]);
 
-        if (!tokenIsOnCoingecko) {
-            const maxPool2ByToken = (await sdk.api.abi.multiCall({
+        if (!tokenIsOnCoingecko && pool2LpPositions.length) {
+            const response = (await sdk.api.abi.multiCall({
                 calls: pool2LpPositions.map(p => ({
                     target: stakingToken,
                     params: [p.token]
@@ -240,7 +240,8 @@ function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingeck
                 abi: "erc20:balanceOf",
                 block,
                 chain
-            })).output.reduce((max, curr) => {
+            })).output
+            const maxPool2ByToken = response.reduce((max, curr) => {
                 if (BigNumber(curr.output).gt(max.output)) {
                     return curr
                 }
@@ -274,6 +275,10 @@ function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingeck
             })
         }
 
+        if (chain === 'cronos') {
+            const fixBalances = await getFixBalances(chain)
+            Object.values(balances).map(fixBalances)
+        }
         balanceResolve(balances)
         return balances.tvl
     };
