@@ -23,6 +23,7 @@ const LUNA = "terra-luna";
 const NEWO = "0x98585dfc8d9e7d48f0b1ae47ce33332cf4237d96";
 const WAVAX = "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7";
 const JEWEL = "harmony:0x72cb10c6bfa5624dd07ef608027e366bd690048f";
+const SFI = "0xb753428af26e81097e7fd17f40c88aaa3e04902c";
 
 const DATA = {
   bsc: {
@@ -81,6 +82,7 @@ const DATA = {
     pool: "0x1116898DdA4015eD8dDefb84b6e8Bc24528Af2d8",
     tokens: [
       "0x0261018Aa50E28133C1aE7a29ebdf9Bd21b878Cb", // UST
+      "0xa8d7f5e7c78ed0fa097cc5ec66c1dc3104c9bbeb", // VSTA
     ],
   },
   polygon: {
@@ -129,6 +131,7 @@ const DATA = {
       "0x5ab7084cb9d270c2cb052dd30dbecbca42f8620c", // USDB
       "0x4bfc90322dd638f81f034517359bd447f8e0235a", // NEWO
       "0x997Ddaa07d716995DE90577C123Db411584E5E46", // synJEWEL
+      "0xc2bf0a1f7d8da50d608bc96cf701110d4a438312", // SFI
     ],
   },
   fantom: {
@@ -263,6 +266,7 @@ const DATA = {
     tokens: [
       "0xfb21b70922b9f6e3c6274bcd6cb1aa8a0fe20b80", // gOHM
       "0x0b5740c6b4a97f90eF2F0220651Cca420B868FfB", // UST
+      "0xe3c82a836ec85311a433fbd9486efaf4b1afbf48", // JUMP
     ],
   },
 };
@@ -271,6 +275,9 @@ const misrepresentedTokensMap = {
   ethereum: {
     // UST -> UST (ETH)
     "0x0261018Aa50E28133C1aE7a29ebdf9Bd21b878Cb": UST,
+    // VSTA -> VSTA (ARB)
+    "0xa8d7f5e7c78ed0fa097cc5ec66c1dc3104c9bbeb":
+      "arbitrum:0xa684cd057951541187f288294a1e1c2646aa2d24",
   },
   fantom: {
     // MIM -> MIM (ARB)
@@ -353,6 +360,8 @@ const misrepresentedTokensMap = {
     "0x4bfc90322dd638f81f034517359bd447f8e0235a": NEWO,
     // synJEWEL -> JEWEL (ONE)
     "0x997Ddaa07d716995DE90577C123Db411584E5E46": JEWEL,
+    // SFI -> SFI (ETH)
+    "0xc2bf0a1f7d8da50d608bc96cf701110d4a438312": SFI,
   },
   moonriver: {
     // synFRAX -> FRAX (ETH)
