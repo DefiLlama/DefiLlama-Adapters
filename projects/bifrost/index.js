@@ -105,5 +105,5 @@ async function tvl() {
 module.exports = {
   timetravel: false,
   methodology: "1.Liquidity Pools from Zenlink (only calculate the initiall Pool's liquidity). 2.Minted vTokens from other chains (only calculate the underlying asset value)",
-  kusuma: { tvl }
+  kusama: { tvl }
 };
