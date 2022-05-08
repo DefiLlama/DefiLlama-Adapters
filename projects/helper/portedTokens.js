@@ -491,6 +491,7 @@ async function transformFuseAddress() {
 async function transformEvmosAddress() {
   const mapping = {
     // '0x0000000000000000000000000000000000000000': '',  // EVMOS
+    // '0xD4949664cD82660AaE99bEdc034a0deA8A0bd517': '',  // WEVMOS
     '0x51e44FfaD5C2B122C8b635671FCC8139dc636E82': '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',  // madUSDC
     '0xe46910336479F254723710D57e7b683F3315b22B': '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',  // ceUSDC
     '0x63743ACF2c7cfee65A5E356A4C4A005b586fC7AA': '0x6B175474E89094C44Da98b954EedeAC495271d0F',  // DAI
@@ -502,8 +503,10 @@ async function transformEvmosAddress() {
     '0xE03494D0033687543a80c9B1ca7D6237F2EA8BD8': '0x853d955aCEf822Db058eb8505911ED77F175b99e',  // FRAX
   }
 
-  return transformChainAddress(mapping, 'evmos', { skipUnmapped: true, chainName: 'evmos' })
+  return transformChainAddress(mapping, 'evmos', { skipUnmapped: false, chainName: 'evmos' })
 }
+
+
 
 function fixAvaxBalances(balances) {
   for (const representation of [
@@ -894,6 +897,15 @@ const songbirdFixMapping = {
   '0x70Ad7172EF0b131A1428D0c1F66457EB041f2176': { coingeckoId: 'usd-coin', decimals: 18, },
 }
 
+const smartbchFixMapping = {
+  '0x3743ec0673453e5009310c727ba4eaf7b3a1cc04': { coingeckoId: 'bitcoin-cash', decimals: 18, },
+}
+
+const evmosFixMapping = {
+  '0x3F75ceabcdfed1aca03257dc6bdc0408e2b4b026': { coingeckoId: 'diffusion', decimals: 18, },
+  '0xd4949664cd82660aae99bedc034a0dea8a0bd517': { coingeckoId: 'evmos', decimals: 18, },
+}
+
 const energywebFixMapping = {
   '0x6b3bd0478DF0eC4984b168Db0E12A539Cc0c83cd': { coingeckoId: 'energy-web-token', decimals: 18, },
 }
@@ -935,6 +947,7 @@ async function getFixBalances(chain) {
 
 const fixBalancesMapping = {
   avax: fixAvaxBalances,
+  evmos: b => fixBalances(b, evmosFixMapping, { removeUnmapped: false }),
   astar: fixAstarBalances,
   shiden: fixShidenBalances,
   cronos: fixCronosBalances,
@@ -945,6 +958,7 @@ const fixBalancesMapping = {
   klaytn: fixKlaytnBalances,
   waves: fixWavesBalances,
   songbird: b => fixBalances(b, songbirdFixMapping, { removeUnmapped: true }),
+  smartbch: b => fixBalances(b, smartbchFixMapping, { removeUnmapped: true }),
   energyweb: b => fixBalances(b, energywebFixMapping, { removeUnmapped: true }),
   oasis: fixOasisBalances,
 }
