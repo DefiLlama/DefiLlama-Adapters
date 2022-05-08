@@ -6,9 +6,11 @@ const token1 = require('./abis/token1.json');
 const getReserves = require('./abis/getReserves.json');
 const { getChainTransform, stripTokenHeader, getFixBalances, } = require('./portedTokens')
 const { requery, } = require('./getUsdUniTvl')
+const { sumTokens, } = require('./unwrapLPs')
 const { isLP, parallelAbiCall } = require('./utils')
 const factoryAbi = require('./abis/factory.json');
 const { getBlock } = require('./getBlock');
+const { default: BigNumber } = require('bignumber.js');
 
 async function getTokenPrices({ block, chain = 'ethereum', coreAssets = [], blacklist = [], whitelist = [], lps = [], transformAddress, maxParallel, allLps = false }) {
   if (!transformAddress)
@@ -138,7 +140,7 @@ async function getTokenPrices({ block, chain = 'ethereum', coreAssets = [], blac
       }
       if (!price) return;
       const coreAsset = price[2];
-      sdk.util.sumSingleBalance(balances, transformAddress(coreAsset), price[1] * (amount ?? 0))
+      sdk.util.sumSingleBalance(balances, transformAddress(coreAsset), BigNumber(price[1] * (amount ?? 0)).toFixed())
       delete balances[address]
     })
 
@@ -194,7 +196,60 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
   }
 }
 
+function unknownTombs({ token, shares = [], rewardPool = [], masonry = [], lps, chain = "ethereum", coreAssets = [], }) {
+  let getPrices
+
+  if (!Array.isArray(shares) && typeof shares === 'string')
+    shares = [shares]
+  if (!Array.isArray(masonry) && typeof masonry === 'string')
+    masonry = [masonry]
+  if (!Array.isArray(rewardPool) && typeof rewardPool === 'string')
+    rewardPool = [rewardPool]
+
+  const pool2 = async (timestamp, _block, chainBlocks) => {
+    let balances = {};
+    const block = chainBlocks[chain]
+    if (!getPrices)
+      getPrices = getTokenPrices({ block, chain, lps, coreAssets, allLps: true })
+
+    const { updateBalances } = await getPrices
+
+    const tao = []
+    lps.forEach(token => rewardPool.forEach(owner => tao.push([token, owner])))
+
+    await sumTokens(balances, tao, block, chain, undefined, { resolveLP: true })
+    await updateBalances(balances)
+    return balances
+  }
+
+  const staking = async (timestamp, _block, chainBlocks) => {
+    let balances = {};
+    const block = chainBlocks[chain]
+    if (!getPrices)
+      getPrices = getTokenPrices({ block, chain, lps, coreAssets, allLps: true })
+
+    const { updateBalances } = await getPrices
+
+    const tao = []
+    shares.forEach(token => masonry.forEach(owner => tao.push([token, owner])))
+
+    await sumTokens(balances, tao, block, chain)
+    await updateBalances(balances)
+    return balances
+  }
+
+  return {
+    [chain === "avax" ? "avalanche" : chain]: {
+      tvl: async () => ({}),
+      staking,
+      pool2
+    }
+  }
+
+}
+
 module.exports = {
   getTokenPrices,
   getUniTVL,
+  unknownTombs,
 };
