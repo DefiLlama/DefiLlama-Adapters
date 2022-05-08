@@ -275,7 +275,7 @@ function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingeck
             })
         }
 
-        if (chain === 'cronos') {
+        if (['smartbch', 'cronos'].includes(chain)) {
             const fixBalances = await getFixBalances(chain)
             Object.values(balances).map(fixBalances)
         }
