@@ -1,53 +1,40 @@
-const sdk = require('@defillama/sdk');
-const { BigNumber, FixedNumber } = require("ethers");
+const { unwrapLPsAuto } = require("../helper/unwrapLPs");
+const { getChainTransform, getFixBalances } = require("../helper/portedTokens");
+const sdk = require('@defillama/sdk')
+const abi = require('../agora/abi.json');
+const { default: BigNumber } = require("bignumber.js");
 
-const {
-  getLpPrice,
-  getAmountLVtoLP,
-  UsdcWevmosVaultAddress,
-  DiffWevmosVaultAddress,
-  WethWevmosVaultAddress
-} = require('./helper');
+const vaults = [
+  '0xB10eb79B6A381F58f234CB90936E76Ae4a97A476',  // Diff LP DIFF/WEVMOS
+  '0x0f91bF3e5a3e4450Ad4f8Af09d03A35069A726D9',  // Diff LP USDC/WEVMOS
+  '0x7a2ff76ed75E7e105ECbBE9B11f3dF0Fa89bd369', // Diff LP WETH/WEVMOS
+]
 
-function toDecimal(bigNumber, decimals = 18) {
-  const fixedNumber = FixedNumber.fromBytes(bigNumber._hex, { width: 256, signed: true, decimals });
-  const fixedStr = fixedNumber.toString();
-  const [characteristic, originalMantissa = ""] = fixedStr.split(".");
-  let mantissa = originalMantissa;
-  mantissa = mantissa.replace(/0+$/, "");
-
-  return mantissa ? characteristic + "." + mantissa : characteristic;
-}
-
-const pools = [UsdcWevmosVaultAddress, DiffWevmosVaultAddress, WethWevmosVaultAddress];
-
-async function fetch(timestamp, block, chainBlocks) {
-  const balances = (await sdk.api.abi.multiCall({
-    abi: 'erc20:totalSupply',
-    chain: 'evmos',
-    calls: pools.map((target) => ({ target})),
-    block: chainBlocks['evmos'],
-  })).output;
-
-  const priceMap = await getLpPrice();
-
-  let totalValueLocked = BigNumber.from(0);
-
-  for (const balance of balances) {
-    const output = BigNumber.from(balance.output);
-    const target = balance.input.target;
-    const amountLVtoLP = await getAmountLVtoLP(target);
-    const dlpPrice = priceMap[target]
-    const vaultPrice = amountLVtoLP.mul(dlpPrice);
-    totalValueLocked = totalValueLocked.add(output.mul(vaultPrice));
-  }
-
-  return toDecimal(totalValueLocked, 18 * 3);
-}
+const chain = 'evmos'
 
 module.exports = {
-  evmos: {fetch},
-  fetch
-}
-// node test.js projects/earnmos/index.js
+  evmos: {
+    tvl: async (ts, _block, { evmos: block }) => {
+      const balances = {}
+      const transform = await getChainTransform(chain)
+      const calls = vaults.map(i => ({ target: i}))
+      let { output: sharePrice } = await sdk.api.abi.multiCall({ calls, abi: abi.getPricePerFullShare, calls, block, chain})
+      let { output: underlying } = await sdk.api.abi.multiCall({ calls, abi: abi.want, calls, block, chain})
+      let { output: totalSupply } = await sdk.api.abi.multiCall({ calls, abi: 'erc20:totalSupply', calls, block, chain})
 
+      const turnToMap = (agg, { input, output }) => ({ ...agg, [input.target]: output })
+      sharePrice = sharePrice.reduce(turnToMap, {})
+      underlying = underlying.reduce(turnToMap, {})
+      totalSupply = totalSupply.reduce(turnToMap, {})
+
+      Object.keys(sharePrice).forEach(key => {
+        const balance = BigNumber(sharePrice[key]).times(totalSupply[key]).div(10**18).toFixed(0)
+        sdk.util.sumSingleBalance(balances, transform(underlying[key]), balance)
+      })
+      await unwrapLPsAuto({ balances, block, chain })
+      const fixBalances = await getFixBalances(chain)
+      fixBalances(balances)
+      return balances
+    },
+  },
+};
