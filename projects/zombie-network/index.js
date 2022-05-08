@@ -50,7 +50,7 @@ const pool2 = async () => {
 
 module.exports = {
   klaytn: {
-    tvl: () => ({}),
+    tvl: pool2,
     pool2,
   },
 };
