@@ -1,7 +1,7 @@
 const { Connection, PublicKey } = require("@solana/web3.js");
 const BufferLayout = require("@solana/buffer-layout");
-const { TokenListProvider } = require("@solana/spl-token-registry");
 const { MintLayout, TOKEN_PROGRAM_ID } = require("@solana/spl-token");
+const { getTokenList } = require('../helper/solana')
 
 const SOLANA_API_URL = "https://solana-api.projectserum.com";
 const PENGUIN_SWAP_PROGRAM_ADDRESS =
@@ -33,9 +33,7 @@ const TokenSwapLayout = BufferLayout.struct([
 const connection = new Connection(SOLANA_API_URL);
 
 async function tvl(time, ethBlock, chainBlocks) {
-  const tokenList = await new TokenListProvider()
-    .resolve()
-    .then((tokens) => tokens.filterByClusterSlug("mainnet-beta").getList());
+  const tokenList = await getTokenList()
 
   // tokenList is giant, Map lookups are more performant than object lookups so use a Map
   const tokenMap = tokenList.reduce((map, token) => {
