@@ -13,7 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "@defillama/sdk": "^2.3.61",
-    "@polkadot/api": "^7.0.0",
+    "@polkadot/api": "^8.0.0",
     "@project-serum/anchor": "^0.18.2",
     "@solana/web3.js": "^1.36.0",
     "@supercharge/promise-pool": "^2.1.0",
