@@ -34,6 +34,8 @@ const YETI_TOKEN_ADDRESS = "0x77777777777d4554c39223C354A05825b2E8Faa3"
 
 const VEYETI_ADDRESS = "0x88888888847DF39Cf1dfe1a05c904b4E603C9416"
 
+const BOOSTED_FARM_ADDRESS = "0xD8A4AA01D54C8Fdd104EAC28B9C975f0663E75D8"
+
 /**
  * Get TVL of YETI FInance
  */
@@ -114,6 +116,15 @@ async function tvl(_, block) {
     })
   ).output
 
+  const boostedCurveFarmAmount = (
+    await sdk.api.abi.call({
+      target: BOOSTED_FARM_ADDRESS,
+      abi: farmPoolTotalSupplyAbi,
+      block,
+      chain: "avax"
+    })
+  ).output
+
   const YUSDCurvPrice = (
     await sdk.api.abi.call({
       target: YUSDCURVE_POOL_ADDRESS,
@@ -123,7 +134,7 @@ async function tvl(_, block) {
     })
   ).output
 
-  const farmTvl = +curveFarmAmount * +YUSDCurvPrice / (10 ** 18)
+  const farmTvl = (+curveFarmAmount + +boostedCurveFarmAmount) * +YUSDCurvPrice / (10 ** 18)
 
   const total =  systemCollateralTvl + farmTvl
 
@@ -230,6 +241,6 @@ module.exports = {
     tvl,
     pool2,
     staking,
-    borrowed
+    // borrowed
   },
 };
