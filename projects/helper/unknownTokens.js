@@ -140,7 +140,7 @@ async function getTokenPrices({ block, chain = 'ethereum', coreAssets = [], blac
       }
       if (!price) return;
       const coreAsset = price[2];
-      sdk.util.sumSingleBalance(balances, transformAddress(coreAsset), BigNumber(price[1] * (amount ?? 0)).toFixed())
+      sdk.util.sumSingleBalance(balances, transformAddress(coreAsset), BigNumber(price[1] * (amount ?? 0)).toFixed(0))
       delete balances[address]
     })
 
