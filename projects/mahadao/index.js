@@ -7,6 +7,6 @@ module.exports = {
   misrepresentedTokens: true,
   methodology: "Deposited collateral in loans used to mint ARTH",
   polygon,
-  bsc,
+  // bsc,
   ethereum,
 };
