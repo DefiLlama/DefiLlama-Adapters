@@ -20,8 +20,8 @@ async function ethereum(timestamp, block) {
 const chainToParams={
   bsc: ["RBNB", "binancecoin"],
   polygon: ["RMATIC", "matic-network"],
-  stafi: ["RDOT", "polkadot"],
-  stafi: ["RKSM", "kusama"],
+  polkadot: ["RDOT", "polkadot"],
+  kusama: ["RKSM", "kusama"],
   solana: ["RSOL", "solana"],
   cosmos: ["RATOM", "cosmos"],
 }
@@ -56,5 +56,19 @@ module.exports = {
     tvl: ethereum,
     staking:  getTvlFunction("RFIS", "stafi")
   },
-  ...chainExports(chainTvl, Object.keys(chainToParams))
+  bsc: {
+    tvl: chainTvl('bsc')
+  },
+  polygon: {
+    tvl: chainTvl('polygon')
+  },
+  cosmos: {
+    tvl: chainTvl('cosmos')
+  },
+  solana: {
+    tvl: chainTvl('solana')
+  },
+  stafi: {
+    tvl: sdk.util.sumChainTvls([chainTvl('polkadot'), chainTvl('kusama')])
+  }
 }
