@@ -14,6 +14,7 @@ module.exports = {
       bridge: {
         address: '0x2796317b0fF8538F253012862c06787Adfb8cEb6',
         tokens: [
+          '0x98585dfc8d9e7d48f0b1ae47ce33332cf4237d96',
           '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
           '0x0ab87046fBb341D058F17CBC4c1133F25a20a52f',
           '0x71ab77b7dbb4fa7e017bc15090b2163221420282',
