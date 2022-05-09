@@ -276,7 +276,7 @@ function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingeck
         return balances
     };
 
-    async function getTvlPromise(key) {
+    function getTvlPromise(key) {
         return async (ts, _block, chainBlocks) => {
             if (!balanceResolve)
                 balanceResolve = getTvl(ts, _block, chainBlocks)
