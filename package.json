@@ -29,7 +29,6 @@
     "graphql": "^15.5.0",
     "graphql-request": "^3.6.1",
     "moment": "^2.29.1",
-    "node-fetch": "2.6.7",
     "pact-lang-api": "^4.3.3",
     "secretjs": "^0.17.5",
     "tronweb": "^3.2.7",
@@ -47,7 +46,6 @@
     "mocha": {
       "nanoid": "3.3.1"
     },
-    "node-fetch": "2.6.7",
     "@project-serum/anchor": {
       "nth-check": "2.0.1"
     }
