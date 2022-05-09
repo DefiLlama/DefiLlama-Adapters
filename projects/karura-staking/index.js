@@ -26,4 +26,4 @@ module.exports = {
   kusuma: {
     tvl,
   },
-};
+}
