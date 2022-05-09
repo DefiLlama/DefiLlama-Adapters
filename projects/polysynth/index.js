@@ -1,9 +1,11 @@
 const sdk = require("@defillama/sdk");
 const {transformPolygonAddress} = require('../helper/portedTokens');
+const { staking } = require("../helper/staking");
 
 const insuranceFund = "0x809F76d983768846acCbD8F8C9BDc240dC39bf8B"
 const manager = "0xeC5ae95D4e9288a5C7c744F278709C56e9dC34eD"
 const usdcMatic = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"
+const stakingAddress = "0xb88cc657d93979495045e9f204cec2eed265ed42"
 
 async function tvl(_timestamp, ethBlock, chainBlocks) {
     const balances = {};
@@ -14,6 +16,9 @@ async function tvl(_timestamp, ethBlock, chainBlocks) {
         },{
             target: usdcMatic,
             params: manager
+        },{
+            target: usdcMatic,
+            params: stakingAddress
         }],
         block: chainBlocks.polygon,
         abi: "erc20:balanceOf",
@@ -22,12 +27,13 @@ async function tvl(_timestamp, ethBlock, chainBlocks) {
     const usdc = await (await transformPolygonAddress())(usdcMatic);
     sdk.util.sumSingleBalance(balances, usdc, underlyingBalances.output[0].output)
     sdk.util.sumSingleBalance(balances, usdc, underlyingBalances.output[1].output)
+    sdk.util.sumSingleBalance(balances, usdc, underlyingBalances.output[2].output)
 
     return balances
 }
 
 module.exports = {    
     polygon: {
-        tvl: tvl
+        tvl: tvl        
     }    
 }
