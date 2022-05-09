@@ -52,4 +52,19 @@ exports.abis = {
     outputs: [{ name: "", type: "uint256" }],
     type: "function",
   },
+
+  totalSupply: {
+    constant: true,
+    inputs: [],
+    name: "totalSupply",
+    outputs: [{ name: "totalSupply", type: "uint256" }],
+    type: "function",
+  },
+
+  getReserves: {
+    constant: true,
+    inputs: [],
+    name: "getReserves",
+    outputs: [{ name: "_reserve0", type: "uint112"}, { name: "_reserve1", type: "uint112"}, { name: "_blockTimestampLast", type: "uint32"} ]
+  }
 };

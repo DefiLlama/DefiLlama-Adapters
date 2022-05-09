@@ -4,63 +4,227 @@
  * @typedef {{ [address: string]: { price: string } }} TokenPrices
  * @typedef {{ [address: string]: { price: string, balance: string } }} TokenData
  */
-const BigNumber = require("bignumber.js");
-const web3 = require("../config/web3.js");
+const sdk = require("@defillama/sdk");
 
 const abis = require("./abis.js").abis;
 const registry = require("./registry.js").registry;
-
-const sdk = require("@defillama/sdk");
-const {
-  sumTokensAndLPsSharedOwners,
-  unwrapUniswapLPs,
-} = require("../helper/unwrapLPs");
-
+const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const utils = require("../helper/utils");
 
-// async function staking(timestamp, block) {
-//   const balances = {};
-//   // Protocol Credit Mining LPs
-//   await sumTokensAndLPsSharedOwners(
-//     balances,
-//     [
-//       [KPR_WETH_SUSHI_POOL, true],
-//       [KPR_LDO_SUSHI_POOL, true],
-//       [KPR_MM_SUSHI_POOL, true],
-//       [KPR_AMOR_SUSHI_POOL, true],
-//       [KP3R, false],
-//     ],
-//     [KP3R],
-//     block
-//   );
+// =================== UTILS ===================
 
-//   console.log('===================  staking ======================')
-//   console.log({balances})
+/**
+ * @param {number} usd
+ * @param {string} bn
+ * @returns {bigint}
+ */
+const multiplyUSDby1e18 = (usd, bn) =>
+  (BigInt(Math.round(usd * 100)) * BigInt(bn)) / BigInt(1e18) / 100n;
 
-//   return balances;
-// }
+/**
+ * @param {Balances} balances
+ * @param {TokenPrices} tokenPrices
+ * @returns {bigint}
+ */
+const getTVLFromBalancesAndTokenPrices = (balances, tokenPrices) => {
+  const ibTokenAddresses = Object.keys(tokenPrices).map((a) => a.toLowerCase());
 
-async function tvl(timestamp, block) {
+  const ibTokensData = ibTokenAddresses.reduce((acc, addr) => {
+    acc[addr].balance = balances[addr];
+    return acc;
+  }, /** @type {TokenData} */ (tokenPrices));
+
+  return Object.values(ibTokensData).reduce(
+    (acc, { price, balance }) =>
+      acc + (BigInt(price) * BigInt(balance)) / BigInt(1e36),
+    0n
+  );
+};
+
+// =================== TVL getters ===================
+
+/**
+ * WARNING: this method return prices with 1e18 base, those can't be used in `multiplyUSDby1e18` function
+ * @param {{ block }} options
+ * @returns {Promise<TokenPrices>} prices
+ */
+const getIbTokenPrices = async ({ block }) => {
+  const ibTokensAddresses = Object.values(registry.ibTokens);
+  const { output } = await sdk.api.abi.multiCall({
+    block: block,
+    calls: ibTokensAddresses.map((address) => ({
+      target: registry.FF_REGISTRY,
+      params: address,
+    })),
+    abi: abis.priceRegistry,
+  });
+
+  return output.reduce((acc, curr) => {
+    const address = curr.input.params[0].toLowerCase();
+
+    acc[address] = {
+      price: curr.output,
+    };
+
+    return acc;
+  }, {});
+};
+
+
+/**
+ * @param {{ balances: Balances, block: any }} options
+ * @return {Promise<BigInt>} ibTokensTVL
+ */
+const getIbTokensTVL = async ({ balances, block }) => {
+  const ibTokenPrices = await getIbTokenPrices({ block });
+
+  return getTVLFromBalancesAndTokenPrices(balances, ibTokenPrices);
+};
+
+/**
+ * @param {{ balances: Balances }} options
+ * @return {Promise<BigInt>} kp3rTVL
+ */
+const getKLPsTVL = async ({ balances }) => {
+  const WETH = registry.WETH.toLowerCase();
+  const KP3R = registry.KP3R.toLowerCase();
+  const klp = registry.Kp3rV2Klps.KP3R_WETH_1_PERCENT.toLowerCase();
+
+  const addresses = [KP3R, WETH];
+
+  const { data } = await utils.getPricesFromContract(addresses);
+
+  const kp3rPrice = data[KP3R].usd;
+  const wethPrice = data[WETH].usd;
+
+  const klpPrice = 2 * Math.sqrt(kp3rPrice / wethPrice) * wethPrice;
+
+  const klpTvl = multiplyUSDby1e18(klpPrice, balances[klp]);
+
+  return klpTvl;
+};
+
+/**
+ * @param {{ balances: Balances }} options
+ * @return {Promise<BigInt>} kp3rTVL
+ */
+const getOtherTokensTVL = async ({ balances }) => {
+  const addresses = [
+    registry.KP3R,
+    registry.WETH,
+    registry.CVX,
+    registry.DAI,
+    registry.SUSHI,
+    registry.CRV,
+    registry.CVXCRV,
+    registry.SPELL,
+    registry.ARMOR,
+    registry.HEGIC,
+    registry.LDO,
+    registry.MM,
+  ];
+
+  const { data } = await utils.getPricesFromContract(addresses);
+
+  const othersTvl = addresses.reduce((acc, curr) => {
+    const addr = curr.toLowerCase();
+    const price = data[addr].usd;
+    const balance = balances[addr];
+
+    acc += multiplyUSDby1e18(price, balance);
+    return acc;
+  }, 0n);
+
+  return othersTvl;
+};
+
+// =================== MAIN FUNCTIONS ===================
+
+/**
+ * @param {string} timestamp
+ * @param {any} block
+ * @return {Promise<BigInt>} TVL
+ */
+async function fetch(timestamp, block) {
+  const balances = /** @type {Balances} */ (await tvl(timestamp, block));
+
+  const IB_TOKENS_TVL = await getIbTokensTVL({ balances, block });
+  const KLPS_TVL = await getKLPsTVL({ balances });
+
+  const OTHER_TOKENS_TVL = await getOtherTokensTVL({ balances });
+
+  // @ts-ignore
+  const TVL = IB_TOKENS_TVL + OTHER_TOKENS_TVL + KLPS_TVL;
+
+  return TVL;
+}
+
+/**
+ * @param {string} timestamp
+ * @param {any} block
+ * @return {Promise<BigInt>} TVL
+ */
+async function staking(timestamp, block) {
+  const { KP3R, VKP3R } = registry;
   const balances = {};
 
-  // const { output: sushiToken } = await sdk.api.abi.call({
-  //   abi: abis.userInfo,
-  //   target: MASTERCHEF,
-  //   params: [58, YEARN_DEPLOYER],
-  //   block,
-  // });
+  await sumTokensAndLPsSharedOwners(balances, [[KP3R, false]], [VKP3R], block);
+  const kp3rBalance = balances[KP3R];
 
-  // await unwrapUniswapLPs(
-  //   balances,
-  //   [{ token: KPR_WETH_SUSHI_POOL, balance: sushiToken.amount }],
-  //   block
-  // );
+  const { data } = await utils.getPricesFromContract([KP3R]);
+  const kp3rPrice = data[KP3R].usd;
 
-  /** @todo: KP3R SUSHI NOT RETURNING RIGHT BALANCES I THINK */
+  const stakingTvl = multiplyUSDby1e18(kp3rPrice, kp3rBalance);
+
+  return stakingTvl;
+}
+
+/**
+ * @param {string} timestamp
+ * @param {any} block
+ * @return {Promise<BigInt>} TVL
+ */
+async function borrowed(timestamp, block) {
+  /** @type {Balances} */
+  const balances = {};
+
+  const cyTokens = Object.values(registry.cTokens);
+  const { output: borrowed } = await sdk.api.abi.multiCall({
+    block: block,
+    calls: cyTokens.map((coin) => ({
+      target: coin,
+    })),
+    abi: abis.totalBorrows,
+  });
+
+  const ib = Object.values(registry.ibTokens);
+  for (const idx in borrowed) {
+    sdk.util.sumSingleBalance(
+      balances,
+      ib[idx].toLowerCase(),
+      borrowed[idx].output
+    );
+  }
+
+  const ibTokenPrices = await getIbTokenPrices({ block });
+
+  const borrowedTvl = getTVLFromBalancesAndTokenPrices(balances, ibTokenPrices);
+
+  return borrowedTvl;
+}
+
+/**
+ * @param {string} timestamp
+ * @param {any} block
+ * @return {Promise<Balances>} balances
+ */
+async function tvl(timestamp, block) {
+  /** @type {Balances} */
+  const balances = {};
+
   await sumTokensAndLPsSharedOwners(
     balances,
     [
-      // [MIM, false],
       [registry.CVX, false],
       [registry.DAI, false],
       [registry.KP3R, false],
@@ -69,12 +233,6 @@ async function tvl(timestamp, block) {
       [registry.CVXCRV, false],
       [registry.SPELL, false],
       [registry.WETH, false],
-      // [SEUR, false],
-      // [SAUD, false],
-      // [SGBP, false],
-      // [SKRW, false],
-      // [SJPY, false],
-      // [SCHF, false],
     ].concat(
       [
         [registry.KPR_WETH_SUSHI_POOL, true],
@@ -96,164 +254,21 @@ async function tvl(timestamp, block) {
 
   await sumTokensAndLPsSharedOwners(
     balances,
-    Object.values(registry.Kp3rV1Slps).map((t) => [t, true]),
-    [registry.KP3R]
+    Object.values(registry.Kp3rV2Klps).map((t) => [t, false]),
+    [registry.KP3RV2],
+    block
   );
 
-  console.log(balances[registry.KP3R.toLowerCase()]);
-  console.log({ balances });
+  await sumTokensAndLPsSharedOwners(
+    balances,
+    Object.values(registry.Kp3rV1Slps).map((t) => [t, true]),
+    [registry.KP3R],
+    block
+  );
+
   return balances;
 }
 
-// async function borrowed(timestamp, block) {
-//   const balances = {};
-
-//   const cyTokens = Object.values(cTokens);
-//   const { output: borrowed } = await sdk.api.abi.multiCall({
-//     block: block,
-//     calls: cyTokens.map((coin) => ({
-//       target: coin,
-//     })),
-//     abi: abis.totalBorrows,
-//   });
-
-// const ib = Object.values(ibTokens);
-// for (const idx in borrowed) {
-//   sdk.util.sumSingleBalance(balances, ib[idx], borrowed[idx].output);
-// }
-
-//   console.log('=================== borroweds ======================')
-//   console.log({balances})
-
-//   return balances;
-// }
-
-const ffRegistryAddress = "0x5C08bC10F45468F18CbDC65454Cbd1dd2cB1Ac65";
-
-// const IB_TOKENS = [
-//   '0xFAFdF0C4c1CB09d430Bf88c75D88BB46DAe09967', // ibAUD
-//   '0x1CC481cE2BD2EC7Bf67d1Be64d4878b16078F309', // ibCHF
-//   '0x69681f8fde45345C3870BCD5eaf4A05a60E7D227', // ibGBP
-//   '0x5555f75e3d5278082200Fb451D1b6bA946D8e13b', // ibJPY
-//   '0x96E61422b6A9bA0e068B6c5ADd4fFaBC6a4aae27', // ibEUR
-//   '0x95dFDC8161832e4fF7816aC4B6367CE201538253', // ibKRW
-// ];
-
-/**
- * @param {{ block }} options
- * @returns {Promise<TokenPrices>} prices
- */
-const getIbTokenPrices = async ({ block }) => {
-  const ibTokensAddresses = Object.values(registry.ibTokens);
-  const { output } = await sdk.api.abi.multiCall({
-    block: block,
-    calls: ibTokensAddresses.map((address) => ({
-      target: ffRegistryAddress,
-      params: address,
-    })),
-    abi: abis.priceRegistry,
-  });
-
-  return output.reduce((acc, curr) => {
-    const address = curr.input.params[0].toLowerCase();
-
-    acc[address] = {
-      price: curr.output,
-    };
-
-    return acc;
-  }, {});
-};
-
-/**
- * @param {{ balances: Balances, block: any }} options
- * @return {Promise<BigInt>} ibTokensTVL
- */
-const getIbTokensTVL = async ({ balances, block }) => {
-  const ibTokenPrices = await getIbTokenPrices({ block });
-
-  const ibTokenAddresses = Object.keys(ibTokenPrices).map((a) =>
-    a.toLowerCase()
-  );
-
-  const ibTokensData = ibTokenAddresses.reduce((acc, addr) => {
-    acc[addr].balance = balances[addr];
-    return acc;
-  }, /** @type {TokenData} */ (ibTokenPrices));
-
-  return Object.values(ibTokensData).reduce(
-    (acc, { price, balance }) =>
-      acc + (BigInt(price) * BigInt(balance)) / BigInt(1e36),
-    0n
-  );
-};
-
-// /**
-//  * @param {{ balances: Balances }} options
-//  * @return {Promise<BigInt>} kp3rTVL
-//  */
-// const getKp3rTVL = async ({ balances }) => {
-//   const { data } = await utils.getPricesfromString("keep3rv1");
-//   const kp3rPrice = data.keep3rv1.usd;
-//   return (BigInt(Math.round(kp3rPrice * 100)) * BigInt(balances[KP3R.toLowerCase()])) / BigInt(1e18) / 100n;
-// }
-
-/**
- * @param {{ balances: Balances }} options
- * @return {Promise<BigInt>} kp3rTVL
- */
-const getOtherTokensTVL = async ({ balances }) => {
-  const addresses = [
-    registry.KP3R,
-    registry.WETH,
-    registry.CVX,
-    registry.DAI,
-    registry.SUSHI,
-    registry.CRV,
-    registry.CVXCRV,
-    registry.SPELL,
-  ];
-
-  const { data } = await utils.getPricesFromContract(addresses);
-
-  const TVL = addresses.reduce((acc, curr) => {
-    const addr = curr.toLowerCase();
-    const price = data[addr].usd;
-    const balance = balances[addr];
-
-    acc +=
-      (BigInt(Math.round(price * 100)) * BigInt(balance)) / BigInt(1e18) / 100n;
-    return acc;
-  }, 0n);
-
-  return TVL;
-};
-
-async function fetch(timestamp, block) {
-  const balances = /** @type {Balances} */ (await tvl(timestamp, block));
-
-  const IB_TOKENS_TVL = await getIbTokensTVL({ balances, block });
-
-  // const KP3R_TVL = await getKp3rTVL({ balances });
-
-  const OTHER_TOKENS_TVL = await getOtherTokensTVL({ balances });
-
-  console.log({ OTHER_TOKENS_TVL });
-
-  // @ts-ignore
-  const TVL = IB_TOKENS_TVL + OTHER_TOKENS_TVL;
-
-  console.log({ TVL });
-
-  return TVL;
-}
-
 module.exports = {
-  ethereum: {
-    fetch,
-    // tvl,
-    // staking,
-    // borrowed,
-  },
   fetch,
 };
