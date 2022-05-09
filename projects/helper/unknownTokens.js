@@ -126,7 +126,8 @@ async function getTokenPrices({ block, chain = 'ethereum', coreAssets = [], blac
       if (coreAssets.indexOf(currentCoreAmount) < coreAssets.indexOf(coreAsset)) return;
       if ((currentCoreAsset === coreAsset) && coreAmount < currentCoreAmount) return;
     }
-    prices[address] = [Number(coreAmount), Number(coreAmount) / Number(tokenAmount), coreAsset]
+    if (Number(tokenAmount) > 0)
+      prices[address] = [Number(coreAmount), Number(coreAmount) / Number(tokenAmount), coreAsset]
   }
 
   async function updateBalances(balances) {
