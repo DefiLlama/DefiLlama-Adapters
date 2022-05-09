@@ -33,6 +33,8 @@ const yearnVaults = {
   "0xb8c3b7a2a618c552c23b1e4701109a9e756bab67": "0x111111111117dc0aa78b770fa6a738034120c302",
   // yvDAI
   "0x19d3364a399d251e894ac732651be8b0e4e85001": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+  // yvDAI
+  "0xda816459f1ab5631232fe5e97a05bbbb94970c95": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
   // yvSNX
   "0xf29ae508698bdef169b89834f76704c3b205aedf": "0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F",
   // yvUNI
@@ -58,11 +60,16 @@ const yearnVaults = {
   // yvUSDC FTM
   "0xef0210eb96c7eb36af8ed1c20306462764935607": "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
   // yvWFTM FTM
-  "0x0dec85e74a92c52b7f708c4b10207d9560cefaf0": "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83"
+  "0x0dec85e74a92c52b7f708c4b10207d9560cefaf0": "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
+  // yvUSDT FTM
+  "0x148c05caf1bb09b5670f00d511718f733c54bc4c": "0x049d68029688eAbF473097a2fC38ef61633A3C7A"
 }
 async function unwrapYearn(balances, yToken, block, chain = "ethereum", transformAddress = (addr) => addr) {
   const underlying = yearnVaults[yToken.toLowerCase()];
   if (!underlying) return;
+
+  const tokenKey = chain == 'ethereum' ? yToken : `${chain}:${yToken}`
+  if (!balances[tokenKey]) return;
 
   let pricePerShare = await sdk.api.abi.call({
     target: yToken,
@@ -78,7 +85,7 @@ async function unwrapYearn(balances, yToken, block, chain = "ethereum", transfor
       chain: chain
     });
   };
-  const tokenKey = chain == 'ethereum' ? yToken : `${chain}:${yToken}`
+  
   const newBalance = BigNumber(balances[tokenKey]).times(pricePerShare.output).div(10 ** (await sdk.api.erc20.decimals(underlying, chain)).output)
   const oldBalance = BigNumber(balances[transformAddress(underlying)] || 0)
   balances[transformAddress(underlying)] = oldBalance.plus(newBalance).toFixed(0)

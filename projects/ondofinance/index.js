@@ -1,8 +1,8 @@
 const sdk = require('@defillama/sdk')
 const abi = require('./abi.json')
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs")
+const { get } = require("../helper/http")
 const { default: BigNumber } = require('bignumber.js')
-const fetch = require('node-fetch');
 
 const NEAR_TOKEN = "0x85f17cf997934a597031b2e18a9ab6ebd4b9f6a4"
 const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
@@ -26,8 +26,7 @@ async function addEthBalances(addresses, block, balances) {
 
 async function tvl(timestamp, block, chainBlocks) {
     const balances = {};
-    const info = await fetch("https://data.ondo.finance/v1/addresses")
-    const data = await info.json()
+    const data = await get("https://data.ondo.finance/v1/addresses")
     partner_tokens = data["supported_tokens"]
     ondo_multisigs = data["ondo_multisigs"]
     ondo_lps = data["ondo_lps"]
@@ -55,8 +54,7 @@ async function tvl(timestamp, block, chainBlocks) {
 }
 
 async function tvlForAllPairs(timestamp, block, chainBlocks) {
-    const info = await fetch("https://data.ondo.finance/v1/addresses")
-    const data = await info.json()
+    const data = await get("https://data.ondo.finance/v1/addresses")
     ondoAllPairVaults = data["ondo_all_pair_vaults"]
     let vaults = await Promise.all(ondoAllPairVaults.map( async (allPairVault) => {
         const vaults = (await sdk.api.abi.call({

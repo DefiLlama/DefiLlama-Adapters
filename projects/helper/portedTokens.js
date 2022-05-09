@@ -324,6 +324,9 @@ async function transformHarmonyAddress() {
   const mapping = {
     '0x6983D1E6DEf3690C4d616b13597A09e6193EA013': '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
     '0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a': 'harmony:0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a',
+    '0x72cb10c6bfa5624dd07ef608027e366bd690048f': 'harmony:0x72cb10c6bfa5624dd07ef608027e366bd690048f',
+    '0xa9ce83507d872c5e1273e745abcfda849daa654f': 'harmony:0xa9ce83507d872c5e1273e745abcfda849daa654f',
+    "0xb12c13e66ade1f72f71834f2fc5082db8c091358": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", //avax
     '0x224e64ec1bdce3870a6a6c777edd450454068fec': '0xa47c8bf37f92abed4a126bda807a7b7498661acd',
     '0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c': '0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c',
     '0xd754ae7bb55feb0c4ba6bc037b4a140f14ebe018': '0x19e6bfc1a6e4b042fb20531244d47e252445df01',
@@ -374,6 +377,10 @@ async function transformOptimismAddress() {
     }
     // OETH -> WETH
     if (compareAddresses(addr, "0x0000000000000000000000000000000000000000")) {
+      return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+    }
+    // synapse WETH -> WETH
+    if (compareAddresses(addr, "0x121ab82b49B2BC4c7901CA46B8277962b4350204")) {
       return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
     }
     // FEI
@@ -484,16 +491,22 @@ async function transformFuseAddress() {
 async function transformEvmosAddress() {
   const mapping = {
     // '0x0000000000000000000000000000000000000000': '',  // EVMOS
-    '0x51e44FfaD5C2B122C8b635671FCC8139dc636E82': '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',  // USDC
+    // '0xD4949664cD82660AaE99bEdc034a0deA8A0bd517': '',  // WEVMOS
+    '0x51e44FfaD5C2B122C8b635671FCC8139dc636E82': '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',  // madUSDC
+    '0xe46910336479F254723710D57e7b683F3315b22B': '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',  // ceUSDC
     '0x63743ACF2c7cfee65A5E356A4C4A005b586fC7AA': '0x6B175474E89094C44Da98b954EedeAC495271d0F',  // DAI
-    '0x7FF4a56B32ee13D7D4D405887E0eA37d61Ed919e': '0xdAC17F958D2ee523a2206206994597C13D831ec7',  // USDT
+    '0x7FF4a56B32ee13D7D4D405887E0eA37d61Ed919e': '0xdAC17F958D2ee523a2206206994597C13D831ec7',  // madUSDT
+    '0xb72A7567847abA28A2819B855D7fE679D4f59846': '0xdAC17F958D2ee523a2206206994597C13D831ec7',  // ceUSDT
     '0x5842C5532b61aCF3227679a8b1BD0242a41752f2': '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',  // WETH
     '0xF80699Dc594e00aE7bA200c7533a07C1604A106D': '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',  // WBTC
-    '0x28eC4B29657959F4A5052B41079fe32919Ec3Bd3': '0x853d955aCEf822Db058eb8505911ED77F175b99e',  // FRAX
+    '0x28eC4B29657959F4A5052B41079fe32919Ec3Bd3': '0x853d955aCEf822Db058eb8505911ED77F175b99e',  // madFRAX
+    '0xE03494D0033687543a80c9B1ca7D6237F2EA8BD8': '0x853d955aCEf822Db058eb8505911ED77F175b99e',  // FRAX
   }
 
-  return transformChainAddress(mapping, 'evmos', { skipUnmapped: true, chainName: 'evmos' })
+  return transformChainAddress(mapping, 'evmos', { skipUnmapped: false, chainName: 'evmos' })
 }
+
+
 
 function fixAvaxBalances(balances) {
   for (const representation of [
@@ -522,6 +535,11 @@ function fixHarmonyBalances(balances) {
       delete balances[representation];
     }
   }
+  const xJewel = 'harmony:0xa9ce83507d872c5e1273e745abcfda849daa654f'
+  if (balances[xJewel]) {
+    sdk.util.sumSingleBalance(balances, 'xjewel', Number(balances[xJewel]) / 1e18)
+    delete balances[xJewel]
+  }
 }
 
 function transformOasisAddressBase(addr) {
@@ -542,7 +560,12 @@ function transformOasisAddressBase(addr) {
 async function transformOasisAddress() {
   return transformOasisAddressBase
 }
-
+function fixBscBalances(balances) {
+  if (balances['bsc:0x8b04E56A8cd5f4D465b784ccf564899F30Aaf88C']) {
+    sdk.util.sumSingleBalance(balances, 'anchorust', 
+      Number(balances['bsc:0x8b04E56A8cd5f4D465b784ccf564899F30Aaf88C']) / 10 ** 6)
+  }
+}
 function fixOasisBalances(balances) {
   ['oasis-network', 'wrapped-rose'].forEach(key => {
     if (balances[key])
@@ -638,6 +661,7 @@ function transformMetisAddress() {
 function transformBobaAddress() {
   const map = {
     "0x0000000000000000000000000000000000000000": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // WETH
+    "0xd203De32170130082896b4111eDF825a4774c18E": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // synapse wETH
     "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // WETH
     "0x66a2a913e447d6b4bf33efbec43aaef87890fbbc": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USDC
     "0x5de1677344d3cb0d7d465c10b72a8f60699c062d": "0xdac17f958d2ee523a2206206994597c13d831ec7", // USDT
@@ -873,6 +897,15 @@ const songbirdFixMapping = {
   '0x70Ad7172EF0b131A1428D0c1F66457EB041f2176': { coingeckoId: 'usd-coin', decimals: 18, },
 }
 
+const smartbchFixMapping = {
+  '0x3743ec0673453e5009310c727ba4eaf7b3a1cc04': { coingeckoId: 'bitcoin-cash', decimals: 18, },
+}
+
+const evmosFixMapping = {
+  '0x3F75ceabcdfed1aca03257dc6bdc0408e2b4b026': { coingeckoId: 'diffusion', decimals: 18, },
+  '0xd4949664cd82660aae99bedc034a0dea8a0bd517': { coingeckoId: 'evmos', decimals: 18, },
+}
+
 const energywebFixMapping = {
   '0x6b3bd0478DF0eC4984b168Db0E12A539Cc0c83cd': { coingeckoId: 'energy-web-token', decimals: 18, },
 }
@@ -914,6 +947,7 @@ async function getFixBalances(chain) {
 
 const fixBalancesMapping = {
   avax: fixAvaxBalances,
+  evmos: b => fixBalances(b, evmosFixMapping, { removeUnmapped: false }),
   astar: fixAstarBalances,
   shiden: fixShidenBalances,
   cronos: fixCronosBalances,
@@ -924,6 +958,7 @@ const fixBalancesMapping = {
   klaytn: fixKlaytnBalances,
   waves: fixWavesBalances,
   songbird: b => fixBalances(b, songbirdFixMapping, { removeUnmapped: true }),
+  smartbch: b => fixBalances(b, smartbchFixMapping, { removeUnmapped: true }),
   energyweb: b => fixBalances(b, energywebFixMapping, { removeUnmapped: true }),
   oasis: fixOasisBalances,
 }
@@ -1042,6 +1077,7 @@ module.exports = {
   transformKccAddress,
   transformArbitrumAddress,
   fixHarmonyBalances,
+  fixBscBalances,
   fixOasisBalances,
   transformIotexAddress,
   transformMetisAddress,
