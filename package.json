@@ -15,6 +15,8 @@
     "@defillama/sdk": "^2.3.61",
     "@polkadot/api": "^8.0.0",
     "@project-serum/anchor": "^0.18.2",
+    "@solana/spl-token": "^0.2.0",
+    "@solana/spl-token-registry": "^0.2.7",
     "@solana/web3.js": "^1.36.0",
     "@supercharge/promise-pool": "^2.1.0",
     "algosdk": "^1.12.0",
@@ -30,7 +32,7 @@
     "graphql-request": "^3.6.1",
     "moment": "^2.29.1",
     "pact-lang-api": "^4.3.3",
-    "secretjs": "^0.17.5",
+    "secretjs": "^0.11.0",
     "tronweb": "^3.2.7",
     "underscore": "^1.13.1",
     "web3": "^1.5.3"
