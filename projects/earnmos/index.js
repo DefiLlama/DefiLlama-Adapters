@@ -20,9 +20,9 @@ module.exports = {
       const vaults = res?.data?.vaults;
 
       const calls = vaults.map(i => ({ target: i}))
-      let { output: sharePrice } = await sdk.api.abi.multiCall({ calls, abi: abi.getPricePerFullShare, calls, block, chain})
-      let { output: underlying } = await sdk.api.abi.multiCall({ calls, abi: abi.want, calls, block, chain})
-      let { output: totalSupply } = await sdk.api.abi.multiCall({ calls, abi: 'erc20:totalSupply', calls, block, chain})
+      let { output: sharePrice } = await sdk.api.abi.multiCall({ abi: abi.getPricePerFullShare, calls, block, chain})
+      let { output: underlying } = await sdk.api.abi.multiCall({ abi: abi.want, calls, block, chain})
+      let { output: totalSupply } = await sdk.api.abi.multiCall({ abi: 'erc20:totalSupply', calls, block, chain})
 
       const turnToMap = (agg, { input, output }) => ({ ...agg, [input.target]: output })
       sharePrice = sharePrice.reduce(turnToMap, {})
