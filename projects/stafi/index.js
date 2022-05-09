@@ -20,8 +20,8 @@ async function ethereum(timestamp, block) {
 const chainToParams={
   bsc: ["RBNB", "binancecoin"],
   polygon: ["RMATIC", "matic-network"],
-  polkadot: ["RDOT", "polkadot"],
-  kusama: ["RKSM", "kusama"],
+  stafi: ["RDOT", "polkadot"],
+  stafi: ["RKSM", "kusama"],
   solana: ["RSOL", "solana"],
   cosmos: ["RATOM", "cosmos"],
 }
