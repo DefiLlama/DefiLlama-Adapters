@@ -155,11 +155,18 @@ async function transformAvaxAddress() {
 }
 
 async function transformBscAddress() {
-  const binanceBridge = (
-    await utils.fetchURL(
-      "https://api.binance.org/bridge/api/v2/tokens?walletNetwork="
-    )
-  ).data.data.tokens;
+  let binanceBridge = []
+
+  try {
+    binanceBridge = (
+      await utils.fetchURL(
+        "https://api.binance.org/bridge/api/v2/tokens?walletNetwork="
+      )
+    ).data.data.tokens;
+  } catch (e) {
+    console.log(e.message)
+    console.log('failed to fetch binance bridge tokens')
+  }
 
   const mapping = {
     '0x0000000000000000000000000000000000000000': 'bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // BNB -> WBNB
@@ -340,7 +347,7 @@ async function transformHarmonyAddress() {
 
   return (addr) => {
     addr = addr.toLowerCase()
-    if (mapping[addr])  return mapping[addr]
+    if (mapping[addr]) return mapping[addr]
     const srcToken = bridge.find((token) =>
       compareAddresses(addr, token.hrc20Address)
     );
@@ -442,7 +449,7 @@ async function transformMoonbeamAddress() {
     //    return "moonbeam";
     // }
     if (compareAddresses(addr, "0x0000000000000000000000000000000000000000")) { //GLMR -> WGLMR
-       return "moonbeam:0xacc15dc74880c9944775448304b263d191c6077f";
+      return "moonbeam:0xacc15dc74880c9944775448304b263d191c6077f";
     }
     return `moonbeam:${addr}`; //`optimism:${addr}` // TODO: Fix
   };
@@ -562,7 +569,7 @@ async function transformOasisAddress() {
 }
 function fixBscBalances(balances) {
   if (balances['bsc:0x8b04E56A8cd5f4D465b784ccf564899F30Aaf88C']) {
-    sdk.util.sumSingleBalance(balances, 'anchorust', 
+    sdk.util.sumSingleBalance(balances, 'anchorust',
       Number(balances['bsc:0x8b04E56A8cd5f4D465b784ccf564899F30Aaf88C']) / 10 ** 6)
   }
 }
@@ -1037,7 +1044,7 @@ async function transformFindoraAddress() {
   return transformChainAddress(mapping, 'findora')
 }
 
-function transformChainAddress(mapping, chain, { skipUnmapped =  false, chainName = '' } =  {}) {
+function transformChainAddress(mapping, chain, { skipUnmapped = false, chainName = '' } = {}) {
   normalizeMapping(mapping)
 
   return (addr) => {

@@ -7,7 +7,9 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
   const block = chainBlocks["bsc"];
   let balances = {};
   const { pools } = await get(poolsURL)
-  const tokensAndOwners = pools.map(pool => [TOTM, pool.poolCreatedEvent.Pool])
+  const tokensAndOwners = pools
+    .filter(pool => pool.poolCreatedEvent)
+    .map(pool => [TOTM, pool.poolCreatedEvent.Pool])
   await sumTokens(balances, tokensAndOwners, block, 'bsc')
   return balances
 }
