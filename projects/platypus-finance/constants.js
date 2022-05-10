@@ -15,6 +15,9 @@ const USD2_USDC_MIM_LP = "0x4E5704991b43C1D33b9Ccd1BC33B211bf068385A";
 const USD2_UST_LP = "0xc7388D98Fa86B6639d71A0A6d410D5cDfc63A1d0";
 const USD2_FRAX_LP = "0x6FD4b4c38ED80727EcD0d58505565F9e422c965f";
 const USD2_MIM_LP = "0xF01cEA00598d87Cb9792a01B040d04b0bd8Ca781";
+// YUSD - USDC
+const USD2_USDC_YUSD_LP = "0x4b851118a4A4948799f24d0CBE17FA3dad09e2D5";
+const USD2_YUSD_LP = "0x7716307350c0819eD05C3e7f6c478b27CAED5361";
 // sAVAX - WAVAX
 const WAVAX_LP = "0xC73eeD4494382093C6a7C284426A9a00f6C79939";
 const SAVAX_LP = "0xA2A7EE49750Ff12bb60b407da2531dB3c50A1789";
@@ -31,6 +34,7 @@ const UST = "0xb599c3590F42f8F995ECfa0f85D2980B76862fc1";
 const FRAX = "0xD24C2Ad096400B6FBcd2ad8B24E7acBc21A1da64";
 const WAVAX = "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7";
 const SAVAX = "0x2b2C81e08f1Af8835a78Bb2A90AE924ACE0eA4bE";
+const YUSD = "0x111111111111ed1D73f860F57b2798b683f2d325";
 
 module.exports = {
   DAI: {
@@ -52,6 +56,7 @@ module.exports = {
           USD2_USDC_FRAX_LP,
           USD2_USDC_UST_LP,
           USD2_USDC_MIM_LP,
+          USD2_USDC_YUSD_LP,
         ],
       },
     ],
@@ -120,6 +125,15 @@ module.exports = {
       {
         token: SAVAX,
         lpTokens: [SAVAX_LP],
+      },
+    ],
+  },
+  YUSD: {
+    id: "yusd-stablecoin",
+    addresses: [
+      {
+        token: YUSD,
+        lpTokens: [USD2_YUSD_LP],
       },
     ],
   },
