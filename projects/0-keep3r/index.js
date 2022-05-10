@@ -176,7 +176,8 @@ async function staking(timestamp, block) {
 
   const stakingTvl = multiplyUSDby1e18(kp3rPrice, kp3rBalance);
 
-  return stakingTvl;
+  // @dev should return stakingTvl
+  return balances;
 }
 
 /**
@@ -210,7 +211,8 @@ async function borrowed(timestamp, block) {
 
   const borrowedTvl = getTVLFromBalancesAndTokenPrices(balances, ibTokenPrices);
 
-  return borrowedTvl;
+  // @dev should return borrowedTvl
+  return balances;
 }
 
 /**
@@ -270,5 +272,10 @@ async function tvl(timestamp, block) {
 }
 
 module.exports = {
+  misrepresentedTokens: true,
+  ethereum: {
+    staking,
+    borrowed
+  },
   fetch,
 };
