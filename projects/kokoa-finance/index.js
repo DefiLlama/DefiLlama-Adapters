@@ -1,10 +1,12 @@
 const ABI = require("./Helper.json");
+const DKSD = require("./DKSD.json");
 const Caver = require("caver-js");
 const { toUSDTBalances } = require("../helper/balances");
 const BigNumber = require("bignumber.js");
 
-const KOKOA_EP_URL = "https://public-node-api.klaytnapi.com/v1/cypress";
-const HELPER_ADDR = "0x2b170005ADA0e616E78A7fa93ea4473c03A98aa0";
+const KOKOA_EP_URL = `https://public-node-api.klaytnapi.com/v1/cypress`;
+const HELPER_ADDR = `0x2b170005ADA0e616E78A7fa93ea4473c03A98aa0`;
+const DKSD_ADDR = `0x5e6215DFB33b1Fb71E48000A47Ed2eBb86d5Bf3d`;
 
 const KLAYSWAP_POOLS =[
   {
@@ -36,7 +38,7 @@ const KOKONUT_POOLS =[
   }
 ]
 
-const fetchCollateral = async () => {
+const fetchCollateralandDepositedKSD = async () => {
   //calculate TVL sum of all collaterals locked in the protocol vaults
   const caver = new Caver(KOKOA_EP_URL);
   const sc = new caver.contract(ABI.abi, HELPER_ADDR);
@@ -48,6 +50,9 @@ const fetchCollateral = async () => {
     sum = sum.plus(assetTvl);
   }
   sum = sum.dividedBy(BigNumber(10).pow(decimal*2))
+  const dksd = new caver.contract(DKSD.abi, DKSD_ADDR);
+  const dksdBalance = BigNumber(await dksd.methods.totalSupply().call());
+  sum = sum.plus(dksdBalance.dividedBy(BigNumber(10).pow(decimal*2)));
   return toUSDTBalances(sum.toFixed(2));
 }
 
@@ -83,7 +88,7 @@ module.exports = {
   timetravel: false,
   klaytn:{
     staking:fetchStakedToken,
-    tvl:fetchCollateral,
+    tvl:fetchCollateralandDepositedKSD,
     pool2:fetchPool2
   },
   methodology:
