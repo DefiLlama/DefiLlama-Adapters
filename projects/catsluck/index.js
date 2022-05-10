@@ -61,7 +61,7 @@ const poolInfoAbi = {
   }
 
 
-const staking = async (timestamp, ethBlock, chainBlocks) => {
+const tvl = async (timestamp, ethBlock, chainBlocks) => {
     const block = await getBlock(timestamp, CHAIN, chainBlocks, false)
 
     const totals = await Promise.all(stakingPools.map(async (pool) => {
@@ -81,9 +81,8 @@ const staking = async (timestamp, ethBlock, chainBlocks) => {
 
 module.exports = {
     misrepresentedTokens: true,
-    methodology: "Total value of tokens staked in prediction pools is counted towards staking metric.",
+    methodology: "Total value of non-native tokens staked in prediction pools is counted towards tvl metric.",
     smartbch: {
-        tvl: () => ({}),
-        staking: staking,
+        tvl: tvl,
     },
 }
