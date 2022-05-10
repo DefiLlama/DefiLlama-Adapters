@@ -2,7 +2,6 @@ const { get, } = require("../helper/http")
 const config = require("./config");
 const { sumTokens, unwrapUniswapLPs, } = require("../helper/unwrapLPs");
 const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
 
 const { getChainTransform, } = require("../helper/portedTokens");
 
