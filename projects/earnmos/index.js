@@ -1,14 +1,11 @@
-const { unwrapLPsAuto } = require("../helper/unwrapLPs");
-const { getChainTransform, getFixBalances } = require("../helper/portedTokens");
 const sdk = require('@defillama/sdk')
-const abi = require('../agora/abi.json');
 const { default: BigNumber } = require("bignumber.js");
 
-const vaults = [
-  '0xB10eb79B6A381F58f234CB90936E76Ae4a97A476',  // Diff LP DIFF/WEVMOS
-  '0x0f91bF3e5a3e4450Ad4f8Af09d03A35069A726D9',  // Diff LP USDC/WEVMOS
-  '0x7a2ff76ed75E7e105ECbBE9B11f3dF0Fa89bd369', // Diff LP WETH/WEVMOS
-]
+const { getChainTransform, getFixBalances } = require("../helper/portedTokens");
+const { unwrapLPsAuto } = require("../helper/unwrapLPs");
+const { fetchURL } = require("../helper/utils");
+
+const abi = require('../agora/abi.json');
 
 const chain = 'evmos'
 
@@ -17,10 +14,15 @@ module.exports = {
     tvl: async (ts, _block, { evmos: block }) => {
       const balances = {}
       const transform = await getChainTransform(chain)
+
+      const res = await fetchURL("http://app.earnmos.fi/api/defi-config.json");
+
+      const vaults = res?.data?.vaults;
+
       const calls = vaults.map(i => ({ target: i}))
-      let { output: sharePrice } = await sdk.api.abi.multiCall({ calls, abi: abi.getPricePerFullShare, calls, block, chain})
-      let { output: underlying } = await sdk.api.abi.multiCall({ calls, abi: abi.want, calls, block, chain})
-      let { output: totalSupply } = await sdk.api.abi.multiCall({ calls, abi: 'erc20:totalSupply', calls, block, chain})
+      let { output: sharePrice } = await sdk.api.abi.multiCall({ abi: abi.getPricePerFullShare, calls, block, chain})
+      let { output: underlying } = await sdk.api.abi.multiCall({ abi: abi.want, calls, block, chain})
+      let { output: totalSupply } = await sdk.api.abi.multiCall({ abi: 'erc20:totalSupply', calls, block, chain})
 
       const turnToMap = (agg, { input, output }) => ({ ...agg, [input.target]: output })
       sharePrice = sharePrice.reduce(turnToMap, {})

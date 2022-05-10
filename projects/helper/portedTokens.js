@@ -897,6 +897,10 @@ const songbirdFixMapping = {
   '0x70Ad7172EF0b131A1428D0c1F66457EB041f2176': { coingeckoId: 'usd-coin', decimals: 18, },
 }
 
+const smartbchFixMapping = {
+  '0x3743ec0673453e5009310c727ba4eaf7b3a1cc04': { coingeckoId: 'bitcoin-cash', decimals: 18, },
+}
+
 const evmosFixMapping = {
   '0x3F75ceabcdfed1aca03257dc6bdc0408e2b4b026': { coingeckoId: 'diffusion', decimals: 18, },
   '0xd4949664cd82660aae99bedc034a0dea8a0bd517': { coingeckoId: 'evmos', decimals: 18, },
@@ -954,6 +958,7 @@ const fixBalancesMapping = {
   klaytn: fixKlaytnBalances,
   waves: fixWavesBalances,
   songbird: b => fixBalances(b, songbirdFixMapping, { removeUnmapped: true }),
+  smartbch: b => fixBalances(b, smartbchFixMapping, { removeUnmapped: true }),
   energyweb: b => fixBalances(b, energywebFixMapping, { removeUnmapped: true }),
   oasis: fixOasisBalances,
 }
