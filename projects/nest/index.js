@@ -13,7 +13,8 @@ function staking(chain) {
                     params: h
                 })),
                 block: chainBlocks[chain],
-                abi: 'erc20:balanceOf'
+                abi: 'erc20:balanceOf',
+                chain
             })).output.map(b => b.output)
                 .reduce((a, b) => Number(a) + Number(b), 0)
         };
