@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk')
-const {getTokenBalance, getTrxBalance, unverifiedCall} = require('../helper/tron')
+const {getTokenBalance, getTrxBalance, unverifiedCall} = require('../helper/tron');
 
 const pool3 = "TKcEU8ekq2ZoFzLSGFYCUY6aocJBX9X31b"
 const stablecoins = [

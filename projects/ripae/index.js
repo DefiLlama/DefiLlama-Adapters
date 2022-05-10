@@ -22,6 +22,17 @@ const chains = [
             "0x1179E6AF2794fA9d39316951e868772F96230375",
             "0x6139361Ccd4f40abF3d5D22AA3b72A195010F9AB"
         ]
+    },
+    {
+        chain: "bsc",
+        token: "0xA2315cC5A1e4aE3D0a491ED4Fe45EBF8356fEaC7",
+        share: "0x6c7fc3Fd4a9f1Cfa2a69B83F92b9DA7EC26240A2",
+        rewardPool: "0x18A5aefA5a6B20FeEeF0a3AabF876c813b04dB3d",
+        masonry: "0x9Fb5Ee9D3ACebCCa39F69d6A2aa60fd8eAfA88B6",
+        pool2: [
+            "0xC7DC9343C90Be0Ea2af6776EFe5e19B2734F8D0d",
+            "0x8eA4875469e8Fd7ad3790b4c7DEeF768ca1e806f"
+        ]
     }
 ];
 

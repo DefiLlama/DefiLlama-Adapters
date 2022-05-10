@@ -21,7 +21,7 @@ const SIENNA_TOKEN_ADDRESS = "secret1rgm2m5t530tdzyd99775n6vzumxa5luxcllml4";
 const LEND_OVERSEER_CONTRACT = "secret1pf88n9hm64mn58aw48jxfs2fsvzr07svnrrdlv";
 
 const SECRET_NODE_URL = "https://bridgeapi.azure-api.net/node10";
-const queryClient = new CosmWasmClient(SECRET_NODE_URL);
+const queryClient = new CosmWasmClient(SECRET_NODE_URL)
 
 const CACHED_TOKENS = {};
 

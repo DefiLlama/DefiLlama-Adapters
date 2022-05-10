@@ -6,7 +6,6 @@ const farmPoolTotalSupplyAbi = require("./farmPoolTotalSupply.abi.json")
 const curve_get_virtual_priceAbi = require("./curve_get_virtual_price.abi.json")
 const getPriceAbi = require("./getPrice.abi.json");
 const getReservesAbi = require("./getReserves.json")
-const { token } = require("@project-serum/anchor/dist/cjs/utils");
 
 const YUSD_TOKEN_ADDRESS = "0x111111111111ed1D73f860F57b2798b683f2d325";
 const YUSD_PRICEFEED_ADDRESS = "0x38C67a46304b9ad4A0A210A65a640213505bd1Dc";

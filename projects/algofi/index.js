@@ -1,7 +1,7 @@
 const algosdk = require("algosdk")
 const sdk = require('@defillama/sdk')
 const { toUSDTBalances } = require('../helper/balances')
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+const { get } = require('../helper/http')
 const retry = require("async-retry");
 const axios = require("axios");
 
@@ -234,10 +234,9 @@ async function staking() {
         lpCirculations[contractName] = contractState[marketStrings.lp_circulation] / 1000000
     }
 
-    let poolSnapshotsResponse = await fetch("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_pool_snapshots/?network=MAINNET")
-    let assetSnapshotsResponse = await fetch("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_asset_snapshots/?network=MAINNET")
+    let poolSnapshots = await get("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_pool_snapshots/?network=MAINNET")
+    let assetSnapshots = await get("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_asset_snapshots/?network=MAINNET")
 
-    let poolSnapshots = await poolSnapshotsResponse.json()
     for (const poolSnapshot of poolSnapshots.pool_snapshots) {
         for (const contractName of variableValueStakingContracts) {
             if (poolSnapshot.id == assetDictionary['STAKING_CONTRACTS'][contractName]["poolAppId"]) {
@@ -246,7 +245,6 @@ async function staking() {
         }
     }
 
-    let assetSnapshots = await assetSnapshotsResponse.json()
     for (const assetSnapshot of assetSnapshots.asset_snapshots) {
         for (const contractName of singleSideStakingContracts) {
             if (assetSnapshot.id == assetDictionary['STAKING_CONTRACTS'][contractName]["assetId"]) {

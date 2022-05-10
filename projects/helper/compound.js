@@ -3,7 +3,7 @@ const sdk = require('@defillama/sdk');
 const abi = require('./abis/compound.json');
 const { getBlock } = require('./getBlock');
 const { unwrapUniswapLPs } = require('./unwrapLPs');
-const { fixHarmonyBalances, fixOasisBalances, transformMetisAddress, } = require('./portedTokens');
+const { fixHarmonyBalances, fixOasisBalances, transformMetisAddress, fixBscBalances} = require('./portedTokens');
 const { usdtAddress } = require('./balances');
 const agoraAbi = require("./../agora/abi.json");
 // ask comptroller for all markets array
@@ -129,6 +129,8 @@ function getCompoundV2Tvl(comptroller, chain = "ethereum", transformAdress = add
             fixHarmonyBalances(balances);
         } else if (chain == "oasis") {
             fixOasisBalances(balances);
+        } else if (chain == "bsc") {
+            fixBscBalances(balances);
         }
         if (comptroller == "0x92DcecEaF4c0fDA373899FEea00032E8E8Da58Da") {
             await unwrapPuffTokens(balances, lpPositions, block)
