@@ -23,7 +23,7 @@ async function xdai(_timestamp, ethBlock, chainBlocks) {
         abi: "erc20:balanceOf",
         chain: 'xdai'
     });
-    const usdc = await (await transformXdaiAddress())(usdcXdai);
+    const usdc = (await transformXdaiAddress())(usdcXdai);
     sdk.util.sumSingleBalance(balances, usdc, underlyingBalances.output[0].output)
     sdk.util.sumSingleBalance(balances, usdc, underlyingBalances.output[1].output)
 

@@ -183,7 +183,7 @@ async function tvl() {
         const price = pMint ? pMint.price : 0;
         if (mint) {
           let decimal = mint.data.decimals;
-          let amount = accInfo.info.amount.toNumber();
+          let amount = +accInfo.info.amount.toString();
           assetAmounts[key] += getAmountWithDecimal(amount, decimal) * price;
         }
       }

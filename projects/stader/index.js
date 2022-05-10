@@ -19,7 +19,7 @@ module.exports = {
   terra: {
     tvl,
   },
-  hbar: {
+  hedera: {
     tvl: hbarTvl,
   },
 }

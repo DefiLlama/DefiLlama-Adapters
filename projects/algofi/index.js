@@ -1,7 +1,7 @@
 const algosdk = require("algosdk")
 const sdk = require('@defillama/sdk')
 const { toUSDTBalances } = require('../helper/balances')
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+const { get } = require('../helper/http')
 const retry = require("async-retry");
 const axios = require("axios");
 
@@ -19,7 +19,7 @@ const fixedValueStakingContracts = ["TINYMAN11_STBL_USDC_LP_STAKING", "ALGOFI-ST
 const singleSideStakingContracts = ["DEFLY", "STBL", "OPUL"]
 const variableValueStakingContracts = ["ALGOFI-STBL-ALGO-LP", "AF-XET-STBL-75BP-STAKING", "AF-GOBTC-STBL-25BP-STAKING", "AF-GOETH-STBL-25BP-STAKING", "AF-OPUL-STBL-75BP-STAKING",
                                         "AF-DEFLY-STBL-75BP-STAKING", "AF-NANO-USDC-STBL-5BP-STAKING", "AF-NANO-USDT-STBL-5BP-STAKING", "AF-NANO-USDT-USDC-5BP-STAKING",
-                                        "AF-ZONE-STBL-75BP-STAKING", "AF-TINY-STBL-75BP-STAKING" ]
+                                        "AF-USDC-STBL-NANO-SUPER-STAKING", "AF-ZONE-STBL-75BP-STAKING", "AF-TINY-STBL-75BP-STAKING" ]
 const stakingContracts = fixedValueStakingContracts.concat(variableValueStakingContracts).concat(singleSideStakingContracts)
 
 const assetDictionary = {
@@ -64,6 +64,11 @@ const assetDictionary = {
             "decimals": 6,
             "assetId": 465865291,
             "marketAppId": 482608867,
+        },
+        "AF-USDC-STBL-NANO-SUPER-STAKING" : {
+            "decimals": 6,
+            "marketAppId" : 705657303,
+            "poolAppId": 658337046,
         },
         "TINYMAN11_STBL_USDC_LP_STAKING" : {
             "decimals": 6,
@@ -229,10 +234,9 @@ async function staking() {
         lpCirculations[contractName] = contractState[marketStrings.lp_circulation] / 1000000
     }
 
-    let poolSnapshotsResponse = await fetch("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_pool_snapshots/?network=MAINNET")
-    let assetSnapshotsResponse = await fetch("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_asset_snapshots/?network=MAINNET")
+    let poolSnapshots = await get("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_pool_snapshots/?network=MAINNET")
+    let assetSnapshots = await get("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_asset_snapshots/?network=MAINNET")
 
-    let poolSnapshots = await poolSnapshotsResponse.json()
     for (const poolSnapshot of poolSnapshots.pool_snapshots) {
         for (const contractName of variableValueStakingContracts) {
             if (poolSnapshot.id == assetDictionary['STAKING_CONTRACTS'][contractName]["poolAppId"]) {
@@ -241,7 +245,6 @@ async function staking() {
         }
     }
 
-    let assetSnapshots = await assetSnapshotsResponse.json()
     for (const assetSnapshot of assetSnapshots.asset_snapshots) {
         for (const contractName of singleSideStakingContracts) {
             if (assetSnapshot.id == assetDictionary['STAKING_CONTRACTS'][contractName]["assetId"]) {
@@ -266,7 +269,7 @@ async function dex() {
           async (bail) =>
             await axios.get("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_protocol_snapshot/?network=MAINNET")
         )
-      ).data.protocol_snapshot.tvl.total_usd
+      ).data.protocol_snapshot.tvl.total_usd;
     return toUSDTBalances(response)
 }
 module.exports = {

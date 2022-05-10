@@ -12,6 +12,7 @@ async function tvl(timestamp) {
 };
 
 module.exports = {
+  timetravel: false,
   waves: {
     tvl,
   }

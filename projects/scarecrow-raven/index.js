@@ -61,5 +61,7 @@ async function chainTvl(timestamp, block, chainBlocks) {
 
 module.exports = {
   methodology: "TVL includes all farms in MasterChef contract",
-  tvl: sdk.util.sumChainTvls([chainTvl]),
+  fantom: {
+    tvl: sdk.util.sumChainTvls([chainTvl]),
+  }
 };

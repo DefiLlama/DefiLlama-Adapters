@@ -1,5 +1,6 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
+const terminal = require("./terminal");
 const {
   kncAddr,
   xaaveaAddr,
@@ -31,6 +32,8 @@ const {
   inchAddr,
   usdcAddr,
   aaveAddr,
+  usdtAddress,
+  xtkAddress
 } = require("./constants");
 const xu3lps = [
   xu3lpaAddr,
@@ -177,12 +180,62 @@ async function tvl(timestamp, block) {
       xsnxaSusdRaw
   );
 
+  let terminalMainnetTvl = await fetchMainnet();
+  sdk.util.sumSingleBalance(
+      balances,
+      usdtAddress,
+      terminalMainnetTvl
+  );
+
   return balances;
 };
 
+async function fetchMainnet() {
+  let poolTotalTVL = await terminal.getData("mainnet");
+  return poolTotalTVL[usdtAddress];
+}
+
+async function fetchOptimism() {
+  return await terminal.getData("optimism");
+}
+
+async function fetchArbitrum() {
+  return await terminal.getData("arbitrum");
+}
+
+async function fetchPolygon() {
+  return await terminal.getData("polygon");
+}
+
+async function fetchMainnetPool2() {
+  let pool2TotalTVL = await terminal.getTokenData("mainnet", xtkAddress);
+  return pool2TotalTVL;
+}
+
+async function pool2() {
+  let balance = {};
+  let terminalXTKTvl = await fetchMainnetPool2();
+  sdk.util.sumSingleBalance(
+      balance,
+      usdtAddress,
+      terminalXTKTvl ? terminalXTKTvl[usdtAddress] : 0
+  );
+  return balance;
+}
+
 module.exports = {
   ethereum:{
-    tvl
+    tvl,
+    pool2
   },
-  methodology: `TVL includes deposits made to the available strategies at xToken Markets.`,
+  arbitrum: {
+    tvl: fetchArbitrum,
+  },
+  optimism: {
+    tvl: fetchOptimism,
+  },
+  polygon: {
+    tvl: fetchPolygon,
+  },
+  methodology: `TVL includes deposits made to xToken Terminal and xToken Market.`,
 };
