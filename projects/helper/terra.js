@@ -41,7 +41,7 @@ async function getBalance(token, owner, block) {
 async function getDenomBalance(denom, owner, block) {
     let endpoint = `${process.env["TERRA_RPC"] ?? "https://lcd.terra.dev"}/bank/balances/${owner}`
     if (block !== undefined) {
-        endpoint += `&height=${block - (block % 100)}`
+        endpoint += `?height=${block - (block % 100)}`
     }
     const data = (await axios.get(endpoint)).data.result
 
