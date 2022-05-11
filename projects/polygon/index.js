@@ -27,7 +27,10 @@ async function tvl(_, block) {
 
         if (resp.status == 200 && resp.data.status == 1) {
 
-            posTokens.push(...resp.data.tokens.map(v => {
+            posTokens.push(...resp.data.tokens.filter(
+                // this token had no supply and was breaking the adapter
+                t => t.rootToken != '0xf042075ad88af3c5b9fbfbfcd9d4deace0b8543e'
+                ).map(v => {
 
                 return {
                     target: v.rootToken,
@@ -89,5 +92,7 @@ async function tvl(_, block) {
 
 module.exports = {
     start: 1590824836, // Sat May 30 13:17:16 2020
-    tvl
+    polygon: {
+        tvl
+    }
 }

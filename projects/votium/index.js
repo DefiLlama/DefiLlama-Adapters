@@ -30,6 +30,5 @@ module.exports = {
   ethereum: {
     tvl: ethTvl,
   },
-  tvl: sdk.util.sumChainTvls([ethTvl]),
   methodology: "Counts tvl of Tokens used for Delegating on Convex Snapshot through MultiMerkleStash Contract",
 };

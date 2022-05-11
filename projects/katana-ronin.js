@@ -9,13 +9,14 @@ const token_lookup_table = { // needed to add 0x in front
   '0x97a9107c1793bc407d6f527b77e7fff4d812bece': '0xbb0e17ef65f82ab018d8edd776e8dd940327b28b', // axs
   '0xa8754b9fa15fc18bb59458815510e40a12cd2014': '0xcc8fa225d80b9c7d42f96e9570156c65d6caaa25', // slp
   '0x0b7007c13325c48911f73a2dad5fa5dcbf808adc': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // usdc
+  '0xe514d9deb7966c8be0ca922de8a064264ea6bcd4': 'ronin'
 }
 // Don't count staking twice
 // const axs_weth_LP_staking = '487671acdea3745b6dac3ae8d1757b44a04bfe8a' 
 // const slp_weth_LP_staking = 'd4640c26c1a31cd632d8ae1a96fe5ac135d1eb52'
 
 // Get pairs using the graph 
-const graphUrl = 'https://thegraph.roninchain.com/subgraphs/name/axieinfinity/katana-subgraph-green'
+const graphUrl = 'https://thegraph.roninchain.com/subgraphs/name/axieinfinity/katana-subgraph-blue'
 
 const pairsQuery = gql`
 query pairs($block: Int, $skip: Int!) {
@@ -97,12 +98,15 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
   // const transform = addr => tokens.find(t => t.id == addr).symbol
   const transform = addr => token_lookup_table[addr.toLowerCase()]
 
-  const balances = {};
+  let balances = {};
   tokens.forEach(token=>{
     sdk.util.sumSingleBalance(balances, transform(token.id), BigNumber(token.totalLiquidity).times(10**token.decimals).toFixed(0))
   })
   if (balances[undefined]) {
     throw ('One balance is undefined, probably because the ronin-to-mainnet mapping is not defined for some tokens')
+  }
+  if (balances['ronin']) {
+    balances['ronin'] /= 10 ** 18
   }
   return balances
 }

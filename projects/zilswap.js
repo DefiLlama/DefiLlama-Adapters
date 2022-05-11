@@ -9,7 +9,7 @@ module.exports = {
   fetch,
   methodology: `ZilSwap TVL is achieved by making a call to its API: https://api.zilstream.com/stats.`,
   misrepresentedTokens: true,
-  doublecounting: false,
-  timeTravel: false,
+  doublecounted: false,
+  timetravel: false,
   incentivized: true,
 }

@@ -57,9 +57,6 @@ async function tvl(timestamp, block) {
   
 
 module.exports = {
-  name: 'Force DAO',
-  token: '-',
-  category: 'Yield',
   start: 0, // WRONG!
   tvl
 }

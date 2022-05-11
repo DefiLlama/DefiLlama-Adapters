@@ -159,5 +159,18 @@
 	],
 	"stateMutability": "pure",
 	"type": "function"
+  },
+  "getCurrentExchangeRate": {
+	"inputs": [],
+	"name": "getCurrentExchangeRate",
+	"outputs": [
+	  {
+		"internalType": "uint256",
+		"name": "_exchangeRate",
+		"type": "uint256"
+	  }
+	],
+	"stateMutability": "view",
+	"type": "function"
   }
 }

@@ -50,9 +50,6 @@ async function fetch() {
 
 module.exports = {
   methodology: `${lendingMarket}. Defibox TVL is achieved by making a call to its API: https://dapp.defibox.io/api/.`,
-  name: 'Defibox',
-  token: 'BOX',
-  category: 'dexes',
   eos: {
     fetch: eos
   },

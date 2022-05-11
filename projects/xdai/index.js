@@ -74,5 +74,4 @@ module.exports = {
   },
   */
   start: 1539028166,
-  tvl: sdk.util.sumChainTvls([eth])
 };

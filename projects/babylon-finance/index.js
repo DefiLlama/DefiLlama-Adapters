@@ -29,8 +29,9 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
         chain: 'ethereum' 
     })
 
+    const gardensToIgnore = ["0xB0EE8C61c78aA9B7ED138bcC6bce7ABeC8470038"]
     for (const gardenDetails of gardensDetails.output) {
-        if (gardenDetails.output === null) continue;
+        if (gardensToIgnore.includes(gardenDetails.input.params[0])) {continue;};
         const [gardenName, symbol, creators, reserveAsset, arr1, strategies, finalizedStrategies, voteParams, capitalArr, profits] = gardenDetails.output
         // const garden_principal = capitalArr[0]
         const garden_idle = capitalArr[9]

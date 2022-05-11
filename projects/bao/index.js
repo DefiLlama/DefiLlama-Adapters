@@ -120,5 +120,4 @@ module.exports = {
     xdai: {
         tvl: chainTvl('xdai')
     },
-    tvl: sdk.util.sumChainTvls(['xdai','ethereum'].map(chainTvl))
 }

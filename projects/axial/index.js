@@ -50,12 +50,13 @@ async function getAxialJLPBalance(_timestamp, _ethereumBlock, chainBlocks) {
   return balances;
 }
 
-async function getAxialPools() {
+async function getAxialPools(block) {
   let vaults = [];
   const poolLength = (await sdk.api.abi.call({
     target: AXIAL_MASTERCHEF_V3,
     abi: abi.poolLength,
-    chain: 'avax'
+    chain: 'avax',
+    block
   })).output;
   await sdk.api.abi.multiCall({
     calls: [...Array(Number(poolLength)).keys()].map(num => ({
@@ -63,14 +64,16 @@ async function getAxialPools() {
       params: num
     })),
     chain: 'avax',
-    abi: abi.poolInfo
+    abi: abi.poolInfo,
+    block
   }).then(async pools => {
     await sdk.api.abi.multiCall({
       calls: pools.output.map(pool => ({
         target: pool.output.lpToken
       })),
       chain: 'avax',
-      abi: abi.owner
+      abi: abi.owner,
+      block
     }).then(owners => {
       vaults = owners.output.filter(e => e.output).map(e => e.output);
     });
@@ -81,7 +84,7 @@ async function getAxialPools() {
 async function tvl(_timestamp, _ethereumBlock, chainBlocks) {
   const balances = {};
   const block = chainBlocks['avax'];
-  const vaults = await getAxialPools();
+  const vaults = await getAxialPools(chainBlocks.avax);
 
   await getAxialVaultBalances(balances, vaults, block);
   return balances;

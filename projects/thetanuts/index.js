@@ -9,13 +9,15 @@ const wbtcPutVault = '0xDCaA803Cd23cfb988DA3794B46aEDBE968ecE17a'
 const lunaPutVault = '0x49d8cde90cefdd4f8568f7d895e686fdb76b146e'
 const algoPutVault = '0xC2DD9C7F526C7465D14bbBb25991DaB35f8Ea2B4'
 const algoCallVault = '0xb8b5A6E1F300b023e9CdCa31AA94B0D66badd982'
+const bitPutVault = '0x4Ca3e8bD2F471415b9131E35bdcEC0819a4E7a83'
+const bitCallVault = '0x9F639524db6DfD57613895b0abb49A53c11B3f0e'
 
 // Avalanche Vaults
 const avaxCallVault = '0x35e26F12a212b3a7eec8Dd215B8705Ed1AF4f39E'
 const avaxPutVault = '0xe088455661dac18164cebcf3d9acd93f5c7b4062'
 
 // Fantom Vaults
-const ftmCallVault = '0x156D422436F4441dDE6ac0aB41ff58C9258C438B'
+const ftmCallVault = '0xB265B013000970909Ac06427fCA58ac34f8B1843'
 const ftmPutVault = '0x47831E1ff871f6D79CFb72956f5Aca65ec244733'
 
 //BSC Vaults
@@ -25,6 +27,7 @@ const bchPutVault = '0x87798b3844a1b8cc8a29472466a76c9875a269de'
 const bchCallVault = '0x05e9373842977024b3531c31bf91e163ad42477f'
 const wbnbPutVault = '0xb29bc98657bd9ee0d663781dad778be3076c48fe'
 const wbnbCallVault = '0xcd69b95d35e640621813ca097eb1798e7b6a4c44'
+const wooSynVault = '0x91FDBdB3E031F0Ac57aCe6F393b247192A7265b4'
 
 //Polygon Vaults
 const wMaticCallVault = '0x156d422436f4441dde6ac0ab41ff58c9258c438b'
@@ -46,6 +49,7 @@ const wbtc = '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599'
 const ust = '0xa693b19d2931d498c5b318df961919bb4aee87a5'
 const tUSDC = '0x9f238fae3d1f1982716f136836fc2c0d1c2928ab'
 const tAlgo = '0x0354762a3c01730d07d2f7098365d64dc81b565d'
+const bit = '0x1a4b46696b2bb4794eb3d4c26f1c55f9170fa4c5'
 
 // Avalanche Assets
 const wavax = '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7'
@@ -60,6 +64,7 @@ const busd = '0xe9e7cea3dedca5984780bafc599bd69add087d56'
 const ada = '0x3ee2200efb3400fabb9aacf31297cbdd1d435d47'
 const bch = '0x8ff795a6f4d97e7887c79bea79aba5cc76444adf'
 const wbnb = '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
+const woo = '0x4691937a7508860F876c9c0a2a617E7d9E945D4B'
 
 // Polygon Assets
 const wmatic = '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270'
@@ -120,6 +125,8 @@ async function ethTvl(timestamp, block) {
         addVault(balances, lunaPutVault, ust, block, 'ethereum'),
         addVault(balances, algoPutVault, tUSDC, block, 'ethereum'),
         addVault(balances, algoCallVault, tAlgo, block, 'ethereum'),
+        addVault(balances, bitPutVault, usdc, block, 'ethereum'),
+        addVault(balances, bitCallVault, bit, block, 'ethereum'),
     ])
     return balances
 }
@@ -139,7 +146,6 @@ async function ftmTvl(timestamp, ethblocks, chainBlocks) {
     await Promise.all([
         addVault(balances, ftmCallVault, wftm, chainBlocks["fantom"], 'fantom'),
         addVault(balances, ftmPutVault, fusdc, chainBlocks["fantom"], 'fantom'),
-        addVault(balances, "0xB265B013000970909Ac06427fCA58ac34f8B1843", "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83", chainBlocks["fantom"], 'fantom'),
     ])
     return balances
 }
@@ -153,6 +159,8 @@ async function bscTvl(timestamp, ethblocks, chainBlocks) {
         addVault(balances, bchCallVault, bch, chainBlocks["bsc"], 'bsc'),
         addVault(balances, wbnbPutVault, busd, chainBlocks["bsc"], 'bsc'),
         addVault(balances, wbnbCallVault, wbnb, chainBlocks["bsc"], 'bsc'),
+        addVault(balances, wooSynVault, woo, chainBlocks["bsc"], 'bsc'),
+        addVault(balances, wooSynVault, busd, chainBlocks["bsc"], 'bsc'),
     ])
     return balances
 }

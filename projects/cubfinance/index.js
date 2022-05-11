@@ -25,6 +25,7 @@ async function tvl(timestamp, ethBlock,chainBlocks) {
         target: cubFarmAddress,
         abi: abi['poolLength'],
         chain:'bsc',
+		block: chainBlocks.bsc
       })).output;
 
       const lps = []
@@ -34,7 +35,8 @@ async function tvl(timestamp, ethBlock,chainBlocks) {
 	            target: cubFarmAddress,
 	            abi: abi['poolInfo'],
 	            chain:'bsc',
-	            params:i
+	            params:i,
+				block: chainBlocks.bsc
 	          })).output;
 	
 	        const strategyAddress = poolInfo['lpToken'];
@@ -44,7 +46,8 @@ async function tvl(timestamp, ethBlock,chainBlocks) {
 	            target: strategyAddress,
 	            params: cubFarmAddress,
 				abi: abi['balanceOf'],
-	            chain:'bsc'
+	            chain:'bsc',
+				block: chainBlocks.bsc
 	          })).output;
 	        	
 	       
@@ -61,6 +64,7 @@ async function tvl(timestamp, ethBlock,chainBlocks) {
         target: cubKingdomFarmAddress,
         abi: abi_kingdom['poolLength'],
         chain:'bsc',
+		block: chainBlocks.bsc
       })).output;
 
       
@@ -71,7 +75,8 @@ async function tvl(timestamp, ethBlock,chainBlocks) {
 	            target: cubKingdomFarmAddress,
 	            abi: abi_kingdom['poolInfo'],
 	            chain:'bsc',
-	            params:i
+	            params:i,
+				block: chainBlocks.bsc
 	          })).output;
 	
 	        const strategyAddressKingdom = poolInfoKingdom['strat'];
@@ -82,7 +87,8 @@ async function tvl(timestamp, ethBlock,chainBlocks) {
 	        const poolTVLKingdom = (await sdk.api.abi.call({
 	            target: strategyAddressKingdom,
 	            abi: abi_kingdom['wantLockedTotal'],
-	            chain:'bsc'
+	            chain:'bsc',
+				block: chainBlocks.bsc
 	          })).output;
 	        if(wantSymbol.output.endsWith('LP')){
 	          lps.push({
@@ -105,5 +111,4 @@ module.exports = {
 	bsc:{
 		tvl,
 	},
-	tvl,
 }

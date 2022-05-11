@@ -2,8 +2,8 @@ const {getBlock} = require('../helper/getBlock')
 const sdk = require('@defillama/sdk')
 const solana = require('../helper/solana')
 const terra = require('../helper/terra')
-const { staking } = require("../helper/staking");
-
+const { staking } = require('../helper/staking');
+const near = require('../helper/near');
 const NATIVE_ADDRESS = "NATIVE";
 
 const data = {
@@ -142,6 +142,22 @@ const data = {
             abrAddress: "0x2BAe00C8BC1868a5F7a216E881Bae9e662630111",
             decimals: 18
         },
+    },
+    harmony: {
+        tokens: [],
+        staking: {
+            contractAddress: "0x788BA01f8E2b87c08B142DB46F82094e0bdCad4F",
+            abrAddress: "0xf80eD129002B0eE58C6d2E63D0D7Dc9Fc9f3383C",
+            decimals: 18
+        },
+    },
+    fuse: {
+        tokens: [],
+        staking: {
+            contractAddress: "0x788BA01f8E2b87c08B142DB46F82094e0bdCad4F",
+            abrAddress: "0xa21AaB22A0bAF9fff3392B0aFc5115b955664FD4",
+            decimals: 18
+        },
     }
 }
 
@@ -169,6 +185,17 @@ const terraData = {
     tokens: [
         {name: "terrausd", address: "uusd", decimals: 6},
         {name: "terra-luna", address: "uluna", decimals: 6},
+    ]
+}
+
+const nearData = {
+    contractAddress: "bridge.a11bd.near",
+    staking: {
+        contractAddress: "staking.a11bd.near",
+        decimals: 24
+    },
+    tokens: [
+        {name: "near", address: "wrap.near", decimals: 24},
     ]
 }
 
@@ -231,6 +258,21 @@ async function terraStaking() {
     return { allbridge: toNumber(terraData.staking.decimals, balance) }
 }
 
+async function nearTvl() {
+    const balances = {}
+    for (const token of nearData.tokens) {
+        const balance = await near.getTokenBalance(token.address, nearData.contractAddress);
+        sdk.util.sumSingleBalance(balances, token.name, toNumber(token.decimals, balance));
+    }
+    return balances
+}
+
+async function nearStaking() {
+    const balance = await near.call(nearData.staking.contractAddress, "get_abr_balance");
+    return { allbridge: toNumber(nearData.staking.decimals, balance) }
+}
+
+
 
 module.exports={
     methodology: "All tokens locked in Allbridge contracts.",
@@ -266,6 +308,14 @@ module.exports={
         tvl: getTVLFunction('aurora'),
         staking: getStakingFunction('aurora'),
     },
+    harmony: {
+        tvl: getTVLFunction('harmony'),
+        staking: getStakingFunction('harmony'),
+    },
+    fuse: {
+        tvl: getTVLFunction('fuse'),
+        staking: getStakingFunction('fuse'),
+    },
     solana: {
         tvl: solanaTvl,
         staking: solanaStaking
@@ -273,5 +323,9 @@ module.exports={
     terra: {
         tvl: terraTvl,
         staking: terraStaking
+    },
+    near: {
+        tvl: nearTvl,
+        staking: nearStaking
     }
 }

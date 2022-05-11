@@ -7,7 +7,7 @@ const {
   } = require("../helper/masterchef");
   const sdk = require("@defillama/sdk");
   const { default: BigNumber } = require("bignumber.js");
-  const { handleYearnTokens } = require("../creditum/index.js");
+  const { handleYearnTokens } = require("../creditum/helper.js");
   const { getBlock } = require("../helper/getBlock");
   const { transformFantomAddress } = require("../helper/portedTokens");
   const { unwrapUniswapLPs } = require("../helper/unwrapLPs");

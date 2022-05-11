@@ -60,6 +60,5 @@ module.exports = {
     ethereum:{
         tvl: tvl,
     },
-    tvl,
     methodology: "counts the value of each stablecoin, and interest-bearing anchor-stable, in the TransparentUpgradeableProxy contracts.",
 };

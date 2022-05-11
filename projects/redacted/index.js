@@ -10,6 +10,16 @@ async function tvl(time, block){
         ["0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b", false],
         //(1) CRV
         ["0xD533a949740bb3306d119CC777fa900bA034cd52", false],
+        //(1) TOKE
+        ["0x2e9d63788249371f1dfc918a52f8d799f4a38c94", false],
+        //(1) FXS
+        ["0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0", false],
+        //(1) wLUNA (Wormhole)
+        ["0xbd31ea8212119f94a611fa969881cba3ea06fa3d", false],
+        //(1) wUST (Wormhole)
+        ["0xa693b19d2931d498c5b318df961919bb4aee87a5", false],
+        //(1) FPIS
+        ["0xc2544a32872a91f4a553b404c6950e89de901fdb", false],
         //(1) Sushi LP
         ["0xe9ab8038ee6dd4fcc7612997fe28d4e22019c4b4", true],
         //(2) OHM 

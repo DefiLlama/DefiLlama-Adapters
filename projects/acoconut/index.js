@@ -69,5 +69,4 @@ module.exports = {
     tvl: bsc
   },
   start: 1600185600,    // 09/16/2020 @ 12:00am (UTC+8)
-  tvl: sdk.util.sumChainTvls([eth, bsc])
 };

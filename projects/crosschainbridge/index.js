@@ -3,7 +3,7 @@ const BigNumber = require("bignumber.js");
 
 const getBridgeContract = (chain) => {
   switch (chain) {
-    case 'avalanche':
+    case 'avax':
       return '0x46325c7005F04900F8D74cD0eAB903597b6EFFFF';
     default:
       return '0xCBCe172d7af2616804ab5b2494102dAeC47B2635';
@@ -12,7 +12,7 @@ const getBridgeContract = (chain) => {
 
 const getRewardPools = (chain) => {
   switch (chain) {
-    case 'avalanche':
+    case 'avax':
       return '0xbAb537b7AE2Fcb00eeA7e91Fa4782EEbaD3B6d10';
     case 'fantom':
       return '0x6eBC0D4Ae955218195E6D016Fb9D4358Ee34d1F9';
@@ -162,7 +162,6 @@ const createRewardPoolsTvlFunction = (chain) => async (timestamp, block, chainBl
     chain,
     block: chainBlocks[chain],
   });
-
   tokenBalance = tokenBalance.plus(resultRewardPools.output);
 
   return { [`${getAddrPrefix(chain)}${bridgeTokenAddress}`] : tokenBalance.toFixed() };

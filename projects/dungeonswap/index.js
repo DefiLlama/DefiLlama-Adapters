@@ -25,7 +25,6 @@ module.exports = {
   bsc: {
     tvl: bscTvl,
   },
-  tvl: sdk.util.sumChainTvls([bscTvl]),
   methodology:
     "We count liquidity on the Farms and Pools seccions through MasterChef Contract",
 };

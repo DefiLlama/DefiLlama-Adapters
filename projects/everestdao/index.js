@@ -67,6 +67,7 @@ async function Staking(chainBlocks) {
 }
 
 module.exports = {
+  deadFrom: 1648765747,
   avax: {
     staking: Staking,
     pool2: pool2s(pool2Contracts, pool2Lps, "avax"),

@@ -1,0 +1,3 @@
+{
+  "nestedRecords_getAssetTokens": {"inputs":[{"internalType":"uint256","name":"_nftId","type":"uint256"}],"name":"getAssetTokens","outputs":[{"internalType":"address[]","name":"","type":"address[]"}],"stateMutability":"view","type":"function"}
+}

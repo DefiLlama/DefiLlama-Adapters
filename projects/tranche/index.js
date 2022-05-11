@@ -121,7 +121,7 @@ async function tvl(timestamp, block, chain, tokenList, holderList) {
   })).output;
 
   for (let i = 0; i < balanceOfResults.length; i++) {
-    await sdk.util.sumSingleBalance(
+    sdk.util.sumSingleBalance(
       balances, 
       transform(balanceOfResults[i].input.target), 
       balanceOfResults[i].output

@@ -48,13 +48,13 @@ async function findBalances(contracts, block) {
     
     for (let i = 0; i < contracts.length; i++) {
         if (contracts[i].token == bitBTC) {
-            await sdk.util.sumSingleBalance(
+            sdk.util.sumSingleBalance(
                 balances, 
                 transform(WBTC), 
                 balanceOfs[i].output / 10 ** 16
             );
         } else {
-            await sdk.util.sumSingleBalance(
+            sdk.util.sumSingleBalance(
                 balances, 
                 transform(contracts[i].token), 
                 balanceOfs[i].output

@@ -1,0 +1,134 @@
+{
+    "contracts": {
+        "masterchef": "0x423D0FE33031aA4456a17b150804aA57fc157d97",
+        "pool2": "0x9EF0C12b787F90F59cBBE0b611B82D30CAB92929",
+        "mainStaking": "0x8B3d9F0017FA369cD8C164D0Cc078bf4cA588aE5",
+        "VTX": "0x5817D4F0b62A59b17f75207DA1848C2cE75e7AF4"
+    },
+    "markets": {
+        "0xC4B7121b4FC065dECd26C33FB32e42C543E8850d": {
+            "underlying": "0xC4B7121b4FC065dECd26C33FB32e42C543E8850d",
+            "isLP": true
+        },
+        
+        "0x5817D4F0b62A59b17f75207DA1848C2cE75e7AF4": {
+            "underlying": "0x5817D4F0b62A59b17f75207DA1848C2cE75e7AF4",
+            "isLP": false,
+            "noUnderlying": true
+        },
+        "0xc641350D40256120BED47cF0AD24B5ce01D04af3": {
+            "underlying": "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664",
+            "isLP": false
+        },
+        "0xB0e2d7d733e013e9005E1fc3Be70B30c58c7359b": {
+            "underlying": "0xc7198437980c041c805A1EDcbA50c1Ce5db95118",
+            "isLP": false
+        },
+        "0x2FdC25cEc50Dab4E1ECCFa1Be40509ae049cEaE0": {
+            "underlying": "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70",
+            "isLP": false
+        },
+        "0x0ADab2F0455987098059Cfc10875C010800c659F": {
+            "underlying": "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+            "isLP": false
+        },
+        "0x3A51459e72e03c8D4213201feE9F5a2300b3D1fF": {
+            "underlying": "0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7",
+            "isLP": false
+        },
+        "0x060556209E507d30f2167a101bFC6D256Ed2f3e1": {
+            "underlying": "0x060556209E507d30f2167a101bFC6D256Ed2f3e1",
+            "isLP": false,
+            "noUnderlying": true
+        },
+        "0x245260481a824A6C0103B0d840EB87B8c6cA0e72": {
+            "underlying": "0xD24C2Ad096400B6FBcd2ad8B24E7acBc21A1da64",
+            "isLP": false
+        },
+        "0x03fE91A6c7996ED726dAbE386c91027899AeE45F": {
+            "underlying": "0xb599c3590F42f8F995ECfa0f85D2980B76862fc1",
+            "isLP": false
+        },
+        "0x6e3Ce3bCa4a388298FeC0C526Fff7b71A77407Da": {
+            "underlying": "0x130966628846BFd36ff31a822705796e8cb8C18D",
+            "isLP": false
+        },
+        "0x48AbadaDCE4BaE4c47F9877D5C08705AD7131A05": {
+            "underlying": "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+            "isLP": false
+        },
+        "0x3f941f31828E251aC24b445c5E318DEB691b5B68": {
+            "underlying": "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+            "isLP": false
+        },
+        "0x6D46346250A46516c0c1f51709c0330476069b41": {
+            "underlying": "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+            "isLP": false          
+        },
+        "0x08a7f16ad042365965D61F2518eAd2dEe281a1F6": {
+            "underlying": "0xf4003F4efBE8691B60249E6afbD307aBE7758adb",
+            "isLP": true,
+            "isJoeLP": true
+        },
+        "0x530Eb6170D2F96310414A96a647F970BcD2CD85C": {
+            "underlying": "0xa389f9430876455c36478deea9769b7ca4e3ddb1",
+            "isLP": true,
+            "isJoeLP": true
+        },
+        "0xac3046c161fc65F453123C55543DA8d6B18e687C": {
+            "underlying": "0xeD8CBD9F0cE3C6986b22002F03c6475CEb7a6256",
+            "isLP": true,
+            "isJoeLP": true
+        },
+        "0x490cFC0F6849de81eB3Adb62332C682bF7A4e118": {
+            "underlying": "0xbb4646a764358ee93c2a9c4a147d5aDEd527ab73",
+            "isLP": true,
+            "isJoeLP": true
+        },
+        "0x12C6aE3b4675ADEe0971C194ED9844B141980653": {
+            "underlying": "0x781655d802670bba3c89aebaaea59d3182fd755d",
+            "isLP": true,
+            "isJoeLP": true
+        },
+        "0xaac6b032048CC892e22bFCb85a60F431Eee83c03": {
+            "underlying": "0x3bc40d4307cd946157447cd55d70ee7495ba6140",
+            "isLP": true,
+            "isJoeLP": true
+        },
+        "0x4e179E5B027e9FABaf5159f02d8e11063519f65e": {
+            "underlying": "0x454e67025631c065d3cfad6d71e6892f74487a15",
+            "isLP": true,
+            "isJoeLP": true
+        },
+        "0x9e54E1eCbCd85b5E6145414E1b88086cFC66006B": {
+            "underlying": "0xFE15c2695F1F920da45C30AAE47d11dE51007AF9",
+            "isLP": true,
+            "isJoeLP": true
+        },
+        "0x47bb23D30081a2d55E49B20276897AC7A5F1064d": {
+            "underlying": "0xd5a37dc5c9a396a03dd1136fc76a1a02b1c88ffa",
+            "isLP": true,
+            "isJoeLP": true
+        },
+        "0xd5978FCB43F87afE4281254CAA29bCD218cba1cF": {
+            "underlying": "0x2a8a315e82f85d1f0658c5d66a452bbdd9356783",
+            "isLP": true,
+            "isJoeLP": true
+        },
+        "0xFB6aE9fD38725E44bD8a76E617cBf801957d9006": {
+            "underlying": "0x74b651eff97871ea99fcc14423e611d85eb0ea93",
+            "isLP": true,
+            "isJoeLP": true
+        },
+        "0x155C615007E5e39BFb51105E8dbe0d86eD2ECb7D": {
+            "underlying": "0x6f3a0c89f611ef5dc9d96650324ac633d02265d3",
+            "isLP": true,
+            "isJoeLP": true
+        },
+        "0xAC55A9Ad2256482771D545805732C818Dc38808c": {
+            "underlying": "0xeb8eb6300c53c3addbb7382ff6c6fbc4165b0742",
+            "isLP": true,
+            "isJoeLP": true
+        }
+    }
+}

@@ -90,6 +90,5 @@ module.exports = {
   polygon: {
     tvl: polygon,
   },
-  tvl: sdk.util.sumChainTvls([ethereum, bsc, polygon]),
   methodology: "We count tvl from the cohort contracts.",
 };

@@ -337,14 +337,13 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
 
 module.exports = {
   misrepresentedTokens: true,
-  treasury: {
-    tvl: sdk.util.sumChainTvls([TreasuryBsc, TreasuryPolygon]) 
-  },
   bsc: {
     tvl: bscTvl,
+    treasury: TreasuryBsc,
   },
   polygon: {
     tvl: polygonTvl,
+    treasury: TreasuryPolygon,
   },
   
   methodology: `We add as TVL the staking LPs on Magic Box by Masterchef contract; the staking Assets on Choco Falls 

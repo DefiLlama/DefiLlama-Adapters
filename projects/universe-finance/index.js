@@ -106,5 +106,4 @@ module.exports = {
   polygon: {
     tvl: matic
   },
-  tvl: sdk.util.sumChainTvls([eth, matic])
 };

@@ -36,9 +36,6 @@ async function tvl(timestamp, block) {
 
 
 module.exports = {
-  name: "inSure DeFi",
-  token: "SURE",
-  category: "Insurance",
   start: 1513566671, // 2020/10/21 6:34:47 (+UTC)
   tvl,
 };

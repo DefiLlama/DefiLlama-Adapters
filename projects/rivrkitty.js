@@ -30,7 +30,7 @@ async function pool2(timestamp, block, chainBlocks) {
 
     const masterChefDeposits = await sdk.api.abi.call({
         target: masterchefContract,
-        abi,
+        abi: abi.userInfo,
         params: [19, stakingContract],
         block,
         chain: 'moonriver'
@@ -69,7 +69,7 @@ async function pool2(timestamp, block, chainBlocks) {
                 transform
             );
         } else {
-            await sdk.util.sumSingleBalance(
+            sdk.util.sumSingleBalance(
                 balances, 
                 transform(tokens[i].address), 
                 balanceOfs[i].output

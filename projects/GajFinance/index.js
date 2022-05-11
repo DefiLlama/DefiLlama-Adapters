@@ -67,7 +67,6 @@ function vaults(pool2, selectedChain) {
 
 module.exports = {
   methodology: "TVL comes from NFT Farming, Jungle Pools, MasterChef and Vaults",
-  tvl: vaults(false),
   avalanche:{
     tvl: vaults(false, 'avax'),
     pool2: vaults(true, 'avax'),

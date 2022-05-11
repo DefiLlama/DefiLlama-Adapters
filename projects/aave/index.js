@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk');
-const { getV2Reserves, getV2Tvl, aaveExports, getV2Borrowed } = require('../helper/aave');
+const { getV2Reserves, getV2Tvl, getV2Borrowed, aaveChainTvl } = require('../helper/aave');
 const { staking } = require('../helper/staking');
 const { singleAssetV1Market,uniswapV1Market } = require('./v1');
 const { ammMarket } = require('./amm');
@@ -75,6 +75,16 @@ async function stakingBalancerTvl(timestamp, block) {
 
 const aaveStakingContract = "0x4da27a545c0c5b758a6ba100e3a049001de870f5";
 
+function v2(chain, v2Registry){
+  const section = borrowed => sdk.util.sumChainTvls([
+    aaveChainTvl(chain, v2Registry, undefined, undefined, borrowed),
+  ])
+  return {
+    tvl: section(false),
+    borrowed: section(true)
+  }
+}
+
 module.exports = {
   timetravel: true,
   methodology: `Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There's multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending`,
@@ -84,6 +94,7 @@ module.exports = {
     tvl: ethereum(false),
     borrowed: ethereum(true),
   },
-  avalanche: aaveExports("avax", "0x4235E22d9C3f28DCDA82b58276cb6370B01265C2"),
-  polygon: aaveExports("polygon", "0x3ac4e9aa29940770aeC38fe853a4bbabb2dA9C19"),
+  avalanche: v2("avax", "0x4235E22d9C3f28DCDA82b58276cb6370B01265C2"),
+  polygon: v2("polygon", "0x3ac4e9aa29940770aeC38fe853a4bbabb2dA9C19"),
 };
+// node test.js projects/aave/index.js

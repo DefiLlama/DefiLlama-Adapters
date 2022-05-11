@@ -56,5 +56,18 @@
         ],
         "stateMutability": "view",
         "type": "function"
+    },
+    "liquidityLocker": {
+        "inputs": [],
+        "name": "liquidityLocker",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
     }
 }

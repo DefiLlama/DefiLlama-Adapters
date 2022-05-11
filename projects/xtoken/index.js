@@ -53,7 +53,7 @@ async function tvl(timestamp, block) {
   ).output
     .map((r) => r.output)
     .reduce((a, b) => a + parseFloat(b), 0);
-  await sdk.util.sumSingleBalance(balances, aaveAddr, xaaveTvlRaw);
+  sdk.util.sumSingleBalance(balances, aaveAddr, xaaveTvlRaw);
 
   const xu3lpTvlRaw = (
     await sdk.api.abi.multiCall({
@@ -64,7 +64,7 @@ async function tvl(timestamp, block) {
   ).output
     .map((r) => r.output)
     .reduce((a, b) => a + parseFloat(b), 0);
-  await sdk.util.sumSingleBalance(balances, usdcAddr, xu3lpTvlRaw / 10 ** 12);
+  sdk.util.sumSingleBalance(balances, usdcAddr, xu3lpTvlRaw / 10 ** 12);
 
   const xu3lpdTvlRaw = (
     await sdk.api.abi.call({
@@ -73,7 +73,7 @@ async function tvl(timestamp, block) {
       block,
     })
   ).output
-  await sdk.util.sumSingleBalance(balances, wethAddr, xu3lpdTvlRaw);
+  sdk.util.sumSingleBalance(balances, wethAddr, xu3lpdTvlRaw);
 
   const xu3lpeTvlRaw = (
     await sdk.api.abi.call({
@@ -82,7 +82,7 @@ async function tvl(timestamp, block) {
       block,
     })
   ).output
-  await sdk.util.sumSingleBalance(balances, wbtcAddr, xu3lpeTvlRaw / 10 ** 10);
+  sdk.util.sumSingleBalance(balances, wbtcAddr, xu3lpeTvlRaw / 10 ** 10);
 
   const xinchTvlRaw = (
     await sdk.api.abi.multiCall({
@@ -93,7 +93,7 @@ async function tvl(timestamp, block) {
   ).output
     .map((r) => r.output)
     .reduce((a, b) => a + parseFloat(b), 0);
-  await sdk.util.sumSingleBalance(balances, inchAddr, xinchTvlRaw);
+  sdk.util.sumSingleBalance(balances, inchAddr, xinchTvlRaw);
 
   const xbntaStakedRaw = (
     await sdk.api.abi.call({
@@ -116,9 +116,9 @@ async function tvl(timestamp, block) {
       block
     })
   ).output;
-  await sdk.util.sumSingleBalance(balances, bntAddr, xbntaStakedRaw);
-  await sdk.util.sumSingleBalance(balances, bntAddr, xbntaBufferRaw);
-  await sdk.util.sumSingleBalance(balances, bntAddr, xbntaPendingRaw);
+  sdk.util.sumSingleBalance(balances, bntAddr, xbntaStakedRaw);
+  sdk.util.sumSingleBalance(balances, bntAddr, xbntaBufferRaw);
+  sdk.util.sumSingleBalance(balances, bntAddr, xbntaPendingRaw);
 
   const xkncTvlRaw = (
     await sdk.api.abi.multiCall({
@@ -129,7 +129,7 @@ async function tvl(timestamp, block) {
   ).output
     .map((r) => r.output)
     .reduce((a, b) => a + parseFloat(b), 0);
-  await sdk.util.sumSingleBalance(balances, kncAddr, xkncTvlRaw);
+  sdk.util.sumSingleBalance(balances, kncAddr, xkncTvlRaw);
 
   const xalphaaTvlRaw = (
     await sdk.api.abi.call({
@@ -138,7 +138,7 @@ async function tvl(timestamp, block) {
       block
     })
   ).output;
-  await sdk.util.sumSingleBalance(balances, alphaAddr, xalphaaTvlRaw);
+  sdk.util.sumSingleBalance(balances, alphaAddr, xalphaaTvlRaw);
   const xsnxaSnxRaw = (
     await sdk.api.abi.call({
       abi: abi.getSnxBalance,
@@ -146,7 +146,7 @@ async function tvl(timestamp, block) {
       block,
     })
   ).output;
-  await sdk.util.sumSingleBalance(balances, snxTokenAddr, xsnxaSnxRaw);
+  sdk.util.sumSingleBalance(balances, snxTokenAddr, xsnxaSnxRaw);
   const xsnxaEthRaw = (
     await sdk.api.abi.call({
       abi: abi.getEthBalance,
@@ -154,7 +154,7 @@ async function tvl(timestamp, block) {
       block,
     })
   ).output;
-  await sdk.util.sumSingleBalance(balances, wethAddr, xsnxaEthRaw);
+  sdk.util.sumSingleBalance(balances, wethAddr, xsnxaEthRaw);
   const xsnxaEthrsi6040Raw = (
     await sdk.api.abi.call({
       abi: "erc20:balanceOf",
@@ -164,14 +164,14 @@ async function tvl(timestamp, block) {
     })
   ).output;
 
-  await sdk.util.sumSingleBalance(balances, ethrsi6040Addr, xsnxaEthrsi6040Raw);
+  sdk.util.sumSingleBalance(balances, ethrsi6040Addr, xsnxaEthrsi6040Raw);
     const xsnxaSusdRaw = (await sdk.api.abi.call({
       abi: abi.debtBalanceOf,
       target: snxAddr,
       params: [xsnxaAdminAddr, '0x7355534400000000000000000000000000000000000000000000000000000000'],
       block,
     })).output;
-  await sdk.util.sumSingleBalance(
+  sdk.util.sumSingleBalance(
       balances,
       "0x57ab1ec28d129707052df4df418d58a2d46d5f51",
       xsnxaSusdRaw

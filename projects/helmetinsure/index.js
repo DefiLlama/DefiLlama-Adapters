@@ -1,10 +1,8 @@
-const retry = require('../helper/retry')
-const { GraphQLClient, gql } = require('graphql-request')
-const sdk = require('@defillama/sdk')
+const { blockQuery } = require('../helper/graph')
+const { gql } = require('graphql-request')
 const BigNumber = require("bignumber.js");
 const CHAIN_POLYGON = 'polygon'
 const CHAIN_BSC = 'bsc'
-
 
 BigNumber.config({ EXPONENTIAL_AT: 50 })
 
@@ -12,7 +10,6 @@ const THEGARPH_API = {
   [CHAIN_POLYGON]: "https://api.thegraph.com/subgraphs/name/app-helmet-insure/guard",
   [CHAIN_BSC]: "https://api.thegraph.com/subgraphs/name/app-helmet-insure/helmet-insure"
 }
-
 
 function transform(str) {
   switch (str) {
@@ -29,9 +26,7 @@ function transform(str) {
 
 function fetch(chain) {
   return async (_timestamp, _ethBlock, chainBlocks) => {
-
     var endpoint = THEGARPH_API[chain]
-    var graphQLClient = new GraphQLClient(endpoint)
     var query = gql`
     query tvl($block: Int){
       options(
@@ -46,9 +41,7 @@ function fetch(chain) {
       }
     }
     `;
-    const results = await retry(async bail => await graphQLClient.request(query, {
-      block: chainBlocks[chain]
-    }))
+    const results = await blockQuery(endpoint, query, chainBlocks[chain], 1000)
     const { options } = results
 
     const data = options.flatMap(o => {
@@ -77,5 +70,4 @@ module.exports = {
   [CHAIN_BSC]:{
     tvl: fetch(CHAIN_BSC)
   },
-  tvl: sdk.util.sumChainTvls([CHAIN_POLYGON, CHAIN_BSC].map(fetch))
 }

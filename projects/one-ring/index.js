@@ -24,7 +24,7 @@ async function tvlFantom(timestamp, block, chainBlocks) {
     })
   ).output;
 
-  await sdk.util.sumSingleBalance(
+  sdk.util.sumSingleBalance(
     balances,
     transform(DAI_ADDRSSS_FANTOM),
     balanceWithInvested
@@ -48,7 +48,7 @@ async function tvlPolygon(timestamp, block, chainBlocks) {
     })
   ).output;
 
-  await sdk.util.sumSingleBalance(
+  sdk.util.sumSingleBalance(
     balances,
     transform(DAI_ADDRESS_POLYGON),
     balanceWithInvested

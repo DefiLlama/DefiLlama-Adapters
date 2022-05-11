@@ -112,10 +112,10 @@ function aaveChainTvl(chain, addressesProviderRegistry, transformAddressRaw, dat
     return balances
   }
 }
-function aaveExports(chain, addressesProviderRegistry){
+function aaveExports(chain, addressesProviderRegistry, transform = undefined, dataHelpers = undefined){
   return {
-    tvl: aaveChainTvl(chain, addressesProviderRegistry, undefined, undefined, false),
-    borrowed: aaveChainTvl(chain, addressesProviderRegistry, undefined, undefined, true)
+    tvl: aaveChainTvl(chain, addressesProviderRegistry, transform, dataHelpers, false),
+    borrowed: aaveChainTvl(chain, addressesProviderRegistry, transform, dataHelpers, true)
   }
 }
 module.exports = {

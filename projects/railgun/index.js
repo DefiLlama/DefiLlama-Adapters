@@ -91,7 +91,6 @@ function getChainTVL(chain) {
 }
 
 module.exports = {
-    website: 'https://railgun.ch',
     ethereum: getChainTVL('ethereum'),
     bsc: getChainTVL('bsc'),
     polygon: getChainTVL('polygon'),

@@ -37,9 +37,7 @@ const tvls = Object.keys(chainIds).reduce((obj, chain) => ({
         [chain]: {
             offers: chainTvl(chain)
         }
-    }), {
-        tvl: async () => ({})
-    })
+    }), {})
 tvls.ethereumclassic.tvl = async () => ({});
 
 module.exports = {

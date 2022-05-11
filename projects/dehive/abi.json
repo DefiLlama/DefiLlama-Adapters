@@ -65,38 +65,6 @@
     "stateMutability": "view",
     "type": "function"
   },
-  "wantPriceInUnderlying": {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_wantAmt",
-        "type": "uint256"
-      }
-    ],
-    "name": "wantPriceInUnderlying",
-    "outputs": [
-      {
-        "internalType": "uint256[]",
-        "name": "",
-        "type": "uint256[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "listUnderlying": {
-    "inputs": [],
-    "name": "listUnderlying",
-    "outputs": [
-      {
-        "internalType": "address[]",
-        "name": "",
-        "type": "address[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
   "getUnderlyingsAmountsFromClusterAmount": {
     "inputs": [
       {

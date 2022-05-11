@@ -26,5 +26,4 @@ module.exports = {
   avalanche: {
     tvl: chainTvl('avax'),
   },
-  tvl: sdk.util.sumChainTvls(['avax'].map(chainTvl))
 }
