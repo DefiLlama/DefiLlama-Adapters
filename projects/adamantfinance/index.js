@@ -496,7 +496,7 @@ const tvl = async (
   let resp = await utils.fetchURL(vaultsUrl[chain]);
 
   let curveVaults = resp.data
-    .filter((vault) => vault.platform.toLowerCase() == "curve")
+    .filter((vault) => vault.platform.toLowerCase() == "curve" || vault.poolName.toLowerCase() === 'mai-3crv')
     .map((vault) => ({
       vaultAddress: vault.vaultAddress,
       lpAddress: vault.lpAddress,
@@ -515,7 +515,8 @@ const tvl = async (
       (vault) =>
         vault.token0 !== vault.token1 &&
         vault.vaultAddress !== "" &&
-        vault.platform !== "dodo"
+        vault.platform !== "dodo" &&
+        vault.poolName.toLowerCase() !== 'mai-3crv'
     )
     .map((vault) => ({
       vaultAddress: vault.vaultAddress,

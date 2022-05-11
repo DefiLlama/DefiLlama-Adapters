@@ -1,0 +1,52 @@
+{
+  "poolLength": {
+    "inputs": [],
+    "name": "poolLength",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "poolInfo": {
+    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "name": "poolInfo",
+    "outputs": [
+      { "internalType": "contract IERC20", "name": "want", "type": "address" },
+      { "internalType": "uint256", "name": "allocPoint", "type": "uint256" },
+      {
+        "internalType": "uint256",
+        "name": "lastRewardBlock",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "accNATIVEPerShare",
+        "type": "uint256"
+      },
+      { "internalType": "address", "name": "strat", "type": "address" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "wantLockedTotal": {
+    "inputs": [],
+    "name": "wantLockedTotal",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "symbol": {
+    "constant": true,
+    "inputs": [],
+    "name": "symbol",
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  }
+}

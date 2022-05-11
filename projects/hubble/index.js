@@ -1,27 +1,29 @@
 const axios = require("axios");
+const BigNumber = require('bignumber.js');
+const {toUSDTBalances} = require('../helper/balances');
 const HUBBLE_API = "https://api.hubbleprotocol.io";
 
 const client = axios.create({
   baseURL: HUBBLE_API,
 });
 
-function exports() {
-  return async () => {
-    const metrics = await client.get("/metrics");
-    const stakings = metrics.data.hbb.staked * metrics.data.hbb.price;
-
-    const staking = () => { stakings };
-    const tvl = () => { metrics.data.totalValueLocked - stakings };
-
-    return {
-      methodology: `To obtain the Hubble Protocol TVL we use the formula 'TVL = Total HBB Staked * Current HBB Price + Total Collateral Value + Total Stablecoin (USDH) in Stability Pool'.`,
-      fetch: tvl,
-      staking: {
-        fetch: staking,
-      },
-      fetch: tvl
-    };
-  }
+async function tvl() {
+  const metrics = await client.get("/metrics");
+  const tvl = new BigNumber(metrics.data.totalValueLocked);
+  const staking = new BigNumber(metrics.data.hbb.staked).multipliedBy( metrics.data.hbb.price);
+  return toUSDTBalances(tvl.minus(staking));
 }
-// node test.js projects/hubble/index.js
-module.exports = exports;
+
+async function staking() {
+  const metrics = await client.get("/metrics");
+  const value = new BigNumber(metrics.data.hbb.staked).multipliedBy(metrics.data.hbb.price);
+  return toUSDTBalances(value)
+}
+
+module.exports = {
+  methodology: `To obtain the Hubble Protocol TVL we use the formula 'TVL = Total HBB Staked * Current HBB Price + Total Collateral Value + Total Stablecoin (USDH) in Stability Pool'.`,
+  solana: {
+    tvl,
+    staking,
+  },
+}

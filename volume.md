@@ -19,6 +19,10 @@ https://docs.dydx.exchange/#get-markets
 #### Pancake Swap
 https://api.pancakeswap.finance/api/v1/stat
 
+#### Champagne Swap
+https://api.thegraph.com/subgraphs/name/champagneswap/exchangev3
+
+
 #### Perp
 https://thegraph.com/explorer/subgraph/perpetual-protocol/perp-position-subgraph
 https://perp.gq/pairs

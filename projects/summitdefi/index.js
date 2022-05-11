@@ -1,140 +1,166 @@
 const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
-const stableabi = require("./stableABI.json");
-const { staking } = require("../helper/staking");
-const { transformFantomAddress } = require("../helper/portedTokens");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-// node test.js projects/summitdefi/index.js
-const CartographerContract = "0x46d303b6829aDc7AC3217D92f71B1DbbE77eBBA2";
-const CartOasisContract = "0x68889c9d8e923b3e310B60ee588242A407fa6755";
-const CartElevationContract = "0xdE1e14e2ED8B2D883B8338b514dDc173e792271a";
-const triPoolAddress = '0xD163415BD34EF06f57C58D2AEd5A5478AfB464cC';
-const WFTM = "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83";
+const abi = require("./abi.json");
+const { BigNumber } = require("bignumber.js");
 
-const ignoreAddresses = [
-  "0x92D5ebF3593a92888C25C0AbEF126583d4b5312E",
-  "0x0000000000000000000000000000000000000000",
-];
+const summit = "0x0ddb88e14494546d07fcd94c3f0ef6d3296b1cd7";
+const everest = "0xc687806cfd11b5330d7c3ae6f18b18dc71e1083e";
+const cartoasis = "0x8047c5bed363fe1bf458ec3e20e93a3c28a07b8d";
+const cartplains = "0x1805922e7f82fc9dbad8e2435c146ba605c4a25d";
+const cartmesa = "0x64f8a1dbc20f132159605ad8d7111e75ea702358";
+const cartsummit = "0x93af6a3882aaf4112fc404e30277b39452f44cf6";
 
-const calcTvl = async (balances, poolInfo, cartographerTypeContract) => {
-  let chainBlocks = {};
-  const countOfPools = Number(
-    (
-      await sdk.api.abi.call({
-        abi: abi.poolsCount,
-        target: CartographerContract,
-        chain: "fantom",
-        block: chainBlocks["fantom"],
-      })
-    ).output
-  );
+const beethovenAddresses = [
+    "0xcde5a11a4acb4ee4c805352cec57e236bdbc3837",
+    "0xd47d2791d3b46f9452709fa41855a045304d6f9d",
+    "0xcdf68a4d525ba2e90fe959c74330430a5a6b8226",
+    "0x9af1f0e9ac9c844a4a4439d446c1437807183075"
+]
 
-  const allPoolNums = Array.from(Array(countOfPools).keys());
+async function getCarttvl(balances, block, cart) {
+    const chain = "fantom";
+    cart = cart.toLowerCase();
 
-  const lpToken = (
-    await sdk.api.abi.multiCall({
-      abi: poolInfo,
-      calls: allPoolNums.map((pid) => ({
-        target: cartographerTypeContract,
-        params: pid,
-      })),
-      chain: "fantom",
-      block: chainBlocks["fantom"],
-    })
-  ).output.map((lp) => lp.output.token);
+    const getPools = (await sdk.api.abi.call({
+        target: cart,
+        abi: abi["getPools"],
+        block,
+        chain
+    })).output;
+    
+    const symbols = (await sdk.api.abi.multiCall({
+        calls: getPools.map(p => ({
+            target: p
+        })),
+        abi: "erc20:symbol",
+        block,
+        chain
+    })).output;
 
-  const lpTokenBalance = (
-    await sdk.api.abi.multiCall({
-      abi: poolInfo,
-      calls: allPoolNums.map((pid) => ({
-        target: cartographerTypeContract,
-        params: pid,
-      })),
-      chain: "fantom",
-      block: chainBlocks["fantom"],
-    })
-  ).output.map((bal) => bal.output.supply);
+    const poolSupply = (await sdk.api.abi.multiCall({
+        calls: getPools.map(p => ({
+            target: cart,
+            params: p
+        })),
+        abi: abi["supply"],
+        block,
+        chain
+    })).output;
 
-  const symbol = (
-    await sdk.api.abi.multiCall({
-      abi: abi.symbol,
-      calls: lpToken.map((lp) => ({
-        target: lp,
-      })),
-      chain: "fantom",
-      block: chainBlocks["fantom"],
-    })
-  ).output;
+    let lps = [];
+    let beethovenBals = [];
 
-  let lpPositions = [];
-
-  lpToken.forEach((lp, pid) => {
-    if (
-      ignoreAddresses.some((addr) => addr.toLowerCase() === lp.toLowerCase())
-    ) {
-      return;
-    } else if (symbol[pid].output.includes("LP")) {
-      lpPositions.push({
-        token: lpToken[pid],
-        balance: lpTokenBalance[pid],
-      });
-    } else {
-      sdk.util.sumSingleBalance(
-        balances,
-        `fantom:${lpToken[pid]}`,
-        lpTokenBalance[pid]
-      );
+    for (let i = 0; i < getPools.length; i++) {
+        const token = getPools[i].toLowerCase();
+        const symbol = symbols[i].output;
+        const balance = poolSupply[i].output;
+        if (token === summit || token === everest) continue;
+        if (beethovenAddresses.includes(token)) {
+            beethovenBals.push(balance);
+            continue;
+        }
+        if (symbol.endsWith("LP")) {
+            lps.push({
+                token,
+                balance
+            });
+            continue;
+        }
+        sdk.util.sumSingleBalance(balances, `fantom:${token}`, balance);
     }
-  });
 
-  const transformAddress = await transformFantomAddress();
-  lpPositions = lpPositions.filter(
-    a => a.token != triPoolAddress);
+    await unwrapUniswapLPs(balances, lps, block, chain, addr=>`fantom:${addr}`);
 
-  await unwrapUniswapLPs(
-    balances,
-    lpPositions,
-    chainBlocks["fantom"],
-    "fantom",
-    transformAddress,
-  );
+    const beetTotalSupply = (await sdk.api.abi.multiCall({
+        calls: beethovenAddresses.map(p => ({
+            target: p
+        })),
+        abi: "erc20:totalSupply",
+        block,
+        chain
+    })).output;
 
-  const rate = (await sdk.api.abi.call({
-    abi: stableabi,
-    chain: "fantom",
-    block: chainBlocks["fantom"],
-    target: triPoolAddress
-  })).output;
+    const beetVaults = (await sdk.api.abi.multiCall({
+        calls: beethovenAddresses.map(p => ({
+            target: p
+        })),
+        abi: abi["getVault"],
+        block,
+        chain
+    })).output;
 
-  const balance = (await sdk.api.abi.call({
-    abi: 'erc20:balanceOf',
-    chain: "fantom",
-    block: chainBlocks["fantom"],
-    target: triPoolAddress,
-    params: CartographerContract
-  })).output;
+    const beetIds = (await sdk.api.abi.multiCall({
+        calls: beethovenAddresses.map(p => ({
+            target:p
+        })),
+        abi: abi["getPoolId"],
+        block,
+        chain
+    })).output;
 
-  sdk.util.sumSingleBalance(balances, `usd-coin`, balance * rate / 10 ** 36);
+    let poolTokenCall = [];
+    for (let i = 0; i < beetVaults.length; i++) {
+        poolTokenCall.push({
+            target: beetVaults[i].output,
+            params: beetIds[i].output
+        });
+    }
 
-  return balances;
-};
+    const beetPoolTokens = (await sdk.api.abi.multiCall({
+        calls: poolTokenCall,
+        abi: abi["getPoolTokens"],
+        block,
+        chain
+    })).output;
 
-const ftmTvl = async () => {
-  const balances = {};
+    for (let i = 0; i < beetPoolTokens.length; i++) {
+        const tokens = beetPoolTokens[i].output.tokens;
+        const bals = beetPoolTokens[i].output.balances;
+        const ratio = Number(beethovenBals[i]) / beetTotalSupply[i].output;
+        for (let j = 0; j < tokens.length; j++) {
+            sdk.util.sumSingleBalance(balances, `fantom:${tokens[j]}`, BigNumber(bals[j]).times(ratio).toFixed(0));
+        }
+    }
+}
 
-  await calcTvl(balances, abi.oasisPoolInfo, CartOasisContract);
+async function tvl(timestamp, block, chainBlocks) {
+    let balances = {};
+    block = chainBlocks.fantom;
+    await getCarttvl(balances, block, cartoasis);
+    await getCarttvl(balances, block, cartplains);
+    await getCarttvl(balances, block, cartmesa);
+    await getCarttvl(balances, block, cartsummit);
+    return balances;
+}
 
-  await calcTvl(balances, abi.elevationPoolInfo, CartElevationContract);
-
-  return balances;
-};
+async function staking(timestamp, block, chainBlocks) {
+    let balances = {};
+    block = chainBlocks.fantom;
+    const chain = "fantom";
+    const getPoolTokens = (await sdk.api.abi.call({
+        target: "0x20dd72ed959b6147912c2e529f0a0c651c33c9ce",
+        params: "0x1577eb091d3933a89be62130484e090bb8bd0e5800010000000000000000020f",
+        abi: abi["getPoolTokens"],
+        block,
+        chain
+    })).output;
+    const valueOfSummitInUSDCInPool = (Number(getPoolTokens.balances[0]) * 3) * 1e12;
+    const summitValueInUSDC = valueOfSummitInUSDCInPool/ Number(getPoolTokens.balances[1]);
+    const summitInEverest = (await sdk.api.erc20.balanceOf({
+        target: summit,
+        owner: everest,
+        block,
+        chain
+    })).output;
+    sdk.util.sumSingleBalance(balances, "fantom:0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e", BigNumber(summitInEverest).times(summitValueInUSDC).toFixed(0));
+    return balances;
+}
 
 module.exports = {
-  misrepresentedTokens: true,
-  fantom: {
-    staking: staking(CartographerContract, WFTM, "fantom"),
-    tvl: ftmTvl,
-  },
-  methodology:
-    "We count liquidity on the all Farm Cartographer Types through their Cartographer Contracts",
-};
+    methodology: "TVL is from deposits into the cartographer contracts. Staking TVL is from SUMMIT deposited into EVEREST contract",
+    fantom: {
+        misrepresentedTokens: true,
+        tvl,
+        staking
+    }
+}

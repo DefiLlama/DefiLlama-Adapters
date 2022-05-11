@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const { calculateUniTvl } = require("../helper/calculateUniTvl");
+const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const abi = require("./abi.json");
 const factory = "0x477Ce834Ae6b7aB003cCe4BC4d8697763FF456FA";
@@ -7,6 +7,7 @@ const vaultchef = "0xBdA1f897E851c7EF22CD490D2Cf2DAce4645A904";
 const tankchef = "0xfaBC099AD582072d26375F65d659A3792D1740fB";
 const fish = "0x3a3df212b7aa91aa0402b9035b098891d276572b";
 const paw = "0xbc5b59ea1b6f8da8258615ee38d40e999ec5d74f";
+const WMATIC = "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"
 
 const convert = {
   "0x61bdd9c7d4df4bf47a4508c0c8245505f2af5b7b":"0xbb0e17ef65f82ab018d8edd776e8dd940327b28b",
@@ -21,16 +22,10 @@ const convert = {
   "0xb4d09ff3da7f9e9a2ba029cb0a81a989fd7b8f17":"0x6c3f90f043a72fa612cbac8115ee7e52bde6e490"
 }
 
-async function tvl(timestamp, block, chainBlocks) {
+async function vaulttvl(timestamp, block, chainBlocks) {
   const chain = "polygon";
   let balances = {};
-  balances = await calculateUniTvl(addr=> {
-    addr = addr.toLowerCase();
-    if (convert[addr] !== undefined) {
-      return convert[addr];
-    }
-    return `polygon:${addr}`;
-  }, block, chain, factory, 0, true);
+  
   await calcVaultTvl(balances, chainBlocks.polygon, vaultchef, false);
   return balances;
 }
@@ -177,8 +172,10 @@ module.exports = {
   misrepresentedTokens: true,
   methodology: "TVL are from the pools created by the factory and TVL in vaults",
   polygon: {
-    tvl,
+    tvl: sdk.util.sumChainTvls([calculateUsdUniTvl(factory,"polygon",WMATIC,["0x2791bca1f2de4661ed88a30c99a7a9449aa84174","0xc2132d05d31c914a87c6611c10748aeb04b58e8f","0x7ceb23fd6bc0add59e62ac25578270cff1b9f619"],"wmatic"),vaulttvl]),
     pool2,
     staking
   }
 }
+  
+

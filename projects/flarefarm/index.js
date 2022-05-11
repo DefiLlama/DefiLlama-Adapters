@@ -1,20 +1,7 @@
-const sdk = require("@defillama/sdk");
 const { stakingPricedLP } = require("../helper/staking");
 const { sumTokens } = require("../helper/unwrapLPs");
 const { getBlock } = require("../helper/getBlock");
-
-const tokens = [
-  {
-    address: "0x02f0826ef6aD107Cfc861152B32B52fD11BaB9ED",
-    id: "songbird"
-  },{
-    address: "0xC348F894d0E939FE72c467156E6d7DcbD6f16e21",
-    id: "flare-finance"
-  },{
-    address: "0x70Ad7172EF0b131A1428D0c1F66457EB041f2176",
-    id: "usd-coin"
-  }
-];
+const { getFixBalances } = require("../helper/portedTokens");
 
 const tokensAndOwners = [
     ["0x02f0826ef6aD107Cfc861152B32B52fD11BaB9ED", "0x6BA0F675EB2f169D15764D5cf10C4EF0e9e059f2"],
@@ -22,47 +9,21 @@ const tokensAndOwners = [
     ["0x70Ad7172EF0b131A1428D0c1F66457EB041f2176", "0x32b36B0A8B74Ac9212946a99e0af727848D5A3A1"]
 ];
 
+const chain = 'songbird'
+
 async function farmTvl(timestamp, ethblock, chainBlocks) {
   balances = {};
-  block = getBlock(timestamp, 'songbird', chainBlocks, true);
+  block = getBlock(timestamp, chain, chainBlocks, true);
   
   await sumTokens(
     balances,
     tokensAndOwners,
     block,
-    "songbird",
+    chain,
   );
 
-  // get decimal places of each token
-  const decimals = (await sdk.api.abi.multiCall({
-    calls: tokens.map(t=>({
-        target: t.address,
-    })),
-    abi: 'erc20:decimals',
-    chain: 'songbird',
-    block,
-  })).output;
-
-  // iterate through tokens array
-  for (let i = 0; i < tokens.length; i++) {
-    // decimals for this particular token
-    const tokenDecimals = decimals[i].output;
-
-    // check the decimals call worked
-    // otherwise it'll divide by 1 and TVL will be trillions
-    if (!tokenDecimals) {
-      // may want to change this for a less extreme fail case but 
-      // probably better if it shows up on outdated if the adapters broken
-      return;
-    };
-
-    const realBalance = balances[tokens[i].address] / 10 ** tokenDecimals;
-    // add a balance for the coingecko API ID
-    balances[tokens[i].id] = realBalance;
-    // delete the address balance 
-    delete balances[tokens[i].address];
-  };
-
+  const fixBalances = await getFixBalances(chain)
+  fixBalances(balances)
   return balances;
 };
 

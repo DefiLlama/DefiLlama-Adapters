@@ -13,11 +13,9 @@ const tvl = async (timestamp, block) => {
 };
 
 module.exports = {
-  name: "Brahma.fi | Aastra",
   methodology:
     "Total amount of eth and usdc tokens in vault, total amount of these tokens present in uni v3 positions owned by the vault",
   ethereum: {
     tvl
   },
-  tvl
 };

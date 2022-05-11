@@ -11,7 +11,6 @@ function fetchByChain(chain) {
     return async () => {
         const urlQuery = chain ? `chain=${chain}` : ''
         const result = await utils.fetchURL(`https://stats.bishares.finance/tvl?${urlQuery}`)
-        console.log(result.data.total);
         return toUSDTBalances(result.data.total);
     }
 }
@@ -23,5 +22,4 @@ module.exports = {
     [CHAINS.FANTOM]: {
         tvl: fetchByChain(CHAINS.FANTOM)
     },
-    tvl: fetchByChain(),
 };

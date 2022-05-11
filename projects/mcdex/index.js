@@ -1,5 +1,6 @@
 const sdk = require('@defillama/sdk');
-const {GraphQLClient, gql} = require('graphql-request')
+const {gql} = require('graphql-request')
+const { blockQuery } = require('../helper/graph')
 const {toUSDTBalances} = require('../helper/balances');
 const {getBlock} = require('../helper/getBlock');
 const _ = require('underscore');
@@ -60,7 +61,6 @@ async function ethereum(timestamp, block) {
 
 async function getTVL(subgraphName, block) {
     const endpoint = `https://api.thegraph.com/subgraphs/name/mcdexio/${subgraphName}`
-    const graphQLClient = new GraphQLClient(endpoint)
 
     const query = gql`
         query getTvl($block: Int) {
@@ -72,9 +72,7 @@ async function getTVL(subgraphName, block) {
             }
         }
     `;
-    const results = await graphQLClient.request(query, {
-        block
-    })
+    const results = await blockQuery(endpoint, query, block, 600)
     return results.factories[0].totalValueLockedUSD;
 }
 

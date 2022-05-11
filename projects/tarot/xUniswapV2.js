@@ -5,8 +5,23 @@ const getReserves = require('./abis/getReserves.json');
 const getTotalSupply = require('./abis/totalSupply.json');
 const getTotalBalance = require('./abis/totalBalance.json');
 
-const START_BLOCK = 9926326;
-const FACTORY = '0x35C052bBf8338b06351782A565aa9AaD173432eA';
+const FACTORIES = [
+  {
+    name: "Tarot Classic",
+    address: "0x35C052bBf8338b06351782A565aa9AaD173432eA",
+    startBlock: 9926326
+  },
+  {
+    name: "Tarot Requiem",
+    address: "0xF6D943c8904195d0f69Ba03D97c0BAF5bbdCd01B",
+    startBlock: 32494961
+  },
+  {
+    name: "Tarot Carcosa",
+    address: "0xbF76F858b42bb9B196A87E43235C2f0058CF7322",
+    startBlock: 32950135
+  }
+];
 
 function toAddress(str, skip = 0) {
   return `0x${str.slice(64 - 40 + 2 + skip * 64, 64 + 2 + skip * 64)}`.toLowerCase();
@@ -28,17 +43,21 @@ async function multiCallAndReduce(abi, targets, block) {
 }
 
 module.exports = async function tvl(_, block, transform) {
-  const logs = (
-    await sdk.api.util
-      .getLogs({
-        keys: [],
-        toBlock: block,
-        target: FACTORY,
-        fromBlock: START_BLOCK,
-        topic: 'LendingPoolInitialized(address,address,address,address,address,address,uint256)',
-        chain: 'fantom'
-      })
-  ).output;
+  const logs = [];
+  for (const factory of FACTORIES) {
+    logs.push(
+      ...(
+        await sdk.api.util.getLogs({
+          keys: [],
+          toBlock: block,
+          target: factory.address,
+          fromBlock: factory.startBlock,
+          topic: "LendingPoolInitialized(address,address,address,address,address,address,uint256)",
+          chain: "fantom"
+        })
+      ).output
+    );
+  }
   if(logs.length<5){
     throw new Error("Log length is too low")
   }
@@ -82,7 +101,7 @@ module.exports = async function tvl(_, block, transform) {
     const collateralBalance = new BigNumber(collateralBalanceRaw);
     const totalSupply = new BigNumber(totalSupplyRaw);
 
-    if(totalSupplyRaw!=="0"){
+    if(totalSupplyRaw!=="0" && reservesRaw){
     {
       const reserve0 = new BigNumber(reservesRaw['0']);
       const borrowable0Balance = new BigNumber(borrowable0BalanceRaw);

@@ -3,8 +3,8 @@ const {toUSDTBalances} = require('../helper/balances');
 const sdk = require('@defillama/sdk')
 
 async function tvl() {
-  var totalTvl = await utils.fetchURL('https://api.ellipsis.finance/api/getTVL')
-  return toUSDTBalances(totalTvl.data.data.total);
+  var totalTvl = await utils.fetchURL('https://api.ellipsis.finance/api/getTVLV2')
+  return toUSDTBalances(totalTvl.data.data.totalTVL);
 }
 
 const lockedSupply = {"inputs":[],"name":"lockedSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}

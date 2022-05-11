@@ -1,111 +1,70 @@
 const sdk = require("@defillama/sdk");
+const { ethers } = require("ethers");
 
-const IsolatedLending = "0xDc5CCAAA928De5D318605A76eEDE50f205Aa6D93";
 const CurvePoolRewards = "0x9727D535165e19590013bdDea8Fd85dd618b9aF7";
 const account = "0x0000000000000000000000000000000000000000";
 const methodology = "";
 const BigNumber = require("bignumber.js");
-const tokenListJson = require("./tokenlist.json");
+const addresses = require("./addresses.json");
+const StrategyViewer = require("./StrategyViewer.json");
+const StrategyRegistry = require("./StrategyRegistry.json");
+const IStrategy = require("./IStrategy.json");
+
+function useAddresses() {
+  return addresses[43114];
+}
 
 async function tvl(timestamp, block) {
-  const stratMeta = (
-    await sdk.api.abi.call({
-      target: IsolatedLending,
-      block,
-      chain: "avax",
-      abi: {
-        inputs: [],
-        name: "viewAllStrategyMetadata",
-        outputs: [
-          {
-            components: [
-              {
-                internalType: "uint256",
-                name: "debtCeiling",
-                type: "uint256",
-              },
-              {
-                internalType: "uint256",
-                name: "totalDebt",
-                type: "uint256",
-              },
-              {
-                internalType: "uint256",
-                name: "stabilityFee",
-                type: "uint256",
-              },
-              {
-                internalType: "uint256",
-                name: "mintingFee",
-                type: "uint256",
-              },
-              {
-                internalType: "address",
-                name: "strategy",
-                type: "address",
-              },
-              {
-                internalType: "address",
-                name: "token",
-                type: "address",
-              },
-              {
-                internalType: "uint256",
-                name: "APF",
-                type: "uint256",
-              },
-              {
-                internalType: "uint256",
-                name: "totalCollateral",
-                type: "uint256",
-              },
-              {
-                internalType: "uint256",
-                name: "borrowablePer10k",
-                type: "uint256",
-              },
-              {
-                internalType: "uint256",
-                name: "valuePer1e18",
-                type: "uint256",
-              },
-              {
-                internalType: "bytes32",
-                name: "strategyName",
-                type: "bytes32",
-              },
-              {
-                internalType: "uint256",
-                name: "tvl",
-                type: "uint256",
-              },
-              {
-                internalType: "uint256",
-                name: "harvestBalance2Tally",
-                type: "uint256",
-              },
-              {
-                internalType: "enum IStrategy.YieldType",
-                name: "yieldType",
-                type: "uint8",
-              },
-              {
-                internalType: "address",
-                name: "underlyingStrategy",
-                type: "address",
-              },
-            ],
-            internalType: "struct IsolatedLending.ILStrategyMetadata[]",
-            name: "",
-            type: "tuple[]",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-    })
-  ).output;
+  const addresses = useAddresses();
+  const provider = new ethers.providers.JsonRpcProvider(
+    "https://api.avax.network/ext/bc/C/rpc"
+  );
 
+  const stratRegistry = new ethers.Contract(
+    addresses.StrategyRegistry,
+    StrategyRegistry.abi,
+    provider
+  );
+
+  const stratViewer = new ethers.Contract(
+    addresses.StrategyViewer,
+    StrategyViewer.abi,
+    provider
+  );
+
+  const enabledStrategies = await stratRegistry.allEnabledStrategies();
+
+  const approvedTokens = await Promise.all(
+    enabledStrategies.map((address) => {
+      const contract = new ethers.Contract(address, IStrategy.abi, provider);
+      return contract.viewAllApprovedTokens();
+    })
+  );
+  let token2Strat2 = {};
+
+  for (let i = 0; i < enabledStrategies.length; i++) {
+    const strategy = enabledStrategies[i];
+    const tokens = approvedTokens[i];
+    for (let j = 0; j < tokens.length; j++) {
+      if (token2Strat2[tokens[j]] == undefined) {
+        token2Strat2[tokens[j]] = strategy;
+      }
+    }
+  }
+
+  const tokens = Object.keys(token2Strat2);
+  const strats = Object.values(token2Strat2);
+
+  const noHarvestBalanceResults =
+    await stratViewer.viewMetadataNoHarvestBalance(
+      addresses.StableLending,
+      addresses.OracleRegistry,
+      addresses.Stablecoin,
+      tokens,
+      strats
+    );
+
+  const stratMeta = [...noHarvestBalanceResults];
   const stakingMeta = (
     await sdk.api.abi.call({
       target: CurvePoolRewards,
@@ -209,31 +168,27 @@ async function tvl(timestamp, block) {
     tokensMeta.map((token, index) => {
       return { address: token, decimals: decimals[index].output };
     }),
-    ...tokenListJson.tokens,
   ];
 
   const tvlsFarm = stakingMeta.tvl;
 
   const tvlNoFarm = Object.values(stratMeta)
     .map((row) => {
-      return { ...row, tvl: new BigNumber(row.tvl) };
-    })
-    .map((strat) => {
-      let decimals = tokenList.filter((t) => t.address === strat.token)[0]
+      let decimals = tokenList.filter((t) => t.address === row.token)[0]
         ?.decimals;
+      const trueOne = ethers.utils.parseUnits("1", decimals);
+      const valPerOne = trueOne
+        .mul(row.valuePer1e18)
+        .div(ethers.utils.parseEther("1"));
       return {
-        ...strat,
-        tvlInPeg: decimals
-          ? strat.tvl.times(strat.valuePer1e18).div((10 ** decimals).toFixed(0))
-          : 0,
+        ...row,
+        tvlInPeg: row.tvl.mul(valPerOne).div(trueOne),
       };
     })
     .reduce((tvl, row) => {
-      return tvl.plus(row.tvlInPeg);
+      return tvl.plus(row.tvlInPeg.toString());
     }, BigNumber(0));
-
   const tvl = tvlNoFarm.plus(tvlsFarm);
-
   return {
     "avax:0xd586e7f844cea2f87f50152665bcbc2c279d8d70": tvl.toFixed(0),
   };

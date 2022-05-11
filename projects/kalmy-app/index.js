@@ -187,7 +187,6 @@ async function staking(timestamp, ethBlock, chainBlocks) {
 }
 
 module.exports = {
-  tvl,
   bsc: {
     tvl,
     staking

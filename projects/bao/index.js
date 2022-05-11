@@ -78,17 +78,17 @@ async function xdaiTvl(timestamp, block, ethBlock) {
     const xdaiLpPositions = []
     await Promise.all(
         sushiLps.map(async (address) =>{
-            const uniLocked = sdk.api.erc20.balanceOf({
+            const uniLocked = await sdk.api.erc20.balanceOf({
                 target: address,
                 owner: xdaiMasterChef,
                 block,
                 chain: 'xdai'
             })
-            const ethAddress = await transformAddress(address)
-            if ((await uniLocked).output != '0') {
+            const ethAddress = transformAddress(address)
+            if (uniLocked.output != '0') {
                 slpPositions.push({
                     token: ethAddress,
-                    balance: (await uniLocked).output
+                    balance: uniLocked.output
                 })
             }
         }),
@@ -120,5 +120,4 @@ module.exports = {
     xdai: {
         tvl: chainTvl('xdai')
     },
-    tvl: sdk.util.sumChainTvls(['xdai','ethereum'].map(chainTvl))
 }

@@ -25,8 +25,32 @@ module.exports = {
   bsc: {
     fetch: fetchChain('BNB')
   },
+  ethereum: {
+    fetch: fetchChain('ETH')
+  },
   polygon: {
     fetch: fetchChain('MATIC')
+  },
+  harmony: {
+    fetch: fetchChain('ONE')
+  },
+  tron: {
+    fetch: fetchChain('TRX')
+  },
+  icon: {
+    fetch: fetchChain('ICX')
+  },
+  ontology: {
+    fetch: fetchChain('ONT')
+  },
+  iotex: {
+    fetch: fetchChain('IOTX')
+  },
+  bittorrent: {
+    fetch: fetchChain('BTT')
+  },
+  avalanche: {
+    fetch: fetchChain('AVAX')
   },
   fetch: fetchTvl
 }

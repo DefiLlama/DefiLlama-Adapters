@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const { sumTokens } = require("../helper/unwrapLPs");
 const { requery } = require("../helper/requery");
-const { transformPolygonAddress } = require("../helper/portedTokens");
+const { transformPolygonAddress, transformBobaAddress } = require("../helper/portedTokens");
 const { getBlock } = require("../helper/getBlock");
 const abi = require("./abi");
 
@@ -17,6 +17,9 @@ const polygonLspCreators = [
   "0x62410e96a2ceB4d66824346e3264d1D9107a0aBE",
   "0x5Fd7FFF20Ee851cD7bEE72fB3C6d324e4C104c9f",
   "0x4FbA8542080Ffb82a12E3b596125B1B02d213424",
+];
+const bobaLspCreators = [
+  "0xC064b1FE8CE7138dA4C07BfCA1F8EEd922D41f68",
 ];
 const ethEmpCreators = [
   "0xad8fD1f418FB860A383c9D4647880af7f043Ef39",
@@ -120,131 +123,56 @@ async function polygonLsp(timestamp, block, chainBlocks) {
   return balances;
 }
 
-// Captures TVL for Jarvis LSP contracts on Polygon
-async function jarvisLsp(timestamp, block, chainBlocks) {
+// Captures TVL for LSP contracts on Boba
+async function bobaLsp(timestamp, block, chainBlocks) {
+  const chain = "boba";
   const balances = {};
-  const transform = await transformPolygonAddress();
-  block = await getBlock(timestamp, "polygon", chainBlocks);
-  const logs = await sdk.api.util.getLogs({
-    target: "0xD5ed74178Fa50EfD7d3E3f30EF5f0ACab56933Bc",
-    topic: "CreatedPerpetual(address,address)",
-    keys: ["topics"],
-    fromBlock: 17618954,
-    toBlock: block,
-    chain: "polygon",
-  });
-  const collaterals = await sdk.api.abi.multiCall({
-    calls: logs.output.map((poolLog) => ({
-      target: `0x${poolLog[1].slice(26)}`,
-    })),
-    block,
-    abi: abi.collateralCurrency,
-    chain: "polygon",
-  });
-  await requery(collaterals, "polygon", block, abi);
-  await sumTokens(
-    balances,
-    collaterals.output
-      .filter((t) => t.output !== null)
-      .map((c) => [c.output, c.input.target]),
-    block,
-    "polygon",
-    transform
-  );
-  return balances;
-}
+  const transform = transformBobaAddress();
 
-// Captures TVL for Across liquidity pools on L1
-async function across(timestamp, block) {
-  const balances = {};
-  const logs = await sdk.api.util.getLogs({
-    target: "0x30B44C676A05F1264d1dE9cC31dB5F2A945186b6",
-    topic: "WhitelistToken(uint256,address,address,address)",
-    keys: ["topics"],
-    fromBlock: 13544988,
-    toBlock: block,
-  });
-  const bridgePoolAddresses = logs.output.map(function (bridgePool) {
-    return bridgePool[3];
-  });
-  const uniquePools = [
-    ...new Set(bridgePoolAddresses.map((a) => JSON.stringify(a))),
-  ].map((a) => JSON.parse(a));
-  const collaterals = await sdk.api.abi.multiCall({
-    calls: uniquePools.map((poolLog) => ({
-      target: `0x${poolLog.slice(26)}`,
-    })),
-    block,
-    abi: abi.l1Token,
-  });
-  await requery(collaterals, "ethereum", block, abi);
-  const poolCollaterals = collaterals.output
-    .filter((t) => t.output !== null)
-    .map((c) => [c.output, c.input.target])
-  await Promise.all(poolCollaterals.map(async poolCollateral=>{
-    const poolSupply = await sdk.api.erc20.totalSupply({
-      target: poolCollateral[1],
-      block
-    })
-    sdk.util.sumSingleBalance(
+  for (let i = 0; i < bobaLspCreators.length; i++) {
+    const lspCreatorAddress = bobaLspCreators[i];
+    block = await getBlock(timestamp, chain, chainBlocks);
+    const logs = await sdk.api.util.getLogs({
+      target: lspCreatorAddress,
+      topic: "CreatedLongShortPair(address,address,address,address)",
+      keys: ["topics"],
+      fromBlock: 291475,
+      toBlock: block,
+      chain,
+    });
+
+    const collaterals = await sdk.api.abi.multiCall({
+      calls: logs.output.map((poolLog) => ({
+        target: `0x${poolLog[1].slice(26)}`,
+      })),
+      block,
+      abi: abi.collateralToken,
+      chain,
+    });
+    
+    await requery(collaterals, chain, block, abi);
+    await sumTokens(
       balances,
-      poolCollateral[0],
-      poolSupply.output
+      collaterals.output
+        .filter((t) => t.output !== null)
+        .map((c) => [c.output, c.input.target]),
+      block,
+      chain,
+      transform
     );
-  }))
-  return balances;
-}
-
-// Captures TVL for Sherlock liquidity that uses UMA's OO/DVM
-async function sherlock(timestamp, block) {
-  const AaveContract = "0xEECee260A402FE3c20e5B8301382005124bef121";
-  const USDC = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
-  const aUSDC = "0xBcca60bB61934080951369a648Fb03DF4F96263C";
-  const SherlockContract = "0xacbBe1d537BDa855797776F969612df7bBb98215";
-  const usdcabi = {
-    inputs: [
-      {
-        internalType: "address",
-        name: "account",
-        type: "address",
-      },
-    ],
-    name: "balanceOf",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  };
-
-  let balances = {};
-  const AaveTVL = await sdk.api.abi.call({
-    target: AaveContract,
-    abi: abi["balanceOf"],
-    block: block,
-  });
-  const SherlockTVL = await sdk.api.abi.call({
-    target: USDC,
-    abi: usdcabi,
-    params: SherlockContract,
-    block: block,
-  });
-
-  balances[aUSDC] = AaveTVL.output;
-  balances[USDC] = SherlockTVL.output;
-
+  }
+  
   return balances;
 }
 
 module.exports = {
   ethereum: {
-    tvl: sdk.util.sumChainTvls([ethEmp, across, ethLsp]),
+    tvl: sdk.util.sumChainTvls([ethEmp, ethLsp]),
   },
   polygon: {
-    tvl: sdk.util.sumChainTvls([polygonLsp, jarvisLsp, sherlock]),
+    tvl: sdk.util.sumChainTvls([polygonLsp]),
+  },
+  boba: {
+    tvl: sdk.util.sumChainTvls([bobaLsp]),
   },
 };

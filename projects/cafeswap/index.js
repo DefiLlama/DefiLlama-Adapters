@@ -91,5 +91,4 @@ module.exports = {
     tvl: polygonTvl,
     staking: polygonStaking
   },
-  tvl: sdk.util.sumChainTvls([bscTvl, polygonTvl])
 };

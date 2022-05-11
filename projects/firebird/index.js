@@ -27,5 +27,5 @@ async function tvl(_, ethBlock, chainBlocks) {
 
 module.exports = {
   methodology: "Includes liquidity on all the pools on the uniswap fork plus the liquidity in the 3FBird stableswap pool",
-  tvl,
+  polygon: { tvl },
 };

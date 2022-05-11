@@ -51,13 +51,14 @@ const getBalanceNumber = (balance, decimals = 18) => {
   return getBalanceAmount(balance, decimals).toNumber();
 };
 
-async function getLPPrice(lpList, lpPrices, chain) {
+async function getLPPrice(lpList, lpPrices, chain, block) {
   let prices = (
     await sdk.api.abi.call({
       abi: apePriceGetterAbi.getLPPrices,
       target: chain.apeprice_getter,
       params: [lpList, 18],
       chain: chain.name,
+      block
     })
   ).output.map((price) => getBalanceNumber(Number(price)));
 
@@ -66,7 +67,7 @@ async function getLPPrice(lpList, lpPrices, chain) {
   }
 }
 
-async function getFarmBalance(lpShares, lpList, chain) {
+async function getFarmBalance(lpShares, lpList, chain, block) {
   if (chain.masterhealer === "") {
     return;
   }
@@ -76,6 +77,7 @@ async function getFarmBalance(lpShares, lpList, chain) {
       abi: abi.poolLength,
       target: chain.masterhealer,
       chain: chain.name,
+      block
     })
   ).output;
 
@@ -86,6 +88,7 @@ async function getFarmBalance(lpShares, lpList, chain) {
         target: chain.masterhealer,
         params: index,
         chain: chain.name,
+        block
       })
     ).output.lpToken;
 
@@ -96,6 +99,7 @@ async function getFarmBalance(lpShares, lpList, chain) {
           target: lpsOrTokens,
           params: chain.masterhealer,
           chain: chain.name,
+          block
         })
       ).output
     );
@@ -111,7 +115,7 @@ async function getFarmBalance(lpShares, lpList, chain) {
   }
 }
 
-async function getVaultBalance(lpShares, lpList, vaultHealer, chain) {
+async function getVaultBalance(lpShares, lpList, vaultHealer, chain, block) {
   if (vaultHealer === "") {
     return;
   }
@@ -121,6 +125,7 @@ async function getVaultBalance(lpShares, lpList, vaultHealer, chain) {
       abi: vaultAbi.poolLength,
       target: vaultHealer,
       chain: chain.name,
+      block
     })
   ).output;
 
@@ -131,6 +136,7 @@ async function getVaultBalance(lpShares, lpList, vaultHealer, chain) {
         target: vaultHealer,
         params: index,
         chain: chain.name,
+        block
       })
     ).output;
 
@@ -140,6 +146,7 @@ async function getVaultBalance(lpShares, lpList, vaultHealer, chain) {
           abi: vaultAbi.vaultSharesTotal,
           target: vault.strat,
           chain: chain.name,
+          block
         })
       ).output
     );
@@ -155,7 +162,7 @@ async function getVaultBalance(lpShares, lpList, vaultHealer, chain) {
   }
 }
 
-async function poolsTvl(chain) {
+async function poolsTvl(chain, block) {
   const pools = await getPools(chain);
 
   const poolLength = pools.length;
@@ -169,6 +176,7 @@ async function poolsTvl(chain) {
           abi: abi.totalStaked,
           target: pools[index],
           chain: chain.name,
+          block
         })
       ).output
     );
@@ -182,6 +190,7 @@ async function poolsTvl(chain) {
         target: chain.apeprice_getter,
         params: [chain.crystl_token, 18],
         chain: chain.name,
+        block
       })
     ).output
   );
@@ -198,7 +207,7 @@ function calculateLpBalancePrice(lpShares, balances, lpPrices) {
   return balances;
 }
 
-async function fetchChain(chain) {
+async function fetchChain(chain, block) {
   let balances = 0;
 
   let lpShares = [];
@@ -206,18 +215,18 @@ async function fetchChain(chain) {
   let lpPrices = [];
 
   let [poolBalance] = await Promise.all([
-    poolsTvl(chain),
-    getFarmBalance(lpShares, lpList, chain),
+    poolsTvl(chain, block),
+    getFarmBalance(lpShares, lpList, chain, block),
   ]);
 
   await Promise.all([
-    getVaultBalance(lpShares, lpList, chain.vaulthealer_v1, chain),
-    getVaultBalance(lpShares, lpList, chain.vaulthealer_v2, chain),
+    getVaultBalance(lpShares, lpList, chain.vaulthealer_v1, chain, block),
+    getVaultBalance(lpShares, lpList, chain.vaulthealer_v2, chain, block),
   ]);
 
   balances += poolBalance;
 
-  await getLPPrice(lpList, lpPrices, chain);
+  await getLPPrice(lpList, lpPrices, chain, block);
 
   balances = calculateLpBalancePrice(lpShares, balances, lpPrices);
 
@@ -231,13 +240,13 @@ async function fetch() {
   return a + b
 }
 
-async function polygon() {
-  p = fetchChain(CHAIN_DATA.polygon);
+async function polygon(timestamp, block, chainBlocks) {
+  p = fetchChain(CHAIN_DATA.polygon, chainBlocks.polygon);
   return p
 }
 
-async function cronos() {
-  c = fetchChain(CHAIN_DATA.cronos);
+async function cronos(timestamp, block, chainBlocks) {
+  c = fetchChain(CHAIN_DATA.cronos, chainBlocks.cronos);
   return c
 }
 

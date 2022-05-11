@@ -93,5 +93,4 @@ module.exports={
     harmony: {
         tvl: harmonyTvl
     },
-    tvl: sdk.util.sumChainTvls([arbitrumTvl, iotexTvl, polygonTvl, harmonyTvl]),
 }

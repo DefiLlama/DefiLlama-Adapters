@@ -47,23 +47,11 @@ async function ftmPool2(timestamp, block, chainBlocks) {
   return await calcPool2(tshareRewardPoolAddress, ftmLPs, chainBlocks.fantom, "fantom");
 }
 
-async function treasury(timestamp, block, chainBlocks) {
-  let balance = (await sdk.api.erc20.balanceOf({
-    target: tombTokenAddress,
-    owner: treasuryAddress, 
-    block: chainBlocks.fantom,
-    chain: 'fantom'
-  })).output;
-
-  return { [`fantom:${tombTokenAddress}`] : balance }
-}
 module.exports = {
   methodology: "Pool2 deposits consist of TOMB/FTM and TSHARE/FTM LP tokens deposits while the staking TVL consists of the TSHARES tokens locked within the Masonry contract(0x8764de60236c5843d9faeb1b638fbce962773b67).",
   fantom: {
     tvl: async () => ({}),
     pool2: ftmPool2,
     staking: staking(masonryAddress, tshareTokenAddress, "fantom"),
-    treasury
   },
 };
-// node test.js projects/tomb/index.js

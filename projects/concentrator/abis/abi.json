@@ -1,0 +1,126 @@
+{
+    "poolInfo": {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "poolInfo",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "lptoken",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "token",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "gauge",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "crvRewards",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "stash",
+                "type": "address"
+            },
+            {
+                "internalType": "bool",
+                "name": "shutdown",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "poolLength": {
+        "inputs": [],
+        "name": "poolLength",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "coinsUint": {
+        "name": "coins",
+        "outputs": [
+            {
+                "type": "address",
+                "name": ""
+            }
+        ],
+        "inputs": [
+            {
+                "type": "uint256",
+                "name": "arg0"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "gas": 2280
+    },
+    "coinsInt": {
+        "name": "coins",
+        "outputs": [
+            {
+                "type": "address",
+                "name": "out"
+            }
+        ],
+        "inputs": [
+            {
+                "type": "int128",
+                "name": "arg0"
+            }
+        ],
+        "constant": true,
+        "payable": false,
+        "type": "function",
+        "gas": 2190
+    },
+    "underlying": {
+        "constant": true,
+        "inputs": [],
+        "name": "underlying",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "exchangeRateStored": {
+        "constant": true,
+        "inputs": [],
+        "name": "exchangeRateStored",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    }
+}

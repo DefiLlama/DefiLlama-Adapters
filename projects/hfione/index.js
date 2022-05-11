@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
+const { unwrapUniswapLPs, sumTokens } = require("../helper/unwrapLPs");
 const { transformHecoAddress } = require("../helper/portedTokens");
 
 const vaults = [
@@ -42,92 +42,57 @@ const vaults = [
   "0x48959A255CCD22d9bb960811975364023444d2CD",
 ];
 
-const daos = [
-  //dao2HFI-5 DAO
-  "0x3a74C61bc3CcAf6933DAB5E697D526021ac47d56",
-  //dao2HFI-30 DAO
-  "0x9255c515c67289F8E5c0d39D9279Ce22bB893DEF",
-  //dao2HFI-100 DAO
-  "0x3f4E7EE1f2c1d602284bc9Aca69035d3Bf04f772",
-];
+const daoObject = {
+  dao5: '0xB4A4c8822650Feaa6501987ea3B3b13055919eCc',
+  dao30: '0x1eab7995EAD7E1E1A8Cc0df6eE55ceCb42d47008',
+  dao100: '0xaB00A0e5377FF7a6fb78a8F81fb500Fe499b8E0E',
+  daov2_5: '0x3a74C61bc3CcAf6933DAB5E697D526021ac47d56',
+  daov2_30: '0xF86A18720C83E22D2012F6E777e7A5D5D57B7Efb',
+  daov2_100: '0x3f4E7EE1f2c1d602284bc9Aca69035d3Bf04f772'
+}
 
 const HFI = "0x98fc3b60ed4a504f588342a53746405e355f9347";
+const chain = 'heco'
 
 const hecoTvl = async (timestamp, ethBlock, chainBlocks) => {
   const balances = {};
-
-  // staking native tokens
-  const totalSupplyD = (
-    await sdk.api.abi.multiCall({
-      abi: abi.totalSupply,
-      calls: daos.map((dao) => ({
-        target: dao,
-      })),
-      chain: "heco",
-      block: chainBlocks["heco"],
-    })
-  ).output.map((bt) => bt.output);
-
-  for (let index = 0; index < daos.length; index++) {
-    sdk.util.sumSingleBalance(balances, `heco:${HFI}`, totalSupplyD[index]);
-  }
+  const block = chainBlocks[chain]
+  const calls = vaults.map((vault) => ({ target: vault, }))
 
   // VAULTS Part
   const tokens = (
-    await sdk.api.abi.multiCall({
-      abi: abi.token,
-      calls: vaults.map((vault) => ({
-        target: vault,
-      })),
-      chain: "heco",
-      block: chainBlocks["heco"],
-    })
+    await sdk.api.abi.multiCall({ abi: abi.token, calls, chain, block, })
   ).output.map((t) => t.output);
 
   const totalSupply = (
-    await sdk.api.abi.multiCall({
-      abi: abi.totalSupply,
-      calls: vaults.map((vault) => ({
-        target: vault,
-      })),
-      chain: "heco",
-      block: chainBlocks["heco"],
-    })
+    await sdk.api.abi.multiCall({ abi: abi.totalSupply, calls, chain, block, })
   ).output.map((bt) => bt.output);
 
   const lpPositions = [];
 
   for (let index = 0; index < vaults.length; index++) {
     if (index >= 10 && index <= 13) {
-      lpPositions.push({
-        token: tokens[index],
-        balance: totalSupply[index],
-      });
+      lpPositions.push({ token: tokens[index], balance: totalSupply[index], });
     } else {
-      sdk.util.sumSingleBalance(
-        balances,
-        `heco:${tokens[index]}`,
-        totalSupply[index]
-      );
+      sdk.util.sumSingleBalance(balances, `heco:${tokens[index]}`, totalSupply[index]);
     }
   }
 
   const transformAddress = await transformHecoAddress();
-
-  await unwrapUniswapLPs(
-    balances,
-    lpPositions,
-    chainBlocks["heco"],
-    "heco",
-    transformAddress
-  );
+  await unwrapUniswapLPs(balances, lpPositions, chainBlocks["heco"], "heco", transformAddress);
 
   return balances;
 };
 
+async function staking(ts, _block, chainBlocks) {
+  const block = chainBlocks[chain]
+  const tokensAndOwners = Object.values(daoObject).map(o => [HFI, o])
+  return sumTokens(undefined, tokensAndOwners, block, chain)
+}
+
 module.exports = {
   heco: {
     tvl: hecoTvl,
+    staking,
   },
-  tvl: sdk.util.sumChainTvls([hecoTvl]),
 };

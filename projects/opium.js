@@ -8,7 +8,8 @@ const { unwrapUniswapLPs } = require('./helper/unwrapLPs');
 const CHAINS = {
   ETHEREUM: 'ethereum',
   POLYGON: 'polygon',
-  BSC: 'bsc'
+  BSC: 'bsc',
+  ARBITRUM: 'arbitrum'
 }
 
 const SUB_TOKENS = {
@@ -96,6 +97,7 @@ const tvl = (url, chain) => async (timestamp, blockETH, chainBlocks) => {
 const ethTvl = tvl('https://static.opium.network/data/opium-addresses.json', CHAINS.ETHEREUM)
 const polygonTvl = tvl('https://static.opium.network/data/opium-addresses-polygon.json', CHAINS.POLYGON)
 const bscTvl = tvl('https://static.opium.network/data/opium-addresses-bsc.json', CHAINS.BSC)
+const arbitrumTvl = tvl('https://static.opium.network/data/opium-addresses-arbitrum.json', CHAINS.ARBITRUM)
 
 module.exports = {
   [CHAINS.ETHEREUM]: {
@@ -107,9 +109,7 @@ module.exports = {
   [CHAINS.BSC]: {
     tvl: bscTvl
   },
-  tvl: sdk.util.sumChainTvls([
-    ethTvl,
-    polygonTvl,
-    bscTvl
-  ])
+  [CHAINS.ARBITRUM]: {
+    tvl: arbitrumTvl
+  },
 };

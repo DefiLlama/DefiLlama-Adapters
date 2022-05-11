@@ -50,6 +50,5 @@ module.exports = {
 	ethereum: {
 		tvl: tvlEth,
 	},
-	tvl: sdk.util.sumChainTvls([tvlPolygon, tvlArbitrum, tvlEth]),
 	methodology: 'We iterate through each HyperLiquidrium and get the total amounts of each deposited asset, then multiply it by their USD dollar provided by CoinGecko'
 };

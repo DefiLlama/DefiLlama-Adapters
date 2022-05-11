@@ -53,15 +53,9 @@ async function tvl(timestamp) {
     return balances
 }
 
-async function test() {
-    console.log(await tvl(Date.now()/1000));
-}
-// test();
-
 module.exports = {
     timetravel: false,
     solana: {
         tvl,
     },
-    tvl
 }
