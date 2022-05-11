@@ -14,6 +14,10 @@ const ETHEREUM_LP_TOKENS = {
 const SOLACE = "0x501acE9c35E60f03A2af4d484f49F9B1EFde9f40"
 const ETHEREUM_TOKENS = [
   {
+    PoolToken: "0x501acE9c35E60f03A2af4d484f49F9B1EFde9f40",
+    TokenTicker: "SOLACE",
+  },
+  {
     PoolToken: "0x853d955aCEf822Db058eb8505911ED77F175b99e",
     TokenTicker: "FRAX",
   },
@@ -87,6 +91,10 @@ const POLYGON_LP_TOKENS = {
 }
 const POLYGON_TOKENS = [
   {
+    PoolToken: "0x501acE9c35E60f03A2af4d484f49F9B1EFde9f40",
+    TokenTicker: "SOLACE",
+  },
+  {
     PoolToken: "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
     TokenTicker: "WMATIC",
   },
@@ -132,6 +140,10 @@ const AURORA_LP_TOKENS = {
   "WNEAR": "aurora:0xC42C30aC6Cc15faC9bD938618BcaA1a1FaE8501d"
 }
 const AURORA_TOKENS = [
+  {
+    PoolToken: "0x501acE9c35E60f03A2af4d484f49F9B1EFde9f40",
+    TokenTicker: "SOLACE",
+  },
   {
     PoolToken: "0xC42C30aC6Cc15faC9bD938618BcaA1a1FaE8501d",
     TokenTicker: "WNEAR",
@@ -197,6 +209,7 @@ async function polygonPool2(timestamp, block, chainBlocks) {
 
   return balances;
 }
+
 module.exports = {
   timetravel: true,
   ethereum: {
