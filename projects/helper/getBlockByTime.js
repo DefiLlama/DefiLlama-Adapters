@@ -1,15 +1,13 @@
 const web3 = require('../config/web3.js');
 
-const moment = require('moment')
-
-const toDate = require('./timestampToDate')
-
 /**
  * Find nearest block to given timestamp, expect timestamp in seconds
  */
 module.exports = async (targetTimestamp, lowerLimitStamp, higherLimitStamp) => {
   // target timestamp or last midnight
-  targetTimestamp = targetTimestamp || moment.utc().startOf('day').unix()
+  // targetTimestamp = targetTimestamp || moment.utc().startOf('day').unix()
+  const startOfDay = new Date(new Date().toISOString().slice(0, 10)) / 1000
+  targetTimestamp = targetTimestamp || startOfDay
 
 
   // decreasing average block size will decrease precision and also

@@ -1,24 +1,16 @@
 const axios = require("axios");
-const moment = require("moment");
 const _ = require("underscore");
 
-let historyTimestamp = 0;
 const dayHistory = {};
 
 async function GetDailyHistory() {
-  let timestamp = moment().startOf('day').unix();
-  if (timestamp == historyTimestamp) return;
-
   let { data } = await axios.get('https://bitcoinvisuals.com/static/data/data_daily.csv');
   data = parseCSV(data);
 
   data.forEach((row) => {
     if (!row.capacity_total) return;
-    let timestamp = moment(row.day, '').utcOffset(0).startOf('day').add(1, 'day').unix();
-    dayHistory[timestamp] = row.capacity_total;
+    dayHistory[row.day] = row.capacity_total;
   });
-
-  historyTimestamp = timestamp;
 }
 
 async function get1MLCapacity() {
@@ -37,13 +29,12 @@ async function getFromTxStat() {
 }
 
 async function getChannelCapacity(timestamp) {
-  if (dayHistory[timestamp] && moment().utcOffset(0).startOf('hour').unix() != timestamp)
-    return dayHistory[timestamp];
+  const day = new Date(timestamp * 1000).toISOString().slice(0,10)
+  return dayHistory[day]
 }
 
 async function tvl(timestamp) {
   const getCurrentTVL = (Date.now() / 1000 - timestamp) < 24 * 3600 // if the time difference is under 24 hours i.e we are not refilling old data
-  
   let channelCapacity
 
   if (getCurrentTVL) {
