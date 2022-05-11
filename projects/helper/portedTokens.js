@@ -157,16 +157,16 @@ async function transformAvaxAddress() {
 async function transformBscAddress() {
   let binanceBridge = []
 
-  try {
-    binanceBridge = (
-      await utils.fetchURL(
-        "https://api.binance.org/bridge/api/v2/tokens?walletNetwork="
-      )
-    ).data.data.tokens;
-  } catch (e) {
-    console.log(e.message)
-    console.log('failed to fetch binance bridge tokens')
-  }
+  // try {
+  //   binanceBridge = (
+  //     await utils.fetchURL(
+  //       "https://api.binance.org/bridge/api/v2/tokens?walletNetwork="
+  //     )
+  //   ).data.data.tokens;
+  // } catch (e) {
+  //   console.log(e.message)
+  //   console.log('failed to fetch binance bridge tokens')
+  // }
 
   const mapping = {
     '0x0000000000000000000000000000000000000000': 'bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // BNB -> WBNB
