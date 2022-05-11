@@ -726,6 +726,7 @@ async function transformKlaytnAddress() {
 function fixKlaytnBalances(balances) {
   const mapping = {
     '0xd7a4d10070a4f7bc2a015e78244ea137398c3b74': { coingeckoId: 'klay-token', decimals: 18, }, // Wrapped KLAY
+    '0xc6a2ad8cc6e4a7e08fc37cc5954be07d499e7654': { coingeckoId: 'klayswap-protocol', decimals: 18, }, // Wrapped KLAY
   }
   return fixBalances(balances, mapping)
 }

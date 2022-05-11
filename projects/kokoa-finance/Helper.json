@@ -2,25 +2,6 @@
   "address": "0x2b170005ADA0e616E78A7fa93ea4473c03A98aa0",
   "abi": [
     {
-      "inputs": [
-        {
-          "internalType": "bytes32",
-          "name": "collateral",
-          "type": "bytes32"
-        }
-      ],
-      "name": "getCollateralTVL",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "collateralTVL",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [],
       "name": "getCollateralTVL",
       "outputs": [
