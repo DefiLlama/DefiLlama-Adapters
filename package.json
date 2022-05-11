@@ -24,7 +24,6 @@
     "bignumber.js": "^9.0.1",
     "borsh": "^0.7.0",
     "caver-js": "^1.6.5",
-    "dayjs": "^1.11.0",
     "dotenv": "^8.6.0",
     "ethers": "^5.6.5",
     "graphql": "^15.5.0",
