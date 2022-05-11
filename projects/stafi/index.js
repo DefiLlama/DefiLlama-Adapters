@@ -56,5 +56,19 @@ module.exports = {
     tvl: ethereum,
     staking:  getTvlFunction("RFIS", "stafi")
   },
-  ...chainExports(chainTvl, Object.keys(chainToParams))
+  bsc: {
+    tvl: chainTvl('bsc')
+  },
+  polygon: {
+    tvl: chainTvl('polygon')
+  },
+  cosmos: {
+    tvl: chainTvl('cosmos')
+  },
+  solana: {
+    tvl: chainTvl('solana')
+  },
+  stafi: {
+    tvl: sdk.util.sumChainTvls([chainTvl('polkadot'), chainTvl('kusama')])
+  }
 }

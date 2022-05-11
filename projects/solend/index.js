@@ -14,11 +14,10 @@ const assetToCoinGeckoIdMap = {
   "SBR": "saber",
   "lsIN": "invictus",
   "xSTEP": "step",
-  "parrot-usd": "usd-coin",
-  "cashio-dollar": "usd-coin",
-  "uxd-stablecoin": "usd-coin",
-  "usdh": "usd-coin",
+  "PAI": "usd-coin",
+  "USDH": "usd-coin",
   "stSOL": "lido-staked-sol",
+  "GMT": "stepn",
 }
 
 // v3/coins/solana/contract/${contract_address} sometime fails to return certain assets
