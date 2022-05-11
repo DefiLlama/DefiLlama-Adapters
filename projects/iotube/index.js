@@ -11,7 +11,7 @@ const query = gql`
     $bscTokens: [String!]!
     $polygonTokens: [String!]!
   ) {
-    iotex: IoTeX_Mainnet {
+    iotex: IoTeX {
       chainId
       CIOTX: ERC20(address: ["0x99B2B0eFb56E62E36960c20cD5ca8eC6ABD5557A"]) {
         address
