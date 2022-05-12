@@ -152,11 +152,10 @@ const getPairsData = async (pairAddress) => {
 };
 
 const getSushiPoolPrice = async (vault) => {
-  if (!vault.contract.address) {
+  if (!vault.pool)
     return ZERO;
-  }
 
-  const data = await await getPairsData(vault.contract.address);
+  const data = await getPairsData(vault.pool);
   const { reserveUSD, totalSupply } = data;
 
   return new BigNumber(reserveUSD).div(totalSupply).div(1e18);
