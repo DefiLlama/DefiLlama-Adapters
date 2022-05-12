@@ -31,12 +31,6 @@ async function eth(timestamp, ethBlock, chainBlocks) {
     abi: abis.find(abi => abi.name === "getTotalPooledEther")
   })
 
-  return {
-    '0x0000000000000000000000000000000000000000': pooledETH.output,
-  }
-}
-
-async function matic(timestamp, ethBlock, chainBlocks) {
   const pooledMatic = await sdk.api.abi.call({
     block: ethBlock,
     target: "0x9ee91F9f426fA633d227f7a9b000E28b9dfd8599",
@@ -44,6 +38,7 @@ async function matic(timestamp, ethBlock, chainBlocks) {
   })
 
   return {
+    '0x0000000000000000000000000000000000000000': pooledETH.output,
     "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0": pooledMatic.output,
   }
 }
@@ -83,9 +78,6 @@ module.exports = {
   },
   ethereum: {
     tvl: eth
-  },
-  polygon: {
-    tvl: matic
   },
   terra: {
     tvl: terra
