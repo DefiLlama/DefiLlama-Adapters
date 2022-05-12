@@ -166,51 +166,73 @@ async function getOracle(block, chain, comptroller, oracleAbi) {
     return oracle;
 }
 
-async function getUnderlyingDecimals(block, chain, token, cether) {
-    if (token.toLowerCase() === cether?.toLowerCase()) {
-        return 18;
-    }
+async function getUnderlyingDecimalsMultiple(block, chain, tokens, cether) {
+    const response = {}
+    const otherTokens = []
+    tokens.forEach(token => {
+        if (token.toLowerCase() === cether?.toLowerCase()) {
+            response[token] = 18
+        } else {
+            otherTokens.push(token)
+        }
+    })
 
     try {
-        const { output: underlying } = await sdk.api.abi.call({
-            target: token,
+        const underLyingCalls = otherTokens.map(t => ({ target: t}))
+        const { output: underlying } = await sdk.api.abi.multiCall({
+            calls: underLyingCalls,
             abi: abi['underlying'],
             block,
-            chain: chain,
+            chain,
         });
-        const { output: decimals } = await sdk.api.abi.call({
-            target: underlying,
+
+        const failed = underlying.find(i => !i.success)
+        if (failed)   throw new Error('Something failed: %s', failed.input.target)
+
+        const underlyingMapping = {}
+        const decimalsCalls = underlying.map(({ output }) => ({ target: output }))
+        underlying.forEach(({ input, output }) => underlyingMapping[output] = input.target)
+        const { output: decimals } = await sdk.api.abi.multiCall({
+            calls: decimalsCalls,
             abi: "erc20:decimals",
             block,
-            chain: chain,
+            chain,
         });
-        return decimals;
+        decimals.forEach(({ input, output }, i) => response[underlying[i].input.target] = output)
+        return response;
     } catch (e) {
-        console.log(`${token} market rugged, is that market CETH?`)
+        console.log(`${e.message} market rugged, is that market CETH?`)
         throw e
     }
 }
 
-async function getUnderlyingPrice(block, chain, oracle, token, methodAbi) {
-    const { output: underlyingPrice } = await sdk.api.abi.call({
+async function getCashMultiple(block, chain, tokens, borrowed) {
+    const calls = tokens.map(t => ({ target: t}))
+    const { output: cash } = await sdk.api.abi.multiCall({
+        calls,
+        abi: borrowed ? abi.totalBorrows : abi['getCash'],
+        block,
+        chain,
+    });
+    const response = {}
+    cash.forEach(({ input, output }) => response[input.target] = output)
+    return response;
+}
+
+async function getUnderlyingPriceMultiple(block, chain, oracle, tokens, methodAbi) {
+    const calls = tokens.map(t => ({ params: [t]}))
+    const { output: underlyingPrice } = await sdk.api.abi.multiCall({
         target: oracle,
         abi: methodAbi,
         block,
-        params: [token],
-        chain: chain,
+        chain,
+        calls,
     });
-    return underlyingPrice;
+    const response = {}
+    underlyingPrice.forEach(({ input, output }) => response[input.params[0]] = output)
+    return response;
 }
 
-async function getCash(block, chain, token, borrowed) {
-    const { output: cash } = await sdk.api.abi.call({
-        target: token,
-        abi: borrowed ? abi.totalBorrows : abi['getCash'],
-        block,
-        chain: chain,
-    });
-    return cash;
-}
 
 function getCompoundUsdTvl(comptroller, chain, cether, borrowed, abis = {
     oracle: abi['oracle'],
@@ -222,28 +244,17 @@ function getCompoundUsdTvl(comptroller, chain, cether, borrowed, abis = {
 
         let allMarkets = await getAllMarkets(block, chain, comptroller);
         let oracle = await getOracle(block, chain, comptroller, abis.oracle);
-        await Promise.all(
-            allMarkets.map(async token => {
-                let amount = new BigNumber(await getCash(block, chain, token, borrowed));
-                let decimals = await getUnderlyingDecimals(block, chain, token, cether);
-                let locked = amount.div(10 ** decimals);
-                let underlyingPrice = new BigNumber(await getUnderlyingPrice(block, chain, oracle, token, abis.underlyingPrice)).div(
-                    10 ** (18 + 18 - decimals)
-                )
-                    
-                /*
-                Uncomment for debugging
-                console.log(
-                    //token, 
-                    (await sdk.api.erc20.symbol(token, chain)).output, 
-                    //locked.times(underlyingPrice).toNumber()/1e6, 
-                    underlyingPrice.toNumber(), 
-                    //amount.toNumber()
-                )
-                */
-                tvl = tvl.plus(locked.times(underlyingPrice));
-            })
-        );
+        const amounts  = await getCashMultiple(block, chain, allMarkets, borrowed)
+        const decimalsAll  = await getUnderlyingDecimalsMultiple(block, chain, allMarkets, cether)
+        const underlyingPrices  = await getUnderlyingPriceMultiple(block, chain, oracle, allMarkets, abis.underlyingPrice)
+
+        allMarkets.forEach(token => {
+            let amount = new BigNumber(amounts[token]);
+            let decimals = decimalsAll[token];
+            let locked = amount.div(10 ** decimals);
+            let underlyingPrice = new BigNumber(underlyingPrices[token]).div(10 ** (18 + 18 - decimals))
+            tvl = tvl.plus(locked.times(underlyingPrice));
+        })
         return toUSDTBalances(tvl.toNumber());
     }
 }

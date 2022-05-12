@@ -39,4 +39,4 @@ module.exports = {
         exp[chain] = compoundExports(comptroller[chain], chain, ceth[chain], native[chain], transform(chain), symbol => ["MLP", "CLP", "SLP"].some(c => symbol.includes(c)))
         return exp
     }, {})
-};
+}
