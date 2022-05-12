@@ -1,0 +1,629 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "contract IReserveOracleGetter",
+        "name": "_reserveOracle",
+        "type": "address"
+      },
+      {
+        "internalType": "contract INFTOracleGetter",
+        "name": "_nftOracle",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract ILendPoolAddressesProvider",
+        "name": "provider",
+        "type": "address"
+      },
+      { "internalType": "address", "name": "user", "type": "address" }
+    ],
+    "name": "getNftsData",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "underlyingAsset",
+            "type": "address"
+          },
+          { "internalType": "string", "name": "name", "type": "string" },
+          { "internalType": "string", "name": "symbol", "type": "string" },
+          { "internalType": "uint256", "name": "ltv", "type": "uint256" },
+          {
+            "internalType": "uint256",
+            "name": "liquidationThreshold",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "liquidationBonus",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "redeemDuration",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "auctionDuration",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "redeemFine",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "redeemThreshold",
+            "type": "uint256"
+          },
+          { "internalType": "bool", "name": "isActive", "type": "bool" },
+          { "internalType": "bool", "name": "isFrozen", "type": "bool" },
+          {
+            "internalType": "address",
+            "name": "bNftAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "priceInEth",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalCollateral",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IUiPoolDataProvider.AggregatedNftData[]",
+        "name": "",
+        "type": "tuple[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "underlyingAsset",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "bNftAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalCollateral",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IUiPoolDataProvider.UserNftData[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract ILendPoolAddressesProvider",
+        "name": "provider",
+        "type": "address"
+      }
+    ],
+    "name": "getNftsList",
+    "outputs": [
+      { "internalType": "address[]", "name": "", "type": "address[]" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract ILendPoolAddressesProvider",
+        "name": "provider",
+        "type": "address"
+      },
+      { "internalType": "address", "name": "user", "type": "address" }
+    ],
+    "name": "getReservesData",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "underlyingAsset",
+            "type": "address"
+          },
+          { "internalType": "string", "name": "name", "type": "string" },
+          { "internalType": "string", "name": "symbol", "type": "string" },
+          { "internalType": "uint256", "name": "decimals", "type": "uint256" },
+          {
+            "internalType": "uint256",
+            "name": "reserveFactor",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "borrowingEnabled",
+            "type": "bool"
+          },
+          { "internalType": "bool", "name": "isActive", "type": "bool" },
+          { "internalType": "bool", "name": "isFrozen", "type": "bool" },
+          {
+            "internalType": "uint128",
+            "name": "liquidityIndex",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "variableBorrowIndex",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "liquidityRate",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "variableBorrowRate",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint40",
+            "name": "lastUpdateTimestamp",
+            "type": "uint40"
+          },
+          {
+            "internalType": "address",
+            "name": "bTokenAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "debtTokenAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "interestRateAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "availableLiquidity",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalVariableDebt",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "priceInEth",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "variableRateSlope1",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "variableRateSlope2",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IUiPoolDataProvider.AggregatedReserveData[]",
+        "name": "",
+        "type": "tuple[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "underlyingAsset",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "bTokenBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "variableDebt",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IUiPoolDataProvider.UserReserveData[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract ILendPoolAddressesProvider",
+        "name": "provider",
+        "type": "address"
+      }
+    ],
+    "name": "getReservesList",
+    "outputs": [
+      { "internalType": "address[]", "name": "", "type": "address[]" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract ILendPoolAddressesProvider",
+        "name": "provider",
+        "type": "address"
+      },
+      { "internalType": "address[]", "name": "nftAssets", "type": "address[]" },
+      {
+        "internalType": "uint256[]",
+        "name": "nftTokenIds",
+        "type": "uint256[]"
+      }
+    ],
+    "name": "getSimpleLoansData",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "uint256", "name": "loanId", "type": "uint256" },
+          { "internalType": "uint256", "name": "state", "type": "uint256" },
+          {
+            "internalType": "address",
+            "name": "reserveAsset",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalCollateralInReserve",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalDebtInReserve",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "availableBorrowsInReserve",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "healthFactor",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "liquidatePrice",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "bidderAddress",
+            "type": "address"
+          },
+          { "internalType": "uint256", "name": "bidPrice", "type": "uint256" },
+          {
+            "internalType": "uint256",
+            "name": "bidBorrowAmount",
+            "type": "uint256"
+          },
+          { "internalType": "uint256", "name": "bidFine", "type": "uint256" }
+        ],
+        "internalType": "struct IUiPoolDataProvider.AggregatedLoanData[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract ILendPoolAddressesProvider",
+        "name": "provider",
+        "type": "address"
+      }
+    ],
+    "name": "getSimpleNftsData",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "underlyingAsset",
+            "type": "address"
+          },
+          { "internalType": "string", "name": "name", "type": "string" },
+          { "internalType": "string", "name": "symbol", "type": "string" },
+          { "internalType": "uint256", "name": "ltv", "type": "uint256" },
+          {
+            "internalType": "uint256",
+            "name": "liquidationThreshold",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "liquidationBonus",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "redeemDuration",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "auctionDuration",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "redeemFine",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "redeemThreshold",
+            "type": "uint256"
+          },
+          { "internalType": "bool", "name": "isActive", "type": "bool" },
+          { "internalType": "bool", "name": "isFrozen", "type": "bool" },
+          {
+            "internalType": "address",
+            "name": "bNftAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "priceInEth",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalCollateral",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IUiPoolDataProvider.AggregatedNftData[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract ILendPoolAddressesProvider",
+        "name": "provider",
+        "type": "address"
+      }
+    ],
+    "name": "getSimpleReservesData",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "underlyingAsset",
+            "type": "address"
+          },
+          { "internalType": "string", "name": "name", "type": "string" },
+          { "internalType": "string", "name": "symbol", "type": "string" },
+          { "internalType": "uint256", "name": "decimals", "type": "uint256" },
+          {
+            "internalType": "uint256",
+            "name": "reserveFactor",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "borrowingEnabled",
+            "type": "bool"
+          },
+          { "internalType": "bool", "name": "isActive", "type": "bool" },
+          { "internalType": "bool", "name": "isFrozen", "type": "bool" },
+          {
+            "internalType": "uint128",
+            "name": "liquidityIndex",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "variableBorrowIndex",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "liquidityRate",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "variableBorrowRate",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint40",
+            "name": "lastUpdateTimestamp",
+            "type": "uint40"
+          },
+          {
+            "internalType": "address",
+            "name": "bTokenAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "debtTokenAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "interestRateAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "availableLiquidity",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalVariableDebt",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "priceInEth",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "variableRateSlope1",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "variableRateSlope2",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IUiPoolDataProvider.AggregatedReserveData[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract ILendPoolAddressesProvider",
+        "name": "provider",
+        "type": "address"
+      },
+      { "internalType": "address", "name": "user", "type": "address" }
+    ],
+    "name": "getUserNftsData",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "underlyingAsset",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "bNftAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalCollateral",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IUiPoolDataProvider.UserNftData[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract ILendPoolAddressesProvider",
+        "name": "provider",
+        "type": "address"
+      },
+      { "internalType": "address", "name": "user", "type": "address" }
+    ],
+    "name": "getUserReservesData",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "underlyingAsset",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "bTokenBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "variableDebt",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IUiPoolDataProvider.UserReserveData[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "nftOracle",
+    "outputs": [
+      {
+        "internalType": "contract INFTOracleGetter",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "reserveOracle",
+    "outputs": [
+      {
+        "internalType": "contract IReserveOracleGetter",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
