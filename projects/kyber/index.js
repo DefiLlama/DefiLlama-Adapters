@@ -1,91 +1,9 @@
-const sdk = require('@defillama/sdk');
-const BigNumber = require('bignumber.js');
-const _ = require('underscore');
-const abi = require('./abi');
-const utils = require('../helper/utils')
-const web3 = require('../config/web3.js');
 const { calcTvl } = require('./tvl.js')
 const { transformAvaxAddress, fixAvaxBalances, transformFantomAddress, transformArbitrumAddress, getChainTransform } = require('../helper/portedTokens');
 const { getBlock } = require('../helper/getBlock');
 
 // tracking TVL for Kyber Network
-  async function ethTvl (timestamp, block) {
-    const balances = {};
-    const pairs = (await utils.fetchURL(
-      `https://api.kyber.network/currencies`
-    )).data.data;
-
-    const balanceOfCalls = [];
-    const tokenWalletCalls = [];
-    const reserves = new Set();
-    pairs.forEach(pair=>{
-      if(pair.reserves_src){
-        const pairReserves = new Set(pair.reserves_src.concat(pair.reserves_dest))
-        pairReserves.forEach(reserveAddress=>{
-          reserves.add(reserveAddress)
-          tokenWalletCalls.push({
-            target: reserveAddress,
-            params: [pair.address]
-          })
-          balanceOfCalls.push({
-            target: pair.address,
-            params: [reserveAddress]
-          })
-        })
-      }
-    })
-    const tokenWallets = (await sdk.api.abi.multiCall({
-      block,
-      calls: tokenWalletCalls,
-      abi: abi.getTokenWallet,
-    })).output;
-    const repeatedTokenWallets = {}
-    await Promise.all(tokenWallets.map(async result=>{
-      if(!reserves.has(result.output)){
-        const token = result.input.params[0];
-        const tokenWallet = result.output
-
-        if(repeatedTokenWallets[token+tokenWallet] !== undefined){
-          return;
-        }
-        repeatedTokenWallets[token+tokenWallet]=true;
-        if((await web3.eth.getCode(tokenWallet)) === '0x'){ // Ignore if EOA
-          return
-        }
-
-        balanceOfCalls.push({
-          target: result.input.params[0],
-          params: [result.output]
-        })
-      }
-    }))
-    const ethBalances = sdk.api.eth.getBalances({
-      targets: Array.from(reserves),
-      block
-    })
-    const balanceOfResult = await sdk.api.abi.multiCall({
-      block,
-      calls: balanceOfCalls,
-      abi: 'erc20:balanceOf',
-    });
-    const ethBalance = BigNumber.sum(...(await ethBalances).output.map(result=>result.balance))
-    balances['0x0000000000000000000000000000000000000000'] = ethBalance.toFixed()
-    /* combine token volumes on multiple markets */
-    _.forEach(balanceOfResult.output, (result) => {
-      let balance = new BigNumber(result.output || 0);
-      if (balance <= 0) return;
-
-      let asset = result.input.target;
-      let total = balances[asset];
-
-      if (total) {
-        balances[asset] = balance.plus(total).toFixed();
-      } else {
-        balances[asset] = balance.toFixed();
-      }
-    }) 
-    return balances;
-  }
+  
   // tracking TVL for KyberDMM ethereum
    async function ethDmmTVL(timestamp, ethBlock, chainBlocks) {
     return calcTvl(addr => `ethereum:${addr}`, ethBlock, 'ethereum', '0x833e4083B7ae46CeA85695c4f7ed25CDAd8886dE', 0, true);
