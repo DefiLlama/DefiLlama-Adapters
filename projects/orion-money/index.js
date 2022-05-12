@@ -63,11 +63,7 @@ async function returnDecimals(address, block) {
     if (address.toLowerCase() === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
       return 18;
     }
-    const { output: decimals } = await sdk.api.abi.call({
-      block,
-      target: address,
-      abi: abis.minABI.find(i => i.name === 'decimals')
-    })
+    const { output: decimals } = await sdk.api.erc20.decimals(address)
     return decimals;
   }
 
