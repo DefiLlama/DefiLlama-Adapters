@@ -2,11 +2,11 @@ const BigNumber = require("bignumber.js");
 
 const utils = require("../helper/utils");
 const { Pools, tokensAddress } = require("./constants.js");
-const { getContractInstance } = require("./utils.js");
 // node test.js projects/drops/index.js
 const masterchefABI = require("./abis/masterchef.json");
 const lptokenABI = require("./abis/lpToken.json");
 const erc20TokenABI = require("./abis/ERC20.json");
+const sdk = require('@defillama/sdk')
 
 const stakedTVL = async () => {
   let stakingTVL = new BigNumber(0);
@@ -15,13 +15,10 @@ const stakedTVL = async () => {
       ? new BigNumber(value).div(10 ** decimals).toString(10)
       : new BigNumber(value).div(10 ** 18).toString(10);
 
-  const masterchefContract = await getContractInstance(
-    masterchefABI,
-    tokensAddress.masterchef
-  );
-  const { poolLength, poolInfo } = masterchefContract.methods;
-
-  const length = await poolLength().call();
+  const { output: length } = await sdk.api.abi.call({
+    target: tokensAddress.masterchef,
+    abi: masterchefABI.find(i => i.name === 'poolLength')
+  });
   const poolInfos = [];
   const res = await utils.getTokenPricesFromString(tokensAddress.Comp);
   const dopPrice = res.data
@@ -29,7 +26,11 @@ const stakedTVL = async () => {
     : 0;
 
   for (let i = 0; i < length; i += 1) {
-    let _info = await poolInfo(i).call();
+    const { output: _info } = await sdk.api.abi.call({
+      params: [i],
+      target: tokensAddress.masterchef,
+      abi: masterchefABI.find(i => i.name === 'poolInfo')
+    });
     poolInfos.push({ ..._info, poolId: i });
   }
   for (let j = 0; j < poolInfos.length; j += 1) {
@@ -48,28 +49,32 @@ const stakedTVL = async () => {
     let methods;
 
     if (poolType === "LP") {
-      const lpTokenContract = await getContractInstance(
-        lptokenABI,
-        info.lpToken
-      );
-      methods = lpTokenContract.methods;
-      _totalLp = await methods.totalSupply().call();
-      _reserves = await methods.getReserves().call();
-      _token0 = await methods.token0().call();
-      _token1 = await methods.token1().call();
-      totalLpSupply = await methods.balanceOf(tokensAddress.masterchef).call();
+      const response = await Promise.all([
+        sdk.api.abi.call({ target: info.lpToken, abi: lptokenABI.find(i => i.name === 'totalSupply') }),
+        sdk.api.abi.call({ target: info.lpToken, abi: lptokenABI.find(i => i.name === 'getReserves') }),
+        sdk.api.abi.call({ target: info.lpToken, abi: lptokenABI.find(i => i.name === 'token0') }),
+        sdk.api.abi.call({ target: info.lpToken, abi: lptokenABI.find(i => i.name === 'token1') }),
+        sdk.api.abi.call({ target: info.lpToken, abi: lptokenABI.find(i => i.name === 'balanceOf'), params: [tokensAddress.masterchef], }),
+      ]).then(res => res.map(i => i.output ))
+      _totalLp = response[0]
+      _reserves = response[1]
+      _token0 = response[2]
+      _token1 = response[3]
+      totalLpSupply = response[4]
     } else {
-      const erc20TokenContract = await getContractInstance(
-        erc20TokenABI,
-        info.lpToken
-      );
-      methods = erc20TokenContract.methods;
-      _totalLp = await methods.totalSupply().call();
+
+      const response = await Promise.all([
+        sdk.api.abi.call({ target: info.lpToken, abi: erc20TokenABI.find(i => i.name === 'totalSupply') }),
+        sdk.api.abi.call({ target: info.lpToken, abi: erc20TokenABI.find(i => i.name === 'decimals') }),
+        sdk.api.abi.call({ target: info.lpToken, abi: erc20TokenABI.find(i => i.name === 'balanceOf'), params: [tokensAddress.masterchef], }),
+      ]).then(res => res.map(i => i.output ))
+      _totalLp = response[0]
+      _reserves = "0"
+      _token1 = response[1]
+      totalLpSupply = response[2]
       _reserves = "0";
       const res = await utils.getTokenPricesFromString(info.lpToken);
       _token0 = res.data ? res.data[info.lpToken.toLowerCase()].usd : 0;
-      _token1 = await methods.decimals().call();
-      totalLpSupply = await methods.balanceOf(tokensAddress.masterchef).call();
     }
 
     let totalLocked = new BigNumber(0);
