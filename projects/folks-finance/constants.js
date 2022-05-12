@@ -39,7 +39,7 @@ const pools = [
 
 const liquidGovernanceAppId = 694427622;
 
-const oracleAppId = 687039379;
+const oracleAppId = 735190677;
 const oracleDecimals = 14;
 
 exports.pools = pools;
