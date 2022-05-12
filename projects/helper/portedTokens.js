@@ -815,6 +815,12 @@ async function transformDfkAddress() {
   }
   return (addr) => mapping[addr.toLowerCase()] || `dfk:${addr.toLowerCase()}`
 }
+async function transformAuroraAddress() {
+  const mapping = {
+    '0xda2585430fef327ad8ee44af8f1f989a2a91a3d2': '0x853d955aCEf822Db058eb8505911ED77F175b99e', // FRAX
+  }
+  return (addr) => mapping[addr.toLowerCase()] || `aurora:${addr.toLowerCase()}`
+}
 
 function fixGodwokenBalances(balances) {
   const mapping = {
@@ -1001,6 +1007,7 @@ const chainTransforms = {
   ethereum: transformEthereumAddress,
   oasis: transformOasisAddress,
   dfk: transformDfkAddress,
+  aurora: transformAuroraAddress,
   findora: transformFindoraAddress,
 };
 
