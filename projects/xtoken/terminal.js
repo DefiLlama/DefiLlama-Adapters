@@ -89,7 +89,7 @@ async function getPoolData(network){
       let stakedTokenDetails = await UTILS.getTokenPrice(stakedToken, network);
       stakedToken = stakedTokenDetails;
 
-      let poolAddress = await UTILS.checksumAddress(pool.id);
+      let poolAddress = (pool.id).toLowerCase();
       let poolBalances;
       if(!pool.bufferTokenBalance) {
           poolBalances = [UTILS.bn(0), UTILS.bn(0)];
