@@ -1,9 +1,10 @@
 const ABI = require("./Helper.json");
-const Caver = require("caver-js");
+const sdk = require("@defillama/sdk")
+const chain = 'klaytn'
+
 const { toUSDTBalances } = require("../helper/balances");
 const BigNumber = require("bignumber.js");
 
-const KOKOA_EP_URL = "https://public-node-api.klaytnapi.com/v1/cypress";
 const HELPER_ADDR = "0x2b170005ADA0e616E78A7fa93ea4473c03A98aa0";
 
 const KLAYSWAP_POOLS =[
@@ -36,14 +37,17 @@ const KOKONUT_POOLS =[
   }
 ]
 
-const fetchCollateral = async () => {
+const fetchCollateral = async (ts, _block, chainBlocks) => {
+  const block = chainBlocks[chain]
   //calculate TVL sum of all collaterals locked in the protocol vaults
-  const caver = new Caver(KOKOA_EP_URL);
-  const sc = new caver.contract(ABI.abi, HELPER_ADDR);
   const decimal = 18;
 
   var sum = new BigNumber(0);
-  const assetTvlLists = await sc.methods.getCollateralTVL().call();
+  const { output: assetTvlLists} = await sdk.api.abi.call({
+    chain, block,
+    target: HELPER_ADDR,
+    abi: ABI.abi.find(i => i.name === 'getCollateralTVL')
+  })
   for (assetTvl of assetTvlLists){
     sum = sum.plus(assetTvl);
   }
@@ -51,36 +55,49 @@ const fetchCollateral = async () => {
   return toUSDTBalances(sum.toFixed(2));
 }
 
-const fetchPool2 = async () => {
-  //
-  const caver = new Caver(KOKOA_EP_URL);
-  const sc = new caver.contract(ABI.abi, HELPER_ADDR);
+const fetchPool2 = async (ts, _block, chainBlocks) => {
+  const block = chainBlocks[chain]
   const decimal = 18;
 
   let klayswapPool2Tvl = BigNumber(0);
   for (pool of KLAYSWAP_POOLS){
-    klayswapPool2Tvl = klayswapPool2Tvl.plus(await sc.methods.getKlayswapLpFarmTVL(pool[`address`]).call());
+    const { output: value} = await sdk.api.abi.call({
+      chain, block,
+      target: HELPER_ADDR,
+      params: [pool[`address`]],
+      abi: ABI.abi.find(i => i.name === 'getKlayswapLpFarmTVL')
+    })
+    klayswapPool2Tvl = klayswapPool2Tvl.plus(value);
   }
   let kokonutPool2Tvl = BigNumber(0);
   for (pool of KOKONUT_POOLS){
-    kokonutPool2Tvl = kokonutPool2Tvl.plus(await sc.methods.getKokonutLpFarmTVL(pool[`address`]).call());
+    const { output: value} = await sdk.api.abi.call({
+      chain, block,
+      target: HELPER_ADDR,
+      params: [pool[`address`]],
+      abi: ABI.abi.find(i => i.name === 'getKokonutLpFarmTVL')
+    })
+    kokonutPool2Tvl = kokonutPool2Tvl.plus(value);
   }
   const totalPool2 = klayswapPool2Tvl.plus(kokonutPool2Tvl).dividedBy(BigNumber(10).pow(decimal*2));
   return toUSDTBalances(totalPool2.toFixed(2));
 }
 
-const fetchStakedToken = async () => {
+const fetchStakedToken = async (ts, _block, chainBlocks) => {
+  const block = chainBlocks[chain]
   //staked token prices are calculated using real-time KOKOA price from KLAY-KOKOA LP
-  const caver = new Caver(KOKOA_EP_URL);
-  const sc = new caver.contract(ABI.abi, HELPER_ADDR);
-  let skokoaTvl = BigNumber(await sc.methods.getSkokoaTVL().call());
+
+  let { output: skokoaTvl} = await sdk.api.abi.call({
+    chain, block,
+    target: HELPER_ADDR,
+    abi: ABI.abi.find(i => i.name === 'getSkokoaTVL')
+  })
   const decimal = 18;
-  skokoaTvl = skokoaTvl.dividedBy(BigNumber(10).pow(decimal*2));
+  skokoaTvl = BigNumber(skokoaTvl).dividedBy(BigNumber(10).pow(decimal*2));
   return toUSDTBalances(BigNumber(skokoaTvl).toFixed(2));
 }
 
 module.exports = {
-  timetravel: false,
   klaytn:{
     staking:fetchStakedToken,
     tvl:fetchCollateral,

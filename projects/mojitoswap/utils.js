@@ -1,5 +1,4 @@
 const { request, gql } = require("graphql-request");
-const dayjs = require("dayjs");
 const { toUSDTBalances } = require("../helper/balances");
 
 const Ethers = require("ethers");
@@ -22,14 +21,15 @@ const { JsonRpcProvider } = require("@ethersproject/providers");
 
 async function getLatestBlock(timestamp) {
   //  a few blocks behind the blockchain,so we write a hack here
-  const utcCurrentTime = timestamp ?? dayjs().unix();
+  const unixTimeNow = Math.floor(Date.now()/1000)
+  const utcCurrentTime = timestamp ?? unixTimeNow;
   const res = await request(KCC_BLOCK_GRAPH, GET_BLOCK, {
     timestampFrom: utcCurrentTime,
     timestampTo: utcCurrentTime + 600,
   });
 
   const block =
-    res?.blocks[0]?.number ?? (await getLatestBlock(dayjs().unix() - 600));
+    res?.blocks[0]?.number ?? (await getLatestBlock(unixTimeNow - 600));
   return Number(block);
 }
 

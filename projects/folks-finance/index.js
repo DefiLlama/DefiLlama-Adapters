@@ -1,17 +1,11 @@
-const algosdk = require("algosdk");
 const { toUSDTBalances } = require("../helper/balances");
+const { lookupApplications, lookupAccountByID , getApplicationAddress } = require("../helper/algorand");
 const {
   pools,
   liquidGovernanceAppId,
   oracleAppId,
   oracleDecimals,
 } = require("./constants");
-
-const indexer = new algosdk.Indexer(
-  "",
-  "https://algoindexer.algoexplorerapi.io/",
-  ""
-);
 
 function fromIntToBytes8Hex(num) {
   return num.toString(16).padStart(16, "0");
@@ -38,7 +32,7 @@ function getParsedValueFromState(state, key, encoding = "utf8") {
 }
 
 async function getAppState(appId) {
-  const res = await indexer.lookupApplications(appId).do();
+  const res = await lookupApplications(appId);
   return res.application.params["global-state"];
 }
 
@@ -60,10 +54,8 @@ async function getPrices() {
 
 async function getAlgoLiquidGovernanceDepositUsd(prices) {
   const [app, acc] = await Promise.all([
-    indexer.lookupApplications(liquidGovernanceAppId).do(),
-    indexer
-      .lookupAccountByID(algosdk.getApplicationAddress(liquidGovernanceAppId))
-      .do(),
+    lookupApplications(liquidGovernanceAppId),
+    lookupAccountByID(getApplicationAddress(liquidGovernanceAppId)),
   ]);
   const state = app.application.params["global-state"];
 

@@ -155,11 +155,18 @@ async function transformAvaxAddress() {
 }
 
 async function transformBscAddress() {
-  const binanceBridge = (
-    await utils.fetchURL(
-      "https://api.binance.org/bridge/api/v2/tokens?walletNetwork="
-    )
-  ).data.data.tokens;
+  let binanceBridge = []
+
+  // try {
+  //   binanceBridge = (
+  //     await utils.fetchURL(
+  //       "https://api.binance.org/bridge/api/v2/tokens?walletNetwork="
+  //     )
+  //   ).data.data.tokens;
+  // } catch (e) {
+  //   console.log(e.message)
+  //   console.log('failed to fetch binance bridge tokens')
+  // }
 
   const mapping = {
     '0x0000000000000000000000000000000000000000': 'bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // BNB -> WBNB
@@ -340,7 +347,7 @@ async function transformHarmonyAddress() {
 
   return (addr) => {
     addr = addr.toLowerCase()
-    if (mapping[addr])  return mapping[addr]
+    if (mapping[addr]) return mapping[addr]
     const srcToken = bridge.find((token) =>
       compareAddresses(addr, token.hrc20Address)
     );
@@ -442,7 +449,7 @@ async function transformMoonbeamAddress() {
     //    return "moonbeam";
     // }
     if (compareAddresses(addr, "0x0000000000000000000000000000000000000000")) { //GLMR -> WGLMR
-       return "moonbeam:0xacc15dc74880c9944775448304b263d191c6077f";
+      return "moonbeam:0xacc15dc74880c9944775448304b263d191c6077f";
     }
     return `moonbeam:${addr}`; //`optimism:${addr}` // TODO: Fix
   };
@@ -562,7 +569,7 @@ async function transformOasisAddress() {
 }
 function fixBscBalances(balances) {
   if (balances['bsc:0x8b04E56A8cd5f4D465b784ccf564899F30Aaf88C']) {
-    sdk.util.sumSingleBalance(balances, 'anchorust', 
+    sdk.util.sumSingleBalance(balances, 'anchorust',
       Number(balances['bsc:0x8b04E56A8cd5f4D465b784ccf564899F30Aaf88C']) / 10 ** 6)
   }
 }
@@ -719,6 +726,7 @@ async function transformKlaytnAddress() {
 function fixKlaytnBalances(balances) {
   const mapping = {
     '0xd7a4d10070a4f7bc2a015e78244ea137398c3b74': { coingeckoId: 'klay-token', decimals: 18, }, // Wrapped KLAY
+    '0xc6a2ad8cc6e4a7e08fc37cc5954be07d499e7654': { coingeckoId: 'klayswap-protocol', decimals: 18, }, // Wrapped KLAY
   }
   return fixBalances(balances, mapping)
 }
@@ -806,6 +814,12 @@ async function transformDfkAddress() {
     '0x3ad9dfe640e1a9cc1d9b0948620820d975c3803a': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC
   }
   return (addr) => mapping[addr.toLowerCase()] || `dfk:${addr.toLowerCase()}`
+}
+async function transformAuroraAddress() {
+  const mapping = {
+    '0xda2585430fef327ad8ee44af8f1f989a2a91a3d2': '0x853d955aCEf822Db058eb8505911ED77F175b99e', // FRAX
+  }
+  return (addr) => mapping[addr.toLowerCase()] || `aurora:${addr.toLowerCase()}`
 }
 
 function fixGodwokenBalances(balances) {
@@ -993,6 +1007,7 @@ const chainTransforms = {
   ethereum: transformEthereumAddress,
   oasis: transformOasisAddress,
   dfk: transformDfkAddress,
+  aurora: transformAuroraAddress,
   findora: transformFindoraAddress,
 };
 
@@ -1037,7 +1052,7 @@ async function transformFindoraAddress() {
   return transformChainAddress(mapping, 'findora')
 }
 
-function transformChainAddress(mapping, chain, { skipUnmapped =  false, chainName = '' } =  {}) {
+function transformChainAddress(mapping, chain, { skipUnmapped = false, chainName = '' } = {}) {
   normalizeMapping(mapping)
 
   return (addr) => {

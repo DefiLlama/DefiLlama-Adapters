@@ -1,76 +1,6 @@
   const abi = require('./abi.json');
   const sdk = require('@defillama/sdk');
-  const axios = require('axios');
-  const _ = require('underscore');
-  const moment = require('moment');
   const BigNumber = require('bignumber.js');
-
-  async function generateCallsByAPI(timestamp) {
-    let tokenConverters = [];
-
-    let moreData = true;
-    let index = 0;
-    let pageFetchCount = 300;
-
-    while(moreData) {
-      let converters = await axios.get('https://api.bancor.network/0.1/converters', {
-        params: {
-          skip: index,
-          limit: pageFetchCount
-        }
-      });
-
-      converters = converters.data.data.page;
-
-      index += pageFetchCount;
-
-      tokenConverters = [
-        ...tokenConverters,
-        ...converters
-      ];
-
-      if(converters.length !== pageFetchCount) {
-        moreData = false;
-      }
-    }
-
-    tokenConverters = _.filter(tokenConverters, (converter) => {
-      let hasLength = converter.details.length > 0;
-      let isEthereum = converter.details[0].blockchain.type === 'ethereum';
-      let createdTimestamp = moment(converter.createdAt).utcOffset(0).unix();
-      let existsAtTimestamp = createdTimestamp <= timestamp;
-
-      return hasLength && isEthereum && existsAtTimestamp;
-    });
-
-    let calls = [];
-
-    _.each(tokenConverters, (converter) => {
-      let details = converter.details[0];
-      let reserves = details.reserves;
-
-      let owners = _.map(converter.converters, (converter) => {
-        return converter.blockchainId;
-      });
-
-      _.each(owners, (owner) => {
-        if (owner === undefined) {
-          return;
-        }
-
-        _.each(reserves, (reserve) => {
-          let address = reserve.blockchainId;
-
-          calls.push({
-            target: address,
-            params: owner
-          })
-        })
-      });
-    });
-
-    return calls;
-  }
 
   async function generateCallsByBlockchain(block) {
     const registryAddress = '0x52Ae12ABe5D8BD778BD5397F99cA900624CfADD4';
@@ -147,13 +77,7 @@
   ==================================================*/
 
   async function tvl(timestamp, block) {
-    let balanceCalls;
-    if (timestamp < 1577836800) {
-      balanceCalls = await generateCallsByAPI(timestamp);
-    }
-    else {
-      balanceCalls = await generateCallsByBlockchain(block);
-    }
+    let balanceCalls = await generateCallsByBlockchain(block);
 
     // get ETH balances
     const ethAddress = '0x0000000000000000000000000000000000000000';
@@ -185,5 +109,7 @@
 
   module.exports = {
     start: 1501632000,  // 08/02/2017 @ 12:00am (UTC)
-    tvl,
+    ethereum: {
+      tvl,
+    }
   };

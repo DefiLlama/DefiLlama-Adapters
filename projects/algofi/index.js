@@ -1,9 +1,9 @@
-const algosdk = require("algosdk")
 const sdk = require('@defillama/sdk')
 const { toUSDTBalances } = require('../helper/balances')
 const { get } = require('../helper/http')
 const retry = require("async-retry");
 const axios = require("axios");
+const { lookupApplications, } = require("../helper/algorand");
 
 const marketStrings = {
     underlying_cash : "uc",
@@ -147,8 +147,8 @@ const assetDictionary = {
 }
 
 
-async function getGlobalMarketState(indexerClient, marketId) {
-  let response = await indexerClient.lookupApplications(marketId).do();
+async function getGlobalMarketState(marketId) {
+  let response = await lookupApplications(marketId);
   let results = {}
   response.application.params["global-state"].forEach(x => {
     let decodedKey =  Buffer.from(x.key, 'base64').toString('binary')
@@ -158,10 +158,10 @@ async function getGlobalMarketState(indexerClient, marketId) {
   return results
 }
 
-async function getPrices(indexerClient, assetDictionary, orderedAssets) {
+async function getPrices(assetDictionary, orderedAssets) {
   let prices = {}
   for (const assetName of orderedAssets) {
-    let response = await indexerClient.lookupApplications(assetDictionary[assetName]["oracleAppId"]).do()
+    let response = await lookupApplications(assetDictionary[assetName]["oracleAppId"])
     for (const y of response.application.params["global-state"]) {
       let decodedKey = Buffer.from(y.key, 'base64').toString('binary')
       if (decodedKey === assetDictionary[assetName]["oracleFieldName"]) {
@@ -174,8 +174,8 @@ async function getPrices(indexerClient, assetDictionary, orderedAssets) {
 }
 
 function getMarketSupply(assetName, marketGlobalState, prices, assetDictionary) {
-    underlying_cash = assetName === "STBL" ? marketGlobalState[marketStrings.active_collateral] : marketGlobalState[marketStrings.underlying_cash]
-    supplyUnderlying = underlying_cash - marketGlobalState[marketStrings.underlying_reserves]
+    underlyingCash = ((assetName === "STBL") || (assetName === "vALGO"))  ? marketGlobalState[marketStrings.active_collateral] : marketGlobalState[marketStrings.underlying_cash]
+    supplyUnderlying = underlyingCash - marketGlobalState[marketStrings.underlying_reserves]
     supplyUnderlying /= Math.pow(10, assetDictionary[assetName]['decimals'])
 
     return supplyUnderlying * prices[assetName]
@@ -189,13 +189,12 @@ function getMarketBorrow(assetName, marketGlobalState, prices) {
 }
 
 async function borrowed() {
-    let client = new algosdk.Indexer("", "https://algoindexer.algoexplorerapi.io/", "")
-    let prices = await getPrices(client, assetDictionary, orderedAssets)
+    let prices = await getPrices(assetDictionary, orderedAssets)
 
     borrow = 0
 
     for (const assetName of orderedAssets) {
-        marketGlobalState = await getGlobalMarketState(client, assetDictionary[assetName]["marketAppId"])
+        marketGlobalState = await getGlobalMarketState(assetDictionary[assetName]["marketAppId"])
         borrow += getMarketBorrow(assetName, marketGlobalState, prices, assetDictionary)
     }
 
@@ -203,12 +202,11 @@ async function borrowed() {
 }
 
 async function supply() {
-    let client = new algosdk.Indexer("", "https://algoindexer.algoexplorerapi.io/", "")
-    let prices = await getPrices(client, assetDictionary, orderedAssets)
+    let prices = await getPrices(assetDictionary, orderedAssets)
 
     supply = 0
     for (const assetName of orderedAssets) {
-        marketGlobalState = await getGlobalMarketState(client, assetDictionary[assetName]["marketAppId"])
+        marketGlobalState = await getGlobalMarketState(assetDictionary[assetName]["marketAppId"])
         assetTvl = getMarketSupply(assetName, marketGlobalState, prices, assetDictionary)
         supply += assetTvl
     }
@@ -217,8 +215,6 @@ async function supply() {
 }
 
 async function staking() {
-    let client = new algosdk.Indexer("", "https://algoindexer.algoexplorerapi.io/", "")
-
     let lpCirculations = {}
 
     let prices = {
@@ -228,7 +224,6 @@ async function staking() {
 
     for (const contractName of variableValueStakingContracts) {
         let contractState = await getGlobalMarketState(
-            client,
             assetDictionary['STAKING_CONTRACTS'][contractName]["poolAppId"]
         )
         lpCirculations[contractName] = contractState[marketStrings.lp_circulation] / 1000000
@@ -255,7 +250,7 @@ async function staking() {
 
     staked = 0
     for (const contractName of stakingContracts) {
-        marketGlobalState = await getGlobalMarketState(client, assetDictionary['STAKING_CONTRACTS'][contractName]["marketAppId"])
+        marketGlobalState = await getGlobalMarketState(assetDictionary['STAKING_CONTRACTS'][contractName]["marketAppId"])
         staked += getMarketSupply(contractName, marketGlobalState, prices, assetDictionary['STAKING_CONTRACTS'])
     }
 

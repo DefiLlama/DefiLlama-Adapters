@@ -131,6 +131,42 @@ function isLP(symbol) {
   return symbol.includes('LP') || symbol.includes('PGL') || symbol.includes('UNI-V2') || symbol === "PNDA-V2" || symbol.includes('GREEN-V2')
 }
 
+function mergeExports(...exportsArray) {
+  exportsArray = exportsArray.flat()
+  const exports = {}
+
+  exportsArray.forEach(exportObj => {
+    Object.keys(exportObj).forEach(key => {
+      if (typeof exportObj[key] !== 'object') {
+        exports[key] = exportObj[key]
+        return;
+      }
+      Object.keys(exportObj[key]).forEach(key1 => addToExports(key, key1, exportObj[key][key1]))
+    })
+  })
+
+  Object.keys(exports)
+    .filter(chain => typeof exports[chain] === 'object')
+    .forEach(chain => {
+      const obj = exports[chain]
+      Object.keys(obj).forEach(key => {
+        if (obj[key].length > 1)
+          obj[key] = sdk.util.sumChainTvls(obj[key])
+        else
+          obj[key] = obj[key][0]
+      })
+    })
+
+
+  return exports
+
+  function addToExports(chain, key, fn) {
+    if (!exports[chain]) exports[chain] = {}
+    if (!exports[chain][key]) exports[chain][key] = []
+    exports[chain][key].push(fn)
+  }
+}
+
 module.exports = {
   createIncrementArray,
   fetchURL,
@@ -146,4 +182,5 @@ module.exports = {
   getPricesFromContract,
   isLP,
   parallelAbiCall,
+  mergeExports,
 }
