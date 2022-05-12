@@ -31,12 +31,15 @@ async function returnBalance(token, address) {
   return parseFloat(balance);
 }
 
-async function returnDecimals(address) {
+async function returnDecimals(address, block) {
   if (address.toLowerCase() === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
     return 18;
   }
-  let contract = new web3.eth.Contract(abis.minABI, address)
-  let decimals = await contract.methods.decimals().call();
+  const { output: decimals } = await sdk.api.abi.multiCall({
+    block,
+    target: address,
+    abi: abis.minABI.find(i => i.name === 'decimals')
+  })
   return decimals;
 }
 
