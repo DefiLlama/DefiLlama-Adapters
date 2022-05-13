@@ -4,6 +4,7 @@ const sdk = require('@defillama/sdk')
 const { usdtAddress } = require('./balances')
 
 async function query(url, block) {
+    block = undefined
     let endpoint = `${process.env["TERRA_RPC"] ?? "https://lcd.terra.dev"}/wasm/${url}`
     if (block !== undefined) {
         endpoint += `&height=${block - (block % 100)}`
