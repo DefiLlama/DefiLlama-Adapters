@@ -19,4 +19,4 @@ module.exports = {
       "evmos"
     ),
   },
-}; // node test.js projects/spaceswap/index.js
+}; // node test.js projects/spacefi/index.js
