@@ -115,7 +115,7 @@ const getOnsPoolsTvl = async (price) => {
 const getOneVaultTvl = async (wethPrice, aethPrice, onsPrice) => {
   const onsValue = new BigNumber(await getBalanceOf(tokenAddresses.oneVault, tokenAddresses.onsToken)
   ).times(onsPrice).div(1e18);
-  const aEthValue = new BigNumber(await getBalanceOf(tokenAddresses.oneVault, tokenAddresses.onsToken)
+  const aEthValue = new BigNumber(await getBalanceOf(tokenAddresses.oneVault, tokenAddresses.aethToken)
   ).times(aethPrice).div(1e18);
   return onsValue.plus(aEthValue);
 }

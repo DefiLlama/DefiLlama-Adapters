@@ -22,4 +22,4 @@ module.exports = {
   avalanche: {
     tvl: getAvalancheTvl,
   },
-}
+};
