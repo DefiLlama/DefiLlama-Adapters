@@ -1,9 +1,9 @@
 // @ts-check
 /**
- * @typedef {{ [address: string]: string }} Balances
- * @typedef {{ [address: string]: { price: string } }} TokenPrices
- * @typedef {{ [address: string]: { price: string, balance: string } }} TokenData
- */
+* @typedef {{ [address: string]: string }} Balances
+* @typedef {{ [address: string]: { price: string } }} TokenPrices
+* @typedef {{ [address: string]: { price: string, balance: string } }} TokenData
+*/
 const sdk = require("@defillama/sdk");
 
 const abis = require("./abis.js").abis;
@@ -19,7 +19,7 @@ const utils = require("../helper/utils");
  * @returns {bigint}
  */
 const multiplyUSDby1e18 = (usd, bn) =>
-  (BigInt(Math.round(usd * 100)) * BigInt(bn)) / BigInt(1e18) / 100n;
+  (BigInt(Math.round(usd * 100)) * BigInt(bn)) / BigInt(1e18) / BigInt(100);
 
 /**
  * @param {Balances} balances
@@ -37,7 +37,7 @@ const getTVLFromBalancesAndTokenPrices = (balances, tokenPrices) => {
   return Object.values(ibTokensData).reduce(
     (acc, { price, balance }) =>
       acc + (BigInt(price) * BigInt(balance)) / BigInt(1e36),
-    0n
+      BigInt(0)
   );
 };
 
@@ -45,7 +45,7 @@ const getTVLFromBalancesAndTokenPrices = (balances, tokenPrices) => {
 
 /**
  * WARNING: this method return prices with 1e18 base, those can't be used in `multiplyUSDby1e18` function
- * @param {{ block }} options
+ * @param {any} options
  * @returns {Promise<TokenPrices>} prices
  */
 const getIbTokenPrices = async ({ block }) => {
@@ -133,7 +133,7 @@ const getOtherTokensTVL = async ({ balances }) => {
 
     acc += multiplyUSDby1e18(price, balance);
     return acc;
-  }, 0n);
+  }, BigInt(0));
 
   return othersTvl;
 };
@@ -160,32 +160,26 @@ async function fetch(timestamp, block) {
 }
 
 /**
- * @param {string} timestamp
+ * @param {string} _timestamp
  * @param {any} block
- * @return {Promise<BigInt>} TVL
+ * @return {Promise<any>} TVL
  */
-async function staking(timestamp, block) {
+async function staking(_timestamp, block) {
   const { KP3R, VKP3R } = registry;
   const balances = {};
 
   await sumTokensAndLPsSharedOwners(balances, [[KP3R, false]], [VKP3R], block);
-  const kp3rBalance = balances[KP3R];
-
-  const { data } = await utils.getPricesFromContract([KP3R]);
-  const kp3rPrice = data[KP3R].usd;
-
-  const stakingTvl = multiplyUSDby1e18(kp3rPrice, kp3rBalance);
 
   // @dev should return stakingTvl
   return balances;
 }
 
 /**
- * @param {string} timestamp
+ * @param {string} _timestamp
  * @param {any} block
- * @return {Promise<BigInt>} TVL
+ * @return {Promise<any>} TVL
  */
-async function borrowed(timestamp, block) {
+async function borrowed(_timestamp, block) {
   /** @type {Balances} */
   const balances = {};
 
@@ -216,11 +210,11 @@ async function borrowed(timestamp, block) {
 }
 
 /**
- * @param {string} timestamp
+ * @param {string} _timestamp
  * @param {any} block
  * @return {Promise<Balances>} balances
  */
-async function tvl(timestamp, block) {
+async function tvl(_timestamp, block) {
   /** @type {Balances} */
   const balances = {};
 
