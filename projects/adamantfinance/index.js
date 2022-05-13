@@ -21,17 +21,12 @@ const vaultsUrl = {
 
 /*** Polygon Addresses ***/
 const stakingContracts_polygon = [
-  "0x2ac4569854e62f78f9c3dDF98f9f41961089935c",
-  "0xC5bCD23f21B6288417eB6C760F8AC0fBb4bb8a56",
-  "0xfFD82F81513b207fB9D7D7835e178B6193f2cA96",
+  "0x920f22E1e5da04504b765F8110ab96A20E6408Bd",
 ];
 
-const vaultAddresses_polygon = ["0x6959D03be3858c41aAa6A86F7411d2f8746dEC5c"];
+const vaultAddresses_polygon = ["0xF7661EE874Ec599c2B450e0Df5c40CE823FEf9d3"]; //ADDY/WETH staking contract
 
-const lpAddresses_polygon = [
-  "0x5fcb390B4422f4FF7940c23618A62BF5f69658A8",
-  "0xa172bbbfe57fa8e7326bc5598be700c5a16d72c7",
-];
+const lpAddresses_polygon = ["0xa5bf14bb945297447fe96f6cd1b31b40d31175cb"]; //ADDY/WETH
 
 const ADDY = "0xc3fdbadc7c795ef1d6ba111e06ff8f16a20ea539";
 
@@ -79,7 +74,7 @@ async function calcPool2(
       calls: uniVaults.map((vault) => ({
         target: vault,
       })),
-      abi: abi.balance,
+      abi: chain === "polygon" ? abi.totalSupply: abi.balance,
     })
   ).output.map((val) => val.output);
 
