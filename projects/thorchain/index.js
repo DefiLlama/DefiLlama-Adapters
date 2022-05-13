@@ -1,15 +1,11 @@
-const utils = require('../helper/utils');
+const { get } = require('../helper/http');
+
+let allTVLData
 
 async function getTvl(chain) {
-  let tvl = await utils.fetchURL('https://api.flipsidecrypto.com/api/v2/queries/6c43c12d-eeb3-456a-9f51-b5f1a63df64e/data/latest');
-  if(!tvl.hasOwnProperty('data')) {
-    return(0);
-  }
-  tvl = tvl.data.filter(x => x.CHAIN == chain);
-  if(tvl.length) {
-    return(tvl[0].TVL)
-  }
-  return(0);
+  if (!allTVLData)
+    allTVLData = await get('https://api.flipsidecrypto.com/api/v2/queries/6c43c12d-eeb3-456a-9f51-b5f1a63df64e/data/latest');
+  return allTVLData.find(x => x.CHAIN == chain).TVL
 }
 async function bch() {
   return(getTvl('BCH'));
@@ -29,9 +25,9 @@ async function eth() {
 async function ltc() {
   return(getTvl('LTC'));
 }
-async function terra() {
-  return(getTvl('TERRA'));
-}
+// async function terra() {
+//   return(getTvl('TERRA'));
+// }
 
 async function fetch() {
   return (
@@ -41,7 +37,7 @@ async function fetch() {
     + (await doge())
     + (await eth())
     + (await ltc())
-    + (await terra())
+    // + (await terra())
 }
 
 module.exports = {
@@ -66,8 +62,8 @@ module.exports = {
   litecoin:{
     fetch: ltc
   },
-  terra:{
-    fetch: terra
-  },
+  // terra:{
+  //   fetch: terra
+  // },
   fetch
 }
