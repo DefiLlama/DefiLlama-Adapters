@@ -2,6 +2,7 @@ const BigNumber = require('bignumber.js');
 const { toUSDTBalances } = require('../balances');
 const vaultABI = require('./abis/TraderJoeVault.json');
 const sdk = require("@defillama/sdk")
+const UniswapV2PairContractAbi = require('./abis/UniswapV2Pair.json');
 
 const ZERO = new BigNumber(0);
 
@@ -46,33 +47,23 @@ const formatDecimal = (value, decimal = 18, numPoint = 4, precision = 2) => {
   return data.dp(numPoint, 1).toNumber();
 };
 
-const getReserves = async (pairContract) => {
-  try {
-    const { _reserve0, _reserve1, _blockTimestampLast } = await pairContract.methods.getReserves().call();
-    return { reserve0: _reserve0, reserve1: _reserve1, blockTimestampLast: _blockTimestampLast };
-  } catch {
-    return { reserve0: '0', reserve1: '0' };
-  }
+const getReserves = async (pairAddress) => {
+  const { output: { _reserve0, _reserve1, _blockTimestampLast } } = await sdk.api.abi.call({
+    target: pairAddress,
+    abi: UniswapV2PairContractAbi.find(i => i.name === 'getReserves')
+  })
+  return { reserve0: _reserve0, reserve1: _reserve1, blockTimestampLast: _blockTimestampLast };
 };
 
 
-const getTotalSupplyOf = async (contract) => {
-  try {
-    const amount = await contract.methods.totalSupply().call();
-    return new BigNumber(amount);
-  } catch (error) {
-    console.log(error);
-    return new BigNumber(0);
-  }
+const getTotalSupplyOf = async (contract, chain) => {
+  const { output: totalSupply } = await sdk.api.erc20.totalSupply({ target: contract })
+  return new BigNumber(totalSupply);
 };
 
 const getBalanceOf = async (account, contract) => {
-  try {
-    const amount = await contract.methods.balanceOf(account).call();
-    return new BigNumber(amount);
-  } catch (error) {
-    return new BigNumber(0);
-  }
+  const { output } = await sdk.api.erc20.balanceOf({ target: contract, owner: account, })
+    return new BigNumber(output);
 };
 
 module.exports = {
