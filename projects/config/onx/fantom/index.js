@@ -12,7 +12,7 @@ const getBooPrice = async () => {
   return fetchPriceData(tokenAddresses.fantom.usdcBooPair, true, 1e12);
 };
 
-const fetchPriceData = async (pairAddress,viceVersa = false,multiplier = 1,) => {
+const fetchPriceData = async (pairAddress, viceVersa = false, multiplier = 1,) => {
   const { reserve0, reserve1 } = await getReserves(pairAddress);
   const isValid = !new BigNumber(reserve0).eq(ZERO) && !new BigNumber(reserve1).eq(ZERO);
 
@@ -27,16 +27,12 @@ const fetchPriceData = async (pairAddress,viceVersa = false,multiplier = 1,) => 
 };
 
 const getReserves = async (pairAddress) => {
-  try {
-    const { output: { _reserve0, _reserve1, _blockTimestampLast } } = await sdk.api.abi.call({
-      chain: 'fantom',
-      target: pairAddress,
-      abi: UniswapV2PairContractAbi.find(i => i.name === 'getReserves')
-    })
-    return { reserve0: _reserve0, reserve1: _reserve1, blockTimestampLast: _blockTimestampLast };
-  } catch {
-    return { reserve0: '0', reserve1: '0' };
-  }
+  const { output: { _reserve0, _reserve1, _blockTimestampLast } } = await sdk.api.abi.call({
+    chain: 'fantom',
+    target: pairAddress,
+    abi: UniswapV2PairContractAbi.find(i => i.name === 'getReserves')
+  })
+  return { reserve0: _reserve0, reserve1: _reserve1, blockTimestampLast: _blockTimestampLast };
 };
 
 const getUniPairQuery = (pairAddress) => gql`
