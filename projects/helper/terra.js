@@ -51,7 +51,7 @@ async function getDenomBalance(denom, owner, block) {
 
 
 // LP stuff
-export async function totalSupply(token, block) {
+async function totalSupply(token, block) {
     const data = await query(`contracts/${token}/store?query_msg={"token_info":{}}`, block)
     return data.total_supply
 }
@@ -132,6 +132,7 @@ function sumSingleBalance(balances, token, balance, price) {
 }
 
 module.exports = {
+    totalSupply,
     getBalance,
     getDenomBalance,
     unwrapLp,
