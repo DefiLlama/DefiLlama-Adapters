@@ -6,7 +6,7 @@ const ENDPOINTS = {
 };
 
 const tvl = async (timestamp, block) => {
-  const result = await axios.default.get(`${BASE_API}${ENDPOINTS.tvl}/`);
+  const result = await axios.default.get(`${BASE_API}${ENDPOINTS.tvl}`);
 
   if (result.status !== 200) return {};
 
