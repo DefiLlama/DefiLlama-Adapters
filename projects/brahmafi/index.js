@@ -15,7 +15,7 @@ const tvl = async (timestamp, block) => {
 
 module.exports = {
   methodology:
-    "TVL is the total supply of our vault tokens, multiplied by their corresponding share price. The share price is calculated based on the positions taken by vaults both on ethereum and optimism networks",
+    "TVL is the total supply of our vault tokens, multiplied by their corresponding share price. The share price is calculated based on the value of positions taken by vaults both on ethereum and optimism networks",
   ethereum: {
     tvl,
   },
