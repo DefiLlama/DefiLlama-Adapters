@@ -10,6 +10,12 @@ const DATA = {
     return [
       bobaTransform,
       {
+        treasury: {
+          addresss: ["0x559dBda9Eb1E02c0235E245D9B175eb8DcC08398"],
+          tokens: [
+            ["0xa18bF3994C0Cc6E3b63ac420308E5383f53120D7", false], // BOBA(Boba)
+          ],
+        },
         swaps: [
           {
             name: "4pool",
@@ -25,6 +31,20 @@ const DATA = {
       },
     ];
   },
+};
+
+const chainTreasuryExports = (chainTreasury, chains) => {
+  const chainTreasuries = chains.reduce(
+    (obj, chain) => ({
+      ...obj,
+      [chain === "avax" ? "avalanche" : chain]: {
+        treasury: chainTreasury(chain),
+      },
+    }),
+    {}
+  );
+
+  return chainTreasuries;
 };
 
 const chainTVL = (chain) => {
@@ -47,7 +67,51 @@ const chainTVL = (chain) => {
   };
 };
 
-module.exports = chainExports(chainTVL, ["boba"]);
+const chainTreasury = (chain) => {
+  return async (timestamp, _ethBlock, chainBlocks) => {
+    const balances = {};
+    const block = await getBlock(timestamp, chain, chainBlocks);
+
+    const [transform, data] = DATA[chain]();
+
+    await sumTokensAndLPsSharedOwners(
+      balances,
+      data.treasury.tokens,
+      data.treasury.addresss,
+      block,
+      chain,
+      transform
+    );
+
+    return balances;
+  };
+};
+
+const chainJoinExports = (cExports, chains) => {
+  const createdCExports = cExports.map((cExport) => cExport(chains));
+  const chainJoins = chains.reduce((obj, chain) => {
+    chain = chain === "avax" ? "avalanche" : chain;
+
+    return {
+      ...obj,
+      [chain]: Object.fromEntries(
+        createdCExports.flatMap((cExport) => [
+          ...Object.entries(cExport[chain]),
+        ])
+      ),
+    };
+  }, {});
+
+  return chainJoins;
+};
+
+module.exports = chainJoinExports(
+  [
+    (chains) => chainExports(chainTVL, chains),
+    (chains) => chainTreasuryExports(chainTreasury, chains),
+  ],
+  ["boba"]
+);
 
 module.exports = {
   ...module.exports,
