@@ -4,6 +4,9 @@ const { pool2s } = require("../helper/pool2");
 const _ = require("underscore");
 const BigNumber = require("bignumber.js");
 
+// SOLACE xsLocker address
+const XSLOCKER = "0x501Ace47c5b0C2099C4464f681c3fa2ECD3146C1"
+
 // Ethereum
 const ETHEREUM_UWP_ADDRESS = "0x5efC0d9ee3223229Ce3b53e441016efC5BA83435"; // underwriting pool address
 const SOLACE_USDC_POOL = "0x9C051F8A6648a51eF324D30C235da74D060153aC"; // sushi solace-usdc pool
@@ -11,7 +14,6 @@ const ETHEREUM_LP_TOKENS = {
   "SOLACE": "0x501acE9c35E60f03A2af4d484f49F9B1EFde9f40",
   "USDC": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
 }
-const SOLACE = "0x501acE9c35E60f03A2af4d484f49F9B1EFde9f40"
 const ETHEREUM_TOKENS = [
   {
     PoolToken: "0x501acE9c35E60f03A2af4d484f49F9B1EFde9f40",
@@ -76,9 +78,8 @@ async function fetchBalances(contract, tokens, chain, block) {
 
 async function ethereum(timestamp, block, chainBlocks) {
   let result = await fetchBalances(ETHEREUM_UWP_ADDRESS, ETHEREUM_TOKENS,  "ethereum", chainBlocks["ethereum"]);
-  const lpBalances = await fetchBalances(SOLACE_USDC_POOL, ETHEREUM_TOKENS,  "ethereum", chainBlocks["ethereum"]);
-  result[ETHEREUM_LP_TOKENS.SOLACE] = BigNumber(result[ETHEREUM_LP_TOKENS.SOLACE] || 0).plus(lpBalances[ETHEREUM_LP_TOKENS.SOLACE] || 0).toFixed();
-  result[ETHEREUM_LP_TOKENS.USDC] =   BigNumber(result[ETHEREUM_LP_TOKENS.USDC]   || 0).plus(lpBalances[ETHEREUM_LP_TOKENS.USDC]   || 0).toFixed();
+  const lockerBalances = await fetchBalances(XSLOCKER, ETHEREUM_TOKENS,  "ethereum", chainBlocks["ethereum"]);
+  result[ETHEREUM_LP_TOKENS.SOLACE] = BigNumber(result[ETHEREUM_LP_TOKENS.SOLACE] || 0).plus(lockerBalances[ETHEREUM_LP_TOKENS.SOLACE] || 0).toFixed();
   return result;
 }
 
@@ -126,9 +127,8 @@ const POLYGON_TOKENS = [
 
 async function polygon(timestamp, block, chainBlocks) {
   let result = await fetchBalances(POLYGON_UWP_ADDRESS, POLYGON_TOKENS,  "polygon", chainBlocks["polygon"]);
-  const lpBalances = await fetchBalances(SOLACE_FRAX_POOL, POLYGON_TOKENS,  "polygon", chainBlocks["polygon"]);
-  result[ POLYGON_LP_TOKENS.SOLACE] = BigNumber(result[POLYGON_LP_TOKENS.SOLACE] || 0).plus(lpBalances[POLYGON_LP_TOKENS.SOLACE] || 0).toFixed();
-  result[ POLYGON_LP_TOKENS.FRAX] =   BigNumber(result[POLYGON_LP_TOKENS.FRAX]   || 0).plus(lpBalances[POLYGON_LP_TOKENS.FRAX]   || 0).toFixed();
+  const lockerBalances = await fetchBalances(XSLOCKER, POLYGON_TOKENS,  "polygon", chainBlocks["polygon"]);
+  result[POLYGON_LP_TOKENS.SOLACE] = BigNumber(result[POLYGON_LP_TOKENS.SOLACE] || 0).plus(lockerBalances[POLYGON_LP_TOKENS.SOLACE] || 0).toFixed();
   return result;
 }
 
@@ -180,9 +180,8 @@ const AURORA_TOKENS = [
 
 async function aurora(timestamp, block, chainBlocks) {
   let result = await fetchBalances(AURORA_UWP_ADDRESS, AURORA_TOKENS,  "aurora", chainBlocks["aurora"]);
-  const lpBalances = await fetchBalances(SOLACE_WNEAR_POOL, AURORA_TOKENS,  "aurora", chainBlocks["aurora"]);
-  result[AURORA_LP_TOKENS.SOLACE] = BigNumber(result[AURORA_LP_TOKENS.SOLACE] || 0).plus(lpBalances[AURORA_LP_TOKENS.SOLACE] || 0).toFixed();
-  result[AURORA_LP_TOKENS.WNEAR]  = BigNumber(result[AURORA_LP_TOKENS.WNEAR]  || 0).plus(lpBalances[AURORA_LP_TOKENS.WNEAR]  || 0).toFixed();
+  const lockerBalances = await fetchBalances(XSLOCKER, AURORA_TOKENS,  "aurora", chainBlocks["aurora"]);
+  result[AURORA_LP_TOKENS.SOLACE] = BigNumber(result[AURORA_LP_TOKENS.SOLACE] || 0).plus(lockerBalances[AURORA_LP_TOKENS.SOLACE] || 0).toFixed();
   return result;
 }
 
