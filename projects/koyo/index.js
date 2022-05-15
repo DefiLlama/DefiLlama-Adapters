@@ -1,4 +1,3 @@
-const { chainExports } = require("../helper/exports");
 const { transformBobaAddress } = require("../helper/portedTokens");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const { getBlock } = require("../helper/getBlock");
@@ -33,18 +32,18 @@ const DATA = {
   },
 };
 
-const chainTreasuryExports = (chainTreasury, chains) => {
-  const chainTreasuries = chains.reduce(
+const chainTypeExports = (chainType, chainFn, chains) => {
+  const chainTypeProps = chains.reduce(
     (obj, chain) => ({
       ...obj,
       [chain === "avax" ? "avalanche" : chain]: {
-        treasury: chainTreasury(chain),
+        [chainType]: chainFn(chain),
       },
     }),
     {}
   );
 
-  return chainTreasuries;
+  return chainTypeProps;
 };
 
 const chainTVL = (chain) => {
@@ -107,8 +106,8 @@ const chainJoinExports = (cExports, chains) => {
 
 module.exports = chainJoinExports(
   [
-    (chains) => chainExports(chainTVL, chains),
-    (chains) => chainTreasuryExports(chainTreasury, chains),
+    (chains) => chainTypeExports("tvl", chainTVL, chains),
+    (chains) => chainTypeExports("treasury", chainTreasury, chains),
   ],
   ["boba"]
 );
