@@ -8,6 +8,7 @@ const { getBlock } = require('./getBlock');
 const { getChainTransform, getFixBalances } = require('./portedTokens')
 
 async function requery(results, chain, block, abi) {
+    console.log('results:', results)
     if (results.some(r => !r.success)) {
         const failed = results.map((r, i) => [r, i]).filter(r => !r[0].success)
         const newResults = await sdk.api.abi
