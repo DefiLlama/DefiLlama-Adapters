@@ -1,0 +1,2556 @@
+[
+  {
+    "inputs": [],
+    "name": "dyst",
+    "outputs": [
+      {
+        "internalType": "contract IDyst",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "dystAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "accountAddress",
+        "type": "address"
+      }
+    ],
+    "name": "dystBalanceOf",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "dystInflationSinceInception",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "penPoolAddress",
+        "type": "address"
+      }
+    ],
+    "name": "dystPoolByPenPool",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "dystopiaLens",
+    "outputs": [
+      {
+        "internalType": "contract IDystopiaLens",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "dystopiaLensAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "dystPoolAddress",
+        "type": "address"
+      }
+    ],
+    "name": "gaugeByDystPool",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "gaugesFactoryAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_penPoolFactoryAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_userProxyFactoryAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_dystopiaLensAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_penAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_vlPenAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_penDystAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_penDystRewardsPoolAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_rewardsDistributorAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_partnersRewardsPoolAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_userProxyInterfaceAddress",
+        "type": "address"
+      }
+    ],
+    "name": "initializeProxyStorage",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "userProxyAddress",
+        "type": "address"
+      }
+    ],
+    "name": "isPartner",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "penPoolAddress",
+        "type": "address"
+      }
+    ],
+    "name": "isPenPool",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "accountAddress",
+        "type": "address"
+      }
+    ],
+    "name": "isProxyPartner",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "accountAddress",
+        "type": "address"
+      }
+    ],
+    "name": "migrateablePenPools",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "fromPenPoolAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "toPenPoolAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "fromStakingPoolAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "balanceOf",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct PenLens.MigrateablePool[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "minterAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "partnersRewardsPoolAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "pen",
+    "outputs": [
+      {
+        "internalType": "contract IPen",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "penAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "penDyst",
+    "outputs": [
+      {
+        "internalType": "contract IPenDyst",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "penDystAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "accountAddress",
+        "type": "address"
+      }
+    ],
+    "name": "penDystBalanceOf",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "accountAddress",
+        "type": "address"
+      }
+    ],
+    "name": "penDystRewardPoolPosition",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "rewardTokenAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rewardRate",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rewardPerToken",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "getRewardForDuration",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "earned",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IUserProxy.RewardToken[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "penDystRewardsPool",
+    "outputs": [
+      {
+        "internalType": "contract IMultiRewards",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "penDystRewardsPoolAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "dystPoolAddress",
+        "type": "address"
+      }
+    ],
+    "name": "penPoolByDystPool",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "penPoolAddress",
+        "type": "address"
+      }
+    ],
+    "name": "penPoolData",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "id",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "stakingAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "stakedTotalSupply",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalSupply",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "id",
+                "type": "address"
+              },
+              {
+                "internalType": "string",
+                "name": "symbol",
+                "type": "string"
+              },
+              {
+                "internalType": "bool",
+                "name": "stable",
+                "type": "bool"
+              },
+              {
+                "internalType": "address",
+                "name": "token0Address",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "token1Address",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "gaugeAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "bribeAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "address[]",
+                "name": "bribeTokensAddresses",
+                "type": "address[]"
+              },
+              {
+                "internalType": "address",
+                "name": "fees",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "totalSupply",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct IDystopiaLens.Pool",
+            "name": "poolData",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct PenLens.PenPoolData",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "penPoolFactory",
+    "outputs": [
+      {
+        "internalType": "contract IPenPoolFactory",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "penPoolFactoryAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "penPoolsAddresses",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "penPoolsData",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "id",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "stakingAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "stakedTotalSupply",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalSupply",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "id",
+                "type": "address"
+              },
+              {
+                "internalType": "string",
+                "name": "symbol",
+                "type": "string"
+              },
+              {
+                "internalType": "bool",
+                "name": "stable",
+                "type": "bool"
+              },
+              {
+                "internalType": "address",
+                "name": "token0Address",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "token1Address",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "gaugeAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "bribeAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "address[]",
+                "name": "bribeTokensAddresses",
+                "type": "address[]"
+              },
+              {
+                "internalType": "address",
+                "name": "fees",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "totalSupply",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct IDystopiaLens.Pool",
+            "name": "poolData",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct PenLens.PenPoolData[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "_penPoolsAddresses",
+        "type": "address[]"
+      }
+    ],
+    "name": "penPoolsData",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "id",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "stakingAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "stakedTotalSupply",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalSupply",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "id",
+                "type": "address"
+              },
+              {
+                "internalType": "string",
+                "name": "symbol",
+                "type": "string"
+              },
+              {
+                "internalType": "bool",
+                "name": "stable",
+                "type": "bool"
+              },
+              {
+                "internalType": "address",
+                "name": "token0Address",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "token1Address",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "gaugeAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "bribeAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "address[]",
+                "name": "bribeTokensAddresses",
+                "type": "address[]"
+              },
+              {
+                "internalType": "address",
+                "name": "fees",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "totalSupply",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct IDystopiaLens.Pool",
+            "name": "poolData",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct PenLens.PenPoolData[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "penPoolsLength",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "penPoolsMigrationMapping",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "penTotalSupply",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "penV1Address",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "penV1RedeemAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "penV1RewardsAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "accountAddress",
+        "type": "address"
+      }
+    ],
+    "name": "penV1StakedPenDystBalanceOf",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "stakedBalance",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "accountAddress",
+        "type": "address"
+      }
+    ],
+    "name": "penV1StakedPenDystStakableAmount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "stakableAmount",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "poolsFactoryAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "accountAddress",
+        "type": "address"
+      }
+    ],
+    "name": "poolsPositions",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "id",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "balanceOf",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IDystopiaLens.PositionPool[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "accountAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "startIndex",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "endIndex",
+        "type": "uint256"
+      }
+    ],
+    "name": "poolsPositions",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "id",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "balanceOf",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IDystopiaLens.PositionPool[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "accountAddress",
+        "type": "address"
+      }
+    ],
+    "name": "positionsOf",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "userProxyAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "veTotalBalanceOf",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "tokenId",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "balanceOf",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "locked",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct IDystopiaLens.PositionVe[]",
+            "name": "vePositions",
+            "type": "tuple[]"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "stakingPoolAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "penPoolAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "dystPoolAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "balanceOf",
+                "type": "uint256"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "address",
+                    "name": "rewardTokenAddress",
+                    "type": "address"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "rewardRate",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "rewardPerToken",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "getRewardForDuration",
+                    "type": "uint256"
+                  },
+                  {
+                    "internalType": "uint256",
+                    "name": "earned",
+                    "type": "uint256"
+                  }
+                ],
+                "internalType": "struct IUserProxy.RewardToken[]",
+                "name": "rewardTokens",
+                "type": "tuple[]"
+              }
+            ],
+            "internalType": "struct IUserProxy.PositionStakingPool[]",
+            "name": "stakingPools",
+            "type": "tuple[]"
+          },
+          {
+            "internalType": "uint256",
+            "name": "penDystBalanceOf",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "stakedPenDystBalanceOf",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "rewardTokenAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "rewardRate",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "rewardPerToken",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "getRewardForDuration",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "earned",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct IUserProxy.RewardToken[]",
+            "name": "penDystRewardPoolPosition",
+            "type": "tuple[]"
+          },
+          {
+            "internalType": "uint256",
+            "name": "penV1StakedPenDystStakableAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "penV1StakedPenDystBalanceOf",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "rewardTokenAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "rewardRate",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "rewardPerToken",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "getRewardForDuration",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "earned",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct IUserProxy.RewardToken[]",
+            "name": "penV1PenDystRewardPoolPosition",
+            "type": "tuple[]"
+          },
+          {
+            "internalType": "uint256",
+            "name": "penBalanceOf",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "dystBalanceOf",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "vlPenBalanceOf",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "total",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "unlockable",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "locked",
+                "type": "uint256"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "uint112",
+                    "name": "amount",
+                    "type": "uint112"
+                  },
+                  {
+                    "internalType": "uint112",
+                    "name": "boosted",
+                    "type": "uint112"
+                  },
+                  {
+                    "internalType": "uint32",
+                    "name": "unlockTime",
+                    "type": "uint32"
+                  }
+                ],
+                "internalType": "struct IVlPen.LockedBalance[]",
+                "name": "locks",
+                "type": "tuple[]"
+              }
+            ],
+            "internalType": "struct IVlPen.LocksData",
+            "name": "vlPenLocksData",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "rewardTokenAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "rewardRate",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "rewardPerToken",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "getRewardForDuration",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "earned",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct IUserProxy.RewardToken[]",
+            "name": "vlPenRewardPoolPosition",
+            "type": "tuple[]"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "delegateAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "weightTotal",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "weightUsed",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "weightAvailable",
+                "type": "uint256"
+              },
+              {
+                "components": [
+                  {
+                    "internalType": "address",
+                    "name": "poolAddress",
+                    "type": "address"
+                  },
+                  {
+                    "internalType": "int256",
+                    "name": "weight",
+                    "type": "int256"
+                  }
+                ],
+                "internalType": "struct IVotingSnapshot.Vote[]",
+                "name": "votes",
+                "type": "tuple[]"
+              }
+            ],
+            "internalType": "struct PenLens.VotesData",
+            "name": "votesData",
+            "type": "tuple"
+          },
+          {
+            "internalType": "uint256",
+            "name": "penV1BalanceOf",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address[]",
+            "name": "userProxyImplementationsAddresses",
+            "type": "address[]"
+          }
+        ],
+        "internalType": "struct PenLens.UserPosition",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "protocolAddresses",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "penPoolFactoryAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "dystopiaLensAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "penAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "vlPenAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "penDystAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "voterProxyAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "dystAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "voterAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "poolsFactoryAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "gaugesFactoryAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "minterAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "veAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "userProxyInterfaceAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "votingSnapshotAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "penV1RewardsAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "penV1RedeemAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "penV1Address",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "tokensAllowlistAddress",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct PenLens.ProtocolAddresses",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "proxyStorageInitialized",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "accountAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "stakingPoolAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "rewardTokenAddress",
+        "type": "address"
+      }
+    ],
+    "name": "rewardTokenPositionOf",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "rewardTokenAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rewardRate",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rewardPerToken",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "getRewardForDuration",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "earned",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IUserProxy.RewardToken",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "stakingPoolAddress",
+        "type": "address"
+      }
+    ],
+    "name": "rewardTokensData",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "id",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rewardRate",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "periodFinish",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IPenLens.RewardTokenData[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "stakingPoolsAddresses",
+        "type": "address[]"
+      }
+    ],
+    "name": "rewardTokensDatas",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "id",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rewardRate",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "periodFinish",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IPenLens.RewardTokenData[][]",
+        "name": "",
+        "type": "tuple[][]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "accountAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "stakingPoolAddress",
+        "type": "address"
+      }
+    ],
+    "name": "rewardTokensPositionsOf",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "rewardTokenAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rewardRate",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rewardPerToken",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "getRewardForDuration",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "earned",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IUserProxy.RewardToken[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "accountAddress",
+        "type": "address"
+      }
+    ],
+    "name": "rewardTokensPositionsOf",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "stakingPoolAddress",
+            "type": "address"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "rewardTokenAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "rewardRate",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "rewardPerToken",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "getRewardForDuration",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "earned",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct IUserProxy.RewardToken[]",
+            "name": "rewardTokens",
+            "type": "tuple[]"
+          }
+        ],
+        "internalType": "struct PenLens.StakingPoolRewardTokens[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "rewardsDistributorAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "fromPenPoolAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "toPenPoolAddress",
+        "type": "address"
+      }
+    ],
+    "name": "setMigration",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "fromPenPoolsAddresses",
+        "type": "address[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "toPenPoolsAddresses",
+        "type": "address[]"
+      }
+    ],
+    "name": "setMigrations",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "accountAddress",
+        "type": "address"
+      }
+    ],
+    "name": "stakedPenDystBalanceOf",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "stakedBalance",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "accountAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "stakingPoolAddress",
+        "type": "address"
+      }
+    ],
+    "name": "stakingPoolPosition",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "stakingPoolAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "penPoolAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "dystPoolAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "balanceOf",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "rewardTokenAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "rewardRate",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "rewardPerToken",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "getRewardForDuration",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "earned",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct IUserProxy.RewardToken[]",
+            "name": "rewardTokens",
+            "type": "tuple[]"
+          }
+        ],
+        "internalType": "struct IUserProxy.PositionStakingPool",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "accountAddress",
+        "type": "address"
+      }
+    ],
+    "name": "stakingPoolsPositions",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "stakingPoolAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "penPoolAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "dystPoolAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "balanceOf",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "rewardTokenAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "rewardRate",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "rewardPerToken",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "getRewardForDuration",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "earned",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct IUserProxy.RewardToken[]",
+            "name": "rewardTokens",
+            "type": "tuple[]"
+          }
+        ],
+        "internalType": "struct IUserProxy.PositionStakingPool[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "stakingPoolsPositions",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "stakingPoolAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "penPoolAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "dystPoolAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "balanceOf",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "rewardTokenAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "rewardRate",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "rewardPerToken",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "getRewardForDuration",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "earned",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct IUserProxy.RewardToken[]",
+            "name": "rewardTokens",
+            "type": "tuple[]"
+          }
+        ],
+        "internalType": "struct IUserProxy.PositionStakingPool[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "dystPoolAddress",
+        "type": "address"
+      }
+    ],
+    "name": "stakingRewardsByDystPool",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "penPoolAddress",
+        "type": "address"
+      }
+    ],
+    "name": "stakingRewardsByPenPool",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "tokenId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "tokensAllowlist",
+    "outputs": [
+      {
+        "internalType": "contract ITokensAllowlist",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "tokensAllowlistAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_newTreasury",
+        "type": "address"
+      }
+    ],
+    "name": "transferTreasury",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "treasuryAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "userProxiesLength",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "accountAddress",
+        "type": "address"
+      }
+    ],
+    "name": "userProxyByAccount",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      }
+    ],
+    "name": "userProxyByIndex",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "userProxyFactory",
+    "outputs": [
+      {
+        "internalType": "contract IUserProxyFactory",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "userProxyFactoryAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "userProxyInterfaceAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "ve",
+    "outputs": [
+      {
+        "internalType": "contract IVe",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "veAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "tokenId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "balanceOf",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "locked",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IDystopiaLens.PositionVe[]",
+        "name": "positions",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "veTotalBalanceOf",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "vlPen",
+    "outputs": [
+      {
+        "internalType": "contract IVlPen",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "vlPenAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "accountAddress",
+        "type": "address"
+      }
+    ],
+    "name": "vlPenLocksData",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "total",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "unlockable",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "locked",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint112",
+                "name": "amount",
+                "type": "uint112"
+              },
+              {
+                "internalType": "uint112",
+                "name": "boosted",
+                "type": "uint112"
+              },
+              {
+                "internalType": "uint32",
+                "name": "unlockTime",
+                "type": "uint32"
+              }
+            ],
+            "internalType": "struct IVlPen.LockedBalance[]",
+            "name": "locks",
+            "type": "tuple[]"
+          }
+        ],
+        "internalType": "struct IVlPen.LocksData",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "accountAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "rewardTokenAddress",
+        "type": "address"
+      }
+    ],
+    "name": "vlPenRewardTokenPositionOf",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "rewardTokenAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rewardRate",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rewardPerToken",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "getRewardForDuration",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "earned",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IUserProxy.RewardToken",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "accountAddress",
+        "type": "address"
+      }
+    ],
+    "name": "vlPenRewardTokenPositionsOf",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "rewardTokenAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rewardRate",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rewardPerToken",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "getRewardForDuration",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "earned",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IUserProxy.RewardToken[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "accountAddress",
+        "type": "address"
+      }
+    ],
+    "name": "votePositionsOf",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "delegateAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "weightTotal",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "weightUsed",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "weightAvailable",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "poolAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "int256",
+                "name": "weight",
+                "type": "int256"
+              }
+            ],
+            "internalType": "struct IVotingSnapshot.Vote[]",
+            "name": "votes",
+            "type": "tuple[]"
+          }
+        ],
+        "internalType": "struct PenLens.VotesData",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "voterAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "voterProxy",
+    "outputs": [
+      {
+        "internalType": "contract IVoterProxy",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "voterProxyAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "votingSnapshot",
+    "outputs": [
+      {
+        "internalType": "contract IVotingSnapshot",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "votingSnapshotAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
