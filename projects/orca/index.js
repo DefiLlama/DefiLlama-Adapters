@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 const endpoint = "https://api.orca.so/pools";
-const wpEndpoint = "https://api-v2.orca.so/pools";
+const wpEndpoint = "https://mainnet-zp2-v2.orca.so/pools";
 
 async function fetch() {
     const [pools, whirlpools] = await Promise.all([axios.get(endpoint), axios.get(wpEndpoint)]);

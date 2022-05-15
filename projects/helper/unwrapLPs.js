@@ -34,7 +34,11 @@ const yearnVaults = {
   // yvDAI
   "0x19d3364a399d251e894ac732651be8b0e4e85001": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
   // yvDAI
+  "0xacd43e627e64355f1861cec6d3a6688b31a6f952": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+  // yvDAI
   "0xda816459f1ab5631232fe5e97a05bbbb94970c95": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+  // yvDAI
+  "0x16de59092dae5ccf4a1e6439d611fd0653f0bd01": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
   // yvSNX
   "0xf29ae508698bdef169b89834f76704c3b205aedf": "0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F",
   // yvUNI
@@ -71,12 +75,17 @@ async function unwrapYearn(balances, yToken, block, chain = "ethereum", transfor
   const tokenKey = chain == 'ethereum' ? yToken : `${chain}:${yToken}`
   if (!balances[tokenKey]) return;
 
-  let pricePerShare = await sdk.api.abi.call({
-    target: yToken,
-    abi: getPricePerShare[1],
-    block: block,
-    chain: chain
-  });
+  let pricePerShare
+  try {
+    pricePerShare =  await sdk.api.abi.call({
+      target: yToken,
+      abi: getPricePerShare[1],
+      block: block,
+      chain: chain
+    });
+  } catch (e) {
+    console.log('Failing to get price per share for %s, trying getPricePerFullShare', yToken)
+  }
   if (pricePerShare == undefined) {
     pricePerShare = await sdk.api.abi.call({
       target: yToken,

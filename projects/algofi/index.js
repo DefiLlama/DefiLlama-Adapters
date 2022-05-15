@@ -174,8 +174,8 @@ async function getPrices(assetDictionary, orderedAssets) {
 }
 
 function getMarketSupply(assetName, marketGlobalState, prices, assetDictionary) {
-    underlying_cash = assetName === "STBL" ? marketGlobalState[marketStrings.active_collateral] : marketGlobalState[marketStrings.underlying_cash]
-    supplyUnderlying = underlying_cash - marketGlobalState[marketStrings.underlying_reserves]
+    underlyingCash = ((assetName === "STBL") || (assetName === "vALGO"))  ? marketGlobalState[marketStrings.active_collateral] : marketGlobalState[marketStrings.underlying_cash]
+    supplyUnderlying = underlyingCash - marketGlobalState[marketStrings.underlying_reserves]
     supplyUnderlying /= Math.pow(10, assetDictionary[assetName]['decimals'])
 
     return supplyUnderlying * prices[assetName]

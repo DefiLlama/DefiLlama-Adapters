@@ -185,30 +185,6 @@ async function aurora(timestamp, block, chainBlocks) {
   return result;
 }
 
-async function polygonPool2(timestamp, block, chainBlocks) {
-  const balances = {};
-
-  const output = await sdk.api.abi.multiCall({
-    calls: [
-      {
-        target: '0x45c32fA6DF82ead1e2EF74d17b76547EDdFaFF89',
-        params: [ SOLACE_FRAX_POOL ]
-      },
-      {
-        target: SOLACE,
-        params: [ SOLACE_FRAX_POOL ]
-      },
-    ],
-    abi: "erc20:balanceOf",
-    block: chainBlocks.polygon,
-    chain: "polygon",
-  });
-
-  sdk.util.sumMultiBalanceOf(balances, output);
-
-  return balances;
-}
-
 module.exports = {
   timetravel: true,
   ethereum: {
