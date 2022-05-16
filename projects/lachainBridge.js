@@ -7,7 +7,15 @@ const contracts = {
     "avalanche-2": "0xD4aE8F772dcf2e20b103c740AfD9D9f9E78dbfFC",
     "fantom": "0x012cebA65fD071473a9E0d3C5048702734a1eE5e",
     "arbitrum": "0xD4aE8F772dcf2e20b103c740AfD9D9f9E78dbfFC",
-    "harmony": "0x0A19afbE4519A40Df3b48BE46EDc0720724B4A6B"
+    "harmony": "0x0A19afbE4519A40Df3b48BE46EDc0720724B4A6B",
+}
+
+const contracts_lachain = {
+    "wUSDT": "0x32D2b9bBCf25525b8D7E92CBAB14Ca1a5f347B14",
+    "latoken": "0x3a898D596840C6B6b586d722bFAdCC8c4761BF41",
+    "amUSDT": "0x38E1280725EeAa6208a4f1Aa6DbDccc3bf788070",
+    "avUSDT": "0x15551e9C0322204e2701D6FD2A7ef45A91428656",
+    "aUSDT": "0x0A0eBc20a1540c4029CaF455ba80495EC250C951",
 }
 
 async function tvl_polygon(timestamp, block, chainBlocks) {
@@ -82,6 +90,55 @@ async function tvl_harmony(timestamp, block, chainBlocks) {
     return {[`harmony`]: supplies_polygon / 10 ** 18}
 };
 
+async function tvl_lachain(timestamp, block, chainBlocks) {
+
+    const balances = {};
+
+    const supplies = (await sdk.api.abi.multiCall({
+        calls: Object.values(contracts_lachain).map((c) => ({
+            target: c
+        })),
+        abi: "erc20:totalSupply",
+        block: chainBlocks.lachain,
+        chain: 'lachain'
+    })).output;
+
+    // console.log("lachain supplies:: ", supplies)
+
+    const decimals = (await sdk.api.abi.multiCall({
+        calls: Object.values(contracts_lachain).map((c) => ({
+            target: c
+        })),
+        abi: "erc20:decimals",
+        block: chainBlocks.lachain,
+        chain: 'lachain'
+    })).output;
+
+    // console.log("lachain decimals:: ", decimals)
+
+    for (let i = 0; i < Object.keys(contracts_lachain).length; i++) {
+        
+        if(Object.keys(contracts_lachain)[i].includes("USDT")){
+            sdk.util.sumSingleBalance(
+                balances, 
+                "tether", 
+                supplies[i].output / 10 ** decimals[i].output
+            );
+        }
+        else{
+            sdk.util.sumSingleBalance(
+                balances, 
+                Object.keys(contracts_lachain)[i], 
+                supplies[i].output / 10 ** decimals[i].output
+                );
+        }
+    };
+
+    // console.log("balances:: ", balances)
+
+    return balances;
+};
+
 module.exports = {
     polygon: {
         tvl: tvl_polygon
@@ -100,5 +157,8 @@ module.exports = {
     },
     harmony: {
         tvl : tvl_harmony
+    },
+    lachain: {
+        tvl: tvl_lachain
     }
 };
