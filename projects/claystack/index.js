@@ -18,7 +18,7 @@ async function getClayMaticTvl(block) {
 
 module.exports = {
 
-  polygon: {
+  ethereum: {
     tvl: getClayMaticTvl,
   },
   methodology: `We get the total token deposited in clay contracts and convert it to USD.`
