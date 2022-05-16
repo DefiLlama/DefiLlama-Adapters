@@ -17,11 +17,24 @@ const replacements = [
   '0x73a052500105205d34Daf004eAb301916DA8190f'
 ]
 
+const curvePools = [
+  {
+    assets: 'Curve.fi Factory USD Metapool: moUSD',
+    isLendingPool: true,
+    coins: ['0x60d55f02a771d515e077c9c2403a1ef324885cec', '0x27f8d03b3a2196956ed754badc28d73be8830a6e', '0x1a13f4ca1d028320a707d99520abfefca3998b7f'],
+    addresses: {
+      swap: '0x445fe580ef8d70ff569ab36e80c647af338db351',
+      lpToken: '0xe7a24ef0c5e95ffb0f6684b813a78f2a3ad7d171',
+      gauge: '0x19793b454d3afc7b454f206ffe95ade26ca6912c',
+    },
+  }
+]
+
 const gaugeLPMapping = {}
 
 Object.keys(crvPools).forEach(key => crvPools[key.toLowerCase()] = crvPools[key])
 
-const curveLPMapping = curvePoolsPartial.reduce((accum, poolData) => {
+const curveLPMapping = [...curvePoolsPartial, ...curvePools].reduce((accum, poolData) => {
   accum[poolData.addresses.lpToken.toLowerCase()] = poolData
   if (poolData.addresses.gauge) {
     const gaugeToken = poolData.addresses.gauge.toLowerCase()

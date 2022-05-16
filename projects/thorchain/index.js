@@ -1,4 +1,4 @@
-const retry = require('./helper/retry')
+const retry = require('../helper/retry')
 const axios = require("axios");
 
 function diff(interval, timestamp){

@@ -88,7 +88,7 @@ module.exports = {
     pool2: ethereumPool2
   },
   terra: {
-    tvl: terraTvl,
-    pool2: terraPool2
+    tvl: () => ({'0': 0}),
+    //pool2: terraPool2
   }
 }
