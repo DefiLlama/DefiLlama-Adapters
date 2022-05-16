@@ -1,10 +1,14 @@
 const { transformBobaAddress } = require("../helper/portedTokens");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const { getBlock } = require("../helper/getBlock");
+const utils = require("../helper/utils");
 
 const DATA = {
-  boba: () => {
+  boba: async () => {
     const bobaTransform = transformBobaAddress();
+    const pools = await utils.fetchURL(
+      "https://api.exchange.koyo.finance/pools/raw/boba"
+    );
 
     return [
       bobaTransform,
@@ -15,18 +19,12 @@ const DATA = {
             ["0xa18bF3994C0Cc6E3b63ac420308E5383f53120D7", false], // BOBA(Boba)
           ],
         },
-        swaps: [
-          {
-            name: "4pool",
-            address: "0x9f0a572be1fcfe96e94c0a730c5f4bc2993fe3f6",
-            tokens: [
-              "0x7562F525106F5d54E891e005867Bf489B5988CD9", // FRAX(Boba)
-              "0xf74195Bb8a5cf652411867c5C2C5b8C2a402be35", // DAI(Boba)
-              "0x66a2A913e447d6b4BF33EFbec43aAeF87890FBbc", // USDC(Boba)
-              "0x5DE1677344D3Cb0D7D465c10b72A8f60699C062d", // USDT(Boba)
-            ],
-          },
-        ],
+        swaps: Object.entries(pools.data.data)
+          .filter(([k]) => k !== "generatedTime")
+          .map(([, pool]) => ({
+            address: pool.addresses.swap,
+            tokens: pool.coins.map((coin) => coin.address),
+          })),
       },
     ];
   },
@@ -51,7 +49,7 @@ const chainTVL = (chain) => {
     const balances = {};
     const block = await getBlock(timestamp, chain, chainBlocks);
 
-    const [transform, data] = DATA[chain]();
+    const [transform, data] = await DATA[chain]();
 
     await sumTokensAndLPsSharedOwners(
       balances,
@@ -71,7 +69,7 @@ const chainTreasury = (chain) => {
     const balances = {};
     const block = await getBlock(timestamp, chain, chainBlocks);
 
-    const [transform, data] = DATA[chain]();
+    const [transform, data] = await DATA[chain]();
 
     await sumTokensAndLPsSharedOwners(
       balances,
