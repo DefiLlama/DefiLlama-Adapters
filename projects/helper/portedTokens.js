@@ -925,6 +925,11 @@ const energywebFixMapping = {
   '0x6b3bd0478DF0eC4984b168Db0E12A539Cc0c83cd': { coingeckoId: 'energy-web-token', decimals: 18, },
 }
 
+const bittorrentFixMapping = {
+  '0xca424b845497f7204d9301bd13ff87c0e2e86fcf': { coingeckoId: 'usd-coin', decimals: 18, },
+  '0x9b5f27f6ea9bbd753ce3793a07cba3c74644330d': { coingeckoId: 'tether', decimals: 18, },
+}
+
 function normalizeMapping(mapping) {
   Object.keys(mapping).forEach(key => mapping[key.toLowerCase()] = mapping[key])
 }
@@ -976,6 +981,7 @@ const fixBalancesMapping = {
   smartbch: b => fixBalances(b, smartbchFixMapping, { removeUnmapped: true }),
   energyweb: b => fixBalances(b, energywebFixMapping, { removeUnmapped: true }),
   oasis: fixOasisBalances,
+  bittorrent: b => fixBalances(b, bittorrentFixMapping, { removeUnmapped: false }),
 }
 
 const chainTransforms = {
@@ -1010,6 +1016,7 @@ const chainTransforms = {
   dfk: transformDfkAddress,
   aurora: transformAuroraAddress,
   findora: transformFindoraAddress,
+  bittorrent: transformBittorrentAddress
 };
 
 async function transformEthereumAddress() {
@@ -1017,6 +1024,29 @@ async function transformEthereumAddress() {
     '0x88536c9b2c4701b8db824e6a16829d5b5eb84440': 'polygon:0xac63686230f64bdeaf086fe6764085453ab3023f', // USV token
     '0xFEEf77d3f69374f66429C91d732A244f074bdf74': '0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0', // CVX FXS token
     '0xb8c77482e45f1f44de1745f52c74426c631bdd52': 'bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // BNB
+  }
+  normalizeMapping(mapping)
+
+  return addr => {
+    addr = addr.toLowerCase()
+    return mapping[addr] || addr
+  }
+}
+
+function transformBittorrentAddress() {
+  const mapping = {
+    '0xdb28719f7f938507dbfe4f0eae55668903d34a15': '0xdac17f958d2ee523a2206206994597c13d831ec7',  // USDT
+    '0x935faa2fcec6ab81265b301a30467bbc804b43d3': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',  // USDC
+    '0x8d193c6efa90bcff940a98785d1ce9d093d3dc8a': 'tron:TKfjV9RNKJJCqPvBtK8L7Knykh7DNWvnYt',  // BTT
+    '0x17f235fd5974318e4e2a5e37919a209f7c37a6d1': '0x0c10bf8fcb7bf5412187a595ab97a3609160b5c6',  // USDD
+    '0xae17940943ba9440540940db0f1877f101d39e8b': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',  // USDC
+    '0xedf53026aea60f8f75fca25f8830b7e2d6200662': 'tron:TNUC9Qb1rRpS5CbWLmNMxXBjyFoydXjWFR',  // TRX
+    //'0xca424b845497f7204d9301bd13ff87c0e2e86fcf': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',  // USDC FAKE
+    //'0x9b5f27f6ea9bbd753ce3793a07cba3c74644330d': '0xdac17f958d2ee523a2206206994597c13d831ec7',  // USDT FAKE
+    '0x1249c65afb11d179ffb3ce7d4eedd1d9b98ad006': '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',  // WETH
+    '0xe887512ab8bc60bcc9224e1c3b5be68e26048b8b': '0xdac17f958d2ee523a2206206994597c13d831ec7',  // USDT
+    '0xe467f79e9869757dd818dfb8535068120f6bcb97': '0xdefa4e8a7bcba345f687a2f1456f5edd9ce97202',  // KNC
+    '0x9888221fe6b5a2ad4ce7266c7826d2ad74d40ccf': '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',  // WBTC
   }
   normalizeMapping(mapping)
 
@@ -1110,4 +1140,5 @@ module.exports = {
   transformFindoraAddress,
   wavesMapping,
   stripTokenHeader,
+  transformBittorrentAddress
 };
