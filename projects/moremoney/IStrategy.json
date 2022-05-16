@@ -1,7 +1,4 @@
 {
-  "_format": "hh-sol-artifact-1",
-  "contractName": "IStrategy",
-  "sourceName": "interfaces/IStrategy.sol",
   "abi": [
     {
       "inputs": [
@@ -871,9 +868,5 @@
       "stateMutability": "view",
       "type": "function"
     }
-  ],
-  "bytecode": "0x",
-  "deployedBytecode": "0x",
-  "linkReferences": {},
-  "deployedLinkReferences": {}
+  ]
 }
