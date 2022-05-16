@@ -9,7 +9,7 @@ const { sumLPWithOnlyOneToken } = require("./helper/unwrapLPs");
 const iotx = "0x6fb3e0a217407efff7ca062d46c26e5d60a14d69";
 const wiotx = "0xA00744882684C3e4747faEFD68D283eA44099D03";
 
-function tvl(chain, gasToken) {
+function pool2(chain, gasToken) {
   return async (timestamp, block, chainBlocks) => {
     block = await getBlock(timestamp, chain, chainBlocks);
     let balances = { iotex: 0 };
@@ -38,6 +38,7 @@ function tvl(chain, gasToken) {
 
 module.exports = {
   iotex: {
-    tvl: tvl("iotex", "iotex")
+    pool2: pool2("iotex", "iotex"),
+    tvl: () => ({}),
   },
 };
