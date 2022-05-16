@@ -1,6 +1,6 @@
 const { getReserves, getStarlayTvl } = require("./starlay");
 const BigNumber = require("bignumber.js");
-const { getV2Borrowed } = require("../helper/aave");
+const { getBorrowed } = require("../helper/aave");
 
 const tokens = {
   // WASTR
@@ -46,7 +46,7 @@ function astar(borrowed) {
     const chain = "astar";
 
     if (borrowed) {
-      await getV2Borrowed(
+      await getBorrowed(
         balances,
         block,
         chain,
