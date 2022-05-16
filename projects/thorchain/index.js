@@ -40,6 +40,14 @@ async function fetch() {
     // + (await terra())
 }
 
+async function staking(timestamp) {
+  var res = await get('https://midgard.thorchain.info/v2/network')
+  const {totalActiveBond, totalStandbyBond} = res.bondMetrics;
+  return{
+    "thorchain": (Number(totalActiveBond) + Number(totalStandbyBond))/1e8
+  }
+}
+
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
@@ -61,6 +69,9 @@ module.exports = {
   },
   litecoin:{
     fetch: ltc
+  },
+  thorchain:{
+    staking
   },
   // terra:{
   //   fetch: terra
