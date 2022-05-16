@@ -1,7 +1,7 @@
 const BigNumber = require('bignumber.js');
 const sdk = require('@defillama/sdk');
 const abi = require('./abi.json');
-const { fixOasisBalances, fixBittorrentBalances, getFixBalances } = require('../helper/portedTokens')
+const { getFixBalances } = require('../helper/portedTokens')
 
 async function requery(results, chain, block, abi){
   if(results.some(r=>!r.success)){
