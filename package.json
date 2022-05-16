@@ -32,8 +32,7 @@
     "pact-lang-api": "^4.3.3",
     "secretjs": "^0.17.5",
     "tron-format-address": "^0.1.8",
-    "underscore": "^1.13.1",
-    "web3": "^1.5.3"
+    "underscore": "^1.13.1"
   },
   "overrides": {
     "ansi-regex": "5.0.1",
