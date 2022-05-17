@@ -91,7 +91,7 @@ module.exports = {
   oasis: {
     tvl: oasisTVL
   },
-  bittorrent: {
-    tvl: bttcTVL
-  }
+  // bittorrent: {
+  //   tvl: bttcTVL
+  // }
 };
