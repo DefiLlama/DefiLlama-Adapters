@@ -2,7 +2,6 @@ const { sumTokens } = require("../helper/unwrapLPs")
 const { getChainTransform, getFixBalances } = require("../helper/portedTokens")
 const { getUserMasterChefBalances } = require("../helper/masterchef")
 const { getUserCraftsmanV2Balances } = require("./helpers")
-const { pools } = require("./cronos/pools")
 const vvsPoolInfoABI = require('./cronos/vvsPoolInfo.json')
 const { fetchURL } = require("../helper/utils")
 
