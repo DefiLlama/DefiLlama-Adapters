@@ -1,4 +1,4 @@
-const sdk = require("@defillama/sdk");
+const sdk = require("@defillama/sdk")
 const { getChainTransform } = require('../helper/portedTokens')
 const abi = require('./abi.json')
 
