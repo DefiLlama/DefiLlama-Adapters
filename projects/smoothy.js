@@ -1,6 +1,4 @@
 const abis = require('./config/smoothy/abis.js')
-const abisbsc = require('./config/smoothy-bsc/abis.js')
-const { sumTokens } = require('./helper/unwrapLPs');
 const { toUSDTBalances } = require('./helper/balances');
 const imp = '0xe5859f4efc09027a9b718781dcb2c6910cac6e91';
 const sdk = require("@defillama/sdk");

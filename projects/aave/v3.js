@@ -5,7 +5,7 @@ const v3params = ["0x770ef9f4fe897e59daCc474EF11238303F9552b6", undefined, ["0x6
 
 function v3(chain){
     const section = borrowed => sdk.util.sumChainTvls([
-        aaveChainTvl(chain, ...v3params, borrowed),
+        aaveChainTvl(chain, ...v3params, borrowed, true),
     ])
     return {
       tvl: section(false),
@@ -20,4 +20,4 @@ function v3(chain){
     polygon: v3("polygon"),
     ...["optimism", "fantom", "harmony", "arbitrum"].reduce((t, c)=>({...t, [c]:aaveExports(c, ...v3params)}), {})
   };
-  
+  // node test.js projects/aave/index.js

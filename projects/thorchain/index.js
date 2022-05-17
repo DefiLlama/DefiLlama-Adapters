@@ -40,11 +40,19 @@ async function fetch() {
     // + (await terra())
 }
 
+async function staking(timestamp) {
+  var res = await get('https://midgard.thorchain.info/v2/network')
+  const {totalActiveBond, totalStandbyBond} = res.bondMetrics;
+  return{
+    "thorchain": (Number(totalActiveBond) + Number(totalStandbyBond))/1e8
+  }
+}
+
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
   methodology: 'Pulls TVL from each THORChain pool using Flipside Crypto data',
-  bch:{
+  bitcoincash:{
     fetch: bch
   },
   binance:{
@@ -53,7 +61,7 @@ module.exports = {
   bitcoin:{
     fetch: btc
   },
-  dogecoin:{
+  doge:{
     fetch: doge
   },
   ethereum:{
@@ -61,6 +69,9 @@ module.exports = {
   },
   litecoin:{
     fetch: ltc
+  },
+  thorchain:{
+    staking
   },
   // terra:{
   //   fetch: terra
