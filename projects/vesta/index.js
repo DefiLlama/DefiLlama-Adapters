@@ -12,6 +12,10 @@ const VaultTokens = {
   GMX: "0xfc5a1a6eb076a2c7ad06ed22c90d7e710e35ad0a"
 }
 
+const gOHM_ETHMAINNET_ADDRESS = '0x0ab87046fbb341d058f17cbc4c1133f25a20a52f';
+const renBTC_ETHMAINNET_ADDRESS = '0xeb4c2781e4eba804ce9a9803c67d0893436bb27d';
+const ETH_ETHMAINNET_ADDRESS = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
+
 const VSTA_FARMING_ADDRESS = "0x65207da01293C692a37f59D1D9b1624F0f21177c";
 const LP_VSTA_ETH_ADDRESS = "0xc61ff48f94d801c1ceface0289085197b5ec44f0";
 
@@ -40,12 +44,14 @@ async function tvl(_, block, chainBlocks) {
 
     const parsedData = () => {
       switch(token){
-        case "renBTC": return totalCollateral.output / 10 ** 10;
-        default: return totalCollateral.output;
+        case "renBTC": return {tokenAddress: renBTC_ETHMAINNET_ADDRESS, data: totalCollateral.output / 10 ** 10};
+        case "gOHM": return {tokenAddress: gOHM_ETHMAINNET_ADDRESS, data: totalCollateral.output};
+        case "ETH": return {tokenAddress: ETH_ETHMAINNET_ADDRESS, data: totalCollateral.output};
+        default: return {tokenAddress: VaultTokens[token], data: totalCollateral.output};
       }
     }
 
-    return { tokenAddress: VaultTokens[token], data: parsedData() }
+    return parsedData();
   }
   ));
 
