@@ -35,14 +35,33 @@ const pools = [
     assetId: 694432641,
     assetDecimals: 6,
   },
+  {
+    appId: 743679535,
+    assetId: 694683000,
+    assetDecimals: 6,
+    poolAppAddress:
+      "WNA4H7Y3UGEVNEVVFU2TUDLMOMLWSV72UF6SYYRBOQ7IGDW4ZIOKYWNIWU",
+  },
+  {
+    appId: 743685742,
+    assetId: 701364134,
+    assetDecimals: 6,
+    poolAppId: 701363946,
+  },
 ];
 
 const liquidGovernanceAppId = 694427622;
 
 const oracleAppId = 735190677;
+const oracleAdapterAppId = 743660117;
 const oracleDecimals = 14;
+const tinymanValidatorAppId = 552635992;
 
-exports.pools = pools;
-exports.liquidGovernanceAppId = liquidGovernanceAppId;
-exports.oracleAppId = oracleAppId;
-exports.oracleDecimals = oracleDecimals;
+module.exports = {
+  pools,
+  liquidGovernanceAppId,
+  oracleAppId,
+  oracleAdapterAppId,
+  oracleDecimals,
+  tinymanValidatorAppId,
+};
