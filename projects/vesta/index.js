@@ -42,16 +42,12 @@ async function tvl(_, block, chainBlocks) {
       chain,
     });
 
-    const parsedData = () => {
-      switch(token){
-        case "renBTC": return {tokenAddress: renBTC_ETHMAINNET_ADDRESS, data: totalCollateral.output / 10 ** 10};
-        case "gOHM": return {tokenAddress: gOHM_ETHMAINNET_ADDRESS, data: totalCollateral.output};
-        case "ETH": return {tokenAddress: ETH_ETHMAINNET_ADDRESS, data: totalCollateral.output};
-        default: return {tokenAddress: VaultTokens[token], data: totalCollateral.output};
-      }
+    switch(token){
+      case "renBTC": return {tokenAddress: renBTC_ETHMAINNET_ADDRESS, data: totalCollateral.output / 10 ** 10};
+      case "gOHM": return {tokenAddress: gOHM_ETHMAINNET_ADDRESS, data: totalCollateral.output};
+      case "ETH": return {tokenAddress: ETH_ETHMAINNET_ADDRESS, data: totalCollateral.output};
+      default: return {tokenAddress: VaultTokens[token], data: totalCollateral.output};
     }
-
-    return parsedData();
   }
   ));
 
