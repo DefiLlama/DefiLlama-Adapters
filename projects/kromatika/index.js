@@ -1,6 +1,4 @@
 const sdk = require("@defillama/sdk");
-const { getBlock } = require('../helper/getBlock');
-const BigNumber = require('bignumber.js');
 const { getChainTransform } = require('../helper/portedTokens')
 const abi = require('./abi.json')
 
@@ -30,16 +28,17 @@ const tvl = (chain) => async function (timestamp, ethBlock, chainBlocks) {
   const { output: positionsSupply } = await sdk.api.erc20.totalSupply({ target: krom_position, chain, block, });
   const position_indices = Array.from(Array(parseInt(positionsSupply)).keys());
   const calls = position_indices.map(idx => ({ target: krom_position, params: [idx] }))
-  const orders = await sdk.api.abi.multiCall({ calls, abi: abi['orders'], chain, block, });
+  const tokenIds = await sdk.api.abi.multiCall({ calls, abi: abi['tokenByIndex'], chain, block, });
+  const tokenCalls = tokenIds.output.map(idx => ({ target: krom_position, params: [idx.output] }))
+  const orders = await sdk.api.abi.multiCall({ calls: tokenCalls, abi: abi['orders'], chain, block, });
   // Retrieve valid orders and add tokens owed to balances
   const valid_orders = orders.output
     .map(order => order.output)
-    .filter(order => order);
+  
   valid_orders.forEach(order => {
     sdk.util.sumSingleBalance(balances, transform(order.token0), order.tokensOwed0);
     sdk.util.sumSingleBalance(balances, transform(order.token1), order.tokensOwed1);
   });
-  console.log('Kroma positions count', valid_orders.length)
 
   return balances;
 }
