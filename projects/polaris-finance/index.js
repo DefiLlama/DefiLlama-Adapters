@@ -1,11 +1,12 @@
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
-const { stakings } = require("../helper/staking");
+const { sumTokensAndLPsSharedOwners, sumLPWithOnlyOneTokenOtherThanKnown } = require("../helper/unwrapLPs");
+const { stakings, stakingUnknownPricedLP } = require("../helper/staking");
 
 const spolar = "0x9D6fc90b25976E40adaD5A3EdD08af9ed7a21729";
 const spolarRewardPool = "0xA5dF6D8D59A7fBDb8a11E23FDa9d11c4103dc49f";
 const polarSunrise = "0xA452f676F109d34665877B7a7B203f2B445D7DE0";
 const tripolarSunrise = "0x203a65b3153C55B57f911Ea73549ed0b8EC82B2D";
 const ethernalSunrise = "0x813c989395f585115152f5D54FdD181fC19CA82a";
+const tripolar = "0x60527a2751A827ec0Adf861EfcAcbf111587d748"
 
 const polarLPTokens = [
   "0x3fa4d0145a0b6Ad0584B1ad5f61cB490A04d8242", // POLAR-NEAR
@@ -36,17 +37,18 @@ const pool2Total = async (_timestamp, _ethBlock, chainBlocks) => {
 
   await sumTokensAndLPsSharedOwners(
     balances,
-    tripolarLPTokens.map((token) => [token, true]),
+    ethernalLPTokens.map((token) => [token, true]),
     [spolarRewardPool],
     chainBlocks["aurora"],
     "aurora",
     transform
   );
 
-  await sumTokensAndLPsSharedOwners(
+  await sumLPWithOnlyOneTokenOtherThanKnown(
     balances,
-    ethernalLPTokens.map((token) => [token, true]),
-    [spolarRewardPool],
+    tripolarLPTokens[0],
+    spolarRewardPool,
+    tripolar,
     chainBlocks["aurora"],
     "aurora",
     transform
