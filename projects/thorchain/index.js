@@ -52,7 +52,7 @@ module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
   methodology: 'Pulls TVL from each THORChain pool using Flipside Crypto data',
-  bch:{
+  bitcoincash:{
     fetch: bch
   },
   binance:{
@@ -61,7 +61,7 @@ module.exports = {
   bitcoin:{
     fetch: btc
   },
-  dogecoin:{
+  doge:{
     fetch: doge
   },
   ethereum:{
