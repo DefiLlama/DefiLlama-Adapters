@@ -1,56 +1,13 @@
 const { toUSDTBalances } = require("../helper/balances");
-const { lookupApplications, lookupAccountByID , getApplicationAddress } = require("../helper/algorand");
+
+const { pools, liquidGovernanceAppId } = require("./constants");
 const {
-  pools,
-  liquidGovernanceAppId,
-  oracleAppId,
-  oracleDecimals,
-} = require("./constants");
-
-function fromIntToBytes8Hex(num) {
-  return num.toString(16).padStart(16, "0");
-}
-
-function encodeToBase64(str, encoding = "utf8") {
-  return Buffer.from(str, encoding).toString("base64");
-}
-
-function parseOracleValue(base64Value) {
-  const value = Buffer.from(base64Value, "base64").toString("hex");
-  // first 8 bytes are the price
-  return BigInt("0x" + value.slice(0, 16));
-}
-
-function getParsedValueFromState(state, key, encoding = "utf8") {
-  const encodedKey = encoding ? encodeToBase64(key, encoding) : key;
-  const keyValue = state.find((entry) => entry.key === encodedKey);
-  if (keyValue === undefined) return;
-  const { value } = keyValue;
-  if (value.type === 1) return value.bytes;
-  if (value.type === 2) return BigInt(value.uint);
-  return;
-}
-
-async function getAppState(appId) {
-  const res = await lookupApplications(appId);
-  return res.application.params["global-state"];
-}
-
-/* Get prices from oracle */
-async function getPrices() {
-  const state = await getAppState(oracleAppId);
-  const prices = {};
-
-  for (const pool of pools) {
-    const base64Value = String(
-      getParsedValueFromState(state, fromIntToBytes8Hex(pool.assetId), "hex")
-    );
-    const price = parseOracleValue(base64Value);
-    prices[pool.assetId] = Number(price) / 10 ** oracleDecimals;
-  }
-
-  return prices;
-}
+  lookupApplications,
+  lookupAccountByID,
+  getApplicationAddress,
+} = require("../helper/algorand");
+const { getAppState, getParsedValueFromState } = require("./utils");
+const { getPrices } = require("./prices");
 
 async function getAlgoLiquidGovernanceDepositUsd(prices) {
   const [app, acc] = await Promise.all([
@@ -105,7 +62,9 @@ async function tvl() {
       borrowed(),
     ]);
 
-  return toUSDTBalances(depositsAmountUsd + algoLiquidGovernanceDepositUsd - borrowsAmountUsd);
+  return toUSDTBalances(
+    depositsAmountUsd + algoLiquidGovernanceDepositUsd - borrowsAmountUsd
+  );
 }
 
 /* Get total borrows */
@@ -133,15 +92,15 @@ async function borrowed() {
   return totalBorrowsUsd;
 }
 
-async function borrowedBalances(){
-  return toUSDTBalances(await borrowed())
+async function borrowedBalances() {
+  return toUSDTBalances(await borrowed());
 }
 
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
-  algorand:{
+  algorand: {
     tvl,
     borrowed: borrowedBalances,
-  }
+  },
 };
