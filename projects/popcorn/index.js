@@ -10,19 +10,16 @@ function getTVL(chain = undefined) {
     let balances = {};
     await addRewardsEscrowTVL(balances, timestamp, chainBlocks, chain)
     if (chain && chain === 'ethereum') {
-      await addButterTVL(balances, timestamp, chainBlocks, chain)
+      // await addButterTVL(balances, timestamp, chainBlocks, chain)
       await addButterV2TVL(balances, timestamp, chainBlocks, chain)
     }
     return balances;
-    // // Check when each contract was deployed ?
-    // if (block >= 11360925) {
-    // }
   }
 }
 
 module.exports = {
   timetravel: true,
-  methodology: `Counts the tokens locked in the contracts`,
+  methodology: ``,
   ethereum: {
     staking: staking([ADDRESSES.ethereum.popLocker], ADDRESSES.ethereum.pop),
     pool2: getLpTokenTVL(),

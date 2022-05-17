@@ -2,60 +2,81 @@ const sdk = require('@defillama/sdk');
 const { getBlock } = require('../helper/getBlock')
 const { ADDRESSES } = require("./constants");
 const { getChainTransform } = require('../helper/portedTokens')
+const butterBatchABI = require("./abi/butterBatchProcessing.json")
+const basicSetIssuanceModule = require("./abi/basicSetIssuanceModule.json")
+const { ethers } = require("ethers")
 
 async function addButterV2TVL(balances, timestamp, chainBlocks, chain = "ethereum") {
-  const butterTokens = [ADDRESSES.ethereum.ycrvAlusd, ADDRESSES.ethereum.ycrvFRAX, ADDRESSES.ethereum.ycrvRai, ADDRESSES.ethereum.ycrvMusd];
-  const butterV2 = ADDRESSES.ethereum.butterV2;
   const block = await getBlock(timestamp, chain, chainBlocks)
+
+  const butterV2 = ADDRESSES.ethereum.butterV2;
+  const setBasicIssuanceModule = ADDRESSES.ethereum.setBasicIssuanceModule
+  const butterBatch = ADDRESSES.ethereum.butterBatch
+
   const chainAddressTransformer = await getChainTransform(chain)
-  const butterTokenBalances = (await sdk.api.abi.multiCall({
-    abi: "erc20:balanceOf",
-    calls: butterTokens.map(token => ({
-      target: token,
-      params: [butterV2]
-    })),
+
+  // get butter circulating supply
+  const butterSupply = (await sdk.api.abi.call({
+    abi: "erc20:totalSupply",
+    target: butterV2,
+    params: [],
     block,
     chain
-  }))
-  sdk.util.sumMultiBalanceOf(balances, butterTokenBalances, true)
-  // map addressess
-  Object.keys(balances).forEach(tokenAddress => {
-    const transformedAddress = chainAddressTransformer(tokenAddress);
-    if (transformedAddress !== tokenAddress) {
-      balances[transformedAddress] = balances[tokenAddress]
-      delete balances[tokenAddress];
-    }
-  })
-  return balances
-}
+  })).output
+  // multiply with value.
+  const [tokenAddresses, quantities] = (await sdk.api.abi.call({
+    abi: basicSetIssuanceModule,
+    target: setBasicIssuanceModule,
+    params: [butterV2, "1000000000000000000"],
+    block,
+    chain
+  })).output
+  const butterPrice = (await sdk.api.abi.call({
+    abi: butterBatchABI,
+    target: butterBatch,
+    params: [tokenAddresses, quantities],
+    block,
+    chain
+  })).output
 
+  const tvl = (ethers.BigNumber.from(butterPrice).div(ethers.constants.WeiPerEther)).mul(ethers.BigNumber.from(butterSupply))
+  sdk.util.sumSingleBalance(balances, ADDRESSES.ethereum.dai, tvl)
+}
 
 async function addButterTVL(balances, timestamp, chainBlocks, chain = "ethereum") {
-  const butterTokens = [ADDRESSES.ethereum.ycrvMim, ADDRESSES.ethereum.ycrvFRAX];
-  const butter = ADDRESSES.ethereum.butter;
   const block = await getBlock(timestamp, chain, chainBlocks)
-  const chainAddressTransformer = await getChainTransform(chain)
-  const butterTokenBalances = (await sdk.api.abi.multiCall({
-    abi: "erc20:balanceOf",
-    calls: butterTokens.map(token => ({
-      target: token,
-      params: [butter]
-    })),
+
+  const butter = ADDRESSES.ethereum.butter;
+  const setBasicIssuanceModule = ADDRESSES.ethereum.setBasicIssuanceModule
+  const butterBatch = ADDRESSES.ethereum.butterBatch
+
+  // get butter circulating supply
+  const butterSupply = (await sdk.api.abi.call({
+    abi: "erc20:totalSupply",
+    target: butter,
+    params: [],
     block,
     chain
-  }))
-  sdk.util.sumMultiBalanceOf(balances, butterTokenBalances, true)
-  // map addressess
-  Object.keys(balances).forEach(tokenAddress => {
-    const transformedAddress = chainAddressTransformer(tokenAddress);
-    if (transformedAddress !== tokenAddress) {
-      balances[transformedAddress] = balances[tokenAddress]
-      delete balances[tokenAddress];
-    }
-  })
-  return balances
-}
+  })).output
+  // multiply with value.
+  const [tokenAddresses, quantities] = (await sdk.api.abi.call({
+    abi: basicSetIssuanceModule,
+    target: setBasicIssuanceModule,
+    params: [butter, "1000000000000000000"],
+    block,
+    chain
+  })).output
+  const butterPrice = (await sdk.api.abi.call({
+    abi: butterBatchABI,
+    target: butterBatch,
+    params: [tokenAddresses, quantities],
+    block,
+    chain
+  })).output
 
+  const tvl = (ethers.BigNumber.from(butterPrice).div(ethers.constants.WeiPerEther)).mul(ethers.BigNumber.from(butterSupply))
+  sdk.util.sumSingleBalance(balances, ADDRESSES.ethereum.dai, tvl)
+}
 
 module.exports = {
   addButterTVL,
