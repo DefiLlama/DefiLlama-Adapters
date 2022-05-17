@@ -1,13 +1,16 @@
 const sdk = require("@defillama/sdk");
+
 const { getBlock } = require("../helper/getBlock");
-const ADDRESSES = require("./addresses");
-const riftVaultAbi = require("./abis/riftVaultAbi");
-const uniVaultAbi = require("./abis/uniVaultAbi");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { getChainTransform } = require("../helper/portedTokens");
 
+const ADDRESSES = require("./addresses");
+
+const riftVaultAbi = require("./abis/riftVaultAbi");
+const masterChefAbi = require("./abis/masterChefAbi");
+
 function getAbi(obj, fnName) {
-  return obj.abi.find((x) => x.name === fnName);
+  return obj.find((x) => x.name === fnName);
 }
 
 async function getVaultBalance(timestamp, chainBlocks, chain) {
@@ -17,7 +20,7 @@ async function getVaultBalance(timestamp, chainBlocks, chain) {
 
   const { core, startBlock } = ADDRESSES[chain];
 
-  // Get vaults from events on core address.
+  // Get all registered vaults by searching events on core address.
   const events = (
     await sdk.api.util.getLogs({
       chain,
@@ -56,7 +59,7 @@ async function getVaultBalance(timestamp, chainBlocks, chain) {
         chain,
         block,
         target: vault,
-        abi: getAbi(uniVaultAbi, "pair"),
+        abi: getAbi(riftVaultAbi, "pair"),
       })
     ).output;
 
@@ -103,6 +106,48 @@ async function getVaultBalance(timestamp, chainBlocks, chain) {
       chain,
       transform
     );
+
+    // Look for MasterChef balance.
+    try {
+      const rewarder = (
+        await sdk.api.abi.call({
+          chain,
+          block,
+          target: vault,
+          abi: getAbi(riftVaultAbi, "rewarder"),
+          params: [],
+        })
+      ).output;
+
+      const pid = (
+        await sdk.api.abi.call({
+          chain,
+          block,
+          target: vault,
+          abi: getAbi(riftVaultAbi, "pid"),
+          params: [],
+        })
+      ).output;
+
+      const { amount: masterChefBal } = (
+        await sdk.api.abi.call({
+          chain,
+          block,
+          target: rewarder,
+          abi: getAbi(masterChefAbi, "userInfo"),
+          params: [pid, vault],
+        })
+      ).output;
+
+      // Unwrap and add MasterChef balances.
+      await unwrapUniswapLPs(
+        balances,
+        [{ balance: masterChefBal, token: pair }],
+        block,
+        chain,
+        transform
+      );
+    } catch (e) {}
   }
 
   return balances;
