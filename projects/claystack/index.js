@@ -1,18 +1,23 @@
 const sdk = require('@defillama/sdk');
-const clayMainAbi = require('./clayABIs/clayMain.json');
-const web3 = require('../config/web3.js');
+const abi = require('./clayABIs/clayMain.json');
 
 const clayAddresses = {
   clayMatic: "0x91730940DCE63a7C0501cEDfc31D9C28bcF5F905",
 };
 
 const coinAddresses = {
-  matic: "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0", 
+  matic: "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0",
 };
 
 async function getClayMaticTvl(block) {
-  const clayMaticInstance = new web3.eth.Contract(clayMainAbi, clayAddresses.clayMatic);
-  const deposits = await clayMaticInstance.methods.funds().call();
+  const deposits = (
+    await sdk.api.abi.call({
+      target: clayAddresses.clayMatic,
+      abi: abi.funds,
+      chain: "ethereum",
+      block
+    })
+  ).output;
   return { [coinAddresses.matic]: deposits.currentDeposit };
 }
 
