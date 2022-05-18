@@ -145,7 +145,7 @@ module.exports = {
     tvl: chainTvl('bsc')
   }, 
   moonriver: {
-    tvl: chainTvl('moonriver')
+    // tvl: chainTvl('moonriver')
   },
   
 }
