@@ -19,6 +19,7 @@ async function tvl(_timestamp, block) {
 
   const balances = {}
   sdk.util.sumMultiBalanceOf(balances, weth_balances)
+  balances[weth] *= 2
   return balances
 }
 
