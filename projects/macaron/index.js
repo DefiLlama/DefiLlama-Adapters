@@ -1,4 +1,4 @@
-const { get, } = require("../helper/http")
+const abi = require("./abi.json");
 const config = require("./config");
 const { sumTokens, unwrapUniswapLPs, } = require("../helper/unwrapLPs");
 const sdk = require("@defillama/sdk");
@@ -8,7 +8,7 @@ const { getChainTransform, } = require("../helper/portedTokens");
 module.exports = {}
 
 function setChainTVL(chain) {
-  const { masterchef, masterchefPools, chocochef, vaults, chainId, treasury, erc20s } = config[chain]
+  const { masterchef, pools, vaults_json, chainId, treasury, erc20s, LPs, token, } = config[chain]
   let getTvl
 
   async function getAllTVL(ts, _block, chainBlocks) {
@@ -20,6 +20,29 @@ function setChainTVL(chain) {
       staking: {},
       pool2: {},
     }
+
+    const lengthOfPool = (
+      await sdk.api.abi.call({
+        abi: abi.poolLength,
+        target: masterchef,
+        chain, block,
+      })
+    ).output
+
+    const lpPositionCalls = [];
+
+    for (let index = 0; index < lengthOfPool; index++)
+      lpPositionCalls.push({ params: [index] })
+
+    const { output: mcPools } = await sdk.api.abi.multiCall({
+      target: masterchef, calls: lpPositionCalls, block, chain, abi: abi.poolInfo
+    })
+
+    masterchefPools = []
+
+    mcPools.forEach(({ output }) => {
+      masterchefPools.push(output)
+    })
 
     if (treasury) {
       let toa = erc20s.map(token => [token, treasury])
@@ -33,29 +56,25 @@ function setChainTVL(chain) {
     const syrupMapping = {}
 
     // handle masterchef
-    let pools = await get(masterchefPools)
-    pools.forEach(pool => {
-      const symbol = pool.lpSymbol?.toLowerCase()
-      const addr = pool.lpAddresses[chainId].toLowerCase()
+    masterchefPools.forEach(pool => {
+      const addr = pool.lpToken.toLowerCase()
       if (pool.isCLP) {
-        const syrup = pool.magicAddresses[chainId].toLowerCase()
+        const syrup = pool.syrupToken.toLowerCase()
         toaSyrup.push([syrup, masterchef])
         syrupMapping[syrup] = addr
         return;
       }
-      if (symbol === 'mcrn')
+      if (addr === token)
         toaStaking.push([addr, masterchef])
-      else if (symbol.includes('mcrn') && symbol.endsWith('lp'))
+      else if (LPs.includes(addr))
         toaPool2.push([addr, masterchef])
       else
         toaTvl.push([addr, masterchef])
     })
 
     // handle chocochef and boost pools
-    pools = await get(chocochef)
-
-    if (vaults)
-      pools.push(...(await get(vaults)))
+    if (vaults_json)
+      pools.push(...vaults_json)
 
     pools.forEach(pool => {
       const symbol = pool.stakingToken?.symbol?.toLowerCase()
