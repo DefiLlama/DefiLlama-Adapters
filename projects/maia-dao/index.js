@@ -2,14 +2,10 @@ const sdk = require("@defillama/sdk");
 const { transformMetisAddress } = require('../helper/portedTokens');
 const { unwrapUniswapLPs } = require('../helper/unwrapLPs');
 const abis = require("./abis.json");
-const { staking } = require("../helper/staking");
 
-const MaiaStaking = "0xE2546b144eFc3F8bd85d84b6CA64cC4F033c9be1"
-const maia = "0x72c232D56542Ba082592DEE7C77b1C6CFA758BCD"
-
-const HERMES = '0xb27BbeaACA2C00d6258C3118BAB6b5B6975161c8';
+const HERMES = '0xb27bbeaaca2c00d6258c3118bab6b5b6975161c8';
 const multisig = '0x77314eAA8D99C2Ad55f3ca6dF4300CFC50BdBC7F';
-const excludedTokens = [];
+const excludedTokens = ["0xa3e8e7eb4649ffc6f3cbe42b4c2ecf6625d3e802"];
 
 async function tvl(timestamp, block, chainBlocks) {
     const balances = {};
@@ -17,7 +13,7 @@ async function tvl(timestamp, block, chainBlocks) {
     
     const hermesBalance = (await sdk.api.abi.multiCall({
       target: '0xa4C546c8F3ca15aa537D2ac3f62EE808d915B65b',
-      calls: Array.from({ length: Number(40) }, (_, k) => ({
+      calls: Array.from({ length: Number(38) }, (_, k) => ({
           params: [k],
       })),
       abi: abis.locked,
@@ -26,7 +22,7 @@ async function tvl(timestamp, block, chainBlocks) {
     })).output;
 
     var sum = 0;
-    for (let i = 1; i < 40; i++) {
+    for (let i = 1; i < 38; i++) {
       sum += Number(hermesBalance[i].output.amount);
     }
 
@@ -100,7 +96,6 @@ async function tvl(timestamp, block, chainBlocks) {
 
 module.exports = {
   metis: {
-    tvl,
-    staking: staking(MaiaStaking, maia, "metis")
+    tvl
   }
 };
