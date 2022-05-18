@@ -82,6 +82,9 @@ async function klaytnTvl() {
         tvl = tvl.plus(vault.tvl)
     })
 
+    const lockedUSDT = beltInfo.data.info.KLAYTN.vaultPools.find(x => x.wantToken.toLowerCase() === tetherLP.toLowerCase())
+    tvl = tvl.plus(lockedUSDT.wantLocked)
+
     return toUSDTBalances(tvl.toFixed(2))
 }
 

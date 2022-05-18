@@ -1,16 +1,17 @@
-const { request, gql } = require("graphql-request");
+const { gql } = require("graphql-request");
+const { blockQuery } = require('../helper/graph')
 const sdk = require('@defillama/sdk')
 
 const weth = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
-async function tvl(_timestamp, block){
-  const {vaults} = await request(graphUrl, graphQuery, {block})
-  const LPs = new Set(vaults.map(v=>v.lpStakingPool.stakingToken.id))
+async function tvl(_timestamp, block) {
+  const { vaults } = await blockQuery(graphUrl, graphQuery, block, 100)
+  const LPs = new Set(vaults.map(v => v.lpStakingPool.stakingToken.id))
   // oldvaults excluded
 
   const weth_balances = await sdk.api.abi.multiCall({
     abi: 'erc20:balanceOf',
     calls: Array.from(LPs).map(lp => ({
-      target: weth, 
+      target: weth,
       params: lp
     })),
     block
@@ -18,6 +19,7 @@ async function tvl(_timestamp, block){
 
   const balances = {}
   sdk.util.sumMultiBalanceOf(balances, weth_balances)
+  balances[weth] *= 2
   return balances
 }
 
@@ -25,7 +27,7 @@ const oldVaultFactory = "0xBe54738723cea167a76ad5421b50cAa49692E7B7"
 
 module.exports = {
   methodology: "Counts total value of all vaults",
-  tvl: tvl
+  ethereum: { tvl }
 }
 
 const graphUrl = "https://api.thegraph.com/subgraphs/name/nftx-project/nftx-v2"

@@ -13,7 +13,7 @@ async function fetch() {
 
   pool = '0xdc42a21e38c3b8028b01a6b00d8dbc648f93305c';
   tokenBalance = await utils.returnBalance('0x57ab1ec28d129707052df4df418d58a2d46d5f51', pool);
-  tvl += tokenBalance;
+  tvl += tokenBalance
 
   pool = '0xC462d8ee54953E7d7bF276612b75387Ea114c3bf';
   tokenBalance = await utils.returnBalance('0xdf5e0e81dff6faf3a7e52ba697820c5e32d806a8', pool);

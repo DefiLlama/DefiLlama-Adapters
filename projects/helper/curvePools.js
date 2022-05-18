@@ -1,4 +1,9 @@
 module.exports = {
+  // Curve.fi Factory USD Metapool: moUSD 
+ '0x162b21ba1a90dd9384c615192fa4053217d2a8db': {
+   swapContract: '0x162B21ba1a90Dd9384C615192FA4053217D2A8Db',
+   underlyingTokens: ['0x9fFFb2F49adFC231B44dDCFf3FfCF0E81b06430A', '0x19793b454d3afc7b454f206ffe95ade26ca6912c'],
+ },
   // ARTHuval3PS
  '0x4cfaabd5920021359bb22bb6924cce708773b6ac': {
    swapContract: '0x1d4b4796853aeda5ab457644a18b703b6ba8b4ab',

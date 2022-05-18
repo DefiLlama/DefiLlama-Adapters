@@ -4,6 +4,7 @@ const sdk = require('@defillama/sdk')
 const { usdtAddress } = require('./balances')
 
 async function query(url, block) {
+    block = undefined
     let endpoint = `${process.env["TERRA_RPC"] ?? "https://lcd.terra.dev"}/wasm/${url}`
     if (block !== undefined) {
         endpoint += `&height=${block - (block % 100)}`
@@ -110,13 +111,13 @@ function sumSingleBalance(balances, token, balance, price) {
     const { coingeckoId, label, decimals = 0, } = tokenMapping[token] || {}
 
     if (coingeckoId || (label && price)) {
-        token = coingeckoId || usdtAddress
+        token = coingeckoId || 'terrausd'
 
         if (decimals)
             balance = BigNumber(balance).shiftedBy(-1 * decimals)
 
         if (!coingeckoId)
-            balance = balance.multipliedBy(BigNumber(price)).shiftedBy(6)    // convert the value to USD
+            balance = balance.multipliedBy(BigNumber(price))   // convert the value to UST
 
         if (!balances[token])
             balances[token] = BigNumber(0)
@@ -132,6 +133,7 @@ function sumSingleBalance(balances, token, balance, price) {
 }
 
 module.exports = {
+    totalSupply,
     getBalance,
     getDenomBalance,
     unwrapLp,

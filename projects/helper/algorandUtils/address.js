@@ -67,5 +67,6 @@ function genericHash(arr) {
 }
 
 module.exports = {
+  encodeAddress,
   getApplicationAddress,
 }
