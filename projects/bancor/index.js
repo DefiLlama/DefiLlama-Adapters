@@ -1,7 +1,5 @@
 const abi = require('./abi.json');
 const sdk = require('@defillama/sdk');
-const BigNumber = require('bignumber.js');
-const { get } = require('../helper/http');
 const { sumTokens } = require('../helper/unwrapLPs');
 
 async function generateCallsByBlockchain(block) {
@@ -76,19 +74,24 @@ async function generateCallsByBlockchain(block) {
 
 const ethAddress = '0x0000000000000000000000000000000000000000';
 const ethReserveAddresses = ['0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'];
+const bancor = '0x1f573d6fb3f13d689ff844b4ce37794d79a7ff1c'
 
 async function addV3Balance(balances, block) {
-  const stats = await get('https://api-v3.bancor.network/tokens')
   const masterVault = '0x649765821D9f64198c905eC0B2B037a4a52Bc373'
+  const networkSettings = '0xeEF417e1D5CC832e619ae18D2F140De2999dD4fB'
+  const { output: tokens } = await sdk.api.abi.call({
+    target: networkSettings, block, abi: abi.liquidityPools
+  })
 
-  const tokenIds = stats.data
-    .map(d => d.dltId.toLowerCase())
-    .filter(t => !ethReserveAddresses.includes(t))
+  tokens.push(bancor)
+
+  const toa = tokens
+    .filter(t => !ethReserveAddresses.includes(t.toLowerCase()))
     .map(t => [t, masterVault])
 
   const { output: balance } = await sdk.api.eth.getBalance({ target: masterVault, block })
   sdk.util.sumSingleBalance(balances, ethAddress, balance)
-  return sumTokens(balances, tokenIds, block)
+  return sumTokens(balances, toa, block)
 }
 
 /*==================================================
