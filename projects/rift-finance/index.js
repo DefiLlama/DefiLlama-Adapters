@@ -13,7 +13,7 @@ function getAbi(obj, fnName) {
   return obj.find((x) => x.name === fnName);
 }
 
-async function getVaultBalance(timestamp, chainBlocks, chain) {
+async function getChainBalances(timestamp, chainBlocks, chain) {
   const block = await getBlock(timestamp, chain, chainBlocks);
   const balances = {};
   const transform = await getChainTransform(chain);
@@ -21,7 +21,7 @@ async function getVaultBalance(timestamp, chainBlocks, chain) {
   const { core, startBlock } = ADDRESSES[chain];
 
   // Get all registered vaults by searching events on core address.
-  const events = (
+  const vaultRegisteredEvents = (
     await sdk.api.util.getLogs({
       chain,
       keys: [],
@@ -32,7 +32,7 @@ async function getVaultBalance(timestamp, chainBlocks, chain) {
     })
   ).output;
 
-  const vaults = events.map((log) => `0x${log.topics[1].substring(26)}`);
+  const vaults = vaultRegisteredEvents.map((log) => `0x${log.topics[1].substring(26)}`);
 
   for (const vault of vaults) {
     // Get addresses.
@@ -95,8 +95,8 @@ async function getVaultBalance(timestamp, chainBlocks, chain) {
     ).output;
 
     // Add token balances.
-    await sdk.util.sumSingleBalance(balances, transform(token0), token0Bal);
-    await sdk.util.sumSingleBalance(balances, transform(token1), token1Bal);
+    sdk.util.sumSingleBalance(balances, transform(token0), token0Bal);
+    sdk.util.sumSingleBalance(balances, transform(token1), token1Bal);
 
     // Unwrap and add pair balances.
     await unwrapUniswapLPs(
@@ -154,7 +154,7 @@ async function getVaultBalance(timestamp, chainBlocks, chain) {
 }
 
 async function aurora(timestamp, block, chainBlocks) {
-  return getVaultBalance(timestamp, chainBlocks, "aurora");
+  return getChainBalances(timestamp, chainBlocks, "aurora");
 }
 
 module.exports = {
