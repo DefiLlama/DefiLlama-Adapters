@@ -17,7 +17,7 @@ const abi = {
   "type": "function"
 }
 
-async function ethTvl(ts, block) {
+async function tvl(ts, block) {
   const { output: tokens } = await sdk.api.abi.call({ target: archEthereumWeb3AddressETH, abi, block })
   const toa = tokens.map(t => [t, archEthereumWeb3AddressETH])
   return sumTokens({}, toa, block)
@@ -26,6 +26,6 @@ async function ethTvl(ts, block) {
 
 module.exports = {
   ethereum: {
-    tvl: ethTvl,
+    tvl,
   },
 };
