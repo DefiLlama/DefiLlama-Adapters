@@ -1,12 +1,12 @@
 const axios = require("axios");
-const Pact = require("pact-lang-api");
 const { GraphQLClient, gql } = require('graphql-request')
 
 const retry = require('../helper/retry')
 const { toUSDTBalances } = require("../helper/balances");
+const { fetchLocal, mkMeta } = require("../helper/pact");
 
 const kdsExchangeContract = 'kdlaunch.kdswap-exchange';
-const kdsExchangeTokenContract =  'kdlaunch.kdswap-exchange-tokens';
+const kdsExchangeTokenContract = 'kdlaunch.kdswap-exchange-tokens';
 const chainId = "1";
 const network = `https://api.chainweb.com/chainweb/0.0/mainnet01/chain/${chainId}/pact`;
 const GAS_PRICE = 0.00000001;
@@ -21,8 +21,8 @@ const getReserve = (tokenData) => {
 };
 
 const getPairTokens = async (url) => {
-    const graphQLClient = new GraphQLClient(url)
-    const reserveQuery = gql`
+  const graphQLClient = new GraphQLClient(url)
+  const reserveQuery = gql`
     {
         pairs {
           id
@@ -38,13 +38,13 @@ const getPairTokens = async (url) => {
         }
       }
     `;
-    return await retry(async bail => await graphQLClient.request(reserveQuery))
+  return await retry(async bail => await graphQLClient.request(reserveQuery))
 }
 
 const normalizeTokens = (items, key) =>
   items.reduce((result, item) => {
     const selectedKey = item[key].replace('_', ':')
-    const { token0, token1} = item
+    const { token0, token1 } = item
     return {
       ...result,
       [selectedKey]: {
@@ -57,15 +57,15 @@ const normalizeTokens = (items, key) =>
 
 
 const getPairList = async (url, grouper) => {
-    const { pairs } = await getPairTokens(url) 
-    const pairTokens = normalizeTokens(pairs, grouper);
+  const { pairs } = await getPairTokens(url)
+  const pairTokens = normalizeTokens(pairs, grouper);
 
-    try {
-        return await Promise.all(
-            Object.values(pairTokens).map(async (pair) => {
-                const data = await Pact.fetch.local(
-                    {
-                    pactCode: `
+  try {
+    return await Promise.all(
+      Object.values(pairTokens).map(async (pair) => {
+        const data = await fetchLocal(
+          {
+            pactCode: `
                         (use ${kdsExchangeContract})
                         (let*
                         (
@@ -75,25 +75,25 @@ const getPairList = async (url, grouper) => {
                             (totalBal (${kdsExchangeTokenContract}.total-supply (${kdsExchangeContract}.get-pair-key ${pair.token0.code} ${pair.token1.code})))
                         )[totalBal reserveA reserveB])
                         `,
-                    meta: Pact.lang.mkMeta("", chainId, GAS_PRICE, 3000, creationTime(), 600),
-                    },
-                    network
-                );
-                  
-                if (data.result.status === "success") {
-                    return {
-                        reserves: [
-                            getReserve(data.result.data[1]),
-                            getReserve(data.result.data[2]),
-                        ],
-                    };
-                }
-                throw new Error("Pair reserves fetch failed");
-            })
+            meta: mkMeta("", chainId, GAS_PRICE, 3000, creationTime(), 600),
+          },
+          network
         );
-    } catch (err) {
-        throw new Error(err);
-    }
+
+        if (data.result.status === "success") {
+          return {
+            reserves: [
+              getReserve(data.result.data[1]),
+              getReserve(data.result.data[2]),
+            ],
+          };
+        }
+        throw new Error("Pair reserves fetch failed");
+      })
+    );
+  } catch (err) {
+    throw new Error(err);
+  }
 };
 
 const fetchKdaPrice = async () => {
@@ -104,7 +104,7 @@ const fetchKdaPrice = async () => {
   return res.data.kadena.usd;
 };
 
-const calculateKdaTotal = (pairList) => pairList.reduce((amount, pair)=> amount += pair.reserves[0], 0)
+const calculateKdaTotal = (pairList) => pairList.reduce((amount, pair) => amount += pair.reserves[0], 0)
 
 async function fetch() {
   const pairList = await getPairList(graphQLUrls['kadena'], 'id');
@@ -119,9 +119,10 @@ async function fetch() {
 }
 
 module.exports = {
-    misrepresentedTokens: true,
-    methodology: "TVL accounts for the liquidity on all KDSWAP AMM pools, with all values calculated in terms of KDA price.",
-    kadena: {
-      tvl: fetch,
-    },
+  timetravel: false,
+  misrepresentedTokens: true,
+  methodology: "TVL accounts for the liquidity on all KDSWAP AMM pools, with all values calculated in terms of KDA price.",
+  kadena: {
+    tvl: fetch,
+  },
 };
