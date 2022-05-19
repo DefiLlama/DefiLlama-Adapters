@@ -1,5 +1,5 @@
-const { stakings } = require("../helper/staking");
-const { pool2s } = require("../helper/pool2");
+const { stakings } = require("./helper/staking");
+const { pool2s } = require("./helper/pool2");
 
 const singleStakingContracts = [
     "0x8A6297d1df7d0c84f0d5F600Fe601b6d9Ce32F53",
