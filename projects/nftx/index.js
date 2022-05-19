@@ -27,8 +27,8 @@ async function tvl(_timestamp, block) {
   })
 
   const balances = {}
-  token_balances.output.forEach(item => sdk.util.sumSingleBalance(balances, item.input.target, item.output))
 
+  sdk.util.sumMultiBalanceOf(balances, token_balances)
   sdk.util.sumMultiBalanceOf(balances, weth_balances)
 
   const lps = weth_balances.output
