@@ -14,10 +14,10 @@ const BLITZ = "0xF376807DcdbAa0d7FA86E7c9EAcC58d11ad710E4";
 
 module.exports = {
   misrepresentedTokens: true,
-  ethereum: {
-    staking: stakings(singleStakingContracts, BLITZ),
-    pool2: pool2s(LPStakingContracts, [BUSD_BLITZ_CAKELP]),
-    tvl: (async) => ({}),
+  bsc: {
+    staking: stakings(singleStakingContracts, BLITZ, 'bsc'),
+    pool2: pool2s(LPStakingContracts, [BUSD_BLITZ_CAKELP], 'bsc'),
+    tvl: async () => ({}),
   },
   methodology: "Counts liquidty on the staking and pool2s only",
 }
