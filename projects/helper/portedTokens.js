@@ -476,7 +476,7 @@ async function transformFuseAddress() {
     '0x43b17749b246fd2a96de25d9e4184e27e09765b0': '0xdefa4e8a7bcba345f687a2f1456f5edd9ce97202',  // KYC
   }
 
-  return transformChainAddress(mapping, 'fuse', { skipUnmapped: false, chainName: 'fuse' })
+  return transformChainAddress(mapping, 'fuse', { skipUnmapped: true, chainName: 'fuse' })
 }
 
 async function transformEvmosAddress() {
