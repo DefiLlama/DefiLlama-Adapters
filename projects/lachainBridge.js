@@ -26,7 +26,7 @@ async function tvl_polygon(timestamp, block, chainBlocks) {
         chain: 'polygon' 
     })).output;
 
-    console.log("supplies usd polygon:: ", supplies_polygon)
+    // console.log("supplies usd polygon:: ", supplies_polygon)
 
     const supplies_usd_polygon = (await sdk.api.abi.call({
         target: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
@@ -36,9 +36,20 @@ async function tvl_polygon(timestamp, block, chainBlocks) {
         chain: 'polygon'
     })).output;
 
-    console.log("Polygon output:: ", supplies_usd_polygon)
+    // console.log("Polygon output:: ", supplies_usd_polygon)
 
-    return {[`matic-network`]: supplies_polygon / 10 ** 18, [`tether`]: supplies_usd_polygon / 10**6}
+    const supplies_latoken = (await sdk.api.abi.call({
+        target: "0x17d09EB02D369Ceef3347d4426ff1b6e46F2aD85",
+        params: contracts_usd['polygon-usd'],
+        abi: "erc20:balanceOf",
+        block: chainBlocks.polygon,
+        chain: 'polygon'
+    })).output;
+
+
+    return {[`matic-network`]: supplies_polygon / 10 ** 18, 
+            [`tether`]: supplies_usd_polygon / 10**6,
+            [`latoken`]: supplies_latoken / 10**18}
 };
 
 async function tvl_bsc(timestamp, block, chainBlocks) {
@@ -58,9 +69,19 @@ async function tvl_bsc(timestamp, block, chainBlocks) {
         chain: 'bsc'
     })).output;
 
+    const supplies_latoken = (await sdk.api.abi.call({
+        target: "0x494aD295ca4b8beC1d89cea200b95062b0dCDD7f",
+        params: contracts_usd['binance-usd'],
+        abi: "erc20:balanceOf",
+        block: chainBlocks.bsc,
+        chain: 'bsc'
+    })).output;
+
     // console.log("bsc output:: ", supplies_usd_bsc)
     
-    return {[`binancecoin`]: supplies_bsc / 10 ** 18, ['tether']: supplies_usd_bsc / 10**18}
+    return {[`binancecoin`]: supplies_bsc / 10 ** 18, 
+            ['tether']: supplies_usd_bsc / 10**18, 
+            ['latoken']: supplies_latoken / 10**18}
 };
 
 async function tvl_ethereum(timestamp, block, chainBlocks) {
@@ -112,9 +133,20 @@ async function tvl_avax(timestamp, block, chainBlocks) {
         chain: 'avax'
     })).output;
 
+    const supplies_latoken = (await sdk.api.abi.call({
+        target: "0x7f1b5d039F873e4B703E2D0a09B4bbcE287BF14a",
+        params: contracts_usd['aave-usd'],
+        abi: "erc20:balanceOf",
+        block: chainBlocks.avax,
+        chain: 'avax'
+    })).output;
+
+
     // console.log("aave output:: ", supplies_usd_aave)
 
-    return {[`avalanche-2`]: supplies_aave / 10 ** 18, [`tether`]: supplies_usd_aave / 10 ** 6}
+    return {[`avalanche-2`]: supplies_aave / 10 ** 18, 
+            [`tether`]: supplies_usd_aave / 10 ** 6,
+            [`latoken`]: supplies_latoken / 10 ** 18}
 };
 
 async function tvl_fantom(timestamp, block, chainBlocks) {
@@ -124,9 +156,27 @@ async function tvl_fantom(timestamp, block, chainBlocks) {
         chain: 'fantom' 
     })).output;
 
-    console.log("fantom output:: ", supplies_polygon)
+    // console.log("fantom output:: ", supplies_polygon)
     
-    return {[`fantom`]: supplies_polygon / 10 ** 18}
+    const supplies_usd_fantom = (await sdk.api.abi.call({
+        target: "0x049d68029688eabf473097a2fc38ef61633a3c7a",
+        params: contracts_usd['fantom-usd'],
+        abi: "erc20:balanceOf",
+        block: chainBlocks.fantom,
+        chain: 'fantom'
+    })).output;
+
+    const supplies_latoken = (await sdk.api.abi.call({
+        target: "0x998De69785e60D953700D6293b53540539f6991e",
+        params: contracts_usd['fantom-usd'],
+        abi: "erc20:balanceOf",
+        block: chainBlocks.fantom,
+        chain: 'fantom'
+    })).output;
+
+    return {[`fantom`]: supplies_polygon / 10 ** 18,
+            [`tether`]: supplies_usd_fantom / 10 ** 6,
+            [`latoken`]: supplies_latoken / 10 ** 18}
 };
 
 async function tvl_harmony(timestamp, block, chainBlocks) {
@@ -136,9 +186,27 @@ async function tvl_harmony(timestamp, block, chainBlocks) {
         chain: 'harmony' 
     })).output;
 
-    console.log("harmony output:: ", supplies_polygon)
+    // console.log("harmony output:: ", supplies_polygon)
+
+    const supplies_usd_harmony = (await sdk.api.abi.call({
+        target: "0x3c2b8be99c50593081eaa2a724f0b8285f5aba8f",
+        params: contracts_usd['harmony-usd'],
+        abi: "erc20:balanceOf",
+        block: chainBlocks.harmony,
+        chain: 'harmony'
+    })).output;
+
+    const supplies_latoken = (await sdk.api.abi.call({
+        target: "0xdcfc88276e0ae400956fb9ba92641d37c00073a5",
+        params: contracts_usd['harmony-usd'],
+        abi: "erc20:balanceOf",
+        block: chainBlocks.harmony,
+        chain: 'harmony'
+    })).output;
     
-    return {[`harmony`]: supplies_polygon / 10 ** 18}
+    return {[`harmony`]: supplies_polygon / 10 ** 18,
+            [`tether`]: supplies_usd_harmony / 10 ** 6,
+            [`latoken`]: supplies_latoken / 10 ** 18}
 };
 
 module.exports = {
