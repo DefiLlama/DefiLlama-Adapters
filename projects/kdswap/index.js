@@ -125,4 +125,4 @@ module.exports = {
   kadena: {
     tvl: fetch,
   },
-};
+}
