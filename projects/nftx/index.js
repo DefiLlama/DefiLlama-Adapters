@@ -29,7 +29,7 @@ async function tvl(_timestamp, block) {
   const balances = {}
 
   sdk.util.sumMultiBalanceOf(balances, token_balances)
-  sdk.util.sumMultiBalanceOf(balances, weth_balances)
+  //sdk.util.sumMultiBalanceOf(balances, weth_balances)
 
   const lps = weth_balances.output
     .filter(({ output }) => +output > 2 * 1e18) // only pick pools with minimum 2 eth in it

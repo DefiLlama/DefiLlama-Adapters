@@ -23,7 +23,6 @@ async function pool2(_timestamp, _ethBlock, chainBlocks) {
 
   return sumTokens(balances, tokensAndOwners, block, chain, undefined, {
     resolveLP: true,
-    resolveCrv: true,
   });
 }
 
