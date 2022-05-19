@@ -8,6 +8,9 @@ const contracts = {
     "fantom": "0x012cebA65fD071473a9E0d3C5048702734a1eE5e",
     "arbitrum": "0xD4aE8F772dcf2e20b103c740AfD9D9f9E78dbfFC",
     "harmony": "0x0A19afbE4519A40Df3b48BE46EDc0720724B4A6B",
+    "heco": "0xbBF0b12A0Be425Db284905A3Cb0Ab72b178b6A4F",
+    "arbitrum": "0xD4aE8F772dcf2e20b103c740AfD9D9f9E78dbfFC",
+
 }
 
 const contracts_usd = {
@@ -17,6 +20,8 @@ const contracts_usd = {
     "aave-usd": "0x8783256443217856B716464A068aabdecc3F0b95",
     "fantom-usd": "0x73Ec53a1Ee3Ea275D95212b41Dcce8cb9e0206Cd",
     "harmony-usd": "0x5DDDc78C8a59CeD4d25a8FD96BF9D9FdA561D0FF",
+    "heco-usd": "0x334d6D6c5EaE4bf5ec7De39a1547e6bDBdDcfbf3",
+    "arbitrum-usd": "0x43d92690D302C0e9f2fBD624eb9589F52b5AD115",
 }
 
 async function tvl_polygon(timestamp, block, chainBlocks) {
@@ -209,6 +214,64 @@ async function tvl_harmony(timestamp, block, chainBlocks) {
             [`latoken`]: supplies_latoken / 10 ** 18}
 };
 
+async function tvl_heco(timestamp, block, chainBlocks) {
+    const supplies_heco = (await sdk.api.eth.getBalance({ 
+        target: contracts['heco'], 
+        block: chainBlocks.heco, 
+        chain: 'heco' 
+    })).output;
+
+    const supplies_usd_heco = (await sdk.api.abi.call({
+        target: "0xa71edc38d189767582c38a3145b5873052c3e47a",
+        params: contracts_usd['heco-usd'],
+        abi: "erc20:balanceOf",
+        block: chainBlocks.heco,
+        chain: 'heco'
+    })).output;
+
+    const supplies_latoken = (await sdk.api.abi.call({
+        target: "0x0179Cbd5A27A068cDB1c88AD336BabA1a23A03ac",
+        params: contracts_usd['heco-usd'],
+        abi: "erc20:balanceOf",
+        block: chainBlocks.heco,
+        chain: 'heco'
+    })).output;
+    
+    return {[`basis-gold-share-heco`]: supplies_heco / 10 ** 18,
+            [`tether`]: supplies_usd_heco / 10 ** 6,
+            [`latoken`]: supplies_latoken / 10 ** 18}
+};
+
+async function tvl_arbitrum(timestamp, block, chainBlocks) {
+    const supplies_polygon = (await sdk.api.eth.getBalance({ 
+        target: contracts['arbitrum'], 
+        block: chainBlocks.arbitrum, 
+        chain: 'arbitrum' 
+    })).output;
+
+    // console.log("harmony output:: ", supplies_polygon)
+
+    const supplies_usd_arbitrum = (await sdk.api.abi.call({
+        target: "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+        params: contracts_usd['arbitrum-usd'],
+        abi: "erc20:balanceOf",
+        block: chainBlocks.arbitrum,
+        chain: 'arbitrum'
+    })).output;
+
+    const supplies_latoken = (await sdk.api.abi.call({
+        target: "0x2Ae3Fe98985C982cC8156fF8BAecD6D7cb003681",
+        params: contracts_usd['arbitrum-usd'],
+        abi: "erc20:balanceOf",
+        block: chainBlocks.arbitrum,
+        chain: 'arbitrum'
+    })).output;
+    
+    return {[`arbitrum`]: supplies_polygon / 10 ** 18,
+            [`tether`]: supplies_usd_arbitrum / 10 ** 6,
+            [`latoken`]: supplies_latoken / 10 ** 18}
+};
+
 module.exports = {
     polygon: {
         tvl: tvl_polygon
@@ -227,5 +290,11 @@ module.exports = {
     },
     harmony: {
         tvl : tvl_harmony
+    },
+    heco: {
+        tvl: tvl_heco
+    },
+    arbitrum:{
+        tvl: tvl_arbitrum
     }
 };
