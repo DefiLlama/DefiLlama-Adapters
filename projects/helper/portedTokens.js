@@ -171,7 +171,6 @@ async function transformBscAddress() {
     '0xce86f7fcd3b40791f63b86c3ea3b8b355ce2685b': '0xb4d930279552397bba2ee473229f89ec245bc365',  // MahaDao
     '0xbb9858603b1fb9375f6df972650343e985186ac5': 'bsc:0xc087c78abac4a0e900a327444193dbf9ba69058e',  // Treat staked  BUSD-USDC Staked APE-LP as LP Token
     '0xc5fb6476a6518dd35687e0ad2670cb8ab5a0d4c5': 'bsc:0x2e707261d086687470b515b320478eb1c88d49bb',  // Treat staked  BUSD-USDT Staked APE-LP as LP Token
-    '0x88fd584df3f97c64843cd474bdc6f78e398394f4': 'bsc:0xe9e7cea3dedca5984780bafc599bd69add087d56',  // ANKR usd -> BUSD
     '0xaed19dab3cd68e4267aec7b2479b1ed2144ad77f': 'bsc:0xe9e7cea3dedca5984780bafc599bd69add087d56',  // valas BUSD -> BUSD
     '0xa6fdea1655910c504e974f7f1b520b74be21857b': 'bsc:0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d',  // valas USDC -> BUSD
     '0x5f7f6cb266737b89f7af86b30f03ae94334b83e9': 'bsc:0x55d398326f99059ff775485246999027b3197955',  // valas USDT -> BUSD
