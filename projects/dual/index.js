@@ -35,7 +35,7 @@ async function tvl() {
     {}
   );
   const dualProgramID = new PublicKey(
-    "EFhLFkx6r2NdhFmAraZacRzxX8SFLbM9KuyVpaUUpR5k"
+    "DiPbvUUJkDhV9jFtQsDFnMEMRJyjW5iS6NMwoySiW8ki"
   );
   const VAULT_MINT_ADDRESS_SEED = "vault-mint";
   const program = new Program(DualIdl, dualProgramID, anchorProvider);
