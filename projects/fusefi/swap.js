@@ -12,6 +12,7 @@ module.exports = {
             '0x94Ba7A27c7A95863d1bdC7645AC2951E0cca06bA',
             '0xFaDbBF8Ce7D5b7041bE672561bbA99f79c532e10',
             '0xa722c13135930332Eb3d749B2F0906559D2C5b99',
+            '0x43b17749b246fd2a96de25d9e4184e27e09765b0',
         ]
     })
 }

@@ -1,6 +1,6 @@
 const retry = require("async-retry");
 const axios = require("axios");
-const Pact = require("pact-lang-api");
+const { fetchLocal, mkMeta } = require("../helper/pact");
 const { toUSDTBalances } = require("../helper/balances");
 
 const chainId = "3";
@@ -62,7 +62,7 @@ const pairTokens = {
 const getPairList = async () => {
   const pairList = await Promise.all(
     Object.values(pairTokens).map(async (pair) => {
-      let data = await Pact.fetch.local(
+      let data = await fetchLocal(
         {
           pactCode: `
             (use free.exchange)
@@ -74,7 +74,7 @@ const getPairList = async () => {
                 (totalBal (free.tokens.total-supply (free.exchange.get-pair-key ${pair.token0.code} ${pair.token1.code})))
               )[totalBal reserveA reserveB])
              `,
-          meta: Pact.lang.mkMeta("", chainId, GAS_PRICE, 3000, creationTime(), 600),
+          meta: mkMeta("", chainId, GAS_PRICE, 3000, creationTime(), 600),
         },
         network
       );
@@ -126,6 +126,7 @@ async function fetch() {
 }
 
 module.exports = {
+  timetravel: false,
   misrepresentedTokens: true,
   methodology: "TVL accounts for the liquidity on all Anedak AMM pools, with all values calculated in terms of KDA price.",
   kadena: {
