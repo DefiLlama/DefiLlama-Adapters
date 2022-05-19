@@ -12,11 +12,6 @@ jobs:
           fileOutput: 'json'
       - name: Check out repository code
         uses: actions/checkout@v2
-      - name: Get npm cache
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
       - name: Run changes files through test script
         run: |
           RUN_FILES=$(
