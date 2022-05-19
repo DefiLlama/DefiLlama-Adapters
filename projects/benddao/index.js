@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 
-const { getTVL, getBorrowed } = require("../helper/benddao");
+const { getTVL, getBorrowed } = require("./helper/index");
 
 async function tvl(timestamp, block, chainBlocks) {
   const balances = {};

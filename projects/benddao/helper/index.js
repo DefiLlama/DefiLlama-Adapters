@@ -3,10 +3,9 @@ const { default: BigNumber } = require("bignumber.js");
 
 const abi = require("./abis");
 const address = require("./address");
-const { getBlock } = require("../getBlock");
 
 async function getTVL(balances, chain, timestamp, chainBlocks) {
-  const block = await getBlock(chain, chain, chainBlocks);
+  const block = chainBlocks[chain];
 
   const [{ output: simpleReservesData }, { output: simpleNftsData }] =
     await Promise.all([
@@ -44,7 +43,7 @@ async function getTVL(balances, chain, timestamp, chainBlocks) {
 }
 
 async function getBorrowed(balances, chain, timestamp, chainBlocks) {
-  const block = await getBlock(chain, chain, chainBlocks);
+  const block = chainBlocks[chain];
 
   const [{ output: simpleReservesData }] = await Promise.all([
     sdk.api.abi.call({
