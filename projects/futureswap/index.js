@@ -71,5 +71,5 @@ async function tvl(timestamp, block) {
 
 module.exports = {
   start: 1609459200, // unix timestamp (utc 0) specifying when the project began, or where live data begins
-  tvl, // tvl adapter
+  ethereum: { tvl }
 };

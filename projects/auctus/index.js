@@ -116,12 +116,12 @@
       acoPools[address] = {underlying: underlyingAddress, strikeAsset: strikeAssetAddress}
     });
 
-    let poolCallsMap = acoPools.map((poolData, poolAddress) => ({
+    let poolCallsMap = Object.entries(acoPools).map(([poolAddress, poolData]) => ({
       target: poolData.underlying,
       params: poolAddress,
     }))
 
-    poolCallsMap = poolCallsMap.concat(acoPools.map((poolData, poolAddress) => ({
+    poolCallsMap = poolCallsMap.concat(Object.entries(acoPools).map(([poolAddress, poolData]) => ({
       target: poolData.strikeAsset,
       params: poolAddress,
     })))
@@ -182,5 +182,5 @@
 
   module.exports = {
     start: 1590014400,   // 05/20/2020 @ 08:10:40pm (UTC)
-    tvl
+    ethereum: { tvl }
   }

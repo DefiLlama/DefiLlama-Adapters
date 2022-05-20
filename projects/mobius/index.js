@@ -216,7 +216,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 
 module.exports = {
   start: 8606077, // January 19, 2021 11:51:30 AM
-  tvl, // tvl adapter
+  celo: { tvl }
 };
 
 ///

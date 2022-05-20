@@ -83,7 +83,7 @@ const { staking } = require('../helper/staking');
     let fundsAddresses = [];
 
     // Prepare funds balances
-    funds.forEach((fund) => {
+    Object.values(funds).forEach((fund) => {
       let fundTokens = fund.tokens
       let fundAddress = fund.address
 
