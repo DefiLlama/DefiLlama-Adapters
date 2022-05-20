@@ -26,7 +26,7 @@ async function GenerateCallList() {
         }
     });
     let calls = []
-    id2Info.map((info, id) => {
+    Object.values(id2Info).map((info, id) => {
         if (info.collateralTokenAddress && info.perpetualAddress) {
             calls.push({
                 target: info.collateralTokenAddress,

@@ -65,5 +65,5 @@
 
   module.exports = {
     start: 1574241665, // 11/20/2019 @ 09:21AM (UTC)
-    tvl
+    ethereum: { tvl }
   }

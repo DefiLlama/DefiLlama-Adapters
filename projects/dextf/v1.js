@@ -78,9 +78,9 @@ module.exports = async function tvl(timestamp, block) {
         let conversionRate = BigNumber(cTokenConversionRatesMap[address]);
         let balanceOfUnderlying = BigNumber(balanceOf.output).times(conversionRate).div(cTokenDecimalScale);
 
-        balances[addressOfUnderlying] = BigNumber(balances[addressOfUnderlying] || 0).plus(balanceOfUnderlying).toFixed();
+        balances[addressOfUnderlying] = BigNumber(balances[addressOfUnderlying] || 0).plus(balanceOfUnderlying || 0).toFixed();
       } else {
-        balances[address] = BigNumber(balances[address] || 0).plus(balanceOf.output).toFixed();
+        balances[address] = BigNumber(balances[address] || 0).plus(balanceOf.output || 0).toFixed();
       }
   });
 

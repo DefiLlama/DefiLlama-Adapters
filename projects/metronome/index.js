@@ -44,5 +44,5 @@
 
   module.exports = {
     start: 1527076766,        // block 5659904
-    tvl,
+    ethereum: { tvl }
   };

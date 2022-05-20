@@ -201,7 +201,7 @@ async function getLiquidityPoolBalances(timestamp, block) {
     // Get token balances
     let balances = await sdk.api.abi.multiCall({
       block,
-      calls: markets.map((data, token) => ({
+      calls: Object.keys(markets).map((token) => ({
         target: token,
         params: liquidityPool,
       })).filter(m => m.target !== "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"),

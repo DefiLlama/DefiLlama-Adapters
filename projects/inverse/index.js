@@ -203,5 +203,5 @@ async function tvl(timestamp, block) {
 module.exports = {
   methodology: "DOLA curve metapool replaced by DOLA",
   start: 1607731200, // Dec 12 2020 00:00:00 GMT+0000
-  tvl,
+  ethereum: { tvl }
 };

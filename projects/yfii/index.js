@@ -106,5 +106,5 @@ async function tvl(timestamp, block) {
 module.exports = {
   doublecounted: true,
   start: 1600185600,    // 09/16/2020 @ 12:00am (UTC+8)
-  tvl,
+  ethereum: { tvl }
 };
