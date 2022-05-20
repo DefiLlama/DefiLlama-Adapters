@@ -20,8 +20,6 @@ module.exports = {
               'BJUH9GJLaMSLV1E7B3SQLCy9eCfyr6zsrwGcpS2MkqR1', // SwimUSD
             ]
           },
-
-
           {
             pool: 'EpvBni7vTfbTG95zf9sNcS9To1NEKnVMpCwZdb21tKsg', // Meta Avax-USDT
             tokens: [
