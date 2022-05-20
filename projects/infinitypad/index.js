@@ -3,6 +3,7 @@ const { stakings } = require("../helper/staking");
 const { getChainTransform } = require("../helper/portedTokens");
 const contracts = require("./contracts.json");
 const axios = require("axios");
+const { pool2s } = require("../helper/pool2");
 
 async function fetchBalances(exports, contracts, transform, chainBlocks, chain) {
     if (!contracts[chain]) return 0;
@@ -20,13 +21,13 @@ async function fetchBalances(exports, contracts, transform, chainBlocks, chain) 
     sdk.util.sumMultiBalanceOf(exports, balances, false, transform);
 };
 
-// node test.js projects/daomaker/index.js
+// node test.js projects/infinitypad/index.js
 function tvl(chain) {
     return async (timestamp, block, chainBlocks) => {
         const balances = {};
         const transform = await getChainTransform(chain);
 
-        const vestingContracts = (await axios.get("https://api.daomaker.com/get-all-vesting-contracts")).data;
+        const vestingContracts = (await axios.get("https://api.infinitypad.com/get-all-vesting-contracts")).data;
         const clientVesting = {};
         for (const vestingContract of vestingContracts) {
             if (!clientVesting[vestingContract.chain_name]) {
@@ -54,9 +55,16 @@ const chainTVLObject = contracts.chains.reduce(
     (agg, chain) => ({ ...agg, [chain]: {tvl: tvl(chain) }}), {}
 );
 
-chainTVLObject.ethereum.staking = stakings(
-    [ contracts.stakingContractEth ], 
-    contracts.stakingTokenEth
+chainTVLObject.bsc.staking = stakings(
+    [ contracts.stakingContractBsc ], 
+    contracts.stakingTokenBsc,
+    "bsc"
+);
+
+chainTVLObject.bsc.pool2 = pool2s(
+    [ contracts.stakingContractBsc ], 
+    [ contracts.stakingTokenLp ], 
+    'bsc'
 );
 
 module.exports = {
