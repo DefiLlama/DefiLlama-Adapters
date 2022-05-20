@@ -9,7 +9,7 @@ async function totalTvl(timestamp) {
   return Promise.all([
       fetchBaseAATvl(timestamp, "GS23D3GQNNMNJ5TL4Z5PINZ5626WASMA"), // Oswap v1
       fetchBaseAATvl(timestamp, "2JYYNOSRFGLI3TBI4FVSE6GFBUAZTTI3"), // Oswap v2
-      fetchBaseAATvl(timestamp, "DYZOJKX4MJOQRAUPX7K6WCEV5STMKOHI")  // Oswap v2
+      fetchBaseAATvl(timestamp, "DYZOJKX4MJOQRAUPX7K6WCEV5STMKOHI")  // Oswap v3
     ]).then( values => {
       return values.reduce( (total, tvl) => total + tvl, 0)
   })
