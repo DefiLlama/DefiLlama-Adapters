@@ -1,7 +1,5 @@
 const retry = require("async-retry");
-const axios = require("axios");
 const { fetchLocal, mkMeta } = require("../helper/pact");
-const { toUSDTBalances } = require("../helper/balances");
 
 const chainId = "3";
 const network = `https://api.chainweb.com/chainweb/0.0/mainnet01/chain/${chainId}/pact`;
@@ -94,17 +92,8 @@ const getPairList = async () => {
   return pairList;
 };
 
-const fetchKdaPrice = async () => {
-  const res = await axios.get(
-    "https://api.coingecko.com/api/v3/simple/price?ids=kadena&vs_currencies=usd"
-  );
-
-  return res.data.kadena.usd;
-};
-
 async function fetch() {
   const pairList = await retry(async (bail) => getPairList());
-  const kdaPrice = await fetchKdaPrice();
   const anedakPairKdaAmount = pairList[0].reserves[0];
   const babenaPairKdaAmount = pairList[1].reserves[0];
   const fluxPairKdaAmount = pairList[2].reserves[0];
@@ -116,13 +105,14 @@ async function fetch() {
    */
   const tvl =
     2 *
-    kdaPrice *
     (anedakPairKdaAmount +
       babenaPairKdaAmount +
       fluxPairKdaAmount +
       kdlPairKdaAmount);
 
-  return toUSDTBalances(tvl);
+  return {
+    kadena: tvl
+  };
 }
 
 module.exports = {
