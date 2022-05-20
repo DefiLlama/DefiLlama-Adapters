@@ -6,8 +6,9 @@
   const oracleAbi = require('./oracleAbi.json');
   const stakingAbi = require('./stakingAbi.json');
   const babyRouterAbi = require('./babyRouterAbi.json');
-  const {toUSDTBalances, usdtAddress} = require('../helper/balances')
-  const BASE = BigNumber(10 ** 18)
+  const {toUSDTBalances, usdtAddress} = require('../helper/balances');
+  const { compoundExports } = require('../helper/compound');
+  const BASE = BigNumber(10 ** 18);
   const Double = BASE * BASE;
 
 let oracles = {
@@ -170,7 +171,7 @@ module.exports = {
   misrepresentedTokens: false,
   methodology: 'counts the number of Total value locked in ESG protocol.',
   bsc: {
-	  tvl: bsc,
+	  ...compoundExports('0xfd1f241ba25b8966a14865cb22a4ea3d24c92451', 'bsc'),
 	  staking,
   },
   start: 15307794, // Feb-16-2022 01:49:31 PM +UTC
