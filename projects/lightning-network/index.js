@@ -1,5 +1,5 @@
 const axios = require("axios");
-const _ = require("underscore");
+
 
 const dayHistory = {};
 
@@ -62,5 +62,13 @@ module.exports = {
 function parseCSV(csvData) {
   csvData = csvData.replaceAll('\r', '').split('\n').map(i => i.split(','))
   const headers = csvData.shift()
-  return csvData.map(row => _.object(headers, row))
+  return csvData.map(row => toObject(headers, row))
+}
+
+function toObject(keys, values) {
+  const res = {}
+  keys.forEach((key, i) => {
+    res[key] = values[i]
+  })
+  return res
 }

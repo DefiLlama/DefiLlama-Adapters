@@ -32,9 +32,9 @@ jobs:
             { 
               node ${{ github.workspace }}/test.js ${{ github.workspace }}/${i} 2>&1 | tee output.txt
               node ${{ github.workspace }}/.github/workflows/commentResult.js /home/runner/work/DefiLlama-Adapters/DefiLlama-Adapters/output.txt "${{ github.repository_owner }}" "${{ github.event.repository.name }}" "${{ github.event.number }}" ${i}
-              if grep -q "\-\-\-\- ERROR \-\-\-\-" output.txt; then
-                exit 1;
-              fi
+              # if grep -q "\-\-\-\- ERROR \-\-\-\-" output.txt; then
+              #   exit 1;
+              # fi
             } || { 
               echo -n $i
               echo ' doesnt run'
