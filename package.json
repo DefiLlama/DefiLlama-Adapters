@@ -35,8 +35,7 @@
     "js-sha512": "^0.8.0",
     "miscreant": "^0.3.2",
     "secure-random": "^1.1.2",
-    "tron-format-address": "^0.1.8",
-    "underscore": "^1.13.1"
+    "tron-format-address": "^0.1.8"
   },
   "overrides": {
     "ansi-regex": "5.0.1",

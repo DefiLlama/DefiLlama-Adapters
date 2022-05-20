@@ -3,7 +3,7 @@
   ==================================================*/
 
 const sdk = require("@defillama/sdk");
-const _ = require("underscore");
+
 
 /*==================================================
     Settings
@@ -32,8 +32,8 @@ async function tvl(timestamp, block) {
 
   let calls = [];
 
-  _.each(addressList, (address) => {
-    _.each(tokenAddresses, (tokenAddress) => {
+  addressList.forEach((address) => {
+    tokenAddresses.forEach((tokenAddress) => {
       calls.push({
         target: tokenAddress,
         params: address,

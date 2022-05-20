@@ -3,7 +3,7 @@
   ==================================================*/
 
   const sdk = require('@defillama/sdk');
-  const _ = require('underscore');
+
   const BigNumber = require('bignumber.js');
 
 /*==================================================
@@ -28,8 +28,8 @@
 
     let calls = [];
 
-    _.each(pools, (pool) => {
-      _.each(tokensAddresses, (tokenAddress) => {
+    pools.forEach((pool) => {
+      tokensAddresses.forEach((tokenAddress) => {
         calls.push({
           target: tokenAddress,
           params: pool

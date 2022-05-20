@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const _us = require('underscore');
+
 const abi = require('./abi.json');
 const {transformFantomAddress} = require('../helper/portedTokens')
 

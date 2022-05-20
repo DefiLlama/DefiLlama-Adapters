@@ -3,7 +3,7 @@
   ==================================================*/
 
   const sdk = require('@defillama/sdk');
-  const _ = require('underscore');
+
   const BigNumber = require('bignumber.js');
 
  /*==================================================
@@ -37,7 +37,7 @@
     };
 
     let calls = [];
-    _.each(listedTokens, (token) => {
+    listedTokens.forEach((token) => {
       calls.push({
         target: token,
         params: oldLoopringExchange

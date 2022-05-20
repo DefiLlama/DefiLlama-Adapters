@@ -1,4 +1,4 @@
-const _ = require('underscore');
+
 const sdk = require('@defillama/sdk');
 const abi = require('./abis/compound.json');
 const { getBlock } = require('./getBlock');
@@ -95,7 +95,7 @@ function getCompoundV2Tvl(comptroller, chain = "ethereum", transformAdress = add
         let v2Locked = await sdk.api.abi.multiCall({
             block,
             chain,
-            calls: _.map(markets, (market) => ({
+            calls: markets.map((market) => ({
                 target: market.cToken,
             })),
             abi: borrowed ? abi.totalBorrows : abi['getCash'],
@@ -106,7 +106,7 @@ function getCompoundV2Tvl(comptroller, chain = "ethereum", transformAdress = add
             symbols = await sdk.api.abi.multiCall({
                 block,
                 chain,
-                calls: _.map(markets, (market) => ({
+                calls: markets.map((market) => ({
                     target: market.cToken,
                 })),
                 abi: "erc20:symbol",
@@ -114,8 +114,8 @@ function getCompoundV2Tvl(comptroller, chain = "ethereum", transformAdress = add
         }
 
         const lpPositions = []
-        _.each(markets, (market, idx) => {
-            let getCash = _.find(v2Locked.output, (result) => result.input.target === market.cToken);
+        markets.forEach((market, idx) => {
+            let getCash = v2Locked.output.find((result) => result.input.target === market.cToken);
             if (checkForLPTokens !== undefined && checkForLPTokens(symbols.output[idx].output)) {
                 lpPositions.push({
                     token: market.underlying,

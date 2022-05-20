@@ -3,7 +3,7 @@
   ==================================================*/
 
 const sdk = require('@defillama/sdk');
-const _ = require('underscore');
+
 const axios = require('axios');
 const BigNumber = require('bignumber.js');
 const ddexMarginContractAddress = '0x241e82c79452f51fbfc89fac6d912e021db1a3b7'
@@ -15,13 +15,13 @@ const ddexMarginContractAddress = '0x241e82c79452f51fbfc89fac6d912e021db1a3b7'
 async function GenerateCallList() {
   let assets = await axios.get('https://api.ddex.io/v4/assets');
   assets = assets.data.data.assets;
-  assets = _.filter(assets, (asset) => {
+  assets = assets.filter((asset) => {
     let symbol = asset.symbol;
     return symbol !== "ETH";
   });
 
   let calls = [];
-  _.each(assets, (asset) => {
+  assets.forEach((asset) => {
     calls.push({
       target: asset.address,
       params: ddexMarginContractAddress

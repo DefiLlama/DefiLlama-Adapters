@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const _ = require('underscore');
+
 const BigNumber = require("bignumber.js");
 
 const constant = {
