@@ -76,7 +76,8 @@ async function v3Pool(
   pool,
   token,
   balances,
-  transform = (a) => a
+  transform = (a) => a,
+  decimals = 18
 ) {
   let liquidity = (
     await sdk.api.abi.call({
@@ -87,7 +88,10 @@ async function v3Pool(
       chain,
     })
   ).output;
-  // console.log(pool, liquidity)
+  if (decimals !== 18) {
+    // fix arbitrum usdc token with decimals 6
+    liquidity = liquidity / 10**(18 - decimals)
+  }
   sdk.util.sumSingleBalance(balances, transform(token), liquidity);
 }
 
@@ -141,6 +145,14 @@ let polygonContracts = {
     bTokenSymbol: "0x3d1d2afd191b165d140e3e8329e634665ffb0e5e",
     pool: "0xdDfCA16Cd80Ae3aeeb7C7ef743924Ac39A94cC9c",
     lite: true,
+  },
+};
+
+let arbitrumContracts = {
+  futureMain: {
+    bTokenSymbol: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
+    pool: "0xDE3447Eb47EcDf9B5F90E7A6960a14663916CeE8",
+    v3: true,
   },
 };
 async function bsc(timestamp, ethBlock, chainBlocks) {
@@ -202,6 +214,24 @@ async function polygon(timestamp, ethBlock, chainBlocks) {
   }
   return balances;
 }
+async function arbitrum(timestamp, ethBlock, chainBlocks) {
+  let balances = {};
+  const transform = (a) => `arbitrum:${a}`;
+  for ([key, contract] of Object.entries(arbitrumContracts)) {
+    if (contract.v3 === true) {
+      await v3Pool(
+        chainBlocks["arbitrum"],
+        "arbitrum",
+        contract.pool,
+        contract.bTokenSymbol,
+        balances,
+        transform,
+        6,                      // bToken decimals
+      );
+    }
+    return balances;
+  }
+}
 // node test.js projects/deri/index.js
 module.exports = {
   bsc: {
@@ -209,5 +239,8 @@ module.exports = {
   },
   polygon: {
     tvl: polygon,
+  },
+  arbitrum: {
+    tvl: arbitrum,
   },
 };
