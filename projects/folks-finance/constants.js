@@ -36,6 +36,7 @@ const pools = [
     assetDecimals: 6,
   },
   {
+    // Algo-gAlgo3 TMP1.1
     appId: 743679535,
     assetId: 694683000,
     assetDecimals: 6,
@@ -43,10 +44,26 @@ const pools = [
       "WNA4H7Y3UGEVNEVVFU2TUDLMOMLWSV72UF6SYYRBOQ7IGDW4ZIOKYWNIWU",
   },
   {
+    // Algo-gAlgo3 PLP
     appId: 743685742,
     assetId: 701364134,
     assetDecimals: 6,
     poolAppId: 701363946,
+  },
+  {
+    // Algo-USDC TMP1.1
+    appId: 747237154,
+    assetId: 552647097,
+    assetDecimals: 6,
+    poolAppAddress:
+      "FPOU46NBKTWUZCNMNQNXRWNW3SMPOOK4ZJIN5WSILCWP662ANJLTXVRUKA",
+  },
+  {
+    // Algo-USDC PLP
+    appId: 747239433,
+    assetId: 620996279,
+    assetDecimals: 6,
+    poolAppId: 620995314,
   },
 ];
 
