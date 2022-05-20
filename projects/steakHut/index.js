@@ -74,7 +74,7 @@ async function pool2(time, ethBlock, chainBlocks){
     timetravel: true,
     misrepresentedTokens: false,
     start: 14003811 ,
-    methodology: 'Counts to amount of LP staked into SteakMasterChef.',
+    methodology: 'Counts the value of JLP tokens staked into SteakMasterChef.',
     avalanche: {
       tvl,
       pool2, 
