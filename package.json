@@ -12,7 +12,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@cosmjs/encoding": "^0.28.4",
     "@defillama/sdk": "^2.3.62",
     "@polkadot/api": "^8.0.0",
     "@project-serum/anchor": "^0.18.2",
@@ -34,17 +33,10 @@
     "js-crypto-hkdf": "^1.0.4",
     "js-sha512": "^0.8.0",
     "miscreant": "^0.3.2",
-    "secure-random": "^1.1.2",
     "tron-format-address": "^0.1.8"
   },
   "overrides": {
     "ansi-regex": "5.0.1",
-    "@connext/nxtp-contracts": {
-      "async": "3.2.3"
-    },
-    "secretjs": {
-      "axios": "0.26.1"
-    },
     "mocha": {
       "nanoid": "3.3.1"
     },

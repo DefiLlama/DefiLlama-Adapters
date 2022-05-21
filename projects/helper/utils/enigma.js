@@ -1,10 +1,12 @@
 
 const miscreant = require("miscreant");
-const { toUtf8, fromBase64 } = require('@cosmjs/encoding')
 const curve25519_js_1 = require("curve25519-js");
-const secureRandom = require("secure-random");
 const hkdf = require("js-crypto-hkdf");
 const { get } = require('../http')
+
+const toBase64 = str => Buffer.from(str).toString('base64')
+const fromBase64 = str => Buffer.from(str, 'base64')
+
 
 const cryptoProvider = new miscreant.PolyfillCryptoProvider();
 const hkdfSalt = Uint8Array.from([
@@ -44,7 +46,7 @@ const hkdfSalt = Uint8Array.from([
 
 class EnigmaUtils {
   constructor(apiUrl) {
-    this.consensusIoPubKey = new Uint8Array(); // cache
+    this.consensusIoPubKey = null; // cache
     this.apiUrl = apiUrl;
     this.seed = EnigmaUtils.GenerateNewSeed();
     const { privkey, pubkey } = EnigmaUtils.GenerateNewKeyPairFromSeed(this.seed);
@@ -55,17 +57,19 @@ class EnigmaUtils {
     return EnigmaUtils.GenerateNewKeyPairFromSeed(EnigmaUtils.GenerateNewSeed());
   }
   static GenerateNewSeed() {
-    return secureRandom(32, { type: "Uint8Array" });
+    return new Uint8Array(Buffer.alloc(32, 0)) // We dont care about true random
   }
   static GenerateNewKeyPairFromSeed(seed) {
     const { private: privkey, public: pubkey } = curve25519_js_1.generateKeyPair(seed);
     return { privkey, pubkey };
   }
   async getConsensusIoPubKey() {
-    if (this.consensusIoPubKey.length === 32) {
-      return this.consensusIoPubKey;
+    if (this.consensusIoPubKey) return this.consensusIoPubKey
+    if (!this.getKey) {
+      this.getKey = get(this.apiUrl + "/reg/tx-key")
     }
-    const { result: { TxKey }, } = await get(this.apiUrl + "/reg/tx-key");
+
+    const { result: { TxKey }, }  = await this.getKey
     this.consensusIoPubKey = fromBase64(TxKey);
     return this.consensusIoPubKey;
   }
@@ -76,9 +80,7 @@ class EnigmaUtils {
     return txEncryptionKey;
   }
   async encrypt(contractCodeHash, msg) {
-    const nonce = secureRandom(32, {
-      type: "Uint8Array",
-    });
+    const nonce = new Uint8Array(Buffer.alloc(32, 0)) // We dont care about true random
     const txEncryptionKey = await this.getTxEncryptionKey(nonce);
     const siv = await miscreant.SIV.importKey(txEncryptionKey, "AES-SIV", cryptoProvider);
     const plaintext = toUtf8(contractCodeHash + JSON.stringify(msg));
@@ -101,5 +103,44 @@ class EnigmaUtils {
     return Promise.resolve(this.pubkey);
   }
 }
+
+function toUtf8(str) {
+  return new TextEncoder().encode(str);
+}
+
+function fromUtf8(data) {
+  return new TextDecoder("utf-8", { fatal: true }).decode(data);
+}
+
+function toHex(data) {
+    let out = "";
+    for (const byte of data) {
+        out += ("0" + byte.toString(16)).slice(-2);
+    }
+    return out;
+}
+
+function fromHex(hexstring) {
+    if (hexstring.length % 2 !== 0) {
+        throw new Error("hex string length must be a multiple of 2");
+    }
+    const out = new Uint8Array(hexstring.length / 2);
+    for (let i = 0; i < out.length; i++) {
+        const j = 2 * i;
+        const hexByteAsString = hexstring.slice(j, j + 2);
+        if (!hexByteAsString.match(/[0-9a-f]{2}/i)) {
+            throw new Error("hex string contains invalid characters");
+        }
+        out[i] = parseInt(hexByteAsString, 16);
+    }
+    return out;
+}
+
+EnigmaUtils.fromHex = fromHex
+EnigmaUtils.toHex = toHex
+EnigmaUtils.toUtf8 = toUtf8
+EnigmaUtils.fromUtf8 = fromUtf8
+EnigmaUtils.fromBase64 = fromBase64
+EnigmaUtils.toBase64 = toBase64
 
 module.exports = EnigmaUtils
