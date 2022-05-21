@@ -5,6 +5,16 @@ const tokenChainMap = {
 }
 
 
+const moonriverStablePoolTokenMap = {
+    "0xffc7780c34b450d917d557e728f033033cb4fa8c": "0xffffffff1fcacbd218edc0eba20fc2308c778080", // stKSM -> xcKSM
+}
+
+
+const MoonriverStableSwapContractAddress = [
+    "0x7BDE79AD4ae9023AC771F435A1DC6efdF3F434D1", // USDT/USDC/xcAUSD/FRAX
+    "0xd38A007F60817635163637411353BB1987209827", // xcKSM/stKSM
+  ];
+
 const MoonbeamStableSwapContractAddress = [
     '0x435a35Fc175be0ba097A7bF43128C020EC5bb151', // 4pool
     '0x944Af4Fb58beDBcE86FB533Bd6DDc49C0BcA6793' // mad3pool/4pool
@@ -14,11 +24,19 @@ module.exports = {
     methodology: "Get all pairs from the Factory Contract then get the reserve0 token amount and reserve1 token amount in one pair. Update the total balance of each token by reserve0 and reserve1. Repeat 2 ~ 3 for each pairs.",
     misrepresentedTokens: true,
     moonriver: {
-        tvl: calculateMoonriverTvl(
+        tvl: calculateUsdTvl(
             "0xf36AE63d89983E3aeA8AaaD1086C3280eb01438D",
             "moonriver",
-            tokenChainMap,
-            true
+            "0x98878b06940ae243284ca214f92bb71a2b032b8a",
+            [
+                "0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d", // USDC
+                "0x639a647fbe20b6c8ac19e48e2de44ea792c62c5c", // ETH
+            ],
+            true,
+            "moonriver",
+            18,
+            MoonriverStableSwapContractAddress,
+            moonriverStablePoolTokenMap
         )
     },
     moonbeam: {

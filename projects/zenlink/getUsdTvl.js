@@ -8,7 +8,12 @@ const stableSwapAbi = require('./abis/StableSwap.json');
 const { getBlock } = require('../helper/getBlock');
 
 
-async function getStableSwapPool(chain, block, address = []) {
+async function getStableSwapPool(
+    chain, 
+    block,
+    address = [],
+    stablePoolTokenMap
+    ) {
     const contractAddress = address;
     const [tokensOutput, balancesOutput] = await Promise.all([
         sdk.api.abi
@@ -36,15 +41,19 @@ async function getStableSwapPool(chain, block, address = []) {
     const balancesList = balancesOutput.map((item) => item.output);
 
     const tokenAmountArray = tokensList.flatMap((item, index) => {
-        const tokens = item;
-        const balances = balancesList[index];
+        const tokens = Object.values(item);
+        const balances = Object.values(balancesList[index]);
 
-        return tokens.map((t, i) => {
-            const token = t.toLowerCase();
+        return tokens.map((r, i) => {
+            let token = r.toLowerCase();
+            if(stablePoolTokenMap[token]) {
+                token = stablePoolTokenMap[token]
+            }
+    
             const amount = balances[i];
             return {
                 token,
-                amount
+                amount,
             }
         });
     });
@@ -212,7 +221,8 @@ function calculateUsdTvl(
     allowUndefinedBlock = true,
     coreAssetName,
     decimals = 18,
-    stableSwapContractAddress = []
+    stableSwapContractAddress = [],
+    stablePoolTokenMap = {},
 ) {
     const whitelist = whitelistRaw.map(t => t.toLowerCase())
     const coreAsset = coreAssetRaw.toLowerCase()
@@ -330,7 +340,7 @@ function calculateUsdTvl(
             }
         }
 
-        const result = await getStableSwapPool(chain, block, stableSwapContractAddress);
+        const result = await getStableSwapPool(chain, block, stableSwapContractAddress, stablePoolTokenMap);
 
         result.map((item) => {
             sum(balances, item.token, Number(item.amount))
