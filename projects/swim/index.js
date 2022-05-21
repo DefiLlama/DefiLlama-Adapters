@@ -19,7 +19,6 @@ Object.values(config).forEach((chain) => {
   })
 });
 
-console.log(tokensAndAccounts);
 async function tvl() {
   return sumTokensUnknown(tokensAndAccounts);
 }

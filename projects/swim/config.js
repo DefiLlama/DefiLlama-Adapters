@@ -17,28 +17,24 @@ module.exports = {
             pool: 'Ha7YEA5wRWyH2htfyMXw3VfLbtBHm4UoVXMpq8Ev6zJh', // Meta Avax-USDC
             tokens: [
               'FHfba3ov5P3RjaiLVgh8FTv4oirxQDoVXuoUUDvHuXax', // Avax-USDC
-              'BJUH9GJLaMSLV1E7B3SQLCy9eCfyr6zsrwGcpS2MkqR1', // SwimUSD
             ]
           },
           {
             pool: 'EpvBni7vTfbTG95zf9sNcS9To1NEKnVMpCwZdb21tKsg', // Meta Avax-USDT
             tokens: [
               'Kz1csQA91WUGcQ2TB3o5kdGmWmMGp8eJcDEyHzNDVCX', // Avax-USDT
-              'BJUH9GJLaMSLV1E7B3SQLCy9eCfyr6zsrwGcpS2MkqR1', // SwimUSD
             ]
           },
           {
             pool: '2iLTifF3JDP65AjFKZ3t4mgfJdQVSmVCiM8Zca3TgvpU', // Meta Polygon-USDC
             tokens: [
               'E2VmbootbVCBkMNNxKQgCLMS1X3NoGMaYAsufaAsf7M', // Polygon-USDC
-              'BJUH9GJLaMSLV1E7B3SQLCy9eCfyr6zsrwGcpS2MkqR1', // SwimUSD
             ]
           },
           {
             pool: '3uxBU3fRZzp3V7v9MTNZiDmjxDkKh3rZutLwFtnjJ2pQ', // Meta Polygon-USDT
             tokens: [
               '5goWRao6a3yNC4d6UjMdQxonkCMvKBwdpubU3qhfcdf1', // Polygon-USDT
-              'BJUH9GJLaMSLV1E7B3SQLCy9eCfyr6zsrwGcpS2MkqR1', // SwimUSD
             ]
           },
         ],
