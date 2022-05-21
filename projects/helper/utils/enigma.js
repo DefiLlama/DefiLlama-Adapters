@@ -1,8 +1,14 @@
 
 const miscreant = require("miscreant");
-const curve25519_js_1 = require("curve25519-js");
-const hkdf = require("js-crypto-hkdf");
+const curve25519 = require("curve25519-js");
 const { get } = require('../http')
+
+const crypto = require('node:crypto')
+
+const {
+  createECDH,
+  ECDH
+} =crypto;
 
 const toBase64 = str => Buffer.from(str).toString('base64')
 const fromBase64 = str => Buffer.from(str, 'base64')
@@ -60,7 +66,7 @@ class EnigmaUtils {
     return new Uint8Array(Buffer.alloc(32, 0)) // We dont care about true random
   }
   static GenerateNewKeyPairFromSeed(seed) {
-    const { private: privkey, public: pubkey } = curve25519_js_1.generateKeyPair(seed);
+    const { private: privkey, public: pubkey } = curve25519.generateKeyPair(seed);
     return { privkey, pubkey };
   }
   async getConsensusIoPubKey() {
@@ -75,9 +81,9 @@ class EnigmaUtils {
   }
   async getTxEncryptionKey(nonce) {
     const consensusIoPubKey = await this.getConsensusIoPubKey();
-    const txEncryptionIkm = curve25519_js_1.sharedKey(this.privkey, consensusIoPubKey);
-    const { key: txEncryptionKey } = await hkdf.compute(Uint8Array.from([...txEncryptionIkm, ...nonce]), "SHA-256", 32, "", hkdfSalt);
-    return txEncryptionKey;
+    const txEncryptionIkm = curve25519.sharedKey(this.privkey, consensusIoPubKey);
+    const txEncryptionKey = crypto.hkdfSync("sha256", Uint8Array.from([...txEncryptionIkm, ...nonce]), hkdfSalt, '', 32)
+    return new Uint8Array(txEncryptionKey)
   }
   async encrypt(contractCodeHash, msg) {
     const nonce = new Uint8Array(Buffer.alloc(32, 0)) // We dont care about true random
