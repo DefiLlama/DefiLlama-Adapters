@@ -71,6 +71,7 @@ module.exports = {
     fetch: ltc
   },
   thorchain:{
+    tvl: ()=>({}),
     staking
   },
   // terra:{
