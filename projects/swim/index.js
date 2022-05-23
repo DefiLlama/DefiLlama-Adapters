@@ -1,12 +1,23 @@
 const { sumTokensUnknown, } = require("../helper/solana")
-const tokens = require("./tokens")
+const config = require("./config")
 
-const contractAddress = 'AfhhYsLMXXyDxQ1B7tNqLTXXDHYtDxCzPcnXWXzHAvDb'
-const tokensAndAccounts = Object.values(tokens).map((token) => [
-  token,
-  contractAddress,
-  'tether',
-]);
+const tokensAndAccounts = [];
+
+Object.values(config).forEach((chain) => {
+  Object.values(chain).forEach((tvl) => {
+    Object.values(tvl).forEach((pools) => {
+      Object.values(pools).forEach((pool) => {
+        Object.values(pool.tokens).forEach((token) => {
+          tokensAndAccounts.push([
+            token,
+            pool.pool,
+            'tether',
+          ])
+        });
+      })
+    })
+  })
+});
 
 async function tvl() {
   return sumTokensUnknown(tokensAndAccounts);
