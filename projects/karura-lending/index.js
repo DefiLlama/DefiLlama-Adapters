@@ -29,5 +29,5 @@ async function tvl() {
 module.exports = {
   timetravel: false,
   methodology: "Counts collateral in lending market",
-  kusuma: { tvl },
+  karura: { tvl },
 };

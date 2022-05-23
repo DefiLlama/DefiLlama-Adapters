@@ -1,5 +1,4 @@
 const axios = require("axios");
-const web3 = require('web3');
 const { ethers } = require('ethers');
 const CONST = require("./constants");
 
@@ -27,7 +26,7 @@ exports.getLPTokensDetails = async (token0, token1, poolPrice, network) => {
 
 
 exports.getTokenPrice = async (token, network) => {
-    token.address = await this.checksumAddress(token.address);
+    token.address = token.address.toLowerCase();
     if(!CONST.networks[network]) {
         errorLogger.error(`network is missing: ${network}`);
         return {
@@ -69,9 +68,6 @@ async function getPriceFromUniswapForToken1(token0Price, poolPrice) {
     return token1PriceInUSD;
 }
 
-exports.checksumAddress = async (address) => {
-  return web3.utils.toChecksumAddress(address);
-}
 
 exports.bn = async (amount) => {
   return ethers.BigNumber.from(amount);

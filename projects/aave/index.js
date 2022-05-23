@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk');
-const { getV2Reserves, getV2Tvl, getV2Borrowed, aaveChainTvl } = require('../helper/aave');
+const { getV2Reserves, getTvl, getBorrowed, aaveChainTvl } = require('../helper/aave');
 const { staking } = require('../helper/staking');
 const { singleAssetV1Market,uniswapV1Market } = require('./v1');
 const { ammMarket } = require('./amm');
@@ -22,9 +22,9 @@ function ethereum(borrowed) {
     if (block >= 11360925) {
       const [v2Atokens, v2ReserveTokens, dataHelper] = await getV2Reserves(block, addressesProviderRegistryETH, 'ethereum')
       if(borrowed){
-        await getV2Borrowed(balances, block, "ethereum", v2ReserveTokens, dataHelper, id=>id);
+        await getBorrowed(balances, block, "ethereum", v2ReserveTokens, dataHelper, id=>id);
       } else {
-        await getV2Tvl(balances, block, 'ethereum', v2Atokens, v2ReserveTokens, id => id);
+        await getTvl(balances, block, 'ethereum', v2Atokens, v2ReserveTokens, id => id);
       }
     }
     if (block >= 11998773) {
@@ -34,9 +34,9 @@ function ethereum(borrowed) {
     if (block >= 13431423) {
       const [v2Atokens, v2ReserveTokens, dataHelper] = await getV2Reserves(block, "0x6FdfafB66d39cD72CFE7984D3Bbcc76632faAb00", 'ethereum', ["0x71B53fC437cCD988b1b89B1D4605c3c3d0C810ea"])
       if(borrowed){
-        await getV2Borrowed(balances, block, "ethereum", v2ReserveTokens, dataHelper, id=>id);
+        await getBorrowed(balances, block, "ethereum", v2ReserveTokens, dataHelper, id=>id);
       } else {
-        await getV2Tvl(balances, block, 'ethereum', v2Atokens, v2ReserveTokens, id => id);
+        await getTvl(balances, block, 'ethereum', v2Atokens, v2ReserveTokens, id => id);
       }
     }
 

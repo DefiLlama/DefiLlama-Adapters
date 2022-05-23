@@ -1,7 +1,6 @@
 const { ApiPromise, WsProvider } = require("@polkadot/api");
 const BigNumber = require("bignumber.js");
-const web3 = require("../config/web3");
-const abi = require("./abi.json");
+const sdk = require("@defillama/sdk")
 
 // node test.js projects/bifrost/index.js
 function formatTokenAmount(amount, tokenSymbol) {
@@ -87,8 +86,9 @@ async function tvl() {
   }));
 
   // Get vETH tvl
-  const vethContract = new web3.eth.Contract(abi, "0xc3d088842dcf02c13699f936bb83dfbbc6f721ab");
-  const totalSupply = await vethContract.methods.totalSupply().call();
+  const { output: totalSupply } = await sdk.api.erc20.totalSupply({
+    target: '0xc3d088842dcf02c13699f936bb83dfbbc6f721ab'
+  })
   totalLiquidity["ETH"] = totalSupply;
 
   const totalLiquidityFormatted = {};

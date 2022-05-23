@@ -1,5 +1,3 @@
-const web3 = require('../config/web3.js')
-const abis = require('../config/abis.js').abis
 const BigNumber = require("bignumber.js");
 const retry = require('async-retry')
 const axios = require("axios");
@@ -23,27 +21,16 @@ async function parallelAbiCall({ block, chain = 'ethereum', abi, getCallArgs = i
   return results
 }
 
-async function returnBalance(token, address) {
-  let contract = new web3.eth.Contract(abis.minABI, token);
-  let decimals = await contract.methods.decimals().call();
-  let balance = await contract.methods.balanceOf(address).call();
+async function returnBalance(token, address, block, chain) {
+  const { output: decimals } = await sdk.api.erc20.decimals(token, chain)
+  let { output: balance } = await sdk.api.erc20.balanceOf({ target: token, owner: address, chain, block })
   balance = await new BigNumber(balance).div(10 ** decimals).toFixed(2);
   return parseFloat(balance);
 }
 
-async function returnDecimals(address) {
-  if (address.toLowerCase() === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
-    return 18;
-  }
-  let contract = new web3.eth.Contract(abis.minABI, address)
-  let decimals = await contract.methods.decimals().call();
-  return decimals;
-}
-
 async function returnEthBalance(address) {
-
-  let getethBalanceRes = await web3.eth.getBalance(address);
-  let ethAmount = await new BigNumber(getethBalanceRes).div(10 ** 18).toFixed(2);
+  const output = await sdk.api.eth.getBalance({ target: address })
+  let ethAmount = await new BigNumber(output.output).div(10 ** 18).toFixed(2);
   return parseFloat(ethAmount);
 }
 
@@ -98,10 +85,6 @@ async function getTokenPricesFromString(stringFeed) {
   return result = await fetchURL(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${stringFeed}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`);
 }
 
-async function returnBlock() {
-  return await web3.eth.getBlockNumber()
-}
-
 async function fetchURL(url) {
   return await retry(async bail => await axios.get(url), {
     retries: 3
@@ -131,6 +114,42 @@ function isLP(symbol) {
   return symbol.includes('LP') || symbol.includes('PGL') || symbol.includes('UNI-V2') || symbol === "PNDA-V2" || symbol.includes('GREEN-V2')
 }
 
+function mergeExports(...exportsArray) {
+  exportsArray = exportsArray.flat()
+  const exports = {}
+
+  exportsArray.forEach(exportObj => {
+    Object.keys(exportObj).forEach(key => {
+      if (typeof exportObj[key] !== 'object') {
+        exports[key] = exportObj[key]
+        return;
+      }
+      Object.keys(exportObj[key]).forEach(key1 => addToExports(key, key1, exportObj[key][key1]))
+    })
+  })
+
+  Object.keys(exports)
+    .filter(chain => typeof exports[chain] === 'object')
+    .forEach(chain => {
+      const obj = exports[chain]
+      Object.keys(obj).forEach(key => {
+        if (obj[key].length > 1)
+          obj[key] = sdk.util.sumChainTvls(obj[key])
+        else
+          obj[key] = obj[key][0]
+      })
+    })
+
+
+  return exports
+
+  function addToExports(chain, key, fn) {
+    if (!exports[chain]) exports[chain] = {}
+    if (!exports[chain][key]) exports[chain][key] = []
+    exports[chain][key].push(fn)
+  }
+}
+
 module.exports = {
   createIncrementArray,
   fetchURL,
@@ -140,10 +159,9 @@ module.exports = {
   getTokenPricesFromString,
   getTokenPrices,
   returnBalance,
-  returnBlock,
-  returnDecimals,
   returnEthBalance,
   getPricesFromContract,
   isLP,
   parallelAbiCall,
+  mergeExports,
 }

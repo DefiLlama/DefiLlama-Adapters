@@ -5,7 +5,8 @@ const { toUSDTBalances } = require('../helper/balances')
 const TERRA_MANAGER = 'terra1ajkmy2c0g84seh66apv9x6xt6kd3ag80jmcvtz'
 const APERTURE_CONTRACT = 'terra1jvehz6d9gk3gl4tldrzd8qzj8zfkurfvtcg99x'
 
-async function tvl(timestamp, ethBlock, { terra: block }) {
+async function tvl() {
+  let block
   let sumTvl = BigNumber(0)
   const { next_position_id } = await queryContractStore({
     contract: TERRA_MANAGER,
@@ -37,7 +38,9 @@ async function tvl(timestamp, ethBlock, { terra: block }) {
       }))
   }
 
-  return toUSDTBalances(sumTvl.dividedBy(BigNumber(1e6)))
+  return {
+    'terrausd': sumTvl.dividedBy(BigNumber(1e6)),
+  }
 
   function getQuery(postion) {
     return { batch_get_position_info: { positions: [postion], } }
@@ -45,6 +48,7 @@ async function tvl(timestamp, ethBlock, { terra: block }) {
 }
 
 module.exports = {
+  timetravel: false,
   terra: {
     tvl,
   }

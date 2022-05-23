@@ -23,7 +23,7 @@ module.exports = {
   timetravel: false,
   methodology:
     "TVL considers KSM tokens deposited to the Liquid-Staking program",
-  kusuma: {
+  karura: {
     tvl,
   },
 }

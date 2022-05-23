@@ -126,7 +126,8 @@ async function getTokenPrices({ block, chain = 'ethereum', coreAssets = [], blac
       if (coreAssets.indexOf(currentCoreAmount) < coreAssets.indexOf(coreAsset)) return;
       if ((currentCoreAsset === coreAsset) && coreAmount < currentCoreAmount) return;
     }
-    prices[address] = [Number(coreAmount), Number(coreAmount) / Number(tokenAmount), coreAsset]
+    if (Number(tokenAmount) > 0)
+      prices[address] = [Number(coreAmount), Number(coreAmount) / Number(tokenAmount), coreAsset]
   }
 
   async function updateBalances(balances) {
@@ -140,7 +141,7 @@ async function getTokenPrices({ block, chain = 'ethereum', coreAssets = [], blac
       }
       if (!price) return;
       const coreAsset = price[2];
-      sdk.util.sumSingleBalance(balances, transformAddress(coreAsset), BigNumber(price[1] * (amount ?? 0)).toFixed())
+      sdk.util.sumSingleBalance(balances, transformAddress(coreAsset), BigNumber(price[1] * (amount ?? 0)).toFixed(0))
       delete balances[address]
     })
 
