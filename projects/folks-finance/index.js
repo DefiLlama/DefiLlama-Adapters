@@ -6,7 +6,7 @@ const {
   lookupAccountByID,
   getApplicationAddress,
 } = require("../helper/algorand");
-const { getAppState, getParsedValueFromState } = require("./utils");
+const { getAppState, getParsedValueFromState, sleep } = require("./utils");
 const { getPrices } = require("./prices");
 
 async function getAlgoLiquidGovernanceDepositUsd(prices) {
@@ -55,12 +55,14 @@ async function getTotalPoolDepositsUsd(prices) {
 async function tvl() {
   const prices = await getPrices();
 
-  const [depositsAmountUsd, algoLiquidGovernanceDepositUsd, borrowsAmountUsd] =
-    await Promise.all([
-      getTotalPoolDepositsUsd(prices),
-      getAlgoLiquidGovernanceDepositUsd(prices),
-      borrowed(),
-    ]);
+  const depositsAmountUsd = await getTotalPoolDepositsUsd(prices);
+  await sleep(3000);
+
+  const algoLiquidGovernanceDepositUsd =
+    await getAlgoLiquidGovernanceDepositUsd(prices);
+  await sleep(3000);
+
+  const borrowsAmountUsd = await borrowed();
 
   return toUSDTBalances(
     depositsAmountUsd + algoLiquidGovernanceDepositUsd - borrowsAmountUsd
