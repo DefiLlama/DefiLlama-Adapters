@@ -5,7 +5,7 @@ const symbol = require('./abis/symbol.json')
 const { getPoolTokens, getPoolId } = require('./abis/balancer.json')
 const getPricePerShare = require('./abis/getPricePerShare.json')
 const { requery } = require('./requery')
-const { getChainTransform } = require('./portedTokens')
+const { getChainTransform, getFixBalances } = require('./portedTokens')
 const creamAbi = require('./abis/cream.json')
 const { unwrapCrv, resolveCrvTokens } = require('./resolveCrvTokens')
 const activePoolAbi = require('./ankr/abis/activePool.json')
@@ -614,6 +614,11 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
   if (resolveYearn || unwrapAll) {
     await Promise.all(Object.keys(balances).map(token => unwrapYearn(balances, stripTokenHeader(token), block, chain, transformAddress)))
     await resolveCrvTokens(balances, block, chain, transformAddress)
+  }
+
+  if (['astar'].includes(chain)) {
+    const fixBalances = await getFixBalances(chain)
+    fixBalances(balances)
   }
 
   return balances

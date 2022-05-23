@@ -759,11 +759,20 @@ function fixAstarBalances(balances) {
     '0x75364D4F779d0Bd0facD9a218c67f87dD9Aff3b4': { coingeckoId: 'shiden', decimals: 18, },
     '0xad543f18cff85c77e140e3e5e3c3392f6ba9d5ca': { coingeckoId: 'bitcoin', decimals: 8, },
     '0x3795C36e7D12A8c252A20C5a7B455f7c57b60283': { coingeckoId: 'tether', decimals: 6, },
+    '0x430D50963d9635bBef5a2fF27BD0bDDc26ed691F': { coingeckoId: 'tether', decimals: 6, },
     '0x19574c3c8fafc875051b665ec131b7e60773d2c9': { coingeckoId: 'astar', decimals: 18, },
     '0xAeaaf0e2c81Af264101B9129C00F4440cCF0F720': { coingeckoId: 'astar', decimals: 18, },
     '0xb361DAD0Cc1a03404b650A69d9a5ADB5aF8A531F': { coingeckoId: 'emiswap', decimals: 18, },
     '0xC404E12D3466acCB625c67dbAb2E1a8a457DEf3c': { coingeckoId: 'usd-coin', decimals: 6, },  // interest bearing USDC
     '0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98': { coingeckoId: 'usd-coin', decimals: 6, },
+    '0x6De33698e9e9b787e09d3Bd7771ef63557E148bb': { coingeckoId: 'dai', decimals: 18, },
+    '0x4dd9c468A44F3FEF662c35c1E9a6108B70415C2c': { coingeckoId: 'dai', decimals: 18, },
+    '0x4Bf769b05E832FCdc9053fFFBC78Ca889aCb5E1E': { coingeckoId: 'binance-usd', decimals: 18, },
+    '0xb7aB962c42A8Bb443e0362f58a5A43814c573FFb': { coingeckoId: 'binance-usd', decimals: 18, },
+    '0x29F6e49c6E3397C3A84F715885F9F233A441165C': { coingeckoId: 'dai', decimals: 18, },
+    '0x733ebcC6DF85f8266349DEFD0980f8Ced9B45f35': { coingeckoId: 'dai', decimals: 18, },
+    // '0x29F6e49c6E3397C3A84F715885F9F233A441165C': { coingeckoId: 'orcus-ousd', decimals: 18, }, // todo: fix this, use correct coingecko id
+    // '0x733ebcC6DF85f8266349DEFD0980f8Ced9B45f35': { coingeckoId: 'bai-stablecoin', decimals: 18, }, // todo: fix this, use correct coingecko id
   }
 
   return fixBalances(balances, mapping)
