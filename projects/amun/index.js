@@ -1,12 +1,12 @@
 const sdk = require('@defillama/sdk');
-const abi = require('./abi.json')
+const abi = require('./abi.json');
 
 const DFI_ADDRESS = '0xA9536B9c75A9E0faE3B56a96AC8EdF76AbC91978';
 const DMX_ADDRESS = '0x1660F10B4D610cF482194356eCe8eFD65B15bA83';
 
 function chainTvl(chain, tokens) {
     return async (timestamp, ethBlock, chainBlocks) => {
-        const block = chainBlocks[chain]
+        const block = chainBlocks[chain];
         const balances = {};
         for (const address of tokens) {
             const underlyings = await sdk.api.abi.call({
@@ -22,7 +22,7 @@ function chainTvl(chain, tokens) {
                     owner: address,
                     chain
                 });
-                sdk.util.sumSingleBalance(balances, chain+':'+token, held.output)
+                sdk.util.sumSingleBalance(balances, chain+':'+token, held.output);
             };
         }
 
