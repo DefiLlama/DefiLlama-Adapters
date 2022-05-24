@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-
-const BRIDGE_ADDRESS = "0x0b8c93c6aaeabfdf7845786188727aa04100cb61";
+const { transformBscAddress, transformPolygonAddress } = require("../helper/portedTokens");
+const { BRIDGE_ADDRESS } = require("./constants");
 
 const callMethod = async (method, chain, chainBlocks, params = []) => {
   return (
@@ -26,9 +26,15 @@ const getTokenAddress = async (chain, chainBlocks, tokenName) => {
 };
 
 const getTokenAmount = async (chain, chainBlocks, tokenAddress) => {
-  return await callMethod("getTokensLocked", chain, chainBlocks, [
-    tokenAddress,
-  ]);
+  return (
+    await sdk.api.abi.call({
+      abi: "erc20:balanceOf",
+      chain,
+      target: tokenAddress,
+      params: [BRIDGE_ADDRESS],
+      block: chainBlocks[chain],
+    })
+  ).output;
 };
 
 module.exports = { getTokenNames, getTokenAddress, getTokenAmount };

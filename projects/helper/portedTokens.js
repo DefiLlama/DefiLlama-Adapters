@@ -175,6 +175,7 @@ async function transformBscAddress() {
     '0xa6fdea1655910c504e974f7f1b520b74be21857b': 'bsc:0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d',  // valas USDC -> BUSD
     '0x5f7f6cb266737b89f7af86b30f03ae94334b83e9': 'bsc:0x55d398326f99059ff775485246999027b3197955',  // valas USDT -> BUSD
     '0x532197ec38756b9956190b845d99b4b0a88e4ca9': '0x1614f18fc94f47967a3fbe5ffcd46d4e7da3d787',  // PAID
+    '0x8ea93d00cc6252e2bd02a34782487eed65738152': '0x8a0cdfab62ed35b836dc0633482798421c81b3ec' // SPHRI
   }
 
   return (addr) => {
@@ -207,6 +208,7 @@ async function transformPolygonAddress() {
     '0xf04d3a8eb17b832fbebf43610e94bdc4fd5cf2dd': '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',  // sBUSD(Polygon) -> BUSD(BSC)
     '0x8eb3771a43a8c45aabe6d61ed709ece652281dc9': 'avax:0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664',  // sUSDC.e(Polygon) -> USDC.e(Avalanche)
     '0x613a489785c95afeb3b404cc41565ccff107b6e0': '0x7a5d3A9Dcd33cb8D527f7b5F96EB4Fef43d55636',  // radioshack
+    '0x2fd4d793c1905d82018d75e3b09d3035856890a1': '0x8a0cdfab62ed35b836dc0633482798421c81b3ec', // SPHRI
   }
 
   return (addr) => {
