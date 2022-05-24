@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const abi = require('./abi.json')
+const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl");
 
 const factory_contract = "0xD707d9038C1d976d3a01c770f01CB73a1fd305Cd"
 
@@ -16,67 +16,21 @@ const token_addresses = {
     "wONE": "0xC224866E0d39AC2d104Dd28F6398F3548ae0f318"
 }
 
-const decimals = {
-    "wUSDT": 6,
-    "wLA": 18,
-    "wETH": 18,
-    "wMATIC": 18,
-    "wBNB": 18,
-    "wAVAX": 18,
-    "wFTM": 18,
-    "wARBETH": 18,
-    "wHT": 18,
-    "wONE": 18
-}
-
-const pairs = [["wUSDT, wLA"]]
-
-async function tvl(timestamp, block, chainBlocks) {
-    const pair = (await sdk.api.abi.call({
-        target: factory_contract,
-        params: [token_addresses['wUSDT'], token_addresses['wLA']],
-        abi: abi['getPair'],
-        block: chainBlocks.lachain,
-        chain: 'lachain'
-    })).output;
-
-    const reserve = (await sdk.api.abi.call({
-        target: pair,
-        params: [],
-        abi: abi['getReserves'],
-        block: chainBlocks.lachain,
-        chain: 'lachain'
-    })).output;
-
-    const token0 = (await sdk.api.abi.call({
-        target: pair,
-        params: [],
-        abi: abi['token0'],
-        block: chainBlocks.lachain,
-        chain: 'lachain'
-    })).output;
-
-    const token1 = (await sdk.api.abi.call({
-        target: pair,
-        params: [],
-        abi: abi['token1'],
-        block: chainBlocks.lachain,
-        chain: 'lachain'
-    })).output;
-
-
-    console.log("pair address:: ", pair)
-    console.log("reserve:: ", reserve)
-
-    console.log("token0: ", token0)
-    console.log("token1: ", token1)
-    console.log("decimals: ", decimals)
-
-    return null
-};
-
 module.exports = {
     lachain: {
-        tvl : tvl
+        tvl : calculateUsdUniTvl(factory_contract,
+             "lachain",
+              "0x3a898D596840C6B6b586d722bFAdCC8c4761BF41",
+               [token_addresses['wUSDT'],
+                token_addresses['wLA'],
+                token_addresses['wETH'],
+                token_addresses['wMATIC'],
+                token_addresses['wBNB'],
+                token_addresses['wAVAX'], 
+                token_addresses['wFTM'],
+                token_addresses['wARBETH'],
+                token_addresses['wHT'],
+                token_addresses['wONE']],
+                "latoken")
     }
 };
