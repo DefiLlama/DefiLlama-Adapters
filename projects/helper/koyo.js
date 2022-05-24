@@ -2,6 +2,7 @@ const sdk = require("@defillama/sdk");
 const { requery } = require("./requery");
 const { fetchURL } = require("./utils");
 const BigNumber = require("bignumber.js");
+const { usdtAddress, toUSDT } = require("./balances");
 
 const koyoStableSwapVirtualPriceABI = {
   stateMutability: "view",
@@ -16,25 +17,34 @@ const koyoStableSwapVirtualPriceABI = {
   ],
 };
 
+/**
+ * @description This function presumes that passed LP Tokens are from USD based stable pools.
+ * @param {Object.<string, number>} balances
+ * @param {string[]} lpTokens
+ * @param {string[]} owners
+ * @param {number[]} block
+ * @param {string} [chain="boba"]
+ * @param {*} transformAddress
+ */
 async function sumKoyoLPTokens(
   balances,
   lpTokens,
   owners,
   block,
-  chain = "boba"
+  chain = "boba",
+  transformAddress = (addr) => addr
 ) {
-  const { data: { data: pools } } = await fetchURL(
-    `https://api.exchange.koyo.finance/pools/raw/${chain}`
-  );
+  const {
+    data: { data: pools },
+  } = await fetchURL(`https://api.exchange.koyo.finance/pools/raw/${chain}`);
   const lpToSwap = Object.fromEntries(
     Object.entries(pools)
       .filter(([k]) => !["generatedTime"].includes(k))
-      .map(([k, pool]) => {
-        console.log(k);
-        return [pool.addresses.lpToken, pool.addresses.swap].map((addr) =>
+      .map(([, pool]) =>
+        [pool.addresses.lpToken, pool.addresses.swap].map((addr) =>
           addr.toLowerCase()
-        );
-      })
+        )
+      )
   );
 
   const swapCalls = Object.values(lpToSwap).map((swap) => ({
@@ -71,10 +81,15 @@ async function sumKoyoLPTokens(
       (call) => call.input.target === lpToSwap[token]
     ).output;
 
-    balances[token] = BigNumber(balance)
-      .times(virtualPrice)
-      .div(10 ** 18)
-      .toFixed(0);
+    const virtualizedBalance = BigNumber(balance).times(
+      BigNumber(virtualPrice).div(10 ** 18)
+    );
+
+    sdk.util.sumSingleBalance(
+      balances,
+      usdtAddress,
+      toUSDT(virtualizedBalance.div(10 ** 18))
+    );
   });
 }
 

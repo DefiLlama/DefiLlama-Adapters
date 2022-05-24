@@ -2,6 +2,7 @@ const { transformBobaAddress } = require("../helper/portedTokens");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const { getBlock } = require("../helper/getBlock");
 const utils = require("../helper/utils");
+const { sumKoyoLPTokens } = require("../helper/koyo");
 
 const DATA = {
   boba: async () => {
@@ -15,6 +16,7 @@ const DATA = {
       {
         treasury: {
           addresss: ["0x559dBda9Eb1E02c0235E245D9B175eb8DcC08398"],
+          koyoLpTokens: ["0xDAb3Fc342A242AdD09504bea790f9b026Aa1e709"],
           tokens: [
             ["0xa18bF3994C0Cc6E3b63ac420308E5383f53120D7", false], // BOBA(Boba)
           ],
@@ -53,7 +55,9 @@ const chainTVL = (chain) => {
 
     await sumTokensAndLPsSharedOwners(
       balances,
-      [...new Set(data.swaps.flatMap((swap) => swap.tokens)).values()].map((token) => [token, false]),
+      [...new Set(data.swaps.flatMap((swap) => swap.tokens)).values()].map(
+        (token) => [token, false]
+      ),
       data.swaps.map((swap) => swap.address),
       block,
       chain,
@@ -74,6 +78,15 @@ const chainTreasury = (chain) => {
     await sumTokensAndLPsSharedOwners(
       balances,
       data.treasury.tokens,
+      data.treasury.addresss,
+      block,
+      chain,
+      transform
+    );
+
+    await sumKoyoLPTokens(
+      balances,
+      data.treasury.koyoLpTokens,
       data.treasury.addresss,
       block,
       chain,
