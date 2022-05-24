@@ -147,6 +147,7 @@ async function transformAvaxAddress() {
       "0x920786cff2a6f601975874bb24c63f0115df7dc8": "0x6b175474e89094c44da98b954eedeac495271d0f",
       "0x49c68edb7aebd968f197121453e41b8704acde0c": "fantom:0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
       "0x0665ef3556520b21368754fb644ed3ebf1993ad4": "0x6c3f90f043a72fa612cbac8115ee7e52bde6e490",
+      '0x2fd4d793c1905d82018d75e3b09d3035856890a1': '0x8a0cdfab62ed35b836dc0633482798421c81b3ec', // SPHRI
       // update below to binspirit when it lists on coingecko
       "0x7345a537a975d9ca588ee631befddfef34fd5e8f": "fantom:0x5Cc61A78F164885776AA610fb0FE1257df78E59B",
     }
