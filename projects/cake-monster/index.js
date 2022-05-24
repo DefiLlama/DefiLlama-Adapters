@@ -28,8 +28,6 @@ async function staking(timestamp, block, chainBlocks) {
     stakingBalanceCorrected
   );
 
-  console.log(typeof stakingBalance);
-
   return balances;
 }
 
