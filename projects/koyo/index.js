@@ -53,7 +53,9 @@ const chainTVL = (chain) => {
 
     await sumTokensAndLPsSharedOwners(
       balances,
-      [...new Set(data.swaps.flatMap((swap) => swap.tokens)).values()].map((token) => [token, false]),
+      [...new Set(data.swaps.flatMap((swap) => swap.tokens)).values()].map(
+        (token) => [token, false]
+      ),
       data.swaps.map((swap) => swap.address),
       block,
       chain,
