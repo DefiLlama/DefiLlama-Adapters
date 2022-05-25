@@ -1,9 +1,4 @@
-const sdk = require("@defillama/sdk");
-const utils = require("../helper/utils");
-const { getCompoundV2Tvl, compoundExports } = require("../helper/compound");
-const { GraphQLClient, gql } = require('graphql-request')
-
-const abiCerc20 = require("./cerc20.json");
+const { compoundExports } = require("../helper/compound");
 
 module.exports = {
   timetravel: false, // milkomeda api's for staked coins can't be queried at historical points
