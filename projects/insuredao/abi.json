@@ -17,5 +17,21 @@
         ],
         "stateMutability": "view",
         "type": "function"
+    },
+    "valueAll": {
+        "inputs": [
+
+        ],
+        "name": "valueAll",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
     }
+
 }
