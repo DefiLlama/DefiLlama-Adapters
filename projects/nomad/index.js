@@ -3,8 +3,7 @@
 // token holdings:
 //     https://etherscan.io/tokenholdings?a=PUT CONTRACT ADDRESS HERE
 
-const sdk = require("@defillama/sdk");
-const { getBlock } = require("../helper/getBlock");
+const { sumTokens } = require('../helper/unwrapLPs')
 const { chainExports } = require("../helper/exports");
 
 const HOME_CHAINS = {
@@ -78,35 +77,13 @@ const TOKEN_ADDRESSES = [
 ];
 
 function tvl(chain) {
-  return async (time, _, chainBlocks) => {
-    const balances = {};
-    const block = await getBlock(time, chain, chainBlocks, true);
-    // console.log(block);
-  
-    await Promise.all(
-      TOKEN_ADDRESSES.map(async (token) => {
-        const target = token[chain];
-
-        if (target != undefined) {
-          const owner = HOME_CHAINS[chain];
-          
-          const tokenBalance = await sdk.api.erc20.balanceOf({
-            chain,
-            block,
-            target,
-            owner,
-          });
-
-          // console.log(tokenBalance.output);
-
-          await sdk.util.sumSingleBalance(balances, target, tokenBalance.output);
-
-          // console.log(balances);
-        }
-      })
-    );
-    
-    return balances;
+  return async (time, _, { [chain]: block }) => {
+    const toa = []
+    const owner = HOME_CHAINS[chain]
+    TOKEN_ADDRESSES.forEach(t => {
+      if (t[chain]) toa.push([t[chain], owner])
+    })
+    return sumTokens({}, toa, block, chain)
   }
 }
 
