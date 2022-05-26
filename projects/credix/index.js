@@ -1,19 +1,20 @@
-const axios = require("axios");
-const CREDIX_API = "https://api.credix.finance/stats/markets";
+const retry = require('../helper/retry');
+const axios = require('axios');
 
-const client = axios.create({
-  baseURL: CREDIX_API,
-});
+async function fetch() {
+  const metrics = (
+      await retry(
+          async (bail) => await axios.get('https://api.credix.finance/stats/markets/credix-marketplace')
+      )
+  ).data;
 
-async function tvl() {
-    const metrics = await client.get("/credix-marketplace");
-    const liquidityPoolAmount = parseInt(metrics.data.liquidity_pool_amount.uiAmount); 
-    const totalCreditOutstanding = parseInt(metrics.data.total_outstanding_credit.uiAmount);
-    return liquidityPoolAmount + totalCreditOutstanding;
+  const liquidityPoolAmount = parseInt(metrics.liquidity_pool_amount.uiAmount); 
+  const totalCreditOutstanding = parseInt(metrics.total_outstanding_credit.uiAmount);
+  const tvl = liquidityPoolAmount + totalCreditOutstanding; 
+
+  return tvl
 }
 
 module.exports = {
-  solana: {
-    tvl
-  },
-}
+    fetch
+};
