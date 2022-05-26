@@ -185,7 +185,7 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
     let pairs
 
     if (!maxParallel) {
-      pairs = (await sdk.api.abi.multiCall({ abi: factoryAbi.allPairs, chain, calls: pairNums.map(num => ({ target: factory, params: [num] })), block })).output
+      pairs = (await sdk.api.abi.multiCall({ abi: factoryAbi.allPairs, chain, calls: pairNums.map(num => ({ target: factory, params: [num] })), block, requery: true })).output
       await requery(pairs, chain, block, factoryAbi.allPairs);
     } else
       pairs = await parallelAbiCall({ block, chain, abi: factoryAbi.allPairs, items: pairNums, maxParallel, getCallArgs: num => ({ params: [num], target: factory }) })

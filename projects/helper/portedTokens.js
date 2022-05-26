@@ -744,6 +744,7 @@ async function transformCronosAddress() {
 
 function fixShidenBalances(balances) {
   const mapping = {
+    '0x0f933dc137d21ca519ae4c7e93f87a4c8ef365ef': { coingeckoId: 'shiden', decimals: 18, },
     '0x765277EebeCA2e31912C9946eAe1021199B39C61': { coingeckoId: 'ethereum', decimals: 18, },
     '0x332730a4f6e03d9c55829435f10360e13cfa41ff': { coingeckoId: 'binancecoin', decimals: 18, },
     '0x65e66a61d0a8f1e686c2d6083ad611a10d84d97a': { coingeckoId: 'binance-usd', decimals: 18, },
