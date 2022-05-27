@@ -5,6 +5,7 @@ const token1 = require('./abis/token1.json');
 const getReserves = require('./abis/getReserves.json');
 const factoryAbi = require('./abis/factory.json');
 const {getBlock} = require('./getBlock')
+const { getChainTransform} = require('./portedTokens')
 
 async function calculateUniTvl(getAddress, block, chain, FACTORY, START_BLOCK, useMulticall = false, abis={
   getReserves
@@ -153,7 +154,7 @@ function uniTvlExport(factory, chain, transformAddressOriginal=undefined, abis){
   return async (timestamp, _ethBlock, chainBlocks)=>{
     let transformAddress;
     if(transformAddressOriginal === undefined){
-      transformAddress = addr=>`${chain}:${addr}`;
+      transformAddress = await getChainTransform(chain);
     }else{
       transformAddress = await transformAddressOriginal()
     }

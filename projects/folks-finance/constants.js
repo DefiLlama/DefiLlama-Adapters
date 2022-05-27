@@ -65,12 +65,18 @@ const pools = [
     assetDecimals: 6,
     poolAppId: 620995314,
   },
+  {
+    // Planets
+    appId: 751285119,
+    assetId: 27165954,
+    assetDecimals: 6,
+  },
 ];
 
 const liquidGovernanceAppId = 694427622;
 
-const oracleAppId = 735190677;
-const oracleAdapterAppId = 743660117;
+const oracleAppId = 751491670;
+const oracleAdapterAppId = 751277258;
 const oracleDecimals = 14;
 const tinymanValidatorAppId = 552635992;
 

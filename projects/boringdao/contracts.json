@@ -272,5 +272,14 @@
             "ONE": "0x731203A6E33001d76AF6da49096fC8753b9E4932",
             "ETH": "0xC9BdeEd33CD01541e1eeD10f90519d2C06Fe3feB"
         }
+    },
+    "iotex": {
+        "contracts": {
+            "TwoWayV2": "0x87DD4a7Ad23B95cD9fF9C26B5cF325905CaF8663"
+        },
+        "tokens": {
+            "USDC": "0x3b2bf2b523f54c4e454f08aa286d03115aff326c",
+            "USDT": "0x6fbcdc1169b5130c59e72e51ed68a84841c98cd1"
+        }
     }
 }

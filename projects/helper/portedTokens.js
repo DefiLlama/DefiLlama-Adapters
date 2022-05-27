@@ -150,6 +150,7 @@ async function transformAvaxAddress() {
       '0x2fd4d793c1905d82018d75e3b09d3035856890a1': '0x8a0cdfab62ed35b836dc0633482798421c81b3ec', // SPHRI
       // update below to binspirit when it lists on coingecko
       "0x7345a537a975d9ca588ee631befddfef34fd5e8f": "fantom:0x5Cc61A78F164885776AA610fb0FE1257df78E59B",
+      '0x90a424754ad0d72cebd440faba18cdc362bfe70a': 'heco:0xcbd6cb9243d8e3381fea611ef023e17d1b7aedf0',  // BXH
     }
     return map[addr.toLowerCase()] || `avax:${addr}`
   }
@@ -176,7 +177,8 @@ async function transformBscAddress() {
     '0xa6fdea1655910c504e974f7f1b520b74be21857b': 'bsc:0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d',  // valas USDC -> BUSD
     '0x5f7f6cb266737b89f7af86b30f03ae94334b83e9': 'bsc:0x55d398326f99059ff775485246999027b3197955',  // valas USDT -> BUSD
     '0x532197ec38756b9956190b845d99b4b0a88e4ca9': '0x1614f18fc94f47967a3fbe5ffcd46d4e7da3d787',  // PAID
-    '0x8ea93d00cc6252e2bd02a34782487eed65738152': '0x8a0cdfab62ed35b836dc0633482798421c81b3ec' // SPHRI
+    '0x8ea93d00cc6252e2bd02a34782487eed65738152': '0x8a0cdfab62ed35b836dc0633482798421c81b3ec', // SPHRI
+    '0x6d1b7b59e3fab85b7d3a3d86e505dd8e349ea7f3': 'heco:0xcbd6cb9243d8e3381fea611ef023e17d1b7aedf0',  // BXH
   }
 
   return (addr) => {
@@ -246,20 +248,21 @@ async function transformXdaiAddress() {
 }
 
 async function transformOkexAddress() {
-  const okexBridge = (
-    await utils.fetchURL(
-      "https://www.okex.com/v2/asset/cross-chain/currencyAddress"
-    )
-  ).data.data.tokens;
-  // TODO
+  // const okexBridge = (
+  //   await utils.fetchURL(
+  //     "https://www.okex.com/v2/asset/cross-chain/currencyAddress"
+  //   )
+  // ).data.data.tokens; TODO
+  const mapping = {
+    '0x0000000000000000000000000000000000000000': '0x75231f58b43240c9718dd58b4967c5114342a86c',  // okex
+    '0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c': 'avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c',
+  }
+
+  normalizeMapping(mapping)
+
   return (addr) => {
-    if (compareAddresses(addr, "0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c")) {
-      return "avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c";
-    }
-    // Native token -> OKB
-    if (compareAddresses(addr, "0x0000000000000000000000000000000000000000")) {
-      return "0x75231f58b43240c9718dd58b4967c5114342a86c";
-    }
+    addr = addr.toLowerCase()
+    if (mapping[addr]) return mapping[addr]
     return `okexchain:${addr}`;
   };
 }
@@ -451,6 +454,7 @@ async function transformArbitrumAddress() {
     '0x9ef758ac000a354479e538b8b2f01b917b8e89e7': 'polygon:0x3dc7b06dd0b1f08ef9acbbd2564f8605b4868eea',  // XDO
     '0x31635A2a3892dAeC7C399102676E344F55d20Da7': '0x09ce2b746c32528b7d864a1e3979bd97d2f095ab',  //  DeFIL
     '0x4a717522566c7a09fd2774ccedc5a8c43c5f9fd2': '0x956f47f50a910163d8bf957cf5846d573e7f87ca',  //  FEI
+    '0x289ba1701c2f088cf0faf8b3705246331cb8a839': '0x58b6a8a3302369daec383334672404ee733ab239',  // LPT
   }
 
   normalizeMapping(mapping)
@@ -746,6 +750,7 @@ async function transformCronosAddress() {
 
 function fixShidenBalances(balances) {
   const mapping = {
+    '0x0f933dc137d21ca519ae4c7e93f87a4c8ef365ef': { coingeckoId: 'shiden', decimals: 18, },
     '0x765277EebeCA2e31912C9946eAe1021199B39C61': { coingeckoId: 'ethereum', decimals: 18, },
     '0x332730a4f6e03d9c55829435f10360e13cfa41ff': { coingeckoId: 'binancecoin', decimals: 18, },
     '0x65e66a61d0a8f1e686c2d6083ad611a10d84d97a': { coingeckoId: 'binance-usd', decimals: 18, },
@@ -762,11 +767,20 @@ function fixAstarBalances(balances) {
     '0x75364D4F779d0Bd0facD9a218c67f87dD9Aff3b4': { coingeckoId: 'shiden', decimals: 18, },
     '0xad543f18cff85c77e140e3e5e3c3392f6ba9d5ca': { coingeckoId: 'bitcoin', decimals: 8, },
     '0x3795C36e7D12A8c252A20C5a7B455f7c57b60283': { coingeckoId: 'tether', decimals: 6, },
+    '0x430D50963d9635bBef5a2fF27BD0bDDc26ed691F': { coingeckoId: 'tether', decimals: 6, },
     '0x19574c3c8fafc875051b665ec131b7e60773d2c9': { coingeckoId: 'astar', decimals: 18, },
     '0xAeaaf0e2c81Af264101B9129C00F4440cCF0F720': { coingeckoId: 'astar', decimals: 18, },
     '0xb361DAD0Cc1a03404b650A69d9a5ADB5aF8A531F': { coingeckoId: 'emiswap', decimals: 18, },
     '0xC404E12D3466acCB625c67dbAb2E1a8a457DEf3c': { coingeckoId: 'usd-coin', decimals: 6, },  // interest bearing USDC
     '0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98': { coingeckoId: 'usd-coin', decimals: 6, },
+    '0x6De33698e9e9b787e09d3Bd7771ef63557E148bb': { coingeckoId: 'dai', decimals: 18, },
+    '0x4dd9c468A44F3FEF662c35c1E9a6108B70415C2c': { coingeckoId: 'dai', decimals: 18, },
+    '0x4Bf769b05E832FCdc9053fFFBC78Ca889aCb5E1E': { coingeckoId: 'binance-usd', decimals: 18, },
+    '0xb7aB962c42A8Bb443e0362f58a5A43814c573FFb': { coingeckoId: 'binance-usd', decimals: 18, },
+    '0x29F6e49c6E3397C3A84F715885F9F233A441165C': { coingeckoId: 'dai', decimals: 18, },
+    '0x733ebcC6DF85f8266349DEFD0980f8Ced9B45f35': { coingeckoId: 'dai', decimals: 18, },
+    // '0x29F6e49c6E3397C3A84F715885F9F233A441165C': { coingeckoId: 'orcus-ousd', decimals: 18, }, // todo: fix this, use correct coingecko id
+    // '0x733ebcC6DF85f8266349DEFD0980f8Ced9B45f35': { coingeckoId: 'bai-stablecoin', decimals: 18, }, // todo: fix this, use correct coingecko id
   }
 
   return fixBalances(balances, mapping)
@@ -1014,6 +1028,7 @@ async function transformEthereumAddress() {
     '0x88536c9b2c4701b8db824e6a16829d5b5eb84440': 'polygon:0xac63686230f64bdeaf086fe6764085453ab3023f', // USV token
     '0xFEEf77d3f69374f66429C91d732A244f074bdf74': '0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0', // CVX FXS token
     '0xb8c77482e45f1f44de1745f52c74426c631bdd52': 'bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // BNB
+    '0xeb637a9ab6be83c7f8c79fdaa62e1043b65534f0': 'heco:0xcbd6cb9243d8e3381fea611ef023e17d1b7aedf0',  // BXH
   }
   normalizeMapping(mapping)
 

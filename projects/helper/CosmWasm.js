@@ -1,6 +1,6 @@
 const { get } = require('./http')
 const EnigmaUtils = require('./utils/enigma')
-const { toHex, toUtf8, toBase64, fromUtf8, fromBase64 } = require('@cosmjs/encoding')
+const { toBase64, fromBase64, toUtf8, fromUtf8, toHex,  }  = EnigmaUtils
 
 class CosmWasmClient {
   constructor(nodeURL) {

@@ -5,7 +5,7 @@ const symbol = require('./abis/symbol.json')
 const { getPoolTokens, getPoolId } = require('./abis/balancer.json')
 const getPricePerShare = require('./abis/getPricePerShare.json')
 const { requery } = require('./requery')
-const { getChainTransform } = require('./portedTokens')
+const { getChainTransform, getFixBalances } = require('./portedTokens')
 const creamAbi = require('./abis/cream.json')
 const { unwrapCrv, resolveCrvTokens } = require('./resolveCrvTokens')
 const activePoolAbi = require('./ankr/abis/activePool.json')
@@ -616,6 +616,11 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
     await resolveCrvTokens(balances, block, chain, transformAddress)
   }
 
+  if (['astar'].includes(chain)) {
+    const fixBalances = await getFixBalances(chain)
+    fixBalances(balances)
+  }
+
   return balances
 }
 
@@ -880,8 +885,7 @@ async function unwrapTroves({ balances = {}, chain = 'ethereum', block, troves =
   const tokensAndOwners = []
 
   for (let i = 0; i < troves.length; i++) {
-    if (activePools[i].success && tokens[i].success)
-      tokensAndOwners.push([tokens[i].output, activePools[i].output])
+    tokensAndOwners.push([tokens[i].output, activePools[i].output])
   }
 
   await sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { resolveCrv: true, resolveLP: true, resolveYearn: true })
