@@ -1,147 +1,88 @@
-const sdk = require("@defillama/sdk");
-const abi = require("./abi.json");
-const utils = require("../helper/utils");
-const { unwrapUniswapLPs, unwrapCrv } = require("../helper/unwrapLPs");
-const { transformPolygonAddress } = require("../helper/portedTokens");
+const { toUSDT, usdtAddress } = require("../helper/balances");
+const axios = require("axios");
 
-const jars_url =
-  "https://stkpowy01i.execute-api.us-west-1.amazonaws.com/prod/protocol/pools";
+const pfcore = "https://api.pickle.finance/prod/protocol/pfcore/";
+const pickleAddress = "0x429881672B9AE42b8EbA0E26cD9C73711b891Ca5";
+// node test.js projects/pickle/index.js
+function fetch(chain, type) {
+  return async (_timestamp, _ethBlock, chainBlocks) => {
+    const response = (await axios.get(pfcore))?.data;
 
-const ethTvl = async (timestamp, block, chainBlocks) => {
-  const balances = {};
+    chain = chain === "ethereum" ? "eth" : chain;
 
-  let jars = (await utils.fetchURL(jars_url)).data
-    .map(jar => {
-      if (jar.network === "eth")
-        return {
-          jarAddress: jar.jarAddress,
-          tokenAddress: jar.tokenAddress,
-          name: jar.identifier
-        };
-    })
-    .filter(x => x);
+    let tvl = 0;
+    let pool2 = 0;
 
-  const jar_balances = (
-    await sdk.api.abi.multiCall({
-      block,
-      calls: jars.map(jar => ({
-        target: jar.jarAddress
-      })),
-      abi: abi.balance
-    })
-  ).output.map(val => val.output);
+    Object.keys(response.assets).forEach((assetsType) => {
+      response.assets[assetsType].forEach((asset) => {
+        if (asset.chain === chain && asset.details && asset.details.harvestStats) {
+          if (asset.tags && asset.tags.includes("pool2")) {
+            pool2 += asset.details.harvestStats.balanceUSD;
+          } else {
+            tvl += asset.details.harvestStats?.balanceUSD ?? 0;
+          }
+        }
+      });
+    });
 
-  const lpPositions = [];
+    let result = {};
 
-  await Promise.all(
-    jars.map(async (jar, idx) => {
-      if (jar.name.toLowerCase().includes("crv") && jar.name != "yvecrv-eth") {
-        await unwrapCrv(
-          balances,
-          jar.tokenAddress,
-          jar_balances[idx],
-          block,
-        );
-      } else if (jar.name.includes("-")) {
-        lpPositions.push({
-          balance: jar_balances[idx],
-          token: jar.tokenAddress
-        });
-      } else if(jar.name==="aleth") {
-        sdk.util.sumSingleBalance( // sum as weth
-          balances,
-          "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-          jar_balances[idx]
-        );
-      } else {
-        sdk.util.sumSingleBalance(
-          balances,
-          jar.tokenAddress,
-          jar_balances[idx]
-        );
-      }
-    })
-  );
-  await unwrapUniswapLPs(
-    balances,
-    lpPositions,
-    block
-  );
+    switch (type) {
+      case "tvl":
+        result = { [usdtAddress]: toUSDT(tvl) };
+        break;
+      case "pool2":
+        result = { [usdtAddress]: toUSDT(pool2) };
+        break;
+      case "staking":
+        const picklesLocked = response.dill.pickleLocked;
+        result = { [pickleAddress]: picklesLocked * 1e18 };
+        break;
+    }
 
-  return balances;
-};
-
-const polygonTvl = async (timestamp, block, chainBlocks) => {
-  const balances = {};
-
-  let jars = (await utils.fetchURL(jars_url)).data
-    .map(jar => {
-      if (jar.network === "polygon")
-        return {
-          jarAddress: jar.jarAddress,
-          tokenAddress: jar.tokenAddress,
-          name: jar.identifier
-        };
-    })
-    .filter(x => x);
-
-  const jar_balances = (
-    await sdk.api.abi.multiCall({
-      chain: "polygon",
-      block: chainBlocks["polygon"],
-      calls: jars.map(jar => ({
-        target: jar.jarAddress
-      })),
-      abi: abi.balance
-    })
-  ).output.map(val => val.output);
-
-  const lpPositions = [];
-
-  const transformAddress = await transformPolygonAddress();
-  await Promise.all(
-    jars.map(async (jar, idx) => {
-      if (jar.name.toLowerCase().includes("crv")) {
-        await unwrapCrv(
-          balances,
-          jar.tokenAddress,
-          jar_balances[idx],
-          chainBlocks["polygon"],
-          "polygon",
-          transformAddress
-        );
-      } else if (jar.name.includes("-")) {
-        lpPositions.push({
-          balance: jar_balances[idx],
-          token: jar.tokenAddress
-        });
-      } else {
-        sdk.util.sumSingleBalance(
-          balances,
-          `polygon:${jar.tokenAddress}`,
-          jar_balances[idx]
-        );
-      }
-    })
-  );
-
-  await unwrapUniswapLPs(
-    balances,
-    lpPositions,
-    chainBlocks["polygon"],
-    "polygon",
-    transformAddress
-  );
-
-  return balances;
-};
+    return result;
+  };
+}
 
 module.exports = {
-  ethereum:{
-    tvl: ethTvl
+  doublecounted: true,
+  misrepresentedTokens: true,
+  timetravel: false,
+  ethereum: {
+    tvl: fetch("ethereum", "tvl"),
+    pool2: fetch("ethereum", "pool2"),
+    staking: fetch("ethereum", "staking"),
   },
   polygon: {
-    tvl: polygonTvl
+    tvl: fetch("polygon", "tvl"),
+    pool2: fetch("polygon", "pool2"),
   },
-  tvl: sdk.util.sumChainTvls([ethTvl, polygonTvl])
+  arbitrum: {
+    tvl: fetch("arbitrum", "tvl"),
+    pool2: fetch("arbitrum", "pool2"),
+  },
+  moonriver: {
+    tvl: fetch("moonriver", "tvl"),
+  },
+  harmony: {
+    tvl: fetch("harmony", "tvl"),
+  },
+  okexchain: {
+    tvl: fetch("okex", "tvl"),
+  },
+  cronos: {
+    tvl: fetch("cronos", "tvl"),
+  },
+  aurora: {
+    tvl: fetch("aurora", "tvl"),
+  },
+  metis: {
+    tvl: fetch("metis", "tvl"),
+  },
+  moonbeam: {
+    tvl: fetch("moonbeam", "tvl"),
+  },
+  optimism: {
+    tvl: fetch("optimism", "tvl"),
+  },
 };

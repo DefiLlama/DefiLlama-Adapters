@@ -1,6 +1,10 @@
 const sdk = require("@defillama/sdk");
+const { stakings } = require("../helper/staking");
+const OracleAbi = require('./abi/oracle.json');
+const TokenAbi = require('./abi/token.json');
+const { toUSDTBalances } = require("../helper/balances");
 
-const stakingPool = '0x488933457E89656D7eF7E69C10F2f80C7acA19b5';
+const stakingPool = ['0x488933457E89656D7eF7E69C10F2f80C7acA19b5', '0x4b1791422dE4807B2999Eeb65359F3E13fa9d11d'];
 const bfcAddr = '0x0c7D5ae016f806603CB1782bEa29AC69471CAb9c';
 
 const ethPool = '0x13000c4a215efe7e414bb329b2f11c39bcf92d78';
@@ -56,9 +60,67 @@ const bscTokenPools = {
     }
 }
 
+const avaxPool = '0x446881360d6d39779D292662fca9BC85C5789dB3'
+const avaxTokenPools = {
+    'eth': {
+        'pool': '0x8AbA88E8A4AB28319b782199cB17f0001EE67984',
+        'token': '0x49D5c2BdFfac6CE2BFdB6640F4F80f226bc10bAB'
+    },
+    'usdt': {
+        'pool': '0xE893233515b7D02dD4e3D888162d4C87Dc837943',
+        'token': '0xc7198437980c041c805A1EDcbA50c1Ce5db95118'
+    },
+    'usdc': {
+        'pool': '0x8385Ea36dD4BDC84B3F2ac718C332E18C1E42d36',
+        'token': '0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664'
+    },
+    'dai': {
+        'pool': '0x34DA42143b0c6E321CEb76931c637c12Bd865f7e',
+        'token': '0xd586E7F844cEa2F87f50152665BCbc2C279D8d70'
+    },
+    'wbtc': {
+        'pool': '0xc4D1e935F02A44D44985E6b1C0eE1ee616fC146a',
+        'token': '0x50b7545627a5162F82A992c33b87aDc75187B218'
+    },
+}
+
+const klayOracleContract = '0xCD4F7C7451FFD8628b7F3D5c1b68a3A207ab1125';
+const klayPool = '0x829fCFb6A6EeA9d14eb4C14FaC5B29874BdBaD13';
+const klaytnTokenPools = {
+    'keth': {
+        'pool': '0x07970F9D979D8594B394fE12345211C376aDfF89',
+        'token': '0x34d21b1e550d73cee41151c77f3c73359527a396'
+    },
+    'kusdt': {
+        'pool': '0xe0e67b991d6b5CF73d8A17A10c3DE74616C1ec11',
+        'token': '0xcee8faf64bb97a73bb51e115aa89c17ffa8dd167'
+    },
+    'kdai': {
+        'pool': '0xE03487927e137526a2dB796A9B3b4048ab615043',
+        'token': '0x5c74070fdea071359b86082bd9f9b3deaafbe32b'
+    },
+    'usdc': {
+        'pool': '0x808c707c53c3D30d0247e4b8D78AA0D8b75CAAE1',
+        'token': '0x754288077d0ff82af7a5317c7cb8c444d421d103'
+    },
+    'kwbtc': {
+        'pool': '0xa6aDE2e6c6F50a2d9b9C4b819e84b367F88C1598',
+        'token': '0x16d0e1fbd024c600ca0380a4c5d57ee7a2ecbf9c'
+    },
+    'kxrp': {
+        'pool': '0x4800577A71F68eD7ef4C09cFBe7fd6E066D5F0dA',
+        'token': '0x9eaefb09fe4aabfbe6b1ca316a3c36afc83a393f'
+    },
+}
+
+function getAVAXAddress(address) {
+    return `avax:${address}`
+}
+
 function getBSCAddress(address) {
     return `bsc:${address}`
 }
+
 const coinAddress = '0x0000000000000000000000000000000000000000'
 
 async function eth(timestamp, block) {
@@ -71,14 +133,6 @@ async function eth(timestamp, block) {
         target: ethPool,
         block: ethBlock
     })).output
-
-    // staking pool
-    let tokenStaked = await sdk.api.erc20.balanceOf({
-        owner: stakingPool,
-        target: bfcAddr,
-        block: ethBlock
-    });
-    sdk.util.sumSingleBalance(balances, bfcAddr, tokenStaked.output);
 
     // eth tokens
     sdk.util.sumMultiBalanceOf(balances, await sdk.api.abi.multiCall({
@@ -135,9 +189,90 @@ async function bsc(timestamp, block, chainBlocks) {
     return balances
 }
 
+const wavax = "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7"
+async function avax(timestamp, block, chainBlocks) {
+    let balances = {};
+
+    const avaxBlock = chainBlocks.avax
+    // avax
+    balances[getAVAXAddress(wavax)] = ((await sdk.api.eth.getBalance({
+        target: avaxPool,
+        chain: 'avax',
+        block: avaxBlock
+    })).output)
+
+    // avax tokens
+    for (const token in avaxTokenPools) {
+        const tokenPool = avaxTokenPools[token];
+        let tokenLocked = await sdk.api.erc20.balanceOf({
+            owner: tokenPool.pool,
+            target: tokenPool.token,
+            chain: 'avax',
+            block: avaxBlock
+        });
+
+          sdk.util.sumSingleBalance(balances, getAVAXAddress(tokenPool.token), tokenLocked.output);
+    }
+
+    return balances
+}
+
+async function klaytn(ts, _block, chainBlocks) {
+    const chain = 'klaytn'
+    const block = chainBlocks[chain]
+    let klaytnTVL = 0;
+
+    const { output: klayPrice} = await sdk.api.abi.call({
+        chain, block,
+        target: klayOracleContract,
+        params: [0],
+        abi: OracleAbi.find(i => i.name === 'getTokenPrice')
+    })
+    const { output: klayBalance } = await sdk.api.eth.getBalance({
+        target: klayPool, block, chain
+    })
+
+    klaytnTVL += klayPrice * klayBalance / (10 ** 36);
+
+    let oracleID = 0
+    for (const token in klaytnTokenPools) {
+        oracleID += 1;
+
+        const tokenAddress = klaytnTokenPools[token].token;
+        const tokenPoolAddress = klaytnTokenPools[token].pool;
+
+        const { output: tokenPrice} = await sdk.api.abi.call({
+            chain, block,
+            target: klayOracleContract,
+            params: [oracleID],
+            abi: OracleAbi.find(i => i.name === 'getTokenPrice')
+        })
+
+        const { output: balance} = await sdk.api.abi.call({
+            chain, block,
+            target: tokenAddress,
+            params: [tokenPoolAddress],
+            abi: TokenAbi.find(i => i.name === 'balanceOf')
+        })
+
+        const { output: decimals} = await sdk.api.abi.call({
+            chain, block,
+            target: tokenAddress,
+            abi: TokenAbi.find(i => i.name === 'decimals')
+        })
+
+        const div = 18 + parseInt(decimals, 10);
+
+        klaytnTVL += balance * tokenPrice / 10 ** div;
+    }
+
+    return toUSDTBalances(klaytnTVL);
+}
+
 module.exports = {
     ethereum: {
-        tvl: eth
+        tvl: eth,
+        staking: stakings(stakingPool, bfcAddr)
     },
     bsc: {
         tvl: bsc
@@ -145,5 +280,10 @@ module.exports = {
     bitcoin:{
         tvl: bitcoin
     },
-    tvl: sdk.util.sumChainTvls([bsc,eth, bitcoin]),
+    avax: {
+        tvl: avax
+    },
+    klaytn: {
+        tvl: klaytn
+    }
 }

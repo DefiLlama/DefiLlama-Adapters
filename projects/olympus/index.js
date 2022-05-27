@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
 const erc20 = require("../helper/abis/erc20.json");
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
+const {gql, request} = require('graphql-request');
+const { toUSDTBalances } = require("../helper/balances");
 
 const OlympusStakings = [
   // Old Staking Contract
@@ -11,18 +12,6 @@ const OlympusStakings = [
 
 const OHM = "0x383518188c0c6d7730d91b2c03a03c837814a899";
 
-const treasuryAddresses = [
-  // V1
-  "0x886CE997aa9ee4F8c2282E182aB72A705762399D",
-  // V2
-  "0x31F8Cc382c9898b273eff4e0b7626a6987C846E8",
-];
-
-const DAI = "0x6b175474e89094c44da98b954eedeac495271d0f";
-const OHM_DAI_SLP = "0x34d7d7aaf50ad4944b70b320acb24c95fa2def7c";
-const FRAX = "0x853d955acef822db058eb8505911ed77f175b99e";
-const OHM_FRAX_UNIV2 = "0x2dce0dda1c2f98e0f171de8333c3c6fe1bbf4877";
-const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 
 /*** Staking of native token (OHM) TVL Portion ***/
 const staking = async (timestamp, ethBlock, chainBlocks) => {
@@ -42,37 +31,37 @@ const staking = async (timestamp, ethBlock, chainBlocks) => {
   return balances;
 };
 
+const protocolQuery = gql`
+query get_tvl($block: Int) {
+  protocolMetrics(
+    first: 1, orderBy: timestamp, orderDirection: desc
+  ) {
+    treasuryMarketValue
+    timestamp
+  }
+}
+`
+
 /*** Bonds TVL Portion (Treasury) ***
  * Treasury TVL consists of DAI, FRAX and WETH balances + Sushi SLP and UNI-V2 balances
  ***/
 async function ethTvl(timestamp, block) {
-  const balances = {};
-
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    [
-      [DAI, false],
-      [FRAX, false],
-      [WETH, false],
-      [OHM_DAI_SLP, true],
-      [OHM_FRAX_UNIV2, true],
-    ],
-    treasuryAddresses,
-    block
-  );
-
-  return balances;
+  const queriedData = await request("https://api.thegraph.com/subgraphs/name/drondin/olympus-protocol-metrics", protocolQuery, {block})
+  const metric= queriedData.protocolMetrics[0]
+  if(Date.now()/1000 - metric.timestamp > 3600*24){
+    throw new Error("outdated")
+  }
+  return toUSDTBalances(metric.treasuryMarketValue)
 }
 
 module.exports = {
   start: 1616569200, // March 24th, 2021
+  timetravel: false,
+  misrepresentedTokens: true,
   ethereum: {
     tvl: ethTvl,
+    staking
   },
-  staking: {
-    tvl: staking,
-  },
-  tvl: sdk.util.sumChainTvls([ethTvl]),
   methodology:
     "Counts DAI, DAI SLP (OHM-DAI), FRAX, FRAX ULP (OHM-FRAX), WETH on the treasury",
 };

@@ -1,6 +1,7 @@
 const sdk = require('@defillama/sdk');
 const abiPolygon = require('./abi-polygon.json');
 const { transformAddress } = require('./utils');
+const { compoundExports } = require('../helper/compound');
 
 const Contracts = {
   polygon: {
@@ -65,60 +66,10 @@ const poolTvl = async (chain, poolAddress, block, addressTransformer) => {
   return sum;
 };
 
-const lendingTvl = async (chain, block, addressTransformer) => {
-  const controller = Contracts[chain].lend.ironController;
-  const { output: markets } = await sdk.api.abi.call({
-    target: controller,
-    abi: abiPolygon.IronController.getAllMarkets,
-    chain,
-    block,
-  });
-
-  const [symbols, cash, underlyingAddress] = await Promise.all([
-    sdk.api.abi.multiCall({
-      abi: abiPolygon.rToken.symbol,
-      calls: markets.map((t) => ({
-        target: t,
-      })),
-      chain,
-      block,
-    }),
-
-    sdk.api.abi.multiCall({
-      abi: abiPolygon.rToken.getCash,
-      calls: markets.map((t) => ({
-        target: t,
-      })),
-      chain,
-      block,
-    }),
-
-    sdk.api.abi.multiCall({
-      abi: abiPolygon.rToken.underlying,
-      calls: markets.map((t) => ({
-        target: t,
-      })),
-      chain,
-      block,
-    }),
-  ]);
-
-  const sum = {};
-  symbols.output.forEach((symbol, i) => {
-    let underlying = underlyingAddress.output[i].output;
-    if (!underlying) {
-      underlying = Contracts[chain].wrappedNative;
-    }
-    sdk.util.sumSingleBalance(sum, addressTransformer(underlying), cash.output[i].output);
-  });
-
-  return sum;
-};
-
 const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
   let block = chainBlocks['polygon'];
   const addressTransformer = await transformAddress('polygon');
-  const tvl = await lendingTvl('polygon', block, addressTransformer);
+  const tvl = {};
 
   for (let address of Object.values(Contracts.polygon.pools)) {
     const balances = await poolTvl(
@@ -159,7 +110,7 @@ const fantomTvl = async (timestamp, ethBlock, chainBlocks) => {
   const addressTransformer = await transformAddress('fantom');
   const block = chainBlocks['fantom'];
 
-  let tvl = await lendingTvl('fantom', block, addressTransformer);
+  let tvl = {};
   for (let address of Object.values(Contracts.fantom.pools)) {
     const balances = await poolTvl(
       'fantom',
@@ -176,15 +127,22 @@ const fantomTvl = async (timestamp, ethBlock, chainBlocks) => {
   return tvl;
 };
 
+const {tvl: polygonLending, borrowed: polygonBorrowed} =
+  compoundExports(Contracts.polygon.lend.ironController, "polygon", "0xCa0F37f73174a28a64552D426590d3eD601ecCa1", Contracts.polygon.wrappedNative)
+const {tvl: fantomLending, borrowed: fantomBorrowed} = 
+  compoundExports(Contracts.fantom.lend.ironController, "fantom", "0xdfce3E14a8c77D32fe2455a9E56424F149E2F271", Contracts.fantom.wrappedNative)
+
 module.exports = {
+  timetravel: true,
   polygon: {
-    tvl: polygonTvl,
+    tvl: sdk.util.sumChainTvls([polygonTvl, polygonLending]),
+    borrowed: polygonBorrowed
   },
   avalanche: {
     tvl: avaxTvl,
   },
   fantom: {
-    tvl: fantomTvl,
+    tvl:  sdk.util.sumChainTvls([fantomTvl, fantomLending]),
+    borrowed: fantomBorrowed
   },
-  tvl: sdk.util.sumChainTvls([polygonTvl, avaxTvl, fantomTvl]),
 };

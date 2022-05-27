@@ -1,34 +1,30 @@
-const axios = require("axios");
+const { get_account_tvl } = require("../helper/eos");
 
-const EOSFLARE_ENDPOINT = "https://api.eosflare.io";
+const tokens = [
+  ["eosio.token", "EOS", "eos"],
+  ["tethertether", "USDT", "tether"],
+  ["btc.ptokens", "PBTC", "ptokens-btc"],
+  ["token.defi", "BOX", "defibox"],
+  ["minedfstoken", "DFS", "defis-network"],
+  ["emanateoneos", "EMT", "emanate"],
+  ["token.newdex", "DEX", "newdex-token"],
+  ["chexchexchex", "CHEX", "chex-token"],
+  ["everipediaiq", "IQ", "everipedia"],
+  ["eosiotptoken", "TPT", "token-pocket"],
+  ["core.ogx", "OGX", "organix"],
+]
 
-async function get_account_tvl(account) {
-  const response = await axios.default.post(EOSFLARE_ENDPOINT + "/v1/eosflare/get_account", {account});
-  const { token_value, balance_total, eos_price } = response.data.account;
-  return token_value + // sum of all alt tokens
-         balance_total * eos_price; // sum of EOS balance * price
-}
+
 
 // https://newdex.io
 // NewDex limit orderbook
 async function eos() {
-  return await get_account_tvl("newdexpublic");
-}
-
-// https://bsc.newdex.io
-// project active on BSC, however no TVL
-async function bsc() {
-  return 0; // TODO FIX
-}
-
-async function fetch() {
-  return await eos() + await bsc();
+  return await get_account_tvl("newdexpublic", tokens);
 }
 
 module.exports = {
-  methodology: `NewDex TVL is achieved by querying token balances from NewDex's limit orderbook smart contract via https://eosflare.io/api.`,
+  methodology: `NewDex TVL is achieved by querying token balances from NewDex's limit orderbook smart contract.`,
   eos: {
-    fetch: eos
+    tvl: eos
   },
-  fetch
 }

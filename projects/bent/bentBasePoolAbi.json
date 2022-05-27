@@ -1,0 +1,16 @@
+{
+  "cvxPoolId": {
+    "inputs": [],
+    "name": "cvxPoolId",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "lpToken": {
+    "inputs": [],
+    "name": "lpToken",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  }
+}

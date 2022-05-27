@@ -4,7 +4,7 @@
 
 const sdk = require('@defillama/sdk');
 const abi = require('./abi');
-const _ = require('underscore');
+
 const BigNumber = require('bignumber.js');
 
 /*==================================================
@@ -42,45 +42,41 @@ async function tvl(timestamp, block) {
 
   // Get iVault's underlying tokens
   const underlyingIVaultAddressResults = await sdk.api.abi.multiCall({
-    calls: _.map(iVaultAddresses, (address) => ({
+    calls: iVaultAddresses.map((address) => ({
       target: address
     })),
     abi: abi["token"]
   });
 
-  _.each(underlyingIVaultAddressResults.output, (token) => {
-    if(token.success) {
+  underlyingIVaultAddressResults.output.forEach((token) => {
       const underlyingTokenAddress = token.output;
       const iVaultAddress = token.input.target;
       iVaultToUnderlyingToken[iVaultAddress] = underlyingTokenAddress;
       if (!balances.hasOwnProperty(underlyingTokenAddress)) {
         balances[underlyingTokenAddress] = 0;
       }
-    }
   });
 
   // Get iVault's balances in underlying token
   const iVaultBalanceResults = await sdk.api.abi.multiCall({
     block,
-    calls: _.map(iVaultAddresses, (address) => ({
+    calls: iVaultAddresses.map((address) => ({
       target: address
     })),
     abi: abi["balance"]
   });
 
-  _.each(iVaultBalanceResults.output, (tokenBalanceResult) => {
-    if(tokenBalanceResult.success) {
+  iVaultBalanceResults.output.forEach((tokenBalanceResult) => {
       const valueInToken = tokenBalanceResult.output;
       const iVaultAddress = tokenBalanceResult.input.target;
       balances[iVaultToUnderlyingToken[iVaultAddress]] = BigNumber(balances[iVaultToUnderlyingToken[iVaultAddress]]).plus(valueInToken);
-    }
   });
 
 
   // Get reward pool 
   const yfiiRewardBalanceResults = await sdk.api.abi.multiCall({
     block,
-    calls: _.map(rewardPool, (address) => ({
+    calls: rewardPool.map((address) => ({
       target: yfii,
       params: address,
     })),
@@ -88,13 +84,11 @@ async function tvl(timestamp, block) {
   });
   
   balances[yfii] = new BigNumber(0);
-  _.each(yfiiRewardBalanceResults.output, (tokenBalanceResult) => {
-    if(tokenBalanceResult.success) {
+  yfiiRewardBalanceResults.output.forEach((tokenBalanceResult) => {
       const target = tokenBalanceResult.input.target;
       const output = tokenBalanceResult.output;
     
       balances[target] = balances[target].plus(BigNumber(output)); 
-    }
   });
   
 
@@ -110,9 +104,7 @@ async function tvl(timestamp, block) {
   ==================================================*/
 
 module.exports = {
-  name: 'dfi.money',
-  token: 'YFII',
-  category: 'assets',
+  doublecounted: true,
   start: 1600185600,    // 09/16/2020 @ 12:00am (UTC+8)
-  tvl,
+  ethereum: { tvl }
 };

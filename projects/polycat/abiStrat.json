@@ -1,9 +1,0 @@
-{
-  "sharesTotal": {
-    "type": "function",
-    "stateMutability": "view",
-    "outputs": [{ "type": "uint256", "name": "", "internalType": "uint256" }],
-    "name": "sharesTotal",
-    "inputs": []
-  }
-}

@@ -1,0 +1,156 @@
+{
+    "poolInfo": {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "poolInfo",
+        "outputs": [
+            {
+                "internalType": "contract IERC20",
+                "name": "lpToken",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "allocPoint",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "lastRewardBlock",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "accCakePerShare",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "poolLength": {
+        "inputs": [],
+        "name": "poolLength",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "symbol": {
+        "inputs": [],
+        "name": "symbol",
+        "outputs": [
+            {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "reserveToken": {
+        "inputs": [],
+        "name": "reserveToken",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "_reserveToken",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "totalReserve": {
+        "inputs": [],
+        "name": "totalReserve",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "_totalReserve",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "state": {
+        "inputs": [],
+        "name": "state",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "_masterChef",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_pid",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "_rewardToken",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "_routingToken",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "_reserveToken",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "_treasury",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "_collector",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "_exchange",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_minimalGulpFactor",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_forceGulpRatio",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_performanceFee",
+                "type": "uint256"
+            },
+            {
+                "internalType": "bool",
+                "name": "_emergencyMode",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+}

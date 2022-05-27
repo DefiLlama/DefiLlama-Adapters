@@ -23,7 +23,7 @@ const staking = async (timestamp, ethBlock, chainBlocks) => {
       abi: erc20.balanceOf,
       target: ASG,
       params: AsgardStaking,
-      ethBlock,
+      block: ethBlock,
     })
   ).output;
 
@@ -57,12 +57,9 @@ async function ethTvl(timestamp, block) {
 
 module.exports = {
   ethereum: {
+    staking,
     tvl: ethTvl,
   },
-  staking: {
-    tvl: staking,
-  },
-  tvl: sdk.util.sumChainTvls([ethTvl]),
   methodology:
     "Counts DAI, DAI SLP (ASG-DAI), FRAX, FRAX SLP (ASG-FRAX), UST, UST SLP (ASG-UST) on the treasury",
 };

@@ -1,0 +1,199 @@
+{
+  "rocketNodeStaking.getNodeEffectiveRPLStake": {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_nodeAddress",
+        "type": "address"
+      }
+    ],
+    "name": "getNodeEffectiveRPLStake",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "rocketNodeStaking.getTotalRPLStake": {
+    "inputs": [],
+    "name": "getTotalRPLStake",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "rocketNetworkBalances.getTotalETHBalance": {
+    "inputs": [],
+    "name": "getTotalETHBalance",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "rocketMinipoolQueue.getTotalLength": {
+    "inputs": [],
+    "name": "getTotalLength",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "rocketMinipoolQueue.getTotalCapacity": {
+    "inputs": [],
+    "name": "getTotalCapacity",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "rocketDepositPool.getBalance": {
+    "inputs": [],
+    "name": "getBalance",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "rocketMinipoolManager.getMinipoolCountPerStatus": {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "offset",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "limit",
+        "type": "uint256"
+      }
+    ],
+    "name": "getMinipoolCountPerStatus",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "initialisedCount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "prelaunchCount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "stakingCount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "withdrawableCount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "dissolvedCount",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "rocketMinipoolManager.getActiveMinipoolCount": {
+    "inputs": [],
+    "name": "getActiveMinipoolCount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "rocketMinipoolManager.getStakingMinipoolCount": {
+    "inputs": [],
+    "name": "getStakingMinipoolCount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "rocketVault.balanceOfToken": {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_networkContractName",
+        "type": "string"
+      },
+      {
+        "internalType": "contract IERC20",
+        "name": "_tokenAddress",
+        "type": "address"
+      }
+    ],
+    "name": "balanceOfToken",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "rocketVault.balanceOf": {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_networkContractName",
+        "type": "string"
+      }
+    ],
+    "name": "balanceOf",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+}

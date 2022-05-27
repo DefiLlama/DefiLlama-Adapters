@@ -1,8 +1,7 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const BigNumber = require("bignumber.js");
-const _ = require("lodash");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs")
+const { unwrapUniswapLPs, sumTokens } = require("../helper/unwrapLPs")
 const utils = require('../helper/utils');
 const getReserves = require('../helper/abis/getReserves.json');
 const { transformBscAddress, transformPolygonAddress } = require('../helper/portedTokens');
@@ -290,7 +289,7 @@ async function eth(timestamp, block) {
       8: tokens.lusd.address,
       9: tokens.weth.address
     } 
-    const calls = _.map(poolIds, function(pid) {
+    const calls = poolIds.map(function(pid) {
       return {target: contracts.stakingPools.address, params: [pid]}
     });
     const { output: poolsInfo } = await sdk.api.abi.multiCall({
@@ -330,7 +329,7 @@ async function eth(timestamp, block) {
       4: tokens.lusd.address,
       5: tokens.weth.address
     } 
-    const callsV4 = _.map(poolIdsV4, function(pid) {
+    const callsV4 = poolIdsV4.map(function(pid) {
       return {target: contracts.stakingPoolsV4.address, params: [pid]}
     });
 
@@ -368,27 +367,15 @@ async function eth(timestamp, block) {
         }
     }
 
-    const { output: vaultsInfo } = await sdk.api.abi.multiCall({
+    const vaultsInfo = await sdk.api.abi.multiCall({
       calls: vaultCalls,
       abi: abi['totalDeposited']
     })
 
-    for(let vault of vaultsInfo) {
-      let totalDeposited = vault.output
-      let poolAddr = vault.input.target
-      sdk.util.sumSingleBalance(balances, _.find(vaultCalls, {target: poolAddr}).token, totalDeposited); 
-    }
+    sdk.util.sumMultiBalanceOf(balances, vaultsInfo)
 
-    //collectors
-    for(let collector of collectors) {
-      let tokenLocked = await sdk.api.erc20.balanceOf({
-          owner: collector.pool,
-          target: collector.token,
-          ethBlock
-      });
-      sdk.util.sumSingleBalance(balances, collector.token, tokenLocked.output);
-    }
-    return balances
+    const toa = collectors.map(c => [c.token, c.pool])
+    return sumTokens(balances, toa, ethBlock)
 }
 
 const contractsBSC = {
@@ -537,7 +524,7 @@ async function bsc(timestamp, block, chainBlocks) {
       1: tokensBSC.busd.address,
       2: tokensBSC.busd.address,
     } 
-    const calls = _.map(poolIds, function(pid) {
+    const calls = poolIds.map(function(pid) {
       return {target: contractsBSC.stakingPools.address, params: [pid]}
     });
     const { output: poolsInfo } = await sdk.api.abi.multiCall({
@@ -676,7 +663,7 @@ async function polygon(timestamp, block, chainBlocks) {
     5: tokensPolygon.pusd.address,
     6: tokensPolygon.pusd.address,
   } 
-  const calls = _.map(poolIds, function(pid) {
+  const calls = poolIds.map(function(pid) {
     return {target: contractsPolygon.stakingPools.address, params: [pid]}
   });
   const { output: poolsInfo } = await sdk.api.abi.multiCall({
@@ -779,7 +766,6 @@ module.exports = {
         tvl: bsc
     },
     polygon:{
-        tbl: polygon
+        tvl: polygon
     },
-    tvl: sdk.util.sumChainTvls([eth,bsc,polygon])
 }

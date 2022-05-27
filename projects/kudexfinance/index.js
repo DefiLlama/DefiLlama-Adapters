@@ -64,7 +64,7 @@ const kccTvl = async (timestamp, ethBlock, chainBlocks) => {
     "kcc",
     transformAddress
   );
-
+  balances['0xdac17f958d2ee523a2206206994597c13d831ec7'] /= 10 ** 12;
   return balances;
 };
 
@@ -74,5 +74,4 @@ module.exports = {
   kcc: {
     tvl: kccTvl,
   },
-  tvl: sdk.util.sumChainTvls([kccTvl]),
 };

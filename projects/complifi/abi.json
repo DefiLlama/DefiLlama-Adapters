@@ -26,5 +26,94 @@
     "stateMutability":"view",
     "type":"function",
     "constant": true
+  },
+  "getAllPools": {
+    "inputs": [],
+    "name": "getAllPools",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function",
+    "constant": true
+  },
+  "getConfig": {
+    "inputs": [],
+    "name": "getConfig",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "minExitAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "protocolFee",
+            "type": "uint256"
+          },
+          {
+            "internalType": "address",
+            "name": "feeWallet",
+            "type": "address"
+          },
+          {
+            "internalType": "contract IERC20",
+            "name": "collateralToken",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "collateralOracle",
+            "type": "address"
+          },
+          {
+            "internalType": "contract IOracleIterator",
+            "name": "collateralOracleIterator",
+            "type": "address"
+          },
+          {
+            "internalType": "contract IVolatilityEvolution",
+            "name": "volatilityEvolution",
+            "type": "address"
+          },
+          {
+            "internalType": "contract IUnderlyingLiquidityValuer",
+            "name": "underlyingLiquidityValuer",
+            "type": "address"
+          },
+          {
+            "internalType": "contract IExposure",
+            "name": "exposure",
+            "type": "address"
+          },
+          {
+            "internalType": "contract IERC20MintedBurnable",
+            "name": "poolShare",
+            "type": "address"
+          },
+          {
+            "internalType": "contract ITraderPortfolio",
+            "name": "traderPortfolio",
+            "type": "address"
+          },
+          {
+            "internalType": "uint8",
+            "name": "collateralDecimals",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct IPoolConfigTypes.PoolConfig",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   }
 }

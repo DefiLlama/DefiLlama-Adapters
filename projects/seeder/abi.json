@@ -1,0 +1,94 @@
+{
+    "getAllFarms": {
+        "inputs": [],
+        "name": "getAllFarms",
+        "outputs": [
+            {
+                "components": [
+                    {
+                        "internalType": "contract IERC20",
+                        "name": "stakeToken",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "allocationPoint",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "lastUpdateBlock",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "rewardPerStakeWithBuffer",
+                        "type": "uint256"
+                    }
+                ],
+                "internalType": "struct BigFarmV3.Farm[]",
+                "name": "",
+                "type": "tuple[]"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "symbol": {
+        "constant": true,
+        "inputs": [],
+        "name": "symbol",
+        "outputs": [
+            {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "getIBPrice": {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "originToken",
+                "type": "address"
+            }
+        ],
+        "name": "getIBPrice",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "ibPriceWithPrecision",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "precision",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "getNativeIBPrice": {
+        "inputs": [],
+        "name": "getNativeIBPrice",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "ibPriceWithPrecision",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "precision",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+}

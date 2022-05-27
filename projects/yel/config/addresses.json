@@ -1,0 +1,42 @@
+{
+    "tokens": {
+        "ethereum" : {
+            "weth": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+            "ifarm" : "0x1571ed0bed4d987fe2b498ddbae7dfa19519f651",
+            "yel": "0x7815bDa662050D84718B988735218CFfd32f75ea"
+        },
+        "bsc" : {
+            "wbnb" : "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+            "yel": "0xd3b71117e6c1558c1553305b44988cd944e97300"
+        },
+        "fantom" : {
+            "wftm" : "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
+            "yel": "0xd3b71117e6c1558c1553305b44988cd944e97300"
+        },
+        "polygon" : {
+            "wmatic" : "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+            "yel": "0xd3b71117e6c1558c1553305b44988cd944e97300"
+        }
+    },
+    "yelFarmingContract" : {
+        "ethereum" : "0xe7c8477C0c7AAaD6106EBDbbED3a5a2665b273b9",
+        "bsc" : "0x954b15065e4FA1243Cd45a020766511b68Ea9b6E",
+        "fantom" : "0x954b15065e4FA1243Cd45a020766511b68Ea9b6E",
+        "polygon" : "0x954b15065e4FA1243Cd45a020766511b68Ea9b6E"
+    },
+    "yelEnhancedPools" : {
+        "ethereum": {
+            "ifarm": "0x5dD8532613B9a6162BA795208D1A01613df26dc5"
+        },
+        "bsc": {
+            "bnbBanana": "0x660f09cF84F8f366Bc653942b54B114d0Ec9E8a2"
+        },
+        "fantom": {
+            "ftmBoo": "0x61EB6f6bC4Ec28203e9973B44967dA263B3Ec0e3",
+            "anySwap": "0x3a6eE00959751A1981D731a5aC15B660a9a8BAd4"
+        },
+        "polygon" : {
+            "dQuick" : "0x0379C1BbE394f835366D2EFDBf2AF09fBa0689A4"
+        }
+    }
+}

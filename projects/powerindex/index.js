@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk');
-const _ = require('underscore');
+
 const BigNumber = require('bignumber.js');
 const curvePools = require('../convex/pools-crv.js')
 
@@ -11,32 +11,38 @@ const curveFactoryPools = [
   "0x4807862AA8b2bF68830e4C8dc86D0e9A998e085a"
 ].map(pool => pool.toLowerCase())
 
-async function getBscTvl() {
+async function getBscTvl(time, ethBlock, chainBlocks) {
   let bscBalances = {}
+  const block = chainBlocks.bsc
 
+  const poolAddress = "0x40E46dE174dfB776BB89E04dF1C47d8a66855EB3"
+  /*
   const poolAddress = await sdk.api.util.getLogs({
     keys: ['topics'],
-    toBlock: 10481380,
+    toBlock: block,
     target: '0x37c4a7E826a7F6606628eb5180df7Be8d6Ca4B2C',
     fromBlock: 10481280,
     topic: 'LOG_NEW_POOL(address,address,address)',
     chain: 'bsc'
   }).then(r => `0x${r.output[0][2].slice(26)}`);
+  */
   
   let poolTokens = await sdk.api.abi.call({
     chain: 'bsc',
     abi: abi.getCurrentTokens,
-    target: poolAddress
+    target: poolAddress,
+    block
   });
 
   let poolBalances = await sdk.api.abi.multiCall({
     chain: 'bsc',
+    block,
     abi: 'erc20:balanceOf',
-    calls: _.map(poolTokens.output, 
+    calls: poolTokens.output.map(
       (poolToken) => ({ target: poolToken, params: poolAddress}))
   })
 
-  _.each(poolBalances.output, (poolBalance) => { 
+  poolBalances.output.forEach((poolBalance) => { 
     bscBalances[`bsc:${poolBalance.input.target}`] = poolBalance.output
   })
   
@@ -64,23 +70,23 @@ async function eth(timestamp, block) {
 
   let poolCalls = [];
 
-  let pools = _.map(poolLogs, (poolLog) => {
+  let pools = poolLogs.map((poolLog) => {
     return `0x${poolLog[2].slice(26)}`
   });
 
   const poolTokenData = (await sdk.api.abi.multiCall({
-    calls: _.map(pools, (poolAddress) => ({ target: poolAddress })),
+    calls: pools.map((poolAddress) => ({ target: poolAddress })),
     abi: abi.getCurrentTokens,
   })).output;
 
-  _.forEach(poolTokenData, (poolToken) => {
+  poolTokenData.forEach((poolToken) => {
     let poolTokens = poolToken.output;
     if(poolTokens === null){
       throw new Error("poolTokens failed call")
     }
     let poolAddress = poolToken.input.target;
 
-    _.forEach(poolTokens, (token) => {
+    poolTokens.forEach((token) => {
       poolCalls.push({
         target: token,
         params: poolAddress,
@@ -99,7 +105,7 @@ async function eth(timestamp, block) {
   for (let i = 0; i < poolBalances.length; i++) {
     const balanceOf = poolBalances[i];
     const tokenAddress = balanceOf.input.target;
-    let underlying = _.find(tokensUnderlyings, t => t.input.target === tokenAddress);
+    let underlying = tokensUnderlyings.find(t => t.input.target === tokenAddress);
     let pricePerFullShare = pricesPerFullShare[i];
     if (v2PricePerShare[i].success) {
       pricePerFullShare = v2PricePerShare[i];
@@ -140,6 +146,5 @@ module.exports = {
   },
   ethereum:{
     tvl: eth
-  },
-  tvl: sdk.util.sumChainTvls([getBscTvl, eth])
+  }
 }

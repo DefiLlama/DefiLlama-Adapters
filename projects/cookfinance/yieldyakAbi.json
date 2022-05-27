@@ -1,0 +1,20 @@
+{
+  "depositToken": {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [
+      { "type": "address", "name": "", "internalType": "contract IERC20" }
+    ],
+    "name": "depositToken",
+    "inputs": []
+  },
+  "getDepositTokensForShares": {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [{ "type": "uint256", "name": "", "internalType": "uint256" }],
+    "name": "getDepositTokensForShares",
+    "inputs": [
+      { "type": "uint256", "name": "amount", "internalType": "uint256" }
+    ]
+  }
+}

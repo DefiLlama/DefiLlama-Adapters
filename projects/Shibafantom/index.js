@@ -13,5 +13,4 @@ module.exports = {
   fantom:{
     tvl,
   },
-  tvl
 }

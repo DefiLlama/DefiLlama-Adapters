@@ -55,12 +55,7 @@ const MASTERCHEF = "0x1719ab3C1518eB28d570a1E52980Dbc137B12e66"
 module.exports = {
     fantom:{
         tvl,
+        pool2: pool2(MASTERCHEF, "0x20aa395F3bcc4dc44a94215D129650533B3da0b3", 'fantom', addr=>`fantom:${addr}`),
+        staking: staking(MASTERCHEF, tokens.SHADE, 'fantom', 'fantom:'+tokens.SHADE),
     },
-    pool2:{
-        tvl: pool2(MASTERCHEF, "0x20aa395F3bcc4dc44a94215D129650533B3da0b3", 'fantom', addr=>`fantom:${addr}`)
-    },
-    staking:{
-        tvl: staking(MASTERCHEF, tokens.SHADE, 'fantom', 'fantom:'+tokens.SHADE)
-    },
-    tvl,
  }

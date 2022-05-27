@@ -58,7 +58,6 @@ module.exports = async function tvl(_, block) {
   const pairs = {};
   // add token0Addresses
   token0Addresses.forEach((token0Address) => {
-    if (token0Address.success) {
       const tokenAddress = token0Address.output.toLowerCase();
 
       if (supportedTokens.includes(tokenAddress)) {
@@ -67,12 +66,10 @@ module.exports = async function tvl(_, block) {
           token0Address: tokenAddress,
         };
       }
-    }
   });
 
   // add token1Addresses
   token1Addresses.forEach((token1Address) => {
-    if (token1Address.success) {
       const tokenAddress = token1Address.output.toLowerCase();
       if (supportedTokens.includes(tokenAddress)) {
         const pairAddress = token1Address.input.target.toLowerCase();
@@ -81,7 +78,6 @@ module.exports = async function tvl(_, block) {
           token1Address: tokenAddress,
         };
       }
-    }
   });
 
   const reserves = (
@@ -95,7 +91,6 @@ module.exports = async function tvl(_, block) {
   ).output;
 
   return reserves.reduce((accumulator, reserve) => {
-    if (reserve.success) {
       const pairAddress = reserve.input.target.toLowerCase();
       const pair = pairs[pairAddress] || {};
 
@@ -127,7 +122,6 @@ module.exports = async function tvl(_, block) {
             .toFixed();
         }
       }
-    }
 
     return accumulator;
   }, {});

@@ -1,0 +1,57 @@
+{
+  "getLPPrice": {
+    "inputs": [
+      { "internalType": "address", "name": "token", "type": "address" },
+      { "internalType": "uint256", "name": "_decimals", "type": "uint256" }
+    ],
+    "name": "getLPPrice",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "getLPPrices": {
+    "inputs": [
+      { "internalType": "address[]", "name": "tokens", "type": "address[]" },
+      { "internalType": "uint256", "name": "_decimals", "type": "uint256" }
+    ],
+    "name": "getLPPrices",
+    "outputs": [
+      { "internalType": "uint256[]", "name": "prices", "type": "uint256[]" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "getPrice": {
+    "inputs": [
+      { "internalType": "address", "name": "token", "type": "address" },
+      { "internalType": "uint256", "name": "_decimals", "type": "uint256" }
+    ],
+    "name": "getPrice",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "getPrices": {
+    "inputs": [
+      { "internalType": "address[]", "name": "tokens", "type": "address[]" },
+      { "internalType": "uint256", "name": "_decimals", "type": "uint256" }
+    ],
+    "name": "getPrices",
+    "outputs": [
+      { "internalType": "uint256[]", "name": "prices", "type": "uint256[]" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "getRawPrices": {
+    "inputs": [
+      { "internalType": "address[]", "name": "tokens", "type": "address[]" }
+    ],
+    "name": "getRawPrices",
+    "outputs": [
+      { "internalType": "uint256[]", "name": "prices", "type": "uint256[]" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+}

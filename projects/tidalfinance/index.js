@@ -62,13 +62,10 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
 
 module.exports = {
   misrepresentedTokens: true,
-  staking: {
-    tvl: staking,
-  },
   polygon: {
+    staking,
     tvl: polygonTvl,
   },
-  tvl: sdk.util.sumChainTvls([polygonTvl]),
   methodology:
     "We count liquidity of USDC Reserve deposited on the pool threw Seller contract; and the staking of native token",
 };

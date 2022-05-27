@@ -1,4 +1,4 @@
-const _ = require('underscore');
+
 const sdk = require('@defillama/sdk');
 const cAbis = require('./abi.json');
 const { unwrapUniswapLPs } = require('../helper/unwrapLPs');
@@ -71,28 +71,29 @@ const coingeckoPrice = {
         decimals: 1e8
     }
 }
-async function tvl() {
+
+function tvl(borrowed){
+return async () => {
     let balances = {};
     let markets = await getMarkets();
     let lpPositions = [];
     let cashInfo = await sdk.api.abi.multiCall({
-        calls: _.map(markets, (market) => ({
+        calls: markets.map((market) => ({
             target: market.cToken,
         })),
         chain: chain,
-        abi: cAbis['getCash'],
+        abi: borrowed?cAbis.totalBorrows: cAbis['getCash'],
     });
     
     const symbols = await sdk.api.abi.multiCall({
-        calls: _.map(markets, (market) => ({
+        calls: markets.map((market) => ({
             target: market.underlying.split(':')[1],
         })),
         chain: chain,
         abi: "erc20:symbol",
     });
-    _.each(markets, async (market, idx) => {
-        let getCash = _.find(cashInfo.output, (result) => result.input.target === market.cToken);
-        if (getCash) {
+    markets.forEach(async (market, idx) => {
+        const getCash = cashInfo.output.find((result) => result.input.target === market.cToken);
             if (getCash.output === null) {
                 throw new Error("failed")
             }
@@ -114,7 +115,6 @@ async function tvl() {
             } else {
                 sdk.util.sumSingleBalance(balances, tokenToCoinGecko.coingecko, Number(getCash.output)/tokenToCoinGecko.decimals)
             }
-        }
     });
 
     await unwrapUniswapLPs(balances, lpPositions, undefined, 'heco', addr=>{
@@ -125,8 +125,12 @@ async function tvl() {
     })
     return balances;
 }
+}
 
 module.exports = {
-    tvl,
-  };
-  
+    timetravel: false,
+    heco:{
+        tvl: tvl(false),
+        borrowed: tvl(true)
+    }
+};

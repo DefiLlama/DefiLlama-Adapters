@@ -1,7 +1,6 @@
 const axios = require("axios");
 
 async function fetch() {
-  try {
     const query = `
     {
       totalValueLocked(id: 1) {
@@ -23,9 +22,6 @@ async function fetch() {
     const tvl = response.data.data.totalValueLocked.totalValueLockedUSD;
 
     return parseFloat(tvl);
-  } catch (e) {
-    return 0;
-  }
 }
 
 module.exports = {

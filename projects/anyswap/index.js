@@ -45,45 +45,57 @@ const chains = {
 
 const url = 'https://netapi.anyswap.net/bridge/v2/info'
 
-async function tvl(){
-  const {data} = await utils.fetchURL(url)
-  let totaltvl = 0
-  data.bridgeList.forEach((item) => {
-    const chainId = item.chainId
-    const tvl = item.tvl ? item.tvl : 0
-    if (chainId && chains[chainId]) {
-      totaltvl += Number(tvl)
+function fetchChain(chain) {
+  return async () => {
+    const { data } = await utils.fetchURL(url)
+    const protocolsInChain = chain === null ? data.bridgeList : data.bridgeList.filter(p => p.chainId.toString() === chain.toString())
+    const protocolsWithRouters = protocolsInChain.filter(p => p.type === "router");
+
+    const coingeckoMcaps = {}
+    for(let i=0; i<protocolsWithRouters.length; i+=50){
+      const cgUrl = `https://api.coingecko.com/api/v3/simple/price?vs_currencies=usd&include_market_cap=true&ids=${
+        protocolsWithRouters.slice(i, i+50).map(p => p.label.toLowerCase()).join(',')
+      }`
+      const partMcaps = await utils.fetchURL(cgUrl)
+      Object.assign(coingeckoMcaps, partMcaps.data)
     }
-  })
-  
-  return totaltvl
+
+    const counted = {}
+    let total = 0
+    protocolsInChain.forEach((item) => {
+      const tvl = Number(item.tvl || 0)
+
+      if (item.type === "bridge") {
+        total += tvl
+      } else if (item.type === "router") {
+        const label = item.label
+        const mcap = coingeckoMcaps[label]?.usd_market_cap
+        if(counted[label]===undefined){
+          counted[label] = 0
+        }
+        if (mcap !== undefined && mcap>counted[label]) {
+          const tvlToAdd = Math.min(tvl, mcap-counted[label])
+          total += tvlToAdd
+          counted[label] += tvlToAdd
+        }
+      }
+    })
+    return total
+  }
 }
+
 
 const chainTvls = {}
 Object.keys(chains).forEach((chain) => {
-  const key = chains[chain]
-  chainTvls[key]={
-    tvl: async()=>{
-      const {data} = await utils.fetchURL(url)
-      const balances = {}
-      data.bridgeList.forEach((item) => {
-        const chainId = item.chainId
-        const tvl = item.tvl ? item.tvl : 0
-        if (chainId.toString() === chain.toString()) {
-          if (!balances[key]) {
-            balances[key] = {
-              tvl: 0
-            }
-          }
-          balances[key].tvl += Number(tvl)
-        }
-      })
-      return balances[key] && balances[key].tvl ? balances[key].tvl : undefined
-    }
+  const chainName = chains[chain]
+  chainTvls[chainName === 'avax' ? 'avalanche' : chainName] = {
+    fetch: fetchChain(chain)
   }
 })
 
 module.exports = {
+  misrepresentedTokens: true,
+  timetravel: false,
   ...chainTvls,
-  tvl
+  fetch: fetchChain(null),
 }

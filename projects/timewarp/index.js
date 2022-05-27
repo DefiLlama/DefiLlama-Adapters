@@ -38,7 +38,7 @@ const calcTvl = async (balances, chain, block, TimeWarpPool) => {
 };
 
 /*** Staking of native token (TIME) on Ethereum and Binance TVL portion ***/
-const staking = async (timestamp, ethBlock, chainBlocks) => {
+const stakingETH = async (timestamp, ethBlock, chainBlocks) => {
   const balances = {};
 
   //  --- Staking of native token TIME on Ethereum ---
@@ -48,6 +48,12 @@ const staking = async (timestamp, ethBlock, chainBlocks) => {
     chainBlocks["ethereum"],
     TimeWarpPool_TIME_ETH
   );
+
+  return balances;
+};
+
+const stakingBSC = async (timestamp, ethBlock, chainBlocks) => {
+  const balances = {};
 
   //  --- Staking of native token TIME on Binance ---
   await calcTvl(balances, "bsc", chainBlocks["bsc"], TimeWarpPool_TIME_BSC);
@@ -85,16 +91,14 @@ const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
 
 module.exports = {
   misrepresentedTokens: true,
-  staking: {
-    tvl: staking,
-  },
   ethereum: {
     tvl: ethTvl,
+    staking: stakingETH
   },
   bsc: {
     tvl: bscTvl,
+    staking: stakingBSC
   },
-  tvl: sdk.util.sumChainTvls([bscTvl, ethTvl]),
   methodology: `We count as TVL the staking Lps on Ethereum (TIME-ETH Sushiswap LP)
    and Binance (TIME-BNB Pancake LP) networks threw their TimeWarpPool contracts; and
    we count the staking native token (TIME) on both netwarks, separated from tvl`,

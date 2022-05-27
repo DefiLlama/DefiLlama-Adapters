@@ -1,9 +1,10 @@
 const sdk = require('@defillama/sdk');
 const abi = require('./abi.json');
-const _ = require('underscore');
+
 const BigNumber = require('bignumber.js');
 const axios = require("axios");
 const polygonPools = require('./polygonPools.json')
+const avalanchePools = require('./avalanchePools.json')
 
 
 async function eth(timestamp, ethBlock) {
@@ -28,7 +29,7 @@ async function eth(timestamp, ethBlock) {
     );
 
     const balances = {};
-    _.each(_tvlList, (element) => {
+    _tvlList.forEach((element) => {
         let address = element.input.params[0].toLowerCase();
         if (address == "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee") {
             address = "0x0000000000000000000000000000000000000000";
@@ -73,7 +74,7 @@ async function bsc(timestamp, ethBlock, chainBlocks){
     );
 
     const balances = {};
-    _.each(_tvlList, (element) => {
+    _tvlList.forEach((element) => {
         let address = element.input.params[0].toLowerCase();
         if (address == "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee") {
             address = "bsc:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c";
@@ -105,13 +106,39 @@ async function polygon(timestamp, ethBlock, chainBlocks) {
     });
 
     const balances = {};
-    _.each(_tvlList, (element) => {
+    _tvlList.forEach((element) => {
         let address = element.input.params[0].toLowerCase();
         if(address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"){
             address = "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"
         }
         let balance = element.output;
         sdk.util.sumSingleBalance(balances, 'polygon:'+address, balance)
+    })
+    return balances;
+}
+
+const INSUR = "0x544c42fbb96b39b21df61cf322b5edc285ee7429"
+async function avax(timestamp, ethBlock, chainBlocks) {
+    const pools = avalanchePools.pools;
+
+    const { output: _tvlList } = await sdk.api.abi.multiCall({
+        calls: pools.map((pool) => ({
+            target: pool.StakersPool,
+            params: pool.PoolToken,
+        })),
+        abi: abi["getStakedAmountPT"],
+        block: chainBlocks.avax,
+        chain: 'avax'
+    });
+
+    const balances = {};
+    _tvlList.forEach((element) => {
+        let address = element.input.params[0].toLowerCase();
+        if(address === "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"){
+            address = "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"
+        }
+        let balance = element.output;
+        sdk.util.sumSingleBalance(balances, address===INSUR?INSUR:'avax:'+address, balance)
     })
     return balances;
 }
@@ -126,5 +153,7 @@ module.exports = {
     polygon:{
         tvl: polygon
     },
-    tvl: sdk.util.sumChainTvls([eth, bsc, polygon])
+    avalanche:{
+        tvl: avax
+    },
 }
