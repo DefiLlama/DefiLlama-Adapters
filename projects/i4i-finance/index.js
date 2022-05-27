@@ -29,12 +29,12 @@ async function tvl(timestamp, block, chainBlocks) {
   await requery(info, chain, chainBlocks[chain], abi.getPoolPriceInfo);
 
   for (let i = 0; i < info.output.length; i++) {
-    if (info.output[i].success) {
-      const poolInfo = info.output[i].output;
-      for (let j = 0; j < poolInfo.tokens.length; j++) {
-        const balance = poolInfo.prices[j] * poolInfo.balances[j] / 10 ** 36;
-        sdk.util.sumSingleBalance(balances, 'usd-coin', balance);
-      };
+    if (!info.output[i].success) continue;
+    const poolInfo = info.output[i].output;
+    
+    for (let j = 0; j < poolInfo.tokens.length; j++) {
+      const balance = poolInfo.prices[j] * poolInfo.balances[j] / 10 ** 36;
+      sdk.util.sumSingleBalance(balances, 'usd-coin', balance);
     };
   };
 
