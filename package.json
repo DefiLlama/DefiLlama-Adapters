@@ -31,7 +31,7 @@
     "graphql-request": "^3.6.1",
     "hi-base32": "^0.5.1",
     "js-sha512": "^0.8.0",
-    "limiter": "^2.1.0",
+    "limiter": "2.1.0",
     "miscreant": "^0.3.2",
     "tron-format-address": "^0.1.8"
   },
