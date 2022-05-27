@@ -1,5 +1,3 @@
-const { RateLimiter } = require("limiter");
-
 const pools = [
   {
     // Algo
@@ -82,8 +80,6 @@ const oracleAdapterAppId = 751277258;
 const oracleDecimals = 14;
 const tinymanValidatorAppId = 552635992;
 
-const limiter = new RateLimiter({ tokensPerInterval: 10, interval: "second" });
-
 module.exports = {
   pools,
   liquidGovernanceAppId,
@@ -91,5 +87,4 @@ module.exports = {
   oracleAdapterAppId,
   oracleDecimals,
   tinymanValidatorAppId,
-  limiter,
 };

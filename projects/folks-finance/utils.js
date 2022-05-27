@@ -1,6 +1,5 @@
 const { lookupApplications } = require("../helper/algorand");
 const { encodeAddress } = require("../helper/algorandUtils/address");
-const { limiter } = require("./constants");
 
 function fromIntToBytes8Hex(num) {
   return num.toString(16).padStart(16, "0");
@@ -49,7 +48,6 @@ function getParsedValueFromState(state, key, encoding = "utf8") {
 }
 
 async function getAppState(appId) {
-  await limiter.removeTokens(1);
   const res = await lookupApplications(appId);
   return res.application.params["global-state"];
 }

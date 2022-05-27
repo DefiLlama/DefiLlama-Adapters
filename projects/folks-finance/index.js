@@ -1,6 +1,6 @@
 const { toUSDTBalances } = require("../helper/balances");
 
-const { pools, liquidGovernanceAppId, limiter } = require("./constants");
+const { pools, liquidGovernanceAppId } = require("./constants");
 const {
   lookupApplications,
   lookupAccountByID,
@@ -10,7 +10,6 @@ const { getAppState, getParsedValueFromState } = require("./utils");
 const { getPrices } = require("./prices");
 
 async function getAlgoLiquidGovernanceDepositUsd(prices) {
-  await limiter.removeTokens(2);
   const [app, acc] = await Promise.all([
     lookupApplications(liquidGovernanceAppId),
     lookupAccountByID(getApplicationAddress(liquidGovernanceAppId)),

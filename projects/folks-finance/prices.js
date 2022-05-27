@@ -5,7 +5,6 @@ const {
   pools,
   tinymanValidatorAppId,
   oracleDecimals,
-  limiter,
 } = require("./constants");
 const {
   getAppState,
@@ -17,7 +16,6 @@ const {
 } = require("./utils");
 
 async function getTinymanLPPrice(validatorAppId, poolAddress, p0, p1) {
-  await limiter.removeTokens(1);
   const res = await lookupAccountByID(poolAddress);
   const { account } = res;
 
@@ -36,7 +34,6 @@ async function getTinymanLPPrice(validatorAppId, poolAddress, p0, p1) {
 }
 
 async function getPactLPPrice(poolAppId, p0, p1) {
-  await limiter.removeTokens(1);
   const res = await lookupApplications(poolAppId);
   const state = res.application.params["global-state"];
 
