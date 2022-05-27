@@ -54,7 +54,7 @@ function fetchChain(chain) {
     const coingeckoMcaps = {}
     for(let i=0; i<protocolsWithRouters.length; i+=50){
       const cgUrl = `https://api.coingecko.com/api/v3/simple/price?vs_currencies=usd&include_market_cap=true&ids=${
-        protocolsWithRouters.slice(i, i+50).map(p => p.label.toLowerCase()).join(',')
+        protocolsWithRouters.slice(i, i+50).map(p => p && p.label ? p.label.toLowerCase().join(',') : '')
       }`
       const partMcaps = await utils.fetchURL(cgUrl)
       Object.assign(coingeckoMcaps, partMcaps.data)
