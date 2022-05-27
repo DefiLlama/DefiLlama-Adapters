@@ -40,22 +40,40 @@ const chains = {
 }
 
 const url = 'https://netapi.anyswap.net/bridge/v2/info'
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+let coingeckoMcapsPromise = null
+function getCgMcaps(){
+  if(coingeckoMcapsPromise !== null){
+    return coingeckoMcapsPromise
+  }
+  coingeckoMcapsPromise = new Promise(async (resolve)=>{
+    const { data } = await utils.fetchURL(url)
+    const protocolsInChain = data.bridgeList
+    const protocolsWithRouters = Array.from(new Set(protocolsInChain.filter(p => p.type === "router" && p.label !== null).map(p => p.label.toLowerCase())));
+
+    const coingeckoMcaps = {}
+    const step = 200;;
+    for(let i=0; i<protocolsWithRouters.length; i+=step){
+      console.log(i/step)
+      const cgUrl = `https://api.coingecko.com/api/v3/simple/price?vs_currencies=usd&include_market_cap=true&ids=${
+        protocolsWithRouters.slice(i, i+step).join(',')
+      }`
+      await sleep(1e3)
+      const partMcaps = await utils.fetchURL(cgUrl)
+      Object.assign(coingeckoMcaps, partMcaps.data)
+    }
+    resolve(coingeckoMcaps)
+  })
+  return coingeckoMcapsPromise
+}
 
 function fetchChain(chain) {
   return async () => {
     const { data } = await utils.fetchURL(url)
     const protocolsInChain = chain === null ? data.bridgeList : data.bridgeList.filter(p => p.chainId.toString() === chain.toString())
-    const protocolsWithRouters = protocolsInChain.filter(p => p.type === "router");
 
-    const coingeckoMcaps = {}
-    for(let i=0; i<protocolsWithRouters.length; i+=50){
-      const cgUrl = `https://api.coingecko.com/api/v3/simple/price?vs_currencies=usd&include_market_cap=true&ids=${
-        protocolsWithRouters.slice(i, i+50).map(p => p.label.toLowerCase()).join(',')
-      }`
-      const partMcaps = await utils.fetchURL(cgUrl)
-      Object.assign(coingeckoMcaps, partMcaps.data)
-    }
-
+    const coingeckoMcaps = await getCgMcaps();
     const counted = {}
     let total = 0
     protocolsInChain.forEach((item) => {
