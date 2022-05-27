@@ -149,6 +149,7 @@ async function transformAvaxAddress() {
       "0x0665ef3556520b21368754fb644ed3ebf1993ad4": "0x6c3f90f043a72fa612cbac8115ee7e52bde6e490",
       // update below to binspirit when it lists on coingecko
       "0x7345a537a975d9ca588ee631befddfef34fd5e8f": "fantom:0x5Cc61A78F164885776AA610fb0FE1257df78E59B",
+      '0x90a424754ad0d72cebd440faba18cdc362bfe70a': 'heco:0xcbd6cb9243d8e3381fea611ef023e17d1b7aedf0',  // BXH
     }
     return map[addr.toLowerCase()] || `avax:${addr}`
   }
@@ -175,6 +176,7 @@ async function transformBscAddress() {
     '0xa6fdea1655910c504e974f7f1b520b74be21857b': 'bsc:0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d',  // valas USDC -> BUSD
     '0x5f7f6cb266737b89f7af86b30f03ae94334b83e9': 'bsc:0x55d398326f99059ff775485246999027b3197955',  // valas USDT -> BUSD
     '0x532197ec38756b9956190b845d99b4b0a88e4ca9': '0x1614f18fc94f47967a3fbe5ffcd46d4e7da3d787',  // PAID
+    '0x6d1b7b59e3fab85b7d3a3d86e505dd8e349ea7f3': 'heco:0xcbd6cb9243d8e3381fea611ef023e17d1b7aedf0',  // BXH
   }
 
   return (addr) => {
@@ -243,20 +245,21 @@ async function transformXdaiAddress() {
 }
 
 async function transformOkexAddress() {
-  const okexBridge = (
-    await utils.fetchURL(
-      "https://www.okex.com/v2/asset/cross-chain/currencyAddress"
-    )
-  ).data.data.tokens;
-  // TODO
+  // const okexBridge = (
+  //   await utils.fetchURL(
+  //     "https://www.okex.com/v2/asset/cross-chain/currencyAddress"
+  //   )
+  // ).data.data.tokens; TODO
+  const mapping = {
+    '0x0000000000000000000000000000000000000000': '0x75231f58b43240c9718dd58b4967c5114342a86c',  // okex
+    '0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c': 'avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c',
+  }
+
+  normalizeMapping(mapping)
+
   return (addr) => {
-    if (compareAddresses(addr, "0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c")) {
-      return "avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c";
-    }
-    // Native token -> OKB
-    if (compareAddresses(addr, "0x0000000000000000000000000000000000000000")) {
-      return "0x75231f58b43240c9718dd58b4967c5114342a86c";
-    }
+    addr = addr.toLowerCase()
+    if (mapping[addr]) return mapping[addr]
     return `okexchain:${addr}`;
   };
 }
@@ -1022,6 +1025,7 @@ async function transformEthereumAddress() {
     '0x88536c9b2c4701b8db824e6a16829d5b5eb84440': 'polygon:0xac63686230f64bdeaf086fe6764085453ab3023f', // USV token
     '0xFEEf77d3f69374f66429C91d732A244f074bdf74': '0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0', // CVX FXS token
     '0xb8c77482e45f1f44de1745f52c74426c631bdd52': 'bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // BNB
+    '0xeb637a9ab6be83c7f8c79fdaa62e1043b65534f0': 'heco:0xcbd6cb9243d8e3381fea611ef023e17d1b7aedf0',  // BXH
   }
   normalizeMapping(mapping)
 
