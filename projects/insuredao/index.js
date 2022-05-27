@@ -29,13 +29,16 @@ async function eth(timestamp, ethBlock) {
     }
     );
 
-    console.log(_tvlList)
+    console.log(_tvlList[0])
     
+    _tvlList[0].input.params[0] = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+
+    console.log(_tvlList)
 
     const balances = {};
     _tvlList.forEach((element) => {
         // let address = element.input.params[0].toLowerCase();
-        let address = element.input.params[1];
+        let address = element.input.params[0];
         if (address == "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee") {
             address = "0x0000000000000000000000000000000000000000";
         }
