@@ -40,5 +40,4 @@ module.exports = {
   lookupApplications: withLimiter(lookupApplications),
   lookupAccountByID: withLimiter(lookupAccountByID),
   searchAccounts: withLimiter(searchAccounts),
-
 }
