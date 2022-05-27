@@ -16,7 +16,6 @@ async function lookupAccountByID(appId) {
   return (await axiosObj.get(`/v2/accounts/${appId}`)).data
 }
 async function searchAccounts({ appId, limit = 1000, nexttoken, }) {
-  const a = getApplicationAddress(appId)
   const response = (await axiosObj.get('/v2/accounts', {
     params: {
       'application-id': appId,
