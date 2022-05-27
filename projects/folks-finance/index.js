@@ -6,7 +6,7 @@ const {
   lookupAccountByID,
   getApplicationAddress,
 } = require("../helper/algorand");
-const { getAppState, getParsedValueFromState, sleep } = require("./utils");
+const { getAppState, getParsedValueFromState } = require("./utils");
 const { getPrices } = require("./prices");
 
 async function getAlgoLiquidGovernanceDepositUsd(prices) {

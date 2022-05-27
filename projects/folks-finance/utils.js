@@ -95,10 +95,6 @@ function isPactLPTokenPool(pool) {
   return "poolAppId" in pool;
 }
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 module.exports = {
   fromIntToBytes8Hex,
   encodeToBase64,
@@ -109,5 +105,4 @@ module.exports = {
   isTinymanLPTokenPool,
   isPactLPTokenPool,
   calcLPPrice,
-  sleep,
 };
