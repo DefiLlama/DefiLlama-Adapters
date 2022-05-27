@@ -1,6 +1,6 @@
 const { toUSDTBalances } = require("../helper/balances");
 
-const { pools, liquidGovernanceAppId } = require("./constants");
+const { pools, liquidGovernanceAppId, limiter } = require("./constants");
 const {
   lookupApplications,
   lookupAccountByID,
@@ -10,6 +10,7 @@ const { getAppState, getParsedValueFromState, sleep } = require("./utils");
 const { getPrices } = require("./prices");
 
 async function getAlgoLiquidGovernanceDepositUsd(prices) {
+  await limiter.removeTokens(2);
   const [app, acc] = await Promise.all([
     lookupApplications(liquidGovernanceAppId),
     lookupAccountByID(getApplicationAddress(liquidGovernanceAppId)),
@@ -55,14 +56,12 @@ async function getTotalPoolDepositsUsd(prices) {
 async function tvl() {
   const prices = await getPrices();
 
-  const depositsAmountUsd = await getTotalPoolDepositsUsd(prices);
-  await sleep(3000);
-
-  const algoLiquidGovernanceDepositUsd =
-    await getAlgoLiquidGovernanceDepositUsd(prices);
-  await sleep(3000);
-
-  const borrowsAmountUsd = await borrowed();
+  const [depositsAmountUsd, algoLiquidGovernanceDepositUsd, borrowsAmountUsd] =
+    await Promise.all([
+      getTotalPoolDepositsUsd(prices),
+      getAlgoLiquidGovernanceDepositUsd(prices),
+      borrowed(),
+    ]);
 
   return toUSDTBalances(
     depositsAmountUsd + algoLiquidGovernanceDepositUsd - borrowsAmountUsd
