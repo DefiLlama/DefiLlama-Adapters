@@ -50,7 +50,7 @@ async function PairsVolumes() {
 
     const pairs = await Pairs();
     return new Promise((resolve, reject) => {
-        eachLimit(pairs, 3, async (contract) => {
+        eachLimit(pairs, 2, async (contract) => {
             const pair_info = (await queryClient.queryContractSmart(contract.address, "pair_info")).pair_info;
 
             const token1 = await TokenInfo(pair_info.pair.token_0.custom_token.contract_addr);
