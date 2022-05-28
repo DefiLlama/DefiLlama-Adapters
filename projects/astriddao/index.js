@@ -18,6 +18,14 @@ const COLLATERALS = {
       activePool: "0x892af684Afd5fCee1023f7811C35fd695Bf0cd6f",
       defaultPool: "0xe487b9066A8fFde840b29892f1052CBEdccc3073",
     }
+  },
+  DAI: {
+    tokenAddress: "0x6De33698e9e9b787e09d3Bd7771ef63557E148bb",
+    bridgeTokenMapping: "0x6b175474e89094c44da98b954eedeac495271d0f",
+    contracts: {
+      activePool: "0xCE90059FbCEc696634981945600d642A79e262aD",
+      defaultPool: "0x3aD8FE12674B4c9481d5C7585ed5bDC4E35025b9",
+    }
   }
 }
 
@@ -55,7 +63,7 @@ async function tvl(ts, _block, chainBlocks ) {
 module.exports = {
   timetravel: true,
   start: 915830,
-  methodology: "Total locked ASTR (in wrapped ERC-20 form) in ActivePool and DefaultPool",
+  methodology: "Total locked collateral assets (in ERC-20 form) in ActivePool and DefaultPool",
   astar: {
     tvl,
   },
