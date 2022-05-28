@@ -733,12 +733,14 @@ function transformVelasAddress() {
 
 async function transformCronosAddress() {
   const mapping = {
+    /*
     '0x45c135c1cdce8d25a3b729a28659561385c52671': 'alethea-artificial-liquid-intelligence-token',
     '0x39a65a74dc5a778ff93d1765ea51f57bc49c81b3': 'akash-network',
     '0xbed48612bc69fa1cab67052b42a95fb30c1bcfee': 'shiba-inu',
     '0x1a8e39ae59e5556b56b76fcba98d22c9ae557396': 'dogecoin',
     '0xb888d8dd1733d72681b30c00ee76bde93ae7aa93': 'cosmos',
     '0x02dccaf514c98451320a9365c5b46c61d3246ff3': 'dogelon-mars',
+    */
     '0x0000000000000000000000000000000000000000': '0xa0b73e1ff0b80914ab6fe0444e65848c4c34450b',
     '0x09ad12552ec45f82be90b38dfe7b06332a680864': 'polygon:0xc3fdbadc7c795ef1d6ba111e06ff8f16a20ea539', // ADDY
   }
