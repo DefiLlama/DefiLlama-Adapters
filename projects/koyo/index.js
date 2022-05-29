@@ -1,8 +1,9 @@
-const { transformBobaAddress } = require("../helper/portedTokens");
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
-const { getBlock } = require("../helper/getBlock");
 const utils = require("../helper/utils");
+const { chainJoinExports, chainTypeExports } = require("./utils");
+const { getBlock } = require("../helper/getBlock");
 const { staking } = require("../helper/staking");
+const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
+const { transformBobaAddress } = require("../helper/portedTokens");
 
 const BOBA_MAINNET_KYO = "0x618CC6549ddf12de637d46CDDadaFC0C2951131C";
 const BOBA_MAINNET_BOBA = "0xa18bF3994C0Cc6E3b63ac420308E5383f53120D7";
@@ -43,20 +44,6 @@ const DATA = {
   },
 };
 
-const chainTypeExports = (chainType, chainFn, chains) => {
-  const chainTypeProps = chains.reduce(
-    (obj, chain) => ({
-      ...obj,
-      [chain === "avax" ? "avalanche" : chain]: {
-        [chainType]: chainFn(chain),
-      },
-    }),
-    {}
-  );
-
-  return chainTypeProps;
-};
-
 const chainTVL = (chain) => {
   return async (timestamp, _ethBlock, chainBlocks) => {
     const balances = {};
@@ -78,7 +65,6 @@ const chainTVL = (chain) => {
     return balances;
   };
 };
-
 const chainTreasury = (chain) => {
   return async (timestamp, _ethBlock, chainBlocks) => {
     const balances = {};
@@ -98,7 +84,6 @@ const chainTreasury = (chain) => {
     return balances;
   };
 };
-
 const chainStaking = (chain) => {
   return async (timestamp, ethBlock, chainBlocks) => {
     const [, data] = await DATA[chain]();
@@ -109,24 +94,6 @@ const chainStaking = (chain) => {
       chainBlocks
     );
   };
-};
-
-const chainJoinExports = (cExports, chains) => {
-  const createdCExports = cExports.map((cExport) => cExport(chains));
-  const chainJoins = chains.reduce((obj, chain) => {
-    chain = chain === "avax" ? "avalanche" : chain;
-
-    return {
-      ...obj,
-      [chain]: Object.fromEntries(
-        createdCExports.flatMap((cExport) => [
-          ...Object.entries(cExport[chain]),
-        ])
-      ),
-    };
-  }, {});
-
-  return chainJoins;
 };
 
 module.exports = chainJoinExports(
