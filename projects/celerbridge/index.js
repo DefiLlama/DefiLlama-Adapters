@@ -22,7 +22,6 @@ config.setProvider(
 
 // Add REI Network
 // TODO: Remove when no longer needed
-if (!getProvider("rei")) {
   config.setProvider(
     "rei",
     new ethers.providers.StaticJsonRpcProvider("https://rpc.rei.network", {
@@ -30,7 +29,6 @@ if (!getProvider("rei")) {
       chainId: 47805,
     })
   );
-}
 
 // Add Clover Network
 // TODO: Remove when no longer needed

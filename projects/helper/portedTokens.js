@@ -734,14 +734,6 @@ function transformVelasAddress() {
 
 async function transformCronosAddress() {
   const mapping = {
-    /*
-    '0x45c135c1cdce8d25a3b729a28659561385c52671': 'alethea-artificial-liquid-intelligence-token',
-    '0x39a65a74dc5a778ff93d1765ea51f57bc49c81b3': 'akash-network',
-    '0xbed48612bc69fa1cab67052b42a95fb30c1bcfee': 'shiba-inu',
-    '0x1a8e39ae59e5556b56b76fcba98d22c9ae557396': 'dogecoin',
-    '0xb888d8dd1733d72681b30c00ee76bde93ae7aa93': 'cosmos',
-    '0x02dccaf514c98451320a9365c5b46c61d3246ff3': 'dogelon-mars',
-    */
     '0x0000000000000000000000000000000000000000': '0xa0b73e1ff0b80914ab6fe0444e65848c4c34450b',
     '0x09ad12552ec45f82be90b38dfe7b06332a680864': 'polygon:0xc3fdbadc7c795ef1d6ba111e06ff8f16a20ea539', // ADDY
   }
@@ -798,19 +790,13 @@ async function transformAstarAddress() {
   return (addr) => addr // we use fix balances instead
 }
 
-function fixCronosBalances(balances) {
-  const tokenDecimals = {
-    'shiba-inu': 18,//SHIBA
-    'dogecoin': 8,//DOGE
-    'cosmos': 6,//ATOM
-    'dogelon-mars': 18,//ELON
-    'alethea-artificial-liquid-intelligence-token': 18,//ALI
-    'akash-network': 6,//AKT
-  }
-  Object.keys(tokenDecimals).forEach(key => {
-    if (balances[key])
-      balances[key] = BigNumber(balances[key]).div(10 ** tokenDecimals[key]).toFixed(0)
-  })
+const cronosFixMapping = {
+  '0x45c135c1cdce8d25a3b729a28659561385c52671': { coingeckoId: 'alethea-artificial-liquid-intelligence-token', decimals: 18, },
+  '0x39a65a74dc5a778ff93d1765ea51f57bc49c81b3': { coingeckoId: 'akash-network', decimals: 6, },
+  '0xbed48612bc69fa1cab67052b42a95fb30c1bcfee': { coingeckoId: 'shiba-inu', decimals: 18, },
+  '0x1a8e39ae59e5556b56b76fcba98d22c9ae557396': { coingeckoId: 'dogecoin', decimals: 8, },
+  '0xb888d8dd1733d72681b30c00ee76bde93ae7aa93': { coingeckoId: 'cosmos', decimals: 6, },
+  '0x02dccaf514c98451320a9365c5b46c61d3246ff3': { coingeckoId: 'dogelon-mars', decimals: 18, },
 }
 
 async function transformDfkAddress() {
@@ -974,7 +960,7 @@ const fixBalancesMapping = {
   evmos: b => fixBalances(b, evmosFixMapping, { removeUnmapped: false }),
   astar: fixAstarBalances,
   shiden: fixShidenBalances,
-  cronos: fixCronosBalances,
+  cronos: b => fixBalances(b, cronosFixMapping, { removeUnmapped: false }),
   tezos: fixTezosBalances,
   harmony: fixHarmonyBalances,
   hpb: fixHPBBalances,
@@ -1111,7 +1097,6 @@ module.exports = {
   getFixBalances,
   transformCeloAddress,
   transformCronosAddress,
-  fixCronosBalances,
   transformFantomAddress,
   transformBscAddress,
   transformPolygonAddress,
