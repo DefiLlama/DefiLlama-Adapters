@@ -2,6 +2,13 @@ const { transformBobaAddress } = require("../helper/portedTokens");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const { getBlock } = require("../helper/getBlock");
 const utils = require("../helper/utils");
+const { staking } = require("../helper/staking");
+
+const BOBA_MAINNET_KYO = "0x618CC6549ddf12de637d46CDDadaFC0C2951131C";
+const BOBA_MAINNET_BOBA = "0xa18bF3994C0Cc6E3b63ac420308E5383f53120D7";
+const BOBA_MAINNET_FRAX = "0x7562F525106F5d54E891e005867Bf489B5988CD9";
+
+const BOBA_MAINNET_FraxKyo = "0xde7C350fA84B7fe792bfAA241303aeF04283c9d2";
 
 const DATA = {
   boba: async () => {
@@ -16,9 +23,14 @@ const DATA = {
         treasury: {
           addresss: ["0x559dBda9Eb1E02c0235E245D9B175eb8DcC08398"],
           tokens: [
-            ["0xa18bF3994C0Cc6E3b63ac420308E5383f53120D7", false], // BOBA(Boba)
-            ["0x7562F525106F5d54E891e005867Bf489B5988CD9", false], // FRAX(Boba)
+            [BOBA_MAINNET_BOBA, false], // BOBA(Boba)
+            [BOBA_MAINNET_FRAX, false], // FRAX(Boba)
+            [BOBA_MAINNET_FraxKyo, true], // FRAX-KYO(Boba, OolongSwap)
           ],
+        },
+        staking: {
+          address: "0x80aa195200f2EC0f3A22f8874515bd97199bB0ec",
+          token: BOBA_MAINNET_KYO,
         },
         swaps: Object.entries(pools.data.data)
           .filter(([k]) => k !== "generatedTime")
@@ -87,6 +99,18 @@ const chainTreasury = (chain) => {
   };
 };
 
+const chainStaking = (chain) => {
+  return async (timestamp, ethBlock, chainBlocks) => {
+    const [, data] = await DATA[chain]();
+
+    return staking(data.staking.address, data.staking.token, chain)(
+      timestamp,
+      ethBlock,
+      chainBlocks
+    );
+  };
+};
+
 const chainJoinExports = (cExports, chains) => {
   const createdCExports = cExports.map((cExport) => cExport(chains));
   const chainJoins = chains.reduce((obj, chain) => {
@@ -109,6 +133,7 @@ module.exports = chainJoinExports(
   [
     (chains) => chainTypeExports("tvl", chainTVL, chains),
     (chains) => chainTypeExports("treasury", chainTreasury, chains),
+    (chains) => chainTypeExports("staking", chainStaking, chains),
   ],
   ["boba"]
 );
