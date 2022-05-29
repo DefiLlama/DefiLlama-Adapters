@@ -23,9 +23,9 @@ config.setProvider(
 // Add REI Network
 // TODO: Remove when no longer needed
   config.setProvider(
-    "rei",
+    "reinetwork",
     new ethers.providers.StaticJsonRpcProvider("https://rpc.rei.network", {
-      name: "rei",
+      name: "reinetwork",
       chainId: 47805,
     })
   );
@@ -92,7 +92,7 @@ const liquidityBridgeContractsV2 = {
     "0xa251c4691C1ffd7d9b128874C023427513D8Ac5C",
     "0x88DCDC47D2f83a99CF0000FDF667A468bB958a78",
   ],
-  rei: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C"],
+  reinetwork: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C"],
   shiden: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C"],
   syscoin: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C"],
   xdai: ["0x3795C36e7D12A8c252A20C5a7B455f7c57b60283"],
@@ -380,7 +380,7 @@ const peggedTokens = [
     moonbeam: "0x81ECac0D6Be0550A00FF064a4f9dd2400585FE9c",
     moonriver: "0xb74527786818aE18B69B6A823960bfAF3906182F",
     oasis: "0x4Bf769b05E832FCdc9053fFFBC78Ca889aCb5E1E",
-    rei: "0x988a631Caf24E14Bb77EE0f5cA881e8B5dcfceC7",
+    reinetwork: "0x988a631Caf24E14Bb77EE0f5cA881e8B5dcfceC7",
     syscoin: "0x6de33698e9e9b787e09d3bd7771ef63557e148bb",
   },
   {
@@ -394,7 +394,7 @@ const peggedTokens = [
     moonbeam: "0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98",
     moonriver: "0x693B47a7fC3d33AE9eBec15e5F42f2dB480066f3",
     oasis: "0x81ECac0D6Be0550A00FF064a4f9dd2400585FE9c",
-    rei: "0x8d5E1225981359E2E09A3AB8F599A51486f53314",
+    reinetwork: "0x8d5E1225981359E2E09A3AB8F599A51486f53314",
     syscoin: "0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98",
   },
   {
@@ -413,7 +413,7 @@ const peggedTokens = [
     conflux: "0x74eaE367d018A5F29be559752e4B67d01cc6b151",
     milkomeda: "0x6De33698e9e9b787e09d3Bd7771ef63557E148bb",
     oasis: "0x5a4Ba16C2AeB295822A95280A7c7149E87769E6A",
-    rei: "0x0ba85980B122353D77fBb494222a10a46E4FB1f6",
+    reinetwork: "0x0ba85980B122353D77fBb494222a10a46E4FB1f6",
     syscoin: "0x8D982783040e3ccC0C04cC7B88B9637ce7286C50",
   },
   {
@@ -427,7 +427,7 @@ const peggedTokens = [
     moonbeam: "0x6959027f7850Adf4916ff5Fdc898d958819E5375",
     moonriver: "0xf6a939e773fa4A63fd53f86bbbB279CaAD955035",
     oasis: "0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98",
-    rei: "0x7a5313468c1C1a3Afb2Cf5ec46558A7D0fc2884A",
+    reinetwork: "0x7a5313468c1C1a3Afb2Cf5ec46558A7D0fc2884A",
     syscoin: "0x81ecac0d6be0550a00ff064a4f9dd2400585fe9c",
   },
   {
@@ -439,7 +439,7 @@ const peggedTokens = [
     metis: "0x75364D4F779d0Bd0facD9a218c67f87dD9Aff3b4",
     milkomeda: "0x8d50a024B2F5593605d3cE8183Ca8969226Fcbf8",
     moonbeam: "0x8a4B4C2aCAdeAa7206Df96F00052e41d74a015CE",
-    rei: "0x8059E671Be1e76f8db5155bF4520f86ACfDc5561",
+    reinetwork: "0x8059E671Be1e76f8db5155bF4520f86ACfDc5561",
     syscoin: "0x86c28C9a6f2DC3C156AA2ad450F0F9d3A5Dec12e",
   },
   {
