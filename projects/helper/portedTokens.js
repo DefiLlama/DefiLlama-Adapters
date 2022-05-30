@@ -292,17 +292,6 @@ async function transformHooAddress() {
 
 async function transformCeloAddress() {
   return (addr) => {
-    if (addr.toLowerCase() === "0xd8763cba276a3738e6de85b4b3bf5fded6d6ca73") {
-      //return "0xd71ecff9342a5ced620049e616c5035f1db98620" //sEUR
-      return "celo-euro";
-    }
-    if (addr.toLowerCase() === "0x765de816845861e75a25fca122bb6898b8b1282a") {
-      //return "0x8e870d67f660d95d5be530380d0ec0bd388289e1" //USDP
-      return "celo-dollar";
-    }
-    if (addr.toLowerCase() === "0x471ece3750da237f93b8e339c536989b8978a438") {
-      return "celo"; //CELO
-    }
     return `celo:${addr}`;
   };
 }
@@ -743,6 +732,7 @@ async function transformCronosAddress() {
 function fixShidenBalances(balances) {
   const mapping = {
     '0x0f933dc137d21ca519ae4c7e93f87a4c8ef365ef': { coingeckoId: 'shiden', decimals: 18, },
+    '0xb4BcA5955F26d2fA6B57842655d7aCf2380Ac854': { coingeckoId: 'emiswap', decimals: 18, },
     '0x765277EebeCA2e31912C9946eAe1021199B39C61': { coingeckoId: 'ethereum', decimals: 18, },
     '0x332730a4f6e03d9c55829435f10360e13cfa41ff': { coingeckoId: 'binancecoin', decimals: 18, },
     '0x65e66a61d0a8f1e686c2d6083ad611a10d84d97a': { coingeckoId: 'binance-usd', decimals: 18, },
@@ -924,6 +914,10 @@ const bittorrentFixMapping = {
   '0x9b5f27f6ea9bbd753ce3793a07cba3c74644330d': { coingeckoId: 'tether', decimals: 18, },
 }
 
+const syscoinFixMapping = {
+  '0xd3e822f3ef011Ca5f17D82C956D952D8d7C3A1BB': { coingeckoId: 'syscoin', decimals: 18, },
+}
+
 function normalizeMapping(mapping) {
   Object.keys(mapping).forEach(key => mapping[key.toLowerCase()] = mapping[key])
 }
@@ -976,6 +970,7 @@ const fixBalancesMapping = {
   energyweb: b => fixBalances(b, energywebFixMapping, { removeUnmapped: true }),
   oasis: fixOasisBalances,
   bittorrent: b => fixBalances(b, bittorrentFixMapping, { removeUnmapped: false }),
+  syscoin: b => fixBalances(b, syscoinFixMapping, { removeUnmapped: true }),
 }
 
 const chainTransforms = {
