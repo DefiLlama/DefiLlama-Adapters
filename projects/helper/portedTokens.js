@@ -760,9 +760,8 @@ function fixAstarBalances(balances) {
     '0x4Bf769b05E832FCdc9053fFFBC78Ca889aCb5E1E': { coingeckoId: 'binance-usd', decimals: 18, },
     '0xb7aB962c42A8Bb443e0362f58a5A43814c573FFb': { coingeckoId: 'binance-usd', decimals: 18, },
     '0x29F6e49c6E3397C3A84F715885F9F233A441165C': { coingeckoId: 'dai', decimals: 18, },
-    '0x733ebcC6DF85f8266349DEFD0980f8Ced9B45f35': { coingeckoId: 'dai', decimals: 18, },
+    '0x733ebcC6DF85f8266349DEFD0980f8Ced9B45f35': { coingeckoId: 'bai-stablecoin', decimals: 18, },
     // '0x29F6e49c6E3397C3A84F715885F9F233A441165C': { coingeckoId: 'orcus-ousd', decimals: 18, }, // todo: fix this, use correct coingecko id
-    // '0x733ebcC6DF85f8266349DEFD0980f8Ced9B45f35': { coingeckoId: 'bai-stablecoin', decimals: 18, }, // todo: fix this, use correct coingecko id
   }
 
   return fixBalances(balances, mapping)
