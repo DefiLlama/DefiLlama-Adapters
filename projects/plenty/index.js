@@ -3,15 +3,7 @@ const { getTokenBalances, sumTokens, convertBalances } = require('../helper/tezo
 const { getFixBalances } = require('../helper/portedTokens')
 
 async function tvl() {
-  const config = await getConfig()
-  const dexSet = new Set()
-  Object.values(config.AMM.mainnet).forEach(t => {
-    Object.values(t.DEX_PAIRS || {}).forEach(pair => {
-      dexSet.add(pair.contract)
-    })
-  })
-  const dexes = [...dexSet]
-  let balances = await sumTokens({ owners: dexes, includeTezos: true, })
+  let balances = await sumTokens({ owners: await getDexes(), includeTezos: true, })
   const fixBalances = await getFixBalances('tezos')
   balances = await convertBalances(balances)
   fixBalances(balances)
@@ -27,7 +19,7 @@ async function staking() {
 }
 
 
-async function getConfig() {
+async function getDexes() {
   // We take ts file and use regex to convert it to JSON and parse it (Yes, seriously)
   const { data } = await axios.get('https://raw.githubusercontent.com/Plenty-DeFi/plenty-interface/master/src/config/config.ts')
 
@@ -40,9 +32,18 @@ async function getConfig() {
     return i
   }).join('\n')
   text = text.replace(/\,(\s*[\}\]])/g, '$1')  // remove trailing commas
-  text = text.replaceAll('\'', '"')  // convert single quotation to double
+  text = text.replace(/\'/g, '"')  // convert single quotation to double
   text = text.replace(/(\s?)(\w+)\:([^\/])/g, '$1"$2":$3') // cover keys with qoutes, eg. key1: "value" -> "key1":"value"
-  return JSON.parse(text)
+  const config = JSON.parse(text)
+  const dexSet = new Set()
+  Object.values(config.AMM.mainnet).forEach(t => {
+    Object.values(t.DEX_PAIRS || {}).forEach(pair => {
+      dexSet.add(pair.contract)
+    })
+  })
+  const dexes = [...dexSet]
+  return dexes
+  // require('fs').writeFileSync('./projects/plenty/dexes.json', JSON.stringify(dexes))
 }
 
 module.exports = {
