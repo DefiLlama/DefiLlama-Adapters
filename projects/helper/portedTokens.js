@@ -883,6 +883,10 @@ function fixTezosBalances(balances) {
   const mapping = {
     'KT1PWx2mnDueood7fEmfbBDKx1D9BAnnXitn': { coingeckoId: 'tzbtc', decimals: 8, },
     'tezos': { coingeckoId: 'tezos', decimals: 0, },
+    'KT1GRSvLoikDsXujKgZPsGLX8k8VvR2Tq95b': { coingeckoId: 'plenty-dao', decimals: 18, },
+    'KT1SjXiUX63QvdNMcM2m492f7kuf8JxXRLp4': { coingeckoId: 'tezos', decimals: 6, }, // this is ctez, ideally should be valued higher
+    'KT1Ha4yFVeyzw6KRAdkzq6TxDHB97KG4pZe8': { coingeckoId: 'dogami', decimals: 5, },
+    'KT1JkoE42rrMBP9b2oDhbx6EUr26GcySZMUH': { coingeckoId: 'kolibri-dao', decimals: 18, },
     'KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-19': { coingeckoId: 'wrapped-bitcoin', decimals: 8, },
     'KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-17': { coingeckoId: 'usd-coin', decimals: 6, },
     'KT1K9gCRgaLRFKTErYt1wVxA3Frb9FjasjTV': { coingeckoId: 'kolibri-usd', decimals: 18, },
