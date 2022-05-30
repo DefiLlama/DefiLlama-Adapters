@@ -3,10 +3,12 @@ const http = require('../helper/http');
 const BigNumber = require("bignumber.js");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { getChainTransform } = require("../helper/portedTokens");
+const evermigrateABI = require("./evermigrate-abi.json");
 
 const zeroAddress = '0x0000000000000000000000000000000000000000'
 const BRIDGE_CONTROLLER = '0x0Dd4A86077dC53D5e4eAE6332CB3C5576Da51281';
 const TOKEN = '0xC17c30e98541188614dF99239cABD40280810cA3';
+const EVERMIGRATE_CONTRACT = '0x429CA183C5f4B43F09D70580C5365a6D21ccCd47';
 const STAKE_HOLDING_API = 'https://app.everrise.com/bridge/api/v1/stats'
 const chainConfig = {
   ethereum: {
@@ -73,8 +75,6 @@ async function staking(timestamp, block, chainId, chain, token) {
 const chainExports = {}
 
 Object.keys(chainConfig).forEach(chain => {
-
-
   async function tvl(ts, _block, chainBlocks) {
     let balances = {}
     const block = chainBlocks[chain]
@@ -87,6 +87,49 @@ Object.keys(chainConfig).forEach(chain => {
 
     for (const c of results.output)
       sdk.util.sumSingleBalance(balances, transformAddress(zeroAddress), c.balance)
+
+    // TVL of tokens using EverMigrate service
+    if (chain == "bsc" || chain == "ethereum" || chain == "polygon") {
+      let supportedInputTokens = (await sdk.api.abi.call({
+        abi: evermigrateABI.allSupportedTokens,
+        chain: chain,
+        target: EVERMIGRATE_CONTRACT
+      })).output;
+
+      // Deduplicate input tokens
+      supportedInputTokens = [...new Set(supportedInputTokens)];
+
+      // Get list of output tokens
+      let supportedOutputTokens = (
+        await sdk.api.abi.multiCall({
+          calls: supportedInputTokens.map((token) => ({
+            target: EVERMIGRATE_CONTRACT,
+            params: token,
+          })),
+          abi: evermigrateABI.tokenMigrateDetails,
+          block, chain,
+        })
+      ).output;
+
+      // Get balances held of output tokens
+      let migrateBalances = (
+        await sdk.api.abi.multiCall({
+          calls: supportedOutputTokens.map((p) => ({
+            target: p.output.targetToken,
+            params: EVERMIGRATE_CONTRACT,
+          })),
+          abi: "erc20:balanceOf",
+          block, chain,
+        })
+      ).output;
+
+      // Add to balances
+      migrateBalances.forEach((i) => {
+        balances[i.input.target] = i.output
+      });
+
+    }
+    
     return balances
   }
 

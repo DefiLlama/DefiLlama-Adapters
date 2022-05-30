@@ -1,0 +1,52 @@
+{
+	"allSupportedTokens": {
+		"inputs": [],
+		"name": "allSupportedTokens",
+		"outputs": [
+			{
+				"internalType": "address[]",
+				"name": "supportedTokens",
+				"type": "address[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	"allSupportedTokensLength": {
+		"inputs": [],
+		"name": "allSupportedTokensLength",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	"tokenMigrateDetails": {
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "sourceToken",
+				"type": "address"
+			}
+		],
+		"name": "tokenMigrateDetails",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "targetToken",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "ratio",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+}
