@@ -38,6 +38,47 @@ async function fetchBaseAABalances(timestamp, address) {
 }
 
 /**
+ * A reducer applied on a list of response objects returned by fetchBaseAABalances() to calculate the total.
+ * This reducer excludes locked in assets that were issued by the same autonomous agent.
+ *
+ * @example
+ *   const balancesV1 = wait fetchBaseAABalances(timestamp, 'GS23D3GQNNMNJ5TL4Z5PINZ5626WASMA')
+ *   const balancesV2 = wait fetchBaseAABalances(timestamp, '2JYYNOSRFGLI3TBI4FVSE6GFBUAZTTI3')
+ *   const tvl = [balancesV1, balancesV2].reduce(summingBaseAABalancesToTvl(assetMetadata, exchangeRates), 0)
+ *
+ * @param {object} assetMetadata asset metadata (eg. decimals) mapped to the asset id (asset unit hash)
+ * @param {object} exchangeRates asset/USD exchange rates mapped to assetId_USD keys
+ * @return {function(number, object)} reducer function to be used with Array.reduce() where each element in the array is
+ *    a result of a fetchBaseAABalances() call
+ */
+function summingBaseAABalancesToTvl(assetMetadata, exchangeRates) {
+
+  const summingAssetTvl = (total, [asset, assetDetails]) => {
+    if (!assetMetadata?.hasOwnProperty(asset)) return total
+
+    const decimals = assetMetadata[asset].decimals ?? 0
+    const baseCurrency = (asset === "base") ? "GBYTE" : asset
+    const usdRate = exchangeRates[`${baseCurrency}_USD`] ?? 0
+    const usdValue = assetDetails.balance / Math.pow(10, decimals) * usdRate
+    // console.log(`  ${assetMetadata[asset]?.symbol ?? asset} = ${usdValue.toFixed(2)}`)
+    return total + usdValue
+  }
+
+  const summingAddressTvl = (total, [address, addressDetails]) => {
+    // console.log(`${address}:`)
+    return total + Object.entries(addressDetails.assets)
+        .filter(([asset, assetDetails]) => !assetDetails.selfIssued)
+        .reduce(summingAssetTvl, 0)
+  }
+
+  const summingBaseAATvl = (total, balances) => {
+    return total + Object.entries(balances.addresses).reduce(summingAddressTvl, 0)
+  }
+
+  return summingBaseAATvl
+}
+
+/**
  * @return {Promise<object>} fetches all exchange rates traded on Oswap v1 and v2 plus a few externally defined tokens such as GBYTE-USD or BTC-USD
  */
 async function fetchOswapExchangeRates() {
@@ -114,5 +155,6 @@ async function fetchOswapAssets() {
 module.exports = {
   fetchBaseAABalances,
   fetchOswapExchangeRates,
-  fetchOswapAssets
+  fetchOswapAssets,
+  summingBaseAABalancesToTvl
 }
