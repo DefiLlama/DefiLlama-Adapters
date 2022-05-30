@@ -223,4 +223,4 @@ module.exports = {
         staking: Staked,
         borrowed: Borrowed
     }
-};
+}
