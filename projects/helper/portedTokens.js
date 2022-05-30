@@ -1005,8 +1005,18 @@ const chainTransforms = {
   dfk: transformDfkAddress,
   aurora: transformAuroraAddress,
   findora: transformFindoraAddress,
-  bittorrent: transformBittorrentAddress
+  bittorrent: transformBittorrentAddress,
+  reichain: transformReichainAddress,
 };
+
+async function transformReichainAddress() {
+  const mapping = {
+    '0xDD2bb4e845Bd97580020d8F9F58Ec95Bf549c3D9': 'bsc:0xe9e7cea3dedca5984780bafc599bd69add087d56', // killswitch busd -> busd token
+    '0xf8ab4aaf70cef3f3659d3f466e35dc7ea10d4a5d': 'bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // killswitch bnb -> bnb token
+  }
+  
+  return transformChainAddress(mapping, 'reichain', { skipUnmapped: true })
+}
 
 async function transformEthereumAddress() {
   const mapping = {
