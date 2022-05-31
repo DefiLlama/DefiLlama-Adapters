@@ -86,7 +86,7 @@ async function getPrices() {
   const priceObj = {}
   pricesArray.forEach(p => {
     let label = p.tokenAddress
-    if (p.tokenId !== 0) label += '-' + p.tokenId
+    if (p.hasOwnProperty('tokenId') && p.tokenId !== 0) label += '-' + p.tokenId
     priceObj[label] = p
   })
   return priceObj
@@ -123,6 +123,7 @@ async function getLPs(dex) {
 
 module.exports = {
   RPC_ENDPOINT,
+  getStorage,
   sumTokens,
   convertBalances,
   getTokenBalances,
