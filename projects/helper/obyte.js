@@ -152,9 +152,99 @@ async function fetchOswapAssets() {
   }
 }
 
+/**
+ * @return {Promise<object>} fetches assets traded on Oswap v2
+ */
+async function fetchOstableAssets() {
+  /*
+   * {
+   *  "IUSD": {
+   *    "asset_id": "eCpmov+r6LOVNj8KD0EWTyfKPrqsG3i2GgxV4P+zE6A=",
+   *    "decimals": 4,
+   *    "description": "Stable+ token for bonded stablecoin (VLKI3XMMX5YULOBA6ZXBXDPI6TXF6V3D)",
+   *    "symbol": "IUSD",
+   *    "supply": 61172.4893,
+   *    "last_gbyte_value": 0.08233341192937123
+   *  },
+   * }
+   */
+  const fetched = await utils.fetchURL("https://data.ostable.org/api/v1/assets")
+  const assets = fetched.data
+  return Object.values(assets).reduce((map, asset) => {
+    map[asset.asset_id] = asset
+    return map
+  }, {})
+}
+
+/**
+ * Exchange rates of assets traded on Ostable.
+ * @example
+ *   {
+ *     { "ymCWKx3kZg06i9oG5c1n3K+BdsCz4uE32hZ94sT3CsU=_base": 2.91381565819933e-06 }
+ *   }
+ *
+ * @return {Promise<object>} map of asset pairs issued on Ostable to their exchange rate.
+ */
+async function fetchOstableExchangeRates() {
+ /*
+  *  {
+  *   {
+  *    "market_name": "GB2S-GBYTE",
+  *      "quote_symbol": "GBYTE",
+  *      "base_symbol": "GB2S",
+  *      "quote_id": "base",
+  *      "base_id": "ymCWKx3kZg06i9oG5c1n3K+BdsCz4uE32hZ94sT3CsU=",
+  *      "lowest_price_24h": 0,
+  *      "highest_price_24h": 0,
+  *      "last_price": 2.91381565819933e-06,
+  *      "quote_volume": 0,
+  *      "base_volume": 0,
+  *      "first_trade_date": "2020-10-09T10:26:11.000Z"
+  *    }
+  *  }
+  */
+
+  const fetched = await utils.fetchURL("https://data.ostable.org/api/v1/tickers")
+  const tickers = fetched.data
+  return Object.values(tickers).reduce((map, ticker) => {
+    const currencyPair = `${ticker.base_id}_${ticker.quote_id}`
+    map[currencyPair] = ticker.last_price
+    return map
+  }, {})
+}
+
+/**
+ * Exchange rates of assets in USD traded on Ostable.
+ * @example
+ *   {
+ *     { "ymCWKx3kZg06i9oG5c1n3K+BdsCz4uE32hZ94sT3CsU=_USD": 42.12 }
+ *   }
+ *
+ * @return {Promise<object>} map of asset pairs issued on Ostable to their exchange rate in USD.
+ */
+async function fetchOstableExchangeRatesInUSD() {
+  const [oswapRates, ostableRates] = await Promise.all([
+    fetchOswapExchangeRates(),
+    fetchOstableExchangeRates()
+  ])
+
+  const gbyteUsd = oswapRates["GBYTE_USD"]
+
+  const ostableRatesInUSD = Object.entries(ostableRates)
+      .filter(([currencyPair, price]) => currencyPair.endsWith("_base"))
+      .reduce((map, [currencyPair, price]) => ({...map, [currencyPair.replace("_base", "_USD")]: price * gbyteUsd}))
+
+  return {
+    "GBYTE_USD": gbyteUsd,
+    ...ostableRatesInUSD
+  }
+}
+
 module.exports = {
   fetchBaseAABalances,
   fetchOswapExchangeRates,
   fetchOswapAssets,
+  fetchOstableAssets,
+  fetchOstableExchangeRatesInUSD,
   summingBaseAABalancesToTvl
 }
