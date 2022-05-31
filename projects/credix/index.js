@@ -58,27 +58,21 @@ const getAssociatedBaseTokenAddressPK = async (publicKey) => {
 async function tvl() {
   const globalMarketSeed = "credix-marketplace"
   const provider = await getProvider();
-  const signingAuthorityKey = await findSigningAuthorityPDA(globalMarketSeed)
-  const liquidityPoolKey = await getAssociatedBaseTokenAddressPK(signingAuthorityKey[0]);
-  const liquidityPool = await provider.connection.getTokenAccountBalance(liquidityPoolKey);
-  const liquidityPoolBalance = liquidityPool.value.uiAmount;
-  return toUSDTBalances(liquidityPoolBalance)
-}
-
-async function borrowed() {
-  const globalMarketSeed = "credix-marketplace"
-  const provider = await getProvider();
   const program = await constructProgram(provider);
   const globalMarketStatePDA = await findGlobalMarketStatePDA(globalMarketSeed);
   const globalMarketStateAccountData = await program.account.globalMarketState.fetch(globalMarketStatePDA[0]);
   const totalOutstandingCredit = Number(globalMarketStateAccountData.totalOutstandingCredit) / 1000000;
-  return toUSDTBalances(totalOutstandingCredit)
+  const signingAuthorityKey = await findSigningAuthorityPDA(globalMarketSeed)
+  const liquidityPoolKey = await getAssociatedBaseTokenAddressPK(signingAuthorityKey[0]);
+  const liquidityPool = await provider.connection.getTokenAccountBalance(liquidityPoolKey);
+  const liquidityPoolBalance = liquidityPool.value.uiAmount;
+  const tvl = liquidityPoolBalance + totalOutstandingCredit
+  return toUSDTBalances(tvl)
 }
 
 module.exports = {
   timetravel: false,
   solana: {
-    tvl,
-    borrowed
+    tvl
   }
 };
