@@ -61,7 +61,7 @@ module.exports = {
             pool: '57k3vNmCivSYn7EwQNjcNFcCWAdohZ9xACfMhJGwKiBq', // GSTBNB-GSTSOL
             tokens: [
               'GDuUFXEhUm4jG71vPxYRX3VxUMJ5etGvHTR1iKwTdb6p', // GSTBNB
-              '8YYBkTNhpY9mFdCdZWM6mHNf8J6A9hGfimb33LEiiZ3x', // GSTSOL
+              'AFbX8oGjGpmVFywbVouvhQSRmiW2aR1mohfahi4Y2AdB', // GSTSOL
             ],
             symbols: [
               "green-satoshi-token-bsc",
@@ -72,7 +72,7 @@ module.exports = {
             pool: 'HZr3bF8YEJWMV75Wi3aFEHEyLLk61VyQduXtunWtXNVQ', // GMTBNB-GMTSOL
             tokens: [
               '7dzFD8xQ3FDmVLxwn75UA9WhVnBsUdRAexASVvpXX3Bo', // GMTBNB
-              '2x7MjgopLXd3qETGLpY19cyZjHvVnGkrwVjTkJnBza4A', // GMTSOL
+              '7i5KKsX2weiTkry7jA4ZwSuXGhs5eJBEjY8vVxR4pfRx', // GMTSOL
             ],
             symbols: [
               "stepn",
