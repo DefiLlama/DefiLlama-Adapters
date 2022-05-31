@@ -109,16 +109,16 @@ async function heco(timestamp, ethBlock, chainBlocks) {
 
 module.exports = {
     ethereum: {
-        // tvl: eth,
+        tvl: eth,
     },
     bsc: {
         tvl: bsc
     },
     polygon: {
-        // tvl: polygon
+        tvl: polygon
     },
     arbitrum: {
-        // tvl: arbitrum
+        tvl: arbitrum
     }
     // We don't include heco、aurora because their subgraph is outdated
 }
