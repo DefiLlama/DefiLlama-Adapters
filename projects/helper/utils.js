@@ -9,7 +9,20 @@ async function parallelAbiCall({ block, chain = 'ethereum', abi, getCallArgs = i
     .for(items)
     .process(async item => {
       const input = getCallArgs(item)
-      const response = await sdk.api.abi.call({ abi, block, chain, ...input })
+      let response
+      let retry = 6
+
+      while (!response) {
+        retry--
+        try {
+          response = await sdk.api.abi.call({ abi, block, chain, ...input })
+        } catch (e) {
+          if (retry < 0)
+            throw e
+          console.log('Call failed, retying after 2 seconds')
+          await sleep(2000)
+        }
+      }
       response.input = input
       response.success = true
       return response
@@ -19,6 +32,10 @@ async function parallelAbiCall({ block, chain = 'ethereum', abi, getCallArgs = i
     throw errors[0]
 
   return results
+}
+
+async function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms))
 }
 
 async function returnBalance(token, address, block, chain) {
