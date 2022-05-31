@@ -7,6 +7,17 @@ const polygonPools = require('./polygonPools.json')
 const avalanchePools = require('./avalanchePools.json')
 const poolslist = require('./pools.json')
 
+    // {
+    //     "StakersPool": "0x131fb74c6fede6d6710ff224e07ce0ed8123f144",
+    //     "PoolToken": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    //     "TokenTicker": "USDC"
+    // },
+    // {
+    //     "StakersPool": "0x3dc07E60ecB3d064d20c386217ceeF8e3905916b",
+    //     "PoolToken": "0xd83AE04c9eD29d6D3E6Bf720C71bc7BeB424393E",
+    //     "TokenTicker": "INSURE"
+    // }
+
 async function eth(timestamp, ethBlock) {
     // ETH
     // start timestamp: 1619248141
@@ -19,19 +30,35 @@ async function eth(timestamp, ethBlock) {
     const data  = poolslist;
     const pools = data.pools;
 
+
+   
+
+
+    // const { output: _tvlList } = await sdk.api.abi.multiCall({
+    //     calls: pools.map((pool) => ({
+    //         target: pool.StakersPool,
+    //         // params: pool.PoolToken,
+    //     })),
+    //     abi: abi["valueAll"],
+    //     ethBlock,
+    // }
+    // );
+
+
     const { output: _tvlList } = await sdk.api.abi.multiCall({
         calls: pools.map((pool) => ({
             target: pool.StakersPool,
             // params: pool.PoolToken,
         })),
-        abi: abi["valueAll"],
+        abi: abi["getveINSURE"],
         ethBlock,
     }
     );
 
     console.log(_tvlList[0])
     
-    _tvlList[0].input.params[0] = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+    // _tvlList[0].input.params[0] = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+    _tvlList[0].input.params[0] = "0xd83AE04c9eD29d6D3E6Bf720C71bc7BeB424393E"
 
     console.log(_tvlList)
 
