@@ -72,11 +72,17 @@ async function sumTokens({ owners = [], balances = {}, includeTezos = false }) {
 
   return balances
 }
+
+function fetchPrice() {
+  return http.get('https://api.teztools.io/token/prices')
+}
+
+
 let pricePromise
 
 async function getPrices() {
-  if (!pricePromise) pricePromise = http.get('https://api.teztools.io/token/prices')
-  const { contracts: pricesArray} = await pricePromise
+  if (!pricePromise) pricePromise = fetchPrice()
+  const { contracts: pricesArray } = await pricePromise
   const priceObj = {}
   pricesArray.forEach(p => {
     let label = p.tokenAddress
@@ -97,12 +103,22 @@ async function convertBalances(balances) {
       return;
     }
     const { decimals, usdValue, } = prices[token]
+    if (!usdValue) return;
     totalUSD += (+balance / 10 ** decimals) * usdValue
   })
 
   response[usdtAddress] = totalUSD * 1e6
   if (balances.tezos) response.tezos = balances.tezos
   return response
+}
+
+async function getLPs(dex) {
+  if (!pricePromise) pricePromise = fetchPrice()
+  const { contracts } = await pricePromise
+  const LPs = {}
+  for (const { pairs } of contracts)
+    pairs.filter(p => p.dex === dex).forEach(p => LPs[p.address] = p)
+  return Object.keys(LPs)
 }
 
 module.exports = {
@@ -112,4 +128,5 @@ module.exports = {
   getTokenBalances,
   addDexPosition,
   resolveLPPosition,
+  getLPs,
 }
