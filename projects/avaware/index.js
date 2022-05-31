@@ -15,6 +15,7 @@ const malformedLPTokens = [
   '0x2af262DD90bd2D124E95Fc778D9c85aA03734Ff2',
   '0xE5403978fF8AD2B0a007F330f6235F7250F54a6C',
   '0x91934e4fA7E2D25DF2FA132a4aAFEFE929751224',
+  '0xac2d6DBE97de8C0363FfCeA77b701c8Ffc4D2F3b',
 ].map(token => token.toLowerCase())
 
 /*** Staking of native token AVE TVL Portion ***/
