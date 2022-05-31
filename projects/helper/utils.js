@@ -10,17 +10,12 @@ async function parallelAbiCall({ block, chain = 'ethereum', abi, getCallArgs = i
     .process(async item => {
       const input = getCallArgs(item)
       let response
-      let retry = 10
-
-      while (!response && retry-- > -1) {
-        try {
-          response = await sdk.api.abi.call({ abi, block, chain, ...input })
-        } catch (e) {
-          if (retry < 0)
-            throw e
-          console.log('Call failed, retying after 2 seconds')
-          await sleep(2000)
-        }
+      try {
+        response = await sdk.api.abi.call({ abi, block, chain, ...input })
+      } catch (e) {
+        console.log('Call failed, retying after 2 seconds')
+        await sleep(2000)
+        response = await sdk.api.abi.call({ abi, block, chain, ...input })
       }
       response.input = input
       response.success = true
