@@ -12,7 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@defillama/sdk": "^2.3.62",
+    "@defillama/sdk": "^2.3.66",
     "@polkadot/api": "^8.0.0",
     "@project-serum/anchor": "^0.18.2",
     "@solana/spl-token": "^0.2.0",
@@ -24,24 +24,19 @@
     "bignumber.js": "^9.0.1",
     "blakejs": "^1.2.1",
     "borsh": "^0.7.0",
+    "curve25519-js": "^0.0.4",
     "dotenv": "^8.6.0",
     "ethers": "^5.6.5",
     "graphql": "^15.5.0",
     "graphql-request": "^3.6.1",
     "hi-base32": "^0.5.1",
     "js-sha512": "^0.8.0",
-    "secretjs": "^0.17.5",
-    "tron-format-address": "^0.1.8",
-    "underscore": "^1.13.1"
+    "limiter": "2.1.0",
+    "miscreant": "^0.3.2",
+    "tron-format-address": "^0.1.8"
   },
   "overrides": {
     "ansi-regex": "5.0.1",
-    "@connext/nxtp-contracts": {
-      "async": "3.2.3"
-    },
-    "secretjs": {
-      "axios": "0.26.1"
-    },
     "mocha": {
       "nanoid": "3.3.1"
     },
@@ -49,9 +44,5 @@
       "nth-check": "2.0.1"
     }
   },
-  "description": "",
-  "devDependencies": {
-    "inquirer": "^8.2.4",
-    "inquirer-fuzzy-path": "^2.3.0"
-  }
+  "description": ""
 }

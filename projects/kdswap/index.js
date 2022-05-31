@@ -1,8 +1,6 @@
-const axios = require("axios");
 const { GraphQLClient, gql } = require('graphql-request')
 
 const retry = require('../helper/retry')
-const { toUSDTBalances } = require("../helper/balances");
 const { fetchLocal, mkMeta } = require("../helper/pact");
 
 const kdsExchangeContract = 'kdlaunch.kdswap-exchange';
@@ -96,26 +94,18 @@ const getPairList = async (url, grouper) => {
   }
 };
 
-const fetchKdaPrice = async () => {
-  const res = await axios.get(
-    "https://api.coingecko.com/api/v3/simple/price?ids=kadena&vs_currencies=usd"
-  );
-
-  return res.data.kadena.usd;
-};
-
 const calculateKdaTotal = (pairList) => pairList.reduce((amount, pair) => amount += pair.reserves[0], 0)
 
 async function fetch() {
   const pairList = await getPairList(graphQLUrls['kadena'], 'id');
-  const kdaPrice = await fetchKdaPrice();
   const kdaTotal = calculateKdaTotal(pairList);
 
   /*
    * value of each pool taken to be twice the value of its KDA
    */
-  const tvl = 2 * kdaPrice * kdaTotal;
-  return toUSDTBalances(tvl);
+  return {
+    kadena: 2 * kdaTotal
+  };
 }
 
 module.exports = {

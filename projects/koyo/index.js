@@ -17,6 +17,7 @@ const DATA = {
           addresss: ["0x559dBda9Eb1E02c0235E245D9B175eb8DcC08398"],
           tokens: [
             ["0xa18bF3994C0Cc6E3b63ac420308E5383f53120D7", false], // BOBA(Boba)
+            ["0x7562F525106F5d54E891e005867Bf489B5988CD9", false], // FRAX(Boba)
           ],
         },
         swaps: Object.entries(pools.data.data)
@@ -53,7 +54,9 @@ const chainTVL = (chain) => {
 
     await sumTokensAndLPsSharedOwners(
       balances,
-      data.swaps.flatMap((swap) => swap.tokens).map((token) => [token, false]),
+      [...new Set(data.swaps.flatMap((swap) => swap.tokens)).values()].map(
+        (token) => [token, false]
+      ),
       data.swaps.map((swap) => swap.address),
       block,
       chain,

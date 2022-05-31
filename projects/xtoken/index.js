@@ -55,7 +55,7 @@ async function tvl(timestamp, block) {
     })
   ).output
     .map((r) => r.output)
-    .reduce((a, b) => a + parseFloat(b), 0);
+    .reduce((a, b) => a + +b, 0);
   sdk.util.sumSingleBalance(balances, aaveAddr, xaaveTvlRaw);
 
   const xu3lpTvlRaw = (
@@ -66,7 +66,7 @@ async function tvl(timestamp, block) {
     })
   ).output
     .map((r) => r.output)
-    .reduce((a, b) => a + parseFloat(b), 0);
+    .reduce((a, b) => a + +b, 0);
   sdk.util.sumSingleBalance(balances, usdcAddr, xu3lpTvlRaw / 10 ** 12);
 
   const xu3lpdTvlRaw = (
@@ -95,7 +95,7 @@ async function tvl(timestamp, block) {
     })
   ).output
     .map((r) => r.output)
-    .reduce((a, b) => a + parseFloat(b), 0);
+    .reduce((a, b) => a + +b, 0);
   sdk.util.sumSingleBalance(balances, inchAddr, xinchTvlRaw);
 
   const xbntaStakedRaw = (
@@ -131,7 +131,7 @@ async function tvl(timestamp, block) {
     })
   ).output
     .map((r) => r.output)
-    .reduce((a, b) => a + parseFloat(b), 0);
+    .reduce((a, b) => a + +b, 0);
   sdk.util.sumSingleBalance(balances, kncAddr, xkncTvlRaw);
 
   const xalphaaTvlRaw = (
@@ -180,53 +180,32 @@ async function tvl(timestamp, block) {
       xsnxaSusdRaw
   );
 
-  let terminalMainnetTvl = await fetchMainnet();
-  sdk.util.sumSingleBalance(
-      balances,
-      usdtAddress,
-      terminalMainnetTvl
-  );
+  let terminalMainnetTvl = await terminal.getData("mainnet");
+  Object.keys(terminalMainnetTvl).forEach(token => sdk.util.sumSingleBalance(
+    balances,
+    token,
+    terminalMainnetTvl[token]
+))
 
   return balances;
 };
 
-async function fetchMainnet() {
-  let poolTotalTVL = await terminal.getData("mainnet");
-  return poolTotalTVL[usdtAddress];
-}
-
 async function fetchOptimism() {
-  return await terminal.getData("optimism");
+  return terminal.getData("optimism");
 }
 
 async function fetchArbitrum() {
-  return await terminal.getData("arbitrum");
+  return terminal.getData("arbitrum");
 }
 
 async function fetchPolygon() {
-  return await terminal.getData("polygon");
-}
-
-async function fetchMainnetPool2() {
-  let pool2TotalTVL = await terminal.getTokenData("mainnet", xtkAddress);
-  return pool2TotalTVL;
-}
-
-async function pool2() {
-  let balance = {};
-  let terminalXTKTvl = await fetchMainnetPool2();
-  sdk.util.sumSingleBalance(
-      balance,
-      usdtAddress,
-      terminalXTKTvl ? terminalXTKTvl[usdtAddress] : 0
-  );
-  return balance;
+  return terminal.getData("polygon");
 }
 
 module.exports = {
+  timetravel: false,
   ethereum:{
     tvl,
-    pool2
   },
   arbitrum: {
     tvl: fetchArbitrum,
