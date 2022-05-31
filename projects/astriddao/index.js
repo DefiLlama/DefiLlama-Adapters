@@ -29,6 +29,25 @@ const COLLATERALS = {
   }
 }
 
+const BAI_TOKEN_ADDRESS = "0x733ebcC6DF85f8266349DEFD0980f8Ced9B45f35"
+const STAKES = {
+  WASTAR: {
+    contracts: {
+      stabilityPool: "0x7e3D1e75C8deef26d659B2fb7b7E436ab8Ea35d9"
+    }
+  },
+  BUSD: {
+    contracts: {
+      stabilityPool: "0x2D95D9191F12a17D61B3a1904581DceFd2C6e3eD"
+    }
+  },
+  DAI: {
+    contracts: {
+      stabilityPool: "0xA5Bb226e06732005Cf6053429B8F6d607A8A530a"
+    }
+  }
+}
+
 const BRIDGE_TOKEN_MAPPINGS = {}
 for (const collateralInfo of Object.values(COLLATERALS)) {
   if (collateralInfo.bridgeTokenMapping) {
@@ -55,6 +74,10 @@ async function tvl(ts, _block, chainBlocks ) {
     const tokensAndOwners = Object.values(collateralInfo.contracts).map(owner => [collateralInfo.tokenAddress, owner])
     await sumTokens(balances, tokensAndOwners, block, chain)
   }
+  for (const stakeInfo of Object.values(STAKES)) {
+    const tokensAndOwners = Object.values(stakeInfo.contracts).map(owner => [BAI_TOKEN_ADDRESS, owner])
+    await sumTokens(balances, tokensAndOwners, block, chain)
+  }
   balances = translateBalancesForBridgeToken(balances)
   ;(await getFixBalances(chain))(balances)
   return balances
@@ -63,7 +86,7 @@ async function tvl(ts, _block, chainBlocks ) {
 module.exports = {
   timetravel: true,
   start: 915830,
-  methodology: "Total locked collateral assets (in ERC-20 form) in ActivePool and DefaultPool",
+  methodology: "Total locked collateral assets (in ERC-20 form) in ActivePool and DefaultPool, plus total staked BAI in StabilityPool",
   astar: {
     tvl,
   },
