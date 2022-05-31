@@ -16,8 +16,7 @@ const MoonriverStableSwapContractAddress = [
   ];
 
 const MoonbeamStableSwapContractAddress = [
-    '0x435a35Fc175be0ba097A7bF43128C020EC5bb151', // 4pool
-    '0x944Af4Fb58beDBcE86FB533Bd6DDc49C0BcA6793' // mad3pool/4pool
+    '0x68bed2c54Fd0e6Eeb70cFA05723EAE7c06805EC5', // 4pool
   ];
 
 module.exports = {
