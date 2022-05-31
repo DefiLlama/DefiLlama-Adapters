@@ -1,15 +1,10 @@
+const constants = require("./constants");
 const utils = require("../helper/utils");
 const { chainJoinExports, chainTypeExports } = require("./utils");
 const { getBlock } = require("../helper/getBlock");
 const { staking } = require("../helper/staking");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const { transformBobaAddress } = require("../helper/portedTokens");
-
-const BOBA_MAINNET_KYO = "0x618CC6549ddf12de637d46CDDadaFC0C2951131C";
-const BOBA_MAINNET_BOBA = "0xa18bF3994C0Cc6E3b63ac420308E5383f53120D7";
-const BOBA_MAINNET_FRAX = "0x7562F525106F5d54E891e005867Bf489B5988CD9";
-
-const BOBA_MAINNET_FraxKyo = "0xde7C350fA84B7fe792bfAA241303aeF04283c9d2";
 
 const DATA = {
   boba: async () => {
@@ -22,16 +17,16 @@ const DATA = {
       bobaTransform,
       {
         treasury: {
-          addresss: ["0x559dBda9Eb1E02c0235E245D9B175eb8DcC08398"],
+          addresss: [constants.addresses.boba.treasury],
           tokens: [
-            [BOBA_MAINNET_BOBA, false], // BOBA(Boba)
-            [BOBA_MAINNET_FRAX, false], // FRAX(Boba)
-            [BOBA_MAINNET_FraxKyo, true], // FRAX-KYO(Boba, OolongSwap)
+            [constants.addresses.boba.BOBA, false], // BOBA(Boba)
+            [constants.addresses.boba.FRAX, false], // FRAX(Boba)
+            [constants.addresses.boba.FRAX_KYO, true], // FRAX-KYO(Boba, OolongSwap)
           ],
         },
         staking: {
-          address: "0x80aa195200f2EC0f3A22f8874515bd97199bB0ec",
-          token: BOBA_MAINNET_KYO,
+          address: constants.addresses.boba.staking,
+          token: constants.addresses.boba.KYO,
         },
         swaps: Object.entries(pools.data.data)
           .filter(([k]) => k !== "generatedTime")
