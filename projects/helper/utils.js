@@ -12,8 +12,7 @@ async function parallelAbiCall({ block, chain = 'ethereum', abi, getCallArgs = i
       let response
       let retry = 6
 
-      while (!response) {
-        retry--
+      while (!response && retry-- > -1) {
         try {
           response = await sdk.api.abi.call({ abi, block, chain, ...input })
         } catch (e) {
