@@ -4,7 +4,7 @@ const { staking } = require("../helper/staking");
 const { toUSDTBalances } = require("../helper/balances");
 
 const account = "0x0000000000000000000000000000000000000000";
-const stats = "0xd1bc52B30b1031a9283Cc9C84575Fc3837A098F5";
+const stats = "0x36C6FBA304009a036BaaE1a24a570B450Ae14a5C";
 const token = "0x4148d2Ce7816F0AE378d98b40eB3A7211E1fcF0D";
 const veToken = "0xdf7C547f332351A86DB0D89a89799A7aB4eC9dEB";
 
