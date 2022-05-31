@@ -21,6 +21,15 @@ const USD2_YUSD_LP = "0x7716307350c0819eD05C3e7f6c478b27CAED5361";
 // sAVAX - WAVAX
 const WAVAX_LP = "0xC73eeD4494382093C6a7C284426A9a00f6C79939";
 const SAVAX_LP = "0xA2A7EE49750Ff12bb60b407da2531dB3c50A1789";
+// FACTORY: USDC - TSD
+const FACTORY_USDC_TSD_LP = "0x979702f708dd794A0e5E616E89C1656a2C55d681";
+const FACTORY_TSD_LP = "0x027A24Fa0168DA4fC7AF9Bf5331D42692889AFaa";
+// FACTORY: USDC - H2O
+const FACTORY_USDC_H2O_LP = "0xd78d5f6A5bF62a88212203077D1A28F812307145";
+const FACTORY_H2O_LP = "0x4f734D89531b6c9A1242C196297316E928AEeFBa";
+// FACTORY: USDC - MONEY
+const FACTORY_USDC_MONEY_LP = "0x551C259Bf4D88edFdAbb04179342a73dAa759583";
+const FACTORY_MONEY_LP = "0xE08947eE864Af325D9F98743B3b905875Ae0Ec99";
 /**
  * token addresses
  */
@@ -35,6 +44,9 @@ const FRAX = "0xD24C2Ad096400B6FBcd2ad8B24E7acBc21A1da64";
 const WAVAX = "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7";
 const SAVAX = "0x2b2C81e08f1Af8835a78Bb2A90AE924ACE0eA4bE";
 const YUSD = "0x111111111111ed1D73f860F57b2798b683f2d325";
+const H2O = "0x026187BdbC6b751003517bcb30Ac7817D5B766f8";
+const TSD = "0x4fbf0429599460d327bd5f55625e30e4fc066095";
+const MONEY = "0x0f577433bf59560ef2a79c124e9ff99fca258948";
 
 module.exports = {
   DAI: {
@@ -57,6 +69,9 @@ module.exports = {
           USD2_USDC_UST_LP,
           USD2_USDC_MIM_LP,
           USD2_USDC_YUSD_LP,
+          FACTORY_USDC_H2O_LP,
+          FACTORY_USDC_MONEY_LP,
+          FACTORY_USDC_TSD_LP,
         ],
       },
     ],
@@ -134,6 +149,33 @@ module.exports = {
       {
         token: YUSD,
         lpTokens: [USD2_YUSD_LP],
+      },
+    ],
+  },
+  TSD: {
+    id: "teddy-dollar",
+    addresses: [
+      {
+        token: TSD,
+        lpTokens: [FACTORY_TSD_LP],
+      },
+    ],
+  },
+  MONEY: {
+    id: "moremoney-usd",
+    addresses: [
+      {
+        token: MONEY,
+        lpTokens: [FACTORY_MONEY_LP],
+      },
+    ],
+  },
+  H2O: {
+    id: "defrost-finance-h2o",
+    addresses: [
+      {
+        token: H2O,
+        lpTokens: [FACTORY_H2O_LP],
       },
     ],
   },
