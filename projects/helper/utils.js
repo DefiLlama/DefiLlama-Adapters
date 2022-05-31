@@ -10,7 +10,7 @@ async function parallelAbiCall({ block, chain = 'ethereum', abi, getCallArgs = i
     .process(async item => {
       const input = getCallArgs(item)
       let response
-      let retry = 6
+      let retry = 10
 
       while (!response && retry-- > -1) {
         try {
