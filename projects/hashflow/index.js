@@ -5,7 +5,6 @@ const { getChainTransform } = require('../helper/portedTokens')
 const { chainExports } = require('../helper/exports');
 const { sumTokens } = require("../helper/unwrapLPs");
 const { getBlock } = require('../helper/getBlock');
-const fs = require('fs')
 
 const http_api_url = 'https://api.hashflow.com/internal/pool/getPools';
 const null_addr = '0x0000000000000000000000000000000000000000';
@@ -23,17 +22,9 @@ function chainTvl(chain) {
     const block = await getBlock(timestamp, chain, chainBlocks);
     const transformAddress = await getChainTransform(chain);
     const chainId = chainIds[chain]
-    const chainFile = `${__dirname}/${chainId}.json`
     const url = `${http_api_url}?networkId=${chainId}&lp=${null_addr}`;
-    let pools_response = require(chainFile)
+    let pools_response = (await retry(async () => await axios.get(url))).data
 
-    // try {
-    //   pools_response = (await retry(async () => await axios.get(url))).data
-    // } catch (e) {
-    //   console.log('Unable to fetch pools from server, using backup data')
-    //   pools_response
-    // }
-    // fs.writeFileSync(chainFile, JSON.stringify(pools_response, null, 2))
     const pools = pools_response.pools.map(pool => 
       ({
         pool: pool.pool, 
@@ -44,25 +35,21 @@ function chainTvl(chain) {
     const tokensAndOwners = pools.map(p => p.tokens.map(t => [t, p.pool]))
       .reduce((a, b) => a.concat(b), []) // flatten
       .filter(x => x[0] !== null_addr);  // remove 0x000 from tokens
-    await sumTokens(balances, tokensAndOwners, block, chain, transformAddress);
 
-    for (const pool of pools) {
-      const ethBalPool = (
-        await sdk.api.eth.getBalance({
-          target: pool.pool,
-          block: ethBlock,
-        })
-      ).output;
+    const poolBalances = await sdk.api.eth.getBalances({
+      targets: pools.map(i => i.pool),
+      block,
+      chain,
+    })
+
+    poolBalances.output.forEach(({ balance }) => sdk.util.sumSingleBalance(
+      balances,
+      transformAddress("0x0000000000000000000000000000000000000000"),
+      balance
+    ))
     
-      sdk.util.sumSingleBalance(
-        balances,
-        transformAddress("0x0000000000000000000000000000000000000000"),
-        ethBalPool
-      );
-    }
-
-    return balances
-  };
+    return sumTokens(balances, tokensAndOwners, block, chain, transformAddress);
+  }
 }
 
 module.exports = chainExports(chainTvl, [

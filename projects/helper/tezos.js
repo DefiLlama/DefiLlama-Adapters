@@ -2,10 +2,12 @@ const http = require('./http')
 const sdk = require('@defillama/sdk')
 const { getChainTransform } = require('./portedTokens')
 const { default: BigNumber } = require('bignumber.js')
+const { usdtAddress, toUSDTBalances } = require('../helper/balances')
+const { PromisePool } = require('@supercharge/promise-pool')
 
 const RPC_ENDPOINT = 'https://api.tzkt.io'
 
-async function getTokenBalances(account) {
+async function getTokenBalances(account, includeTezosBalance = true) {
   const response = await http.get(`${RPC_ENDPOINT}/v1/tokens/balances?account=${account}&sort.desc=balance&offset=0&limit=40&select=balance,token.id%20as%20id,token.contract%20as%20contract,token.tokenId%20as%20token_id`)
   const balances = response.reduce((agg, item) => {
     let token = item.contract.address
@@ -14,8 +16,10 @@ async function getTokenBalances(account) {
     return agg
   }, {})
 
-  balances['tezos'] = await getTezosBalance(account)
-  if (balances.tezos === 0)  delete balances.tezos
+  if (includeTezosBalance)
+    balances['tezos'] = await getTezosBalance(account)
+
+  if (balances.tezos === 0) delete balances.tezos
   return balances
 }
 
@@ -42,10 +46,10 @@ async function resolveLPPosition({ balances = {}, owner, lpToken, transformAddre
   const data = await getStorage(lpToken)
   const admin = data.admin || data.exchangeAddress
   const total_supply = data.total_supply || data.totalSupply
-  
+
   if (ignoreList.includes(admin))
     return balances
-  
+
   const tokenBalances = await getTokenBalances(admin)
   const ownershipRatio = BigNumber(LPBalances[lpToken]).dividedBy(total_supply)
   Object.keys(tokenBalances).forEach(token => {
@@ -55,8 +59,56 @@ async function resolveLPPosition({ balances = {}, owner, lpToken, transformAddre
   return balances
 }
 
+async function sumTokens({ owners = [], balances = {}, includeTezos = false }) {
+  const { errors } = await PromisePool.withConcurrency(10)
+    .for(owners)
+    .process(async item => {
+      const balance = await getTokenBalances(item, includeTezos)
+      Object.entries(balance).forEach(([token, bal]) => sdk.util.sumSingleBalance(balances, token, bal))
+    })
+
+  if (errors && errors.length)
+    throw errors[0]
+
+  return balances
+}
+let pricePromise
+
+async function getPrices() {
+  if (!pricePromise) pricePromise = http.get('https://api.teztools.io/token/prices')
+  const { contracts: pricesArray} = await pricePromise
+  const priceObj = {}
+  pricesArray.forEach(p => {
+    let label = p.tokenAddress
+    if (p.tokenId !== 0) label += '-' + p.tokenId
+    priceObj[label] = p
+  })
+  return priceObj
+}
+
+async function convertBalances(balances) {
+  let totalUSD = 0
+  const prices = await getPrices()
+  const response = {}
+  Object.entries(balances).forEach(([token, balance]) => {
+    if (token === 'tezos') return;
+    if (!prices[token]) {
+      response[token] = balance
+      return;
+    }
+    const { decimals, usdValue, } = prices[token]
+    totalUSD += (+balance / 10 ** decimals) * usdValue
+  })
+
+  response[usdtAddress] = totalUSD * 1e6
+  if (balances.tezos) response.tezos = balances.tezos
+  return response
+}
+
 module.exports = {
   RPC_ENDPOINT,
+  sumTokens,
+  convertBalances,
   getTokenBalances,
   addDexPosition,
   resolveLPPosition,

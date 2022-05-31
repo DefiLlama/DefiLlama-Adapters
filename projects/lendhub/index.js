@@ -1,4 +1,4 @@
-const _ = require('underscore');
+
 const sdk = require('@defillama/sdk');
 const cAbis = require('./abi.json');
 const { unwrapUniswapLPs } = require('../helper/unwrapLPs');
@@ -78,7 +78,7 @@ return async () => {
     let markets = await getMarkets();
     let lpPositions = [];
     let cashInfo = await sdk.api.abi.multiCall({
-        calls: _.map(markets, (market) => ({
+        calls: markets.map((market) => ({
             target: market.cToken,
         })),
         chain: chain,
@@ -86,14 +86,14 @@ return async () => {
     });
     
     const symbols = await sdk.api.abi.multiCall({
-        calls: _.map(markets, (market) => ({
+        calls: markets.map((market) => ({
             target: market.underlying.split(':')[1],
         })),
         chain: chain,
         abi: "erc20:symbol",
     });
-    _.each(markets, async (market, idx) => {
-        const getCash = _.find(cashInfo.output, (result) => result.input.target === market.cToken);
+    markets.forEach(async (market, idx) => {
+        const getCash = cashInfo.output.find((result) => result.input.target === market.cToken);
             if (getCash.output === null) {
                 throw new Error("failed")
             }

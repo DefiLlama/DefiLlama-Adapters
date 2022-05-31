@@ -2,11 +2,14 @@
 
 const axios = require('axios')
 const { getApplicationAddress } = require('./algorandUtils/address')
+const { RateLimiter } = require("limiter");
 
 const axiosObj = axios.create({
   baseURL: 'https://algoindexer.algoexplorerapi.io',
   timeout: 300000,
 })
+
+const indexerLimiter = new RateLimiter({ tokensPerInterval: 10, interval: "second" });
 
 async function lookupApplications(appId) {
   return (await axiosObj.get(`/v2/applications/${appId}`)).data
@@ -15,8 +18,8 @@ async function lookupApplications(appId) {
 async function lookupAccountByID(appId) {
   return (await axiosObj.get(`/v2/accounts/${appId}`)).data
 }
+
 async function searchAccounts({ appId, limit = 1000, nexttoken, }) {
-  const a = getApplicationAddress(appId)
   const response = (await axiosObj.get('/v2/accounts', {
     params: {
       'application-id': appId,
@@ -27,11 +30,14 @@ async function searchAccounts({ appId, limit = 1000, nexttoken, }) {
   return response.data
 }
 
-
+const withLimiter = (fn, tokensToRemove = 1) => async (...args) => {
+  await indexerLimiter.removeTokens(tokensToRemove);
+  return fn(...args);
+}
 
 module.exports = {
-  lookupApplications,
-  lookupAccountByID,
   getApplicationAddress,
-  searchAccounts,
+  lookupApplications: withLimiter(lookupApplications),
+  lookupAccountByID: withLimiter(lookupAccountByID),
+  searchAccounts: withLimiter(searchAccounts),
 }
