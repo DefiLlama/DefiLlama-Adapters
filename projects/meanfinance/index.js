@@ -11,7 +11,7 @@ const VERSIONS = {
   optimism: [
     { contract: STABLE_VERSION, subgraph: 'https://api.thegraph.com/subgraphs/name/mean-finance/dca-v2-optimism' },
     { contract: VULN_VERSION, subgraph: 'https://api.thegraph.com/subgraphs/name/mean-finance/dca-v2-vulnerable-optimism' },
-    { contract: BETA_VERSION, subgraph: 'https://api.thegraph.com/subgraphs/name/mean-finance/dca-v2-optimism-beta', ignore: ['0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'] },
+    { contract: BETA_VERSION, subgraph: 'https://api.thegraph.com/subgraphs/name/mean-finance/dca-v2-optimism-beta' },
   ],
   polygon: [ 
     { contract: STABLE_VERSION, subgraph: 'https://api.thegraph.com/subgraphs/name/mean-finance/dca-v2-polygon' },
@@ -24,16 +24,15 @@ const VERSIONS = {
 
 const query = gql`
   query tokens {
-    tokens {
+    tokens (where: { id_not: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" }) {
       id
     }
   }`
 ;
 
-const getTokensInChain = async (subgraph, ignore) => {
+const getTokensInChain = async (subgraph) => {
   const result = await request(subgraph, query);
   return result.tokens.map(({ id }) => id)
-    .filter(address => !ignore || !ignore.includes(address))
 };
 
 function getV2TvlObject(chain) {
@@ -51,8 +50,8 @@ async function getV2TVL(chain, block) {
 }
 
 async function getV2TVLForVersion(balances, chain, version, block) {
-  const { contract, subgraph, ignore } = version
-  const tokens = await getTokensInChain(subgraph, ignore)
+  const { contract, subgraph } = version
+  const tokens = await getTokensInChain(subgraph)
   const chainTransform = await getChainTransform(chain)
   for (const token of tokens) {
     const balance = await sdk.api.erc20.balanceOf({
