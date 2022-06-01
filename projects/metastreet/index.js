@@ -57,7 +57,6 @@ async function getTVL(balances, block, isBorrowed) {
         } else {
             vaultBalance = 
             BigNumber(vaultBalanceState[i].totalCashBalance).plus(
-            BigNumber(vaultBalanceState[i].totalLoanBalance)).plus(
             BigNumber(vaultBalanceState[i].totalAdminFeeBalance)).minus(
             BigNumber(vaultBalanceState[i].totalWithdrawalBalance)).toFixed();
         }
