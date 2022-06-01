@@ -2,65 +2,54 @@ const sdk = require('@defillama/sdk');
 const abi = require("./abi.json");
 const BigNumber = require('bignumber.js')
 
-// constants
+// Constants
 const METASTREET_VAULT_REGISTRY = '0x07AB40311B992c8C75c4813388eDf95420e8f80A';
 
-// ask vault registry for array of all vaults + currency token
+// Gets the array of all MetaStreet Vaults registered in VaultRegistry
+// and the currency token the vault balances are denoted in
 async function getAllVaults(block) {
-    const vaults = [];
-    allVaults = (await sdk.api.abi.call({
+    const vaultList = (await sdk.api.abi.call({
         target: METASTREET_VAULT_REGISTRY,
         abi: abi.getVaultList,
         block,
-        chain: 'ethereum'
     })).output;
 
-    await (
-        Promise.all(allVaults.map(async (vault) => {
-            //
-            for (let address of allVaults) {
-                let currencyToken = await getVaultCurrency(block, vault);
-                vaults.push({address, currencyToken});
-            }
-        }))
-    );
+    // 
+    const vaults = (await sdk.api.abi.multiCall({
+        abi: abi.currencyToken,
+        calls: vaultList.map((vault) => ({
+            target: vault
+        })),
+        block
+    })).output.map((response) => ({
+        address: response.input.target, 
+        currencyToken: response.output
+    }));
 
     return vaults;
 }
 
-async function getVaultCurrency(block, vault) {
-    return (await sdk.api.abi.call({
-      target: vault,
-      abi: abi.currencyToken,
-      block,
-    })).output;
-}
-
+// Calculates the TVL or borrowed funds across all MetaStreet vaults
 async function getTVL(balances, block, isBorrowed) {
-    let vaults = await getAllVaults(block);
+    const vaults = await getAllVaults(block);
 
-    // query vault balance state
-    // vault tvl = cash reserves + admin fee - pending withdrawals
-    // vault borrows = loan balance
-    const vaultBalanceState = (await sdk.api.abi.multiCall({
+    // Vault TVL = cash reserves = vault balance - admin fee - pending withdrawals
+    // TODO: Could rewrite using the ERC20 balance and subtracting admin fees/
+    // withdrawals to slightly reduce reliance on vault's internal state keeping
+    // TODO: Could incorporate NFT collateral value into TVL
+    const vaultBalances = (await sdk.api.abi.multiCall({
         abi: abi.balanceState,
         calls: vaults.map((vault) => ({
             target: vault.address
         })),
         block
-    })).output.map((response) => response.output);
-
+    })).output.map((response) => (
+        // If borrows, return loan balance; otherwise, return cash balance
+        isBorrowed ? response.output.totalLoanBalance : response.output.totalCashBalance
+    ));
+    
     for (let i = 0; i < vaults.length; i++) {
-        let vaultBalance;
-        if (isBorrowed) {
-            vaultBalance = BigNumber(vaultBalanceState[i].totalLoanBalance).toFixed();
-        } else {
-            vaultBalance = 
-            BigNumber(vaultBalanceState[i].totalCashBalance).plus(
-            BigNumber(vaultBalanceState[i].totalAdminFeeBalance)).minus(
-            BigNumber(vaultBalanceState[i].totalWithdrawalBalance)).toFixed();
-        }
-        sdk.util.sumSingleBalance(balances, vaults[i].currencyToken, vaultBalance);
+        sdk.util.sumSingleBalance(balances, vaults[i].currencyToken, vaultBalances[i]);
     };
 
     return balances;
@@ -83,5 +72,8 @@ module.exports = {
         tvl,
         borrowed,
     },
-    methodology: "",
+    timetravel: true,
+    misrepresentedTokens: false,
+    methodology: 'TVL is calculated by getting the totalCashBalance of each vault, which counts currency tokens deposited into contracts for earning yield but not NFT collateral tokens. Borrowed tokens are also not counted towards TVL.',
+    start: 14878205
 };
