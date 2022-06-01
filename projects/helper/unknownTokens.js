@@ -173,7 +173,7 @@ async function getTokenPrices({ block, chain = 'ethereum', coreAssets = [], blac
   }
 }
 
-function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitelist = [], factory, transformAddress, maxParallel, allowUndefinedBlock = true }) {
+function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitelist = [], factory, transformAddress, maxParallel, allowUndefinedBlock = true, updateBalancesFlag = false }) {
   return async (ts, _block, chainBlocks) => {
     let pairAddresses;
     const block = await getBlock(ts, chain, chainBlocks, allowUndefinedBlock)
@@ -185,14 +185,15 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
     let pairs
 
     if (!maxParallel) {
-      pairs = (await sdk.api.abi.multiCall({ abi: factoryAbi.allPairs, chain, calls: pairNums.map(num => ({ target: factory, params: [num] })), block })).output
+      pairs = (await sdk.api.abi.multiCall({ abi: factoryAbi.allPairs, chain, calls: pairNums.map(num => ({ target: factory, params: [num] })), block, requery: true })).output
       await requery(pairs, chain, block, factoryAbi.allPairs);
     } else
       pairs = await parallelAbiCall({ block, chain, abi: factoryAbi.allPairs, items: pairNums, maxParallel, getCallArgs: num => ({ params: [num], target: factory }) })
 
     pairAddresses = pairs.map(result => result.output.toLowerCase())
 
-    const { balances } = await getTokenPrices({ block, chain, coreAssets, blacklist, lps: pairAddresses, transformAddress, maxParallel, whitelist, allLps: true })
+    const { balances, updateBalances } = await getTokenPrices({ block, chain, coreAssets, blacklist, lps: pairAddresses, transformAddress, maxParallel, whitelist, allLps: true })
+    if (updateBalancesFlag) await updateBalances(balances)
     return balances
   }
 }

@@ -616,7 +616,7 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
     await resolveCrvTokens(balances, block, chain, transformAddress)
   }
 
-  if (['astar'].includes(chain)) {
+  if (['astar', 'harmony'].includes(chain)) {
     const fixBalances = await getFixBalances(chain)
     fixBalances(balances)
   }
@@ -885,8 +885,7 @@ async function unwrapTroves({ balances = {}, chain = 'ethereum', block, troves =
   const tokensAndOwners = []
 
   for (let i = 0; i < troves.length; i++) {
-    if (activePools[i].success && tokens[i].success)
-      tokensAndOwners.push([tokens[i].output, activePools[i].output])
+    tokensAndOwners.push([tokens[i].output, activePools[i].output])
   }
 
   await sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { resolveCrv: true, resolveLP: true, resolveYearn: true })

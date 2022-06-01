@@ -50,7 +50,7 @@ async function PairsVolumes() {
 
     const pairs = await Pairs();
     return new Promise((resolve, reject) => {
-        eachLimit(pairs, 3, async (contract) => {
+        eachLimit(pairs, 2, async (contract) => {
             const pair_info = (await queryClient.queryContractSmart(contract.address, "pair_info")).pair_info;
 
             const token1 = await TokenInfo(pair_info.pair.token_0.custom_token.contract_addr);
@@ -152,15 +152,17 @@ async function TVL() {
     const balances = {};
 
     const pairs_volumes = await PairsVolumes();
-    await Promise.all(pairs_volumes.map(async volume => {
-        if (utils.symbolsMap[volume.symbol]) await sdk.util.sumSingleBalance(balances, utils.symbolsMap[volume.symbol], volume.tokens);
-    }));
+    pairs_volumes.map(async volume => {
+        if (utils.symbolsMap[volume.symbol])
+            sdk.util.sumSingleBalance(balances, utils.symbolsMap[volume.symbol], volume.tokens);
+    });
 
     const lend_data = await Lend();
 
-    await Promise.all(lend_data.map(async volume => {
-        if (utils.symbolsMap[volume.symbol]) await sdk.util.sumSingleBalance(balances, utils.symbolsMap[volume.symbol], volume.tokens);
-    }));
+    lend_data.map(async volume => {
+        if (utils.symbolsMap[volume.symbol])
+            sdk.util.sumSingleBalance(balances, utils.symbolsMap[volume.symbol], volume.tokens);
+    });
 
     return balances;
 }
@@ -168,7 +170,8 @@ async function TVL() {
 async function Staked() {
     const balances = {};
     const staked_tokens = await StakedTokens();
-    if (staked_tokens) await sdk.util.sumSingleBalance(balances, "sienna", staked_tokens);
+    if (staked_tokens)
+        sdk.util.sumSingleBalance(balances, "sienna", staked_tokens);
     return balances;
 }
 
@@ -203,9 +206,10 @@ async function Borrowed() {
 
     const lend_data = await LendBorrowed();
 
-    await Promise.all(lend_data.map(async volume => {
-        if (utils.symbolsMap[volume.symbol]) await sdk.util.sumSingleBalance(balances, utils.symbolsMap[volume.symbol], volume.tokens);
-    }));
+    lend_data.map(async volume => {
+        if (utils.symbolsMap[volume.symbol])
+            sdk.util.sumSingleBalance(balances, utils.symbolsMap[volume.symbol], volume.tokens);
+    })
 
     return balances;
 }
@@ -219,4 +223,4 @@ module.exports = {
         staking: Staked,
         borrowed: Borrowed
     }
-};
+}

@@ -9,7 +9,7 @@ async function addRewardsEscrowTVL(balances, timestamp, chainBlocks, chain = "et
   const rewardsEscrowAddress = ADDRESSES[chain].rewardsEscrow
   const rewardToken = ADDRESSES[chain].pop
   const block = await getBlock(timestamp, chain, chainBlocks)
-  const rewardsEscrowBalance = (await sdk.api.abi.call({
+  let rewardsEscrowBalance = (await sdk.api.abi.call({
     abi: "erc20:balanceOf",
     target: rewardToken,
     params: [rewardsEscrowAddress],
