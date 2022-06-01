@@ -35,6 +35,7 @@ const {
   usdtAddress,
   xtkAddress
 } = require("./constants");
+const BigNumber = require('bignumber.js');
 const xu3lps = [
   xu3lpaAddr,
   xu3lpbAddr,
@@ -179,6 +180,8 @@ async function tvl(timestamp, block) {
       "0x57ab1ec28d129707052df4df418d58a2d46d5f51",
       xsnxaSusdRaw
   );
+
+  Object.keys(balances).forEach(key => balances[key] = BigNumber(balances[key]).toFixed(0))
 
   let terminalMainnetTvl = await terminal.getData("mainnet");
   Object.keys(terminalMainnetTvl).forEach(token => sdk.util.sumSingleBalance(

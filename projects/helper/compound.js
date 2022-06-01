@@ -187,7 +187,7 @@ async function getUnderlyingDecimalsMultiple(block, chain, tokens, cether) {
         });
 
         const failed = underlying.find(i => !i.success)
-        if (failed) throw new Error('Something failed: %s', failed.input.target)
+        if (failed) throw new Error('Something failed: ' + failed.input.target)
 
         const underlyingMapping = {}
         const decimalsCalls = underlying.map(({ output }) => ({ target: output }))
