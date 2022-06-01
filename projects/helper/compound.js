@@ -3,7 +3,7 @@ const sdk = require('@defillama/sdk');
 const abi = require('./abis/compound.json');
 const { getBlock } = require('./getBlock');
 const { unwrapUniswapLPs } = require('./unwrapLPs');
-const { fixHarmonyBalances, fixOasisBalances, transformMetisAddress, fixBscBalances} = require('./portedTokens');
+const { fixHarmonyBalances, fixOasisBalances, transformMetisAddress, fixBscBalances } = require('./portedTokens');
 const { usdtAddress } = require('./balances');
 const agoraAbi = require("./../agora/abi.json");
 // ask comptroller for all markets array
@@ -178,7 +178,7 @@ async function getUnderlyingDecimalsMultiple(block, chain, tokens, cether) {
     })
 
     try {
-        const underLyingCalls = otherTokens.map(t => ({ target: t}))
+        const underLyingCalls = otherTokens.map(t => ({ target: t }))
         const { output: underlying } = await sdk.api.abi.multiCall({
             calls: underLyingCalls,
             abi: abi['underlying'],
@@ -187,7 +187,7 @@ async function getUnderlyingDecimalsMultiple(block, chain, tokens, cether) {
         });
 
         const failed = underlying.find(i => !i.success)
-        if (failed)   throw new Error('Something failed: %s', failed.input.target)
+        if (failed) throw new Error('Something failed: %s', failed.input.target)
 
         const underlyingMapping = {}
         const decimalsCalls = underlying.map(({ output }) => ({ target: output }))
@@ -207,7 +207,7 @@ async function getUnderlyingDecimalsMultiple(block, chain, tokens, cether) {
 }
 
 async function getCashMultiple(block, chain, tokens, borrowed) {
-    const calls = tokens.map(t => ({ target: t}))
+    const calls = tokens.map(t => ({ target: t }))
     const { output: cash } = await sdk.api.abi.multiCall({
         calls,
         abi: borrowed ? abi.totalBorrows : abi['getCash'],
@@ -220,7 +220,7 @@ async function getCashMultiple(block, chain, tokens, borrowed) {
 }
 
 async function getUnderlyingPriceMultiple(block, chain, oracle, tokens, methodAbi) {
-    const calls = tokens.map(t => ({ params: [t]}))
+    const calls = tokens.map(t => ({ params: [t] }))
     const { output: underlyingPrice } = await sdk.api.abi.multiCall({
         target: oracle,
         abi: methodAbi,
@@ -237,16 +237,19 @@ async function getUnderlyingPriceMultiple(block, chain, oracle, tokens, methodAb
 function getCompoundUsdTvl(comptroller, chain, cether, borrowed, abis = {
     oracle: abi['oracle'],
     underlyingPrice: abi['getUnderlyingPrice']
-}) {
+}, {
+    blacklist =[]
+} = {}) {
     return async (timestamp, ethBlock, chainBlocks) => {
         const block = await getBlock(timestamp, chain, chainBlocks, true);
         let tvl = new BigNumber('0');
-
+        blacklist = blacklist.map(i => i.toLowerCase())
         let allMarkets = await getAllMarkets(block, chain, comptroller);
+        allMarkets = allMarkets.filter(token => !blacklist.includes(token.toLowerCase()))
         let oracle = await getOracle(block, chain, comptroller, abis.oracle);
-        const amounts  = await getCashMultiple(block, chain, allMarkets, borrowed)
-        const decimalsAll  = await getUnderlyingDecimalsMultiple(block, chain, allMarkets, cether)
-        const underlyingPrices  = await getUnderlyingPriceMultiple(block, chain, oracle, allMarkets, abis.underlyingPrice)
+        const amounts = await getCashMultiple(block, chain, allMarkets, borrowed)
+        const decimalsAll = await getUnderlyingDecimalsMultiple(block, chain, allMarkets, cether)
+        const underlyingPrices = await getUnderlyingPriceMultiple(block, chain, oracle, allMarkets, abis.underlyingPrice)
 
         allMarkets.forEach(token => {
             let amount = new BigNumber(amounts[token]);
@@ -291,33 +294,33 @@ function fullCoumpoundExports(comptroller, chain, cether, cetheEquivalent, trans
     }
 }
 
-function usdCompoundExports(comptroller, chain, cether, abis) {
+function usdCompoundExports(comptroller, chain, cether, abis, options = {}) {
     return {
-        tvl: getCompoundUsdTvl(comptroller, chain, cether, false, abis),
-        borrowed: getCompoundUsdTvl(comptroller, chain, cether, true, abis)
+        tvl: getCompoundUsdTvl(comptroller, chain, cether, false, abis, options,),
+        borrowed: getCompoundUsdTvl(comptroller, chain, cether, true, abis, options,)
     }
 }
 
 function compoundExportsWithDifferentBase(comptroller, chain, token) {
     const raw = usdCompoundExports(comptroller, chain)
     async function tvl(...params) {
-      const tvl = await raw.tvl(...params)
-      return {
-        [token]: Number(tvl[usdtAddress]) / 1e6
-      }
+        const tvl = await raw.tvl(...params)
+        return {
+            [token]: Number(tvl[usdtAddress]) / 1e6
+        }
     }
-  
+
     async function borrowed(...params) {
-      const tvl = await raw.borrowed(...params)
-      return {
-        [token]: Number(tvl[usdtAddress]) / 1e6
-      }
+        const tvl = await raw.borrowed(...params)
+        return {
+            [token]: Number(tvl[usdtAddress]) / 1e6
+        }
     }
     return {
-      tvl,
-      borrowed
+        tvl,
+        borrowed
     }
-  }
+}
 
 module.exports = {
     getCompoundV2Tvl,
