@@ -20,7 +20,7 @@ async function getData() {
 async function tvl() {
   const { btc_in_moc, btc_in_roc } = await getData()
   return {
-    'bitcoin': btc_in_moc + btc_in_roc
+    'rootstock': btc_in_moc + btc_in_roc
   }
 }
 
