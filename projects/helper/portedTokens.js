@@ -892,6 +892,14 @@ function fixTezosBalances(balances) {
     // 'KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW-1': { coingeckoId: 'youves-you-defi', decimals: 12, },  //uDEFI token - update gecko id here after adding in coin geckp
     'KT1Xobej4mc6XgEjDoJoHtTKgbD1ELMvcQuL': { coingeckoId: 'youves-you-governance', decimals: 12, },
     'KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW-2': { coingeckoId: 'wrapped-bitcoin', decimals: 12, }, // youves BTC
+    'KT1UsSfaXyqcjSVPeiD7U1bWgKy3taYN7NWY-0': { coingeckoId: 'ethereum', decimals: 18, }, // plenty bridge
+    'KT1UsSfaXyqcjSVPeiD7U1bWgKy3taYN7NWY-1': { coingeckoId: 'wrapped-bitcoin', decimals: 8, }, // plenty bridge
+    'KT1UsSfaXyqcjSVPeiD7U1bWgKy3taYN7NWY-2': { coingeckoId: 'usd-coin', decimals: 6, }, // plenty bridge
+    'KT1UsSfaXyqcjSVPeiD7U1bWgKy3taYN7NWY-3': { coingeckoId: 'tether', decimals: 6, }, // plenty bridge
+    'KT1UsSfaXyqcjSVPeiD7U1bWgKy3taYN7NWY-4': { coingeckoId: 'matic-network', decimals: 18, }, // plenty bridge
+    'KT1UsSfaXyqcjSVPeiD7U1bWgKy3taYN7NWY-5': { coingeckoId: 'chainlink', decimals: 18, }, // plenty bridge
+    'KT1UsSfaXyqcjSVPeiD7U1bWgKy3taYN7NWY-6': { coingeckoId: 'dai', decimals: 18, }, // plenty bridge
+    'KT1UsSfaXyqcjSVPeiD7U1bWgKy3taYN7NWY-7': { coingeckoId: 'binance-usd', decimals: 18, }, // plenty bridge
   }
 
   return fixBalances(balances, mapping)
