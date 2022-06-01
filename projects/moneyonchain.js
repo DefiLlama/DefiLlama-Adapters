@@ -9,27 +9,24 @@
 // Various API endpoints: https://api.moneyonchain.com/api/report/
 
 // stats from https://moneyonchain.com/stats/
-const retry = require('async-retry')
-const axios = require("axios");
-const BigNumber = require("bignumber.js");
-async function fetch() {
-  // Money on Chain measures TVL as MoC+RoC
-  let tvl_feed = await retry(async bail => await axios.get('https://api.moneyonchain.com/api/report/mocMainnet2/USDinSystem'))
-  let tvl_latest = tvl_feed.data.values[tvl_feed.data.values.length-1]
-  
-  //MoC (Money on Chain)
-  // console.log('%s', tvl_latest.MoC)
-  // let tvl = new BigNumber(tvl_latest.Total).toFixed(2);
-  
-  //RoC (Rif on Chain)
-  // console.log('%s', tvl_latest.RoC)
-  // let tvl = new BigNumber(tvl_latest.Total).toFixed(2);
-  
-  //Total
-  //console.log('%s', tvl_latest.Total)
-  let tvl = new BigNumber(tvl_latest.Total).toFixed(2);
-  return tvl;
+const { get } = require('./helper/http')
+let data
+
+async function getData() {
+  if (!data) data = get('https://api.moneyonchain.com/api/calculated/TVL')
+  return data
 }
+
+async function tvl() {
+  const { btc_in_moc, btc_in_roc } = await getData()
+  return {
+    'bitcoin': btc_in_moc + btc_in_roc
+  }
+}
+
 module.exports = {
-   fetch
+  timetravel: false,
+  rsk: {
+    tvl,
+  }
 }

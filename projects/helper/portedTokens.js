@@ -150,6 +150,7 @@ async function transformAvaxAddress() {
       // update below to binspirit when it lists on coingecko
       "0x7345a537a975d9ca588ee631befddfef34fd5e8f": "fantom:0x5Cc61A78F164885776AA610fb0FE1257df78E59B",
       '0x90a424754ad0d72cebd440faba18cdc362bfe70a': 'heco:0xcbd6cb9243d8e3381fea611ef023e17d1b7aedf0',  // BXH
+      '0x8965349fb649a33a30cbfda057d8ec2c48abe2a2': '0x6e9730ecffbed43fd876a264c982e254ef05a0de',  // Nord
     }
     return map[addr.toLowerCase()] || `avax:${addr}`
   }
