@@ -122,7 +122,7 @@ function isLP(symbol) {
     console.log('Blacklisting Zenlink LP because they have different abi for get reservers', symbol)
     return false
   }
-  return symbol.includes('LP') || symbol.includes('PGL') || symbol.includes('UNI-V2') || symbol === "PNDA-V2" || symbol.includes('GREEN-V2')
+  return symbol.includes('LP') || symbol.includes('PGL') || symbol.includes('UNI-V2') || symbol === "PNDA-V2" || symbol.includes('GREEN-V2') || symbol === 'HMDX'
 }
 
 function mergeExports(...exportsArray) {

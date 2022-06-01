@@ -29,6 +29,7 @@ async function getDexes() {
   text = text.split('\n')  //remove all comment lines 
   text = text.map(i => {
     if (i.includes('// ')) return i.slice(0, i.indexOf('// '))
+    if (i.includes(' //')) return i.slice(0, i.indexOf(' //'))
     return i
   }).join('\n')
   text = text.replace(/\,(\s*[\}\]])/g, '$1')  // remove trailing commas
