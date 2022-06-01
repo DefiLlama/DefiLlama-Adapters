@@ -42,6 +42,7 @@ const bscTvl = async (ts, _b, { bsc: block }) => {
     '0x03a3cDa7F684Db91536e5b36DC8e9077dC451081',
     '0xd43b226d365d8b22ba472afc2fa769b356eb5d47',
     '0x8d98a4e36ca048b8e4616564e5a8ebb78895ddff',
+    '0x1337ace33c2b3fc17d85f33dbd0ed73a896148b5',
   ].map(i => i.toLowerCase())
 
   const chain = 'bsc'
@@ -63,12 +64,10 @@ const bscTvl = async (ts, _b, { bsc: block }) => {
   })
 
   // note: since there are too many calls, we are splitting into smaller blocks
-  const chunkSize = 500
+  const chunkSize = 2000
   for (let i = 0; i < calls.length; i += chunkSize) {
     const miniBalances = {}
     const chunk = calls.slice(i, i + chunkSize)
-    console.log('working on calls from ', i, 'to ', i + chunkSize, 'out of ', calls.length)
-
     const { output } = await sdk.api.abi.multiCall({
       abi: abi.lockedToken, requery: true,
       calls: chunk, chain, block,
