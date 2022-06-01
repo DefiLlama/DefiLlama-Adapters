@@ -40,7 +40,7 @@ async function getTVL(balances, block, isBorrowed) {
     let vaults = await getAllVaults(block);
 
     // query vault balance state
-    // vault tvl = cash reserves + loan balance + admin fee - withdrawals
+    // vault tvl = cash reserves + admin fee - pending withdrawals
     // vault borrows = loan balance
     const vaultBalanceState = (await sdk.api.abi.multiCall({
         abi: abi.balanceState,
