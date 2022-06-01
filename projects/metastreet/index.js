@@ -6,32 +6,28 @@ const BigNumber = require('bignumber.js')
 const METASTREET_VAULT_REGISTRY = '0x07AB40311B992c8C75c4813388eDf95420e8f80A';
 
 // Gets the array of all MetaStreet Vaults registered in VaultRegistry
-// and the currency token the vault balances are denoted in
 async function getAllVaults(block) {
-    const vaultList = (await sdk.api.abi.call({
+    return (await sdk.api.abi.call({
         target: METASTREET_VAULT_REGISTRY,
         abi: abi.getVaultList,
         block,
     })).output;
-
-    // 
-    const vaults = (await sdk.api.abi.multiCall({
-        abi: abi.currencyToken,
-        calls: vaultList.map((vault) => ({
-            target: vault
-        })),
-        block
-    })).output.map((response) => ({
-        address: response.input.target, 
-        currencyToken: response.output
-    }));
-
-    return vaults;
 }
 
 // Calculates the TVL or borrowed funds across all MetaStreet vaults
 async function getTVL(balances, block, isBorrowed) {
     const vaults = await getAllVaults(block);
+
+    // Gets the currency token each vault's balance is denoted in
+    const vaultTokens = (await sdk.api.abi.multiCall({
+        abi: abi.currencyToken,
+        calls: vaults.map((vault) => ({
+            target: vault
+        })),
+        block
+    })).output.map((response) => (
+        response.output
+    ));
 
     // Vault TVL = cash reserves = vault balance - admin fee - pending withdrawals
     // TODO: Could rewrite using the ERC20 balance and subtracting admin fees/
@@ -40,7 +36,7 @@ async function getTVL(balances, block, isBorrowed) {
     const vaultBalances = (await sdk.api.abi.multiCall({
         abi: abi.balanceState,
         calls: vaults.map((vault) => ({
-            target: vault.address
+            target: vault
         })),
         block
     })).output.map((response) => (
@@ -48,8 +44,9 @@ async function getTVL(balances, block, isBorrowed) {
         isBorrowed ? response.output.totalLoanBalance : response.output.totalCashBalance
     ));
     
+    // Sum up token balances
     for (let i = 0; i < vaults.length; i++) {
-        sdk.util.sumSingleBalance(balances, vaults[i].currencyToken, vaultBalances[i]);
+        sdk.util.sumSingleBalance(balances, vaultTokens[i], vaultBalances[i]);
     };
 
     return balances;
