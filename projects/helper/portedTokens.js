@@ -265,16 +265,21 @@ async function transformOkexAddress() {
   };
 }
 
+
 async function transformHecoAddress() {
-  return (addr) => {
-    if (addr.toLowerCase() == "0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c") {
-      return "avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c";
-    }
-    if (addr.toLowerCase() == "0x0000000000000000000000000000000000000000" || addr.toLowerCase() == "0xhecozzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz") {
-      return "0x6f259637dcd74c767781e37bc6133cd6a68aa161";
-    }
-    return `heco:${addr}`;
-  };
+  const mapping = {
+    '0xb6f4c418514dd4680f76d5caa3bb42db4a893acb': 'bsc:0x250632378e573c6be1ac2f97fcdf00515d0aa91b',
+    '0x0000000000000000000000000000000000000000': '0x6f259637dcd74c767781e37bc6133cd6a68aa161',
+    '0xhecozzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz': '0x6f259637dcd74c767781e37bc6133cd6a68aa161',
+    '0x5545153ccfca01fbd7dd11c0b23ba694d9509a6f': '0x6f259637dcd74c767781e37bc6133cd6a68aa161',
+    '0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c': 'avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c',
+    '0x3D760a45D0887DFD89A2F5385a236B29Cb46ED2a': '0x6b175474e89094c44da98b954eedeac495271d0f',
+    '0x9362Bbef4B8313A8Aa9f0c9808B80577Aa26B73B': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+    '0xCe0A5CA134fb59402B723412994B30E02f083842': '0xc00e94cb662c3520282e6f5717214004a7f26888',
+    '0x1Ee8382bE3007Bd9249a89f636506284DdEf6Cc0': '0x35a532d376ffd9a705d0bb319532837337a398e7',
+  }
+  
+  return transformChainAddress(mapping, 'heco', { skipUnmapped: false })
 }
 
 async function transformHooAddress() {
