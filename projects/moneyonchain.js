@@ -9,18 +9,18 @@
 // Various API endpoints: https://api.moneyonchain.com/api/report/
 
 // stats from https://moneyonchain.com/stats/
-const { get } = require('./helper/http')
-let data
+const sdk = require('@defillama/sdk')
 
-async function getData() {
-  if (!data) data = get('https://api.moneyonchain.com/api/calculated/TVL')
-  return data
-}
-
-async function tvl() {
-  const { btc_in_moc, btc_in_roc } = await getData()
+async function tvl(_, _b, { rsk: block }) {
+  const docCollateral = '0xf773b590af754d597770937fa8ea7abdf2668370'
+  const { output } = await sdk.api.eth.getBalances({
+    targets: [docCollateral],
+    chain: 'rsk', block,
+  });
+  let total = 0
+  output.forEach(i => total += i.balance/1e18)
   return {
-    'rootstock': btc_in_moc + btc_in_roc
+    'rootstock': total
   }
 }
 
