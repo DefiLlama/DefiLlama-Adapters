@@ -1,19 +1,5 @@
 const { getUniTVL } = require('./helper/unknownTokens')
 
-const ethers = require("ethers");
-const { config } = require("@defillama/sdk/build/api")
-
-config.setProvider(
-  "energi",
-  new ethers.providers.StaticJsonRpcProvider(
-    "https://nodeapi.energi.network",
-    {
-      name: "energi",
-      chainId: 39797,
-    }
-  )
-);
-
 module.exports = {
   energi: {
     tvl: getUniTVL({

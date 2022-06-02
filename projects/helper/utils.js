@@ -117,7 +117,7 @@ function createIncrementArray(length) {
   return arr
 }
 
-const LP_SYMBOLS = ['SLP', 'spLP', 'JLP', 'OLP', 'SCLP', 'DLP', 'MLP', 'MSLP', 'ULP', 'TLP']
+const LP_SYMBOLS = ['SLP', 'spLP', 'JLP', 'OLP', 'SCLP', 'DLP', 'MLP', 'MSLP', 'ULP', 'TLP', 'HMDX','YLP']
 function isLP(symbol) {
   if (!symbol) return false
   if (symbol.startsWith('ZLK-LP')) {
@@ -125,7 +125,7 @@ function isLP(symbol) {
     return false
   }
 
-  return LP_SYMBOLS.includes(symbol) || /(UNI-V2|PGL|HMDX|GREEN-V2|PNDA-V2)/.test(symbol) || symbol.split(/\W+/).includes('LP')
+  return LP_SYMBOLS.includes(symbol) || /(UNI-V2|PGL|GREEN-V2|PNDA-V2)/.test(symbol) || symbol.split(/\W+/).includes('LP')
 }
 
 function mergeExports(...exportsArray) {
