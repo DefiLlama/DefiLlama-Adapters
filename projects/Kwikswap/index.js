@@ -2,20 +2,6 @@ const { getChainTvlBuffered } = require("../helper/getUniSubgraphTvl");
 const { getUniTVL } = require("../helper/unknownTokens");
 const { staking } = require("../helper/staking.js");
 
-const ethers = require("ethers");
-const { config } = require("@defillama/sdk/build/api")
-
-config.setProvider(
-  "shiden",
-  new ethers.providers.StaticJsonRpcProvider(
-    "https://evm.shiden.astar.network",
-    {
-      name: "shiden",
-      chainId: 336,
-    }
-  )
-);
-
 const v1graph = getChainTvlBuffered(
   {
     ethereum:
