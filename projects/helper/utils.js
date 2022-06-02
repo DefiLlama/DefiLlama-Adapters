@@ -3,6 +3,7 @@ const retry = require('async-retry')
 const axios = require("axios");
 const { PromisePool } = require('@supercharge/promise-pool')
 const sdk = require('@defillama/sdk')
+const http = require('./http')
 
 async function parallelAbiCall({ block, chain = 'ethereum', abi, getCallArgs = i => i, items, maxParallel = 1 }) {
   const { results, errors } = await PromisePool.withConcurrency(maxParallel)
@@ -116,14 +117,15 @@ function createIncrementArray(length) {
   return arr
 }
 
+const LP_SYMBOLS = ['SLP', 'spLP', 'JLP', 'OLP', 'SCLP', 'DLP', 'MLP', 'MSLP', 'ULP']
 function isLP(symbol) {
   if (!symbol) return false
   if (symbol.startsWith('ZLK-LP')) {
     console.log('Blacklisting Zenlink LP because they have different abi for get reservers', symbol)
     return false
   }
-  
-  return symbol.split(/\W+/).includes('LP') || /(UNI-V2|PGL|HMDX|GREEN-V2|PNDA-V2)/.test(symbol)
+
+  return LP_SYMBOLS.includes(symbol) || /(UNI-V2|PGL|HMDX|GREEN-V2|PNDA-V2)/.test(symbol) || symbol.split(/\W+/).includes('LP')
 }
 
 function mergeExports(...exportsArray) {
@@ -162,6 +164,14 @@ function mergeExports(...exportsArray) {
   }
 }
 
+async function getBalance(chain, account) {
+  switch (chain) {
+    case 'bitcoin':
+      return (await http.get(`https://chain.api.btc.com/v3/address/${account}`)).data.balance / 1e8
+    default: throw new Error('Unsupported chain')
+  }
+}
+
 module.exports = {
   createIncrementArray,
   fetchURL,
@@ -176,4 +186,5 @@ module.exports = {
   isLP,
   parallelAbiCall,
   mergeExports,
+  getBalance,
 }
