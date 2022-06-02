@@ -27,7 +27,7 @@ async function staking(timestamp, chain) {
 
 module.exports = {
   timetravel: false,
-  methodology: `Computing the TVL of Argo Finance`,
+  methodology: `The TVL is counted as the total CRO that is currently being delegated. We query the crypto.org api for the delegations and sum up the CRO being delegated. The Staking TVL is computed as the total XARGO being pledged on our platform. ARGO and XARGO has a 1:1, with XARGO being a pledged version of ARGO. The Staking TVL is calculated by getting the totalSupply() of XARGO in our contract.`,
   cronos: {
     tvl,
     staking
