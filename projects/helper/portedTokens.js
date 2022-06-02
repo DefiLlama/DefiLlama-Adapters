@@ -375,6 +375,18 @@ async function transformOptimismAddress() {
     if (compareAddresses(addr, "0x35D48A789904E9b15705977192e5d95e2aF7f1D3")) {
       return "0x956f47f50a910163d8bf957cf5846d573e7f87ca";
     }
+    // alUSD
+    if (compareAddresses(addr, "0xcb8fa9a76b8e203d8c3797bf438d8fb81ea3326a")) {
+      return "0xbc6da0fe9ad5f3b0d58160288917aa56653660e9";
+    }
+    // FRAX Share
+    if (compareAddresses(addr, "0x67CCEA5bb16181E7b4109c9c2143c24a1c2205Be")) {
+      return "0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0";
+    }
+    // FRAX
+    if (compareAddresses(addr, "0x2E3D870790dC77A83DD1d18184Acc7439A53f475")) {
+      return "0x853d955acef822db058eb8505911ed77f175b99e";
+    }
     const possibleSynth = optimismSynths[addr.toLowerCase()];
     if (possibleSynth !== undefined) {
       return possibleSynth;
@@ -578,14 +590,6 @@ async function transformKccAddress() {
   return (addr) => {
     if (compareAddresses(addr, "0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c")) {
       return "avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c";
-    }
-    if (
-      compareAddresses(
-        addr.toLowerCase(),
-        "0x0039f574ee5cc39bdd162e9a88e3eb1f111baf48"
-      )
-    ) {
-      return "0xdac17f958d2ee523a2206206994597c13d831ec7";
     }
     if (compareAddresses(addr, "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48")) {
       return "okexchain:0xc946daf81b08146b1c7a8da2a851ddf2b3eaaf85";
@@ -993,6 +997,7 @@ const fixBalancesMapping = {
   oasis: fixOasisBalances,
   bittorrent: b => fixBalances(b, bittorrentFixMapping, { removeUnmapped: false }),
   syscoin: b => fixBalances(b, syscoinFixMapping, { removeUnmapped: true }),
+  syscoin: b => fixBalances(b, syscoinFixMapping, { removeUnmapped: false }),
 }
 
 const chainTransforms = {
