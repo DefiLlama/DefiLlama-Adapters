@@ -968,6 +968,12 @@ async function getFixBalances(chain) {
   return fixBalancesMapping[chain] || dummyFn
 }
 
+const energiFixMapping = {
+  '0x7A86173daa4fDA903c9A4C0517735a7d34B9EC39': { coingeckoId: 'energi', decimals: 18, },
+  '0xa55f26319462355474a9f2c8790860776a329aa4': { coingeckoId: 'energi', decimals: 18, },
+}
+
+
 const fixBalancesMapping = {
   avax: fixAvaxBalances,
   evmos: b => fixBalances(b, evmosFixMapping, { removeUnmapped: false }),
@@ -981,6 +987,7 @@ const fixBalancesMapping = {
   klaytn: fixKlaytnBalances,
   waves: fixWavesBalances,
   songbird: b => fixBalances(b, songbirdFixMapping, { removeUnmapped: true }),
+  energi: b => fixBalances(b, energiFixMapping, { removeUnmapped: true }),
   smartbch: b => fixBalances(b, smartbchFixMapping, { removeUnmapped: true }),
   energyweb: b => fixBalances(b, energywebFixMapping, { removeUnmapped: true }),
   oasis: fixOasisBalances,

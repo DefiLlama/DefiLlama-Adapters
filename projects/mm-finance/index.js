@@ -18,11 +18,6 @@ module.exports = {
       coreAssets: [
         '0x5c7f8a570d578ed84e63fdfa7b1ee72deae1ae23', // wcro
       ],
-      blacklist: [
-        '0x4FD5941C0C10ceb7B6AbC8d61071de353A359DEa',
-        '0x766887dadc5437979ac629577ba4c0a968b0ffeb',
-        '0x9a52a362558cedf187710db0b50d87ab67f0ae99',
-      ]
     }),
   },
 }
