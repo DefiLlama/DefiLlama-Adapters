@@ -9,7 +9,7 @@ const DFI_ADDRESS = '0xA9536B9c75A9E0faE3B56a96AC8EdF76AbC91978';
 const SOLI_ADDRESS = '8JnNWJ46yfdq8sKgT1Lk4G7VWkAA8Rhh7LhqgJ6WY41G';
 const SOLI_COINGECKO_ID = 'solana-ecosystem-index';
 
-function fetchTvl(chain, tokens) {
+function fetchSolanaTvl(tokens) {
   return async () => {
     const balances = {};
     for (const token of tokens) {
@@ -17,10 +17,6 @@ function fetchTvl(chain, tokens) {
       balances[token.coingeckoID] = tokenSupply;
     }
 
-    let total = 0;
-    for (const key in balances) {
-      total += balances[key];
-    }
     return balances;
   };
 }
@@ -61,7 +57,7 @@ module.exports = {
     tvl: chainTvl('polygon', [PECO_ADDRESS]),
   },
   solana: {
-    tvl: fetchTvl('solana', [{
+    tvl: fetchSolanaTvl([{
       address: SOLI_ADDRESS,
       coingeckoID: SOLI_COINGECKO_ID,
     }]),
