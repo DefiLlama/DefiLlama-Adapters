@@ -1,3 +1,5 @@
+const { stakingUnknownPricedLP } = require("../helper/staking")
+const { pool2 } = require("../helper/unknownTokens")
 const { sumTokens } = require("../helper/unwrapLPs");
 const { getFixBalances } = require("../helper/portedTokens");
 const { default: BigNumber } = require("bignumber.js");
@@ -14,79 +16,16 @@ const SCNR = {
 };
 
 const WKLAY = "0xd7a4d10070a4f7bc2a015e78244ea137398c3b74";
-const transformedSCNR = `klaytn:${SCNR.address}`;
-const transformedWKLAY = `klaytn:${WKLAY}`;
-
-const tvl = async () => ({});
-
-const staking = async (_ts, _block, chainBlocks) => {
-  const block = chainBlocks[chain];
-  const fixBalances = await getFixBalances(chain);
-  const { balances, price } = await getTokenPrice(block);
-  sdk.util.sumSingleBalance(
-    balances,
-    transformedWKLAY,
-    BigNumber(balances[transformedSCNR]) //
-      .multipliedBy(price)
-      .toFixed(0)
-  );
-  fixBalances(balances);
-  return balances;
-};
-
-const pool2 = async (_ts, _block, chainBlocks) => {
-  const block = chainBlocks[chain];
-  const fixBalances = await getFixBalances(chain);
-
-  const balances = {};
-  await sumTokens(
-    balances,
-    [[SCNR.address, SCNR.staking]],
-    block,
-    chain,
-    undefined,
-    { resolveLP: true }
-  );
-  const { price } = await getTokenPrice(block);
-  sdk.util.sumSingleBalance(
-    balances,
-    transformedWKLAY,
-    BigNumber(balances[transformedSCNR]) //
-      .multipliedBy(price)
-      .toFixed(0)
-  );
-
-  fixBalances(balances);
-  return balances;
-};
-
-let priceCache;
-async function getTokenPrice(block) {
-  if (!priceCache) priceCache = _call();
-  return priceCache;
-
-  async function _call() {
-    const balances = {};
-    await sumTokens(
-      balances,
-      [[SCNR.LPs.KLAY, SCNR.staking]],
-      block,
-      chain,
-      undefined,
-      { resolveLP: true }
-    );
-    return {
-      price: BigNumber(balances[transformedWKLAY]) //
-        .dividedBy(balances[transformedSCNR]),
-      balances,
-    };
-  }
-}
 
 module.exports = {
   klaytn: {
-    tvl,
-    staking,
-    pool2,
+    tvl: async () => ({}),
+    staking: stakingUnknownPricedLP(SCNR.staking, SCNR.address, 'klaytn', SCNR.LPs.KLAY),
+    pool2: pool2({ 
+      coreAsset: WKLAY,
+      chain: 'klaytn',
+      lpToken: SCNR.LPs.KLAY,
+      stakingContract: SCNR.staking,
+    }),
   },
 };

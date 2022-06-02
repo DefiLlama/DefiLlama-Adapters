@@ -3,13 +3,21 @@ const retry = require('async-retry')
 const axios = require("axios");
 const { PromisePool } = require('@supercharge/promise-pool')
 const sdk = require('@defillama/sdk')
+const http = require('./http')
 
 async function parallelAbiCall({ block, chain = 'ethereum', abi, getCallArgs = i => i, items, maxParallel = 1 }) {
   const { results, errors } = await PromisePool.withConcurrency(maxParallel)
     .for(items)
     .process(async item => {
       const input = getCallArgs(item)
-      const response = await sdk.api.abi.call({ abi, block, chain, ...input })
+      let response
+      try {
+        response = await sdk.api.abi.call({ abi, block, chain, ...input })
+      } catch (e) {
+        console.log('Call failed, retying after 2 seconds')
+        await sleep(2000)
+        response = await sdk.api.abi.call({ abi, block, chain, ...input })
+      }
       response.input = input
       response.success = true
       return response
@@ -19,6 +27,10 @@ async function parallelAbiCall({ block, chain = 'ethereum', abi, getCallArgs = i
     throw errors[0]
 
   return results
+}
+
+async function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms))
 }
 
 async function returnBalance(token, address, block, chain) {
@@ -105,13 +117,15 @@ function createIncrementArray(length) {
   return arr
 }
 
+const LP_SYMBOLS = ['SLP', 'spLP', 'JLP', 'OLP', 'SCLP', 'DLP', 'MLP', 'MSLP', 'ULP', 'TLP', 'HMDX','YLP', 'SCNRLP',]
 function isLP(symbol) {
   if (!symbol) return false
   if (symbol.startsWith('ZLK-LP')) {
     console.log('Blacklisting Zenlink LP because they have different abi for get reservers', symbol)
     return false
   }
-  return symbol.includes('LP') || symbol.includes('PGL') || symbol.includes('UNI-V2') || symbol === "PNDA-V2" || symbol.includes('GREEN-V2')
+
+  return LP_SYMBOLS.includes(symbol) || /(UNI-V2|PGL|GREEN-V2|PNDA-V2)/.test(symbol) || symbol.split(/\W+/).includes('LP')
 }
 
 function mergeExports(...exportsArray) {
@@ -150,6 +164,14 @@ function mergeExports(...exportsArray) {
   }
 }
 
+async function getBalance(chain, account) {
+  switch (chain) {
+    case 'bitcoin':
+      return (await http.get(`https://chain.api.btc.com/v3/address/${account}`)).data.balance / 1e8
+    default: throw new Error('Unsupported chain')
+  }
+}
+
 module.exports = {
   createIncrementArray,
   fetchURL,
@@ -164,4 +186,5 @@ module.exports = {
   isLP,
   parallelAbiCall,
   mergeExports,
+  getBalance,
 }

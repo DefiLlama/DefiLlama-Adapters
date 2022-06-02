@@ -43,4 +43,4 @@ module.exports = {
       return balances;
     }
   }
-};
+}

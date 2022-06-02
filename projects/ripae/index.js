@@ -33,6 +33,17 @@ const chains = [
             "0xC7DC9343C90Be0Ea2af6776EFe5e19B2734F8D0d",
             "0x8eA4875469e8Fd7ad3790b4c7DEeF768ca1e806f"
         ]
+    },
+    {
+        chain: "polygon",
+        token: "0xA0dF47432d9d88bcc040E9ee66dDC7E17A882715",
+        share: "0x8063037ea50E4a066bF1430EA1E3e609CD5cEf6B",
+        rewardPool: "0xa4dC4c7624acE1b415e6D937E694047b517F2D99",
+        masonry: "0x4f1437a43500B7863c614528e6A15b220904010B",
+        pool2: [
+            "0x05eFa0Ed56DDdB4E950E3F5a54e349A137d4edC9",
+            "0x07D53b147eF96FAD1896D1156755A9Da7E06098E"
+        ]
     }
 ];
 

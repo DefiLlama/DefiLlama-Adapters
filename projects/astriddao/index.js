@@ -18,6 +18,33 @@ const COLLATERALS = {
       activePool: "0x892af684Afd5fCee1023f7811C35fd695Bf0cd6f",
       defaultPool: "0xe487b9066A8fFde840b29892f1052CBEdccc3073",
     }
+  },
+  DAI: {
+    tokenAddress: "0x6De33698e9e9b787e09d3Bd7771ef63557E148bb",
+    bridgeTokenMapping: "0x6b175474e89094c44da98b954eedeac495271d0f",
+    contracts: {
+      activePool: "0xCE90059FbCEc696634981945600d642A79e262aD",
+      defaultPool: "0x3aD8FE12674B4c9481d5C7585ed5bDC4E35025b9",
+    }
+  }
+}
+
+const BAI_TOKEN_ADDRESS = "0x733ebcC6DF85f8266349DEFD0980f8Ced9B45f35"
+const STAKES = {
+  WASTAR: {
+    contracts: {
+      stabilityPool: "0x7e3D1e75C8deef26d659B2fb7b7E436ab8Ea35d9"
+    }
+  },
+  BUSD: {
+    contracts: {
+      stabilityPool: "0x2D95D9191F12a17D61B3a1904581DceFd2C6e3eD"
+    }
+  },
+  DAI: {
+    contracts: {
+      stabilityPool: "0xA5Bb226e06732005Cf6053429B8F6d607A8A530a"
+    }
   }
 }
 
@@ -47,6 +74,10 @@ async function tvl(ts, _block, chainBlocks ) {
     const tokensAndOwners = Object.values(collateralInfo.contracts).map(owner => [collateralInfo.tokenAddress, owner])
     await sumTokens(balances, tokensAndOwners, block, chain)
   }
+  for (const stakeInfo of Object.values(STAKES)) {
+    const tokensAndOwners = Object.values(stakeInfo.contracts).map(owner => [BAI_TOKEN_ADDRESS, owner])
+    await sumTokens(balances, tokensAndOwners, block, chain)
+  }
   balances = translateBalancesForBridgeToken(balances)
   ;(await getFixBalances(chain))(balances)
   return balances
@@ -55,7 +86,7 @@ async function tvl(ts, _block, chainBlocks ) {
 module.exports = {
   timetravel: true,
   start: 915830,
-  methodology: "Total locked ASTR (in wrapped ERC-20 form) in ActivePool and DefaultPool",
+  methodology: "Total locked collateral assets (in ERC-20 form) in ActivePool and DefaultPool, plus total staked BAI in StabilityPool",
   astar: {
     tvl,
   },
