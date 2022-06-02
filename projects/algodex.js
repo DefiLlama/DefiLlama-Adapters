@@ -9,9 +9,18 @@ async function tvl(){
     const volumData = await fetchURL(assetVolURL)
     const usdPriceData = await fetchURL(usdPriceUrl)
     const algoPriceData = await fetchURL(algoPriceUrl)
-    
+
     return toUSDTBalances(data.data.total_liquidity_in_usd)
 }
+
+// query for api 
+// SELECT assetid,   Sum(asaAmount) asaAmountTotal FROM algodex.orderbook
+// group by assetid
+// union all 
+// select 0 as assetId,  sum(algoAmount) from algodex.orderbook
+// order by assetid
+
+
 
 //    (asaAmount * tinyMan)
 //    +
