@@ -36,7 +36,7 @@ async function cronos() {
 }
 
 async function fetch() {
-  const [bscTvl, ethTvl, polygonTvl, kccTvl, ftmTvl, avaxTvl, croTvl] = await Promise.all([
+  const [bscTvl, ethTvl, polygonTvl, ftmTvl, avaxTvl, croTvl] = await Promise.all([
     bsc(),
     ethereum(),
     polygon(),
@@ -44,7 +44,7 @@ async function fetch() {
     avalanche(),
     cronos(),
   ]);
-  return bscTvl + ethTvl + polygonTvl + kccTvl + ftmTvl + avaxTvl + croTvl;
+  return bscTvl + ethTvl + polygonTvl + ftmTvl + avaxTvl + croTvl;
 }
 
 module.exports = {
