@@ -96,6 +96,7 @@ async function getTokenPrices({ block, chain = 'ethereum', coreAssets = [], blac
     }
   }
 
+  filterPrices(prices)
   const balances = {}
   Object.values(pairBalances).forEach(pb => addBalances(pb, balances))
   const fixBalances = await getFixBalances(chain)
@@ -163,13 +164,31 @@ async function getTokenPrices({ block, chain = 'ethereum', coreAssets = [], blac
 
   function addBalances(balances, finalBalances, ratio = 1) {
     Object.entries(balances).forEach(([address, amount]) => {
-      const price = prices[address]; 
+      const price = prices[address];
       // const price =  undefined; // NOTE: this is disabled till, we add a safeguard to limit LP manipulation to inflate token price, like mimimum core asset liquidity to be 10k
       if (price !== undefined) {
         const coreAsset = price[2];
         sdk.util.sumSingleBalance(finalBalances, transformAddress(coreAsset), BigNumber(price[1] * (amount ?? 0) * ratio).toFixed(0))
       } else
         sdk.util.sumSingleBalance(finalBalances, transformAddress(address), BigNumber(+amount * ratio).toFixed(0))
+    })
+  }
+
+  // If we fetch prices from pools with low liquidity, the value of tokens can be absurdly high, so we set a threshold that if we are using a core asset to determine price,
+  // the amount of said core asset in a pool from which price is fetched must be at least 0.5% of the amount of core asset tokens in pool with highest core asset tokens
+  function filterPrices(prices) {
+    const maxCoreTokens = {}
+    Object.values(prices).forEach(([amount, _, coreAsset]) => {
+      if (!maxCoreTokens[coreAsset] || maxCoreTokens[coreAsset] < +amount)
+        maxCoreTokens[coreAsset] = +amount
+    })
+
+    Object.keys(prices).forEach(token => {
+      const priceArry = prices[token]
+      const [amount, _, coreAsset] = priceArry
+      if (!maxCoreTokens[coreAsset]) throw new Error('there is bug in the code')
+      const lpRatio = +amount * 100 / maxCoreTokens[coreAsset]
+      if (lpRatio < 0.5) delete prices[token] // current pool has less than 0.5% of tokens compared to pool with highest number of core tokens
     })
   }
 }
