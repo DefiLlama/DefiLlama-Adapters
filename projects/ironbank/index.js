@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const utils = require("../helper/utils");
-const { getCompoundV2Tvl, compoundExports } = require("../helper/compound");
+const { getCompoundV2Tvl, compoundExports, usdCompoundExports } = require("../helper/compound");
 const { transformFantomAddress } = require('../helper/portedTokens')
 const { GraphQLClient, gql } = require('graphql-request')
 
@@ -96,7 +96,7 @@ const fantomTvl = async (timestamp, ethBlock, chainBlocks) => {
 module.exports = {
   timetravel: false, // fantom api's for staked coins can't be queried at historical points
   start: 1599552000, // 09/08/2020 @ 8:00am (UTC)
-  ethereum: compoundExports("0xAB1c342C7bf5Ec5F02ADEA1c2270670bCa144CbB", "ethereum"),
+  ethereum: usdCompoundExports("0xAB1c342C7bf5Ec5F02ADEA1c2270670bCa144CbB", "ethereum"),
   fantom: {
     tvl: fantomTvl,
     borrowed: getCompoundV2Tvl("0x4250a6d3bd57455d7c6821eecb6206f507576cd2", "fantom", addr=>`fantom:${addr}`, undefined, undefined, true)
