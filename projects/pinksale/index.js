@@ -8,12 +8,6 @@ async function getTvl(nativeToken, chainId) {
   const nativeTokenPrice = res.data[nativeToken].usd;
   const nativeTokenLocked = pinklockTvl.data.tvl;
   const stableCoinLocked = pinklockTvl.data.stableCoinTvl;
-  console.log({
-    nativeToken,
-    nativeTokenPrice,
-    nativeTokenLocked,
-    stableCoinLocked,
-  })
   return (nativeTokenPrice * nativeTokenLocked) + stableCoinLocked;
 }
 
@@ -27,10 +21,6 @@ async function ethereum() {
 
 async function polygon() {
   return await getTvl('matic-network', 137);
-}
-
-async function kcc() {
-  return await getTvl('kucoin-shares', 321);
 }
 
 async function fantom() {
@@ -50,15 +40,12 @@ async function fetch() {
     bsc(),
     ethereum(),
     polygon(),
-    kcc(),
     fantom(),
     avalanche(),
     cronos(),
   ]);
   return bscTvl + ethTvl + polygonTvl + kccTvl + ftmTvl + avaxTvl + croTvl;
 }
-
-fetch().then((tvl) => console.log(tvl))
 
 module.exports = {
   bsc: {
@@ -69,9 +56,6 @@ module.exports = {
   },
   polygon: {
     fetch: polygon,
-  },
-  kcc: {
-    fetch: kcc,
   },
   avalanche: {
     fetch: avalanche,
