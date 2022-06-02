@@ -131,8 +131,8 @@ async function getTokenPrices({ block, chain = 'ethereum', coreAssets = [], blac
       prices[address] = [Number(coreAmount), Number(coreAmount) / Number(tokenAmount), coreAsset]
   }
 
-  async function updateBalances(balances) {
-    let lpAddresses = []
+  async function updateBalances(balances, resolveLP = true) {
+    let lpAddresses = []  // if some of the tokens in balances are LP tokens, we resolve those as well
     Object.entries(balances).forEach(([address, amount]) => {
       const token = stripTokenHeader(address)
       const price = prices[token];
@@ -145,6 +145,8 @@ async function getTokenPrices({ block, chain = 'ethereum', coreAssets = [], blac
       sdk.util.sumSingleBalance(balances, transformAddress(coreAsset), BigNumber(price[1] * (amount ?? 0)).toFixed(0))
       delete balances[address]
     })
+
+    if (!resolveLP) return balances
 
     if (lpAddresses.length) {
       const totalBalances = (await sdk.api.abi.multiCall({
@@ -269,8 +271,25 @@ function unknownTombs({ token, shares = [], rewardPool = [], masonry = [], lps, 
 
 }
 
+function pool2({ stakingContract, lpToken, chain = "ethereum", transformAddress, coreAsset }) {
+  return async (_timestamp, _ethBlock, chainBlocks) => {
+    const block = chainBlocks[chain]
+    if (!transformAddress)
+      transformAddress = await getChainTransform(chain)
+
+    const balances = await sumTokens({}, [[lpToken, stakingContract]], block, chain, transformAddress, { resolveLP: true })
+    const { updateBalances } = await getTokenPrices({ block, chain, transformAddress, coreAssets: [coreAsset], lps: [lpToken], allLps: true, })
+
+    await updateBalances(balances, false)
+    const fixBalances = await getFixBalances(chain)
+    fixBalances(balances)
+    return balances
+  }
+}
+
 module.exports = {
   getTokenPrices,
   getUniTVL,
   unknownTombs,
+  pool2,
 };

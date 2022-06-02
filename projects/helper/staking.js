@@ -4,7 +4,7 @@ const getReserves = require('./abis/getReserves.json');
 const token0Abi = require('./abis/token0.json');
 const token1Abi = require('./abis/token1.json');
 const { default: BigNumber } = require('bignumber.js');
-const { getChainTransform } = require('./portedTokens')
+const { getChainTransform, getFixBalances, } = require('./portedTokens')
 
 
 function staking(stakingContract, stakingToken, chain = "ethereum", transformedTokenAddress = undefined, decimals = undefined) {
@@ -71,9 +71,17 @@ function stakingUnknownPricedLP(stakingContract, stakingToken, chain, lpContract
         if(decimals !== undefined){
             stakedBal = Number(stakedBal)/(10**decimals)
         }
-        return {
+
+        const balances = {
             [transform(token)]: stakedBal
         }
+
+        if (['klaytn'].includes(chain)) {
+            const fixBalances = await getFixBalances(chain)
+            fixBalances(balances)
+        }
+
+        return balances
     }
 }
 
