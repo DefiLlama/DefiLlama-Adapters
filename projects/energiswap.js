@@ -1,21 +1,28 @@
-const { GraphQLClient, gql } = require('graphql-request')
+const { getUniTVL } = require('./helper/unknownTokens')
 
-async function fetch() {
-  const endpoint = 'https://graphnode.energiswap.exchange:8000/subgraphs/name/energi/energiswap'
-  const graphQLClient = new GraphQLClient(endpoint)
+const ethers = require("ethers");
+const { config } = require("@defillama/sdk/build/api")
 
-  const query = gql`
-    query Energiswap_TVL {
-      energiswapFactories(first: 1) {
-        totalLiquidityUSD
-      }
-    }`
-
-  const data = await graphQLClient.request(query)
-
-  return data.energiswapFactories[0].totalLiquidityUSD
-}
+config.setProvider(
+  "energi",
+  new ethers.providers.StaticJsonRpcProvider(
+    "https://nodeapi.energi.network",
+    {
+      name: "energi",
+      chainId: 39797,
+    }
+  )
+);
 
 module.exports = {
-  fetch
+  energi: {
+    tvl: getUniTVL({
+      chain: 'energi',
+      factory: '0x875aDBaF8109c9CC9AbCC708a42607F573f594E4',
+      coreAssets: [
+        '0x7A86173daa4fDA903c9A4C0517735a7d34B9EC39', // wnrg
+        '0xa55f26319462355474a9f2c8790860776a329aa4', // wnrg
+      ]
+    }),
+  },
 }

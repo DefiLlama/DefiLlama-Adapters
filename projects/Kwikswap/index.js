@@ -1,7 +1,20 @@
 const { getChainTvlBuffered } = require("../helper/getUniSubgraphTvl");
-const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl");
 const { getUniTVL } = require("../helper/unknownTokens");
 const { staking } = require("../helper/staking.js");
+
+const ethers = require("ethers");
+const { config } = require("@defillama/sdk/build/api")
+
+config.setProvider(
+  "shiden",
+  new ethers.providers.StaticJsonRpcProvider(
+    "https://evm.shiden.astar.network",
+    {
+      name: "shiden",
+      chainId: 336,
+    }
+  )
+);
 
 const v1graph = getChainTvlBuffered(
   {
@@ -59,7 +72,6 @@ module.exports = {
       "0x735aBE48e8782948a37C7765ECb76b98CdE97B0F",
       // STND
       "0x722377A047e89CA735f09Eb7CccAb780943c4CB4",],
-      maxParallel: 25,
     }),
     staking: staking(
       STAKING_CONTRACTS["shiden"],
