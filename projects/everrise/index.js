@@ -13,7 +13,7 @@ const chainConfig = {
     chainId: '1',
     LPs: [
       {
-        owner: "0x33280d3a65b96eb878dd711abe9b2c0dbf740579",
+        owner: "0x78ab99dae7302ea91e36962f4b23418a89d3a69d", // EverOwn DAO Locked LP
         pool: "0x7250f7e97a4338d2bd72abc4b010d7a8477dc1f9",
       }, // RISE-ETH
     ],
@@ -22,7 +22,7 @@ const chainConfig = {
     chainId: '56',
     LPs: [
       {
-        owner: "0x89dd305ffbd8e684c77758288c48cdf4f4abe0f4",
+        owner: "0x89dd305ffbd8e684c77758288c48cdf4f4abe0f4", // EverOwn DAO Locked LP
         pool: "0x10dA269F5808f934326D3Dd1E04B7E7Ca78bb804",
       }, // RISE-BNB
     ],
@@ -31,7 +31,7 @@ const chainConfig = {
     chainId: '137',
     LPs: [
       {
-        owner: "0x33280d3a65b96eb878dd711abe9b2c0dbf740579",
+        owner: "0x7dd45e9be23219fd8ccfc584b652775aba62fdef", // EverOwn DAO Locked LP
         pool: "0xf3c62dbbfec92a2e73d676d62ebec06a6bc224e2",
       }, // RISE-MATIC
     ],
@@ -40,7 +40,7 @@ const chainConfig = {
     chainId: '43114',
     LPs: [
       {
-        owner: "0x33280d3a65b96eb878dd711abe9b2c0dbf740579",
+        owner: "0x22a8e3f957fcdd4883cfcbc67c5e14cf2bb6477d", // EverOwn DAO Locked LP
         pool: "0x5472e98d22b0fb7ec5c3e360788b8700419370b5",
       }, // RISE-AVAX
     ],
@@ -49,7 +49,7 @@ const chainConfig = {
     chainId: '250',
     LPs: [
       {
-        owner: "0x33280d3a65b96eb878dd711abe9b2c0dbf740579",
+        owner: "0x59503632ab8a093c266509c797c957e063f4d32b",
         pool: "0xde62a6cdd8d5a3988495317cffac9f3fed299383",
       }, // RISE-FTM
     ],
