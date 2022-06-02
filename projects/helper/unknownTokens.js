@@ -163,17 +163,18 @@ async function getTokenPrices({ block, chain = 'ethereum', coreAssets = [], blac
 
   function addBalances(balances, finalBalances, ratio = 1) {
     Object.entries(balances).forEach(([address, amount]) => {
-      const price = prices[address];
+      const price = prices[address]; 
+      // const price =  undefined; // NOTE: this is disabled till, we add a safeguard to limit LP manipulation to inflate token price, like mimimum core asset liquidity to be 10k
       if (price !== undefined) {
         const coreAsset = price[2];
-        sdk.util.sumSingleBalance(finalBalances, transformAddress(coreAsset), price[1] * (amount ?? 0) * ratio)
+        sdk.util.sumSingleBalance(finalBalances, transformAddress(coreAsset), BigNumber(price[1] * (amount ?? 0) * ratio).toFixed(0))
       } else
-        sdk.util.sumSingleBalance(finalBalances, transformAddress(address), amount * ratio)
+        sdk.util.sumSingleBalance(finalBalances, transformAddress(address), BigNumber(+amount * ratio).toFixed(0))
     })
   }
 }
 
-function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitelist = [], factory, transformAddress, maxParallel, allowUndefinedBlock = true, updateBalancesFlag = false }) {
+function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitelist = [], factory, transformAddress, maxParallel, allowUndefinedBlock = true }) {
   return async (ts, _block, chainBlocks) => {
     let pairAddresses;
     const block = await getBlock(ts, chain, chainBlocks, allowUndefinedBlock)
@@ -192,8 +193,7 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
 
     pairAddresses = pairs.map(result => result.output.toLowerCase())
 
-    const { balances, updateBalances } = await getTokenPrices({ block, chain, coreAssets, blacklist, lps: pairAddresses, transformAddress, maxParallel, whitelist, allLps: true })
-    if (updateBalancesFlag) await updateBalances(balances)
+    const { balances } = await getTokenPrices({ block, chain, coreAssets, blacklist, lps: pairAddresses, transformAddress, maxParallel, whitelist, allLps: true })
     return balances
   }
 }

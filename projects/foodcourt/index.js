@@ -11,7 +11,6 @@ module.exports = {
       coreAssets: [
         '0xe9e7cea3dedca5984780bafc599bd69add087d56',
       ],
-      updateBalancesFlag: true,
     }),
   },
   reichain: {
@@ -22,7 +21,6 @@ module.exports = {
         '0xf8ab4aaf70cef3f3659d3f466e35dc7ea10d4a5d', // killswitch BNB
         '0xDD2bb4e845Bd97580020d8F9F58Ec95Bf549c3D9', // killswitch BUSD
       ],
-      updateBalancesFlag: true,
     }),
   }
 }
