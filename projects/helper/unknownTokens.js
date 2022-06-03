@@ -19,8 +19,10 @@ async function getTokenPrices({ block, chain = 'ethereum', coreAssets = [], blac
   coreAssets = coreAssets.map(i => i.toLowerCase())
   blacklist = blacklist.map(i => i.toLowerCase())
   whitelist = whitelist.map(i => i.toLowerCase())
+  lps = getUniqueAddresses(lps)
   const pairAddresses = allLps ? lps : await getLPList(lps)
   const pairCalls = pairAddresses.map((pairAddress) => ({ target: pairAddress, }))
+
   let token0Addresses, token1Addresses, reserves
 
   [token0Addresses, token1Addresses, reserves] = await Promise.all([
@@ -106,8 +108,11 @@ async function getTokenPrices({ block, chain = 'ethereum', coreAssets = [], blac
 
   async function getLPList(lps) {
     const callArgs = lps.map(t => ({ target: t }))
-    const symbols = (await sdk.api.abi.multiCall({ calls: callArgs, abi: symbol, block, chain })).output
-    return symbols.filter(item => isLP(item.output)).map(item => item.input.target.toLowerCase())
+    let symbols = (await sdk.api.abi.multiCall({ calls: callArgs, abi: symbol, block, chain })).output
+    symbols = symbols.filter(item => isLP(item.output, item.input.target, chain))
+    console.log(symbols.filter(item => item.output !== 'Cake-LP').map(i => `token: ${i.input.target} Symbol: ${i.output}`).join('\n'))
+    console.log(getUniqueAddresses(symbols.map(i => i.output)).join(', '))
+    return symbols.map(item => item.input.target.toLowerCase())
   }
 
   function setPrice(prices, address, coreAmount, tokenAmount, coreAsset) {

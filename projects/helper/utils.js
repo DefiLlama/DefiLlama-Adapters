@@ -88,15 +88,20 @@ function createIncrementArray(length) {
   return arr
 }
 
-const LP_SYMBOLS = ['SLP', 'spLP', 'JLP', 'OLP', 'SCLP', 'DLP', 'MLP', 'MSLP', 'ULP', 'TLP', 'HMDX', 'YLP', 'SCNRLP',]
-function isLP(symbol) {
+const LP_SYMBOLS = ['SLP', 'spLP', 'JLP', 'OLP', 'SCLP', 'DLP', 'MLP', 'MSLP', 'ULP', 'TLP', 'HMDX', 'YLP', 'SCNRLP', 'PGL', 'GREEN-V2', 'PNDA-V2' ]
+const blacklisted_LPS = [
+].map(i => i.toLowerCase())
+
+function isLP(symbol, token, chain) {
+  // if (token && blacklisted_LPS.includes(token.toLowerCase())) return false
+  if (chain === 'bsc' && ['OLP', 'DLP', 'MLP'].includes(symbol)) return false
   if (!symbol) return false
   if (symbol.startsWith('ZLK-LP')) {
     console.log('Blacklisting Zenlink LP because they have different abi for get reservers', symbol)
     return false
   }
 
-  return LP_SYMBOLS.includes(symbol) || /(UNI-V2|PGL|GREEN-V2|PNDA-V2)/.test(symbol) || symbol.split(/\W+/).includes('LP')
+  return LP_SYMBOLS.includes(symbol) || /(UNI-V2)/.test(symbol) || symbol.split(/\W+/).includes('LP')
 }
 
 function mergeExports(...exportsArray) {
