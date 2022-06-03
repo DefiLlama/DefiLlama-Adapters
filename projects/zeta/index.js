@@ -10,6 +10,6 @@ async function tvl() {
 module.exports = {
   timetravel: false,
   methodology:
-    "Snapshots of the TVL from Zeta FLEX (zeta.markets) are saved periodically into the statistics repo. Zeta DEX to be added soon",
+    "Snapshots of the TVL from Zeta (zeta.markets) are saved periodically into the statistics repo. This includes all tokens used as collateral and in the insurance fund",
   tvl,
 };
