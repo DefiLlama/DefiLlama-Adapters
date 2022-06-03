@@ -185,6 +185,11 @@
         "internalType": "address",
         "name": "_userProxyInterfaceAddress",
         "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_votingSnapshotAddress",
+        "type": "address"
       }
     ],
     "name": "initializeProxyStorage",

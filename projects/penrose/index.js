@@ -1,17 +1,18 @@
 const penLensAbi = require("./penLens.json");
-const dystopiaLensAbi = require("./dystLens.json");
+const dystopiaLensAbi = require("./dystopiaLens.json");
 const veAbi = require("./ve.json");
 const erc20Abi = require("./erc20.json");
-const partnerRewardsPoolAddress = "0xd1A9F69E94E3B9D646D6928f8Ead596dc50e6b18";
-const penDystRewardPoolAddress = "0x8d05FC2232b595Fa323EbA64f073460A6F3728de";
-const vlPenAddress = "0xaa0FF6a08F8D9aB30064F5E98E585D165336a898";
-const penAddress = "0xc3559c37C2020A44E74eA2C6E0F009b531FB4eD3";
-const dystopiaAddress = "0x39aB6574c289c3Ae4d88500eEc792AB5B947A5Eb";
+const partnerRewardsPoolAddress = "0x5DD340DD4142D093c1926282CD56B0D4690dEB11";
+const penV1RewardsPoolAddress = "0x0000000000000000000000000000000000000000";
+const penDystRewardPoolAddress = "0x62f9B938323fb68379B9Ac1641012F9BeE339C69";
+const vlPenAddress = "0x55CA76E0341ccD35c2E3F34CbF767C6102aea70f";
+const penAddress = "0x9008D70A5282a936552593f410AbcBcE2F891A97";
+const dystAddress = "0x39aB6574c289c3Ae4d88500eEc792AB5B947A5Eb";
 const veAddress = "0x060fa7aD32C510F12550c7a967999810dafC5697";
-const penDystAddress = "0xFB8D5bbcc0f09916cF004C1Ab8EAA56bb73dc679";
+const penDystAddress = "0x5b0522391d0A5a37FD117fE4C43e8876FB4e91E6";
 const sanitize = require("./sanitizeWeb3Response.js");
 
-const { masterChefExports, standardPoolInfoAbi, addFundsInMasterChef } = require('../helper/masterchef')
+// const { masterChefExports, standardPoolInfoAbi, addFundsInMasterChef } = require('../helper/masterchef')
 const sdk = require('@defillama/sdk')
 const { default: BigNumber } = require('bignumber.js')
 
@@ -32,14 +33,48 @@ async function tvl(time, ethBlock, chainBlocks) {
         chain, block
     }
     const transform = addr => `polygon:${addr}`
+    // await addFundsInMasterChef(balances, "0xa7821c3e9fc1bf961e280510c471031120716c3d", block, chain,
+    //     transform, standardPoolInfoAbi, [], true, true, "0xc165d941481e68696f43ee6e99bfb2b23e0e3114")
 
-    // Penrose Core
-    const penLensAddress = "0x12bb4E7e868627049AD62B1Aefa11dEbaB446c8A";
-    const solidlyLensAddress = "0xe72c3FA9Edf5A996d210fA9FC7D481dEe602aeE2";
-    // const oxd = new web3.eth.Contract(erc20Abi, oxdAddress);
+    // const screamShare = await sdk.api.abi.call({
+    //     ...calldata,
+    //     target: xSCREAM,
+    //     abi: shareValue
+    // })
+    // sdk.util.sumSingleBalance(balances, transform("0xe0654C8e6fd4D733349ac7E09f6f23DA256bF475"),
+    //     BigNumber(screamShare.output).times(balances[transform(xSCREAM)]).div(1e18).toFixed(0))
+    // delete balances[transform(xSCREAM)]
+
+    // const creditShare = await sdk.api.abi.call({
+    //     ...calldata,
+    //     target: xCREDIT,
+    //     abi: shareValue
+    // })
+    // sdk.util.sumSingleBalance(balances, transform("0x77128dfdd0ac859b33f44050c6fa272f34872b5e"),
+    //     BigNumber(creditShare.output).times(balances[transform(xCREDIT)]).div(1e18).toFixed(0))
+    // delete balances[transform(xCREDIT)]
+
+    // const tarotShare = await sdk.api.abi.call({
+    //     ...calldata,
+    //     target: xTAROT,
+    //     abi: shareTarot,
+    //     params: balances[transform(xTAROT)]
+    // })
+    // sdk.util.sumSingleBalance(balances, transform("0xc5e2b037d30a390e62180970b3aa4e91868764cd"),
+    //     tarotShare.output)
+    // delete balances[transform(xTAROT)]
+
+    // sdk.util.sumSingleBalance(balances, transform("0xf24bcf4d1e507740041c9cfd2dddb29585adce1e"),
+    //     balances[transform(fBEET)])
+    // delete balances[transform(fBEET)]
+
+    // 0xDAO Core
+    const penLensAddress = "0x1432c3553FDf7FBD593a84B3A4d380c643cbf7a2";
+    const dystopiaLensAddress = "0xDd688a48A511f1341CC57D89e3DcA486e073eaCe";
+    // const pen = new web3.eth.Contract(erc20Abi, penAddress);
 
     // Fetch pools addresses
-    const { output: penPoolAddresses } = await sdk.api.abi.call({
+    const { output: penPoolsAddresses } = await sdk.api.abi.call({
         block,
         chain: 'polygon',
         target: penLensAddress,
@@ -79,7 +114,7 @@ async function tvl(time, ethBlock, chainBlocks) {
     while (true) {
         const start = currentPage * pageSize;
         const end = start + pageSize;
-        const addresses = penPoolAddresses.slice(start, end);
+        const addresses = penPoolsAddresses.slice(start, end);
         if (addresses.length === 0) {
             break;
         }
@@ -88,16 +123,15 @@ async function tvl(time, ethBlock, chainBlocks) {
         const { output: poolsData } = await sdk.api.abi.call({
             block,
             chain: 'polygon',
-            params: [addresses],
             target: penLensAddress,
             abi: penLensAbi.find(i => i.name === 'penPoolsData')
         })
-        const solidlyPoolsAddresses = poolsData.map((pool) => pool.poolData.id);
+        const dystopiaPoolsAddresses = poolsData.map((pool) => pool.poolData.id);
         const { output: reservesData } = await sdk.api.abi.call({
             block,
             chain: 'polygon',
-            target: solidlyLensAddress,
-            params: [solidlyPoolsAddresses],
+            target: dystopiaLensAddress,
+            params: [dystopiaPoolsAddresses],
             abi: dystopiaLensAbi.find(i => i.name === 'poolsReservesInfo')
         })
         addPools(
@@ -109,12 +143,12 @@ async function tvl(time, ethBlock, chainBlocks) {
 
     // Add TVL from pools to balances
     const addBalance = (tokenAddress, amount) => {
-        const fantomTokenAddress = `polygon:${tokenAddress}`
-        const existingBalance = balances[fantomTokenAddress];
+        const polygonTokenAddress = `polygon:${tokenAddress}`
+        const existingBalance = balances[polygonTokenAddress];
         if (existingBalance) {
-            balances[fantomTokenAddress] = new BigNumber(existingBalance).plus(amount).toFixed(0)
+            balances[polygonTokenAddress] = new BigNumber(existingBalance).plus(amount).toFixed(0)
         } else {
-            balances[fantomTokenAddress] = amount;
+            balances[polygonTokenAddress] = amount;
         }
     }
     pools.forEach(pool => {
@@ -126,18 +160,24 @@ async function tvl(time, ethBlock, chainBlocks) {
         addBalance(token1, amount1);
     });
 
-    // Add locked SOLID
-    const { output: { amount: lockedSolidAmount } } = await sdk.api.abi.call({
+    // Add locked DYST
+    const { output: { amount: lockedDystAmount } } = await sdk.api.abi.call({
         block,
         chain: 'polygon',
         target: veAddress,
         params: 2,
         abi: veAbi.find(i => i.name === 'locked')
     })
-    addBalance(dystopiaAddress, lockedSolidAmount);
+    addBalance(dystAddress, lockedDystAmount);
 
-    // Add staking pools TVL
-    const { output: oxSolidRewardsPoolBalance } = await sdk.api.abi.call({
+    // // Add staking pools TVL
+    // const { output: penV1RewardsPoolBalance } = await sdk.api.abi.call({
+    //     block,
+    //     chain: 'polygon',
+    //     target: penV1RewardsPoolAddress,
+    //     abi: erc20Abi.find(i => i.name === 'totalSupply')
+    // })
+    const { output: penDystRewardsPoolBalance } = await sdk.api.abi.call({
         block,
         chain: 'polygon',
         target: penDystRewardPoolAddress,
@@ -150,18 +190,19 @@ async function tvl(time, ethBlock, chainBlocks) {
         abi: erc20Abi.find(i => i.name === 'totalSupply')
     })
 
+    // addBalance(penDystAddress, penV1RewardsPoolBalance);
     addBalance(penDystAddress, partnerRewardsPoolBalance);
-    addBalance(penDystAddress, oxSolidRewardsPoolBalance);
+    addBalance(penDystAddress, penDystRewardsPoolBalance);
 
-    // Add vote locked OXD
-    const { output: voteLockedOxdBalance } = await sdk.api.abi.call({
+    // Add vote locked PEN
+    const { output: voteLockedPenBalance } = await sdk.api.abi.call({
         block,
         chain: 'polygon',
         target: penAddress,
         params: vlPenAddress,
         abi: erc20Abi.find(i => i.name === 'balanceOf')
     })
-    addBalance(penAddress, voteLockedOxdBalance);
+    addBalance(penAddress, voteLockedPenBalance);
 
     return balances
 }
