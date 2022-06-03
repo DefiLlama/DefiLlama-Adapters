@@ -4,7 +4,7 @@ const {toUSDTBalances} = require("../helper/balances");
 const axios = require("axios")
 
 const starbankTVLUrl =
-    'https://starbank-storage-api.s3.ap-south-1.amazonaws.com/api/consolidatedDataV1.json';
+    `https://starbank-storage-api.s3.ap-south-1.amazonaws.com/api/consolidatedDataV1.json?timestamp=${Date.now()}`;
 
 async function tvl() {
   const { data } = await retry(
@@ -15,7 +15,7 @@ async function tvl() {
 }
 
 module.exports = {
-    starbank:{
+    astar:{
         tvl
     }
 };
