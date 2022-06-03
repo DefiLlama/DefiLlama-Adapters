@@ -1,4 +1,3 @@
-const utils = require('../helper/utils');
 const BigNumber = require("bignumber.js");
 const sdk = require('@defillama/sdk')
 const { sumTokens } = require('../helper/unwrapLPs');
@@ -11,13 +10,10 @@ const pieABI = require("../config/piedao/abi/IPie.json");
 const pieStakingAll = require("../config/piedao/abi/IStakingAll.json");
 const IStakingBalancer = require("../config/piedao/abi/IStakingBalancer.json");
 const IStakedToken = require("../config/piedao/abi/IStakedToken.json");
-const ISLP = require("../config/piedao/abi/ISLP.json");
-const IBPT = require("../config/piedao/abi/IBPT.json");
+const IBPT = IStakedToken;
 const IBCP = require("../config/piedao/abi/IBCP.json");
-const IUniswap = require("../config/piedao/abi/IUniswap.json");
-const IStakedPieDAO = require("../config/piedao/abi/IStakedPieDAO.json");
-const IStakingUniswap = require("../config/piedao/abi/IStakingUniswap.json");
-const erc20ABI = require("../config/piedao/abi/ERC20.json");
+const IStakedPieDAO = IStakingBalancer;
+const IStakingUniswap = IStakingBalancer;
 
 module.exports = class PieDAO {
   constructor(block) {

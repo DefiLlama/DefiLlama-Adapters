@@ -51,7 +51,7 @@ function getChainTvl(graphUrls, factoriesName = "uniswapFactories", tvlName = "t
 };
 
 const subgraphs = {
-  'ethereum': 'impermax-finance/impermax-x-uniswap-v2',
+  'ethereum': 'impermax-finance/impermax-x-uniswap1',
   'polygon': 'impermax-finance/impermax-x-uniswap-v2-polygon',
   'arbitrum': 'impermax-finance/impermax-x-uniswap-v2-arbitrum',
   'moonriver': 'impermax-finance/impermax-x-uniswap-v2-moonriver',

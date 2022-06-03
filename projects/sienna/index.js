@@ -1,4 +1,4 @@
-const { CosmWasmClient } = require("secretjs");
+const CosmWasm = require("../helper/CosmWasm");
 const BigNumber = require("bignumber.js");
 const sdk = require('@defillama/sdk');
 const utils = require("./utils");
@@ -21,7 +21,7 @@ const SIENNA_TOKEN_ADDRESS = "secret1rgm2m5t530tdzyd99775n6vzumxa5luxcllml4";
 const LEND_OVERSEER_CONTRACT = "secret1pf88n9hm64mn58aw48jxfs2fsvzr07svnrrdlv";
 
 const SECRET_NODE_URL = "https://bridgeapi.azure-api.net/node10";
-const queryClient = new CosmWasmClient(SECRET_NODE_URL)
+const queryClient = new CosmWasm(SECRET_NODE_URL)
 
 const CACHED_TOKENS = {};
 
@@ -50,7 +50,7 @@ async function PairsVolumes() {
 
     const pairs = await Pairs();
     return new Promise((resolve, reject) => {
-        eachLimit(pairs, 3, async (contract) => {
+        eachLimit(pairs, 2, async (contract) => {
             const pair_info = (await queryClient.queryContractSmart(contract.address, "pair_info")).pair_info;
 
             const token1 = await TokenInfo(pair_info.pair.token_0.custom_token.contract_addr);
@@ -152,15 +152,17 @@ async function TVL() {
     const balances = {};
 
     const pairs_volumes = await PairsVolumes();
-    await Promise.all(pairs_volumes.map(async volume => {
-        if (utils.symbolsMap[volume.symbol]) await sdk.util.sumSingleBalance(balances, utils.symbolsMap[volume.symbol], volume.tokens);
-    }));
+    pairs_volumes.map(async volume => {
+        if (utils.symbolsMap[volume.symbol])
+            sdk.util.sumSingleBalance(balances, utils.symbolsMap[volume.symbol], volume.tokens);
+    });
 
     const lend_data = await Lend();
 
-    await Promise.all(lend_data.map(async volume => {
-        if (utils.symbolsMap[volume.symbol]) await sdk.util.sumSingleBalance(balances, utils.symbolsMap[volume.symbol], volume.tokens);
-    }));
+    lend_data.map(async volume => {
+        if (utils.symbolsMap[volume.symbol])
+            sdk.util.sumSingleBalance(balances, utils.symbolsMap[volume.symbol], volume.tokens);
+    });
 
     return balances;
 }
@@ -168,7 +170,8 @@ async function TVL() {
 async function Staked() {
     const balances = {};
     const staked_tokens = await StakedTokens();
-    if (staked_tokens) await sdk.util.sumSingleBalance(balances, "sienna", staked_tokens);
+    if (staked_tokens)
+        sdk.util.sumSingleBalance(balances, "sienna", staked_tokens);
     return balances;
 }
 
@@ -203,9 +206,10 @@ async function Borrowed() {
 
     const lend_data = await LendBorrowed();
 
-    await Promise.all(lend_data.map(async volume => {
-        if (utils.symbolsMap[volume.symbol]) await sdk.util.sumSingleBalance(balances, utils.symbolsMap[volume.symbol], volume.tokens);
-    }));
+    lend_data.map(async volume => {
+        if (utils.symbolsMap[volume.symbol])
+            sdk.util.sumSingleBalance(balances, utils.symbolsMap[volume.symbol], volume.tokens);
+    })
 
     return balances;
 }
@@ -219,4 +223,4 @@ module.exports = {
         staking: Staked,
         borrowed: Borrowed
     }
-};
+}

@@ -1,4 +1,4 @@
-const _ = require('underscore');
+
 const sdk = require('@defillama/sdk');
 const abi = require('./abi.json');
 
@@ -28,7 +28,7 @@ async function chainTvlV2(chain, block, transformAddr) {
 
   let poolCollaterals = (await sdk.api.abi.multiCall({
     block,
-    calls: _.map(pools, (pool) => ({
+    calls: pools.map((pool) => ({
       target: pool,
     })),
     chain,
@@ -37,7 +37,7 @@ async function chainTvlV2(chain, block, transformAddr) {
 
   let poolBalances = await sdk.api.abi.multiCall({
     block,
-    calls: _.map(pools, (pool, index) => ({
+    calls: pools.map((pool, index) => ({
       target: poolCollaterals[index],
       params: pool,
     })),
@@ -76,7 +76,7 @@ async function chainTvl(chain, block, transformAddr) {
 
   let vaultCollaterals = (await sdk.api.abi.multiCall({
     block,
-    calls: _.map(vaults, (vault) => ({
+    calls: vaults.map((vault) => ({
       target: vault,
     })),
     chain,
@@ -85,7 +85,7 @@ async function chainTvl(chain, block, transformAddr) {
 
   let vaultBalances = await sdk.api.abi.multiCall({
     block,
-    calls: _.map(vaults, (vault,index) => ({
+    calls: vaults.map((vault,index) => ({
       target: vaultCollaterals[index].output,
       params: vault,
     })),

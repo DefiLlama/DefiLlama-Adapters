@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk')
 const BigNumber = require('bignumber.js')
-const _ = require('underscore')
+
 const { staking } = require('../helper/staking')
 const {unwrapCrv} = require('../helper/unwrapLPs')
 
@@ -66,7 +66,7 @@ async function tvl(timestamp, block, chainBlocks) {
   })
 
   // Compute Balances
-  _.each(balanceOfResults.output, (balanceOf) => {
+  balanceOfResults.output.forEach((balanceOf) => {
       let address = `bsc:${balanceOf.input.target}`.toLowerCase();
       if(address === "bsc:0x54261774905f3e6e9718f2abb10ed6555cae308a"){
         balances["bitcoin"] = Number(balanceOf.output)/1e8

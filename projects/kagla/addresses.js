@@ -19,8 +19,10 @@ const TOKENS = {
   "0x4dd9c468A44F3FEF662c35c1E9a6108B70415C2c": "0x6b175474e89094c44da98b954eedeac495271d0f",
   // BUSD
   "0x4Bf769b05E832FCdc9053fFFBC78Ca889aCb5E1E": "binance-usd",
-  };
-  
+  // BAI
+  "0x733ebcC6DF85f8266349DEFD0980f8Ced9B45f35": "bai-stablecoin",
+};
+
 
 module.exports = {
   ZERO_ADDRESS,

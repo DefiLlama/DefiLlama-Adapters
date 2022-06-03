@@ -1,25 +1,8 @@
 const BigNumber = require("bignumber.js");
 const retry = require('async-retry')
 const axios = require("axios");
-const { PromisePool } = require('@supercharge/promise-pool')
 const sdk = require('@defillama/sdk')
-
-async function parallelAbiCall({ block, chain = 'ethereum', abi, getCallArgs = i => i, items, maxParallel = 1 }) {
-  const { results, errors } = await PromisePool.withConcurrency(maxParallel)
-    .for(items)
-    .process(async item => {
-      const input = getCallArgs(item)
-      const response = await sdk.api.abi.call({ abi, block, chain, ...input })
-      response.input = input
-      response.success = true
-      return response
-    })
-
-  if (errors && errors.length)
-    throw errors[0]
-
-  return results
-}
+const http = require('./http')
 
 async function returnBalance(token, address, block, chain) {
   const { output: decimals } = await sdk.api.erc20.decimals(token, chain)
@@ -105,13 +88,15 @@ function createIncrementArray(length) {
   return arr
 }
 
+const LP_SYMBOLS = ['SLP', 'spLP', 'JLP', 'OLP', 'SCLP', 'DLP', 'MLP', 'MSLP', 'ULP', 'TLP', 'HMDX', 'YLP', 'SCNRLP',]
 function isLP(symbol) {
   if (!symbol) return false
   if (symbol.startsWith('ZLK-LP')) {
     console.log('Blacklisting Zenlink LP because they have different abi for get reservers', symbol)
     return false
   }
-  return symbol.includes('LP') || symbol.includes('PGL') || symbol.includes('UNI-V2') || symbol === "PNDA-V2" || symbol.includes('GREEN-V2')
+
+  return LP_SYMBOLS.includes(symbol) || /(UNI-V2|PGL|GREEN-V2|PNDA-V2)/.test(symbol) || symbol.split(/\W+/).includes('LP')
 }
 
 function mergeExports(...exportsArray) {
@@ -150,6 +135,20 @@ function mergeExports(...exportsArray) {
   }
 }
 
+async function getBalance(chain, account) {
+  switch (chain) {
+    case 'bitcoin':
+      return (await http.get(`https://chain.api.btc.com/v3/address/${account}`)).data.balance / 1e8
+    default: throw new Error('Unsupported chain')
+  }
+}
+
+function getUniqueAddresses(addresses) {
+  const set = new Set()
+  addresses.forEach(i => set.add(i.toLowerCase()))
+  return [...set]
+}
+
 module.exports = {
   createIncrementArray,
   fetchURL,
@@ -162,6 +161,7 @@ module.exports = {
   returnEthBalance,
   getPricesFromContract,
   isLP,
-  parallelAbiCall,
   mergeExports,
+  getBalance,
+  getUniqueAddresses,
 }

@@ -105,8 +105,8 @@
   "osmosis",
   "bitgert",
   "reef",
-  "bch",
-  "dogecoin",
+  "bitcoincash",
+  "doge",
   "litecoin",
   "secret",
   "sora",
@@ -114,5 +114,14 @@
   "bifrost",
   "stafi",
   "lachain",
-  "coti"
+  "coti",
+  "obyte",
+  "carbon",
+  "neo3",
+  "energi",
+  "palette",
+  "bytomsidechain",
+  "fusion",
+  "reichain",
+  "ontology_evm"
 ]
