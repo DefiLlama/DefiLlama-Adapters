@@ -2,8 +2,8 @@ const { GraphQLClient, gql } = require("graphql-request");
 const { toUSDTBalances } = require("../helper/balances");
 const { getBlock } = require("../helper/getBlock");
 async function getTVL(subgraphName, block) {
-  // delayed by 50 blocks to allow subgraph to update
-  block -= 50;
+  // delayed by 500 blocks to allow subgraph to update
+  block -= 500;
   var endpoint = `https://api.thegraph.com/subgraphs/name/beethovenxfi/${subgraphName}`;
   var graphQLClient = new GraphQLClient(endpoint);
 
@@ -28,10 +28,12 @@ async function fantom(timestamp, ethBlock, chainBlocks) {
 }
 
 async function optimism(timestamp, ethBlock, chainBlocks) {
-  var opBlock = await getBlock(timestamp, "optimism", chainBlocks);
-  // OP subgraph is behind between 200 and 400 blocks usually, slow RPCs used by thegraph.com
-  opBlock -= 400;
-  return toUSDTBalances(await getTVL("beethovenx-optimism", opBlock));
+  return toUSDTBalances(
+    await getTVL(
+      "beethovenx-optimism",
+      await getBlock(timestamp, "optimism", chainBlocks)
+    )
+  );
 }
 
 module.exports = {
