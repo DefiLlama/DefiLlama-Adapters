@@ -33,6 +33,9 @@ const TOKENS = {
   // BAI -> DAI(TMP)
   "0x733ebcC6DF85f8266349DEFD0980f8Ced9B45f35":
     "0x6b175474e89094c44da98b954eedeac495271d0f",
+  // oUSD -> DAI(TMP)
+  "0x29F6e49c6E3397C3A84F715885F9F233A441165C":
+    "0x6b175474e89094c44da98b954eedeac495271d0f",
 };
 
 const transformTokenAddress = (address) => TOKENS[address];
@@ -111,9 +114,8 @@ async function tvl(timestamp, block, chainBlocks) {
       ).output;
 
       const coins = [];
-
-      for (let coinlist = 0; coinlist < maincoins.length; coinlist++) {
-        let coin = maincoins[coinlist];
+      for (let key in maincoins) {
+        let coin = maincoins[key];
         if (coin == ZERO_ADDRESS) {
           continue;
         }

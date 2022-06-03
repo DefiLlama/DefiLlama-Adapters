@@ -1,7 +1,5 @@
 
   const sdk = require('@defillama/sdk');
-  const _ = require('underscore');
-  _.flatMap = _.compose(_.flatten, _.map);
 
 /*==================================================
   TVL
@@ -39,9 +37,9 @@
 
     let coins = [2, 2, 2, 3, 4, 4, 2, 4, 4, 2, 3, 2, 3, 2, 2, 2, 2, 2, 2, 2, 2]
 
-    let balancesCalls = _.flatMap(swaps, (token, i) => {
+    let balancesCalls = swaps.flatMap((token, i) => {
       return Array.from(Array(coins[i]), (e, idx) =>({target: token, params: idx}))
-    })
+    }).flat()
     balancesCalls = balancesCalls.filter(call => !(call.target == '0xeDf54bC005bc2Df0Cc6A675596e843D28b16A966' && call.params == 1))
 
     let balancesResults = await sdk.api.abi.multiCall({
@@ -92,9 +90,9 @@
       },
     })
 
-    let coinsCalls = _.flatMap(swaps, (token, i) => {
+    let coinsCalls = swaps.flatMap((token, i) => {
       return Array.from(Array(coins[i]), (e, idx) =>({target: token, params: idx}))
-    })
+    }).flat()
     coinsCalls = coinsCalls.filter(call => !(call.target == '0xeDf54bC005bc2Df0Cc6A675596e843D28b16A966' && call.params == 1))
 
     let coinsResults = await sdk.api.abi.multiCall({

@@ -1,6 +1,5 @@
 const retry = require("../helper/retry");
 const { request, gql } = require("graphql-request");
-const _ = require("lodash");
 
 const apiURL = "https://smart-graph.iotex.me/iotube/graphql";
 
@@ -11,7 +10,7 @@ const query = gql`
     $bscTokens: [String!]!
     $polygonTokens: [String!]!
   ) {
-    iotex: IoTeX_Mainnet {
+    iotex: IoTeX {
       chainId
       CIOTX: ERC20(address: ["0x99B2B0eFb56E62E36960c20cD5ca8eC6ABD5557A"]) {
         address
@@ -188,8 +187,8 @@ const loadTvl = async () => {
     ? cache
     : await retry(async (fail) => await request(apiURL, query, variables)).then(
         (res) => {
-          _.each(res, (v, k) => {
-            res[k] = _.sum([
+          Object.entries(res).forEach(([k, v]) => {
+            res[k] = [
               ...(v.CIOTX?.filter((i) => i.balance > 0).map((i) =>
                 Number(i.balance)
               ) || []),
@@ -202,7 +201,7 @@ const loadTvl = async () => {
               ...(v.TokenSafe?.filter((i) => i.balance > 0).map((i) =>
                 Number(i.balance)
               ) || []),
-            ]);
+            ].reduce((acc, i) => acc + i, 0)
             if (!cache) cache = {};
             cache[res] = res[k];
           });
@@ -226,6 +225,6 @@ module.exports = {
   ...allChains,
   fetch: async () => {
     const tvl = await loadTvl();
-    return _.sum(Object.values(tvl));
+    return Object.values(tvl).reduce((acc, i) => acc + i, 0)
   },
 };

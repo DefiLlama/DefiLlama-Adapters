@@ -83,7 +83,7 @@ async function getTvl(chain, timestamp, _ethBlock, chainBlocks) {
   const baseToken = usdMappings[chain];
   balances[`${chain}:${baseToken}`] = tvl.toNumber();
 
-  if (chainBlocks) return balances;
+  // if (chainBlocks) return balances;
   return tvl.toNumber();
 }
 
@@ -102,7 +102,9 @@ async function getTvl(chain, timestamp, _ethBlock, chainBlocks) {
 module.exports = {
   misrepresentedTokens: true,
   methodology: "We count liquidity on the dexes, pulling data from onchain",
-  fetch: getChainTvl("bsc"),
+  bsc: {
+    tvl: getChainTvl("bsc"),
+  }
   // kcc: {
   //   tvl: getChainTvl("kcc"),
   // },

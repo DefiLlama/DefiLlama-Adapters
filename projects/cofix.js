@@ -17,7 +17,7 @@ async function fetch() {
   tvl += (tokenBalanceBTC * price_feed.data['bitcoin'].usd)
   tvl += (tokenBalanceETH2 * price_feed.data['ethereum'].usd)
 
-  return tvl;
+  return tvl
 
 }
 

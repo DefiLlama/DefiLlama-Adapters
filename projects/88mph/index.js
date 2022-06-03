@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk')
 const abi = require('./abi')
-const _ = require('underscore')
+
 const BigNumber = require('bignumber.js')
 const { default: axios } = require('axios')
 const { chainExports } = require('../helper/exports')
@@ -78,7 +78,7 @@ function chainTvl(chain) {
 
     // Get deposit pools' underlying tokens
     const poolUnderlyingAddressResults = await sdk.api.abi.multiCall({
-      calls: _.map(dInterestAddresses, (address) => ({
+      calls: dInterestAddresses.map((address) => ({
         target: address
       })),
       block,
@@ -86,7 +86,7 @@ function chainTvl(chain) {
       abi: abi.stablecoin
     })
 
-    _.each(poolUnderlyingAddressResults.output, (token) => {
+    poolUnderlyingAddressResults.output.forEach((token) => {
       const underlyingTokenAddress = token.output
       if(underlyingTokenAddress === null){
         throw new Error(`token ${token} is broken`)
@@ -98,14 +98,14 @@ function chainTvl(chain) {
     // Get deposit pools' balances in underlying token
     const poolDepositBalanceResults = await sdk.api.abi.multiCall({
       block,
-      calls: _.map(dInterestAddresses, (address) => ({
+      calls: dInterestAddresses.map((address) => ({
         target: address
       })),
       chain,
       abi: abi.totalDeposit
     })
 
-    _.each(poolDepositBalanceResults.output, (tokenBalanceResult) => {
+    poolDepositBalanceResults.output.forEach((tokenBalanceResult) => {
       let valueInToken = tokenBalanceResult.output
       const poolAddress = tokenBalanceResult.input.target
       let underlyingTokenAddress = poolToUnderlyingToken[poolAddress]

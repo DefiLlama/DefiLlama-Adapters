@@ -1,25 +1,29 @@
-const { sumTokens, } = require("../helper/unwrapLPs.js");
+const { sumTokens } = require("../helper/unwrapLPs.js");
 const { unwrapTroves } = require("../helper/unwrapLPs");
 
-const bscTokens = require('./bscTokens.json')
-Object.keys(bscTokens).forEach(key => bscTokens[key] = bscTokens[key].toLowerCase())
+const bscTokens = require("./bscTokens.json");
+Object.keys(bscTokens).forEach(
+  (key) => (bscTokens[key] = bscTokens[key].toLowerCase())
+);
 
-const chain = "bsc"
+const chain = "bsc";
 
 async function pool2(_timestamp, _ethBlock, chainBlocks) {
-  const balances = {}
-  const block = chainBlocks[chain]
+  const balances = {};
+  const block = chainBlocks[chain];
   const tokensAndOwners = [
-    [bscTokens['ARTHBUSDLP'], bscTokens['ARTHBUSDBasicStaking']],
-    [bscTokens['ARTHMAHA-APE-LP'], bscTokens['ARTHMAHA-APE-LP-Staking']],
-    [bscTokens['ARTHMAHALP'], bscTokens['ARTHMAHABasicStaking']],
-    [bscTokens['ARTHuval3PS'], bscTokens['ARTHuval3PS-BasicStaking']],
-    // [bscTokens['ARTHuval3PS'], bscTokens['ARTHu3PXBasicStakingV2']], // ellipsis masterchef, tvl belongs to them?
-    [bscTokens['ARTHu3PS'], bscTokens['ARTHu3PSBasicStakingV2']],
-    // [bscTokens['ARTHuval3PS'], bscTokens['ARTHuval3PSDotBasicStaking']], // ellipsis masterchef?
-  ]
+    [bscTokens.ARTHBUSDLP, bscTokens.ARTHBUSDBasicStaking],
+    [bscTokens.ARTHMAHAApeLP, bscTokens.ARTHMAHAApeLPStaking],
+    [bscTokens.ARTHMAHALP, bscTokens.ARTHMAHABasicStaking],
+    [bscTokens.ARTHuval3PS, bscTokens.ARTHuval3PSBasicStaking],
+    [bscTokens.ARTHuval3PS, bscTokens.ARTHu3PXBasicStakingV2], // ellipsis masterchef, tvl belongs to them? SE: contains ARTH our stablecoin; we pay bribes for this tvl
+    [bscTokens.ARTHu3PS, bscTokens.ARTHu3PSBasicStakingV2],
+    [bscTokens.ARTHuval3PS, bscTokens.ARTHuval3PSDotBasicStaking], // ellipsis masterchef? SE: contains ARTH our stablecoin
+  ];
 
-  return sumTokens(balances, tokensAndOwners, block, chain, undefined, { resolveLP: true, resolveCrv: true })
+  return sumTokens(balances, tokensAndOwners, block, chain, undefined, {
+    resolveLP: true,
+  });
 }
 
 async function tvl(ts, _block, chainBlocks) {

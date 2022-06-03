@@ -123,9 +123,11 @@ async function tvlV2Onchain(block, chain) {
     const { safeBoxApi, poolsJsonUrl } = chainParams[chain];
     const { data: safebox } = await axios.get(safeBoxApi);
     await unwrapCreamTokens(balances, safebox.map(s=>[s.cyTokenAddress, s.safeboxAddress]), block, chain, transform)
-    const pools= await getPools(poolsJsonUrl);
+    let pools= await getPools(poolsJsonUrl);
+    let poolsWithPid = pools.filter(p => p.pid !== undefined)
+    let poolsWithoutPid = pools.filter(p => p.pid === undefined)
     const { output: masterchefLpTokens } = await sdk.api.abi.multiCall({
-        calls: pools.filter(p => p.pid !== undefined).map((pool) => ({
+        calls: poolsWithPid.map((pool) => ({
             target: pool.exchange.stakingAddress ?? pool.stakingAddress,
             params: [pool.pid, pool.wTokenAddress],
         })),
@@ -135,10 +137,10 @@ async function tvlV2Onchain(block, chain) {
     });
     let lpPools = masterchefLpTokens.map((amount, i) => ({
         balance: amount.output.amount,
-        token: pools.filter(p => p.pid !== undefined)[i].lpTokenAddress
+        token: poolsWithPid[i].lpTokenAddress
     }))
     const { output: stakingPoolsLpTokens } = await sdk.api.abi.multiCall({
-        calls: pools.filter(p => p.pid === undefined).map((pool) => ({
+        calls: poolsWithoutPid.map((pool) => ({
             target: pool.stakingAddress,
             params: [pool.wTokenAddress],
         })),
@@ -148,7 +150,7 @@ async function tvlV2Onchain(block, chain) {
     });
     stakingPoolsLpTokens.forEach((amount, i) => lpPools.push({
         balance: amount.output,
-        token: pools[i].lpTokenAddress
+        token: poolsWithoutPid[i].lpTokenAddress
     }))
     lpPools = lpPools.filter(p => p.token != '0x2a8a315e82f85d1f0658c5d66a452bbdd9356783')
     await unwrapUniswapLPs(balances, lpPools, block, chain, transform)

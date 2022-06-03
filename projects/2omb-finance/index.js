@@ -20,8 +20,8 @@ const omb3Tvl = async (chainBlocks) => {
   const balances = {};
 
   const lpPositions = [];
-  let poolInfoReturn = "";
-  i = 0;
+  let poolInfoReturn;
+  let i = 0;
   do {
     try {
       const token = (
@@ -69,7 +69,9 @@ const omb3Tvl = async (chainBlocks) => {
       poolInfoReturn = error.reason;
     }
     i += 1;
-  } while (poolInfoReturn != "missing revert data in call exception");
+  } while (!poolInfoReturn);
+
+  if (!Object.keys(balances).length)  throw new Error('Bad length, something is wrong')
 
   const transformAddress = await transformFantomAddress();
 

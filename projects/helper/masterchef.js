@@ -141,17 +141,11 @@ async function addFundsInMasterChef(balances, masterChef, block, chain = 'ethere
     );
 }
 
-
-function awaitBalanceUpdate(balancePromise, section) {
-    return async () => balancePromise.then(b => b[section])
-}
-
 function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingecko = true, poolInfoAbi = abi.poolInfo, includeYVTokens = false) {
     const stakingToken = stakingTokenRaw.toLowerCase();
     let balanceResolve;
-    const balancePromise = new Promise((resolve) => { balanceResolve = resolve })
 
-    async function tvl(timestamp, ethBlock, chainBlocks) {
+    async function getTvl(timestamp, ethBlock, chainBlocks) {
         const block = await getBlock(timestamp, chain, chainBlocks, true)
         const transformAddress = await getChainTransform(chain);
 
@@ -275,21 +269,28 @@ function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingeck
             })
         }
 
-        if (chain === 'cronos') {
+        if (['smartbch', 'cronos'].includes(chain)) {
             const fixBalances = await getFixBalances(chain)
             Object.values(balances).map(fixBalances)
         }
-        balanceResolve(balances)
-        return balances.tvl
+        return balances
     };
+
+    function getTvlPromise(key) {
+        return async (ts, _block, chainBlocks) => {
+            if (!balanceResolve)
+                balanceResolve = getTvl(ts, _block, chainBlocks)
+            return (await balanceResolve)[key]
+        }
+    }
 
     return {
         methodology: "TVL includes all farms in MasterChef contract",
         [chain]: {
-            staking: awaitBalanceUpdate(balancePromise, "staking"),
-            pool2: awaitBalanceUpdate(balancePromise, "pool2"),
-            masterchef: awaitBalanceUpdate(balancePromise, "tvl"),
-            tvl
+            staking: getTvlPromise("staking"),
+            pool2: getTvlPromise("pool2"),
+            masterchef: getTvlPromise("tvl"),
+            tvl: getTvlPromise("tvl"),
         }
     };
 }

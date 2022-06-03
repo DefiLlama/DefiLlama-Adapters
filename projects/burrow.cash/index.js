@@ -15,7 +15,7 @@ function tvl(borrowed = false) {
     };
 
     return balances;
-  };
+  }
 };
 
 module.exports = {

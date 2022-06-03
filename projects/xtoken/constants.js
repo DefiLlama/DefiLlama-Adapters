@@ -49,10 +49,10 @@ const wethAddress = '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1'
 const usdtAddress = '0xdac17f958d2ee523a2206206994597c13d831ec7';
 const COINGECKO_API_URL = 'https://api.coingecko.com/api/v3/coins';
 const urls = {
-    "mainnet": "https://api.thegraph.com/subgraphs/name/miracle-arrow/terminal-mainnet",
-    "arbitrum": "https://api.thegraph.com/subgraphs/name/miracle-arrow/terminal-arbitrum",
-    "optimism": "https://api.thegraph.com/subgraphs/name/miracle-arrow/terminal-optimism",
-    "polygon": "https://api.thegraph.com/subgraphs/name/miracle-arrow/terminal-polygon",
+    "mainnet": "https://api.thegraph.com/subgraphs/name/xtokenmarket/terminal-mainnet",
+    "arbitrum": "https://api.thegraph.com/subgraphs/name/xtokenmarket/terminal-arbitrum",
+    "optimism": "https://api.thegraph.com/subgraphs/name/xtokenmarket/terminal-optimism",
+    "polygon": "https://api.thegraph.com/subgraphs/name/xtokenmarket/terminal-polygon",
 };
 const networks = {
     "mainnet": "ethereum",

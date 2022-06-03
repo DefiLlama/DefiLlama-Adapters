@@ -10,11 +10,31 @@ module.exports = {
             "0xdac17f958d2ee523a2206206994597c13d831ec7", // USDT
           ]
         },
-      ]
+      ],
+      bridge: {
+        address: '0x2796317b0fF8538F253012862c06787Adfb8cEb6',
+        tokens: [
+          '0x98585dfc8d9e7d48f0b1ae47ce33332cf4237d96',
+          '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+          '0x0ab87046fBb341D058F17CBC4c1133F25a20a52f',
+          '0x71ab77b7dbb4fa7e017bc15090b2163221420282',
+          '0x853d955acef822db058eb8505911ed77f175b99e',
+          '0xbaac2b4491727d78d2b78815144570b9f2fe8899',
+          '0x73968b9a57c6e53d41345fd57a6e6ae27d6cdb2f',
+          '0x0f2d719407fdbeff09d87557abb7232601fd9f29',
+          '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+          '0xdac17f958d2ee523a2206206994597c13d831ec7',
+          '0xb753428af26e81097e7fd17f40c88aaa3e04902c',
+        ]
+      }
     }
   },
   optimism: {
     tvl: {
+      bridge: {
+        address: '0xAf41a65F786339e7911F4acDAD6BD49426F2Dc6b',
+        tokens: [ ]
+      },
       pools: [
         {
           pool: '0xE27BFf97CE92C3e1Ff7AA9f86781FDd6D48F5eE9',
@@ -30,11 +50,19 @@ module.exports = {
             '0x7f5c764cbc14f9669b88837ca1490cca17c31607', // usdc
           ]
         },
-      ]
+      ],
     }
   },
   avax: {
     tvl: {
+      bridge: {
+        address: '0xC05e61d0E7a63D27546389B7aD62FdFf5A91aACE',
+        tokens: [
+          '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7',
+          '0x1f1e7c893855525b303f99bdf5c3c05be09ca251',
+          '0x321E7092a180BB43555132ec53AaA65a5bF84251',
+        ]
+      },
       pools: [
         {
           pool: '0xED2a7edd7413021d440b09D654f3b87712abAB66',
@@ -57,6 +85,10 @@ module.exports = {
   },
   cronos: {
     tvl: {
+      bridge: {
+        address: '0xE27BFf97CE92C3e1Ff7AA9f86781FDd6D48F5eE9',
+        tokens: [        ]
+      },
       pools: [
         {
           pool: '0xCb6674548586F20ca39C97A52A0ded86f48814De',
@@ -70,6 +102,13 @@ module.exports = {
   },
   bsc: {
     tvl: {
+      bridge: {
+        address: '0xd123f70AE324d34A9E76b67a27bf77593bA8749f',
+        tokens: [
+          '0x5f4bde007dc06b867f86ebfe4802e34a1ffeed63',
+          '0xa4080f1778e69467e905b8d6f72f6e441f9e9484',
+        ]
+      },
       pools: [
         {
           pool: '0x28ec0B36F0819ecB5005cAB836F4ED5a2eCa4D13',
@@ -85,6 +124,11 @@ module.exports = {
   },
   polygon: {
     tvl: {
+      bridge: {
+        address: '0x8f5bbb2bb8c2ee94639e55d5f41de9b4839c1280',
+        tokens: [
+        ]
+      },
       pools: [
         {
           pool: '0x85fCD7Dd0a1e1A9FCD5FD886ED522dE8221C3EE5',
@@ -100,6 +144,10 @@ module.exports = {
   },
   fantom: {
     tvl: {
+      bridge: {
+        address: '0xAf41a65F786339e7911F4acDAD6BD49426F2Dc6b',
+        tokens: [  ]
+      },
       pools: [
         {
           pool: '0x85662fd123280827e11c59973ac9fcbe838dc3b4',
@@ -130,6 +178,11 @@ module.exports = {
   },
   boba: {
     tvl: {
+      bridge: {
+        address: '0x432036208d2717394d2614d6697c46DF3Ed69540',
+        tokens: [
+        ]
+      },
       pools: [
         {
           pool: '0x753bb855c8fe814233d26Bb23aF61cb3d2022bE5',
@@ -152,6 +205,12 @@ module.exports = {
   },
   metis: {
     tvl: {
+      bridge: {
+        address: '0x06Fea8513FF03a0d3f61324da709D4cf06F42A5c',
+        tokens: [
+          '0xe3c82a836ec85311a433fbd9486efaf4b1afbf48'
+        ]
+      },
       pools: [
         {
           pool: '0x09fec30669d63a13c666d2129230dd5588e2e240',
@@ -172,6 +231,12 @@ module.exports = {
   },
   arbitrum: {
     tvl: {
+      bridge: {
+        address: '0x6F4e8eBa4D337f874Ab57478AcC2Cb5BACdc19c9',
+        tokens: [
+          '0xfc5a1a6eb076a2c7ad06ed22c90d7e710e35ad0a',
+        ]
+      },
       pools: [
         {
           pool: '0xa067668661C84476aFcDc6fA5D758C4c01C34352',
@@ -202,6 +267,11 @@ module.exports = {
   },
   aurora: {
     tvl: {
+      bridge: {
+        address: '0xaeD5b25BE1c3163c907a471082640450F928DDFE',
+        tokens: [
+        ]
+      },
       pools: [
         {
           pool: '0xcEf6C2e20898C2604886b888552CA6CcF66933B0',
@@ -216,6 +286,13 @@ module.exports = {
   },
   harmony: {
     tvl: {
+      bridge: {
+        address: '0xAf41a65F786339e7911F4acDAD6BD49426F2Dc6b',
+        tokens: [
+          '0x72cb10c6bfa5624dd07ef608027e366bd690048f',
+          '0xa9ce83507d872c5e1273e745abcfda849daa654f',
+        ]
+      },
       pools: [
         {
           pool: '0x3ea9B0ab55F34Fb188824Ee288CeaEfC63cf908e',
@@ -241,6 +318,26 @@ module.exports = {
           ]
         },
       ]
+    }
+  },
+  moonriver: {
+    tvl: {
+      bridge: {
+        address: '0xaeD5b25BE1c3163c907a471082640450F928DDFE',
+        tokens: [
+          '0x98878B06940aE243284CA214f92Bb71a2b032B8A',
+        ]
+      },
+    }
+  },
+  moonbeam: {
+    tvl: {
+      bridge: {
+        address: '0x84A420459cd31C3c34583F67E0f0fB191067D32f',
+        tokens: [
+          '0x0db6729c03c85b0708166ca92801bcb5cac781fc',
+        ]
+      },
     }
   },
 }

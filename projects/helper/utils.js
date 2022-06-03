@@ -1,49 +1,19 @@
-const web3 = require('../config/web3.js')
-const abis = require('../config/abis.js').abis
 const BigNumber = require("bignumber.js");
 const retry = require('async-retry')
 const axios = require("axios");
-const { PromisePool } = require('@supercharge/promise-pool')
 const sdk = require('@defillama/sdk')
+const http = require('./http')
 
-async function parallelAbiCall({ block, chain = 'ethereum', abi, getCallArgs = i => i, items, maxParallel = 1 }) {
-  const { results, errors } = await PromisePool.withConcurrency(maxParallel)
-    .for(items)
-    .process(async item => {
-      const input = getCallArgs(item)
-      const response = await sdk.api.abi.call({ abi, block, chain, ...input })
-      response.input = input
-      response.success = true
-      return response
-    })
-
-  if (errors && errors.length)
-    throw errors[0]
-
-  return results
-}
-
-async function returnBalance(token, address) {
-  let contract = new web3.eth.Contract(abis.minABI, token);
-  let decimals = await contract.methods.decimals().call();
-  let balance = await contract.methods.balanceOf(address).call();
+async function returnBalance(token, address, block, chain) {
+  const { output: decimals } = await sdk.api.erc20.decimals(token, chain)
+  let { output: balance } = await sdk.api.erc20.balanceOf({ target: token, owner: address, chain, block })
   balance = await new BigNumber(balance).div(10 ** decimals).toFixed(2);
   return parseFloat(balance);
 }
 
-async function returnDecimals(address) {
-  if (address.toLowerCase() === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee') {
-    return 18;
-  }
-  let contract = new web3.eth.Contract(abis.minABI, address)
-  let decimals = await contract.methods.decimals().call();
-  return decimals;
-}
-
 async function returnEthBalance(address) {
-
-  let getethBalanceRes = await web3.eth.getBalance(address);
-  let ethAmount = await new BigNumber(getethBalanceRes).div(10 ** 18).toFixed(2);
+  const output = await sdk.api.eth.getBalance({ target: address })
+  let ethAmount = await new BigNumber(output.output).div(10 ** 18).toFixed(2);
   return parseFloat(ethAmount);
 }
 
@@ -98,10 +68,6 @@ async function getTokenPricesFromString(stringFeed) {
   return result = await fetchURL(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${stringFeed}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`);
 }
 
-async function returnBlock() {
-  return await web3.eth.getBlockNumber()
-}
-
 async function fetchURL(url) {
   return await retry(async bail => await axios.get(url), {
     retries: 3
@@ -122,13 +88,65 @@ function createIncrementArray(length) {
   return arr
 }
 
+const LP_SYMBOLS = ['SLP', 'spLP', 'JLP', 'OLP', 'SCLP', 'DLP', 'MLP', 'MSLP', 'ULP', 'TLP', 'HMDX', 'YLP', 'SCNRLP',]
 function isLP(symbol) {
   if (!symbol) return false
   if (symbol.startsWith('ZLK-LP')) {
     console.log('Blacklisting Zenlink LP because they have different abi for get reservers', symbol)
     return false
   }
-  return symbol.includes('LP') || symbol.includes('PGL') || symbol.includes('UNI-V2') || symbol === "PNDA-V2" || symbol.includes('GREEN-V2')
+
+  return LP_SYMBOLS.includes(symbol) || /(UNI-V2|PGL|GREEN-V2|PNDA-V2)/.test(symbol) || symbol.split(/\W+/).includes('LP')
+}
+
+function mergeExports(...exportsArray) {
+  exportsArray = exportsArray.flat()
+  const exports = {}
+
+  exportsArray.forEach(exportObj => {
+    Object.keys(exportObj).forEach(key => {
+      if (typeof exportObj[key] !== 'object') {
+        exports[key] = exportObj[key]
+        return;
+      }
+      Object.keys(exportObj[key]).forEach(key1 => addToExports(key, key1, exportObj[key][key1]))
+    })
+  })
+
+  Object.keys(exports)
+    .filter(chain => typeof exports[chain] === 'object')
+    .forEach(chain => {
+      const obj = exports[chain]
+      Object.keys(obj).forEach(key => {
+        if (obj[key].length > 1)
+          obj[key] = sdk.util.sumChainTvls(obj[key])
+        else
+          obj[key] = obj[key][0]
+      })
+    })
+
+
+  return exports
+
+  function addToExports(chain, key, fn) {
+    if (!exports[chain]) exports[chain] = {}
+    if (!exports[chain][key]) exports[chain][key] = []
+    exports[chain][key].push(fn)
+  }
+}
+
+async function getBalance(chain, account) {
+  switch (chain) {
+    case 'bitcoin':
+      return (await http.get(`https://chain.api.btc.com/v3/address/${account}`)).data.balance / 1e8
+    default: throw new Error('Unsupported chain')
+  }
+}
+
+function getUniqueAddresses(addresses) {
+  const set = new Set()
+  addresses.forEach(i => set.add(i.toLowerCase()))
+  return [...set]
 }
 
 module.exports = {
@@ -140,10 +158,10 @@ module.exports = {
   getTokenPricesFromString,
   getTokenPrices,
   returnBalance,
-  returnBlock,
-  returnDecimals,
   returnEthBalance,
   getPricesFromContract,
   isLP,
-  parallelAbiCall,
+  mergeExports,
+  getBalance,
+  getUniqueAddresses,
 }

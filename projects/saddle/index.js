@@ -4,7 +4,7 @@
 const axios = require("axios");
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
-const _ = require("underscore");
+
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const {
   transformArbitrumAddress,
@@ -133,7 +133,7 @@ async function tvl(timestamp, block) {
   });
 
   // Compute Balances
-  _.each(balanceOfResults.output, (balanceOf) => {
+  balanceOfResults.output.forEach((balanceOf) => {
     let address = balanceOf.input.target;
     let amount = balanceOf.output;
     if (balanceOf.input.params[0] === veth2PoolAddress) {
@@ -196,7 +196,7 @@ async function tvlFantom(timestamp, block) {
   });
 
   // Compute Balances
-  _.each(balanceOfResults.output, (balanceOf) => {
+  balanceOfResults.output.forEach((balanceOf) => {
     let address = balanceOf.input.target;
     let amount = balanceOf.output;
     rawBalances[address] = BigNumber(rawBalances[address] || 0)

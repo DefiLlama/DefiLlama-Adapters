@@ -7,7 +7,8 @@ const riskHarborOzoneAddress = "terra1dlfz2teqt5shxuw87npfecjtv7xlrxvqd4sapt";
 const riskHarborOzoneAddress2 = "terra1h6t8gx7jvc2ens9nrxcf9vqylzquey75e2wvzt";
 
 async function terra(timestamp, ethBlock, chainBlocks) {
-  const block = await getBlock(timestamp, "terra", chainBlocks);
+  // const block = await getBlock(timestamp, "terra", chainBlocks);
+  let block
   const balances = { terrausd: 0 };
   let paginationKey;
 
