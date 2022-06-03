@@ -7,12 +7,12 @@ const getReserves = require('./abis/getReserves.json');
 const { getChainTransform, stripTokenHeader, getFixBalances, } = require('./portedTokens')
 const { requery, } = require('./getUsdUniTvl')
 const { sumTokens, } = require('./unwrapLPs')
-const { isLP, parallelAbiCall } = require('./utils')
+const { isLP, getUniqueAddresses, } = require('./utils')
 const factoryAbi = require('./abis/factory.json');
 const { getBlock } = require('./getBlock');
 const { default: BigNumber } = require('bignumber.js');
 
-async function getTokenPrices({ block, chain = 'ethereum', coreAssets = [], blacklist = [], whitelist = [], lps = [], transformAddress, maxParallel, allLps = false }) {
+async function getTokenPrices({ block, chain = 'ethereum', coreAssets = [], blacklist = [], whitelist = [], lps = [], transformAddress, allLps = false }) {
   if (!transformAddress)
     transformAddress = await getChainTransform(chain)
 
@@ -23,20 +23,15 @@ async function getTokenPrices({ block, chain = 'ethereum', coreAssets = [], blac
   const pairCalls = pairAddresses.map((pairAddress) => ({ target: pairAddress, }))
   let token0Addresses, token1Addresses, reserves
 
-  if (!maxParallel) {
-    [token0Addresses, token1Addresses, reserves] = await Promise.all([
-      sdk.api.abi.multiCall({ abi: token0, chain, calls: pairCalls, block, }).then(({ output }) => output),
-      sdk.api.abi.multiCall({ abi: token1, chain, calls: pairCalls, block, }).then(({ output }) => output),
-      sdk.api.abi.multiCall({ abi: getReserves, chain, calls: pairCalls, block, }).then(({ output }) => output),
-    ]);
-    await requery(token0Addresses, chain, block, token0);
-    await requery(token1Addresses, chain, block, token1);
-    await requery(reserves, chain, block, getReserves);
-  } else {
-    token0Addresses = await parallelAbiCall({ block, chain, abi: token0, items: pairCalls, maxParallel, })
-    token1Addresses = await parallelAbiCall({ block, chain, abi: token1, items: pairCalls, maxParallel, })
-    reserves = await parallelAbiCall({ block, chain, abi: getReserves, items: pairCalls, maxParallel, })
-  }
+  [token0Addresses, token1Addresses, reserves] = await Promise.all([
+    sdk.api.abi.multiCall({ abi: token0, chain, calls: pairCalls, block, }).then(({ output }) => output),
+    sdk.api.abi.multiCall({ abi: token1, chain, calls: pairCalls, block, }).then(({ output }) => output),
+    sdk.api.abi.multiCall({ abi: getReserves, chain, calls: pairCalls, block, }).then(({ output }) => output),
+  ]);
+  await requery(token0Addresses, chain, block, token0);
+  await requery(token1Addresses, chain, block, token1);
+  await requery(reserves, chain, block, getReserves);
+
 
   const pairs = {};
   // add token0Addresses
@@ -110,12 +105,8 @@ async function getTokenPrices({ block, chain = 'ethereum', coreAssets = [], blac
   }
 
   async function getLPList(lps) {
-    let symbols
     const callArgs = lps.map(t => ({ target: t }))
-    if (!maxParallel)
-      symbols = (await sdk.api.abi.multiCall({ calls: callArgs, abi: symbol, block, chain })).output
-    else
-      symbols = await parallelAbiCall({ block, chain, abi: symbol, items: callArgs, maxParallel, })
+    const symbols = (await sdk.api.abi.multiCall({ calls: callArgs, abi: symbol, block, chain })).output
     return symbols.filter(item => isLP(item.output)).map(item => item.input.target.toLowerCase())
   }
 
@@ -195,7 +186,7 @@ async function getTokenPrices({ block, chain = 'ethereum', coreAssets = [], blac
   }
 }
 
-function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitelist = [], factory, transformAddress, maxParallel, allowUndefinedBlock = true }) {
+function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitelist = [], factory, transformAddress, allowUndefinedBlock = true }) {
   return async (ts, _block, chainBlocks) => {
     let pairAddresses;
     const block = await getBlock(ts, chain, chainBlocks, allowUndefinedBlock)
@@ -204,17 +195,12 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
       throw new Error("allPairsLength() failed")
 
     const pairNums = Array.from(Array(Number(pairLength)).keys())
-    let pairs
-
-    if (!maxParallel) {
-      pairs = (await sdk.api.abi.multiCall({ abi: factoryAbi.allPairs, chain, calls: pairNums.map(num => ({ target: factory, params: [num] })), block, requery: true })).output
-      await requery(pairs, chain, block, factoryAbi.allPairs);
-    } else
-      pairs = await parallelAbiCall({ block, chain, abi: factoryAbi.allPairs, items: pairNums, maxParallel, getCallArgs: num => ({ params: [num], target: factory }) })
+    let pairs = (await sdk.api.abi.multiCall({ abi: factoryAbi.allPairs, chain, calls: pairNums.map(num => ({ target: factory, params: [num] })), block, requery: true })).output
+    await requery(pairs, chain, block, factoryAbi.allPairs);
 
     pairAddresses = pairs.map(result => result.output.toLowerCase())
 
-    const { balances } = await getTokenPrices({ block, chain, coreAssets, blacklist, lps: pairAddresses, transformAddress, maxParallel, whitelist, allLps: true })
+    const { balances } = await getTokenPrices({ block, chain, coreAssets, blacklist, lps: pairAddresses, transformAddress, whitelist, allLps: true })
     return balances
   }
 }
@@ -287,7 +273,21 @@ function pool2({ stakingContract, lpToken, chain = "ethereum", transformAddress,
   }
 }
 
+async function sumTokensSingle({ coreAssets, balances = {}, owner, tokens, chain, block, }) {
+  tokens = getUniqueAddresses(tokens)
+  const toa = tokens.map(i => [i, owner])
+  const [
+    { updateBalances }
+  ] = await Promise.all([
+    getTokenPrices({ coreAssets, lps: tokens, chain, block, }),
+    sumTokens(balances, toa, block, chain)
+  ])
+  await updateBalances(balances)
+  return balances
+}
+
 module.exports = {
+  sumTokensSingle,
   getTokenPrices,
   getUniTVL,
   unknownTombs,

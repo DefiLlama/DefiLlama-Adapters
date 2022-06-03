@@ -1,37 +1,8 @@
 const BigNumber = require("bignumber.js");
 const retry = require('async-retry')
 const axios = require("axios");
-const { PromisePool } = require('@supercharge/promise-pool')
 const sdk = require('@defillama/sdk')
 const http = require('./http')
-
-async function parallelAbiCall({ block, chain = 'ethereum', abi, getCallArgs = i => i, items, maxParallel = 1 }) {
-  const { results, errors } = await PromisePool.withConcurrency(maxParallel)
-    .for(items)
-    .process(async item => {
-      const input = getCallArgs(item)
-      let response
-      try {
-        response = await sdk.api.abi.call({ abi, block, chain, ...input })
-      } catch (e) {
-        console.log('Call failed, retying after 2 seconds')
-        await sleep(2000)
-        response = await sdk.api.abi.call({ abi, block, chain, ...input })
-      }
-      response.input = input
-      response.success = true
-      return response
-    })
-
-  if (errors && errors.length)
-    throw errors[0]
-
-  return results
-}
-
-async function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms))
-}
 
 async function returnBalance(token, address, block, chain) {
   const { output: decimals } = await sdk.api.erc20.decimals(token, chain)
@@ -117,7 +88,7 @@ function createIncrementArray(length) {
   return arr
 }
 
-const LP_SYMBOLS = ['SLP', 'spLP', 'JLP', 'OLP', 'SCLP', 'DLP', 'MLP', 'MSLP', 'ULP', 'TLP', 'HMDX','YLP', 'SCNRLP',]
+const LP_SYMBOLS = ['SLP', 'spLP', 'JLP', 'OLP', 'SCLP', 'DLP', 'MLP', 'MSLP', 'ULP', 'TLP', 'HMDX', 'YLP', 'SCNRLP',]
 function isLP(symbol) {
   if (!symbol) return false
   if (symbol.startsWith('ZLK-LP')) {
@@ -172,6 +143,12 @@ async function getBalance(chain, account) {
   }
 }
 
+function getUniqueAddresses(addresses) {
+  const set = new Set()
+  addresses.forEach(i => set.add(i.toLowerCase()))
+  return [...set]
+}
+
 module.exports = {
   createIncrementArray,
   fetchURL,
@@ -184,7 +161,7 @@ module.exports = {
   returnEthBalance,
   getPricesFromContract,
   isLP,
-  parallelAbiCall,
   mergeExports,
   getBalance,
+  getUniqueAddresses,
 }
