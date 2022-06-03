@@ -276,12 +276,8 @@ function pool2({ stakingContract, lpToken, chain = "ethereum", transformAddress,
 async function sumTokensSingle({ coreAssets, balances = {}, owner, tokens, chain, block, }) {
   tokens = getUniqueAddresses(tokens)
   const toa = tokens.map(i => [i, owner])
-  const [
-    { updateBalances }
-  ] = await Promise.all([
-    getTokenPrices({ coreAssets, lps: tokens, chain, block, }),
-    sumTokens(balances, toa, block, chain)
-  ])
+  const { updateBalances } = await getTokenPrices({ coreAssets, lps: tokens, chain, block, })
+  await sumTokens(balances, toa, block, chain)
   await updateBalances(balances)
   return balances
 }
