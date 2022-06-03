@@ -11,5 +11,7 @@ module.exports = {
   timetravel: false,
   methodology:
     "Snapshots of the TVL from Zeta (zeta.markets) are saved periodically into the statistics repo. This includes all tokens used as collateral and in the insurance fund",
-  tvl,
+  solana: {
+    tvl,
+  },
 };
