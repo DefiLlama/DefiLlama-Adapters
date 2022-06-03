@@ -1,5 +1,6 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
+const BigNumber = require('bignumber.js');
 
 const chain = "ethereum";
 
@@ -15,28 +16,8 @@ const insure = "0xd83AE04c9eD29d6D3E6Bf720C71bc7BeB424393E";
 // addresses getters
 const PolicyBookRegistry = "0x131fb74c6fede6d6710ff224e07ce0ed8123f144";
 const ShieldMining = "0x3dc07E60ecB3d064d20c386217ceeF8e3905916b";
+const vlINSURE = "0xA12ab76a82D118e33682AcB242180B4cc0d19E29";
 
-// =================== GET LIST OF POLICY BOOKS =================== //
-// async function getPolicyBookList(timestamp, block) {
-//   const countPolicyBooks = (
-//     await sdk.api.abi.call({
-//       target: PolicyBookRegistry,
-//       abi: abi["count"],
-//       chain: chain,
-//       block: block,
-//     })
-//   ).output;
-//   const listPolicyBooks = (
-//     await sdk.api.abi.call({
-//       target: PolicyBookRegistry,
-//       params: [0, countPolicyBooks],
-//       abi: abi["list"],
-//       chain: chain,
-//       block: block,
-//     })
-//   ).output;
-//   return listPolicyBooks;
-// }
 
 async function tvl(timestamp, block) {
   let balances = {};
@@ -52,8 +33,6 @@ async function tvl(timestamp, block) {
   ).output;
   sdk.util.sumSingleBalance(balances, usdc, vusdcBalances);
 
-  console.log(tvl);
-
   return balances;
 }
 
@@ -61,7 +40,8 @@ async function tvl(timestamp, block) {
 async function staking(timestamp, block) {
   let balances = {};
 
-  const insureBalances = (
+
+  const veinsureBalances = (
     await sdk.api.abi.call({
       target: ShieldMining,
       abi: abi["supply"],
@@ -69,7 +49,32 @@ async function staking(timestamp, block) {
       block: block,
     })
   ).output;
-  sdk.util.sumSingleBalance(balances, insure ,insureBalances);
+
+  const vlinsureBalances = (
+    await sdk.api.abi.call({
+      target: insure,
+      params: vlINSURE,
+      abi: abi["balanceOf"],
+      chain: chain,
+      block: block,
+    })
+  ).output;
+
+  console.log(veinsureBalances);
+  
+  console.log(vlinsureBalances);
+  
+  sdk.util.sumSingleBalance(balances, insure ,veinsureBalances);
+  sdk.util.sumSingleBalance(balances, insure ,vlinsureBalances);
+  
+  console.log(balances);
+  
+  // let totalStakingAmount = BigNumber();
+  // totalStakingAmount = BigNumber(veinsureBalances).plus(vlinsureBalances);
+
+  // console.log(BigNumber(totalStakingAmount));
+
+  // sdk.util.sumSingleBalance(balances, insure ,totalStakingAmount);
 
   return balances;
 }
