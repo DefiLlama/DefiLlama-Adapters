@@ -12,7 +12,7 @@ const factoryAbi = require('./abis/factory.json');
 const { getBlock } = require('./getBlock');
 const { default: BigNumber } = require('bignumber.js');
 
-async function getTokenPrices({ block, chain = 'ethereum', coreAssets = [], blacklist = [], whitelist = [], lps = [], transformAddress, allLps = false }) {
+async function getTokenPrices({ block, chain = 'ethereum', coreAssets = [], blacklist = [], whitelist = [], lps = [], transformAddress, allLps = false, restrictTokenPrice }) {
   if (!transformAddress)
     transformAddress = await getChainTransform(chain)
 
@@ -95,7 +95,7 @@ async function getTokenPrices({ block, chain = 'ethereum', coreAssets = [], blac
 
   filterPrices(prices)
   const balances = {}
-  Object.values(pairBalances).forEach(pb => addBalances(pb, balances))
+  Object.keys(pairBalances).forEach(key => addBalances(pairBalances[key], balances, { pairAddress: key }))
   const fixBalances = await getFixBalances(chain)
   fixBalances(balances)
 
@@ -110,8 +110,8 @@ async function getTokenPrices({ block, chain = 'ethereum', coreAssets = [], blac
     const callArgs = lps.map(t => ({ target: t }))
     let symbols = (await sdk.api.abi.multiCall({ calls: callArgs, abi: symbol, block, chain })).output
     symbols = symbols.filter(item => isLP(item.output, item.input.target, chain))
-    console.log(symbols.filter(item => item.output !== 'Cake-LP').map(i => `token: ${i.input.target} Symbol: ${i.output}`).join('\n'))
-    console.log(getUniqueAddresses(symbols.map(i => i.output)).join(', '))
+    // console.log(symbols.filter(item => item.output !== 'Cake-LP').map(i => `token: ${i.input.target} Symbol: ${i.output}`).join('\n'))
+    // console.log(getUniqueAddresses(symbols.map(i => i.output)).join(', '))
     return symbols.map(item => item.input.target.toLowerCase())
   }
 
@@ -124,21 +124,24 @@ async function getTokenPrices({ block, chain = 'ethereum', coreAssets = [], blac
       if ((currentCoreAsset === coreAsset) && coreAmount < currentCoreAmount) return;
     }
     if (Number(tokenAmount) > 0)
-      prices[address] = [Number(coreAmount), Number(coreAmount) / Number(tokenAmount), coreAsset]
+      prices[address] = [Number(coreAmount), Number(coreAmount) / Number(tokenAmount), coreAsset, +Number(tokenAmount)]
   }
 
-  async function updateBalances(balances, resolveLP = true) {
+  async function updateBalances(balances, { resolveLP = true, skipConversion = false, } = {}) {
     let lpAddresses = []  // if some of the tokens in balances are LP tokens, we resolve those as well
-    Object.entries(balances).forEach(([address, amount]) => {
+    Object.entries(balances).forEach(([address, amount = 0]) => {
       const token = stripTokenHeader(address)
       const price = prices[token];
       if (pairBalances[token]) {
         lpAddresses.push(token)
         return;
       }
-      if (!price) return;
+      if (!price || skipConversion) return;
       const coreAsset = price[2];
-      sdk.util.sumSingleBalance(balances, transformAddress(coreAsset), BigNumber(price[1] * (amount ?? 0)).toFixed(0))
+      const coreTokenAmountInLP = price[0]
+      // if (+amount / 1e22 > 1) console.log(+amount / 1e22 * 2.96, +amount > +coreTokenAmountInLP, token)  // print current token value and token address
+      if (restrictTokenPrice && +amount > +coreTokenAmountInLP) amount = coreTokenAmountInLP
+      sdk.util.sumSingleBalance(balances, transformAddress(coreAsset), BigNumber(price[1] * +amount).toFixed(0))
       delete balances[address]
     })
 
@@ -153,20 +156,23 @@ async function getTokenPrices({ block, chain = 'ethereum', coreAssets = [], blac
         const token = item.input.target
         const address = transformAddress(token)
         const ratio = (+(balances[address]) || 0) / +item.output
-        addBalances(pairBalances[token], balances, ratio)
+        addBalances(pairBalances[token], balances, { ratio, pairAddress: token, skipConversion, })
       })
     }
 
     return balances
   }
 
-  function addBalances(balances, finalBalances, ratio = 1) {
-    Object.entries(balances).forEach(([address, amount]) => {
+  function addBalances(balances, finalBalances, { skipConversion = false, pairAddress, ratio = 1 }) {
+    Object.entries(balances).forEach(([address, amount = 0]) => {
       const price = prices[address];
       // const price =  undefined; // NOTE: this is disabled till, we add a safeguard to limit LP manipulation to inflate token price, like mimimum core asset liquidity to be 10k
-      if (price !== undefined) {
+      if (price && !skipConversion) {
+        const coreTokenAmountInLP = price[0]
+        // if (+amount / 1e22 > 1) console.log(+amount / 1e22 * 2.96, +amount > +coreTokenAmountInLP, address, pairAddress)  // print current token value and token address
+        if (restrictTokenPrice && +amount > +coreTokenAmountInLP) amount = coreTokenAmountInLP
         const coreAsset = price[2];
-        sdk.util.sumSingleBalance(finalBalances, transformAddress(coreAsset), BigNumber(price[1] * (amount ?? 0) * ratio).toFixed(0))
+        sdk.util.sumSingleBalance(finalBalances, transformAddress(coreAsset), BigNumber(price[1] * +amount * ratio).toFixed(0))
       } else
         sdk.util.sumSingleBalance(finalBalances, transformAddress(address), BigNumber(+amount * ratio).toFixed(0))
     })
@@ -271,19 +277,20 @@ function pool2({ stakingContract, lpToken, chain = "ethereum", transformAddress,
     const balances = await sumTokens({}, [[lpToken, stakingContract]], block, chain, transformAddress, { resolveLP: true })
     const { updateBalances } = await getTokenPrices({ block, chain, transformAddress, coreAssets: [coreAsset], lps: [lpToken], allLps: true, })
 
-    await updateBalances(balances, false)
+    await updateBalances(balances, { resolveLP: false, })
     const fixBalances = await getFixBalances(chain)
     fixBalances(balances)
     return balances
   }
 }
 
-async function sumTokensSingle({ coreAssets, balances = {}, owner, tokens, chain, block, }) {
+async function sumTokensSingle({ coreAssets, balances = {}, owner, tokens, chain, block, restrictTokenPrice = false, blacklist = [], skipConversion }) {
   tokens = getUniqueAddresses(tokens)
-  const toa = tokens.map(i => [i, owner])
-  const { updateBalances } = await getTokenPrices({ coreAssets, lps: tokens, chain, block, })
+  blacklist = getUniqueAddresses(blacklist)
+  const toa = tokens.filter(t => !blacklist.includes(t)).map(i => [i, owner])
+  const { updateBalances } = await getTokenPrices({ coreAssets, lps: tokens, chain, block, restrictTokenPrice, blacklist, })
   await sumTokens(balances, toa, block, chain)
-  await updateBalances(balances)
+  await updateBalances(balances, { skipConversion })
   return balances
 }
 

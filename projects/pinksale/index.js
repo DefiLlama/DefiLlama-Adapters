@@ -27,10 +27,29 @@ const tvl = async (timestamp, _block, { [chain]: block }) => {
     coreAssets: [
       '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // WBNB
       '0xe9e7cea3dedca5984780bafc599bd69add087d56', // BUSD
+      '0x55d398326f99059ff775485246999027b3197955', // USDT token
+      '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d', // USDC token
+      '0x2170ed0880ac9a755fd29b2688956bd959f933f8', // ETH token
+      '0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c' //  WBTC token
+    ],
+    blacklist: [
+      '0x602ba546a7b06e0fc7f58fd27eb6996ecc824689',
+      '0x17e65e6b9b166fb8e7c59432f0db126711246bc0',
+      '0xee6cacddd3a9370d87db581ee6728226883578e5',
+      '0x6d163b653010740bfb41bed4bee23f94b3285cba',
+      '0xb0228eb6c0b49f8265e6e161c3a987eed7471f42',
+      '0x9888d3d9fbc12487259d1c82665b2ffd009936c6',
+      '0x49a9f9a2271d8c5da44c57e7102aca79c222f4a9',
+      '0x25f6212eb410e22956856ccb0383ec1a86fceaf9',
+      '0x851b7cb21d7428fa1ed87a7c45da8048079b0a90',
+      '0xb08f67c04bfdf069017365969ca19a0ae6e66b85',
+      '0x4aee9d30893c5c73e5a5b8637a10d9537497f1c8',
     ],
     owner: vault,
     tokens,
     block, chain,
+    restrictTokenPrice: true,
+    skipConversion: true,
   })
 };
 
