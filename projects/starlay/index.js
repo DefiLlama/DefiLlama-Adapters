@@ -4,6 +4,7 @@ const { getBorrowed } = require("../helper/aave");
 
 const DOT_TOKEN = "polkadot"
 const DOT_DECIMALS = 10
+const DEFAULT_DECIMALS = 18
 
 const tokens = {
   // WASTR
@@ -70,18 +71,13 @@ function astar(borrowed) {
       );
     }
 
-    const res = Object.keys(balances).map((key, index) => {
-      console.log("key", key);
-      if (key.startsWith("0x")) return { symbol: key, balance: balances[key] };
-      if (key === DOT_TOKEN) return { symbol: key, balance: BigNumber(balances[key]).shiftedBy(-DOT_DECIMALS)};
-      return {
-        symbol: key,
-        balance: BigNumber(balances[key])
-          .div(10 ** 18)
-          .toFixed(0),
-      };
-    });
-    return Object.fromEntries(res.map((e) => [e.symbol, e.balance]));
+   return Object.keys(balances).reduce((res, key) => {
+      if (key.startsWith("0x"))
+        return { ...res, [key]: balances[key] };
+      if (key === DOT_TOKEN)
+        return { ...res, [key]: new BigNumber(balances[key]).shiftedBy(-DOT_DECIMALS) };
+      return { ...res, [key]: new BigNumber(balances[key]).shiftedBy(-DEFAULT_DECIMALS) };
+    }, {});
   };
 }
 
