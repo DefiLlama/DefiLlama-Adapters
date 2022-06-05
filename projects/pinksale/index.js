@@ -29,8 +29,6 @@ const tvl = async (timestamp, _block, { [chain]: block }) => {
       '0xe9e7cea3dedca5984780bafc599bd69add087d56', // BUSD
       '0x55d398326f99059ff775485246999027b3197955', // USDT token
       '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d', // USDC token
-      '0x2170ed0880ac9a755fd29b2688956bd959f933f8', // ETH token
-      '0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c' //  WBTC token
     ],
     blacklist: [
       '0x602ba546a7b06e0fc7f58fd27eb6996ecc824689',
@@ -44,12 +42,21 @@ const tvl = async (timestamp, _block, { [chain]: block }) => {
       '0x851b7cb21d7428fa1ed87a7c45da8048079b0a90',
       '0xb08f67c04bfdf069017365969ca19a0ae6e66b85',
       '0x4aee9d30893c5c73e5a5b8637a10d9537497f1c8',
+      '0x9FBff386a9405b4C98329824418ec02b5C20976b',
     ],
     owner: vault,
     tokens,
     block, chain,
     restrictTokenPrice: true,
-    skipConversion: true,
+    skipConversion: false,
+    onlyLPs: false,
+    log_coreAssetPrices: [
+      300/ 1e18,
+      1/ 1e18,
+      1/ 1e18,
+      1/ 1e18,
+    ],
+    log_minTokenValue: 1e4,
   })
 };
 
