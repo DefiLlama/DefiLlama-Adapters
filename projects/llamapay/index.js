@@ -24,8 +24,6 @@ const queryField = gql`
 const translateToken = {
     "0x91f8490ec27cbb1b2faedd29c2ec23011d7355fb": "0xdac17f958d2ee523a2206206994597c13d831ec7",
     "0x4ecaba5870353805a9f068101a40e0f32ed605c6": "0xdac17f958d2ee523a2206206994597c13d831ec7",
-    "0xdf613af6b44a31299e48131e9347f034347e2f00": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
-    "0x662d0f9ff837a51cf89a1fe7e0882a906dac08a3": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
 }
 
 async function getTvl(block, chain, endpoint) {
@@ -92,7 +90,6 @@ async function xdaiTvl(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
-    misrepresentedTokens: true,
     arbitrum: {
         tvl: arbitrumTvl
     },
