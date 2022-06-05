@@ -50,13 +50,14 @@ const tvl = async (timestamp, _block, { [chain]: block }) => {
     restrictTokenPrice: true,
     skipConversion: false,
     onlyLPs: false,
+    minLPRatio: 0.01,
     log_coreAssetPrices: [
       300/ 1e18,
       1/ 1e18,
       1/ 1e18,
       1/ 1e18,
     ],
-    log_minTokenValue: 1e4,
+    log_minTokenValue: 1e6,
   })
 };
 

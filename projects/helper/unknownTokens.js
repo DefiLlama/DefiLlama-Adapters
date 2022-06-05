@@ -13,8 +13,18 @@ const { getBlock } = require('./getBlock');
 const { default: BigNumber } = require('bignumber.js')
 
 async function getTokenPrices({
-  block, chain = 'ethereum', coreAssets = [], blacklist = [], whitelist = [], lps = [], transformAddress,
-  allLps = false, restrictTokenPrice = false, log_coreAssetPrices = [], log_minTokenValue = 1e6 // log only if token value is higer than this value, now minimum is set as 1 million
+  block, 
+  chain = 'ethereum', 
+  coreAssets = [],  // list of tokens that can used as base token to price unknown tokens against (Note: order matters, is there are two LPs for a token, the core asset with a lower index is used)
+  blacklist = [],   // list of tokens to ignore/blacklist
+  whitelist = [],   // if set, tvl/price is computed only for these tokens
+  lps = [], // list of token addresses (all need not be LPs, code checks and filters out non LPs)
+  transformAddress, // function for transforming token address to coingecko friendly format
+  allLps = false,   // if set true, assumes all tokens provided as lps are lps and skips validation/filtering
+  minLPRatio = 0.5, // if a token pool has less that this percent of core asset tokens compared to a token pool with max tokens for a given core asset, this token pool is not used for price calculation
+  restrictTokenPrice = false, // if enabled, while computed tvl, an unknown token value can max 
+  log_coreAssetPrices = [], 
+  log_minTokenValue = 1e6 // log only if token value is higer than this value, now minimum is set as 1 million
 }) {
   let counter = 0
   if (!transformAddress)
@@ -79,6 +89,7 @@ async function getTokenPrices({
         setPrice(prices, token1Address, reserveAmounts[0], reserveAmounts[1], token0Address)
       }
     } else if (coreAssets.includes(token1Address)) {
+      if (!reserveAmounts)  console.log('missing reserves', pairAddress)
       sdk.util.sumSingleBalance(pairBalances[pairAddress], token1Address, Number(reserveAmounts[1]) * 2)
       if (!blacklist.includes(token0Address) && (!whitelist.length || whitelist.includes(token0Address))) {
         setPrice(prices, token0Address, reserveAmounts[1], reserveAmounts[0], token1Address)
@@ -215,7 +226,7 @@ async function getTokenPrices({
       const [amount, _, coreAsset] = priceArry
       if (!maxCoreTokens[coreAsset]) throw new Error('there is bug in the code')
       const lpRatio = +amount * 100 / maxCoreTokens[coreAsset]
-      if (lpRatio < 0.5) delete prices[token] // current pool has less than 0.5% of tokens compared to pool with highest number of core tokens
+      if (lpRatio < minLPRatio) delete prices[token] // current pool has less than 0.5% of tokens compared to pool with highest number of core tokens
     })
   }
 }
@@ -308,13 +319,13 @@ function pool2({ stakingContract, lpToken, chain = "ethereum", transformAddress,
 }
 
 async function sumTokensSingle({
-  coreAssets, balances = {}, owner, tokens, chain, block, restrictTokenPrice = false, blacklist = [], skipConversion, onlyLPs,
+  coreAssets, balances = {}, owner, tokens, chain, block, restrictTokenPrice = false, blacklist = [], skipConversion, onlyLPs, minLPRatio,
   log_coreAssetPrices = [], log_minTokenValue = 1e6,
 }) {
   tokens = getUniqueAddresses(tokens)
   blacklist = getUniqueAddresses(blacklist)
   const toa = tokens.filter(t => !blacklist.includes(t)).map(i => [i, owner])
-  const { updateBalances } = await getTokenPrices({ coreAssets, lps: tokens, chain, block, restrictTokenPrice, blacklist, log_coreAssetPrices, log_minTokenValue })
+  const { updateBalances } = await getTokenPrices({ coreAssets, lps: tokens, chain, block, restrictTokenPrice, blacklist, log_coreAssetPrices, log_minTokenValue, minLPRatio })
   await sumTokens(balances, toa, block, chain)
   return updateBalances(balances, { skipConversion, onlyLPs })
 }
