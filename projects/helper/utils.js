@@ -28,7 +28,7 @@ async function getPrices(object) {
       }
     }
   }
-  return await fetchURL(`https://api.coingecko.com/api/v3/simple/price?ids=${stringFetch}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`)
+  return fetchURL(`https://api.coingecko.com/api/v3/simple/price?ids=${stringFetch}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`)
 }
 
 async function getPricesFromContract(object) {
@@ -42,40 +42,22 @@ async function getPricesFromContract(object) {
       }
     }
   }
-  return await fetchURL(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${contractFetch}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`)
+  return fetchURL(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${contractFetch}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`)
 }
 
 async function getPricesfromString(stringFeed) {
-  return await fetchURL(`https://api.coingecko.com/api/v3/simple/price?ids=${stringFeed}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`)
+  return fetchURL(`https://api.coingecko.com/api/v3/simple/price?ids=${stringFeed}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`)
 }
 
-async function getTokenPrices(object) {
-  var stringFetch = '';
-  for (var key in object[0]) {
-    if (object[0][key] != 'stable') {
-      if (stringFetch.length > 0) {
-        stringFetch = stringFetch + ',' + object[0][key];
-      } else {
-        stringFetch = object[0][key];
-      }
-    }
-  }
-
-  return await getTokenPricesFromString(stringFetch);
-}
-
-async function getTokenPricesFromString(stringFeed) {
-  return result = await fetchURL(`https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${stringFeed}&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true`);
-}
 
 async function fetchURL(url) {
-  return await retry(async bail => await axios.get(url), {
+  return retry(async bail => await axios.get(url), {
     retries: 3
   })
 }
 
 async function postURL(url, data) {
-  return await retry(async bail => await axios.post(url, data), {
+  return retry(async bail => await axios.post(url, data), {
     retries: 3
   })
 }
@@ -88,15 +70,25 @@ function createIncrementArray(length) {
   return arr
 }
 
-const LP_SYMBOLS = ['SLP', 'spLP', 'JLP', 'OLP', 'SCLP', 'DLP', 'MLP', 'MSLP', 'ULP', 'TLP', 'HMDX', 'YLP', 'SCNRLP',]
-function isLP(symbol) {
+const LP_SYMBOLS = ['SLP', 'spLP', 'JLP', 'OLP', 'SCLP', 'DLP', 'MLP', 'MSLP', 'ULP', 'TLP', 'HMDX', 'YLP', 'SCNRLP', 'PGL', 'GREEN-V2', 'PNDA-V2']
+const blacklisted_LPS = [
+].map(i => i.toLowerCase())
+
+function isLP(symbol, token, chain) {
+  // if (token && blacklisted_LPS.includes(token.toLowerCase())) return false
+  if (chain === 'bsc' && ['OLP', 'DLP', 'MLP', 'LP'].includes(symbol)) return false
   if (!symbol) return false
   if (symbol.startsWith('ZLK-LP')) {
-    console.log('Blacklisting Zenlink LP because they have different abi for get reservers', symbol)
+    console.log('Blacklisting Zenlink LP because they have different abi for get reservers', symbol, token)
     return false
   }
 
-  return LP_SYMBOLS.includes(symbol) || /(UNI-V2|PGL|GREEN-V2|PNDA-V2)/.test(symbol) || symbol.split(/\W+/).includes('LP')
+  if (symbol.includes('DMM-LP')) {
+    console.log('Blacklisting Kybe DMM LP because they have different abi for get reservers', symbol, token)
+    return false
+  }
+
+  return LP_SYMBOLS.includes(symbol) || /(UNI-V2)/.test(symbol) || symbol.split(/\W+/).includes('LP')
 }
 
 function mergeExports(...exportsArray) {
@@ -149,14 +141,16 @@ function getUniqueAddresses(addresses) {
   return [...set]
 }
 
+
+const DEBUG_MODE = !!process.env.LLAMA_DEBUG_MODE
+
 module.exports = {
+  DEBUG_MODE,
   createIncrementArray,
   fetchURL,
   postURL,
   getPricesfromString,
   getPrices,
-  getTokenPricesFromString,
-  getTokenPrices,
   returnBalance,
   returnEthBalance,
   getPricesFromContract,

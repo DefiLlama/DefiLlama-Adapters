@@ -1,8 +1,7 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { pool2s } = require("../helper/pool2");
-const { unwrapLPsAuto, } = require("../helper/unwrapLPs");
-const { getChainTransform } = require("../helper/portedTokens");
+const { sumTokensSingle } = require("../helper/unknownTokens");
 
 const deepLockLockerContractV1 = "0x10dD7FD1Bf3753235068ea757f2018dFef94B257";
 const deepLockLockerContractV2 = "0x3f4D6bf08CB7A003488Ef082102C2e6418a4551e";
@@ -43,48 +42,65 @@ const bscTvl = async (ts, _b, { bsc: block }) => {
     '0xd43b226d365d8b22ba472afc2fa769b356eb5d47',
     '0x8d98a4e36ca048b8e4616564e5a8ebb78895ddff',
     '0x1337ace33c2b3fc17d85f33dbd0ed73a896148b5',
+    '0x486dccaf152b271630216d62c00188f2558f6bec',
+    '0xf0ee026f572c4a229dc67a692244e90abac29ec2',
   ].map(i => i.toLowerCase())
 
   const chain = 'bsc'
   const balances = {}
-  const transformAddress = await getChainTransform(chain)
   const contracts = [
     deepLockLockerContractV1,
     deepLockLockerContractV2,
   ]
+
   const { output: lengths } = await sdk.api.abi.multiCall({
     abi: abi.depositId,
     calls: contracts.map(i => ({ target: i })),
     chain, block,
   })
-  const calls = []
-  lengths.forEach(({ output }, idx) => {
-    for (let i = 1; i <= output; i++)
-      calls.push({ target: contracts[idx], params: i })
+
+  const allBalances = await Promise.all(contracts.map((vault, i) => getBalances(vault, lengths[i].output)))
+  allBalances.forEach(balance => {
+    Object.entries(balance).forEach(([token, val]) => sdk.util.sumSingleBalance(balances, token, val))
   })
-
-  // note: since there are too many calls, we are splitting into smaller blocks
-  const chunkSize = 2000
-  for (let i = 0; i < calls.length; i += chunkSize) {
-    const miniBalances = {}
-    const chunk = calls.slice(i, i + chunkSize)
-    const { output } = await sdk.api.abi.multiCall({
-      abi: abi.lockedToken, requery: true,
-      calls: chunk, chain, block,
-    });
-
-    output.forEach(({ output }) => {
-      if (blacklist.includes(output.tokenAddress.toLowerCase())) return;
-      sdk.util.sumSingleBalance(miniBalances, transformAddress(output.tokenAddress), output.tokenAmount)
-    })
-
-    await unwrapLPsAuto({ balances: miniBalances, transformAddress, block, chain })
-    Object.entries(miniBalances).forEach(([token, bal]) => sdk.util.sumSingleBalance(balances, token, bal))
-  }
 
   delete balances['bsc:0x60de5f9386b637fe97af1cc05f25548e9baaee19'] // remove deeplock token from tvl calculation
   delete balances['bsc:0x64f36701138f0e85cc10c34ea535fdbadcb54147'] // remove Anon INU - incorrect price
   return balances;
+
+  async function getBalances(vault, length) {
+    const calls = []
+    for (let i = 1; i <= length; i++)
+      calls.push({ target: vault, params: i })
+    const { output } = await sdk.api.abi.multiCall({
+      abi: abi.lockedToken, requery: true,
+      calls, chain, block,
+    })
+    const tokens = output.map(i => i.output.tokenAddress)
+    return sumTokensSingle({
+      coreAssets: [
+        '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // WBNB
+        '0xe9e7cea3dedca5984780bafc599bd69add087d56', // BUSD
+        '0x55d398326f99059ff775485246999027b3197955', // USDT token
+        '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d', // USDC token
+      ],
+      blacklist,
+      owner: vault,
+      tokens,
+      block, chain,
+      restrictTokenPrice: true,
+      skipConversion: false,
+      onlyLPs: false,
+      minLPRatio: 0.01,
+      log_coreAssetPrices: [
+        300/ 1e18,
+        1/ 1e18,
+        1/ 1e18,
+        1/ 1e18,
+      ],
+      log_minTokenValue: 1e6,
+    })
+  }
 };
 
 module.exports = {
