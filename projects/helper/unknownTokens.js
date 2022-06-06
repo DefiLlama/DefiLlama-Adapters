@@ -82,7 +82,7 @@ async function getTokenPrices({
     const reserveAmounts = reserves[i].output
     if (coreAssets.includes(token0Address) && coreAssets.includes(token1Address)) {
       sdk.util.sumSingleBalance(pairBalances[pairAddress], token0Address, Number(reserveAmounts[0]))
-      sdk.util.sumSingleBalance(pairBalances[pairAddress], token0Address, Number(reserveAmounts[1]))
+      sdk.util.sumSingleBalance(pairBalances[pairAddress], token1Address, Number(reserveAmounts[1]))
     } else if (coreAssets.includes(token0Address)) {
       sdk.util.sumSingleBalance(pairBalances[pairAddress], token0Address, Number(reserveAmounts[0]) * 2)
       if (!blacklist.includes(token1Address) && (!whitelist.length || whitelist.includes(token1Address))) {
@@ -231,7 +231,10 @@ async function getTokenPrices({
   }
 }
 
-function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitelist = [], factory, transformAddress, allowUndefinedBlock = true }) {
+function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitelist = [], factory, transformAddress, allowUndefinedBlock = true,
+  minLPRatio = 1,
+  log_coreAssetPrices = [], log_minTokenValue = 1e6,
+ }) {
   return async (ts, _block, chainBlocks) => {
     let pairAddresses;
     const block = await getBlock(ts, chain, chainBlocks, allowUndefinedBlock)
@@ -245,7 +248,10 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
 
     pairAddresses = pairs.map(result => result.output.toLowerCase())
 
-    const { balances } = await getTokenPrices({ block, chain, coreAssets, blacklist, lps: pairAddresses, transformAddress, whitelist, allLps: true })
+    const { balances } = await getTokenPrices({ 
+      block, chain, coreAssets, blacklist, lps: pairAddresses, transformAddress, whitelist, allLps: true,
+      minLPRatio, log_coreAssetPrices, log_minTokenValue,
+     })
     return balances
   }
 }
