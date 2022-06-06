@@ -10,7 +10,7 @@ const creamAbi = require('./abis/cream.json')
 const { unwrapCrv, resolveCrvTokens } = require('./resolveCrvTokens')
 const activePoolAbi = require('./ankr/abis/activePool.json')
 const wethAddressAbi = require('./ankr/abis/wethAddress.json');
-const { isLP } = require('./utils')
+const { isLP, DEBUG_MODE } = require('./utils')
 const wildCreditABI = require('../wildcredit/abi.json')
 
 const yearnVaults = {
@@ -206,6 +206,7 @@ async function unwrapUniswapLPs(balances, lpPositions, block, chain = 'ethereum'
         sdk.util.sumSingleBalance(balances, await transformAddress(token1), token1Balance.toFixed(0))
       }
     } catch (e) {
+      if (DEBUG_MODE) console.error(e)
       console.log(`Failed to get data for LP token at ${lpPosition.token} on chain ${chain}`)
       throw e
     }
@@ -576,6 +577,7 @@ async function sumBalancerLps(balances, tokensAndOwners, block, chain, transform
   })
 }
 
+const nullAddress = '0x0000000000000000000000000000000000000000'
 /*
 tokensAndOwners [
     [token, owner] - eg ["0xaaa", "0xbbb"]
@@ -584,6 +586,20 @@ tokensAndOwners [
 async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereum", transformAddress, { resolveCrv = false, resolveLP = false, resolveYearn = false, unwrapAll = false, } = {}) {
   if (!transformAddress)
     transformAddress = await getChainTransform(chain)
+
+  const ethBalanceInputs = []
+
+  tokensAndOwners = tokensAndOwners.filter(i => {
+    if (i[0] !== nullAddress)
+      return true
+    ethBalanceInputs.push[i[1]]
+    return false
+  })
+
+  if (ethBalanceInputs.length) {
+    const { output: ethBalances } = await sdk.api.eth.getBalances({ target: ethBalanceInputs, chain, block })
+    ethBalances.forEach(({ balance }) => sdk.util.sumSingleBalance(balances, transformAddress(nullAddress), balance))
+  }
 
   const balanceOfTokens = await sdk.api.abi.multiCall({
     calls: tokensAndOwners.map(t => ({
@@ -774,7 +790,7 @@ async function unwrapLPsAuto({ balances, block, chain = "ethereum", transformAdd
     symbols.forEach(({ output }, idx) => {
       const token = tokens[idx].output
       const balance = amounts[idx].output
-      if (isLP(output))
+      if (isLP(output, token, chain))
         lpBalances.push({ token, balance })
       else
         sdk.util.sumSingleBalance(balances, transformAddress(token), balance);
@@ -784,27 +800,18 @@ async function unwrapLPsAuto({ balances, block, chain = "ethereum", transformAdd
 
   async function _unwrapUniswapLPs(balances, lpPositions) {
     const lpTokenCalls = lpPositions.map(lpPosition => ({ target: lpPosition.token }))
-    const lpReserves = await sdk.api.abi.multiCall({ block, abi: lpReservesAbi, calls: lpTokenCalls, chain, })
-    const lpSupplies = await sdk.api.abi.multiCall({ block, abi: lpSuppliesAbi, calls: lpTokenCalls, chain, })
-    const tokens0 = await sdk.api.abi.multiCall({ block, abi: token0Abi, calls: lpTokenCalls, chain, })
-    const tokens1 = await sdk.api.abi.multiCall({ block, abi: token1Abi, calls: lpTokenCalls, chain, })
-    if (retry) {
-      await Promise.all([
-        [lpReserves, lpReservesAbi],
-        [lpSupplies, lpSuppliesAbi],
-        [tokens0, token0Abi],
-        [tokens1, token1Abi]
-      ].map(async call => {
-        await requery(call[0], chain, block, call[1])
-      }))
-    }
-    await Promise.all(lpPositions.map(async lpPosition => {
+    const { output: lpReserves } = await sdk.api.abi.multiCall({ block, abi: lpReservesAbi, calls: lpTokenCalls, chain, })
+    const { output: lpSupplies } = await sdk.api.abi.multiCall({ block, abi: lpSuppliesAbi, calls: lpTokenCalls, chain, })
+    const { output: tokens0 } = await sdk.api.abi.multiCall({ block, abi: token0Abi, calls: lpTokenCalls, chain, })
+    const { output: tokens1 } = await sdk.api.abi.multiCall({ block, abi: token1Abi, calls: lpTokenCalls, chain, })
+
+    lpPositions.map(lpPosition => {
       try {
         let token0, token1, supply
         const lpToken = lpPosition.token
-        const token0_ = tokens0.output.find(call => call.input.target === lpToken)
-        const token1_ = tokens1.output.find(call => call.input.target === lpToken)
-        const supply_ = lpSupplies.output.find(call => call.input.target === lpToken)
+        const token0_ = tokens0.find(call => call.input.target === lpToken)
+        const token1_ = tokens1.find(call => call.input.target === lpToken)
+        const supply_ = lpSupplies.find(call => call.input.target === lpToken)
         try {
           token0 = token0_.output.toLowerCase()
           token1 = token1_.output.toLowerCase()
@@ -825,29 +832,19 @@ async function unwrapLPsAuto({ balances, block, chain = "ethereum", transformAdd
         }
 
         let _reserve0, _reserve1
-        if (uni_type === 'standard') {
-          ({ _reserve0, _reserve1 } = (await lpReserves).output.find(call => call.input.target === lpToken).output)
-        }
-        else if (uni_type === 'gelato') {
-          const gelatoPools = sdk.api.abi.multiCall({ block, abi: gelatoPoolsAbi, calls: lpTokenCalls, chain });
-          const gelatoPool = (await gelatoPools).output.find(call => call.input.target === lpToken).output
-          const [{ output: _reserve0_ }, { output: _reserve1_ }] = (await Promise.all([
-            sdk.api.erc20.balanceOf({ target: token0, owner: gelatoPool, block, chain })
-            , sdk.api.erc20.balanceOf({ target: token1, owner: gelatoPool, block, chain })
-          ]))
-          _reserve0 = _reserve0_
-          _reserve1 = _reserve1_
-        }
+        let output = lpReserves.find(call => call.input.target === lpToken);
+        _reserve0 = output.output._reserve0 || output.output.reserve0
+        _reserve1 = output.output._reserve1 || output.output.reserve1
 
-        const token0Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve0)).div(BigNumber(supply))
-        sdk.util.sumSingleBalance(balances, await transformAddress(token0), token0Balance.toFixed(0))
-        const token1Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve1)).div(BigNumber(supply))
-        sdk.util.sumSingleBalance(balances, await transformAddress(token1), token1Balance.toFixed(0))
+        const token0Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve0)).div(BigNumber(supply)).toFixed(0)
+        const token1Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve1)).div(BigNumber(supply)).toFixed(0)
+        sdk.util.sumSingleBalance(balances, transformAddress(token0), token0Balance)
+        sdk.util.sumSingleBalance(balances, transformAddress(token1), token1Balance)
       } catch (e) {
         console.log(`Failed to get data for LP token at ${lpPosition.token} on chain ${chain}`)
         throw e
       }
-    }))
+    })
   }
 }
 
