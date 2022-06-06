@@ -78,13 +78,13 @@ function isLP(symbol, token, chain) {
   // if (token && blacklisted_LPS.includes(token.toLowerCase())) return false
   if (chain === 'bsc' && ['OLP', 'DLP', 'MLP', 'LP'].includes(symbol)) return false
   if (!symbol) return false
-  if (symbol.startsWith('ZLK-LP')) {
-    console.log('Blacklisting Zenlink LP because they have different abi for get reservers', symbol, token)
-    return false
-  }
+  let label
 
-  if (symbol.includes('DMM-LP')) {
-    console.log('Blacklisting Kybe DMM LP because they have different abi for get reservers', symbol, token)
+  if (symbol.startsWith('ZLK-LP') || symbol.includes('DMM-LP') || (chain === 'avax' && 'DLP' === symbol))
+    label = 'Blackisting this LP because of unsupported abi'
+
+  if (label) {
+    if (DEBUG_MODE) console.log(label, token, symbol)
     return false
   }
 
