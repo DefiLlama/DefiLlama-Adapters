@@ -1,9 +1,7 @@
 const axios = require("axios");
 const retry = require('../helper/retry');
-const { getChainTransform } = require('../helper/portedTokens')
 const { chainExports } = require('../helper/exports');
 const { sumTokens } = require("../helper/unwrapLPs");
-const { getBlock } = require('../helper/getBlock')
 let dataCache = require('./dataCache.json')
 
 const chainIds = {
@@ -39,23 +37,17 @@ const chainIds = {
 // }
 
 function chainTvl(chain) {
-  return async (timestamp, ethBlock, chainBlocks) => {
-    const transformAddress = await getChainTransform(chain);
-    const block = await getBlock(timestamp, chain, chainBlocks);
-
+  return async (timestamp, ethBlock, { [chain]: block}) => {
     // if (!dataCacheUpdating) dataCacheUpdating = updateDataCache()
     // await dataCacheUpdating
 
-    const balances = {}
-
     const pools = dataCache[chain]
-
     const tokensAndOwners = pools.map(p => p.tokens.map(t => [t, p.pool])).flat()
-
-    return sumTokens(balances, tokensAndOwners, block, chain, transformAddress);
+    console.log(tokensAndOwners)
+    return sumTokens({}, tokensAndOwners, block, chain);
   }
 }
 
 module.exports = chainExports(chainTvl, Object.keys(chainIds)),
-  module.exports.methodology = 'Hashflow TVL is made of all pools token balances. Pools and their tokens are retrieved by Hashflow HTTP REST API.'
+module.exports.methodology = 'Hashflow TVL is made of all pools token balances. Pools and their tokens are retrieved by Hashflow HTTP REST API.'
 module.exports.broken = 'Server IP is blocked, so api call fails'

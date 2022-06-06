@@ -592,12 +592,12 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
   tokensAndOwners = tokensAndOwners.filter(i => {
     if (i[0] !== nullAddress)
       return true
-    ethBalanceInputs.push[i[1]]
+    ethBalanceInputs.push(i[1])
     return false
   })
 
   if (ethBalanceInputs.length) {
-    const { output: ethBalances } = await sdk.api.eth.getBalances({ target: ethBalanceInputs, chain, block })
+    const { output: ethBalances } = await sdk.api.eth.getBalances({ targets: ethBalanceInputs, chain, block })
     ethBalances.forEach(({ balance }) => sdk.util.sumSingleBalance(balances, transformAddress(nullAddress), balance))
   }
 
