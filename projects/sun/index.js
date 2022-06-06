@@ -27,6 +27,11 @@ const pools = [
       ["TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8", "usd-coin"], // USDC
     ]
   },
+  {
+    pool: 'TB6zgiG14iQkNxqU4mYe7cMiS5aCYfyidL', stablecoins: [
+      ["TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8", "usd-coin"], // USDC
+    ]
+  }
 ]
 
   async function tvl() {
