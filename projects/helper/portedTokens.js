@@ -203,6 +203,7 @@ async function transformPolygonAddress() {
     }, {});
   const mapping = {
     '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee': '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0',  // 
+    // '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270': '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0',  // WMATIC
     '0x0000000000000000000000000000000000000000': '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0',  // 
     '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': '0x0000000000000000000000000000000000000000',  // 
     '0x2f28add68e59733d23d5f57d94c31fb965f835d0': '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',  // sUSDC(Polygon) -> USDC(Ethereum)
@@ -232,17 +233,7 @@ async function transformXdaiAddress() {
     // '0x29414ec76d79ff238e5e773322799d1c7ca2443f': '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', // Boring oBTC
   }
 
-  normalizeMapping(mapping)
-
-  return (address) => {
-    address = address.toLowerCase()
-    if (!mapping[address]) {
-      console.log('Xdai mapping not found for %s', address)
-      return address
-    }
-
-    return mapping[address]
-  };
+  return transformChainAddress(mapping, 'xdai', { skipUnmapped: false })
 }
 
 async function transformOkexAddress() {
