@@ -12,6 +12,7 @@ async function tvl(){
 }
 
 module.exports = {
+  timetravel: false,
   methodology: 'The total value of ANA tokens locked in the protocol, either as staking or as collateral for loans.',
   solana: {
     tvl
