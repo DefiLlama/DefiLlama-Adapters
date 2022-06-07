@@ -7,8 +7,8 @@ const client = axios.create({
 });
 
 async function getTvl(){
-  const metrics = client.get("/getLlama")
-  const { tvl } = metrics
+  const metrics = await client.get("/getLlama")
+  const { tvl } = metrics.data
   return toUSDTBalances(tvl);
 }
 
