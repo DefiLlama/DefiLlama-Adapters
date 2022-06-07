@@ -1,16 +1,8 @@
-/*==================================================
-  Modules
-  ==================================================*/
-
   const sdk = require('@defillama/sdk');
-  const _ = require('underscore');
+
   const BigNumber = require('bignumber.js');
 
   const opportunityAbi = require('./abis/Opportunity');
-
-/*==================================================
-  Settings
-  ==================================================*/
 
   const ETH_ADDRESS = '0x0000000000000000000000000000000000000000';
   const WETH_ADDRESS = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
@@ -57,10 +49,6 @@
     }
   ];
 
-/*==================================================
-  Helper Functions
-  ==================================================*/
-
   function getPmCalls(timestamp) {
 
     let pmCalls = [];
@@ -72,7 +60,7 @@
          ((allPortfolioManagers[i].endTimestamp == null) ||
            timestamp <= allPortfolioManagers[i].endTimestamp)) {
 
-         let calls = _.reduce(tokenAddresses, (accum, tokenAddress) => [...accum, {
+         let calls = tokenAddresses.reduce((accum, tokenAddress) => [...accum, {
              target: tokenAddress,
              params: allPortfolioManagers[i].address
          }], []);
@@ -105,7 +93,7 @@
            supportedTokens = removeTokens(timestamp, supportedTokens, allOpportunities[i].added);
          }
 
-         let calls = _.reduce(supportedTokens, (accum, tokenAddress) => [...accum,
+         let calls = supportedTokens.reduce((accum, tokenAddress) => [...accum,
            {
              target: allOpportunities[i].address,
              params: tokenAddress
@@ -134,17 +122,13 @@
     return tokens;
   }
 
-/*==================================================
-  TVL
-  ==================================================*/
-
   async function tvl(timestamp, block) {
     let balances = {};
 
     let { pmCalls, portfolioManagers } = getPmCalls(timestamp);
     let opportunityCalls = getOpportunityCalls(timestamp);
 
-    await Promise.all(_.map(portfolioManagers, (portfolioManager) => {
+    await Promise.all(portfolioManagers.map((portfolioManager) => {
       return new Promise(async (resolve, reject) => {
         try {
           let balance = (await sdk.api.eth.getBalance({target: portfolioManager, block})).output;
@@ -163,8 +147,7 @@
       abi: 'erc20:balanceOf'
     })).output;
 
-    _.each(pmBalances, (result) => {
-      if (result.success) {
+    pmBalances.forEach((result) => {
         let balance = result.output;
         let address = result.input.target;
 
@@ -173,7 +156,6 @@
         }
 
         balances[address] = BigNumber(balances[address] || 0).plus(balance).toFixed();
-      }
     });
 
     let opportunityBalances = (await sdk.api.abi.multiCall({
@@ -182,8 +164,10 @@
       abi: opportunityAbi.getBalance
     })).output;
 
-    _.each(opportunityBalances, (result) => {
-      if (result.success) {
+    opportunityBalances.forEach((result) => {
+      if(result.input.params[0] === '0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359' && result.input.target === "0x759A728653C4d0483D897DCCf3a343fe2bBbb54A"){
+        return
+      }
         let balance = result.output;
         let address = result.input.params;
 
@@ -192,21 +176,14 @@
         }
 
         balances[address] = BigNumber(balances[address] || 0).plus(balance).toFixed();
-      }
     });
 
     return balances;
   }
 
-/*==================================================
-  Exports
-  ==================================================*/
-
   module.exports = {
-    name: 'Robo-Advisor for Yield',
-    shortName: 'RAY',
-    token: 'RAY',
-    category: 'lending',
     start: 1568274392,  // 09/12/2019 @ 7:46am (UTC)
-    tvl
+    ethereum:{
+      tvl
+    }
   }

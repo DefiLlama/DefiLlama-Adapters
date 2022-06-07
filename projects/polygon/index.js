@@ -21,27 +21,25 @@ async function tvl(_, block) {
 
     // -- Attempt to calculate TVL from mapped POS tokens
     const posTokens = [{ target: maticToken, params: stakeManager }]
-
-    try {
-
         // Attempt to read list of all mapped ERC20 token addresses
         // via POS bridge
         const resp = await axios.get(PoSMappedTokenList)
 
         if (resp.status == 200 && resp.data.status == 1) {
 
-            posTokens.push(...resp.data.tokens.map(v => {
+            posTokens.push(...resp.data.tokens.filter(
+                // this token had no supply and was breaking the adapter
+                t => t.rootToken != '0xf042075ad88af3c5b9fbfbfcd9d4deace0b8543e'
+                ).map(v => {
 
                 return {
                     target: v.rootToken,
                     params: posERC20Predicate
                 }
 
-            }))
+            }).filter(t=>t.target !== "0x7ebaa895e524d5646e7a5b686c47989b3b17aa5f"))
 
         }
-
-    } catch (e) { }
 
     const lockedPoSBalances = await sdk.api.abi.multiCall({
         calls: posTokens,
@@ -55,15 +53,13 @@ async function tvl(_, block) {
     // -- Attempt to calculate TVL from mapped Plasma tokens
     const plasmaTokens = []
 
-    try {
-
         // Attempt to read list of all mapped ERC20 token addresses
         // via Plasma bridge
-        const resp = await axios.get(PlasmaMappedTokenList)
+        const respPlasma = await axios.get(PlasmaMappedTokenList)
 
-        if (resp.status == 200 && resp.data.status == 1) {
+        if (respPlasma.status == 200 && respPlasma.data.status == 1) {
 
-            plasmaTokens.push(...resp.data.tokens.map(v => {
+            plasmaTokens.push(...respPlasma.data.tokens.map(v => {
 
                 return {
                     target: v.rootToken,
@@ -74,15 +70,13 @@ async function tvl(_, block) {
 
         }
 
-    } catch (e) { }
-
     const lockedPlasmaBalances = await sdk.api.abi.multiCall({
         calls: plasmaTokens,
         abi: 'erc20:balanceOf',
         block
     })
 
-    let wrappedETHIndex = lockedPlasmaBalances.output.findIndex(v => v.success && v.input.target == '0xa45b966996374E9e65ab991C6FE4Bfce3a56DDe8')
+    let wrappedETHIndex = lockedPlasmaBalances.output.findIndex(v => v.input.target == '0xa45b966996374E9e65ab991C6FE4Bfce3a56DDe8')
     if (wrappedETHIndex > -1) {
 
         balances[etherAddress] = new BigNumber(balances[etherAddress]).plus(lockedPlasmaBalances.output[wrappedETHIndex].output)
@@ -97,10 +91,8 @@ async function tvl(_, block) {
 }
 
 module.exports = {
-    name: 'Polygon',
-    website: 'https://polygon.technology/',
-    token: 'MATIC',
-    category: 'payments',
     start: 1590824836, // Sat May 30 13:17:16 2020
-    tvl
+    polygon: {
+        tvl
+    }
 }

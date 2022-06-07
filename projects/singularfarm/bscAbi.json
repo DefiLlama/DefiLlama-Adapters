@@ -1,0 +1,71 @@
+{
+	"poolInfo": {
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "poolInfo",
+		"outputs": [
+			{
+				"internalType": "contract IBEP20",
+				"name": "lpToken",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "allocPoint",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "lastRewardTime",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "accSingPerShare",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint16",
+				"name": "depositFeeBP",
+				"type": "uint16"
+			},
+			{
+				"internalType": "uint256",
+				"name": "totalcap",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "isStrat",
+				"type": "bool"
+			},
+			{
+				"internalType": "uint256",
+				"name": "stratId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "earned",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "earnfee",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "accEarnPerShare",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+}

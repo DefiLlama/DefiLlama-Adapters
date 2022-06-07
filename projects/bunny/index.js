@@ -1,11 +1,13 @@
 const sdk = require('@defillama/sdk')
 const abi = require('./abi.json')
 const potABI = require('./pot_abi.json')
+const leverageABI = require('./leverage_abi.json')
 const BigNumber = require('bignumber.js')
 
 const dashboard = '0xb3C96d3C3d643c2318E4CDD0a9A48aF53131F5f4'
 const pools = [
     '0xb037581cF0cE10b04C4735443d95e0C93db5d940',
+    '0x4fd0143a3DA1E4BA762D42fF53BE5Fab633e014D',
     //'0x69FF781Cf86d42af9Bf93c06B8bE0F16a2905cBC', // pool2
     '0xCADc8CB26c8C7cB46500E61171b5F27e9bd7889D',
     '0xEDfcB78e73f7bA6aD2D829bf5D462a0924da28eD',
@@ -28,6 +30,7 @@ const pools = [
     '0x549d2e2B4fA19179CA5020A981600571C2954F6a',
     '0x0Ba950F0f099229828c10a9B307280a450133FFc',
     '0x0243A20B20ECa78ddEDF6b8ddb43a0286438A67A',
+    '0xD1ad1943b70340783eD9814ffEdcAaAe459B6c39',
 
     // pancakeswap v2
     '0xa6C29a422D1612293669156a34f2793526783622',
@@ -48,8 +51,27 @@ const pools = [
     '0xc1d9Ead28Fc4CB9658C62594A695a53bfD306f77',
     '0xf92f12b505594EedF65CB8B973819dfA242c61D7',
     '0xFeED0bb79035c61CF6519795a02a6a2A69A11aAC',
-    '0xD2220455E760Fb27ED8aaA6F9C7E143A687BB0aD'
-    
+    '0xD2220455E760Fb27ED8aaA6F9C7E143A687BB0aD',
+    '0xBdd478cF8313240EfDC54108A2ed389d450cD702',
+
+    // qSAV
+    '0xDe80CE223C9f1D1db0BC8D5bDD88E03f6882eEA3',   // CAKE
+    '0x67c42b3dAC9526efCBFeeb2FC1C56Cf77F494e46',   // BNB
+    '0x4FC359E39A99acFDF44c794eF702fab93067B2A6',   // BUSD
+    '0x53fd20bc5D4d222764B70817810494F1D06f3403',   // USDT
+    '0x401c22395200Caaae87f8aB9f9446636Dde38c9A',   // DAI
+    '0xEe3Ee0BEb7919eDD31a4506d7d4C93940f2ACED6',   // USDC
+    '0xB9Cf0d36e82C2a1b46eD51e44dC0a4B0100D6d74',   // BTCB
+    '0x4b107b794c9Bbfd83E5Ac9E8Dd59F918510C5729',   // ETH
+    '0x33F93897e914a7482A262Ef10A94319840EB8D05',   // bQBT
+    '0xE6b3fb8E6c7B9d7fBf3BFD1a50ac8201c2fa5a8F',   // bQBT-BNB
+
+    // vSAV v2
+    '0xA555443A5eE77f334648eF4F557C0B5070fcb4de',
+    '0xf70e331AcDDfC2a5cd169B8B3D1cC02951E8dE85',
+    '0xa08a2664BD2124dD011224E1cb4fd6E263E3A208',
+    '0x7cD22bd5B7a45F952a4f375AA6d5bf08538ed03C',
+    '0x7d2De1362dc32c1974d3A7CBBbd6Ad898E7B3EE7',
 ]
 
 const pots = [
@@ -57,13 +79,52 @@ const pots = [
     '0xD601966588E812218a45f3ec06D3A89602348183'
 ]
 
+const leveragedPools = [
+    '0xfb8358f34133c275B0393E3883BDd8764Cb610DE',
+    '0xD75f3E4e8ed51ec98ED57386Cb47DF457308Ad08',
+    '0xb04D1A8266Ff97Ee9f48d48Ad2F2868b77F1C668',
+    '0x12B7b4BEc740A7F438367ff3117253507eF605A7',
+    '0xe0fB5Cd342BCA2229F413DA7a2684506b0397fF3',
+    '0x8626Af388F0B69BB15C36422cE67f9638BA2B800'
+]
+
+const dashboardPolygon = '0xFA71FD547A6654b80c47DC0CE16EA46cECf93C02'
+const poolsPolygon = [
+    // polyBUNNY
+    '0x10C8CFCa4953Bc554e71ddE3Fa19c335e163D7Ac',
+    '0x7a526d4679cDe16641411cA813eAf7B33422501D',
+    '0x6b86aB330F18E8FcC4FB214C91b1080577df3513',
+    '0xe167Cf12a60f606C4C83bc34F09C4f9D9453690e',
+    // qPool
+    '0x4beB900C3a642c054CA57EfCA7090464082e904F',
+    '0x54E1feE2182d0d96D0D8e592CbFd4debC8EEf7Df',
+    '0x3cba7b58b4430794fa7a37F042bd54E3C2A351A8',
+    '0x4964e4d8E17B86e15A2f0a4D8a43D8E4AbeC3E78',
+    '0xf066208Fb16Dc1A06e31e104bEDb187468206a92',
+    '0xB0621a46aFd14C0D1a1F8d3E1021C4aBCcd02F5b',
+    '0x95aF402e9751f665617c3F9037f00f91ec00F7b6',
+    '0x29270e0bb9bD89ce4febc2fBd72Cd7EB53C0aDD7',
+    '0xE94096Fb06f60C7FC0d122A352154842384F80bd',
+    '0x58918F94C14dD657f0745f8a5599190f5baDFa05',
+    '0x4ee929E9b25d00E6C7FCAa513C01311Da40462F2',
+    '0x560F866fE4e1E6EA20701B9dCc9555486E1B84c2',
+    '0x470Be517cBd063265c1A519aE186ae82d10dD360',
+
+    // sPool
+    '0x87c743C1418864c9799FdE4C8612D1Ba64188ECe',
+    '0x16CeE21c231E2c3cf2778Fe568230c145C8591cA',
+    '0x45F10bAE59Ff9D4Be78eD20F0AAfDE532b254707',
+    '0xdF0BE663C84322f55aD7b40A4120CdECBa4C4B45',
+    '0x51C30ee94052baAABA60Db6b931c1f4657FFe174',
+    '0x39D28Db6742a457BCfB927D4539bEea55Dc5Dd87',
+    
+]
+
 const ZERO = new BigNumber(0)
 const ETHER = new BigNumber(10).pow(18)
 
-async function tvl(timestamp) {
-    const { block } = await sdk.api.util.lookupBlock(timestamp, {
-        chain: 'bsc'
-      })
+async function bsc(timestamp, ethBlock, chainBlock) {
+    const block = chainBlock.bsc
     const total = (await sdk.api.abi.multiCall({
         calls: pools.map( address => ({
             target: dashboard,
@@ -83,13 +144,44 @@ async function tvl(timestamp) {
         chain: 'bsc'
     })).output.reduce((tvl, call) => tvl.plus(new BigNumber(call.output)), ZERO)
     
-
+    const leverage_total = (await sdk.api.abi.multiCall({
+        calls: leveragedPools.map( address => ({
+            target: address
+        })),
+        block,
+        abi: leverageABI,
+        chain: 'bsc'
+    })).output.reduce((tvl, call) => tvl.plus(new BigNumber(call.output[1])), ZERO)
         
     return {
-        'tether': total.plus(pot_total).dividedBy(ETHER).toNumber()
+        'tether': total.plus(pot_total).plus(leverage_total).dividedBy(ETHER).toNumber()
     }
 }
 
+async function polygon(timestamp, ethBlock, chainBlock) {
+    const block = chainBlock.polygon
+    const total = (await sdk.api.abi.multiCall({
+        calls: poolsPolygon.map( address => ({
+            target: dashboardPolygon,
+            params: address
+        })),
+        block,
+        abi: abi,
+        chain: 'polygon'
+    })).output.reduce((tvl, call) => tvl.plus(new BigNumber(call.output)), ZERO)
+
+    return {
+        'tether': total.dividedBy(ETHER).toNumber()
+    }
+}
+
+
 module.exports = {
-    tvl
+    misrepresentedTokens: true,
+    bsc:{
+        tvl: bsc
+    },
+    polygon:{
+        tvl:polygon
+    },
 }

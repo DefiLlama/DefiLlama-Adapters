@@ -1,0 +1,41 @@
+{
+    "LPtoken": {
+        "type": "function",
+        "stateMutability": "view",
+        "outputs": [
+            {
+                "type": "address",
+                "name": "",
+                "internalType": "address"
+            }
+        ],
+        "name": "LPtoken",
+        "inputs": []
+    },
+    "balanceLPinSystem": {
+        "type": "function",
+        "stateMutability": "view",
+        "outputs": [
+            {
+                "type": "uint256",
+                "name": "",
+                "internalType": "uint256"
+            }
+        ],
+        "name": "balanceLPinSystem",
+        "inputs": []
+    },
+    "stakingToken": {
+        "type": "function",
+        "stateMutability": "view",
+        "outputs": [
+            {
+                "type": "address",
+                "name": "",
+                "internalType": "contract IERC20"
+            }
+        ],
+        "name": "stakingToken",
+        "inputs": []
+    }
+}

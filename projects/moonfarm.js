@@ -45,7 +45,6 @@ async function solana() {
   return data.data.tvlSOLANA
 }
 
-
 module.exports = {
   bsc:{
     fetch:bsc

@@ -80,24 +80,15 @@ async function ethereumTvl() {
   }
 }
 
-const getTvl = balances => Number(balances[ustAddress])
-async function tvl(timestamp, block) {
-  const eth = getTvl(await ethereumTvl())
-  const terr = getTvl(await terraTvl())
-  return {
-    [ustAddress]: fixed(eth+terr)
-  }
-}
-
-
 module.exports = {
-  tvl,
+  timetravel: false,
+  misrepresentedTokens: true,
   ethereum: {
     tvl: ethereumTvl,
     pool2: ethereumPool2
   },
   terra: {
-    tvl: terraTvl,
-    pool2: terraPool2
+    tvl: () => ({'0': 0}),
+    //pool2: terraPool2
   }
 }

@@ -1,0 +1,105 @@
+{
+  "balanceOf": {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "balanceOf",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "totalSupply": {
+    "inputs": [],
+    "name": "totalSupply",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "banks":{
+    "constant":true,
+    "inputs":[
+        {
+            "internalType":"address",
+            "name":"",
+            "type":"address"
+        }
+    ],
+    "name":"banks",
+    "outputs":[
+        {
+            "internalType":"address",
+            "name":"tokenAddr",
+            "type":"address"
+        },
+        {
+            "internalType":"address",
+            "name":"gTokenAddr",
+            "type":"address"
+        },
+        {
+            "internalType":"bool",
+            "name":"isOpen",
+            "type":"bool"
+        },
+        {
+            "internalType":"bool",
+            "name":"canDeposit",
+            "type":"bool"
+        },
+        {
+            "internalType":"bool",
+            "name":"canWithdraw",
+            "type":"bool"
+        },
+        {
+            "internalType":"uint256",
+            "name":"totalVal",
+            "type":"uint256"
+        },
+        {
+            "internalType":"uint256",
+            "name":"totalDebt",
+            "type":"uint256"
+        },
+        {
+            "internalType":"uint256",
+            "name":"totalDebtShare",
+            "type":"uint256"
+        },
+        {
+            "internalType":"uint256",
+            "name":"totalReserve",
+            "type":"uint256"
+        },
+        {
+            "internalType":"uint256",
+            "name":"lastInterestTime",
+            "type":"uint256"
+        },
+        {
+            "internalType":"uint256",
+            "name":"tokenIdx",
+            "type":"uint256"
+        }
+    ],
+    "payable":false,
+    "stateMutability":"view",
+    "type":"function"
+  }
+}

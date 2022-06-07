@@ -1,45 +1,65 @@
 const sdk = require('@defillama/sdk');
-const { toUSDTBalances } = require('../helper/balances');
-const { GraphQLClient, gql } = require('graphql-request');
-const { getBlock } = require('../helper/getBlock');
+const { getUniTVL } = require('../helper/unknownTokens');
 
-const endpoints = {
-  bsc: 'https://api.thegraph.com/subgraphs/name/mochiswapdev/mochiswap3',
-  harmony: 'https://api.mochiswap.io/subgraphs/name/mochiswap/mochiswap1',
+const bscMochi = "0x055daB90880613a556a5ae2903B2682f8A5b8d27";
+const bscBMochi = "0x2d0e75b683e8b56243b429b24f2b08bcc1ffd8da";
+const bscChef = "0x464F1A30e5A5b5b2D3c5f4F0e823e01EeFE304df";
+const bscFactory = '0xCBac17919f7aad11E623Af4FeA98B10B84802eAc'
+
+async function bscStaking(timestamp, block, chainBlocks) {
+  let balances = {};
+  let balance = (await sdk.api.erc20.balanceOf({
+    target: bscBMochi,
+    owner: bscChef,
+    block: chainBlocks.bsc,
+    chain: "bsc"
+  })).output;
+  sdk.util.sumSingleBalance(balances, `bsc:${bscMochi}`, balance);
+  return balances;
 }
 
-const graphQuery = gql`
-query get_tvl($block: Int) {
-  uniswapFactories(
-    first: 1,
-    block: { number: $block }
-  ) {
-    totalLiquidityUSD
-  },
-}
-`;
+const harmonyFactory = '0x3bEF610a4A6736Fd00EBf9A73DA5535B413d82F6'
+const harmonyHMochi = "0x0dd740db89b9fda3baadf7396ddad702b6e8d6f5";
+const harmonyStakingToken = "0x691f37653f2fbed9063febb1a7f54bc5c40bed8c";
+const harmonyChef = "0xd0cb3e55449646c9735d53e83eea5eb7e97a52dc";
 
-async function getChainTvl(chain, block) {
-  const graphQLClient = new GraphQLClient(endpoints[chain]);
-  const results = await graphQLClient.request(graphQuery, { block });
 
-  return toUSDTBalances(results.uniswapFactories[0].totalLiquidityUSD);
-}
-
-async function bsc(timestamp, block, chainBlocks) {
-  return getChainTvl('bsc', chainBlocks['bsc']-5);
-}
-
-async function harmony(timestamp, block, chainBlocks) {
-  return getChainTvl('harmony', await getBlock(timestamp, 'harmony', chainBlocks)-5);
+async function harmonyStaking(timestamp, block, chainBlocks) {
+  let balances = {};
+  let balance = (await sdk.api.erc20.balanceOf({
+    target: harmonyStakingToken,
+    owner: harmonyChef,
+    block: chainBlocks.harmony,
+    chain: "harmony"
+  })).output;
+  sdk.util.sumSingleBalance(balances, `harmony:${harmonyHMochi}`, balance);
+  return balances;
 }
 
 module.exports = {
-  bsc: {
-    tvl: bsc
-  },
+ bsc: {
+   tvl: getUniTVL({
+     chain: 'bsc',
+     factory: bscFactory,
+     coreAssets: [
+       '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c', // wbnb
+       bscBMochi,
+       bscMochi,
+     ]
+   }),
+   staking: bscStaking
+ },
   harmony: {
-    tvl: harmony
+    tvl: getUniTVL({
+      chain: 'harmony',
+      factory: harmonyFactory,
+      coreAssets: [
+        '0xE176EBE47d621b984a73036B9DA5d834411ef734', // BUSD
+        '0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a', // wone
+        harmonyStakingToken, // hMOCHI
+      ]
+    }),
+    staking: harmonyStaking
   },
-  tvl: sdk.util.sumChainTvls([harmony, bsc])
+  
 }

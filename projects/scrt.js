@@ -9,6 +9,14 @@ async function fetch() {
         tvl += parseFloat(p.totalLockedUSD)
       }
     }
+    
+    var data_bsc = await utils.fetchURL('https://bridge-bsc-mainnet.azurewebsites.net/tokens/?page=0&size=1000')
+    
+    for (const q of data_bsc.data.tokens) {
+      if(q.src_coin !== "WSCRT"){
+        tvl += parseFloat(q.totalLockedUSD)
+      }
+    }
 
     return tvl;
 }

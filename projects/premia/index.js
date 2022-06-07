@@ -1,5 +1,11 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
+const { sumTokens } = require("../helper/unwrapLPs");
+const { stakings } = require("../helper/staking");
+const { request, gql } = require("graphql-request");
+const { getBlock } = require("../helper/getBlock");
+//const tvlV1 = require('./v1')
+
 
 const PREMIA_OPTIONS_CONTRACT_ETH =
   "0x5920cb60B1c62dC69467bf7c6EDFcFb3f98548c0";
@@ -63,7 +69,6 @@ const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
       ethBlock,
     })
   ).output;
-
   sdk.util.sumSingleBalance(balances, erc20DAI, erc20DAIBalance);
 
   return balances;
@@ -93,12 +98,63 @@ const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
   return balances;
 };
 
+const getAddresses = gql`
+  query TokenPairs(
+    $block: Int
+  ) {
+    pools(
+      first: 100
+      where:  { optionType: CALL }
+    ) {
+      name
+      address
+      base {
+        address
+        symbol
+      }
+      underlying {
+        address
+        symbol
+      }
+    }
+  }
+`;
+
+const chainToSubgraph = {
+  ethereum: "https://api.thegraph.com/subgraphs/name/premiafinance/premiav2",
+  arbitrum: "https://api.thegraph.com/subgraphs/name/premiafinance/premia-arbitrum",
+  fantom: "https://api.thegraph.com/subgraphs/name/premiafinance/premia-fantom",
+}
+
+const DAI = {
+  ethereum: "0x6b175474e89094c44da98b954eedeac495271d0f",
+  arbitrum: "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1",
+  fantom: "0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E"
+}
+function chainTvl(chain){
+  return async (time, _ethBlock, chainBlocks)=>{
+    const block = await getBlock(time, chain, chainBlocks, true)
+    const {pools} = await request(chainToSubgraph[chain], getAddresses, {block})
+    const balances = {}
+    await sumTokens(balances, 
+      pools.map(p=>[p.underlying.address, p.address]).concat(pools.map(p=>[DAI[chain], p.address])),
+      block, chain, addr=>`${chain}:${addr}`)
+    return balances
+  }
+}
+
 module.exports = {
   ethereum: {
-    tvl: ethTvl,
+    tvl: sdk.util.sumChainTvls([chainTvl("ethereum"), ethTvl]),
+    staking: stakings(["0x16f9d564df80376c61ac914205d3fdff7057d610", "0xF1bB87563A122211d40d393eBf1c633c330377F9"], "0x6399c842dd2be3de30bf99bc7d1bbf6fa3650e70")
   },
   bsc: {
     tvl: bscTvl,
   },
-  tvl: sdk.util.sumChainTvls([ethTvl, bscTvl]),
+  arbitrum:{
+    tvl: chainTvl("arbitrum")
+  },
+  fantom:{
+    tvl: chainTvl("fantom")
+  }
 };

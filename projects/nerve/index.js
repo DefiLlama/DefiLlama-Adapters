@@ -1,6 +1,7 @@
 const sdk = require('@defillama/sdk')
 const BigNumber = require('bignumber.js')
-const _ = require('underscore')
+
+const { staking } = require('../helper/staking')
 const {unwrapCrv} = require('../helper/unwrapLPs')
 
 /*==================================================
@@ -15,6 +16,7 @@ const rusdPoolAddress = '0x0eafaa7ed9866c1f08ac21dd0ef3395e910f7114'
 const fusdtPoolAddress = '0xd0fBF0A224563D5fFc8A57e4fdA6Ae080EbCf3D3'
 const ustPoolAddress = '0x2dcCe1586b1664f41C72206900e404Ec3cA130e0'
 const nrv3 = '0xf2511b5e4fb0e5e2d123004b672ba14850478c14'
+const nrv = "0x42F6f551ae042cBe50C739158b4f0CAC0Edb9096"
 
 const tokens = {
   // BUSD
@@ -35,16 +37,12 @@ const tokens = {
   '0x2170ed0880ac9a755fd29b2688956bd959f933f8': [ethPoolAddress],
   // anyETH
   '0x6f817a0ce8f7640add3bc0c1c2298635043c2423': [ethPoolAddress],
-  // NRV
-  '0x42F6f551ae042cBe50C739158b4f0CAC0Edb9096': [xnrvAddress],
   // FUSDT
   '0x049d68029688eabf473097a2fc38ef61633a3c7a': [fusdtPoolAddress],
   // 3NRV-LP
   '0xf2511b5e4fb0e5e2d123004b672ba14850478c14': [fusdtPoolAddress],
   // UST
-  '0x23396cf899ca06c4472205fc903bdb4de249d6fc': [ustPoolAddress],
-    // 3NRV-LP
-  '0xf2511b5e4fb0e5e2d123004b672ba14850478c14': [ustPoolAddress],  
+  '0x23396cf899ca06c4472205fc903bdb4de249d6fc': [ustPoolAddress],  
 }
 
 async function tvl(timestamp, block, chainBlocks) {
@@ -68,8 +66,7 @@ async function tvl(timestamp, block, chainBlocks) {
   })
 
   // Compute Balances
-  _.each(balanceOfResults.output, (balanceOf) => {
-    if (balanceOf.success) {
+  balanceOfResults.output.forEach((balanceOf) => {
       let address = `bsc:${balanceOf.input.target}`.toLowerCase();
       if(address === "bsc:0x54261774905f3e6e9718f2abb10ed6555cae308a"){
         balances["bitcoin"] = Number(balanceOf.output)/1e8
@@ -82,7 +79,6 @@ async function tvl(timestamp, block, chainBlocks) {
       balances[address] = BigNumber(balances[address] || 0)
         .plus(balanceOf.output)
         .toFixed()
-    }
   })
   await unwrapCrv(balances, nrv3, balances['bsc:'+nrv3], chainBlocks['bsc'], 'bsc', (addr)=>`bsc:${addr}`)
   delete balances['bsc:'+nrv3];
@@ -91,6 +87,10 @@ async function tvl(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
+  timetravel: true,
   start: 1614556800, // March 1, 2021 00:00 AM (UTC)
-  tvl, // tvl adapter
+  bsc:{
+    tvl,
+    staking:staking(xnrvAddress, nrv, "bsc")
+  }
 }

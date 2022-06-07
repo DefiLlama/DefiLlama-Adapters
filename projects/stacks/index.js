@@ -9,5 +9,7 @@ async function tvl(timestamp) {
 }
 
 module.exports = {
-    tvl
+    stacks: {
+        tvl
+    },
 }

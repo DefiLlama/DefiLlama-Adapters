@@ -1,0 +1,55 @@
+{
+  "allPairs": {
+    "inputs": [],
+    "name": "allPairs",
+    "outputs": [
+      { "internalType": "address[]", "name": "_pairs", "type": "address[]" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "tokenA": {
+    "inputs": [],
+    "name": "tokenA",
+    "outputs": [
+      {
+        "internalType": "contract IERC20Metadata",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "tokenB": {
+    "inputs": [],
+    "name": "tokenB",
+    "outputs": [
+      {
+        "internalType": "contract IERC20Metadata",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "availableToBorrow": {
+    "inputs": [],
+    "name": "availableToBorrow",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "_amountToBorrowTokenA",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amountToBorrowTokenB",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+}

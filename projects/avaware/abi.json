@@ -1,0 +1,74 @@
+{
+    "poolCount": {
+        "type": "function",
+        "stateMutability": "view",
+        "outputs": [
+            {
+                "type": "uint256",
+                "name": "",
+                "internalType": "uint256"
+            }
+        ],
+        "name": "poolCount",
+        "inputs": []
+    },
+    "getPool": {
+        "type": "function",
+        "stateMutability": "view",
+        "outputs": [
+            {
+                "type": "tuple",
+                "name": "",
+                "internalType": "struct FarmPoolManager.Pool",
+                "components": [
+                    {
+                        "type": "address",
+                        "name": "pool",
+                        "internalType": "address"
+                    },
+                    {
+                        "type": "string",
+                        "name": "name",
+                        "internalType": "string"
+                    },
+                    {
+                        "type": "uint256",
+                        "name": "rewardAmount",
+                        "internalType": "uint256"
+                    },
+                    {
+                        "type": "bool",
+                        "name": "legacy",
+                        "internalType": "bool"
+                    },
+                    {
+                        "type": "bool",
+                        "name": "active",
+                        "internalType": "bool"
+                    }
+                ]
+            }
+        ],
+        "name": "getPool",
+        "inputs": [
+            {
+                "type": "uint256",
+                "name": "id",
+                "internalType": "uint256"
+            }
+        ]
+    },
+    "stakingToken": {
+        "type": "function",
+        "stateMutability": "view",
+        "outputs": [
+            {
+                "type": "address",
+                "name": "",
+                "internalType": "contract IERC20"
+            }
+        ],
+        "name": "stakingToken",
+        "inputs": []
+    }
+}

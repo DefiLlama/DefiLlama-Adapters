@@ -1,0 +1,73 @@
+{
+    "tokens": {
+        "V3S": "0xc7e99a2f064cf86af91db252a9d8bc16e6fe7427",
+        "VSHARE": "0xdcC261c03cD2f33eBea404318Cdc1D9f8b78e1AD",
+        "VVS": "0x2D03bECE6747ADC00E1a131BBA1469C15fD11e03",
+        "CRO": "0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23",
+        "USDC": "0xc21223249CA28397B4B6541dfFaEcC539BfF0c59",
+        "USDT": "0x66e428c3f67a68878562e79A0234c1F83c208770"
+    },
+    "farms": [
+        {
+            "masterChef": "0xEe38B8d70382c50cDD020785D0aC551d259Cec84",
+            "reward": "V3S",
+            "pools": [
+                {
+                    "id": 12,
+                    "lpToken": "0x57b975364140e4a8d1C96FAa00225b855BaB0E8E",
+                    "token0": "VVS",
+                    "token1": "V3S",
+                    "rewardToken": "V3S"
+                },
+                {
+                    "id": 13,
+                    "lpToken": "0x331016552c92Df180d7B1202b93042A1d680D7CF",
+                    "token0": "CRO",
+                    "token1": "V3S",
+                    "rewardToken": "V3S"
+                },
+                {
+                    "id": 14,
+                    "lpToken": "0x6e9F100d7B7533800fc0870B59ab4c6C5e41Fa39",
+                    "token0": "USDC",
+                    "token1": "V3S",
+                    "rewardToken": "V3S"
+                },
+                {
+                    "id": 15,
+                    "lpToken": "0x9BC2B3c5300449Dc36C70a5A0B77AB99339c6FDE",
+                    "token0": "USDT",
+                    "token1": "V3S",
+                    "rewardToken": "V3S"
+                },
+                {
+                    "id": 16,
+                    "lpToken": "0x00F6345d957734d207Cd474BF89780f4783DFe61",
+                    "token0": "CRO",
+                    "token1": "V3S",
+                    "rewardToken": "V3S"
+                }
+            ]
+        },
+        {
+            "masterChef": "0x569608516A81C0B1247310A3E0CD001046dA0663",
+            "reward": "VSHARE",
+            "pools": [
+                {
+                    "id": 0,
+                    "lpToken": "0x57b975364140e4a8d1C96FAa00225b855BaB0E8E",
+                    "token0": "VVS",
+                    "token1": "V3S",
+                    "rewardToken": "VSHARE"
+                },
+                {
+                    "id": 1,
+                    "lpToken": "0xcb0704BC4E885384ac96F0ED22B9204C3adD91AD",
+                    "token0": "CRO",
+                    "token1": "VSHARE",
+                    "rewardToken": "VSHARE"
+                }
+            ]
+        }
+    ]
+}

@@ -1,14 +1,6 @@
-/*==================================================
-  Modules
-==================================================*/
-
   const sdk = require('@defillama/sdk');
-  const _ = require('underscore');
-  const BigNumber = require("bignumber.js");
 
-/*==================================================
-    Settings
- ==================================================*/
+  const BigNumber = require("bignumber.js");
 
   const contracts = [
     '0x5199071825CC1d6cd019B0D7D42B08106f6CF16D',
@@ -23,18 +15,14 @@
     '0x6B175474E89094C44Da98b954EedeAC495271d0F'
   ];
 
-/*==================================================
-  Main
-==================================================*/
-
   async function tvl (timestamp, block) {
     const balances = {};
 
     let balanceOfCalls = [];
-    _.forEach(contracts, (contract) => {
+    contracts.forEach((contract) => {
       balanceOfCalls = [
         ...balanceOfCalls,
-        ..._.map(tokens, (token) => ({
+        ...tokens.map((token) => ({
           target: token,
           params: contract
         }))
@@ -45,34 +33,20 @@
       block,
       calls: balanceOfCalls,
       abi: 'erc20:balanceOf',
-    })).output;
+    }));
 
-    /* combine token volumes on multiple contracts */
-    _.forEach(balanceOfResult, (result) => {
-      let balance = new BigNumber(result.output || 0);
-      if (balance <= 0) return;
-
-      let asset = result.input.target;
-      let total = balances[asset];
-
-      if (total) {
-        balances[asset] = balance.plus(total).toFixed();
-      } else {
-        balances[asset] = balance.toFixed();
-      }
-    });
+    sdk.util.sumMultiBalanceOf(balances, balanceOfResult, true)
 
     return balances;
   }
 
-/*==================================================
-  Exports
-==================================================*/
-
   module.exports = {
-    name: 'dYdX',
-    token: null,
-    category: 'Lending',
     start: 1538179200,  // 09/29/2018 @ 12:00am (UTC)
-    tvl,
+    ethereum: { tvl },
+   hallmarks:[
+    [1611630974, "Series B $10M"],
+    [1623726974, "Series C $65M"],
+    [1627960574, "dydx token"],
+    [1632798974, "$250k Trading Comp"],
+  ]
   };

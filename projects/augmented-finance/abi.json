@@ -1,0 +1,905 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "contract IMarketAccessController",
+        "name": "addressesProvider",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [],
+    "name": "ADDRESS_PROVIDER",
+    "outputs": [
+      {
+        "internalType": "contract IMarketAccessController",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "ETH",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "USD",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      },
+      {
+        "internalType": "enum IUiPoolDataProvider.TokenType",
+        "name": "tokenType",
+        "type": "uint8"
+      }
+    ],
+    "name": "balanceOf",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "balance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "underlyingBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rewardedBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint32",
+            "name": "unstakeWindowStart",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "unstakeWindowEnd",
+            "type": "uint32"
+          }
+        ],
+        "internalType": "struct IUiPoolDataProvider.TokenBalance",
+        "name": "r",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "users",
+        "type": "address[]"
+      },
+      {
+        "internalType": "address[]",
+        "name": "tokens",
+        "type": "address[]"
+      },
+      {
+        "internalType": "enum IUiPoolDataProvider.TokenType[]",
+        "name": "tokenTypes",
+        "type": "uint8[]"
+      },
+      {
+        "internalType": "enum IUiPoolDataProvider.TokenType",
+        "name": "defType",
+        "type": "uint8"
+      }
+    ],
+    "name": "batchBalanceOf",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "balance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "underlyingBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "rewardedBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint32",
+            "name": "unstakeWindowStart",
+            "type": "uint32"
+          },
+          {
+            "internalType": "uint32",
+            "name": "unstakeWindowEnd",
+            "type": "uint32"
+          }
+        ],
+        "internalType": "struct IUiPoolDataProvider.TokenBalance[]",
+        "name": "balances",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "holder",
+        "type": "address"
+      },
+      {
+        "internalType": "uint32",
+        "name": "minDuration",
+        "type": "uint32"
+      }
+    ],
+    "name": "explainReward",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "amountClaimable",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "amountExtra",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxBoost",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "boostLimit",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint32",
+            "name": "latestClaimAt",
+            "type": "uint32"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              },
+              {
+                "internalType": "uint256",
+                "name": "extra",
+                "type": "uint256"
+              },
+              {
+                "internalType": "address",
+                "name": "pool",
+                "type": "address"
+              },
+              {
+                "internalType": "uint32",
+                "name": "since",
+                "type": "uint32"
+              },
+              {
+                "internalType": "uint32",
+                "name": "factor",
+                "type": "uint32"
+              },
+              {
+                "internalType": "enum RewardType",
+                "name": "rewardType",
+                "type": "uint8"
+              }
+            ],
+            "internalType": "struct RewardExplainEntry[]",
+            "name": "allocations",
+            "type": "tuple[]"
+          }
+        ],
+        "internalType": "struct RewardExplained",
+        "name": "",
+        "type": "tuple"
+      },
+      {
+        "internalType": "uint32",
+        "name": "at",
+        "type": "uint32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getAddresses",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "addressProvider",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "lendingPool",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "stakeConfigurator",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "rewardConfigurator",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "rewardController",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "wethGateway",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "priceOracle",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "lendingPriceOracle",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "rewardToken",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "rewardStake",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "referralRegistry",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct IUiPoolDataProvider.Addresses",
+        "name": "data",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bool",
+        "name": "includeAssets",
+        "type": "bool"
+      }
+    ],
+    "name": "getAllTokenDescriptions",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "token",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "priceToken",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "rewardPool",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "tokenSymbol",
+            "type": "string"
+          },
+          {
+            "internalType": "address",
+            "name": "underlying",
+            "type": "address"
+          },
+          {
+            "internalType": "uint8",
+            "name": "decimals",
+            "type": "uint8"
+          },
+          {
+            "internalType": "enum IUiPoolDataProvider.TokenType",
+            "name": "tokenType",
+            "type": "uint8"
+          },
+          {
+            "internalType": "bool",
+            "name": "active",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "frozen",
+            "type": "bool"
+          }
+        ],
+        "internalType": "struct IUiPoolDataProvider.TokenDescription[]",
+        "name": "tokens",
+        "type": "tuple[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenCount",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bool",
+        "name": "includeAssets",
+        "type": "bool"
+      }
+    ],
+    "name": "getAllTokens",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "tokens",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "tokenCount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "enum IUiPoolDataProvider.TokenType[]",
+        "name": "tokenTypes",
+        "type": "uint8[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "asset",
+        "type": "address"
+      }
+    ],
+    "name": "getReserveConfigurationData",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "decimals",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "ltv",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "liquidationThreshold",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "liquidationBonus",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "reserveFactor",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "usageAsCollateralEnabled",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "borrowingEnabled",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "stableBorrowRateEnabled",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "isActive",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "isFrozen",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "asset",
+        "type": "address"
+      }
+    ],
+    "name": "getReserveData",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "availableLiquidity",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalStableDebt",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalVariableDebt",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "liquidityRate",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "variableBorrowRate",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "stableBorrowRate",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "averageStableBorrowRate",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "liquidityIndex",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "variableBorrowIndex",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint40",
+        "name": "lastUpdateTimestamp",
+        "type": "uint40"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "asset",
+        "type": "address"
+      }
+    ],
+    "name": "getReserveTokensAddresses",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "depositTokenAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "stableDebtTokenAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "variableDebtTokenAddress",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "getReservesData",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "underlyingAsset",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "pricingAsset",
+            "type": "address"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "symbol",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "decimals",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "baseLTVasCollateral",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "reserveLiquidationThreshold",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "reserveLiquidationBonus",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "reserveFactor",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "usageAsCollateralEnabled",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "borrowingEnabled",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "stableBorrowRateEnabled",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isActive",
+            "type": "bool"
+          },
+          {
+            "internalType": "bool",
+            "name": "isFrozen",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint128",
+            "name": "liquidityIndex",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "variableBorrowIndex",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "liquidityRate",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "variableBorrowRate",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint128",
+            "name": "stableBorrowRate",
+            "type": "uint128"
+          },
+          {
+            "internalType": "uint40",
+            "name": "lastUpdateTimestamp",
+            "type": "uint40"
+          },
+          {
+            "internalType": "address",
+            "name": "depositTokenAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "stableDebtTokenAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "variableDebtTokenAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "strategy",
+            "type": "address"
+          },
+          {
+            "internalType": "bool",
+            "name": "isExternalStrategy",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "availableLiquidity",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalPrincipalStableDebt",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "averageStableRate",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalStableDebt",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "stableDebtLastUpdateTimestamp",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalScaledVariableDebt",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "priceInEth",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IUiPoolDataProvider.AggregatedReserveData[]",
+        "name": "",
+        "type": "tuple[]"
+      },
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "underlyingAsset",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "scaledDepositTokenBalance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "bool",
+            "name": "usageAsCollateralEnabledOnUser",
+            "type": "bool"
+          },
+          {
+            "internalType": "uint256",
+            "name": "stableBorrowRate",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "scaledVariableDebt",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "principalStableDebt",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "stableBorrowLastUpdateTimestamp",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IUiPoolDataProvider.UserReserveData[]",
+        "name": "",
+        "type": "tuple[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "asset",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "getUserReserveData",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "currentDepositBalance",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "currentStableDebt",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "currentVariableDebt",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "principalStableDebt",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "scaledVariableDebt",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "stableBorrowRate",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "liquidityRate",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint40",
+        "name": "stableRateLastUpdated",
+        "type": "uint40"
+      },
+      {
+        "internalType": "bool",
+        "name": "usageAsCollateralEnabled",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "pools",
+        "type": "address[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "ignoreMask",
+        "type": "uint256"
+      }
+    ],
+    "name": "rewardPoolNames",
+    "outputs": [
+      {
+        "internalType": "string[]",
+        "name": "names",
+        "type": "string[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

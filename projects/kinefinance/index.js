@@ -1,162 +1,209 @@
 const sdk = require("@defillama/sdk");
-const { transformBscAddress } = require("../helper/portedTokens");
+const { BigNumber } = require("bignumber.js");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const abi = require("./abi.json");
 
-const CONTROLLER = "0xbB7D94a423f4978545ecf73161f0678e8AfD1a92";
-const CONTROLLER_BSC = "0xC11c339a1B24b3a10f81a309A1d271DE141908dA";
+const translate = {
+  "0xbfa9df9ed8805e657d0feab5d186c6a567752d7f":"0xcbfef8fdd706cde6f208460f2bf39aa9c785f05d",
+  "0xa9c1740fa56e4c0f6ce5a792fd27095c8b6ccd87":"0xcbfef8fdd706cde6f208460f2bf39aa9c785f05d"
+}
 
-const kETH = "0xa58e822De1517aAE7114714fB354Ee853Cd35780";
-const kETH_BSC = "0x670076F14fb7Bc9735Af1BC9a1D1ad5266f54FA0";
+async function getUnitrollerTvl(block, chain, unitroller, cToken, cTokenEquivalent, kine, xKine, kMcd) {
+  let balances = {};
 
-const ETH = "0x0000000000000000000000000000000000000000";
+  const allMarkets = (await sdk.api.abi.call({
+    target: unitroller,
+    abi: abi["getAllMarkets"],
+    block,
+    chain
+  })).output;
 
-const kxKINE = "0x473ccDeC83B7125a4F52Aa6F8699026FCB878eE8";
-const KINE = "0xCbfef8fdd706cde6F208460f2Bf39Aa9c785F05D";
+  for (let i = allMarkets.length -1 ; i >= 0; i--) {
+    let address = allMarkets[i].toLowerCase();
+    if (address === cToken || address === kMcd) {
+      allMarkets.splice(i, 1);
+    }
+  }
 
-/* ---- Farm at ethereum chain ---- */
-const KINE_ETH_LP_FARM = "0x80850DB68db03792CA5650fbdacCeBe1DA5e52bF";
-const kUSD_ETH_LP_FARM = "0x834C3bB26bb1Bf025dc6B66aD5D7F9003333606b";
-const kUSD_USDT_LP_FARM = "0xc75ba7E3A40E2293817b590e47BEb01e52A0C9b6";
+  const cTokenBalance = (await sdk.api.erc20.totalSupply({
+    target: cToken,
+    block,
+    chain
+  })).output;
 
-/* ---- Farm at bsc chain ---- */
-const KINE_kUSD_LP_FARM = "0x6c2C7C5b5c0B60a13B981ACCFe1aa1616985d3D7";
-const BUSD_T_kUSD_LP_FARM = "0x308043A2a7c62B17906F9B074a349c43ccD919ad";
+  sdk.util.sumSingleBalance(balances, `${chain}:${cTokenEquivalent}`, cTokenBalance);
 
-const calcTvl = async (balances, chain, block, controller, arrFarms) => {
-  const KERC20_TOKENS = (
-    await sdk.api.abi.call({
-      abi: abi.getAllMarkets,
-      target: controller,
-      block,
-      ...(chain == "bsc" && { chain }),
-    })
-  ).output;
+  const underlyings = (await sdk.api.abi.multiCall({
+    calls: allMarkets.map(p => ({
+      target: p
+    })),
+    abi: abi["underlying"],
+    block,
+    chain
+  })).output;
 
-  if (KERC20_TOKENS.length != 0) {
-    const underlyingTokens = (
-      await sdk.api.abi.multiCall({
-        abi: abi.underlying,
-        calls: KERC20_TOKENS.map((underAddr) => ({
-          target: underAddr,
-        })),
-        block,
-        ...(chain == "bsc" && { chain }),
-      })
-    ).output.map((addr) => addr.output);
+  const underlyingBalances = (await sdk.api.abi.multiCall({
+    calls: underlyings.map(p => ({
+      target: p.output,
+      params: p.input.target
+    })),
+    abi: "erc20:balanceOf",
+    block,
+    chain
+  })).output;
 
-    const getCash = (
-      await sdk.api.abi.multiCall({
-        abi: abi.getCash,
-        calls: KERC20_TOKENS.map((Addr) => ({
-          target: Addr,
-        })),
-        block,
-        ...(chain == "bsc" && { chain }),
-      })
-    ).output.map((bal) => bal.output);
+  const symbols = (await sdk.api.abi.multiCall({
+    calls: underlyings.map(p => ({
+      target: p.input.target
+    })),
+    abi: "erc20:symbol",
+    block,
+    chain
+  })).output;
 
-    for (let i = 0; i < KERC20_TOKENS.length; i++) {
-      try {
-        sdk.util.sumSingleBalance(
-          balances,
-          `${underlyingTokens[i]}`,
-          getCash[i]
-        );
-      } catch (err) {
-        console.error(err);
-      }
+  let lpPositions = [];
+
+  for (let i = 0; i < underlyingBalances.length; i++) {
+    let token = underlyingBalances[i].input.target.toLowerCase();
+    let balance = underlyingBalances[i].output;
+    let symbol = symbols[i].output;
+
+    if (symbol.endsWith("LP")) {
+      lpPositions.push({
+        token,
+        balance
+      });
+      continue;
     }
 
-    let getCashkETH = (
-      await sdk.api.eth.getBalance({
-        target: kETH,
+    if (token === xKine) {
+      const totalSupply = (await sdk.api.erc20.totalSupply({
+        target: xKine,
         block,
-      })
-    ).output;
-
-    sdk.util.sumSingleBalance(balances, ETH, getCashkETH);
-
-    const getCashkxKINE = (
-      await sdk.api.abi.call({
-        abi: abi.getCash,
-        target: kxKINE,
+        chain
+      })).output;
+  
+      const kineBal = (await sdk.api.erc20.balanceOf({
+        target: kine,
+        owner: xKine,
         block,
-        ...(chain == "bsc" && { chain }),
-      })
-    ).output;
+        chain
+      })).output;
+  
+      const ratio = Number(kineBal) / Number(totalSupply);
+      balance = BigNumber(balance).times(ratio).toFixed(0);
+      token = kine;
+    }
 
-    sdk.util.sumSingleBalance(balances, KINE, getCashkxKINE);
+    if (translate[token] !== undefined) {
+      sdk.util.sumSingleBalance(balances, translate[token], balance);
+      continue;
+    }
+    sdk.util.sumSingleBalance(balances, `${chain}:${token}`, balance);
   }
 
-  const farmStakingTokens = (
-    await sdk.api.abi.multiCall({
-      abi: abi.stakingToken,
-      calls: arrFarms.map((stakingAddr) => ({
-        target: stakingAddr,
-      })),
-      block,
-      ...(chain == "bsc" && { chain }),
-    })
-  ).output.map((el) => el.output);
-
-  const stakedAmts = (
-    await sdk.api.abi.multiCall({
-      abi: abi.totalStakes,
-      calls: arrFarms.map((stakingAddr) => ({
-        target: stakingAddr,
-      })),
-      block,
-      ...(chain == "bsc" && { chain }),
-    })
-  ).output.map((el) => el.output);
-
-  const lpPositions = stakedAmts.map((amt, idx) => ({
-    token: farmStakingTokens[idx],
-    balance: amt,
-  }));
-
-  if (chain == "bsc") {
-    const transformAdress = await transformBscAddress();
-
-    await unwrapUniswapLPs(
-      balances,
-      lpPositions,
-      block,
-      "bsc",
-      transformAdress
-    );
-  } else {
-    await unwrapUniswapLPs(balances, lpPositions, block);
-  }
-};
-
-const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
-
-  const arrFarms = [KINE_ETH_LP_FARM, kUSD_ETH_LP_FARM, kUSD_USDT_LP_FARM];
-
-  await calcTvl(balances, "", ethBlock, CONTROLLER, arrFarms);
+  await unwrapUniswapLPs(balances, lpPositions, block, chain, addr=> {
+    addr = addr.toLowerCase();
+    if (translate[addr] !== undefined) {
+      return translate[addr];
+    }
+    return `${chain}:${addr}`;
+  });
 
   return balances;
-};
+}
 
-const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
+async function getBorrowed(block, chain, kMcd) {
+  let balances = {};
 
-  const arrFarms = [KINE_kUSD_LP_FARM, BUSD_T_kUSD_LP_FARM];
+  const totalBorrows = (await sdk.api.abi.call({
+    target: kMcd,
+    abi: abi["totalBorrows"],
+    block,
+    chain
+  })).output;
 
-  await calcTvl(balances, "bsc", chainBlocks["bsc"], CONTROLLER_BSC, arrFarms);
+  sdk.util.sumSingleBalance(balances, "0xdac17f958d2ee523a2206206994597c13d831ec7", BigNumber(totalBorrows).div(1e12).toFixed(0));
 
   return balances;
-};
+}
+
+const ethUnitroller = "0xbb7d94a423f4978545ecf73161f0678e8afd1a92";
+const keth = "0xa58e822de1517aae7114714fb354ee853cd35780";
+const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+const ethXKine = "0xa8d7643324df0f38764f514eb1a99d8f379cc692";
+const ethKine = "0xcbfef8fdd706cde6f208460f2bf39aa9c785f05d";
+const ethkMcd = "0xaf2617aa6fd98581bb8cb099a16af74510b6555f";
+
+async function ethTvl(timestamp, block) {
+  return await getUnitrollerTvl(block, "ethereum", ethUnitroller, keth, weth, ethKine, ethXKine, ethkMcd);
+}
+
+async function ethBorrow(timestamp, block) {
+  return await getBorrowed(block, "ethereum", ethkMcd);
+}
+
+const bscUnitroller = "0x3c2ddd486c07343b711a4415cdc9ab90ed32b571";
+const kbnb = "0x5fbe4eb536dadbcee54d5b55ed6559e29c60b055";
+const wbnb = "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c";
+const bscXKine = "0x8f5abd0d891d293b13f854700ff89210da3d5ba3";
+const bscKine = "0xbfa9df9ed8805e657d0feab5d186c6a567752d7f";
+const bsckMcd = "0x4f1ab95b798084e44d512b8b0fed3ef933177986";
+
+async function bscTvl(timestamp, block, chainBlocks) {
+  return await getUnitrollerTvl(chainBlocks.bsc, "bsc", bscUnitroller, kbnb, wbnb, bscKine, bscXKine, bsckMcd);
+}
+
+async function bscBorrowed(timestamp, block, chainBlocks) {
+  return await getBorrowed(chainBlocks.bsc, "bsc", bsckMcd);
+}
+
+const polygonUnitroller = "0xdff18ac4146d67bf2ccbe98e7db1e4fa32b96881";
+const kmatic = "0xf186a66c2bd0509beaafca2a16d6c39ba02425f9";
+const wmatic = "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270";
+const polygonXKine = "0x66a782c9a077f5adc988cc0b5fb1cdcc9d7adeda";
+const polygonKine = "0xa9c1740fa56e4c0f6ce5a792fd27095c8b6ccd87";
+const polygonkMcd = "0xcd6b46443becad4996a70ee3d8665c0b86a0c54c";
+
+async function polygonTvl(timestamp, block, chainBlocks) {
+  return await getUnitrollerTvl(chainBlocks.polygon, "polygon", polygonUnitroller, kmatic, wmatic, polygonKine, polygonXKine, polygonkMcd);
+}
+
+async function polygonBorrowed(timestamp, block, chainBlocks) {
+  return await getBorrowed(chainBlocks.polygon, "polygon", polygonkMcd);
+}
+
+const avaxUnitroller = "0x0ec3126390c606be63a0fa6585e68075f06679c6";
+const kavax = "0x0544be6693763d64c02f49f16986ba1390a2fc39";
+const wavax = "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7";
+const avaxXKine = "0x68b9737ae74cf1a169890042f1aa359647aa3e47";
+const avaxKine = "0xa9c1740fa56e4c0f6ce5a792fd27095c8b6ccd87";
+const avaxkMcd = "0xcd6b46443becad4996a70ee3d8665c0b86a0c54c";
+
+async function avaxTvl(timestamp, block, chainBlocks) {
+  return await getUnitrollerTvl(chainBlocks.avax, "avax", avaxUnitroller, kavax, wavax, avaxKine, avaxXKine, avaxkMcd);
+}
+
+async function avaxBorrowed(timestamp, block, chainBlocks) {
+  return await getBorrowed(chainBlocks.avax, "avax", avaxkMcd);
+}
 
 module.exports = {
+  misrepresentedTokens: true,
   ethereum: {
     tvl: ethTvl,
+    borrowed: ethBorrow
   },
   bsc: {
     tvl: bscTvl,
+    borrowed: bscBorrowed
   },
-  tvl: sdk.util.sumChainTvls([ethTvl, bscTvl]),
-};
+  polygon: {
+    tvl: polygonTvl,
+    borrowed: polygonBorrowed
+  },
+  avalanche: {
+    tvl: avaxTvl,
+    borrowed: avaxBorrowed
+  }
+}

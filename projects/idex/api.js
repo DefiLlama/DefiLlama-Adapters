@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 const client = axios.create({
-  baseURL: 'https://api.idex.io/v1',
+  baseURL: 'https://api-matic.idex.io/v1',
   headers: {
     'User-Agent': 'defi-pulse-adapter'
   }

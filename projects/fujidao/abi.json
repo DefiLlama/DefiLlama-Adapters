@@ -1,0 +1,3 @@
+{
+    "totalSupply":{"inputs":[{"internalType":"uint256","name":"_assetID","type":"uint256"}],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+}

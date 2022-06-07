@@ -1,0 +1,294 @@
+{
+    "chains": [
+        {
+            "chainId": 1337,
+            "chainName": "local"
+        },
+        {
+            "chainId": 97,
+            "chainName": "bsc-testnet"
+        },
+        {
+            "chainId": 56,
+            "chainName": "bsc-mainnet"
+        }
+    ],
+    "tokens": [
+        {
+            "address": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+            "symbol": "bnb",
+            "isFlip": false,
+            "tokenId": 0,
+            "decimals": 18,
+            "tradeable": true
+        },
+        {
+            "address": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+            "symbol": "wbnb",
+            "isFlip": false,
+            "tokenId": 1,
+            "decimals": 18,
+            "tradeable": true
+        },
+        {
+            "address": "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+            "symbol": "busd",
+            "isFlip": false,
+            "tokenId": 2,
+            "decimals": 18,
+            "tradeable": true
+        },
+        {
+            "address": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
+            "symbol": "cake",
+            "isFlip": false,
+            "tokenId": 3,
+            "decimals": 18,
+            "tradeable": true
+        },
+        {
+            "address": "0x0eD7e52944161450477ee417DE9Cd3a859b14fD0",
+            "symbol": "cake-bnb",
+            "isFlip": true,
+            "tokenId": 4,
+            "decimals": 18,
+            "tradeable": true
+        },
+        {
+            "address": "0x58F876857a02D6762E0101bb5C46A8c1ED44Dc16",
+            "symbol": "busd-bnb",
+            "isFlip": true,
+            "tokenId": 5,
+            "decimals": 18,
+            "tradeable": true
+        },
+        {
+            "address": "0x804678fa97d91B974ec2af3c843270886528a9E6",
+            "symbol": "cake-busd",
+            "isFlip": true,
+            "tokenId": 6,
+            "decimals": 18,
+            "tradeable": true
+        },
+        {
+            "address": "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c",
+            "symbol": "btcb",
+            "isFlip": false,
+            "tokenId": 7,
+            "decimals": 18,
+            "tradeable": true
+        },
+        {
+            "address": "0x2170ed0880ac9a755fd29b2688956bd959f933f8",
+            "symbol": "eth",
+            "isFlip": false,
+            "tokenId": 8,
+            "decimals": 18,
+            "tradeable": true
+        }
+    ],
+    "vaults": [
+        {
+            "address": "0x52cFa188A1468A521A98eaa798E715Fbb9eb38a3",
+            "depositTokenAddress": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+            "nativeTokenAddress": "0xc9849e6fdb743d08faee3e34dd2d1bc69ea11a51",
+            "depositTokenSymbol": "bnb",
+            "nativeTokenSymbol": "bunny",
+            "vaultProvider": "bunny",
+            "additionalData": {
+                "vid": "0",
+                "vaultType": "venus"
+            }
+        },
+        {
+            "address": "0x0243A20B20ECa78ddEDF6b8ddb43a0286438A67A",
+            "depositTokenAddress": "0xe9e7cea3dedca5984780bafc599bd69add087d56",
+            "nativeTokenAddress": "0xc9849e6fdb743d08faee3e34dd2d1bc69ea11a51",
+            "depositTokenSymbol": "busd",
+            "nativeTokenSymbol": "bunny",
+            "vaultProvider": "bunny",
+            "additionalData": {
+                "vid": "1",
+                "vaultType": "venus"
+            }
+        },
+        {
+            "address": "0xEDfcB78e73f7bA6aD2D829bf5D462a0924da28eD",
+            "depositTokenAddress": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
+            "nativeTokenAddress": "0xc9849e6fdb743d08faee3e34dd2d1bc69ea11a51",
+            "depositTokenSymbol": "cake",
+            "nativeTokenSymbol": "bunny",
+            "vaultProvider": "bunny",
+            "additionalData": {
+                "vid": "2",
+                "vaultType": "cakeToCake"
+            }
+        },
+        {
+            "address": "0xA599d6b81eC4a5DDd8eCa85e3AAc31E006aF00AA",
+            "depositTokenAddress": "0x0eD7e52944161450477ee417DE9Cd3a859b14fD0",
+            "nativeTokenAddress": "0xc9849e6fdb743d08faee3e34dd2d1bc69ea11a51",
+            "depositTokenSymbol": "cake-bnb",
+            "nativeTokenSymbol": "bunny",
+            "vaultProvider": "bunny",
+            "additionalData": {
+                "vid": "3",
+                "vaultType": "flipToFlip"
+            }
+        },
+        {
+            "address": "0xE0aca387C6600b455CCFC32B253e2DB13b71ca62",
+            "depositTokenAddress": "0x58F876857a02D6762E0101bb5C46A8c1ED44Dc16",
+            "nativeTokenAddress": "0xc9849e6fdb743d08faee3e34dd2d1bc69ea11a51",
+            "depositTokenSymbol": "busd-bnb",
+            "nativeTokenSymbol": "bunny",
+            "vaultProvider": "bunny",
+            "additionalData": {
+                "vid": "4",
+                "vaultType": "flipToFlip"
+            }
+        },
+        {
+            "address": "0x6BE4741AB0aD233e4315a10bc783a7B923386b71",
+            "depositTokenAddress": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+            "nativeTokenAddress": "0xCa3F508B8e4Dd382eE878A314789373D80A5190A",
+            "depositTokenSymbol": "bnb",
+            "nativeTokenSymbol": "beefy",
+            "vaultProvider": "beefy",
+            "additionalData": {
+                "vid": "5",
+                "strategyType": "venusBNBV2"
+            }
+        },
+        {
+            "address": "0x97e5d50Fe0632A95b9cf1853E744E02f7D816677",
+            "depositTokenAddress": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
+            "nativeTokenAddress": "0xCa3F508B8e4Dd382eE878A314789373D80A5190A",
+            "depositTokenSymbol": "cake",
+            "nativeTokenSymbol": "beefy",
+            "vaultProvider": "beefy",
+            "additionalData": {
+                "vid": "6",
+                "strategyType": "cakeV2"
+            }
+        },
+        {
+            "address": "0xb26642B6690E4c4c9A6dAd6115ac149c700C7dfE",
+            "depositTokenAddress": "0x0eD7e52944161450477ee417DE9Cd3a859b14fD0",
+            "nativeTokenAddress": "0xCa3F508B8e4Dd382eE878A314789373D80A5190A",
+            "depositTokenSymbol": "cake-bnb",
+            "nativeTokenSymbol": "beefy",
+            "vaultProvider": "beefy",
+            "additionalData": {
+                "vid": "7",
+                "strategyType": "commonChefLP"
+            }
+        },
+        {
+            "address": "0xAd61143796D90FD5A61d89D63a546C7dB0a70475",
+            "depositTokenAddress": "0x58F876857a02D6762E0101bb5C46A8c1ED44Dc16",
+            "nativeTokenAddress": "0xCa3F508B8e4Dd382eE878A314789373D80A5190A",
+            "depositTokenSymbol": "busd-bnb",
+            "nativeTokenSymbol": "beefy",
+            "vaultProvider": "beefy",
+            "additionalData": {
+                "vid": "8",
+                "strategyType": "cakeLP"
+            }
+        },
+        {
+            "address": "0x1542885D6EeD4EE3AC1a110d3f159003a0774101",
+            "depositTokenAddress": "0x804678fa97d91B974ec2af3c843270886528a9E6",
+            "nativeTokenAddress": "0xCa3F508B8e4Dd382eE878A314789373D80A5190A",
+            "depositTokenSymbol": "cake-busd",
+            "nativeTokenSymbol": "beefy",
+            "vaultProvider": "beefy",
+            "additionalData": {
+                "vid": "9",
+                "strategyType": "cakeLP-dynamicWithdrawalFee"
+            }
+        },
+        {
+            "address": "0x0895196562C7868C5Be92459FaE7f877ED450452",
+            "depositTokenAddress": "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
+            "nativeTokenAddress": "0xa184088a740c695E156F91f5cC086a06bb78b827",
+            "depositTokenSymbol": "cake",
+            "nativeTokenSymbol": "auto",
+            "vaultProvider": "autofarm",
+            "additionalData": {
+                "vid": "10",
+                "pid": "7",
+                "strategyType": "stratX"
+            }
+        },
+        {
+            "address": "0x0895196562C7868C5Be92459FaE7f877ED450452",
+            "depositTokenAddress": "0x0eD7e52944161450477ee417DE9Cd3a859b14fD0",
+            "nativeTokenAddress": "0xa184088a740c695E156F91f5cC086a06bb78b827",
+            "depositTokenSymbol": "cake-bnb",
+            "nativeTokenSymbol": "auto",
+            "vaultProvider": "autofarm",
+            "additionalData": {
+                "vid": "11",
+                "pid": "243",
+                "strategyType": "stratX2PCS"
+            }
+        },
+        {
+            "address": "0x0895196562C7868C5Be92459FaE7f877ED450452",
+            "depositTokenAddress": "0x58F876857a02D6762E0101bb5C46A8c1ED44Dc16",
+            "nativeTokenAddress": "0xa184088a740c695E156F91f5cC086a06bb78b827",
+            "depositTokenSymbol": "busd-bnb",
+            "nativeTokenSymbol": "auto",
+            "vaultProvider": "autofarm",
+            "additionalData": {
+                "vid": "12",
+                "pid": "244",
+                "strategyType": "stratX2PCS"
+            }
+        },
+        {
+            "address": "0x0895196562C7868C5Be92459FaE7f877ED450452",
+            "depositTokenAddress": "0x804678fa97d91B974ec2af3c843270886528a9E6",
+            "nativeTokenAddress": "0xa184088a740c695E156F91f5cC086a06bb78b827",
+            "depositTokenSymbol": "cake-busd",
+            "nativeTokenSymbol": "auto",
+            "vaultProvider": "autofarm",
+            "additionalData": {
+                "vid": "13",
+                "pid": "381",
+                "strategyType": "stratX2PCS"
+            }
+        }
+    ],
+    "pancakeswap": {
+        "router": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+        "factory": "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73",
+        "masterchef": "0x73feaa1eE314F8c655E354234017bE2193C9E24E"
+    },
+    "bunny": {
+        "token": "0xc9849e6fdb743d08faee3e34dd2d1bc69ea11a51",
+        "minter": "0x8cB88701790F650F273c8BB2Cc4c5f439cd65219",
+        "earlyWithdrawFeePercentage": "0.005"
+    },
+    "beefy": {
+        "token": "0xCa3F508B8e4Dd382eE878A314789373D80A5190A"
+    },
+    "autofarm": {
+        "token": "0xa184088a740c695E156F91f5cC086a06bb78b827",
+        "vault": "0x0895196562C7868C5Be92459FaE7f877ED450452"
+    },
+    "revaToken": "0x4FdD92Bd67Acf0676bfc45ab7168b3996F7B4A3B",
+    "vRevaToken": "0x774D9103dc027b707812aCF0e0B40A34DcAeF658",
+    "revaChef": "0xd7550285532f1642511b16Df858546F2593d638B",
+    "revault": "0x2642fa04bd1f7250be6539c5bDa36335333d9Ccd",
+    "revaFeeReceiver": "0xEdA62c8710F245463cE362a5E52Fa3B046E0fd0d",
+    "revaLpFeeReceiver": "0xa66aF20F23AB0e5eeD726f62AE60ea58D25960C8",
+    "revaStakingPool": "0x8B7b2a115201ACd7F95d874D6A9432FcEB9C466A",
+    "revaLpStakingPool": "0x785ffB6e2825E62d1416B17659Bb728667caBe2c",
+    "zap": "0xc01123Bb1b01B3540eDD270F2FA5DBCD66292BE6",
+    "zapAndDeposit": "0x141683F38A13b3311098A28C91898BA0dA651cfB",
+    "dead": "0x000000000000000000000000000000000000dEaD",
+    "reva-bnb": "0x861859cc8D3c650B07373ed699D5bD8f5E80Eb07",
+    "reva-bnb-lp-staking-pid": 0
+}

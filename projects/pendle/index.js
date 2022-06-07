@@ -1,47 +1,168 @@
-const sdk = require('@defillama/sdk');
-const { sumTokensAndLPs } = require('../helper/unwrapLPs')
+const { sumTokensAndLPsSharedOwners, 
+    unwrapUniswapLPs } = require('../helper/unwrapLPs');
+const { getBlock } = require('../helper/getBlock');
+const { transformAvaxAddress } = require('../helper/portedTokens');
+const sdk = require("@defillama/sdk");
+const abi = require("./abi.json");
+const contracts = require('./contracts');
 
-const aUSDC = "0xbcca60bb61934080951369a648fb03df4f96263c"
-const cDAI = "0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643"
-const USDC = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
-const PENDLE = "0x808507121b80c02388fad14726482e061b8da827"
-// Pulled from https://github.com/pendle-finance/pendle-core/blob/master/docs/contracts_with_funds.json
-const contracts = Object.keys({
-    "0x33d3071cfa7404a406edB5826A11620282021745": "PendleCompoundYieldTokenHolder",
-    "0xb0aa68d8A0D56ae7276AB9E0E017965a67320c60": "PendleAaveV2YieldTokenHolder",
-    "0x8315BcBC2c5C1Ef09B71731ab3827b0808A2D6bD": "PendleAaveMarket",
-    "0xB26C86330FC7F97533051F2F8cD0a90C2E82b5EE": "PendleCompoundMarket",
-    "0x2F16B22C839FA995375602562ba5dD15A22d349d": "PendleLpHolder_Compound",
-    "0x76A16d9325E9519Ef1819A4e7d16B168956f325F": "PendleLpHolder_Aave",
-})
-const SingleStaking = "0x07282F2CEEbD7a65451Fcd268b364300D9e6D7f5"
+const ethTokens = contracts.eth.tokens;
+const ethFundedContracts = Object.keys(contracts.eth.funded);
+const ethStakingContracts = Object.keys(contracts.eth.staking);
+const ethOtTokens = Object.keys(contracts.eth.otTokens);
+const ethPool2Contracts = Object.keys(contracts.eth.pool2);
 
-// Treasury TVL consists of DAI balance + Sushi SLP balance
-async function tvl(timestamp, block) {
-    const balances = {}
-    await sumTokensAndLPs(balances, [
-        [aUSDC, false],
-        [cDAI, false],
-        [USDC, false],
-    ], contracts, block)
+const avaxTokens = contracts.avax.tokens;
+const avaxFundedContracts = Object.keys(contracts.avax.funded);
+const avaxOtTokens = Object.keys(contracts.avax.otTokens);
+const avaxPool2Contracts = Object.keys(contracts.avax.pool2);
 
-    return balances
-}
+async function ethTvl(timestamp, block) {
+    const balances = {};
+    let lpBalances = [];
+    const masterChefContract = "0xc2edad668740f1aa35e4d8f227fb8e17dca888cd";
 
+    const masterChefDeposits = await sdk.api.abi.call({
+        target: masterChefContract,
+        abi: abi.userInfo,
+        params: [1, ethFundedContracts[4]],
+        block: block,
+      });
+    lpBalances.push({
+        'token': ethTokens.SLP_ETHUSDC,
+        'balance': masterChefDeposits.output.amount
+    });
+    await unwrapUniswapLPs(balances, lpBalances, block);
+    
+    await sumTokensAndLPsSharedOwners(balances, [
+        [ethTokens.USDC, false],
+        [ethTokens.aUSDC, false],
+        [ethTokens.cDAI, false],
+        [ethTokens.SLP_ETHUSDC, true],
+        [ethTokens.SLP_PENDLEETH, true],
+        [ethTokens.SUSHI, false],
+        [ethTokens.COMP, false],
+        [ethTokens.wxBTRFLY, false],
+        [ethTokens.SLP_OT_aUSDC_21, true],
+        [ethTokens.SLP_OT_aUSDC_22, true],
+        [ethTokens.SLP_OT_cDAI_21, true], 
+        [ethTokens.SLP_OT_cDAI_22, true],
+        [ethTokens.SLP_OT_ETHUSDC_22, true],
+        [ethTokens.SLP_OT_wxBTRFLY_22, true],
+    ], ethFundedContracts, block);
+    for (token of ethOtTokens) {
+        delete balances[token.toLowerCase()];
+    };
+    delete balances[ethTokens.PENDLE];
+
+    balances[ethTokens.BTRFLY] = (await sdk.api.abi.call({
+        target: ethTokens.wxBTRFLY,
+        abi: abi.xBTRFLYValue,
+        params: [ balances[ethTokens.wxBTRFLY] ],
+        block: block
+      })).output;
+    delete balances[ethTokens.wxBTRFLY];
+
+    return balances;
+};
 async function staking(timestamp, block) {
-    return {
-        [PENDLE]: await sdk.api.erc20.balanceOf({
-            target: PENDLE,
-            owner: SingleStaking,
-            block
-        })
-    }
-}
+    const staking = {};
+    await sumTokensAndLPsSharedOwners(staking, [
+        [ethTokens.PENDLE, false],
+    ], ethStakingContracts, block);
+    return staking;
+};
+async function ethPool2(timestamp, block) {
+    const pool2 = {};
+    await sumTokensAndLPsSharedOwners(pool2, [
+        [ethTokens.SLP_PENDLEETH, true],
+        [ethTokens.PENDLE, false],
+        [ethTokens.SUSHI, false]
+    ], ethPool2Contracts, block);
+
+    return pool2;
+};
+async function avaxTvl(timestamp, block, chainBlocks) {
+    const transform = await transformAvaxAddress();
+    const balances = {};
+    block = await getBlock(timestamp, "avax", chainBlocks);
+    
+    const masterChefContract = "0xd6a4F121CA35509aF06A0Be99093d08462f53052";
+    const TIME = "avax:0xb54f16fb19478766a268f172c9480f8da1a7c9c3";
+
+    balances[transform(avaxTokens.xJOE)] = (await sdk.api.abi.call({
+        target: masterChefContract,
+        abi: abi.userInfo,
+        params: [24, avaxFundedContracts[0]],
+        block: block,
+        chain: "avax"
+      })).output.amount;
+
+    await sumTokensAndLPsSharedOwners(balances, [
+        [avaxTokens.USDC, false],
+        [avaxTokens.qiAVAX, false],
+        [avaxTokens.qiUSDC, false],
+        [avaxTokens.xJOE, false],
+        [avaxTokens.JLP_PENDLEAVAX, true],
+        [avaxTokens.WAVAX, false],
+        [avaxTokens.JOE, false],
+        [avaxTokens.QI, false],
+        [avaxTokens.MIM, false],
+        [avaxTokens.wMEMO, false],
+        [avaxTokens.JLP_OT_PAP, true],
+        [avaxTokens.JLP_OT_qiUSDC, true],
+        [avaxTokens.JLP_OT_qiAVAX, true],
+        [avaxTokens.JLP_OT_xJOE, true],
+        [avaxTokens.JLP_OT_wMEMO, true]
+    ], avaxFundedContracts, block, "avax", transform);
+
+
+    balances[TIME] = (await sdk.api.abi.call({
+        target: avaxTokens.wMEMO,
+        abi: abi.wMEMOToMEMO,
+        params: [ balances[`avax:${avaxTokens.wMEMO}`] ],
+        block: block,
+        chain: "avax"
+      })).output;
+    delete balances[`avax:${avaxTokens.wMEMO}`];
+
+    for (token of avaxOtTokens) {
+        delete balances[`avax:${token.toLowerCase()}`];
+    };
+
+    if (`avax:${avaxTokens.qiUSDC}` in balances) {
+        balances[ethTokens.USDC] = Number(balances[ethTokens.USDC]) 
+            + Number(balances[`avax:${avaxTokens.qiUSDC}`]) / 10**12
+        delete balances[`avax:${avaxTokens.qiUSDC}`]
+    };
+    delete balances[avaxTokens.PENDLE];
+
+    return balances;
+};
+async function avaxPool2(timestamp, block, chainBlocks) {
+    const transform = await transformAvaxAddress();
+    const pool2 = {};
+    block = await getBlock(timestamp, "avax", chainBlocks);
+
+    await sumTokensAndLPsSharedOwners(pool2, [
+        [avaxTokens.JLP_PENDLEAVAX, true],
+        [avaxTokens.PENDLE, false],
+        [avaxTokens.JOE, false]
+    ], avaxPool2Contracts, block, "avax", transform);
+
+    return pool2;
+};
 
 module.exports = {
-    methodology: "Counts USDC and DAI earning yield on Compound/Aave and backing the yield tokens and USDC in the pendle markets. Staking TVL is just staked PENDLE on SingleStaking",
-    tvl,
-    staking:{
-        tvl: staking
-    }
-}
+    ethereum:{
+        pool2: ethPool2,
+        tvl: ethTvl,
+        staking
+    },
+    avalanche:{
+        pool2: avaxPool2,
+        tvl: avaxTvl
+    },
+    methodology: "Counts the collateral backing the yield tokens and USDC in the pendle markets, plus staked OT liquidity, and SLP/JLP staked in masterchef. Staking TVL is just staked PENDLE on 0x07282F2CEEbD7a65451Fcd268b364300D9e6D7f5. Pool2 refers to the Pe,P pool on mainnet, and Pa,P pool on avax.",
+};
+// node test.js projects/pendle/index.js

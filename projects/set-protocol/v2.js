@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js');
-const _ = require('underscore');
+
 
 const SUPPLY_SCALE = BigNumber("10").pow(18)
 const START_BLOCK = 10830496;
@@ -43,7 +43,7 @@ module.exports = async function tvl(timestamp, block) {
   let supplies = (await sdk.api.abi.multiCall({
     abi: totalSupply,
     block,
-    calls: _.map(setAddresses, (setAddress) => {
+    calls: setAddresses.map((setAddress) => {
       return {
         target: setAddress,
       }
@@ -53,7 +53,7 @@ module.exports = async function tvl(timestamp, block) {
   let positionsForSets = (await sdk.api.abi.multiCall({
     abi: getPositions,
     block,
-    calls: _.map(setAddresses, (setAddress) => {
+    calls: setAddresses.map((setAddress) => {
       return {
         target: setAddress,
       }
@@ -61,14 +61,17 @@ module.exports = async function tvl(timestamp, block) {
   })).output;
 
   let uniswapPositions = {};
-  _.each(positionsForSets, function(positionForSet, i) {
+  positionsForSets.forEach(function(positionForSet, i) {
     const setSupply = BigNumber(supplies[i].output);
-    _.each(positionForSet.output, (position) => {
+    if(positionForSet.output === null){
+      throw new Error("positionForSet call failed")
+    }
+    positionForSet.output.forEach((position) => {
       const componentAddress = position[0];
       const positionUnits = BigNumber(position[2]);
       
       const isExternalPosition = position[3] == EXTERNAL_POSITION;
-      balances[componentAddress] = BigNumber(balances[componentAddress] || 0).plus((positionUnits).times(setSupply).div(SUPPLY_SCALE)).toFixed();
+      balances[componentAddress] = BigNumber(balances[componentAddress] || 0).plus((positionUnits).times(setSupply).div(SUPPLY_SCALE)).toFixed(0);
     });    
   });
 

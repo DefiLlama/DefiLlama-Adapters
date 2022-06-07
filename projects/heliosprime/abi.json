@@ -1,0 +1,3 @@
+{
+    "getComponents":{"inputs":[],"name":"getComponents","outputs":[{"internalType":"address[]","name":"","type":"address[]"}],"stateMutability":"view","type":"function"}
+}

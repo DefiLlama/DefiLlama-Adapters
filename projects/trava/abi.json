@@ -1,0 +1,186 @@
+{
+    "getLendingPool": {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "providerId",
+                "type": "uint256"
+            }
+        ],
+        "name": "getLendingPool",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "getAddressesProviderFactory": {
+        "inputs": [],
+        "name": "getAddressesProviderFactory",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "getAllPools": {
+        "inputs": [],
+        "name": "getAllPools",
+        "outputs": [
+            {
+                "internalType": "uint256[]",
+                "name": "",
+                "type": "uint256[]"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "getReservesList": {
+        "inputs": [],
+        "name": "getReservesList",
+        "outputs": [
+            {
+                "internalType": "address[]",
+                "name": "",
+                "type": "address[]"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "getReserveData": {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "asset",
+                "type": "address"
+            }
+        ],
+        "name": "getReserveData",
+        "outputs": [
+            {
+                "components": [
+                    {
+                        "components": [
+                            {
+                                "internalType": "uint256",
+                                "name": "data",
+                                "type": "uint256"
+                            }
+                        ],
+                        "internalType": "struct DataTypes.ReserveConfigurationMap",
+                        "name": "configuration",
+                        "type": "tuple"
+                    },
+                    {
+                        "internalType": "uint128",
+                        "name": "liquidityIndex",
+                        "type": "uint128"
+                    },
+                    {
+                        "internalType": "uint128",
+                        "name": "variableBorrowIndex",
+                        "type": "uint128"
+                    },
+                    {
+                        "internalType": "uint128",
+                        "name": "currentLiquidityRate",
+                        "type": "uint128"
+                    },
+                    {
+                        "internalType": "uint128",
+                        "name": "currentVariableBorrowRate",
+                        "type": "uint128"
+                    },
+                    {
+                        "internalType": "uint40",
+                        "name": "lastUpdateTimestamp",
+                        "type": "uint40"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "tTokenAddress",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "variableDebtTokenAddress",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "interestRateStrategyAddress",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint8",
+                        "name": "id",
+                        "type": "uint8"
+                    }
+                ],
+                "internalType": "struct DataTypes.ReserveData",
+                "name": "",
+                "type": "tuple"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "totalSupply": {
+        "inputs": [],
+        "name": "totalSupply",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "constant": true
+    },
+    "getAssetPrice": {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "asset",
+                "type": "address"
+            }
+        ],
+        "name": "getAssetPrice",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "decimals": {
+        "constant": true,
+        "inputs": [],
+        "name": "decimals",
+        "outputs": [
+            {
+                "internalType": "uint8",
+                "name": "",
+                "type": "uint8"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    }
+}

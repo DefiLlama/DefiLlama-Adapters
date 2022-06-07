@@ -1,0 +1,129 @@
+{
+  "pool_list": {
+    "name": "pool_list",
+    "outputs": [{ "type": "address", "name": "" }],
+    "inputs": [{ "type": "uint256", "name": "arg0" }],
+    "stateMutability": "view",
+    "type": "function",
+    "gas": 2280
+  },
+  "pool_count": {
+    "name": "pool_count",
+    "outputs": [{ "type": "uint256", "name": "" }],
+    "inputs": [],
+    "stateMutability": "view",
+    "type": "function",
+    "gas": 2201
+  },
+  "coins128": {
+    "name": "coins",
+    "outputs": [
+     {
+      "type": "address",
+      "name": "out"
+     }
+    ],
+    "inputs": [
+     {
+      "type": "int128",
+      "name": "arg0"
+     }
+    ],
+    "constant": true,
+    "payable": false,
+    "type": "function",
+    "gas": 2190
+  },
+  "coins256": {
+    "name": "coins",
+    "outputs": [
+     {
+      "type": "address",
+      "name": "out"
+     }
+    ],
+    "inputs": [
+     {
+      "type": "uint256",
+      "name": "arg0"
+     }
+    ],
+    "constant": true,
+    "payable": false,
+    "type": "function",
+    "gas": 2190
+  },
+  "balances128": {
+    "name": "balances",
+    "outputs": [
+     {
+      "type": "uint256",
+      "name": "out"
+     }
+    ],
+    "inputs": [
+     {
+      "type": "int128",
+      "name": "arg0"
+     }
+    ],
+    "constant": true,
+    "payable": false,
+    "type": "function",
+    "gas": 2250
+  },
+  "balances256": {
+    "name": "balances",
+    "outputs": [
+     {
+      "type": "uint256",
+      "name": "out"
+     }
+    ],
+    "inputs": [
+     {
+      "type": "uint256",
+      "name": "arg0"
+     }
+    ],
+    "constant": true,
+    "payable": false,
+    "type": "function",
+    "gas": 2250
+  },
+  "get_registry": {
+    "name": "get_registry",
+    "outputs": [{ "type": "address", "name": "" }],
+    "inputs": [],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "get_coins": {
+    "name": "get_coins",
+    "outputs": [{"name":"","type":"address[8]"}],
+    "inputs": [{"name":"_pool","type":"address"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "get_balances": {
+    "name": "get_balances",
+    "outputs": [{"name":"","type":"uint256[8]"}],
+    "inputs": [{"name":"_pool","type":"address"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "get_coinsf": {
+    "name": "get_coins",
+    "outputs": [{"name":"","type":"address[2]"}],
+    "inputs": [{"name":"_pool","type":"address"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "get_balancesf": {
+    "name": "get_balances",
+    "outputs": [{"name":"","type":"uint256[2]"}],
+    "inputs": [{"name":"_pool","type":"address"}],
+    "stateMutability": "view",
+    "type": "function"
+  }
+}

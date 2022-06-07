@@ -1,18 +1,25 @@
 const utils = require('./helper/utils');
+const {fetchChainExports} = require('./helper/exports');
 
-/* * * * * * * *
-* ==> Correct adapter needs to be created.
-*
-*****************/
-async function fetch() {
-  var tvl = 0;
-  var staked = await utils.fetchURL('https://api.harvest.finance/cmc?key=fc8ad696-7905-4daa-a552-129ede248e33')
-  staked.data.pools.map(async item => {
-    tvl += parseFloat(item.totalStaked)
-  })
-  return tvl;
+// historical tvl on https://ethparser-api.herokuapp.com/api/transactions/history/alltvl?network=eth
+const endpoint = "https://api-ui.harvest.finance/vaults?key=41e90ced-d559-4433-b390-af424fdc76d6"
+const chains = {
+  ethereum: 'eth',
+  bsc: 'bsc',
+  polygon: 'matic'
 }
 
-module.exports = {
-  fetch
+function fetchChain(chainRaw) {
+  const chain = chains[chainRaw]
+  return async () => {
+    var tvl = 0;
+    var staked = await utils.fetchURL(endpoint)
+    Object.values(staked.data[chain]).map(async item => {
+      const poolTvl = parseFloat(item.totalValueLocked ?? 0)
+      tvl += poolTvl
+    })
+    return tvl;
+  }
 }
+
+module.exports = fetchChainExports(fetchChain, Object.keys(chains))

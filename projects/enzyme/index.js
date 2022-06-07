@@ -1,32 +1,41 @@
-const BigNumber = require('bignumber.js')
+const retry = require('async-retry')
+const axios = require('axios')
+const { sumTokens } = require('../helper/unwrapLPs')
+const cwADA_ETH = '0x64875aaa68d1d5521666c67d692ee0b926b08b2f'
+const cwADA_POLY = 'polygon:0x64875aaa68d1d5521666c67d692ee0b926b08b2f'
+const cwDOGE_ETH = '0xf9e293d5d793ddc1ae4f778761e0b3e4aa7cf2dd'
+const cwDOGE_POLY = 'polygon:0x9bd9ad490dd3a52f096d229af4483b94d63be618'
 
-const v1TVL = require('./v1');
-const v2TVL = require('./v2');
+async function getData() {
+  return retry(async bail => await axios.get('https://app.enzyme.finance/api/v1/network-asset-balances?network=ethereum'))
+}
 
-async function tvl(timestamp, block) {
-  const [v1, v2] = await Promise.all([v1TVL(timestamp, block), v2TVL(timestamp, block)]);
+async function tvl(ts, block) {
+  const tokens = (await getData()).data
+  const tokensAndOwners = []
+  const balances = {}
+  const vaultsObj = {}
+  tokens.forEach(({ id, vaults }) => {
+    vaults.forEach(vault => {
+      tokensAndOwners.push([id, vault])
+      vaultsObj[vault] = true
+    })
+  })
+  await sumTokens(balances, tokensAndOwners, block, undefined, undefined, { resolveCrv: true, resolveLP: true, resolveYearn: true })
+  
+  if (balances[cwADA_ETH]) {
+    balances[cwADA_POLY] = balances[cwADA_ETH]
+    delete balances[cwADA_ETH]
+  }
 
-  const tokenAddresses = new Set(Object.keys(v1).concat(Object.keys(v2)));
-
-  const balances = (
-    Array
-      .from(tokenAddresses)
-      .reduce((accumulator, tokenAddress) => {
-        const v1Balance = new BigNumber(v1[tokenAddress] || '0');
-        const v2Balance = new BigNumber(v2[tokenAddress] || '0');
-        accumulator[tokenAddress] = v1Balance.plus(v2Balance).toFixed();
-
-        return accumulator
-      }, {})
-  );
-
-  return balances;
+  if (balances[cwDOGE_ETH]) {
+    balances[cwDOGE_POLY] = balances[cwDOGE_ETH]
+    delete balances[cwDOGE_ETH]
+  }
+  return balances
 }
 
 module.exports = {
-  name: "Enzyme Finance",
-  token: "MLN",
-  category: "assets",
-  start: 1551398400, // 03/01/2019 @ 12:00am (UTC)
-  tvl
-};
+  timetravel: false,
+  ethereum: { tvl }
+}

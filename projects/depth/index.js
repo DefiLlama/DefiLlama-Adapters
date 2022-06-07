@@ -93,12 +93,17 @@ const vaultAbi = {
 }
 const daoAbi={"sharesAndRewardsInfo":{"inputs":[],"name":"sharesAndRewardsInfo","outputs":[{"internalType":"uint256","name":"activeShares","type":"uint256"},{"internalType":"uint256","name":"pendingSharesToAdd","type":"uint256"},{"internalType":"uint256","name":"pendingSharesToReduce","type":"uint256"},{"internalType":"uint256","name":"rewards","type":"uint256"},{"internalType":"uint256","name":"claimedRewards","type":"uint256"},{"internalType":"uint256","name":"lastUpdatedEpochFlag","type":"uint256"}],"stateMutability":"view","type":"function"}}
 
+const swapPoolAbiV2 ={
+    "balances":{"name":"balances","outputs":[{"type":"uint256","name":""}],"inputs":[{"type":"uint256","name":"arg0"}],"stateMutability":"view","type":"function","gas":2220},
+    "coins":{"name":"coins","outputs":[{"type":"address","name":""}],"inputs":[{"type":"uint256","name":"arg0"}],"stateMutability":"view","type":"function","gas":2190}
+}
 
 const channels = '0x11bFEE9D8625ac4cDa6Ce52EeBF5caC7DC033d15';
 const filda = '0xE796c55d6af868D8c5E4A92e4fbCF8D8F88AcDED';
 const lendhub = '0xdA0519AA3F097A3A5b1325cb1D380C765d8F1D70';
 const lendhubeth = '0x15155042F8d13Db274224AF4530397f640f69274';
 
+const fildaSwapV2Address="0xa7a0EA0C5D2257e44Ad87d10DB90158c9c5c54b3"
 
 const vaultGroup=[
     {
@@ -172,6 +177,72 @@ const vaultGroup=[
         ]
     }
 ]
+
+const VaultGroupBsc= [
+    {
+      "CoinName": "USDT",
+      "Vaults": [
+        {
+          "Name": "Alpaca",
+          "ContractAddress": "0xcB08DA2339d562b66b314d2bBfB580CB87FFBD76",
+          "TokenName": "alUSDT",
+          "Pid": 11
+        },
+        {
+          "Name": "Venus",
+          "ContractAddress": "0x3253041F27416c975FFb0100b08734187F82c8A2",
+          "TokenName": "vUSDT",
+          "Pid": 10
+        },
+        {
+          "Name": "Coinwind",
+          "ContractAddress": "0x0B28a55dbBd6c5DdD4D1d7157361e9D6D0CcEfC0",
+          "TokenName": "cwUSDT",
+          "Pid": 8
+        }
+      ]
+    },
+    {
+      "CoinName": "BUSD",
+      "Vaults": [
+        {
+          "Name": "Alpaca",
+          "ContractAddress": "0xAf996B5E33007ed5EB33eaAe817ad8E1310CCebc",
+          "TokenName": "alBUSD",
+          "Pid": 5
+        },
+        {
+          "Name": "Venus",
+          "ContractAddress": "0x2E128EB2EE787428307A7B246d02C1801788e1A6",
+          "TokenName": "vBUSD",
+          "Pid": 4
+        },
+        {
+          "Name": "Coinwind",
+          "ContractAddress": "0x9F4198C4a73c103Bc9b1c34D1f680d4E43D901AF",
+          "TokenName": "cwBUSD",
+          "Pid": 7
+        }
+      ]
+    },
+    {
+      "CoinName": "BNB",
+      "Vaults": [
+        {
+          "Name": "Alpaca",
+          "ContractAddress": "0x024F05c70F203fb77f27b00422534cC33E1FB69d",
+          "TokenName": "alBNB",
+          "Pid": 12
+        },
+        {
+          "Name": "Coinwind",
+          "ContractAddress": "0xcd8EF3E3A7b25741cE5B8C728F582cF748b60b1A",
+          "TokenName": "cwBNB",
+          "Pid": 9
+        }
+      ]
+    }
+  ]
 async function exchangeRateStored(depositContractAddress, coinId) {
     const coinAddress = await sdk.api.abi.call({
         target: depositContractAddress,
@@ -218,6 +289,31 @@ async function getDecimals(contractAddress, coinId) {
     return decimals.output
 }
 
+async function swapV2GetBalance(contractAddress, coinId) {
+    const balance = await sdk.api.abi.call({
+        target: contractAddress,
+        abi: swapPoolAbiV2['balances'],
+        chain: "heco",
+        params: coinId,
+
+    });
+    return balance.output
+}
+
+async function swapV2GetDecimals(contractAddress, coinId) {
+    const underlyingCoinsAddress = await sdk.api.abi.call({
+        target: contractAddress,
+        abi: swapPoolAbiV2['coins'],
+        chain: "heco",
+        params: coinId,
+    });
+    const decimals = await sdk.api.abi.call({
+        target: underlyingCoinsAddress.output,
+        abi: erc20['decimals'],
+        chain: "heco",
+    });
+    return decimals.output
+}
 async function getTokenPrice(contractAddress) {
     const underlyingCoinsAddress = await sdk.api.abi.call({
         target: contractAddress,
@@ -241,6 +337,12 @@ async function poolUnderlyingCoinBalance(contractAddress, coinId) {
     const balance = await getBalance(contractAddress, coinId)
     const decimals = await getDecimals(contractAddress, coinId)
     const tvlPool = rate * balance / 1e18 / Math.pow(10, decimals)
+    return tvlPool
+}
+async function swapV2PoolUnderlyingCoinBalance(contractAddress, coinId) {
+    const balance = await swapV2GetBalance(contractAddress, coinId)
+    const decimals = await swapV2GetDecimals(contractAddress, coinId)
+    const tvlPool =  balance  / Math.pow(10, decimals)
     return tvlPool
 }
 
@@ -299,7 +401,63 @@ async function getVaultTotalDeposit(){
     return totalSelfUnderlying
 }
 
-async function fetch() {
+
+async function swapV2GetBalanceBsc(contractAddress, coinId) {
+    const balance = await sdk.api.abi.call({
+        target: contractAddress,
+        abi: swapPoolAbiV2['balances'],
+        chain: "bsc",
+        params: coinId,
+
+    });
+    return balance.output
+}
+
+async function getBnbPrice() {
+
+    const getAmountsIn = await sdk.api.abi.call({
+        target: "0x10ed43c718714eb63d5aa57b78b54704e256024e",
+        abi: mdexRouter['getAmountsOut'],
+        chain: "bsc",
+        params: [1e8, ["0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c","0x55d398326f99059ff775485246999027b3197955"]],
+    });
+    return getAmountsIn.output[1] / Math.pow(10, 26 - 18)
+}
+
+async function swapV2PoolUnderlyingCoinBalanceBsc(contractAddress) {
+    const balance0 = await swapV2GetBalanceBsc(contractAddress, 0)
+    const balance1 = await swapV2GetBalanceBsc(contractAddress, 1)
+    const balance2 = await swapV2GetBalanceBsc(contractAddress, 2)
+
+    const tvlPool =  balance0  / Math.pow(10, 18)+ balance1  / Math.pow(10, 18)+ balance2 / Math.pow(10, 18)
+    return tvlPool
+}
+
+async function getVaultTotalDepositBsc(){
+    let totalSelfUnderlying=0
+    for(let i=0;i<VaultGroupBsc.length;i++){
+        for(let j=0;j<VaultGroupBsc[i].Vaults.length;j++) {
+            const out= await sdk.api.abi.call({
+                target: VaultGroupBsc[i].Vaults[j].ContractAddress,
+                abi: vaultAbi['balance'],
+                chain: "bsc",
+            });
+            if(VaultGroupBsc[i].CoinName==="BNB"){
+
+                const bnbPrice=await getBnbPrice()
+                totalSelfUnderlying=totalSelfUnderlying+out.output/ Math.pow(10, 18)*bnbPrice
+            }else{
+                totalSelfUnderlying= totalSelfUnderlying+out.output/ Math.pow(10, 18)
+            }
+
+        }
+
+    }
+    return totalSelfUnderlying
+}
+
+//heco tvl
+async function fetchHeco() {
 
     let balances = {};
 
@@ -313,10 +471,15 @@ async function fetch() {
     const lendhubethBalances2 = await poolUnderlyingCoinBalance(lendhubeth, 1)
     const price = await getTokenPrice(lendhubeth)
 
+    const fildaSwapV2Balances1 = await swapV2PoolUnderlyingCoinBalance(fildaSwapV2Address, 0)
+    const fildaSwapV2Balances2 = await swapV2PoolUnderlyingCoinBalance(fildaSwapV2Address, 1)
+
     balances[channels] = channelsBalances1 + channelsBalances2;
     balances[filda] = fildaBalances1 + fildaBalances2;
     balances[lendhub] = lendhubBalances1 + lendhubBalances2;
     balances[lendhubeth] = (lendhubethBalances1 + lendhubethBalances2) * price;
+
+    balances[fildaSwapV2Address] = fildaSwapV2Balances1 + fildaSwapV2Balances2;
 
     let total = 0
     for (var key in balances) {
@@ -324,15 +487,24 @@ async function fetch() {
     }
     let dao=await getDaoSharesAndRewards()
     let vault=await getVaultTotalDeposit()
+
     return total+dao+vault
+}
+
+//bsc tvl
+async function fetchBsc() {
+    const swapTvl=await swapV2PoolUnderlyingCoinBalanceBsc("0xc57220b65dd9200562aa73b850c06be7bd632b57")
+    const vaultTvl=await getVaultTotalDepositBsc()
+    return swapTvl+vaultTvl
 }
 
 
 module.exports = {
-    name: 'Depth',
-    website: 'https://depth.fi/',
-    token: 'DEP',
-    category: 'lending',
-    start: 1602054167,
-    fetch
+    heco:{
+        fetch: fetchHeco
+    },
+    bsc:{
+        fetch: fetchBsc
+    },
+    fetch: async ()=>{return (await fetchHeco())+(await fetchBsc())}
 }

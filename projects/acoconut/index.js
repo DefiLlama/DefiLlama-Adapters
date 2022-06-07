@@ -1,7 +1,7 @@
 const sdk = require('@defillama/sdk');
 const vaultAbi = require('./abis/vault');
 const singlePlusAbi = require('./abis/singlePlus');
-const _ = require('underscore');
+
 const BigNumber = require('bignumber.js');
 
 const tokensInacBTC = [
@@ -45,19 +45,17 @@ async function bsc(timestamp, block, chainBlocks) {
 
   const totalUnderlyingResults = await sdk.api.abi.multiCall({
     block: bscBlock.block,
-    calls: _.map(bscSingleTokens, (address) => ({
+    calls: bscSingleTokens.map((address) => ({
       target: address
     })),
     abi: singlePlusAbi["totalUnderlying"],
     chain: 'bsc'
   });
 
-  _.each(totalUnderlyingResults.output, (tokenBalanceResult) => {
-    if(tokenBalanceResult.success) {
+  totalUnderlyingResults.output.forEach((tokenBalanceResult) => {
       const valueInToken = tokenBalanceResult.output;
       const singleTokenAddress = tokenBalanceResult.input.target;
       balances[btcb] = BigNumber(balances[btcb]).plus(valueInToken).toFixed(0);
-    }
   });
 
   return balances;
@@ -71,5 +69,4 @@ module.exports = {
     tvl: bsc
   },
   start: 1600185600,    // 09/16/2020 @ 12:00am (UTC+8)
-  tvl: sdk.util.sumChainTvls([eth, bsc])
 };

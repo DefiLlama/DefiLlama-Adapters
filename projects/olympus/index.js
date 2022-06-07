@@ -1,30 +1,67 @@
-const sdk = require('@defillama/sdk');
-const {sumTokensAndLPs} = require('../helper/unwrapLPs')
+const sdk = require("@defillama/sdk");
+const erc20 = require("../helper/abis/erc20.json");
+const {gql, request} = require('graphql-request');
+const { toUSDTBalances } = require("../helper/balances");
 
-const treasuryAddresses = ["0x886CE997aa9ee4F8c2282E182aB72A705762399D", "0x31F8Cc382c9898b273eff4e0b7626a6987C846E8"];
-const dai = "0x6b175474e89094c44da98b954eedeac495271d0f";
-const ohm = "0x383518188c0c6d7730d91b2c03a03c837814a899";
-const slp = "0x34d7d7aaf50ad4944b70b320acb24c95fa2def7c";
-const frax = "0x853d955acef822db058eb8505911ed77f175b99e";
-const fraxLP = "0x2dce0dda1c2f98e0f171de8333c3c6fe1bbf4877";
-const slpOhm = "0x34d7d7aaf50ad4944b70b320acb24c95fa2def7c";
+const OlympusStakings = [
+  // Old Staking Contract
+  "0x0822F3C03dcc24d200AFF33493Dc08d0e1f274A2",
+  // New Staking Contract
+  "0xFd31c7d00Ca47653c6Ce64Af53c1571f9C36566a",
+];
 
-// Treasury TVL consists of DAI balance + Sushi SLP balance
-async function tvl(timestamp, block) {
-  const balances = {}
-  await sumTokensAndLPs(balances, [
-    [dai, false],
-    [frax, false],
-    [slp, true],
-    [fraxLP, true],
-    [slpOhm, true]
-  ], treasuryAddresses, block)
+const OHM = "0x383518188c0c6d7730d91b2c03a03c837814a899";
 
-  return balances
+
+/*** Staking of native token (OHM) TVL Portion ***/
+const staking = async (timestamp, ethBlock, chainBlocks) => {
+  const balances = {};
+
+  for (const stakings of OlympusStakings) {
+    const stakingBalance = await sdk.api.abi.call({
+      abi: erc20.balanceOf,
+      target: OHM,
+      params: stakings,
+      block: ethBlock,
+    });
+
+    sdk.util.sumSingleBalance(balances, OHM, stakingBalance.output);
+  }
+
+  return balances;
+};
+
+const protocolQuery = gql`
+query get_tvl($block: Int) {
+  protocolMetrics(
+    first: 1, orderBy: timestamp, orderDirection: desc
+  ) {
+    treasuryMarketValue
+    timestamp
+  }
+}
+`
+
+/*** Bonds TVL Portion (Treasury) ***
+ * Treasury TVL consists of DAI, FRAX and WETH balances + Sushi SLP and UNI-V2 balances
+ ***/
+async function ethTvl(timestamp, block) {
+  const queriedData = await request("https://api.thegraph.com/subgraphs/name/drondin/olympus-protocol-metrics", protocolQuery, {block})
+  const metric= queriedData.protocolMetrics[0]
+  if(Date.now()/1000 - metric.timestamp > 3600*24){
+    throw new Error("outdated")
+  }
+  return toUSDTBalances(metric.treasuryMarketValue)
 }
 
 module.exports = {
   start: 1616569200, // March 24th, 2021
-  methodology: "Counts DAI, OHM SLP (DAI-OHM), FRAX and FRAX LP (OHM-FRAX) on the treasury",
-  tvl
-}
+  timetravel: false,
+  misrepresentedTokens: true,
+  ethereum: {
+    tvl: ethTvl,
+    staking
+  },
+  methodology:
+    "Counts DAI, DAI SLP (OHM-DAI), FRAX, FRAX ULP (OHM-FRAX), WETH on the treasury",
+};

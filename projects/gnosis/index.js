@@ -15,9 +15,10 @@ const PROTOCOL_ADDRESS = '0x6F400810b62df8E13fded51bE75fF5393eaa841F';
 * Tokens on GP to ignore
 [ 
     0x7cac16770dd5f2a59859a395a492224f05a846b6: "oETH Put $200 29/05/2020",
+    0x57ab1e02fee23774580c119740129eac7081e9d3: "broken sUSD proxy"
 ]
 */
-const TOKENS_TO_IGNORE = new Set(['0x7cac16770dd5f2a59859a395a492224f05a846b6']);
+const TOKENS_TO_IGNORE = new Set(['0x7cac16770dd5f2a59859a395a492224f05a846b6', '0x57ab1e02fee23774580c119740129eac7081e9d3', '0xc011a72400e58ecd99ee497cf89e3775d4bd732f']);
 
 /*==================================================
   Helper Functions
@@ -92,9 +93,6 @@ async function tvl(_, block) {
 ==================================================*/
 
 module.exports = {
-  name: 'Gnosis',
-  token: 'GNO',
-  category: 'dexes',
   start: 1579811423, // Thu, 23 Jan 2020 20:30:23 GMT
   tvl,
 };
