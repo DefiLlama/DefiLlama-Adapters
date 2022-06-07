@@ -14,6 +14,7 @@ const config = {
   optimism: {
     factories: [
       '0x1D90fDAc4DD30c3ba38d53f52A884F6e75d0989e', // Tarot Opaline
+      '0xD7cABeF2c1fD77a31c5ba97C724B82d3e25fC83C', // Tarot Velours
     ]
   },
 }
