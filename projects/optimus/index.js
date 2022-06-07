@@ -47,21 +47,29 @@ async function getICXPrice() {
     .then(d => utils.parseHex(d));
 }
 
-async function getTotalSupply() {
-  return icxCall(LIQUIDTY_LEGACY_STRATEGY_CONTRACT, 'getIcxPool')
+async function getOMMPrice() {
+  return icxCall(OMM_ORACLE_CONTRACT, 'get_reference_data', {
+    _base: 'OMM',
+    _quote: 'USD',
+  })
     .then(d => utils.parseHex(d));
-}
-
-async function getLoanInfo() {
-  return icxCall(BORROWER_LEGACY_STRATEGY_CONTRACT, 'getLoanInfo')
-    .then(value => {
-      return value ? utils.parseHex(value.collateral) : new BigNumber(0);
-    });
 }
 
 async function ommSIcxRate() {
   return icxCall(OMM_SICX_CONTRACT, 'priceInLoop')
     .then(d => utils.parseHex(d));
+}
+
+async function getTotalSupplyLP() {
+  return icxCall(LIQUIDTY_LEGACY_STRATEGY_CONTRACT, 'getIcxPool')
+    .then(d => utils.parseHex(d));
+}
+
+async function getTotalSupplyBorrower() {
+  return icxCall(BORROWER_LEGACY_STRATEGY_CONTRACT, 'getLoanInfo')
+    .then(value => {
+      return value ? utils.parseHex(value.collateral) : new BigNumber(0);
+    });
 }
 
 async function getOMMLendingStatus() {
@@ -72,14 +80,6 @@ async function getOMMLendingStatus() {
         fTokenPool: utils.parseHex(fTokenPool),
       };
     });
-}
-
-async function getOMMPrice() {
-  return icxCall(OMM_ORACLE_CONTRACT, 'get_reference_data', {
-    _base: 'OMM',
-    _quote: 'USD'
-  })
-    .then(d => utils.parseHex(d));
 }
 
 async function getOmmAutoStakingStatus() {
@@ -105,15 +105,15 @@ async function fetch() {
     { ommRate, ommPool },
    ] = await Promise.all([
       getICXPrice(),
-      getTotalSupply(),
-      getLoanInfo(),
+      getTotalSupplyLP(),
+      getTotalSupplyBorrower(),
       ommSIcxRate(),
       getOMMLendingStatus(),
       getOMMPrice(),
       getOmmAutoStakingStatus(),
   ]);
 
-  const values = await Promise.all( [
+  const values = await Promise.all([
     totalSupply.times(ICXPrice),
     loanInfo.times(ICXPrice),
     fTokenPool.times(fTokenRate).times(ommRatesIcx).times(ICXPrice),
