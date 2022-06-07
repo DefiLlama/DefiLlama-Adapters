@@ -1,5 +1,4 @@
 const axios = require("axios");
-const {toUSDTBalances} = require('../helper/balances');
 const NIRVANA_API = "https://us-central1-nirvana-91051.cloudfunctions.net";
 
 const client = axios.create({
@@ -9,7 +8,7 @@ const client = axios.create({
 async function getTvl(){
   const metrics = await client.get("/getLlama")
   const { tvl } = metrics.data
-  return toUSDTBalances(tvl);
+  return tvl;
 }
 
 const tvl = await getTvl();
