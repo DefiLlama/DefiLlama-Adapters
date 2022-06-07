@@ -6,7 +6,7 @@ const client = axios.create({
   baseURL: NIRVANA_API,
 });
 
-async funtion getTvl(){
+async function getTvl(){
   const metrics = client.get("/getLlama")
   const { tvl } = metrics
   return toUSDTBalances(tvl);
