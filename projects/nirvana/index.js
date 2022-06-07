@@ -5,13 +5,11 @@ const client = axios.create({
   baseURL: NIRVANA_API,
 });
 
-async function getTvl(){
+async function tvl(){
   const metrics = await client.get("/getLlama")
   const { tvl } = metrics.data
   return tvl;
 }
-
-const tvl = await getTvl();
 
 module.exports = {
   methodology: 'The total value of ANA tokens locked in the protocol, either as staking or as collateral for loans.',
