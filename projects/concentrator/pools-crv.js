@@ -157,4 +157,18 @@ module.exports = [
         },
     },
 
+    {
+        dataIndex: 38,
+        id: 'pusd',
+        name: 'pusd',
+        coins: [
+            coins.pusd,
+            coins.crv3pool
+        ],
+        addresses: {
+            swap: '0x8EE017541375F6Bcd802ba119bdDC94dad6911A1',
+            lpToken: '0x8EE017541375F6Bcd802ba119bdDC94dad6911A1',
+        },
+    },
+
 ];

@@ -10,7 +10,7 @@ async function tvl() {
 
   await api.isReady;
   const era = await api.query.dappsStaking.currentEra();
-  const result = await api.query.dappsStaking.eraRewardsAndStakes(era);
+  const result = await api.query.dappsStaking.generalEraInfo(era);
   const tvl = result.unwrap().staked.valueOf();
   const AstrLocked = tvl / 10 ** ASTR_DECIMALS;
 

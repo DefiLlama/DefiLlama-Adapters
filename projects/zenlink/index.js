@@ -16,8 +16,7 @@ const MoonriverStableSwapContractAddress = [
   ];
 
 const MoonbeamStableSwapContractAddress = [
-    '0x435a35Fc175be0ba097A7bF43128C020EC5bb151', // 4pool
-    '0x944Af4Fb58beDBcE86FB533Bd6DDc49C0BcA6793' // mad3pool/4pool
+    '0x68bed2c54Fd0e6Eeb70cFA05723EAE7c06805EC5', // 4pool
   ];
 
 module.exports = {
@@ -30,6 +29,10 @@ module.exports = {
             "0x98878b06940ae243284ca214f92bb71a2b032b8a",
             [
                 "0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d", // USDC
+                "0xb44a9b6905af7c801311e8f4e76932ee959c663c", // USDT
+                "0xffffffffa1b026a00fbaa67c86d5d1d5bf8d8228", // xcAUSD
+                "0x1a93b23281cc1cde4c4741353f3064709a16197d", // FRAX
+                "0xffffffff1fcacbd218edc0eba20fc2308c778080", // xcKSM
                 "0x639a647fbe20b6c8ac19e48e2de44ea792c62c5c", // ETH
             ],
             true,
@@ -51,6 +54,7 @@ module.exports = {
                 "0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b", // anyUSDC
                 "0xefaeee334f0fd1712f9a8cc375f427d9cdd40d73", // anyUSDT
                 "0x765277eebeca2e31912c9946eae1021199b39c61", // anyDAI
+                "0xffffffff52c56a9257bb97f4b2b6f7b2d624ecda", // xcAUSD
                 "0x322e86852e492a7ee17f28a78c663da38fb33bfb", // FRAX
                 "0x81ecac0d6be0550a00ff064a4f9dd2400585fe9c", // ceUSDT
                 "0x6a2d262d56735dba19dd70682b39f6be9a931d98" // ceUSDC

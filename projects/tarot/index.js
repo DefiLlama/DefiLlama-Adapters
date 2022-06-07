@@ -1,13 +1,97 @@
-const xUniswapV2TVL = require('./xUniswapV2');
-const {transformFantomAddress} = require('../helper/portedTokens')
+const abi = require('./abi')
+const { getChainTransform } = require('../helper/portedTokens')
+const { sumTokens } = require('../helper/unwrapLPs')
+const sdk = require('@defillama/sdk')
 
-async function tvl(timestamp, ethBlock, chainBlocks) {
-  const transform = addr=>`fantom:${addr}`// await transformFantomAddress()
-  return xUniswapV2TVL(timestamp, chainBlocks.fantom, transform)
+const config = {
+  fantom: {
+    factories: [
+      '0x35C052bBf8338b06351782A565aa9AaD173432eA', // Tarot Classic
+      '0xF6D943c8904195d0f69Ba03D97c0BAF5bbdCd01B', // Tarot Requiem
+      '0xbF76F858b42bb9B196A87E43235C2f0058CF7322', // Tarot Carcosa
+    ]
+  },
+  optimism: {
+    factories: [
+      '0x1D90fDAc4DD30c3ba38d53f52A884F6e75d0989e', // Tarot Opaline
+    ]
+  },
 }
+module.exports = {}
 
-module.exports = {
-  fantom:{
-    tvl,
+Object.keys(config).forEach(chain => {
+  let tvlPromise
+  const balances = {}
+  const borrowedBalances = {}
+
+  async function _getTvl(block) {
+    const { factories } = config[chain]
+    const transform = await getChainTransform(chain)
+    const collaterals = []
+    const borrowables = []
+    for (const factory of factories) {
+      const { output: allLendingPoolsLength } = await sdk.api.abi.call({
+        target: factory,
+        abi: abi.allLendingPoolsLength,
+        chain, block,
+      })
+
+      const poolCalls = []
+      for (let i = 0; i < +allLendingPoolsLength; i++)  poolCalls.push({ params: i })
+      const { output: allLendingPools } = await sdk.api.abi.multiCall({
+        target: factory,
+        abi: abi.allLendingPools,
+        calls: poolCalls,
+        chain, block,
+      })
+
+      const calls2 = allLendingPools.map(i => ({ params: i.output }))
+
+      const { output: getLendingPool } = await sdk.api.abi.multiCall({
+        target: factory,
+        abi: abi.getLendingPool,
+        calls: calls2,
+        chain, block,
+      })
+
+      getLendingPool.forEach(i => {
+        collaterals.push(i.output.collateral)
+        borrowables.push(i.output.borrowable0, i.output.borrowable1)
+      })
+    }
+
+    const underlyingCalls = [...collaterals, ...borrowables].map(i => ({ target: i }))
+    const { output: toaInput } = await sdk.api.abi.multiCall({
+      abi: abi.underlying,
+      calls: underlyingCalls,
+      chain, block,
+    })
+
+    const underlyingMapping = {}
+
+    const toa = toaInput.map(i => [i.output, i.input.target])
+    toaInput.forEach(i => underlyingMapping[i.input.target] = i.output)
+    const { output: borrowed } = await sdk.api.abi.multiCall({
+      abi: abi.totalBorrows,
+      calls: borrowables.map(i => ({ target: i })),
+      chain, block,
+    })
+
+    borrowed.forEach(i => {
+      sdk.util.sumSingleBalance(borrowedBalances, transform(underlyingMapping[i.input.target]), i.output)
+    })
+
+    await sumTokens(balances, toa, block, chain, transform, { resolveLP: true })
+    return { balances, borrowedBalances }
   }
-};
+
+  async function getTvl(block) {
+    if (!tvlPromise) tvlPromise = _getTvl(block)
+    return tvlPromise
+  }
+
+  module.exports[chain] = {
+    tvl: async (_, _b, { [chain]: block }) => (await getTvl(block)).balances,
+    borrowed: async (_, _b, { [chain]: block }) => (await getTvl(block)).borrowedBalances,
+  }
+})

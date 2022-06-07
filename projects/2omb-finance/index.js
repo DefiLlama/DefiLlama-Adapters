@@ -21,7 +21,7 @@ const omb3Tvl = async (chainBlocks) => {
 
   const lpPositions = [];
   let poolInfoReturn;
-  i = 0;
+  let i = 0;
   do {
     try {
       const token = (

@@ -2,28 +2,36 @@
  * Oswap is a decentralized token swap protocol on the Obyte ledger.
  *
  * @see https://oswap.io/
+ * @see https://v2-stats.oswap.io/
+ *
+ * @see https://v1.oswap.io/
+ * @see https://v1-stats.oswap.io/
  */
-const { fetchBaseAATvl } = require('../helper/obyte')
+const {fetchBaseAABalances, fetchOswapExchangeRates, fetchOswapAssets, summingBaseAABalancesToTvl} = require('../helper/obyte')
 
-async function totalTvl(timestamp) {
-  return Promise.all([
-      fetchBaseAATvl(timestamp, "GS23D3GQNNMNJ5TL4Z5PINZ5626WASMA"), // Oswap v1
-      fetchBaseAATvl(timestamp, "2JYYNOSRFGLI3TBI4FVSE6GFBUAZTTI3"), // Oswap v2
-      fetchBaseAATvl(timestamp, "DYZOJKX4MJOQRAUPX7K6WCEV5STMKOHI")  // Oswap v3
-    ]).then( values => {
-      return values.reduce( (total, tvl) => total + tvl, 0)
-  })
+// TODO support time travel for the exchange rate, currently it always returns the latest rates
+async function tvl(timestamp) {
+    const [exchangeRates, assetMetadata] = await Promise.all([
+        fetchOswapExchangeRates(),
+        fetchOswapAssets()
+    ])
+
+    return Promise.all([
+        fetchBaseAABalances(timestamp, "GS23D3GQNNMNJ5TL4Z5PINZ5626WASMA"), // Oswap v1
+        fetchBaseAABalances(timestamp, "2JYYNOSRFGLI3TBI4FVSE6GFBUAZTTI3"), // Oswap v2
+        fetchBaseAABalances(timestamp, "DYZOJKX4MJOQRAUPX7K6WCEV5STMKOHI")  // Oswap v2.1
+    ]).then(baseAABalances => {
+        return baseAABalances.reduce(summingBaseAABalancesToTvl(assetMetadata, exchangeRates), 0)
+    })
 }
 
 module.exports = {
-  timetravel: true,
-  doublecounted: false,
-  methodology:
-    "The TVL is the USD value of the total native asset (bytes) locked into the autonomous agents extending the Oswap protocol (v1, v2 and v3). " +
-    "The value of other assets listed in Oswap are not part of this TVL because they are either assets without established value " +
-    "other protocol tokens such as algorithmic stable coins (Ostable) or imported tokens from other chains (CounterStake bridge).",
-  obyte: {
-    fetch: totalTvl
-  },
-  fetch: totalTvl
+    timetravel: false,
+    doublecounted: false,
+    methodology:
+        "The TVL is the USD value of the all non-self issued assets locked into the autonomous agents extending the Oswap protocol.",
+    obyte: {
+        fetch: tvl
+    },
+    fetch: tvl
 }
