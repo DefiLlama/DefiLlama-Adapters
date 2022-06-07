@@ -203,6 +203,7 @@ async function transformPolygonAddress() {
     }, {});
   const mapping = {
     '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee': '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0',  // 
+    // '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270': '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0',  // WMATIC
     '0x0000000000000000000000000000000000000000': '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0',  // 
     '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': '0x0000000000000000000000000000000000000000',  // 
     '0x2f28add68e59733d23d5f57d94c31fb965f835d0': '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',  // sUSDC(Polygon) -> USDC(Ethereum)
@@ -232,17 +233,7 @@ async function transformXdaiAddress() {
     // '0x29414ec76d79ff238e5e773322799d1c7ca2443f': '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', // Boring oBTC
   }
 
-  normalizeMapping(mapping)
-
-  return (address) => {
-    address = address.toLowerCase()
-    if (!mapping[address]) {
-      console.log('Xdai mapping not found for %s', address)
-      return address
-    }
-
-    return mapping[address]
-  };
+  return transformChainAddress(mapping, 'xdai', { skipUnmapped: false })
 }
 
 async function transformOkexAddress() {
@@ -356,37 +347,24 @@ async function transformOptimismAddress() {
     await utils.fetchURL("https://static.optimism.io/optimism.tokenlist.json")
   ).data.tokens;
 
+  const mapping = {
+    '0x4200000000000000000000000000000000000006': '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+    '0x5029c236320b8f15ef0a657054b84d90bfbeded3': '0x15ee120fd69bec86c1d38502299af7366a41d1a6',
+    '0x0000000000000000000000000000000000000000': '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', // OETH -> WETH
+    '0x121ab82b49B2BC4c7901CA46B8277962b4350204': '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',  // synapse WETH -> WETH
+    '0x35D48A789904E9b15705977192e5d95e2aF7f1D3': '0x956f47f50a910163d8bf957cf5846d573e7f87ca',  // FEI
+    '0xcb8fa9a76b8e203d8c3797bf438d8fb81ea3326a': '0xbc6da0fe9ad5f3b0d58160288917aa56653660e9',  // alUSD
+    '0x67CCEA5bb16181E7b4109c9c2143c24a1c2205Be': '0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0',  // FRAX Share
+    '0x2E3D870790dC77A83DD1d18184Acc7439A53f475': '0x853d955acef822db058eb8505911ed77f175b99e',  // FRAX
+    '0x0b5740c6b4a97f90eF2F0220651Cca420B868FfB': '0x0ab87046fbb341d058f17cbc4c1133f25a20a52f',  // gOHM
+  }
+  normalizeMapping(mapping)
+
   return (addr) => {
-    if (compareAddresses(addr, "0x4200000000000000000000000000000000000006")) {
-      return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-    }
-    if (compareAddresses(addr, "0x5029c236320b8f15ef0a657054b84d90bfbeded3")) {
-      return "0x15ee120fd69bec86c1d38502299af7366a41d1a6";
-    }
-    // OETH -> WETH
-    if (compareAddresses(addr, "0x0000000000000000000000000000000000000000")) {
-      return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-    }
-    // synapse WETH -> WETH
-    if (compareAddresses(addr, "0x121ab82b49B2BC4c7901CA46B8277962b4350204")) {
-      return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-    }
-    // FEI
-    if (compareAddresses(addr, "0x35D48A789904E9b15705977192e5d95e2aF7f1D3")) {
-      return "0x956f47f50a910163d8bf957cf5846d573e7f87ca";
-    }
-    // alUSD
-    if (compareAddresses(addr, "0xcb8fa9a76b8e203d8c3797bf438d8fb81ea3326a")) {
-      return "0xbc6da0fe9ad5f3b0d58160288917aa56653660e9";
-    }
-    // FRAX Share
-    if (compareAddresses(addr, "0x67CCEA5bb16181E7b4109c9c2143c24a1c2205Be")) {
-      return "0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0";
-    }
-    // FRAX
-    if (compareAddresses(addr, "0x2E3D870790dC77A83DD1d18184Acc7439A53f475")) {
-      return "0x853d955acef822db058eb8505911ed77f175b99e";
-    }
+    addr = addr.toLowerCase()
+    
+    if (mapping[addr]) return mapping[addr]
+    
     const possibleSynth = optimismSynths[addr.toLowerCase()];
     if (possibleSynth !== undefined) {
       return possibleSynth;
@@ -402,20 +380,17 @@ async function transformOptimismAddress() {
         return srcToken.address;
       }
     }
-    return addr; //`optimism:${addr}` // TODO: Fix
+    return `optimism:${addr}`
   };
 }
 
 async function transformMoonriverAddress() {
-  return (addr) => {
-    if (compareAddresses(addr, "0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c")) {
-      return "avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c";
-    }
-    if (compareAddresses(addr, "0x0000000000000000000000000000000000000000")) {
-      return "moonriver:0x98878B06940aE243284CA214f92Bb71a2b032B8A";
-    }
-    return `moonriver:${addr}`; //`optimism:${addr}` // TODO: Fix
-  };
+  const mapping = {
+    '0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c': 'avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c',
+    '0x0000000000000000000000000000000000000000': 'moonriver:0x98878B06940aE243284CA214f92Bb71a2b032B8A',
+  }
+  
+  return transformChainAddress(mapping, 'moonriver', { skipUnmapped: false })
 }
 
 async function transformMoonbeamAddress() {

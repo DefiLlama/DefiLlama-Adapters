@@ -1,0 +1,536 @@
+[
+  {
+    "inputs": [
+      { "internalType": "address", "name": "poolAddress", "type": "address" }
+    ],
+    "name": "bribeAddresByPoolAddress",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "bribeAddress", "type": "address" }
+    ],
+    "name": "bribeTokensAddressesByBribeAddress",
+    "outputs": [
+      { "internalType": "address[]", "name": "", "type": "address[]" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "poolAddress", "type": "address" }
+    ],
+    "name": "bribeTokensAddressesByPoolAddress",
+    "outputs": [
+      { "internalType": "address[]", "name": "", "type": "address[]" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "bribesAddresses",
+    "outputs": [
+      { "internalType": "address[]", "name": "", "type": "address[]" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "accountAddress",
+        "type": "address"
+      },
+      { "internalType": "address", "name": "poolAddress", "type": "address" },
+      { "internalType": "uint256", "name": "tokenId", "type": "uint256" }
+    ],
+    "name": "bribesPositionsOf",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "address",
+            "name": "bribeTokenAddress",
+            "type": "address"
+          },
+          { "internalType": "uint256", "name": "earned", "type": "uint256" }
+        ],
+        "internalType": "struct ISolidlyLens.PositionBribe[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "accountAddress",
+        "type": "address"
+      },
+      { "internalType": "address", "name": "poolAddress", "type": "address" }
+    ],
+    "name": "bribesPositionsOf",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "uint256", "name": "tokenId", "type": "uint256" },
+          {
+            "components": [
+              {
+                "internalType": "address",
+                "name": "bribeTokenAddress",
+                "type": "address"
+              },
+              { "internalType": "uint256", "name": "earned", "type": "uint256" }
+            ],
+            "internalType": "struct ISolidlyLens.PositionBribe[]",
+            "name": "bribes",
+            "type": "tuple[]"
+          }
+        ],
+        "internalType": "struct ISolidlyLens.PositionBribesByTokenId[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "poolAddress", "type": "address" }
+    ],
+    "name": "gaugeAddressByPoolAddress",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "gaugesAddresses",
+    "outputs": [
+      { "internalType": "address[]", "name": "", "type": "address[]" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "gaugesFactoryAddress",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_veAddress", "type": "address" }
+    ],
+    "name": "initializeProxyStorage",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "minterAddress",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "ownerAddress",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "poolAddress", "type": "address" }
+    ],
+    "name": "poolInfo",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "address", "name": "id", "type": "address" },
+          { "internalType": "string", "name": "symbol", "type": "string" },
+          { "internalType": "bool", "name": "stable", "type": "bool" },
+          {
+            "internalType": "address",
+            "name": "token0Address",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "token1Address",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "gaugeAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "bribeAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address[]",
+            "name": "bribeTokensAddresses",
+            "type": "address[]"
+          },
+          { "internalType": "address", "name": "fees", "type": "address" }
+        ],
+        "internalType": "struct ISolidlyLens.Pool",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "poolAddress", "type": "address" }
+    ],
+    "name": "poolReservesInfo",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "address", "name": "id", "type": "address" },
+          {
+            "internalType": "address",
+            "name": "token0Address",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "token1Address",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "token0Reserve",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "token1Reserve",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint8",
+            "name": "token0Decimals",
+            "type": "uint8"
+          },
+          { "internalType": "uint8", "name": "token1Decimals", "type": "uint8" }
+        ],
+        "internalType": "struct ISolidlyLens.PoolReserveData",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "poolsAddresses",
+    "outputs": [
+      { "internalType": "address[]", "name": "", "type": "address[]" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "poolsFactoryAddress",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "poolsInfo",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "address", "name": "id", "type": "address" },
+          { "internalType": "string", "name": "symbol", "type": "string" },
+          { "internalType": "bool", "name": "stable", "type": "bool" },
+          {
+            "internalType": "address",
+            "name": "token0Address",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "token1Address",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "gaugeAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "bribeAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address[]",
+            "name": "bribeTokensAddresses",
+            "type": "address[]"
+          },
+          { "internalType": "address", "name": "fees", "type": "address" }
+        ],
+        "internalType": "struct ISolidlyLens.Pool[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "poolsLength",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "accountAddress", "type": "address" }
+    ],
+    "name": "poolsPositionsOf",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "address", "name": "id", "type": "address" },
+          { "internalType": "uint256", "name": "balanceOf", "type": "uint256" }
+        ],
+        "internalType": "struct ISolidlyLens.PositionPool[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "accountAddress",
+        "type": "address"
+      },
+      { "internalType": "uint256", "name": "startIndex", "type": "uint256" },
+      { "internalType": "uint256", "name": "endIndex", "type": "uint256" }
+    ],
+    "name": "poolsPositionsOf",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "address", "name": "id", "type": "address" },
+          { "internalType": "uint256", "name": "balanceOf", "type": "uint256" }
+        ],
+        "internalType": "struct ISolidlyLens.PositionPool[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "_poolsAddresses",
+        "type": "address[]"
+      }
+    ],
+    "name": "poolsReservesInfo",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "address", "name": "id", "type": "address" },
+          {
+            "internalType": "address",
+            "name": "token0Address",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "token1Address",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "token0Reserve",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "token1Reserve",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint8",
+            "name": "token0Decimals",
+            "type": "uint8"
+          },
+          { "internalType": "uint8", "name": "token1Decimals", "type": "uint8" }
+        ],
+        "internalType": "struct ISolidlyLens.PoolReserveData[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "protocolMetadata",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "address", "name": "veAddress", "type": "address" },
+          {
+            "internalType": "address",
+            "name": "solidAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "voterAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "poolsFactoryAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "gaugesFactoryAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "minterAddress",
+            "type": "address"
+          }
+        ],
+        "internalType": "struct SolidlyLens.ProtocolMetadata",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "proxyStorageInitialized",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "routerAddress",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_ownerAddress", "type": "address" }
+    ],
+    "name": "setOwnerAddress",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_veAddress", "type": "address" }
+    ],
+    "name": "setVeAddress",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "solidAddress",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "veAddress",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "veDistAddress",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "accountAddress", "type": "address" }
+    ],
+    "name": "vePositionsOf",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "uint256", "name": "tokenId", "type": "uint256" },
+          { "internalType": "uint256", "name": "balanceOf", "type": "uint256" },
+          { "internalType": "uint256", "name": "locked", "type": "uint256" }
+        ],
+        "internalType": "struct ISolidlyLens.PositionVe[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "accountAddress", "type": "address" }
+    ],
+    "name": "veTokensIdsOf",
+    "outputs": [
+      { "internalType": "uint256[]", "name": "", "type": "uint256[]" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "voterAddress",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

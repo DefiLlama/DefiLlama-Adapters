@@ -70,13 +70,15 @@ function createIncrementArray(length) {
   return arr
 }
 
-const LP_SYMBOLS = ['SLP', 'spLP', 'JLP', 'OLP', 'SCLP', 'DLP', 'MLP', 'MSLP', 'ULP', 'TLP', 'HMDX', 'YLP', 'SCNRLP', 'PGL', 'GREEN-V2', 'PNDA-V2']
+const LP_SYMBOLS = ['SLP', 'spLP', 'JLP', 'OLP', 'SCLP', 'DLP', 'MLP', 'MSLP', 'ULP', 'TLP', 'HMDX', 'YLP', 'SCNRLP', 'PGL', 'GREEN-V2', 'PNDA-V2', 'vTAROT', 'TETHYSLP']
 const blacklisted_LPS = [
+  '0xb3dc4accfe37bd8b3c2744e9e687d252c9661bc7',
 ].map(i => i.toLowerCase())
 
 function isLP(symbol, token, chain) {
-  // if (token && blacklisted_LPS.includes(token.toLowerCase())) return false
+  if (token && blacklisted_LPS.includes(token.toLowerCase())) return false
   if (chain === 'bsc' && ['OLP', 'DLP', 'MLP', 'LP'].includes(symbol)) return false
+  if (chain === 'metis' && ['NLP'].includes(symbol)) return true // Netswap LP Token
   if (!symbol) return false
   let label
 
