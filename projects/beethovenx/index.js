@@ -1,32 +1,49 @@
-const { request, gql } = require("graphql-request");
-const {toUSDTBalances} = require("../helper/balances");
+const { GraphQLClient, gql } = require("graphql-request");
+const { toUSDTBalances } = require("../helper/balances");
+const { getBlock } = require("../helper/getBlock");
+async function getTVL(subgraphName, block) {
+  // delayed by 500 blocks to allow subgraph to update
+  block -= 500;
+  var endpoint = `https://api.thegraph.com/subgraphs/name/beethovenxfi/${subgraphName}`;
+  var graphQLClient = new GraphQLClient(endpoint);
 
-const graphUrl =
-    'https://backend.beets-ftm-node.com/graphql';
-
-const graphQuery = gql`
-    query get_tvl {
-            data: beetsGetProtocolData {
-                totalLiquidity
-            }
+  var query = gql`
+    query get_tvl($block: Int) {
+      balancers(first: 5, block: { number: $block }) {
+        totalLiquidity
+        totalSwapVolume
+      }
     }
-`;
-
-async function tvl(timestamp, ...params) {
-    if(Math.abs(timestamp - Date.now()/1000) < 3600/2){
-        const { data } = await request(
-            graphUrl,
-            graphQuery,
-        );
-        return toUSDTBalances(data.totalLiquidity)
-    }
-    return getBalancerSubgraphTvl('https://graph-node.beets-ftm-node.com/subgraphs/name/beethovenx', 'fantom')(timestamp, ...params)
+  `;
+  const results = await graphQLClient.request(query, {
+    block,
+  });
+  return results.balancers[0].totalLiquidity;
 }
 
-const {getBalancerSubgraphTvl} = require('../helper/balancer')
+async function fantom(timestamp, ethBlock, chainBlocks) {
+  return toUSDTBalances(
+    await getTVL("beethovenx", await getBlock(timestamp, "fantom", chainBlocks))
+  );
+}
+
+async function optimism(timestamp, ethBlock, chainBlocks) {
+  return toUSDTBalances(
+    await getTVL(
+      "beethovenx-optimism",
+      await getBlock(timestamp, "optimism", chainBlocks)
+    )
+  );
+}
 
 module.exports = {
-    fantom:{
-        tvl,
-    },
+  timetravel: true,
+  misrepresentedTokens: true,
+  methodology: `BeethovenX TVL is pulled from the Balancer subgraph and includes deposits made to v2 liquidity pools.`,
+  fantom: {
+    tvl: fantom,
+  },
+  optimism: {
+    tvl: optimism,
+  },
 };
