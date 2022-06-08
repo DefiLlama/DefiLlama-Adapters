@@ -1028,6 +1028,7 @@ async function transformEthereumAddress() {
     '0xFEEf77d3f69374f66429C91d732A244f074bdf74': '0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0', // CVX FXS token
     '0xb8c77482e45f1f44de1745f52c74426c631bdd52': 'bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // BNB
     '0xeb637a9ab6be83c7f8c79fdaa62e1043b65534f0': 'heco:0xcbd6cb9243d8e3381fea611ef023e17d1b7aedf0',  // BXH
+    '0x18a1ea69a50a85752b7bc204a2c45a95ce6e429d': 'avax:0xf30c5083a1479865c9a8916dec6ddadd82e8907b', // SPICE
   }
   normalizeMapping(mapping)
 
