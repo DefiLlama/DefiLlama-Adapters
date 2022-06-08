@@ -600,7 +600,7 @@ tokensAndOwners [
     [token, owner] - eg ["0xaaa", "0xbbb"]
 ]
 */
-async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereum", transformAddress, { resolveCrv = false, resolveLP = false, resolveYearn = false, unwrapAll = false, } = {}) {
+async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereum", transformAddress, { resolveCrv = false, resolveLP = false, resolveYearn = false, unwrapAll = false, blacklistedLPs = [], } = {}) {
   if (!transformAddress)
     transformAddress = await getChainTransform(chain)
 
@@ -639,7 +639,7 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
   })
 
   if (resolveLP || unwrapAll)
-    await unwrapLPsAuto({ balances, block, chain, transformAddress })
+    await unwrapLPsAuto({ balances, block, chain, transformAddress, blacklistedLPs })
 
   if (resolveCrv || unwrapAll)
     await resolveCrvTokens(balances, block, chain, transformAddress)
@@ -775,15 +775,12 @@ async function genericUnwrapCvx(balances, holder, cvx_BaseRewardPool, block, cha
   await genericUnwrapCrv(balances, crvPoolInfo.lptoken, cvx_LP_bal, block, chain)
 }
 
-async function unwrapLPsAuto({ balances, block, chain = "ethereum", transformAddress, excludePool2 = false, onlyPool2 = false, pool2Tokens = [] }) {
+async function unwrapLPsAuto({ balances, block, chain = "ethereum", transformAddress, excludePool2 = false, onlyPool2 = false, pool2Tokens = [], blacklistedLPs = [] }) {
   if (!transformAddress)
     transformAddress = await getChainTransform(chain)
 
-  pool2Tokens.forEach(token => token.toLowerCase())
-
-  const uni_type = 'standard'
-  const retry = false
-
+  pool2Tokens = pool2Tokens.map(token => token.toLowerCase())
+  blacklistedLPs = blacklistedLPs.map(token => token.toLowerCase())
   const tokens = []
   const amounts = []
 
@@ -807,7 +804,7 @@ async function unwrapLPsAuto({ balances, block, chain = "ethereum", transformAdd
     symbols.forEach(({ output }, idx) => {
       const token = tokens[idx].output
       const balance = amounts[idx].output
-      if (isLP(output, token, chain))
+      if (isLP(output, token, chain) && !blacklistedLPs.includes(token.toLowerCase()))
         lpBalances.push({ token, balance })
       else
         sdk.util.sumSingleBalance(balances, transformAddress(token), balance);
