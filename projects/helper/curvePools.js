@@ -4,6 +4,11 @@ module.exports = {
     swapContract: '0x162B21ba1a90Dd9384C615192FA4053217D2A8Db',
     underlyingTokens: ['0x9fFFb2F49adFC231B44dDCFf3FfCF0E81b06430A', '0x19793b454d3afc7b454f206ffe95ade26ca6912c'],
   },
+  // USDS3CRV
+  '0xde495223f7cd7ee0cde1addbd6836046bbdf3ad3': {
+    swapContract: '0xde495223f7cd7ee0cde1addbd6836046bbdf3ad3',
+    underlyingTokens: ['0x6c3f90f043a72fa612cbac8115ee7e52bde6e490', '0x45fdb1b92a649fb6a64ef1511d3ba5bf60044838']
+  },
   // USDSam3CRV
   '0xcf5186491739aac19db943d71a9b9b759f3afabf': {
     swapContract: '0xcf5186491739aac19db943d71a9b9b759f3afabf',

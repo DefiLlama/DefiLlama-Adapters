@@ -11,9 +11,11 @@ function getTokens(chain, type) {
             const lps = Object.values(contracts[chain].tokens.lp)
                 .map(t => [t, true]);
             return tokens.concat(lps);
+
         case 'staking':
             return Object.values(contracts[chain].tokens.staking)
                 .map(t => [t, false]);
+
         case 'pool2':
             const pool2s = Object.entries(contracts[chain].tokens.pool2);
             const univ2Lps = pool2s.filter(p => !p[0].includes('CURVE'))
@@ -32,24 +34,35 @@ async function unwrapCrvGauge(balances, tokens, chainBlocks, chain, transform) {
         await unwrapCrv(
             balances,
             crvLps[i][0],
-            balances[`${chain}:${crvLps[i][0]}`],
+            chain == 'ethereum' 
+                ? balances[crvLps[i][0]] 
+                : balances[`${chain}:${crvLps[i][0]}`],
             chainBlocks[chain],
             chain,
             transform
         );
-        delete balances[`${chain}:${crvLps[i][0]}`];
+
+        chain == 'ethereum' 
+            ? delete balances[crvLps[i][0]]
+            : delete balances[`${chain}:${crvLps[i][0]}`];
     };
+
     for (key in contracts[chain].curveGaugeMapping) {
         if (`${chain}:${key}` in balances) {
             await unwrapCrv(
                 balances,
                 contracts[chain].curveGaugeMapping[key],
-                balances[`${chain}:${key}`],
+                chain == 'ethereum' 
+                    ? balances[key] 
+                    : balances[`${chain}:${key}`],
                 chainBlocks[chain],
                 chain,
                 transform
             );
-            delete balances[`${chain}:${key}`];
+
+            chain == 'ethereum'
+                ? delete balances[key] 
+                : delete balances[`${chain}:${key}`];
         };
     };
 };
