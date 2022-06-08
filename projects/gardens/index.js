@@ -90,7 +90,7 @@ async function tvl(timestamp, block, chainBlocks) {
   );
 
   console.log(orgs.organizations.length);
-    let i = 0;
+  let i = 0;
   for (const org of orgs.organizations) {
     let fundManagerContract = org.config.conviction?.fundsManager;
     let token = org.config.conviction?.requestToken.id;
@@ -115,21 +115,20 @@ async function tvl(timestamp, block, chainBlocks) {
       }`
     );
     const data = await getTokenChardData(token);
-    if (data){
+    if (data) {
+      const liquidity = data[data.length - 1].totalLiquidityUSD ?? 0;
+      console.log("sumup", liquidity);
 
-      const liquidity = data[data.length-1].totalLiquidityUSD??0;
-      console.log('sumup',liquidity);
-      
       listTokens[token] = {
-      name,
-      org: org.id,
-      balance: output,
-      liquidityUSD:new BigNumberJs(liquidity),
-      liquidityUSDString:new BigNumberJs(liquidity).valueOf(),
-    };
-  }else{
-    console.error(`Cannnot find token chart data of token: ${token}`)
-  }
+        name,
+        org: org.id,
+        balance: output,
+        liquidityUSD: new BigNumberJs(liquidity),
+        liquidityUSDString: new BigNumberJs(liquidity).valueOf(),
+      };
+    } else {
+      console.error(`Cannnot find token chart data of token: ${token}`);
+    }
     // if ( i++ ==3){
     //   break;
     // }
@@ -153,7 +152,7 @@ async function getTokenChardData(tokenAddress) {
       const tokenDayDatas = await request(
         "https://api.thegraph.com/subgraphs/name/1hive/honeyswap-xdai",
         TOKEN_CHART,
-        { tokenAddr: tokenAddress, skip: 0 }
+        { tokenAddr: tokenAddress, skip }
       );
 
       console.log("tokenDayDatas", tokenDayDatas.tokenDayDatas.length);
@@ -202,7 +201,7 @@ async function getTokenChardData(tokenAddress) {
 
     console.log("data.length: ", data.length);
 
-    console.log("data[last]", data[data.length-1]);
+    console.log("data[last]", data[data.length - 1]);
   } catch (error) {
     console.error(error);
   }
@@ -240,12 +239,11 @@ async function getUSDBalancesFromTokens(tokens) {
       objToken = {
         ...objToken,
         totalUSD,
-        totalUSDString:totalUSD.valueOf(),
+        totalUSDString: totalUSD.valueOf(),
         tokenPrice,
         // price,
         priceBN,
         tokenUnits,
-
       };
       tokens[token.id] = objToken;
 
