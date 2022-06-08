@@ -1,86 +1,33 @@
 const sdk = require('@defillama/sdk');
-const { config, whitelist, protocolPairs, tokens,
-  getNumLockedTokens, getLockedTokenAtIndex, 
+const { config, coreTokenWhitelist, protocolPairs, tokens,
+  getNumLockedTokens, getLockedTokenAtIndex,
   lockedTokensLength, lockedToken, stakingContracts } = require('./config')
 const BigNumber = require("bignumber.js");
 
 const { stakings } = require("../helper/staking");
 const { pool2s } = require("../helper/pool2");
 const { getBlock } = require('../helper/getBlock');
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 
-async function getLockerTVL(chain, contract, block) {
-
-  let balances = {};     
-
-  let isV1 = (contract == config.pol.contract)
-
-  const getLocks = Number(
-    (
-      await sdk.api.abi.call({
-        abi: isV1 ? lockedTokensLength : getNumLockedTokens,
-        target: contract,
-        chain: chain,
-        block: block,
-      })
-    ).output
-  );
-
-  const lockIds = Array.from(Array(getLocks).keys());
-
-  const lockedLPs = (
-    await sdk.api.abi.multiCall({
-      abi: isV1 ? lockedToken : getLockedTokenAtIndex,
-      calls: lockIds.map((lockid) => ({
-        target: contract,
-        params: lockid,
-      })),
-      chain: chain,
-      block: block,
-    })
-  )
-  .output.map((lp) => (lp.output.toLowerCase()));
-
-  const lpBalances = (
-    await sdk.api.abi.multiCall({
-      calls: lockedLPs.map((lp) => ({
-        target: lp,
-        params: contract,
-      })),
-      abi: "erc20:balanceOf",
-      block: block,
-      chain: chain,
-    })
-    ).output;
-  
-
-  let filteredLps = lpBalances
-  .filter(lp => lp.output > 0)
-  .map((lp) => {
-    return {
-      balance: BigNumber(lp.output).times(BigNumber(2)).toFixed(0),
-      token: lp.input.target,
-    }
-  });
-
-  await unwrapUniswapLPs(balances, filteredLps, block, chain, (addr) => `${chain}:${addr}`);
-  
-  balances = Object.keys(balances)
-  .filter(balance => whitelist.includes(balance))
-  .reduce((obj, balance) => {
-    obj[balance] = balances[balance];
-    return obj;
-  }, {});
-
-  return balances;
-}
+const { getUnicryptLps } = require("../helper/unicrypt")
 
 function tvl(args){
   return async (timestamp, ethBlock, chainBlocks) => {
     let totalBalances = {}
     for (let i = 0; i < args.length; i++) {
       let block = await getBlock(timestamp, args[i].chain, chainBlocks)
-      let balances = await getLockerTVL(args[i].chain, args[i].contract, block);
+      
+      let balances = await getUnicryptLps(
+        block, 
+        args[i].chain, 
+        args[i].contract, 
+        args[i].getNumLockedTokensABI, 
+        args[i].getLockedTokenAtIndexABI, 
+        args[i].trackedTokens,
+        args[i].pool2,
+        args[i].isMixedTokenContract, //use when locker mixes Tokens and LPs
+        args[i].factory
+        );
+
       for (const [token, balance] of Object.entries(balances)) {
         if (!totalBalances[token]) totalBalances[token] = '0'
           totalBalances[token] = BigNumber(totalBalances[token]).plus(BigNumber(balance)).toFixed(0) 
@@ -105,49 +52,122 @@ module.exports = {
     config.uniswapv2.chain
     ),
   tvl: tvl([
-    {
+    { // Uniswap v2
+      chain: config.uniswapv2.chain,
       contract: config.uniswapv2.locker, 
-      chain: config.uniswapv2.chain
+      getNumLockedTokensABI: getNumLockedTokens,
+      getLockedTokenAtIndexABI: getLockedTokenAtIndex,
+      trackedTokens: coreTokenWhitelist.ethereum,
+      pool2: [protocolPairs.uncx_WETH]
     },
-    {
+    { // Sushiswap
+      chain: config.sushiswap.chain,
       contract: config.sushiswap.locker, 
-      chain: config.sushiswap.chain
+      getNumLockedTokensABI: getNumLockedTokens,
+      getLockedTokenAtIndexABI: getLockedTokenAtIndex,
+      trackedTokens: coreTokenWhitelist.ethereum,
+      pool2: [protocolPairs.uncx_WETH]
+    },
+    { // Uniswap v2 (mixed contract)
+      chain: config.pol.chain,
+      contract: config.pol.locker,
+      getNumLockedTokensABI: lockedTokensLength,
+      getLockedTokenAtIndexABI: lockedToken,
+      trackedTokens: coreTokenWhitelist.ethereum,
+      pool2: [protocolPairs.uncx_WETH],
+      isMixedTokenContract: true,
+      factory: config.pol.factory
     }
   ]),
 
   pool2: pool2s([config.uniswapv2.locker, config.pol.locker], 
-    [protocolPairs.uncx_WETH, protocolPairs.uncl_WETH, protocolPairs.unc_WETH], 
+    [protocolPairs.uncx_WETH], 
      config.uniswapv2.chain)
   },
   bsc: {
   tvl: tvl([
-    {
+    { // Pancakeswap v2
+      chain: config.pancakeswapv2.chain,
       contract: config.pancakeswapv2.locker, 
-      chain: config.pancakeswapv2.chain
+      getNumLockedTokensABI: getNumLockedTokens,
+      getLockedTokenAtIndexABI: getLockedTokenAtIndex,
+      trackedTokens: coreTokenWhitelist.bsc,
+      pool2: [protocolPairs.uncx_BNB],
     },
-    {
+    { // Pancakeswap v1
+      chain: config.pancakeswapv1.chain,
       contract: config.pancakeswapv1.locker, 
-      chain: config.pancakeswapv1.chain
+      getNumLockedTokensABI: getNumLockedTokens,
+      getLockedTokenAtIndexABI: getLockedTokenAtIndex,
+      trackedTokens: coreTokenWhitelist.bsc,
+      pool2: [protocolPairs.uncx_BNB],
     },
-    {
+    { // Safeswap v1
+      chain: config.safeswap.chain,
       contract: config.safeswap.locker, 
-      chain: config.safeswap.chain
+      getNumLockedTokensABI: getNumLockedTokens,
+      getLockedTokenAtIndexABI: getLockedTokenAtIndex,
+      trackedTokens: coreTokenWhitelist.bsc,
+      pool2: [protocolPairs.uncx_BNB],
     },
-    {
+    { // Julswap
+      chain: config.julswap.chain,
       contract: config.julswap.locker,
-      chain: config.julswap.chain
+      getNumLockedTokensABI: getNumLockedTokens,
+      getLockedTokenAtIndexABI: getLockedTokenAtIndex,
+      trackedTokens: coreTokenWhitelist.bsc,
+      pool2: [protocolPairs.uncx_BNB],
+    },
+    { // Biswap
+      chain: config.biswap.chain,
+      contract: config.biswap.locker,
+      getNumLockedTokensABI: getNumLockedTokens,
+      getLockedTokenAtIndexABI: getLockedTokenAtIndex,
+      trackedTokens: coreTokenWhitelist.bsc,
+      pool2: [protocolPairs.uncx_BNB],
     }
   ]),
 
-  pool2: pool2s([config.pancakeswapv2.locker, config.pancakeswapv1.locker], 
+  pool2: pool2s([config.pancakeswapv2.locker, config.pancakeswapv1.locker, config.safeswap.locker,
+    config.julswap.locker, config.biswap.locker], 
       [protocolPairs.uncx_BNB], config.pancakeswapv2.chain)
   },
   polygon: {
     tvl: tvl([
-      {
+      { // Quickswap
+        chain: config.quickswap.chain,
         contract: config.quickswap.locker, 
-        chain: config.quickswap.chain
+        getNumLockedTokensABI: getNumLockedTokens,
+        getLockedTokenAtIndexABI: getLockedTokenAtIndex,
+        trackedTokens: coreTokenWhitelist.polygon,
       },
     ])
-  }
+  },
+  avax: {
+    tvl: tvl([
+      { // TraderJoe
+        chain: config.traderjoe.chain,
+        contract: config.traderjoe.locker, 
+        getNumLockedTokensABI: getNumLockedTokens,
+        getLockedTokenAtIndexABI: getLockedTokenAtIndex,
+        trackedTokens: coreTokenWhitelist.avalanche,
+      },
+    ])
+  },
+  xdai: {
+    tvl: tvl([
+      { // HoneySwap
+        chain: config.honeyswap.chain,
+        contract: config.honeyswap.locker, 
+        getNumLockedTokensABI: getNumLockedTokens,
+        getLockedTokenAtIndexABI: getLockedTokenAtIndex,
+        trackedTokens: coreTokenWhitelist.xdai,
+        pool2: [protocolPairs.uncx_XDAI]
+      }
+    ]),
+    pool2: pool2s([config.honeyswap.locker], 
+      [protocolPairs.uncx_XDAI], 
+       config.honeyswap.chain)
+    },
 }
+
