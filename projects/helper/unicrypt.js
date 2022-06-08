@@ -9,7 +9,7 @@ const token1 = require('./abis/token1.json');
 const getPairFactory = require('./abis/getPair.json') 
 
 
-async function getUnicryptLps(
+async function getUnicryptLpsCoreValue(
   block,
   chain,
   contract,
@@ -51,8 +51,6 @@ async function getUnicryptLps(
   )
   .output
 
-  // requery(lps, chain, block, getLockedTokenAtIndexABI)
-
   lps.forEach(lp => {
     if (lp.success && (!pool2.includes(lp))) {
       const lpToken = lp.output.toLowerCase()
@@ -62,12 +60,12 @@ async function getUnicryptLps(
 }
 
   return (isMixedTokenContract) ? //check if purely an lp locker or contains lps and tokens 
-  getTokensAndLPsWithTrackedAssets(balances, lockedLPs, contract, factory, trackedTokens, block, chain) :
-  getLPsWithTrackedAssets(balances, lockedLPs, contract, trackedTokens, block, chain)
+  getTokensAndLPsTrackedValue(balances, lockedLPs, contract, factory, trackedTokens, block, chain) :
+  getLPsTrackedValue(balances, lockedLPs, contract, trackedTokens, block, chain)
 }
 
 
-async function getTokensAndLPsWithTrackedAssets(balances, lpTokens, contract, factory, trackedTokens, block, chain) {
+async function getTokensAndLPsTrackedValue(balances, lpTokens, contract, factory, trackedTokens, block, chain) {
 
   const [token0Addresses, token1Addresses, tokenBalances] = await Promise.all([
     sdk.api.abi
@@ -180,7 +178,7 @@ async function getTokensAndLPsWithTrackedAssets(balances, lpTokens, contract, fa
 
 
 
-async function getLPsWithTrackedAssets(balances, lpTokens, contract, trackedTokens, block, chain) {
+async function getLPsTrackedValue(balances, lpTokens, contract, trackedTokens, block, chain) {
 
   let lps = []
 {
@@ -230,8 +228,8 @@ let lpBalances = []
 }
 
 module.exports = {
-  getUnicryptLps,
-  getTokensAndLPsWithTrackedAssets,
-  getLPsWithTrackedAssets
+  getUnicryptLpsCoreValue,
+  getTokensAndLPsTrackedValue,
+  getLPsTrackedValue
 }
 

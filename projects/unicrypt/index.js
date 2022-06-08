@@ -8,7 +8,7 @@ const { stakings } = require("../helper/staking");
 const { pool2s } = require("../helper/pool2");
 const { getBlock } = require('../helper/getBlock');
 
-const { getUnicryptLps } = require("../helper/unicrypt")
+const { getUnicryptLpsCoreValue } = require("../helper/unicrypt")
 
 function tvl(args){
   return async (timestamp, ethBlock, chainBlocks) => {
@@ -16,7 +16,7 @@ function tvl(args){
     for (let i = 0; i < args.length; i++) {
       let block = await getBlock(timestamp, args[i].chain, chainBlocks)
       
-      let balances = await getUnicryptLps(
+      let balances = await getUnicryptLpsCoreValue(
         block, 
         args[i].chain, 
         args[i].contract, 
