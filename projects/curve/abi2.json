@@ -1,0 +1,82 @@
+{
+    "get_registry": {
+        "name": "get_registry",
+        "outputs": [
+            {
+                "type": "address",
+                "name": ""
+            }
+        ],
+        "inputs": [],
+        "stateMutability": "view",
+        "type": "function",
+        "gas": 1061
+    },
+    "pool_list": {
+        "stateMutability": "view",
+        "type": "function",
+        "name": "pool_list",
+        "inputs": [
+            {
+                "name": "arg0",
+                "type": "uint256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "gas": 2217
+    },
+    "pool_count": {
+        "stateMutability": "view",
+        "type": "function",
+        "name": "pool_count",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "gas": 2138
+    },
+    "get_n_coins": {
+        "stateMutability": "view",
+        "type": "function",
+        "name": "get_n_coins",
+        "inputs": [
+            {
+                "name": "_pool",
+                "type": "address"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256[2]"
+            }
+        ],
+        "gas": 1521
+    },
+    "get_coins": {
+        "stateMutability": "view",
+        "type": "function",
+        "name": "get_coins",
+        "inputs": [
+            {
+                "name": "_pool",
+                "type": "address"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "address[8]"
+            }
+        ],
+        "gas": 12102
+    }
+}
