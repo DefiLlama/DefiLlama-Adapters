@@ -4,14 +4,15 @@ const { toUSDTBalances } = require('./helper/balances')
 
 const usdPriceUrl = "https://mainnet.analytics.tinyman.org/api/v1/current-asset-prices/"
 const algoPriceUrl = "https://app.algodex.com/algodex-backend/assets.php"
-const assetVolURL = "https://app.algodex.com/algodex-backend/tvl.php/"
+const assetVolURL = "https://app.algodex.com/algodex-backend/tvl.php"
+// const assetVolURL = "http://localhost/algodex-backend/tvl.php"
 
 async function tvl() {
     const volumData = await fetchURL(assetVolURL)
     const usdPriceData = await fetchURL(usdPriceUrl)
     const algoPriceData = await fetchURL(algoPriceUrl)
 
-    const algoPrices = algoPriceData.data.reduce((obj, item) => {
+    const algoPrices = algoPriceData.data.data.reduce((obj, item) => {
         if (item.hasOwnProperty("price")) {
             obj[item.id] = item.price
         }
@@ -21,13 +22,14 @@ async function tvl() {
 
 
     var total_liquidity_in_usd = 0
-    volumData.map((asset) => {
+
+    volumData.data.map((asset) => {
 
         var assetPrice = 0
 
-        if (usdPriceData.hasOwnProperty(asset.assetid)) {
+        if (usdPriceData.data.hasOwnProperty(asset.assetid)) {
             // console.log("Tinyprice: ", assetId)
-            assetPrice = usdPriceData[asset.assetid].price
+            assetPrice = usdPriceData.data[asset.assetid].price
 
         } else {
             // price for some asset is not found on tinyman then
@@ -42,9 +44,8 @@ async function tvl() {
         total_liquidity_in_usd = total_liquidity_in_usd + total
     })
 
-    return toUSDTBalances(data.data.total_liquidity_in_usd)
+    return toUSDTBalances(total_liquidity_in_usd)
 }
-
 module.exports = {
     misrepresentedTokens: true,
     algodex: {
