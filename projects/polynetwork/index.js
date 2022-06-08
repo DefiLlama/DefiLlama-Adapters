@@ -111,7 +111,17 @@ async function bytomSideChain() {
 }
 
 async function kcc() {
+    const tvl = await utils.fetchURL('https://explorer.poly.network/api/v1/getTVLKava')
+    return Number(tvl.data);
+}
+
+async function kava() {
     const tvl = await utils.fetchURL('https://explorer.poly.network/api/v1/getTVLKCC')
+    return Number(tvl.data);
+}
+
+async function starcoin() {
+    const tvl = await utils.fetchURL('https://explorer.poly.network/api/v1/getTVLStarcoin')
     return Number(tvl.data);
 }
 
@@ -192,6 +202,12 @@ module.exports = {
     },
     kcc: {
         fetch: kcc
+    },
+    kava: {
+        fetch: kava
+    },
+    starcoin: {
+        fetch: starcoin
     },
     fetch
 }
