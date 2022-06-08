@@ -178,6 +178,7 @@ async function transformBscAddress() {
     '0x5f7f6cb266737b89f7af86b30f03ae94334b83e9': 'bsc:0x55d398326f99059ff775485246999027b3197955',  // valas USDT -> BUSD
     '0x532197ec38756b9956190b845d99b4b0a88e4ca9': '0x1614f18fc94f47967a3fbe5ffcd46d4e7da3d787',  // PAID
     '0x6d1b7b59e3fab85b7d3a3d86e505dd8e349ea7f3': 'heco:0xcbd6cb9243d8e3381fea611ef023e17d1b7aedf0',  // BXH
+    '0x42586ef4495bb512a86cf7496f6ef85ae7d69a64': 'polygon:0x66e8617d1df7ab523a316a6c01d16aa5bed93681',  // SPICE
   }
 
   return (addr) => {
