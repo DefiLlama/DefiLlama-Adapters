@@ -129,13 +129,12 @@ async function tvl(timestamp, block, chainBlocks) {
     } else {
       console.error(`Cannnot find token chart data of token: ${token}`);
     }
-    // if ( i++ ==3){
+    // if (i++ == 3) {
     //   break;
     // }
   }
 
   return getUSDBalancesFromTokens(listTokens);
-  // return balances;
 }
 
 async function getTokenChardData(tokenAddress) {
@@ -200,8 +199,6 @@ async function getTokenChardData(tokenAddress) {
     data = data.sort((a, b) => (parseInt(a.date) > parseInt(b.date) ? 1 : -1));
 
     console.log("data.length: ", data.length);
-
-    console.log("data[last]", data[data.length - 1]);
   } catch (error) {
     console.error(error);
   }
@@ -223,6 +220,7 @@ async function getUSDBalancesFromTokens(tokens) {
 
     console.log("resultTokenPrice", resultTokenPrice);
     let totalPrices = new BigNumberJs(0);
+    let tokensUsedInTheSum =[];
     for (const token of resultTokenPrice.tokens) {
       let objToken = tokens[token.id];
 
@@ -250,12 +248,18 @@ async function getUSDBalancesFromTokens(tokens) {
       console.log(
         `Price: ${priceBN}, tokenUnits:${tokenUnits} totalUSD: ${totalUSD} token.id: ${token.id} LiquidityUSD: ${objToken.liquidityUSD}`
       );
-      // if (totalUSD > 10000){
-      totalPrices = totalPrices.plus(objToken.liquidityUSD);
-      // totalPrices  = totalPrices.plus(totalUSD) ;
-      // }
+      if (objToken.liquidityUSD.valueOf() > 10000) {
+        totalPrices = totalPrices.plus(objToken.liquidityUSD);
+        console.log(`Token: ${token.id} have more 10k`);
+        // totalPrices  = totalPrices.plus(totalUSD) ;
+        tokensUsedInTheSum.push({
+          token: token.id,
+          liquidityUSDString: objToken.liquidityUSDString,
+        });
+      }
     }
-    console.log("tokens", tokens);
+    // console.log("AllTokens", tokens);
+    console.log("tokensUsedInTheSum:", tokensUsedInTheSum);
     // let usdBal = toUSDTBalances(totalPrices)[usdtAddress];
     let usdBal = toUSDTBalances(totalPrices)[usdtAddress];
     console.log(`usdBal: ${usdBal}`);
