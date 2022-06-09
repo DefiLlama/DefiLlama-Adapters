@@ -90,7 +90,9 @@ async function totalTvl(timestamp) {
         decisionEngine(timestamp, assetMetadata, exchangeRates)
     ])
 
-    return tvls.reduce( (total, tvl) => total + tvl, 0)
+    return {
+      tether: tvls.reduce( (total, tvl) => total + tvl, 0)
+    }
 }
 
 module.exports = {
