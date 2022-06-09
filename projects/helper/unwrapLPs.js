@@ -10,7 +10,7 @@ const creamAbi = require('./abis/cream.json')
 const { unwrapCrv, resolveCrvTokens } = require('./resolveCrvTokens')
 const activePoolAbi = require('./ankr/abis/activePool.json')
 const wethAddressAbi = require('./ankr/abis/wethAddress.json');
-const { isLP } = require('./utils')
+const { isLP, DEBUG_MODE } = require('./utils')
 const wildCreditABI = require('../wildcredit/abi.json')
 
 const yearnVaults = {
@@ -77,7 +77,7 @@ async function unwrapYearn(balances, yToken, block, chain = "ethereum", transfor
 
   let pricePerShare
   try {
-    pricePerShare =  await sdk.api.abi.call({
+    pricePerShare = await sdk.api.abi.call({
       target: yToken,
       abi: getPricePerShare[1],
       block: block,
@@ -94,7 +94,7 @@ async function unwrapYearn(balances, yToken, block, chain = "ethereum", transfor
       chain: chain
     });
   };
-  
+
   const newBalance = BigNumber(balances[tokenKey]).times(pricePerShare.output).div(10 ** (await sdk.api.erc20.decimals(underlying, chain)).output)
   const oldBalance = BigNumber(balances[transformAddress(underlying)] || 0)
   balances[transformAddress(underlying)] = oldBalance.plus(newBalance).toFixed(0)
@@ -158,10 +158,10 @@ async function unwrapUniswapLPs(balances, lpPositions, block, chain = 'ethereum'
       const token1_ = (await tokens1).output.find(call => call.input.target === lpToken)
       const supply_ = (await lpSupplies).output.find(call => call.input.target === lpToken)
 
-        token0 = token0_.output.toLowerCase()
-        token1 = token1_.output.toLowerCase()
-        supply = supply_.output
-        // console.log(token0_, supply_, token1_, lpToken)
+      token0 = token0_.output.toLowerCase()
+      token1 = token1_.output.toLowerCase()
+      supply = supply_.output
+      // console.log(token0_, supply_, token1_, lpToken)
 
       if (supply === "0") {
         return
@@ -206,6 +206,7 @@ async function unwrapUniswapLPs(balances, lpPositions, block, chain = 'ethereum'
         sdk.util.sumSingleBalance(balances, await transformAddress(token1), token1Balance.toFixed(0))
       }
     } catch (e) {
+      if (DEBUG_MODE) console.error(e)
       console.log(`Failed to get data for LP token at ${lpPosition.token} on chain ${chain}`)
       throw e
     }
@@ -576,14 +577,29 @@ async function sumBalancerLps(balances, tokensAndOwners, block, chain, transform
   })
 }
 
+const nullAddress = '0x0000000000000000000000000000000000000000'
 /*
 tokensAndOwners [
     [token, owner] - eg ["0xaaa", "0xbbb"]
 ]
 */
-async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereum", transformAddress, { resolveCrv = false, resolveLP = false, resolveYearn = false, unwrapAll = false, } = {}) {
+async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereum", transformAddress, { resolveCrv = false, resolveLP = false, resolveYearn = false, unwrapAll = false, blacklistedLPs = [], } = {}) {
   if (!transformAddress)
     transformAddress = await getChainTransform(chain)
+
+  const ethBalanceInputs = []
+
+  tokensAndOwners = tokensAndOwners.filter(i => {
+    if (i[0] !== nullAddress)
+      return true
+    ethBalanceInputs.push(i[1])
+    return false
+  })
+
+  if (ethBalanceInputs.length) {
+    const { output: ethBalances } = await sdk.api.eth.getBalances({ targets: ethBalanceInputs, chain, block })
+    ethBalances.forEach(({ balance }) => sdk.util.sumSingleBalance(balances, transformAddress(nullAddress), balance))
+  }
 
   const balanceOfTokens = await sdk.api.abi.multiCall({
     calls: tokensAndOwners.map(t => ({
@@ -606,7 +622,7 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
   })
 
   if (resolveLP || unwrapAll)
-    await unwrapLPsAuto({ balances, block, chain, transformAddress })
+    await unwrapLPsAuto({ balances, block, chain, transformAddress, blacklistedLPs })
 
   if (resolveCrv || unwrapAll)
     await resolveCrvTokens(balances, block, chain, transformAddress)
@@ -616,7 +632,7 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
     await resolveCrvTokens(balances, block, chain, transformAddress)
   }
 
-  if (['astar'].includes(chain)) {
+  if (['astar', 'harmony'].includes(chain)) {
     const fixBalances = await getFixBalances(chain)
     fixBalances(balances)
   }
@@ -663,44 +679,44 @@ const crv_abi = {
   "crvLP_coins": { "stateMutability": "view", "type": "function", "name": "coins", "inputs": [{ "name": "arg0", "type": "uint256" }], "outputs": [{ "name": "", "type": "address" }], "gas": 3123 }
 }
 async function genericUnwrapCrv(balances, crvToken, lpBalance, block, chain) {
-	const { output: resolvedCrvTotalSupply } = await sdk.api.erc20.totalSupply({
-		target: crvToken,
-		chain, block
-	})
+  const { output: resolvedCrvTotalSupply } = await sdk.api.erc20.totalSupply({
+    target: crvToken,
+    chain, block
+  })
 
-	// Get Curve LP token balances
-	// A while-loop would need a try-catch because sending error when idx > tokens_count
-	const { output: crv_symbol } = await sdk.api.abi.call({
-		abi: 'erc20:symbol',
-		target: crvToken,
-		chain,
-		block
-	})
+  // Get Curve LP token balances
+  // A while-loop would need a try-catch because sending error when idx > tokens_count
+  const { output: crv_symbol } = await sdk.api.abi.call({
+    abi: 'erc20:symbol',
+    target: crvToken,
+    chain,
+    block
+  })
 
-	const LP_tokens_count = ['3Crv'].includes(crv_symbol) ? 3 : 2
-	const coins_indices = Array.from(Array(LP_tokens_count).keys())
-	const coins = (await sdk.api.abi.multiCall({
-		abi: crv_abi['crvLP_coins'],
-		calls: coins_indices.map(i => ({ params: [i] })),
-		target: crvToken,
-		chain,
-		block
-	})).output.map(c => c.output)
-	const crvLP_token_balances = await sdk.api.abi.multiCall({
-		abi: 'erc20:balanceOf',
-		calls: coins.map(c => ({
-			target: c,
-			params: crvToken,
-		})),
-		chain,
-		block
-	})
+  const LP_tokens_count = ['3Crv'].includes(crv_symbol) ? 3 : 2
+  const coins_indices = Array.from(Array(LP_tokens_count).keys())
+  const coins = (await sdk.api.abi.multiCall({
+    abi: crv_abi['crvLP_coins'],
+    calls: coins_indices.map(i => ({ params: [i] })),
+    target: crvToken,
+    chain,
+    block
+  })).output.map(c => c.output)
+  const crvLP_token_balances = await sdk.api.abi.multiCall({
+    abi: 'erc20:balanceOf',
+    calls: coins.map(c => ({
+      target: c,
+      params: crvToken,
+    })),
+    chain,
+    block
+  })
 
-	// Edit the balances to weigh with respect to the wallet holdings of the crv LP token
-	crvLP_token_balances.output.forEach(call =>
-		call.output = BigNumber(call.output).times(lpBalance).div(resolvedCrvTotalSupply).toFixed(0)
-	)
-	sdk.util.sumMultiBalanceOf(balances, crvLP_token_balances);
+  // Edit the balances to weigh with respect to the wallet holdings of the crv LP token
+  crvLP_token_balances.output.forEach(call =>
+    call.output = BigNumber(call.output).times(lpBalance).div(resolvedCrvTotalSupply).toFixed(0)
+  )
+  sdk.util.sumMultiBalanceOf(balances, crvLP_token_balances);
 }
 
 const cvx_abi = {
@@ -742,15 +758,12 @@ async function genericUnwrapCvx(balances, holder, cvx_BaseRewardPool, block, cha
   await genericUnwrapCrv(balances, crvPoolInfo.lptoken, cvx_LP_bal, block, chain)
 }
 
-async function unwrapLPsAuto({ balances, block, chain = "ethereum", transformAddress, excludePool2 = false, onlyPool2 = false, pool2Tokens = [] }) {
+async function unwrapLPsAuto({ balances, block, chain = "ethereum", transformAddress, excludePool2 = false, onlyPool2 = false, pool2Tokens = [], blacklistedLPs = [] }) {
   if (!transformAddress)
     transformAddress = await getChainTransform(chain)
 
-  pool2Tokens.forEach(token => token.toLowerCase())
-
-  const uni_type = 'standard'
-  const retry = false
-
+  pool2Tokens = pool2Tokens.map(token => token.toLowerCase())
+  blacklistedLPs = blacklistedLPs.map(token => token.toLowerCase())
   const tokens = []
   const amounts = []
 
@@ -767,17 +780,14 @@ async function unwrapLPsAuto({ balances, block, chain = "ethereum", transformAdd
   return _addTokensAndLPs(balances, tokens, amounts)
 
   async function _addTokensAndLPs(balances, tokens, amounts) {
-    const tokens0 = await sdk.api.abi.multiCall({
-      calls: tokens.map(t => ({ target: t.output })), abi: token0, block, chain
-    })
     const symbols = (await sdk.api.abi.multiCall({
       calls: tokens.map(t => ({ target: t.output })), abi: symbol, block, chain
     })).output
     const lpBalances = []
-    tokens0.output.forEach((result, idx) => {
+    symbols.forEach(({ output }, idx) => {
       const token = tokens[idx].output
       const balance = amounts[idx].output
-      if (isLP(symbols[idx].output))
+      if (isLP(output, token, chain) && !blacklistedLPs.includes(token.toLowerCase()))
         lpBalances.push({ token, balance })
       else
         sdk.util.sumSingleBalance(balances, transformAddress(token), balance);
@@ -787,75 +797,51 @@ async function unwrapLPsAuto({ balances, block, chain = "ethereum", transformAdd
 
   async function _unwrapUniswapLPs(balances, lpPositions) {
     const lpTokenCalls = lpPositions.map(lpPosition => ({ target: lpPosition.token }))
-    const lpReserves = sdk.api.abi.multiCall({ block, abi: lpReservesAbi, calls: lpTokenCalls, chain })
-    const lpSupplies = sdk.api.abi.multiCall({ block, abi: lpSuppliesAbi, calls: lpTokenCalls, chain })
-    const tokens0 = sdk.api.abi.multiCall({ block, abi: token0Abi, calls: lpTokenCalls, chain })
-    const tokens1 = sdk.api.abi.multiCall({ block, abi: token1Abi, calls: lpTokenCalls, chain })
-    if (retry) {
-      await Promise.all([
-        [lpReserves, lpReservesAbi],
-        [lpSupplies, lpSuppliesAbi],
-        [tokens0, token0Abi],
-        [tokens1, token1Abi]
-      ].map(async call => {
-        await requery(await call[0], chain, block, call[1])
-      }))
-    }
-    await Promise.all(lpPositions.map(async lpPosition => {
+    const { output: lpReserves } = await sdk.api.abi.multiCall({ block, abi: lpReservesAbi, calls: lpTokenCalls, chain, })
+    const { output: lpSupplies } = await sdk.api.abi.multiCall({ block, abi: lpSuppliesAbi, calls: lpTokenCalls, chain, })
+    const { output: tokens0 } = await sdk.api.abi.multiCall({ block, abi: token0Abi, calls: lpTokenCalls, chain, })
+    const { output: tokens1 } = await sdk.api.abi.multiCall({ block, abi: token1Abi, calls: lpTokenCalls, chain, })
+
+    lpPositions.map(lpPosition => {
       try {
         let token0, token1, supply
         const lpToken = lpPosition.token
-        const token0_ = (await tokens0).output.find(call => call.input.target === lpToken)
-        const token1_ = (await tokens1).output.find(call => call.input.target === lpToken)
-        const supply_ = (await lpSupplies).output.find(call => call.input.target === lpToken)
+        const token0_ = tokens0.find(call => call.input.target === lpToken)
+        const token1_ = tokens1.find(call => call.input.target === lpToken)
+        const supply_ = lpSupplies.find(call => call.input.target === lpToken)
         try {
           token0 = token0_.output.toLowerCase()
           token1 = token1_.output.toLowerCase()
           supply = supply_.output
-          // console.log(token0_, supply_, token1_, lpToken)
-
-          if (excludePool2)
-            if (pool2Tokens.includes(token0) || pool2Tokens.includes(token1)) return;
-
-          if (onlyPool2)
-            if (!pool2Tokens.includes(token0) && !pool2Tokens.includes(token1)) return;
-
         } catch (e) {
-          // console.log(token0_, supply_, token1_, lpToken)
-          if (token1_?.input.target?.toLowerCase() === lpToken.toLowerCase()) {
-            console.log(`Not LP token: ${lpToken}, ignoring token`)
-            return
-          }
+          console.log('Unable to resolve LP: ', lpToken);
           throw e
         }
+
+        if (excludePool2)
+          if (pool2Tokens.includes(token0) || pool2Tokens.includes(token1)) return;
+
+        if (onlyPool2)
+          if (!pool2Tokens.includes(token0) && !pool2Tokens.includes(token1)) return;
+
         if (supply === "0") {
           return
         }
 
         let _reserve0, _reserve1
-        if (uni_type === 'standard') {
-          ({ _reserve0, _reserve1 } = (await lpReserves).output.find(call => call.input.target === lpToken).output)
-        }
-        else if (uni_type === 'gelato') {
-          const gelatoPools = sdk.api.abi.multiCall({ block, abi: gelatoPoolsAbi, calls: lpTokenCalls, chain });
-          const gelatoPool = (await gelatoPools).output.find(call => call.input.target === lpToken).output
-          const [{ output: _reserve0_ }, { output: _reserve1_ }] = (await Promise.all([
-            sdk.api.erc20.balanceOf({ target: token0, owner: gelatoPool, block, chain })
-            , sdk.api.erc20.balanceOf({ target: token1, owner: gelatoPool, block, chain })
-          ]))
-          _reserve0 = _reserve0_
-          _reserve1 = _reserve1_
-        }
+        let output = lpReserves.find(call => call.input.target === lpToken);
+        _reserve0 = output.output._reserve0 || output.output.reserve0
+        _reserve1 = output.output._reserve1 || output.output.reserve1
 
-        const token0Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve0)).div(BigNumber(supply))
-        sdk.util.sumSingleBalance(balances, await transformAddress(token0), token0Balance.toFixed(0))
-        const token1Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve1)).div(BigNumber(supply))
-        sdk.util.sumSingleBalance(balances, await transformAddress(token1), token1Balance.toFixed(0))
+        const token0Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve0)).div(BigNumber(supply)).toFixed(0)
+        const token1Balance = BigNumber(lpPosition.balance).times(BigNumber(_reserve1)).div(BigNumber(supply)).toFixed(0)
+        sdk.util.sumSingleBalance(balances, transformAddress(token0), token0Balance)
+        sdk.util.sumSingleBalance(balances, transformAddress(token1), token1Balance)
       } catch (e) {
         console.log(`Failed to get data for LP token at ${lpPosition.token} on chain ${chain}`)
         throw e
       }
-    }))
+    })
   }
 }
 
@@ -885,14 +871,37 @@ async function unwrapTroves({ balances = {}, chain = 'ethereum', block, troves =
   const tokensAndOwners = []
 
   for (let i = 0; i < troves.length; i++) {
-    if (activePools[i].success && tokens[i].success)
-      tokensAndOwners.push([tokens[i].output, activePools[i].output])
+    tokensAndOwners.push([tokens[i].output, activePools[i].output])
   }
 
   await sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { resolveCrv: true, resolveLP: true, resolveYearn: true })
   return balances
 }
 
+
+async function sumTokens2({
+  balances = {},
+  tokensAndOwners = [],
+  tokens = [],
+  owners = [],
+  owner,
+  block,
+  chain = 'ethereum',
+  transformAddress,
+  resolveCrv = false,
+  resolveLP = false,
+  resolveYearn = false,
+  unwrapAll = false,
+  blacklistedLPs = [],
+}) {
+
+  if (!tokensAndOwners.length) {
+    if (owner) tokensAndOwners = tokens.map(t => [t, owner])
+    if (owners.length) tokensAndOwners = tokens.map(t => owners.map(o => [t, o])).flat()
+  }
+
+  return sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { resolveCrv, resolveLP, resolveYearn, unwrapAll, blacklistedLPs })
+}
 
 module.exports = {
   unwrapYearn,
@@ -913,5 +922,6 @@ module.exports = {
   genericUnwrapCvx,
   unwrapLPsAuto,
   unwrapTroves,
-  isLP
+  isLP,
+  sumTokens2,
 }

@@ -5,7 +5,8 @@ const {uniTvlExport} = require('../helper/calculateUniTvl')
 
 const stakingAddresses = [
     "0x1d37f1e6f0cce814f367d2765ebad5448e59b91b",
-    "0x1aBd0067f60513F152ff14E9cD26a62c820d022C"
+    "0x1aBd0067f60513F152ff14E9cD26a62c820d022C",
+    "0xfc652ea2e8a373c16f3d8c5bd25e9898b9699ecb"
 ]
 const idia = "0x0b15ddf19d47e6a86a56148fb4afffc6929bcb89"
 

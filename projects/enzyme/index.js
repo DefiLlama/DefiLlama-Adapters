@@ -37,5 +37,5 @@ async function tvl(ts, block) {
 
 module.exports = {
   timetravel: false,
-  ethereum: { tvl },
+  ethereum: { tvl }
 }
