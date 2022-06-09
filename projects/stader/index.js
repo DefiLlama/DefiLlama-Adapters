@@ -4,7 +4,7 @@ const { addHBarBalance } = require("../helper/hbar")
 async function tvl() {
   const res = await fetchURL("https://staderverse.staderlabs.com/tvl")
   return {
-    "terra-luna": res.data.totalStakedLuna / 1e6,
+    "terra-luna": res.data.terraClassic.native
     //"terrausd": res.data.totalStakedLunaInUst / 1e6
   }
 }
@@ -27,6 +27,13 @@ async function ftmTvl() {
   }
 }
 
+async function terra2Tvl() {
+  const res = await fetchURL("https://staderverse.staderlabs.com/tvl")
+  return {
+    "terra-luna-2": res.data.terra.native
+  }
+}
+
 module.exports = {
   timetravel: false,
   methodology: 'We aggregated the luna staked across Stader stake-pools & liquid token and then converted to UST',
@@ -41,6 +48,10 @@ module.exports = {
   },
   fantom: {
     tvl: ftmTvl
+  },
+  terra2: {
+    tvl: terra2Tvl
   }
 }
+
 

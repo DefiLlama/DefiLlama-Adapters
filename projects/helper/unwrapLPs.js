@@ -879,6 +879,30 @@ async function unwrapTroves({ balances = {}, chain = 'ethereum', block, troves =
 }
 
 
+async function sumTokens2({
+  balances = {},
+  tokensAndOwners = [],
+  tokens = [],
+  owners = [],
+  owner,
+  block,
+  chain = 'ethereum',
+  transformAddress,
+  resolveCrv = false,
+  resolveLP = false,
+  resolveYearn = false,
+  unwrapAll = false,
+  blacklistedLPs = [],
+}) {
+
+  if (!tokensAndOwners.length) {
+    if (owner) tokensAndOwners = tokens.map(t => [t, owner])
+    if (owners.length) tokensAndOwners = tokens.map(t => owners.map(o => [t, o])).flat()
+  }
+
+  return sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { resolveCrv, resolveLP, resolveYearn, unwrapAll, blacklistedLPs })
+}
+
 module.exports = {
   unwrapYearn,
   unwrapCrv,
@@ -898,5 +922,6 @@ module.exports = {
   genericUnwrapCvx,
   unwrapLPsAuto,
   unwrapTroves,
-  isLP
+  isLP,
+  sumTokens2,
 }
