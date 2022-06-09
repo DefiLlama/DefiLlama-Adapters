@@ -9,7 +9,6 @@ const client = axios.create({
 async function staking() {
   const metrics = await client.get("/getLlama");
   const { tvl } = metrics.data;
-  console.log("tvl", tvl);
   return toUSDTBalances(tvl);
 }
 
