@@ -12,11 +12,11 @@ const getPairFactory = require('./abis/getPair.json')
 async function getUnicryptLpsCoreValue(
   block,
   chain,
-  contract,
-  getNumLockedTokensABI,
-  getLockedTokenAtIndexABI, 
-  trackedTokens, // liquid assets for tokens to be paired against
-  pool2 = [], // pool2 pair to be excluded from the balances
+  contract, // locker contract address.
+  getNumLockedTokensABI, // ABI to retrieve the total amount of tokens locked.
+  getLockedTokenAtIndexABI, // ABI to retrieve tokens at a specific lock index.
+  trackedTokens = [], // liquid assets for tokens to be paired against (ETH, USD etc.) (array of token addresses, at least 2).
+  pool2 = [], // pool2 pair to be excluded from the balances.
   isMixedTokenContract = false,
   factory = null
   ) {
@@ -59,9 +59,9 @@ async function getUnicryptLpsCoreValue(
   })  
 }
 
-  return (isMixedTokenContract) ? //check if purely an lp locker or contains lps and tokens 
+  return (isMixedTokenContract) ? // check if purely an lp locker or contains lps and tokens 
   getTokensAndLPsTrackedValue(balances, lockedLPs, contract, factory, trackedTokens, block, chain) :
-  getLPsTrackedValue(balances, lockedLPs, contract, trackedTokens, block, chain)
+  getLPsTrackedValue(balances, lockedLPs, contract, factory, trackedTokens, block, chain)
 }
 
 
@@ -105,7 +105,7 @@ async function getTokensAndLPsTrackedValue(balances, lpTokens, contract, factory
 
   tokenBalances.forEach((balance) => {
     if (balance.success) {
-      const lpBalance = BigNumber(balance.output).times(BigNumber(2)).toFixed(0)
+      const lpBalance = balance.output 
       const lpAddress = balance.input.target.toLowerCase()
       lps[lpAddress] = {
           balance: lpBalance,
@@ -137,6 +137,7 @@ async function getTokensAndLPsTrackedValue(balances, lpTokens, contract, factory
     }
   })
 
+  // Check if token is actually a v2 pair
   {const checkedLPToken = (
     await sdk.api.abi.multiCall({
       abi: getPairFactory,
@@ -153,8 +154,15 @@ async function getTokensAndLPsTrackedValue(balances, lpTokens, contract, factory
     if (lp.success) {
       const lpToken = lp.output.toLowerCase()
       if (lp.success && Object.keys(filteredLps).includes(lpToken)) {
+        // check if pair contains both base tokens
+        let lpBalance =
+        ((trackedTokens.includes(filteredLps[lpToken].token0)   && 
+          trackedTokens.includes(filteredLps[lpToken].token1))) ? 
+        filteredLps[lpToken].balance :
+        BigNumber(filteredLps[lpToken].balance).times(BigNumber(2)).toFixed(0) 
+
         lpBalances.push({
-          balance: filteredLps[lpToken].balance,
+          balance: lpBalance,
           token: lpToken
         })}
       }
@@ -176,9 +184,43 @@ async function getTokensAndLPsTrackedValue(balances, lpTokens, contract, factory
   return balances;
 }
 
+async function getLPsTrackedValue(balances, lpTokens, contract, factory, trackedTokens, block, chain) {
 
+  if (!Array.isArray(trackedTokens)) throw new Error("must pass an array of base tokens to trackedTokens")
+  
+  // get pairs made of 2 core assets to avoid double counting their balances
 
-async function getLPsTrackedValue(balances, lpTokens, contract, trackedTokens, block, chain) {
+  let matchedBaseTokens = []
+  if (trackedTokens.length > 1) {
+    trackedTokens.forEach(token0 => 
+    trackedTokens.forEach(token1 => {
+    if (!(token0 == token1)) 
+    matchedBaseTokens.push([token0, token1])
+  }))
+  }
+
+  let whitelistedBasePairs = new Set()
+  
+{  const basePairs = (
+    await sdk.api.abi.multiCall({
+      abi: getPairFactory,
+      calls: Object.values(matchedBaseTokens).map((value) => ({
+        target: factory,
+        params: value,
+      })),
+      chain: chain,
+      block: block,
+    })
+  ).output
+
+  basePairs.forEach(pair => {
+    if (pair.success) {
+      const basePair = pair.output.toLowerCase()
+      if (basePair != '0x0000000000000000000000000000000000000000') 
+      whitelistedBasePairs.add(basePair)}
+    }
+  )
+}
 
   let lps = []
 {
@@ -195,8 +237,9 @@ async function getLPsTrackedValue(balances, lpTokens, contract, trackedTokens, b
 
   tokenBalances.forEach((balance) => {
     if (balance.success) {
-      const lpBalance = BigNumber(balance.output).times(BigNumber(2)).toFixed(0)
       const lpAddress = balance.input.target.toLowerCase()
+      let lpBalance = (whitelistedBasePairs.has(lpAddress)) ? 
+      balance.output : BigNumber(balance.output).times(BigNumber(2)).toFixed(0)
       if (lpBalance > 0) {
         lps[lpAddress] = lpBalance
       }
@@ -226,6 +269,7 @@ let lpBalances = []
 
   return balances;
 }
+
 
 module.exports = {
   getUnicryptLpsCoreValue,
