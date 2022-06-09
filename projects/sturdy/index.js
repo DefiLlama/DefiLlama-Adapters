@@ -1,6 +1,5 @@
 const { request, gql } = require("graphql-request");
 const { toUSDTBalances } = require("../helper/balances");
-const web3 = require('../config/web3')
 
 const graphUrl_ftm =
     'https://api.thegraph.com/subgraphs/name/sturdyfi/sturdy-fantom';
