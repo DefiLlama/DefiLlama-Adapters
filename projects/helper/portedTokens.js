@@ -915,6 +915,10 @@ const syscoinFixMapping = {
   '0xd3e822f3ef011Ca5f17D82C956D952D8d7C3A1BB': { coingeckoId: 'syscoin', decimals: 18, },
 }
 
+const kavaFixMapping = {
+  '0xc86c7C0eFbd6A49B35E8714C5f59D99De09A225b': { coingeckoId: 'kava', decimals: 18, },
+}
+
 function normalizeMapping(mapping) {
   Object.keys(mapping).forEach(key => mapping[key.toLowerCase()] = mapping[key])
 }
@@ -976,6 +980,7 @@ const fixBalancesMapping = {
   bittorrent: b => fixBalances(b, bittorrentFixMapping, { removeUnmapped: false }),
   syscoin: b => fixBalances(b, syscoinFixMapping, { removeUnmapped: true }),
   syscoin: b => fixBalances(b, syscoinFixMapping, { removeUnmapped: false }),
+  kava: b => fixBalances(b, kavaFixMapping, { removeUnmapped: false }),
 }
 
 const chainTransforms = {

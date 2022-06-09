@@ -27,6 +27,23 @@ const tokenMapping = {
   '2260fac5e5542a773aa44fbcfedf7c193bc2c599.factory.bridge.near': { name: 'wrapped-bitcoin', decimals: 18 }
 }
 
+async function view_account(account_id) {
+  const result = await axios.post(endpoint, {
+    "jsonrpc": "2.0",
+    "id": "1",
+    "method": "query",
+    "params": {
+      "request_type": "view_account",
+      "finality": "final",
+      "account_id": account_id
+    }
+  });
+  if (result.data.error) {
+    throw new Error(`${result.data.error.message}: ${result.data.error.data}`)
+  }
+  return result.data.result;
+}
+
 async function call(contract, method, args = {}) {
   const result = await axios.post(endpoint, {
     "jsonrpc": "2.0",
@@ -81,6 +98,7 @@ function sumSingleBalance(balances, token, balance) {
 }
 
 module.exports = {
+  view_account,
   call,
   addTokenBalances,
   getTokenBalance,
