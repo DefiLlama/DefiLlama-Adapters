@@ -134,7 +134,7 @@ function borrowing(chain) {
 module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
-  methodology: "Sums total DAI staked in the UserManager and uDAI contracts",
+  methodology: "Counts the tokens locked in the contracts to be used to underwrite or to borrow. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted.",
   ethereum: {
     tvl: tvl("ethereum"),
     staking: tvl("ethereum"),
