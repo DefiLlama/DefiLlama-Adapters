@@ -1,4 +1,3 @@
-const sdk = require("@defillama/sdk");
 const { ContractFactory, ethers, providers, BigNumber } = require("ethers");
 const { request, gql } = require("graphql-request");
 const { toUSDTBalances, usdtAddress } = require("../helper/balances");
@@ -8,6 +7,26 @@ const utc = require("dayjs/plugin/utc");
 dayjs.extend(utc);
 
 const BigNumberJs = require("bignumber.js");
+
+const DEBUG = false;
+
+const SUBGRAPH_HONEYSWAP_V2 =
+  "https://api.thegraph.com/subgraphs/name/1hive/honeyswap-v2";
+const SUBGRAPH_HONEYSWAP_XDAI =
+  "https://api.thegraph.com/subgraphs/name/1hive/honeyswap-xdai";
+const SUBGRAPH_GARDENS_XDAI =
+  "https://api.thegraph.com/subgraphs/name/1hive/gardens-xdai";
+
+const XDAI_NODE = "https://rpc.xdaichain.com";
+const abiFundManager = [
+  "function balance(address _token) public view returns (uint256)",
+];
+
+function _log(...args) {
+  if (DEBUG) {
+    console.log(...args);
+  }
+}
 
 const ALL_ORGS_GQL = gql`
   query allOrgs($lastID: ID) {
@@ -32,13 +51,6 @@ const ALL_ORGS_GQL = gql`
   }
 `;
 
-const TOKEN_PRICE_QUERY = gql`
-  query tokenPrice($tokenAddress: String) {
-    token(id: $tokenAddress) {
-      derivedETH
-    }
-  }
-`;
 const ALL_TOKEN_PRICE_QUERY = gql`
   query pricesTokens($tokenAddress: [ID]) {
     tokens(where: { id_in: $tokenAddress }) {
@@ -73,34 +85,46 @@ const TOKEN_CHART = gql`
   }
 `;
 
-const XDAI_NODE = "https://rpc.xdaichain.com";
-const abiFundManager = [
-  "function balance(address _token) public view returns (uint256)",
-];
+async function getAllOrgs() {
+  let allFound = false;
+  let lastID = "";
+  let data = [];
+
+  try {
+    while (!allFound) {
+      const orgs = await request(
+        SUBGRAPH_GARDENS_XDAI,
+        ALL_ORGS_GQL,
+        { lastID }
+      );
+
+
+      const numOrgs = orgs.organizations.length;
+      
+      if (numOrgs < 1000) {
+        allFound = true;
+      }
+      lastID = orgs.organizations[numOrgs-1].id;
+      data = data.concat(orgs.organizations);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+  _log("numOrgs", data.length);
+  return data;
+}
 
 async function tvl(timestamp, block, chainBlocks) {
-  // let balances = BigNumber.from(0)
-  let balances = {};
   let listTokens = {};
 
-  const orgs = await request(
-    "https://api.thegraph.com/subgraphs/name/1hive/gardens-xdai",
-    ALL_ORGS_GQL,
-    { lastID: "" }
-  );
-
-  console.log(orgs.organizations.length);
-  let i = 0;
-  for (const org of orgs.organizations) {
+  const orgs = await getAllOrgs();
+  for (const org of orgs) {
     let fundManagerContract = org.config.conviction?.fundsManager;
     let token = org.config.conviction?.requestToken.id;
     let name = org.config.conviction?.requestToken.name;
     if (!fundManagerContract || !token) {
       continue;
     }
-
-    // let fundManagerContract = "0x4ba7362F9189572CbB1216819a45aba0d0B2D1CB";
-    // let token = "0x71850b7E9Ee3f13Ab46d67167341E4bDc905Eef9";
 
     const fundManager = ContractFactory.getContract(
       fundManagerContract,
@@ -109,15 +133,15 @@ async function tvl(timestamp, block, chainBlocks) {
     );
     const output = await fundManager.balance(token);
 
-    console.log(
+    _log(
       `Name: ${name} Balance: ${ethers.utils.formatEther(output)} OrgID: ${
         org.id
       }`
     );
-    const data = await getTokenChardData(token);
+    const data = await getTokenChartData(token);
     if (data) {
       const liquidity = data[data.length - 1].totalLiquidityUSD ?? 0;
-      console.log("sumup", liquidity);
+      _log("sumup", liquidity);
 
       listTokens[token] = {
         name,
@@ -129,15 +153,12 @@ async function tvl(timestamp, block, chainBlocks) {
     } else {
       console.error(`Cannnot find token chart data of token: ${token}`);
     }
-    // if (i++ == 3) {
-    //   break;
-    // }
   }
 
   return getUSDBalancesFromTokens(listTokens);
 }
 
-async function getTokenChardData(tokenAddress) {
+async function getTokenChartData(tokenAddress) {
   let allFound = false;
   let skip = 0;
   let data = [];
@@ -149,12 +170,12 @@ async function getTokenChardData(tokenAddress) {
     tokenAddress = tokenAddress.toLowerCase();
     while (!allFound) {
       const tokenDayDatas = await request(
-        "https://api.thegraph.com/subgraphs/name/1hive/honeyswap-xdai",
+        SUBGRAPH_HONEYSWAP_XDAI,
         TOKEN_CHART,
         { tokenAddr: tokenAddress, skip }
       );
 
-      console.log("tokenDayDatas", tokenDayDatas.tokenDayDatas.length);
+      _log("tokenDayDatas", tokenDayDatas.tokenDayDatas.length);
 
       if (tokenDayDatas.tokenDayDatas.length < 1000) {
         allFound = true;
@@ -198,7 +219,7 @@ async function getTokenChardData(tokenAddress) {
     }
     data = data.sort((a, b) => (parseInt(a.date) > parseInt(b.date) ? 1 : -1));
 
-    console.log("data.length: ", data.length);
+    _log("data.length: ", data.length);
   } catch (error) {
     console.error(error);
   }
@@ -213,56 +234,52 @@ async function getUSDBalancesFromTokens(tokens) {
     tokensIDLowerCase = Object.keys(tokens).map((token) => token.toLowerCase());
 
     const resultTokenPrice = await request(
-      "https://api.thegraph.com/subgraphs/name/1hive/honeyswap-v2",
+      SUBGRAPH_HONEYSWAP_V2,
       ALL_TOKEN_PRICE_QUERY,
       { tokenAddress: tokensIDLowerCase }
     );
 
-    console.log("resultTokenPrice", resultTokenPrice);
+    _log("resultTokenPrice", resultTokenPrice);
     let totalPrices = new BigNumberJs(0);
-    let tokensUsedInTheSum =[];
+    let tokensUsedInTheSum = [];
     for (const token of resultTokenPrice.tokens) {
       let objToken = tokens[token.id];
 
       const tokenPrice = token.derivedETH;
-      const priceBN = new BigNumberJs(tokenPrice);
-      // const price = Number(parseFloat(tokenPrice).toFixed(2));
+      const tokenPriceBN = new BigNumberJs(tokenPrice);
 
       const tokenUnits = parseFloat(
         ethers.utils.formatEther(objToken.balance)
       ).toFixed(2);
 
-      const totalUSD = priceBN.times(new BigNumberJs(tokenUnits));
+      const totalUSD = tokenPriceBN.times(new BigNumberJs(tokenUnits));
 
       objToken = {
         ...objToken,
         totalUSD,
         totalUSDString: totalUSD.valueOf(),
         tokenPrice,
-        // price,
-        priceBN,
+        tokenPriceBN,
         tokenUnits,
       };
       tokens[token.id] = objToken;
 
-      console.log(
-        `Price: ${priceBN}, tokenUnits:${tokenUnits} totalUSD: ${totalUSD} token.id: ${token.id} LiquidityUSD: ${objToken.liquidityUSD}`
+      _log(
+        `Price: ${tokenPriceBN}, tokenUnits:${tokenUnits} totalUSD: ${totalUSD} token.id: ${token.id} LiquidityUSD: ${objToken.liquidityUSD}`
       );
       if (objToken.liquidityUSD.valueOf() > 10000) {
-        totalPrices = totalPrices.plus(objToken.liquidityUSD);
-        console.log(`Token: ${token.id} have more 10k`);
-        // totalPrices  = totalPrices.plus(totalUSD) ;
+        _log(`Token: ${token.id} have more 10k`);
+        totalPrices = totalPrices.plus(totalUSD);
         tokensUsedInTheSum.push({
+          ...objToken,
           token: token.id,
           liquidityUSDString: objToken.liquidityUSDString,
         });
       }
     }
-    // console.log("AllTokens", tokens);
-    console.log("tokensUsedInTheSum:", tokensUsedInTheSum);
-    // let usdBal = toUSDTBalances(totalPrices)[usdtAddress];
+    _log("tokensUsedInTheSum:", tokensUsedInTheSum);
     let usdBal = toUSDTBalances(totalPrices)[usdtAddress];
-    console.log(`usdBal: ${usdBal}`);
+    _log(`usdBal: ${usdBal}`);
     balances[usdtAddress] = usdBal;
   } catch (error) {
     console.error(error);
@@ -271,6 +288,8 @@ async function getUSDBalancesFromTokens(tokens) {
 }
 
 module.exports = {
+  methodology:
+    '"Uses Gardens and Honeyswap Subgraph to finds USD value of Common Pool treasuries for tokens with greater than $10k of liquidity on Honeyswap"',
   misrepresentedTokens: true,
   xdai: {
     tvl,
