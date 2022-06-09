@@ -8,7 +8,7 @@ const { stakings } = require("../helper/staking");
 const { pool2s } = require("../helper/pool2");
 const { getBlock } = require('../helper/getBlock');
 
-const { getUnicryptLpsCoreValue } = require("../helper/liquidityLockerTvl")
+const { getUnicryptLpsCoreValue } = require("../helper/unicrypt")
 
 function tvl(args){
   return async (timestamp, ethBlock, chainBlocks) => {

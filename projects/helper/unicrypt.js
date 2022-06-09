@@ -15,7 +15,7 @@ async function getUnicryptLpsCoreValue(
   contract, // locker contract address.
   getNumLockedTokensABI, // ABI to retrieve the total amount of tokens locked.
   getLockedTokenAtIndexABI, // ABI to retrieve tokens at a specific lock index.
-  trackedTokens = [], // liquid assets for tokens to be paired against (ETH, USD etc.) (array of token addresses, at least 2).
+  trackedTokens = [], // liquid assets for tokens to be paired against (ETH, USD etc.).
   pool2 = [], // pool2 pair to be excluded from the balances.
   isMixedTokenContract = false,
   factory = null
@@ -66,6 +66,8 @@ async function getUnicryptLpsCoreValue(
 
 
 async function getTokensAndLPsTrackedValue(balances, lpTokens, contract, factory, trackedTokens, block, chain) {
+
+  if (!Array.isArray(trackedTokens)) throw new Error("must pass an array of base tokens to trackedTokens")
 
   const [token0Addresses, token1Addresses, tokenBalances] = await Promise.all([
     sdk.api.abi
