@@ -1,29 +1,44 @@
 module.exports = {
   // Curve.fi Factory USD Metapool: moUSD 
- '0x162b21ba1a90dd9384c615192fa4053217d2a8db': {
-   swapContract: '0x162B21ba1a90Dd9384C615192FA4053217D2A8Db',
-   underlyingTokens: ['0x9fFFb2F49adFC231B44dDCFf3FfCF0E81b06430A', '0x19793b454d3afc7b454f206ffe95ade26ca6912c'],
- },
+  '0x162b21ba1a90dd9384c615192fa4053217d2a8db': {
+    swapContract: '0x162B21ba1a90Dd9384C615192FA4053217D2A8Db',
+    underlyingTokens: ['0x9fFFb2F49adFC231B44dDCFf3FfCF0E81b06430A', '0x19793b454d3afc7b454f206ffe95ade26ca6912c'],
+  },
+  // USDS3CRV
+  '0xde495223f7cd7ee0cde1addbd6836046bbdf3ad3': {
+    swapContract: '0xde495223f7cd7ee0cde1addbd6836046bbdf3ad3',
+    underlyingTokens: ['0x6c3f90f043a72fa612cbac8115ee7e52bde6e490', '0x45fdb1b92a649fb6a64ef1511d3ba5bf60044838']
+  },
+  // USDSam3CRV
+  '0xcf5186491739aac19db943d71a9b9b759f3afabf': {
+    swapContract: '0xcf5186491739aac19db943d71a9b9b759f3afabf',
+    underlyingTokens: ['0x2f1b1662A895C6Ba01a99DcAf56778E7d77e5609', '0x19793B454D3AfC7b454F206Ffe95aDE26cA6912c']
+  },
+  // USDSav3CRV
+  '0x90d5233b53436767fecacd1a783d3da8cc7395ed': {
+    swapContract: '0x90D5233b53436767fecACD1a783D3dA8Cc7395ED',
+    underlyingTokens: ['0xab05b04743e0aeaf9d2ca81e5d3b8385e4bf961e', '0x5b5cfe992adac0c9d48e05854b2d91c73a003858']
+  },
   // ARTHuval3PS
- '0x4cfaabd5920021359bb22bb6924cce708773b6ac': {
-   swapContract: '0x1d4b4796853aeda5ab457644a18b703b6ba8b4ab',
-   underlyingTokens: ['0x88fd584dF3f97c64843CD474bDC6F78e398394f4', '0x5b5bd8913d766d005859ce002533d4838b0ebbb5'],
- },
- // val3PS
-'0x5b5bd8913d766d005859ce002533d4838b0ebbb5': {
-  swapContract: '0x19ec9e3f7b21dd27598e7ad5aae7dc0db00a806d',
-  underlyingTokens: ['0xaed19dab3cd68e4267aec7b2479b1ed2144ad77f', '0xa6fdea1655910c504e974f7f1b520b74be21857b', '0x5f7f6cb266737b89f7af86b30f03ae94334b83e9'],
-},
-   // ARTHu3PS
+  '0x4cfaabd5920021359bb22bb6924cce708773b6ac': {
+    swapContract: '0x1d4b4796853aeda5ab457644a18b703b6ba8b4ab',
+    underlyingTokens: ['0x88fd584dF3f97c64843CD474bDC6F78e398394f4', '0x5b5bd8913d766d005859ce002533d4838b0ebbb5'],
+  },
+  // val3PS
+  '0x5b5bd8913d766d005859ce002533d4838b0ebbb5': {
+    swapContract: '0x19ec9e3f7b21dd27598e7ad5aae7dc0db00a806d',
+    underlyingTokens: ['0xaed19dab3cd68e4267aec7b2479b1ed2144ad77f', '0xa6fdea1655910c504e974f7f1b520b74be21857b', '0x5f7f6cb266737b89f7af86b30f03ae94334b83e9'],
+  },
+  // ARTHu3PS
   '0xb38b49bae104bbb6a82640094fd61b341a858f78': {
     swapContract: '0x98245bfbef4e3059535232d68821a58abb265c45',
     underlyingTokens: ['0x88fd584dF3f97c64843CD474bDC6F78e398394f4', '0xaf4de8e872131ae328ce21d909c74705d3aaf452'],
   },
   // 3EPS
- '0xaf4de8e872131ae328ce21d909c74705d3aaf452': {
-   swapContract: '0x160caed03795365f3a589f10c379ffa7d75d4e76',
-   underlyingTokens: ['0xe9e7cea3dedca5984780bafc599bd69add087d56', '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d', '0x55d398326f99059ff775485246999027b3197955'],
- },
+  '0xaf4de8e872131ae328ce21d909c74705d3aaf452': {
+    swapContract: '0x160caed03795365f3a589f10c379ffa7d75d4e76',
+    underlyingTokens: ['0xe9e7cea3dedca5984780bafc599bd69add087d56', '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d', '0x55d398326f99059ff775485246999027b3197955'],
+  },
   '0x6c3f90f043a72fa612cbac8115ee7e52bde6e490': {
     swapContract: '0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7',
     underlyingTokens: ['0xdac17f958d2ee523a2206206994597c13d831ec7', '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', '0x6b175474e89094c44da98b954eedeac495271d0f'],

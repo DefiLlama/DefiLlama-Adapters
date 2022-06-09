@@ -178,6 +178,7 @@ async function transformBscAddress() {
     '0x5f7f6cb266737b89f7af86b30f03ae94334b83e9': 'bsc:0x55d398326f99059ff775485246999027b3197955',  // valas USDT -> BUSD
     '0x532197ec38756b9956190b845d99b4b0a88e4ca9': '0x1614f18fc94f47967a3fbe5ffcd46d4e7da3d787',  // PAID
     '0x6d1b7b59e3fab85b7d3a3d86e505dd8e349ea7f3': 'heco:0xcbd6cb9243d8e3381fea611ef023e17d1b7aedf0',  // BXH
+    '0x42586ef4495bb512a86cf7496f6ef85ae7d69a64': 'polygon:0x66e8617d1df7ab523a316a6c01d16aa5bed93681',  // SPICE
   }
 
   return (addr) => {
@@ -206,12 +207,14 @@ async function transformPolygonAddress() {
     // '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270': '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0',  // WMATIC
     '0x0000000000000000000000000000000000000000': '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0',  // 
     '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619': '0x0000000000000000000000000000000000000000',  // 
+    '0xAa9654BECca45B5BDFA5ac646c939C62b527D394': 'polygon:0xAa9654BECca45B5BDFA5ac646c939C62b527D394',  // Dino
     '0x2f28add68e59733d23d5f57d94c31fb965f835d0': '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',  // sUSDC(Polygon) -> USDC(Ethereum)
     '0x9fffb2f49adfc231b44ddcff3ffcf0e81b06430a': '0x6B175474E89094C44Da98b954EedeAC495271d0F',  // moUSD(Polygon) -> DAI
     '0xf04d3a8eb17b832fbebf43610e94bdc4fd5cf2dd': '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',  // sBUSD(Polygon) -> BUSD(BSC)
     '0x8eb3771a43a8c45aabe6d61ed709ece652281dc9': 'avax:0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664',  // sUSDC.e(Polygon) -> USDC.e(Avalanche)
     '0x613a489785c95afeb3b404cc41565ccff107b6e0': '0x7a5d3A9Dcd33cb8D527f7b5F96EB4Fef43d55636',  // radioshack
   }
+  normalizeMapping(mapping)
 
   return (addr) => {
     addr = addr.toLowerCase()
@@ -271,7 +274,7 @@ async function transformHecoAddress() {
     '0x40280e26a572745b1152a54d1d44f365daa51618': 'bsc:0xba2ae424d960c26247dd6c32edc70b295c744c43',
     '0x5ee41ab6edd38cdfb9f6b4e6cf7f75c87e170d98': '0x0000000000085d4780b73119b644ae5ecd22b376',
   }
-  
+
   return transformChainAddress(mapping, 'heco', { skipUnmapped: false })
 }
 
@@ -362,9 +365,9 @@ async function transformOptimismAddress() {
 
   return (addr) => {
     addr = addr.toLowerCase()
-    
+
     if (mapping[addr]) return mapping[addr]
-    
+
     const possibleSynth = optimismSynths[addr.toLowerCase()];
     if (possibleSynth !== undefined) {
       return possibleSynth;
@@ -389,7 +392,7 @@ async function transformMoonriverAddress() {
     '0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c': 'avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c',
     '0x0000000000000000000000000000000000000000': 'moonriver:0x98878B06940aE243284CA214f92Bb71a2b032B8A',
   }
-  
+
   return transformChainAddress(mapping, 'moonriver', { skipUnmapped: false })
 }
 
@@ -1016,7 +1019,7 @@ async function transformReichainAddress() {
     '0xDD2bb4e845Bd97580020d8F9F58Ec95Bf549c3D9': 'bsc:0xe9e7cea3dedca5984780bafc599bd69add087d56', // killswitch busd -> busd token
     '0xf8ab4aaf70cef3f3659d3f466e35dc7ea10d4a5d': 'bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // killswitch bnb -> bnb token
   }
-  
+
   return transformChainAddress(mapping, 'reichain', { skipUnmapped: true })
 }
 
@@ -1026,6 +1029,7 @@ async function transformEthereumAddress() {
     '0xFEEf77d3f69374f66429C91d732A244f074bdf74': '0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0', // CVX FXS token
     '0xb8c77482e45f1f44de1745f52c74426c631bdd52': 'bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // BNB
     '0xeb637a9ab6be83c7f8c79fdaa62e1043b65534f0': 'heco:0xcbd6cb9243d8e3381fea611ef023e17d1b7aedf0',  // BXH
+    '0x18a1ea69a50a85752b7bc204a2c45a95ce6e429d': 'avax:0xf30c5083a1479865c9a8916dec6ddadd82e8907b', // SPICE
   }
   normalizeMapping(mapping)
 
