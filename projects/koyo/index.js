@@ -1,7 +1,10 @@
-const { transformBobaAddress } = require("../helper/portedTokens");
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
-const { getBlock } = require("../helper/getBlock");
+const constants = require("./constants");
 const utils = require("../helper/utils");
+const { chainJoinExports, chainTypeExports } = require("./utils");
+const { getBlock } = require("../helper/getBlock");
+const { staking } = require("../helper/staking");
+const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
+const { transformBobaAddress } = require("../helper/portedTokens");
 
 const DATA = {
   boba: async () => {
@@ -14,11 +17,16 @@ const DATA = {
       bobaTransform,
       {
         treasury: {
-          addresss: ["0x559dBda9Eb1E02c0235E245D9B175eb8DcC08398"],
+          addresss: [constants.addresses.boba.treasury],
           tokens: [
-            ["0xa18bF3994C0Cc6E3b63ac420308E5383f53120D7", false], // BOBA(Boba)
-            ["0x7562F525106F5d54E891e005867Bf489B5988CD9", false], // FRAX(Boba)
+            [constants.addresses.boba.BOBA, false], // BOBA(Boba)
+            [constants.addresses.boba.FRAX, false], // FRAX(Boba)
+            [constants.addresses.boba.FRAX_KYO, true], // FRAX-KYO(Boba, OolongSwap)
           ],
+        },
+        staking: {
+          address: constants.addresses.boba.staking,
+          token: constants.addresses.boba.KYO,
         },
         swaps: Object.entries(pools.data.data)
           .filter(([k]) => k !== "generatedTime")
@@ -29,20 +37,6 @@ const DATA = {
       },
     ];
   },
-};
-
-const chainTypeExports = (chainType, chainFn, chains) => {
-  const chainTypeProps = chains.reduce(
-    (obj, chain) => ({
-      ...obj,
-      [chain === "avax" ? "avalanche" : chain]: {
-        [chainType]: chainFn(chain),
-      },
-    }),
-    {}
-  );
-
-  return chainTypeProps;
 };
 
 const chainTVL = (chain) => {
@@ -66,7 +60,6 @@ const chainTVL = (chain) => {
     return balances;
   };
 };
-
 const chainTreasury = (chain) => {
   return async (timestamp, _ethBlock, chainBlocks) => {
     const balances = {};
@@ -86,29 +79,23 @@ const chainTreasury = (chain) => {
     return balances;
   };
 };
+const chainStaking = (chain) => {
+  return async (timestamp, ethBlock, chainBlocks) => {
+    const [, data] = await DATA[chain]();
 
-const chainJoinExports = (cExports, chains) => {
-  const createdCExports = cExports.map((cExport) => cExport(chains));
-  const chainJoins = chains.reduce((obj, chain) => {
-    chain = chain === "avax" ? "avalanche" : chain;
-
-    return {
-      ...obj,
-      [chain]: Object.fromEntries(
-        createdCExports.flatMap((cExport) => [
-          ...Object.entries(cExport[chain]),
-        ])
-      ),
-    };
-  }, {});
-
-  return chainJoins;
+    return staking(data.staking.address, data.staking.token, chain)(
+      timestamp,
+      ethBlock,
+      chainBlocks
+    );
+  };
 };
 
 module.exports = chainJoinExports(
   [
     (chains) => chainTypeExports("tvl", chainTVL, chains),
     (chains) => chainTypeExports("treasury", chainTreasury, chains),
+    (chains) => chainTypeExports("staking", chainStaking, chains),
   ],
   ["boba"]
 );
