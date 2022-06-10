@@ -79,6 +79,9 @@ function stakingUnknownPricedLP(stakingContract, stakingToken, chain, lpContract
         if (['klaytn'].includes(chain)) {
             const fixBalances = await getFixBalances(chain)
             fixBalances(balances)
+        } else if (['kava'].includes(chain)) {
+            const fixBalances = await getFixBalances(chain)
+            fixBalances(balances)
         }
 
         return balances
