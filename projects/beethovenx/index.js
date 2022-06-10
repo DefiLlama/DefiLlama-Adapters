@@ -37,8 +37,6 @@ async function optimism(timestamp, ...params) {
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: true,
   methodology: `BeethovenX TVL is pulled from the Balancer subgraph and includes deposits made to v2 liquidity pools.`,
   fantom: {
     tvl: fantom,
