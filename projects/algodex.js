@@ -37,7 +37,7 @@ async function tvl() {
     // console.log(total_liquidity_in_usd)
     return toUSDTBalances(total_liquidity_in_usd)
 }
-tvl()
+// tvl()
 module.exports = {
     misrepresentedTokens: true,
     algodex: {
