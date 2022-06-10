@@ -88,4 +88,4 @@ module.exports = {
       return balances;
     },
   },
-};
+}
