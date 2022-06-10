@@ -151,6 +151,7 @@ async function transformAvaxAddress() {
       "0x7345a537a975d9ca588ee631befddfef34fd5e8f": "fantom:0x5Cc61A78F164885776AA610fb0FE1257df78E59B",
       '0x90a424754ad0d72cebd440faba18cdc362bfe70a': 'heco:0xcbd6cb9243d8e3381fea611ef023e17d1b7aedf0',  // BXH
       '0x8965349fb649a33a30cbfda057d8ec2c48abe2a2': '0x6e9730ecffbed43fd876a264c982e254ef05a0de',  // Nord
+      "0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7": "0xdac17f958d2ee523a2206206994597c13d831ec7"
     }
     return map[addr.toLowerCase()] || `avax:${addr}`
   }
