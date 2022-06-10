@@ -34,7 +34,7 @@ async function fetch(borrow, chain) {
     const graphUrl = chain == 'fantom' ? graphUrl_ftm : graphUrl_eth;
     const { reserves, usdPriceEth } = await request(graphUrl, graphQuery);
     let tvl = reserves.reduce((sum, reserve) => {
-        const value = borrow ? reserve.totalCurrentVariableDebt : reserve.totalLiquidity;
+        const value = borrow ? reserve.totalCurrentVariableDebt : reserve.availableLiquidity;
         return sum + +priceInUSD(value, reserve.decimals, reserve.price.priceInEth);        
     }, 0);
 
