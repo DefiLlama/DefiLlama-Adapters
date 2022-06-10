@@ -150,4 +150,4 @@ module.exports = {
     ethereum: {
         tvl: tvls.ethereum
     },
-}
+};

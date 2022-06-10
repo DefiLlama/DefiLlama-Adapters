@@ -10,4 +10,4 @@ module.exports = {
       coreAssets: ['0xBE05Ac1FB417c9EA435b37a9Cecd39Bc70359d31',]
     })
   }
-}
+};
