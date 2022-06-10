@@ -20,7 +20,7 @@ const utils = require("./helper/utils");
  module.exports = {
    methodology:
      'TVL data is pulled from the crown Financial API "https://www.crownfinance.io/api/".',
-   milkomeda: {
+   cronos: {
      fetch
    },
    fetch,
