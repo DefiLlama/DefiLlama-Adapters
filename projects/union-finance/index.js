@@ -137,12 +137,10 @@ module.exports = {
   methodology: "Counts the tokens locked in the contracts to be used to underwrite or to borrow. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted.",
   ethereum: {
     tvl: tvl("ethereum"),
-    staking: tvl("ethereum"),
     borrowed: borrowing("ethereum"),
   },
   arbitrum: {
     tvl: tvl("arbitrum"),
-    staking: tvl("arbitrum"),
     borrowed: borrowing("arbitrum"),
   },
 };
