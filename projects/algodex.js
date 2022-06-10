@@ -19,33 +19,25 @@ async function tvl() {
         return obj
     }, {})
 
-
-
     var total_liquidity_in_usd = 0
-
     volumData.data.map((asset) => {
-
         var assetPrice = 0
-
         if (usdPriceData.data.hasOwnProperty(asset.assetid)) {
-            // console.log("Tinyprice: ", assetId)
             assetPrice = usdPriceData.data[asset.assetid].price
-
         } else {
             // price for some asset is not found on tinyman then
             // set its price to zero
-
             assetPrice = 0
-
         }
 
-
         var total = assetPrice * asset.asaAmountTotal
+        // console.log(asset.assetid, ":", " Price:", assetPrice, " Amount:", asset.asaAmountTotal, " Total:", total)
         total_liquidity_in_usd = total_liquidity_in_usd + total
     })
-
+    // console.log(total_liquidity_in_usd)
     return toUSDTBalances(total_liquidity_in_usd)
 }
+tvl()
 module.exports = {
     misrepresentedTokens: true,
     algodex: {
