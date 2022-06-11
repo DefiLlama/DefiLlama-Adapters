@@ -158,6 +158,7 @@ async function getTokenPrices({
       const price = prices[token];
       if (pairBalances[token]) {
         lpAddresses.push(token)
+        delete balances[address]
         return;
       }
       if (!price || skipConversion) return;
