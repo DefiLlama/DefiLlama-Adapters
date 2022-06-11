@@ -144,11 +144,17 @@ function getUniqueAddresses(addresses) {
   return [...set]
 }
 
-
 const DEBUG_MODE = !!process.env.LLAMA_DEBUG_MODE
+
+function log(...args) {
+  if (DEBUG_MODE) {
+    console.log(...args);
+  }
+}
 
 module.exports = {
   DEBUG_MODE,
+  log,
   createIncrementArray,
   fetchURL,
   postURL,
