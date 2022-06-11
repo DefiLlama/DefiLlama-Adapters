@@ -7,6 +7,9 @@ function handleError(error){
     console.error(error.response.errors.map(e => e.message).join('\n'))
   else
     console.error(error.toString())
+  const axiosError  = error?.response?.data?.message
+  if (axiosError)
+    console.log('Axios: ', axiosError)
   const stack = getStackMessage(error.stack)
   if (stack.length) {
     console.log('Truncated error stack:')

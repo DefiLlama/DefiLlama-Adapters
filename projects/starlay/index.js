@@ -1,6 +1,10 @@
 const { getReserves, getStarlayTvl } = require("./starlay");
 const BigNumber = require("bignumber.js");
-const { getV2Borrowed } = require("../helper/aave");
+const { getBorrowed } = require("../helper/aave");
+
+const DOT_TOKEN = "polkadot"
+const DOT_DECIMALS = 10
+const DEFAULT_DECIMALS = 18
 
 const tokens = {
   // WASTR
@@ -28,6 +32,8 @@ const tokens = {
   "0xdd90E5E87A2081Dcf0391920868eBc2FFB81a1aF": "matic-network",
   // BNB
   "0x7f27352D5F83Db87a5A3E00f4B07Cc2138D8ee52": "binancecoin",
+  // DOT
+  "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF": DOT_TOKEN,
   // LAY
   "0xc4335B1b76fA6d52877b3046ECA68F6E708a27dd": "LAY",
 };
@@ -46,7 +52,7 @@ function astar(borrowed) {
     const chain = "astar";
 
     if (borrowed) {
-      await getV2Borrowed(
+      await getBorrowed(
         balances,
         block,
         chain,
@@ -65,17 +71,13 @@ function astar(borrowed) {
       );
     }
 
-    const res = Object.keys(balances).map((key, index) => {
-      console.log("key", key);
-      if (key.startsWith("0x")) return { symbol: key, balance: balances[key] };
-      return {
-        symbol: key,
-        balance: BigNumber(balances[key])
-          .div(10 ** 18)
-          .toFixed(0),
-      };
-    });
-    return Object.fromEntries(res.map((e) => [e.symbol, e.balance]));
+   return Object.keys(balances).reduce((res, key) => {
+      if (key.startsWith("0x"))
+        return { ...res, [key]: balances[key] };
+      if (key === DOT_TOKEN)
+        return { ...res, [key]: new BigNumber(balances[key]).shiftedBy(-DOT_DECIMALS) };
+      return { ...res, [key]: new BigNumber(balances[key]).shiftedBy(-DEFAULT_DECIMALS) };
+    }, {});
   };
 }
 

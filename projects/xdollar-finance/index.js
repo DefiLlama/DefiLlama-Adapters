@@ -2,7 +2,7 @@ const sdk = require("@defillama/sdk");
 const BigNumber = require('bignumber.js')
 const { transformIotexAddress } = require('../helper/portedTokens.js')
 const getEntireSystemCollAbi = require("./getEntireSystemColl.abi.json")
-const _ = require('underscore');
+
 const {getLiquityTvl} = require('../helper/liquity')
 
 const ETH_ADDR = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
@@ -42,7 +42,7 @@ const iotexTvl = async (timestamp, ethBlock, chainBlocks) => {
         chain: 'iotex'
     });
 
-    _.each(getCollResults.output, (getColl) => {
+    getCollResults.output.forEach((getColl) => {
         let address = iotexTMs[getColl.input.target]
         let amount =  getColl.output
 
@@ -70,7 +70,7 @@ const iotexTvl = async (timestamp, ethBlock, chainBlocks) => {
         chain: 'iotex'
     });
 
-    _.each(balanceOfResults.output, (balanceOf) => {
+    balanceOfResults.output.forEach((balanceOf) => {
         let address = balanceOf.input.target
         let amount =  balanceOf.output
 
@@ -101,7 +101,7 @@ const ethStableCollat = async (timestamp, ethBlock, chainBlocks) => {
         chain: 'ethereum'
     });
 
-    _.each(balanceOfResults.output, (balanceOf) => {
+    balanceOfResults.output.forEach((balanceOf) => {
         let address = balanceOf.input.target
         let amount =  balanceOf.output
 

@@ -1,6 +1,5 @@
 const axios = require("axios");
-const Pact = require("pact-lang-api");
-const { toUSDTBalances } = require("../helper/balances");
+const { fetchLocal, mkMeta } = require("../helper/pact");
 
 const chainId = "2";
 const network = `https://api.chainweb.com/chainweb/0.0/mainnet01/chain/${chainId}/pact`;
@@ -12,7 +11,7 @@ const getReserve = (tokenData) => {
 };
 
 const pairTokens = {
-  
+
   "coin:runonflux.flux": {
     name: "coin:runonflux.flux",
     token0: {
@@ -29,7 +28,7 @@ const pairTokens = {
 const getPairList = async () => {
   const pairList = await Promise.all(
     Object.values(pairTokens).map(async (pair) => {
-      let data = await Pact.fetch.local(
+      let data = await fetchLocal(
         {
           pactCode: `
             (use kswap.exchange)
@@ -41,7 +40,7 @@ const getPairList = async () => {
                 (totalBal (kswap.tokens.total-supply (kswap.exchange.get-pair-key ${pair.token0.code} ${pair.token1.code})))
               )[totalBal reserveA reserveB])
              `,
-          meta: Pact.lang.mkMeta(
+          meta: mkMeta(
             "",
             chainId,
             GAS_PRICE,
@@ -52,9 +51,9 @@ const getPairList = async () => {
         },
         network
       );
-       
+
       return {
-        
+
         reserves: [
           getReserve(data.result.data[1]),
           getReserve(data.result.data[2]),
@@ -63,14 +62,6 @@ const getPairList = async () => {
     })
   );
   return pairList;
-};
-
-const fetchKdaPrice = async () => {
-  const res = await axios.get(
-    "https://api.coingecko.com/api/v3/simple/price?ids=kadena&vs_currencies=usd"
-  );
-
-  return res.data.kadena.usd;
 };
 
 const fetchKdaTotal = async (pairList) => {
@@ -84,16 +75,17 @@ const fetchKdaTotal = async (pairList) => {
 
 async function fetch() {
   const pairList = await getPairList();
-  const kdaPrice = await fetchKdaPrice();
   const kdaTotal = await fetchKdaTotal(pairList);
   const kdaInFluxPair = pairList[0].reserves[0];
-  const tvl=kdaPrice * (kdaTotal + kdaInFluxPair);
-  return toUSDTBalances(tvl);
+  return {
+    kadena: kdaTotal + kdaInFluxPair
+  }
 }
 
 module.exports = {
-    misrepresentedTokens: true,
-    kadena: {
-      tvl: fetch,
-    },
-  };
+  timetravel: false,
+  misrepresentedTokens: true,
+  kadena: {
+    tvl: fetch,
+  },
+};

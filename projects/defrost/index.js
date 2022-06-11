@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js');
-const _ = require('underscore');
+
 const abi = require('./abi');
 const {gql, request} = require('graphql-request')
 const {getApiTvl} = require('../helper/historicalApi')

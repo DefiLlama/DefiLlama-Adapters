@@ -8,7 +8,7 @@ const { Provider, Program, web3, utils } = require("@project-serum/anchor");
 const { NodeWallet } = require("@project-serum/anchor/dist/cjs/provider");
 const DualIdl = require("./idl.json");
 const axios = require("axios");
-const { u64, MintLayout } = require("@solana/spl-token");
+const { MintLayout } = require("@solana/spl-token")
 const { toUSDTBalances } = require("../helper/balances");
 
 async function getPriceWithTokenAddress(mintAddress) {
@@ -35,7 +35,7 @@ async function tvl() {
     {}
   );
   const dualProgramID = new PublicKey(
-    "EFhLFkx6r2NdhFmAraZacRzxX8SFLbM9KuyVpaUUpR5k"
+    "DiPbvUUJkDhV9jFtQsDFnMEMRJyjW5iS6NMwoySiW8ki"
   );
   const VAULT_MINT_ADDRESS_SEED = "vault-mint";
   const program = new Program(DualIdl, dualProgramID, anchorProvider);
@@ -120,7 +120,6 @@ const deserializeMint = (data) => {
     mintInfo.mintAuthority = new PublicKey(mintInfo.mintAuthority);
   }
 
-  mintInfo.supply = u64.fromBuffer(mintInfo.supply);
   mintInfo.isInitialized = mintInfo.isInitialized !== 0;
 
   if (mintInfo.freezeAuthorityOption === 0) {
