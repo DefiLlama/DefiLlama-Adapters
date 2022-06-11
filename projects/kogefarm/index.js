@@ -529,13 +529,12 @@ const moonriverTvl = async (timestamp, block, chainBlocks) => {
 
 const kogeMasterChefAddr = '0x6275518a63e891b1bC54FEEBBb5333776E32fAbD'
 
+// vKogeKoge
 const _polygonStaking = polygonMasterChef(kogeMasterChefAddr, 1)
 
 // Pool2
 const kogecoinVaultAddr = '0x992Ae1912CE6b608E0c0d2BF66259ab1aE62A657'
-const kogecoinVault2Addr = '0xb6D7bA013e13C3f00a20826aF2008C83228eD50a'
 const kogecoinMaticVaultAddr = '0xb7D3e1C5cb26D088d619525c6fD5D8DDC1B543d1'
-const kogecoinMatic2VaultAddr = '0x84a9c05b9F52FfD041eA1cFD6f56031d50DECc5c'
 const kogecoinSageVaultAddr = '0x4792b5943a05fc6AF3B20B5F1D1d7dDe33C42980'
 const kogecoinIrisVaultAddr = '0x55A2FedB176C09488102596Db21937A753025466'
 const kogecoinCollarVaultAddr = '0x64c20BB3D9aCD870f748fe73B6541D500643e490'
@@ -546,9 +545,7 @@ const kogecoinTamagoVaultAddr = '0xA838F1e986b27d7AC5a977c7d0eCbADFFCDC7Bb5'
 
 const _kogePool2 = [
   kogecoinVaultAddr,
-  kogecoin2VaultAddr,
   kogecoinMaticVaultAddr,
-  kogecoinMatic2VaultAddr,
   kogecoinSageVaultAddr,
   kogecoinIrisVaultAddr,
   kogecoinCollarVaultAddr,
@@ -569,7 +566,6 @@ const _polygonPool2 = async (timestamp, block, chainBlocks) => {
     )),
   }
 }
-
 const _polygonTvl = polygonTvl({
   exclude: _kogePool2,
 })
