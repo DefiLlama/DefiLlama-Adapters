@@ -3,20 +3,20 @@ const {gql} = require('graphql-request')
 const { blockQuery } = require('../helper/graph')
 const {toUSDTBalances} = require('../helper/balances');
 const {getBlock} = require('../helper/getBlock');
-const _ = require('underscore');
+
 const axios = require('axios');
 
 async function GenerateCallList() {
     const markets = (await axios.get('https://mcdex.io/api/markets')).data.data.markets;
     const marketStatus = (await axios.get('https://mcdex.io/api/markets/status')).data.data;
     let id2Info = {};
-    _.forEach(markets, market => {
+    markets.forEach(market => {
         const id = market.id;
         if (market.contractType === 'Perpetual') {
             id2Info[id] = {perpetualAddress: market.perpetualAddress};
         }
     });
-    _.forEach(marketStatus, status => {
+    marketStatus.forEach(status => {
         if (status === null) {
             return;
         }
@@ -26,7 +26,7 @@ async function GenerateCallList() {
         }
     });
     let calls = []
-    _.map(id2Info, (info, id) => {
+    Object.values(id2Info).map((info, id) => {
         if (info.collateralTokenAddress && info.perpetualAddress) {
             calls.push({
                 target: info.collateralTokenAddress,

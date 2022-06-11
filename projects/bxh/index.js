@@ -1,29 +1,20 @@
-const { toUSDTBalances } = require('../helper/balances');
-const { GraphQLClient, gql } = require('graphql-request');
 
-async function tvl(timestamp) {
-  const query = gql`
-    query {
-        uniswapDayDatas(
-          first: 10, 
-          where: {
-            date_gt: ${timestamp - 86400}
-            date_lt: ${timestamp}
-          }, 
-          orderBy: date, 
-          orderDirection: asc
-          ) {
-            totalLiquidityUSD
-          }
-        }`;
-  const graphQLClient = new GraphQLClient("https://n10.hg.network/subgraphs/name/bxhinfov2/heco");
-  const results = await graphQLClient.request(query);
-
-  return toUSDTBalances(results.uniswapDayDatas[0].totalLiquidityUSD);
-}
+const { uniTvlExport } = require('../helper/calculateUniTvl');
 
 module.exports = {
     heco: {
-        tvl,
+      tvl: uniTvlExport('0xe0367ec2bd4ba22b1593e4fefcb91d29de6c512a', 'heco'),
+    },
+    bsc: {
+      tvl: uniTvlExport('0x7897c32cbda1935e97c0b59f244747562d4d97c1', 'bsc'),
+    },
+    ethereum: {
+      tvl: uniTvlExport('0x8d0fCA60fDf50CFE65e3E667A37Ff3010D6d1e8d', 'ethereum'),
+    },
+    avax: {
+      tvl: uniTvlExport('0xDeC9231b2492ccE6BA01376E2cbd2bd821150e8C', 'avax'),
+    },
+    okexchain: {
+      tvl: uniTvlExport('0xff65bc42c10dcc73ac0924b674fd3e30427c7823', 'okexchain'),
     },
 }; // node test.js projects/bxh/index.js

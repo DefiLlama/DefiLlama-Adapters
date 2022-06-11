@@ -1,15 +1,11 @@
-const { createWeb3, createContractObject } = require('../../../helper/ankr/utils');
-const { avalancheRpcUrl } = require('../../../helper/ankr/networks');
-const poolAbi = require('../../../helper/ankr/abis/TraderJoePool.json');
-const vaultABI = require('../../../helper/ankr/abis/TraderJoeVault.json');
-const web3 = createWeb3(avalancheRpcUrl);
-
 const createVaultModel = (poolAddress, vaultAddress) => {
   return {
-    contract: createContractObject(poolAddress, poolAbi, web3),
-    vault: createContractObject(vaultAddress, vaultABI, web3),
+    pool: poolAddress,
+    vault: vaultAddress,
+    chain: 'avax',
   }
 }
+
 
 const vaults = [
   //usdcAvax

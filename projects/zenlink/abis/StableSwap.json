@@ -1,0 +1,28 @@
+{
+	"getTokens": 	{
+		"inputs": [],
+		"name": "getTokens",
+		"outputs": [
+			{
+				"internalType": "contract IERC20[]",
+				"name": "",
+				"type": "address[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	"getTokenBalances": {
+		"inputs": [],
+		"name": "getTokenBalances",
+		"outputs": [
+			{
+				"internalType": "uint256[]",
+				"name": "",
+				"type": "uint256[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+}
