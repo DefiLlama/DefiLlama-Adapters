@@ -1,79 +1,8 @@
 const { GraphQLClient, gql } = require("graphql-request");
 const retry = require("async-retry");
-const sdk = require("@defillama/sdk");
-const {toUSDTBalances} = require('../helper/balances');
+const { toUSDTBalances } = require("../helper/balances");
+const axios = require("axios");
 
-async function treasury() {
-  var endpoint =
-    "https://api.thegraph.com/subgraphs/name/hectordao-hec/hector-dao";
-  var graphQLClient = new GraphQLClient(endpoint);
-
-  var query = gql`
-    query {
-      protocolMetrics(first: 1, orderBy: timestamp, orderDirection: desc) {
-        treasuryMarketValue
-      }
-    }
-  `;
-  const results = await retry(
-    async (bail) => await graphQLClient.request(query)
-  );
-  return +results.protocolMetrics[0].treasuryMarketValue;
-}
-async function bankLiquidity() {
-  var endpoint =
-    "https://api.thegraph.com/subgraphs/name/hectordao-hec/hector-dao";
-  var graphQLClient = new GraphQLClient(endpoint);
-
-  var query = gql`
-    query {
-      protocolMetrics(first: 1, orderBy: timestamp, orderDirection: desc) {
-        bankSupplied
-      }
-    }
-  `;
-  const results = await retry(
-    async (bail) => await graphQLClient.request(query)
-  );
-
-  return +results.protocolMetrics[0].bankSupplied - (await borrowed());
-}
-async function borrowed() {
-  var endpoint =
-    "https://api.thegraph.com/subgraphs/name/hectordao-hec/hector-dao";
-  var graphQLClient = new GraphQLClient(endpoint);
-
-  var query = gql`
-    query {
-      protocolMetrics(first: 1, orderBy: timestamp, orderDirection: desc) {
-        bankBorrowed
-      }
-    }
-  `;
-  const results = await retry(
-    async (bail) => await graphQLClient.request(query)
-  );
-
-  return results.protocolMetrics[0].bankBorrowed;
-}
-async function eth() {
-  var endpoint =
-    "https://api.thegraph.com/subgraphs/name/hectordao-hec/hector-eth";
-  var graphQLClient = new GraphQLClient(endpoint);
-
-  var query = gql`
-    query {
-      ethMetrics(first: 1, orderBy: timestamp, orderDirection: desc) {
-        treasuryBaseRewardPool
-      }
-    }
-  `;
-  const results = await retry(
-    async (bail) => await graphQLClient.request(query)
-  );
-
-  return +results.ethMetrics[0].treasuryBaseRewardPool;
-}
 const staking = async () => {
   var endpoint =
     "https://api.thegraph.com/subgraphs/name/hectordao-hec/hector-dao";
@@ -90,11 +19,16 @@ const staking = async () => {
     async (bail) => await graphQLClient.request(query)
   );
   return toUSDTBalances(+results.protocolMetrics[0].totalValueLocked);
-}
+};
 
 async function tvl() {
-  return toUSDTBalances((await eth())  + (await treasury()) + (await bankLiquidity()));
-};
+  var endpoint = "https://beta.hector.finance/api/debank";
+  let { treasuryVal } = await retry(
+    async (bail) => await axios.get(endpoint)
+  ).then((res) => res.data);
+
+  return toUSDTBalances(treasuryVal);
+}
 async function borrowedTvl() {
   var endpoint =
     "https://api.thegraph.com/subgraphs/name/hectordao-hec/hector-dao";
@@ -120,5 +54,5 @@ module.exports = {
     tvl: tvl,
     staking: staking,
     borrowed: borrowedTvl,
-    },  
+  },
 };
