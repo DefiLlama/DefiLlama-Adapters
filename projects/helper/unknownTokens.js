@@ -282,6 +282,8 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
     const pairLength = (await sdk.api.abi.call({ target: factory, abi: factoryAbi.allPairsLength, chain, block })).output
     if (pairLength === null)
       throw new Error("allPairsLength() failed")
+    
+    if (DEBUG_MODE) console.log('No. of pairs: ', pairLength)
 
     const pairNums = Array.from(Array(Number(pairLength)).keys())
     let pairs = (await sdk.api.abi.multiCall({ abi: factoryAbi.allPairs, chain, calls: pairNums.map(num => ({ target: factory, params: [num] })), block, requery: true })).output
