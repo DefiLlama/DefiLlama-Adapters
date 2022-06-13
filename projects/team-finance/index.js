@@ -1,10 +1,9 @@
 const sdk = require("@defillama/sdk");
-const erc20 = require("../helper/abis/erc20.json");
-const { addTokensAndLPs } = require("../helper/unwrapLPs");
-const { ethereumContractData } = require("./config");
+const { ethereumContractData, polygonContractData } = require("./config");
 const BigNumber = require("bignumber.js");
+const { getTokensAndLPsTrackedValue } = require("../helper/teamFinance");
 
-function ethereumTvl(args) {
+function getTvl(args) {
   return async (timestamp, ethBlock, chainBlocks) => {
     let totalBalances = {}
     for (let i = 0; i < args.length; i++) {
@@ -14,7 +13,8 @@ function ethereumTvl(args) {
       const balances = {};
       const chain = args[i].chain
       const block = chainBlocks[chain]
-
+      const factory = args[i].factory
+      const trackedTokens = args[i].trackedTokens
       const totalDepositId = Number(
         (
           await sdk.api.abi.call({
@@ -25,7 +25,8 @@ function ethereumTvl(args) {
           })
         ).output
       );
-
+        
+      let lockedLPs = [];
       const allDepositId = Array.from(Array(totalDepositId).keys());
       const lpAllTokens = (
         await sdk.api.abi.multiCall({
@@ -37,37 +38,20 @@ function ethereumTvl(args) {
           chain: chain,
           block: block 
         })
-      ).output.map((lp) => (lp.output[0].toLowerCase())) 
+      ).output 
 
-      const lpFilterTokens = lpAllTokens.sort().filter(function (item, pos, ary) {
+      lpAllTokens.forEach(lp => {
+        if (lp.success) {
+          const lpToken = lp.output[0].toLowerCase()
+          lockedLPs.push(lpToken)
+        }
+      })  
+
+      const lpFilterTokens = lockedLPs.sort().filter(function (item, pos, ary) {
         return (!pos || item != ary[pos - 1]) && item != "0x0000000000000000000000000000000000000000";
       });
 
-      const lpTokens = lpFilterTokens.map((lp) => ({ output: lp.toLowerCase() }));
-      const amounts =
-        (
-          await sdk.api.abi.multiCall({
-            abi: erc20.balanceOf,
-            calls: lpTokens.map((lp) => ({
-              target: lp.output,
-              params: contractAddress,
-            })),
-            chain: chain,
-            block: block,
-          })
-        )
-
-      const transformAddress = addr => `${chain}:${addr}`;
-      const tokens = { output: lpTokens };
-
-      await addTokensAndLPs(
-        balances,
-        tokens,
-        amounts,
-        chainBlocks[chain],
-        chain,
-        transformAddress
-      );
+      await getTokensAndLPsTrackedValue(balances, lpFilterTokens, contractAddress, factory, trackedTokens, block, chain)
 
       for (const [token, balance] of Object.entries(balances)) {
         if (!totalBalances[token]) totalBalances[token] = '0'
@@ -81,7 +65,7 @@ function ethereumTvl(args) {
 module.exports = {
   methodology: '',
   ethereum: {
-    tvl: ethereumTvl(ethereumContractData),
+    tvl: getTvl(ethereumContractData),
   },
 };
 
