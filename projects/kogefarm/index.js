@@ -572,8 +572,6 @@ const kavaTvl = async (timestamp, block, chainBlocks) => {
   ).output.map((val) => val.output)
 
   vaults = vaults.map((e, idx) => ({ ...e, symbol: lp_symbols[idx] }))
-  console.log(vaults)
-  console.log(lp_symbols)
 
   const singlePositions = []
   const uniV2Positions = []
