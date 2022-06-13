@@ -12,7 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@defillama/sdk": "^2.3.75",
+    "@defillama/sdk": "^2.3.66",
     "@polkadot/api": "^8.0.0",
     "@project-serum/anchor": "^0.18.2",
     "@solana/spl-token": "^0.2.0",
@@ -25,7 +25,6 @@
     "blakejs": "^1.2.1",
     "borsh": "^0.7.0",
     "curve25519-js": "^0.0.4",
-    "defillama-adapters": "^0.0.1-security.9",
     "dotenv": "^8.6.0",
     "ethers": "^5.6.5",
     "graphql": "^15.5.0",
