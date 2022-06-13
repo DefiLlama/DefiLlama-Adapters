@@ -1,59 +1,29 @@
 const sdk = require("@defillama/sdk");
-const { request, gql } = require("graphql-request");
+const unipilotActiveFactory = '0x4b8e58d252ba251e044ec63125e83172eca5118f'
 
 const { getChainTransform } = require("../helper/portedTokens");
 const getPositionDetails = require("./abis/getPositionDetails.json");
-
-const GRAPH_URL = {
-  ethereum:
-    "https://api.thegraph.com/subgraphs/name/unipilotvoirstudio/stats-v2",
-};
-
-const vaultsQuery = gql`
-  {
-    vaults(first: 1000) {
-      id
-      token0 {
-        id
-      }
-      token1 {
-        id
-      }
-    }
-  }
-`;
 
 function protocolTvl(chain) {
   return async (timestamp, block, chainBlocks) => {
     const balances = {};
 
-    const res = await request(GRAPH_URL[chain], vaultsQuery);
-
-    const vaultAddresses = [];
-    const token0Addresses = [];
-    const token1Addresses = [];
-
-    for (let vault of res.vaults) {
-      token0Addresses.push(vault.token0.id.toLowerCase());
-      token1Addresses.push(vault.token1.id.toLowerCase());
-      vaultAddresses.push(vault.id.toLowerCase());
-    }
+    const vaultLogs = (await sdk.api.util.getLogs({
+      target: unipilotActiveFactory,
+      topic: 'VaultCreated(address,address,uint24,address)',
+      keys: [],
+      fromBlock: 14495907,
+      toBlock: block,
+    })).output;
 
     const vaults = {};
-    token0Addresses.forEach((token0Address, i) => {
-      const vaultAddress = vaultAddresses[i];
-      vaults[vaultAddress] = {
-        token0Address: token0Address,
-      };
-    });
 
-    token1Addresses.forEach((token1Address, i) => {
-      const vaultAddress = vaultAddresses[i];
-      vaults[vaultAddress] = {
-        ...(vaults[vaultAddress] || {}),
-        token1Address: token1Address,
-      };
-    });
+    for (let log of vaultLogs) {
+      vaults[`0x${log.topics[3].substr(-40)}`] = {
+        token0Address: `0x${log.topics[1].substr(-40)}`,
+        token1Address: `0x${log.topics[2].substr(-40)}`,
+      }
+    }
 
     const vaultCalls = [];
     const balanceCalls = [];
