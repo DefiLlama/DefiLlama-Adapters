@@ -1043,6 +1043,7 @@ async function transformEthereumAddress() {
     '0xb8c77482e45f1f44de1745f52c74426c631bdd52': 'bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // BNB
     '0xeb637a9ab6be83c7f8c79fdaa62e1043b65534f0': 'heco:0xcbd6cb9243d8e3381fea611ef023e17d1b7aedf0',  // BXH
     '0x18a1ea69a50a85752b7bc204a2c45a95ce6e429d': 'avax:0xf30c5083a1479865c9a8916dec6ddadd82e8907b', // SPICE
+    '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee': '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', // ETH -> WETH
   }
   normalizeMapping(mapping)
 
