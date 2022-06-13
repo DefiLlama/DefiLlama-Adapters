@@ -644,8 +644,6 @@ const kavaTvl = async (timestamp, block, chainBlocks) => {
   const fixBalances = await getFixBalances('kava')
   fixBalances(balances)
 
-  console.log(balances)
-
   await unwrapCrvLPs(
     balances,
     crvPositions,
