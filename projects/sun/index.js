@@ -31,6 +31,12 @@ const pools = [
     pool: 'TB6zgiG14iQkNxqU4mYe7cMiS5aCYfyidL', stablecoins: [
       ["TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8", "usd-coin"], // USDC
     ]
+  },
+  {
+    pool: 'TNTfaTpkdd4AQDeqr8SGG7tgdkdjdhbP5c', stablecoins: [  // new USDD 2pool
+      ["TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn", "usdd"], // USDD
+      ["TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t", "tether"], // USDT
+    ]
   }
 ]
 
