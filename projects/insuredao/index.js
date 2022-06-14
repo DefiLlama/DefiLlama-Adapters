@@ -1,5 +1,6 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
+const { sumTokens, sumTokensAndLPs, unwrapCrv, unwrapUniswapLPs, genericUnwrapCvx, } = require('../helper/unwrapLPs');
 
 const chain = "ethereum";
 
@@ -11,6 +12,9 @@ const insure = "0xd83AE04c9eD29d6D3E6Bf720C71bc7BeB424393E";
 const Vault = "0x131fb74c6fede6d6710ff224e07ce0ed8123f144";
 const VotingEscrow = "0x3dc07E60ecB3d064d20c386217ceeF8e3905916b";
 const vlINSURE = "0xA12ab76a82D118e33682AcB242180B4cc0d19E29";
+
+const uni = "0x1b459aec393d604ae6468ae3f7d7422efa2af1ca";
+const uniStaking = "0xf57882cf186db61691873d33e3511a40c3c7e4da";
 
 
 async function tvl(timestamp, block) {
@@ -66,9 +70,19 @@ async function staking(timestamp, block) {
   return balances;
 }
 
+
+async function pool2(timestamp, block) {
+  const balances = {}
+  await sumTokensAndLPs(balances, [
+    [uni, uniStaking, true]
+  ], block)
+  return balances
+}
+
 module.exports = {
   ethereum: {
     tvl: tvl,
     staking: staking,
+    pool2: pool2,
   },
 };
