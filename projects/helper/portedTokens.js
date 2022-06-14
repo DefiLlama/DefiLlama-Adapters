@@ -877,12 +877,18 @@ function fixTezosBalances(balances) {
     'KT1JkoE42rrMBP9b2oDhbx6EUr26GcySZMUH': { coingeckoId: 'kolibri-dao', decimals: 18, },
     'KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-19': { coingeckoId: 'wrapped-bitcoin', decimals: 8, },
     'KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-17': { coingeckoId: 'usd-coin', decimals: 6, },
+    'KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-1': { coingeckoId: 'binance-usd', decimals: 18, },
+    'KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-20': { coingeckoId: 'ethereum', decimals: 18, },
+    'KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-5': { coingeckoId: 'dai', decimals: 18, },
+    'KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ': { coingeckoId: 'aave', decimals: 18, },
+    'KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-18': { coingeckoId: 'tether', decimals: 6, },
     'KT1K9gCRgaLRFKTErYt1wVxA3Frb9FjasjTV': { coingeckoId: 'kolibri-usd', decimals: 18, },
     'KT1LN4LPSqTMS7Sd2CJw4bbDGRkMv2t68Fy9': { coingeckoId: 'usdtez', decimals: 6, },
     'KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW': { coingeckoId: 'youves-uusd', decimals: 12, },
     // 'KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW-1': { coingeckoId: 'youves-you-defi', decimals: 12, },  //uDEFI token - update gecko id here after adding in coin geckp
     'KT1Xobej4mc6XgEjDoJoHtTKgbD1ELMvcQuL': { coingeckoId: 'youves-you-governance', decimals: 12, },
     'KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW-2': { coingeckoId: 'wrapped-bitcoin', decimals: 12, }, // youves BTC
+    'KT1UsSfaXyqcjSVPeiD7U1bWgKy3taYN7NWY': { coingeckoId: 'ethereum', decimals: 18, }, // plenty bridge
     'KT1UsSfaXyqcjSVPeiD7U1bWgKy3taYN7NWY-0': { coingeckoId: 'ethereum', decimals: 18, }, // plenty bridge
     'KT1UsSfaXyqcjSVPeiD7U1bWgKy3taYN7NWY-1': { coingeckoId: 'wrapped-bitcoin', decimals: 8, }, // plenty bridge
     'KT1UsSfaXyqcjSVPeiD7U1bWgKy3taYN7NWY-2': { coingeckoId: 'usd-coin', decimals: 6, }, // plenty bridge
@@ -1056,6 +1062,7 @@ async function transformEthereumAddress() {
     '0xb8c77482e45f1f44de1745f52c74426c631bdd52': 'bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // BNB
     '0xeb637a9ab6be83c7f8c79fdaa62e1043b65534f0': 'heco:0xcbd6cb9243d8e3381fea611ef023e17d1b7aedf0',  // BXH
     '0x18a1ea69a50a85752b7bc204a2c45a95ce6e429d': 'avax:0xf30c5083a1479865c9a8916dec6ddadd82e8907b', // SPICE
+    '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee': '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', // ETH -> WETH
     '0x18084fbA666a33d37592fA2633fD49a74DD93a88': '0x8dAEBADE922dF735c38C80C7eBD708Af50815fAa', //tBTC
     '0xef779cf3d260dbe6177b30ff08b10db591a6dd9c': '0x0000000000085d4780B73119b644AE5ecd22b376', // kUSD
     '0x42ef9077d8e79689799673ae588e046f8832cb95': '0x0000000000085d4780B73119b644AE5ecd22b376', //fUSD 

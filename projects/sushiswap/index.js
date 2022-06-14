@@ -24,6 +24,11 @@ kashi_chains.forEach(chain => {
 // Fantom: use a more precise method correctly unwrapping wrapped assets
 modulesToExport['fantom'].tvl = sdk.util.sumChainTvls([getExports("sushi", ['fantom'])['fantom'].tvl, kashiLendingFantom])
 // modulesToExport.ethereum.tvl = async (timestamp, block, chainBlocks) => getExports("sushi", ['ethereum']).ethereum.tvl() + kashiLending(timestamp, block, chainBlocks)
+modulesToExport['harmony'].tvl = async (...params) => {
+    const balances = await getExports("sushi", ['harmony'])['harmony'].tvl(...params)
+    delete balances["harmony:0xed0b4b0f0e2c17646682fc98ace09feb99af3ade"]
+    return balances
+}
 
 module.exports = {
     timetravel: false,
