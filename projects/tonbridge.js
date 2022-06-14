@@ -55,5 +55,17 @@ module.exports = {
     },
     ethereum: {
         tvl: evm('ethereum', '0x29d578CEc46B50Fa5C88a99C6A4B70184C062953')
-    }
+    },
+    avalanche: {
+        tvl: evm('avax', '0x1ffefd8036409cb6d652bd610de465933b226917')
+    },
+    milkomeda: {
+        tvl: evm('milkomeda', '0x1ffEFD8036409Cb6d652bd610DE465933b226917')
+    },
+    polygon: {
+        tvl: evm('polygon', '0x1ffEFD8036409Cb6d652bd610DE465933b226917')
+    },
+    fantom: {
+        tvl: evm('fantom', '0x1ffEFD8036409Cb6d652bd610DE465933b226917')
+    },
 };

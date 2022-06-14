@@ -1,5 +1,5 @@
 const BigNumber = require('bignumber.js');
-const { ZERO, getVautsTvl, createWeb3 } = require('../../../helper/ankr/utils');
+const { ZERO, getVautsTvl, } = require('../../../helper/ankr/utils');
 const { vaults } = require('./vaults');
 const { request, gql } = require("graphql-request");
 
@@ -29,11 +29,11 @@ const getPairsData = async (pairAddress) => {
 };
 
 const getTraderJoePoolPrice = async (vault) => {
-  if (!vault.contract.address) {
+  if (!vault.pool) {
     return ZERO;
   }
 
-  const data = await getPairsData(vault.contract.address);
+  const data = await getPairsData(vault.pool);
   const { reserveUSD, totalSupply } = data;
 
   return reserveUSD && totalSupply ? new BigNumber(reserveUSD).div(totalSupply).div(1e18) : ZERO;

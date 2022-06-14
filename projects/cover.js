@@ -1,36 +1,36 @@
-const web3 = require('./config/web3.js');
-const retry = require('./helper/retry')
-const axios = require("axios");
+const sdk = require("@defillama/sdk");
 const abis = require('./config/cover/cover.js')
-const utils = require('./helper/utils');
+const { sumTokens } = require('./helper/unwrapLPs');
 
-async function fetch() {
+async function tvl(ts, block) {
 
-    let factory = '0xedfC81Bf63527337cD2193925f9C0cF2D537AccA';
-    let dacontract = new web3.eth.Contract(abis.abis.protocols, factory)
-    let allProtocols = await dacontract.methods.getAllProtocolAddresses().call();
+  let factory = '0xedfC81Bf63527337cD2193925f9C0cF2D537AccA';
+  const { output: allProtocols } = await sdk.api.abi.call({
+    block,
+    target: factory,
+    abi: abis.abis.protocols.find(i => i.name === 'getAllProtocolAddresses')
+  })
 
-    let tvl = 0;
-    await Promise.all(
-      allProtocols.map(async (protocol) => {
-        let dacontract = new web3.eth.Contract(abis.abis.cover, protocol)
-        let protocolDetails = await dacontract.methods.getProtocolDetails().call();
-        await Promise.all(
-          protocolDetails._allCovers.map(async cover => {
-            let coverBalance = await utils.returnBalance('0x6b175474e89094c44da98b954eedeac495271d0f', cover)
-            let coverBalanceYdai = await utils.returnBalance('0x16de59092dAE5CcF4A1E6439D611fd0653f0Bd01', cover)
-            tvl += coverBalanceYdai
-            tvl += coverBalance
-          })
-        )
-      })
-    )
+  const calls = allProtocols.map(p => ({ target: p }))
+  const { output: protocolDetails } = await sdk.api.abi.multiCall({
+    block,
+    calls,
+    abi: abis.abis.cover.find(i => i.name === 'getProtocolDetails')
+  })
+  const toa = []
 
-    return tvl;
-
+  protocolDetails.forEach(({ output }) => {
+    output._allCovers.forEach(cover => toa.push(
+      ['0x6b175474e89094c44da98b954eedeac495271d0f', cover],  // DAI
+      ['0x16de59092dAE5CcF4A1E6439D611fd0653f0Bd01', cover],  // yearn DAI
+    ))
+  })
+  return sumTokens({}, toa, block, undefined, undefined, { resolveYearn: true })
 }
 
 
 module.exports = {
-  fetch
+  ethereum: {
+    tvl
+  }
 }

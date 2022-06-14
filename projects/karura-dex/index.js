@@ -1,5 +1,4 @@
 const { ApiPromise, WsProvider } = require("@polkadot/api");
-const { options } = require("@acala-network/api");
 const lksmToKsm = require("../karura-staking/lksmToKsm.js");
 // node test.js projects/karura-dex/index.js
 function formatTokenAmount(amount, tokenSymbol) {
@@ -30,7 +29,7 @@ const tokenToCoingecko = {
 
 async function tvl() {
   const provider = new WsProvider("wss://karura-rpc-1.aca-api.network");
-  const api = await ApiPromise.create(options({ provider }));
+  const api = await ApiPromise.create(({ provider }));
 
   // Get all of the entries of this storage.
   const pools = await api.query.dex.liquidityPool.entries();
@@ -79,6 +78,7 @@ async function tvl() {
 }
 
 module.exports = {
+  timetravel: false,
   methodology: "Counts all liquidity on DEX pools. KUSD is counted as USDT",
-  kusuma: { tvl },
+  karura: { tvl },
 };

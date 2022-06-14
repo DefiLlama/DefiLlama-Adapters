@@ -1,9 +1,8 @@
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
-const { unwrapCrv, unwrapUniswapLPs } = require("../helper/unwrapLPs");
+const { unwrapCrv, unwrapUniswapLPs, unwrapYearn } = require("../helper/unwrapLPs");
 const { abi } = require("../yaxis/abi.js");
 const constants = require("../yaxis/constants.js");
-const { eth } = require('../helper/alchemixHelper.js')
 
 async function tvl(timestamp, block) {
   const balances = {};
@@ -154,20 +153,19 @@ async function staking(time, block){
 }
 async function convertALETHtoETH(block, balances) {
   const alETH = '0x0100546F2cD4C9D97f798fFC9755E47865FF7Ee6'
-  const ETH = '0x0000000000000000000000000000000000000000'
+  const yvWETH = '0xa258C4606Ca8206D8aA700cE2143D7db854D168c'
   const [alETHSupply, alETHLocked] = await Promise.all([
     sdk.api.erc20.totalSupply({
       target: alETH,
       block,
     }),
-    eth()
+    sdk.api.erc20.balanceOf({
+      target: yvWETH,
+      owner: '0x546E6711032Ec744A7708D4b7b283A210a85B3BC'
+    })
   ])
-  sdk.util.sumSingleBalance(
-    balances,
-    ETH,
-    (balances[alETH] * alETHSupply.output / alETHLocked * 10 ** -18).toLocaleString('fullwide', { useGrouping: false })
-  );
-  delete balances[alETH]
+  sdk.util.sumSingleBalance(balances, yvWETH, balances[alETH] * alETHLocked / alETHSupply)
+  unwrapYearn(balances, yvWETH, block)
 }
 module.exports = {
   doublecounted: true,

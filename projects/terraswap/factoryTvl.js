@@ -6,27 +6,27 @@ function getAssetInfo(asset) {
     return [asset.info.native_token?.denom ?? asset.info.token?.contract_addr, Number(asset.amount)]
 }
 
-async function getAllPairs(factory, block) {
+async function getAllPairs(factory, block, phoenix) {
     let allPairs = []
     let currentPairs;
     do {
         currentPairs = (await query(`contracts/${factory}/store?query_msg={"pairs":{"limit":30${allPairs.length === 0 ? "" : `,"start_after":${JSON.stringify(allPairs[allPairs.length - 1].asset_infos)}`
-            }}}`, block)).pairs
+            }}}`, block, phoenix)).pairs
         allPairs = [...allPairs, ...currentPairs];
     } while (currentPairs.length > 0)
     return allPairs.map(pair => pair.contract_addr)
 }
 
-function getFactoryTvl(factory) {
+function getFactoryTvl(factory, phoenix = false) {
     return async (timestamp, ethBlock, chainBlocks) => {
-        const block = await getBlock(timestamp, "terra", chainBlocks, true)
-        const pairs = await getAllPairs(factory, block)
+        const block = await getBlock(timestamp, phoenix ? "terra2" : "terra", chainBlocks, true)
+        const pairs = await getAllPairs(factory, block, phoenix)
 
         let ustTvl = 0;
         const balances = {}
         const prices = {}
         const addPairToTVL = async (pair, index) => {
-            const { assets } = await query(`contracts/${pair}/store?query_msg={"pool":{}}`, block)
+            const { assets } = await query(`contracts/${pair}/store?query_msg={"pool":{}}`, block, phoenix)
             const [token0, amount0] = getAssetInfo(assets[0])
             const [token1, amount1] = getAssetInfo(assets[1])
             if (token0 === "uusd") {
