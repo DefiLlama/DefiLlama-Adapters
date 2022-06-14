@@ -3,7 +3,6 @@
   ==================================================*/
   const sdk = require("@defillama/sdk");
   const BigNumber = require("bignumber.js");
-  const _ = require("underscore");
   const { requery } = require("../helper/requery");
   
   /*** Astar Addresses ***/
