@@ -1,8 +1,7 @@
 {
     "ethereum": {
         "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
-        "metapoolFactory": "0xB9fC157394Af804a3578134A6585C0dc9cc990d4",
-        "gasTokenDummy": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+        "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
         "CRV": "0xd533a949740bb3306d119cc777fa900ba034cd52",
         "veCRV": "0x5f3b5dfeb7b28cdbd7faba78963ee202a494e2a2",
         "wrapped": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
@@ -28,8 +27,7 @@
     },
     "polygon": {
         "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
-        "metapoolFactory": "0x722272D36ef0Da72FF51c5A65Db7b870E2e8D4ee",
-        "gasTokenDummy": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+        "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
         "wrapped": "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
         "metapoolBases": {
             "am3CRV": "0x19793b454d3afc7b454f206ffe95ade26ca6912c",
@@ -38,8 +36,7 @@
     },
     "arbitrum": {
         "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
-        "metapoolFactory": "0xb17b674d9c5cb2e441f8e196a2f048a81355d031",
-        "gasTokenDummy": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+        "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
         "wrapped": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
         "metapoolBases": {
             "2CRV": "0xbf7e49483881c76487b0989cd7d9a8239b20ca41"
@@ -47,7 +44,7 @@
     },
     "aurora": {
         "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
-        "gasTokenDummy": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+        "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
         "wrapped": "0xc9bdeed33cd01541e1eed10f90519d2c06fe3feb",
         "metapoolBases": {
             "3CRV": "0xbf7e49483881c76487b0989cd7d9a8239b20ca41"
@@ -55,8 +52,7 @@
     },
     "avax": {
         "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
-        "metapoolFactory": "0xb17b674D9c5CB2e441F8e196a2f048A81355d031",
-        "gasTokenDummy": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+        "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
         "wrapped": "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
         "metapoolBases": {
             "av3CRV": "0xb0d2eb3c2ca3c6916fab8dcbf9d9c165649231ae"
@@ -64,17 +60,25 @@
     },
     "fantom": {
         "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
-        "metapoolFactory": "0x686d67265703d1f124c45e33d47d794c566889ba",
-        "gasTokenDummy": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+        "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
         "wrapped": "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
         "metapoolBases": {
             "2CRV": "0x27e611fd27b276acbd5ffd632e5eaebec9761e40",
             "g3CRV": "0xd4f94d0aaa640bbb72b5eec2d85f6d114d81a88e"
+        },
+        "creamTokens": {
+            "iDAI": "0x04c762a5df2fa02fe868f25359e0c259fb811cfe",
+            "iUSDC": "0x328a7b4d538a2b3942653a9983fda3c12c571141",
+            "iFUSDT": "0x70fac71debfd67394d1278d98a29dea79dc6e57a",
+            "scUSDC": "0xe45ac34e528907d0a0239ab5db507688070b20bf",
+            "scDAI": "0x8d9aed9882b4953a0c9fa920168fa1fdfa0ebe75",
+            "scFUSDT": "0x02224765bc8d54c21bb51b0951c80315e1c263f9",
+            "scMIM": "0x90b7c21be43855afd2515675fc307c084427404f"
         }
     },
     "harmony": {
         "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
-        "gasTokenDummy": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+        "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
         "wrapped": "0xcf664087a5bb0237a0bad6742852ec6c8d69a27a",
         "metapoolBases": {
             "3CRV": "0xc5cfada84e902ad92dd40194f0883ad49639b023"
@@ -82,8 +86,7 @@
     },
     "optimism": {
         "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
-        "metapoolFactory": "0x2db0e83599a91b508ac268a6197b8b14f5e72840",
-        "gasTokenDummy": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+        "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
         "wrapped": "0x4200000000000000000000000000000000000006",
         "metapoolBases": {
             "3CRV": "0x061b87122ed14b9526a813209c8a59a633257bab"
@@ -91,8 +94,7 @@
     },
     "xdai": {
         "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
-        "metapoolFactory": "0xd19baeadc667cf2015e395f2b08668ef120f41f5",
-        "gasTokenDummy": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+        "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
         "wrapped": "0xe91d153e0b41518a2ce8dd3d7944fa863463a97d",
         "metapoolBases": {
             "3CRV": "0x1337bedc9d22ecbe766df105c9623922a27963ec"
@@ -100,8 +102,7 @@
     },
     "moonbeam": {
         "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
-        "metapoolFactory": "0x686d67265703d1f124c45e33d47d794c566889ba",
-        "gasTokenDummy": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+        "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
         "wrapped": "0x4244eb811d6e0ef302326675207a95113db4e1f8",
         "metapoolBases": {
 

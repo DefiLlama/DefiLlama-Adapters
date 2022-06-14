@@ -27,7 +27,12 @@ async function transformFantomAddress() {
     "0x0665ef3556520b21368754fb644ed3ebf1993ad4": "0x6c3f90f043a72fa612cbac8115ee7e52bde6e490",
     // update below to binspirit when it lists on coingecko
     "0x7345a537a975d9ca588ee631befddfef34fd5e8f": "fantom:0x5Cc61A78F164885776AA610fb0FE1257df78E59B",
-    "0xDBf31dF14B66535aF65AaC99C32e9eA844e14501": "0xeb4c2781e4eba804ce9a9803c67d0893436bb27d", // RenBTC
+    "0xdbf31df14b66535af65aac99c32e9ea844e14501": "0xeb4c2781e4eba804ce9a9803c67d0893436bb27d", // RenBTC
+    "0x4a89338a2079a01edbf5027330eac10b615024e5": "fantom:0xad84341756bf337f5a0164515b1f6f993d194e1f", // USDL
+    "0xc0d9784fdba39746919bbf236eb73bc015fd351d": "fantom:0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83", // FTML
+    "0xe3a486c1903ea794eed5d5fa0c9473c7d7708f40": "fantom:0xad84341756bf337f5a0164515b1f6f993d194e1f", // cUSD (revenent finance)
+    "0x02a2b736f9150d36c0919f3acee8ba2a92fbbb40": "0x1a7e4e63778b4f12a199c062f3efdd288afcbce8", // agEUR
+    "0x1b6382dbdea11d97f24495c9a90b7c88469134a4": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // axUSDC
   }
 
   normalizeMapping(mapping)
@@ -204,6 +209,7 @@ async function transformPolygonAddress() {
       return tokenMap;
     }, {});
   const mapping = {
+    '0x60d01ec2d5e98ac51c8b4cf84dfcce98d527c747': '0x9ad37205d608b8b219e6a2573f922094cec5c200',  // IZI
     '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee': '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0',  // 
     // '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270': '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0',  // WMATIC
     '0x0000000000000000000000000000000000000000': '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0',  // 
@@ -214,6 +220,7 @@ async function transformPolygonAddress() {
     '0xf04d3a8eb17b832fbebf43610e94bdc4fd5cf2dd': '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',  // sBUSD(Polygon) -> BUSD(BSC)
     '0x8eb3771a43a8c45aabe6d61ed709ece652281dc9': 'avax:0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664',  // sUSDC.e(Polygon) -> USDC.e(Avalanche)
     '0x613a489785c95afeb3b404cc41565ccff107b6e0': '0x7a5d3A9Dcd33cb8D527f7b5F96EB4Fef43d55636',  // radioshack
+    '0x1ddcaa4ed761428ae348befc6718bcb12e63bfaa': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // deUSDC
   }
   normalizeMapping(mapping)
 
@@ -967,6 +974,17 @@ const energiFixMapping = {
   '0xa55f26319462355474a9f2c8790860776a329aa4': { coingeckoId: 'energi', decimals: 18, },
 }
 
+const ethereumFixMapping = {
+  '0xf6b1c627e95bfc3c1b4c9b825a032ff0fbf3e07d': { coingeckoId: 'jpyc', decimals: 18, },
+  '0x97fe22e7341a0cd8db6f6c021a24dc8f4dad855f': { coingeckoId: 'jarvis-synthetic-british-pound', decimals: 18, },
+  '0x0f83287ff768d1c1e17a42f44d644d7f22e8ee1d': { coingeckoId: 'upper-swiss-franc', decimals: 18, },
+  '0x9fcf418b971134625cdf38448b949c8640971671': { coingeckoId: 'tether-eurt', decimals: 18, },
+  '0x8751d4196027d4e6da63716fa7786b5174f04c15': { coingeckoId: 'wrapped-bitcoin', decimals: 18, },
+  '0x0f83287ff768d1c1e17a42f44d644d7f22e8ee1d': { coingeckoId: 'upper-swiss-franc', decimals: 18, },
+  '0x0f83287ff768d1c1e17a42f44d644d7f22e8ee1d': { coingeckoId: 'upper-swiss-franc', decimals: 18, },
+  '0x0f83287ff768d1c1e17a42f44d644d7f22e8ee1d': { coingeckoId: 'upper-swiss-franc', decimals: 18, },
+  '0x0f83287ff768d1c1e17a42f44d644d7f22e8ee1d': { coingeckoId: 'upper-swiss-franc', decimals: 18, },
+}
 
 const fixBalancesMapping = {
   avax: fixAvaxBalances,
@@ -989,6 +1007,7 @@ const fixBalancesMapping = {
   syscoin: b => fixBalances(b, syscoinFixMapping, { removeUnmapped: true }),
   syscoin: b => fixBalances(b, syscoinFixMapping, { removeUnmapped: false }),
   kava: b => fixBalances(b, kavaFixMapping, { removeUnmapped: false }),
+  ethereum: b => fixBalances(b, ethereumFixMapping, { removeUnmapped: false }),
 }
 
 const chainTransforms = {
@@ -1044,6 +1063,23 @@ async function transformEthereumAddress() {
     '0xeb637a9ab6be83c7f8c79fdaa62e1043b65534f0': 'heco:0xcbd6cb9243d8e3381fea611ef023e17d1b7aedf0',  // BXH
     '0x18a1ea69a50a85752b7bc204a2c45a95ce6e429d': 'avax:0xf30c5083a1479865c9a8916dec6ddadd82e8907b', // SPICE
     '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee': '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', // ETH -> WETH
+    '0x18084fbA666a33d37592fA2633fD49a74DD93a88': '0x8dAEBADE922dF735c38C80C7eBD708Af50815fAa', //tBTC
+    '0xef779cf3d260dbe6177b30ff08b10db591a6dd9c': '0x0000000000085d4780B73119b644AE5ecd22b376', // kUSD
+    '0x42ef9077d8e79689799673ae588e046f8832cb95': '0x0000000000085d4780B73119b644AE5ecd22b376', //fUSD 
+    '0x99534ef705df1fff4e4bd7bbaaf9b0dff038ebfe': '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0', // aMATICb
+    '0xd3d13a578a53685b4ac36a1bab31912d2b2a2f36': '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', // tWETH
+    '0x94671a3cee8c7a12ea72602978d1bb84e920efb2': '0x853d955aCEf822Db058eb8505911ED77F175b99e', // tFRAX
+    '0x2fc6e9c1b2c07e18632efe51879415a580ad22e1': '0x6bea7cfef803d1e3d5f7c0103f7ded065644e197', // tGAMMA
+    '0xeff721eae19885e17f5b80187d6527aad3ffc8de': '0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f', // tSNX
+    '0xdc0b02849bb8e0f126a216a2840275da829709b0': '0x4104b135dbc9609fc1a9490e61369036497660c8', // tAPW
+    '0x15a629f0665a3eb97d7ae9a7ce7abf73aeb79415': '0x9C4A4204B79dd291D6b6571C5BE8BbcD0622F050', // tTCR
+    '0x808d3e6b23516967ceae4f17a5f9038383ed5311': '0xc770EEfAd204B5180dF6a14Ee197D99d808ee52d', // tFOX
+    '0xf49764c9c5d644ece6ae2d18ffd9f1e902629777': '0x6B3595068778DD592e39A122f4f5a5cF09C90fE2', // tSUSHI
+    '0xd3b5d9a561c293fb42b446fe7e237daa9bf9aa84': '0xdBdb4d16EdA451D0503b854CF79D55697F90c8DF', // tALCX
+    '0xadf15ec41689fc5b6dca0db7c53c9bfe7981e655': '0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0', // tFXS
+    '0xc7d9c108d4e1dd1484d3e2568d7f74bfd763d356': '0x0000000000085d4780B73119b644AE5ecd22b376',  // XSTUSD
+    '0x65f7ba4ec257af7c55fd5854e5f6356bbd0fb8ec': '0x92d6c1e31e14520e676a687f0a93788b716beff5', // sDYDX
+    '0x586aa273f262909eef8fa02d90ab65f5015e0516': '0x0000000000085d4780B73119b644AE5ecd22b376', // FIAT
   }
   normalizeMapping(mapping)
 
