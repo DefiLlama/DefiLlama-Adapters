@@ -56,7 +56,7 @@
       [JPYC]: "0x2370f9d504c7a6e775bf6e14b3f12846b594cd53",
       [WBTC]: "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
       [WETH]: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-      [WBNB]: "0xB8c77482e45F1F44dE1745F52C74426C631bDD52"
+      [WBNB]: "0x418d75f65a02b3d53b2418fb8e1fe493759c7605"
   }
   
   /*==================================================
