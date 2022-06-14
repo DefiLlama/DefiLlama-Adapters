@@ -81,8 +81,6 @@ async function staking(_, _b, { [chain]: block }) {
   return (await getAllTVL(block)).staking
 }
 
-
-
 module.exports = {
   cronos: {
     tvl,

@@ -234,6 +234,10 @@ async function getTokenPrices({
 
 
   function addBalances(balances, finalBalances, { skipConversion = false, pairAddress, ratio = 1 }) {
+    if (ratio > 1) {
+      console.log(`There is bug in the code. Pair address: ${pairAddress}, ratio: ${ratio}`)
+      ratio = 1
+    }
     Object.entries(balances).forEach(([address, amount = 0]) => {
       const price = prices[address];
       // const price =  undefined; // NOTE: this is disabled till, we add a safeguard to limit LP manipulation to inflate token price, like mimimum core asset liquidity to be 10k
