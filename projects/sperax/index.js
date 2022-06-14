@@ -1,6 +1,10 @@
 const sdk = require("@defillama/sdk");
 const abi = require("../sperax/abi.json");
 const BigNumber = require("bignumber.js");
+const { staking } = require("../helper/staking.js");
+
+const ethStakingAddr = "0xbF82a3212e13b2d407D10f5107b5C8404dE7F403";
+const arbStakingAddr = "0x2e2071180682Ce6C247B1eF93d382D509F5F6A17";
 
 const vaultcore = '0xF783DD830A4650D2A8594423F123250652340E3f'
 const collateralTokens = [
@@ -13,6 +17,7 @@ const strategyArr = [
 ]
 
 const SPA = '0x5575552988a3a80504bbaeb1311674fcfd40ad4b'
+const ethSPA = '0xB4A3B0Faf0Ab53df58001804DdA5Bfc6a3D59008'
 
 async function tvl (timestamp, ethBlock, chainBlocks) {
   const chain = 'arbitrum'
@@ -54,7 +59,12 @@ async function tvl (timestamp, ethBlock, chainBlocks) {
 
 module.exports = {
   arbitrum: {
-    tvl
+    tvl,
+    staking: staking(arbStakingAddr,SPA,"arbitrum",`arbitrum:${SPA}`)
   },
-  methodology: 'Counts as TVL all collateral - USDC, USDT at the moment - provided as collateral along SPA to mint USDs, stored in the vaultcore contract.'
-}
+  ethereum: {
+    tvl: ()=>({}),
+    staking: staking(ethStakingAddr,ethSPA)
+  },
+    methodology: 'Counts all collaterals - USDC, USDT at the moment - locked to mint USDs. These collaterals are either stored in VaultCore contract of USDs protocol, or deposited into Curve’s USDC-USDT pool. Some TVL are classified as staking. This component of TVL consists of all SPA locked in Sperax’s veSPA protocol.'
+};

@@ -8,7 +8,7 @@ const tokenHolderMap = [
     {
       tokens: [],
       holders: [
-        "0xDF3E96a5d4A0C9AEf5F15C642Eb736E2A2f49630" // BNB table
+        "0x45218EDE6f026F0994C55b6Fa3554A8Ea989f819" // BNB table
       ],
       checkETHBalance: true,
     },

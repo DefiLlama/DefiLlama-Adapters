@@ -67,6 +67,7 @@ async function staking(timestamp, ethBlock, { terra: block }) {
   const pAssets = assets.map(({ balance, denom: { cw20, native }, price }) => {
     const token = cw20 || native
     if (!STAKING_TOKENS.includes(token)) return;
+    console.log(token, balance, price)
     return sumSingleBalance(balances, token, balance, price)
   })
 

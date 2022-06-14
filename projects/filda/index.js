@@ -1,4 +1,4 @@
-const _ = require('underscore');
+
 const sdk = require('@defillama/sdk');
 const abi = require('./abi.json');
 const { getBlock } = require('../helper/getBlock')
@@ -83,7 +83,7 @@ function lending(borrowed) {
 
     let v2Locked = await sdk.api.abi.multiCall({
       block,
-      calls: _.map(markets, (market) => ({
+      calls: markets.map((market) => ({
         target: market.cToken,
       })),
       chain: 'heco',
@@ -92,7 +92,7 @@ function lending(borrowed) {
 
     const symbols = await sdk.api.abi.multiCall({
       block,
-      calls: _.map(markets, (market) => ({
+      calls: markets.map((market) => ({
         target: market.cToken,
       })),
       chain: 'heco',
@@ -100,9 +100,9 @@ function lending(borrowed) {
     });
 
     const lps = []
-    _.each(markets, (market, idx) => {
-      let getCash = _.find(v2Locked.output, (result) => result.input.target === market.cToken);
-      const symbol = _.find(symbols.output, (result) => result.input.target === market.cToken);
+    markets.forEach((market, idx) => {
+      let getCash = v2Locked.output.find((result) => result.input.target === market.cToken);
+      const symbol = symbols.output.find((result) => result.input.target === market.cToken);
       if (getCash.output === null) {
         throw new Error("getCash failed")
       }

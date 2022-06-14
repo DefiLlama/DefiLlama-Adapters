@@ -1,0 +1,14 @@
+const addresses = {
+  boba: {
+    treasury: "0x559dBda9Eb1E02c0235E245D9B175eb8DcC08398",
+    staking: "0xD3535a7797F921cbCD275d746A4EFb1fBba0989F",
+    KYO: "0x618CC6549ddf12de637d46CDDadaFC0C2951131C",
+    BOBA: "0xa18bF3994C0Cc6E3b63ac420308E5383f53120D7",
+    FRAX: "0x7562F525106F5d54E891e005867Bf489B5988CD9",
+    FRAX_KYO: "0xde7C350fA84B7fe792bfAA241303aeF04283c9d2",
+  },
+};
+
+module.exports = {
+  addresses,
+};

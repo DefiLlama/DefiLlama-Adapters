@@ -5,7 +5,7 @@ async function fetch() {
   let tvl = tvl_feed.data.tvlLending.totalUsd + tvl_feed.data.tvlAmm.totalUsd + tvl_feed.data.tvlProtocol.totalUsd + tvl_feed.data.tvlSubprotocols.totalUsd;
   return tvl;
 }
-fetch().then(console.log)
+
 module.exports = {
   fetch
 }
