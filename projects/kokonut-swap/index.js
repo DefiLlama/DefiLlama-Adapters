@@ -1,4 +1,5 @@
 const abi = require("./abi.json");
+const kip7 = require("./kip7.json");
 const sdk = require("@defillama/sdk");
 const { requery } = require('../helper/requery.js');
 
@@ -34,9 +35,15 @@ async function tvl(timestamp, block, chainBlocks) {
   for (let i = 0; i < info.output.length; i++) {
     if (!info.output[i].success) continue;
     const poolInfo = info.output[i].output;
-
     for (let j = 0; j < poolInfo.tokens.length; j++) {
-      const balance = poolInfo.prices[j] * poolInfo.balances[j] / 10 ** 36;
+      const decimal = poolInfo.tokens[j]==`0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE`?18:
+        (await sdk.api.abi.call({
+        target: poolInfo.tokens[j],
+        abi: kip7.decimals,
+        block: chainBlocks[chain],
+        chain
+      })).output;
+      const balance = poolInfo.prices[j] / 10**(18) * poolInfo.balances[j] / 10**(decimal);
       sdk.util.sumSingleBalance(balances, 'usd-coin', balance);
     };
   };
@@ -63,5 +70,5 @@ module.exports = {
     tvl
   },
   methodology:
-    "tvl is calculated using the total value of protocol's liquidity pool. Staked tokens include staked EYE values. Pool2 includes staked lp tokens eligible for EYE emissions"
+    "tvl is calculated using the total value of protocol's liquidity pool. Staked tokens include staked EYE values. Pool2 includes staked lp tokens eligible for KOKOS emissions"
 };
