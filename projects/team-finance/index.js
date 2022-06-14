@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const { ethereumContractData, polygonContractData } = require("./config");
+const { ethereumContractData, polygonContractData, avaxContractData, bscContractData } = require("./config");
 const BigNumber = require("bignumber.js");
 const { getTokensAndLPsTrackedValue } = require("../helper/teamFinance");
 
@@ -63,9 +63,20 @@ function getTvl(args) {
 };
 
 module.exports = {
-  methodology: '',
+  methodology: `Counts each LP pair's native token and 
+  stable balance, adjusted to reflect locked pair's value. 
+  Balances and merged across multiple locker to return sum TVL per chain`,
   ethereum: {
     tvl: getTvl(ethereumContractData),
+  },
+  bsc: {
+    tvl: getTvl(bscContractData),
+  },
+  polygon: {
+    tvl: getTvl(polygonContractData),
+  },
+  avax: {
+    tvl: getTvl(avaxContractData),
   },
 };
 

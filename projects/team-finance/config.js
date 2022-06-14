@@ -53,7 +53,61 @@ const ethereumContractData = [
     },
 ]
 
+const polygonContractData = [
+    {
+        chain: "polygon",
+        contract: "0x3eF7442dF454bA6b7C1deEc8DdF29Cfb2d6e56c7",
+        contractABI: abi_v2,
+        trackedTokens: coreTokenWhitelist.polygon,
+        factory: "0x5757371414417b8c6caad45baef941abc7d3ab32"
+    },
+    {
+        chain: "polygon",
+        contract: "0x586c21a779c24efd2a8af33c9f7df2a2ea9af55c",
+        contractABI: abi_v2,
+        trackedTokens: coreTokenWhitelist.polygon,
+        factory: "0x5757371414417b8c6caad45baef941abc7d3ab32"
+    },
+]  
+
+const avaxContractData = [
+    {
+        chain: "avax",
+        contract: "0x88ada02f6fce2f1a833cd9b4999d62a7ebb70367",
+        contractABI: abi_v2,
+        trackedTokens: coreTokenWhitelist.avalanche,
+        factory: "0x9ad6c38be94206ca50bb0d90783181662f0cfa10"
+    },
+    {
+        chain: "avax",
+        contract: "0xe2fe530c047f2d85298b07d9333c05737f1435fb",
+        contractABI: abi,
+        trackedTokens: coreTokenWhitelist.avalanche,
+        factory: "0x9ad6c38be94206ca50bb0d90783181662f0cfa10"
+    },
+]
+
+
+const bscContractData = [
+    {
+        chain: "bsc",
+        contract: "0x7536592bb74b5d62eb82e8b93b17eed4eed9a85c",
+        contractABI: abi_v2,
+        trackedTokens: coreTokenWhitelist.bsc,
+        factory: "0xca143ce32fe78f1f7019d7d551a6402fc5350c73"
+    },
+    {
+        chain: "bsc",
+        contract: "0x0c89c0407775dd89b12918b9c0aa42bf96518820",
+        contractABI: abi_v2,
+        trackedTokens: coreTokenWhitelist.bsc,
+        factory: "0xca143ce32fe78f1f7019d7d551a6402fc5350c73"
+    },
+]
 
 module.exports = {
     ethereumContractData,
+    polygonContractData,
+    avaxContractData,
+    bscContractData
 }
