@@ -66,6 +66,21 @@ const pools = [
     poolAppId: 620995314,
   },
   {
+    // USDC-USDt TMP1.1
+    appId: 776179559,
+    assetId: 552888874,
+    assetDecimals: 6,
+    poolAppAddress:
+      "I37JDCOJCK2JSPRMV5HHFHQ54YU6J6VWCBCDNULIT5ZJWO357R2DJLGIBM",
+  },
+  {
+    // USDC-USDt PLP
+    appId: 776176449,
+    assetId: 701273234,
+    assetDecimals: 6,
+    poolAppId: 701273050,
+  },
+  {
     // Planets
     appId: 751285119,
     assetId: 27165954,
