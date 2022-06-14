@@ -155,6 +155,7 @@ async function getTokenPrices({
   fixBalances(balances)
 
   return {
+    pairs,
     updateBalances,
     pairBalances,
     prices,
@@ -275,6 +276,7 @@ async function getTokenPrices({
 function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitelist = [], factory, transformAddress, allowUndefinedBlock = true,
   minLPRatio = 1,
   log_coreAssetPrices = [], log_minTokenValue = 1e6,
+  withMetaData = false,
 }) {
   return async (ts, _block, chainBlocks) => {
     let pairAddresses;
@@ -282,7 +284,7 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
     const pairLength = (await sdk.api.abi.call({ target: factory, abi: factoryAbi.allPairsLength, chain, block })).output
     if (pairLength === null)
       throw new Error("allPairsLength() failed")
-    
+
     if (DEBUG_MODE) console.log('No. of pairs: ', pairLength)
 
     const pairNums = Array.from(Array(Number(pairLength)).keys())
@@ -291,11 +293,11 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
 
     pairAddresses = pairs.map(result => result.output.toLowerCase())
 
-    const { balances } = await getTokenPrices({
+    const response = await getTokenPrices({
       block, chain, coreAssets, blacklist, lps: pairAddresses, transformAddress, whitelist, allLps: true,
       minLPRatio, log_coreAssetPrices, log_minTokenValue,
     })
-    return balances
+    return withMetaData ? response : response.balances
   }
 }
 
