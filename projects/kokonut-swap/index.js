@@ -1,5 +1,4 @@
 const abi = require("./abi.json");
-const kip7 = require("./kip7.json");
 const sdk = require("@defillama/sdk");
 const { requery } = require('../helper/requery.js');
 
@@ -37,12 +36,7 @@ async function tvl(timestamp, block, chainBlocks) {
     const poolInfo = info.output[i].output;
     for (let j = 0; j < poolInfo.tokens.length; j++) {
       const decimal = poolInfo.tokens[j]==`0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE`?18:
-        (await sdk.api.abi.call({
-        target: poolInfo.tokens[j],
-        abi: kip7.decimals,
-        block: chainBlocks[chain],
-        chain
-      })).output;
+        (await sdk.api.erc20.decimals(poolInfo.tokens[j], chain)).output
       const balance = poolInfo.prices[j] / 10**(18) * poolInfo.balances[j] / 10**(decimal);
       sdk.util.sumSingleBalance(balances, 'usd-coin', balance);
     };
