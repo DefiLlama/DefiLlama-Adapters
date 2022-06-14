@@ -1,3 +1,4 @@
+const sdk = require("@defillama/sdk");
 const axios = require("axios");
 const retry = require("async-retry");
 const { toUSDTBalances } = require("../helper/balances");
@@ -34,7 +35,7 @@ async function getPolygonTvl() {
 
 module.exports = {
   ethereum: {
-    tvl: getETHTvl,
+    tvl: sdk.util.sumChainTvls([getETHTvl, getPolygonTvl]),
   },
   bsc: {
     tvl: getBscTvl,
@@ -44,9 +45,6 @@ module.exports = {
   },
   fantom: {
     tvl: getFantomTvl,
-  },
-  polygon: {
-    tvl: getPolygonTvl,
   },
   methodology: `We get the total staked amount and total staked USD from Ankr's official API.`,
 };
