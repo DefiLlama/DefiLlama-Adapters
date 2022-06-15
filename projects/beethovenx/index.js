@@ -10,9 +10,20 @@ const backendGraphQuery = gql`
   query get_tvl {
     data: beetsGetProtocolData {
       totalLiquidity
+      block
     }
   }
 `;
+
+async function getLatestSyncedBlockFantom() {
+  const { data } = await request(backendGraphUrlFantom, backendGraphQuery);
+  return data.block;
+}
+
+async function getLatestSyncedBlockOptimism() {
+  const { data } = await request(backendGraphUrlOptimism, backendGraphQuery);
+  return data.block;
+}
 
 async function fantom(timestamp, ...params) {
   if (Math.abs(timestamp - Date.now() / 1000) < 3600 / 2) {
