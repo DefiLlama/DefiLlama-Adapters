@@ -4,19 +4,6 @@ const abi = require('./abi.json');
 const { getBlock } = require('../helper/getBlock');
 const { requery } = require('../helper/requery');
 const { request, gql } = require("graphql-request");
-// const oldOptimismHolders = require('./oldOptimismHolders')
-
-const QUERY = gql`
-query manyHolders($lastID: String, $block: Int) {
-  holders(first: 1000, where: { 
-    id_gt: $lastID
-  },
-    block: { number: $block }  
-  ){
-    id
-  }
-}
-`
 
 const QUERY_NO_BLOCK = gql`
 query manyHolders($lastID: String, $block: Int) {
@@ -52,7 +39,8 @@ function chainTvl(chain) {
     let totalTopStakersSNXLocked = new BigNumber(0);
     let totalTopStakersSNX = new BigNumber(0);
 
-    const holders = await SNXHolders(snxGraphEndpoint, block, chain);
+    const holdersAll = sliceIntoChunks(await SNXHolders(snxGraphEndpoint, block, chain), 300)
+    console.log('holders count: ', holdersAll.flat().length, chain)
 
     const issuanceRatio = (await sdk.api.abi.call({
       block,
@@ -61,39 +49,50 @@ function chainTvl(chain) {
       abi: abi['issuanceRatio']
     })).output;
 
-    const calls = holders.map(holder => ({ target: synthetix, params: holder }))
+    for (const holders of holdersAll) {
 
-    const [ratio, collateral] = await Promise.all([
-      sdk.api.abi.multiCall({
-        block,
-        chain,
-        abi: abi['collateralisationRatio'],
-        calls,
-      }),
-      sdk.api.abi.multiCall({
-        block,
-        chain,
-        abi: abi['collateral'],
-        calls,
-      })
-    ]);
-    await requery(ratio, chain, block, abi['collateralisationRatio'])
-    await requery(collateral, chain, block, abi['collateral'])
-    const ratios = {}
-    ratio.output.forEach(r => ratios[r.input.params[0]] = r.output)
-    const collaterals = {}
-    collateral.output.forEach(r => collaterals[r.input.params[0]] = r.output)
-
-    holders.forEach((holder) => {
-      let _collateral = collaterals[holder];
-      let _ratio = ratios[holder];
-      if(_collateral === null || _ratio === null){
-        throw new Error(`Failed request for collateral/ratio of holder ${holder}`)
+      const calls = holders.map(holder => ({ target: synthetix, params: holder }))
+      const [ratio, collateral] = await Promise.all([
+        sdk.api.abi.multiCall({
+          block,
+          chain,
+          abi: abi['collateralisationRatio'],
+          calls,
+        }),
+        sdk.api.abi.multiCall({
+          block,
+          chain,
+          abi: abi['collateral'],
+          calls,
+        })
+      ])
+      if (ratio.output.some(i => !i.output)) {
+        console.log(ratio.filter(i => !i.output).map(i => i.input))
+        process.exit(0)
       }
-      let locked = _collateral * Math.min(1, _ratio / issuanceRatio);
-      totalTopStakersSNX = totalTopStakersSNX.plus(_collateral)
-      totalTopStakersSNXLocked = totalTopStakersSNXLocked.plus(locked);
-    });
+      if (collateral.output.some(i => !i.output)) {
+        console.log(collateral.filter(i => !i.output).map(i => i.input))
+        process.exit(0)
+      }
+      
+      await requery(ratio, chain, block, abi['collateralisationRatio'])
+      await requery(collateral, chain, block, abi['collateral'])
+      const ratios = {}
+      ratio.output.forEach(r => ratios[r.input.params[0]] = r.output)
+      const collaterals = {}
+      collateral.output.forEach(r => collaterals[r.input.params[0]] = r.output)
+
+      holders.forEach((holder) => {
+        let _collateral = collaterals[holder];
+        let _ratio = ratios[holder];
+        if (_collateral === null || _ratio === null) {
+          throw new Error(`Failed request for collateral/ratio of holder ${holder}`)
+        }
+        let locked = _collateral * Math.min(1, _ratio / issuanceRatio);
+        totalTopStakersSNX = totalTopStakersSNX.plus(_collateral)
+        totalTopStakersSNXLocked = totalTopStakersSNXLocked.plus(locked);
+      });
+    }
 
     const percentLocked = totalTopStakersSNXLocked.div(totalTopStakersSNX);
     const unformattedSnxTotalSupply = (await sdk.api.abi.call({
@@ -127,9 +126,6 @@ function chainTvl(chain) {
 // we can use graph-results-pager library to increase the limit.
 async function SNXHolders(snxGraphEndpoint, block, chain) {
   let holders = new Set()
-  // if(chain === "optimism"){
-  //   holders = oldOptimismHolders;
-  // }
   let lastID = ""
   let holdersPage;
   do {
@@ -137,10 +133,19 @@ async function SNXHolders(snxGraphEndpoint, block, chain) {
       block,
       lastID
     })).holders
-    holdersPage.forEach(h=>holders.add(h.id))
+    holdersPage.forEach(h => holders.add(h.id))
     lastID = holdersPage[holdersPage.length - 1]?.id
   } while (holdersPage.length === 1e3);
   return Array.from(holders)
+}
+
+function sliceIntoChunks(arr, chunkSize = 100) {
+  const res = [];
+  for (let i = 0; i < arr.length; i += chunkSize) {
+    const chunk = arr.slice(i, i + chunkSize);
+    res.push(chunk);
+  }
+  return res;
 }
 
 module.exports = {

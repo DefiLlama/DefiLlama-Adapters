@@ -1,6 +1,6 @@
 
-const { getKaruraAPI } = require('../helper/karura')
 const lksmToKsm = require("../karura-staking/lksmToKsm.js");
+const { getKaruraAPI } = require('../helper/karura')
 // node test.js projects/karura-dex/index.js
 function formatTokenAmount(amount, tokenSymbol) {
   let decimals = 12;
@@ -78,7 +78,5 @@ async function tvl() {
 }
 
 module.exports = {
-  timetravel: false,
-  methodology: "Counts all liquidity on DEX pools. KUSD is counted as USDT",
   karura: { tvl },
 };
