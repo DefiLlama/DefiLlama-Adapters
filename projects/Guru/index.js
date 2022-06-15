@@ -77,22 +77,21 @@ const USD = {
 	"ech"	:	{"addr":"0x6B175474E89094C44Da98b954EedeAC495271d0F",		"deci":18}	//Rep. Mainnet DAI
 }
 
+async function ftm_p_2(timestamp,ethBlock,chainBlocks) { return {[USD.ftm.addr]:(Number( ( await sdk.api.abi.call({ target: tvlGuru.ftm, abi: ITVL[0], block: chainBlocks.fantom, chain: 'fantom' }) ).output )/(10**(18-USD.ftm.deci)))} }
+async function ftm_stk(timestamp,ethBlock,chainBlocks) { return {[USD.ftm.addr]:(Number( ( await sdk.api.abi.call({ target: tvlGuru.ftm, abi: ITVL[1], block: chainBlocks.fantom, chain: 'fantom' }) ).output )/(10**(18-USD.ftm.deci)))} }
+async function ftm_tvl(timestamp,ethBlock,chainBlocks) { return {[USD.ftm.addr]:(Number( ( await sdk.api.abi.call({ target: tvlGuru.ftm, abi: ITVL[2], block: chainBlocks.fantom, chain: 'fantom' }) ).output )/(10**(18-USD.ftm.deci)))} }
 
-async function ftm_p_2(timestamp,chainBlocks) { return {[USD.ftm.addr]:(Number( ( await sdk.api.abi.call({ target: tvlGuru.ftm, abi: ITVL[0], block: chainBlocks.fantom, chain: 'fantom' }) ).output )/(10**(18-USD.ftm.deci)))} }
-async function ftm_stk(timestamp,chainBlocks) { return {[USD.ftm.addr]:(Number( ( await sdk.api.abi.call({ target: tvlGuru.ftm, abi: ITVL[1], block: chainBlocks.fantom, chain: 'fantom' }) ).output )/(10**(18-USD.ftm.deci)))} }
-async function ftm_tvl(timestamp,chainBlocks) { return {[USD.ftm.addr]:(Number( ( await sdk.api.abi.call({ target: tvlGuru.ftm, abi: ITVL[2], block: chainBlocks.fantom, chain: 'fantom' }) ).output )/(10**(18-USD.ftm.deci)))} }
+async function kcc_p_2(timestamp,ethBlock,chainBlocks) { return {[USD.kcc.addr]:(Number( ( await sdk.api.abi.call({ target: tvlGuru.kcc, abi: ITVL[0], block: chainBlocks.kcc, chain: 'kcc' }) ).output )/(10**(18-USD.kcc.deci)))} }
+async function kcc_stk(timestamp,ethBlock,chainBlocks) { return {[USD.kcc.addr]:(Number( ( await sdk.api.abi.call({ target: tvlGuru.kcc, abi: ITVL[1], block: chainBlocks.kcc, chain: 'kcc' }) ).output )/(10**(18-USD.kcc.deci)))} }
+async function kcc_tvl(timestamp,ethBlock,chainBlocks) { return {[USD.kcc.addr]:(Number( ( await sdk.api.abi.call({ target: tvlGuru.kcc, abi: ITVL[2], block: chainBlocks.kcc, chain: 'kcc' }) ).output )/(10**(18-USD.kcc.deci)))} }
 
-async function kcc_p_2(timestamp,chainBlocks) { return {[USD.kcc.addr]:(Number( ( await sdk.api.abi.call({ target: tvlGuru.kcc, abi: ITVL[0], block: chainBlocks.kcc, chain: 'kcc' }) ).output )/(10**(18-USD.kcc.deci)))} }
-async function kcc_stk(timestamp,chainBlocks) { return {[USD.kcc.addr]:(Number( ( await sdk.api.abi.call({ target: tvlGuru.kcc, abi: ITVL[1], block: chainBlocks.kcc, chain: 'kcc' }) ).output )/(10**(18-USD.kcc.deci)))} }
-async function kcc_tvl(timestamp,chainBlocks) { return {[USD.kcc.addr]:(Number( ( await sdk.api.abi.call({ target: tvlGuru.kcc, abi: ITVL[2], block: chainBlocks.kcc, chain: 'kcc' }) ).output )/(10**(18-USD.kcc.deci)))} }
+async function mtv_p_2(timestamp,ethBlock,chainBlocks) { return {[USD.mtv.addr]:(Number( ( await sdk.api.abi.call({ target: tvlGuru.mtv, abi: ITVL[0], block: chainBlocks.multivac, chain: 'multivac' }) ).output )/(10**(18-USD.mtv.deci)))} }
+async function mtv_stk(timestamp,ethBlock,chainBlocks) { return {[USD.mtv.addr]:(Number( ( await sdk.api.abi.call({ target: tvlGuru.mtv, abi: ITVL[1], block: chainBlocks.multivac, chain: 'multivac' }) ).output )/(10**(18-USD.mtv.deci)))} }
+async function mtv_tvl(timestamp,ethBlock,chainBlocks) { return {[USD.mtv.addr]:(Number( ( await sdk.api.abi.call({ target: tvlGuru.mtv, abi: ITVL[2], block: chainBlocks.multivac, chain: 'multivac' }) ).output )/(10**(18-USD.mtv.deci)))} }
 
-async function mtv_p_2(timestamp,chainBlocks) { return {[USD.mtv.addr]:(Number( ( await sdk.api.abi.call({ target: tvlGuru.mtv, abi: ITVL[0], block: chainBlocks.multivac, chain: 'multivac' }) ).output )/(10**(18-USD.mtv.deci)))} }
-async function mtv_stk(timestamp,chainBlocks) { return {[USD.mtv.addr]:(Number( ( await sdk.api.abi.call({ target: tvlGuru.mtv, abi: ITVL[1], block: chainBlocks.multivac, chain: 'multivac' }) ).output )/(10**(18-USD.mtv.deci)))} }
-async function mtv_tvl(timestamp,chainBlocks) { return {[USD.mtv.addr]:(Number( ( await sdk.api.abi.call({ target: tvlGuru.mtv, abi: ITVL[2], block: chainBlocks.multivac, chain: 'multivac' }) ).output )/(10**(18-USD.mtv.deci)))} }
-
-async function ech_p_2(timestamp,chainBlocks) { return {[USD.ech.addr]:(Number( ( await sdk.api.abi.call({ target: tvlGuru.ech, abi: ITVL[0], block: chainBlocks.echelon, chain: 'echelon' }) ).output )/(10**(18-USD.ech.deci)))} }
-async function ech_stk(timestamp,chainBlocks) { return {[USD.ech.addr]:(Number( ( await sdk.api.abi.call({ target: tvlGuru.ech, abi: ITVL[1], block: chainBlocks.echelon, chain: 'echelon' }) ).output )/(10**(18-USD.ech.deci)))} }
-async function ech_tvl(timestamp,chainBlocks) { return {[USD.ech.addr]:(Number( ( await sdk.api.abi.call({ target: tvlGuru.ech, abi: ITVL[2], block: chainBlocks.echelon, chain: 'echelon' }) ).output )/(10**(18-USD.ech.deci)))} }
+async function ech_p_2(timestamp,ethBlock,chainBlocks) { return {[USD.ech.addr]:(Number( ( await sdk.api.abi.call({ target: tvlGuru.ech, abi: ITVL[0], block: chainBlocks.echelon, chain: 'echelon' }) ).output )/(10**(18-USD.ech.deci)))} }
+async function ech_stk(timestamp,ethBlock,chainBlocks) { return {[USD.ech.addr]:(Number( ( await sdk.api.abi.call({ target: tvlGuru.ech, abi: ITVL[1], block: chainBlocks.echelon, chain: 'echelon' }) ).output )/(10**(18-USD.ech.deci)))} }
+async function ech_tvl(timestamp,ethBlock,chainBlocks) { return {[USD.ech.addr]:(Number( ( await sdk.api.abi.call({ target: tvlGuru.ech, abi: ITVL[2], block: chainBlocks.echelon, chain: 'echelon' }) ).output )/(10**(18-USD.ech.deci)))} }
 
 module.exports = {
 	methodology: "USD-denominated value aggregation of most Locked assets held across Guru Network's & Kompound Protocol's smart contracts across multiple chains, powered by direct on-chain storage of quantity, pools and prices using ftm.guru's Universal TVL Finder Tool (tvlGuru.sol). More detailed documentation of TVL is available at https://ftm.guru/rawdata/tvl",
