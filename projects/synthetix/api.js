@@ -66,14 +66,6 @@ function chainTvl(chain) {
           calls,
         })
       ])
-      if (ratio.output.some(i => !i.output)) {
-        console.log(ratio.filter(i => !i.output).map(i => i.input))
-        process.exit(0)
-      }
-      if (collateral.output.some(i => !i.output)) {
-        console.log(collateral.filter(i => !i.output).map(i => i.input))
-        process.exit(0)
-      }
       
       await requery(ratio, chain, block, abi['collateralisationRatio'])
       await requery(collateral, chain, block, abi['collateral'])
