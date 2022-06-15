@@ -26,6 +26,13 @@ const COLLATERALS = {
       activePool: "0xCE90059FbCEc696634981945600d642A79e262aD",
       defaultPool: "0x3aD8FE12674B4c9481d5C7585ed5bDC4E35025b9",
     }
+  },
+  DOT: {
+    tokenAddress: "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF",
+    contracts: {
+      activePool: "0x8cd0b101838b082133e25eEb76C916Ae2AC56f36",
+      defaultPool: "0x4e8B4867899A69bB05EFa6A16e68363C2BBeB02f",
+    }
   }
 }
 
@@ -44,6 +51,11 @@ const STAKES = {
   DAI: {
     contracts: {
       stabilityPool: "0xA5Bb226e06732005Cf6053429B8F6d607A8A530a"
+    }
+  },
+  DOT: {
+    contracts: {
+      stabilityPool: "0xB333a7a951DC495bA7F27999cD41361AAafb6BE0"
     }
   }
 }

@@ -3,6 +3,7 @@ const abi = require("./abi.json");
 const BigNumber = require("bignumber.js");
 const axios = require("axios");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
+const { transformAvaxAddress } = require("../helper/portedTokens");
 
 async function getProcolAddresses(chain) {
   if (chain == 'avax') {
@@ -17,6 +18,7 @@ async function getProcolAddresses(chain) {
 async function calLyfTvl(chain, block) {
   /// @dev Initialized variables
   const balances = {};
+  const transform = await transformAvaxAddress()
 
   /// @dev Getting all addresses from Github
   const addresses = await getProcolAddresses(chain);
@@ -53,7 +55,7 @@ async function calLyfTvl(chain, block) {
         }),
       block,
       chain,
-      (addr) => `${chain}:${addr}`
+      transform
     );
   }
 
@@ -73,8 +75,8 @@ async function calLyfTvl(chain, block) {
   ).output;
 
   unusedBTOKEN.forEach((u) => {
-    balances[`${chain}:${u.input.target.toLowerCase()}`] = BigNumber(
-      balances[`${chain}:${u.input.target.toLowerCase()}`] || 0
+    balances[transform(u.input.target.toLowerCase())] = BigNumber(
+      balances[transform(u.input.target.toLowerCase())] || 0
     )
       .plus(BigNumber(u.output))
       .toFixed(0);

@@ -73,6 +73,7 @@ function createIncrementArray(length) {
 const LP_SYMBOLS = ['SLP', 'spLP', 'JLP', 'OLP', 'SCLP', 'DLP', 'MLP', 'MSLP', 'ULP', 'TLP', 'HMDX', 'YLP', 'SCNRLP', 'PGL', 'GREEN-V2', 'PNDA-V2', 'vTAROT', 'TETHYSLP', 'BAO-V2', 'DINO-V2', 'DFYNLP', 'LavaSwap', 'RLP']
 const blacklisted_LPS = [
   '0xb3dc4accfe37bd8b3c2744e9e687d252c9661bc7',
+  '0xf146190e4d3a2b9abe8e16636118805c628b94fe',
 ].map(i => i.toLowerCase())
 
 function isLP(symbol, token, chain) {
@@ -143,11 +144,17 @@ function getUniqueAddresses(addresses) {
   return [...set]
 }
 
-
 const DEBUG_MODE = !!process.env.LLAMA_DEBUG_MODE
+
+function log(...args) {
+  if (DEBUG_MODE) {
+    console.log(...args);
+  }
+}
 
 module.exports = {
   DEBUG_MODE,
+  log,
   createIncrementArray,
   fetchURL,
   postURL,
