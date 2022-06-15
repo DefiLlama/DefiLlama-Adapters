@@ -1,0 +1,71 @@
+{
+  "issuanceRatio": {
+    "constant":true,
+    "inputs":[
+
+    ],
+    "name":"issuanceRatio",
+    "outputs":[
+      {
+        "name":"",
+        "type":"uint256"
+      }
+    ],
+    "payable":false,
+    "stateMutability":"view",
+    "type":"function"
+  },
+  "collateralisationRatio": {
+    "constant":true,
+    "inputs":[
+      {
+        "name":"issuer",
+        "type":"address"
+      }
+    ],
+    "name":"collateralisationRatio",
+    "outputs":[
+      {
+        "name":"",
+        "type":"uint256"
+      }
+    ],
+    "payable":false,
+    "stateMutability":"view",
+    "type":"function"
+  },
+  "collateral": {
+    "constant":true,
+    "inputs":[
+      {
+        "name":"account",
+        "type":"address"
+      }
+    ],
+    "name":"collateral",
+    "outputs":[
+      {
+        "name":"",
+        "type":"uint256"
+      }
+    ],
+    "payable":false,
+    "stateMutability":"view",
+    "type":"function"
+  },
+  "totalSupply": {
+    "constant":true,
+    "inputs":[
+    ],
+    "name":"totalSupply",
+    "outputs":[
+      {
+        "name":"",
+        "type":"uint256"
+      }
+    ],
+    "payable":false,
+    "stateMutability":"view",
+    "type":"function"
+  }
+}

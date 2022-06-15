@@ -18,7 +18,6 @@ async function staking() {
   return balances
 }
 
-
 async function getDexes() {
   // We take ts file and use regex to convert it to JSON and parse it (Yes, seriously)
   const { data } = await axios.get('https://raw.githubusercontent.com/Plenty-DeFi/plenty-interface/master/src/config/config.ts')
@@ -34,7 +33,7 @@ async function getDexes() {
   }).join('\n')
   text = text.replace(/\,(\s*[\}\]])/g, '$1')  // remove trailing commas
   text = text.replace(/\'/g, '"')  // convert single quotation to double
-  text = text.replace(/(\s?)(\w+)\:([^\/])/g, '$1"$2":$3') // cover keys with qoutes, eg. key1: "value" -> "key1":"value"
+  text = text.replace(/(\s?)(\w+)\s*\:([^\/])/g, '$1"$2":$3') // cover keys with qoutes, eg. key1: "value" -> "key1":"value"
   const config = JSON.parse(text)
   const dexSet = new Set()
   Object.values(config.AMM.mainnet).forEach(t => {
@@ -44,7 +43,6 @@ async function getDexes() {
   })
   const dexes = [...dexSet]
   return dexes
-  // require('fs').writeFileSync('./projects/plenty/dexes.json', JSON.stringify(dexes))
 }
 
 module.exports = {
