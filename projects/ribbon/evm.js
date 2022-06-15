@@ -1,5 +1,7 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
+const abiBond = require("./abi-bond.json");
+
 const { staking } = require("../helper/staking");
 
 // Ethereum Vaults
@@ -13,6 +15,9 @@ const yvUSDCETHPutVaultV2 = "0xCc323557c71C0D1D20a1861Dc69c06C5f3cC9624";
 const aaveCallVault = "0xe63151A0Ed4e5fafdc951D877102cf0977Abd365";
 const stETHCallVault = "0x53773E034d9784153471813dacAFF53dBBB78E8c";
 const apeCallVault = "0xc0cF10Dd710aefb209D9dc67bc746510ffd98A53";
+
+// Ethereum Ribbon/Porter Bonds
+const rbnBondCollateral = "0xe34c023c0ea9899a8f8e9381437a604908e8b719";
 
 // Avalanche Vaults
 const avaxCallVault = "0x98d03125c62DaE2328D9d3cb32b7B969e6a87787";
@@ -29,11 +34,28 @@ const usdc = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
 const aave = "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9";
 const perp = "0xbC396689893D065F41bc2C6EcbeE5e0085233447";
 const ape = "0x4d224452801ACEd8B2F0aebE155379bb5D594381";
+const rbn = "0x6123B0049F904d730dB3C36a31167D9d4121fA6B";
 
 // Avalanche Assets
 const wavax = "avax:0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7";
 const savax = "avax:0x2b2C81e08f1Af8835a78Bb2A90AE924ACE0eA4bE";
 const usdce = "avax:0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664";
+
+async function addBondCollateral(
+  balances,
+  vault,
+  token,
+  block,
+  chain = "ethereum"
+) {
+  const totalBalance = await sdk.api.abi.call({
+    target: vault,
+    block,
+    abi: abiBond.collateralBalance,
+    chain,
+  });
+  sdk.util.sumSingleBalance(balances, token, totalBalance.output);
+}
 
 async function addVault(balances, vault, token, block, chain = "ethereum") {
   const totalBalance = await sdk.api.abi.call({
@@ -59,6 +81,7 @@ async function ethTvl(_, block) {
     addVault(balances, stETHCallVault, weth, block),
     addVault(balances, perpCallVault, perp, block),
     addVault(balances, apeCallVault, ape, block),
+    addBondCollateral(balances, rbnBondCollateral, rbn, block),
   ]);
   return balances;
 }

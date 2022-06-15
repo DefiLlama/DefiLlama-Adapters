@@ -1,0 +1,15 @@
+{
+  "collateralBalance": {
+    "inputs": [],
+    "name": "collateralBalance",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "collateralTokens",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+}
