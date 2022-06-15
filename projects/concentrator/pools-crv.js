@@ -117,6 +117,20 @@ module.exports = [
 
     {
         dataIndex: 38,
+        id: 'ust-wormhole',
+        name: 'ust-wormhole',
+        coins: [
+            coins.ust,
+            coins.crv3pool
+        ],
+        addresses: {
+            swap: '0xCEAF7747579696A2F0bb206a14210e3c9e6fB269',
+            lpToken: '0xCEAF7747579696A2F0bb206a14210e3c9e6fB269',
+        },
+    },
+
+    {
+        dataIndex: 38,
         id: 'rocketpooleth',
         name: 'rocketpooleth',
         coins: [
@@ -131,15 +145,29 @@ module.exports = [
 
     {
         dataIndex: 38,
-        id: 'ust-wormhole',
-        name: 'ust-wormhole',
+        id: 'ren',
+        name: 'ren',
         coins: [
-            coins.ust,
+            coins.renbtc,
+            coins.wbtc
+        ],
+        addresses: {
+            swap: '0x93054188d876f558f4a66B2EF1d97d16eDf0895B',
+            lpToken: '0x49849C98ae39Fff122806C06791Fa73784FB3675',
+        },
+    },
+
+    {
+        dataIndex: 38,
+        id: 'pusd',
+        name: 'pusd',
+        coins: [
+            coins.pusd,
             coins.crv3pool
         ],
         addresses: {
-            swap: '0xCEAF7747579696A2F0bb206a14210e3c9e6fB269',
-            lpToken: '0xCEAF7747579696A2F0bb206a14210e3c9e6fB269',
+            swap: '0x8EE017541375F6Bcd802ba119bdDC94dad6911A1',
+            lpToken: '0x8EE017541375F6Bcd802ba119bdDC94dad6911A1',
         },
     },
 

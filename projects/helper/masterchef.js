@@ -8,10 +8,9 @@ const getReservesAbi = require("./abis/getReserves.json");
 const userInfoAbi = require("./abis/userInfo.json");
 const { getBlock } = require('./getBlock');
 const { default: BigNumber } = require('bignumber.js');
-const { getChainTransform } = require('../helper/portedTokens');
-const { requery, setPrice, sum } = require('./getUsdUniTvl');
+const { getChainTransform, getFixBalances } = require('../helper/portedTokens');
 
-async function getPoolInfo(masterChef, block, chain, poolInfoAbi) {
+async function getPoolInfo(masterChef, block, chain, poolInfoAbi = abi.poolInfo) {
     const poolLength = (
         await sdk.api.abi.call({
             abi: abi.poolLength,
@@ -63,8 +62,9 @@ function isYV(symbol) {
     return symbol.includes('yv')
 }
 
-async function addFundsInMasterChef(balances, masterChef, block, chain = 'ethereum', transformAddress = id => id, poolInfoAbi = abi.poolInfo, ignoreAddresses = [], includeLPs = true, excludePool2 = false, stakingToken = undefined) {
+async function addFundsInMasterChef(balances, masterChef, block, chain = 'ethereum', transformAddress = undefined, poolInfoAbi = abi.poolInfo, ignoreAddresses = [], includeLPs = true, excludePool2 = false, stakingToken = undefined) {
     const poolInfo = await getPoolInfo(masterChef, block, chain, poolInfoAbi)
+    if (!transformAddress) transformAddress = await getChainTransform(chain)
     const [symbols, tokenBalances] = await getSymbolsAndBalances(masterChef, block, chain, poolInfo);
 
     const lpPositions = [];
@@ -76,7 +76,7 @@ async function addFundsInMasterChef(balances, masterChef, block, chain = 'ethere
         if (ignoreAddresses.some(addr => addr.toLowerCase() === token.toLowerCase()) || symbol.output === null) {
             return
         }
-        if (isLP(symbol.output)) {
+        if (isLP(symbol.output, symbol.input.target, chain)) {
             if (includeLPs && balance && !excludePool2) {
                 lpPositions.push({
                     balance,
@@ -141,17 +141,11 @@ async function addFundsInMasterChef(balances, masterChef, block, chain = 'ethere
     );
 }
 
-
-function awaitBalanceUpdate(balancePromise, section) {
-    return async () => balancePromise.then(b => b[section])
-}
-
 function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingecko = true, poolInfoAbi = abi.poolInfo, includeYVTokens = false) {
     const stakingToken = stakingTokenRaw.toLowerCase();
     let balanceResolve;
-    const balancePromise = new Promise((resolve) => { balanceResolve = resolve })
 
-    async function tvl(timestamp, ethBlock, chainBlocks) {
+    async function getTvl(timestamp, ethBlock, chainBlocks) {
         const block = await getBlock(timestamp, chain, chainBlocks, true)
         const transformAddress = await getChainTransform(chain);
 
@@ -171,7 +165,7 @@ function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingeck
             const token = symbol.input.target.toLowerCase();
             if (token === stakingToken) {
                 sdk.util.sumSingleBalance(balances.staking, transformAddress(token), balance)
-            } else if (isLP(symbol.output)) {
+            } else if (isLP(symbol.output, symbol.input.target, chain)) {
                 lpPositions.push({
                     balance,
                     token
@@ -231,8 +225,8 @@ function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingeck
             transformAddress
         )]);
 
-        if (!tokenIsOnCoingecko) {
-            const maxPool2ByToken = (await sdk.api.abi.multiCall({
+        if (!tokenIsOnCoingecko && pool2LpPositions.length) {
+            const response = (await sdk.api.abi.multiCall({
                 calls: pool2LpPositions.map(p => ({
                     target: stakingToken,
                     params: [p.token]
@@ -240,7 +234,8 @@ function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingeck
                 abi: "erc20:balanceOf",
                 block,
                 chain
-            })).output.reduce((max, curr) => {
+            })).output
+            const maxPool2ByToken = response.reduce((max, curr) => {
                 if (BigNumber(curr.output).gt(max.output)) {
                     return curr
                 }
@@ -274,17 +269,28 @@ function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingeck
             })
         }
 
-        balanceResolve(balances)
-        return balances.tvl
+        if (['smartbch', 'cronos'].includes(chain)) {
+            const fixBalances = await getFixBalances(chain)
+            Object.values(balances).map(fixBalances)
+        }
+        return balances
     };
+
+    function getTvlPromise(key) {
+        return async (ts, _block, chainBlocks) => {
+            if (!balanceResolve)
+                balanceResolve = getTvl(ts, _block, chainBlocks)
+            return (await balanceResolve)[key]
+        }
+    }
 
     return {
         methodology: "TVL includes all farms in MasterChef contract",
         [chain]: {
-            staking: awaitBalanceUpdate(balancePromise, "staking"),
-            pool2: awaitBalanceUpdate(balancePromise, "pool2"),
-            masterchef: awaitBalanceUpdate(balancePromise, "tvl"),
-            tvl
+            staking: getTvlPromise("staking"),
+            pool2: getTvlPromise("pool2"),
+            masterchef: getTvlPromise("tvl"),
+            tvl: getTvlPromise("tvl"),
         }
     };
 }

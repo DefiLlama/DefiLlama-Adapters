@@ -1,11 +1,10 @@
 const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js');
-const _ = require('underscore');
-const abi = require('./abi');
+const abi = require('./abi.json');
 const { getBlock } = require('../helper/getBlock');
 const { requery } = require('../helper/requery');
 const { request, gql } = require("graphql-request");
-const oldOptimismHolders = require('./oldOptimismHolders')
+// const oldOptimismHolders = require('./oldOptimismHolders')
 
 const QUERY = gql`
 query manyHolders($lastID: String, $block: Int) {
@@ -62,18 +61,20 @@ function chainTvl(chain) {
       abi: abi['issuanceRatio']
     })).output;
 
+    const calls = holders.map(holder => ({ target: synthetix, params: holder }))
+
     const [ratio, collateral] = await Promise.all([
       sdk.api.abi.multiCall({
         block,
         chain,
         abi: abi['collateralisationRatio'],
-        calls: _.map(holders, holder => ({ target: synthetix, params: holder }))
+        calls,
       }),
       sdk.api.abi.multiCall({
         block,
         chain,
         abi: abi['collateral'],
-        calls: _.map(holders, holder => ({ target: synthetix, params: holder }))
+        calls,
       })
     ]);
     await requery(ratio, chain, block, abi['collateralisationRatio'])
@@ -83,7 +84,7 @@ function chainTvl(chain) {
     const collaterals = {}
     collateral.output.forEach(r => collaterals[r.input.params[0]] = r.output)
 
-    _.forEach(holders, (holder) => {
+    holders.forEach((holder) => {
       let _collateral = collaterals[holder];
       let _ratio = ratios[holder];
       if(_collateral === null || _ratio === null){
@@ -122,13 +123,13 @@ function chainTvl(chain) {
   }
 }
 
-// Uses graph protocol to run through SNX contract. Since there is a limit of 100 results per query
+// Uses graph protocol to run through SNX contract. Since there is a limit of 1000 results per query
 // we can use graph-results-pager library to increase the limit.
 async function SNXHolders(snxGraphEndpoint, block, chain) {
   let holders = new Set()
-  if(chain === "optimism"){
-    holders = oldOptimismHolders;
-  }
+  // if(chain === "optimism"){
+  //   holders = oldOptimismHolders;
+  // }
   let lastID = ""
   let holdersPage;
   do {

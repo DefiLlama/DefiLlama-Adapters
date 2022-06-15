@@ -2,9 +2,9 @@
   Modules
   ==================================================*/
 
-  const _ = require('underscore');
+
   const sdk = require('@defillama/sdk');
-  const abi = require('./abi');
+  const abi = require('./abi.json');
   const BigNumber = require("bignumber.js");
 
 /*==================================================
@@ -209,7 +209,8 @@
     // combine balances for Maker and Compound B.Protocol's TVL
     const allLendingPlatformBalances = {}
     // all assets in B.Protocol
-    _.uniq(Object.keys(cTvl).concat(Object.keys(mTvl)).concat(Object.keys(lTvl))).forEach(asset => {
+    const uniq = arry => [... new Set(arry)]
+    uniq(Object.keys(cTvl).concat(Object.keys(mTvl)).concat(Object.keys(lTvl))).forEach(asset => {
       allLendingPlatformBalances[asset] = new BigNumber(cTvl[asset] || "0").plus(new BigNumber(mTvl[asset] || "0")).plus(new BigNumber(lTvl[asset] || "0")).toString(10)
     })
 

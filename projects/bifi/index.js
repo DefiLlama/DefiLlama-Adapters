@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const { stakings } = require("../helper/staking");
-const Caver = require('caver-js');
 const OracleAbi = require('./abi/oracle.json');
 const TokenAbi = require('./abi/token.json');
 const { toUSDTBalances } = require("../helper/balances");
@@ -218,15 +217,20 @@ async function avax(timestamp, block, chainBlocks) {
     return balances
 }
 
-async function klaytn() {
-    const provider = new Caver.providers.HttpProvider("https://cypress.chain.thebifrost.io/");
-    const caver = new Caver(provider);
+async function klaytn(ts, _block, chainBlocks) {
+    const chain = 'klaytn'
+    const block = chainBlocks[chain]
     let klaytnTVL = 0;
 
-    const oracleContract = new caver.klay.Contract(OracleAbi, klayOracleContract);
-
-    const klayPrice = await oracleContract.methods.getTokenPrice(0).call();
-    const klayBalance = await caver.rpc.klay.getBalance(klayPool);
+    const { output: klayPrice} = await sdk.api.abi.call({
+        chain, block,
+        target: klayOracleContract,
+        params: [0],
+        abi: OracleAbi.find(i => i.name === 'getTokenPrice')
+    })
+    const { output: klayBalance } = await sdk.api.eth.getBalance({
+        target: klayPool, block, chain
+    })
 
     klaytnTVL += klayPrice * klayBalance / (10 ** 36);
 
@@ -237,11 +241,25 @@ async function klaytn() {
         const tokenAddress = klaytnTokenPools[token].token;
         const tokenPoolAddress = klaytnTokenPools[token].pool;
 
-        const tokenPrice = await oracleContract.methods.getTokenPrice(oracleID).call();
+        const { output: tokenPrice} = await sdk.api.abi.call({
+            chain, block,
+            target: klayOracleContract,
+            params: [oracleID],
+            abi: OracleAbi.find(i => i.name === 'getTokenPrice')
+        })
 
-        const tokenContract = new caver.klay.Contract(TokenAbi, tokenAddress);
-        const balance = await tokenContract.methods.balanceOf(tokenPoolAddress).call();
-        const decimals = await tokenContract.methods.decimals().call();
+        const { output: balance} = await sdk.api.abi.call({
+            chain, block,
+            target: tokenAddress,
+            params: [tokenPoolAddress],
+            abi: TokenAbi.find(i => i.name === 'balanceOf')
+        })
+
+        const { output: decimals} = await sdk.api.abi.call({
+            chain, block,
+            target: tokenAddress,
+            abi: TokenAbi.find(i => i.name === 'decimals')
+        })
 
         const div = 18 + parseInt(decimals, 10);
 

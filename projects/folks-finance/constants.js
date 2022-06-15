@@ -35,14 +35,71 @@ const pools = [
     assetId: 694432641,
     assetDecimals: 6,
   },
+  {
+    // Algo-gAlgo3 TMP1.1
+    appId: 743679535,
+    assetId: 694683000,
+    assetDecimals: 6,
+    poolAppAddress:
+      "WNA4H7Y3UGEVNEVVFU2TUDLMOMLWSV72UF6SYYRBOQ7IGDW4ZIOKYWNIWU",
+  },
+  {
+    // Algo-gAlgo3 PLP
+    appId: 743685742,
+    assetId: 701364134,
+    assetDecimals: 6,
+    poolAppId: 701363946,
+  },
+  {
+    // Algo-USDC TMP1.1
+    appId: 747237154,
+    assetId: 552647097,
+    assetDecimals: 6,
+    poolAppAddress:
+      "FPOU46NBKTWUZCNMNQNXRWNW3SMPOOK4ZJIN5WSILCWP662ANJLTXVRUKA",
+  },
+  {
+    // Algo-USDC PLP
+    appId: 747239433,
+    assetId: 620996279,
+    assetDecimals: 6,
+    poolAppId: 620995314,
+  },
+  {
+    // USDC-USDt TMP1.1
+    appId: 776179559,
+    assetId: 552888874,
+    assetDecimals: 6,
+    poolAppAddress:
+      "I37JDCOJCK2JSPRMV5HHFHQ54YU6J6VWCBCDNULIT5ZJWO357R2DJLGIBM",
+  },
+  {
+    // USDC-USDt PLP
+    appId: 776176449,
+    assetId: 701273234,
+    assetDecimals: 6,
+    poolAppId: 701273050,
+  },
+  {
+    // Planets
+    appId: 751285119,
+    assetId: 27165954,
+    assetDecimals: 6,
+  },
 ];
 
 const liquidGovernanceAppId = 694427622;
 
-const oracleAppId = 687039379;
+const oracleAppId = 751491670;
+const oracleAdapterAppId = 751277258;
 const oracleDecimals = 14;
+const tinymanValidatorAppId = 552635992;
 
-exports.pools = pools;
-exports.liquidGovernanceAppId = liquidGovernanceAppId;
-exports.oracleAppId = oracleAppId;
-exports.oracleDecimals = oracleDecimals;
+module.exports = {
+  pools,
+  liquidGovernanceAppId,
+  oracleAppId,
+  oracleAdapterAppId,
+  oracleDecimals,
+  tinymanValidatorAppId,
+};

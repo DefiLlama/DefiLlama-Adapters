@@ -1,7 +1,7 @@
 const { getBlock } = require("../helper/getBlock");
 const sdk = require("@defillama/sdk");
 const { sumTokens } = require("../helper/unwrapLPs");
-const { returnEthBalance } = require("../helper/utils");
+const { returnEthBalance } = require("../helper/utils")
 const { getChainTransform } = require("../helper/portedTokens");
 
 const bridgeContracts = {

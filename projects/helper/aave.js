@@ -70,7 +70,7 @@ async function getV2Reserves(block, addressesProviderRegistry, chain, dataHelper
   return [aTokenAddresses, reserveAddresses, validProtocolDataHelpers[0]]
 }
 
-async function getV2Tvl(balances, block, chain, v2Atokens, v2ReserveTokens, transformAddress) {
+async function getTvl(balances, block, chain, v2Atokens, v2ReserveTokens, transformAddress) {
   const balanceOfUnderlying = await sdk.api.abi.multiCall({
       calls: v2Atokens.map((aToken, index) => ({
         target: v2ReserveTokens[index],
@@ -83,31 +83,33 @@ async function getV2Tvl(balances, block, chain, v2Atokens, v2ReserveTokens, tran
   sdk.util.sumMultiBalanceOf(balances, balanceOfUnderlying, true, transformAddress)
 }
 
-async function getV2Borrowed(balances, block, chain, v2ReserveTokens, dataHelper, transformAddress) {
+async function getBorrowed(balances, block, chain, v2ReserveTokens, dataHelper, transformAddress, v3 = false) {
   const reserveData = await sdk.api.abi.multiCall({
       calls: v2ReserveTokens.map((token) => ({
         target: dataHelper,
         params: [token],
       })),
-      abi: abi.getHelperReserveData,
+      abi: v3 ? abi.getTotalDebt : abi.getHelperReserveData,
       block,
       chain
     });
+
     reserveData.output.forEach((data, idx)=>{
-      sdk.util.sumSingleBalance(balances, transformAddress(data.input.params[0]), BigNumber(data.output.totalVariableDebt).plus(data.output.totalStableDebt).toFixed(0))
+      const quantity = v3 ? data.output : BigNumber(data.output.totalVariableDebt).plus(data.output.totalStableDebt).toFixed(0)
+      sdk.util.sumSingleBalance(balances, transformAddress(data.input.params[0]), quantity)
     })
 }
 
-function aaveChainTvl(chain, addressesProviderRegistry, transformAddressRaw, dataHelperAddresses, borrowed) {
+function aaveChainTvl(chain, addressesProviderRegistry, transformAddressRaw, dataHelperAddresses, borrowed, v3 = false) {
   const transformAddress = transformAddressRaw ? transformAddressRaw : addr=>`${chain}:${addr}`
   return async (timestamp, ethBlock, chainBlocks) => {
     const balances = {}
     const block = await getBlock(timestamp, chain, chainBlocks, true);
     const [v2Atokens, v2ReserveTokens, dataHelper] = await getV2Reserves(block, addressesProviderRegistry, chain, dataHelperAddresses)
     if(borrowed){
-      await getV2Borrowed(balances, block, chain, v2ReserveTokens, dataHelper, transformAddress);
+      await getBorrowed(balances, block, chain, v2ReserveTokens, dataHelper, transformAddress, v3);
     } else {
-      await getV2Tvl(balances, block, chain, v2Atokens, v2ReserveTokens, transformAddress);
+      await getTvl(balances, block, chain, v2Atokens, v2ReserveTokens, transformAddress);
     }
     return balances
   }
@@ -121,7 +123,7 @@ function aaveExports(chain, addressesProviderRegistry, transform = undefined, da
 module.exports = {
   aaveChainTvl,
   getV2Reserves,
-  getV2Tvl,
+  getTvl,
   aaveExports,
-  getV2Borrowed,
+  getBorrowed,
 }
