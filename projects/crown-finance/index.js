@@ -31,7 +31,7 @@ async function getAllTVL(block) {
     for (let i = 0; i < length; i++) calls.push({ params: [i] })
     const { output: data } = await sdk.api.abi.multiCall({
       target: contract,
-      abi: abi.poolInfo2, 
+      abi: abi.poolInfo2,
       calls,
       chain, block,
     })
@@ -42,14 +42,14 @@ async function getAllTVL(block) {
     data.forEach(({ output }) => {
       const token = output.lpToken.toLowerCase()
       const amount = output.amount0
-      if (token === crown)  balances.staking[transform(token)] = amount
-      else tempBalances[token] = amount
+      if (token === crown) sdk.util.sumSingleBalance(balances.staking, transform(token), amount)
+      else sdk.util.sumSingleBalance(tempBalances, token, amount)
       lps.push(token)
     })
 
     const pairs = await getLPData({ lps, chain, block })
 
-    const { updateBalances, prices, pairBalances } = await getTokenPrices({ lps: Object.keys(pairs), allLps: true, coreAssets: [ tether ], block, chain, minLPRatio: 0.001 })
+    const { updateBalances, } = await getTokenPrices({ lps: Object.keys(pairs), allLps: true, coreAssets: [tether], block, chain, minLPRatio: 0.001 })
     Object.entries(tempBalances).forEach(([token, balance]) => {
       if (pairs[token]) {
         const { token0Address, token1Address } = pairs[token]
@@ -80,8 +80,6 @@ async function pool2(_, _b, { [chain]: block }) {
 async function staking(_, _b, { [chain]: block }) {
   return (await getAllTVL(block)).staking
 }
-
-
 
 module.exports = {
   cronos: {

@@ -760,6 +760,7 @@ function fixAstarBalances(balances) {
     '0x29F6e49c6E3397C3A84F715885F9F233A441165C': { coingeckoId: 'dai', decimals: 18, },
     '0x733ebcC6DF85f8266349DEFD0980f8Ced9B45f35': { coingeckoId: 'bai-stablecoin', decimals: 18, },
     '0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF': { coingeckoId: 'polkadot', decimals: 10, },
+    '0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB': { coingeckoId: 'jpy-coin', decimals: 18, },
     // '0x29F6e49c6E3397C3A84F715885F9F233A441165C': { coingeckoId: 'orcus-ousd', decimals: 18, }, // todo: fix this, use correct coingecko id
   }
 

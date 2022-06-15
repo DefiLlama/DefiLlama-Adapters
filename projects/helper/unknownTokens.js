@@ -155,6 +155,7 @@ async function getTokenPrices({
   fixBalances(balances)
 
   return {
+    pairs,
     updateBalances,
     pairBalances,
     prices,
@@ -233,6 +234,10 @@ async function getTokenPrices({
 
 
   function addBalances(balances, finalBalances, { skipConversion = false, pairAddress, ratio = 1 }) {
+    if (ratio > 1) {
+      console.log(`There is bug in the code. Pair address: ${pairAddress}, ratio: ${ratio}`)
+      ratio = 1
+    }
     Object.entries(balances).forEach(([address, amount = 0]) => {
       const price = prices[address];
       // const price =  undefined; // NOTE: this is disabled till, we add a safeguard to limit LP manipulation to inflate token price, like mimimum core asset liquidity to be 10k
@@ -275,6 +280,7 @@ async function getTokenPrices({
 function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitelist = [], factory, transformAddress, allowUndefinedBlock = true,
   minLPRatio = 1,
   log_coreAssetPrices = [], log_minTokenValue = 1e6,
+  withMetaData = false,
 }) {
   return async (ts, _block, chainBlocks) => {
     let pairAddresses;
@@ -282,7 +288,7 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
     const pairLength = (await sdk.api.abi.call({ target: factory, abi: factoryAbi.allPairsLength, chain, block })).output
     if (pairLength === null)
       throw new Error("allPairsLength() failed")
-    
+
     if (DEBUG_MODE) console.log('No. of pairs: ', pairLength)
 
     const pairNums = Array.from(Array(Number(pairLength)).keys())
@@ -291,11 +297,11 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
 
     pairAddresses = pairs.map(result => result.output.toLowerCase())
 
-    const { balances } = await getTokenPrices({
+    const response = await getTokenPrices({
       block, chain, coreAssets, blacklist, lps: pairAddresses, transformAddress, whitelist, allLps: true,
       minLPRatio, log_coreAssetPrices, log_minTokenValue,
     })
-    return balances
+    return withMetaData ? response : response.balances
   }
 }
 

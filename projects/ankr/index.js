@@ -1,34 +1,50 @@
-const sdk = require('@defillama/sdk');
-const { getaETHcTvl, getaMATICbTvl, getaDOTbTvl, getaKSMbTvl } = require('../config/ankr/ethereum');
-const { getaFTMbTvl } = require('../config/ankr/fantom');
-const { getaAVAXbTvl } = require('../config/ankr/avalanche');
-const { getaBNBbTvl } = require('../config/ankr/binance');
+const sdk = require("@defillama/sdk");
+const axios = require("axios");
+const retry = require("async-retry");
+const { toUSDTBalances } = require("../helper/balances");
 
-const wethAddress = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+async function getTvls(serviceName, key) {
+  const response = await retry(async (_) =>
+    axios.get("https://api.stkr.io/v1alpha/metrics")
+  );
+  const idx = response.data.services.findIndex(
+    (service) => service.serviceName === serviceName
+  );
+  return idx > -1 ? response.data.services[idx][key] : 0;
+}
 
-async function tvl(block) {
-  const supply = await sdk.api.erc20.totalSupply({
-    target: '0xE95A203B1a91a908F9B9CE46459d101078c2c3cb',
-    block
-  })
+async function getETHTvl() {
+  return toUSDTBalances(await getTvls("eth", "totalStakedUsd"));
+}
 
-  return {
-    [wethAddress]: supply.output
-  }
+async function getBscTvl() {
+  return toUSDTBalances(await getTvls("bnb", "totalStakedUsd"));
+}
+
+async function getAvaxTvl() {
+  return toUSDTBalances(await getTvls("avax", "totalStakedUsd"));
+}
+
+async function getFantomTvl() {
+  return toUSDTBalances(await getTvls("ftm", "totalStakedUsd"));
+}
+
+async function getPolygonTvl() {
+  return toUSDTBalances(await getTvls("polygon", "totalStakedUsd"));
 }
 
 module.exports = {
   ethereum: {
-    tvl: sdk.util.sumChainTvls([getaETHcTvl,getaDOTbTvl,getaKSMbTvl,getaMATICbTvl])    
+    tvl: sdk.util.sumChainTvls([getETHTvl, getPolygonTvl]),
   },
   bsc: {
-    tvl: getaBNBbTvl,
+    tvl: getBscTvl,
   },
   avalanche: {
-    tvl: getaAVAXbTvl,
+    tvl: getAvaxTvl,
   },
   fantom: {
-    tvl: getaFTMbTvl,
+    tvl: getFantomTvl,
   },
-  methodology: `We get the total supply of aETHc, the ETH staking contract and convert it to USD.`
-}
+  methodology: `We get the total staked amount and total staked USD from Ankr's official API.`,
+};
