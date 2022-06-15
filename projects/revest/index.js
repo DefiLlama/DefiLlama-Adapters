@@ -1,4 +1,6 @@
 const { default: axios } = require("axios");
+var BigNumber = require("big-number");
+
 const {
   sumTokensAndLPsSharedOwners,
   addTokensAndLPs,
@@ -9,7 +11,9 @@ const {
   transformPolygonAddress,
 } = require("../helper/portedTokens.js");
 
+const { createClient } = require("urql");
 const { ethers } = require("ethers");
+const fetch = require("isomorphic-unfetch");
 
 const HOLDERS = {
   ethereum: "0xA81bd16Aa6F6B25e66965A2f842e9C806c0AA11F",
@@ -25,14 +29,6 @@ const MIN_BLOCK = {
   avax: 0,
 };
 
-const eventLog_addresses = {
-  fantom: ["0xb80f5a586BC247D993E6dbaCD8ADD211ec6b0cA5"],
-};
-
-const tokenAddresses = {
-  fantom: { LQDR: "0x10b620b2dbAC4Faa7D7FFD71Da486f5D44cd86f9" },
-};
-
 const providers = {
   fantom: "https://rpc.ftm.tools/",
 };
@@ -41,7 +37,12 @@ async function mainnetTVL(time, block) {
   const tokenRes = await axios.get(
     "https://defi-llama-feed.vercel.app/api/address"
   );
-  const balances = {};
+
+  const APIURL =
+    "https://api.thegraph.com/subgraphs/name/revest-finance/revest-mainnet-subgraph";
+
+  const balances = await queryGraph("", APIURL, tokenRes);
+
   await calculateTVL(tokenRes, balances, block);
   return balances;
 }
@@ -61,80 +62,16 @@ async function fantomTVL(time, block) {
     "https://defi-llama-feed.vercel.app/api/address?chainId=250"
   );
 
-  const balances = {};
   const transform = await transformFantomAddress();
+
+  const APIURL =
+    "https://api.thegraph.com/subgraphs/name/revest-finance/revestfantomtvl";
+
+  const balances = await queryGraph("fantom:", APIURL, tokenRes);
+
   await calculateTVL(tokenRes, balances, block, "fantom", transform);
 
-  for (var x = 0; x < eventLog_addresses["fantom"].length; x++) {
-    let event_balance = await parse_event_logs_for_balance(
-      "fantom",
-      eventLog_addresses["fantom"][x]
-    );
-
-    //TBH i'm not sure this is the intended solution but i'm rolling with it anyways
-    balances["fantom:" + eventLog_addresses["fantom"][x]] = ethers.utils
-      .parseEther(event_balance.toString())
-      .toString();
-
-    console.log(balances);
-  }
-
   return balances;
-}
-
-async function parse_event_logs_for_balance(
-  network,
-  deposit_address,
-  token = null
-) {
-  const provider = new ethers.providers.JsonRpcProvider(providers[network]);
-
-  let abi = [
-    "event DepositERC20OutputReceiver(address indexed mintTo, address indexed token, uint amountTokens, uint indexed fnftId, bytes extraData)",
-    "event WithdrawERC20OutputReceiver(address indexed caller, address indexed token, uint amountTokens, uint indexed fnftId, bytes extraData)",
-  ];
-
-  let balance = 0;
-
-  let deposit_contract = new ethers.Contract(deposit_address, abi, provider);
-
-  let DepositFilter = deposit_contract.filters.DepositERC20OutputReceiver(
-    null,
-    token,
-    null,
-    null,
-    null
-  );
-  let WithdrawFilter = deposit_contract.filters.WithdrawERC20OutputReceiver(
-    null,
-    token,
-    null,
-    null,
-    null
-  );
-
-  DepositFilter.fromBlock = WithdrawFilter.fromBlock = MIN_BLOCK["fantom"];
-  DepositFilter.toBlock = WithdrawFilter.toBlock = "latest";
-
-  let deposits = await provider.getLogs(DepositFilter);
-  let withdrawals = await provider.getLogs(WithdrawFilter);
-
-  let events = deposits.map((log) => deposit_contract.interface.parseLog(log));
-
-  for (let i in events) {
-    let txn = events[i];
-    balance += Number(ethers.utils.formatEther(txn.args.amountTokens));
-  }
-
-  events = withdrawals.map((log) => deposit_contract.interface.parseLog(log));
-  for (let i in events) {
-    let txn = events[i];
-    balance -= Number(ethers.utils.formatEther(txn.args.amountTokens));
-  }
-
-  console.log("TOTAL BALANCE: ", balance);
-
-  return balance;
 }
 
 async function avaxTVL(time, block) {
@@ -152,6 +89,68 @@ function sumTvl(tvlList = []) {
     const results = await Promise.all(tvlList.map((fn) => fn(...args)));
     return results.reduce((a, c) => Object.assign(a, c), {});
   };
+}
+
+async function queryGraph(chain, graph_api, tokenRes) {
+  let balances = {};
+  //for each token we care about in the array
+  for (let i = 0; i < tokenRes.data.body.length; i++) {
+    let totalBalance = 0;
+    let skipAmount = 0;
+    let objReturned = 0;
+
+    do {
+      const tokensQuery = `
+      query {
+        tokenVaultInteractions (
+            where: {
+              token: \"${tokenRes.data.body[i]}"
+            }
+            skip: ${skipAmount}
+        ) {
+          isDeposit
+          amountTokens
+        }
+      }
+    `;
+
+      const client = createClient({
+        url: graph_api,
+      });
+
+      const data = await client.query(tokensQuery).toPromise();
+
+      for (let y = 0; y < data.data.tokenVaultInteractions.length; y++) {
+        let bal = Number(
+          ethers.utils.formatEther(
+            data.data.tokenVaultInteractions[y].amountTokens
+          )
+        );
+        if (data.data.tokenVaultInteractions[y].isDeposit == true) {
+          // console.log(Number(ethers.utils.formatEther(data.data.tokenVaultInteractions[y].amountTokens)))
+          totalBalance += bal;
+        } else {
+          totalBalance -= bal;
+        }
+      }
+
+      // console.log(`Length: ${data.data.tokenVaultInteractions.length}`)
+      skipAmount += 100;
+      objReturned = data.data.tokenVaultInteractions.length;
+    } while (objReturned != 0);
+    // console.log(`Total Balance ${tokenRes.data.body[i]}: ${totalBalance}`)
+    if (totalBalance < 0) {
+      balances[chain + tokenRes.data.body[i]] = ethers.utils
+        .parseEther("0")
+        .toString();
+    } else {
+      balances[chain + tokenRes.data.body[i]] = ethers.utils
+        .parseEther(totalBalance.toString())
+        .toString();
+    }
+  }
+
+  return balances;
 }
 
 async function calculateTVL(
@@ -182,6 +181,7 @@ async function calculateTVL(
       return { output: element };
     }),
   };
+
   await addTokensAndLPs(
     balances,
     tokens,
