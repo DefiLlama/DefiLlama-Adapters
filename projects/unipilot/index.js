@@ -1,29 +1,53 @@
 const sdk = require("@defillama/sdk");
-const unipilotActiveFactory = '0x4b8e58d252ba251e044ec63125e83172eca5118f'
 
 const { getChainTransform } = require("../helper/portedTokens");
 const getPositionDetails = require("./abis/getPositionDetails.json");
+
+const FACTORY_ADDRESSES = {
+  ethereum: {
+    activeFactory: "0x4b8e58d252ba251e044ec63125e83172eca5118f",
+    passiveFactory: "0x06c2ae330c57a6320b2de720971ebd09003c7a01",
+  },
+};
+
+const START_BLOCKS = {
+  ethereum: {
+    activeFactory: 14495907,
+    passiveFactory: 14495929,
+  },
+};
+
+async function getVaultLogs(chain, block, factoryType) {
+  const vaults = {};
+
+  const vaultLogs = (
+    await sdk.api.util.getLogs({
+      target: FACTORY_ADDRESSES[chain][factoryType],
+      topic: "VaultCreated(address,address,uint24,address)",
+      keys: [],
+      fromBlock: START_BLOCKS[chain][factoryType],
+      toBlock: block,
+    })
+  ).output;
+
+  for (let log of vaultLogs) {
+    vaults[`0x${log.topics[3].substr(-40)}`] = {
+      token0Address: `0x${log.topics[1].substr(-40)}`,
+      token1Address: `0x${log.topics[2].substr(-40)}`,
+    };
+  }
+
+  return vaults;
+}
 
 function protocolTvl(chain) {
   return async (timestamp, block, chainBlocks) => {
     const balances = {};
 
-    const vaultLogs = (await sdk.api.util.getLogs({
-      target: unipilotActiveFactory,
-      topic: 'VaultCreated(address,address,uint24,address)',
-      keys: [],
-      fromBlock: 14495907,
-      toBlock: block,
-    })).output;
+    const activeVaultLogs = await getVaultLogs(chain, block, "activeFactory");
+    const passiveVaultLogs = await getVaultLogs(chain, block, "passiveFactory");
 
-    const vaults = {};
-
-    for (let log of vaultLogs) {
-      vaults[`0x${log.topics[3].substr(-40)}`] = {
-        token0Address: `0x${log.topics[1].substr(-40)}`,
-        token1Address: `0x${log.topics[2].substr(-40)}`,
-      }
-    }
+    const vaults = { ...activeVaultLogs, ...passiveVaultLogs };
 
     const vaultCalls = [];
     const balanceCalls = [];
