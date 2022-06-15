@@ -1,6 +1,6 @@
 
-const lksmToKsm = require("../karura-staking/lksmToKsm.js");
 const { getKaruraAPI } = require('../helper/karura')
+const lksmToKsm = require("../karura-staking/lksmToKsm.js");
 // node test.js projects/karura-lending/index.js
 async function tvl() {
   const api = await getKaruraAPI();
@@ -26,7 +26,5 @@ async function tvl() {
 }
 
 module.exports = {
-  timetravel: false,
-  methodology: "Counts collateral in lending market",
   karura: { tvl },
 };

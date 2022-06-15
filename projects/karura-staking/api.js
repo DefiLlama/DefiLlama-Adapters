@@ -2,7 +2,7 @@ const lksmToKsm = require("./lksmToKsm.js");
 const { getKaruraAPI } = require('../helper/karura')
 
 async function tvl() {
-    const api = await getKaruraAPI();
+  const api = await getKaruraAPI();
 
   const ksmLocked = await lksmToKsm(
     api,
@@ -19,9 +19,6 @@ async function tvl() {
 }
 
 module.exports = {
-  timetravel: false,
-  methodology:
-    "TVL considers KSM tokens deposited to the Liquid-Staking program",
   karura: {
     tvl,
   },

@@ -131,7 +131,6 @@ async function transformAvaxAddress() {
       "0x53f7c5869a859f0aec3d334ee8b4cf01e3492f21": "0x030ba81f1c18d280636f32af80b9aad02cf0854e",
       "0x47afa96cdc9fab46904a55a6ad4bf6660b53c38a": "0x028171bca77440897b824ca71d1c56cac55b68a3",
       "0x574679ec54972cf6d705e0a71467bb5bb362919d": "avax:0x5817d4f0b62a59b17f75207da1848c2ce75e7af4",
-      "0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7": "0xdac17f958d2ee523a2206206994597c13d831ec7",
       "0x2f28add68e59733d23d5f57d94c31fb965f835d0": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",// sUSDC(Avalanche) -> USDC(Ethereum)
       "0xf04d3a8eb17b832fbebf43610e94bdc4fd5cf2dd": "bsc:0xe9e7cea3dedca5984780bafc599bd69add087d56", // sBUSD(Avalanche) -> BUSD(BSC)
       "0xb0a8e082e5f8d2a04e74372c1be47737d85a0e73": "polygon:0xac63686230f64bdeaf086fe6764085453ab3023f", // USV
@@ -1002,7 +1001,6 @@ const fixBalancesMapping = {
   oasis: fixOasisBalances,
   bittorrent: b => fixBalances(b, bittorrentFixMapping, { removeUnmapped: false }),
   syscoin: b => fixBalances(b, syscoinFixMapping, { removeUnmapped: true }),
-  syscoin: b => fixBalances(b, syscoinFixMapping, { removeUnmapped: false }),
   kava: b => fixBalances(b, kavaFixMapping, { removeUnmapped: false }),
   ethereum: b => fixBalances(b, ethereumFixMapping, { removeUnmapped: false }),
 }
