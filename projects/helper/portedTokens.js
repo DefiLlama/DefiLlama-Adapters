@@ -981,10 +981,6 @@ const ethereumFixMapping = {
   '0x0f83287ff768d1c1e17a42f44d644d7f22e8ee1d': { coingeckoId: 'upper-swiss-franc', decimals: 18, },
   '0x9fcf418b971134625cdf38448b949c8640971671': { coingeckoId: 'tether-eurt', decimals: 18, },
   '0x8751d4196027d4e6da63716fa7786b5174f04c15': { coingeckoId: 'wrapped-bitcoin', decimals: 18, },
-  '0x0f83287ff768d1c1e17a42f44d644d7f22e8ee1d': { coingeckoId: 'upper-swiss-franc', decimals: 18, },
-  '0x0f83287ff768d1c1e17a42f44d644d7f22e8ee1d': { coingeckoId: 'upper-swiss-franc', decimals: 18, },
-  '0x0f83287ff768d1c1e17a42f44d644d7f22e8ee1d': { coingeckoId: 'upper-swiss-franc', decimals: 18, },
-  '0x0f83287ff768d1c1e17a42f44d644d7f22e8ee1d': { coingeckoId: 'upper-swiss-franc', decimals: 18, },
 }
 
 const fixBalancesMapping = {
