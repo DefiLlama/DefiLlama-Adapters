@@ -1,16 +1,11 @@
-const axios = require("axios");
-const NIRVANA_API = "https://us-central1-nirvana-91051.cloudfunctions.net";
-const { toUSDTBalances } = require("../helper/balances");
-
-const client = axios.create({
-  baseURL: NIRVANA_API,
-});
+const { getTokenBalance } = require('../helper/solana');
+const ANA = "ANAxByE6G2WjFp7A4NqtWYXb3mgruyzZYg3spfxe6Lbo";
+const stakingContract = "CxuuSEv67PzNkMxqCvHeDUr6HKaadoz8NhTfxbQSJnaG";
 
 async function staking() {
-  const metrics = await client.get("/getLlama");
-  const { tvl } = metrics.data;
-  return toUSDTBalances(tvl);
-}
+  const balance = await getTokenBalance(ANA, stakingContract);
+  return { 'nirvana-ana': balance };
+};
 
 module.exports = {
   timetravel: false,

@@ -13,5 +13,8 @@ async function fetch() {
 
 module.exports = {
   timetravel: false,
+  solana: {
+    fetch
+  },
   fetch,
 };
