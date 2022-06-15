@@ -6,6 +6,7 @@ const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const creamAbi = require('../helper/abis/cream.json');
 const contracts = require("./contracts.json");
+const { requery } = require('../helper/requery');
 const chains = [
     "ethereum",
     "polygon",
@@ -17,49 +18,84 @@ const chains = [
     "optimism",
     "xdai",
     //"moonbeam"
-]// Object.keys(contracts);
+]; // Object.keys(contracts);
+const registryIds = {
+    "stableswap": 0,
+    "stableFactory": 3,
+    "crypto": 5,
+    "cryptoFactory": 6
+};
 
-async function getPools(block, chain, registry) {
-    const poolCount = (await sdk.api.abi.call({
+async function getPools(block, chain) {
+    const registries = (await sdk.api.abi.multiCall({
         block,
         chain,
-        target: registry,
+        calls: Object.values(registryIds).map(r => ({
+            params: r
+        })),
+        target: contracts[chain].addressProvider,
+        abi: abi.get_id_info,
+    })).output.map(r => r.output.addr);
+
+    const poolCounts = (await sdk.api.abi.multiCall({
+        block,
+        chain,
+        calls: registries.map(r => ({
+            target: r
+        })),
         abi: abi.pool_count
     })).output;
 
-    return (await sdk.api.abi.multiCall({
-        calls: [...Array(Number(poolCount)).keys()].map((n) => ({
-            params: n
-        })),
-        block,
-        chain,
-        target: registry,
-        abi: abi.pool_list
-    })).output;
+    const pools = {};
+    for (let i = 0; i < Object.values(registryIds).length; i++) {
+        pools[Object.keys(registryIds)[i]] =
+            (await sdk.api.abi.multiCall({
+                calls: [...Array(Number(poolCounts[i].output)).keys()].map(n => ({
+                    target: poolCounts[i].input.target,
+                    params: [n]
+                })),
+                block,
+                chain,
+                abi: abi.pool_list
+            })).output;
+    };
+
+    return pools;
 };
 
-function aggregateBalanceCalls(coins, nCoins, poolList) {
+function aggregateBalanceCalls(coins, nCoins, poolList, registry) {
     let calls = [];
-    coins.map((coin, i) => (
-        [...Array(Number(nCoins[i].output[0])).keys()].map(n => (
-            calls.push({
-                params: [poolList[i].output],
-                target: coin.output[n]
-            })))
-    ));
+    if (registry == 'cryptoFactory') {
+        coins.map((coin, i) => (
+            [...Array(Number(coin.output.length)).keys()].map(n => (
+                calls.push({
+                    params: [poolList[i].output],
+                    target: coin.output[n]
+                })))
+        ));
+    } else {
+        coins.map((coin, i) => (
+            [...Array(Number(nCoins[i].output[0])).keys()].map(n => (
+                calls.push({
+                    params: [poolList[i].output],
+                    target: coin.output[n]
+                })))
+        ));
+    };
     return calls;
 };
 
 async function fixGasTokenBalances(poolBalances, block, chain) {
     for (let i = 0; i < poolBalances.output.length; i++) {
         if (poolBalances.output[i].success == false
-            && poolBalances.output[i].input.target == contracts[chain].gasTokenDummy) {
+            && poolBalances.output[i].input.target.toLowerCase() == contracts[chain].gasTokenDummy) {
 
             const ethBalance = (await sdk.api.eth.getBalance({
                 target: poolBalances.output[i].input.params[0],
                 block,
                 chain
             })).output;
+
             poolBalances.output[i].success = true;
             poolBalances.output[i].output = ethBalance;
             poolBalances.output[i].input.target = contracts[chain].wrapped;
@@ -112,59 +148,93 @@ async function unwrapCreamTokens(balances, block, chain, creamTokens, transform)
             transform(underlying),
             balance
         );
-        delete balances[creamTokens[i]]
+        delete balances[creamTokens[i]];
+        delete balances[`${chain}:${creamTokens[i]}`];
+
     };
 };
 
 function deleteMetapoolBaseBalances(balances, chain) {
     for (let token of Object.values(contracts[chain].metapoolBases)) {
-        if (!(token in balances)) continue;
+        if (!(token in balances || `${chain}:${token}` in balances)) continue;
         delete balances[token];
+        delete balances[`${chain}:${token}`];
     };
 };
 
-function mapGaugeTokenBalances(calls) {
+function mapGaugeTokenBalances(calls, chain) {
     const mapping = { // token listed in coins() mapped to gauge token held in contract
-        "0xe7a24ef0c5e95ffb0f6684b813a78f2a3ad7d171": "0x19793b454d3afc7b454f206ffe95ade26ca6912c",
-        "0x7f90122bf0700f9e7e1f688fe926940e8839f353": "0xbf7e49483881c76487b0989cd7d9a8239b20ca41",
-        "0xd02a30d33153877bc20e5721ee53dedee0422b2f": "0xd4f94d0aaa640bbb72b5eec2d85f6d114d81a88e",
-        //"0x1337bedc9d22ecbe766df105c9623922a27963ec": "0x7f90122bf0700f9e7e1f688fe926940e8839f353"
+        //"0xe7a24ef0c5e95ffb0f6684b813a78f2a3ad7d171": "0x19793b454d3afc7b454f206ffe95ade26ca6912c", // maybe not? 4 0s poly
+        "0x7f90122bf0700f9e7e1f688fe926940e8839f353": {
+            to: "0xbf7e49483881c76487b0989cd7d9a8239b20ca41",
+            pools: ["0x30df229cefa463e991e29d42db0bae2e122b2ac7"],
+            chains: []
+        }, // need a pool conditional - only for (1) ['0x30dF229cefa463e991e29D42DB0bae2e122B2AC7']
+        "0xd02a30d33153877bc20e5721ee53dedee0422b2f": {
+            to: "0xd4f94d0aaa640bbb72b5eec2d85f6d114d81a88e",
+            pools: [],
+            chains: []
+        },
+        "0x1337bedc9d22ecbe766df105c9623922a27963ec": {
+            to: "0x5b5cfe992adac0c9d48e05854b2d91c73a003858",
+            pools: [],
+            chains: ["avax"]
+        },
+        "0x7f90122bf0700f9e7e1f688fe926940e8839f353": {
+            to: "0xbF7E49483881C76487b0989CD7d9A8239B20CA41",
+            pools: [],
+            chains: ["arbitrum"]
+        },
+        "0x27e611fd27b276acbd5ffd632e5eaebec9761e40": {
+            to: "0x8866414733F22295b7563f9C5299715D2D76CAf4",
+            pools: [],
+            chains: ["fantom"]
+        },
+        "0xd02a30d33153877bc20e5721ee53dedee0422b2f": {
+            to: "0xd4f94d0aaa640bbb72b5eec2d85f6d114d81a88e",
+            pools: [],
+            chains: ["fantom"]
+        }
     };
 
-    let a = calls.map(c => ({
-        target: mapping[c.target.toLowerCase()] || c.target,
-        params: c.params
-    }));
-
-    return a;
+    return calls.map(function (c) {
+        let target = c.target;
+        if (c.target.toLowerCase() in mapping
+            && (
+                mapping[c.target.toLowerCase()].pools.includes(c.params[0].toLowerCase())
+                || mapping[c.target.toLowerCase()].chains.includes(chain)
+            )
+        ) {
+            target = mapping[c.target.toLowerCase()].to;
+        };
+        return { target, params: c.params };
+    });
 };
 
-async function unwrapPools(balances, block, chain, transform, target, nCoinsAbi, getCoinsAbi) {
-    const poolList = await getPools(block, chain, target)
-
+async function unwrapPools(balances, block, chain, transform, poolList, registry) {
     const [{ output: nCoins }, { output: coins }] = await Promise.all([
         sdk.api.abi.multiCall({
             calls: poolList.map((p) => ({
-                params: p.output
+                target: p.input.target,
+                params: [p.output]
             })),
             block,
             chain,
-            target,
-            abi: nCoinsAbi
+            abi: abi.get_n_coins[registry]
         }),
         sdk.api.abi.multiCall({
             calls: poolList.map((p) => ({
+                target: p.input.target,
                 params: p.output
             })),
             block,
             chain,
-            target,
-            abi: getCoinsAbi
+            abi: abi.get_coins[registry]
         })
     ]);
 
-    let calls = aggregateBalanceCalls(coins, nCoins, poolList);
-    calls = mapGaugeTokenBalances(calls);
+    let calls = aggregateBalanceCalls(coins, nCoins, poolList, registry);
+    calls = mapGaugeTokenBalances(calls, chain);
 
     let poolBalances = await sdk.api.abi.multiCall({
         calls,
@@ -172,66 +242,46 @@ async function unwrapPools(balances, block, chain, transform, target, nCoinsAbi,
         chain,
         abi: 'erc20:balanceOf'
     });
-
-
+    requery(poolBalances, chain, block, 'erc20:balanceOf');
     await fixGasTokenBalances(poolBalances, block, chain);
     try {
-    sdk.util.sumMultiBalanceOf(balances, poolBalances, true, transform);
+        sdk.util.sumMultiBalanceOf(balances, poolBalances, true, transform);
     } catch (e) {
         console.log(e)
-        let a = chain
-         console.log(chain)
-         
+        console.log(chain)
     }
     await fixWrappedTokenBalances(balances, block, chain, transform);
     deleteMetapoolBaseBalances(balances, chain);
 
     return balances;
-};
+}; // node test.js projects/curve/index.js
 
 function tvl(chain) {
     return async (_t, _e, chainBlocks) => {
         let balances = {};
         const transform = await getChainTransform(chain);
+        const poolList = await getPools(chainBlocks[chain], chain);
 
-        const registry = (await sdk.api.abi.call({
-            block: chainBlocks[chain],
-            chain,
-            target: contracts[chain].addressProvider,
-            abi: abi.get_registry
-        })).output;
-
-        await unwrapPools(
-            balances,
-            chainBlocks[chain],
-            chain,
-            transform,
-            registry,
-            abi.get_n_coins,
-            abi.get_coins
-        );
-
-        if (!('metapoolFactory' in contracts[chain])) return balances;
-
-        await unwrapPools(
-            balances,
-            chainBlocks[chain],
-            chain,
-            transform,
-            contracts[chain].metapoolFactory,
-            abi.get_n_coins_metapool,
-            abi.get_coins_metapool
-        );
+        for (let registry of Object.keys(poolList)) {
+            await unwrapPools(
+                balances,
+                chainBlocks[chain],
+                chain,
+                transform,
+                poolList[registry],
+                registry
+            );
+        };
 
         return balances;
-    }; // node test.js projects/curve/index.js
+    };
 };
 
 const chainTypeExports = (chains) => {
     let exports = chains.reduce((obj, chain) => (
         { ...obj, [chain]: { tvl: tvl(chain) } }
     ), {});
-    exports.ethereum['staking'] = staking(contracts.ethereum.veCRV, contracts.ethereum.CRV);
+    //exports.ethereum['staking'] = staking(contracts.ethereum.veCRV, contracts.ethereum.CRV);
     return exports;
 };
 

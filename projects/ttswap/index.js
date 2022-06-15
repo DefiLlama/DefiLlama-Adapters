@@ -16,4 +16,4 @@ module.exports = {
   },
   methodology:
     "Counts the liquidity on all pairs. Metrics come from https://ttswap.space/#/stats",
-};
+}

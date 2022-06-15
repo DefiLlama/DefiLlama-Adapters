@@ -10,7 +10,7 @@ const creamAbi = require('./abis/cream.json')
 const { unwrapCrv, resolveCrvTokens } = require('./resolveCrvTokens')
 const activePoolAbi = require('./ankr/abis/activePool.json')
 const wethAddressAbi = require('./ankr/abis/wethAddress.json');
-const { isLP, DEBUG_MODE } = require('./utils')
+const { isLP, DEBUG_MODE, getUniqueAddresses, } = require('./utils')
 const wildCreditABI = require('../wildcredit/abi.json')
 
 const yearnVaults = {
@@ -913,6 +913,8 @@ async function sumTokens2({
 }) {
 
   if (!tokensAndOwners.length) {
+    tokens = getUniqueAddresses(tokens)
+    owners = getUniqueAddresses(owners)
     if (owner) tokensAndOwners = tokens.map(t => [t, owner])
     if (owners.length) tokensAndOwners = tokens.map(t => owners.map(o => [t, o])).flat()
   }

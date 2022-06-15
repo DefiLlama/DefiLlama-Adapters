@@ -55,6 +55,7 @@ const tvl = (chain) => async (_timestamp, _ethBlock, chainBlocks) => {
 }
 
 module.exports = {
+    misrepresentedTokens: true,
     fantom: {
         tvl: tvl('fantom'),
         borrowed: borrowed('fantom'),
