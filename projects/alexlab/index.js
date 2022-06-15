@@ -15,28 +15,9 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 
   // Retrieve contract balances using the blockstacks hiro REST API
   const url = `${ALEX_API}/stats/tvl`;
-  const vault_balances_responses = await retry(
-    async () => await axios.get(url)
-  );
-  const stx_balance = vault_balances_responses.data["stx"].balance;
-  sdk.util.sumSingleBalance(
-    balances,
-    "blockstack",
-    BigNumber(stx_balance).div(1e6).toFixed(0)
-  );
-
-  // Extract fungible tokens list and build a tokenBalances object to call sumMultiBalanceOf
-  const tokens = vault_balances_responses.data.fungible_tokens;
-  const tokenBalances = {
-    output: Object.keys(tokens).map((t) => ({
-      input: { target: t },
-      success: true,
-      output: BigNumber(tokens[t].balance).div(1e8).toFixed(0),
-    })),
-  };
-  sdk.util.sumMultiBalanceOf(balances, tokenBalances, true, transformAddress);
-
-  return balances;
+  const alexResponse = await retry(async () => await axios.get(url));
+  const total_tvl = alexResponse.tvl;
+  return total_tvl;
 }
 
 module.exports = {
