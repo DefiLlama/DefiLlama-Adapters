@@ -987,6 +987,15 @@ const ethereumFixMapping = {
   '0x8751d4196027d4e6da63716fa7786b5174f04c15': { coingeckoId: 'wrapped-bitcoin', decimals: 18, },
 }
 
+const sxFixMapping = {
+  '0x90d27E008d5Db7f0a3c90a15A8Dcc4Ca18cFc670': { coingeckoId: 'sx-network', decimals: 18, },
+  '0xA173954Cc4b1810C0dBdb007522ADbC182DaB380': { coingeckoId: 'ethereum', decimals: 18, },
+  '0xe2aa35C2039Bd0Ff196A6Ef99523CC0D3972ae3e': { coingeckoId: 'usd-coin', decimals: 6, },
+  '0xfa6F64DFbad14e6883321C2f756f5B22fF658f9C': { coingeckoId: 'matic-network', decimals: 18, },
+  '0x53813CD4aCD7145A716B4686b195511FA93e4Cb7': { coingeckoId: 'dai', decimals: 18, },
+  '0xa0cB58E7F783fce0F4042C790ea3045c48CD51e8': { coingeckoId: 'shark', decimals: 18, },
+}
+
 const fixBalancesMapping = {
   avax: fixAvaxBalances,
   evmos: b => fixBalances(b, evmosFixMapping, { removeUnmapped: false }),
@@ -1009,6 +1018,7 @@ const fixBalancesMapping = {
   syscoin: b => fixBalances(b, syscoinFixMapping, { removeUnmapped: true }),
   kava: b => fixBalances(b, kavaFixMapping, { removeUnmapped: false }),
   ethereum: b => fixBalances(b, ethereumFixMapping, { removeUnmapped: false }),
+  sx: b => fixBalances(b, sxFixMapping, { removeUnmapped: true }),
 }
 
 const chainTransforms = {
