@@ -16,4 +16,5 @@ module.exports = {
   fantom: v2("fantom", "0x6D77F7a0e9F8EBE1C0FF2d757FC5a411640309ac"),
   avalanche: v2("avax", "0xC043BA54F34C9fb3a0B45d22e2Ef1f171272Bc9D"),
   optimism: v2("optimism", "0x872B9e8aea5D65Fbf29b8B05bfA4AA3fE94cC11f"),
+  harmony: v2("harmony", "0xeb3DF52E0254e22434f044C3b62291919501Ee7D"),
 }
