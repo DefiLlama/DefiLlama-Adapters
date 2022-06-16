@@ -13,7 +13,6 @@ const config = {
     graph: 'https://api.thegraph.com/subgraphs/name/revest-finance/revest-mainnet-subgraph',
     chainId: 1,
     revest: '0x120a3879da835a5af037bb2d1456bebd6b54d4ba',
-    lp: '0x6490828bd87be38279a36f029f3b9af8b4e14b49',
   },
   polygon: {
     holder: '0x3cCc20d960e185E863885913596b54ea666b2fe7',
@@ -62,12 +61,11 @@ module.exports = {
 
 
 Object.keys(config).forEach(chain => {
-  const { chainId, holder, revest, lp, graph, } = config[chain]
+  const { chainId, holder, revest, graph, } = config[chain]
   module.exports[chain] = {
     tvl: async (_, _b, { [chain]: block }) => {
       const blacklist = []
       if (revest) blacklist.push(revest.toLowerCase())
-      if (lp) blacklist.push(lp.toLowerCase())
       const transform = await getChainTransform(chain)
       const tokenURL = `${tokenAddress}?chainId=${chainId}`
       let { body: tokens } = await get(tokenURL)
@@ -77,14 +75,6 @@ Object.keys(config).forEach(chain => {
       return queryGraph(graph, tokens, transform, balances)
     },
   }
-
-  if (lp)
-    module.exports[chain].pool2 = async (_, _b, { [chain]: block }) => {
-      const transform = await getChainTransform(chain)
-      const balances = await sumTokens2({ chain, block, owner: holder, tokens: [lp], resolveLP: true })
-      if (!graph) return balances
-      return queryGraph(graph, [lp], transform, balances)
-    }
 
   if (revest)
     module.exports[chain].staking = async (_, _b, { [chain]: block }) => {
