@@ -1,10 +1,10 @@
-const { sumTokens2, unwrapLPsAuto, } = require("../helper/unwrapLPs")
-const { get } = require("../helper/http")
+const { sumTokens2, } = require("../helper/unwrapLPs")
+const { request } = require("graphql-request");
+const { get, } = require("../helper/http")
 const sdk = require('@defillama/sdk')
 const { getChainTransform } = require('../helper/portedTokens')
-const { staking } = require('../helper/staking')
-const { pool2 } = require('../helper/pool2')
 const { getUniqueAddresses } = require('../helper/utils')
+const BigNumber = require("bignumber.js");
 
 const tokenAddress = 'https://defi-llama-feed.vercel.app/api/address'
 const config = {
@@ -62,7 +62,7 @@ module.exports = {
 
 
 Object.keys(config).forEach(chain => {
-  const { chainId, holder, revest, lp } = config[chain]
+  const { chainId, holder, revest, lp, graph, } = config[chain]
   module.exports[chain] = {
     tvl: async (_, _b, { [chain]: block }) => {
       const blacklist = []
@@ -72,20 +72,75 @@ Object.keys(config).forEach(chain => {
       const tokenURL = `${tokenAddress}?chainId=${chainId}`
       let { body: tokens } = await get(tokenURL)
       tokens = getUniqueAddresses(tokens).filter(t => !blacklist.includes(t)) // filter out staking and LP tokens
-      // const balances = await sumTokens2({ chain, block, owner: holder, tokens })
-      const { output: tokenRes } = await sdk.api.abi.multiCall({
-        target: holder,
-        abi: tokenTrackersABI,
-        calls: tokens.map(i => ({ params: i})),
-        chain, block,
-      })
-      const balance2 = {}
-      tokenRes.forEach(i => sdk.util.sumSingleBalance(balance2, transform(i.input.params[0]), i.output.lastBalance))
-      await unwrapLPsAuto({ balances: balance2, block, chain, transformAddress: transform, })
-      // console.log(chain, balances, balance2)
-      return balance2
+      const balances = await sumTokens2({ chain, block, owner: holder, tokens, resolveLP: true })
+      if (!graph) return balances
+      return queryGraph(graph, tokens, transform, balances)
     },
-    pool2: lp ? pool2(holder, lp, chain) : undefined,
-    staking: revest ? staking(holder, revest, chain): undefined,
   }
+
+  if (lp)
+    module.exports[chain].pool2 = async (_, _b, { [chain]: block }) => {
+      const transform = await getChainTransform(chain)
+      const balances = await sumTokens2({ chain, block, owner: holder, tokens: [lp], resolveLP: true })
+      if (!graph) return balances
+      return queryGraph(graph, [lp], transform, balances)
+    }
+
+  if (revest)
+    module.exports[chain].staking = async (_, _b, { [chain]: block }) => {
+      const transform = await getChainTransform(chain)
+      const balances = await sumTokens2({ chain, block, owner: holder, tokens: [revest] })
+      if (!graph) return balances
+      return queryGraph(graph, [revest], transform, balances)
+    }
 })
+
+
+async function queryGraph(graph_api, tokens, transform, balances) {
+  //for each token we care about in the array
+  for (let i = 0; i < tokens.length; i++) {
+    let totalBalance = 0;
+    let skipAmount = 0;
+    let objReturned = 0;
+
+    do {
+      const tokensQuery = `
+      query {
+        tokenVaultInteractions (
+            where: {
+              token: \"${tokens[i]}"
+            }
+            skip: ${skipAmount}
+        ) {
+          isDeposit
+          amountTokens
+        }
+      }
+    `;
+
+      const data = await request(graph_api, tokensQuery)
+
+      for (let y = 0; y < data.tokenVaultInteractions.length; y++) {
+        let bal = +data.tokenVaultInteractions[y].amountTokens;
+        if (data.tokenVaultInteractions[y].isDeposit == true) {
+          // console.log(Number(ethers.utils.formatEther(data.tokenVaultInteractions[y].amountTokens)))
+          totalBalance += bal;
+        } else {
+          totalBalance -= bal;
+        }
+      }
+
+      // console.log(`Length: ${data.tokenVaultInteractions.length}`)
+      skipAmount += 100;
+      objReturned = data.tokenVaultInteractions.length;
+    } while (objReturned != 0);
+    // console.log(`Total Balance ${tokens[i]}: ${totalBalance}`)
+    if (totalBalance < 0) {
+      // throw new Error('balance should never be zero  token: ' + tokens[i] + totalBalance)
+      console.log('balance should never be zero  token: ' + tokens[i] + totalBalance)
+      totalBalance = 0
+    }
+    sdk.util.sumSingleBalance(balances, transform(tokens[i]), BigNumber(totalBalance).toFixed(0))
+  }
+  return balances;
+}
