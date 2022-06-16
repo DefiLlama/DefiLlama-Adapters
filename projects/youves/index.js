@@ -9,7 +9,7 @@ const { PromisePool } = require('@supercharge/promise-pool');
 const { default: BigNumber } = require("bignumber.js");
 let graphQLClient
 
-const indexer = "https://youves-mainnet-indexer.dev.gke.papers.tech/v1/graphql"
+const indexer = "https://youves-mainnet-indexer.prod.gke.papers.tech/v1/graphql"
 const engines = {
   uUSDTezos: 'KT1FFE2LC5JpVakVjHm5mM36QVp2p3ZzH4hH',
   uUSDtzBTCLP: 'KT1FzcHaNhmpdYPNTgfb8frYXx7B5pvVyowu',
