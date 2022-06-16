@@ -1,18 +1,18 @@
-const ethers = require("ethers");
-const { config } = require("@defillama/sdk/build/api");
+// const ethers = require("ethers");
+// const { config } = require("@defillama/sdk/build/api");
 const { getUniTVL } = require("../helper/unknownTokens")
 
 // TODO: Remove when no longer needed
-config.setProvider(
-  "sx",
-  new ethers.providers.StaticJsonRpcProvider(
-    "https://rpc.sx.technology",
-    {
-      name: "sx",
-      chainId: 416,
-    }
-  )
-);
+// config.setProvider(
+//   "sx",
+//   new ethers.providers.StaticJsonRpcProvider(
+//     "https://rpc.sx.technology",
+//     {
+//       name: "sx",
+//       chainId: 416,
+//     }
+//   )
+// );
 
 module.exports = {
   sx: {
