@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk');
 
-const predyContract = '0xc7ec02AEeCdC9087bf848c4C4f790Ed74A93F2AF'
+const predyContract = '0xAdBAeE9665C101413EbFF07e20520bdB67C71AB6'
 
 const weth = "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1";
 const usdc = "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8";
