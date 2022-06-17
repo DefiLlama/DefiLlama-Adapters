@@ -1,5 +1,4 @@
 const sdk = require('@defillama/sdk');
-const BigNumber = require('bignumber.js');
 const {lendingMarket} = require('../helper/methodologies')
 
 const VaultController = "0x4aaE9823Fb4C70490F1d802fC697F3ffF8D5CbE3"
@@ -95,16 +94,8 @@ const getVaultCount = async (block) => {
     abi: {name:"vaultsMinted", type:"function",stateMutability:"view",outputs:[{internalType:"uint96",type:"uint96"}]},
   })).output;
 }
-const getOracleMaster = async (block) => {
-  return (await sdk.api.abi.call({
-    block,
-    target: VaultController,
-    params: [],
-    abi: {name:"getOracleMaster", type:"function",stateMutability:"view",outputs:[{internalType:"address",type:"address"}]},
-  })).output;
-}
 
-const getVaults = async (block,start,stop) => {
+const getVaults = async (block) => {
   return getVaultCount()
     .then(async (c)=>{
       return (await sdk.api.abi.call({
