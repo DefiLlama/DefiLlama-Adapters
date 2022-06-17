@@ -21,7 +21,7 @@ async function getLPData({
   lps = getUniqueAddresses(lps)
   const pairAddresses = allLps ? lps : await getLPList(lps)
   const pairCalls = pairAddresses.map((pairAddress) => ({ target: pairAddress, }))
-  let token0Addresses, token1Addresses
+  let token0Addresses, token1Addresses, reserves
 
   [token0Addresses, token1Addresses, reserves] = await Promise.all([
     sdk.api.abi.multiCall({ abi: token0, chain, calls: pairCalls, block, }).then(({ output }) => output),
