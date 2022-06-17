@@ -1,14 +1,15 @@
 const axios = require('axios');
 const { getApiTvl } = require('./helper/historicalApi');
-const sdk = require('@defillama/sdk')
 
 const historicalUrl = "https://pnetwork.watch/api/datasources/proxy/1/query?db=pnetwork-volumes-1&q=SELECT%20sum(%22tvl_number%22)%20FROM%20%22tvl_test%22%20WHERE%20time%20%3E%3D%201600150697388ms%20GROUP%20BY%20time(1d)%2C%20%22host_blockchain%22%3BSELECT%20sum(%22tvl_number%22)%20FROM%20%22tvl_test%22%20WHERE%20time%20%3E%3D%201600150697388ms%20GROUP%20BY%20time(1d)%20fill(null)&epoch=ms"
 const currentUrl = "https://chart.ptokens.io/index.php?a=assets"
+let _response
 
 function getChainTvl(chain) {
     async function current() {
-        let response = await axios.get(currentUrl)
-        return response.data.filter(c=>c.hostBlockchain===chain).reduce((total, asset)=>total+asset.tvl_number, 0);
+        if (!_response) _response = axios.get(currentUrl)
+        let response = await _response
+        return response.data.filter(c=>c.hostBlockchain===chain && !['EFX', 'PNT',].includes(c.name)).reduce((total, asset)=>total+asset.tvl_number, 0);
     }
 
     async function historical() {
