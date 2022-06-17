@@ -2,7 +2,6 @@ const sdk = require('@defillama/sdk');
 const { default: BigNumber } = require('bignumber.js');
 
 const contracts = {
-    "treasury": "0x8E0dfafD247236B9025d3648F195386caD5b2da1",
     "trading": "0xD296169A91C8eD59C08eb2f7D831bd646a8AF2C8",
     "ftmPool": "0xBec7d4561037e657830F78b87e780AeE1d09Fc7B",
     "usdcPool": "0x7A494C755911Ce06444C47248108439a06Ac028C",
@@ -36,7 +35,7 @@ async function tvl(_time, _ethBlock, chainBlocks) {
 };
 
 module.exports = {
-    methodology: "ETH locked on trading contracts",
+    methodology: "FTM & USDC held in the pool and trading contracts",
     fantom: {
         tvl
     }
