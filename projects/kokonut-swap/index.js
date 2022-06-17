@@ -8,11 +8,12 @@ const chain = 'klaytn';
 
 async function tvl(timestamp, block, chainBlocks) {
   const balances = {};
+  block = chainBlocks[chain]
 
   const poolList = (await sdk.api.abi.call({
     target: registry_addr,
     abi: abi.getPoolList,
-    block: chainBlocks[chain],
+    block,
     chain
   })).output;
 
@@ -22,25 +23,39 @@ async function tvl(timestamp, block, chainBlocks) {
       params: p
     })),
     abi: abi.getPoolPriceInfo,
-    block: chainBlocks[chain],
+    block,
     chain
   });
 
   await requery(info, chain, chainBlocks[chain], abi.getPoolPriceInfo);
+  const gasToken = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'.toLowerCase()
+  const tokenSet = new Set()
 
-  const successes = info.output.filter(o => o.success == true)
-  if (successes.length == 0) throw 'not a single call was successful'
+  for (const { output: poolInfo } of info.output) {
+    for (let token of poolInfo.tokens) {
+      token = token.toLowerCase()
+      if (token !== gasToken) tokenSet.add(token)
+    }
+  }
 
-  for (let i = 0; i < info.output.length; i++) {
-    if (!info.output[i].success) continue;
-    const poolInfo = info.output[i].output;
-    for (let j = 0; j < poolInfo.tokens.length; j++) {
-      const decimal = poolInfo.tokens[j]==`0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE`?18:
-        (await sdk.api.erc20.decimals(poolInfo.tokens[j], chain)).output
-      const balance = poolInfo.prices[j] / 10**(18) * poolInfo.balances[j] / 10**(decimal);
+  const { output: tokenResponse } = await sdk.api.abi.multiCall({
+    abi: 'erc20:decimals',
+    calls: [...tokenSet].map(i => ({ target: i })),
+    chain, block,
+  })
+
+  const tokenMapping = {}
+  tokenResponse.forEach(i => tokenMapping[i.input.target] = i.output)
+
+
+  for (const { output: poolInfo } of info.output) {
+    for (let j = 0; j < poolInfo.tokens.length;j++) {
+      const token = poolInfo.tokens[j].toLowerCase()
+      const decimal = token === gasToken ? 18 : tokenMapping[token]
+      const balance = poolInfo.prices[j] / 1e18 * poolInfo.balances[j] / 10 ** (decimal);
       sdk.util.sumSingleBalance(balances, 'usd-coin', balance);
-    };
-  };
+    }
+  }
 
   return balances;
 };
@@ -49,7 +64,7 @@ async function staking(timestamp, block, chainBlocks) {
   const info = (await sdk.api.abi.call({
     target: helper_addr,
     abi: abi.getStakedEyePriceInfo,
-    block: chainBlocks[chain],
+    block,
     chain
   })).output;
 
