@@ -317,7 +317,7 @@ async function unwrapPools(
   requery(poolBalances, chain, block, "erc20:balanceOf");
   await fixGasTokenBalances(poolBalances, block, chain);
 
-  sdk.util.sumMultiBalanceOf(balances, poolBalances, true, transform);
+  sdk.util.sumMultiBalanceOf(balances, poolBalances, false, transform);
 
   await fixWrappedTokenBalances(balances, block, chain, transform);
   await handleUnlistedFxTokens(balances, chain);
