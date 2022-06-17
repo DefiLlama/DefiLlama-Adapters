@@ -154,8 +154,8 @@ module.exports = {
     borrowed
   },
   methodology: `${lendingMarket}.
-  For Interest Protocol, this is Reserve + Total Collateral Value
+  For Interest Protocol, TVL is Reserve + Total Collateral Value
   Reserve is found through calling USDC.getBalances(USDI)
-  Balances are found through first obtaining all vaults, their collaterals, and deposits, through VaultController.vaultSummaries(1,VaultController.vaultsMinted())
+  Balances are found through VaultController.vaultSummaries(1,VaultController.vaultsMinted())
   `
 };
