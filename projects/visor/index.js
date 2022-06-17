@@ -51,7 +51,7 @@ async function tvlEthereum(timestamp, block, chainBlocks) {
   ]);
 
   // Ethereum TVL
-  for (currTvl of tvls) {
+  for (const currTvl of tvls) {
     for (let [token, amount] of Object.entries(currTvl)) {
       sdk.util.sumSingleBalance(balances, token, amount);
     }

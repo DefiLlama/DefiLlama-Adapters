@@ -23,7 +23,7 @@ function getAvaxTvl(timestamp, block, chainBlocks) {
         }
 
         if (balances === 0) {
-            throw new Error(chainId)
+            throw new Error('avax fetch error')
 
         }
         return balances;
