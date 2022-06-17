@@ -48,7 +48,7 @@ const fetchCollateral = async (ts, _block, chainBlocks) => {
     target: HELPER_ADDR,
     abi: ABI.abi.find(i => i.name === 'getCollateralTVL')
   })
-  for (assetTvl of assetTvlLists){
+  for (let assetTvl of assetTvlLists){
     sum = sum.plus(assetTvl);
   }
   sum = sum.dividedBy(BigNumber(10).pow(decimal*2))
@@ -60,7 +60,7 @@ const fetchPool2 = async (ts, _block, chainBlocks) => {
   const decimal = 18;
 
   let klayswapPool2Tvl = BigNumber(0);
-  for (pool of KLAYSWAP_POOLS){
+  for (let pool of KLAYSWAP_POOLS){
     const { output: value} = await sdk.api.abi.call({
       chain, block,
       target: HELPER_ADDR,
@@ -70,7 +70,7 @@ const fetchPool2 = async (ts, _block, chainBlocks) => {
     klayswapPool2Tvl = klayswapPool2Tvl.plus(value);
   }
   let kokonutPool2Tvl = BigNumber(0);
-  for (pool of KOKONUT_POOLS){
+  for (let pool of KOKONUT_POOLS){
     const { output: value} = await sdk.api.abi.call({
       chain, block,
       target: HELPER_ADDR,
