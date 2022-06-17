@@ -39,8 +39,8 @@ async function fetchBalance(balances, token, engineAddress, decimals = 1, shareP
   let balance = oracleData["vault_aggregate"]["aggregate"]["sum"]["balance"] / 10 ** decimals
 
   if (token === 'tzbtc-lp') {
-    balancetZ = balance * sharePrice.xtzPool / sharePrice.lqtTotal
-    balanceBTC = balance * sharePrice.tokenPool / sharePrice.lqtTotal
+    const balancetZ = balance * sharePrice.xtzPool / sharePrice.lqtTotal
+    const balanceBTC = balance * sharePrice.tokenPool / sharePrice.lqtTotal
     sdk.util.sumSingleBalance(balances, 'tezos', balancetZ / 1e6)
     sdk.util.sumSingleBalance(balances, sharePrice.tokenAddress, balanceBTC)
     return;

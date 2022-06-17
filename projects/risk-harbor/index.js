@@ -33,6 +33,8 @@ async function terra(timestamp, ethBlock, chainBlocks) {
     });
   } while (paginationKey);
 
+  let paginationKey2
+
   do {
     const data2 = await queryV1Beta1(
       `bank/v1beta1/balances/${riskHarborOzoneAddress2}`,
