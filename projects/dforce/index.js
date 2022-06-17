@@ -49,6 +49,7 @@ let oracles = {
   "optimism": "0x4f9312A21F8853384E0f6141F3F9fB855d860161",
   "polygon": "0x9E8B68E17441413b26C2f18e741EAba69894767c",
   "avax": "0x5237d212F9BbC83d91c2cbd810D2b07808d94f08",
+  "kava": "0xe04cea4d02261923769D79Dd24D188C2cB29dB4A",
 }
 
 let allControllers = {
@@ -66,6 +67,7 @@ let allControllers = {
   "optimism": ["0xA300A84D8970718Dac32f54F61Bd568142d8BCF4"],
   "polygon": ["0x52eaCd19E38D501D006D2023C813d7E37F025f37"],
   "avax": ["0x078ad8d6faeD9DAeE55f5d446C80E0C81230DE6b"],
+  "kava": ["0xFBf64A8cAEA1D641affa185f850dbBF90d5c84dC"],
 }
 
 let yieldMarkets = {
@@ -133,6 +135,9 @@ const excludeAlliTokens = {
   "avax": [
     "0x73c01b355f2147e5ff315680e068354d6344eb0b", // iUSX
   ],
+  "kava": [
+    "0x9787af345e765a3fbf0f881c49f8a6830d94a514", // iUSX
+  ],
 }
 
 // Lock USX to cross chain to L2.
@@ -147,6 +152,7 @@ const dfStakingPools = "0x41602ccf9b1F63ea1d0Ab0F0A1D2F4fd0da53f60";
 const USXs = {
   "polygon": "0xCf66EB3D546F0415b368d98A95EAF56DeD7aA752",
   "avax": "0x73C01B355F2147E5FF315680E068354D6344Eb0b",
+  "kava": "0x9787aF345E765a3fBf0F881c49f8A6830D94A514",
 };
 
 /*==================================================
@@ -418,7 +424,7 @@ async function getTVLByChain(chain, block) {
 
   // For Polygon, USX is the original token.
   // we do not trafer USX from mainnet to polygon.
-  if (chain == 'polygon' || chain == 'avax') {
+  if (chain == 'polygon' || chain == 'avax' || chain == 'kava') {
     let { tvl: usxTVL } = await getTVLByTotalSupply(chain, USXs[chain], block);
     tvl = tvl.plus(usxTVL);
   }
@@ -450,6 +456,10 @@ async function avax(timestamp, ethBlock, chainBlocks) {
   return getTVLByChain('avax', chainBlocks['avax']);
 }
 
+async function kava(timestamp, ethBlock, chainBlocks) {
+  return getTVLByChain('kava', chainBlocks['kava']);
+}
+
 async function staking(timestamp, ethBlock, chainBlocks) {
   let dfStakingValue = await getDFStakingValue(ethBlock);
   return toUSDTBalances(dfStakingValue.toNumber());
@@ -474,6 +484,9 @@ module.exports = {
   },
   avax: {
     tvl: avax
+  },
+  kava: {
+    tvl: kava
   },
   start: 1564165044, // Jul-27-2019 02:17:24 AM +UTC
 }
