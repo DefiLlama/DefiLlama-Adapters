@@ -123,7 +123,7 @@ async function fixWrappedTokenBalances(balances, block, chain, transform) {
   }
 
   if ("sdTokens" in contracts[chain]) {
-    await unwrapSdTokens(balances, contracts[chain].sdTokens);
+    await unwrapSdTokens(balances, contracts[chain].sdTokens, chain);
   }
 }
 
@@ -224,7 +224,7 @@ function mapGaugeTokenBalances(calls, chain) {
   });
 }
 
-async function unwrapSdTokens(balances, sdTokens) {
+async function unwrapSdTokens(balances, sdTokens, chain) {
   const apiData = (await retry(
     async bail => await axios.get("https://lockers.stakedao.org/api/lockers")
   )).data.map(t => ({
