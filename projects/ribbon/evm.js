@@ -81,7 +81,7 @@ async function ethTvl(_, block) {
     addVault(balances, stETHCallVault, weth, block),
     addVault(balances, perpCallVault, perp, block),
     addVault(balances, apeCallVault, ape, block),
-    addBondCollateral(balances, rbnBondCollateral, rbn, block),
+    // addBondCollateral(balances, rbnBondCollateral, rbn, block),
   ]);
   return balances;
 }
