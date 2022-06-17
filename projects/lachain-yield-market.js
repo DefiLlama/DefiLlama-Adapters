@@ -13,6 +13,7 @@ async function fetch() {
 }
 
 module.exports = {
-  fetch
+  lachain: { fetch },
+  fetch,
 }
 
