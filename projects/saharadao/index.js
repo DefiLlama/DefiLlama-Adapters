@@ -123,8 +123,8 @@ async function calcLp(lps, block, chain, baseToken) {
 }
 
 async function calcChef(timestamp, block, chainBlocks) {
-  const farm = await calcLp(Contracts.cronos.mmfLps, block, "cronos", Contracts.cronos.mmf);
-  const farmMusd = await calcLp(Contracts.cronos.musdLps, block, "cronos", Contracts.cronos.musd);
+  const farm = await calcLp(Contracts.cronos.mmfLps, chainBlocks.cronos, "cronos", Contracts.cronos.mmf);
+  const farmMusd = await calcLp(Contracts.cronos.musdLps, chainBlocks.cronos, "cronos", Contracts.cronos.musd);
 
   return { ...farm, ...farmMusd };
 }
