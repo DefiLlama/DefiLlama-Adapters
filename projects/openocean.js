@@ -23,7 +23,6 @@ module.exports = {
         '0x526648286569cefc133ce78f5f7b519c1c6862e0',
       ], allLps: true, block, })
       const toa = Object.entries(data).map(([lp, tokens]) => Object.values(tokens).map(t => [t, lp])).flat()
-      console.log(toa)
       return sumTokens2({ tokensAndOwners: toa, block, })
     },
     staking: staking('0xb99d38eb69214e493b1183ffa3d561fc9f75d519', '0x7778360f035c589fce2f4ea5786cbd8b36e5396b',)
