@@ -23,7 +23,6 @@
     "bignumber.js": "^9.0.1",
     "blakejs": "^1.2.1",
     "borsh": "^0.7.0",
-    "cross-fetch": "^3.1.5",
     "curve25519-js": "^0.0.4",
     "dotenv": "^8.6.0",
     "ethers": "^5.6.5",
