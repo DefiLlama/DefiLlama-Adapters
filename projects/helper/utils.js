@@ -152,6 +152,15 @@ function log(...args) {
   }
 }
 
+function sliceIntoChunks(arr, chunkSize = 100) {
+  const res = [];
+  for (let i = 0; i < arr.length; i += chunkSize) {
+    const chunk = arr.slice(i, i + chunkSize);
+    res.push(chunk);
+  }
+  return res;
+}
+
 module.exports = {
   DEBUG_MODE,
   log,
@@ -167,4 +176,5 @@ module.exports = {
   mergeExports,
   getBalance,
   getUniqueAddresses,
+  sliceIntoChunks,
 }
