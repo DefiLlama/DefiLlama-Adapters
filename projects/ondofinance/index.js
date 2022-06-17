@@ -27,9 +27,9 @@ async function addEthBalances(addresses, block, balances) {
 async function tvl(timestamp, block, chainBlocks) {
     const balances = {};
     const data = await get("https://data.ondo.finance/v1/addresses")
-    partner_tokens = data["supported_tokens"]
-    ondo_multisigs = data["ondo_multisigs"]
-    ondo_lps = data["ondo_lps"]
+    const partner_tokens = data["supported_tokens"]
+    const ondo_multisigs = data["ondo_multisigs"]
+    const ondo_lps = data["ondo_lps"]
 
     await addEthBalances(ondo_multisigs, block, balances)
 
@@ -55,7 +55,7 @@ async function tvl(timestamp, block, chainBlocks) {
 
 async function tvlForAllPairs(timestamp, block, chainBlocks) {
     const data = await get("https://data.ondo.finance/v1/addresses")
-    ondoAllPairVaults = data["ondo_all_pair_vaults"]
+    const ondoAllPairVaults = data["ondo_all_pair_vaults"]
     let vaults = await Promise.all(ondoAllPairVaults.map( async (allPairVault) => {
         const vaults = (await sdk.api.abi.call({
             target: allPairVault,
