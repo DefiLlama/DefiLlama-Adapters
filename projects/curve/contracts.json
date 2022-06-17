@@ -23,6 +23,18 @@
             "cyDAI": "0x8e595470ed749b85c6f7669de83eae304c2ec68f",
             "cyUSDC": "0x76eb2fe28b36b3ee97f3adae0c69606eedb2a37c",
             "cyUSDT": "0x48759f220ed983db51fa7a8c0d2aab8f3ce4166a"
+        },
+        "sdTokens": {
+            "sdCrv": "0xd1b5651e55d4ceed36251c61c50c889b36f6abb5",
+            "sdANGLE": "0x752b4c6e92d96467fe9b9a2522ef07228e00f87c",
+            "sdFXS": "0x402f878bdd1f5c66fdaf0fababcf74741b68ac36",
+            "sdBAL": "0xf24d8651578a55b0c119b9910759a351a3458895"
+        },
+        "fxTokens": {
+            "ibKRW": { 
+                "address": "0x95dfdc8161832e4ff7816ac4b6367ce201538253",
+                "currency": "KRW"
+            }
         }
     },
     "polygon": {
