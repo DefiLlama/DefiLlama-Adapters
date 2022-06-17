@@ -9,7 +9,25 @@ const BSC_STAKING_ADDRESS = '0x593497878c33dd1f32098E3F4aE217773F803cf3';
 const POLY_TOKEN_ADDRESS = '0xfd4959c06fbcc02250952daebf8e0fb38cf9fd8c';
 const POLY_STAKING_ADDRESS = '0x89eA093C07f4FCc03AEBe8A1D5507c15dE88531f';
 
-//etherum tvl
+
+//etherum TVL
+async function ethereum_tvl(timestamp, block) {
+  const collateralBalance = (await sdk.api.abi.call({
+    abi: 'erc20:balanceOf',
+    chain: 'ethereum',
+    target: ETH_TOKEN_ADDRESS,
+    params: [ETH_TOKEN_ADDRESS],
+    chain: 'ethereum'
+  })).output;
+
+  const balances = {
+    [ETH_TOKEN_ADDRESS]: collateralBalance
+  }
+
+  return balances;
+}
+
+//etherum staking
 async function ethereum(timestamp, block) {
   const collateralBalance = (await sdk.api.abi.call({
     abi: 'erc20:balanceOf',
@@ -26,7 +44,25 @@ async function ethereum(timestamp, block) {
   return balances;
 }
 
-//bsc tvl
+//bsc TVL
+async function bsc_tvl(timestamp, block, chainBlocks) {
+  const balances = {};
+  const transform = await transformBscAddress();
+
+  const collateralBalance = (await sdk.api.abi.call({
+    abi: 'erc20:balanceOf',
+    chain: 'bsc',
+    target: BSC_TOKEN_ADDRESS,
+    params: [BSC_TOKEN_ADDRESS],
+    block: chainBlocks['bsc'],
+  })).output;
+
+  await sdk.util.sumSingleBalance(balances, transform(BSC_TOKEN_ADDRESS), collateralBalance)
+
+  return balances;
+}
+
+//bsc staking
 async function bsc(timestamp, block, chainBlocks) {
   const balances = {};
   const transform = await transformBscAddress();
@@ -45,6 +81,24 @@ async function bsc(timestamp, block, chainBlocks) {
 }
 
 //polygon tvl
+async function polygon_tvl(timestamp, block, chainBlocks) {
+  const balances = {};
+  const transform = await transformPolygonAddress();
+
+  const collateralBalance = (await sdk.api.abi.call({
+    abi: 'erc20:balanceOf',
+    chain: 'polygon',
+    target: POLY_TOKEN_ADDRESS,
+    params: [POLY_TOKEN_ADDRESS],
+    block: chainBlocks['polygon'],
+  })).output;
+
+  await sdk.util.sumSingleBalance(balances, transform(POLY_TOKEN_ADDRESS), collateralBalance)
+
+  return balances;
+}
+
+//polygon Staking
 async function polygon(timestamp, block, chainBlocks) {
   const balances = {};
   const transform = await transformPolygonAddress();
@@ -68,12 +122,15 @@ module.exports = {
   methodology: 'Counts tvl of all the tokens staked through Staking Contracts',
   start: 1000235,
   ethereum: {
-    tvl:ethereum
+    tvl:ethereum_tvl,
+    staking:ethereum
   },
   bsc: {
-    tvl:bsc
+    tvl: bsc_tvl,
+    staking:bsc
   },
   polygon: {
-    tvl:polygon
+    tvl:polygon_tvl,
+    staking:polygon
   }
 };
