@@ -3,9 +3,9 @@ const { default: BigNumber } = require("bignumber.js")
 const sdk = require('@defillama/sdk')
 const { usdtAddress } = require('./balances')
 
-async function query(url, block) {
+async function query(url, block, phoenix = false) {
     block = undefined
-    let endpoint = `${process.env["TERRA_RPC"] ?? "https://lcd.terra.dev"}/wasm/${url}`
+    let endpoint = `${process.env["TERRA_RPC"] ?? `https://${phoenix ? 'phoenix-' : ''}lcd.terra.dev`}/wasm/${url}`
     if (block !== undefined) {
         endpoint += `&height=${block - (block % 100)}`
     }

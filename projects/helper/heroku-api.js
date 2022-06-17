@@ -1,5 +1,5 @@
 const utils = require('./utils')
-const endpoint = "https://sushi-analytics-defi.herokuapp.com/"
+const endpoint = "https://sushi-analytics.onrender.com/"
 let _data
 
 function getExports(protocol, chains) {

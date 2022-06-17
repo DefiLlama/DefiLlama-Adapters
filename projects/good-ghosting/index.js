@@ -60,4 +60,4 @@ module.exports = {
   celo: {
     tvl: tvl("celo"),
   },
-};
+}

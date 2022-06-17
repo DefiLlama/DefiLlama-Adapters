@@ -10,11 +10,25 @@ const creamAbi = require('./abis/cream.json')
 const { unwrapCrv, resolveCrvTokens } = require('./resolveCrvTokens')
 const activePoolAbi = require('./ankr/abis/activePool.json')
 const wethAddressAbi = require('./ankr/abis/wethAddress.json');
-const { isLP, DEBUG_MODE } = require('./utils')
+const { isLP, DEBUG_MODE, getUniqueAddresses, } = require('./utils')
 const wildCreditABI = require('../wildcredit/abi.json')
 
 const yearnVaults = {
   // yvToken: underlying, eg yvYFI:YFI
+  // ycDAI
+  "0x99d1fa417f94dcd62bfe781a1213c092a47041bc": "0x6b175474e89094c44da98b954eedeac495271d0f",
+  // ycUSDC
+  "0x9777d7e2b60bb01759d0e2f8be2095df444cb07e": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+  // ycUSDT
+  "0x1be5d71f2da660bfdee8012ddc58d024448a0a59": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+  // yDAI 
+  "0xc2cb1040220768554cf699b0d863a3cd4324ce32": "0x6b175474e89094c44da98b954eedeac495271d0f",
+  // yUSDT
+  "0xe6354ed5bc4b393a5aad09f21c46e101e692d447": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+  // yUSDC
+  "0xd6ad7a6750a7593e092a9b218d66c0a814a3436e": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+  // yUSDT
+  "0x83f798e925bcd4017eb265844fddabb448f1707d": "0xdac17f958d2ee523a2206206994597c13d831ec7",
   // yvYFI v2
   "0xe14d13d8b3b85af791b2aadd661cdbd5e6097db1": "0x0bc529c00c6401aef6d220be8c6ea1667f6ad93e",
   // yvWETH v2
@@ -28,7 +42,7 @@ const yearnVaults = {
   // yvUSDC
   "0xa354f35829ae975e850e23e9615b11da1b3dc4de": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
   // yvWBTC
-  "0xa696a63cc78dffa1a63e9e50587c197387ff6c7e": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+  "0xa696a63cc78dffa1a63e9e50587c197387ff6c7e": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
   // yv1INCH
   "0xb8c3b7a2a618c552c23b1e4701109a9e756bab67": "0x111111111117dc0aa78b770fa6a738034120c302",
   // yvDAI
@@ -76,6 +90,7 @@ async function unwrapYearn(balances, yToken, block, chain = "ethereum", transfor
   if (!balances[tokenKey]) return;
 
   let pricePerShare
+  let decimals
   try {
     pricePerShare = await sdk.api.abi.call({
       target: yToken,
@@ -83,6 +98,7 @@ async function unwrapYearn(balances, yToken, block, chain = "ethereum", transfor
       block: block,
       chain: chain
     });
+    decimals = (await sdk.api.erc20.decimals(underlying, chain)).output
   } catch (e) {
     console.log('Failing to get price per share for %s, trying getPricePerFullShare', yToken)
   }
@@ -93,9 +109,10 @@ async function unwrapYearn(balances, yToken, block, chain = "ethereum", transfor
       block: block,
       chain: chain
     });
+    decimals = 18
   };
 
-  const newBalance = BigNumber(balances[tokenKey]).times(pricePerShare.output).div(10 ** (await sdk.api.erc20.decimals(underlying, chain)).output)
+  const newBalance = BigNumber(balances[tokenKey]).times(pricePerShare.output).div(10 ** decimals)
   const oldBalance = BigNumber(balances[transformAddress(underlying)] || 0)
   balances[transformAddress(underlying)] = oldBalance.plus(newBalance).toFixed(0)
   delete balances[tokenKey];
@@ -879,6 +896,32 @@ async function unwrapTroves({ balances = {}, chain = 'ethereum', block, troves =
 }
 
 
+async function sumTokens2({
+  balances = {},
+  tokensAndOwners = [],
+  tokens = [],
+  owners = [],
+  owner,
+  block,
+  chain = 'ethereum',
+  transformAddress,
+  resolveCrv = false,
+  resolveLP = false,
+  resolveYearn = false,
+  unwrapAll = false,
+  blacklistedLPs = [],
+}) {
+
+  if (!tokensAndOwners.length) {
+    tokens = getUniqueAddresses(tokens)
+    owners = getUniqueAddresses(owners)
+    if (owner) tokensAndOwners = tokens.map(t => [t, owner])
+    if (owners.length) tokensAndOwners = tokens.map(t => owners.map(o => [t, o])).flat()
+  }
+
+  return sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { resolveCrv, resolveLP, resolveYearn, unwrapAll, blacklistedLPs })
+}
+
 module.exports = {
   unwrapYearn,
   unwrapCrv,
@@ -898,5 +941,6 @@ module.exports = {
   genericUnwrapCvx,
   unwrapLPsAuto,
   unwrapTroves,
-  isLP
+  isLP,
+  sumTokens2,
 }

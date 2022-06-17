@@ -12,9 +12,49 @@ const factoryAbi = require('./abis/factory.json');
 const { getBlock } = require('./getBlock');
 const { default: BigNumber } = require('bignumber.js')
 
+async function getLPData({
+  block,
+  chain = 'ethereum',
+  lps = [], // list of token addresses (all need not be LPs, code checks and filters out non LPs)
+  allLps = false,   // if set true, assumes all tokens provided as lps are lps and skips validation/filtering
+}) {
+  lps = getUniqueAddresses(lps)
+  const pairAddresses = allLps ? lps : await getLPList(lps)
+  const pairCalls = pairAddresses.map((pairAddress) => ({ target: pairAddress, }))
+  let token0Addresses, token1Addresses, reserves
+
+  [token0Addresses, token1Addresses, reserves] = await Promise.all([
+    sdk.api.abi.multiCall({ abi: token0, chain, calls: pairCalls, block, }).then(({ output }) => output),
+    sdk.api.abi.multiCall({ abi: token1, chain, calls: pairCalls, block, }).then(({ output }) => output),
+  ]);
+  await requery(token0Addresses, chain, block, token0);
+  await requery(token1Addresses, chain, block, token1);
+  const pairs = {};
+  // add token0Addresses
+  token0Addresses.forEach((token0Address) =>
+    pairs[token0Address.input.target] = {
+      token0Address: token0Address.output.toLowerCase(),
+    }
+  )
+  token1Addresses.forEach((token1Address) => {
+    if (!pairs[token1Address.input.target]) pairs[token1Address.input.target] = {}
+    pairs[token1Address.input.target].token1Address = token1Address.output.toLowerCase()
+  })
+  return pairs
+
+  async function getLPList(lps) {
+    const callArgs = lps.map(t => ({ target: t }))
+    let symbols = (await sdk.api.abi.multiCall({ calls: callArgs, abi: symbol, block, chain })).output
+    symbols = symbols.filter(item => isLP(item.output, item.input.target, chain))
+    // if (DEBUG_MODE) console.log(symbols.filter(item => item.output !== 'Cake-LP').map(i => `token: ${i.input.target} Symbol: ${i.output}`).join('\n'))
+    if (DEBUG_MODE) console.log('LP symbols:', getUniqueAddresses(symbols.map(i => i.output)).join(', '))
+    return symbols.map(item => item.input.target.toLowerCase())
+  }
+}
+
 async function getTokenPrices({
-  block, 
-  chain = 'ethereum', 
+  block,
+  chain = 'ethereum',
   coreAssets = [],  // list of tokens that can used as base token to price unknown tokens against (Note: order matters, is there are two LPs for a token, the core asset with a lower index is used)
   blacklist = [],   // list of tokens to ignore/blacklist
   whitelist = [],   // if set, tvl/price is computed only for these tokens
@@ -23,7 +63,7 @@ async function getTokenPrices({
   allLps = false,   // if set true, assumes all tokens provided as lps are lps and skips validation/filtering
   minLPRatio = 0.5, // if a token pool has less that this percent of core asset tokens compared to a token pool with max tokens for a given core asset, this token pool is not used for price calculation
   restrictTokenPrice = false, // if enabled, while computed tvl, an unknown token value can max 
-  log_coreAssetPrices = [], 
+  log_coreAssetPrices = [],
   log_minTokenValue = 1e6 // log only if token value is higer than this value, now minimum is set as 1 million
 }) {
   let counter = 0
@@ -89,7 +129,7 @@ async function getTokenPrices({
         setPrice(prices, token1Address, reserveAmounts[0], reserveAmounts[1], token0Address)
       }
     } else if (coreAssets.includes(token1Address)) {
-      if (!reserveAmounts)  console.log('missing reserves', pairAddress)
+      if (!reserveAmounts) console.log('missing reserves', pairAddress)
       sdk.util.sumSingleBalance(pairBalances[pairAddress], token1Address, Number(reserveAmounts[1]) * 2)
       if (!blacklist.includes(token0Address) && (!whitelist.length || whitelist.includes(token0Address))) {
         setPrice(prices, token0Address, reserveAmounts[1], reserveAmounts[0], token1Address)
@@ -115,6 +155,7 @@ async function getTokenPrices({
   fixBalances(balances)
 
   return {
+    pairs,
     updateBalances,
     pairBalances,
     prices,
@@ -182,8 +223,9 @@ async function getTokenPrices({
       totalBalances.forEach((item) => {
         const token = item.input.target
         const address = transformAddress(token)
-        const ratio = (+(balances[address]) || 0) / +item.output
+        const ratio = +item.output > 0 ? (+(balances[address]) || 0) / +item.output : 0
         addBalances(pairBalances[token], finalBalances, { ratio, pairAddress: token, skipConversion, })
+        delete balances[address]
       })
     }
 
@@ -192,6 +234,10 @@ async function getTokenPrices({
 
 
   function addBalances(balances, finalBalances, { skipConversion = false, pairAddress, ratio = 1 }) {
+    if (ratio > 1) {
+      console.log(`There is bug in the code. Pair address: ${pairAddress}, ratio: ${ratio}`)
+      ratio = 1
+    }
     Object.entries(balances).forEach(([address, amount = 0]) => {
       const price = prices[address];
       // const price =  undefined; // NOTE: this is disabled till, we add a safeguard to limit LP manipulation to inflate token price, like mimimum core asset liquidity to be 10k
@@ -234,7 +280,8 @@ async function getTokenPrices({
 function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitelist = [], factory, transformAddress, allowUndefinedBlock = true,
   minLPRatio = 1,
   log_coreAssetPrices = [], log_minTokenValue = 1e6,
- }) {
+  withMetaData = false,
+}) {
   return async (ts, _block, chainBlocks) => {
     let pairAddresses;
     const block = await getBlock(ts, chain, chainBlocks, allowUndefinedBlock)
@@ -242,17 +289,19 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
     if (pairLength === null)
       throw new Error("allPairsLength() failed")
 
+    if (DEBUG_MODE) console.log('No. of pairs: ', pairLength)
+
     const pairNums = Array.from(Array(Number(pairLength)).keys())
     let pairs = (await sdk.api.abi.multiCall({ abi: factoryAbi.allPairs, chain, calls: pairNums.map(num => ({ target: factory, params: [num] })), block, requery: true })).output
     await requery(pairs, chain, block, factoryAbi.allPairs);
 
     pairAddresses = pairs.map(result => result.output.toLowerCase())
 
-    const { balances } = await getTokenPrices({ 
+    const response = await getTokenPrices({
       block, chain, coreAssets, blacklist, lps: pairAddresses, transformAddress, whitelist, allLps: true,
       minLPRatio, log_coreAssetPrices, log_minTokenValue,
-     })
-    return balances
+    })
+    return withMetaData ? response : response.balances
   }
 }
 
@@ -342,4 +391,5 @@ module.exports = {
   getUniTVL,
   unknownTombs,
   pool2,
+  getLPData,
 };
