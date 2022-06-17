@@ -1,0 +1,8 @@
+{
+  "name": {"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
+  "polynomial_COLLATERAL": {"inputs":[],"name":"COLLATERAL","outputs":[{"internalType":"contract ERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+  "polynomial_UNDERLYING": {"inputs":[],"name":"UNDERLYING","outputs":[{"internalType":"contract ERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+  "polynomial_pendingDeposits": {"inputs":[],"name":"pendingDeposits","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  "polynomial_totalFunds": {"inputs":[],"name":"totalFunds","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  "polynomial_premiumCollected": {"inputs":[],"name":"premiumCollected","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+}

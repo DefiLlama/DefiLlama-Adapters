@@ -25,4 +25,4 @@ module.exports = {
   velas: {
     tvl: uniTvlExport(factoryVelas, "velas", () => getChainTransform("velas")),
   },
-};
+}

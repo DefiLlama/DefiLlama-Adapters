@@ -1,0 +1,829 @@
+{
+  "version": "0.1.0",
+  "name": "dual_market",
+  "instructions": [
+    {
+      "name": "initializeMints",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "vaultMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "optionMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "splMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "premiumUsdcTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "usdcMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "priceAndExpiration",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "vaultMintBump",
+          "type": "u8"
+        },
+        {
+          "name": "optionMintBump",
+          "type": "u8"
+        },
+        {
+          "name": "vaultSplBump",
+          "type": "u8"
+        },
+        {
+          "name": "vaultUsdcBump",
+          "type": "u8"
+        },
+        {
+          "name": "premiumBump",
+          "type": "u8"
+        },
+        {
+          "name": "strikePrice",
+          "type": "u64"
+        },
+        {
+          "name": "expiration",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "initializeMintsAndVaultSplTokenAccount",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "vaultMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "optionMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultSplTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "splMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "vaultUsdcTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "premiumUsdcTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "usdcMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "mmOptionTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mmPk",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "priceAndExpiration",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "vaultMintBump",
+          "type": "u8"
+        },
+        {
+          "name": "optionMintBump",
+          "type": "u8"
+        },
+        {
+          "name": "vaultSplBump",
+          "type": "u8"
+        },
+        {
+          "name": "vaultUsdcBump",
+          "type": "u8"
+        },
+        {
+          "name": "premiumBump",
+          "type": "u8"
+        },
+        {
+          "name": "strikePrice",
+          "type": "u64"
+        },
+        {
+          "name": "expiration",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "deposit",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "userSplTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultSplTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userVaultTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultTokenMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultMintSigner",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "premiumUsdcTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userUsdcTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "usdcMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "premiumUsdcSigner",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "optionTokenMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "optionMintSigner",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "splMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "mmOptionTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "pythPrice",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "vaultMintBump",
+          "type": "u8"
+        },
+        {
+          "name": "premiumUsdcBump",
+          "type": "u8"
+        },
+        {
+          "name": "optionMintBump",
+          "type": "u8"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "strikePrice",
+          "type": "u64"
+        },
+        {
+          "name": "expiration",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "initForDepositWithLso",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "vaultTokenMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "userVaultTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "usdcMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "userUsdcTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "lsoMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "recipientLsoAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "depositWithLso",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "userSplTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultSplTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userVaultTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultTokenMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultMintSigner",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "premiumUsdcTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userUsdcTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "usdcMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "premiumUsdcSigner",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "optionTokenMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "optionMintSigner",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "splMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "mmOptionTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "pythPrice",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "stakingOptionsProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "lsoMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "recipientLsoAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "lsoMintSigner",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "activeLsoMints",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "vaultMintBump",
+          "type": "u8"
+        },
+        {
+          "name": "premiumUsdcBump",
+          "type": "u8"
+        },
+        {
+          "name": "optionMintBump",
+          "type": "u8"
+        },
+        {
+          "name": "lsoMintBump",
+          "type": "u8"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "strikePrice",
+          "type": "u64"
+        },
+        {
+          "name": "expiration",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "withdraw",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "userSplTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultSplTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userVaultTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultTokenMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultSplTokenAccountSigner",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "vaultUsdcTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userUsdcTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultUsdcSigner",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "usdcMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "splMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "vaultSplBump",
+          "type": "u8"
+        },
+        {
+          "name": "vaultUsdcBump",
+          "type": "u8"
+        },
+        {
+          "name": "strikePrice",
+          "type": "u64"
+        },
+        {
+          "name": "expiration",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "exerciseOption",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "vaultUsdcTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mmUsdcTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mmOptionTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "optionMint",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "mmSplTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultSplTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "vaultSplTokenAccountSigner",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "splMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "vaultSplBump",
+          "type": "u8"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "strikePrice",
+          "type": "u64"
+        },
+        {
+          "name": "expiration",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "depositPremiums",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "premiumUsdcTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userUsdcTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "closePricingAndExpiration",
+      "accounts": [
+        {
+          "name": "authority",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "priceAndExpiration",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    }
+  ],
+  "accounts": [
+    {
+      "name": "PriceAndExpiration",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "strikePrice",
+            "type": "u64"
+          },
+          {
+            "name": "expiration",
+            "type": "u64"
+          },
+          {
+            "name": "splMint",
+            "type": "publicKey"
+          }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "ErrorCode",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "TokensStillLocked"
+          },
+          {
+            "name": "DepositExpirationInPast"
+          },
+          {
+            "name": "ExerciseAfterExpiration"
+          },
+          {
+            "name": "UnauthorizedInitMints"
+          },
+          {
+            "name": "IncorrectAddressForOption"
+          },
+          {
+            "name": "WrongLSOMint"
+          }
+        ]
+      }
+    }
+  ],
+  "metadata": {
+    "address": "EFhLFkx6r2NdhFmAraZacRzxX8SFLbM9KuyVpaUUpR5k"
+  }
+}

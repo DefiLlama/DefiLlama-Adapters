@@ -6,7 +6,7 @@ const { dodoPool2 } = require('../helper/pool2')
 
 const ethMarketsManager = "0x5ed98Ebb66A929758C7Fe5Ac60c979aDF0F4040a"
 const ETH_SUSD = "0x57ab1ec28d129707052df4df418d58a2d46d5f51"
-const ETH_THALES = "0x03e173ad8d1581a4802d3b532ace27a62c5b81dc"
+const ETH_THALES = "0x8947da500eb47f82df21143d0c01a29862a8c3c5"
 const ETH_WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
 
 const opMarketsManager = "0xBE086E0A2c588Ad64C8530048cE4356190D6a6F3"
@@ -51,7 +51,7 @@ async function op_tvl(_time, block){
         chain: "optimism"
     })
     const balances = {}
-    await sumTokensAndLPsSharedOwners(balances, [[OP_SUSD, false]], markets.output, block, chain="optimism", transform)
+    await sumTokensAndLPsSharedOwners(balances, [[OP_SUSD, false]], markets.output, block, "optimism", transform)
     return balances
 }
 

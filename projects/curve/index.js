@@ -15,6 +15,12 @@ async function polygon() {
   return tvl.data.data.tvl
 }
 
+async function aurora() {
+  const tvl = await utils.fetchURL('https://api.curve.fi/api/getTVLAurora')
+  return tvl.data.data.tvl
+}
+
+
 async function fantom() {
   const tvl = await utils.fetchURL('https://api.curve.fi/api/getTVLFantom')
   return tvl.data.data.tvl
@@ -86,6 +92,9 @@ module.exports = {
   },
   optimism:{
     fetch: optimism,
+  },
+  aurora:{
+    fetch: aurora,
   },
   fetch
 }

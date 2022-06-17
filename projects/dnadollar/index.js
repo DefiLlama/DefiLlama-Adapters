@@ -44,8 +44,6 @@ const pool2 = async (chainBlocks) => {
   const balances = {};
 
   const lpPositions = [];
-  let poolInfoReturn = "";
-  i = 0;
   for (let i = 0; i < 5; i++) {
     const token = (
       await sdk.api.abi.call({

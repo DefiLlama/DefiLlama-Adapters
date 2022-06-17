@@ -1,13 +1,8 @@
-const { createWeb3, createContractObject } = require('../../../helper/ankr/utils');
-const { polygonRpcUrl } = require('../../../helper/ankr/networks');
-const poolABIPolygon = require('../../../helper/ankr/abis/QuickswapPool.json');
-const vaultABIPolygon = require('../../../helper/ankr/abis/QuickswapVault.json');
-const web3 = createWeb3(polygonRpcUrl);
-
 const createVaultModel = (poolAddress, vaultAddress) => {
   return {
-    contract: createContractObject(poolAddress, poolABIPolygon, web3),
-    vault: createContractObject(vaultAddress, vaultABIPolygon, web3),
+    pool: poolAddress,
+    vault: vaultAddress,
+    chain: 'polygon',
   }
 }
 

@@ -81,7 +81,7 @@ async function pool2BalanceFromMasterChef(balances, masterchef, token, block, ch
         if (symbol.output === null) {
             continue;
         }
-        if (isLP(symbol.output)){
+        if (isLP(symbol.output, symbol.input.target, chain)){
             lpTokens.push(symbol.input.target);
         }
     }
