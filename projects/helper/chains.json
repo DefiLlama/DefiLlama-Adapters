@@ -80,7 +80,6 @@
   "ethereumclassic",
   "thorchain",
   "everscale",
-  "ThunderCore",
   "icon",
   "bittorrent",
   "vechain",
@@ -129,5 +128,8 @@
   "echelon",
   "multivac",
   "sx",
+  "lbry",
+  "rvn",
+  "ore",
   "genshiro"
 ]
