@@ -6,39 +6,49 @@ const currentUrl = "https://chart.ptokens.io/index.php?a=assets"
 let _response
 
 function getChainTvl(chain) {
-    async function current() {
-        if (!_response) _response = axios.get(currentUrl)
-        let response = await _response
-        return response.data.filter(c=>c.hostBlockchain===chain && !['EFX', 'PNT',].includes(c.name)).reduce((total, asset)=>total+asset.tvl_number, 0);
-    }
+  async function current() {
+    if (!_response) _response = axios.get(currentUrl)
+    let response = await _response
+    return response.data.filter(c => c.nativeBlockchain === chain && !['EFX', 'PNT',].includes(c.name)).reduce((total, asset) => total + asset.tvl_number, 0);
+  }
 
-    async function historical() {
-        let response = await axios.get(historicalUrl)
-        return response.data.results[0].series.find(s=>s.tags.host_blockchain === chain).values.map(d => ({
-            date: d[0] / 1000,
-            totalLiquidityUSD: d[1]
-        }))
-    }
-    return async (time)=> {
-        return getApiTvl(time, current, historical)
-    }
+  async function historical() {
+    let response = await axios.get(historicalUrl)
+    return response.data.results[0].series.find(s => s.tags.host_blockchain === chain).values.map(d => ({
+      date: d[0] / 1000,
+      totalLiquidityUSD: d[1]
+    }))
+  }
+  return async (time) => {
+    return getApiTvl(time, current, historical)
+  }
 }
 
 const chains = {
-    "ethereum": "eth",
-    "polygon": "polygon",
-    "bsc": "bsc",
-    "eos": "eos",
-    "telos": "telos",
-    "ultra": "ultra",
-    "xdai": "xdai"
+  "ethereum": "eth",
+  "bsc": "bsc",
+  "eos": "eos",
+  "telos": "telos",
+  "bitcoin": "btc",
+  "ore": "ore",
+  "litecoin": "ltc",
+  "doge": "dogecoin",
+  "lbry": "lbry",
+  "rvn": "rvn",
+  "fantom": "fantom",
+  // "polygon": "polygon",
+  // "ultra": "ultra",
+  // "xdai": "xdai",
+  // "algorand": "algorand",
+  // "arbitrum": "arbitrum",
+  // "luxochain": "luxochain",
 }
-const chainTvls = Object.fromEntries(Object.entries(chains).map(c=>[c[0], {
-    tvl:getChainTvl(c[1])
-}]))
 
 module.exports = {
-    timetravel: true,
-    ...chainTvls,
-    methodology: 'Queries the pNetwork database, using the same API endpoint as their own UI. TVL is based on the amount of assets “locked” in the system and that therefore has a 1:1 tokenisation on a host blockchain, including all of the assets and all of the blockchains supported by pNetwork.'
+  timetravel: false,
+  methodology: 'Queries the pNetwork database, using the same API endpoint as their own UI. TVL is based on the amount of assets “locked” in the system and that therefore has a 1:1 tokenisation on a host blockchain, including all of the assets and all of the blockchains supported by pNetwork.'
 };
+
+Object.entries(chains).forEach(([chain, key]) => {
+  module.exports[chain] = { tvl: getChainTvl(key) }
+})
