@@ -2,8 +2,10 @@ const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 
 const llamaPayAvax = "0x7d507b4c2d7e54da5731f643506996da8525f4a3";
+const llamaPayMeter = "0xc666badd040d5e471d2b77296fef46165ffe5132"
 const llamaPayDefault = "0xde1C04855c2828431ba637675B6929A684f84C7F";
 const llamaPayVesting = "0xB93427b83573C8F27a08A909045c3e809610411a";
+const llamaPayMeterVesting = "0x6B24Fe659D1E91f8800E86600DE577A4cA8814a6";
 
 async function calculateTvl(llamapay, vesting, block, chain) {
     const balances = {};
@@ -85,6 +87,10 @@ async function xdaiTvl(timestamp, block, chainBlocks) {
     return calculateTvl(llamaPayDefault, llamaPayVesting, chainBlocks.xdai, "xdai")
 }
 
+async function meterTvl(timestamp, block, chainBlocks) {
+    return calculateTvl(llamaPayMeter, llamaPayMeterVesting, chainBlocks.meter, "meter")
+}
+
 module.exports = {
     avalanche: {
         tvl: avaxTvl
@@ -109,5 +115,8 @@ module.exports = {
     },
     xdai: {
         tvl: xdaiTvl
+    },
+    meter: {
+        tvl: meterTvl
     }
 }
