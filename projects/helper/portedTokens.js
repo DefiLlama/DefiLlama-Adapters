@@ -996,6 +996,10 @@ const sxFixMapping = {
   '0xa0cB58E7F783fce0F4042C790ea3045c48CD51e8': { coingeckoId: 'shark', decimals: 18, },
 }
 
+const meterFixMapping = {
+  '0xd86e243fc0007e6226b07c9a50c9d70d78299eb5': { coingeckoId: 'usd-coin', decimals: 6, },
+}
+
 const fixBalancesMapping = {
   avax: fixAvaxBalances,
   evmos: b => fixBalances(b, evmosFixMapping, { removeUnmapped: false }),
@@ -1019,6 +1023,7 @@ const fixBalancesMapping = {
   kava: b => fixBalances(b, kavaFixMapping, { removeUnmapped: false }),
   ethereum: b => fixBalances(b, ethereumFixMapping, { removeUnmapped: false }),
   sx: b => fixBalances(b, sxFixMapping, { removeUnmapped: true }),
+  meter: b => fixBalances(b, meterFixMapping, { removeUnmapped: true }),
 }
 
 const chainTransforms = {
