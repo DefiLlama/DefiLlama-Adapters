@@ -37,7 +37,7 @@ const chains = {
   "rvn": "rvn",
   "fantom": "fantom",
   // "polygon": "polygon",
-  // "ultra": "ultra",
+  "ultra": "ultra",
   // "xdai": "xdai",
   // "algorand": "algorand",
   // "arbitrum": "arbitrum",
