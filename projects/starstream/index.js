@@ -5,9 +5,12 @@ const client = axios.create({
   baseURL: STARSTREAM_API
 });
 
+let _tvlMsg
+
 async function fetch() {
-  const tvlMsg = await client.get("/tvl");
-  return tvlMsg.data.tvlTotal;
+  if (!_tvlMsg) _tvlMsg = client.get("/tvl")
+  const { data: { tvlTotal } } = await _tvlMsg
+  return tvlTotal;
 }
 
 module.exports = {
@@ -17,5 +20,5 @@ module.exports = {
   metis: {
     fetch
   },
-  fetch
+  fetch,
 }
