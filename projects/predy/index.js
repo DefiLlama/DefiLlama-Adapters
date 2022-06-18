@@ -35,7 +35,7 @@ async function tvl(_time, _ethBlock, chainBlocks) {
 
     const v202weth = (await sdk.api.erc20.balanceOf({
         target: weth,
-        owner: predyContractV2,
+        owner: predyContractV202,
         chain: 'arbitrum',
         block: chainBlocks.arbitrum
     })).output;
