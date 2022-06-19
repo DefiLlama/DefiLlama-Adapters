@@ -5,6 +5,13 @@ const { BigNumber } = require('bignumber.js');
 
 const {getBlock} = require('../helper/getBlock')
 
+const mimAddress = {
+  ethereum: "0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3",
+  bsc: "0xfe19f0b51438fd612f6fd59c1dbb3ea319f433ba",
+  fantom: "0x82f0b8b456c1a451378467398982d4834b6829c1",
+  arbitrum: "0xfea7a6a0b346362bf88a9e4a88416b77a57d6c2a",
+} // MIM uses kashi for unissued tokens, so these must be removed
+
 // https://thegraph.com/hosted-service/subgraph/sushiswap/bentobox
 const graphUrls = {
   'ethereum': 'https://api.thegraph.com/subgraphs/name/sushiswap/bentobox',
@@ -79,8 +86,10 @@ function kashiLending(chain, borrowed) {
       for (const [key, value] of Object.entries(balances)) {
         borrowed_balances[key] = BigNumber.max(0, BigNumber(borrowed_balances[key]).minus(balances[key]));
       }
+      delete borrowed_balances[chain+":"+mimAddress[chain]]
       return borrowed_balances
     } else {
+      delete balances[chain+":"+mimAddress[chain]]
       return balances
     }
   }
@@ -92,9 +101,7 @@ const { transformFantomAddress } = require("../helper/portedTokens");
 async function kashiLendingFantom(timestamp, ethBlock, chainBlocks) {
   const transform = await transformFantomAddress()
   const chain = "fantom"
-  console.log('test')
   const block = await getBlock(timestamp, chain, chainBlocks, false) 
-  console.log('blocks', chainBlocks, block)
   const box = "0xF5BCE5077908a1b7370B9ae04AdC565EBd643966"
   const wsSPA= "0x89346b51a54263cf2e92da79b1863759efa68692";
   const spa = "fantom:0x5602df4a94eb6c680190accfa2a475621e0ddbdc";
@@ -133,6 +140,7 @@ async function kashiLendingFantom(timestamp, ethBlock, chainBlocks) {
   })).output;
   balances[spa] = sSPA;
   delete balances["fantom:0x89346b51a54263cf2e92da79b1863759efa68692"];
+  delete balances[chain+":"+mimAddress[chain]]
   return balances
 }
 
