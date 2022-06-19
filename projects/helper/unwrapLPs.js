@@ -351,7 +351,9 @@ tokens [
     [token, isLP] - eg ["0xaaa", true]
 ]
 */
-async function sumTokensAndLPsSharedOwners(balances, tokens, owners, block, chain = "ethereum", transformAddress = id => id) {
+async function sumTokensAndLPsSharedOwners(balances, tokens, owners, block, chain = "ethereum", transformAddress) {
+  if (!transformAddress)
+    transformAddress = await getChainTransform(chain)
   const balanceOfTokens = await sdk.api.abi.multiCall({
     calls: tokens.map(t => owners.map(o => ({
       target: t[0],
