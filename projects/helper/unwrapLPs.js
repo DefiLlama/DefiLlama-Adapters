@@ -4,6 +4,7 @@ const token0 = require('./abis/token0.json')
 const symbol = require('./abis/symbol.json')
 const { getPoolTokens, getPoolId } = require('./abis/balancer.json')
 const getPricePerShare = require('./abis/getPricePerShare.json')
+const underlyingABI = require('./abis/underlying.json')
 const { requery } = require('./requery')
 const { getChainTransform, getFixBalances } = require('./portedTokens')
 const creamAbi = require('./abis/cream.json')
@@ -82,9 +83,19 @@ const yearnVaults = {
   // yvUSDT FTM
   "0x148c05caf1bb09b5670f00d511718f733c54bc4c": "0x049d68029688eAbF473097a2fC38ef61633A3C7A"
 }
-async function unwrapYearn(balances, yToken, block, chain = "ethereum", transformAddress = (addr) => addr) {
-  const underlying = yearnVaults[yToken.toLowerCase()];
-  if (!underlying) return;
+async function unwrapYearn(balances, yToken, block, chain = "ethereum", transformAddress = (addr) => addr, fetchUnderlying) {
+  let underlying = yearnVaults[yToken.toLowerCase()];
+  if (!underlying) {
+    if (!fetchUnderlying) return;
+    const { output: _underlying } = await sdk.api.abi.call({
+      target: yToken,
+      abi: underlyingABI,
+      chain, block,
+    })
+    underlying = _underlying
+  }
+  
+  console.log('underinglin found', underlying)
 
   const tokenKey = chain == 'ethereum' ? yToken : `${chain}:${yToken}`
   if (!balances[tokenKey]) return;
@@ -597,6 +608,7 @@ async function sumBalancerLps(balances, tokensAndOwners, block, chain, transform
 }
 
 const nullAddress = '0x0000000000000000000000000000000000000000'
+const gasTokens = ['0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee']
 /*
 tokensAndOwners [
     [token, owner] - eg ["0xaaa", "0xbbb"]
@@ -606,14 +618,17 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
   if (!transformAddress)
     transformAddress = await getChainTransform(chain)
 
-  const ethBalanceInputs = []
+  let ethBalanceInputs = []
 
   tokensAndOwners = tokensAndOwners.filter(i => {
-    if (i[0] !== nullAddress)
+    const token = i[0].toLowerCase()
+    if (token !==  nullAddress && !gasTokens.includes(token))
       return true
     ethBalanceInputs.push(i[1])
     return false
   })
+
+  ethBalanceInputs = getUniqueAddresses(ethBalanceInputs)
 
   if (ethBalanceInputs.length) {
     const { output: ethBalances } = await sdk.api.eth.getBalances({ targets: ethBalanceInputs, chain, block })
@@ -912,6 +927,7 @@ async function sumTokens2({
   resolveYearn = false,
   unwrapAll = false,
   blacklistedLPs = [],
+  blacklistedTokens = [],
 }) {
 
   if (!tokensAndOwners.length) {
@@ -920,6 +936,9 @@ async function sumTokens2({
     if (owner) tokensAndOwners = tokens.map(t => [t, owner])
     if (owners.length) tokensAndOwners = tokens.map(t => owners.map(o => [t, o])).flat()
   }
+
+  blacklistedTokens = blacklistedTokens.map(t => t.toLowerCase())
+  tokensAndOwners = tokensAndOwners.filter(([token]) => !blacklistedTokens.includes(token.toLowerCase()))
 
   return sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { resolveCrv, resolveLP, resolveYearn, unwrapAll, blacklistedLPs })
 }
