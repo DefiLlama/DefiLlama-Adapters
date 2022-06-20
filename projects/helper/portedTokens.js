@@ -933,6 +933,11 @@ const syscoinFixMapping = {
 
 const kavaFixMapping = {
   '0xc86c7C0eFbd6A49B35E8714C5f59D99De09A225b': { coingeckoId: 'kava', decimals: 18, },
+  '0xfA9343C3897324496A05fC75abeD6bAC29f8A40f': { coingeckoId: 'usd-coin', decimals: 6, },
+  '0xB44a9B6905aF7c801311e8F4E76932ee959c663C': {coingeckoId: 'tether', decimals: 6, },
+  '0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b': { coingeckoId: 'bitcoin', decimals: 8, },
+  '0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d': { coingeckoId: 'ethereum', decimals: 18, },
+  '0x765277EebeCA2e31912C9946eAe1021199B39C61': { coingeckoId: 'dai', decimals: 18, },
 }
 
 function normalizeMapping(mapping) {
