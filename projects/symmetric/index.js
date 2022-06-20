@@ -10,7 +10,7 @@ async function getTVL(subgraphName, block) {
 
   var query = gql`
   query get_tvl($block: Int) {
-    symmetrics(
+    balancers(
       first: 5,
       block: { number: $block }
     ) {
@@ -22,21 +22,24 @@ async function getTVL(subgraphName, block) {
   const results = await graphQLClient.request(query, {
     block
   })
-  return results.symmetrics[0].totalLiquidity;
+  return results.balancers[0].totalLiquidity;
 }
 
 async function xdai(timestamp, ethBlock, chainBlocks) {
-  return toUSDTBalances(await getTVL("symmetric-xdai", await getBlock(timestamp, "xdai", chainBlocks)))
+  const [v1,v2] = await Promise.all([getTVL("cent-swap-xdai", ethBlock), getTVL("symmetric-v2-gnosis", ethBlock)])
+  return toUSDTBalances(BigNumber(v1).plus(v2))
 }
 
 async function celo(timestamp, ethBlock, chainBlocks) {
-  return toUSDTBalances(await getTVL("symmetric-celo", await getBlock(timestamp, "celo", chainBlocks)))
+  const [v1,v2] = await Promise.all([getTVL("cent-swap-celo", ethBlock), getTVL("symmetric-v2-celo", ethBlock)])
+  return toUSDTBalances(BigNumber(v1).plus(v2))
 }
 
 module.exports = {
+  timetravel: true,
   misrepresentedTokens: true,
-  methodology: `Symmetric is an Automated Market Maker (AMM) and a Decentralized Exchange (DEX), running on the Celo and xDai networks.
-  Symmetric TVL is pulled from the Symmetric subgraph and includes deposits made to Symmetric xDai and Symmetric Celo liquidity pools.`,
+  methodology: `Symmetric is an Automated Market Maker (AMM) and a Decentralized Exchange (DEX), running on the Celo and Gnosis networks.
+  Symmetric TVL is pulled from the Symmetric subgraph and includes deposits made to Symmetric Gnosis and Symmetric Celo on V1 & V2 liquidity pools.`,
   celo:{
     tvl: celo
   },
