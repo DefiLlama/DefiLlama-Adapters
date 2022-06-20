@@ -23,6 +23,18 @@
             "cyDAI": "0x8e595470ed749b85c6f7669de83eae304c2ec68f",
             "cyUSDC": "0x76eb2fe28b36b3ee97f3adae0c69606eedb2a37c",
             "cyUSDT": "0x48759f220ed983db51fa7a8c0d2aab8f3ce4166a"
+        },
+        "sdTokens": {
+            "sdCrv": "0xd1b5651e55d4ceed36251c61c50c889b36f6abb5",
+            "sdANGLE": "0x752b4c6e92d96467fe9b9a2522ef07228e00f87c",
+            "sdFXS": "0x402f878bdd1f5c66fdaf0fababcf74741b68ac36",
+            "sdBAL": "0xf24d8651578a55b0c119b9910759a351a3458895"
+        },
+        "fxTokens": {
+            "ibKRW": {
+                "address": "0x95dfdc8161832e4ff7816ac4b6367ce201538253",
+                "currency": "KRW"
+            }
         }
     },
     "polygon": {
@@ -32,7 +44,12 @@
         "metapoolBases": {
             "am3CRV": "0x19793b454d3afc7b454f206ffe95ade26ca6912c",
             "4eur-f": "0xad326c253a84e9805559b73a08724e11e49ca651"
-        }
+        },
+        "blacklist": [
+            "0xd6d9bc8e2b894b5c73833947abdb5031cc7a4894",
+            "0xa7fd7d83e2d63f093b71c5f3b84c27cff66a7802",
+            "0xacfbe6979d58b55a681875fc9adad0da4a37a51b"
+        ]
     },
     "arbitrum": {
         "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
@@ -74,6 +91,8 @@
             "scDAI": "0x8d9aed9882b4953a0c9fa920168fa1fdfa0ebe75",
             "scFUSDT": "0x02224765bc8d54c21bb51b0951c80315e1c263f9",
             "scMIM": "0x90b7c21be43855afd2515675fc307c084427404f"
+        },
+        "yearnTokens": {
         }
     },
     "harmony": {
@@ -104,8 +123,6 @@
         "addressProvider": "0x0000000022D53366457F9d5E68Ec105046FC4383",
         "gasTokenDummy": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
         "wrapped": "0x4244eb811d6e0ef302326675207a95113db4e1f8",
-        "metapoolBases": {
-
-        }
+        "metapoolBases": {}
     }
 }
