@@ -18,6 +18,7 @@ const config = {
     ]
   },
 }
+
 module.exports = {}
 
 Object.keys(config).forEach(chain => {
@@ -82,7 +83,11 @@ Object.keys(config).forEach(chain => {
       sdk.util.sumSingleBalance(borrowedBalances, transform(underlyingMapping[i.input.target]), i.output)
     })
 
-    await sumTokens(balances, toa, block, chain, transform, { resolveLP: true })
+    await sumTokens(balances, toa, block, chain, transform, {
+      resolveLP: true, blacklistedLPs: [
+        '0x1f2bff0e37c592c7de6393c9dd3c0f7933408228' // disabled because _getReserves has a different abi compared to others
+      ]
+    })
     return { balances, borrowedBalances }
   }
 
