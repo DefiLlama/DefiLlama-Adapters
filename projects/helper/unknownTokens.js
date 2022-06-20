@@ -385,6 +385,88 @@ async function sumTokensSingle({
   return updateBalances(balances, { skipConversion, onlyLPs })
 }
 
+// TODO: this is incomplete/untested, might need to extend how pools are resolved and tokens are fetched.
+function masterchefExports({ chain, poolInfoABI, coreAssets, }) {
+  let allTvl
+
+  async function getAllTVL(block) {
+    if (!allTvl) allTvl = getTVL()
+    return allTvl
+
+    async function getTVL() {
+      const transform = await getChainTransform(chain)
+      const balances = {
+        tvl: {},
+        staking: {},
+        pool2: {},
+      }
+      const { output: length } = await sdk.api.abi.call({
+        target: contract,
+        abi: abi.poolLength,
+        chain, block,
+      })
+
+      const calls = []
+      for (let i = 0; i < length; i++) calls.push({ params: [i] })
+      const { output: data } = await sdk.api.abi.multiCall({
+        target: contract,
+        abi: poolInfoABI,
+        calls,
+        chain, block,
+      })
+
+      const tempBalances = {}
+      const lps = []
+
+      data.forEach(({ output }) => {
+        const token = output.lpToken.toLowerCase()
+        const amount = output.amount0
+        if (token === crown) sdk.util.sumSingleBalance(balances.staking, transform(token), amount)
+        else sdk.util.sumSingleBalance(tempBalances, token, amount)
+        lps.push(token)
+      })
+
+      const pairs = await getLPData({ lps, chain, block })
+
+      const { updateBalances, } = await getTokenPrices({ lps: Object.keys(pairs), allLps: true, coreAssets, block, chain, minLPRatio: 0.001 })
+      Object.entries(tempBalances).forEach(([token, balance]) => {
+        if (pairs[token]) {
+          const { token0Address, token1Address } = pairs[token]
+          if (crown === token0Address || crown === token1Address) {
+            sdk.util.sumSingleBalance(balances.pool2, transform(token), balance)
+            return;
+          }
+        }
+        sdk.util.sumSingleBalance(balances.tvl, transform(token), balance)
+      })
+
+      await updateBalances(balances.tvl)
+      await updateBalances(balances.pool2)
+      await updateBalances(balances.staking)
+
+      return balances
+    }
+  }
+
+  async function tvl(_, _b, { [chain]: block }) {
+    return (await getAllTVL(block)).tvl
+  }
+
+  async function pool2(_, _b, { [chain]: block }) {
+    return (await getAllTVL(block)).pool2
+  }
+
+  async function staking(_, _b, { [chain]: block }) {
+    return (await getAllTVL(block)).staking
+  }
+
+  return {
+    [chain] : {
+      tvl, pool2, staking
+    }
+  }
+}
+
 module.exports = {
   sumTokensSingle,
   getTokenPrices,
@@ -392,4 +474,5 @@ module.exports = {
   unknownTombs,
   pool2,
   getLPData,
+  masterchefExports,
 };
