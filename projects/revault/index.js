@@ -62,9 +62,6 @@ async function tvl(timestamp, block) {
 
 module.exports = {
   misrepresentedTokens: true,
-  name: 'Revault Network',
-  website: 'https://app.revault.network',
-  token: 'REVA',
   start: 1634150000,        // 13th of October, 2021
 	bsc: {
 		tvl,

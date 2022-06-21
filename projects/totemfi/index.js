@@ -1,53 +1,17 @@
-const { request, gql } = require("graphql-request");
-const sdk = require('@defillama/sdk');
-const { default: BigNumber } = require("bignumber.js");
+const { get } = require('../helper/http')
+const { sumTokens } = require('../helper/unwrapLPs');
+const poolsURL = 'https://new-offchain.totemfi.com/api/v1/pool/?order=desc&order_field=maturity_date&page=0&limit=99&schedule=&filter=network%7Cbsc%7C%3D%3B'
+const TOTM = "0x6FF1BFa14A57594a5874B37ff6AC5efbD9F9599A"
 
-const graphUrls = [
-  'https://graph.totemfi.com/subgraphs/name/totemfi/predictor'
-]
-const graphQuery = gql`
-  query GET_POOLS($block: Int,$timestamp: BigInt) {
-    stakingPools(
-      block: { number: $block },where:{startDate_lte:$timestamp}
-    ) {
-     totalStaked
-     totalUnStaked
-    }
-  }
-  `;
-const TOTM = "bsc:0x6FF1BFa14A57594a5874B37ff6AC5efbD9F9599A"
 async function tvl(timestamp, ethBlock, chainBlocks) {
   const block = chainBlocks["bsc"];
   let balances = {};
-  try {
-    let allPrizePools = []
-    for (const graphUrl of graphUrls) {
-      const { stakingPools } = await request(
-        graphUrl,
-        graphQuery,
-        {
-          block,
-          timestamp
-        }
-      );
-      allPrizePools = allPrizePools.concat(stakingPools)
-    }
-    for (let i = 0; i < allPrizePools.length; i++) {
-      if (allPrizePools[i]["totalUnStaked"] == null) {
-        allPrizePools[i]["totalUnStaked"] = 0
-      }
-      sdk.util.sumSingleBalance(balances, TOTM, BigNumber(allPrizePools[i]["totalStaked"]).minus(allPrizePools[i]["totalUnStaked"]).toFixed(0))
-    }
-    return balances
-  } catch (error) {
-    if (error.message !== undefined) {
-      if (error.message.includes("decode") && error.response?.status == 200) {
-        balances[TOTM] = "0"
-        return balances
-      }
-    }
-    throw error
-  }
+  const { pools } = await get(poolsURL)
+  const tokensAndOwners = pools
+    .filter(pool => pool.poolCreatedEvent)
+    .map(pool => [TOTM, pool.poolCreatedEvent.Pool])
+  await sumTokens(balances, tokensAndOwners, block, 'bsc')
+  return balances
 }
 
 

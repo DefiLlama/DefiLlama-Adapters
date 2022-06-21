@@ -16,6 +16,7 @@ async function taiSupply(timestamp, ethBlock, chainBlocks) {
 };
 
 module.exports = {
+    timetravel: true,
     misrepresentedTokens: true,
     tomochain: {
         tvl: taiSupply

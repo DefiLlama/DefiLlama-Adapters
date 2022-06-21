@@ -1,20 +1,42 @@
 {
-    "stakingToken": {
-        "inputs": [],
-        "name": "stakingToken",
-        "outputs": [
+    "tvlOfPool": {
+        "inputs": [
             {
                 "internalType": "address",
-                "name": "",
+                "name": "vault",
                 "type": "address"
+            }
+        ],
+        "name": "tvlOfPool",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
             }
         ],
         "stateMutability": "view",
         "type": "function"
     },
-    "balance": {
-        "inputs": [],
-        "name": "balance",
+    "tvlOfVault": {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_vault",
+                "type": "address"
+            },
+            {
+                "internalType": "bool",
+                "name": "isLp",
+                "type": "bool"
+            },
+            {
+                "internalType": "address",
+                "name": "tokenRouter",
+                "type": "address"
+            }
+        ],
+        "name": "tvlOfVault",
         "outputs": [
             {
                 "internalType": "uint256",

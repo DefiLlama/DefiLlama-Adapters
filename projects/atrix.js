@@ -8,12 +8,11 @@ async function fetch() {
     )
   ).data;
 
-  const tvl = response.tvl;
-
-  return tvl || 0;
+  return response.tvl;
 }
 
 module.exports = {
+  timetravel: false,
   methodology: "The Atrix API endpoint fetches on-chain data from the Serum orderbook and token accounts for each liquidity pool, then uses prices from Coingecko to aggregate total TVL.",
   fetch,
 };

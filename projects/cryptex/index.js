@@ -1,78 +1,161 @@
 const sdk = require("@defillama/sdk");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs.js");
+const erc20Abi = require("../helper/abis/erc20.json");
+const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 
-const ctxToken = "0x321c2fe4446c7c963dc41dd58879af648838f98d";
-const factory = "0x70236b36f86AB4bd557Fe9934E1246537B472918";
+const {
+    chainIds,
+    chainNameById,
+    cryptexConfig,
+    chainConfigs,
+} = require('./cryptex-config');
 
-const pool2 = [
-  "0xa87e2c5d5964955242989b954474ff2eb08dd2f5", // TCAP-WETH
-  "0x2a93167ed63a31f35ca4788e2eb9fbd9fa6089d0", // CTX-WETH
-];
+const { getLockerPairAddresses, getVestInstances } = require('./cryptex-helper');
 
-async function tvl(timestamp, block) {
-  let balances = {};
+/*
+const fetchTVLByLPLocker = async (locker, chainId, block) => {
+    const chainName = chainNameById[chainId];
+    let balances = {};
+    if (locker.address) {
 
-  const results = await sdk.api.abi.multiCall({
-    block,
-    abi: "erc20:balanceOf",
-    calls: [
-      {
-        target: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-        params: ["0x717170b66654292dfbd89c39f5ae6753d2ac1381"],
-      },
-      {
-        target: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
-        params: ["0x443366a7a5821619d8d57405511e4fadd9964771"],
-      },
-    ],
-  });
-  sdk.util.sumMultiBalanceOf(balances, results);
+        const pairs = await getLockerPairAddresses(
+            locker.address,
+            chainName,
+            locker.deployBlock,
+            block
+        );
 
-  return balances;
+        const lpBalances = (await sdk.api.abi.multiCall({
+            abi: erc20Abi.balanceOf,
+            chain: chainName,
+            calls: pairs.map(pair => ({
+                target: pair,
+                params: [locker.address],
+            }))
+        })).output;
+
+        let lpPositions = [];
+        
+        lpBalances.forEach((p) => {
+            lpPositions.push({
+                balance: p.output,
+                token: p.input.target,
+            });
+        });
+        
+        await unwrapUniswapLPs(
+            balances,
+            lpPositions,
+            undefined,
+            chainName,
+            (addr) => `${chainName}:${addr}`
+        );
+    }
+
+    return balances;
 }
 
-async function pool2Tvl(timestamp, block) {
-  let balances = {};
+const fetchTVLByVestingLocker = async (vesting, chainId, block) => {
+    const chainName = chainNameById[chainId];
+    let balances = {};
+    if (vesting.address) {
+        const vestInstances = await getVestInstances(
+            vesting.address,
+            chainName,
+            vesting.deployBlock,
+            block
+        );
 
-  let { output: totalSupply } = await sdk.api.abi.multiCall({
-    calls: pool2.map((address) => ({ target: address })),
-    abi: "erc20:totalSupply",
-    block,
-  });
+        const instanceBalances = (await sdk.api.abi.multiCall({
+            abi: erc20Abi.balanceOf,
+            chain: chainName,
+            calls: vestInstances.map(item => ({
+                target: item.token,
+                params: [item.instance],
+            }))
+        })).output;
 
-  for (let i = 0; i < totalSupply.length; i++) {
-    await unwrapUniswapLPs(
-      balances,
-      [{ balance: totalSupply[i].output, token: pool2[i] }],
-      block,
-      "ethereum",
-      (addr) => addr,
-      []
-    );
-  }
+        instanceBalances.forEach((item) => {
+            sdk.util.sumSingleBalance(balances, `${chainName}:${item.input.target}`, item.output);; 
+        })
+    }
 
-  return balances;
+    return balances;
 }
 
-async function stakingTvl(timestamp, block) {
-  let balances = {};
+const fetchTVL = (chainId) => {
+    return async (timestamp, ethBlock, chainBlocks) => {
+        const lockers = (chainConfigs[chainId]?.lockers || []);
+        const vesting = (chainConfigs[chainId]?.vesting || {})
+        const chainName = chainNameById[chainId];
+        const block = chainBlocks[chainName];
+        const balances = {};
 
-  let { output: balance } = await sdk.api.erc20.balanceOf({
-    target: ctxToken,
-    owner: factory,
-    block,
-  });
+        const vestingBalances = await fetchTVLByVestingLocker(vesting, chainId, block);
 
-  sdk.util.sumSingleBalance(balances, ctxToken, balance);
+        Object.keys(vestingBalances).forEach((key) => {
+            sdk.util.sumSingleBalance(balances, key, vestingBalances[key]);
+        });
 
-  return balances;
+        for (let i = 0; i < lockers.length; i++) {
+            const locker = lockers[i];
+            const data = await fetchTVLByLPLocker(locker, chainId, block);
+
+            Object.keys(data).forEach((key) => {
+                sdk.util.sumSingleBalance(balances, key, data[key]);
+            });
+        }
+
+        return balances;
+        
+    }
+}
+*/
+const fetchStaking = async (timestamp, block, chainBlocks) => {
+    let balances = {};
+    
+    const v1Balance = (await sdk.api.erc20.balanceOf({
+        target: cryptexConfig.crxToken,
+        owner: cryptexConfig.staking.V1,
+        chain: "bsc",
+        block: chainBlocks.bsc
+    })).output;
+
+    const v2Balance = (await sdk.api.erc20.balanceOf({
+        target: cryptexConfig.crxToken,
+        owner: cryptexConfig.staking.V2,
+        chain: "bsc",
+        block: chainBlocks.bsc
+    })).output;
+
+    sdk.util.sumSingleBalance(balances, `bsc:${cryptexConfig.crxToken}`, v1Balance);
+    sdk.util.sumSingleBalance(balances, `bsc:${cryptexConfig.crxToken}`, v2Balance);
+
+    return balances;
 }
 
+// const excludedChains = [chainIds.bsc, chainIds.polygon];
+/*
+const chainCalcs = Object.keys(chainIds).reduce((acc, key) => {
+    const chainId = chainIds[key];
+    
+    // if (excludedChains.indexOf(chainId) !== -1) return acc;
+
+    const calcs = {
+        tvl: fetchTVL(chainId),
+    }
+
+    if (chainId === 56) {
+        calcs.staking = fetchStaking;
+    }
+
+    acc[key] = calcs;
+    return acc;
+}, {});
+*/
 module.exports = {
-  ethereum: {
-    tvl: tvl,
-    pool2: pool2Tvl,
-    staking: stakingTvl,
-  },
-  tvl,
+    methodology: "TVL includes locked LP tokens and vested team tokens",
+    bsc: {
+        tvl: ()=>({}),
+        staking: fetchStaking
+    }
 };

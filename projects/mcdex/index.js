@@ -1,21 +1,22 @@
 const sdk = require('@defillama/sdk');
-const {GraphQLClient, gql} = require('graphql-request')
+const {gql} = require('graphql-request')
+const { blockQuery } = require('../helper/graph')
 const {toUSDTBalances} = require('../helper/balances');
 const {getBlock} = require('../helper/getBlock');
-const _ = require('underscore');
+
 const axios = require('axios');
 
 async function GenerateCallList() {
     const markets = (await axios.get('https://mcdex.io/api/markets')).data.data.markets;
     const marketStatus = (await axios.get('https://mcdex.io/api/markets/status')).data.data;
     let id2Info = {};
-    _.forEach(markets, market => {
+    markets.forEach(market => {
         const id = market.id;
         if (market.contractType === 'Perpetual') {
             id2Info[id] = {perpetualAddress: market.perpetualAddress};
         }
     });
-    _.forEach(marketStatus, status => {
+    marketStatus.forEach(status => {
         if (status === null) {
             return;
         }
@@ -25,7 +26,7 @@ async function GenerateCallList() {
         }
     });
     let calls = []
-    _.map(id2Info, (info, id) => {
+    Object.values(id2Info).map((info, id) => {
         if (info.collateralTokenAddress && info.perpetualAddress) {
             calls.push({
                 target: info.collateralTokenAddress,
@@ -60,7 +61,6 @@ async function ethereum(timestamp, block) {
 
 async function getTVL(subgraphName, block) {
     const endpoint = `https://api.thegraph.com/subgraphs/name/mcdexio/${subgraphName}`
-    const graphQLClient = new GraphQLClient(endpoint)
 
     const query = gql`
         query getTvl($block: Int) {
@@ -72,9 +72,7 @@ async function getTVL(subgraphName, block) {
             }
         }
     `;
-    const results = await graphQLClient.request(query, {
-        block
-    })
+    const results = await blockQuery(endpoint, query, block, 600)
     return results.factories[0].totalValueLockedUSD;
 }
 

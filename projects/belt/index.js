@@ -1,5 +1,9 @@
 const sdk = require('@defillama/sdk')
 const abi = require('./abi.json')
+const retry = require('async-retry')
+const axios = require("axios");
+const BigNumber = require("bignumber.js");
+const { toUSDTBalances } = require('../helper/balances');
 
 // https://docs.belt.fi/contracts/contract-deployed-info
 const bscVaults = [
@@ -22,6 +26,19 @@ const hecoVaults = [
     '0x0e564BC863c2072C47FB8f952062BD5bc673E142'
 ]
 
+// const klaytnVaults = [
+//     '0xe510d40a4B92302798d6baA1eF004E4629438e81',
+//     '0x426533F501c3615A4244087d2A9981b037C40D46',
+//     '0x826c88315bb441e6886a63f80164E67F89359C5A',
+//     '0xe7fa18E435FE9aCBdFb5016514B00C61C9a27507',
+//     '0x39Ff319dd1282452cd73154B6ac670449234230F',
+//     '0x430a6768Ef348B06F65F1FEEf01B9b2B58C75f79',
+//     '0xf70644e5650e2ef5f0D31dF46e7e369771c2707F'
+// ]
+
+const tetherLP = "0x04100231d548Df31a003BEb99e81e3305Be9647b"
+// const BELT = "0xE0e514c71282b6f4e823703a39374Cf58dc3eA4f"
+
 async function getTvl(chain, block, address) {
     const underlyingTokens = await sdk.api.abi.multiCall({
         chain: chain,
@@ -39,8 +56,15 @@ async function getTvl(chain, block, address) {
     underlyingBalances.output.forEach((balance, index)=>{
         sdk.util.sumSingleBalance(balances, chain+':'+underlyingTokens.output[index].output, balance.output)
     })
+
+    const beltInfo = await retry(async bail => await axios.get('https://s.belt.fi/info/all.json'))
+    const lockedUSDT = beltInfo.data.info[chain.toUpperCase()].vaultPools.find(x => x.wantToken.toLowerCase() === tetherLP.toLowerCase())
+    const [ usdt, wantLocked ] = Object.entries(toUSDTBalances(lockedUSDT.wantLocked))[0]
+    balances[usdt] = wantLocked
+
     return balances
 }
+
 
 function bscTvl(timestamp, ethBlock, chainBlocks) {
     return getTvl('bsc', chainBlocks['bsc'], bscVaults)
@@ -50,12 +74,38 @@ function hecoTvl(timestamp, ethBlock, chainBlocks) {
     return getTvl('heco', chainBlocks['heco'], hecoVaults)
 }
 
+async function klaytnTvl() {
+    const beltInfo = await retry(async bail => await axios.get('https://s.belt.fi/info/all.json'))
+    var tvl = new BigNumber('0');
+
+    beltInfo.data.info.KLAYTN.vaults.forEach(vault =>{
+        tvl = tvl.plus(vault.tvl)
+    })
+
+    const lockedUSDT = beltInfo.data.info.KLAYTN.vaultPools.find(x => x.wantToken.toLowerCase() === tetherLP.toLowerCase())
+    tvl = tvl.plus(lockedUSDT.wantLocked)
+
+    return toUSDTBalances(tvl.toFixed(2))
+}
+
+async function getStaking(chain) {
+    const beltInfo = await retry(async bail => await axios.get('https://s.belt.fi/info/all.json'))
+    const stakingInfo = beltInfo.data.info[chain.toUpperCase()].staking
+
+    return toUSDTBalances(stakingInfo.tvl)
+}
+
 module.exports = {
+    timetravel: false,
+    methodology: 'TVL includes the liquidity of all the Vaults, 3Tether LP and staking counts the BELT that has been staked in BSC. Data is pulled from:"https://s.belt.fi/info/all.json".',
     bsc: {
         tvl: bscTvl,
+        staking: () => getStaking('bsc'),
     },
     heco: {
         tvl: hecoTvl,
     },
-    tvl: sdk.util.sumChainTvls([bscTvl, hecoTvl]),
+    klaytn: {
+        tvl: klaytnTvl,
+    },
 }

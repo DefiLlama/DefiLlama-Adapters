@@ -11,5 +11,4 @@ module.exports = {
   ethereum: {
     tvl: chainTvl('ethereum'),
   },
-  tvl: chainTvl('ethereum'),
 }

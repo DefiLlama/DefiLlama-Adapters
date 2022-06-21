@@ -1,5 +1,5 @@
   const sdk = require("@defillama/sdk");
-  const _ = require("underscore");
+
   const abi = require("./abi.json");
   const BigNumber = require("bignumber.js");
   const axios = require("axios")
@@ -40,7 +40,7 @@
       calls: calls,
       abi: abi["collateralTokens"],
     });
-    _.each(erc20AssetResults.output, (result) => {
+    erc20AssetResults.output.forEach((result) => {
       if (result.output != EthAddress) {
         erc20Assets.push(result.output);
       }
@@ -54,14 +54,14 @@
     let erc20AssetsV2 = [];
     let underlyings = await sdk.api.abi.multiCall({
       block,
-      calls: _.map(fTokens, (fToken) => ({
+      calls: fTokens.map((fToken) => ({
         target: fToken,
         params: [],
       })),
       abi: abi['underlying']
     });
 
-    _.each(underlyings.output, (result) => {
+    underlyings.output.forEach((result) => {
       if (result.output != EthAddressV2) {
         erc20AssetsV2.push(result.output);
       }
@@ -84,7 +84,7 @@
     // Get erc20 assets locked
     let balanceOfResults = await sdk.api.abi.multiCall({
       block,
-      calls: _.map(erc20Assets, (asset) => ({
+      calls: erc20Assets.map((asset) => ({
         target: asset,
         params: ForTube,
       })),
@@ -104,7 +104,7 @@
       let erc20AssetsV2 = await allUnderlyingMarkets(block);
       let balanceOfResultsV2 = await sdk.api.abi.multiCall({
         block,
-        calls: _.map(erc20AssetsV2, (assetV2) => ({
+        calls: erc20AssetsV2.map((assetV2) => ({
           target: assetV2,
           params: ForTubeV2,
         })),
@@ -196,7 +196,17 @@
   */
   async function okexchain(_timestamp, _ethBlock, chainBlocks){
     const markets = await axios.get("https://api.for.tube/api/v1/bank/public/chain/OEC-Inno/markets")
-    const usdCollateral = markets.data.data.reduce((acc, val)=>acc+val.token_price*val.balance_in_cheque, 0)
+    const usdCollateral = markets.data.data.reduce((acc, val)=> acc + val.token_price * val.global_token_reserved, 0)
+    return toUSDTBalances(usdCollateral)
+  }
+  async function iotexchain(_timestamp, _ethBlock, chainBlocks){
+    const markets = await axios.get("https://api.for.tube/api/v1/bank/public/chain/IoTeX-Inno/markets")
+    const usdCollateral = markets.data.data.reduce((acc, val)=> acc + val.token_price * val.global_token_reserved, 0)
+    return toUSDTBalances(usdCollateral)
+  }
+  async function polygonchain(_timestamp, _ethBlock, chainBlocks){
+    const markets = await axios.get("https://api.for.tube/api/v1/bank/public/chain/Polygon-Inno/markets")
+    const usdCollateral = markets.data.data.reduce((acc, val)=> acc + val.token_price * val.global_token_reserved, 0)
     return toUSDTBalances(usdCollateral)
   }
   
@@ -212,6 +222,12 @@
     okexchain: {
       tvl: okexchain
     },
-    tvl: sdk.util.sumChainTvls([eth, bsc, okexchain])
+    iotex: {
+      tvl: iotexchain
+    },
+    polygon: {
+      tvl: polygonchain
+    },
+    
   };
   

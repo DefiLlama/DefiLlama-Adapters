@@ -1,9 +1,7 @@
 const sdk = require("@defillama/sdk");
-const tokenMasterABI = require('./abis/TokenMaster.json')
 const {unwrapUniswapLPs, unwrapCrv} = require('../helper/unwrapLPs')
 const vaultABI = require('./abis/Vault.json')
 
-// const config = require('./config.json')
 
 const tokenMaster = '0xfF4446E9dF1c8281CE1d42610c3bC0342f93E4d7'
 const aldsETH = '0xB17d98c36d2238Ffcb27bF797cA9967B3Cc9Aa07'
@@ -71,8 +69,8 @@ async function tvl(timestamp, block) {
 
 
 module.exports = {
+  doublecounted: true,
   ethereum:{
     tvl,
   },
-  tvl
 }

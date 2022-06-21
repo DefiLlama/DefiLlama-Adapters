@@ -20,8 +20,21 @@ const chainParams = {
             },
         ]
     },
+    fantom: {
+        safeBoxApi: "https://homora-api.alphafinance.io/v2/250/safeboxes",
+        latestAlphaHomoraV2GraphUrl: `https://api.thegraph.com/subgraphs/name/alphafinancelab/alpha-homora-v2-fantom`,
+        poolsJsonUrl: "https://homora-api.alphafinance.io/v2/250/pools",        
+        instances: [
+            {
+                wMasterChefAddress: "0x5FC20fCD1B50c5e1196ac790DADCfcDD416bb0C7",
+                wLiquidityGauge: "0xf1f32c8eeb06046d3cc3157b8f9f72b09d84ee5b", // wrong
+                poolsJsonUrl: "https://homora-api.alphafinance.io/v2/43114/pools",
+                graphUrl: `https://api.thegraph.com/subgraphs/name/alphafinancelab/alpha-homora-v2-fantom`,
+            },
+        ]
+    },
     ethereum: {
-        safeBoxApi: "https://homora-v2.alphafinance.io/static/safebox.json",
+        safeBoxApi: "https://homora-api.alphafinance.io/v2/1/safeboxes",
         coreOracleAddress: "0x6be987c6d72e25f02f6f061f94417d83a6aa13fc",
         latestAlphaHomoraV2GraphUrl: `https://api.thegraph.com/subgraphs/name/hermioneeth/alpha-homora-v2-mainnet`,
         instances: [
@@ -43,7 +56,7 @@ const chainParams = {
                 wStakingRewardIndex: "0x713df2ddda9c7d7bda98a9f8fcd82c06c50fbd90",
                 wStakingRewardPerp: "0xc4635854480fff80f742645da0310e9e59795c63",
                 poolsJsonUrl:
-                    "https://homora-v2.alphafinance.io/static/legacy-pools.json",
+                    "local",
                 graphUrl: `https://api.thegraph.com/subgraphs/name/hermioneeth/alpha-homora-v2-mainnet`,
             }
         ]
@@ -94,40 +107,54 @@ module.exports = {
     tvlV2Onchain
 }
 
+async function getPools(poolsJsonUrl){
+    return poolsJsonUrl === "local"? require('./v2/legacy-pools.json') : (await axios.get(poolsJsonUrl)).data
+}
+
 async function tvlV2Onchain(block, chain) {
     const balances = {}
-    const transform = addr => `${chain}:${addr}`
+    const transform = addr => {
+        if (addr.toLowerCase() === '0x260bbf5698121eb85e7a74f2e45e16ce762ebe11') 
+          return 'avax:0xc7198437980c041c805a1edcba50c1ce5db95118' // Axelar wrapped UST -> USDT
+        if (addr.toLowerCase() === '0x2147efff675e4a4ee1c2f918d181cdbd7a8e208f') 
+        return '0xa1faa113cbe53436df28ff0aee54275c13b40975' // Wrapped Alpha Finance -> ALPHA (erc20)
+      return  `${chain}:${addr}`
+    }
     const { safeBoxApi, poolsJsonUrl } = chainParams[chain];
     const { data: safebox } = await axios.get(safeBoxApi);
     await unwrapCreamTokens(balances, safebox.map(s=>[s.cyTokenAddress, s.safeboxAddress]), block, chain, transform)
-    const { data: pools } = await axios.get(poolsJsonUrl);
+    let pools= await getPools(poolsJsonUrl);
+    let poolsWithPid = pools.filter(p => p.pid !== undefined)
+    let poolsWithoutPid = pools.filter(p => p.pid === undefined)
     const { output: masterchefLpTokens } = await sdk.api.abi.multiCall({
-        calls: pools.map((pool) => ({
-            target: pool.exchange.stakingAddress,
+        calls: poolsWithPid.map((pool) => ({
+            target: pool.exchange.stakingAddress ?? pool.stakingAddress,
             params: [pool.pid, pool.wTokenAddress],
-        })).filter(c => c.target !== undefined),
+        })),
         chain,
         abi: abi["userInfo"],
         block,
     });
-    const lpPools = masterchefLpTokens.map((amount, i) => ({
+    let lpPools = masterchefLpTokens.map((amount, i) => ({
         balance: amount.output.amount,
-        token: pools[i].lpTokenAddress
+        token: poolsWithPid[i].lpTokenAddress
     }))
     const { output: stakingPoolsLpTokens } = await sdk.api.abi.multiCall({
-        calls: pools.map((pool) => ({
+        calls: poolsWithoutPid.map((pool) => ({
             target: pool.stakingAddress,
             params: [pool.wTokenAddress],
-        })).filter(c => c.target !== undefined),
+        })),
         chain,
         abi: "erc20:balanceOf",
         block,
     });
     stakingPoolsLpTokens.forEach((amount, i) => lpPools.push({
         balance: amount.output,
-        token: pools[i].lpTokenAddress
+        token: poolsWithoutPid[i].lpTokenAddress
     }))
+    lpPools = lpPools.filter(p => p.token != '0x2a8a315e82f85d1f0658c5d66a452bbdd9356783')
     await unwrapUniswapLPs(balances, lpPools, block, chain, transform)
+
     return balances
 }
 
@@ -236,7 +263,7 @@ async function getTotalCollateral(
         graphUrl,
     }
 ) {
-    const { data: pools } = await axios.get(poolsJsonUrl);
+    const pools = await getPools(poolsJsonUrl);
 
     const {
         crvCollaterals,

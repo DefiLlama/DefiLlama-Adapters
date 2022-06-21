@@ -115,7 +115,7 @@ const hecoTvl = async (timestamp, ethBlock, chainBlocks) => {
         await sdk.api.abi.call({
           abi: abi.userInfo,
           target: HECOPOOL_CONTRACT,
-          params: [(pid = hecoPoolId[index]), (farm = farmingPools[index])],
+          params: [hecoPoolId[index], farmingPools[index]],
           chain: "heco",
           block: chainBlocks["heco"],
         })
@@ -160,5 +160,4 @@ module.exports = {
   heco: {
     tvl: hecoTvl,
   },
-  tvl: sdk.util.sumChainTvls([hecoTvl]),
 };

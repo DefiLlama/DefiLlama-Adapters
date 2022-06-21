@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk');
-const _ = require('underscore');
+
 const { request, gql } = require("graphql-request");
 const { transformArbitrumAddress } = require('../helper/portedTokens')
 const { requery } = require('../helper/requery')
@@ -31,7 +31,7 @@ async function v1(timestamp, block) {
 
   let poolCalls = [];
 
-  let pools = _.map(poolLogs.output, (poolLog) => {
+  let pools = poolLogs.output.map((poolLog) => {
     if (poolLog.topics) {
       return `0x${poolLog.topics[2].slice(26)}`
     } else {
@@ -40,15 +40,15 @@ async function v1(timestamp, block) {
   });
 
   const poolTokenData = (await sdk.api.abi.multiCall({
-    calls: _.map(pools, (poolAddress) => ({ target: poolAddress })),
+    calls: pools.map((poolAddress) => ({ target: poolAddress })),
     abi: abi.getCurrentTokens,
   })).output;
 
-  _.forEach(poolTokenData, (poolToken) => {
+  poolTokenData.forEach((poolToken) => {
     let poolTokens = poolToken.output;
     let poolAddress = poolToken.input.target;
 
-    _.forEach(poolTokens, (token) => {
+    poolTokens.forEach((token) => {
       if(ignored.includes(token)){
         return
       }
@@ -94,7 +94,7 @@ function v2(chain) {
         tokenAddresses.push(address.address)
       }
     }
-    tokenAddresses = _.uniq(tokenAddresses);
+    tokenAddresses = [...new Set(tokenAddresses)]
 
     let v2Calls = tokenAddresses.map((address) => {
       return {
@@ -128,5 +128,4 @@ module.exports = {
   ethereum:{
     tvl: sdk.util.sumChainTvls([v1, v2("ethereum")])
   },
-  tvl: sdk.util.sumChainTvls([v1, v2("ethereum"), v2("polygon"), v2("arbitrum")])
 }

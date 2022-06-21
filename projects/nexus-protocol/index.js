@@ -25,6 +25,7 @@ async function staking() {
 }
 
 module.exports = {
+    timetravel: false,
     terra: {
         // Token not on coingecko yet
         //staking,

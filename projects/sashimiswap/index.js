@@ -1,11 +1,7 @@
 const sdk = require("@defillama/sdk");
-const erc20 = require("../helper/abis/erc20.json");
 const {uniTvlExport} = require("../helper/calculateUniTvl");
-const { getCompoundV2Tvl } = require("../helper/compound");
-const {
-  transformBscAddress,
-  transformHecoAddress,
-} = require("../helper/portedTokens");
+const { compoundExports } = require("../helper/compound");
+const { staking } = require("../helper/staking");
 
 const factoryETH = "0xF028F723ED1D0fE01cC59973C49298AA95c57472";
 const comprollerETH = "0xB5d53eC97Bed54fe4c2b77f275025c3fc132D770";
@@ -22,58 +18,26 @@ const comprollerHECO = "0x6Cb9d7ecf84b0d3E7704ed91046e16f9D45C00FA";
 const sIHT = "0xf13d3E10DEE31b80887422c89285112Dd00ce0B5";
 const WHTEquivalent = "0x5545153ccfca01fbd7dd11c0b23ba694d9509a6f";
 
-const staking = async (timestamp, ethBlock) => {
-  const balances = {};
+const {tvl: ethMarketsTvl, borrowed: borrowedEth} = compoundExports(
+  comprollerETH,
+  "ethereum",
+  sIETH,
+  WETHEquivalent
+)
 
-  const bal = (
-    await sdk.api.abi.call({
-      abi: erc20.balanceOf,
-      target: "0xC28E27870558cF22ADD83540d2126da2e4b464c2",
-      params: "0x6ed306DbA10E6c6B20BBa693892Fac21f3B91977",
-      block: ethBlock,
-    })
-  ).output;
+const {tvl: bscMarketsTvl, borrowed: borrowedBsc} = compoundExports(
+  comprollerBSC,
+  "bsc",
+  sIBNB,
+  WBNBEquivalent
+)
 
-  sdk.util.sumSingleBalance(
-    balances,
-    "0xC28E27870558cF22ADD83540d2126da2e4b464c2",
-    bal
-  );
-
-  return balances;
-};
-
-const ethMarketsTvl = async (...params) => {
-  return getCompoundV2Tvl(
-    comprollerETH,
-    "ethereum",
-    (addr) => addr,
-    sIETH,
-    WETHEquivalent
-  )(...params);
-};
-
-const bscMarketsTvl = async (...params) => {
-  const transformAdress = await transformBscAddress();
-  return getCompoundV2Tvl(
-    comprollerBSC,
-    "bsc",
-    transformAdress,
-    sIBNB,
-    WBNBEquivalent
-  )(...params);
-};
-
-const hecoMarketsTvl = async (...params) => {
-  const transformAdress = await transformHecoAddress();
-  return getCompoundV2Tvl(
-    comprollerHECO,
-    "heco",
-    transformAdress,
-    sIHT,
-    WHTEquivalent
-  )(...params);
-};
+const {tvl: hecoMarketsTvl, borrowed: borrowedHeco} = compoundExports(
+  comprollerHECO,
+  "heco",
+  sIHT,
+  WHTEquivalent
+)
 
 const ethTvl = uniTvlExport(factoryETH, "ethereum");
 
@@ -82,25 +46,20 @@ const bscTvl = uniTvlExport(factoryBSC, "bsc");
 const hecoTvl = uniTvlExport(factoryHECO, "heco");
 
 module.exports = {
-  tvl: sdk.util.sumChainTvls([
-    ethTvl,
-    ethMarketsTvl,
-    bscTvl,
-    bscMarketsTvl,
-    hecoTvl,
-    hecoMarketsTvl,
-  ]),
-  staking: {
-    tvl: staking,
-  },
+  timetravel: true,
+  doublecounted: false,
   ethereum: {
     tvl: sdk.util.sumChainTvls([ethTvl,ethMarketsTvl]),
+    staking: staking("0x6ed306DbA10E6c6B20BBa693892Fac21f3B91977", "0xC28E27870558cF22ADD83540d2126da2e4b464c2"),
+    borrowed: borrowedEth,
   },
   bsc: {
     tvl: sdk.util.sumChainTvls([bscTvl, bscMarketsTvl]),
+    borrowed: borrowedBsc,
   },
   heco: {
     tvl: sdk.util.sumChainTvls([hecoTvl,hecoMarketsTvl]),
+    borrowed: borrowedHeco,
   },
   methodology:
     "We count liquidity on the Farms (LP tokens) threw Factory Contract; and on the lending markets same as compound",

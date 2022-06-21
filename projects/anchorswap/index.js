@@ -30,9 +30,10 @@ async function staking(timestamp, chain, chainBlocks) {
 
 
 module.exports = {
+    methodology: `Uses the masterchef addresss() to find the tokens locked within, excludes the $ANCHOR token which is separated and added under the "staking" label`,
     bsc: {
         tvl,
         staking
     },
-    tvl
+    
 }

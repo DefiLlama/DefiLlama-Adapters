@@ -46,11 +46,9 @@ async function staked(timestamp, block) {
 
 module.exports = {
   methodology:"Pool2 is the SYNC-ETH pair on UNI and staking according to their FAQ are SYNC tokens locked into CBOND contracts",
-  pool2: {
-    tvl: pool2,
-  },
-  staking: {
-    tvl: staked,
-  },
-  tvl: async () => ({}),
+  ethereum:{
+    pool2,
+    staking: staked,
+    tvl: async () => ({}),
+  }
 };

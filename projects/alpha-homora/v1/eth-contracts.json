@@ -1,0 +1,551 @@
+{
+    "bankAddress": "0x67b66c99d3eb37fa76aa3ed1ff33e8e39f0b9c7a",
+    "WETHAddress": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+    "pools": [
+      {
+        "exchange": "Uniswap",
+        "name": "WETH/WBTC",
+        "tokenAddress": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+        "goblinAddress": "0x41f07d87a28adec58dba1d063d540b86ccbb989f",
+        "lpTokenAddress": "0xBb2b8038a1640196FbE3e38816F3e67Cba72D940",
+        "lpStakingAddress": "0xCA35e32e7926b96A9988f61d510E038108d8068e",
+        "hasTradingFeeAPY": true,
+        "hasFarmingAPY": false,
+        "leverages": [1, 1.5, 2, 2.5],
+        "logo": "/static/tokens/wbtc.png"
+      },
+      {
+        "exchange": "Uniswap",
+        "name": "WETH/USDC",
+        "tokenAddress": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        "goblinAddress": "0xb7bf6d2e6c4fa291d6073b51911bac17890e92ec",
+        "lpTokenAddress": "0xB4e16d0168e52d35CaCD2c6185b44281Ec28C9Dc",
+        "lpStakingAddress": "0x7FBa4B8Dc5E7616e59622806932DBea72537A56b",
+        "hasTradingFeeAPY": true,
+        "hasFarmingAPY": false,
+        "leverages": [1, 1.5, 2, 2.5],
+        "logo": "/static/tokens/usdc.png"
+      },
+      {
+        "exchange": "Uniswap",
+        "name": "WETH/USDT",
+        "tokenAddress": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        "goblinAddress": "0x4668ff4d478c5459d6023c4a7efda853412fb999",
+        "lpTokenAddress": "0x0d4a11d5EEaaC28EC3F61d100daF4d40471f1852",
+        "lpStakingAddress": "0x6C3e4cb2E96B01F4b866965A91ed4437839A121a",
+        "hasTradingFeeAPY": true,
+        "hasFarmingAPY": false,
+        "leverages": [1, 1.5, 2, 2.5],
+        "logo": "/static/tokens/usdt.png"
+      },
+      {
+        "exchange": "Uniswap",
+        "name": "WETH/DAI",
+        "tokenAddress": "0x6b175474e89094c44da98b954eedeac495271d0f",
+        "goblinAddress": "0x14804802592c0f6e2fd03e78ec3efc9b56f1963d",
+        "lpTokenAddress": "0xA478c2975Ab1Ea89e8196811F51A7B7Ade33eB11",
+        "lpStakingAddress": "0xa1484C3aa22a66C62b77E0AE78E15258bd0cB711",
+        "hasTradingFeeAPY": true,
+        "hasFarmingAPY": false,
+        "leverages": [1, 1.5, 2, 2.5],
+        "logo": "/static/tokens/dai.png"
+      },
+      {
+        "exchange": "IndexCoop",
+        "name": "WETH/DPI",
+        "tokenAddress": "0x1494ca1f11d487c2bbe4543e90080aeba4ba3c2b",
+        "goblinAddress": "0xdaa93955982d32451f90a1109ecec7fecb7ee4b3",
+        "lpTokenAddress": "0x4d5ef58aac27d99935e5b6b4a6778ff292059991",
+        "lpStakingAddress": "0x8f06fba4684b5e0988f215a47775bb611af0f986",
+        "hasTradingFeeAPY": true,
+        "hasFarmingAPY": false,
+        "leverages": [1, 1.25, 1.5, 1.75],
+        "logo": "/static/tokens/dpi.png"
+      },
+      {
+        "exchange": "IndexCoop",
+        "name": "WETH/DPI",
+        "tokenAddress": "0x1494ca1f11d487c2bbe4543e90080aeba4ba3c2b",
+        "goblinAddress": "0x4d4ad9628f0c16bbd91cab3a39a8f15f11134300",
+        "lpTokenAddress": "0x4d5ef58aac27d99935e5b6b4a6778ff292059991",
+        "lpStakingAddress": "0xb93b505ed567982e2b6756177ddd23ab5745f309",
+        "hasTradingFeeAPY": true,
+        "hasFarmingAPY": true,
+        "leverages": [1, 1.25, 1.5, 1.75],
+        "logo": "/static/tokens/dpi.png"
+      },
+      {
+        "exchange": "Uniswap",
+        "name": "WETH/YFI",
+        "tokenAddress": "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e",
+        "goblinAddress": "0x66e970f2602367f8ae46ccee79f6139737eaff1c",
+        "lpTokenAddress": "0x2fDbAdf3C4D5A8666Bc06645B8358ab803996E28",
+        "lpStakingAddress": "0xb0942ab3bd38fe3128f09a613de80cd70a90c94d",
+        "hasTradingFeeAPY": true,
+        "hasFarmingAPY": false,
+        "leverages": [1, 1.25, 1.5, 1.75],
+        "logo": "/static/tokens/yfi.png"
+      },
+      {
+        "exchange": "Uniswap",
+        "name": "WETH/UNI",
+        "tokenAddress": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
+        "goblinAddress": "0xfbc0d22bf0ecc735a03fd08fc20b48109cb89543",
+        "lpTokenAddress": "0xd3d2e2692501a5c9ca623199d38826e513033a17",
+        "lpStakingAddress": "0x98a39b20a6907acd7e7710ae80b696c54d4b2dfd",
+        "hasTradingFeeAPY": true,
+        "hasFarmingAPY": false,
+        "leverages": [1, 1.5, 2],
+        "logo": "/static/tokens/uni.png"
+      },
+      {
+        "exchange": "Uniswap",
+        "name": "WETH/LINK",
+        "tokenAddress": "0x514910771af9ca656af840dff83e8264ecf986ca",
+        "goblinAddress": "0xf285e8adf8b871a32c305ab20594cbb251341535",
+        "lpTokenAddress": "0xa2107fa5b38d9bbd2c461d6edf11b11a50f6b974",
+        "lpStakingAddress": "0xfd97f5bc8ee51fa655f53a21005d0f5653b971c0",
+        "hasTradingFeeAPY": true,
+        "hasFarmingAPY": false,
+        "leverages": [1, 1.5, 2],
+        "logo": "/static/tokens/uni.png"
+      },
+      {
+        "exchange": "Uniswap",
+        "name": "WETH/AAVE",
+        "tokenAddress": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
+        "goblinAddress": "0xe900e07ce6bcdd3c5696bfc67201e940e316c1f1",
+        "lpTokenAddress": "0xdfc14d2af169b0d36c4eff567ada9b2e0cae044f",
+        "lpStakingAddress": "0x36a5e6139199b8220f3733a2ad29c8059b1834b1",
+        "hasTradingFeeAPY": true,
+        "hasFarmingAPY": false,
+        "leverages": [1, 1.5, 2],
+        "logo": "/static/tokens/aave.png"
+      },
+      {
+        "exchange": "Uniswap",
+        "name": "WETH/MKR",
+        "tokenAddress": "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2",
+        "goblinAddress": "0xee781f10ce14a45f1d8c2487aeaf24d0366fb9fa",
+        "lpTokenAddress": "0xc2adda861f89bbb333c90c492cb837741916a225",
+        "lpStakingAddress": "0xa86e0b83831e9e235016ba710bebe754d1602457",
+        "hasTradingFeeAPY": true,
+        "hasFarmingAPY": false,
+        "leverages": [1, 1.5, 2],
+        "logo": "/static/tokens/mkr.png"
+      },
+      {
+        "exchange": "Uniswap",
+        "name": "WETH/renBTC",
+        "tokenAddress": "0xeb4c2781e4eba804ce9a9803c67d0893436bb27d",
+        "goblinAddress": "0x09b4608a0ca9ae8002465eb48cd2f916edf5bf63",
+        "lpTokenAddress": "0x81fbef4704776cc5bba0a5df3a90056d2c6900b3",
+        "lpStakingAddress": "0x697349dfdda56936c716a243524810506c2898b7",
+        "hasTradingFeeAPY": true,
+        "hasFarmingAPY": false,
+        "leverages": [1, 1.5, 2, 2.5],
+        "logo": "/static/tokens/renBTC.png"
+      },
+      {
+        "exchange": "Uniswap",
+        "name": "WETH/REN",
+        "tokenAddress": "0x408e41876cccdc0f92210600ef50372656052a38",
+        "goblinAddress": "0x9d00b5eeedeea5141e82b101e645352a2ea960ba",
+        "lpTokenAddress": "0x8bd1661da98ebdd3bd080f0be4e6d9be8ce9858c",
+        "lpStakingAddress": "0x593d49c82feadc0f5a756a4a4d673573ea0baba4",
+        "hasTradingFeeAPY": true,
+        "hasFarmingAPY": false,
+        "leverages": [1, 1.25, 1.5, 1.75],
+        "logo": "/static/tokens/ren.png"
+      },
+      {
+        "exchange": "Uniswap",
+        "name": "WETH/SNX",
+        "tokenAddress": "0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f",
+        "goblinAddress": "0x0ec3de9941479526bb3f530c23aaff84148d17a7",
+        "lpTokenAddress": "0x43ae24960e5534731fc831386c07755a2dc33d47",
+        "lpStakingAddress": "0x201687712c2a0c4669518d838cbbedcea77f98ef",
+        "hasTradingFeeAPY": true,
+        "hasFarmingAPY": false,
+        "leverages": [1, 1.25, 1.5, 1.75],
+        "logo": "/static/tokens/snx.png"
+      },
+      {
+        "exchange": "Uniswap",
+        "name": "WETH/KP3R",
+        "tokenAddress": "0x1ceb5cb57c4d4e2b2433641b95dd330a33185a44",
+        "goblinAddress": "0xcbb95b7708b1b543ecb82b2d58db1711f88d265c",
+        "lpTokenAddress": "0x87febfb3ac5791034fd5ef1a615e9d9627c2665d",
+        "lpStakingAddress": "0x7599a3c5a4eaba41863126df4b14b8b20606fffc",
+        "hasTradingFeeAPY": true,
+        "hasFarmingAPY": false,
+        "leverages": [1],
+        "logo": "/static/tokens/kp3r.png"
+      },
+      {
+        "exchange": "Uniswap",
+        "name": "WETH/SFI",
+        "tokenAddress": "0xb753428af26e81097e7fd17f40c88aaa3e04902c",
+        "goblinAddress": "0x6cc2c08e413638ceb38e3db964a114f139fff81e",
+        "lpTokenAddress": "0xc76225124f3caab07f609b1d147a31de43926cd6",
+        "lpStakingAddress": "0xe932326d463d56ca40b4aaa3572a1052b544f908",
+        "hasTradingFeeAPY": true,
+        "hasFarmingAPY": false,
+        "leverages": [1],
+        "logo": "/static/tokens/sfi.png"
+      },
+      {
+        "exchange": "Uniswap",
+        "name": "WETH/PERP",
+        "tokenAddress": "0xbc396689893d065f41bc2c6ecbee5e0085233447",
+        "goblinAddress": "0x766614adcff1137f8fced7f0804d184ce659826a",
+        "lpTokenAddress": "0xf66369997ae562bc9eec2ab9541581252f9ca383",
+        "lpStakingAddress": "0xcd912be8943fd58bede3859a56048f2a8475b865",
+        "hasTradingFeeAPY": true,
+        "hasFarmingAPY": false,
+        "leverages": [1],
+        "logo": "/static/tokens/perp.png"
+      },
+      {
+        "exchange": "Uniswap",
+        "name": "WETH/COMP",
+        "tokenAddress": "0xc00e94cb662c3520282e6f5717214004a7f26888",
+        "goblinAddress": "0xcc11e2cf6755953eed483ba2b3c433647d0f18dc",
+        "lpTokenAddress": "0xcffdded873554f362ac02f8fb1f02e5ada10516f",
+        "lpStakingAddress": "0x373d22e4fcd14d06d03a89e048f8870f15fb1fd0",
+        "hasTradingFeeAPY": true,
+        "hasFarmingAPY": false,
+        "leverages": [1, 1.25, 1.5, 1.75],
+        "logo": "/static/tokens/comp.png"
+      },
+      {
+        "exchange": "Uniswap",
+        "name": "WETH/CRV",
+        "tokenAddress": "0xd533a949740bb3306d119cc777fa900ba034cd52",
+        "goblinAddress": "0x18712bcb987785d6679134abc7cddee669ec35ca",
+        "lpTokenAddress": "0x3da1313ae46132a397d90d95b1424a9a7e3e0fce",
+        "lpStakingAddress": "0x4803e45218016ad186ed7edb5d289527f177beaa",
+        "hasTradingFeeAPY": true,
+        "hasFarmingAPY": false,
+        "leverages": [1, 1.25, 1.5, 1.75],
+        "logo": "/static/tokens/crv.png"
+      },
+      {
+        "exchange": "Uniswap",
+        "name": "WETH/OCEAN",
+        "tokenAddress": "0x967da4048cd07ab37855c090aaf366e4ce1b9f48",
+        "goblinAddress": "0xee8f4e4b13c610bfa2c65d968ba1d5263d640ce6",
+        "lpTokenAddress": "0x9b7dad79fc16106b47a3dab791f389c167e15eb0",
+        "lpStakingAddress": "0x59aaa3466794cb40183ac96d2762ff74fd773a3f",
+        "hasTradingFeeAPY": true,
+        "hasFarmingAPY": false,
+        "leverages": [1],
+        "logo": "/static/tokens/ocean.png"
+      },
+      {
+        "exchange": "Sushi",
+        "name": "WETH/SUSHI",
+        "id": 12,
+        "tokenAddress": "0x6b3595068778dd592e39a122f4f5a5cf09c90fe2",
+        "goblinAddress": "0x3c2bbb353b48d54b619db8ac6aa642627fb800e3",
+        "lpTokenAddress": "0x795065dcc9f64b5614c407a6efdc400da6221fb0",
+        "lpStakingAddress": "0xc2EdaD668740f1aA35E4D8f227fB8E17dcA888Cd",
+        "hasTradingFeeAPY": true,
+        "hasFarmingAPY": true,
+        "leverages": [1, 1.5, 2],
+        "logo": "/static/tokens/sushi.png"
+      },
+      {
+        "exchange": "Pickle",
+        "name": "WETH/PICKLE",
+        "id": 0,
+        "tokenAddress": "0x429881672B9AE42b8EbA0E26cD9C73711b891Ca5",
+        "goblinAddress": "0xa8854bd26ee44ad3c78792d68564b96ad0a45245",
+        "lpTokenAddress": "0xdc98556Ce24f007A5eF6dC1CE96322d65832A819",
+        "lpStakingAddress": "0xbD17B1ce622d73bD438b9E658acA5996dc394b0d",
+        "hasTradingFeeAPY": true,
+        "hasFarmingAPY": true,
+        "leverages": [1],
+        "logo": "/static/tokens/pickle.png"
+      },
+      {
+        "exchange": "mStable",
+        "name": "WETH/MTA",
+        "tokenAddress": "0xa3bed4e1c75d00fa6f4e5e6922db7261b5e9acd2",
+        "goblinAddress": "0x4ec23befb01b9903d58c4bea096d65927e9462cc",
+        "lpTokenAddress": "0x0d0d65e7a7db277d3e0f5e1676325e75f3340455",
+        "lpStakingAddress": "0x9b4aba35b35eee7481775ccb4055ce4e176c9a6f",
+        "hasTradingFeeAPY": true,
+        "hasFarmingAPY": true,
+        "leverages": [1],
+        "logo": "/static/tokens/mta.png"
+      },
+      {
+        "exchange": "Sushi",
+        "name": "WETH/USDT",
+        "id": 0,
+        "tokenAddress": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        "goblinAddress": "0xd902A3BEdEbaD8bEAD116E8596497cf7d9f45dA2",
+        "lpTokenAddress": "0x06da0fd433c1a5d7a4faa01111c044910a184553",
+        "lpStakingAddress": "0xc2EdaD668740f1aA35E4D8f227fB8E17dcA888Cd",
+        "leverages": [1, 1.5, 2, 2.5],
+        "logo": "/static/tokens/usdt.png"
+      },
+      {
+        "exchange": "Sushi",
+        "name": "WETH/USDC",
+        "id": 1,
+        "tokenAddress": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        "goblinAddress": "0xf134fDD0BBCE951e963D5BC5b0ffe445C9B6c5C6",
+        "lpTokenAddress": "0x397ff1542f962076d0bfe58ea045ffa2d347aca0",
+        "lpStakingAddress": "0xc2EdaD668740f1aA35E4D8f227fB8E17dcA888Cd",
+        "leverages": [1, 1.5, 2, 2.5],
+        "logo": "/static/tokens/usdc.png"
+      },
+      {
+        "exchange": "Sushi",
+        "name": "WETH/DAI",
+        "id": 2,
+        "tokenAddress": "0x6b175474e89094c44da98b954eedeac495271d0f",
+        "goblinAddress": "0xd6419FD982a7651A12a757Ca7cD96b969D180330",
+        "lpTokenAddress": "0xc3d03e4f041fd4cd388c549ee2a29a9e5075882f",
+        "lpStakingAddress": "0xc2EdaD668740f1aA35E4D8f227fB8E17dcA888Cd",
+        "leverages": [1, 1.5, 2, 2.5],
+        "logo": "/static/tokens/dai.png"
+      },
+      {
+        "exchange": "Sushi",
+        "name": "WETH/WBTC",
+        "id": 21,
+        "tokenAddress": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+        "goblinAddress": "0x54a2C35D689F4314FA70DD018eA0a84C74506925",
+        "lpTokenAddress": "0xceff51756c56ceffca006cd410b03ffc46dd3a58",
+        "lpStakingAddress": "0xc2EdaD668740f1aA35E4D8f227fB8E17dcA888Cd",
+        "leverages": [1, 1.5, 2, 2.5],
+        "logo": "/static/tokens/wbtc.png"
+      },
+      {
+        "exchange": "Sushi",
+        "name": "ETH/BAND",
+        "id": 9,
+        "tokenAddress": "0xba11d00c5f74255f56a5e366f4f77f5a186d7f55",
+        "goblinAddress": "0xa7120893283cc2aba8155d6b9887bf228a8a86d2",
+        "lpTokenAddress": "0xa75f7c2f025f470355515482bde9efa8153536a8",
+        "lpStakingAddress": "0xc2edad668740f1aa35e4d8f227fb8e17dca888cd",
+        "leverages": [1, 1.25, 1.5, 1.75],
+        "logo": "/static/tokens/band.png"
+      },
+      {
+        "exchange": "Sushi",
+        "name": "ETH/LINK",
+        "id": 8,
+        "tokenAddress": "0x514910771af9ca656af840dff83e8264ecf986ca",
+        "goblinAddress": "0xcfbd9eeac76798571ed96ed60ca34df35f29ea8d",
+        "lpTokenAddress": "0xc40d16476380e4037e6b1a2594caf6a6cc8da967",
+        "lpStakingAddress": "0xc2edad668740f1aa35e4d8f227fb8e17dca888cd",
+        "leverages": [1, 1.25, 1.75, 2],
+        "logo": "/static/tokens/link.png"
+      },
+      {
+        "exchange": "Sushi",
+        "name": "ETH/AAVE",
+        "id": 37,
+        "tokenAddress": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
+        "goblinAddress": "0xbb4755673e9df77f1af82f448d2b09f241752c05",
+        "lpTokenAddress": "0xd75ea151a61d06868e31f8988d28dfe5e9df57b4",
+        "lpStakingAddress": "0xc2edad668740f1aa35e4d8f227fb8e17dca888cd",
+        "leverages": [1, 1.25, 1.75, 2],
+        "logo": "/static/tokens/aave.png"
+      },
+      {
+        "exchange": "Sushi",
+        "name": "ETH/COMP",
+        "id": 4,
+        "tokenAddress": "0xc00e94cb662c3520282e6f5717214004a7f26888",
+        "goblinAddress": "0x35952c82e146da5251f2f822d7b679f34ffa71d3",
+        "lpTokenAddress": "0x31503dcb60119a812fee820bb7042752019f2355",
+        "lpStakingAddress": "0xc2edad668740f1aa35e4d8f227fb8e17dca888cd",
+        "leverages": [1, 1.25, 1.75, 2],
+        "logo": "/static/tokens/comp.png"
+      },
+      {
+        "exchange": "Sushi",
+        "name": "ETH/SNX",
+        "id": 6,
+        "leverages": [1, 1.25, 1.5, 1.75],
+        "tokenAddress": "0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f",
+        "goblinAddress": "0x8c5cecc9abd8503d167e6a7f2862874b6193e6e4",
+        "lpTokenAddress": "0xa1d7b2d891e3a1f9ef4bbc5be20630c2feb1c470",
+        "lpStakingAddress": "0xc2edad668740f1aa35e4d8f227fb8e17dca888cd",
+        "logo": "/static/tokens/snx.png"
+      },
+      {
+        "exchange": "Sushi",
+        "name": "ETH/SUSD",
+        "id": 3,
+        "leverages": [1, 1.5, 2, 2.5],
+        "tokenAddress": "0x57ab1ec28d129707052df4df418d58a2d46d5f51",
+        "goblinAddress": "0x69fe7813f804a11e2fd279eba5dc1ecf6d6bf73b",
+        "lpTokenAddress": "0xf1f85b2c54a2bd284b1cf4141d64fd171bd85539",
+        "lpStakingAddress": "0xc2edad668740f1aa35e4d8f227fb8e17dca888cd",
+        "logo": "/static/tokens/susd.png"
+      },
+      {
+        "exchange": "Sushi",
+        "name": "ETH/UMA",
+        "id": 7,
+        "leverages": [1, 1.5, 1.75],
+        "tokenAddress": "0x04fa0d235c4abf4bcf4787af4cf447de572ef828",
+        "goblinAddress": "0x8fc4c0566606aa0c715989928c12ce254f8e1228",
+        "lpTokenAddress": "0x001b6450083e531a5a7bf310bd2c1af4247e23d4",
+        "lpStakingAddress": "0xc2edad668740f1aa35e4d8f227fb8e17dca888cd",
+        "logo": "/static/tokens/uma.jpg"
+      },
+      {
+        "exchange": "Sushi",
+        "name": "ETH/YAM",
+        "id": 44,
+        "leverages": [1],
+        "tokenAddress": "0x0aacfbec6a24756c20d41914f2caba817c0d8521",
+        "goblinAddress": "0x9d9c28f39696ce0ebc42ababd875977060e7afa1",
+        "lpTokenAddress": "0x0f82e57804d0b1f6fab2370a43dcfad3c7cb239c",
+        "lpStakingAddress": "0xc2edad668740f1aa35e4d8f227fb8e17dca888cd",
+        "logo": "/static/tokens/yam.png"
+      },
+      {
+        "exchange": "Sushi",
+        "name": "ETH/CRV",
+        "id": 17,
+        "leverages": [1, 1.5, 1.75],
+        "tokenAddress": "0xd533a949740bb3306d119cc777fa900ba034cd52",
+        "goblinAddress": "0x5c767dbf81ec894b2d70f2aa9e45a54692d0d7eb",
+        "lpTokenAddress": "0x58dc5a51fe44589beb22e8ce67720b5bc5378009",
+        "lpStakingAddress": "0xc2edad668740f1aa35e4d8f227fb8e17dca888cd",
+        "logo": "/static/tokens/crv.png"
+      },
+      {
+        "exchange": "Sushi",
+        "name": "ETH/REN",
+        "id": 13,
+        "leverages": [1, 1.5, 1.75],
+        "tokenAddress": "0x408e41876cccdc0f92210600ef50372656052a38",
+        "goblinAddress": "0x37ef9c13faa609d5eee21f84e4c6c7bf62e4002e",
+        "lpTokenAddress": "0x611cde65dea90918c0078ac0400a72b0d25b9bb1",
+        "lpStakingAddress": "0xc2edad668740f1aa35e4d8f227fb8e17dca888cd",
+        "logo": "/static/tokens/ren.png"
+      },
+      {
+        "exchange": "Sushi",
+        "name": "ETH/YFI",
+        "id": 11,
+        "leverages": [1, 1.5, 1.75],
+        "tokenAddress": "0x0bc529c00c6401aef6d220be8c6ea1667f6ad93e",
+        "goblinAddress": "0x6d0eb60d814a21e2bed483c71879777c9217aa28",
+        "lpTokenAddress": "0x088ee5007c98a9677165d78dd2109ae4a3d04d0c",
+        "lpStakingAddress": "0xc2edad668740f1aa35e4d8f227fb8e17dca888cd",
+        "logo": "/static/tokens/yfi.png"
+      },
+      {
+        "logo": "/static/tokens/grt.png",
+        "exchange": "Uniswap",
+        "name": "ETH/GRT",
+        "leverages": [1],
+        "tokenAddress": "0xc944e90c64b2c07662a292be6244bdf05cda44a7",
+        "goblinAddress": "0xbd95cfef698d4d582e66110475ec7e4e21120e4a",
+        "lpTokenAddress": "0x2e81ec0b8b4022fac83a21b2f2b4b8f5ed744d70",
+        "lpStakingAddress": "0x003756fc5e1908fba1af693cba81bd8885b44888"
+      },
+      {
+        "logo": "/static/tokens/kp3r.png",
+        "exchange": "Sushi",
+        "name": "ETH/KP3R",
+        "id": 58,
+        "leverages": [1],
+        "tokenAddress": "0x1ceb5cb57c4d4e2b2433641b95dd330a33185a44",
+        "goblinAddress": "0x795d3655d0d7ecbf26dd33b1a7676017bb0ee611",
+        "lpTokenAddress": "0xaf988aff99d3d0cb870812c325c588d8d8cb7de8",
+        "lpStakingAddress": "0xc2edad668740f1aa35e4d8f227fb8e17dca888cd"
+      },
+      {
+        "exchange": "Sushi",
+        "name": "ETH/BOR",
+        "id": 70,
+        "leverages": [1],
+        "tokenAddress": "0x3c9d6c1c73b31c837832c72e04d3152f051fc1a9",
+        "goblinAddress": "0x6a279df44b5717e89b51645e287c734bd3086c1f",
+        "lpTokenAddress": "0x44d34985826578e5ba24ec78c93be968549bb918",
+        "lpStakingAddress": "0xc2edad668740f1aa35e4d8f227fb8e17dca888cd"
+      },
+      {
+        "logo": "/static/tokens/obtc.png",
+        "exchange": "Sushi",
+        "name": "ETH/oBTC",
+        "id": 81,
+        "leverages": [1],
+        "tokenAddress": "0x8064d9ae6cdf087b1bcd5bdf3531bd5d8c537a68",
+        "goblinAddress": "0x1001ec1b6fc2438e8be6ffa338d3380237c0399a",
+        "lpTokenAddress": "0x53e9fb796b2feb4b3184afdf601c2a2797548d88",
+        "lpStakingAddress": "0xc2edad668740f1aa35e4d8f227fb8e17dca888cd"
+      }
+    ],
+    "alphaPools": [
+      {
+        "exchange": "Uniswap",
+        "name": "ibETH/ALPHA",
+        "tokenAddress": "0xa1faa113cbe53436df28ff0aee54275c13b40975",
+        "goblinAddress": "ALPHA_POOL",
+        "lpTokenAddress": "0x411a9b902f364817a0f9c4261ce28b5566a42875",
+        "hasTradingFeeAPY": true,
+        "hasFarmingAPY": false,
+        "leverages": [1],
+        "logo": "/static/tokens/ibeth.png"
+      }
+    ],
+    "exchanges": {
+      "Uniswap": {
+        "name": "Uniswap",
+        "reward": {
+          "tokenName": "UNI",
+          "rewardPerPoolPerYear": "3.0416545e25",
+          "rewardTokenAddress": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
+          "rewardEthLpTokenAddress": "0xd3d2E2692501A5c9Ca623199D38826e513033a17"
+        }
+      },
+      "IndexCoop": {
+        "name": "IndexCoop",
+        "reward": {
+          "tokenName": "INDEX",
+          "rewardPerPoolPerYear": "9.125e23",
+          "rewardTokenAddress": "0x0954906da0bf32d5479e25f46056d22f08464cab",
+          "rewardEthLpTokenAddress": "0x3452a7f30a712e415a0674c0341d44ee9d9786f9"
+        }
+      },
+      "Sushi": {
+        "name": "Sushi",
+        "reward": {
+          "tokenName": "SUSHI",
+          "rewardPerPoolPerYear": "0",
+          "rewardTokenAddress": "0x6b3595068778dd592e39a122f4f5a5cf09c90fe2",
+          "rewardEthLpTokenAddress": "0x795065dCc9f64b5614C407a6EFDC400DA6221FB0"
+        }
+      },
+      "Pickle": {
+        "name": "Pickle",
+        "reward": {
+          "tokenName": "PICKLE",
+          "rewardPerPoolPerYear": "0",
+          "rewardTokenAddress": "0x429881672B9AE42b8EbA0E26cD9C73711b891Ca5",
+          "rewardEthLpTokenAddress": "0xdc98556Ce24f007A5eF6dC1CE96322d65832A819"
+        }
+      },
+      "mStable": {
+        "name": "mStable",
+        "reward": {
+          "tokenName": "MTA",
+          "rewardPerPoolPerYear": "1.2e24",
+          "rewardTokenAddress": "0xa3bed4e1c75d00fa6f4e5e6922db7261b5e9acd2",
+          "rewardEthLpTokenAddress": "0x0d0d65e7a7db277d3e0f5e1676325e75f3340455"
+        }
+      }
+    }
+  }

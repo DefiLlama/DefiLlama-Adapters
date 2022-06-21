@@ -1,0 +1,25 @@
+{
+  "totalGHST":
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_user",
+          "type": "address"
+        }
+      ],
+      "name": "totalGHST",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "_totalGHST",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    "tokenIdsOfOwner":
+    {"inputs":[{"internalType":"address","name":"_owner","type":"address"}],"name":"tokenIdsOfOwner","outputs":[{"internalType":"uint32[]","name":"tokenIds_","type":"uint32[]"}],"stateMutability":"view","type":"function"}
+
+  }

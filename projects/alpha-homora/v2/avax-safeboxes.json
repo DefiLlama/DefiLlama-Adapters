@@ -1,0 +1,32 @@
+[
+    {
+        "address": "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+        "safeboxAddress": "0x21c630b7824d15bcdfeefa73cbd4e49cafe9f836",
+        "cyTokenAddress": "0xb3c68d69e95b095ab4b33b4cb67dbc0fbf3edf56"
+    },
+    {
+        "address": "0xc7198437980c041c805a1edcba50c1ce5db95118",
+        "safeboxAddress": "0x858d6353a52c25c53df1869230282d22b41f5790",
+        "cyTokenAddress": "0xceb1ce674f38398432d20bc8f90345e91ef46fd3"
+    },
+    {
+        "address": "0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664",
+        "safeboxAddress": "0xd3843b60e69f958ef93bec299467e6ed301cbeeb",
+        "cyTokenAddress": "0xe28965073c49a02923882b8329d3e8c1d805e832"
+    },
+    {
+        "address": "0x49d5c2bdffac6ce2bfdb6640f4f80f226bc10bab",
+        "safeboxAddress": "0xf9eb24b83b51fbc0bcb1204221c8c9f1cef33994",
+        "cyTokenAddress": "0x338eee1f7b89ce6272f302bdc4b952c13b221f1d"
+    },
+    {
+        "address": "0xd586e7f844cea2f87f50152665bcbc2c279d8d70",
+        "safeboxAddress": "0x69491fd9a6d9e32f32113cc076b1b69d8b9ebd3f",
+        "cyTokenAddress": "0x085682716f61a72bf8c573fbaf88cca68c60e99b"
+    },
+    {
+        "address": "0x50b7545627a5162f82a992c33b87adc75187b218",
+        "safeboxAddress": "0x1de90c0ce3d940412c3ba7322a257f7bdcc00ceb",
+        "cyTokenAddress": "0xb09b75916c5f4097c8b5812e63e216fef97661fc"
+    }
+]

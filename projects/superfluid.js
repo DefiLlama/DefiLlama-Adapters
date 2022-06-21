@@ -1,12 +1,15 @@
 const sdk = require("@defillama/sdk");
 const { default: BigNumber } = require("bignumber.js");
 const { request, gql } = require("graphql-request"); // GraphQLClient
-const { transformPolygonAddress, transformXdaiAddress } = require("./helper/portedTokens");
 // const abi = require('./erc20-abi.json')
 
 // Superfluid Supertokens can be retrieved using GraphQl API - cannot use block number to retrieve historical data at the moment though
-const polygonGraphUrl = 'https://api.thegraph.com/subgraphs/name/superfluid-finance/superfluid-matic'
-const xdaiGraphUrl = 'https://api.thegraph.com/subgraphs/name/superfluid-finance/superfluid-xdai'
+// TheGraph URL before being deprecated, before 2021-12-23
+// const polygonGraphUrl = 'https://api.thegraph.com/subgraphs/name/superfluid-finance/superfluid-matic'
+// const xdaiGraphUrl = 'https://api.thegraph.com/subgraphs/name/superfluid-finance/superfluid-xdai'
+const polygonGraphUrl = 'https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-matic'
+const xdaiGraphUrl = 'https://api.thegraph.com/subgraphs/name/superfluid-finance/protocol-v1-xdai'
+
 const supertokensQuery = gql`
 query get_supertokens($block: Int) {
   tokens(
@@ -23,7 +26,7 @@ query get_supertokens($block: Int) {
 // An upcoming superfluid graphql subgraph will be published soon and provide token supplies. 
 
 // Main function for all chains to get balances of superfluid tokens
-async function getChainBalances(allTokens, chain, block, transform = a => a) {
+async function getChainBalances(allTokens, chain, block) {
   // Init empty balances
   let balances = {};
 
@@ -82,21 +85,20 @@ async function getChainBalances(allTokens, chain, block, transform = a => a) {
 
 const tokensNativeToSidechain = [
   '0x2bf2ba13735160624a0feae98f6ac8f70885ea61', // xdai FRACTION
-  '0x63e62989d9eb2d37dfdb1f93a22f063635b07d51'  // xdai MIVA 
+  '0x63e62989d9eb2d37dfdb1f93a22f063635b07d51', // xdai MIVA 
+  '0x263026e7e53dbfdce5ae55ade22493f828922965', // polygon RIC
 ]
 
 async function retrieveSupertokensBalances(chain, timestamp, ethBlock, chainBlocks) {
   // Retrieve supertokens from graphql API
-  let graphUrl, block, transform;
+  let graphUrl, block;
   if (chain === 'polygon') {
     graphUrl = polygonGraphUrl
     block = chainBlocks.polygon
-    transform = await transformPolygonAddress()
   }
   else if (chain === 'xdai') {
     graphUrl = xdaiGraphUrl
     block = chainBlocks.xdai
-    transform = await transformXdaiAddress()
   }
 
   const { tokens } = await request(
@@ -105,9 +107,9 @@ async function retrieveSupertokensBalances(chain, timestamp, ethBlock, chainBloc
     {block}
   )
 
-  const allTokens = tokens.filter(t => t.symbol.length > 0)
+  const allTokens = tokens // .filter(t => t.symbol.length > 0)
 
-  return getChainBalances(allTokens, chain, block, transform)
+  return getChainBalances(allTokens, chain, block)
 }
 async function polygon(timestamp, block, chainBlocks) {
   return retrieveSupertokensBalances('polygon', timestamp, block, chainBlocks)
