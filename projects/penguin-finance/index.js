@@ -3,7 +3,7 @@ const BufferLayout = require("@solana/buffer-layout");
 const { MintLayout, TOKEN_PROGRAM_ID } = require("@solana/spl-token");
 const { getTokenList } = require('../helper/solana')
 
-const SOLANA_API_URL = "https://solana-api.projectserum.com";
+const SOLANA_API_URL = "https://api.mainnet-beta.solana.com";
 const PENGUIN_SWAP_PROGRAM_ADDRESS =
   "PSwapMdSai8tjrEXcxFeQth87xC4rRsa4VA5mhGhXkP";
 
@@ -32,7 +32,7 @@ const TokenSwapLayout = BufferLayout.struct([
 
 const connection = new Connection(SOLANA_API_URL);
 
-async function tvl(time, ethBlock, chainBlocks) {
+async function tvl() {
   const tokenList = await getTokenList()
 
   // tokenList is giant, Map lookups are more performant than object lookups so use a Map
@@ -48,6 +48,7 @@ async function tvl(time, ethBlock, chainBlocks) {
   const programAccounts = await connection.getParsedProgramAccounts(
     penguinSwapProgramPublicKey
   );
+  await sleep(11000)
 
   const validTokenAddresses = new Set();
 
@@ -70,15 +71,17 @@ async function tvl(time, ethBlock, chainBlocks) {
           new PublicKey(MintLayout.decode(account.data).mintAuthority)
       )
     );
+  await sleep(11000)
+  let i = 0
 
-  const poolsTokenAccounts = await Promise.all(
-    poolAuthorityPubKeys.map((key) =>
-      connection.getParsedTokenAccountsByOwner(key, {
-        programId: TOKEN_PROGRAM_ID,
-      })
-    )
-  );
-
+  const poolsTokenAccounts = []
+  
+  for (const key of poolAuthorityPubKeys) {
+    poolsTokenAccounts.push(await connection.getParsedTokenAccountsByOwner(key, {
+      programId: TOKEN_PROGRAM_ID,
+    }))
+    await sleep(2000)
+  }
   const balances = {};
 
   poolsTokenAccounts.forEach((tokenAccounts) => {
@@ -112,6 +115,10 @@ async function tvl(time, ethBlock, chainBlocks) {
   });
 
   return balances;
+}
+
+async function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 module.exports = {
