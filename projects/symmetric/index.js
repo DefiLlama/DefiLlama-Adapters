@@ -4,6 +4,8 @@ const { GraphQLClient, gql } = require('graphql-request')
 const { toUSDTBalances } = require('../helper/balances');
 const { getBlock } = require('../helper/getBlock');
 async function getTVL(subgraphName, block, version = 'v1') {
+  // delayed by around 5 mins to allow subgraph to update
+  block -= 25;
   var endpoint = `https://api.thegraph.com/subgraphs/name/centfinance/${subgraphName}`
   var graphQLClient = new GraphQLClient(endpoint)
 
@@ -35,7 +37,7 @@ async function getTVL(subgraphName, block, version = 'v1') {
   return version ==='v1'? results.symmetrics[0].totalLiquidity : results.balancers[0].totalLiquidity;
 }
 
-async function gnosis(timestamp, ethBlock, chainBlocks) {
+async function xdai(timestamp, ethBlock, chainBlocks) {
   const [v1,v2] = await Promise.all([getTVL("symmetric-xdai", await getBlock(timestamp, "xdai", chainBlocks), 'v1'), getTVL("symmetric-v2-gnosis", await getBlock(timestamp, "xdai", chainBlocks), 'v2')])
   return toUSDTBalances(BigNumber(v1).plus(v2))
 }
@@ -52,8 +54,8 @@ module.exports = {
   celo:{
     tvl: celo
   },
-  gnosis:{
-    tvl: gnosis
+  xdai:{
+    tvl: xdai
   },
-  tvl: sdk.util.sumChainTvls([gnosis, celo])
+  tvl: sdk.util.sumChainTvls([xdai, celo])
 }
