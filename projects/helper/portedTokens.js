@@ -1695,8 +1695,7 @@ const fixBalancesMapping = {
   kava: b => fixBalances(b, kavaFixMapping, { removeUnmapped: false }),
   ethereum: b => fixBalances(b, ethereumFixMapping, { removeUnmapped: false }),
   sx: b => fixBalances(b, sxFixMapping, { removeUnmapped: true }),
-  meter: b => fixBalances(b, meterFixMapping, { removeUnmapped: true }),
-  kava: b => fixBalances(b, kavaFixMapping, { removeUnmapped: false })
+  meter: b => fixBalances(b, meterFixMapping, { removeUnmapped: true })
 };
 
 const chainTransforms = {
