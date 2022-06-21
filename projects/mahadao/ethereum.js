@@ -1,4 +1,5 @@
 const { unwrapTroves, sumTokens } = require("../helper/unwrapLPs.js");
+const getEntireSystemCollAbi = require("../helper/abis/getEntireSystemColl.abi.json");
 const BigNumber = require("bignumber.js");
 const sdk = require("@defillama/sdk");
 
@@ -15,6 +16,8 @@ const eth = {
   frxArthLP: "0x5a59fd6018186471727faaeae4e57890abc49b08",
   frxArthStaking: "0x7B2F31Fe97f32760c5d6A4021eeA132d44D22039",
 };
+const ETH_ADDRESS = "0x0000000000000000000000000000000000000000";
+const TROVE_MANAGER_ADDRESS = "0xF4eD5d0C3C977B57382fabBEa441A63FAaF843d3";
 
 Object.keys(eth).forEach((k) => (eth[k] = eth[k].toLowerCase()));
 
@@ -75,13 +78,28 @@ async function pool2(_, block) {
 }
 
 async function tvl(_, block) {
-  const balances = {};
-  const troves = [
-    "0x4a47a8EB52c6213963727BF93baaa1CF66CBdF38", // FRAX Trove
-  ];
-  await unwrapTroves({ balances, chain, block, troves });
-  return balances;
+  /*const stabilityPoolLusdTvl = (
+    await sdk.api.erc20.balanceOf({
+      target: LUSD_TOKEN_ADDRESS,
+      owner: STABILITY_POOL_ADDRESS,
+      block,
+    })
+  ).output;*/
+
+  const troveEthTvl = (
+    await sdk.api.abi.call({
+      target: TROVE_MANAGER_ADDRESS,
+      abi: getEntireSystemCollAbi,
+      block,
+    })
+  ).output;
+
+  return {
+    [ETH_ADDRESS]: troveEthTvl,
+    //[LUSD_TOKEN_ADDRESS]: stabilityPoolLusdTvl,
+  };
 }
+
 
 module.exports = {
   pool2,
