@@ -1,47 +1,86 @@
 const axios = require('axios')
-const {getPricesfromString} = require('../helper/utils')
-const { toUSDTBalances } = require('../helper/balances')
-const sdk = require('@defillama/sdk')
+const { getApiTvl } = require('../helper/historicalApi')
 
 async function ethereum(timestamp) {
-    if(Math.abs(timestamp-Date.now()/1000)<3600){
-        const tvl = await axios.get('https://yearn.science/v1/tvl/latest')
-        return toUSDTBalances(tvl.data.tvl)
-    }
-    const historicalTvls = Object.entries((await axios.get('https://yearn.science/v1/tvl')).data)
-        .map(([date, tvl]) => [Date.parse(date)/1000, tvl]).sort(([date1], [date2]) => date1 - date2);
-    let high = historicalTvls.length;
-    let low = 0;
-    while ((high - low) > 1) {
-        const mid = Math.floor((high + low) / 2);
-        const midTimestamp = historicalTvls[mid][0]
-        if (midTimestamp < timestamp) {
-            low = mid;
-        } else {
-            high = mid;
-        }
-    }
-    if(Math.abs(historicalTvls[low][0]-timestamp)>(24*3600)){
-        throw new Error('no data');
-    }
-    return toUSDTBalances(historicalTvls[low][1])
+    return getApiTvl(timestamp, async () => {
+        const tvl = await axios.get('https://api.yearn.finance/v1/chains/1/vaults/all')
+        return tvl.data.reduce((all, vault) => all + vault.tvl.tvl, 0)
+    }, async () => {
+        /*
+        Outdated as of Dec 2022
+        const historicalTvls = Object.entries((await axios.get('https://yearn.science/v1/tvl')).data)
+            .map(([date, tvl]) => [Date.parse(date)/1000, tvl]).sort(([date1], [date2]) => date1 - date2);
+        */
+        const ibTvl = await axios.post("https://yearn.vision/api/ds/query", { "queries": [{ "datasource": { "uid": "PBFE396EC0B189D67", "type": "prometheus" }, "expr": "(sum(ironbank{network=\"ETH\", param=\"tvl\"}) or vector(0))", "utcOffsetSec": 0, "datasourceId": 1 }], "from": "1639958400000", "to": Date.now().toString() })
+        const totalTvl = await axios.post("https://yearn.vision/api/ds/query", { "queries": [{ "datasource": { "uid": "PBFE396EC0B189D67", "type": "prometheus" }, "expr": "(sum(ironbank{network=\"ETH\", param=\"tvl\"}) or vector(0)) + (sum(yearn_vault{network=\"ETH\", param=\"tvl\"}) or vector(0))", "utcOffsetSec": 0, "datasourceId": 1 }], "from": "1639958400000", "to": Date.now().toString() })
+        const result = []
+        const [tvlTimestamps, tvls] = totalTvl.data.results.A.frames[0].data.values
+        const [ibTimestamps, ib] = ibTvl.data.results.A.frames[0].data.values
+        tvlTimestamps.forEach((time, index) => {
+            const ibIndex = ibTimestamps.indexOf(time)
+            const tvl = tvls[index] - ib[ibIndex]
+            result.push({
+                date: Math.round(time / 1000),
+                totalLiquidityUSD: tvl
+            })
+        })
+        return result
+    })
 }
 
-async function fantom(){
-    const vaults = (await axios.get("https://ape.tax/api/vaults?network=250")).data.data.map(vault=>[vault.want.cgID, Number(vault.data.totalAssets)])
-    const coingeckoPrices = await getPricesfromString(vaults.map(v=>v[0]).join(','))
-    const total = vaults.reduce((sum, vault)=>sum+vault[1]*coingeckoPrices.data[vault[0]].usd, 0)
-    return toUSDTBalances(total)
+async function fantom(timestamp) {
+    return getApiTvl(timestamp, async () => {
+        const tvl = await axios.get('https://api.yearn.finance/v1/chains/250/vaults/all')
+        const total = tvl.data.reduce((all, vault) => all + vault.tvl.tvl, 0)
+        if(total === 0){ throw new Error("TVL can't be 0")}
+        return total
+    }, async () => {
+        const totalTvl = await axios.post("https://yearn.vision/api/ds/query", {"queries":[{"datasource":{"uid":"PBFE396EC0B189D67","type":"prometheus"},"expr":"(sum(ironbank{network=\"FTM\", param=\"tvl\"}) or vector(0)) + (sum(yearn_vault{network=\"FTM\", param=\"tvl\"}) or vector(0))", "utcOffsetSec":0,"datasourceId":1}],"from":"1642091361529","to": Date.now().toString() })
+        const result = []
+        const [tvlTimestamps, tvls] = totalTvl.data.results.A.frames[0].data.values
+        tvlTimestamps.forEach((time, index) => {
+            const tvl = tvls[index]
+            result.push({
+                date: Math.round(time / 1000),
+                totalLiquidityUSD: tvl
+            })
+        })
+        return result
+    })
 }
 
+async function arbitrum(timestamp) {
+    return getApiTvl(timestamp, async () => {
+        const tvl = await axios.get('https://api.yearn.finance/v1/chains/42161/vaults/all')
+        const total = tvl.data.reduce((all, vault) => all + vault.tvl.tvl, 0)
+        if(total === 0){ throw new Error("TVL can't be 0")}
+        return total
+    }, async () => {
+        const totalTvl = await axios.post("https://yearn.vision/api/ds/query", {"queries":[{"datasource":{"uid":"PBFE396EC0B189D67","type":"prometheus"},"expr":"(sum(ironbank{network=\"AETH\", param=\"tvl\"}) or vector(0)) + (sum(yearn_vault{network=\"AETH\", param=\"tvl\"}) or vector(0))", "utcOffsetSec":0,"datasourceId":1}],"from":"1645565848000","to": Date.now().toString() })
+        const result = []
+        const [tvlTimestamps, tvls] = totalTvl.data.results.A.frames[0].data.values
+        tvlTimestamps.forEach((time, index) => {
+            const tvl = tvls[index]
+            result.push({
+                date: Math.round(time / 1000),
+                totalLiquidityUSD: tvl
+            })
+        })
+        return result
+    })
+}
 
 module.exports = {
+    doublecounted: true,
     misrepresentedTokens: true,
-    fantom:{
+    timetravel: false,
+    fantom: {
         tvl: fantom
     },
-    ethereum:{
+    ethereum: {
         tvl: ethereum
     },
-    tvl:sdk.util.sumChainTvls([ethereum, fantom]),
+    arbitrum: {
+        tvl: arbitrum
+    },
 };

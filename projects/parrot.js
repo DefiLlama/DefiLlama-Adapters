@@ -128,6 +128,7 @@ async function tvl() {
     }
 }
 module.exports = {
+    timetravel: false,
     tvl,
     methodology: `To obtain the Parrot TVL we make on-chain calls using the function getTokenBalance() that uses the token addresses and the vault addresses where deposits are made to mint PAI, pBTC or pSOL. Hence, the addresses used are the addresses that hold the collateral for the protocol and these addresses are hard-coded. The calls made return the number of tokens held in each contract for us to then use Coingecko to get the price of each token in USD and export the sum of all tokens. Since the Mercurial and Saber LP tokens that are used as collateral have a virtual price of $1, these are counted as Tether. We also include SOL staked on prtSOL that is used for the liquidity staking program.`,
 }

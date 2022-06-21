@@ -1,6 +1,7 @@
 const {getChainTvl} = require("../helper/getUniSubgraphTvl");
 const {uniTvlExport} = require("../helper/calculateUniTvl");
 const {sumTokens} = require("../helper/unwrapLPs");
+const { transformBscAddress } = require("../helper/portedTokens");
 
 const factory = "0x858e3312ed3a876947ea49d572a7c42de08af7ee";
 
@@ -47,6 +48,6 @@ async function staking(time, ethBlock, chainBlocks){
 module.exports = {
   bsc: {
     staking,
-    tvl: uniTvlExport(factory, "bsc")
+    tvl: uniTvlExport(factory, "bsc", transformBscAddress)
   },
 };

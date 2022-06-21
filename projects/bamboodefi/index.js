@@ -1,28 +1,28 @@
 const sdk = require("@defillama/sdk");
-const tvlOnPairs = require("../helper/processPairs.js");
+const { uniTvlExport } = require("../helper/calculateUniTvl.js");
+const { getChainTransform } = require("../helper/portedTokens");
 
 const factoryETH = "0x3823Ac41b77e51bf0E6536CE465479cBdedcaEa9";
 const factoryBSC = "0xFC2604a3BCB3BA6016003806A288E7aBF75c8Aa3";
-
-const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
-  await tvlOnPairs("bsc", chainBlocks, factoryBSC, balances);
-  return balances;
-};
-
-const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
-    const balances = {};
-    await tvlOnPairs("ethereum", chainBlocks, factoryETH, balances);
-    return balances;
-  };
+const factoryPolygon = "0x25cc30af6b2957b0ed7ceca026fc204fdbe04e59";
+const factoryVelas = "0xFC2604a3BCB3BA6016003806A288E7aBF75c8Aa3";
 
 module.exports = {
+  misrepresentedTokens: false,
+  timetravel: true,
+  methodology:
+    "TVL is calculated from the Bamboo DeFi factory smart contracts on each chain.",
   bsc: {
-    tvl: bscTvl, //   individually outputs >1B    ---   breakdown per token             (OK)
+    tvl: uniTvlExport(factoryBSC, "bsc"),
   },
   ethereum: {
-    tvl: ethTvl, //   individually outputs >1B    ---   breakdown per token             (OK)
+    tvl: uniTvlExport(factoryETH, "ethereum"),
   },
-  tvl: sdk.util.sumChainTvls([bscTvl, ethTvl]),
-  methodology: `Bamboo Defi uses a Factory address to create new pairs and as BambooDefi exists in the Ethereum network and also in the BSC network, it has two Factory addresses. In the case of TVL, the Factory address is used to identify the existing pairs. First the balance of the pairs in the Ethereum network is achieved and then the balance in the BSC network, this allows to be able to show the balances individually and also together.`
-};
+
+  polygon: {
+    tvl: uniTvlExport(factoryPolygon, "polygon"),
+  },
+  velas: {
+    tvl: uniTvlExport(factoryVelas, "velas", () => getChainTransform("velas")),
+  },
+}

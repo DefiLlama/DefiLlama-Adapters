@@ -1,155 +1,113 @@
-const sdk = require('@defillama/sdk');
-const abi = require('./abi.json');
-const BigNumber = require('bignumber.js')
-const {getBlock} = require('../helper/getBlock')
+const { get } = require("../helper/http");
+const { getBlock } = require("../helper/getBlock");
+const { chainExports } = require("../helper/exports");
+const sdk = require("@defillama/sdk");
+const { getChainTransform, getFixBalances } = require("../helper/portedTokens");
+const { sumTokens } = require("../helper/unwrapLPs");
 
-// V1
-const hubAddress = '0xdfa6edAe2EC0cF1d4A60542422724A48195A5071';
-const tokenDenominationAddress = '0x6b175474e89094c44da98b954eedeac495271d0f';
-//V3
-const routers = ['0xe3cF69b86F274a14B87946bf641f11Ac837f4492', '0xe6887c0cc3c37cb2ee34Bc58AB258f36825CA910', '0xE540998865aFEB054021dc849Cc6191b8E09dC08', '0xC6C68811E75EfD86d012587849F1A1D30427361d']
-const ethereumTokens = ['0xdAC17F958D2ee523a2206206994597C13D831ec7', '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0', '0x0f5d2fb29fb7d3cfee444a200298f468908cc942', '0x6b175474e89094c44da98b954eedeac495271d0f']
-const bscTokens = ['0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3', '0x55d398326f99059fF775485246999027B3197955', '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d']
-const polygonSettings = {
-  nativeCoin: 'matic-network',
-  tokens: [
-    {
-      address: '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063',
-      coingeckoId: 'dai',
-    },
-    {
-      address: '0xA1c57f48F0Deb89f569dFbE6E2B7f46D33606fD4',
-      coingeckoId: 'decentraland'
-    },
-    {
-      address: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
-      coingeckoId: 'tether'
-    },
-    {
-      address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
-      coingeckoId: 'usd-coin'
-    }
-  ]
-}
-const xdaiSettings = {
-  nativeCoin: 'dai',
-  tokens: [
-    {
-      address: '0xDDAfbb505ad214D7b80b1f830fcCc89B60fb7A83',
-      coingeckoId: 'usd-coin'
-    },
-    {
-      address: '0x4ECaBa5870353805a9F068101A40E0f32ed605C6',
-      coingeckoId: 'tether'
-    },
-  ]
-}
-
-function constructBalanceOfCalls(tokens, useAddressProp){
-  const calls = []
-  for(const router of routers){
-    for(const token of tokens){
-      const address = useAddressProp?token.address:token
-      calls.push({
-        target: address,
-        params: [router]
-      })
-    }
-  }
-  return calls
-}
-
-async function getRouterBalances(timestamp, chain, settings, block){
-  const routerBalances = await sdk.api.abi.multiCall({
-    abi: 'erc20:balanceOf',
-    block,
-    calls: constructBalanceOfCalls(settings.tokens, true),
-    chain
-  })
-  const tokenDecimals = await sdk.api.abi.multiCall({
-    abi: 'erc20:decimals',
-    block,
-    calls: settings.tokens.map(token => ({
-      target: token.address,
-    })),
-    chain
-  })
-  const nativeBalances = await sdk.api.eth.getBalances({
-    targets: routers,
-    block,
-    chain,
-  })
-  const totalNativeBalance = nativeBalances.output.reduce((acc, output)=>acc.plus(output.balance), BigNumber(0))
-  const balances = {}
-  balances[settings.nativeCoin] = totalNativeBalance.div(1e18).toFixed(0)
-  routerBalances.output.forEach((result)=>{
-    const tokenIndex = settings.tokens.findIndex(token=>result.input.target.toLowerCase()===token.address.toLowerCase())
-    const coingeckoId = settings.tokens[tokenIndex].coingeckoId
-    const decimals = Number(tokenDecimals.output[tokenIndex].output)
-    sdk.util.sumSingleBalance(balances, coingeckoId, BigNumber(result.output).div(10**decimals).toFixed(0))
-  })
-  return balances;
-}
-
-async function ethereum(timestamp, block) {
-  // V1
-  const totalChannelToken = (await sdk.api.abi.call({
-    block,
-    target: hubAddress,
-    abi: abi['totalChannelToken'],
-  })).output;
-
-  const balances = { [tokenDenominationAddress]: totalChannelToken };
-
-  // V2
-  const routerBalances = await sdk.api.abi.multiCall({
-    abi: 'erc20:balanceOf',
-    block,
-    calls: constructBalanceOfCalls(ethereumTokens, false)
-  })
-  sdk.util.sumMultiBalanceOf(balances, routerBalances);
-
-  return balances
-}
-
-async function bsc(timestamp, ethBlock, chainBlocks) {
-  const block = chainBlocks.bsc
-  const balances={}
-  const routerBalances = await sdk.api.abi.multiCall({
-    abi: 'erc20:balanceOf',
-    block,
-    chain:'bsc',
-    calls: constructBalanceOfCalls(bscTokens, false)
-  })
-  routerBalances.output.forEach(result=>{
-    sdk.util.sumSingleBalance(balances, `bsc:${result.input.target}`, result.output)
-  })
-  return balances
-}
-
-async function polygon(timestamp, ethBlock, chainBlocks) {
-  const block = await getBlock(timestamp, 'polygon', chainBlocks)
-  return getRouterBalances(timestamp, 'polygon', polygonSettings, block)
-}
-
-async function xdai(timestamp, ethBlock, chainBlocks) {
-  const block = await getBlock(timestamp, 'xdai', chainBlocks)
-  return getRouterBalances(timestamp, 'xdai', xdaiSettings, block)
-}
-
-module.exports = {
-  start: 1552065900,  // 03/08/2019 @ 5:25pm (UTC)
-  tvl:sdk.util.sumChainTvls([ethereum, polygon, xdai, bsc]),
-  ethereum: {
-    tvl: ethereum
-  },
-  polygon: {
-    tvl: polygon
-  },
-  xdai: {
-    tvl: xdai
-  },
-  bsc:{
-    tvl: bsc
-  }
+// Includes some chains that are not yet live
+const chainNameToChainId = {
+  ethereum: 1,
+  bsc: 56,
+  boba: 288,
+  polygon: 137,
+  xdai: 100,
+  fantom: 250,
+  arbitrum: 42161,
+  avax: 43114,
+  optimism: 10,
+  fuse: 122,
+  moonbeam: 1284,
+  moonriver: 1285,
+  milkomeda: 2001,
+  celo: 42220,
+  aurora: 1313161554,
+  harmony: 1666600000,
+  cronos: 25,
+  evmos: 9001,
+  heco: 128,
 };
+
+let getContractsPromise
+
+// Taken from @connext/nxtp-contracts
+async function getContracts() {
+  if (!getContractsPromise)
+    getContractsPromise = get('https://raw.githubusercontent.com/connext/nxtp/v0.1.36/packages/contracts/deployments.json')
+  return getContractsPromise
+}
+
+async function getDeployedContractAddress(chainId) {
+  const contracts = await getContracts()
+  const record = contracts[String(chainId)] || {}
+  const name = Object.keys(record)[0];
+  if (!name) {
+    return undefined;
+  }
+  const contract = record[name]?.contracts?.TransactionManager;
+  return contract ? contract.address : undefined;
+}
+
+let getAssetsPromise
+// Taken from @connext/nxtp-utils
+async function getAssetIds(chainId) {
+  const url = "https://raw.githubusercontent.com/connext/chaindata/main/crossChain.json"
+  if (!getAssetsPromise)
+    getAssetsPromise = get(url)
+  const data = await getAssetsPromise
+  const chainData = data.find(item => item.chainId === chainId)
+  return Object.keys(chainData.assetId).map(id => id.toLowerCase())
+}
+
+const nullAddress = '0x0000000000000000000000000000000000000000'
+
+function chainTvl(chain) {
+  return async (time, ethBlock, chainBlocks) => {
+    const chainId = chainNameToChainId[chain]
+    const contractAddress = await getDeployedContractAddress(chainId);
+    if (!contractAddress)
+      return {}
+    const block = await getBlock(time, chain, chainBlocks, true);
+    const chainTransform = await getChainTransform(chain);
+    const fixBalances = await getFixBalances(chain);
+    const balances = {};
+
+    let assetIds = await getAssetIds(chainId)
+    if (assetIds.includes(nullAddress)) {
+      const balance = await sdk.api.eth.getBalance({ chain, block, target: contractAddress, })
+      sdk.util.sumSingleBalance(balances, chainTransform(nullAddress), balance.output)
+    }
+    const tokensAndOwners = assetIds
+      .filter(id => id !== nullAddress)
+      .map(id => [id, contractAddress])
+    await sumTokens(balances, tokensAndOwners, block, chain, chainTransform)
+    fixBalances(balances)
+    return balances
+  };
+}
+
+const chains = [
+  "ethereum",
+  "bsc",
+  "polygon",
+  "moonriver",
+  "fantom",
+  "xdai",
+  "avax",
+  "optimism",
+  "arbitrum",
+  "moonbeam",
+  "fuse",
+  "cronos",
+  "milkomeda",
+  "boba",
+  "evmos",
+  "harmony",
+  /*
+  "okexchain",
+  "metis",
+  "heco",
+  "aurora",
+  */
+];
+module.exports = chainExports(chainTvl, Array.from(chains));

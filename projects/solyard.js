@@ -20,6 +20,7 @@ async function pool2() {
 }
 
 module.exports = {
+  timetravel: false,
   staking:{
     fetch:staking
   },

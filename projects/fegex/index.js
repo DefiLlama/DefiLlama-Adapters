@@ -7,12 +7,13 @@ const stakingContractBSC = "0xF8303c3ac316b82bCbB34649e24616AA9ED9E5F4";
 const FEG_BSC = "0xacfc95585d80ab62f67a14c566c1b7a49fe91167";
 
 module.exports = {
+  timetravel:true,
   misrepresentedTokens: true,
-  staking_eth: {
-    tvl: staking(stakingContractETH, FEG_ETH)
+  ethereum: {
+    staking: staking(stakingContractETH, FEG_ETH)
   },
-  staking_bsc: {
-    tvl: staking(stakingContractBSC, FEG_BSC, "bsc"),
+  bsc: {
+    staking: staking(stakingContractBSC, FEG_BSC, "bsc"),
   },
   tvl: async ()=>({}),
   methodology:

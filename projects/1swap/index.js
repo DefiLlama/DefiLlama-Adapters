@@ -12,7 +12,7 @@ const Contracts = {
       '1s3pavaxusd': '0x7179F2C31763f395082489588534F4abb3Dd4Be6',
       '1s3pwanusd': '0x02A105939Dc0C47cb6bD04f320dAa77Bd9E3Bb0D',
     },
-    ignoredLps: ['0x17da5445f3cd02b3f1cd820e6de55983fe80cf85'],
+    ignoredLps: ['0x17da5445f3cd02b3f1cd820e6de55983fe80cf85'] ,
   }
 };
 
@@ -77,7 +77,7 @@ function getTokenId(address) {
       case '0x80a16016cc4a2e6a2caca8a4a498b1699ff0f844':
           return ['dai', 18]
       case '0x5d9ab5522c64e1f6ef5e3627eccc093f56167818':
-          return ['busd', 18]
+          return ['binance-usd', 18]
       case '0x0cae51e1032e8461f4806e26332c030e34de3adb':
           return ['magic-internet-money', 18]
       case '0x965f84d915a9efa2dd81b653e3ae736555d945f4':
@@ -103,5 +103,4 @@ module.exports = {
   moonriver: {
     tvl: moonriverTvl,
   },
-  tvl: sdk.util.sumChainTvls([moonriverTvl]),
 };

@@ -52,11 +52,11 @@ const iotexTvl = async (timestamp, ethBlock, chainBlocks) => {
 };
 
 module.exports={
+    timetravel: true, //no archive node
     arbitrum: {
         tvl: arbitrumTvl
     },
     iotex: {
         tvl: iotexTvl
     },
-    tvl: sdk.util.sumChainTvls([arbitrumTvl, iotexTvl]),
 }

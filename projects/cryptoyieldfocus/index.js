@@ -36,16 +36,11 @@ const pool2 = async (timestamp, ethBlock, chainBlocks) => {
 };
 
 module.exports = {
-  staking:{
-    tvl:staking(STAKING_CONTRACT, cyf, 'avax', `avax:${cyf}`)
-  },
-  pool2:{
-    tvl: pool2
-  },
   avalanche: {
     tvl: avaxTvl,
+    pool2,
+    staking: staking(STAKING_CONTRACT, cyf, 'avax', `avax:${cyf}`)
   },
-  tvl: sdk.util.sumChainTvls([avaxTvl]),
   methodology:
     "We add the tvl from the farming pools fetching from StakingContract",
 };

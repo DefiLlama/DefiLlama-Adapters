@@ -27,7 +27,7 @@ async function icxCall(address, method, params) {
 
 async function getIcxUsdPrice() {
     let response = await icxCall(bandOracleContract, 'get_ref_data', {'_symbol': 'ICX'})
-    let icxUsdPrice = sicxIcxPrice = parseInt(response.rate, 16) / 10 ** 9;
+    let icxUsdPrice = parseInt(response.rate, 16) / 10 ** 9;
     return icxUsdPrice
 }
 
@@ -47,11 +47,11 @@ async function getLoanTvl() {
 }
 
 async function getBnusdUsdPrice() {
-    sicxUsdPrice = await getSicxUsdPrice()
-    response = await icxCall(balancedDexContract, 'getSicxBnusdPrice')
-    sicxBnusdPrice = parseInt(response, 16) / 10 ** 18
-    bnusdSicxPrice = 1 / sicxBnusdPrice
-    bnusdUsdPrice = bnusdSicxPrice * sicxUsdPrice
+    let sicxUsdPrice = await getSicxUsdPrice()
+    let response = await icxCall(balancedDexContract, 'getSicxBnusdPrice')
+    let sicxBnusdPrice = parseInt(response, 16) / 10 ** 18
+    let bnusdSicxPrice = 1 / sicxBnusdPrice
+    let bnusdUsdPrice = bnusdSicxPrice * sicxUsdPrice
     return bnusdUsdPrice
 }
 
@@ -90,6 +90,6 @@ async function fetch() {
 }
 
 module.exports = {
-    Methodology: 'TVL consists of liquidty on the DEX and deposits made to the lending program. Data is pulled from the ICX API "https://ctz.solidwallet.io/api/v3"',
-   fetch,
+    methodology: 'TVL consists of liquidty on the DEX and deposits made to the lending program. Data is pulled from the ICX API "https://ctz.solidwallet.io/api/v3"',
+    fetch,
 }

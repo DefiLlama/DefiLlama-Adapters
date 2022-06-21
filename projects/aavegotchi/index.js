@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
-const { pool2Exports } = require("../helper/pool2");
+const { pool2s } = require("../helper/pool2");
 const { transformPolygonAddress } = require("../helper/portedTokens");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const { request, gql } = require("graphql-request");
@@ -101,26 +101,22 @@ const polygonTvl = async (timestamp, block, chainBlocks) => {
     transformAddress
   );
 
-  const gotchisBalances = await getGotchisCollateral(timestamp, block);
+  const gotchisBalances = await getGotchisCollateral(timestamp, chainBlocks["polygon"]);
   sdk.util.sumMultiBalanceOf(balances, gotchisBalances, true, x => 'polygon:' + x);
 
   return balances;
 };
 
 module.exports = {
-  misrepresentedTokens: true,
-  staking_polygon: {
-    tvl: staking(stkGHST_QUICKContract, GHST_Polygon, "polygon"),
-  },
-  pool2s: pool2Exports(stkGHST_QUICKContract, GHST_pools2, "polygon").tvl,
+  timetravel: true,
   ethereum: {
     tvl: ethTvl,
   },
   polygon: {
+    staking: staking(stkGHST_QUICKContract, GHST_Polygon, "polygon"),
     tvl: polygonTvl,
+    pool2: pool2s([stkGHST_QUICKContract], GHST_pools2, "polygon")
   },
-  tvl: sdk.util.sumChainTvls([ethTvl, polygonTvl]),
-  // tvl: getGotchisCollateral,
   methodology:
     `We count liquidity on Vaults from ETHEREUM and Polygon chains through Vault Contracts;
     On Rarity Farming, Staking and Pool2s parts on Polygon chain through their Contrats`,

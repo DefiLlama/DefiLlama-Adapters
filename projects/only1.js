@@ -10,6 +10,7 @@ async function staking() {
 }
 
 module.exports = {
+  timetravel: false,
   methodology: "TVL is the sum of all tokens in the staking pools",
   solana: {
     staking,

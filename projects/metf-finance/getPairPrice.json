@@ -1,0 +1,29 @@
+{
+  "inputs": [
+    {
+      "internalType": "address",
+      "name": "pair",
+      "type": "address"
+    },
+    {
+      "internalType": "uint256",
+      "name": "amount",
+      "type": "uint256"
+    }
+  ],
+  "name": "getPairPrice",
+  "outputs": [
+    {
+      "internalType": "uint256",
+      "name": "valueInMMF",
+      "type": "uint256"
+    },
+    {
+      "internalType": "uint256",
+      "name": "valueInUSD",
+      "type": "uint256"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+}

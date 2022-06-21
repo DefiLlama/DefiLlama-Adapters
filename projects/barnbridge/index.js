@@ -184,6 +184,9 @@ async function avaxTvl(timestamp, block, chainBlocks) {
 }
 module.exports = {
     start: 1615564559, // Mar-24-2021 02:17:40 PM +UTC
+    doublecounted: true,
+    timetravel: false,
+    misrepresentedTokens: true,
     ethereum: {
         tvl: mainnetTvl,
     },
@@ -193,5 +196,4 @@ module.exports = {
     avalanche: {
         tvl: avaxTvl
     },
-    tvl: sumTvl([mainnetTvl, polygonTvl, avaxTvl]),
 };

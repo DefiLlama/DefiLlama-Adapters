@@ -1,0 +1,28 @@
+{
+    "getAllPools": {
+        "inputs": [],
+        "name": "getAllPools",
+        "outputs": [
+            {
+                "internalType": "contract Mooniswap[]",
+                "name": "",
+                "type": "address[]"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "getTokens": {
+        "inputs": [],
+        "name": "getTokens",
+        "outputs": [
+            {
+                "internalType": "contract IERC20[]",
+                "name": "",
+                "type": "address[]"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+}

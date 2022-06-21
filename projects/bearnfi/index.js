@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const _ = require("underscore");
+
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { transformBscAddress } = require("../helper/portedTokens");
 const tvlOnPairs = require("../helper/processPairs.js");
@@ -101,7 +101,7 @@ async function bscTvl(timestamp, chainBlocks) {
     await sdk.api.abi.multiCall({
       block: chainBlocks["bsc"],
       chain: "bsc",
-      calls: _.map(markets, (market) => ({
+      calls: markets.map((market) => ({
         target: market,
       })),
       abi: abiFork.getCash,
@@ -112,7 +112,7 @@ async function bscTvl(timestamp, chainBlocks) {
     await sdk.api.abi.multiCall({
       block: chainBlocks["bsc"],
       chain: "bsc",
-      calls: _.map(markets, (market) => ({
+      calls: markets.map((market) => ({
         target: market,
       })),
       abi: abiFork.underlying,
@@ -150,5 +150,4 @@ module.exports = {
   bsc: {
     tvl: bscTvl,
   },
-  tvl: sdk.util.sumChainTvls([bscTvl]),
 };

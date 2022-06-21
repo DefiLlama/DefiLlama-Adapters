@@ -1,0 +1,8 @@
+{
+    "getSupportedAsset": {"inputs":[{"internalType":"uint256","name":"assetId","type":"uint256"}],"name":"getSupportedAsset","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+    "getSupportedAssets": {"inputs":[],"name":"getSupportedAssets","outputs":[{"internalType":"address[]","name":"","type":"address[]"}],"stateMutability":"view","type":"function"},
+    "getTotalDeposited": {"inputs":[],"name":"getTotalDeposited","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},
+    "getTotalFees": {"inputs":[],"name":"getTotalFees","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},
+    "getTotalPendingDeposit": {"inputs":[],"name":"getTotalPendingDeposit","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},
+    "getTotalWithdrawn": {"inputs":[],"name":"getTotalWithdrawn","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"}
+}

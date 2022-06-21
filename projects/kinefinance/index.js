@@ -1,421 +1,209 @@
 const sdk = require("@defillama/sdk");
+const { BigNumber } = require("bignumber.js");
+const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const abi = require("./abi.json");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs.js");
 
-// ETH CONTRACTS
-const kine = "0xCbfef8fdd706cde6F208460f2Bf39Aa9c785F05D";
-const xKine = "0xa8d7643324df0f38764f514eb1a99d8f379cc692";
+const translate = {
+  "0xbfa9df9ed8805e657d0feab5d186c6a567752d7f":"0xcbfef8fdd706cde6f208460f2bf39aa9c785f05d",
+  "0xa9c1740fa56e4c0f6ce5a792fd27095c8b6ccd87":"0xcbfef8fdd706cde6f208460f2bf39aa9c785f05d"
+}
 
-const ethPool2 = "0x80850DB68db03792CA5650fbdacCeBe1DA5e52bF"; // KINE-ETH
+async function getUnitrollerTvl(block, chain, unitroller, cToken, cTokenEquivalent, kine, xKine, kMcd) {
+  let balances = {};
 
-const kEth = "0xa58e822De1517aAE7114714fB354Ee853Cd35780"; //kETH
+  const allMarkets = (await sdk.api.abi.call({
+    target: unitroller,
+    abi: abi["getAllMarkets"],
+    block,
+    chain
+  })).output;
 
-const ethCollaterals = [
-  "0x1568A7f0bdf67D37DC963c345Dbc4A598859ebA3", // kUSDC
-  "0x377f100a7280dd992C6F2503330f893620F586aB", // kWBTC
-  "0x63B63b5f0Ae8057cb8f704F65Fd91c19BadD5A73", // kUSDT
-];
+  for (let i = allMarkets.length -1 ; i >= 0; i--) {
+    let address = allMarkets[i].toLowerCase();
+    if (address === cToken || address === kMcd) {
+      allMarkets.splice(i, 1);
+    }
+  }
 
-const kineEthStaking = "0x473ccDeC83B7125a4F52Aa6F8699026FCB878eE8"; // xKINE staking
+  const cTokenBalance = (await sdk.api.erc20.totalSupply({
+    target: cToken,
+    block,
+    chain
+  })).output;
 
-// BSC CONTRACTS
-const kineBscToken = "0xbFa9dF9ed8805E657D0FeaB5d186c6a567752D7F";
-const kUsdBsc = "0xd819D96f9D28Ea85C1DD78e66d7241134E8d4aB4";
+  sdk.util.sumSingleBalance(balances, `${chain}:${cTokenEquivalent}`, cTokenBalance);
 
-const xKineBsc = "0x8f5abD0d891D293B13f854700ff89210dA3d5ba3";
+  const underlyings = (await sdk.api.abi.multiCall({
+    calls: allMarkets.map(p => ({
+      target: p
+    })),
+    abi: abi["underlying"],
+    block,
+    chain
+  })).output;
 
-const bscPool2 = [
-  "0x308043A2a7c62B17906F9B074a349c43ccD919ad", // BUSD-T-kUSD
-  "0x6c2C7C5b5c0B60a13B981ACCFe1aa1616985d3D7", // KINE-kUSD
-];
+  const underlyingBalances = (await sdk.api.abi.multiCall({
+    calls: underlyings.map(p => ({
+      target: p.output,
+      params: p.input.target
+    })),
+    abi: "erc20:balanceOf",
+    block,
+    chain
+  })).output;
 
-const kbnb = "0x5FBe4eB536DADBcee54d5b55eD6559E29C60B055"; // kBNB
+  const symbols = (await sdk.api.abi.multiCall({
+    calls: underlyings.map(p => ({
+      target: p.input.target
+    })),
+    abi: "erc20:symbol",
+    block,
+    chain
+  })).output;
 
-const bscCollaterals = [
-  "0x3A8502FD810Df171D327e080fB39C734c79B57C2", // kBTCB
-  "0x670076F14fb7Bc9735Af1BC9a1D1ad5266f54FA0", // kETH
-  "0xD61867501b821befd5E4270A91836f8F7424B847", // kBCH
-  "0xf8c7B7709Dd106e70133474BdF05d9d5a87C871f", // kXRP
-  "0xa58e822De1517aAE7114714fB354Ee853Cd35780", // kLTC
-];
+  let lpPositions = [];
 
-// POLYGON CONTRACTS
+  for (let i = 0; i < underlyingBalances.length; i++) {
+    let token = underlyingBalances[i].input.target.toLowerCase();
+    let balance = underlyingBalances[i].output;
+    let symbol = symbols[i].output;
 
-const kinePolyToken = "0xa9C1740fA56e4c0f6Ce5a792fd27095C8b6CCd87";
-const xKinePoly = "0x66a782C9A077F5aDC988cc0B5fB1CdCc9d7ADeDa"
+    if (symbol.endsWith("LP")) {
+      lpPositions.push({
+        token,
+        balance
+      });
+      continue;
+    }
 
-const kUsdPoly = "0x03324bBc860FBBfd452F6AC0B0b1d76deAFC99a2";
+    if (token === xKine) {
+      const totalSupply = (await sdk.api.erc20.totalSupply({
+        target: xKine,
+        block,
+        chain
+      })).output;
+  
+      const kineBal = (await sdk.api.erc20.balanceOf({
+        target: kine,
+        owner: xKine,
+        block,
+        chain
+      })).output;
+  
+      const ratio = Number(kineBal) / Number(totalSupply);
+      balance = BigNumber(balance).times(ratio).toFixed(0);
+      token = kine;
+    }
 
-const polyPool2 = [
-  "0x69c78C26f272405599382925689D0A54B8Ceedf9", // KINE-USDC
-  "0x4D7242a89877Eb044fcCBA6c49E96B4e032a8636", // kUSD-USDC
-];
+    if (translate[token] !== undefined) {
+      sdk.util.sumSingleBalance(balances, translate[token], balance);
+      continue;
+    }
+    sdk.util.sumSingleBalance(balances, `${chain}:${token}`, balance);
+  }
 
-const kMatic = "0xf186A66C2Bd0509BeaAFCa2A16D6c39bA02425f9"; // kMATIC
-const polyCollaterals = [
-  "0x4F6A33b62017dc804866e6b564C32ed5A57C49Cd", // kPBNB
-  "0x96f4516a9d150574cb6d8ae3380f28f330e64ef7", // kWBTC
-  "0xc903e8a6811f5e4354ec530F34CC90Bd820Ac1B4", // kETH
-];
+  await unwrapUniswapLPs(balances, lpPositions, block, chain, addr=> {
+    addr = addr.toLowerCase();
+    if (translate[addr] !== undefined) {
+      return translate[addr];
+    }
+    return `${chain}:${addr}`;
+  });
 
-const xKinePolyStake = "0x6c0ED47f567071Db4207BdFF4F241aF67E972D91";
+  return balances;
+}
+
+async function getBorrowed(block, chain, kMcd) {
+  let balances = {};
+
+  const totalBorrows = (await sdk.api.abi.call({
+    target: kMcd,
+    abi: abi["totalBorrows"],
+    block,
+    chain
+  })).output;
+
+  sdk.util.sumSingleBalance(balances, "0xdac17f958d2ee523a2206206994597c13d831ec7", BigNumber(totalBorrows).div(1e12).toFixed(0));
+
+  return balances;
+}
+
+const ethUnitroller = "0xbb7d94a423f4978545ecf73161f0678e8afd1a92";
+const keth = "0xa58e822de1517aae7114714fb354ee853cd35780";
+const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+const ethXKine = "0xa8d7643324df0f38764f514eb1a99d8f379cc692";
+const ethKine = "0xcbfef8fdd706cde6f208460f2bf39aa9c785f05d";
+const ethkMcd = "0xaf2617aa6fd98581bb8cb099a16af74510b6555f";
 
 async function ethTvl(timestamp, block) {
-  let balances = {};
-
-  // kETH TVL
-  let { output: ethBalance } = await sdk.api.eth.getBalance({
-    target: kEth,
-    block,
-  });
-  sdk.util.sumSingleBalance(
-    balances,
-    "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-    ethBalance
-  );
-
-  for (let i = 0; i < ethCollaterals.length; i++) {
-    let { output: underlying } = await sdk.api.abi.call({
-      target: ethCollaterals[i],
-      abi: abi["underlying"],
-      block,
-    });
-
-    let { output: totalSupply } = await sdk.api.erc20.balanceOf({
-      target: underlying,
-      owner: ethCollaterals[i],
-      block,
-    });
-
-    sdk.util.sumSingleBalance(balances, underlying, totalSupply);
-  }
-
-  return balances;
+  return await getUnitrollerTvl(block, "ethereum", ethUnitroller, keth, weth, ethKine, ethXKine, ethkMcd);
 }
 
-async function ethPool2Tvl(timestamp, block) {
-  balances = {};
-
-  let { output: stakingToken } = await sdk.api.abi.call({
-    target: ethPool2,
-    abi: abi["stakingToken"],
-    block,
-  });
-
-  let { output: balance } = await sdk.api.abi.call({
-    target: stakingToken,
-    params: ethPool2,
-    abi: abi["balanceOf"],
-    block,
-  });
-
-  await unwrapUniswapLPs(
-    balances,
-    [{ balance, token: stakingToken }],
-    block,
-    "ethereum",
-    (addr) => addr,
-    []
-  );
-
-  return balances;
+async function ethBorrow(timestamp, block) {
+  return await getBorrowed(block, "ethereum", ethkMcd);
 }
 
-async function ethStakingTvl(timestamp, block) {
-  let balances = {};
-
-  let { output: balance } = await sdk.api.erc20.balanceOf({
-    target: xKine,
-    owner: kineEthStaking,
-    block,
-  });
-
-  sdk.util.sumSingleBalance(balances, kine, balance);
-
-  return balances;
-}
+const bscUnitroller = "0x3c2ddd486c07343b711a4415cdc9ab90ed32b571";
+const kbnb = "0x5fbe4eb536dadbcee54d5b55ed6559e29c60b055";
+const wbnb = "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c";
+const bscXKine = "0x8f5abd0d891d293b13f854700ff89210da3d5ba3";
+const bscKine = "0xbfa9df9ed8805e657d0feab5d186c6a567752d7f";
+const bsckMcd = "0x4f1ab95b798084e44d512b8b0fed3ef933177986";
 
 async function bscTvl(timestamp, block, chainBlocks) {
-  let balances = {};
-
-  let { output: bnbBalance } = await sdk.api.eth.getBalance({
-    target: kbnb,
-    block: chainBlocks["bsc"],
-    chain: "bsc",
-  });
-
-  sdk.util.sumSingleBalance(
-    balances,
-    `bsc:${"0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"}`,
-    bnbBalance
-  );
-
-  for (let i = 0; i < bscCollaterals.length; i++) {
-    let { output: underlying } = await sdk.api.abi.call({
-      target: bscCollaterals[i],
-      abi: abi["underlying"],
-      block: chainBlocks["bsc"],
-      chain: "bsc",
-    });
-
-    let { output: totalSupply } = await sdk.api.erc20.balanceOf({
-      target: underlying,
-      owner: bscCollaterals[i],
-      block: chainBlocks["bsc"],
-      chain: "bsc",
-    });
-
-    sdk.util.sumSingleBalance(balances, `bsc:${underlying}`, totalSupply);
-  }
-
-  return balances;
+  return await getUnitrollerTvl(chainBlocks.bsc, "bsc", bscUnitroller, kbnb, wbnb, bscKine, bscXKine, bsckMcd);
 }
 
-async function bscPool2Tvl(timestamp, block, chainBlocks) {
-  let balances = {};
-
-  for (let i = 0; i < bscPool2.length; i++) {
-    let { output: stakingToken } = await sdk.api.abi.call({
-      target: bscPool2[i],
-      abi: abi["stakingToken"],
-      block: chainBlocks["bsc"],
-      chain: "bsc",
-    });
-
-    let { output: balance } = await sdk.api.abi.call({
-      target: stakingToken,
-      params: bscPool2[i],
-      abi: abi["balanceOf"],
-      block: chainBlocks["bsc"],
-      chain: "bsc",
-    });
-
-    let { output: reserves } = await sdk.api.abi.call({
-      target: stakingToken,
-      abi: abi["getReserves"],
-      block: chainBlocks["bsc"],
-      chain: "bsc",
-    });
-
-    let { output: totalSupply } = await sdk.api.abi.call({
-      target: stakingToken,
-      abi: abi["totalSupply"],
-      block: chainBlocks["bsc"],
-      chain: "bsc",
-    });
-
-    let { output: token0 } = await sdk.api.abi.call({
-      target: stakingToken,
-      abi: abi["token0"],
-      block: chainBlocks["bsc"],
-      chain: "bsc",
-    });
-
-    let { output: token1 } = await sdk.api.abi.call({
-      target: stakingToken,
-      abi: abi["token1"],
-      block: chainBlocks["bsc"],
-      chain: "bsc",
-    });
-
-    let token0Balance = (balance / totalSupply) * reserves._reserve0;
-    let token1Balance = (balance / totalSupply) * reserves._reserve1;
-
-    switch (token0) {
-      case kUsdBsc:
-        token0 = "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3";
-        break;
-      case kineBscToken:
-        token0 = "0xcbfef8fdd706cde6f208460f2bf39aa9c785f05d";
-        sdk.util.sumSingleBalance(balances, token0, token0Balance);
-        break;
-      default:
-        break;
-    }
-
-    //Resolving addresses for CoinGecko
-    switch (token1) {
-      case kUsdBsc:
-        token1 = "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3";
-        break;
-      case kineBscToken:
-        token1 = "0xcbfef8fdd706cde6f208460f2bf39aa9c785f05d";
-        sdk.util.sumSingleBalance(balances, token1, token0Balance);
-        break;
-      default:
-        break;
-    }
-
-    sdk.util.sumSingleBalance(balances, `bsc:${token0}`, token0Balance);
-    sdk.util.sumSingleBalance(balances, `bsc:${token1}`, token1Balance);
-  }
-
-  return balances;
+async function bscBorrowed(timestamp, block, chainBlocks) {
+  return await getBorrowed(chainBlocks.bsc, "bsc", bsckMcd);
 }
 
-async function bscStaking(timestmap, block, chainBlocks) {
-  let balances = {};
+const polygonUnitroller = "0xdff18ac4146d67bf2ccbe98e7db1e4fa32b96881";
+const kmatic = "0xf186a66c2bd0509beaafca2a16d6c39ba02425f9";
+const wmatic = "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270";
+const polygonXKine = "0x66a782c9a077f5adc988cc0b5fb1cdcc9d7adeda";
+const polygonKine = "0xa9c1740fa56e4c0f6ce5a792fd27095c8b6ccd87";
+const polygonkMcd = "0xcd6b46443becad4996a70ee3d8665c0b86a0c54c";
 
-  let { output: balance } = await sdk.api.erc20.balanceOf({
-    target: kineBscToken,
-    owner: xKineBsc,
-    block: chainBlocks["bsc"],
-    chain: "bsc",
-  });
-
-  sdk.util.sumSingleBalance(balances, kine, balance);
-
-  return balances;
+async function polygonTvl(timestamp, block, chainBlocks) {
+  return await getUnitrollerTvl(chainBlocks.polygon, "polygon", polygonUnitroller, kmatic, wmatic, polygonKine, polygonXKine, polygonkMcd);
 }
 
-
-async function polyTvl(timestamp, block, chainBlocks) {
-  let balances = {};
-
-  // kMATIC TVL
-  let { output: maticBalance } = await sdk.api.eth.getBalance({
-    target: kMatic,
-    block: chainBlocks["polygon"],
-    chain: "polygon",
-  });
-  sdk.util.sumSingleBalance(
-    balances,
-    `polygon:${"0x0000000000000000000000000000000000001010"}`,
-    maticBalance
-  );
-
-  for (let i = 0; i < polyCollaterals.length; i++) {
-    let { output: underlying } = await sdk.api.abi.call({
-      target: polyCollaterals[i],
-      abi: abi["underlying"],
-      block: chainBlocks["polygon"],
-      chain: "polygon",
-    });
-
-    let { output: totalSupply } = await sdk.api.erc20.balanceOf({
-      target: underlying,
-      owner: polyCollaterals[i],
-      block: chainBlocks["polygon"],
-      chain: "polygon",
-    });
-
-    sdk.util.sumSingleBalance(balances, `polygon:${underlying}`, totalSupply);
-  }
-
-  return balances;
+async function polygonBorrowed(timestamp, block, chainBlocks) {
+  return await getBorrowed(chainBlocks.polygon, "polygon", polygonkMcd);
 }
 
-async function polyPool2Tvl(timestamp, block, chainBlocks) {
-  let balances = {};
+const avaxUnitroller = "0x0ec3126390c606be63a0fa6585e68075f06679c6";
+const kavax = "0x0544be6693763d64c02f49f16986ba1390a2fc39";
+const wavax = "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7";
+const avaxXKine = "0x68b9737ae74cf1a169890042f1aa359647aa3e47";
+const avaxKine = "0xa9c1740fa56e4c0f6ce5a792fd27095c8b6ccd87";
+const avaxkMcd = "0xcd6b46443becad4996a70ee3d8665c0b86a0c54c";
 
-  for (let i = 0; i < polyPool2.length; i++) {
-    let { output: stakingToken } = await sdk.api.abi.call({
-      target: polyPool2[i],
-      abi: abi["stakingToken"],
-      block: chainBlocks["polygon"],
-      chain: "polygon",
-    });
-
-    let { output: balance } = await sdk.api.abi.call({
-      target: stakingToken,
-      params: polyPool2[i],
-      abi: abi["balanceOf"],
-      block: chainBlocks["polygon"],
-      chain: "polygon",
-    });
-
-    let { output: reserves } = await sdk.api.abi.call({
-      target: stakingToken,
-      abi: abi["getReserves"],
-      block: chainBlocks["polygon"],
-      chain: "polygon",
-    });
-
-    let { output: totalSupply } = await sdk.api.abi.call({
-      target: stakingToken,
-      abi: abi["totalSupply"],
-      block: chainBlocks["polygon"],
-      chain: "polygon",
-    });
-
-    let { output: token0 } = await sdk.api.abi.call({
-      target: stakingToken,
-      abi: abi["token0"],
-      block: chainBlocks["polygon"],
-      chain: "polygon",
-    });
-
-    let { output: token1 } = await sdk.api.abi.call({
-      target: stakingToken,
-      abi: abi["token1"],
-      block: chainBlocks["polygon"],
-      chain: "polygon",
-    });
-
-    let token0Balance = (balance / totalSupply) * reserves._reserve0;
-    let token1Balance = (balance / totalSupply) * reserves._reserve1;
-
-    switch (token0) {
-      case kUsdPoly:
-        token0 = "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3";
-        break;
-      case kinePolyToken:
-        token0 = "0xcbfef8fdd706cde6f208460f2bf39aa9c785f05d";
-        sdk.util.sumSingleBalance(balances, token0, token0Balance);
-        break;
-      default:
-        break;
-    }
-
-    switch (token1) {
-      case kUsdPoly:
-        token1 = "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3";
-        break;
-      case kinePolyToken:
-        token1 = "0xcbfef8fdd706cde6f208460f2bf39aa9c785f05d";
-        sdk.util.sumSingleBalance(balances, token1, token0Balance);
-        break;
-      default:
-        break;
-    }
-
-    sdk.util.sumSingleBalance(balances, `polygon:${token0}`, token0Balance);
-    sdk.util.sumSingleBalance(balances, `polygon:${token1}`, token1Balance);
-  }
-
-  return balances;
+async function avaxTvl(timestamp, block, chainBlocks) {
+  return await getUnitrollerTvl(chainBlocks.avax, "avax", avaxUnitroller, kavax, wavax, avaxKine, avaxXKine, avaxkMcd);
 }
 
-async function polyStaking(timestamp, block, chainBlocks) {
-  let balances = {};
-
-  let { output: balance } = await sdk.api.erc20.balanceOf({
-    target: xKinePoly,
-    owner: xKinePolyStake,
-    block: chainBlocks["polygon"],
-    chain: "polygon",
-  });
-
-  sdk.util.sumSingleBalance(balances, kine, balance);
-
-  return balances;
+async function avaxBorrowed(timestamp, block, chainBlocks) {
+  return await getBorrowed(chainBlocks.avax, "avax", avaxkMcd);
 }
-
 
 module.exports = {
+  misrepresentedTokens: true,
   ethereum: {
     tvl: ethTvl,
-    pool2: ethPool2Tvl,
-    staking: ethStakingTvl,
+    borrowed: ethBorrow
   },
   bsc: {
     tvl: bscTvl,
-    pool2: bscPool2Tvl,
-    staking: bscStaking,
+    borrowed: bscBorrowed
   },
   polygon: {
-    tvl: polyTvl,
-    pool2: polyPool2Tvl,
-    staking: polyStaking,
+    tvl: polygonTvl,
+    borrowed: polygonBorrowed
   },
-};
+  avalanche: {
+    tvl: avaxTvl,
+    borrowed: avaxBorrowed
+  }
+}

@@ -40,10 +40,6 @@
   ==================================================*/
 
   module.exports = {
-    name: 'dextf',
-    website: "https://dextf.com",
-    token: "DEXTF",
-    category: 'assets',
     start: 1595853825,  // 27/07/2020 @ 12:43:45am (UTC)
-    tvl
+    ethereum: { tvl }
   }

@@ -1,0 +1,89 @@
+[
+  {
+    "inputs": [],
+    "name": "oxPoolsAddresses",
+    "outputs": [
+      { "internalType": "address[]", "name": "", "type": "address[]" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "_oxPoolsAddresses",
+        "type": "address[]"
+      }
+    ],
+    "name": "oxPoolsData",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "address", "name": "id", "type": "address" },
+          {
+            "internalType": "address",
+            "name": "stakingAddress",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "stakedTotalSupply",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalSupply",
+            "type": "uint256"
+          },
+          {
+            "components": [
+              { "internalType": "address", "name": "id", "type": "address" },
+              { "internalType": "string", "name": "symbol", "type": "string" },
+              { "internalType": "bool", "name": "stable", "type": "bool" },
+              {
+                "internalType": "address",
+                "name": "token0Address",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "token1Address",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "gaugeAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "address",
+                "name": "bribeAddress",
+                "type": "address"
+              },
+              {
+                "internalType": "address[]",
+                "name": "bribeTokensAddresses",
+                "type": "address[]"
+              },
+              { "internalType": "address", "name": "fees", "type": "address" },
+              {
+                "internalType": "uint256",
+                "name": "totalSupply",
+                "type": "uint256"
+              }
+            ],
+            "internalType": "struct ISolidlyLens.Pool",
+            "name": "poolData",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct OxLens.OxPoolData[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

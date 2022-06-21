@@ -72,5 +72,4 @@ module.exports = {
   heco: {
     tvl,
   },
-  tvl
 }

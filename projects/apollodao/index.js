@@ -30,6 +30,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 }
 
 module.exports = {
+    timetravel: false,
     methodology: "Total TVL on vaults",
     tvl
 }

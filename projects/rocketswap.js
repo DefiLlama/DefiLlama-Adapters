@@ -14,5 +14,6 @@ async function tvl(){
 }
 
 module.exports={
+    timetravel: false,
     tvl
 }

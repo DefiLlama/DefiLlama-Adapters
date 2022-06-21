@@ -1,4 +1,5 @@
 const { default: axios } = require("axios");
+const { toUSDTBalances } = require("../helper/balances");
 const retry = require("../helper/retry");
 
 const farmApi = "https://api.elision.farm/getFarmStats/harmony/farmersonlyfi";
@@ -43,30 +44,25 @@ async function getTvl(data, category) {
 async function harmonyTvl() {
   let farmTvl = await getFarmTvl();
   let vaultTvl = await getVaultTvl();
-  return farmTvl + vaultTvl;
+  return toUSDTBalances(farmTvl + vaultTvl);
 }
 
 async function pool2() {
   let farmTvl = await getFarmTvl("pool2");
   let vaultTvl = await getVaultTvl("pool2");
-  return farmTvl + vaultTvl;
+  return toUSDTBalances(farmTvl + vaultTvl);
 }
 
 async function staking() {
   let farmTvl = await getFarmTvl("staking");
   let vaultTvl = await getVaultTvl("staking");
-  return farmTvl + vaultTvl;
+  return toUSDTBalances(farmTvl + vaultTvl);
 }
 
 module.exports = {
   harmony: {
-    fetch: harmonyTvl,
+    tvl: harmonyTvl,
+    pool2,
+    staking
   },
-  pool2: {
-    fetch: pool2,
-  },
-  staking: {
-    fetch: staking,
-  },
-  fetch: harmonyTvl
 };
