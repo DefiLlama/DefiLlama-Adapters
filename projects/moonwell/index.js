@@ -40,5 +40,5 @@ const moonbeamStaking = staking(moonbeamConfig.stakingContract, moonbeamConfig.s
 
 module.exports = {
   moonriver: { ...moonriverTVL, ...moonriverStaking},
-  moonbeam: {...moonriverTVL, ...moonbeamStaking},
+  moonbeam: {...moonbeamTVL, ...moonbeamStaking},
 }
