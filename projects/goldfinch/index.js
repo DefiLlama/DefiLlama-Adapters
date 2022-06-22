@@ -66,9 +66,10 @@ const borrowed = async (_, ethBlock) => {
     })
   ).output);
 
-  // the totalInvested includes senior investments, so we subtract out seniorLoansOutstanding
-  // to avoid double counting. Thus we arrive at the net invested + additional assets,
-  // giving us total TVL
+  // `totalInvested` reflects the senior pool's investments. So we subtract out
+  // `seniorLoansOutstanding`, to avoid double-counting given the inclusion of
+  // `totalLoansOutstanding` in the definition of `assets`. Thus we arrive at
+  // net invested + additional assets, giving us total TVL.
   const totalTvl = totalInvested.plus(seniorAssets).minus(seniorLoansOutstanding)
 
   sdk.util.sumSingleBalance(balances, USDC, String(totalTvl));
