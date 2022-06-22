@@ -84,5 +84,5 @@ module.exports = {
     borrowed,
   },
   methodology:
-    "We count liquidity that is in both the Senior Pool as well as that from Backers in all the TranchedPools",
+    "We count liquidity that is in both the Senior Pool as well as that from Backers in all the Borrower Pools.",
 };
