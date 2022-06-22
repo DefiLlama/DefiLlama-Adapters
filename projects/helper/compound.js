@@ -18,9 +18,9 @@ async function getAllCTokens(comptroller, block, chain) {
   })).output;
 }
 
-// returns {[underlying]: {cToken, decimals, symbol}}
-async function getMarkets(comptroller, block, chain, cether, cetheEquivalent) {
-  const marketKey = `${chain}:${comptroller}`
+// returns [{cToken, underlying}]
+async function getMarkets(comptroller, block, chain, cether, cetheEquivalent, blacklist = []) {
+  const marketKey = `${chain}:${comptroller}:${block}`
 
   if (!marketsCache[marketKey]) marketsCache[marketKey] = _getMarkets()
   return marketsCache[marketKey]
@@ -31,7 +31,8 @@ async function getMarkets(comptroller, block, chain, cether, cetheEquivalent) {
     const calls = []
     allCTokens.forEach(cToken => {
       cToken = cToken.toLowerCase()
-      if (cToken === cether.toLowerCase()) {
+      if (blacklist.includes(cToken)) return;
+      if (cether && cToken === cether.toLowerCase()) {
         markets.push({ underlying: cetheEquivalent, cToken })
         return;
       }
@@ -41,6 +42,10 @@ async function getMarkets(comptroller, block, chain, cether, cetheEquivalent) {
       }
       if (cToken === '0x5C0401e81Bc07Ca70fAD469b451682c0d747Ef1c'.toLowerCase() && chain === 'avax') {
         markets.push({ underlying: '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7', cToken })
+        return;
+      }
+      if (['0xd2ec53e8dd00d204d3d9313af5474eb9f5188ef6', '0x0aeadb9d4c6a80462a47e87e76e487fa8b9a37d7'].includes(cToken) && chain === 'rsk') {
+        markets.push({ underlying: '0x542fda317318ebf1d3deaf76e0b632741a7e677d', cToken })
         return;
       }
 
@@ -154,17 +159,6 @@ function getCompoundV2Tvl(comptroller, chain = "ethereum", transformAdress, ceth
 const BigNumber = require('bignumber.js').default;
 const { toUSDTBalances } = require('./balances');
 
-// ask comptroller for all markets array
-async function getAllMarkets(block, chain, comptroller) {
-  const { output: markets } = await sdk.api.abi.call({
-    target: comptroller,
-    abi: abi['getAllMarkets'],
-    block,
-    chain: chain,
-  });
-  return markets;
-}
-
 // ask comptroller for oracle
 async function getOracle(block, chain, comptroller, oracleAbi) {
   const { output: oracle } = await sdk.api.abi.call({
@@ -176,44 +170,21 @@ async function getOracle(block, chain, comptroller, oracleAbi) {
   return oracle;
 }
 
-async function getUnderlyingDecimalsMultiple(block, chain, tokens, cether) {
+async function getUnderlyingDecimalsMultiple(block, chain, marketData, cether) {
   const response = {}
-  const otherTokens = []
-  tokens.forEach(token => {
-    if (token.toLowerCase() === cether?.toLowerCase()) {
-      response[token] = 18
-    } else {
-      otherTokens.push(token)
-    }
+  const calls = marketData.map(i => ({ target: i.underlying }))
+  const { output: decimals } = await sdk.api.abi.multiCall({
+    calls,
+    abi: "erc20:decimals",
+    block,
+    chain,
   })
 
-  try {
-    const underLyingCalls = otherTokens.map(t => ({ target: t }))
-    const { output: underlying } = await sdk.api.abi.multiCall({
-      calls: underLyingCalls,
-      abi: abi['underlying'],
-      block,
-      chain,
-    });
+  decimals.forEach(({ output}, i) => {
+    response[marketData[i].cToken] = output
+  })
 
-    const failed = underlying.find(i => !i.success)
-    if (failed) throw new Error('Something failed: ' + failed.input.target)
-
-    const underlyingMapping = {}
-    const decimalsCalls = underlying.map(({ output }) => ({ target: output }))
-    underlying.forEach(({ input, output }) => underlyingMapping[output] = input.target)
-    const { output: decimals } = await sdk.api.abi.multiCall({
-      calls: decimalsCalls,
-      abi: "erc20:decimals",
-      block,
-      chain,
-    });
-    decimals.forEach(({ input, output }, i) => response[underlying[i].input.target] = output)
-    return response;
-  } catch (e) {
-    console.log(`${e.message} market rugged, is that market CETH?`)
-    throw e
-  }
+  return response
 }
 
 async function getCashMultiple(block, chain, tokens, borrowed) {
@@ -254,11 +225,12 @@ function getCompoundUsdTvl(comptroller, chain, cether, borrowed, abis = {
     const block = await getBlock(timestamp, chain, chainBlocks, true);
     let tvl = new BigNumber('0');
     blacklist = blacklist.map(i => i.toLowerCase())
-    let allMarkets = await getAllMarkets(block, chain, comptroller);
-    allMarkets = allMarkets.filter(token => !blacklist.includes(token.toLowerCase()))
+    const marketData = await getMarkets(comptroller, block, chain, cether, undefined, blacklist)
+    let allMarkets = marketData.map(i => i.cToken);
+    // allMarkets = allMarkets.filter(token => !blacklist.includes(token.toLowerCase())) // taken care of by getMarkets
     let oracle = await getOracle(block, chain, comptroller, abis.oracle);
     const amounts = await getCashMultiple(block, chain, allMarkets, borrowed)
-    const decimalsAll = await getUnderlyingDecimalsMultiple(block, chain, allMarkets, cether)
+    const decimalsAll = await getUnderlyingDecimalsMultiple(block, chain, marketData, cether)
     const underlyingPrices = await getUnderlyingPriceMultiple(block, chain, oracle, allMarkets, abis.underlyingPrice)
 
     allMarkets.forEach(token => {

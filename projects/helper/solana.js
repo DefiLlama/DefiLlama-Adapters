@@ -62,12 +62,23 @@ async function getTokenAccountBalance(account) {
 }
 
 let tokenList
+let _tokenList
 
 async function getTokenList() {
-  if (!tokenList)
-    tokenList = (await http.get(TOKEN_LIST_URL)).tokens
+  if (!_tokenList)
+    _tokenList = http.get(TOKEN_LIST_URL)
+  tokenList = (await _tokenList).tokens
   return tokenList
 }
+
+// tokenList is giant, Map lookups are more performant than object lookups so use a Map
+async function getTokenMap() {
+  return (await getTokenList()).reduce((map, token) => {
+    map.set(token.address, token);
+    return map;
+  }, new Map())
+}
+
 
 async function getCoingeckoId() {
   const tokenlist = await getTokenList();
@@ -207,6 +218,7 @@ async function sumOrcaLPs(tokensAndAccounts) {
 module.exports = {
   TOKEN_LIST_URL,
   getTokenList,
+  getTokenMap,
   getTokenSupply,
   getTokenBalance,
   getTokenAccountBalance,
