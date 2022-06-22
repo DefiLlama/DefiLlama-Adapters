@@ -74,6 +74,7 @@ const LP_SYMBOLS = ['SLP', 'spLP', 'JLP', 'OLP', 'SCLP', 'DLP', 'MLP', 'MSLP', '
 const blacklisted_LPS = [
   '0xb3dc4accfe37bd8b3c2744e9e687d252c9661bc7',
   '0xf146190e4d3a2b9abe8e16636118805c628b94fe',
+  '0xCC8Fa225D80b9c7D42F96e9570156c65D6cAAa25',
 ].map(i => i.toLowerCase())
 
 function isLP(symbol, token, chain) {
@@ -161,6 +162,10 @@ function sliceIntoChunks(arr, chunkSize = 100) {
   return res;
 }
 
+async function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 module.exports = {
   DEBUG_MODE,
   log,
@@ -177,4 +182,5 @@ module.exports = {
   getBalance,
   getUniqueAddresses,
   sliceIntoChunks,
+  sleep,
 }

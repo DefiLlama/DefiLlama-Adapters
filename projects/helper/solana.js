@@ -1,6 +1,10 @@
 const BigNumber = require("bignumber.js");
 const axios = require("axios");
 const http = require('./http')
+const { Connection, PublicKey } = require("@solana/web3.js")
+const BufferLayout = require("@solana/buffer-layout")
+const { MintLayout, TOKEN_PROGRAM_ID } = require("@solana/spl-token")
+const { sleep, sliceIntoChunks } = require('./utils')
 
 const solscan_base = "https://public-api.solscan.io/account/";
 async function getSolBalance(account) {
@@ -215,6 +219,111 @@ async function sumOrcaLPs(tokensAndAccounts) {
   return totalUsdValue;
 }
 
+function exportDexTVL(DEX_PROGRAM_ID) {
+  return async () => {
+    const SOLANA_API_URL = "https://api.mainnet-beta.solana.com"
+    const connection = new Connection(SOLANA_API_URL)
+
+    const TokenSwapLayout = BufferLayout.struct([
+      BufferLayout.u8("version"),
+      BufferLayout.u8("isInitialized"),
+      BufferLayout.u8("bumpSeed"),
+      BufferLayout.blob(32, "tokenProgramId"),
+      BufferLayout.blob(32, "tokenAccountA"),
+      BufferLayout.blob(32, "tokenAccountB"),
+      BufferLayout.blob(32, "tokenPool"),
+      BufferLayout.blob(32, "mintA"),
+      BufferLayout.blob(32, "mintB"),
+      BufferLayout.blob(32, "feeAccount"),
+      BufferLayout.blob(8, "tradeFeeNumerator"),
+      BufferLayout.blob(8, "tradeFeeDenominator"),
+      BufferLayout.blob(8, "ownerTradeFeeNumerator"),
+      BufferLayout.blob(8, "ownerTradeFeeDenominator"),
+      BufferLayout.blob(8, "ownerWithdrawFeeNumerator"),
+      BufferLayout.blob(8, "ownerWithdrawFeeDenominator"),
+      BufferLayout.blob(8, "hostFeeNumerator"),
+      BufferLayout.blob(8, "hostFeeDenominator"),
+      BufferLayout.u8("curveType"),
+      BufferLayout.blob(32, "curveParameters"),
+    ])
+
+    const tokenMap = await getTokenMap()
+
+    const programPublicKey = new PublicKey(DEX_PROGRAM_ID)
+
+    const programAccounts = await connection.getParsedProgramAccounts(programPublicKey);
+
+    const validTokenAddresses = new Set();
+
+    programAccounts.forEach((account) => {
+      const tokenSwap = TokenSwapLayout.decode(account.account.data);
+      validTokenAddresses.add(new PublicKey(tokenSwap.mintA).toString());
+      validTokenAddresses.add(new PublicKey(tokenSwap.mintB).toString());
+    });
+
+    const tokenPoolMints = programAccounts.map(
+      (account) =>
+        new PublicKey(TokenSwapLayout.decode(account.account.data).tokenPool)
+    );
+
+    const poolAuthorityPubKeys = []
+    const chunks = sliceIntoChunks(tokenPoolMints, 99)
+    for (const chunk of chunks)
+      poolAuthorityPubKeys.push(...await connection
+        .getMultipleAccountsInfo(chunk)
+        .then((poolAccounts) =>
+          poolAccounts.map(
+            (account) =>
+              new PublicKey(MintLayout.decode(account.data).mintAuthority)
+          )
+        ))
+
+    const poolsTokenAccounts = []
+
+    let j = 0
+    for (const key of poolAuthorityPubKeys) {
+      console.log('poolAuthorityPubKeys', ++j, poolAuthorityPubKeys.length)
+      poolsTokenAccounts.push(await connection.getParsedTokenAccountsByOwner(key, {
+        programId: TOKEN_PROGRAM_ID,
+      }))
+      await sleep(1000)
+    }
+    const balances = {};
+
+    poolsTokenAccounts.forEach((tokenAccounts) => {
+      const poolTokens = tokenAccounts.value.filter((account) =>
+        validTokenAddresses.has(account.account.data.parsed.info.mint)
+      );
+
+      const token1 = tokenMap.get(poolTokens[0].account.data.parsed.info.mint);
+      const token2 = tokenMap.get(poolTokens[1].account.data.parsed.info.mint);
+      const symbol1 = token1?.extensions?.coingeckoId;
+      const symbol2 = token2?.extensions?.coingeckoId;
+
+      let amount1 = poolTokens[0].account.data.parsed.info.tokenAmount.uiAmount;
+      let amount2 = poolTokens[1].account.data.parsed.info.tokenAmount.uiAmount;
+
+      // Future proofing - only add this pool's tokens to balances if one of the pool's tokens are listed on Coingecko
+      // As of March 23, 2022 all of Penguin Finance pools have at least one token listed on Coingecko
+      if (symbol1 || symbol2) {
+        // If one of the pool's tokens is not on Coingecko we will double the amount of the other token to get a pool TVL estimation
+        if (!symbol1 && symbol2) {
+          amount2 *= 2;
+          balances[symbol2] = (balances[symbol2] ?? 0) + amount2;
+        } else if (symbol1 && !symbol2) {
+          amount1 *= 2;
+          balances[symbol1] = (balances[symbol1] ?? 0) + amount1;
+        } else {
+          balances[symbol1] = (balances[symbol1] ?? 0) + amount1;
+          balances[symbol2] = (balances[symbol2] ?? 0) + amount2;
+        }
+      }
+    });
+
+    return balances;
+  }
+}
+
 module.exports = {
   TOKEN_LIST_URL,
   getTokenList,
@@ -228,5 +337,6 @@ module.exports = {
   sumOrcaLPs,
   getSolBalance,
   getCoingeckoId,
-  sumTokensUnknown
+  sumTokensUnknown,
+  exportDexTVL,
 };

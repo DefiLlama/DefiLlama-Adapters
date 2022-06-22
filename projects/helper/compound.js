@@ -306,6 +306,7 @@ function compoundExportsWithDifferentBase(comptroller, chain, token) {
 module.exports = {
   getCompoundV2Tvl,
   compoundExports,
+  getCompoundUsdTvl,
   compoundExportsWithAsyncTransform,
   fullCoumpoundExports,
   usdCompoundExports,
