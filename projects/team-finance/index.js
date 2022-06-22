@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const { ethereumContractData, polygonContractData, avaxContractData, bscContractData } = require("./config");
 const BigNumber = require("bignumber.js");
-const { getTokensAndLPsTrackedValue } = require("../helper/teamFinance");
+const { getTokensAndLPsTrackedValue } = require("../helper/unicrypt");
 
 function getTvl(args) {
   return async (timestamp, ethBlock, chainBlocks) => {

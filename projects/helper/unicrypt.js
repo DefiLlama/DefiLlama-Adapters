@@ -118,14 +118,16 @@ async function getTokensAndLPsTrackedValue(balances, lpTokens, contract, factory
   token0Addresses.forEach((token0Address) => {
     if (token0Address.success) {
       const pairAddress = token0Address.input.target.toLowerCase();
-      lps[pairAddress].token0 = token0Address.output
+      if (pairAddress && lps[pairAddress])
+        lps[pairAddress].token0 = token0Address.output
     }
   });
 
   token1Addresses.forEach((token1Address) => {
     if (token1Address.success) {
     const pairAddress = token1Address.input.target.toLowerCase();
-    lps[pairAddress].token1 = token1Address.output
+      if (pairAddress && lps[pairAddress])
+        lps[pairAddress].token1 = token1Address.output
     }
   });
 
