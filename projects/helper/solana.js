@@ -280,9 +280,7 @@ function exportDexTVL(DEX_PROGRAM_ID) {
 
     const poolsTokenAccounts = []
 
-    let j = 0
     for (const key of poolAuthorityPubKeys) {
-      console.log('poolAuthorityPubKeys', ++j, poolAuthorityPubKeys.length)
       poolsTokenAccounts.push(await connection.getParsedTokenAccountsByOwner(key, {
         programId: TOKEN_PROGRAM_ID,
       }))
