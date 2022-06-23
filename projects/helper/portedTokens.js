@@ -891,8 +891,35 @@ function transformNearAddress() {
     if (addr.endsWith(bridgedAssetIdentifier))
       return `0x${addr.slice(0, addr.length - bridgedAssetIdentifier.length)}`;
 
-    return addr;
+    return addr
   };
+}
+
+const nearFixMapping = {
+  "token.jumbo_exchange.near": {
+    coingeckoId: "jumbo-exchange",
+    decimals: 18
+  },
+  "token.paras.near": {
+    coingeckoId: "paras",
+    decimals: 18
+  },
+  "marmaj.tkn.near": {
+    coingeckoId: "marmaj",
+    decimals: 18
+  },
+  "linear-protocol.near": {
+    coingeckoId: "linear-protocol",
+    decimals: 24
+  },
+  "token.pembrock.near": {
+    coingeckoId: "pembrock",
+    decimals: 18
+  },
+  "token.burrow.near": {
+    coingeckoId: "burrow",
+    decimals: 18
+  },
 }
 
 async function transformKlaytnAddress() {
@@ -1695,7 +1722,8 @@ const fixBalancesMapping = {
   kava: b => fixBalances(b, kavaFixMapping, { removeUnmapped: false }),
   ethereum: b => fixBalances(b, ethereumFixMapping, { removeUnmapped: false }),
   sx: b => fixBalances(b, sxFixMapping, { removeUnmapped: true }),
-  meter: b => fixBalances(b, meterFixMapping, { removeUnmapped: true })
+  meter: b => fixBalances(b, meterFixMapping, { removeUnmapped: true }),
+  near: b => fixBalances(b, nearFixMapping, { removeUnmapped: false }),
 };
 
 const chainTransforms = {
@@ -1731,7 +1759,7 @@ const chainTransforms = {
   aurora: transformAuroraAddress,
   findora: transformFindoraAddress,
   bittorrent: transformBittorrentAddress,
-  reichain: transformReichainAddress
+  reichain: transformReichainAddress,
 };
 
 async function transformReichainAddress() {
