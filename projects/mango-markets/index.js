@@ -35,7 +35,8 @@ const coingeckoIds = {
     'MSOL': 'marinade-staked-sol',
     'BNB': 'binance-coin',
     'AVAX': 'avalanche',
-    'LUNA': 'terra-luna'
+    'LUNA': 'terra-luna',
+    'GMT': 'stepn'
 }
 
 
