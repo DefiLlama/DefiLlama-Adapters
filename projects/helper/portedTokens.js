@@ -545,41 +545,24 @@ async function transformMoonriverAddress() {
   return transformChainAddress(mapping, "moonriver", { skipUnmapped: false });
 }
 
+
+
 async function transformMoonbeamAddress() {
-  return addr => {
-    if (compareAddresses(addr, "0x8f552a71EFE5eeFc207Bf75485b356A0b3f01eC9")) {
-      //usdc
-      return "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
-    }
-    if (compareAddresses(addr, "0x8e70cD5B4Ff3f62659049e74b6649c6603A0E594")) {
-      //usdt
-      return "0xdac17f958d2ee523a2206206994597c13d831ec7";
-    }
-    if (compareAddresses(addr, "0x30D2a9F5FDf90ACe8c17952cbb4eE48a55D916A7")) {
-      //eth
-      return "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-    }
-    if (compareAddresses(addr, "0x1DC78Acda13a8BC4408B207c9E48CDBc096D95e0")) {
-      // wtbc
-      return "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599";
-    }
-    if (compareAddresses(addr, "0xc234A67a4F840E61adE794be47de455361b52413")) {
-      // dai
-      return "0x6b175474e89094c44da98b954eedeac495271d0f";
-    }
-    if (compareAddresses(addr, "0x1d4C2a246311bB9f827F4C768e277FF5787B7D7E")) {
-      //movr
-      return "moonriver:0x98878b06940ae243284ca214f92bb71a2b032b8a";
-    }
-    // if (compareAddresses(addr, "0x0000000000000000000000000000000000000802")) { //GLMR
-    //    return "moonbeam";
-    // }
-    if (compareAddresses(addr, "0x0000000000000000000000000000000000000000")) {
-      //GLMR -> WGLMR
-      return "moonbeam:0xacc15dc74880c9944775448304b263d191c6077f";
-    }
-    return `moonbeam:${addr}`; //`optimism:${addr}` // TODO: Fix
-  };
+  const mapping = {
+    '0x322E86852e492a7Ee17f28a78c663da38FB33bfb' : '0x853d955aCEf822Db058eb8505911ED77F175b99e', // frax
+    '0x8f552a71EFE5eeFc207Bf75485b356A0b3f01eC9' : '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // usdc
+    '0xdfa46478f9e5ea86d57387849598dbfb2e964b02' : 'polygon:0xa3fa99a148fa48d14ed51d610c367c61876997f1', // mai
+    '0x8e70cD5B4Ff3f62659049e74b6649c6603A0E594' : '0xdac17f958d2ee523a2206206994597c13d831ec7', // usdt
+    '0x30D2a9F5FDf90ACe8c17952cbb4eE48a55D916A7' : '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', // eth
+    '0x1DC78Acda13a8BC4408B207c9E48CDBc096D95e0' : '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', // wtbc
+    '0xc234A67a4F840E61adE794be47de455361b52413' : '0x6b175474e89094c44da98b954eedeac495271d0f', // dai
+    '0x1d4C2a246311bB9f827F4C768e277FF5787B7D7E' : 'moonriver:0x98878b06940ae243284ca214f92bb71a2b032b8a', // movr
+    '0x1d4C2a246311bB9f827F4C768e277FF5787B7D7E' : '"moonbeam:0xacc15dc74880c9944775448304b263d191c6077f', // GLMR -> WGLMR
+    "0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c":  "",
+    "0x0000000000000000000000000000000000000000": "moonriver:0x98878B06940aE243284CA214f92Bb71a2b032B8A"
+  }
+
+  return transformChainAddress(mapping, "moonbeam", { skipUnmapped: false });
 }
 
 async function transformArbitrumAddress() {
