@@ -1,12 +1,37 @@
 const BigNumber = require("bignumber.js");
 const axios = require("axios");
 const http = require('./http')
-const { Connection, PublicKey } = require("@solana/web3.js")
+const { Connection, PublicKey, Keypair } = require("@solana/web3.js")
+const { Provider } = require("@project-serum/anchor");
+const { NodeWallet } = require("@project-serum/anchor/dist/cjs/provider");
 const BufferLayout = require("@solana/buffer-layout")
 const { MintLayout, TOKEN_PROGRAM_ID } = require("@solana/spl-token")
 const { sleep, sliceIntoChunks } = require('./utils')
 
-const solscan_base = "https://public-api.solscan.io/account/";
+const solscan_base = "https://public-api.solscan.io/account/"
+
+let connection, provider
+
+const endpoint = process.env.SOLANA_RPC || "https://solana-api.projectserum.com/" // or "https://api.mainnet-beta.solana.com"
+
+function getConnection() { 
+  if (!connection)  connection = new Connection(endpoint)
+  return connection
+
+}
+
+function getProvider() {
+  if (!provider) {
+    const dummy_keypair = Keypair.generate();
+    const wallet = new NodeWallet(dummy_keypair);
+  
+    provider = new Provider(
+      getConnection(), wallet
+    );
+  }
+  return provider;
+}
+
 async function getSolBalance(account) {
   const solBalance = await axios
     .get(solscan_base + account)
@@ -14,11 +39,10 @@ async function getSolBalance(account) {
   return new BigNumber(solBalance).div(1e9).toString(10);
 }
 
-const endpoint = "https://solana-api.projectserum.com/";
 const TOKEN_LIST_URL = "https://cdn.jsdelivr.net/gh/solana-labs/token-list@main/src/tokens/solana.tokenlist.json"
 
 async function getTokenSupply(token) {
-  const tokenSupply = await axios.post("https://api.mainnet-beta.solana.com", {
+  const tokenSupply = await axios.post(endpoint, {
     jsonrpc: "2.0",
     id: 1,
     method: "getTokenSupply",
@@ -221,8 +245,7 @@ async function sumOrcaLPs(tokensAndAccounts) {
 
 function exportDexTVL(DEX_PROGRAM_ID) {
   return async () => {
-    const SOLANA_API_URL = "https://api.mainnet-beta.solana.com"
-    const connection = new Connection(SOLANA_API_URL)
+    const connection = getConnection()
 
     const TokenSwapLayout = BufferLayout.struct([
       BufferLayout.u8("version"),
@@ -284,7 +307,7 @@ function exportDexTVL(DEX_PROGRAM_ID) {
       poolsTokenAccounts.push(await connection.getParsedTokenAccountsByOwner(key, {
         programId: TOKEN_PROGRAM_ID,
       }))
-      await sleep(1000)
+      await sleep(300)
     }
     const balances = {};
 
@@ -323,6 +346,7 @@ function exportDexTVL(DEX_PROGRAM_ID) {
 }
 
 module.exports = {
+  endpoint,
   TOKEN_LIST_URL,
   getTokenList,
   getTokenMap,
@@ -337,4 +361,6 @@ module.exports = {
   getCoingeckoId,
   sumTokensUnknown,
   exportDexTVL,
+  getProvider,
+  getConnection,
 };
