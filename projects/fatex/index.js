@@ -2,7 +2,6 @@ const sdk = require("@defillama/sdk");
 const { transformPolygonAddress } = require("../helper/portedTokens");
 const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl");
 const BigNumber = require("bignumber.js");
-const FactoryAbi = require("./all-abi.json");
 
 const FACTORY_CONTRACT = "0x937e0c67d21Df99eaEa0e6a1055A5b783291DC8f";
 const FATE_TOKEN = "0x4853365bC81f8270D902076892e13F27c27e7266";
@@ -12,7 +11,6 @@ const X_FATE_TOKEN = "0x56BE76031A4614370fA1f188e01e18a1CF16E642";
 
 async function xFateTvl(timestamp, block, chainBlocks) {
   const balances = {};
-  const transform = await transformPolygonAddress();
 
   const fateBalanceRaw = (await sdk.api.abi.call({
     abi: "erc20:balanceOf",
