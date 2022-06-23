@@ -40,7 +40,6 @@ async function eth(timestamp, ethBlock) {
         }
         balances[address] = BigNumber(balances[address] || 0).plus(balance).toFixed();
     })
-    console.log(balances)
     const uniLPINSUR2USDC = "0x169bf778a5eadab0209c0524ea5ce8e7a616e33b";
     /*
     await unwrapUniswapLPs(balances, [{
