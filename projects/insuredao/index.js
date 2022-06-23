@@ -57,15 +57,9 @@ async function staking(timestamp, block) {
       block: block,
     })
   ).output;
-
-  console.log(veinsureBalances);
-  
-  console.log(vlinsureBalances);
   
   sdk.util.sumSingleBalance(balances, insure ,veinsureBalances);
   sdk.util.sumSingleBalance(balances, insure ,vlinsureBalances);
-
-  console.log(balances);
   
   return balances;
 }
