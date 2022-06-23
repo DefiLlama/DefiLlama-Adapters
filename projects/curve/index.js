@@ -140,12 +140,6 @@ async function unwrapCreamTokens(
     sdk.util.sumSingleBalance(balances, transform(underlying), balance);
     delete balances[token];
     delete balances[`${chain}:${token}`];
-    console.log(
-      "i am hit",
-      token,
-      balances[token],
-      balances[`${chain}:${token}`]
-    );
   }
 }
 
