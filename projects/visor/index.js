@@ -51,7 +51,7 @@ async function tvlEthereum(timestamp, block, chainBlocks) {
   ]);
 
   // Ethereum TVL
-  for (currTvl of tvls) {
+  for (const currTvl of tvls) {
     for (let [token, amount] of Object.entries(currTvl)) {
       sdk.util.sumSingleBalance(balances, token, amount);
     }
@@ -71,7 +71,7 @@ async function tvlLiquidityMining(timestamp, block) {
   //get the staking pool contracts, and the respective token addresses
   const resp = await request(GRAPH_URL["ethereum"], liquidityMiningQuery);
 
-  for (i = 0; i < resp.hypervisors.length; i++) {
+  for (let i = 0; i < resp.hypervisors.length; i++) {
     const curr = resp.hypervisors[i];
     const stakingPoolAddr = curr.id;
     const tokenAddr = curr.stakingToken.id;

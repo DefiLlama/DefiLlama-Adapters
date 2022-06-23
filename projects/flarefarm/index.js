@@ -12,8 +12,8 @@ const tokensAndOwners = [
 const chain = 'songbird'
 
 async function farmTvl(timestamp, ethblock, chainBlocks) {
-  balances = {};
-  block = getBlock(timestamp, chain, chainBlocks, true);
+  let balances = {};
+  let block = getBlock(timestamp, chain, chainBlocks, true);
   
   await sumTokens(
     balances,

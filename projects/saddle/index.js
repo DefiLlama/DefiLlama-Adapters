@@ -6,10 +6,6 @@ const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
-const {
-  transformArbitrumAddress,
-  transformOptimismAddress,
-} = require("../helper/portedTokens");
 
 /*** Ethereum Addresses ***/
 const btcPoolAddress = "0x4f6A43Ad7cba042606dECaCA730d4CE0A57ac62e";
@@ -24,6 +20,7 @@ const d4Pool = "0xc69ddcd4dfef25d8a793241834d4cc4b3668ead6";
 const btcV2PoolAddress = "0xdf3309771d2BF82cb2B6C56F9f5365C8bD97c4f2";
 const tbtcV2MetapoolAddress = "0xf74ebe6e5586275dc4CeD78F5DBEF31B1EfbE7a5";
 const wcusdMetapoolAddress = "0x3F1d224557afA4365155ea77cE4BC32D5Dae2174";
+const frax3PoolAddress = "0x8cAEa59f3Bf1F341f89c51607E4919841131e47a";
 
 const tokens = {
   // TBTC
@@ -52,11 +49,13 @@ const tokens = {
   "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": [
     usdPoolAddress,
     usdV2PoolAddress,
+    frax3PoolAddress,
   ],
   // USDT
   "0xdAC17F958D2ee523a2206206994597C13D831ec7": [
     usdPoolAddress,
     usdV2PoolAddress,
+    frax3PoolAddress,
   ],
   // SUSD
   "0x57ab1ec28d129707052df4df418d58a2d46d5f51": [susdPoolAddress],
@@ -72,6 +71,8 @@ const tokens = {
   "0x18084fba666a33d37592fa2633fd49a74dd93a88": [tbtcV2MetapoolAddress],
   // WCUSD
   "0xad3e3fc59dff318beceaab7d00eb4f68b1ecf195": [wcusdMetapoolAddress],
+  // FRAX
+  "0x853d955aCEf822Db058eb8505911ED77F175b99e": [frax3PoolAddress],
 };
 
 /*** Fantom Addresses ***/
@@ -90,12 +91,15 @@ const poolAddresses_arb = [
   "0xBea9F78090bDB9e662d8CB301A00ad09A5b756e9",
   //ArbFRAXPoolContract
   "0xfeEa4D1BacB0519E8f952460A70719944fe56Ee0",
+  //ArbUSDSarbUSDv2Meta
+  "0x5dD186f8809147F96D3ffC4508F3C82694E58c9c",
 ];
 const MIM_arb = "0xfea7a6a0b346362bf88a9e4a88416b77a57d6c2a";
 const USDT_arb = "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9";
 const USDC_arb = "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8";
 const nUSD_arb = "0x2913e812cf0dcca30fb28e6cac3d2dcff4497688";
 const FRAX_arb = "0x17fc002b466eec40dae837fc4be5c67993ddbd6f";
+const USDS_arb = "0xD74f5255D557944cf7Dd0E45FF521520002D5748";
 
 /*** Optimism Addresses ***/
 const poolAddresses_opt = [
@@ -108,6 +112,15 @@ const DAI_opt = "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1";
 const USDT_opt = "0x94b008aa00579c1307b0ef2c499ad98a8ce58e58";
 const USDC_opt = "0x7f5c764cbc14f9669b88837ca1490cca17c31607";
 const FRAX_opt = "0x2e3d870790dc77a83dd1d18184acc7439a53f475";
+
+/*** Evmos Addresses ***/
+const poolAddresses_evm = [
+  //EvmosFrax3pool
+  "0x21d4365834B7c61447e142ef6bCf01136cBD01c6",
+];
+const FRAX_evm = "0xe03494d0033687543a80c9b1ca7d6237f2ea8bd8";
+const USDC_evm = "0x51e44ffad5c2b122c8b635671fcc8139dc636e82";
+const USDT_evm = "0x7ff4a56b32ee13d7d4d405887e0ea37d61ed919e";
 
 /*==================================================
   TVL
@@ -219,7 +232,6 @@ async function tvlFantom(timestamp, block) {
 async function arbTvl(timestamp, chainBlocks) {
   const balances = {};
 
-  const transformAddress = await transformArbitrumAddress();
   await sumTokensAndLPsSharedOwners(
     balances,
     [
@@ -228,11 +240,11 @@ async function arbTvl(timestamp, chainBlocks) {
       [MIM_arb, false],
       [FRAX_arb, false],
       [nUSD_arb, false],
+      [USDS_arb, false]
     ],
     poolAddresses_arb,
     chainBlocks["arbitrum"],
     "arbitrum",
-    transformAddress
   );
 
   return balances;
@@ -241,7 +253,6 @@ async function arbTvl(timestamp, chainBlocks) {
 async function optTvl(timestamp, chainBlocks) {
   const balances = {};
 
-  const transformAddress = await transformOptimismAddress();
   await sumTokensAndLPsSharedOwners(
     balances,
     [
@@ -253,7 +264,24 @@ async function optTvl(timestamp, chainBlocks) {
     poolAddresses_opt,
     chainBlocks["optimism"],
     "optimism",
-    transformAddress
+  );
+
+  return balances;
+}
+
+async function evmTvl(timestamp, chainBlocks) {
+  const balances = {};
+
+  await sumTokensAndLPsSharedOwners(
+    balances,
+    [
+      [USDC_evm, false],
+      [USDT_evm, false],
+      [FRAX_evm, false],
+    ],
+    poolAddresses_evm,
+    chainBlocks["evmos"],
+    "evmos",
   );
 
   return balances;
@@ -278,6 +306,9 @@ module.exports = {
   },
   optimism: {
     tvl: optTvl,
+  },
+  evmos: {
+    tvl: evmTvl, // Saturday, June 18th, 2022 
   },
   methodology:
     "Counts as TVL all the Assets deposited on each chain through different Pool Contracts",

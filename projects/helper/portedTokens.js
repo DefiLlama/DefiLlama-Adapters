@@ -57,7 +57,9 @@ async function transformFantomAddress() {
     "0x1b6382dbdea11d97f24495c9a90b7c88469134a4":
       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // axUSDC
     "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee":
-      "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83"
+      "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
+    "0x95bf7e307bc1ab0ba38ae10fc27084bc36fcd605":
+      "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
   };
 
   normalizeMapping(mapping);
@@ -269,6 +271,7 @@ async function transformBscAddress() {
       "heco:0xcbd6cb9243d8e3381fea611ef023e17d1b7aedf0", // BXH
     "0x42586ef4495bb512a86cf7496f6ef85ae7d69a64":
       "polygon:0x66e8617d1df7ab523a316a6c01d16aa5bed93681" // SPICE
+    // "0x250632378E573c6Be1AC2f97Fcdf00515d0Aa91B": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // BETH->WETH
   };
 
   return addr => {
@@ -309,7 +312,7 @@ async function transformPolygonAddress() {
     "0x9fffb2f49adfc231b44ddcff3ffcf0e81b06430a":
       "0x6B175474E89094C44Da98b954EedeAC495271d0F", // moUSD(Polygon) -> DAI
     "0xf04d3a8eb17b832fbebf43610e94bdc4fd5cf2dd":
-      "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", // sBUSD(Polygon) -> BUSD(BSC)
+      "bsc:0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", // sBUSD(Polygon) -> BUSD(BSC)
     "0x8eb3771a43a8c45aabe6d61ed709ece652281dc9":
       "avax:0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664", // sUSDC.e(Polygon) -> USDC.e(Avalanche)
     "0x613a489785c95afeb3b404cc41565ccff107b6e0":
@@ -396,7 +399,11 @@ async function transformHecoAddress() {
     "0x40280e26a572745b1152a54d1d44f365daa51618":
       "bsc:0xba2ae424d960c26247dd6c32edc70b295c744c43",
     "0x5ee41ab6edd38cdfb9f6b4e6cf7f75c87e170d98":
-      "0x0000000000085d4780b73119b644ae5ecd22b376"
+      "0x0000000000085d4780b73119b644ae5ecd22b376",
+    "0xA2F3C2446a3E20049708838a779Ff8782cE6645a":
+      "bsc:0x1d2f0da169ceb9fc7b3144628db156f3f6c60dbe", // XRP
+    "0x843Af718EF25708765a8E0942F89edEae1D88DF0":
+      "bsc:0x3ee2200efb3400fabb9aacf31297cbdd1d435d47" // ADA
   };
 
   return transformChainAddress(mapping, "heco", { skipUnmapped: false });
@@ -605,7 +612,9 @@ async function transformArbitrumAddress() {
     "0x289ba1701c2f088cf0faf8b3705246331cb8a839":
       "0x58b6a8a3302369daec383334672404ee733ab239", // LPT
     "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee":
-      "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+      "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+    "0x2913e812cf0dcca30fb28e6cac3d2dcff4497688":
+      "0x6b175474e89094c44da98b954eedeac495271d0f" //  nUSD
   };
 
   normalizeMapping(mapping);
@@ -1511,6 +1520,26 @@ const kavaFixMapping = {
   "0xc86c7C0eFbd6A49B35E8714C5f59D99De09A225b": {
     coingeckoId: "kava",
     decimals: 18
+  },
+  "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f": {
+    coingeckoId: "usd-coin",
+    decimals: 6
+  },
+  "0xB44a9B6905aF7c801311e8F4E76932ee959c663C": {
+    coingeckoId: "tether",
+    decimals: 6
+  },
+  "0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b": {
+    coingeckoId: "bitcoin",
+    decimals: 8
+  },
+  "0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d": {
+    coingeckoId: "ethereum",
+    decimals: 18
+  },
+  "0x765277EebeCA2e31912C9946eAe1021199B39C61": {
+    coingeckoId: "dai",
+    decimals: 18
   }
 };
 
@@ -1568,6 +1597,17 @@ const energiFixMapping = {
   }
 };
 
+const palmFixMapping = {
+  "0x4c1f6fcbd233241bf2f4d02811e3bf8429bc27b8": {
+    coingeckoId: "dai",
+    decimals: 18
+  },
+  "0x726138359c17f1e56ba8c4f737a7caf724f6010b": {
+    coingeckoId: "ethereum",
+    decimals: 18
+  }
+};
+
 const ethereumFixMapping = {
   "0xf6b1c627e95bfc3c1b4c9b825a032ff0fbf3e07d": {
     coingeckoId: "jpyc",
@@ -1591,6 +1631,56 @@ const ethereumFixMapping = {
   }
 };
 
+const sxFixMapping = {
+  "0x90d27E008d5Db7f0a3c90a15A8Dcc4Ca18cFc670": {
+    coingeckoId: "sx-network",
+    decimals: 18
+  },
+  "0xA173954Cc4b1810C0dBdb007522ADbC182DaB380": {
+    coingeckoId: "ethereum",
+    decimals: 18
+  },
+  "0xe2aa35C2039Bd0Ff196A6Ef99523CC0D3972ae3e": {
+    coingeckoId: "usd-coin",
+    decimals: 6
+  },
+  "0xfa6F64DFbad14e6883321C2f756f5B22fF658f9C": {
+    coingeckoId: "matic-network",
+    decimals: 18
+  },
+  "0x53813CD4aCD7145A716B4686b195511FA93e4Cb7": {
+    coingeckoId: "dai",
+    decimals: 18
+  },
+  "0xa0cB58E7F783fce0F4042C790ea3045c48CD51e8": {
+    coingeckoId: "shark",
+    decimals: 18
+  }
+};
+
+const meterFixMapping = {
+  "0xd86e243fc0007e6226b07c9a50c9d70d78299eb5": {
+    coingeckoId: "usd-coin",
+    decimals: 6
+  },
+  "0x5729cb3716a315d0bde3b5e489163bf8b9659436": {
+    coingeckoId: "meter",
+    decimals: 18
+  },
+  "0x6abaedab0ba368f1df52d857f24154cc76c8c972": {
+    coingeckoId: "meter-stable",
+    decimals: 18
+  },
+  "0x24aa189dfaa76c671c279262f94434770f557c35": {
+    coingeckoId: "binance-usd",
+    decimals: 18
+  },
+  "0x5fa41671c48e3c951afc30816947126ccc8c162e": {
+    coingeckoId: "tether",
+    decimals: 6
+  }
+};
+
 const fixBalancesMapping = {
   avax: fixAvaxBalances,
   evmos: b => fixBalances(b, evmosFixMapping, { removeUnmapped: false }),
@@ -1607,13 +1697,16 @@ const fixBalancesMapping = {
   energi: b => fixBalances(b, energiFixMapping, { removeUnmapped: true }),
   smartbch: b => fixBalances(b, smartbchFixMapping, { removeUnmapped: true }),
   energyweb: b => fixBalances(b, energywebFixMapping, { removeUnmapped: true }),
+  palm: b => fixBalances(b, palmFixMapping, { removeUnmapped: true }),
   oasis: fixOasisBalances,
   bittorrent: b =>
     fixBalances(b, bittorrentFixMapping, { removeUnmapped: false }),
   syscoin: b => fixBalances(b, syscoinFixMapping, { removeUnmapped: true }),
-  syscoin: b => fixBalances(b, syscoinFixMapping, { removeUnmapped: false }),
   kava: b => fixBalances(b, kavaFixMapping, { removeUnmapped: false }),
-  ethereum: b => fixBalances(b, ethereumFixMapping, { removeUnmapped: false })
+  ethereum: b => fixBalances(b, ethereumFixMapping, { removeUnmapped: false }),
+  sx: b => fixBalances(b, sxFixMapping, { removeUnmapped: true }),
+  meter: b => fixBalances(b, meterFixMapping, { removeUnmapped: true }),
+  kava: b => fixBalances(b, kavaFixMapping, { removeUnmapped: false })
 };
 
 const chainTransforms = {

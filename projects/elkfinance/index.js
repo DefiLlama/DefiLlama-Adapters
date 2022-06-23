@@ -48,21 +48,6 @@ const stakingContracts = {
   "iotex": "0x57A1CE7686F3B2AB61F5191c76361F985b57E0fa",
 };
 // node test.js projects/elkfinance/index.js
-function chainStaking(chain, contract){
- return async (timestamp, ethBlock, chainBlocks) => {
-  balance = 0;
-    const block = await getBlock(timestamp, chain, chainBlocks, true);
-
-    balance += Number((await sdk.api.erc20.balanceOf({
-      target: elkAddress(chain),
-      owner: contract,
-      block: block,
-      chain
-    })).output);
-
-  return { 'avax:0xeEeEEb57642040bE42185f49C52F7E9B38f8eeeE': balance };
- }
-};
 
 const factories = {
   xdai: "0xCB018587dA9590A18f49fFE2b85314c33aF3Ad3B",

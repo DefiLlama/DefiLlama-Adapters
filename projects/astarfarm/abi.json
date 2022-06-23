@@ -1,13 +1,15 @@
-[{
-  "inputs": [],
-  "name": "staked",
-  "outputs": [
-    {
-      "internalType": "uint128",
-      "name": "",
-      "type": "uint128"
-    }
-  ],
-  "stateMutability": "view",
-  "type": "function"
-}]
+[
+  {
+    "inputs": [],
+    "name": "stakedV2",
+    "outputs": [
+      {
+        "internalType": "uint128",
+        "name": "",
+        "type": "uint128"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

@@ -12,6 +12,7 @@ const activePoolAbi = require("./ankr/abis/activePool.json");
 const wethAddressAbi = require("./ankr/abis/wethAddress.json");
 const { isLP, DEBUG_MODE, getUniqueAddresses } = require("./utils");
 const wildCreditABI = require("../wildcredit/abi.json");
+const underlyingABI = require("./abis/underlying.json");
 
 const yearnVaults = {
   // yvToken: underlying, eg yvYFI:YFI
@@ -120,10 +121,22 @@ async function unwrapYearn(
   yToken,
   block,
   chain = "ethereum",
-  transformAddress = addr => addr
+  transformAddress = addr => addr,
+  fetchUnderlying
 ) {
-  const underlying = yearnVaults[yToken.toLowerCase()];
-  if (!underlying) return;
+  let underlying = yearnVaults[yToken.toLowerCase()];
+  if (!underlying) {
+    if (!fetchUnderlying) return;
+    const { output: _underlying } = await sdk.api.abi.call({
+      target: yToken,
+      abi: underlyingABI,
+      chain,
+      block
+    });
+    underlying = _underlying;
+  }
+
+  console.log("underinglin found", underlying);
 
   const tokenKey = chain == "ethereum" ? yToken : `${chain}:${yToken}`;
   if (!balances[tokenKey]) return;
@@ -527,8 +540,9 @@ async function sumTokensAndLPsSharedOwners(
   owners,
   block,
   chain = "ethereum",
-  transformAddress = id => id
+  transformAddress
 ) {
+  if (!transformAddress) transformAddress = await getChainTransform(chain);
   const balanceOfTokens = await sdk.api.abi.multiCall({
     calls: tokens
       .map(t =>
@@ -927,7 +941,8 @@ async function sumBalancerLps(
   });
 }
 
-const nullAddress = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
+const nullAddress = "0x0000000000000000000000000000000000000000";
+const gasTokens = ["0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"];
 /*
 tokensAndOwners [
     [token, owner] - eg ["0xaaa", "0xbbb"]
@@ -949,13 +964,16 @@ async function sumTokens(
 ) {
   if (!transformAddress) transformAddress = await getChainTransform(chain);
 
-  const ethBalanceInputs = [];
+  let ethBalanceInputs = [];
 
   tokensAndOwners = tokensAndOwners.filter(i => {
-    if (i[0] !== nullAddress) return true;
+    const token = i[0].toLowerCase();
+    if (token !== nullAddress && !gasTokens.includes(token)) return true;
     ethBalanceInputs.push(i[1]);
     return false;
   });
+
+  ethBalanceInputs = getUniqueAddresses(ethBalanceInputs);
 
   if (ethBalanceInputs.length) {
     const { output: ethBalances } = await sdk.api.eth.getBalances({
@@ -1428,7 +1446,8 @@ async function sumTokens2({
   resolveLP = false,
   resolveYearn = false,
   unwrapAll = false,
-  blacklistedLPs = []
+  blacklistedLPs = [],
+  blacklistedTokens = []
 }) {
   if (!tokensAndOwners.length) {
     tokens = getUniqueAddresses(tokens);
@@ -1437,6 +1456,11 @@ async function sumTokens2({
     if (owners.length)
       tokensAndOwners = tokens.map(t => owners.map(o => [t, o])).flat();
   }
+
+  blacklistedTokens = blacklistedTokens.map(t => t.toLowerCase());
+  tokensAndOwners = tokensAndOwners.filter(
+    ([token]) => !blacklistedTokens.includes(token.toLowerCase())
+  );
 
   return sumTokens(balances, tokensAndOwners, block, chain, transformAddress, {
     resolveCrv,

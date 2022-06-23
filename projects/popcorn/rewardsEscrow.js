@@ -18,12 +18,12 @@ async function addRewardsEscrowTVL(balances, timestamp, chainBlocks, chain = "et
   })).output
 
   let address = rewardToken;
-  if (!!transformedRewardTokenAddress) {
+  if (transformedRewardTokenAddress) {
     address = transformedRewardTokenAddress
   } else {
     address = (await getChainTransform(chain))(rewardToken)
   }
-  if (!!decimals) {
+  if (decimals) {
     rewardsEscrowBalance = Number(rewardsEscrowBalance) / (10 ** decimals)
   }
   let coingeckoPopAddress = ADDRESSES.ethereum.pop

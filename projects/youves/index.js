@@ -9,7 +9,7 @@ const { PromisePool } = require('@supercharge/promise-pool');
 const { default: BigNumber } = require("bignumber.js");
 let graphQLClient
 
-const indexer = "https://youves-mainnet-indexer.dev.gke.papers.tech/v1/graphql"
+const indexer = "https://youves-mainnet-indexer.prod.gke.papers.tech/v1/graphql"
 const engines = {
   uUSDTezos: 'KT1FFE2LC5JpVakVjHm5mM36QVp2p3ZzH4hH',
   uUSDtzBTCLP: 'KT1FzcHaNhmpdYPNTgfb8frYXx7B5pvVyowu',
@@ -39,8 +39,8 @@ async function fetchBalance(balances, token, engineAddress, decimals = 1, shareP
   let balance = oracleData["vault_aggregate"]["aggregate"]["sum"]["balance"] / 10 ** decimals
 
   if (token === 'tzbtc-lp') {
-    balancetZ = balance * sharePrice.xtzPool / sharePrice.lqtTotal
-    balanceBTC = balance * sharePrice.tokenPool / sharePrice.lqtTotal
+    const balancetZ = balance * sharePrice.xtzPool / sharePrice.lqtTotal
+    const balanceBTC = balance * sharePrice.tokenPool / sharePrice.lqtTotal
     sdk.util.sumSingleBalance(balances, 'tezos', balancetZ / 1e6)
     sdk.util.sumSingleBalance(balances, sharePrice.tokenAddress, balanceBTC)
     return;
