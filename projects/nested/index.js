@@ -3,20 +3,33 @@ const { getBlock } = require('../helper/getBlock')
 const axios = require("axios");
 const retry = require('../helper/retry');
 const {chainExports} = require('../helper/exports')
-// const abi = require('./abi.json')
 
-const nestReserve_contract = '0x150fb0Cfa5bF3D4023bA198C725b6DCBc1577f21'
 const tokens_url = 'https://api.nested.finance/tvl-tokens'
+const nested = {
+  'polygon': {
+    'prefix': 'poly', 
+    'nestReserve_contract': '0x150fb0Cfa5bF3D4023bA198C725b6DCBc1577f21'
+  }, 
+  'bsc': {
+    'prefix': 'bsc', 
+    'nestReserve_contract': '0x150fb0Cfa5bF3D4023bA198C725b6DCBc1577f21'
+  }, 
+  'avax': {
+    'prefix': 'avax', 
+    'nestReserve_contract': '0x150fb0Cfa5bF3D4023bA198C725b6DCBc1577f21'
+  }, 
+  'ethereum': {
+    'prefix': 'eth', 
+    'nestReserve_contract': '0x0535f1f43ee274123291bbab284948caed46c65d'
+  }, 
+  'optimism': {
+    'prefix': 'opti', 
+    'nestReserve_contract': '0x150fb0Cfa5bF3D4023bA198C725b6DCBc1577f21'
+  }, 
+}
 // const nestRecords_contract = '0x3Ee96E771D5E56b34245b023E8B31ffDf36dFafd'
 // const graphUrl = 'https://api.nested.finance/graphql'
 
-const chainTransform = {
-  'polygon': 'poly', 
-  'bsc': 'bsc',
-  'avax': 'avax',
-}
-
-const max_calls = 50
 function chainTvl_onchain(chain) {
   return async (timestamp, ethBlock, chainBlocks) => {
     const block = await getBlock(timestamp, chain, chainBlocks, false)
@@ -26,7 +39,7 @@ function chainTvl_onchain(chain) {
     
     const tokens_response = await retry(async () => await axios.get(tokens_url));
     const recordsTokens = tokens_response.data
-      .filter(t => t.startsWith(chainTransform[chain]))
+      .filter(t => t.startsWith(nested[chain]['prefix']))
       .map(t => t.substring(t.indexOf(':') + 1))
 
     const reserveTokens = [...new Set(recordsTokens.flat())]
@@ -35,7 +48,7 @@ function chainTvl_onchain(chain) {
     const tokenBalances = await sdk.api.abi.multiCall({
       calls: reserveTokens.map(t => ({
         target: t,
-        params: nestReserve_contract,
+        params: nested[chain]['nestReserve_contract'],
       })),
       abi: 'erc20:balanceOf',
       chain,
@@ -47,5 +60,5 @@ function chainTvl_onchain(chain) {
   }
 }
 
-module.exports = chainExports(chainTvl_onchain, ['polygon', 'bsc', 'avax'])
-module.exports.methodology = 'Nested TVL consists of tokens held by NestedReserve, for which we can get the address using the nestedRecords contract or better, the rest api endpoint'
+module.exports = chainExports(chainTvl_onchain, Object.keys(nested))
+module.exports.methodology = 'Nested TVL consists of tokens held by NestedReserve contracts on each chain, for which we can get the address using a rest api endpoint'

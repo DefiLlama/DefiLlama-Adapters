@@ -9,5 +9,7 @@ async function tvl(_, ethBlock, chainBlocks) {
 };
 
 module.exports = {
-  tvl
-};
+  ethereum: {
+    tvl
+  }
+}; 

@@ -1,8 +1,6 @@
 const sdk = require("@defillama/sdk");
-const BigNumber = require('bignumber.js')
 const { GraphQLClient, gql } = require('graphql-request');
 const retry = require('../helper/retry');
-const utils = require('../helper/utils');
 const abi = require("./abi.json");
 const { staking } = require("../helper/staking");
 const { addFundsInMasterChef } = require("../helper/masterchef");
@@ -10,10 +8,8 @@ const { addFundsInMasterChef } = require("../helper/masterchef");
 const BDPMasterContract = "0x0De845955E2bF089012F682fE9bC81dD5f11B372";
 const BDP = "0xf3dcbc6d72a4e1892f7917b7c43b74131df8480e";
 
-const pricesOfBDP = "https://api.coingecko.com/api/v3/simple/price?ids=big-data-protocol&vs_currencies=BTC,CAD,CNY,ETH,EUR,GBP,HKD,INR,JPY,LINK,RUB,SGD,USD"
 const endpoint = 'https://subgraph.mainnet.bigdataprotocolmarket.com:8000/subgraphs/name/oceanprotocol/ocean-subgraph'
 
-const USDT = "0xdAC17F958D2ee523a2206206994597C13D831ec7";
 
 const ethTvl = async (chainBlocks) => {
   const balances = {};
@@ -37,14 +33,11 @@ const ethTvl = async (chainBlocks) => {
     }
   }`;
 
-  const priceBDPtoUSD = (await utils.fetchURL(pricesOfBDP)).data['big-data-protocol'].usd;
 
   const tvlInBDP = (await retry(
     async bail => await graphQLClient.request(query))).poolFactories.map(tvl => tvl.totalValueLocked);
 
-  const USDTbalance = BigNumber(priceBDPtoUSD * tvlInBDP[0]).times(1e6).toFixed(0)
-
-  sdk.util.sumSingleBalance(balances, USDT, USDTbalance);
+  sdk.util.sumSingleBalance(balances, 'big-data-protocol', +tvlInBDP[0]);
 
   return balances;
 };

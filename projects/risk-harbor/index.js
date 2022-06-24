@@ -4,9 +4,11 @@ const { getBlock } = require("../helper/getBlock");
 
 const USDC = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
 const riskHarborOzoneAddress = "terra1dlfz2teqt5shxuw87npfecjtv7xlrxvqd4sapt";
+const riskHarborOzoneAddress2 = "terra1h6t8gx7jvc2ens9nrxcf9vqylzquey75e2wvzt";
 
 async function terra(timestamp, ethBlock, chainBlocks) {
-  const block = await getBlock(timestamp, "terra", chainBlocks);
+  // const block = await getBlock(timestamp, "terra", chainBlocks);
+  let block
   const balances = { terrausd: 0 };
   let paginationKey;
 
@@ -30,6 +32,29 @@ async function terra(timestamp, ethBlock, chainBlocks) {
       }
     });
   } while (paginationKey);
+
+  let paginationKey2
+
+  do {
+    const data2 = await queryV1Beta1(
+      `bank/v1beta1/balances/${riskHarborOzoneAddress2}`,
+      paginationKey,
+      block
+    );
+
+    paginationKey2 = data2.pagination.next_key;
+
+    data2.balances.forEach(({ denom, amount }) => {
+      /**
+       * 3/10/2022 - As of now the only supported underwriting token for Risk Harbor Ozone is UST, so
+       * balances should always be an array of length 1. Added support for dynamic balances length, denom checking, and pagination for
+       * future proofing and safety.
+       */
+      if (denom === "uusd") {
+        balances["terrausd"] += parseInt(amount) / 1e6;
+      }
+    });
+  } while (paginationKey2);
 
   return balances;
 };

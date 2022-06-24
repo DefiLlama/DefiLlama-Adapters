@@ -3,7 +3,6 @@ const coins = {};
 
 module.exports = [
     {
-        dataIndex: 38,
         id: 'cvxcrv',
         name: 'cvxcrv',
         coins: [
@@ -16,7 +15,6 @@ module.exports = [
         }
     },
     {
-        dataIndex: 72,
         id: 'cvxfxs',
         name: 'cvxfxs',
         coins: [
@@ -30,7 +28,6 @@ module.exports = [
     },
 
     {
-        dataIndex: 27,
         id: 'steth',
         name: 'steth',
         coins: [
@@ -44,7 +41,6 @@ module.exports = [
     },
 
     {
-        dataIndex: 34,
         id: 'frax',
         name: 'frax',
         coins: [
@@ -58,7 +54,6 @@ module.exports = [
     },
 
     {
-        dataIndex: 38,
         id: 'tricrypto2',
         name: 'tricrypto2',
         coins: [
@@ -73,7 +68,6 @@ module.exports = [
     },
 
     {
-        dataIndex: 38,
         id: 'crveth',
         name: 'crveth',
         coins: [
@@ -87,7 +81,6 @@ module.exports = [
     },
 
     {
-        dataIndex: 38,
         id: 'cvxeth',
         name: 'cvxeth',
         coins: [
@@ -101,7 +94,6 @@ module.exports = [
     },
 
     {
-        dataIndex: 38,
         id: 'crv3pool',
         name: 'crv3pool',
         coins: [
@@ -116,7 +108,19 @@ module.exports = [
     },
 
     {
-        dataIndex: 38,
+        id: 'ust-wormhole',
+        name: 'ust-wormhole',
+        coins: [
+            coins.ust,
+            coins.crv3pool
+        ],
+        addresses: {
+            swap: '0xCEAF7747579696A2F0bb206a14210e3c9e6fB269',
+            lpToken: '0xCEAF7747579696A2F0bb206a14210e3c9e6fB269',
+        },
+    },
+
+    {
         id: 'rocketpooleth',
         name: 'rocketpooleth',
         coins: [
@@ -130,16 +134,70 @@ module.exports = [
     },
 
     {
-        dataIndex: 38,
-        id: 'ust-wormhole',
-        name: 'ust-wormhole',
+        id: 'ren',
+        name: 'ren',
         coins: [
-            coins.ust,
+            coins.renbtc,
+            coins.wbtc
+        ],
+        addresses: {
+            swap: '0x93054188d876f558f4a66B2EF1d97d16eDf0895B',
+            lpToken: '0x49849C98ae39Fff122806C06791Fa73784FB3675',
+        },
+    },
+
+    {
+        id: 'pusd',
+        name: 'pusd',
+        coins: [
+            coins.pusd,
             coins.crv3pool
         ],
         addresses: {
-            swap: '0xCEAF7747579696A2F0bb206a14210e3c9e6fB269',
-            lpToken: '0xCEAF7747579696A2F0bb206a14210e3c9e6fB269',
+            swap: '0x8EE017541375F6Bcd802ba119bdDC94dad6911A1',
+            lpToken: '0x8EE017541375F6Bcd802ba119bdDC94dad6911A1',
+        },
+    },
+
+    {
+        id: 'susd',
+        name: 'susd',
+        coins: [
+            coins.dai,
+            coins.usdc,
+            coins.usdt,
+            coins.SUSD
+        ],
+        addresses: {
+            swap: '0xA5407eAE9Ba41422680e2e00537571bcC53efBfD',
+            lpToken: '0xC25a3A3b969415c80451098fa907EC722572917F',
+        },
+    },
+
+    {
+        id: 'seth',
+        name: 'seth',
+        coins: [
+            coins.eth,
+            coins.seth
+        ],
+        addresses: {
+            swap: '0xc5424b857f758e906013f3555dad202e4bdb4567',
+            lpToken: '0xA3D87FffcE63B53E0d54fAa1cc983B7eB0b74A9c',
+        },
+    },
+
+    {
+        id: 'sbtc',
+        name: 'sbtc',
+        coins: [
+            coins.renBTC,
+            coins.wbtc,
+            coins.sBTC
+        ],
+        addresses: {
+            swap: '0x7fC77b5c7614E1533320Ea6DDc2Eb61fa00A9714',
+            lpToken: '0x075b1bb99792c9E1041bA13afEf80C91a1e70fB3',
         },
     },
 
