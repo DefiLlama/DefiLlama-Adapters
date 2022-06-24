@@ -13,8 +13,8 @@ async function transformKlaytnAddress() {
         "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USDC
       "0x0268dbed3832b87582b1fa508acf5958cbb1cd74":
         "bsc:0xf258f061ae2d68d023ea6e7cceef97962785c6c1", // IJM
-      "0xcee8faf64bb97a73bb51e115aa89c17ffa8dd167":
-        "0xd6dAb4CfF47dF175349e6e7eE2BF7c40Bb8C05A3", // USDT
+      "0xd6dAb4CfF47dF175349e6e7eE2BF7c40Bb8C05A3":
+        "0xdac17f958d2ee523a2206206994597c13d831ec7", // USDT
       "0x168439b5eebe8c83db9eef44a0d76c6f54767ae4":
         "0x6b175474e89094c44da98b954eedeac495271d0f", // pUSD
       "0x4fa62f1f404188ce860c8f0041d6ac3765a72e67":
