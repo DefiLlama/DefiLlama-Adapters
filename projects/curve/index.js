@@ -247,8 +247,8 @@ async function handleUnlistedFxTokens(balances, chain) {
 
         sdk.util.sumSingleBalance(
           balances,
-          "usd-coin",
-          balances[token.address] * rate.result / 10 ** decimals
+          "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          balances[token.address] * rate.result / 10 ** (decimals - 6)
         );
         delete balances[token.address];
         delete balances[`${chain}:${token.address}`];
