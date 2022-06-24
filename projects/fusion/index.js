@@ -1,7 +1,11 @@
 const sdk = require("@defillama/sdk");
 const abi = require("../helper/abis/masterchef.json");
 const { getBlock } = require("../helper/getBlock");
-const { unwrapUniswapLPs, isLP } = require("../helper/unwrapLPs");
+const {
+  unwrapUniswapLPs,
+  unwrapLPsAuto,
+  isLP,
+} = require("../helper/unwrapLPs");
 const { getChainTransform, getFixBalances } = require("../helper/portedTokens");
 const tokenAbi = require("../helper/abis/token.json");
 const token0Abi = require("../helper/abis/token0.json");
@@ -173,20 +177,6 @@ function masterChefExports(
       })
     );
 
-    const stakeBalances = await stakeTvl(timestamp, ethBlock, chainBlocks);
-    Object.keys(stakeBalances).forEach((key) => {
-      sdk.util.sumSingleBalance(
-        balances.staking,
-        transformAddress(key),
-        stakeBalances[key]
-      );
-      sdk.util.sumSingleBalance(
-        balances.tvl,
-        transformAddress(key),
-        stakeBalances[key]
-      );
-    });
-
     const [token0, token1] = await Promise.all([
       sdk.api.abi.multiCall({
         calls: lpPositions.map((p) => ({
@@ -206,17 +196,9 @@ function masterChefExports(
       }),
     ]);
 
-    const pool2LpPositions = [];
     const outsideLpPositions = [];
     lpPositions.forEach((position, idx) => {
-      if (
-        token0.output[idx].output.toLowerCase() === stakingToken ||
-        token1.output[idx].output.toLowerCase() === stakingToken
-      ) {
-        pool2LpPositions.push(position);
-      } else {
-        outsideLpPositions.push(position);
-      }
+      outsideLpPositions.push(position);
     });
 
     await Promise.all([
@@ -229,64 +211,26 @@ function masterChefExports(
       ),
       unwrapUniswapLPs(
         balances.pool2,
-        pool2LpPositions,
+        outsideLpPositions,
         block,
         chain,
         transformAddress
       ),
     ]);
 
-    console.log(balances);
-
-    if (!tokenIsOnCoingecko && pool2LpPositions.length) {
-      const response = (
-        await sdk.api.abi.multiCall({
-          calls: pool2LpPositions.map((p) => ({
-            target: stakingToken,
-            params: [p.token],
-          })),
-          abi: "erc20:balanceOf",
-          block,
-          chain,
-        })
-      ).output;
-      const maxPool2ByToken = response.reduce((max, curr) => {
-        if (BigNumber(curr.output).gt(max.output)) {
-          return curr;
-        }
-        return max;
-      });
-      const poolAddress = maxPool2ByToken.input.params[0].toLowerCase();
-      const poolReserves = await sdk.api.abi.call({
-        block,
-        chain,
-        abi: getReservesAbi,
-        target: poolAddress,
-      });
-      const posToken0 = token0.output.find(
-        (t) => t.input.target.toLowerCase() === poolAddress
-      ).output;
-      const posToken1 = token1.output.find(
-        (t) => t.input.target.toLowerCase() === poolAddress
-      ).output;
-      let price, otherToken;
-      if (posToken0.toLowerCase() === stakingToken) {
-        price = poolReserves.output[1] / poolReserves.output[0];
-        otherToken = transformAddress(posToken1);
-      } else {
-        price = poolReserves.output[0] / poolReserves.output[1];
-        otherToken = transformAddress(posToken0);
-      }
-      const transformedStakingToken = transformAddress(stakingToken);
-      Object.values(balances).forEach((balance) => {
-        Object.entries(balance).forEach(([addr, bal]) => {
-          if (addr.toLowerCase() === transformedStakingToken) {
-            balance[otherToken] = BigNumber(bal).times(price).toFixed(0);
-            delete balance[addr];
-          }
-        });
-      });
-    }
+    const stakeBalances = await stakeTvl(timestamp, ethBlock, chainBlocks);
+    Object.keys(stakeBalances).forEach((key) => {
+      sdk.util.sumSingleBalance(
+        balances.staking,
+        transformAddress(key),
+        stakeBalances[key]
+      );
+      sdk.util.sumSingleBalance(
+        balances.tvl,
+        transformAddress(key),
+        stakeBalances[key]
+      );
+    });
 
     if (["smartbch", "cronos"].includes(chain)) {
       const fixBalances = await getFixBalances(chain);
@@ -314,5 +258,5 @@ function masterChefExports(
 }
 module.exports = {
   methodology: `Counts tokens held in the fusion contracts`,
-  ...masterChefExports(masterchef, "fantom", "", false),
-}; // node test.js projects/furylabsfinance/index.js
+  ...masterChefExports(masterchef, "fantom", STAKEToken, false),
+}; // node test.js projects/fusion/index.js
