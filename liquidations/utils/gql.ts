@@ -1,8 +1,8 @@
-const { request } = require("graphql-request")
+import { request } from "graphql-request"
 
-async function getPagedGql(url, query, itemName){
+export async function getPagedGql(url:string, query:string, itemName:string){
     let lastId = "";
-    let all = []
+    let all = [] as any[]
     let page;
     do {
         page = (await request(url, query, {
@@ -12,8 +12,4 @@ async function getPagedGql(url, query, itemName){
         lastId = page[page.length - 1]?.id
     } while (page.length === 1e3);
     return all
-}
-
-module.exports={
-    getPagedGql
 }

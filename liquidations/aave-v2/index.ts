@@ -1,5 +1,5 @@
-const { gql, request } = require("graphql-request")
-const { getPagedGql } = require("../utils/gql")
+import { gql, request } from "graphql-request"
+import { getPagedGql } from "../utils/gql"
 
 const query = gql`
 query users($lastId: String) {
@@ -43,7 +43,7 @@ const liqs = async () => {
     const badDebt = []
     const positions = users.map(user => {
         let totalDebt = 0, totalCollateral = 0;
-        const debts = user.reserves.map(reserve => {
+        const debts = (user.reserves as any[]).map(reserve => {
             const decimals = 10 ** reserve.reserve.decimals
             const price = (Number(reserve.reserve.price.priceInEth) / (1e18)) * ethPrice
             const liqThreshold = Number(reserve.reserve.reserveLiquidationThreshold) / 1e4
@@ -95,4 +95,3 @@ module.exports = {
         liquidations: liqs
     }
 }
-liqs()
