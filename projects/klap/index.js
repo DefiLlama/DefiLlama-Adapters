@@ -41,7 +41,7 @@ function lending(borrowed) {
     const transform = await transformKlaytnAddress();
     return aaveChainTvl(
       "klaytn",
-      "0x78b6ADDE60A9181C1889913D31906bbF5C3795dD",
+      "0x969E4A05c2F3F3029048e7943274eC2E762497AB",
       transform,
       undefined,
       borrowed
