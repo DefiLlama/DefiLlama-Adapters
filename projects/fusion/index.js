@@ -303,7 +303,7 @@ function masterChefExports(
   }
 
   return {
-    methodology: "TVL includes all farms in MasterChef contract",
+    methodology: "TVL includes all farms and stakes in contracts",
     [chain]: {
       staking: getTvlPromise("staking"),
       pool2: getTvlPromise("pool2"),
@@ -313,6 +313,6 @@ function masterChefExports(
   };
 }
 module.exports = {
-  methodology: `Counts tokens held in the masterchef contract(0x23e2DA1657C2b552185d7AF485d6f4825f68200a)`,
+  methodology: `Counts tokens held in the fusion contracts`,
   ...masterChefExports(masterchef, "fantom", "", false),
 }; // node test.js projects/furylabsfinance/index.js
