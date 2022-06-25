@@ -1,6 +1,7 @@
 const SUNNY_POOLS = require("./helper/sunny-pools.json");
 
 const { getMultipleAccountBuffers } = require("./helper/solana");
+const { sleep } = require("./helper/utils");
 
 function genericSunnySaberPoolReader(sunnyPoolOffset) {
   return async (pool) => {
@@ -52,6 +53,7 @@ async function tvl() {
   // Run these serially to avoid rate limiting issues
   for (const pool of SUNNY_POOLS) {
     const poolTVL = await tvlReaders[pool.tvlReader](pool);
+    await sleep(1200);
 
     for (const [tokenId, amount] of Object.entries(poolTVL)) {
       if (!tvlResult[tokenId]) {

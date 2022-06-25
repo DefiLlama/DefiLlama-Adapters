@@ -282,9 +282,8 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
   log_coreAssetPrices = [], log_minTokenValue = 1e6,
   withMetaData = false,
 }) {
-  return async (ts, _block, chainBlocks) => {
+  return async (ts, _block, { [chain]: block }) => {
     let pairAddresses;
-    const block = chainBlocks[chain]
     const pairLength = (await sdk.api.abi.call({ target: factory, abi: factoryAbi.allPairsLength, chain, block })).output
     if (pairLength === null)
       throw new Error("allPairsLength() failed")
@@ -461,7 +460,7 @@ function masterchefExports({ chain, poolInfoABI, coreAssets, }) {
   }
 
   return {
-    [chain] : {
+    [chain]: {
       tvl, pool2, staking
     }
   }

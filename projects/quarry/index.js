@@ -125,7 +125,7 @@ async function tvl() {
 
     // sleep to avoid rate limiting issues
     utils.log('done', ++i)
-    await utils.sleep(200);
+    await utils.sleep(1200);
   }
 
   return tvlResult;
