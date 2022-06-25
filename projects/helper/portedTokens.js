@@ -954,7 +954,6 @@ function fixKlaytnBalances(balances) {
       decimals: 18
     } // KLAYSWAP
   };
-  console.log("fixed it here")
   return fixBalances(balances, mapping);
 }
 
