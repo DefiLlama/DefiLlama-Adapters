@@ -36,7 +36,6 @@ const coingeckoIds = {
     'BNB': 'binance-coin',
     'AVAX': 'avalanche',
     'LUNA': 'terra-luna',
-    'LUNA': 'terra-luna',
     'GMT': 'stepn',
 }
 
