@@ -945,11 +945,16 @@ function fixKlaytnBalances(balances) {
       coingeckoId: "klay-token",
       decimals: 18
     }, // Wrapped KLAY
+    "0xe4f05a66ec68b54a58b17c22107b02e0232cc817": {
+      coingeckoId: "klay-token",
+      decimals: 18
+    }, // Wrapped KLAY
     "0xc6a2ad8cc6e4a7e08fc37cc5954be07d499e7654": {
       coingeckoId: "klayswap-protocol",
       decimals: 18
-    } // Wrapped KLAY
+    } // KLAYSWAP
   };
+  console.log("fixed it here")
   return fixBalances(balances, mapping);
 }
 
