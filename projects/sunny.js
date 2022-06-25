@@ -2,10 +2,6 @@ const SUNNY_POOLS = require("./helper/sunny-pools.json");
 
 const { getMultipleAccountBuffers } = require("./helper/solana");
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 function genericSunnySaberPoolReader(sunnyPoolOffset) {
   return async (pool) => {
     const accountData = await getMultipleAccountBuffers(pool.relevantAccounts);
@@ -56,8 +52,6 @@ async function tvl() {
   // Run these serially to avoid rate limiting issues
   for (const pool of SUNNY_POOLS) {
     const poolTVL = await tvlReaders[pool.tvlReader](pool);
-    console.log(pool.poolName, poolTVL);
-    await sleep(1200);
 
     for (const [tokenId, amount] of Object.entries(poolTVL)) {
       if (!tvlResult[tokenId]) {
@@ -76,5 +70,5 @@ module.exports = {
   timetravel: false,
   methodology:
     'TVL counts LP token deposits made to Sunny Aggregator. CoinGecko is used to find the price of tokens in USD, only the original "SOL" token price is used for all existing variations of the token.',
-  tvl,
+  solana: { tvl },
 };

@@ -3,10 +3,6 @@ const SUNNY_POOLS = require("../helper/sunny-pools.json");
 
 const { getMultipleAccountBuffers, getMultipleAccountsRaw } = require("../helper/solana");
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 const readTVL = async ({
   tokenA,
   tokenB,
@@ -89,8 +85,6 @@ async function tvl() {
       poolMint,
       tokenAccounts,
     });
-    console.log(sunnyPool.poolName, poolTVL);
-    await sleep(1200);
 
     for (const [tokenId, amount] of Object.entries(poolTVL)) {
       if (!tvlResult[tokenId]) {
@@ -108,5 +102,5 @@ module.exports = {
   timetravel: false,
   methodology:
     'TVL counts LP token deposits made to Arrow Protocol. CoinGecko is used to find the price of tokens in USD, only the original "SOL" token price is used for all existing variations of the token.',
-  tvl,
+  solana: { tvl },
 };

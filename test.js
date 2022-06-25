@@ -12,6 +12,7 @@ const sdk = require("@defillama/sdk");
 const whitelistedExportKeys = require('./projects/helper/whitelistedExportKeys.json')
 const chainList = require('./projects/helper/chains.json')
 const handleError = require('./utils/handleError')
+const { diplayUnknownTable } = require('./projects/helper/utils')
 
 async function getLatestBlockRetry(chain) {
   for (let i = 0; i < 5; i++) {
@@ -64,6 +65,7 @@ async function getTvl(
       getCoingeckoLock,
       maxCoingeckoRetries
     );
+    await diplayUnknownTable({ tvlResults, storedKey, tvlBalances, })
     usdTvls[storedKey] = tvlResults.usdTvl;
     tokensBalances[storedKey] = tvlResults.tokenBalances;
     usdTokenBalances[storedKey] = tvlResults.usdTokenBalances;

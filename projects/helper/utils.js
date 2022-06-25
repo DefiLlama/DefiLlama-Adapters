@@ -3,6 +3,7 @@ const retry = require('async-retry')
 const axios = require("axios");
 const sdk = require('@defillama/sdk')
 const http = require('./http')
+const erc20 = require('./abis/erc20.json')
 
 async function returnBalance(token, address, block, chain) {
   const { output: decimals } = await sdk.api.erc20.decimals(token, chain)
@@ -166,6 +167,80 @@ async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+
+function stripTokenHeader(token) {
+  token = token.toLowerCase();
+  return token.indexOf(":") > -1 ? token.split(":")[1] : token;
+}
+
+async function diplayUnknownTable({ tvlResults = {}, tvlBalances = {}, storedKey = 'ethereum', log = false, tableLabel = 'Unrecognized tokens' }) {
+  if (!DEBUG_MODE && !log) return;
+  const balances = {}
+  Object.entries(tvlResults.tokenBalances).forEach(([label, balance]) => {
+    if (!label.startsWith('UNKNOWN')) return;
+    const token = label.split('(')[1].replace(')', '')
+    balances[token] = +(+tvlBalances[token] / 1e18).toFixed(0)
+    if (balances[token] === 0) delete balances[token]
+  })
+
+  return debugBalances({ balances, chain: storedKey, log, tableLabel })
+}
+
+async function debugBalances({ balances = {}, chain, log = false, tableLabel = '' }) {
+  if (!DEBUG_MODE && !log) return;
+  if (!Object.keys(balances).length) return;
+
+  const labelMapping = {}
+  const tokens = []
+  const ethTokens = []
+  Object.keys(balances).forEach(label => {
+    const token = stripTokenHeader(label)
+    if (!token.startsWith('0x')) return;
+    if (!label.startsWith(chain))
+      ethTokens.push(token)
+    else
+      tokens.push(token)
+    labelMapping[label] = token
+  })
+
+  const { output: symbols } = await sdk.api.abi.multiCall({
+    abi: 'erc20:symbol',
+    calls: tokens.map(i => ({ target: i })),
+    chain,
+  })
+
+  const { output: name } = await sdk.api.abi.multiCall({
+    abi: erc20.name,
+    calls: tokens.map(i => ({ target: i })),
+    chain,
+  })
+
+  const { output: symbolsETH } = await sdk.api.abi.multiCall({
+    abi: 'erc20:symbol',
+    calls: ethTokens.map(i => ({ target: i })),
+  })
+
+  const { output: nameETH } = await sdk.api.abi.multiCall({
+    abi: erc20.name,
+    calls: ethTokens.map(i => ({ target: i })),
+  })
+
+  let symbolMapping = symbols.reduce((a, i) => ({ ...a, [i.input.target]: i.output }), {})
+  let nameMapping = name.reduce((a, i) => ({ ...a, [i.input.target]: i.output }), {})
+  symbolMapping = symbolsETH.reduce((a, i) => ({ ...a, [i.input.target]: i.output }), symbolMapping)
+  nameMapping = nameETH.reduce((a, i) => ({ ...a, [i.input.target]: i.output }), nameMapping)
+  const logObj = []
+  Object.entries(balances).forEach(([label, balance]) => {
+    let token = labelMapping[label]
+    let name = token && nameMapping[token] || '-'
+    let symbol = token && symbolMapping[token] || '-'
+    logObj.push({ name, symbol, balance, label })
+  })
+
+  console.log('Balance table for [%s] %s', chain, tableLabel)
+  console.table(logObj)
+}
+
 module.exports = {
   DEBUG_MODE,
   log,
@@ -183,4 +258,7 @@ module.exports = {
   getUniqueAddresses,
   sliceIntoChunks,
   sleep,
+  debugBalances,
+  stripTokenHeader,
+  diplayUnknownTable,
 }
