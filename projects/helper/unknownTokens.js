@@ -284,7 +284,7 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
 }) {
   return async (ts, _block, chainBlocks) => {
     let pairAddresses;
-    const block = await getBlock(ts, chain, chainBlocks, allowUndefinedBlock)
+    const block = chainBlocks[chain]
     const pairLength = (await sdk.api.abi.call({ target: factory, abi: factoryAbi.allPairsLength, chain, block })).output
     if (pairLength === null)
       throw new Error("allPairsLength() failed")
