@@ -557,9 +557,7 @@ async function transformMoonbeamAddress() {
     '0x1DC78Acda13a8BC4408B207c9E48CDBc096D95e0' : '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', // wtbc
     '0xc234A67a4F840E61adE794be47de455361b52413' : '0x6b175474e89094c44da98b954eedeac495271d0f', // dai
     '0x1d4C2a246311bB9f827F4C768e277FF5787B7D7E' : 'moonriver:0x98878b06940ae243284ca214f92bb71a2b032b8a', // movr
-    '0x1d4C2a246311bB9f827F4C768e277FF5787B7D7E' : '"moonbeam:0xacc15dc74880c9944775448304b263d191c6077f', // GLMR -> WGLMR
-    "0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c":  "",
-    "0x0000000000000000000000000000000000000000": "moonriver:0x98878B06940aE243284CA214f92Bb71a2b032B8A"
+    '0x0000000000000000000000000000000000000000' : '"moonbeam:0xacc15dc74880c9944775448304b263d191c6077f', // GLMR -> WGLMR
   }
 
   return transformChainAddress(mapping, "moonbeam", { skipUnmapped: false });
@@ -932,7 +930,7 @@ async function transformKlaytnAddress() {
       "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", // WBTC
     "0x34d21b1e550d73cee41151c77f3c73359527a396":
       "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // WETH
-    "0x0000000000000000000000000000000000000000": "klay-token" // Klaytn
+    "0x0000000000000000000000000000000000000000": "0xd7a4d10070a4f7bc2a015e78244ea137398c3b74" // Klaytn
   };
 
   return addr => {
@@ -947,10 +945,14 @@ function fixKlaytnBalances(balances) {
       coingeckoId: "klay-token",
       decimals: 18
     }, // Wrapped KLAY
+    "0xe4f05a66ec68b54a58b17c22107b02e0232cc817": {
+      coingeckoId: "klay-token",
+      decimals: 18
+    }, // Wrapped KLAY
     "0xc6a2ad8cc6e4a7e08fc37cc5954be07d499e7654": {
       coingeckoId: "klayswap-protocol",
       decimals: 18
-    } // Wrapped KLAY
+    } // KLAYSWAP
   };
   return fixBalances(balances, mapping);
 }
