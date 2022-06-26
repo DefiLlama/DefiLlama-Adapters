@@ -3,7 +3,6 @@ const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { getFixBalances } = require("../helper/portedTokens");
 const { getTokenPrices } = require("../helper/unknownTokens")
 const { stakingUnknownPricedLP } = require("../helper/staking")
-const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const wkavaAddress = "0xc86c7C0eFbd6A49B35E8714C5f59D99De09A225b";
 const rshareTokenAddress = "0x5547F680Ad0104273d0c007073B87f98dEF199c6";
@@ -56,23 +55,31 @@ async function calcPool2(genesisPool, rewardPool, lps, block, chain) {
   return balances;
 }
 
-async function calcKava(genesisPool, rewardPool, lps, block, chain) {
+async function calcKava(rewardPool, block, chain) {
   let balances = {};
 
-  const { updateBalances, } = await getTokenPrices({
-    block, chain, coreAssets: [wkavaAddress], allLps: true, lps,
-  })
+  const wkavaRewardBalance = (
+    await sdk.api.abi.call({
+      abi: "erc20:balanceOf",
+      chain: chain,
+      target: wkavaAddress,
+      params: rewardPool,
+      block: block,
+    })
+  ).output;
 
-  const toa = [...lps, wkavaAddress].map(token => [genesisPool, rewardPool].map(o => [token, o])).flat()
-  await sumTokens2({ balances, tokensAndOwners: toa, block, chain, })
+  await sdk.util.sumSingleBalance(
+    balances,
+    `kava:${wkavaAddress}`,
+    wkavaRewardBalance
+  );
 
-  await updateBalances(balances, { resolveLP: true  });
   (await getFixBalances(chain))(balances);
   return balances;
 }
 
 async function KavaSingle(timestamp, block, chainBlocks) {
-  return calcKava(genesisPoolAddress, rshareRewardPoolAddress, Kavalps, chainBlocks.kava, "kava");
+  return calcKava(rshareRewardPoolAddress, chainBlocks.kava, "kava");
 }
 
 async function KavaPool2(timestamp, block, chainBlocks) {
