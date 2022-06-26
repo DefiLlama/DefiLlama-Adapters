@@ -11,13 +11,11 @@ const transformAddress = (addr) => {
   return slug;
 };
 async function tvl(timestamp, ethBlock, chainBlocks) {
-  const balances = {};
-
   // Retrieve contract balances using the blockstacks hiro REST API
   const url = `${ALEX_API}/stats/tvl`;
   const alexResponse = await retry(async () => await axios.get(url));
-  const total_tvl = alexResponse.tvl;
-  return total_tvl;
+  const balances = { tvl: alexResponse.tvl };
+  return balances;
 }
 
 module.exports = {
