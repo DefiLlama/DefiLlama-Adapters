@@ -1,5 +1,9 @@
 const { gql } = require("graphql-request");
 
+const tvlExclusion = ["arbitrum"];
+const treasuryExclusion = [];
+const stakingExclusion = ["arbitrum"];
+
 const addresses = {
   boba: {
     treasury: "0x559dBda9Eb1E02c0235E245D9B175eb8DcC08398",
@@ -11,6 +15,10 @@ const addresses = {
     USDT: "0x5DE1677344D3Cb0D7D465c10b72A8f60699C062d",
     DAI: "0xf74195Bb8a5cf652411867c5C2C5b8C2a402be35",
     FRAX_KYO: "0xde7C350fA84B7fe792bfAA241303aeF04283c9d2",
+  },
+  arbitrum: {
+    treasury: "0x7736DdFbf43eF2c4751F1E1D8f93EE15a5387DD9",
+    USDC: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
   },
 };
 
@@ -28,6 +36,9 @@ const POOL_TOKENS = gql`
 `;
 
 module.exports = {
+  tvlExclusion,
+  treasuryExclusion,
+  stakingExclusion,
   addresses,
   POOL_TOKENS,
 };

@@ -1,11 +1,14 @@
-const sdk = require('@defillama/sdk');
+const sdk = require("@defillama/sdk");
 const constants = require("./constants");
 const { requery } = require("../helper/requery");
 const { chainJoinExports, chainTypeExports } = require("./utils");
 const { getBlock } = require("../helper/getBlock");
 const { staking } = require("../helper/staking");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
-const { transformBobaAddress } = require("../helper/portedTokens");
+const {
+  transformBobaAddress,
+  transformArbitrumAddress,
+} = require("../helper/portedTokens");
 const { request } = require("graphql-request");
 
 const DATA = {
@@ -29,7 +32,22 @@ const DATA = {
         staking: {
           address: constants.addresses.boba.staking,
           token: constants.addresses.boba.KYO,
-        }
+        },
+      },
+    ];
+  },
+  arbitrum: async () => {
+    const arbitrumTransform = await transformArbitrumAddress();
+
+    return [
+      arbitrumTransform,
+      {
+        treasury: {
+          addresss: [constants.addresses.arbitrum.treasury],
+          tokens: [
+            [constants.addresses.arbitrum.USDC, false], // USDC(Arbitrum)
+          ],
+        },
       },
     ];
   },
@@ -37,6 +55,8 @@ const DATA = {
 
 const chainTVL = (chain) => {
   return async (timestamp, _ethBlock, chainBlocks) => {
+    if (!DATA[chain] || constants.tvlExclusion.includes(chain)) return {};
+
     const balances = {};
     const block = await getBlock(timestamp, chain, chainBlocks);
 
@@ -75,6 +95,8 @@ const chainTVL = (chain) => {
 };
 const chainTreasury = (chain) => {
   return async (timestamp, _ethBlock, chainBlocks) => {
+    if (!DATA[chain] || constants.treasuryExclusion.includes(chain)) return {};
+
     const balances = {};
     const block = await getBlock(timestamp, chain, chainBlocks);
 
@@ -94,6 +116,8 @@ const chainTreasury = (chain) => {
 };
 const chainStaking = (chain) => {
   return async (timestamp, ethBlock, chainBlocks) => {
+    if (!DATA[chain] || constants.stakingExclusion.includes(chain)) return {};
+
     const [, data] = await DATA[chain]();
 
     return staking(data.staking.address, data.staking.token, chain)(
@@ -110,7 +134,7 @@ module.exports = chainJoinExports(
     (chains) => chainTypeExports("treasury", chainTreasury, chains),
     (chains) => chainTypeExports("staking", chainStaking, chains),
   ],
-  ["boba"]
+  ["boba", "arbitrum"]
 );
 
 module.exports = {
