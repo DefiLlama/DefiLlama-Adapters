@@ -1,8 +1,8 @@
 const { gql } = require("graphql-request");
 
-const tvlExclusion = ["arbitrum"];
+const tvlExclusion = ["arbitrum", "avax"];
 const treasuryExclusion = [];
-const stakingExclusion = ["arbitrum"];
+const stakingExclusion = ["arbitrum", "avax"];
 
 const addresses = {
   boba: {
@@ -19,6 +19,10 @@ const addresses = {
   arbitrum: {
     treasury: "0x7736DdFbf43eF2c4751F1E1D8f93EE15a5387DD9",
     USDC: "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8",
+  },
+  avalanche: {
+    treasury: "0x898125D67b9c8aD1029E42A2B16EF4CbB08c330f",
+    USDC: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
   },
 };
 

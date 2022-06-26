@@ -8,6 +8,7 @@ const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const {
   transformBobaAddress,
   transformArbitrumAddress,
+  transformAvaxAddress,
 } = require("../helper/portedTokens");
 const { request } = require("graphql-request");
 
@@ -46,6 +47,21 @@ const DATA = {
           addresss: [constants.addresses.arbitrum.treasury],
           tokens: [
             [constants.addresses.arbitrum.USDC, false], // USDC(Arbitrum)
+          ],
+        },
+      },
+    ];
+  },
+  avax: async () => {
+    const avalancheTransform = await transformAvaxAddress();
+
+    return [
+      avalancheTransform,
+      {
+        treasury: {
+          addresss: [constants.addresses.avalanche.treasury],
+          tokens: [
+            [constants.addresses.avalanche.USDC, false], // USDC(Avalanche)
           ],
         },
       },
@@ -134,7 +150,7 @@ module.exports = chainJoinExports(
     (chains) => chainTypeExports("treasury", chainTreasury, chains),
     (chains) => chainTypeExports("staking", chainStaking, chains),
   ],
-  ["boba", "arbitrum"]
+  ["boba", "arbitrum", "avax"]
 );
 
 module.exports = {
