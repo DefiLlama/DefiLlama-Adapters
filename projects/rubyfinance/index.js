@@ -51,6 +51,18 @@ async function calcPool2(genesisPool, rewardPool, lps, block, chain) {
     (addr) => `${chain}:${addr}`
   );
 
+  await updateBalances(balances, { resolveLP: true  });
+  (await getFixBalances(chain))(balances);
+  return balances;
+}
+
+async function calcKava(genesisPool, rewardPool, lps, block, chain) {
+  let balances = {};
+
+  const { updateBalances, } = await getTokenPrices({
+    block, chain, coreAssets: [wkavaAddress], allLps: true, lps,
+  })
+
   const toa = [...lps, wkavaAddress].map(token => [genesisPool, rewardPool].map(o => [token, o])).flat()
   await sumTokens2({ balances, tokensAndOwners: toa, block, chain, })
 
@@ -59,15 +71,19 @@ async function calcPool2(genesisPool, rewardPool, lps, block, chain) {
   return balances;
 }
 
+async function KavaSingle(timestamp, block, chainBlocks) {
+  return calcKava(genesisPoolAddress, rshareRewardPoolAddress, Kavalps, chainBlocks.kava, "kava");
+}
+
 async function KavaPool2(timestamp, block, chainBlocks) {
   return calcPool2(genesisPoolAddress, rshareRewardPoolAddress, Kavalps, chainBlocks.kava, "kava");
 }
 
 module.exports = {
   methodology:
-    "Pool2 deposits consist of RUBY/KAVA and RSHARE/KAVA LP and WKAVA tokens deposits while the staking TVL consists of the RSHARE tokens locked within the Boardroom contract.",
+    "Pool2 deposits consist of RUBY/USDC, RUBY/KAVA, RSHARE/KAVA and RUBY/RSHARE LP deposits while the staking TVL consists of the RSHARE tokens locked within the Boardroom contract.",
   kava: {
-    tvl: async () => ({}),
+    tvl: KavaSingle,
     pool2: KavaPool2,
     staking: stakingUnknownPricedLP(boardroomAddress, rshareTokenAddress, "kava", rshareKavaLp),
   },
