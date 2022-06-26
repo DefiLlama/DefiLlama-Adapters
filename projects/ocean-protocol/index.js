@@ -68,7 +68,7 @@ function chainTvl(chain) {
     while (skip >= 0) {
       const query = (
         await retry(async () => await graphQLClient.request(
-          graphqlQuery, {skip, block, first: PAGE_SIZE}
+          graphqlQuery, {skip, block: block - 200, first: PAGE_SIZE}
         ))
       );
       let pools = query.pools;

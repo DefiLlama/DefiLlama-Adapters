@@ -1,1 +1,0 @@
-{"getAllMarkets":{"constant":true,"inputs":[],"name":"getAllMarkets","outputs":[{"internalType":"contract EToken[]","name":"","type":"address[]"}],"payable":false,"stateMutability":"view","type":"function"}}
