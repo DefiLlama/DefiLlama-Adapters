@@ -281,6 +281,7 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
   minLPRatio = 1,
   log_coreAssetPrices = [], log_minTokenValue = 1e6,
   withMetaData = false,
+  skipPair = [],
 }) {
   return async (ts, _block, { [chain]: block }) => {
     let pairAddresses;
@@ -290,8 +291,9 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
 
     if (DEBUG_MODE) console.log('No. of pairs: ', pairLength)
 
-    const pairNums = Array.from(Array(Number(pairLength)).keys())
-    let pairs = (await sdk.api.abi.multiCall({ abi: factoryAbi.allPairs, chain, calls: pairNums.map(num => ({ target: factory, params: [num] })), block, requery: true })).output
+    let pairNums = Array.from(Array(Number(pairLength)).keys())
+    if (skipPair.length) pairNums = pairNums.filter(i => !skipPair.includes(i))
+    let pairs = (await sdk.api.abi.multiCall({ abi: factoryAbi.allPairs, chain, calls: pairNums.map(num => ({ target: factory, params: [num] })), block })).output
     await requery(pairs, chain, block, factoryAbi.allPairs);
 
     pairAddresses = pairs.map(result => result.output.toLowerCase())
