@@ -1,49 +1,48 @@
-const retry = require('async-retry')
-const axios = require("axios");
-const BigNumber = require("bignumber.js");
-
-async function fetchPolygon() {
-  let response = await retry(async bail => await axios.get('https://izumi.finance/api/v1/farm/stat/chaintvl/?chainId=137'))
-  let tvl = new BigNumber(response.data.data.tvl).toFixed(2);
-  return tvl;
-}
-
-async function fetchArbitrum() {
-  let response = await retry(async bail => await axios.get('https://izumi.finance/api/v1/farm/stat/chaintvl/?chainId=42161'))
-  let tvl = new BigNumber(response.data.data.tvl).toFixed(2);
-  return tvl;
-}
-
-async function fetchEthereum() {
-  let response = await retry(async bail => await axios.get('https://izumi.finance/api/v1/farm/stat/chaintvl/?chainId=1'))
-  let tvl = new BigNumber(response.data.data.tvl).toFixed(2);
-  return tvl;
-}
-
-async function fetch() {
-  let response = await retry(async bail => await axios.get('https://izumi.finance/api/v1/farm/stat/tvl'))
-  let tvl = new BigNumber(response.data.data.tvl).toFixed(2);
-  return tvl;
-}
-
-async function pool2() {
-  let response = await retry(async bail => await axios.get('https://izumi.finance/api/v1/farm/stat/pool2tvl'))
-  let tvl = new BigNumber(response.data.data.tvl).toFixed(2);
-  return tvl;
-}
+const { sumTokens2 } = require('../helper/unwrapLPs')
+const { getBlock } = require('../helper/getBlock')
+let bscPools = require('./bscPools.json')
+let abi = require('./abi')
+const sdk = require('@defillama/sdk')
+const chain = 'bsc'
 
 module.exports = {
-    ethereum: {
-        fetch: fetchEthereum,
-    },
-    polygon: {
-        fetch: fetchPolygon,
-    },
-    arbitrum: {
-        fetch: fetchArbitrum,
-    },
-    pool2: {
-        fetch: pool2
-    },
-    fetch,
+  bsc: {
+    tvl: async (ts, _b, chainBlocks) => {
+      const toa = []
+      const block = await getBlock(ts, chain, chainBlocks, false)
+
+      // const logs = (await sdk.api.util
+      //   .getLogs({
+      //     keys: [],
+      //     toBlock: block,
+      //     chain,
+      //     target: '0xd7de110bd452aab96608ac3750c3730a17993de0',
+      //     fromBlock: 17681022,
+      //     topic: 'NewPool(address,address,uint24,uint24,address)',
+      //   })).output;
+      // bscPools = logs.map(log => `0x${log.data.substr(-40)}`.toLowerCase())
+
+      const calls = bscPools.map(i => ({ target: i }))
+      const { output: tokenY } = await sdk.api.abi.multiCall({
+        abi: abi.tokenY,
+        calls,
+        chain, block,
+      })
+      const { output: tokenX } = await sdk.api.abi.multiCall({
+        abi: abi.tokenX,
+        calls,
+        chain, block,
+      })
+
+      tokenX.map(({ output, }, i) => toa.push([output, bscPools[i]]))
+      tokenY.map(({ output, }, i) => toa.push([output, bscPools[i]]))
+
+
+
+      return sumTokens2({
+        tokensAndOwners: toa,
+        chain, block
+      })
+    }
+  },
 }
