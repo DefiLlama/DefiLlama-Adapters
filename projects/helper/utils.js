@@ -76,11 +76,13 @@ const blacklisted_LPS = [
   '0xb3dc4accfe37bd8b3c2744e9e687d252c9661bc7',
   '0xf146190e4d3a2b9abe8e16636118805c628b94fe',
   '0xCC8Fa225D80b9c7D42F96e9570156c65D6cAAa25',
+  '0xaee4164c1ee46ed0bbc34790f1a3d1fc87796668',
 ].map(i => i.toLowerCase())
 
 function isLP(symbol, token, chain) {
   if (token && blacklisted_LPS.includes(token.toLowerCase())) return false
   if (chain === 'bsc' && ['OLP', 'DLP', 'MLP', 'LP'].includes(symbol)) return false
+  if (chain === 'bsc' && ['WLP'].includes(symbol)) return true
   if (chain === 'metis' && ['NLP'].includes(symbol)) return true // Netswap LP Token
   if (!symbol) return false
   let label

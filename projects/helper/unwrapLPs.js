@@ -827,6 +827,7 @@ async function unwrapLPsAuto({ balances, block, chain = "ethereum", transformAdd
         sdk.util.sumSingleBalance(balances, transformAddress(token), balance);
     })
     await _unwrapUniswapLPs(balances, lpBalances)
+    return balances
   }
 
   async function _unwrapUniswapLPs(balances, lpPositions) {
