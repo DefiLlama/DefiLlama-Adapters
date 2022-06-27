@@ -4,6 +4,7 @@ const abi = require('./abis/compound.json');
 const { getBlock } = require('./getBlock');
 const { unwrapUniswapLPs } = require('./unwrapLPs');
 const { requery } = require("./requery");
+const { getUniqueAddresses } = require("./utils");
 const { transformMetisAddress, getChainTransform, getFixBalances, } = require('./portedTokens');
 const { usdtAddress } = require('./balances');
 const agoraAbi = require("./../agora/abi.json");
@@ -103,7 +104,8 @@ async function unwrapPuffTokens(balances, lpPositions, block) {
 
 let marketsCache = {}
 
-function getCompoundV2Tvl(comptroller, chain = "ethereum", transformAdress, cether = "0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5", cetheEquivalent = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", borrowed = false, checkForLPTokens = undefined) {
+function getCompoundV2Tvl(comptroller, chain = "ethereum", transformAdress, cether = "0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5", cetheEquivalent = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", borrowed = false, checkForLPTokens = undefined, { blacklistedTokens = []} = {}) {
+  blacklistedTokens = blacklistedTokens.map(i => i.toLowerCase())
   return async (timestamp, ethBlock, chainBlocks) => {
     if (!transformAdress) transformAdress = await getChainTransform(chain)
     const block = await getBlock(timestamp, chain, chainBlocks, true);
@@ -132,14 +134,16 @@ function getCompoundV2Tvl(comptroller, chain = "ethereum", transformAdress, ceth
 
     const lpPositions = []
     markets.forEach((market, idx) => {
+      const underlying = market.underlying.toLowerCase()
+      if (blacklistedTokens.includes(underlying)) return;
       let getCash = v2Locked.output.find((result) => result.input.target === market.cToken);
       if (checkForLPTokens !== undefined && checkForLPTokens(symbols.output[idx].output)) {
         lpPositions.push({
-          token: market.underlying,
+          token: underlying,
           balance: getCash.output
         })
       } else {
-        sdk.util.sumSingleBalance(balances, transformAdress(market.underlying), getCash.output)
+        sdk.util.sumSingleBalance(balances, transformAdress(underlying), getCash.output)
       }
     });
     if (["harmony", 'oasis', 'bsc'].includes(chain)) {
@@ -244,13 +248,13 @@ function getCompoundUsdTvl(comptroller, chain, cether, borrowed, abis = {
   }
 }
 
-function compoundExports(comptroller, chain, cether, cetheEquivalent, transformAdressRaw, checkForLPTokens) {
+function compoundExports(comptroller, chain, cether, cetheEquivalent, transformAdressRaw, checkForLPTokens, { blacklistedTokens = [] } = {}) {
   if (cether !== undefined && cetheEquivalent === undefined) {
     throw new Error("You need to define the underlying for native cAsset")
   }
   return {
-    tvl: getCompoundV2Tvl(comptroller, chain, transformAdressRaw, cether, cetheEquivalent, false, checkForLPTokens),
-    borrowed: getCompoundV2Tvl(comptroller, chain, transformAdressRaw, cether, cetheEquivalent, true, checkForLPTokens)
+    tvl: getCompoundV2Tvl(comptroller, chain, transformAdressRaw, cether, cetheEquivalent, false, checkForLPTokens, { blacklistedTokens }),
+    borrowed: getCompoundV2Tvl(comptroller, chain, transformAdressRaw, cether, cetheEquivalent, true, checkForLPTokens, { blacklistedTokens })
   }
 }
 
