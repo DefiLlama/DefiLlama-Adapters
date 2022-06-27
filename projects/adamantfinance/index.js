@@ -174,8 +174,8 @@ async function valueInGauge(chain, block, GAUGE, HOLDER, transformAddress = (a) 
 }
 
 async function crvPoolTvl(chain, block, COIN_TARGET, transformAddress = (a) => a, SUPPLY_TARGET = COIN_TARGET) {
-  balances = {};
-  maincoins = [];
+  const balances = {};
+  const maincoins = [];
 
   // find coins in curve pool
   for (var c = 0; c < 10; c++) {
@@ -207,29 +207,11 @@ async function crvPoolTvl(chain, block, COIN_TARGET, transformAddress = (a) => a
   ).output.map((val) => new BigNumber(val.output));
 
   // add up total pool tvl
-  for (j = 0; j < maincoins.length; j++) {
+  for (let j = 0; j < maincoins.length; j++) {
     sdk.util.sumSingleBalance(balances, transformAddress(maincoins[j]), underlying_balances[j].toFixed(0));
   }
 
   return balances;
-}
-
-function join(obj1, obj2) {
-  // joins 2 balances objects
-  var a = {};
-
-  for (var i in obj1) {
-    a[i] = obj1[i];
-  }
-
-  for (var j in obj2) {
-    if (j in a) {
-      a[j] = BigNumber(a[j]) + BigNumber(obj2[j]);
-    } else {
-      a[j] = obj2[j];
-    }
-  }
-  return a;
 }
 
 async function curveTvl(balances, chain, block, curveVaults, transformAddress = (a) => a) {
@@ -322,7 +304,7 @@ async function curveTvl(balances, chain, block, curveVaults, transformAddress = 
         .dividedBy(strat_supplies[i])
     );
 
-    for (j = 0; j < maincoins.length; j++) {
+    for (let j = 0; j < maincoins.length; j++) {
       sdk.util.sumSingleBalance(
         balances,
         await transformAddress(maincoins[j]),
@@ -341,11 +323,11 @@ async function curveTvl(balances, chain, block, curveVaults, transformAddress = 
       }
 
       // lastly, break down any 3crv / 2crv
-      if (`${chain}:${crv3Address}` in balances) {
+      // if (`${chain}:${crv3Address}` in balances) {
         //strat_balances.push(new BigNumber(balances[`${chain}:${crv3Address}`]));
-      } else {
+      // } else {
         //return balances;
-      }
+      // }
     }
   }
 

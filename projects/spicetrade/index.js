@@ -20,7 +20,7 @@ function getTokens(chain, type) {
 const tvl = (chain, type) => {
     return async (_t, _e, { [chain]: block}) => {
         let holders = []
-        for (key in contracts[chain].tokenHolders) {
+        for (let key in contracts[chain].tokenHolders) {
             holders.push(...Object.values(contracts[chain].tokenHolders[key]));
         };
 

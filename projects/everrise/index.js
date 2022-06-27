@@ -6,6 +6,7 @@ const { getChainTransform } = require("../helper/portedTokens");
 
 const zeroAddress = '0x0000000000000000000000000000000000000000'
 const BRIDGE_CONTROLLER = '0x0Dd4A86077dC53D5e4eAE6332CB3C5576Da51281';
+const RESERVES = '0x78b939518f51b6da10afb3c3238Dd04014e00057';
 const TOKEN = '0xC17c30e98541188614dF99239cABD40280810cA3';
 const STAKE_HOLDING_API = 'https://app.everrise.com/bridge/api/v1/stats'
 const chainConfig = {
@@ -17,6 +18,11 @@ const chainConfig = {
         pool: "0x7250f7e97a4338d2bd72abc4b010d7a8477dc1f9",
       }, // RISE-ETH
     ],
+    reserveTokens: [
+      "0xdAC17F958D2ee523a2206206994597C13D831ec7", // USDT
+      "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USDC
+      TOKEN,
+    ],
   },
   bsc: {
     chainId: '56',
@@ -25,6 +31,12 @@ const chainConfig = {
         owner: "0x89dd305ffbd8e684c77758288c48cdf4f4abe0f4", // EverOwn DAO Locked LP
         pool: "0x10dA269F5808f934326D3Dd1E04B7E7Ca78bb804",
       }, // RISE-BNB
+    ],
+    reserveTokens: [
+      "0x55d398326f99059fF775485246999027B3197955", // USDT
+      "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d", // USDC
+      "0xe9e7cea3dedca5984780bafc599bd69add087d56", // BUSD
+      TOKEN,
     ],
   },
   polygon: {
@@ -35,6 +47,11 @@ const chainConfig = {
         pool: "0xf3c62dbbfec92a2e73d676d62ebec06a6bc224e2",
       }, // RISE-MATIC
     ],
+    reserveTokens: [
+      "0xc2132D05D31c914a87C6611C10748AEb04B58e8F", // USDT
+      "0x2791bca1f2de4661ed88a30c99a7a9449aa84174", // USDC
+      TOKEN,
+    ],
   },
   avax: {
     chainId: '43114',
@@ -44,14 +61,23 @@ const chainConfig = {
         pool: "0x5472e98d22b0fb7ec5c3e360788b8700419370b5",
       }, // RISE-AVAX
     ],
+    reserveTokens: [
+      "0xc2132D05D31c914a87C6611C10748AEb04B58e8F", // USDT
+      "0x2791bca1f2de4661ed88a30c99a7a9449aa84174", // USDC
+      TOKEN,
+    ],
   },
   fantom: {
     chainId: '250',
     LPs: [
       {
-        owner: "0x59503632ab8a093c266509c797c957e063f4d32b",
+        owner: "0x59503632ab8a093c266509c797c957e063f4d32b", // EverOwn DAO Locked LP
         pool: "0xde62a6cdd8d5a3988495317cffac9f3fed299383",
       }, // RISE-FTM
+    ],
+    reserveTokens: [
+      "0x04068da6c83afcfa0e13ba15a6696662335d5b75", // USDC
+      TOKEN,
     ],
   },
 }
@@ -81,12 +107,31 @@ Object.keys(chainConfig).forEach(chain => {
     const transformAddress = await getChainTransform(chain)
 
     const results = (await sdk.api.eth.getBalances({
-      targets: [TOKEN, BRIDGE_CONTROLLER],
+      targets: [TOKEN, BRIDGE_CONTROLLER, RESERVES],
       chain, block
     }))
 
     for (const c of results.output)
       sdk.util.sumSingleBalance(balances, transformAddress(zeroAddress), c.balance)
+
+    // Get reserve token balances
+    let migrateBalances = (
+      await sdk.api.abi.multiCall({
+        calls: chainConfig[chain].reserveTokens.map((token) => ({
+          target: token,
+          params: RESERVES,
+        })),
+        abi: "erc20:balanceOf",
+        block, chain,
+      })
+    ).output;
+
+    migrateBalances.forEach((i) => {
+      // Only include positive balances
+      if (i.output > 0)
+        balances[i.input.target] = i.output
+    });
+
     return balances
   }
 

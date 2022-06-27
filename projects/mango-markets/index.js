@@ -32,10 +32,11 @@ const coingeckoIds = {
     'RAY': 'raydium',
     'COPE': 'cope',
     'FTT': 'ftx-token',
-    'MSOL': 'marinade-staked-sol',
+    'MSOL': 'msol',
     'BNB': 'binance-coin',
     'AVAX': 'avalanche',
-    'LUNA': 'terra-luna'
+    'LUNA': 'terra-luna',
+    'GMT': 'stepn',
 }
 
 

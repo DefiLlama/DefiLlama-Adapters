@@ -24,7 +24,7 @@ async function getTotalSupply(pools, timestamp, block, chainBlocks) {
             }
         })
     })).output.map((result, i) => {
-        for (p of pools) {
+        for (let p of pools) {
             if (p.virtualBalance == result.input.target) {
                 p.totalSupply = (new BN(result.output));
                 p.totalSupplyString = p.totalSupply.toString();
