@@ -1,8 +1,6 @@
 const sdk = require("@defillama/sdk");
 const utils = require("../helper/utils");
 
-const erc20 = require("../helper/abis/erc20.json");
-
 // --- Grab from here the pools available atm ---
 const DOPPLE_API = "https://api-v3.dopple.finance/multi-chain";
 const CHAINS = {
@@ -77,7 +75,7 @@ const fantomTvl = async (timestamp, ethBlock, chainBlocks) => {
           chain: CHAINS[chainId],
           target: asset,
           params: pool.swapAddress,
-          abi: erc20["balanceOf"],
+          abi: 'erc20:balanceOf',
         })
       ).output;
 
@@ -100,7 +98,7 @@ const harmonyTvl = async (timestamp, ethBlock, chainBlocks) => {
           chain: CHAINS[chainId],
           target: asset,
           params: pool.swapAddress,
-          abi: erc20["balanceOf"],
+          abi: 'erc20:balanceOf',
         })
       ).output;
 
@@ -124,7 +122,7 @@ const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
           chain: CHAINS[chainId],
           target: asset,
           params: pool.swapAddress,
-          abi: erc20["balanceOf"],
+          abi: 'erc20:balanceOf',
         })
       ).output;
 
