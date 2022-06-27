@@ -1,3 +1,12 @@
+**NOTE**
+
+1. The protocol is usually listed within 24 hours of merging the PR
+2. Please fill the form below if the PR is for listing a new protocol
+3. If you want to update the protocol info you entered in the form below, you can find your listing in this file: https://github.com/DefiLlama/defillama-server/blob/master/defi/src/protocols/data2.ts, you can  edit it there and put up a PR
+4. Do not edit/push `package-lock.json` file as part of your changes, we use lockfileVersion 2, and most use v1 and using that messes up our CI
+
+---
+
 ##### Twitter Link:
 
 
