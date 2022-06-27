@@ -43,8 +43,5 @@
       "nth-check": "2.0.1"
     }
   },
-  "description": "",
-  "devDependencies": {
-    "ts-node": "^10.8.1"
-  }
+  "description": ""
 }
