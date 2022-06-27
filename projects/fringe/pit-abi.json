@@ -1,5 +1,31 @@
 {
-  "getPair": {
+  "getProjectTokensLength": {
+    "inputs": [],
+    "name": "projectTokensLength",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "getLendingTokensLength": {
+    "inputs": [],
+    "name": "lendingTokensLength",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "getProjectTokenByIndex": {
     "inputs": [
       {
         "internalType": "uint256",
@@ -7,7 +33,7 @@
         "type": "uint256"
       }
     ],
-    "name": "allPairs",
+    "name": "projectTokens",
     "outputs": [
       {
         "internalType": "address",
@@ -18,22 +44,15 @@
     "stateMutability": "view",
     "type": "function"
   },
-  "getAllPairsLength": {
-    "inputs": [],
-    "name": "allPairsLength",
-    "outputs": [
+  "getLendingTokenByIndex": {
+    "inputs": [
       {
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
       }
     ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "getToken0": {
-    "inputs": [],
-    "name": "token0",
+    "name": "lendingTokens",
     "outputs": [
       {
         "internalType": "address",
@@ -44,13 +63,29 @@
     "stateMutability": "view",
     "type": "function"
   },
-  "getToken1": {
-    "inputs": [],
-    "name": "token1",
-    "outputs": [
+  "getLendingTokenInfo": {
+    "inputs": [
       {
         "internalType": "address",
         "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "lendingTokenInfo",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "isListed",
+        "type": "bool"
+      },
+      {
+        "internalType": "bool",
+        "name": "isPaused",
+        "type": "bool"
+      },
+      {
+        "internalType": "contract BLendingToken",
+        "name": "bLendingToken",
         "type": "address"
       }
     ],
