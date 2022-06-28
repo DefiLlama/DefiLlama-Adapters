@@ -1,30 +1,13 @@
 const axios = require("axios");
+const { queryContract, } = require('../helper/terra')
 
 const contracts = {
   terra2_hub:
     "terra10788fkzah89xrdm27zkj5yvhj9x3494lxawzm5qq3vvxcqz2yzaqyd3enk",
 };
 
-const queryPhoenix = async function (url, block) {
-  let endpoint = `${
-    process.env["TERRA_RPC"] ?? "https://phoenix-lcd.terra.dev"
-  }${url}`;
-
-  let headers = undefined;
-  if (block !== undefined) {
-    headers = {
-      "x-cosmos-block-height": block,
-    };
-  }
-  return (await axios.get(endpoint, { headers })).data.data;
-};
-
 async function terra2Tvl() {
-  const queryStr = `{"state": {}}`;
-  const base64Str = Buffer.from(queryStr).toString("base64");
-  const res = await queryPhoenix(
-    `/cosmwasm/wasm/v1/contract/${contracts.terra2_hub}/smart/${base64Str}`
-  );
+  const res = await queryContract({ isTerra2: true, contract: contracts.terra2_hub, data: { state: { }}})
 
   return {
     "terra-luna-2": +res.tvl_uluna / 1e6,
