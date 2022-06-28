@@ -18,10 +18,10 @@ const coreTokenWhitelist = {
   ],
   kava: [
     '0xc86c7c0efbd6a49b35e8714c5f59d99de09a225b',  // WKAVA
-    '0xfa9343c3897324496a05fc75abed6bac29f8a40f',  // usdc
+    '0xfA9343C3897324496A05fC75abeD6bAC29f8A40f',  // usdc
     '0xb44a9b6905af7c801311e8f4e76932ee959c663c',  // usdt
     '0x765277EebeCA2e31912C9946eAe1021199B39C61',  // dai
-    '0x9591865d9d4bbd3b5fa8a8e2400fd530d1a16191' //WETH
+    '0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D' //WETH
   ],
     polygon: [
     '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',  // wmatic
