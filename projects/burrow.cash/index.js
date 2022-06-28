@@ -26,4 +26,4 @@ module.exports = {
   misrepresentedTokens: true,
   timetravel: false,
   methodology: 'Summed up all the tokens deposited in their main lending contract'
-};
+}
