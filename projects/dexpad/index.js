@@ -40,9 +40,10 @@ module.exports = {
    stable balance, adjusted to reflect locked pair's value. 
    Balances and merged across multiple 
    locker and staking contracts to return sum TVL per chain`,
-  cronos: {
-    tvl: tvl(cronosContractData)
-  },
+   //Temp removing cronos chain as verification is failing
+  // cronos: {
+  //   tvl: tvl(cronosContractData)
+  // },
   polygon: {
     tvl: tvl(polygonContractData)
   },
