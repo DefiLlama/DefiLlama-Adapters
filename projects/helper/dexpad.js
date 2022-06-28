@@ -255,15 +255,14 @@ async function getLPsTrackedValue(
       token: key
     });
   });
-  const chainTransform = await getChainTransform(chain)
   await unwrapUniswapLPs(
     balances,
     lpBalances,
     block,
     chain,
-    addr => chain == 'kava'?chainTransform(addr):`${chain}:${addr}`
+    addr => `${chain}:${addr}`
   );
-  let formattedWhitelist = trackedTokens.map(addr => chain == 'kava' ? chainTransform(addr) : `${chain}:${addr}`);
+  let formattedWhitelist = trackedTokens.map(addr => `${chain}:${addr}`);
 
   console.log("before", balances)
   balances = Object.keys(balances)
@@ -273,14 +272,12 @@ async function getLPsTrackedValue(
       return obj;
     }, {});
     console.log("after",balances)
+    if(chain === 'kava'){
+      return (await getFixBalances(chain))(balances)
+    }
   return balances;
 }
 
-async function getKavaAddress(chainedAddress, chain){
-  console.log("getKava",chainedAddress, chain)
-  let transformAddress = await getChainTransform(chain)
-  return transformAddress(chainedAddress.split(":")[1])
-}
 
 module.exports = {
   getDexPadLpsCoreValue,

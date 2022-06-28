@@ -974,16 +974,6 @@ function transformVelasAddress() {
     return map[addr.toLowerCase()] || `velas:${addr}`;
   };
 }
-async function transformKavaAddress() {
-  console.log('in transform kava')
-  const mapping = {
-    "0xfa9343c3897324496a05fc75abed6bac29f8a40f":
-      "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USDC
-    "0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d":
-      "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2" //WETH
-  };
-  return addr => mapping[addr.toLowerCase()] || `kava:${addr.toLowerCase()}`;
-}
 async function transformCronosAddress() {
   const mapping = {
     "0x0000000000000000000000000000000000000000":
@@ -1544,7 +1534,7 @@ const kavaFixMapping = {
     coingeckoId: "bitcoin",
     decimals: 8
   },
-  "0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d": {
+  "0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D": {
     coingeckoId: "ethereum",
     decimals: 18
   },
@@ -1727,7 +1717,6 @@ const chainTransforms = {
   cronos: transformCronosAddress,
   evmos: transformEvmosAddress,
   fantom: transformFantomAddress,
-  kava: transformKavaAddress,
   bsc: transformBscAddress,
   boba: transformBobaAddress,
   polygon: transformPolygonAddress,

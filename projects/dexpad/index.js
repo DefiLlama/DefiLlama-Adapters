@@ -16,7 +16,6 @@ function tvl(args){
    
     for (let i = 0; i < args.length; i++) {
       let block = await getBlock(timestamp, args[i].chain, chainBlocks)
-      const fixBalances = await getFixBalances(args[i].chain)
       let balances = await getDexPadLpsCoreValue(
         block, 
         args[i].chain, 
@@ -28,11 +27,6 @@ function tvl(args){
         args[i].isMixedTokenContract, //use when locker mixes LPs with other tokens
         args[i].factory
         );
-      console.log("index", args[i].chain,balances)
-      if(args[i] === 'kava'){
-        balances = fixBalances(balances)
-      }
-      console.log('updated balance', balances)
       for (const [token, balance] of Object.entries(balances)) {
         if (!totalBalances[token]) totalBalances[token] = '0'
           totalBalances[token] = BigNumber(totalBalances[token]).plus(BigNumber(balance)).toFixed(0) 
