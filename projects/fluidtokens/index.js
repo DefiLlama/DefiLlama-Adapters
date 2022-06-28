@@ -7,7 +7,7 @@ const { BlockFrostAPI } = require("@blockfrost/blockfrost-js");
 const smartContractAddress =
   "addr1wxzqzlncct5g0686c07lyuq3q3j2a0t8l88uwdznw99k9asz6z0hq";
 
-const getTVL = async () => {
+const tvl = async () => {
   const blockFrost = new BlockFrostAPI({
     projectId: "mainnet9mqP0lhGpRfqcUnVjOFaTSK67Z9UdZMM",
     isTestnet: false,
@@ -42,6 +42,6 @@ const getTVL = async () => {
 module.exports = {
   timetravel: false,
   cardano: {
-    getTVL,
+    tvl,
   },
 };
