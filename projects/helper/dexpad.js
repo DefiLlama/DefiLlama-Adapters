@@ -2,11 +2,11 @@ const BigNumber = require("bignumber.js");
 const sdk = require("@defillama/sdk");
 
 const { unwrapUniswapLPs } = require("./unwrapLPs");
-
 const symbol = require("./abis/symbol.json");
 const getPairFactory = require("./abis/getPair.json");
 
 const { isLP } = require("./utils");
+const { getChainTransform, getFixBalances } = require("./portedTokens");
 
 async function getDexPadLpsCoreValue(
   block,
@@ -183,13 +183,14 @@ async function getTokensAndLPsTrackedValue(
       token: key
     });
   });
+  const chainTransform = await getChainTransform(chain)
 
   await unwrapUniswapLPs(
     balances,
     lpBalances,
     block,
     chain,
-    addr => `${chain}:${addr}`
+    addr => chainTransform(addr)
   );
 
   let formattedWhitelist = trackedTokens.map(address => `${chain}:${address}`);
@@ -254,23 +255,31 @@ async function getLPsTrackedValue(
       token: key
     });
   });
-
+  const chainTransform = await getChainTransform(chain)
   await unwrapUniswapLPs(
     balances,
     lpBalances,
     block,
     chain,
-    addr => `${chain}:${addr}`
+    addr => chain == 'kava'?chainTransform(addr):`${chain}:${addr}`
   );
+  let formattedWhitelist = trackedTokens.map(addr => chain == 'kava' ? chainTransform(addr) : `${chain}:${addr}`);
 
-  let formattedWhitelist = trackedTokens.map(address => `${chain}:${address}`);
+  console.log("before", balances)
   balances = Object.keys(balances)
     .filter(balance => formattedWhitelist.includes(balance))
     .reduce((obj, balance) => {
       obj[balance] = balances[balance];
       return obj;
     }, {});
+    console.log("after",balances)
   return balances;
+}
+
+async function getKavaAddress(chainedAddress, chain){
+  console.log("getKava",chainedAddress, chain)
+  let transformAddress = await getChainTransform(chain)
+  return transformAddress(chainedAddress.split(":")[1])
 }
 
 module.exports = {

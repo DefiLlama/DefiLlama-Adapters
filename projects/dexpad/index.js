@@ -3,15 +3,20 @@ const {polygonContractData,
 const BigNumber = require("bignumber.js");
 
 const { getBlock } = require('../helper/getBlock');
-
+const {
+  transformPolygonAddress,
+  getChainTransform,
+  getFixBalances,
+} = require("../helper/portedTokens");
 const { getDexPadLpsCoreValue } = require("../helper/dexpad")
 
 function tvl(args){
   return async (timestamp, ethBlock, chainBlocks) => {
     let totalBalances = {}
+   
     for (let i = 0; i < args.length; i++) {
       let block = await getBlock(timestamp, args[i].chain, chainBlocks)
-      
+      const fixBalances = await getFixBalances(args[i].chain)
       let balances = await getDexPadLpsCoreValue(
         block, 
         args[i].chain, 
@@ -23,7 +28,11 @@ function tvl(args){
         args[i].isMixedTokenContract, //use when locker mixes LPs with other tokens
         args[i].factory
         );
-
+      console.log("index", args[i].chain,balances)
+      if(args[i] === 'kava'){
+        balances = fixBalances(balances)
+      }
+      console.log('updated balance', balances)
       for (const [token, balance] of Object.entries(balances)) {
         if (!totalBalances[token]) totalBalances[token] = '0'
           totalBalances[token] = BigNumber(totalBalances[token]).plus(BigNumber(balance)).toFixed(0) 
@@ -32,7 +41,6 @@ function tvl(args){
     return totalBalances
   }
 }
-
 module.exports = {
   timetravel: true,
   methodology: 
@@ -44,9 +52,9 @@ module.exports = {
   // cronos: {
   //   tvl: tvl(cronosContractData)
   // },
-  polygon: {
-    tvl: tvl(polygonContractData)
-  },
+  // polygon: {
+  //   tvl: tvl(polygonContractData)
+  // },
   avax: {
     tvl: tvl(avalancheContractData)
   },

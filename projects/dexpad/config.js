@@ -4,12 +4,6 @@ const { getNumLockedTokens, getLockedTokenAtIndex} = require('./abis')
 
 
 const coreTokenWhitelist = {
-  evmos: [
-    '0x5c7f8a570d578ed84e63fdfa7b1ee72deae1ae23',  // WCRO
-    '0xc21223249ca28397b4b6541dffaecc539bff0c59',  // usdc
-    '0x66e428c3f67a68878562e79a0234c1f83c208770',  // usdt
-    '0xf2001b145b43032aaf5ee2884e456ccd805f677d',  // dai
-  ],
   cronos: [
     '0x5c7f8a570d578ed84e63fdfa7b1ee72deae1ae23',  // WCRO
     '0xc21223249ca28397b4b6541dffaecc539bff0c59',  // usdc
@@ -18,10 +12,10 @@ const coreTokenWhitelist = {
   ],
   kava: [
     '0xc86c7c0efbd6a49b35e8714c5f59d99de09a225b',  // WKAVA
-    '0xfA9343C3897324496A05fC75abeD6bAC29f8A40f',  // usdc
+    '0xfa9343c3897324496a05fc75abed6bac29f8a40f',  // usdc
     '0xb44a9b6905af7c801311e8f4e76932ee959c663c',  // usdt
-    '0x765277EebeCA2e31912C9946eAe1021199B39C61',  // dai
-    '0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D' //WETH
+    '0x765277eebeca2e31912c9946eae1021199b39c61',  // dai
+    '0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d' //WETH
   ],
     polygon: [
     '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',  // wmatic
