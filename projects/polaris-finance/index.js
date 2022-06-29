@@ -51,6 +51,10 @@ const pool2Total = async (_timestamp, _ethBlock, chainBlocks) => {
 };
 
 module.exports = {
+  timetravel: true,
+  misrepresentedTokens: false,
+  methodology:
+    "Pool2 TVL accounts for all LPs staked in Dawn, Staking TVL accounts for all tokens staked in Sunrise.",
   aurora: {
     tvl: async () => ({}),
     pool2: pool2Total,
