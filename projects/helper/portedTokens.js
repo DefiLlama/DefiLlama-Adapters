@@ -1165,7 +1165,7 @@ function transformNovachainAddress() {
       return "fantom:0x69D17C151EF62421ec338a0c92ca1c1202A427EC";
     } else if (addr === "0x1f5396f254ee25377a5c1b9c6bff5f44e9294fff")
       return "fantom:0x04068da6c83afcfa0e13ba15a6696662335d5b75";
-    else return `nova:${addr}`;
+    else return addr;
   };
 }
 
