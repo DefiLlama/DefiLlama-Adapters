@@ -1,8 +1,6 @@
-const sdk = require("@defillama/sdk");
-const { vaults, getTVLData, getVaultL1Funds } = require("../helper/brahmafi");
-const { BigNumber } = require("ethers");
-
+const { vaults, getTVLData, getVaultL1Funds } = require("./helper");
 const MAX_BPS = 1e3;
+const sdk = require('@defillama/sdk')
 
 const tvl = async (_, block) => {
   const { pendingDeposits, tokens, totalSupplies } = await getTVLData(block);
@@ -14,20 +12,14 @@ const tvl = async (_, block) => {
     const totalSupply = totalSupplies[idx].output;
 
     const totalFunds = await getVaultL1Funds(address, wantToken, block);
-    const sharePrice = totalFunds.mul(MAX_BPS).div(totalSupply);
+    const sharePrice = totalFunds * MAX_BPS / totalSupply;
 
-    const value = BigNumber.from(totalSupply)
-      .mul(sharePrice)
-      .div(MAX_BPS)
-      .add(pendingDeposits[idx].output);
-    const tokenBalance = balances[wantToken];
-
-    balances[wantToken] = !!tokenBalance
-      ? BigNumber.from(tokenBalance).add(value).toString()
-      : value.toString();
+    const value = totalSupply * sharePrice / MAX_BPS + +pendingDeposits[idx].output
+    console.log(value, value.toFixed(0))
+    sdk.util.sumSingleBalance(balances, wantToken, value.toFixed(0))
   }
 
-  console.log(balances);
+  return balances
 };
 
 module.exports = {
