@@ -19,6 +19,7 @@ async function covalentGetTokens(address, chain = 'ethereum') {
   let chainId
   switch(chain) {
     case 'ethereum': chainId = 1; break;
+    case 'bsc': chainId = 56; break;
     default: throw new Error('Missing chain to chain id mapping!!!')
   }
   const {

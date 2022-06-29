@@ -1,9 +1,9 @@
 const axios = require('axios');
 const abis = require('./abis.json')
 const sdk = require('@defillama/sdk')
-const { Connection } = require('@solana/web3.js');
 const sol = require('./sol-helpers');
 const { getBlock } = require('../helper/getBlock');
+const { getConnection } = require('../helper/solana');
 
 const ethContract = '0xae7ab96520de3a18e5e111b5eaab095312d7fe84';
 
@@ -59,7 +59,7 @@ async function ksm(timestamp, ethBlock, chainBlocks) {
 }
 
 async function solana(timestamp, ethBlock, chainBlocks) {
-  const connection = new Connection('https://solana-api.projectserum.com/');
+  const connection = getConnection()
   const validatorsBalance = await sol.retrieveValidatorsBalance(connection)
   const reserveAccountBalance = await sol.retrieveReserveAccountBalance(connection)
 

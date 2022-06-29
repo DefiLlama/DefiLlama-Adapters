@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const utils = require("../helper/utils");
-const erc20 = require("../helper/abis/erc20.json");
 const abi = require("./abi.json");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { transformPolygonAddress } = require("../helper/portedTokens");
@@ -37,7 +36,7 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
 
   const balance = (
     await sdk.api.abi.multiCall({
-      abi: erc20.balanceOf,
+      abi: 'erc20:balanceOf',
       calls: lpTokens.map((lp) => ({
         target: lp,
         params: MasterAugur,
@@ -98,7 +97,7 @@ const treasuryTvl = async (timestamp, ethBlock, chainBlocks) => {
 
   const balanceTreasury = (
     await sdk.api.abi.multiCall({
-      abi: erc20.balanceOf,
+      abi: 'erc20:balanceOf',
       calls: tokens_polygon.map((tp) => ({
         target: tp,
         params: DeveloperTeamWallet,

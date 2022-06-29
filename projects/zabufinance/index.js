@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const erc20 = require("../helper/abis/erc20.json");
 const abi = require("./abi.json");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { transformAvaxAddress } = require("../helper/portedTokens");
@@ -33,7 +32,7 @@ const avaxTvl = async (timestamp, ethBlock, chainBlocks) => {
 
     const lpOrToken_bal = (
       await sdk.api.abi.call({
-        abi: erc20.balanceOf,
+        abi: 'erc20:balanceOf',
         target: lpOrTokens,
         params: FARMING_CONTRACT_ADDRESS,
         chain: "avax",

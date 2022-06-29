@@ -132,7 +132,7 @@ async function transformAvaxAddress() {
     if (
       srcToken !== undefined &&
       srcToken["Ethereum Token Decimals"] ===
-        srcToken["Avalanche Token Decimals"]
+      srcToken["Avalanche Token Decimals"]
     ) {
       return srcToken["Ethereum Token Address"];
     }
@@ -549,15 +549,15 @@ async function transformMoonriverAddress() {
 
 async function transformMoonbeamAddress() {
   const mapping = {
-    '0x322E86852e492a7Ee17f28a78c663da38FB33bfb' : '0x853d955aCEf822Db058eb8505911ED77F175b99e', // frax
-    '0x8f552a71EFE5eeFc207Bf75485b356A0b3f01eC9' : '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // usdc
-    '0xdfa46478f9e5ea86d57387849598dbfb2e964b02' : 'polygon:0xa3fa99a148fa48d14ed51d610c367c61876997f1', // mai
-    '0x8e70cD5B4Ff3f62659049e74b6649c6603A0E594' : '0xdac17f958d2ee523a2206206994597c13d831ec7', // usdt
-    '0x30D2a9F5FDf90ACe8c17952cbb4eE48a55D916A7' : '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', // eth
-    '0x1DC78Acda13a8BC4408B207c9E48CDBc096D95e0' : '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', // wtbc
-    '0xc234A67a4F840E61adE794be47de455361b52413' : '0x6b175474e89094c44da98b954eedeac495271d0f', // dai
-    '0x1d4C2a246311bB9f827F4C768e277FF5787B7D7E' : 'moonriver:0x98878b06940ae243284ca214f92bb71a2b032b8a', // movr
-    '0x0000000000000000000000000000000000000000' : '"moonbeam:0xacc15dc74880c9944775448304b263d191c6077f', // GLMR -> WGLMR
+    '0x322E86852e492a7Ee17f28a78c663da38FB33bfb': '0x853d955aCEf822Db058eb8505911ED77F175b99e', // frax
+    '0x8f552a71EFE5eeFc207Bf75485b356A0b3f01eC9': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // usdc
+    '0xdfa46478f9e5ea86d57387849598dbfb2e964b02': 'polygon:0xa3fa99a148fa48d14ed51d610c367c61876997f1', // mai
+    '0x8e70cD5B4Ff3f62659049e74b6649c6603A0E594': '0xdac17f958d2ee523a2206206994597c13d831ec7', // usdt
+    '0x30D2a9F5FDf90ACe8c17952cbb4eE48a55D916A7': '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', // eth
+    '0x1DC78Acda13a8BC4408B207c9E48CDBc096D95e0': '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', // wtbc
+    '0xc234A67a4F840E61adE794be47de455361b52413': '0x6b175474e89094c44da98b954eedeac495271d0f', // dai
+    '0x1d4C2a246311bB9f827F4C768e277FF5787B7D7E': 'moonriver:0x98878b06940ae243284ca214f92bb71a2b032b8a', // movr
+    '0x0000000000000000000000000000000000000000': '"moonbeam:0xacc15dc74880c9944775448304b263d191c6077f', // GLMR -> WGLMR
   }
 
   return transformChainAddress(mapping, "moonbeam", { skipUnmapped: false });
@@ -732,7 +732,7 @@ function fixBscBalances(balances) {
       balances,
       "anchorust",
       Number(balances["bsc:0x8b04E56A8cd5f4D465b784ccf564899F30Aaf88C"]) /
-        10 ** 6
+      10 ** 6
     );
   }
 }
@@ -930,7 +930,7 @@ async function transformKlaytnAddress() {
       "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", // WBTC
     "0x34d21b1e550d73cee41151c77f3c73359527a396":
       "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // WETH
-    "0x0000000000000000000000000000000000000000": "klay-token" // Klaytn
+    "0x0000000000000000000000000000000000000000": "0xd7a4d10070a4f7bc2a015e78244ea137398c3b74" // Klaytn
   };
 
   return addr => {
@@ -945,10 +945,14 @@ function fixKlaytnBalances(balances) {
       coingeckoId: "klay-token",
       decimals: 18
     }, // Wrapped KLAY
+    "0xe4f05a66ec68b54a58b17c22107b02e0232cc817": {
+      coingeckoId: "klay-token",
+      decimals: 18
+    }, // Wrapped KLAY
     "0xc6a2ad8cc6e4a7e08fc37cc5954be07d499e7654": {
       coingeckoId: "klayswap-protocol",
       decimals: 18
-    } // Wrapped KLAY
+    } // KLAYSWAP
   };
   return fixBalances(balances, mapping);
 }
@@ -958,6 +962,16 @@ function transformVelasAddress() {
     const map = {
       "0x85219708c49aa701871ad330a94ea0f41dff24ca":
         "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // WETH
+      "0xe41c4324dCbD2926481101f8580D13930AFf8A75":
+        "velas:0xc579D1f3CF86749E05CD06f7ADe17856c2CE3126", // WVLX
+      "0x6ab0B8C1a35F9F4Ce107cCBd05049CB1Dbd99Ec5":
+        "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0", // MATIC
+      "0x639A647fbe20b6c8ac19E48E2de44ea792c62c5C":
+        "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", // WBTC
+      "0x2B8e9cD44C9e09D936149549a8d207c918ecB5C4":
+        "bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c", // BNB
+      "0xc9b3aA6E91d70f4ca0988D643Ca2bB93851F3de4":
+        "fantom:0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83", // FTM
       "0xe2c120f188ebd5389f71cf4d9c16d05b62a58993":
         "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USDC
       "0x01445c31581c354b7338ac35693ab2001b50b9ae":
@@ -967,6 +981,7 @@ function transformVelasAddress() {
       "0x300a8be53b4b5557f48620d578e7461e3b927dd0":
         "0xf56842af3b56fd72d17cb103f92d027bba912e89" // BAMBOO
     };
+    normalizeMapping(map)
     return map[addr.toLowerCase()] || `velas:${addr}`;
   };
 }
@@ -1150,8 +1165,12 @@ async function transformDfkAddress() {
 async function transformAuroraAddress() {
   const mapping = {
     "0xda2585430fef327ad8ee44af8f1f989a2a91a3d2":
-      "0x853d955aCEf822Db058eb8505911ED77F175b99e" // FRAX
+      "0x853d955aCEf822Db058eb8505911ED77F175b99e", // FRAX
+    "0x07379565cd8b0cae7c60dc78e7f601b34af2a21c":
+      "0x6b175474e89094c44da98b954eedeac495271d0f", //  nUSD -> DAI
   };
+
+  normalizeMapping(mapping)
   return addr => mapping[addr.toLowerCase()] || `aurora:${addr.toLowerCase()}`;
 }
 

@@ -6,9 +6,9 @@ const factory = {
 }
 
 module.exports = {
-    timetravel: true,
+    timetravel: false,
     misrepresentedTokens: true,
     methodology: "Liquidity on the DEX",
     terra: { tvl: getFactoryTvl(factory.classic) },
-    terra2: { tvl: getFactoryTvl(factory.terra2) }
+    terra2: { tvl: getFactoryTvl(factory.terra2, true) }
 }
