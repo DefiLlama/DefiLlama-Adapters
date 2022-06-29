@@ -773,6 +773,9 @@ async function transformKccAddress() {
     if (compareAddresses(addr, "0xc9baa8cfdde8e328787e29b4b078abf2dadc2055")) {
       return "0x6b175474e89094c44da98b954eedeac495271d0f";
     }
+    if (compareAddresses(addr, "0xfa93c12cd345c658bc4644d1d4e1b9615952258c")) {
+      return "bsc:0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c";
+    }
     if (compareAddresses(addr, "0x218c3c3d49d0e7b37aff0d8bb079de36ae61a4c0")) {
       return "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599";
     }
