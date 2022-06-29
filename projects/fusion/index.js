@@ -10,12 +10,12 @@ const { getChainTransform, getFixBalances } = require("../helper/portedTokens");
 const tokenAbi = require("../helper/abis/token.json");
 const token0Abi = require("../helper/abis/token0.json");
 const token1Abi = require("../helper/abis/token1.json");
-const getReservesAbi = require("../helper/abis/getReserves.json");
 const BigNumber = require("bignumber.js");
 const masterchef = "0x00501Ed66d67B1127809E54395F064e256b75B23";
 const callStake = "0xe9749a786c77A89fd45dAd3A6Ad1022eEa897F97";
 const bondStake = "0xaaBaB0FB0840DFfFc93dbeed364FB46b1ffD92EE";
 const STAKEToken = "0x69D17C151EF62421ec338a0c92ca1c1202A427EC";
+const NovaSTAKEToken = "0x657a66332A65B535Da6C5d67b8cD1D410c161a08";
 
 async function getPoolInfo(
   masterChef,
@@ -83,7 +83,7 @@ function masterChefExports(
   const contracts = [callStake, bondStake];
 
   const tokens = [
-    STAKEToken, // fantom SNT token
+    stakingToken, // fantom SNT token
   ];
   async function stakeTvl(timestamp, block, chainBlocks) {
     const balances = {};
@@ -101,10 +101,10 @@ function masterChefExports(
 
     const balanceOfResult = (
       await sdk.api.abi.multiCall({
-        block: chainBlocks.fantom,
+        block: chainBlocks[chain],
         calls: balanceOfCalls,
         abi: "erc20:balanceOf",
-        chain: "fantom",
+        chain: chain,
       })
     ).output;
 
@@ -231,11 +231,6 @@ function masterChefExports(
         stakeBalances[key]
       );
     });
-
-    if (["smartbch", "cronos"].includes(chain)) {
-      const fixBalances = await getFixBalances(chain);
-      Object.values(balances).map(fixBalances);
-    }
     return balances;
   }
 
@@ -258,5 +253,6 @@ function masterChefExports(
 }
 module.exports = {
   methodology: `Counts tokens held in the fusion contracts`,
+  ...masterChefExports(masterchef, "nova", NovaSTAKEToken, false),
   ...masterChefExports(masterchef, "fantom", STAKEToken, false),
 }; // node test.js projects/fusion/index.js
