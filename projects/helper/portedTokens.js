@@ -1165,8 +1165,12 @@ async function transformDfkAddress() {
 async function transformAuroraAddress() {
   const mapping = {
     "0xda2585430fef327ad8ee44af8f1f989a2a91a3d2":
-      "0x853d955aCEf822Db058eb8505911ED77F175b99e" // FRAX
+      "0x853d955aCEf822Db058eb8505911ED77F175b99e", // FRAX
+    "0x07379565cd8b0cae7c60dc78e7f601b34af2a21c":
+      "0x6b175474e89094c44da98b954eedeac495271d0f", //  nUSD -> DAI
   };
+
+  normalizeMapping(mapping)
   return addr => mapping[addr.toLowerCase()] || `aurora:${addr.toLowerCase()}`;
 }
 
