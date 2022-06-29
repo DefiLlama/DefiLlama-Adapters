@@ -83,7 +83,8 @@ function isLP(symbol, token, chain) {
   if (token && blacklisted_LPS.includes(token.toLowerCase())) return false
   if (chain === 'bsc' && ['OLP', 'DLP', 'MLP', 'LP'].includes(symbol)) return false
   if (chain === 'bsc' && ['WLP'].includes(symbol)) return true
-  if (chain === 'metis' && ['NLP'].includes(symbol)) return true // Netswap LP Token
+  if (chain === 'metis' && ['NLP', 'ALP'].includes(symbol)) return true // Netswap/Agora LP Token
+  if (chain === 'metis' && /vAMM/.test(symbol)) return true // volatile AMM (HERMES?)
   if (!symbol) return false
   let label
 

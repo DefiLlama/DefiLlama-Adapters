@@ -788,44 +788,29 @@ async function transformKccAddress() {
 
 function transformMetisAddress() {
   const map = {
-    "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000":
-      "0x9e32b13ce7f2e80a01932b42553652e053d6ed8e",
-    "0xbb06dca3ae6887fabf931640f67cab3e3a16f4dc":
-      "0xdac17f958d2ee523a2206206994597c13d831ec7",
-    "0x420000000000000000000000000000000000000a":
-      "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-    "0x5801d0e1c7d977d78e4890880b8e579eb4943276":
-      "bsc:0x5801d0e1c7d977d78e4890880b8e579eb4943276",
-    "0xea32a96608495e54156ae48931a7c20f0dcc1a21":
-      "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-    "0x2692be44a6e38b698731fddf417d060f0d20a0cb":
-      "bsc:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"
-  };
+    "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000": "0x9e32b13ce7f2e80a01932b42553652e053d6ed8e",
+    "0xbb06dca3ae6887fabf931640f67cab3e3a16f4dc": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+    "0x420000000000000000000000000000000000000a": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+    "0x5801d0e1c7d977d78e4890880b8e579eb4943276": "bsc:0x5801d0e1c7d977d78e4890880b8e579eb4943276",
+    "0xea32a96608495e54156ae48931a7c20f0dcc1a21": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    "0x2692be44a6e38b698731fddf417d060f0d20a0cb": "bsc:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+    "0xa5B55ab1dAF0F8e1EFc0eB1931a957fd89B918f4": "avax:0x50b7545627a5162F82A992c33b87aDc75187B218",
+    "0x12d84f1cfe870ca9c9df9785f8954341d7fbb249": "bsc:0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", // bUSD
+    "0xE253E0CeA0CDD43d9628567d097052B33F98D611": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", // wAVAX
+    "0xa9109271abcf0c4106ab7366b4edb34405947eed": "fantom:0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83", // wFTM
+    "0x4651B38e7ec14BB3db731369BFE5B08F2466Bd0A": "bsc:0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",
+    "0xfe282Af5f9eB59C30A3f78789EEfFA704188bdD4": "metis:0xfe282Af5f9eB59C30A3f78789EEfFA704188bdD4",
+    "0x6aB6d61428fde76768D7b45D8BFeec19c6eF91A8": "bsc:0xad29abb318791d579433d831ed122afeaf29dcfe",
+    "0x4b9D2923D875edF43980BF5dddDEde3Fb20fC742": "bsc:0xcc42724c6683b7e57334c4e856f4c9965ed682bd",
+    "0x67c10c397dd0ba417329543c1a40eb48aaa7cd00": "0x0f2d719407fdbeff09d87557abb7232601fd9f29", //SYN
+    "0x226d8bfb4da78ddc5bd8fd6c1532c58e88f9fd34": "0xbc19712feb3a26080ebf6f2f7849b417fdd792ca", // BoringDAO
+  }
+  normalizeMapping(map)
+
   return addr => {
-    if (compareAddresses(addr, "0xa5B55ab1dAF0F8e1EFc0eB1931a957fd89B918f4")) {
-      return "avax:0x50b7545627a5162F82A992c33b87aDc75187B218";
-    }
-    if (compareAddresses(addr, "0xE253E0CeA0CDD43d9628567d097052B33F98D611")) {
-      return "avax:0xE253E0CeA0CDD43d9628567d097052B33F98D611";
-    }
+    addr = addr.toLowerCase()
 
-    if (compareAddresses(addr, "0x4651B38e7ec14BB3db731369BFE5B08F2466Bd0A")) {
-      return "bsc:0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3";
-    }
-
-    if (compareAddresses(addr, "0xfe282Af5f9eB59C30A3f78789EEfFA704188bdD4")) {
-      return "metis:0xfe282Af5f9eB59C30A3f78789EEfFA704188bdD4";
-    }
-
-    if (compareAddresses(addr, "0x6aB6d61428fde76768D7b45D8BFeec19c6eF91A8")) {
-      return "bsc:0xad29abb318791d579433d831ed122afeaf29dcfe";
-    }
-
-    if (compareAddresses(addr, "0x4b9D2923D875edF43980BF5dddDEde3Fb20fC742")) {
-      return "bsc:0xcc42724c6683b7e57334c4e856f4c9965ed682bd";
-    }
-
-    return map[addr.toLowerCase()] || `metis:${addr}`;
+    return map[addr] || `metis:${addr}`;
   };
 }
 
