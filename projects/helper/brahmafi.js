@@ -69,15 +69,22 @@ const getVaultL1Funds = async (vault, wantToken, block) => {
     BigNumber.from(it.output.posValue)
   );
 
-  let totalL1Funds = BigNumber.from(0);
+  let totalExecutorFunds = BigNumber.from(0);
 
   for (const [index] of executors.entries()) {
-    totalL1Funds = totalL1Funds
+    totalExecutorFunds = totalExecutorFunds
       .add(wantTokenBalances[index])
       .add(positionValues[index]);
   }
 
-  return totalL1Funds;
+  const vaultBalance = await sdk.api.abi.call({
+    block,
+    target: wantToken,
+    params: vault,
+    abi: "erc20:balanceOf",
+  });
+
+  return totalExecutorFunds.add(vaultBalance.output);
 };
 
 const getExecutorsForVault = async (vault, block) => {
