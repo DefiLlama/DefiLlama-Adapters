@@ -1,6 +1,8 @@
 const sdk = require("@defillama/sdk");
 const vaultAbi = require("../brahmafi/vault.json");
 const batcherAbi = require("../brahmafi/batcher.json");
+const teAbi = require("../brahmafi/tradeExecutor.json");
+const { BigNumber } = require("ethers");
 
 const vaults = [
   {
@@ -42,7 +44,70 @@ const getTVLData = async (block) => {
   return { totalSupplies, pendingDeposits, tokens };
 };
 
+const getVaultL1Funds = async (vault, wantToken, block) => {
+  const executors = await getExecutorsForVault(vault, block);
+  const positionCalls = executors.map((e) => ({ target: e }));
+  const balanceCalls = executors.map((e) => ({ target: wantToken, params: e }));
+
+  const [_wantTokenBalances, _positionValues] = await Promise.all([
+    sdk.api.abi.multiCall({
+      block,
+      calls: balanceCalls,
+      abi: "erc20:balanceOf",
+    }),
+    sdk.api.abi.multiCall({
+      block,
+      calls: positionCalls,
+      abi: teAbi.positionInWantToken,
+    }),
+  ]).then((o) => o.map((it) => it.output));
+
+  const wantTokenBalances = _wantTokenBalances.map((it) =>
+    BigNumber.from(it.output)
+  );
+  const positionValues = _positionValues.map((it) =>
+    BigNumber.from(it.output.posValue)
+  );
+
+  let totalL1Funds = BigNumber.from(0);
+
+  for (const [index] of executors.entries()) {
+    totalL1Funds = totalL1Funds
+      .add(wantTokenBalances[index])
+      .add(positionValues[index]);
+  }
+
+  return totalL1Funds;
+};
+
+const getExecutorsForVault = async (vault, block) => {
+  var index = 0;
+  let flag = true;
+
+  const executors = [];
+
+  while (flag) {
+    try {
+      const { output } = await sdk.api.abi.call({
+        block,
+        target: vault,
+        abi: vaultAbi.executorByIndex,
+        params: index,
+      });
+
+      executors.push(output);
+    } catch (e) {
+      flag = false;
+    }
+
+    index++;
+  }
+
+  return executors;
+};
+
 module.exports = {
   vaults,
   getTVLData,
+  getVaultL1Funds,
 };

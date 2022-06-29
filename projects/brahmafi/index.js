@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const { vaults, getTVLData } = require("../helper/brahmafi");
+const { vaults, getTVLData, getVaultL1Funds } = require("../helper/brahmafi");
 const { BigNumber } = require("ethers");
 
 const tvl = async (_, block) => {
@@ -7,16 +7,21 @@ const tvl = async (_, block) => {
 
   const balances = {};
 
-  vaults.forEach((_, idx) => {
+  for (const [idx, { address }] of vaults.entries()) {
+    const wantToken = tokens[idx].output;
+
+    const totalFunds = await getVaultL1Funds(address, wantToken, block);
+    console.log("tf", totalFunds);
+
     const value = BigNumber.from(totalSupplies[idx].output).add(
       BigNumber.from(pendingDeposits[idx].output)
     );
-    const tokenBalance = balances[tokens[idx].output];
+    const tokenBalance = balances[wantToken];
 
-    balances[tokens[idx].output] = !!tokenBalance
+    balances[wantToken] = !!tokenBalance
       ? BigNumber.from(tokenBalance).add(value).toString()
       : value.toString();
-  });
+  }
 
   console.log(balances);
 };
