@@ -132,7 +132,7 @@ async function transformAvaxAddress() {
     if (
       srcToken !== undefined &&
       srcToken["Ethereum Token Decimals"] ===
-        srcToken["Avalanche Token Decimals"]
+      srcToken["Avalanche Token Decimals"]
     ) {
       return srcToken["Ethereum Token Address"];
     }
@@ -549,15 +549,15 @@ async function transformMoonriverAddress() {
 
 async function transformMoonbeamAddress() {
   const mapping = {
-    '0x322E86852e492a7Ee17f28a78c663da38FB33bfb' : '0x853d955aCEf822Db058eb8505911ED77F175b99e', // frax
-    '0x8f552a71EFE5eeFc207Bf75485b356A0b3f01eC9' : '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // usdc
-    '0xdfa46478f9e5ea86d57387849598dbfb2e964b02' : 'polygon:0xa3fa99a148fa48d14ed51d610c367c61876997f1', // mai
-    '0x8e70cD5B4Ff3f62659049e74b6649c6603A0E594' : '0xdac17f958d2ee523a2206206994597c13d831ec7', // usdt
-    '0x30D2a9F5FDf90ACe8c17952cbb4eE48a55D916A7' : '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', // eth
-    '0x1DC78Acda13a8BC4408B207c9E48CDBc096D95e0' : '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', // wtbc
-    '0xc234A67a4F840E61adE794be47de455361b52413' : '0x6b175474e89094c44da98b954eedeac495271d0f', // dai
-    '0x1d4C2a246311bB9f827F4C768e277FF5787B7D7E' : 'moonriver:0x98878b06940ae243284ca214f92bb71a2b032b8a', // movr
-    '0x0000000000000000000000000000000000000000' : '"moonbeam:0xacc15dc74880c9944775448304b263d191c6077f', // GLMR -> WGLMR
+    '0x322E86852e492a7Ee17f28a78c663da38FB33bfb': '0x853d955aCEf822Db058eb8505911ED77F175b99e', // frax
+    '0x8f552a71EFE5eeFc207Bf75485b356A0b3f01eC9': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // usdc
+    '0xdfa46478f9e5ea86d57387849598dbfb2e964b02': 'polygon:0xa3fa99a148fa48d14ed51d610c367c61876997f1', // mai
+    '0x8e70cD5B4Ff3f62659049e74b6649c6603A0E594': '0xdac17f958d2ee523a2206206994597c13d831ec7', // usdt
+    '0x30D2a9F5FDf90ACe8c17952cbb4eE48a55D916A7': '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', // eth
+    '0x1DC78Acda13a8BC4408B207c9E48CDBc096D95e0': '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', // wtbc
+    '0xc234A67a4F840E61adE794be47de455361b52413': '0x6b175474e89094c44da98b954eedeac495271d0f', // dai
+    '0x1d4C2a246311bB9f827F4C768e277FF5787B7D7E': 'moonriver:0x98878b06940ae243284ca214f92bb71a2b032b8a', // movr
+    '0x0000000000000000000000000000000000000000': '"moonbeam:0xacc15dc74880c9944775448304b263d191c6077f', // GLMR -> WGLMR
   }
 
   return transformChainAddress(mapping, "moonbeam", { skipUnmapped: false });
@@ -732,7 +732,7 @@ function fixBscBalances(balances) {
       balances,
       "anchorust",
       Number(balances["bsc:0x8b04E56A8cd5f4D465b784ccf564899F30Aaf88C"]) /
-        10 ** 6
+      10 ** 6
     );
   }
 }
@@ -788,44 +788,29 @@ async function transformKccAddress() {
 
 function transformMetisAddress() {
   const map = {
-    "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000":
-      "0x9e32b13ce7f2e80a01932b42553652e053d6ed8e",
-    "0xbb06dca3ae6887fabf931640f67cab3e3a16f4dc":
-      "0xdac17f958d2ee523a2206206994597c13d831ec7",
-    "0x420000000000000000000000000000000000000a":
-      "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-    "0x5801d0e1c7d977d78e4890880b8e579eb4943276":
-      "bsc:0x5801d0e1c7d977d78e4890880b8e579eb4943276",
-    "0xea32a96608495e54156ae48931a7c20f0dcc1a21":
-      "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-    "0x2692be44a6e38b698731fddf417d060f0d20a0cb":
-      "bsc:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"
-  };
+    "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000": "0x9e32b13ce7f2e80a01932b42553652e053d6ed8e",
+    "0xbb06dca3ae6887fabf931640f67cab3e3a16f4dc": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+    "0x420000000000000000000000000000000000000a": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+    "0x5801d0e1c7d977d78e4890880b8e579eb4943276": "bsc:0x5801d0e1c7d977d78e4890880b8e579eb4943276",
+    "0xea32a96608495e54156ae48931a7c20f0dcc1a21": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    "0x2692be44a6e38b698731fddf417d060f0d20a0cb": "bsc:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+    "0xa5B55ab1dAF0F8e1EFc0eB1931a957fd89B918f4": "avax:0x50b7545627a5162F82A992c33b87aDc75187B218",
+    "0x12d84f1cfe870ca9c9df9785f8954341d7fbb249": "bsc:0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", // bUSD
+    "0xE253E0CeA0CDD43d9628567d097052B33F98D611": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", // wAVAX
+    "0xa9109271abcf0c4106ab7366b4edb34405947eed": "fantom:0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83", // wFTM
+    "0x4651B38e7ec14BB3db731369BFE5B08F2466Bd0A": "bsc:0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",
+    "0xfe282Af5f9eB59C30A3f78789EEfFA704188bdD4": "metis:0xfe282Af5f9eB59C30A3f78789EEfFA704188bdD4",
+    "0x6aB6d61428fde76768D7b45D8BFeec19c6eF91A8": "bsc:0xad29abb318791d579433d831ed122afeaf29dcfe",
+    "0x4b9D2923D875edF43980BF5dddDEde3Fb20fC742": "bsc:0xcc42724c6683b7e57334c4e856f4c9965ed682bd",
+    "0x67c10c397dd0ba417329543c1a40eb48aaa7cd00": "0x0f2d719407fdbeff09d87557abb7232601fd9f29", //SYN
+    "0x226d8bfb4da78ddc5bd8fd6c1532c58e88f9fd34": "0xbc19712feb3a26080ebf6f2f7849b417fdd792ca", // BoringDAO
+  }
+  normalizeMapping(map)
+
   return addr => {
-    if (compareAddresses(addr, "0xa5B55ab1dAF0F8e1EFc0eB1931a957fd89B918f4")) {
-      return "avax:0x50b7545627a5162F82A992c33b87aDc75187B218";
-    }
-    if (compareAddresses(addr, "0xE253E0CeA0CDD43d9628567d097052B33F98D611")) {
-      return "avax:0xE253E0CeA0CDD43d9628567d097052B33F98D611";
-    }
+    addr = addr.toLowerCase()
 
-    if (compareAddresses(addr, "0x4651B38e7ec14BB3db731369BFE5B08F2466Bd0A")) {
-      return "bsc:0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3";
-    }
-
-    if (compareAddresses(addr, "0xfe282Af5f9eB59C30A3f78789EEfFA704188bdD4")) {
-      return "metis:0xfe282Af5f9eB59C30A3f78789EEfFA704188bdD4";
-    }
-
-    if (compareAddresses(addr, "0x6aB6d61428fde76768D7b45D8BFeec19c6eF91A8")) {
-      return "bsc:0xad29abb318791d579433d831ed122afeaf29dcfe";
-    }
-
-    if (compareAddresses(addr, "0x4b9D2923D875edF43980BF5dddDEde3Fb20fC742")) {
-      return "bsc:0xcc42724c6683b7e57334c4e856f4c9965ed682bd";
-    }
-
-    return map[addr.toLowerCase()] || `metis:${addr}`;
+    return map[addr] || `metis:${addr}`;
   };
 }
 
@@ -962,6 +947,16 @@ function transformVelasAddress() {
     const map = {
       "0x85219708c49aa701871ad330a94ea0f41dff24ca":
         "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // WETH
+      "0xe41c4324dCbD2926481101f8580D13930AFf8A75":
+        "velas:0xc579D1f3CF86749E05CD06f7ADe17856c2CE3126", // WVLX
+      "0x6ab0B8C1a35F9F4Ce107cCBd05049CB1Dbd99Ec5":
+        "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0", // MATIC
+      "0x639A647fbe20b6c8ac19E48E2de44ea792c62c5C":
+        "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", // WBTC
+      "0x2B8e9cD44C9e09D936149549a8d207c918ecB5C4":
+        "bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c", // BNB
+      "0xc9b3aA6E91d70f4ca0988D643Ca2bB93851F3de4":
+        "fantom:0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83", // FTM
       "0xe2c120f188ebd5389f71cf4d9c16d05b62a58993":
         "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USDC
       "0x01445c31581c354b7338ac35693ab2001b50b9ae":
@@ -971,10 +966,10 @@ function transformVelasAddress() {
       "0x300a8be53b4b5557f48620d578e7461e3b927dd0":
         "0xf56842af3b56fd72d17cb103f92d027bba912e89" // BAMBOO
     };
+    normalizeMapping(map)
     return map[addr.toLowerCase()] || `velas:${addr}`;
   };
 }
-
 async function transformCronosAddress() {
   const mapping = {
     "0x0000000000000000000000000000000000000000":
@@ -1154,8 +1149,12 @@ async function transformDfkAddress() {
 async function transformAuroraAddress() {
   const mapping = {
     "0xda2585430fef327ad8ee44af8f1f989a2a91a3d2":
-      "0x853d955aCEf822Db058eb8505911ED77F175b99e" // FRAX
+      "0x853d955aCEf822Db058eb8505911ED77F175b99e", // FRAX
+    "0x07379565cd8b0cae7c60dc78e7f601b34af2a21c":
+      "0x6b175474e89094c44da98b954eedeac495271d0f", //  nUSD -> DAI
   };
+
+  normalizeMapping(mapping)
   return addr => mapping[addr.toLowerCase()] || `aurora:${addr.toLowerCase()}`;
 }
 
@@ -1470,7 +1469,7 @@ const songbirdFixMapping = {
     decimals: 18
   },
   "0x70Ad7172EF0b131A1428D0c1F66457EB041f2176": {
-    coingeckoId: "usd-coin",
+    coingeckoId: "canary-dollar",
     decimals: 18
   }
 };
@@ -1535,7 +1534,7 @@ const kavaFixMapping = {
     coingeckoId: "bitcoin",
     decimals: 8
   },
-  "0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d": {
+  "0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D": {
     coingeckoId: "ethereum",
     decimals: 18
   },

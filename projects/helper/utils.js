@@ -83,19 +83,25 @@ function isLP(symbol, token, chain) {
   if (token && blacklisted_LPS.includes(token.toLowerCase())) return false
   if (chain === 'bsc' && ['OLP', 'DLP', 'MLP', 'LP'].includes(symbol)) return false
   if (chain === 'bsc' && ['WLP'].includes(symbol)) return true
-  if (chain === 'metis' && ['NLP'].includes(symbol)) return true // Netswap LP Token
+  if (chain === 'metis' && ['NLP', 'ALP'].includes(symbol)) return true // Netswap/Agora LP Token
+  if (chain === 'metis' && /vAMM/.test(symbol)) return true // volatile AMM (HERMES?)
   if (!symbol) return false
   let label
 
   if (symbol.startsWith('ZLK-LP') || symbol.includes('DMM-LP') || (chain === 'avax' && 'DLP' === symbol))
     label = 'Blackisting this LP because of unsupported abi'
 
-  if (label) {
+  if (label) {1000
     if (DEBUG_MODE) console.log(label, token, symbol)
     return false
   }
 
-  return LP_SYMBOLS.includes(symbol) || /(UNI-V2)/.test(symbol) || symbol.split(/\W+/).includes('LP')
+  const isLPRes = LP_SYMBOLS.includes(symbol) || /(UNI-V2)/.test(symbol) || symbol.split(/\W+/).includes('LP')
+  
+  if (DEBUG_MODE && isLPRes && !['UNI-V2', 'Cake-LP'].includes(symbol))
+    console.log(symbol, token)
+
+  return isLPRes
 }
 
 function mergeExports(...exportsArray) {
@@ -204,6 +210,12 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
       tokens.push(token)
     labelMapping[label] = token
   })
+
+  if (tokens.length > 100) {
+    console.log('too many unknowns')
+    return;
+  }
+
 
   const { output: symbols } = await sdk.api.abi.multiCall({
     abi: 'erc20:symbol',

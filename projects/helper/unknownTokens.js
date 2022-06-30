@@ -6,8 +6,8 @@ const token1 = require('./abis/token1.json');
 const getReserves = require('./abis/getReserves.json');
 const { getChainTransform, stripTokenHeader, getFixBalances, } = require('./portedTokens')
 const { requery, } = require('./getUsdUniTvl')
-const { sumTokens, } = require('./unwrapLPs')
-const { isLP, getUniqueAddresses, DEBUG_MODE } = require('./utils')
+const { sumTokens, sumTokens2, } = require('./unwrapLPs')
+const { isLP, getUniqueAddresses, DEBUG_MODE, sliceIntoChunks, sleep } = require('./utils')
 const factoryAbi = require('./abis/factory.json');
 const { getBlock } = require('./getBlock');
 const { default: BigNumber } = require('bignumber.js')
@@ -52,6 +52,15 @@ async function getLPData({
   }
 }
 
+async function getLPList(lps, chain, block) {
+  const callArgs = lps.map(t => ({ target: t }))
+  let symbols = (await sdk.api.abi.multiCall({ calls: callArgs, abi: symbol, block, chain })).output
+  symbols = symbols.filter(item => isLP(item.output, item.input.target, chain))
+  // if (DEBUG_MODE) console.log(symbols.filter(item => item.output !== 'Cake-LP').map(i => `token: ${i.input.target} Symbol: ${i.output}`).join('\n'))
+  if (DEBUG_MODE) console.log('LP symbols:', getUniqueAddresses(symbols.map(i => i.output)).join(', '))
+  return symbols.map(item => item.input.target.toLowerCase())
+}
+
 async function getTokenPrices({
   block,
   chain = 'ethereum',
@@ -74,7 +83,7 @@ async function getTokenPrices({
   blacklist = blacklist.map(i => i.toLowerCase())
   whitelist = whitelist.map(i => i.toLowerCase())
   lps = getUniqueAddresses(lps)
-  const pairAddresses = allLps ? lps : await getLPList(lps)
+  const pairAddresses = allLps ? lps : await getLPList(lps, chain, block)
   const pairCalls = pairAddresses.map((pairAddress) => ({ target: pairAddress, }))
 
   let token0Addresses, token1Addresses, reserves
@@ -160,15 +169,6 @@ async function getTokenPrices({
     pairBalances,
     prices,
     balances,
-  }
-
-  async function getLPList(lps) {
-    const callArgs = lps.map(t => ({ target: t }))
-    let symbols = (await sdk.api.abi.multiCall({ calls: callArgs, abi: symbol, block, chain })).output
-    symbols = symbols.filter(item => isLP(item.output, item.input.target, chain))
-    // if (DEBUG_MODE) console.log(symbols.filter(item => item.output !== 'Cake-LP').map(i => `token: ${i.input.target} Symbol: ${i.output}`).join('\n'))
-    if (DEBUG_MODE) console.log('LP symbols:', getUniqueAddresses(symbols.map(i => i.output)).join(', '))
-    return symbols.map(item => item.input.target.toLowerCase())
   }
 
   function setPrice(prices, address, coreAmount, tokenAmount, coreAsset) {
@@ -376,14 +376,51 @@ function pool2({ stakingContract, lpToken, chain = "ethereum", transformAddress,
 
 async function sumTokensSingle({
   coreAssets, balances = {}, owner, tokens, chain, block, restrictTokenPrice = false, blacklist = [], skipConversion, onlyLPs, minLPRatio,
-  log_coreAssetPrices = [], log_minTokenValue = 1e6,
+  log_coreAssetPrices = [], log_minTokenValue = 1e6, countOnlyLps = false, 
 }) {
   tokens = getUniqueAddresses(tokens)
   blacklist = getUniqueAddresses(blacklist)
-  const toa = tokens.filter(t => !blacklist.includes(t)).map(i => [i, owner])
-  const { updateBalances } = await getTokenPrices({ coreAssets, lps: tokens, chain, block, restrictTokenPrice, blacklist, log_coreAssetPrices, log_minTokenValue, minLPRatio })
-  await sumTokens(balances, toa, block, chain)
-  return updateBalances(balances, { skipConversion, onlyLPs })
+  tokens = tokens.filter(t => !blacklist.includes(t))
+  const finalBalances = {}
+  for (let  i=0;i<chunks.length;i++) {
+    if (DEBUG_MODE) console.log('resolving for %s/%s of %s (chain: %s)', i+1, chunks.length, tokens.length, chain)
+    const toa = chunks[i].map(i => [i, owner])
+    const { updateBalances } = await getTokenPrices({ coreAssets, lps: chunks[i], chain, block, restrictTokenPrice, blacklist, log_coreAssetPrices, log_minTokenValue, minLPRatio })
+    await sumTokens(balances, toa, block, chain)
+    await updateBalances(balances, { skipConversion, onlyLPs })
+    Object.entries(balances).forEach(([token, bal]) => sdk.util.sumSingleBalance(finalBalances, token, bal))
+    if (i !==0 && i%4 === 0)  await sleep(3000)
+  }
+  return finalBalances
+}
+
+async function vestingHelper({
+  coreAssets, owner, tokens, chain, block, restrictTokenPrice = true, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
+  log_coreAssetPrices = [], log_minTokenValue = 1e6, 
+}) {
+  tokens = getUniqueAddresses(tokens)
+  blacklist = getUniqueAddresses(blacklist)
+  tokens = tokens.filter(t => !blacklist.includes(t))
+  const chunks = sliceIntoChunks(tokens, 2000)
+  const finalBalances = {}
+  for (let  i=0;i<chunks.length;i++) {
+    if (DEBUG_MODE) console.log('resolving for %s/%s of total tokens: %s (chain: %s)', i+1, chunks.length, tokens.length, chain)
+    let lps = await getLPList(chunks[i], chain, block)  // we count only LP tokens for vesting protocols
+    const balances = await sumTokens2({ chain, block, owner, tokens: lps })
+    const lpBalances = {}
+    Object.entries(balances).forEach(([token, bal]) => {
+      if (bal && bal !== 0)
+        lpBalances[stripTokenHeader(token)] = bal
+      else
+        delete balances[token]
+    })
+    lps = lps.filter(lp => lpBalances[lp])  // we only care about LPs that are still locked in the protocol, we can ignore withdrawn LPs
+    const { updateBalances } = await getTokenPrices({ coreAssets, lps, allLps: true, chain, block, restrictTokenPrice, blacklist, log_coreAssetPrices, log_minTokenValue, minLPRatio })
+    await updateBalances(balances, { skipConversion, onlyLPs })
+    Object.entries(balances).forEach(([token, bal]) => sdk.util.sumSingleBalance(finalBalances, token, bal))
+    if (i !==0 && i%2 === 0)  await sleep(3000)
+  }
+  return finalBalances
 }
 
 // TODO: this is incomplete/untested, might need to extend how pools are resolved and tokens are fetched.
@@ -476,4 +513,6 @@ module.exports = {
   pool2,
   getLPData,
   masterchefExports,
+  vestingHelper,
+  getLPList,
 };
