@@ -1,7 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { ethereumContractData, polygonContractData, avaxContractData, bscContractData } = require("./config");
-const BigNumber = require("bignumber.js");
-const { getTokensAndLPsTrackedValue } = require("../helper/unicrypt");
+const { vestingHelper } = require("../helper/unknownTokens");
 
 function getTvl(args) {
   return async (timestamp, ethBlock, chainBlocks) => {
@@ -10,10 +9,8 @@ function getTvl(args) {
 
       const contractAddress = args[i].contract
       const abi = args[i].contractABI
-      const balances = {};
       const chain = args[i].chain
       const block = chainBlocks[chain]
-      const factory = args[i].factory
       const trackedTokens = args[i].trackedTokens
       const totalDepositId = Number(
         (
@@ -21,11 +18,11 @@ function getTvl(args) {
             abi: abi.depositId,
             target: contractAddress,
             chain: chain,
-            block: block 
+            block: block
           })
         ).output
       );
-        
+
       let lockedLPs = [];
       const allDepositId = Array.from(Array(totalDepositId).keys());
       const lpAllTokens = (
@@ -36,26 +33,26 @@ function getTvl(args) {
             params: num,
           })),
           chain: chain,
-          block: block 
+          block: block
         })
-      ).output 
+      ).output
 
       lpAllTokens.forEach(lp => {
-        if (lp.success) {
-          const lpToken = lp.output[0].toLowerCase()
-          lockedLPs.push(lpToken)
-        }
-      })  
+        if (!lp.success) return;
+        const lpToken = lp.output[0].toLowerCase()
+        lockedLPs.push(lpToken)
+      })
 
-      const lpFilterTokens = lockedLPs.sort().filter(function (item, pos, ary) {
-        return (!pos || item != ary[pos - 1]) && item != "0x0000000000000000000000000000000000000000";
-      });
-
-      await getTokensAndLPsTrackedValue(balances, lpFilterTokens, contractAddress, factory, trackedTokens, block, chain)
+      const balances = await vestingHelper({
+        coreAssets: trackedTokens,
+        owner: contractAddress,
+        tokens: lockedLPs,
+        block, chain,
+        blacklist: args[i].blacklist,
+      })
 
       for (const [token, balance] of Object.entries(balances)) {
-        if (!totalBalances[token]) totalBalances[token] = '0'
-        totalBalances[token] = BigNumber(totalBalances[token]).plus(BigNumber(balance)).toFixed(0)
+        sdk.util.sumSingleBalance(totalBalances, token, balance)
       }
     }
     return totalBalances
