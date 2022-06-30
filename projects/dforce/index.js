@@ -155,25 +155,6 @@ const USXs = {
   TVL
   ==================================================*/
 
-async function getLockedUSXValueForL2(block) {
-  let lockedUSX = BigNumber("0");
-
-  await Promise.all(
-    escrowPools.map(async escrowPool => {
-      let { output: usxAmount } = await sdk.api.abi.call({
-        block,
-        target: "0x0a5e677a6a24b2f1a2bf4f3bffc443231d2fdec8", // Mainnet USX
-        params: escrowPool,
-        abi: "erc20:balanceOf",
-        chain: "ethereum"
-      });
-      lockedUSX = lockedUSX.plus(BigNumber(usxAmount));
-    })
-  );
-  // the price of USX is always 1.
-  return lockedUSX.div(BASE);
-}
-
 async function getDFStakingValue(block) {
   // Mainnet DF
   const DF = "0x431ad2ff6a9C365805eBaD47Ee021148d6f7DBe0";
@@ -427,6 +408,12 @@ async function getTVLByChain(chain, block) {
   } = await getLendingTVLByChain(chain, block);
 
   tvl = tvl.plus(lendingTVL);
+
+  // For ethereum mainnet, should exclude locked USX for L2.
+  if (chain == "ethereum") {
+    let lockedUSXValue = await getLockedUSXValueForL2(block);
+    tvl = tvl.minus(lockedUSXValue);
+  }
 
   return toUSDTBalances(tvl.toNumber());
 }
