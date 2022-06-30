@@ -1470,7 +1470,7 @@ const songbirdFixMapping = {
     decimals: 18
   },
   "0x70Ad7172EF0b131A1428D0c1F66457EB041f2176": {
-    coingeckoId: "usd-coin",
+    coingeckoId: "canary-dollar",
     decimals: 18
   }
 };
