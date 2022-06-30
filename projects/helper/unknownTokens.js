@@ -9,7 +9,6 @@ const { requery, } = require('./getUsdUniTvl')
 const { sumTokens, sumTokens2, } = require('./unwrapLPs')
 const { isLP, getUniqueAddresses, DEBUG_MODE, sliceIntoChunks, sleep } = require('./utils')
 const factoryAbi = require('./abis/factory.json');
-const { getBlock } = require('./getBlock');
 const { default: BigNumber } = require('bignumber.js')
 
 async function getLPData({
@@ -400,6 +399,8 @@ async function vestingHelper({
     Object.entries(balances).forEach(([token, bal]) => sdk.util.sumSingleBalance(finalBalances, token, bal))
     if (i !==0 && i%2 === 0)  await sleep(3000)
   }
+  const fixBalances = await getFixBalances(chain)
+  fixBalances(finalBalances)
   return finalBalances
 }
 
