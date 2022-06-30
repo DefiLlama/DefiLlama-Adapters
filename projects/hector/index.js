@@ -251,7 +251,7 @@ function tvl(chain) {
     return balances;
   };
 }
-// node test.js projects/hector/index.js
+
 module.exports = {
   ethereum: {
     tvl: tvl("ethereum")

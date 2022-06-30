@@ -739,7 +739,7 @@ async function genericUnwrapCrv(balances, crvToken, lpBalance, block, chain) {
     target: tokenToPoolMapping[crvToken.toLowerCase()] || crvToken,
     chain,
     block
-  })).output.map(c => c.output)
+  })).output.map(c => c.output.toLowerCase())
   const crvLP_token_balances = await sdk.api.abi.multiCall({
     abi: 'erc20:balanceOf',
     calls: coins.map(c => ({
@@ -749,6 +749,23 @@ async function genericUnwrapCrv(balances, crvToken, lpBalance, block, chain) {
     chain,
     block
   })
+
+  const transform = await getChainTransform(chain)
+  const wrappedGasToken = transform('0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee')
+  if (coins.includes(wrappedGasToken)) {
+    const gasTokenBalance = (await sdk.api.eth.getBalance({
+      target: tokenToPoolMapping[crvToken.toLowerCase()] || crvToken,
+      block, 
+      chain
+    })).output
+    crvLP_token_balances.output.push({
+      output: gasTokenBalance,
+      input: {
+        target: wrappedGasToken
+      },
+      success: true
+    })
+  }
 
   // Edit the balances to weigh with respect to the wallet holdings of the crv LP token
   crvLP_token_balances.output.forEach(call =>
