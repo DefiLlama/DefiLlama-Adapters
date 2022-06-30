@@ -267,6 +267,8 @@ const staking = async () => {
   return toUSDTBalances(+results.protocolMetrics[0].totalValueLocked);
 };
 module.exports = {
+  timetravel: false,
+  misrepresentedTokens: true,
   ethereum: {
     tvl: tvl("ethereum")
   },
