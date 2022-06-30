@@ -41,12 +41,26 @@ const poolManagers_abi = {
 };
 
 // get Borrowing module vault managers list
-async function getVaultManagersFromAPI() {
+async function getVaultManagersFromAPI(chain) {
+  let chainId;
+  if (chain == "ethereum") {
+    chainId = 1;
+  } else if (chain == "polygon") {
+    chainId = 137;
+  } else if (chain == "optimism") {
+    chainId = 10;
+  } else if (chain == "arbitrum") {
+    chainId = 42161;
+  } else if (chain == "fantom") {
+    chainId = 250;
+  } else if (chain == "avalanche") {
+    chainId = 42161;
+  }
   let result;
   let calls = [];
   try {
     result = await (
-      await fetch("https://api.angle.money/v1/vaultManagers")
+      await fetch("https://api.angle.money/v1/vaultManagers?chainId=" + chainId)
     ).json();
     const vaultManagersList = Object.keys(result);
     for (const vaultManager of vaultManagersList) {
@@ -61,7 +75,7 @@ async function getVaultManagersFromAPI() {
   }
 }
 
-async function tvl(timestamp, block, chainBlocks) {
+async function tvl(timestamp, block, chainBlocks, chain) {
   // Core module
   const poolManagersBalanceOf_calls = agTokens
     .map((t) => {
@@ -95,17 +109,17 @@ async function tvl(timestamp, block, chainBlocks) {
   let collateralBalances = await sdk.api.abi.multiCall({
     calls: poolManagersTotalAsset_calls,
     abi: poolManagers_abi["getTotalAsset"],
-    block: chainBlocks["ethereum"],
-    chain: "ethereum",
+    block: chainBlocks[chain],
+    chain: chain,
   });
 
   // Borrowing module
-  const vaultManagersBalances_call = await getVaultManagersFromAPI();
+  const vaultManagersBalances_call = await getVaultManagersFromAPI(chain);
   let vaultManagersBalances = await sdk.api.abi.multiCall({
     calls: vaultManagersBalances_call,
     abi: "erc20:balanceOf",
-    block: chainBlocks["ethereum"],
-    chain: "ethereum",
+    block: chainBlocks[chain],
+    chain: chain,
   });
 
   // Accumulate collateral to balances
@@ -134,10 +148,55 @@ async function tvl(timestamp, block, chainBlocks) {
   return balances;
 }
 
+async function ethTvl(timestamp, block, chainBlocks) {
+  // check weird behaviors of these arguments
+  return tvl(timestamp, chainBlocks, "ethereum", "ethereum");
+}
+
+async function polygonTvl(timestamp, block, chainBlocks) {
+  // check weird behaviors of these arguments
+  return tvl(timestamp, chainBlocks, "polygon", "polygon");
+}
+
+async function optimismTvl(timestamp, block, chainBlocks) {
+  // check weird behaviors of these arguments
+  return tvl(timestamp, chainBlocks, "optimism", "optimism");
+}
+
+async function arbitrumTvl(timestamp, block, chainBlocks) {
+  // check weird behaviors of these arguments
+  return tvl(timestamp, chainBlocks, "arbitrum", "arbitrum");
+}
+
+async function fantomTvl(timestamp, block, chainBlocks) {
+  // check weird behaviors of these arguments
+  return tvl(timestamp, chainBlocks, "fantom", "fantom");
+}
+
+async function avalancheTvl(timestamp, block, chainBlocks) {
+  // check weird behaviors of these arguments
+  return tvl(timestamp, chainBlocks, "avalanche", "avalanche");
+}
+
 module.exports = {
   ethereum: {
-    tvl,
+    tvl: ethTvl,
     staking: staking(veANGLE, ANGLE, "ethereum"),
+  },
+  polygon: {
+    tvl: polygonTvl,
+  },
+  optimism: {
+    tvl: optimismTvl,
+  },
+  arbitrum: {
+    tvl: arbitrumTvl,
+  },
+  fantom: {
+    tvl: fantomTvl,
+  },
+  avalanche: {
+    tvl: avalancheTvl,
   },
   methodology: `TVL is retrieved on-chain by querying the total assets managed by the Core module, and the balances of the vaultManagers of the Borrowing module.`,
 };
