@@ -38,6 +38,6 @@ module.exports = {
   methodology: `Gets token balance from the smart contract address holding the user deposits. These addresses are are labele "tokensAndOwners". SFIN staked to earn more SFIN is labeles as "staking" category`,
   songbird: {
     tvl: farmTvl,
-    staking: stakingPricedLP("0x554742076743b366504972F86609d64fd18BDC34", "0x0D94e59332732D18CF3a3D457A8886A2AE29eA1B", "songbird", "0x48195Ca4D228ce487AE2AE1335B017a95493Ade6", "usd-coin" ),
+    staking: stakingPricedLP("0x554742076743b366504972F86609d64fd18BDC34", "0x0D94e59332732D18CF3a3D457A8886A2AE29eA1B", "songbird", "0x48195Ca4D228ce487AE2AE1335B017a95493Ade6", "canary-dollar" ),
   }
 };
