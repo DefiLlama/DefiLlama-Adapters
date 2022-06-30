@@ -59,5 +59,18 @@
       "gasToken": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
       "wrappedGasToken": "bsc:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"
     }
+  },
+  "uniLPs": {
+    "fantom": [
+      "0xbc0eecda2d8141e3a26d2535c57cadcb1095bca9",
+      "0x41d88635029c4402bf9914782ae55c412f8f2142"
+    ]
+  },
+  "curveLPs": {
+    "fantom": ["0x24699312cb27c26cfc669459d670559e5e44ee60"],
+    "ethereum": [
+      "0x3a283d9c08e8b55966afb64c515f5143cf907611",
+      "0xed4064f376cb8d68f770fb1ff088a3d0f3ff5c4d"
+    ]
   }
 }

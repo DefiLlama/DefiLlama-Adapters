@@ -712,6 +712,10 @@ async function unwrapCreamTokens(balances, tokensAndOwners, block, chain = "ethe
 const crv_abi = {
   "crvLP_coins": { "stateMutability": "view", "type": "function", "name": "coins", "inputs": [{ "name": "arg0", "type": "uint256" }], "outputs": [{ "name": "", "type": "address" }], "gas": 3123 }
 }
+const tokenToPoolMapping = {
+  "0x3a283d9c08e8b55966afb64c515f5143cf907611": "0xb576491f1e6e5e62f1d8f26062ee822b40b0e0d4",
+  "0xed4064f376cb8d68f770fb1ff088a3d0f3ff5c4d": "0x8301ae4fc9c624d1d396cbdaa1ed877821d7c511"
+}
 async function genericUnwrapCrv(balances, crvToken, lpBalance, block, chain) {
   const { output: resolvedCrvTotalSupply } = await sdk.api.erc20.totalSupply({
     target: crvToken,
@@ -732,7 +736,7 @@ async function genericUnwrapCrv(balances, crvToken, lpBalance, block, chain) {
   const coins = (await sdk.api.abi.multiCall({
     abi: crv_abi['crvLP_coins'],
     calls: coins_indices.map(i => ({ params: [i] })),
-    target: crvToken,
+    target: tokenToPoolMapping[crvToken.toLowerCase()] || crvToken,
     chain,
     block
   })).output.map(c => c.output)
@@ -740,7 +744,7 @@ async function genericUnwrapCrv(balances, crvToken, lpBalance, block, chain) {
     abi: 'erc20:balanceOf',
     calls: coins.map(c => ({
       target: c,
-      params: crvToken,
+      params: tokenToPoolMapping[crvToken.toLowerCase()] || crvToken,
     })),
     chain,
     block
