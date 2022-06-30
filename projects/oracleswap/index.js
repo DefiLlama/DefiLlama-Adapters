@@ -15,7 +15,7 @@ module.exports = {
       "songbird",
       "0x02f0826ef6aD107Cfc861152B32B52fD11BaB9ED",
       [
-        
+        "0xd7565b16b65376e2ddb6c71e7971c7185a7ff3ff"
       ],
       "songbird"
     ),
