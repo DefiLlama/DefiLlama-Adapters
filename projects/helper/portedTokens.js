@@ -970,7 +970,6 @@ function transformVelasAddress() {
     return map[addr.toLowerCase()] || `velas:${addr}`;
   };
 }
-
 async function transformCronosAddress() {
   const mapping = {
     "0x0000000000000000000000000000000000000000":
@@ -1535,7 +1534,7 @@ const kavaFixMapping = {
     coingeckoId: "bitcoin",
     decimals: 8
   },
-  "0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d": {
+  "0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D": {
     coingeckoId: "ethereum",
     decimals: 18
   },
