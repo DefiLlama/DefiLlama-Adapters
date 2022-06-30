@@ -91,12 +91,17 @@ function isLP(symbol, token, chain) {
   if (symbol.startsWith('ZLK-LP') || symbol.includes('DMM-LP') || (chain === 'avax' && 'DLP' === symbol))
     label = 'Blackisting this LP because of unsupported abi'
 
-  if (label) {
+  if (label) {1000
     if (DEBUG_MODE) console.log(label, token, symbol)
     return false
   }
 
-  return LP_SYMBOLS.includes(symbol) || /(UNI-V2)/.test(symbol) || symbol.split(/\W+/).includes('LP')
+  const isLPRes = LP_SYMBOLS.includes(symbol) || /(UNI-V2)/.test(symbol) || symbol.split(/\W+/).includes('LP')
+  
+  if (DEBUG_MODE && isLPRes && !['UNI-V2', 'Cake-LP'].includes(symbol))
+    console.log(symbol, token)
+
+  return isLPRes
 }
 
 function mergeExports(...exportsArray) {
@@ -205,6 +210,12 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
       tokens.push(token)
     labelMapping[label] = token
   })
+
+  if (tokens.length > 100) {
+    console.log('too many unknowns')
+    return;
+  }
+
 
   const { output: symbols } = await sdk.api.abi.multiCall({
     abi: 'erc20:symbol',
