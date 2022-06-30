@@ -1,5 +1,5 @@
 const { request, gql } = require('graphql-request');
-const { toUSDTBalances } = require('./helper/balances');
+const { toUSDTBalances } = require('../helper/balances');
 
 
 const graphUrl = 'https://api.sonic.ooo/graphql';
