@@ -1,7 +1,9 @@
 const { getExports } = require('../helper/heroku-api')
-const config = require('./config')
+const indexExports = require('./index')
+const chainKeys = Object.keys(indexExports).filter(chain => typeof indexExports[chain] === 'object' && indexExports[chain].tvl)
+
 
 module.exports = {
   timetravel: false,
-  ...getExports("pinksale", Object.keys(config)),
+  ...getExports("pinksale", chainKeys),
 }
