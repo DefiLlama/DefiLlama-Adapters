@@ -1,14 +1,9 @@
-const sdk = require('@defillama/sdk');
-const { config, coreTokenWhitelist, protocolPairs, tokens, stakingContracts,
-  ethereumContractData, bscContractData, polygonContractData,
-  avalancheContractData, gnosisContractData } = require('./config')
-
-const { stakings } = require("../helper/staking");
-const { pool2s } = require("../helper/pool2");
-
+const {polygonContractData, 
+  avalancheContractData, cronosContractData, kavaContractData } = require('./config')
 const { vestingHelper } = require("../helper/unknownTokens")
+const sdk = require('@defillama/sdk')
 
-function tvl(args) {
+function tvl(args){
   return async (timestamp, ethBlock, chainBlocks) => {
     let totalBalances = {}
     for (let i = 0; i < args.length; i++) {
@@ -60,33 +55,15 @@ function tvl(args) {
     return totalBalances
   }
 }
-
 module.exports = {
   timetravel: true,
-  methodology:
-    `Counts each LP pair's native token and 
+  methodology: 
+  `Counts each LP pair's native token and 
    stable balance, adjusted to reflect locked pair's value. 
    Balances and merged across multiple 
    locker and staking contracts to return sum TVL per chain`,
-
-  ethereum: {
-    staking: stakings(
-      stakingContracts,
-      tokens.uncx_eth,
-      config.uniswapv2.chain
-    ),
-    tvl: tvl(ethereumContractData),
-
-    pool2: pool2s([config.uniswapv2.locker, config.pol.locker],
-      [protocolPairs.uncx_WETH],
-      config.uniswapv2.chain)
-  },
-  bsc: {
-    tvl: tvl(bscContractData),
-
-    pool2: pool2s([config.pancakeswapv2.locker, config.pancakeswapv1.locker, config.safeswap.locker,
-    config.julswap.locker, config.biswap.locker],
-      [protocolPairs.uncx_BNB], config.pancakeswapv2.chain)
+  cronos: {
+    tvl: tvl(cronosContractData)
   },
   polygon: {
     tvl: tvl(polygonContractData)
@@ -94,11 +71,8 @@ module.exports = {
   avax: {
     tvl: tvl(avalancheContractData)
   },
-  xdai: {
-    tvl: tvl(gnosisContractData),
-    pool2: pool2s([config.honeyswap.locker],
-      [protocolPairs.uncx_XDAI],
-      config.honeyswap.chain)
-  },
+  kava:{
+    tvl: tvl(kavaContractData)
+  }
 }
 

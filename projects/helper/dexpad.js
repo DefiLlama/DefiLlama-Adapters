@@ -2,13 +2,13 @@ const BigNumber = require("bignumber.js");
 const sdk = require("@defillama/sdk");
 
 const { unwrapUniswapLPs } = require("./unwrapLPs");
-
 const symbol = require("./abis/symbol.json");
 const getPairFactory = require("./abis/getPair.json");
 
 const { isLP } = require("./utils");
+const { getChainTransform, getFixBalances } = require("./portedTokens");
 
-async function getUnicryptLpsCoreValue(
+async function getDexPadLpsCoreValue(
   block,
   chain,
   contract, // locker contract address.
@@ -74,6 +74,7 @@ async function getUnicryptLpsCoreValue(
 
 // get pairs made of 2 core assets to avoid double counting their balances
 async function generateWhitelistedPairs(trackedTokens, factory, block, chain) {
+  
   if (!Array.isArray(trackedTokens))
     throw new Error("must pass an array of base tokens to trackedTokens");
 
@@ -107,7 +108,6 @@ async function generateWhitelistedPairs(trackedTokens, factory, block, chain) {
       }
     });
   }
-
   return whitelistedBasePairs;
 }
 // mixed token contracts
@@ -150,7 +150,6 @@ async function getTokensAndLPsTrackedValue(
       })
       .then(({ output }) => output)
   ]);
-
   let lps = {};
   let filteredLps = {};
 
@@ -178,20 +177,20 @@ async function getTokensAndLPsTrackedValue(
   });
 
   let lpBalances = [];
-
   Object.entries(filteredLps).forEach(([key, value]) => {
     lpBalances.push({
       balance: value,
       token: key
     });
   });
+  const chainTransform = await getChainTransform(chain)
 
   await unwrapUniswapLPs(
     balances,
     lpBalances,
     block,
     chain,
-    addr => `${chain}:${addr}`
+    addr => chainTransform(addr)
   );
 
   let formattedWhitelist = trackedTokens.map(address => `${chain}:${address}`);
@@ -218,7 +217,6 @@ async function getLPsTrackedValue(
 ) {
   if (!Array.isArray(trackedTokens))
     throw new Error("must pass an array of base tokens to trackedTokens");
-
   const whitelistedBasePairs = await generateWhitelistedPairs(
     trackedTokens,
     factory,
@@ -237,7 +235,6 @@ async function getLPsTrackedValue(
       chain: chain,
       block: block
     })).output;
-
     tokenBalances.forEach(balance => {
       if (balance.success) {
         const lpAddress = balance.input.target.toLowerCase();
@@ -252,14 +249,12 @@ async function getLPsTrackedValue(
   }
 
   let lpBalances = [];
-
   Object.entries(lps).forEach(([key, value]) => {
     lpBalances.push({
       balance: value,
       token: key
     });
   });
-
   await unwrapUniswapLPs(
     balances,
     lpBalances,
@@ -267,21 +262,25 @@ async function getLPsTrackedValue(
     chain,
     addr => `${chain}:${addr}`
   );
+  let formattedWhitelist = trackedTokens.map(addr => `${chain}:${addr}`);
 
-  let formattedWhitelist = trackedTokens.map(address => `${chain}:${address}`);
-
+  console.log("before", balances)
   balances = Object.keys(balances)
     .filter(balance => formattedWhitelist.includes(balance))
     .reduce((obj, balance) => {
       obj[balance] = balances[balance];
       return obj;
     }, {});
-
+    console.log("after",balances)
+    if(chain === 'kava'){
+      return (await getFixBalances(chain))(balances)
+    }
   return balances;
 }
 
+
 module.exports = {
-  getUnicryptLpsCoreValue,
+  getDexPadLpsCoreValue,
   getTokensAndLPsTrackedValue,
   getLPsTrackedValue
 };

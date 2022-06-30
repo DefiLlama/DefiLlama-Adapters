@@ -10,7 +10,7 @@ async function tvl() {
 }
 
 async function hbarTvl(timestamp) {
-  return addHBarBalance({ timestamp, address: '0.0.834119' })
+  return addHBarBalance({ timestamp, address: '0.0.1027588' })
 }
 
 async function maticTvl() {
