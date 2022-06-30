@@ -58,17 +58,15 @@ async function walletBalances(chain, chainBlocks, balances) {
   );
 }
 async function deployedBalances(chain, chainBlocks, balances) {
-  let a = await hectorBank(chain);
   // curve
   // spooky
   // beefy
   // pancake
   // convex
 
-  return a;
+  return;
 }
-async function hectorBank(chain) {
-  if (chain != "fantom") return;
+async function hectorBank() {
   var endpoint =
     "https://api.thegraph.com/subgraphs/name/hectordao-hec/hector-dao";
   var graphQLClient = new GraphQLClient(endpoint);
@@ -103,10 +101,17 @@ async function borrowed() {
 }
 function tvl(chain) {
   return async (t, b, chainBlocks) => {
-    const balances = {};
+    let balances = {};
 
     await walletBalances(chain, chainBlocks, balances);
-    await deployedBalances(chain, chainBlocks, balances);
+    //await deployedBalances(chain, chainBlocks, balances);
+
+    delete balances["fantom:0x74e23df9110aa9ea0b6ff2faee01e740ca1c642e"];
+    delete balances["bsc:0x1d6cbdc6b29c6afbae65444a1f65ba9252b8ca83"];
+
+    delete balances["fantom:0x5c4fdfc5233f935f20d2adba572f770c2e377ab0"];
+    delete balances["bsc:0x638eebe886b0e9e7c6929e69490064a6c94d204d"];
+
     return balances;
   };
 }
@@ -116,7 +121,7 @@ module.exports = {
     tvl: tvl("ethereum")
   },
   fantom: {
-    tvl: tvl("fantom")
+    tvl: sdk.util.sumChainTvls([tvl("fantom"), hectorBank])
   },
   bsc: {
     tvl: tvl("bsc")
