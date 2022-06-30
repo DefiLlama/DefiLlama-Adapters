@@ -1,21 +1,80 @@
 const { getUniTVL } = require('../helper/unknownTokens')
+const sdk = require('@defillama/sdk')
+const { sumTokens2 } = require('../helper/unwrapLPs')
+const chain = 'kava'
+
+const dexTVL = getUniTVL({
+  factory: "0x30D70fFBbfD795B147842100be5564502285E31F",
+  chain: "kava",
+  coreAssets: [
+    "0xc86c7C0eFbd6A49B35E8714C5f59D99De09A225b", // WKAVA
+    '0xfA9343C3897324496A05fC75abeD6bAC29f8A40f', // USDC
+    "0x88905056caCBb5554Add698204B6a757BEcA278D", // TIDE
+  ],
+})
+
+async function stablePoolTVL(_, _b, { [chain]: block }) {
+  const pools = [
+    '0x62bf12869E145A862218eE7e28F942Cc7FaeC460', //  base 4 pool
+  ]
+
+  let { output: lpTokens } = await sdk.api.abi.multiCall({
+    abi: abi.getLpToken,
+    calls: pools.map(i => ({ target: i })),
+    chain, block,
+  })
+
+  lpTokens = lpTokens.map(i => i.output.toLowerCase())
+
+  const { output: tokens } = await sdk.api.abi.multiCall({
+    abi: abi.getTokens,
+    calls: pools.map(i => ({ target: i })),
+    chain, block,
+  })
+
+  const toa = []
+  tokens.forEach(res => {
+    res.output.forEach(t => {
+      if (lpTokens.includes(t.toLowerCase())) return;
+      toa.push([t, res.input.target])
+    })
+  })
+
+  return sumTokens2({ tokensAndOwners: toa, chain, block, })
+}
 
 module.exports = {
   misrepresentedTokens: true,
-  methodology: "Factory addresses (0x30D70fFBbfD795B147842100be5564502285E31F for kava) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
-  kava: {
-    tvl: getUniTVL({
-      factory: '0x30D70fFBbfD795B147842100be5564502285E31F',
-      chain: 'kava',
-      coreAssets: [
-        '0x88905056caCBb5554Add698204B6a757BEcA278D',
-        "0xc86c7C0eFbd6A49B35E8714C5f59D99De09A225b",
-        "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f",
-        "0xB44a9B6905aF7c801311e8F4E76932ee959c663C",
-        "0x65e66a61D0a8F1e686C2D6083ad611a10D84D97A",
-        "0x765277EebeCA2e31912C9946eAe1021199B39C61",
-        "0x332730a4F6E03D9C55829435f10360E13cfA41Ff",
-      ]
-    }),
+  moonbeam: {
+    tvl: sdk.util.sumChainTvls([dexTVL, stablePoolTVL])
   }
+}
+
+const abi = {
+  getTokens: {
+    "inputs": [],
+    "name": "getTokens",
+    "outputs": [
+      {
+        "internalType": "contract IERC20[]",
+        "name": "",
+        "type": "address[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  getLpToken: {
+    "inputs": [],
+    "name": "getLpToken",
+    "outputs": [
+      {
+        "internalType": "contract LPToken",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
 }
