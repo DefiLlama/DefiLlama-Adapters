@@ -90,7 +90,7 @@ const pools = [
 
 const liquidGovernanceAppId = 694427622;
 
-const oracleAppId = 751491670;
+const oracleAppId = 793269965;
 const oracleAdapterAppId = 751277258;
 const oracleDecimals = 14;
 const tinymanValidatorAppId = 552635992;
