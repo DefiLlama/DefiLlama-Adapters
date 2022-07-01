@@ -3,8 +3,8 @@ const {
   getTvl,
   getBorrowed,
   getOmniReserves,
-} = require("../helper/omniprotocol");
-const abi = require("../helper/abis/omni.json");
+} = require("./helper.js");
+const abi = require("./omni.json");
 const { default: BigNumber } = require("bignumber.js");
 
 const validProtocolDataHelper = "0x8AAc97e25c79195aC77817287Cf512b0Acc9da44";

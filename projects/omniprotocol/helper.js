@@ -1,8 +1,5 @@
 const sdk = require("@defillama/sdk");
-const { default: BigNumber } = require("bignumber.js");
-const abi = require("./abis/aave.json");
-const abiOmni = require("./abis/omni.json");
-const { getBlock } = require("./getBlock");
+const abiOmni = require("./omni.json");
 
 async function getOmniReserves(
   block,
