@@ -1,4 +1,5 @@
 import { getLatestBlock } from "@defillama/sdk/build/util";
+import { FetchResult } from "../dexVolume.type";
 
 export function checkArguments(argv: string[]) {
     if (argv.length < 3) {
@@ -16,4 +17,13 @@ export async function getLatestBlockRetry(chain: string) {
             throw new Error(`Couln't get block heights for chain "${chain}"\n${e}`);
         }
     }
+}
+
+export function printVolumes(volumes: FetchResult[]) {
+    volumes.forEach(element => {
+        console.info("----------")
+        console.info(`Daily: ${element.dailyVolume}`)
+        console.info(`Total: ${element.totalVolume}`)
+        console.info("----------")
+      });
 }
