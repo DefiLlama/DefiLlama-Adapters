@@ -45,7 +45,7 @@ async function stablePoolTVL(_, _b, { [chain]: block }) {
 
 module.exports = {
   misrepresentedTokens: true,
-  moonbeam: {
+  kava: {
     tvl: sdk.util.sumChainTvls([dexTVL, stablePoolTVL])
   }
 }
