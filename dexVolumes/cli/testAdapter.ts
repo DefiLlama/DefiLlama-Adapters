@@ -29,7 +29,14 @@ const passedFile = path.resolve(process.cwd(), process.argv[2]);
     const allVolumes = await Promise.allSettled(Object.entries(breakdownAdapter).map(async ([version, adapter]) =>
       await runAdapter(adapter).then(res => ({ version, res }))
     ))
-    console.info("all volumes", allVolumes)
+    allVolumes.forEach((promise)=>{
+      if (promise.status==="fulfilled") {
+        console.info(promise.value.version)
+        printVolumes(promise.value.res)
+      } else {
+        console.info(promise.reason)
+      }
+    })
   } else console.info("No compatible adapter found")
 })()
 
@@ -44,18 +51,17 @@ async function runAdapter(volumeAdapter: VolumeAdapter) {
       if (chainsForBlocks.includes(chain as Chain) || chain === "ethereum") {
         const latestBlock = await getLatestBlockRetry(chain)
         if (!latestBlock) throw new Error("latestBlock")
-        chainBlocks[chain] = {...latestBlock, number: latestBlock.number - 10};
+        chainBlocks[chain] = latestBlock.number - 10
       }
     })
   );
-//console.log(chainBlocks)
+  // Get volumes
   const unixTimestamp = Math.round(Date.now() / 1000) - 60;
-  const volumes = await Promise.all(Object.keys(chainBlocks).map(chain => {
-    console.log(chain)
-    return volumeAdapter[chain].fetch(unixTimestamp, chainBlocks).then(res => {
-      console.log(res)
-      return undefined//{ timestamp: unixTimestamp, totalVolume: res.totalVolume, dailyVolume: res.dailyVolume }
-    })
-  }))
+  const volumes = await Promise.all(Object.keys(chainBlocks).map(
+    async chain => volumeAdapter[chain].fetch(unixTimestamp, chainBlocks)
+      .then(res => {
+        return { timestamp: unixTimestamp, totalVolume: res.totalVolume, dailyVolume: res.dailyVolume }
+      })
+  ))
   return volumes
 }
