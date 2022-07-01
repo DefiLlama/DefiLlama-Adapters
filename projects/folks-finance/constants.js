@@ -94,7 +94,10 @@ const pools = [
   },
 ];
 
-const liquidGovernanceAppId = 694427622;
+// app id of the governance app used only on 3rd governance period
+const liquidGovernance3AppId = 694427622;
+// app id of the governance app used from 4th governance period on
+const liquidGovernanceAppId = 793119194;
 
 const oracleAppId = 793269965;
 const oracleAdapterAppId = 751277258;
@@ -103,6 +106,7 @@ const tinymanValidatorAppId = 552635992;
 
 module.exports = {
   pools,
+  liquidGovernance3AppId,
   liquidGovernanceAppId,
   oracleAppId,
   oracleAdapterAppId,
