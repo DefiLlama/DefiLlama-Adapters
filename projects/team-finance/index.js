@@ -51,9 +51,8 @@ function getTvl(args) {
         blacklist: args[i].blacklist,
       })
 
-      for (const [token, balance] of Object.entries(balances)) {
+      for (const [token, balance] of Object.entries(balances))
         sdk.util.sumSingleBalance(totalBalances, token, balance)
-      }
     }
     return totalBalances
   }

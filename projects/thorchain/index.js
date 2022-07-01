@@ -70,10 +70,7 @@ module.exports = {
   litecoin:{
     fetch: ltc
   },
-  thorchain:{
-    tvl: ()=>({}),
-    staking
-  },
+  
   // terra:{
   //   fetch: terra
   // },
