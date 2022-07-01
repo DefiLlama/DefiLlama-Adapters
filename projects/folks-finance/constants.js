@@ -6,6 +6,12 @@ const pools = [
     assetDecimals: 6,
   },
   {
+    // gALGO
+    appId: 794055220,
+    assetId: 793124631,
+    assetDecimals: 6,
+  },
+  {
     // USDC
     appId: 686500029,
     assetId: 31566704,
