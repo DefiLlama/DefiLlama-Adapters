@@ -3,8 +3,9 @@ const sdk = require("@defillama/sdk");
 const { getBlock } = require("../helper/getBlock");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { getChainTransform } = require("../helper/portedTokens");
+const { request, gql } = require("graphql-request");
 
-const ADDRESSES = require("./addresses");
+const NETWORKS = require("./networks");
 
 const riftVaultAbi = require("./abis/riftVaultAbi");
 const masterChefAbi = require("./abis/masterChefAbi");
@@ -13,64 +14,50 @@ function getAbi(obj, fnName) {
   return obj.find((x) => x.name === fnName);
 }
 
+function addressToId(address) {
+  return address.toLowerCase();
+}
+
 async function getChainBalances(timestamp, chainBlocks, chain) {
   const block = await getBlock(timestamp, chain, chainBlocks);
   const balances = {};
   const transform = await getChainTransform(chain);
 
-  const { core, startBlock } = ADDRESSES[chain];
+  const { coreAddress, graphUrl } = NETWORKS[chain];
 
-  // Get all registered vaults by searching events on core address.
-  const vaultRegisteredEvents = (
-    await sdk.api.util.getLogs({
-      chain,
-      keys: [],
-      toBlock: block,
-      fromBlock: startBlock,
-      target: core,
-      topic: "VaultRegistered(address,address)",
-    })
-  ).output;
+  const query = gql`
+    query get_vaults($coreAddr: String) {
+      core(id: $coreAddr) {
+        vaults {
+          id
+          type
+          token0 {
+            id
+          }
+          token1 {
+            id
+          }
+          pair {
+            id
+          }
+        }
+      }
+    }
+  `;
 
-  const vaults = vaultRegisteredEvents.map((log) => `0x${log.topics[1].substring(26)}`);
+  const queryResult = await request(graphUrl, query, {
+    coreAddr: addressToId(coreAddress),
+  });
 
-  for (const vault of vaults) {
-    // Get addresses.
-    const token0 = (
-      await sdk.api.abi.call({
-        abi: getAbi(riftVaultAbi, "token0"),
-        chain,
-        target: vault,
-        block,
-      })
-    ).output;
-
-    const token1 = (
-      await sdk.api.abi.call({
-        chain,
-        block,
-        target: vault,
-        abi: getAbi(riftVaultAbi, "token1"),
-      })
-    ).output;
-
-    const pair = (
-      await sdk.api.abi.call({
-        chain,
-        block,
-        target: vault,
-        abi: getAbi(riftVaultAbi, "pair"),
-      })
-    ).output;
-
+  for (const vault of queryResult.core.vaults) {
     // Get balances.
     const token0Bal = (
       await sdk.api.abi.call({
         chain,
         block,
-        target: token0,
+        target: vault.token0.id,
         abi: "erc20:balanceOf",
-        params: [vault],
+        params: [vault.id],
       })
     ).output;
 
@@ -78,9 +65,9 @@ async function getChainBalances(timestamp, chainBlocks, chain) {
       await sdk.api.abi.call({
         chain,
         block,
-        target: token1,
+        target: vault.token1.id,
         abi: "erc20:balanceOf",
-        params: [vault],
+        params: [vault.id],
       })
     ).output;
 
@@ -88,32 +75,32 @@ async function getChainBalances(timestamp, chainBlocks, chain) {
       await sdk.api.abi.call({
         chain,
         block,
-        target: pair,
+        target: vault.pair.id,
         abi: "erc20:balanceOf",
-        params: [vault],
+        params: [vault.id],
       })
     ).output;
 
     // Add token balances.
-    sdk.util.sumSingleBalance(balances, transform(token0), token0Bal);
-    sdk.util.sumSingleBalance(balances, transform(token1), token1Bal);
+    sdk.util.sumSingleBalance(balances, transform(vault.token0.id), token0Bal);
+    sdk.util.sumSingleBalance(balances, transform(vault.token1.id), token1Bal);
 
     // Unwrap and add pair balances.
     await unwrapUniswapLPs(
       balances,
-      [{ balance: pairBal, token: pair }],
+      [{ balance: pairBal, token: vault.pair.id }],
       block,
       chain,
       transform
     );
 
     // Look for MasterChef balance.
-    try {
+    if (vault.type === "SUSHI_SWAP") {
       const rewarder = (
         await sdk.api.abi.call({
           chain,
           block,
-          target: vault,
+          target: vault.id,
           abi: getAbi(riftVaultAbi, "rewarder"),
           params: [],
         })
@@ -123,7 +110,7 @@ async function getChainBalances(timestamp, chainBlocks, chain) {
         await sdk.api.abi.call({
           chain,
           block,
-          target: vault,
+          target: vault.id,
           abi: getAbi(riftVaultAbi, "pid"),
           params: [],
         })
@@ -135,19 +122,19 @@ async function getChainBalances(timestamp, chainBlocks, chain) {
           block,
           target: rewarder,
           abi: getAbi(masterChefAbi, "userInfo"),
-          params: [pid, vault],
+          params: [pid, vault.id],
         })
       ).output;
 
       // Unwrap and add MasterChef balances.
       await unwrapUniswapLPs(
         balances,
-        [{ balance: masterChefBal, token: pair }],
+        [{ balance: masterChefBal, token: vault.pair.id }],
         block,
         chain,
         transform
       );
-    } catch (e) {}
+    }
   }
 
   return balances;
@@ -157,10 +144,17 @@ async function aurora(timestamp, block, chainBlocks) {
   return getChainBalances(timestamp, chainBlocks, "aurora");
 }
 
+async function ethereum(timestamp, block, chainBlocks) {
+  return getChainBalances(timestamp, chainBlocks, "ethereum");
+}
+
 module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
   aurora: {
     tvl: aurora,
+  },
+  ethereum: {
+    tvl: ethereum,
   },
 };
