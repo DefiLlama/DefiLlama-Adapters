@@ -6,7 +6,7 @@ async function getOmniReserves(
   chain,
   validProtocolDataHelper
 ) {
-  validProtocolDataHelpers = [validProtocolDataHelper];
+  const validProtocolDataHelpers = [validProtocolDataHelper];
 
   const aTokenMarketData = (
     await sdk.api.abi.multiCall({
