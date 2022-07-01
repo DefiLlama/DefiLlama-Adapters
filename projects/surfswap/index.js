@@ -9,7 +9,6 @@ const dexTVL = getUniTVL({
   coreAssets: [
     "0xc86c7C0eFbd6A49B35E8714C5f59D99De09A225b", // WKAVA
     '0xfA9343C3897324496A05fC75abeD6bAC29f8A40f', // USDC
-    "0x88905056caCBb5554Add698204B6a757BEcA278D", // TIDE
   ],
 })
 

@@ -1522,6 +1522,14 @@ const kavaFixMapping = {
     coingeckoId: "kava",
     decimals: 18
   },
+  "0x332730a4F6E03D9C55829435f10360E13cfA41Ff": {
+    coingeckoId: "binance-usd",
+    decimals: 18
+  },
+  "0x65e66a61D0a8F1e686C2D6083ad611a10D84D97A": {
+    coingeckoId: "binancecoin",
+    decimals: 18
+  },
   "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f": {
     coingeckoId: "usd-coin",
     decimals: 6
