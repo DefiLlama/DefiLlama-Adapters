@@ -15,6 +15,6 @@
   },
   "compilerOptions": {
     // typescript options here
-    "typeRoots": ["./@types/", "./node_modules/@types/"]
+    "typeRoots": ["./typings/", "./node_modules/@types/"]
   }
 }
