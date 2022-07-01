@@ -128,7 +128,7 @@ function totalTvl() {
 
     // subtract borrowed from each position
     for (const asset in staked) {
-      balances[asset] == staked[asset] - borrowed[asset];
+      balances[asset] = staked[asset] - borrowed[asset];
     }
 
     return balances;
