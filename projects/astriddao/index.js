@@ -42,6 +42,21 @@ const COLLATERALS = {
       defaultPool: "0xEb80f1a9ede36412cF26E1e35ae74dbA30cCfF02",
     }
   },
+  WETH: {
+    tokenAddress: "0x81ECac0D6Be0550A00FF064a4f9dd2400585FE9c",
+    contracts: {
+      activePool: "0x5Ec419F08602caE5e4C591dE65bD640d66673035",
+      defaultPool: "0x2eE0F3daa042af6Fdd56f0194d5aBfdA0A723D95",
+    }
+  },
+  WBTC: {
+    tokenAddress: "0xad543f18cFf85c77E140E3E5E3c3392f6Ba9d5CA",
+    bridgeTokenMapping: "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+    contracts: {
+      activePool: "0x1685E4f68FD9A50246ce92F0eb07a977591F5Ba2",
+      defaultPool: "0xD69eB04d9ff456A31Da6D2a20538512C433ac1Ca",
+    }
+  },
 }
 
 const BAI_TOKEN_ADDRESS = "0x733ebcC6DF85f8266349DEFD0980f8Ced9B45f35"
@@ -69,6 +84,16 @@ const STAKES = {
   USDC: {
     contracts: {
       stabilityPool: "0x3598e5Aa98FDa59261b7372D68C116ad7220716D"
+    }
+  },
+  WETH: {
+    contracts: {
+      stabilityPool: "0x19Af5DA5770d17808aA9b0011a47693379f338DD"
+    }
+  },
+  WBTC: {
+    contracts: {
+      stabilityPool: "0x9A64Af13Cd72212ab0D812BEB839Fa93692E8B9F"
     }
   },
 }
