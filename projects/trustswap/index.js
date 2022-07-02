@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const erc20 = require("../helper/abis/erc20.json");
 const abi = require("./abi.json");
 
 const staking_contract = "0x5A753021CE28CBC5A7c51f732ba83873D673d8cC";
@@ -35,7 +34,7 @@ const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
   for (let i = 0; i < assets.length; i++) {
     const assetsBalance = (
       await sdk.api.abi.call({
-        abi: erc20.balanceOf,
+        abi: 'erc20:balanceOf',
         target: assets[i],
         params: staking_contract,
         block: ethBlock,

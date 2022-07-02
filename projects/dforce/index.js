@@ -151,8 +151,8 @@ const dfStakingPools = "0x41602ccf9b1F63ea1d0Ab0F0A1D2F4fd0da53f60";
 
 const USXs = {
   "polygon": "0xCf66EB3D546F0415b368d98A95EAF56DeD7aA752",
-  "avax": "0x73C01B355F2147E5FF315680E068354D6344Eb0b",
-  "kava": "0x9787aF345E765a3fBf0F881c49f8A6830D94A514",
+  "avax": "0x853ea32391AaA14c112C645FD20BA389aB25C5e0",
+  "kava": "0xDb0E1e86B01c4ad25241b1843E407Efc4D615248",
 };
 
 /*==================================================

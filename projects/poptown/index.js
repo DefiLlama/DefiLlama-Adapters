@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const erc20 = require("../helper/abis/erc20.json");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 
@@ -57,7 +56,7 @@ const ethTvl = async (block) => {
 
     const mlpBalance = (
       await sdk.api.abi.call({
-        abi: erc20.balanceOf,
+        abi: 'erc20:balanceOf',
         target: mlpPairUNI,
         params: mlp,
         block,

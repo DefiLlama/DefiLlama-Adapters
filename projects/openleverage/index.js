@@ -1,5 +1,4 @@
 const sdk = require('@defillama/sdk');
-const erc20 = require("../helper/abis/erc20.json");
 const {gql, GraphQLClient} = require("graphql-request");
 const retry = require("../helper/retry");
 const utils = require("../helper/utils");
@@ -24,7 +23,7 @@ async function eth_tvl(timestamp, block) {
         const poolToken = poolInfo["poolToken"][pool]
         const poolBalance = (
             await sdk.api.abi.call({
-                abi: erc20.balanceOf,
+                abi: 'erc20:balanceOf',
                 target: poolToken,
                 params: pool
             })
@@ -34,7 +33,7 @@ async function eth_tvl(timestamp, block) {
     for (const token of poolInfo["tokenAddressList"]) {
         const openLeveBalance = (
             await sdk.api.abi.call({
-                abi: erc20.balanceOf,
+                abi: 'erc20:balanceOf',
                 target: token,
                 params: openleve_address["eth"]
             })
@@ -51,7 +50,7 @@ async function bsc_tvl(timestamp, block, chainBlocks) {
         const poolToken = poolInfo["poolToken"][pool]
         const poolBalance = (
             await sdk.api.abi.call({
-                abi: erc20.balanceOf,
+                abi: 'erc20:balanceOf',
                 target: poolToken,
                 chain: 'bsc',
                 params: pool
@@ -62,7 +61,7 @@ async function bsc_tvl(timestamp, block, chainBlocks) {
     for (const token of poolInfo["tokenAddressList"]) {
         const openLeveBalance = (
             await sdk.api.abi.call({
-                abi: erc20.balanceOf,
+                abi: 'erc20:balanceOf',
                 target: token,
                 chain: 'bsc',
                 params: openleve_address["bsc"]
@@ -129,7 +128,7 @@ async function kcc_tvl(timestamp, block) {
         const poolToken = poolInfo["poolToken"][pool]
         const poolBalance = (
             await sdk.api.abi.call({
-                abi: erc20.balanceOf,
+                abi: 'erc20:balanceOf',
                 target: poolToken,
                 chain: 'kcc',
                 params: pool
@@ -141,7 +140,7 @@ async function kcc_tvl(timestamp, block) {
     for (const token of poolInfo["tokenAddressList"]) {
         const openLeveBalance = (
             await sdk.api.abi.call({
-                abi: erc20.balanceOf,
+                abi: 'erc20:balanceOf',
                 target: token,
                 chain: 'kcc',
                 params: openleve_address["kcc"]

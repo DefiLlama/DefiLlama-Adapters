@@ -1,7 +1,7 @@
-const sdk = require("@defillama/sdk");
-const utils = require("../helper/utils");
+const { get } = require("../helper/http");
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
-const erc20 = require("../helper/abis/erc20.json");
+let _response
 
 // --- Grab from here the pools available atm ---
 const DOPPLE_API = "https://api-v3.dopple.finance/multi-chain";
@@ -64,85 +64,32 @@ const assetsOnExchange = {
   ]
 }
 
-const fantomTvl = async (timestamp, ethBlock, chainBlocks) => {
-  let balances = {};
-  const chainId = 250
-  const response = await utils.fetchURL(DOPPLE_API);
-  const pools = response.data[chainId]
-  for (const pool of pools) {
-    for (const asset of assetsOnExchange[CHAINS[chainId]]) {
-      const balance = (
-        await sdk.api.abi.call({
-          block: chainBlocks[CHAINS[chainId]],
-          chain: CHAINS[chainId],
-          target: asset,
-          params: pool.swapAddress,
-          abi: erc20["balanceOf"],
-        })
-      ).output;
-
-      sdk.util.sumSingleBalance(balances, `${CHAINS[chainId]}:${asset}`, balance);
+function getTvl(chainId) {
+  return async (_, _b, chainBlocks) => {
+    const chain = CHAINS[chainId]
+    const block = chainBlocks[chain]
+    if (!_response) _response = get(DOPPLE_API)
+    const response = await _response
+    const pools = response[chainId]
+    const toa = []
+    for (const pool of pools) {
+      for (const asset of assetsOnExchange[CHAINS[chainId]]) {
+        toa.push([asset, pool.swapAddress])
+      }
     }
+
+    return sumTokens2({ tokensAndOwners: toa, chain, block, })
   }
-
-  return balances;
-};
-const harmonyTvl = async (timestamp, ethBlock, chainBlocks) => {
-  let balances = {};
-  const chainId = 1666600000
-  const response = await utils.fetchURL(DOPPLE_API);
-  const pools = response.data[chainId]
-  for (const pool of pools) {
-    for (const asset of assetsOnExchange[CHAINS[chainId]]) {
-      const balance = (
-        await sdk.api.abi.call({
-          block: chainBlocks[CHAINS[chainId]],
-          chain: CHAINS[chainId],
-          target: asset,
-          params: pool.swapAddress,
-          abi: erc20["balanceOf"],
-        })
-      ).output;
-
-      sdk.util.sumSingleBalance(balances, `${CHAINS[chainId]}:${asset}`, balance);
-    }
-  }
-
-  return balances;
-};
-
-const bscTvl = async (timestamp, ethBlock, chainBlocks) => {
-  let balances = {};
-  const chainId = 56
-  const response = await utils.fetchURL(DOPPLE_API);
-  const pools = response.data[chainId]
-  for (const pool of pools) {
-    for (const asset of assetsOnExchange[CHAINS[chainId]]) {
-      const balance = (
-        await sdk.api.abi.call({
-          block: chainBlocks[CHAINS[chainId]],
-          chain: CHAINS[chainId],
-          target: asset,
-          params: pool.swapAddress,
-          abi: erc20["balanceOf"],
-        })
-      ).output;
-
-      sdk.util.sumSingleBalance(balances, `${CHAINS[chainId]}:${asset}`, balance);
-    }
-  }
-
-  return balances;
-};
+}
 
 module.exports = {
   bsc: {
-    tvl: bscTvl,
+    tvl: getTvl(56),
   },
   fantom: {
-    tvl: fantomTvl
+    tvl: getTvl(250),
   },
   harmony: {
-    tvl: harmonyTvl
+    tvl: getTvl(1666600000),
   },
 };

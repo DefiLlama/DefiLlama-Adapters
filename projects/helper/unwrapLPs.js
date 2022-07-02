@@ -4,6 +4,7 @@ const token0 = require('./abis/token0.json')
 const symbol = require('./abis/symbol.json')
 const { getPoolTokens, getPoolId } = require('./abis/balancer.json')
 const getPricePerShare = require('./abis/getPricePerShare.json')
+const underlyingABI = require('./abis/underlying.json')
 const { requery } = require('./requery')
 const { getChainTransform, getFixBalances } = require('./portedTokens')
 const creamAbi = require('./abis/cream.json')
@@ -82,9 +83,19 @@ const yearnVaults = {
   // yvUSDT FTM
   "0x148c05caf1bb09b5670f00d511718f733c54bc4c": "0x049d68029688eAbF473097a2fC38ef61633A3C7A"
 }
-async function unwrapYearn(balances, yToken, block, chain = "ethereum", transformAddress = (addr) => addr) {
-  const underlying = yearnVaults[yToken.toLowerCase()];
-  if (!underlying) return;
+async function unwrapYearn(balances, yToken, block, chain = "ethereum", transformAddress = (addr) => addr, fetchUnderlying) {
+  let underlying = yearnVaults[yToken.toLowerCase()];
+  if (!underlying) {
+    if (!fetchUnderlying) return;
+    const { output: _underlying } = await sdk.api.abi.call({
+      target: yToken,
+      abi: underlyingABI,
+      chain, block,
+    })
+    underlying = _underlying
+  }
+  
+  console.log('underinglin found', underlying)
 
   const tokenKey = chain == 'ethereum' ? yToken : `${chain}:${yToken}`
   if (!balances[tokenKey]) return;
@@ -351,7 +362,9 @@ tokens [
     [token, isLP] - eg ["0xaaa", true]
 ]
 */
-async function sumTokensAndLPsSharedOwners(balances, tokens, owners, block, chain = "ethereum", transformAddress = id => id) {
+async function sumTokensAndLPsSharedOwners(balances, tokens, owners, block, chain = "ethereum", transformAddress) {
+  if (!transformAddress)
+    transformAddress = await getChainTransform(chain)
   const balanceOfTokens = await sdk.api.abi.multiCall({
     calls: tokens.map(t => owners.map(o => ({
       target: t[0],
@@ -595,6 +608,7 @@ async function sumBalancerLps(balances, tokensAndOwners, block, chain, transform
 }
 
 const nullAddress = '0x0000000000000000000000000000000000000000'
+const gasTokens = ['0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee']
 /*
 tokensAndOwners [
     [token, owner] - eg ["0xaaa", "0xbbb"]
@@ -604,14 +618,17 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
   if (!transformAddress)
     transformAddress = await getChainTransform(chain)
 
-  const ethBalanceInputs = []
+  let ethBalanceInputs = []
 
   tokensAndOwners = tokensAndOwners.filter(i => {
-    if (i[0] !== nullAddress)
+    const token = i[0].toLowerCase()
+    if (token !==  nullAddress && !gasTokens.includes(token))
       return true
     ethBalanceInputs.push(i[1])
     return false
   })
+
+  ethBalanceInputs = getUniqueAddresses(ethBalanceInputs)
 
   if (ethBalanceInputs.length) {
     const { output: ethBalances } = await sdk.api.eth.getBalances({ targets: ethBalanceInputs, chain, block })
@@ -649,7 +666,7 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
     await resolveCrvTokens(balances, block, chain, transformAddress)
   }
 
-  if (['astar', 'harmony'].includes(chain)) {
+  if (['astar', 'harmony', 'kava'].includes(chain)) {
     const fixBalances = await getFixBalances(chain)
     fixBalances(balances)
   }
@@ -695,6 +712,10 @@ async function unwrapCreamTokens(balances, tokensAndOwners, block, chain = "ethe
 const crv_abi = {
   "crvLP_coins": { "stateMutability": "view", "type": "function", "name": "coins", "inputs": [{ "name": "arg0", "type": "uint256" }], "outputs": [{ "name": "", "type": "address" }], "gas": 3123 }
 }
+const tokenToPoolMapping = {
+  "0x3a283d9c08e8b55966afb64c515f5143cf907611": "0xb576491f1e6e5e62f1d8f26062ee822b40b0e0d4",
+  "0xed4064f376cb8d68f770fb1ff088a3d0f3ff5c4d": "0x8301ae4fc9c624d1d396cbdaa1ed877821d7c511"
+}
 async function genericUnwrapCrv(balances, crvToken, lpBalance, block, chain) {
   const { output: resolvedCrvTotalSupply } = await sdk.api.erc20.totalSupply({
     target: crvToken,
@@ -715,19 +736,36 @@ async function genericUnwrapCrv(balances, crvToken, lpBalance, block, chain) {
   const coins = (await sdk.api.abi.multiCall({
     abi: crv_abi['crvLP_coins'],
     calls: coins_indices.map(i => ({ params: [i] })),
-    target: crvToken,
+    target: tokenToPoolMapping[crvToken.toLowerCase()] || crvToken,
     chain,
     block
-  })).output.map(c => c.output)
+  })).output.map(c => c.output.toLowerCase())
   const crvLP_token_balances = await sdk.api.abi.multiCall({
     abi: 'erc20:balanceOf',
     calls: coins.map(c => ({
       target: c,
-      params: crvToken,
+      params: tokenToPoolMapping[crvToken.toLowerCase()] || crvToken,
     })),
     chain,
     block
   })
+
+  const transform = await getChainTransform(chain)
+  const wrappedGasToken = transform('0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee')
+  if (coins.includes(wrappedGasToken)) {
+    const gasTokenBalance = (await sdk.api.eth.getBalance({
+      target: tokenToPoolMapping[crvToken.toLowerCase()] || crvToken,
+      block, 
+      chain
+    })).output
+    crvLP_token_balances.output.push({
+      output: gasTokenBalance,
+      input: {
+        target: wrappedGasToken
+      },
+      success: true
+    })
+  }
 
   // Edit the balances to weigh with respect to the wallet holdings of the crv LP token
   crvLP_token_balances.output.forEach(call =>
@@ -810,6 +848,7 @@ async function unwrapLPsAuto({ balances, block, chain = "ethereum", transformAdd
         sdk.util.sumSingleBalance(balances, transformAddress(token), balance);
     })
     await _unwrapUniswapLPs(balances, lpBalances)
+    return balances
   }
 
   async function _unwrapUniswapLPs(balances, lpPositions) {
@@ -910,6 +949,7 @@ async function sumTokens2({
   resolveYearn = false,
   unwrapAll = false,
   blacklistedLPs = [],
+  blacklistedTokens = [],
 }) {
 
   if (!tokensAndOwners.length) {
@@ -918,6 +958,9 @@ async function sumTokens2({
     if (owner) tokensAndOwners = tokens.map(t => [t, owner])
     if (owners.length) tokensAndOwners = tokens.map(t => owners.map(o => [t, o])).flat()
   }
+
+  blacklistedTokens = blacklistedTokens.map(t => t.toLowerCase())
+  tokensAndOwners = tokensAndOwners.filter(([token]) => !blacklistedTokens.includes(token.toLowerCase()))
 
   return sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { resolveCrv, resolveLP, resolveYearn, unwrapAll, blacklistedLPs })
 }

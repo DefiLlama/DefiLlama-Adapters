@@ -1,7 +1,14 @@
-const utils = require('../helper/utils')
+const { get } = require('../helper/http')
+let _data
 
 function fetch(chain) {
-  return async () => utils.fetchURL('https://api.beluga.fi/tvl').then(d => ({ 'usd-coin':  d.data[chain] }))
+  return async () => {
+    if (!_data) _data = get('https://api.beluga.fi/tvl')
+    let data = await _data
+    return {
+      'usd-coin': data[chain]
+    }
+  }
 }
 
 module.exports = {

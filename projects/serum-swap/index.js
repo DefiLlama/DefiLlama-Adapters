@@ -1,7 +1,7 @@
 const { getPools } = require('./pools')
 const axios = require('axios')
 const { getTokenAccountBalance } = require('../helper/solana')
-const { sliceIntoChunks, log } = require('../helper/utils')
+const { sliceIntoChunks, log, sleep } = require('../helper/utils')
 
 async function tvl() {
   const pools = getPools()
@@ -17,7 +17,7 @@ async function tvl() {
   for (const chunk of chunks) {
     const data = await Promise.all(chunk.map(getTokenAccountBalance))
     tokenBalances.push(...data)
-    await sleep(2000)
+    await sleep(300)
   }
 
   const coingeckoIds = holdingMints.map(mint => tokenlist.find(t => t.address === mint)?.extensions?.coingeckoId)
@@ -29,10 +29,6 @@ async function tvl() {
     }
   }
   return balances
-}
-
-async function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 module.exports = {

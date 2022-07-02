@@ -30,8 +30,9 @@ async function tvl() {
 
 
 module.exports = {
+  timetravel: false,
   near: {
     tvl,
   },
   methodology: 'Summed up all the tokens deposited into Spin DEX'
-};
+}
