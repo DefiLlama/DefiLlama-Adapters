@@ -35,7 +35,6 @@ async function fetchData(block, balances, transform, borrowed=false) {
   if (!borrowed) {
     for (let i=0; i < data.poolStatuses.length; i++) {
       let amount = parseInt(data.poolStatuses[i].normalizedAvailableAmount)
-                + parseInt(data.poolStatuses[i].normalizedBorrowedAmount)
                 + parseInt(data.poolStatuses[i].adjustedPendingAmount);
       let assetAddress = data.poolStatuses[i].pool.parameters.underlyingToken;
 
