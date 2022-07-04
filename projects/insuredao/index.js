@@ -10,6 +10,8 @@ const usdc = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
 const insure = "0xd83AE04c9eD29d6D3E6Bf720C71bc7BeB424393E";
 
 const Vault = "0x131fb74c6fede6d6710ff224e07ce0ed8123f144";
+const optimismVault = "0x2FaE8C7Edd26213cA1A88fC57B65352dbe353698"; //test by pika 
+
 const VotingEscrow = "0x3dc07E60ecB3d064d20c386217ceeF8e3905916b";
 const vlINSURE = "0xA12ab76a82D118e33682AcB242180B4cc0d19E29";
 
@@ -26,6 +28,23 @@ async function tvl(timestamp, block) {
       target: Vault,
       abi: abi["valueAll"],
       chain: chain,
+      block: block,
+    })
+  ).output;
+  sdk.util.sumSingleBalance(balances, usdc, vusdcBalances);
+
+  return balances;
+}
+
+// =================== GET 'optimism' usdc BALANCES =================== //
+async function optimismtvl(timestamp, block) {
+  let balances = {};
+
+  const vusdcBalances = (
+    await sdk.api.abi.call({
+      target: optimismVault,
+      abi: abi["getPendingProtocolReward"], //test 
+      chain: "optimism",
       block: block,
     })
   ).output;
@@ -78,5 +97,8 @@ module.exports = {
     tvl: tvl,
     staking: staking,
     pool2: pool2,
+  },
+  optimism: {
+    tvl: optimismtvl,
   },
 };

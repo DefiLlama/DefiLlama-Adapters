@@ -100,5 +100,18 @@
     ],
     "stateMutability": "view",
     "type": "function"
+  },
+  "getPendingProtocolReward": {
+    "inputs": [],
+    "name": "getPendingProtocolReward",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   }
 }
