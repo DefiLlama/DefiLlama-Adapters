@@ -20,6 +20,9 @@ query cdps($lastId: String) {
         }
       }
       debt
+      owner{
+        address
+      }
     }
 }
 `
@@ -47,6 +50,7 @@ const liqs = async () => {
     }))
     return cdps.map(cdp=>{
         return {
+            owner: cdp.owner.address,
             liqPrice: cdp.debt * cdp.collateralType.liquidationRatio / cdp.collateral,
             collateral: gems[cdp.collateralType.id],
             collateralAmount: cdp.collateral,
