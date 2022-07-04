@@ -1,6 +1,6 @@
 # DEX volumes
 
-> **_NOTE:_**  In progress.
+> **_NOTE:_**  Under developement.
 
 ## Test an adapter 
 
