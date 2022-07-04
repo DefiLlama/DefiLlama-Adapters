@@ -125,17 +125,6 @@ async function tvl(timestamp, block, chainBlocks, chain) {
   // Accumulate collateral to balances
   const balances = {};
 
-  // core module TVL (poolManagers total assets)
-  collateralBalances.output.forEach((bal) => {
-    const token = poolManagersBalanceOf_calls.find(
-      (t) => bal.input.target == t.params
-    ).target;
-
-    balances[token] = BigNumber(balances[token] || 0)
-      .plus(BigNumber(bal.output))
-      .toFixed();
-  });
-
   // borrowing module TVL (vaultManagers balances)
   vaultManagersBalances.output.forEach((bal) => {
     const token = bal.input.target;
@@ -145,38 +134,37 @@ async function tvl(timestamp, block, chainBlocks, chain) {
       .toFixed();
   });
 
+  if (chain == "ethereum") {
+    // add Core module TVL (poolManagers total assets)
+    collateralBalances.output.forEach((bal) => {
+      const token = poolManagersBalanceOf_calls.find(
+        (t) => bal.input.target == t.params
+      ).target;
+
+      balances[token] = BigNumber(balances[token] || 0)
+        .plus(BigNumber(bal.output))
+        .toFixed();
+    });
+  } else {
+    // do nothing
+  }
   return balances;
 }
 
 async function ethTvl(timestamp, block, chainBlocks) {
   // check weird behaviors of these arguments
-  return tvl(timestamp, chainBlocks, "ethereum", "ethereum");
+  return tvl("", "", "ethereum", "ethereum");
 }
 
 async function polygonTvl(timestamp, block, chainBlocks) {
   // check weird behaviors of these arguments
-  return tvl(timestamp, chainBlocks, "polygon", "polygon");
+  return tvl("", "", "polygon", "polygon");
 }
 
-async function optimismTvl(timestamp, block, chainBlocks) {
-  // check weird behaviors of these arguments
-  return tvl(timestamp, chainBlocks, "optimism", "optimism");
-}
-
-async function arbitrumTvl(timestamp, block, chainBlocks) {
-  // check weird behaviors of these arguments
-  return tvl(timestamp, chainBlocks, "arbitrum", "arbitrum");
-}
-
-async function fantomTvl(timestamp, block, chainBlocks) {
-  // check weird behaviors of these arguments
-  return tvl(timestamp, chainBlocks, "fantom", "fantom");
-}
-
-async function avalancheTvl(timestamp, block, chainBlocks) {
-  // check weird behaviors of these arguments
-  return tvl(timestamp, chainBlocks, "avalanche", "avalanche");
-}
+/*
+New networks will need to be added progressively. 
+If not, the API call defaults to mainnet and the blockchain calls fail and return an error. 
+*/
 
 module.exports = {
   ethereum: {
@@ -185,18 +173,6 @@ module.exports = {
   },
   polygon: {
     tvl: polygonTvl,
-  },
-  optimism: {
-    tvl: optimismTvl,
-  },
-  arbitrum: {
-    tvl: arbitrumTvl,
-  },
-  fantom: {
-    tvl: fantomTvl,
-  },
-  avalanche: {
-    tvl: avalancheTvl,
   },
   methodology: `TVL is retrieved on-chain by querying the total assets managed by the Core module, and the balances of the vaultManagers of the Borrowing module.`,
 };
