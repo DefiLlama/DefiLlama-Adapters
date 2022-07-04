@@ -1162,13 +1162,16 @@ async function transformAuroraAddress() {
 }
 
 function transformNovachainAddress() {
-  return (addr) => {
-    if (addr === "0x657a66332a65b535da6c5d67b8cd1d410c161a08") {
-      return "fantom:0x69D17C151EF62421ec338a0c92ca1c1202A427EC";
-    } else if (addr === "0x1f5396f254ee25377a5c1b9c6bff5f44e9294fff")
-      return "fantom:0x04068da6c83afcfa0e13ba15a6696662335d5b75";
-    else return addr;
+  const mapping = {
+    "0x0000000000000000000000000000000000000000":
+      "fantom:0x69D17C151EF62421ec338a0c92ca1c1202A427EC", // SNT
+      "0x657a66332a65b535da6c5d67b8cd1d410c161a08":
+        "fantom:0x69D17C151EF62421ec338a0c92ca1c1202A427EC", // SNT
+    "0x1f5396f254ee25377a5c1b9c6bff5f44e9294fff":
+      "fantom:0x04068da6c83afcfa0e13ba15a6696662335d5b75" // USDC
   };
+
+  return transformChainAddress(mapping, "nova", { skipUnmapped: true });
 }
 
 
