@@ -248,7 +248,7 @@ function checkExportKeys(module, filePath, chains) {
 
   if (filePath.length > 2  
     || (filePath.length === 1 && !['.js', ''].includes(path.extname(filePath[0]))) // matches .../projects/projectXYZ.js or .../projects/projectXYZ
-    || (filePath.length === 2 && filePath[1] !== 'index.js'))  // matches .../projects/projectXYZ/index.js
+    || (filePath.length === 2 && !['api.js', 'index.js'].includes(filePath[1])))  // matches .../projects/projectXYZ/index.js
     process.exit(0)
 
   const blacklistedRootExportKeys = ['tvl', 'staking', 'pool2', 'borrowed', 'treasury'];
