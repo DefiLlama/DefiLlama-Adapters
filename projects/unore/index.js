@@ -1,6 +1,7 @@
 const sdk = require('@defillama/sdk');
 const BigNumber = require("bignumber.js");
 
+// BSC pools
 const riskPools = [
   '0xEcE9f1A3e8bb72b94c4eE072D227b9c9ba4cd750',
   '0x0b5C802ecA88161B5daed08e488C83d819a0cD02',
@@ -9,12 +10,18 @@ const riskPools = [
 
 const bscTokens = ['0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d'] // BUSD
 
-const ethTokens = ['0x474021845c4643113458ea4414bdb7fb74a01a77'] // UNO
+const ethTokens = [
+  '0x474021845c4643113458ea4414bdb7fb74a01a77', // UNO
+  '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC
+  '0xdac17f958d2ee523a2206206994597c13d831ec7' // USDT
+] 
 
-// UNO SSRP, SSIP pools on ethereum
+// SSRP, SSIP pools(risk pools) on ethereum
 const ethRiskPools = [
-  '0x1eECc8C8298ed9Bd46c147D44E2D7A7BfACE2034', // SSRP
-  '0xbd3E70819A8Add92B06d6d92A06DcdA9249DF2a3'  // SSIP
+  '0x1eECc8C8298ed9Bd46c147D44E2D7A7BfACE2034', // UNO SSRP
+  '0xbd3E70819A8Add92B06d6d92A06DcdA9249DF2a3',  // UNO SSIP
+  '0x920d510d5c70c01989b66f4e24687dddb988ddae', // USDT SSIP
+  '0xfdfaa453ef3709d2c26ecf43786a14ab8bf27e36' // USDC SSIP
 ]
 const ethSSIPEth = '0x29B4b8674D93b36Bf651d0b86A8e5bE3c378aCF4'
 

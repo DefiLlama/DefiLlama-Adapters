@@ -6,6 +6,12 @@ const pools = [
     assetDecimals: 6,
   },
   {
+    // gALGO
+    appId: 794055220,
+    assetId: 793124631,
+    assetDecimals: 6,
+  },
+  {
     // USDC
     appId: 686500029,
     assetId: 31566704,
@@ -88,15 +94,19 @@ const pools = [
   },
 ];
 
-const liquidGovernanceAppId = 694427622;
+// app id of the governance app used only on 3rd governance period
+const liquidGovernance3AppId = 694427622;
+// app id of the governance app used from 4th governance period on
+const liquidGovernanceAppId = 793119194;
 
-const oracleAppId = 751491670;
+const oracleAppId = 793269965;
 const oracleAdapterAppId = 751277258;
 const oracleDecimals = 14;
 const tinymanValidatorAppId = 552635992;
 
 module.exports = {
   pools,
+  liquidGovernance3AppId,
   liquidGovernanceAppId,
   oracleAppId,
   oracleAdapterAppId,

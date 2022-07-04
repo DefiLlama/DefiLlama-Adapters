@@ -773,6 +773,9 @@ async function transformKccAddress() {
     if (compareAddresses(addr, "0xc9baa8cfdde8e328787e29b4b078abf2dadc2055")) {
       return "0x6b175474e89094c44da98b954eedeac495271d0f";
     }
+    if (compareAddresses(addr, "0xfa93c12cd345c658bc4644d1d4e1b9615952258c")) {
+      return "bsc:0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c";
+    }
     if (compareAddresses(addr, "0x218c3c3d49d0e7b37aff0d8bb079de36ae61a4c0")) {
       return "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599";
     }
@@ -1158,6 +1161,17 @@ async function transformAuroraAddress() {
   return addr => mapping[addr.toLowerCase()] || `aurora:${addr.toLowerCase()}`;
 }
 
+function transformNovachainAddress() {
+  return (addr) => {
+    if (addr === "0x657a66332a65b535da6c5d67b8cd1d410c161a08") {
+      return "fantom:0x69D17C151EF62421ec338a0c92ca1c1202A427EC";
+    } else if (addr === "0x1f5396f254ee25377a5c1b9c6bff5f44e9294fff")
+      return "fantom:0x04068da6c83afcfa0e13ba15a6696662335d5b75";
+    else return addr;
+  };
+}
+
+
 function fixGodwokenBalances(balances) {
   const mapping = {
     "0xC3b946c53E2e62200515d284249f2a91d9DF7954": {
@@ -1522,6 +1536,14 @@ const kavaFixMapping = {
     coingeckoId: "kava",
     decimals: 18
   },
+  "0x332730a4F6E03D9C55829435f10360E13cfA41Ff": {
+    coingeckoId: "binance-usd",
+    decimals: 18
+  },
+  "0x65e66a61D0a8F1e686C2D6083ad611a10D84D97A": {
+    coingeckoId: "binancecoin",
+    decimals: 18
+  },
   "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f": {
     coingeckoId: "usd-coin",
     decimals: 6
@@ -1744,6 +1766,7 @@ const chainTransforms = {
   findora: transformFindoraAddress,
   bittorrent: transformBittorrentAddress,
   reichain: transformReichainAddress,
+  nova: transformNovachainAddress,
 };
 
 async function transformReichainAddress() {
