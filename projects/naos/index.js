@@ -34,6 +34,42 @@ const boostPoolAbi = [
   },
 ];
 
+const AssessorAbi = [
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "seniorDebt",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
+
+const reserveAbi = [
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "totalBalance",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+]
+
 // BSC address
 const BSC_NAOS_ADDRESS = "0x758d08864fb6cce3062667225ca10b8f00496cc2";
 const BSC_BNB_ADDRESS = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
@@ -53,6 +89,15 @@ const BSC_ALPACA_ADAPTERS = [
 
 const BSC_STAKING_POOL_WITH_TRANSFER =
   "0x6ebc2c41c1e29a5506b86b758b6c16dd5bbcf7d1";
+
+// RWA
+const Galaxy = [
+  {
+    Tranche: "0x2e07a30Ba047058ed1c360Cbf00CfCb61B07A1aA",
+    Assessor: "0x2E6FB688635A8C85D2B93e70087ed35c87ACe1D1",
+    Reserve: "0x9eEd257f7d5Bed450BC2B3562B24113C9fbD848b"
+  }
+]
 
 // ETH address
 const STAKING_POOL_ADDRESS = "0x99E4eA9eF6bf396C49B35FF9478EbB8890aEF581";
@@ -201,6 +246,48 @@ async function bscTvl(timestamp, ethBlock, chainBlocks) {
     `bsc:${BUSD_CONTRACT_ADDRESS}`,
     betaInsuranceBUSDTotalAmount
   );
+  // RWA
+  for (let borrwer of Galaxy) {
+    const seniorDebt = (
+      await sdk.api.abi.call({
+        target: borrwer.Assessor,
+        abi: AssessorAbi[0],
+        block: block,
+        chain: "bsc",
+      })
+    ).output;
+    const reserve = (
+      await sdk.api.abi.call({
+        target: borrwer.Reserve,
+        abi: reserveAbi[0],
+        block: block,
+        chain: "bsc",
+      })
+    ).output;
+    const trancheValue = (
+      await sdk.api.erc20.balanceOf({
+        target: BUSD_CONTRACT_ADDRESS,
+        owner: borrwer.Tranche,
+        block: block,
+        chain: "bsc",
+      })
+    ).output;
+    sdk.util.sumSingleBalance(
+      balances,
+      `bsc:${BUSD_CONTRACT_ADDRESS}`,
+      seniorDebt
+    );
+    sdk.util.sumSingleBalance(
+      balances,
+      `bsc:${BUSD_CONTRACT_ADDRESS}`,
+      reserve
+    );
+    sdk.util.sumSingleBalance(
+      balances,
+      `bsc:${BUSD_CONTRACT_ADDRESS}`,
+      trancheValue
+    );
+  }
   // ---- End BUSD
 
   // ---- Start ibBUSD (map ibBUSD value to BUSD)
