@@ -3,6 +3,7 @@ const BigNumber = require("bignumber.js");
 const { staking } = require("../helper/staking");
 const { Contract } = require("ethers");
 const fetch = require("node-fetch");
+const { transformPolygonAddress } = require("../helper/portedTokens");
 
 // Registry will be released in next sdk of Angle + graphql endpoint to come
 const collaterals = {
@@ -75,7 +76,13 @@ async function getVaultManagersFromAPI(chain) {
   }
 }
 
-async function tvl(timestamp, block, chainBlocks, chain) {
+async function tvl(
+  timestamp,
+  block,
+  chainBlocks,
+  chain,
+  transformAddress = (addr) => addr
+) {
   // Core module
   const poolManagersBalanceOf_calls = agTokens
     .map((t) => {
@@ -158,7 +165,7 @@ async function ethTvl(timestamp, block, chainBlocks) {
 
 async function polygonTvl(timestamp, block, chainBlocks) {
   // check weird behaviors of these arguments
-  return tvl("", "", "polygon", "polygon");
+  return tvl("", "", "polygon", "polygon", await transformPolygonAddress());
 }
 
 /*
