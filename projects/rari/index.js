@@ -188,8 +188,8 @@ module.exports = {
     borrowed,
   },
   hallmarks:[
-    [1651276800, "Fuse pools hack"],
-    [1618012800, "ICHI sell-off event"],
+    [1651276800, "FEI hack"],
+    [1649548800, "ICHI sell-off"],
     [1620432000, "First Rari hack"],
   ]
 }
