@@ -10,6 +10,7 @@ const riskPools = [
 
 const bscTokens = ['0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d'] // BUSD
 
+// ETHEREUM pools
 const ethTokens = [
   '0x474021845c4643113458ea4414bdb7fb74a01a77', // UNO
   '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // USDC
@@ -24,6 +25,18 @@ const ethRiskPools = [
   '0xfdfaa453ef3709d2c26ecf43786a14ab8bf27e36' // USDC SSIP
 ]
 const ethSSIPEth = '0x29B4b8674D93b36Bf651d0b86A8e5bE3c378aCF4'
+
+// KAVA pools
+// tokens
+const kavaTokens = [
+  // '0xfA9343C3897324496A05fC75abeD6bAC29f8A40f', // USDC
+]
+// risk pools
+const kavaRiskPools = [
+  '0x6cEC77829F474b56c327655f3281739De112B019'
+]
+
+const kavaSSIPKava = '0x112a295B0fCd382E47E98E8271e45979EDf952b6'
 
 function constructBalanceOfCalls(tokens, useAddressProp, pools) {
   const calls = []
@@ -76,6 +89,28 @@ async function bsc(timestamp, ethBlock, chainBlocks) {
   return balances
 }
 
+async function kava(timestamp, ethBlock, chainBlocks) {
+  const block = chainBlocks.kava
+  const balances = {}
+  const routerBalances = await sdk.api.abi.multiCall({
+    abi: 'erc20:balanceOf',
+    block,
+    chain: 'kava',
+    calls: constructBalanceOfCalls(kavaTokens, false, kavaRiskPools)
+  })
+
+  routerBalances.output.forEach(result => {
+    sdk.util.sumSingleBalance(balances, `kava:${result.input.target}`, result.output)
+  })
+
+  let _kavaBalance = await sdk.api.eth.getBalance({ target: kavaSSIPKava, chain: 'kava' })
+  _kavaBalance = BigNumber(_kavaBalance.output).div(10 ** 18)
+
+  balances['kava'] = _kavaBalance
+
+  return balances
+}
+
 module.exports = {
   start: 1632122867,  // Sep-20-2021 07:27:47 AM +UTC
   ethereum: {
@@ -83,5 +118,8 @@ module.exports = {
   },
   bsc: {
     tvl: bsc
+  },
+  kava: {
+    tvl: kava
   }
 };

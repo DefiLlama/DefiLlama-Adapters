@@ -76,6 +76,7 @@ const liqs = async () => {
                     badDebt.push([totalDebt, liqPrice, pos.price, user.id])
                 } else {
                     return {
+                        owner: user.id,
                         liqPrice,
                         collateral: pos.token,
                         collateralAmount: pos.totalBal,
