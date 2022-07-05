@@ -1,18 +1,7 @@
-const { get } = require("../helper/http");
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
-let _response
-
-// --- Grab from here the pools available atm ---
-const DOPPLE_API = "https://api-v3.dopple.finance/multi-chain";
-const CHAINS = {
-  56: 'bsc',
-  250: 'fantom',
-  1666600000: 'harmony'
-}
-
 const assetsOnExchange = {
-  [CHAINS[56]]: [
+  bsc: [
     // * KUSD
     '0x940Ff63e82d15fb47371BFE5a4ed7D7D183dE1A5',
     // * BUSD
@@ -36,7 +25,7 @@ const assetsOnExchange = {
     // * DOLLY
     "0xfF54da7CAF3BC3D34664891fC8f3c9B6DeA6c7A5"
   ],
-  [CHAINS[250]]: [
+  fantom: [
     // * USDC
     '0x04068da6c83afcfa0e13ba15a6696662335d5b75',
     // * fUSDT
@@ -46,7 +35,7 @@ const assetsOnExchange = {
     // * MIM
     '0x82f0b8b456c1a451378467398982d4834b6829c1',
   ],
-  [CHAINS[1666600000]]: [
+  harmony: [
     // * KUSD
     '0x60d717d69f964f4b67de9786e1796a4cf0d89940',
     // * 1USDC
@@ -64,32 +53,54 @@ const assetsOnExchange = {
   ]
 }
 
-function getTvl(chainId) {
-  return async (_, _b, chainBlocks) => {
-    const chain = CHAINS[chainId]
-    const block = chainBlocks[chain]
-    if (!_response) _response = get(DOPPLE_API)
-    const response = await _response
-    const pools = response[chainId]
-    const toa = []
-    for (const pool of pools) {
-      for (const asset of assetsOnExchange[CHAINS[chainId]]) {
-        toa.push([asset, pool.swapAddress])
-      }
-    }
+async function bscTVL(_, _b, { bsc: block }) {
+  const chain = 'bsc'
+  const pools = [
+    '0x5162f992EDF7101637446ecCcD5943A9dcC63A8A',
+    '0x449256e20ac3ed7f9ae81c2583068f7508d15c02',
+    '0x61f864a7dfe66cc818a4fd0baabe845323d70454',
+    '0x215b3616730020a7f3e075526588d0cdaa057dca',
+    '0x36e04b29169313d93a056289109ba8a8291e69ab',
+    '0xbc42fadcc37994c65a559fb7803ed60d90994e9f',
+    '0xf8af8659a2af27d65bb3e705f0e97b321886031d',
+    '0x830e287ac5947b1c0da865dfb3afd7cdf7900464',
+  ]
+  const toa = [
+    ['0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d', '0xa275769Fb6fF34A1a01C8CE61D0182f5d36AD27A',], // USDC collateral for minting KUSD
+  ]
+  assetsOnExchange.bsc.forEach(t => pools.forEach(o => toa.push([t, o])))
+  return sumTokens2({ tokensAndOwners: toa, chain, block, })
+}
 
-    return sumTokens2({ tokensAndOwners: toa, chain, block, })
-  }
+async function fantom(_, _b, { fantom: block }) {
+  const chain = 'fantom'
+  const pools = [
+    '0x5162f992EDF7101637446ecCcD5943A9dcC63A8A',
+  ]
+  const toa = []
+  assetsOnExchange.fantom.forEach(t => pools.forEach(o => toa.push([t, o])))
+  return sumTokens2({ tokensAndOwners: toa, chain, block, })
+}
+
+async function harmony(_, _b, { fantom: block }) {
+  const chain = 'harmony'
+  const pools = [
+    '0xccb7c3166729fe92c914fb38b850696748d83db8',
+    '0x44a783b046f012287a233e4e51949f47a2279dee',
+  ]
+  const toa = []
+  assetsOnExchange.harmony.forEach(t => pools.forEach(o => toa.push([t, o])))
+  return sumTokens2({ tokensAndOwners: toa, chain, block, })
 }
 
 module.exports = {
   bsc: {
-    tvl: getTvl(56),
+    tvl: bscTVL,
   },
   fantom: {
-    tvl: getTvl(250),
+    tvl: fantom,
   },
   harmony: {
-    tvl: getTvl(1666600000),
+    tvl: harmony,
   },
-};
+}

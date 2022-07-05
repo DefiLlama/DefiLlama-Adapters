@@ -168,4 +168,4 @@ module.exports = {
   },
   methodology:
     "We count liquidity by USDC deposited on the pools through PoolFactory contract",
-};
+}
