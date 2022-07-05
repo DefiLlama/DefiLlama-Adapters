@@ -12,7 +12,7 @@ const chains = {
   592: 'astar',
   1285: 'moonriver',
   42161: 'arbitrum',
-  43114: 'avax',
+  43114: 'avalanche',
 }
 
 const url = 'https://api.xy.finance/stats/v1/tvl'
@@ -34,7 +34,7 @@ function fetchChain(chain) {
 const chainTvls = {}
 Object.keys(chains).forEach((chain) => {
   const chainName = chains[chain]
-  chainTvls[chainName === 'avax' ? 'avalanche' : chainName] = {
+  chainTvls[chainName] = {
     fetch: fetchChain(Number(chain))
   }
 })
