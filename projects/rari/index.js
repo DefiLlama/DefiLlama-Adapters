@@ -191,5 +191,6 @@ module.exports = {
     [1651276800, "FEI hack"],
     [1649548800, "ICHI sell-off"],
     [1620432000, "First Rari hack"],
+    [1654905600, "Bhavnani's announcement"]
   ]
 }
