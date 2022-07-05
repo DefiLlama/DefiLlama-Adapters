@@ -1582,7 +1582,7 @@ function fixBalances(balances, mapping, { removeUnmapped = false } = {}) {
     const tokenKey = stripTokenHeader(token).toLowerCase();
     const { coingeckoId, decimals } = mapping[tokenKey] || {};
     if (!coingeckoId) {
-      if (removeUnmapped) {
+      if (removeUnmapped && tokenKey.startsWith('0x')) {
         console.log(
           `Removing token from balances, it is not part of whitelist: ${tokenKey}`
         );

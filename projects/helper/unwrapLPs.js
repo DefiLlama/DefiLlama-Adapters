@@ -94,7 +94,7 @@ async function unwrapYearn(balances, yToken, block, chain = "ethereum", transfor
     })
     underlying = _underlying
   }
-  
+
   console.log('underinglin found', underlying)
 
   const tokenKey = chain == 'ethereum' ? yToken : `${chain}:${yToken}`
@@ -444,7 +444,20 @@ async function sumLPWithOnlyOneTokenOtherThanKnown(balances, lpToken, owner, tok
   }
   await sumLPWithOnlyOneToken(balances, lpToken, owner, listedToken, block, chain, transformAddress)
 }
-async function unwrapUniswapV3NFTs({ balances, nftsAndOwners, block, chain, transformAddress }) {
+async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], block, chain, transformAddress, owner, nftAddress, owners }) {
+  if (!nftsAndOwners.length) {
+    if (!nftAddress)
+      switch (chain) {
+        case 'ethereum':
+        case 'polygon':
+        case 'arbitrum': nftAddress = '0xC36442b4a4522E871399CD717aBDD847Ab11FE88'; break;
+        default: throw new Error('missing default uniswap nft address')
+      }
+
+    if (!owners && owner)
+      owners = [owner]
+    nftsAndOwners = owners.map(o => [nftAddress, o])
+  }
   await Promise.all(nftsAndOwners.map(([nftAddress, owner]) => unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain, transformAddress })))
   return balances
 }
@@ -456,10 +469,11 @@ async function unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain = 
   const nftPositions = (await sdk.api.erc20.balanceOf({ target: nftAddress, owner, block, chain })).output
   const factory = (await sdk.api.abi.call({ target: nftAddress, abi: wildCreditABI.factory, block, chain })).output
 
+  const blacklisted = ['170666']  // TODO: check why this returning 773M
   const positionIds = (await sdk.api.abi.multiCall({
     block, chain, abi: wildCreditABI.tokenOfOwnerByIndex, target: nftAddress,
     calls: Array(Number(nftPositions)).fill(0).map((_, index) => ({ params: [owner, index] })),
-  })).output.map(positionIdCall => positionIdCall.output)
+  })).output.map(positionIdCall => positionIdCall.output).filter(i => !blacklisted.includes(i))
 
   const positions = (await sdk.api.abi.multiCall({
     block, chain, abi: wildCreditABI.positions, target: nftAddress,
@@ -622,7 +636,7 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
 
   tokensAndOwners = tokensAndOwners.filter(i => {
     const token = i[0].toLowerCase()
-    if (token !==  nullAddress && !gasTokens.includes(token))
+    if (token !== nullAddress && !gasTokens.includes(token))
       return true
     ethBalanceInputs.push(i[1])
     return false
@@ -960,7 +974,7 @@ async function sumTokens2({
   }
 
   blacklistedTokens = blacklistedTokens.map(t => t.toLowerCase())
-  tokensAndOwners = tokensAndOwners.filter(([token]) => !blacklistedTokens.includes(token.toLowerCase()))
+  tokensAndOwners = tokensAndOwners.map(([t, o]) => [t.toLowerCase(), o]).filter(([token]) => !blacklistedTokens.includes(token))
 
   return sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { resolveCrv, resolveLP, resolveYearn, unwrapAll, blacklistedLPs })
 }
