@@ -10,22 +10,40 @@ const usdc = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
 const insure = "0xd83AE04c9eD29d6D3E6Bf720C71bc7BeB424393E";
 
 const Vault = "0x131fb74c6fede6d6710ff224e07ce0ed8123f144";
+const optimismVault = "0xCa1FeE73b00c221966E5f25226402146BdffE259";
+
 const VotingEscrow = "0x3dc07E60ecB3d064d20c386217ceeF8e3905916b";
 const vlINSURE = "0xA12ab76a82D118e33682AcB242180B4cc0d19E29";
 
 const uni = "0x1b459aec393d604ae6468ae3f7d7422efa2af1ca";
 const uniStaking = "0xf57882cf186db61691873d33e3511a40c3c7e4da";
 
-
+// =================== GET ETH usdc BALANCES =================== //
 async function tvl(timestamp, block) {
   let balances = {};
 
-  // =================== GET usdc BALANCES =================== //
   const vusdcBalances = (
     await sdk.api.abi.call({
       target: Vault,
       abi: abi["valueAll"],
       chain: chain,
+      block: block,
+    })
+  ).output;
+  sdk.util.sumSingleBalance(balances, usdc, vusdcBalances);
+
+  return balances;
+}
+
+// =================== GET Optimism usdc BALANCES =================== //
+async function optimismtvl(timestamp, block) {
+  let balances = {};
+
+  const vusdcBalances = (
+    await sdk.api.abi.call({
+      target: optimismVault,
+      abi: abi["valueAll"],
+      chain: "optimism",
       block: block,
     })
   ).output;
@@ -78,5 +96,8 @@ module.exports = {
     tvl: tvl,
     staking: staking,
     pool2: pool2,
+  },
+  optimism: {
+    tvl: optimismtvl,
   },
 };
