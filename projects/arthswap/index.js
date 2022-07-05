@@ -1,8 +1,7 @@
-const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl");
+const { getUniTVL } = require("../helper/unknownTokens");
 const { stakingPricedLP } = require("../helper/staking");
 
 const FACTORIES = "0xA9473608514457b4bF083f9045fA63ae5810A03E";
-
 const NATIVE_TOKEN_WASTAR = "0xAeaaf0e2c81Af264101B9129C00F4440cCF0F720";
 
 const TOKENS = {
@@ -22,19 +21,15 @@ const STAKING_CONTRACTS = {
   astar: "0x42d175a498Cb517Ad29d055ea7DcFD3D99045404",
 };
 
-const astarTvl = calculateUsdUniTvl(
-  FACTORIES,
-  "astar",
-  NATIVE_TOKEN_WASTAR,
-  [...Object.values(TOKENS)],
-  "astar"
-);
-
 module.exports = {
   timetravel: true,
   methodology: "Arthswap Tvl Calculation",
   astar: {
-    tvl: astarTvl,
+    tvl: getUniTVL({
+      factory: FACTORIES,
+      chain: 'astar',
+      coreAssets: Object.values(TOKENS),
+    }),
     staking: stakingPricedLP(
       STAKING_CONTRACTS.astar,
       TOKENS.ARSW,
