@@ -1,42 +1,51 @@
 
-let bscPools = require('../izumi/bscPools.json')
-let abi = require('../izumi/abi')
+let abi = require('./abi')
 const { sumTokens2, } = require('../helper/unwrapLPs')
 
 const sdk = require('@defillama/sdk')
+const nullAddress = '0x0000000000000000000000000000000000000000'
+const poolHelper = '0x93C22Fbeff4448F2fb6e432579b0638838Ff9581'
 
 module.exports = {
   bsc: {
     tvl: async (ts, _b, { bsc: block }) => {
       const chain = 'bsc'
       const toa = []
-      // const block = await getBlock(ts, chain, chainBlocks, false)
+      let i = 1
+      let foundLastPool = false
+      const chunkSize = 10
+      const poolMetaData = []
 
-      // const logs = (await sdk.api.util
-      //   .getLogs({
-      //     keys: [],
-      //     toBlock: block,
-      //     chain,
-      //     target: '0xd7de110bd452aab96608ac3750c3730a17993de0',
-      //     fromBlock: 17681022,
-      //     topic: 'NewPool(address,address,uint24,uint24,address)',
-      //   })).output;
-      // bscPools = logs.map(log => `0x${log.data.substr(-40)}`.toLowerCase())
+      do {
+        const calls = []
+        for (let j = i; j < i + chunkSize; j++)
+          calls.push({ params: j })
+        i += chunkSize
+        const { output: poolMetas } = await sdk.api.abi.multiCall({
+          target: poolHelper,
+          abi: abi.poolMetas,
+          calls,
+          chain, block,
+        })
+        for (const { output } of poolMetas) {
+          if (output.tokenX === nullAddress && output.fee === '0') {
+            foundLastPool = true
+            break;
+          }
+          poolMetaData.push(output)
+        }
+      } while (!foundLastPool)
 
-      const calls = bscPools.map(i => ({ target: i }))
-      const { output: tokenY } = await sdk.api.abi.multiCall({
-        abi: abi.tokenY,
-        calls,
+      const poolCalls = poolMetaData.map(i => ({ params: [i.tokenX, i.tokenY, i.fee] }))
+      const { output: pools } = await sdk.api.abi.multiCall({
+        target: poolHelper,
+        abi: abi.pool,
+        calls: poolCalls,
         chain, block,
       })
-      const { output: tokenX } = await sdk.api.abi.multiCall({
-        abi: abi.tokenX,
-        calls,
-        chain, block,
-      })
 
-      tokenX.map(({ output, }, i) => toa.push([output, bscPools[i]]))
-      tokenY.map(({ output, }, i) => toa.push([output, bscPools[i]]))
+      pools.forEach(({ output }, i) => toa.push([poolMetaData[i].tokenX, output], [poolMetaData[i].tokenY, output],))
+
       return sumTokens2({ tokensAndOwners: toa, chain, block })
     }
   },
