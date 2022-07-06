@@ -1138,18 +1138,6 @@ const cronosFixMapping = {
     coingeckoId: "dogelon-mars",
     decimals: 18
   },
-  "0xf2001b145b43032aaf5ee2884e456ccd805f677d": {
-    coingeckoId: "dai",
-    decimals: 18
-  },
-  "0xc21223249ca28397b4b6541dffaecc539bff0c59": {
-    coingeckoId: "usd-coin",
-    decimals: 6
-  },
-  "0x66e428c3f67a68878562e79a0234c1f83c208770": {
-    coingeckoId: "tether",
-    decimals: 6
-  }
 };
 
 async function transformDfkAddress() {
