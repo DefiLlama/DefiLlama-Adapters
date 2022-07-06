@@ -1137,7 +1137,7 @@ const cronosFixMapping = {
   "0x02dccaf514c98451320a9365c5b46c61d3246ff3": {
     coingeckoId: "dogelon-mars",
     decimals: 18
-  }
+  },
 };
 
 async function transformDfkAddress() {
