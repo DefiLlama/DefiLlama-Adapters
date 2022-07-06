@@ -1,11 +1,14 @@
-const sdk = require("@defillama/sdk");
+  const sdk = require('@defillama/sdk');
 
-const BigNumber = require("bignumber.js");
-const abi = require("./abi.json");
-const BASE = BigNumber(10 ** 18);
-const Double = BASE * BASE;
-const mappingTokens = require("./tokenMapping.json");
-const { toUSDTBalances, usdtAddress } = require("../helper/balances");
+  const BigNumber = require('bignumber.js');
+  const abi = require('./abi.json');
+  const BASE = BigNumber(10 ** 18)
+  const Double = BASE * BASE;
+  const mappingTokens = require("./tokenMapping.json");
+  const {sumTokensSharedOwners} = require('../helper/unwrapLPs')
+  const {getCompoundV2Tvl} = require('../helper/compound')
+  const {generalizedChainExports} = require('../helper/exports')
+
 
 /*==================================================
   Ethereum Settings
@@ -25,6 +28,7 @@ const dUSDC = "0x16c9cF62d8daC4a38FB50Ae5fa5d51E9170F3179";
 
 const usdxPool = "0x7FdcDAd3b4a67e00D9fD5F22f4FD89a5fa4f57bA"; // USDx Stablecoin Pool
 
+
 /*==================================================
   GOLDx Protocol
   ==================================================*/
@@ -38,6 +42,7 @@ const BSC_BUSD = "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56";
 const BSC_DAI = "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3";
 const BSC_USDC = "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d";
 const BSC_USDT = "0x55d398326f99059fF775485246999027B3197955";
+
 
 let oracles = {
   ethereum: "0x34BAf46eA5081e3E49c29fccd8671ccc51e61E79",
@@ -118,6 +123,7 @@ const excludeAlliTokens = {
     "0x8af4f25019e00c64b5c9d4a49d71464d411c2199", // Stock pool EUX
     "0x450e09a303aa4bcc518b5f74dd00433bd9555a77", // Liqee qUSX
     "0xee0d3450b577743eee2793c0ec6d59361eb9a454" // Liqee iMUSX
+    
   ],
   // Polygon
   polygon: [
@@ -136,24 +142,17 @@ const excludeAlliTokens = {
   ]
 };
 
-// Lock USX to cross chain to L2.
-const escrowPools = [
-  "0x9e8b68e17441413b26c2f18e741eaba69894767c", // Arbitrum
-  "0x40be37096ce3b8a2e9ec002468ab91071501c499" // Optimism
-];
-
 // DF staking pool: sDF
 const dfStakingPools = "0x41602ccf9b1F63ea1d0Ab0F0A1D2F4fd0da53f60";
 
 const USXs = {
-  polygon: "0xCf66EB3D546F0415b368d98A95EAF56DeD7aA752",
-  avax: "0x853ea32391AaA14c112C645FD20BA389aB25C5e0",
-  kava: "0xDb0E1e86B01c4ad25241b1843E407Efc4D615248"
+  "ethereum": "0x0a5e677a6a24b2f1a2bf4f3bffc443231d2fdec8",
+  "bsc": "0xb5102cee1528ce2c760893034a4603663495fd72",
+  "arbitrum": "0x641441c631e2f909700d2f41fd87f0aa6a6b4edb",
+  "polygon": "0xCf66EB3D546F0415b368d98A95EAF56DeD7aA752",
+  "avax": "0x853ea32391AaA14c112C645FD20BA389aB25C5e0",
+  "kava": "0xDb0E1e86B01c4ad25241b1843E407Efc4D615248",
 };
-
-/*==================================================
-  TVL
-  ==================================================*/
 
 async function getDFStakingValue(block) {
   // Mainnet DF
@@ -173,127 +172,11 @@ async function getDFStakingValue(block) {
     chain: "ethereum"
   });
 
-  let lockedDF = BigNumber(stakingExchangeRate.toString())
-    .times(BigNumber(stakingTotalSupply.toString()))
-    .div(BASE);
-
-  let dfPrice = await getUnderlyingPrice("ethereum", DF, block);
-
-  return lockedDF.times(dfPrice).div(Double);
-}
-
-async function getTVLByTotalSupply(chain, token, block) {
-  let balances = {};
-  let tvl = BigNumber("0");
-
-  let { output: assetTotalSupply } = await sdk.api.abi.call({
-    block,
-    target: token,
-    abi: "erc20:totalSupply",
-    chain: chain
-  });
-
-  let assetPrice = await getUnderlyingPrice(chain, token, block);
-  tvl = tvl.plus(
-    BigNumber(assetTotalSupply).times(BigNumber(assetPrice)).div(Double)
-  );
-  let convertedBalance = BigNumber(assetTotalSupply);
+  const lockedDF = BigNumber(stakingExchangeRate.toString()).times(BigNumber(stakingTotalSupply.toString())).div(BASE);
 
   return {
-    convertedBalance,
-    tvl
+    [DF]:lockedDF
   };
-}
-
-async function getTVLByBalanceOf(chain, token, pool, block) {
-  let balances = {};
-  let tvl = BigNumber("0");
-
-  let { output: assetBalance } = await sdk.api.abi.call({
-    block,
-    target: pool,
-    params: token,
-    abi: "erc20:balanceOf",
-    chain: chain
-  });
-
-  let assetPrice = await getUnderlyingPrice(chain, pool, block);
-  tvl = tvl.plus(
-    BigNumber(assetBalance).times(BigNumber(assetPrice)).div(Double)
-  );
-  let convertedBalance = BigNumber(assetBalance);
-
-  return {
-    convertedBalance,
-    tvl
-  };
-}
-
-async function getCurrentCash(chain, token, block) {
-  let cash;
-  let excludeiTokens = excludeAlliTokens[chain];
-  if (!excludeiTokens.includes(token.toLowerCase())) {
-    const { output: isiToken } = await sdk.api.abi.call({
-      block,
-      target: token,
-      abi: abi["isiToken"],
-      chain: chain
-    });
-    if (isiToken) {
-      const { output: iTokenTotalSupply } = await sdk.api.abi.call({
-        block,
-        target: token,
-        abi: abi["totalSupply"],
-        chain: chain
-      });
-
-      const { output: iTokenExchangeRate } = await sdk.api.abi.call({
-        block,
-        target: token,
-        abi: abi["exchangeRateCurrent"],
-        chain: chain
-      });
-
-      cash = BigNumber(iTokenTotalSupply)
-        .times(BigNumber(iTokenExchangeRate))
-        .div(BigNumber(10 ** 18));
-    } else {
-      let { output: underlying } = await sdk.api.abi.call({
-        block,
-        target: token,
-        abi: abi["underlying"],
-        chain: chain
-      });
-
-      // Maybe need to accrue borrowed interests
-      let { output: iMtokenSupply } = await sdk.api.abi.call({
-        block,
-        target: underlying,
-        abi: "erc20:totalSupply",
-        chain: chain
-      });
-      cash = BigNumber(iMtokenSupply);
-    }
-  } else {
-    cash = BigNumber("0");
-  }
-
-  return cash;
-}
-
-async function getAllMarketsByChain(chain, block) {
-  const markets = await Promise.all(
-    allControllers[chain].map(async controller => {
-      return (await sdk.api.abi.call({
-        block,
-        target: controller,
-        abi: abi["getAlliTokens"],
-        chain: chain
-      })).output;
-    })
-  );
-
-  return markets.flat();
 }
 
 async function getUnderlyingPrice(chain, token, block) {
@@ -308,31 +191,12 @@ async function getUnderlyingPrice(chain, token, block) {
   return iTokenPrices;
 }
 
-async function getLendingTVLByChain(chain, block) {
-  let iTokens = {};
-  let lendingTVL = BigNumber("0");
-  let markets = await getAllMarketsByChain(chain, block);
-
-  await Promise.all(
-    markets.map(async market => {
-      let cash = await getCurrentCash(chain, market, block);
-      let price = await getUnderlyingPrice(chain, market, block);
-
-      iTokens[market] = cash;
-      lendingTVL = lendingTVL.plus(cash.times(price).div(Double));
-    })
-  );
-
-  return { iTokens, lendingTVL };
-}
-
-async function getTVLOfdToken(chain, block) {
-  let dTokenBalances = {};
+async function getTVLOfdToken(chain, block, dTokenBalances) {
   let dTokenTVL = BigNumber("0");
   let dTokens = yieldMarkets[chain];
   let dTokenUnderlyings = yieldUnderlyingTokens[chain];
-  await Promise.all(
-    dTokens.map(async dToken => {
+  await 
+  Promise.all(dTokens.map(async dToken => {
       let { output: marketTVL } = await sdk.api.abi.call({
         block,
         target: dToken,
@@ -342,18 +206,12 @@ async function getTVLOfdToken(chain, block) {
 
       const _balance = marketTVL["4"] || 0;
 
-      dTokenBalances[dTokenUnderlyings[dToken]] = BigNumber(_balance);
+      dTokenBalances[dTokenUnderlyings[dToken]] = _balance;
 
-      let assetPrice = await getUnderlyingPrice(
-        chain,
-        dTokenUnderlyings[dToken],
-        block
-      );
+      let assetPrice = await getUnderlyingPrice(chain, dTokenUnderlyings[dToken], block);
 
-      dTokenTVL = dTokenTVL.plus(
-        BigNumber(_balance).times(BigNumber(assetPrice)).div(Double)
-      );
-    })
+      dTokenTVL = dTokenTVL.plus(BigNumber(_balance).times(BigNumber(assetPrice)).div(Double)
+      )})
   );
 
   return {
@@ -362,117 +220,56 @@ async function getTVLOfdToken(chain, block) {
   };
 }
 
-async function getTVLByChain(chain, block) {
-  let balances = {};
-  let tvl = BigNumber("0");
-  if (chain == "ethereum") {
-    // 1. get balance and tvl of the USDx token.
-    await Promise.all(
-      usdxReservedTokens.map(async reserveToken => {
-        let {
-          convertedBalance: reserveBalance,
-          tvl: reserveTVL
-        } = await getTVLByBalanceOf(chain, usdxPool, reserveToken, block);
+function getTVLByChain(chain) {
+  return async (time, ethBlock, chainBlocks) => {
+    const block = chainBlocks[chain];
+    const balances = {};
+    if (chain == "ethereum") {
+      // 1. get balance and tvl of the USDx token.
+      await sumTokensSharedOwners(balances, usdxReservedTokens, [usdxPool], block, chain)
+      // 2. get backing of GOLDx token.
+      await sumTokensSharedOwners(balances, [goldxReserve], [goldxProtocol], block, chain)
+    }
 
-        balances[reserveToken] = reserveBalance;
-        tvl = tvl.plus(reserveTVL);
-      })
-    );
-    // 2. get balance and tvl of the GOLDx token.
-    let {
-      convertedBalance: goldxTotalSupply,
-      tvl: goldxTVL
-    } = await getTVLByTotalSupply(chain, goldxProtocol, block);
-    balances[goldxProtocol] = BigNumber(balances[goldxProtocol] || 0).plus(
-      goldxTotalSupply
-    );
-    tvl = tvl.plus(goldxTVL);
-    // 3. get balance and tvl of the dToken protocol.
-    let {
-      dTokenBalances: dTokenDetails,
-      dTokenTVL: dTokenTVL
-    } = await getTVLOfdToken(chain, block);
-    tvl = tvl.plus(dTokenTVL);
-  } else if (chain == "bsc") {
-    // 3. get balance and tvl of the dToken protocol.
-    let {
-      dTokenBalances: dTokenDetails,
-      dTokenTVL: dTokenTVL
-    } = await getTVLOfdToken(chain, block);
-    tvl = tvl.plus(dTokenTVL);
+    if (chain === "ethereum" || chain === "bsc") {
+      // 3. get balance and tvl of the dToken protocol.
+      let {
+        dTokenBalances: dTokenDetails,
+        dTokenTVL: dTokenTVL
+      } = await getTVLOfdToken(chain, block, balances);
+    }
+
+    return balances
   }
-  // 4. get balance and tvl of the lending protocol.
-  let {
-    iTokens: iTokensDetials,
-    lendingTVL: lendingTVL
-  } = await getLendingTVLByChain(chain, block);
-
-  tvl = tvl.plus(lendingTVL);
-
-  // For ethereum mainnet, should exclude locked USX for L2.
-  if (chain == "ethereum") {
-    let lockedUSXValue = await getLockedUSXValueForL2(block);
-    tvl = tvl.minus(lockedUSXValue);
-  }
-
-  return toUSDTBalances(tvl.toNumber());
 }
 
-async function ethereum(timestamp, ethBlock, chainBlocks) {
-  return getTVLByChain("ethereum", ethBlock);
+function getLendingTvl(chain, borrowed){
+  return sdk.util.sumChainTvls(allControllers[chain].map(controller =>
+    getCompoundV2Tvl(controller, chain, addr => `${chain}:${addr}`, undefined, undefined, borrowed, undefined, {
+      blacklistedTokens: excludeAlliTokens[chain].concat([USXs[chain] ?? ""]),
+      abis: {
+        getAllMarkets: abi['getAlliTokens']
+      }
+    })
+  ))
 }
 
-async function bsc(timestamp, ethBlock, chainBlocks) {
-  return getTVLByChain("bsc", chainBlocks["bsc"]);
-}
-
-async function arbitrum(timestamp, ethBlock, chainBlocks) {
-  return getTVLByChain("arbitrum", chainBlocks["arbitrum"]);
-}
-
-async function optimism(timestamp, ethBlock, chainBlocks) {
-  return getTVLByChain("optimism", chainBlocks["optimism"]);
-}
-
-async function polygon(timestamp, ethBlock, chainBlocks) {
-  return getTVLByChain("polygon", chainBlocks["polygon"]);
-}
-
-async function avax(timestamp, ethBlock, chainBlocks) {
-  return getTVLByChain("avax", chainBlocks["avax"]);
-}
-
-async function kava(timestamp, ethBlock, chainBlocks) {
-  return getTVLByChain("kava", chainBlocks["kava"]);
+function chainTvl(chain) {
+  return {
+    tvl: sdk.util.sumChainTvls([getLendingTvl(chain, false), getTVLByChain(chain)]),
+    borrowed: getLendingTvl(chain, true),
+  };
 }
 
 async function staking(timestamp, ethBlock, chainBlocks) {
-  let dfStakingValue = await getDFStakingValue(ethBlock);
-  return toUSDTBalances(dfStakingValue.toNumber());
+  return getDFStakingValue(ethBlock);
 }
 
 module.exports = {
   ethereum: {
-    tvl: ethereum,
-    staking
+    ...chainTvl("ethereum"),
+    staking,
   },
-  bsc: {
-    tvl: bsc
-  },
-  arbitrum: {
-    tvl: arbitrum
-  },
-  optimism: {
-    tvl: optimism
-  },
-  polygon: {
-    tvl: polygon
-  },
-  avax: {
-    tvl: avax
-  },
-  kava: {
-    tvl: kava
-  },
-  start: 1564165044 // Jul-27-2019 02:17:24 AM +UTC
-};
+  ...generalizedChainExports(chainTvl, ["bsc", "arbitrum", "optimism", "polygon", "avax", "kava"]),
+  start: 1564165044, // Jul-27-2019 02:17:24 AM +UTC
+}

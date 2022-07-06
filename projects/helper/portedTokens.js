@@ -264,7 +264,9 @@ async function transformBscAddress() {
     "0x6d1b7b59e3fab85b7d3a3d86e505dd8e349ea7f3":
       "heco:0xcbd6cb9243d8e3381fea611ef023e17d1b7aedf0", // BXH
     "0x42586ef4495bb512a86cf7496f6ef85ae7d69a64":
-      "polygon:0x66e8617d1df7ab523a316a6c01d16aa5bed93681" // SPICE
+      "polygon:0x66e8617d1df7ab523a316a6c01d16aa5bed93681", // SPICE
+    "0x60d01ec2d5e98ac51c8b4cf84dfcce98d527c747": "0x9ad37205d608b8b219e6a2573f922094cec5c200", // iZi
+    "0x0a3bb08b3a15a19b4de82f8acfc862606fb69a2d": "0x0a3bb08b3a15a19b4de82f8acfc862606fb69a2d", // iUSD
     // "0x250632378E573c6Be1AC2f97Fcdf00515d0Aa91B": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // BETH->WETH
   };
 
@@ -311,8 +313,8 @@ async function transformPolygonAddress() {
       "avax:0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664", // sUSDC.e(Polygon) -> USDC.e(Avalanche)
     "0x613a489785c95afeb3b404cc41565ccff107b6e0":
       "0x7a5d3A9Dcd33cb8D527f7b5F96EB4Fef43d55636", // radioshack
-    "0x1ddcaa4ed761428ae348befc6718bcb12e63bfaa":
-      "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48" // deUSDC
+    "0x1ddcaa4ed761428ae348befc6718bcb12e63bfaa": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // deUSDC
+    "0x794baab6b878467f93ef17e2f2851ce04e3e34c8": "0x794baab6b878467f93ef17e2f2851ce04e3e34c8", // Yin
   };
   normalizeMapping(mapping);
 
@@ -585,7 +587,8 @@ async function transformArbitrumAddress() {
     "0x2913e812cf0dcca30fb28e6cac3d2dcff4497688":
       "0x6b175474e89094c44da98b954eedeac495271d0f", //  nUSD
     "0x289ba1701c2f088cf0faf8b3705246331cb8a839":
-      "0x58b6a8a3302369daec383334672404ee733ab239" // LPT
+      "0x58b6a8a3302369daec383334672404ee733ab239", // LPT
+    "0x61a1ff55c5216b636a294a07d77c6f4df10d3b56": "0x52a8845df664d76c69d2eea607cd793565af42b8", // APEX
   };
 
   normalizeMapping(mapping);
@@ -772,6 +775,9 @@ async function transformKccAddress() {
     }
     if (compareAddresses(addr, "0xc9baa8cfdde8e328787e29b4b078abf2dadc2055")) {
       return "0x6b175474e89094c44da98b954eedeac495271d0f";
+    }
+    if (compareAddresses(addr, "0xfa93c12cd345c658bc4644d1d4e1b9615952258c")) {
+      return "bsc:0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c";
     }
     if (compareAddresses(addr, "0x218c3c3d49d0e7b37aff0d8bb079de36ae61a4c0")) {
       return "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599";
@@ -1134,7 +1140,7 @@ const cronosFixMapping = {
   "0x02dccaf514c98451320a9365c5b46c61d3246ff3": {
     coingeckoId: "dogelon-mars",
     decimals: 18
-  }
+  },
 };
 
 async function transformDfkAddress() {
@@ -1157,6 +1163,20 @@ async function transformAuroraAddress() {
   normalizeMapping(mapping)
   return addr => mapping[addr.toLowerCase()] || `aurora:${addr.toLowerCase()}`;
 }
+
+function transformNovachainAddress() {
+  const mapping = {
+    "0x0000000000000000000000000000000000000000":
+      "fantom:0x69D17C151EF62421ec338a0c92ca1c1202A427EC", // SNT
+    "0x657a66332a65b535da6c5d67b8cd1d410c161a08":
+      "fantom:0x69D17C151EF62421ec338a0c92ca1c1202A427EC", // SNT
+    "0x1f5396f254ee25377a5c1b9c6bff5f44e9294fff":
+      "fantom:0x04068da6c83afcfa0e13ba15a6696662335d5b75" // USDC
+  };
+
+  return transformChainAddress(mapping, "nova", { skipUnmapped: true });
+}
+
 
 function fixGodwokenBalances(balances) {
   const mapping = {
@@ -1522,6 +1542,14 @@ const kavaFixMapping = {
     coingeckoId: "kava",
     decimals: 18
   },
+  "0x332730a4F6E03D9C55829435f10360E13cfA41Ff": {
+    coingeckoId: "binance-usd",
+    decimals: 18
+  },
+  "0x65e66a61D0a8F1e686C2D6083ad611a10D84D97A": {
+    coingeckoId: "binancecoin",
+    decimals: 18
+  },
   "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f": {
     coingeckoId: "usd-coin",
     decimals: 6
@@ -1557,7 +1585,7 @@ function fixBalances(balances, mapping, { removeUnmapped = false } = {}) {
     const tokenKey = stripTokenHeader(token).toLowerCase();
     const { coingeckoId, decimals } = mapping[tokenKey] || {};
     if (!coingeckoId) {
-      if (removeUnmapped) {
+      if (removeUnmapped && tokenKey.startsWith('0x')) {
         console.log(
           `Removing token from balances, it is not part of whitelist: ${tokenKey}`
         );
@@ -1744,6 +1772,7 @@ const chainTransforms = {
   findora: transformFindoraAddress,
   bittorrent: transformBittorrentAddress,
   reichain: transformReichainAddress,
+  nova: transformNovachainAddress,
 };
 
 async function transformReichainAddress() {
