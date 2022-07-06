@@ -9,7 +9,6 @@ const { requery, } = require('./getUsdUniTvl')
 const { sumTokens, sumTokens2, } = require('./unwrapLPs')
 const { isLP, getUniqueAddresses, DEBUG_MODE, sliceIntoChunks, sleep } = require('./utils')
 const factoryAbi = require('./abis/factory.json');
-const { getBlock } = require('./getBlock');
 const { default: BigNumber } = require('bignumber.js')
 
 async function getLPData({
@@ -374,26 +373,6 @@ function pool2({ stakingContract, lpToken, chain = "ethereum", transformAddress,
   }
 }
 
-async function sumTokensSingle({
-  coreAssets, balances = {}, owner, tokens, chain, block, restrictTokenPrice = false, blacklist = [], skipConversion, onlyLPs, minLPRatio,
-  log_coreAssetPrices = [], log_minTokenValue = 1e6, countOnlyLps = false, 
-}) {
-  tokens = getUniqueAddresses(tokens)
-  blacklist = getUniqueAddresses(blacklist)
-  tokens = tokens.filter(t => !blacklist.includes(t))
-  const finalBalances = {}
-  for (let  i=0;i<chunks.length;i++) {
-    if (DEBUG_MODE) console.log('resolving for %s/%s of %s (chain: %s)', i+1, chunks.length, tokens.length, chain)
-    const toa = chunks[i].map(i => [i, owner])
-    const { updateBalances } = await getTokenPrices({ coreAssets, lps: chunks[i], chain, block, restrictTokenPrice, blacklist, log_coreAssetPrices, log_minTokenValue, minLPRatio })
-    await sumTokens(balances, toa, block, chain)
-    await updateBalances(balances, { skipConversion, onlyLPs })
-    Object.entries(balances).forEach(([token, bal]) => sdk.util.sumSingleBalance(finalBalances, token, bal))
-    if (i !==0 && i%4 === 0)  await sleep(3000)
-  }
-  return finalBalances
-}
-
 async function vestingHelper({
   coreAssets, owner, tokens, chain, block, restrictTokenPrice = true, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
   log_coreAssetPrices = [], log_minTokenValue = 1e6, 
@@ -420,6 +399,8 @@ async function vestingHelper({
     Object.entries(balances).forEach(([token, bal]) => sdk.util.sumSingleBalance(finalBalances, token, bal))
     if (i !==0 && i%2 === 0)  await sleep(3000)
   }
+  const fixBalances = await getFixBalances(chain)
+  fixBalances(finalBalances)
   return finalBalances
 }
 
@@ -506,7 +487,6 @@ function masterchefExports({ chain, poolInfoABI, coreAssets, }) {
 }
 
 module.exports = {
-  sumTokensSingle,
   getTokenPrices,
   getUniTVL,
   unknownTombs,
