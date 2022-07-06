@@ -1,4 +1,14 @@
 const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl");
+const ethers = require("ethers")
+const { config } = require('@defillama/sdk/build/api');
+
+config.setProvider("callisto", new ethers.providers.StaticJsonRpcProvider(
+  "https://rpc.callisto.network/",
+  {
+    name: "callisto",
+    chainId: 820,
+  }
+))
 
 module.exports = {
   misrepresentedTokens: true,
