@@ -34,8 +34,10 @@ const TOKENS = {
   // DOT
   "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF": DOT_TOKEN,
   // LAY
-  [LAY_ADDRESS]: "LAY",
+  [LAY_ADDRESS]: "starlay-finance",
 };
+
+const VOTING_ESCROW_ADDRESS = "0xDf32D28c1BdF25c457E82797316d623C2fcB29C8"
 
 module.exports = {
   DEFAULT_DECIMALS,
@@ -43,4 +45,5 @@ module.exports = {
   DOT_TOKEN,
   LAY_ADDRESS,
   TOKENS,
+  VOTING_ESCROW_ADDRESS,
 }

@@ -1,7 +1,8 @@
 const { getReserves, getStarlayTvl } = require("./starlay");
 const BigNumber = require("bignumber.js");
 const { getBorrowed } = require("../helper/aave");
-const { TOKENS, DOT_TOKEN, DOT_DECIMALS, DEFAULT_DECIMALS } = require("./constanrs");
+const { TOKENS, DOT_TOKEN, DOT_DECIMALS, DEFAULT_DECIMALS, LAY_ADDRESS } = require("./constanrs");
+const { getLockedLAY } = require("./ve");
 
 const transferFromAddress = (underlying) => TOKENS[underlying]
 
@@ -42,11 +43,21 @@ function astar(borrowed) {
   };
 }
 
+async function staking(_timestamp, _block, {astar: block}) {
+  const chain = "astar"
+  const stakedLay = await getLockedLAY(chain, block)
+  return {
+    [transferFromAddress(LAY_ADDRESS)]: stakedLay.shiftedBy(-DEFAULT_DECIMALS)
+  }
+}
+
+
 module.exports = {
   timetravel: true,
   methodology: `Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There's multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending.`,
   astar: {
     tvl: astar(false),
     borrowed: astar(true),
+    staking,
   },
 };
