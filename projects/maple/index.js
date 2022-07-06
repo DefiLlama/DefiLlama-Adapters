@@ -144,10 +144,10 @@ async function getSolanaTVL() {
 
   return {
     tvl: {
-      [USDC]: tvlValue,
+      [USDC]: tvlValue.toFixed(0),
     },
     borrowed: {
-      [USDC]: borrowed
+      [USDC]: borrowed.toFixed(0)
     }
   };
 }
