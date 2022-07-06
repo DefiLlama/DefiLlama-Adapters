@@ -1710,6 +1710,33 @@ const meterFixMapping = {
   }
 };
 
+const callistoFixMapping = {
+  "0xF5AD6F6EDeC824C7fD54A66d241a227F6503aD3a": {
+    coingeckoId: "callisto",
+    decimals: 18
+  },
+  "0xbf6c50889d3a620eb42c0f188b65ade90de958c4": {
+    coingeckoId: "tether",
+    decimals: 18
+  },
+  "0xccc766f97629a4e14b3af8c91ec54f0b5664a69f": {
+    coingeckoId: "ethereum-classic",
+    decimals: 18
+  },
+  "0xcc208c32cc6919af5d8026dab7a3ec7a57cd1796": {
+    coingeckoId: "ethereum",
+    decimals: 18
+  },
+  "0xccde29903e621ca12df33bb0ad9d1add7261ace9": {
+    coingeckoId: "binancecoin",
+    decimals: 18
+  },
+  "0x9FaE2529863bD691B4A7171bDfCf33C7ebB10a65": {
+    coingeckoId: "soy-finance",
+    decimals: 18
+  },
+};
+
 const fixBalancesMapping = {
   avax: fixAvaxBalances,
   evmos: b => fixBalances(b, evmosFixMapping, { removeUnmapped: false }),
@@ -1735,6 +1762,7 @@ const fixBalancesMapping = {
   ethereum: b => fixBalances(b, ethereumFixMapping, { removeUnmapped: false }),
   sx: b => fixBalances(b, sxFixMapping, { removeUnmapped: true }),
   meter: b => fixBalances(b, meterFixMapping, { removeUnmapped: true }),
+  callisto: b => fixBalances(b, callistoFixMapping, { removeUnmapped: true }),
   near: b => fixBalances(b, nearFixMapping, { removeUnmapped: false }),
 };
 
