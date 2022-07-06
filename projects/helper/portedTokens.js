@@ -264,7 +264,9 @@ async function transformBscAddress() {
     "0x6d1b7b59e3fab85b7d3a3d86e505dd8e349ea7f3":
       "heco:0xcbd6cb9243d8e3381fea611ef023e17d1b7aedf0", // BXH
     "0x42586ef4495bb512a86cf7496f6ef85ae7d69a64":
-      "polygon:0x66e8617d1df7ab523a316a6c01d16aa5bed93681" // SPICE
+      "polygon:0x66e8617d1df7ab523a316a6c01d16aa5bed93681", // SPICE
+    "0x60d01ec2d5e98ac51c8b4cf84dfcce98d527c747": "0x9ad37205d608b8b219e6a2573f922094cec5c200", // iZi
+    "0x0a3bb08b3a15a19b4de82f8acfc862606fb69a2d": "0x0a3bb08b3a15a19b4de82f8acfc862606fb69a2d", // iUSD
     // "0x250632378E573c6Be1AC2f97Fcdf00515d0Aa91B": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // BETH->WETH
   };
 
@@ -311,8 +313,8 @@ async function transformPolygonAddress() {
       "avax:0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664", // sUSDC.e(Polygon) -> USDC.e(Avalanche)
     "0x613a489785c95afeb3b404cc41565ccff107b6e0":
       "0x7a5d3A9Dcd33cb8D527f7b5F96EB4Fef43d55636", // radioshack
-    "0x1ddcaa4ed761428ae348befc6718bcb12e63bfaa":
-      "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48" // deUSDC
+    "0x1ddcaa4ed761428ae348befc6718bcb12e63bfaa": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // deUSDC
+    "0x794baab6b878467f93ef17e2f2851ce04e3e34c8": "0x794baab6b878467f93ef17e2f2851ce04e3e34c8", // Yin
   };
   normalizeMapping(mapping);
 
@@ -585,7 +587,8 @@ async function transformArbitrumAddress() {
     "0x2913e812cf0dcca30fb28e6cac3d2dcff4497688":
       "0x6b175474e89094c44da98b954eedeac495271d0f", //  nUSD
     "0x289ba1701c2f088cf0faf8b3705246331cb8a839":
-      "0x58b6a8a3302369daec383334672404ee733ab239" // LPT
+      "0x58b6a8a3302369daec383334672404ee733ab239", // LPT
+    "0x61a1ff55c5216b636a294a07d77c6f4df10d3b56": "0x52a8845df664d76c69d2eea607cd793565af42b8", // APEX
   };
 
   normalizeMapping(mapping);
@@ -1165,8 +1168,8 @@ function transformNovachainAddress() {
   const mapping = {
     "0x0000000000000000000000000000000000000000":
       "fantom:0x69D17C151EF62421ec338a0c92ca1c1202A427EC", // SNT
-      "0x657a66332a65b535da6c5d67b8cd1d410c161a08":
-        "fantom:0x69D17C151EF62421ec338a0c92ca1c1202A427EC", // SNT
+    "0x657a66332a65b535da6c5d67b8cd1d410c161a08":
+      "fantom:0x69D17C151EF62421ec338a0c92ca1c1202A427EC", // SNT
     "0x1f5396f254ee25377a5c1b9c6bff5f44e9294fff":
       "fantom:0x04068da6c83afcfa0e13ba15a6696662335d5b75" // USDC
   };

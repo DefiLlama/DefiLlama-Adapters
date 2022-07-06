@@ -469,11 +469,10 @@ async function unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain = 
   const nftPositions = (await sdk.api.erc20.balanceOf({ target: nftAddress, owner, block, chain })).output
   const factory = (await sdk.api.abi.call({ target: nftAddress, abi: wildCreditABI.factory, block, chain })).output
 
-  const blacklisted = ['170666']  // TODO: check why this returning 773M
   const positionIds = (await sdk.api.abi.multiCall({
     block, chain, abi: wildCreditABI.tokenOfOwnerByIndex, target: nftAddress,
     calls: Array(Number(nftPositions)).fill(0).map((_, index) => ({ params: [owner, index] })),
-  })).output.map(positionIdCall => positionIdCall.output).filter(i => !blacklisted.includes(i))
+  })).output.map(positionIdCall => positionIdCall.output)
 
   const positions = (await sdk.api.abi.multiCall({
     block, chain, abi: wildCreditABI.positions, target: nftAddress,
@@ -504,40 +503,34 @@ async function unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain = 
   }
 
   function addV3PositionBalances(position) {
-    const tickToPrice = (tick) => new BigNumber(1.0001 ** +tick)
+    const tickToPrice = (tick) => 1.0001 ** tick
 
     const token0 = position.token0
     const token1 = position.token1
     const liquidity = position.liquidity
-    const bottomTick = position.tickLower
-    const topTick = position.tickUpper
-    const tick = lpInfo[getKey(position)].tick
+    const bottomTick = +position.tickLower
+    const topTick = +position.tickUpper
+    const tick = +lpInfo[getKey(position)].tick
+    const sa = tickToPrice(bottomTick / 2)
+    const sb = tickToPrice(topTick / 2)
 
-    let amount0 = BigNumber(0)
-    let amount1 = BigNumber(0)
+    let amount0 = 0
+    let amount1 = 0
 
-    if (Number(tick) < Number(bottomTick)) {
-      const sa = tickToPrice(new BigNumber(bottomTick).div(2).integerValue(BigNumber.ROUND_DOWN))
-      const sb = tickToPrice(new BigNumber(topTick).div(2).integerValue(BigNumber.ROUND_DOWN))
-
-      amount0 = new BigNumber(liquidity).times(new BigNumber(sb.minus(sa)).div(sa.times(sb))).integerValue(BigNumber.ROUND_DOWN)
-    } else if (Number(tick) < Number(topTick)) {
-      const sa = tickToPrice(Math.floor(+bottomTick / 2))
-      const sb = tickToPrice(Math.floor(+topTick / 2))
+    if (tick < bottomTick) {
+      amount0 = liquidity * (sb - sa) / (sa * sb)
+    } else if (tick < topTick) {
       const price = tickToPrice(tick)
-      const sp = price.squareRoot()
+      const sp = price ** 0.5
 
-      amount0 = new BigNumber(liquidity).times(sb.minus(sp)).div(sp.times(sb)).integerValue(BigNumber.ROUND_DOWN)
-      amount1 = new BigNumber(liquidity).times(sp.minus(sa)).integerValue(BigNumber.ROUND_DOWN)
+      amount0 = liquidity * (sb - sp) / (sp * sb)
+      amount1 = liquidity * (sp - sa)
     } else {
-      const sa = tickToPrice(new BigNumber(bottomTick).div(2)).integerValue(BigNumber.ROUND_DOWN)
-      const sb = tickToPrice(new BigNumber(topTick).div(2)).integerValue(BigNumber.ROUND_DOWN)
-
-      amount1 = new BigNumber(liquidity).times(new BigNumber(sb.minus(sa))).integerValue(BigNumber.ROUND_DOWN)
+      amount1 = liquidity * (sb - sa)
     }
 
-    sdk.util.sumSingleBalance(balances, transformAddress(token0), amount0.toFixed(0))
-    sdk.util.sumSingleBalance(balances, transformAddress(token1), amount1.toFixed(0))
+    sdk.util.sumSingleBalance(balances, transformAddress(token0), new BigNumber(amount0).toFixed(0))
+    sdk.util.sumSingleBalance(balances, transformAddress(token1), new BigNumber(amount1).toFixed(0))
   }
 }
 
@@ -769,7 +762,7 @@ async function genericUnwrapCrv(balances, crvToken, lpBalance, block, chain) {
   if (coins.includes(wrappedGasToken)) {
     const gasTokenBalance = (await sdk.api.eth.getBalance({
       target: tokenToPoolMapping[crvToken.toLowerCase()] || crvToken,
-      block, 
+      block,
       chain
     })).output
     crvLP_token_balances.output.push({
