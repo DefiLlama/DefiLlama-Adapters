@@ -2,6 +2,7 @@ import { gql } from "graphql-request"
 import { getPagedGql } from "../utils/gql"
 import { ethers } from "ethers";
 import { providers } from "../utils/ethers"
+import BigNumber from "bignumber.js";
 
 const cdpQuery = gql`
 query cdps($lastId: String) {
@@ -42,18 +43,30 @@ const liqs = async () => {
     ], providers.ethereum)
     let ilks = new Set<string>()
     cdps.map(cdp=>ilks.add(cdp.collateralType.id))
-    const gems = {} as {[ilk:string]:string}
+    const gems = {} as {[ilk:string]:{
+        address:string,
+        decimals:number,
+    }};
     await Promise.all(Array.from(ilks).map(async ilk=>{
         const hex = "0x"+toHex(ilk).padEnd(64, "0")
         const gem = await ilkRegistry.gem(hex)
-        gems[ilk] = gem
+        const gemContract = new ethers.Contract(gem, [
+            "function decimals() view returns (uint8)"
+        ], providers.ethereum)
+        const decimals = await gemContract.decimals()
+        gems[ilk] = {
+            address:gem,
+            decimals
+        }
     }))
     return cdps.map(cdp=>{
+        const gem = gems[cdp.collateralType.id]
+        console.log(cdp)
         return {
             owner: cdp.owner.address,
-            liqPrice: cdp.debt * cdp.collateralType.liquidationRatio / cdp.collateral,
-            collateral: gems[cdp.collateralType.id],
-            collateralAmount: cdp.collateral,
+            liqPrice: (cdp.debt * cdp.collateralType.liquidationRatio) / cdp.collateral,
+            collateral: "ethereum:"+gem.address,
+            collateralAmount: new BigNumber(cdp.collateral).times(10**gem.decimals).toFixed(0),
         }
     })
 }
