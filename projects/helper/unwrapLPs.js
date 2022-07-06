@@ -503,7 +503,7 @@ async function unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain = 
   }
 
   function addV3PositionBalances(position) {
-    const tickToPrice = (tick) => 1.0001 ** +tick
+    const tickToPrice = (tick) => 1.0001 ** tick
 
     const token0 = position.token0
     const token1 = position.token1
@@ -511,8 +511,8 @@ async function unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain = 
     const bottomTick = +position.tickLower
     const topTick = +position.tickUpper
     const tick = +lpInfo[getKey(position)].tick
-    const sa = tickToPrice(Math.floor(bottomTick / 2))
-    const sb = tickToPrice(Math.floor(topTick / 2))
+    const sa = tickToPrice(bottomTick / 2)
+    const sb = tickToPrice(topTick / 2)
 
     let amount0 = 0
     let amount1 = 0

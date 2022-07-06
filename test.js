@@ -119,7 +119,7 @@ sdk.api.abi.call = async (...args)=>{
   } catch(e) {
     console.log(e)
   }
-  const chains = Object.keys(module).filter(item => typeof module[item] === 'object' && item !== 'hallmarks');
+  const chains = Object.keys(module).filter(item => typeof module[item] === 'object' && !Array.isArray(module[item]));
   checkExportKeys(module, passedFile, chains)
   const unixTimestamp = Math.round(Date.now() / 1000) - 60;
   const chainBlocks = {};
