@@ -86,7 +86,6 @@ function isLP(symbol, token, chain) {
   if (chain === 'bsc' && ['WLP'].includes(symbol)) return true
   if (chain === 'songbird' && ['FLRX', 'OLP'].includes(symbol)) return true
   if (chain === 'metis' && ['NLP', 'ALP'].includes(symbol)) return true // Netswap/Agora LP Token
-  if (chain === 'metis' && /vAMM/.test(symbol)) return true // volatile AMM (HERMES?)
   if (['fantom', 'nova',].includes(chain) && ['NLT'].includes(symbol)) return true
   let label
 
@@ -98,7 +97,7 @@ function isLP(symbol, token, chain) {
     return false
   }
 
-  const isLPRes = LP_SYMBOLS.includes(symbol) || /(UNI-V2)/.test(symbol) || symbol.split(/\W+/).includes('LP')
+  const isLPRes = LP_SYMBOLS.includes(symbol) || /(UNI-V2|vAMM)/.test(symbol) || symbol.split(/\W+/).includes('LP')
 
   if (DEBUG_MODE && isLPRes && !['UNI-V2', 'Cake-LP'].includes(symbol))
     console.log(symbol, token)

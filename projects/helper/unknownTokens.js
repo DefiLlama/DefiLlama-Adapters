@@ -374,7 +374,7 @@ function pool2({ stakingContract, lpToken, chain = "ethereum", transformAddress,
 }
 
 async function vestingHelper({
-  coreAssets, owner, tokens, chain, block, restrictTokenPrice = true, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
+  coreAssets, owner, tokens, chain = 'ethereum', block, restrictTokenPrice = true, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
   log_coreAssetPrices = [], log_minTokenValue = 1e6,
 }) {
   tokens = getUniqueAddresses(tokens)
@@ -406,11 +406,11 @@ async function vestingHelper({
 
 
 async function sumUnknownTokens({ tokensAndOwners = [],
-  coreAssets, owner, tokens, chain, block, restrictTokenPrice = true, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
+  coreAssets, owner, tokens, chain = 'ethereum', block, restrictTokenPrice = true, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
   log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [],
 }) {
   blacklist = getUniqueAddresses(blacklist)
-  if (!tokensAndOwners)
+  if (!tokensAndOwners.length)
     if (owners.length)
       tokensAndOwners = owners.map(o => tokens.map(t => [t, o])).flat()
     else if (owner)
@@ -423,6 +423,31 @@ async function sumUnknownTokens({ tokensAndOwners = [],
   fixBalances(balances)
   return balances
 }
+
+
+function staking({ tokensAndOwners = [],
+  coreAssets, owner, tokens, chain = 'ethereum', restrictTokenPrice = true, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
+  log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [],
+}) {
+  blacklist = getUniqueAddresses(blacklist)
+  if (!tokensAndOwners.length)
+    if (owners.length)
+      tokensAndOwners = owners.map(o => tokens.map(t => [t, o])).flat()
+    else if (owner)
+      tokensAndOwners = tokens.map(t => [t, owner])
+  tokensAndOwners = tokensAndOwners.filter(t => !blacklist.includes(t[0]))
+
+  return async (_, _b, { [chain]: block }) => {
+    const balances = await sumTokens2({ chain, block, tokensAndOwners })
+    const { updateBalances, pairBalances, prices, } = await getTokenPrices({ coreAssets, lps: [...tokensAndOwners.map(t => t[0]), ...lps,], chain, block, restrictTokenPrice, blacklist, log_coreAssetPrices, log_minTokenValue, minLPRatio })
+    await updateBalances(balances, { skipConversion, onlyLPs })
+    console.log(balances, tokensAndOwners, pairBalances, prices, lps, )
+    const fixBalances = await getFixBalances(chain)
+    fixBalances(balances)
+    return balances
+  }
+}
+
 
 // TODO: this is incomplete/untested, might need to extend how pools are resolved and tokens are fetched.
 function masterchefExports({ chain, poolInfoABI, coreAssets, }) {
@@ -516,4 +541,5 @@ module.exports = {
   vestingHelper,
   getLPList,
   sumUnknownTokens,
+  staking,
 };
