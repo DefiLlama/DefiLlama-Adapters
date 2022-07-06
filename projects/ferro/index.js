@@ -1,4 +1,5 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const { getBlock } = require('../helper/getBlock');
 
 const threeFerPoolAddress = '0xe8d13664a42B338F009812Fa5A75199A865dA5cD';
 const chain = 'cronos'
@@ -19,7 +20,7 @@ const tokens = {
 };
 
 async function tvl(timestamp, ethBlock, chainBlocks) {
-  const block = chainBlocks[chain]
+  const block = await getBlock(timestamp, 'cronos', chainBlocks);
   const tokensAndOwners = Object.entries(tokens).map(([token, owners]) => owners.map(owner => [token, owner])).flat()
   return sumTokens2({ chain, block, tokensAndOwners })
 }
@@ -28,7 +29,7 @@ module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
   methodology: 'sum of ferro stablecoin pool contracts balance',
-  start: 2542015,
+  start: 1651218360,
   cronos: {
     tvl,
   }
