@@ -1,9 +1,7 @@
-const sdk = require('@defillama/sdk');
-const { getBlock } = require('../helper/getBlock');
-const { transformCronosAddress } = require('../helper/portedTokens');
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const threeFerPoolAddress = '0xe8d13664a42B338F009812Fa5A75199A865dA5cD';
-const CHAIN = 'cronos';
+const chain = 'cronos'
 
 const tokens = {
   // DAI
@@ -21,32 +19,9 @@ const tokens = {
 };
 
 async function tvl(timestamp, ethBlock, chainBlocks) {
-  const block = await getBlock(timestamp, CHAIN, chainBlocks)
-  const transform = await transformCronosAddress()
-  const balances = {}
-
-  const calls = [];
-  for (const token in tokens) {
-    for (const poolAddress of tokens[token])
-      calls.push({
-        target: token,
-        params: poolAddress,
-      });
-  }
-  const balanceOfResults = await sdk.api.abi.multiCall({
-    block,
-    chain: CHAIN,
-    calls: calls,
-    abi: "erc20:balanceOf",
-  });
-
-  balanceOfResults.output.forEach((balanceOf) => {
-    const address = balanceOf.input.target;
-    const amount = balanceOf.output;
-    sdk.util.sumSingleBalance(balances, transform(address), amount)
-  });
-
-  return balances;
+  const block = chainBlocks[chain]
+  const tokensAndOwners = Object.entries(tokens).map(([token, owners]) => owners.map(owner => [token, owner])).flat()
+  return sumTokens2({ chain, block, tokensAndOwners })
 }
 
 module.exports = {
