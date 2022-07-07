@@ -12,19 +12,19 @@ const contracts = {
     OCEAN: '0x967da4048cD07aB37855c090aAF366e4ce1b9F48', 
   },
   polygon: {
-    graphql_endpoint: "https://subgraph.polygon.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph",
+    graphql_endpoint: "https://v4.subgraph.polygon.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph",
     OCEAN: '0x282d8efCe846A88B159800bd4130ad77443Fa1A1', 
   }, 
   bsc: {
-    graphql_endpoint: "https://subgraph.bsc.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph",
+    graphql_endpoint: "https://v4.subgraph.bsc.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph",
     OCEAN: '0xdce07662ca8ebc241316a15b611c89711414dd1a',
   }, 
   moonriver: {
-    graphql_endpoint: "https://subgraph.moonriver.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph",
+    graphql_endpoint: "https://v4.subgraph.moonriver.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph",
     OCEAN: '0x99C409E5f62E4bd2AC142f17caFb6810B8F0BAAE',
   }, 
   energyweb: {
-    graphql_endpoint: "https://subgraph.energyweb.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph",
+    graphql_endpoint: "https://v4.subgraph.energyweb.oceanprotocol.com/subgraphs/name/oceanprotocol/ocean-subgraph",
     OCEAN: '0x593122aae80a6fc3183b2ac0c4ab3336debee528',
   }, 
 }
@@ -32,13 +32,6 @@ const contracts = {
 const PAGE_SIZE = 1000
 const graphqlQuery = gql`
 query GET_POOLS($skip: Int, $block: Int, $first: Int) {
-  poolFactories(
-    block: {number: $block}
-  ) {
-    id
-    totalValueLocked
-    poolCount
-  }
   pools (
   	first: $first
     skip: $skip
@@ -54,11 +47,8 @@ function chainTvl(chain) {
     const balances = {};
     const {graphql_endpoint, OCEAN} = contracts[chain]
     const graphQLClient = new GraphQLClient(graphql_endpoint);
+    block = await getBlock(timestamp, chain, chainBlocks)
 
-    let block = chainBlocks[chain] // go back a few blocks as graph is not always up to date 
-    block = await getBlock(timestamp, chain, chainBlocks);
-    // if (chain == 'moonriver') {block = 1242900;} // TODO: get correct moonriver block
-    // console.log(chainBlocks[chain])
     const transform = (['bsc', 'moonriver'].includes(chain)) ? 
         t => contracts.ethereum.OCEAN: 
         t => `${chain}:${t}`;
@@ -72,7 +62,6 @@ function chainTvl(chain) {
         ))
       );
       let pools = query.pools;
-      console.log(chain, 'block', block, 'skip', skip, 'poolCount', query.poolFactories[0].poolCount, 'tvl', parseInt(query.poolFactories[0].totalValueLocked));
       
       // Stop criteria for while loop once graphql query returned less than page-size pools
       if (pools.length < PAGE_SIZE) {
@@ -146,6 +135,9 @@ module.exports = {
   }, 
   moonriver: {
     tvl: chainTvl('moonriver')
+  },
+  energyweb: {
+    // tvl: chainTvl('energyweb')
   },
   
 }
