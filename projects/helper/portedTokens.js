@@ -1770,6 +1770,17 @@ const callistoFixMapping = {
   },
 };
 
+const thundercoreFixMapping = {
+  "0x4f3c8e20942461e2c3bdd8311ac57b0c222f2b82": {
+    coingeckoId: "tether",
+    decimals: 6
+  },
+  "0x22e89898a04eaf43379beb70bf4e38b1faf8a31e": {
+    coingeckoId: "usd-coin",
+    decimals: 6
+  },
+};
+
 const fixBalancesMapping = {
   avax: fixAvaxBalances,
   evmos: b => fixBalances(b, evmosFixMapping, { removeUnmapped: false }),
@@ -1797,6 +1808,7 @@ const fixBalancesMapping = {
   meter: b => fixBalances(b, meterFixMapping, { removeUnmapped: true }),
   callisto: b => fixBalances(b, callistoFixMapping, { removeUnmapped: true }),
   near: b => fixBalances(b, nearFixMapping, { removeUnmapped: false }),
+  thundercore: b => fixBalances(b, thundercoreFixMapping, { removeUnmapped: true }),
 };
 
 const chainTransforms = {
