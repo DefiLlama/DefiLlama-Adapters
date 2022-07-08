@@ -4,17 +4,32 @@ const token0 = require('./abis/token0.json')
 const symbol = require('./abis/symbol.json')
 const { getPoolTokens, getPoolId } = require('./abis/balancer.json')
 const getPricePerShare = require('./abis/getPricePerShare.json')
+const underlyingABI = require('./abis/underlying.json')
 const { requery } = require('./requery')
 const { getChainTransform, getFixBalances } = require('./portedTokens')
 const creamAbi = require('./abis/cream.json')
 const { unwrapCrv, resolveCrvTokens } = require('./resolveCrvTokens')
 const activePoolAbi = require('./ankr/abis/activePool.json')
 const wethAddressAbi = require('./ankr/abis/wethAddress.json');
-const { isLP, DEBUG_MODE } = require('./utils')
+const { isLP, DEBUG_MODE, getUniqueAddresses, } = require('./utils')
 const wildCreditABI = require('../wildcredit/abi.json')
 
 const yearnVaults = {
   // yvToken: underlying, eg yvYFI:YFI
+  // ycDAI
+  "0x99d1fa417f94dcd62bfe781a1213c092a47041bc": "0x6b175474e89094c44da98b954eedeac495271d0f",
+  // ycUSDC
+  "0x9777d7e2b60bb01759d0e2f8be2095df444cb07e": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+  // ycUSDT
+  "0x1be5d71f2da660bfdee8012ddc58d024448a0a59": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+  // yDAI 
+  "0xc2cb1040220768554cf699b0d863a3cd4324ce32": "0x6b175474e89094c44da98b954eedeac495271d0f",
+  // yUSDT
+  "0xe6354ed5bc4b393a5aad09f21c46e101e692d447": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+  // yUSDC
+  "0xd6ad7a6750a7593e092a9b218d66c0a814a3436e": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+  // yUSDT
+  "0x83f798e925bcd4017eb265844fddabb448f1707d": "0xdac17f958d2ee523a2206206994597c13d831ec7",
   // yvYFI v2
   "0xe14d13d8b3b85af791b2aadd661cdbd5e6097db1": "0x0bc529c00c6401aef6d220be8c6ea1667f6ad93e",
   // yvWETH v2
@@ -28,7 +43,7 @@ const yearnVaults = {
   // yvUSDC
   "0xa354f35829ae975e850e23e9615b11da1b3dc4de": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
   // yvWBTC
-  "0xa696a63cc78dffa1a63e9e50587c197387ff6c7e": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+  "0xa696a63cc78dffa1a63e9e50587c197387ff6c7e": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
   // yv1INCH
   "0xb8c3b7a2a618c552c23b1e4701109a9e756bab67": "0x111111111117dc0aa78b770fa6a738034120c302",
   // yvDAI
@@ -68,14 +83,25 @@ const yearnVaults = {
   // yvUSDT FTM
   "0x148c05caf1bb09b5670f00d511718f733c54bc4c": "0x049d68029688eAbF473097a2fC38ef61633A3C7A"
 }
-async function unwrapYearn(balances, yToken, block, chain = "ethereum", transformAddress = (addr) => addr) {
-  const underlying = yearnVaults[yToken.toLowerCase()];
-  if (!underlying) return;
+async function unwrapYearn(balances, yToken, block, chain = "ethereum", transformAddress = (addr) => addr, fetchUnderlying) {
+  let underlying = yearnVaults[yToken.toLowerCase()];
+  if (!underlying) {
+    if (!fetchUnderlying) return;
+    const { output: _underlying } = await sdk.api.abi.call({
+      target: yToken,
+      abi: underlyingABI,
+      chain, block,
+    })
+    underlying = _underlying
+  }
+
+  console.log('underinglin found', underlying)
 
   const tokenKey = chain == 'ethereum' ? yToken : `${chain}:${yToken}`
   if (!balances[tokenKey]) return;
 
   let pricePerShare
+  let decimals
   try {
     pricePerShare = await sdk.api.abi.call({
       target: yToken,
@@ -83,6 +109,7 @@ async function unwrapYearn(balances, yToken, block, chain = "ethereum", transfor
       block: block,
       chain: chain
     });
+    decimals = (await sdk.api.erc20.decimals(underlying, chain)).output
   } catch (e) {
     console.log('Failing to get price per share for %s, trying getPricePerFullShare', yToken)
   }
@@ -93,9 +120,10 @@ async function unwrapYearn(balances, yToken, block, chain = "ethereum", transfor
       block: block,
       chain: chain
     });
+    decimals = 18
   };
 
-  const newBalance = BigNumber(balances[tokenKey]).times(pricePerShare.output).div(10 ** (await sdk.api.erc20.decimals(underlying, chain)).output)
+  const newBalance = BigNumber(balances[tokenKey]).times(pricePerShare.output).div(10 ** decimals)
   const oldBalance = BigNumber(balances[transformAddress(underlying)] || 0)
   balances[transformAddress(underlying)] = oldBalance.plus(newBalance).toFixed(0)
   delete balances[tokenKey];
@@ -334,7 +362,9 @@ tokens [
     [token, isLP] - eg ["0xaaa", true]
 ]
 */
-async function sumTokensAndLPsSharedOwners(balances, tokens, owners, block, chain = "ethereum", transformAddress = id => id) {
+async function sumTokensAndLPsSharedOwners(balances, tokens, owners, block, chain = "ethereum", transformAddress) {
+  if (!transformAddress)
+    transformAddress = await getChainTransform(chain)
   const balanceOfTokens = await sdk.api.abi.multiCall({
     calls: tokens.map(t => owners.map(o => ({
       target: t[0],
@@ -414,7 +444,20 @@ async function sumLPWithOnlyOneTokenOtherThanKnown(balances, lpToken, owner, tok
   }
   await sumLPWithOnlyOneToken(balances, lpToken, owner, listedToken, block, chain, transformAddress)
 }
-async function unwrapUniswapV3NFTs({ balances, nftsAndOwners, block, chain, transformAddress }) {
+async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], block, chain, transformAddress, owner, nftAddress, owners }) {
+  if (!nftsAndOwners.length) {
+    if (!nftAddress)
+      switch (chain) {
+        case 'ethereum':
+        case 'polygon':
+        case 'arbitrum': nftAddress = '0xC36442b4a4522E871399CD717aBDD847Ab11FE88'; break;
+        default: throw new Error('missing default uniswap nft address')
+      }
+
+    if (!owners && owner)
+      owners = [owner]
+    nftsAndOwners = owners.map(o => [nftAddress, o])
+  }
   await Promise.all(nftsAndOwners.map(([nftAddress, owner]) => unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain, transformAddress })))
   return balances
 }
@@ -460,40 +503,34 @@ async function unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain = 
   }
 
   function addV3PositionBalances(position) {
-    const tickToPrice = (tick) => new BigNumber(1.0001 ** +tick)
+    const tickToPrice = (tick) => 1.0001 ** tick
 
     const token0 = position.token0
     const token1 = position.token1
     const liquidity = position.liquidity
-    const bottomTick = position.tickLower
-    const topTick = position.tickUpper
-    const tick = lpInfo[getKey(position)].tick
+    const bottomTick = +position.tickLower
+    const topTick = +position.tickUpper
+    const tick = +lpInfo[getKey(position)].tick
+    const sa = tickToPrice(bottomTick / 2)
+    const sb = tickToPrice(topTick / 2)
 
-    let amount0 = BigNumber(0)
-    let amount1 = BigNumber(0)
+    let amount0 = 0
+    let amount1 = 0
 
-    if (Number(tick) < Number(bottomTick)) {
-      const sa = tickToPrice(new BigNumber(bottomTick).div(2).integerValue(BigNumber.ROUND_DOWN))
-      const sb = tickToPrice(new BigNumber(topTick).div(2).integerValue(BigNumber.ROUND_DOWN))
-
-      amount0 = new BigNumber(liquidity).times(new BigNumber(sb.minus(sa)).div(sa.times(sb))).integerValue(BigNumber.ROUND_DOWN)
-    } else if (Number(tick) < Number(topTick)) {
-      const sa = tickToPrice(Math.floor(+bottomTick / 2))
-      const sb = tickToPrice(Math.floor(+topTick / 2))
+    if (tick < bottomTick) {
+      amount0 = liquidity * (sb - sa) / (sa * sb)
+    } else if (tick < topTick) {
       const price = tickToPrice(tick)
-      const sp = price.squareRoot()
+      const sp = price ** 0.5
 
-      amount0 = new BigNumber(liquidity).times(sb.minus(sp)).div(sp.times(sb)).integerValue(BigNumber.ROUND_DOWN)
-      amount1 = new BigNumber(liquidity).times(sp.minus(sa)).integerValue(BigNumber.ROUND_DOWN)
+      amount0 = liquidity * (sb - sp) / (sp * sb)
+      amount1 = liquidity * (sp - sa)
     } else {
-      const sa = tickToPrice(new BigNumber(bottomTick).div(2)).integerValue(BigNumber.ROUND_DOWN)
-      const sb = tickToPrice(new BigNumber(topTick).div(2)).integerValue(BigNumber.ROUND_DOWN)
-
-      amount1 = new BigNumber(liquidity).times(new BigNumber(sb.minus(sa))).integerValue(BigNumber.ROUND_DOWN)
+      amount1 = liquidity * (sb - sa)
     }
 
-    sdk.util.sumSingleBalance(balances, transformAddress(token0), amount0.toFixed(0))
-    sdk.util.sumSingleBalance(balances, transformAddress(token1), amount1.toFixed(0))
+    sdk.util.sumSingleBalance(balances, transformAddress(token0), new BigNumber(amount0).toFixed(0))
+    sdk.util.sumSingleBalance(balances, transformAddress(token1), new BigNumber(amount1).toFixed(0))
   }
 }
 
@@ -578,6 +615,7 @@ async function sumBalancerLps(balances, tokensAndOwners, block, chain, transform
 }
 
 const nullAddress = '0x0000000000000000000000000000000000000000'
+const gasTokens = ['0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee']
 /*
 tokensAndOwners [
     [token, owner] - eg ["0xaaa", "0xbbb"]
@@ -587,14 +625,17 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
   if (!transformAddress)
     transformAddress = await getChainTransform(chain)
 
-  const ethBalanceInputs = []
+  let ethBalanceInputs = []
 
   tokensAndOwners = tokensAndOwners.filter(i => {
-    if (i[0] !== nullAddress)
+    const token = i[0].toLowerCase()
+    if (token !== nullAddress && !gasTokens.includes(token))
       return true
     ethBalanceInputs.push(i[1])
     return false
   })
+
+  ethBalanceInputs = getUniqueAddresses(ethBalanceInputs)
 
   if (ethBalanceInputs.length) {
     const { output: ethBalances } = await sdk.api.eth.getBalances({ targets: ethBalanceInputs, chain, block })
@@ -632,7 +673,7 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
     await resolveCrvTokens(balances, block, chain, transformAddress)
   }
 
-  if (['astar', 'harmony'].includes(chain)) {
+  if (['astar', 'harmony', 'kava'].includes(chain)) {
     const fixBalances = await getFixBalances(chain)
     fixBalances(balances)
   }
@@ -678,6 +719,10 @@ async function unwrapCreamTokens(balances, tokensAndOwners, block, chain = "ethe
 const crv_abi = {
   "crvLP_coins": { "stateMutability": "view", "type": "function", "name": "coins", "inputs": [{ "name": "arg0", "type": "uint256" }], "outputs": [{ "name": "", "type": "address" }], "gas": 3123 }
 }
+const tokenToPoolMapping = {
+  "0x3a283d9c08e8b55966afb64c515f5143cf907611": "0xb576491f1e6e5e62f1d8f26062ee822b40b0e0d4",
+  "0xed4064f376cb8d68f770fb1ff088a3d0f3ff5c4d": "0x8301ae4fc9c624d1d396cbdaa1ed877821d7c511"
+}
 async function genericUnwrapCrv(balances, crvToken, lpBalance, block, chain) {
   const { output: resolvedCrvTotalSupply } = await sdk.api.erc20.totalSupply({
     target: crvToken,
@@ -698,19 +743,36 @@ async function genericUnwrapCrv(balances, crvToken, lpBalance, block, chain) {
   const coins = (await sdk.api.abi.multiCall({
     abi: crv_abi['crvLP_coins'],
     calls: coins_indices.map(i => ({ params: [i] })),
-    target: crvToken,
+    target: tokenToPoolMapping[crvToken.toLowerCase()] || crvToken,
     chain,
     block
-  })).output.map(c => c.output)
+  })).output.map(c => c.output.toLowerCase())
   const crvLP_token_balances = await sdk.api.abi.multiCall({
     abi: 'erc20:balanceOf',
     calls: coins.map(c => ({
       target: c,
-      params: crvToken,
+      params: tokenToPoolMapping[crvToken.toLowerCase()] || crvToken,
     })),
     chain,
     block
   })
+
+  const transform = await getChainTransform(chain)
+  const wrappedGasToken = transform('0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee')
+  if (coins.includes(wrappedGasToken)) {
+    const gasTokenBalance = (await sdk.api.eth.getBalance({
+      target: tokenToPoolMapping[crvToken.toLowerCase()] || crvToken,
+      block,
+      chain
+    })).output
+    crvLP_token_balances.output.push({
+      output: gasTokenBalance,
+      input: {
+        target: wrappedGasToken
+      },
+      success: true
+    })
+  }
 
   // Edit the balances to weigh with respect to the wallet holdings of the crv LP token
   crvLP_token_balances.output.forEach(call =>
@@ -793,6 +855,7 @@ async function unwrapLPsAuto({ balances, block, chain = "ethereum", transformAdd
         sdk.util.sumSingleBalance(balances, transformAddress(token), balance);
     })
     await _unwrapUniswapLPs(balances, lpBalances)
+    return balances
   }
 
   async function _unwrapUniswapLPs(balances, lpPositions) {
@@ -879,6 +942,36 @@ async function unwrapTroves({ balances = {}, chain = 'ethereum', block, troves =
 }
 
 
+async function sumTokens2({
+  balances = {},
+  tokensAndOwners = [],
+  tokens = [],
+  owners = [],
+  owner,
+  block,
+  chain = 'ethereum',
+  transformAddress,
+  resolveCrv = false,
+  resolveLP = false,
+  resolveYearn = false,
+  unwrapAll = false,
+  blacklistedLPs = [],
+  blacklistedTokens = [],
+}) {
+
+  if (!tokensAndOwners.length) {
+    tokens = getUniqueAddresses(tokens)
+    owners = getUniqueAddresses(owners)
+    if (owner) tokensAndOwners = tokens.map(t => [t, owner])
+    if (owners.length) tokensAndOwners = tokens.map(t => owners.map(o => [t, o])).flat()
+  }
+
+  blacklistedTokens = blacklistedTokens.map(t => t.toLowerCase())
+  tokensAndOwners = tokensAndOwners.map(([t, o]) => [t.toLowerCase(), o]).filter(([token]) => !blacklistedTokens.includes(token))
+
+  return sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { resolveCrv, resolveLP, resolveYearn, unwrapAll, blacklistedLPs })
+}
+
 module.exports = {
   unwrapYearn,
   unwrapCrv,
@@ -898,5 +991,6 @@ module.exports = {
   genericUnwrapCvx,
   unwrapLPsAuto,
   unwrapTroves,
-  isLP
+  isLP,
+  sumTokens2,
 }

@@ -38,7 +38,7 @@ function setChainTVL(chain) {
       target: masterchef, calls: lpPositionCalls, block, chain, abi: abi.poolInfo
     })
 
-    masterchefPools = []
+    const masterchefPools = []
 
     mcPools.forEach(({ output }) => {
       masterchefPools.push(output)

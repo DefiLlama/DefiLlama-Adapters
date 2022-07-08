@@ -1,11 +1,5 @@
 const { stakingUnknownPricedLP } = require("../helper/staking")
 const { pool2 } = require("../helper/unknownTokens")
-const { sumTokens } = require("../helper/unwrapLPs");
-const { getFixBalances } = require("../helper/portedTokens");
-const { default: BigNumber } = require("bignumber.js");
-const sdk = require("@defillama/sdk");
-
-const chain = "klaytn";
 
 const SCNR = {
   address: "0x8888888888885b073f3c81258c27e83db228d5f3",

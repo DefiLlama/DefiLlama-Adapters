@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const erc20 = require("../helper/abis/erc20.json");
 
 const factoryPoolContract = "0x98C58c1cEb01E198F8356763d5CbA8EB7b11e4E2";
 const USDC = "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8";
@@ -30,7 +29,7 @@ const arbiTvl = async (chainBlocks) => {
 
     const poolBalance = (
       await sdk.api.abi.call({
-        abi: erc20.balanceOf,
+        abi: 'erc20:balanceOf',
         target: USDC,
         params: pool,
         chain: "arbitrum",

@@ -41,7 +41,7 @@ function waterloan(chain, borrowed) {
       );
     }
 
-    erc20Map = {
+    const erc20Map = {
       "0xE6f8988d30614afE4F7124b76477Add79c665822":
         "0x081f67afa0ccf8c7b17540767bbe95df2ba8d97f", // CET
       "0x1D7C98750A47762FA8B45c6E3744aC6704F44698":

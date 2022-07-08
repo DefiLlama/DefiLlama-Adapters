@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const erc20 = require("../helper/abis/erc20.json");
 const abi = require("./abi.json");
 const retry = require("../helper/retry");
 const { GraphQLClient, gql } = require("graphql-request");
@@ -46,7 +45,7 @@ const bscTvl = async (chainBlocks) => {
 
     const getToken0Balance = (
       await sdk.api.abi.call({
-        abi: erc20.balanceOf,
+        abi: 'erc20:balanceOf',
         target: token0,
         params: pool,
         chain: "bsc",
@@ -56,7 +55,7 @@ const bscTvl = async (chainBlocks) => {
 
     const getToken1Balance = (
       await sdk.api.abi.call({
-        abi: erc20.balanceOf,
+        abi: 'erc20:balanceOf',
         target: token1,
         params: pool,
         chain: "bsc",

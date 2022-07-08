@@ -18,6 +18,8 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     })
     // console.log('gardens (public and private)', gardens)
 
+    const gardensToIgnore = ["0xB0EE8C61c78aA9B7ED138bcC6bce7ABeC8470038", "0xF0AF08d7bc6e4aE42b84771aE3f9DA7D8e58b083", "0x4f5721Ce7F02586D67eA0CC6003e889E974DC9A0"]
+    gardens = gardens.filter(i => !gardensToIgnore.includes(i))
     // Get details of all gardens using babylonViewer contract
     const gardensDetails = await sdk.api.abi.multiCall({
         abi: abi['getGardenDetails'],
@@ -29,9 +31,9 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
         chain: 'ethereum'
     })
 
-    const gardensToIgnore = ["0xB0EE8C61c78aA9B7ED138bcC6bce7ABeC8470038"]
     for (const gardenDetails of gardensDetails.output) {
         if (gardensToIgnore.includes(gardenDetails.input.params[0])) { continue; };
+        console.log(gardenDetails.input.params[0], !!gardenDetails.output)
         const [gardenName, symbol, creators, reserveAsset, arr1, strategies, finalizedStrategies, voteParams, capitalArr, profits] = gardenDetails.output
         // const garden_principal = capitalArr[0]
         const garden_idle = capitalArr[9]

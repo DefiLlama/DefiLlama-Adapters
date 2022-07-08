@@ -174,15 +174,15 @@ async function getPrices(assetDictionary, orderedAssets) {
 }
 
 function getMarketSupply(assetName, marketGlobalState, prices, assetDictionary) {
-    underlyingCash = ((assetName === "STBL") || (assetName === "vALGO"))  ? marketGlobalState[marketStrings.active_collateral] : marketGlobalState[marketStrings.underlying_cash]
-    supplyUnderlying = underlyingCash - marketGlobalState[marketStrings.underlying_reserves]
+    let underlyingCash = ((assetName === "STBL") || (assetName === "vALGO"))  ? marketGlobalState[marketStrings.active_collateral] : marketGlobalState[marketStrings.underlying_cash]
+    let supplyUnderlying = underlyingCash - marketGlobalState[marketStrings.underlying_reserves]
     supplyUnderlying /= Math.pow(10, assetDictionary[assetName]['decimals'])
 
     return supplyUnderlying * prices[assetName]
 }
 
 function getMarketBorrow(assetName, marketGlobalState, prices) {
-    borrowUnderlying = marketGlobalState[marketStrings.underlying_borrowed]
+    let borrowUnderlying = marketGlobalState[marketStrings.underlying_borrowed]
     borrowUnderlying /= Math.pow(10, assetDictionary[assetName]['decimals'])
 
     return borrowUnderlying * prices[assetName]
@@ -191,10 +191,10 @@ function getMarketBorrow(assetName, marketGlobalState, prices) {
 async function borrowed() {
     let prices = await getPrices(assetDictionary, orderedAssets)
 
-    borrow = 0
+    let borrow = 0
 
     for (const assetName of orderedAssets) {
-        marketGlobalState = await getGlobalMarketState(assetDictionary[assetName]["marketAppId"])
+        let marketGlobalState = await getGlobalMarketState(assetDictionary[assetName]["marketAppId"])
         borrow += getMarketBorrow(assetName, marketGlobalState, prices, assetDictionary)
     }
 
@@ -204,10 +204,10 @@ async function borrowed() {
 async function supply() {
     let prices = await getPrices(assetDictionary, orderedAssets)
 
-    supply = 0
+    let supply = 0
     for (const assetName of orderedAssets) {
-        marketGlobalState = await getGlobalMarketState(assetDictionary[assetName]["marketAppId"])
-        assetTvl = getMarketSupply(assetName, marketGlobalState, prices, assetDictionary)
+        let marketGlobalState = await getGlobalMarketState(assetDictionary[assetName]["marketAppId"])
+        let assetTvl = getMarketSupply(assetName, marketGlobalState, prices, assetDictionary)
         supply += assetTvl
     }
 
@@ -248,9 +248,9 @@ async function staking() {
         }
     }
 
-    staked = 0
+    let staked = 0
     for (const contractName of stakingContracts) {
-        marketGlobalState = await getGlobalMarketState(assetDictionary['STAKING_CONTRACTS'][contractName]["marketAppId"])
+        let marketGlobalState = await getGlobalMarketState(assetDictionary['STAKING_CONTRACTS'][contractName]["marketAppId"])
         staked += getMarketSupply(contractName, marketGlobalState, prices, assetDictionary['STAKING_CONTRACTS'])
     }
 

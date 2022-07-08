@@ -80,7 +80,6 @@
   "ethereumclassic",
   "thorchain",
   "everscale",
-  "ThunderCore",
   "icon",
   "bittorrent",
   "vechain",
@@ -126,5 +125,16 @@
   "reichain",
   "ontology_evm",
   "terra2",
-  "clv"
+  "clv",
+  "echelon",
+  "multivac",
+  "sx",
+  "lbry",
+  "rvn",
+  "ore",
+  "acala",
+  "genshiro",
+  "icp",
+  "nova",
+  "kintsugi"
 ]

@@ -1,14 +1,10 @@
 const utils = require("../helper/utils");
-const { Connection, PublicKey } = require("@solana/web3.js");
+const { PublicKey } = require("@solana/web3.js");
 const { Coder } = require("@project-serum/anchor");
 const QuarryMineIDL = require("./quarry_mine.json");
 const { getMSolLPTokens, MSOL_LP_MINT } = require("./msolLP");
 
-const { getMultipleAccountBuffers } = require("../helper/solana");
-
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
+const { getMultipleAccountBuffers, getConnection } = require("../helper/solana");
 
 const readTVL = async ({
   tokenA,
@@ -63,8 +59,10 @@ async function tvl() {
     "https://registry.saber.so/data/llama.mainnet.json"
   );
 
-  const connection = new Connection("https://api.mainnet-beta.solana.com");
+  const connection = getConnection();
   const coder = new Coder(QuarryMineIDL);
+  let i = 0
+  utils.log('total', Object.keys(quarriesByStakedMint).length)
 
   for (const [stakedMint, quarryKeys] of Object.entries(quarriesByStakedMint)) {
     const coingeckoID = coingeckoIDs[stakedMint];
@@ -126,7 +124,8 @@ async function tvl() {
     }
 
     // sleep to avoid rate limiting issues
-    await sleep(1200);
+    utils.log('done', ++i)
+    await utils.sleep(1200);
   }
 
   return tvlResult;

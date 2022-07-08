@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { pool2s } = require("../helper/pool2");
-const { sumTokensSingle } = require("../helper/unknownTokens");
+const { vestingHelper } = require("../helper/unknownTokens");
 
 const deepLockLockerContractV1 = "0x10dD7FD1Bf3753235068ea757f2018dFef94B257";
 const deepLockLockerContractV2 = "0x3f4D6bf08CB7A003488Ef082102C2e6418a4551e";
@@ -77,7 +77,7 @@ const bscTvl = async (ts, _b, { bsc: block }) => {
       calls, chain, block,
     })
     const tokens = output.map(i => i.output.tokenAddress)
-    return sumTokensSingle({
+    return vestingHelper({
       coreAssets: [
         '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // WBNB
         '0xe9e7cea3dedca5984780bafc599bd69add087d56', // BUSD
@@ -88,10 +88,6 @@ const bscTvl = async (ts, _b, { bsc: block }) => {
       owner: vault,
       tokens,
       block, chain,
-      restrictTokenPrice: true,
-      skipConversion: false,
-      onlyLPs: false,
-      minLPRatio: 0.01,
       log_coreAssetPrices: [
         300/ 1e18,
         1/ 1e18,

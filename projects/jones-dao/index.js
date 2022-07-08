@@ -50,7 +50,7 @@ const lps = [
 async function tvl(timestamp, block, chainBlocks) {
     let balances = {};
     block = chainBlocks.arbitrum;
-    chain = "arbitrum";
+    const chain = "arbitrum";
 
     const ethManagementWindow = (await sdk.api.abi.call({
         target: ethVault,
