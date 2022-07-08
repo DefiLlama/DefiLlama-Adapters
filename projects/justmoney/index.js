@@ -3,32 +3,14 @@ const { get } = require('../helper/http')
 
 let _response
 
-async function getTvl() {
-  if (! _response) {
-    _response = get('https://api.just.money/v1/tvl')
+function getTvl(chain) {
+  return async () => {
+    if (!_response) _response = get('https://api.just.money/v1/tvl')
+    
+    const response = await _response
+
+    return toUSDTBalances(response[chain])
   }
-  
-  return await _response
-}
-
-async function tronTvl() {
-  return toUSDTBalances((await getTvl()).tron)
-}
-
-async function bscTvl() {
-  return toUSDTBalances((await getTvl()).bsc)
-}
-
-async function polygonTvl() {
-  return toUSDTBalances((await getTvl()).poly)
-}
-
-async function bittorrentTvl() {
-  return toUSDTBalances((await getTvl()).bttc)
-}
-
-async function zenithTvl() {
-  return toUSDTBalances((await getTvl()).zenith)
 }
 
 module.exports = {
@@ -36,18 +18,18 @@ module.exports = {
   misrepresentedTokens: true,
   methodology: 'The data is obtained from JustMoney\'s official API.',
   tron: {
-    tvl: tronTvl,
+    tvl: getTvl('tron'),
   },
   bsc: {
-    tvl: bscTvl,
+    tvl: getTvl('bsc'),
   },
   polygon: {
-    tvl: polygonTvl,
+    tvl: getTvl('poly'),
   },
   bittorrent: {
-    tvl: bittorrentTvl,
+    tvl: getTvl('bttc'),
   },
   // zenith: {
-  //   tvl: zenithTvl
+  //   tvl: getTvl('zenith')
   // },
 }
