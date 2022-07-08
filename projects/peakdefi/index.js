@@ -1,4 +1,4 @@
-  const _ = require('underscore');
+
   const sdk = require("@defillama/sdk")
   const BigNumber = require('bignumber.js');
 const { staking } = require('../helper/staking');
@@ -83,7 +83,7 @@ const { staking } = require('../helper/staking');
     let fundsAddresses = [];
 
     // Prepare funds balances
-    _.each(funds, (fund) => {
+    Object.values(funds).forEach((fund) => {
       let fundTokens = fund.tokens
       let fundAddress = fund.address
 
@@ -91,7 +91,7 @@ const { staking } = require('../helper/staking');
       fundsAddresses.push(fundAddress)
 
       // Calculate ERC20 balance for every token of the fund
-      _.each(fundTokens, (tokenAddress) => {
+      fundTokens.forEach((tokenAddress) => {
         calls.push({
           target: tokenAddress,
           params: fundAddress

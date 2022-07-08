@@ -50,7 +50,7 @@ async function ethTvl(timestamp, block) {
         [ethTokens.SLP_OT_ETHUSDC_22, true],
         [ethTokens.SLP_OT_wxBTRFLY_22, true],
     ], ethFundedContracts, block);
-    for (token of ethOtTokens) {
+    for (let token of ethOtTokens) {
         delete balances[token.toLowerCase()];
     };
     delete balances[ethTokens.PENDLE];
@@ -126,7 +126,7 @@ async function avaxTvl(timestamp, block, chainBlocks) {
       })).output;
     delete balances[`avax:${avaxTokens.wMEMO}`];
 
-    for (token of avaxOtTokens) {
+    for (let token of avaxOtTokens) {
         delete balances[`avax:${token.toLowerCase()}`];
     };
 

@@ -14,5 +14,7 @@
   "hallmarks",
   "incentivized",
   "offers",
-  "deadFrom"
+  "deadFrom",
+  "broken",
+  "ownTokens"
 ]

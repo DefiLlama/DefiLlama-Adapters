@@ -1,7 +1,8 @@
-const _ = require('underscore');
+
 const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js');
 const liquidityAbi = require('./abi/liquidity.json');
+
 
 const ETH = '0x0000000000000000000000000000000000000000';
 
@@ -94,7 +95,7 @@ async function getMarkets(block, liquidityPool) {
   } else {
     let allTokens = await getAllTokens(block, liquidityPool);
     // if not in cache, get from the blockchain
-    for (token of allTokens) {
+    for (const token of allTokens) {
       let kToken = await getKToken(block, token, liquidityPool);
 
       if (!markets[token]) {
@@ -121,12 +122,14 @@ async function getHidingVaultBalances(timestamp, block) {
     })).output;
 
     // numberRange to iterate over indexes of NFTs. Can migrate to any supported util func of erc721 when it is supported.
-    const indexRange = _.range(0, parseInt(noOfHidingVaults));
+    const indexRange = [];
+    for (let i = 0;i < +noOfHidingVaults; i++)
+      indexRange.push(i)
 
     // Query Hiding Vault Contract's 'tokenByIndex' with index to get individual HidingVaultNFTs
     let totalHidingVaultNFTs = (await sdk.api.abi.multiCall({
       target: HIDING_VAULT_CONTRACT,
-      calls: _.map(indexRange, (index) => ({
+      calls: indexRange.map((index) => ({
         params: [index],
       })),
       abi: liquidityAbi['tokenByIndex'],
@@ -198,7 +201,7 @@ async function getLiquidityPoolBalances(timestamp, block) {
     // Get token balances
     let balances = await sdk.api.abi.multiCall({
       block,
-      calls: _.map(markets, (data, token) => ({
+      calls: Object.keys(markets).map((token) => ({
         target: token,
         params: liquidityPool,
       })).filter(m => m.target !== "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"),
@@ -220,7 +223,8 @@ async function tvl(timestamp, block) {
 
   const totalBalances = {};
 
-  _.uniq(Object.keys(hidingVaultBalances).concat(Object.keys(liquidityPoolBalances))).forEach(asset => {
+  const uniq = arry => [... new Set(arry)]
+  uniq(Object.keys(hidingVaultBalances).concat(Object.keys(liquidityPoolBalances))).forEach(asset => {
     totalBalances[asset] = new BigNumber(hidingVaultBalances[asset] || "0").plus(new BigNumber(liquidityPoolBalances[asset] || "0")).toString(10);
   });
 

@@ -1,43 +1,33 @@
+const { toUSDTBalances } = require("../helper/balances")
 const sdk = require('@defillama/sdk')
-const abi = require('./abi.json')
-const BigNumber = require('bignumber.js')
-const { ethers } = require('ethers')
 
-const address = "0xf1f25A26499B023200B3f9A30a8eCEE87b031Ee1";
+const getTotalDepositABI = {
+  'inputs': [],
+  'name': 'getTotalDeposit',
+  'outputs': [
+    {
+      'internalType': 'uint256',
+      'name': '',
+      'type': 'uint256'
+    }
+  ],
+  'stateMutability': 'view',
+  'type': 'function'
+}
 
-function toBN(value) {
-    let data = value ? value : 0;
-    data = !Number.isNaN(data) ? data : 0;
+async function tvl(ts, _block, chainBlocks) {
+  const value = (await sdk.api.abi.call({
+    target: '0xf1f25A26499B023200B3f9A30a8eCEE87b031Ee1', 
+    abi: getTotalDepositABI,
+    block: chainBlocks.bsc,
+    chain: 'bsc'
+  })).output
 
-    return new BigNumber(data);
-};
-
-function fromWei(value, decimals) {
-    const prepValue = value.toString(10).split('.')[0];
-    const eth = ethers.utils.formatUnits(prepValue, decimals).toString();
-
-    return toBN(eth);
-};
-
-function safeBN(v) {
-    const value = v.toString(10);
-  
-    return value.includes('.') ? value.split('.')[0] : value;
-};
-
-async function fetch() {
-    const { output } = await sdk.api.abi.call({
-        abi: abi.getTotalDeposit,
-        target: address,
-        params: [],
-        chain: "bsc",
-    });
-    
-    return safeBN(fromWei(output, 18).toString(10));
-};
+  return toUSDTBalances(value, 1e-12)
+}
 
 module.exports = {
-    timetravel: true,
-    methodology: '',
-    fetch,
-};
+  bsc: {
+    tvl
+  }
+}

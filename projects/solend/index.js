@@ -1,10 +1,9 @@
 const BigNumber = require("bignumber.js");
-const { PublicKey, Connection } = require("@solana/web3.js");
+const { PublicKey, } = require("@solana/web3.js");
 const { parseReserve } = require("./utils");
-const { getTokenBalance } = require("../helper/solana");
+const { getTokenBalance, getCoingeckoId, getConnection, } = require("../helper/solana");
 const { fetchURL } = require('../helper/utils')
 
-const connection = new Connection("https://solana-api.projectserum.com/");
 const solendConfigEndpoint = "https://api.solend.fi/v1/config?deployment=production";
 const assetToCoinGeckoIdMap = {
   "USDT-USDC": "usd-coin",
@@ -14,14 +13,10 @@ const assetToCoinGeckoIdMap = {
   "SBR": "saber",
   "lsIN": "invictus",
   "xSTEP": "step",
-  "parrot-usd": "usd-coin",
-  "cashio-dollar": "usd-coin",
-  "uxd-stablecoin": "usd-coin",
-  "usdh": "usd-coin",
-}
-
-async function getCoingeckoId(contract_address) {
-  return (await fetchURL(`https://api.coingecko.com/api/v3/coins/solana/contract/${contract_address}`))?.data?.id;
+  "PAI": "usd-coin",
+  "USDH": "usd-coin",
+  "stSOL": "lido-staked-sol",
+  "GMT": "stepn",
 }
 
 // v3/coins/solana/contract/${contract_address} sometime fails to return certain assets
@@ -31,17 +26,18 @@ function getAssetToCoingeckoIDFallback(asset) {
 
 async function borrowed() {
   const solendConfig = (await fetchURL(solendConfigEndpoint))?.data;
+  const getCg = await getCoingeckoId();
   const borrowed = {};
   for (const market of solendConfig.markets) {
     for (const reserve of market.reserves) {
       const asset = solendConfig.assets.find(asset => asset.symbol === reserve.asset);
       const { mintAddress } = asset;
       let coingeckoId = reserve.asset
-      try {
-        coingeckoId = await getCoingeckoId(mintAddress);
-      } catch (e) {
+        coingeckoId = getCg(mintAddress);
+      if(coingeckoId === undefined){
         coingeckoId = getAssetToCoingeckoIDFallback(reserve.asset);
       }
+      const connection = getConnection()
       const accountInfo = await connection.getAccountInfo(new PublicKey(reserve.address), "processed");
       const parsedReserve = parseReserve(PublicKey.default, accountInfo);
       const amount = new BigNumber(
@@ -66,6 +62,7 @@ async function borrowed() {
 
 async function tvl() {
   const solendConfig = (await fetchURL(solendConfigEndpoint))?.data;
+  const getCg = await getCoingeckoId();
   const tvl = {};
 
   for (const market of solendConfig.markets) {
@@ -73,9 +70,9 @@ async function tvl() {
       const asset = solendConfig.assets.find(asset => asset.symbol === reserve.asset);
       const { mintAddress } = asset;
       let coingeckoId = reserve.asset
-      try {
-        coingeckoId = await getCoingeckoId(mintAddress);
-      } catch (e) {
+      
+        coingeckoId = getCg(mintAddress);
+      if(coingeckoId === undefined){
         coingeckoId = getAssetToCoingeckoIDFallback(reserve.asset);
       }
       const amount = await getTokenBalance(mintAddress, market.authorityAddress);

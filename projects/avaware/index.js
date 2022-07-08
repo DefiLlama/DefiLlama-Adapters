@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const erc20 = require("../helper/abis/erc20.json");
 const abi = require("./abi.json");
 
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
@@ -15,6 +14,7 @@ const malformedLPTokens = [
   '0x2af262DD90bd2D124E95Fc778D9c85aA03734Ff2',
   '0xE5403978fF8AD2B0a007F330f6235F7250F54a6C',
   '0x91934e4fA7E2D25DF2FA132a4aAFEFE929751224',
+  '0xac2d6DBE97de8C0363FfCeA77b701c8Ffc4D2F3b',
 ].map(token => token.toLowerCase())
 
 /*** Staking of native token AVE TVL Portion ***/
@@ -79,7 +79,7 @@ const avaxTvl = async (timestamp, ethBlock, chainBlocks) => {
 
       const balanceOfLpoOrToken = (
         await sdk.api.abi.call({
-          abi: erc20.balanceOf,
+          abi: 'erc20:balanceOf',
           target: stakingLpOrTokens,
           params: getPoolAddress,
           chain: "avax",

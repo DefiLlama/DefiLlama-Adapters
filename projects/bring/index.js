@@ -1,5 +1,5 @@
 const { staking, stakings } = require("../helper/staking");
-const { transformBscAddress } = require("../helper/portedTokens");
+const { transformBscAddress, transformHarmonyAddress, fixHarmonyBalances } = require("../helper/portedTokens");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const { pool2s } = require("../helper/pool2");
 
@@ -62,6 +62,16 @@ const listOfTokenOld_bsc = [
   "0xc7d8d35eba58a0935ff2d5a33df105dd9f071731",
 ];
 
+/*** Harmony Addresses ***/
+const chefHarmonyContracts = "0x3d4ACf89997148DcF2D266Ceb52A8bea2a7d4B2c";
+const BRNG_harmony = "0x3Ecb96039340630c8B82E5A7732bc88b2aeadE82";
+
+const listOfToken_harmony = [
+  //BRNG
+  "0x3Ecb96039340630c8B82E5A7732bc88b2aeadE82",
+];
+
+
 async function calc(
   balances,
   chefContract,
@@ -103,6 +113,15 @@ async function ethTvl() {
   return balances;
 }
 
+async function harmonyTvl() {
+  const balances = {};
+
+  await calc(balances, chefHarmonyContracts, listOfToken_harmony, "harmony");
+
+  return balances;
+}
+
+
 module.exports = {
   misrepresentedTokens: true,
   ethereum: {
@@ -121,6 +140,10 @@ module.exports = {
       "bsc"
     ),
     tvl: bscTvl,
+  },
+  harmony: {
+    staking: harmonyTvl,
+    tvl: ()=>({})
   },
   methodology: "Counts liquidty of the Pools through their chefContracts",
 };

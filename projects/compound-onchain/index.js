@@ -1,4 +1,4 @@
-const _ = require('underscore');
+
 const sdk = require('@defillama/sdk');
 const abi = require('./abi.json');
 const v1abi = require('./v1Abi.json');
@@ -157,7 +157,7 @@ async function v2Tvl(balances, block, borrowed){
   // Get V1 tokens locked
   let v1Locked = await sdk.api.abi.multiCall({
     block,
-    calls: _.map(markets, (market) => ({
+    calls: markets.map((market) => ({
       target: market.underlying,
       params: '0x3FDA67f7583380E67ef93072294a7fAc882FD7E7',
     })),
@@ -169,14 +169,14 @@ async function v2Tvl(balances, block, borrowed){
   // Get V2 tokens locked
   let v2Locked = await sdk.api.abi.multiCall({
     block,
-    calls: _.map(markets, (market) => ({
+    calls: markets.map((market) => ({
       target: market.cToken,
     })),
     abi: borrowed?abi.totalBorrows: abi['getCash'],
   });
 
-  _.each(markets, (market) => {
-    let getCash = _.find(v2Locked.output, (result) => result.input.target === market.cToken);
+  markets.forEach((market) => {
+    let getCash = v2Locked.output.find((result) => result.input.target === market.cToken);
       balances[market.underlying] = BigNumber(balances[market.underlying] || 0)
         .plus(getCash.output)
         .toFixed();
@@ -197,7 +197,7 @@ async function tvl(timestamp, block) {
   // Get V1 tokens locked
   let v1Locked = await sdk.api.abi.multiCall({
     block,
-    calls: _.map(markets, (market) => ({
+    calls: markets.map((market) => ({
       target: market.underlying,
       params: v1Contract,
     })),

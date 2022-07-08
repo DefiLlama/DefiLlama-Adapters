@@ -3,7 +3,7 @@
   ==================================================*/
 
 const sdk = require("@defillama/sdk");
-const _ = require("underscore");
+
 const BigNumber = require("bignumber.js");
 
 /*==================================================
@@ -29,10 +29,10 @@ async function tvl(timestamp, block) {
   const balances = {};
 
   let balanceOfCalls = [];
-  _.forEach(contracts, (contract) => {
+  contracts.forEach((contract) => {
     balanceOfCalls = [
       ...balanceOfCalls,
-      ..._.map(tokens, (token) => ({
+      ...tokens.map((token) => ({
         target: token,
         params: contract,
       })),
@@ -48,7 +48,7 @@ async function tvl(timestamp, block) {
   ).output;
 
   /* combine token volumes on multiple contracts */
-  _.forEach(balanceOfResult, (result) => {
+  balanceOfResult.forEach((result) => {
     let balance = new BigNumber(result.output || 0);
     if (balance <= 0) return;
 
@@ -71,5 +71,5 @@ async function tvl(timestamp, block) {
 
 module.exports = {
   start: 1609459200, // unix timestamp (utc 0) specifying when the project began, or where live data begins
-  tvl, // tvl adapter
+  ethereum: { tvl }
 };
