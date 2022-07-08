@@ -222,7 +222,7 @@ module.exports = {
     celo: {
         fetch: celo
     },
-    clv: {
+    clover: {
         fetch: clv
     },
     fetch
