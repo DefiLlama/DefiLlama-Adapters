@@ -6,7 +6,7 @@
   const Double = BASE * BASE;
   const mappingTokens = require("./tokenMapping.json");
   const {sumTokensSharedOwners} = require('../helper/unwrapLPs')
-  const {getCompoundV2Tvl} = require('../helper/compound')
+  const {getCompoundV2Tvl,getCompoundUsdTvl} = require('../helper/compound')
   const {generalizedChainExports} = require('../helper/exports')
 
 
@@ -58,18 +58,22 @@ let allControllers = {
   ethereum: [
     "0x8B53Ab2c0Df3230EA327017C91Eb909f815Ad113", // dForce general pool
     "0x3bA6e5e5dF88b9A88B2c19449778A4754170EA17", // dForce stock pool
-    "0x8f1f15DCf4c70873fAF1707973f6029DEc4164b3" // liqee general pool
+    "0x1E96e916A64199069CcEA2E6Cf4D63d30a61b93d", // dForce vault pool: USX/3CRV
+    "0x8f1f15DCf4c70873fAF1707973f6029DEc4164b3", // liqee general pool
   ],
   bsc: [
     "0x0b53E608bD058Bb54748C35148484fD627E6dc0A", // dForce general pool
     "0xb6f29c4507A53A7Ab78d99C1698999dbCf33c800", // dForce stock pool
     "0x6d290f45A280A688Ff58d095de480364069af110" // liqee general pool
   ],
-  arbitrum: ["0x8E7e9eA9023B81457Ae7E6D2a51b003D421E5408"],
+  arbitrum: [
+    "0x8E7e9eA9023B81457Ae7E6D2a51b003D421E5408", // dForce general pool
+    "0x50210A88217d1dD9e7FBc3E4a927Cc55829a38eB", // dForce vault pool: USX/2CRV
+  ],
   optimism: ["0xA300A84D8970718Dac32f54F61Bd568142d8BCF4"],
   polygon: ["0x52eaCd19E38D501D006D2023C813d7E37F025f37"],
   avax: ["0x078ad8d6faeD9DAeE55f5d446C80E0C81230DE6b"],
-  kava: ["0xFBf64A8cAEA1D641affa185f850dbBF90d5c84dC"]
+  kava: ["0xFBf64A8cAEA1D641affa185f850dbBF90d5c84dC"],
 };
 
 let yieldMarkets = {
@@ -123,7 +127,6 @@ const excludeAlliTokens = {
     "0x8af4f25019e00c64b5c9d4a49d71464d411c2199", // Stock pool EUX
     "0x450e09a303aa4bcc518b5f74dd00433bd9555a77", // Liqee qUSX
     "0xee0d3450b577743eee2793c0ec6d59361eb9a454" // Liqee iMUSX
-    
   ],
   // Polygon
   polygon: [
@@ -195,7 +198,7 @@ async function getTVLOfdToken(chain, block, dTokenBalances) {
   let dTokenTVL = BigNumber("0");
   let dTokens = yieldMarkets[chain];
   let dTokenUnderlyings = yieldUnderlyingTokens[chain];
-  await 
+  await
   Promise.all(dTokens.map(async dToken => {
       let { output: marketTVL } = await sdk.api.abi.call({
         block,
@@ -245,11 +248,13 @@ function getTVLByChain(chain) {
 
 function getLendingTvl(chain, borrowed){
   return sdk.util.sumChainTvls(allControllers[chain].map(controller =>
-    getCompoundV2Tvl(controller, chain, addr => `${chain}:${addr}`, undefined, undefined, borrowed, undefined, {
-      blacklistedTokens: excludeAlliTokens[chain].concat([USXs[chain] ?? ""]),
-      abis: {
+    getCompoundUsdTvl(controller, chain, cether = "0x5ACD75f21659a59fFaB9AEBAf350351a8bfaAbc0", borrowed,
+      abis = {
+        oracle: abi['oracle'],
+        underlyingPrice: abi['getUnderlyingPrice'],
         getAllMarkets: abi['getAlliTokens']
-      }
+      }, {
+      blacklist: excludeAlliTokens[chain].concat([USXs[chain] ?? ""]),
     })
   ))
 }
