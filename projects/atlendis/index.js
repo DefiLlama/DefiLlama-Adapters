@@ -44,7 +44,6 @@ async function fetchData(block, balances, transform) {
 
 async function tvl (timestamp, block, chainBlocks) {
   const balances = {};
-  console.log("f")
   const transform = await transformPolygonAddress();
   block = await getBlock(timestamp, "polygon", chainBlocks);
   await fetchData(block, balances, transform);
