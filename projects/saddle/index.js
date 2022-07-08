@@ -310,6 +310,8 @@ module.exports = {
   evmos: {
     tvl: evmTvl, // Saturday, June 18th, 2022 
   },
-  methodology:
-    "Counts as TVL all the Assets deposited on each chain through different Pool Contracts",
+  hallmarks: [
+    [1651276800, "sUSDv2 hack"]
+  ],
+  methodology: "Counts as TVL all the Assets deposited on each chain through different Pool Contracts",
 };
