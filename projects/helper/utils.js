@@ -100,7 +100,7 @@ function isLP(symbol, token, chain) {
   const isLPRes = LP_SYMBOLS.includes(symbol) || /(UNI-V2|vAMM)/.test(symbol) || symbol.split(/\W+/).includes('LP')
 
   if (DEBUG_MODE && isLPRes && !['UNI-V2', 'Cake-LP'].includes(symbol))
-    console.log(symbol, token)
+    console.log(chain, symbol, token)
 
   return isLPRes
 }
