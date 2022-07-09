@@ -143,5 +143,5 @@ module.exports = {
   bsc: {
     tvl: bsc
   },
-  methodology: `TVL is the total quantity of tokens locked in poolTogether pools, on Ethereum, Polygon, Avalance, Optimism, Celo, and BSC`
+  methodology: `TVL is the total quantity of tokens locked in poolTogether pools, on Ethereum, Polygon, Avalanche, Optimism, Celo, and BSC`
 }
