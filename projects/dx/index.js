@@ -23,20 +23,105 @@ const {
   getPresaleDataV3,
   getLPAddressFromPresaleRouterV3,
   getPresaleOwnerAddressByIdV3,
+  getStorageLockDataV33,
+  getStorageLockCountV33,
 } = require("./abis");
 const { getChainTransform } = require("../helper/portedTokens");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { returnBalance } = require("../helper/utils");
 
-function getLPLockersV3(args) {
+function getTVLTotal(args) {
   return async (timestamp, ethBlock, chainBlocks) => {
     let balances = {};
-    let lpPairs = [];
     let tokens = [];
+    let lptokens = [];
     const chain = args.chain;
     const block = chainBlocks[chain];
     const transform = await getChainTransform(chain);
 
+    //Get Liquidity Locks new from storage
+    try {
+      for (let i = 0; i < args.storageLiquidityLocks.length; i++) {
+        //Get Amount of Locks on Contract
+        const { output: totalLocks } = await sdk.api.abi.call({
+          target: args.storageLiquidityLocks[i],
+          abi: getStorageLockCountV33,
+          chain,
+          block,
+        });
+
+        for (let j = 0; j < totalLocks; j++) {
+          //Get Wallet at Lock ID
+          const { output: lockData } = await sdk.api.abi.call({
+            target: args.storageLiquidityLocks[i],
+            params: j,
+            abi: getStorageLockDataV33,
+            chain,
+            block,
+          });
+          const getTokenBalance = (
+            await sdk.api.abi.call({
+              abi: "erc20:balanceOf",
+              target: lockData[2],
+              params: lockData[4],
+              chain,
+              block,
+            })
+          ).output;
+
+          lptokens.push({
+            token: lockData[2],
+            balance: getTokenBalance,
+          });
+        }
+      }
+    } catch (e) {
+      console.log(e);
+    }
+    //Get Token Locks new from storage
+    try {
+      for (let i = 0; i < args.storageTokenLocks.length; i++) {
+        //Get Amount of Locks on Contract
+        const { output: totalLocks } = await sdk.api.abi.call({
+          target: args.storageTokenLocks[i],
+          abi: getStorageLockCountV33,
+          chain,
+          block,
+        });
+
+        console.log(totalLocks);
+
+        for (let j = 0; j < totalLocks; j++) {
+          //Get Wallet at Lock ID
+          const { output: lockData } = await sdk.api.abi.call({
+            target: args.storageTokenLocks[i],
+            params: j,
+            abi: getStorageLockDataV33,
+            chain,
+            block,
+          });
+          const getTokenBalance = (
+            await sdk.api.abi.call({
+              abi: "erc20:balanceOf",
+              target: lockData[2],
+              params: lockData[4],
+              chain,
+              block,
+            })
+          ).output;
+
+          tokens.push({
+            token: lockData[2],
+            balance: getTokenBalance,
+          });
+
+          console.log(tokens);
+        }
+      }
+    } catch (e) {
+      console.log(e);
+    }
+    //Get Locks from Archives
     try {
       for (let i = 0; i < args.locks.length; i++) {
         let preventDuplicates = [];
@@ -84,7 +169,7 @@ function getLPLockersV3(args) {
               });
 
               if (returnFromDataStruct[1]) {
-                lpPairs.push({
+                lptokens.push({
                   token: returnFromDataStruct[6],
                   balance: returnFromDataStruct[3],
                 });
@@ -114,7 +199,7 @@ function getLPLockersV3(args) {
       console.log(e);
     }
 
-    await unwrapUniswapLPs(balances, lpPairs, block, chain, transform);
+    await unwrapUniswapLPs(balances, lptokens, block, chain, transform);
 
     for (let i = 0; i < tokens.length; i++) {
       sdk.util.sumSingleBalance(
@@ -128,110 +213,35 @@ function getLPLockersV3(args) {
   };
 }
 
-function getPresaleLocksV3(args) {
-  return async (timestamp, ethBlock, chainBlocks) => {
-    let balances = {};
-    let lpPairs = [];
-    const chain = args.chain;
-    const block = chainBlocks[chain];
-    const transform = await getChainTransform(chain);
-
-    try {
-      for (let i = 0; i < args.presales.length; i++) {
-        //Get Amount of Presales on Contract
-        const { output: totalPresales } = await sdk.api.abi.call({
-          target: args.presales[i],
-          abi: getPresaleCountPerContractV3,
-          chain,
-          block,
-        });
-
-        console.log(totalPresales);
-
-        for (let j = 0; j < totalPresales; j++) {
-          //Get Wallet at Presale ID
-          const { output: walletToId } = await sdk.api.abi.call({
-            target: args.presales[i],
-            params: j,
-            abi: getPresaleOwnerAddressByIdV3,
-            chain,
-            block,
-          });
-
-          try {
-            //Get Data for the Presale
-            const { output: presaleData } = await sdk.api.abi.call({
-              target: args.presales[i],
-              params: walletToId,
-              abi: getPresaleDataV3,
-              chain,
-              block,
-            });
-
-            //Get LP Address from Router
-            const { output: lpAddress } = await sdk.api.abi.call({
-              target: presaleData["10"],
-              abi: getLPAddressFromPresaleRouterV3,
-              chain,
-              block,
-            });
-
-            await returnBalance(
-              lpAddress,
-              presaleData["10"],
-              block,
-              chain
-            ).then((value) => {
-              console.log('Address: ' + lpAddress + 'Value: ' + value);
-              lpPairs.push({
-                token: lpAddress,
-                balance: value,
-              });
-            });
-          } catch (e) {
-            console.log("Presale is not finalized");
-          }
-        }
-
-      }
-    } catch (e) {
-      console.log(e);
-    }
-
-    console.log("End of List", lpPairs);
-    await unwrapUniswapLPs(balances, lpPairs, block, chain, transform);
-
-    return balances;
-  };
-}
-
 module.exports = {
-
+  polygon: {
+    tvl: getTVLTotal(polygonArchives),
+  },
   bsc: {
-    tvl: getPresaleLocksV3(bscArchives),
+    tvl: getTVLTotal(bscArchives),
   },
   ethereum: {
-    tvl: getPresaleLocksV3(ethereumArchives),
+    tvl: getTVLTotal(ethereumArchives),
   },
   arbitrum: {
-    tvl: getPresaleLocksV3(arbitrumArchives),
+    tvl: getTVLTotal(arbitrumArchives),
   },
   celo: {
-    tvl: getPresaleLocksV3(celoArchives),
+    tvl: getTVLTotal(celoArchives),
   },
   kcc: {
-    tvl: getPresaleLocksV3(kucoinArchives),
+    tvl: getTVLTotal(kucoinArchives),
   },
   harmony: {
-    tvl: getPresaleLocksV3(harmonyArchives),
+    tvl: getTVLTotal(harmonyArchives),
   },
   avalanche: {
-    tvl: getPresaleLocksV3(avalancheArchives),
+    tvl: getTVLTotal(avalancheArchives),
   },
   xdai: {
-    tvl: getPresaleLocksV3(xdaiArchives),
+    tvl: getTVLTotal(xdaiArchives),
   },
   fantom: {
-    tvl: getPresaleLocksV3(fantomArchives),
+    tvl: getTVLTotal(fantomArchives),
   },
-}
+};
