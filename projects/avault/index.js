@@ -37,7 +37,8 @@ async function tvl(chainBlocks) {
   const chain = "astr";
   const chainLocal = chain === "astr" ? "astar" : chainArr[i];
   const fixBalances = await getFixBalances(chainLocal);
-  const vaultAddressArr = Object.values(vaultsInfo[chain]);
+  console.log(vaultsInfo[chainLocal])
+  const vaultAddressArr = Object.values(vaultsInfo[chainLocal]);
   const transformAddress = await getChainTransform(chainLocal);
   const { wantedLocked, wantedAddresses, vaultName } = await vaultsBase(
     chainLocal,
