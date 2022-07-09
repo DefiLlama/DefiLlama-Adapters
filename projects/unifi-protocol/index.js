@@ -92,15 +92,15 @@ module.exports = {
       ],
     }),
   },
-  bittorrent: {
-    tvl: getUniTVL({
-      factory: '0xCAaB36C77841647dC9955B3b1D03710E9B9F127f',
-      chain: 'bittorrent',
-      coreAssets: [
-        '0x8D193c6efa90BCFf940A98785d1Ce9D093d3DC8A'
-      ],
-    }),
-  },
+  // bittorrent: {
+  //   tvl: getUniTVL({
+  //     factory: '0xCAaB36C77841647dC9955B3b1D03710E9B9F127f',
+  //     chain: 'bittorrent',
+  //     coreAssets: [
+  //       '0x8D193c6efa90BCFf940A98785d1Ce9D093d3DC8A'
+  //     ],
+  //   }),
+  // },
   tron: {
     tvl: async () => {
       return {
