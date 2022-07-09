@@ -1781,6 +1781,13 @@ const thundercoreFixMapping = {
   },
 };
 
+const ontologyFixMapping = {
+  "0xd8bc24cfd45452ef2c8bc7618e32330b61f2691b": {
+    coingeckoId: "ong",
+    decimals: 18,
+  },
+};
+
 const fixBalancesMapping = {
   avax: fixAvaxBalances,
   evmos: b => fixBalances(b, evmosFixMapping, { removeUnmapped: false }),
@@ -1809,6 +1816,7 @@ const fixBalancesMapping = {
   callisto: b => fixBalances(b, callistoFixMapping, { removeUnmapped: true }),
   near: b => fixBalances(b, nearFixMapping, { removeUnmapped: false }),
   thundercore: b => fixBalances(b, thundercoreFixMapping, { removeUnmapped: true }),
+  ontology: b => fixBalances(b, ontologyFixMapping, { removeUnmapped: false }),
 };
 
 const chainTransforms = {
@@ -1923,7 +1931,7 @@ function transformBittorrentAddress() {
     "0x935faa2fcec6ab81265b301a30467bbc804b43d3":
       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USDC
     "0x8d193c6efa90bcff940a98785d1ce9d093d3dc8a":
-      "tron:TKfjV9RNKJJCqPvBtK8L7Knykh7DNWvnYt", // BTT
+      "0xc669928185dbce49d2230cc9b0979be6dc797957", // BTT
     "0x17f235fd5974318e4e2a5e37919a209f7c37a6d1":
       "0x0c10bf8fcb7bf5412187a595ab97a3609160b5c6", // USDD
     "0xae17940943ba9440540940db0f1877f101d39e8b":
