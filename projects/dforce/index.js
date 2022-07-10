@@ -57,13 +57,11 @@ let oracles = {
 let allControllers = {
   ethereum: [
     "0x8B53Ab2c0Df3230EA327017C91Eb909f815Ad113", // dForce general pool
-    "0x3bA6e5e5dF88b9A88B2c19449778A4754170EA17", // dForce stock pool
     "0x1E96e916A64199069CcEA2E6Cf4D63d30a61b93d", // dForce vault pool: USX/3CRV
     "0x8f1f15DCf4c70873fAF1707973f6029DEc4164b3", // liqee general pool
   ],
   bsc: [
     "0x0b53E608bD058Bb54748C35148484fD627E6dc0A", // dForce general pool
-    "0xb6f29c4507A53A7Ab78d99C1698999dbCf33c800", // dForce stock pool
     "0x6d290f45A280A688Ff58d095de480364069af110" // liqee general pool
   ],
   arbitrum: [
