@@ -434,6 +434,10 @@ async function transformHarmonyAddress() {
   const mapping = {
     "0x6983D1E6DEf3690C4d616b13597A09e6193EA013":
       "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+    "0xb1f6E61E1e113625593a22fa6aa94F8052bc39E0":
+      "bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    "0xFbdd194376de19a88118e84E279b977f165d01b8":
+      "polygon:0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0",
     "0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a":
       "harmony:0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a",
     "0x72cb10c6bfa5624dd07ef608027e366bd690048f":

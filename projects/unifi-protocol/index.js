@@ -61,7 +61,8 @@ module.exports = {
       factory: '0x08e7974CacF66C5a92a37c221A15D3c30C7d97e0',
       chain: 'ethereum',
       coreAssets: [
-        '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
+        '0xdac17f958d2ee523a2206206994597c13d831ec7',
+        '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
       ],
     }),
   },
