@@ -11,6 +11,7 @@ const getTotalAmounts = require("./abis/getTotalAmounts.json");
 const GRAPH_URL = {
   ethereum: "https://api.thegraph.com/subgraphs/name/gammastrategies/gamma",
   polygon: "https://api.thegraph.com/subgraphs/name/gammastrategies/polygon",
+  optimism: "https://api.thegraph.com/subgraphs/name/gammastrategies/optimism"
 };
 
 const liquidityMiningQuery = gql`
@@ -62,6 +63,10 @@ async function tvlEthereum(timestamp, block, chainBlocks) {
 
 async function tvlPolygon(timestamp, block, chainBlocks) {
   return await tvlUniV3(timestamp, chainBlocks, "polygon");
+}
+
+async function tvlOptimism(timestamp, block, chainBlocks) {
+  return await tvlUniV3(timestamp, chainBlocks, "optimism");
 }
 
 /*Tokens staked in Visors*/
@@ -181,4 +186,7 @@ module.exports = {
   polygon: {
     tvl: tvlPolygon,
   },
+  optimism: {
+    tvl: tvlOptimism,
+  }
 };
