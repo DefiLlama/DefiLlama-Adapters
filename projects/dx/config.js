@@ -1,12 +1,3 @@
-// const { ethereum } = require(".")
-
-const {
-  getNumLockedTokens,
-  getLockedTokenAtIndex,
-  lockedTokensLength,
-  lockedToken,
-} = require("./abis");
-
 const LockersV3 = {
   bsc: [
     "0xEb3a9C56d963b971d320f889bE2fb8B59853e449",
@@ -123,7 +114,7 @@ const LockerV33 = {
     lpStorage: ["0xFEE2A3f4329e9A1828F46927bD424DB2C1624985"],
   },
 
-  oec: {
+  okexchain: {
     tokenStorage: ["0x983b00a2C3d8925cEDfC9f3eb5Df1aE121Ff6B9F"],
     lpStorage: ["0xFEE2A3f4329e9A1828F46927bD424DB2C1624985"],
   },
@@ -142,6 +133,14 @@ const LockerV33 = {
     tokenStorage: ["0x983b00a2C3d8925cEDfC9f3eb5Df1aE121Ff6B9F"],
     lpStorage: ["0xFEE2A3f4329e9A1828F46927bD424DB2C1624985"],
   },
+  smartbch: {
+    tokenStorage: ["0x983b00a2C3d8925cEDfC9f3eb5Df1aE121Ff6B9F"],
+    lpStorage: ["0xFEE2A3f4329e9A1828F46927bD424DB2C1624985"],
+  },
+  milkomeda: {
+    tokenStorage: ["0x983b00a2C3d8925cEDfC9f3eb5Df1aE121Ff6B9F"],
+    lpStorage: ["0x6E573D464416a81A9F82207F1dFD6a42e4b21066"],
+  },
 };
 
 const protocolPairs = {
@@ -157,9 +156,7 @@ const tokens = {
   sale_ETH: "0xf063fe1ab7a291c5d06a86e14730b00bf24cb589",
   sale_Heco: "0x2665375a48A76BB49F6b375844eB88390840C0B8",
   sale_MATIC: "0x8f6196901a4a153d8ee8f3fa779a042f6092d908",
-  weth: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
 };
-
 
 const bscArchives = {
   chain: "bsc",
@@ -221,8 +218,46 @@ const fantomArchives = {
   storageTokenLocks: LockerV33.fantom.tokenStorage,
   storageLiquidityLocks: LockerV33.fantom.lpStorage,
 };
+const hecoArchives = {
+  chain: "heco",
+  storageTokenLocks: LockerV33.heco.tokenStorage,
+  storageLiquidityLocks: LockerV33.heco.lpStorage,
+};
+const okexchainArchives = {
+  chain: "okexchain",
+  storageTokenLocks: LockerV33.okexchain.tokenStorage,
+  storageLiquidityLocks: LockerV33.okexchain.lpStorage,
+};
+const cronosArchives = {
+  chain: "cronos",
+  storageTokenLocks: LockerV33.cronos.tokenStorage,
+  storageLiquidityLocks: LockerV33.cronos.lpStorage,
+};
+const moonriverArchives = {
+  chain: "moonriver",
+  storageTokenLocks: LockerV33.moonriver.tokenStorage,
+  storageLiquidityLocks: LockerV33.moonriver.lpStorage,
+};
+const smartbchArchives = {
+  chain: "smartbch",
+  storageTokenLocks: LockerV33.smartbch.tokenStorage,
+  storageLiquidityLocks: LockerV33.smartbch.lpStorage,
+};
+const milkomedaArchives = {
+  chain: "milkomeda",
+  storageTokenLocks: LockerV33.milkomeda.tokenStorage,
+  storageLiquidityLocks: LockerV33.milkomeda.lpStorage,
+};
+
+
 
 module.exports = {
+  milkomedaArchives,
+  smartbchArchives,
+  moonriverArchives,
+  cronosArchives,
+  okexchainArchives,
+  hecoArchives,
   polygonArchives,
   bscArchives,
   ethereumArchives,

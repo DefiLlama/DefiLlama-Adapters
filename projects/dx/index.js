@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const {
-  bscContractData,
   polygonArchives,
   bscArchives,
   ethereumArchives,
@@ -11,6 +10,12 @@ const {
   arbitrumArchives,
   celoArchives,
   kucoinArchives,
+  okexchainArchives,
+  hecoArchives,
+  cronosArchives,
+  moonriverArchives,
+  smartbchArchives,
+  milkomedaArchives,
 } = require("./config");
 const {
   getLockCountPerContractV3,
@@ -18,17 +23,11 @@ const {
   getLockerWalletWithIdV3,
   getLockerLPDataV3,
   getLockerTokenDataV3,
-  getPresaleCountPerContractV3,
-  getPresaleOwnerAddressById,
-  getPresaleDataV3,
-  getLPAddressFromPresaleRouterV3,
-  getPresaleOwnerAddressByIdV3,
   getStorageLockDataV33,
   getStorageLockCountV33,
 } = require("./abis");
 const { getChainTransform } = require("../helper/portedTokens");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { returnBalance } = require("../helper/utils");
 
 function getTVLTotal(args) {
   return async (timestamp, ethBlock, chainBlocks) => {
@@ -89,8 +88,6 @@ function getTVLTotal(args) {
           block,
         });
 
-        console.log(totalLocks);
-
         for (let j = 0; j < totalLocks; j++) {
           //Get Wallet at Lock ID
           const { output: lockData } = await sdk.api.abi.call({
@@ -115,7 +112,6 @@ function getTVLTotal(args) {
             balance: getTokenBalance,
           });
 
-          console.log(tokens);
         }
       }
     } catch (e) {
@@ -157,7 +153,6 @@ function getTVLTotal(args) {
           preventDuplicates.push(walletToId);
 
           for (let k = 0; k < walletLockCount; k++) {
-            console.log(walletLockCount, "count per person");
             try {
               //Try resolving as LP Lock
               const { output: returnFromDataStruct } = await sdk.api.abi.call({
@@ -243,5 +238,23 @@ module.exports = {
   },
   fantom: {
     tvl: getTVLTotal(fantomArchives),
+  },
+  heco: {
+    tvl: getTVLTotal(hecoArchives),
+  },
+  okexchain: {
+    tvl: getTVLTotal(okexchainArchives),
+  },
+  cronos: {
+    tvl: getTVLTotal(cronosArchives),
+  },
+  moonriver: {
+    tvl: getTVLTotal(moonriverArchives),
+  },
+  smartbch: {
+    tvl: getTVLTotal(smartbchArchives),
+  },
+  milkomeda: {
+    tvl: getTVLTotal(milkomedaArchives),
   },
 };
