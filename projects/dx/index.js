@@ -111,7 +111,6 @@ function getTVLTotal(args) {
             token: lockData[2],
             balance: getTokenBalance,
           });
-
         }
       }
     } catch (e) {
@@ -194,14 +193,18 @@ function getTVLTotal(args) {
       console.log(e);
     }
 
-    await unwrapUniswapLPs(balances, lptokens, block, chain, transform);
+    try {
+      await unwrapUniswapLPs(balances, lptokens, block, chain, transform);
 
-    for (let i = 0; i < tokens.length; i++) {
-      sdk.util.sumSingleBalance(
-        balances,
-        transform(tokens[i].token),
-        tokens[i].balance
-      );
+      for (let i = 0; i < tokens.length; i++) {
+        sdk.util.sumSingleBalance(
+          balances,
+          transform(tokens[i].token),
+          tokens[i].balance
+        );
+      }
+    } catch (e) {
+      console.log(e);
     }
 
     return balances;
@@ -250,9 +253,6 @@ module.exports = {
   },
   moonriver: {
     tvl: getTVLTotal(moonriverArchives),
-  },
-  smartbch: {
-    tvl: getTVLTotal(smartbchArchives),
   },
   milkomeda: {
     tvl: getTVLTotal(milkomedaArchives),

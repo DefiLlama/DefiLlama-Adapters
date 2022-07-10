@@ -1,4 +1,5 @@
 const LockersV3 = {
+  empty: ['0xEb3a9C56d963b971d320f889bE2fb8B59853e449'],
   bsc: [
     "0xEb3a9C56d963b971d320f889bE2fb8B59853e449",
     "0x8655E5c4D701186D16765d1CDcef6D5287E4679a",
@@ -220,31 +221,37 @@ const fantomArchives = {
 };
 const hecoArchives = {
   chain: "heco",
+  locks: LockersV3.empty,
   storageTokenLocks: LockerV33.heco.tokenStorage,
   storageLiquidityLocks: LockerV33.heco.lpStorage,
 };
 const okexchainArchives = {
   chain: "okexchain",
+  locks: LockersV3.empty,
   storageTokenLocks: LockerV33.okexchain.tokenStorage,
   storageLiquidityLocks: LockerV33.okexchain.lpStorage,
 };
 const cronosArchives = {
   chain: "cronos",
+  locks: LockersV3.empty,
   storageTokenLocks: LockerV33.cronos.tokenStorage,
   storageLiquidityLocks: LockerV33.cronos.lpStorage,
 };
 const moonriverArchives = {
   chain: "moonriver",
+  locks: LockersV3.empty,
   storageTokenLocks: LockerV33.moonriver.tokenStorage,
   storageLiquidityLocks: LockerV33.moonriver.lpStorage,
 };
 const smartbchArchives = {
   chain: "smartbch",
+  locks: LockersV3.empty,
   storageTokenLocks: LockerV33.smartbch.tokenStorage,
   storageLiquidityLocks: LockerV33.smartbch.lpStorage,
 };
 const milkomedaArchives = {
   chain: "milkomeda",
+  locks: LockersV3.empty,
   storageTokenLocks: LockerV33.milkomeda.tokenStorage,
   storageLiquidityLocks: LockerV33.milkomeda.lpStorage,
 };
