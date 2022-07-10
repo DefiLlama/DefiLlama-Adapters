@@ -1,8 +1,11 @@
 const { getUniTVL } = require('../helper/unknownTokens')
+const { staking } = require('../helper/staking')
 const ethers = require("ethers")
 const { config } = require('@defillama/sdk/build/api');
-const { getTokenBalance  } = require('../helper/tron');
-
+const { getTokenBalance } = require('../helper/tron');
+const { toUSDTBalances } = require('../helper/balances')
+const { get } = require('../helper/http')
+const { mergeExports } = require('../helper/utils')
 
 config.setProvider("ontology", new ethers.providers.StaticJsonRpcProvider(
   "https://dappnode1.ont.io:10339",
@@ -12,8 +15,7 @@ config.setProvider("ontology", new ethers.providers.StaticJsonRpcProvider(
   }
 ))
 
-module.exports = {
-
+const dexExports = {
   avax: {
     tvl: getUniTVL({
       factory: '0x839547067bc885db205F5fA42dcFeEcDFf5A8530',
@@ -61,9 +63,11 @@ module.exports = {
       factory: '0x08e7974CacF66C5a92a37c221A15D3c30C7d97e0',
       chain: 'ethereum',
       coreAssets: [
-        '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
+        '0xdac17f958d2ee523a2206206994597c13d831ec7',
+        '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
       ],
     }),
+    staking: staking('0x2e2fb3db9ecdb9b7d9eb05e00964c8941f7171a7', '0x441761326490cACF7aF299725B6292597EE822c2')
   },
   fantom: {
     tvl: getUniTVL({
@@ -104,9 +108,43 @@ module.exports = {
   tron: {
     tvl: async () => {
       return {
-        "tether": await getTokenBalance('TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t','TDrFhbM8kDiPtSx3Cgd71K3qwwu77bRdYQ'),
-        "tron": await getTokenBalance('TNUC9Qb1rRpS5CbWLmNMxXBjyFoydXjWFR','TDrFhbM8kDiPtSx3Cgd71K3qwwu77bRdYQ'),
+        "tether": await getTokenBalance('TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t', 'TDrFhbM8kDiPtSx3Cgd71K3qwwu77bRdYQ'),
+        "tron": await getTokenBalance('TNUC9Qb1rRpS5CbWLmNMxXBjyFoydXjWFR', 'TDrFhbM8kDiPtSx3Cgd71K3qwwu77bRdYQ'),
       }
     }
   },
 }
+
+
+let _stakedResponse
+
+const mapping = {
+  harmony: 'Harmony',
+  icon: 'Icon',
+  ontology: 'Ontology',
+  tron: 'Tron',
+  iotex: 'IoTeX',
+}
+
+const stakingExports = {}
+
+function stakingChain(chain) {
+  stakingExports[chain] = {
+    tvl: async () => {
+      if (!_stakedResponse) _stakedResponse = get('https://data.unifi.report/api/stake-data/grouped')
+      const { results } = await _stakedResponse
+      const blockchainName = mapping[chain]
+      const { delegated_stake_usd } = results.find(i => i.blockchain === blockchainName)
+      return toUSDTBalances(delegated_stake_usd)
+    }
+  }
+}
+
+Object.keys(mapping).forEach(stakingChain)
+
+module.exports = mergeExports([{
+  timetravel: false,
+},
+  dexExports,
+  stakingExports,
+])
