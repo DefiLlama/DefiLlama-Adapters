@@ -125,6 +125,16 @@ async function starcoin() {
     return Number(tvl.data);
 }
 
+async function celo() {
+    const tvl = await utils.fetchURL('https://explorer.poly.network/api/v1/getTVLCelo')
+    return Number(tvl.data);
+}
+
+async function clv() {
+    const tvl = await utils.fetchURL('https://explorer.poly.network/api/v1/getTVLClover')
+    return Number(tvl.data);
+}
+
 async function fetch() {
     const tvl = await utils.fetchURL('https://explorer.poly.network/api/v1/getTVLTotal')
     return Number(tvl.data);
@@ -208,6 +218,12 @@ module.exports = {
     },
     starcoin: {
         fetch: starcoin
+    },
+    celo: {
+        fetch: celo
+    },
+    clover: {
+        fetch: clv
     },
     fetch
 }

@@ -84,6 +84,7 @@ function isLP(symbol, token, chain) {
   if (token && blacklisted_LPS.includes(token.toLowerCase())) return false
   if (chain === 'bsc' && ['OLP', 'DLP', 'MLP', 'LP'].includes(symbol)) return false
   if (chain === 'bsc' && ['WLP'].includes(symbol)) return true
+  if (chain === 'harmony' && ['HLP'].includes(symbol)) return true
   if (chain === 'songbird' && ['FLRX', 'OLP'].includes(symbol)) return true
   if (chain === 'metis' && ['NLP', 'ALP'].includes(symbol)) return true // Netswap/Agora LP Token
   if (['fantom', 'nova',].includes(chain) && ['NLT'].includes(symbol)) return true
@@ -100,7 +101,7 @@ function isLP(symbol, token, chain) {
   const isLPRes = LP_SYMBOLS.includes(symbol) || /(UNI-V2|vAMM)/.test(symbol) || symbol.split(/\W+/).includes('LP')
 
   if (DEBUG_MODE && isLPRes && !['UNI-V2', 'Cake-LP'].includes(symbol))
-    console.log(symbol, token)
+    console.log(chain, symbol, token)
 
   return isLPRes
 }
