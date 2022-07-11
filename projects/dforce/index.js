@@ -246,7 +246,7 @@ function getTVLByChain(chain) {
 
 function getLendingTvl(chain, borrowed){
   return sdk.util.sumChainTvls(allControllers[chain].map(controller =>
-    getCompoundUsdTvl(controller, chain, cether = "0x5ACD75f21659a59fFaB9AEBAf350351a8bfaAbc0", borrowed,
+    getCompoundUsdTvl(controller, chain, "0x5ACD75f21659a59fFaB9AEBAf350351a8bfaAbc0", borrowed,
       abis = {
         oracle: abi['oracle'],
         underlyingPrice: abi['getUnderlyingPrice'],
