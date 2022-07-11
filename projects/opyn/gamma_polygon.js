@@ -26,7 +26,7 @@ module.exports.tvl = async function tvl(timestamp, block, chainBlocks) {
     abi: 'erc20:balanceOf',
     calls: balanceCalls,
     chain: 'polygon',
-    block
+    block: chainBlocks.polygon
   })
 
   sdk.util.sumMultiBalanceOf(balances, balanceOfs, false, transform)
@@ -37,7 +37,7 @@ module.exports.tvl = async function tvl(timestamp, block, chainBlocks) {
       target: WETH,
       params: marginPool,
       abi: 'erc20:balanceOf',
-      polygonBlock,
+      block: chainBlocks.polygon,
       chain: 'polygon',
     })
   ).output;
