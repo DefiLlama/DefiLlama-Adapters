@@ -902,7 +902,6 @@ async function transformKlaytnAddress() {
   const mapping = {
     "0x5388ce775de8f7a69d17fd5caa9f7dbfee65dfce":
       "0x4576E6825B462b6916D2a41E187626E9090A92c6", // Donkey
-    "0x9eaefb09fe4aabfbe6b1ca316a3c36afc83a393f": "ripple", // XRP
     "0x02cbe46fb8a1f579254a9b485788f2d86cad51aa":
       "0x26fb86579e371c7aedc461b2ddef0a8628c93d3b", // bora
     "0x5c74070fdea071359b86082bd9f9b3deaafbe32b":
@@ -944,6 +943,10 @@ function fixKlaytnBalances(balances) {
       coingeckoId: "klay-token",
       decimals: 18
     }, // Wrapped KLAY
+    "0x9eaefb09fe4aabfbe6b1ca316a3c36afc83a393f": {
+      coingeckoId: "ripple",
+      decimals: 6
+    },
     "0xc6a2ad8cc6e4a7e08fc37cc5954be07d499e7654": {
       coingeckoId: "klayswap-protocol",
       decimals: 18
