@@ -11,6 +11,7 @@ const insure = "0xd83AE04c9eD29d6D3E6Bf720C71bc7BeB424393E";
 
 const Vault = "0x131fb74c6fede6d6710ff224e07ce0ed8123f144";
 const optimismVault = "0xCa1FeE73b00c221966E5f25226402146BdffE259";
+const astarVault = "0x190dA1B9fA124BD872e9166bA3c7Dd656A11E8F8";
 
 const VotingEscrow = "0x3dc07E60ecB3d064d20c386217ceeF8e3905916b";
 const vlINSURE = "0xA12ab76a82D118e33682AcB242180B4cc0d19E29";
@@ -44,6 +45,23 @@ async function optimismtvl(timestamp, block) {
       target: optimismVault,
       abi: abi["valueAll"],
       chain: "optimism",
+      block: block,
+    })
+  ).output;
+  sdk.util.sumSingleBalance(balances, usdc, vusdcBalances);
+
+  return balances;
+}
+
+// =================== GET astar usdc BALANCES =================== //
+async function astartvl(timestamp, block) {
+  let balances = {};
+
+  const vusdcBalances = (
+    await sdk.api.abi.call({
+      target: astarVault,
+      abi: abi["valueAll"],
+      chain: "astar",
       block: block,
     })
   ).output;
@@ -100,4 +118,7 @@ module.exports = {
   optimism: {
     tvl: optimismtvl,
   },
+  astar: {
+    tvl: astartvl,
+  }
 };
