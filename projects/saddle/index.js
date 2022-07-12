@@ -67,24 +67,16 @@ const fraxBPUSDTPoolFantomAddress = "0xdb5c5A6162115Ce9a188E7D773C4D011F421BbE5"
 const fraxBPalUSDPoolAddress = "0x4E1484607760118ebE2Ab07C0c71f1B4D9671e01";
 ];
 
-const tokens = { 
-  
+const tokens = {
 //ftmUSDC
-
-const fantom_usdc = "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75";
-
+const fantom_usdc = "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75",
 //ftmFRAX
-
-const fantom_frax = "0xdc301622e621166BD8E82f2cA0A26c13Ad0BE355";
-
+const fantom_frax = "0xdc301622e621166bd8e82f2ca0a26c13ad0be355",
 //ftmUSDT
-
-const fantom_usdt = "0x049d68029688eAbF473097a2fC38ef61633A3C7A"
-
+const fantom_usdt = "0x049d68029688eabf473097a2fc38ef61633a3c7a",
 //ftmalUSD
-const fantom_alusd = "0xa44f69aeAC480E23C0ABFA9A55D99c9F098bEac6";
-};
-
+const fantom_alusd = "0xa44f69aeAC480E23C0ABFA9A55D99c9F098bEac6",
+}
 /*** Arbitrum Addresses ***/
 const poolAddresses_arb = [
   //ArbUSDPoolAddress
@@ -110,19 +102,14 @@ const USDS_arb = "0xD74f5255D557944cf7Dd0E45FF521520002D5748";
 /*** Optimism Addresses ***/
 const poolAddresses_opt = [
   //OptUSDPoolAddress
-
   "0x5847f8177221268d279Cf377D0E01aB3FD993628",
   //OptFRAXPoolAddress
-
   "0xc55E8C79e5A6c3216D4023769559D06fa9A7732e",
   //OptFraxBPAddress
-
   "0xF6C2e0aDc659007Ba7c48446F5A4e4E94dfe08b5",
   //OptfraxBPUSDTPoolAddress
-
   "0xa9a84238098Dc3d1529228E6c74dBE7EbdF117a5",
   //OptfraxBPSUSDPoolAddress
-
   "0x250184dDDEC6d38E28ac12B481c9016867226E9D",
 
 ];
@@ -135,7 +122,6 @@ const SUSD_opt = "0x8c6f28f2F1A3C87F0f938b96d27520d9751ec8d9";
 /*** Evmos Addresses ***/
 const poolAddresses_evm = [
   //EvmosFrax3pool
-
   "0x21d4365834B7c61447e142ef6bCf01136cBD01c6",
 ];
 const FRAX_evm = "0xe03494d0033687543a80c9b1ca7d6237f2ea8bd8";
