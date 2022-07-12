@@ -66,17 +66,16 @@ const fraxBPFantomAddress = "0xc969dD0A7AB0F8a0C5A69C0839dB39b6C928bC08";
 const fraxBPUSDTPoolFantomAddress = "0xdb5c5A6162115Ce9a188E7D773C4D011F421BbE5";
 const fraxBPalUSDPoolAddress = "0x4E1484607760118ebE2Ab07C0c71f1B4D9671e01";
 ];
-
-const tokens = {
+const fantom_tokens = :
 //ftmUSDC
-const fantom_usdc = "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75",
+fantom_usdc = "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75"; 
 //ftmFRAX
-const fantom_frax = "0xdc301622e621166bd8e82f2ca0a26c13ad0be355",
+const fantom_frax = "0xdc301622e621166bd8e82f2ca0a26c13ad0be355";
 //ftmUSDT
-const fantom_usdt = "0x049d68029688eabf473097a2fc38ef61633a3c7a",
+const fantom_usdt = "0x049d68029688eabf473097a2fc38ef61633a3c7a";
 //ftmalUSD
-const fantom_alusd = "0xa44f69aeAC480E23C0ABFA9A55D99c9F098bEac6",
-}
+const fantom_alusd = "0xa44f69aeAC480E23C0ABFA9A55D99c9F098bEac6";
+
 /*** Arbitrum Addresses ***/
 const poolAddresses_arb = [
   //ArbUSDPoolAddress
@@ -95,25 +94,24 @@ const poolAddresses_arb = [
 const MIM_arb =  "0xfea7a6a0b346362bf88a9e4a88416b77a57d6c2a";
 const USDT_arb = "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9";
 const USDC_arb = "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8";
-const nUSD_arb = "0x2913E812Cf0dcCA30FB28E6Cac3d2DCFF4497688";
+const nUSD_arb = "0x2913e812cf0dcca30fb28e6cac3d2dcff4497688";
 const FRAX_arb = "0x17fc002b466eec40dae837fc4be5c67993ddbd6f";
-const USDS_arb = "0xD74f5255D557944cf7Dd0E45FF521520002D5748";
+const USDS_arb = "0xd74f5255d557944cf7dd0e45ff521520002d5748";
 
 /*** Optimism Addresses ***/
 const poolAddresses_opt = [
   //OptUSDPoolAddress
-  "0x5847f8177221268d279Cf377D0E01aB3FD993628",
+  "0x5847f8177221268d279cf377d0e01ab3fd993628",
   //OptFRAXPoolAddress
-  "0xc55E8C79e5A6c3216D4023769559D06fa9A7732e",
+  "0xc55e8c79e5a6c3216d4023769559d06fa9a7732e",
   //OptFraxBPAddress
   "0xF6C2e0aDc659007Ba7c48446F5A4e4E94dfe08b5",
   //OptfraxBPUSDTPoolAddress
   "0xa9a84238098Dc3d1529228E6c74dBE7EbdF117a5",
   //OptfraxBPSUSDPoolAddress
-  "0x250184dDDEC6d38E28ac12B481c9016867226E9D",
-
+  "0x250184dddec6d38e28ac12b481c9016867226e9d",
 ];
-const DAI_opt = "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1";
+const DAI_opt =  "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1";
 const USDT_opt = "0x94b008aa00579c1307b0ef2c499ad98a8ce58e58";
 const USDC_opt = "0x7f5c764cbc14f9669b88837ca1490cca17c31607";
 const FRAX_opt = "0x2e3d870790dc77a83dd1d18184acc7439a53f475";
@@ -122,7 +120,7 @@ const SUSD_opt = "0x8c6f28f2F1A3C87F0f938b96d27520d9751ec8d9";
 /*** Evmos Addresses ***/
 const poolAddresses_evm = [
   //EvmosFrax3pool
-  "0x21d4365834B7c61447e142ef6bCf01136cBD01c6",
+  "0x21d4365834b7c61447e142ef6bcf01136cbd01c6",
 ];
 const FRAX_evm = "0xe03494d0033687543a80c9b1ca7d6237f2ea8bd8";
 const USDC_evm = "0x51e44ffad5c2b122c8b635671fcc8139dc636e82";
@@ -302,13 +300,17 @@ module.exports = {
   misrepresentedTokens: true,
   ethereum: {
     start: 1611057090, // January 19, 2021 11:51:30 AM
-    tvl, // tvl adapter
-  },
-  fantom: {
+    tvl, methodology: "Counts as TVL all the Assets deposited on each chain through different Pool Contracts",
+    },
+        tvl: sdk.util.sumChainTvls([eth_tvl, optTvl, arbTvl, tvlFantom, evmTvl])
+  }// tvl adapter
+  ,{
+  fantom; 
     start: 1642723200, // Friday, January 21, 2022 12:00:00 AM UTC
     tvl: tvlFantom,
-  },
-  arbitrum: {
+  }
+  {
+  arbitrum
     tvl: arbTvl,
   },
   optimism: {
@@ -319,47 +321,4 @@ module.exports = {
   },
   hallmarks: [
     [1651276800, "sUSDv2 hack"]
-  ],
-  methodology: "Counts as TVL all the Assets deposited on each chain through different Pool Contracts",
-};
-
-
-module.exports={
-  methodology: "TVL",
-  ethereum:{
-      tvl: eth_tvl,
-  },
-      tvl: sdk.util.sumChainTvls([eth_tvl, optTvl, arbTvl, tvlFantom, evmTvl])
-}
-
-const { SDL, veSDL, veSDLStaking } = require("./index");
-
-
-async function staking(timestamp, chainBlocks) {
-  const balances = {};
-
-  await staking(
-    balances,
-    [
-      [SDL, false],
-      [veSDL, false],
-      [veSDLStaking, false],
-    ],
-    staking,
-    chainBlocks["ethereum"],
-    "ethereum"
-  );
-
-  return balances;
-}
-exports.evmTvl = evmTvl;
-
-module.exports={
-  methodology: "Staking TVL",
-  ethereum:{
-      tvl: eth_tvl,
-  },
-      tvl: sdk.util.sumChainTvls([eth_tvl, // SDL Staking TVL
-          staking(veSDLStaking, veSDL, "ethereum", SDL),
-      ]),
-}
+  ]
