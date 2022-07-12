@@ -7,7 +7,7 @@ const getReserves = require('./abis/getReserves.json');
 const { getChainTransform, stripTokenHeader, getFixBalances, } = require('./portedTokens')
 const { requery, } = require('./getUsdUniTvl')
 const { sumTokens, sumTokens2, } = require('./unwrapLPs')
-const { isLP, getUniqueAddresses, DEBUG_MODE, sliceIntoChunks, sleep } = require('./utils')
+const { isLP, getUniqueAddresses, DEBUG_MODE, sliceIntoChunks, sleep, log } = require('./utils')
 const factoryAbi = require('./abis/factory.json');
 const { default: BigNumber } = require('bignumber.js')
 
@@ -45,8 +45,8 @@ async function getLPData({
     const callArgs = lps.map(t => ({ target: t }))
     let symbols = (await sdk.api.abi.multiCall({ calls: callArgs, abi: symbol, block, chain })).output
     symbols = symbols.filter(item => isLP(item.output, item.input.target, chain))
-    // if (DEBUG_MODE) console.log(symbols.filter(item => item.output !== 'Cake-LP').map(i => `token: ${i.input.target} Symbol: ${i.output}`).join('\n'))
-    if (DEBUG_MODE) console.log('LP symbols:', getUniqueAddresses(symbols.map(i => i.output)).join(', '))
+    // log(symbols.filter(item => item.output !== 'Cake-LP').map(i => `token: ${i.input.target} Symbol: ${i.output}`).join('\n'))
+    log('LP symbols:', getUniqueAddresses(symbols.map(i => i.output)).join(', '))
     return symbols.map(item => item.input.target.toLowerCase())
   }
 }
@@ -55,8 +55,8 @@ async function getLPList(lps, chain, block) {
   const callArgs = lps.map(t => ({ target: t }))
   let symbols = (await sdk.api.abi.multiCall({ calls: callArgs, abi: symbol, block, chain })).output
   symbols = symbols.filter(item => isLP(item.output, item.input.target, chain))
-  // if (DEBUG_MODE) console.log(symbols.filter(item => item.output !== 'Cake-LP').map(i => `token: ${i.input.target} Symbol: ${i.output}`).join('\n'))
-  if (DEBUG_MODE) console.log('LP symbols:', getUniqueAddresses(symbols.map(i => i.output)).join(', '))
+  // log(symbols.filter(item => item.output !== 'Cake-LP').map(i => `token: ${i.input.target} Symbol: ${i.output}`).join('\n'))
+  log('LP symbols:', getUniqueAddresses(symbols.map(i => i.output)).join(', '))
   return symbols.map(item => item.input.target.toLowerCase())
 }
 
@@ -190,7 +190,7 @@ async function getTokenPrices({
 
   async function updateBalances(balances, { resolveLP = true, skipConversion = false, onlyLPs = false, } = {}) {
     let lpAddresses = []  // if some of the tokens in balances are LP tokens, we resolve those as well
-    if (DEBUG_MODE) console.log('---updating balances-----')
+    log('---updating balances-----')
     const finalBalances = onlyLPs ? {} : balances
     counter = 0
     Object.entries(balances).forEach(([address, amount = 0]) => {
@@ -288,7 +288,7 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
     if (pairLength === null)
       throw new Error("allPairsLength() failed")
 
-    if (DEBUG_MODE) console.log('No. of pairs: ', pairLength)
+    log('No. of pairs: ', pairLength)
 
     let pairNums = Array.from(Array(Number(pairLength)).keys())
     if (skipPair.length) pairNums = pairNums.filter(i => !skipPair.includes(i))
@@ -374,16 +374,16 @@ function pool2({ stakingContract, lpToken, chain = "ethereum", transformAddress,
 }
 
 async function vestingHelper({
-  coreAssets, owner, tokens, chain, block, restrictTokenPrice = true, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
-  log_coreAssetPrices = [], log_minTokenValue = 1e6, 
+  coreAssets, owner, tokens, chain = 'ethereum', block, restrictTokenPrice = true, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
+  log_coreAssetPrices = [], log_minTokenValue = 1e6,
 }) {
   tokens = getUniqueAddresses(tokens)
   blacklist = getUniqueAddresses(blacklist)
   tokens = tokens.filter(t => !blacklist.includes(t))
   const chunks = sliceIntoChunks(tokens, 2000)
   const finalBalances = {}
-  for (let  i=0;i<chunks.length;i++) {
-    if (DEBUG_MODE) console.log('resolving for %s/%s of total tokens: %s (chain: %s)', i+1, chunks.length, tokens.length, chain)
+  for (let i = 0; i < chunks.length; i++) {
+    log('resolving for %s/%s of total tokens: %s (chain: %s)', i + 1, chunks.length, tokens.length, chain)
     let lps = await getLPList(chunks[i], chain, block)  // we count only LP tokens for vesting protocols
     const balances = await sumTokens2({ chain, block, owner, tokens: lps })
     const lpBalances = {}
@@ -397,12 +397,57 @@ async function vestingHelper({
     const { updateBalances } = await getTokenPrices({ coreAssets, lps, allLps: true, chain, block, restrictTokenPrice, blacklist, log_coreAssetPrices, log_minTokenValue, minLPRatio })
     await updateBalances(balances, { skipConversion, onlyLPs })
     Object.entries(balances).forEach(([token, bal]) => sdk.util.sumSingleBalance(finalBalances, token, bal))
-    if (i !==0 && i%2 === 0)  await sleep(3000)
+    if (i !== 0 && i % 2 === 0) await sleep(3000)
   }
   const fixBalances = await getFixBalances(chain)
   fixBalances(finalBalances)
   return finalBalances
 }
+
+
+async function sumUnknownTokens({ tokensAndOwners = [],
+  coreAssets, owner, tokens, chain = 'ethereum', block, restrictTokenPrice = true, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
+  log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [],
+}) {
+  blacklist = getUniqueAddresses(blacklist)
+  if (!tokensAndOwners.length)
+    if (owners.length)
+      tokensAndOwners = owners.map(o => tokens.map(t => [t, o])).flat()
+    else if (owner)
+      tokensAndOwners = tokens.map(t => [t, owner])
+  tokensAndOwners = tokensAndOwners.filter(t => !blacklist.includes(t[0]))
+  const balances = await sumTokens2({ chain, block, tokensAndOwners })
+  const { updateBalances, } = await getTokenPrices({ coreAssets, lps: [...tokensAndOwners.map(t => t[0]), ...lps,], chain, block, restrictTokenPrice, blacklist, log_coreAssetPrices, log_minTokenValue, minLPRatio })
+  await updateBalances(balances, { skipConversion, onlyLPs })
+  const fixBalances = await getFixBalances(chain)
+  fixBalances(balances)
+  return balances
+}
+
+
+function staking({ tokensAndOwners = [],
+  coreAssets, owner, tokens, chain = 'ethereum', restrictTokenPrice = true, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
+  log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [],
+}) {
+  blacklist = getUniqueAddresses(blacklist)
+  if (!tokensAndOwners.length)
+    if (owners.length)
+      tokensAndOwners = owners.map(o => tokens.map(t => [t, o])).flat()
+    else if (owner)
+      tokensAndOwners = tokens.map(t => [t, owner])
+  tokensAndOwners = tokensAndOwners.filter(t => !blacklist.includes(t[0]))
+
+  return async (_, _b, { [chain]: block }) => {
+    const balances = await sumTokens2({ chain, block, tokensAndOwners })
+    const { updateBalances, pairBalances, prices, } = await getTokenPrices({ coreAssets, lps: [...tokensAndOwners.map(t => t[0]), ...lps,], chain, block, restrictTokenPrice, blacklist, log_coreAssetPrices, log_minTokenValue, minLPRatio })
+    await updateBalances(balances, { skipConversion, onlyLPs })
+    log(balances, tokensAndOwners, pairBalances, prices, lps, )
+    const fixBalances = await getFixBalances(chain)
+    fixBalances(balances)
+    return balances
+  }
+}
+
 
 // TODO: this is incomplete/untested, might need to extend how pools are resolved and tokens are fetched.
 function masterchefExports({ chain, poolInfoABI, coreAssets, }) {
@@ -495,4 +540,6 @@ module.exports = {
   masterchefExports,
   vestingHelper,
   getLPList,
+  sumUnknownTokens,
+  staking,
 };

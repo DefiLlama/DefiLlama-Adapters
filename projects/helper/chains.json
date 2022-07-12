@@ -125,6 +125,7 @@
   "reichain",
   "ontology_evm",
   "terra2",
+  "clv",
   "echelon",
   "multivac",
   "sx",
@@ -133,5 +134,7 @@
   "ore",
   "acala",
   "genshiro",
-  "icp"
+  "icp",
+  "nova",
+  "kintsugi"
 ]

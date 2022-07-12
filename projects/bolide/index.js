@@ -1,3 +1,5 @@
+const { staking } = require("../helper/staking")
+const { pool2 } = require("../helper/pool2")
 const { toUSDTBalances } = require("../helper/balances")
 const sdk = require('@defillama/sdk')
 
@@ -28,6 +30,8 @@ async function tvl(ts, _block, chainBlocks) {
 
 module.exports = {
   bsc: {
-    tvl
+    tvl,
+    staking: staking('0x3782c47e62b13d579fe748946aef7142b45b2cf7', '0x766AFcf83Fd5eaf884B3d529b432CA27A6d84617', 'bsc'),
+    pool2: pool2('0x3782c47e62b13d579fe748946aef7142b45b2cf7', '0x12c35ed2405bc70721584594723351bf5db6235c', 'bsc'),
   }
 }

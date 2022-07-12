@@ -26,8 +26,34 @@ async function getTVL(subgraphName, block) {
   return results.balancers[0].totalLiquidity;
 }
 
+async function getTVLFromPools(subgraphName, block) {
+  // delayed by around 5 mins to allow subgraph to update
+  block -= 25;
+  var endpoint = `https://api.thegraph.com/subgraphs/name/balancer-labs/${subgraphName}`
+  var graphQLClient = new GraphQLClient(endpoint)
+
+  var query = gql`
+  query get_tvl($block: Int) {
+    pools (
+      block: { number: $block }
+      orderBy: liquidity
+      orderDirection:desc
+    ) {
+      liquidity
+    }
+  }
+  `;
+  const results = await graphQLClient.request(query, {
+    block
+  })
+  return results.pools
+    .map(i => +i.liquidity)
+    .filter(i => i < 1e10)  // we filter out if liquidity is higher than 10B as it is unlikely/error
+    .reduce((acc, i) => acc + i, 0)
+}
+
 async function ethereum(timestamp, ethBlock) {
-  const [v1,v2] = await Promise.all([getTVL("balancer", ethBlock), getTVL("balancer-v2", ethBlock)])
+  const [v1,v2] = await Promise.all([getTVLFromPools("balancer", ethBlock), getTVL("balancer-v2", ethBlock)])
 
   return toUSDTBalances(BigNumber(v1).plus(v2))
 }

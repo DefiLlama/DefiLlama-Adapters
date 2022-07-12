@@ -119,7 +119,7 @@ sdk.api.abi.call = async (...args)=>{
   } catch(e) {
     console.log(e)
   }
-  const chains = Object.keys(module).filter(item => typeof module[item] === 'object' && item !== 'hallmarks');
+  const chains = Object.keys(module).filter(item => typeof module[item] === 'object' && !Array.isArray(module[item]));
   checkExportKeys(module, passedFile, chains)
   const unixTimestamp = Math.round(Date.now() / 1000) - 60;
   const chainBlocks = {};
@@ -248,7 +248,7 @@ function checkExportKeys(module, filePath, chains) {
 
   if (filePath.length > 2  
     || (filePath.length === 1 && !['.js', ''].includes(path.extname(filePath[0]))) // matches .../projects/projectXYZ.js or .../projects/projectXYZ
-    || (filePath.length === 2 && filePath[1] !== 'index.js'))  // matches .../projects/projectXYZ/index.js
+    || (filePath.length === 2 && !['api.js', 'index.js'].includes(filePath[1])))  // matches .../projects/projectXYZ/index.js
     process.exit(0)
 
   const blacklistedRootExportKeys = ['tvl', 'staking', 'pool2', 'borrowed', 'treasury'];
