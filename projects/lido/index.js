@@ -70,7 +70,7 @@ async function solana(timestamp, ethBlock, chainBlocks) {
 }
 
 module.exports = {
-  hallmark: [
+  hallmarks: [
     [1651881600,"UST depeg"]
   ],
   methodology: 'Staked tokens are counted as TVL based on the chain that they are staked on and where the liquidity tokens are issued, stMATIC is counted as Ethereum TVL since MATIC is staked in Ethereum and the liquidity token is also issued on Ethereum',
