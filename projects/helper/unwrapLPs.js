@@ -673,7 +673,7 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
     await resolveCrvTokens(balances, block, chain, transformAddress)
   }
 
-  if (['astar', 'harmony', 'kava', 'thundercore', 'klaytn'].includes(chain)) {
+  if (['astar', 'harmony', 'kava', 'thundercore', 'klaytn', 'evmos'].includes(chain)) {
     const fixBalances = await getFixBalances(chain)
     fixBalances(balances)
   }
