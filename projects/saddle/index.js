@@ -336,3 +336,12 @@ module.exports = {
   ],
   methodology: "Counts as TVL all the Assets deposited on each chain through different Pool Contracts",
 };
+
+
+module.exports={
+  methodology: "TVL",
+  ethereum:{
+      tvl: eth_tvl,
+  },
+      tvl: sdk.util.sumChainTvls([eth_tvl, optTvl, arbTvl, tvlFantom, evmTvl])
+}
