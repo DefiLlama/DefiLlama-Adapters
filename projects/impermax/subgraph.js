@@ -1,26 +1,37 @@
 const sdk = require('@defillama/sdk')
 const { getChainTvl } = require('../helper/getUniSubgraphTvl')
 const {staking} = require('../helper/staking')
+const { usdtAddress } = require('../helper/balances');
 
 const subgraphs = {
-  'ethereum': 'impermax-finance/impermax-x-uniswap-v2',
-  'polygon': 'impermax-finance/impermax-x-uniswap-v2-polygon',
-  'arbitrum': 'impermax-finance/impermax-x-uniswap-v2-arbitrum',
-  'moonriver': 'impermax-finance/impermax-x-uniswap-v2-moonriver',
-  'avax': 'impermax-finance/impermax-x-uniswap-v2-avalanche',
-  'fantom': 'impermax-finance/impermax-x-uniswap-v2-fantom',
+  'ethereum': ['impermax-finance/impermax-x-uniswap-v2'],
+  'polygon': [
+    'impermax-finance/impermax-x-uniswap-v2-polygon',
+    'impermax-finance/impermax-x-uniswap-v2-polygon-v2',
+  ],
+  'polygon-v2': 'impermax-finance/impermax-x-uniswap-v2-polygon-v2',
+  'arbitrum': ['impermax-finance/impermax-x-uniswap-v2-arbitrum'],
+  'moonriver': ['impermax-finance/impermax-x-uniswap-v2-moonriver'],
+  'avax': ['impermax-finance/impermax-x-uniswap-v2-avalanche'],
+  'fantom': ['impermax-finance/impermax-x-uniswap-v2-fantom'],
 }
-
-const chainTvl = getChainTvl(
-  Object.fromEntries(Object.entries(subgraphs).map(s => [s[0], s[1].startsWith("http")?s[1]:"https://api.thegraph.com/subgraphs/name/" + s[1]])),
-  "impermaxFactories",
-  "totalBalanceUSD"
-)
 
 const subgraphChainTvls = Object.keys(subgraphs).reduce((obj, chain) => ({
   ...obj,
   [chain]: {
-    tvl:chainTvl(chain)
+    tvl: async (timestamp, ethBlock, chainBlocks) => {
+      let tvl = 0
+      for (const s of subgraphs[chain]) {
+        tvl += parseInt((await getChainTvl(
+          { [chain]: s.startsWith("http")?s:"https://api.thegraph.com/subgraphs/name/" + s },
+          "impermaxFactories",
+          "totalBalanceUSD"
+        )(chain)(timestamp, ethBlock, chainBlocks))[usdtAddress])
+      }
+      return {
+        [usdtAddress]: tvl
+      }
+    }
   }
 }), {})
 
