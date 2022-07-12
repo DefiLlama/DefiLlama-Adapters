@@ -12,6 +12,7 @@ const OPTIMISM = "optimism";
 const POLYGON = "polygon";
 const RONIN = "ronin";
 const XDAI = "xdai";
+const AURORA = "aurora";
 
 module.exports = {
   ARBITRUM,
@@ -28,4 +29,5 @@ module.exports = {
   POLYGON,
   RONIN,
   XDAI,
+  AURORA,
 };
