@@ -62,7 +62,7 @@ function chainTvl(chain) {
 
     const transform = (['bsc', 'moonriver', 'energyweb',].includes(chain)) ?
       t => contracts.ethereum.OCEAN :
-      t => `${chain}:${t}`;
+      t =>  contracts.ethereum.OCEAN;
     let pools = []
 
     for (const graphql_endpoint of graphql_endpoints) {
@@ -154,5 +154,4 @@ module.exports = {
   energyweb: {
     tvl: chainTvl('energyweb')
   },
-
 }
