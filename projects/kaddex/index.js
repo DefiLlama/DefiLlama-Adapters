@@ -22,6 +22,18 @@ const pairTokens = {
       name: "FLUX",
       code: "runonflux.flux",
     },
+  },
+
+  "coin:hypercent.prod-hype-coin": {
+    name: "coin:hypercent.prod-hype-coin",
+    token0: {
+      name: "KDA",
+      code: "coin",
+    },
+    token1: {
+      name: "HYPE",
+      code: "hypercent.prod-hype-coin",
+    },
   }
 }
 
@@ -77,8 +89,10 @@ async function fetch() {
   const pairList = await getPairList();
   const kdaTotal = await fetchKdaTotal(pairList);
   const kdaInFluxPair = pairList[0].reserves[0];
+  const kdaInHypePair = pairList[1].reserves[0]
   return {
-    kadena: kdaTotal + kdaInFluxPair
+    'kadena': kdaTotal + kdaInFluxPair + kdaInHypePair
+    
   }
 }
 

@@ -126,18 +126,13 @@ const chainToSubgraph = {
   fantom: "https://api.thegraph.com/subgraphs/name/premiafinance/premia-fantom",
 }
 
-const DAI = {
-  ethereum: "0x6b175474e89094c44da98b954eedeac495271d0f",
-  arbitrum: "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1",
-  fantom: "0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E"
-}
 function chainTvl(chain){
   return async (time, _ethBlock, chainBlocks)=>{
     const block = await getBlock(time, chain, chainBlocks, true)
     const {pools} = await request(chainToSubgraph[chain], getAddresses, {block})
     const balances = {}
-    await sumTokens(balances, 
-      pools.map(p=>[p.underlying.address, p.address]).concat(pools.map(p=>[DAI[chain], p.address])),
+    await sumTokens(balances,
+      pools.map(p=>[p.underlying.address, p.address]).concat(pools.map(p=>[p.base.address, p.address])),
       block, chain, addr=>`${chain}:${addr}`)
     return balances
   }

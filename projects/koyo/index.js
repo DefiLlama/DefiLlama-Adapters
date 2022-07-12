@@ -1,74 +1,118 @@
-const { transformBobaAddress } = require("../helper/portedTokens");
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
+const sdk = require("@defillama/sdk");
+const constants = require("./constants");
+const { requery } = require("../helper/requery");
+const { chainJoinExports, chainTypeExports } = require("./utils");
 const { getBlock } = require("../helper/getBlock");
-const utils = require("../helper/utils");
+const { staking } = require("../helper/staking");
+const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
+const {
+  transformBobaAddress,
+  transformArbitrumAddress,
+  transformAvaxAddress,
+} = require("../helper/portedTokens");
+const { request } = require("graphql-request");
 
 const DATA = {
   boba: async () => {
     const bobaTransform = transformBobaAddress();
-    const pools = await utils.fetchURL(
-      "https://api.exchange.koyo.finance/pools/raw/boba"
-    );
 
     return [
       bobaTransform,
       {
         treasury: {
-          addresss: ["0x559dBda9Eb1E02c0235E245D9B175eb8DcC08398"],
+          addresss: [constants.addresses.boba.treasury],
           tokens: [
-            ["0xa18bF3994C0Cc6E3b63ac420308E5383f53120D7", false], // BOBA(Boba)
-            ["0x7562F525106F5d54E891e005867Bf489B5988CD9", false], // FRAX(Boba)
+            [constants.addresses.boba.BOBA, false], // BOBA(Boba)
+            [constants.addresses.boba.FRAX, false], // FRAX(Boba)
+            [constants.addresses.boba.USDC, false], // USDC(Boba)
+            [constants.addresses.boba.USDT, false], // USDT(Boba)
+            [constants.addresses.boba.DAI, false], // DAI(Boba)
+            [constants.addresses.boba.FRAX_KYO, true], // FRAX-KYO(Boba, OolongSwap)
           ],
         },
-        swaps: Object.entries(pools.data.data)
-          .filter(([k]) => k !== "generatedTime")
-          .map(([, pool]) => ({
-            address: pool.addresses.swap,
-            tokens: pool.coins.map((coin) => coin.address),
-          })),
+        staking: {
+          address: constants.addresses.boba.staking,
+          token: constants.addresses.boba.KYO,
+        },
+      },
+    ];
+  },
+  arbitrum: async () => {
+    const arbitrumTransform = await transformArbitrumAddress();
+
+    return [
+      arbitrumTransform,
+      {
+        treasury: {
+          addresss: [constants.addresses.arbitrum.treasury],
+          tokens: [
+            [constants.addresses.arbitrum.USDC, false], // USDC(Arbitrum)
+          ],
+        },
+      },
+    ];
+  },
+  avax: async () => {
+    const avalancheTransform = await transformAvaxAddress();
+
+    return [
+      avalancheTransform,
+      {
+        treasury: {
+          addresss: [constants.addresses.avalanche.treasury],
+          tokens: [
+            [constants.addresses.avalanche.USDC, false], // USDC(Avalanche)
+          ],
+        },
       },
     ];
   },
 };
 
-const chainTypeExports = (chainType, chainFn, chains) => {
-  const chainTypeProps = chains.reduce(
-    (obj, chain) => ({
-      ...obj,
-      [chain === "avax" ? "avalanche" : chain]: {
-        [chainType]: chainFn(chain),
-      },
-    }),
-    {}
-  );
-
-  return chainTypeProps;
-};
-
 const chainTVL = (chain) => {
   return async (timestamp, _ethBlock, chainBlocks) => {
+    if (!DATA[chain] || constants.tvlExclusion.includes(chain)) return {};
+
     const balances = {};
     const block = await getBlock(timestamp, chain, chainBlocks);
 
-    const [transform, data] = await DATA[chain]();
+    const [transform] = await DATA[chain]();
+    const subgraphApi = `https://api.thegraph.com/subgraphs/name/koyo-finance/exchange-subgraph-${chain}`;
 
-    await sumTokensAndLPsSharedOwners(
-      balances,
-      [...new Set(data.swaps.flatMap((swap) => swap.tokens)).values()].map(
-        (token) => [token, false]
-      ),
-      data.swaps.map((swap) => swap.address),
+    const koyoVault = await request(subgraphApi, constants.POOL_TOKENS, {
       block,
-      chain,
-      transform
-    );
+    });
+
+    let tokenAddresses = [];
+    for (const pool of koyoVault.koyos[0].pools) {
+      for (let address of pool.tokens) {
+        tokenAddresses.push(address.address);
+      }
+    }
+    tokenAddresses = [...new Set(tokenAddresses)];
+
+    const balanceCalls = tokenAddresses.map((address) => {
+      return {
+        target: address,
+        params: koyoVault.koyos[0].address,
+      };
+    });
+    const balancesCalled = await sdk.api.abi.multiCall({
+      block,
+      calls: balanceCalls,
+      abi: "erc20:balanceOf",
+    });
+    await requery(balancesCalled, chain, block, "erc20:balanceOf");
+
+    sdk.util.sumMultiBalanceOf(balances, balancesCalled, true, transform);
 
     return balances;
   };
 };
-
 const chainTreasury = (chain) => {
   return async (timestamp, _ethBlock, chainBlocks) => {
+    if (!DATA[chain] || constants.treasuryExclusion.includes(chain)) return {};
+
     const balances = {};
     const block = await getBlock(timestamp, chain, chainBlocks);
 
@@ -86,36 +130,32 @@ const chainTreasury = (chain) => {
     return balances;
   };
 };
+const chainStaking = (chain) => {
+  return async (timestamp, ethBlock, chainBlocks) => {
+    if (!DATA[chain] || constants.stakingExclusion.includes(chain)) return {};
 
-const chainJoinExports = (cExports, chains) => {
-  const createdCExports = cExports.map((cExport) => cExport(chains));
-  const chainJoins = chains.reduce((obj, chain) => {
-    chain = chain === "avax" ? "avalanche" : chain;
+    const [, data] = await DATA[chain]();
 
-    return {
-      ...obj,
-      [chain]: Object.fromEntries(
-        createdCExports.flatMap((cExport) => [
-          ...Object.entries(cExport[chain]),
-        ])
-      ),
-    };
-  }, {});
-
-  return chainJoins;
+    return staking(data.staking.address, data.staking.token, chain)(
+      timestamp,
+      ethBlock,
+      chainBlocks
+    );
+  };
 };
 
 module.exports = chainJoinExports(
   [
     (chains) => chainTypeExports("tvl", chainTVL, chains),
     (chains) => chainTypeExports("treasury", chainTreasury, chains),
+    (chains) => chainTypeExports("staking", chainStaking, chains),
   ],
-  ["boba"]
+  ["boba", "arbitrum", "avax"]
 );
 
 module.exports = {
   ...module.exports,
   methodology:
     "Counts the tokens locked on swap pools based on their holdings.",
-  start: 587_102,
+  start: 668_337,
 };

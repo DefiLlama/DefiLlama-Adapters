@@ -124,7 +124,7 @@ async function getSnowglobeBalances(balances, snowglobes, block) {
 
   const lpPositions = [];
   for (let i = 0; i < tokenNames.output.length; i++) {
-    if (isLP(tokenNames.output[i].output)) {
+    if (isLP(tokenNames.output[i].output , tokenNames.output[i].input.target, 'avax')) {
       lpPositions.push({
         token: lpTokens.output[i].output,
         balance: lpTokenBalances.output[i].output

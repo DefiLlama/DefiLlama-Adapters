@@ -44,7 +44,7 @@ async function adaTvl(){
         const totalSell = totalAmountOtherToken * topPrice
         totalAda += totalBuy + totalSell
     }))
-    const orderbooksv2 = (await fetchURL("https://orderbookv2.muesliswap.com/all-orderbooks")).data
+    const orderbooksv2 = (await fetchURL("https://pools.muesliswap.com/all-orderbooks")).data
     await Promise.all(orderbooksv2.map(async orders=>{
         if(orders.fromToken !== "."){
             throw new Error("Tokens paired against something other than ADA")

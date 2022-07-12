@@ -23,10 +23,6 @@ async function getTotalBalancesFromMultipleAccounts(tokenAccounts) {
     .reduce((acc, el) => acc + el, 0);
 }
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 const readTVL = async ({
   tokenA,
   tokenB,
@@ -122,8 +118,6 @@ async function tvl() {
       poolMint: sunnyPool.relevantAccounts.lpTokenSPL,
       tokenAccounts,
     });
-    console.log(sunnyPool.poolName, poolTVL);
-    await sleep(1200);
 
     for (const [tokenId, amount] of Object.entries(poolTVL)) {
       if (!tvlResult[tokenId]) {
@@ -139,7 +133,10 @@ async function tvl() {
 
 module.exports = {
   timetravel: false,
+  hallmarks: [
+    [1647993600, "Infinite mint glitch"]
+],
   methodology:
     "TVL counts LP token deposits made to Cashio and accrued reward tokens to its bank. CoinGecko is used to find the price of tokens in USD.",
-  tvl,
+  solana: { tvl },
 };

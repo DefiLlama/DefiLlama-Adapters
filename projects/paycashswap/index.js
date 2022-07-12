@@ -21,5 +21,5 @@ module.exports = {
   eos: {
     fetch: eos
   },
-  fetch
+  fetch,
 }
