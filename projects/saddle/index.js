@@ -62,13 +62,13 @@ const tokens = {
 
 /*** Fantom Addresses ***/
 const poolAddresses_ftm = [
-const fraxBPFantomAddress = "0xc969dD0A7AB0F8a0C5A69C0839dB39b6C928bC08";
-const fraxBPUSDTPoolFantomAddress = "0xdb5c5A6162115Ce9a188E7D773C4D011F421BbE5";
-const fraxBPalUSDPoolAddress = "0x4E1484607760118ebE2Ab07C0c71f1B4D9671e01";
+const fraxBPFantomAddress = "0xc969dD0A7AB0F8a0C5A69C0839dB39b6C928bC08",
+const fraxBPUSDTPoolFantomAddress = "0xdb5c5a6162115ce9a188e7d773c4d011f421bbe5",
+const fraxBPalUSDPoolAddress = "0x4E1484607760118ebE2Ab07C0c71f1B4D9671e01",
 ];
-const fantom_tokens = :
+
 //ftmUSDC
-fantom_usdc = "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75"; 
+const fantom_usdc = "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75";
 //ftmFRAX
 const fantom_frax = "0xdc301622e621166bd8e82f2ca0a26c13ad0be355";
 //ftmUSDT
@@ -91,7 +91,7 @@ const poolAddresses_arb = [
   //ArbfraxBPUSDTAddress
   "0xf8504e92428d65E56e495684A38f679C1B1DC30b",
 ];
-const MIM_arb =  "0xfea7a6a0b346362bf88a9e4a88416b77a57d6c2a";
+const MIM_arb  = "0xfea7a6a0b346362bf88a9e4a88416b77a57d6c2a";
 const USDT_arb = "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9";
 const USDC_arb = "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8";
 const nUSD_arb = "0x2913e812cf0dcca30fb28e6cac3d2dcff4497688";
@@ -111,7 +111,7 @@ const poolAddresses_opt = [
   //OptfraxBPSUSDPoolAddress
   "0x250184dddec6d38e28ac12b481c9016867226e9d",
 ];
-const DAI_opt =  "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1";
+const DAI_opt  = "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1";
 const USDT_opt = "0x94b008aa00579c1307b0ef2c499ad98a8ce58e58";
 const USDC_opt = "0x7f5c764cbc14f9669b88837ca1490cca17c31607";
 const FRAX_opt = "0x2e3d870790dc77a83dd1d18184acc7439a53f475";
@@ -291,34 +291,33 @@ async function evmTvl(timestamp, chainBlocks) {
 
   return balances;
 }
+    /*==================================================
+    Exports
+    ==================================================*/
 
-/*==================================================
-  Exports
-  ==================================================*/
+    module.exports = {
+      misrepresentedTokens: true,
+      ethereum: {
+        start: 1611057090, // January 19, 2021 11:51:30 AM
+        tvl, // tvl adapter
+      },
+      fantom: {
+        start: 1642723200, // Friday, January 21, 2022 12:00:00 AM UTC
+        tvl: tvlFantom,
+      },
+      arbitrum: {
+        tvl: arbTvl,
+      },
+      optimism: {
+        tvl: optTvl,
+      },
+      evmos: {
+        tvl: evmTvl, // Saturday, June 18th, 2022 
+      },
+      methodology:
+        "Counts as TVL all the Assets deposited on each chain through different Pool Contracts",
+    };
 
-module.exports = {
-  misrepresentedTokens: true,
-  ethereum: {
-    start: 1611057090, // January 19, 2021 11:51:30 AM
-    tvl, methodology: "Counts as TVL all the Assets deposited on each chain through different Pool Contracts",
-    },
-        tvl: sdk.util.sumChainTvls([eth_tvl, optTvl, arbTvl, tvlFantom, evmTvl])
-  }// tvl adapter
-  ,{
-  fantom; 
-    start: 1642723200, // Friday, January 21, 2022 12:00:00 AM UTC
-    tvl: tvlFantom,
-  }
-  {
-  arbitrum
-    tvl: arbTvl,
-  },
-  optimism: {
-    tvl: optTvl,
-  },
-  evmos: {
-    tvl: evmTvl, // Saturday, June 18th, 2022 
-  },
-  hallmarks: [
-    [1651276800, "sUSDv2 hack"]
-  ]
+    hallmarks: [
+      [1651276800, "sUSDv2 hack"]
+    ]
