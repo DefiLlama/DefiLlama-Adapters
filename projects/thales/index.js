@@ -51,7 +51,7 @@ async function op_tvl(_time, block){
         chain: "optimism"
     })
     const balances = {}
-    await sumTokensAndLPsSharedOwners(balances, [[OP_SUSD, false]], markets.output, block, chain="optimism", transform)
+    await sumTokensAndLPsSharedOwners(balances, [[OP_SUSD, false]], markets.output, block, "optimism", transform)
     return balances
 }
 

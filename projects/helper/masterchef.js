@@ -76,7 +76,7 @@ async function addFundsInMasterChef(balances, masterChef, block, chain = 'ethere
         if (ignoreAddresses.some(addr => addr.toLowerCase() === token.toLowerCase()) || symbol.output === null) {
             return
         }
-        if (isLP(symbol.output)) {
+        if (isLP(symbol.output, symbol.input.target, chain)) {
             if (includeLPs && balance && !excludePool2) {
                 lpPositions.push({
                     balance,
@@ -165,7 +165,7 @@ function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingeck
             const token = symbol.input.target.toLowerCase();
             if (token === stakingToken) {
                 sdk.util.sumSingleBalance(balances.staking, transformAddress(token), balance)
-            } else if (isLP(symbol.output)) {
+            } else if (isLP(symbol.output, symbol.input.target, chain)) {
                 lpPositions.push({
                     balance,
                     token

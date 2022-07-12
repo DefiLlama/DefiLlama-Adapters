@@ -60,7 +60,7 @@ async function avaxTVL(timestamp, block, chainBlocks) {
 async function calcInactiveTrancheBalances(balances, product, chain, block ) {
     const transform = await addressTransform[chain]();
     let calls = [];
-    for (currency of product.currency){
+    for (const currency of product.currency){
         calls.push({
             target: currency, 
             params: product.address
