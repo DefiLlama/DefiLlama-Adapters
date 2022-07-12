@@ -1,46 +1,38 @@
 const { fetchURL } = require('./helper/utils')
 const { toUSDTBalances } = require('./helper/balances')
-// const fs = require("fs")
 
 const usdPriceUrl = "https://mainnet.analytics.tinyman.org/api/v1/current-asset-prices/"
-const algoPriceUrl = "https://app.algodex.com/algodex-backend/assets.php"
-const assetVolURL = "https://app.algodex.com/algodex-backend/tvl.php"
-// const assetVolURL = "http://localhost/algodex-backend/tvl.php"
+const algoPriceUrl = "https://eu-central-1.algodex.com/algodex-backend/assets.php"
+const assetTVLURL = "https://eu-central-1.algodex.com/algodex-backend/tvl.php"
 
-async function tvl() {
-    const volumData = await fetchURL(assetVolURL)
-    const usdPriceData = await fetchURL(usdPriceUrl)
-    const algoPriceData = await fetchURL(algoPriceUrl)
+async function fetch() {
+  const tvlData = await fetchURL(assetTVLURL)
+  const usdPriceData = await fetchURL(usdPriceUrl)
+  const algoPriceData = await fetchURL(algoPriceUrl)
 
-    const algoPrices = algoPriceData.data.data.reduce((obj, item) => {
-        if (item.hasOwnProperty("price")) {
-            obj[item.id] = item.price
-        }
-        return obj
-    }, {})
-
-    var total_liquidity_in_usd = 0
-    volumData.data.map((asset) => {
-        var assetPrice = 0
-        if (usdPriceData.data.hasOwnProperty(asset.assetid)) {
-            assetPrice = usdPriceData.data[asset.assetid].price
-        } else {
-            // price for some asset is not found on tinyman then
-            // set its price to zero
-            assetPrice = 0
-        }
-
-        var total = assetPrice * asset.asaAmountTotal
-        // console.log(asset.assetid, ":", " Price:", assetPrice, " Amount:", asset.asaAmountTotal, " Total:", total)
-        total_liquidity_in_usd = total_liquidity_in_usd + total
-    })
-    // console.log(total_liquidity_in_usd)
-    return toUSDTBalances(total_liquidity_in_usd)
-}
-// tvl()
-module.exports = {
-    misrepresentedTokens: true,
-    algodex: {
-        tvl
+  const algoPrices = algoPriceData.data.data.reduce((obj, item) => {
+    if (item.hasOwnProperty("price")) {
+        obj[item.id] = item.price
     }
+    return obj
+  }, {})
+
+  const total_liquidity_in_usd = tvlData.data.reduce((sum, asset) => {
+    var assetPrice = 0
+    if (usdPriceData.data.hasOwnProperty(asset.assetid)) {
+      assetPrice = usdPriceData.data[asset.assetid].price
+    } else {
+      // price for some asset is not found on tinyman then
+      // set its price to zero
+      assetPrice = 0
+    }
+
+    sum += assetPrice * asset.asaAmountTotal
+    return sum
+  }, 0)
+  return total_liquidity_in_usd 
+}
+// tvl in USD
+module.exports = {
+  fetch
 }
