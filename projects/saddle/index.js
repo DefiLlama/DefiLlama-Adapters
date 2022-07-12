@@ -6,8 +6,9 @@ const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
+const { evmTvl } = require("./staking");
 
-/*** Ethereum Addresses ***/
+// *** Ethereum Addresses ***/
 const btcPoolAddress = "0x4f6A43Ad7cba042606dECaCA730d4CE0A57ac62e";
 const usdPoolAddress = "0x3911f80530595fbd01ab1516ab61255d75aeb066";
 const veth2PoolAddress = "0xdec2157831D6ABC3Ec328291119cc91B337272b5";
@@ -21,44 +22,27 @@ const btcV2PoolAddress = "0xdf3309771d2BF82cb2B6C56F9f5365C8bD97c4f2";
 const tbtcV2MetapoolAddress = "0xf74ebe6e5586275dc4CeD78F5DBEF31B1EfbE7a5";
 const wcusdMetapoolAddress = "0x3F1d224557afA4365155ea77cE4BC32D5Dae2174";
 const frax3PoolAddress = "0x8cAEa59f3Bf1F341f89c51607E4919841131e47a";
+const fraxBPAddress = "0x13Cc34Aa8037f722405285AD2C82FE570bfa2bdc";
+const fraxBPSUSDAddress ="0x69baA0d7c2e864b74173922Ca069Ac79d3be1556";
+const fraxBPUSDTAddress = "0xC765Cd3d015626244AD63B5FB63a97c5634643b9";
 
 const tokens = {
   // TBTC
   "0x8dAEBADE922dF735c38C80C7eBD708Af50815fAa": [btcPoolAddress],
   // RENBTC
-  "0xeb4c2781e4eba804ce9a9803c67d0893436bb27d": [
-    btcPoolAddress,
-    btcV2PoolAddress,
-  ],
+  "0xeb4c2781e4eba804ce9a9803c67d0893436bb27d": [btcV2PoolAddress], [btcPoolAddress],
   // WBTC
-  "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599": [
-    btcPoolAddress,
-    btcV2PoolAddress,
-  ],
+  "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599": [btcV2PoolAddress], [btcV2PoolAddress],
   // SBTC
-  "0xfe18be6b3bd88a2d2a7f928d00292e7a9963cfc6": [
-    btcPoolAddress,
-    btcV2PoolAddress,
-  ],
+  "0xfe18be6b3bd88a2d2a7f928d00292e7a9963cfc6": [btcV2PoolAddress], [btcV2PoolAddress],
   // DAI
-  "0x6B175474E89094C44Da98b954EedeAC495271d0F": [
-    usdPoolAddress,
-    usdV2PoolAddress,
-  ],
+  "0x6B175474E89094C44Da98b954EedeAC495271d0F": [usdPoolAddress],[usdV2PoolAddress],
   // USDC
-  "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": [
-    usdPoolAddress,
-    usdV2PoolAddress,
-    frax3PoolAddress,
-  ],
+  "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": [fraxBPAddress], [fraxBPSUSDAddress], [fraxBPUSDTAddress],[usdV2PoolAddress],[usdPoolAddress],
   // USDT
-  "0xdAC17F958D2ee523a2206206994597C13D831ec7": [
-    usdPoolAddress,
-    usdV2PoolAddress,
-    frax3PoolAddress,
-  ],
+  "0xdAC17F958D2ee523a2206206994597C13D831ec7": [fraxBPUSDTAddress], [usdPoolAddress], [frax3PoolAddress],
   // SUSD
-  "0x57ab1ec28d129707052df4df418d58a2d46d5f51": [susdPoolAddress],
+  "0x57ab1ec28d129707052df4df418d58a2d46d5f51": [susdPoolAddress], [fraxBPSUSDAddress],
   // WETH
   [weth]: [veth2PoolAddress, alethPoolAddress],
   // VETH2
@@ -72,17 +56,33 @@ const tokens = {
   // WCUSD
   "0xad3e3fc59dff318beceaab7d00eb4f68b1ecf195": [wcusdMetapoolAddress],
   // FRAX
-  "0x853d955aCEf822Db058eb8505911ED77F175b99e": [frax3PoolAddress],
+  "0x853d955aCEf822Db058eb8505911ED77F175b99e": [frax3PoolAddress], [fraxBPAddress], [fraxBPSUSDAddress], [fraxBPUSDTAddress],
+ 
 };
 
 /*** Fantom Addresses ***/
-const fantom_usdPoolAddress = "0xBea9F78090bDB9e662d8CB301A00ad09A5b756e9";
+const poolAddresses_ftm = [
+const fraxBPFantomAddress = "0xc969dD0A7AB0F8a0C5A69C0839dB39b6C928bC08";
+const fraxBPUSDTPoolFantomAddress = "0xdb5c5A6162115Ce9a188E7D773C4D011F421BbE5";
+const fraxBPalUSDPoolAddress = "0x4E1484607760118ebE2Ab07C0c71f1B4D9671e01";
+];
+
+const tokens = { 
+  
+//ftmUSDC
+
 const fantom_usdc = "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75";
+
+//ftmFRAX
+
 const fantom_frax = "0xdc301622e621166BD8E82f2cA0A26c13Ad0BE355";
 
-const fantom_tokens = {
-  [fantom_usdc]: [fantom_usdPoolAddress],
-  [fantom_frax]: [fantom_usdPoolAddress],
+//ftmUSDT
+
+const fantom_usdt = "0x049d68029688eAbF473097a2fC38ef61633A3C7A"
+
+//ftmalUSD
+const fantom_alusd = "0xa44f69aeAC480E23C0ABFA9A55D99c9F098bEac6";
 };
 
 /*** Arbitrum Addresses ***/
@@ -93,29 +93,49 @@ const poolAddresses_arb = [
   "0xfeEa4D1BacB0519E8f952460A70719944fe56Ee0",
   //ArbUSDSarbUSDv2Meta
   "0x5dD186f8809147F96D3ffC4508F3C82694E58c9c",
+  //ArbfraxBP
+  "0x401AFbc31ad2A3Bc0eD8960d63eFcDEA749b4849",
+  //ArbfraxBPUSDS
+  "0xa5bD85ed9fA27ba23BfB702989e7218E44fd4706",
+  //ArbfraxBPUSDTAddress
+  "0xf8504e92428d65E56e495684A38f679C1B1DC30b",
 ];
-const MIM_arb = "0xfea7a6a0b346362bf88a9e4a88416b77a57d6c2a";
+const MIM_arb =  "0xfea7a6a0b346362bf88a9e4a88416b77a57d6c2a";
 const USDT_arb = "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9";
 const USDC_arb = "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8";
-const nUSD_arb = "0x2913e812cf0dcca30fb28e6cac3d2dcff4497688";
+const nUSD_arb = "0x2913E812Cf0dcCA30FB28E6Cac3d2DCFF4497688";
 const FRAX_arb = "0x17fc002b466eec40dae837fc4be5c67993ddbd6f";
 const USDS_arb = "0xD74f5255D557944cf7Dd0E45FF521520002D5748";
 
 /*** Optimism Addresses ***/
 const poolAddresses_opt = [
   //OptUSDPoolAddress
+
   "0x5847f8177221268d279Cf377D0E01aB3FD993628",
-  //OptFRAXPoolContract
+  //OptFRAXPoolAddress
+
   "0xc55E8C79e5A6c3216D4023769559D06fa9A7732e",
+  //OptFraxBPAddress
+
+  "0xF6C2e0aDc659007Ba7c48446F5A4e4E94dfe08b5",
+  //OptfraxBPUSDTPoolAddress
+
+  "0xa9a84238098Dc3d1529228E6c74dBE7EbdF117a5",
+  //OptfraxBPSUSDPoolAddress
+
+  "0x250184dDDEC6d38E28ac12B481c9016867226E9D",
+
 ];
 const DAI_opt = "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1";
 const USDT_opt = "0x94b008aa00579c1307b0ef2c499ad98a8ce58e58";
 const USDC_opt = "0x7f5c764cbc14f9669b88837ca1490cca17c31607";
 const FRAX_opt = "0x2e3d870790dc77a83dd1d18184acc7439a53f475";
+const SUSD_opt = "0x8c6f28f2F1A3C87F0f938b96d27520d9751ec8d9";
 
 /*** Evmos Addresses ***/
 const poolAddresses_evm = [
   //EvmosFrax3pool
+
   "0x21d4365834B7c61447e142ef6bCf01136cBD01c6",
 ];
 const FRAX_evm = "0xe03494d0033687543a80c9b1ca7d6237f2ea8bd8";
@@ -260,6 +280,7 @@ async function optTvl(timestamp, chainBlocks) {
       [USDT_opt, false],
       [DAI_opt, false],
       [FRAX_opt, false],
+      [SUSD_opt, false],
     ],
     poolAddresses_opt,
     chainBlocks["optimism"],
