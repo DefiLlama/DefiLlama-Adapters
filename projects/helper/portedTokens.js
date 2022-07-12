@@ -2057,6 +2057,7 @@ module.exports = {
   transformMilkomedaAddress,
   transformDfkAddress,
   transformFindoraAddress,
+  transformEvmosAddress,
   wavesMapping,
   stripTokenHeader,
   transformBittorrentAddress
