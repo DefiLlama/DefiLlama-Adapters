@@ -60,7 +60,7 @@ function chainTvl(chain) {
     const balances = {};
     const { graphql_endpoints, OCEAN } = contracts[chain]
 
-    const transform = (['bsc', 'moonriver', 'energyweb',].includes(chain)) ?
+    const transform = (['bsc', 'moonriver', 'energyweb', 'polygon'].includes(chain)) ?
       t => contracts.ethereum.OCEAN :
       t => `${chain}:${t}`;
     let pools = []

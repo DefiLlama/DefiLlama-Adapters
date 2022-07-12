@@ -315,6 +315,7 @@ async function transformPolygonAddress() {
       "0x7a5d3A9Dcd33cb8D527f7b5F96EB4Fef43d55636", // radioshack
     "0x1ddcaa4ed761428ae348befc6718bcb12e63bfaa": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // deUSDC
     "0x794baab6b878467f93ef17e2f2851ce04e3e34c8": "0x794baab6b878467f93ef17e2f2851ce04e3e34c8", // Yin
+    "0x282d8efce846a88b159800bd4130ad77443fa1a1": "0x967da4048cd07ab37855c090aaf366e4ce1b9f48" //ocean
   };
   normalizeMapping(mapping);
 
