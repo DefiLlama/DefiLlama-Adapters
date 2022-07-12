@@ -229,7 +229,8 @@ async function getUnderlyingPriceMultiple(block, chain, oracle, tokens, methodAb
 
 function getCompoundUsdTvl(comptroller, chain, cether, borrowed, abis = {
   oracle: abi['oracle'],
-  underlyingPrice: abi['getUnderlyingPrice']
+  underlyingPrice: abi['getUnderlyingPrice'],
+  getAllMarkets: abi['getAllMarkets']
 }, {
   blacklist = []
 } = {}) {
@@ -237,7 +238,7 @@ function getCompoundUsdTvl(comptroller, chain, cether, borrowed, abis = {
     const block = await getBlock(timestamp, chain, chainBlocks, true);
     let tvl = new BigNumber('0');
     blacklist = blacklist.map(i => i.toLowerCase())
-    const marketData = await getMarkets(comptroller, block, chain, cether, undefined, blacklist)
+    const marketData = await getMarkets(comptroller, block, chain, cether, undefined, blacklist, abis)
     let allMarkets = marketData.map(i => i.cToken);
     // allMarkets = allMarkets.filter(token => !blacklist.includes(token.toLowerCase())) // taken care of by getMarkets
     let oracle = await getOracle(block, chain, comptroller, abis.oracle);
