@@ -3,7 +3,7 @@ const { ohmTvl } = require('../helper/ohm')
 const treasury = "0xe35737c865968a6fcb13e536adcaa37d9be0c7eb"
 module.exports = {
     hallmarks: [
-        [1647302400, "protocol compromised keys"]
+        [1638748800, "protocol compromised keys"]
     ],
     misrepresentedTokens: true,
     ...ohmTvl(treasury, [
