@@ -1,5 +1,6 @@
 const utils = require('./helper/utils');
-const {fetchChainExports} = require('./helper/exports')
+const {fetchChainExports} = require('./helper/exports');
+const { hallmarks } = require('./hundredfinance');
 
 function chainTvl(chain){
   return async()=>{
@@ -8,4 +9,6 @@ function chainTvl(chain){
   }
 }
 
-module.exports = fetchChainExports(chainTvl, ["ethereum", "bsc", "arbitrum"])
+module.exports = fetchChainExports(chainTvl, ["ethereum", "bsc", "arbitrum"]),
+module.exports.hallmarks =  [[1638403200, "Front-end attack"]
+]
