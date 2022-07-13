@@ -1,4 +1,79 @@
-const getStorageLockDataV33 = {
+const getStorageLPLockDataV33 ={
+  "inputs": [
+    {
+      "internalType": "uint256",
+      "name": "",
+      "type": "uint256"
+    }
+  ],
+  "name": "AllLockRecord",
+  "outputs": [
+    {
+      "internalType": "uint256",
+      "name": "createdOn",
+      "type": "uint256"
+    },
+    {
+      "internalType": "address",
+      "name": "lockOwner",
+      "type": "address"
+    },
+    {
+      "internalType": "address",
+      "name": "lockedLPTokens",
+      "type": "address"
+    },
+    {
+      "internalType": "uint256",
+      "name": "lockTime",
+      "type": "uint256"
+    },
+    {
+      "internalType": "address",
+      "name": "lpLockContract",
+      "type": "address"
+    },
+    {
+      "internalType": "bool",
+      "name": "locked",
+      "type": "bool"
+    },
+    {
+      "internalType": "string",
+      "name": "logo",
+      "type": "string"
+    },
+    {
+      "internalType": "uint256",
+      "name": "lockedAmount",
+      "type": "uint256"
+    },
+    {
+      "internalType": "uint256",
+      "name": "countID",
+      "type": "uint256"
+    },
+    {
+      "internalType": "bool",
+      "name": "exists",
+      "type": "bool"
+    },
+    {
+      "internalType": "address",
+      "name": "token0Addr",
+      "type": "address"
+    },
+    {
+      "internalType": "address",
+      "name": "token1Addr",
+      "type": "address"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+}
+
+const getStorageTokenLockDataV33 = {
   inputs: [
     {
       internalType: "uint256",
@@ -272,7 +347,8 @@ const getLockerPerWalletV3 = {
 };
 
 module.exports = {
-  getStorageLockDataV33,
+  getStorageLPLockDataV33,
+  getStorageLockDataV33: getStorageTokenLockDataV33,
   getStorageLockCountV33,
   getLockerLPDataV3,
   getLockerTokenDataV3,

@@ -56,7 +56,7 @@ function getTVLTotal(args) {
             const { output: lockData } = await sdk.api.abi.call({
               target: args.storageLiquidityLocks[i],
               params: j,
-              abi: getStorageLockDataV33,
+              abi: getStorageLPLockDataV33,
               chain,
               block,
             });
@@ -95,7 +95,7 @@ function getTVLTotal(args) {
             const { output: lockData } = await sdk.api.abi.call({
               target: args.storageTokenLocks[i],
               params: j,
-              abi: getStorageLockDataV33,
+              abi: getStorageTokenLockDataV33,
               chain,
               block,
             });
