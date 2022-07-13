@@ -2,6 +2,7 @@ const sdk = require('@defillama/sdk')
 const { getFixBalances } = require('../helper/portedTokens')
 const { getTokenBalance } = require('../helper/tron')
 const { getUniTVL } = require('../helper/unknownTokens')
+const { sleep } = require('../helper/utils')
 
 const tokens = {
   ACTIV: { 'address': 'TVoxBVmFuBM7dsRnfi1V8v1iupv4uyPifN', 'id': '_activ' },
@@ -81,8 +82,9 @@ async function tronTvl() {
   const balances = {}
 
   for (let [tokenA, tokenB, pool] of pairs) {
-    sdk.util.sumSingleBalance(balances, tokenA.id, await getTokenBalance(tokenA.address, pool))
-    sdk.util.sumSingleBalance(balances, tokenB.id, await getTokenBalance(tokenB.address, pool))
+    if (!tokenA.id.startsWith('_')) sdk.util.sumSingleBalance(balances, tokenA.id, await getTokenBalance(tokenA.address, pool))
+    if (!tokenB.id.startsWith('_')) sdk.util.sumSingleBalance(balances, tokenB.id, await getTokenBalance(tokenB.address, pool))
+    await sleep(1000)
   }
 
   return balances
@@ -100,25 +102,25 @@ module.exports = {
       ],
     }),
   },
-  bittorrent: {
-    tvl: async (ts, _block, { bittorrent: block }) => {
-      const { balances } = await getUniTVL({
-          chain: 'bittorrent',
-          factory: '0x4dEb2f0976DC3Bf351555524B3A24A4feA4e137E',
-          coreAssets: [
-            '0x23181f21dea5936e24163ffaba4ea3b316b57f3c', // BTT
-            '0xedf53026aea60f8f75fca25f8830b7e2d6200662', // TRX
-          ],
-          withMetaData: true,
-      })(ts, _block, { bittorrent: block })
+  // bittorrent: {
+  //   tvl: async (ts, _block, { bittorrent: block }) => {
+  //     const { balances } = await getUniTVL({
+  //         chain: 'bittorrent',
+  //         factory: '0x4dEb2f0976DC3Bf351555524B3A24A4feA4e137E',
+  //         coreAssets: [
+  //           '0x23181f21dea5936e24163ffaba4ea3b316b57f3c', // BTT
+  //           '0xedf53026aea60f8f75fca25f8830b7e2d6200662', // TRX
+  //         ],
+  //         withMetaData: true,
+  //     })(ts, _block, { bittorrent: block })
 
-      const fixBalances = await getFixBalances('bittorrent')
+  //     const fixBalances = await getFixBalances('bittorrent')
 
-      fixBalances(balances)
+  //     fixBalances(balances)
 
-      return balances
-    },
-  },
+  //     return balances
+  //   },
+  // },
   polygon: {
     tvl: getUniTVL({
       chain: 'polygon',

@@ -31,7 +31,7 @@ module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
   methodology: "Counts the number of LIFT tokens in the Staking contract",
-  start: 12735587,
+  start: 1637191200,
   bsc: {
     tvl: () => ({}),
     staking: tvl,
