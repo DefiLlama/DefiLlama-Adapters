@@ -120,6 +120,9 @@ async function xdai(timestamp, block, chainBlocks) {
 
 
 module.exports = {
+  hallmarks: [
+    [1644278400, "Fake ctx hack"]
+],
   polygon: {
     tvl: polygon
   }, 

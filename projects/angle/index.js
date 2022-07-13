@@ -80,7 +80,6 @@ async function tvl(chain, block) {
     agTokens.map((t) => {
       return Object.entries(t.poolManagers).forEach(([key, value]) => {
         tokenMapping[value] = collaterals[key]
-        tokensAndOwners.push([collaterals[key], value])
       });
     })
 

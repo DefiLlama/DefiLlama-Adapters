@@ -1,37 +1,8 @@
-const { sumTokens2, unwrapUniswapV3NFTs } = require('../helper/unwrapLPs')
+const {  unwrapUniswapV3NFTs } = require('../helper/unwrapLPs')
 const { staking } = require('../helper/staking')
-
-const sdk = require('@defillama/sdk')
-// const { get } = require('../helper/http')
-// const poolEndpoint = 'https://izumi.finance/api/v1/farm/dashboard'
-
-const rewardPoolAbi = {
-  "inputs": [],
-  "name": "rewardPool",
-  "outputs": [
-    {
-      "internalType": "address",
-      "name": "token0",
-      "type": "address"
-    },
-    {
-      "internalType": "address",
-      "name": "token1",
-      "type": "address"
-    },
-    {
-      "internalType": "uint24",
-      "name": "fee",
-      "type": "uint24"
-    }
-  ],
-  "stateMutability": "view",
-  "type": "function"
-}
 
 const config = {
   ethereum: {
-    // chainId: 1,
     pools: [
       '0x461b154b688D5171934D70F991C17d719082710C',
       '0x57AFF370686043B5d21fDd76aE4b513468B9fb3C',
@@ -45,7 +16,6 @@ const config = {
     ],
   },
   polygon: {
-    chainId: 137,
     pools: [
       '0x01Cc44fc1246D17681B325926865cDB6242277A5',
       '0x150848c11040F6E52D4802bFFAfFBD57E6264737',
@@ -57,7 +27,6 @@ const config = {
     ],
   },
   arbitrum: {
-    chainId: 42161,
     pools: [
       '0x1c0a560EF9f6Ff3f5c2BCCe98dC92f2649a507EF',
       '0xB2DeceA19D58ebe10ab215A04dB2EDBE52E37fA4',
@@ -74,7 +43,7 @@ module.exports = {
 }
 
 Object.keys(config).forEach(chain => {
-  const { chainId, pools, pool2 = []} = config[chain]
+  const { pools, pool2 = []} = config[chain]
   module.exports[chain] = {
     tvl: getTvl(),
     pool2: getTvl(true),
@@ -83,21 +52,6 @@ Object.keys(config).forEach(chain => {
   function getTvl(isPool2) {
     const poolList = isPool2 ? pool2 : pools
     return async (_, _b, { [chain]: block }) => {
-      // let { data: { data: pools } } = await get(`${poolEndpoint}?chainId=${chainId}`)
-      // pools = pools.map(i => i.pool_address)
-      // const { output: poolInfos } = await sdk.api.abi.multiCall({
-      //   abi: rewardPoolAbi,
-      //   calls: poolList.map(i => ({ target: i })),
-      //   chain, block,
-      // })
-      // const toa = poolInfos.map(({ input, output }) => {
-      //   return [
-      //     [output.token0, input.target,],
-      //     [output.token1, input.target,],
-      //   ]
-      // }).flat()
-
-      // const balances = await sumTokens2({ chain, block, tokensAndOwners: toa, })
       return unwrapUniswapV3NFTs({ chain, block, owners: poolList, })
     }
   }
