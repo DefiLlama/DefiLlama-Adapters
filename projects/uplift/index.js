@@ -33,6 +33,7 @@ module.exports = {
   methodology: "Counts the number of LIFT tokens in the Staking contract",
   start: 12735587,
   bsc: {
-    tvl,
+    tvl: () => ({}),
+    staking: tvl,
   }
 };
