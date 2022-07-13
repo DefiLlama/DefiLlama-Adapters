@@ -1,6 +1,7 @@
 const sdk = require('@defillama/sdk')
-const { getUniTVL } = require('../helper/unknownTokens')
+const { getFixBalances } = require('../helper/portedTokens')
 const { getTokenBalance } = require('../helper/tron')
+const { getUniTVL } = require('../helper/unknownTokens')
 
 const tokens = {
   ACTIV: { 'address': 'TVoxBVmFuBM7dsRnfi1V8v1iupv4uyPifN', 'id': '_activ' },
@@ -101,14 +102,23 @@ module.exports = {
     }),
   },
   bittorrent: {
-    tvl: getUniTVL({
-      chain: 'bittorrent',
-      factory: '0x4dEb2f0976DC3Bf351555524B3A24A4feA4e137E',
-      coreAssets: [
-        '0x23181f21dea5936e24163ffaba4ea3b316b57f3c', // BTT
-        '0xedf53026aea60f8f75fca25f8830b7e2d6200662', // TRX
-      ],
-    }),
+    tvl: async (ts, _block, { bittorrent: block }) => {
+      const { balances } = await getUniTVL({
+          chain: 'bittorrent',
+          factory: '0x4dEb2f0976DC3Bf351555524B3A24A4feA4e137E',
+          coreAssets: [
+            '0x23181f21dea5936e24163ffaba4ea3b316b57f3c', // BTT
+            '0xedf53026aea60f8f75fca25f8830b7e2d6200662', // TRX
+          ],
+          withMetaData: true,
+      })(ts, _block, { bittorrent: block })
+
+      const fixBalances = await getFixBalances('bittorrent')
+
+      fixBalances(balances)
+
+      return balances
+    },
   },
   polygon: {
     tvl: getUniTVL({
