@@ -1,6 +1,4 @@
 const sdk = require("@defillama/sdk");
-const { BigNumber } = require("bignumber.js");
-const utils = require('./helper/utils');
 
 
 const LPContract = '0xac004b512c33D029cf23ABf04513f1f380B3FD0a'
