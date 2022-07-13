@@ -19,7 +19,7 @@ const fixedValueStakingContracts = ["TINYMAN11_STBL_USDC_LP_STAKING", "ALGOFI-ST
 const singleSideStakingContracts = ["DEFLY", "STBL", "OPUL"]
 const variableValueStakingContracts = ["ALGOFI-STBL-ALGO-LP", "AF-XET-STBL-75BP-STAKING", "AF-GOBTC-STBL-25BP-STAKING", "AF-GOETH-STBL-25BP-STAKING", "AF-OPUL-STBL-75BP-STAKING",
                                         "AF-DEFLY-STBL-75BP-STAKING", "AF-NANO-USDC-STBL-5BP-STAKING", "AF-NANO-USDT-STBL-5BP-STAKING", "AF-NANO-USDT-USDC-5BP-STAKING",
-                                        "AF-USDC-STBL-NANO-SUPER-STAKING", "AF-ZONE-STBL-75BP-STAKING", "AF-TINY-STBL-75BP-STAKING" ]
+                                        "AF-USDC-STBL-NANO-SUPER-STAKING", "AF-ZONE-STBL-75BP-STAKING", "AF-TINY-STBL-75BP-STAKING", "AF-GOMINT-STBL-25BP-STAKING"]
 const stakingContracts = fixedValueStakingContracts.concat(variableValueStakingContracts).concat(singleSideStakingContracts)
 
 const assetDictionary = {
@@ -131,6 +131,11 @@ const assetDictionary = {
         "AF-ZONE-STBL-75BP-STAKING" : {
             "marketAppId" : 647785158,
             "poolAppId": 647799801,
+            "decimals": 6
+        },
+        "AF-GOMINT-STBL-25BP-STAKING" : {
+            "marketAppId" : 764406975,
+            "poolAppId": 764420932,
             "decimals": 6
         },
         "DEFLY" : {
