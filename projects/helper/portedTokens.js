@@ -1569,6 +1569,14 @@ const bittorrentFixMapping = {
   "0x9b5f27f6ea9bbd753ce3793a07cba3c74644330d": {
     coingeckoId: "tether",
     decimals: 18
+  },
+  "0x23181f21dea5936e24163ffaba4ea3b316b57f3c": {
+    coingeckoId: 'bittorrent',
+    decimals: 18,
+  },
+  "TNUC9Qb1rRpS5CbWLmNMxXBjyFoydXjWFR": {
+    coingeckoId: 'tron',
+    decimals: 6,
   }
 };
 
