@@ -7,6 +7,8 @@ let totalTvl
 
 
 const contract = '0xf300b9171aAb493F4584b8f5601d97E627AaB451'
+const blur = '0x4165084a6e5388ce53c9d9892f904a2712dd943a'
+const wbnb = '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'
 const sushi = '0x4165084A6e5388ce53c9D9892f904a2712Dd943A'
 const busd = '0x66e428c3f67a68878562e79a0234c1f83c208770'
 
@@ -18,6 +20,8 @@ async function gettotalTvl(block) {
     const transform = await getChainTransform(chain)
     const balances = {
       tvl: {},
+      pool2: {},
+      staking: {},
     }
     const { output: length } = await sdk.api.abi.call({
       target: contract,
@@ -43,15 +47,27 @@ async function gettotalTvl(block) {
       sdk.util.sumSingleBalance(tempBalances, token, amount)
       lps.push(token)
     })
+
+    balances.staking['bsc:' + blur] = tempBalances[blur]
+    delete tempBalances[blur]
+
     const pairs = await getLPData({ lps, chain, block })
 
-    const { updateBalances, } = await getTokenPrices({ lps: Object.keys(pairs), allLps: true, coreAssets: [busd], block, chain, minLPRatio: 0.001 })
+    const { updateBalances, } = await getTokenPrices({ lps: Object.keys(pairs), allLps: true, coreAssets: [ ], block, chain, minLPRatio: 0.001 })
 
     Object.entries(tempBalances).forEach(([token, balance]) => {
+      if (pairs[token]) {
+        const { token0Address, token1Address } = pairs[token]
+        if (blur === token0Address || blur === token1Address) {
+          sdk.util.sumSingleBalance(balances.pool2, transform(token), balance)
+          return;
+        }
+      }
       sdk.util.sumSingleBalance(balances.tvl, transform(token), balance)
     })
 
     await updateBalances(balances.tvl)
+    await updateBalances(balances.pool2)
 
     return balances
   }
@@ -61,10 +77,18 @@ async function tvl(_, _b, { [chain]: block }) {
   return (await gettotalTvl(block)).tvl
 }
 
+async function pool2(_, _b, { [chain]: block }) {
+  return (await gettotalTvl(block)).pool2
+}
+
+async function staking(_, _b, { [chain]: block }) {
+  return (await gettotalTvl(block)).staking
+}
+
 
 
 module.exports = {
   bsc: {
-    tvl,
+    tvl, pool2, staking,
   }
 }

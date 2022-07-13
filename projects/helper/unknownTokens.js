@@ -3,6 +3,7 @@ const sdk = require('@defillama/sdk');
 const symbol = require('./abis/symbol.json')
 const token0 = require('./abis/token0.json');
 const token1 = require('./abis/token1.json');
+const masterchefAbi = require('./abis/masterchef.json')
 const getReserves = require('./abis/getReserves.json');
 const { getChainTransform, stripTokenHeader, getFixBalances, } = require('./portedTokens')
 const { requery, } = require('./getUsdUniTvl')
@@ -449,9 +450,9 @@ function staking({ tokensAndOwners = [],
 }
 
 
-// TODO: this is incomplete/untested, might need to extend how pools are resolved and tokens are fetched.
-function masterchefExports({ chain, poolInfoABI, coreAssets, }) {
+function masterchefExports({ chain, masterchef, coreAssets, nativeToken, poolInfoABI = masterchefAbi.poolInfo,  poolLengthAbi = masterchefAbi.poolLength, getToken = output => output.lpToken }) {
   let allTvl
+  nativeToken = nativeToken.toLowerCase()
 
   async function getAllTVL(block) {
     if (!allTvl) allTvl = getTVL()
@@ -465,30 +466,25 @@ function masterchefExports({ chain, poolInfoABI, coreAssets, }) {
         pool2: {},
       }
       const { output: length } = await sdk.api.abi.call({
-        target: contract,
-        abi: abi.poolLength,
+        target: masterchef,
+        abi: poolLengthAbi,
         chain, block,
       })
 
       const calls = []
       for (let i = 0; i < length; i++) calls.push({ params: [i] })
       const { output: data } = await sdk.api.abi.multiCall({
-        target: contract,
+        target: masterchef,
         abi: poolInfoABI,
         calls,
         chain, block,
       })
 
-      const tempBalances = {}
-      const lps = []
-
-      data.forEach(({ output }) => {
-        const token = output.lpToken.toLowerCase()
-        const amount = output.amount0
-        if (token === crown) sdk.util.sumSingleBalance(balances.staking, transform(token), amount)
-        else sdk.util.sumSingleBalance(tempBalances, token, amount)
-        lps.push(token)
-      })
+      const tokens = data.map(({ output }) => getToken(output).toLowerCase())
+      const lps = [...tokens].filter(i => i !== nativeToken)
+      const tempBalances = await sumTokens2({ chain, block, owner: masterchef, tokens, transformAddress: a => a.toLowerCase() })
+      sdk.util.sumSingleBalance(balances.staking, transform(nativeToken), tempBalances[nativeToken])
+      delete tempBalances[nativeToken]
 
       const pairs = await getLPData({ lps, chain, block })
 
@@ -496,7 +492,7 @@ function masterchefExports({ chain, poolInfoABI, coreAssets, }) {
       Object.entries(tempBalances).forEach(([token, balance]) => {
         if (pairs[token]) {
           const { token0Address, token1Address } = pairs[token]
-          if (crown === token0Address || crown === token1Address) {
+          if (nativeToken === token0Address || nativeToken === token1Address) {
             sdk.util.sumSingleBalance(balances.pool2, transform(token), balance)
             return;
           }
