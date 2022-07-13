@@ -41,7 +41,6 @@ const tokens = {
 
 const pairs = [
   [ tokens.TRX, tokens.OLDJM, 'TFijK2dCUsrXoZM7PYhFqnM9F4Tac8uBJt' ],
-  [ tokens.TRX, tokens.OLDJM, 'TFijK2dCUsrXoZM7PYhFqnM9F4Tac8uBJt' ],
   [ tokens.TRX, tokens.USDT, 'TYA7DfE44XFsZEpBm7M2HAmEgU5kCtDDXg' ],
   [ tokens.USDT, tokens.OLDJM, 'TSGv8is6ZMeHRwMQCvq6f16YFTLbw2bpmr' ],
   [ tokens.SafeMoney, tokens.TRX, 'TTqB2CRJ2PF9qbCRkSVVGsFbx9mZUFNZS3' ],
