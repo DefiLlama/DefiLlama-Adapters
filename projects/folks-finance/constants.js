@@ -41,6 +41,21 @@ const pools = [
     assetId: 694432641,
     assetDecimals: 6,
   },
+  // USDC-gALGO TMP1.1
+  {
+    appId: 805843312,
+    assetId: 794948880,
+    assetDecimals: 6,
+    poolAppAddress:
+      "3WT6YVLQY2WSQ6VLX73MJB7BI3CGBDTB2KKAAFZ2CZQJUFUCIOMUN2K24U",
+  },
+  // ALGO-gALGO PLP
+  {
+    appId: 805846536,
+    assetId: 794882756,
+    assetDecimals: 6,
+    poolAppId: 794882684,
+  },
   {
     // Algo-gAlgo3 TMP1.1
     appId: 743679535,
