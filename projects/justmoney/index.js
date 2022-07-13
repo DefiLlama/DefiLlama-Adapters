@@ -2,6 +2,7 @@ const sdk = require('@defillama/sdk')
 const { getFixBalances } = require('../helper/portedTokens')
 const { getTokenBalance } = require('../helper/tron')
 const { getUniTVL } = require('../helper/unknownTokens')
+const { sleep } = require('../helper/utils')
 
 const tokens = {
   ACTIV: { 'address': 'TVoxBVmFuBM7dsRnfi1V8v1iupv4uyPifN', 'id': '_activ' },
@@ -81,8 +82,9 @@ async function tronTvl() {
   const balances = {}
 
   for (let [tokenA, tokenB, pool] of pairs) {
-    sdk.util.sumSingleBalance(balances, tokenA.id, await getTokenBalance(tokenA.address, pool))
-    sdk.util.sumSingleBalance(balances, tokenB.id, await getTokenBalance(tokenB.address, pool))
+    if (!tokenA.id.startsWith('_')) sdk.util.sumSingleBalance(balances, tokenA.id, await getTokenBalance(tokenA.address, pool))
+    if (!tokenB.id.startsWith('_')) sdk.util.sumSingleBalance(balances, tokenB.id, await getTokenBalance(tokenB.address, pool))
+    await sleep(1000)
   }
 
   return balances
