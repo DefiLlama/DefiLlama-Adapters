@@ -32,7 +32,7 @@ const chains = {
     factory: "0x78df70615ffc8066cc0887917f2Cd72092C86409"
   },
   cronos: {
-    graphId: "cronos",
+    // graphId: "cronos",
     factory: "0xD9bfE9979e9CA4b2fe84bA5d4Cf963bBcB376974"
   },
   optimism: { graphId: "optimism" },
