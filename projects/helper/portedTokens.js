@@ -2067,5 +2067,6 @@ module.exports = {
   transformEvmosAddress,
   wavesMapping,
   stripTokenHeader,
-  transformBittorrentAddress
+  transformBittorrentAddress,
+  transformAuroraAddress
 };

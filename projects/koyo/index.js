@@ -10,6 +10,7 @@ const {
   transformArbitrumAddress,
   transformAvaxAddress,
   transformBscAddress,
+  transformAuroraAddress,
 } = require("../helper/portedTokens");
 const { request } = require("graphql-request");
 
@@ -84,8 +85,10 @@ const DATA = {
     ];
   },
   aurora: async () => {
+    const auroraTransform = await transformAuroraAddress();
+
     return [
-      (addr) => addr,
+      auroraTransform,
       {
         treasury: {
           addresss: [constants.addresses.aurora.treasury],
