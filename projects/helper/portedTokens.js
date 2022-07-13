@@ -1825,7 +1825,7 @@ const fixBalancesMapping = {
   callisto: b => fixBalances(b, callistoFixMapping, { removeUnmapped: true }),
   near: b => fixBalances(b, nearFixMapping, { removeUnmapped: false }),
   thundercore: b => fixBalances(b, thundercoreFixMapping, { removeUnmapped: true }),
-  ontology: b => fixBalances(b, ontologyFixMapping, { removeUnmapped: false }),
+  ontology_evm: b => fixBalances(b, ontologyFixMapping, { removeUnmapped: false }),
 };
 
 const chainTransforms = {

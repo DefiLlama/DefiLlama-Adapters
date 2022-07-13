@@ -2,8 +2,18 @@ const { getBlock } = require("../helper/getBlock");
 const { chainExports } = require("../helper/exports");
 const { sumTokens } = require("../helper/unwrapLPs");
 const { getFixBalances } = require('../helper/portedTokens')
+const ethers = require("ethers")
+const { config } = require('@defillama/sdk/build/api');
 
 const bridgeContractV1 = "0x841ce48F9446C8E281D3F1444cB859b4A6D0738C";
+config.setProvider("clv", new ethers.providers.StaticJsonRpcProvider(
+  "https://api-para.clover.finance",
+  {
+    name: "clv",
+    chainId: 1024,
+  }
+))
+
 
 // Bridge and token contract addresses are taken from https://cbridge-docs.celer.network/reference/contract-addresses
 const liquidityBridgeContractsV2 = {
@@ -537,6 +547,8 @@ let chains = liquidityBridgeTokens.reduce((allChains, token) => {
   Object.keys(token).forEach((key) => allChains.add(key));
   return allChains;
 }, new Set());
+
+Object.keys(liquidityBridgeContractsV2).forEach(chain => chains.add(chain))
 
 module.exports = chainExports(chainTvl, Array.from(chains));
 module.exports.methodology = `Tokens bridged via cBridge are counted as TVL`;

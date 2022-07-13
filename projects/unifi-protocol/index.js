@@ -7,10 +7,10 @@ const { toUSDTBalances } = require('../helper/balances')
 const { get } = require('../helper/http')
 const { mergeExports } = require('../helper/utils')
 
-config.setProvider("ontology", new ethers.providers.StaticJsonRpcProvider(
+config.setProvider("ontology_evm", new ethers.providers.StaticJsonRpcProvider(
   "https://dappnode1.ont.io:10339",
   {
-    name: "ontology",
+    name: "ontology_evm",
     chainId: 58,
   }
 ))
@@ -49,10 +49,10 @@ const dexExports = {
       ],
     }),
   },
-  ontology: {
+  ontology_evm: {
     tvl: getUniTVL({
       factory: '0x839547067bc885db205F5fA42dcFeEcDFf5A8530',
-      chain: 'ontology',
+      chain: 'ontology_evm',
       coreAssets: [
         '0xd8bc24cfd45452ef2c8bc7618e32330b61f2691b'
       ],
