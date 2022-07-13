@@ -1,16 +1,18 @@
 const sdk = require('@defillama/sdk');
 const { staking } = require('./staking')
 const { ADDRESSES } = require("./constants");
-const { addButterV2TVL, addButterTVL } = require("./butter")
+const { addButterV2TVL, addThreeXTVL } = require("./butter")
+const { addStakingPoolsTVL } = require("./stakingPools")
 const { getLpTokenTVL } = require("./lpTokens")
 
 function getTVL(chain = undefined) {
   return async (timestamp, block, chainBlocks) => {
     let balances = {};
     if (chain && chain === 'ethereum') {
-      // await addButterTVL(balances, timestamp, chainBlocks, chain)
-      await addButterV2TVL(balances, timestamp, chainBlocks, chain)
+      await addButterV2TVL(balances, timestamp, chainBlocks, chain);
+      await addThreeXTVL(balances, timestamp, chainBlocks, chain);
     }
+    await addStakingPoolsTVL(balances, timestamp, chainBlocks, chain)
     return balances;
   }
 }
