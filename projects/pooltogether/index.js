@@ -107,7 +107,7 @@ async function optimism(timestamp, block, chainBlocks) {
 async function celo(timestamp, block, chainBlocks) {
   const transform = await transformCeloAddress()
   let allPrizePools = []
-  block = await getBlock(timestamp, 'celo', chainBlocks)
+  block = chainBlocks.celo
   const { prizePools } = await request(
     celoGraphUrl, graphQuery, { block })
   allPrizePools = allPrizePools.concat(prizePools)

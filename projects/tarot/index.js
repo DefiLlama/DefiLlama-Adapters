@@ -87,6 +87,7 @@ Object.keys(config).forEach(chain => {
       resolveLP: true, blacklistedLPs: [
         '0x1f2bff0e37c592c7de6393c9dd3c0f7933408228', // disabled because _getReserves has a different abi compared to others
         '0x3fa4226faa9cc45c9b1317377ec450c58e54d2c1', // disabled because _getReserves has a different abi compared to others (it is "blockTimestampLast" instead of "_blockTimestampLast")
+        '0x0fd2947895fcd9fd4fe5c66d255998c2d7e56ce6', // disabled because _getReserves has a different abi compared to others (it is "blockTimestampLast" instead of "_blockTimestampLast")
       ]
     })
     return { balances, borrowedBalances }
