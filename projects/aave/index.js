@@ -2,6 +2,7 @@ const sdk = require('@defillama/sdk');
 const { getV2Reserves, getTvl, getBorrowed, aaveChainTvl } = require('../helper/aave');
 const { staking } = require('../helper/staking');
 const { ammMarket } = require('./amm');
+const { unwrapBalancerToken } = require('../helper/unwrapLPs');
 
 
 const addressesProviderRegistryETH = "0x52D306e36E3B6B02c153d0266ff0f85d18BCD413";
@@ -27,33 +28,10 @@ function ethereum(borrowed) {
   }
 }
 
-const aaveBalancerContractImp = "0xC697051d1C6296C24aE3bceF39acA743861D9A81";
 const aaveTokenAddress = "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9";
-const wethTokenAddress = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
 
 async function stakingBalancerTvl(timestamp, block) {
-  const aaveBal = (
-    await sdk.api.abi.call({
-      target: aaveTokenAddress,
-      params: aaveBalancerContractImp,
-      abi: "erc20:balanceOf",
-      block,
-    })
-  ).output;
-
-  const wethBal = (
-    await sdk.api.abi.call({
-      target: wethTokenAddress,
-      params: aaveBalancerContractImp,
-      abi: "erc20:balanceOf",
-      block,
-    })
-  ).output;
-
-  return {
-    [aaveTokenAddress]: aaveBal,
-    [wethTokenAddress]: wethBal,
-  };
+  return unwrapBalancerToken({ block, owner: '0xa1116930326d21fb917d5a27f1e9943a9595fb47', balancerToken: '0x41a08648c3766f9f9d85598ff102a08f4ef84f84' })
 }
 
 const aaveStakingContract = "0x4da27a545c0c5b758a6ba100e3a049001de870f5";
