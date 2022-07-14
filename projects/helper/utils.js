@@ -71,7 +71,7 @@ function createIncrementArray(length) {
   return arr
 }
 
-const LP_SYMBOLS = ['SLP', 'spLP', 'JLP', 'OLP', 'SCLP', 'DLP', 'MLP', 'MSLP', 'ULP', 'TLP', 'HMDX', 'YLP', 'SCNRLP', 'PGL', 'GREEN-V2', 'PNDA-V2', 'vTAROT', 'TETHYSLP', 'BAO-V2', 'DINO-V2', 'DFYNLP', 'LavaSwap', 'RLP',]
+const LP_SYMBOLS = ['SLP', 'spLP', 'JLP', 'OLP', 'SCLP', 'DLP', 'MLP', 'MSLP', 'ULP', 'TLP', 'HMDX', 'YLP', 'SCNRLP', 'PGL', 'GREEN-V2', 'PNDA-V2', 'vTAROT', 'TETHYSLP', 'BAO-V2', 'DINO-V2', 'DFYNLP', 'LavaSwap', 'RLP', 'ZDEXLP']
 const blacklisted_LPS = [
   '0xb3dc4accfe37bd8b3c2744e9e687d252c9661bc7',
   '0xf146190e4d3a2b9abe8e16636118805c628b94fe',
@@ -83,7 +83,8 @@ function isLP(symbol, token, chain) {
   if (!symbol) return false
   if (token && blacklisted_LPS.includes(token.toLowerCase())) return false
   if (chain === 'bsc' && ['OLP', 'DLP', 'MLP', 'LP'].includes(symbol)) return false
-  if (chain === 'bsc' && ['WLP'].includes(symbol)) return true
+  if (chain === 'bsc' && ['WLP', 'FstLP', ].includes(symbol)) return true
+  if (chain === 'ethereum' && ['SSLP'].includes(symbol)) return true
   if (chain === 'harmony' && ['HLP'].includes(symbol)) return true
   if (chain === 'songbird' && ['FLRX', 'OLP'].includes(symbol)) return true
   if (chain === 'metis' && ['NLP', 'ALP'].includes(symbol)) return true // Netswap/Agora LP Token
