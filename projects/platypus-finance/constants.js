@@ -37,7 +37,14 @@ const FACTORY_H2O_LP = "0x4f734D89531b6c9A1242C196297316E928AEeFBa";
 // FACTORY: USDC - MONEY
 const FACTORY_USDC_MONEY_LP = "0x551C259Bf4D88edFdAbb04179342a73dAa759583";
 const FACTORY_MONEY_LP = "0xE08947eE864Af325D9F98743B3b905875Ae0Ec99";
-
+// FACTORY: USDC - MAI
+/** @todo add addresses */
+const FACTORY_USDC_MAI_LP = "";
+const FACTORY_MAI_LP = "";
+// FACTORY: USDC - USX
+/** @todo add addresses */
+const FACTORY_USDC_USX_LP = "";
+const FACTORY_USX_LP = "";
 /**
  * token addresses
  */
@@ -57,7 +64,9 @@ const TSD = "0x4fbf0429599460d327bd5f55625e30e4fc066095";
 const MONEY = "0x0f577433bf59560ef2a79c124e9ff99fca258948";
 const BTCb = "0x152b9d0FdC40C096757F570A51E494bd4b943E50";
 const WBTCe = "0x50b7545627a5162F82A992c33b87aDc75187B218";
-
+/** @todo add addresses */
+const MAI = "";
+const USX = "";
 module.exports = {
   DAI: {
     id: "dai",
@@ -82,6 +91,8 @@ module.exports = {
           FACTORY_USDC_H2O_LP,
           FACTORY_USDC_MONEY_LP,
           FACTORY_USDC_TSD_LP,
+          FACTORY_USDC_MAI_LP,
+          FACTORY_USDC_USX_LP,
         ],
       },
     ],
@@ -204,6 +215,24 @@ module.exports = {
       {
         token: WBTCe,
         lpTokens: [ALT_WBTCe_LP],
+      },
+    ],
+  },
+  MAI: {
+    id: "mimatic",
+    addresses: [
+      {
+        token: MAI,
+        lpTokens: [FACTORY_MAI_LP],
+      },
+    ],
+  },
+  USX: {
+    id: "token-dforce-usd",
+    addresses: [
+      {
+        token: USX,
+        lpTokens: [FACTORY_USX_LP],
       },
     ],
   },
