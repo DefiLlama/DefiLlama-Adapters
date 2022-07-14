@@ -40,5 +40,33 @@
         ],
         "stateMutability": "view",
         "type": "function"
+    },
+    "bPool": {
+        "inputs": [],
+        "name": "bPool",
+        "outputs": [
+            {
+                "internalType": "contract IBPool",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "getCurrentTokens": {
+        "constant": true,
+        "inputs": [],
+        "name": "getCurrentTokens",
+        "outputs": [
+            {
+                "internalType": "address[]",
+                "name": "tokens",
+                "type": "address[]"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
     }
 }
