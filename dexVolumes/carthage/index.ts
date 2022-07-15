@@ -12,13 +12,8 @@ const { getStartTimestamp } = require("../helper/getStartTimestamp");
 
 
 const v3Endpoints = {
-  [ETHEREUM]: "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3",
-  [OPTIMISM]:
-    "https://api.thegraph.com/subgraphs/name/ianlapham/optimism-post-regenesis",
   [CANDLE]:
     "https://thegraph.cndlchain.com/subgraphs/name/ianlapham/uniswap-v3",
-  [POLYGON]:
-    "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-v3-polygon",
 };
 
 const VOLUME_USD = "volumeUSD";
