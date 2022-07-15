@@ -1,7 +1,7 @@
 const {sumTokensAndLPsSharedOwners} = require('../helper/unwrapLPs')
 const sdk = require('@defillama/sdk')
 
-const deversifiStarkAddr = '0x5d22045daceab03b158031ecb7d9d06fad24609b';
+const rhinofiStarkAddr = '0x5d22045daceab03b158031ecb7d9d06fad24609b';
 const listedTokens = [
   '0xdac17f958d2ee523a2206206994597c13d831ec7',
   '0x6B175474E89094C44Da98b954EedeAC495271d0F',
@@ -50,14 +50,14 @@ const aust = "0xa8De3e3c934e2A1BB08B010104CcaBBD4D6293ab"
 
 async function tvl(timestamp, ethBlock){
     const balances = {}
-    await sumTokensAndLPsSharedOwners(balances, listedTokens.map(t=>[t, false]), [deversifiStarkAddr], ethBlock)
+    await sumTokensAndLPsSharedOwners(balances, listedTokens.map(t=>[t, false]), [rhinofiStarkAddr], ethBlock)
     const eth = await sdk.api.eth.getBalance({
-        target: deversifiStarkAddr,
+        target: rhinofiStarkAddr,
         block: ethBlock
     })
     const austBalance = await sdk.api.abi.call({
         target: aust,
-        params: deversifiStarkAddr,
+        params: rhinofiStarkAddr,
         abi: 'erc20:balanceOf',
         block: ethBlock
     })
@@ -67,7 +67,7 @@ async function tvl(timestamp, ethBlock){
 }
 
 module.exports = {
-    methodology: `Counts the tokens on ${deversifiStarkAddr}`,
+    methodology: `Counts the tokens on ${rhinofiStarkAddr}`,
     ethereum: {
       tvl
     }
