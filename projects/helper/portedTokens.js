@@ -1933,7 +1933,9 @@ async function transformEthereumAddress() {
     "0x65f7ba4ec257af7c55fd5854e5f6356bbd0fb8ec":
       "0x92d6c1e31e14520e676a687f0a93788b716beff5", // sDYDX
     "0x586aa273f262909eef8fa02d90ab65f5015e0516":
-      "0x0000000000085d4780B73119b644AE5ecd22b376" // FIAT
+    "0x0000000000085d4780B73119b644AE5ecd22b376", // FIAT
+    "0x0a5e677a6a24b2f1a2bf4f3bffc443231d2fdec8":
+      "bsc:0xb5102cee1528ce2c760893034a4603663495fd72", // USX
   };
   normalizeMapping(mapping);
 
