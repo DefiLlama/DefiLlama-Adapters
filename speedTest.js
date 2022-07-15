@@ -8,7 +8,7 @@ function createProvider(name, url, chainId) {
     name.toUpperCase() + '_RPC',
     url
   ].join('='));
-  
+
   return new ethers.providers.JsonRpcProvider(url,
     {
       name: name,
@@ -21,6 +21,7 @@ function createProvider(name, url, chainId) {
   const providers = {
     ethereum: createProvider("ethereum", "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161", 1),
     bsc: createProvider("bsc", "https://bsc-dataseed4.binance.org", 56),
+    candle: createProvider("candle", "https://candlelabs.org", 534),
     polygon: createProvider("polygon", "https://rpc-mainnet.maticvigil.com/", 137),
     heco: createProvider("heco", "https://http-mainnet.hecochain.com", 128),
     fantom: createProvider("fantom", "https://rpc.ftm.tools", 250),
@@ -45,7 +46,7 @@ function createProvider(name, url, chainId) {
     const spend = Date.now() - start
     console.log(name, "spend", spend / 1000, "s", "block", lastBlockNumber);
   }
-  
+
   console.log('.env')
   console.log(allNetworks.join("\n"))
 })();
