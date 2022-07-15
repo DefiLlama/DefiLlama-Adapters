@@ -20,6 +20,28 @@ const constants = {
   }
 }
 
+const lpTokenABI = {
+  "inputs": [
+    {
+      "internalType": "uint256",
+      "name": "",
+      "type": "uint256"
+    }
+  ],
+  "name": "lpToken",
+  "outputs": [
+    {
+      "internalType": "contract IERC20",
+      "name": "",
+      "type": "address"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+}
+
+const spookyMasterchef = '0x18b4f774fdC7BF685daeeF66c2990b1dDd9ea6aD'.toLowerCase()
+
 const getHelpers = (chain) => {
 
   const SINGLE_TOKEN = constants[chain].single;
@@ -41,7 +63,7 @@ const getHelpers = (chain) => {
         fetchURL(`${BASE_API_URL}/api/protocol/contracts?chainid=${constants[chain].chainId}`)
           .then(value => {
             data = value;
-          
+
             for (const resolve of queues) {
               resolve(value);
             }
@@ -59,7 +81,7 @@ const getHelpers = (chain) => {
     const transformAddress = await getChainTransform(chain)
     const fixBalances = await getFixBalances(chain)
     const block = chainBlocks[chain]
-    const tokenAndOwners= pools.filter(pool => !pool.isLP).map(pool => [pool.tokenContract, pool.address])
+    const tokenAndOwners = pools.filter(pool => !pool.isLP).map(pool => [pool.tokenContract, pool.address])
 
     await sumTokens(balances, tokenAndOwners, block, chain, transformAddress)
     fixBalances(balances)
@@ -76,13 +98,17 @@ const getHelpers = (chain) => {
 
     for (const { masterChef: masterChefAddress, wMasterChef, name, ...rest } of wmasterchefs) {
       if (name === "vvsMultiYield") {
-        await getUserCraftsmanV2Balances({ balances, masterChefAddress, userAddres: wMasterChef, block, chain, poolInfoABI: vvsPoolInfoABI, excludePool2: true, pool2Tokens: [ SINGLE_TOKEN ], craftsmanV1: rest.craftsmanV1 })
+        await getUserCraftsmanV2Balances({ balances, masterChefAddress, userAddres: wMasterChef, block, chain, poolInfoABI: vvsPoolInfoABI, excludePool2: true, pool2Tokens: [SINGLE_TOKEN], craftsmanV1: rest.craftsmanV1 })
         continue;
       }
-      await getUserMasterChefBalances({ balances, masterChefAddress, userAddres: wMasterChef, block, chain, poolInfoABI: vvsPoolInfoABI, excludePool2: true, pool2Tokens: [ SINGLE_TOKEN ] })
+      if (masterChefAddress.toLowerCase() === spookyMasterchef) {
+        await getUserMasterChefBalances({ balances, masterChefAddress, userAddres: wMasterChef, block, chain, poolInfoABI: lpTokenABI, excludePool2: true, pool2Tokens: [SINGLE_TOKEN] })
+        continue;
+      }
+      await getUserMasterChefBalances({ balances, masterChefAddress, userAddres: wMasterChef, block, chain, poolInfoABI: vvsPoolInfoABI, excludePool2: true, pool2Tokens: [SINGLE_TOKEN] })
     }
 
-    const tokenAndOwners = vaults.map(({token, address}) => [token, address])
+    const tokenAndOwners = vaults.map(({ token, address }) => [token, address])
     await sumTokens(balances, tokenAndOwners, block, chain) // Add lending pool tokens to balances
     fixBalances(balances)
     return balances
@@ -100,17 +126,25 @@ const getHelpers = (chain) => {
 
     for (const { masterChef: masterChefAddress, wMasterChef, name, ...rest } of wmasterchefs) {
       if (name === "vvsMultiYield") {
-        await getUserCraftsmanV2Balances({ balances, masterChefAddress, userAddres: wMasterChef, block, chain, poolInfoABI: vvsPoolInfoABI, onlyPool2: true, pool2Tokens: [ SINGLE_TOKEN ], craftsmanV1: rest.craftsmanV1 })
+        await getUserCraftsmanV2Balances({ balances, masterChefAddress, userAddres: wMasterChef, block, chain, poolInfoABI: vvsPoolInfoABI, onlyPool2: true, pool2Tokens: [SINGLE_TOKEN], craftsmanV1: rest.craftsmanV1 })
         continue;
       }
-      await getUserMasterChefBalances({ balances, masterChefAddress, userAddres: wMasterChef, block, chain, poolInfoABI: vvsPoolInfoABI, onlyPool2: true, pool2Tokens: [ SINGLE_TOKEN ] })
+      if (masterChefAddress.toLowerCase() === spookyMasterchef) {
+        await getUserMasterChefBalances({ balances, masterChefAddress, userAddres: wMasterChef, block, chain, poolInfoABI: lpTokenABI, onlyPool2: true, pool2Tokens: [SINGLE_TOKEN] })
+        continue;
+      }
+      await getUserMasterChefBalances({ balances, masterChefAddress, userAddres: wMasterChef, block, chain, poolInfoABI: vvsPoolInfoABI, onlyPool2: true, pool2Tokens: [SINGLE_TOKEN] })
     }
 
     fixBalances(balances)
     return balances
   }
 
-  return { tvl, pool2, staking }
+  return {
+    tvl,
+    pool2,
+    staking
+  }
 }
 
 module.exports = {
