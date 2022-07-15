@@ -58,5 +58,8 @@ module.exports={
         tvl: async () => ({}),
         pool2,
         staking,
-    },
+    },    
+    hallmarks: [
+        [1650153600, "Governance proposal hack"]
+    ]
 };

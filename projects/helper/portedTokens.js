@@ -56,6 +56,8 @@ async function transformFantomAddress() {
       "0x1a7e4e63778b4f12a199c062f3efdd288afcbce8", // agEUR
     "0x1b6382dbdea11d97f24495c9a90b7c88469134a4":
       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // axUSDC
+    "0xB67FA6deFCe4042070Eb1ae1511Dcd6dcc6a532E":
+      "0xBC6DA0FE9aD5f3b0d58160288917AA56653660E9", // alUSD
     "0x95bf7e307bc1ab0ba38ae10fc27084bc36fcd605":
       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
   };
@@ -132,7 +134,7 @@ async function transformAvaxAddress() {
     if (
       srcToken !== undefined &&
       srcToken["Ethereum Token Decimals"] ===
-        srcToken["Avalanche Token Decimals"]
+      srcToken["Avalanche Token Decimals"]
     ) {
       return srcToken["Ethereum Token Address"];
     }
@@ -264,7 +266,9 @@ async function transformBscAddress() {
     "0x6d1b7b59e3fab85b7d3a3d86e505dd8e349ea7f3":
       "heco:0xcbd6cb9243d8e3381fea611ef023e17d1b7aedf0", // BXH
     "0x42586ef4495bb512a86cf7496f6ef85ae7d69a64":
-      "polygon:0x66e8617d1df7ab523a316a6c01d16aa5bed93681" // SPICE
+      "polygon:0x66e8617d1df7ab523a316a6c01d16aa5bed93681", // SPICE
+    "0x60d01ec2d5e98ac51c8b4cf84dfcce98d527c747": "0x9ad37205d608b8b219e6a2573f922094cec5c200", // iZi
+    "0x0a3bb08b3a15a19b4de82f8acfc862606fb69a2d": "0x0a3bb08b3a15a19b4de82f8acfc862606fb69a2d", // iUSD
     // "0x250632378E573c6Be1AC2f97Fcdf00515d0Aa91B": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // BETH->WETH
   };
 
@@ -311,8 +315,9 @@ async function transformPolygonAddress() {
       "avax:0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664", // sUSDC.e(Polygon) -> USDC.e(Avalanche)
     "0x613a489785c95afeb3b404cc41565ccff107b6e0":
       "0x7a5d3A9Dcd33cb8D527f7b5F96EB4Fef43d55636", // radioshack
-    "0x1ddcaa4ed761428ae348befc6718bcb12e63bfaa":
-      "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48" // deUSDC
+    "0x1ddcaa4ed761428ae348befc6718bcb12e63bfaa": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // deUSDC
+    "0x794baab6b878467f93ef17e2f2851ce04e3e34c8": "0x794baab6b878467f93ef17e2f2851ce04e3e34c8", // Yin
+    "0x282d8efce846a88b159800bd4130ad77443fa1a1": "0x967da4048cd07ab37855c090aaf366e4ce1b9f48" //ocean
   };
   normalizeMapping(mapping);
 
@@ -432,6 +437,10 @@ async function transformHarmonyAddress() {
   const mapping = {
     "0x6983D1E6DEf3690C4d616b13597A09e6193EA013":
       "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+    "0xb1f6E61E1e113625593a22fa6aa94F8052bc39E0":
+      "bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    "0xFbdd194376de19a88118e84E279b977f165d01b8":
+      "polygon:0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0",
     "0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a":
       "harmony:0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a",
     "0x72cb10c6bfa5624dd07ef608027e366bd690048f":
@@ -549,15 +558,15 @@ async function transformMoonriverAddress() {
 
 async function transformMoonbeamAddress() {
   const mapping = {
-    '0x322E86852e492a7Ee17f28a78c663da38FB33bfb' : '0x853d955aCEf822Db058eb8505911ED77F175b99e', // frax
-    '0x8f552a71EFE5eeFc207Bf75485b356A0b3f01eC9' : '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // usdc
-    '0xdfa46478f9e5ea86d57387849598dbfb2e964b02' : 'polygon:0xa3fa99a148fa48d14ed51d610c367c61876997f1', // mai
-    '0x8e70cD5B4Ff3f62659049e74b6649c6603A0E594' : '0xdac17f958d2ee523a2206206994597c13d831ec7', // usdt
-    '0x30D2a9F5FDf90ACe8c17952cbb4eE48a55D916A7' : '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', // eth
-    '0x1DC78Acda13a8BC4408B207c9E48CDBc096D95e0' : '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', // wtbc
-    '0xc234A67a4F840E61adE794be47de455361b52413' : '0x6b175474e89094c44da98b954eedeac495271d0f', // dai
-    '0x1d4C2a246311bB9f827F4C768e277FF5787B7D7E' : 'moonriver:0x98878b06940ae243284ca214f92bb71a2b032b8a', // movr
-    '0x0000000000000000000000000000000000000000' : '"moonbeam:0xacc15dc74880c9944775448304b263d191c6077f', // GLMR -> WGLMR
+    '0x322E86852e492a7Ee17f28a78c663da38FB33bfb': '0x853d955aCEf822Db058eb8505911ED77F175b99e', // frax
+    '0x8f552a71EFE5eeFc207Bf75485b356A0b3f01eC9': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', // usdc
+    '0xdfa46478f9e5ea86d57387849598dbfb2e964b02': 'polygon:0xa3fa99a148fa48d14ed51d610c367c61876997f1', // mai
+    '0x8e70cD5B4Ff3f62659049e74b6649c6603A0E594': '0xdac17f958d2ee523a2206206994597c13d831ec7', // usdt
+    '0x30D2a9F5FDf90ACe8c17952cbb4eE48a55D916A7': '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2', // eth
+    '0x1DC78Acda13a8BC4408B207c9E48CDBc096D95e0': '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', // wtbc
+    '0xc234A67a4F840E61adE794be47de455361b52413': '0x6b175474e89094c44da98b954eedeac495271d0f', // dai
+    '0x1d4C2a246311bB9f827F4C768e277FF5787B7D7E': 'moonriver:0x98878b06940ae243284ca214f92bb71a2b032b8a', // movr
+    '0x0000000000000000000000000000000000000000': '"moonbeam:0xacc15dc74880c9944775448304b263d191c6077f', // GLMR -> WGLMR
   }
 
   return transformChainAddress(mapping, "moonbeam", { skipUnmapped: false });
@@ -585,7 +594,8 @@ async function transformArbitrumAddress() {
     "0x2913e812cf0dcca30fb28e6cac3d2dcff4497688":
       "0x6b175474e89094c44da98b954eedeac495271d0f", //  nUSD
     "0x289ba1701c2f088cf0faf8b3705246331cb8a839":
-      "0x58b6a8a3302369daec383334672404ee733ab239" // LPT
+      "0x58b6a8a3302369daec383334672404ee733ab239", // LPT
+    "0x61a1ff55c5216b636a294a07d77c6f4df10d3b56": "0x52a8845df664d76c69d2eea607cd793565af42b8", // APEX
   };
 
   normalizeMapping(mapping);
@@ -633,6 +643,10 @@ async function transformEvmosAddress() {
     // '0xD4949664cD82660AaE99bEdc034a0deA8A0bd517': '',  // WEVMOS
     "0x51e44FfaD5C2B122C8b635671FCC8139dc636E82":
       "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // madUSDC
+    "0x8d395AfFC1767141387ffF45aF88a074614E7Ccf":
+      "0x18084fba666a33d37592fa2633fd49a74dd93a88", // tBTCv2
+    "0xb1a8C961385B01C3aA782fba73E151465445D319":
+      "0xeb4c2781e4eba804ce9a9803c67d0893436bb27d", // renBTC
     "0xe46910336479F254723710D57e7b683F3315b22B":
       "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // ceUSDC
     "0x63743ACF2c7cfee65A5E356A4C4A005b586fC7AA":
@@ -732,7 +746,7 @@ function fixBscBalances(balances) {
       balances,
       "anchorust",
       Number(balances["bsc:0x8b04E56A8cd5f4D465b784ccf564899F30Aaf88C"]) /
-        10 ** 6
+      10 ** 6
     );
   }
 }
@@ -773,6 +787,9 @@ async function transformKccAddress() {
     if (compareAddresses(addr, "0xc9baa8cfdde8e328787e29b4b078abf2dadc2055")) {
       return "0x6b175474e89094c44da98b954eedeac495271d0f";
     }
+    if (compareAddresses(addr, "0xfa93c12cd345c658bc4644d1d4e1b9615952258c")) {
+      return "bsc:0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c";
+    }
     if (compareAddresses(addr, "0x218c3c3d49d0e7b37aff0d8bb079de36ae61a4c0")) {
       return "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599";
     }
@@ -788,44 +805,29 @@ async function transformKccAddress() {
 
 function transformMetisAddress() {
   const map = {
-    "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000":
-      "0x9e32b13ce7f2e80a01932b42553652e053d6ed8e",
-    "0xbb06dca3ae6887fabf931640f67cab3e3a16f4dc":
-      "0xdac17f958d2ee523a2206206994597c13d831ec7",
-    "0x420000000000000000000000000000000000000a":
-      "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-    "0x5801d0e1c7d977d78e4890880b8e579eb4943276":
-      "bsc:0x5801d0e1c7d977d78e4890880b8e579eb4943276",
-    "0xea32a96608495e54156ae48931a7c20f0dcc1a21":
-      "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-    "0x2692be44a6e38b698731fddf417d060f0d20a0cb":
-      "bsc:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"
-  };
+    "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000": "0x9e32b13ce7f2e80a01932b42553652e053d6ed8e",
+    "0xbb06dca3ae6887fabf931640f67cab3e3a16f4dc": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+    "0x420000000000000000000000000000000000000a": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+    "0x5801d0e1c7d977d78e4890880b8e579eb4943276": "bsc:0x5801d0e1c7d977d78e4890880b8e579eb4943276",
+    "0xea32a96608495e54156ae48931a7c20f0dcc1a21": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    "0x2692be44a6e38b698731fddf417d060f0d20a0cb": "bsc:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+    "0xa5B55ab1dAF0F8e1EFc0eB1931a957fd89B918f4": "avax:0x50b7545627a5162F82A992c33b87aDc75187B218",
+    "0x12d84f1cfe870ca9c9df9785f8954341d7fbb249": "bsc:0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", // bUSD
+    "0xE253E0CeA0CDD43d9628567d097052B33F98D611": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", // wAVAX
+    "0xa9109271abcf0c4106ab7366b4edb34405947eed": "fantom:0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83", // wFTM
+    "0x4651B38e7ec14BB3db731369BFE5B08F2466Bd0A": "bsc:0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3",
+    "0xfe282Af5f9eB59C30A3f78789EEfFA704188bdD4": "metis:0xfe282Af5f9eB59C30A3f78789EEfFA704188bdD4",
+    "0x6aB6d61428fde76768D7b45D8BFeec19c6eF91A8": "bsc:0xad29abb318791d579433d831ed122afeaf29dcfe",
+    "0x4b9D2923D875edF43980BF5dddDEde3Fb20fC742": "bsc:0xcc42724c6683b7e57334c4e856f4c9965ed682bd",
+    "0x67c10c397dd0ba417329543c1a40eb48aaa7cd00": "0x0f2d719407fdbeff09d87557abb7232601fd9f29", //SYN
+    "0x226d8bfb4da78ddc5bd8fd6c1532c58e88f9fd34": "0xbc19712feb3a26080ebf6f2f7849b417fdd792ca", // BoringDAO
+  }
+  normalizeMapping(map)
+
   return addr => {
-    if (compareAddresses(addr, "0xa5B55ab1dAF0F8e1EFc0eB1931a957fd89B918f4")) {
-      return "avax:0x50b7545627a5162F82A992c33b87aDc75187B218";
-    }
-    if (compareAddresses(addr, "0xE253E0CeA0CDD43d9628567d097052B33F98D611")) {
-      return "avax:0xE253E0CeA0CDD43d9628567d097052B33F98D611";
-    }
+    addr = addr.toLowerCase()
 
-    if (compareAddresses(addr, "0x4651B38e7ec14BB3db731369BFE5B08F2466Bd0A")) {
-      return "bsc:0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3";
-    }
-
-    if (compareAddresses(addr, "0xfe282Af5f9eB59C30A3f78789EEfFA704188bdD4")) {
-      return "metis:0xfe282Af5f9eB59C30A3f78789EEfFA704188bdD4";
-    }
-
-    if (compareAddresses(addr, "0x6aB6d61428fde76768D7b45D8BFeec19c6eF91A8")) {
-      return "bsc:0xad29abb318791d579433d831ed122afeaf29dcfe";
-    }
-
-    if (compareAddresses(addr, "0x4b9D2923D875edF43980BF5dddDEde3Fb20fC742")) {
-      return "bsc:0xcc42724c6683b7e57334c4e856f4c9965ed682bd";
-    }
-
-    return map[addr.toLowerCase()] || `metis:${addr}`;
+    return map[addr] || `metis:${addr}`;
   };
 }
 
@@ -907,7 +909,6 @@ async function transformKlaytnAddress() {
   const mapping = {
     "0x5388ce775de8f7a69d17fd5caa9f7dbfee65dfce":
       "0x4576E6825B462b6916D2a41E187626E9090A92c6", // Donkey
-    "0x9eaefb09fe4aabfbe6b1ca316a3c36afc83a393f": "ripple", // XRP
     "0x02cbe46fb8a1f579254a9b485788f2d86cad51aa":
       "0x26fb86579e371c7aedc461b2ddef0a8628c93d3b", // bora
     "0x5c74070fdea071359b86082bd9f9b3deaafbe32b":
@@ -949,6 +950,10 @@ function fixKlaytnBalances(balances) {
       coingeckoId: "klay-token",
       decimals: 18
     }, // Wrapped KLAY
+    "0x9eaefb09fe4aabfbe6b1ca316a3c36afc83a393f": {
+      coingeckoId: "ripple",
+      decimals: 6
+    },
     "0xc6a2ad8cc6e4a7e08fc37cc5954be07d499e7654": {
       coingeckoId: "klayswap-protocol",
       decimals: 18
@@ -962,6 +967,16 @@ function transformVelasAddress() {
     const map = {
       "0x85219708c49aa701871ad330a94ea0f41dff24ca":
         "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // WETH
+      "0xe41c4324dCbD2926481101f8580D13930AFf8A75":
+        "velas:0xc579D1f3CF86749E05CD06f7ADe17856c2CE3126", // WVLX
+      "0x6ab0B8C1a35F9F4Ce107cCBd05049CB1Dbd99Ec5":
+        "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0", // MATIC
+      "0x639A647fbe20b6c8ac19E48E2de44ea792c62c5C":
+        "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", // WBTC
+      "0x2B8e9cD44C9e09D936149549a8d207c918ecB5C4":
+        "bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c", // BNB
+      "0xc9b3aA6E91d70f4ca0988D643Ca2bB93851F3de4":
+        "fantom:0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83", // FTM
       "0xe2c120f188ebd5389f71cf4d9c16d05b62a58993":
         "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USDC
       "0x01445c31581c354b7338ac35693ab2001b50b9ae":
@@ -971,10 +986,10 @@ function transformVelasAddress() {
       "0x300a8be53b4b5557f48620d578e7461e3b927dd0":
         "0xf56842af3b56fd72d17cb103f92d027bba912e89" // BAMBOO
     };
+    normalizeMapping(map)
     return map[addr.toLowerCase()] || `velas:${addr}`;
   };
 }
-
 async function transformCronosAddress() {
   const mapping = {
     "0x0000000000000000000000000000000000000000":
@@ -1018,87 +1033,115 @@ function fixShidenBalances(balances) {
 
 function fixAstarBalances(balances) {
   const mapping = {
+    "0xcdb32eed99aa19d39e5d6ec45ba74dc4afec549f": {
+      coingeckoId: "orcus-oru",
+      decimals: 18,
+    },
+    "0xc5bcac31cf55806646017395ad119af2441aee37": {
+      coingeckoId: "muuu",
+      decimals: 18,
+    },
+    "0x6df98e5fbff3041105cb986b9d44c572a43fcd22": {
+      coingeckoId: "alnair-finance-nika",
+      decimals: 18,
+    },
+    "0x29F6e49c6E3397C3A84F715885F9F233A441165C": {
+      coingeckoId: "origin-dollar",
+      decimals: 18,
+    },
+    "0xdd90e5e87a2081dcf0391920868ebc2ffb81a1af": {
+      coingeckoId: "wmatic",
+      decimals: 18,
+    },
+    "0x257f1a047948f73158dadd03eb84b34498bcdc60": {
+      coingeckoId: "kagla-finance",
+      decimals: 18,
+    },
+    "0xc4335b1b76fa6d52877b3046eca68f6e708a27dd": {
+      coingeckoId: "starlay-finance",
+      decimals: 18,
+    },
+    "0xde2578edec4669ba7f41c5d5d2386300bcea4678": {
+      coingeckoId: "arthswap",
+      decimals: 18,
+    },
     "0x81ECac0D6Be0550A00FF064a4f9dd2400585FE9c": {
       coingeckoId: "ethereum",
-      decimals: 18
+      decimals: 18,
     },
     "0x7f27352d5f83db87a5a3e00f4b07cc2138d8ee52": {
       coingeckoId: "binancecoin",
-      decimals: 18
+      decimals: 18,
     },
     "0x75364D4F779d0Bd0facD9a218c67f87dD9Aff3b4": {
       coingeckoId: "shiden",
-      decimals: 18
+      decimals: 18,
     },
     "0xad543f18cff85c77e140e3e5e3c3392f6ba9d5ca": {
       coingeckoId: "bitcoin",
-      decimals: 8
+      decimals: 8,
     },
     "0x3795C36e7D12A8c252A20C5a7B455f7c57b60283": {
       coingeckoId: "tether",
-      decimals: 6
+      decimals: 6,
     },
     "0x430D50963d9635bBef5a2fF27BD0bDDc26ed691F": {
       coingeckoId: "tether",
-      decimals: 6
+      decimals: 6,
     },
     "0x19574c3c8fafc875051b665ec131b7e60773d2c9": {
       coingeckoId: "astar",
-      decimals: 18
+      decimals: 18,
     },
     "0xAeaaf0e2c81Af264101B9129C00F4440cCF0F720": {
       coingeckoId: "astar",
-      decimals: 18
+      decimals: 18,
     },
     "0xb361DAD0Cc1a03404b650A69d9a5ADB5aF8A531F": {
       coingeckoId: "emiswap",
-      decimals: 18
+      decimals: 18,
     },
     "0xC404E12D3466acCB625c67dbAb2E1a8a457DEf3c": {
       coingeckoId: "usd-coin",
-      decimals: 6
+      decimals: 6,
     }, // interest bearing USDC
     "0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98": {
       coingeckoId: "usd-coin",
-      decimals: 6
+      decimals: 6,
     },
     "0x6De33698e9e9b787e09d3Bd7771ef63557E148bb": {
       coingeckoId: "dai",
-      decimals: 18
+      decimals: 18,
     },
     "0x4dd9c468A44F3FEF662c35c1E9a6108B70415C2c": {
       coingeckoId: "dai",
-      decimals: 18
+      decimals: 18,
     },
     "0x4Bf769b05E832FCdc9053fFFBC78Ca889aCb5E1E": {
       coingeckoId: "binance-usd",
-      decimals: 18
+      decimals: 18,
     },
     "0xb7aB962c42A8Bb443e0362f58a5A43814c573FFb": {
       coingeckoId: "binance-usd",
-      decimals: 18
-    },
-    "0x29F6e49c6E3397C3A84F715885F9F233A441165C": {
-      coingeckoId: "dai",
-      decimals: 18
+      decimals: 18,
     },
     "0x733ebcC6DF85f8266349DEFD0980f8Ced9B45f35": {
       coingeckoId: "bai-stablecoin",
-      decimals: 18
+      decimals: 18,
     },
     "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF": {
       coingeckoId: "polkadot",
-      decimals: 10
+      decimals: 10,
     },
     "0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB": {
       coingeckoId: "jpy-coin",
-      decimals: 18
-    }
-    // '0x29F6e49c6E3397C3A84F715885F9F233A441165C': { coingeckoId: 'orcus-ousd', decimals: 18, }, // todo: fix this, use correct coingecko id
+      decimals: 18,
+    },
   };
 
   return fixBalances(balances, mapping);
 }
+
 
 function fixHPBBalances(balances) {
   const mapping = {
@@ -1139,7 +1182,7 @@ const cronosFixMapping = {
   "0x02dccaf514c98451320a9365c5b46c61d3246ff3": {
     coingeckoId: "dogelon-mars",
     decimals: 18
-  }
+  },
 };
 
 async function transformDfkAddress() {
@@ -1154,10 +1197,28 @@ async function transformDfkAddress() {
 async function transformAuroraAddress() {
   const mapping = {
     "0xda2585430fef327ad8ee44af8f1f989a2a91a3d2":
-      "0x853d955aCEf822Db058eb8505911ED77F175b99e" // FRAX
+      "0x853d955aCEf822Db058eb8505911ED77F175b99e", // FRAX
+    "0x07379565cd8b0cae7c60dc78e7f601b34af2a21c":
+      "0x6b175474e89094c44da98b954eedeac495271d0f", //  nUSD -> DAI
   };
+
+  normalizeMapping(mapping)
   return addr => mapping[addr.toLowerCase()] || `aurora:${addr.toLowerCase()}`;
 }
+
+function transformNovachainAddress() {
+  const mapping = {
+    "0x0000000000000000000000000000000000000000":
+      "fantom:0x69D17C151EF62421ec338a0c92ca1c1202A427EC", // SNT
+    "0x657a66332a65b535da6c5d67b8cd1d410c161a08":
+      "fantom:0x69D17C151EF62421ec338a0c92ca1c1202A427EC", // SNT
+    "0x1f5396f254ee25377a5c1b9c6bff5f44e9294fff":
+      "fantom:0x04068da6c83afcfa0e13ba15a6696662335d5b75" // USDC
+  };
+
+  return transformChainAddress(mapping, "nova", { skipUnmapped: true });
+}
+
 
 function fixGodwokenBalances(balances) {
   const mapping = {
@@ -1470,7 +1531,7 @@ const songbirdFixMapping = {
     decimals: 18
   },
   "0x70Ad7172EF0b131A1428D0c1F66457EB041f2176": {
-    coingeckoId: "usd-coin",
+    coingeckoId: "canary-dollar",
     decimals: 18
   }
 };
@@ -1508,6 +1569,14 @@ const bittorrentFixMapping = {
   "0x9b5f27f6ea9bbd753ce3793a07cba3c74644330d": {
     coingeckoId: "tether",
     decimals: 18
+  },
+  "0x23181f21dea5936e24163ffaba4ea3b316b57f3c": {
+    coingeckoId: 'bittorrent',
+    decimals: 18,
+  },
+  "TNUC9Qb1rRpS5CbWLmNMxXBjyFoydXjWFR": {
+    coingeckoId: 'tron',
+    decimals: 6,
   }
 };
 
@@ -1523,6 +1592,14 @@ const kavaFixMapping = {
     coingeckoId: "kava",
     decimals: 18
   },
+  "0x332730a4F6E03D9C55829435f10360E13cfA41Ff": {
+    coingeckoId: "binance-usd",
+    decimals: 18
+  },
+  "0x65e66a61D0a8F1e686C2D6083ad611a10D84D97A": {
+    coingeckoId: "binancecoin",
+    decimals: 18
+  },
   "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f": {
     coingeckoId: "usd-coin",
     decimals: 6
@@ -1535,7 +1612,7 @@ const kavaFixMapping = {
     coingeckoId: "bitcoin",
     decimals: 8
   },
-  "0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d": {
+  "0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D": {
     coingeckoId: "ethereum",
     decimals: 18
   },
@@ -1558,7 +1635,7 @@ function fixBalances(balances, mapping, { removeUnmapped = false } = {}) {
     const tokenKey = stripTokenHeader(token).toLowerCase();
     const { coingeckoId, decimals } = mapping[tokenKey] || {};
     if (!coingeckoId) {
-      if (removeUnmapped) {
+      if (removeUnmapped && tokenKey.startsWith('0x')) {
         console.log(
           `Removing token from balances, it is not part of whitelist: ${tokenKey}`
         );
@@ -1683,6 +1760,51 @@ const meterFixMapping = {
   }
 };
 
+const callistoFixMapping = {
+  "0xF5AD6F6EDeC824C7fD54A66d241a227F6503aD3a": {
+    coingeckoId: "callisto",
+    decimals: 18
+  },
+  "0xbf6c50889d3a620eb42c0f188b65ade90de958c4": {
+    coingeckoId: "tether",
+    decimals: 18
+  },
+  "0xccc766f97629a4e14b3af8c91ec54f0b5664a69f": {
+    coingeckoId: "ethereum-classic",
+    decimals: 18
+  },
+  "0xcc208c32cc6919af5d8026dab7a3ec7a57cd1796": {
+    coingeckoId: "ethereum",
+    decimals: 18
+  },
+  "0xccde29903e621ca12df33bb0ad9d1add7261ace9": {
+    coingeckoId: "binancecoin",
+    decimals: 18
+  },
+  "0x9FaE2529863bD691B4A7171bDfCf33C7ebB10a65": {
+    coingeckoId: "soy-finance",
+    decimals: 18
+  },
+};
+
+const thundercoreFixMapping = {
+  "0x4f3c8e20942461e2c3bdd8311ac57b0c222f2b82": {
+    coingeckoId: "tether",
+    decimals: 6
+  },
+  "0x22e89898a04eaf43379beb70bf4e38b1faf8a31e": {
+    coingeckoId: "usd-coin",
+    decimals: 6
+  },
+};
+
+const ontologyFixMapping = {
+  "0xd8bc24cfd45452ef2c8bc7618e32330b61f2691b": {
+    coingeckoId: "ong",
+    decimals: 18,
+  },
+};
+
 const fixBalancesMapping = {
   avax: fixAvaxBalances,
   evmos: b => fixBalances(b, evmosFixMapping, { removeUnmapped: false }),
@@ -1708,7 +1830,10 @@ const fixBalancesMapping = {
   ethereum: b => fixBalances(b, ethereumFixMapping, { removeUnmapped: false }),
   sx: b => fixBalances(b, sxFixMapping, { removeUnmapped: true }),
   meter: b => fixBalances(b, meterFixMapping, { removeUnmapped: true }),
+  callisto: b => fixBalances(b, callistoFixMapping, { removeUnmapped: true }),
   near: b => fixBalances(b, nearFixMapping, { removeUnmapped: false }),
+  thundercore: b => fixBalances(b, thundercoreFixMapping, { removeUnmapped: true }),
+  ontology_evm: b => fixBalances(b, ontologyFixMapping, { removeUnmapped: false }),
 };
 
 const chainTransforms = {
@@ -1745,6 +1870,7 @@ const chainTransforms = {
   findora: transformFindoraAddress,
   bittorrent: transformBittorrentAddress,
   reichain: transformReichainAddress,
+  nova: transformNovachainAddress,
 };
 
 async function transformReichainAddress() {
@@ -1822,7 +1948,7 @@ function transformBittorrentAddress() {
     "0x935faa2fcec6ab81265b301a30467bbc804b43d3":
       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USDC
     "0x8d193c6efa90bcff940a98785d1ce9d093d3dc8a":
-      "tron:TKfjV9RNKJJCqPvBtK8L7Knykh7DNWvnYt", // BTT
+      "0xc669928185dbce49d2230cc9b0979be6dc797957", // BTT
     "0x17f235fd5974318e4e2a5e37919a209f7c37a6d1":
       "0x0c10bf8fcb7bf5412187a595ab97a3609160b5c6", // USDD
     "0xae17940943ba9440540940db0f1877f101d39e8b":
@@ -1946,7 +2072,9 @@ module.exports = {
   transformMilkomedaAddress,
   transformDfkAddress,
   transformFindoraAddress,
+  transformEvmosAddress,
   wavesMapping,
   stripTokenHeader,
-  transformBittorrentAddress
+  transformBittorrentAddress,
+  transformAuroraAddress
 };

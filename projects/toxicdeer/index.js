@@ -5,11 +5,12 @@ const { stakingUnknownPricedLP, stakingPricedLP } = require("../helper/staking")
 
 const DEER = "0x8efbaa6080412d7832025b03b9239d0be1e2aa3b";
 const XDSHARE = "0x6f715158d4b1468528da002f5941c72fe4159520";
-const boardroom = "0x8ff5c261cb91f31eb158fd39aa132e510447474a";
+const boardroom = "0x85b60750761d0e170237700Ce1e94213E1742A34";
 const rewardPool = "0xf6c3e1B489c1e634a3c66876d5A8E19B1A65B252";
 const lps = [
   "0x264f27bf0ec4fe383cfda50f1bb11588735bbe6d",
   "0x18cD20C6CA9Ccfe1C8b48516e6d5e0055a0271D2",
+  "0x40d85d01f8b8E4A8cEa6F552e47Cf8F88A42db54"
 ];
 const shareLps = "0x18cD20C6CA9Ccfe1C8b48516e6d5e0055a0271D2";
 

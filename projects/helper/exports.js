@@ -1,11 +1,18 @@
-const sdk = require('@defillama/sdk')
-
 function chainExports(chainTvl, chains){
   const chainTvls = chains.reduce((obj, chain) => ({
     ...obj,
     [chain === 'avax' ? 'avalanche' : chain]: {
       tvl:chainTvl(chain)
     }
+  }), {})
+
+  return chainTvls
+}
+
+function generalizedChainExports(chainTvl, chains){
+  const chainTvls = chains.reduce((obj, chain) => ({
+    ...obj,
+    [chain === 'avax' ? 'avalanche' : chain]: chainTvl(chain)
   }), {})
 
   return chainTvls
@@ -29,5 +36,6 @@ function fetchChainExports(chainTvl, chains){
 
 module.exports={
     chainExports,
-    fetchChainExports
+    fetchChainExports,
+    generalizedChainExports
 }

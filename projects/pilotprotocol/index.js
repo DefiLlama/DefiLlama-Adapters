@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const erc20 = require("../helper/abis/erc20.json");
 const abi = require("./abi.json");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { transformHecoAddress } = require("../helper/portedTokens");
@@ -128,7 +127,7 @@ const hecoTvl = async (timestamp, ethBlock, chainBlocks) => {
     } else {
       // Single side staking reward contracts
       const balance = await sdk.api.abi.call({
-        abi: erc20.balanceOf,
+        abi: 'erc20:balanceOf',
         target: stakingToken[index],
         params: farmingPools[index],
         chain: "heco",

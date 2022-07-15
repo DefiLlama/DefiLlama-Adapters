@@ -1,0 +1,782 @@
+{
+  "ethereum": {
+    "BTC": {
+      "address": "0x4f6A43Ad7cba042606dECaCA730d4CE0A57ac62e",
+      "lpToken": "0xC28DF698475dEC994BE00C9C9D8658A548e6304F",
+      "poolTokens": [
+        {
+          "address": "0x8daebade922df735c38c80c7ebd708af50815faa",
+          "name": "tBTC"
+        },
+        {
+          "address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+          "name": "WBTC"
+        },
+        {
+          "address": "0xeb4c2781e4eba804ce9a9803c67d0893436bb27d",
+          "name": "renBTC"
+        },
+        {
+          "address": "0xfe18be6b3bd88a2d2a7f928d00292e7a9963cfc6",
+          "name": "sBTC"
+        }
+      ]
+    },
+    "BTC V2": {
+      "address": "0xdf3309771d2BF82cb2B6C56F9f5365C8bD97c4f2",
+      "lpToken": "0xF32E91464ca18fc156aB97a697D6f8ae66Cd21a3",
+      "poolTokens": [
+        {
+          "address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+          "name": "WBTC"
+        },
+        {
+          "address": "0xeb4c2781e4eba804ce9a9803c67d0893436bb27d",
+          "name": "renBTC"
+        },
+        {
+          "address": "0xfe18be6b3bd88a2d2a7f928d00292e7a9963cfc6",
+          "name": "sBTC"
+        }
+      ]
+    },
+    "Frax 3Pool": {
+      "address": "0x8cAEa59f3Bf1F341f89c51607E4919841131e47a",
+      "lpToken": "0x0785aDDf5F7334aDB7ec40cD785EBF39bfD91520",
+      "poolTokens": [
+        {
+          "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          "name": "USDC Coin"
+        },
+        {
+          "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+          "name": "Tether"
+        },
+        {
+          "address": "0x853d955aCEf822Db058eb8505911ED77F175b99e",
+          "name": "Frax"
+        }
+      ]
+    },
+    "USD": {
+      "address": "0x3911F80530595fBd01Ab1516Ab61255d75AEb066",
+      "lpToken": "0x76204f8CFE8B95191A3d1CfA59E267EA65e06FAC",
+      "poolTokens": [
+        {
+          "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+          "name": "Dai"
+        },
+        {
+          "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          "name": "USDC Coin"
+        },
+        {
+          "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+          "name": "Tether"
+        }
+      ]
+    },
+    "USDv2": {
+      "address": "0xaCb83E0633d6605c5001e2Ab59EF3C745547C8C7",
+      "lpToken": "0x5f86558387293b6009d7896A61fcc86C17808D62",
+      "poolTokens": [
+        {
+          "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+          "name": "Dai"
+        },
+        {
+          "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          "name": "USDC Coin"
+        },
+        {
+          "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+          "name": "Tether"
+        }
+      ]
+    },
+    "vETH2": {
+      "address": "0xdec2157831D6ABC3Ec328291119cc91B337272b5",
+      "lpToken": "0xe37E2a01feA778BC1717d72Bd9f018B6A6B241D5",
+      "poolTokens": [
+        {
+          "address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+          "name": "WETH"
+        },
+        {
+          "address": "0x898BAD2774EB97cF6b94605677F43b41871410B1",
+          "name": "vETH2"
+        }
+      ]
+    },
+    "alETH": {
+      "address": "0xa6018520EAACC06C30fF2e1B3ee2c7c22e64196a",
+      "lpToken": "0xc9da65931ABf0Ed1b74Ce5ad8c041C4220940368",
+      "poolTokens": [
+        {
+          "address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+          "name": "WETH"
+        },
+        {
+          "address": "0x0100546F2cD4C9D97f798fFC9755E47865FF7Ee6",
+          "name": "Alchemix ETH"
+        },
+        {
+          "address": "0x5e74C9036fb86BD7eCdcb084a0673EFc32eA31cb",
+          "name": "Synth sETH"
+        }
+      ]
+    },
+    "D4": {
+      "address": "0xC69DDcd4DFeF25D8a793241834d4cc4b3668EAD6",
+      "lpToken": "0xd48cF4D7FB0824CC8bAe055dF3092584d0a1726A",
+      "poolTokens": [
+        {
+          "address": "0xBC6DA0FE9aD5f3b0d58160288917AA56653660E9",
+          "name": "Alchemix USD"
+        },
+        {
+          "address": "0x956F47F50A910163D8BF957Cf5846D573E7f87CA",
+          "name": "Fei Protocol"
+        },
+        {
+          "address": "0x853d955aCEf822Db058eb8505911ED77F175b99e",
+          "name": "Frax"
+        },
+        {
+          "address": "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0",
+          "name": "Liquity USD"
+        }
+      ]
+    },
+    "sUSD Meta V2": {
+      "address": "0xc66Ed5d7800579220c71f21B1cCa2006B3a95900",
+      "lpToken": "0xb6214a9d18f5Bf34A23a355114A03bE4f7D804fa",
+      "poolTokens": [
+        {
+          "address": "0x57Ab1ec28D129707052df4dF418D58a2D46d5f51",
+          "name": "sUSD"
+        },
+        {
+          "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+          "name": "Dai"
+        },
+        {
+          "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          "name": "USDC Coin"
+        },
+        {
+          "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+          "name": "Tether"
+        }
+      ]
+    },
+    "sUSD Meta": {
+      "address": "0x1e35ebF875f8A2185EDf22da02e7dBCa0F5558aB",
+      "lpToken": "0x8Fa31c1b33De16bf05c38AF20329f22D544aD64c",
+      "poolTokens": [
+        {
+          "address": "0x57Ab1ec28D129707052df4dF418D58a2D46d5f51",
+          "name": "sUSD"
+        },
+        {
+          "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+          "name": "Dai"
+        },
+        {
+          "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          "name": "USDC Coin"
+        },
+        {
+          "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+          "name": "Tether"
+        }
+      ]
+    },
+    "tBTC Meta": {
+      "address": "0xee1ec4e1C6e39C31dAaf3db2A62A397bdf3fe2f1",
+      "lpToken": "0x122Eca07139EB368245A29FB702c9ff11E9693B7",
+      "poolTokens": [
+        {
+          "address": "0x18084fba666a33d37592fa2633fd49a74dd93a88",
+          "name": "tBTCv2"
+        },
+        {
+          "address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+          "name": "WBTC"
+        },
+        {
+          "address": "0xeb4c2781e4eba804ce9a9803c67d0893436bb27d",
+          "name": "renBTC"
+        },
+        {
+          "address": "0xfe18be6b3bd88a2d2a7f928d00292e7a9963cfc6",
+          "name": "sBTC"
+        }
+      ]
+    },
+    "tBTC Meta V2": {
+      "address": "0x05383312655856E25b851c15fA856dB7e270F0cF",
+      "lpToken": "0x3f2f811605bC6D701c3Ad6E501be13461c560320",
+      "poolTokens": [
+        {
+          "address": "0x18084fba666a33d37592fa2633fd49a74dd93a88",
+          "name": "tBTCv2"
+        },
+        {
+          "address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+          "name": "WBTC"
+        },
+        {
+          "address": "0xeb4c2781e4eba804ce9a9803c67d0893436bb27d",
+          "name": "renBTC"
+        },
+        {
+          "address": "0xfe18be6b3bd88a2d2a7f928d00292e7a9963cfc6",
+          "name": "sBTC"
+        }
+      ]
+    },
+    "wCUSD Meta": {
+      "address": "0x401AFbc31ad2A3Bc0eD8960d63eFcDEA749b4849",
+      "lpToken": "0x78179d49C13c4ECa14C69545ec172Ba0179EAE6B",
+      "poolTokens": [
+        {
+          "address": "0xad3e3fc59dff318beceaab7d00eb4f68b1ecf195",
+          "name": "Wrapped Celo USD"
+        },
+        {
+          "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+          "name": "Dai"
+        },
+        {
+          "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          "name": "USDC Coin"
+        },
+        {
+          "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+          "name": "Tether"
+        }
+      ]
+    },
+    "wCUSD Meta V2": {
+      "address": "0x9898D87368DE0Bf1f10bbea8dE46c00cC3a2F9F1",
+      "lpToken": "0x5F7872490a9B405946376dd40fCbDeF521F13e3f",
+      "poolTokens": [
+        {
+          "address": "0xad3e3fc59dff318beceaab7d00eb4f68b1ecf195",
+          "name": "Wrapped Celo USD"
+        },
+        {
+          "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+          "name": "Dai"
+        },
+        {
+          "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          "name": "USDC Coin"
+        },
+        {
+          "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+          "name": "Tether"
+        }
+      ]
+    },
+    "tBTCv2-BTCv2_v3": {
+      "address": "0x4946DE721ce70D4B7aa226aA0Fe869C935769388",
+      "lpToken": "0xA2E81Eb93F0F9814ae9A3bea2D2A63408f2709C1",
+      "poolTokens": [
+        {
+          "address": "0x18084fba666a33d37592fa2633fd49a74dd93a88",
+          "name": "tBTCv2"
+        },
+        {
+          "address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+          "name": "WBTC"
+        },
+        {
+          "address": "0xeb4c2781e4eba804ce9a9803c67d0893436bb27d",
+          "name": "renBTC"
+        },
+        {
+          "address": "0xfe18be6b3bd88a2d2a7f928d00292e7a9963cfc6",
+          "name": "sBTC"
+        }
+      ]
+    },
+    "wcUSD-USDv2_v3": {
+      "address": "0x671D5942F901F5C60e4EbaD1c3bF284A4d28c675",
+      "lpToken": "0x0dB8b09c13FE21913faF463274cE8e0a51719f16",
+      "poolTokens": [
+        {
+          "address": "0xad3e3fc59dff318beceaab7d00eb4f68b1ecf195",
+          "name": "Wrapped Celo USD"
+        },
+        {
+          "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+          "name": "Dai"
+        },
+        {
+          "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          "name": "USDC Coin"
+        },
+        {
+          "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+          "name": "Tether"
+        }
+      ]
+    },
+    "sUSD-USDv2_v3": {
+      "address": "0xB98fd1f66884cD5786b37cDE040B9f0cf763866f",
+      "lpToken": "0x444F94460a641429CDa4e38E02E51642Cc38276A",
+      "poolTokens": [
+        {
+          "address": "0x57Ab1ec28D129707052df4dF418D58a2D46d5f51",
+          "name": "sUSD"
+        },
+        {
+          "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+          "name": "Dai"
+        },
+        {
+          "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          "name": "USDC Coin"
+        },
+        {
+          "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+          "name": "Tether"
+        }
+      ]
+    },
+    "FRAX-USDC-BP": {
+      "address": "0x13Cc34Aa8037f722405285AD2C82FE570bfa2bdc",
+      "lpToken": "0x927E6f04609A45B107C789aF34BA90Ebbf479f7f",
+      "poolTokens": [
+        {
+          "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          "name": "USDC Coin"
+        },
+        {
+          "address": "0x853d955aCEf822Db058eb8505911ED77F175b99e",
+          "name": "Frax"
+        }
+      ]
+    },
+    "FRAXBP-USDT": {
+      "address": "0xAbf69CDE7B3725c12B8703005342EB5DD8a95D61",
+      "lpToken": "0x486DFCfdbF9025c062110E8c0344a15279aD0a85",
+      "poolTokens": [
+        {
+          "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+          "name": "Tether"
+        },
+        {
+          "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          "name": "USDC Coin"
+        },
+        {
+          "address": "0x853d955aCEf822Db058eb8505911ED77F175b99e",
+          "name": "Frax"
+        }
+      ]
+    },
+    "FRAXBP-SUSD": {
+      "address": "0x7D6c760cBde5a9Ad47510A86b9DCc58F9473CdD8",
+      "lpToken": "0x6Ac7a4cB3BFa90DC651CD53EB098e23c88d04e77",
+      "poolTokens": [
+        {
+          "address": "0x57Ab1ec28D129707052df4dF418D58a2D46d5f51",
+          "name": "sUSD"
+        },
+        {
+          "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          "name": "USDC Coin"
+        },
+        {
+          "address": "0x853d955aCEf822Db058eb8505911ED77F175b99e",
+          "name": "Frax"
+        }
+      ]
+    },
+    "FRAXBP-alUSD": {
+      "address": "0xe9154791883Df07e1328B636BCedfcCb80fefa38",
+      "lpToken": "0x3cF7b9479a01eeB3bbfC43581fa3bb21cd888e2A",
+      "poolTokens": [
+        {
+          "address": "0xBC6DA0FE9aD5f3b0d58160288917AA56653660E9",
+          "name": "Alchemix USD"
+        },
+        {
+          "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          "name": "USDC Coin"
+        },
+        {
+          "address": "0x853d955aCEf822Db058eb8505911ED77F175b99e",
+          "name": "Frax"
+        }
+      ]
+    },
+    "USDC-USX": {
+      "address": "0x2bFf1B48CC01284416E681B099a0CDDCA0231d72",
+      "lpToken": "0x1AE28a6ACA177c29b5773e91fbf74AfB0B7fE5C9",
+      "poolTokens": [
+        {
+          "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          "name": "USDC Coin"
+        },
+        {
+          "address": "0x0a5e677a6a24b2f1a2bf4f3bffc443231d2fdec8",
+          "name": "dForce USD"
+        }
+      ]
+    }
+  },
+  "arbitrum": {
+    "arbUSD": {
+      "address": "0xBea9F78090bDB9e662d8CB301A00ad09A5b756e9",
+      "lpToken": "0xc969dD0A7AB0F8a0C5A69C0839dB39b6C928bC08",
+      "poolTokens": [
+        {
+          "address": "0x2913e812cf0dcca30fb28e6cac3d2dcff4497688",
+          "name": "nUSD"
+        },
+        {
+          "address": "0xfea7a6a0b346362bf88a9e4a88416b77a57d6c2a",
+          "name": "Magic Internet Money"
+        },
+        {
+          "address": "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
+          "name": "USDC Coin"
+        },
+        {
+          "address": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+          "name": "Tether"
+        }
+      ]
+    },
+    "usds-arbUSDV2 Meta": {
+      "address": "0xDCA5b16A96f984ffb2A3022cfF339eb049126101",
+      "lpToken": "0xa815b134294580692482E321dD1A191aC1454192",
+      "poolTokens": [
+        {
+          "address": "0xd74f5255d557944cf7dd0e45ff521520002d5748",
+          "name": "USDs"
+        },
+        {
+          "address": "0x17fc002b466eec40dae837fc4be5c67993ddbd6f",
+          "name": "Frax"
+        },
+        {
+          "address": "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
+          "name": "USDC Coin"
+        },
+        {
+          "address": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+          "name": "Tether"
+        }
+      ]
+    },
+    "arbUSDV2": {
+      "address": "0xfeEa4D1BacB0519E8f952460A70719944fe56Ee0",
+      "lpToken": "0x0a20c2FFa10cD43F67D06170422505b7D6fC0953",
+      "poolTokens": [
+        {
+          "address": "0x17fc002b466eec40dae837fc4be5c67993ddbd6f",
+          "name": "Frax"
+        },
+        {
+          "address": "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
+          "name": "USDC Coin"
+        },
+        {
+          "address": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+          "name": "Tether"
+        }
+      ]
+    },
+    "FRAX-USDC-BP": {
+      "address": "0x401AFbc31ad2A3Bc0eD8960d63eFcDEA749b4849",
+      "lpToken": "0x896935B02D3cBEb152192774e4F1991bb1D2ED3f",
+      "poolTokens": [
+        {
+          "address": "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
+          "name": "USDC Coin"
+        },
+        {
+          "address": "0x17fc002b466eec40dae837fc4be5c67993ddbd6f",
+          "name": "Frax"
+        }
+      ]
+    },
+    "FRAXBP-USDT": {
+      "address": "0xc8DFCFC329E19fDAF43a338aD6038dBA02a5079B",
+      "lpToken": "0x166680852ae9Dec3d63374c5eBf89E974448BFE9",
+      "poolTokens": [
+        {
+          "address": "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9",
+          "name": "Tether"
+        },
+        {
+          "address": "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
+          "name": "USDC Coin"
+        },
+        {
+          "address": "0x17fc002b466eec40dae837fc4be5c67993ddbd6f",
+          "name": "Frax"
+        }
+      ]
+    },
+    "arbFRAXBP-SUSD": {
+      "address": "0x1D434f50acf16BA013BE3536e9A3CDb5D7d4e694",
+      "lpToken": "0x1e491122f3C096392b40a4EA27aa1a29360d38a1",
+      "poolTokens": [
+        {
+          "address": "0xd74f5255d557944cf7dd0e45ff521520002d5748",
+          "name": "USDs"
+        },
+        {
+          "address": "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
+          "name": "USDC Coin"
+        },
+        {
+          "address": "0x17fc002b466eec40dae837fc4be5c67993ddbd6f",
+          "name": "Frax"
+        }
+      ]
+    }
+  },
+  "fantom": {
+    "ftmUSD": {
+      "address": "0xBea9F78090bDB9e662d8CB301A00ad09A5b756e9",
+      "lpToken": "0xc969dD0A7AB0F8a0C5A69C0839dB39b6C928bC08",
+      "poolTokens": [
+        {
+          "address": "0xdc301622e621166bd8e82f2ca0a26c13ad0be355",
+          "name": "Frax"
+        },
+        {
+          "address": "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
+          "name": "USDC Coin"
+        }
+      ]
+    },
+    "ftmFRAXBP-USDT": {
+      "address": "0x4A5208F83A17E030a18830521E4064E80728c4FC",
+      "lpToken": "0x21EA072844fd4aBEd72539750c054E009D877f72",
+      "poolTokens": [
+        {
+          "address": "0x049d68029688eAbF473097a2fC38ef61633A3C7A",
+          "name": "Tether"
+        },
+        {
+          "address": "0xdc301622e621166bd8e82f2ca0a26c13ad0be355",
+          "name": "Frax"
+        },
+        {
+          "address": "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
+          "name": "USDC Coin"
+        }
+      ]
+    },
+    "ftmFRAXBP-alUSD": {
+      "address": "0x0E510c9b20a5D136E75f7FD2a5F344BD98f9d875",
+      "lpToken": "0xd7D1b50c8ef77d9aB410723f81363C8B252C729F",
+      "poolTokens": [
+        {
+          "address": "0xB67FA6deFCe4042070Eb1ae1511Dcd6dcc6a532E",
+          "name": "Alchemix USD"
+        },
+        {
+          "address": "0xdc301622e621166bd8e82f2ca0a26c13ad0be355",
+          "name": "Frax"
+        },
+        {
+          "address": "0x04068da6c83afcfa0e13ba15a6696662335d5b75",
+          "name": "USDC Coin"
+        }
+      ]
+    }
+  },
+  "evmos": {
+    "Evmos BTC": {
+      "address": "0x7003102c75587E8D29c56124060463Ef319407D0",
+      "lpToken": "0xa6018520EAACC06C30fF2e1B3ee2c7c22e64196a",
+      "poolTokens": [
+        {
+          "address": "0xF80699Dc594e00aE7bA200c7533a07C1604A106D",
+          "name": "WBTC"
+        },
+        {
+          "address": "0xb1a8C961385B01C3aA782fba73E151465445D319",
+          "name": "renBTC"
+        }
+      ]
+    },
+    "Evmos 4Pool": {
+      "address": "0x81272C5c573919eF0C719D6d63317a4629F161da",
+      "lpToken": "0x9A34c72Bb85f0Da63578aC18047325E2a246f273",
+      "poolTokens": [
+        {
+          "address": "0x63743ACF2c7cfee65A5E356A4C4A005b586fC7AA",
+          "name": "madDAI"
+        },
+        {
+          "address": "0x51e44FfaD5C2B122C8b635671FCC8139dc636E82",
+          "name": "madUSDC Coin"
+        },
+        {
+          "address": "0x7FF4a56B32ee13D7D4D405887E0eA37d61Ed919e",
+          "name": "madTether"
+        },
+        {
+          "address": "0xE03494D0033687543a80c9B1ca7D6237F2EA8BD8",
+          "name": "Frax"
+        }
+      ]
+    },
+    "Evmos Frax 3Pool": {
+      "address": "0x21d4365834B7c61447e142ef6bCf01136cBD01c6",
+      "lpToken": "0x2801fE8f9DE3a4aD6098a5B95d5165676bb01f82",
+      "poolTokens": [
+        {
+          "address": "0x51e44FfaD5C2B122C8b635671FCC8139dc636E82",
+          "name": "madUSDC Coin"
+        },
+        {
+          "address": "0x7FF4a56B32ee13D7D4D405887E0eA37d61Ed919e",
+          "name": "madTether"
+        },
+        {
+          "address": "0xE03494D0033687543a80c9B1ca7D6237F2EA8BD8",
+          "name": "Frax"
+        }
+      ]
+    },
+    "evmosUSD": {
+      "address": "0x1275203FB58Fc25bC6963B13C2a1ED1541563aF0",
+      "lpToken": "0x9c673F50CEe126FcC9F7378Ed46c33f5DEDEc0fC",
+      "poolTokens": [
+        {
+          "address": "0x63743ACF2c7cfee65A5E356A4C4A005b586fC7AA",
+          "name": "Dai"
+        },
+        {
+          "address": "0x51e44FfaD5C2B122C8b635671FCC8139dc636E82",
+          "name": "USDC Coin"
+        },
+        {
+          "address": "0x7FF4a56B32ee13D7D4D405887E0eA37d61Ed919e",
+          "name": "Tether"
+        }
+      ]
+    },
+    "tbtc-evmosBTC Meta": {
+      "address": "0xFdA5D2ad8b6d3884AbB799DA66f57175E8706941",
+      "lpToken": "0x21EA072844fd4aBEd72539750c054E009D877f72",
+      "poolTokens": [
+        {
+          "address": "0x8d395AfFC1767141387ffF45aF88a074614E7Ccf",
+          "name": "tBTCv2"
+        },
+        {
+          "address": "0xF80699Dc594e00aE7bA200c7533a07C1604A106D",
+          "name": "WBTC"
+        },
+        {
+          "address": "0xb1a8C961385B01C3aA782fba73E151465445D319",
+          "name": "renBTC"
+        }
+      ]
+    }
+  },
+  "optimism": {
+    "optUSD": {
+      "address": "0x5847f8177221268d279Cf377D0E01aB3FD993628",
+      "lpToken": "0xcCf860874cbF2d615192a4C4455580B4d622D3B9",
+      "poolTokens": [
+        {
+          "address": "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
+          "name": "Dai"
+        },
+        {
+          "address": "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
+          "name": "USDC Coin"
+        },
+        {
+          "address": "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58",
+          "name": "Tether"
+        }
+      ]
+    },
+    "frax-optUSD": {
+      "address": "0x88Cc4aA0dd6Cf126b00C012dDa9f6F4fd9388b17",
+      "lpToken": "0xfF5fa61Eb9b5cDD63bdFa16EF029d5313457925A",
+      "poolTokens": [
+        {
+          "address": "0x2E3D870790dC77A83DD1d18184Acc7439A53f475",
+          "name": "Frax"
+        },
+        {
+          "address": "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
+          "name": "Dai"
+        },
+        {
+          "address": "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
+          "name": "USDC Coin"
+        },
+        {
+          "address": "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58",
+          "name": "Tether"
+        }
+      ]
+    },
+    "FRAX-USDC-BP": {
+      "address": "0xF6C2e0aDc659007Ba7c48446F5A4e4E94dfe08b5",
+      "lpToken": "0xf74ebe6e5586275dc4CeD78F5DBEF31B1EfbE7a5",
+      "poolTokens": [
+        {
+          "address": "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
+          "name": "USDC Coin"
+        },
+        {
+          "address": "0x2E3D870790dC77A83DD1d18184Acc7439A53f475",
+          "name": "Frax"
+        }
+      ]
+    },
+    "FRAXBP-USDT": {
+      "address": "0x3F1d224557afA4365155ea77cE4BC32D5Dae2174",
+      "lpToken": "0xb63d7B0D835ca6eFf89ab774498ed6dD0D71e93e",
+      "poolTokens": [
+        {
+          "address": "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58",
+          "name": "Tether"
+        },
+        {
+          "address": "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
+          "name": "USDC Coin"
+        },
+        {
+          "address": "0x2E3D870790dC77A83DD1d18184Acc7439A53f475",
+          "name": "Frax"
+        }
+      ]
+    },
+    "FRAXBP-SUSD": {
+      "address": "0xdf815Ea6b066Ac9f3107d8863a6c19aA2a5d24d3",
+      "lpToken": "0x205c9B8c1fCa803B779b1eB4B887Aa0E00FE629F",
+      "poolTokens": [
+        {
+          "address": "0x8c6f28f2F1A3C87F0f938b96d27520d9751ec8d9",
+          "name": "sUSD"
+        },
+        {
+          "address": "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
+          "name": "USDC Coin"
+        },
+        {
+          "address": "0x2E3D870790dC77A83DD1d18184Acc7439A53f475",
+          "name": "Frax"
+        }
+      ]
+    }
+  }
+}

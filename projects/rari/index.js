@@ -186,5 +186,11 @@ module.exports = {
     tvl,
     pool2: pool2(rariGovernanceTokenUniswapDistributorAddress, RGTETHSushiLPTokenAddress),
     borrowed,
-  }
+  },
+  hallmarks:[
+    [1651276800, "FEI hack"],
+    [1649548800, "ICHI sell-off"],
+    [1620432000, "First Rari hack"],
+    [1654905600, "Bhavnani's announcement"]
+  ]
 }
