@@ -1,18 +1,18 @@
 const sdk = require("@defillama/sdk");
-const chain = 'arbitrum'
+const chain = "arbitrum";
 const getGlpPriceABI = {
-  "inputs": [],
-  "name": "getGlpPrice",
-  "outputs": [
+  inputs: [],
+  name: "getGlpPrice",
+  outputs: [
     {
-      "internalType": "uint256",
-      "name": "",
-      "type": "uint256"
-    }
+      internalType: "uint256",
+      name: "",
+      type: "uint256",
+    },
   ],
-  "stateMutability": "view",
-  "type": "function"
-}
+  stateMutability: "view",
+  type: "function",
+};
 
 const usdcVaults = [
   "0x9ba57a1D3f6C61Ff500f598F16b97007EB02E346",
@@ -29,15 +29,15 @@ const glpVaults = [
 ];
 
 async function usdcVaultsTVL(block) {
-
   const { output: tvls } = await sdk.api.abi.multiCall({
-    abi: 'erc20:totalSupply',
-    calls: usdcVaults.map(i => ({ target: i })),
-    chain, block,
-  })
+    abi: "erc20:totalSupply",
+    calls: usdcVaults.map((i) => ({ target: i })),
+    chain,
+    block,
+  });
 
-  let tvl = 0
-  tvls.forEach(i => tvl += i.output / 1e6)
+  let tvl = 0;
+  tvls.forEach((i) => (tvl += i.output / 1e6));
   return tvl;
 }
 
@@ -45,25 +45,26 @@ async function glpVaultsTVL(block) {
   const { output: glpPrice } = await sdk.api.abi.call({
     abi: getGlpPriceABI,
     target: glpVaults[0],
-    chain, block,
+    chain,
+    block,
   });
 
   const { output: tvls } = await sdk.api.abi.multiCall({
-    abi: 'erc20:totalSupply',
-    calls: glpVaults.map(i => ({ target: i })),
-    chain, block,
-  })
-  let tvl = 0
-  tvls.forEach(i => tvl += i.output / 1e18)
-  return tvl * glpPrice / 1e18
+    abi: "erc20:totalSupply",
+    calls: glpVaults.map((i) => ({ target: i })),
+    chain,
+    block,
+  });
+  let tvl = 0;
+  tvls.forEach((i) => (tvl += i.output / 1e18));
+  return (tvl * glpPrice) / 1e18;
 }
 
 async function tvl(ts, _, { [chain]: block }) {
-  const totalTvl =
-    (await usdcVaultsTVL(block)) + (await glpVaultsTVL(block));
+  const totalTvl = (await usdcVaultsTVL(block)) + (await glpVaultsTVL(block));
 
   return {
-    'usd-coin': totalTvl,
+    "usd-coin": totalTvl,
   };
 }
 
@@ -71,4 +72,5 @@ module.exports = {
   arbitrum: {
     tvl,
   },
+  misrepresentedTokens: true,
 };
