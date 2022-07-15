@@ -43,5 +43,5 @@ module.exports = {
       staking
     },
     methodology:
-      "TVL is calcuated as Collateral Value + Stability Pool Deposits * USH price + HDG Staked * HDG price"
+      "TVL is calculated as Collateral Value + Stability Pool Deposits * USH price + HDG Staked * HDG price"
   };
