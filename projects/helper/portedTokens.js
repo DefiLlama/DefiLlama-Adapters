@@ -58,6 +58,8 @@ async function transformFantomAddress() {
       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // axUSDC
     "0xB67FA6deFCe4042070Eb1ae1511Dcd6dcc6a532E":
       "0xBC6DA0FE9aD5f3b0d58160288917AA56653660E9", // alUSD
+    "0x8cc97b50fe87f31770bcdcd6bc8603bc1558380b":
+      "cronos:0x0804702a4e749d39a35fde73d1df0b1f1d6b8347", // single
     "0x95bf7e307bc1ab0ba38ae10fc27084bc36fcd605":
       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
   };
