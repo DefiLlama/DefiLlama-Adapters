@@ -4,11 +4,14 @@ const graphUrl = 'https://thegraph.cndlchain.com/subgraphs/name/ianlapham/uniswa
 
 const graphQuery = gql`
 query get_tvl($block: Int) {
-  uniswapFactory(
+  factory(
     id: "0x5Bb7BAE25728e9e51c25466D2A15FaE97834FD95",
     block: { number: $block }
   ) {
-    totalLiquidityUSD
+    totalValueLockedETHUntracked
+    totalValueLockedETH
+    totalValueLockedUSD
+    totalValueLockedUSDUntracked
   }
 }
 `;
@@ -22,7 +25,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     }
   );
 
-  return toUSDTBalances(Number(response.uniswapFactory.totalLiquidityUSD));
+  return toUSDTBalances(Number(response.factory.totalLiquidityUSD));
 }
 
 module.exports = {
