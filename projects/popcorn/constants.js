@@ -7,7 +7,8 @@ const ADDRESSES = {
     butterV2: "0x109d2034e97ec88f50beebc778b5a5650f98c124", // done
 
     popUsdcUniswapPool: "0x9fEE77D8B5050A55c16D0446E6eAb06a6A24cd06",
-    popUsdcLp: "0xbba11b41407df8793a89b44ee4b50afad4508555",
+    popUsdcGelatoLp: "0xbba11b41407df8793a89b44ee4b50afad4508555",
+    popUsdcGelatoLpStaking: "0x633b32573793A67cE41A7D0fFe66e78Cd3379C45",
 
     pop: "0xd0cd466b34a24fcb2f87676278af2005ca8a78c4",
 
@@ -48,7 +49,8 @@ const ADDRESSES = {
     usdc: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
     popLocker: "0xe8af04AD759Ad790Aa5592f587D3cFB3ecC6A9dA",
     rewardsEscrow: "0xa82cAA79F35f7d6B6f1EC1971878F3474C894565",
-    popUsdcLp: "0xe8654f2b0a038a01bc273a2a7b7c48a76c0e58c5",
+
+    popUsdcGelatoLp: "0xe8654f2b0a038a01bc273a2a7b7c48a76c0e58c5",
 
     arrakisPool: "0x6dE0500211bc3140409B345Fa1a5289cb77Af1e4",
     arrakisPoolStaking: "0xd3836EF639A74EA7398d34c66aa171b1564BE4bc"

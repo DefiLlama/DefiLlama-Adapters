@@ -7,8 +7,23 @@ const { ADDRESSES } = require("./constants");
 const { unwrapUniswapLPs } = require('../helper/unwrapLPs');
 
 function getStakingPools(chain) {
-  if (chain === 'polygon') {
-    return [{ stakingContract: ADDRESSES.polygon.arrakisPoolStaking, stakingToken: ADDRESSES.polygon.arrakisPool, isGelatoPoolToken: true }]
+  if (chain === 'ethereum') {
+    // uni v3 and gelato pools
+    return [
+      {
+        stakingContract: ADDRESSES.ethereum.popUsdcGelatoLpStaking,
+        stakingToken: ADDRESSES.ethereum.popUsdcGelatoLp,
+        isGelatoPoolToken: true
+      },
+     
+    ]
+
+  } else if (chain === 'polygon') {
+    return [{
+      stakingContract: ADDRESSES.polygon.arrakisPoolStaking,
+      stakingToken: ADDRESSES.polygon.arrakisPool,
+      isGelatoPoolToken: true
+    }]
   }
   return []
 }
