@@ -3,10 +3,10 @@ const { toUSDTBalances } = require('../helper/balances');
 const graphUrl = 'https://thegraph.cndlchain.com/subgraphs/name/ianlapham/uniswap-v3'
 
 const graphQuery = gql`
-query get_tvl($block: Int) {
+query get_tvl($block: Int, $number_gte: Int = 10) {
   factory(
-    id: "0x5Bb7BAE25728e9e51c25466D2A15FaE97834FD95",
-    block: { number: $block }
+    id: "0x5Bb7BAE25728e9e51c25466D2A15FaE97834FD95"
+    block: {number_gte: $number_gte}
   ) {
     totalValueLockedETHUntracked
     totalValueLockedETH
@@ -21,11 +21,11 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     graphUrl,
     graphQuery,
     {
-      block:chainBlocks.avax,
+      block:chainBlocks.cndl,
     }
   );
 
-  return toUSDTBalances(Number(response.factory.totalLiquidityUSD));
+  return toUSDTBalances(Number(response.factory.totalValueLockedUSD));
 }
 
 module.exports = {
