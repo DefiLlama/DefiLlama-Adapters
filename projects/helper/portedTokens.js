@@ -58,6 +58,8 @@ async function transformFantomAddress() {
       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // axUSDC
     "0xB67FA6deFCe4042070Eb1ae1511Dcd6dcc6a532E":
       "0xBC6DA0FE9aD5f3b0d58160288917AA56653660E9", // alUSD
+    "0x8cc97b50fe87f31770bcdcd6bc8603bc1558380b":
+      "cronos:0x0804702a4e749d39a35fde73d1df0b1f1d6b8347", // single
     "0x95bf7e307bc1ab0ba38ae10fc27084bc36fcd605":
       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
   };
@@ -1931,7 +1933,9 @@ async function transformEthereumAddress() {
     "0x65f7ba4ec257af7c55fd5854e5f6356bbd0fb8ec":
       "0x92d6c1e31e14520e676a687f0a93788b716beff5", // sDYDX
     "0x586aa273f262909eef8fa02d90ab65f5015e0516":
-      "0x0000000000085d4780B73119b644AE5ecd22b376" // FIAT
+    "0x0000000000085d4780B73119b644AE5ecd22b376", // FIAT
+    "0x0a5e677a6a24b2f1a2bf4f3bffc443231d2fdec8":
+      "bsc:0xb5102cee1528ce2c760893034a4603663495fd72", // USX
   };
   normalizeMapping(mapping);
 
