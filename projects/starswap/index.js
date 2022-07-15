@@ -1,8 +1,17 @@
 const { getUniTVL } = require('../helper/unknownTokens')
+const { stakingPricedLP } = require("../helper/staking")
 
 const FACTORIES = "0x0b657e81a0C3E903cbe1228579fBd49AC5D81Ac1"
 
 const NATIVE_TOKEN_WASTAR = "0xAeaaf0e2c81Af264101B9129C00F4440cCF0F720"
+
+const TOKENS = {
+  STAR: "0x8489f4554790F5A103F2B0398537eAEe68B73884"
+}
+
+const STAKING_CONTRACTS = {
+  astar: "0x0262592d5f489e19afe070abc88a0808afc75250"
+}
 
 module.exports = {
   misrepresentedTokens: true,
@@ -22,5 +31,13 @@ module.exports = {
           "0x75364D4F779d0Bd0facD9a218c67f87dD9Aff3b4"
         ],
     }),
+    staking: stakingPricedLP(
+      STAKING_CONTRACTS.astar,
+      TOKENS.STAR,
+      "astar",
+      "0x4a0e3b2a0c35737d1c2a78fb76470ce31836024c",
+      "astar",
+      true,
+    ),
   }
 }

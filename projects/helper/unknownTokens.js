@@ -449,7 +449,7 @@ function staking({ tokensAndOwners = [],
 }
 
 
-function masterchefExports({ chain, masterchef, coreAssets, nativeToken, poolInfoABI = masterchefAbi.poolInfo,  poolLengthAbi = masterchefAbi.poolLength, getToken = output => output.lpToken }) {
+function masterchefExports({ chain, masterchef, coreAssets, nativeToken, poolInfoABI = masterchefAbi.poolInfo, poolLengthAbi = masterchefAbi.poolLength, getToken = output => output.lpToken }) {
   let allTvl
   nativeToken = nativeToken.toLowerCase()
 
