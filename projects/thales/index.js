@@ -17,6 +17,9 @@ const opThalesAmm = "0x5ae7454827d83526261f3871c1029792644ef1b1"
 const opThalesLpToken = "0xac6705BC7f6a35eb194bdB89066049D6f1B0B1b5";
 const opThalesToken = "0x217d47011b23bb961eb6d93ca9945b7501a5bb11"
 
+const opSportsMarketsManager = "0xFBffEbfA2bF2cF84fdCf77917b358fC59Ff5771e"
+const opSportsAmm = "0x170a5714112daEfF20E798B6e92e25B86Ea603C1"
+
 const polygonMarketsManager = "0x85f1B57A1D3Ac7605de3Df8AdA056b3dB9676eCE"
 const polygon_USDC = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"
 const polygonThalesAmm = "0x9b6d76B1C6140FbB0ABc9C4a348BFf4e4e8a1213"
@@ -51,6 +54,19 @@ async function eth_tvl(_time, block){
 async function op_tvl(_time, block){
     const markets = await sdk.api.abi.call({
         target: opMarketsManager,
+        abi: abi.activeMarkets,
+        block,
+        params:[0, 1000],
+        chain: "optimism"
+    })
+    const balances = {}
+    await sumTokensAndLPsSharedOwners(balances, [[OP_SUSD, false]], markets.output, block, "optimism", transform)
+    return balances
+}
+
+async function sports_tvl(_time, block){
+    const markets = await sdk.api.abi.call({
+        target: opSportsMarketsManager,
         abi: abi.activeMarkets,
         block,
         params:[0, 1000],
@@ -97,8 +113,9 @@ module.exports={
         pool2: dodoPool2("0x136829c258e31b3ab1975fe7d03d3870c3311651", "0x031816fd297228e4fd537c1789d51509247d0b43")
     },
     optimism:{
-        tvl: sdk.util.sumChainTvls([op_tvl, // sUSD in all active markets
+        tvl: sdk.util.sumChainTvls([op_tvl, sports_tvl, // sUSD in all active markets
             staking(opThalesAmm, OP_SUSD, "optimism", ETH_SUSD),
+            staking(opSportsAmm, OP_SUSD, "optimism", ETH_SUSD),
         ]),
         staking: staking(opThalesStaking, opThalesToken, "optimism", ETH_THALES), 
         pool2: guniPool2()
