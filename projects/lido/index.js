@@ -58,6 +58,21 @@ async function ksm(timestamp, ethBlock, chainBlocks) {
   }
 }
 
+async function dot(timestamp, ethBlock, chainBlocks) {
+  const chain = "moonbeam"
+  const block = await getBlock(timestamp, chain, chainBlocks, true)
+  const pooledCoin = await sdk.api.abi.call({
+    block,
+    chain,
+    target: "0xFA36Fe1dA08C89eC72Ea1F0143a35bFd5DAea108",
+    abi: {"inputs":[],"name":"getTotalPooledKSM","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+  })
+
+  return {
+    'polkadot': Number(pooledCoin.output)/1e10,
+  }
+}
+
 async function solana(timestamp, ethBlock, chainBlocks) {
   const connection = getConnection()
   const validatorsBalance = await sol.retrieveValidatorsBalance(connection)
@@ -88,4 +103,7 @@ module.exports = {
   moonriver:{
     tvl: ksm
   },
+  moonbeam:{
+    tvl: dot
+  }
 }
