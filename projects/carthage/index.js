@@ -4,7 +4,7 @@ const graphUrl = 'https://thegraph.cndlchain.com/subgraphs/name/ianlapham/uniswa
 
 const graphQuery = gql`
 query get_tvl($block: Int) {
-  pangolinFactory(
+  carthageFactory(
     id: "0x5Bb7BAE25728e9e51c25466D2A15FaE97834FD95",
     block: { number: $block }
   ) {
