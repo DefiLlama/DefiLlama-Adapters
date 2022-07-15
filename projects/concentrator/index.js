@@ -12,7 +12,9 @@ const concentratorAcrv = '0x2b95A1Dcc3D405535f9ed33c219ab38E8d7e0884';
 const cvxcrvAddress = '0x62b9c7356a2dc64a1969e19c23e4f579f9810aa7';
 
 const concentratorNewVault = '0x3Cf54F3A1969be9916DAD548f3C084331C4450b5';
-
+const addressZero = "0x0000000000000000000000000000000000000000"
+const ethAddress = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
+const wethAddress = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
 const replacements = [
   "0x99d1Fa417f94dcD62BfE781a1213c092a47041Bc",
   "0x9777d7E2b60bB01759D0E2f8be2095df444cb07E",
@@ -106,31 +108,36 @@ async function getVaultInfo(poolLength, type, balances, block) {
     if (!coins.output[0].success) {
       coins = await coinsInt
     }
-    const coinBalances = await sdk.api.abi.multiCall({
-      abi: 'erc20:balanceOf',
-      calls: coins.output.map(coin => ({
-        target: coin.output,
-        params: [swapAddress]
-      })),
-      block
-    })
 
+    let coinBalances = []
+    for (let i = 0, l = coins.output.length; i < l; i++) {
+      let _coinAddress = coins.output[i].output
+      if (_coinAddress == addressZero) {
+        continue;
+      }
+      if (_coinAddress != ethAddress && _coinAddress != wethAddress) {
+        var bal = await sdk.api.erc20.balanceOf({
+          target: _coinAddress,
+          owner: swapAddress,
+          block
+        })
+        coinBalances.push({ coin: _coinAddress, balance: bal.output });
+      } else {
+        var ethbal = await sdk.api.eth.getBalance({
+          target: swapAddress,
+          block
+        })
+        coinBalances.push({ coin: addressZero, balance: ethbal.output })
+      }
+    }
     const resolvedLPSupply = lpTokenSupply.output;
 
-    await Promise.all(coinBalances.output.map(async (coinBalance, index) => {
-      let coinAddress = coins.output[index].output
+    await Promise.all(coinBalances.map(async (coinBalance, index) => {
+      let coinAddress = coinBalance.coin
       if (replacements.includes(coinAddress)) {
         coinAddress = "0x6b175474e89094c44da98b954eedeac495271d0f" // dai
       }
-      if (coinBalance.input.target === "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE") {
-        coinBalance = await sdk.api.eth.getBalance({
-          target: coinBalance.input.params[0],
-          block
-        })
-        coinAddress = '0x0000000000000000000000000000000000000000'
-      }
-
-      const balance = BigNumber(poolInfo.output.totalUnderlying).times(coinBalance.output).div(resolvedLPSupply);
+      const balance = BigNumber(poolInfo.output.totalUnderlying).times(coinBalance.balance).div(resolvedLPSupply);
       if (!balance.isZero()) {
         sdk.util.sumSingleBalance(balances, coinAddress, balance.toFixed(0))
       }
