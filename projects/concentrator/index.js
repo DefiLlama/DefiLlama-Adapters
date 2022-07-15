@@ -5,6 +5,7 @@ const { default: BigNumber } = require("bignumber.js");
 const AladdinConvexVaultABI = require('./abis/AladdinConvexVault.json')
 const AladdinCRVABI = require('./abis/AladdinCRV.json')
 const curvePools = require('./pools-crv.js');
+const { createIncrementArray } = require('../helper/utils');
 
 
 const concentratorVault = '0xc8fF37F7d057dF1BB9Ad681b53Fa4726f268E0e8';
@@ -32,81 +33,69 @@ async function tvl(timestamp, block) {
     target: concentratorAcrv,
     block,
     abi: AladdinCRVABI.totalUnderlying,
-    params: []
   })).output;
 
-  const acrvTotalSupply = (await sdk.api.abi.call({
-    target: concentratorAcrv,
-    block,
-    abi: AladdinCRVABI.totalSupply,
-    params: []
-  })).output;
-
-  const rate = acrvTotalSupply * 1 ? BigNumber(acrvTotalUnderlying).div(acrvTotalSupply) : 1
-
-  const cvxcrvBalance = BigNumber(acrvTotalUnderlying).multipliedBy(rate)
+  sdk.util.sumSingleBalance(balances, cvxcrvAddress, BigNumber(acrvTotalUnderlying).toFixed(0))
 
   const oldPoolLength = (await sdk.api.abi.call({
     target: concentratorVault,
     abi: abi.poolLength,
     block
   })).output;
-  await getVaultInfo(oldPoolLength, 'old', balances, block)
   const newPoolLength = (await sdk.api.abi.call({
     target: concentratorNewVault,
     abi: abi.poolLength,
     block
   })).output;
+
+  await getVaultInfo(oldPoolLength, 'old', balances, block)
   await getVaultInfo(newPoolLength, 'New', balances, block)
-  if (!cvxcrvBalance.isZero()) {
-    sdk.util.sumSingleBalance(balances, cvxcrvAddress, cvxcrvBalance.toFixed(0))
-  }
   return balances
 }
 
 async function getVaultInfo(poolLength, type, balances, block) {
   const _target = type == 'New' ? concentratorNewVault : concentratorVault;
-  await Promise.all([...Array(Number(poolLength)).keys()].map(async i => {
-    const poolInfo = await sdk.api.abi.call({
-      target: _target,
-      block,
-      abi: AladdinConvexVaultABI.poolInfo,
-      params: [i]
-    });
+  const paramsCalls = createIncrementArray(poolLength).map(i => ({ params: i }))
+  const { output: poolInfos } = await sdk.api.abi.multiCall({
+    target: _target,
+    abi: AladdinConvexVaultABI.poolInfo,
+    calls: paramsCalls,
+    block,
+  })
+  const { output: totalSupplies } = await sdk.api.abi.multiCall({
+    abi: 'erc20:totalSupply',
+    calls: poolInfos.map(i => ({ target: i.output.lpToken })),
+    block,
+  })
 
-    const lpTokenSupply = await sdk.api.erc20.totalSupply({
-      target: poolInfo.output.lpToken,
-      block
-    })
+  await Promise.all(poolInfos.map(async (_, i) => {
+    const poolInfo = poolInfos[i];
     const poolData = curvePools.find(crvPool => crvPool.addresses.lpToken.toLowerCase() === poolInfo.output.lpToken.toLowerCase())
+
     if (poolData === undefined) {
-      console.log(poolInfo.output);
-      return;
+      console.log(poolInfo.output, poolData, );
+      throw new Error('Missing pool data');
     }
 
     const swapAddress = poolData.addresses.swap
-    const coinCalls = [...Array(Number(poolData.coins.length)).keys()].map(num => {
+    const coinCalls = createIncrementArray(poolData.coins.length).map(num => {
       return {
         target: swapAddress,
         params: [num]
       }
     });
 
-    const coinsUint = sdk.api.abi.multiCall({
+    let coins = await sdk.api.abi.multiCall({
       abi: abi.coinsUint,
       calls: coinCalls,
       block
     })
-
-    const coinsInt = sdk.api.abi.multiCall({
-      abi: abi.coinsInt,
-      calls: coinCalls,
-      block
-    })
-
-    let coins = await coinsUint
     if (!coins.output[0].success) {
-      coins = await coinsInt
+      coins = await sdk.api.abi.multiCall({
+        abi: abi.coinsInt,
+        calls: coinCalls,
+        block
+      })
     }
 
     let coinBalances = []
@@ -130,14 +119,16 @@ async function getVaultInfo(poolLength, type, balances, block) {
         coinBalances.push({ coin: addressZero, balance: ethbal.output })
       }
     }
-    const resolvedLPSupply = lpTokenSupply.output;
+    const resolvedLPSupply = totalSupplies[i].output;
 
     await Promise.all(coinBalances.map(async (coinBalance, index) => {
       let coinAddress = coinBalance.coin
       if (replacements.includes(coinAddress)) {
         coinAddress = "0x6b175474e89094c44da98b954eedeac495271d0f" // dai
+      } else if (coinAddress.toLowerCase() === '0xFEEf77d3f69374f66429C91d732A244f074bdf74'.toLowerCase()) {
+        coinAddress = '0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0' // replace cvxFXS -> FXS
       }
-      const balance = BigNumber(poolInfo.output.totalUnderlying).times(coinBalance.balance).div(resolvedLPSupply);
+      const balance = BigNumber(poolInfo.output.totalUnderlying * coinBalance.balance / resolvedLPSupply);
       if (!balance.isZero()) {
         sdk.util.sumSingleBalance(balances, coinAddress, balance.toFixed(0))
       }
