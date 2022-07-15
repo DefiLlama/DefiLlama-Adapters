@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk")
 const abi = require('./abi')
 const config = require('./config')
-const { sumTokensSingle } = require('../helper/unknownTokens')
+const { vestingHelper } = require('../helper/unknownTokens')
 
 module.exports = {}
 
@@ -31,16 +31,12 @@ Object.keys(config).forEach(chain => {
         })
 
         tokens = tokens.map(i => i.output[1])
-        const balance = await sumTokensSingle({
+        const balance = await vestingHelper({
           coreAssets,
           blacklist,
           owner: vault,
           tokens,
           block, chain,
-          restrictTokenPrice: true,
-          skipConversion: false,
-          onlyLPs: false,
-          minLPRatio: 0.01,
           log_coreAssetPrices,
           log_minTokenValue,
         })

@@ -7,10 +7,11 @@ const AladdinCRVABI = require('./abis/AladdinCRV.json')
 const curvePools = require('./pools-crv.js');
 
 
-const convexVault = '0xc8fF37F7d057dF1BB9Ad681b53Fa4726f268E0e8';
-const convexVaultAcrv = '0x2b95A1Dcc3D405535f9ed33c219ab38E8d7e0884';
+const concentratorVault = '0xc8fF37F7d057dF1BB9Ad681b53Fa4726f268E0e8';
+const concentratorAcrv = '0x2b95A1Dcc3D405535f9ed33c219ab38E8d7e0884';
 const cvxcrvAddress = '0x62b9c7356a2dc64a1969e19c23e4f579f9810aa7';
 
+const concentratorNewVault = '0x3Cf54F3A1969be9916DAD548f3C084331C4450b5';
 
 const replacements = [
   "0x99d1Fa417f94dcD62BfE781a1213c092a47041Bc",
@@ -26,14 +27,14 @@ async function tvl(timestamp, block) {
   let balances = {}
 
   const acrvTotalUnderlying = (await sdk.api.abi.call({
-    target: convexVaultAcrv,
+    target: concentratorAcrv,
     block,
     abi: AladdinCRVABI.totalUnderlying,
     params: []
   })).output;
 
   const acrvTotalSupply = (await sdk.api.abi.call({
-    target: convexVaultAcrv,
+    target: concentratorAcrv,
     block,
     abi: AladdinCRVABI.totalSupply,
     params: []
@@ -43,15 +44,29 @@ async function tvl(timestamp, block) {
 
   const cvxcrvBalance = BigNumber(acrvTotalUnderlying).multipliedBy(rate)
 
-  const poolLength = (await sdk.api.abi.call({
-    target: convexVault,
+  const oldPoolLength = (await sdk.api.abi.call({
+    target: concentratorVault,
     abi: abi.poolLength,
     block
   })).output;
+  await getVaultInfo(oldPoolLength, 'old', balances, block)
+  const newPoolLength = (await sdk.api.abi.call({
+    target: concentratorNewVault,
+    abi: abi.poolLength,
+    block
+  })).output;
+  await getVaultInfo(newPoolLength, 'New', balances, block)
+  if (!cvxcrvBalance.isZero()) {
+    sdk.util.sumSingleBalance(balances, cvxcrvAddress, cvxcrvBalance.toFixed(0))
+  }
+  return balances
+}
 
+async function getVaultInfo(poolLength, type, balances, block) {
+  const _target = type == 'New' ? concentratorNewVault : concentratorVault;
   await Promise.all([...Array(Number(poolLength)).keys()].map(async i => {
     const poolInfo = await sdk.api.abi.call({
-      target: convexVault,
+      target: _target,
       block,
       abi: AladdinConvexVaultABI.poolInfo,
       params: [i]
@@ -121,12 +136,6 @@ async function tvl(timestamp, block) {
       }
     }))
   }))
-  console.log('balances--', balances)
-
-  if (!cvxcrvBalance.isZero()) {
-    sdk.util.sumSingleBalance(balances, cvxcrvAddress, cvxcrvBalance.toFixed(0))
-  }
-  return balances
 }
 module.exports = {
   doublecounted: true,

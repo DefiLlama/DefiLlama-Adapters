@@ -12,42 +12,41 @@ const chainIds = {
   avax: 43114
 }
 
-// let dataCacheUpdating
+let dataCacheUpdating
 
-// async function updateDataCache() {
+async function updateDataCache() {
 
-// const http_api_url = 'https://api.hashflow.com/internal/pool/getPools';
-// const null_addr = '0x0000000000000000000000000000000000000000';
-//   const allChainData = {}
+  const http_api_url = 'https://api.hashflow.com/internal/pool/getPools';
+  const null_addr = '0x0000000000000000000000000000000000000000';
+  const allChainData = {}
 
-//   for (const chain of Object.keys(chainIds)) {
-//     const chainId = chainIds[chain]
-//     const url = `${http_api_url}?networkId=${chainId}&lp=${null_addr}`
-//     const pools_response = (await retry(async () => await axios.get(url))).data
-//     allChainData[chain] = pools_response.pools.map(pool =>
-//     ({
-//       pool: pool.pool,
-//       tokens: pool.tokens.map(t => t.token)
-//     })
-//     )
-//   }
+  for (const chain of Object.keys(chainIds)) {
+    const chainId = chainIds[chain]
+    const url = `${http_api_url}?networkId=${chainId}&lp=${null_addr}`
+    const pools_response = (await retry(async () => await axios.get(url))).data
+    allChainData[chain] = pools_response.pools.map(pool =>
+    ({
+      pool: pool.pool,
+      tokens: pool.tokens.map(t => t.token.address)
+    })
+    )
+  }
 
-//   require('fs').writeFileSync(__dirname+'/dataCache.json', JSON.stringify(allChainData, null, 2))
-// dataCache = allChainData
-// }
+  require('fs').writeFileSync(__dirname + '/dataCache.json', JSON.stringify(allChainData, null, 2))
+  dataCache = allChainData
+}
 
 function chainTvl(chain) {
-  return async (timestamp, ethBlock, { [chain]: block}) => {
+  return async (timestamp, ethBlock, { [chain]: block }) => {
     // if (!dataCacheUpdating) dataCacheUpdating = updateDataCache()
     // await dataCacheUpdating
 
     const pools = dataCache[chain]
     const tokensAndOwners = pools.map(p => p.tokens.map(t => [t, p.pool])).flat()
-    console.log(tokensAndOwners)
     return sumTokens({}, tokensAndOwners, block, chain);
   }
 }
 
 module.exports = chainExports(chainTvl, Object.keys(chainIds)),
-module.exports.methodology = 'Hashflow TVL is made of all pools token balances. Pools and their tokens are retrieved by Hashflow HTTP REST API.'
+  module.exports.methodology = 'Hashflow TVL is made of all pools token balances. Pools and their tokens are retrieved by Hashflow HTTP REST API.'
 module.exports.broken = 'Server IP is blocked, so api call fails'
