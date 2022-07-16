@@ -6,6 +6,7 @@ const AladdinConvexVaultABI = require('./abis/AladdinConvexVault.json')
 const AladdinCRVABI = require('./abis/AladdinCRV.json')
 const curvePools = require('./pools-crv.js');
 const { createIncrementArray } = require('../helper/utils');
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 
 const concentratorVault = '0xc8fF37F7d057dF1BB9Ad681b53Fa4726f268E0e8';
@@ -24,7 +25,7 @@ const replacements = [
   "0xd6aD7a6750A7593E092a9B218d66C0A814a3436e",
   "0x83f798e925BcD4017Eb265844FDDAbb448f1707D",
   "0x73a052500105205d34Daf004eAb301916DA8190f"
-]
+].map(i => i.toLowerCase())
 
 async function tvl(timestamp, block) {
   let balances = {}
@@ -73,7 +74,7 @@ async function getVaultInfo(poolLength, type, balances, block) {
     const poolData = curvePools.find(crvPool => crvPool.addresses.lpToken.toLowerCase() === poolInfo.output.lpToken.toLowerCase())
 
     if (poolData === undefined) {
-      console.log(poolInfo.output, poolData, );
+      console.log(poolInfo.output, poolData,);
       throw new Error('Missing pool data');
     }
 
@@ -99,40 +100,23 @@ async function getVaultInfo(poolLength, type, balances, block) {
     }
 
     let coinBalances = []
-    for (let i = 0, l = coins.output.length; i < l; i++) {
-      let _coinAddress = coins.output[i].output
-      if (_coinAddress == addressZero) {
-        continue;
-      }
-      if (_coinAddress != ethAddress && _coinAddress != wethAddress) {
-        var bal = await sdk.api.erc20.balanceOf({
-          target: _coinAddress,
-          owner: swapAddress,
-          block
-        })
-        coinBalances.push({ coin: _coinAddress, balance: bal.output });
-      } else {
-        var ethbal = await sdk.api.eth.getBalance({
-          target: swapAddress,
-          block
-        })
-        coinBalances.push({ coin: addressZero, balance: ethbal.output })
-      }
-    }
+    const tokens = coins.output.map(i => i.output)
+    const tempBalances = await sumTokens2({ block, owner: swapAddress, tokens, })
+    Object.entries(tempBalances).forEach(([coin, balance]) => coinBalances.push({ coin, balance }))
     const resolvedLPSupply = totalSupplies[i].output;
 
-    await Promise.all(coinBalances.map(async (coinBalance, index) => {
-      let coinAddress = coinBalance.coin
+    coinBalances.map((coinBalance) => {
+      let coinAddress = coinBalance.coin.toLowerCase()
       if (replacements.includes(coinAddress)) {
         coinAddress = "0x6b175474e89094c44da98b954eedeac495271d0f" // dai
-      } else if (coinAddress.toLowerCase() === '0xFEEf77d3f69374f66429C91d732A244f074bdf74'.toLowerCase()) {
+      } else if (coinAddress === '0xFEEf77d3f69374f66429C91d732A244f074bdf74'.toLowerCase()) {
         coinAddress = '0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0' // replace cvxFXS -> FXS
       }
       const balance = BigNumber(poolInfo.output.totalUnderlying * coinBalance.balance / resolvedLPSupply);
       if (!balance.isZero()) {
         sdk.util.sumSingleBalance(balances, coinAddress, balance.toFixed(0))
       }
-    }))
+    })
   }))
 }
 module.exports = {
