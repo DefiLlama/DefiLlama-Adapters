@@ -20,7 +20,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     }
   );
 
-  return toUSDTBalances(Number(response.factory.totalValueLockedUSD));
+  return toUSDTBalances(Number(response.pools.liquidity));
 }
 
 module.exports = {
