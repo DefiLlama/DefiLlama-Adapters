@@ -2,7 +2,7 @@ const sdk = require("@defillama/sdk");
 
 const { gql } = require("graphql-request");
 const mEtherABI = require("./helper/abis/MEtherInterfaceFull.json");
-const { getTotalCash, getTotalCollateral, fetch } = require("./helper");
+const { getTotalCash, getTotalCollateral, fetch } = require("./helper/helper");
 
 async function tvl(block) {
   const totalCashAvailable = await getTotalCash(block);
