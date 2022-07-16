@@ -8,15 +8,8 @@ const stakingContracts = [
 
 ];
 
-const lpContracts = [
-  // stakingContract1 =
-  "0xDE6d8C4B6ee674EB8d9c4652eE7456E70D9d24B9",
-  // stakingContract2
 
-];
-
-
-const USDC_CNDL_UNIV2 = "0x31AeCD83f765F7f21A3BD4541eE3bbE343AF618E";
+const USDC_CNDL_UNIV2 = "0x65a364c98aa6554932b551471e7873d9617047d4";
 const CNDL = "0x3D97EdB1c1D87C0cBf098a0D2230d7380d4b1432";
 
 
@@ -27,11 +20,11 @@ module.exports = {
     pool2: pool2s(stakingContracts, [USDC_CNDL_UNIV2]),
     tvl: () => ({}),
   },
-  candle: {
-    staking: stakings(stakingContracts, CNDL, 'candle'),
-    pool2: pool2s(stakingContracts, [USDC_CNDL_UNIV2], 'candle'),
-    tvl: () => ({}),
-   },
+  // candle: {
+  //   staking: stakings(stakingContracts, CNDL, 'candle'),
+  //   pool2: pool2s(stakingContracts, [USDC_CNDL_UNIV2], 'candle'),
+  //   tvl: () => ({}),
+  // },
   methodology: "Counts liquidty on the staking and pool2s only",
 
 };
