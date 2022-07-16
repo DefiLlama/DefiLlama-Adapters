@@ -32,6 +32,7 @@ const treasuryTokens = [
     ["0xbE068B517e869f59778B3a8303DF2B8c13E05d06", false], //iDAI
     ["0xeE3B4Ce32A6229ae15903CDa0A5Da92E739685f7", false], // xIRON_LOAN_USDC
     ["0xeF7B706cA139dBd9010031a50de5509D890CE527", false], // xMULTI_WMATIC 
+    ["0xAcEE7Bd17E7B04F7e48b29c0C91aF67758394f0f", false], //dxTETU
     ["0x4Cd44ced63d9a6FEF595f6AD3F7CED13fCEAc768", false], // tetuQi 
    ]
 module.exports = ohmTvlMultiTreasuries(treasuries, treasuryTokens, "polygon", stakingAddress, sphere_token, undefined, undefined, true)
