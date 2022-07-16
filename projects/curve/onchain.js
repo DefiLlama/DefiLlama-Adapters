@@ -1,4 +1,4 @@
-const { unwrapYearn } = require("../helper/unwrapLPs");
+const { unwrapYearn, sumTokensSharedOwners } = require("../helper/unwrapLPs");
 const { getChainTransform } = require("../helper/portedTokens");
 const { staking } = require("../helper/staking.js");
 const BigNumber = require("bignumber.js");
@@ -9,6 +9,7 @@ const contracts = require("./contracts.json");
 const { requery } = require("../helper/requery");
 const { default: axios } = require("axios");
 const retry = require("async-retry");
+const { getBlock } = require("../helper/getBlock");
 const chains = [
   "ethereum", //-200M
   "polygon", //-40M
@@ -16,7 +17,6 @@ const chains = [
   "aurora", //G
   "avax", //-30M
   "fantom", //-80M
-  "harmony",
   "optimism", //-6M
   "xdai", //G
   "moonbeam"
@@ -136,6 +136,12 @@ async function fixWrappedTokenBalances(balances, block, chain, transform) {
 
   if ("sdTokens" in contracts[chain]) {
     await unwrapSdTokens(balances, contracts[chain].sdTokens, chain);
+  }
+
+  const stDOT = "moonbeam:0xfa36fe1da08c89ec72ea1f0143a35bfd5daea108"
+  if(stDOT in balances){
+    balances["bsc:0x7083609fce4d1d8dc0c979aab8c869ea2c873402"] = BigNumber(balances[stDOT]).times(1e8).toFixed(0)
+    delete balances[stDOT]
   }
 }
 
@@ -343,11 +349,12 @@ function tvl(chain) {
     let balances = {};
     const transform = await getChainTransform(chain);
     const poolList = await getPools(chainBlocks[chain], chain);
+    const block = await getBlock(_t, chain, chainBlocks, true)
 
     for (let registry of Object.keys(poolList)) {
       await unwrapPools(
         balances,
-        chainBlocks[chain],
+        block,
         chain,
         transform,
         poolList[registry],
@@ -368,6 +375,21 @@ const chainTypeExports = chains => {
     contracts.ethereum.veCRV,
     contracts.ethereum.CRV
   );
+
+  exports.harmony = {
+    tvl: async (ts, ethB, chainB) => {
+      const block = await getBlock(ts, "harmony", chainB, true)
+      const balances = {}
+      await sumTokensSharedOwners(balances, 
+        ["0xef977d2f931c1978db5f6747666fa1eacb0d0339", "0x3c2b8be99c50593081eaa2a724f0b8285f5aba8f"],
+        ["0xC5cfaDA84E902aD92DD40194f0883ad49639b023"],
+        block,
+        "harmony",
+        addr=>`harmony:${addr}`
+      )
+      return balances
+    }
+  }
   return exports;
 };
 
