@@ -13,7 +13,7 @@ const { getStartTimestamp } = require("../helper/getStartTimestamp");
 
 const v3Endpoints = {
   [CANDLE]:
-    "https://thegraph.cndlchain.com/subgraphs/name/ianlapham/uniswap-v3",
+    "https://thegraph.cndlchain.com/subgraphs/name/ianlapham/uniswap-v3-test",
 };
 
 const VOLUME_USD = "volumeUSD";
