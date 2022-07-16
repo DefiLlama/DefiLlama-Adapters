@@ -61,6 +61,18 @@ async function getPools(block, chain) {
     })).output;
   }
 
+  let allPools = {}
+  Object.entries(pools).map(([key, list])=>{
+    pools[key] = list.filter(p=>{
+      if(allPools[p.output] === undefined){
+        allPools[p.output] = true
+        return true
+      } else {
+        return false
+      }
+    })
+  })
+
   return pools;
 }
 
