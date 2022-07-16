@@ -3,15 +3,10 @@ const { toUSDTBalances } = require('../helper/balances');
 const graphUrl = 'https://thegraph.cndlchain.com/subgraphs/name/ianlapham/uniswap-v3'
 
 const graphQuery = gql`
-query get_tvl($block: Int, $number_gte: Int = 10) {
-  factory(
-    id: "0x5Bb7BAE25728e9e51c25466D2A15FaE97834FD95"
-    block: {number_gte: $number_gte}
-  ) {
-    totalValueLockedETHUntracked
-    totalValueLockedETH
-    totalValueLockedUSD
-    totalValueLockedUSDUntracked
+query MyQuery {
+  pools(first: 10) {
+    id
+    liquidity
   }
 }
 `;
