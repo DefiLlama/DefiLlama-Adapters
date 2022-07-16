@@ -1,33 +1,14 @@
-const { request, gql } = require("graphql-request");
-const { toUSDTBalances } = require('../helper/balances');
-const graphUrl = 'https://thegraph.cndlchain.com/subgraphs/name/ianlapham/uniswap-v3'
-
-const graphQuery = gql`
-query MyQuery {
-  pools(first: 10) {
-    id
-    liquidity
-  }
-}
-`;
-
-async function tvl(timestamp, ethBlock, chainBlocks) {
-  const response = await request(
-    graphUrl,
-    graphQuery,
-    {
-      block:chainBlocks.cndl,
-    }
-  );
-
-  return toUSDTBalances(Number(response.pools.liquidity));
-}
+const { getUniTVL } = require('../helper/unknownTokens')
 
 module.exports = {
+  timetravel: true,
   misrepresentedTokens: true,
-  methodology: 'The Carthage subgraph and the Carthage factory contract address are used to obtain the balance held in every LP pair.',
-  candle:{
-    tvl,
-  },
-  start: 1612715300, // 7th-Feb-2021
-}
+  methodology: "Factory address (0x5Bb7BAE25728e9e51c25466D2A15FaE97834FD95) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
+  candle: {
+    tvl: getUniTVL({
+      chain: 'candle',
+      factory: '0x5Bb7BAE25728e9e51c25466D2A15FaE97834FD95',
+      coreAssets: ['0x85FA00f55492B0437b3925381fAaf0E024747627'],
+    })
+  }
+};
