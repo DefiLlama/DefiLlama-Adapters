@@ -52,6 +52,7 @@ const ADDRESSES = {
 
     popUsdcGelatoLp: "0xe8654f2b0a038a01bc273a2a7b7c48a76c0e58c5",
 
+    popUsdcUniswapPool: "0x8f5b8b73c5168747779e4ef38a80cc90caf358fb",
     arrakisPool: "0x6dE0500211bc3140409B345Fa1a5289cb77Af1e4",
     arrakisPoolStaking: "0xd3836EF639A74EA7398d34c66aa171b1564BE4bc"
   },
