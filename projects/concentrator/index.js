@@ -107,8 +107,13 @@ async function getVaultInfo(poolLength, type, balances, block) {
     }
 
     let coinBalances = []
-    const tokens = coins.output.map(i => i.output)
-    const tempBalances = await sumTokens2({ block, owner: swapAddress, tokens, })
+    const tokens = coins.output.map(i => {
+      if (i.output.toLowerCase() == wethAddress.toLowerCase()) {
+        return ethAddress
+      }
+      return i.output;
+    })
+    let tempBalances = await sumTokens2({ block, owner: swapAddress, tokens, })
     Object.entries(tempBalances).forEach(([coin, balance]) => coinBalances.push({ coin, balance }))
     const resolvedLPSupply = totalSupplies[i].output;
 
