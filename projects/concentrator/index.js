@@ -58,6 +58,7 @@ async function tvl(timestamp, block) {
 
   await getVaultInfo(oldPoolLength, 'old', balances, block)
   await getVaultInfo(newPoolLength, 'New', balances, block)
+  sdk.util.sumSingleBalance(balances, cvxcrvAddress, BigNumber(cvxcrvBalance).toFixed(0))
   return balances
 }
 
