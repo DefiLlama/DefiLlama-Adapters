@@ -35,8 +35,15 @@ async function tvl(timestamp, block) {
     block,
     abi: AladdinCRVABI.totalUnderlying,
   })).output;
-
-  sdk.util.sumSingleBalance(balances, cvxcrvAddress, BigNumber(acrvTotalUnderlying).toFixed(0))
+  const acrvTotalSupply = (await sdk.api.abi.call({
+    target: concentratorAcrv,
+    block,
+    abi: AladdinCRVABI.totalSupply,
+    params: []
+  })).output;
+  const rate = acrvTotalSupply * 1 ? BigNumber(acrvTotalUnderlying).div(acrvTotalSupply) : 1
+  const cvxcrvBalance = BigNumber(acrvTotalUnderlying).multipliedBy(rate)
+  sdk.util.sumSingleBalance(balances, cvxcrvAddress, BigNumber(cvxcrvBalance).toFixed(0))
 
   const oldPoolLength = (await sdk.api.abi.call({
     target: concentratorVault,
