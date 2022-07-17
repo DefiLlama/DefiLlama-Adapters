@@ -1,5 +1,14 @@
 const sdk = require("@defillama/sdk");
 const chain = "arbitrum";
+
+const getPricePerShareABI = {
+  inputs: [{ internalType: "bool", name: "isMax", type: "bool" }],
+  name: "getPricePerShare",
+  outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+  stateMutability: "view",
+  type: "function",
+};
+
 const getGlpPriceABI = {
   inputs: [],
   name: "getGlpPrice",
@@ -29,6 +38,13 @@ const glpVaults = [
 ];
 
 async function usdcVaultsTVL(block) {
+  const { output: pricePerShare } = await sdk.api.abi.multiCall({
+    abi: getPricePerShareABI,
+    calls: usdcVaults.map((i) => ({ target: i, params: false })),
+    chain,
+    block,
+  });
+
   const { output: tvls } = await sdk.api.abi.multiCall({
     abi: "erc20:totalSupply",
     calls: usdcVaults.map((i) => ({ target: i })),
@@ -37,7 +53,10 @@ async function usdcVaultsTVL(block) {
   });
 
   let tvl = 0;
-  tvls.forEach((i) => (tvl += i.output / 1e6));
+  tvls.forEach(
+    (i, index) =>
+      (tvl += (i.output / 1e6) * (+pricePerShare[index].output / 1e18))
+  );
   return tvl;
 }
 
@@ -49,14 +68,25 @@ async function glpVaultsTVL(block) {
     block,
   });
 
+  const { output: pricePerShare } = await sdk.api.abi.multiCall({
+    abi: getPricePerShareABI,
+    calls: glpVaults.map((i) => ({ target: i, params: false })),
+    chain,
+    block,
+  });
+
   const { output: tvls } = await sdk.api.abi.multiCall({
     abi: "erc20:totalSupply",
     calls: glpVaults.map((i) => ({ target: i })),
     chain,
     block,
   });
+
   let tvl = 0;
-  tvls.forEach((i) => (tvl += i.output / 1e18));
+  tvls.forEach(
+    (i, index) =>
+      (tvl += (i.output / 1e18) * (+pricePerShare[index].output / 1e18))
+  );
   return (tvl * glpPrice) / 1e18;
 }
 
