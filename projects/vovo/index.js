@@ -1,10 +1,22 @@
 const sdk = require("@defillama/sdk");
 const chain = "arbitrum";
 
-const getPricePerShareABI = {
-  inputs: [{ internalType: "bool", name: "isMax", type: "bool" }],
-  name: "getPricePerShare",
-  outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+const balanceABI = {
+  inputs: [
+    {
+      internalType: "bool",
+      name: "isMax",
+      type: "bool",
+    },
+  ],
+  name: "balance",
+  outputs: [
+    {
+      internalType: "uint256",
+      name: "",
+      type: "uint256",
+    },
+  ],
   stateMutability: "view",
   type: "function",
 };
@@ -38,25 +50,15 @@ const glpVaults = [
 ];
 
 async function usdcVaultsTVL(block) {
-  const { output: pricePerShare } = await sdk.api.abi.multiCall({
-    abi: getPricePerShareABI,
-    calls: usdcVaults.map((i) => ({ target: i, params: false })),
-    chain,
-    block,
-  });
-
   const { output: tvls } = await sdk.api.abi.multiCall({
-    abi: "erc20:totalSupply",
-    calls: usdcVaults.map((i) => ({ target: i })),
+    abi: balanceABI,
+    calls: usdcVaults.map((i) => ({ target: i, params: true })),
     chain,
     block,
   });
 
   let tvl = 0;
-  tvls.forEach(
-    (i, index) =>
-      (tvl += (i.output / 1e6) * (+pricePerShare[index].output / 1e18))
-  );
+  tvls.forEach((i) => (tvl += i.output / 1e6));
   return tvl;
 }
 
@@ -68,25 +70,15 @@ async function glpVaultsTVL(block) {
     block,
   });
 
-  const { output: pricePerShare } = await sdk.api.abi.multiCall({
-    abi: getPricePerShareABI,
-    calls: glpVaults.map((i) => ({ target: i, params: false })),
-    chain,
-    block,
-  });
-
   const { output: tvls } = await sdk.api.abi.multiCall({
-    abi: "erc20:totalSupply",
-    calls: glpVaults.map((i) => ({ target: i })),
+    abi: balanceABI,
+    calls: glpVaults.map((i) => ({ target: i, params: true })),
     chain,
     block,
   });
 
   let tvl = 0;
-  tvls.forEach(
-    (i, index) =>
-      (tvl += (i.output / 1e18) * (+pricePerShare[index].output / 1e18))
-  );
+  tvls.forEach((i) => (tvl += i.output / 1e18));
   return (tvl * glpPrice) / 1e18;
 }
 
