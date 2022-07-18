@@ -28,7 +28,6 @@ module.exports = {
           '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599', // wBTC
           '0x1a7e4e63778B4f12a199C062f3eFdD288afCBce8', // agEUR
           '0x0642026E7f0B6cCaC5925b4E7Fa61384250e1701', // H2O      
-          '
         ]
       }
     }
@@ -37,7 +36,7 @@ module.exports = {
     tvl: {
       bridge: {
         address: '0xAf41a65F786339e7911F4acDAD6BD49426F2Dc6b',
-        tokens: [ ]
+        tokens: []
       },
       pools: [
         {
@@ -91,7 +90,7 @@ module.exports = {
     tvl: {
       bridge: {
         address: '0xE27BFf97CE92C3e1Ff7AA9f86781FDd6D48F5eE9',
-        tokens: [        ]
+        tokens: []
       },
       pools: [
         {
@@ -150,7 +149,7 @@ module.exports = {
     tvl: {
       bridge: {
         address: '0xAf41a65F786339e7911F4acDAD6BD49426F2Dc6b',
-        tokens: [  ]
+        tokens: []
       },
       pools: [
         {
@@ -344,7 +343,6 @@ module.exports = {
       },
     }
   },
-}
   klaytn: {
     tvl: {
       bridge: {
@@ -363,3 +361,4 @@ module.exports = {
       ]
     }
   },
+}
