@@ -1,8 +1,7 @@
 const sdk = require("@defillama/sdk");
 const {transformPolygonAddress} = require('../helper/portedTokens');
 const { staking } = require("../helper/staking");
-const totalBalanceABI = require('./abi/vault.json')
-const _ = require('underscore');
+const totalBalanceABI = require('./vault.json')
 
 const insuranceFund = "0x809F76d983768846acCbD8F8C9BDc240dC39bf8B"
 const manager = "0xeC5ae95D4e9288a5C7c744F278709C56e9dC34eD"
@@ -62,14 +61,14 @@ async function tvl(_timestamp, ethBlock, chainBlocks) {
         chain: 'polygon'
     });
     
-    _.each(underlyingBalances.output, (ub)=>{
+    underlyingBalances.output.forEach((ub)=>{
         sdk.util.sumSingleBalance(balances, usdc, ub.output)    
     })
     
 
     //TVL for USDC DOV vaults
     const totalBalances = await sdk.api.abi.multiCall({
-        calls: _.map(usdcAssetVaults, (address) => ({
+        calls: usdcAssetVaults.map((address) => ({
             target: address
           })),
         abi: totalBalanceABI['totalBalance'],        
@@ -77,13 +76,13 @@ async function tvl(_timestamp, ethBlock, chainBlocks) {
         chain: 'polygon'
     })
 
-    _.each(totalBalances.output, (totalBalanceVault)=>{
+    totalBalances.output.forEach((totalBalanceVault)=>{
         sdk.util.sumSingleBalance(balances, usdc, totalBalanceVault.output)
     })
     
     //TVL for ETH DOV vaults
     const totalBalancesETH = await sdk.api.abi.multiCall({
-        calls: _.map(ethAssetVaults, (address) => ({
+        calls: ethAssetVaults.map((address) => ({
             target: address
           })),
         abi: totalBalanceABI['totalBalance'],        
@@ -91,13 +90,13 @@ async function tvl(_timestamp, ethBlock, chainBlocks) {
         chain: 'polygon'
     })
 
-    _.each(totalBalancesETH.output, (totalBalanceVault)=>{
+    totalBalancesETH.output.forEach((totalBalanceVault)=>{
         sdk.util.sumSingleBalance(balances, weth, totalBalanceVault.output)
     })
 
     //TVL for BTC DOV vaults
     const totalBalancesBTC = await sdk.api.abi.multiCall({
-        calls: _.map(btcAssetVaults, (address) => ({
+        calls: btcAssetVaults.map((address) => ({
             target: address
           })),
         abi: totalBalanceABI['totalBalance'],        
@@ -105,7 +104,7 @@ async function tvl(_timestamp, ethBlock, chainBlocks) {
         chain: 'polygon'
     })
 
-    _.each(totalBalancesBTC.output, (totalBalanceVault)=>{
+    totalBalancesBTC.output.forEach((totalBalanceVault)=>{
         sdk.util.sumSingleBalance(balances, wbtc, totalBalanceVault.output)
     })
         
