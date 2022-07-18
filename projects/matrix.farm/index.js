@@ -7,14 +7,16 @@ const client = axios.create({
 
 async function fetch() {
   const tvlRes = await client.get("/statistics/tvl");
-  const tvl = tvlRes.data.tvl;
-  return tvl;
+  const fantom = tvlRes.data.fantom
+  const optimism = tvlRes.data.optimism
+
+  return {fantom, optimism};
 }
 
 module.exports = {
   doublecounted: true,
   timetravel: false,
   misrepresentedTokens: true,
-  methodology: "The TVL is calculated using a google cloud function that runs every 30 minutes, it checks the value of all the LPs staked in our vaults and returns the total",
-  fetch
+  methodology: "The TVL is calculated using a google cloud function that runs every minute, it checks the value of all the LPs staked in our vaults and returns the total",
+  ...fetch()
 }
