@@ -28,12 +28,19 @@ async function fetch() {
   return totalValueLocked;
 }
 
+async function staking() {
+  const url = `${ALEX_API}/stats/tvl`;
+  const alexResponse = (await retry(async () => await axios.get(url))).data;
+  return alexResponse.reserve_pool_value;
+}
+
 // node test.js projects/alexlab/index.js
 module.exports = {
   timetravel: false,
   stacks: {
     fetch,
   },
+  staking: { fetch: staking },
   fetch,
   methodology: "Alex Lab TVL is sum of tokens locked in ALEX platform.",
 };
