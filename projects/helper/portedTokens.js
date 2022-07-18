@@ -809,6 +809,7 @@ async function transformKccAddress() {
 
 function transformMetisAddress() {
   const map = {
+    "0x0000000000000000000000000000000000000000": "0x9e32b13ce7f2e80a01932b42553652e053d6ed8e", // METIS
     "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000": "0x9e32b13ce7f2e80a01932b42553652e053d6ed8e",
     "0xbb06dca3ae6887fabf931640f67cab3e3a16f4dc": "0xdac17f958d2ee523a2206206994597c13d831ec7",
     "0x420000000000000000000000000000000000000a": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
@@ -956,6 +957,10 @@ function fixKlaytnBalances(balances) {
     }, // Wrapped KLAY
     "0x9eaefb09fe4aabfbe6b1ca316a3c36afc83a393f": {
       coingeckoId: "ripple",
+      decimals: 6
+    },
+    "0xd6dab4cff47df175349e6e7ee2bf7c40bb8c05a3": {
+      coingeckoId: "tether",
       decimals: 6
     },
     "0xc6a2ad8cc6e4a7e08fc37cc5954be07d499e7654": {
@@ -1200,6 +1205,8 @@ async function transformDfkAddress() {
 }
 async function transformAuroraAddress() {
   const mapping = {
+    "0x0000000000000000000000000000000000000000":
+      "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // Aurora gas -> WETH
     "0xda2585430fef327ad8ee44af8f1f989a2a91a3d2":
       "0x853d955aCEf822Db058eb8505911ED77F175b99e", // FRAX
     "0x07379565cd8b0cae7c60dc78e7f601b34af2a21c":
@@ -1955,7 +1962,7 @@ async function transformEthereumAddress() {
     "0x65f7ba4ec257af7c55fd5854e5f6356bbd0fb8ec":
       "0x92d6c1e31e14520e676a687f0a93788b716beff5", // sDYDX
     "0x586aa273f262909eef8fa02d90ab65f5015e0516":
-    "0x0000000000085d4780B73119b644AE5ecd22b376", // FIAT
+      "0x0000000000085d4780B73119b644AE5ecd22b376", // FIAT
     "0x0a5e677a6a24b2f1a2bf4f3bffc443231d2fdec8":
       "bsc:0xb5102cee1528ce2c760893034a4603663495fd72", // USX
   };

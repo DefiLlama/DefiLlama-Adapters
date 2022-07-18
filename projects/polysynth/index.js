@@ -21,6 +21,22 @@ const btcAssetVaults = [
   "0x3728afb2dab6A6D0507f5536F9601F0956154355"
 ]
 
+//ETH mainnet
+const wethMainnet = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+const wbtcMainnet = "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"
+const usdcMainnet = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+const ethAssetVaultsMainnet = [
+  "0x8c6b3A5f9E7A92fe631Ac6EEc68d507Ee2AC7eA2"
+]
+const btcAssetVaultsMainnet = [
+  "0xBbC6561d382bC45d81Fdb3581D76047f15825D53"
+]
+const usdcAssetVaultsMainnet = [
+  "0x2d2ac1edaf20C1f34A153167E62D1A41F11Ad940",
+  "0x16b9f400192dc0809431219EeBB38650b980A11F"
+]
+
+
 async function tvl(_timestamp, ethBlock, chainBlocks) {
   const balances = {};
   const transformAddress = await transformPolygonAddress()
@@ -95,7 +111,55 @@ async function tvl(_timestamp, ethBlock, chainBlocks) {
   return balances
 }
 
+async function ethTVL(ts, ethBlock) {
+  const balances = {};
+
+  //TVL for ETH DOV vaults
+  const totalBalancesETH = await sdk.api.abi.multiCall({
+    calls: ethAssetVaultsMainnet.map((address) => ({
+      target: address
+    })),
+    abi: totalBalanceABI['totalBalance'],
+    block: ethBlock
+  })
+
+  totalBalancesETH.output.forEach((totalBalanceVault) => {
+    sdk.util.sumSingleBalance(balances, wethMainnet, totalBalanceVault.output)
+  })
+
+  //TVL for USDC DOV vaults
+  const totalBalances = await sdk.api.abi.multiCall({
+    calls: usdcAssetVaultsMainnet.map((address) => ({
+      target: address
+    })),
+    abi: totalBalanceABI['totalBalance'],
+    block: ethBlock
+  })
+
+  totalBalances.output.forEach((totalBalanceVault) => {
+    sdk.util.sumSingleBalance(balances, usdcMainnet, totalBalanceVault.output)
+  })
+
+  //TVL for BTC DOV vaults
+  const totalBalancesBTC = await sdk.api.abi.multiCall({
+    calls: btcAssetVaultsMainnet.map((address) => ({
+      target: address
+    })),
+    abi: totalBalanceABI['totalBalance'],
+    block: ethBlock
+  })
+
+  totalBalancesBTC.output.forEach((totalBalanceVault) => {
+    sdk.util.sumSingleBalance(balances, wbtcMainnet, totalBalanceVault.output)
+  })
+
+  return balances
+}
+
 module.exports = {
+  ethereum: {
+    tvl: ethTVL
+  },
   polygon: {
     tvl: tvl
   }
