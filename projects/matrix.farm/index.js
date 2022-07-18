@@ -1,16 +1,12 @@
-const axios = require("axios");
-const MATRIX_API = "https://api.matrix.farm/";
+const { get } = require('../helper/http')
+const MATRIX_API = "https://api.matrix.farm/statistics/tvl";
+let _response
 
-const client = axios.create({
-  baseURL: MATRIX_API
-});
-
-async function fetch() {
-  const tvlRes = await client.get("/statistics/tvl");
-  const fantom = tvlRes.data.fantom
-  const optimism = tvlRes.data.optimism
-
-  return {fantom, optimism};
+function fetch(key) {
+  return async () => {
+    if (!_response) _response = get(MATRIX_API)
+    return (await _response)[key] 
+  }
 }
 
 module.exports = {
@@ -18,5 +14,11 @@ module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
   methodology: "The TVL is calculated using a google cloud function that runs every minute, it checks the value of all the LPs staked in our vaults and returns the total",
-  ...fetch()
+  fantom: {
+    fetch: fetch('fantom'),
+  },
+  optimism: {
+    fetch: fetch('optimism'),
+  },
+  fetch: fetch('tvl')
 }
