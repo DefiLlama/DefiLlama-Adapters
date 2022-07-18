@@ -2,6 +2,8 @@
 const sdk = require('@defillama/sdk')
 const { createIncrementArray } = require('../helper/utils')
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const token0ABI  = require('../helper/abis/token0.json')
+const token1ABI  = require('../helper/abis/token1.json')
 
 const abis = {
   "poolsCount": {
@@ -88,12 +90,25 @@ async function tvl(_, _b, { [chain]: block }) {
     chain, block,
   })
 
-  poolAddreses = poolAddreses.map(i => i.output)
-  const kavaBal = await sumTokens2({ chain, block, tokens: [customWKava], owners: poolAddreses, transformAddress: a => a, })
-
-  return {
-    kava: kavaBal[customWKava] / 1e18
-  }
+  poolAddreses = poolAddreses.map(i => ({ target: i.output}))
+  const { output: token0s } = await sdk.api.abi.multiCall({
+    abi: token0ABI,
+    calls: poolAddreses,
+    chain, block,
+  })
+  const { output: token1s } = await sdk.api.abi.multiCall({
+    abi: token1ABI,
+    calls: poolAddreses,
+    chain, block,
+  })
+  const toa = []
+  token0s.forEach(({ input: { target }, output }) => toa.push([output, target]))
+  token1s.forEach(({ input: { target }, output }) => toa.push([output, target]))
+  const kavaBal = await sumTokens2({ chain, block, tokensAndOwners: toa })
+  const customKavaKey = 'kava:'+customWKava
+  sdk.util.sumSingleBalance(kavaBal, 'kava', (kavaBal[customKavaKey] || 0) / 1e18)
+  delete kavaBal[customKavaKey]
+  return kavaBal
 }
 
 module.exports = {
