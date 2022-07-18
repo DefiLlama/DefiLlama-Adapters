@@ -15,6 +15,19 @@ module.exports = [
         }
     },
     {
+        id: 'ib3crv',
+        name: 'ib3crv',
+        coins: [
+            coins.cyDai,
+            coins.cyUSDT,
+            coins.cyUSDC,
+        ],
+        addresses: {
+            swap: '0x2dded6da1bf5dbdf597c45fcfaa3194e53ecfeaf',
+            lpToken: '0x5282a4eF67D9C33135340fB3289cc1711c13638C'
+        }
+    },
+    {
         id: 'cvxfxs',
         name: 'cvxfxs',
         coins: [
