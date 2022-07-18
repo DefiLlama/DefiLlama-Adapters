@@ -6,7 +6,6 @@ async function fetch() {
 }
 
 module.exports = {
-  doublecounted: true,
   fetch,
   
 }
