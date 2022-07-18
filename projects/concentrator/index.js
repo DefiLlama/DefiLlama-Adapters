@@ -35,8 +35,15 @@ async function tvl(timestamp, block) {
     block,
     abi: AladdinCRVABI.totalUnderlying,
   })).output;
-
-  sdk.util.sumSingleBalance(balances, cvxcrvAddress, BigNumber(acrvTotalUnderlying).toFixed(0))
+  const acrvTotalSupply = (await sdk.api.abi.call({
+    target: concentratorAcrv,
+    block,
+    abi: AladdinCRVABI.totalSupply,
+    params: []
+  })).output;
+  const rate = acrvTotalSupply * 1 ? BigNumber(acrvTotalUnderlying).div(acrvTotalSupply) : 1
+  const cvxcrvBalance = BigNumber(acrvTotalUnderlying).multipliedBy(rate)
+  sdk.util.sumSingleBalance(balances, cvxcrvAddress, BigNumber(cvxcrvBalance).toFixed(0))
 
   const oldPoolLength = (await sdk.api.abi.call({
     target: concentratorVault,
@@ -51,6 +58,7 @@ async function tvl(timestamp, block) {
 
   await getVaultInfo(oldPoolLength, 'old', balances, block)
   await getVaultInfo(newPoolLength, 'New', balances, block)
+  sdk.util.sumSingleBalance(balances, cvxcrvAddress, BigNumber(acrvTotalUnderlying).toFixed(0))
   return balances
 }
 
@@ -100,8 +108,13 @@ async function getVaultInfo(poolLength, type, balances, block) {
     }
 
     let coinBalances = []
-    const tokens = coins.output.map(i => i.output)
-    const tempBalances = await sumTokens2({ block, owner: swapAddress, tokens, })
+    const tokens = coins.output.map(i => {
+      if (i.output.toLowerCase() == wethAddress.toLowerCase()) {
+        return ethAddress
+      }
+      return i.output;
+    })
+    let tempBalances = await sumTokens2({ block, owner: swapAddress, tokens, })
     Object.entries(tempBalances).forEach(([coin, balance]) => coinBalances.push({ coin, balance }))
     const resolvedLPSupply = totalSupplies[i].output;
 
