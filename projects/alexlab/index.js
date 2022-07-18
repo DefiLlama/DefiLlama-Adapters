@@ -6,10 +6,28 @@ const retry = require("../helper/retry");
 const ALEX_API = "https://api.alexlab.co/v1";
 
 async function fetch() {
-  const url = `${ALEX_API}/stats/tvl`;
-  const alexResponse = (await retry(async () => await axios.get(url))).data;
-  return alexResponse.lp_token_supply;
+  const url = `${ALEX_API}/pool_token_stats`;
+  const alexStatsResponse = (await retry(async () => await axios.get(url)))
+    .data;
+
+  const valueLockedMap = {};
+  let totalValueLocked = 0;
+  for (const pool of alexStatsResponse) {
+    let poolValue = 0;
+    const poolToken = pool.pool_token;
+
+    if (poolToken == "age000-governance-token") {
+      poolValue = pool.price * pool.reserved_balance;
+    } else {
+      poolValue = pool.price * pool.total_supply;
+    }
+    totalValueLocked += poolValue;
+    valueLockedMap[poolToken] = poolValue;
+  }
+
+  return totalValueLocked;
 }
+
 // node test.js projects/alexlab/index.js
 module.exports = {
   timetravel: false,
