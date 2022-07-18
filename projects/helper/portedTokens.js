@@ -3,6 +3,8 @@ const sdk = require("@defillama/sdk");
 const IOTEX_CG_MAPPING = require("./../xdollar-finance/iotex_cg_mapping.json");
 const BigNumber = require("bignumber.js");
 
+const nullAddress = '0x0000000000000000000000000000000000000000'
+
 async function transformFantomAddress() {
   const multichainTokens = (await utils.fetchURL(
     "https://netapi.anyswap.net/bridge/v2/info"
@@ -1539,10 +1541,30 @@ const songbirdFixMapping = {
 };
 
 const smartbchFixMapping = {
+  [nullAddress]: {
+    coingeckoId: "bitcoin-cash",
+    decimals: 18
+  },
   "0x3743ec0673453e5009310c727ba4eaf7b3a1cc04": {
     coingeckoId: "bitcoin-cash",
     decimals: 18
-  }
+  },
+  "0x0b00366fBF7037E9d75E4A569ab27dAB84759302": {
+    coingeckoId: "law",
+    decimals: 18
+  },
+  "0x7b2B3C5308ab5b2a1d9a94d20D35CCDf61e05b72": {
+    coingeckoId: "flex-usd",
+    decimals: 18
+  },
+  "0x24d8d5Cbc14FA6A740c3375733f0287188F8dF3b": {
+    coingeckoId: "tropical-finance",
+    decimals: 18
+  },
+  "0xBc2F884680c95A02cea099dA2F524b366d9028Ba": {
+    coingeckoId: "tether",
+    decimals: 18
+  },
 };
 
 const evmosFixMapping = {
