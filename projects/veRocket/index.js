@@ -4,9 +4,10 @@ const baseUrl = "https://api-v1.verocket.com";
 const tvlApy = `${baseUrl}/dex/overall/lp_volume`
 
 async function tvl() {
-  balances = 0;
   const response = (await get(tvlApy)).data;
-  return { 'vechain': +response[response.length - 1].eq_vet}
+  return {
+    'vechain': +response[response.length - 1].eq_vet
+  }
 }
 
 module.exports = {
@@ -14,4 +15,4 @@ module.exports = {
   vechain: {
     tvl
   }
-};
+}

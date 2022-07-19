@@ -21,4 +21,7 @@ module.exports = {
       "fuse-network-token"
     ),
   },
+  hallmarks: [
+    [1648684800, "Reentrancy attack"]
+]
 };

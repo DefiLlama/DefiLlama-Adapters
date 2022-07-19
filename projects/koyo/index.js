@@ -9,6 +9,8 @@ const {
   transformBobaAddress,
   transformArbitrumAddress,
   transformAvaxAddress,
+  transformBscAddress,
+  transformAuroraAddress,
 } = require("../helper/portedTokens");
 const { request } = require("graphql-request");
 
@@ -59,10 +61,38 @@ const DATA = {
       avalancheTransform,
       {
         treasury: {
-          addresss: [constants.addresses.avalanche.treasury],
+          addresss: [constants.addresses.avax.treasury],
           tokens: [
-            [constants.addresses.avalanche.USDC, false], // USDC(Avalanche)
+            [constants.addresses.avax.USDC, false], // USDC(Avalanche)
           ],
+        },
+      },
+    ];
+  },
+  bsc: async () => {
+    const bscTransform = await transformBscAddress();
+
+    return [
+      bscTransform,
+      {
+        treasury: {
+          addresss: [constants.addresses.bsc.treasury],
+          tokens: [
+            [constants.addresses.bsc.BUSD, false], // BUSD(Binance Smart Chain)
+          ],
+        },
+      },
+    ];
+  },
+  aurora: async () => {
+    const auroraTransform = await transformAuroraAddress();
+
+    return [
+      auroraTransform,
+      {
+        treasury: {
+          addresss: [constants.addresses.aurora.treasury],
+          tokens: [],
         },
       },
     ];
@@ -91,11 +121,14 @@ const chainTVL = (chain) => {
     }
     tokenAddresses = [...new Set(tokenAddresses)];
 
-    const balanceCalls = tokenAddresses.map((address) => {
-      return {
-        target: address,
-        params: koyoVault.koyos[0].address,
-      };
+    const balanceCalls = tokenAddresses.flatMap((address) => {
+      return [
+        {
+          target: address,
+          params: koyoVault.koyos[0].address,
+        },
+        { target: address, params: constants.addresses[chain].feeCollector },
+      ];
     });
     const balancesCalled = await sdk.api.abi.multiCall({
       block,
@@ -150,12 +183,11 @@ module.exports = chainJoinExports(
     (chains) => chainTypeExports("treasury", chainTreasury, chains),
     (chains) => chainTypeExports("staking", chainStaking, chains),
   ],
-  ["boba", "arbitrum", "avax"]
+  ["boba", "arbitrum", "avax", "bsc", "aurora"]
 );
 
 module.exports = {
   ...module.exports,
   methodology:
     "Counts the tokens locked on swap pools based on their holdings.",
-  start: 668_337,
 };
