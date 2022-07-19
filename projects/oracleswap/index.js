@@ -9,7 +9,7 @@ module.exports = {
   misrepresentedTokens: true,
   methodology:
     "Factory address (0xDcA8EfcDe7F6Cb36904ea204bb7FCC724889b55d) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",
-  cronos: {
+  songbird: {
     tvl: calculateUsdUniTvl(
       "0xDcA8EfcDe7F6Cb36904ea204bb7FCC724889b55d",
       "songbird",

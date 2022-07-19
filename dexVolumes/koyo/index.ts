@@ -1,10 +1,12 @@
 import { DexVolumeAdapter } from "../dexVolume.type";
+import { AURORA, BOBA } from "../helper/chains";
 import { getChainVolume } from "../helper/getUniSubgraphVolume";
-import { BOBA } from "../helper/chains";
 
 const endpoints = {
   [BOBA]:
     "https://thegraph.com/hosted-service/subgraph/koyo-finance/exchange-subgraph-boba",
+  [AURORA]:
+    "https://thegraph.com/hosted-service/subgraph/koyo-finance/exchange-subgraph-aurora",
 };
 
 const graphs = getChainVolume({
@@ -21,6 +23,11 @@ const adapter: DexVolumeAdapter = {
     [BOBA]: {
       fetch: graphs(BOBA),
       start: 1655104044,
+      customBackfill: () => {},
+    },
+    [AURORA]: {
+      fetch: graphs(AURORA),
+      start: 1657617165,
       customBackfill: () => {},
     },
   },

@@ -8,7 +8,7 @@ function getExports(protocol, chains) {
                 if(Math.abs(Date.now()/1000-timestamp) > 3600){
                     throw new Error("Can't refill adapters moved to heroku")
                 }
-                const data = await get(`${endpoint}?protocol=${protocol}&chain=${chain}`)
+                const data = await get(`${endpoint}?project=${protocol}&chain=${chain}`)
                 if(data[protocol]?.[chain] === undefined){
                     throw new Error(`Data for protocol ${protocol} on chain ${chain} is undefined on heroku`)
                 }
