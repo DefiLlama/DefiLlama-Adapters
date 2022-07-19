@@ -62,7 +62,7 @@ module.exports = {
   ethereum: { tvl }
 }
 
-const graphUrl = "https://api.thegraph.com/subgraphs/name/nftx-project/nftx-v2"
+const graphUrl = "https://graph-proxy.nftx.xyz/c/nftx-indexer/subgraphs/id/QmTCMt7aWvxCnEwTQAB1r9a5QMk9cpoFTMfefm4D1c2ewT"
 const graphQuery = gql`
 query get_vaults($block: Int) {
   vaults(
