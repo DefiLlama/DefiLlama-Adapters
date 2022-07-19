@@ -51,11 +51,21 @@ const dexTVL = {
 
 const stakingExports = {
   fantom: {
-    staking: stakings([callStake, bondStake], sntFantom, 'fantom'),
+    staking: stakings(
+      [callStake, callStakeV2, bondStake, liquidStake, incomeStake],
+      sntFantom,
+      'fantom'
+    ),
   },
   nova: {
-    staking: async (_, _b, { nova: block }) => sumTokens2({ owners: [callStake, bondStake,], tokens: [nullAddress, sntNova], chain: 'nova', block, })
+    staking: async (_, _b, { nova: block }) =>
+      sumTokens2({
+        owners: [callStake, callStakeV2, bondStake, liquidStake, incomeStake],
+        tokens: [nullAddress, sntNova],
+        chain: 'nova',
+        block,
+      }),
   },
-}
+};
 
-module.exports = mergeExports([dexTVL, stakingExports,])
+module.exports = mergeExports([dexTVL, stakingExports]);
