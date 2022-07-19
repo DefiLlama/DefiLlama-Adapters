@@ -45,7 +45,7 @@ async function staking() {
   return { [COINGECKO_ID]: parseInt(pool.bonded_tokens) / 10 ** 6 };
 }
 
-async function pool2() {
+async function tvl() {
   const { pairs } = await get("https://api.kujira.app/api/coingecko/pairs");
   const balances = {};
   await Promise.all(
@@ -67,20 +67,9 @@ async function pool2() {
   return balances;
 }
 
-async function tvl(...args) {
-  const s = await staking(...args);
-  const p = await pool2(...args);
-
-  return [...Object.entries(s), ...Object.entries(p)].reduce((a, [k, v]) => {
-    sdk.util.sumSingleBalance(a, k, v);
-    return a;
-  }, {});
-}
-
 module.exports = {
   kujira: {
     tvl,
-    pool2,
     staking,
   },
 };
