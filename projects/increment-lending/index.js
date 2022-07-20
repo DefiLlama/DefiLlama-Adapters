@@ -17,8 +17,7 @@ async function borrowed() {
 
 module.exports = {
   misrepresentedTokens: true,
-  methodology:
-    "This is the first lending protocol on the flow blockchain , and temporarily uses the project's own endpoint.",
+  methodology: "Counting the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed funds are not counted in the TVL, so only the tokens actually locked in the contracts are counted.",
   flow: {
     fetch: tvl,
     borrowed: borrowed
