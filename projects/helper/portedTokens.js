@@ -1835,6 +1835,24 @@ const ontologyFixMapping = {
     decimals: 18,
   },
 };
+const reiFixMapping = {
+  "0x2545af3d8b11e295bb7aedd5826021ab54f71630": {
+    coingeckoId: "rei-network",
+    decimals: 18,
+  },
+  "0x988a631caf24e14bb77ee0f5ca881e8b5dcfcec7": {
+    coingeckoId: "tether",
+    decimals: 6,
+  },
+  "0x8059e671be1e76f8db5155bf4520f86acfdc5561": {
+    coingeckoId: "wrapped-bitcoin",
+    decimals: 8
+  },
+  "0x5B07F2582d0Cc26E400D56266aeBB201c93560eD": {
+    coingeckoId: "ethereum",
+    decimals: 18
+  },
+};
 
 const fixBalancesMapping = {
   avax: fixAvaxBalances,
@@ -1865,6 +1883,7 @@ const fixBalancesMapping = {
   near: b => fixBalances(b, nearFixMapping, { removeUnmapped: false }),
   thundercore: b => fixBalances(b, thundercoreFixMapping, { removeUnmapped: true }),
   ontology_evm: b => fixBalances(b, ontologyFixMapping, { removeUnmapped: false }),
+  rei: b => fixBalances(b, reiFixMapping, { removeUnmapped: true }),
 };
 
 const chainTransforms = {
