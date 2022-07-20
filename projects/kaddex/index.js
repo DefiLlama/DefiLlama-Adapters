@@ -11,7 +11,6 @@ const getReserve = (tokenData) => {
 };
 
 const pairTokens = {
-
   "coin:runonflux.flux": {
     name: "coin:runonflux.flux",
     token0: {
@@ -34,8 +33,19 @@ const pairTokens = {
       name: "HYPE",
       code: "hypercent.prod-hype-coin",
     },
-  }
-}
+  },
+  "coin:mock.token": {
+    name: "coin:mok.token",
+    token0: {
+      name: "KDA",
+      code: "coin",
+    },
+    token1: {
+      name: "MOK",
+      code: "mok.token",
+    },
+  },
+};
 
 const getPairList = async () => {
   const pairList = await Promise.all(
@@ -52,20 +62,12 @@ const getPairList = async () => {
                 (totalBal (kswap.tokens.total-supply (kswap.exchange.get-pair-key ${pair.token0.code} ${pair.token1.code})))
               )[totalBal reserveA reserveB])
              `,
-          meta: mkMeta(
-            "",
-            chainId,
-            GAS_PRICE,
-            3000,
-            creationTime(),
-            600
-          ),
+          meta: mkMeta("", chainId, GAS_PRICE, 3000, creationTime(), 600),
         },
         network
       );
 
       return {
-
         reserves: [
           getReserve(data.result.data[1]),
           getReserve(data.result.data[2]),
@@ -77,23 +79,23 @@ const getPairList = async () => {
 };
 
 const fetchKdaTotal = async (pairList) => {
-  let kdaTotal = 0;
-  for (let i = 0; i < pairList.length; i++) {
-    let pair = pairList[i];
-    kdaTotal += pair.reserves[0];
+  let totalKda = 0;
+  for (const pair of pairList) {
+    const kdaInPool = pair.reserves[0];
+    const tokenInPoolInKdaRate = pair.reserves[0] / pair.reserves[1];
+    totalKda +=
+      kdaInPool +
+      tokenInPoolInKdaRate * pair.reserves[1]; /** equal to do (kda*2) */
   }
-  return kdaTotal;
+  return totalKda;
 };
 
 async function fetch() {
   const pairList = await getPairList();
   const kdaTotal = await fetchKdaTotal(pairList);
-  const kdaInFluxPair = pairList[0].reserves[0];
-  const kdaInHypePair = pairList[1].reserves[0]
   return {
-    'kadena': kdaTotal + kdaInFluxPair + kdaInHypePair
-    
-  }
+    kadena: kdaTotal,
+  };
 }
 
 module.exports = {
