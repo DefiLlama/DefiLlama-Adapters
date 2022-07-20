@@ -23,7 +23,7 @@ async function tvl() {
     tvl['usd-coin'] = tvl['usd-coin'].plus(data?.psm?.deposited)
 
     //stability pool
-    tvl['hedge-usd'] = tvl['hedge-usd'].plus(data?.liquidationPoolDeposits)
+    //tvl['hedge-usd'] = tvl['hedge-usd'].plus(data?.liquidationPoolDeposits)
 
     return tvl;    
 }
