@@ -327,8 +327,10 @@ function unknownTombs({ token, shares = [], rewardPool = [], masonry = [], lps, 
     const tao = []
     lps.forEach(token => rewardPool.forEach(owner => tao.push([token, owner])))
 
-    await sumTokens(balances, tao, block, chain, undefined, { resolveLP: true })
+    await sumTokens(balances, tao, block, chain, undefined, { resolveLP: true, skipFixBalances: true })
+    const fixBalances = await getFixBalances(chain)
     await updateBalances(balances)
+    fixBalances(balances)
     return balances
   }
 
@@ -343,8 +345,10 @@ function unknownTombs({ token, shares = [], rewardPool = [], masonry = [], lps, 
     const tao = []
     shares.forEach(token => masonry.forEach(owner => tao.push([token, owner])))
 
-    await sumTokens(balances, tao, block, chain)
+    await sumTokens(balances, tao, block, chain, undefined, { skipFixBalances: true })
+    const fixBalances = await getFixBalances(chain)
     await updateBalances(balances)
+    fixBalances(balances)
     return balances
   }
 
@@ -417,7 +421,7 @@ async function sumUnknownTokens({ tokensAndOwners = [],
     else if (owner)
       tokensAndOwners = tokens.map(t => [t, owner])
   tokensAndOwners = tokensAndOwners.filter(t => !blacklist.includes(t[0]))
-  const balances = await sumTokens2({ chain, block, tokensAndOwners })
+  const balances = await sumTokens2({ chain, block, tokensAndOwners, skipFixBalances: true, })
   const { updateBalances, } = await getTokenPrices({ coreAssets, lps: [...tokensAndOwners.map(t => t[0]), ...lps,], chain, block, restrictTokenPrice, blacklist, log_coreAssetPrices, log_minTokenValue, minLPRatio })
   await updateBalances(balances, { skipConversion, onlyLPs })
   const fixBalances = await getFixBalances(chain)
