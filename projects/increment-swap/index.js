@@ -18,7 +18,7 @@ async function fetch() {
 }
 
 module.exports = {
-    methodology: "This is the first permissionless dex on the flow blockchain.",
+    methodology: "Counting the tokens locked in SwapPair AMM pools, pulling the data from the https://app.increment.fi/infos ",
     flow: {
         fetch: tvl,
     },
