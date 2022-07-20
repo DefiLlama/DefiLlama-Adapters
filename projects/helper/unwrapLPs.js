@@ -621,7 +621,7 @@ tokensAndOwners [
     [token, owner] - eg ["0xaaa", "0xbbb"]
 ]
 */
-async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereum", transformAddress, { resolveCrv = false, resolveLP = false, resolveYearn = false, unwrapAll = false, blacklistedLPs = [], } = {}) {
+async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereum", transformAddress, { resolveCrv = false, resolveLP = false, resolveYearn = false, unwrapAll = false, blacklistedLPs = [], skipFixBalances = false, } = {}) {
   if (!transformAddress)
     transformAddress = await getChainTransform(chain)
 
@@ -673,7 +673,7 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
     await resolveCrvTokens(balances, block, chain, transformAddress)
   }
 
-  if (['astar', 'harmony', 'kava', 'thundercore', 'klaytn', 'evmos'].includes(chain)) {
+  if (!skipFixBalances && ['astar', 'harmony', 'kava', 'thundercore', 'klaytn', 'evmos'].includes(chain)) {
     const fixBalances = await getFixBalances(chain)
     fixBalances(balances)
   }
@@ -957,6 +957,7 @@ async function sumTokens2({
   unwrapAll = false,
   blacklistedLPs = [],
   blacklistedTokens = [],
+  skipFixBalances = false,
 }) {
 
   if (!tokensAndOwners.length) {
@@ -969,7 +970,14 @@ async function sumTokens2({
   blacklistedTokens = blacklistedTokens.map(t => t.toLowerCase())
   tokensAndOwners = tokensAndOwners.map(([t, o]) => [t.toLowerCase(), o]).filter(([token]) => !blacklistedTokens.includes(token))
 
-  return sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { resolveCrv, resolveLP, resolveYearn, unwrapAll, blacklistedLPs })
+  await sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { resolveCrv, resolveLP, resolveYearn, unwrapAll, blacklistedLPs, skipFixBalances: true })
+
+  if (!skipFixBalances) {
+    const fixBalances = await getFixBalances(chain)
+    fixBalances(balances)
+  }
+
+  return balances
 }
 
 async function unwrapBalancerToken({ chain, block, balancerToken, owner, balances = {} }) {
