@@ -34,13 +34,13 @@ interface IGetChainVolumeParams {
     factory: string,
     field: string
   },
-  dailyVolume: {
+  dailyVolume?: {
     factory: string,
     field: string
   },
   customDailyVolume?: string,
-  hasDailyVolume: boolean
-  hasTotalVolume: boolean
+  hasDailyVolume?: boolean
+  hasTotalVolume?: boolean
   getCustomBlock?: (timestamp: number) => Promise<number>
 }
 

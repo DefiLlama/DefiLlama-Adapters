@@ -1,4 +1,4 @@
-import path from 'path'
+import * as path from 'path'
 import type { ChainBlocks, DexAdapter, VolumeAdapter } from '../dexVolume.type';
 import { chainsForBlocks } from "@defillama/sdk/build/computeTVL/blocks";
 import { Chain } from '@defillama/sdk/build/general';
@@ -26,16 +26,12 @@ const passedFile = path.resolve(process.cwd(), process.argv[2]);
     printVolumes(volumes)
   } else if ("breakdown" in module) {
     const breakdownAdapter = module.breakdown
-    const allVolumes = await Promise.allSettled(Object.entries(breakdownAdapter).map(async ([version, adapter]) =>
+    const allVolumes = await Promise.all(Object.entries(breakdownAdapter).map(async ([version, adapter]) =>
       await runAdapter(adapter).then(res => ({ version, res }))
     ))
-    allVolumes.forEach((promise)=>{
-      if (promise.status==="fulfilled") {
-        console.info(promise.value.version)
-        printVolumes(promise.value.res)
-      } else {
-        console.info(promise.reason)
-      }
+    allVolumes.forEach((promise) => {
+      console.info(promise.version)
+      printVolumes(promise.res)
     })
   } else console.info("No compatible adapter found")
 })()
