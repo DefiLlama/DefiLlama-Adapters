@@ -54,7 +54,7 @@ return balances
 
 
 module.exports = {
-  methodology: `Counts SWAP tokens locked int the staking contract(0x5A753021CE28CBC5A7c51f732ba83873D673d8cC). Regular TVL counts UNI, USDT, and USDC that are also in the staking contract.`,
+  methodology: `Counts SWAP tokens locked int the staking contract(0x5A753021CE28CBC5A7c51f732ba83873D673d8cC). Regular TVL counts UNI, USDT, and USDC that are also in the staking contract(these tokens may have been sent to the contract by accident).`,
   ethereum: {
     tvl: ethTvl,
     staking: stakingTvl
