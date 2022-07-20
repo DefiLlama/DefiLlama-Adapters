@@ -1,0 +1,61 @@
+[
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "validatorAddress",
+                "type": "address"
+            }
+        ],
+        "name": "getValidatorStatus",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "ownerAddress",
+                "type": "address"
+            },
+            {
+                "internalType": "uint8",
+                "name": "status",
+                "type": "uint8"
+            },
+            {
+                "internalType": "uint256",
+                "name": "totalDelegated",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint32",
+                "name": "slashesCount",
+                "type": "uint32"
+            },
+            {
+                "internalType": "uint64",
+                "name": "changedAt",
+                "type": "uint64"
+            },
+            {
+                "internalType": "uint64",
+                "name": "jailedBefore",
+                "type": "uint64"
+            },
+            {
+                "internalType": "uint64",
+                "name": "claimedAt",
+                "type": "uint64"
+            },
+            {
+                "internalType": "uint16",
+                "name": "commissionRate",
+                "type": "uint16"
+            },
+            {
+                "internalType": "uint96",
+                "name": "totalRewards",
+                "type": "uint96"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+]
