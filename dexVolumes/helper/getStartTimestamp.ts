@@ -2,6 +2,17 @@ import { request, gql } from "graphql-request";
 
 import { DEFAULT_DAILY_VOLUME_FACTORY, DEFAULT_DAILY_VOLUME_FIELD } from "./getUniSubgraphVolume";
 
+interface IgetStartTimestampProps {
+  endpoints: {
+    [chain: string]: string
+  }
+  chain: string
+  dailyDataField: string
+  volumeField: string
+  dateField: string
+  first: number
+}
+
 const getStartTimestamp =
   ({
     endpoints,
@@ -10,7 +21,7 @@ const getStartTimestamp =
     volumeField = DEFAULT_DAILY_VOLUME_FIELD,
     dateField = "date",
     first = 1000,
-  }) =>
+  }: IgetStartTimestampProps) =>
   async () => {
     const query = gql`
         {
@@ -25,7 +36,7 @@ const getStartTimestamp =
 
     const days = result?.[dailyDataField];
 
-    const firstValidDay = days.find((data) => data[volumeField] !== "0");
+    const firstValidDay = days.find((data: any) => data[volumeField] !== "0");
 
     return firstValidDay[dateField];
   };
