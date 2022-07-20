@@ -3,6 +3,8 @@ const sdk = require("@defillama/sdk");
 const IOTEX_CG_MAPPING = require("./../xdollar-finance/iotex_cg_mapping.json");
 const BigNumber = require("bignumber.js");
 
+const nullAddress = '0x0000000000000000000000000000000000000000'
+
 async function transformFantomAddress() {
   const multichainTokens = (await utils.fetchURL(
     "https://netapi.anyswap.net/bridge/v2/info"
@@ -58,6 +60,8 @@ async function transformFantomAddress() {
       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // axUSDC
     "0xB67FA6deFCe4042070Eb1ae1511Dcd6dcc6a532E":
       "0xBC6DA0FE9aD5f3b0d58160288917AA56653660E9", // alUSD
+    "0x8cc97b50fe87f31770bcdcd6bc8603bc1558380b":
+      "cronos:0x0804702a4e749d39a35fde73d1df0b1f1d6b8347", // single
     "0x95bf7e307bc1ab0ba38ae10fc27084bc36fcd605":
       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
   };
@@ -566,7 +570,7 @@ async function transformMoonbeamAddress() {
     '0x1DC78Acda13a8BC4408B207c9E48CDBc096D95e0': '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', // wtbc
     '0xc234A67a4F840E61adE794be47de455361b52413': '0x6b175474e89094c44da98b954eedeac495271d0f', // dai
     '0x1d4C2a246311bB9f827F4C768e277FF5787B7D7E': 'moonriver:0x98878b06940ae243284ca214f92bb71a2b032b8a', // movr
-    '0x0000000000000000000000000000000000000000': '"moonbeam:0xacc15dc74880c9944775448304b263d191c6077f', // GLMR -> WGLMR
+    '0x0000000000000000000000000000000000000000': 'moonbeam:0xacc15dc74880c9944775448304b263d191c6077f', // GLMR -> WGLMR
   }
 
   return transformChainAddress(mapping, "moonbeam", { skipUnmapped: false });
@@ -805,6 +809,7 @@ async function transformKccAddress() {
 
 function transformMetisAddress() {
   const map = {
+    "0x0000000000000000000000000000000000000000": "0x9e32b13ce7f2e80a01932b42553652e053d6ed8e", // METIS
     "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000": "0x9e32b13ce7f2e80a01932b42553652e053d6ed8e",
     "0xbb06dca3ae6887fabf931640f67cab3e3a16f4dc": "0xdac17f958d2ee523a2206206994597c13d831ec7",
     "0x420000000000000000000000000000000000000a": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
@@ -952,6 +957,10 @@ function fixKlaytnBalances(balances) {
     }, // Wrapped KLAY
     "0x9eaefb09fe4aabfbe6b1ca316a3c36afc83a393f": {
       coingeckoId: "ripple",
+      decimals: 6
+    },
+    "0xd6dab4cff47df175349e6e7ee2bf7c40bb8c05a3": {
+      coingeckoId: "tether",
       decimals: 6
     },
     "0xc6a2ad8cc6e4a7e08fc37cc5954be07d499e7654": {
@@ -1196,6 +1205,8 @@ async function transformDfkAddress() {
 }
 async function transformAuroraAddress() {
   const mapping = {
+    "0x0000000000000000000000000000000000000000":
+      "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // Aurora gas -> WETH
     "0xda2585430fef327ad8ee44af8f1f989a2a91a3d2":
       "0x853d955aCEf822Db058eb8505911ED77F175b99e", // FRAX
     "0x07379565cd8b0cae7c60dc78e7f601b34af2a21c":
@@ -1537,10 +1548,30 @@ const songbirdFixMapping = {
 };
 
 const smartbchFixMapping = {
+  [nullAddress]: {
+    coingeckoId: "bitcoin-cash",
+    decimals: 18
+  },
   "0x3743ec0673453e5009310c727ba4eaf7b3a1cc04": {
     coingeckoId: "bitcoin-cash",
     decimals: 18
-  }
+  },
+  "0x0b00366fBF7037E9d75E4A569ab27dAB84759302": {
+    coingeckoId: "law",
+    decimals: 18
+  },
+  "0x7b2B3C5308ab5b2a1d9a94d20D35CCDf61e05b72": {
+    coingeckoId: "flex-usd",
+    decimals: 18
+  },
+  "0x24d8d5Cbc14FA6A740c3375733f0287188F8dF3b": {
+    coingeckoId: "tropical-finance",
+    decimals: 18
+  },
+  "0xBc2F884680c95A02cea099dA2F524b366d9028Ba": {
+    coingeckoId: "tether",
+    decimals: 18
+  },
 };
 
 const evmosFixMapping = {
@@ -1931,7 +1962,9 @@ async function transformEthereumAddress() {
     "0x65f7ba4ec257af7c55fd5854e5f6356bbd0fb8ec":
       "0x92d6c1e31e14520e676a687f0a93788b716beff5", // sDYDX
     "0x586aa273f262909eef8fa02d90ab65f5015e0516":
-      "0x0000000000085d4780B73119b644AE5ecd22b376" // FIAT
+      "0x0000000000085d4780B73119b644AE5ecd22b376", // FIAT
+    "0x0a5e677a6a24b2f1a2bf4f3bffc443231d2fdec8":
+      "bsc:0xb5102cee1528ce2c760893034a4603663495fd72", // USX
   };
   normalizeMapping(mapping);
 
