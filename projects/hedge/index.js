@@ -43,5 +43,5 @@ module.exports = {
       staking
     },
     methodology:
-      "TVL is calculated as Collateral Value + Stability Pool Deposits * USH price + HDG Staked * HDG price"
+      "TVL is equal to the Collateral Value + assets in PSM. Staking adds Amount of HDG staked * HDG price"
   };
