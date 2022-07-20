@@ -64,7 +64,7 @@ async function dot(timestamp, ethBlock, chainBlocks) {
   const pooledCoin = await sdk.api.abi.call({
     block,
     chain,
-    target: "0xFA36Fe1dA08C89eC72Ea1F0143a35bFd5DAea108",
+    target: "0xfa36fe1da08c89ec72ea1f0143a35bfd5daea108",
     abi: {"inputs":[],"name":"getTotalPooledKSM","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
   })
 
