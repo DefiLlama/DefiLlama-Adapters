@@ -52,6 +52,7 @@ async function getTotalCash(block) {
     calls: totalCashUnderlyingCalls,
     block: block,
   });
+  let totalCashObj
   let totalCashAvailable = 0;
   for (totalCashObj of totalCashUnderlying.output) {
     totalCashAvailable += totalCashObj.output / 10 ** 18;
@@ -72,7 +73,7 @@ async function getTotalCollateral(block) {
     }
   `;
   const results = await fetch(getDepositedNFTs);
-
+  let depositedNFTObj
   let totalCollateral = 0;
   for (depositedNFTObj of results.depositedNFTsEntities) {
     if (depositedNFTObj.name === "Glasses") {

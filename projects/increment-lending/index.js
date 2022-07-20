@@ -9,17 +9,19 @@ async function fetch() {
   const { data: tvls } = await fetchURL("https://app.increment.fi/info/tvl");
   return tvls.LendingTVL - tvls.LendingBorrow;
 }
-
+//denominating in tether as a placeholder for usd
 async function borrowed() {
   const { data: tvls } = await fetchURL("https://app.increment.fi/info/tvl");
-  return tvls.LendingBorrow;
+  return {tether: tvls.LendingBorrow};
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   methodology:
     "This is the first lending protocol on the flow blockchain , and temporarily uses the project's own endpoint.",
   flow: {
-    fetch: tvl
+    fetch: tvl,
+    borrowed: borrowed
   },
   fetch
 };

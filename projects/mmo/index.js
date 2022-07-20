@@ -44,6 +44,7 @@ async function borrowed(block) {
     calls: totalBorrowsCall,
     block: block,
   });
+  let borrowObj
   let totalBorrows = 0;
   for (borrowObj of totalBorrowsResults.output) {
     totalBorrows += borrowObj.output / 10 ** 18;
