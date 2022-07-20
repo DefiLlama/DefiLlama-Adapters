@@ -1,5 +1,5 @@
 export type ChainBlocks = {
-  [x: string]: number
+  [x: string]: number;
 };
 
 export type FetchResult = {

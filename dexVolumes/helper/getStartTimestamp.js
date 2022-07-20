@@ -1,6 +1,9 @@
-import { request, gql } from "graphql-request";
+const { request, gql } = require("graphql-request");
 
-import { DEFAULT_DAILY_VOLUME_FACTORY, DEFAULT_DAILY_VOLUME_FIELD } from "./getUniSubgraphVolume";
+const {
+  DEFAULT_DAILY_VOLUME_FACTORY,
+  DEFAULT_DAILY_VOLUME_FIELD,
+} = require("./getUniSubgraphVolume");
 
 const getStartTimestamp =
   ({
@@ -30,6 +33,6 @@ const getStartTimestamp =
     return firstValidDay[dateField];
   };
 
-export {
+module.exports = {
   getStartTimestamp,
 };
