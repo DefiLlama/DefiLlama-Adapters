@@ -76,6 +76,11 @@ const chain = 'kava'
 const positionManager = '0x1Bf12f0650d8065fFCE3Cd9111feDEC21deF6825'
 const customWKava = '0xc13791DA84f43525189456CfE2026C60D3B7F706'.toLowerCase()
 
+const chainAurora = 'aurora'
+const positionManagerAurora = '0x649Da64F6d4F2079156e13b38E95ffBF8EBB1B14'
+const customWETH = '0x274d83086C356E0cFc75933FBf838CA10A7E8274'.toLowerCase()
+
+
 async function tvl(_, _b, { [chain]: block }) {
   const { output: poolCount } = await sdk.api.abi.call({
     target: positionManager,
@@ -111,8 +116,46 @@ async function tvl(_, _b, { [chain]: block }) {
   return kavaBal
 }
 
+async function tvlAurora(_, _b, { [chain]: block }) {
+  const { output: poolCount } = await sdk.api.abi.call({
+    target: positionManagerAurora,
+    abi: abis.poolsCount,
+    chainAurora, block,
+  })
+  const calls = createIncrementArray(poolCount).map(i => ({ params: i }))
+  let { output: poolAddreses } = await sdk.api.abi.multiCall({
+    target: positionManagerAurora,
+    abi: abis.poolsAddresses,
+    calls,
+    chainAurora, block,
+  })
+
+  poolAddreses = poolAddreses.map(i => ({ target: i.output}))
+  const { output: token0s } = await sdk.api.abi.multiCall({
+    abi: token0ABI,
+    calls: poolAddreses,
+    chainAurora, block,
+  })
+  const { output: token1s } = await sdk.api.abi.multiCall({
+    abi: token1ABI,
+    calls: poolAddreses,
+    chainAurora, block,
+  })
+  const toa = []
+  token0s.forEach(({ input: { target }, output }) => toa.push([output, target]))
+  token1s.forEach(({ input: { target }, output }) => toa.push([output, target]))
+  const kavaBal = await sumTokens2({ chainAurora, block, tokensAndOwners: toa })
+  const customKavaKey = 'aurora:'+customWETH
+  sdk.util.sumSingleBalance(kavaBal, 'aurora', (kavaBal[customKavaKey] || 0) / 1e18)
+  delete kavaBal[customKavaKey]
+  return kavaBal
+}
+
 module.exports = {
   kava: {
     tvl
+  },
+  aurora: {
+    tvlAurora
   }
 }
