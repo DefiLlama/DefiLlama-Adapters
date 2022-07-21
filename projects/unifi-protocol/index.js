@@ -1,19 +1,9 @@
 const { getUniTVL } = require('../helper/unknownTokens')
 const { staking } = require('../helper/staking')
-const ethers = require("ethers")
-const { config } = require('@defillama/sdk/build/api');
 const { getTokenBalance } = require('../helper/tron');
 const { toUSDTBalances } = require('../helper/balances')
 const { get } = require('../helper/http')
 const { mergeExports } = require('../helper/utils')
-
-config.setProvider("ontology_evm", new ethers.providers.StaticJsonRpcProvider(
-  "https://dappnode1.ont.io:10339",
-  {
-    name: "ontology_evm",
-    chainId: 58,
-  }
-))
 
 const dexExports = {
   avax: {
