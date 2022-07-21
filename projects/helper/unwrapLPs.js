@@ -1016,6 +1016,7 @@ module.exports = {
   unwrapLPsAuto,
   unwrapTroves,
   isLP,
+  nullAddress,
   sumTokens2,
   unwrapBalancerToken,
 }
