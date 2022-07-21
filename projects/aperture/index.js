@@ -1,6 +1,5 @@
 const { queryContractStore, } = require('../helper/terra')
 const BigNumber = require('bignumber.js')
-const { toUSDTBalances } = require('../helper/balances')
 
 const TERRA_MANAGER = 'terra1ajkmy2c0g84seh66apv9x6xt6kd3ag80jmcvtz'
 const APERTURE_CONTRACT = 'terra1jvehz6d9gk3gl4tldrzd8qzj8zfkurfvtcg99x'
