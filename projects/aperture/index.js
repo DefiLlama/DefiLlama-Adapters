@@ -1,4 +1,5 @@
 const { queryContractStore, } = require('../helper/terra')
+const { sleep, } = require('../helper/utils')
 const BigNumber = require('bignumber.js')
 
 const TERRA_MANAGER = 'terra1ajkmy2c0g84seh66apv9x6xt6kd3ag80jmcvtz'
@@ -35,6 +36,7 @@ async function tvl() {
         if (!position_close_info)  // position is closed no need to add it to tvl
           sumTvl = sumTvl.plus(BigNumber(detailed_info.uusd_value))
       }))
+    await sleep(5000)
   }
 
   return {
