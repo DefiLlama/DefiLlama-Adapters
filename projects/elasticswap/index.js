@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const utils = require("../helper/utils");
-const { stakings } = require("../helper/staking");
+const { staking, stakings } = require("../helper/staking");
 
 // addresses grabbed from https://docs.elasticswap.org/resources/deployments
 const addresses = {
@@ -58,19 +58,6 @@ const QuoteTokenAbi = {
   type: "function",
 };
 
-async function getPriceFromContractAndChain(address, chain) {
-  const _address = address.toLowerCase();
-  const _chain = chain === "avax" ? "avalanche" : chain;
-  try {
-    const priceUrl = `https://api.coingecko.com/api/v3/simple/token_price/${chain}?contract_addresses=${_address}&vs_currencies=USD`;
-    const { data: priceResp } = await utils.fetchURL(priceUrl);
-    const price = priceResp[_address].usd;
-    return Number(price);
-  } catch {
-    return 0;
-  }
-}
-
 async function getElasticSwapLpReserves(address, chain = "ethereum") {
   const { output: internalBalances } = await sdk.api.abi.call({
     abi: InternalBalancesAbi,
@@ -84,35 +71,23 @@ async function getElasticSwapLpReserves(address, chain = "ethereum") {
     target: address,
     chain,
   });
-  const { output: baseTokenDecimal } = await sdk.api.erc20.decimals(
-    baseToken,
-    chain
-  );
-  const baseTokenPrice = await getPriceFromContractAndChain(baseToken, chain);
-  const baseTokenReserve =
-    (Number(baseTokenReserveQty) / 10 ** baseTokenDecimal) * baseTokenPrice;
 
   const { output: quoteToken } = await sdk.api.abi.call({
     abi: QuoteTokenAbi,
     target: address,
     chain,
   });
-  const { output: quoteTokenDecimal } = await sdk.api.erc20.decimals(
-    quoteToken,
-    chain
-  );
-  const quoteTokenPrice = await getPriceFromContractAndChain(quoteToken, chain);
-  const quoteTokenReserve =
-    (Number(quoteTokenReserveQty) / 10 ** quoteTokenDecimal) * quoteTokenPrice;
 
-  // FOXY is staked FOX and not listed on CoinGecko
-  if (baseTokenReserve === 0) {
-    return { address, value: quoteTokenReserve * 2 };
-  } else if (quoteTokenReserve === 0) {
-    return { address, value: baseTokenReserve * 2 };
-  } else {
-    return { address, value: quoteTokenReserve + baseTokenReserve };
-  }
+  return [
+    {
+      address: baseToken,
+      value: baseTokenReserveQty,
+    },
+    {
+      address: quoteToken,
+      value: quoteTokenReserveQty,
+    },
+  ];
 }
 
 async function getEthereumTvl(timestamp, block, chainBlocks) {
@@ -120,14 +95,16 @@ async function getEthereumTvl(timestamp, block, chainBlocks) {
   const lps = [
     addresses.ethTicUsdc,
     addresses.ethAmplUsdc,
-    addresses.ethFoxyFox, // FOXY is staked FOX. ElasticSwap is the only place I found liquidity.
+    addresses.ethFoxyFox,
   ];
 
-  const reserves = await Promise.all(
-    lps.map(async (lp) => {
-      return await getElasticSwapLpReserves(lp, "ethereum");
-    })
-  );
+  const reserves = (
+    await Promise.all(
+      lps.map(async (lp) => {
+        return await getElasticSwapLpReserves(lp, "ethereum");
+      })
+    )
+  ).flat();
 
   reserves.forEach((reserve) => {
     sdk.util.sumSingleBalance(balances, reserve.address, reserve.value);
@@ -136,8 +113,46 @@ async function getEthereumTvl(timestamp, block, chainBlocks) {
   return balances;
 }
 
+async function getAvaxTvl(timestamp, block, chainBlocks) {
+  const balances = {};
+  const lps = [
+    addresses.avaxAmplTic,
+    addresses.avaxAmplUsdce,
+    addresses.avaxTicUsdce,
+  ];
+
+  const reserves = (
+    await Promise.all(
+      lps.map(async (lp) => {
+        return await getElasticSwapLpReserves(lp, "avax");
+      })
+    )
+  ).flat();
+
+  reserves.forEach((reserve) => {
+    sdk.util.sumSingleBalance(
+      balances,
+      "avax:" + reserve.address,
+      reserve.value
+    );
+  });
+
+  return balances;
+}
+
 module.exports = {
+  methodology:
+    "TVL of Elastic Swap consists of liquidity pools and native token staking. Data fetched from on-chain.",
   ethereum: {
     tvl: getEthereumTvl,
+    staking: staking(addresses.ethStakingPool, addresses.ethTicToken),
+  },
+  avax: {
+    tvl: getAvaxTvl,
+    staking: stakings(
+      [addresses.avaxStakingPool, addresses.avaxStakingPoolLegacy],
+      addresses.avaxTicToken,
+      "avax"
+    ),
   },
 };
