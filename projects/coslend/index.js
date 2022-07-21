@@ -1,12 +1,10 @@
 const { usdCompoundExports } = require("../helper/compound");
 module.exports = {
   evmos: usdCompoundExports(
-    "0x2C8b48Dc777C26dc857E1040D8ef3Bdd3B1ef499",
+    "0x5b32B588Af5F99F4e5c4038dDE6BDD991024F650",
     "evmos",
-    undefined, undefined, {
-      blacklist: [
-        '0x269bd2505045947d410582128bc65105d285e66e', // MockToken
-      ]
-    }
+    undefined, 
+    undefined,
+    {} 
   ),
 };
