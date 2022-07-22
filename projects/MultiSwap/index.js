@@ -156,6 +156,6 @@ module.exports = {
     tvl
   },
   aurora: {
-    tvlAurora
+    tvl:tvlAurora
   }
 }
