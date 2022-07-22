@@ -5,7 +5,8 @@ import { getPagedGql } from "../utils/gql";
 
 // we do all prices in ETH until the end
 
-const subgraphUrl = "https://api.thegraph.com/subgraphs/name/graphprotocol/compound-v2";
+const subgraphUrl =
+  "https://api.thegraph.com/subgraphs/name/graphprotocol/compound-v2";
 
 const accountsQuery = gql`
   query accounts($lastId: ID) {
@@ -67,7 +68,11 @@ type Market = {
 const getUnderwaterAccounts = (accounts: Account[]) => {
   const underwaterAccounts = accounts.filter((account) => {
     const { health, totalBorrowValueInEth } = account;
-    return Number(health) < 1 && Number(health) > 0 && Number(totalBorrowValueInEth) > 0;
+    return (
+      Number(health) < 1 &&
+      Number(health) > 0 &&
+      Number(totalBorrowValueInEth) > 0
+    );
   });
   return underwaterAccounts;
 };
@@ -100,7 +105,11 @@ const getSupplyValueInEth = (token: Token) => {
  * 1. enteredMarket === true
  * 2. supplyValue >= borrowValue * 0.5
  */
-const findSupplyPositionToSeize = (tokens: Token[], borrowId: string, borrowValueInEth: number) => {
+const findSupplyPositionToSeize = (
+  tokens: Token[],
+  borrowId: string,
+  borrowValueInEth: number
+) => {
   for (const token of tokens) {
     const { enteredMarket, id: supplyId } = token;
 
@@ -127,9 +136,16 @@ const findBorrowAndSupplyPosition = (tokens: Token[]) => {
     const { id: borrowId } = token;
     const borrowValueInEth = getBorrowValueInEth(token);
     if (borrowValueInEth > 0) {
-      const supplyPositionToSeize = findSupplyPositionToSeize(tokens, borrowId, borrowValueInEth);
+      const supplyPositionToSeize = findSupplyPositionToSeize(
+        tokens,
+        borrowId,
+        borrowValueInEth
+      );
       if (supplyPositionToSeize !== null) {
-        return { borrowPositionToRepay: { token, borrowValueInEth }, supplyPositionToSeize };
+        return {
+          borrowPositionToRepay: { token, borrowValueInEth },
+          supplyPositionToSeize,
+        };
       }
     }
   }
@@ -181,7 +197,11 @@ const uniswapAnchoredView = new ethers.Contract(
 );
 
 const liqs = async () => {
-  const accounts = (await getPagedGql(subgraphUrl, accountsQuery, "accounts")) as Account[];
+  const accounts = (await getPagedGql(
+    subgraphUrl,
+    accountsQuery,
+    "accounts"
+  )) as Account[];
   const ethPriceInUsd = Number(await uniswapAnchoredView.price("ETH")) / 1e6;
 
   // all the liquidable positions across all users
