@@ -11,7 +11,7 @@ const creamAbi = require('./abis/cream.json')
 const { unwrapCrv, resolveCrvTokens } = require('./resolveCrvTokens')
 const activePoolAbi = require('./ankr/abis/activePool.json')
 const wethAddressAbi = require('./ankr/abis/wethAddress.json');
-const { isLP, DEBUG_MODE, getUniqueAddresses, } = require('./utils')
+const { isLP, DEBUG_MODE, getUniqueAddresses, log, } = require('./utils')
 const wildCreditABI = require('../wildcredit/abi.json')
 
 const yearnVaults = {
@@ -660,6 +660,10 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
       console.log(token, balance, balances[token])
       throw e
     }
+  })
+
+  Object.entries(balances).forEach(([token, value]) => {
+    if (+value === 0) delete balances[token]
   })
 
   if (resolveLP || unwrapAll)
