@@ -1,5 +1,7 @@
 const sdk = require("@defillama/sdk");
-const utils = require("../helper/utils");
+const { get } = require("../helper/http");
+const BigNumber = require("bignumber.js");
+const { unwrapBalancerPool } = require('../helper/unwrapLPs')
 
 const addresses = {
   aura: "0xc0c293ce456ff0ed870add98a0828dd4d2903dbf",
@@ -7,67 +9,33 @@ const addresses = {
   bal: "0xba100000625a3754423978a60c9317c58a424e3d",
   veBal: "0xC128a9954e6c874eA3d62ce62B468bA073093F25",
   auraDelegate: "0xaF52695E1bB01A16D33D7194C28C42b10e0Dbec2",
+  bal80eth20: "0x5c6Ee304399DBdB9C8Ef030aB642B10820DB8F56",
 };
 
-/**
- * Fetches the TVL of Aura Finance
- * @returns {Promise<{balancer: {tvl: number, breakdown: {[address: string]: number}}}>}
- */
-const fetchTvl = async () => {
-  const resp = await utils.fetchURL("https://aura-metrics.onrender.com/tvl");
-  return resp.data;
-};
+async function tvl(_, block) {
+  const { balancer: { tvl } } = await get("https://aura-metrics.onrender.com/tvl")
+  const { output: veBalTotalSupply } = await sdk.api.erc20.totalSupply({ target: addresses.veBal, block })
+  const { output: veBalance } = await sdk.api.erc20.balanceOf({ target: addresses.veBal, owner: addresses.auraDelegate, block })
+  const ratio = veBalance / veBalTotalSupply
+  const bal = await unwrapBalancerPool({ block, balancerPool: addresses.bal80eth20, owner: addresses.veBal, })
+  const balances = {
+    tether: tvl,
+  }
 
-const BalanceOfAbi = {
-  stateMutability: "view",
-  type: "function",
-  name: "balanceOf",
-  inputs: [{ name: "addr", type: "address" }],
-  outputs: [{ name: "", type: "uint256" }],
-};
-const TotalSupplyAbi = {
-  stateMutability: "view",
-  type: "function",
-  name: "totalSupply",
-  inputs: [],
-  outputs: [{ name: "", type: "uint256" }],
-};
+  Object.entries(bal).forEach(([token, value], i) => {
+    const newValue = BigNumber(+value * ratio).toFixed(0)
+    sdk.util.sumSingleBalance(balances, token, newValue)
+  })
 
-/**
- * Fetches the PCV of Aura Finance
- * @returns {Promise<{pcv: number, percent: number}>}
- */
-const fetchPcv = async () => {
-  const { output: balance } = await sdk.api.abi.call({
-    abi: BalanceOfAbi,
-    target: addresses.veBal,
-    params: addresses.auraDelegate,
-  });
-  const { output: totalSupply } = await sdk.api.abi.call({
-    abi: TotalSupplyAbi,
-    target: addresses.veBal,
-  });
-
-  const priceUrl = `https://api.coingecko.com/api/v3/simple/token_price/ethereum?contract_addresses=${addresses.bal}&vs_currencies=USD`;
-  const { data: priceResp } = await utils.fetchURL(priceUrl);
-  const price = priceResp[addresses.bal].usd;
-
-  return {
-    pcv: (balance * price * 2.5) / 1e18,
-    percent: balance / totalSupply,
-  };
-};
-
-const fetch = async () => {
-  const { balancer } = await fetchTvl();
-  const { tvl } = balancer;
-  const { pcv } = await fetchPcv();
-
-  return tvl + pcv;
-};
+  return balances
+}
 
 module.exports = {
   methodology:
     "TVL of Aura Finance consists of both the total deposited assets (fetched from the Aura Finance's Metrics API) and protocol-controlled value via veBAL (fetched on-chain)",
-  fetch,
+  misrepresentedTokens: true,
+  timetravel: false,
+  ethereum: {
+    tvl
+  },
 };

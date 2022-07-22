@@ -2,7 +2,7 @@ const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 const token0 = require('./abis/token0.json')
 const symbol = require('./abis/symbol.json')
-const { getPoolTokens, getPoolId, bPool, getCurrentTokens, } = require('./abis/balancer.json')
+const { getPoolTokens, getPoolId, bPool, getCurrentTokens, getVault: getBalancerVault, } = require('./abis/balancer.json')
 const getPricePerShare = require('./abis/getPricePerShare.json')
 const underlyingABI = require('./abis/underlying.json')
 const { requery } = require('./requery')
@@ -996,6 +996,24 @@ async function unwrapBalancerToken({ chain, block, balancerToken, owner, balance
   return balances
 }
 
+async function unwrapBalancerPool({ chain = 'ethereum', block, balancerPool, owner, balances = {} }) {
+  const { output: vault } = await sdk.api.abi.call({ target: balancerPool, abi: getBalancerVault, chain, block, })
+  const { output: poolId } = await sdk.api.abi.call({ target: balancerPool, abi: getPoolId, chain, block, })
+  const { output: poolTokens } = await sdk.api.abi.call({ target: vault, params: [poolId], abi: getPoolTokens, chain, block, })
+  const transform = await getChainTransform(chain)
+
+  const { output: lpTokens } = await sdk.api.erc20.balanceOf({ target: balancerPool, owner, chain, block, })
+  const { output: lpSupply } = await sdk.api.erc20.totalSupply({ target: balancerPool, chain, block, })
+
+  const ratio = lpTokens / lpSupply
+  const { tokens, balances: bal, } = poolTokens
+  tokens.forEach((token, i) => {
+    const newValue = BigNumber(+bal[i] * ratio).toFixed(0)
+    sdk.util.sumSingleBalance(balances, transform(token), newValue)
+  })
+  return balances
+}
+
 module.exports = {
   unwrapYearn,
   unwrapCrv,
@@ -1018,4 +1036,5 @@ module.exports = {
   isLP,
   sumTokens2,
   unwrapBalancerToken,
+  unwrapBalancerPool,
 }
