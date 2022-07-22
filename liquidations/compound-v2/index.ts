@@ -1,149 +1,201 @@
-import { gql, request } from "graphql-request";
+import { gql } from "graphql-request";
+import { ethers } from "ethers";
+import { providers } from "../utils/ethers";
 import { getPagedGql } from "../utils/gql";
 
-/*
-to / liquidator : 0xd911560979b78821d7b045c79e36e9cbfc2f6c6f
-from / borrower : 0x9bf62c518ffe86bd43d57c7026aa1a4fbea83b15
-underlyingRepayAmount / repayAmount : 1907307144
-amount / seizeTokens : 25883142924011
+// we do all prices in ETH until the end
 
-? / cTokenCollateral : 0x6c8c6b02e7b2be14d4fa6022dfd6d75921d90e4e
-cTokenSymbol / ? : cDAI
-*/
+const subgraphUrl = "https://api.thegraph.com/subgraphs/name/graphprotocol/compound-v2";
 
-// {
-// owner: '0x00b20584e6ad3f3598e6230d9fcf7f5e98eddd62',
-// liqPrice: 1148.8813469126733, ->
-// collateral: 'ethereum:0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
-// collateralAmount: '9069748775564947880'
-// },
-
-const marketsQuery = gql`
-  {
-    markets(first: 1000) {
-      id # cToken address
-      symbol # cToken symbol
+const accountsQuery = gql`
+  query accounts($lastId: ID) {
+    accounts(first: 1000, where: { hasBorrowed: true, id_gt: $lastId }) {
+      id
+      health
+      totalBorrowValueInEth
+      totalCollateralValueInEth
+      tokens {
+        id
+        symbol
+        market {
+          name
+          symbol
+          collateralFactor
+          # underlyingPriceUSD
+          underlyingPrice
+          exchangeRate
+          reserveFactor
+          underlyingDecimals
+          underlyingAddress
+        }
+        borrowBalanceUnderlying
+        supplyBalanceUnderlying
+        enteredMarket
+      }
     }
   }
 `;
 
-const getMarkets = async () => {
-  const { markets } = (await request(subgraphUrl, marketsQuery)) as {
-    markets: { id: string; symbol: string }[];
-  };
-  return markets;
+type Account = {
+  id: string;
+  health: string;
+  totalBorrowValueInEth: string;
+  totalCollateralValueInEth: string;
+  tokens: Token[];
 };
 
-const getUnderlying = async (cTokenSymbol: string, blockNumber: number) => {};
+type Token = {
+  id: string;
+  symbol: string;
+  market: Market;
+  borrowBalanceUnderlying: string;
+  supplyBalanceUnderlying: string;
+  enteredMarket: boolean;
+};
 
-const liquidationEventsQuery = gql`
-  query liquidationEvents($lastId: String) {
-    liquidationEvents(first: 1000) {
-      blockNumber # for id-ing the token price
-      from # owner
-      cTokenSymbol # cToken symbol, needs to be transformed to address, then looked up for collateral address
+type Market = {
+  name: string;
+  symbol: string;
+  collateralFactor: string;
+  underlyingPrice: string;
+  exchangeRate: string;
+  reserveFactor: string;
+  underlyingDecimals: number;
+  underlyingAddress: string;
+};
+
+const getUnderwaterAccounts = (accounts: Account[]) => {
+  const underwaterAccounts = accounts.filter((account) => {
+    const { health, totalBorrowValueInEth } = account;
+    return Number(health) < 1 && Number(health) > 0 && Number(totalBorrowValueInEth) > 0;
+  });
+  return underwaterAccounts;
+};
+
+const getCTokenData = (token: Token) => {
+  const { market } = token;
+  const { underlyingAddress, underlyingPrice, underlyingDecimals } = market;
+
+  return {
+    underlyingAddress,
+    underlyingPrice,
+    underlyingDecimals,
+  };
+};
+
+const getBorrowValueInEth = (token: Token) => {
+  const { borrowBalanceUnderlying, market } = token;
+  const { underlyingPrice } = market;
+  return parseFloat(borrowBalanceUnderlying) * parseFloat(underlyingPrice);
+};
+
+const getSupplyValueInEth = (token: Token) => {
+  const { supplyBalanceUnderlying, market } = token;
+  const { underlyingPrice } = market;
+  return parseFloat(supplyBalanceUnderlying) * parseFloat(underlyingPrice);
+};
+
+/**
+ * Find seizable supply position with conditions:
+ * 1. enteredMarket === true
+ * 2. supplyValue >= borrowValue * 0.5
+ */
+const findSupplyPositionToSeize = (tokens: Token[], borrowId: string, borrowValueInEth: number) => {
+  for (const token of tokens) {
+    const { enteredMarket, id: supplyId } = token;
+
+    // Borrow and supply position can't be the same token
+    if (!enteredMarket || borrowId === supplyId) {
+      continue;
+    }
+
+    const supplyValueInEth = getSupplyValueInEth(token);
+    // Must have enough supply to seize 50% of borrow value
+    if (supplyValueInEth >= borrowValueInEth * 0.5) {
+      return { token, supplyValueInEth };
     }
   }
-`;
+  return null;
+};
 
-const query = gql`
-  query users($lastId: String) {
-    users(first: 1000, where: { borrowedReservesCount_gt: 0, id_gt: $lastId }) {
-      id
-      reserves {
-        usageAsCollateralEnabledOnUser
-        reserve {
-          symbol
-          usageAsCollateralEnabled
-          underlyingAsset
-          price {
-            priceInEth
-          }
-          decimals
-          reserveLiquidationThreshold
-        }
-        currentATokenBalance
-        currentTotalDebt
+/**
+ * Finds a supply position to seize given a borrow position to repay given
+ * the tokens of an underwater account.
+ */
+const findBorrowAndSupplyPosition = (tokens: Token[]) => {
+  for (const token of tokens) {
+    const { id: borrowId } = token;
+    const borrowValueInEth = getBorrowValueInEth(token);
+    if (borrowValueInEth > 0) {
+      const supplyPositionToSeize = findSupplyPositionToSeize(tokens, borrowId, borrowValueInEth);
+      if (supplyPositionToSeize !== null) {
+        return { borrowPositionToRepay: { token, borrowValueInEth }, supplyPositionToSeize };
       }
     }
-    _meta {
-      block {
-        number
-      }
-    }
   }
-`;
+  return null;
+};
 
-const ethPriceQuery = gql`
-  {
-    priceOracleAsset(id: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48") {
-      priceInEth
-    }
+const getLiquidatablePosition = (account: Account) => {
+  const { tokens } = account;
+
+  const borrowAndSupplyPosition = findBorrowAndSupplyPosition(tokens);
+  if (!borrowAndSupplyPosition) {
+    return null;
   }
-`;
 
-const subgraphUrl =
-  "https://api.thegraph.com/subgraphs/name/graphprotocol/compound-v2";
+  const { supplyPositionToSeize } = borrowAndSupplyPosition;
+
+  const {
+    underlyingAddress: collateralAddress,
+    underlyingPrice: liqPriceInEth,
+    underlyingDecimals,
+  } = getCTokenData(supplyPositionToSeize.token);
+  const { id: owner } = account;
+
+  return {
+    owner,
+    // supplyBalanceUnderlying is also calculated from cToken balance while indexing, so there's fractional
+    collateralAmount: (
+      Number(supplyPositionToSeize.token.supplyBalanceUnderlying) *
+      10 ** underlyingDecimals
+    ).toFixed(),
+    collateral: "ethereum:" + collateralAddress,
+    liqPriceInEth,
+  };
+};
+
+// price oracle used in comptroller
+const uniswapAnchoredView = new ethers.Contract(
+  "0x65c816077C29b557BEE980ae3cC2dCE80204A0C5",
+  [
+    {
+      inputs: [{ internalType: "string", name: "symbol", type: "string" }],
+      name: "price",
+      outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+      stateMutability: "view",
+      type: "function",
+    },
+  ],
+  providers.ethereum
+);
 
 const liqs = async () => {
-  const users = await getPagedGql(subgraphUrl, query, "users");
-  const ethPrice =
-    1 /
-    ((await request(subgraphUrl, ethPriceQuery)).priceOracleAsset.priceInEth /
-      1e18);
-  const positions = users
-    .map((user) => {
-      let totalDebt = 0,
-        totalCollateral = 0;
-      const debts = (user.reserves as any[]).map((reserve) => {
-        const decimals = 10 ** reserve.reserve.decimals;
-        const price =
-          (Number(reserve.reserve.price.priceInEth) / 1e18) * ethPrice;
-        const liqThreshold =
-          Number(reserve.reserve.reserveLiquidationThreshold) / 1e4; // belongs to [0, 1]
-        let debt = Number(reserve.currentTotalDebt);
-        if (reserve.usageAsCollateralEnabledOnUser === true) {
-          debt -= Number(reserve.currentATokenBalance) * liqThreshold;
-        }
-        debt *= price / decimals;
-        if (debt > 0) {
-          totalDebt += debt;
-        } else {
-          totalCollateral -= debt;
-        }
-        return {
-          debt,
-          price,
-          token: reserve.reserve.underlyingAsset,
-          totalBal: reserve.currentATokenBalance,
-          decimals,
-        };
-      });
+  const accounts = (await getPagedGql(subgraphUrl, accountsQuery, "accounts")) as Account[];
+  const ethPriceInUsd = Number(await uniswapAnchoredView.price("ETH")) / 1e6;
 
-      const liquidablePositions = debts
-        .filter(({ debt }) => debt < 0)
-        .map((pos) => {
-          const usdPosNetCollateral = -pos.debt;
-          const otherCollateral = totalCollateral - usdPosNetCollateral;
-          const diffDebt = totalDebt - otherCollateral;
-          if (diffDebt > 0) {
-            const amountCollateral = usdPosNetCollateral / pos.price; // accounts for liqThreshold
-            const liqPrice = diffDebt / amountCollateral;
-            // if liqPrice > pos.price -> bad debt
-            return {
-              owner: user.id,
-              liqPrice,
-              collateral: "ethereum:" + pos.token,
-              collateralAmount: pos.totalBal,
-            };
-          }
-        })
-        .filter((t) => t !== undefined);
-
-      return liquidablePositions;
-    })
-    .flat();
-  return positions;
+  // all the liquidable positions across all users
+  const underwaterAccounts = getUnderwaterAccounts(accounts);
+  const liquidablePositions = underwaterAccounts
+    .map((account) => getLiquidatablePosition(account))
+    .filter((position) => !!position)
+    .map((position) => ({
+      owner: position?.owner,
+      liqPrice: Number(position?.liqPriceInEth) * ethPriceInUsd,
+      collateral: position?.collateral,
+      collateralAmount: position?.collateralAmount,
+    }));
+  return liquidablePositions;
 };
 
 module.exports = {
