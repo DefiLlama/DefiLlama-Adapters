@@ -63,7 +63,7 @@ async function transformFantomAddress() {
     "0x8cc97b50fe87f31770bcdcd6bc8603bc1558380b":
       "cronos:0x0804702a4e749d39a35fde73d1df0b1f1d6b8347", // single
     "0x95bf7e307bc1ab0ba38ae10fc27084bc36fcd605":
-    "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
     "0xc5cd01e988cd0794e05ab80f2bcdbdf13ce08bd3":
       "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // nUSD -> USDC
   };
@@ -227,7 +227,7 @@ async function transformAvaxAddress() {
       "0x8965349fb649a33a30cbfda057d8ec2c48abe2a2":
         "0x6e9730ecffbed43fd876a264c982e254ef05a0de", // Nord
       "0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7":
-        "0xdac17f958d2ee523a2206206994597c13d831ec7"
+        "0xdac17f958d2ee523a2206206994597c13d831ec7",
     };
     return map[addr.toLowerCase()] || `avax:${addr}`;
   };
@@ -1986,6 +1986,8 @@ async function transformEthereumAddress() {
       "0x0000000000085d4780B73119b644AE5ecd22b376", // FIAT
     "0x0a5e677a6a24b2f1a2bf4f3bffc443231d2fdec8":
       "bsc:0xb5102cee1528ce2c760893034a4603663495fd72", // USX
+    "0x2163383C1F4E74fE36c50E6154C7F18d9Fd06d6f":
+      "avax:0x75739a693459f33b1fbcc02099eea3ebcf150cbe",  // Elasticswap token
   };
   normalizeMapping(mapping);
 
