@@ -2,8 +2,8 @@
 const sdk = require('@defillama/sdk')
 const { createIncrementArray } = require('../helper/utils')
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const token0ABI  = require('../helper/abis/token0.json')
-const token1ABI  = require('../helper/abis/token1.json')
+const token0ABI = require('../helper/abis/token0.json')
+const token1ABI = require('../helper/abis/token1.json')
 
 const abis = {
   "poolsCount": {
@@ -72,90 +72,60 @@ const abis = {
     "type": "function"
   },
 }
-const chain = 'kava'
-const positionManager = '0x1Bf12f0650d8065fFCE3Cd9111feDEC21deF6825'
-const customWKava = '0xc13791DA84f43525189456CfE2026C60D3B7F706'.toLowerCase()
 
-const chainAurora = 'aurora'
-const positionManagerAurora = '0x649Da64F6d4F2079156e13b38E95ffBF8EBB1B14'
-const customWETH = '0x274d83086C356E0cFc75933FBf838CA10A7E8274'.toLowerCase()
-
-
-async function tvl(_, _b, { [chain]: block }) {
-  const { output: poolCount } = await sdk.api.abi.call({
-    target: positionManager,
-    abi: abis.poolsCount,
-    chain, block,
-  })
-  const calls = createIncrementArray(poolCount).map(i => ({ params: i }))
-  let { output: poolAddreses } = await sdk.api.abi.multiCall({
-    target: positionManager,
-    abi: abis.poolsAddresses,
-    calls,
-    chain, block,
-  })
-
-  poolAddreses = poolAddreses.map(i => ({ target: i.output}))
-  const { output: token0s } = await sdk.api.abi.multiCall({
-    abi: token0ABI,
-    calls: poolAddreses,
-    chain, block,
-  })
-  const { output: token1s } = await sdk.api.abi.multiCall({
-    abi: token1ABI,
-    calls: poolAddreses,
-    chain, block,
-  })
-  const toa = []
-  token0s.forEach(({ input: { target }, output }) => toa.push([output, target]))
-  token1s.forEach(({ input: { target }, output }) => toa.push([output, target]))
-  const kavaBal = await sumTokens2({ chain, block, tokensAndOwners: toa })
-  const customKavaKey = 'kava:'+customWKava
-  sdk.util.sumSingleBalance(kavaBal, 'kava', (kavaBal[customKavaKey] || 0) / 1e18)
-  delete kavaBal[customKavaKey]
-  return kavaBal
-}
-
-async function tvlAurora(_, _b, { [chain]: block }) {
-  const { output: poolCount } = await sdk.api.abi.call({
-    target: positionManagerAurora,
-    abi: abis.poolsCount,
-    chainAurora, block,
-  })
-  const calls = createIncrementArray(poolCount).map(i => ({ params: i }))
-  let { output: poolAddreses } = await sdk.api.abi.multiCall({
-    target: positionManagerAurora,
-    abi: abis.poolsAddresses,
-    calls,
-    chainAurora, block,
-  })
-
-  poolAddreses = poolAddreses.map(i => ({ target: i.output}))
-  const { output: token0s } = await sdk.api.abi.multiCall({
-    abi: token0ABI,
-    calls: poolAddreses,
-    chainAurora, block,
-  })
-  const { output: token1s } = await sdk.api.abi.multiCall({
-    abi: token1ABI,
-    calls: poolAddreses,
-    chainAurora, block,
-  })
-  const toa = []
-  token0s.forEach(({ input: { target }, output }) => toa.push([output, target]))
-  token1s.forEach(({ input: { target }, output }) => toa.push([output, target]))
-  const kavaBal = await sumTokens2({ chainAurora, block, tokensAndOwners: toa })
-  const customKavaKey = 'aurora:'+customWETH
-  sdk.util.sumSingleBalance(kavaBal, 'aurora', (kavaBal[customKavaKey] || 0) / 1e18)
-  delete kavaBal[customKavaKey]
-  return kavaBal
-}
-
-module.exports = {
+const config = {
   kava: {
-    tvl
+    nativeCoinGeckoId: 'kava',
+    positionManager: '0x1Bf12f0650d8065fFCE3Cd9111feDEC21deF6825',
+    customToken: '0xc13791DA84f43525189456CfE2026C60D3B7F706'.toLowerCase(),
   },
   aurora: {
-    tvl:tvlAurora
-  }
+    nativeCoinGeckoId: 'aurora',
+    positionManager: '0x649Da64F6d4F2079156e13b38E95ffBF8EBB1B14',
+    customToken: '0x274d83086C356E0cFc75933FBf838CA10A7E8274'.toLowerCase(),
+  },
 }
+
+module.exports = {}
+
+Object.keys(config).forEach(chain => {
+  const { nativeCoinGeckoId, positionManager, customToken } = config[chain]
+  module.exports[chain] = {
+    tvl: async function tvl(_, _b, { [chain]: block }) {
+
+      const { output: poolCount } = await sdk.api.abi.call({
+        target: positionManager,
+        abi: abis.poolsCount,
+        chain, block,
+      })
+      const calls = createIncrementArray(poolCount).map(i => ({ params: i }))
+      let { output: poolAddreses } = await sdk.api.abi.multiCall({
+        target: positionManager,
+        abi: abis.poolsAddresses,
+        calls,
+        chain, block,
+      })
+
+      poolAddreses = poolAddreses.map(i => ({ target: i.output }))
+      const { output: token0s } = await sdk.api.abi.multiCall({
+        abi: token0ABI,
+        calls: poolAddreses,
+        chain, block,
+      })
+      const { output: token1s } = await sdk.api.abi.multiCall({
+        abi: token1ABI,
+        calls: poolAddreses,
+        chain, block,
+      })
+      const toa = []
+      token0s.forEach(({ input: { target }, output }) => toa.push([output, target]))
+      token1s.forEach(({ input: { target }, output }) => toa.push([output, target]))
+      const balances = await sumTokens2({ chain, block, tokensAndOwners: toa })
+      const customKey = chain + ':' + customToken
+      sdk.util.sumSingleBalance(balances, nativeCoinGeckoId, (balances[customKey] || 0) / 1e18)
+      delete balances[customKey]
+      return balances
+    }
+  }
+})
+
