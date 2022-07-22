@@ -18,6 +18,7 @@ const chains = {
     arbitrum: 42161,
     optimism: 10,
     xdai: 100,
+    metis: 1088
 }
 
 module.exports = {
