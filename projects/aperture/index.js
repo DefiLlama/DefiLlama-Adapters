@@ -10,12 +10,19 @@ let openPositions = require('./openPositions.json')
 
 // const posQuery = gql`{  wasm {    contractQuery(      contractAddress: "terra1ajkmy2c0g84seh66apv9x6xt6kd3ag80jmcvtz"      query: {get_next_position_id: {}}    )  }}`
 
-// const currentQueriedCount = 11190
+const currentQueriedCount = 11190
 
 async function tvl() {
   // await updatePositionsList()
   let sumTvl = 0
-  // log(next_position_id, currentQueriedCount, openPositions.length)
+  const { next_position_id } = await queryContractStore({
+    contract: TERRA_MANAGER,
+    queryParam: { get_next_position_id: {}, },
+  })
+  for (let i = currentQueriedCount; i < +next_position_id; i++)
+    openPositions.push(i)
+
+  log(next_position_id, currentQueriedCount, openPositions.length)
   const positions = openPositions
     .map((_value) => ({ chain_id: 3, position_id: `${_value}` }))
 
@@ -39,8 +46,8 @@ async function tvl() {
         if (!position_close_info)  // position is closed no need to add it to tvl
           sumTvl += +detailed_info.uusd_value
 
-        await sleep(2000)
       }))
+    // await sleep(2000)
   }
 
   log('Final UST sum: %s', sumTvl)
@@ -60,31 +67,37 @@ async function updatePositionsList() {
     contract: TERRA_MANAGER,
     queryParam: { get_next_position_id: {}, },
   })
-  var graphQLClient = new GraphQLClient(host)
   const positions = [...Array(+next_position_id).keys()]
-    .map((_value, position) => (`{ chain_id: 3, position_id: "${position}" }`))
-  // .slice(currentQueriedCount)
+    .map((_value, i) => ({ chain_id: 3, position_id: `${i}` }))
 
-  const chunkSize = 1
+  const chunkSize = 50
   for (let i = 0; i < positions.length; i += chunkSize) {
-    if (i % 100)
-      require('fs').writeFileSync(__dirname + '/openPositions.json', JSON.stringify(openPositions))
-    log('fetching from %s out of %s', i, positions.length, openPositions.length)
+    log('fetching %s of %s', i/chunkSize, Math.ceil(positions.length / chunkSize), openPositions.length)
+    await Promise.all(positions.slice(i, i + chunkSize)
+      .map(async position => {
+        const {
+          items: [{
+            info: {
+              position_close_info,
+            }
+          }]
+        } = await queryContractStore({
+          contract: APERTURE_CONTRACT,
+          queryParam: getQuery(position),
+        })
 
-    const { wasm: { contractQuery: { items } } } = await graphQLClient.request(getQuery(positions.slice(i, i + chunkSize)))
-    if (!items) {
-      log('missed it')
-      continue;
-    }
-    items.forEach((val, idx) => {
-      if (!val.info.position_close_info) openPositions.push(i + idx)
-    })
+        if (!position_close_info)  // position is closed no need to add it to tvl
+          openPositions.push(+position.position_id)
+      }))
+
+    require('fs').writeFileSync(__dirname + '/openPositions.json', JSON.stringify(openPositions.sort((a, b) => a - b)))
+    // await sleep(2000)
   }
 
-  require('fs').writeFileSync(__dirname + '/openPositions.json', JSON.stringify(openPositions))
+  // require('fs').writeFileSync(__dirname + '/openPositions.json', JSON.stringify(openPositions))
 
-  function getQuery(positions) {
-    return `{  wasm {    contractQuery(      contractAddress: "${APERTURE_CONTRACT}"      query:{ batch_get_position_info: { positions: [${positions.join(', ')}] } } )}}`
+  function getQuery(postion) {
+    return { batch_get_position_info: { positions: [postion], } }
   }
 }
 
