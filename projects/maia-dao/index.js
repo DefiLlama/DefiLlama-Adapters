@@ -11,22 +11,15 @@ async function tvl(timestamp, block, chainBlocks) {
   const balances = {};
   const transform = await transformMetisAddress();
 
-  const hermesBalance = (await sdk.api.abi.multiCall({
+  const hermesBalance = (await sdk.api.abi.call({
     target: '0xa4C546c8F3ca15aa537D2ac3f62EE808d915B65b',
-    calls: Array.from({ length: Number(38) }, (_, k) => ({
-      params: [k],
-    })),
     abi: abis.locked,
+    params: [2],
     block: chainBlocks.metis,
     chain: 'metis'
   })).output;
 
-  var sum = 0;
-  for (let i = 1; i < 38; i++) {
-    sum += Number(hermesBalance[i].output.amount);
-  }
-
-  balances[`metis:${HERMES}`] = BigInt(sum).toString()
+  balances[`metis:${HERMES}`] = BigInt(hermesBalance.amount - 8424424910000000000000000).toString()
 
   const noPairs = (await sdk.api.abi.call({
     target: '0x879828da3a678D349A3C8d6B3D9C78e9Ee31137F',

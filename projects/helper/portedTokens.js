@@ -63,7 +63,9 @@ async function transformFantomAddress() {
     "0x8cc97b50fe87f31770bcdcd6bc8603bc1558380b":
       "cronos:0x0804702a4e749d39a35fde73d1df0b1f1d6b8347", // single
     "0x95bf7e307bc1ab0ba38ae10fc27084bc36fcd605":
-      "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+      "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    "0xc5cd01e988cd0794e05ab80f2bcdbdf13ce08bd3":
+      "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // nUSD -> USDC
   };
 
   normalizeMapping(mapping);
@@ -225,7 +227,7 @@ async function transformAvaxAddress() {
       "0x8965349fb649a33a30cbfda057d8ec2c48abe2a2":
         "0x6e9730ecffbed43fd876a264c982e254ef05a0de", // Nord
       "0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7":
-        "0xdac17f958d2ee523a2206206994597c13d831ec7"
+        "0xdac17f958d2ee523a2206206994597c13d831ec7",
     };
     return map[addr.toLowerCase()] || `avax:${addr}`;
   };
@@ -321,7 +323,15 @@ async function transformPolygonAddress() {
       "0x7a5d3A9Dcd33cb8D527f7b5F96EB4Fef43d55636", // radioshack
     "0x1ddcaa4ed761428ae348befc6718bcb12e63bfaa": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // deUSDC
     "0x794baab6b878467f93ef17e2f2851ce04e3e34c8": "0x794baab6b878467f93ef17e2f2851ce04e3e34c8", // Yin
-    "0x282d8efce846a88b159800bd4130ad77443fa1a1": "0x967da4048cd07ab37855c090aaf366e4ce1b9f48" //ocean
+    "0x282d8efce846a88b159800bd4130ad77443fa1a1": "0x967da4048cd07ab37855c090aaf366e4ce1b9f48", //ocean
+    "0x769434dca303597c8fc4997bf3dab233e961eda2":
+      "0x70e8de73ce538da2beed35d14187f6959a8eca96", // xSGD
+    "0x6d3cC56DFC016151eE2613BdDe0e03Af9ba885CC":
+      "0x00000100F2A2bd000715001920eB70D229700085", // wTCAD
+    "0xe4F7761b541668f88d04fe9F2E9DF10CA613aEf7":
+      "0x00006100F7090010005F1bd7aE6122c3C2CF0090", // wTAUD
+    "0x81A123f10C78216d32F8655eb1A88B5E9A3e9f2F":
+      "0x00000000441378008ea67f4284a57932b1c000a5", // wTGBP
   };
   normalizeMapping(mapping);
 
@@ -1835,6 +1845,24 @@ const ontologyFixMapping = {
     decimals: 18,
   },
 };
+const reiFixMapping = {
+  "0x2545af3d8b11e295bb7aedd5826021ab54f71630": {
+    coingeckoId: "rei-network",
+    decimals: 18,
+  },
+  "0x988a631caf24e14bb77ee0f5ca881e8b5dcfcec7": {
+    coingeckoId: "tether",
+    decimals: 6,
+  },
+  "0x8059e671be1e76f8db5155bf4520f86acfdc5561": {
+    coingeckoId: "wrapped-bitcoin",
+    decimals: 8
+  },
+  "0x5B07F2582d0Cc26E400D56266aeBB201c93560eD": {
+    coingeckoId: "ethereum",
+    decimals: 18
+  },
+};
 
 const fixBalancesMapping = {
   avax: fixAvaxBalances,
@@ -1865,6 +1893,7 @@ const fixBalancesMapping = {
   near: b => fixBalances(b, nearFixMapping, { removeUnmapped: false }),
   thundercore: b => fixBalances(b, thundercoreFixMapping, { removeUnmapped: true }),
   ontology_evm: b => fixBalances(b, ontologyFixMapping, { removeUnmapped: false }),
+  rei: b => fixBalances(b, reiFixMapping, { removeUnmapped: true }),
 };
 
 const chainTransforms = {
@@ -1965,6 +1994,8 @@ async function transformEthereumAddress() {
       "0x0000000000085d4780B73119b644AE5ecd22b376", // FIAT
     "0x0a5e677a6a24b2f1a2bf4f3bffc443231d2fdec8":
       "bsc:0xb5102cee1528ce2c760893034a4603663495fd72", // USX
+    "0x2163383C1F4E74fE36c50E6154C7F18d9Fd06d6f":
+      "avax:0x75739a693459f33b1fbcc02099eea3ebcf150cbe",  // Elasticswap token
   };
   normalizeMapping(mapping);
 

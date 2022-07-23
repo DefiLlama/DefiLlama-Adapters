@@ -21,29 +21,5 @@
     ],
     "stateMutability": "view",
     "type": "function"
-  },
-  "escrows_length": {
-    "stateMutability": "view",
-    "type": "function",
-    "name": "escrows_length",
-    "inputs": [],
-    "outputs": [{ "name": "", "type": "uint256" }],
-    "gas": 2448
-  },
-  "vested_token": {
-    "stateMutability": "view",
-    "type": "function",
-    "name": "token",
-    "inputs": [],
-    "outputs": [{ "name": "", "type": "address" }],
-    "gas": 2688
-  },
-  "escrows": {
-    "stateMutability": "view",
-    "type": "function",
-    "name": "escrows",
-    "inputs": [{ "name": "arg0", "type": "uint256" }],
-    "outputs": [{ "name": "", "type": "address" }],
-    "gas": 2523
   }
 }
