@@ -45,6 +45,17 @@ const pairTokens = {
       code: "mok.token",
     },
   },
+  "coin:lago.kwUSDC": {
+    name: "coin:lago.kwUSDC",
+    token0: {
+      name: "KDA",
+      code: "coin",
+    },
+    token1: {
+      name: "USDC",
+      code: "lago.kwUSDC",
+    },
+  },
 };
 
 const getPairList = async () => {
