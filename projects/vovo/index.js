@@ -1,5 +1,26 @@
 const sdk = require("@defillama/sdk");
 const chain = "arbitrum";
+
+const balanceABI = {
+  inputs: [
+    {
+      internalType: "bool",
+      name: "isMax",
+      type: "bool",
+    },
+  ],
+  name: "balance",
+  outputs: [
+    {
+      internalType: "uint256",
+      name: "",
+      type: "uint256",
+    },
+  ],
+  stateMutability: "view",
+  type: "function",
+};
+
 const getGlpPriceABI = {
   inputs: [],
   name: "getGlpPrice",
@@ -30,8 +51,8 @@ const glpVaults = [
 
 async function usdcVaultsTVL(block) {
   const { output: tvls } = await sdk.api.abi.multiCall({
-    abi: "erc20:totalSupply",
-    calls: usdcVaults.map((i) => ({ target: i })),
+    abi: balanceABI,
+    calls: usdcVaults.map((i) => ({ target: i, params: true })),
     chain,
     block,
   });
@@ -50,11 +71,12 @@ async function glpVaultsTVL(block) {
   });
 
   const { output: tvls } = await sdk.api.abi.multiCall({
-    abi: "erc20:totalSupply",
-    calls: glpVaults.map((i) => ({ target: i })),
+    abi: balanceABI,
+    calls: glpVaults.map((i) => ({ target: i, params: true })),
     chain,
     block,
   });
+
   let tvl = 0;
   tvls.forEach((i) => (tvl += i.output / 1e18));
   return (tvl * glpPrice) / 1e18;

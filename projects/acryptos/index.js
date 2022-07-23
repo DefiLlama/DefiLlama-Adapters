@@ -28,6 +28,12 @@ module.exports = {
   cronos: {
     tvl: fetchallchain(25),
   },
+  xdai: {
+    tvl: fetchallchain(100),
+  },
+  astar: {
+    tvl: fetchallchain(592),
+  },
   avalanche: {
     tvl: fetchallchain(43114),
   },

@@ -2,7 +2,7 @@ const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 const token0 = require('./abis/token0.json')
 const symbol = require('./abis/symbol.json')
-const { getPoolTokens, getPoolId, bPool, getCurrentTokens, } = require('./abis/balancer.json')
+const { getPoolTokens, getPoolId, bPool, getCurrentTokens, getVault: getBalancerVault, } = require('./abis/balancer.json')
 const getPricePerShare = require('./abis/getPricePerShare.json')
 const underlyingABI = require('./abis/underlying.json')
 const { requery } = require('./requery')
@@ -11,7 +11,7 @@ const creamAbi = require('./abis/cream.json')
 const { unwrapCrv, resolveCrvTokens } = require('./resolveCrvTokens')
 const activePoolAbi = require('./ankr/abis/activePool.json')
 const wethAddressAbi = require('./ankr/abis/wethAddress.json');
-const { isLP, DEBUG_MODE, getUniqueAddresses, } = require('./utils')
+const { isLP, DEBUG_MODE, getUniqueAddresses, log, } = require('./utils')
 const wildCreditABI = require('../wildcredit/abi.json')
 
 const yearnVaults = {
@@ -621,7 +621,7 @@ tokensAndOwners [
     [token, owner] - eg ["0xaaa", "0xbbb"]
 ]
 */
-async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereum", transformAddress, { resolveCrv = false, resolveLP = false, resolveYearn = false, unwrapAll = false, blacklistedLPs = [], } = {}) {
+async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereum", transformAddress, { resolveCrv = false, resolveLP = false, resolveYearn = false, unwrapAll = false, blacklistedLPs = [], skipFixBalances = false, } = {}) {
   if (!transformAddress)
     transformAddress = await getChainTransform(chain)
 
@@ -662,6 +662,10 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
     }
   })
 
+  Object.entries(balances).forEach(([token, value]) => {
+    if (+value === 0) delete balances[token]
+  })
+
   if (resolveLP || unwrapAll)
     await unwrapLPsAuto({ balances, block, chain, transformAddress, blacklistedLPs })
 
@@ -673,7 +677,7 @@ async function sumTokens(balances = {}, tokensAndOwners, block, chain = "ethereu
     await resolveCrvTokens(balances, block, chain, transformAddress)
   }
 
-  if (['astar', 'harmony', 'kava', 'thundercore', 'klaytn', 'evmos'].includes(chain)) {
+  if (!skipFixBalances && ['astar', 'harmony', 'kava', 'thundercore', 'klaytn', 'evmos'].includes(chain)) {
     const fixBalances = await getFixBalances(chain)
     fixBalances(balances)
   }
@@ -957,6 +961,7 @@ async function sumTokens2({
   unwrapAll = false,
   blacklistedLPs = [],
   blacklistedTokens = [],
+  skipFixBalances = false,
 }) {
 
   if (!tokensAndOwners.length) {
@@ -969,7 +974,14 @@ async function sumTokens2({
   blacklistedTokens = blacklistedTokens.map(t => t.toLowerCase())
   tokensAndOwners = tokensAndOwners.map(([t, o]) => [t.toLowerCase(), o]).filter(([token]) => !blacklistedTokens.includes(token))
 
-  return sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { resolveCrv, resolveLP, resolveYearn, unwrapAll, blacklistedLPs })
+  await sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { resolveCrv, resolveLP, resolveYearn, unwrapAll, blacklistedLPs, skipFixBalances: true })
+
+  if (!skipFixBalances) {
+    const fixBalances = await getFixBalances(chain)
+    fixBalances(balances)
+  }
+
+  return balances
 }
 
 async function unwrapBalancerToken({ chain, block, balancerToken, owner, balances = {} }) {
@@ -985,6 +997,24 @@ async function unwrapBalancerToken({ chain, block, balancerToken, owner, balance
     sdk.util.sumSingleBalance(balances, token, newValue)
   }
 
+  return balances
+}
+
+async function unwrapBalancerPool({ chain = 'ethereum', block, balancerPool, owner, balances = {} }) {
+  const { output: vault } = await sdk.api.abi.call({ target: balancerPool, abi: getBalancerVault, chain, block, })
+  const { output: poolId } = await sdk.api.abi.call({ target: balancerPool, abi: getPoolId, chain, block, })
+  const { output: poolTokens } = await sdk.api.abi.call({ target: vault, params: [poolId], abi: getPoolTokens, chain, block, })
+  const transform = await getChainTransform(chain)
+
+  const { output: lpTokens } = await sdk.api.erc20.balanceOf({ target: balancerPool, owner, chain, block, })
+  const { output: lpSupply } = await sdk.api.erc20.totalSupply({ target: balancerPool, chain, block, })
+
+  const ratio = lpTokens / lpSupply
+  const { tokens, balances: bal, } = poolTokens
+  tokens.forEach((token, i) => {
+    const newValue = BigNumber(+bal[i] * ratio).toFixed(0)
+    sdk.util.sumSingleBalance(balances, transform(token), newValue)
+  })
   return balances
 }
 
@@ -1008,6 +1038,8 @@ module.exports = {
   unwrapLPsAuto,
   unwrapTroves,
   isLP,
+  nullAddress,
   sumTokens2,
   unwrapBalancerToken,
+  unwrapBalancerPool,
 }

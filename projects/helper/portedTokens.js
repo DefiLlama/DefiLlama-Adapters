@@ -3,6 +3,8 @@ const sdk = require("@defillama/sdk");
 const IOTEX_CG_MAPPING = require("./../xdollar-finance/iotex_cg_mapping.json");
 const BigNumber = require("bignumber.js");
 
+const nullAddress = '0x0000000000000000000000000000000000000000'
+
 async function transformFantomAddress() {
   const multichainTokens = (await utils.fetchURL(
     "https://netapi.anyswap.net/bridge/v2/info"
@@ -61,7 +63,9 @@ async function transformFantomAddress() {
     "0x8cc97b50fe87f31770bcdcd6bc8603bc1558380b":
       "cronos:0x0804702a4e749d39a35fde73d1df0b1f1d6b8347", // single
     "0x95bf7e307bc1ab0ba38ae10fc27084bc36fcd605":
-      "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+      "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    "0xc5cd01e988cd0794e05ab80f2bcdbdf13ce08bd3":
+      "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // nUSD -> USDC
   };
 
   normalizeMapping(mapping);
@@ -223,7 +227,7 @@ async function transformAvaxAddress() {
       "0x8965349fb649a33a30cbfda057d8ec2c48abe2a2":
         "0x6e9730ecffbed43fd876a264c982e254ef05a0de", // Nord
       "0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7":
-        "0xdac17f958d2ee523a2206206994597c13d831ec7"
+        "0xdac17f958d2ee523a2206206994597c13d831ec7",
     };
     return map[addr.toLowerCase()] || `avax:${addr}`;
   };
@@ -319,7 +323,15 @@ async function transformPolygonAddress() {
       "0x7a5d3A9Dcd33cb8D527f7b5F96EB4Fef43d55636", // radioshack
     "0x1ddcaa4ed761428ae348befc6718bcb12e63bfaa": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // deUSDC
     "0x794baab6b878467f93ef17e2f2851ce04e3e34c8": "0x794baab6b878467f93ef17e2f2851ce04e3e34c8", // Yin
-    "0x282d8efce846a88b159800bd4130ad77443fa1a1": "0x967da4048cd07ab37855c090aaf366e4ce1b9f48" //ocean
+    "0x282d8efce846a88b159800bd4130ad77443fa1a1": "0x967da4048cd07ab37855c090aaf366e4ce1b9f48", //ocean
+    "0x769434dca303597c8fc4997bf3dab233e961eda2":
+      "0x70e8de73ce538da2beed35d14187f6959a8eca96", // xSGD
+    "0x6d3cC56DFC016151eE2613BdDe0e03Af9ba885CC":
+      "0x00000100F2A2bd000715001920eB70D229700085", // wTCAD
+    "0xe4F7761b541668f88d04fe9F2E9DF10CA613aEf7":
+      "0x00006100F7090010005F1bd7aE6122c3C2CF0090", // wTAUD
+    "0x81A123f10C78216d32F8655eb1A88B5E9A3e9f2F":
+      "0x00000000441378008ea67f4284a57932b1c000a5", // wTGBP
   };
   normalizeMapping(mapping);
 
@@ -568,7 +580,7 @@ async function transformMoonbeamAddress() {
     '0x1DC78Acda13a8BC4408B207c9E48CDBc096D95e0': '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', // wtbc
     '0xc234A67a4F840E61adE794be47de455361b52413': '0x6b175474e89094c44da98b954eedeac495271d0f', // dai
     '0x1d4C2a246311bB9f827F4C768e277FF5787B7D7E': 'moonriver:0x98878b06940ae243284ca214f92bb71a2b032b8a', // movr
-    '0x0000000000000000000000000000000000000000': '"moonbeam:0xacc15dc74880c9944775448304b263d191c6077f', // GLMR -> WGLMR
+    '0x0000000000000000000000000000000000000000': 'moonbeam:0xacc15dc74880c9944775448304b263d191c6077f', // GLMR -> WGLMR
   }
 
   return transformChainAddress(mapping, "moonbeam", { skipUnmapped: false });
@@ -807,6 +819,7 @@ async function transformKccAddress() {
 
 function transformMetisAddress() {
   const map = {
+    "0x0000000000000000000000000000000000000000": "0x9e32b13ce7f2e80a01932b42553652e053d6ed8e", // METIS
     "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000": "0x9e32b13ce7f2e80a01932b42553652e053d6ed8e",
     "0xbb06dca3ae6887fabf931640f67cab3e3a16f4dc": "0xdac17f958d2ee523a2206206994597c13d831ec7",
     "0x420000000000000000000000000000000000000a": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
@@ -954,6 +967,10 @@ function fixKlaytnBalances(balances) {
     }, // Wrapped KLAY
     "0x9eaefb09fe4aabfbe6b1ca316a3c36afc83a393f": {
       coingeckoId: "ripple",
+      decimals: 6
+    },
+    "0xd6dab4cff47df175349e6e7ee2bf7c40bb8c05a3": {
+      coingeckoId: "tether",
       decimals: 6
     },
     "0xc6a2ad8cc6e4a7e08fc37cc5954be07d499e7654": {
@@ -1198,6 +1215,8 @@ async function transformDfkAddress() {
 }
 async function transformAuroraAddress() {
   const mapping = {
+    "0x0000000000000000000000000000000000000000":
+      "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // Aurora gas -> WETH
     "0xda2585430fef327ad8ee44af8f1f989a2a91a3d2":
       "0x853d955aCEf822Db058eb8505911ED77F175b99e", // FRAX
     "0x07379565cd8b0cae7c60dc78e7f601b34af2a21c":
@@ -1539,10 +1558,30 @@ const songbirdFixMapping = {
 };
 
 const smartbchFixMapping = {
+  [nullAddress]: {
+    coingeckoId: "bitcoin-cash",
+    decimals: 18
+  },
   "0x3743ec0673453e5009310c727ba4eaf7b3a1cc04": {
     coingeckoId: "bitcoin-cash",
     decimals: 18
-  }
+  },
+  "0x0b00366fBF7037E9d75E4A569ab27dAB84759302": {
+    coingeckoId: "law",
+    decimals: 18
+  },
+  "0x7b2B3C5308ab5b2a1d9a94d20D35CCDf61e05b72": {
+    coingeckoId: "flex-usd",
+    decimals: 18
+  },
+  "0x24d8d5Cbc14FA6A740c3375733f0287188F8dF3b": {
+    coingeckoId: "tropical-finance",
+    decimals: 18
+  },
+  "0xBc2F884680c95A02cea099dA2F524b366d9028Ba": {
+    coingeckoId: "tether",
+    decimals: 18
+  },
 };
 
 const evmosFixMapping = {
@@ -1806,6 +1845,24 @@ const ontologyFixMapping = {
     decimals: 18,
   },
 };
+const reiFixMapping = {
+  "0x2545af3d8b11e295bb7aedd5826021ab54f71630": {
+    coingeckoId: "rei-network",
+    decimals: 18,
+  },
+  "0x988a631caf24e14bb77ee0f5ca881e8b5dcfcec7": {
+    coingeckoId: "tether",
+    decimals: 6,
+  },
+  "0x8059e671be1e76f8db5155bf4520f86acfdc5561": {
+    coingeckoId: "wrapped-bitcoin",
+    decimals: 8
+  },
+  "0x5B07F2582d0Cc26E400D56266aeBB201c93560eD": {
+    coingeckoId: "ethereum",
+    decimals: 18
+  },
+};
 
 const fixBalancesMapping = {
   avax: fixAvaxBalances,
@@ -1836,6 +1893,7 @@ const fixBalancesMapping = {
   near: b => fixBalances(b, nearFixMapping, { removeUnmapped: false }),
   thundercore: b => fixBalances(b, thundercoreFixMapping, { removeUnmapped: true }),
   ontology_evm: b => fixBalances(b, ontologyFixMapping, { removeUnmapped: false }),
+  rei: b => fixBalances(b, reiFixMapping, { removeUnmapped: true }),
 };
 
 const chainTransforms = {
@@ -1933,9 +1991,11 @@ async function transformEthereumAddress() {
     "0x65f7ba4ec257af7c55fd5854e5f6356bbd0fb8ec":
       "0x92d6c1e31e14520e676a687f0a93788b716beff5", // sDYDX
     "0x586aa273f262909eef8fa02d90ab65f5015e0516":
-    "0x0000000000085d4780B73119b644AE5ecd22b376", // FIAT
+      "0x0000000000085d4780B73119b644AE5ecd22b376", // FIAT
     "0x0a5e677a6a24b2f1a2bf4f3bffc443231d2fdec8":
       "bsc:0xb5102cee1528ce2c760893034a4603663495fd72", // USX
+    "0x2163383C1F4E74fE36c50E6154C7F18d9Fd06d6f":
+      "avax:0x75739a693459f33b1fbcc02099eea3ebcf150cbe",  // Elasticswap token
   };
   normalizeMapping(mapping);
 

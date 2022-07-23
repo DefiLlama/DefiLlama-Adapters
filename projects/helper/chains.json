@@ -12,6 +12,7 @@
   "moonriver",
   "solana",
   "xdai",
+  "lamden",
   "optimism",
   "aurora",
   "okexchain",
@@ -137,5 +138,6 @@
   "flow",
   "icp",
   "nova",
-  "kintsugi"
+  "kintsugi",
+  "kujira"
 ]
