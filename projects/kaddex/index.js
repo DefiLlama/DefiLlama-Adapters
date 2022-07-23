@@ -34,7 +34,7 @@ const pairTokens = {
       code: "hypercent.prod-hype-coin",
     },
   },
-  "coin:mock.token": {
+  "coin:mok.token": {
     name: "coin:mok.token",
     token0: {
       name: "KDA",
