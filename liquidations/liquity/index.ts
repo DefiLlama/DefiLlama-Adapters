@@ -58,15 +58,6 @@ const getSystemState = async () => {
   return systemState;
 };
 
-const calculateCollateralRatio = (
-  collateral: string,
-  debt: string,
-  price: string
-) => {
-  const ratio = new BigNumber(collateral).times(price).div(debt).toString();
-  return ratio;
-};
-
 // 1.1 * debt / collateral = price
 const calculateLiquidationPrice = (
   debt: string,
@@ -81,8 +72,8 @@ const calculateLiquidationPrice = (
   return price;
 };
 
-const liqs = async () => {
-  const { price, totalCollateralRatio } = await getSystemState();
+const positions = async () => {
+  const { totalCollateralRatio } = await getSystemState();
   const _isRecoveryMode = isRecoveryMode(totalCollateralRatio);
 
   const troves = (await getPagedGql(
@@ -90,18 +81,8 @@ const liqs = async () => {
     trovesQuery,
     "troves"
   )) as Trove[];
-  const liquidableTroves = troves
-    .filter((trove) => {
-      const collateralRatio = calculateCollateralRatio(
-        trove.collateral,
-        trove.debt,
-        price
-      );
-      return _isRecoveryMode
-        ? Number(collateralRatio) < 1.5
-        : Number(collateralRatio) < 1.1;
-    })
-    .map(({ collateral: _collateral, debt, owner, rawCollateral }) => {
+  const _troves = troves.map(
+    ({ collateral: _collateral, debt, owner, rawCollateral }) => {
       return {
         owner: owner.id,
         liqPrice: Number(
@@ -110,13 +91,14 @@ const liqs = async () => {
         collateral: "ethereum:" + "0x0000000000000000000000000000000000000000", // ETH
         collateralAmount: rawCollateral,
       };
-    });
+    }
+  );
 
-  return liquidableTroves;
+  return _troves;
 };
 
 module.exports = {
   ethereum: {
-    liquidations: liqs,
+    liquidations: positions,
   },
 };
