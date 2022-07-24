@@ -2,6 +2,7 @@ import { gql } from "graphql-request";
 import { ethers } from "ethers";
 import { providers } from "../utils/ethers";
 import { getPagedGql } from "../utils/gql";
+import BigNumber from "bignumber.js";
 
 // we do all prices in ETH until the end
 
@@ -204,18 +205,63 @@ const liqs = async () => {
   )) as Account[];
   const ethPriceInUsd = Number(await uniswapAnchoredView.price("ETH")) / 1e6;
 
-  // all the liquidable positions across all users
-  const underwaterAccounts = getUnderwaterAccounts(accounts);
-  const liquidablePositions = underwaterAccounts
-    .map((account) => getLiquidatablePosition(account))
-    .filter((position) => !!position)
-    .map((position) => ({
-      owner: position?.owner,
-      liqPrice: Number(position?.liqPriceInEth) * ethPriceInUsd,
-      collateral: position?.collateral,
-      collateralAmount: position?.collateralAmount,
-    }));
-  return liquidablePositions;
+  // all positions across all users
+  const positions = accounts
+    .flatMap((account) => {
+      const { totalBorrowValueInEth, totalCollateralValueInEth } = account;
+      const totalDebtInEth = new BigNumber(totalBorrowValueInEth)
+        .minus(totalCollateralValueInEth)
+        .toString();
+
+      // for all users, calculate liquidation price for all positions
+      // - 1ETH, 2ETH worth collaterals, when liquidation happens, they don't get completely liquidated
+
+      const debts = account.tokens.map((token) => {
+        const decimals = token.market.underlyingDecimals;
+        const price = Number(token.market.underlyingPrice) * ethPriceInUsd;
+        const collateralFactor = Number(token.market.collateralFactor); // equivalent to liqThreshold in aave
+        let debt = new BigNumber(token.borrowBalanceUnderlying);
+        if (token.enteredMarket) {
+          debt = debt
+            .minus(token.supplyBalanceUnderlying)
+            .times(collateralFactor);
+        }
+        debt = debt.times(ethPriceInUsd);
+        return {
+          debt,
+          price,
+          token: token.market.underlyingAddress,
+          totalBal: token.supplyBalanceUnderlying,
+          decimals,
+        };
+      });
+
+      const liquidablePositions = debts
+        .filter(({ debt }) => debt.lt(0))
+        .map((pos) => {
+          const usdPosNetCollateral = pos.debt.negated();
+          const otherCollateral = new BigNumber(
+            totalCollateralValueInEth
+          ).minus(usdPosNetCollateral);
+          const diffDebt = new BigNumber(totalDebtInEth).minus(otherCollateral);
+          if (diffDebt.gt(0)) {
+            const amountCollateral = usdPosNetCollateral.div(pos.price);
+            const liqPrice = diffDebt.div(amountCollateral);
+            return {
+              owner: account.id,
+              liqPrice: liqPrice.toFixed(6),
+              collateral: "ethereum:" + pos.token,
+              collateralAmount: pos.totalBal,
+            };
+          }
+        })
+        .filter((t) => t !== undefined);
+
+      return liquidablePositions;
+    })
+    .flat();
+
+  return positions;
 };
 
 module.exports = {
