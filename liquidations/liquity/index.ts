@@ -2,8 +2,6 @@ import { gql, request } from "graphql-request";
 import BigNumber from "bignumber.js";
 import { getPagedGql } from "../utils/gql";
 
-// we do all prices in ETH until the end
-
 const subgraphUrl = "https://api.thegraph.com/subgraphs/name/liquity/liquity";
 
 const globalQuery = gql`
