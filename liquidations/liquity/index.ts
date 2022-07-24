@@ -50,12 +50,14 @@ type Trove = {
   };
 };
 
-const getCurrentPrice = async () => {
-  const price = (
-    (await request(subgraphUrl, globalQuery)).global
-      .currentSystemState as SystemState
-  ).price;
-  return price;
+const isRecoveryMode = (totalCollateralRatio: string) => {
+  return Number(totalCollateralRatio) < 1.5;
+};
+
+const getSystemState = async () => {
+  const systemState = (await request(subgraphUrl, globalQuery)).global
+    .currentSystemState as SystemState;
+  return systemState;
 };
 
 const calculateCollateralRatio = (
@@ -74,7 +76,9 @@ const calculateLiquidationPrice = (debt: string, collateral: string) => {
 };
 
 const liqs = async () => {
-  const price = await getCurrentPrice();
+  const { price, totalCollateralRatio } = await getSystemState();
+  const _isRecoveryMode = isRecoveryMode(totalCollateralRatio);
+
   const troves = (await getPagedGql(
     subgraphUrl,
     trovesQuery,
@@ -87,7 +91,9 @@ const liqs = async () => {
         trove.debt,
         price
       );
-      return Number(collateralRatio) < 1.1;
+      return _isRecoveryMode
+        ? Number(collateralRatio) < 1.5
+        : Number(collateralRatio) < 1.1;
     })
     .map(({ collateral: _collateral, debt, owner, rawCollateral }) => {
       return {
