@@ -68,8 +68,16 @@ const calculateCollateralRatio = (
 };
 
 // 1.1 * debt / collateral = price
-const calculateLiquidationPrice = (debt: string, collateral: string) => {
-  const price = new BigNumber(1.1).times(debt).div(collateral).toString();
+const calculateLiquidationPrice = (
+  debt: string,
+  collateral: string,
+  isRecoveryMode: boolean
+) => {
+  const collateralRatioThreshold = isRecoveryMode ? 1.5 : 1.1;
+  const price = new BigNumber(collateralRatioThreshold)
+    .times(debt)
+    .div(collateral)
+    .toString();
   return price;
 };
 
@@ -96,7 +104,9 @@ const liqs = async () => {
     .map(({ collateral: _collateral, debt, owner, rawCollateral }) => {
       return {
         owner: owner.id,
-        liqPrice: Number(calculateLiquidationPrice(debt, _collateral)),
+        liqPrice: Number(
+          calculateLiquidationPrice(debt, _collateral, _isRecoveryMode)
+        ),
         collateral: "ethereum:" + "0x0000000000000000000000000000000000000000", // ETH
         collateralAmount: rawCollateral,
       };
