@@ -1,10 +1,8 @@
-import request, { gql } from "graphql-request";
+import { gql } from "graphql-request";
 import { ethers } from "ethers";
 import { providers } from "../utils/ethers";
 import { getPagedGql } from "../utils/gql";
 import BigNumber from "bignumber.js";
-
-// we do all prices in ETH until the end
 
 const subgraphUrl =
   "https://api.thegraph.com/subgraphs/name/graphprotocol/compound-v2";
