@@ -103,10 +103,10 @@ if (process.argv.length < 3) {
 const passedFile = path.resolve(process.cwd(), process.argv[2]);
 
 const originalCall = sdk.api.abi.call
-sdk.api.abi.call = async (...args)=>{
-  try{
+sdk.api.abi.call = async (...args) => {
+  try {
     return await originalCall(...args)
-  } catch(e){
+  } catch (e) {
     console.log("sdk.api.abi.call errored with params:", args)
     throw e
   }
@@ -116,7 +116,7 @@ sdk.api.abi.call = async (...args)=>{
   let module = {};
   try {
     module = require(passedFile)
-  } catch(e) {
+  } catch (e) {
     console.log(e)
   }
   const chains = Object.keys(module).filter(item => typeof module[item] === 'object' && !Array.isArray(module[item]));
@@ -129,7 +129,7 @@ sdk.api.abi.call = async (...args)=>{
   }
   await Promise.all(
     chains.map(async (chainRaw) => {
-      const chain = chainRaw === "avalanche"?"avax":chainRaw
+      const chain = chainRaw === "avalanche" ? "avax" : chainRaw
       if (chainsForBlocks.includes(chain) || chain === "ethereum") {
         chainBlocks[chain] = (await getLatestBlockRetry(chain)).number - 10;
       }
@@ -246,7 +246,7 @@ function checkExportKeys(module, filePath, chains) {
   filePath = filePath.split(path.sep)
   filePath = filePath.slice(filePath.lastIndexOf('projects') + 1)
 
-  if (filePath.length > 2  
+  if (filePath.length > 2
     || (filePath.length === 1 && !['.js', ''].includes(path.extname(filePath[0]))) // matches .../projects/projectXYZ.js or .../projects/projectXYZ
     || (filePath.length === 2 && !['api.js', 'index.js'].includes(filePath[1])))  // matches .../projects/projectXYZ/index.js
     process.exit(0)
@@ -257,7 +257,7 @@ function checkExportKeys(module, filePath, chains) {
   const blacklistedKeysFound = rootexportKeys.filter(key => blacklistedRootExportKeys.includes(key));
   let exportKeys = chains.map(chain => Object.keys(module[chain])).flat()
   exportKeys.push(...rootexportKeys)
-  exportKeys = Object.keys(exportKeys.reduce((agg, key) => ({...agg, [key]: 1}), {})) // get unique keys
+  exportKeys = Object.keys(exportKeys.reduce((agg, key) => ({ ...agg, [key]: 1 }), {})) // get unique keys
   const unknownKeys = exportKeys.filter(key => !whitelistedExportKeys.includes(key))
 
 
@@ -301,7 +301,7 @@ process.on('uncaughtException', handleError)
 
 
 const BigNumber = require("bignumber.js");
-const fetch =require("node-fetch");
+const fetch = require("node-fetch");
 
 const ethereumAddress = "0x0000000000000000000000000000000000000000";
 const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
@@ -316,7 +316,7 @@ async function computeTVL(balances, timestamp) {
   const PKsToTokens = {};
   const readKeys = Object.keys(balances)
     .map((address) => {
-      const PK = `${timestamp === "now"?"":"asset#"}${address.startsWith("0x") ? "ethereum:" : ""
+      const PK = `${timestamp === "now" ? "" : "asset#"}${address.startsWith("0x") ? "ethereum:" : ""
         }${address.toLowerCase()}`;
       if (PKsToTokens[PK] === undefined) {
         PKsToTokens[PK] = [address];
@@ -335,33 +335,34 @@ async function computeTVL(balances, timestamp) {
         body: JSON.stringify({
           "coins": readKeys.slice(i, i + 100)
         })
-      }).then((r) => r.json()).then(r=>{
+      }).then((r) => r.json()).then(r => {
         return Object.entries(r.coins).map(
-        ([PK, value])=>({
-          ...value,
-          PK
-        })
-      )
-    })
+          ([PK, value]) => ({
+            ...value,
+            PK
+          })
+        )
+      })
     );
   }
   let tokenData = ([]).concat(...(await Promise.all(readRequests)));
   let usdTvl = 0;
   const tokenBalances = {};
-  const usdTokenBalances = {} ;
+  const usdTokenBalances = {};
   const now = timestamp === "now" ? Math.round(Date.now() / 1000) : timestamp;
   tokenData.forEach((response) => {
     if (Math.abs(response.timestamp - now) < DAY) {
       PKsToTokens[response.PK].forEach((address) => {
         const balance = balances[address];
         const { price, decimals } = response;
+        console.log({ price, decimals })
         let symbol, amount, usdAmount;
-        if (response.PK.includes(':')) {
+        if (response.PK.includes(':') && !response.PK.startsWith("coingecko:")) {
           symbol = response.symbol.toUpperCase();
           amount = new BigNumber(balance).div(10 ** decimals).toNumber();
           usdAmount = amount * price;
         } else {
-          symbol = response.PK.slice('asset#'.length);
+          symbol = response.PK.startsWith("coingecko:") ? response.PK.split(':')[1] : response.PK.slice('asset#'.length);
           amount = Number(balance);
           usdAmount = amount * price;
         }
@@ -373,6 +374,11 @@ async function computeTVL(balances, timestamp) {
       console.error(`Data for ${response.PK} is stale`);
     }
   });
+  console.log({
+    usdTvl,
+    tokenBalances,
+    usdTokenBalances,
+  })
   return {
     usdTvl,
     tokenBalances,
