@@ -1,54 +1,19 @@
 const sdk = require('@defillama/sdk')
 const { ABI_SHORT } = require('./constants.js')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
-async function getTVL (network, block) {
-  const balances = {}
-  const pairs = []
+async function getTVL(network, block) {
+  const chain = network.name
 
-  const assets = await sdk.api.abi.multiCall({
+  const { output: assets } = await sdk.api.abi.multiCall({
     abi: ABI_SHORT.asset,
-    block,
-    calls: network.vaults
-      .map(vault => [
-        {
-          target: vault,
-          params: []
-        }
-      ])
-      .reduce((prev, curr) => prev.concat(curr), []),
-    chain: network.name
+    block, chain,
+    calls: network.vaults.map(i => ({ target: i })),
   })
 
-  if (assets && assets.output) {
-    pairs.push(
-      ...assets.output
-        .map(result => {
-          if (![true, 'true'].includes(result.success)) return null
-
-          return {
-            asset: result.output,
-            vault: result.input.target
-          }
-        })
-        .filter(item => item !== null)
-    )
-  }
-
-  const amounts = await sdk.api.abi.multiCall({
-    abi: 'erc20:balanceOf',
-    block,
-    calls: pairs.map(pair => ({
-      target: pair.asset,
-      params: [pair.vault]
-    })),
-    chain: network.name
-  })
-
-  const transform = address => `${network.name}:${address}`
-
-  sdk.util.sumMultiBalanceOf(balances, amounts, true, transform)
-
-  return balances
+  const toa = []
+  assets.forEach(({ output, input: { target }}) => toa.push([output, target ]))
+  return sumTokens2({ tokensAndOwners: toa, chain, block, })
 }
 
 module.exports = {
