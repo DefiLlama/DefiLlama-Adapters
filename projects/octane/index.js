@@ -1,4 +1,3 @@
-const sdk = require("@defillama/sdk");
 const { addFundsInMasterChef } = require("../helper/masterchef.js");
 const masterchefAddress = '0x8459d87618e45dc801bc384ea60596ddb7223aae';
 
