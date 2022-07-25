@@ -30,6 +30,7 @@ async function stablePoolTvl(timestamp, chainBlocks) {
   }
 
 module.exports = {
+    methodology: 'Counts the DAI, USDC, and USDT that have been deposited to mint CHAOS',
     avax: {
         tvl: stablePoolTvl
     }
