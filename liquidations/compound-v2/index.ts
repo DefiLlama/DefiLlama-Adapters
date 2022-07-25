@@ -1,4 +1,4 @@
-import { gql } from "graphql-request";
+import request, { gql } from "graphql-request";
 import { ethers } from "ethers";
 import { providers } from "../utils/ethers";
 import { getPagedGql } from "../utils/gql";
@@ -203,55 +203,65 @@ const liqs = async () => {
     accountsQuery,
     "accounts"
   )) as Account[];
+  // const accounts = (await request(subgraphUrl, accountsQuery))
+  //   .accounts as Account[];
+
   const ethPriceInUsd = Number(await uniswapAnchoredView.price("ETH")) / 1e6;
 
   // all positions across all users
   const positions = accounts
     .flatMap((account) => {
       const { totalBorrowValueInEth, totalCollateralValueInEth } = account;
-      const totalDebtInEth = new BigNumber(totalBorrowValueInEth)
-        .minus(totalCollateralValueInEth)
-        .toString();
 
-      // for all users, calculate liquidation price for all positions
-      // - 1ETH, 2ETH worth collaterals, when liquidation happens, they don't get completely liquidated
-
-      const debts = account.tokens.map((token) => {
-        const decimals = token.market.underlyingDecimals;
-        const price = Number(token.market.underlyingPrice) * ethPriceInUsd;
-        const collateralFactor = Number(token.market.collateralFactor); // equivalent to liqThreshold in aave
-        let debt = new BigNumber(token.borrowBalanceUnderlying);
-        if (token.enteredMarket) {
-          debt = debt
-            .minus(token.supplyBalanceUnderlying)
-            .times(collateralFactor);
-        }
-        debt = debt.times(ethPriceInUsd);
-        return {
-          debt,
-          price,
-          token: token.market.underlyingAddress,
-          totalBal: token.supplyBalanceUnderlying,
-          decimals,
-        };
-      });
+      const debts = account.tokens
+        .filter(
+          (token) =>
+            !(
+              Number(token.borrowBalanceUnderlying) === 0 &&
+              Number(token.supplyBalanceUnderlying) === 0
+            )
+        )
+        .map((token) => {
+          const decimals = token.market.underlyingDecimals;
+          const price = Number(token.market.underlyingPrice) * ethPriceInUsd;
+          const collateralFactor = Number(token.market.collateralFactor); // equivalent to liqThreshold in aave
+          let debt = new BigNumber(token.borrowBalanceUnderlying);
+          if (token.enteredMarket) {
+            const factoredSupply = new BigNumber(
+              token.supplyBalanceUnderlying
+            ).times(collateralFactor);
+            debt = debt.minus(factoredSupply);
+          }
+          debt = debt.times(price);
+          return {
+            debt,
+            price,
+            token: token.market.underlyingAddress,
+            totalBal: token.supplyBalanceUnderlying,
+            decimals,
+          };
+        });
 
       const liquidablePositions = debts
         .filter(({ debt }) => debt.lt(0))
         .map((pos) => {
           const usdPosNetCollateral = pos.debt.negated();
-          const otherCollateral = new BigNumber(
-            totalCollateralValueInEth
-          ).minus(usdPosNetCollateral);
-          const diffDebt = new BigNumber(totalDebtInEth).minus(otherCollateral);
+          const otherCollateral = new BigNumber(totalCollateralValueInEth)
+            .times(ethPriceInUsd)
+            .minus(usdPosNetCollateral);
+          const diffDebt = new BigNumber(totalBorrowValueInEth)
+            .times(ethPriceInUsd)
+            .minus(otherCollateral);
           if (diffDebt.gt(0)) {
             const amountCollateral = usdPosNetCollateral.div(pos.price);
             const liqPrice = diffDebt.div(amountCollateral);
             return {
               owner: account.id,
-              liqPrice: liqPrice.toFixed(6),
+              liqPrice: Number(liqPrice.toFixed(6)),
               collateral: "ethereum:" + pos.token,
-              collateralAmount: pos.totalBal,
+              collateralAmount: new BigNumber(pos.totalBal)
+                .times(10 ** pos.decimals)
+                .toFixed(0),
             };
           }
         })
