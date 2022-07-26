@@ -7,26 +7,6 @@ import BigNumber from "bignumber.js";
 const subgraphUrl =
   "https://api.thegraph.com/subgraphs/name/euler-xyz/euler-mainnet";
 
-// Contains information about all Euler markets
-const assetsQuery = gql`
-  query assets($lastId: ID) {
-    assets(first: 1000, where: { id_gt: $lastId }) {
-      id
-      symbol
-      currPriceUsd
-      # config can be null -> "isolated"
-      config {
-        id
-        # borrowFactor and collateralFactor can be transformed in a decimal fraction by dividing by 4e9
-        borrowFactor
-        borrowIsolated
-        collateralFactor
-        tier # "collateral" | "isolated" | "cross"
-      }
-    }
-  }
-`;
-
 const accountsQuery = gql`
   query accounts($lastId: ID) {
     # subgraph bug - balances_: {amount_not: "0"} filter doesn't work
@@ -37,7 +17,6 @@ const accountsQuery = gql`
         id
       }
       balances {
-        id
         amount
         asset {
           id
@@ -45,7 +24,6 @@ const accountsQuery = gql`
           currPriceUsd
           # config can be null -> "isolated"
           config {
-            id
             # borrowFactor and collateralFactor can be transformed in a decimal fraction by dividing by 4e9
             borrowFactor
             borrowIsolated
@@ -58,51 +36,17 @@ const accountsQuery = gql`
   }
 `;
 
-// A Balance represents the current amount of each assets held by an account
-const balancesQuery = gql`
-  query balances($lastId: ID) {
-    balances(first: 1000, where: { hasBorrowed: true, id_gt: $lastId }) {
-      # account_address:asset_address
-      id
-      account {
-        id
-        topLevelAccount {
-          id # if account != topLevelAccount then it's a sub-account, needs to be remapped for "owner" in the end
-        }
-      }
-      amount
-      asset {
-        id
-        symbol
-        currPriceUsd
-        config {
-          id
-          borrowFactor
-          borrowIsolated
-          collateralFactor
-          tier # "collateral" | "isolated" | "cross"
-        }
-      }
-    }
-  }
-`;
-
-// [sample]
-// 0x7bfee91193d9df2ac0bfe90191d40f23c773c060
-// dToken WETH = 512.88 = $724,198; balance = -511645289607802011271
-// eToken wstETH = 1,531.38 = $2,668,688; balance = 1531384695311005494914
-// eToken LINK = 54,315.69 = $347,954.85; balance = 54315693499704372034252
-// eToken STG = 50,000.00 = $20,023.55; balance = 50000000000000000000000
-
 type Account = {
   id: string;
   topLevelAccount: {
     id: string;
   };
-  balances: {
-    amount: string;
-    asset: Asset;
-  }[];
+  balances: Balance[];
+};
+
+type Balance = {
+  amount: string;
+  asset: Asset;
 };
 
 type Asset = {
@@ -121,7 +65,7 @@ type AssetConfig = {
   tier: Tier;
 };
 
-type AssetMapped = {
+type MappedAsset = {
   id: string;
   symbol: string;
   currPriceUsd: BigNumber;
@@ -131,83 +75,130 @@ type AssetMapped = {
   tier: Tier;
 };
 
-type Balance = {
-  id: string;
-  account: {
-    id: string;
-    topLevelAccount: {
-      id: string;
-    };
+// [sample]
+// 0x7bfee91193d9df2ac0bfe90191d40f23c773c060
+// dToken WETH = 512.88 = $724,198; balance = -511645289607802011271
+// eToken wstETH = 1,531.38 = $2,668,688; balance = 1531384695311005494914
+// eToken LINK = 54,315.69 = $347,954.85; balance = 54315693499704372034252
+// eToken STG = 50,000.00 = $20,023.55; balance = 50000000000000000000000
+
+const mapAsset = (asset: Asset): MappedAsset => {
+  const config = asset.config;
+  const id = asset.id;
+  const symbol = asset.symbol;
+  const currPriceUsd = new BigNumber(asset.currPriceUsd).div(1e18);
+  // tiers are treated differently
+  // isolated: no collateral, can be borrowed, one borrow per account
+  // cross: no collateral, can be borrowed alongside other assets
+  // collateral: cross + can be used as collateral
+  const tier = config?.tier ?? "isolated";
+  const borrowIsolated = config?.borrowIsolated ?? true;
+
+  // isolation by default borrowFactor is 0.28
+  // reserveFactor is default reserve factor is 0.23
+  // isolation collateralFactor is 0 obviously
+  const borrowFactorRaw = config?.borrowFactor ?? "1120000000";
+  const borrowFactor = new BigNumber(borrowFactorRaw).div(4e9);
+  const collateralFactorRaw = config?.collateralFactor ?? "0";
+  const collateralFactor = new BigNumber(collateralFactorRaw).div(4e9);
+  return {
+    id,
+    symbol,
+    currPriceUsd,
+    borrowFactor,
+    borrowIsolated,
+    collateralFactor,
+    tier,
   };
-  amount: string;
-  asset: Asset;
 };
 
 const positions = async () => {
-  const balances = (await getPagedGql(
+  const accounts = (await getPagedGql(
     subgraphUrl,
-    balancesQuery,
-    "balances"
-  )) as Balance[];
+    accountsQuery,
+    "accounts"
+  )) as Account[];
 
-  const assets = (await getPagedGql(
-    subgraphUrl,
-    assetsQuery,
-    "assets"
-  )) as Asset[];
+  // liquidation in euler works like this:
+  // suppose a user has $1000 of USDC (collateral factor cf=0.9), and wants to borrow UNI (borrow factor of bf=0.7)
+  // then they can borrow up to $1000 * 0.9 * 0.7 = $630
+  // liquidation price is calculated so:
+  // collateralAmount * liqPrice * cf * bf = borrowedAmount * borrowedCoinPrice = borrowedValue
+  // liqPrice = borrowedValue / (collateralAmount * cf * bf)
+  const positions = accounts
+    .map((account) => {
+      let totalAdjustedDebt = new BigNumber(0);
+      let totalAdjustedCollateral = new BigNumber(0);
+      const debts = account.balances.map((balance) => {
+        const mappedAsset = mapAsset(balance.asset);
+        const {
+          id,
+          borrowFactor,
+          borrowIsolated,
+          collateralFactor,
+          currPriceUsd,
+          symbol,
+          tier,
+        } = mappedAsset;
+        // everything is in WAD on euler
+        const amount = new BigNumber(balance.amount).div(1e18);
+        let adjustedDebt: BigNumber;
+        if (amount.lt(0)) {
+          adjustedDebt = amount.times(borrowFactor).times(currPriceUsd);
+        } else {
+          adjustedDebt =
+            tier === "collateral"
+              ? amount.times(collateralFactor).times(currPriceUsd).negated()
+              : new BigNumber(0);
+        }
 
-  const assetsMapped: AssetMapped[] = assets.map((asset) => {
-    const config = asset.config;
-    const id = asset.id;
-    const symbol = asset.symbol;
-    const currPriceUsd = new BigNumber(asset.currPriceUsd).div(1e18);
-    // tiers are treated differently
-    // isolated: no collateral, can be borrowed, one borrow per account
-    // cross: no collateral, can be borrowed alongside other assets
-    // collateral: cross + can be used as collateral
-    const tier = config?.tier ?? "isolated";
-    const borrowIsolated = config?.borrowIsolated ?? true;
+        if (adjustedDebt.gt(0)) {
+          totalAdjustedDebt = totalAdjustedDebt.plus(adjustedDebt);
+        } else {
+          totalAdjustedCollateral = totalAdjustedCollateral.minus(adjustedDebt);
+        }
 
-    // isolation by default borrowFactor is 0.28
-    // reserveFactor is default reserve factor is 0.23
-    // isolation collateralFactor is 0 obviously
-    const borrowFactorRaw = config?.borrowFactor ?? "1120000000";
-    const borrowFactor = new BigNumber(borrowFactorRaw).div(4e9);
-    const collateralFactorRaw = config?.collateralFactor ?? "0";
-    const collateralFactor = new BigNumber(collateralFactorRaw).div(4e9);
-    return {
-      id,
-      symbol,
-      currPriceUsd,
-      borrowFactor,
-      borrowIsolated,
-      collateralFactor,
-      tier,
-    };
-  });
+        return {
+          adjustedDebt,
+          currPriceUsd,
+          token: id,
+          totalBal: amount,
+        };
+      });
 
-  const positions = balances.map((balance) => {
-    const { account, amount, asset } = balance;
-    const owner = account.topLevelAccount.id;
-    const { id } = asset;
-    const {
-      symbol,
-      currPriceUsd,
-      borrowFactor,
-      borrowIsolated,
-      collateralFactor,
-      tier,
-    } = assetsMapped.find((assetMapped) => assetMapped.id === id) ?? {};
+      const liquidablePositions = debts
+        .filter(({ adjustedDebt }) => adjustedDebt.lt(0))
+        .map((pos) => {
+          const usdPosNetAdjustedCollateral = pos.adjustedDebt.negated();
+          const otherAdjustedCollateral = totalAdjustedCollateral.minus(
+            usdPosNetAdjustedCollateral
+          );
+          const diffAdjustedDebt = totalAdjustedDebt.minus(
+            otherAdjustedCollateral
+          );
 
-    // liquidation in euler works like this:
-    // suppose a user has $1000 of USDC (collateral factor cf=0.9), and wants to borrow UNI (borrow factor of bf=0.7)
-    // then they can borrow up to $1000 * 0.9 * 0.7 = $630
-    // liquidation price is calculated so:
-    // collateralAmount * liqPrice * cf * bf = borrowedAmount * borrowedCoinPrice = borrowedValue
-    // liqPrice = borrowedValue / (collateralAmount * cf * bf)
-  });
+          if (diffAdjustedDebt.gt(0)) {
+            const amountAdjustedCollateral = usdPosNetAdjustedCollateral.div(
+              pos.currPriceUsd
+            );
+            const liquidationPrice = diffAdjustedDebt.div(
+              amountAdjustedCollateral
+            );
+            return {
+              owner: account.topLevelAccount.id,
+              liqPrice: liquidationPrice.toNumber(),
+              collateral: "ethereum:" + pos.token,
+              collateralAmount: pos.totalBal.toNumber(),
+            };
+          }
+        })
+        .filter((t) => t !== undefined);
 
-  return () => [];
+      return liquidablePositions;
+    })
+    .flat();
+
+  return positions;
 };
 
 module.exports = {
