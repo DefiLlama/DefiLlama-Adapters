@@ -321,7 +321,6 @@ function fixBalances(balances) {
 
 async function computeTVL(balances, timestamp) {
   fixBalances(balances)
-  console.log(balances)
   const eth = balances[ethereumAddress];
   if (eth !== undefined) {
     balances[weth] = new BigNumber(balances[weth] ?? 0).plus(eth).toFixed(0);
