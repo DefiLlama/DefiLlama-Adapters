@@ -620,6 +620,25 @@ async function arbitrum (timestamp, block, chainBlocks) {
   return balances;
 }
 
+async function metis (timestamp, block, chainBlocks) {
+  const balances = {};
+  const transformAddress = await getChainTransform('metis')
+
+  await sumTokens(
+    balances,
+    [
+      [
+        "0x10dcbee8afa39a847707e16aea5eb34c6b01aba9", //Vault
+        "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000"  //Token address
+      ],  
+    ],
+    chainBlocks.metis,
+    "metis",
+    transformAddress
+  );
+  return balances;
+}
+
 module.exports = {
   misrepresentedTokens: true,
   methodology:
@@ -650,5 +669,8 @@ module.exports = {
   },
   bsc: {
     tvl: bsc
+  },
+  metis: {
+    tvl: metis 
   },
 };
