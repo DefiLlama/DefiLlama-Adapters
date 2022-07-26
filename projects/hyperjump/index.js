@@ -57,8 +57,6 @@ async function bscTvl(timestamp, block, chainBlocks) {
 module.exports = {
   methodology: "Liquidity on DEX pools",
   fantom: { tvl: fantomTvl },
-  bsc: {
-    tvl: bscTvl,
-  },
+  bsc: { tvl: bscTvl },
   metis: { tvl: metisTvl },
 };
