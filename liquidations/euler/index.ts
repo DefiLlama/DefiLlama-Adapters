@@ -25,6 +25,7 @@ const accountsQuery = gql`
         asset {
           id
           symbol
+          decimals
           currPriceUsd
           # config can be null -> "isolated"
           config {
@@ -56,6 +57,7 @@ type Balance = {
 type Asset = {
   id: string;
   symbol: string;
+  decimals: string;
   currPriceUsd: string;
   config: AssetConfig | null;
 };
@@ -72,6 +74,7 @@ type AssetConfig = {
 type MappedAsset = {
   id: string;
   symbol: string;
+  decimals: string;
   currPriceUsd: BigNumber;
   borrowFactor: BigNumber;
   borrowIsolated: boolean;
@@ -90,6 +93,7 @@ const mapAsset = (asset: Asset): MappedAsset => {
   const config = asset.config;
   const id = asset.id;
   const symbol = asset.symbol;
+  const decimals = asset.decimals;
   const currPriceUsd = new BigNumber(asset.currPriceUsd).div(1e18);
   // tiers are treated differently
   // isolated: no collateral, can be borrowed, one borrow per account
@@ -108,6 +112,7 @@ const mapAsset = (asset: Asset): MappedAsset => {
   return {
     id,
     symbol,
+    decimals,
     currPriceUsd,
     borrowFactor,
     borrowIsolated,
@@ -146,6 +151,7 @@ const positions = async () => {
         const {
           id,
           borrowFactor,
+          decimals,
           borrowIsolated,
           collateralFactor,
           currPriceUsd,
@@ -174,10 +180,11 @@ const positions = async () => {
           adjustedDebt,
           currPriceUsd,
           symbol,
+          decimals,
           borrowFactor,
           collateralFactor,
           token: id,
-          totalBal: amount,
+          amount,
         };
       });
 
@@ -203,7 +210,9 @@ const positions = async () => {
               owner: account.topLevelAccount.id,
               liqPrice: liquidationPrice.toNumber(),
               collateral: "ethereum:" + pos.token,
-              collateralAmount: pos.totalBal.toNumber(),
+              collateralAmount: pos.amount
+                .times(10 ** Number(pos.decimals))
+                .toFixed(0),
             };
           }
         })
