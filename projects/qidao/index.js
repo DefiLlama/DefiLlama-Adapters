@@ -628,8 +628,8 @@ async function metis (timestamp, block, chainBlocks) {
     balances,
     [
       [
-        "0x10dcbee8afa39a847707e16aea5eb34c6b01aba9", //Vault
-        "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000"  //Token address
+        "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000", //Token Qidao
+        "0x10dcbee8afa39a847707e16aea5eb34c6b01aba9"  //Token address
       ],  
     ],
     chainBlocks.metis,
