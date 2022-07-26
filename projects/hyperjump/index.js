@@ -59,8 +59,6 @@ module.exports = {
   fantom: { tvl: fantomTvl },
   bsc: {
     tvl: bscTvl,
-
-    
   },
   metis: { tvl: metisTvl },
 };
