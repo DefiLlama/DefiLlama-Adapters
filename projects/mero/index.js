@@ -20,7 +20,7 @@ async function tvl(timestamp, ethBlock, chainBlock) {
   })
 
   const { output: deposits } = await sdk.api.abi.multiCall({
-    abi: abi.getAllUnderlying,
+    abi: abi.totalUnderlying,
     calls: strategies.map(i => ({ target: i})),
     chain, ethBlock,
   })
