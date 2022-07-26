@@ -104,11 +104,7 @@ async function tvl(timestamp, _block, { astar: block }) {
         owners_nASTR.forEach(o => toa.push([wASTR, o]))
     })
 
-    let balances = {};
-    await sumTokens(balances, toa, block, chain);
-    let balancesWithPrefixes = {};
-    Object.keys(balances).forEach(k => balancesWithPrefixes[`coingecko:${k}`] = balances[k])
-    return balancesWithPrefixes;
+    return sumTokens(balances, toa, block, chain);
 }
 
 /*==================================================
