@@ -21,6 +21,11 @@ const query = gql`
         currentTotalDebt
       }
     }
+    _meta {
+      block {
+        number
+      }
+    }
   }
 `;
 

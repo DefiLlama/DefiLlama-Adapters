@@ -33,6 +33,11 @@ const accountsQuery = gql`
         enteredMarket
       }
     }
+    _meta {
+      block {
+        number
+      }
+    }
   }
 `;
 
