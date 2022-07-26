@@ -1,12 +1,6 @@
-import { request, gql } from "graphql-request";
-import { ethers } from "ethers";
-import { providers } from "../utils/ethers";
+import { gql } from "graphql-request";
 import { getPagedGql } from "../utils/gql";
 import BigNumber from "bignumber.js";
-
-const jLog = (obj: any) => {
-  console.log(JSON.stringify(obj, null, 2));
-};
 
 const subgraphUrl =
   "https://api.thegraph.com/subgraphs/name/euler-xyz/euler-mainnet";
