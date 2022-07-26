@@ -103,7 +103,7 @@ async function tvl(timestamp, _block, { astar: block }) {
     Object.values(nASTRPool).forEach(t => {
         owners_nASTR.forEach(o => toa.push([wASTR, o]))
     })
-
+    const balances = {}
     return sumTokens(balances, toa, block, chain);
 }
 
