@@ -35,7 +35,7 @@ async function tvl(timestamp, ethBlock, chainBlock) {
 }
 
 module.exports = {
-    methodology: 'Counts the DAI, USDC, and USDT that have been deposited to mint CHAOS',
+    methodology: 'Counts the DAI and USDC that has been deposited into the protocol',
     ethereum: {
         tvl
     }
