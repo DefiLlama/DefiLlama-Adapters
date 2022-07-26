@@ -307,7 +307,20 @@ const ethereumAddress = "0x0000000000000000000000000000000000000000";
 const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 const DAY = 24 * 3600;
 
+function fixBalances(balances) {
+  Object.entries(balances).forEach(([token, value]) => {
+    let newKey
+    if (token.startsWith("0x")) newKey = `ethereum:${token}`
+    if (!token.includes(':')) newKey = `coingecko:${token}`
+    if (newKey) {
+      delete balances[token]
+      sdk.util.sumSingleBalance(balances, newKey, value)
+    }
+  })
+}
+
 async function computeTVL(balances, timestamp) {
+  fixBalances(balances)
   const eth = balances[ethereumAddress];
   if (eth !== undefined) {
     balances[weth] = new BigNumber(balances[weth] ?? 0).plus(eth).toFixed(0);
@@ -356,12 +369,12 @@ async function computeTVL(balances, timestamp) {
         const balance = balances[address];
         const { price, decimals } = response;
         let symbol, amount, usdAmount;
-        if (response.PK.includes(':')) {
+        if (response.PK.includes(':') && !response.PK.startsWith("coingecko:")) {
           symbol = response.symbol.toUpperCase();
           amount = new BigNumber(balance).div(10 ** decimals).toNumber();
           usdAmount = amount * price;
         } else {
-          symbol = response.PK.slice('asset#'.length);
+          symbol = response.PK.startsWith("coingecko:") ? response.PK.split(':')[1] : response.PK.slice('asset#'.length);
           amount = Number(balance);
           usdAmount = amount * price;
         }
