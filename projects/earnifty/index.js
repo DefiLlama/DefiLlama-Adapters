@@ -7,6 +7,8 @@ const vaults_info = require('./vaults_info.json');
 
 async function tvl(timestamp, block, chainBlocks) {
     const balances = {};
+    const transform = await transformVelasAddress();
+    
     for (const info of vaults_info) {
         const balance = ((await sdk.api.abi.call({
             abi: vaultContractABI,
@@ -15,7 +17,6 @@ async function tvl(timestamp, block, chainBlocks) {
             params: [],
             block: chainBlocks['velas'],
         })).output);
-        const transform = await transformVelasAddress();
         await unwrapUniswapLPs(
             balances,
             [{
