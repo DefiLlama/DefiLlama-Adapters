@@ -1,16 +1,23 @@
-import { gql } from "graphql-request";
+import { request, gql } from "graphql-request";
 import { ethers } from "ethers";
 import { providers } from "../utils/ethers";
 import { getPagedGql } from "../utils/gql";
 import BigNumber from "bignumber.js";
 
+const jLog = (obj: any) => {
+  console.log(JSON.stringify(obj, null, 2));
+};
+
 const subgraphUrl =
   "https://api.thegraph.com/subgraphs/name/euler-xyz/euler-mainnet";
 
 const accountsQuery = gql`
-  query accounts($lastId: ID) {
+  {
     # subgraph bug - balances_: {amount_not: "0"} filter doesn't work
-    accounts(first: 1000, where: { id_gt: $lastId }) {
+    accounts(
+      first: 1000
+      where: { id: "0x7bfee91193d9df2ac0bfe90191d40f23c773c060" }
+    ) {
       id
       # if account_id != topLevelAccount_id then it's a sub-account, needs to be remapped for "owner" in the end
       topLevelAccount {
@@ -77,10 +84,10 @@ type MappedAsset = {
 
 // [sample]
 // 0x7bfee91193d9df2ac0bfe90191d40f23c773c060
-// dToken WETH = 512.88 = $724,198; balance = -511645289607802011271
-// eToken wstETH = 1,531.38 = $2,668,688; balance = 1531384695311005494914
-// eToken LINK = 54,315.69 = $347,954.85; balance = 54315693499704372034252
-// eToken STG = 50,000.00 = $20,023.55; balance = 50000000000000000000000
+// debt WETH = 512.88 = $724,198; balance = -511e18; adjustedDebt = 724,198 / 0.91 = 795,821
+// supply wstETH = 1,531.38 = $2,668,688; balance = 1531e18; adjustedDebt = -2,668,688 * 0.85 = -2,268,384
+// supply LINK = 54,315.69 = $347,954.85; balance = 54315e18; adjustedDebt = -347,954 * 0.66 = -229,649
+// supply STG = 50,000.00 = $20,023.55; balance = 50000e18; adjustedDebt = 0
 
 const mapAsset = (asset: Asset): MappedAsset => {
   const config = asset.config;
@@ -113,11 +120,20 @@ const mapAsset = (asset: Asset): MappedAsset => {
 };
 
 const positions = async () => {
-  const accounts = (await getPagedGql(
-    subgraphUrl,
-    accountsQuery,
-    "accounts"
-  )) as Account[];
+  // const accounts = (await getPagedGql(
+  //   subgraphUrl,
+  //   accountsQuery,
+  //   "accounts"
+  // )) as Account[];
+  const _accounts = (await request(subgraphUrl, accountsQuery))
+    .accounts as Account[];
+  const accounts = _accounts.map((x) => {
+    const _balances = x.balances.filter((b) => b.amount !== "0");
+    return {
+      ...x,
+      balances: _balances,
+    };
+  });
 
   // liquidation in euler works like this:
   // suppose a user has $1000 of USDC (collateral factor cf=0.9), and wants to borrow UNI (borrow factor of bf=0.7)
@@ -144,7 +160,7 @@ const positions = async () => {
         const amount = new BigNumber(balance.amount).div(1e18);
         let adjustedDebt: BigNumber;
         if (amount.lt(0)) {
-          adjustedDebt = amount.times(borrowFactor).times(currPriceUsd);
+          adjustedDebt = amount.div(borrowFactor).times(currPriceUsd).negated();
         } else {
           adjustedDebt =
             tier === "collateral"
@@ -161,10 +177,16 @@ const positions = async () => {
         return {
           adjustedDebt,
           currPriceUsd,
+          symbol,
+          borrowFactor,
+          collateralFactor,
           token: id,
           totalBal: amount,
         };
       });
+      jLog(debts);
+      jLog(totalAdjustedDebt);
+      jLog(totalAdjustedCollateral);
 
       const liquidablePositions = debts
         .filter(({ adjustedDebt }) => adjustedDebt.lt(0))
