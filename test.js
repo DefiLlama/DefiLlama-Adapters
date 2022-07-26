@@ -311,7 +311,7 @@ function fixBalances(balances) {
   Object.entries(balances).forEach(([token, value]) => {
     let newKey
     if (token.startsWith("0x")) newKey = `ethereum:${token}`
-    if (!token.includes(':')) newKey = `coingecko:${token}`
+    else if (!token.includes(':')) newKey = `coingecko:${token}`
     if (newKey) {
       delete balances[token]
       sdk.util.sumSingleBalance(balances, newKey, value)
@@ -321,6 +321,7 @@ function fixBalances(balances) {
 
 async function computeTVL(balances, timestamp) {
   fixBalances(balances)
+  console.log(balances)
   const eth = balances[ethereumAddress];
   if (eth !== undefined) {
     balances[weth] = new BigNumber(balances[weth] ?? 0).plus(eth).toFixed(0);
@@ -329,8 +330,7 @@ async function computeTVL(balances, timestamp) {
   const PKsToTokens = {};
   const readKeys = Object.keys(balances)
     .map((address) => {
-      const PK = `${timestamp === "now"?"":"asset#"}${address.startsWith("0x") ? "ethereum:" : ""
-        }${address.toLowerCase()}`;
+      const PK = `${timestamp === "now"?"":"asset#"}${address.toLowerCase()}`;
       if (PKsToTokens[PK] === undefined) {
         PKsToTokens[PK] = [address];
         return PK;
