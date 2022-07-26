@@ -12,12 +12,9 @@ const subgraphUrl =
   "https://api.thegraph.com/subgraphs/name/euler-xyz/euler-mainnet";
 
 const accountsQuery = gql`
-  {
+  query accounts($lastId: ID) {
     # subgraph bug - balances_: {amount_not: "0"} filter doesn't work
-    accounts(
-      first: 1000
-      where: { id: "0x7bfee91193d9df2ac0bfe90191d40f23c773c060" }
-    ) {
+    accounts(first: 1000, where: { id_gt: $lastId }) {
       id
       # if account_id != topLevelAccount_id then it's a sub-account, needs to be remapped for "owner" in the end
       topLevelAccount {
@@ -120,13 +117,12 @@ const mapAsset = (asset: Asset): MappedAsset => {
 };
 
 const positions = async () => {
-  // const accounts = (await getPagedGql(
-  //   subgraphUrl,
-  //   accountsQuery,
-  //   "accounts"
-  // )) as Account[];
-  const _accounts = (await request(subgraphUrl, accountsQuery))
-    .accounts as Account[];
+  const _accounts = (await getPagedGql(
+    subgraphUrl,
+    accountsQuery,
+    "accounts"
+  )) as Account[];
+
   const accounts = _accounts.map((x) => {
     const _balances = x.balances.filter((b) => b.amount !== "0");
     return {
@@ -184,9 +180,6 @@ const positions = async () => {
           totalBal: amount,
         };
       });
-      jLog(debts);
-      jLog(totalAdjustedDebt);
-      jLog(totalAdjustedCollateral);
 
       const liquidablePositions = debts
         .filter(({ adjustedDebt }) => adjustedDebt.lt(0))
