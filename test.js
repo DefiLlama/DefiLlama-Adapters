@@ -301,7 +301,7 @@ process.on('uncaughtException', handleError)
 
 
 const BigNumber = require("bignumber.js");
-const fetch =require("node-fetch");
+const axios =require("axios");
 
 const ethereumAddress = "0x0000000000000000000000000000000000000000";
 const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
@@ -342,19 +342,16 @@ async function computeTVL(balances, timestamp) {
   const readRequests = [];
   for (let i = 0; i < readKeys.length; i += 100) {
     readRequests.push(
-      fetch("https://coins.llama.fi/prices", {
-        method: "POST",
-        body: JSON.stringify({
-          "coins": readKeys.slice(i, i + 100)
-        })
-      }).then((r) => r.json()).then(r=>{
-        return Object.entries(r.coins).map(
-        ([PK, value])=>({
-          ...value,
-          PK
-        })
-      )
-    })
+      axios.post("https://coins.llama.fi/prices", {
+        "coins": readKeys.slice(i, i + 100)
+      }).then(r => {
+        return Object.entries(r.data.coins).map(
+          ([PK, value]) => ({
+            ...value,
+            PK
+          })
+        )
+      })
     );
   }
   let tokenData = ([]).concat(...(await Promise.all(readRequests)));
