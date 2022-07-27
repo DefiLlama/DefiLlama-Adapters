@@ -101,10 +101,13 @@ async function tvl(timestamp, _block, { astar: block }) {
 
     //=======nASTR========
     Object.values(nASTRPool).forEach(t => {
-        owners_nASTR.forEach(o => toa.push([wASTR, o]))
+        owners_nASTR.forEach(o => toa.push([t, o]))
     })
     const balances = {}
-    return sumTokens(balances, toa, block, chain);
+    await sumTokens(balances, toa, block, chain);
+    balances['astar'] = balances['astar'] + balances[nASTR] / 10e17; // Map nASTR to ASTR since nASTR is 1:1 pegged.
+    delete balances[nASTR];
+    return balances;
 }
 
 /*==================================================
@@ -113,7 +116,7 @@ async function tvl(timestamp, _block, { astar: block }) {
 
 module.exports = {
     misrepresentedTokens: true,
-    timetravel: true,
+    timetravel: false,
     methodology: "All locked tokens includes stable and crypto assets in Sirius's pools.",
     astar: {
         start: 1650117600, // 2022/04/16 14:00 UTC
