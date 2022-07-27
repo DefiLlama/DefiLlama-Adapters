@@ -17,6 +17,7 @@ const replacements = {
     "0x2170ed0880ac9a755fd29b2688956bd959f933f8", //beltETH->
 };
 
+// liquidity pools
 async function tvl(timestamp, ethBlock, chainBlocks) {
   let balances = {};
   const lps = [];
@@ -89,22 +90,38 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 // node test.js projects/planet-finance/index.js
 module.exports = {
   bsc: {
-    tvl: sdk.util.sumChainTvls([tvl, compoundExports(
-      '0xF54f9e7070A1584532572A6F640F09c606bb9A83',
-      'bsc',
-      '0x24664791B015659fcb71aB2c9C0d56996462082F',
-      '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'
-    ).tvl]),
+    tvl: sdk.util.sumChainTvls(
+      [
+        tvl, 
+        compoundExports(
+          '0x1e0C9D09F9995B95Ec4175aaA18b49f49f6165A3',
+          'bsc',
+          '0x190354707Ad8221bE30bF5f097fa51C9b1EbdB29',
+          '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'
+        ).tvl,
+        compoundExports(
+          '0xF54f9e7070A1584532572A6F640F09c606bb9A83',
+          'bsc',
+          '0x24664791B015659fcb71aB2c9C0d56996462082F',
+          '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'
+        ).tvl
+      ]
+    ),
     staking: staking(
       "0xb7eD4A5AF620B52022fb26035C565277035d4FD7",
       "0x72B7D61E8fC8cF971960DD9cfA59B8C829D91991",
       "bsc",
-      ),
-    borrowed: compoundExports(
+    ),
+    borrowed: sdk.util.sumChainTvls([compoundExports(
+      '0x1e0C9D09F9995B95Ec4175aaA18b49f49f6165A3',
+      'bsc',
+      '0x190354707Ad8221bE30bF5f097fa51C9b1EbdB29',
+      '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'
+    ).borrowed, compoundExports(
       '0xF54f9e7070A1584532572A6F640F09c606bb9A83',
       'bsc',
       '0x24664791B015659fcb71aB2c9C0d56996462082F',
       '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'
-    ).borrowed
+    ).borrowed ])
   },
 };
