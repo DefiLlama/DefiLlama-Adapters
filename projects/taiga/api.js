@@ -1,5 +1,16 @@
 const { getAPI } = require('../helper/acala/api')
 const { forceToCurrencyId } = require("@acala-network/sdk-core");
+const sdk = require('@defillama/sdk')
+const ethers = require("ethers")
+const { config } = require('@defillama/sdk/build/api');
+
+config.setProvider("karura_evm", new ethers.providers.StaticJsonRpcProvider(
+  "https://eth-rpc-karura.aca-api.network",
+  {
+    name: "karura_evm",
+    chainId: 686,
+  }
+))
 
 module.exports = {
   karura: {
@@ -9,12 +20,13 @@ module.exports = {
       const account = 'qmmNug1GQstpimAXBphJPSbDawH47vwMmhuSUq9xRqAsDAr'
       const account_3USD = 'qmmNug1GQstpimAXBpy3QzBL5cUWg2p6SeQzRWzRFhu8pfX'
 
-      const stableAssetRes = (await api.query.stableAsset.pools(1)).toJSON()
-      let usdcIndex = -1
-      stableAssetRes.assets.forEach((val, i) => {
-        if (val.erc20)  usdcIndex = i
+      const { output: usdcRes } = await sdk.api.erc20.balanceOf({
+        target: '0x1F3a10587A20114EA25Ba1b388EE2dD4A337ce27',
+        owner: '0xC760Da3C525c8511938c35613684c3f6175c01A5',
+        chain: 'karura_evm',
       })
-      const usdcBalance = (stableAssetRes.balances[usdcIndex])/1e12
+      const usdcBalance = usdcRes / 1e6
+
       return {
         kusama: (await balanceOf(api, account, 'KSM')) / 1e12,
         'liquid-ksm': (await balanceOf(api, account, 'LKSM')) / 1e12,
