@@ -24,9 +24,13 @@ const chains = {
       prefix: "rsk",
       "0x542fda317318ebf1d3deaf76e0b632741a7e677d": "rootstock", // RSK's WRBTC
       "0x1d931bf8656d795e50ef6d639562c5bd8ac2b78f": "ethereum", // RSK's ETHs
-      "0xb450ff06d950efa9a9c0ad63790c51971c1be885": "usd-coin", // RSK's BDUS
-      "0x99ac494badd0cba26143bd423e39a088591c7b09": "tether-eurt", // RSK's BDEU
-      "0xb5999795be0ebb5bab23144aa5fd6a02d080299f": "usd-coin", // RSK's XUSD
+      "0xb450ff06d950efa9a9c0ad63790c51971c1be885": "usd-coin", // RSK's BDUS - USD stable
+      "0x99ac494badd0cba26143bd423e39a088591c7b09": "tether-eurt", // RSK's BDEU, - Euro stable
+      "0xa4a8fb98a26e5314397170e5d12da8b73dc2ceb5": "pax-gold", // RSK's bXAU, - Gold stable
+      "0x2415e222755fd1f07b0a565eb4f036e410852ee0":
+        "jarvis-synthetic-british-pound", // RSK's bGBP - British Pound Stable
+      "0xb5999795be0ebb5bab23144aa5fd6a02d080299f": "usd-coin", // RSK's XUSD, - USD stable
+      "0xe700691da7b9851f2f35f8b8182c69c53ccad9db": "usd-coin", // RSK's DOC - USD stable
     },
   },
 };
@@ -98,9 +102,7 @@ async function getBDStableCollateralBalances(block, chainName, bdstable) {
       collateralAddress
     );
 
-    balances[coingeckoMappedName] = balances.hasOwnProperty(coingeckoMappedName)
-      ? balances[coingeckoMappedName] + collateralBalance
-      : collateralBalance;
+    sdk.util.sumSingleBalance(balances, coingeckoMappedName, collateralBalance)
   }
 
   const bdxTokenAddress = chains[chainName].bdxTokenAddress;

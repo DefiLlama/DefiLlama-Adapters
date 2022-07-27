@@ -10,6 +10,6 @@ const treasuryContracts = [
 ]
 
 module.exports = {
-    rekt: true,
+    deadFrom: 1648765747,
     ...ohmTvl(treasury, treasuryContracts, "polygon", stakingContract, token)
 }

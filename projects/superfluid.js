@@ -1,8 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { default: BigNumber } = require("bignumber.js");
 const { request, gql } = require("graphql-request"); // GraphQLClient
-const { transformPolygonAddress, transformXdaiAddress } = require("./helper/portedTokens");
-// const abi = require('./erc20-abi.json')
 
 // Superfluid Supertokens can be retrieved using GraphQl API - cannot use block number to retrieve historical data at the moment though
 // TheGraph URL before being deprecated, before 2021-12-23
@@ -27,7 +25,7 @@ query get_supertokens($block: Int) {
 // An upcoming superfluid graphql subgraph will be published soon and provide token supplies. 
 
 // Main function for all chains to get balances of superfluid tokens
-async function getChainBalances(allTokens, chain, block, transform = a => a) {
+async function getChainBalances(allTokens, chain, block) {
   // Init empty balances
   let balances = {};
 
@@ -92,16 +90,14 @@ const tokensNativeToSidechain = [
 
 async function retrieveSupertokensBalances(chain, timestamp, ethBlock, chainBlocks) {
   // Retrieve supertokens from graphql API
-  let graphUrl, block, transform;
+  let graphUrl, block;
   if (chain === 'polygon') {
     graphUrl = polygonGraphUrl
     block = chainBlocks.polygon
-    transform = await transformPolygonAddress()
   }
   else if (chain === 'xdai') {
     graphUrl = xdaiGraphUrl
     block = chainBlocks.xdai
-    transform = await transformXdaiAddress()
   }
 
   const { tokens } = await request(
@@ -112,7 +108,7 @@ async function retrieveSupertokensBalances(chain, timestamp, ethBlock, chainBloc
 
   const allTokens = tokens // .filter(t => t.symbol.length > 0)
 
-  return getChainBalances(allTokens, chain, block, transform)
+  return getChainBalances(allTokens, chain, block)
 }
 async function polygon(timestamp, block, chainBlocks) {
   return retrieveSupertokensBalances('polygon', timestamp, block, chainBlocks)
@@ -124,6 +120,9 @@ async function xdai(timestamp, block, chainBlocks) {
 
 
 module.exports = {
+  hallmarks: [
+    [1644278400, "Fake ctx hack"]
+],
   polygon: {
     tvl: polygon
   }, 

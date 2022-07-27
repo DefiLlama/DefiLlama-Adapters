@@ -21,6 +21,30 @@ async function ethereum() {
   return data.data.tvlETH
 }
 
+async function kava() {
+  const data = await utils.fetchURL(farmDataEndpoint)
+  return data.data.tvlKAVA
+}
+async function avalanche() {
+  const data = await utils.fetchURL(farmDataEndpoint)
+  return data.data.tvlAVAX
+}
+
+async function fantom() {
+  const data = await utils.fetchURL(farmDataEndpoint)
+  return data.data.tvlFANTOM
+}
+
+async function terra() {
+  const data = await utils.fetchURL(farmDataEndpoint)
+  return data.data.tvlLUNA
+}
+
+async function solana() {
+  const data = await utils.fetchURL(farmDataEndpoint)
+  return data.data.tvlSOLANA
+}
+
 module.exports = {
   bsc:{
     fetch:bsc
@@ -30,6 +54,21 @@ module.exports = {
   },
   ethereum:{
     fetch: ethereum
+  },
+  kava:{
+    fetch: kava
+  },
+  avalanche:{
+    fetch: avalanche
+  },
+  fantom:{
+    fetch: fantom
+  },
+  terra:{
+    fetch: terra
+  },
+  solana:{
+    fetch: solana
   },
   fetch
 }
