@@ -14,6 +14,11 @@ const globalQuery = gql`
         totalCollateralRatio
       }
     }
+    _meta {
+      block {
+        number
+      }
+    }
   }
 `;
 
@@ -33,6 +38,11 @@ const trovesQuery = gql`
       debt
       owner {
         id
+      }
+    }
+    _meta {
+      block {
+        number
       }
     }
   }

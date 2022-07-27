@@ -32,6 +32,11 @@ const accountsQuery = gql`
         }
       }
     }
+    _meta {
+      block {
+        number
+      }
+    }
   }
 `;
 
