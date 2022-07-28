@@ -81,13 +81,16 @@ async function getVaultInfo(poolLength, type, balances, block) {
     const poolInfo = poolInfos[i];
     const poolData = curvePools.find(crvPool => crvPool.addresses.lpToken.toLowerCase() === poolInfo.output.lpToken.toLowerCase())
 
-    if (poolData === undefined) {
-      console.log(poolInfo.output, poolData,);
-      throw new Error('Missing pool data');
+    let swapAddress = poolInfo.output.lpToken
+    let coinsLength = 2
+    if (poolData) {
+      swapAddress = poolData.addresses.swap
+      coinsLength = poolData.coins.length
+    } else {
+      console.log(`lp token(${poolInfo.output.lpToken}) not found in pre-defined list, assuming it is a swap address, coin length assumed to be 2`)
     }
 
-    const swapAddress = poolData.addresses.swap
-    const coinCalls = createIncrementArray(poolData.coins.length).map(num => {
+    const coinCalls = createIncrementArray(coinsLength).map(num => {
       return {
         target: swapAddress,
         params: [num]

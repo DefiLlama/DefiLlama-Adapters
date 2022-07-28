@@ -1003,7 +1003,15 @@ function transformVelasAddress() {
       "0xc111c29a988ae0c0087d97b33c6e6766808a3bd3":
         "bsc:0xe9e7cea3dedca5984780bafc599bd69add087d56", // BUSD
       "0x300a8be53b4b5557f48620d578e7461e3b927dd0":
-        "0xf56842af3b56fd72d17cb103f92d027bba912e89" // BAMBOO
+        "0xf56842af3b56fd72d17cb103f92d027bba912e89", // BAMBOO
+      "0x525bd1f949ffa2a0c5820f3b6fe61bb897466ff7":
+       "avax:0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7", // AVAX
+      "0x9b6fbF0ea23faF0d77B94d5699B44062e5E747Ac":
+        "bsc:0xd522a1dce1ca4b138dda042a78672307eb124cc2", // SWAPZ
+      "0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D":
+        "0x6b175474e89094c44da98b954eedeac495271d0f", // DAI
+      "0x8d9fB713587174Ee97e91866050c383b5cEE6209":
+        "bsc:0x8d9fb713587174ee97e91866050c383b5cee6209" // SCAR
     };
     normalizeMapping(map)
     return map[addr.toLowerCase()] || `velas:${addr}`;
@@ -1234,7 +1242,8 @@ function transformNovachainAddress() {
     "0x657a66332a65b535da6c5d67b8cd1d410c161a08":
       "fantom:0x69D17C151EF62421ec338a0c92ca1c1202A427EC", // SNT
     "0x1f5396f254ee25377a5c1b9c6bff5f44e9294fff":
-      "fantom:0x04068da6c83afcfa0e13ba15a6696662335d5b75" // USDC
+      "fantom:0x04068da6c83afcfa0e13ba15a6696662335d5b75", // USDC
+    "0x356c044b99e9378c1b28a1cab2f95cd65e877f33": "nova:0x356c044b99e9378c1b28a1cab2f95cd65e877f33", // quasarswap, hopefully handled by fetching price in unknown tokens helper
   };
 
   return transformChainAddress(mapping, "nova", { skipUnmapped: true });

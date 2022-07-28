@@ -3,6 +3,54 @@ const coins = {};
 
 module.exports = [
     {
+        id: 'SUSDFRAXBP3CRV-f',
+        name: 'Curve.fi Factory USD Metapool: sUSDFRAXBP',
+        coins: [
+            coins.SUSD,
+            coins.TUSD,
+        ],
+        addresses: {
+            swap: '0xe3c190c57b5959Ae62EfE3B6797058B76bA2f5eF',
+            lpToken: '0xe3c190c57b5959Ae62EfE3B6797058B76bA2f5eF'
+        }
+    },
+    {
+        id: 'TUSD3CRV-f',
+        name: 'Curve.fi Factory USD Metapool: TrueUSD',
+        coins: [
+            coins.crvFRAX,
+            coins.TUSD,
+        ],
+        addresses: {
+            swap: '0xEcd5e75AFb02eFa118AF914515D6521aaBd189F1',
+            lpToken: '0xEcd5e75AFb02eFa118AF914515D6521aaBd189F1'
+        }
+    },
+    {
+        id: 'silofrax-f',
+        name: 'Curve.fi Factory Crypto Pool: SILO/FRAX',
+        coins: [
+            coins.crvFRAX,
+            coins.TUSD,
+        ],
+        addresses: {
+            swap: '0x9a22cdb1ca1cdd2371cd5bb5199564c4e89465eb',
+            lpToken: '0x2302aaBe69e6E7A1b0Aa23aAC68fcCB8A4D2B460'
+        }
+    },
+    {
+        id: 'TUSDFRAXBP3CRV-f',
+        name: 'Curve.fi Factory USD Metapool: TUSDFRAXBP',
+        coins: [
+            coins.crvFRAX,
+            coins.TUSD,
+        ],
+        addresses: {
+            swap: '0x33baeDa08b8afACc4d3d07cf31d49FC1F1f3E893',
+            lpToken: '0x33baeDa08b8afACc4d3d07cf31d49FC1F1f3E893'
+        }
+    },
+    {
         id: 'cvxcrv',
         name: 'cvxcrv',
         coins: [

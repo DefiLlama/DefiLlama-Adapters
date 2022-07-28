@@ -486,7 +486,7 @@ function masterchefExports({ chain, masterchef, coreAssets, nativeToken, poolInf
       const tokens = data.map(({ output }) => getToken(output).toLowerCase())
       const lps = [...tokens].filter(i => i !== nativeToken)
       const tempBalances = await sumTokens2({ chain, block, owner: masterchef, tokens, transformAddress: a => a.toLowerCase() })
-      sdk.util.sumSingleBalance(balances.staking, transform(nativeToken), tempBalances[nativeToken])
+      if (tempBalances[nativeToken]) sdk.util.sumSingleBalance(balances.staking, transform(nativeToken), tempBalances[nativeToken])
       delete tempBalances[nativeToken]
 
       const pairs = await getLPData({ lps, chain, block })
