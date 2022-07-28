@@ -1,18 +1,19 @@
-const { getChainTvl } = require("../helper/getUniSubgraphTvl");
-const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl");
+const { getChainTvlBuffered } = require("../helper/getUniSubgraphTvl");
+const { getUniTVL } = require("../helper/unknownTokens");
 const { staking } = require("../helper/staking.js");
 
-const v1graph = getChainTvl(
+const v1graph = getChainTvlBuffered(
   {
     ethereum:
       "https://api.thegraph.com/subgraphs/name/kwikswap/kwikswap-subgraph",
     bsc: "https://api.thegraph.com/subgraphs/name/kwikswap/kwikswap-bsc-subgraph",
     polygon: "https://api.thegraph.com/subgraphs/name/kwikswap/matic-exchange",
   },
+  600,
   "kwikswapFactories",
   "totalLiquidityUSD"
 );
-
+// node test.js projects/kwikswap/index.js
 const KWIK_TOKEN_ADDRESSES = {
   ethereum: "0x286c0936c7eaf6651099ab5dab9ee5a6cb5d229d",
   shiden: "0xd67de0e0a0fd7b15dc8348bb9be742f3c5850454",
@@ -45,11 +46,10 @@ module.exports = {
     ),
   },
   shiden: {
-    tvl: calculateUsdUniTvl(
-      "0xf5fC2D145381A2eBAFb93Cc2B60fB2b97FB405aa",
-      "shiden",
-      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
-      [
+    tvl: getUniTVL({
+      factory: '0xf5fC2D145381A2eBAFb93Cc2B60fB2b97FB405aa',
+      chain: 'shiden',
+      coreAssets: ['0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef',
         // USDC
         "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f",
         // USDT
@@ -57,25 +57,20 @@ module.exports = {
         // JPYC
         "0x735aBE48e8782948a37C7765ECb76b98CdE97B0F",
         // STND
-        "0x722377A047e89CA735f09Eb7CccAb780943c4CB4",
-      ],
-      "shiden"
-    ),
+        "0x722377A047e89CA735f09Eb7CccAb780943c4CB4",],
+    }),
     staking: staking(
       STAKING_CONTRACTS["shiden"],
       KWIK_TOKEN_ADDRESSES["shiden"],
       "shiden",
-      KWIK_TOKEN_ADDRESSES["ethereum"],
-      0
+      KWIK_TOKEN_ADDRESSES["ethereum"]
     ),
   },
   bsc: {
-    tvl: calculateUsdUniTvl(
-      "0x64eBD6CaCece790e9C4DDeA1a24952Ddb2715279",
-      "bsc",
-      "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
-      [],
-      "wbnb"
-    ),
+    tvl: getUniTVL({
+      chain: 'bsc',
+      coreAssets: ['0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c'],
+      factory: '0x64eBD6CaCece790e9C4DDeA1a24952Ddb2715279',
+    }),
   },
-};
+}

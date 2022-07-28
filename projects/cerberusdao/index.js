@@ -2,7 +2,7 @@ const { ohmTvl } = require('../helper/ohm')
 
 const treasury = "0x56D595ea5591D264bc1Ef9E073aF66685F0bFD31"
 module.exports = {
-    rekt: true,
+    deadFrom: 1648765747,
     ...ohmTvl(treasury, [
     //SHIB
     ["0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE", false],

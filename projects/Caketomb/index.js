@@ -13,7 +13,7 @@ const pancakeLPs = [
 ]
 
 module.exports = {
-    rekt: true,
+    deadFrom: 1648765747,
     bsc: {
         tvl: async () => ({}),
         staking: staking(boardroom, shares, "bsc"),

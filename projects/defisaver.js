@@ -1,9 +1,28 @@
 const BigNumber = require("bignumber.js");
-const web3 = require("./config/web3.js");
 const defisaverABIs = require("./config/defisaver/abis");
 const utils = require("./helper/utils");
-const Multicall = require("@makerdao/multicall");
-require("dotenv").config();
+const sdk = require('@defillama/sdk')
+
+const usdtAddress = "0xdac17f958d2ee523a2206206994597c13d831ec7"
+
+const {
+  AaveSubscriptions,
+  AaveLoanInfo,
+  CompoundSubscriptions,
+  CompoundLoanInfo,
+  McdSubscriptions,
+  MCDSaverProxy,
+  AaveSubscriptionsV2,
+  AaveLoanInfoV2,
+} = defisaverABIs;
+
+function getAddress(defisaverConfig) {
+  return defisaverConfig.networks['1'].address
+}
+
+function getAbi(defisaverConfig, abiName) {
+  return defisaverConfig.abi.find(obj => obj.name === abiName)
+}
 
 // Configs
 const coins = {
@@ -151,15 +170,7 @@ const keys = [
   },
 ];
 
-let web3RpcUrl = (process.env.ETHEREUM_RPC || '').split(",")[0];
-
 // Utils
-const aggregate = (calls) =>
-  Multicall.aggregate(calls, {
-    multicallAddress: "0xeefba1e63905ef1d7acba5a8513c70307c1ce441",
-    rpcUrl: web3RpcUrl,
-  });
-
 const bytesToString = (hex) =>
   Buffer.from(hex.replace(/^0x/, ""), "hex").toString().replace(/\x00/g, "");
 
@@ -176,116 +187,27 @@ const assetAmountInEth = (amount, asset = "ETH") => {
     .toString();
 };
 
-const initContracts = (web3) => {
-  const network = 1;
-  const getContract = (_contract) => ({
-    abi: _contract.abi,
-    address: _contract.networks[network].address,
-  });
+async function tvl(ts, block) {
+  const balances = {}
+  const prices = (await utils.getPrices(keys)).data;
+  await getCompoundData()
+  await getAaveV2Data()
+  await getMakerData()
+  return balances
 
-  const {
-    AaveSubscriptions,
-    AaveLoanInfo,
-    CompoundSubscriptions,
-    CompoundLoanInfo,
-    McdSubscriptions,
-    MCDSaverProxy,
-    AaveSubscriptionsV2,
-    AaveLoanInfoV2,
-  } = defisaverABIs;
-
-  const aaveSubs = getContract(AaveSubscriptions);
-  const aaveLoans = getContract(AaveLoanInfo);
-  const aaveV2Subs = getContract(AaveSubscriptionsV2);
-  const aaveV2Loans = getContract(AaveLoanInfoV2);
-  const compoundSubs = getContract(CompoundSubscriptions);
-  const compoundLoans = getContract(CompoundLoanInfo);
-  const mcdSubs = getContract(McdSubscriptions);
-  const mcdSaverProxy = getContract(MCDSaverProxy);
-  return {
-    aaveSubscriptions: new web3.eth.Contract(aaveSubs.abi, aaveSubs.address),
-    aaveLoanInfo: new web3.eth.Contract(aaveLoans.abi, aaveLoans.address),
-    aaveV2Subscriptions: new web3.eth.Contract(
-      aaveV2Subs.abi,
-      aaveV2Subs.address
-    ),
-    aaveV2LoanInfo: new web3.eth.Contract(aaveV2Loans.abi, aaveV2Loans.address),
-    compoundSubscriptions: new web3.eth.Contract(
-      compoundSubs.abi,
-      compoundSubs.address
-    ),
-    compoundLoanInfo: new web3.eth.Contract(
-      compoundLoans.abi,
-      compoundLoans.address
-    ),
-    mcdSubscriptions: new web3.eth.Contract(mcdSubs.abi, mcdSubs.address),
-    mcdSaverProxy: new web3.eth.Contract(
-      mcdSaverProxy.abi,
-      mcdSaverProxy.address
-    ),
-  };
-};
-// node test.js projects/defisaver.js
-// Volume data getters
-const getMakerData = async (contracts, prices) => {
-  let makerSubs = await contracts.mcdSubscriptions.methods
-    .getSubscribers()
-    .call();
-  const calls = [];
-  for (const cdp of makerSubs) {
-    calls.push({
-      target: contracts.mcdSaverProxy.options.address,
-      call: [
-        "getCdpDetailedInfo(uint256)(uint256,uint256,uint256,bytes32)",
-        cdp.cdpId,
-      ],
-      returns: [
-        [`cdp-${cdp.cdpId}-collateral`],
-        [`cdp-${cdp.cdpId}-debt`],
-        [`cdp-${cdp.cdpId}-price`],
-        [`cdp-${cdp.cdpId}-ilk`],
-      ],
-    });
-  }
-  const cdpsDetailed = await aggregate(calls);
-  let data = [];
-  makerSubs.forEach((cdp, i) => {
-    const asset = ilkToAsset(
-      cdpsDetailed.results.original[`cdp-${cdp.cdpId}-ilk`]
-    );
-    const debt = assetAmountInEth(
-      cdpsDetailed.results.original[`cdp-${cdp.cdpId}-debt`],
-      "DAI"
-    );
-    const collateral = assetAmountInEth(
-      cdpsDetailed.results.original[`cdp-${cdp.cdpId}-collateral`],
-      `MCD-${asset}`
-    );
-    data = [
-      ...data,
-      {
-        debt,
-        collateralUsd:
-          parseFloat(collateral) * parseFloat(prices[keys[0][asset]].usd),
-      },
-    ];
-  });
-  const activeSubs = data.filter(({ debt }) => parseFloat(debt));
-
-  return Math.floor(
-    activeSubs.reduce((sum, cdp) => sum + parseFloat(cdp.collateralUsd), 0)
-  );
-};
-
-const getCompoundData = async (contracts) => {
-  let compoundSubs = await contracts.compoundSubscriptions.methods
-    .getSubscribers()
-    .call();
-  let subData = await contracts.compoundLoanInfo.methods
-    .getLoanDataArr(compoundSubs.map((s) => s.user))
-    .call();
-  const activeSubs = subData
-    .map((sub) => {
+  async function getCompoundData() {
+    let { output: compoundSubs } = await sdk.api.abi.call({
+      target: getAddress(CompoundSubscriptions),
+      abi: getAbi(CompoundSubscriptions, 'getSubscribers'),
+      block,
+    })
+    let { output: subData } = await sdk.api.abi.call({
+      target: getAddress(CompoundLoanInfo),
+      abi: getAbi(CompoundLoanInfo, 'getLoanDataArr'),
+      params: [compoundSubs.map((s) => s.user)],
+      block,
+    })
+    const activeSubs = subData.map((sub) => {
       let sumBorrowUsd = 0;
       let sumCollUsd = 0;
 
@@ -304,67 +226,34 @@ const getCompoundData = async (contracts) => {
       });
 
       return { sumBorrowUsd, sumCollUsd };
-    })
-    .filter(({ sumBorrowUsd }) => sumBorrowUsd);
+    }).filter(({ sumBorrowUsd }) => sumBorrowUsd);
 
-  return Math.floor(
-    activeSubs.reduce((sum, sub) => sum + parseFloat(sub.sumCollUsd), 0)
-  );
-};
-
-const getAaveData = async (contracts, prices) => {
-  let aaveSubs = await contracts.aaveSubscriptions.methods
-    .getSubscribers()
-    .call();
-  let subData = await contracts.aaveLoanInfo.methods
-    .getLoanDataArr(aaveSubs.map((s) => s.user))
-    .call();
-  const activeSubs = subData
-    .map((sub) => {
-      let sumBorrowUsd = 0;
-      let sumCollUsd = 0;
-
-      sub.borrowAmounts.forEach((amount, i) => {
-        if (sub.borrowAddr[i] === "0x0000000000000000000000000000000000000000")
-          return;
-        const borrowUsd = assetAmountInEth(amount) * prices.ethereum.usd;
-        sumBorrowUsd += borrowUsd;
-      });
-
-      sub.collAmounts.forEach((amount, i) => {
-        if (sub.collAddr[i] === "0x0000000000000000000000000000000000000000")
-          return;
-        const collUsd = assetAmountInEth(amount) * prices.ethereum.usd;
-        sumCollUsd += collUsd;
-      });
-
-      return { sumBorrowUsd, sumCollUsd };
-    })
-    .filter(({ sumBorrowUsd }) => sumBorrowUsd);
-
-  return Math.floor(
-    activeSubs.reduce((sum, sub) => sum + parseFloat(sub.sumCollUsd), 0)
-  );
-};
-
-const getAaveV2Data = async (contracts, prices) => {
-  const defaultMarket = "0xB53C1a33016B2DC2fF3653530bfF1848a515c8c5";
-  let aaveSubs = await contracts.aaveV2Subscriptions.methods
-    .getSubscribers()
-    .call();
-  let subData = [];
-  for (let i = 0; i < subData.length; i += 30) {
-    subData = subData.concat(
-      await contracts.aaveV2LoanInfo.methods
-        .getLoanDataArr(
-          defaultMarket,
-          aaveSubs.map((s) => s.user).slice(i, i + 30)
-        )
-        .call()
-    );
+    activeSubs.forEach(sub => addToBalances(sub.sumCollUsd))
   }
-  const activeSubs = subData
-    .map((sub) => {
+
+  async function getAaveV2Data() {
+    const defaultMarket = "0xB53C1a33016B2DC2fF3653530bfF1848a515c8c5";
+    let { output: aaveSubs } = await sdk.api.abi.call({
+      target: getAddress(AaveSubscriptionsV2),
+      abi: getAbi(AaveSubscriptionsV2, 'getSubscribers'),
+      block,
+    })
+    let subData = [];
+
+    for (let i = 0; i < subData.length; i += 30) {
+      let userAddresses = aaveSubs.map((s) => s.user).slice(i, i + 30)
+      subData = subData.concat(
+        (await sdk.api.abi.call({
+          target: getAddress(AaveLoanInfoV2),
+          abi: getAbi(AaveLoanInfoV2, 'getLoanDataArr'),
+          params: [defaultMarket, userAddresses],
+          block,
+        })
+        ).output
+      )
+    }
+
+    const activeSubs = subData.map((sub) => {
       let sumBorrowUsd = 0;
       let sumCollUsd = 0;
 
@@ -390,27 +279,54 @@ const getAaveV2Data = async (contracts, prices) => {
       });
 
       return { sumBorrowUsd, sumCollUsd };
+    }).filter(({ sumBorrowUsd }) => sumBorrowUsd);
+
+    activeSubs.forEach(sub => addToBalances(sub.sumCollUsd))
+  }
+
+  async function getMakerData() {
+    let { output: makerSubs } = await sdk.api.abi.call({
+      target: getAddress(McdSubscriptions),
+      abi: getAbi(McdSubscriptions, 'getSubscribers'),
+      block,
     })
-    .filter(({ sumBorrowUsd }) => sumBorrowUsd);
 
-  return Math.floor(
-    activeSubs.reduce((sum, sub) => sum + parseFloat(sub.sumCollUsd), 0)
-  );
-};
+    const getCdpDetailedInfoABI = getAbi(MCDSaverProxy, 'getCdpDetailedInfo')
 
-async function fetch() {
-  const prices = (await utils.getPrices(keys)).data;
-  const contracts = initContracts(web3);
+    const calls = [];
+    for (const cdp of makerSubs) {
+      calls.push({
+        target: getAddress(MCDSaverProxy),
+        params: [cdp.cdpId,],
+      });
+    }
+    const { output: callResults } = await sdk.api.abi.multiCall({
+      abi: getCdpDetailedInfoABI,
+      calls,
+      block,
+    })
+    const results = {}
+    callResults.forEach(result => results[result.input.params[0]] = result.output)
 
-  const makerColl = await getMakerData(contracts, prices);
-  const compoundColl = await getCompoundData(contracts, prices);
-  // if block > 12837601 ignore aave v1, contract was self-destructed in https://etherscan.io/tx/0xded247efd3d46251f9b5b410b207140ea1852d78e8d09f1ab698c93a4ad9b513
-  //const aaveColl = await getAaveData(contracts, prices);
-  const aaveV2Coll = await getAaveV2Data(contracts, prices);
+    let data = [];
 
-  return makerColl + compoundColl + aaveV2Coll;
+    makerSubs.forEach((cdp, i) => {
+      const asset = ilkToAsset(results[cdp.cdpId].ilk)
+      const debt = assetAmountInEth(results[cdp.cdpId].debt, 'DAI')
+      const collateral = assetAmountInEth(results[cdp.cdpId].collateral, `MCD-${asset}`)
+      data.push({ debt, collateralUsd: parseFloat(collateral) * parseFloat(prices[keys[0][asset]].usd), })
+    });
+    const activeSubs = data.filter(({ debt }) => parseFloat(debt));
+    activeSubs.forEach(sub => addToBalances(sub.collateralUsd))
+  }
+
+  function addToBalances(usdValue) {
+    sdk.util.sumSingleBalance(balances, usdtAddress, parseFloat(usdValue) * (10 ** 6))
+  }
 }
 
 module.exports = {
-  fetch,
+  ethereum: {
+    tvl
+  },
 };

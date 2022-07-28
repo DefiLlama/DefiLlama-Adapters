@@ -10,6 +10,7 @@ function getChainData(chain, type) {
     const info = (data?.data?.data?.detail || []).find(
       (item) => item.chain === chain
     );
+    if (!info)  return toUSDTBalances(0)
 
     switch (type) {
       case "tvl":

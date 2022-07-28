@@ -1,0 +1,28 @@
+{
+    "see_s1ftm_circ": {
+        "inputs": [],
+		"name": "see_s1ftm_circ",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+    },
+    "see_s1tomb_circ": {
+        "inputs": [],
+		"name": "see_s1tomb_circ",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+    }
+}

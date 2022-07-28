@@ -61,7 +61,7 @@ async function lpStakingTvl(chain, meta, ethBlock) {
         tvl.push([meta.underlying[i], underlyingTvl.integerValue().toFixed()]);
     }
 
-    if (!!meta.dhvToken) {
+    if (meta.dhvToken) {
         const dhvBalance = (await sdk.api.abi.call({
             target: meta.dhvToken,
             abi: abi.balanceOf,

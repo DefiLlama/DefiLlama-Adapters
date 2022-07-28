@@ -9,7 +9,7 @@ const tokens = [
 ];
 
 module.exports = {
-    rekt: true,
+    deadFrom: 1648765747,
     misrepresentedTokens: true,
     ...ohmTvl(treasury, tokens, "avax", staking, sea, undefined, undefined, false)
 }

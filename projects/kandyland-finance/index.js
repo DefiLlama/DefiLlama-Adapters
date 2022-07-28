@@ -9,6 +9,6 @@ const tokens = [
 ]
 
 module.exports = {
-    rekt: true,
+    deadFrom: 1648765747,
     ...ohmTvl(treasury, tokens, "avax", stakingContract, kandy, undefined, undefined, false)
 }

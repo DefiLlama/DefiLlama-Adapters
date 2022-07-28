@@ -1,71 +1,46 @@
 const sdk = require('@defillama/sdk');
-const erc20 = require("../helper/abis/erc20.json");
 const {gql, GraphQLClient} = require("graphql-request");
 const retry = require("../helper/retry");
+const utils = require("../helper/utils");
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const openleve_address = {
     "eth" : '0x03bf707deb2808f711bb0086fc17c5cafa6e8aaf',
-    "bsc" : '0x6A75aC4b8d8E76d15502E69Be4cb6325422833B4'
+    "bsc" : '0x6A75aC4b8d8E76d15502E69Be4cb6325422833B4',
+    "kcc" : '0xEF6890d740E1244fEa42E3D1B9Ff515C24c004Ce'
 }
 const subgraph_endpoint = {
     "eth" : 'https://api.thegraph.com/subgraphs/name/openleveragedev/openleverage',
     "bsc" : 'https://api.thegraph.com/subgraphs/name/openleveragedev/openleverage-bsc'
 }
+const http_endpoint = {
+    "kcc" : 'https://kcc.openleverage.finance/api/trade/markets/stat?page=1&size=1000',
+}
 
 async function eth_tvl(timestamp, block) {
     const poolInfo = await getPoolFromSubgraph("eth");
-    const balances = {}
+    const toa = []    
     for (const pool of poolInfo["poolAddressList"]) {
         const poolToken = poolInfo["poolToken"][pool]
-        const poolBalance = (
-            await sdk.api.abi.call({
-                abi: erc20.balanceOf,
-                target: poolToken,
-                params: pool
-            })
-        ).output;
-        sdk.util.sumSingleBalance(balances, poolToken, poolBalance);
+        toa.push([poolToken, pool])
     }
     for (const token of poolInfo["tokenAddressList"]) {
-        const openLeveBalance = (
-            await sdk.api.abi.call({
-                abi: erc20.balanceOf,
-                target: token,
-                params: openleve_address["eth"]
-            })
-        ).output;
-        sdk.util.sumSingleBalance(balances, token, openLeveBalance);
+        toa.push([token, openleve_address["eth"]])
     }
-    return balances
+    return sumTokens2({ block, tokensAndOwners: toa, })
 }
 
-async function bsc_tvl(timestamp, block, chainBlocks) {
+async function bsc_tvl(timestamp, _block, { bsc: block }) {
+    const toa = []    
     const poolInfo = await getPoolFromSubgraph("bsc");
-    const balances = {}
     for (const pool of poolInfo["poolAddressList"]) {
         const poolToken = poolInfo["poolToken"][pool]
-        const poolBalance = (
-            await sdk.api.abi.call({
-                abi: erc20.balanceOf,
-                target: poolToken,
-                chain: 'bsc',
-                params: pool
-            })
-        ).output;
-        sdk.util.sumSingleBalance(balances,"bsc:" + poolToken, poolBalance);
+        toa.push([poolToken, pool])
     }
     for (const token of poolInfo["tokenAddressList"]) {
-        const openLeveBalance = (
-            await sdk.api.abi.call({
-                abi: erc20.balanceOf,
-                target: token,
-                chain: 'bsc',
-                params: openleve_address["bsc"]
-            })
-        ).output;
-        sdk.util.sumSingleBalance(balances, "bsc:" + token, openLeveBalance);
+        toa.push([token, openleve_address["bsc"]])
     }
-    return balances
+    return sumTokens2({ chain: 'bsc', block, tokensAndOwners: toa, })
 }
 
 async function getPoolFromSubgraph(chain) {
@@ -100,16 +75,46 @@ async function getPoolFromSubgraph(chain) {
     return {"tokenAddressList" : Array.from(new Set(tokenAddressList)), "poolAddressList" : poolAddressList, "poolToken": poolToken}
 }
 
+async function getPoolFromHttp(chain) {
+    const results = await utils.fetchURL(http_endpoint[chain])
+    const tokenAddressList = []
+    const poolAddressList = []
+    const poolToken = {}
+    for (const s of results["data"]["data"]) {
+        tokenAddressList.push(s["token0Addr"])
+        poolAddressList.push(s["pool0Addr"])
+        poolToken[s["pool0Addr"]] = s["token1Addr"]
 
+        tokenAddressList.push(s["token1Addr"])
+        poolAddressList.push(s["pool1Addr"])
+        poolToken[s["pool1Addr"]] = s["token0Addr"]
+    }
+    return {"tokenAddressList" : Array.from(new Set(tokenAddressList)), "poolAddressList" : poolAddressList, "poolToken": poolToken}
+}
+
+async function kcc_tvl(timestamp, _block, { kcc: block }) {
+    const toa = []    
+    const poolInfo = await getPoolFromHttp("kcc");
+    for (const pool of poolInfo["poolAddressList"]) {
+        const poolToken = poolInfo["poolToken"][pool]
+        toa.push([poolToken, pool])
+    }
+
+    for (const token of poolInfo["tokenAddressList"]) {
+        toa.push([token, openleve_address["kcc"]])
+    }
+    return sumTokens2({ chain: 'kcc', block, tokensAndOwners: toa, })
+}
 
 module.exports = {
     methodology: "get pool and token address from the openleverage subgraph",
-  start: 1638720000,
     ethereum: {
         tvl: eth_tvl
     },
     bsc: {
         tvl: bsc_tvl
     },
-    
+    kcc: {
+        tvl: kcc_tvl
+    } 
 }

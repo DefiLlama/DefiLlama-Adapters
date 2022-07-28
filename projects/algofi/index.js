@@ -1,9 +1,9 @@
-const algosdk = require("algosdk")
 const sdk = require('@defillama/sdk')
 const { toUSDTBalances } = require('../helper/balances')
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+const { get } = require('../helper/http')
 const retry = require("async-retry");
 const axios = require("axios");
+const { lookupApplications, } = require("../helper/algorand");
 
 const marketStrings = {
     underlying_cash : "uc",
@@ -14,12 +14,12 @@ const marketStrings = {
     lp_circulation: "lc"
 }
 
-const orderedAssets = ["ALGO", "STBL", "USDC", "goBTC", "goETH"]
+const orderedAssets = ["ALGO", "STBL", "USDC", "goBTC", "goETH", "vALGO"]
 const fixedValueStakingContracts = ["TINYMAN11_STBL_USDC_LP_STAKING", "ALGOFI-STBL-USDC-LP"]
-const singleSideStakingContracts = ["DEFLY", "STBL"]
+const singleSideStakingContracts = ["DEFLY", "STBL", "OPUL"]
 const variableValueStakingContracts = ["ALGOFI-STBL-ALGO-LP", "AF-XET-STBL-75BP-STAKING", "AF-GOBTC-STBL-25BP-STAKING", "AF-GOETH-STBL-25BP-STAKING", "AF-OPUL-STBL-75BP-STAKING",
                                         "AF-DEFLY-STBL-75BP-STAKING", "AF-NANO-USDC-STBL-5BP-STAKING", "AF-NANO-USDT-STBL-5BP-STAKING", "AF-NANO-USDT-USDC-5BP-STAKING",
-                                        "AF-ZONE-STBL-75BP-STAKING", "AF-TINY-STBL-75BP-STAKING" ]
+                                        "AF-USDC-STBL-NANO-SUPER-STAKING", "AF-ZONE-STBL-75BP-STAKING", "AF-TINY-STBL-75BP-STAKING", "AF-GOMINT-STBL-25BP-STAKING"]
 const stakingContracts = fixedValueStakingContracts.concat(variableValueStakingContracts).concat(singleSideStakingContracts)
 
 const assetDictionary = {
@@ -53,11 +53,22 @@ const assetDictionary = {
         "oracleAppId": 451327550,
         "oracleFieldName": "price"
     },
+    "vALGO": {
+        "decimals": 6,
+        "marketAppId": 465814318,
+        "oracleAppId": 531724540,
+        "oracleFieldName": "latest_twap_price",
+    },
     "STAKING_CONTRACTS": {
         "STBL": {
             "decimals": 6,
             "assetId": 465865291,
             "marketAppId": 482608867,
+        },
+        "AF-USDC-STBL-NANO-SUPER-STAKING" : {
+            "decimals": 6,
+            "marketAppId" : 705657303,
+            "poolAppId": 658337046,
         },
         "TINYMAN11_STBL_USDC_LP_STAKING" : {
             "decimals": 6,
@@ -122,19 +133,29 @@ const assetDictionary = {
             "poolAppId": 647799801,
             "decimals": 6
         },
+        "AF-GOMINT-STBL-25BP-STAKING" : {
+            "marketAppId" : 764406975,
+            "poolAppId": 764420932,
+            "decimals": 6
+        },
         "DEFLY" : {
             "marketAppId" : 641499935,
             "assetId": 470842789,
             "decimals": 6
+        },
+        "OPUL" : {
+            "marketAppId" : 674526408,
+            "assetId": 287867876,
+            "decimals": 10
         }
     }
 }
 
 
-async function getGlobalMarketState(algodClient, marketId) {
-  let response = await algodClient.getApplicationByID(marketId).do()
+async function getGlobalMarketState(marketId) {
+  let response = await lookupApplications(marketId);
   let results = {}
-  response.params["global-state"].forEach(x => {
+  response.application.params["global-state"].forEach(x => {
     let decodedKey =  Buffer.from(x.key, 'base64').toString('binary')
     results[decodedKey] = x.value.uint
   })
@@ -142,11 +163,11 @@ async function getGlobalMarketState(algodClient, marketId) {
   return results
 }
 
-async function getPrices(algodClient, assetDictionary, orderedAssets) {
+async function getPrices(assetDictionary, orderedAssets) {
   let prices = {}
   for (const assetName of orderedAssets) {
-    let response = await algodClient.getApplicationByID(assetDictionary[assetName]["oracleAppId"]).do()
-    for (const y of response.params["global-state"]) {
+    let response = await lookupApplications(assetDictionary[assetName]["oracleAppId"])
+    for (const y of response.application.params["global-state"]) {
       let decodedKey = Buffer.from(y.key, 'base64').toString('binary')
       if (decodedKey === assetDictionary[assetName]["oracleFieldName"]) {
         prices[assetName] = y.value.uint / 1000000
@@ -158,28 +179,27 @@ async function getPrices(algodClient, assetDictionary, orderedAssets) {
 }
 
 function getMarketSupply(assetName, marketGlobalState, prices, assetDictionary) {
-    underlying_cash = assetName === "STBL" ? marketGlobalState[marketStrings.active_collateral] : marketGlobalState[marketStrings.underlying_cash]
-    supplyUnderlying = underlying_cash - marketGlobalState[marketStrings.underlying_reserves]
+    let underlyingCash = ((assetName === "STBL") || (assetName === "vALGO"))  ? marketGlobalState[marketStrings.active_collateral] : marketGlobalState[marketStrings.underlying_cash]
+    let supplyUnderlying = underlyingCash - marketGlobalState[marketStrings.underlying_reserves]
     supplyUnderlying /= Math.pow(10, assetDictionary[assetName]['decimals'])
 
     return supplyUnderlying * prices[assetName]
 }
 
 function getMarketBorrow(assetName, marketGlobalState, prices) {
-    borrowUnderlying = marketGlobalState[marketStrings.underlying_borrowed]
+    let borrowUnderlying = marketGlobalState[marketStrings.underlying_borrowed]
     borrowUnderlying /= Math.pow(10, assetDictionary[assetName]['decimals'])
 
     return borrowUnderlying * prices[assetName]
 }
 
 async function borrowed() {
-    let client = new algosdk.Algodv2("", "https://algoexplorerapi.io/", "")
-    let prices = await getPrices(client, assetDictionary, orderedAssets)
+    let prices = await getPrices(assetDictionary, orderedAssets)
 
-    borrow = 0
+    let borrow = 0
 
     for (const assetName of orderedAssets) {
-        marketGlobalState = await getGlobalMarketState(client, assetDictionary[assetName]["marketAppId"])
+        let marketGlobalState = await getGlobalMarketState(assetDictionary[assetName]["marketAppId"])
         borrow += getMarketBorrow(assetName, marketGlobalState, prices, assetDictionary)
     }
 
@@ -187,13 +207,12 @@ async function borrowed() {
 }
 
 async function supply() {
-    let client = new algosdk.Algodv2("", "https://algoexplorerapi.io/", "")
-    let prices = await getPrices(client, assetDictionary, orderedAssets)
+    let prices = await getPrices(assetDictionary, orderedAssets)
 
-    supply = 0
+    let supply = 0
     for (const assetName of orderedAssets) {
-        marketGlobalState = await getGlobalMarketState(client, assetDictionary[assetName]["marketAppId"])
-        assetTvl = getMarketSupply(assetName, marketGlobalState, prices, assetDictionary)
+        let marketGlobalState = await getGlobalMarketState(assetDictionary[assetName]["marketAppId"])
+        let assetTvl = getMarketSupply(assetName, marketGlobalState, prices, assetDictionary)
         supply += assetTvl
     }
 
@@ -201,8 +220,6 @@ async function supply() {
 }
 
 async function staking() {
-    let client = new algosdk.Algodv2("", "https://algoexplorerapi.io/", "")
-
     let lpCirculations = {}
 
     let prices = {
@@ -212,16 +229,14 @@ async function staking() {
 
     for (const contractName of variableValueStakingContracts) {
         let contractState = await getGlobalMarketState(
-            client,
             assetDictionary['STAKING_CONTRACTS'][contractName]["poolAppId"]
         )
         lpCirculations[contractName] = contractState[marketStrings.lp_circulation] / 1000000
     }
 
-    let poolSnapshotsResponse = await fetch("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_pool_snapshots/?network=MAINNET")
-    let assetSnapshotsResponse = await fetch("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_asset_snapshots/?network=MAINNET")
+    let poolSnapshots = await get("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_pool_snapshots/?network=MAINNET")
+    let assetSnapshots = await get("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_asset_snapshots/?network=MAINNET")
 
-    let poolSnapshots = await poolSnapshotsResponse.json();
     for (const poolSnapshot of poolSnapshots.pool_snapshots) {
         for (const contractName of variableValueStakingContracts) {
             if (poolSnapshot.id == assetDictionary['STAKING_CONTRACTS'][contractName]["poolAppId"]) {
@@ -230,7 +245,6 @@ async function staking() {
         }
     }
 
-    let assetSnapshots = await assetSnapshotsResponse.json();
     for (const assetSnapshot of assetSnapshots.asset_snapshots) {
         for (const contractName of singleSideStakingContracts) {
             if (assetSnapshot.id == assetDictionary['STAKING_CONTRACTS'][contractName]["assetId"]) {
@@ -239,9 +253,9 @@ async function staking() {
         }
     }
 
-    staked = 0
+    let staked = 0
     for (const contractName of stakingContracts) {
-        marketGlobalState = await getGlobalMarketState(client, assetDictionary['STAKING_CONTRACTS'][contractName]["marketAppId"])
+        let marketGlobalState = await getGlobalMarketState(assetDictionary['STAKING_CONTRACTS'][contractName]["marketAppId"])
         staked += getMarketSupply(contractName, marketGlobalState, prices, assetDictionary['STAKING_CONTRACTS'])
     }
 
@@ -255,7 +269,7 @@ async function dex() {
           async (bail) =>
             await axios.get("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_protocol_snapshot/?network=MAINNET")
         )
-      ).data.asset_snapshots[0].tvl;
+      ).data.protocol_snapshot.tvl.total_usd;
     return toUSDTBalances(response)
 }
 module.exports = {

@@ -148,11 +148,15 @@ const minichefTvl = async (timestamp, ethBlock, chainBlocks) => {
           transformAddress(wftmTokenAddress),
           new BigNumber(Number(reserves.output[0])).times(2).times(lpTokenRatio).toFixed(0)
         );
-      } else if (symbols.output[idx].output.includes("LP") && symbols.output[idx].output != "BeetXLP_MIM_USDC_USDT") {
-        lpPositions.push({
-          balance: totalBalance.toString(10),
-          token,
-        });
+      } else if (symbols.output[idx].output.includes("LP")) {
+        if (lpTokens.output[idx].output === "0xD163415BD34EF06f57C58D2AEd5A5478AfB464cC") { // BeetXLP_MIM_USDC_USDT
+          // DO NOTHING
+        } else {
+          lpPositions.push({
+            balance: totalBalance.toString(10),
+            token,
+          });
+        }
       } else {
         if (symbols.output[idx].output === "3poolV2-f") {
           const virtual_price = (
@@ -193,7 +197,7 @@ const minichefTvl = async (timestamp, ethBlock, chainBlocks) => {
             }),
           ]);
           const lpTokenRatio = new BigNumber(totalSupply.output).isZero() ? new BigNumber(0) : totalBalance.div(totalSupply.output);
-          linspiritPriceInSpirit = new BigNumber(Number(reserves.output[0])).div(Number(reserves.output[1]))
+          const linspiritPriceInSpirit = new BigNumber(Number(reserves.output[0])).div(Number(reserves.output[1]))
           const linSpiritBalanceInSpirit = linspiritPriceInSpirit.times(Number(tokenBalances.output['1'][1]))
           const bptLinspiritTvlInSpirit = new BigNumber(Number(tokenBalances.output['1'][0])).plus(linSpiritBalanceInSpirit).times(lpTokenRatio).toFixed(0);
           sdk.util.sumSingleBalance(
@@ -303,17 +307,6 @@ const minichefTvl = async (timestamp, ethBlock, chainBlocks) => {
       }
     }
   });
-
-  const beetXLP_MIM_USDC_USDT = 'fantom:0xD163415BD34EF06f57C58D2AEd5A5478AfB464cC';
-
-  if (beetXLP_MIM_USDC_USDT in balances) {
-    sdk.util.sumSingleBalance(
-      balances,
-      transformAddress(usdtTokenAddress),
-      Math.round(balances[beetXLP_MIM_USDC_USDT] / 10 ** 12)
-    );
-    delete balances[beetXLP_MIM_USDC_USDT];
-  };
 
   const turns = Math.floor(lpPositions.length / 10);
   let n = 0;
@@ -429,4 +422,4 @@ module.exports = {
       hundredchefTvl,
     ]),
   }
-};
+}; // node test.js projects/liquiddriver/index.js

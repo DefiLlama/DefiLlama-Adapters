@@ -1,35 +1,18 @@
-const retry = require('./helper/retry')
-const { GraphQLClient, gql } = require('graphql-request')
-const { toUSDTBalances } = require('./helper/balances');
-
-async function tvl(_timestamp, _ethBlock, chainBlocks) {
-  var totalValue = 0;
-
-  var graphQLClient = new GraphQLClient('https://api.thegraph.com/subgraphs/name/waka-finance/waka-graph')
-  var reserveQuery = gql`
-  query get_tvl($block: Int) {
-    pairs (
-      block: { number: $block }
-    ) {
-      reserveUSD
-    }
-  }`;
-  var reserveResult = await retry(async bail => await graphQLClient.request(reserveQuery, {
-    block: chainBlocks.fantom
-  }))
-  var reserves = reserveResult.pairs;
-
-  for (var i = 0; i < reserves.length; i ++) {
-    var reserveUSD = Number(reserves[i].reserveUSD);
-    totalValue += reserveUSD;
-  }
-  
-  return toUSDTBalances(totalValue);
-}
+const { getUniTVL } = require("./helper/unknownTokens")
 
 module.exports = {
   misrepresentedTokens: true,
   fantom:{
-    tvl,
+    tvl: getUniTVL({
+      factory: '0xb2435253c71fca27be41206eb2793e44e1df6b6d',
+      chain: 'fantom',
+      coreAssets: [
+        '0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83', // wftm
+        '0x04068da6c83afcfa0e13ba15a6696662335d5b75', // USDC
+        '0x049d68029688eabf473097a2fc38ef61633a3c7a', // USDT
+        '0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e', // DAI
+        // '0xf61cCdE1D4bB76CeD1dAa9D4c429cCA83022B08B', // WAKA
+      ],
+    }),
   },
 }
