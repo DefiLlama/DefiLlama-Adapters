@@ -383,4 +383,82 @@ module.exports = [
             lpToken: '0x1AEf73d49Dedc4b1778d0706583995958Dc862e6',
         },
     },
+
+    {
+        id: 'tusd',
+        name: 'tusd',
+        coins: [
+            coins.TUSD,
+            coins.crv3pool,
+        ],
+        addresses: {
+            swap: '0xecd5e75afb02efa118af914515d6521aabd189f1',
+            lpToken: '0xecd5e75afb02efa118af914515d6521aabd189f1',
+        },
+    },
+
+    {
+        id: 'tusdfraxbp',
+        name: 'tusdfraxbp',
+        coins: [
+            coins.TUSD,
+            coins.FRAXBP,
+        ],
+        addresses: {
+            swap: '0x33baeDa08b8afACc4d3d07cf31d49FC1F1f3E893',
+            lpToken: '0x33baeDa08b8afACc4d3d07cf31d49FC1F1f3E893',
+        },
+    },
+
+    {
+        id: 'silofrax',
+        name: 'silofrax',
+        coins: [
+            coins.SILO,
+            coins.frax,
+        ],
+        addresses: {
+            swap: '0x9a22CDB1CA1cdd2371cD5BB5199564C4E89465eb',
+            lpToken: '0x2302aaBe69e6E7A1b0Aa23aAC68fcCB8A4D2B460',
+        },
+    },
+
+    {
+        id: 'alusdfraxbp',
+        name: 'alusdfraxbp',
+        coins: [
+            coins.alUSD,
+            coins.FRAXBP,
+        ],
+        addresses: {
+            swap: '0xB30dA2376F63De30b42dC055C93fa474F31330A5',
+            lpToken: '0xB30dA2376F63De30b42dC055C93fa474F31330A5',
+        },
+    },
+
+    {
+        id: 'busdfraxbp',
+        name: 'busdfraxbp',
+        coins: [
+            coins.busd,
+            coins.FRAXBP,
+        ],
+        addresses: {
+            swap: '0x8fdb0bB9365a46B145Db80D0B1C5C5e979C84190',
+            lpToken: '0x8fdb0bB9365a46B145Db80D0B1C5C5e979C84190',
+        },
+    },
+
+    {
+        id: 'susdfraxbp',
+        name: 'busdfraxbp',
+        coins: [
+            coins.SUSD,
+            coins.FRAXBP,
+        ],
+        addresses: {
+            swap: '0xe3c190c57b5959Ae62EfE3B6797058B76bA2f5eF',
+            lpToken: '0xe3c190c57b5959Ae62EfE3B6797058B76bA2f5eF',
+        },
+    },
 ];
