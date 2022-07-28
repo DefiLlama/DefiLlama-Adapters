@@ -148,7 +148,7 @@ function pool2BalanceFromMasterChefExports(masterchef, token, chain = "ethereum"
 
 function pool2UniV3({ stakingAddress, chain = 'ethereum' }) {
     return async (_, _b, { [chain]: block }) => {
-        return unwrapUniswapV3NFTs({ nftsAndOwners: [['0xC36442b4a4522E871399CD717aBDD847Ab11FE88', stakingAddress, ]], block, chain, })
+        return unwrapUniswapV3NFTs({ owner: stakingAddress, block, chain, })
     }
 }
 
