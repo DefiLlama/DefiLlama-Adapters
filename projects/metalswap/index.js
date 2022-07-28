@@ -1,12 +1,9 @@
 const sdk = require("@defillama/sdk");
-const BigNumber = require("bignumber.js");
 
 const {
-  transformBscAddress,
-  transformPolygonAddress,
+    transformBscAddress,
+    transformPolygonAddress
 } = require("../helper/portedTokens");
-
-const { getChainTransform } = require("../helper/portedTokens");
 
 // TOKENS
 const ETH_XMT_CONTRACT = "0x3E5D9D8a63CC8a88748f229999CF59487e90721e";
@@ -17,9 +14,9 @@ const WETH_CONTRACT = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
 
 // pool2 ETH
 const ETH_UNISWAP_ADDRESSES = [
-  "0xb143bbeb287dcd1034da6e7186ec695316fff78f",
-  "0x8ea45f0bf608d553a4d8837ebdd5b2c7d0eba772",
-  "0x78a3d03598c39bc8cfad331ceeaea0ca5345fe6a",
+    "0xb143bbeb287dcd1034da6e7186ec695316fff78f",
+    "0x8ea45f0bf608d553a4d8837ebdd5b2c7d0eba772",
+    "0x78a3d03598c39bc8cfad331ceeaea0ca5345fe6a"
 ];
 
 // staking ETH
@@ -27,16 +24,17 @@ const ETH_NFT_PREORDER_CONTRACT = "0x6b392C307E0Fe2a8BE3687Bc780D4157592F4aC2";
 
 const ETH_DAO_CONTRACT = "0xc35BD9072de45215a25EB9DADB4fA54eea445a01";
 
+
 const ETH_POOLS_ADDRESSES = [
-  "0xd9b5b86De1F696dFe290803b92Fe5e9baCa9371A",
-  "0xbEe93fD8822c3a61068Abf54A28734644c9f61Ed",
-  "0xB9B17B61F7Cf8BDB192547948d5379C8EeaF3cd8",
-  "0xCbD0F8e80e32B8e82f21f39FDE0A8bcf18535B21",
+    "0xd9b5b86De1F696dFe290803b92Fe5e9baCa9371A",
+    "0xbEe93fD8822c3a61068Abf54A28734644c9f61Ed",
+    "0xB9B17B61F7Cf8BDB192547948d5379C8EeaF3cd8",
+    "0xCbD0F8e80e32B8e82f21f39FDE0A8bcf18535B21"
 ];
 
 const ETH_PREMIUM_POOLS_ADDRESSES = [
-  "0xcbF519299A115e325d6C82b514358362A9CA6ee5",
-  "0xaF9101314b14D8e243e1D519c0dd4e69DFd44466",
+    "0xcbF519299A115e325d6C82b514358362A9CA6ee5",
+    "0xaF9101314b14D8e243e1D519c0dd4e69DFd44466"
 ];
 
 // BSC
@@ -47,21 +45,21 @@ const WBNB_CONTRACT = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
 
 // Staking
 const BSC_POOLS_ADDRESSES = [
-  "0xd38b66aACA9819623380f60814308c6594E2DC26",
-  "0xd9b5b86De1F696dFe290803b92Fe5e9baCa9371A",
-  "0xbEe93fD8822c3a61068Abf54A28734644c9f61Ed",
+    "0xd38b66aACA9819623380f60814308c6594E2DC26",
+    "0xd9b5b86De1F696dFe290803b92Fe5e9baCa9371A",
+    "0xbEe93fD8822c3a61068Abf54A28734644c9f61Ed"
 ];
 
 const BSC_SMART_POOLS_ADDRESSES = [
-  "0x306825856807321671d21d4A2A9a65b02CCB51db",
+    "0x306825856807321671d21d4A2A9a65b02CCB51db"
 ];
 
 // pool2
 const BSC_PANCAKESWAP_ADDRESSES = [
-  "0x7062326862fc74d8731deca1d95ca1418896d67c",
-  "0xb5e267fa0613c859c108132eb43eed43675454bd",
-  "0x03e74f607ca88c6d0c010e8734747dc04b6c987c",
-  "0x548d4968a7402d98b1a710717d43e9f4eb6ea173",
+    "0x7062326862fc74d8731deca1d95ca1418896d67c",
+    "0xb5e267fa0613c859c108132eb43eed43675454bd",
+    "0x03e74f607ca88c6d0c010e8734747dc04b6c987c",
+    "0x548d4968a7402d98b1a710717d43e9f4eb6ea173"
 ];
 
 const ACRYPTOS_POOL_ADDRESS = "0xa82f327BBbF0667356D2935C6532d164b06cEced";
@@ -73,13 +71,13 @@ const POLYGON_WMATIC_CONTRACT = "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270";
 
 // pool2
 const POLYGON_LIQUIDITY_POOLS = [
-  "0x2c92547ea81d9855e55ca7ac66956bfccbaf11d2",
-  "0xf7abb7dee889da4300a82c26f8c0c725c64bd493",
+    "0x2c92547ea81d9855e55ca7ac66956bfccbaf11d2",
+    "0xf7abb7dee889da4300a82c26f8c0c725c64bd493"
 ];
 
 // TVL
-const POLYGON_NFT_STAKING_CONTRACT =
-  "0x313c3F878998622f18761d609AA007F2bbC378Db";
+const POLYGON_NFT_STAKING_CONTRACT = "0x313c3F878998622f18761d609AA007F2bbC378Db";
+
 
 // ETHEREUM
 
@@ -97,354 +95,311 @@ const POLYGON_NFT_STAKING_CONTRACT =
     }
  */
 const stakingEthereum = async (timestamp, block, chainBlocks) => {
-  // A dictionary where all the keys are either token addresses or Coingecko token IDs
-  // If a token balance has an address key, the DefiLlama SDK will manage any raw to real amount conversion for you (so you don'gitt need to worry about erc20 decimals).
-  // If a token balance has a Coingecko ID key, you will need to process the decimals and use a real token amount in the balances object.
-  const balances = {};
 
-  await Promise.all([
-    extractEthereumStakedPerCurrency(balances, ETH_XMT_CONTRACT),
-    extractEthereumStakedPerCurrency(balances, ETH_TETHER_CONTRACT),
-    extractEthereumStakedPerCurrency(balances, ETH_USDC_CONTRACT),
-    extractEthereumStakedPerCurrency(balances, ETH_WBTC_CONTRACT),
-    extractEthereumStakedPerCurrency(balances, WETH_CONTRACT),
-  ]);
+    // A dictionary where all the keys are either token addresses or Coingecko token IDs
+    // If a token balance has an address key, the DefiLlama SDK will manage any raw to real amount conversion for you (so you don'gitt need to worry about erc20 decimals).
+    // If a token balance has a Coingecko ID key, you will need to process the decimals and use a real token amount in the balances object.
+    const balances = {};
 
-  return balances;
-};
+    await Promise.all([
+        extractEthereumStakedPerCurrency(balances, ETH_XMT_CONTRACT),
+        extractEthereumStakedPerCurrency(balances, ETH_TETHER_CONTRACT),
+        extractEthereumStakedPerCurrency(balances, ETH_USDC_CONTRACT),
+        extractEthereumStakedPerCurrency(balances, ETH_WBTC_CONTRACT),
+        extractEthereumStakedPerCurrency(balances, WETH_CONTRACT),
+        extractEthereumPool2PerCurrency(balances, ETH_XMT_CONTRACT),
+    ]);
+
+    return balances;
+}
 
 const extractEthereumStakedPerCurrency = async (balances, currencyAddress) => {
-  for (let i = 0; i < ETH_POOLS_ADDRESSES.length; i++) {
-    const collateralBalance = await makeOnChainFunctionCall(
-      "erc20:balanceOf",
-      undefined,
-      currencyAddress,
-      [ETH_POOLS_ADDRESSES[i]],
-      undefined
+
+    for (let i = 0; i < ETH_POOLS_ADDRESSES.length; i++) {
+
+        const collateralBalance = await makeOnChainFunctionCall(
+            "erc20:balanceOf",
+            undefined,
+            currencyAddress,
+            [ETH_POOLS_ADDRESSES[i]],
+            undefined
+        );
+
+        sdk.util.sumSingleBalance(balances, currencyAddress, collateralBalance);
+    }
+
+    for (let i = 0; i < ETH_PREMIUM_POOLS_ADDRESSES.length; i++) {
+
+        const collateralBalance = await makeOnChainFunctionCall(
+            "erc20:balanceOf",
+            undefined,
+            currencyAddress,
+            [ETH_PREMIUM_POOLS_ADDRESSES[i]],
+            undefined
+        );
+
+        sdk.util.sumSingleBalance(balances, currencyAddress, collateralBalance);
+    }
+
+    const collateralDAOBalance = await makeOnChainFunctionCall(
+        "erc20:balanceOf",
+        undefined,
+        currencyAddress,
+        [ETH_DAO_CONTRACT],
+        undefined
     );
 
-    sdk.util.sumSingleBalance(balances, currencyAddress, collateralBalance);
-  }
+    sdk.util.sumSingleBalance(balances, currencyAddress, collateralDAOBalance);
 
-  for (let i = 0; i < ETH_PREMIUM_POOLS_ADDRESSES.length; i++) {
-    const collateralBalance = await makeOnChainFunctionCall(
-      "erc20:balanceOf",
-      undefined,
-      currencyAddress,
-      [ETH_PREMIUM_POOLS_ADDRESSES[i]],
-      undefined
+    const collateralPreorderBalance = await makeOnChainFunctionCall(
+        "erc20:balanceOf",
+        undefined,
+        currencyAddress,
+        [ETH_NFT_PREORDER_CONTRACT],
+        undefined
     );
 
-    sdk.util.sumSingleBalance(balances, currencyAddress, collateralBalance);
-  }
-
-  const collateralDAOBalance = await makeOnChainFunctionCall(
-    "erc20:balanceOf",
-    undefined,
-    currencyAddress,
-    [ETH_DAO_CONTRACT],
-    undefined
-  );
-
-  sdk.util.sumSingleBalance(balances, currencyAddress, collateralDAOBalance);
-
-  const collateralPreorderBalance = await makeOnChainFunctionCall(
-    "erc20:balanceOf",
-    undefined,
-    currencyAddress,
-    [ETH_NFT_PREORDER_CONTRACT],
-    undefined
-  );
-
-  sdk.util.sumSingleBalance(
-    balances,
-    currencyAddress,
-    collateralPreorderBalance
-  );
-};
+    sdk.util.sumSingleBalance(balances, currencyAddress, collateralPreorderBalance);
+}
 
 const pool2Ethereum = async (timestamp, block, chainBlocks) => {
-  const balances = {};
 
-  await Promise.all([
-    extractEthereumPool2PerCurrency(balances, ETH_XMT_CONTRACT),
-    extractEthereumPool2PerCurrency(balances, ETH_TETHER_CONTRACT),
-    extractEthereumPool2PerCurrency(balances, ETH_USDC_CONTRACT),
-    extractEthereumPool2PerCurrency(balances, ETH_WBTC_CONTRACT),
-    extractEthereumPool2PerCurrency(balances, WETH_CONTRACT),
-  ]);
+    const balances = {};
 
-  return balances;
-};
+    await Promise.all([
+        extractEthereumPool2PerCurrency(balances, ETH_TETHER_CONTRACT),
+        extractEthereumPool2PerCurrency(balances, ETH_USDC_CONTRACT),
+        extractEthereumPool2PerCurrency(balances, ETH_WBTC_CONTRACT),
+        extractEthereumPool2PerCurrency(balances, WETH_CONTRACT),
+    ]);
+
+    return balances;
+}
 
 const extractEthereumPool2PerCurrency = async (balances, currencyAddress) => {
-  // UNISWAP
-  for (let i = 0; i < ETH_UNISWAP_ADDRESSES.length; i++) {
-    const collateralBalance = await makeOnChainFunctionCall(
-      "erc20:balanceOf",
-      undefined,
-      currencyAddress,
-      [ETH_UNISWAP_ADDRESSES[i]],
-      undefined
-    );
 
-    sdk.util.sumSingleBalance(balances, currencyAddress, collateralBalance);
-  }
-};
+    // UNISWAP
+    for (let i = 0; i < ETH_UNISWAP_ADDRESSES.length; i++) {
+
+        const collateralBalance = await makeOnChainFunctionCall(
+            "erc20:balanceOf",
+            undefined,
+            currencyAddress,
+            [ETH_UNISWAP_ADDRESSES[i]],
+            undefined
+        );
+
+        sdk.util.sumSingleBalance(balances, currencyAddress, collateralBalance);
+    }
+}
 
 // BINANCE
 
 /**
- *
+ * 
  * @param {Number} timestamp - Can be the current or past timestamp when we back fill chart data for your protocol.
  * @param {Number} block - Ethereum mainnet block height corresponding the timestamp in the first param
- * @param {*} chainBlocks - Optional object containing block heights for other EVM chains. This is not needed if your project is only on Ethereum mainnet
+ * @param {*} chainBlocks - Optional object containing block heights for other EVM chains. This is not needed if your project is only on Ethereum mainnet 
  * @returns the balance objects
  */
 const stakingBSC = async (timestamp, block, chainBlocks) => {
-  const balances = {};
 
-  // Many assets have been deployed on multiple chains.
-  // It"s hard for CoinGecko to keep up with asset addresses for every chain, so sometimes we have to transform the addresses to ones known by CoinGecko.
-  // We have managed most cases for you in the transform__Address() functions, found in projects/helper/portedTokens.js
-  const transform = await transformBscAddress();
+    const balances = {};
 
-  await Promise.all([
-    extractBinanceStakingPerCurrency(
-      balances,
-      BSC_XMT_CONTRACT,
-      transform,
-      chainBlocks
-    ),
-    extractBinanceStakingPerCurrency(
-      balances,
-      WBNB_CONTRACT,
-      transform,
-      chainBlocks
-    ),
-  ]);
+    // Many assets have been deployed on multiple chains.
+    // It"s hard for CoinGecko to keep up with asset addresses for every chain, so sometimes we have to transform the addresses to ones known by CoinGecko.
+    // We have managed most cases for you in the transform__Address() functions, found in projects/helper/portedTokens.js
+    const transform = await transformBscAddress();
 
-  return balances;
-};
+    await Promise.all([
+        extractBinanceStakingPerCurrency(
+            balances,
+            BSC_XMT_CONTRACT,
+            transform,
+            chainBlocks
+        ),
+        extractBinanceStakingPerCurrency(
+            balances,
+            BSC_XMT_CONTRACT,
+            transform,
+            chainBlocks
+        ),
+        extractBinanceStakingPerCurrency(
+            balances,
+            WBNB_CONTRACT,
+            transform,
+            chainBlocks
+        ),
+    ]);
 
-const extractBinanceStakingPerCurrency = async (
-  balances,
-  currencyAddress,
-  transform,
-  chainBlocks
-) => {
-  for (let i = 0; i < BSC_POOLS_ADDRESSES.length; i++) {
-    const collateralBalance = await makeOnChainFunctionCall(
-      "erc20:balanceOf",
-      "bsc",
-      currencyAddress,
-      [BSC_POOLS_ADDRESSES[i]],
-      chainBlocks["bsc"]
-    );
+    return balances;
+}
 
-    sdk.util.sumSingleBalance(
-      balances,
-      transform(currencyAddress),
-      collateralBalance
-    );
-  }
+const extractBinanceStakingPerCurrency = async (balances, currencyAddress, transform, chainBlocks) => {
 
-  for (let i = 0; i < BSC_SMART_POOLS_ADDRESSES.length; i++) {
-    const collateralBalance = await makeOnChainFunctionCall(
-      "erc20:balanceOf",
-      "bsc",
-      currencyAddress,
-      [BSC_SMART_POOLS_ADDRESSES[i]],
-      chainBlocks["bsc"]
-    );
+    for (let i = 0; i < BSC_POOLS_ADDRESSES.length; i++) {
 
-    sdk.util.sumSingleBalance(
-      balances,
-      transform(currencyAddress),
-      collateralBalance
-    );
-  }
-};
+        const collateralBalance = await makeOnChainFunctionCall(
+            "erc20:balanceOf",
+            'bsc',
+            currencyAddress,
+            [BSC_POOLS_ADDRESSES[i]],
+            chainBlocks['bsc']
+        );
+
+        sdk.util.sumSingleBalance(balances, transform(currencyAddress), collateralBalance);
+    }
+
+    for (let i = 0; i < BSC_SMART_POOLS_ADDRESSES.length; i++) {
+
+        const collateralBalance = await makeOnChainFunctionCall(
+            "erc20:balanceOf",
+            'bsc',
+            currencyAddress,
+            [BSC_SMART_POOLS_ADDRESSES[i]],
+            chainBlocks['bsc']
+        );
+
+        sdk.util.sumSingleBalance(balances, transform(currencyAddress), collateralBalance);
+    }
+}
 
 const pool2BSC = async (timestamp, block, chainBlocks) => {
-  const balances = {};
 
-  // Many assets have been deployed on multiple chains.
-  // It"s hard for CoinGecko to keep up with asset addresses for every chain, so sometimes we have to transform the addresses to ones known by CoinGecko.
-  // We have managed most cases for you in the transform__Address() functions, found in projects/helper/portedTokens.js
-  const transform = await transformBscAddress();
+    const balances = {};
 
-  await Promise.all([
-    extractBinancePool2PerCurrency(
-      balances,
-      BSC_XMT_CONTRACT,
-      transform,
-      chainBlocks
-    ),
-    extractBinancePool2PerCurrency(
-      balances,
-      WBNB_CONTRACT,
-      transform,
-      chainBlocks
-    ),
-    extractAcryptosXMTTotalValueLocked(balances, transform, chainBlocks),
-  ]);
+    // Many assets have been deployed on multiple chains.
+    // It"s hard for CoinGecko to keep up with asset addresses for every chain, so sometimes we have to transform the addresses to ones known by CoinGecko.
+    // We have managed most cases for you in the transform__Address() functions, found in projects/helper/portedTokens.js
+    const transform = await transformBscAddress();
 
-  return balances;
-};
+    await Promise.all([
 
-const extractBinancePool2PerCurrency = async (
-  balances,
-  currencyAddress,
-  transform,
-  chainBlocks
-) => {
-  for (let i = 0; i < BSC_PANCAKESWAP_ADDRESSES.length; i++) {
-    const collateralBalance = await makeOnChainFunctionCall(
-      "erc20:balanceOf",
-      "bsc",
-      currencyAddress,
-      [BSC_PANCAKESWAP_ADDRESSES[i]],
-      chainBlocks["bsc"]
-    );
+        extractBinanceCurrencyBalanceFromPancakeswap(balances, WBNB_CONTRACT, transform, chainBlocks),
+        extractAcryptosXMTTotalValueLocked(balances, transform, chainBlocks)
+    ]);
 
-    sdk.util.sumSingleBalance(
-      balances,
-      transform(currencyAddress),
-      collateralBalance
-    );
-  }
-};
+    return balances;
+}
 
-const extractAcryptosXMTTotalValueLocked = async (
-  balances,
-  transform,
-  chainBlocks
-) => {
-  const collateralBalance = await makeOnChainFunctionCall(
-    "erc20:balanceOf",
-    "bsc",
-    BSC_XMT_CONTRACT,
-    [ACRYPTOS_POOL_ADDRESS],
-    chainBlocks["bsc"]
-  );
-
-  sdk.util.sumSingleBalance(
+const extractBinanceCurrencyBalanceFromPancakeswap = async (
     balances,
-    transform(BSC_XMT_CONTRACT),
-    collateralBalance
-  );
-};
+    currencyAddress,
+    transform,
+    chainBlocks
+) => {
+
+    for (let i = 0; i < BSC_PANCAKESWAP_ADDRESSES.length; i++) {
+
+        const collateralBalance = await makeOnChainFunctionCall(
+            "erc20:balanceOf",
+            'bsc',
+            currencyAddress,
+            [BSC_PANCAKESWAP_ADDRESSES[i]],
+            chainBlocks['bsc']
+        );
+
+        sdk.util.sumSingleBalance(balances, transform(currencyAddress), collateralBalance);
+    }
+}
+
+const extractAcryptosXMTTotalValueLocked = async (balances, transform, chainBlocks) => {
+
+    const collateralBalance = await makeOnChainFunctionCall(
+        "erc20:balanceOf",
+        'bsc',
+        BSC_XMT_CONTRACT,
+        [ACRYPTOS_POOL_ADDRESS],
+        chainBlocks['bsc']
+    );
+
+    sdk.util.sumSingleBalance(balances, transform(BSC_XMT_CONTRACT), collateralBalance);
+}
+
 
 /**
- *
+ * 
  * @param {Number} timestamp - Can be the current or past timestamp when we back fill chart data for your protocol.
  * @param {Number} block - Ethereum mainnet block height corresponding the timestamp in the first param
- * @param {*} chainBlocks - Optional object containing block heights for other EVM chains. This is not needed if your project is only on Ethereum mainnet
+ * @param {*} chainBlocks - Optional object containing block heights for other EVM chains. This is not needed if your project is only on Ethereum mainnet 
  * @returns the balance objects
  */
 const tvlPolygon = async (timestamp, block, chainBlocks) => {
-  const balances = {};
 
-  const transform = await transformPolygonAddress();
+    const balances = {};
 
-  await Promise.all([
-    extractPolygonTotalValueLockedPerCurrency(
-      balances,
-      POLYGON_XMT_CONTRACT,
-      transform,
-      chainBlocks
-    ),
-    extractPolygonTotalValueLockedPerCurrency(
-      balances,
-      POLYGON_USDC_CONTRACT,
-      transform,
-      chainBlocks
-    ),
-    extractPolygonTotalValueLockedPerCurrency(
-      balances,
-      POLYGON_WMATIC_CONTRACT,
-      transform,
-      chainBlocks
-    ),
-  ]);
+    const transform = await transformPolygonAddress();
 
-  return balances;
-};
+    await Promise.all([
+        extractPolygonTotalValueLockedPerCurrency(balances, POLYGON_XMT_CONTRACT, transform, chainBlocks),
+        extractPolygonTotalValueLockedPerCurrency(balances, POLYGON_USDC_CONTRACT, transform, chainBlocks),
+        extractPolygonTotalValueLockedPerCurrency(balances, POLYGON_WMATIC_CONTRACT, transform, chainBlocks)
+    ]);
 
-const extractPolygonTotalValueLockedPerCurrency = async (
-  balances,
-  currencyAddress,
-  transform,
-  chainBlocks
-) => {
-  const collateralBalance = await makeOnChainFunctionCall(
-    "erc20:balanceOf",
-    "polygon",
-    currencyAddress,
-    [POLYGON_NFT_STAKING_CONTRACT],
-    chainBlocks["polygon"]
-  );
+    return balances;
+}
 
-  sdk.util.sumSingleBalance(
-    balances,
-    transform(currencyAddress),
-    collateralBalance
-  );
-};
+const extractPolygonTotalValueLockedPerCurrency = async (balances, currencyAddress, transform, chainBlocks) => {
+
+    const collateralBalance = await makeOnChainFunctionCall(
+        "erc20:balanceOf",
+        'polygon',
+        currencyAddress,
+        [POLYGON_NFT_STAKING_CONTRACT],
+        chainBlocks['polygon']
+    );
+
+    sdk.util.sumSingleBalance(balances, transform(currencyAddress), collateralBalance);
+}
 
 const pool2Polygon = async (timestamp, block, chainBlocks) => {
-  const balances = {};
 
-  const transform = await transformPolygonAddress();
+    const balances = {};
 
-  await Promise.all([
-    extractPolygonPool2PerCurrency(
-      balances,
-      POLYGON_XMT_CONTRACT,
-      transform,
-      chainBlocks
-    ),
-    extractPolygonPool2PerCurrency(
-      balances,
-      POLYGON_USDC_CONTRACT,
-      transform,
-      chainBlocks
-    ),
-    extractPolygonPool2PerCurrency(
-      balances,
-      POLYGON_WMATIC_CONTRACT,
-      transform,
-      chainBlocks
-    ),
-  ]);
+    const transform = await transformPolygonAddress();
 
-  return balances;
-};
+    await Promise.all([
+        extractPolygonCurrencyBalanceFromLiquidityPool(
+            balances, POLYGON_USDC_CONTRACT, transform, chainBlocks),
+        extractPolygonCurrencyBalanceFromLiquidityPool(
+            balances, POLYGON_WMATIC_CONTRACT, transform, chainBlocks)
+    ]);
 
-const extractPolygonPool2PerCurrency = async (
-  balances,
-  currencyAddress,
-  transform,
-  chainBlocks
-) => {
-  // Liquidity Pools
-  for (let i = 0; i < POLYGON_LIQUIDITY_POOLS.length; i++) {
-    const collateralBalance = await makeOnChainFunctionCall(
-      "erc20:balanceOf",
-      "polygon",
-      currencyAddress,
-      [POLYGON_LIQUIDITY_POOLS[i]],
-      chainBlocks["polygon"]
+    return balances;
+}
+
+const stakingPolygon = async (timestamp, block, chainBlocks) => {
+
+    const balances = {};
+
+    const transform = await transformPolygonAddress();
+
+    await extractPolygonCurrencyBalanceFromLiquidityPool(
+        balances,
+        POLYGON_XMT_CONTRACT,
+        transform,
+        chainBlocks
     );
 
-    sdk.util.sumSingleBalance(
-      balances,
-      transform(currencyAddress),
-      collateralBalance
-    );
-  }
-};
+    return balances;
+}
+
+const extractPolygonCurrencyBalanceFromLiquidityPool = async (balances, currencyAddress, transform, chainBlocks) => {
+
+    // Liquidity Pools
+    for (let i = 0; i < POLYGON_LIQUIDITY_POOLS.length; i++) {
+
+        const collateralBalance = await makeOnChainFunctionCall(
+            "erc20:balanceOf",
+            'polygon',
+            currencyAddress,
+            [POLYGON_LIQUIDITY_POOLS[i]],
+            chainBlocks['polygon']
+        );
+
+        sdk.util.sumSingleBalance(balances, transform(currencyAddress), collateralBalance);
+    }
+}
 
 /**
  * Function that can be used to call all sorts of contract functions
@@ -453,43 +408,41 @@ const extractPolygonPool2PerCurrency = async (
  * @param {*} target - address of the contract call.
  * @param {*} params - Optional, must take the same amount of params expected by the on-chain contract function
  * @param {*} block -  The block height that the contract call will be executed on. This should always correspond to the chain parameter, and in this case we use the chainBlocks object to get the bsc block height (remember, the second param on line 6 is the Ethereum mainnet block, not BSCs, which we are interested in for Mint Club)
- * @returns
+ * @returns 
  */
 const makeOnChainFunctionCall = async (abi, chain, target, params, block) => {
-  const callParameters = {
-    abi,
-    target,
-    block,
-  };
 
-  if (chain !== undefined) callParameters.chain = chain;
+    const callParameters = { abi, target, block };
 
-  if (params !== undefined) callParameters.params = params;
+    if (chain !== undefined) callParameters.chain = chain;
 
-  if (block !== undefined) callParameters.block = block;
+    if (params !== undefined) callParameters.params = params;
 
-  const { output } = await sdk.api.abi.call(callParameters);
+    if (block !== undefined) callParameters.block = block;
 
-  return output;
-};
+    const { output } = await sdk.api.abi.call(callParameters);
+
+    return output;
+}
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
-  methodology: "counts the number of MINT tokens in the Club Bonding contract.",
-  start: 1000235,
-  ethereum: {
-    tvl: async () => ({}),
-    staking: stakingEthereum,
-    pool2: pool2Ethereum,
-  },
-  bsc: {
-    tvl: async () => ({}),
-    staking: stakingBSC,
-    pool2: pool2BSC,
-  },
-  polygon: {
-    tvl: tvlPolygon,
-    pool2: pool2Polygon,
-  },
+    timetravel: true,
+    misrepresentedTokens: false,
+    methodology: "counts the number of MINT tokens in the Club Bonding contract.",
+    start: 1000235,
+    ethereum: {
+        tvl: async () => ({}),
+        staking: stakingEthereum,
+        pool2: pool2Ethereum,
+    },
+    bsc: {
+        tvl: async () => ({}),
+        staking: stakingBSC,
+        pool2: pool2BSC,
+    },
+    polygon: {
+        tvl: tvlPolygon,
+        pool2: pool2Polygon,
+        staking: stakingPolygon,
+    }
 };
