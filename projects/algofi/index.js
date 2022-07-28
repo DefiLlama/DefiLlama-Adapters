@@ -19,7 +19,7 @@ const fixedValueStakingContracts = ["TINYMAN11_STBL_USDC_LP_STAKING", "ALGOFI-ST
 const singleSideStakingContracts = ["DEFLY", "STBL", "OPUL"]
 const variableValueStakingContracts = ["ALGOFI-STBL-ALGO-LP", "AF-XET-STBL-75BP-STAKING", "AF-GOBTC-STBL-25BP-STAKING", "AF-GOETH-STBL-25BP-STAKING", "AF-OPUL-STBL-75BP-STAKING",
                                         "AF-DEFLY-STBL-75BP-STAKING", "AF-NANO-USDC-STBL-5BP-STAKING", "AF-NANO-USDT-STBL-5BP-STAKING", "AF-NANO-USDT-USDC-5BP-STAKING",
-                                        "AF-USDC-STBL-NANO-SUPER-STAKING", "AF-ZONE-STBL-75BP-STAKING", "AF-TINY-STBL-75BP-STAKING" ]
+                                        "AF-USDC-STBL-NANO-SUPER-STAKING", "AF-ZONE-STBL-75BP-STAKING", "AF-TINY-STBL-75BP-STAKING", "AF-GOMINT-STBL-25BP-STAKING"]
 const stakingContracts = fixedValueStakingContracts.concat(variableValueStakingContracts).concat(singleSideStakingContracts)
 
 const assetDictionary = {
@@ -133,6 +133,11 @@ const assetDictionary = {
             "poolAppId": 647799801,
             "decimals": 6
         },
+        "AF-GOMINT-STBL-25BP-STAKING" : {
+            "marketAppId" : 764406975,
+            "poolAppId": 764420932,
+            "decimals": 6
+        },
         "DEFLY" : {
             "marketAppId" : 641499935,
             "assetId": 470842789,
@@ -174,15 +179,15 @@ async function getPrices(assetDictionary, orderedAssets) {
 }
 
 function getMarketSupply(assetName, marketGlobalState, prices, assetDictionary) {
-    underlyingCash = ((assetName === "STBL") || (assetName === "vALGO"))  ? marketGlobalState[marketStrings.active_collateral] : marketGlobalState[marketStrings.underlying_cash]
-    supplyUnderlying = underlyingCash - marketGlobalState[marketStrings.underlying_reserves]
+    let underlyingCash = ((assetName === "STBL") || (assetName === "vALGO"))  ? marketGlobalState[marketStrings.active_collateral] : marketGlobalState[marketStrings.underlying_cash]
+    let supplyUnderlying = underlyingCash - marketGlobalState[marketStrings.underlying_reserves]
     supplyUnderlying /= Math.pow(10, assetDictionary[assetName]['decimals'])
 
     return supplyUnderlying * prices[assetName]
 }
 
 function getMarketBorrow(assetName, marketGlobalState, prices) {
-    borrowUnderlying = marketGlobalState[marketStrings.underlying_borrowed]
+    let borrowUnderlying = marketGlobalState[marketStrings.underlying_borrowed]
     borrowUnderlying /= Math.pow(10, assetDictionary[assetName]['decimals'])
 
     return borrowUnderlying * prices[assetName]
@@ -191,10 +196,10 @@ function getMarketBorrow(assetName, marketGlobalState, prices) {
 async function borrowed() {
     let prices = await getPrices(assetDictionary, orderedAssets)
 
-    borrow = 0
+    let borrow = 0
 
     for (const assetName of orderedAssets) {
-        marketGlobalState = await getGlobalMarketState(assetDictionary[assetName]["marketAppId"])
+        let marketGlobalState = await getGlobalMarketState(assetDictionary[assetName]["marketAppId"])
         borrow += getMarketBorrow(assetName, marketGlobalState, prices, assetDictionary)
     }
 
@@ -204,10 +209,10 @@ async function borrowed() {
 async function supply() {
     let prices = await getPrices(assetDictionary, orderedAssets)
 
-    supply = 0
+    let supply = 0
     for (const assetName of orderedAssets) {
-        marketGlobalState = await getGlobalMarketState(assetDictionary[assetName]["marketAppId"])
-        assetTvl = getMarketSupply(assetName, marketGlobalState, prices, assetDictionary)
+        let marketGlobalState = await getGlobalMarketState(assetDictionary[assetName]["marketAppId"])
+        let assetTvl = getMarketSupply(assetName, marketGlobalState, prices, assetDictionary)
         supply += assetTvl
     }
 
@@ -248,9 +253,9 @@ async function staking() {
         }
     }
 
-    staked = 0
+    let staked = 0
     for (const contractName of stakingContracts) {
-        marketGlobalState = await getGlobalMarketState(assetDictionary['STAKING_CONTRACTS'][contractName]["marketAppId"])
+        let marketGlobalState = await getGlobalMarketState(assetDictionary['STAKING_CONTRACTS'][contractName]["marketAppId"])
         staked += getMarketSupply(contractName, marketGlobalState, prices, assetDictionary['STAKING_CONTRACTS'])
     }
 

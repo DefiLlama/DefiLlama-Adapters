@@ -2,7 +2,7 @@ const { ApiPromise, WsProvider } = require("@polkadot/api");
 const BigNumber = require("bignumber.js");
 const sdk = require("@defillama/sdk")
 
-// node test.js projects/bifrost/index.js
+// node test.js projects/bifrost/api.js
 function formatTokenAmount(amount, tokenSymbol) {
   let decimals = 12;
 
@@ -12,6 +12,7 @@ function formatTokenAmount(amount, tokenSymbol) {
       decimals = 10;
       break;
 
+    case "BNC":
     case "KSM":
     case "KAR":
     case "KUSD":
@@ -19,6 +20,7 @@ function formatTokenAmount(amount, tokenSymbol) {
       break;
     case "ETH":
     case "ZLK":
+    case "MOVR":
       decimals = 18;
       break;
   }
@@ -47,8 +49,10 @@ function formatToken(token) {
 
 const tokenToCoingecko = {
   DOT: "polkadot",
+  BNC: "bifrost",
   KSM: "kusama",
   KAR: "karura",
+  MOVR: "moonriver",
   KUSD: "tether",
   ZLK: "zenlink-network-token",
   RMRK: "rmrk",
@@ -83,6 +87,14 @@ async function tvl() {
         }
       });
     }
+  }));
+
+  // Get vToken tvl (vKSM / vMOVR )
+  const tokenPool = await api.query.vtokenMinting.tokenPool.entries();
+
+  await Promise.all(tokenPool.map(async (pool) => {
+    const token=pool[0].toHuman()[0].Token||pool[0].toHuman()[0].Native
+    totalLiquidity[token]=new BigNumber(totalLiquidity[token]||0).plus(pool[1].toString()).toString()
   }));
 
   // Get vETH tvl

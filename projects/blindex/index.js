@@ -102,9 +102,7 @@ async function getBDStableCollateralBalances(block, chainName, bdstable) {
       collateralAddress
     );
 
-    balances[coingeckoMappedName] = balances.hasOwnProperty(coingeckoMappedName)
-      ? balances[coingeckoMappedName] + collateralBalance
-      : collateralBalance;
+    sdk.util.sumSingleBalance(balances, coingeckoMappedName, collateralBalance)
   }
 
   const bdxTokenAddress = chains[chainName].bdxTokenAddress;

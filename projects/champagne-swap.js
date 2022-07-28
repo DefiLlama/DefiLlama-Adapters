@@ -2,11 +2,6 @@ const { request, gql } = require("graphql-request");
 const sdk = require('@defillama/sdk')
 const { toUSDTBalances } = require('./helper/balances')
 
-async function fetch() {
-  let response = await utils.fetchURL('https://api.thegraph.com/subgraphs/name/champagneswap/exchangev3')
-  return response.data.total_value_locked_all;
-}
-
 const graphEndpoint = 'https://api.thegraph.com/subgraphs/name/champagneswap/exchangev3'
 const currentQuery = gql`
 query champagneFactories {

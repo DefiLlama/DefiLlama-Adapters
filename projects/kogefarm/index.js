@@ -131,10 +131,10 @@ const polygonTvl = ({ include, exclude }) => async (
   let vaults = vaults_full.map( v => v['vault']) */
   let vaults = (await utils.fetchURL(current_polygon_vaults_url)).data
 
-  if (!!include) {
+  if (include) {
     vaults = include
   }
-  if (!!exclude) {
+  if (exclude) {
     vaults = vaults.filter(
       (v) => !exclude.find((e) => e.toLowerCase() === v.toLowerCase()),
     )
@@ -533,6 +533,7 @@ const kavaTvl = async (timestamp, block, chainBlocks) => {
   let balances = {};
 
   let vaults = (await utils.fetchURL(current_kava_vaults_url)).data
+  if (typeof vaults === 'string') vaults = JSON.parse(vaults.replace(/\,(\s*[\}\]])/g, '$1'))
 
   const lp_addresses = (
     await sdk.api.abi.multiCall({

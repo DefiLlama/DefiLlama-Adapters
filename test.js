@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const path = require("path");
 require("dotenv").config();
-const { default: computeTVL } = require("@defillama/sdk/build/computeTVL");
+//const { default: computeTVL } = require("@defillama/sdk/build/computeTVL");
 const { chainsForBlocks } = require("@defillama/sdk/build/computeTVL/blocks");
 const { getLatestBlock } = require("@defillama/sdk/build/util/index");
 const {
@@ -12,6 +12,7 @@ const sdk = require("@defillama/sdk");
 const whitelistedExportKeys = require('./projects/helper/whitelistedExportKeys.json')
 const chainList = require('./projects/helper/chains.json')
 const handleError = require('./utils/handleError')
+const { diplayUnknownTable } = require('./projects/helper/utils')
 
 async function getLatestBlockRetry(chain) {
   for (let i = 0; i < 5; i++) {
@@ -64,6 +65,7 @@ async function getTvl(
       getCoingeckoLock,
       maxCoingeckoRetries
     );
+    await diplayUnknownTable({ tvlResults, storedKey, tvlBalances, })
     usdTvls[storedKey] = tvlResults.usdTvl;
     tokensBalances[storedKey] = tvlResults.tokenBalances;
     usdTokenBalances[storedKey] = tvlResults.usdTokenBalances;
@@ -117,7 +119,7 @@ sdk.api.abi.call = async (...args)=>{
   } catch(e) {
     console.log(e)
   }
-  const chains = Object.keys(module).filter(item => typeof module[item] === 'object' && item !== 'hallmarks');
+  const chains = Object.keys(module).filter(item => typeof module[item] === 'object' && !Array.isArray(module[item]));
   checkExportKeys(module, passedFile, chains)
   const unixTimestamp = Math.round(Date.now() / 1000) - 60;
   const chainBlocks = {};
@@ -246,7 +248,7 @@ function checkExportKeys(module, filePath, chains) {
 
   if (filePath.length > 2  
     || (filePath.length === 1 && !['.js', ''].includes(path.extname(filePath[0]))) // matches .../projects/projectXYZ.js or .../projects/projectXYZ
-    || (filePath.length === 2 && filePath[1] !== 'index.js'))  // matches .../projects/projectXYZ/index.js
+    || (filePath.length === 2 && !['api.js', 'index.js'].includes(filePath[1])))  // matches .../projects/projectXYZ/index.js
     process.exit(0)
 
   const blacklistedRootExportKeys = ['tvl', 'staking', 'pool2', 'borrowed', 'treasury'];
@@ -296,3 +298,93 @@ function checkExportKeys(module, filePath, chains) {
 
 process.on('unhandledRejection', handleError)
 process.on('uncaughtException', handleError)
+
+
+const BigNumber = require("bignumber.js");
+const axios =require("axios");
+
+const ethereumAddress = "0x0000000000000000000000000000000000000000";
+const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+const DAY = 24 * 3600;
+
+function fixBalances(balances) {
+  Object.entries(balances).forEach(([token, value]) => {
+    let newKey
+    if (token.startsWith("0x")) newKey = `ethereum:${token}`
+    else if (!token.includes(':')) newKey = `coingecko:${token}`
+    if (newKey) {
+      delete balances[token]
+      sdk.util.sumSingleBalance(balances, newKey, value)
+    }
+  })
+}
+
+async function computeTVL(balances, timestamp) {
+  fixBalances(balances)
+  const eth = balances[ethereumAddress];
+  if (eth !== undefined) {
+    balances[weth] = new BigNumber(balances[weth] ?? 0).plus(eth).toFixed(0);
+    delete balances[ethereumAddress];
+  }
+  const PKsToTokens = {};
+  const readKeys = Object.keys(balances)
+    .map((address) => {
+      const PK = `${timestamp === "now"?"":"asset#"}${address.toLowerCase()}`;
+      if (PKsToTokens[PK] === undefined) {
+        PKsToTokens[PK] = [address];
+        return PK;
+      } else {
+        PKsToTokens[PK].push(address);
+        return undefined;
+      }
+    })
+    .filter((item) => item !== undefined);
+  const readRequests = [];
+  for (let i = 0; i < readKeys.length; i += 100) {
+    readRequests.push(
+      axios.post("https://coins.llama.fi/prices", {
+        "coins": readKeys.slice(i, i + 100)
+      }).then(r => {
+        return Object.entries(r.data.coins).map(
+          ([PK, value]) => ({
+            ...value,
+            PK
+          })
+        )
+      })
+    );
+  }
+  let tokenData = ([]).concat(...(await Promise.all(readRequests)));
+  let usdTvl = 0;
+  const tokenBalances = {};
+  const usdTokenBalances = {} ;
+  const now = timestamp === "now" ? Math.round(Date.now() / 1000) : timestamp;
+  tokenData.forEach((response) => {
+    if (Math.abs(response.timestamp - now) < DAY) {
+      PKsToTokens[response.PK].forEach((address) => {
+        const balance = balances[address];
+        const { price, decimals } = response;
+        let symbol, amount, usdAmount;
+        if (response.PK.includes(':') && !response.PK.startsWith("coingecko:")) {
+          symbol = response.symbol.toUpperCase();
+          amount = new BigNumber(balance).div(10 ** decimals).toNumber();
+          usdAmount = amount * price;
+        } else {
+          symbol = response.PK.startsWith("coingecko:") ? response.PK.split(':')[1] : response.PK.slice('asset#'.length);
+          amount = Number(balance);
+          usdAmount = amount * price;
+        }
+        tokenBalances[symbol] = (tokenBalances[symbol] ?? 0) + amount;
+        usdTokenBalances[symbol] = (usdTokenBalances[symbol] ?? 0) + usdAmount;
+        usdTvl += usdAmount;
+      });
+    } else {
+      console.error(`Data for ${response.PK} is stale`);
+    }
+  });
+  return {
+    usdTvl,
+    tokenBalances,
+    usdTokenBalances,
+  };
+}

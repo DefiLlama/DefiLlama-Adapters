@@ -152,7 +152,8 @@ async function tvlV2Onchain(block, chain) {
         balance: amount.output,
         token: poolsWithoutPid[i].lpTokenAddress
     }))
-    lpPools = lpPools.filter(p => p.token != '0x2a8a315e82f85d1f0658c5d66a452bbdd9356783')
+    const blacklisted = ['0xf3a602d30dcb723a74a0198313a7551feaca7dac', '0x2a8a315e82f85d1f0658c5d66a452bbdd9356783',].map(i => i.toLowerCase())
+    lpPools = lpPools.filter(p => !blacklisted.includes(p.token.toLowerCase()))
     await unwrapUniswapLPs(balances, lpPools, block, chain, transform)
 
     return balances
