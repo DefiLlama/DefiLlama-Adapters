@@ -13,9 +13,9 @@ async function staking() {
   const topPrice = (await axios.get("https://orders.muesliswap.com/orderbook/?policy-id=8fef2d34078659493ce161a6c7fba4b56afefa8535296a5743f69587&tokenname=AADA")
   ).data.buy[0].price;
 
-  return {
-    cardano: aadaLocked * topPrice
-  };
+  const cardano = aadaLocked * topPrice;
+  // console.log({cardanoStaking: cardano})
+  return { cardano };
 }
 
 const scriptAdresses = [
@@ -35,7 +35,7 @@ const tvl = async () => {
     totalLovelaceLocked = BigNumber.sum(totalLovelaceLocked, addressTvl).toNumber();
   }
   const cardano = totalLovelaceLocked / 1e6;
-  console.log({ cardano });
+  // console.log({ cardano });
   return { cardano, };
 };
 
