@@ -431,7 +431,7 @@ async function sumLPWithOnlyOneTokenOtherThanKnown(balances, lpToken, owner, tok
   }
   await sumLPWithOnlyOneToken(balances, lpToken, owner, listedToken, block, chain, transformAddress)
 }
-async function unwrapUniswapV3NFTs({ balances, nftsAndOwners, block, chain, transformAddress }) {
+async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners, block, chain, transformAddress }) {
   await Promise.all(nftsAndOwners.map(([nftAddress, owner]) => unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain, transformAddress })))
   return balances
 }
