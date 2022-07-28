@@ -588,6 +588,10 @@ async function optimism (timestamp, block, chainBlocks) {
         "0x68f180fcCe6836688e9084f035309E29Bf0A2095",
         "0xb9c8f0d3254007ee4b98970b94544e473cd610ec"
       ],
+      [
+        "0x4200000000000000000000000000000000000042",
+        "0xbf1aea8670d2528e08334083616dd9c5f3b087ae"
+      ]
       
     ],
     chainBlocks.optimism,
