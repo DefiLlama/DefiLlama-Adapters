@@ -6,6 +6,7 @@ const abis = require("./abis.json");
 const HERMES = '0xb27bbeaaca2c00d6258c3118bab6b5b6975161c8';
 const multisig = '0x77314eAA8D99C2Ad55f3ca6dF4300CFC50BdBC7F';
 const excludedTokens = ["0xa3e8e7eb4649ffc6f3cbe42b4c2ecf6625d3e802"];
+const tokens = ['0x420000000000000000000000000000000000000A', '0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000', '0xEA32A96608495e54156Ae48931A7c20f0dcc1a21', '0xbB06DCA3AE6887fAbF931640f67cab3e3a16F4dC'];
 
 async function tvl(timestamp, block, chainBlocks) {
   const balances = {};
@@ -83,6 +84,21 @@ async function tvl(timestamp, block, chainBlocks) {
     'metis',
     transform
   );
+
+  async function sumBalance(token) {
+    const bal = (await sdk.api.abi.call({
+      abi: abis.balanceOf,
+      chain: 'metis',
+      target: token,
+      params: [multisig],
+      block: chainBlocks.metis,
+    })).output;
+    await sdk.util.sumSingleBalance(balances, transform(token), bal);
+  }
+
+  for (let i = 0; i < tokens.length; i++) {
+    await sumBalance(tokens[i]);
+  }
 
   return balances;
 };
