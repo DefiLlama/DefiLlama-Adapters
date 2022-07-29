@@ -1737,6 +1737,29 @@ const palmFixMapping = {
   }
 };
 
+const confluxFixMapping = {
+  "0x14b2d3bc65e74dae1030eafd8ac30c533c976a9b": {
+    coingeckoId: "conflux-token",
+    decimals: 18
+  },
+  "0x1f545487c62e5acfea45dcadd9c627361d1616d8": {
+    coingeckoId: "wrapped-bitcoin",
+    decimals: 18
+  },
+  "0xa47f43de2f9623acb395ca4905746496d2014d57": {
+    coingeckoId: "ethereum",
+    decimals: 18
+  },
+  "0x6963efed0ab40f6c3d7bda44a05dcf1437c44372 ": {
+    coingeckoId: "usd-coin",
+    decimals: 18,
+  },
+  "0xfe97e85d13abd9c1c33384e796f10b73905637ce": {
+    coingeckoId: "tether",
+    decimals: 18,
+  },
+};
+
 const ethereumFixMapping = {
   "0xf6b1c627e95bfc3c1b4c9b825a032ff0fbf3e07d": {
     coingeckoId: "jpyc",
@@ -1903,6 +1926,7 @@ const fixBalancesMapping = {
   thundercore: b => fixBalances(b, thundercoreFixMapping, { removeUnmapped: true }),
   ontology_evm: b => fixBalances(b, ontologyFixMapping, { removeUnmapped: false }),
   rei: b => fixBalances(b, reiFixMapping, { removeUnmapped: true }),
+  conflux: b => fixBalances(b, confluxFixMapping, { removeUnmapped: false, }),
 };
 
 const chainTransforms = {
