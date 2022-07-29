@@ -12,7 +12,7 @@ async function fetch() {
                 }
             }`
         );
-    return results.hydraswapFactories[0].totalLiquidityUSD;
+    return { tether: results.hydraswapFactories[0].totalLiquidityUSD }
 };
 
 module.exports = {
@@ -20,7 +20,6 @@ module.exports = {
   timetravel: false,
   methodology: "We count liquidity on the dex, pulling data from subgraph",
   hydra: {
-    fetch
+    tvl: fetch,
   },
-  fetch
 };
