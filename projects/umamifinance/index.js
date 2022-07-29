@@ -12,6 +12,7 @@ const glpUSDC = "0x2e2153fd13459eba1f277ab9acd624f045d676ce";
 const USDC = "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8";
 
 module.exports = {
+  doublecounted: true,
   timetravel: true,
   start: 1657027865, // UMAMI deployment block ts
   arbitrum: {
