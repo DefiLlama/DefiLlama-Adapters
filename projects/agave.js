@@ -24,7 +24,7 @@ module.exports = {
     ]),
     borrowed: sdk.util.sumChainTvls([
       aaveChainTvl("xdai", addressesProviderRegistryXDAI, addr => `xdai:${addr}`, [protocolDataHelper], true),
-      aaveChainTvl("xdai", addressesProviderRegistryXDAI_old, addr => `xdai:${addr}`, [protocolDataHelper_old], true),
+      // aaveChainTvl("xdai", addressesProviderRegistryXDAI_old, addr => `xdai:${addr}`, [protocolDataHelper_old], true), // borrowed amount is lost due to attack
     ]),
     staking: staking(agaveStakingContract, agaveTokenAddress, "xdai")
   }
