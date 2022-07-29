@@ -16,8 +16,6 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 }
 
 
-
-
 module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
