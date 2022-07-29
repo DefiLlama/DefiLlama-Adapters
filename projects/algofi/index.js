@@ -372,7 +372,7 @@ module.exports = {
     algorand: {
         tvl: sdk.util.sumChainTvls([supply, dex]),
         borrowed,
-        staking: stakingV1 + stakingV2
+        staking: sdk.util.sumChainTvls([stakingV1, stakingV2])
     }
 }
 // node test.js projects/algofi/index.js
