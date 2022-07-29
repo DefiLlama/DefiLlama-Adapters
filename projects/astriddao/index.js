@@ -57,6 +57,14 @@ const COLLATERALS = {
       defaultPool: "0xD69eB04d9ff456A31Da6D2a20538512C433ac1Ca",
     }
   },
+  USDT: {
+    tokenAddress: "0x3795c36e7d12a8c252a20c5a7b455f7c57b60283",
+    bridgeTokenMapping: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+    contracts: {
+      activePool: "0x74dFF63491B39E5fFE0Be44Ee3B23F674C27DB7c",
+      defaultPool: "0x8EE2f5403246b86d7493ddCeED19f9347bc4DF1D",
+    }
+  },
 }
 
 const BAI_TOKEN_ADDRESS = "0x733ebcC6DF85f8266349DEFD0980f8Ced9B45f35"
