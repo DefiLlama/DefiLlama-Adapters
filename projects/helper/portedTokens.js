@@ -1896,6 +1896,21 @@ const reiFixMapping = {
   },
 };
 
+const rskFixMapping = {
+  "0x967f8799af07df1534d48a95a5c9febe92c53ae0": {
+    coingeckoId: "rootstock",
+    decimals: 18,
+  },
+  "0x542fda317318ebf1d3deaf76e0b632741a7e677d": {
+    coingeckoId: "rootstock",
+    decimals: 18,
+  },
+  "0x1d931bf8656d795e50ef6d639562c5bd8ac2b78f": {
+    coingeckoId: "ethereum",
+    decimals: 18,
+  },
+};
+
 const fixBalancesMapping = {
   avax: fixAvaxBalances,
   evmos: b => fixBalances(b, evmosFixMapping, { removeUnmapped: false }),
@@ -1927,6 +1942,7 @@ const fixBalancesMapping = {
   ontology_evm: b => fixBalances(b, ontologyFixMapping, { removeUnmapped: false }),
   rei: b => fixBalances(b, reiFixMapping, { removeUnmapped: true }),
   conflux: b => fixBalances(b, confluxFixMapping, { removeUnmapped: false, }),
+  rsk: b => fixBalances(b, rskFixMapping, { removeUnmapped: false, }),
 };
 
 const chainTransforms = {
