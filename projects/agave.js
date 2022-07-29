@@ -20,10 +20,10 @@ module.exports = {
   xdai: {
     tvl: sdk.util.sumChainTvls([
       aaveChainTvl("xdai", addressesProviderRegistryXDAI, addr => `xdai:${addr}`, [protocolDataHelper], false),
-      aaveChainTvl("xdai", addressesProviderRegistryXDAI_old, addr => `xdai:${addr}`, [protocolDataHelper], false),
+      aaveChainTvl("xdai", addressesProviderRegistryXDAI_old, addr => `xdai:${addr}`, [protocolDataHelper_old], false),
     ]),
     borrowed: sdk.util.sumChainTvls([
-      aaveChainTvl("xdai", addressesProviderRegistryXDAI, addr => `xdai:${addr}`, [protocolDataHelper_old], true),
+      aaveChainTvl("xdai", addressesProviderRegistryXDAI, addr => `xdai:${addr}`, [protocolDataHelper], true),
       aaveChainTvl("xdai", addressesProviderRegistryXDAI_old, addr => `xdai:${addr}`, [protocolDataHelper_old], true),
     ]),
     staking: staking(agaveStakingContract, agaveTokenAddress, "xdai")
