@@ -186,4 +186,5 @@ module.exports = {
     //getCompoundV2Tvl("0x589de0f0ccf905477646599bb3e5c622c84cc0ba", "bsc", addr=>`bsc:${addr}`,  "0x1Ffe17B99b439bE0aFC831239dDECda2A790fF3A", "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c", true),
   },
   polygon:compoundExports("0x20ca53e2395fa571798623f1cfbd11fe2c114c24", "polygon"),
+  arbitrum:compoundExports("0xbadaC56c9aca307079e8B8FC699987AAc89813ee", "arbitrum"),
 };

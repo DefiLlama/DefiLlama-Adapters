@@ -1,4 +1,4 @@
-const {getBlock} = require('../helper/getBlock')
+
 const sdk = require('@defillama/sdk')
 const solana = require('../helper/solana')
 const terra = require('../helper/terra')
@@ -206,7 +206,7 @@ function getTVLFunction(chain)
     return async function tvl(timestamp, ethBlock, chainBlocks) {
         const balances = {}
         const chainData = data[chain];
-        const block = await getBlock(timestamp, chain, chainBlocks);
+        const block = chainBlocks[chain];
         for (const token of chainData.tokens) {
             const balance = token.address === NATIVE_ADDRESS ? await sdk.api.eth.getBalance({
                 block, chain, target: chainData.contractAddress

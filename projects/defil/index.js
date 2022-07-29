@@ -85,7 +85,7 @@ module.exports = {
         pool2: pool2(
             contracts.bsc.pool2, 
             contracts.bsc.tokens['DFL-USDT'].address, 
-            'ethereum'
+            'bsc'
         ),
     },
     ethereum: {

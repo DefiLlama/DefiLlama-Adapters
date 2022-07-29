@@ -28,6 +28,11 @@
             },
             {
               "internalType": "uint256",
+              "name": "lpTokenPrice",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
               "name": "totalValue",
               "type": "uint256"
             },

@@ -1,8 +1,8 @@
 const sdk = require('@defillama/sdk');
-const erc20 = require("../helper/abis/erc20.json");
 const {gql, GraphQLClient} = require("graphql-request");
 const retry = require("../helper/retry");
 const utils = require("../helper/utils");
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const openleve_address = {
     "eth" : '0x03bf707deb2808f711bb0086fc17c5cafa6e8aaf',
@@ -19,58 +19,28 @@ const http_endpoint = {
 
 async function eth_tvl(timestamp, block) {
     const poolInfo = await getPoolFromSubgraph("eth");
-    const balances = {}
+    const toa = []    
     for (const pool of poolInfo["poolAddressList"]) {
         const poolToken = poolInfo["poolToken"][pool]
-        const poolBalance = (
-            await sdk.api.abi.call({
-                abi: erc20.balanceOf,
-                target: poolToken,
-                params: pool
-            })
-        ).output;
-        sdk.util.sumSingleBalance(balances, poolToken, poolBalance);
+        toa.push([poolToken, pool])
     }
     for (const token of poolInfo["tokenAddressList"]) {
-        const openLeveBalance = (
-            await sdk.api.abi.call({
-                abi: erc20.balanceOf,
-                target: token,
-                params: openleve_address["eth"]
-            })
-        ).output;
-        sdk.util.sumSingleBalance(balances, token, openLeveBalance);
+        toa.push([token, openleve_address["eth"]])
     }
-    return balances
+    return sumTokens2({ block, tokensAndOwners: toa, })
 }
 
-async function bsc_tvl(timestamp, block, chainBlocks) {
+async function bsc_tvl(timestamp, _block, { bsc: block }) {
+    const toa = []    
     const poolInfo = await getPoolFromSubgraph("bsc");
-    const balances = {}
     for (const pool of poolInfo["poolAddressList"]) {
         const poolToken = poolInfo["poolToken"][pool]
-        const poolBalance = (
-            await sdk.api.abi.call({
-                abi: erc20.balanceOf,
-                target: poolToken,
-                chain: 'bsc',
-                params: pool
-            })
-        ).output;
-        sdk.util.sumSingleBalance(balances,"bsc:" + poolToken, poolBalance);
+        toa.push([poolToken, pool])
     }
     for (const token of poolInfo["tokenAddressList"]) {
-        const openLeveBalance = (
-            await sdk.api.abi.call({
-                abi: erc20.balanceOf,
-                target: token,
-                chain: 'bsc',
-                params: openleve_address["bsc"]
-            })
-        ).output;
-        sdk.util.sumSingleBalance(balances, "bsc:" + token, openLeveBalance);
+        toa.push([token, openleve_address["bsc"]])
     }
-    return balances
+    return sumTokens2({ chain: 'bsc', block, tokensAndOwners: toa, })
 }
 
 async function getPoolFromSubgraph(chain) {
@@ -122,34 +92,18 @@ async function getPoolFromHttp(chain) {
     return {"tokenAddressList" : Array.from(new Set(tokenAddressList)), "poolAddressList" : poolAddressList, "poolToken": poolToken}
 }
 
-async function kcc_tvl(timestamp, block) {
+async function kcc_tvl(timestamp, _block, { kcc: block }) {
+    const toa = []    
     const poolInfo = await getPoolFromHttp("kcc");
-    const balances = {}
     for (const pool of poolInfo["poolAddressList"]) {
         const poolToken = poolInfo["poolToken"][pool]
-        const poolBalance = (
-            await sdk.api.abi.call({
-                abi: erc20.balanceOf,
-                target: poolToken,
-                chain: 'kcc',
-                params: pool
-            })
-        ).output;
-        sdk.util.sumSingleBalance(balances,"kcc:" + poolToken, poolBalance);
+        toa.push([poolToken, pool])
     }
 
     for (const token of poolInfo["tokenAddressList"]) {
-        const openLeveBalance = (
-            await sdk.api.abi.call({
-                abi: erc20.balanceOf,
-                target: token,
-                chain: 'kcc',
-                params: openleve_address["kcc"]
-            })
-        ).output;
-        sdk.util.sumSingleBalance(balances, "kcc:" + token, openLeveBalance);
+        toa.push([token, openleve_address["kcc"]])
     }
-    return balances
+    return sumTokens2({ chain: 'kcc', block, tokensAndOwners: toa, })
 }
 
 module.exports = {

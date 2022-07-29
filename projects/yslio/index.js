@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const erc20 = require("../helper/abis/erc20.json");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { transformBscAddress } = require("../helper/portedTokens");
 
@@ -43,7 +42,7 @@ const bscTvl = async (chainBlocks) => {
     
     const strat_bal = (
       await sdk.api.abi.call({
-        abi: erc20.balanceOf,
+        abi: 'erc20:balanceOf',
         target: lpToken,
         params: strat,
         chain: "bsc",

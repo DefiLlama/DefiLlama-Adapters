@@ -264,7 +264,14 @@ const TOKENS = {
     decimals: 4,
     contractAddress: '0x083196549637fAf95C91EcCD157E60430e69E1A7',
     coingeckoId: 'sparda-wallet',
-  }
+  },
+  '0x4306f921c982766810cf342775fd79aa2d0d0e24': {
+    name: 'Wrapped ZIL',
+    symbol: 'wZIL',
+    decimals: 12,
+    contractAddress: '0x4306f921c982766810cf342775fd79aa2d0d0e24',
+    coingeckoId: 'zilliqa',
+  },
 }
 
 

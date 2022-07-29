@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js');
-const _ = require('underscore');
+
 const axios = require('axios');
 
 /*==================================================
@@ -35,7 +35,7 @@ module.exports = async function tvl(timestamp, block) {
   // Vault Asset Balances
   let balanceOfResults = await sdk.api.abi.multiCall({
     block,
-    calls: _.map(tokensList, (token) => {
+    calls: tokensList.map((token) => {
       return {
         target: token,
         params: vaultAddress
@@ -47,7 +47,7 @@ module.exports = async function tvl(timestamp, block) {
   // cToken Exchange Rates
   let cTokenConversionRatesMap = (await sdk.api.abi.multiCall({
     block,
-    calls: _.map(Object.keys(cTokensMap), (cToken) => {
+    calls: Object.keys(cTokensMap).map((cToken) => {
       return {
         target: cToken
       }
@@ -70,7 +70,7 @@ module.exports = async function tvl(timestamp, block) {
   }, {});
 
   // Compute Balances
-  _.each(balanceOfResults.output, (balanceOf) => {
+  balanceOfResults.output.forEach((balanceOf) => {
       let address = balanceOf.input.target
 
       if (address in cTokensMap) {
@@ -78,9 +78,9 @@ module.exports = async function tvl(timestamp, block) {
         let conversionRate = BigNumber(cTokenConversionRatesMap[address]);
         let balanceOfUnderlying = BigNumber(balanceOf.output).times(conversionRate).div(cTokenDecimalScale);
 
-        balances[addressOfUnderlying] = BigNumber(balances[addressOfUnderlying] || 0).plus(balanceOfUnderlying).toFixed();
+        balances[addressOfUnderlying] = BigNumber(balances[addressOfUnderlying] || 0).plus(balanceOfUnderlying || 0).toFixed();
       } else {
-        balances[address] = BigNumber(balances[address] || 0).plus(balanceOf.output).toFixed();
+        balances[address] = BigNumber(balances[address] || 0).plus(balanceOf.output || 0).toFixed();
       }
   });
 

@@ -15,6 +15,9 @@ const coingeckoMap = {
   stSOL: 'solana',
   FTT: 'ftx-token',
   UST: 'terrausd',
+  scnSOL: 'solana',
+  JSOL: 'solana',
+  FIDA: 'bonfida'
 };
 
 async function getTokenPrices() {

@@ -54,6 +54,16 @@ const angle_vault = {
   abi:'balanceOf',
   abiCM: 'collateralMap'
 }
+const fxs_locker_vault = {
+  contract: '0xCd3a267DE09196C48bbB1d9e842D7D7645cE448f',
+  veFxsToken: '0xc8418aF6358FFddA74e09Ca9CC3Fe03Ca6aDC5b0',
+  abi: 'locked'
+}
+const angle_locker_vault = {
+  contract: '0xD13F8C25CceD32cdfA79EB5eD654Ce3e484dCAF5',
+  veAngleToken: '0x0C462Dbb9EC8cD1630f1728B2CFD2769d09f0dd5',
+  abi: 'locked'
+}
 
 // Polygon
 const crv_3crv_vault_polygon = {
@@ -129,8 +139,11 @@ const vaultsBsc = [
 
 const sanctuary = '0xaC14864ce5A98aF3248Ffbf549441b04421247D3'
 const arbStrat = '0x20D1b558Ef44a6e23D9BF4bf8Db1653626e642c3'
+const veSdt = '0x0C30476f66034E11782938DF8e4384970B6c9e8a'
 const sdtToken = '0x73968b9a57c6E53d41345FD57a6E6ae27d6CDB2F'
 const crvToken = '0xD533a949740bb3306d119CC777fa900bA034cd52'
+const fxsToken = '0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0'
+const angleToken = '0x31429d1856aD1377A8A0079410B297e1a9e214c2'
 
 async function ethereum(timestamp, block) {
   let balances = {};
@@ -139,6 +152,18 @@ async function ethereum(timestamp, block) {
     block,
     abi: abi[crv_perpetual_vault.abi],
     params: crv_perpetual_vault.contract
+  })
+  const fxsInLocker = sdk.api.abi.call({
+    target: fxs_locker_vault.veFxsToken,
+    block,
+    abi: abi[fxs_locker_vault.abi],
+    params: fxs_locker_vault.contract
+  })
+  const angleInLocker = sdk.api.abi.call({
+    target: angle_locker_vault.veAngleToken,
+    block,
+    abi: abi[angle_locker_vault.abi],
+    params: angle_locker_vault.contract
   })
   const sanUsdcEurInVault = sdk.api.abi.call({
     target: angle_vault.sanUsdcEurGauge,
@@ -163,7 +188,9 @@ async function ethereum(timestamp, block) {
     await unwrapCrv(balances, vault.crvToken, crvBalance.output, block)
   }))
   sdk.util.sumSingleBalance(balances, crvToken, (await crvInPerpetual).output.amount)
-  sdk.util.sumSingleBalance(balances, angle_vault.usdcToken, parseInt(sanUsdcEurVaultBalance * sanUsdcEurRate / 10**18))
+  sdk.util.sumSingleBalance(balances, fxsToken, (await fxsInLocker).output.amount)
+  sdk.util.sumSingleBalance(balances, angleToken, (await angleInLocker).output.amount)
+  sdk.util.sumSingleBalance(balances, angle_vault.usdcToken, (sanUsdcEurVaultBalance * sanUsdcEurRate / 10**18).toFixed(0))
   return balances
 }
 
@@ -180,7 +207,16 @@ async function staking(timestamp, block){
     block
   })
 
-  const totalSDTStaked = BigNumber(sdtInSactuary.output).plus(BigNumber(sdtInArbStrategy.output)).toFixed()
+  const sdtInLocker = await sdk.api.erc20.balanceOf({
+    target: sdtToken,
+    owner: veSdt,
+    block
+  })
+
+  const totalSDTStaked = BigNumber(sdtInSactuary.output)
+  .plus(BigNumber(sdtInArbStrategy.output))
+  .plus(BigNumber(sdtInLocker.output))
+  .toFixed()
 
   return {
     [sdtToken]:totalSDTStaked
@@ -293,6 +329,6 @@ module.exports = {
     tvl: harmony
   },
   bsc: {
-    tvl: bsc
+    tvl: bsc,
   }
 }

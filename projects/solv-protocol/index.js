@@ -54,7 +54,7 @@ async function tokenList(chainId) {
     const allTokens = (await axios.get(tokenListsApiEndpoint)).data.tokens;
     for (let token of allTokens) {
         if (chainId == token.chainId) {
-            if (token.extensions.voucher.underlyingToken.symbol != "SOLV") {
+            if (token.extensions.voucher.underlyingToken && token.extensions.voucher.underlyingToken.symbol != "SOLV") {
                 tokens.push({
                     address: token.extensions.voucher.underlyingToken.address,
                     pool: token.extensions.voucher.vestingPool

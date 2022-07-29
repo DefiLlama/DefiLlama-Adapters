@@ -12,6 +12,15 @@ const algoCallVault = '0xb8b5A6E1F300b023e9CdCa31AA94B0D66badd982'
 const bitPutVault = '0x4Ca3e8bD2F471415b9131E35bdcEC0819a4E7a83'
 const bitCallVault = '0x9F639524db6DfD57613895b0abb49A53c11B3f0e'
 
+// Ethereum - Stronghold IndexUSDC vaults
+const indexUSDC_BTC_1wk     = "0x99bA8d367044da7EB4919C3294eb9848E1D0Ed35"
+const indexUSDC_ETH_2wk_a   = "0xC3548eF47ab4D4163a44C797cE746583Af10D8D4"
+const indexUSDC_AVAX_2wk_b  = "0xB786beda9c66964eB3028F6813307eDFC11F862c"
+const indexUSDC_FTM_2wk_a   = "0x182E7DAD39C8412ce1258B01f1a25afDC6c2294d"
+const indexUSDC_SOL_2wk_b   = "0x50700C3559b19F008A00242F82a3a3631929002D"
+const indexUSDC_MATIC_2wk_a = "0x491c162188E127FE71144aC0686f2809526B8f94"
+const indexUSDC_BNB_2wk_b   = "0x0543d73010657959746979d90b750fDB77b2E272"
+
 // Avalanche Vaults
 const avaxCallVault = '0x35e26F12a212b3a7eec8Dd215B8705Ed1AF4f39E'
 const avaxPutVault = '0xe088455661dac18164cebcf3d9acd93f5c7b4062'
@@ -32,6 +41,10 @@ const wooSynVault = '0x91FDBdB3E031F0Ac57aCe6F393b247192A7265b4'
 //Polygon Vaults
 const wMaticCallVault = '0x156d422436f4441dde6ac0ab41ff58c9258c438b'
 const wMaticPutVault = '0x47831E1ff871f6D79CFb72956f5Aca65ec244733'
+
+// Polygon - Stronghold IndexUST vaults
+const indexUST_LUNA_2wk_a = "0x400f7569AfCF3E756A427DD7522DFE2De4664717"
+const indexUST_LUNA_2wk_b = "0x112AdEC687FA605CE3221943C301Ed99B7C33Ed7"
 
 //Aurora Vaults
 const nearCallVault = '0x6d31e1126b4abf8502fc80a1f61f1e930862b075'
@@ -69,6 +82,7 @@ const woo = '0x4691937a7508860F876c9c0a2a617E7d9E945D4B'
 // Polygon Assets
 const wmatic = '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270'
 const pousdc = '0x2791bca1f2de4661ed88a30c99a7a9449aa84174'
+const ust_matic_wormhole = '0xE6469Ba6D2fD6130788E0eA9C0a0515900563b59'
 
 // Aurora Assets
 const near = '0xC42C30aC6Cc15faC9bD938618BcaA1a1FaE8501d'
@@ -127,6 +141,15 @@ async function ethTvl(timestamp, block) {
         addVault(balances, algoCallVault, tAlgo, block, 'ethereum'),
         addVault(balances, bitPutVault, usdc, block, 'ethereum'),
         addVault(balances, bitCallVault, bit, block, 'ethereum'),
+
+        addVault(balances, indexUSDC_BTC_1wk    , usdc, block, 'ethereum'),
+        addVault(balances, indexUSDC_ETH_2wk_a  , usdc, block, 'ethereum'),
+        addVault(balances, indexUSDC_AVAX_2wk_b , usdc, block, 'ethereum'),
+        addVault(balances, indexUSDC_FTM_2wk_a  , usdc, block, 'ethereum'),
+        addVault(balances, indexUSDC_SOL_2wk_b  , usdc, block, 'ethereum'),
+        addVault(balances, indexUSDC_MATIC_2wk_a, usdc, block, 'ethereum'),
+        addVault(balances, indexUSDC_BNB_2wk_b  , usdc, block, 'ethereum'),
+        
     ])
     return balances
 }
@@ -170,6 +193,8 @@ async function polygonTvl(timestamp, ethblocks, chainBlocks) {
     await Promise.all([
         addVault(balances, wMaticCallVault, wmatic, chainBlocks["polygon"], 'polygon'),
         addVault(balances, wMaticPutVault, pousdc, chainBlocks["polygon"], 'polygon'),
+        addVault(balances, indexUST_LUNA_2wk_a, ust_matic_wormhole, chainBlocks["polygon"], 'polygon'),
+        addVault(balances, indexUST_LUNA_2wk_b, ust_matic_wormhole, chainBlocks["polygon"], 'polygon'),
     ])
     return balances
 }

@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const erc20 = require("../helper/abis/erc20.json");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { transformKccAddress } = require("../helper/portedTokens");
 
@@ -33,7 +32,7 @@ const kccTvl = async (timestamp, ethBlock, chainBlocks) => {
 
     const lpToken_sToken_bal = (
       await sdk.api.abi.call({
-        abi: erc20.balanceOf,
+        abi: 'erc20:balanceOf',
         target: lpTokens_sToken,
         params: masterChefContract,
         chain: "kcc",

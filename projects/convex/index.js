@@ -1,11 +1,6 @@
 const sdk = require("@defillama/sdk");
 const ABI = require('./abi.json')
-const axios = require('axios')
-const { unwrapCrv, unwrapUniswapLPs } = require('../helper/unwrapLPs')
-const curvePools = require('./pools-crv.js');
 const { default: BigNumber } = require("bignumber.js");
-const methodAbi = require('./abi.json')
-
 
 const addressZero = "0x0000000000000000000000000000000000000000"
 const ethAddress = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
@@ -69,7 +64,7 @@ async function tvl(timestamp, block) {
   })).output;
   var poolInfo = [];
   var calldata = [];
-  for (var i = 0; i < poolLength; i++) {
+  for (let i = 0; i < poolLength; i++) {
     calldata.push({
       target: boosterAddress,
       params: [i]
@@ -80,7 +75,7 @@ async function tvl(timestamp, block) {
     calls: calldata,
     block
   })
-  for (var i = 0; i < poolLength; i++) {
+  for (let i = 0; i < poolLength; i++) {
     var pdata = returnData.output[i].output;
     poolInfo.push(pdata);
   }
@@ -123,7 +118,7 @@ async function tvl(timestamp, block) {
 
       //i dont see a way to get number of coins..
       //loop until it fails
-      for(var c=0; c < 10; c++){
+      for(let c=0; c < 10; c++){
         try {
           var coinX = await sdk.api.abi.call({
             target: swapPool,
@@ -202,7 +197,7 @@ async function tvl(timestamp, block) {
     }
 
     //calc convex share of pool
-    for (var c = 0; c < coins.length; c++) {
+    for (let c = 0; c < coins.length; c++) {
         var balanceShare = BigNumber(coins[c].balance.toString()).times(share).div(1e18).toFixed(0);
 
         var coinAddress = coins[c].coin;

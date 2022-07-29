@@ -1,7 +1,5 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const erc20 = require("../helper/abis/erc20.json");
-const { pool2BalanceFromMasterChefExports } = require("../helper/pool2");
 const { calculateUniTvl } = require("../helper/calculateUniTvl");
 const { getBlock } = require("../helper/getBlock");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
@@ -97,7 +95,7 @@ const Staking = async (chainBlocks) => {
 
   const balanceOf = (
     await sdk.api.abi.call({
-      abi: erc20.balanceOf,
+      abi: 'erc20:balanceOf',
       target: GMI,
       params: masterChef,
       chain: "harmony",

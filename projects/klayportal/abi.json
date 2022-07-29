@@ -1,0 +1,16 @@
+{
+  "stakingPoolSum": {
+    "constant": true,
+    "inputs": [],
+    "name": "stakingPoolSum",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  }
+}

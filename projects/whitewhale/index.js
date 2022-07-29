@@ -10,10 +10,12 @@ async function tvl() {
     let tvl = {}
     await Promise.all(vaults.map(async vault => {
         pool_state = await fetchURL(vault)
-        tvl = toUSDTBalances(Number(pool_state.data.result.total_value_in_ust) / 1e6)
+        tvl = Number(pool_state.data.result.total_value_in_ust) / 1e6
     }))
     // console.log(Number(pool_state.data.result.total_value_in_ust) / 1e6)
-    return tvl
+    return {
+        terrausd: tvl
+    }
 }
 
 async function staking() {

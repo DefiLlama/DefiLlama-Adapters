@@ -1,6 +1,5 @@
-const utils = require('./utils')
-const sdk = require('@defillama/sdk')
-const endpoint = "https://sushi-analytics-defi.herokuapp.com/"
+const { get } = require('./http')
+const endpoint = "https://sushi-analytics.onrender.com"
 
 function getExports(protocol, chains) {
     const chainTvls = chains.reduce((obj, chain) => {
@@ -9,11 +8,11 @@ function getExports(protocol, chains) {
                 if(Math.abs(Date.now()/1000-timestamp) > 3600){
                     throw new Error("Can't refill adapters moved to heroku")
                 }
-                const data = await utils.fetchURL(endpoint)
-                if(data.data[protocol]?.[chain] === undefined){
+                const data = await get(`${endpoint}?project=${protocol}&chain=${chain}`)
+                if(data[protocol]?.[chain] === undefined){
                     throw new Error(`Data for protocol ${protocol} on chain ${chain} is undefined on heroku`)
                 }
-                return data.data[protocol][chain]
+                return data[protocol][chain]
             }
         }
         return obj

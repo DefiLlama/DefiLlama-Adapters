@@ -1,88 +1,21 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
+const { getV2Reserves, getTvl, getBorrowed, aaveChainTvl } = require('../helper/aave');
 
-const registry = "0x7220FFD5Dc173BA3717E47033a01d870f06E5284";
-
-async function tvl (timestamp, block, chainBlocks) {
-    let balances = {};
-    const chain = "fantom";
-    block = chainBlocks.fantom;
-
-    const reserveList = (await sdk.api.abi.call({
-        target: registry,
-        abi: abi.getReservesList,
-        block,
-        chain
-    })).output;
-
-    const reserveDatas = (await sdk.api.abi.multiCall({
-        calls: reserveList.map(p => ({
-            target: registry,
-            params: p
-        })),
-        abi: abi.getReserveData,
-        block,
-        chain
-    })).output;
-
-    const collateralBalances = (await sdk.api.abi.multiCall({
-        calls: reserveDatas.map(p => ({
-            target: p.input.params[0],
-            params: p.output.aTokenAddress
-        })),
-        abi: "erc20:balanceOf",
-        block,
-        chain
-    })).output;
-
-    collateralBalances.forEach(p => {
-        sdk.util.sumSingleBalance(balances, `fantom:${p.input.target}`, p.output);
-    })
-
-    return balances;
-}
-
-async function borrowed (timestamp, block, chainBlocks) {
-    let balances = {};
-    const chain = "fantom";
-    block = chainBlocks.fantom;
-
-    const reserveList = (await sdk.api.abi.call({
-        target: registry,
-        abi: abi.getReservesList,
-        block,
-        chain
-    })).output;
-
-    const reserveDatas = (await sdk.api.abi.multiCall({
-        calls: reserveList.map(p => ({
-            target: registry,
-            params: p
-        })),
-        abi: abi.getReserveData,
-        block,
-        chain
-    })).output;
-
-    const debtTokenSupply = (await sdk.api.abi.multiCall({
-        calls: reserveDatas.map(p => ({
-            target: p.output.variableDebtTokenAddress
-        })),
-        abi: "erc20:totalSupply",
-        block,
-        chain
-    })).output;
-    
-    for (let i = 0; i < debtTokenSupply.length; i++) {
-        sdk.util.sumSingleBalance(balances, `fantom:${reserveList[i]}`, debtTokenSupply[i].output);
-    } 
-
-    return balances;
+function v2(chain, v2Registry){
+  const section = borrowed => sdk.util.sumChainTvls([
+    aaveChainTvl(chain, v2Registry, undefined, undefined, borrowed),
+  ])
+  return {
+    tvl: section(false),
+    borrowed: section(true)
+  }
 }
 
 module.exports = {
-    fantom: {
-        tvl,
-        borrowed
-    }
+  fantom: v2("fantom", "0x6D77F7a0e9F8EBE1C0FF2d757FC5a411640309ac"),
+  avalanche: v2("avax", "0xC043BA54F34C9fb3a0B45d22e2Ef1f171272Bc9D"),
+  optimism: v2("optimism", "0x872B9e8aea5D65Fbf29b8B05bfA4AA3fE94cC11f"),
+  harmony: v2("harmony", "0xeb3DF52E0254e22434f044C3b62291919501Ee7D"),
+  ethereum: v2("ethereum", "0x5C93B799D31d3d6a7C977f75FDB88d069565A55b"),
 }

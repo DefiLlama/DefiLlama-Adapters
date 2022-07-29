@@ -4,7 +4,7 @@
 
   const sdk = require('@defillama/sdk');
   const BigNumber = require("bignumber.js");
-  const _ = require('underscore');
+
 /*==================================================
   TVL
   ==================================================*/
@@ -44,5 +44,5 @@
 
   module.exports = {
     start: 1527076766,        // block 5659904
-    tvl,
+    ethereum: { tvl }
   };

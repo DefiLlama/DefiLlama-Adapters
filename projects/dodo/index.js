@@ -1,6 +1,6 @@
 const { request, gql } = require("graphql-request");
 const sdk = require('@defillama/sdk');
-const {transformArbitrumAddress} = require('../helper/portedTokens')
+const { transformArbitrumAddress } = require('../helper/portedTokens')
 const { getBlock } = require('../helper/getBlock')
 
 const graphEndpoints = {
@@ -61,20 +61,23 @@ async function getChainTvl(chain, block, transformAddr) {
             target: pair.baseToken.id,
             params: [pair.id]
         }]
-    }).filter(pair => pair !== null).flat()
+    }).filter(pair => pair !== null).flat().filter(call =>
+        ![
+            '0xd79d32a4722129a4d9b90d52d44bf5e91bed430c', 
+            '0xdb1e780db819333ea79c9744cc66c89fbf326ce8', // this token is destroyed
+            '0x738076a6cb6c30d906bcb2e9ba0e0d9a58b3292e', // SRSB is absuredly priced 
+        ].includes(call.target.toLowerCase())
+    )
 
     let balanceResults = await sdk.api.abi.multiCall({
         abi: 'erc20:balanceOf',
         calls: balanceCalls,
         block,
-        chain
+        chain,
+        requery: true,
     })
     const balances = {}
-
-    balanceResults.output = balanceResults.output.filter(
-        b => b.input.target != '0xd79d32a4722129a4d9b90d52d44bf5e91bed430c')
     sdk.util.sumMultiBalanceOf(balances, balanceResults, true, transformAddr)
-
     return balances
 }
 
@@ -114,8 +117,11 @@ module.exports = {
     polygon: {
         tvl: polygon
     },
-    arbitrum:{
+    arbitrum: {
         tvl: arbitrum
+    },
+    aurora: {
+        tvl: aurora
     }
-    // We don't include heco、aurora because their subgraph is outdated
+    // We don't include heco because their subgraph is outdated
 }

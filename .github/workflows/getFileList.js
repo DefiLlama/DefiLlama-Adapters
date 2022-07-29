@@ -4,7 +4,7 @@ const fileSet = new Set();
 
 [...MODIFIED, ...ADDED].forEach(file => {
   const [root, dir] = file.split('/')
-  if (root === 'projects' && dir !=='helper') fileSet.add(root + '/' + dir)
+  if (root === 'projects' && dir !=='helper' && dir !== 'config') fileSet.add(root + '/' + dir)
 })
 
 console.log(JSON.stringify([...fileSet]))

@@ -11,6 +11,7 @@ const getTotalAmounts = require("./abis/getTotalAmounts.json");
 const GRAPH_URL = {
   ethereum: "https://api.thegraph.com/subgraphs/name/gammastrategies/gamma",
   polygon: "https://api.thegraph.com/subgraphs/name/gammastrategies/polygon",
+  optimism: "https://api.thegraph.com/subgraphs/name/gammastrategies/optimism"
 };
 
 const liquidityMiningQuery = gql`
@@ -51,7 +52,7 @@ async function tvlEthereum(timestamp, block, chainBlocks) {
   ]);
 
   // Ethereum TVL
-  for (currTvl of tvls) {
+  for (const currTvl of tvls) {
     for (let [token, amount] of Object.entries(currTvl)) {
       sdk.util.sumSingleBalance(balances, token, amount);
     }
@@ -64,6 +65,10 @@ async function tvlPolygon(timestamp, block, chainBlocks) {
   return await tvlUniV3(timestamp, chainBlocks, "polygon");
 }
 
+async function tvlOptimism(timestamp, block, chainBlocks) {
+  return await tvlUniV3(timestamp, chainBlocks, "optimism");
+}
+
 /*Tokens staked in Visors*/
 async function tvlLiquidityMining(timestamp, block) {
   const balances = {};
@@ -71,7 +76,7 @@ async function tvlLiquidityMining(timestamp, block) {
   //get the staking pool contracts, and the respective token addresses
   const resp = await request(GRAPH_URL["ethereum"], liquidityMiningQuery);
 
-  for (i = 0; i < resp.hypervisors.length; i++) {
+  for (let i = 0; i < resp.hypervisors.length; i++) {
     const curr = resp.hypervisors[i];
     const stakingPoolAddr = curr.id;
     const tokenAddr = curr.stakingToken.id;
@@ -181,4 +186,7 @@ module.exports = {
   polygon: {
     tvl: tvlPolygon,
   },
+  optimism: {
+    tvl: tvlOptimism,
+  }
 };

@@ -1,27 +1,15 @@
-const utils = require('../helper/utils');
+const { get } = require('../helper/http')
 const { toUSDTBalances } = require('../helper/balances');
 
-function fetch() {
-  return async () => {
-      const response = await utils.fetchURL('https://api.yieldhub.finance/tvl');
-      let tvl = 0;
-      for (chainId in response.data) {
-        const chain = response.data[chainId];
-        for (vault in chain) {
-          tvl += chain[vault];
-        } 
-      }
-      return toUSDTBalances(tvl);
-    }
-}
-
-const chains = {
-  telos:40
+async function fetch() {
+  const response = await get('https://api.yieldhub.finance/tvl');
+  let tvl = Object.values(response).map(i => Object.values(i)).flat().reduce((acc, i) => acc + i, 0)
+  return toUSDTBalances(tvl);
 }
 
 module.exports = {
   timetravel: false,
   telos: {
-      tvl: fetch()
+    tvl: fetch
   },
 }

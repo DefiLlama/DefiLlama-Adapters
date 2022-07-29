@@ -17,11 +17,24 @@ const replacements = [
   '0x73a052500105205d34Daf004eAb301916DA8190f'
 ]
 
+const curvePools = [
+  {
+    assets: 'Curve.fi Factory USD Metapool: moUSD',
+    isLendingPool: true,
+    coins: ['0x60d55f02a771d515e077c9c2403a1ef324885cec', '0x27f8d03b3a2196956ed754badc28d73be8830a6e', '0x1a13f4ca1d028320a707d99520abfefca3998b7f'],
+    addresses: {
+      swap: '0x445fe580ef8d70ff569ab36e80c647af338db351',
+      lpToken: '0xe7a24ef0c5e95ffb0f6684b813a78f2a3ad7d171',
+      gauge: '0x19793b454d3afc7b454f206ffe95ade26ca6912c',
+    },
+  }
+]
+
 const gaugeLPMapping = {}
 
 Object.keys(crvPools).forEach(key => crvPools[key.toLowerCase()] = crvPools[key])
 
-const curveLPMapping = curvePoolsPartial.reduce((accum, poolData) => {
+const curveLPMapping = [...curvePoolsPartial, ...curvePools].reduce((accum, poolData) => {
   accum[poolData.addresses.lpToken.toLowerCase()] = poolData
   if (poolData.addresses.gauge) {
     const gaugeToken = poolData.addresses.gauge.toLowerCase()
@@ -33,7 +46,7 @@ const curveLPMapping = curvePoolsPartial.reduce((accum, poolData) => {
 
 
 async function unwrapCrvKnown(balances, crvToken, lpBalance, block, chain = 'ethereum', transformAddress = (addr) => addr, excludeTokensRaw = []) {
-  crvToken = crvToken.toLowerCase()
+  crvToken = stripChainHeader(crvToken).toLowerCase()
   const excludeTokens = excludeTokensRaw.map(addr => addr.toLowerCase())
   if (crvPools[crvToken] === undefined)
     return;
@@ -68,9 +81,20 @@ async function unwrapCrvKnown(balances, crvToken, lpBalance, block, chain = 'eth
   })
 }
 
+const cGaugeMapping = {
+  avax: {
+    '0x5b5cfe992adac0c9d48e05854b2d91c73a003858': '0x1337BedC9D22ecbe766dF105c9623922A27963EC',
+  },
+  polygon: {
+    '0x19793b454d3afc7b454f206ffe95ade26ca6912c': '0xe7a24ef0c5e95ffb0f6684b813a78f2a3ad7d171',
+  }
+}
+Object.values(cGaugeMapping).forEach(mapping => Object.keys(mapping).forEach(key => mapping[key.toLowerCase()] = mapping[key]))
 
 async function unwrapCrv(balances, crvToken, lpBalance, block, chain = 'ethereum', transformAddress = (addr) => addr) {
   crvToken = stripChainHeader(crvToken).toLowerCase()
+  const gaugeMap = cGaugeMapping[chain] || {}
+  if (gaugeMap[crvToken]) crvToken = gaugeMap[crvToken]
 
   if (crvPools[crvToken]) return unwrapCrvKnown(...arguments)
 

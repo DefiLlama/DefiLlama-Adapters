@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const erc20 = require("../helper/abis/erc20.json");
 const abi = require("./abi.json");
 
 const factoryContract = "0x71CD6666064C3A1354a3B4dca5fA1E2D3ee7D303";
@@ -24,7 +23,7 @@ const ethTvl = async () => {
 
     const getBalance = (
       await sdk.api.abi.multiCall({
-        abi: erc20.balanceOf,
+        abi: 'erc20:balanceOf',
         calls: getTokens.map((token) => ({
           target: token,
           params: pool,

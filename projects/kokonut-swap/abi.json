@@ -1,0 +1,62 @@
+{
+    "getPoolPriceInfo": {
+        "inputs": [
+            {
+                "internalType": "contract II4ISwapPool",
+                "name": "swap",
+                "type": "address"
+            }
+        ],
+        "name": "getPoolPriceInfo",
+        "outputs": [
+            {
+                "internalType": "address[]",
+                "name": "tokens",
+                "type": "address[]"
+            },
+            {
+                "internalType": "uint256[]",
+                "name": "balances",
+                "type": "uint256[]"
+            },
+            {
+                "internalType": "uint256[]",
+                "name": "prices",
+                "type": "uint256[]"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "getStakedEyePriceInfo": {
+        "inputs": [],
+        "name": "getStakedEyePriceInfo",
+        "outputs": [
+          {
+            "internalType": "uint256",
+            "name": "balance",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "price",
+            "type": "uint256"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      },
+      "getPoolList": {
+        "inputs": [],
+        "name": "getPoolList",
+        "outputs": [
+          {
+            "internalType": "address[]",
+            "name": "",
+            "type": "address[]"
+          }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      }
+}

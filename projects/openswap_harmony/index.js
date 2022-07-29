@@ -1,34 +1,20 @@
-const { request, gql, rawRequest } = require("graphql-request");
-const sdk = require('@defillama/sdk');
-const { toUSDTBalances } = require('../helper/balances');
-const { getBlock } = require("../helper/getBlock");
+const { getUniTVL } = require("../helper/unknownTokens");
 
-const graphUrl = 'https://api.openswap.one/subgraphs/name/openswap/openswapv2'
-const graphQuery = gql`
-query get_tvl($block: Int) {
-  uniswapFactory(
-    id: "0x5d2f9817303b940c9bb4f47c8c566c5c034d9848",
-    block: { number: $block }
-  ) {
-    totalLiquidityUSD
-  },
-}
-`;
-async function tvl(timestamp, ethBlock, chainBlocks) {
-  const block = await getBlock(timestamp, "harmony", chainBlocks)
-  const response = await request(
-    graphUrl,
-    graphQuery,
-    {
-      block: block - 100,
-    }
-  );
-  const usdTvl = Number(response.uniswapFactory.totalLiquidityUSD)
-
-  return toUSDTBalances(usdTvl)
-}
 module.exports = {
-  harmony:{
-    tvl,
-  },
+  harmony: {
+    tvl: getUniTVL({
+      factory: '0x5d2f9817303b940c9bb4f47c8c566c5c034d9848',
+      chain: 'harmony',
+      coreAssets: [
+        '0x6983D1E6DEf3690C4d616b13597A09e6193EA013', // WETH
+        '0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a', // WHARMONY
+        '0x985458e523db3d53125813ed68c274899e9dfab4', // USDC
+        '0x3c2b8be99c50593081eaa2a724f0b8285f5aba8f', // USDT
+        '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1', // DAI
+      ],
+      blacklist: [
+        '0xed0b4b0f0e2c17646682fc98ace09feb99af3ade', // RVRS
+      ]
+    })
+  }
 }

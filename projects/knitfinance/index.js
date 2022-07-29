@@ -1,63 +1,40 @@
-const axios = require("axios");
+const { get } = require("../helper/http");
+const { toUSDTBalances } = require("../helper/balances");
 
-let url = "https://adminv1.knit.finance/api/tvl";
+const url = "https://knit-admin.herokuapp.com/api/public/tvl/";
 
-async function fetchBsc() {
-  let bsc = await axios.get(`${url}/bsc`);
-  return bsc.data.data.data.tvl.bsc;
-}
-
-async function fetchPoly() {
-  let poly = await axios.get(`${url}/matic`);
-  return poly.data.data.data.tvl.matic;
-}
-
-async function fetchEth() {
-  let eth = await axios.get(`${url}/eth`);
-  return eth.data.data.data.tvl.eth;
-}
-
-async function fetchFantom() {
-  let fantom = await axios.get(`${url}/fantom`);
-  return fantom.data.data.data.tvl.fantom;
-}
-
-async function fetchHeco() {
-  let heco = await axios.get(`${url}/heco`);
-  return heco.data.data.data.tvl.heco;
-}
-
-async function fetch() {
-  let poly = await axios.get(`${url}/matic`),
-    bsc = await axios.get(`${url}/bsc`),
-    eth = await axios.get(`${url}/eth`),
-    fantom = await axios.get(`${url}/fantom`),
-    heco = await axios.get(`${url}/heco`);
-  const tvl =
-    bsc.data.data.data.tvl.bsc +
-    poly.data.data.data.tvl.matic +
-    eth.data.data.data.tvl.eth +
-    fantom.data.data.data.tvl.fantom +
-    heco.data.data.data.tvl.heco;
-  return tvl;
-}
+const chainConfig = {
+  bsc: "bsc",
+  polygon: "matic",
+  ethereum: "eth",
+  heco: "heco",
+  fantom: "fantom",
+  avalanche: "avalanche",
+  kcc: "kcc",
+  harmony: "harmony",
+  okexchain: "okexchain",
+  syscoin: "syscoin",
+  telos: "telos",
+  moonriver: "moonriver",
+  milkomeda: "milkomeda",
+  moonbeam: "moonbeam",
+  bitgert: "bitgert",
+  xdai: "gnosis",
+  reef: "reef",
+};
 
 module.exports = {
-  polygon: {
-    fetch: fetchPoly,
-  },
-  bsc: {
-    fetch: fetchBsc,
-  },
-  ethereum: {
-    fetch: fetchEth,
-  },
-  heco: {
-    fetch: fetchHeco,
-  },
-  fantom: {
-    fetch: fetchFantom,
-  },
-
-  fetch,
+  timetravel: false,
 };
+
+function addChain(chain) {
+  module.exports[chain] = {
+    tvl: async () => {
+      const key = chainConfig[chain];
+      let response = await get(url + key);
+      return toUSDTBalances(response.data.data.tvl[key]);
+    },
+  };
+}
+
+Object.keys(chainConfig).map(addChain);

@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk');
-const { unwrapUniswapLPs, unwrapCrv } = require('../helper/unwrapLPs')
+const { unwrapUniswapLPs, unwrapCrv, unwrapLPsAuto } = require('../helper/unwrapLPs')
 const abi = require('./abi.json')
 const { request, gql } = require("graphql-request");
 const { transformAvaxAddress } = require('../helper/portedTokens');
@@ -23,6 +23,7 @@ query get_tvl($block: Int) {
 `;
 
 async function tvl(timestamp, ethBlock, chainBlocks) {
+    const chain = 'avax'
     const block = chainBlocks.avax;
     const farms = (await request(graphUrl, graphQuery, { block })).farms
     const transformAddress = await transformAvaxAddress()
@@ -31,7 +32,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
             target: f.id
         })),
         block,
-        chain: 'avax'
+        chain
     }
     const [tokenAmounts, tokens] = await Promise.all([
         sdk.api.abi.multiCall({
@@ -53,41 +54,49 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     const balances = {}
     const lps = []
     const crvLps = []
-    await Promise.all(farms.map(async (farm, idx)=>{
+    const snowballCalls = []
+    const snowballBalances = []
+    farms.forEach((farm, idx) => {
         let token = tokens.output[idx].output.toLowerCase()
+        if (token === '0xb599c3590f42f8f995ecfa0f85d2980b76862fc1') return;    // Blacklist UST token
         if (token == "0x0000000000000000000000000000000000000000") {
             token = "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"; // Replace YY's AVAX with WAVAX
         }
         let balance = tokenAmounts.output[idx].output
         if (farm.name.startsWith("Snowball: sPGL ")) {
-            const [underlyingToken, ratio] = await Promise.all([abi.token, abi.getRatio].map(abi =>
-                sdk.api.abi.call({
-                    target: token,
-                    block,
-                    chain: 'avax',
-                    abi
-                })
-            ));
-            token = underlyingToken.output;
-            balance = BigNumber(balance).times(ratio.output).div(1e18).toFixed(0)
+            snowballCalls.push({ target: token })
+            snowballBalances.push(balance)
         } else if (farm.name.startsWith("Yield Yak: Gondola ") || farm.name.includes("Curve 3pool")) {
             crvLps.push({
                 token,
                 balance,
             })
-        } else if(farm.name.includes("ZERO")){
-            sdk.util.sumSingleBalance(balances, transformAddress(token), balance)
-        } else if (farm.name.includes('-')) {
-            lps.push({
-                token,
-                balance,
-            })
         } else {
-            sdk.util.sumSingleBalance(balances, transformAddress(token), balance)
+            try {
+                sdk.util.sumSingleBalance(balances, transformAddress(token), balance)
+            } catch (e) {
+                console.log(e)
+            }
         }
-    }))
+    })
 
-    await unwrapUniswapLPs(balances, lps, block, 'avax', transformAddress, [], true)
+
+    const [underlyingToken, ratio] = await Promise.all([abi.token, abi.getRatio].map(abi =>
+        sdk.api.abi.multiCall({
+            calls: snowballCalls,
+            block,
+            chain,
+            abi,
+            requery: true,
+        })
+    ))
+
+    underlyingToken.output.forEach(({ output }, idx) => {
+        const balance = BigNumber(snowballBalances[idx]).times(ratio.output[idx].output).div(1e18).toFixed(0)
+        sdk.util.sumSingleBalance(balances, transformAddress(output), balance)
+    })
+
+    await unwrapLPsAuto({ balances, block, chain, transformAddress })
     await Promise.all(
         crvLps.map(crvLp => unwrapCrv(balances, crvLp.token, crvLp.balance, block, 'avax', transformAddress))
     )
@@ -97,14 +106,14 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 
 const masterYak = "0x0cf605484A512d3F3435fed77AB5ddC0525Daf5f"
 const yakToken = "0x59414b3089ce2af0010e7523dea7e2b35d776ec7"
-async function pool2(time, ethBlock, chainBlocks){
+async function pool2(time, ethBlock, chainBlocks) {
     const balances = {}
-    await addFundsInMasterChef(balances, masterYak, chainBlocks.avax, "avax", addr=>`avax:${addr}`, undefined, [yakToken])
+    await addFundsInMasterChef(balances, masterYak, chainBlocks.avax, "avax", addr => `avax:${addr}`, undefined, [yakToken])
     return balances
 }
 
 module.exports = {
-    avalanche:{
+    avalanche: {
         tvl,
         staking: staking(masterYak, yakToken, "avax"),
         pool2

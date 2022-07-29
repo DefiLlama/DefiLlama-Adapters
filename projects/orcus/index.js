@@ -14,58 +14,65 @@ const ORU = '0xCdB32eEd99AA19D39e5d6EC45ba74dC4afeC549F'
 const STAKE_ADDRESS = '0x243e038685209B9B68e0521bD5838C6C937d666A'
 const BANK_SAFE = '0xd89dEa2daC8Fb73F4107C2cbeA5Eb36dab511F64'
 
-function getExports() {
-  let balanceResolve;
-  const balancePromise = new Promise((resolve) => { balanceResolve = resolve })
+let balanceResolve;
 
-  async function tvl(ts, _block, chainBlocks) {
-    const balances = {}
-    const pool2Balances = {}
-    const stakeBalances = {}
-    const fixBalances = await getFixBalances(chain)
-    const block = chainBlocks[chain]
+async function getTVL(chainBlocks) {
+  const balances = {}
+  const pool2Balances = {}
+  const stakeBalances = {}
+  const fixBalances = await getFixBalances(chain)
+  const block = chainBlocks[chain]
 
-    // resolve masterchef
-    const poolLength = (await sdk.api.abi.call({ abi: masterChefABI.poolLength, target: MASTER_CHEF, block, chain, })).output
-    let pools = (await sdk.api.abi.multiCall({ target: MASTER_CHEF, abi: abi.lpToken, block, chain, calls: createIncrementArray(poolLength).map(i => ({ params: [i] })) })).output.map(p => p.output.toLowerCase())
-    const tokensAndOwners = pools.map(p => [p, MASTER_CHEF])
-    await sumTokens(pool2Balances, tokensAndOwners, block, chain)
-    const {
-      updateBalances
-    } = await getTokenPrices({ block, chain, lps: pools, coreAssets: [USDC] })
-    await updateBalances(pool2Balances)
-    await fixBalances(pool2Balances)
+  // resolve masterchef
+  const poolLength = (await sdk.api.abi.call({ abi: masterChefABI.poolLength, target: MASTER_CHEF, block, chain, })).output
+  let pools = (await sdk.api.abi.multiCall({ target: MASTER_CHEF, abi: abi.lpToken, block, chain, calls: createIncrementArray(poolLength).map(i => ({ params: [i] })) })).output.map(p => p.output.toLowerCase())
+  const tokensAndOwners = pools.map(p => [p, MASTER_CHEF])
+  await sumTokens(pool2Balances, tokensAndOwners, block, chain)
+  const {
+    updateBalances
+  } = await getTokenPrices({ block, chain, lps: pools, coreAssets: [USDC] })
+  await updateBalances(pool2Balances)
+  await fixBalances(pool2Balances)
 
 
-    // resolve pool2
-    await sumTokens(stakeBalances, [[ORU, STAKE_ADDRESS]], block, chain)
-    await updateBalances(stakeBalances)
-    await fixBalances(stakeBalances)
+  // resolve pool2
+  await sumTokens(stakeBalances, [[ORU, STAKE_ADDRESS]], block, chain)
+  await updateBalances(stakeBalances)
+  await fixBalances(stakeBalances)
 
 
-    // resolve bank
-    await sumTokens(balances, [[USDC, BANK_SAFE], [ibUSDC, BANK_SAFE]], block, chain)
-    await updateBalances(balances)
-    await fixBalances(balances)
+  // resolve bank
+  await sumTokens(balances, [[USDC, BANK_SAFE], [ibUSDC, BANK_SAFE]], block, chain)
+  await updateBalances(balances)
+  await fixBalances(balances)
 
-    balanceResolve({
-      pool2: pool2Balances,
-      staking: stakeBalances,
-    })
-
-    return balances
+  return {
+    tvl: balances,
+    pool2: pool2Balances,
+    staking: stakeBalances,
   }
+}
 
-  async function pool2() {
-    return (await balancePromise).pool2
-  }
 
-  async function staking() {
-    return (await balancePromise).staking
-  }
-  return { tvl, staking, pool2 }
+async function tvl(ts, _block, chainBlocks) {
+  if (!balanceResolve)  balanceResolve = getTVL(chainBlocks)
+  return (await balanceResolve).tvl
+}
+
+async function pool2(ts, _block, chainBlocks) {
+  if (!balanceResolve)  balanceResolve = getTVL(chainBlocks)
+  return (await balanceResolve).pool2
+}
+
+async function staking(ts, _block, chainBlocks) {
+  if (!balanceResolve)  balanceResolve = getTVL(chainBlocks)
+  return (await balanceResolve).staking
 }
 
 module.exports = {
-  astar: getExports()
+  astar: {
+    tvl,
+    staking,
+    pool2,
+  }
 }

@@ -1,160 +1,107 @@
-const Caver = require("caver-js");
-const erc20 = require("../helper/abis/erc20.json");
-const abi = require("./abi.json");
-const BigNumber = require("bignumber.js");
-const axios = require("axios");
-const { toUSDTBalances } = require("../helper/balances");
+const sdk = require("@defillama/sdk");
+const { getChainTransform, getFixBalances } = require("../helper/portedTokens")
 
-const sKRNO_ADDRESS = "0x6555F93f608980526B5cA79b3bE2d4EdadB5C562";
-const BOND_CALCULATOR = "0x1f6b7Bde22d1618724519d135839fDc5D2Ffd35A";
+const KDAI = "0x5c74070fdea071359b86082bd9f9b3deaafbe32b";
+const KSD = "0x4fa62f1f404188ce860c8f0041d6ac3765a72e67";
+const wrappedKlay = '0xd7a4d10070a4f7bc2a015e78244ea137398c3b74'
+const TREASURY = "0x03c812eE50e244909efE72e8c729976ACc5C16bb";
+const token = "0xd676e57ca65b827feb112ad81ff738e7b6c1048d";
+const STAKING_ADDR = "0x39281362641da798de3801b23bfba19155b57f13";
 
-const TREASURY_ADDRESS = "0x03c812eE50e244909efE72e8c729976ACc5C16bb";
+const LPs = [
+  {
+    address: '0xdf5caf79899407da1c1b31389448861a9846956d', // KDAI_KRNO_LP
+    tokens: [
+      KDAI,
+    ]
+  },
+  {
+    address: '0x5876aa130de74d9d8924e8ff05a0bc4387ee93f0', // KSD_KRNO_LP
+    tokens: [
+      KSD,
+    ]
+  },
+  {
+    address: '0x193ce4066aebe1911feb03425d4312a7b6514081', // KRNO_KLAY_LP
+    tokens: [ ]
+  },
+  {
+    address: '0x2febbaed702b9a1d9f6ffccd67701550ac546115',  // KRNO_KSP_LP
+    tokens: [
+      '0xc6a2ad8cc6e4a7e08fc37cc5954be07d499e7654',
+    ]
+  }
+]
 
-const KRNOS_RPC_URL = "https://en.kronosdao.finance";
+const chain = 'klaytn'
+let balanceResolve
 
-const MINT_DATA_ARRAY = [
-  {
-    NAME: "KDAI",
-    TOKEN: "0x5c74070fdea071359b86082bd9f9b3deaafbe32b",
-    BOND: "0x017EA59Bf82C26288CE8211d3A35B25BBa684eD8",
-    TYPE: "STABLE_TOKEN",
-  },
-  {
-    NAME: "KDAI_KRNO_LP",
-    TOKEN: "0xdf5caf79899407da1c1b31389448861a9846956d",
-    BOND: "0x9bA4428d3B753880dF53F67ABb31222EF900DB79",
-    TYPE: "LP",
-  },
-  {
-    NAME: "KSD",
-    TOKEN: "0x4fa62f1f404188ce860c8f0041d6ac3765a72e67",
-    BOND: "0x1FF29982e7eC4F53728ED398063587876F2a0d22",
-    TYPE: "STABLE_TOKEN",
-  },
-  {
-    NAME: "KSD_KRNO_LP",
-    TOKEN: "0x5876aa130de74d9d8924e8ff05a0bc4387ee93f0",
-    BOND: "0xb805CD015D52e852fC31B8937b80adBc00Cc2B61",
-    TYPE: "LP",
-  },
-  {
-    NAME: "KRNO_KLAY_LP",
-    TOKEN: "0x193ce4066aebe1911feb03425d4312a7b6514081",
-    BOND: "0x16DC360812d3d07D27bA35eca4CFC01b6E1C947f",
-    TYPE: "LP_UNSTABLE",
-  },
-  {
-    NAME: "KRNO_KSP_LP",
-    TOKEN: "0x2febbaed702b9a1d9f6ffccd67701550ac546115",
-    BOND: "0xFA3A46Bc0E1587CE4ae26298B5c89B5b85Ca7786",
-    TYPE: "LP_UNSTABLE",
-  },
-];
+async function addToBalance({ balances, lp, owner, transform, block }) {
+  let valueToken = lp.tokens[0] || wrappedKlay
+  const lpTokenValue = lp.tokens[0] ? sdk.api.erc20.balanceOf({ target: valueToken, owner: lp.address, block, chain }) : sdk.api.eth.getBalance({ target: lp.address, block, chain })
 
-const loadTokenPrices = async () => {
-  const url =
-    "https://api.coingecko.com/api/v3/simple/price?ids=avalanche-2,olympus,magic-internet-money,dai,klay-token,klayswap-protocol&vs_currencies=usd";
-  const { data } = await axios.get(url);
-  const result = {};
-  result["AVAX"] = data["avalanche-2"].usd;
-  result["MIM"] = data["dai"].usd;
-  result["OHM"] = data["olympus"].usd;
-  result["OHM"] = data["olympus"].usd;
-  result["KLAY"] = data["klay-token"].usd;
-  result["KSP"] = data["klayswap-protocol"].usd;
-  return result;
+  const [
+    valueBalance,
+    lpSupply,
+    lpBalance,
+  ] = await Promise.all([
+    lpTokenValue,
+    sdk.api.erc20.totalSupply({ target: lp.address, block, chain }),
+    sdk.api.erc20.balanceOf({ target: lp.address, owner, block, chain }),
+  ]).then(all => all.map(i => i.output))
+
+  const value = valueBalance * lpBalance * 2 / lpSupply
+  sdk.util.sumSingleBalance(balances, transform(valueToken), value)
+}
+
+function getTvlPromise(key) {
+  return async (ts, _block, chainBlocks) => {
+    if (!balanceResolve)
+      balanceResolve = getTvl(ts, _block, chainBlocks)
+    return (await balanceResolve)[key]
+  }
+}
+
+async function getTvl(timestamp, ethBlock, chainBlocks) {
+  const block = chainBlocks[chain]
+
+  const balances = {
+    staking: {},
+    tvl: {}
+  }
+  const transform = await getChainTransform(chain)
+  const fixBalances = await getFixBalances(chain)
+
+  await Promise.all(LPs.map(lp => addToBalance({
+    balances: balances.tvl,
+    owner: TREASURY,
+    block,
+    lp,
+    transform,
+  })))
+
+  const [
+    tokenBalance,
+    kdaiBalance,
+    stakingBalance,
+  ] = await Promise.all([
+    sdk.api.erc20.balanceOf({ target: token, owner: LPs[0].address, block, chain }),
+    sdk.api.erc20.balanceOf({ target: KDAI, owner: LPs[0].address, block, chain }),
+    sdk.api.erc20.balanceOf({ target: token, owner: STAKING_ADDR, block, chain }),
+  ]).then(all => all.map(i => i.output))
+
+  const tokenPrice = kdaiBalance / tokenBalance
+  const staking = stakingBalance * tokenPrice / 10 ** 18
+
+  sdk.util.sumSingleBalance(balances.staking, 'tether', staking)
+  fixBalances(balances.tvl)
+
+  return balances
 };
 
-async function getMintVolume(caver, mintData) {
-  let volume = 0;
-  const [marketPrice, amount] = await Promise.all([
-    getBondMarketPrice(caver, mintData),
-    getTreasuryAmount(caver, mintData),
-  ]);
-
-  if (mintData.TYPE.includes("LP")) {
-    const bondCalculatorContract = caver.contract.create(
-      [abi.markdown, abi.valuation],
-      BOND_CALCULATOR
-    );
-    const [markdown, valuation] = await Promise.all([
-      bondCalculatorContract.methods.markdown(mintData.TOKEN).call(),
-      bondCalculatorContract.methods.valuation(mintData.TOKEN, amount).call(),
-    ]);
-    volume = markdown * (valuation / Math.pow(10, 9));
-    if (mintData.NAME === "KRNO_KLAY_LP") {
-      const klayPrice = (await loadTokenPrices()).KLAY;
-      volume *= klayPrice;
-    } else if (mintData.NAME === "KRNO_KSP_LP") {
-      const kspPrice = (await loadTokenPrices()).KSP;
-      volume *= kspPrice;
-    }
-  } else {
-    volume = marketPrice * amount;
-  }
-
-  return volume / Math.pow(10, 18);
-}
-
-async function getBondMarketPrice(caver, mintData) {
-  let marketPrice;
-  let contract;
-  if (mintData.TYPE.includes("LP")) {
-    contract = caver.contract.create([abi.getCurrentPool], mintData.TOKEN);
-    const reserves = await contract.methods.getCurrentPool().call();
-    marketPrice = new BigNumber(reserves[0])
-      .div(reserves[1])
-      .div(10 ** 9)
-      .toString();
-  } else if (mintData.TYPE === "STABLE_TOKEN") {
-    marketPrice = "1";
-  } else {
-    throw "ERR";
-  }
-  return marketPrice;
-}
-
-async function getTreasuryAmount(caver, mintData) {
-  const contract = caver.contract.create([erc20.balanceOf], mintData.TOKEN);
-  return (treasuryAmount = await contract.methods
-    .balanceOf(TREASURY_ADDRESS)
-    .call());
-}
-
-async function fetchStakedToken() {
-  const caver = new Caver(KRNOS_RPC_URL);
-
-  const sKRNO = caver.contract.create([abi.circulatingSupply], sKRNO_ADDRESS);
-
-  const [sKRNOcirculatingSupply, marketPrice] = await Promise.all([
-    sKRNO.methods.circulatingSupply().call(),
-    getBondMarketPrice(
-      caver,
-      MINT_DATA_ARRAY.find((mintData) => mintData.NAME === "KDAI_KRNO_LP")
-    ),
-  ]);
-  return toUSDTBalances(
-    (sKRNOcirculatingSupply * marketPrice) / Math.pow(10, 9).toFixed(2)
-  );
-}
-
-async function fetchLiquidity() {
-  const caver = new Caver(KRNOS_RPC_URL);
-
-  const volumes = await Promise.all(
-    MINT_DATA_ARRAY.map((mintData) => getMintVolume(caver, mintData))
-  );
-
-  return toUSDTBalances(volumes.reduce((acc, cur) => acc + cur, 0).toFixed(2));
-}
-
 module.exports = {
-  timetravel: false,
   misrepresentedTokens: true,
-  klaytn: {
-    staking: fetchStakedToken,
-    tvl: fetchLiquidity,
-  },
-  methodology:
-    "Counts tokens on the treasury for tvl and staked KRNO for staking",
+  klaytn:
+    ['tvl', 'staking']
+      .reduce((acc, key) => ({ ...acc, [key]: getTvlPromise(key) }), {}),
 };

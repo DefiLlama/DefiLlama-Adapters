@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const erc20 = require("../helper/abis/erc20.json");
 const { staking } = require("../helper/staking");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
@@ -44,8 +43,6 @@ const pool2 = async (chainBlocks) => {
   const balances = {};
 
   const lpPositions = [];
-  let poolInfoReturn = "";
-  i = 0;
   for (let i = 0; i < 5; i++) {
     const token = (
       await sdk.api.abi.call({
@@ -59,7 +56,7 @@ const pool2 = async (chainBlocks) => {
 
     const getTokenBalance = (
       await sdk.api.abi.call({
-        abi: erc20.balanceOf,
+        abi: 'erc20:balanceOf',
         target: token,
         params: DShareRewardPool,
         chain: "cronos",

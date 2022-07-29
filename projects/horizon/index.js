@@ -1,7 +1,6 @@
 const sdk = require("@defillama/sdk");
-const { staking, stakingPricedLP } = require("../helper/staking");
-const { unwrapUniswapLPs } = require('../helper/unwrapLPs');
-const { transformBscAddress } = require('../helper/portedTokens');
+const { staking, } = require("../helper/staking");
+const { sumTokens } = require('../helper/unwrapLPs');
 const { collateral } = require('./collateral.js');
 
 const hzn_bnb_LP = '0xdc9a574b9b341d4a98ce29005b614e1e27430e74'
@@ -31,32 +30,12 @@ const lpStaking = [
     }
 ]
 
-async function calculateLPStaking(timestamp, block, chainBlocks) {
-    const transform = await transformBscAddress();
-    let balances = {};
-    for (const pool of lpStaking) {
-        let lpLocked = ((await sdk.api.abi.call({
-            chain: 'bsc',
-            block: chainBlocks['bsc'],
-            target: pool.stakingLPToken,
-            abi: 'erc20:balanceOf',
-            params: pool.stakingContract
-        })).output)
-
-        await unwrapUniswapLPs(
-            balances,
-            [{
-                balance: lpLocked,
-                token: pool.stakingLPToken
-            }],
-            chainBlocks['bsc'],
-            'bsc',
-            transform
-        )
-    }
-
+async function calculateLPStaking(timestamp, _block, chainBlocks) {
+    const block = chainBlocks.bsc
+    const tokensAndOwners = lpStaking.map(lp => [lp.stakingLPToken, lp.stakingContract])
+    const balances = {}
+    await sumTokens(balances, tokensAndOwners, block, 'bsc', undefined, { resolveLP: true })
     return balances;
-
 }
 
 module.exports = {
@@ -67,7 +46,7 @@ module.exports = {
         tvl: collateral,
         staking: sdk.util.sumChainTvls([
             staking(tokenStaking[0].stakingContract, tokenStaking[0].stakingToken, "bsc"), 
-            stakingPricedLP(tokenStaking[1].stakingContract, tokenStaking[1].stakingToken, "bsc", hzn_bnb_LP, 'wbnb', true)
+            staking(tokenStaking[1].stakingContract, tokenStaking[1].stakingToken, "bsc"), 
         ]),
         pool2: calculateLPStaking
     },

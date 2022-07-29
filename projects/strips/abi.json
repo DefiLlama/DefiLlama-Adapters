@@ -1,5 +1,5 @@
-{ 
-  "getAllMarkets" : {
+{
+  "getAllMarkets": {
     "inputs": [],
     "name": "getAllMarkets",
     "outputs": [
@@ -19,6 +19,19 @@
         "internalType": "struct IStrips.ExtendedMarketData[]",
         "name": "",
         "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "getLiquidity": {
+    "inputs": [],
+    "name": "getLiquidity",
+    "outputs": [
+      {
+        "internalType": "int256",
+        "name": "",
+        "type": "int256"
       }
     ],
     "stateMutability": "view",

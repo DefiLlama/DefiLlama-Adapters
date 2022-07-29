@@ -1,6 +1,5 @@
 const axios = require("axios");
-const Pact = require("pact-lang-api");
-const { toUSDTBalances } = require("../helper/balances");
+const { fetchLocal, mkMeta } = require("../helper/pact");
 
 const chainId = "2";
 const network = `https://api.chainweb.com/chainweb/0.0/mainnet01/chain/${chainId}/pact`;
@@ -12,7 +11,6 @@ const getReserve = (tokenData) => {
 };
 
 const pairTokens = {
-  
   "coin:runonflux.flux": {
     name: "coin:runonflux.flux",
     token0: {
@@ -23,13 +21,47 @@ const pairTokens = {
       name: "FLUX",
       code: "runonflux.flux",
     },
-  }
-}
+  },
+
+  "coin:hypercent.prod-hype-coin": {
+    name: "coin:hypercent.prod-hype-coin",
+    token0: {
+      name: "KDA",
+      code: "coin",
+    },
+    token1: {
+      name: "HYPE",
+      code: "hypercent.prod-hype-coin",
+    },
+  },
+  "coin:mok.token": {
+    name: "coin:mok.token",
+    token0: {
+      name: "KDA",
+      code: "coin",
+    },
+    token1: {
+      name: "MOK",
+      code: "mok.token",
+    },
+  },
+  "coin:lago.kwUSDC": {
+    name: "coin:lago.kwUSDC",
+    token0: {
+      name: "KDA",
+      code: "coin",
+    },
+    token1: {
+      name: "USDC",
+      code: "lago.kwUSDC",
+    },
+  },
+};
 
 const getPairList = async () => {
   const pairList = await Promise.all(
     Object.values(pairTokens).map(async (pair) => {
-      let data = await Pact.fetch.local(
+      let data = await fetchLocal(
         {
           pactCode: `
             (use kswap.exchange)
@@ -41,20 +73,12 @@ const getPairList = async () => {
                 (totalBal (kswap.tokens.total-supply (kswap.exchange.get-pair-key ${pair.token0.code} ${pair.token1.code})))
               )[totalBal reserveA reserveB])
              `,
-          meta: Pact.lang.mkMeta(
-            "",
-            chainId,
-            GAS_PRICE,
-            3000,
-            creationTime(),
-            600
-          ),
+          meta: mkMeta("", chainId, GAS_PRICE, 3000, creationTime(), 600),
         },
         network
       );
-       
+
       return {
-        
         reserves: [
           getReserve(data.result.data[1]),
           getReserve(data.result.data[2]),
@@ -65,35 +89,30 @@ const getPairList = async () => {
   return pairList;
 };
 
-const fetchKdaPrice = async () => {
-  const res = await axios.get(
-    "https://api.coingecko.com/api/v3/simple/price?ids=kadena&vs_currencies=usd"
-  );
-
-  return res.data.kadena.usd;
-};
-
 const fetchKdaTotal = async (pairList) => {
-  let kdaTotal = 0;
-  for (let i = 0; i < pairList.length; i++) {
-    let pair = pairList[i];
-    kdaTotal += pair.reserves[0];
+  let totalKda = 0;
+  for (const pair of pairList) {
+    const kdaInPool = pair.reserves[0];
+    const tokenInPoolInKdaRate = pair.reserves[0] / pair.reserves[1];
+    totalKda +=
+      kdaInPool +
+      tokenInPoolInKdaRate * pair.reserves[1]; /** equal to do (kda*2) */
   }
-  return kdaTotal;
+  return totalKda;
 };
 
 async function fetch() {
   const pairList = await getPairList();
-  const kdaPrice = await fetchKdaPrice();
   const kdaTotal = await fetchKdaTotal(pairList);
-  const kdaInFluxPair = pairList[0].reserves[0];
-  const tvl=kdaPrice * (kdaTotal + kdaInFluxPair);
-  return toUSDTBalances(tvl);
+  return {
+    kadena: kdaTotal,
+  };
 }
 
 module.exports = {
-    misrepresentedTokens: true,
-    kadena: {
-      tvl: fetch,
-    },
-  };
+  timetravel: false,
+  misrepresentedTokens: true,
+  kadena: {
+    tvl: fetch,
+  },
+};

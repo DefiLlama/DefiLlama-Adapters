@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
-const BigNumberJs = require("bignumber.js");
-BigNumberJs.config({ EXPONENTIAL_AT: 1e9 })
+const { toBigNumberJsOrZero } = require("./utils.js");
 
 const addressProviderABI = require("./abi/addressProvider.json");
 const registryABI = require("./abi/registry.json");
@@ -50,11 +49,6 @@ const getBalances = async (chain, block) => {
       ? balanceBNRecord[key].toString()
       : balanceBNRecord[key].shiftedBy(-18)
   }), {})
-}
-
-const toBigNumberJsOrZero = (value) => {
-  const bn = new BigNumberJs(value)
-  return bn.isNaN() ? new BigNumberJs('0') : bn
 }
 
 const listPoolAddresses = async (chain, block, registryAddress) => {

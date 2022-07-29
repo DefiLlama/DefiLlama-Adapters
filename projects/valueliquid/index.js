@@ -4,7 +4,7 @@
 
 const sdk = require('@defillama/sdk');
 const getCurrentTokens = require('./abis/getCurrentTokens.json');
-const _ = require('underscore');
+
 const BigNumber = require("bignumber.js");
 
 async function valueLiquidTvl(timestamp, block) {
@@ -22,20 +22,20 @@ async function valueLiquidTvl(timestamp, block) {
 
   let poolCalls = [];
 
-  let pools = _.map(poolLogs.output, (poolLog) => {
+  let pools = poolLogs.output.map((poolLog) => {
     return `0x${poolLog[2].slice(26)}`
   });
 
   const poolTokenData = (await sdk.api.abi.multiCall({
-    calls: _.map(pools, (poolAddress) => ({target: poolAddress})),
+    calls: pools.map((poolAddress) => ({target: poolAddress})),
     abi: getCurrentTokens,
   })).output;
 
-  _.forEach(poolTokenData, (poolToken) => {
+  poolTokenData.forEach((poolToken) => {
     let poolTokens = poolToken.output;
     let poolAddress = poolToken.input.target;
 
-    _.forEach(poolTokens, (token) => {
+    poolTokens.forEach((token) => {
       poolCalls.push({
         target: token,
         params: poolAddress,
@@ -49,7 +49,7 @@ async function valueLiquidTvl(timestamp, block) {
     abi: 'erc20:balanceOf'
   })).output;
 
-  _.each(poolBalances, (balanceOf) => {
+  poolBalances.forEach((balanceOf) => {
       let balance = balanceOf.output;
       let address = balanceOf.input.target;
 
@@ -72,5 +72,5 @@ async function tvl(timestamp, block) {
 ==================================================*/
 module.exports = {
   start: 1601440616,  // 09/30/2020 @ 4:36am (UTC)
-  tvl,
+  ethereum: { tvl }
 };

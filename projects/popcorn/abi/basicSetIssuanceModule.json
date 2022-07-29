@@ -1,0 +1,29 @@
+{
+  "inputs": [
+    {
+      "internalType": "contract ISetToken",
+      "name": "_setToken",
+      "type": "address"
+    },
+    {
+      "internalType": "uint256",
+      "name": "_quantity",
+      "type": "uint256"
+    }
+  ],
+  "name": "getRequiredComponentUnitsForIssue",
+  "outputs": [
+    {
+      "internalType": "address[]",
+      "name": "",
+      "type": "address[]"
+    },
+    {
+      "internalType": "uint256[]",
+      "name": "",
+      "type": "uint256[]"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+}

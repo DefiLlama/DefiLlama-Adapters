@@ -1,4 +1,4 @@
-const _ = require('underscore');
+
 const sdk = require('@defillama/sdk');
 const BigNumber = require("bignumber.js");
 const getReserves = require('./abis/uniswap/getReserves.json');
@@ -42,7 +42,7 @@ async function getUniswapPairInfo(pairAddresses, timestamp, block) {
       .then(({ output }) => output.map(value => value.output)),
     sdk.api.abi.multiCall({
       abi: token1,
-      calls: _.map(pairAddresses, (pairAddress) => ({
+      calls: pairAddresses.map((pairAddress) => ({
         target: pairAddress,
       })),
       block,
@@ -50,7 +50,7 @@ async function getUniswapPairInfo(pairAddresses, timestamp, block) {
       .then(({ output }) => output.map(value => value.output)),
     sdk.api.abi.multiCall({
       abi: getReserves,
-      calls: _.map(pairAddresses, (pairAddress) => ({
+      calls: pairAddresses.map((pairAddress) => ({
         target: pairAddress,
       })),
       block,
@@ -58,7 +58,7 @@ async function getUniswapPairInfo(pairAddresses, timestamp, block) {
       .then(({ output }) => output.map(value => value.output)),
     sdk.api.abi.multiCall({
       block,
-      calls: _.map(pairAddresses, pairAddress => ({
+      calls: pairAddresses.map(pairAddress => ({
         target: pairAddress
       })),
       abi: 'erc20:totalSupply',
@@ -112,12 +112,14 @@ async function getTokenUnderlyingReserves(token, defaultReserve, _timestamp, blo
   });
 
   const wrappedTokenCount = parseInt(numTokensWrappedResponse.output);
-  const getTokenInfoCalls = _.range(wrappedTokenCount).map(i => ({
-    target: token,
-    params: [i],
-    abi: getTokenInfo,
-    block
-  }));
+  const getTokenInfoCalls = []
+  for (let i = 0;i < wrappedTokenCount; i++)
+    getTokenInfoCalls.push({
+      target: token,
+      params: [i],
+      abi: getTokenInfo,
+      block
+    })
 
   const tokenInfoResponse = await sdk.api.abi.multiCall({
     block,
@@ -141,10 +143,10 @@ async function getTokenUnderlyingReserves(token, defaultReserve, _timestamp, blo
 function flattenUnderlyingReserves(underlyingReserves) {
   const reserves = {};
 
-  _.each(underlyingReserves, pairReserves => {
-    _.each(pairReserves, tokenReserves => {
-      _.each(tokenReserves, underlyingReserves => {
-        _.each(Object.keys(underlyingReserves), address => {
+  underlyingReserves.forEach(pairReserves => {
+    pairReserves.forEach(tokenReserves => {
+      tokenReserves.forEach(underlyingReserves => {
+        Object.keys(underlyingReserves).forEach(address => {
           const tokenReserve = new BigNumber(underlyingReserves[address]);
           reserves[address] = (reserves[address] || zero).plus(tokenReserve);
         });
@@ -152,7 +154,7 @@ function flattenUnderlyingReserves(underlyingReserves) {
     });
   });
 
-  _.each(Object.keys(reserves), address => {
+  Object.keys(reserves).forEach(address => {
     reserves[address] = reserves[address].toFixed();
   });
 
@@ -169,5 +171,5 @@ async function tvl(timestamp, block) {
 
 module.exports = {
   start: 1601142406,    // 2020-09-26 17:46:46 (UTC)
-  tvl
+  ethereum: { tvl }
 };

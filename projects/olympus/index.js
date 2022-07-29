@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const erc20 = require("../helper/abis/erc20.json");
 const {gql, request} = require('graphql-request');
 const { toUSDTBalances } = require("../helper/balances");
 
@@ -19,7 +18,7 @@ const staking = async (timestamp, ethBlock, chainBlocks) => {
 
   for (const stakings of OlympusStakings) {
     const stakingBalance = await sdk.api.abi.call({
-      abi: erc20.balanceOf,
+      abi: 'erc20:balanceOf',
       target: OHM,
       params: stakings,
       block: ethBlock,

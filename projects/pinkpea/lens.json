@@ -1,0 +1,69 @@
+{
+	"balanceInfoViews":
+	{
+		"inputs": [
+			{
+				"internalType": "address[]",
+				"name": "vaults",
+				"type": "address[]"
+			},
+			{
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "balanceInfoViews",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint8",
+						"name": "decimal",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint256",
+						"name": "balance",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "allowance",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "deposited",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "vaultPerShare",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "vaultAddress",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "tvl",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "tokenPrice",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct BalanceInfosLens.BalanceInfo[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+}

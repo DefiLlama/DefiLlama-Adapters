@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const _ = require('underscore');
+
 const BigNumber = require("bignumber.js");
 
 const constant = {
@@ -37,6 +37,6 @@ async function tvl(timestamp, block) {
 
 module.exports = {
   start: 1513566671, // 2020/10/21 6:34:47 (+UTC)
-  tvl,
+  ethereum: { tvl }
 };
 
