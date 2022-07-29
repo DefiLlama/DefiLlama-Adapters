@@ -1,9 +1,4 @@
-const { getChainTvl } = require('../helper/getUniSubgraphTvl')
 const { getUniTVL } = require('../helper/unknownTokens')
-
-const tvl = getChainTvl({
-  'moonriver': 'https://api.thegraph.com/subgraphs/name/moonfarmin/moonswap-dex'
-})
 
 module.exports = {
   moonriver: {
