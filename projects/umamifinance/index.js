@@ -17,14 +17,13 @@ module.exports = {
   start: 1657027865, // UMAMI deployment block ts
   arbitrum: {
     staking: stakings([mUMAMI, OHM_STAKING_sUMAMI], UMAMI, "arbitrum"),
-    tvl: async (chainBlocks) => {
+    tvl: async (_, _b, { arbitrum: block }) => {
       const totalAssets = await sdk.api.abi.call({
         abi: abi.totalAssets,
         target: glpUSDC,
         chain: "arbitrum",
-        block: chainBlocks["arbitrum"],
+        block: block,
       });
-      console.log({ totalAssets });
 
       return {
         [`arbitrum:${USDC}`]: totalAssets.output,
