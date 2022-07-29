@@ -1,9 +1,9 @@
-const algosdk = require("algosdk")
-const sdk = require("@defillama/sdk")
-const { toUSDTBalances } = require("../helper/balances")
-const fetch = (...args) => import("node-fetch").then(({default: fetch}) => fetch(...args));
+const sdk = require('@defillama/sdk')
+const { toUSDTBalances } = require('../helper/balances')
+const { get } = require('../helper/http')
 const retry = require("async-retry");
 const axios = require("axios");
+const { lookupApplications, } = require("../helper/algorand");
 
 const marketStrings = {
     underlying_cash : "uc",
@@ -159,6 +159,11 @@ const appDictionary = {
             "poolAppId": 647799801,
             "decimals": 6
         },
+        "AF-GOMINT-STBL-25BP-STAKING" : {
+            "marketAppId" : 764406975,
+            "poolAppId": 764420932,
+            "decimals": 6
+        },
         "DEFLY" : {
             "appId" : 641499935,
             "assetId": 470842789,
@@ -209,8 +214,8 @@ const appDictionary = {
 }
 
 
-async function getAppGlobalState(indexerClient, marketId) {
-  let response = await indexerClient.lookupApplications(marketId).do();
+async function getAppGlobalState(marketId) {
+  let response = await lookupApplications(marketId);
   let results = {}
   response.application.params["global-state"].forEach(x => {
     let decodedKey =  Buffer.from(x.key, "base64").toString("binary")
@@ -220,10 +225,10 @@ async function getAppGlobalState(indexerClient, marketId) {
   return results
 }
 
-async function getPrices(indexerClient, marketDictionary, orderedAssets) {
+async function getPrices(marketDictionary, orderedAssets) {
   let prices = {}
   for (const assetName of orderedAssets) {
-    let response = await indexerClient.lookupApplications(marketDictionary[assetName]["oracleAppId"]).do()
+    let response = await lookupApplications(marketDictionary[assetName]["oracleAppId"])
     for (const y of response.application.params["global-state"]) {
       let decodedKey = Buffer.from(y.key, 'base64').toString('binary')
       if (decodedKey === marketDictionary[assetName]["oracleFieldName"]) {
@@ -236,29 +241,28 @@ async function getPrices(indexerClient, marketDictionary, orderedAssets) {
 }
 
 function getMarketSupply(assetName, appGlobalState, prices, appDictionary) {
-    underlyingCash = ((assetName === "STBL") || (assetName === "vALGO"))  ? appGlobalState[marketStrings.active_collateral] : appGlobalState[marketStrings.underlying_cash]
-    supplyUnderlying = underlyingCash - appGlobalState[marketStrings.underlying_reserves]
+    let underlyingCash = ((assetName === "STBL") || (assetName === "vALGO"))  ? appGlobalState[marketStrings.active_collateral] : appGlobalState[marketStrings.underlying_cash]
+    let supplyUnderlying = underlyingCash - appGlobalState[marketStrings.underlying_reserves]
     supplyUnderlying /= Math.pow(10, appDictionary[assetName]["decimals"])
 
     return supplyUnderlying * prices[assetName]
 }
 
 function getMarketBorrow(assetName, appGlobalState, prices) {
-    borrowUnderlying = appGlobalState[marketStrings.underlying_borrowed]
+    let borrowUnderlying = appGlobalState[marketStrings.underlying_borrowed]
     borrowUnderlying /= Math.pow(10, appDictionary[assetName]["decimals"])
 
     return borrowUnderlying * prices[assetName]
 }
 
 async function borrowed() {
-    let client = new algosdk.Indexer("", "https://algoindexer.algoexplorerapi.io/", "")
-    let prices = await getPrices(client, appDictionary, orderedAssets)
+    let prices = await getPrices(appDictionary, orderedAssets)
 
-    borrow = 0
+    let borrow = 0
 
     for (const assetName of orderedAssets) {
         for (const id of appDictionary[assetName]["appIds"]) {
-            appGlobalState = await getAppGlobalState(client, id)
+            appGlobalState = await getAppGlobalState(id)
             borrow += getMarketBorrow(assetName, appGlobalState, prices)
         }
     }
@@ -267,14 +271,13 @@ async function borrowed() {
 }
 
 async function supply() {
-    let client = new algosdk.Indexer("", "https://algoindexer.algoexplorerapi.io/", "")
-    let prices = await getPrices(client, appDictionary, orderedAssets)
+    let prices = await getPrices(appDictionary, orderedAssets)
 
-    supply = 0
+    let supply = 0
     for (const assetName of orderedAssets) {
         for (const id of appDictionary[assetName]["appIds"]) {
-            appGlobalState = await getAppGlobalState(client, id)
-            assetTvl = getMarketSupply(assetName, appGlobalState, prices, appDictionary)
+            let appGlobalState = await getAppGlobalState(id)
+            let assetTvl = getMarketSupply(assetName, appGlobalState, prices, appDictionary)
             supply += assetTvl
         }
     }
@@ -283,8 +286,6 @@ async function supply() {
 }
 
 async function stakingV1() {
-    let client = new algosdk.Indexer("", "https://algoindexer.algoexplorerapi.io/", "")
-
     let lpCirculations = {}
 
     let prices = {
@@ -294,16 +295,14 @@ async function stakingV1() {
 
     for (const contractName of variableValueStakingContracts) {
         let contractState = await getAppGlobalState(
-            client,
             appDictionary["STAKING_CONTRACTS"][contractName]["poolAppId"]
         )
         lpCirculations[contractName] = contractState[marketStrings.lp_circulation] / 1000000
     }
 
-    let poolSnapshotsResponse = await fetch("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_pool_snapshots/?network=MAINNET")
-    let assetSnapshotsResponse = await fetch("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_asset_snapshots/?network=MAINNET")
+    let poolSnapshots = await get("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_pool_snapshots/?network=MAINNET")
+    let assetSnapshots = await get("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_asset_snapshots/?network=MAINNET")
 
-    let poolSnapshots = await poolSnapshotsResponse.json()
     for (const poolSnapshot of poolSnapshots.pool_snapshots) {
         for (const contractName of variableValueStakingContracts) {
             if (poolSnapshot.id == appDictionary["STAKING_CONTRACTS"][contractName]["poolAppId"]) {
@@ -312,7 +311,6 @@ async function stakingV1() {
         }
     }
 
-    let assetSnapshots = await assetSnapshotsResponse.json()
     for (const assetSnapshot of assetSnapshots.asset_snapshots) {
         for (const contractName of singleSideStakingContracts) {
             if (assetSnapshot.id == appDictionary["STAKING_CONTRACTS"][contractName]["assetId"]) {
@@ -323,7 +321,7 @@ async function stakingV1() {
 
     staked = 0
     for (const contractName of stakingContractsV1) {
-        appGlobalState = await getAppGlobalState(client, appDictionary["STAKING_CONTRACTS"][contractName]["appId"])
+        let appGlobalState = await getAppGlobalState(appDictionary["STAKING_CONTRACTS"][contractName]["appId"])
         staked += getMarketSupply(contractName, appGlobalState, prices, appDictionary["STAKING_CONTRACTS"])
     }
 
@@ -332,11 +330,10 @@ async function stakingV1() {
 }
 
 async function stakingV2() {
-    let client = new algosdk.Indexer("", "https://algoindexer.algoexplorerapi.io/", "")
     totalStaked = 0
     for (const contractName of bankStakingContractsV2) {
-        stakingAppGlobalState = await getAppGlobalState(client, appDictionary["STAKING_CONTRACTS"][contractName]["appId"])
-        marketAppGlobalState = await getAppGlobalState(client, appDictionary["STAKING_CONTRACTS"][contractName]["marketAppId"])
+        stakingAppGlobalState = await getAppGlobalState(appDictionary["STAKING_CONTRACTS"][contractName]["appId"])
+        marketAppGlobalState = await getAppGlobalState(appDictionary["STAKING_CONTRACTS"][contractName]["marketAppId"])
 
         bAssetStaked = stakingAppGlobalState[stakingV2Strings.total_staked]
 
@@ -346,7 +343,7 @@ async function stakingV2() {
 
         underlyingStaked = rawUnderlyingStaked  / 10 ** appDictionary["STAKING_CONTRACTS"][contractName]["decimals"]
 
-        oracleState = await getAppGlobalState(client, marketAppGlobalState[marketStrings.oracle_app_id])
+        oracleState = await getAppGlobalState(marketAppGlobalState[marketStrings.oracle_app_id])
 
         oraclePriceFieldName = appDictionary["STAKING_CONTRACTS"][contractName]["oracleFieldName"]
         oraclePrice = oracleState[oraclePriceFieldName]

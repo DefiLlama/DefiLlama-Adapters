@@ -7,7 +7,7 @@ const sdk = require('@defillama/sdk');
 const abi = require("./abi.json");
 const poolInfos = {}
 
-const templeStakingContract = "0x4D14b24EDb751221B3Ff08BBB8bd91D4b1c8bc77";
+const templeStakingContract = "0xEc3C1aBDAb15EbC069ec5e320EaACf716eDfC011";
 const templePool2Contract = '0x10460d02226d6ef7B2419aE150E6377BdbB7Ef16'
 const TEMPLE_FRAX_LP = '0x6021444f1706f15465bee85463bcc7d7cc17fc03'
 const TEMPLE = "0x470ebf5f030ed85fc1ed4c2d36b9dd02e77cf1b7";
@@ -19,6 +19,7 @@ const CVX_FXS = "0xFEEf77d3f69374f66429C91d732A244f074bdf74";
 const TEMPLE_DENDEND1 = '0x8A5058100E60e8F7C42305eb505B12785bbA3BcA'
 const TEMPLE_DENDEND2 = '0xb0D978C8Be39C119922B99f483cD8C4092f0EA56'
 const FRAX_3CRV_CVX_POOL = '0xB900EF131301B307dB5eFcbed9DBb50A3e209B2e'
+const FRAX_USDC_CVX_POOL = '0x7e880867363A7e321f5d260Cade2B0Bb2F717B02'
 const chain = 'ethereum'
 
 const tokensAndOwners = [
@@ -30,8 +31,9 @@ const tokensAndOwners = [
 
 async function treasuryTvl(ts, block) {
   const balances = {}
-  await sumTokens(balances,  tokensAndOwners, block, chain, undefined)
+  await sumTokens(balances, tokensAndOwners, block, chain, undefined)
   await getCvxPoolValue({ block, balances, pool: FRAX_3CRV_CVX_POOL, owner: templeTreasuryContract })
+  await getCvxPoolValue({ block, balances, pool: FRAX_USDC_CVX_POOL, owner: templeTreasuryContract })
   return balances;
 }
 
@@ -43,7 +45,7 @@ async function getCvxPoolValue({ block, owner, pool, balances, chain }) {
   const ourPoolInfo = poolInfos[operator].find(i => JSON.stringify(i).indexOf(stakingToken) > -1)
   const crvToken = ourPoolInfo.lptoken
   balances[crvToken] = poolBalance
-  await resolveCrvTokens(balances, block, chain) 
+  await resolveCrvTokens(balances, block, chain)
 
   async function setPoolInfo(operator) {
     if (poolInfos[operator])  return;

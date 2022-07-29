@@ -4,6 +4,17 @@ const abi = require("../pendle/abi.json");
 const BigNumber = require('bignumber.js')
 const positions = require('./positions.json');
 
+const cvx_abi = {
+	"cvxBRP_pid": { "inputs": [], "name": "pid", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
+	"cvxBRP_balanceOf": { "inputs": [{ "internalType": "address", "name": "account", "type": "address" }], "name": "balanceOf", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
+	"cvxBRP_earned": { "inputs": [{ "internalType": "address", "name": "account", "type": "address" }], "name": "earned", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
+	"cvxBRP_rewards": { "inputs": [{ "internalType": "address", "name": "", "type": "address" }], "name": "rewards", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
+	"cvxBRP_userRewardPerTokenPaid": { "inputs": [{ "internalType": "address", "name": "", "type": "address" }], "name": "userRewardPerTokenPaid", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
+	"cvxBRP_stakingToken": { "inputs": [], "name": "stakingToken", "outputs": [{ "internalType": "address", "name": "stakingToken", "type": "address" }], "stateMutability": "view", "type": "function" },
+	"cvxBooster_poolInfo": { "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "name": "poolInfo", "outputs": [{ "internalType": "address", "name": "lptoken", "type": "address" }, { "internalType": "address", "name": "token", "type": "address" }, { "internalType": "address", "name": "gauge", "type": "address" }, { "internalType": "address", "name": "crvRewards", "type": "address" }, { "internalType": "address", "name": "stash", "type": "address" }, { "internalType": "bool", "name": "shutdown", "type": "bool" }], "stateMutability": "view", "type": "function" }
+}
+
+const cvxBoosterAddress = "0xF403C135812408BFbE8713b5A23a04b3D48AAE31";
 const degenesisContract = "0xc803737D3E12CC4034Dde0B2457684322100Ac38";
 const wethPool = "0xD3D13a578a53685B4ac36A1Bab31912D2B2A2F36";
 const usdcPool = "0x04bda0cf6ad025948af830e75228ed420b0e860d";
@@ -50,6 +61,8 @@ const uni = "0x5fa464cefe8901d66c09b85d5fcdc55b3738c688";
 const uniStaking = "0x1b429e75369ea5cd84421c1cc182cee5f3192fd3";
 const alusd = "0xBC6DA0FE9aD5f3b0d58160288917AA56653660E9";
 const alusdPool = "0x7211508D283353e77b9A7ed2f22334C219AD4b4C";
+const steth = "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84";
+const crvSteth = "0xDC24316b9AE028F1497c275EB9192a3Ea0f67022";
 
 async function tvl(timestamp, block) {
   const balances = {}
@@ -80,7 +93,11 @@ async function tvl(timestamp, block) {
   const cvxUSTWPool = "0x7e2b9b5244bcfa5108a76d5e7b507cfd5581ad4a";
   const cvxFRAXPool = "0xB900EF131301B307dB5eFcbed9DBb50A3e209B2e";
   const cvxalUSDPool = "0x02E2151D4F351881017ABdF2DD2b51150841d5B3";
+  const cvxstethPool = "0x0A760466E1B4621579a82a39CB56Dda2F4E70f03";
+
   let tokeManager = "0xA86e412109f77c45a3BC1c5870b880492Fb86A14";
+  // node test.js projects/tokemak/index.js
+  await unwrapCvxSteth(balances, tokeManager, cvxstethPool, block, "ethereum");
 
   //UST CVX Wormhole Pool
   await genericUnwrapCvx(balances, tokeManager, cvxUSTWPool, block, "ethereum");
@@ -108,6 +125,57 @@ async function tvl(timestamp, block) {
   return balances
 }
 
+async function unwrapCvxSteth(balances, holder, cvx_BaseRewardPool, block, chain) {
+  const [{ output: cvx_LP_bal }, { output: pool_id }] = await Promise.all([
+    sdk.api.abi.call({
+      abi: cvx_abi['cvxBRP_balanceOf'],
+      target: cvx_BaseRewardPool,
+      params: [holder],
+      block
+    }),
+    sdk.api.abi.call({
+      abi: cvx_abi['cvxBRP_pid'],
+      target: cvx_BaseRewardPool,
+       block
+    })
+  ])
+
+  const { output: crvPoolInfo } = await sdk.api.abi.call({
+    abi: cvx_abi['cvxBooster_poolInfo'],
+    target: cvxBoosterAddress,
+    params: [pool_id],
+    block: block,
+  })
+  const { output: resolvedCrvTotalSupply } = await sdk.api.erc20.totalSupply({
+    target: crvPoolInfo.lptoken,
+    block
+  })
+
+  const crvLP_steth_balance = await sdk.api.abi.call({
+    abi: 'erc20:balanceOf',
+    target: steth,
+    params: crvSteth,
+    block
+  })
+  sdk.util.sumSingleBalance(
+    balances, 
+    steth, 
+    BigNumber(crvLP_steth_balance.output)
+      .times(cvx_LP_bal).div(resolvedCrvTotalSupply).toFixed(0)
+    )
+
+  const crvLP_eth_balance = await sdk.api.eth.getBalance({ 
+    target: crvSteth, 
+    block 
+  })
+  sdk.util.sumSingleBalance(
+    balances, 
+    weth, 
+    BigNumber(crvLP_eth_balance.output)
+      .times(cvx_LP_bal).div(resolvedCrvTotalSupply).toFixed(0)
+    )
+}
+
 async function lpBalances(block, balances, holdings) {
   const manager = "0xA86e412109f77c45a3BC1c5870b880492Fb86A14"
   let masterChef
@@ -124,13 +192,13 @@ async function lpBalances(block, balances, holdings) {
       block,
       target: pool.pool_address,
       abi: 'erc20:balanceOf',
-      params: [ manager ]
+      params: [manager]
     })).output;
 
     if (wallet > 0) {
       holdings[0].type == 'Curve' ?
-      await unwrapCrv(balances, pool.pool_address, wallet, block) :
-      lpPositions.push({ balance: wallet, token: pool.pool_address })
+        await unwrapCrv(balances, pool.pool_address, wallet, block) :
+        lpPositions.push({ balance: wallet, token: pool.pool_address })
     }
 
     if (!pool.hasOwnProperty('staking')) {
@@ -146,8 +214,8 @@ async function lpBalances(block, balances, holdings) {
 
     if (staked > 0) {
       holdings[0].type == 'Curve' ?
-      await unwrapCrv(balances, pool.pool_address, staked, block) :
-      lpPositions.push({ balance: staked, token: pool.pool_address })
+        await unwrapCrv(balances, pool.pool_address, staked, block) :
+        lpPositions.push({ balance: staked, token: pool.pool_address })
     }
   }
   await unwrapUniswapLPs(balances, lpPositions, block)

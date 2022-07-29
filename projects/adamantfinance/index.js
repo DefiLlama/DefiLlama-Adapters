@@ -2,12 +2,12 @@ const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const utils = require("../helper/utils");
 const { stakings } = require("../helper/staking");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
+const { unwrapUniswapLPs, sumTokens, } = require("../helper/unwrapLPs");
 const {
   transformPolygonAddress,
-  transformArbitrumAddress,
+  getChainTransform,
+  getFixBalances,
 } = require("../helper/portedTokens");
-const { getBlock } = require("../helper/getBlock");
 const BigNumber = require("bignumber.js");
 
 const vaultsUrl = {
@@ -21,17 +21,12 @@ const vaultsUrl = {
 
 /*** Polygon Addresses ***/
 const stakingContracts_polygon = [
-  "0x2ac4569854e62f78f9c3dDF98f9f41961089935c",
-  "0xC5bCD23f21B6288417eB6C760F8AC0fBb4bb8a56",
-  "0xfFD82F81513b207fB9D7D7835e178B6193f2cA96",
+  "0x920f22E1e5da04504b765F8110ab96A20E6408Bd",
 ];
 
-const vaultAddresses_polygon = ["0x6959D03be3858c41aAa6A86F7411d2f8746dEC5c"];
+const vaultAddresses_polygon = ["0xF7661EE874Ec599c2B450e0Df5c40CE823FEf9d3"]; //ADDY/WETH staking contract
 
-const lpAddresses_polygon = [
-  "0x5fcb390B4422f4FF7940c23618A62BF5f69658A8",
-  "0xa172bbbfe57fa8e7326bc5598be700c5a16d72c7",
-];
+const lpAddresses_polygon = ["0xa5bf14bb945297447fe96f6cd1b31b40d31175cb"]; //ADDY/WETH
 
 const ADDY = "0xc3fdbadc7c795ef1d6ba111e06ff8f16a20ea539";
 
@@ -63,7 +58,13 @@ const lpAddresses_cronos = [
   "0x2a008ef8ec3ef6b03eff10811054e989aad1cf71", //CADDY-WCRO Cronos
 ];
 
-async function calcPool2(
+async function calcPool2(uniVaults, lpAddress, chain, block) {
+  const toa = []
+  uniVaults.forEach(owner => lpAddress.forEach(lp => toa.push([lp, owner])))
+  return sumTokens({}, toa, block, chain, undefined, { resolveLP: true })
+}
+
+async function calcPool2_staking_rewards(
   balances,
   uniVaults,
   lpAddress,
@@ -79,7 +80,7 @@ async function calcPool2(
       calls: uniVaults.map((vault) => ({
         target: vault,
       })),
-      abi: abi.balance,
+      abi: abi.totalSupply, //IStakingRewards.totalSupply()
     })
   ).output.map((val) => val.output);
 
@@ -105,7 +106,7 @@ async function pool2Polygon(timestamp, block, chainBlocks) {
   const balances = {};
 
   const transformAddress = await transformPolygonAddress();
-  await calcPool2(
+  await calcPool2_staking_rewards(
     balances,
     vaultAddresses_polygon,
     [lpAddresses_polygon[0]],
@@ -116,135 +117,65 @@ async function pool2Polygon(timestamp, block, chainBlocks) {
 }
 
 async function pool2Cronos(timestamp, block, chainBlocks) {
-  const balances = {};
-  await calcPool2(
-    balances,
-    vaultAddresses_cronos,
-    lpAddresses_cronos,
-    "cronos",
-    (addr) => `cronos:${addr}`
-  );
-  return balances;
+  return calcPool2(vaultAddresses_cronos, lpAddresses_cronos, "cronos", chainBlocks.cronos);
 }
 
 async function polygonTvl(timestamp, block, chainBlocks) {
-  const transformAddress = await transformPolygonAddress();
-  return await tvl(
-    timestamp,
-    "polygon",
-    chainBlocks,
-    lpAddresses_polygon,
-    transformAddress
-  );
+  return await tvl(timestamp, "polygon", chainBlocks, lpAddresses_polygon);
 }
+
 async function arbitrumTvl(timestamp, block, chainBlocks) {
-  const transformAddress = await transformArbitrumAddress();
-  return await tvl(
-    timestamp,
-    "arbitrum",
-    chainBlocks,
-    lpAddresses_arbitrum,
-    transformAddress
-  );
+  return await tvl(timestamp, "arbitrum", chainBlocks, lpAddresses_arbitrum);
 }
+
 async function cronosTvl(timestamp, block, chainBlocks) {
-  return await tvl(
-    timestamp,
-    "cronos",
-    chainBlocks,
-    lpAddresses_cronos,
-    (addr) => `cronos:${addr}`
-  );
+  return await tvl(timestamp, "cronos", chainBlocks, lpAddresses_cronos);
 }
-async function valueInGauge(
-  chain,
-  block,
-  GAUGE,
-  HOLDER,
-  transformAddress = (a) => a
-) {
+
+async function valueInGauge(chain, block, GAUGE, HOLDER, transformAddress = (a) => a) {
   // lp token
   let lp_token = (
     await sdk.api.abi.call({
-      chain: chain,
-      block: block,
-      target: GAUGE,
-      abi: abi.lp_token,
+      chain: chain, block: block, target: GAUGE, abi: abi.lp_token,
     })
   ).output;
 
   // balance of lp token
   const gauge_lp_balance = new BigNumber(
-    (
-      await sdk.api.abi.call({
-        chain: chain,
-        block: block,
-        target: lp_token,
-        abi: abi.balanceOf,
-        params: GAUGE,
-      })
+    (await sdk.api.abi.call({ chain: chain, block: block, target: lp_token, abi: abi.balanceOf, params: GAUGE, })
     ).output
   );
 
   // total supply of lp token
   const lp_total_supply = new BigNumber(
-    (
-      await sdk.api.abi.call({
-        chain: chain,
-        block: block,
-        target: lp_token,
-        abi: abi.totalSupply,
-      })
+    (await sdk.api.abi.call({ chain: chain, block: block, target: lp_token, abi: abi.totalSupply, })
     ).output
   );
 
   // balance of gauge
   const holder_gauge_balance = new BigNumber(
-    (
-      await sdk.api.abi.call({
-        chain: chain,
-        block: block,
-        target: GAUGE,
-        abi: abi.balanceOf,
-        params: HOLDER,
-      })
+    (await sdk.api.abi.call({ chain: chain, block: block, target: GAUGE, abi: abi.balanceOf, params: HOLDER, })
     ).output
   );
 
   // total supply of gauge
   const gauge_total_supply = new BigNumber(
-    (
-      await sdk.api.abi.call({
-        chain: chain,
-        block: block,
-        target: GAUGE,
-        abi: abi.totalSupply,
-      })
+    (await sdk.api.abi.call({ chain: chain, block: block, target: GAUGE, abi: abi.totalSupply, })
     ).output
   );
 
   // calc the portion of curve lp locked in the strategy
   let poolCoins = await crvPoolTvl(chain, block, lp_token, transformAddress);
   for (const coinQty in poolCoins) {
-    poolCoins[coinQty] = new BigNumber(poolCoins[coinQty])
-      .times(gauge_lp_balance)
-      .dividedBy(lp_total_supply)
-      .times(holder_gauge_balance)
-      .dividedBy(gauge_total_supply)
-      .toFixed(0);
+    poolCoins[coinQty] = new BigNumber(poolCoins[coinQty]).times(gauge_lp_balance).dividedBy(lp_total_supply).times(holder_gauge_balance).dividedBy(gauge_total_supply).toFixed(0);
   }
 
   return poolCoins;
 }
-async function crvPoolTvl(
-  chain,
-  block,
-  COIN_TARGET,
-  transformAddress = (a) => a,
-  SUPPLY_TARGET = COIN_TARGET
-) {
-  balances = {};
-  maincoins = [];
+
+async function crvPoolTvl(chain, block, COIN_TARGET, transformAddress = (a) => a, SUPPLY_TARGET = COIN_TARGET) {
+  const balances = {};
+  const maincoins = [];
 
   // find coins in curve pool
   for (var c = 0; c < 10; c++) {
@@ -276,40 +207,14 @@ async function crvPoolTvl(
   ).output.map((val) => new BigNumber(val.output));
 
   // add up total pool tvl
-  for (j = 0; j < maincoins.length; j++) {
-    sdk.util.sumSingleBalance(
-      balances,
-      transformAddress(maincoins[j]),
-      underlying_balances[j].toFixed(0)
-    );
+  for (let j = 0; j < maincoins.length; j++) {
+    sdk.util.sumSingleBalance(balances, transformAddress(maincoins[j]), underlying_balances[j].toFixed(0));
   }
 
   return balances;
 }
-function join(obj1, obj2) {
-  // joins 2 balances objects
-  var a = {};
 
-  for (var i in obj1) {
-    a[i] = obj1[i];
-  }
-
-  for (var j in obj2) {
-    if (j in a) {
-      a[j] = BigNumber(a[j]) + BigNumber(obj2[j]);
-    } else {
-      a[j] = obj2[j];
-    }
-  }
-  return a;
-}
-async function curveTvl(
-  balances,
-  chain,
-  block,
-  curveVaults,
-  transformAddress = (a) => a
-) {
+async function curveTvl(balances, chain, block, curveVaults, transformAddress = (a) => a) {
   let crv3Address;
 
   if (chain == "arbitrum") {
@@ -399,7 +304,7 @@ async function curveTvl(
         .dividedBy(strat_supplies[i])
     );
 
-    for (j = 0; j < maincoins.length; j++) {
+    for (let j = 0; j < maincoins.length; j++) {
       sdk.util.sumSingleBalance(
         balances,
         await transformAddress(maincoins[j]),
@@ -418,11 +323,11 @@ async function curveTvl(
       }
 
       // lastly, break down any 3crv / 2crv
-      if (`${chain}:${crv3Address}` in balances) {
+      // if (`${chain}:${crv3Address}` in balances) {
         //strat_balances.push(new BigNumber(balances[`${chain}:${crv3Address}`]));
-      } else {
+      // } else {
         //return balances;
-      }
+      // }
     }
   }
 
@@ -445,14 +350,8 @@ async function curveTvl(
 
   return balances;
 }
-async function uniTvl(
-  balances,
-  chain,
-  block,
-  uniVaults,
-  lpAddressesIgnored,
-  transformAddress = (a) => a
-) {
+
+async function uniTvl(balances, chain, block, uniVaults, lpAddressesIgnored, transformAddress = (a) => a) {
   const vault_balances = (
     await sdk.api.abi.multiCall({
       chain: chain,
@@ -483,14 +382,11 @@ async function uniTvl(
   await unwrapUniswapLPs(balances, lpPositions, block, chain, transformAddress);
   return balances;
 }
-const tvl = async (
-  timestamp,
-  chain,
-  chainBlocks,
-  lpAddressesIgnored,
-  transformAddress = (a) => a
-) => {
-  const block = await getBlock(timestamp, chain, chainBlocks);
+
+const tvl = async (timestamp, chain, chainBlocks, lpAddressesIgnored) => {
+  const block = chainBlocks[chain];
+  const transformAddress = await getChainTransform(chain)
+  const fixBalances = await getFixBalances(chain)
   let balances = {};
 
   let resp = await utils.fetchURL(vaultsUrl[chain]);
@@ -502,13 +398,7 @@ const tvl = async (
       lpAddress: vault.lpAddress,
       strategyAddress: vault.strategyAddress,
     }));
-  balances = await curveTvl(
-    balances,
-    chain,
-    block,
-    curveVaults,
-    transformAddress
-  );
+  balances = await curveTvl(balances, chain, block, curveVaults, transformAddress);
 
   let uniVaults = resp.data
     .filter(
@@ -522,17 +412,12 @@ const tvl = async (
       vaultAddress: vault.vaultAddress,
       lpAddress: vault.lpAddress,
     }));
-  balances = await uniTvl(
-    balances,
-    chain,
-    block,
-    uniVaults,
-    lpAddressesIgnored,
-    transformAddress
-  );
+  balances = await uniTvl(balances, chain, block, uniVaults, lpAddressesIgnored, transformAddress);
 
+  fixBalances(balances)
   return balances;
 };
+
 module.exports = {
   polygon: {
     staking: stakings(stakingContracts_polygon, ADDY, "polygon"),

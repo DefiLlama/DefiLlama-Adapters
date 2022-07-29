@@ -2,14 +2,14 @@ const { GraphQLClient, gql } = require("graphql-request");
 const retry = require('../helper/retry')
 const sdk = require("@defillama/sdk")
 const { usdtAddress } = require('../helper/balances')
-const { addDexPosition, getTokenBalances, resolveLPPosition, } = require('../helper/tezos')
+const { addDexPosition, getTokenBalances, resolveLPPosition, getStorage, convertBalances, } = require('../helper/tezos')
 const { getFixBalances } = require('../helper/portedTokens')
 const { dexes, farms } = require('./data')
 const { PromisePool } = require('@supercharge/promise-pool');
 const { default: BigNumber } = require("bignumber.js");
 let graphQLClient
 
-const indexer = "https://youves-mainnet-indexer.dev.gke.papers.tech/v1/graphql"
+const indexer = "https://youves-mainnet-indexer.prod.gke.papers.tech/v1/graphql"
 const engines = {
   uUSDTezos: 'KT1FFE2LC5JpVakVjHm5mM36QVp2p3ZzH4hH',
   uUSDtzBTCLP: 'KT1FzcHaNhmpdYPNTgfb8frYXx7B5pvVyowu',
@@ -39,8 +39,11 @@ async function fetchBalance(balances, token, engineAddress, decimals = 1, shareP
   let balance = oracleData["vault_aggregate"]["aggregate"]["sum"]["balance"] / 10 ** decimals
 
   if (token === 'tzbtc-lp') {
-    balance = balance * sharePrice * 10 ** 6
-    token = usdtAddress
+    const balancetZ = balance * sharePrice.xtzPool / sharePrice.lqtTotal
+    const balanceBTC = balance * sharePrice.tokenPool / sharePrice.lqtTotal
+    sdk.util.sumSingleBalance(balances, 'tezos', balancetZ / 1e6)
+    sdk.util.sumSingleBalance(balances, sharePrice.tokenAddress, balanceBTC)
+    return;
   }
 
   sdk.util.sumSingleBalance(balances, token, balance)
@@ -48,17 +51,7 @@ async function fetchBalance(balances, token, engineAddress, decimals = 1, shareP
 
 
 async function getTzBTCLPSharePrice() {
-  const client = new GraphQLClient('https://api.dipdup.net/dex/graphql');
-  const query = gql`
-{
-  exchange(where: { address: { _eq: "KT1TxqZ8QtKvLu3V3JH7Gx58n7Co8pgtpQU5" } }) {
-    sharePxUsd
-  },
-}
-`
-
-  const response = await client.request(query)
-  return +response.exchange[0].sharePxUsd
+  return getStorage('KT1TxqZ8QtKvLu3V3JH7Gx58n7Co8pgtpQU5')
 }
 
 async function tvl() {
@@ -72,7 +65,7 @@ async function tvl() {
     fetchBalance(balances, 'tzbtc-lp', engines.uUSDtzBTCLP, 0, sharePrice),
     fetchBalance(balances, 'tzbtc-lp', engines.uBTCtzBTCLP, 0, sharePrice),
   ])
-  return balances
+  return convertBalances(balances)
 }
 
 async function pool2() {

@@ -30,6 +30,7 @@ const snxTokenAddr = "0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f";
 const inchAddr = "0x111111111117dc0aa78b770fa6a738034120c302";
 const usdcAddr = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
 const aaveAddr = "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9";
+const xtkAddress = "0x7F3EDcdD180Dbe4819Bd98FeE8929b5cEdB3AdEB";
 
 const xu3lpaAddrArbitrum = "0x9F8cFc08f781e1576A05d4d3669b3E6FF22913FF";
 const xu3lpbAddrArbitrum = "0x216D135926f5EC9E5924564A342580B0b5A3bdc6";
@@ -45,6 +46,21 @@ const WETH = "weth";
 const QUOTER_ADDRESS = '0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6'
 const usdcAddress = '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8'
 const wethAddress = '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1'
+const usdtAddress = '0xdac17f958d2ee523a2206206994597c13d831ec7';
+const COINGECKO_API_URL = 'https://api.coingecko.com/api/v3/coins';
+const urls = {
+    "mainnet": "https://api.thegraph.com/subgraphs/name/xtokenmarket/terminal-mainnet",
+    "arbitrum": "https://api.thegraph.com/subgraphs/name/xtokenmarket/terminal-arbitrum",
+    "optimism": "https://api.thegraph.com/subgraphs/name/xtokenmarket/terminal-optimism",
+    "polygon": "https://api.thegraph.com/subgraphs/name/xtokenmarket/terminal-polygon",
+};
+const networks = {
+    "mainnet": "ethereum",
+    "homestead": "ethereum",
+    "optimism": "optimistic-ethereum",
+    "arbitrum": "arbitrum-one",
+    "polygon": "polygon-pos",
+};
 
 module.exports = {
   DEC_18,
@@ -92,4 +108,9 @@ module.exports = {
   QUOTER_ADDRESS,
   usdcAddress,
   wethAddress,
+  usdtAddress,
+  COINGECKO_API_URL,
+  urls,
+  networks,
+  xtkAddress
 };
