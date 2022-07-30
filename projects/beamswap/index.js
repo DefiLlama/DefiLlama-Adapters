@@ -61,3 +61,32 @@ module.exports = {
     staking: staking(SHARE_CONTRACT, GLINT_TOKEN, 'moonbeam')
   },
 };
+
+const abi = {
+  getTokens: {
+    "inputs": [],
+    "name": "getTokens",
+    "outputs": [
+      {
+        "internalType": "contract IERC20[]",
+        "name": "",
+        "type": "address[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  getLpToken: {
+    "inputs": [],
+    "name": "getLpToken",
+    "outputs": [
+      {
+        "internalType": "contract LPToken",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+}
