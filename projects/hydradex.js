@@ -1,18 +1,14 @@
-const { GraphQLClient, gql } = require('graphql-request');
+const cloudscraper = require('cloudscraper')
 
 async function fetch() {
-    var graphQLClient = new GraphQLClient(`https://info.hydradex.org/graphql`);
-    const results = await graphQLClient.request(gql
-        `query Query {
-            hydraswapFactories(
-                where: {
-                    id: "5a2a927bea6c5f4a48d4e0116049c1e36d52a528"
-                }) {
-                    totalLiquidityUSD
-                }
-            }`
-        );
-    return { tether: results.hydraswapFactories[0].totalLiquidityUSD }
+  const uri = 'https://info.hydradex.org/graphql'
+  const body = { "operationName": "Query", "variables": {}, "query": "query Query {\n  hydraswapFactories(where: {id: \"5a2a927bea6c5f4a48d4e0116049c1e36d52a528\"}) {\n    totalLiquidityUSD\n  }\n}\n" }
+  const reserves = (
+    await cloudscraper.post(uri, {
+      json: body
+    })
+  )
+  return { tether: +reserves.data.hydraswapFactories[0].totalLiquidityUSD }
 };
 
 module.exports = {
