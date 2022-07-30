@@ -116,5 +116,3 @@ module.exports = mergeExports([{
 { bsc: compoundTVL1, },
 { bsc: compoundTVL2, },
 ]);
-
-console.log(module.exports)

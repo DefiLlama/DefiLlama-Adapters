@@ -1,5 +1,4 @@
 const axios = require('axios');
-const BigNumber = require("bignumber.js");
 const dataUrl = 'https://spicya.sdaotools.xyz/api/rest/SpicyDailyMetrics';
 
 async function tvl() {
