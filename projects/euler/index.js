@@ -52,6 +52,9 @@ async function borrowedEthereum() {
 }
 
 module.exports = {
+  hallmarks: [
+    [1654387200,"Whale Deposit"]
+  ],
   methodology: `TVL is supply balance minus borrows the euler contract. Borrows are pulled from the subgraph.`,
   ethereum: {
     tvl: tvlEthereum,
