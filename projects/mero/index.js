@@ -11,13 +11,13 @@ async function tvl(timestamp, block) {
   const balances = {}
   const { output: vaultCount } = await sdk.api.abi.call({
     target: addressProvider,
-    abi: abi.vaultsCount,
+    abi: abi.poolsCount,
     chain, block,
   })
   const vaultCalls = createIncrementArray(vaultCount).map(i => ({ params: i }))
   const { output: vaultsOut } = await sdk.api.abi.multiCall({
     target: addressProvider,
-    abi: abi.getVaultAtIndex,
+    abi: abi.getPoolAtIndex,
     calls: vaultCalls,
     chain, block,
   })
