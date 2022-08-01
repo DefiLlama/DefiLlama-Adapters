@@ -152,19 +152,19 @@ const fetchKdaTotal = async (pairList) => {
   return totalKda;
 };
 
-async function fetch() {
+async function tvl() {
   const pairList = await getPairList();
-  const kadena = await fetchKdaTotal(pairList);
+  const kdaTotal = await fetchKdaTotal(pairList);
   return {
-    kadena,
+    kadena: kdaTotal,
   };
 }
 
-async function fetchStaking() {
+async function staking() {
   const pairList = await getPairList();
-  const staking = await getStakedKDXValueInKDA(pairList);
+  const stakedKdxValue = await getStakedKDXValueInKDA(pairList);
   return {
-    staking,
+    kadena: stakedKdxValue,
   };
 }
 
@@ -172,7 +172,7 @@ module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
   kadena: {
-    tvl: fetch,
-    staking: fetchStaking,
+    tvl: tvl,
+    staking: staking
   },
 };
