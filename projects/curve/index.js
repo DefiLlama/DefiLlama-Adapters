@@ -362,8 +362,6 @@ function tvl(chain) {
       );
     }
 
-    console.log("done", chain)
-
     return balances;
   };
 }
