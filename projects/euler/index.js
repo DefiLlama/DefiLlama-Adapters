@@ -1,5 +1,6 @@
 const { sumTokens } = require("../helper/unwrapLPs");
 const { GraphQLClient, gql } = require("graphql-request");
+const sdk = require("@defillama/sdk");
 
 const contracts = {
   euler: "0x27182842E098f60e3D576794A5bFFb0777E025d3",
@@ -11,21 +12,26 @@ const contracts = {
 const graphql_url =
   "https://api.thegraph.com/subgraphs/name/euler-xyz/euler-mainnet";
 
-async function ethereum(timestamp, ethBlock) {
-  var graphQLClient = new GraphQLClient(graphql_url);
-
-  const markets_query = gql`
-    query {
-      eulerMarketStores {
-        markets {
-          id
-        }
+const markets_query = gql`
+  query {
+    eulerMarketStores {
+      markets {
+        id
+        totalBorrows
       }
     }
-  `;
+  }
+`;
 
-  const results = await graphQLClient.request(markets_query);
-  const markets = results.eulerMarketStores[0].markets;
+const graphQLClient = new GraphQLClient(graphql_url);
+
+async function getMarkets() {
+  const markets = await graphQLClient.request(markets_query);
+  return markets.eulerMarketStores[0].markets;
+}
+
+async function tvlEthereum(timestamp, ethBlock) {
+  const markets = await getMarkets();
   const markets_underlyings = markets.map((market) => market.id);
 
   // use markets_underlyings or markets_underlyings_nographql
@@ -36,10 +42,20 @@ async function ethereum(timestamp, ethBlock) {
   return sumTokens({}, tokensAndOwners, ethBlock);
 }
 
+async function borrowedEthereum() {
+  const borrowed = {};
+  const markets = await getMarkets();
+  markets.forEach((market) => {
+    borrowed[market.id] = market.totalBorrows;
+  });
+  return borrowed;
+}
+
 module.exports = {
-  methodology: `Collateral (supply minus borrows) in the balance of the euler contract`,
+  methodology: `TVL is supply balance minus borrows the euler contract. Borrows are pulled from the subgraph.`,
   ethereum: {
-    tvl: ethereum,
+    tvl: tvlEthereum,
+    borrowed: borrowedEthereum,
     // staking: staking(EULstaking, EUL),
   },
 };
