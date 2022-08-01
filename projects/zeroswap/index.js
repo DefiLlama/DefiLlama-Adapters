@@ -5,6 +5,8 @@ const BSC_TOKEN_ADDRESS = '0x44754455564474A89358B2C2265883DF993b12F0';
 const BSC_STAKING_ADDRESS = '0x593497878c33dd1f32098E3F4aE217773F803cf3';
 const POLY_TOKEN_ADDRESS = '0xfd4959c06fbcc02250952daebf8e0fb38cf9fd8c';
 const POLY_STAKING_ADDRESS = '0x89eA093C07f4FCc03AEBe8A1D5507c15dE88531f';
+const AVAX_TOKEN_ADDRESS = '0x44754455564474A89358B2C2265883DF993b12F0'
+const AVAX_STAKING_ADDRESS = '0xa4751EAa89C5D6ff61384766268cabf25aCD1011'
 
 module.exports = {
   methodology: 'Counts tvl of all the tokens staked through Staking Contracts',
@@ -18,6 +20,9 @@ module.exports = {
   },
   polygon: {
     staking: staking(POLY_STAKING_ADDRESS, POLY_TOKEN_ADDRESS, 'polygon')
+  },
+  avax: {
+    staking: staking(AVAX_STAKING_ADDRESS, AVAX_TOKEN_ADDRESS, 'avax')
   }
 };
 
