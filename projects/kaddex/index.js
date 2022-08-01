@@ -154,10 +154,17 @@ const fetchKdaTotal = async (pairList) => {
 
 async function fetch() {
   const pairList = await getPairList();
-  const kdaTotal = await fetchKdaTotal(pairList);
-  const stakedKdxValue = await getStakedKDXValueInKDA(pairList);
+  const kadena = await fetchKdaTotal(pairList);
   return {
-    kadena: kdaTotal + stakedKdxValue,
+    kadena,
+  };
+}
+
+async function fetchStaking() {
+  const pairList = await getPairList();
+  const staking = await getStakedKDXValueInKDA(pairList);
+  return {
+    staking,
   };
 }
 
@@ -166,5 +173,6 @@ module.exports = {
   misrepresentedTokens: true,
   kadena: {
     tvl: fetch,
+    staking: fetchStaking,
   },
 };
