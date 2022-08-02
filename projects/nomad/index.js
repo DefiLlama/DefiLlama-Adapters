@@ -88,6 +88,9 @@ function tvl(chain) {
 }
 
 module.exports = {
+  hallmarks: [
+    [1659312000,"trusted root exploit"]
+  ],
   timetravel: true,
   misrepresentedTokens: false,
   methodology: 'counts the total amount of assets locked in the Nomad token bridge.',
