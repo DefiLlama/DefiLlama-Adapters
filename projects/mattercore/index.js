@@ -1,6 +1,5 @@
 const axios = require('axios');
 const BigNumber = require("bignumber.js");
-const { get } = require('../helper/http');
 const { RPC_ENDPOINT } = require('../helper/tezos');
 const { PromisePool } = require('@supercharge/promise-pool');
 const { getTokenBalances } = require('../helper/tezos');
@@ -8,15 +7,17 @@ const { getTokenBalances } = require('../helper/tezos');
 const DATA_URL = 'https://spicya.sdaotools.xyz/api/rest';
 const MATTER_CONTRACT = 'KT1K4jn23GonEmZot3pMGth7unnzZ6EaMVjY';
 
+let matterBalance;
+
 async function grabTokenBalances (contract) {
   const sslp = await getTokenBalances(contract);
+  matterBalance = new BigNumber(Object.entries(sslp).find(balances => balances[0] == MATTER_CONTRACT)[1]);
   
   return Object.entries(sslp).filter(token => token[1] = new BigNumber(token[1]));
 }
 
 async function grabSupply (contract) {
-  const supply = await get(`${RPC_ENDPOINT}/v1/contracts/${contract}/bigmaps/token_total_supply/keys?limit=1`);
-  
+  const supply = (await axios(`${RPC_ENDPOINT}/v1/contracts/${contract}/bigmaps/token_total_supply/keys?limit=1`)).data;
   return new BigNumber(supply[0].value);
 }
 
@@ -59,6 +60,11 @@ async function fetchFarmsTvl(farms) {
   return results.reduce((previous, current) => previous.plus(current))
 }
 
+async function fetchMatterStakedTvl () {
+  const tokenData = await (await axios(`${DATA_URL}/TokenList?_ilike=KT1K4jn23GonEmZot3pMGth7unnzZ6EaMVjY:0`)).data.tokens;
+  return new BigNumber(tokenData[0].derivedxtz).multipliedBy(matterBalance.shiftedBy(-12));
+}
+
 async function lpToTez(reservextz, matterBalance, totalBalance) {
   const reserveXtz = new BigNumber(reservextz);
   const tezPerLp = reserveXtz.dividedBy(totalBalance.shiftedBy(-18));
@@ -69,14 +75,18 @@ async function lpToTez(reservextz, matterBalance, totalBalance) {
 async function tvl() {
   const spicyPools = await fetchSpicyPoolsAndMatch();
   const farmsTvl = await fetchFarmsTvl(spicyPools);
+  const matterTvl = await fetchMatterStakedTvl();
 
   return {
-      tezos: farmsTvl.toFixed(0)
+      tezos: farmsTvl.plus(matterTvl).toFixed(0)
   };
 }
 
 module.exports = {
-    methodology: `TVL counts the liquidity of Matter Core farms..`,
+    methodology: `
+    TVL counts the liquidity of Matter Core farms.. 
+    Matter balances pulled from tzkt API & pool data is retrieved using SpicySwap API ${DATA_URL}.
+    `,
     misrepresentedTokens: true,
     tezos: {
       tvl
