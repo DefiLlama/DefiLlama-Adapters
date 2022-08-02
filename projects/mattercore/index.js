@@ -1,42 +1,50 @@
+const axios = require('axios');
 const BigNumber = require("bignumber.js");
 const { get } = require('../helper/http');
 const { RPC_ENDPOINT } = require('../helper/tezos');
 const { PromisePool } = require('@supercharge/promise-pool');
 const { getTokenBalances } = require('../helper/tezos');
 
-const axios = require('axios');
-const dataUrl = 'https://spicya.sdaotools.xyz/api/rest/PoolListAll';
+const DATA_URL = 'https://spicya.sdaotools.xyz/api/rest';
 const MATTER_CONTRACT = 'KT1K4jn23GonEmZot3pMGth7unnzZ6EaMVjY';
 
-async function grabTokenBalances() {
-  const sslp = await getTokenBalances(MATTER_CONTRACT);
+async function grabTokenBalances (contract) {
+  const sslp = await getTokenBalances(contract);
+  
   return Object.entries(sslp).filter(token => token[1] = new BigNumber(token[1]));
 }
 
-async function getSpicyPools(tokenBalances) {
-  const pools = await axios(dataUrl);
-  const poolData = pools.data.pair_info;
-  const matterPools = [];
-
-  const grabSupply = async (contract) => {
-    const res = await get(`${RPC_ENDPOINT}/v1/contracts/${contract}/bigmaps/token_total_supply/keys?limit=1`);
-    return new BigNumber(res[0].value);
-  }
+async function grabSupply (contract) {
+  const supply = await get(`${RPC_ENDPOINT}/v1/contracts/${contract}/bigmaps/token_total_supply/keys?limit=1`);
   
-  const res = poolData.map(token => ({ contract: token.contract, reservextz: token.reservextz }));
+  return new BigNumber(supply[0].value);
+}
 
-  res.forEach(token => {
-    if(tokenBalances.find(balances => balances[0] == token.contract)) {
-      token.matterBalance = tokenBalances[tokenBalances.findIndex(i => i[0] === token.contract)][1];
-      matterPools.push(token);
-    }
-  });
+async function matchToMatter (pool, matterBalances) {
+  if(matterBalances.find(balances => balances[0] == pool.contract)) {
+    const index = matterBalances.findIndex(i => i[0] === pool.contract);
 
-  for(let pool of matterPools) {
-    pool.totalBalance = await grabSupply(pool.contract);;
+    pool.matterBalance = matterBalances[index][1];
+    pool.totalBalance = await grabSupply(pool.contract);
+    
+    return pool;
+  }
+}
+
+async function fetchSpicyPoolsAndMatch () {
+  const spicyPools = (await axios(`${DATA_URL}/PoolListAll/`)).data.pair_info;
+  const formatted = spicyPools.map(token => ({ contract: token.contract, reservextz: token.reservextz }));
+  const matterBalances = await grabTokenBalances(MATTER_CONTRACT);
+
+  const { results, errors } = await PromisePool.withConcurrency(10)
+    .for(formatted)
+    .process(async (pool) => matchToMatter(pool, matterBalances))
+
+  if (errors && errors.length) {
+    throw errors[0];
   }
 
-  return matterPools;
+  return results.filter(result => result);
 }
 
 async function fetchFarmsTvl(farms) {
@@ -59,8 +67,7 @@ async function lpToTez(reservextz, matterBalance, totalBalance) {
 }
 
 async function tvl() {
-  const tokenBalances = await grabTokenBalances();
-  const spicyPools = await getSpicyPools(tokenBalances);
+  const spicyPools = await fetchSpicyPoolsAndMatch();
   const farmsTvl = await fetchFarmsTvl(spicyPools);
 
   return {
