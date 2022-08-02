@@ -14,7 +14,12 @@ const marketStrings = {
     bank_to_underlying_exchange: "bt",
     b_asset_circulation: "bac",
     oracle_price_field_name: "opfn",
+    oracle_price_scale_factor: "ops",
     oracle_app_id: "oai",
+}
+
+const marketV2Strings = {
+    b_asset_to_underlying_exchange_rate: "baer"
 }
 
 const stakingV2Strings = {
@@ -36,11 +41,12 @@ const variableValueStakingContracts = [
                                         "AF-NANO-USDT-USDC-5BP-STAKING",
                                         "AF-USDC-STBL-NANO-SUPER-STAKING",
                                         "AF-ZONE-STBL-75BP-STAKING",
-                                        "AF-TINY-STBL-75BP-STAKING"
+                                        "AF-TINY-STBL-75BP-STAKING",
+                                        "AF-GOMINT-STBL-25BP-STAKING"
                                       ]
 
 const stakingContractsV1 = fixedValueStakingContracts.concat(variableValueStakingContracts).concat(singleSideStakingContracts)
-const bankStakingContractsV2 = ["AF-BANK-ALGO-STANDARD", "AF-BANK-USDC-STANDARD", "AF-BANK-goBTC-STANDARD", "AF-BANK-goETH-STANDARD", "AF-BANK-USDt-STANDARD"]
+const bankStakingContractsV2 = ["AF-BANK-USDC-STANDARD", "AF-BANK-USDt-STANDARD"]
 
 const appDictionary = {
     "ALGO": {
@@ -160,7 +166,7 @@ const appDictionary = {
             "decimals": 6
         },
         "AF-GOMINT-STBL-25BP-STAKING" : {
-            "marketAppId" : 764406975,
+            "appId" : 764406975,
             "poolAppId": 764420932,
             "decimals": 6
         },
@@ -174,37 +180,16 @@ const appDictionary = {
             "assetId": 287867876,
             "decimals": 10
         },
-        "AF-BANK-ALGO-STANDARD" : {
-            "appId" : 818206045,
-            "assetId" : 818179690,
-            "marketAppId": 818179346,
-            "decimals": 6,
-            "oracleFieldName": "latest_twap_price"
-        },
         "AF-BANK-USDC-STANDARD" : {
-            "appId" : 818207598,
+            "appId" : 821882730,
             "assetId" : 818182311,
             "marketAppId": 818182048,
             "decimals": 6,
             "oracleFieldName": "price"
 
         },
-        "AF-BANK-goBTC-STANDARD" : {
-            "appId" : 818207650,
-            "assetId" : 818184214,
-            "marketAppId": 818183964,
-            "decimals": 8,
-            "oracleFieldName": "latest_twap_price",
-        },
-        "AF-BANK-goETH-STANDARD" : {
-            "appId" : 818207743,
-            "assetId" : 818188553,
-            "marketAppId": 818188286,
-            "decimals": 8,
-            "oracleFieldName": "latest_twap_price",
-        },
         "AF-BANK-USDt-STANDARD" : {
-            "appId" : 818207873,
+            "appId" : 821882927,
             "assetId" : 818190568,
             "marketAppId": 818190205,
             "decimals": 6,
@@ -325,7 +310,6 @@ async function stakingV1() {
         staked += getMarketSupply(contractName, appGlobalState, prices, appDictionary["STAKING_CONTRACTS"])
     }
 
-
     return toUSDTBalances(staked)
 }
 
@@ -335,18 +319,14 @@ async function stakingV2() {
         stakingAppGlobalState = await getAppGlobalState(appDictionary["STAKING_CONTRACTS"][contractName]["appId"])
         marketAppGlobalState = await getAppGlobalState(appDictionary["STAKING_CONTRACTS"][contractName]["marketAppId"])
 
-        bAssetStaked = stakingAppGlobalState[stakingV2Strings.total_staked]
-
-        underlyingSupplied = marketAppGlobalState[marketStrings.underlying_borrowed] + marketAppGlobalState[marketStrings.underlying_cash] - marketAppGlobalState[marketStrings.underlying_reserves]
-        bAssetCirculation = marketAppGlobalState[marketStrings.b_asset_circulation]
-        rawUnderlyingStaked = bAssetStaked * underlyingSupplied / bAssetCirculation
-
-        underlyingStaked = rawUnderlyingStaked  / 10 ** appDictionary["STAKING_CONTRACTS"][contractName]["decimals"]
+        bAssetStaked = stakingAppGlobalState[stakingV2Strings.total_staked] / 1000000
+        bAssetToUnderlyingExchange = marketAppGlobalState[marketV2Strings.b_asset_to_underlying_exchange_rate] / 1000000000
+        underlyingStaked = bAssetStaked * bAssetToUnderlyingExchange
 
         oracleState = await getAppGlobalState(marketAppGlobalState[marketStrings.oracle_app_id])
 
         oraclePriceFieldName = appDictionary["STAKING_CONTRACTS"][contractName]["oracleFieldName"]
-        oraclePrice = oracleState[oraclePriceFieldName]
+        oraclePrice = oracleState[oraclePriceFieldName] / 1000000
 
         stakedUsd = underlyingStaked * oraclePrice
 
