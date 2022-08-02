@@ -1,0 +1,28 @@
+Author:
+
+Weston Nelson
+ENS: westonnelson.eth
+Twitter: @westonnelson
+
+Summary:
+
+THe $SDL Token is still missing from the DeFi Llama page here:
+
+https://defillama.com/protocol/saddle-finance
+
+## API id CoinGecko:
+
+The API id for the token contract is: "saddle-finance" and is on CoinGecko at https://www.coingecko.com/en/coins/saddle-finance
+
+The contract address is: 0xf1Dc500FdE233A4055e25e5BbF516372BC4F6871
+On Etherscan at: https://etherscan.io/token/0xf1dc500fde233a4055e25e5bbf516372bc4f6871
+
+
+
+
+
+Cheers Llama frens!
+
+Thanks for all your help. 
+
+Weston
