@@ -28,7 +28,11 @@ const data = {"ondo_lps":["0x9241943c29eb0B1Fc0f8E5B464fbc14915Da9A57","0x5d6213
 async function tvl(timestamp, block, chainBlocks) {
     const balances = {};
     const partner_tokens = data["supported_tokens"]
-    const ondo_multisigs = data["ondo_multisigs"]
+    let ondo_multisigs = data["ondo_multisigs"]
+    
+    if (block > 15258765)
+      ondo_multisigs = []
+
     const ondo_lps = data["ondo_lps"]
 
     await addEthBalances(ondo_multisigs, block, balances)
