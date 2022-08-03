@@ -47,7 +47,8 @@ async function tvl(ttimestamp, _b, chainBlocks){
 module.exports = {
     methodology: 'TVL counts the option market locked synth value, along with USDC in safety module.',
     optimism:{
-        tvl
+        tvl,
+        staking: staking("0xdE48b1B5853cc63B1D05e507414D3E02831722F8", "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb", "optimism")
     },
     ethereum:{
         tvl: staking("0x54d59c4596c7ea66fd62188ba1e16db39e6f5472", "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", "ethereum"),
