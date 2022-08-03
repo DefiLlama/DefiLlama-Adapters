@@ -97,9 +97,7 @@ async function tvl() {
   //calculate TVL
   const coreFarmsTvl = await fetchCoreFarmsTvl(coreToMatter);
   const liveFarmsTvl = await fetchCoreFarmsTvl(liveToMatter);
-
-  console.log(coreFarmsTvl.plus(liveFarmsTvl).toFixed(0));
-
+  
   return {
       tezos: coreFarmsTvl.plus(liveFarmsTvl).toFixed(0)
   };
