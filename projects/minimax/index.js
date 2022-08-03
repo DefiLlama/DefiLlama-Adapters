@@ -21,6 +21,17 @@ async function avalanche() {
     return parseFloat(tvl_data.data.TvlTotal);
 }
 
+async function aurora() {
+    const tvl_data = await retry(async bail => axios.get("https://api.minimax.finance/tvl/1313161554"));
+    return parseFloat(tvl_data.data.TvlTotal);
+}
+
+async function moonbeam() {
+    const tvl_data = await retry(async bail => axios.get("https://api.minimax.finance/tvl/1284"));
+    return parseFloat(tvl_data.data.TvlTotal);
+}
+
+
 async function fetch() {
     const tvl_data = await retry(async bail => axios.get("https://api.minimax.finance/tvl"));
     return parseFloat(tvl_data.data.TvlTotal);
@@ -39,6 +50,12 @@ module.exports = {
     },
     avalanche: {
         fetch: avalanche
+    },
+    aurora: {
+        fetch: aurora
+    },
+    moonbeam: {
+        fetch: moonbeam
     },
     fetch
 }
