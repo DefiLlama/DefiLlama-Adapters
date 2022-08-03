@@ -26,7 +26,7 @@ function resolveUnderlier(underlier) {
 }
 
 // Launch Ceremony
-async function staking(timestamp, block) {
+async function launchCeremonyTVL(timestamp, block) {
   const balances = {}
 
   await sumTokensAndLPsSharedOwners(
@@ -55,6 +55,7 @@ async function staking(timestamp, block) {
 
 // Protocol TVL
 async function tvl(timestamp, block) {
+  if (block && block < 14928955 ) return {};
   const balances = {};
 
   const metadata = (await fetchURL('https://raw.githubusercontent.com/fiatdao/changelog/main/metadata/metadata-mainnet.json')).data
@@ -107,11 +108,12 @@ async function tvl(timestamp, block) {
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   methodology: 'TVL includes fair value of collateral backing outstanding $FIAT and the initial FDT Jubilee event',
-  ethereum: { tvl, staking: staking },
+  ethereum: { tvl: sdk.util.sumChainTvls([tvl, launchCeremonyTVL]) },
   hallmarks:[
-    [13542757, "FDT Jubilee starts"],
-    [13795215, "FDT Jubilee ends"],
-    [14558571, "Protocol Launch"]
+    [1635959960, "FDT Jubilee starts"],
+    [1639380013, "FDT Jubilee ends"],
+    [1649604096, "Protocol Launch"]
   ]
 }
