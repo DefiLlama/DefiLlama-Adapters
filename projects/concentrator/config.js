@@ -499,7 +499,7 @@ module.exports = [
 
     {
         id: 'susdfraxbp',
-        name: 'busdfraxbp',
+        name: 'susdfraxbp',
         coins: [
             coins.SUSD,
             coins.FRAXBP,
@@ -507,6 +507,19 @@ module.exports = [
         addresses: {
             swap: '0xe3c190c57b5959Ae62EfE3B6797058B76bA2f5eF',
             lpToken: '0xe3c190c57b5959Ae62EfE3B6797058B76bA2f5eF',
+        },
+    },
+
+    {
+        id: 'lusdfraxbp',
+        name: 'lusdfraxbp',
+        coins: [
+            coins.lusd,
+            coins.FRAXBP,
+        ],
+        addresses: {
+            swap: '0x497CE58F34605B9944E6b15EcafE6b001206fd25',
+            lpToken: '0x497CE58F34605B9944E6b15EcafE6b001206fd25',
         },
     },
 ];

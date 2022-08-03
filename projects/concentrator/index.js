@@ -4,7 +4,7 @@ const { default: BigNumber } = require("bignumber.js");
 
 const AladdinConvexVaultABI = require('./abis/AladdinConvexVault.json')
 const AladdinCRVABI = require('./abis/AladdinCRV.json')
-const curvePools = require('./pools-crv.js');
+const configPools = require('./config.js');
 const { createIncrementArray } = require('../helper/utils');
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
@@ -79,7 +79,7 @@ async function getVaultInfo(poolLength, type, balances, block) {
 
   await Promise.all(poolInfos.map(async (_, i) => {
     const poolInfo = poolInfos[i];
-    const poolData = curvePools.find(crvPool => crvPool.addresses.lpToken.toLowerCase() === poolInfo.output.lpToken.toLowerCase())
+    const poolData = configPools.find(crvPool => crvPool.addresses.lpToken.toLowerCase() === poolInfo.output.lpToken.toLowerCase())
 
     let swapAddress = poolInfo.output.lpToken
     let coinsLength = 2
