@@ -247,7 +247,7 @@ async function borrowed() {
 
     for (const assetName of orderedAssets) {
         for (const id of appDictionary[assetName]["appIds"]) {
-            appGlobalState = await getAppGlobalState(id)
+            let appGlobalState = await getAppGlobalState(id)
             borrow += getMarketBorrow(assetName, appGlobalState, prices)
         }
     }
@@ -304,7 +304,7 @@ async function stakingV1() {
         }
     }
 
-    staked = 0
+    let staked = 0
     for (const contractName of stakingContractsV1) {
         let appGlobalState = await getAppGlobalState(appDictionary["STAKING_CONTRACTS"][contractName]["appId"])
         staked += getMarketSupply(contractName, appGlobalState, prices, appDictionary["STAKING_CONTRACTS"])
@@ -314,21 +314,21 @@ async function stakingV1() {
 }
 
 async function stakingV2() {
-    totalStaked = 0
+    let totalStaked = 0
     for (const contractName of bankStakingContractsV2) {
-        stakingAppGlobalState = await getAppGlobalState(appDictionary["STAKING_CONTRACTS"][contractName]["appId"])
-        marketAppGlobalState = await getAppGlobalState(appDictionary["STAKING_CONTRACTS"][contractName]["marketAppId"])
+        let stakingAppGlobalState = await getAppGlobalState(appDictionary["STAKING_CONTRACTS"][contractName]["appId"])
+        let marketAppGlobalState = await getAppGlobalState(appDictionary["STAKING_CONTRACTS"][contractName]["marketAppId"])
 
-        bAssetStaked = stakingAppGlobalState[stakingV2Strings.total_staked] / 1000000
-        bAssetToUnderlyingExchange = marketAppGlobalState[marketV2Strings.b_asset_to_underlying_exchange_rate] / 1000000000
-        underlyingStaked = bAssetStaked * bAssetToUnderlyingExchange
+        let bAssetStaked = stakingAppGlobalState[stakingV2Strings.total_staked] / 1000000
+        let bAssetToUnderlyingExchange = marketAppGlobalState[marketV2Strings.b_asset_to_underlying_exchange_rate] / 1000000000
+        let underlyingStaked = bAssetStaked * bAssetToUnderlyingExchange
 
-        oracleState = await getAppGlobalState(marketAppGlobalState[marketStrings.oracle_app_id])
+        let oracleState = await getAppGlobalState(marketAppGlobalState[marketStrings.oracle_app_id])
 
-        oraclePriceFieldName = appDictionary["STAKING_CONTRACTS"][contractName]["oracleFieldName"]
-        oraclePrice = oracleState[oraclePriceFieldName] / 1000000
+        let oraclePriceFieldName = appDictionary["STAKING_CONTRACTS"][contractName]["oracleFieldName"]
+        let oraclePrice = oracleState[oraclePriceFieldName] / 1000000
 
-        stakedUsd = underlyingStaked * oraclePrice
+        let stakedUsd = underlyingStaked * oraclePrice
 
         totalStaked  += stakedUsd
     }
