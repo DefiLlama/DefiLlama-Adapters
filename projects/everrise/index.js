@@ -122,7 +122,6 @@ Object.keys(chainConfig).forEach(chain => {
     let balances = {};
     const block = chainBlocks[chain]
     const transformAddress = await getChainTransform(chain);
-    daoLockerClients = daoLockerClients || await http.get(EVEROWN_DAO_API);
 
     const results = (await sdk.api.eth.getBalances({
       targets: [TOKEN, BRIDGE_CONTROLLER, RESERVES],
@@ -153,6 +152,14 @@ Object.keys(chainConfig).forEach(chain => {
         balances[i.input.target] = i.output
     });
 
+    await everOwnClients(balances, chain, block, transformAddress);
+
+    return balances
+  }
+
+  async function everOwnClients(balances, chain, block, transformAddress) {
+    daoLockerClients = daoLockerClients || await http.get(EVEROWN_DAO_API);
+    
     let clients = daoLockerClients[chainData.chainId] || [];
     // Don't include self as that's pool2
     clients = clients.filter(t => t.contractAddress.toLowerCase() !== TOKEN.toLowerCase());
@@ -199,7 +206,6 @@ Object.keys(chainConfig).forEach(chain => {
       await unwrapUniswapLPs(balances, lpPositions, block, chain, transformAddress);
 
     }
-    return balances
   }
 
   async function pool2(ts, _block, chainBlocks) {
