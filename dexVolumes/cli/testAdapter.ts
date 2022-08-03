@@ -13,9 +13,9 @@ process.on('uncaughtException', handleError)
 checkArguments(process.argv)
 
 // Get path of module import
-const passedFile = path.resolve(process.cwd(), process.argv[2]);
+const passedFile = path.resolve(process.cwd(), `dexVolumes/${process.argv[2]}`);
 (async () => {
-  console.info(`Running ${process.argv[2].slice("dexVolumes/".length).toUpperCase()} adapter`)
+  console.info(`Running ${process.argv[2].toUpperCase()} adapter`)
   // Import module to test
   let module: DexAdapter = (await import(passedFile)).default
 

@@ -1,7 +1,7 @@
 # DEX volumes
 
-> **_NOTE:_**  Under developement.
+> **_NOTE:_** Under developement.
 
-## Test an adapter 
+## Test an adapter
 
-`npm run test-dex dexVolumes/1inch`
+`npm run test-dex 1inch`
