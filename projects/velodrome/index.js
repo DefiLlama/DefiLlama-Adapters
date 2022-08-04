@@ -7,5 +7,8 @@ module.exports = {
   incentivized: true,
   optimism: {
     tvl: uniTvlExport("0x25CbdDb98b35ab1FF77413456B31EC81A6B6B746", "optimism"),
-  }
+  },
+  hallmarks:[
+    [1635218174, "Loss $350k Operational Funds"],
+  ]
 }
