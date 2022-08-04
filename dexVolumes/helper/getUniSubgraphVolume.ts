@@ -1,5 +1,7 @@
-const { request, gql } = require("graphql-request");
-const { getBlock } = require("./getBlock");
+import { Chain } from "@defillama/sdk/build/general";
+import { request, gql } from "graphql-request";
+import { getBlock } from "../../projects/helper/getBlock";
+import { ChainBlocks } from "../dexVolume.type";
 
 const getUniqStartOfTodayTimestamp = (date = new Date()) => {
   var date_utc = Date.UTC(
@@ -11,7 +13,7 @@ const getUniqStartOfTodayTimestamp = (date = new Date()) => {
     date.getUTCSeconds()
   );
   var startOfDay = new Date(date_utc);
-  var timestamp = startOfDay / 1000;
+  var timestamp = startOfDay.getTime() / 1000;
   return Math.floor(timestamp / 86400) * 86400;
 };
 
@@ -23,6 +25,24 @@ const DEFAULT_TOTAL_VOLUME_FIELD = "totalVolumeUSD";
 
 const DEFAULT_DAILY_VOLUME_FACTORY = "uniswapDayData";
 const DEFAULT_DAILY_VOLUME_FIELD = "dailyVolumeUSD";
+
+interface IGetChainVolumeParams {
+  graphUrls: {
+    [chains: string]: string
+  },
+  totalVolume: {
+    factory: string,
+    field: string
+  },
+  dailyVolume?: {
+    factory: string,
+    field: string
+  },
+  customDailyVolume?: string,
+  hasDailyVolume?: boolean
+  hasTotalVolume?: boolean
+  getCustomBlock?: (timestamp: number) => Promise<number>
+}
 
 function getChainVolume({
   graphUrls,
@@ -38,7 +58,7 @@ function getChainVolume({
   hasDailyVolume = true,
   hasTotalVolume = true,
   getCustomBlock = undefined,
-}) {
+}: IGetChainVolumeParams) {
   const totalVolumeQuery = gql`
   ${totalVolume.factory}(
     block: { number: $block }
@@ -56,18 +76,18 @@ function getChainVolume({
     ${dailyVolume.field}
   }
   `;
-
   const graphQuery = gql`
-query get_volume($block: Int, $id: Int) {
-  ${hasTotalVolume ? totalVolumeQuery : ""}
-  ${hasDailyVolume ? dailyVolumeQuery : ""}
-}
-`;
-  return (chain) => {
-    return async (timestamp, chainBlocks) => {
+  query get_volume($block: Int, $id: Int) {
+    ${hasTotalVolume ? totalVolumeQuery : ""}
+    ${hasDailyVolume ? dailyVolumeQuery : ""}
+  }
+  `;
+  return (chain: Chain) => {
+    return async (timestamp: number, chainBlocks: ChainBlocks) => {
       const block =
-        (getCustomBlock && (await getCustomBlock(timestamp))) ||
-        (await getBlock(timestamp, chain, chainBlocks));
+        getCustomBlock ?
+          await getCustomBlock(timestamp) :
+          await getBlock(timestamp, chain, chainBlocks);
       const id = getUniswapDateId();
       const graphRes = await request(graphUrls[chain], graphQuery, {
         block,
@@ -80,14 +100,14 @@ query get_volume($block: Int, $id: Int) {
         totalVolume: graphRes[totalVolume.factory][0][totalVolume.field],
         dailyVolume: hasDailyVolume
           ? (graphRes?.[dailyVolume.factory]?.[dailyVolume.field] || "0") ??
-            undefined
+          undefined
           : undefined,
       };
     };
   };
 }
 
-module.exports = {
+export {
   getUniqStartOfTodayTimestamp,
   getChainVolume,
   DEFAULT_TOTAL_VOLUME_FACTORY,
