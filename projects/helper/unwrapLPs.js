@@ -444,7 +444,7 @@ async function sumLPWithOnlyOneTokenOtherThanKnown(balances, lpToken, owner, tok
   }
   await sumLPWithOnlyOneToken(balances, lpToken, owner, listedToken, block, chain, transformAddress)
 }
-async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], block, chain, transformAddress, owner, nftAddress, owners }) {
+async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], block, chain = 'ethereum', transformAddress, owner, nftAddress, owners }) {
   if (!nftsAndOwners.length) {
     if (!nftAddress)
       switch (chain) {
@@ -943,7 +943,7 @@ async function unwrapTroves({ balances = {}, chain = 'ethereum', block, troves =
   const tokensAndOwners = []
 
   for (let i = 0; i < troves.length; i++) {
-    tokensAndOwners.push([tokens[i].output, activePools[i].output])
+    tokensAndOwners.push([tokens[i].output || nullAddress, activePools[i].output ])
   }
 
   await sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { resolveCrv: true, resolveLP: true, resolveYearn: true })
