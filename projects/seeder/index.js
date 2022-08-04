@@ -24,7 +24,7 @@ const bscTvl = async (chainBlocks) => {
 
   const farmBalance = (
     await sdk.api.abi.multiCall({
-      abi: "erc20:balanceOf",
+      abi: 'erc20:balanceOf',
       calls: getAllFarms.map((f) => ({
         target: f,
         params: farmContract,
@@ -117,5 +117,6 @@ module.exports = {
   bsc: {
     tvl: bscTvl,
   },
-  methodology: "We count liquidity on the Farms through Farm Contract",
+  methodology:
+    "We count liquidity on the Farms through Farm Contract",
 };
