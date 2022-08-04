@@ -54,9 +54,6 @@ const tvlPolygon = async (timestamp, blockETH, chainBlocks) => {
 
 const tvlOec = async (timestamp, blockETH, chainBlocks) => {
     let block = chainBlocks[CHAIN_OEC];
-    if (block === undefined) {
-        block = (await sdk.api.util.lookupBlock(timestamp, { chain: CHAIN_OEC })).block;
-    }
     const statistics = (await sdk.api.abi.call({ target: VAULT_OEC, abi: abi["getGlobalStatistics"], block: block, chain: CHAIN_OEC })).output;
     const balances = {}
     balances[CHAIN_OEC + ":" + USDT_OEC] = statistics[0]

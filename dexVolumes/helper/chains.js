@@ -1,5 +1,6 @@
 const ARBITRUM = "arbitrum";
 const AVAX = "avax";
+const BOBA = "boba";
 const BSC = "bsc";
 const CELO = "celo";
 const ETHEREUM = "ethereum";
@@ -11,10 +12,12 @@ const OPTIMISM = "optimism";
 const POLYGON = "polygon";
 const RONIN = "ronin";
 const XDAI = "xdai";
+const AURORA = "aurora";
 
 module.exports = {
   ARBITRUM,
   AVAX,
+  BOBA,
   BSC,
   CELO,
   ETHEREUM,
@@ -26,4 +29,5 @@ module.exports = {
   POLYGON,
   RONIN,
   XDAI,
+  AURORA,
 };

@@ -1,15 +1,12 @@
 const {
-  clusterApiUrl,
-  Connection,
   PublicKey,
-  Keypair,
 } = require("@solana/web3.js");
-const { Provider, Program, web3, utils } = require("@project-serum/anchor");
-const { NodeWallet } = require("@project-serum/anchor/dist/cjs/provider");
+const { Program, web3, utils } = require("@project-serum/anchor");
 const DualIdl = require("./idl.json");
 const axios = require("axios");
-const { u64, MintLayout } = require("@solana/spl-token");
+const { MintLayout } = require("@solana/spl-token")
 const { toUSDTBalances } = require("../helper/balances");
+const { getConnection, getProvider, } = require("../helper/solana");
 
 async function getPriceWithTokenAddress(mintAddress) {
   const { data } = await axios.post("https://coins.llama.fi/prices", {
@@ -28,14 +25,10 @@ function toBytes(x) {
 }
 
 async function tvl() {
-  const connection = new Connection(clusterApiUrl("mainnet-beta"));
-  const anchorProvider = new Provider(
-    connection,
-    new NodeWallet(new Keypair()),
-    {}
-  );
+  const connection =  getConnection();
+  const anchorProvider = getProvider();
   const dualProgramID = new PublicKey(
-    "EFhLFkx6r2NdhFmAraZacRzxX8SFLbM9KuyVpaUUpR5k"
+    "DiPbvUUJkDhV9jFtQsDFnMEMRJyjW5iS6NMwoySiW8ki"
   );
   const VAULT_MINT_ADDRESS_SEED = "vault-mint";
   const program = new Program(DualIdl, dualProgramID, anchorProvider);
@@ -120,7 +113,6 @@ const deserializeMint = (data) => {
     mintInfo.mintAuthority = new PublicKey(mintInfo.mintAuthority);
   }
 
-  mintInfo.supply = u64.fromBuffer(mintInfo.supply);
   mintInfo.isInitialized = mintInfo.isInitialized !== 0;
 
   if (mintInfo.freezeAuthorityOption === 0) {

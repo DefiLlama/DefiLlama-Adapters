@@ -1,17 +1,13 @@
 const {
-  clusterApiUrl,
-  Connection,
   PublicKey,
-  Keypair,
 } = require("@solana/web3.js");
 const { getMultipleAccountInfo, getMultipleMintInfo, deserializeAccount } = require("./accounts");
 const { TOKENSBASE } = require("./tokens");
-const { Provider, Program } = require("@project-serum/anchor");
-const { NodeWallet } = require("@project-serum/anchor/dist/cjs/provider");
+const { Program } = require("@project-serum/anchor");
 const PsyAmericanIdl = require("./idl.json");
 const axios = require("axios");
 const { toUSDTBalances } = require("../helper/balances");
-const { isArray } = require("underscore");
+const { getConnection, getProvider, } = require("../helper/solana");
 
 const textEncoder = new TextEncoder();
 
@@ -106,7 +102,7 @@ async function getTokenizedEurosControlledAccounts(anchorProvider) {
     // Add the mint to the mint keys object
     mintKeys[mintAddress] = true;
     // Add the token account to the mintTokenAccountsMap
-    if (isArray(mintTokenAccountsMap[mintAddress])) {
+    if (Array.isArray(mintTokenAccountsMap[mintAddress])) {
       mintTokenAccountsMap[mintAddress].push(tokenProgramAccount.pubkey);
     } else {
       mintTokenAccountsMap[mintAddress] = [tokenProgramAccount.pubkey];
@@ -117,12 +113,8 @@ async function getTokenizedEurosControlledAccounts(anchorProvider) {
 }
 
 async function tvl() {
-  const connection = new Connection(clusterApiUrl("mainnet-beta"));
-  const anchorProvider = new Provider(
-    connection,
-    new NodeWallet(new Keypair()),
-    {}
-  );
+  const connection = getConnection();
+  const anchorProvider = getProvider();
 
   // Maps mint addresses to an array of token accounts
   let mintTokenAccountsMap = {};
@@ -146,7 +138,7 @@ async function tvl() {
     tokenAccounts = [...tokenAccounts, ...protocolTokenAccounts];
     // Consolidate the mint to token accounts map
     Object.keys(protocolAccountMap).forEach((mintAddress) => {
-      if (isArray(mintTokenAccountsMap[mintAddress])) {
+      if (Array.isArray(mintTokenAccountsMap[mintAddress])) {
         // Concat the two arrays
         mintTokenAccountsMap[mintAddress] = [
           ...mintTokenAccountsMap[mintAddress],
@@ -183,7 +175,7 @@ async function tvl() {
         const price = pMint ? pMint.price : 0;
         if (mint) {
           let decimal = mint.data.decimals;
-          let amount = accInfo.info.amount.toNumber();
+          let amount = +accInfo.info.amount.toString();
           assetAmounts[key] += getAmountWithDecimal(amount, decimal) * price;
         }
       }

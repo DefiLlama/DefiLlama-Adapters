@@ -1,69 +1,25 @@
-const algosdk = require("algosdk");
 const { toUSDTBalances } = require("../helper/balances");
+
 const {
   pools,
+  liquidGovernance3AppId,
   liquidGovernanceAppId,
-  oracleAppId,
-  oracleDecimals,
 } = require("./constants");
+const {
+  lookupApplications,
+  lookupAccountByID,
+  getApplicationAddress,
+} = require("../helper/algorand");
+const { getAppState, getParsedValueFromState } = require("./utils");
+const { getPrices } = require("./prices");
 
-const indexer = new algosdk.Indexer(
-  "",
-  "https://algoindexer.algoexplorerapi.io/",
-  ""
-);
-
-function fromIntToBytes8Hex(num) {
-  return num.toString(16).padStart(16, "0");
-}
-
-function encodeToBase64(str, encoding = "utf8") {
-  return Buffer.from(str, encoding).toString("base64");
-}
-
-function parseOracleValue(base64Value) {
-  const value = Buffer.from(base64Value, "base64").toString("hex");
-  // first 8 bytes are the price
-  return BigInt("0x" + value.slice(0, 16));
-}
-
-function getParsedValueFromState(state, key, encoding = "utf8") {
-  const encodedKey = encoding ? encodeToBase64(key, encoding) : key;
-  const keyValue = state.find((entry) => entry.key === encodedKey);
-  if (keyValue === undefined) return;
-  const { value } = keyValue;
-  if (value.type === 1) return value.bytes;
-  if (value.type === 2) return BigInt(value.uint);
-  return;
-}
-
-async function getAppState(appId) {
-  const res = await indexer.lookupApplications(appId).do();
-  return res.application.params["global-state"];
-}
-
-/* Get prices from oracle */
-async function getPrices() {
-  const state = await getAppState(oracleAppId);
-  const prices = {};
-
-  for (const pool of pools) {
-    const base64Value = String(
-      getParsedValueFromState(state, fromIntToBytes8Hex(pool.assetId), "hex")
-    );
-    const price = parseOracleValue(base64Value);
-    prices[pool.assetId] = Number(price) / 10 ** oracleDecimals;
-  }
-
-  return prices;
-}
-
-async function getAlgoLiquidGovernanceDepositUsd(prices) {
+async function getAlgoLiquidGovernanceDepositUsd(
+  prices,
+  liquidGovernanceAppId
+) {
   const [app, acc] = await Promise.all([
-    indexer.lookupApplications(liquidGovernanceAppId).do(),
-    indexer
-      .lookupAccountByID(algosdk.getApplicationAddress(liquidGovernanceAppId))
-      .do(),
+    lookupApplications(liquidGovernanceAppId),
+    lookupAccountByID(getApplicationAddress(liquidGovernanceAppId)),
   ]);
   const state = app.application.params["global-state"];
 
@@ -106,14 +62,24 @@ async function getTotalPoolDepositsUsd(prices) {
 async function tvl() {
   const prices = await getPrices();
 
-  const [depositsAmountUsd, algoLiquidGovernanceDepositUsd, borrowsAmountUsd] =
-    await Promise.all([
-      getTotalPoolDepositsUsd(prices),
-      getAlgoLiquidGovernanceDepositUsd(prices),
-      borrowed(),
-    ]);
+  const [
+    depositsAmountUsd,
+    algoLiquidGovernance3DepositUsd,
+    algoLiquidGovernanceDepositUsd,
+    borrowsAmountUsd,
+  ] = await Promise.all([
+    getTotalPoolDepositsUsd(prices),
+    getAlgoLiquidGovernanceDepositUsd(prices, liquidGovernance3AppId),
+    getAlgoLiquidGovernanceDepositUsd(prices, liquidGovernanceAppId),
+    borrowed(),
+  ]);
 
-  return toUSDTBalances(depositsAmountUsd + algoLiquidGovernanceDepositUsd - borrowsAmountUsd);
+  return toUSDTBalances(
+    depositsAmountUsd +
+      algoLiquidGovernance3DepositUsd +
+      algoLiquidGovernanceDepositUsd -
+      borrowsAmountUsd
+  );
 }
 
 /* Get total borrows */
@@ -141,15 +107,15 @@ async function borrowed() {
   return totalBorrowsUsd;
 }
 
-async function borrowedBalances(){
-  return toUSDTBalances(await borrowed())
+async function borrowedBalances() {
+  return toUSDTBalances(await borrowed());
 }
 
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
-  algorand:{
+  algorand: {
     tvl,
     borrowed: borrowedBalances,
-  }
+  },
 };

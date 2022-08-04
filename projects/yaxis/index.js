@@ -1,27 +1,8 @@
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
-const { unwrapCrv, unwrapUniswapLPs } = require("../helper/unwrapLPs");
+const { unwrapCrv, unwrapUniswapLPs, unwrapYearn } = require("../helper/unwrapLPs");
 const { abi } = require("../yaxis/abi.js");
 const constants = require("../yaxis/constants.js");
-
-async function eth() {
-  const pricePerYvWeth = await getPricePerShareInFloat(yvWethContract);
-
-  let totalEth = 0;
-
-  // Get ETH TVL
-  //Get total ETH TVL from transmuter and alchemist contracts
-  for (let i = 0; i < wethHolders.length; i++) {
-    let ethbal = await getBalInFloat(wethcontract, wethHolders[i]);
-    totalEth += ethbal;
-  }
-  //Get total ETH TVL from yvWETH holders
-  for (let i = 0; i < yvWethHolders.length; i++) {
-    let yethbal = await getBalInFloat(yvWethContract, yvWethHolders[i]);
-    totalEth += yethbal * pricePerYvWeth;
-  }
-  return totalEth
-}
 
 async function tvl(timestamp, block) {
   const balances = {};
@@ -91,70 +72,70 @@ async function tvl(timestamp, block) {
   return balances;
 }
 
-async function pool2(time, block){
+async function pool2(time, block) {
   const balances = {};
-    // 4. LPs
-    const uniswapLPs = (
-      await sdk.api.abi.multiCall({
-        calls: constants.UNISWAP_LPS.map((lp) => ({
-          target: lp.address,
-          params: [lp.staking]
-        })),
-        abi: "erc20:balanceOf",
-        block: block,
-      })
-    ).output.map((val) => val.output);
-  
-    const lpPositions = [];
-  
-    constants.UNISWAP_LPS.forEach((lp, index) => {
-      lpPositions.push({
-        balance: uniswapLPs[index],
-        token: lp.address,
-      });
-    });
-  
-    await unwrapUniswapLPs(balances, lpPositions, block);
+  // 4. LPs
+  const uniswapLPs = (
+    await sdk.api.abi.multiCall({
+      calls: constants.UNISWAP_LPS.map((lp) => ({
+        target: lp.address,
+        params: [lp.staking]
+      })),
+      abi: "erc20:balanceOf",
+      block: block,
+    })
+  ).output.map((val) => val.output);
 
-    return balances
+  const lpPositions = [];
+
+  constants.UNISWAP_LPS.forEach((lp, index) => {
+    lpPositions.push({
+      balance: uniswapLPs[index],
+      token: lp.address,
+    });
+  });
+
+  await unwrapUniswapLPs(balances, lpPositions, block);
+
+  return balances
 }
 
-async function staking(time, block){
+async function staking(time, block) {
   const balances = {};
 
-    // 2. sYAX (LEGACY v1) - YAXIS
-    const sYAX = (
-      await sdk.api.abi.call({
-        target: constants.BAR,
-        abi: abi.yAxisBar,
-        block: block,
-      })
-    ).output;
-  
-    sdk.util.sumSingleBalance(balances, constants.CURRENCIES["YAXIS"], sYAX);
-  
-    // sYAXIS (LEGACY v2) - YAXIS
-    const sYAXIS = (
-      await sdk.api.erc20.totalSupply({
-        target: constants.STAKING.YAXIS,
-        block,
-      })
-    ).output;
-  
-    sdk.util.sumSingleBalance(balances, constants.CURRENCIES["YAXIS"], sYAXIS);
-  
-    //  Voting Escrow (v3) - YAXIS
-    const veYAXIS = (
-      await sdk.api.abi.call({
-        target: constants.VOTING_ESCROW,
-        abi: abi.votingEscrow,
-        block,
-      })
-    ).output;
-  
-    sdk.util.sumSingleBalance(balances, constants.CURRENCIES["YAXIS"], veYAXIS);
+  // 2. sYAX (LEGACY v1) - YAXIS
+  const sYAX = (
+    await sdk.api.abi.call({
+      target: constants.BAR,
+      abi: abi.yAxisBar,
+      block: block,
+    })
+  ).output;
 
-      // Add YAXIS vault
+  sdk.util.sumSingleBalance(balances, constants.CURRENCIES["YAXIS"], sYAX);
+
+  // sYAXIS (LEGACY v2) - YAXIS
+  const sYAXIS = (
+    await sdk.api.erc20.totalSupply({
+      target: constants.STAKING.YAXIS,
+      block,
+    })
+  ).output;
+
+  sdk.util.sumSingleBalance(balances, constants.CURRENCIES["YAXIS"], sYAXIS);
+
+  //  Voting Escrow (v3) - YAXIS
+  const veYAXIS = (
+    await sdk.api.abi.call({
+      target: constants.VOTING_ESCROW,
+      abi: abi.votingEscrow,
+      block,
+    })
+  ).output;
+
+  sdk.util.sumSingleBalance(balances, constants.CURRENCIES["YAXIS"], veYAXIS);
+
+  // Add YAXIS vault
   const yaxisVault = (
     await sdk.api.erc20.totalSupply({
       target: constants.YAXIS_GAUGE,
@@ -172,20 +153,20 @@ async function staking(time, block){
 }
 async function convertALETHtoETH(block, balances) {
   const alETH = '0x0100546F2cD4C9D97f798fFC9755E47865FF7Ee6'
-  const ETH = '0x0000000000000000000000000000000000000000'
-  const [alETHSupply, alETHLocked] = await Promise.all([
+  const yvWETH = '0xa258C4606Ca8206D8aA700cE2143D7db854D168c'
+  const [{ output: alETHSupply }, { output: alETHLocked }] = await Promise.all([
     sdk.api.erc20.totalSupply({
       target: alETH,
       block,
     }),
-    eth()
+    sdk.api.erc20.balanceOf({
+      target: yvWETH,
+      owner: '0x546E6711032Ec744A7708D4b7b283A210a85B3BC'
+    })
   ])
-  sdk.util.sumSingleBalance(
-    balances,
-    ETH,
-    (balances[alETH] * alETHSupply.output / alETHLocked * 10 ** -18).toLocaleString('fullwide', { useGrouping: false })
-  );
+  sdk.util.sumSingleBalance(balances, yvWETH, balances[alETH] * alETHLocked / alETHSupply)
   delete balances[alETH]
+  unwrapYearn(balances, yvWETH, block)
 }
 module.exports = {
   doublecounted: true,

@@ -13,10 +13,11 @@ async function tvl(){
 
     const data = response.data
 
-    return data.tvl ? toUSDTBalances(data.tvl) : toUSDTBalances(0);
+    return toUSDTBalances(data.tvl);
 }
 
 module.exports={
+    misrepresentedTokens:true,
     algorand:{
         tvl
     }

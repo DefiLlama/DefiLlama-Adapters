@@ -52,7 +52,7 @@ async function tvl(timestamp, block) {
   sdk.util.sumSingleBalance(balances, usdt, vusdtBalances);
 
   // =================== GET TOKENX BALANCES =================== //
-  for (PolicyBook of listPolicyBooks) {
+  for (let PolicyBook of listPolicyBooks) {
     const tokenX = (
       await sdk.api.abi.call({
         target: ShieldMining,

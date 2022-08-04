@@ -6,7 +6,6 @@ const farmPoolTotalSupplyAbi = require("./farmPoolTotalSupply.abi.json")
 const curve_get_virtual_priceAbi = require("./curve_get_virtual_price.abi.json")
 const getPriceAbi = require("./getPrice.abi.json");
 const getReservesAbi = require("./getReserves.json")
-const { token } = require("@project-serum/anchor/dist/cjs/utils");
 
 const YUSD_TOKEN_ADDRESS = "0x111111111111ed1D73f860F57b2798b683f2d325";
 const YUSD_PRICEFEED_ADDRESS = "0x38C67a46304b9ad4A0A210A65a640213505bd1Dc";
@@ -21,6 +20,7 @@ const ACTIVE_POOL_ADDRESS = "0xAAAaaAaaAaDd4AA719f0CF8889298D13dC819A15";
 const DEFAULT_POOL_ADDRESS = "0xdDDDDDdDDD3AD7297B3D13E17414fBED370cd425";
 
 const FARM_ADDRESS = "0xfffFffFFfFe8aA117FE603a37188E666aF110F39";
+const BOOST_CURVE_LP_FARM_ADDRESS = "0xD8A4AA01D54C8Fdd104EAC28B9C975f0663E75D8"
 
 const YUSDCURVE_POOL_ADDRESS = "0x1da20ac34187b2d9c74f729b85acb225d3341b25"
 
@@ -115,6 +115,15 @@ async function tvl(_, _block, chainBlocks) {
     })
   ).output
 
+  const curveBoostFarmAmount = (
+    await sdk.api.abi.call({
+      target: BOOST_CURVE_LP_FARM_ADDRESS,
+      abi: farmPoolTotalSupplyAbi,
+      block,
+      chain: "avax"
+    })
+  ).output
+
   const YUSDCurvPrice = (
     await sdk.api.abi.call({
       target: YUSDCURVE_POOL_ADDRESS,
@@ -124,7 +133,7 @@ async function tvl(_, _block, chainBlocks) {
     })
   ).output
 
-  const farmTvl = +curveFarmAmount * +YUSDCurvPrice / (10 ** 18)
+  const farmTvl = (+curveFarmAmount + +curveBoostFarmAmount) * +YUSDCurvPrice / (10 ** 18)
 
   const total =  systemCollateralTvl + farmTvl
 

@@ -1,5 +1,4 @@
 const cakeVaultAbi = require("./abi.json");
-const { getWeb3, multicall } = require("./api");
 const BigNumber = require("bignumber.js");
 const {
   getBalanceNumber,
@@ -11,6 +10,7 @@ const woofVaultContractAddres = {
   kcc: "0x5cE1e2F6c99aFcfbB6E640354837C263ec3a5664",
   bsc: "0x09fE45A62502E7a0b226a99f18043F3eC32F78E8",
 };
+const sdk = require("@defillama/sdk")
 
 const convertSharesToWoof = (
   shares,
@@ -34,27 +34,34 @@ const convertSharesToWoof = (
 };
 
 const fetchPublicVaultData = async (chain, block) => {
-  try {
-    const web3 = getWeb3(chain);
-    const woofVaultAddress = woofVaultContractAddres[chain];
-    const woofVaultContract = new web3.eth.Contract(
-      cakeVaultAbi,
-      woofVaultAddress
-    );
-
+  const woofVaultAddress = woofVaultContractAddres[chain];
     const [
       sharePrice,
       shares,
       estimatedCakeBountyReward,
       totalPendingCakeHarvest,
     ] = await Promise.all([
-      woofVaultContract.methods.getPricePerFullShare().call({}, block),
-      woofVaultContract.methods.totalShares().call({}, block),
-      woofVaultContract.methods.calculateHarvestCakeRewards().call({}, block),
-      woofVaultContract.methods
-        .calculateTotalPendingCakeRewards()
-        .call({}, block),
-    ]);
+      sdk.api.abi.call({
+        block, chain,
+        target: woofVaultAddress,
+        abi: cakeVaultAbi.find(i => i.name === 'getPricePerFullShare')
+      }),
+      sdk.api.abi.call({
+        block, chain,
+        target: woofVaultAddress,
+        abi: cakeVaultAbi.find(i => i.name === 'totalShares')
+      }),
+      sdk.api.abi.call({
+        block, chain,
+        target: woofVaultAddress,
+        abi: cakeVaultAbi.find(i => i.name === 'calculateHarvestCakeRewards')
+      }),
+      sdk.api.abi.call({
+        block, chain,
+        target: woofVaultAddress,
+        abi: cakeVaultAbi.find(i => i.name === 'calculateTotalPendingCakeRewards')
+      }),
+    ]).then(response => response.map(a => a.output));
     
     const totalSharesAsBigNumber = new BigNumber(shares);
     const sharePriceAsBigNumber = new BigNumber(sharePrice);
@@ -71,16 +78,6 @@ const fetchPublicVaultData = async (chain, block) => {
       ).toJSON(),
       totalPendingCakeHarvest: new BigNumber(totalPendingCakeHarvest).toJSON(),
     };
-  } catch (error) {
-    console.log(error);
-    return {
-      totalShares: null,
-      pricePerFullShare: null,
-      totalCakeInVault: null,
-      estimatedCakeBountyReward: null,
-      totalPendingCakeHarvest: null,
-    };
-  }
 };
 
 module.exports = fetchPublicVaultData;

@@ -55,8 +55,8 @@ async function getAssetIds(chainId) {
   if (!getAssetsPromise)
     getAssetsPromise = get(url)
   const data = await getAssetsPromise
-  const chainData = data.find(item => item.chainId === chainId)
-  return Object.keys(chainData.assetId).map(id => id.toLowerCase())
+  const chainData = data.find(item => item.chainId === chainId) || {}
+  return Object.keys(chainData.assetId || {}).map(id => id.toLowerCase())
 }
 
 const nullAddress = '0x0000000000000000000000000000000000000000'
