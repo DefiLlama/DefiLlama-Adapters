@@ -835,6 +835,10 @@ async function unwrapLPsAuto({ balances, block, chain = "ethereum", transformAdd
   const amounts = []
 
   Object.keys(balances).forEach(key => {
+    if (+balances[key] === 0) {
+      delete balances[key]
+      return;
+    }
     if (chain === 'ethereum' && key.indexOf(':') > -1) return;  // token is transformed, probably not an LP
     if (chain !== 'ethereum' && !key.startsWith(chain + ':')) return;  // token is transformed, probably not an LP
     const token = stripTokenHeader(key)
