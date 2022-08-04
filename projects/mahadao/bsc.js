@@ -54,15 +54,6 @@ const getTotalSupply = async (target, block) => {
   ).output;
 };
 
-const replaceMAHAonBSCTransform = (addr) => {
-  if (addr.toLowerCase() === "0xce86f7fcd3b40791f63b86c3ea3b8b355ce2685b")
-    return "mahadao";
-
-  if (addr.toLowerCase() === "0xb69a424df8c737a122d0e60695382b3eec07ff4b")
-    return "arth";
-  return `bsc:${addr}`;
-};
-
 const getTVLOfarthuval3ps = async (balances, block) => {
   //get balance of arth-usd of arth-usd+val3eps
   const arthUSDBalance = await getBalance(
@@ -139,18 +130,6 @@ const getTVLOfarthuval3ps = async (balances, block) => {
 
 async function pool2(_timestamp, _ethBlock, chainBlocks) {
   const balances = {};
-
-  // await sumTokens(
-  //   balances,
-  //   [
-  //     // apeswap MAHA/BNB
-  //     [bsc.wbnb, bsc["apeswap.bnbMahaLP"]],
-  //     [bsc.maha, bsc["apeswap.bnbMahaLP"]],
-  //   ],
-  //   chainBlocks.bsc,
-  //   "bsc",
-  //   replaceMAHAonBSCTransform
-  // );
 
   await getTVLOfarthuval3ps(balances, chainBlocks.bsc);
 
