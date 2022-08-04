@@ -59,5 +59,6 @@ module.exports = {
     [1635822974, "Token Program Start"],
     [1655341200, "Lyra V1.1 End"],
     [1656291600, "Lyra Avalon Start"],
+    [1659560056, "OP Rewards Distribution Start"]
   ]
 }
