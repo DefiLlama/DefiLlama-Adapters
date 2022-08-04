@@ -139,20 +139,32 @@ const getTVLOfarthuval3ps = async (balances, block) => {
 
 async function pool2(_timestamp, _ethBlock, chainBlocks) {
   const balances = {};
-  const block = chainBlocks[chain];
-  const tokensAndOwners = [
-    [bscTokens.ARTHBUSDLP, bscTokens.ARTHBUSDBasicStaking],
-    [bscTokens.ARTHMAHAApeLP, bscTokens.ARTHMAHAApeLPStaking],
-    [bscTokens.ARTHMAHALP, bscTokens.ARTHMAHABasicStaking],
-    [bscTokens.ARTHuval3PS, bscTokens.ARTHuval3PSBasicStaking],
-    [bscTokens.ARTHuval3PS, bscTokens.ARTHu3PXBasicStakingV2], // ellipsis masterchef, tvl belongs to them? SE: contains ARTH our stablecoin; we pay bribes for this tvl
-    [bscTokens.ARTHu3PS, bscTokens.ARTHu3PSBasicStakingV2],
-    [bscTokens.ARTHuval3PS, bscTokens.ARTHuval3PSDotBasicStaking], // ellipsis masterchef? SE: contains ARTH our stablecoin
-  ];
 
-  return sumTokens(balances, tokensAndOwners, block, chain, undefined, {
-    resolveLP: true,
-  });
+  // await sumTokens(
+  //   balances,
+  //   [
+  //     // apeswap MAHA/BNB
+  //     [bsc.wbnb, bsc["apeswap.bnbMahaLP"]],
+  //     [bsc.maha, bsc["apeswap.bnbMahaLP"]],
+  //   ],
+  //   chainBlocks.bsc,
+  //   "bsc",
+  //   replaceMAHAonBSCTransform
+  // );
+
+  await getTVLOfarthuval3ps(balances, chainBlocks.bsc);
+
+  if (balances.arth && balances.mahadao) {
+    balances.arth = balances.arth / 1e18;
+    balances.mahadao = balances.mahadao / 1e18;
+  }
+
+  balances.arth = balances["arth.usd"]
+    ? balances["arth.usd"] / 2 / 1e18
+    : balances["arth.usd"] / 2 / 1e18 + balances.arth;
+  delete balances["arth.usd"];
+
+  return balances;
 }
 
 async function tvl(_, block) {
