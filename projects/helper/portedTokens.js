@@ -471,6 +471,8 @@ async function transformHarmonyAddress() {
       "0x19e6bfc1a6e4b042fb20531244d47e252445df01",
     "0x0000000000000000000000000000000000000000":
       "0x799a4202c12ca952cB311598a024C80eD371a41e", // Harmony ONE
+    "0xed0b4b0f0e2c17646682fc98ace09feb99af3ade":
+      "0x123", // RVRS has rubbish price, setting it as 0
     "0xd74433b187cf0ba998ad9be3486b929c76815215":
       "harmony:0xd74433b187cf0ba998ad9be3486b929c76815215", // MIS
     "0x3c2b8be99c50593081eaa2a724f0b8285f5aba8f":
