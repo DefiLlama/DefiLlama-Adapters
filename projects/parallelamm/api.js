@@ -7,6 +7,7 @@ const { getAPI } = require('../helper/acala/api')
 // const createAddress = id => encodeAddress(u8aConcat(stringToU8a(`modl${id}`), EMPTY_U8A_32).subarray(0, 32))
 
 module.exports = {
+  misrepresentedTokens: true,
   parallel: {
     tvl: async () => {
       const chain = 'parallel'
