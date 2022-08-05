@@ -6,10 +6,10 @@ async function fetch() {
     await retry(
       async () =>
         await axios.get(
-          "https://asia-south1-cyclos-finance.cloudfunctions.net/stats"
+          "https://analytics.cykura.io/api/protocolData"
         )
     )
-  ).data.TVL;
+  ).data.tvlUSD;
 };
 
 module.exports = {
