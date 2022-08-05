@@ -1,9 +1,10 @@
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
-const { stakings } = require("../helper/staking");
+const { sumTokens2 } = require('../helper/unwrapLPs')
 const sdk = require("@defillama/sdk");
 
 const spolar = "0x9D6fc90b25976E40adaD5A3EdD08af9ed7a21729";
 const spolarRewardPool = "0xA5dF6D8D59A7fBDb8a11E23FDa9d11c4103dc49f";
+const chain = 'aurora'
 
 const sunrises = [
   "0xA452f676F109d34665877B7a7B203f2B445D7DE0", //polarSunrise
@@ -53,7 +54,8 @@ const singleStakeTokens = [
   "0x8200B4F47eDb608e36561495099a8caF3F806198", // TRIBOND
 ];
 
-const pool2Total = async (_timestamp, _ethBlock, chainBlocks) => {
+const pool2Total = async (_timestamp, _ethBlock, {[chain]: block}) => {
+  return sumTokens2({ chain, block, owner: spolarRewardPool, tokens: LPTokens.flat(), resolveLP: true })
   let balances = {};
   let transform = (addr) => `${"aurora"}:${addr}`;
 
@@ -85,6 +87,13 @@ const pool2Total = async (_timestamp, _ethBlock, chainBlocks) => {
   return balances;
 };
 
+const staking = async (_timestamp, _ethBlock, {[chain]: block}) => {
+  const tokensAndOwners = []
+  sunrises.forEach(o => tokensAndOwners.push([spolar, o]))
+  singleStakeTokens.forEach(t => tokensAndOwners.push([t, spolarRewardPool]))
+  return sumTokens2({ chain, block, tokensAndOwners })
+};
+
 module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
@@ -93,6 +102,6 @@ module.exports = {
   aurora: {
     tvl: async () => ({}),
     pool2: pool2Total,
-    staking: stakings(sunrises, spolar, "aurora"),
+    staking,
   },
 };
