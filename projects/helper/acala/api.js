@@ -34,6 +34,14 @@ const providers = {
     "wss://acala-rpc-3.aca-api.network/ws",
     "wss://acala.polkawallet.io",
   ],
+  heiko: [
+    "wss://parallel-heiko.api.onfinality.io/public-ws",
+    "wss://heiko-rpc.parallel.fi",
+  ],
+  parallel: [
+    "wss://parallel.api.onfinality.io/public-ws",
+    "wss://rpc.parallel.fi",
+  ],
 }
 
 async function getAPI(chain) {
