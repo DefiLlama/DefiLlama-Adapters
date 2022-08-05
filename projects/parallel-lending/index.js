@@ -1,4 +1,4 @@
-const retry = require('./helper/retry');
+const retry = require('../helper/retry');
 const axios = require('axios');
 
 async function fetch() {
@@ -8,7 +8,7 @@ async function fetch() {
             )
         ).data;
 
-        const tvl = response.products.crowdloan;
+        const tvl = response.products.moneyMarket;
 
         return tvl
 }
