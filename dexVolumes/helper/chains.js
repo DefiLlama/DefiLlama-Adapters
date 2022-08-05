@@ -1,3 +1,4 @@
+const CANDLE = "candle";
 const ARBITRUM = "arbitrum";
 const AVAX = "avax";
 const BOBA = "boba";
@@ -15,6 +16,7 @@ const XDAI = "xdai";
 const AURORA = "aurora";
 
 module.exports = {
+  CANDLE,
   ARBITRUM,
   AVAX,
   BOBA,
