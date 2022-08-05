@@ -125,6 +125,7 @@ async function bsc(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
+  doublecounted: true,
   ethereum: {
     tvl: eth
   },
