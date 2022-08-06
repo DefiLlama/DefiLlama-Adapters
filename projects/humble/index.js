@@ -13,7 +13,7 @@ async function tvl(){
 
     const data = response.data.find(p => p.id === 'H2')
 
-    return toUSDTBalances(data?.tvl);
+    return toUSDTBalances(data.tvl);
 }
 
 module.exports={
