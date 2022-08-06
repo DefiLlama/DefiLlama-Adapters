@@ -20,4 +20,9 @@ module.exports = {
     }),
     staking: staking(masterchefAddress, wardenTokenAddress, "bsc")
   },
+  hallmarks:[
+    [1629910800, `Announcement 2 week left before pool's rewards end`],
+    [1630083600, `Start pool's reward 100x warden pool`],
+    [1631293200, `Pool's rewards end`]
+  ]
 };
