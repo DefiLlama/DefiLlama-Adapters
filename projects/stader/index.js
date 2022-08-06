@@ -34,6 +34,20 @@ async function terra2Tvl() {
   }
 }
 
+async function bscTvl() {
+  const res = await fetchURL("https://staderverse.staderlabs.com/tvl")
+  return {
+    "binancecoin": res.data.bnb.native
+  }
+}
+
+async function nearTvl() {
+  const res = await fetchURL("https://staderverse.staderlabs.com/tvl")
+  return {
+    "near": res.data.near.native
+  }
+}
+
 module.exports = {
   timetravel: false,
   methodology: 'We aggregated the luna staked across Stader stake-pools & liquid token and then converted to UST',
@@ -51,6 +65,12 @@ module.exports = {
   },
   terra2: {
     tvl: terra2Tvl
+  },
+  bsc: {
+    tvl: bscTvl
+  },
+  near: {
+    tvl: nearTvl
   }
 }
 
