@@ -1,6 +1,8 @@
 const { fetchURL } = require("../helper/utils")
 const { addHBarBalance } = require("../helper/hbar")
 
+//const bscStakeManger = '0x7276241a669489E4BBB76f63d2A43Bfe63080F2F'
+
 async function tvl() {
   const res = await fetchURL("https://staderverse.staderlabs.com/tvl")
   return {
