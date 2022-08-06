@@ -154,6 +154,7 @@ const fantomTvl = async (timestamp, ethBlock, chainBlocks) => {
 }
 
 module.exports = {
+  doublecounted: true,
   misrepresentedTokens: true,
   ethereum: {
     treasury: stakings(treasuryContracts, FXS),
