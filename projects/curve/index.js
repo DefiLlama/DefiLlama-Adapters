@@ -395,8 +395,10 @@ const chainTypeExports = chains => {
   }
   exports.hallmarks = [
     [1597446675, "CRV Launch"],
+    [1621213201, "Convex Launch"],
     [1642374675, "MIM depeg"],
-    [1651881600, "UST depeg"]
+    [1651881600, "UST depeg"],
+    [1654822801, "stETH depeg"],
   ];
   return exports;
 };
