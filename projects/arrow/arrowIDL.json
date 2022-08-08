@@ -1,0 +1,103 @@
+{
+  "version": "0.1.8",
+  "name": "arrow_sunny",
+  "instructions": [],
+  "accounts": [
+    {
+      "name": "Arrow",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "type": "publicKey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "beneficiary",
+            "type": "publicKey"
+          },
+          {
+            "name": "pool",
+            "type": "publicKey"
+          },
+          {
+            "name": "vault",
+            "type": "publicKey"
+          },
+          {
+            "name": "vendorMiner",
+            "type": {
+              "defined": "ArrowMiner"
+            }
+          },
+          {
+            "name": "internalMiner",
+            "type": {
+              "defined": "ArrowMiner"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "ArrowMiner",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "type": "publicKey"
+          },
+          {
+            "name": "rewarder",
+            "type": "publicKey"
+          },
+          {
+            "name": "quarry",
+            "type": "publicKey"
+          },
+          {
+            "name": "miner",
+            "type": "publicKey"
+          },
+          {
+            "name": "minerVault",
+            "type": "publicKey"
+          },
+          {
+            "name": "rewardsMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "mintWrapper",
+            "type": "publicKey"
+          },
+          {
+            "name": "claimFeeTokenAccount",
+            "type": "publicKey"
+          },
+          {
+            "name": "vaultStakedTokenAccount",
+            "type": "publicKey"
+          },
+          {
+            "name": "vaultRewardsTokenAccount",
+            "type": "publicKey"
+          },
+          {
+            "name": "sunnyPoolRewardsFeeAccount",
+            "type": "publicKey"
+          }
+        ]
+      }
+    }
+  ],
+  "events": [],
+  "errors": []
+}
