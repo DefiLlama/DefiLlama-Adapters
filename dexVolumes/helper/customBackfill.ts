@@ -1,5 +1,5 @@
 import { Chain } from "@defillama/sdk/build/general"
-import { Fetch } from "../dexVolume.type"
+import { ChainBlocks, Fetch } from "../dexVolume.type"
 import { getChainVolume } from "./getUniSubgraphVolume"
 import { getBlock } from "../../projects/helper/getBlock"
 
