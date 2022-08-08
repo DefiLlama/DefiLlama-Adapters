@@ -1,7 +1,7 @@
 const { getReserves, getSio2Tvl } = require("./sio2");
 const BigNumber = require("bignumber.js");
 const { getBorrowed } = require("../helper/aave");
-const { TOKENS, SIO2_TOKEN, DOT_DECIMALS, DEFAULT_DECIMALS, LAY_ADDRESS } = require("./constanrs");
+const { TOKENS, DOT_TOKEN, DOT_DECIMALS, DEFAULT_DECIMALS } = require("./constants");
 
 const transferFromAddress = (underlying) => TOKENS[underlying]
 
@@ -36,9 +36,9 @@ function astar(borrowed) {
     return Object.keys(balances).reduce((res, key) => {
       if (key.startsWith("0x"))
         return { ...res, [key]: balances[key] };
-      if (key === SIO2_TOKEN)
-        return { ...res, [key]: new BigNumber(balances[key]).shiftedBy(-DOT_DECIMALS) };
-      return { ...res, [key]: new BigNumber(balances[key]).shiftedBy(-DEFAULT_DECIMALS) };
+      if (key === DOT_TOKEN)
+        return { ...res, [key]: new BigNumber(balances[key]).shiftedBy(-DOT_DECIMALS).toNumber() };
+      return { ...res, [key]: new BigNumber(balances[key]).shiftedBy(-DEFAULT_DECIMALS).toNumber() };
     }, {});
   };
 }
