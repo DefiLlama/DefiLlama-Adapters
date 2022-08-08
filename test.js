@@ -307,7 +307,7 @@ function checkExportKeys(module, filePath, chains) {
     List of valid keys: ${['', '', ...whitelistedExportKeys].join('\n\t\t\t\t')}
     `)
   }
-}
+} 
 
 
 process.on('unhandledRejection', handleError)
