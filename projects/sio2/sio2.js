@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { default: BigNumber } = require("bignumber.js");
-const addressesProviderRegistry = "0x9D8bB85b1c728f69672923dD4A0209EC8b75EFda"; // from https://github.com/SiO2-Finance/sio2-protocol/blob/main/deployed-contracts.json
+const addressesProviderRegistry = "0x9D8bB85b1c728f69672923dD4A0209EC8b75EFda"; // from https://sio2-finance.gitbook.io/en/development/contract-addresses
 
 async function getReserves(block) {
   const chain = "astar";
@@ -85,6 +85,7 @@ async function getSio2Tvl(
     block,
     chain,
   });
+
   sdk.util.sumMultiBalanceOf(
     balances,
     balanceOfUnderlying,

@@ -1,11 +1,7 @@
 const DEFAULT_DECIMALS = 18
 
-const SIO2_TOKEN = "SIO2_TOKEN"
 const DOT_TOKEN = "polkadot"
-
-const SIO2_DECIMALS = 18
-
-const SIO2_ADDRESS = "0x04fD8d256f15b54283b5852f0acF0Aa651F7a5D8" // TODO need to check this, get this from https://blockscout.com/astar/address/0x04fD8d256f15b54283b5852f0acF0Aa651F7a5D8
+const DOT_DECIMALS = 10
 
 const TOKENS = {
   // WASTR
@@ -13,10 +9,9 @@ const TOKENS = {
   // DOT
   "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF": DOT_TOKEN,
   // BAI
-  "0x733ebcc6df85f8266349defd0980f8ced9b45f35": 'bai-stablecoin', // TODO need to check this get this from https://blockscout.com/astar/address/0x733ebcC6DF85f8266349DEFD0980f8Ced9B45f35
+  "0x733ebcC6DF85f8266349DEFD0980f8Ced9B45f35": "bai-stablecoin",
   // USDC
-  "0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98":
-    "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+  "0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
   // USDT
   "0x3795C36e7D12A8c252A20C5a7B455f7c57b60283":
     "0xdac17f958d2ee523a2206206994597c13d831ec7",
@@ -33,16 +28,11 @@ const TOKENS = {
     "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
   // BNB
   "0x7f27352D5F83Db87a5A3E00f4B07Cc2138D8ee52": "binancecoin",
-
-  // SIO2
-  [SIO2_ADDRESS]: "sio2-finance",
 };
-
 
 module.exports = {
   DEFAULT_DECIMALS,
-  SIO2_DECIMALS,
-  SIO2_TOKEN,
-  SIO2_ADDRESS,
+  DOT_DECIMALS,
+  DOT_TOKEN,
   TOKENS,
 }
