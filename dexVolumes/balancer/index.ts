@@ -2,7 +2,6 @@ import { DexVolumeAdapter, Fetch } from "../dexVolume.type";
 import { getChainVolume } from "../helper/getUniSubgraphVolume";
 import { ARBITRUM, ETHEREUM, POLYGON } from "../helper/chains";
 import { Chain } from "@defillama/sdk/build/general";
-import { getChainBlocks } from "@defillama/sdk/build/computeTVL/blocks";
 import { getBlock } from "../../projects/helper/getBlock"
 
 const endpoints = {
