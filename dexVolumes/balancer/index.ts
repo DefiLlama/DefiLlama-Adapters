@@ -1,8 +1,7 @@
-import { DexVolumeAdapter, Fetch } from "../dexVolume.type";
+import { DexVolumeAdapter } from "../dexVolume.type";
 import { getChainVolume } from "../helper/getUniSubgraphVolume";
 import { ARBITRUM, ETHEREUM, POLYGON } from "../helper/chains";
-import { Chain } from "@defillama/sdk/build/general";
-import { getBlock } from "../../projects/helper/getBlock"
+import customBackfill from "../helper/customBackfill";
 
 const endpoints = {
   [ETHEREUM]: "https://api.thegraph.com/subgraphs/name/balancer-labs/balancer",
@@ -25,38 +24,24 @@ const graphs = getChainVolume({
   hasDailyVolume: false,
 });
 
-const customBackfill = (chain: Chain): Fetch => async (timestamp: number, chainBlocks: ChainBlocks) => {
-  const fetchGetVolume = graphs(chain)
-  const resultDayN = await fetchGetVolume(timestamp, chainBlocks)
-  const timestampPreviousDay = timestamp - 60 * 60 * 24
-  const chainBlocksPreviousDay = (await getBlock(timestampPreviousDay, chain, {})) - 20
-  const resultPreviousDayN = await fetchGetVolume(timestampPreviousDay, { [chain]: chainBlocksPreviousDay })
-  return {
-    block: resultDayN.block,
-    timestamp: resultDayN.timestamp,
-    totalVolume: resultDayN.totalVolume,
-    dailyVolume: `${Number(resultDayN.totalVolume) - Number(resultPreviousDayN.totalVolume)}`,
-  }
-}
-
 const adapter: DexVolumeAdapter = {
   volume: {
     [ETHEREUM]: {
       fetch: graphs(ETHEREUM),
       start: 0,
-      customBackfill: customBackfill(ETHEREUM),
+      customBackfill: customBackfill(ETHEREUM, graphs),
     },
     // POLYGON
     [POLYGON]: {
       fetch: graphs(POLYGON),
       start: 0,
-      customBackfill: customBackfill(POLYGON),
+      customBackfill: customBackfill(POLYGON, graphs),
     },
     // ARBITRUM
     [ARBITRUM]: {
       fetch: graphs(ARBITRUM),
       start: 0,
-      customBackfill: customBackfill(ARBITRUM),
+      customBackfill: customBackfill(ARBITRUM, graphs),
     },
   },
 };
