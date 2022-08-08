@@ -1,48 +1,12 @@
-const sdk = require("@defillama/sdk");
-const { ethers } = require("ethers");
-
-const insuranceFund = "0x870850A72490379f60A4924Ca64BcA89a6D53a9d";
-const marginAccount = "0x7648675cA85DfB9e2F9C764EbC5e9661ef46055D";
-
-const hUSD = "0x5c6FC0AaF35A55E7a43Fff45575380bCEdb5Cbc2";
-const collaterals = [
-  {
-    token: "avalanche-2",
-    address: "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
-    decimals: 18,
-  },
-  { token: "usd-coin", address: hUSD, decimals: 6 },
-];
-
-async function tvl(timestamp, block, chainBlocks) {
-  const calls = [
-    ...collaterals.map((c) => ({
-      target: c.address,
-      params: marginAccount,
-    })),
-    { target: hUSD, params: insuranceFund },
-  ];
-
-  const tokens = await sdk.api.abi.multiCall({
-    calls,
-    abi: "erc20:balanceOf",
-    block: chainBlocks["avax"],
-    chain: "avax",
-  });
-  const balancesSum = {};
-  await sdk.util.sumMultiBalanceOf(balancesSum, tokens);
-  const balances = {};
-  collaterals.forEach((c) => {
-    balances[c.token] = Number(
-      ethers.utils.formatUnits(balancesSum[c.address], c.decimals)
-    );
-  });
-
-  return balances;
-}
+const { sumTokens2 } = require('../helper/unwrapLPs')
+const chain = 'avax'
+const toa = [
+  ['0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e', '0x5c6fc0aaf35a55e7a43fff45575380bcedb5cbc2'], // USDC used for HUSD minting
+  ['0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7', '0x7648675ca85dfb9e2f9c764ebc5e9661ef46055d'], // AVAX used as collateral
+]
 
 module.exports = {
-  avalanche: {
-    tvl,
-  },
-};
+  avax: {
+    tvl: async (_, _b, { [chain]: block }) => sumTokens2({ tokensAndOwners: toa, chain, block, })
+  }
+}
