@@ -37,8 +37,8 @@ function astar(borrowed) {
       if (key.startsWith("0x"))
         return { ...res, [key]: balances[key] };
       if (key === DOT_TOKEN)
-        return { ...res, [key]: new BigNumber(balances[key]).shiftedBy(-DOT_DECIMALS) };
-      return { ...res, [key]: new BigNumber(balances[key]).shiftedBy(-DEFAULT_DECIMALS) };
+        return { ...res, [key]: new BigNumber(balances[key]).shiftedBy(-DOT_DECIMALS).toNumber() };
+      return { ...res, [key]: new BigNumber(balances[key]).shiftedBy(-DEFAULT_DECIMALS).toNumber() };
     }, {});
   };
 }
