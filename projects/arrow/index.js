@@ -1,5 +1,5 @@
 const utils = require("../helper/utils");
-const SUNNY_POOLS = require("../helper/sunny-pools.json");
+const SUNNY_POOLS = require("./sunny-pools.json");
 
 const { getMultipleAccountBuffers, getMultipleAccountsRaw } = require("../helper/solana");
 
