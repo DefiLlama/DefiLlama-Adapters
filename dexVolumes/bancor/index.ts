@@ -42,7 +42,7 @@ const adapter: DexVolumeAdapter = {
     ethereum: {
       fetch: graphs("ethereum"),
       runAtCurrTime: true,
-      customBackfill: () => {},
+      customBackfill: undefined,
       start: 0,
     },
     // CUSTOM BACKFILL
