@@ -58,6 +58,46 @@
           }
         ]
       }
+    },
+    {
+      "name": "Miner",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "quarry",
+            "type": "publicKey"
+          },
+          {
+            "name": "authority",
+            "type": "publicKey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "tokenVaultKey",
+            "type": "publicKey"
+          },
+          {
+            "name": "rewardsEarned",
+            "type": "u64"
+          },
+          {
+            "name": "rewardsPerTokenPaid",
+            "type": "u128"
+          },
+          {
+            "name": "balance",
+            "type": "u64"
+          },
+          {
+            "name": "index",
+            "type": "u64"
+          }
+        ]
+      }
     }
   ],
   "types": [
