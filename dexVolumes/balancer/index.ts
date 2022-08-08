@@ -31,8 +31,17 @@ const adapter: DexVolumeAdapter = {
       customBackfill: () => {},
     },
     // POLYGON
-
+    [POLYGON]: {
+      fetch: graphs(POLYGON),
+      start: 0,
+      customBackfill: () => {},
+    },
     // ARBITRUM
+    [POLYGON]: {
+      fetch: graphs(POLYGON),
+      start: 0,
+      customBackfill: () => {},
+    },
   },
 };
 
