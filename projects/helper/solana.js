@@ -345,6 +345,13 @@ function exportDexTVL(DEX_PROGRAM_ID) {
   }
 }
 
+async function getSaberPools() {
+  return http.get('https://registry.saber.so/data/llama.mainnet.json')
+}
+async function getQuarryData() {
+  return http.get('https://raw.githubusercontent.com/QuarryProtocol/rewarder-list-build/master/mainnet-beta/tvl.json')
+}
+
 module.exports = {
   endpoint,
   TOKEN_LIST_URL,
@@ -363,4 +370,6 @@ module.exports = {
   exportDexTVL,
   getProvider,
   getConnection,
+  getSaberPools,
+  getQuarryData,
 };
