@@ -260,5 +260,8 @@ module.exports = {
     tvl,
     staking,
     //pool2: pool2("0x5F465e9fcfFc217c5849906216581a657cd60605", "0x05767d9ef41dc40689678ffca0608878fb3de906"),
-  }
+  },
+  hallmarks:[
+    [1651881600, "UST depeg"],
+  ]
 }
