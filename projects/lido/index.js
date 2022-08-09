@@ -105,5 +105,8 @@ module.exports = {
   },
   moonbeam:{
     tvl: dot
-  }
+  },
+  hallmarks:[
+    [1658145600, "News stETH on Layer 2"],
+  ]
 }
