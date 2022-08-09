@@ -1915,6 +1915,13 @@ const rskFixMapping = {
   },
 };
 
+const fixPolisMapping = {
+  "0x6fc851b8d66116627fb1137b9d5fe4e2e1bea978": {
+    coingeckoId: "polis",
+    decimals: 18,
+  },
+}
+
 const fixBalancesMapping = {
   avax: fixAvaxBalances,
   evmos: b => fixBalances(b, evmosFixMapping, { removeUnmapped: false }),
@@ -1947,6 +1954,7 @@ const fixBalancesMapping = {
   rei: b => fixBalances(b, reiFixMapping, { removeUnmapped: true }),
   conflux: b => fixBalances(b, confluxFixMapping, { removeUnmapped: false, }),
   rsk: b => fixBalances(b, rskFixMapping, { removeUnmapped: false, }),
+  polis: b => fixBalances(b, fixPolisMapping, { removeUnmapped: true, }),
 };
 
 const chainTransforms = {
