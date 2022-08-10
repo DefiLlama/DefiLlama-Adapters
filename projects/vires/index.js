@@ -18,6 +18,6 @@ module.exports = {
         }),
     },
     hallmarks:[
-        [1656500400, "Bad debt settlement in USDN"],
+        [1659092400, "Bad debt settlement in USDN"],
     ],
 }
