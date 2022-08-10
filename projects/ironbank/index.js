@@ -13,7 +13,8 @@ module.exports = {
       '0x5555f75e3d5278082200fb451d1b6ba946d8e13b', //ibJPY
       '0x1cc481ce2bd2ec7bf67d1be64d4878b16078f309', //ibCHF
       '0x69681f8fde45345c3870bcd5eaf4a05a60e7d227', //ibGBP
-      '0x81d66D255D47662b6B16f3C5bbfBb15283B05BC2'  //ibZAR
+      '0x81d66D255D47662b6B16f3C5bbfBb15283B05BC2', //ibZAR
+      '0x4e3a36A633f63aee0aB57b5054EC78867CB3C0b8', //old hacked sUSD cream market
     ]
   }),
   fantom: {
