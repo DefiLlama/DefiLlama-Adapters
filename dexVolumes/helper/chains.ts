@@ -14,7 +14,7 @@ const RONIN = "ronin";
 const XDAI = "xdai";
 const AURORA = "aurora";
 
-module.exports = {
+export {
   ARBITRUM,
   AVAX,
   BOBA,

@@ -59,7 +59,7 @@ module.exports = {
   hedera: {
     tvl: hbarTvl,
   },
-  polygon: {
+  ethereum: {
     tvl: maticTvl
   },
   fantom: {

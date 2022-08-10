@@ -144,5 +144,8 @@ module.exports = {
   bsc: {
     tvl: bsc
   },
+  hallmarks:[
+    [1658872800, "OP Rewards Start"],
+  ],
   methodology: `TVL is the total quantity of tokens locked in PoolTogether pools on Ethereum, Polygon, Avalanche, Optimism, Celo, and BSC`
 }
