@@ -174,7 +174,7 @@ module.exports = {
   arbitrum: {
     tvl: evm("arbitrum"),
   },
-  avalanche: {
+  avax:{
     tvl: evm("avax"),
   },
   fantom: {

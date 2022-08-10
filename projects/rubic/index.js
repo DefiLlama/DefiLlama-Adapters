@@ -76,7 +76,7 @@ module.exports = {
   fantom: {
     tvl: chainTvl('fantom')
   },
-  avalanche: {
+  avax:{
     tvl: chainTvl('avax')
   },
   harmony: {

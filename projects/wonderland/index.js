@@ -80,7 +80,7 @@ async function ethTvl(timestamp, ethBlock, chainBlocks) {
 
 
 module.exports = {
-  avalanche: {
+  avax:{
     tvl,
     staking: staking(TimeStaking, time, "avax")
   },

@@ -9,7 +9,7 @@ const chainConfig = {
   ethereum: "eth",
   heco: "heco",
   fantom: "fantom",
-  avalanche: "avalanche",
+  avax: "avalanche",
   kcc: "kcc",
   harmony: "harmony",
   okexchain: "okexchain",

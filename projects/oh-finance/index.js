@@ -19,7 +19,7 @@ module.exports={
     ethereum:{
         tvl: getBankTvl("0xa528639aae2e765351dcd1e0c2dd299d6279db52", "ethereum"),
     },
-    avalanche: {
+    avax:{
         tvl: sdk.util.sumChainTvls([
             getBankTvl("0x8B1Be96dc17875ee01cC1984e389507Bb227CaAB", "avax"), // usdc
             getBankTvl("0xd96AbEcf6AA022735CFa9CB512d63645b0834720", "avax"), // usdt
