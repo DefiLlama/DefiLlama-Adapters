@@ -5,7 +5,7 @@ const tvl = getAvaxUniswapTvl('https://api.thegraph.com/subgraphs/name/baguette-
 module.exports = {
   misrepresentedTokens: true,
   methodology: 'We count liquidity on the pairs. We get that information from the "baguette-exchange/baguette" subgraph',
-  avalanche:{
+  avax:{
     tvl,
   },
 }

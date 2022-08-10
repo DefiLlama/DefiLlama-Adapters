@@ -53,7 +53,7 @@ module.exports = {
     fantom: {
         fetch: fantom
     },
-    avalanche: {
+    avax:{
         fetch: avalanche
     },
     arbitrum: {

@@ -21,5 +21,5 @@ module.exports = {
     tvl: getCompoundV2Tvl("0x4250a6d3bd57455d7c6821eecb6206f507576cd2", "fantom", ftmSFIreplace, undefined, undefined, false),
     borrowed: getCompoundV2Tvl("0x4250a6d3bd57455d7c6821eecb6206f507576cd2", "fantom", ftmSFIreplace, undefined, undefined, true)
   },
-  avalanche:compoundExports("0x2eE80614Ccbc5e28654324a66A396458Fa5cD7Cc", "avax"),
+  avax:compoundExports("0x2eE80614Ccbc5e28654324a66A396458Fa5cD7Cc", "avax"),
 };

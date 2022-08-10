@@ -653,7 +653,7 @@ module.exports = {
   fantom: {
     tvl: fantom,
   },
-  avalanche: { 
+  avax:{ 
     tvl: avax,
   },
   moonriver: { 
