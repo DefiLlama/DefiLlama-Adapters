@@ -1,5 +1,15 @@
 const retry = require('../helper/retry')
 const { GraphQLClient, gql } = require('graphql-request')
+const { staking } = require("../helper/staking");
+//const { transformPolygonAddress } = require('../helper/portedTokens');
+
+
+const ETH_STAKING_ADDR = '0x94515758819F4D5119f75EEeB7F6bfdCAdc5e835'
+const POLY_STAKING_ADDR = '0xAf12F8Ec3f8C711d15434B63f9d346224C1c4666'
+const UNB_ETH = '0x8db253a1943dddf1af9bcf8706ac9a0ce939d922'
+const UNB_POLY = '0xD81F558b71A5323e433729009D55159955F8A7f9'
+
+
 
 async function ethTvl() {
     var endpoint = 'https://api.thegraph.com/subgraphs/name/unbound-finance/unbound'
@@ -65,9 +75,11 @@ module.exports = {
   misrepresentedTokens: true,
   doublecounted: true,
   ethereum: {
-    tvl: ethTvl
+    tvl: ethTvl,
+    staking: staking(ETH_STAKING_ADDR,UNB_ETH)
   },
   polygon: {
-    tvl: polyTvl
+    tvl: polyTvl,
+    staking: staking(POLY_STAKING_ADDR,UNB_POLY,'polygon', `polygon:${UNB_POLY}`)
   }
 }

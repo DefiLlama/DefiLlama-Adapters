@@ -332,6 +332,8 @@ async function transformPolygonAddress() {
       "0x00006100F7090010005F1bd7aE6122c3C2CF0090", // wTAUD
     "0x81A123f10C78216d32F8655eb1A88B5E9A3e9f2F":
       "0x00000000441378008ea67f4284a57932b1c000a5", // wTGBP
+    "0xAf12F8Ec3f8C711d15434B63f9d346224C1c4666":
+      "0x8dB253a1943DdDf1AF9bcF8706ac9A0Ce939d922", // UNB unbound token
   };
   normalizeMapping(mapping);
 
