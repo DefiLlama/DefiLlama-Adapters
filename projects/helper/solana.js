@@ -2,8 +2,7 @@ const BigNumber = require("bignumber.js");
 const axios = require("axios");
 const http = require('./http')
 const { Connection, PublicKey, Keypair } = require("@solana/web3.js")
-const { Provider } = require("@project-serum/anchor");
-const { NodeWallet } = require("@project-serum/anchor/dist/cjs/provider");
+const { AnchorProvider: Provider, Wallet, } = require("@project-serum/anchor");
 const BufferLayout = require("@solana/buffer-layout")
 const { MintLayout, TOKEN_PROGRAM_ID } = require("@solana/spl-token")
 const { sleep, sliceIntoChunks, log } = require('./utils')
@@ -23,7 +22,7 @@ function getConnection() {
 function getProvider() {
   if (!provider) {
     const dummy_keypair = Keypair.generate();
-    const wallet = new NodeWallet(dummy_keypair);
+    const wallet = new Wallet(dummy_keypair);
   
     provider = new Provider(
       getConnection(), wallet
