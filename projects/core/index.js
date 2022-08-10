@@ -240,8 +240,6 @@ async function  tvl(timestamp, block)
     const underlyingReserves = await Promise.all(pairInfo.map(info => getPairUnderlyingReserves(info, timestamp, block)));
     const balances_erc90 = flattenUnderlyingReserves(underlyingReserves);
   
-    console.log(balances_erc90)
-  
     const balances_treasure = {};
     await Promise.all(configs.treasury.map(address => sumTokensAndLPsSharedOwners(
     balances_treasure,
@@ -250,8 +248,6 @@ async function  tvl(timestamp, block)
     block
     )));  
     
-    console.log(balances_treasure)
-
     const balances_borrow = {};
     await Promise.all(configs.lending.map(address => sumTokensAndLPsSharedOwners(
     balances_borrow,
@@ -259,8 +255,6 @@ async function  tvl(timestamp, block)
     [address],
     block
     )));
-  
-    console.log(balances_borrow)
   
     const balances_staking = {};
     await Promise.all(configs.staking.map(address => sumTokensAndLPsSharedOwners(
@@ -270,13 +264,10 @@ async function  tvl(timestamp, block)
     block
     )));  
     
-    console.log(balances_staking)
-    
     balances_cat = [balances_erc90, balances_treasure, balances_borrow, balances_staking];
 
     const balances = merge(balances_cat) 
 
-    console.log(balances)
     return balances
 }
 
