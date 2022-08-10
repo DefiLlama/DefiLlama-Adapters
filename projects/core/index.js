@@ -1,13 +1,4 @@
-const sdk = require('@defillama/sdk');
-const BigNumber = require("bignumber.js");
-const getReserves = require('./abis/uniswap/getReserves.json');
-const token0 = require('./abis/uniswap/token0.json');
-const token1 = require('./abis/uniswap/token1.json');
-
-const numTokensWrapped = require('./abis/erc95/numTokensWrapped.json');
-const getTokenInfo = require('./abis/erc95/getTokenInfo.json');
-
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
+const { sumTokens2, nullAddress, } = require('../helper/unwrapLPs')
 
 // cVault UniV2 pairs
 const CORE_WETH_V2 =    '0x32Ce7e48debdccbFE0CD037Cc89526E4382cb81b' // CORE/WETH - LP1
@@ -31,6 +22,9 @@ const FANNY =       '0x8ad66f7e0e3e3dc331d3dbf2c662d7ae293c1fe0' // FANNY
 const CORE = '0x62359ed7505efc61ff1d56fef82158ccaffa23d7' // CORE
 const DELTA_RLP =      '0xfcfc434ee5bff924222e084a8876eee74ea7cfba' // DELTA rLP       
 const WETH =       '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2' // wETH
+const USDC = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
+const USDT = "0xdac17f958d2ee523a2206206994597c13d831ec7"
+const WBTC = "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"
 
 // Ecosystem contracts
 const CORE_DEPLOYER      = '0x5a16552f59ea34e44ec81e58b3817833e9fd5436' // CoreVault Deployer/Multisig
@@ -45,272 +39,43 @@ const DELTA_LSW          = '0xdaFCE5670d3F67da9A3A44FE6bc36992e5E2beaB' // Delta
 const DELTA_DISTRIBUTOR  = '0xF249C5B422758D91d8f05E1Cc5FC85CF4B667461' // Delta Distributor
 const DELTA_MULTISIG     = '0xB2d834dd31816993EF53507Eb1325430e67beefa' // Delta Multisig
 
-const zero = new BigNumber(0);
-
-const configs = {
-  
-  // [address,isLP]
-  assets: [
-      [DAI, false],
-      [DELTA, false],
-      [CORE, false],
-      [COREDAO, false],
-      [DELTA_RLP, false],
-      [FANNY, false],
-      [WETH, false], 
-      [COREBTC, false],
-      [COREDAI, false],
-      [WCORE, false],
-      [FANNY, false],
-      [DELTA_ETH_SSLP, true],
-      [CORE_WETH_V2, true],
-      [CORE_CBTC_V2, true],
-      [COREDAI_WCORE_V2,true],
-      [CORE_FANNY_V2, true],
-    ] ,
-  pairAddresses: [CORE_WETH_V2, CORE_CBTC_V2, COREDAI_WCORE_V2]
-  ,
-  erc95TokenAddresses: [COREBTC, COREDAI, WCORE]
-  ,  
-  staking: [CORE_VAULT_PROXY, DELTA_DFV, FANNY_VAULT, DELTA_STABLE_YIELD]
-  ,
-  lending: [CLEND]
-  ,
-  treasury: [CORE_DEPLOYER, CORE_LGE_2, LP_WRAPPER, DELTA_LSW, DELTA_DISTRIBUTOR, DELTA_MULTISIG]
+async function treasury(_, block){ 
+  const tokensAndOwners = [
+    [nullAddress, CORE_DEPLOYER],
+    [DAI, CORE_DEPLOYER],
+    [USDC, CORE_DEPLOYER],
+    [CORE_CBTC_V2, CORE_LGE_2],
+    [DAI, LP_WRAPPER],
+    [WETH, DELTA_LSW],
+    [USDT, DELTA_LSW],
+    [WETH, DELTA_DISTRIBUTOR],
+    [WETH, DELTA_MULTISIG],
+    [CORE_WETH_V2, DELTA_MULTISIG],
+  ]
+  return sumTokens2({ block,  tokensAndOwners, resolveLP: true, })
 }
 
-/**
- * Retrieve all the Uniswap pair information.
- * 
- * @param {[String]} pairAddresses The uniswap pair addresses
- * @param {any} timestamp 
- * @param {any} block 
- * @returns {Promise<[{ token0: String,  token1: String, reserve0: String, reserve1: String }]>}
- */
-async function getUniswapPairInfo(pairAddresses, timestamp, block) {
-  const [token0Addresses, token1Addresses, reserves, totalSupplies] = await Promise.all([
-    sdk.api.abi.multiCall({
-      abi: token0,
-      calls: pairAddresses.map((pairAddress) => ({
-        target: pairAddress,
-      })),
-      block,
-    })
-      .then(({ output }) => output.map(value => value.output)),
-    sdk.api.abi.multiCall({
-      abi: token1,
-      calls: pairAddresses.map((pairAddress) => ({
-        target: pairAddress,
-      })),
-      block,
-    })
-      .then(({ output }) => output.map(value => value.output)),
-    sdk.api.abi.multiCall({
-      abi: getReserves,
-      calls: pairAddresses.map((pairAddress) => ({
-        target: pairAddress,
-      })),
-      block,
-    })
-      .then(({ output }) => output.map(value => value.output)),
-    sdk.api.abi.multiCall({
-      block,
-      calls: pairAddresses.map(pairAddress => ({
-        target: pairAddress
-      })),
-      abi: 'erc20:totalSupply',
-    }).then(({ output }) => output.map(value => value.output))
-  ]);
-  return pairAddresses.map((_value, index) => {
-    return {
-      reserve0: reserves[index] ? reserves[index]['reserve0'] : null,
-      reserve1: reserves[index] ? reserves[index]['reserve1'] : null,
-      token0: token0Addresses[index],
-      token1: token1Addresses[index],
-      totalSupply: totalSupplies[index],
-    }
-  })
+async function tvl(_, block){ 
+  const tokensAndOwners = [
+    [WETH, DELTA_DFV],
+    [DAI, CLEND],
+    [WBTC, COREBTC],
+    [DAI, COREDAI],
+    [DELTA_ETH_SSLP, DELTA_RLP],
+  ]
+  return sumTokens2({ block,  tokensAndOwners, resolveLP: true, })
 }
 
-/**
- * Retrieve the underlying reserve of each token within a pair.
- * 
- * @param {{ token0: String, token1: String, reserve0: String, reserve1: String }} pairInfo Contains the information about a pair.
- * @param {any} timestamp 
- * @param {any} block
- * @returns {Promise<{ [String]: BigNumber }>}
- */
-async function getPairUnderlyingReserves(pairInfo, timestamp, block) {
-  return Promise.all([
-    getTokenUnderlyingReserves(pairInfo.token0, pairInfo.reserve0, timestamp, block),
-    getTokenUnderlyingReserves(pairInfo.token1, pairInfo.reserve1, timestamp, block)
-  ]);
-};
-
-/**
- * Retrieve the token reserve and if it's an ERC95 token, retrieve
- * each underlying assets reserves.
- * 
- * @param {String} token Token address
- * @param {String} defaultReserve Default reserve amount to use when not a ERC95 token
- * @param {any} timestamp 
- * @param {any} block
- * @returns {Promise<{ [String]: BigNumber }>}
- */
-async function getTokenUnderlyingReserves(token, defaultReserve, _timestamp, block) {
-  if (configs.erc95TokenAddresses.indexOf(token) === -1) {
-    return [{ [token]: defaultReserve }];
-  }
-
-  const numTokensWrappedResponse = await sdk.api.abi.call({
-    target: token,
-    abi: numTokensWrapped,
-    block
-  });
-
-  const wrappedTokenCount = parseInt(numTokensWrappedResponse.output);
-  const getTokenInfoCalls = []
-  for (let i = 0;i < wrappedTokenCount; i++)
-    getTokenInfoCalls.push({
-      target: token,
-      params: [i],
-      abi: getTokenInfo,
-      block
-    })
-
-  const tokenInfoResponse = await sdk.api.abi.multiCall({
-    block,
-    calls: getTokenInfoCalls,
-    abi: getTokenInfo,
-  });
-
-  const reserves = tokenInfoResponse.output.map(info => ({
-    [info.output.address]: info.output.reserve
-  }));
-
-  return reserves;
-};
-
-/**
- * Flatten and merge common underlying assets with their reserve sum.
- *
- * @param {[{[String]: BigNumber}]} underlyingReserves 
- * @returns {{[String]: [String]}} An object of the token address and its reserve.
- */
-function flattenUnderlyingReserves(underlyingReserves) {
-  const reserves = {};
-
-  underlyingReserves.forEach(pairReserves => {
-    pairReserves.forEach(tokenReserves => {
-      tokenReserves.forEach(underlyingReserves => {
-        Object.keys(underlyingReserves).forEach(address => {
-          const tokenReserve = new BigNumber(underlyingReserves[address]);
-          reserves[address] = (reserves[address] || zero).plus(tokenReserve);
-        });
-      });
-    });
-  });
-
-  Object.keys(reserves).forEach(address => {
-    reserves[address] = reserves[address].toFixed();
-  });
-
-  return reserves;
-}
-
-const merge = data => {
-    const result = {};
-    data.forEach(obj => {
-        for (let [key, value] of Object.entries(obj)) {
-            
-            if (result[key]) {
-                result[key] = BigNumber(result[key]).plus(value).toFixed(0);
-            } else {
-                result[key] = value;
-            }
-        }
-    });
-    return result;
-};
-    
-async function  tvl(timestamp, block)
-{
-
-    const pairInfo = await getUniswapPairInfo(configs.pairAddresses, timestamp, block);
-    const underlyingReserves = await Promise.all(pairInfo.map(info => getPairUnderlyingReserves(info, timestamp, block)));
-    const balances_erc90 = flattenUnderlyingReserves(underlyingReserves);
-  
-    const balances_treasure = {};
-    await Promise.all(configs.treasury.map(address => sumTokensAndLPsSharedOwners(
-    balances_treasure,
-    configs.assets,
-    [address],
-    block
-    )));  
-    
-    const balances_borrow = {};
-    await Promise.all(configs.lending.map(address => sumTokensAndLPsSharedOwners(
-    balances_borrow,
-    configs.assets,
-    [address],
-    block
-    )));
-  
-    const balances_staking = {};
-    await Promise.all(configs.staking.map(address => sumTokensAndLPsSharedOwners(
-    balances_staking,
-    configs.assets,
-    [address],
-    block
-    )));  
-    
-    balances_cat = [balances_erc90, balances_treasure, balances_borrow, balances_staking];
-
-    const balances = merge(balances_cat) 
-
-    return balances
-}
-
-async function treasury(timestamp, block)
-{
-    const balances = {};
-    await Promise.all(configs.treasury.map(address => sumTokensAndLPsSharedOwners(
-    balances,
-    configs.assets,
-    [address],
-    block
-  )));
-
-  return balances;
-    
-}
-
-async function borrowed(timestamp, block)
-{
-    const balances = {};
-    await Promise.all(configs.lending.map(address => sumTokensAndLPsSharedOwners(
-    balances,
-    configs.assets,
-    [address],
-    block
-  )));
- 
-  return balances;
-    
-}
-
-async function staking(timestamp, block)
-{
-    const balances = {};
-    await Promise.all(configs.staking.map(address => sumTokensAndLPsSharedOwners(
-    balances,
-    configs.assets,
-    [address],
-    block
-  )));
-
-  return balances;
-    
+async function staking(_, block){ 
+  const tokensAndOwners = [
+    [COREDAO, CORE_VAULT_PROXY],
+    [DELTA, DELTA_DFV],
+    // [DELTA_RLP, DELTA_DFV],
+    [CORE, FANNY_VAULT],
+    // [FANNY, FANNY_VAULT],
+    [DELTA, DELTA_STABLE_YIELD],
+  ]
+  return sumTokens2({ block,  tokensAndOwners })
 }
 
 module.exports = {
@@ -319,7 +84,6 @@ module.exports = {
       start: 1601142406, // 2020-09-26 17:46:46 (UTC),
       tvl, 
       treasury, 
-      borrowed, 
       staking,
       ownTokens: ['CORE', 'CoreDAO', 'Delta', 'FANNY', 'Delta rLP', 'cBTC', 'cDAI']
   }
