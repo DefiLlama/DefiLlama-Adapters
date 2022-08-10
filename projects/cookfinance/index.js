@@ -280,7 +280,7 @@ module.exports = {
     ),
     staking: staking(stakingPool, cookToken),
   },
-  avalanche: {
+  avax:{
     tvl: avaTvl,
     pool2: pool2s(["0x35be7982bc5e40a8c9af39a639bddce32081102e", "0x188bED1968b795d5c9022F6a0bb5931Ac4c18F00"], avaxPool2LPs, "avax"),
     staking: staking(

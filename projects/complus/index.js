@@ -23,7 +23,7 @@ module.exports = {
     tvl: chainTvl('heco'),
   },
   */
-  avalanche: {
+  avax:{
     tvl: chainTvl('avax'),
   },
 }
