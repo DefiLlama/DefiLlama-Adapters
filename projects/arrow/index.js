@@ -1,25 +1,33 @@
-const { Program, } = require("@project-serum/anchor");
+const { Program, BorshAccountsCoder, } = require("@project-serum/anchor");
 const { sliceIntoChunks, } = require("../helper/utils");
 const { PublicKey } = require("@solana/web3.js");
-const QuarryMineIDL = require("../quarry/quarry_mine.json");
 const arrowIDL = require("./arrowIDL.json");
 const sdk = require('@defillama/sdk')
-const { getMultipleAccountBuffers, getSaberPools, getProvider, } = require("../helper/solana");
+const { getMultipleAccountBuffers, getSaberPools, getProvider, getConnection } = require("../helper/solana");
 
 async function tvl() {
-
+  // const connection = getConnection()
   const arrowId = new PublicKey('ARoWLTBWoWrKMvxEiaE2EH9DrWyV7mLpKywGDWxBGeq9')
+  const quarryId = new PublicKey('QMNeHCGYnLVDn1icRAfQZpjPLBNkfGbSKRB83G5d8KB')
   const provider = getProvider()
+  const QuarryMineIDL = await Program.fetchIdl(quarryId, provider)
   const saberPools = await getSaberPools()
   const arrowProgram = new Program(arrowIDL, arrowId, provider)
   const balances = {}
-  const arrows = await arrowProgram.account.arrow.all()
-  arrows[159].account.vendorMiner.minerVault
+  const arrows = (await arrowProgram.account.arrow.all()).filter(i => i.account.internalMiner.miner._bn > 0)
   const miners = arrows.map(i => i.account.internalMiner.miner.toString())
   const lpMints = arrows.map(i => i.account.vendorMiner.mint.toString())
-  const quarryId = new PublicKey('QMNeHCGYnLVDn1icRAfQZpjPLBNkfGbSKRB83G5d8KB')
   const quarryProgram = new Program(QuarryMineIDL, quarryId, provider)
   const quaryData = await quarryProgram.account.miner.fetchMultiple(miners)
+  // return  {}
+  // const coder = new BorshAccountsCoder(QuarryMineIDL);
+  // const minersRaw = await connection.getMultipleAccountsInfo(
+  //   miners.map((q) => new PublicKey(q))
+  // );
+  // const quaryData = minersRaw.map((q) =>
+  //   coder.accountLayouts.get('Miner').decode(q.data)
+  // );
+  // const quaryData = await quarryProgram.account.miner.fetchMultiple(miners)
   const quarryDataKeyed = {}
   quaryData.forEach((data, i) => {
     if (!data) return;

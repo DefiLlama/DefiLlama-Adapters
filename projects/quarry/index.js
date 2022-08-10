@@ -2,7 +2,6 @@ const { sliceIntoChunks, log } = require("../helper/utils");
 const { PublicKey } = require("@solana/web3.js");
 const { BorshAccountsCoder, } = require("@project-serum/anchor");
 const { Program, } = require("@project-serum/anchor");
-const QuarryMineIDL = require("./quarry_mine.json");
 const { getMSolLPTokens, MSOL_LP_MINT } = require("./msolLP");
 const sdk = require('@defillama/sdk')
 
@@ -18,8 +17,15 @@ async function tvl() {
   } = await getQuarryData();
   const saberPools = await getSaberPools()
 
-  const connection = getConnection();
-  const coder = new BorshAccountsCoder(QuarryMineIDL);
+  // const connection = getConnection();
+  const quarryId = new PublicKey('QMNeHCGYnLVDn1icRAfQZpjPLBNkfGbSKRB83G5d8KB')
+  const provider = getProvider();
+  const QuarryMineIDL = await Program.fetchIdl(quarryId, provider)
+  const quarryProgram = new Program(QuarryMineIDL, quarryId, provider)
+  const allQuaries = await quarryProgram.account.quarry.all()
+  const quaryMapping = {}
+  allQuaries.forEach(i => quaryMapping[i.publicKey.toString()] = i)
+  // const coder = new BorshAccountsCoder(QuarryMineIDL);
   let i = 0
   log('total', Object.keys(quarriesByStakedMint).length)
   const quarriies = []
@@ -41,12 +47,8 @@ async function tvl() {
       continue;
     }
 
-    const quarriesRaw = await connection.getMultipleAccountsInfo(
-      quarryKeys.map((q) => new PublicKey(q))
-    );
-    const quarries = quarriesRaw.map((q) =>
-      coder.accountLayouts.get('Quarry').decode(q.data)
-    );
+    const quarries = quarryKeys.map(i => quaryMapping[i].account)
+    
     const totalTokens = quarries.reduce(
       (sum, q) =>
         sum +
@@ -78,10 +80,7 @@ async function tvl() {
   }
 
   const balances = tvlResult
-  const quarryId = new PublicKey('QMNeHCGYnLVDn1icRAfQZpjPLBNkfGbSKRB83G5d8KB')
-  const provider = getProvider()
-  const quarryProgram = new Program(QuarryMineIDL, quarryId, provider)
-  const quaryData = await quarryProgram.account.quarry.fetchMultiple(quarriies)
+  const quaryData = quarriies.map(i => quaryMapping[i].account)
   const quarryDataKeyed = {}
   quaryData.forEach((data, i) => {
     if (!data) return;
