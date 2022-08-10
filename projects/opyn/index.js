@@ -15,7 +15,7 @@ module.exports = {
   ethereum: {
     tvl: sdk.util.sumChainTvls([v1TVL.tvl, v2TVL.tvl, squeethTVL.tvl])
   },
-  avalanche: {
+  avax:{
     tvl: avaxTvl
   },
   polygon: {

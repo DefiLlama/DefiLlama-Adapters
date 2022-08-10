@@ -54,7 +54,7 @@ module.exports = {
   bsc: {
     tvl: getBscTvl,
   },
-  avalanche: {
+  avax:{
     tvl: getAvaxTvl,
   },
   fantom: {

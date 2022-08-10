@@ -125,7 +125,7 @@ async function pool2(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
-    avalanche: {
+    avax:{
         tvl,
         pool2,
         staking: staking(stakingAddress, boofi, "avax")

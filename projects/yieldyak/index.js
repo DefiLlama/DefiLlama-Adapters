@@ -113,7 +113,7 @@ async function pool2(time, ethBlock, chainBlocks) {
 }
 
 module.exports = {
-    avalanche: {
+    avax:{
         tvl,
         staking: staking(masterYak, yakToken, "avax"),
         pool2
