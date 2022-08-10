@@ -1,12 +1,12 @@
 const { sliceIntoChunks, log } = require("../helper/utils");
 const { PublicKey } = require("@solana/web3.js");
-const { Coder } = require("@project-serum/anchor");
+const { BorshAccountsCoder, } = require("@project-serum/anchor");
 const { Program, } = require("@project-serum/anchor");
 const QuarryMineIDL = require("./quarry_mine.json");
 const { getMSolLPTokens, MSOL_LP_MINT } = require("./msolLP");
 const sdk = require('@defillama/sdk')
 
-const { getMultipleAccountBuffers, getConnection, getSaberPools, getQuarryData,  getProvider, } = require("../helper/solana");
+const { getMultipleAccountBuffers, getConnection, getSaberPools, getQuarryData, getProvider, } = require("../helper/solana");
 
 async function tvl() {
   // a mapping of coin name to coin amount
@@ -19,10 +19,10 @@ async function tvl() {
   const saberPools = await getSaberPools()
 
   const connection = getConnection();
-  const coder = new Coder(QuarryMineIDL);
+  const coder = new BorshAccountsCoder(QuarryMineIDL);
   let i = 0
   log('total', Object.keys(quarriesByStakedMint).length)
-  const quarriies =  []
+  const quarriies = []
 
   for (const [stakedMint, quarryKeys] of Object.entries(quarriesByStakedMint)) {
     const coingeckoID = coingeckoIDs[stakedMint];
@@ -45,13 +45,13 @@ async function tvl() {
       quarryKeys.map((q) => new PublicKey(q))
     );
     const quarries = quarriesRaw.map((q) =>
-      coder.accounts.decode("Quarry", q.data)
+      coder.accountLayouts.get('Quarry').decode(q.data)
     );
     const totalTokens = quarries.reduce(
       (sum, q) =>
         sum +
         parseFloat(q.totalTokensDeposited.toString()) /
-          10 ** q.tokenMintDecimals,
+        10 ** q.tokenMintDecimals,
       0
     );
 
