@@ -19,7 +19,7 @@ export type VolumeAdapter = {
     start: number | any;
     fetch: Fetch;
     runAtCurrTime?: boolean;
-    customBackfill?: any;
+    customBackfill?: Fetch;
   };
 };
 

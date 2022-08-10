@@ -285,20 +285,7 @@ async function transformBscAddress() {
   };
 }
 
-const PoSMappedTokenList =
-  "https://api.bridge.matic.network/api/tokens/pos/erc20";
-const PlasmaMappedTokenList =
-  "https://api.bridge.matic.network/api/tokens/plasma/erc20";
-
 async function transformPolygonAddress() {
-  const posTokens = await utils.fetchURL(PoSMappedTokenList);
-  const plasmaTokens = await utils.fetchURL(PlasmaMappedTokenList);
-  const tokens = posTokens.data.tokens
-    .concat(plasmaTokens.data.tokens)
-    .reduce((tokenMap, token) => {
-      tokenMap[token.childToken.toLowerCase()] = token.rootToken.toLowerCase();
-      return tokenMap;
-    }, {});
   const mapping = {
     "0x60d01ec2d5e98ac51c8b4cf84dfcce98d527c747":
       "0x9ad37205d608b8b219e6a2573f922094cec5c200", // IZI
@@ -332,12 +319,14 @@ async function transformPolygonAddress() {
       "0x00006100F7090010005F1bd7aE6122c3C2CF0090", // wTAUD
     "0x81A123f10C78216d32F8655eb1A88B5E9A3e9f2F":
       "0x00000000441378008ea67f4284a57932b1c000a5", // wTGBP
+    "0xAf12F8Ec3f8C711d15434B63f9d346224C1c4666":
+      "0x8dB253a1943DdDf1AF9bcF8706ac9A0Ce939d922", // UNB unbound token
   };
   normalizeMapping(mapping);
 
   return addr => {
     addr = addr.toLowerCase();
-    return mapping[addr] || tokens[addr] || `polygon:${addr}`;
+    return mapping[addr] || `polygon:${addr}`;
   };
 }
 
@@ -1915,6 +1904,13 @@ const rskFixMapping = {
   },
 };
 
+const fixPolisMapping = {
+  "0x6fc851b8d66116627fb1137b9d5fe4e2e1bea978": {
+    coingeckoId: "polis",
+    decimals: 18,
+  },
+}
+
 const fixBalancesMapping = {
   avax: fixAvaxBalances,
   evmos: b => fixBalances(b, evmosFixMapping, { removeUnmapped: false }),
@@ -1947,6 +1943,7 @@ const fixBalancesMapping = {
   rei: b => fixBalances(b, reiFixMapping, { removeUnmapped: true }),
   conflux: b => fixBalances(b, confluxFixMapping, { removeUnmapped: false, }),
   rsk: b => fixBalances(b, rskFixMapping, { removeUnmapped: false, }),
+  polis: b => fixBalances(b, fixPolisMapping, { removeUnmapped: true, }),
 };
 
 const chainTransforms = {
