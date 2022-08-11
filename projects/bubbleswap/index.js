@@ -1,7 +1,7 @@
 const { default: axios } = require('axios');
 async function fetch(){
 
-    const response = await axios.get('https://analytics.bubbleswap.io/api/v1/analytics/aggregate/liquidity/year', {
+    const response = await axios.get('https://api.bubbleswap.io/analytics/api/v1/analytics/aggregate/liquidity/year', {
         headers: {
             //I would prefer the user agengt to be set to something like axios, or DefiLlama, but our WAF only allows the bellow
             'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36'

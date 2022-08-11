@@ -30,7 +30,7 @@ async function ethTvl() {
     var results = await retry(async bail => await graphQLClient.request(query))
     let t = []
 
-    for (i=0;i<results.vaults.length-1;i++){
+    for (let i=0;i<results.vaults.length-1;i++){
       t.push(results.vaults[i].tvl)
     }
     let vault0 = parseFloat(results.vaults[0].tvl ) / 10e17
@@ -60,7 +60,7 @@ async function polyTvl() {
   var results = await retry(async bail => await graphQLClient.request(query))
   let t = []
 
-  for (i=0;i<results.vaults.length-1;i++){
+  for (let i=0;i<results.vaults.length-1;i++){
     t.push(results.vaults[i].tvl)
   }
   let vault0 = parseFloat(results.vaults[0].tvl ) / 10e17
