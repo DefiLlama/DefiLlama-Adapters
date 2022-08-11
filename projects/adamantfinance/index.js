@@ -2,7 +2,7 @@ const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const utils = require("../helper/utils");
 const { stakings } = require("../helper/staking");
-const { unwrapUniswapLPs, sumTokens, } = require("../helper/unwrapLPs");
+const { unwrapUniswapLPs, sumTokens, unwrapLPsAuto, } = require("../helper/unwrapLPs");
 const {
   transformPolygonAddress,
   getChainTransform,
@@ -372,14 +372,11 @@ async function uniTvl(balances, chain, block, uniVaults, lpAddressesIgnored, tra
       )
     ) {
     } else {
-      lpPositions.push({
-        balance: vault_balances[idx],
-        token: v.lpAddress,
-      });
+      sdk.util.sumSingleBalance(balances, chain + ':' + v.lpAddress, vault_balances[idx])
     }
   });
 
-  await unwrapUniswapLPs(balances, lpPositions, block, chain, transformAddress);
+  await unwrapLPsAuto({ balances, block, chain, });
   return balances;
 }
 

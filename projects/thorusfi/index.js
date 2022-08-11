@@ -12,7 +12,7 @@ const THO_moonbeam = "0x735aBE48e8782948a37C7765ECb76b98CdE97B0F";
 
 module.exports = {
   timetravel: true,
-  avalanche: {
+  avax:{
     tvl: getUniTVL({
       chain: 'avax',
       factory: factoryContract,

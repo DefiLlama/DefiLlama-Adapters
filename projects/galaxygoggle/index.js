@@ -48,7 +48,7 @@ async function bscTvl(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
-  avalanche: {
+  avax:{
     tvl,
     staking: staking(GgStaking, gg, "avax")
   },
