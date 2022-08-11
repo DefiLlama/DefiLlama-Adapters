@@ -50,8 +50,17 @@ module.exports = {
   karura: {
     fetch: fetch("11")
   },
+  acala: {
+    fetch: fetch("12") 
+  },
+  klaytn: {
+    fetch: fetch("13")
+  },
   celo: {
     fetch: fetch("14")
+  },
+  terra2: {
+    fetch: fetch("18")
   },
   fetch: fetch("*")
 }

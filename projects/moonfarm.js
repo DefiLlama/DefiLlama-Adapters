@@ -58,7 +58,7 @@ module.exports = {
   kava:{
     fetch: kava
   },
-  avalanche:{
+  avax:{
     fetch: avalanche
   },
   fantom:{

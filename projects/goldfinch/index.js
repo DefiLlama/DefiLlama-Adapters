@@ -8,16 +8,22 @@ const gfFactoryAddress = "0xd20508E1E971b80EE172c73517905bfFfcBD87f9";
 const poolTokensAddress = "0x57686612C601Cb5213b01AA8e80AfEb24BBd01df";
 const V2_START = 13097274;
 const USDC = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
+let _trancheAddresses
 
 const getTranchedPoolAddresses = async (ethBlock) => {
-  const logs = await sdk.api.util.getLogs({
-    target: gfFactoryAddress,
-    keys: [],
-    fromBlock: V2_START,
-    toBlock: ethBlock,
-    topic: "PoolCreated(address,address)",
-  });
-  return logs.output.map((l) => "0x" + l.topics[1].substr(26));
+  if (!_trancheAddresses) _trancheAddresses = _get()
+  return _trancheAddresses
+
+  async function _get() {
+    const logs = await sdk.api.util.getLogs({
+      target: gfFactoryAddress,
+      keys: [],
+      fromBlock: V2_START,
+      toBlock: ethBlock,
+      topic: "PoolCreated(address,address)",
+    });
+    return logs.output.map((l) => "0x" + l.topics[1].substr(26));
+  }
 };
 
 /**
@@ -58,7 +64,7 @@ const borrowed = async (_, ethBlock) => {
     [seniorPoolAddress].map((pool) => [USDC, pool]),
     ethBlock
   );
-  const seniorPoolUsdcBalance = new BigNumber(_seniorPoolUsdcBalances[USDC]);
+  const seniorPoolUsdcBalance = new BigNumber(_seniorPoolUsdcBalances[USDC] || 0);
 
   const balances = {};
 

@@ -11,19 +11,30 @@ async function getTVL(subgraphName, block) {
 
   var query = gql`
   query get_tvl($block: Int) {
-    balancers(
-      first: 5,
+    pools (
+      orderBy: totalLiquidity
+      orderDirection:desc
       block: { number: $block }
-    ) {
-      totalLiquidity,
-      totalSwapVolume
+    ){
+      id
+      name
+      owner
+      address
+      totalLiquidity
     }
   }
   `;
   const results = await graphQLClient.request(query, {
     block
   })
-  return results.balancers[0].totalLiquidity;
+
+  results.pools.forEach(i => {
+    if (+i.totalLiquidity > 1e10) console.log('bad pool: ', i)
+  })
+  return results.pools
+    .map(i => +i.totalLiquidity)
+    .filter(i => i < 1e10)  // we filter out if liquidity is higher than 10B as it is unlikely/error
+    .reduce((acc, i) => acc + i, 0)
 }
 
 async function getTVLFromPools(subgraphName, block) {
@@ -40,11 +51,17 @@ async function getTVLFromPools(subgraphName, block) {
       orderDirection:desc
     ) {
       liquidity
+      name
+      publicSwap
+      tokens
     }
   }
   `;
   const results = await graphQLClient.request(query, {
     block
+  })
+  results.pools.forEach(i => {
+    if (+i.liquidity > 1e10) console.log('bad pool: ', i)
   })
   return results.pools
     .map(i => +i.liquidity)

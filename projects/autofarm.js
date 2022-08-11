@@ -3,7 +3,7 @@ const {fetchChainExports} = require('./helper/exports');
 
 const transformChain = {
   okexchain: 'okex',
-  avalanche: 'avax',
+  avax: 'avax',
 }
 
 function chainTvl(chain){
@@ -15,7 +15,7 @@ function chainTvl(chain){
 
 module.exports=fetchChainExports(chainTvl, [
   'bsc',       'polygon',
-  'heco',      'avalanche',
+  'heco',      'avax',
   'fantom',    'moonriver',
   'okexchain', 'celo',
   'cronos',    'boba',

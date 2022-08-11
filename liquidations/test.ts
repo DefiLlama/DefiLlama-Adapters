@@ -1,63 +1,14 @@
-import path from "path";
-import axios from "axios";
+import * as path from "path";
 import { ethers } from "ethers";
 import { providers } from "./utils/ethers"
 import {
     humanizeNumber,
   } from "@defillama/sdk/build/computeTVL/humanizeNumber";
-
-const TOTAL_BINS = 20;
-
-interface Liq {
-    owner: string,
-    liqPrice: number,
-    collateral: string,
-    collateralAmount: string,
-}
-
-interface Bins {
-    [token:string]:{
-        bins:{
-            [bin:number]:number
-        },
-        binSize: number,
-        price: number,
-    }
-}
+import {TOTAL_BINS, Bins, binResults, Liq} from "./utils/binResults"
 
 const f2 = (n:number) => Number(n.toFixed(2))
 
-async function binResults(liqs:Liq[]){
-    const tokens = new Set<string>()
-    liqs.map(liq=>tokens.add(liq.collateral))
-    const prices = (await axios.post("https://coins.llama.fi/prices", {
-        "coins": Array.from(tokens)
-    })).data.coins as {
-        [address:string]: { decimals: number, price: number, symbol: string, timestamp: number }
-    }
-    const bins = Object.values(prices).reduce((all, token)=>({
-        ...all,
-        [token!.symbol]:{
-            bins: {},
-            binSize: token.price/TOTAL_BINS,
-            price: token.price,
-        }
-    }), {} as Bins)
-    const skippedTokens = new Set<string>()
-    liqs.map(liq=>{
-        const tokenAddress = liq.collateral.toLowerCase()
-        const token = prices[tokenAddress]
-        if(token === undefined){
-            skippedTokens.add(tokenAddress)
-            return
-        }
-        const binSize = bins[token.symbol].binSize;
-        const bin = Math.floor(liq.liqPrice/binSize)
-        if(bins[token.symbol].bins[bin] === undefined){
-            bins[token.symbol].bins[bin] = 0
-        }
-        bins[token.symbol].bins[bin] += Number(liq.collateralAmount)/(10**token.decimals)
-    })
+async function displayDebugInfo(skippedTokens:Set<string>, liqs: Liq[], bins:Bins){
     let sumLiquidable = 0
     const liquidableTable = [] as any[]
     Object.entries(bins).map(([symbol, tokenLiqs])=>{
@@ -138,7 +89,8 @@ async function main(){
         console.log(e)
       }
     const liqs = await module.ethereum.liquidations();
-    await binResults(liqs)
+    const {skippedTokens, bins} = await binResults(liqs)
+    await displayDebugInfo(skippedTokens, liqs, bins)
     //console.log(liqs)
     console.log(`\nSize of all liquidation data: ${JSON.stringify(liqs).length/10**6} MB`)
     process.exit(0)

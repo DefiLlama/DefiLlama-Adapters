@@ -55,7 +55,7 @@ module.exports = {
     tvl: ethereum(false),
     borrowed: ethereum(true),
   },
-  avalanche: v2("avax", "0x4235E22d9C3f28DCDA82b58276cb6370B01265C2"),
+  avax: v2("avax", "0x4235E22d9C3f28DCDA82b58276cb6370B01265C2"),
   polygon: v2("polygon", "0x3ac4e9aa29940770aeC38fe853a4bbabb2dA9C19"),
 };
 // node test.js projects/aave/index.js
