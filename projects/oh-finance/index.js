@@ -1,13 +1,11 @@
 const sdk = require('@defillama/sdk');
 const { getBlock } = require('../helper/getBlock');
-const { avalanche } = require('../multichainMiner');
 const abi = require('./abi.json')
 
 function getBankTvl(bankAddress, chain){
     return async (time, ethBlock, chainBlocks)=>{
         const block = (await getBlock(time, chain, chainBlocks));
-        const balances = {};
-        const invested = await sdk.api.abi.call({target: bankAddress, block, chain, abi:abi.investedBalance})
+        const invested = await sdk.api.abi.call({target: bankAddress, block, chain, abi:abi.virtualBalance})
         const underlying = await sdk.api.abi.call({target: bankAddress, block, chain, abi:abi.underlying})
         return {
             [chain+":"+underlying.output]: invested.output
@@ -17,7 +15,7 @@ function getBankTvl(bankAddress, chain){
 
 module.exports={
     ethereum:{
-        tvl: getBankTvl("0xa528639aae2e765351dcd1e0c2dd299d6279db52", "ethereum"),
+        tvl: getBankTvl("0xa528639aae2e765351dcd1e0c2dd299d6279db52", "ethereum"), // usdc
     },
     avax:{
         tvl: sdk.util.sumChainTvls([
@@ -36,8 +34,8 @@ module.exports={
     },
     metis: {
         tvl: sdk.util.sumChainTvls([
-            getBankTvl("0x4C211F45876d8EC7bAb54CAc0e32AAD15095358A", "metis"),
-            getBankTvl("0xc53bC2517Fceff56308b492AFad4A53d96d16ed8", "metis")
+            getBankTvl("0x4C211F45876d8EC7bAb54CAc0e32AAD15095358A", "metis"), // m.usdc
+            getBankTvl("0xc53bC2517Fceff56308b492AFad4A53d96d16ed8", "metis"), // m.usdt
         ])
     }
 }
