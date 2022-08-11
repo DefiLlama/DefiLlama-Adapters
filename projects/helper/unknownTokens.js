@@ -289,7 +289,7 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
     if (pairLength === null)
       throw new Error("allPairsLength() failed")
 
-    log('No. of pairs: ', pairLength)
+    log(chain, ' No. of pairs: ', pairLength)
 
     let pairNums = Array.from(Array(Number(pairLength)).keys())
     if (skipPair.length) pairNums = pairNums.filter(i => !skipPair.includes(i))
