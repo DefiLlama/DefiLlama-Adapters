@@ -7,7 +7,7 @@ export default (chain: Chain, graphs: ReturnType<typeof getChainVolume>): Fetch 
     const fetchGetVolume = graphs(chain)
     const resultDayN = await fetchGetVolume(timestamp, chainBlocks)
     const timestampPreviousDay = timestamp - 60 * 60 * 24
-    const chainBlocksPreviousDay = (await getBlock(timestampPreviousDay, chain, {})) - 20
+    const chainBlocksPreviousDay = (await getBlock(timestampPreviousDay, chain, {}))
     const resultPreviousDayN = await fetchGetVolume(timestampPreviousDay, { [chain]: chainBlocksPreviousDay })
     return {
         block: resultDayN.block,
