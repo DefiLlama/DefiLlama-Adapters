@@ -138,6 +138,8 @@
   "flow",
   "icp",
   "nova",
+  "parallel",
+  "heiko",
   "kintsugi",
   "kujira"
 ]

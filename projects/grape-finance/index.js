@@ -13,7 +13,7 @@ const LPTokens = [
 ]
 
 module.exports = {
-    avalanche: {
+    avax:{
         tvl: async () => ({}),
         pool2: pool2Exports(rewardpool, LPTokens, "avax"),
         staking: staking(boardroom, wine, "avax")

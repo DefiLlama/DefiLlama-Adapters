@@ -213,7 +213,7 @@ module.exports = {
   methodology: true,
   // first trove opened
   start: 1650027587,
-  avalanche:{
+  avax:{
     tvl,
     pool2,
     staking

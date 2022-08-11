@@ -34,7 +34,7 @@ const adapter: DexVolumeAdapter = {
     cosmos: {
       fetch: graphs,
       runAtCurrTime: true,
-      customBackfill: () => {},
+      customBackfill: undefined,
       start: 0,
     },
     // TODO custom backfill

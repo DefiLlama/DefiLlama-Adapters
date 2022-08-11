@@ -42,10 +42,21 @@ async function staking() {
   return balances
 }
 
+
+async function borrowed() {
+  const balances = {}
+  const stats = await getStats()
+  stats.underlyingsStatistics.forEach(item => {
+    sdk.util.sumSingleBalance(balances, replaceEth(item.currency.ethAddress), BigNumber(item.totalBorrowedAmount).toFixed(0))
+  })
+  return balances
+}
+
 module.exports = {
   timetravel: false,
   ethereum: {
     tvl,
     staking,
+    borrowed,
   }
 }

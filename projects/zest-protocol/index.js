@@ -5,13 +5,15 @@ const BigNumber = require("bignumber.js");
 const Contracts = {
   fantom: {
     wftm: "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
+    wethBank: "0xB717b014BC34fc904396585CbF4FC1B0BBe603B4",
+    weth: "0x74b23882a30290451A17c44f4F05243b6b58C76d",
     zsp: "0x2C26617034C840C9412CD67aE0Fc68A6755D00BF",
     ftmz: "0x9e219b51891e2c62ea8a2ea438d331eae7c68484",
     usdc: "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75",
     bank: "0x9fc3E5259Ba18BD13366D0728a256E703869F21D",
     multiFeeDistribution: "0x1b6deD5c603d66800B0DDf566Ec316a344C7BcaD",
     chef: "0xFdAa392FCF8946e8e658B9f36ffbE6659cB40edf",
-    lps: [
+    wftmLps: [
       {
         address: "0xcAa542473912a727C7F6715458db8C5f9b0291FC", // ZSP-WFTM
         isToken0: true,
@@ -20,6 +22,14 @@ const Contracts = {
         address: "0xd02cc84b296ef3332Ca9371fC633bB7D7a51ad32", // FTMz-WFTM
         isToken0: true,
       },
+    ],
+    wethLps: [
+      {
+        address: "0x4f9b08C06A19EBee8871C3b563C38326927Ac945", // ETHz-WETH
+        isToken0: true,
+      },
+    ],
+    usdcLps: [
       {
         address: "0x2ABDC15324a38093e07b9EBF7c15bD8e672E212e", // ZSP-USDC
         isToken0: true,
@@ -39,8 +49,16 @@ async function calcTvl(timestamp, ethBlock, chainBlocks) {
     block,
   });
 
+  const bankBalanceWeth = await sdk.api.abi.call({
+    target: Contracts.fantom.wethBank,
+    abi: Abis.bank.usableCollateralBalance,
+    chain: chain,
+    block,
+  });
+
   return {
     [`fantom:${Contracts.fantom.wftm}`]: +bankBalance.output,
+    [`fantom:${Contracts.fantom.weth}`]: +bankBalanceWeth.output,
   };
 }
 
@@ -103,6 +121,7 @@ async function calcLp(lps, block, chain, baseToken) {
       .times(new BigNumber(balances[index].output))
       .idiv(new BigNumber(totalSupplies[index].output))
   );
+
   const total = results.reduce(
     (total, num) => total.plus(num),
     new BigNumber(0)
@@ -115,23 +134,39 @@ async function calcLp(lps, block, chain, baseToken) {
 
 async function ftmPool2(timestamp, block, chainBlocks) {
   const zsp = await calcLp(
-    Contracts.fantom.lps,
+    Contracts.fantom.wftmLps,
     chainBlocks.fantom,
     "fantom",
     Contracts.fantom.zsp
   );
 
   const ftmz = await calcLp(
-    Contracts.fantom.lps,
+    Contracts.fantom.wftmLps,
     chainBlocks.fantom,
     "fantom",
     Contracts.fantom.wftm
   );
 
-  return { ...zsp, ...ftmz };
+  const weth = await calcLp(
+    Contracts.fantom.wethLps,
+    chainBlocks.fantom,
+    "fantom",
+    Contracts.fantom.weth
+  );
+
+  const usdc = await calcLp(
+    Contracts.fantom.usdcLps,
+    chainBlocks.fantom,
+    "fantom",
+    Contracts.fantom.usdc
+  );
+
+  return { ...zsp, ...ftmz, ...weth, ...usdc };
 }
 
 module.exports = {
+  methodology:
+    "TVL of collateral added to Zest Protocol in order to mint Synthetic Assets.",
   fantom: {
     tvl: calcTvl,
     pool2: ftmPool2,

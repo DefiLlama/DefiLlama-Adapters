@@ -4,7 +4,7 @@ const { default: BigNumber } = require("bignumber.js");
 
 const AladdinConvexVaultABI = require('./abis/AladdinConvexVault.json')
 const AladdinCRVABI = require('./abis/AladdinCRV.json')
-const curvePools = require('./pools-crv.js');
+const configPools = require('./config.js');
 const { createIncrementArray } = require('../helper/utils');
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
@@ -79,15 +79,19 @@ async function getVaultInfo(poolLength, type, balances, block) {
 
   await Promise.all(poolInfos.map(async (_, i) => {
     const poolInfo = poolInfos[i];
-    const poolData = curvePools.find(crvPool => crvPool.addresses.lpToken.toLowerCase() === poolInfo.output.lpToken.toLowerCase())
+    const poolData = configPools.find(crvPool => crvPool.addresses.lpToken.toLowerCase() === poolInfo.output.lpToken.toLowerCase())
 
-    if (poolData === undefined) {
-      console.log(poolInfo.output, poolData,);
-      throw new Error('Missing pool data');
+    let swapAddress = poolInfo.output.lpToken
+    let coinsLength = 2
+    if (poolData) {
+      swapAddress = poolData.addresses.swap
+      coinsLength = poolData.coins.length
+    } else {
+      console.log(`lp token(${poolInfo.output.lpToken}) not found in pre-defined list, assuming it is a swap address, coin length assumed to be 2`)
+      return;
     }
 
-    const swapAddress = poolData.addresses.swap
-    const coinCalls = createIncrementArray(poolData.coins.length).map(num => {
+    const coinCalls = createIncrementArray(coinsLength).map(num => {
       return {
         target: swapAddress,
         params: [num]
@@ -124,6 +128,10 @@ async function getVaultInfo(poolLength, type, balances, block) {
         coinAddress = "0x6b175474e89094c44da98b954eedeac495271d0f" // dai
       } else if (coinAddress === '0xFEEf77d3f69374f66429C91d732A244f074bdf74'.toLowerCase()) {
         coinAddress = '0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0' // replace cvxFXS -> FXS
+      } else if (coinAddress === '0x3175Df0976dFA876431C2E9eE6Bc45b65d3473CC'.toLowerCase()) {
+        coinAddress = '0x853d955aCEf822Db058eb8505911ED77F175b99e' // replace crvFRAX -> FRAX
+      } else if (coinAddress === '0x0100546f2cd4c9d97f798ffc9755e47865ff7ee6'.toLowerCase()) {
+        coinAddress = ethAddress // replace alETH -> ETH
       }
       const balance = BigNumber(poolInfo.output.totalUnderlying * coinBalance.balance / resolvedLPSupply);
       if (!balance.isZero()) {

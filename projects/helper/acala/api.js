@@ -27,7 +27,20 @@ const providers = {
     "wss://kusama-rpc.dwellir.com",
   ],
   acala: [
+    "wss://acala-polkadot.api.onfinality.io/public-ws",
+    "wss://acala-rpc-0.aca-api.network",
+    "wss://acala-rpc-1.aca-api.network",
+    "wss://acala-rpc-2.aca-api.network/ws",
+    "wss://acala-rpc-3.aca-api.network/ws",
     "wss://acala.polkawallet.io",
+  ],
+  heiko: [
+    "wss://heiko-rpc.parallel.fi",
+    "wss://parallel-heiko.api.onfinality.io/public-ws",
+  ],
+  parallel: [
+    "wss://rpc.parallel.fi",
+    "wss://parallel.api.onfinality.io/public-ws",
   ],
 }
 

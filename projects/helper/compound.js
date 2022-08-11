@@ -118,7 +118,7 @@ function getCompoundV2Tvl(comptroller, chain = "ethereum", transformAdress,
     if (!transformAdress) transformAdress = await getChainTransform(chain)
     const block = await getBlock(timestamp, chain, chainBlocks, true);
     let balances = {};
-    let markets = await getMarkets(comptroller, block, chain, cether, cetheEquivalent, [], abis);
+    let markets = await getMarkets(comptroller, block, chain, cether, cetheEquivalent, blacklistedTokens, abis);
     const cTokenCalls = markets.map(market => ({
       target: market.cToken,
     }))

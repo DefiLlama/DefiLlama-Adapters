@@ -1,6 +1,7 @@
 import oneInch from "./1inch";
 import balancer from "./balancer";
 import bancor from "./bancor";
+import carthage from "./carthage";
 import champagneswap from "./champagneswap";
 import curve from "./curve";
 import dodo from "./dodo";
@@ -25,6 +26,7 @@ export default {
   "1inch": oneInch,
   balancer,
   bancor,
+  carthage,
   champagneswap,
   curve,
   dodo,

@@ -63,6 +63,7 @@ module.exports = {
       factory,
       chain: 'moonriver',
       coreAssets: [
+        "0x98878B06940aE243284CA214f92Bb71a2b032B8A", // WMOVR
         '0xf50225a84382c74CbdeA10b0c176f71fc3DE0C4d', // moonriver
         "0xb44a9b6905af7c801311e8f4e76932ee959c663c", // usdt
         "0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d", // usdc
@@ -119,11 +120,11 @@ module.exports = {
       factory,
       chain: 'harmony',
       coreAssets: [
-        '0x6983D1E6DEf3690C4d616b13597A09e6193EA013', // WETH
+        // '0x6983D1E6DEf3690C4d616b13597A09e6193EA013', // WETH
         '0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a', // WHARMONY
-        '0x985458e523db3d53125813ed68c274899e9dfab4', // USDC
-        '0x3c2b8be99c50593081eaa2a724f0b8285f5aba8f', // USDT
-        '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1', // DAI
+        // '0x985458e523db3d53125813ed68c274899e9dfab4', // USDC
+        // '0x3c2b8be99c50593081eaa2a724f0b8285f5aba8f', // USDT
+        // '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1', // DAI
       ],
       blacklist: [
         '0xed0b4b0f0e2c17646682fc98ace09feb99af3ade', // RVRS
