@@ -25,7 +25,7 @@ async function eth(timestamp, ethBlock, chainBlocks) {
     graphUrl,
     graphQuery,
     {
-      block,
+      block: block - 50,
     }
   );
   const usdTvl = Number(uniswapFactory.totalLiquidityUSD)
