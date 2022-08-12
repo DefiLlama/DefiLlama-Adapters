@@ -6,13 +6,13 @@ const REF_FINANCE_CONTRACT = "v2.ref-finance.near"
 const REF_BOOST_CONTRACT = "boostfarm.ref-labs.near"
 
 async function addFarmBalances(farms, seeds, balances) {
-  return Promise.all(Object.values(farms).map(async value => {
+  return Promise.all(Object.values(farms).map(async farm => {
     const [pool, nonStakedShares] = await Promise.all([
-      call(REF_FINANCE_CONTRACT, "get_pool", {"pool_id": value.ref_pool_id}),
-      call(REF_FINANCE_CONTRACT, "mft_balance_of", {token_id:  `:${value.ref_pool_id}`, account_id: PEMBROCK_CONTRACT})
+      call(REF_FINANCE_CONTRACT, "get_pool", {"pool_id": farm.ref_pool_id}),
+      call(REF_FINANCE_CONTRACT, "mft_balance_of", {token_id:  `:${farm.ref_pool_id}`, account_id: PEMBROCK_CONTRACT})
     ]);
-    const seed = seeds[`${REF_FINANCE_CONTRACT}@${value.ref_pool_id}`];
-    
+    const seed = seeds[`${REF_FINANCE_CONTRACT}@${farm.ref_pool_id}`];
+
     const shares = BigNumber(nonStakedShares).plus(seed.free_amount).plus(seed.locked_amount);
 
     const firstTokenAmount = shares.multipliedBy(pool.amounts[0]).dividedBy(pool.shares_total_supply);
