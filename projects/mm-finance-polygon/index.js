@@ -9,7 +9,7 @@ module.exports = {
   timetravel: true,
   misrepresentedTokens: true,
   methodology: 'TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://polymm.finance as the source. Staking accounts for the MMF locked in MasterChef (0xa2B417088D63400d211A4D5EB3C4C5363f834764)',
-  cronos: {
+  polygon: {
     staking: staking(masterChef, mmfToken, 'polygon'),
     tvl: getUniTVL({
       chain: 'polygon',
