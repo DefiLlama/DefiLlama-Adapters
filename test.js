@@ -307,6 +307,19 @@ const ethereumAddress = "0x0000000000000000000000000000000000000000";
 const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 const DAY = 24 * 3600;
 
+function sumSingleBalance(balances, token, balance) {
+  if (typeof balance === 'number') {
+    const prevBalance = balances[token] ?? 0
+    if (typeof prevBalance !== 'number') {
+      throw new Error(`Trying to merge token balance and coingecko amount for ${token}`)
+    }
+    balances[token] = prevBalance + balance;
+  } else {
+    const prevBalance = BigNumber(balances[token] ?? "0");
+    balances[token] = prevBalance.plus(balance);
+  }
+}
+
 function fixBalances(balances) {
   Object.entries(balances).forEach(([token, value]) => {
     let newKey
@@ -314,7 +327,7 @@ function fixBalances(balances) {
     else if (!token.includes(':')) newKey = `coingecko:${token}`
     if (newKey) {
       delete balances[token]
-      sdk.util.sumSingleBalance(balances, newKey, value)
+      sumSingleBalance(balances, newKey, value)
     }
   })
 }
