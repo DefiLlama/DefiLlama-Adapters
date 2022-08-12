@@ -1,5 +1,5 @@
 const { BigNumber } = require('bignumber.js');
-const { call, addTokenBalances, sumSingleBalance } = require('./helper/near');
+const { call, addTokenBalances, sumSingleBalance } = require('../helper/near');
 
 const PEMBROCK_CONTRACT = "v1.pembrock.near";
 const REF_FINANCE_CONTRACT = "v2.ref-finance.near";
