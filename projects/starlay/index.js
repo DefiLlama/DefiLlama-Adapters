@@ -38,9 +38,9 @@ function astar(borrowed) {
         return { ...res, [key]: balances[key] };
       for (const token of Object.values(TOKEN_INFO)) {
         if (key === token.key)
-          return { ...res, [key]: new BigNumber(balances[key]).shiftedBy(-token.decimals) };
+          return { ...res, [key]: new BigNumber(balances[key]).shiftedBy(-token.decimals).toFixed(0) };
       }
-      return { ...res, [key]: new BigNumber(balances[key]).shiftedBy(-DEFAULT_DECIMALS) };
+      return { ...res, [key]: new BigNumber(balances[key]).shiftedBy(-DEFAULT_DECIMALS).toFixed(0) };
     }, {});
   };
 }
@@ -49,7 +49,7 @@ async function staking(_timestamp, _block, {astar: block}) {
   const chain = "astar"
   const stakedLay = await getLockedLAY(chain, block)
   return {
-    [transferFromAddress(LAY_ADDRESS)]: stakedLay.shiftedBy(-DEFAULT_DECIMALS)
+    [transferFromAddress(LAY_ADDRESS)]: stakedLay.shiftedBy(-DEFAULT_DECIMALS).toFixed(0)
   }
 }
 
