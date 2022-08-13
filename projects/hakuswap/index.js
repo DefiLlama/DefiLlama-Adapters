@@ -20,7 +20,7 @@ async function avalancheTvl(timestamp, block, chainBlocks) {
 
 
 module.exports = {
-  avalanche: {
+  avax:{
     tvl: avalancheTvl,
     staking: stakingUnknownPricedLP(XHAKU_ADDRESS, HAKU_TOKEN_ADDRESS, "avax", "0x7943Acd42c41a345841cB22Bd846794a22d8682d")
   },

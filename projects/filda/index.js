@@ -3,7 +3,7 @@ const sdk = require('@defillama/sdk');
 const abi = require('./abi.json');
 const { getBlock } = require('../helper/getBlock')
 const { unwrapUniswapLPs } = require('../helper/unwrapLPs')
-const { compoundExportsWithDifferentBase, compoundExports } = require('../helper/compound');
+const { compoundExportsWithDifferentBase, compoundExports, usdCompoundExports } = require('../helper/compound');
 
 const comptroller = "0xb74633f2022452f377403B638167b0A135DB096d"
 
@@ -32,14 +32,14 @@ async function getUnderlying(block, cToken) {
   }
 }
 
-function transformAddress(token){
-  if(token === '0x6f259637dcd74c767781e37bc6133cd6a68aa161'){
+function transformAddress(token) {
+  if (token === '0x6f259637dcd74c767781e37bc6133cd6a68aa161') {
     return token
   } else if (token === '0x3D760a45D0887DFD89A2F5385a236B29Cb46ED2a') {
     return '0x6b175474e89094c44da98b954eedeac495271d0f';//DAI => DAI
   } else if (token === '0x9362Bbef4B8313A8Aa9f0c9808B80577Aa26B73B') {
     return '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';//USDC => USDC
-  } else if (token === "0x5eE41aB6edd38cDfB9f6B4e6Cf7F75c87E170d98"){
+  } else if (token === "0x5eE41aB6edd38cDfB9f6B4e6Cf7F75c87E170d98") {
     return "0x0000000000085d4780b73119b644ae5ecd22b376" //TUSD
   } else {
     return 'heco:' + token
@@ -120,7 +120,7 @@ function lending(borrowed) {
         }
       }
     });
-    
+
     await unwrapUniswapLPs(balances, lps, block, "heco", transformAddress)
     return balances;
   }
@@ -135,6 +135,7 @@ module.exports = {
   },
   iotex: compoundExportsWithDifferentBase("0x55E5F6E48FD4715e1c05b9dAfa5CfD0B387425Ee", "iotex", "iotex"),
   bsc: compoundExports("0xF0700A310Cb14615a67EEc1A8dAd5791859f65f1", "bsc"),
+  rei: compoundExportsWithDifferentBase("0xEc1e6e331e990a0D8e40AC51f773e9c998ec7BC3", "rei", "rei-network"),
   polygon: compoundExports("0xfBE0f3A3d1405257Bd69691406Eafa73f5095723", "polygon"),
   arbitrum: compoundExports("0xF67EF5E77B350A81DcbA5430Bc8bE876eDa8D591", "arbitrum"),
   elastos: compoundExportsWithDifferentBase("0xE52792E024697A6be770e5d6F1C455550265B2CD", "elastos", "elastos"),

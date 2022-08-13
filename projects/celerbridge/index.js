@@ -2,8 +2,25 @@ const { getBlock } = require("../helper/getBlock");
 const { chainExports } = require("../helper/exports");
 const { sumTokens } = require("../helper/unwrapLPs");
 const { getFixBalances } = require('../helper/portedTokens')
+const ethers = require("ethers")
+const { config } = require('@defillama/sdk/build/api');
 
 const bridgeContractV1 = "0x841ce48F9446C8E281D3F1444cB859b4A6D0738C";
+config.setProvider("clv", new ethers.providers.StaticJsonRpcProvider(
+  "https://api-para.clover.finance",
+  {
+    name: "clv",
+    chainId: 1024,
+  }
+))
+
+config.setProvider("syscoin", new ethers.providers.StaticJsonRpcProvider(
+  "https://rpc.ankr.com/syscoin",
+  {
+    name: "syscoin",
+    chainId: 57,
+  }
+))
 
 // Bridge and token contract addresses are taken from https://cbridge-docs.celer.network/reference/contract-addresses
 const liquidityBridgeContractsV2 = {
@@ -30,7 +47,7 @@ const liquidityBridgeContractsV2 = {
     "0x11a0c9270D88C99e221360BCA50c2f6Fda44A980",
   ],
   celo: ["0xBB7684Cc5408F4DD0921E5c2Cadd547b8f1AD573", '0xD9d1034ef3d21221F008C7e96346CA999966752C'],
-  clover: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C"],
+  clv: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C"],
   conflux: ["0x841ce48F9446C8E281D3F1444cB859b4A6D0738C"],
   ethereum: [
     "0xc578Cbaf5a411dFa9F0D227F97DaDAa4074aD062",
@@ -538,6 +555,7 @@ let chains = liquidityBridgeTokens.reduce((allChains, token) => {
   return allChains;
 }, new Set());
 
+Object.keys(liquidityBridgeContractsV2).forEach(chain => chains.add(chain))
 module.exports = chainExports(chainTvl, Array.from(chains));
 module.exports.methodology = `Tokens bridged via cBridge are counted as TVL`;
 module.exports.misrepresentedTokens = true;

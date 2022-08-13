@@ -11,4 +11,4 @@ module.exports = {
       coreAssets: ['0x6b3bd0478DF0eC4984b168Db0E12A539Cc0c83cd'],
     })
   }
-}
+};

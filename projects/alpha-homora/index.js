@@ -34,7 +34,7 @@ module.exports = {
   bsc:{
     tvl: tvlV1Bsc
   },
-  avalanche:{
+  avax:{
     tvl: avaxTvl
   },
   fantom:{

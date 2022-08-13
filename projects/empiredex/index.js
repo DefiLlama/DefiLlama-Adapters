@@ -1,5 +1,6 @@
 const { getChainTvl } = require("../helper/getUniSubgraphTvl");
 const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl");
+const { getUniTVL } = require("../helper/unknownTokens")
 
 const graphUrls = {
   //bsc: "https://api.thegraph.com/subgraphs/name/trnhgquan/empiredexbsc",
@@ -93,6 +94,15 @@ module.exports = {
       ],
       "ethereum"
     ),
+  },
+  kava: {
+    tvl: getUniTVL({
+        factory: '0x06530550A48F990360DFD642d2132354A144F31d',
+        chain: 'kava',
+        coreAssets: [
+            '0xc86c7C0eFbd6A49B35E8714C5f59D99De09A225b'
+        ]
+    }),
   },
   
   methodology: "Factory address(0x06530550A48F990360DFD642d2132354A144F31d) is used to find the LP pairs. TVL is equal to the liquidity on the AMM.",

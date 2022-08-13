@@ -10,8 +10,28 @@ async function getProcolAddresses() {
   )).data
 }
 
+async function getFTMProcolAddresses() {
+  return (await axios.get(
+    'https://raw.githubusercontent.com/kalmar-io/kalmar-assets/main/data/ftm-kalmar-contract.json'
+  )).data
+}
+
+async function getAvaxProcolAddresses() {
+  return (await axios.get(
+    'https://raw.githubusercontent.com/kalmar-io/kalmar-assets/main/data/avax-kalmar-contract.json'
+  )).data
+}
+
 function getBSCAddress(address) {
   return `bsc:${address}`
+}
+
+function getFTMAddress(address) {
+  return `fantom:${address}`
+}
+
+function getAvaxAddress(address) {
+  return `avax:${address}`
 }
 
 async function tvl(timestamp, ethBlock, chainBlocks) {
@@ -106,6 +126,105 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 
   balances[getBSCAddress(vBNB['baseToken'])] = BigNumber(balances[getBSCAddress(vBNB['baseToken'])] || 0).plus(BigNumber(unusedBNB)).toFixed(0)
 
+  /// @dev getting all unused liquidity on each lp staking
+  const lpStakingInfos = (await sdk.api.abi.multiCall({
+    block,
+    abi: abi.balanceOf,
+    calls: addresses['Liquidity'].map((s) => {
+      return {
+        target: s['stakingToken'],
+        params: [s['stakingTokenAt']]
+      }
+    }),
+    chain: 'bsc'
+  })).output
+
+  /// @dev unwrap LP to get underlaying token balances for lp staking that are working with LPs
+  await unwrapUniswapLPs(balances,
+    lpStakingInfos.map((info) => {
+      /// @dev getting LP address and return the object that unwrapUniswapLPs want
+      const lpAddr = info.input.target;
+      return {
+        token: lpAddr,
+        balance: info.output
+      }
+    }
+  ), block, 'bsc', (addr) => `bsc:${addr}`)
+
+  return balances
+}
+
+async function ftmTvl(timestamp, ethBlock, chainBlocks) {
+  /// @dev Initialized variables
+  const balances = {}
+
+  /// @dev Getting all addresses from Github
+  const addresses = await getFTMProcolAddresses()
+
+  const block = chainBlocks.fantom;
+
+  /// @dev getting all unused liquidity on each lp staking
+  const lpStakingInfos = (await sdk.api.abi.multiCall({
+    block,
+    abi: abi.balanceOf,
+    calls: addresses['Liquidity'].map((s) => {
+      return {
+        target: s['stakingToken'],
+        params: [s['stakingTokenAt']]
+      }
+    }),
+    chain: 'fantom'
+  })).output
+
+  /// @dev unwrap LP to get underlaying token balances for lp staking that are working with LPs
+  await unwrapUniswapLPs(balances,
+    lpStakingInfos.map((info) => {
+      /// @dev getting LP address and return the object that unwrapUniswapLPs want
+      const lpAddr = info.input.target;
+      return {
+        token: lpAddr,
+        balance: info.output
+      }
+    }
+  ), block, 'fantom', (addr) => `fantom:${addr}`)
+
+  return balances
+}
+
+async function avaxTvl(timestamp, ethBlock, chainBlocks) {
+  /// @dev Initialized variables
+  const balances = {}
+
+  /// @dev Getting all addresses from Github
+  const addresses = await getAvaxProcolAddresses()
+
+  const block = chainBlocks.avax;
+
+  /// @dev getting all unused liquidity on each lp staking
+  const lpStakingInfos = (await sdk.api.abi.multiCall({
+    block,
+    abi: abi.balanceOf,
+    calls: addresses['Liquidity'].map((s) => {
+      return {
+        target: s['stakingToken'],
+        params: [s['stakingTokenAt']]
+      }
+    }),
+    chain: 'avax'
+  })).output
+
+  /// @dev unwrap LP to get underlaying token balances for lp staking that are working with LPs
+  await unwrapUniswapLPs(balances,
+    lpStakingInfos.map((info) => {
+      /// @dev getting LP address and return the object that unwrapUniswapLPs want
+      const lpAddr = info.input.target;
+      return {
+        token: lpAddr,
+        balance: info.output
+      }
+    }
+  ), block, 'avax', (addr) => `avax:${addr}`)
+
   return balances
 }
 
@@ -130,7 +249,6 @@ async function staking(timestamp, ethBlock, chainBlocks) {
     }),
     chain: 'bsc'
   })).output
-
   
   /// @dev getting Kalm staking balance
   const kalmObjIndex = addresses['Staking'].findIndex((s) => s.name.includes('Kalm'))
@@ -186,10 +304,80 @@ async function staking(timestamp, ethBlock, chainBlocks) {
   return balances
 }
 
+async function ftmStaking(timestamp, ethBlock, chainBlocks) {
+  /// @dev Initialized variables
+  const balances = {}
+
+  /// @dev Getting all addresses from Github
+  const addresses = await getFTMProcolAddresses()
+
+  const block = chainBlocks.fantom;
+
+  /// @dev getting staking amount on each vault
+  const stakingTokens = (await sdk.api.abi.multiCall({
+    block,
+    abi: abi.balanceOf,
+    calls: addresses['Staking'].map((s) => {
+      return {
+        target: s['stakingToken'],
+        params: [s['address']]
+      }
+    }),
+    chain: 'fantom'
+  })).output
+  
+  /// @dev getting Kalm staking balance
+  const kalmObjIndex = addresses['Staking'].findIndex((s) => s.name.includes('Kalm'))
+  const kalmStaking = addresses['Staking'][kalmObjIndex]
+  const kalmStaked = stakingTokens[kalmObjIndex].output
+  balances[getFTMAddress(kalmStaking['stakingToken'])] = BigNumber(balances[getFTMAddress(kalmStaking['stakingToken'])] || 0).plus(BigNumber(kalmStaked)).toFixed(0)
+
+  return balances
+}
+
+async function avaxStaking(timestamp, ethBlock, chainBlocks) {
+  /// @dev Initialized variables
+  const balances = {}
+
+  /// @dev Getting all addresses from Github
+  const addresses = await getAvaxProcolAddresses()
+
+  const block = chainBlocks.avax;
+
+  /// @dev getting staking amount on each vault
+  const stakingTokens = (await sdk.api.abi.multiCall({
+    block,
+    abi: abi.balanceOf,
+    calls: addresses['Staking'].map((s) => {
+      return {
+        target: s['stakingToken'],
+        params: [s['address']]
+      }
+    }),
+    chain: 'avax'
+  })).output
+  
+  /// @dev getting Kalm staking balance
+  const kalmObjIndex = addresses['Staking'].findIndex((s) => s.name.includes('Kalm'))
+  const kalmStaking = addresses['Staking'][kalmObjIndex]
+  const kalmStaked = stakingTokens[kalmObjIndex].output
+  balances[getAvaxAddress(kalmStaking['stakingToken'])] = BigNumber(balances[getAvaxAddress(kalmStaking['stakingToken'])] || 0).plus(BigNumber(kalmStaked)).toFixed(0)
+
+  return balances
+}
+
 module.exports = {
   bsc: {
     tvl,
     staking
+  },
+  fantom: {
+    tvl: ftmTvl,
+    staking: ftmStaking
+  },
+  avax: {
+    tvl: avaxTvl,
+    staking: avaxStaking
   }
 };
   

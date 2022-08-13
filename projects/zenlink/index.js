@@ -19,6 +19,10 @@ const MoonbeamStableSwapContractAddress = [
     '0x68bed2c54Fd0e6Eeb70cFA05723EAE7c06805EC5', // 4pool
   ];
 
+const AstarStableSwapContractAddress = [
+    '0xb0Fa056fFFb74c0FB215F86D691c94Ed45b686Aa', // 4pool
+];
+
 module.exports = {
     methodology: "Get all pairs from the Factory Contract then get the reserve0 token amount and reserve1 token amount in one pair. Update the total balance of each token by reserve0 and reserve1. Repeat 2 ~ 3 for each pairs.",
     misrepresentedTokens: true,
@@ -63,6 +67,24 @@ module.exports = {
             "moonbeam",
             18,
             MoonbeamStableSwapContractAddress
+        )
+    },
+    astar: {
+        tvl: calculateUsdTvl(
+            "0x7BAe21fB8408D534aDfeFcB46371c3576a1D5717",
+            "astar",
+            "0xaeaaf0e2c81af264101b9129c00f4440ccf0f720",
+            [
+                "0x3795c36e7d12a8c252a20c5a7b455f7c57b60283", // USDT
+                "0x6a2d262d56735dba19dd70682b39f6be9a931d98", // USDC
+                "0x6de33698e9e9b787e09d3bd7771ef63557e148bb", // DAI
+                "0x733ebcc6df85f8266349defd0980f8ced9b45f35", // BAI
+                "0x4bf769b05e832fcdc9053fffbc78ca889acb5e1e" // BUSD
+            ],
+            true,
+            "astar",
+            18,
+            AstarStableSwapContractAddress
         )
     }
 }

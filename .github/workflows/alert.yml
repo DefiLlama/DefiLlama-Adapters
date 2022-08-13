@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - run: curl https://born-to-llama.herokuapp.com/refresh
+    - run: curl https://born-to-llama.onrender.com/refresh
     - name: Deploy
       run: |
         curl -XPOST -H "Accept: application/vnd.github.everest-preview+json" -H "Content-Type: application/json" -H "Authorization: Bearer ${{ secrets.PAT }}" https://api.github.com/repos/DefiLlama/defillama-server/dispatches --data '{"event_type": "build"}'

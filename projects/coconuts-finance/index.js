@@ -8,7 +8,7 @@ function getAvaxTvl(timestamp, block, chainBlocks) {
         let avaxResponse = await utils.fetchURL(`https://coconutsfinance-test.herokuapp.com/api/apys?network=43114`);
         let balances = {}
         let avaxData = await avaxResponse.data;
-        for (i = 0; i < avaxData.length; i++) {
+        for (let i = 0; i < avaxData.length; i++) {
             let token = avaxData[i].token
 
             const balance = (await sdk.api.abi.call({
@@ -23,7 +23,7 @@ function getAvaxTvl(timestamp, block, chainBlocks) {
         }
 
         if (balances === 0) {
-            throw new Error(chainId)
+            throw new Error('avax fetch error')
 
         }
         return balances;
@@ -36,7 +36,7 @@ function getPolygonTvl(timestamp, block, chainBlocks) {
         let balances = {}
         let polyData = await polyResponse.data;
 
-        for (i = 0; i < polyData.length; i++) {
+        for (let i = 0; i < polyData.length; i++) {
             let token = polyData[i].token
 
             let balance = (await sdk.api.abi.call({
@@ -60,10 +60,11 @@ function getPolygonTvl(timestamp, block, chainBlocks) {
 
 module.exports = {
     avax: {
-        tvl: getAvaxTvl()
+        // tvl: getAvaxTvl()
+        tvl: () => ({})
     },
-    polygon: {
-        tvl: getPolygonTvl()
-    },
+    // polygon: {
+        // tvl: getPolygonTvl()
+    // },
     broken: 'Api is down'
 }; 

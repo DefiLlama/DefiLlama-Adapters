@@ -30,7 +30,12 @@ const tokens = {
         'ooki': '0xCd150B1F528F326f5194c012f32Eb30135C7C2c9',
     },
     bsc: {
-
+        'ooki': '0xa5a6817ac4c164F27df3254B71fE83904B1C3c3e',
+    },
+    arbitrum: {
+        'ooki': '0x400F3ff129Bc9C9d239a567EaF5158f1850c65a4',
+    },
+    optimism: {
     }
 }
 
@@ -53,6 +58,14 @@ const contracts = {
     bsc: {
         'protocol': '0xD154eE4982b83a87b0649E5a7DDA1514812aFE1f',
         'registry': '0x1BE70f29D30bB1D325E5D76Ee73109de3e50A57d',
+    },
+    arbitrum: {
+        'protocol': '0x37407F3178ffE07a6cF5C847F8f680FEcf319FAB',
+        'registry': '0x86003099131d83944d826F8016E09CC678789A30',
+    },
+    optimism: {
+        'protocol': '0xAcedbFd5Bc1fb0dDC948579d4195616c05E74Fd1',
+        'registry': '0x22a2208EeEDeb1E2156370Fd1c1c081355c68f2B',
     }
 }
 
@@ -69,6 +82,14 @@ return getBalances(timestamp, block, chainBlocks, 'bsc')
 
 async function polygon(timestamp, block, chainBlocks) {
 return getBalances(timestamp, block, chainBlocks, 'polygon')
+}
+
+async function optimism(timestamp, block, chainBlocks) {
+return getBalances(timestamp, block, chainBlocks, 'optimism')
+}
+
+async function arbitrum(timestamp, block, chainBlocks) {
+return getBalances(timestamp, block, chainBlocks, 'arbitrum')
 }
 
 async function getBalances(timestamp, block, chainBlocks, network) {
@@ -253,6 +274,12 @@ module.exports = {
     },
     bsc:{
         tvl: bsc
+    },
+    arbitrum:{
+        tvl: arbitrum
+    },
+    optimism:{
+        tvl: optimism
     },
 };
 

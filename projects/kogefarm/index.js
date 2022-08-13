@@ -2,7 +2,7 @@ const sdk = require('@defillama/sdk')
 const abi = require('./abi.json')
 const utils = require('../helper/utils')
 const { unwrapUniswapLPs, unwrapCrv } = require('../helper/unwrapLPs')
-const { transformPolygonAddress } = require('../helper/portedTokens')
+const { transformPolygonAddress, getFixBalances } = require('../helper/portedTokens')
 const {
   transformAddressKF,
   getSinglePositions,
@@ -16,6 +16,8 @@ const current_fantom_vaults_url =
   'https://raw.githubusercontent.com/kogecoin/vault-contracts/main/ftm_vault_addresses.json'
 const current_moonriver_vaults_url =
   'https://raw.githubusercontent.com/kogecoin/vault-contracts/main/movr_vault_addresses.json'
+const current_kava_vaults_url =
+  'https://raw.githubusercontent.com/kogecoin/vault-contracts/main/kava_vault_addresses.json'
 
 const beethovenX = '0x20dd72Ed959b6147912C2e529F0a0C651c33c9ce'
 
@@ -31,6 +33,8 @@ const ftm_BalancerForks = [
   },
 ]
 const movr_BalancerForks = []
+const kava_BalancerForks = []
+const kava_CrvVaultAddr = []
 
 const polygonMasterChef = (masterChef, pid) => async (
   timestamp,
@@ -127,10 +131,10 @@ const polygonTvl = ({ include, exclude }) => async (
   let vaults = vaults_full.map( v => v['vault']) */
   let vaults = (await utils.fetchURL(current_polygon_vaults_url)).data
 
-  if (!!include) {
+  if (include) {
     vaults = include
   }
-  if (!!exclude) {
+  if (exclude) {
     vaults = vaults.filter(
       (v) => !exclude.find((e) => e.toLowerCase() === v.toLowerCase()),
     )
@@ -398,7 +402,6 @@ const fantomTvl = async (timestamp, block, chainBlocks) => {
       })
     ).output
     const usdtPersUSDT = sUSDTLiquidity / sUSDTSupply
-    console.log(usdtPersUSDT)
     // Then, multiply the staked spell balance by spell to staked spell ratio
     balances[sUSDT] = Math.floor(balances[sUSDT] * usdtPersUSDT);
   }
@@ -424,12 +427,10 @@ const fantomTvl = async (timestamp, block, chainBlocks) => {
       })
     ).output
     const usdcPersUSDC = sUSDCLiquidity / sUSDCSupply
-    console.log(usdcPersUSDC)
 
     // Then, multiply the staked spell balance by spell to staked spell ratio
     balances[sUSDC] = Math.floor(balances[sUSDC] * usdcPersUSDC);
   }
-
 
   return balances
 }
@@ -527,6 +528,143 @@ const moonriverTvl = async (timestamp, block, chainBlocks) => {
   return balances
 }
 
+const kavaTvl = async (timestamp, block, chainBlocks) => {
+
+  let balances = {};
+
+  let vaults = (await utils.fetchURL(current_kava_vaults_url)).data
+  if (typeof vaults === 'string') vaults = JSON.parse(vaults.replace(/\,(\s*[\}\]])/g, '$1'))
+
+  const lp_addresses = (
+    await sdk.api.abi.multiCall({
+      chain: 'kava',
+      block: chainBlocks['kava'],
+      calls: vaults.map((vault) => ({
+        target: vault.vault,
+      })),
+      abi: abi.token,
+    })
+  ).output.map((val) => val.output)
+
+  vaults = vaults.map((e, idx) => ({ ...e, lp_address: lp_addresses[idx] }))
+
+  const vault_balances = (
+    await sdk.api.abi.multiCall({
+      chain: 'kava',
+      block: chainBlocks['kava'],
+      calls: vaults.map((vault) => ({
+        target: vault.vault,
+      })),
+      abi: abi.balance,
+    })
+  ).output.map((val) => val.output)
+
+  vaults = vaults.map((e, idx) => ({ ...e, balance: vault_balances[idx] }))
+
+  const lp_symbols = (
+    await sdk.api.abi.multiCall({
+      chain: 'kava',
+      block: chainBlocks['kava'],
+      calls: vaults.map((vault) => ({
+        target: vault.lp_address,
+      })),
+      abi: abi.symbol,
+    })
+  ).output.map((val) => val.output)
+
+  vaults = vaults.map((e, idx) => ({ ...e, symbol: lp_symbols[idx] }))
+
+  const singlePositions = []
+  const uniV2Positions = []
+  const balancerPositions = []
+  const crvPositions = []
+
+  // We populate the positions by protocol
+  vaults.forEach((vault) => {
+    const pushElem = (array) =>
+      array.push({
+        vaultAddr: vault.vault,
+        balance: vault.balance,
+        token: vault.lp_address,
+        symbol: vault.symbol,
+        name: vault.__comment,
+      })
+    // Balancer
+    if (
+      kava_BalancerForks.length &&
+      kava_BalancerForks
+        .map((e) => String(vault.__comment).toLowerCase().includes(e.name))
+        .reduce((p, c) => p && c, true)
+    ) {
+      pushElem(balancerPositions)
+    }
+    // CRV
+    else if (kava_CrvVaultAddr.includes(vault.vault)) {
+      pushElem(crvPositions)
+    }
+    // Uni-V2
+    else if (vault.symbol==="Uni-V2" || vault.symbol==="SLP" || vault.symbol==="JUPITER-LP"){
+      pushElem(uniV2Positions)
+    }
+    else{
+      pushElem(singlePositions)
+    }
+  })
+
+  const transformAddress = transformAddressKF('kava')
+
+  await unwrapUniswapLPs(
+    balances,
+    uniV2Positions,
+    chainBlocks['kava'],
+    'kava',
+    transformAddress,
+  )
+
+
+/*  const { updateBalances,
+    pairBalances,
+    prices,
+    balances } = await getTokenPrices({
+    block: kavablock,
+    chain: kavachain,
+    coreAssets: [wkava],
+    lps: uniV2Positions.map(val => val.token),
+    transformAddress: transformAddress,
+    allLps: true
+  })
+*/
+  await getSinglePositions(
+    balances,
+    singlePositions,
+    chainBlocks['kava'],
+    'kava',
+    transformAddress,
+  )
+
+  const fixBalances = await getFixBalances('kava')
+  fixBalances(balances)
+
+  await unwrapCrvLPs(
+    balances,
+    crvPositions,
+    chainBlocks['kava'],
+    'kava',
+    transformAddress,
+  )
+
+  await unwrapBalancerLPs(
+    beethovenX,
+    balances,
+    balancerPositions,
+    chainBlocks['kava'],
+    'kava',
+    transformAddress,
+  )
+
+  return balances
+}
+
 const kogeMasterChefAddr = '0x6275518a63e891b1bC54FEEBBb5333776E32fAbD'
 
 // vKogeKoge
@@ -582,5 +720,8 @@ module.exports = {
   },
   moonriver: {
     tvl: moonriverTvl,
+  },
+  kava: {
+    tvl: kavaTvl,
   },
 }

@@ -1,7 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { default: BigNumber } = require("bignumber.js");
 const { request, gql } = require("graphql-request"); // GraphQLClient
-// const abi = require('./erc20-abi.json')
 
 // Superfluid Supertokens can be retrieved using GraphQl API - cannot use block number to retrieve historical data at the moment though
 // TheGraph URL before being deprecated, before 2021-12-23
@@ -15,11 +14,23 @@ query get_supertokens($block: Int) {
   tokens(
     first: 1000, 
     block: { number: $block } 
+    where:{
+     isSuperToken:true
+   }
   ) {
     id
     underlyingAddress
     name
+    underlyingToken {
+      name
+      decimals
+      id
+    }
     symbol
+    decimals
+    isSuperToken
+    isNativeAssetSuperToken
+    isListed
   }
 }
 `;
@@ -31,54 +42,35 @@ async function getChainBalances(allTokens, chain, block) {
   let balances = {};
 
   // Abi MultiCall to get supertokens supplies
-  const lockedTokensOutput = await sdk.api.abi.multiCall({
+  const { output: supply } = await sdk.api.abi.multiCall({
     abi: 'erc20:totalSupply', // abi['totalSupply'],
     calls: allTokens.map(token => ({
       target: token.id,
-      })
+    })
     ),
     block,
     chain
   })
-  //console.log(chain, lockedTokensOutput.output, allTokens)
-  
-  // Execute decimals ABI (future proof), otherwise could simply store decimals count in an array
-  const decimals = await sdk.api.abi.multiCall({
-    abi: 'erc20:decimals', // abi['decimals'],
-    calls: allTokens.map(token => ({
-      target: token.underlyingAddress,
-      })),
-    block,
-    chain
-  })
-  decimals.output.forEach(call => {
-    const tokens = allTokens.filter(token => token.underlyingAddress === call.input.target)
-    let decimals = call.output
-    tokens.forEach(token => {
-      // Some abi calls error out, replace known decimals count 
-      if (token.underlyingAddress === '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599') decimals = '8'; // WBTC
-      else if (token.underlyingAddress === '0x0000000000000000000000000000000000000000') decimals = '18'; // ETH
-      token.decimals = decimals
-    })
-  })
-  // Going forward, each token of allTokens has been appended mainnetUnderlyingAddress and decimals  
-  // console.log('\n\n', allTokens, '\n\n')
 
-  // Loop one last time through abi multicalls to parse balances 
-  lockedTokensOutput.output.forEach(call => {
-    // Find corresponding token and retrieve mainnetUnderlyingAddress and decimals stored previously
-    const token = allTokens.find(token => token.id === call.input.target)
-
-    // Edit balance given decimal ABI multicall output and decimalCount. Note: all super tokens have 18 decimals, regardless of underlying asset, but need to adjust balance based on decimal of underlying
-    let decimals = token.decimals || 18;
-    let underlyingTokenBalance = BigNumber(call.output).div( 10 ** (18 - decimals) ).toFixed(0)
-    
+  supply.forEach(({ output: totalSupply }, i) => {
+    const {
+      id,
+      underlyingAddress,
+      underlyingToken,
+      decimals,
+      name, 
+      symbol,
+      isNativeAssetSuperToken,
+    } = allTokens[i]
+    let underlyingTokenBalance = BigNumber(totalSupply * (10 ** (underlyingToken || { decimals: 18 }).decimals) / (10 ** decimals)).toFixed(0)
     // Accumulate to balances, the balance for tokens on mainnet or sidechain
-    let prefixedUnderlyingAddress = chain + ':' + token.underlyingAddress
-    if (tokensNativeToSidechain.includes(token.id)) prefixedUnderlyingAddress = chain + ':' + token.id
+    let prefixedUnderlyingAddress = chain + ':' + underlyingAddress
+    // if (!underlyingToken && underlyingTokenBalance/1e24 > 1) console.log(name, symbol, chain, Math.floor(underlyingTokenBalance/1e24))
+    if (isNativeAssetSuperToken || tokensNativeToSidechain.includes(id.toLowerCase())) prefixedUnderlyingAddress = chain + ':' + id
+    else if (!underlyingToken) return;
     sdk.util.sumSingleBalance(balances, prefixedUnderlyingAddress, underlyingTokenBalance)
-    //console.log('Token:', token.symbol, '- decimals:', decimals, '- underlyingTokenBalance:', underlyingTokenBalance, '- mainnetUnderlyingAddress:', mainnetUnderlyingAddress)
   })
+  //console.log(chain, lockedTokensOutput.output, allTokens)
 
   return balances
 }
@@ -102,12 +94,12 @@ async function retrieveSupertokensBalances(chain, timestamp, ethBlock, chainBloc
   }
 
   const { tokens } = await request(
-    graphUrl, 
-    supertokensQuery, 
-    {block}
+    graphUrl,
+    supertokensQuery,
+    { block }
   )
 
-  const allTokens = tokens // .filter(t => t.symbol.length > 0)
+  const allTokens = tokens.filter(t => t.isSuperToken)
 
   return getChainBalances(allTokens, chain, block)
 }
@@ -121,9 +113,12 @@ async function xdai(timestamp, block, chainBlocks) {
 
 
 module.exports = {
+  hallmarks: [
+    [1644278400, "Fake ctx hack"]
+  ],
   polygon: {
     tvl: polygon
-  }, 
+  },
   xdai: {
     tvl: xdai
   },

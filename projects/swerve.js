@@ -60,7 +60,7 @@ async function tvl(ts, block) {
     swaps.map(async item => {
       await Promise.all(
         item.coins.map(async i => {
-          poolAmount = await calc(item, i, price_feed, block);
+          const poolAmount = await calc(item, i, price_feed, block);
           if (item.type == 'btc') {
             btcTVL += parseFloat(poolAmount);
           } else {
@@ -121,7 +121,7 @@ async function calc(item, i, price_feed, block) {
   if (item.type == 'yToken') {
     var multiplier = 1;
     if (coins !== '0x8E870D67F660D95d5be530380D0eC0bd388289E1') { // PAX exception
-      var multiplier = await getVirtualPrice(abis.abis.yTokens, coins, block)
+      multiplier = await getVirtualPrice(abis.abis.yTokens, coins, block)
       multiplier = new BigNumber(multiplier).div(10 ** 18).toFixed(4);
     }
     poolAmount = poolAmount * multiplier;

@@ -1,29 +1,11 @@
-const { Connection, PublicKey } = require('@solana/web3.js')
-const { Program, Provider, web3, utils } = require("@project-serum/anchor");
+const { PublicKey } = require('@solana/web3.js')
+const { Program, utils } = require("@project-serum/anchor");
 const { getAssociatedTokenAddress } = require("@solana/spl-token");
-const { NodeWallet } = require("@project-serum/anchor/dist/cjs/provider");
 const IDL = require("./credix.json");
 const { toUSDTBalances } = require('../helper/balances')
+const { getProvider } = require('../helper/solana')
 
 const programId = new PublicKey("CRDx2YkdtYtGZXGHZ59wNv1EwKHQndnRc1gT4p8i2vPX");
-
-const getProvider = async () => {
-  /* create the provider and return it to the caller */
-  /* network set to local network for now */
-  const dummy_keypair = web3.Keypair.generate();
-  const wallet = new NodeWallet(dummy_keypair);
-  const network = "https://solana-api.projectserum.com/";
-  const connection = new Connection(network, 'processed');
-  const confirmOptions = {
-    commitment: "processed",
-    preflightCommitment: "processed",
-  };
-
-  const provider = new Provider(
-    connection, wallet, confirmOptions
-  );
-  return provider;
-}
 
 const encodeSeedString = (seedString) => Buffer.from(utils.bytes.utf8.encode(seedString));
 
@@ -57,7 +39,7 @@ const getAssociatedBaseTokenAddressPK = async (publicKey) => {
 
 async function tvl() {
   const globalMarketSeed = "credix-marketplace"
-  const provider = await getProvider();
+  const provider = getProvider();
   const signingAuthorityKey = await findSigningAuthorityPDA(globalMarketSeed)
   const liquidityPoolKey = await getAssociatedBaseTokenAddressPK(signingAuthorityKey[0]);
   const liquidityPool = await provider.connection.getTokenAccountBalance(liquidityPoolKey);
@@ -67,7 +49,7 @@ async function tvl() {
 
 async function borrowed() {
   const globalMarketSeed = "credix-marketplace"
-  const provider = await getProvider();
+  const provider = getProvider();
   const program = await constructProgram(provider);
   const globalMarketStatePDA = await findGlobalMarketStatePDA(globalMarketSeed);
   const globalMarketStateAccountData = await program.account.globalMarketState.fetch(globalMarketStatePDA[0]);

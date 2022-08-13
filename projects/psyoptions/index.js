@@ -1,16 +1,13 @@
 const {
-  clusterApiUrl,
-  Connection,
   PublicKey,
-  Keypair,
 } = require("@solana/web3.js");
 const { getMultipleAccountInfo, getMultipleMintInfo, deserializeAccount } = require("./accounts");
 const { TOKENSBASE } = require("./tokens");
-const { Provider, Program } = require("@project-serum/anchor");
-const { NodeWallet } = require("@project-serum/anchor/dist/cjs/provider");
+const { Program } = require("@project-serum/anchor");
 const PsyAmericanIdl = require("./idl.json");
 const axios = require("axios");
 const { toUSDTBalances } = require("../helper/balances");
+const { getConnection, getProvider, } = require("../helper/solana");
 
 const textEncoder = new TextEncoder();
 
@@ -116,12 +113,8 @@ async function getTokenizedEurosControlledAccounts(anchorProvider) {
 }
 
 async function tvl() {
-  const connection = new Connection(clusterApiUrl("mainnet-beta"));
-  const anchorProvider = new Provider(
-    connection,
-    new NodeWallet(new Keypair()),
-    {}
-  );
+  const connection = getConnection();
+  const anchorProvider = getProvider();
 
   // Maps mint addresses to an array of token accounts
   let mintTokenAccountsMap = {};

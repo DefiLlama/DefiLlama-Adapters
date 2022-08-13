@@ -13,7 +13,7 @@ function staking(stakingContract, stakingToken, chain = "ethereum", transformedT
 
 function stakings(stakingContracts, stakingToken, chain = "ethereum", transformedTokenAddress = undefined, decimals = undefined) {
     return async (timestamp, _ethBlock, chainBlocks) => {
-        const block = await getBlock(timestamp, chain, chainBlocks)
+        const block = await getBlock(timestamp, chain, chainBlocks, true)
         const bal = (await sdk.api.abi.multiCall({
             calls: stakingContracts.map(c => ({ target: stakingToken, params: [c] })),
             chain,
@@ -76,7 +76,7 @@ function stakingUnknownPricedLP(stakingContract, stakingToken, chain, lpContract
             [transform(token)]: stakedBal
         }
 
-        if (['klaytn'].includes(chain)) {
+        if (['klaytn', 'kava'].includes(chain)) {
             const fixBalances = await getFixBalances(chain)
             fixBalances(balances)
         }

@@ -1,15 +1,12 @@
 const {
-  clusterApiUrl,
-  Connection,
   PublicKey,
-  Keypair,
 } = require("@solana/web3.js");
-const { Provider, Program, web3, utils } = require("@project-serum/anchor");
-const { NodeWallet } = require("@project-serum/anchor/dist/cjs/provider");
+const { Program, web3, utils } = require("@project-serum/anchor");
 const DualIdl = require("./idl.json");
 const axios = require("axios");
 const { MintLayout } = require("@solana/spl-token")
 const { toUSDTBalances } = require("../helper/balances");
+const { getConnection, getProvider, } = require("../helper/solana");
 
 async function getPriceWithTokenAddress(mintAddress) {
   const { data } = await axios.post("https://coins.llama.fi/prices", {
@@ -28,12 +25,8 @@ function toBytes(x) {
 }
 
 async function tvl() {
-  const connection = new Connection(clusterApiUrl("mainnet-beta"));
-  const anchorProvider = new Provider(
-    connection,
-    new NodeWallet(new Keypair()),
-    {}
-  );
+  const connection =  getConnection();
+  const anchorProvider = getProvider();
   const dualProgramID = new PublicKey(
     "DiPbvUUJkDhV9jFtQsDFnMEMRJyjW5iS6NMwoySiW8ki"
   );

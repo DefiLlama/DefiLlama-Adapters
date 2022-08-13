@@ -119,6 +119,9 @@ module.exports = {
     },
     arbitrum: {
         tvl: arbitrum
+    },
+    aurora: {
+        tvl: aurora
     }
-    // We don't include heco、aurora because their subgraph is outdated
+    // We don't include heco because their subgraph is outdated
 }

@@ -81,9 +81,20 @@ async function unwrapCrvKnown(balances, crvToken, lpBalance, block, chain = 'eth
   })
 }
 
+const cGaugeMapping = {
+  avax: {
+    '0x5b5cfe992adac0c9d48e05854b2d91c73a003858': '0x1337BedC9D22ecbe766dF105c9623922A27963EC',
+  },
+  polygon: {
+    '0x19793b454d3afc7b454f206ffe95ade26ca6912c': '0xe7a24ef0c5e95ffb0f6684b813a78f2a3ad7d171',
+  }
+}
+Object.values(cGaugeMapping).forEach(mapping => Object.keys(mapping).forEach(key => mapping[key.toLowerCase()] = mapping[key]))
 
 async function unwrapCrv(balances, crvToken, lpBalance, block, chain = 'ethereum', transformAddress = (addr) => addr) {
   crvToken = stripChainHeader(crvToken).toLowerCase()
+  const gaugeMap = cGaugeMapping[chain] || {}
+  if (gaugeMap[crvToken]) crvToken = gaugeMap[crvToken]
 
   if (crvPools[crvToken]) return unwrapCrvKnown(...arguments)
 

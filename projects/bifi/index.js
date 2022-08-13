@@ -1,7 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { stakings } = require("../helper/staking");
 const OracleAbi = require('./abi/oracle.json');
-const TokenAbi = require('./abi/token.json');
 const { toUSDTBalances } = require("../helper/balances");
 
 const stakingPool = ['0x488933457E89656D7eF7E69C10F2f80C7acA19b5', '0x4b1791422dE4807B2999Eeb65359F3E13fa9d11d'];
@@ -252,13 +251,13 @@ async function klaytn(ts, _block, chainBlocks) {
             chain, block,
             target: tokenAddress,
             params: [tokenPoolAddress],
-            abi: TokenAbi.find(i => i.name === 'balanceOf')
+            abi: 'erc20:balanceOf'
         })
 
         const { output: decimals} = await sdk.api.abi.call({
             chain, block,
             target: tokenAddress,
-            abi: TokenAbi.find(i => i.name === 'decimals')
+            abi: 'erc20:decimals'
         })
 
         const div = 18 + parseInt(decimals, 10);

@@ -1,16 +1,19 @@
 const retry = require('async-retry')
 const axios = require("axios");
 const BigNumber = require("bignumber.js");
+const url = 'https://europe-west3-wormhole-315720.cloudfunctions.net/mainnet-notionaltvl'
+let _response
 
 function fetch(chainId) {
   return async () => {
-    const url = 'https://europe-west3-wormhole-315720.cloudfunctions.net/mainnet-notionaltvl'
-    const res = await retry(async bail => await axios.get(url))
+    if (!_response) _response = retry(async bail => await axios.get(url))
+    const res = await _response
     if (chainId in res.data.AllTime) {
       const tvl = res.data.AllTime[chainId]["*"].Notional
       return new BigNumber(tvl).toFixed(2)
     } else {
-      throw "invalid ChainId supplied"
+      console.log('Chain no longer supported: %s', chainId)
+      return BigNumber(0).toFixed(2)
     }
   }
 }
@@ -43,6 +46,21 @@ module.exports = {
   },
   fantom: {
     fetch: fetch("10")
+  },
+  karura: {
+    fetch: fetch("11")
+  },
+  acala: {
+    fetch: fetch("12") 
+  },
+  klaytn: {
+    fetch: fetch("13")
+  },
+  celo: {
+    fetch: fetch("14")
+  },
+  terra2: {
+    fetch: fetch("18")
   },
   fetch: fetch("*")
 }

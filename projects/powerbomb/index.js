@@ -12,105 +12,30 @@ const powerbombAvaxAncETHAddr = "0x7065FdCcE753f4fCEeEcFe25F2B7c51d52cf056e";
 const powerbombAvaxAncSAVAXAddr = "0x1c3b1069E60F9e3CE8212410b734a7C6775D865C";
 const powerbombAvaxAncGOHMAddr = "0x9838e8E72B4225a9966Ea78A47F297Aa9d7973B0";
 
-async function fetch() {
-  const curveBtcTVL =
-    Number(
-      (
-        await sdk.api.abi.call({
-          chain: "avax",
-          target: powerbombAvaxCurveBTCAddr,
-          abi: abi["getAllPoolInUSD"],
-        })
-      ).output
-    ) / 1000000;
+async function tvl(_, _B, { avax: block}) {
+  let total = 0
+  const owners = [
+    powerbombAvaxCurveBTCAddr,
+    powerbombAvaxCurveETHAddr,
+    powerbombAvaxCurveWsOHMAddr,
+    powerbombAvaxCurveWMEMOAddr,
+    // powerbombAvaxAncBTCAddr,
+    // powerbombAvaxAncETHAddr,
+    // powerbombAvaxAncSAVAXAddr,
+    // powerbombAvaxAncGOHMAddr,
+  ]
 
-  const curveEthTVL =
-    Number(
-      (
-        await sdk.api.abi.call({
-          chain: "avax",
-          target: powerbombAvaxCurveETHAddr,
-          abi: abi["getAllPoolInUSD"],
-        })
-      ).output
-    ) / 1000000;
+  const { output } = await sdk.api.abi.multiCall({
+    abi: abi["getAllPoolInUSD"],
+    calls: owners.map(i => ({ target: i})),
+    chain: 'avax', block,
+  })
 
-  const curveWsohmTVL =
-    Number(
-      (
-        await sdk.api.abi.call({
-          chain: "avax",
-          target: powerbombAvaxCurveWsOHMAddr,
-          abi: abi["getAllPoolInUSD"],
-        })
-      ).output
-    ) / 1000000;
+  output.forEach(i => total += +i.output)
 
-  const curveWmemoTVL =
-    Number(
-      (
-        await sdk.api.abi.call({
-          chain: "avax",
-          target: powerbombAvaxCurveWMEMOAddr,
-          abi: abi["getAllPoolInUSD"],
-        })
-      ).output
-    ) / 1000000;
-
-  const ancBtcTVL =
-    Number(
-      (
-        await sdk.api.abi.call({
-          chain: "avax",
-          target: powerbombAvaxAncBTCAddr,
-          abi: abi["getAllPoolInUSD"],
-        })
-      ).output
-    ) / 1000000;
-
-  const ancEthTVL =
-    Number(
-      (
-        await sdk.api.abi.call({
-          chain: "avax",
-          target: powerbombAvaxAncETHAddr,
-          abi: abi["getAllPoolInUSD"],
-        })
-      ).output
-    ) / 1000000;
-
-  const ancSavaxTVL =
-    Number(
-      (
-        await sdk.api.abi.call({
-          chain: "avax",
-          target: powerbombAvaxAncSAVAXAddr,
-          abi: abi["getAllPoolInUSD"],
-        })
-      ).output
-    ) / 1000000;
-
-  const ancGohmTVL =
-    Number(
-      (
-        await sdk.api.abi.call({
-          chain: "avax",
-          target: powerbombAvaxAncGOHMAddr,
-          abi: abi["getAllPoolInUSD"],
-        })
-      ).output
-    ) / 1000000;
-
-  return (
-    curveBtcTVL +
-    curveEthTVL +
-    curveWsohmTVL +
-    curveWmemoTVL +
-    ancBtcTVL +
-    ancEthTVL +
-    ancSavaxTVL +
-    ancGohmTVL
-  );
+  return {
+    tether: total / 1e6
+  }
 }
 
 module.exports = {
@@ -118,8 +43,7 @@ module.exports = {
     Curve: Balance of av3CRV-gauge in contract multiple by virtual price of corresponding Curve pool, 
     Anchor: Balance of aUST in contract multiple by aUST rate
   `,
-  avalanche: {
-    fetch,
+  avax: {
+    tvl,
   },
-  fetch,
 };

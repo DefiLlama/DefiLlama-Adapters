@@ -22,6 +22,9 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 }
 
 module.exports={
+    hallmarks: [
+        [1656547200,"Token Purchase & Rewards claiming halt"]
+    ],
     methodology: "Get all cUSD that the staking contract for Talent Protocol holds",
     celo: {
         tvl

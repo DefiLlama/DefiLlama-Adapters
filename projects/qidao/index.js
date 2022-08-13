@@ -301,7 +301,11 @@ async function fantom(timestamp, block, chainBlocks) {
       [
         "0x2C850cceD00ce2b14AA9D658b7Cad5dF659493Db",
         "0x6d6029557a06961aCC5F81e1ffF5A474C54e32Fd",
-      ]
+      ],
+      [
+        "0xa48d959AE2E88f1dAA7D5F611E01908106dE7598",
+        "0x3f6cf10e85e9c0630856599fab8d8bfcd9c0e7d4",
+      ],
       //[t,p],
       
     ],
@@ -557,6 +561,10 @@ async function bsc (timestamp, block, chainBlocks) {
         "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
         "0xa56f9a54880afbc30cf29bb66d2d9adcdcaeadd6"
       ],
+      [
+        "0x67ee3cb086f8a16f34bee3ca72fad36f7db929e2",
+        "0x7333fd58d8d73a8e5fc1a16c8037ada4f580fa2b"
+      ],
     ],
     chainBlocks.bsc,
     "bsc",
@@ -580,6 +588,10 @@ async function optimism (timestamp, block, chainBlocks) {
         "0x68f180fcCe6836688e9084f035309E29Bf0A2095",
         "0xb9c8f0d3254007ee4b98970b94544e473cd610ec"
       ],
+      [
+        "0x4200000000000000000000000000000000000042",
+        "0xbf1aea8670d2528e08334083616dd9c5f3b087ae"
+      ]
       
     ],
     chainBlocks.optimism,
@@ -612,6 +624,25 @@ async function arbitrum (timestamp, block, chainBlocks) {
   return balances;
 }
 
+async function metis (timestamp, block, chainBlocks) {
+  const balances = {};
+  const transformAddress = await getChainTransform('metis')
+
+  await sumTokens(
+    balances,
+    [
+      [
+        "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000", //Token Qidao
+        "0x10dcbee8afa39a847707e16aea5eb34c6b01aba9"  //Token address
+      ],  
+    ],
+    chainBlocks.metis,
+    "metis",
+    transformAddress
+  );
+  return balances;
+}
+
 module.exports = {
   misrepresentedTokens: true,
   methodology:
@@ -622,7 +653,7 @@ module.exports = {
   fantom: {
     tvl: fantom,
   },
-  avalanche: { 
+  avax:{ 
     tvl: avax,
   },
   moonriver: { 
@@ -642,5 +673,8 @@ module.exports = {
   },
   bsc: {
     tvl: bsc
+  },
+  metis: {
+    tvl: metis 
   },
 };
