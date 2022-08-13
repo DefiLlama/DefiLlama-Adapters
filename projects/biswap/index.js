@@ -50,4 +50,7 @@ module.exports = {
     staking,
     tvl: uniTvlExport(factory, "bsc", transformBscAddress)
   },
+  hallmarks:[
+    [1651881600, "UST depeg"],
+  ]
 };

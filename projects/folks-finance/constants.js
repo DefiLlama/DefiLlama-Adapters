@@ -6,6 +6,12 @@ const pools = [
     assetDecimals: 6,
   },
   {
+    // gALGO
+    appId: 794055220,
+    assetId: 793124631,
+    assetDecimals: 6,
+  },
+  {
     // USDC
     appId: 686500029,
     assetId: 31566704,
@@ -34,6 +40,21 @@ const pools = [
     appId: 694464549,
     assetId: 694432641,
     assetDecimals: 6,
+  },
+  // USDC-gALGO TMP1.1
+  {
+    appId: 805843312,
+    assetId: 794948880,
+    assetDecimals: 6,
+    poolAppAddress:
+      "3WT6YVLQY2WSQ6VLX73MJB7BI3CGBDTB2KKAAFZ2CZQJUFUCIOMUN2K24U",
+  },
+  // ALGO-gALGO PLP
+  {
+    appId: 805846536,
+    assetId: 794882756,
+    assetDecimals: 6,
+    poolAppId: 794882684,
   },
   {
     // Algo-gAlgo3 TMP1.1
@@ -66,22 +87,55 @@ const pools = [
     poolAppId: 620995314,
   },
   {
+    // USDC-USDt TMP1.1
+    appId: 776179559,
+    assetId: 552888874,
+    assetDecimals: 6,
+    poolAppAddress:
+      "I37JDCOJCK2JSPRMV5HHFHQ54YU6J6VWCBCDNULIT5ZJWO357R2DJLGIBM",
+  },
+  {
+    // USDC-USDt PLP
+    appId: 776176449,
+    assetId: 701273234,
+    assetDecimals: 6,
+    poolAppId: 701273050,
+  },
+  {
     // Planets
     appId: 751285119,
     assetId: 27165954,
     assetDecimals: 6,
   },
+  {
+    // goBTC-gALGO PLP
+    appId: 818026112,
+    assetId: 807805560,
+    assetDecimals: 6,
+    poolAppId: 807805342,
+  },
+  {
+    // goETH-gALGO PLP
+    appId: 818028354,
+    assetId: 807804381,
+    assetDecimals: 6,
+    poolAppId: 807804196,
+  },
 ];
 
-const liquidGovernanceAppId = 694427622;
+// app id of the governance app used only on 3rd governance period
+const liquidGovernance3AppId = 694427622;
+// app id of the governance app used from 4th governance period on
+const liquidGovernanceAppId = 793119194;
 
-const oracleAppId = 751491670;
+const oracleAppId = 793269965;
 const oracleAdapterAppId = 751277258;
 const oracleDecimals = 14;
 const tinymanValidatorAppId = 552635992;
 
 module.exports = {
   pools,
+  liquidGovernance3AppId,
   liquidGovernanceAppId,
   oracleAppId,
   oracleAdapterAppId,

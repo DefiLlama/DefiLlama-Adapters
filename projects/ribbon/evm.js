@@ -13,6 +13,7 @@ const yvUSDCETHPutVaultV2 = "0xCc323557c71C0D1D20a1861Dc69c06C5f3cC9624";
 const aaveCallVault = "0xe63151A0Ed4e5fafdc951D877102cf0977Abd365";
 const stETHCallVault = "0x53773E034d9784153471813dacAFF53dBBB78E8c";
 const apeCallVault = "0xc0cF10Dd710aefb209D9dc67bc746510ffd98A53";
+const rethCallVault = "0xA1Da0580FA96129E753D736a5901C31Df5eC5edf";
 
 // Avalanche Vaults
 const avaxCallVault = "0x98d03125c62DaE2328D9d3cb32b7B969e6a87787";
@@ -21,6 +22,7 @@ const usdcAvaxPutVault = "0x9DD6be071b4292cc88B8190aB718329adEA3E3a3";
 
 // Treasury Vaults
 const perpCallVault = "0xe44eDF7aD1D434Afe3397687DD0A914674F2E405";
+const balCallVault = "0x2a6B048eB15C7d4ddCa27db4f9A454196898A0Fe";
 
 // Ethereum Assets
 const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
@@ -29,6 +31,8 @@ const usdc = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
 const aave = "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9";
 const perp = "0xbC396689893D065F41bc2C6EcbeE5e0085233447";
 const ape = "0x4d224452801ACEd8B2F0aebE155379bb5D594381";
+const bal = "0xba100000625a3754423978a60c9317c58a424e3D";
+const reth = "0xae78736Cd615f374D3085123A210448E74Fc6393";
 
 // Avalanche Assets
 const wavax = "avax:0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7";
@@ -59,6 +63,8 @@ async function ethTvl(_, block) {
     addVault(balances, stETHCallVault, weth, block),
     addVault(balances, perpCallVault, perp, block),
     addVault(balances, apeCallVault, ape, block),
+    addVault(balances, balCallVault, bal, block),
+    addVault(balances, rethCallVault, reth, block),
   ]);
   return balances;
 }
@@ -85,7 +91,7 @@ module.exports = {
     tvl: ethTvl,
     staking: veRBNStaking,
   },
-  avalanche: {
+  avax:{
     tvl: avaxTvl,
   },
 };

@@ -26,7 +26,45 @@ const COLLATERALS = {
       activePool: "0xCE90059FbCEc696634981945600d642A79e262aD",
       defaultPool: "0x3aD8FE12674B4c9481d5C7585ed5bDC4E35025b9",
     }
-  }
+  },
+  DOT: {
+    tokenAddress: "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF",
+    contracts: {
+      activePool: "0x8cd0b101838b082133e25eEb76C916Ae2AC56f36",
+      defaultPool: "0x4e8B4867899A69bB05EFa6A16e68363C2BBeB02f",
+    }
+  },
+  USDC: {
+    tokenAddress: "0x6a2d262d56735dba19dd70682b39f6be9a931d98",
+    bridgeTokenMapping: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+    contracts: {
+      activePool: "0x5070d543654D866964C44E610a3b7f85fcAf2859",
+      defaultPool: "0xEb80f1a9ede36412cF26E1e35ae74dbA30cCfF02",
+    }
+  },
+  WETH: {
+    tokenAddress: "0x81ECac0D6Be0550A00FF064a4f9dd2400585FE9c",
+    contracts: {
+      activePool: "0x5Ec419F08602caE5e4C591dE65bD640d66673035",
+      defaultPool: "0x2eE0F3daa042af6Fdd56f0194d5aBfdA0A723D95",
+    }
+  },
+  WBTC: {
+    tokenAddress: "0xad543f18cFf85c77E140E3E5E3c3392f6Ba9d5CA",
+    bridgeTokenMapping: "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+    contracts: {
+      activePool: "0x1685E4f68FD9A50246ce92F0eb07a977591F5Ba2",
+      defaultPool: "0xD69eB04d9ff456A31Da6D2a20538512C433ac1Ca",
+    }
+  },
+  USDT: {
+    tokenAddress: "0x3795c36e7d12a8c252a20c5a7b455f7c57b60283",
+    bridgeTokenMapping: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+    contracts: {
+      activePool: "0x74dFF63491B39E5fFE0Be44Ee3B23F674C27DB7c",
+      defaultPool: "0x8EE2f5403246b86d7493ddCeED19f9347bc4DF1D",
+    }
+  },
 }
 
 const BAI_TOKEN_ADDRESS = "0x733ebcC6DF85f8266349DEFD0980f8Ced9B45f35"
@@ -45,7 +83,27 @@ const STAKES = {
     contracts: {
       stabilityPool: "0xA5Bb226e06732005Cf6053429B8F6d607A8A530a"
     }
-  }
+  },
+  DOT: {
+    contracts: {
+      stabilityPool: "0xB333a7a951DC495bA7F27999cD41361AAafb6BE0"
+    }
+  },
+  USDC: {
+    contracts: {
+      stabilityPool: "0x3598e5Aa98FDa59261b7372D68C116ad7220716D"
+    }
+  },
+  WETH: {
+    contracts: {
+      stabilityPool: "0x19Af5DA5770d17808aA9b0011a47693379f338DD"
+    }
+  },
+  WBTC: {
+    contracts: {
+      stabilityPool: "0x9A64Af13Cd72212ab0D812BEB839Fa93692E8B9F"
+    }
+  },
 }
 
 const BRIDGE_TOKEN_MAPPINGS = {}

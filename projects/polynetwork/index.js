@@ -115,6 +115,26 @@ async function kcc() {
     return Number(tvl.data);
 }
 
+async function kava() {
+    const tvl = await utils.fetchURL('https://explorer.poly.network/api/v1/getTVLKava')
+    return Number(tvl.data);
+}
+
+async function starcoin() {
+    const tvl = await utils.fetchURL('https://explorer.poly.network/api/v1/getTVLStarcoin')
+    return Number(tvl.data);
+}
+
+async function celo() {
+    const tvl = await utils.fetchURL('https://explorer.poly.network/api/v1/getTVLCelo')
+    return Number(tvl.data);
+}
+
+async function clv() {
+    const tvl = await utils.fetchURL('https://explorer.poly.network/api/v1/getTVLClover')
+    return Number(tvl.data);
+}
+
 async function fetch() {
     const tvl = await utils.fetchURL('https://explorer.poly.network/api/v1/getTVLTotal')
     return Number(tvl.data);
@@ -192,6 +212,18 @@ module.exports = {
     },
     kcc: {
         fetch: kcc
+    },
+    kava: {
+        fetch: kava
+    },
+    starcoin: {
+        fetch: starcoin
+    },
+    celo: {
+        fetch: celo
+    },
+    clv: {
+        fetch: clv
     },
     fetch
 }

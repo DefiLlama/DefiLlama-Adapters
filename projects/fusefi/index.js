@@ -21,4 +21,7 @@ module.exports = {
       "fuse-network-token"
     ),
   },
+  hallmarks: [
+    [1648684800, "Ola Finance exploit"]
+]
 };

@@ -63,7 +63,7 @@ module.exports = {
       const [data, transform, koyoAssets] = CHAIN_ORGANISED_DATA[chain]();
 
       const balances = {};
-      const block = await getBlock(timestamp, chain, chainBlocks);
+      const block = chainBlocks[chain];
 
       await sumTokensAndLPsSharedOwners(
         balances,
@@ -74,18 +74,18 @@ module.exports = {
         transform
       );
 
-      if (koyoAssets) {
-        await sumKoyoLPTokens(
-          balances,
-          data.treasuryKoyoTokens,
-          data.treasuryAddresses,
-          block,
-          chain,
-          transform
-        );
-      }
+      // if (koyoAssets) {
+      //   await sumKoyoLPTokens(
+      //     balances,
+      //     data.treasuryKoyoTokens,
+      //     data.treasuryAddresses,
+      //     block,
+      //     chain,
+      //     transform
+      //   );
+      // }
 
       return balances;
     },
   },
-};
+}

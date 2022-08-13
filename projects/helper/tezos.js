@@ -2,17 +2,33 @@ const http = require('./http')
 const sdk = require('@defillama/sdk')
 const { getChainTransform } = require('./portedTokens')
 const { default: BigNumber } = require('bignumber.js')
-const { usdtAddress, toUSDTBalances } = require('../helper/balances')
+const { usdtAddress, } = require('../helper/balances')
 const { PromisePool } = require('@supercharge/promise-pool')
 
 const RPC_ENDPOINT = 'https://api.tzkt.io'
+
+const tokenBlacklist = [
+  'KT18quSVkqhbJS38d5sbRAEkXd5GoNqmAoro',
+  'KT1TtaMcoSx5cZrvaVBWsFoeZ1L15cxo5AEy',
+  'KT19oivKN2qzeWgCs886BbttSVYtkcJHRtuQ',
+  'KT1AhSVv4Se1j3Hf5Y6a56vBV44zNzjP91D2',
+  'KT1Gf5JGXC1M8GMji58pKraXiRLkzW2NRK1s',
+  'KT1R52Gk7LzWvyV41oP9dRUbboHs4yVTXAZT',
+  'KT1LVnyY5cSCVpFMGXzqVsWNiSkJYA8w1rZk',
+  'KT1T9kFJD5fKAT4LAZWjYBCaWNbD7cw1CUju',
+  'KT1JXxK3bd39ayLiiBdKm2cdReYnVSG3bkzK',
+  'KT1FR9ij18K3dDExgFMBs7ppxfdGYzHiPo7c',
+  'KT1GhX6MzTHKcjkMTg1mwCPzam12HRjsp6Sf',
+]
 
 async function getTokenBalances(account, includeTezosBalance = true) {
   const response = await http.get(`${RPC_ENDPOINT}/v1/tokens/balances?account=${account}&sort.desc=balance&offset=0&limit=40&select=balance,token.id%20as%20id,token.contract%20as%20contract,token.tokenId%20as%20token_id`)
   const balances = response.reduce((agg, item) => {
     let token = item.contract.address
     if (item.token_id !== '0') token += '-' + item.token_id
-    agg[token] = item.balance
+
+    if (!tokenBlacklist.includes(token))
+      agg[token] = item.balance
     return agg
   }, {})
 
@@ -103,7 +119,9 @@ async function convertBalances(balances) {
       return;
     }
     const { decimals, usdValue, } = prices[token]
-    if (!usdValue) return;
+    if (!usdValue || !decimals) return;
+    const inMillions = (+balance / 10 ** decimals) * usdValue / 1e6
+    if (inMillions > 0.2) console.log(inMillions, decimals, balance, usdValue, token)
     totalUSD += (+balance / 10 ** decimals) * usdValue
   })
 

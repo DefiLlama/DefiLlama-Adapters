@@ -19,3 +19,6 @@ function chainTvl(chain){
 }
 
 module.exports = fetchChainExports(chainTvl, Object.keys(chainIds))
+module.exports.hallmarks = [
+    [1651881600, "UST depeg"],
+  ]
