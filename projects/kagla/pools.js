@@ -47,7 +47,7 @@ const getBalances = async (chain, block) => {
     ...result,
     [key]: key.startsWith("0x")
       ? balanceBNRecord[key].toString()
-      : balanceBNRecord[key].shiftedBy(-18)
+      : balanceBNRecord[key].shiftedBy(-18).toFixed(0)
   }), {})
 }
 
