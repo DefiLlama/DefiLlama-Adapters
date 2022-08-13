@@ -83,7 +83,6 @@ async function getStarlayTvl(
     block,
     chain,
   });
-  console.log(balanceOfUnderlying)
   sdk.util.sumMultiBalanceOf(
     balances,
     balanceOfUnderlying,
