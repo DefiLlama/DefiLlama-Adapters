@@ -1,7 +1,9 @@
 const DEFAULT_DECIMALS = 18
 
-const DOT_TOKEN = "polkadot"
-const DOT_DECIMALS = 10
+const TOKEN_INFO = {
+  dot: { key: "polkadot", decimals:10 },
+  ausd: { key: "acala-dollar", decimals:12 }
+}
 
 const LAY_ADDRESS = "0xc4335B1b76fA6d52877b3046ECA68F6E708a27dd"
 
@@ -32,7 +34,9 @@ const TOKENS = {
   // BNB
   "0x7f27352D5F83Db87a5A3E00f4B07Cc2138D8ee52": "binancecoin",
   // DOT
-  "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF": DOT_TOKEN,
+  "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF": TOKEN_INFO.dot.key,
+  // aUSD
+  "0xfFFFFfFF00000000000000010000000000000001": TOKEN_INFO.ausd.key,
   // LAY
   [LAY_ADDRESS]: "starlay-finance",
 };
@@ -41,8 +45,7 @@ const VOTING_ESCROW_ADDRESS = "0xDf32D28c1BdF25c457E82797316d623C2fcB29C8"
 
 module.exports = {
   DEFAULT_DECIMALS,
-  DOT_DECIMALS,
-  DOT_TOKEN,
+  TOKEN_INFO,
   LAY_ADDRESS,
   TOKENS,
   VOTING_ESCROW_ADDRESS,
