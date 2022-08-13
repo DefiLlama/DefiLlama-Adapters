@@ -27,7 +27,8 @@ const graphs = (chain: string) =>
         return fetchURL(endpoints.ethereum(dayTimestamp)).then((res: any) => res.data)
           .then(({ data }: BancorV2Response) => {
             const volume = data.find(item => (item.timestamp / 1000) === dayTimestamp)
-            if (!volume) throw new Error("Unexpected error: No volume found")
+            if (!volume) throw new Error(`Unexpected error: No volume found for ${dayTimestamp}`)
+            console.log(`Bancor timestamp -> ${dayTimestamp} ${volume.usd}`)
             return {
               timestamp: dayTimestamp,
               dailyVolume: volume.usd
@@ -44,7 +45,7 @@ const adapter: DexVolumeAdapter = {
       fetch: graphs("ethereum"),
       runAtCurrTime: true,
       customBackfill: undefined,
-      start: 1544918400, //manually from scripting endpoint
+      start: 1612137600, //manually from scripting endpoint
     },
     // CUSTOM BACKFILL
   },
