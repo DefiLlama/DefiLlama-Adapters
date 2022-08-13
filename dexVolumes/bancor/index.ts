@@ -1,7 +1,5 @@
-import { DexVolumeAdapter, FetchResult } from "../dexVolume.type";
-import { getTimestampAtStartOfHour } from "../helper/getTimestampAtStartOfHour";
+import { ChainBlocks, DexVolumeAdapter, FetchResult } from "../dexVolume.type";
 
-const BigNumber = require("bignumber.js");
 const { fetchURL } = require("../helper/utils");
 const {
   getUniqStartOfTodayTimestamp,
