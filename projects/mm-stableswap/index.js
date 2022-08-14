@@ -31,5 +31,5 @@ module.exports = {
     cronos:{
         tvl,
     },
-    methodology: "Counts tokens on the treasury for tvl and staked CROWN for staking",
+    methodology: "Counts DAI, USDC, & USDT tokens on the 3MM Base Pool for tvl",
 };
