@@ -9,6 +9,7 @@ const {polygonContracts} = require('./polygon');
 const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 const wbtc = "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599";
 const ftm = "0x4E15361FD6b4BB609Fa63C81A2be19d873717870";
+const matic = '0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0';
 const usdc= "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
 
 const marketsupply = async (contract, block, chain) => {
@@ -75,6 +76,9 @@ async function polygon(_timestamp, ethBlock, chainBlocks){
 }
 
 module.exports = {
+    timetravel: false,
+    misrepresentedTokens: false,
+    methodology: "Counts on-chain balance of receipt tokens in F1155 contracts for all vaults.",
     ethereum:{
         tvl:eth
     },
@@ -84,5 +88,4 @@ module.exports = {
     polygon: {
         tvl: polygon
     },
-    methodology: "Counts balance of receipt tokens in F1155 Contract on all vaults."
 }
