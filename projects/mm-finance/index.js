@@ -1,6 +1,22 @@
+const { calculateUniTvl } = require('../helper/calculateUniTvl')
 const { staking } = require('../helper/staking')
 const { getUniTVL } = require('../helper/unknownTokens')
 
+const factory2 = '0x7cFB780010e9C861e03bCbC7AC12E013137D47A5'
+const mmfToken2 = '0x22a31bD4cB694433B6de19e0aCC2899E553e9481'
+const masterChef2 = '0xa2B417088D63400d211A4D5EB3C4C5363f834764'
+
+async function polyTvl(timestamp, block, chainBlocks) {
+  const balances = await calculateUniTvl(
+    (address) => `polygon:${address}`,
+    chainBlocks.polygon,
+    "polygon",
+    factory2,
+    0,
+    true
+  );
+  return balances
+}
 
 const factory = '0xd590cC180601AEcD6eeADD9B7f2B7611519544f4'
 const mmfToken = '0x97749c9B61F878a880DfE312d2594AE07AEd7656'
@@ -24,5 +40,9 @@ module.exports = {
         "0x388c07066aa6cea2be4db58e702333df92c3a074", // hakuna too
       ]
     }),
+  },
+  polygon: {
+    staking: staking(masterChef2, mmfToken2, 'polygon'),
+    tvl: polyTvl,
   },
 }
