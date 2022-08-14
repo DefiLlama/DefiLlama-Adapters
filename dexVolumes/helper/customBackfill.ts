@@ -3,7 +3,14 @@ import { ChainBlocks, Fetch } from "../dexVolume.type"
 import { getChainVolume } from "./getUniSubgraphVolume"
 import { getBlock } from "../../projects/helper/getBlock"
 
-export default (chain: Chain, graphs: ReturnType<typeof getChainVolume>): Fetch => async (timestamp: number, chainBlocks: ChainBlocks) => {
+export type IGraphs = (chain: Chain) => (timestamp: number, chainBlocks: ChainBlocks) => Promise<{
+    timestamp: number;
+    block?: number;
+    totalVolume: string;
+    dailyVolume?: string;
+}>
+
+export default (chain: Chain, graphs: IGraphs): Fetch => async (timestamp: number, chainBlocks: ChainBlocks) => {
     const fetchGetVolume = graphs(chain)
     const resultDayN = await fetchGetVolume(timestamp, chainBlocks)
     const timestampPreviousDay = timestamp - 60 * 60 * 24
