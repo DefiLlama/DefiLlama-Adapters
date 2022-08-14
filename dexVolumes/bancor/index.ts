@@ -1,41 +1,43 @@
-import { DexVolumeAdapter } from "../dexVolume.type";
-import { getTimestampAtStartOfHour } from "../helper/getTimestampAtStartOfHour";
+import { ChainBlocks, DexVolumeAdapter, FetchResult } from "../dexVolume.type";
 
-const BigNumber = require("bignumber.js");
 const { fetchURL } = require("../helper/utils");
 const {
   getUniqStartOfTodayTimestamp,
 } = require("../helper/getUniSubgraphVolume");
 
+interface BancorV2Response {
+  data: Array<{
+    timestamp: number
+    bnt: string
+    usd: string
+    eur: string
+    eth: string
+  }>
+}
 const endpoints = {
   ethereum: (date: number) =>
-    `https://api-v2.bancor.network/history/volume?interval=hour&start_date=${date}`,
+    `https://api-v2.bancor.network/history/volume?interval=day&start_date=${date}`,
 };
 
-const graphs = (chain: string) => async () => {
-  const timestamp = getTimestampAtStartOfHour();
-
-  let res;
-  switch (chain) {
-    case "ethereum":
-      res = await fetchURL(endpoints.ethereum(getUniqStartOfTodayTimestamp()));
-    default:
-      res = await fetchURL(endpoints.ethereum(getUniqStartOfTodayTimestamp()));
+const graphs = (chain: string) =>
+  async (timestamp: number, _chainBlocks: ChainBlocks): Promise<FetchResult> => {
+    const dayTimestamp = getUniqStartOfTodayTimestamp(new Date(timestamp * 1000))
+    switch (chain) {
+      case "ethereum":
+        return fetchURL(endpoints.ethereum(dayTimestamp)).then((res: any) => res.data)
+          .then(({ data }: BancorV2Response) => {
+            const volume = data.find(item => (item.timestamp / 1000) === dayTimestamp)
+            if (!volume) throw new Error(`Unexpected error: No volume found for ${dayTimestamp}`)
+            console.log(`Bancor timestamp -> ${dayTimestamp} ${volume.usd}`)
+            return {
+              timestamp: dayTimestamp,
+              dailyVolume: volume.usd
+            }
+          })
+      default:
+        throw new Error(`No adapter found for ${chain}`)
+    }
   }
-
-  const todayHourlyData = res?.data?.data;
-
-  return {
-    totalVolume: "0", //@TODO FIX
-    dailyVolume: todayHourlyData
-      .reduce(
-        (acc: any, { usd }: any) => acc.plus(BigNumber(usd)),
-        new BigNumber(0)
-      )
-      .toString(),
-    timestamp,
-  };
-};
 
 const adapter: DexVolumeAdapter = {
   volume: {
@@ -43,7 +45,7 @@ const adapter: DexVolumeAdapter = {
       fetch: graphs("ethereum"),
       runAtCurrTime: true,
       customBackfill: undefined,
-      start: 0,
+      start: 1570665600, //manually from scripting endpoint
     },
     // CUSTOM BACKFILL
   },
