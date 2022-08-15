@@ -1,5 +1,5 @@
 import { DexVolumeAdapter } from "../dexVolume.type";
-import { getTimestampAtStartOfHour } from "../helper/getTimestampAtStartOfHour";
+import { IGraphs } from "../helper/customBackfill";
 
 const { fetchURL } = require("../helper/utils");
 
@@ -8,8 +8,8 @@ const endpoints = {
 };
 
 // type better later
-const graphs = (chain: any) => async () => {
-  const timestamp = getTimestampAtStartOfHour();
+const graphs: IGraphs = (chain: any) => async () => {
+  const timestamp = Date.now() / 1000;
   let res;
   switch (chain) {
     case "ethereum":
@@ -29,7 +29,7 @@ const adapter: DexVolumeAdapter = {
     ethereum: {
       fetch: graphs("ethereum"),
       runAtCurrTime: true,
-      customBackfill: () => {},
+      customBackfill: undefined,
       start: 0,
     },
     // TODO custom backfill

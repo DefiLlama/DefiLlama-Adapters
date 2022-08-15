@@ -2,32 +2,37 @@ const { request, gql } = require("graphql-request");
 const { toUSDTBalances } = require("../helper/balances");
 const { getBalancerSubgraphTvl } = require("../helper/balancer");
 
-const backendGraphUrlFantom = "https://backend.beets-ftm-node.com/graphql";
+const backendGraphUrlFantom = "https://backend-v2.beets-ftm-node.com/graphql";
 const backendGraphUrlOptimism =
-  "https://backend-optimism.beets-ftm-node.com/graphql";
+  "https://backend-optimism-v2.beets-ftm-node.com/graphql";
 
-const backendGraphQuery = gql`
+const backendTvlGraphQuery = gql`
   query get_tvl {
-    data: beetsGetProtocolData {
+    data: protocolMetrics {
       totalLiquidity
-      block
     }
+  }`;
+
+const backendLatestBlockQuery = gql`
+query get_latest_block {
+  data: latestSyncedBlocks {
+    poolSyncBlock
   }
-`;
+}`;
 
 async function getLatestSyncedBlockFantom() {
-  const { data } = await request(backendGraphUrlFantom, backendGraphQuery);
-  return data.block;
+  const { data } = await request(backendGraphUrlFantom, backendLatestBlockQuery);
+  return data.poolSyncBlock;
 }
 
 async function getLatestSyncedBlockOptimism() {
-  const { data } = await request(backendGraphUrlOptimism, backendGraphQuery);
-  return data.block;
+  const { data } = await request(backendGraphUrlOptimism, backendLatestBlockQuery);
+  return data.poolSyncBlock;
 }
 
 async function fantom(timestamp, ...params) {
   if (Math.abs(timestamp - Date.now() / 1000) < 3600 / 2) {
-    const { data } = await request(backendGraphUrlFantom, backendGraphQuery);
+    const { data } = await request(backendGraphUrlFantom, backendTvlGraphQuery);
     return toUSDTBalances(data.totalLiquidity);
   }
   return getBalancerSubgraphTvl(
@@ -38,7 +43,7 @@ async function fantom(timestamp, ...params) {
 
 async function optimism(timestamp, ...params) {
   if (Math.abs(timestamp - Date.now() / 1000) < 3600 / 2) {
-    const { data } = await request(backendGraphUrlOptimism, backendGraphQuery);
+    const { data } = await request(backendGraphUrlOptimism, backendTvlGraphQuery);
     return toUSDTBalances(data.totalLiquidity);
   }
   return getBalancerSubgraphTvl(
@@ -48,7 +53,7 @@ async function optimism(timestamp, ...params) {
 }
 
 module.exports = {
-  methodology: `BeethovenX TVL is pulled from the Balancer subgraph and includes deposits made to v2 liquidity pools.`,
+  methodology: `BeethovenX TVL is pulled from the Balancer subgraph and on-chain. It includes deposits made to v2 liquidity pools.`,
   fantom: {
     tvl: fantom,
   },

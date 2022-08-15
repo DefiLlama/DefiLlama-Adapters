@@ -23,12 +23,12 @@ const adapter: DexVolumeAdapter = {
     [BOBA]: {
       fetch: graphs(BOBA),
       start: 1655104044,
-      customBackfill: () => {},
+      customBackfill: undefined,
     },
     [AURORA]: {
       fetch: graphs(AURORA),
       start: 1657617165,
-      customBackfill: () => {},
+      customBackfill: undefined,
     },
   },
 };

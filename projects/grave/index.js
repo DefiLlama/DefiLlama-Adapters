@@ -42,7 +42,7 @@ const pool2LPs = [
   ];
   
 module.exports = {
-    avalanche: {
+    avax:{
         tvl: atvl,
         pool2: pool2Exports(GShareRewardPool,pool2LPs,"avax"),
         staking: stakingPricedLP(ASYLUM, GSHARE, "avax", gShareAvaxLp, "wrapped-avax")

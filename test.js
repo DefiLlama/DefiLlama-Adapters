@@ -260,6 +260,20 @@ function checkExportKeys(module, filePath, chains) {
   exportKeys = Object.keys(exportKeys.reduce((agg, key) => ({...agg, [key]: 1}), {})) // get unique keys
   const unknownKeys = exportKeys.filter(key => !whitelistedExportKeys.includes(key))
 
+  const hallmarks = module.hallmarks || [];
+
+  if (hallmarks.length) {
+    const TIMESTAMP_LENGTH = 10;
+    hallmarks.forEach(([timestamp, text]) => {
+      const strTimestamp = String(timestamp)
+      if (strTimestamp.length !== TIMESTAMP_LENGTH){
+        throw new Error(`
+        Incorrect time format for the hallmark: [${strTimestamp}, ${text}] ,please use unix timestamp
+        `)
+      }
+    })
+  }
+
 
   if (unknownChains.length) {
     throw new Error(`
@@ -314,7 +328,7 @@ function fixBalances(balances) {
     else if (!token.includes(':')) newKey = `coingecko:${token}`
     if (newKey) {
       delete balances[token]
-      sdk.util.sumSingleBalance(balances, newKey, value)
+      sdk.util.sumSingleBalance(balances, newKey, BigNumber(value).toFixed(0))
     }
   })
 }

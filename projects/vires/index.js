@@ -16,5 +16,8 @@ module.exports = {
             item.meta.forEach(market => tvl += Number(market.currentTotalDebtUsd))
             return tvl
         }),
-    }
+    },
+    hallmarks:[
+        [1659092400, "Bad debt settlement in USDN"],
+    ],
 }
