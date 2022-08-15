@@ -27,5 +27,8 @@ module.exports = {
   },
   fantom: {
     tvl: fetchByNetwork('FANTOM')
-  }
+  },
+  hallmarks:[
+    [1651881600, "UST depeg"],
+  ],
 }
