@@ -1,5 +1,5 @@
 export type ChainBlocks = {
-  [x: string]: number;
+  [x: string]: number
 };
 
 export type FetchResult = {
@@ -16,10 +16,10 @@ export type Fetch = (
 
 export type VolumeAdapter = {
   [x: string]: {
-    start: number | any;
+    start: number | (() => Promise<number>)
     fetch: Fetch;
     runAtCurrTime?: boolean;
-    customBackfill?: any;
+    customBackfill?: Fetch;
   };
 };
 

@@ -56,6 +56,7 @@ async function getCvxPoolValue({ block, owner, pool, balances, chain }) {
 }
 
 module.exports = {
+  doublecounted: true,
   misrepresentedTokens: true,
   ethereum: {
     staking: staking(templeStakingContract, TEMPLE),

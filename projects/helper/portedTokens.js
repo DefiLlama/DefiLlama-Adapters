@@ -285,20 +285,7 @@ async function transformBscAddress() {
   };
 }
 
-const PoSMappedTokenList =
-  "https://api.bridge.matic.network/api/tokens/pos/erc20";
-const PlasmaMappedTokenList =
-  "https://api.bridge.matic.network/api/tokens/plasma/erc20";
-
 async function transformPolygonAddress() {
-  const posTokens = await utils.fetchURL(PoSMappedTokenList);
-  const plasmaTokens = await utils.fetchURL(PlasmaMappedTokenList);
-  const tokens = posTokens.data.tokens
-    .concat(plasmaTokens.data.tokens)
-    .reduce((tokenMap, token) => {
-      tokenMap[token.childToken.toLowerCase()] = token.rootToken.toLowerCase();
-      return tokenMap;
-    }, {});
   const mapping = {
     "0x60d01ec2d5e98ac51c8b4cf84dfcce98d527c747":
       "0x9ad37205d608b8b219e6a2573f922094cec5c200", // IZI
@@ -332,12 +319,14 @@ async function transformPolygonAddress() {
       "0x00006100F7090010005F1bd7aE6122c3C2CF0090", // wTAUD
     "0x81A123f10C78216d32F8655eb1A88B5E9A3e9f2F":
       "0x00000000441378008ea67f4284a57932b1c000a5", // wTGBP
+    "0xAf12F8Ec3f8C711d15434B63f9d346224C1c4666":
+      "0x8dB253a1943DdDf1AF9bcF8706ac9A0Ce939d922", // UNB unbound token
   };
   normalizeMapping(mapping);
 
   return addr => {
     addr = addr.toLowerCase();
-    return mapping[addr] || tokens[addr] || `polygon:${addr}`;
+    return mapping[addr] || `polygon:${addr}`;
   };
 }
 
@@ -471,6 +460,10 @@ async function transformHarmonyAddress() {
       "0x19e6bfc1a6e4b042fb20531244d47e252445df01",
     "0x0000000000000000000000000000000000000000":
       "0x799a4202c12ca952cB311598a024C80eD371a41e", // Harmony ONE
+    "0xed0b4b0f0e2c17646682fc98ace09feb99af3ade":
+      "0x123", // RVRS has rubbish price, setting it as 0
+    "0xd74433b187cf0ba998ad9be3486b929c76815215":
+      "harmony:0xd74433b187cf0ba998ad9be3486b929c76815215", // MIS
     "0x3c2b8be99c50593081eaa2a724f0b8285f5aba8f":
       "0xdAC17F958D2ee523a2206206994597C13D831ec7", // USDT
     "0x985458e523db3d53125813ed68c274899e9dfab4":
@@ -1005,7 +998,7 @@ function transformVelasAddress() {
       "0x300a8be53b4b5557f48620d578e7461e3b927dd0":
         "0xf56842af3b56fd72d17cb103f92d027bba912e89", // BAMBOO
       "0x525bd1f949ffa2a0c5820f3b6fe61bb897466ff7":
-       "avax:0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7", // AVAX
+        "avax:0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7", // AVAX
       "0x9b6fbF0ea23faF0d77B94d5699B44062e5E747Ac":
         "bsc:0xd522a1dce1ca4b138dda042a78672307eb124cc2", // SWAPZ
       "0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D":
@@ -1911,6 +1904,13 @@ const rskFixMapping = {
   },
 };
 
+const fixPolisMapping = {
+  "0x6fc851b8d66116627fb1137b9d5fe4e2e1bea978": {
+    coingeckoId: "polis",
+    decimals: 18,
+  },
+}
+
 const fixBalancesMapping = {
   avax: fixAvaxBalances,
   evmos: b => fixBalances(b, evmosFixMapping, { removeUnmapped: false }),
@@ -1943,6 +1943,7 @@ const fixBalancesMapping = {
   rei: b => fixBalances(b, reiFixMapping, { removeUnmapped: true }),
   conflux: b => fixBalances(b, confluxFixMapping, { removeUnmapped: false, }),
   rsk: b => fixBalances(b, rskFixMapping, { removeUnmapped: false, }),
+  polis: b => fixBalances(b, fixPolisMapping, { removeUnmapped: true, }),
 };
 
 const chainTransforms = {

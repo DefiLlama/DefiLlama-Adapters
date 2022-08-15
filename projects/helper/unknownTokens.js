@@ -289,7 +289,7 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
     if (pairLength === null)
       throw new Error("allPairsLength() failed")
 
-    log('No. of pairs: ', pairLength)
+    log(chain, ' No. of pairs: ', pairLength)
 
     let pairNums = Array.from(Array(Number(pairLength)).keys())
     if (skipPair.length) pairNums = pairNums.filter(i => !skipPair.includes(i))
@@ -453,7 +453,7 @@ function staking({ tokensAndOwners = [],
 }
 
 
-function masterchefExports({ chain, masterchef, coreAssets, nativeToken, poolInfoABI = masterchefAbi.poolInfo, poolLengthAbi = masterchefAbi.poolLength, getToken = output => output.lpToken }) {
+function masterchefExports({ chain, masterchef, coreAssets, nativeToken, poolInfoABI = masterchefAbi.poolInfo, poolLengthAbi = masterchefAbi.poolLength, getToken = output => output.lpToken, blacklistedTokens = [], }) {
   let allTvl
   nativeToken = nativeToken.toLowerCase()
 
@@ -485,13 +485,13 @@ function masterchefExports({ chain, masterchef, coreAssets, nativeToken, poolInf
 
       const tokens = data.map(({ output }) => getToken(output).toLowerCase())
       const lps = [...tokens].filter(i => i !== nativeToken)
-      const tempBalances = await sumTokens2({ chain, block, owner: masterchef, tokens, transformAddress: a => a.toLowerCase() })
+      const tempBalances = await sumTokens2({ chain, block, owner: masterchef, tokens, transformAddress: a => a.toLowerCase(), blacklistedTokens, })
       if (tempBalances[nativeToken]) sdk.util.sumSingleBalance(balances.staking, transform(nativeToken), tempBalances[nativeToken])
       delete tempBalances[nativeToken]
 
       const pairs = await getLPData({ lps, chain, block })
 
-      const { updateBalances, } = await getTokenPrices({ lps: Object.keys(pairs), allLps: true, coreAssets, block, chain, minLPRatio: 0.001 })
+      const { updateBalances, } = await getTokenPrices({ lps: Object.keys(pairs), allLps: true, coreAssets, block, chain, minLPRatio: 0.001, })
       Object.entries(tempBalances).forEach(([token, balance]) => {
         if (pairs[token]) {
           const { token0Address, token1Address } = pairs[token]
@@ -506,6 +506,7 @@ function masterchefExports({ chain, masterchef, coreAssets, nativeToken, poolInf
       await updateBalances(balances.tvl)
       await updateBalances(balances.pool2)
       await updateBalances(balances.staking)
+      console.log(balances)
 
       return balances
     }

@@ -61,7 +61,6 @@ const liqs = async () => {
     }))
     return cdps.map(cdp=>{
         const gem = gems[cdp.collateralType.id]
-        console.log(cdp)
         return {
             owner: cdp.owner.address,
             liqPrice: (cdp.debt * cdp.collateralType.liquidationRatio) / cdp.collateral,

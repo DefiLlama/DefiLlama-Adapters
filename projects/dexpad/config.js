@@ -21,7 +21,7 @@ const coreTokenWhitelist = {
     '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',  // wmatic
     '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',  // usdc
     '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619'], // weth
-    avalanche: [
+    avax: [
     '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7',  // wavax
     '0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e',  // usdc
     '0xc7198437980c041c805a1edcba50c1ce5db95118'], // usdt
