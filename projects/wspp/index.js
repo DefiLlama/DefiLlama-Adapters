@@ -78,5 +78,3 @@ Object.keys(config).forEach(chain => {
       module.exports[chain] = { staking: stakingFn }
   }
 })
-
-delete module.exports.bsc
