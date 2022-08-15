@@ -30,7 +30,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     if (activeMinipoolCount_arr.reduce((a, b)=> a + parseInt(b), 0) < limit) { break; }
     offset += limit
   }
-  console.log(`minipool_count_per_status / [unmatched*16, pending*32, staking*32, withdrawable*32] ${minipool_count_per_status}\n`)
+  // console.log(`minipool_count_per_status / [unmatched*16, pending*32, staking*32, withdrawable*32] ${minipool_count_per_status}\n`)
   
   // Get ETH and RPL balance of multiple rocketpool contracts as well as RPL staked
   const [
@@ -99,17 +99,17 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
   // rpl_tvl += solidity.to_float(rp.call("rocketVault.balanceOfToken", "rocketAuctionManager", rpl)) // slashed RPL that hasn't been auctioned off yet
   const RPL_tvl = parseFloat(totalRPLStake) + parseFloat(rocketDAONodeTrustedActions_rplBalance) + parseFloat(rocketAuctionManager_rplBalance)
 
-  console.log(`staking_minipools: ${staking_minipools}
-pending_minipools: ${pending_minipools}
-unmatched_minipools: ${unmatched_minipools}
-withdrawable_minipools: ${withdrawable_minipools}
-rocketDepositPoolBalance: ${rocketDepositPoolBalance / 1e18}
-rocketTokenRETHBalance: ${rocketTokenRETHBalance / 1e18}
-= ETH_TVL: ${ETH_TVL}\n
-rocketNodeStaking.getTotalRPLStake: ${totalRPLStake/1e18}
-rocketDAONodeTrustedActions_rplBalance: ${rocketDAONodeTrustedActions_rplBalance/1e18}
-rocketAuctionManager_rplBalance: ${rocketAuctionManager_rplBalance/1e18}
-= RPL_tvl: ${RPL_tvl/1e18}\n`) 
+//   console.log(`staking_minipools: ${staking_minipools}
+// pending_minipools: ${pending_minipools}
+// unmatched_minipools: ${unmatched_minipools}
+// withdrawable_minipools: ${withdrawable_minipools}
+// rocketDepositPoolBalance: ${rocketDepositPoolBalance / 1e18}
+// rocketTokenRETHBalance: ${rocketTokenRETHBalance / 1e18}
+// = ETH_TVL: ${ETH_TVL}\n
+// rocketNodeStaking.getTotalRPLStake: ${totalRPLStake/1e18}
+// rocketDAONodeTrustedActions_rplBalance: ${rocketDAONodeTrustedActions_rplBalance/1e18}
+// rocketAuctionManager_rplBalance: ${rocketAuctionManager_rplBalance/1e18}
+// = RPL_tvl: ${RPL_tvl/1e18}\n`) 
 
   const balances = {
     [weth]: ETH_TVL * 1e18, 

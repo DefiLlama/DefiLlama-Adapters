@@ -132,8 +132,6 @@ async function getBalances(timestamp, block, chainBlocks, network) {
         abi: abi["totalAssetBorrow"]
     });
 
-    console.log(supplyResult)
-
     iTokens.forEach((iToken) => {
         const supply = supplyResult.output.find((result) => (result.input.target === iToken.iTokenAddress));
         const borrow = borrowResult.output.find((result) => (result.input.target === iToken.iTokenAddress));
