@@ -229,7 +229,7 @@ async function addTokenBalance({ balances, amount, chain, tokenArg, api, wallet,
   const geckoMapping = geckoMappings[chain]
   const tokenJson = tokenArg.toJSON()
   const tokenStr = tokenArg.toString()
-  console.log(tokenJson, tokenStr)
+  // console.log(tokenJson, tokenStr)
   const token = await wallet.getToken(forceToCurrencyName(tokenArg));
   amount = FixedPointNumber.fromInner(amount.toString(), token.decimals)
 

@@ -164,7 +164,7 @@ async function sumTokensUnknown(tokensAndAccounts) {
         balances[coingeckoId] = (balances[coingeckoId] || 0) + tokenBalances[i];
       } else {
         balances[token] = (balances[token] || 0) + tokenBalances[i];
-        console.log(`Solana token ${token} has no coingecko id`);
+        log(`Solana token ${token} has no coingecko id`);
       }
     } else {
       balances[coingeckoId] = (balances[coingeckoId] || 0) + tokenBalances[i];
