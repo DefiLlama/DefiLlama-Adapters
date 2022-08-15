@@ -64,7 +64,7 @@ module.exports = {
   },
   fetch: fetch("*"),
   hallmarks:[
-    [1651881600, "UST depeg"],
+    [1652008803, "UST depeg"],
   ],
   
 }
