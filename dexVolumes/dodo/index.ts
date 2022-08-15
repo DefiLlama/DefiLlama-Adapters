@@ -1,38 +1,28 @@
 import { DexVolumeAdapter } from "../dexVolume.type";
+import { ARBITRUM, AURORA, AVAX, BOBA, BSC, ETHEREUM, POLYGON } from "../helper/chains";
 
 const { getChainVolume } = require("../helper/getUniSubgraphVolume");
-const {
-  ARBITRUM,
-  BSC,
-  ETHEREUM,
-  HECO,
-  OKEXCHAIN,
-  POLYGON,
-} = require("../helper/chains");
 const { getStartTimestamp } = require("../helper/getStartTimestamp");
 
 const endpoints = {
+  [ETHEREUM]: "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2",
+  [BSC]: "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-bsc",
+  [POLYGON]: "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-polygon",
   [ARBITRUM]:
     "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-arbitrum",
-  [BSC]: "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-bsc",
-  [ETHEREUM]: "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2",
-  [HECO]: "https://n10.hg.network/subgraphs/name/dodoex-v2-heco-hg/heco",
+  ["MOONRIVER"]: "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-moonriver",
+  [AURORA]: "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-aurora",
+  [AVAX]: "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-avax",
+  [BOBA]: "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-boba"
+  // [HECO]: "https://n10.hg.network/subgraphs/name/dodoex-mine-v3-heco/heco",
   // [OKEXCHAIN]: "https://graph.kkt.one/subgraphs/name/dodoex/dodoex-v2-okchain",
-  [POLYGON]: "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-polygon",
 };
 
 const DAILY_VOLUME_FACTORY = "dodoDayData";
 const VOLUME_FIELD = "volumeUSD";
 
 const graphs = getChainVolume({
-  graphUrls: {
-    [ARBITRUM]: endpoints[ARBITRUM],
-    [BSC]: endpoints[BSC],
-    [ETHEREUM]: endpoints[ETHEREUM],
-    [HECO]: endpoints[HECO],
-    // [OKEXCHAIN]: endpoints[OKEXCHAIN],
-    [POLYGON]: endpoints[POLYGON],
-  },
+  graphUrls: endpoints,
   totalVolume: {
     factory: "dodoZoos",
     field: VOLUME_FIELD,
