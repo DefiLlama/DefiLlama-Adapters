@@ -185,6 +185,6 @@ module.exports = {
         tvl:polygon
     },
     hallmarks: [
-        [1621395248, "Flash Loan Attack"],
+        [1621395248, 'Flash Loan Attack'],
     ],
 }
