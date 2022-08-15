@@ -147,4 +147,7 @@ module.exports = {
      pool2: pool2,
      staking: staking,
   },
+  hallmarks:[
+    [1655991120, "Horizon bridge Hack $100m"],
+  ],
 };
