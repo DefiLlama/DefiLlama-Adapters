@@ -56,9 +56,12 @@ async function runAdapter(volumeAdapter: VolumeAdapter, timestamp: number) {
   // Get volumes
   const volumes = await Promise.all(Object.keys(chainBlocks).map(
     async chain => {
+      let start = volumeAdapter[chain].start
+      let startDate: undefined | number = typeof start !== 'number' ? undefined : start
+      if (typeof start !== 'number') startDate = await start()
       const fetchVolumeFunc = volumeAdapter[chain].customBackfill ?? volumeAdapter[chain].fetch
       return fetchVolumeFunc(timestamp, chainBlocks)
-        .then(res => ({ timestamp: res.timestamp, totalVolume: res.totalVolume, dailyVolume: res.dailyVolume }))
+        .then(res => ({ timestamp: res.timestamp, totalVolume: res.totalVolume, dailyVolume: res.dailyVolume, chain, startDate }))
     }
   ))
   return volumes

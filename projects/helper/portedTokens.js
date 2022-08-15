@@ -285,20 +285,7 @@ async function transformBscAddress() {
   };
 }
 
-const PoSMappedTokenList =
-  "https://api.bridge.matic.network/api/tokens/pos/erc20";
-const PlasmaMappedTokenList =
-  "https://api.bridge.matic.network/api/tokens/plasma/erc20";
-
 async function transformPolygonAddress() {
-  const posTokens = await utils.fetchURL(PoSMappedTokenList);
-  const plasmaTokens = await utils.fetchURL(PlasmaMappedTokenList);
-  const tokens = posTokens.data.tokens
-    .concat(plasmaTokens.data.tokens)
-    .reduce((tokenMap, token) => {
-      tokenMap[token.childToken.toLowerCase()] = token.rootToken.toLowerCase();
-      return tokenMap;
-    }, {});
   const mapping = {
     "0x60d01ec2d5e98ac51c8b4cf84dfcce98d527c747":
       "0x9ad37205d608b8b219e6a2573f922094cec5c200", // IZI
@@ -339,7 +326,7 @@ async function transformPolygonAddress() {
 
   return addr => {
     addr = addr.toLowerCase();
-    return mapping[addr] || tokens[addr] || `polygon:${addr}`;
+    return mapping[addr] || `polygon:${addr}`;
   };
 }
 

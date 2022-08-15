@@ -2,9 +2,6 @@ const { getProvider, getSaberPools, getQuarryData, getMultipleAccountBuffers, } 
 const sdk = require('@defillama/sdk')
 const { PublicKey } = require('@solana/web3.js')
 const { Program, } = require("@project-serum/anchor");
-const quarryIdl = require('./quarry/quarry_mine.json')
-const sunnyIDL = require('./quarry/SPQR.json')
-const sunnyOldIDL = require('./quarry/sunnyOldIDL.json')
 const { sliceIntoChunks, } = require('./helper/utils')
 
 async function tvl_V2() {
@@ -13,7 +10,9 @@ async function tvl_V2() {
   const quarryId = new PublicKey('QMNeHCGYnLVDn1icRAfQZpjPLBNkfGbSKRB83G5d8KB')
   const sunnyProgramId = new PublicKey('SPQR4kT3q2oUKEJes2L6NNSBCiPW9SfuhkuqC9bp6Sx')
   const provider = getProvider()
-  const quarryProgram = new Program(quarryIdl, quarryId, provider)
+  const QuarryMineIDL = await Program.fetchIdl(quarryId, provider)
+  const sunnyIDL = await Program.fetchIdl(sunnyProgramId, provider)
+  const quarryProgram = new Program(QuarryMineIDL, quarryId, provider)
   const sunnyProgram = new Program(sunnyIDL, sunnyProgramId, provider)
   const pools = await sunnyProgram.account.pool.all()
   // const vaults = await sunnyProgram.account.vault.all()
@@ -60,6 +59,7 @@ async function tvl_V1() {
   const saberPools = await getSaberPools()
   const sunnyProgramId = new PublicKey('SSFNHWYFdELMTkWNdaPaZQuVL4d2RY7ykjGmeGkmKXW')
   const provider = getProvider()
+  const sunnyOldIDL = await Program.fetchIdl(sunnyProgramId, provider)
   const sunnyProgram = new Program(sunnyOldIDL, sunnyProgramId, provider)
   const pools = await sunnyProgram.account.pool.all()
   const poolsDataKeyed = {}

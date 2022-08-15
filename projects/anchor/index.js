@@ -71,7 +71,7 @@ module.exports = {
       tvl,
       borrowed
   },
-  avalanche: {
+  avax:{
     tvl: avalancheTVL
   }
 }

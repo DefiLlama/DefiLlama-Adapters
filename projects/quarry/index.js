@@ -1,12 +1,11 @@
 const { sliceIntoChunks, log } = require("../helper/utils");
 const { PublicKey } = require("@solana/web3.js");
-const { Coder } = require("@project-serum/anchor");
+const { BorshAccountsCoder, } = require("@project-serum/anchor");
 const { Program, } = require("@project-serum/anchor");
-const QuarryMineIDL = require("./quarry_mine.json");
 const { getMSolLPTokens, MSOL_LP_MINT } = require("./msolLP");
 const sdk = require('@defillama/sdk')
 
-const { getMultipleAccountBuffers, getConnection, getSaberPools, getQuarryData,  getProvider, } = require("../helper/solana");
+const { getMultipleAccountBuffers, getConnection, getSaberPools, getQuarryData, getProvider, } = require("../helper/solana");
 
 async function tvl() {
   // a mapping of coin name to coin amount
@@ -18,11 +17,18 @@ async function tvl() {
   } = await getQuarryData();
   const saberPools = await getSaberPools()
 
-  const connection = getConnection();
-  const coder = new Coder(QuarryMineIDL);
+  // const connection = getConnection();
+  const quarryId = new PublicKey('QMNeHCGYnLVDn1icRAfQZpjPLBNkfGbSKRB83G5d8KB')
+  const provider = getProvider();
+  const QuarryMineIDL = await Program.fetchIdl(quarryId, provider)
+  const quarryProgram = new Program(QuarryMineIDL, quarryId, provider)
+  const allQuaries = await quarryProgram.account.quarry.all()
+  const quaryMapping = {}
+  allQuaries.forEach(i => quaryMapping[i.publicKey.toString()] = i)
+  // const coder = new BorshAccountsCoder(QuarryMineIDL);
   let i = 0
   log('total', Object.keys(quarriesByStakedMint).length)
-  const quarriies =  []
+  const quarriies = []
 
   for (const [stakedMint, quarryKeys] of Object.entries(quarriesByStakedMint)) {
     const coingeckoID = coingeckoIDs[stakedMint];
@@ -41,17 +47,13 @@ async function tvl() {
       continue;
     }
 
-    const quarriesRaw = await connection.getMultipleAccountsInfo(
-      quarryKeys.map((q) => new PublicKey(q))
-    );
-    const quarries = quarriesRaw.map((q) =>
-      coder.accounts.decode("Quarry", q.data)
-    );
+    const quarries = quarryKeys.map(i => quaryMapping[i].account)
+    
     const totalTokens = quarries.reduce(
       (sum, q) =>
         sum +
         parseFloat(q.totalTokensDeposited.toString()) /
-          10 ** q.tokenMintDecimals,
+        10 ** q.tokenMintDecimals,
       0
     );
 
@@ -78,10 +80,7 @@ async function tvl() {
   }
 
   const balances = tvlResult
-  const quarryId = new PublicKey('QMNeHCGYnLVDn1icRAfQZpjPLBNkfGbSKRB83G5d8KB')
-  const provider = getProvider()
-  const quarryProgram = new Program(QuarryMineIDL, quarryId, provider)
-  const quaryData = await quarryProgram.account.quarry.fetchMultiple(quarriies)
+  const quaryData = quarriies.map(i => quaryMapping[i].account)
   const quarryDataKeyed = {}
   quaryData.forEach((data, i) => {
     if (!data) return;

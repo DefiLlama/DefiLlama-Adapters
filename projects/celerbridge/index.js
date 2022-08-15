@@ -559,3 +559,6 @@ Object.keys(liquidityBridgeContractsV2).forEach(chain => chains.add(chain))
 module.exports = chainExports(chainTvl, Array.from(chains));
 module.exports.methodology = `Tokens bridged via cBridge are counted as TVL`;
 module.exports.misrepresentedTokens = true;
+module.exports.hallmarks = [
+  [1651881600, "UST depeg"],
+];

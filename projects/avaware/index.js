@@ -79,7 +79,7 @@ const avaxTvl = async (timestamp, ethBlock, chainBlocks) => {
 
 module.exports = {
   timetravel: true,
-  avalanche: {
+  avax:{
     staking,
     tvl: avaxTvl,
   },
