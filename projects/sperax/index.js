@@ -53,7 +53,6 @@ async function tvl (timestamp, ethBlock, chainBlocks) {
     }
   }
   getBalance(balances)
-  console.log(balances)
   return balances
 }
 

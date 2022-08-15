@@ -21,7 +21,6 @@ const tokens = {
 function transform(address) {
     for (let token of Object.keys(tokens)) {
         if (tokens[token].boba == address) {
-            console.log(`${address} maps to ${tokens[token].eth}`)
             return tokens[token].eth;
         };
     };
