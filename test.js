@@ -369,6 +369,7 @@ async function computeTVL(balances, timestamp) {
     );
   }
   let tokenData = ([]).concat(...(await Promise.all(readRequests)));
+  const pkSet = new Set(tokenData.map(i => i.PK))
   let usdTvl = 0;
   const tokenBalances = {};
   const usdTokenBalances = {} ;
@@ -396,6 +397,10 @@ async function computeTVL(balances, timestamp) {
       console.error(`Data for ${response.PK} is stale`);
     }
   });
+  readKeys.filter(key => key.includes('0x')).forEach(key => {
+    if (pkSet.has(key)) return;
+    tokenBalances[`UNKNOWN (${key})`] = balances[key]
+  })
   return {
     usdTvl,
     tokenBalances,
