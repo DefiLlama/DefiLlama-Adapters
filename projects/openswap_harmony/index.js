@@ -16,5 +16,8 @@ module.exports = {
         '0xed0b4b0f0e2c17646682fc98ace09feb99af3ade', // RVRS
       ]
     })
-  }
+  },
+  hallmarks:[
+    [1655991120, "Horizon bridge Hack $100m"],
+  ],
 }

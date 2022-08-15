@@ -59,7 +59,10 @@ module.exports = {
         harmonyStakingToken, // hMOCHI
       ]
     }),
-    staking: harmonyStaking
+    staking: harmonyStaking,
+    hallmarks:[
+      [1655991120, "Horizon bridge Hack $100m"],
+    ],
   },
   
 }
