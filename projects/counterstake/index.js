@@ -75,6 +75,7 @@ async function totalObyteTvl(timestamp) {
 module.exports = {
     timetravel: false,
     doublecounted: false,
+    misrepresentedTokens: true,
     methodology:
         "The TVL is the USD value of the assets locked into the autonomous agents that extend the Counterstake protocol. " +
         "This includes the value of exported assets held in the custody of cross-chain bridges, the stakes of cross-chain transfers, " +
