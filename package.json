@@ -6,64 +6,46 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "weeklyChanges": "git pull && git diff $(git log -1 --before=@{7.days.ago} --format=%H) --stat | grep -E \"projects/\" | cut -d / -f 2 | cut -d \" \" -f 1 | uniq | wc -l",
-    "dev": "babel-watch curve.js"
+    "dev": "babel-watch curve.js",
+    "test-interactive": "node utils/testInteractive",
+    "test-dex": "ts-node dexVolumes/cli/testAdapter.ts"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@acala-network/api": "^4.0.0",
-    "@connext/nxtp-contracts": "^0.1.17",
-    "@connext/nxtp-utils": "^0.1.17",
-    "@defillama/sdk": "^2.3.56",
-    "@makerdao/multicall": "^0.12.0",
-    "@polkadot/api": "^7.0.0",
-    "@port.finance/port-sdk": "0.1.42",
-    "@project-serum/anchor": "^0.18.2",
-    "@pythnetwork/client": "^2.6.1",
+    "@defillama/sdk": "^2.3.66",
+    "@project-serum/anchor": "^0.25.0",
+    "@solana/spl-token": "^0.3.0",
     "@solana/web3.js": "^1.36.0",
     "@supercharge/promise-pool": "^2.1.0",
-    "@terra-money/terra.js": "^3.0.3",
-    "@vechain/connex-driver": "^2.0.7",
-    "@vechain/connex-framework": "^2.0.7",
-    "algosdk": "^1.12.0",
+    "async": "^3.2.3",
     "async-retry": "^1.3.1",
-    "axios": "^0.26.0",
-    "axios-rate-limit": "^1.3.0",
+    "axios": "^0.27.0",
     "bignumber.js": "^9.0.1",
+    "blakejs": "^1.2.1",
     "borsh": "^0.7.0",
-    "caver-js": "^1.6.5",
-    "dayjs": "^1.11.0",
+    "curve25519-js": "^0.0.4",
     "dotenv": "^8.6.0",
-    "graph-results-pager": "^1.0.3",
-    "graphql": "^15.5.0",
-    "graphql-request": "^3.6.1",
-    "inquirer": "^8.2.1",
-    "inquirer-fuzzy-path": "^2.3.0",
-    "js-yaml": "^4.1.0",
-    "moment": "^2.29.1",
-    "node-fetch": "2.6.7",
-    "node-html-parser": "^5.0.0",
-    "pact-lang-api": "^4.3.3",
-    "papaparse": "^5.3.1",
-    "tronweb": "^3.2.7",
-    "underscore": "^1.13.1",
-    "web3": "^1.5.3"
+    "ethers": "^5.6.5",
+    "graphql": "^16.0.0",
+    "graphql-request": "^4.0.0",
+    "hi-base32": "^0.5.1",
+    "js-sha512": "^0.8.0",
+    "limiter": "2.1.0",
+    "miscreant": "^0.3.2",
+    "tron-format-address": "^0.1.8"
   },
   "overrides": {
     "ansi-regex": "5.0.1",
-    "@connext/nxtp-contracts": {
-      "async": "3.2.3"
-    },
-    "caver-js": {
-      "node-forge": "1.3.1"
-    },
     "mocha": {
       "nanoid": "3.3.1"
     },
-    "node-fetch": "2.6.7",
     "@project-serum/anchor": {
       "nth-check": "2.0.1"
     }
   },
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "ts-node": "^10.8.1"
+  }
 }

@@ -23,7 +23,7 @@ async function xdai(_timestamp, ethBlock, chainBlocks) {
         abi: "erc20:balanceOf",
         chain: 'xdai'
     });
-    const usdc = await (await transformXdaiAddress())(usdcXdai);
+    const usdc = (await transformXdaiAddress())(usdcXdai);
     sdk.util.sumSingleBalance(balances, usdc, underlyingBalances.output[0].output)
     sdk.util.sumSingleBalance(balances, usdc, underlyingBalances.output[1].output)
 
@@ -33,9 +33,6 @@ async function xdai(_timestamp, ethBlock, chainBlocks) {
 module.exports = {
     ethereum: {
         staking: staking(stakingContract, perpToken)
-    },
-    xdai: {
-        tvl: xdai
     },
     optimism:{
         tvl: staking("0xAD7b4C162707E0B2b5f6fdDbD3f8538A5fbA0d60", "0x7f5c764cbc14f9669b88837ca1490cca17c31607", "optimism")

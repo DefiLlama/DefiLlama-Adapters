@@ -35,7 +35,7 @@ async function tvl(_, _ethBlock, chainBlocks) {
             calls.push([token, address]);
         });
     });
-    await sumTokens(balances, calls, chainBlocks['fantom'], chain = "fantom");
+    await sumTokens(balances, calls, chainBlocks['fantom'], "fantom");
 
     // TRANSFORM ADDRESSES
     let transformAddress = await transformFantomAddress();

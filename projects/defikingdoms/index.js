@@ -1,9 +1,10 @@
-const { request, gql } = require("graphql-request");
 const { calculateUniTvl } = require("../helper/calculateUniTvl");
 const { staking } = require("../helper/staking");
 const { getBlock } = require("../helper/getBlock");
 const { fixHarmonyBalances, transformHarmonyAddress } = require("../helper/portedTokens");
 
+/*
+const { request, gql } = require("graphql-request");
 const graphUrl =
   "https://graph.defikingdoms.com/subgraphs/name/defikingdoms/dex";
 const graphQuery = gql`
@@ -24,22 +25,21 @@ const transforms = {
   "0xfbdd194376de19a88118e84e279b977f165d01b8": "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0", //matic
   // missing luna
 }
+*/
 
 const factory = "0x9014B937069918bd319f80e8B3BB4A2cf6FAA5F7"
 async function tvl(timestamp, _ethBlock, chainBlocks) {
   const block = await getBlock(timestamp, "harmony", chainBlocks, true);
-  const transformAddress = addr=>{
-    return transforms[addr.toLowerCase()] ?? `harmony:${addr}`;
-  }
   const balances = await calculateUniTvl(
-      addr => { return `harmony:${addr}`; },
-      chainBlocks.harmony,
+      addr => `harmony:${addr}`,
+      block,
       "harmony",
       factory,
       0,
       true
   );
   fixHarmonyBalances(balances)
+  delete balances["harmony:0xed0b4b0f0e2c17646682fc98ace09feb99af3ade"]
 
   return balances
 
@@ -50,4 +50,7 @@ module.exports = {
     tvl,
     staking: staking("0xa9ce83507d872c5e1273e745abcfda849daa654f", "0x72cb10c6bfa5624dd07ef608027e366bd690048f", "harmony"),
   },
+  hallmarks:[
+    [1655991120, "Horizon bridge Hack $100m"],
+  ],
 };

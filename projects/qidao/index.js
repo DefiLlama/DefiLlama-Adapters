@@ -172,6 +172,19 @@ async function polygon(timestamp, block, chainBlocks) {
         "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
         "0x305f113ff78255d4f8524c8f50c7300b91b10f6a",
       ],  // WMATIC
+      [
+        "0xfe4546feFe124F30788c4Cc1BB9AA6907A7987F9",
+        "0x7d36999a69f2B99BF3FB98866cBbE47aF43696C8",
+      ],  // cxETH
+      [
+        "0x64875Aaa68d1d5521666C67d692Ee0B926b08b2F",
+        "0x506533B9C16eE2472A6BF37cc320aE45a0a24F11",
+      ],  // cxADA
+      [
+        "0x9Bd9aD490dD3a52f096D229af4483b94D63BE618",
+        "0x7CbF49E4214C7200AF986bc4aACF7bc79dd9C19a",
+      ],  // WMATIC
+
     ],
     chainBlocks.polygon,
     "polygon",
@@ -288,7 +301,11 @@ async function fantom(timestamp, block, chainBlocks) {
       [
         "0x2C850cceD00ce2b14AA9D658b7Cad5dF659493Db",
         "0x6d6029557a06961aCC5F81e1ffF5A474C54e32Fd",
-      ]
+      ],
+      [
+        "0xa48d959AE2E88f1dAA7D5F611E01908106dE7598",
+        "0x3f6cf10e85e9c0630856599fab8d8bfcd9c0e7d4",
+      ],
       //[t,p],
       
     ],
@@ -431,7 +448,23 @@ async function avax(timestamp, block, chainBlocks) {
       [
         "0x0665eF3556520B21368754Fb644eD3ebF1993AD4",
         "0x13a7fe3ab741ea6301db8b164290be711f546a73"
-      ]
+      ],
+      [
+        "0x60781C2586D68229fde47564546784ab3fACA982",
+        "0xfc3eAFD931ebcd0D8E59bfa0BeaE776d7F987716"
+      ],
+      [
+        "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+        "0x73a755378788a4542a780002a75a7bae7f558730"
+      ], // avax
+      [
+        "0x49D5c2BdFfac6CE2BFdB6640F4F80f226bc10bAB",
+        "0xa9122dacf3fccf1aae6b8ddd1f75b6267e5cbbb8"
+      ], // eth
+      [
+        "0x50b7545627a5162F82A992c33b87aDc75187B218",
+        "0x1f8f7a1d38e41eaf0ed916def29bdd13f2a3f11a"
+      ] // btc
     ],
     chainBlocks.avax,
     "avax",
@@ -500,11 +533,112 @@ async function xdai (timestamp, block, chainBlocks) {
       [
         "0x6a023ccd1ff6f2045c3309768ead9e68f978f6e1",
         "0x5c49b268c9841AFF1Cc3B0a418ff5c3442eE3F3b"
+      ],
+      [
+        "0x9c58bacc331c9aa871afd802db6379a98e80cedb",
+        "0x014a177e9642d1b4e970418f894985dc1b85657f"
       ]
     ],
     chainBlocks.xdai,
     "xdai",
     addr=>`xdai:${addr}`
+  );
+  return balances;
+}
+
+async function bsc (timestamp, block, chainBlocks) {
+  const balances = {};
+  const transformAddress = await getChainTransform('bsc')
+
+  await sumTokens(
+    balances,
+    [
+      [
+        "0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82",
+        "0x014a177e9642d1b4e970418f894985dc1b85657f"
+      ],
+      [
+        "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+        "0xa56f9a54880afbc30cf29bb66d2d9adcdcaeadd6"
+      ],
+      [
+        "0x67ee3cb086f8a16f34bee3ca72fad36f7db929e2",
+        "0x7333fd58d8d73a8e5fc1a16c8037ada4f580fa2b"
+      ],
+    ],
+    chainBlocks.bsc,
+    "bsc",
+    transformAddress
+  );
+  return balances;
+}
+
+async function optimism (timestamp, block, chainBlocks) {
+  const balances = {};
+  const transformAddress = await getChainTransform('optimism')
+
+  await sumTokens(
+    balances,
+    [
+      [
+        "0x4200000000000000000000000000000000000006",
+        "0x062016cd29fabb26c52bab646878987fc9b0bc55"
+      ],
+      [
+        "0x68f180fcCe6836688e9084f035309E29Bf0A2095",
+        "0xb9c8f0d3254007ee4b98970b94544e473cd610ec"
+      ],
+      [
+        "0x4200000000000000000000000000000000000042",
+        "0xbf1aea8670d2528e08334083616dd9c5f3b087ae"
+      ]
+      
+    ],
+    chainBlocks.optimism,
+    "optimism",
+    transformAddress
+  );
+  return balances;
+}
+
+async function arbitrum (timestamp, block, chainBlocks) {
+  const balances = {};
+  const transformAddress = await getChainTransform('arbitrum')
+
+  await sumTokens(
+    balances,
+    [
+      [
+        "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+        "0xC76a3cBefE490Ae4450B2fCC2c38666aA99f7aa0"
+      ],
+      [
+        "0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f",
+        "0xB237f4264938f0903F5EC120BB1Aa4beE3562FfF"
+      ],
+    ],
+    chainBlocks.arbitrum,
+    "arbitrum",
+    transformAddress
+  );
+  return balances;
+}
+
+async function metis (timestamp, block, chainBlocks) {
+  const balances = {};
+  const transformAddress = await getChainTransform('metis')
+
+  await sumTokens(
+    balances,
+    [
+      [
+        "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000", //Token Qidao
+        "0x10dcbee8afa39a847707e16aea5eb34c6b01aba9"  //Token address
+      ],  
+    ],
+    chainBlocks.metis,
+    "metis",
+    transformAddress
   );
   return balances;
 }
@@ -519,7 +653,7 @@ module.exports = {
   fantom: {
     tvl: fantom,
   },
-  avalanche: { 
+  avax:{ 
     tvl: avax,
   },
   moonriver: { 
@@ -530,5 +664,17 @@ module.exports = {
   },
   xdai: { 
     tvl: xdai
+  },
+  arbitrum: {
+    tvl: arbitrum
+  },
+  optimism: {
+    tvl: optimism
+  },
+  bsc: {
+    tvl: bsc
+  },
+  metis: {
+    tvl: metis 
   },
 };

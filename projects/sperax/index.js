@@ -53,18 +53,17 @@ async function tvl (timestamp, ethBlock, chainBlocks) {
     }
   }
   getBalance(balances)
-  console.log(balances)
   return balances
 }
 
 module.exports = {
   arbitrum: {
     tvl,
-    staking: staking(arbStakingAddr,SPA,"arbitrum")
+    staking: staking(arbStakingAddr,SPA,"arbitrum",`arbitrum:${SPA}`)
   },
   ethereum: {
     tvl: ()=>({}),
     staking: staking(ethStakingAddr,ethSPA)
   },
-  methodology: 'Counts as TVL all collateral - USDC, USDT at the moment - provided as collateral along SPA to mint USDs, stored in the vaultcore contract.'
-}
+    methodology: 'Counts all collaterals - USDC, USDT at the moment - locked to mint USDs. These collaterals are either stored in VaultCore contract of USDs protocol, or deposited into Curve’s USDC-USDT pool. Some TVL are classified as staking. This component of TVL consists of all SPA locked in Sperax’s veSPA protocol.'
+};

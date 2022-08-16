@@ -48,21 +48,6 @@ const stakingContracts = {
   "iotex": "0x57A1CE7686F3B2AB61F5191c76361F985b57E0fa",
 };
 // node test.js projects/elkfinance/index.js
-function chainStaking(chain, contract){
- return async (timestamp, ethBlock, chainBlocks) => {
-  balance = 0;
-    const block = await getBlock(timestamp, chain, chainBlocks, true);
-
-    balance += Number((await sdk.api.erc20.balanceOf({
-      target: elkAddress(chain),
-      owner: contract,
-      block: block,
-      chain
-    })).output);
-
-  return { 'avax:0xeEeEEb57642040bE42185f49C52F7E9B38f8eeeE': balance };
- }
-};
 
 const factories = {
   xdai: "0xCB018587dA9590A18f49fFE2b85314c33aF3Ad3B",
@@ -80,7 +65,10 @@ const factories = {
   hoo: "0x9c03E724455306491BfD2CE0805fb872727313eA",
   elastos: "0x440a1B8b8e968D6765D41E6b92DF3cBb0e9D2b1e",
   fuse: "0x779407e40Dad9D70Ba5ADc30E45cC3494ec71ad2",
-  iotex: "0xF96bE66DA0b9bC9DFD849827b4acfA7e8a6F3C42"
+  iotex: "0xF96bE66DA0b9bC9DFD849827b4acfA7e8a6F3C42",
+  ethereum: "0x6511eBA915fC1b94b2364289CCa2b27AE5898d80", 
+  optimism: "0xedfad3a0F42A8920B011bb0332aDe632e552d846",
+  arbitrum: "0xA59B2044EAFD15ee4deF138D410d764c9023E1F0"
 }
 
 function chainTvl(chain){
@@ -97,7 +85,7 @@ function chainTvl(chain){
 
 const chainExports = getChainExports(chainTvl, Object.keys(factories))
 chainExports.misrepresentedTokens= true;
-chainExports.timetravel= true,
+chainExports.timetravel= true
 /*
 Object.entries(stakingContracts).forEach(contract=>{
   chainExports[contract[0] === "avax"?"avalanche":contract[0]].staking = chainStaking(contract[0], contract[1])

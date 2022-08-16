@@ -81,6 +81,10 @@ async function ethereumTvl() {
 }
 
 module.exports = {
+  hallmarks: [
+    [1633651200,"Lock contract exploit"],
+    [1653696000,"LUNC mispricing exploit"]
+  ],
   timetravel: false,
   misrepresentedTokens: true,
   ethereum: {
@@ -88,7 +92,7 @@ module.exports = {
     pool2: ethereumPool2
   },
   terra: {
-    tvl: terraTvl,
-    pool2: terraPool2
+    tvl: () => ({'0': 0}),
+    //pool2: terraPool2
   }
 }
