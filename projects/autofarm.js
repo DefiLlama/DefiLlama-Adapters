@@ -21,5 +21,6 @@ module.exports=fetchChainExports(chainTvl, [
   'cronos',    'boba',
   'harmony','xdai',
   'velas','aurora',
-  'oasis'
+  'oasis','kcs',
+  'wan','evmos'
 ])
