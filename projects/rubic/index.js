@@ -1,3 +1,4 @@
+const sdk = require('@defillama/sdk');
 const { stakings } = require('../helper/staking');
 
 const stakingContractRoundThree = '0x3333B155fa21A972D179921718792f1036370333';
