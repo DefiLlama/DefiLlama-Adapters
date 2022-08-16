@@ -15,6 +15,16 @@ query get_tvl($block: Int) {
   }
 }
 `;
+const graphQueryPolygon = gql`
+query get_tvl($block: Int) {
+  factory(
+    id: "0xc35dadb65012ec5796536bd9864ed8773abc74c4",
+    block: { number: $block }
+  ) {
+    liquidityUSD
+  }
+}
+`;
 
 async function eth(timestamp, ethBlock, chainBlocks) {
   let block = ethBlock
@@ -29,6 +39,20 @@ async function eth(timestamp, ethBlock, chainBlocks) {
     }
   );
   const usdTvl = Number(uniswapFactory.totalLiquidityUSD)
+
+  return toUSDTBalances(usdTvl)
+}
+
+async function polygon(_, _b, {polygon: block}) {
+  const { factory } = await request(
+    'https://api.thegraph.com/subgraphs/name/sushiswap/exchange-polygon',
+    graphQueryPolygon,
+    {
+      block: block - 50,
+    }
+  );
+  const usdTvl = Number(factory.liquidityUSD)
+  console.log(usdTvl, toUSDTBalances(usdTvl))
 
   return toUSDTBalances(usdTvl)
 }
@@ -135,16 +159,17 @@ module.exports = {
     tvl: eth,
   },
   polygon: {
-    tvl: getUniTVL({
-      factory,
-      chain: 'polygon',
-      coreAssets: [
-        '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270', // WMATIC
-        '0x2791bca1f2de4661ed88a30c99a7a9449aa84174', // USDC
-        '0xc2132d05d31c914a87c6611c10748aeb04b58e8f', // USDT
-        '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063', // DAI
-      ],
-    }),
+    tvl: polygon,
+    // getUniTVL({
+    //   factory,
+    //   chain: 'polygon',
+    //   coreAssets: [
+    //     '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270', // WMATIC
+    //     '0x2791bca1f2de4661ed88a30c99a7a9449aa84174', // USDC
+    //     '0xc2132d05d31c914a87c6611c10748aeb04b58e8f', // USDT
+    //     '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063', // DAI
+    //   ],
+    // }),
   },
   fantom: {
     tvl: getUniTVL({
