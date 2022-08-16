@@ -8,10 +8,12 @@ const manager = "0xeC5ae95D4e9288a5C7c744F278709C56e9dC34eD"
 const usdcMatic = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"
 const wethMatic = "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619"
 const wbtcMatic = "0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6"
+const wmatic = "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"
 const stakingAddress = "0xb88cc657d93979495045e9f204cec2eed265ed42"
 const usdcAssetVaults = [
     "0x26dde715023d8acb57f6702731b569c160e2a3fb",
-    "0xAefA2EF8c02e39DAA310F5CAdAE3a35B198ff38B"
+    "0xAefA2EF8c02e39DAA310F5CAdAE3a35B198ff38B",
+    "0x80B3C9Cc16d2614b667E66844265395527a9b9C6"
 ]
 
 const ethAssetVaults = [
@@ -20,6 +22,10 @@ const ethAssetVaults = [
 
 const btcAssetVaults = [
     "0x3728afb2dab6A6D0507f5536F9601F0956154355"
+]
+
+const wmaticAssetVaults = [
+    "0xbBf71cbE5Cf84DEB429fEA9BC77394931230a054"
 ]
 
 //ETH mainnet
@@ -43,6 +49,7 @@ async function tvl(_timestamp, ethBlock, chainBlocks) {
     const usdc = await (await transformPolygonAddress())(usdcMatic);
     const weth = await (await transformPolygonAddress())(wethMatic);
     const wbtc = await (await transformPolygonAddress())(wbtcMatic);
+    const trWMatic = await (await transformPolygonAddress())(wmatic);
 
     //TVL for Perpetuals
     const underlyingBalances = await sdk.api.abi.multiCall({
@@ -106,6 +113,20 @@ async function tvl(_timestamp, ethBlock, chainBlocks) {
 
     totalBalancesBTC.output.forEach((totalBalanceVault)=>{
         sdk.util.sumSingleBalance(balances, wbtc, totalBalanceVault.output)
+    })
+
+    //TVL for WMATIC DOV vaults
+    const totalBalancesWMATIC = await sdk.api.abi.multiCall({
+        calls: wmaticAssetVaults.map((address) => ({
+            target: address
+          })),
+        abi: totalBalanceABI['totalBalance'],        
+        block: chainBlocks.polygon,        
+        chain: 'polygon'
+    })
+
+    totalBalancesWMATIC.output.forEach((totalBalanceVault)=>{
+        sdk.util.sumSingleBalance(balances, trWMatic, totalBalanceVault.output)
     })
         
     return balances
