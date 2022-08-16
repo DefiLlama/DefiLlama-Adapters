@@ -87,23 +87,14 @@ async function displayDebugInfo(skippedTokens: Set<string>, liqs: Liq[], bins: B
 async function main() {
   const passedFile = path.resolve(process.cwd(), process.argv[2]);
   let module = {} as {
-    [chain: string]: {
-      liquidations: () => Promise<
-        {
-          owner: string;
-          liqPrice: number;
-          collateral: string;
-          collateralAmount: string;
-        }[]
-      >;
-    };
+    [chain: string]: { liquidations: () => Promise<Liq[]> };
   };
   try {
     module = require(passedFile);
   } catch (e) {
     console.log(e);
   }
-  const liqs = await module.avalanche.liquidations();
+  const liqs = (await Promise.all(Object.values(module).map((m) => m.liquidations()))).flat();
   const { skippedTokens, bins } = await binResults(liqs);
   await displayDebugInfo(skippedTokens, liqs, bins);
   //console.log(liqs)
