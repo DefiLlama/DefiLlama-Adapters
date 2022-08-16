@@ -19,7 +19,7 @@ async function getLatestBlockRetry(chain) {
     try {
       return await getLatestBlock(chain);
     } catch (e) {
-      throw new Error(`Couln't get block heights for chain "${chain}"`, e);
+      throw new Error(`Couln't get block height for chain "${chain}"`, e);
     }
   }
 }
@@ -89,7 +89,11 @@ function mergeBalances(key, storedKeys, balancesObject) {
     balancesObject[key] = {};
     storedKeys.map((keyToMerge) => {
       Object.entries(balancesObject[keyToMerge]).forEach((balance) => {
-        util.sumSingleBalance(balancesObject[key], balance[0], balance[1]);
+        try {
+          util.sumSingleBalance(balancesObject[key], balance[0], BigNumber(balance[1] || '0').toFixed(0));
+        } catch (e) {
+          console.log(e)
+        }
       });
     });
   }
@@ -103,10 +107,10 @@ if (process.argv.length < 3) {
 const passedFile = path.resolve(process.cwd(), process.argv[2]);
 
 const originalCall = sdk.api.abi.call
-sdk.api.abi.call = async (...args)=>{
-  try{
+sdk.api.abi.call = async (...args) => {
+  try {
     return await originalCall(...args)
-  } catch(e){
+  } catch (e) {
     console.log("sdk.api.abi.call errored with params:", args)
     throw e
   }
@@ -116,7 +120,7 @@ sdk.api.abi.call = async (...args)=>{
   let module = {};
   try {
     module = require(passedFile)
-  } catch(e) {
+  } catch (e) {
     console.log(e)
   }
   const chains = Object.keys(module).filter(item => typeof module[item] === 'object' && !Array.isArray(module[item]));
@@ -129,7 +133,7 @@ sdk.api.abi.call = async (...args)=>{
   }
   await Promise.all(
     chains.map(async (chainRaw) => {
-      const chain = chainRaw === "avalanche"?"avax":chainRaw
+      const chain = chainRaw === "avalanche" ? "avax" : chainRaw
       if (chainsForBlocks.includes(chain) || chain === "ethereum") {
         chainBlocks[chain] = (await getLatestBlockRetry(chain)).number - 10;
       }
@@ -246,7 +250,7 @@ function checkExportKeys(module, filePath, chains) {
   filePath = filePath.split(path.sep)
   filePath = filePath.slice(filePath.lastIndexOf('projects') + 1)
 
-  if (filePath.length > 2  
+  if (filePath.length > 2
     || (filePath.length === 1 && !['.js', ''].includes(path.extname(filePath[0]))) // matches .../projects/projectXYZ.js or .../projects/projectXYZ
     || (filePath.length === 2 && !['api.js', 'index.js'].includes(filePath[1])))  // matches .../projects/projectXYZ/index.js
     process.exit(0)
@@ -257,7 +261,7 @@ function checkExportKeys(module, filePath, chains) {
   const blacklistedKeysFound = rootexportKeys.filter(key => blacklistedRootExportKeys.includes(key));
   let exportKeys = chains.map(chain => Object.keys(module[chain])).flat()
   exportKeys.push(...rootexportKeys)
-  exportKeys = Object.keys(exportKeys.reduce((agg, key) => ({...agg, [key]: 1}), {})) // get unique keys
+  exportKeys = Object.keys(exportKeys.reduce((agg, key) => ({ ...agg, [key]: 1 }), {})) // get unique keys
   const unknownKeys = exportKeys.filter(key => !whitelistedExportKeys.includes(key))
 
   const hallmarks = module.hallmarks || [];
@@ -266,7 +270,7 @@ function checkExportKeys(module, filePath, chains) {
     const TIMESTAMP_LENGTH = 10;
     hallmarks.forEach(([timestamp, text]) => {
       const strTimestamp = String(timestamp)
-      if (strTimestamp.length !== TIMESTAMP_LENGTH){
+      if (strTimestamp.length !== TIMESTAMP_LENGTH) {
         throw new Error(`
         Incorrect time format for the hallmark: [${strTimestamp}, ${text}] ,please use unix timestamp
         `)
@@ -315,7 +319,7 @@ process.on('uncaughtException', handleError)
 
 
 const BigNumber = require("bignumber.js");
-const axios =require("axios");
+const axios = require("axios");
 
 const ethereumAddress = "0x0000000000000000000000000000000000000000";
 const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
@@ -343,7 +347,7 @@ async function computeTVL(balances, timestamp) {
   const PKsToTokens = {};
   const readKeys = Object.keys(balances)
     .map((address) => {
-      const PK = `${timestamp === "now"?"":"asset#"}${address.toLowerCase()}`;
+      const PK = `${timestamp === "now" ? "" : "asset#"}${address.toLowerCase()}`;
       if (PKsToTokens[PK] === undefined) {
         PKsToTokens[PK] = [address];
         return PK;
@@ -372,7 +376,7 @@ async function computeTVL(balances, timestamp) {
   const pkSet = new Set(tokenData.map(i => i.PK))
   let usdTvl = 0;
   const tokenBalances = {};
-  const usdTokenBalances = {} ;
+  const usdTokenBalances = {};
   const now = timestamp === "now" ? Math.round(Date.now() / 1000) : timestamp;
   tokenData.forEach((response) => {
     if (Math.abs(response.timestamp - now) < DAY) {

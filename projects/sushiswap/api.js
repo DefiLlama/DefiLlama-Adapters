@@ -28,8 +28,8 @@ query get_tvl($block: Int) {
 
 async function eth(timestamp, ethBlock, chainBlocks) {
   let block = ethBlock
-  if(block === undefined){
-    block = await getBlock(timestamp, 'ethereum', chainBlocks);
+  if (block === undefined) {
+    block = await getBlock(timestamp, 'ethereum', chainBlocks)
   }
   const { uniswapFactory } = await request(
     graphUrl,
@@ -43,18 +43,21 @@ async function eth(timestamp, ethBlock, chainBlocks) {
   return toUSDTBalances(usdTvl)
 }
 
-async function polygon(_, _b, {polygon: block}) {
-  const { factory } = await request(
-    'https://api.thegraph.com/subgraphs/name/sushiswap/exchange-polygon',
-    graphQueryPolygon,
-    {
-      block: block - 50,
-    }
-  );
-  const usdTvl = Number(factory.liquidityUSD)
-  console.log(usdTvl, toUSDTBalances(usdTvl))
-
-  return toUSDTBalances(usdTvl)
+function getChainTVL(chain) {
+  return async (timestamp, _b, chainBlocks) => {
+    console.log(chainBlocks, chain)
+    const block = await getBlock(timestamp, chain, chainBlocks, false)
+    const { factory } = await request(
+      'https://api.thegraph.com/subgraphs/name/sushiswap/exchange-'+chain,
+      graphQueryPolygon,
+      {
+        block: block - 100,
+      }
+    );
+    const usdTvl = Number(factory.liquidityUSD)
+  
+    return toUSDTBalances(usdTvl)
+  }
 }
 
 const factory = '0xc35DADB65012eC5796536bD9864eD8773aBc74C4'
@@ -139,7 +142,7 @@ module.exports = {
       ]
     })
   },
-  harmony:{
+  harmony: {
     tvl: getUniTVL({
       factory,
       chain: 'harmony',
@@ -159,17 +162,16 @@ module.exports = {
     tvl: eth,
   },
   polygon: {
-    tvl: polygon,
-    // getUniTVL({
-    //   factory,
-    //   chain: 'polygon',
-    //   coreAssets: [
-    //     '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270', // WMATIC
-    //     '0x2791bca1f2de4661ed88a30c99a7a9449aa84174', // USDC
-    //     '0xc2132d05d31c914a87c6611c10748aeb04b58e8f', // USDT
-    //     '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063', // DAI
-    //   ],
-    // }),
+    tvl: getUniTVL({
+      factory,
+      chain: 'polygon',
+      coreAssets: [
+        '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270', // WMATIC
+        '0x2791bca1f2de4661ed88a30c99a7a9449aa84174', // USDC
+        '0xc2132d05d31c914a87c6611c10748aeb04b58e8f', // USDT
+        '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063', // DAI
+      ],
+    }),
   },
   fantom: {
     tvl: getUniTVL({
@@ -201,7 +203,7 @@ module.exports = {
       ]
     }),
   },
-  heco:{
+  heco: {
     tvl: getUniTVL({
       factory,
       chain: 'heco',
@@ -210,7 +212,7 @@ module.exports = {
       ],
     }),
   },
-  avax:{
+  avax: {
     tvl: getUniTVL({
       factory,
       chain: 'avax',
@@ -221,7 +223,7 @@ module.exports = {
       ],
     }),
   },
-  fuse:{
+  fuse: {
     tvl: getUniTVL({
       factory: '0x43eA90e2b786728520e4f930d2A71a477BF2737C',
       chain: 'fuse',
@@ -233,3 +235,8 @@ module.exports = {
     }),
   },
 }
+
+module.exports.polygon.tvl = getChainTVL('polygon')
+module.exports.bsc.tvl = getChainTVL('bsc')
+module.exports.fantom.tvl = getChainTVL('fantom')
+module.exports.harmony.tvl = getChainTVL('harmony')
