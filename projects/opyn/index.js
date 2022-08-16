@@ -23,6 +23,8 @@ module.exports = {
   },
   hallmarks: [
     [1619493707, "Ribbon launch"],
-    [1641855660, "Squeeth launch"]
+    [1641855660, "Squeeth launch"],
+    [1643053740, "Crab v1 launch"],
+    [1659055140, "Crab v2 launch"]
   ]
 }
