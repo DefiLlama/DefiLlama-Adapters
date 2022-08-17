@@ -84,7 +84,7 @@ function isLP(symbol, token, chain) {
   if (!symbol) return false
   if (token && blacklisted_LPS.includes(token.toLowerCase())) return false
   if (chain === 'bsc' && ['OLP', 'DLP', 'MLP', 'LP'].includes(symbol)) return false
-  if (chain === 'bsc' && ['WLP', 'FstLP', ].includes(symbol)) return true
+  if (chain === 'bsc' && ['WLP', 'FstLP',].includes(symbol)) return true
   if (chain === 'avax' && ['ELP', 'EPT', 'CRL', 'YSL'].includes(symbol)) return true
   if (chain === 'ethereum' && ['SSLP'].includes(symbol)) return true
   if (chain === 'harmony' && ['HLP'].includes(symbol)) return true
@@ -274,6 +274,12 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
   console.table(logObj)
 }
 
+async function getRippleBalance(account) {
+  const body = { "method": "account_info", "params": [{ account }] }
+  const res = await http.post('https://s1.ripple.com:51234', body)
+  return res.result.account_data.Balance / 1e6
+}
+
 module.exports = {
   DEBUG_MODE,
   log,
@@ -294,5 +300,6 @@ module.exports = {
   debugBalances,
   stripTokenHeader,
   diplayUnknownTable,
+  getRippleBalance,
   getSymbols,
 }
