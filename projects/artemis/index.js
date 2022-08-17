@@ -5,10 +5,7 @@ const masterchef = "0x59c777cd749b307be910f15c54a3116ff88f9706";
 
 module.exports = masterchefExports({
   chain: 'harmony',
-  coreAssets: [
-    '0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a', // WHARMONY
-    token,
-  ],
+  useDefaultCoreAssets: true,
   masterchef,
   nativeToken: token,
   blacklistedTokens: [

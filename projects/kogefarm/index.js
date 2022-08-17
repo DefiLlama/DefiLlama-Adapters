@@ -628,7 +628,7 @@ const kavaTvl = async (timestamp, block, chainBlocks) => {
     balances } = await getTokenPrices({
     block: kavablock,
     chain: kavachain,
-    coreAssets: [wkava],
+    useDefaultCoreAssets: true,
     lps: uniV2Positions.map(val => val.token),
     transformAddress: transformAddress,
     allLps: true

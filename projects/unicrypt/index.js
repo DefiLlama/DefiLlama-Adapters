@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk');
-const { config, coreTokenWhitelist, protocolPairs, tokens, stakingContracts,
+const { config, protocolPairs, tokens, stakingContracts,
   ethereumContractData, bscContractData, polygonContractData,
   avalancheContractData, gnosisContractData } = require('./config')
 
@@ -49,7 +49,7 @@ function tvl(args) {
       let balances = await vestingHelper({
         chain, block,
         owner: contract,
-        coreAssets: args[i].trackedTokens,
+        useDefaultCoreAssets: true,
         blacklist,
         tokens,
       })
