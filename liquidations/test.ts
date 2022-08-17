@@ -1,4 +1,5 @@
 import * as path from "path";
+import * as fs from "fs";
 import { ethers } from "ethers";
 import { providers } from "./utils/ethers";
 import { humanizeNumber } from "@defillama/sdk/build/computeTVL/humanizeNumber";
@@ -95,6 +96,9 @@ async function main() {
     console.log(e);
   }
   const liqs = (await Promise.all(Object.values(module).map((m) => m.liquidations()))).flat();
+  // // write liqs to disk as JSON
+  // fs.writeFileSync(path.resolve(process.cwd(), "liquidations2.json"), JSON.stringify(liqs, null, 2));
+
   const { skippedTokens, bins } = await binResults(liqs);
   await displayDebugInfo(skippedTokens, liqs, bins);
   //console.log(liqs)
