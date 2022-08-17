@@ -1,18 +1,6 @@
-const { getChainTvlBuffered } = require("../helper/getUniSubgraphTvl");
 const { getUniTVL } = require("../helper/unknownTokens");
 const { staking } = require("../helper/staking.js");
 
-const v1graph = getChainTvlBuffered(
-  {
-    ethereum:
-      "https://api.thegraph.com/subgraphs/name/kwikswap/kwikswap-subgraph",
-    bsc: "https://api.thegraph.com/subgraphs/name/kwikswap/kwikswap-bsc-subgraph",
-    polygon: "https://api.thegraph.com/subgraphs/name/kwikswap/matic-exchange",
-  },
-  600,
-  "kwikswapFactories",
-  "totalLiquidityUSD"
-);
 // node test.js projects/kwikswap/index.js
 const KWIK_TOKEN_ADDRESSES = {
   ethereum: "0x286c0936c7eaf6651099ab5dab9ee5a6cb5d229d",
@@ -30,7 +18,11 @@ module.exports = {
   timetravel: true,
   misrepresentedTokens: true,
   ethereum: {
-    tvl: v1graph("ethereum"),
+    tvl: getUniTVL({
+      factory: '0xdD9EFCbDf9f422e2fc159eFe77aDD3730d48056d',
+      chain: 'ethereum',
+      useDefaultCoreAssets: true,
+    }),
     staking: staking(
       STAKING_CONTRACTS["ethereum"],
       KWIK_TOKEN_ADDRESSES["ethereum"]
@@ -38,7 +30,11 @@ module.exports = {
   },
 
   polygon: {
-    tvl: v1graph("polygon"),
+    tvl: getUniTVL({
+      factory: '0x0B29D7a989D6647E4A56eE9899DaF7535FF9620c',
+      chain: 'polygon',
+      useDefaultCoreAssets: true,
+    }),
     staking: staking(
       STAKING_CONTRACTS["polygon"],
       KWIK_TOKEN_ADDRESSES["polygon"],
