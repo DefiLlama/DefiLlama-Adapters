@@ -238,9 +238,12 @@ const positions = async (): Promise<Liq[]> => {
       const owner = owners[i - 1];
       const collateral = "ethereum:" + collaterals[i - 1];
 
-      return { collateralAmount: _collateralAmount, collateral, liqPrice, owner };
+      const decimal = decimals[i - 1];
+      const collateralAmountFormatted = collateralAmount.times(10 ** Number(decimal)).toFixed(0);
+
+      return { collateralAmount: collateralAmountFormatted, collateral, liqPrice, owner };
     })
-    .filter((x) => !isNaN(x.liqPrice) && x.liqPrice > 0);
+    .filter((x) => x.liqPrice > 0);
 
   return positions;
 };
