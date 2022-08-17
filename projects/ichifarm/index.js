@@ -210,6 +210,23 @@ async function tvl(timestamp, block) {
   return balances
 }
 
+async function polygonTvl(_, _b, { polygon: block }){
+  const chain = 'polygon'
+  const tokensAndOwners = [
+    // oneBTC mint
+    ['0x2791bca1f2de4661ed88a30c99a7a9449aa84174', '0x1f194578e7510A350fb517a9ce63C40Fa1899427'],
+    ['0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6', '0x1f194578e7510A350fb517a9ce63C40Fa1899427'],
+
+    // BTC pool
+    ['0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6', '0x61F7d1F537E959d62265a76Bf1ac40EB3E338De7'], 
+
+    // USDC pool
+    ['0x2791bca1f2de4661ed88a30c99a7a9449aa84174', '0x499277a14d1eDB5583dd070A447dEDA19E7aBf85'], 
+  ]
+
+  return sumTokens2({ chain, block, tokensAndOwners, })
+}
+
 module.exports = {
   methodology: "Tokens deposited to mint oneTokens, Angel and HODL vaults excluding oneTokens",
   misrepresentedTokens: true,
@@ -224,5 +241,8 @@ module.exports = {
       return sumTokens2({ tokensAndOwners: toa, block, resolveLP: true, })
     },
     staking: stakings([xIchi, ichiLending] , ichi)
+  },
+  polygon: {
+    tvl: polygonTvl,
   }
 } // node test.js projects/ichifarm/index.js

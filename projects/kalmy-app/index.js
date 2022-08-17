@@ -249,12 +249,14 @@ async function staking(timestamp, ethBlock, chainBlocks) {
     }),
     chain: 'bsc'
   })).output
-  
+
   /// @dev getting Kalm staking balance
-  const kalmObjIndex = addresses['Staking'].findIndex((s) => s.name.includes('Kalm'))
-  const kalmStaking = addresses['Staking'][kalmObjIndex]
-  const kalmStaked = stakingTokens[kalmObjIndex].output
-  balances[getBSCAddress(kalmStaking['stakingToken'])] = BigNumber(balances[getBSCAddress(kalmStaking['stakingToken'])] || 0).plus(BigNumber(kalmStaked)).toFixed(0)
+  const kalmObjIndexes = addresses['Staking'].reduce((memo, s, i) => s.name.includes('Kalm') ? [...memo, i] : [...memo], [])
+  kalmObjIndexes.forEach((kalmObjIndex) => {
+    const kalmToken = addresses['Staking'][kalmObjIndex]['stakingToken']
+    const kalmStaked = stakingTokens[kalmObjIndex].output
+    balances[getBSCAddress(kalmToken)] = BigNumber(balances[getBSCAddress(kalmToken)] || 0).plus(BigNumber(kalmStaked)).toFixed(0)
+  })
 
   /// @dev getting total base token
   const totalBNB = (await sdk.api.abi.multiCall({
@@ -293,7 +295,7 @@ async function staking(timestamp, ethBlock, chainBlocks) {
     chain: 'bsc'
   })).output
 
-  const onlyITOKENStaking = stakingTokens.filter((s, i) => i !== kalmObjIndex)
+  const onlyITOKENStaking = stakingTokens.filter((_, i) => !kalmObjIndexes.includes(i))
 
   totalITOKEN.forEach((t, i) => {
     const tokenPerShare = BigNumber(totalBTOKEN[i].output).div(totalITOKEN[i].output)
@@ -325,12 +327,14 @@ async function ftmStaking(timestamp, ethBlock, chainBlocks) {
     }),
     chain: 'fantom'
   })).output
-  
+
   /// @dev getting Kalm staking balance
-  const kalmObjIndex = addresses['Staking'].findIndex((s) => s.name.includes('Kalm'))
-  const kalmStaking = addresses['Staking'][kalmObjIndex]
-  const kalmStaked = stakingTokens[kalmObjIndex].output
-  balances[getFTMAddress(kalmStaking['stakingToken'])] = BigNumber(balances[getFTMAddress(kalmStaking['stakingToken'])] || 0).plus(BigNumber(kalmStaked)).toFixed(0)
+  const kalmObjIndexes = addresses['Staking'].reduce((memo, s, i) => s.name.includes('Kalm') ? [...memo, i] : [...memo], [])
+  kalmObjIndexes.forEach((kalmObjIndex) => {
+    const kalmToken = addresses['Staking'][kalmObjIndex]['stakingToken']
+    const kalmStaked = stakingTokens[kalmObjIndex].output
+    balances[getFTMAddress(kalmToken)] = BigNumber(balances[getFTMAddress(kalmToken)] || 0).plus(BigNumber(kalmStaked)).toFixed(0)
+  })
 
   return balances
 }
@@ -356,12 +360,14 @@ async function avaxStaking(timestamp, ethBlock, chainBlocks) {
     }),
     chain: 'avax'
   })).output
-  
+
   /// @dev getting Kalm staking balance
-  const kalmObjIndex = addresses['Staking'].findIndex((s) => s.name.includes('Kalm'))
-  const kalmStaking = addresses['Staking'][kalmObjIndex]
-  const kalmStaked = stakingTokens[kalmObjIndex].output
-  balances[getAvaxAddress(kalmStaking['stakingToken'])] = BigNumber(balances[getAvaxAddress(kalmStaking['stakingToken'])] || 0).plus(BigNumber(kalmStaked)).toFixed(0)
+  const kalmObjIndexes = addresses['Staking'].reduce((memo, s, i) => s.name.includes('Kalm') ? [...memo, i] : [...memo], [])
+  kalmObjIndexes.forEach((kalmObjIndex) => {
+    const kalmToken = addresses['Staking'][kalmObjIndex]['stakingToken']
+    const kalmStaked = stakingTokens[kalmObjIndex].output
+    balances[getAvaxAddress(kalmToken)] = BigNumber(balances[getAvaxAddress(kalmToken)] || 0).plus(BigNumber(kalmStaked)).toFixed(0)
+  })
 
   return balances
 }

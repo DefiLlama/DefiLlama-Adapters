@@ -42,4 +42,7 @@ module.exports = {
     harmony: {
         tvl: getTVLFunction('harmony'),
     },
+    hallmarks:[
+        [1651881600, "UST depeg"],
+      ],
 };
