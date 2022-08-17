@@ -10,10 +10,10 @@ function bscTvl() {
     const block = chainBlocks[chain];
     const balances = {};
     const poolBalance = await sdk.api.erc20.balanceOf({
-      target: usdcByChain[chain], owner: pools[chain], block, undefined, chain
+      target: '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d', owner: pools[chain], block, undefined, chain
     });
 
-    sdk.util.sumSingleBalance(balances, chain+':'+usdcByChain[chain], poolBalance.output);
+    sdk.util.sumSingleBalance(balances, chain+':'+'0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d', poolBalance.output);
 
     return balances;
   }
