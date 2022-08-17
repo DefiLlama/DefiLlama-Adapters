@@ -95,7 +95,7 @@ async function unwrapYearn(balances, yToken, block, chain = "ethereum", transfor
     underlying = _underlying
   }
 
-  console.log('underinglin found', underlying)
+  // console.log('underinglin found', underlying)
 
   const tokenKey = chain == 'ethereum' ? yToken : `${chain}:${yToken}`
   if (!balances[tokenKey]) return;
