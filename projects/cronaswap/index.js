@@ -8,9 +8,7 @@ module.exports={
       tvl: getUniTVL({
         chain: 'cronos',
         factory: '0x73A48f8f521EB31c55c0e1274dB0898dE599Cb11',
-        coreAssets: [
-          '0x5c7f8a570d578ed84e63fdfa7b1ee72deae1ae23', // wcro
-        ],
+        useDefaultCoreAssets: true,
         blacklist: [
           '0x5b5fe1238aca91c65683acd7f9d9bf922e271eaa', // SUS
         ]
