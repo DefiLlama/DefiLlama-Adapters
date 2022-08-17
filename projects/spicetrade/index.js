@@ -38,7 +38,7 @@ const chainTypeExports = (chains) => {
         const uniTVL = getUniTVL({
             chain, 
             factory: contracts[chain].factory,
-            coreAssets: [],
+            useDefaultCoreAssets: true,
         })
         return ({
             ...obj,
