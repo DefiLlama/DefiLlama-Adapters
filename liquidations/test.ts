@@ -1,5 +1,4 @@
 import * as path from "path";
-import * as fs from "fs";
 import { ethers } from "ethers";
 import { providers } from "./utils/ethers";
 import { humanizeNumber } from "@defillama/sdk/build/computeTVL/humanizeNumber";
@@ -87,21 +86,18 @@ async function displayDebugInfo(skippedTokens: Set<string>, liqs: Liq[], bins: B
 
 async function main() {
   const passedFile = path.resolve(process.cwd(), process.argv[2]);
-  let module = {} as any;
+  let module = {} as {
+    [chain: string]: { liquidations: () => Promise<Liq[]> };
+  };
   try {
     module = require(passedFile);
   } catch (e) {
     console.log(e);
   }
-  const liqs = await module.ethereum.liquidations();
-
-  // // save liqs into json file
-  // const fileName = path.resolve(process.cwd(), "liquidations.json");
-  // fs.writeFileSync(fileName, JSON.stringify(liqs, null, 2));
-
+  const liqs = (await Promise.all(Object.values(module).map((m) => m.liquidations()))).flat();
   const { skippedTokens, bins } = await binResults(liqs);
   await displayDebugInfo(skippedTokens, liqs, bins);
-  //   //console.log(liqs)
+  //console.log(liqs)
   console.log(`\nSize of all liquidation data: ${JSON.stringify(liqs).length / 10 ** 6} MB`);
   process.exit(0);
 }
