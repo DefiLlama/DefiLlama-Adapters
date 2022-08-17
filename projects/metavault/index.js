@@ -2,7 +2,9 @@ const sdk = require("@defillama/sdk");
 
 const readerAbi = require("./reader.json");
 const mvlpManagerAbi = require("./mvlpManager.json");
-const { BigNumber } = require("ethers");
+const { staking } = require("../helper/staking");
+const { sumTokens2 } = require('../helper/unwrapLPs');
+const { default: BigNumber } = require("bignumber.js");
 
 const DAI_ADDRESS = "0x6B175474E89094C44Da98b954EedeAC495271d0F";
 const USDC_ADDRESS = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
@@ -22,103 +24,66 @@ const stakingAddress = "0x42162457006DB4DA3a7af5B53DFee5A891243b4D"; // Governan
 const stakingTokenAddress = "0x788B6D2B37Aa51D916F2837Ae25b05f0e61339d1"; // MVD
 const ADDRESS_ZERO = "0x0000000000000000000000000000000000000000";
 
-async function getStaking(timestamp, ethBlock, chainBlocks) {
-  const mvdPrice = BigNumber.from(272); // $2.72
+async function getTvl(timestamp, block) {
+  const toa = [
+    [DAI_ADDRESS, REDEEM_CONTRACT,],
+    [USDC_ADDRESS, GOV_CLUB_CONTRACT,],
+  ]
 
-  // MVD balance of Staking contract
-  const mvdBalance = (
-    await sdk.api.erc20.balanceOf({
-      block: ethBlock,
-      target: stakingTokenAddress,
-      owner: stakingAddress,
-    })
-  ).output;
-
-  const bal = BigNumber.from(mvdBalance)
-    .mul(mvdPrice)
-    .div(BigNumber.from(10).pow(5));
-
-  return {
-    [USDC_ADDRESS]: bal.toString(),
-  };
+  return sumTokens2({ tokensAndOwners: toa, block })
 }
 
-async function getTvl(timestamp, ethBlock, chainBlocks) {
-  // DAI balance of Redeem contract
-  const daiBalance = (
-    await sdk.api.erc20.balanceOf({
-      block: ethBlock,
-      target: DAI_ADDRESS,
-      owner: REDEEM_CONTRACT,
-    })
-  ).output;
-
-  // USDC balance of Gov Club contract
-  const usdcBalance = (
-    await sdk.api.erc20.balanceOf({
-      block: ethBlock,
-      target: USDC_ADDRESS,
-      owner: GOV_CLUB_CONTRACT,
-    })
-  ).output;
+async function polygon(_, _b, { polygon: block }) {
+  const chain = 'polygon'
 
   // Metavault DAO MVLP Holdings
   const aums = (
     await sdk.api.abi.call({
       target: MVLP_MANAGER_CONTRACT,
       abi: mvlpManagerAbi.getAums,
-      chain: "polygon",
-      block: ethBlock,
+      chain, block,
     })
   ).output;
 
-  const averageAums = BigNumber.from(aums[0])
-    .add(BigNumber.from(aums[1]))
-    .div(2);
+  const averageAums = (+aums[0] + +aums[1]) / 2
 
   const supplies = (
     await sdk.api.abi.call({
       target: READER_CONTRACT,
       params: [ADDRESS_ZERO, [MVLP_ADDRESS]],
-      chain: "polygon",
+      chain, block,
       abi: readerAbi.getTokenBalancesWithSupplies,
-      block: ethBlock,
     })
   ).output;
 
-  const mvlpSupply = BigNumber.from(supplies[1]);
+  const mvlpSupply = supplies[1];
 
-  const mvlpPrice = averageAums
-    .mul(BigNumber.from(10).pow(MVLP_DECIMALS))
-    .div(mvlpSupply)
-    .div(BigNumber.from(10).pow(MVLP_DECIMALS));
+  const mvlpPrice = averageAums / mvlpSupply
 
   const metavaultDaoMvlpHoldings = (
     await sdk.api.erc20.balanceOf({
-      block: ethBlock,
-      chain: "polygon",
+      chain, block,
       target: MVLP_TRACKER_CONTRACT,
       owner: MVD_DAO_MULTI_SIG_WALLET,
     })
   ).output;
 
-  const daoMvlpHoldingsValue = BigNumber.from(metavaultDaoMvlpHoldings).mul(
-    mvlpPrice
-  );
+  const daoMvlpHoldingsValue = metavaultDaoMvlpHoldings * mvlpPrice;
 
-  const sum = BigNumber.from(daiBalance)
-    .div(BigNumber.from(10).pow(12))
-    .add(BigNumber.from(usdcBalance))
-    .add(BigNumber.from(daoMvlpHoldingsValue).div(BigNumber.from(10).pow(24)));
+  const sum = BigNumber(daoMvlpHoldingsValue / 1e24).toFixed(0);
 
   return {
-    [USDC_ADDRESS]: sum.toString(),
+    [USDC_ADDRESS]: sum,
   };
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   ethereum: {
     tvl: getTvl,
-    staking: getStaking,
+    staking: staking(stakingAddress, stakingTokenAddress,),
   },
+  polygon: {
+    tvl: polygon,
+  }
 };
