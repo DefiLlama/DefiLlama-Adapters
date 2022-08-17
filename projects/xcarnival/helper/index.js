@@ -1,6 +1,4 @@
 const sdk = require("@defillama/sdk");
-const { default: BigNumber } = require("bignumber.js");
-
 const abi = require("./abis");
 
 const XETH = "0x6CC71cD03a70b4eF06d688716F611cE368f80530";
@@ -10,26 +8,9 @@ const NFT_ARRAY = ["0xbc4ca0eda7647a8ab7c2061c2e118a18a936f13d", "0xb47e3cd837dd
 
 async function getTVL(balances, chain, timestamp, chainBlocks) {
   const block = chainBlocks[chain];
+  const {output : ethBalance } = await sdk.api.eth.getBalance({ target: XETH, block, chain, })
 
-  const [{ output: borrowed }, { output: supplyed }, { output: price }, { output: balanceOf }] = await Promise.all([
-    sdk.api.abi.call({
-      target: XETH,
-      params: [],
-      abi: abi.XETH_ABI.find(
-        (a) => a.name === "totalBorrows"
-      ),
-      block,
-      chain,
-    }),
-    sdk.api.abi.call({
-      target: XETH,
-      params: [],
-      abi: abi.XETH_ABI.find(
-        (a) => a.name === "totalCash"
-      ),
-      block,
-      chain,
-    }),
+  const [{ output: price }, { output: balanceOf }] = await Promise.all([
     sdk.api.abi.multiCall({
       calls: NFT_ARRAY.map((address) => ({
         target: PRICEORACLE,
@@ -53,16 +34,13 @@ async function getTVL(balances, chain, timestamp, chainBlocks) {
       chain,
     })
   ]);
-  let collateralValue = new BigNumber(0);
+
+  let collateralValue = 0;
   for(let i=0; i<NFT_ARRAY.length; i++){
-    collateralValue = collateralValue.plus(new BigNumber(price[i].output).multipliedBy(balanceOf[i].output));
+    collateralValue += price[i].output * balanceOf[i].output;
   }
-  let b = new BigNumber(borrowed).shiftedBy(-18);
-  let s = new BigNumber(supplyed).shiftedBy(-18);
-  let c = new BigNumber(collateralValue).shiftedBy(-18);
 
-  balances["ETHEREUM"] = (b || 0).plus(s || 0).plus(c || 0);
-
+  balances.ethereum = (+ethBalance + +collateralValue)/1e18;
   return balances;
 }
 
@@ -81,9 +59,7 @@ async function getBorrowed(balances, chain, timestamp, chainBlocks) {
     }),
   ]);
 
-  let b = new BigNumber(borrowed).shiftedBy(-18);
-
-  balances["ETHEREUM"] = (b || 0);
+  balances.ethereum = borrowed / 1e18;
 
   return balances;
 }
