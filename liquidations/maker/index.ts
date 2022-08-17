@@ -153,14 +153,9 @@ function collateralPriceAtRatio({
 }
 
 const positions = async (): Promise<Liq[]> => {
-  // 1. go to cdp manager and call cdpi() to get the length of vaults array
   const cdpi = ((await cdpManager.cdpi()) as BigNumber).toNumber();
   const cdps = Array.from(Array(cdpi).keys()).map((x) => x + 1); // starts from 1
 
-  // 2. then for each vaultNum (1 to cdpi):
-  // - call ilks(vaultNum) to get ilkId of collateral, then you can use ilkRegistry.gem(ilkId) to get address of collateral token
-  // - call owns(vaultNum) to get owner
-  // - call urns(vaultNum) then that returns urnHandler, then call mcdVat.urns(ilkId, urnHandler), then from result  -> ink = amount of collateral in vault, art = amount of dai in debt
   const ilkIds = (
     (await sdk.api.abi.multiCall({
       calls: cdps.map((i) => ({ target: CDP_MANAGER.address, params: [i] })),
