@@ -33,7 +33,6 @@
     "js-sha512": "^0.8.0",
     "limiter": "2.1.0",
     "miscreant": "^0.3.2",
-    "ripple-lib": "^1.10.1",
     "tron-format-address": "^0.1.8"
   },
   "overrides": {
