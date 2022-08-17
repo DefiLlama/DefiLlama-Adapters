@@ -15,7 +15,7 @@ const tvl = async (_, block) => {
     const sharePrice = totalFunds * MAX_BPS / totalSupply;
 
     const value = totalSupply * sharePrice / MAX_BPS + +pendingDeposits[idx].output
-    console.log(value, value.toFixed(0))
+    // console.log(value, value.toFixed(0))
     sdk.util.sumSingleBalance(balances, wantToken, value.toFixed(0))
   }
 

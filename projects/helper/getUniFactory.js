@@ -14,7 +14,7 @@ async function getFactory(){
         chain,
         abi: {"inputs":[],"name":"WETH","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
     })
-    console.log("factory", factory.output)
-    console.log("wrapped token", wrappedToken.output)
+    // console.log("factory", factory.output)
+    // console.log("wrapped token", wrappedToken.output)
 }
-getFactory()
+// getFactory()

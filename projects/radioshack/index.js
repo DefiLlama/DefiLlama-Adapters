@@ -65,11 +65,9 @@ const moduleExports = Object.keys(chainConfig).reduce((agg, chain) => {
   } = chainConfig[chain]
 
   async function tvl(timestamp, ethBlock, chainBlocks) {
-    console.log('getting for chain', chain)
     const block = chainBlocks[chain]
     const transformAddress = await getChainTransform(chain)
     const balances = await calculateUniTvl(transformAddress, block, chain, factory, 0, true)
-    console.log(chain, 'tvl', balances)
     return balances
   }
 
@@ -85,7 +83,6 @@ const moduleExports = Object.keys(chainConfig).reduce((agg, chain) => {
     if (shack) tokens.push(shack)
     stakingContracts.forEach(owner => tokens.forEach(token => tokensAndOwners.push([token, owner])))
     await sumTokens(balances, tokensAndOwners, block, chain, transformAddress)
-    console.log(chain, 'staking', balances)
     return balances
   }
 

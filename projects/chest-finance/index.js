@@ -23,7 +23,7 @@ async function solanaTVL() {
 
   // Get SOL balance as well (not wrapped SOL)
   const solBalance = await getSolBalance(SOL_chest_owner);
-  console.log("Chest SOL:", solBalance, ", Chest tokenBalances", balances);
+  // console.log("Chest SOL:", solBalance, ", Chest tokenBalances", balances);
   balances["solana"] = new BigNumber(balances["solana"] || "0").plus(
     new BigNumber(solBalance)
   );

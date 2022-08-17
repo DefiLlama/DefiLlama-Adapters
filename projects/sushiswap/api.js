@@ -15,11 +15,21 @@ query get_tvl($block: Int) {
   }
 }
 `;
+const graphQueryPolygon = gql`
+query get_tvl($block: Int) {
+  factory(
+    id: "0xc35dadb65012ec5796536bd9864ed8773abc74c4",
+    block: { number: $block }
+  ) {
+    liquidityUSD
+  }
+}
+`;
 
 async function eth(timestamp, ethBlock, chainBlocks) {
   let block = ethBlock
-  if(block === undefined){
-    block = await getBlock(timestamp, 'ethereum', chainBlocks);
+  if (block === undefined) {
+    block = await getBlock(timestamp, 'ethereum', chainBlocks)
   }
   const { uniswapFactory } = await request(
     graphUrl,
@@ -31,6 +41,23 @@ async function eth(timestamp, ethBlock, chainBlocks) {
   const usdTvl = Number(uniswapFactory.totalLiquidityUSD)
 
   return toUSDTBalances(usdTvl)
+}
+
+function getChainTVL(chain) {
+  return async (timestamp, _b, chainBlocks) => {
+    console.log(chainBlocks, chain)
+    const block = await getBlock(timestamp, chain, chainBlocks, false)
+    const { factory } = await request(
+      'https://api.thegraph.com/subgraphs/name/sushiswap/exchange-'+chain,
+      graphQueryPolygon,
+      {
+        block: block - 100,
+      }
+    );
+    const usdTvl = Number(factory.liquidityUSD)
+  
+    return toUSDTBalances(usdTvl)
+  }
 }
 
 const factory = '0xc35DADB65012eC5796536bD9864eD8773aBc74C4'
@@ -115,7 +142,7 @@ module.exports = {
       ]
     })
   },
-  harmony:{
+  harmony: {
     tvl: getUniTVL({
       factory,
       chain: 'harmony',
@@ -176,7 +203,7 @@ module.exports = {
       ]
     }),
   },
-  heco:{
+  heco: {
     tvl: getUniTVL({
       factory,
       chain: 'heco',
@@ -185,7 +212,7 @@ module.exports = {
       ],
     }),
   },
-  avax:{
+  avax: {
     tvl: getUniTVL({
       factory,
       chain: 'avax',
@@ -196,7 +223,7 @@ module.exports = {
       ],
     }),
   },
-  fuse:{
+  fuse: {
     tvl: getUniTVL({
       factory: '0x43eA90e2b786728520e4f930d2A71a477BF2737C',
       chain: 'fuse',
@@ -208,3 +235,8 @@ module.exports = {
     }),
   },
 }
+
+module.exports.polygon.tvl = getChainTVL('polygon')
+module.exports.bsc.tvl = getChainTVL('bsc')
+module.exports.fantom.tvl = getChainTVL('fantom')
+module.exports.harmony.tvl = getChainTVL('harmony')

@@ -60,8 +60,8 @@ function getTvl(chain) {
       print.push({ id: vault.token.id, balance, name: vault.token.name, val: total })
     })
     print.sort((a, b) => b.val - a.val)
-    console.table(print)
-    console.log(print.reduce((a, i) => a + i.val, 0))
+    // console.table(print)
+    // console.log(print.reduce((a, i) => a + i.val, 0))
   
     updateBalances(balances)
   
