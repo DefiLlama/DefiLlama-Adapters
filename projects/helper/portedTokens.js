@@ -1911,6 +1911,18 @@ const fixPolisMapping = {
   },
 }
 
+const fixDogechainMapping = {
+  [nullAddress]: {
+    coingeckoId: "dogecoin",
+    decimals: 18,
+  },
+  "0xB7ddC6414bf4F5515b52D8BdD69973Ae205ff101": {
+    coingeckoId: "dogecoin",
+    decimals: 18,
+  },
+
+}
+
 const fixBalancesMapping = {
   avax: fixAvaxBalances,
   evmos: b => fixBalances(b, evmosFixMapping, { removeUnmapped: false }),
@@ -1944,6 +1956,7 @@ const fixBalancesMapping = {
   conflux: b => fixBalances(b, confluxFixMapping, { removeUnmapped: false, }),
   rsk: b => fixBalances(b, rskFixMapping, { removeUnmapped: false, }),
   polis: b => fixBalances(b, fixPolisMapping, { removeUnmapped: true, }),
+  dogechain: b => fixBalances(b, fixDogechainMapping, { removeUnmapped: false, }),
 };
 
 const chainTransforms = {

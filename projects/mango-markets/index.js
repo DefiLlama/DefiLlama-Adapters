@@ -33,7 +33,7 @@ const coingeckoIds = {
     'COPE': 'cope',
     'FTT': 'ftx-token',
     'MSOL': 'msol',
-    // 'BNB': 'binancecoin',
+    'BNB': 'binancecoin',
     'AVAX': 'avalanche-wormhole',
     'LUNA': 'terra-luna',
     'GMT': 'stepn',

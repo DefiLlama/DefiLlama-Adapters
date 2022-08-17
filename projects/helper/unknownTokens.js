@@ -453,9 +453,10 @@ function staking({ tokensAndOwners = [],
 }
 
 
-function masterchefExports({ chain, masterchef, coreAssets, nativeToken, poolInfoABI = masterchefAbi.poolInfo, poolLengthAbi = masterchefAbi.poolLength, getToken = output => output.lpToken, blacklistedTokens = [], }) {
+function masterchefExports({ chain, masterchef, coreAssets, nativeTokens = [], nativeToken, poolInfoABI = masterchefAbi.poolInfo, poolLengthAbi = masterchefAbi.poolLength, getToken = output => output.lpToken, blacklistedTokens = [], }) {
   let allTvl
-  nativeToken = nativeToken.toLowerCase()
+  if (nativeToken) nativeTokens.push(nativeToken)
+  nativeTokens = getUniqueAddresses(nativeTokens)
 
   async function getAllTVL(block) {
     if (!allTvl) allTvl = getTVL()
@@ -484,10 +485,12 @@ function masterchefExports({ chain, masterchef, coreAssets, nativeToken, poolInf
       })
 
       const tokens = data.map(({ output }) => getToken(output).toLowerCase())
-      const lps = [...tokens].filter(i => i !== nativeToken)
-      const tempBalances = await sumTokens2({ chain, block, owner: masterchef, tokens, transformAddress: a => a.toLowerCase(), blacklistedTokens, })
-      if (tempBalances[nativeToken]) sdk.util.sumSingleBalance(balances.staking, transform(nativeToken), tempBalances[nativeToken])
-      delete tempBalances[nativeToken]
+      const lps = [...tokens].filter(i => !nativeTokens.includes(i))
+      const tempBalances = await sumTokens2({ chain, block, owner: masterchef, tokens, transformAddress: a => a, blacklistedTokens, })
+      nativeTokens.forEach(nativeToken => {
+        if (tempBalances[nativeToken]) sdk.util.sumSingleBalance(balances.staking, transform(nativeToken), tempBalances[nativeToken])
+        delete tempBalances[nativeToken]
+      })
 
       const pairs = await getLPData({ lps, chain, block })
 
@@ -495,7 +498,7 @@ function masterchefExports({ chain, masterchef, coreAssets, nativeToken, poolInf
       Object.entries(tempBalances).forEach(([token, balance]) => {
         if (pairs[token]) {
           const { token0Address, token1Address } = pairs[token]
-          if (nativeToken === token0Address || nativeToken === token1Address) {
+          if (nativeTokens.includes(token0Address) || nativeTokens.includes(token1Address)) {
             sdk.util.sumSingleBalance(balances.pool2, transform(token), balance)
             return;
           }
@@ -506,7 +509,8 @@ function masterchefExports({ chain, masterchef, coreAssets, nativeToken, poolInf
       await updateBalances(balances.tvl)
       await updateBalances(balances.pool2)
       await updateBalances(balances.staking)
-      console.log(balances)
+
+      log(balances)
 
       return balances
     }

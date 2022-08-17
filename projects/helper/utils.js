@@ -199,6 +199,20 @@ async function diplayUnknownTable({ tvlResults = {}, tvlBalances = {}, storedKey
   return debugBalances({ balances, chain: storedKey, log, tableLabel })
 }
 
+async function getSymbols(chain, tokens) {
+  tokens = tokens.filter(i => i.includes('0x')).map(i => i.slice(i.indexOf('0x')))
+  const calls = tokens.map(i => ({ target: i }))
+  const { output: symbols } = await sdk.api.abi.multiCall({
+    abi: 'erc20:symbol',
+    calls,
+    chain,
+  })
+
+  const response = {}
+  symbols.map(i => response[i.input.target] = i.output)
+  return response
+}
+
 async function debugBalances({ balances = {}, chain, log = false, tableLabel = '' }) {
   if (!DEBUG_MODE && !log) return;
   if (!Object.keys(balances).length) return;
@@ -280,4 +294,5 @@ module.exports = {
   debugBalances,
   stripTokenHeader,
   diplayUnknownTable,
+  getSymbols,
 }
