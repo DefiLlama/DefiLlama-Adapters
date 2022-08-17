@@ -8,5 +8,6 @@ module.exports = {
   methodology: 'Staking pool balance',
   bsc: {
     staking: staking(stakingContractRoundThree, stakingToken, 'bsc')
-  }
+  },
+  tvl: () => ({})
 }
