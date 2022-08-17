@@ -4,6 +4,7 @@ const {fetchChainExports} = require('./helper/exports');
 const transformChain = {
   okexchain: 'okex',
   avax: 'avax',
+  wanchain: 'wan',
 }
 
 function chainTvl(chain){
@@ -21,5 +22,6 @@ module.exports=fetchChainExports(chainTvl, [
   'cronos',    'boba',
   'harmony','xdai',
   'velas','aurora',
-  'oasis'
+  'oasis','wan'
+  'kcc','evmos'
 ])
