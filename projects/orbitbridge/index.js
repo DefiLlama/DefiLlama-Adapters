@@ -1,10 +1,6 @@
 const sdk = require('@defillama/sdk')
 const utils = require('../helper/utils')
-const BN = require("bignumber.js");
-const { toUSDTBalances } = require('../helper/balances');
-const { getBlock } = require('../helper/getBlock');
 const { getChainTransform } = require('../helper/portedTokens')
-const RippleAPI = require('ripple-lib').RippleAPI;
 
 // const { data } = await utils.fetchURL(url)
 const ABI = {
@@ -66,7 +62,6 @@ const farms = {
         '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',// WBTC
     ]
 }
-
 
 function chainTvls(chain) {
     return async (timestamp, ethBlock, chainBlocks) => {
@@ -138,22 +133,9 @@ function chainTvls(chain) {
 
 async function rippleTvls() {
     const rippleVault = 'rLcxBUrZESqHnruY4fX7GQthRjDCDSAWia'
-    const api = new RippleAPI({
-        server: 'wss://s1.ripple.com' // Public rippled server hosted by Ripple, Inc.
-    });
-
-    await api.connect().then(() => {
-        console.log('connect')
-    })
-
-    let balance = await api.getBalances(rippleVault).then((balances) => {
-      return balances[0].value
-    });
-
-    let price = await utils.getPricesfromString('ripple')
-    price = price.data.ripple.usd
-
-    return toUSDTBalances(balance * price)
+    return {
+        ripple: await utils.getRippleBalance(rippleVault)
+    }
 }
 
 module.exports = {
