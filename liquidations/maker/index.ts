@@ -147,20 +147,22 @@ const positions = async (): Promise<Liq[]> => {
     })) as MulticallResponse<Urn>
   ).output.map((x) => x.output);
 
-  const positions: Liq[] = cdps.map((i) => {
-    const { ink: collateralAmount, art: debt } = urns[i - 1];
-    const owner = owners[i - 1];
-    const collateral = collaterals[i - 1];
-    const decimal = decimals[i - 1];
+  const positions: Liq[] = cdps
+    .map((i) => {
+      const { ink: collateralAmount, art: debt } = urns[i - 1];
+      const owner = owners[i - 1];
+      const collateral = "ethereum:" + collaterals[i - 1];
+      const decimal = decimals[i - 1];
 
-    const _debt = new BigNumber(debt).div(1e18);
-    const _collateralAmount = new BigNumber(collateralAmount).div(10 ** Number(decimal));
+      const _debt = new BigNumber(debt).div(1e18);
+      const _collateralAmount = new BigNumber(collateralAmount).div(10 ** Number(decimal));
 
-    // liqPrice = debt/collateral*1.45
-    const liqPrice = _debt.div(_collateralAmount).times(1.45).toNumber();
+      // liqPrice = debt/collateral*1.45
+      const liqPrice = _debt.div(_collateralAmount).times(1.45).toNumber();
 
-    return { collateralAmount, collateral, liqPrice, owner };
-  });
+      return { collateralAmount, collateral, liqPrice, owner };
+    })
+    .filter((x) => !isNaN(x.liqPrice) && x.liqPrice > 0);
 
   return positions;
 };
