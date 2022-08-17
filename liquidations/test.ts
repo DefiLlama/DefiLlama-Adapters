@@ -95,14 +95,14 @@ async function main() {
   }
   const liqs = await module.ethereum.liquidations();
 
-  // save liqs into json file
-  const fileName = path.resolve(process.cwd(), "liquidations.json");
-  fs.writeFileSync(fileName, JSON.stringify(liqs, null, 2));
+  // // save liqs into json file
+  // const fileName = path.resolve(process.cwd(), "liquidations.json");
+  // fs.writeFileSync(fileName, JSON.stringify(liqs, null, 2));
 
-  //   const { skippedTokens, bins } = await binResults(liqs);
-  //   await displayDebugInfo(skippedTokens, liqs, bins);
+  const { skippedTokens, bins } = await binResults(liqs);
+  await displayDebugInfo(skippedTokens, liqs, bins);
   //   //console.log(liqs)
-  //   console.log(`\nSize of all liquidation data: ${JSON.stringify(liqs).length / 10 ** 6} MB`);
+  console.log(`\nSize of all liquidation data: ${JSON.stringify(liqs).length / 10 ** 6} MB`);
   process.exit(0);
 }
 main();
