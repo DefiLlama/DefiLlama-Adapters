@@ -39,4 +39,7 @@ module.exports = {
   cardano: {
     tvl,
   },
+  hallmarks: [
+    [1659312000,"Nomad Bridge Hack"]
+  ],
 };

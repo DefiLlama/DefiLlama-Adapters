@@ -84,8 +84,8 @@ function isLP(symbol, token, chain) {
   if (!symbol) return false
   if (token && blacklisted_LPS.includes(token.toLowerCase())) return false
   if (chain === 'bsc' && ['OLP', 'DLP', 'MLP', 'LP'].includes(symbol)) return false
-  if (chain === 'bsc' && ['WLP', 'FstLP', ].includes(symbol)) return true
-  if (chain === 'avax' && ['ELP', 'EPT', 'CRL', 'YSL'].includes(symbol)) return true
+  if (chain === 'bsc' && ['WLP', 'FstLP',].includes(symbol)) return true
+  if (chain === 'avax' && ['ELP', 'EPT', 'CRL', 'YSL', 'BGL', 'PLP'].includes(symbol)) return true
   if (chain === 'ethereum' && ['SSLP'].includes(symbol)) return true
   if (chain === 'harmony' && ['HLP'].includes(symbol)) return true
   if (chain === 'songbird' && ['FLRX', 'OLP'].includes(symbol)) return true
@@ -101,7 +101,7 @@ function isLP(symbol, token, chain) {
     return false
   }
 
-  const isLPRes = LP_SYMBOLS.includes(symbol) || /(UNI-V2|vAMM)/.test(symbol) || symbol.split(/\W+/).includes('LP')
+  const isLPRes = LP_SYMBOLS.includes(symbol) || /(UNI-V2|vAMM|sAMM)/.test(symbol) || symbol.split(/\W+/).includes('LP')
 
   if (DEBUG_MODE && isLPRes && !['UNI-V2', 'Cake-LP'].includes(symbol))
     console.log(chain, symbol, token)
@@ -199,6 +199,20 @@ async function diplayUnknownTable({ tvlResults = {}, tvlBalances = {}, storedKey
   return debugBalances({ balances, chain: storedKey, log, tableLabel })
 }
 
+async function getSymbols(chain, tokens) {
+  tokens = tokens.filter(i => i.includes('0x')).map(i => i.slice(i.indexOf('0x')))
+  const calls = tokens.map(i => ({ target: i }))
+  const { output: symbols } = await sdk.api.abi.multiCall({
+    abi: 'erc20:symbol',
+    calls,
+    chain,
+  })
+
+  const response = {}
+  symbols.map(i => response[i.input.target] = i.output)
+  return response
+}
+
 async function debugBalances({ balances = {}, chain, log = false, tableLabel = '' }) {
   if (!DEBUG_MODE && !log) return;
   if (!Object.keys(balances).length) return;
@@ -260,6 +274,12 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
   console.table(logObj)
 }
 
+async function getRippleBalance(account) {
+  const body = { "method": "account_info", "params": [{ account }] }
+  const res = await http.post('https://s1.ripple.com:51234', body)
+  return res.result.account_data.Balance / 1e6
+}
+
 module.exports = {
   DEBUG_MODE,
   log,
@@ -280,4 +300,6 @@ module.exports = {
   debugBalances,
   stripTokenHeader,
   diplayUnknownTable,
+  getRippleBalance,
+  getSymbols,
 }

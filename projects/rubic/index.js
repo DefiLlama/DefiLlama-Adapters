@@ -58,40 +58,38 @@ function solanaTvl() {
   }
 }
 
-
-
 module.exports = {
   timetravel: false, // solana :cries:
-  methodology: 'TVL for each network - USDC balance of the pool, in each network we have one pool and the total indicator is calculated as the sum of the balances of all pools.',
+  methodology: 'Staking pool balance',
   bsc: {
-    tvl: chainTvl('bsc'),
+    tvl: () => ({}),
     staking: stakings([stakingContractRoundOne, stakingContractRoundTwo, stakingContractRoundThree, ], stakingToken, 'bsc'),
   },
-  ethereum: {
-    tvl: chainTvl('ethereum')
-  },
-  polygon: {
-    tvl: chainTvl('polygon')
-  },
-  fantom: {
-    tvl: chainTvl('fantom')
-  },
-  avax:{
-    tvl: chainTvl('avax')
-  },
-  harmony: {
-    tvl: chainTvl('harmony')
-  },
-  moonriver: {
-    tvl: chainTvl('moonriver')
-  },
-  arbitrum: {
-    tvl: chainTvl('arbitrum')
-  },
-  aurora: {
-    tvl: chainTvl('aurora')
-  },
-  solana: {
-    tvl: solanaTvl()
-  }
+  // ethereum: {
+  //   tvl: chainTvl('ethereum')
+  // },
+  // polygon: {
+  //   tvl: chainTvl('polygon')
+  // },
+  // fantom: {
+  //   tvl: chainTvl('fantom')
+  // },
+  // avax:{
+  //   tvl: chainTvl('avax')
+  // },
+  // harmony: {
+  //   tvl: chainTvl('harmony')
+  // },
+  // moonriver: {
+  //   tvl: chainTvl('moonriver')
+  // },
+  // arbitrum: {
+  //   tvl: chainTvl('arbitrum')
+  // },
+  // aurora: {
+  //   tvl: chainTvl('aurora')
+  // },
+  // solana: {
+  //   tvl: solanaTvl()
+  // }
 }

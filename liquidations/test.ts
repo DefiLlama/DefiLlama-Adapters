@@ -96,6 +96,7 @@ async function main() {
     console.log(e);
   }
   const liqs = (await Promise.all(Object.values(module).map((m) => m.liquidations()))).flat();
+
   // // write liqs to disk as JSON
   // fs.writeFileSync(path.resolve(process.cwd(), "liquidations2.json"), JSON.stringify(liqs, null, 2));
 
