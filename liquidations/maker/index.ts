@@ -17,6 +17,13 @@ type Urn = {
   ink: string;
   art: string;
 };
+type Ilk = {
+  Art: string;
+  rate: string;
+  spot: string;
+  line: string;
+  dust: string;
+};
 
 const CDP_MANAGER = {
   address: "0x5ef30b9986345249bc32d8928B7ee64DE9435E39",
@@ -92,6 +99,21 @@ const MCD_VAT = {
       stateMutability: "view",
       type: "function",
     },
+    ilks: {
+      constant: true,
+      inputs: [{ internalType: "bytes32", name: "", type: "bytes32" }],
+      name: "ilks",
+      outputs: [
+        { internalType: "uint256", name: "Art", type: "uint256" },
+        { internalType: "uint256", name: "rate", type: "uint256" },
+        { internalType: "uint256", name: "spot", type: "uint256" },
+        { internalType: "uint256", name: "line", type: "uint256" },
+        { internalType: "uint256", name: "dust", type: "uint256" },
+      ],
+      payable: false,
+      stateMutability: "view",
+      type: "function",
+    },
   },
 };
 
@@ -147,22 +169,32 @@ const positions = async (): Promise<Liq[]> => {
     })) as MulticallResponse<Urn>
   ).output.map((x) => x.output);
 
-  const positions: Liq[] = cdps
-    .map((i) => {
-      const { ink: collateralAmount, art: debt } = urns[i - 1];
-      const owner = owners[i - 1];
-      const collateral = "ethereum:" + collaterals[i - 1];
-      const decimal = decimals[i - 1];
+  const ilks: Ilk[] = (
+    (await sdk.api.abi.multiCall({
+      calls: ilkIds.map((ilkId) => ({ target: MCD_VAT.address, params: [ilkId] })),
+      abi: MCD_VAT.abis.ilks,
+    })) as MulticallResponse<Ilk>
+  ).output.map((x) => x.output);
 
-      const _debt = new BigNumber(debt).div(1e18);
-      const _collateralAmount = new BigNumber(collateralAmount).div(10 ** Number(decimal));
+  const positions: Liq[] = cdps.map((i) => {
+    const { ink: collateralAmount, art: normalizedIlkDebt } = urns[i - 1];
+    const owner = owners[i - 1];
+    const collateral = "ethereum:" + collaterals[i - 1];
+    const decimal = decimals[i - 1];
+    const { rate } = ilks[i - 1];
 
-      // liqPrice = debt/collateral*1.45
-      const liqPrice = _debt.div(_collateralAmount).times(1.45).toNumber();
+    const _debt = new BigNumber(normalizedIlkDebt).div(1e18).times(rate).div(1e27);
+    i === 9166 ? console.log(_debt.toString()) : null;
+    const _collateralAmount = new BigNumber(collateralAmount).div(10 ** Number(decimal));
 
-      return { collateralAmount, collateral, liqPrice, owner };
-    })
-    .filter((x) => !isNaN(x.liqPrice) && x.liqPrice > 0);
+    // liqPrice = debt/collateral*1.45
+    const liqPrice = _debt.div(_collateralAmount).times(1.45).toNumber();
+
+    return { collateralAmount, collateral, liqPrice, owner };
+  });
+  // .filter((x) => !isNaN(x.liqPrice) && x.liqPrice > 0);
+
+  console.log(positions[9166]);
 
   return positions;
 };
