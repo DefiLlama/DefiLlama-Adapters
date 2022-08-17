@@ -1920,7 +1920,37 @@ const fixDogechainMapping = {
     coingeckoId: "dogecoin",
     decimals: 18,
   },
+}
+const fixCantoMapping = {
+  "0x80b5a32e4f032b2a058b4f29ec95eefeeb87adcd": {
+    coingeckoId: "usd-coin",
+    decimals: 6,
+  },
+  "0xd567B3d7B8FE3C79a1AD8dA978812cfC4Fa05e75": {
+    coingeckoId: "tether",
+    decimals: 6,
+  },
+  "0x5FD55A1B9FC24967C4dB09C513C3BA0DFa7FF687": {
+    coingeckoId: "ethereum",
+    decimals: 18,
+  },
+}
 
+
+function transformCantoAddress() {
+  const map = {
+    [nullAddress]: "canto:0x826551890Dc65655a0Aceca109aB11AbDbD7a07B", // wCanto
+    "0x80b5a32e4f032b2a058b4f29ec95eefeeb87adcd": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USDC
+    "0xd567B3d7B8FE3C79a1AD8dA978812cfC4Fa05e75": "0xdAC17F958D2ee523a2206206994597C13D831ec7",  // USDT
+    "0x5FD55A1B9FC24967C4dB09C513C3BA0DFa7FF687": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",  // ETH
+  }
+  normalizeMapping(map)
+
+  return addr => {
+    addr = addr.toLowerCase()
+
+    return map[addr] || `canto:${addr}`;
+  };
 }
 
 const fixBalancesMapping = {
@@ -1957,6 +1987,7 @@ const fixBalancesMapping = {
   rsk: b => fixBalances(b, rskFixMapping, { removeUnmapped: false, }),
   polis: b => fixBalances(b, fixPolisMapping, { removeUnmapped: true, }),
   dogechain: b => fixBalances(b, fixDogechainMapping, { removeUnmapped: false, }),
+  canto: b => fixBalances(b, fixCantoMapping, { removeUnmapped: false, }),
 };
 
 const chainTransforms = {
@@ -1994,6 +2025,7 @@ const chainTransforms = {
   bittorrent: transformBittorrentAddress,
   reichain: transformReichainAddress,
   nova: transformNovachainAddress,
+  canto: transformCantoAddress,
 };
 
 async function transformReichainAddress() {
