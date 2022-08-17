@@ -14,6 +14,7 @@ const WBTCPoolAddress = "0xff390905269Ac30eA640dBaBdF5960D7B860f2CF"
 const WETHPoolAddress = "0x46F63Ec42eFcf972FCeF2330cC22e6ED1fCEB950"
 const WBNBPoolAddress = "0xA82222d8b826E6a741f6cb4bFC6002c34D32fF67"
 const nASTRPoolAddress = "0xEEa640c27620D7C448AD655B6e3FB94853AC01e3"
+const AvaultPoolAddress = "0xD8Bc543273B0E19eed34a295614963720c89f9e4"
 const owners = [usdPoolAddress]
 const owners_oUSD = [oUSDPoolAddress]
 const owners_BAI = [BAIPoolAddress]
@@ -23,6 +24,7 @@ const owners_WBTC = [WBTCPoolAddress]
 const owners_WETH = [WETHPoolAddress]
 const owners_WBNB = [WBNBPoolAddress]
 const owners_nASTR = [nASTRPoolAddress]
+const owners_avault = [AvaultPoolAddress]
 
 const DAI = '0x6De33698e9e9b787e09d3Bd7771ef63557E148bb'
 const USDC = '0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98'
@@ -40,6 +42,10 @@ const WETH = '0x81ecac0d6be0550a00ff064a4f9dd2400585fe9c'
 const WBNB = '0x7f27352d5f83db87a5a3e00f4b07cc2138d8ee52'
 const nASTR = '0xE511ED88575C57767BAfb72BfD10775413E3F2b0'
 const wASTR = '0xAeaaf0e2c81Af264101B9129C00F4440cCF0F720'
+const aBaiUsdc = '0xDBd71969aC2583A9A20Af3FB81FE9C20547f30F3'
+const aDaiUsdc = '0x9914Bff0437f914549c673B34808aF6020e2B453'
+const aBusdUsdc = '0x347e53263F8fb843EC605A1577eC7C8c0cAC7a58'
+const aUsdtUsdc = '0x02Dac4898B2c2cA9D50fF8D6a7726166CF7bCFD0'
 
 const fourPool = { DAI, USDC, USDT, BUSD }
 const oUSDPool = { oUSD }
@@ -50,6 +56,7 @@ const WBTCPool = { WBTC };
 const WETHPool = { WETH };
 const WBNBPool = { WBNB };
 const nASTRPool = { nASTR, wASTR };
+const AvaultPool = { aBaiUsdc, aDaiUsdc, aBusdUsdc, aUsdtUsdc };
 
 /*==================================================
   TVL
@@ -103,10 +110,18 @@ async function tvl(timestamp, _block, { astar: block }) {
     Object.values(nASTRPool).forEach(t => {
         owners_nASTR.forEach(o => toa.push([t, o]))
     })
+
+    //======= avault 4 pools ========
+    Object.values(AvaultPool).forEach(t => {
+        owners_avault.forEach(o => toa.push([t, o]))
+    })
+
     const balances = {}
     await sumTokens(balances, toa, block, chain);
-    balances['astar'] = balances['astar'] + balances[nASTR] / 10e17; // Map nASTR to ASTR since nASTR is 1:1 pegged.
-    delete balances[nASTR];
+    balances['astar'] = balances['astar'] + balances[nASTR] / 1e18; // Map nASTR to ASTR since nASTR is 1:1 pegged.
+    // remap
+    Object.values(AvaultPool).forEach(t => balances['dai'] += +balances[t] / 1e18);
+    [nASTR, ...Object.values(AvaultPool)].forEach(t => delete balances[t]);
     return balances;
 }
 
