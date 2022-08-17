@@ -51,7 +51,8 @@ async function gettotalTvl(block) {
 */
     const pairs = await getLPData({ lps, chain, block })
 
-    const { updateBalances, } = await getTokenPrices({ lps: Object.keys(pairs), allLps: true, coreAssets: [ ], block, chain, minLPRatio: 0.001 })
+    const { updateBalances, } = await getTokenPrices({ lps: Object.keys(pairs), allLps: true, 
+      useDefaultCoreAssets: true, block, chain, minLPRatio: 0.001 })
 
     Object.entries(tempBalances).forEach(([token, balance]) => {
       if (pairs[token]) {
