@@ -24,6 +24,10 @@ type Ilk = {
   line: string;
   dust: string;
 };
+type Spot = {
+  pip: string;
+  mat: string;
+};
 
 const CDP_MANAGER = {
   address: "0x5ef30b9986345249bc32d8928B7ee64DE9435E39",
@@ -117,6 +121,37 @@ const MCD_VAT = {
   },
 };
 
+const MCD_SPOT = {
+  address: "0x65C79fcB50Ca1594B025960e539eD7A9a6D434A3",
+  abis: {
+    ilks: {
+      constant: true,
+      inputs: [{ internalType: "bytes32", name: "", type: "bytes32" }],
+      name: "ilks",
+      outputs: [
+        { internalType: "contract PipLike", name: "pip", type: "address" },
+        { internalType: "uint256", name: "mat", type: "uint256" },
+      ],
+      payable: false,
+      stateMutability: "view",
+      type: "function",
+    },
+  },
+};
+
+// the collateral price at which the collateral ratio is reached
+function collateralPriceAtRatio({
+  colRatio,
+  collateral,
+  vaultDebt,
+}: {
+  colRatio: BigNumber;
+  collateral: BigNumber;
+  vaultDebt: BigNumber;
+}): BigNumber {
+  return collateral.isZero() || vaultDebt.isZero() ? new BigNumber("0") : vaultDebt.times(colRatio).div(collateral);
+}
+
 const positions = async (): Promise<Liq[]> => {
   // 1. go to cdp manager and call cdpi() to get the length of vaults array
   const cdpi = ((await cdpManager.cdpi()) as BigNumber).toNumber();
@@ -154,6 +189,13 @@ const positions = async (): Promise<Liq[]> => {
     })) as MulticallResponse<string>
   ).output.map((x) => x.output);
 
+  const spots = (
+    (await sdk.api.abi.multiCall({
+      calls: ilkIds.map((ilkId) => ({ target: MCD_SPOT.address, params: [ilkId] })),
+      abi: MCD_SPOT.abis.ilks,
+    })) as MulticallResponse<Spot>
+  ).output.map((x) => x.output);
+
   const decimals = (
     (await sdk.api.abi.multiCall({
       calls: collaterals.map((collateral) => ({ target: collateral })),
@@ -176,25 +218,34 @@ const positions = async (): Promise<Liq[]> => {
     })) as MulticallResponse<Ilk>
   ).output.map((x) => x.output);
 
-  const positions: Liq[] = cdps.map((i) => {
-    const { ink: collateralAmount, art: normalizedIlkDebt } = urns[i - 1];
-    const owner = owners[i - 1];
-    const collateral = "ethereum:" + collaterals[i - 1];
-    const decimal = decimals[i - 1];
-    const { rate } = ilks[i - 1];
+  const positions: Liq[] = cdps
+    .map((i) => {
+      const urn = urns[i - 1];
+      const _collateralAmount = urn.ink;
+      const collateralAmount = new BigNumber(_collateralAmount).div(1e18); // in wei
+      const normalizedDebt = new BigNumber(urn.art).div(1e18); // in wei
+      const ilk = ilks[i - 1];
+      // const normalizedIlkDebt = ilk.Art; // in wei
+      const debtScalingFactor = new BigNumber(ilk.rate).div(1e27); // in ray (27 decimal places)
+      // const maxDebtPerUnitCollateral = ilk.spot; // in ray (27 decimal places)
+      // const debtCeiling = ilk.line; // in rad (45 decimal places)
+      // const debtFloor = ilk.dust; // in rad (45 decimal places)
+      const spot = spots[i - 1];
+      const liquidationRatio = new BigNumber(spot.mat).div(1e27); // in ray (27 decimal places)
+      const debt = normalizedDebt.times(debtScalingFactor);
 
-    const _debt = new BigNumber(normalizedIlkDebt).div(1e18).times(rate).div(1e27);
-    i === 9166 ? console.log(_debt.toString()) : null;
-    const _collateralAmount = new BigNumber(collateralAmount).div(10 ** Number(decimal));
+      const liqPrice = collateralPriceAtRatio({
+        colRatio: liquidationRatio,
+        collateral: collateralAmount,
+        vaultDebt: debt,
+      }).toNumber();
 
-    // liqPrice = debt/collateral*1.45
-    const liqPrice = _debt.div(_collateralAmount).times(1.45).toNumber();
+      const owner = owners[i - 1];
+      const collateral = "ethereum:" + collaterals[i - 1];
 
-    return { collateralAmount, collateral, liqPrice, owner };
-  });
-  // .filter((x) => !isNaN(x.liqPrice) && x.liqPrice > 0);
-
-  console.log(positions[9166]);
+      return { collateralAmount: _collateralAmount, collateral, liqPrice, owner };
+    })
+    .filter((x) => !isNaN(x.liqPrice) && x.liqPrice > 0);
 
   return positions;
 };
