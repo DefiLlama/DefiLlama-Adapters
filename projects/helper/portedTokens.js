@@ -954,6 +954,10 @@ function fixKlaytnBalances(balances) {
       coingeckoId: "klay-token",
       decimals: 18
     }, // Wrapped KLAY
+    "0xff3e7cf0c007f919807b32b30a4a9e7bd7bc4121": {
+      coingeckoId: "klay-token",
+      decimals: 18
+    }, // Wrapped KLAY
     "0xe4f05a66ec68b54a58b17c22107b02e0232cc817": {
       coingeckoId: "klay-token",
       decimals: 18
