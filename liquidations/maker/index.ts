@@ -160,6 +160,7 @@ const positions = async (): Promise<Liq[]> => {
     (await sdk.api.abi.multiCall({
       calls: cdps.map((i) => ({ target: CDP_MANAGER.address, params: [i] })),
       abi: CDP_MANAGER.abis.ilks,
+      requery: true,
     })) as MulticallResponse<string>
   ).output.map((x) => x.output);
 
@@ -167,6 +168,7 @@ const positions = async (): Promise<Liq[]> => {
     (await sdk.api.abi.multiCall({
       calls: cdps.map((i) => ({ target: CDP_MANAGER.address, params: [i] })),
       abi: CDP_MANAGER.abis.urns,
+      requery: true,
     })) as MulticallResponse<string>
   ).output.map((x) => x.output);
 
@@ -174,6 +176,7 @@ const positions = async (): Promise<Liq[]> => {
     (await sdk.api.abi.multiCall({
       calls: cdps.map((i) => ({ target: CDP_MANAGER.address, params: [i] })),
       abi: CDP_MANAGER.abis.owns,
+      requery: true,
     })) as MulticallResponse<string>
   ).output.map((x) => x.output);
 
@@ -181,6 +184,7 @@ const positions = async (): Promise<Liq[]> => {
     (await sdk.api.abi.multiCall({
       calls: ilkIds.map((ilkId) => ({ target: ILK_REGISTRY.address, params: [ilkId] })),
       abi: ILK_REGISTRY.abis.gem,
+      requery: true,
     })) as MulticallResponse<string>
   ).output.map((x) => x.output);
 
@@ -188,6 +192,7 @@ const positions = async (): Promise<Liq[]> => {
     (await sdk.api.abi.multiCall({
       calls: ilkIds.map((ilkId) => ({ target: MCD_SPOT.address, params: [ilkId] })),
       abi: MCD_SPOT.abis.ilks,
+      requery: true,
     })) as MulticallResponse<Spot>
   ).output.map((x) => x.output);
 
@@ -195,6 +200,7 @@ const positions = async (): Promise<Liq[]> => {
     (await sdk.api.abi.multiCall({
       calls: collaterals.map((collateral) => ({ target: collateral })),
       abi: "erc20:decimals",
+      requery: true,
     })) as MulticallResponse<string>
   ).output.map((x) => x.output);
 
@@ -203,6 +209,7 @@ const positions = async (): Promise<Liq[]> => {
     (await sdk.api.abi.multiCall({
       calls: urnParamPairs.map((pair) => ({ target: MCD_VAT.address, params: pair })),
       abi: MCD_VAT.abis.urns,
+      requery: true,
     })) as MulticallResponse<Urn>
   ).output.map((x) => x.output);
 
@@ -210,6 +217,7 @@ const positions = async (): Promise<Liq[]> => {
     (await sdk.api.abi.multiCall({
       calls: ilkIds.map((ilkId) => ({ target: MCD_VAT.address, params: [ilkId] })),
       abi: MCD_VAT.abis.ilks,
+      requery: true,
     })) as MulticallResponse<Ilk>
   ).output.map((x) => x.output);
 
