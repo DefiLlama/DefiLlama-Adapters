@@ -139,6 +139,18 @@ const MCD_SPOT = {
   },
 };
 
+const ERC20 = {
+  abis: {
+    decimals: {
+      inputs: [],
+      name: "decimals",
+      outputs: [{ internalType: "uint8", name: "", type: "uint8" }],
+      stateMutability: "view",
+      type: "function",
+    },
+  },
+};
+
 // the collateral price at which the collateral ratio is reached
 function collateralPriceAtRatio({
   colRatio,
@@ -200,7 +212,7 @@ const positions = async (): Promise<Liq[]> => {
     (await sdk.api.abi.multiCall({
       calls: collaterals.map((collateral) => ({ target: collateral })),
       abi: "erc20:decimals",
-      requery: true,
+      //   requery: true,
     })) as MulticallResponse<string>
   ).output.map((x) => x.output);
 
@@ -243,8 +255,8 @@ const positions = async (): Promise<Liq[]> => {
         vaultDebt: debt,
       }).toNumber();
 
-      const owner = owners[i - 1];
-      const collateral = "ethereum:" + collaterals[i - 1];
+      const owner = owners[i - 1].toLowerCase();
+      const collateral = "ethereum:" + collaterals[i - 1].toLowerCase();
 
       const decimal = decimals[i - 1];
       const collateralAmountFormatted = collateralAmount.times(10 ** Number(decimal)).toFixed(0);
