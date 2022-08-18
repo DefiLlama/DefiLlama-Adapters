@@ -15,7 +15,7 @@ export type Fetch = (
 ) => Promise<FetchResult>;
 
 export type VolumeAdapter = {
-  [x: string]: {
+  [chain: string]: {
     start: () => Promise<number>
     fetch: Fetch;
     runAtCurrTime?: boolean;
@@ -24,7 +24,7 @@ export type VolumeAdapter = {
 };
 
 export type BreakdownAdapter = {
-  [x: string]: VolumeAdapter;
+  [version: string]: VolumeAdapter;
 };
 
 export type DexVolumeAdapter = {
