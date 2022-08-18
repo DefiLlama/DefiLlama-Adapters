@@ -1874,6 +1874,16 @@ const ontologyFixMapping = {
     decimals: 18,
   },
 };
+const fixBitgertMapping = {
+  [nullAddress]: {
+    coingeckoId: "bitrise-token",
+    decimals: 18,
+  },
+  "0x0eb9036cbE0f052386f36170c6b07eF0a0E3f710": {
+    coingeckoId: "bitrise-token",
+    decimals: 18,
+  },
+};
 const reiFixMapping = {
   "0x2545af3d8b11e295bb7aedd5826021ab54f71630": {
     coingeckoId: "rei-network",
@@ -1978,6 +1988,7 @@ function transformCantoAddress() {
 const fixBalancesMapping = {
   avax: fixAvaxBalances,
   evmos: b => fixBalances(b, evmosFixMapping, { removeUnmapped: false }),
+  bitgert: b => fixBalances(b, fixBitgertMapping, { removeUnmapped: false }),
   astar: fixAstarBalances,
   shiden: fixShidenBalances,
   cronos: b => fixBalances(b, cronosFixMapping, { removeUnmapped: false }),
