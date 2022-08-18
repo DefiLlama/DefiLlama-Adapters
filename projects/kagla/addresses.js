@@ -13,6 +13,8 @@ const TOKEN_INFO = {
 const TOKENS = {
   // KGL
   [KGL_ADDRESS]: "kagla-finance",
+  // muKGL: staked KGL by Muuu Finance
+  "0x5eaAe8435B178d4677904430BAc5079e73aFa56e": "kagla-finance",
   // USDC
   "0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
   // Starlay lUSDC -> USDC
