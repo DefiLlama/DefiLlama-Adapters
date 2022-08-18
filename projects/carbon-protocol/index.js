@@ -15,24 +15,17 @@ async function staking() {
 async function tvl() {
   const allTokensResult =  await get("https://api-insights.carbon.network/info/defillama")
   const allTokens = allTokensResult.result
-  const poolResult = await get("https://api-insights.carbon.network/pool/list?limit=100000");
-  const pools = poolResult?.result?.models
+  const supplyResult = await get("https://api.carbon.network/cosmos/bank/v1beta1/supply?pagination.limit=100000");
+  const supply = supplyResult?.supply
   const balances = {};
   await Promise.all(
-    pools.map(async (pool) => {
-      const res = await get(
-        `https://api.carbon.network/cosmos/bank/v1beta1/balances/${pool.address}`
+    supply.map(async (token) => {
+      allTokens[token.denom] &&
+      sdk.util.sumSingleBalance(
+        balances,
+        allTokens[token.denom].coinGeckoId,
+        parseInt(token.amount) / 10 ** allTokens[token.denom].decimals
       );
-      res.balances.forEach((b) => {
-        // console.log(allTokens[b.denom], b.denom)
-        // allTokens[b.denom] && console.log(allTokens[b.denom].coinGeckoId ,parseInt(b.amount) / 10 ** allTokens[b.denom].decimals)
-        allTokens[b.denom] &&
-          sdk.util.sumSingleBalance(
-            balances,
-            allTokens[b.denom].coinGeckoId,
-            parseInt(b.amount) / 10 ** allTokens[b.denom].decimals
-          );
-      });
     })
   );
 
