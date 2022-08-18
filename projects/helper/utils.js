@@ -71,6 +71,10 @@ function createIncrementArray(length) {
   return arr
 }
 
+function getParamCalls(length) {
+  return createIncrementArray(length).map(i => ({ params: i }))
+}
+
 const LP_SYMBOLS = ['SLP', 'spLP', 'JLP', 'OLP', 'SCLP', 'DLP', 'MLP', 'MSLP', 'ULP', 'TLP', 'HMDX', 'YLP', 'SCNRLP', 'PGL', 'GREEN-V2', 'PNDA-V2', 'vTAROT', 'TETHYSLP', 'BAO-V2', 'DINO-V2', 'DFYNLP', 'LavaSwap', 'RLP', 'ZDEXLP', 'lawSWAPLP']
 const blacklisted_LPS = [
   '0xb3dc4accfe37bd8b3c2744e9e687d252c9661bc7',
@@ -302,4 +306,5 @@ module.exports = {
   diplayUnknownTable,
   getRippleBalance,
   getSymbols,
+  getParamCalls,
 }
