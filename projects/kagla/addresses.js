@@ -30,7 +30,11 @@ const TOKENS = {
   // BAI
   "0x733ebcC6DF85f8266349DEFD0980f8Ced9B45f35": "bai-stablecoin",
   // aUSD
-  "0xfFFFFfFF00000000000000010000000000000001": TOKEN_INFO.ausd.key
+  "0xfFFFFfFF00000000000000010000000000000001": TOKEN_INFO.ausd.key,
+  // ASTR
+  "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" : "astar",
+  // nASTR: staked ASTR by Algem
+  "0xE511ED88575C57767BAfb72BfD10775413E3F2b0": "astar"
 };
 
 
