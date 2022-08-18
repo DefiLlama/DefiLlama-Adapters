@@ -16,7 +16,7 @@ const adapter: DexVolumeAdapter = {
   volume: {
     [FANTOM]: {
       fetch: graphs(FANTOM),
-      start: 1618617600,
+      start: async () => 1618617600,
     },
   },
 };

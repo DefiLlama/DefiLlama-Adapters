@@ -24,7 +24,7 @@ const adapter: DexVolumeAdapter = {
   volume: {
     avax: {
       fetch: graphs("avax"),
-      start: 1628467200,
+      start: async () => 1628467200,
     },
   },
 };
