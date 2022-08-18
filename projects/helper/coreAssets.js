@@ -296,4 +296,7 @@ module.exports = {
   multivac: [
     '0x8E321596267a4727746b2F48BC8736DB5Da26977',  // Wrapped MultiVAC
   ],
+  bitgert: [
+    '0x0eb9036cbE0f052386f36170c6b07eF0a0E3f710', // WBRISE
+  ]
 }
