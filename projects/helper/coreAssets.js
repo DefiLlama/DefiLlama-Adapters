@@ -109,7 +109,11 @@ module.exports = {
     '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7', // wavax
     '0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e', // USDC
     '0xc7198437980c041c805a1edcba50c1ce5db95118', // USDT
+    '0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7', // USDT.e
+    '0x152b9d0fdc40c096757f570a51e494bd4b943e50', // BTC.e
     '0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664', // USDC.e
+    '0x49d5c2bdffac6ce2bfdb6640f4f80f226bc10bab', // WETH.e
+    '0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd', // JOE
     '0x008E26068B3EB40B443d3Ea88c1fF99B789c10F7'  // 0 token
   ],
   fuse: [
@@ -284,5 +288,12 @@ module.exports = {
   ],
   optimism: [
     '0x4200000000000000000000000000000000000006', // WETH
+  ],
+  ethereumclassic: [
+    '0x82A618305706B14e7bcf2592D4B9324A366b6dAd', //WETC
+    '0x1953cab0E5bFa6D4a9BaD6E05fD46C1CC6527a5a', //WETC
+  ],
+  multivac: [
+    '0x8E321596267a4727746b2F48BC8736DB5Da26977',  // Wrapped MultiVAC
   ],
 }

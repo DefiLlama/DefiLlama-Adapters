@@ -1936,6 +1936,24 @@ const fixCantoMapping = {
   },
 }
 
+const fixETCMapping = {
+  "0x82A618305706B14e7bcf2592D4B9324A366b6dAd": {
+    coingeckoId: "ethereum-classic",
+    decimals: 18,
+  },
+  "0x1953cab0E5bFa6D4a9BaD6E05fD46C1CC6527a5a": {
+    coingeckoId: "ethereum-classic",
+    decimals: 18,
+  },
+}
+
+const fixMultivacMapping = {
+  "0x8E321596267a4727746b2F48BC8736DB5Da26977": {
+    coingeckoId: "multivac",
+    decimals: 18,
+  },
+}
+
 
 function transformCantoAddress() {
   const map = {
@@ -1988,6 +2006,8 @@ const fixBalancesMapping = {
   polis: b => fixBalances(b, fixPolisMapping, { removeUnmapped: true, }),
   dogechain: b => fixBalances(b, fixDogechainMapping, { removeUnmapped: false, }),
   canto: b => fixBalances(b, fixCantoMapping, { removeUnmapped: false, }),
+  ethereumclassic: b => fixBalances(b, fixETCMapping, { removeUnmapped: false, }),
+  multivac: b => fixBalances(b, fixMultivacMapping, { removeUnmapped: false, }),
 };
 
 const chainTransforms = {
