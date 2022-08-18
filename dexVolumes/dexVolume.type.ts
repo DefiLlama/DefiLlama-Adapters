@@ -16,7 +16,7 @@ export type Fetch = (
 
 export type VolumeAdapter = {
   [x: string]: {
-    start: number | (() => Promise<number>)
+    start: () => Promise<number>
     fetch: Fetch;
     runAtCurrTime?: boolean;
     customBackfill?: Fetch;
