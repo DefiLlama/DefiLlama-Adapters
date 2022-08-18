@@ -31,4 +31,7 @@ module.exports = {
   cardano: {
     tvl,
   },
+  hallmarks:[
+    [1647949370, "Vulnerability Found"],
+  ],
 };
