@@ -65,6 +65,9 @@ module.exports = {
     tvl: () => ({}),
     staking: stakings([stakingContractRoundOne, stakingContractRoundTwo, stakingContractRoundThree, ], stakingToken, 'bsc'),
   },
+  hallmarks:[
+    [1655991120, "Horizon bridge Hack $100m"],
+  ],
   // ethereum: {
   //   tvl: chainTvl('ethereum')
   // },
