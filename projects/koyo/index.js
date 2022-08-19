@@ -6,7 +6,8 @@ const { getBlock } = require("../helper/getBlock");
 const { staking } = require("../helper/staking");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const {
-  transformBobaAddress, transformOptimismAddress,
+  transformBobaAddress,
+  transformOptimismAddress,
 } = require("../helper/portedTokens");
 const { request } = require("graphql-request");
 
@@ -48,7 +49,7 @@ const DATA = {
         },
       },
     ];
-  }
+  },
 };
 
 const chainTVL = (chain) => {
@@ -142,4 +143,9 @@ module.exports = {
   ...module.exports,
   methodology:
     "Counts the tokens locked on swap pools based on their holdings.",
+  hallmarks: [
+    [1656419883, "Boba adds to FRAX-USDC"],
+    [1658439731, "Boba removes from FRAX-USDC"],
+    [1659129231, "Boba adds to USDC-DAI"],
+  ],
 };
