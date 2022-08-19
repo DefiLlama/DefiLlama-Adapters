@@ -1,11 +1,21 @@
-const retry = require('async-retry')
-const axios = require('axios');
+const { getAllProgramAccounts } = require('./helpers');
 
-async function tvl() {
-  const { data } = await retry(async () => await axios.get('https://fraktion-monorep.herokuapp.com/stats/tvl'));
+const tvl = async () => {
+  const { timeBasedLiquidityPools, priceBasedLiquidityPools, loans } = await getAllProgramAccounts();
 
-  return { solana: data.tvl ?? 0 };
-}
+  const stakedInTimeBased = timeBasedLiquidityPools.reduce((sum, { amountOfStaked }) => sum + amountOfStaked, 0);
+  const stakedInPriceBased = priceBasedLiquidityPools.reduce((sum, { amountOfStaked }) => sum + amountOfStaked , 0);
+
+  const loansTvl = loans.reduce((sum, { loanStatus, originalPrice }) => {
+    if (loanStatus === 'activated' ) { sum += originalPrice; }
+
+    return sum;
+  }, 0);
+
+  const tvlInSol = (stakedInTimeBased + stakedInPriceBased + loansTvl) / 1e9;
+
+  return { solana: tvlInSol };
+};
 
 module.exports = {
   timetravel: false,
