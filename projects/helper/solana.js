@@ -83,6 +83,23 @@ async function getTokenBalances(tokensAndAccounts) {
   return balances
 }
 
+async function getTokenAccountBalances(tokenAccounts) {
+  const formBody = account => ({ method: "getAccountInfo", jsonrpc: "2.0", params: [account, { encoding: "jsonParsed", commitment: "confirmed" }], id: 1 })
+
+  const body = tokenAccounts.map(formBody)
+  const data = await axios.post(endpoint, body);
+  const balances = {}
+  data.data.forEach(({ result: { value } }, i) => {
+    if (!value) {
+      console.log(data.data.map(i => i.result.value )[i], tokenAccounts[i])
+    }
+    const { data: { parsed: { info: { mint, tokenAmount: { uiAmount }}}}} = value
+    balances[mint] = (balances[mint] || 0) + uiAmount
+  })
+  return balances
+}
+
+
 async function getTokenAccountBalance(account) {
   const tokenBalance = await axios.post(
     endpoint,
@@ -185,7 +202,7 @@ async function getMultipleAccountsRaw(accountsArray) {
   ) {
     throw new Error("Expected accountsArray to be an array of strings");
   }
-  const accountsInfo = await axios.post("https://api.mainnet-beta.solana.com", {
+  const accountsInfo = await axios.post(endpoint, {
     jsonrpc: "2.0",
     id: 1,
     method: "getMultipleAccounts",
@@ -359,38 +376,61 @@ async function sumTokens2({
   owners = [],
   owner,
   ignoreBadTokens = true,
+  tokenAccounts = [],
 }) {
   if (!tokensAndOwners.length) {
     if (owner) tokensAndOwners = tokens.map(t => [t, owner])
     if (owners.length) tokensAndOwners = tokens.map(t => owners.map(o => [t, o])).flat()
   }
 
-  const chunks = sliceIntoChunks(tokensAndOwners, 99)
-  for (const chunk of chunks) {
-    await _sumTokens(chunk)
-    // if (chunks.length > 2) {
-    //   log('waiting before more calls')
-    //   await sleep(1000)
-    // }
+  if (tokensAndOwners.length) {
+    const chunks = sliceIntoChunks(tokensAndOwners, 99)
+    for (const chunk of chunks) {
+      await _sumTokens(chunk)
+      if (chunks.length > 2) {
+        log('waiting before more calls')
+        await sleep(2000)
+      }
+    }
+  }
+  
+  if (tokenAccounts.length) {
+    const chunks = sliceIntoChunks(tokenAccounts, 31)
+    for (const chunk of chunks) {
+      await _sumTokenAccounts(chunk)
+      if (chunks.length > 2) {
+        log('waiting before more calls')
+        await sleep(5000)
+      }
+    }
   }
 
   return balances
 
   async function _sumTokens(tokensAndAccounts) {
-    const tokenlist = await getTokenList();
     const tokenBalances = await getTokenBalances(tokensAndAccounts)
-    for (const [token, balance] of Object.entries(tokenBalances)) {
-      let coingeckoId = tokenlist.find((t) => t.address === token)?.extensions?.coingeckoId;
-      if (!coingeckoId) {
-        if (!ignoreBadTokens)
-          throw new Error(`Solana token ${token} has no coingecko id`)
-        log(`Solana token ${token} has no coingecko id, it is ignored`)
-      }
-      if (coingeckoId)
-        balances[coingeckoId] = (balances[coingeckoId] || 0) + balance;
-    }
-    return balances
+    return transformBalances({ tokenBalances, balances, ignoreBadTokens, })
   }
+
+  async function _sumTokenAccounts(tokenAccounts) {
+    const tokenBalances = await getTokenAccountBalances(tokenAccounts)
+    return transformBalances({ tokenBalances, balances, ignoreBadTokens, })
+  }
+}
+
+async function transformBalances({ tokenBalances, balances = {}, ignoreBadTokens = true, }) {
+  const tokenlist = await getTokenList();
+  for (const [token, balance] of Object.entries(tokenBalances)) {
+    let coingeckoId = tokenlist.find((t) => t.address === token)?.extensions?.coingeckoId;
+    if (!coingeckoId) {
+      if (!ignoreBadTokens)
+        throw new Error(`Solana token ${token} has no coingecko id`)
+      log(`Solana token ${token} has no coingecko id, it is ignored`)
+    }
+    if (coingeckoId)
+      balances[coingeckoId] = (balances[coingeckoId] || 0) + balance;
+  }
+  return balances
 }
 
 module.exports = {
@@ -415,4 +455,5 @@ module.exports = {
   getQuarryData,
   sumTokens2,
   getTokenBalances,
+  transformBalances,
 };
