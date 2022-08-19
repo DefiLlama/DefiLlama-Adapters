@@ -274,8 +274,13 @@ module.exports = {
     "0x9FaE2529863bD691B4A7171bDfCf33C7ebB10a65",//soy
   ],
   boba: [
-    '0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000',
-    '0xa18bf3994c0cc6e3b63ac420308e5383f53120d7',
+    '0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000',  // WETH
+    '0xa18bf3994c0cc6e3b63ac420308e5383f53120d7',  // BOBA 
+    '0x66a2a913e447d6b4bf33efbec43aaef87890fbbc',  // USDC 
+    '0x5de1677344d3cb0d7d465c10b72a8f60699c062d',  // USDT
+    '0xf74195bb8a5cf652411867c5c2c5b8c2a402be35',  // DAI
+    '0x461d52769884ca6235B685EF2040F47d30C94EB5',  // BUSD
+    '0x7562f525106f5d54e891e005867bf489b5988cd9',  // FRAX
   ],
   klaytn: [
     '0xd7a4d10070a4f7bc2a015e78244ea137398c3b74',
