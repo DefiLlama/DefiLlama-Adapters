@@ -1,5 +1,6 @@
 const ABI = require("./Helper.json");
 const sdk = require("@defillama/sdk");
+const { sumTokens2 } = require('../helper/unwrapLPs')
 const chain = 'klaytn'
 
 const { toUSDTBalances } = require("../helper/balances");
@@ -58,6 +59,12 @@ const fetchCollateral = async (ts, _block, chainBlocks) => {
 
 const fetchPool2 = async (ts, _block, chainBlocks) => {
   const block = chainBlocks[chain]
+  // const toa = [
+  //   ['0x4bFCc93fb85c969a590A2e7D7a4Ad72F0668AFF2', '0x53fe8c456c470a7214ed5caad88c486449f3b196'], // KLAY-KOKOA
+  //   ['0xd52aCC40924C906D3EeAB239D6F6C36B612011af', '0xc8D2b302266f90a713af573dFd4F305CC4C30C92'], // KLAY-KSD
+  // ]
+
+  // return sumTokens2({ chain, block, tokensAndOwners: toa, resolveLP: true })
   const decimal = 18;
 
   let klayswapPool2Tvl = BigNumber(0);
@@ -100,6 +107,7 @@ const fetchStakedToken = async (ts, _block, chainBlocks) => {
 
 
 module.exports = {
+  misrepresentedTokens: true,
   klaytn: {
     staking: fetchStakedToken,
     tvl: fetchCollateral,

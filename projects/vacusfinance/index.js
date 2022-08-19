@@ -7,7 +7,7 @@ const chain = 'avax'
 let totalTvl
 
 const contract = '0x8aC4007633B9CD72B9447BB717e3d2f5682D1760'
-const vcs = '0xF6557bC62AC67744961479eA6c131B61444714d6'
+const vcs = '0xF6557bC62AC67744961479eA6c131B61444714d6'.toLowerCase()
 
 
 async function gettotalTvl(block) {
@@ -45,13 +45,13 @@ async function gettotalTvl(block) {
       sdk.util.sumSingleBalance(tempBalances, token, amount)
       lps.push(token)
     })
-/*
-    balances.staking['avax:' + vcs] = tempBalances[vcs]
+    
+    // balances.staking['avax:' + vcs] = tempBalances[vcs]
     delete tempBalances[vcs]
-*/
     const pairs = await getLPData({ lps, chain, block })
 
-    const { updateBalances, } = await getTokenPrices({ lps: Object.keys(pairs), allLps: true, coreAssets: [ ], block, chain, minLPRatio: 0.001 })
+    const { updateBalances, prices } = await getTokenPrices({ lps: Object.keys(pairs), allLps: true, 
+      useDefaultCoreAssets: true, block, chain, minLPRatio: 0.001 })
 
     Object.entries(tempBalances).forEach(([token, balance]) => {
       if (pairs[token]) {
@@ -66,7 +66,6 @@ async function gettotalTvl(block) {
 
     await updateBalances(balances.tvl)
     await updateBalances(balances.pool2)
-
     return balances
   }
 }
@@ -86,6 +85,7 @@ async function staking(_, _b, { [chain]: block }) {
 
 
 module.exports = {
+  misrepresentedTokens: true,
   avax: {
     tvl, 
     pool2, 

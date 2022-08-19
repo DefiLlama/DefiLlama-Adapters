@@ -28,19 +28,19 @@ const adapter: DexVolumeAdapter = {
   volume: {
     [ETHEREUM]: {
       fetch: graphs(ETHEREUM),
-      start: 0,
+      start: async () => 0,
       customBackfill: customBackfill(ETHEREUM, graphs),
     },
     // POLYGON
     [POLYGON]: {
       fetch: graphs(POLYGON),
-      start: 0,
+      start: async () => 0,
       customBackfill: customBackfill(POLYGON, graphs),
     },
     // ARBITRUM
     [ARBITRUM]: {
       fetch: graphs(ARBITRUM),
-      start: 0,
+      start: async () => 0,
       customBackfill: customBackfill(ARBITRUM, graphs),
     },
   },

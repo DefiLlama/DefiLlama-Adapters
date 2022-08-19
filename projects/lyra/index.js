@@ -15,11 +15,13 @@ const v1_1_ShortCollateral = [
 ]
 
 const v1_2_LiquidityPool = [
-    '0x5Db73886c4730dBF3C562ebf8044E19E8C93843e'
+    '0x5Db73886c4730dBF3C562ebf8044E19E8C93843e',
+    '0x3C73CD65D708A5C951f0Cc19a4D0Bb6559ae20c5'
     ]
 
 const v1_2_ShortCollateral = [
-    '0x3E86B53e1D7DA7eDbA225c3A218d0b5a7544fDfD'
+    '0x3E86B53e1D7DA7eDbA225c3A218d0b5a7544fDfD',
+    '0x26cf967e466d9fd60af7d1b78a01c43e75e03b32'
     ]
 
 const pools = [...new Set([...v1_0_Pools, ...v1_1_LiquidityPool, ...v1_1_ShortCollateral, ...v1_2_LiquidityPool, ...v1_2_ShortCollateral].map(t=>t.toLowerCase()))]

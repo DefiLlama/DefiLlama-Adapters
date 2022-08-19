@@ -19,7 +19,7 @@ async function tvl(_t, _b, chainBlocks){
         [tusd]: fusd.output
     }
     const transform = await transformFantomAddress()
-    await addFundsInMasterChef(balances, '0x5bC37CAAA3b490b65F5A50E2553f4312126A8b7e', block, 'fantom', transform, poolInfoAbi, [ifusd])
+    await addFundsInMasterChef(balances, '0x5bC37CAAA3b490b65F5A50E2553f4312126A8b7e', block, 'fantom', transform, poolInfoAbi, [ifusd,"0xa0828eE559110b041DEdbf10Ae0cf42274251de1"])
     return balances
 }
 

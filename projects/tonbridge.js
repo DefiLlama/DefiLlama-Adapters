@@ -68,4 +68,7 @@ module.exports = {
     fantom: {
         tvl: evm('fantom', '0x1ffEFD8036409Cb6d652bd610DE465933b226917')
     },
+    hallmarks:[
+        [1651881600, "UST depeg"],
+      ],
 };

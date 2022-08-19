@@ -25,7 +25,7 @@ jobs:
             exit 0
           fi
 
-          npm ci --production --only=prod
+          npm ci --omit=dev
 
           for i in $(echo $RUN_FILES | tr  -d '"[]' | tr "," "\n")
           do 

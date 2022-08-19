@@ -18,5 +18,8 @@ module.exports = {
   harmony: {
     tvl,
     staking: staking(xviper, viper, "harmony")
-  }
+  },
+  hallmarks:[
+    [1655991120, "Horizon bridge Hack $100m"],
+  ],
 }
