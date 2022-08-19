@@ -26,7 +26,7 @@ const stakingV2Strings = {
     total_staked: "ts",
 }
 
-const orderedAssets = ["ALGO", "STBL", "USDC", "goBTC", "goETH", "vALGO", "USDT"]
+const orderedAssets = ["ALGO", "STBL", "USDC", "goBTC", "goETH", "vALGO", "USDT", "STBL2", "AF-NANO-BSTBL2-BUSDC"]
 const fixedValueStakingContracts = ["TINYMAN11_STBL_USDC_LP_STAKING", "ALGOFI-STBL-USDC-LP"]
 const singleSideStakingContracts = ["DEFLY", "STBL", "OPUL"]
 const variableValueStakingContracts = [
@@ -85,11 +85,23 @@ const appDictionary = {
         "oracleAppId": 451327550,
         "oracleFieldName": "price"
     },
+    "STBL2": {
+        "decimals": 6,
+        "appIds": [841145020],
+        "oracleAppId": 451327550,
+        "oracleFieldName": "price"
+    },
     "vALGO": {
         "decimals": 6,
         "appIds": [465814318],
         "oracleAppId": 531724540,
         "oracleFieldName": "latest_twap_price",
+    },
+    "AF-NANO-BSTBL2-BUSDC": {
+        "decimals": 6,
+        "appIds": [841194726],
+        "oracleAppId": 841179855,
+        "oracleFieldName": "latest_twap_price"
     },
     "STAKING_CONTRACTS": {
         "STBL": {
@@ -226,7 +238,7 @@ async function getPrices(marketDictionary, orderedAssets) {
 }
 
 function getMarketSupply(assetName, appGlobalState, prices, appDictionary) {
-    let underlyingCash = ((assetName === "STBL") || (assetName === "vALGO"))  ? appGlobalState[marketStrings.active_collateral] : appGlobalState[marketStrings.underlying_cash]
+    let underlyingCash = ((assetName === "STBL") || (assetName === "vALGO")) ? appGlobalState[marketStrings.active_collateral] : appGlobalState[marketStrings.underlying_cash]
     let supplyUnderlying = underlyingCash - appGlobalState[marketStrings.underlying_reserves]
     supplyUnderlying /= Math.pow(10, appDictionary[assetName]["decimals"])
 
