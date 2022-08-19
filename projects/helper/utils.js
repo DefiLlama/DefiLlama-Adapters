@@ -97,7 +97,7 @@ function isLP(symbol, token, chain) {
   if (['fantom', 'nova',].includes(chain) && ['NLT'].includes(symbol)) return true
   let label
 
-  if (symbol.startsWith('ZLK-LP') || symbol.includes('DMM-LP') || (chain === 'avax' && 'DLP' === symbol))
+  if (symbol.startsWith('ZLK-LP') || symbol.includes('DMM-LP') || (chain === 'avax' && 'DLP' === symbol) || symbol === 'fChe-LP')
     label = 'Blackisting this LP because of unsupported abi'
 
   if (label) {
