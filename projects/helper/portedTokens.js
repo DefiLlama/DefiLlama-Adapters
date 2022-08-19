@@ -1227,6 +1227,8 @@ async function transformAuroraAddress() {
       "0x853d955aCEf822Db058eb8505911ED77F175b99e", // FRAX
     "0x07379565cd8b0cae7c60dc78e7f601b34af2a21c":
       "0x6b175474e89094c44da98b954eedeac495271d0f", //  nUSD -> DAI
+    "0x42cc1cbf253f89be6814a0f59f745b40b69b6220": "polygon:0x2791bca1f2de4661ed88a30c99a7a9449aa84174", // sUSDC(Aurora) -> USDC(Polygon)
+    "0xd5e98caeb396dabe5a102bb9256b552944e3401f": "bsc:0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", // sBUSD(Aurora) -> BUSD(BSC)
   };
 
   normalizeMapping(mapping)
@@ -2034,6 +2036,18 @@ const fixBalancesMapping = {
   cronos: b => fixBalances(b, fixCronosMapping, { removeUnmapped: false, }),
 };
 
+function transformTelosAddress() {
+  return (addr) => {
+    if (compareAddresses(addr, "0x0000000000000000000000000000000000000000")) {
+      return "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000"; // WETH
+    }
+    const map = {
+      "0x017043607270ecbb440e20b0f0bc5e760818b3d8": "bsc:0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", // sBUSD(Aurora) -> BUSD(BSC)
+    }
+    return map[addr.toLowerCase()] || `telos:${addr}`
+  }
+}
+
 const chainTransforms = {
   astar: transformAstarAddress,
   fuse: transformFuseAddress,
@@ -2070,6 +2084,7 @@ const chainTransforms = {
   reichain: transformReichainAddress,
   nova: transformNovachainAddress,
   canto: transformCantoAddress,
+  telos: transformTelosAddress,
 };
 
 async function transformReichainAddress() {
@@ -2279,5 +2294,6 @@ module.exports = {
   wavesMapping,
   stripTokenHeader,
   transformBittorrentAddress,
-  transformAuroraAddress
+  transformAuroraAddress,
+  transformTelosAddress,
 };
