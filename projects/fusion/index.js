@@ -27,14 +27,14 @@ const dexTVL = {
     tvl: getUniTVL({
       factory: dexFactory,
       chain: "nova",
-      coreAssets: [sntNova],
+      useDefaultCoreAssets: true,
     }),
   },
   fantom: {
     tvl: getUniTVL({
       factory: dexFactory,
       chain: "fantom",
-      coreAssets: [],
+      useDefaultCoreAssets: true,
     }),
   },
 };

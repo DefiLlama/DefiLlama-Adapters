@@ -71,6 +71,10 @@ function createIncrementArray(length) {
   return arr
 }
 
+function getParamCalls(length) {
+  return createIncrementArray(length).map(i => ({ params: i }))
+}
+
 const LP_SYMBOLS = ['SLP', 'spLP', 'JLP', 'OLP', 'SCLP', 'DLP', 'MLP', 'MSLP', 'ULP', 'TLP', 'HMDX', 'YLP', 'SCNRLP', 'PGL', 'GREEN-V2', 'PNDA-V2', 'vTAROT', 'TETHYSLP', 'BAO-V2', 'DINO-V2', 'DFYNLP', 'LavaSwap', 'RLP', 'ZDEXLP', 'lawSWAPLP']
 const blacklisted_LPS = [
   '0xb3dc4accfe37bd8b3c2744e9e687d252c9661bc7',
@@ -93,7 +97,7 @@ function isLP(symbol, token, chain) {
   if (['fantom', 'nova',].includes(chain) && ['NLT'].includes(symbol)) return true
   let label
 
-  if (symbol.startsWith('ZLK-LP') || symbol.includes('DMM-LP') || (chain === 'avax' && 'DLP' === symbol))
+  if (symbol.startsWith('ZLK-LP') || symbol.includes('DMM-LP') || (chain === 'avax' && 'DLP' === symbol) || symbol === 'fChe-LP')
     label = 'Blackisting this LP because of unsupported abi'
 
   if (label) {
@@ -101,7 +105,7 @@ function isLP(symbol, token, chain) {
     return false
   }
 
-  const isLPRes = LP_SYMBOLS.includes(symbol) || /(UNI-V2|vAMM)/.test(symbol) || symbol.split(/\W+/).includes('LP')
+  const isLPRes = LP_SYMBOLS.includes(symbol) || /(UNI-V2|vAMM|sAMM)/.test(symbol) || symbol.split(/\W+/).includes('LP')
 
   if (DEBUG_MODE && isLPRes && !['UNI-V2', 'Cake-LP'].includes(symbol))
     console.log(chain, symbol, token)
@@ -302,4 +306,5 @@ module.exports = {
   diplayUnknownTable,
   getRippleBalance,
   getSymbols,
+  getParamCalls,
 }

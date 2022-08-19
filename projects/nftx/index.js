@@ -47,7 +47,8 @@ function getTvl(chain) {
       .map(({ input }) => input.params[0])
   
     const { updateBalances, prices } = await getTokenPrices({
-      block, coreAssets: [weth], lps, allLps: true, chain, 
+      block,
+      useDefaultCoreAssets: true, lps, allLps: true, chain, 
     })
   
     const print = []

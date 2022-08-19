@@ -5,7 +5,7 @@ const { Connection, PublicKey, Keypair } = require("@solana/web3.js")
 const { AnchorProvider: Provider, Wallet, } = require("@project-serum/anchor");
 const BufferLayout = require("@solana/buffer-layout")
 const { MintLayout, TOKEN_PROGRAM_ID } = require("@solana/spl-token")
-const { sleep, sliceIntoChunks, log } = require('./utils')
+const { sleep, sliceIntoChunks, log, } = require('./utils')
 
 const solscan_base = "https://public-api.solscan.io/account/"
 
@@ -16,7 +16,6 @@ const endpoint = process.env.SOLANA_RPC || "https://solana-api.projectserum.com/
 function getConnection() { 
   if (!connection)  connection = new Connection(endpoint)
   return connection
-
 }
 
 function getProvider() {
@@ -115,11 +114,7 @@ async function getCoingeckoId() {
 
 // Example: [[token1, account1], [token2, account2], ...]
 async function sumTokens(tokensAndAccounts, balances = {}, ignoreBadTokens = false) {
-  const tokenlist = await axios
-    .get(
-      "https://cdn.jsdelivr.net/gh/solana-labs/token-list@main/src/tokens/solana.tokenlist.json"
-    )
-    .then((r) => r.data.tokens);
+  const tokenlist = await getTokenList();
   const tokenBalances = await Promise.all(
     tokensAndAccounts.map((t) => getTokenBalance(...t))
   );
@@ -145,11 +140,7 @@ async function sumTokens(tokensAndAccounts, balances = {}, ignoreBadTokens = fal
 
 // Example: [[token1, account1], [token2, account2], ...]
 async function sumTokensUnknown(tokensAndAccounts) {
-  const tokenlist = await axios
-    .get(
-      "https://cdn.jsdelivr.net/gh/solana-labs/token-list@main/src/tokens/solana.tokenlist.json"
-    )
-    .then((r) => r.data.tokens);
+  const tokenlist = await getTokenList();
   const tokenBalances = await Promise.all(
     tokensAndAccounts.map((t) => getTokenBalance(...t))
   );
@@ -221,11 +212,7 @@ async function getMultipleAccountBuffers(labeledAddresses) {
 // Example: [[token1, account1], [token2, account2], ...]
 async function sumOrcaLPs(tokensAndAccounts) {
   const [tokenlist, orcaPools] = await Promise.all([
-    axios
-      .get(
-        "https://cdn.jsdelivr.net/gh/solana-labs/token-list@main/src/tokens/solana.tokenlist.json"
-      )
-      .then((r) => r.data.tokens),
+    getTokenList(),
     axios.get("https://api.orca.so/pools").then((r) => r.data),
   ]);
   let totalUsdValue = 0;
@@ -366,7 +353,16 @@ async function sumTokens2({
     if (owners.length) tokensAndOwners = tokens.map(t => owners.map(o => [t, o])).flat()
   }
 
-  return sumTokens(tokensAndOwners, balances, ignoreBadTokens)
+  const chunks = sliceIntoChunks(tokensAndOwners, 99)
+  for (const chunk of chunks) {
+    await sumTokens(chunk, balances, ignoreBadTokens)
+    if (chunks.length > 2) {
+      log('waiting before more calls')
+      await sleep(5000)
+    }
+  }
+
+  return balances
 }
 
 module.exports = {
