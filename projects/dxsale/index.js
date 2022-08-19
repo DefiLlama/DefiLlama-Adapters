@@ -89,7 +89,7 @@ function getTVLTotal(args) {
         tokenSet.add(output.lpAddress)
       })
 
-      const tempBalances = await vestingHelper({ coreAssets: args.coreAssets, owner: lockContract, tokens: [...tokenSet], chain, block, })
+      const tempBalances = await vestingHelper({ useDefaultCoreAssets: true, owner: lockContract, tokens: [...tokenSet], chain, block, })
 
       Object.entries(tempBalances).forEach(([token, bal]) => sdk.util.sumSingleBalance(balances, token, bal))
     }
@@ -116,9 +116,7 @@ function getTVLTotal(args) {
         lpData.forEach(({ output: { lockedLPTokens, lpLockContract } }) => tokensAndOwners.push([lockedLPTokens, lpLockContract]))
       }
 
-      const tempBalances = await sumUnknownTokens({
-        chain, block, tokensAndOwners, coreAssets: args.coreAssets, balances,
-      })
+      const tempBalances = await sumUnknownTokens({ chain, block, tokensAndOwners, useDefaultCoreAssets: true, balances, })
 
       Object.entries(tempBalances).forEach(([token, bal]) => sdk.util.sumSingleBalance(balances, token, bal))
     }

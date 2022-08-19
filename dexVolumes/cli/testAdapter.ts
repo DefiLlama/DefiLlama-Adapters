@@ -40,12 +40,11 @@ const passedFile = path.resolve(process.cwd(), `dexVolumes/${process.argv[2]}`);
 
 async function runAdapter(volumeAdapter: VolumeAdapter, timestamp: number) {
   // Get chains to check
-  const chains = Object.keys(volumeAdapter).filter(item => typeof volumeAdapter[item] === 'object');
+  const chains: Chain[] = Object.keys(volumeAdapter).filter(item => typeof volumeAdapter[item] === 'object').map(c => c === "ava" ? "avax" : c as Chain)
   // Get lastest block 
   const chainBlocks: ChainBlocks = {};
   await Promise.all(
-    chains.map(async (chainRaw) => {
-      const chain: Chain = chainRaw === "ava" ? "avax" : chainRaw as Chain
+    chains.map(async (chain) => {
       if (chainsForBlocks.includes(chain as Chain) || chain === "ethereum") {
         const latestBlock = await getBlock(timestamp, chain, chainBlocks)
         if (!latestBlock) throw new Error("latestBlock")
@@ -54,11 +53,12 @@ async function runAdapter(volumeAdapter: VolumeAdapter, timestamp: number) {
     })
   );
   // Get volumes
-  const volumes = await Promise.all(Object.keys(chainBlocks).map(
+  const volumes = await Promise.all(chains.map(
     async chain => {
+      const startTimestamp = await volumeAdapter[chain].start()
       const fetchVolumeFunc = volumeAdapter[chain].customBackfill ?? volumeAdapter[chain].fetch
       return fetchVolumeFunc(timestamp, chainBlocks)
-        .then(res => ({ timestamp: res.timestamp, totalVolume: res.totalVolume, dailyVolume: res.dailyVolume }))
+        .then(res => ({ timestamp: res.timestamp, totalVolume: res.totalVolume, dailyVolume: res.dailyVolume, chain, startTimestamp }))
     }
   ))
   return volumes
