@@ -37,5 +37,8 @@ module.exports={
     methodology: "Counts the tokens on the bath pools and on the market (orders in the orderbook)",
     optimism:{
         tvl
-    }
+    },
+    hallmarks:[
+        [1657915200, "OP Rewards Start"],
+      ]
 }

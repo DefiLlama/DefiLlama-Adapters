@@ -2,11 +2,10 @@ const BigNumber = require("bignumber.js");
 const axios = require("axios");
 const http = require('./http')
 const { Connection, PublicKey, Keypair } = require("@solana/web3.js")
-const { Provider } = require("@project-serum/anchor");
-const { NodeWallet } = require("@project-serum/anchor/dist/cjs/provider");
+const { AnchorProvider: Provider, Wallet, } = require("@project-serum/anchor");
 const BufferLayout = require("@solana/buffer-layout")
 const { MintLayout, TOKEN_PROGRAM_ID } = require("@solana/spl-token")
-const { sleep, sliceIntoChunks } = require('./utils')
+const { sleep, sliceIntoChunks, log } = require('./utils')
 
 const solscan_base = "https://public-api.solscan.io/account/"
 
@@ -23,7 +22,7 @@ function getConnection() {
 function getProvider() {
   if (!provider) {
     const dummy_keypair = Keypair.generate();
-    const wallet = new NodeWallet(dummy_keypair);
+    const wallet = new Wallet(dummy_keypair);
   
     provider = new Provider(
       getConnection(), wallet
@@ -115,7 +114,7 @@ async function getCoingeckoId() {
 }
 
 // Example: [[token1, account1], [token2, account2], ...]
-async function sumTokens(tokensAndAccounts) {
+async function sumTokens(tokensAndAccounts, balances = {}, ignoreBadTokens = false) {
   const tokenlist = await axios
     .get(
       "https://cdn.jsdelivr.net/gh/solana-labs/token-list@main/src/tokens/solana.tokenlist.json"
@@ -124,7 +123,6 @@ async function sumTokens(tokensAndAccounts) {
   const tokenBalances = await Promise.all(
     tokensAndAccounts.map((t) => getTokenBalance(...t))
   );
-  const balances = {};
   for (let i = 0; i < tokensAndAccounts.length; i++) {
     const token = tokensAndAccounts[i][0];
     let coingeckoId = tokenlist.find((t) => t.address === token)?.extensions
@@ -134,10 +132,13 @@ async function sumTokens(tokensAndAccounts) {
       if (replacementCoingeckoId !== undefined) {
         coingeckoId = replacementCoingeckoId;
       } else {
-        throw new Error(`Solana token ${token} has no coingecko id`);
+        if (!ignoreBadTokens)
+          throw new Error(`Solana token ${token} has no coingecko id`)
+        log(`Solana token ${token} has no coingecko id, it is ignored`)
       }
     }
-    balances[coingeckoId] = (balances[coingeckoId] || 0) + tokenBalances[i];
+    if (coingeckoId)
+      balances[coingeckoId] = (balances[coingeckoId] || 0) + tokenBalances[i];
   }
   return balances;
 }
@@ -345,6 +346,29 @@ function exportDexTVL(DEX_PROGRAM_ID) {
   }
 }
 
+async function getSaberPools() {
+  return http.get('https://registry.saber.so/data/llama.mainnet.json')
+}
+async function getQuarryData() {
+  return http.get('https://raw.githubusercontent.com/QuarryProtocol/rewarder-list-build/master/mainnet-beta/tvl.json')
+}
+
+async function sumTokens2({
+  balances = {},
+  tokensAndOwners = [],
+  tokens = [],
+  owners = [],
+  owner,
+  ignoreBadTokens = true,
+}) {
+  if (!tokensAndOwners.length) {
+    if (owner) tokensAndOwners = tokens.map(t => [t, owner])
+    if (owners.length) tokensAndOwners = tokens.map(t => owners.map(o => [t, o])).flat()
+  }
+
+  return sumTokens(tokensAndOwners, balances, ignoreBadTokens)
+}
+
 module.exports = {
   endpoint,
   TOKEN_LIST_URL,
@@ -363,4 +387,7 @@ module.exports = {
   exportDexTVL,
   getProvider,
   getConnection,
+  getSaberPools,
+  getQuarryData,
+  sumTokens2,
 };

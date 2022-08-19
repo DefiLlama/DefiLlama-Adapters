@@ -138,7 +138,7 @@ module.exports = {
     tvl: sdk.util.sumChainTvls([polygonTvl, polygonLending]),
     borrowed: polygonBorrowed
   },
-  avalanche: {
+  avax:{
     tvl: avaxTvl,
   },
   fantom: {

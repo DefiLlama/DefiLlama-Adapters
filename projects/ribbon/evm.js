@@ -91,7 +91,7 @@ module.exports = {
     tvl: ethTvl,
     staking: veRBNStaking,
   },
-  avalanche: {
+  avax:{
     tvl: avaxTvl,
   },
 };
