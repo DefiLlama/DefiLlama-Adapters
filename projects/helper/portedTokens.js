@@ -1016,11 +1016,12 @@ function transformVelasAddress() {
 }
 async function transformCronosAddress() {
   const mapping = {
-    "0x0000000000000000000000000000000000000000":
-      "0xa0b73e1ff0b80914ab6fe0444e65848c4c34450b",
+    "0x87EFB3ec1576Dec8ED47e58B832bEdCd86eE186e":
+      "0x0000000000085d4780B73119b644AE5ecd22b376",
     "0x09ad12552ec45f82be90b38dfe7b06332a680864":
       "polygon:0xc3fdbadc7c795ef1d6ba111e06ff8f16a20ea539" // ADDY
   };
+  normalizeMapping(mapping)
   return addr => mapping[addr.toLowerCase()] || `cronos:${addr.toLowerCase()}`;
 }
 
@@ -1961,6 +1962,13 @@ const fixETCMapping = {
   },
 }
 
+const fixCronosMapping = {
+  "0x0000000000000000000000000000000000000000": {
+    coingeckoId: "crypto-com-chain",
+    decimals: 18,
+  },
+}
+
 const fixMultivacMapping = {
   "0x8E321596267a4727746b2F48BC8736DB5Da26977": {
     coingeckoId: "multivac",
@@ -2023,6 +2031,7 @@ const fixBalancesMapping = {
   canto: b => fixBalances(b, fixCantoMapping, { removeUnmapped: false, }),
   ethereumclassic: b => fixBalances(b, fixETCMapping, { removeUnmapped: false, }),
   multivac: b => fixBalances(b, fixMultivacMapping, { removeUnmapped: false, }),
+  cronos: b => fixBalances(b, fixCronosMapping, { removeUnmapped: false, }),
 };
 
 const chainTransforms = {
