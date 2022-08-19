@@ -1,9 +1,5 @@
 const utils = require('./helper/utils');
 
-/* * * * * * * *
-* ==> Correct adapter needs to be created.
-*
-*****************/
 async function farmingTvl() {
     var totalTvl = await utils.fetchURL('https://swap-api.starcoin.org/main/v1/farmingTvlInUsd');
     return totalTvl.data;
