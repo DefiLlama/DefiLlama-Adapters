@@ -2075,7 +2075,7 @@ const chainTransforms = {
   reichain: transformReichainAddress,
   nova: transformNovachainAddress,
   canto: transformCantoAddress,
-  telos: transformTelosAddress(),
+  telos: transformTelosAddress,
 };
 
 async function transformReichainAddress() {
