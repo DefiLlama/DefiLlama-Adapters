@@ -458,6 +458,7 @@ async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], block, c
 
     if (!owners && owner)
       owners = [owner]
+    owners = getUniqueAddresses(owners)
     nftsAndOwners = owners.map(o => [nftAddress, o])
   }
   await Promise.all(nftsAndOwners.map(([nftAddress, owner]) => unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain, transformAddress })))
