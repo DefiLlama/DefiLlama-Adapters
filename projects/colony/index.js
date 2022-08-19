@@ -42,7 +42,7 @@ async function staking(timestamp, block, chainBlocks) {
 module.exports = {
   methodology:
     "Staking is calculated based on CLY tokens locked on Colony staking contracts",
-  avalanche: {
+  avax:{
     tvl: async () => ({}),
     staking,
   },

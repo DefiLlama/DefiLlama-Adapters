@@ -62,7 +62,7 @@ module.exports = {
         tvl: ftmTvl,
         staking: stakingUnknownPricedLP(ftmStaking, ftmToken, "fantom", "0x78b51a1fd7524186982c2cb8982df312b1e896a8")
     },
-    avalanche: {
+    avax:{
         tvl: avaxTvl,
         staking: stakingUnknownPricedLP(avaxStaking, avaxToken, "avax", "0x26e7c9b2890440866d7d3f8f84b1ccaff443b9d8")
     }

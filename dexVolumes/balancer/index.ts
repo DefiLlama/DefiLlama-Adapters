@@ -1,6 +1,7 @@
 import { DexVolumeAdapter } from "../dexVolume.type";
 import { getChainVolume } from "../helper/getUniSubgraphVolume";
 import { ARBITRUM, ETHEREUM, POLYGON } from "../helper/chains";
+import customBackfill from "../helper/customBackfill";
 
 const endpoints = {
   [ETHEREUM]: "https://api.thegraph.com/subgraphs/name/balancer-labs/balancer",
@@ -28,11 +29,20 @@ const adapter: DexVolumeAdapter = {
     [ETHEREUM]: {
       fetch: graphs(ETHEREUM),
       start: 0,
-      customBackfill: () => {},
+      customBackfill: customBackfill(ETHEREUM, graphs),
     },
     // POLYGON
-
+    [POLYGON]: {
+      fetch: graphs(POLYGON),
+      start: 0,
+      customBackfill: customBackfill(POLYGON, graphs),
+    },
     // ARBITRUM
+    [ARBITRUM]: {
+      fetch: graphs(ARBITRUM),
+      start: 0,
+      customBackfill: customBackfill(ARBITRUM, graphs),
+    },
   },
 };
 

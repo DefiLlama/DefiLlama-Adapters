@@ -236,7 +236,7 @@ module.exports = {
     ethereum: {
         tvl: ethTvl
     },
-    avalanche: {
+    avax:{
         tvl: avaxTvl
     },
     fantom: {
