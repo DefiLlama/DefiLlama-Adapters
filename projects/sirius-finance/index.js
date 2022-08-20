@@ -10,7 +10,8 @@ const { remap } = require("./lib");
 /*==================================================
   TVL
   ==================================================*/
-
+let o;
+let ts;
 async function tvl(timestamp, _block, { astar: block }) {
     const toa = []
 
