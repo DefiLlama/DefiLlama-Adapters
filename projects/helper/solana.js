@@ -31,11 +31,15 @@ function getProvider() {
   return provider;
 }
 
+
+async function getSolBalances(accounts) {
+  const formBody = key => ({ "jsonrpc": "2.0", "id": 1, "method": "getBalance", "params": [key] })
+  const tokenBalances = await axios.post(endpoint, accounts.map(formBody));
+  return tokenBalances.data.reduce((a, i) => a + i.result.value, 0) / 1e9
+}
+
 async function getSolBalance(account) {
-  const solBalance = await axios
-    .get(solscan_base + account)
-    .then((r) => r.data.lamports);
-  return new BigNumber(solBalance).div(1e9).toString(10);
+  return getSolBalances([account])
 }
 
 const TOKEN_LIST_URL = "https://cdn.jsdelivr.net/gh/solana-labs/token-list@main/src/tokens/solana.tokenlist.json"
@@ -377,6 +381,7 @@ async function sumTokens2({
   owner,
   ignoreBadTokens = true,
   tokenAccounts = [],
+  solOwners = []
 }) {
   if (!tokensAndOwners.length) {
     if (owner) tokensAndOwners = tokens.map(t => [t, owner])
@@ -403,6 +408,11 @@ async function sumTokens2({
         await sleep(5000)
       }
     }
+  }
+
+  if (solOwners.length)  {
+    const solBalance = await getSolBalances(solOwners)
+    sdk.util.sumSingleBalance(balances, 'solana', solBalance)
   }
 
   return balances
@@ -456,4 +466,5 @@ module.exports = {
   sumTokens2,
   getTokenBalances,
   transformBalances,
+  getSolBalances,
 };
