@@ -30,5 +30,8 @@ module.exports = {
         // Token not on coingecko yet
         //staking,
         tvl
-    }
+    },
+     hallmarks:[
+    [1651881600, "UST depeg"],
+  ]
 }
