@@ -19,11 +19,6 @@ const addresses = {
   CCANTO: '0xb65ec550ff356eca6150f733ba9b954b2e0ca488',
   // PriceFeed: '0xa252eEE9BDe830Ca4793F054B506587027825a8e'
 }
-const coreAssets = [
-  addresses.USDT,
-  addresses.USDC,
-  addresses.ETH,
-]
 
 const chain = 'canto'
 const checkForLPTokens = i => /vAMM/.test(i)
@@ -39,7 +34,7 @@ module.exports = {
 async function update(block, balances) {
   const lps = Object.keys(addresses).filter(i => /LP$/.test(i)).map(i => addresses[i])
   lps.push(...Object.keys(balances))
-  const { updateBalances, } = await getTokenPrices({ chain, block, lps, coreAssets,  })
+  const { updateBalances, } = await getTokenPrices({ chain, block, lps, useDefaultCoreAssets: true,  })
   updateBalances(balances)
   return balances
 }
