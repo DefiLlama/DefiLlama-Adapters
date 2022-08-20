@@ -1,12 +1,21 @@
 const sdk = require("@defillama/sdk");
 const { CONFIG_DATA } = require("./config");
 
+const isNctLive = (chain, block) => {
+    return ((chain === "polygon" && block >= 24749944) || chain !== "polygon");
+};
+
 const getCalculationMethod = (chain) => {
     return async (timestamp, block, chainBlocks) => {
         const supplyCalls = [
-            {target: CONFIG_DATA[chain].bct},
-            {target: CONFIG_DATA[chain].nct}
+            {target: CONFIG_DATA[chain].bct}
         ];
+
+        if (isNctLive(chain, chainBlocks[chain])) {
+            supplyCalls.push({
+                target: CONFIG_DATA[chain].nct
+            });
+        }
 
         const supplies = (
             await sdk.api.abi.multiCall({
@@ -19,7 +28,9 @@ const getCalculationMethod = (chain) => {
 
         const balances = {};
         sdk.util.sumSingleBalance(balances, `${chain}:${CONFIG_DATA[chain].bct}`, supplies[0].output);
-        sdk.util.sumSingleBalance(balances, `${chain}:${CONFIG_DATA[chain].nct}`, supplies[1].output);
+        if (isNctLive(chain, chainBlocks[chain])) {
+            sdk.util.sumSingleBalance(balances, `${chain}:${CONFIG_DATA[chain].nct}`, supplies[1].output);
+        }
 
         return balances;
     };
