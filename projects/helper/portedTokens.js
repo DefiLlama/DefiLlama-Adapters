@@ -1947,6 +1947,10 @@ const fixCantoMapping = {
     coingeckoId: "tether",
     decimals: 6,
   },
+  "0x4e71A2E537B7f9D9413D3991D37958c0b5e1e503": {  // NOTE
+    coingeckoId: "usd-coin",
+    decimals: 18,
+  },
   "0x5FD55A1B9FC24967C4dB09C513C3BA0DFa7FF687": {
     coingeckoId: "ethereum",
     decimals: 18,
