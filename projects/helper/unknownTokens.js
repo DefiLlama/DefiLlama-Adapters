@@ -488,6 +488,7 @@ function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = 
 
     async function getTVL() {
       const transform = await getChainTransform(chain)
+      const fixBalances = await getFixBalances(chain)
       const balances = {
         tvl: {},
         staking: {},
@@ -510,7 +511,7 @@ function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = 
 
       const tokens = data.map(({ output }) => getToken(output).toLowerCase())
       const lps = [...tokens].filter(i => !nativeTokens.includes(i))
-      const tempBalances = await sumTokens2({ chain, block, owner: masterchef, tokens, transformAddress: a => a, blacklistedTokens, })
+      const tempBalances = await sumTokens2({ chain, block, owner: masterchef, tokens, transformAddress: a => a, blacklistedTokens})
       nativeTokens.forEach(nativeToken => {
         if (tempBalances[nativeToken]) sdk.util.sumSingleBalance(balances.staking, transform(nativeToken), tempBalances[nativeToken])
         delete tempBalances[nativeToken]
@@ -530,11 +531,12 @@ function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = 
         sdk.util.sumSingleBalance(balances.tvl, transform(token), balance)
       })
 
-      await updateBalances(balances.tvl)
-      await updateBalances(balances.pool2)
-      await updateBalances(balances.staking)
+      for (const bal of Object.values(balances)) {
+        await updateBalances(bal)
+        fixBalances(bal)
+      }
 
-      log(balances)
+       log(balances)
 
       return balances
     }

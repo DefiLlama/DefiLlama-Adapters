@@ -2253,7 +2253,10 @@ function transformChainAddress(
 async function getChainTransform(chain) {
   if (chainTransforms[chain]) return chainTransforms[chain]();
 
-  return addr => `${chain}:${addr}`;
+  return addr => {
+    if (addr.startsWith('0x'))  return `${chain}:${addr}`
+    return addr
+  };
 }
 
 module.exports = {
