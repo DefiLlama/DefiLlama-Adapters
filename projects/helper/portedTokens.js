@@ -1277,7 +1277,7 @@ function fixGodwokenBalances(balances) {
       decimals: 18,
     }, // Wrapped BTC (ForceBridge from BSC)
 
-    "0xC3b946c53E2e62200515d284249f2a91d9DF7954": {
+    "0x9E858A7aAEDf9FDB1026Ab1f77f627be2791e98A": {
       coingeckoId: "ethereum",
       decimals: 18,
     }, // ETH (via Forcebridge from ETH)
