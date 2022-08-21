@@ -1,6 +1,6 @@
 import { DexVolumeAdapter } from "../dexVolume.type";
-
-const { getChainVolume } = require("../helper/getUniSubgraphVolume");
+import { getStartTimestamp } from "../helper/getStartTimestamp";
+import { getChainVolume } from "../helper/getUniSubgraphVolume";
 
 const endpoints = {
   avax: "https://api.thegraph.com/subgraphs/name/traderjoe-xyz/exchange",
@@ -24,7 +24,12 @@ const adapter: DexVolumeAdapter = {
   volume: {
     avax: {
       fetch: graphs("avax"),
-      start: async () => 1628467200,
+      start: getStartTimestamp({
+        endpoints: endpoints,
+        chain: "avax",
+        volumeField: "volumeUSD",
+        dailyDataField: "dayDatas"
+      })
     },
   },
 };
