@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { staking } = require("../helper/staking");
-const { fixHarmonyBalances } = require("../helper/portedTokens");
+const { getFixBalances } = require("../helper/portedTokens");
 const { getBlock } = require("../helper/getBlock");
 
 const comfyTokenAddress = "0x702f78E81Cf3DfaE89648b5a9e2e1aa8db1De546";
@@ -49,7 +49,7 @@ async function calcPool2(block, chain) {
     chain,
     (addr) => `${chain}:${addr}`
   );
-  fixHarmonyBalances(balances);
+  (await getFixBalances('harmony'))(balances);
   return balances;
 }
 

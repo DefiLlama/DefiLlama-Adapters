@@ -1,7 +1,7 @@
 const { request, gql } = require("graphql-request");
 const { toUSDTBalances } = require('../helper/balances');
 const { calculateUniTvl } = require('../helper/calculateUniTvl.js')
-const { transformFantomAddress, transformHarmonyAddress, fixHarmonyBalances } = require('../helper/portedTokens')
+const { transformFantomAddress, transformHarmonyAddress, getFixBalancesSync } = require('../helper/portedTokens')
 const { getBlock } = require('../helper/getBlock')
 const sdk = require('@defillama/sdk')
 
@@ -16,7 +16,7 @@ async function harmony(timestamp, ethBlock, chainBlocks) {
   const block = await getBlock(timestamp, 'harmony', chainBlocks);
   const transform = await transformHarmonyAddress()
   const balances = await calculateUniTvl(transform, block, 'harmony', factory, 0, true);
-  fixHarmonyBalances(balances)
+  getFixBalancesSync('harmony')(balances);
   return balances
 }
 

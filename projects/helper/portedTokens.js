@@ -214,6 +214,11 @@ async function getFixBalances(chain) {
   return fixBalancesMapping[chain] || dummyFn;
 }
 
+function getFixBalancesSync(chain) {
+  const dummyFn = i => i;
+  return fixBalancesMapping[chain] || dummyFn;
+}
+
 const fixBalancesMapping = {};
 
 for (const chain of Object.keys(fixBalancesTokens)) {
@@ -278,4 +283,5 @@ module.exports = {
   transformArbitrumAddress,
   transformIotexAddress,
   stripTokenHeader,
+  getFixBalancesSync,
 };
