@@ -7,15 +7,11 @@ const masterchefAbi = require('./abis/masterchef.json')
 const getReserves = require('./abis/getReserves.json');
 const { getChainTransform, stripTokenHeader, getFixBalances, } = require('./portedTokens')
 const { requery, } = require('./getUsdUniTvl')
-const coreAssetsAll = require('./coreAssets')
+const { getCoreAssets } = require('./tokenMapping')
 const { sumTokens, sumTokens2, } = require('./unwrapLPs')
 const { isLP, getUniqueAddresses, DEBUG_MODE, sliceIntoChunks, sleep, log } = require('./utils')
 const factoryAbi = require('./abis/factory.json');
 const { default: BigNumber } = require('bignumber.js')
-
-function getCoreAssets(chain) {
-  return coreAssetsAll[chain] || []
-}
 
 async function getLPData({
   block,

@@ -13,6 +13,7 @@ module.exports = {
       factory: '0xF4bc79D32A7dEfd87c8A9C100FD83206bbF19Af5',
       blacklist: [
         '0xe52CE89E16c4C596D30D111f3b5c137da412dEb8',
+        '0xbe14fbbccd4587b276549e734cc80294fc4b0f83',
       ]
     }),
     staking: staking({
