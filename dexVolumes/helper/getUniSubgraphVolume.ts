@@ -62,25 +62,25 @@ function getChainVolume({
   const totalVolumeQuery = gql`
   ${totalVolume.factory}(
     block: { number: $block }
-  ) {
-    ${totalVolume.field}
-  }
-  `;
-
-  const dailyVolumeQuery =
+    ) {
+      ${totalVolume.field}
+    }
+    `;
+    
+    const dailyVolumeQuery =
     customDailyVolume ||
     gql`
-  ${dailyVolume.factory} (
-    id: $id
-  ) {
-    ${dailyVolume.field}
-  }
-  `;
-  const graphQueryTotalVolume = gql`
+    ${dailyVolume.factory} (
+      id: $id
+      ) {
+        ${dailyVolume.field}
+      }
+      `;
+      const graphQueryTotalVolume = gql`
   ${hasTotalVolume ? `query get_total_volume($block: Int) { ${totalVolumeQuery} }` : ""}`
   const graphQueryDailyVolume = gql`
   ${hasDailyVolume ? `query get_daily_volume($id: Int) { ${dailyVolumeQuery} }` : ""}`;
-
+  
   return (chain: Chain) => {
     return async (timestamp: number, chainBlocks: ChainBlocks) => {
       const block =
@@ -88,8 +88,8 @@ function getChainVolume({
           await getCustomBlock(timestamp) :
           await getBlock(timestamp, chain, chainBlocks);
       const id = getUniswapDateId(new Date(timestamp * 1000));
-      const graphResTotal = await request(graphUrls[chain], graphQueryTotalVolume, { block }).catch(e => console.log(e));
-      const graphResDaily = await request(graphUrls[chain], graphQueryDailyVolume, { id }).catch(e => console.log(e));
+      const graphResTotal = await request(graphUrls[chain], graphQueryTotalVolume, { block }).catch(e => console.error(`Failed to get total volume${e.message}`));
+      const graphResDaily = await request(graphUrls[chain], graphQueryDailyVolume, { id }).catch(e => console.error(`Failed to get daily volume${e.message}`));
       return {
         timestamp,
         block,
