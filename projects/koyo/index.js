@@ -6,14 +6,13 @@ const { getBlock } = require("../helper/getBlock");
 const { staking } = require("../helper/staking");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const {
-  transformBobaAddress,
-  transformOptimismAddress,
+  getChainTransform,
 } = require("../helper/portedTokens");
 const { request } = require("graphql-request");
 
 const DATA = {
   boba: async () => {
-    const bobaTransform = transformBobaAddress();
+    const bobaTransform = await getChainTransform('boba');
 
     return [
       bobaTransform,
@@ -36,7 +35,7 @@ const DATA = {
     ];
   },
   optimism: async () => {
-    const optimismTransform = await transformOptimismAddress();
+    const optimismTransform = await getChainTransform('optimism');
 
     return [
       optimismTransform,

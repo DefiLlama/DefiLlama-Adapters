@@ -1,9 +1,16 @@
 const axios = require("axios")
 const { default: BigNumber } = require("bignumber.js")
-const { transformNearAddress } = require('../helper/portedTokens')
 const sdk = require('@defillama/sdk')
 
-const transformAddress = transformNearAddress()
+function transformAddress() {
+  return addr => {
+    const bridgedAssetIdentifier = ".factory.bridge.near";
+    if (addr.endsWith(bridgedAssetIdentifier))
+      return `0x${addr.slice(0, addr.length - bridgedAssetIdentifier.length)}`;
+
+    return addr
+  };
+}
 
 const endpoint = "https://rpc.mainnet.near.org"
 

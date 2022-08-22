@@ -1,13 +1,13 @@
 const retry = require('./helper/retry')
 const axios = require("axios");
 const sdk = require('@defillama/sdk');
-const { transformHecoAddress } = require('./helper/portedTokens');
+const { getChainTransform } = require('./helper/portedTokens');
 const { unwrapUniswapLPs } = require("./helper/unwrapLPs");
 const { getBlock } = require('./helper/getBlock')
 
 async function tvl(timestamp, block, chainBlocks) {
   let balances = {};
-  const transform = await transformHecoAddress();
+  const transform = await getChainTransform('heco');
 
   let liquidity = (await retry(async bail => 
     await axios.get('https://demeter.xyz/app/api/market_global_data', {
@@ -27,7 +27,7 @@ async function tvl(timestamp, block, chainBlocks) {
 
 async function staking(timestamp, block, chainBlocks) {
     let balances = {};
-    const transform = await transformHecoAddress();
+    const transform = await getChainTransform('heco');
     block = await getBlock(timestamp, 'heco', chainBlocks);
 
     let liquidity = (await retry(async bail => 
