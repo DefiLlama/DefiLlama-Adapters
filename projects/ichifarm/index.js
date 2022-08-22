@@ -4,7 +4,7 @@ const { stakings } = require("../helper/staking");
 const abi = require("./abi.json");
 const chain = 'ethereum'
 const { createIncrementArray } = require('../helper/utils')
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const { sumTokens2, unwrapUniswapV3NFTs } = require('../helper/unwrapLPs')
 
 
 const ichi = "0x903bEF1736CDdf2A537176cf3C64579C3867A881";
@@ -114,8 +114,40 @@ const lendingPools = [
   },
 ]
 
+const strategies = [
+  // oneUni
+  '0x6287d56e246EEE33beAd2D7DD3a99Db693f4554C', 
+  // oneBTC
+  '0x435B65196f302b04bAabcc1E5f07CA1192736771', 
+  // oneDoDO
+  '0x1faac4842054F2dB2DdDFC8152D7C259d5102c13',
+  // oneFox
+  '0xeB370EE6927e4655a463F898fFF30479b34708f6',
+  // oneFuse
+  '0x8740c9f316241f905323920f4f4fa8a4d6ab100b',
+  // onePerl
+  '0x2Dfb5348CC20218426e566C1bD7B8b3789CBa9d5',
+  // oneFil
+  '0xc9682298cd1C39145EB34614a0B4356c7F29c92e',
+  // oneInch
+  '0x97B380Ae50160E400d68c92ABeAf24402C9CaA62',
+  // oneMPH
+  '0xF1587Cb51349CDf5bb408845249De36466C35F41',
+  // oneICHI
+  '0xAC225b5Be5b2EBe53b75798366287626b9881BC8',
+  // oneGiv
+  '0x8A17A9ACF32811b0d2a10Bd97839643e8AD14B1B',
+  // oneOJA
+  '0x2E76A8D053f839A04235341dF1f25235437fEDd6',
+  // oneWING
+  '0xac20007A5CBDA40d8E16df26bAD89E8738404691',
+  // bootUSD
+  '0x4ed128f3087DB2D9F6Ea0f1dca3b7FC716EC256C',
+]
+
 
 async function getLendingTvl(balances, block) {
+  return; // Team asked to disable lending in rari
 
   const ethBalance = (await sdk.api.eth.getBalance({
     target: "0xd2626105690e480dfeb12a64bc94b878df9d35d8",
@@ -205,8 +237,63 @@ async function tvl(timestamp, block) {
   })
   const ichiTokens = oneTokens.map(i => i.output)
   const blacklistedTokens = [...ichiTokens, ichi, ichiNew,]
+  toa.push(
+    // oneUNI strategy
+    ['0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', '0x6287d56e246EEE33beAd2D7DD3a99Db693f4554C'], 
+    ['0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', '0x6287d56e246EEE33beAd2D7DD3a99Db693f4554C'], 
+    ['0x1f9840a85d5af5bf1d1762f925bdaddc4201f984', '0x6287d56e246EEE33beAd2D7DD3a99Db693f4554C'], 
+    // oneBTC strategy
+    ['0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599', '0x435B65196f302b04bAabcc1E5f07CA1192736771'], 
+    ['0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', '0x435B65196f302b04bAabcc1E5f07CA1192736771'], 
+    // oneDODO strategy
+    ['0x43dfc4159d86f3a37a5a4b3d4580b888ad7d4ddd', '0x1faac4842054F2dB2DdDFC8152D7C259d5102c13'], 
+    ['0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', '0x1faac4842054F2dB2DdDFC8152D7C259d5102c13'], 
+    // oneFox
+    ['0xc770EEfAd204B5180dF6a14Ee197D99d808ee52d', '0xeB370EE6927e4655a463F898fFF30479b34708f6'], 
+    ['0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', '0xeB370EE6927e4655a463F898fFF30479b34708f6'], 
+    
+    // oneFuse
+    ['0x970B9bB2C0444F5E81e9d0eFb84C8ccdcdcAf84d', '0x8740c9f316241f905323920f4f4fa8a4d6ab100b'], 
+    ['0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', '0x8740c9f316241f905323920f4f4fa8a4d6ab100b'], 
+    
+    // onePerl
+    ['0xeca82185adCE47f39c684352B0439f030f860318', '0x2Dfb5348CC20218426e566C1bD7B8b3789CBa9d5'], 
+    ['0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', '0x2Dfb5348CC20218426e566C1bD7B8b3789CBa9d5'], 
+    
+    // oneFil
+    ['0xD5147bc8e386d91Cc5DBE72099DAC6C9b99276F5', '0xc9682298cd1C39145EB34614a0B4356c7F29c92e'], 
+    ['0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', '0xc9682298cd1C39145EB34614a0B4356c7F29c92e'], 
+    
+    // oneInch
+    ['0x111111111117dC0aa78b770fA6A738034120C302', '0x97B380Ae50160E400d68c92ABeAf24402C9CaA62'], 
+    ['0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', '0x97B380Ae50160E400d68c92ABeAf24402C9CaA62'], 
+    
+    // oneMPH
+    ['0x111111111117dC0aa78b770fA6A738034120C302', '0xF1587Cb51349CDf5bb408845249De36466C35F41'], 
+    ['0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', '0xF1587Cb51349CDf5bb408845249De36466C35F41'], 
+    
+    // oneICHI
+    ['0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', '0xAC225b5Be5b2EBe53b75798366287626b9881BC8'], 
+    
+    // oneGiv
+    ['0x900dB999074d9277c5DA2A43F252D74366230DA0', '0x8A17A9ACF32811b0d2a10Bd97839643e8AD14B1B'], 
+    ['0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', '0x8A17A9ACF32811b0d2a10Bd97839643e8AD14B1B'], 
+    
+    // oneOJA
+    ['0x0aA7eFE4945Db24d95cA6E117BBa65Ed326e291A', '0x2E76A8D053f839A04235341dF1f25235437fEDd6'], 
+    ['0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', '0x2E76A8D053f839A04235341dF1f25235437fEDd6'], 
+    
+    // oneWING
+    ['0xDb0f18081b505A7DE20B18ac41856BCB4Ba86A1a', '0xac20007A5CBDA40d8E16df26bAD89E8738404691'], 
+    ['0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', '0xac20007A5CBDA40d8E16df26bAD89E8738404691'], 
+    
+    // bootUSD
+    ['0x43dfc4159d86f3a37a5a4b3d4580b888ad7d4ddd', '0x4ed128f3087DB2D9F6Ea0f1dca3b7FC716EC256C'], 
+    
+  )
   const balances = await sumTokens2({ tokensAndOwners: toa, block, chain, blacklistedTokens })
-  await getLendingTvl(balances, block);
+  // await getLendingTvl(balances, block);
+  await unwrapUniswapV3NFTs({ balances, owners: strategies, chain, block, })
   return balances
 }
 
@@ -222,6 +309,12 @@ async function polygonTvl(_, _b, { polygon: block }){
 
     // USDC pool
     ['0x2791bca1f2de4661ed88a30c99a7a9449aa84174', '0x499277a14d1eDB5583dd070A447dEDA19E7aBf85'], 
+
+    // oneBTC Strategy
+    ['0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6', '0x339d2bb734bbe105b48a2983d504378cded3093b'], 
+    ['0x2791bca1f2de4661ed88a30c99a7a9449aa84174', '0x339d2bb734bbe105b48a2983d504378cded3093b'], 
+    ['0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6', '0x6980e5afafec8c9c5f039d0c1a8ccfa6cefb9393'], 
+    ['0x2791bca1f2de4661ed88a30c99a7a9449aa84174', '0x6980e5afafec8c9c5f039d0c1a8ccfa6cefb9393'], 
   ]
 
   return sumTokens2({ chain, block, tokensAndOwners, })
