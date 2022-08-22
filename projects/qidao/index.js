@@ -2,7 +2,7 @@ const { sumTokens, unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { BigNumber } = require("bignumber.js");
-const { fixHarmonyBalances, getChainTransform } = require("../helper/portedTokens");
+const { getFixBalancesSync, getChainTransform } = require("../helper/portedTokens");
 const { handleYearnTokens } = require("../creditum/helper.js");
 
 async function handleMooTokens(balances, block, chain, tokens) {
@@ -533,7 +533,7 @@ async function harmony(timestamp, block, chainBlocks) {
       return `harmony:${addr}`;
     }
   );
-  fixHarmonyBalances(balances);
+  getFixBalancesSync('harmony')(balances);
   return balances;
 }
 
