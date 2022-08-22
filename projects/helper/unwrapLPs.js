@@ -139,7 +139,9 @@ const token1Abi = { "constant": true, "inputs": [], "name": "token1", "outputs":
     token
 }[]
 */
-async function unwrapUniswapLPs(balances, lpPositions, block, chain = 'ethereum', transformAddress = (addr) => addr, excludeTokensRaw = [], retry = false, uni_type = 'standard',) {
+async function unwrapUniswapLPs(balances, lpPositions, block, chain = 'ethereum', transformAddress = null, excludeTokensRaw = [], retry = false, uni_type = 'standard',) {
+  if (!transformAddress)
+    transformAddress = await getChainTransform(chain)
   lpPositions = lpPositions.filter(i => +i.balance > 0)
   const excludeTokens = excludeTokensRaw.map(addr => addr.toLowerCase())
   const lpTokenCalls = lpPositions.map(lpPosition => ({

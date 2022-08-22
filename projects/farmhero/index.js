@@ -4,9 +4,7 @@ const { stakings } = require("../helper/staking");
 const { pool2s } = require("../helper/pool2");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const {
-  transformBscAddress,
-  transformPolygonAddress,
-  transformOkexAddress,
+  getChainTransform,
 } = require("../helper/portedTokens");
 
 // --- BSC Addresses ---
@@ -204,7 +202,7 @@ const calcTvl = async (
 const bscTvl = async (chainBlocks) => {
   const balances = {};
 
-  const transformAddress = await transformBscAddress();
+  const transformAddress = await getChainTransform('bsc');
 
   await calcTvl(
     balances,
@@ -221,7 +219,7 @@ const bscTvl = async (chainBlocks) => {
 const polygonTvl = async (chainBlocks) => {
   const balances = {};
 
-  const transformAddress = await transformPolygonAddress();
+  const transformAddress = await getChainTransform('polygon');
 
   await calcTvl(
     balances,
@@ -238,7 +236,7 @@ const polygonTvl = async (chainBlocks) => {
 const okexTvl = async (chainBlocks) => {
   const balances = {};
 
-  const transformAddress = await transformOkexAddress();
+  const transformAddress = await getChainTransform('okexchain');
 
   await calcTvl(
     balances,

@@ -424,6 +424,14 @@ const transformTokens = {
     "0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D": "0x6b175474e89094c44da98b954eedeac495271d0f", // DAI
     "0x8d9fB713587174Ee97e91866050c383b5cEE6209": "bsc:0x8d9fb713587174ee97e91866050c383b5cee6209" // SCAR
   },
+  telos: {
+    "0x0000000000000000000000000000000000000000": "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000", // WETH
+    "0x017043607270ecbb440e20b0f0bc5e760818b3d8": "bsc:0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", // sBUSD(Aurora) -> BUSD(BSC)
+  },
+  reichain: {
+    "0xDD2bb4e845Bd97580020d8F9F58Ec95Bf549c3D9": "bsc:0xe9e7cea3dedca5984780bafc599bd69add087d56", // killswitch busd -> busd token
+    "0xf8ab4aaf70cef3f3659d3f466e35dc7ea10d4a5d": "bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c" // killswitch bnb -> bnb token
+  },
 }
 
 const fixBalancesTokens = {

@@ -7,14 +7,12 @@ const {
   fixBalancesTokens,
 } = require('./tokenMapping')
 
-const nullAddress = '0x0000000000000000000000000000000000000000'
-
 async function transformFantomAddress() {
   const multichainTokens = (await utils.fetchURL(
     "https://netapi.anyswap.net/bridge/v2/info"
   )).data.bridgeList;
 
-  const mapping = tranformTokens.fantom
+  const mapping = transformTokens.fantom
 
   return addr => {
     addr = addr.toLowerCase()
@@ -91,31 +89,6 @@ async function transformPolygonAddress() {
   return transformChainAddress(transformTokens.polygon, "polygon")
 }
 
-async function transformXdaiAddress() {
-  return transformChainAddress(transformTokens.xdai, "xdai")
-}
-
-async function transformOkexAddress() {
-  // const okexBridge = (
-  //   await utils.fetchURL(
-  //     "https://www.okex.com/v2/asset/cross-chain/currencyAddress"
-  //   )
-  // ).data.data.tokens; TODO
-  return transformChainAddress(transformTokens.okexchain, "okexchain")
-}
-
-async function transformHecoAddress() {
-  return transformChainAddress(transformTokens.heco, "heco")
-}
-
-async function transformHooAddress() {
-  return transformChainAddress(transformTokens.hoo, "hoo")
-}
-
-async function transformCeloAddress() {
-  return transformChainAddress(transformTokens.celo, "celo")
-}
-
 async function transformHarmonyAddress() {
   const bridge = (await utils.fetchURL(
     "https://be4.bridge.hmny.io/tokens/?page=0&size=1000"
@@ -164,14 +137,6 @@ async function transformOptimismAddress() {
   };
 }
 
-async function transformMoonriverAddress() {
-  return transformChainAddress(transformTokens.moonriver, "moonriver");
-}
-
-async function transformMoonbeamAddress() {
-  return transformChainAddress(transformTokens.moonbeam, "moonbeam");
-}
-
 async function transformArbitrumAddress() {
   const bridge = (await utils.fetchURL(
     "https://bridge.arbitrum.io/token-list-42161.json"
@@ -191,35 +156,6 @@ async function transformArbitrumAddress() {
   };
 }
 
-async function transformFuseAddress() {
-  return transformChainAddress(transformTokens.fuse, "fuse")
-}
-
-async function transformEvmosAddress() {
-  return transformChainAddress(transformTokens.evmos, "evmos")
-}
-
-function fixAvaxBalances(balances) {
-  return fixBalances(balances, fixBalancesTokens.avax)
-}
-
-function transformOasisAddressBase(addr) {
-  const map = transformTokens.oasis;
-  return map[addr.toLowerCase()] || `${addr}`;
-}
-
-async function transformOasisAddress() {
-  return transformOasisAddressBase;
-}
-
-function fixBscBalances(balances) {
-  return fixBalances(balances, fixBalancesTokens.bsc)
-}
-
-function fixOasisBalances(balances) {
-  return fixBalances(balances, fixBalancesTokens.oasis)
-}
-
 async function transformIotexAddress() {
   return addr => {
     const dstToken = Object.keys(IOTEX_CG_MAPPING).find(token =>
@@ -232,28 +168,6 @@ async function transformIotexAddress() {
       );
     }
     return `iotex:${addr}`;
-  };
-}
-
-async function transformKccAddress() {
-  return transformChainAddress(transformTokens.kcc, "kcc")
-}
-
-function transformMetisAddress() {
-  return transformChainAddress(transformTokens.metis, "metis")
-}
-
-function transformBobaAddress() {
-  return transformChainAddress(transformTokens.boba, "boba")
-}
-
-function transformNearAddress() {
-  return addr => {
-    const bridgedAssetIdentifier = ".factory.bridge.near";
-    if (addr.endsWith(bridgedAssetIdentifier))
-      return `0x${addr.slice(0, addr.length - bridgedAssetIdentifier.length)}`;
-
-    return addr
   };
 }
 
@@ -300,67 +214,22 @@ async function getFixBalances(chain) {
   return fixBalancesMapping[chain] || dummyFn;
 }
 
-
 const fixBalancesMapping = {};
 
 for (const chain of Object.keys(fixBalancesTokens)) {
   fixBalancesMapping[chain] = b => fixBalances(b, fixBalancesTokens[chain])
 }
 
-function transformTelosAddress() {
-  return (addr) => {
-    if (compareAddresses(addr, "0x0000000000000000000000000000000000000000")) {
-      return "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000"; // WETH
-    }
-    const map = {
-      "0x017043607270ecbb440e20b0f0bc5e760818b3d8": "bsc:0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", // sBUSD(Aurora) -> BUSD(BSC)
-    }
-    return map[addr.toLowerCase()] || `telos:${addr}`
-  }
-}
-
 const chainTransforms = {
-  fuse: transformFuseAddress,
-  celo: transformCeloAddress,
-  evmos: transformEvmosAddress,
   fantom: transformFantomAddress,
   bsc: transformBscAddress,
-  boba: transformBobaAddress,
   polygon: transformPolygonAddress,
-  xdai: transformXdaiAddress,
   avax: transformAvaxAddress,
-  heco: transformHecoAddress,
-  hoo: transformHooAddress,
   harmony: transformHarmonyAddress,
   optimism: transformOptimismAddress,
-  moonriver: transformMoonriverAddress,
-  okex: transformOkexAddress,
-  kcc: transformKccAddress,
   arbitrum: transformArbitrumAddress,
   iotex: transformIotexAddress,
-  metis: transformMetisAddress,
-  near: transformNearAddress,
-  moonbeam: transformMoonbeamAddress,
-  ethereum: transformEthereumAddress,
-  oasis: transformOasisAddress,
-  reichain: transformReichainAddress,
-  telos: transformTelosAddress,
 };
-
-async function transformReichainAddress() {
-  const mapping = {
-    "0xDD2bb4e845Bd97580020d8F9F58Ec95Bf549c3D9":
-      "bsc:0xe9e7cea3dedca5984780bafc599bd69add087d56", // killswitch busd -> busd token
-    "0xf8ab4aaf70cef3f3659d3f466e35dc7ea10d4a5d":
-      "bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c" // killswitch bnb -> bnb token
-  };
-
-  return transformChainAddress(mapping, "reichain", { skipUnmapped: true });
-}
-
-async function transformEthereumAddress() {
-  return transformChainAddress(transformTokens.ethereum, "ethereum");
-}
 
 function transformChainAddress(
   mapping = {},
@@ -400,30 +269,13 @@ async function getChainTransform(chain) {
 module.exports = {
   getChainTransform,
   getFixBalances,
-  transformCeloAddress,
   transformFantomAddress,
   transformBscAddress,
   transformPolygonAddress,
-  transformXdaiAddress,
   transformAvaxAddress,
-  transformHecoAddress,
   transformHarmonyAddress,
   transformOptimismAddress,
-  transformMoonriverAddress,
-  fixAvaxBalances,
-  transformOkexAddress,
-  transformKccAddress,
   transformArbitrumAddress,
-  fixBscBalances,
   transformIotexAddress,
-  transformMetisAddress,
-  transformBobaAddress,
-  transformNearAddress,
-  transformMoonbeamAddress,
-  transformEthereumAddress,
-  transformOasisAddress,
-  transformOasisAddressBase,
-  transformEvmosAddress,
   stripTokenHeader,
-  transformTelosAddress,
 };
