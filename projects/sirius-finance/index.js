@@ -1,11 +1,9 @@
 /*==================================================
   Modules
   ==================================================*/
-const { sumTokens } = require('../helper/unwrapLPs')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 const { staking } = require("../helper/staking");
 const { Chain, CoinGeckoID, Pools, SRS, VotingEscrow } = require("./constants");
-const { remap } = require("./lib");
-
 
 /*==================================================
   TVL
@@ -17,8 +15,7 @@ async function tvl(timestamp, _block, { astar: block }) {
 
     for ([o, ts] of Object.entries(Pools))
         ts.forEach(t => toa.push([t, o]))
-
-    return remap(await sumTokens({}, toa, block, Chain));
+    return sumTokens2({ chain: Chain, block, tokensAndOwners: toa, })
 }
 
 /*==================================================
