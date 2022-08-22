@@ -1502,6 +1502,9 @@ const coreAssets = {
     '0x0be9e53fd7edac9f859882afdda116645287c629', // wfuse
     "0x620fd5fa44BE6af63715Ef4E65DDFA0387aD13F5", //usdc
     "0xa722c13135930332Eb3d749B2F0906559D2C5b99", //weth
+    '0x94Ba7A27c7A95863d1bdC7645AC2951E0cca06bA',
+    '0xFaDbBF8Ce7D5b7041bE672561bbA99f79c532e10',
+    '0x43b17749b246fd2a96de25d9e4184e27e09765b0',
   ],
   energi: [
     '0x7A86173daa4fDA903c9A4C0517735a7d34B9EC39', // wnrg
@@ -1592,14 +1595,6 @@ const coreAssets = {
   reichain: [
     '0xf8ab4aaf70cef3f3659d3f466e35dc7ea10d4a5d', // killswitch BNB
     '0xDD2bb4e845Bd97580020d8F9F58Ec95Bf549c3D9', // killswitch BUSD
-  ],
-  fuse: [
-    '0x0be9e53fd7edac9f859882afdda116645287c629',
-    '0x620fd5fa44BE6af63715Ef4E65DDFA0387aD13F5',
-    '0x94Ba7A27c7A95863d1bdC7645AC2951E0cca06bA',
-    '0xFaDbBF8Ce7D5b7041bE672561bbA99f79c532e10',
-    '0xa722c13135930332Eb3d749B2F0906559D2C5b99',
-    '0x43b17749b246fd2a96de25d9e4184e27e09765b0',
   ],
   nova: [
     '0x657a66332a65b535da6c5d67b8cd1d410c161a08',  // SNT
