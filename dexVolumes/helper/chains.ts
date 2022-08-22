@@ -13,6 +13,7 @@ const POLYGON = "polygon";
 const RONIN = "ronin";
 const XDAI = "xdai";
 const AURORA = "aurora";
+const MOONRIVER = "moonriver"
 
 export {
   ARBITRUM,
@@ -30,4 +31,5 @@ export {
   RONIN,
   XDAI,
   AURORA,
+  MOONRIVER
 };
