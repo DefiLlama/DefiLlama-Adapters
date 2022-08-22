@@ -68,6 +68,26 @@
           }
         ]
       }
+    },
+    "meter": {
+      "jioMeterUSD": {
+        "address": "0x559Ec9D7D0a80220C8167d6B413d8AA1B26f596D",
+        "lpToken": "0x4CD99606b98230b039a82bE45165663f6A931A96",
+        "poolTokens": [
+          {
+            "address": "0x24aa189dfaa76c671c279262f94434770f557c35",
+            "name": "BUSD"
+          },
+          {
+            "address": "0xD86e243FC0007e6226B07c9A50C9d70D78299EB5",
+            "name": "USDC"
+          },
+          {
+            "address": "0x5fa41671c48e3c951afc30816947126ccc8c162e",
+            "name": "USDT"
+          }
+        ]
+      }
     }
   }
   
