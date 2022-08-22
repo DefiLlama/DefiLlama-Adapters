@@ -26,31 +26,27 @@ const ETHER = new BigNumber(10).pow(18);
 
 async function TVLPoolPolygon(timestamp, ethBlock, chainBlock) {
   const block = chainBlock.polygon;
-  try {
-    const total = (
-      await sdk.api.abi.multiCall({
-        calls: poolsPolygon.map((address) => ({
-          target: dashboardPolygon,
-          params: address,
-        })),
-        block,
-        abi: abi,
-        chain: "polygon",
-      })
-    ).output.reduce((tvl, call) => {
-      let value = call && call.output && new BigNumber(call.output);
-      if (value) {
-        return tvl.plus(value.dividedBy(ETHER));
-      }
-      return tvl;
-    }, ZERO);
+  const total = (
+    await sdk.api.abi.multiCall({
+      calls: poolsPolygon.map((address) => ({
+        target: dashboardPolygon,
+        params: address,
+      })),
+      block,
+      abi: abi,
+      chain: "polygon",
+    })
+  ).output.reduce((tvl, call) => {
+    let value = call && call.output && new BigNumber(call.output);
+    if (value) {
+      return tvl.plus(value.dividedBy(ETHER));
+    }
+    return tvl;
+  }, ZERO);
 
-    return {
-      tether: total.toNumber(),
-    };
-  } catch (err) {
-    console.error(err)
-  }
+  return {
+    tether: total.toNumber(),
+  };
 }
 
 async function singleStakingPolygon(timestamp, ethBlock, chainBlock) {
