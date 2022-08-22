@@ -1,4 +1,5 @@
 import { DexVolumeAdapter } from "../dexVolume.type";
+import { getStartTimestamp } from "../helper/getStartTimestamp";
 
 const { getChainVolume } = require("../helper/getUniSubgraphVolume");
 const { FANTOM } = require("../helper/chains");
@@ -16,7 +17,10 @@ const adapter: DexVolumeAdapter = {
   volume: {
     [FANTOM]: {
       fetch: graphs(FANTOM),
-      start: async () => 1618617600,
+      start: getStartTimestamp({
+        endpoints,
+        chain: FANTOM
+      }),
     },
   },
 };
