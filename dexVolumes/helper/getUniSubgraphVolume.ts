@@ -88,8 +88,8 @@ function getChainVolume({
           await getCustomBlock(timestamp) :
           await getBlock(timestamp, chain, chainBlocks);
       const id = getUniswapDateId(new Date(timestamp * 1000));
-      const graphResTotal = await request(graphUrls[chain], graphQueryTotalVolume, { block }).catch(e => console.error(`Failed to get total volume${e.message}`));
-      const graphResDaily = await request(graphUrls[chain], graphQueryDailyVolume, { id }).catch(e => console.error(`Failed to get daily volume${e.message}`));
+      const graphResTotal = await request(graphUrls[chain], graphQueryTotalVolume, { block }).catch(e => console.error(`Failed to get total volume on ${chain}: ${e.message}`));
+      const graphResDaily = await request(graphUrls[chain], graphQueryDailyVolume, { id }).catch(e => console.error(`Failed to get daily volume on ${chain}: ${e.message}`));
       return {
         timestamp,
         block,
