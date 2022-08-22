@@ -13,10 +13,11 @@ async function tvl(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   methodology: `Counts the floor value of all NFTs supplied in the protocol vaults`,
-  ethereum:{
+  ethereum: {
     tvl,
-    staking: staking(staking_contract, JPEG, "ethereum"), 
-    pool2: pool2(staking_contract, JPEG_WETH_SLP, "ethereum"), 
+    staking: staking(staking_contract, JPEG, "ethereum"),
+    pool2: pool2(staking_contract, JPEG_WETH_SLP, "ethereum"),
   }
 }
