@@ -4,7 +4,7 @@ const { calculateUniTvl } = require("../helper/calculateUniTvl");
 const { getBlock } = require("../helper/getBlock");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const {
-  fixHarmonyBalances,
+  getFixBalancesSync,
   transformHarmonyAddress,
 } = require("../helper/portedTokens");
 
@@ -66,17 +66,14 @@ const Treasury = async (timesamp, ethBlock, chainBlocks) => {
     }
   });
 
-  let transformAddress = await transformHarmonyAddress();
-
   await unwrapUniswapLPs(
     balances,
     lpPositions,
     chainBlocks["harmony"],
     "harmony",
-    transformAddress
   );
 
-  fixHarmonyBalances(balances);
+  getFixBalancesSync('harmony')(balances);
 
   return balances;
 };
@@ -122,7 +119,7 @@ async function harmonyTvl(timestamp, _ethBlock, chainBlocks) {
     true
   );
 
-  fixHarmonyBalances(balances);
+  getFixBalancesSync('harmony')(balances);
 
   return balances;
 }

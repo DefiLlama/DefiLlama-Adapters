@@ -1,7 +1,7 @@
 const { calculateUniTvl } = require("../helper/calculateUniTvl");
 const { staking } = require("../helper/staking");
 const { getBlock } = require("../helper/getBlock");
-const { fixHarmonyBalances, transformHarmonyAddress } = require("../helper/portedTokens");
+const { getFixBalances, } = require("../helper/portedTokens");
 
 /*
 const { request, gql } = require("graphql-request");
@@ -38,7 +38,7 @@ async function tvl(timestamp, _ethBlock, chainBlocks) {
       0,
       true
   );
-  fixHarmonyBalances(balances)
+  (await getFixBalances('harmony'))(balances);
   delete balances["harmony:0xed0b4b0f0e2c17646682fc98ace09feb99af3ade"]
 
   return balances
