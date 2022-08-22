@@ -25,7 +25,7 @@ const ZERO = new BigNumber(0);
 const ETHER = new BigNumber(10).pow(18);
 
 async function TVLPoolPolygon(timestamp, ethBlock, chainBlock) {
-  const block = chainBlock.cronos;
+  const block = chainBlock.polygon;
   try {
     const total = (
       await sdk.api.abi.multiCall({
