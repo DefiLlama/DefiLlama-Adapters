@@ -292,7 +292,7 @@ const transformTokens = {
     "0xc9baa8cfdde8e328787e29b4b078abf2dadc2055": "0x6b175474e89094c44da98b954eedeac495271d0f",
     "0xfa93c12cd345c658bc4644d1d4e1b9615952258c": "bsc:0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c",
     "0x218c3c3d49d0e7b37aff0d8bb079de36ae61a4c0": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
-    "0xf55af137a98607f7ed2efefa4cd2dfe70e4253b1": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+    // "0xf55af137a98607f7ed2efefa4cd2dfe70e4253b1": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
     "0x980a5afef3d17ad98635f6c5aebcbaeded3c3430": "okexchain:0xc946daf81b08146b1c7a8da2a851ddf2b3eaaf85",
   },
   metis: {
@@ -406,7 +406,7 @@ const transformTokens = {
   },
   cronos: {
     "0x87EFB3ec1576Dec8ED47e58B832bEdCd86eE186e": "0x0000000000085d4780B73119b644AE5ecd22b376",
-    "0x09ad12552ec45f82be90b38dfe7b06332a680864": "polygon:0xc3fdbadc7c795ef1d6ba111e06ff8f16a20ea539" // ADDY
+    // "0x09ad12552ec45f82be90b38dfe7b06332a680864": "polygon:0xc3fdbadc7c795ef1d6ba111e06ff8f16a20ea539" // ADDY
   },
   velas: {
     "0x85219708c49aa701871ad330a94ea0f41dff24ca": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // WETH
@@ -496,6 +496,10 @@ const fixBalancesTokens = {
       coingeckoId: "astar",
       decimals: 18,
     },
+    "0xE511ED88575C57767BAfb72BfD10775413E3F2b0": {  // nASTR
+      coingeckoId: "astar",
+      decimals: 18,
+    },
     "0xAeaaf0e2c81Af264101B9129C00F4440cCF0F720": {
       coingeckoId: "astar",
       decimals: 18,
@@ -517,6 +521,22 @@ const fixBalancesTokens = {
       decimals: 18,
     },
     "0x4dd9c468A44F3FEF662c35c1E9a6108B70415C2c": {
+      coingeckoId: "dai",
+      decimals: 18,
+    },
+    "0xDBd71969aC2583A9A20Af3FB81FE9C20547f30F3": {  // aBaiUsdc
+      coingeckoId: "dai",
+      decimals: 18,
+    },
+    "0x9914Bff0437f914549c673B34808aF6020e2B453": {  // aDaiUsdc
+      coingeckoId: "dai",
+      decimals: 18,
+    },
+    "0x347e53263F8fb843EC605A1577eC7C8c0cAC7a58": {  // aBusdUsdc
+      coingeckoId: "dai",
+      decimals: 18,
+    },
+    "0x02Dac4898B2c2cA9D50fF8D6a7726166CF7bCFD0": {  // aUsdtUsdc
       coingeckoId: "dai",
       decimals: 18,
     },
