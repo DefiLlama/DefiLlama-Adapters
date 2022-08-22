@@ -1276,47 +1276,50 @@ function fixGodwokenBalances(balances) {
       coingeckoId: "bitcoin",
       decimals: 18,
     }, // Wrapped BTC (ForceBridge from BSC)
-
-    "0x9E858A7aAEDf9FDB1026Ab1f77f627be2791e98A": {
-      coingeckoId: "ethereum",
-      decimals: 18,
-    }, // ETH (via Forcebridge from ETH)
-
-    "0xB66954619363145a05eF835547449EB9050d82f6": {
-      coingeckoId: "ethereum",
-      decimals: 18,
-    }, // WETH (Via Celer CBridge From ETH)
-    "0x186181e225dc1Ad85a4A94164232bD261e351C33": {
-      coingeckoId: "usd-coin",
-      decimals: 6,
-    }, // USDC (via Forcebridge from ETH
-    "0x53bB26dc8C5EFC6c95C37155aCa487d1D043436a": {
-      coingeckoId: "usd-coin",
-      decimals: 6,
-    }, // USDC (Via Celer CBridge From ETH)
-    "0x2c9Fc6087875646112f66a3C92fEF2d158FAa76e": {
-      coingeckoId: "dai",
-      decimals: 18,
-    }, // DAI (via Forcebridge from ETH)
-    "0x317F8d18FB16E49a958Becd0EA72f8E153d25654": {
-      coingeckoId: "dai",
-      decimals: 18,
-    }, // Dai (Via Celer CBridge From ETH)
-    "0x8E019acb11C7d17c26D334901fA2ac41C1f44d50": {
-      coingeckoId: "tether",
-      decimals: 6,
-    }, // USDT (via Forcebridge from ETH)
-    "0x3c790b38f466514ffCB4230e7B2334e52B64c942": {
-      coingeckoId: "tether",
-      decimals: 6,
-    }, // USDT (Via Celer CBridge From ETH)
-    "0xcD7bC9fC617a4F82eC1c8359D1C8610B90e3B44C": {
-      coingeckoId: "binance-usd",
-      decimals: 18,
-    }, // BUSD (Via Celer CBridge From BSC)
   };
 
   return fixBalances(balances, mapping);
+}
+
+const godwokenV1FixMapping = {
+
+  "0x9E858A7aAEDf9FDB1026Ab1f77f627be2791e98A": {
+    coingeckoId: "ethereum",
+    decimals: 18,
+  }, // ETH (via Forcebridge from ETH)
+
+  "0xB66954619363145a05eF835547449EB9050d82f6": {
+    coingeckoId: "ethereum",
+    decimals: 18,
+  }, // WETH (Via Celer CBridge From ETH)
+  "0x186181e225dc1Ad85a4A94164232bD261e351C33": {
+    coingeckoId: "usd-coin",
+    decimals: 6,
+  }, // USDC (via Forcebridge from ETH
+  "0x53bB26dc8C5EFC6c95C37155aCa487d1D043436a": {
+    coingeckoId: "usd-coin",
+    decimals: 6,
+  }, // USDC (Via Celer CBridge From ETH)
+  "0x2c9Fc6087875646112f66a3C92fEF2d158FAa76e": {
+    coingeckoId: "dai",
+    decimals: 18,
+  }, // DAI (via Forcebridge from ETH)
+  "0x317F8d18FB16E49a958Becd0EA72f8E153d25654": {
+    coingeckoId: "dai",
+    decimals: 18,
+  }, // Dai (Via Celer CBridge From ETH)
+  "0x8E019acb11C7d17c26D334901fA2ac41C1f44d50": {
+    coingeckoId: "tether",
+    decimals: 6,
+  }, // USDT (via Forcebridge from ETH)
+  "0x3c790b38f466514ffCB4230e7B2334e52B64c942": {
+    coingeckoId: "tether",
+    decimals: 6,
+  }, // USDT (Via Celer CBridge From ETH)
+  "0xcD7bC9fC617a4F82eC1c8359D1C8610B90e3B44C": {
+    coingeckoId: "binance-usd",
+    decimals: 18,
+  }, // BUSD (Via Celer CBridge From BSC)
 }
 
 const wavesMapping = {
@@ -2048,6 +2051,7 @@ const fixBalancesMapping = {
   harmony: fixHarmonyBalances,
   hpb: fixHPBBalances,
   godwoken: fixGodwokenBalances,
+  godwoken_v1: b => fixBalances(b, godwokenV1FixMapping, { removeUnmapped: false }),
   klaytn: fixKlaytnBalances,
   waves: fixWavesBalances,
   songbird: b => fixBalances(b, songbirdFixMapping, { removeUnmapped: true }),
