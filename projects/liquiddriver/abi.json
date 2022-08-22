@@ -197,5 +197,32 @@
     "payable": false,
     "stateMutability": "view",
     "type": "function"
+  },
+  "shadowLpToken" : {
+      "inputs": [],
+      "name": "lpToken",
+      "outputs": [
+          {
+              "internalType": "contract IERC20",
+              "name": "",
+              "type": "address"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  "shadowStrategy" : 
+  {
+      "inputs": [],
+      "name": "strategy",
+      "outputs": [
+          {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   }
 }
