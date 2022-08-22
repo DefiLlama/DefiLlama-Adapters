@@ -2,10 +2,10 @@ const axios = require("axios")
 const retry = require('async-retry')
 
 async function staking() {
-  const { data } = await axios.get("https://api.only1.app/staking-pools?pageSize=100")
+  const { data } = await axios.get("https://us-central1-only1-staking-stats.cloudfunctions.net/tvl")
 
   return {
-    'only1': data.data.reduce((a, i) => (a + i.tvl/1e9), 0)
+    'only1': data.totalTvl
   }
 }
 
