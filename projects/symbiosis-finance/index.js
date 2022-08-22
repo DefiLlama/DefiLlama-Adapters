@@ -1,16 +1,10 @@
 const sdk = require('@defillama/sdk');
 const {
-  transformBscAddress,
-  transformAvaxAddress,
-  transformPolygonAddress,
-  transformBobaAddress,
-  transformAuroraAddress,
-  transformTelosAddress
+  getChainTransform,
 } = require('../helper/portedTokens');
 
 const getTokenAbi = require("./abi/getToken.json");
 const getTokenBalanceAbi = require("./abi/getTokenBalance.json");
-const BigNumber = require("bignumber.js");
 
 const config = {
   chains: [
@@ -84,23 +78,7 @@ const config = {
 }
 
 async function getTransform(chainName) {
-  let transform = (address) => {
-    return address
-  }
-  if (chainName === 'bsc') {
-    transform = await transformBscAddress();
-  } else if (chainName === 'avax') {
-    transform = await transformAvaxAddress();
-  } else if (chainName === 'polygon') {
-    transform = await transformPolygonAddress();
-  } else if (chainName === 'boba') {
-    transform = await transformBobaAddress();
-  } else if (chainName === 'aurora') {
-    transform = await transformAuroraAddress();
-  } else if (chainName === 'telos') {
-    transform = await transformTelosAddress();
-  }
-  return transform
+  return getChainTransform(chainName)
 }
 
 async function tvl(chainName, timestamp, block, chainBlocks) {
