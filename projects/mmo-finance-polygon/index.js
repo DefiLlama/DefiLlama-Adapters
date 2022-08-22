@@ -54,7 +54,7 @@ async function TVLPoolPolygon(timestamp, ethBlock, chainBlock) {
 }
 
 async function singleStakingPolygon(timestamp, ethBlock, chainBlock) {
-  const block = chainBlock.cronos;
+  const block = chainBlock.polygon;
   const total = (
     await sdk.api.abi.multiCall({
       calls: stakingPolygon.map((address) => ({
