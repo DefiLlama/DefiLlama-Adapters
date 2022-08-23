@@ -586,6 +586,10 @@ const fixBalancesTokens = {
     },
   },
   bsc: {
+    "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c": {
+      coingeckoId: "binancecoin",
+      decimals: 18,
+    },
     "0x8b04E56A8cd5f4D465b784ccf564899F30Aaf88C": {
       coingeckoId: "anchorust",
       decimals: 6,
@@ -1426,6 +1430,7 @@ const coreAssets = {
     '0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f', //snx
     '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e', //yfi
     '0x6b175474e89094c44da98b954eedeac495271d0f', //dai
+    '0x3aaDA3e213aBf8529606924d8D1c55CbDc70Bf74', // XMON
   ],
   canto: Object.values({
     USDC: '0x80b5a32E4F032B2a058b4F29EC95EEfEEB87aDcd',

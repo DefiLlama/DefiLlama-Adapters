@@ -2,7 +2,6 @@ const sdk = require("@defillama/sdk");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { staking } = require("../helper/staking");
 const { getFixBalances } = require("../helper/portedTokens");
-const { getBlock } = require("../helper/getBlock");
 
 const comfyTokenAddress = "0x702f78E81Cf3DfaE89648b5a9e2e1aa8db1De546";
 const cshareTokenAddress = "0x3CB98cacd44Ee77eb35E99EB74Ace91bF550c964";
@@ -57,13 +56,12 @@ async function onePool2(timestamp, block, chainBlocks) {
   return await calcPool2(chainBlocks.harmony, "harmony");
 }
 
-async function treasury(timestamp, block, chainBlocks) {
-  const _block = await getBlock(timestamp, "harmony", chainBlocks, true);
+async function treasury(timestamp, block, { harmony: block }) {
   let balance = (
     await sdk.api.erc20.balanceOf({
       target: comfyTokenAddress,
       owner: treasuryAddress,
-      block: _block,
+      block: block,
       chain: "harmony",
     })
   ).output;
