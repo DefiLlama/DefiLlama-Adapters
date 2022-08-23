@@ -64,7 +64,7 @@ const func = async (): Promise<void> => {
 
   const obligations = accounts
     .map((account) => parseObligation(account.pubkey, account.account))
-    .map((x) => x?.info)
+    .map((x) => ({ ...x?.info!, pubkey: x?.pubkey.toString() }))
     .filter(
       (x) =>
         x?.borrowedValue.gt(new BN(0)) &&
@@ -103,22 +103,25 @@ const func = async (): Promise<void> => {
           };
         }),
         borrowedValue: x?.borrowedValue.toString(),
+        pubkey: x?.pubkey,
       };
     });
 
   console.log("Number of users in market:", obligations.length);
+
   console.log(
     obligations.find(
       (x) => x.owner === "3oSE9CtGMQeAdtkm2U3ENhEpkFMfvrckJMA8QwVsuRbE" // an example user witha lotta monies
     )
   );
+
   // {
   //   owner: '3oSE9CtGMQeAdtkm2U3ENhEpkFMfvrckJMA8QwVsuRbE',
   //   lendingMarket: '4UpD2fh7xH3VP9QQaXtsS1YY3bxzWhtfpks7FatyKvdY',
   //   deposits: [
   //     {
   //       depositReserve: '8PbodeaosQP19SjYFx855UMqWxH2HynZLdBXmsrbac36',
-  //       depositedAmount: '2567490723574012',
+  //       depositedAmount: '2567490723574012', // issa ctoken
   //       marketValue: '102678618022093413665770808',
   //       name: 'Wrapped SOL',
   //       depositTokenAddress: 'So11111111111111111111111111111111111111112',
@@ -149,7 +152,8 @@ const func = async (): Promise<void> => {
   //       depositTokenDecimals: 6
   //     }
   //   ],
-  //   borrowedValue: '49066389039429610690391302'
+  //   borrowedValue: '49066389039429610690391302',
+  //   pubkey: 'GhahiVZSzG7GLfkSCF9DikyuDkoBGqbBJvco8wsTs8CZ'
   // }
 };
 
