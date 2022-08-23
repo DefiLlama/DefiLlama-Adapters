@@ -1,11 +1,12 @@
 const sdk = require("@defillama/sdk");
 const abi = require('./abis/abi.json')
 const { default: BigNumber } = require("bignumber.js");
+const { toUSDTBalances } = require('../helper/balances');
 
 const AladdinConvexVaultABI = require('./abis/AladdinConvexVault.json')
 const AladdinCRVABI = require('./abis/AladdinCRV.json')
 const configPools = require('./config.js');
-const { createIncrementArray } = require('../helper/utils');
+const { createIncrementArray, fetchURL } = require('../helper/utils');
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
 
@@ -17,6 +18,7 @@ const concentratorNewVault = '0x3Cf54F3A1969be9916DAD548f3C084331C4450b5';
 const addressZero = "0x0000000000000000000000000000000000000000"
 const ethAddress = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
 const wethAddress = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
+const usdtAddress = "0xdac17f958d2ee523a2206206994597c13d831ec7";
 const replacements = [
   "0x99d1Fa417f94dcD62BfE781a1213c092a47041Bc",
   "0x9777d7E2b60bB01759D0E2f8be2095df444cb07E",
@@ -29,7 +31,9 @@ const replacements = [
 
 async function tvl(timestamp, block) {
   let balances = {}
-
+  const initInfo = await fetchURL('https://concentrator-api.aladdin.club/data/aladdin/initInfo');
+  const usdtTvl = toUSDTBalances(initInfo.data.data.afraxPoolInfo.totalTvl)
+  sdk.util.sumSingleBalance(balances, usdtAddress, BigNumber(usdtTvl[usdtAddress]).toFixed(0))
   const acrvTotalUnderlying = (await sdk.api.abi.call({
     target: concentratorAcrv,
     block,
