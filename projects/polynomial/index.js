@@ -6,6 +6,7 @@ const abi = require('./abi.json')
 const abi2 = require('./abi2.json')
 const chain = 'optimism'
 const transform = t => `${chain}:${t}`
+const ethers = require('ethers')
 
 // Polynomial contract addresses
 const polynomial_contracts = [
@@ -107,6 +108,7 @@ async function tvl (timestamp, ethBlock, chainBlocks) {
     }
   })
   const v2balance = await getV2Balance(block)
+  return v2balance
 
   Object.keys(balances).forEach(key => {
     const v1Amount = balances[key]
@@ -121,7 +123,7 @@ async function tvl (timestamp, ethBlock, chainBlocks) {
 }
 
 
-function tvlSumup(contract) {
+function tvlSumUp(contract) {
   const { totalFund, withdrawal, deposit } = contract
 
   return new BigNumber(totalFund)
@@ -131,7 +133,8 @@ function tvlSumup(contract) {
 async function getV2Balance(block) {
   const ENDPOINT = 'https://earn-api.polynomial.fi/vaults'
   const response = await axios.get(ENDPOINT)
-  const v2Contracts = response.data
+  // Only allow contracts which sets underlying and COLLATERAL
+  const v2Contracts = response.data.filter(contract => contractL1Synths[contract.vaultAddress])
   const multiCalls = v2Contracts.map(contract => ({ target: contract.vaultAddress}))
 
   const [{output: pendingDeposits}, {output: totalFunds}, {output: totalWithdrawals}] = await Promise.all( [
@@ -165,7 +168,7 @@ async function getV2Balance(block) {
   }, {})
 
   const result = Object.keys(contractTable).reduce((balance, vaultAddress) => {
-    const amount = tvlSumup(contractTable[vaultAddress])
+    const amount = tvlSumUp(contractTable[vaultAddress])
     const key =  `ethereum:${contractL1Synths[vaultAddress]}`
     const prev = balance[key]
     if (key in balance) {
