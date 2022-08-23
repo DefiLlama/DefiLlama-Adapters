@@ -15,34 +15,38 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
         More info here: https://stcelo.xyz/connect
     */
 
-    const mento_contract_address = '0x9380fA34Fd9e4Fd14c06305fd7B6199089eD4eb9';
-    const mento_locked_contract_address = '0x246f4599eFD3fA67AC44335Ed5e749E518Ffd8bB';
+    const stCelo_contract_address = '0x4aAD04D41FD7fd495503731C5a2579e19054C432';
 
     const block = chainBlocks.celo
 
-    const mento_pooled = await sdk.api.eth.getBalance({
-        target: mento_contract_address,
-        block,
-        chain: 'celo'
-    })
-
-    const mento_locked_pooled = await sdk.api.eth.getBalance({
-        target: mento_locked_contract_address,
-        block,
+    const stCelo_pooled = await sdk.api.eth.getBalance({
+        abi: {
+            "type":"function",
+            "stateMutability":"view",
+            "outputs":[{
+                "type":"uint256",
+                "name":"",
+                "internalType":"uint256"
+            }],
+            "name":"getTotalCelo",
+            "inputs":[]
+        },
+        target: stCelo_contract_address,
+        block: block,
         chain: 'celo'
     })
 
     return {
-        'celo': Number(mento_pooled.output) / 1e18 + Number(mento_locked_pooled.output) / 1e18
+        'celo': Number(stCelo_pooled.output) / 1e18
     };
 }
 
 module.exports = {
     timetravel: true,
     misrepresentedTokens: false,
-    methodology: 'TVL counts Celo deposited as collateral to mint cUSD.',
+    methodology: 'TVL counts Celo staked by the protocl.',
     start: 14330000,
     celo: { 
         tvl 
-    },
+    }
 }
