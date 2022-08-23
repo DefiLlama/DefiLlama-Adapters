@@ -1,4 +1,5 @@
 import { DexVolumeAdapter } from "../dexVolume.type";
+import { getUniqStartOfTodayTimestamp } from "../helper/getUniSubgraphVolume";
 
 const { fetchURL } = require("../helper/utils");
 
@@ -11,12 +12,13 @@ const historicalVolumeEndpoint =
   "https://s.klayswap.com/stat/klayswapInfo.json";
 
 const fetch = async (timestamp: number) => {
+  const dayTimestamp = getUniqStartOfTodayTimestamp(new Date(timestamp * 1000))
   const historicalVolume: IKlaySwapInfoDayVolumeItem[] = (await fetchURL(historicalVolumeEndpoint))?.data
     .dayVolume;
 
   return {
-    timestamp,
-    dailyVolume: historicalVolume.find(dayItem => (new Date(dayItem.dateId).getTime() / 1000) === timestamp)?.amount,
+    timestamp: dayTimestamp,
+    dailyVolume: historicalVolume.find(dayItem => (new Date(dayItem.dateId).getTime() / 1000) === dayTimestamp)?.amount,
   };
 };
 
