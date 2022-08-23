@@ -16,8 +16,9 @@ const func = async (): Promise<void> => {
   const market = await SolendMarket.initialize(connection);
   await market.loadReserves();
 
+  const solendReserves = market.reserves;
+
   const marketConfigs = market.reserves
-    // .map((r) => r.stats?.loanToValueRatio)
     .map((r) => ({ ...r.config, ltv: r.stats?.loanToValueRatio }))
     .map((c) => ({
       name: c.name,
@@ -60,101 +61,36 @@ const func = async (): Promise<void> => {
       encoding: "base64",
     }
   );
-  console.log("Number of users:", accounts.length);
 
   const obligations = accounts
     .map((account) => parseObligation(account.pubkey, account.account))
-    .map((x) => ({ ...x?.info!, pubkey: x?.pubkey.toString() }))
-    .filter(
-      (x) =>
-        x?.borrowedValue.gt(new BN(0)) &&
-        x?.depositedValue.gt(x?.borrowedValue) &&
-        x?.deposits.length! > 0 &&
-        x?.borrows.length! > 0 // rough filter for undercollateralized positions/bad debts
-    )
-    .map((x) => {
+    .map((o) => {
+      const so = new SolendObligation(
+        o?.account.owner!,
+        o?.pubkey!,
+        o?.info!,
+        solendReserves
+      );
       return {
-        owner: x?.owner.toString(),
-        lendingMarket: x?.lendingMarket.toString(),
-        deposits: x?.deposits.map((d) => {
-          const token = marketConfigsMap.get(d.depositReserve.toString());
-          return {
-            depositReserve: d.depositReserve.toString(),
-            depositedAmount: d.depositedAmount.toString(),
-            marketValue: d.marketValue.toString(),
-            name: token?.name,
-            depositTokenAddress: token?.collateral,
-            depositTokenSymbol: token?.symbol,
-            depositTokenDecimals: token?.decimals,
-          };
-        }),
-        depositedValue: x?.depositedValue.toString(),
-        borrows: x?.borrows.map((b) => {
-          const token = marketConfigsMap.get(b.borrowReserve.toString());
-          return {
-            borrowReserve: b.borrowReserve.toString(),
-            borrowedAmount: b.borrowedAmountWads.toString(),
-            cumulativeBorrowRateWads: b.cumulativeBorrowRateWads.toString(),
-            marketValue: b.marketValue.toString(),
-            name: token?.name,
-            depositTokenAddress: token?.collateral,
-            depositTokenSymbol: token?.symbol,
-            depositTokenDecimals: token?.decimals,
-          };
-        }),
-        borrowedValue: x?.borrowedValue.toString(),
-        pubkey: x?.pubkey,
+        owner: o?.info.owner.toString(),
+        borrows: so.borrows.map((b) => ({
+          mintAddress: b.mintAddress,
+          amount: b.amount.toString(),
+        })),
+        deposits: so.deposits.map((d) => ({
+          mintAddress: d.mintAddress,
+          amount: d.amount.toString(),
+        })),
+        ...so.obligationStats,
       };
-    });
-
-  console.log("Number of users in market:", obligations.length);
+    })
+    .filter((o) => o.borrowUtilization < 1);
 
   console.log(
     obligations.find(
-      (x) => x.owner === "3oSE9CtGMQeAdtkm2U3ENhEpkFMfvrckJMA8QwVsuRbE" // an example user witha lotta monies
+      (o) => o.owner === "3oSE9CtGMQeAdtkm2U3ENhEpkFMfvrckJMA8QwVsuRbE"
     )
   );
-
-  // {
-  //   owner: '3oSE9CtGMQeAdtkm2U3ENhEpkFMfvrckJMA8QwVsuRbE',
-  //   lendingMarket: '4UpD2fh7xH3VP9QQaXtsS1YY3bxzWhtfpks7FatyKvdY',
-  //   deposits: [
-  //     {
-  //       depositReserve: '8PbodeaosQP19SjYFx855UMqWxH2HynZLdBXmsrbac36',
-  //       depositedAmount: '2567490723574012', // issa ctoken
-  //       marketValue: '102678618022093413665770808',
-  //       name: 'Wrapped SOL',
-  //       depositTokenAddress: 'So11111111111111111111111111111111111111112',
-  //       depositTokenSymbol: 'SOL',
-  //       depositTokenDecimals: 9
-  //     }
-  //   ],
-  //   depositedValue: '102678618022093413665770808',
-  //   borrows: [
-  //     {
-  //       borrowReserve: '8K9WC8xoh2rtQNY7iEGXtPvfbDCi563SdWhCAhuMP2xE',
-  //       borrowedAmount: '499346690573971950934099',
-  //       cumulativeBorrowRateWads: '1072543202579825630',
-  //       marketValue: '499471532240082349',
-  //       name: 'USDT',
-  //       depositTokenAddress: 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
-  //       depositTokenSymbol: 'USDT',
-  //       depositTokenDecimals: 6
-  //     },
-  //     {
-  //       borrowReserve: 'BgxfHJDzm44T7XG68MYKx7YisTjZu73tVovyZSjJMpmw',
-  //       borrowedAmount: '49063935343190918904363735020628',
-  //       cumulativeBorrowRateWads: '1070781113684550885',
-  //       marketValue: '49066388539958078450308953',
-  //       name: 'USD Coin',
-  //       depositTokenAddress: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
-  //       depositTokenSymbol: 'USDC',
-  //       depositTokenDecimals: 6
-  //     }
-  //   ],
-  //   borrowedValue: '49066389039429610690391302',
-  //   pubkey: 'GhahiVZSzG7GLfkSCF9DikyuDkoBGqbBJvco8wsTs8CZ'
-  // }
 };
 
 func();
