@@ -1,43 +1,45 @@
 import { DexVolumeAdapter } from "../dexVolume.type";
-import { getTimestampAtStartOfHour } from "../helper/getTimestampAtStartOfHour";
-
-const BigNumber = require("bignumber.js");
+import { getUniqStartOfTodayTimestamp } from "../helper/getUniSubgraphVolume";
 const { fetchURL } = require("../helper/utils");
 
-const historicalVolumeEndpoint =
-  "https://api-osmosis.imperator.co/volume/v1/historical/chart";
-const dailyVolumeEndpoint = "https://api-osmosis.imperator.co/volume/v1/actual";
+const historicalVolumeEndpoint = "https://api-osmosis.imperator.co/volume/v2/historical/chart"
 
-const graphs = async () => {
-  const timestamp = getTimestampAtStartOfHour();
-  const historicalVolume = (await fetchURL(historicalVolumeEndpoint))?.data;
-  const dailyVolume = (await fetchURL(dailyVolumeEndpoint))?.data.value;
+interface IChartItem {
+  time: string
+  value: number
+}
+
+const fetch = async (timestamp: number) => {
+  const dayTimestamp = getUniqStartOfTodayTimestamp(new Date(timestamp * 1000))
+  const historicalVolume: IChartItem[] = (await fetchURL(historicalVolumeEndpoint))?.data;
 
   const totalVolume = historicalVolume
-    .reduce(
-      (acc: typeof BigNumber, { value }: { value: string | number }) =>
-        acc.plus(value),
-      new BigNumber(0)
-    )
-    .plus(dailyVolume)
-    .toString();
+    .filter(volItem => (new Date(volItem.time).getTime() / 1000) <= dayTimestamp)
+    .reduce((acc, { value }) => acc + value, 0)
+
+  const dailyVolume = historicalVolume
+    .find(dayItem => (new Date(dayItem.time).getTime() / 1000) === dayTimestamp)?.value
 
   return {
-    totalVolume,
-    dailyVolume,
-    timestamp,
+    totalVolume: `${totalVolume}`,
+    dailyVolume: dailyVolume ? `${dailyVolume}` : undefined,
+    timestamp: dayTimestamp,
   };
 };
+
+const getStartTimestamp = async () => {
+  const historicalVolume: IChartItem[] = (await fetchURL(historicalVolumeEndpoint))?.data
+  return (new Date(historicalVolume[0].time).getTime()) / 1000
+}
 
 const adapter: DexVolumeAdapter = {
   volume: {
     cosmos: {
-      fetch: graphs,
+      fetch,
       runAtCurrTime: true,
-      customBackfill: undefined,
-      start: async () => 0,
+      customBackfill: fetch,
+      start: getStartTimestamp,
     },
-    // TODO custom backfill
   },
 };
 
