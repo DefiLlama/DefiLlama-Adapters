@@ -31,7 +31,7 @@ const replacements = [
 
 async function tvl(timestamp, block) {
   let balances = {}
-  const initInfo = await fetchURL('https://concentrator-api.aladdin.club/data/aladdin/initInfo');
+  const initInfo = await fetchURL('http://concentrator-api.aladdin.club/data/aladdin/initInfo');
   const usdtTvl = toUSDTBalances(initInfo.data.data.afraxPoolInfo.totalTvl)
   sdk.util.sumSingleBalance(balances, usdtAddress, BigNumber(usdtTvl[usdtAddress]).toFixed(0))
   const acrvTotalUnderlying = (await sdk.api.abi.call({
