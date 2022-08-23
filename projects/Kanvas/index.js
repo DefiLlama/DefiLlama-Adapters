@@ -7,8 +7,8 @@ const {staking} = require("../helper/staking");
 const BigNumber = require("bignumber.js");
 
 const kanvas = "0xe005097ad7eea379ce404011eef68359b052cd0a";
-const stakingAddress = "0x34d2Cfb257cCf7EFDC41DB9a824ac314da80Bae8";
-const artStudio = "0xf15Bf479A5711f9411595C6289a9e7C36F24ad2F";
+const stakingAddress = "0x34d2cfb257ccf7efdc41db9a824ac314da80bae8";
+const artStudio = "0xf15bf479a5711f9411595c6289a9e7c36f24ad2f";
 
 const transform = {
 "0x150410ebbccc3be87997462ea7a44449b7c0dbf2":"kava:0xfa9343c3897324496a05fc75abed6bac29f8a40f"
