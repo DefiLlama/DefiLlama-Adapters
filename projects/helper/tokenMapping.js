@@ -1397,6 +1397,21 @@ const fixBalancesTokens = {
       decimals: 18
     }
   },
+  iotex: {
+    [nullAddress]: {
+      coingeckoId: "iotex",
+      decimals: 18
+    },
+    '0xA00744882684C3e4747faEFD68D283eA44099D03': {
+      coingeckoId: "iotex",
+      decimals: 18
+    },
+    "0x3fe04320885e6124231254c802004871be681218": {
+      coingeckoId: "mcn-ventures",
+      decimals: 18
+    },
+
+  },
 }
 
 const coreAssets = {
