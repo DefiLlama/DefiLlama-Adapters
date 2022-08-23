@@ -1,11 +1,12 @@
 import { DexVolumeAdapter } from "../dexVolume.type";
+import { getUniqStartOfTodayTimestamp } from "../helper/getUniSubgraphVolume";
 
 const { GraphQLClient, gql } = require("graphql-request");
 
 const endpoint = "https://api.vybenetwork.com/v1/graphql";
 
 const query = gql`
-  query MyQuery {
+  query QueryVolume {
     api_serum_dex_m {
       globalVolumeStats {
         t
@@ -21,26 +22,38 @@ const graphQLClient = new GraphQLClient(endpoint, {
   },
 });
 
-const fetch = async () => {
-  const data = await graphQLClient.request(query);
+interface IGraphResponse {
+  api_serum_dex_m: {
+    globalVolumeStats: {
+      t: number[]
+      v: number[]
+    }
+  }
+}
 
-  const volumes = data.api_serum_dex_m.globalVolumeStats.v;
+const fetch = async (timestamp: number) => {
+  const dayTimestamp = getUniqStartOfTodayTimestamp(new Date(timestamp * 1000))
 
-  const dailyVolume: string = volumes[volumes.length - 1];
+  const data: IGraphResponse = await graphQLClient.request(query);
+
+  const dailyVolumeIndex = data.api_serum_dex_m.globalVolumeStats.t.findIndex(t => t === dayTimestamp);
 
   return {
-    totalVolume: "0",
-    dailyVolume,
-    timestamp: 1,
+    dailyVolume: dailyVolumeIndex ? `${data.api_serum_dex_m.globalVolumeStats.v[dailyVolumeIndex]}` : undefined,
+    timestamp: dayTimestamp,
   };
 };
+
+const getStartTimestamp = async () => {
+  const data = await graphQLClient.request(query);
+  return data.api_serum_dex_m.globalVolumeStats.t[0]
+}
 
 const adapter: DexVolumeAdapter = {
   volume: {
     solana: {
       fetch,
-      start: async () => 0,
-      runAtCurrTime: true,
+      start: getStartTimestamp,
     },
   },
 };
