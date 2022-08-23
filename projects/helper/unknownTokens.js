@@ -288,6 +288,7 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
   withMetaData = false,
   skipPair = [],
   useDefaultCoreAssets = false,
+  restrictTokenPrice = false, // if enabled, while computed tvl, an unknown token value can max 
 }) {
   if (!coreAssets.length && useDefaultCoreAssets)
     coreAssets = getCoreAssets(chain)
@@ -308,7 +309,7 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
 
     const response = await getTokenPrices({
       block, chain, coreAssets, blacklist, lps: pairAddresses, transformAddress, whitelist, allLps: true,
-      minLPRatio, log_coreAssetPrices, log_minTokenValue,
+      minLPRatio, log_coreAssetPrices, log_minTokenValue, restrictTokenPrice,
     })
     return withMetaData ? response : response.balances
   }
