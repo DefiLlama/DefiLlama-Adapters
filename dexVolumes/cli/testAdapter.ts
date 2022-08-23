@@ -5,6 +5,7 @@ import { Chain } from '@defillama/sdk/build/general';
 import handleError from '../../utils/handleError';
 import { checkArguments, printVolumes } from './utils';
 import { getBlock } from '../../projects/helper/getBlock';
+require('dotenv').config()
 
 // Add handler to rejections/exceptions
 process.on('unhandledRejection', handleError)
