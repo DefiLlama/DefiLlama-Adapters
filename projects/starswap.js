@@ -2,12 +2,12 @@ const utils = require('./helper/utils');
 
 async function farmingTvl() {
     var totalTvl = await utils.fetchURL('https://swap-api.starcoin.org/main/v1/farmingTvlInUsd');
-    return totalTvl.data;
+    return Number(totalTvl.data);
 }
 
 async function stakeTvl() {
     const totalTvl = await utils.fetchURL('https://swap-api.starcoin.org/main/v1/syrupPoolTvlInUsd')
-    return totalTvl.data;
+    return Number(totalTvl.data);
 }
 
 async function fetch() {
@@ -19,5 +19,8 @@ module.exports = {
     doublecounted: false,
     timetravel: false,
     incentivized: true,
+    pool2: {fetch: farmingTvl },
+    staking: {fetch: stakeTvl },
+    starcoin: {fetch },
     fetch,
 }
