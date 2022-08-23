@@ -38,6 +38,11 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 }
 
 module.exports = {
+    timetravel: true,
+    misrepresentedTokens: false,
     methodology: 'TVL counts Celo deposited as collateral to mint cUSD.',
-    celo: { tvl },
+    start: 14330000,
+    celo: { 
+        tvl 
+    },
 }
