@@ -21,7 +21,7 @@ export async function getLatestBlockRetry(chain: string) {
 
 export function printVolumes(volumes: (FetchResult & { chain: string, startTimestamp?: number })[]) {
     volumes.forEach(element => {
-        console.info("----------", element.startTimestamp)
+        console.info("----------")
         if (element.startTimestamp !== undefined)
             console.info(`Start date\nTimestamp -> ${element.startTimestamp}\nDate -> ${new Date(element.startTimestamp * 1000).toUTCString()}`)
         console.info(element.chain)
