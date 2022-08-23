@@ -82,6 +82,9 @@ async function klaytnTvl() {
         tvl = tvl.plus(vault.tvl)
     })
 
+    const lockedUSDT = beltInfo.data.info.KLAYTN.vaultPools.find(x => x.wantToken.toLowerCase() === tetherLP.toLowerCase())
+    tvl = tvl.plus(lockedUSDT.wantLocked)
+
     return toUSDTBalances(tvl.toFixed(2))
 }
 
@@ -93,10 +96,11 @@ async function getStaking(chain) {
 }
 
 module.exports = {
+    timetravel: false,
     methodology: 'TVL includes the liquidity of all the Vaults, 3Tether LP and staking counts the BELT that has been staked in BSC. Data is pulled from:"https://s.belt.fi/info/all.json".',
     bsc: {
         tvl: bscTvl,
-        staking: getStaking('bsc'),
+        staking: () => getStaking('bsc'),
     },
     heco: {
         tvl: hecoTvl,

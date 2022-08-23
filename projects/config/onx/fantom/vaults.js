@@ -1,15 +1,11 @@
-const { createWeb3, createContractObject } = require('../../../helper/ankr/utils');
-const { fantomRpcUrl } = require('../../../helper/ankr/networks');
 const { EXCHANGE_TYPE } = require('../vault');
-const spookyPoolAbi = require('../../../helper/ankr/abis/SpookyswapPool.json');
-const spookyVaultABI = require('../../../helper/ankr/abis/SpookyswapVault.json');
-const web3 = createWeb3(fantomRpcUrl);
 
 const createVaultModel = (poolAddress, vaultAddress, exchangeType = EXCHANGE_TYPE.SPOOKYSWAP) => {
   return {
-    contract: createContractObject(poolAddress, spookyPoolAbi, web3),
-    vault: createContractObject(vaultAddress, spookyVaultABI, web3),
+    pool: poolAddress,
+    vault: vaultAddress,
     exchangeType,
+    chain: 'fantom',
   }
 }
 

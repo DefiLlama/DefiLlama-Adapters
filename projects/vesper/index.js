@@ -37,7 +37,7 @@ function getChainExports(chain) {
     if (!poolList.length) return balances
 
     // Get collateral token
-    calls = poolList.map(target => ({ target }))
+    const calls = poolList.map(target => ({ target }))
     const { output: tokens } = await sdk.api.abi.multiCall({ calls, abi: abi.token, chain, block, })
     const { output: totalValue } = await sdk.api.abi.multiCall({ calls, abi: abi.totalValue, chain, block, })
     tokens.forEach((token, index) => sdk.util.sumSingleBalance(balances, transformAddress(token.output), totalValue[index].output))

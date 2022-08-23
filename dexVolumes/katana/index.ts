@@ -11,7 +11,7 @@ const {
 
 const endpoints = {
   [RONIN]:
-    "https://thegraph.roninchain.com/subgraphs/name/axieinfinity/katana-subgraph-green",
+    "https://thegraph.roninchain.com/subgraphs/name/axieinfinity/katana-subgraph-blue",
 };
 
 const blocksGraph =

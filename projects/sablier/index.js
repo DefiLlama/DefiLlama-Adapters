@@ -1,4 +1,4 @@
-  const _ = require('underscore')
+
   const axios = require("axios");
   const sdk = require('@defillama/sdk');
 
@@ -31,7 +31,7 @@ async function tvl(timestamp, block) {
     };
 
     const calls = [];
-    _.each(allTokens, (token) => {
+    allTokens.forEach((token) => {
         calls.push(
             {
                 target: token,
@@ -57,5 +57,5 @@ async function tvl(timestamp, block) {
 
 module.exports = {
   start: 1573582731,
-  tvl,
+  ethereum: { tvl }
 };

@@ -1,8 +1,6 @@
 const { GraphQLClient, gql } = require("graphql-request");
 const { toUSDTBalances } = require("../helper/balances");
 const axios = require("axios");
-const ethers = require("ethers");
-const { default: BigNumber } = require("bignumber.js");
 
 async function fetch() {
   const endpoint =
@@ -27,12 +25,11 @@ async function staking() {
     "https://www.yokaiswap.com/api/pool_total_staked"
   );
 
-  return toUSDTBalances(
-    ethers.utils.formatEther(BigNumber(response.data).toFixed())
-  );
+  return toUSDTBalances(response.data/1e18);
 }
 
 module.exports = {
+  timetravel: false,
   methodology: `Finds TotalLiquidityUSD using the YokaiSwap subgraph "https://www.yokaiswap.com/subgraphs/name/yokaiswap/exchange". Staking accounts for the YOK locked in MasterChef (0x62493bFa183bB6CcD4b4e856230CF72f68299469).`,
   godwoken: {
     tvl: fetch,

@@ -1,6 +1,6 @@
 const BigNumber = require('bignumber.js')
 const sdk = require('@defillama/sdk')
-const _ = require('underscore');
+
 
 const gold = {
   "ethereum": "0x358dBA28848cca268BA8a76B65E5b3eF9Ef92238",
@@ -238,7 +238,7 @@ async function ethTvl(timestamp, blocks) {
 async function stakingBalanceTvl(timestamp, block, chain, lps) {
 
   const balancesOfResult = await sdk.api.abi.multiCall({
-    calls: _.map(lps, (lp) => ({
+    calls: lps.map((lp) => ({
       target: lp.target,
       params: lp.params
     })),

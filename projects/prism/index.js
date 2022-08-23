@@ -15,10 +15,8 @@ async function staking() {
     `https://lcd.terra.dev/wasm/contracts/terra1042wzrwg2uk6jqxjm34ysqquyr9esdgm5qyswz/store?query_msg=%7B%22token_info%22%3A%20%7B%7D%7D`
   )
 
-  const res = await fetchURL('https://api.extraterrestrial.money/v1/api/prices?symbol=xPRISM')
-
   return {
-    "prism-protocol": Number(staked.data.result.total_supply) / 1e6 * res.data.prices.xPRISM.price
+    "prism-governance-token": Number(staked.data.result.total_supply) / 1e6
   }
 }
 
@@ -27,5 +25,8 @@ module.exports = {
   terra: {
     tvl,
     staking,
-  }
+  },
+  hallmarks:[
+    [1651881600, "UST depeg"],
+  ]
 }

@@ -1,9 +1,8 @@
 const BigNumber = require("bignumber.js");
+const abis = require('./config/curve/abis.js')
+const sdk = require("@defillama/sdk");
 const retry = require('./helper/retry')
 const axios = require("axios");
-const web3 = require('./config/web3.js');
-const abis = require('./config/curve/abis.js')
-
 
 let swaps = [
   {
@@ -51,22 +50,17 @@ let coinDecimals = [
   }
 ]
 
-
-
-
-async function fetch() {
+async function tvl(ts, block) {
   var price_feed = await retry(async bail => await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,cdai,compound-usd-coin&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true'))
-
 
   var tvl = 0;
   var btcTVL = 0;
 
   await Promise.all(
     swaps.map(async item => {
-      var details = {};
       await Promise.all(
         item.coins.map(async i => {
-          poolAmount = await calc(item, i, price_feed);
+          const poolAmount = await calc(item, i, price_feed, block);
           if (item.type == 'btc') {
             btcTVL += parseFloat(poolAmount);
           } else {
@@ -77,29 +71,40 @@ async function fetch() {
     })
   )
 
-
-
-  var total = (price_feed.data.bitcoin.usd * btcTVL) + tvl
-  return total;
-
-
+  const balances = {}
+  const wBTC = '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599'
+  sdk.util.sumSingleBalance(balances, wBTC, btcTVL * 1e8)
+  sdk.util.sumSingleBalance(balances, '0xdac17f958d2ee523a2206206994597c13d831ec7', tvl * 1e6) // add as usdt
+  return balances;
 }
 
-async function getVirtualPrice(abi, contract) {
-  var dacontract = new web3.eth.Contract(abi, contract)
-  var virtualPrice = await dacontract.methods.getPricePerFullShare().call();
+async function getVirtualPrice(abi, contract, block) {
+  const { output: virtualPrice } = await sdk.api.abi.call({
+    block,
+    target: contract,
+    abi: abi.find(i => i.name === 'getPricePerFullShare')
+  })
   return virtualPrice;
 }
 
 
 
-async function calc(item, i, price_feed) {
-  var dacontract = new web3.eth.Contract(item.abi, item.address)
-  var balances = await dacontract.methods.balances(i).call();
-  var coins = await dacontract.methods.coins(i).call();
+async function calc(item, i, price_feed, block) {
+  const { output: balances } = await sdk.api.abi.call({
+    block,
+    target: item.address,
+    params: [i],
+    abi: item.abi.find(i => i.name === 'balances')
+  })
+  const { output: coins } = await sdk.api.abi.call({
+    block,
+    target: item.address,
+    params: [i],
+    abi: item.abi.find(i => i.name === 'coins')
+  })
 
 
-  var poolAmount = await new BigNumber(balances).div(10 ** coinDecimals[0][coins]).toFixed(2);
+  var poolAmount = new BigNumber(balances).div(10 ** coinDecimals[0][coins]).toFixed(2);
 
 
   if (item.type == 'compound') {
@@ -116,14 +121,11 @@ async function calc(item, i, price_feed) {
   if (item.type == 'yToken') {
     var multiplier = 1;
     if (coins !== '0x8E870D67F660D95d5be530380D0eC0bd388289E1') { // PAX exception
-      var multiplier = await getVirtualPrice(abis.abis.yTokens, coins)
-      multiplier = await new BigNumber(multiplier).div(10 ** 18).toFixed(4);
+      multiplier = await getVirtualPrice(abis.abis.yTokens, coins, block)
+      multiplier = new BigNumber(multiplier).div(10 ** 18).toFixed(4);
     }
     poolAmount = poolAmount * multiplier;
   }
-
-
-  //console.log(`we have ${item.name}`, `${balances} in ${coins} -- ${poolAmount}`);
 
   return poolAmount;
 }
@@ -131,5 +133,8 @@ async function calc(item, i, price_feed) {
 
 
 module.exports = {
-  fetch
+  timetravel: false,
+  ethereum: {
+    tvl
+  }
 }

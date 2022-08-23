@@ -1,10 +1,9 @@
 const sdk = require("@defillama/sdk");
-const BigNumberJs = require("bignumber.js");
-BigNumberJs.config({ EXPONENTIAL_AT: 1e9 })
+const { toBigNumberJsOrZero } = require("./utils.js");
 
 const addressProviderABI = require("./abi/addressProvider.json");
 const registryABI = require("./abi/registry.json");
-const { ADDRESS_PROVIDER_ADDRESS, ZERO_ADDRESS, transformTokenAddress } = require("./addresses");
+const { ADDRESS_PROVIDER_ADDRESS, ZERO_ADDRESS, transformTokenAddress, TOKEN_INFO } = require("./addresses");
 
 const getBalances = async (chain, block) => {
   const registryAddress = (await sdk.api.abi.call({
@@ -44,17 +43,15 @@ const getBalances = async (chain, block) => {
     {}
   )
 
-  return Object.keys(balanceBNRecord).reduce((result, key) => ({
-    ...result,
-    [key]: key.startsWith("0x")
-      ? balanceBNRecord[key].toString()
-      : balanceBNRecord[key].shiftedBy(-18)
-  }), {})
-}
-
-const toBigNumberJsOrZero = (value) => {
-  const bn = new BigNumberJs(value)
-  return bn.isNaN() ? new BigNumberJs('0') : bn
+  return Object.keys(balanceBNRecord).reduce((result, key) => {
+    if (key.startsWith("0x"))
+      return { ...result, [key]: balanceBNRecord[key].toString() }
+    for (const token of Object.values(TOKEN_INFO)) {
+      if (key === token.key)
+        return {...result, [key]: balanceBNRecord[key].shiftedBy(-token.decimals).toFixed(0) }
+    }
+    return ({ ...result, [key]: balanceBNRecord[key].shiftedBy(-18).toFixed(0) })
+  }, {})
 }
 
 const listPoolAddresses = async (chain, block, registryAddress) => {

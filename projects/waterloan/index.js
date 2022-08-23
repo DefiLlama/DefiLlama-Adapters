@@ -1,4 +1,4 @@
-const { getV2Reserves, getV2Tvl, getV2Borrowed } = require("../helper/aave");
+const { getV2Reserves, getTvl, getBorrowed } = require("../helper/aave");
 
 const addressesProviderRegistry = {
   "csc": "0x9D15cf1a8ebF191A0df57fA0362ba535F371883b",
@@ -22,7 +22,7 @@ function waterloan(chain, borrowed) {
       chain
     );
     if (borrowed) {
-      await getV2Borrowed(
+      await getBorrowed(
         balances,
         block,
         chain,
@@ -31,7 +31,7 @@ function waterloan(chain, borrowed) {
         (id) => id
       );
     } else {
-      await getV2Tvl(
+      await getTvl(
         balances,
         block,
         chain,
@@ -41,7 +41,7 @@ function waterloan(chain, borrowed) {
       );
     }
 
-    erc20Map = {
+    const erc20Map = {
       "0xE6f8988d30614afE4F7124b76477Add79c665822":
         "0x081f67afa0ccf8c7b17540767bbe95df2ba8d97f", // CET
       "0x1D7C98750A47762FA8B45c6E3744aC6704F44698":

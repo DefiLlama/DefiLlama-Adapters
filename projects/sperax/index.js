@@ -1,7 +1,5 @@
-const axios = require("axios");
 const sdk = require("@defillama/sdk");
 const abi = require("../sperax/abi.json");
-const BigNumber = require("bignumber.js");
 const {staking} = require("../helper/staking.js");
 
 const ethStakingAddr = "0xbF82a3212e13b2d407D10f5107b5C8404dE7F403";
@@ -12,14 +10,6 @@ const vaultcore = '0xF783DD830A4650D2A8594423F123250652340E3f';
 const SPA = '0x5575552988a3a80504bbaeb1311674fcfd40ad4b';
 const ethSPA = '0xB4A3B0Faf0Ab53df58001804DdA5Bfc6a3D59008';
 const USDsAddress = '0xD74f5255D557944cf7Dd0E45FF521520002D5748';
-
-const fetchUSDsPrice = async () => {
-    const res = await axios.get(
-        "https://api.coingecko.com/api/v3/simple/price?ids=sperax-usd&vs_currencies=usd"
-    );
-
-    return res.data['sperax-usd'].usd;
-};
 
 async function tvl(timestamp, ethBlock, chainBlocks) {
     const chain = 'arbitrum';
@@ -33,16 +23,13 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
         block: block
     })).output;
 
-    let tvlInUSDBn = BigNumber(tvlInUSD);
-    let usdsPrice = await fetchUSDsPrice();
-    let tvlInUSDs = tvlInUSDBn.div(usdsPrice);
-
-    const balances = {};
-    sdk.util.sumSingleBalance(balances, `arbitrum:${USDsAddress}`, tvlInUSDs.toFixed(0));
-    return balances;
+    return {
+      tether: tvlInUSD / 1e18
+    }
 }
 
 module.exports = {
+  misrepresentedTokens: true,
     arbitrum: {
         tvl,
         staking: staking(arbStakingAddr, SPA, "arbitrum", `arbitrum:${SPA}`)

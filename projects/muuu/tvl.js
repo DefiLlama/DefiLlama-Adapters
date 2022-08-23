@@ -1,10 +1,13 @@
 const sdk = require("@defillama/sdk");
 const BigNumberJs = require("bignumber.js");
 const ABI = require("./abi.json");
+const { toBigNumberJsOrZero } = require("./utils.js");
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 const REGISTRY_ADDRESS = "0xDA820e20A89928e43794645B9A9770057D65738B";
 const BOOSTER_ADDRESS = "0x6d12e3dE6dAcDBa2779C4947c0F718E13b78cfF4";
+const MUKGL_ADDRESS = "0x5eaAe8435B178d4677904430BAc5079e73aFa56e";
+const MUUU_REWARDS_ADDRESS = "0xB2ae0CF4819f2BE89574D3dc46D481cf80C7a255";
 const TOKENS = {
   // USDC
   "0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98":
@@ -32,6 +35,9 @@ const TOKENS = {
     "0x6b175474e89094c44da98b954eedeac495271d0f",
   // BAI -> DAI(TMP)
   "0x733ebcC6DF85f8266349DEFD0980f8Ced9B45f35":
+    "0x6b175474e89094c44da98b954eedeac495271d0f",
+  // oUSD -> DAI(TMP)
+  "0x29F6e49c6E3397C3A84F715885F9F233A441165C":
     "0x6b175474e89094c44da98b954eedeac495271d0f",
 };
 
@@ -111,9 +117,8 @@ async function tvl(timestamp, block, chainBlocks) {
       ).output;
 
       const coins = [];
-
-      for (let coinlist = 0; coinlist < maincoins.length; coinlist++) {
-        let coin = maincoins[coinlist];
+      for (let key in maincoins) {
+        let coin = maincoins[key];
         if (coin == ZERO_ADDRESS) {
           continue;
         }
@@ -147,32 +152,38 @@ async function tvl(timestamp, block, chainBlocks) {
   );
 
   // When KGL's price is determined, we can count muKGL's TVL
-  // const muKGL = await sdk.api.erc20.totalSupply({
-  //   target: MUKGL_ADDRESS,
-  //   block
-  // });
-  // sdk.util.sumSingleBalance(allCoins, MUKGL_ADDRESS, muKGL.output)
+  const muKGL = await sdk.api.erc20.totalSupply({
+    target: MUKGL_ADDRESS,
+    block: chainBlocks["astar"],
+    chain: "astar",
+  });
+  sdk.util.sumSingleBalance(
+    allCoins,
+    "kagla-finance",
+    toBigNumberJsOrZero(muKGL.output).shiftedBy(-18).toNumber()
+  );
 
   return allCoins;
 }
 
 // When MUUU's price is determined, we can count MUUU's TVL
-// async function staking(timestamp, block, chainBlocks) {
-//   const balances = {};
-//   const muuuStakedSupply = await sdk.api.erc20.totalSupply({
-//     target: "0xB2ae0CF4819f2BE89574D3dc46D481cf80C7a255", // muuuRewardsAddress,
-//     block: chainBlocks["astar"],
-//     chain: "astar",
-//   });
+async function staking(timestamp, block, chainBlocks) {
+  const balances = {};
+  const muuuStakedSupply = await sdk.api.erc20.totalSupply({
+    target: MUUU_REWARDS_ADDRESS,
+    block: chainBlocks["astar"],
+    chain: "astar",
+  });
 
-//   sdk.util.sumSingleBalance(
-//     balances,
-//     "0x6b175474e89094c44da98b954eedeac495271d0f", // ≈ $1 DAI at mainnet(decimal:18)
-//     muuuStakedSupply.output
-//   );
-//   return balances;
-// }
+  sdk.util.sumSingleBalance(
+    balances,
+    "muuu",
+    toBigNumberJsOrZero(muuuStakedSupply.output).shiftedBy(-18).toNumber()
+  );
+  return balances;
+}
 
 module.exports = {
   tvl,
+  staking,
 };

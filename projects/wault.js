@@ -19,10 +19,10 @@ async function fetch() {
 
 module.exports = {
   bsc: {
-    fetch: fetchBsc
+    fetch: () => 0
   },
   polygon: {
-    fetch: fetchPoly
+    fetch: () => 0
   },
-  fetch
+  fetch: () => 0 // Project was initially relaunced as thorus.fi but it is dead now
 }

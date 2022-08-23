@@ -1,0 +1,15 @@
+{
+  "name": "run-interactive",
+  "version": "0.0.1",
+  "description": "",
+  "main": "testInteractive.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "inquirer": "^8.2.4",
+    "inquirer-fuzzy-path": "^2.3.0"
+  }
+}

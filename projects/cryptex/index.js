@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
-const erc20Abi = require("../helper/abis/erc20.json");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
+// const erc20Abi = require("../helper/abis/erc20.json");
+// const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 
 const {
     chainIds,

@@ -1,5 +1,5 @@
-const { getMultipleAccountBuffers } = require("../helper/solana");
-const { Connection, PublicKey } = require("@solana/web3.js");
+const { getMultipleAccountBuffers, getConnection, } = require("../helper/solana");
+const { PublicKey } = require("@solana/web3.js");
 
 const MSOL_LP_SOL = new PublicKey(
   "UefNb6z6yvArqe4cJHTXCqStRsKmWhGxnZzuHbikP5Q"
@@ -12,7 +12,7 @@ const MSOL_LP_MINT = new PublicKey(
 );
 
 const getMSolLPTokens = async (lpAmount) => {
-  const connection = new Connection("https://api.mainnet-beta.solana.com");
+  const connection = getConnection();
   const accountData = await getMultipleAccountBuffers({
     msolTokens: MSOL_LP_MSOL.toString(),
     poolMint: MSOL_LP_MINT.toString(),

@@ -1,5 +1,5 @@
 const { ohmTvl } = require('../helper/ohm')
-const { fixHarmonyBalances } = require('../helper/portedTokens')
+const { getFixBalancesSync } = require('../helper/portedTokens')
 
 const replacements = {
     "0x224e64ec1bdce3870a6a6c777edd450454068fec":"0xa47c8bf37f92abed4a126bda807a7b7498661acd", //UST
@@ -20,5 +20,5 @@ module.exports= {
     ["0xcf664087a5bb0237a0bad6742852ec6c8d69a27a", false], // WONE
     ["0x224e64ec1bdce3870a6a6c777edd450454068fec", false] // WUST
 ], "harmony", "0x9cAc73eA219e5F8a96485c937E2C8A617f7F4f37", "0x947394294F75D7502977AC6813FD99f77C2931ec",addr=>{
-    return replacements[addr] || `harmony:${addr}`}, fixHarmonyBalances)
+    return replacements[addr] || `harmony:${addr}`}, getFixBalancesSync('harmony'))
 }

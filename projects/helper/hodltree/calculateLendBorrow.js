@@ -1,8 +1,4 @@
 const sdk = require('@defillama/sdk');
-const erc20 = require("../abis/erc20.json");
-const {
-    dexTypes
-} = require('../../config/hodltree');
 
 /**
  * @param {import("../../config/hodltree/addresses").Dex} dex 
@@ -24,7 +20,7 @@ async function calculateLendBorrow(dex, chain, chainBlocks) {
 
     const lendBorrowBalances = (
         await sdk.api.abi.multiCall({
-            abi: erc20.balanceOf,
+            abi: 'erc20:balanceOf',
             calls,
             chain: chain,
             block: chainBlocks[chain],

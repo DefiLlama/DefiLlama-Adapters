@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { default: BigNumber } = require("bignumber.js");
-const _ = require("underscore");
+
 const abi = require("./abi.json");
 
 // pool addresses
@@ -80,7 +80,7 @@ const tvl = async (timestamp, ethBlock, chainBlock) => {
     chain: "aurora",
   });
 
-  _.each(balances.output, (res) => {
+  balances.output.forEach((res) => {
     const amount = res.output;
     const poolAddress = res.input.target;
     const tokenAddress = poolToTokensMap[poolAddress][res.input.params[0]];
@@ -115,7 +115,7 @@ const tvl = async (timestamp, ethBlock, chainBlock) => {
     chain: "aurora",
   });
 
-  _.each(vaseCollateralBalances.output, (res) => {
+  vaseCollateralBalances.output.forEach((res) => {
     const amount = res.output;
     const tokenAddress = res.input.params[0];
     sdk.util.sumSingleBalance(tvl, `aurora:${tokenAddress}`, amount);
@@ -139,9 +139,7 @@ const staking = async (timestamp, ethBlock, chainBlock) => {
 };
 
 const borrowed = async (timestamp, ethBlock, chainBlock) => {
-  amount = {};
-
-  calls = [];
+  const calls = [];
   Object.entries(gardenToTokensMap).forEach(([gardenAddress, gardenTokens]) => {
     gardenTokens.forEach((_) => {
       calls.push({
@@ -158,7 +156,7 @@ const borrowed = async (timestamp, ethBlock, chainBlock) => {
     chain: "aurora",
   });
 
-  _.each(borrowedAmounts.output, (res) => {
+  borrowedAmounts.output.forEach((res) => {
     const amount = res.output[0];
     sdk.util.sumSingleBalance(borrowed, `aurora:${RUSD}`, amount);
   });

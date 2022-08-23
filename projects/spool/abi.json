@@ -1,0 +1,6 @@
+{
+    "spoolController_getAllStrategies": {"inputs":[],"name":"getAllStrategies","outputs":[{"internalType":"address[]","name":"","type":"address[]"}],"stateMutability":"view","type":"function"},
+    "masterSpool_getUnderlying": {"inputs":[{"internalType":"address","name":"strat","type":"address"}],"name":"getUnderlying","outputs":[{"internalType":"uint128","name":"","type":"uint128"}],"stateMutability":"view","type":"function"}, 
+    "masterSpool_getStratUnderlying": {"inputs":[{"internalType":"address","name":"strat","type":"address"}],"name":"getStratUnderlying","outputs":[{"internalType":"uint128","name":"","type":"uint128"}],"stateMutability":"nonpayable","type":"function"}, 
+    "strategy_underlying": {"inputs":[],"name":"underlying","outputs":[{"internalType":"contract IERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"}
+}

@@ -66,8 +66,8 @@ const adapter: DexVolumeAdapter = {
     terra: {
       fetch,
       runAtCurrTime: true,
-      customBackfill: () => {},
-      start: 0,
+      customBackfill: undefined,
+      start: async () => 0,
     },
     // TODO custom backfill
   },

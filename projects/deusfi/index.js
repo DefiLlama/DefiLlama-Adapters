@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const erc20 = require("../helper/abis/erc20.json");
 const BigNumber = require("bignumber.js");
 const { pool2, pool2s } = require("../helper/pool2");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
@@ -51,7 +50,7 @@ async function Pool2() {
 
   const balance_slp = (
     await sdk.api.abi.call({
-      abi: erc20.balanceOf,
+      abi: 'erc20:balanceOf',
       target: DEI3CRV,
       params: stakingPool2Contract,
     })
@@ -63,7 +62,7 @@ async function Pool2() {
         target: token,
         params: DEI3CRV,
       })),
-      abi: erc20.balanceOf,
+      abi: 'erc20:balanceOf',
     })
   ).output;
 
