@@ -393,6 +393,13 @@ function pool2({ stakingContract, lpToken, chain = "ethereum", transformAddress,
   }
 }
 
+function sumTokensExport({ tokensAndOwners = [],
+  coreAssets = [], owner, tokens, chain = 'ethereum', restrictTokenPrice = true, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
+  log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [], useDefaultCoreAssets = false,
+}) {
+  return (_, _b, { [chain]: block }) => sumUnknownTokens({ tokensAndOwners, coreAssets, owner, tokens, chain, block, restrictTokenPrice, blacklist, skipConversion, log_coreAssetPrices, log_minTokenValue, owners, lps, useDefaultCoreAssets, })
+}
+
 async function vestingHelper({
   coreAssets = [], owner, tokens, chain = 'ethereum', block, restrictTokenPrice = true, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
   log_coreAssetPrices = [], log_minTokenValue = 1e6, useDefaultCoreAssets = false,
@@ -472,7 +479,7 @@ function staking({ tokensAndOwners = [],
   }
 }
 
-function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = [], nativeToken, poolInfoABI = masterchefAbi.poolInfo, poolLengthAbi = masterchefAbi.poolLength, getToken = output => output.lpToken, blacklistedTokens = [],  useDefaultCoreAssets = false, }) {
+function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = [], lps = [], nativeToken, poolInfoABI = masterchefAbi.poolInfo, poolLengthAbi = masterchefAbi.poolLength, getToken = output => output.lpToken, blacklistedTokens = [],  useDefaultCoreAssets = false, }) {
   if (!coreAssets.length && useDefaultCoreAssets)
     coreAssets = getCoreAssets(chain)
   let allTvl
@@ -507,16 +514,15 @@ function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = 
       })
 
       const tokens = data.map(({ output }) => getToken(output).toLowerCase())
-      const lps = [...tokens].filter(i => !nativeTokens.includes(i))
+      const tokenLPs = [...tokens].filter(i => !nativeTokens.includes(i))
       const tempBalances = await sumTokens2({ chain, block, owner: masterchef, tokens, transformAddress: a => a, blacklistedTokens})
       nativeTokens.forEach(nativeToken => {
         if (tempBalances[nativeToken]) sdk.util.sumSingleBalance(balances.staking, transform(nativeToken), tempBalances[nativeToken])
         delete tempBalances[nativeToken]
       })
 
-      const pairs = await getLPData({ lps, chain, block })
-
-      const { updateBalances, } = await getTokenPrices({ lps: Object.keys(pairs), allLps: true, coreAssets, block, chain, minLPRatio: 0.001, })
+      const pairs = await getLPData({ lps: tokenLPs, chain, block })
+      const { updateBalances, prices, } = await getTokenPrices({ lps: [ ...Object.keys(pairs), ...lps ], allLps: true, coreAssets, block, chain, minLPRatio: 0.001, })
       Object.entries(tempBalances).forEach(([token, balance]) => {
         if (pairs[token]) {
           const { token0Address, token1Address } = pairs[token]
@@ -569,4 +575,5 @@ module.exports = {
   getLPList,
   sumUnknownTokens,
   staking,
+  sumTokensExport,
 };
