@@ -24,7 +24,6 @@ async function tvl() {
     poolIndex += 100
   } while (poolIndex < numberOfPools)
 
-  console.log(balances)
   return balances
 }
 
