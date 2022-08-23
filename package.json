@@ -24,6 +24,7 @@
     "axios": "^0.27.0",
     "bignumber.js": "^9.0.1",
     "blakejs": "^1.2.1",
+    "bn.js": "^5.2.1",
     "borsh": "^0.7.0",
     "curve25519-js": "^0.0.4",
     "dotenv": "^8.6.0",
@@ -48,6 +49,7 @@
   },
   "description": "",
   "devDependencies": {
+    "@types/bn.js": "^5.1.0",
     "ts-node": "^10.8.1"
   }
 }
