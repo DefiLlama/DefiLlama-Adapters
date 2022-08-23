@@ -16,7 +16,7 @@ const adapter: DexVolumeAdapter = {
   volume: {
     polygon: {
       fetch: graphs("polygon"),
-      start: 1602115200,
+      start: async () => 1602115200,
     },
   },
 };

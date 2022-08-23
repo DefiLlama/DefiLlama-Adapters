@@ -116,4 +116,7 @@ module.exports = {
   timetravel: false,
   ...chainTvls,
   fetch: fetchChain(null),
+  hallmarks:[
+    [1651881600, "UST depeg"],
+  ],
 }

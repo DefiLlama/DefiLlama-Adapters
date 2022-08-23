@@ -69,7 +69,7 @@ const adapter: DexBreakdownAdapter = {
     v1: {
       [ETHEREUM]: {
         fetch: v1Graph(ETHEREUM),
-        start: 1541203200,
+        start: async () => 1541203200,
       },
     },
     v2: {

@@ -47,7 +47,8 @@ function getTvl(chain) {
       .map(({ input }) => input.params[0])
   
     const { updateBalances, prices } = await getTokenPrices({
-      block, coreAssets: [weth], lps, allLps: true, chain, 
+      block,
+      useDefaultCoreAssets: true, lps, allLps: true, chain, 
     })
   
     const print = []
@@ -60,8 +61,8 @@ function getTvl(chain) {
       print.push({ id: vault.token.id, balance, name: vault.token.name, val: total })
     })
     print.sort((a, b) => b.val - a.val)
-    console.table(print)
-    console.log(print.reduce((a, i) => a + i.val, 0))
+    // console.table(print)
+    // console.log(print.reduce((a, i) => a + i.val, 0))
   
     updateBalances(balances)
   

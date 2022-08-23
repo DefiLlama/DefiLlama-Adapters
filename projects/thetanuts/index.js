@@ -13,13 +13,21 @@ const bitPutVault = '0x4Ca3e8bD2F471415b9131E35bdcEC0819a4E7a83'
 const bitCallVault = '0x9F639524db6DfD57613895b0abb49A53c11B3f0e'
 
 // Ethereum - Stronghold IndexUSDC vaults
-const indexUSDC_BTC_1wk     = "0x99bA8d367044da7EB4919C3294eb9848E1D0Ed35"
-const indexUSDC_ETH_2wk_a   = "0xC3548eF47ab4D4163a44C797cE746583Af10D8D4"
-const indexUSDC_AVAX_2wk_b  = "0xB786beda9c66964eB3028F6813307eDFC11F862c"
+const indexUSDC_BTC_1wk     = "0x7B372439E75a4Dc57BbaE8843e03d240F7600158"
+const indexUSDC_ETH_2wk_a   = "0xd6B7cE2BD328998Bb519304752619238BC2242DF"
+const indexUSDC_AVAX_2wk_b  = "0xCb846ADaBBB608933EBD1F8f2b2B9388b7c6571D"
 const indexUSDC_FTM_2wk_a   = "0x182E7DAD39C8412ce1258B01f1a25afDC6c2294d"
-const indexUSDC_SOL_2wk_b   = "0x50700C3559b19F008A00242F82a3a3631929002D"
-const indexUSDC_MATIC_2wk_a = "0x491c162188E127FE71144aC0686f2809526B8f94"
-const indexUSDC_BNB_2wk_b   = "0x0543d73010657959746979d90b750fDB77b2E272"
+const indexUSDC_SOL_2wk_b   = "0xC7B354259aD25cBefdca8515851895AD8f06F3E4"
+const indexUSDC_MATIC_2wk_a = "0x38F83Bd0cceC5204530370a7524700b1c84C7bd1"
+const indexUSDC_BNB_2wk_b   = "0xE6741a3b7984Ef8C50D609cF3B0aD2F392Fd3160"
+
+// Ethereum - Stronghold IndexETH vaults
+const indexETH_BiWeekly_A = "0x28d604Ac5A841141791CeD298515381fdC3605B7"
+const indexETH_BiWeekly_B = "0x3be620c362a175A0c914e170AAfaE08022e7378B"
+
+// Ethereum - Stronghold IndexBTC vaults
+const indexBTC_BiWeekly_A = "0xBdA5c42815E72a9ED48a9D3d8Dd62a2f491D1Ed4"
+const indexBTC_BiWeekly_B = "0x3864fd723235B11d0A7Bba8EB68FD35172D2A109"
 
 // Avalanche Vaults
 const avaxCallVault = '0x35e26F12a212b3a7eec8Dd215B8705Ed1AF4f39E'
@@ -149,6 +157,11 @@ async function ethTvl(timestamp, block) {
         addVault(balances, indexUSDC_SOL_2wk_b  , usdc, block, 'ethereum'),
         addVault(balances, indexUSDC_MATIC_2wk_a, usdc, block, 'ethereum'),
         addVault(balances, indexUSDC_BNB_2wk_b  , usdc, block, 'ethereum'),
+
+        addVault(balances, indexETH_BiWeekly_A, weth, block, 'ethereum'),
+        addVault(balances, indexETH_BiWeekly_B, weth, block, 'ethereum'),
+        addVault(balances, indexBTC_BiWeekly_A, wbtc, block, 'ethereum'),
+        addVault(balances, indexBTC_BiWeekly_B, wbtc, block, 'ethereum'),
         
     ])
     return balances
@@ -223,7 +236,7 @@ module.exports = {
     ethereum: {
         tvl: ethTvl
     },
-    avalanche: {
+    avax:{
         tvl: avaxTvl
     },
     fantom: {
@@ -242,3 +255,4 @@ module.exports = {
         tvl: auroraTvl
     },
 }
+

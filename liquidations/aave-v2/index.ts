@@ -29,21 +29,49 @@ const query = gql`
   }
 `;
 
-const ethPriceQuery = gql`
+const ethPriceQuery = (usdcAddress: string) => gql`
   {
-    priceOracleAsset(id: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48") {
+    priceOracleAsset(id: "${usdcAddress}") {
       priceInEth
     }
   }
 `;
 
-const subgraphUrl = "https://api.thegraph.com/subgraphs/name/aave/protocol-v2";
+enum Chains {
+  ethereum = "ethereum",
+  polygon = "polygon",
+}
 
-const positions = async () => {
-  const users = await getPagedGql(subgraphUrl, query, "users");
+type AaveAdapterResource = {
+  name: "aave";
+  chain: Chains;
+  usdcAddress: string;
+  subgraphUrl: string;
+};
+
+const rc: { [chain in Chains]: AaveAdapterResource } = {
+  [Chains.ethereum]: {
+    name: "aave",
+    chain: Chains.ethereum,
+    usdcAddress: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    subgraphUrl: "https://api.thegraph.com/subgraphs/name/aave/protocol-v2",
+  },
+  [Chains.polygon]: {
+    name: "aave",
+    chain: Chains.polygon,
+    usdcAddress: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+    subgraphUrl: "https://api.thegraph.com/subgraphs/name/aave/aave-v2-matic",
+  },
+};
+
+const positions = (chain: Chains) => async () => {
+  const subgraphUrl = rc[chain].subgraphUrl;
+  const usdcAddress = rc[chain].usdcAddress;
+  const _ethPriceQuery = ethPriceQuery(usdcAddress);
+  const users = await getPagedGql(rc[chain].subgraphUrl, query, "users");
   const ethPrice =
     1 /
-    ((await request(subgraphUrl, ethPriceQuery)).priceOracleAsset.priceInEth /
+    ((await request(subgraphUrl, _ethPriceQuery)).priceOracleAsset.priceInEth /
       1e18);
   const positions = users
     .map((user) => {
@@ -87,7 +115,7 @@ const positions = async () => {
             return {
               owner: user.id,
               liqPrice,
-              collateral: "ethereum:" + pos.token,
+              collateral: `${chain}:` + pos.token,
               collateralAmount: pos.totalBal,
             };
           }
@@ -102,6 +130,9 @@ const positions = async () => {
 
 module.exports = {
   ethereum: {
-    liquidations: positions,
+    liquidations: positions(Chains.ethereum),
+  },
+  polygon: {
+    liquidations: positions(Chains.polygon),
   },
 };

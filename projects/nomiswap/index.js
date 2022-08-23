@@ -16,14 +16,7 @@ module.exports = {
     tvl: getUniTVL({
       factory,
       chain: 'bsc',
-      coreAssets: [
-        '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56', // BUSD
-        '0x55d398326f99059ff775485246999027b3197955', // BUSD
-        '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // WBNB
-        '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d', // USDC
-        '0x2170ed0880ac9a755fd29b2688956bd959f933f8', // BETH
-        '0xd32d01a43c869edcd1117c640fbdcfcfd97d9d65', // NMX
-      ]
+      useDefaultCoreAssets: true,
     }),
   },
 };
