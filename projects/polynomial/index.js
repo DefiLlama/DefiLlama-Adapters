@@ -106,7 +106,7 @@ async function tvl (timestamp, ethBlock, chainBlocks) {
       balances[mainnetTokenAddress] = e[1];
     }
   })
-  const v2balance = await tvl2(block)
+  const v2balance = await getV2Balance(block)
 
   Object.keys(balances).forEach(key => {
     const v1Amount = balances[key]
@@ -121,14 +121,14 @@ async function tvl (timestamp, ethBlock, chainBlocks) {
 }
 
 
-function tvlSummup(contract) {
+function tvlSumup(contract) {
   const { totalFund, withdrawal, deposit } = contract
 
   return new BigNumber(totalFund)
     .plus(new BigNumber(deposit))
     .minus(new BigNumber(withdrawal))
 }
-async function tvl2(block) {
+async function getV2Balance(block) {
   const ENDPOINT = 'https://earn-api.polynomial.fi/vaults'
   const response = await axios.get(ENDPOINT)
   const v2Contracts = response.data
@@ -165,7 +165,7 @@ async function tvl2(block) {
   }, {})
 
   const result = Object.keys(contractTable).reduce((balance, vaultAddress) => {
-    const amount = tvlSummup(contractTable[vaultAddress])
+    const amount = tvlSumup(contractTable[vaultAddress])
     const key =  `ethereum:${contractL1Synths[vaultAddress]}`
     const prev = balance[key]
     if (key in balance) {
