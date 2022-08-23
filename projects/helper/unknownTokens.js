@@ -393,6 +393,13 @@ function pool2({ stakingContract, lpToken, chain = "ethereum", transformAddress,
   }
 }
 
+function sumTokensExport({ tokensAndOwners = [],
+  coreAssets = [], owner, tokens, chain = 'ethereum', restrictTokenPrice = true, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
+  log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [], useDefaultCoreAssets = false,
+}) {
+  return (_, _b, { [chain]: block }) => sumUnknownTokens({ tokensAndOwners, coreAssets, owner, tokens, chain, block, restrictTokenPrice, blacklist, skipConversion, log_coreAssetPrices, log_minTokenValue, owners, lps, useDefaultCoreAssets, })
+}
+
 async function vestingHelper({
   coreAssets = [], owner, tokens, chain = 'ethereum', block, restrictTokenPrice = true, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
   log_coreAssetPrices = [], log_minTokenValue = 1e6, useDefaultCoreAssets = false,
@@ -568,4 +575,5 @@ module.exports = {
   getLPList,
   sumUnknownTokens,
   staking,
+  sumTokensExport,
 };

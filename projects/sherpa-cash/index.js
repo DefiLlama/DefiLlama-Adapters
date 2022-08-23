@@ -8,7 +8,7 @@ const ETHSherpaContracts = [
 
 function getNativeTVL(contractAddresses, chain) {
   return async function (timestamp, block, chainBlocks) {
-    return sumTokens2({ chain, block: chainBlocks.block, owners: ETHSherpaContracts, tokens: [nullAddress], })
+    return sumTokens2({ chain, block: chainBlocks.block, owners: contractAddresses, tokens: [nullAddress], })
   };
 }
 
