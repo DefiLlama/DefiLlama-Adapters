@@ -56,6 +56,8 @@ async function transformAvaxAddress() {
     )
   ]);
   return addr => {
+    const map = transformTokens.avax;
+    if (map[addr.toLowerCase()])  return map[addr.toLowerCase()]
     const srcToken = bridgeTokensOld.data.find(token =>
       compareAddresses(token["Avalanche Token Address"], addr)
     );
@@ -76,8 +78,7 @@ async function transformAvaxAddress() {
         return tokenData.nativeContractAddress;
       }
     }
-    const map = transformTokens.avax;
-    return map[addr.toLowerCase()] || `avax:${addr}`;
+    return `avax:${addr}`;
   };
 }
 
