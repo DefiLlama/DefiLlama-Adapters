@@ -5,7 +5,7 @@ export type ChainBlocks = {
 export type FetchResult = {
   block?: number;
   dailyVolume?: string;
-  totalVolume: string;
+  totalVolume?: string;
   timestamp: number;
 };
 

@@ -41,7 +41,6 @@ const adapter: DexVolumeAdapter = {
       fetch,
       start: async () => 0,
       runAtCurrTime: true,
-      customBackfill: undefined,
     },
   },
 };
