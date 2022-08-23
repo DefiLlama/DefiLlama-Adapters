@@ -56,7 +56,19 @@ const PRICEORACLE_ABI = [{
     "type": "function"
 }];
 
+const CURVE_POOL_ABI = [{
+  "stateMutability": "view",
+  "type": "function",
+  "name": "get_virtual_price",
+  "inputs": [],
+  "outputs": [{
+      "name": "",
+      "type": "uint256"
+  }]
+}];
+
 module.exports = {
+    CURVE_POOL_ABI,
     VAULT_ABI,
     PRICEORACLE_ABI
 };

@@ -13,6 +13,10 @@ const DAI = "0x6b175474e89094c44da98b954eedeac495271d0f";
 const USDT = "0xdac17f958d2ee523a2206206994597c13d831ec7";
 const TUSD = "0x0000000000085d4780B73119b644AE5ecd22b376";
 
+// JPEG'd stablecoin
+const PUSD = "0x466a756E9A7401B5e2444a3fCB3c2C12FBEa0a54";
+const PUSD_3CRV = "0x8ee017541375f6bcd802ba119bddc94dad6911a1";
+
 // NFT vaults
 const CRYPTO_PUNK_VAULT = "0xD636a2fC1C18A54dB4442c3249D5e620cf8fE98F";
 const ETHER_ROCKS_VAULT = "0x6837a113aa7393ffbd5f7464e7313593cd2dd560";
@@ -127,7 +131,33 @@ async function getTreasury(balances, chain, timestamp, chainBlocks) {
     return balances;
 }
 
+async function getBorrowed(balances, chain, timestamp, chainBlocks) {
+    const supply = (await sdk.api.abi.call({
+        target: PUSD,
+        abi: "erc20:totalSupply",
+        block: chainBlocks[chain],
+        chain
+    })).output
+
+    const PUSD_3CRVPrice = (
+        await sdk.api.abi.call({
+            target: PUSD_3CRV,
+            abi: abi.CURVE_POOL_ABI.find(
+                (a) => a.name === "get_virtual_price"
+            ),
+            block: chainBlocks[chain],
+            chain
+        })
+    ).output
+
+    // Divide by 30 decimals, 18 because of supply + 12 because USDC is 6 decimals
+    const borrowedUSD = supply * PUSD_3CRVPrice / (10 ** 30)
+    sdk.util.sumSingleBalance(balances, `${chain}:${USDC}`, borrowedUSD);
+    return balances;
+}
+
 module.exports = {
     getTVL,
     getTreasury,
+    getBorrowed,
 };
