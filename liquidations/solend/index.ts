@@ -12,59 +12,6 @@ const SOLEND_PROGRAM_ID = "So1endDq2YkqhipRh3WViPa8hdiSpxWy6z3Z6tMCpAo";
 const LENDING_MARKET_MAIN = "4UpD2fh7xH3VP9QQaXtsS1YY3bxzWhtfpks7FatyKvdY";
 const OBLIGATION_LEN = 1300;
 
-async function getObligations() {
-  const accounts = await connection.getProgramAccounts(
-    new PublicKey(SOLEND_PROGRAM_ID),
-    {
-      commitment: connection.commitment,
-      filters: [
-        {
-          memcmp: {
-            offset: 10,
-            bytes: LENDING_MARKET_MAIN,
-          },
-        },
-        {
-          dataSize: OBLIGATION_LEN,
-        },
-      ],
-      encoding: "base64",
-    }
-  );
-  console.log("Number of users:", accounts.length);
-
-  const obligations = accounts
-    .map((account) => parseObligation(account.pubkey, account.account))
-    .map((x) => x?.info)
-    .filter(
-      (x) =>
-        x?.borrowedValue.gt(new BN(0)) &&
-        x?.depositedValue.gt(x?.borrowedValue) &&
-        x?.deposits.length! > 0 &&
-        x?.borrows.length! > 0 // rough filter for undercollateralized positions/bad debts
-    )
-    .map((x) => ({
-      owner: x?.owner.toString(),
-      lendingMarket: x?.lendingMarket.toString(),
-      deposits: x?.deposits.map((d) => ({
-        depositReserve: d.depositReserve.toString(),
-        depositedAmount: d.depositedAmount.toString(),
-        marketValue: d.marketValue.toString(),
-      })),
-      depositedValue: x?.depositedValue.toString(),
-      borrows: x?.borrows.map((b) => ({
-        borrowReserve: b.borrowReserve.toString(),
-        borrowedAmount: b.borrowedAmountWads.toString(),
-        cumulativeBorrowRateWads: b.cumulativeBorrowRateWads.toString(),
-        marketValue: b.marketValue.toString(),
-      })),
-      borrowedValue: x?.borrowedValue.toString(),
-    }));
-  console.log("Number of users in market:", obligations.length);
-
-  return obligations;
-}
-
 const func = async (): Promise<void> => {
   const market = await SolendMarket.initialize(connection);
   await market.loadReserves();
