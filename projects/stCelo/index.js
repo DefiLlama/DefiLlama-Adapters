@@ -19,7 +19,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 
     const block = chainBlocks.celo
 
-    const stCelo_pooled = await sdk.api.eth.getBalance({
+    const stCelo_pooled = await sdk.api.abi.call({
         abi: {
             "type":"function",
             "stateMutability":"view",
