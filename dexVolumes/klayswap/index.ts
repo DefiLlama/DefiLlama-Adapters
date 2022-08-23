@@ -34,7 +34,6 @@ const adapter: DexVolumeAdapter = {
     klatyn: {
       fetch,
       runAtCurrTime: true,
-      customBackfill: fetch,
       start: getStartTimestamp,
     },
     // TODO custom backfill

@@ -37,7 +37,6 @@ const adapter: DexVolumeAdapter = {
     cosmos: {
       fetch,
       runAtCurrTime: true,
-      customBackfill: fetch,
       start: getStartTimestamp,
     },
   },
