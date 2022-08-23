@@ -1,4 +1,4 @@
-const { unwrapTroves, sumTokens } = require("../helper/unwrapLPs.js");
+const { unwrapTroves, sumTokens, unwrapUniswapV3NFTs, } = require("../helper/unwrapLPs.js");
 const BigNumber = require("bignumber.js");
 const sdk = require("@defillama/sdk");
 
@@ -65,6 +65,7 @@ async function tvl(_, block) {
   const balances = {};
   const troves = [
     "0x4a47a8EB52c6213963727BF93baaa1CF66CBdF38", // FRAX Trove
+    "0xd3761e54826837b8bbd6ef0a278d5b647b807583", // ETH Trove
   ];
   await unwrapTroves({ balances, chain, block, troves });
   return balances;

@@ -14,14 +14,19 @@ const marketStrings = {
     bank_to_underlying_exchange: "bt",
     b_asset_circulation: "bac",
     oracle_price_field_name: "opfn",
+    oracle_price_scale_factor: "ops",
     oracle_app_id: "oai",
+}
+
+const marketV2Strings = {
+    b_asset_to_underlying_exchange_rate: "baer"
 }
 
 const stakingV2Strings = {
     total_staked: "ts",
 }
 
-const orderedAssets = ["ALGO", "STBL", "USDC", "goBTC", "goETH", "vALGO", "USDT"]
+const orderedAssets = ["ALGO", "STBL", "USDC", "goBTC", "goETH", "vALGO", "USDT", "STBL2", "AF-NANO-BSTBL2-BUSDC"]
 const fixedValueStakingContracts = ["TINYMAN11_STBL_USDC_LP_STAKING", "ALGOFI-STBL-USDC-LP"]
 const singleSideStakingContracts = ["DEFLY", "STBL", "OPUL"]
 const variableValueStakingContracts = [
@@ -36,11 +41,12 @@ const variableValueStakingContracts = [
                                         "AF-NANO-USDT-USDC-5BP-STAKING",
                                         "AF-USDC-STBL-NANO-SUPER-STAKING",
                                         "AF-ZONE-STBL-75BP-STAKING",
-                                        "AF-TINY-STBL-75BP-STAKING"
+                                        "AF-TINY-STBL-75BP-STAKING",
+                                        "AF-GOMINT-STBL-25BP-STAKING"
                                       ]
 
 const stakingContractsV1 = fixedValueStakingContracts.concat(variableValueStakingContracts).concat(singleSideStakingContracts)
-const bankStakingContractsV2 = ["AF-BANK-ALGO-STANDARD", "AF-BANK-USDC-STANDARD", "AF-BANK-goBTC-STANDARD", "AF-BANK-goETH-STANDARD", "AF-BANK-USDt-STANDARD"]
+const bankStakingContractsV2 = ["AF-BANK-USDC-STANDARD", "AF-BANK-USDt-STANDARD"]
 
 const appDictionary = {
     "ALGO": {
@@ -79,11 +85,23 @@ const appDictionary = {
         "oracleAppId": 451327550,
         "oracleFieldName": "price"
     },
+    "STBL2": {
+        "decimals": 6,
+        "appIds": [841145020],
+        "oracleAppId": 451327550,
+        "oracleFieldName": "price"
+    },
     "vALGO": {
         "decimals": 6,
         "appIds": [465814318],
         "oracleAppId": 531724540,
         "oracleFieldName": "latest_twap_price",
+    },
+    "AF-NANO-BSTBL2-BUSDC": {
+        "decimals": 6,
+        "appIds": [841194726],
+        "oracleAppId": 841179855,
+        "oracleFieldName": "latest_twap_price"
     },
     "STAKING_CONTRACTS": {
         "STBL": {
@@ -160,7 +178,7 @@ const appDictionary = {
             "decimals": 6
         },
         "AF-GOMINT-STBL-25BP-STAKING" : {
-            "marketAppId" : 764406975,
+            "appId" : 764406975,
             "poolAppId": 764420932,
             "decimals": 6
         },
@@ -174,37 +192,16 @@ const appDictionary = {
             "assetId": 287867876,
             "decimals": 10
         },
-        "AF-BANK-ALGO-STANDARD" : {
-            "appId" : 818206045,
-            "assetId" : 818179690,
-            "marketAppId": 818179346,
-            "decimals": 6,
-            "oracleFieldName": "latest_twap_price"
-        },
         "AF-BANK-USDC-STANDARD" : {
-            "appId" : 818207598,
+            "appId" : 821882730,
             "assetId" : 818182311,
             "marketAppId": 818182048,
             "decimals": 6,
             "oracleFieldName": "price"
 
         },
-        "AF-BANK-goBTC-STANDARD" : {
-            "appId" : 818207650,
-            "assetId" : 818184214,
-            "marketAppId": 818183964,
-            "decimals": 8,
-            "oracleFieldName": "latest_twap_price",
-        },
-        "AF-BANK-goETH-STANDARD" : {
-            "appId" : 818207743,
-            "assetId" : 818188553,
-            "marketAppId": 818188286,
-            "decimals": 8,
-            "oracleFieldName": "latest_twap_price",
-        },
         "AF-BANK-USDt-STANDARD" : {
-            "appId" : 818207873,
+            "appId" : 821882927,
             "assetId" : 818190568,
             "marketAppId": 818190205,
             "decimals": 6,
@@ -241,7 +238,7 @@ async function getPrices(marketDictionary, orderedAssets) {
 }
 
 function getMarketSupply(assetName, appGlobalState, prices, appDictionary) {
-    let underlyingCash = ((assetName === "STBL") || (assetName === "vALGO"))  ? appGlobalState[marketStrings.active_collateral] : appGlobalState[marketStrings.underlying_cash]
+    let underlyingCash = ((assetName === "STBL") || (assetName === "vALGO")) ? appGlobalState[marketStrings.active_collateral] : appGlobalState[marketStrings.underlying_cash]
     let supplyUnderlying = underlyingCash - appGlobalState[marketStrings.underlying_reserves]
     supplyUnderlying /= Math.pow(10, appDictionary[assetName]["decimals"])
 
@@ -262,7 +259,7 @@ async function borrowed() {
 
     for (const assetName of orderedAssets) {
         for (const id of appDictionary[assetName]["appIds"]) {
-            appGlobalState = await getAppGlobalState(id)
+            let appGlobalState = await getAppGlobalState(id)
             borrow += getMarketBorrow(assetName, appGlobalState, prices)
         }
     }
@@ -319,36 +316,31 @@ async function stakingV1() {
         }
     }
 
-    staked = 0
+    let staked = 0
     for (const contractName of stakingContractsV1) {
         let appGlobalState = await getAppGlobalState(appDictionary["STAKING_CONTRACTS"][contractName]["appId"])
         staked += getMarketSupply(contractName, appGlobalState, prices, appDictionary["STAKING_CONTRACTS"])
     }
 
-
     return toUSDTBalances(staked)
 }
 
 async function stakingV2() {
-    totalStaked = 0
+    let totalStaked = 0
     for (const contractName of bankStakingContractsV2) {
-        stakingAppGlobalState = await getAppGlobalState(appDictionary["STAKING_CONTRACTS"][contractName]["appId"])
-        marketAppGlobalState = await getAppGlobalState(appDictionary["STAKING_CONTRACTS"][contractName]["marketAppId"])
+        let stakingAppGlobalState = await getAppGlobalState(appDictionary["STAKING_CONTRACTS"][contractName]["appId"])
+        let marketAppGlobalState = await getAppGlobalState(appDictionary["STAKING_CONTRACTS"][contractName]["marketAppId"])
 
-        bAssetStaked = stakingAppGlobalState[stakingV2Strings.total_staked]
+        let bAssetStaked = stakingAppGlobalState[stakingV2Strings.total_staked] / 1000000
+        let bAssetToUnderlyingExchange = marketAppGlobalState[marketV2Strings.b_asset_to_underlying_exchange_rate] / 1000000000
+        let underlyingStaked = bAssetStaked * bAssetToUnderlyingExchange
 
-        underlyingSupplied = marketAppGlobalState[marketStrings.underlying_borrowed] + marketAppGlobalState[marketStrings.underlying_cash] - marketAppGlobalState[marketStrings.underlying_reserves]
-        bAssetCirculation = marketAppGlobalState[marketStrings.b_asset_circulation]
-        rawUnderlyingStaked = bAssetStaked * underlyingSupplied / bAssetCirculation
+        let oracleState = await getAppGlobalState(marketAppGlobalState[marketStrings.oracle_app_id])
 
-        underlyingStaked = rawUnderlyingStaked  / 10 ** appDictionary["STAKING_CONTRACTS"][contractName]["decimals"]
+        let oraclePriceFieldName = appDictionary["STAKING_CONTRACTS"][contractName]["oracleFieldName"]
+        let oraclePrice = oracleState[oraclePriceFieldName] / 1000000
 
-        oracleState = await getAppGlobalState(marketAppGlobalState[marketStrings.oracle_app_id])
-
-        oraclePriceFieldName = appDictionary["STAKING_CONTRACTS"][contractName]["oracleFieldName"]
-        oraclePrice = oracleState[oraclePriceFieldName]
-
-        stakedUsd = underlyingStaked * oraclePrice
+        let stakedUsd = underlyingStaked * oraclePrice
 
         totalStaked  += stakedUsd
     }

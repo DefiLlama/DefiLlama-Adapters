@@ -5,7 +5,7 @@ const tvl = getAvaxUniswapTvl('https://api.thegraph.com/subgraphs/name/canarydev
 module.exports = {
   misrepresentedTokens: true,
   methodology: 'We count liquidity on the pairs. We get that information from the "canarydeveloper/canarydex" subgraph',
-  avalanche:{
+  avax:{
     tvl,
   },
 }

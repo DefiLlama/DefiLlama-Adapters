@@ -206,6 +206,7 @@ async function fetchPolygon() {
 }
 
 module.exports = {
+  doublecounted: true,
   timetravel: false,
   ethereum:{
     tvl,

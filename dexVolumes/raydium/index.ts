@@ -26,8 +26,8 @@ const adapter: DexVolumeAdapter = {
     solana: {
       fetch: graphs("solana"),
       runAtCurrTime: true,
-      customBackfill: () => {},
-      start: 0,
+      customBackfill: undefined,
+      start: async () => 0,
     },
     // TODO custom backfill
   },

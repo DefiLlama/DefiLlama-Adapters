@@ -90,6 +90,7 @@
   "meter",
   "zilliqa",
   "godwoken",
+  "godwoken_v1",
   "zksync",
   "zyx",
   "karura",
@@ -138,6 +139,11 @@
   "flow",
   "icp",
   "nova",
+  "parallel",
+  "heiko",
+  "canto",
+  "dogechain",
   "kintsugi",
-  "kujira"
+  "kujira",
+  "ripple"
 ]
