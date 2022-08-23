@@ -15,6 +15,7 @@ const historicalData = gql`
     terraswap {
       historicalData(from: $from, to: $to) {
         volumeUST
+        timestamp
       }
     }
   }
