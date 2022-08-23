@@ -121,5 +121,8 @@ const tvl2 = (timestamp, block, chainBlocks) => getChainTvl({
 
 module.exports = {
   methodology: `Counts the tokens locked on LPs pools, pulling the pairs data from the katana graphql endpoint`,
-  ronin: { tvl: tvl }
+  ronin: { tvl: tvl },
+  hallmarks:[
+    [1653744720, "Ronin Bridge Hack $625m"],
+  ],
 }

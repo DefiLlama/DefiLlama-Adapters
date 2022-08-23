@@ -76,7 +76,7 @@ async function addFundsInMasterChef(balances, masterChef, block, chain = 'ethere
         if (ignoreAddresses.some(addr => addr.toLowerCase() === token.toLowerCase()) || symbol.output === null) {
             return
         }
-        if (isLP(symbol.output)) {
+        if (isLP(symbol.output, symbol.input.target, chain)) {
             if (includeLPs && balance && !excludePool2) {
                 lpPositions.push({
                     balance,
@@ -141,17 +141,11 @@ async function addFundsInMasterChef(balances, masterChef, block, chain = 'ethere
     );
 }
 
-
-function awaitBalanceUpdate(balancePromise, section) {
-    return async () => balancePromise.then(b => b[section])
-}
-
 function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingecko = true, poolInfoAbi = abi.poolInfo, includeYVTokens = false) {
     const stakingToken = stakingTokenRaw.toLowerCase();
     let balanceResolve;
-    const balancePromise = new Promise((resolve) => { balanceResolve = resolve })
 
-    async function tvl(timestamp, ethBlock, chainBlocks) {
+    async function getTvl(timestamp, ethBlock, chainBlocks) {
         const block = await getBlock(timestamp, chain, chainBlocks, true)
         const transformAddress = await getChainTransform(chain);
 
@@ -171,7 +165,7 @@ function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingeck
             const token = symbol.input.target.toLowerCase();
             if (token === stakingToken) {
                 sdk.util.sumSingleBalance(balances.staking, transformAddress(token), balance)
-            } else if (isLP(symbol.output)) {
+            } else if (isLP(symbol.output, symbol.input.target, chain)) {
                 lpPositions.push({
                     balance,
                     token
@@ -275,28 +269,35 @@ function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingeck
             })
         }
 
-        if (chain === 'cronos') {
+        if (['smartbch', 'cronos', 'avax'].includes(chain)) {
             const fixBalances = await getFixBalances(chain)
             Object.values(balances).map(fixBalances)
         }
-        balanceResolve(balances)
-        return balances.tvl
+        return balances
     };
+
+    function getTvlPromise(key) {
+        return async (ts, _block, chainBlocks) => {
+            if (!balanceResolve)
+                balanceResolve = getTvl(ts, _block, chainBlocks)
+            return (await balanceResolve)[key]
+        }
+    }
 
     return {
         methodology: "TVL includes all farms in MasterChef contract",
         [chain]: {
-            staking: awaitBalanceUpdate(balancePromise, "staking"),
-            pool2: awaitBalanceUpdate(balancePromise, "pool2"),
-            masterchef: awaitBalanceUpdate(balancePromise, "tvl"),
-            tvl
+            staking: getTvlPromise("staking"),
+            pool2: getTvlPromise("pool2"),
+            masterchef: getTvlPromise("tvl"),
+            tvl: getTvlPromise("tvl"),
         }
     };
 }
 
 const standardPoolInfoAbi = { "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "name": "poolInfo", "outputs": [{ "internalType": "contract IERC20", "name": "lpToken", "type": "address" }, { "internalType": "uint256", "name": "allocPoint", "type": "uint256" }, { "internalType": "uint256", "name": "lastRewardBlock", "type": "uint256" }, { "internalType": "uint256", "name": "accWeVEPerShare", "type": "uint256" }], "stateMutability": "view", "type": "function" }
 
-async function getUserMasterChefBalances({ balances = {}, masterChefAddress, userAddres, block, chain = 'ethereum', transformAddress, excludePool2 = false, onlyPool2 = false, pool2Tokens= [], poolInfoABI = abi.poolInfo }) {
+async function getUserMasterChefBalances({ balances = {}, masterChefAddress, userAddres, block, chain = 'ethereum', transformAddress, excludePool2 = false, onlyPool2 = false, pool2Tokens= [], poolInfoABI = abi.poolInfo, getLPAddress = null }) {
     if (!transformAddress)
         transformAddress = await getChainTransform(chain)
 
@@ -306,7 +307,7 @@ async function getUserMasterChefBalances({ balances = {}, masterChefAddress, use
     const poolInfoCalls = dummyArray.map(i => ({ target: masterChefAddress, params: i, }))
     const userInfoCalls = dummyArray.map(i => ({ target: masterChefAddress, params: [i, userAddres], }))
     const lpTokens = (await sdk.api.abi.multiCall({ block, calls: poolInfoCalls, abi: poolInfoABI, chain, })).output
-        .map(a => a.output && a.output[0])
+        .map(a => getLPAddress ? getLPAddress(a.output) : (a.output && a.output[0]))
     const userBalances = (await sdk.api.abi.multiCall({ block, calls: userInfoCalls, abi: userInfoAbi, chain, })).output
         .map(a => a.output[0])
 

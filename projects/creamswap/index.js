@@ -2,7 +2,7 @@
   Modules
   ==================================================*/
 
-  const _ = require('underscore');
+
   const sdk = require('@defillama/sdk');
   const abi = require('./abi.json');
   const BigNumber = require('bignumber.js');
@@ -68,20 +68,20 @@
 
     let poolCalls = [];
 
-    let pools = _.map(poolLogs.output, (poolLog) => {
+    let pools = poolLogs.output.map((poolLog) => {
       return `0x${poolLog[2].slice(26)}`
     });
 
     const poolTokenData = (await sdk.api.abi.multiCall({
-      calls: _.map(pools, (poolAddress) => ({ target: poolAddress })),
+      calls: pools.map((poolAddress) => ({ target: poolAddress })),
       abi: abi.getCurrentTokens,
     })).output;
 
-    _.forEach(poolTokenData, (poolToken) => {
+    poolTokenData.forEach((poolToken) => {
       let poolTokens = poolToken.output;
       let poolAddress = poolToken.input.target;
 
-      _.forEach(poolTokens, (token) => {
+      poolTokens.forEach((token) => {
         poolCalls.push({
           target: token,
           params: poolAddress,
@@ -95,7 +95,7 @@
       abi: 'erc20:balanceOf'
     })).output;
 
-    _.each(poolBalances, (balanceOf) => {
+    poolBalances.forEach((balanceOf) => {
         let balance = balanceOf.output;
         let address = balanceOf.input.target;
 
@@ -108,7 +108,7 @@
 
     let underlyingBalanceCalls = [];
     let underlyingAddressCalls = [];
-    _.filter(poolBalances, (poolBalance) => isCrToken(poolBalance.input.target)).forEach(pooBalance => {
+    poolBalances.filter((poolBalance) => isCrToken(poolBalance.input.target)).forEach(pooBalance => {
       underlyingBalanceCalls.push({
         target: pooBalance.input.target,
         params: pooBalance.input.params,
@@ -149,7 +149,7 @@
     yCrvPrice = yCrvPrice.output;
 
     // convert cTokens into underlying tokens
-    _.each(underlyingBalances, (underlying, i) => {
+    underlyingBalances.forEach((underlying, i) => {
         let balance = underlying.output;
         let address = underlyingAddress[i].output;
         let cAddress = underlying.input.target;
@@ -158,7 +158,7 @@
     })
 
     // convert vault tokens into underlying values
-    _.each(poolBalances, (balanceOf, i) => {
+    poolBalances.forEach((balanceOf, i) => {
         let balance = balanceOf.output;
         let address = balanceOf.input.target;
 
@@ -186,5 +186,5 @@
 
   module.exports = {
     start: 1599552000, // 09/08/2020 @ 8:00am (UTC)
-    tvl
+    ethereum: { tvl }
   }

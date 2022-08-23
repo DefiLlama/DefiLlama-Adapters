@@ -1,0 +1,4 @@
+{
+  "risky": {"inputs":[],"name":"risky","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+  "stable": {"inputs":[],"name":"stable","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}
+}

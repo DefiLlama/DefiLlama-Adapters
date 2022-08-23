@@ -39,9 +39,8 @@ const adapter: DexVolumeAdapter = {
   volume: {
     solana: {
       fetch,
-      start: 0,
+      start: async () => 0,
       runAtCurrTime: true,
-      customBackfill: () => {},
     },
   },
 };

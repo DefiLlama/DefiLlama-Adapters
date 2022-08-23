@@ -2,11 +2,7 @@ const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { staking } = require("../helper/staking");
 const { unwrapUniswapLPs, unwrapCrv } = require("../helper/unwrapLPs");
-const {
-  transformBscAddress,
-  transformPolygonAddress,
-  transformMoonriverAddress,
-} = require("../helper/portedTokens");
+const { getChainTransform } = require('../helper/portedTokens')
 
 const GRAND = {
   bsc: "0xeE814F5B2bF700D2e843Dc56835D28d095161dd9",
@@ -121,21 +117,14 @@ const calcTvl = async (balances, banksContract, chain) => {
     }
   }
 
-  const transformAddress_bsc = await transformBscAddress();
-  const transformAddress_polygon = await transformPolygonAddress();
-  const transformAddress_moonriver = await transformMoonriverAddress();
-
   await unwrapUniswapLPs(
     balances,
     lpPositions,
     chainBlocks[chain],
     chain,
-    chain == "bsc"
-      ? transformAddress_bsc
-      : chain == "polygon"
-      ? transformAddress_polygon
-      : transformAddress_moonriver
   );
+
+  const transform = await getChainTransform(chain)
 
   await Promise.all(
     crvPositions.map(async (crv) => {
@@ -145,11 +134,7 @@ const calcTvl = async (balances, banksContract, chain) => {
         crv.balance,
         chainBlocks[chain],
         chain,
-        chain == "bsc"
-          ? transformAddress_bsc
-          : chain == "polygon"
-          ? transformAddress_polygon
-          : transformAddress_moonriver
+        transform,
       );
     })
   );

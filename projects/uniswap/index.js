@@ -1,6 +1,8 @@
 const { getChainTvl } = require('../helper/getUniSubgraphTvl');
 const sdk = require('@defillama/sdk')
 const {optimism, ethereum:v3Ethereum} = require('./v3/index')
+const { request, gql } = require('graphql-request');
+const { toUSDTBalances } = require('../helper/balances');
 
 const v1graph = getChainTvl({
   ethereum: 'https://api.thegraph.com/subgraphs/name/ianlapham/uniswap'
@@ -18,6 +20,21 @@ const v3Graphs = getChainTvl({
   polygon: "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-v3-polygon",
 }, "factories", "totalValueLockedUSD", 500)
 
+const graphUrl = 'https://api.thegraph.com/subgraphs/name/jesse-sawa/uniswap-celo';
+const graphQuery = gql`
+query uniswapFactories {  
+  factories(first: 1, subgraphError: allow) {  
+    totalValueLockedUSD
+  }
+}
+`;
+
+async function celotvl(timestamp, block) {
+   const { factories } = await request(graphUrl, graphQuery);
+   const usdTvl = Number(factories[0].totalValueLockedUSD);
+   return toUSDTBalances(usdTvl);
+}
+
 module.exports = {
   timetravel: true,
   misrepresentedTokens: true,
@@ -33,6 +50,9 @@ module.exports = {
   },
   optimism: {
     tvl: v3Graphs('optimism')
+  },
+  celo: {
+    tvl: celotvl
   },
   hallmarks:[
     [1598412107, "SushiSwap launch"],

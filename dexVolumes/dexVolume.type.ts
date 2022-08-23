@@ -1,11 +1,11 @@
 export type ChainBlocks = {
-  [x: string]: number;
+  [x: string]: number
 };
 
 export type FetchResult = {
   block?: number;
   dailyVolume?: string;
-  totalVolume: string;
+  totalVolume?: string;
   timestamp: number;
 };
 
@@ -15,16 +15,16 @@ export type Fetch = (
 ) => Promise<FetchResult>;
 
 export type VolumeAdapter = {
-  [x: string]: {
-    start: number | any;
+  [chain: string]: {
+    start: () => Promise<number>
     fetch: Fetch;
     runAtCurrTime?: boolean;
-    customBackfill?: any;
+    customBackfill?: Fetch;
   };
 };
 
 export type BreakdownAdapter = {
-  [x: string]: VolumeAdapter;
+  [version: string]: VolumeAdapter;
 };
 
 export type DexVolumeAdapter = {

@@ -72,7 +72,7 @@ module.exports = {
     fantom: {
         tvl: fantomTvl,
     },
-    avalanche: {
+    avax:{
         tvl: avaxTvl,
     },
 };

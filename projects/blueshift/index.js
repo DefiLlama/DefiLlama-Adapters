@@ -1,11 +1,11 @@
 const sdk = require('@defillama/sdk');
 const { default: BigNumber } = require('bignumber.js');
-const { transformMilkomedaAddress } = require('../helper/portedTokens');
+const { getChainTransform } = require('../helper/portedTokens');
 
 const abi = require('./abi.json');
 
 
-const REGISTRY_CONTRACT = '0xf7B767D4817a912b5dB7De7747DE2E2960BEF86f';
+const REGISTRY_CONTRACT = '0x83E384d119adA05195Caca26396B8f56fdDA1c91';
 const MANUAL_POOL_CONTRACT = '0xA4f0e3C80C77b347250B9D3999478E305FF814A4';
 // temporary solution using BLUES/ADA price
 const BLUESHIFT_INDEX_PORTFOLIO = '0xB2A76Ce2D5eD32aD7F8B93a1098C1Fee473e27bA';
@@ -13,7 +13,7 @@ const BLUESHIFT_INDEX_PORTFOLIO = '0xB2A76Ce2D5eD32aD7F8B93a1098C1Fee473e27bA';
 
 async function staking(timestamp, block, chainBlocks) {
   const balances = {};
-  const transform = await transformMilkomedaAddress();
+  const transform = await getChainTransform('milkomeda');
 
   const value = (await sdk.api.abi.call({
     abi: abi.BlueshiftEarning.getAccDeposit,
@@ -62,7 +62,7 @@ async function staking(timestamp, block, chainBlocks) {
 
 async function tvl(timestamp, block, chainBlocks) {
   const balances = {};
-  const transform = await transformMilkomedaAddress();
+  const transform = await getChainTransform('milkomeda');
 
   const portfolios = (await sdk.api.abi.call({
     abi: abi.BlueshiftRegistry.getPortfolios,
