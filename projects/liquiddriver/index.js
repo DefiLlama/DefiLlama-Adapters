@@ -325,6 +325,36 @@ const minichefTvl = async (timestamp, ethBlock, chainBlocks) => {
             transformAddress(usdcTokenAddress),
             bptDeiUsdcTvlInUsdc
           );
+        } else if (lpTokens.output[idx].output === "0xc0064b291bd3D4ba0E44ccFc81bF8E7f7a579cD2") { // SFTMX/FTM
+          const [tokenBalances, totalSupply] = await Promise.all([
+            sdk.api.abi.call({
+              abi: abi.getPoolTokens,
+              target: beethovenVaultAddress,
+              params: ["0xc0064b291bd3d4ba0e44ccfc81bf8e7f7a579cd200000000000000000000042c"],
+              chain: "fantom",
+              block: chainBlocks["fantom"],
+            }),
+            sdk.api.abi.call({
+              abi: abi.getVirtualSupply,
+              target: token,
+              chain: "fantom",
+              block: chainBlocks["fantom"],
+            }),
+          ]);
+          const sftmTokenAddress = "0xd7028092c830b5C8FcE061Af2E593413EbbC1fc1";
+          const lpTokenRatio = new BigNumber(totalSupply.output).isZero() ? new BigNumber(0) : totalBalance.div(totalSupply.output);
+          const bptSftmxTvlInFtm = new BigNumber(Number(tokenBalances.output['1'][1])).times(lpTokenRatio).toFixed(0);
+          const bptSftmxTvlInFtm1 = new BigNumber(Number(tokenBalances.output['1'][2])).times(lpTokenRatio).toFixed(0);
+          sdk.util.sumSingleBalance(
+            balances,
+            transformAddress(wftmTokenAddress),
+            bptSftmxTvlInFtm
+          );
+          sdk.util.sumSingleBalance(
+            balances,
+            transformAddress(sftmTokenAddress),
+            bptSftmxTvlInFtm1
+          );
         } else {
           sdk.util.sumSingleBalance(
             balances,
@@ -514,7 +544,7 @@ const shadowchefTvl = async (timestamp, ethBlock, chainBlocks) => {
     }
 
     const token = balance.input.target;
-    if (symbols.output[idx].success) {      
+    if (symbols.output[idx].success) {
       lpPositions.push({
         balance: totalBalance.toString(10),
         token,
