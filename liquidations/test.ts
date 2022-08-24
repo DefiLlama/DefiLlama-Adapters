@@ -45,6 +45,13 @@ async function displayDebugInfo(skippedTokens: Set<string>, liqs: Liq[], bins: B
   const skippedTable = await Promise.all(
     Array.from(skippedTokens).map(async (tokenAddress) => {
       const [chain, address] = tokenAddress.split(":");
+      if (chain.toLowerCase() === "solana") {
+        return {
+          symbol: "UNKNOWN",
+          address: tokenAddress,
+        };
+      }
+
       const tokenContract = new ethers.Contract(address, ["function symbol() view returns (string)"], providers[chain]);
       let symbol: string;
       try {
