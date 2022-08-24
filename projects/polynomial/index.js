@@ -108,7 +108,6 @@ async function tvl (timestamp, ethBlock, chainBlocks) {
     }
   })
   const v2balance = await getV2Balance(block)
-  return v2balance
 
   Object.keys(balances).forEach(key => {
     const v1Amount = balances[key]
@@ -128,7 +127,8 @@ function tvlSumUp(contract) {
 
   return new BigNumber(totalFund)
     .plus(new BigNumber(deposit))
-    .minus(new BigNumber(withdrawal))
+    // XXX: The logic needs more discussion
+    // .minus(new BigNumber(withdrawal))
 }
 async function getV2Balance(block) {
   const ENDPOINT = 'https://earn-api.polynomial.fi/vaults'
