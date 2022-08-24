@@ -5,6 +5,7 @@ import { Chain } from '@defillama/sdk/build/general';
 import handleError from '../../utils/handleError';
 import { checkArguments, printVolumes } from './utils';
 import { getBlock } from '../../projects/helper/getBlock';
+require('dotenv').config()
 
 // Add handler to rejections/exceptions
 process.on('unhandledRejection', handleError)
@@ -55,12 +56,10 @@ async function runAdapter(volumeAdapter: VolumeAdapter, timestamp: number) {
   // Get volumes
   const volumes = await Promise.all(chains.map(
     async chain => {
-      let start = volumeAdapter[chain].start
-      let startDate: undefined | number = typeof start !== 'number' ? undefined : start
-      if (typeof start !== 'number') startDate = await start()
+      const startTimestamp = await volumeAdapter[chain].start()
       const fetchVolumeFunc = volumeAdapter[chain].customBackfill ?? volumeAdapter[chain].fetch
       return fetchVolumeFunc(timestamp, chainBlocks)
-        .then(res => ({ timestamp: res.timestamp, totalVolume: res.totalVolume, dailyVolume: res.dailyVolume, chain, startDate }))
+        .then(res => ({ timestamp: res.timestamp, totalVolume: res.totalVolume, dailyVolume: res.dailyVolume, chain, startTimestamp }))
     }
   ))
   return volumes

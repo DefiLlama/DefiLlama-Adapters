@@ -7,8 +7,8 @@ interface IGetStartTimestamp {
     [chain: string]: string;
   }
   chain: string
-  dailyDataField: string
-  volumeField: string
+  dailyDataField?: string
+  volumeField?: string
   dateField?: string
   first?: number
 }

@@ -187,4 +187,7 @@ module.exports = {
   aurora: {
     tvl: evm("aurora"),
   },
+  hallmarks:[
+    [1651881600, "UST depeg"],
+  ]
 };

@@ -62,26 +62,25 @@ function getChainVolume({
   const totalVolumeQuery = gql`
   ${totalVolume.factory}(
     block: { number: $block }
-  ) {
-    ${totalVolume.field}
-  }
-  `;
-
-  const dailyVolumeQuery =
+    ) {
+      ${totalVolume.field}
+    }
+    `;
+    
+    const dailyVolumeQuery =
     customDailyVolume ||
     gql`
-  ${dailyVolume.factory} (
-    id: $id
-  ) {
-    ${dailyVolume.field}
-  }
-  `;
-  const graphQuery = gql`
-  query get_volume($block: Int, $id: Int) {
-    ${hasTotalVolume ? totalVolumeQuery : ""}
-    ${hasDailyVolume ? dailyVolumeQuery : ""}
-  }
-  `;
+    ${dailyVolume.factory} (
+      id: $id
+      ) {
+        ${dailyVolume.field}
+      }
+      `;
+      const graphQueryTotalVolume = gql`
+  ${hasTotalVolume ? `query get_total_volume($block: Int) { ${totalVolumeQuery} }` : ""}`
+  const graphQueryDailyVolume = gql`
+  ${hasDailyVolume ? `query get_daily_volume($id: Int) { ${dailyVolumeQuery} }` : ""}`;
+  
   return (chain: Chain) => {
     return async (timestamp: number, chainBlocks: ChainBlocks) => {
       const block =
@@ -89,19 +88,13 @@ function getChainVolume({
           await getCustomBlock(timestamp) :
           await getBlock(timestamp, chain, chainBlocks);
       const id = getUniswapDateId(new Date(timestamp * 1000));
-      const graphRes = await request(graphUrls[chain], graphQuery, {
-        block,
-        id,
-      });
-
+      const graphResTotal = await request(graphUrls[chain], graphQueryTotalVolume, { block }).catch(e => console.error(`Failed to get total volume on ${chain}: ${e.message}`));
+      const graphResDaily = await request(graphUrls[chain], graphQueryDailyVolume, { id }).catch(e => console.error(`Failed to get daily volume on ${chain}: ${e.message}`));
       return {
         timestamp,
         block,
-        totalVolume: graphRes[totalVolume.factory][0][totalVolume.field],
-        dailyVolume: hasDailyVolume
-          ? (graphRes?.[dailyVolume.factory]?.[dailyVolume.field] || "0") ??
-          undefined
-          : undefined,
+        totalVolume: graphResTotal ? graphResTotal[totalVolume.factory]?.[0]?.[totalVolume.field] : undefined,
+        dailyVolume: graphResDaily ? graphResDaily[dailyVolume.factory]?.[dailyVolume.field] : undefined,
       };
     };
   };

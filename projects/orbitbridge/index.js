@@ -79,7 +79,7 @@ function chainTvls(chain) {
     let tokenList = data.origins.filter(x => x.chain === targetChain).map(x => x.address)
     const tokensAndOwners = tokenList.map(i => ([i, vault]))
     const balances = await sumTokens2({ tokensAndOwners, chain, block, blacklistedTokens: [
-      '0x662b67d00a13faf93254714dd601f5ed49ef2f51' // ORC, blacklist project's own token
+      // '0x662b67d00a13faf93254714dd601f5ed49ef2f51' // ORC, blacklist project's own token
     ] })
 
     if (farms[chain]) {

@@ -13,9 +13,7 @@ const chain = 'harmony'
 const dexTVL = getUniTVL({
   chain: 'harmony',
   factory: '0xfa53b963a39621126bf45f647f813952cd3c5c66',
-  coreAssets: [
-    '0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a', // WHARMONY
-  ],
+  useDefaultCoreAssets: true,
 })
 
 const vaultTvl = async (_, _b, { [chain]: block }) => {

@@ -7,6 +7,7 @@ const masterchefAbi = require('./abis/masterchef.json')
 const getReserves = require('./abis/getReserves.json');
 const { getChainTransform, stripTokenHeader, getFixBalances, } = require('./portedTokens')
 const { requery, } = require('./getUsdUniTvl')
+const { getCoreAssets } = require('./tokenMapping')
 const { sumTokens, sumTokens2, } = require('./unwrapLPs')
 const { isLP, getUniqueAddresses, DEBUG_MODE, sliceIntoChunks, sleep, log } = require('./utils')
 const factoryAbi = require('./abis/factory.json');
@@ -64,6 +65,7 @@ async function getLPList(lps, chain, block) {
 async function getTokenPrices({
   block,
   chain = 'ethereum',
+  useDefaultCoreAssets = false,  // use pre-defined list
   coreAssets = [],  // list of tokens that can used as base token to price unknown tokens against (Note: order matters, is there are two LPs for a token, the core asset with a lower index is used)
   blacklist = [],   // list of tokens to ignore/blacklist
   whitelist = [],   // if set, tvl/price is computed only for these tokens
@@ -78,6 +80,9 @@ async function getTokenPrices({
   let counter = 0
   if (!transformAddress)
     transformAddress = await getChainTransform(chain)
+
+  if (!coreAssets.length && useDefaultCoreAssets)
+    coreAssets = getCoreAssets(chain)
 
   coreAssets = coreAssets.map(i => i.toLowerCase())
   blacklist = blacklist.map(i => i.toLowerCase())
@@ -282,7 +287,11 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
   log_coreAssetPrices = [], log_minTokenValue = 1e6,
   withMetaData = false,
   skipPair = [],
+  useDefaultCoreAssets = false,
+  restrictTokenPrice = false, // if enabled, while computed tvl, an unknown token value can max 
 }) {
+  if (!coreAssets.length && useDefaultCoreAssets)
+    coreAssets = getCoreAssets(chain)
   return async (ts, _block, { [chain]: block }) => {
     let pairAddresses;
     const pairLength = (await sdk.api.abi.call({ target: factory, abi: factoryAbi.allPairsLength, chain, block })).output
@@ -300,14 +309,17 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
 
     const response = await getTokenPrices({
       block, chain, coreAssets, blacklist, lps: pairAddresses, transformAddress, whitelist, allLps: true,
-      minLPRatio, log_coreAssetPrices, log_minTokenValue,
+      minLPRatio, log_coreAssetPrices, log_minTokenValue, restrictTokenPrice,
     })
     return withMetaData ? response : response.balances
   }
 }
 
-function unknownTombs({ token, shares = [], rewardPool = [], masonry = [], lps, chain = "ethereum", coreAssets = [], }) {
+function unknownTombs({ token, shares = [], rewardPool = [], masonry = [], lps, chain = "ethereum", coreAssets = [],
+  useDefaultCoreAssets = false, }) {
   let getPrices
+  if (!coreAssets.length && useDefaultCoreAssets)
+    coreAssets = getCoreAssets(chain)
 
   if (!Array.isArray(shares) && typeof shares === 'string')
     shares = [shares]
@@ -362,14 +374,17 @@ function unknownTombs({ token, shares = [], rewardPool = [], masonry = [], lps, 
 
 }
 
-function pool2({ stakingContract, lpToken, chain = "ethereum", transformAddress, coreAsset }) {
+function pool2({ stakingContract, lpToken, chain = "ethereum", transformAddress, coreAssets = [], useDefaultCoreAssets = false, }) {
+  if (!coreAssets.length && useDefaultCoreAssets)
+    coreAssets = getCoreAssets(chain)
+
   return async (_timestamp, _ethBlock, chainBlocks) => {
     const block = chainBlocks[chain]
     if (!transformAddress)
       transformAddress = await getChainTransform(chain)
 
     const balances = await sumTokens({}, [[lpToken, stakingContract]], block, chain, transformAddress, { resolveLP: true })
-    const { updateBalances } = await getTokenPrices({ block, chain, transformAddress, coreAssets: [coreAsset], lps: [lpToken], allLps: true, })
+    const { updateBalances } = await getTokenPrices({ block, chain, transformAddress, coreAssets, lps: [lpToken], allLps: true, })
 
     await updateBalances(balances, { resolveLP: false, })
     const fixBalances = await getFixBalances(chain)
@@ -378,10 +393,20 @@ function pool2({ stakingContract, lpToken, chain = "ethereum", transformAddress,
   }
 }
 
-async function vestingHelper({
-  coreAssets, owner, tokens, chain = 'ethereum', block, restrictTokenPrice = true, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
-  log_coreAssetPrices = [], log_minTokenValue = 1e6,
+function sumTokensExport({ tokensAndOwners = [],
+  coreAssets = [], owner, tokens, chain = 'ethereum', restrictTokenPrice = true, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
+  log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [], useDefaultCoreAssets = false,
 }) {
+  return (_, _b, { [chain]: block }) => sumUnknownTokens({ tokensAndOwners, coreAssets, owner, tokens, chain, block, restrictTokenPrice, blacklist, skipConversion, log_coreAssetPrices, log_minTokenValue, owners, lps, useDefaultCoreAssets, })
+}
+
+async function vestingHelper({
+  coreAssets = [], owner, tokens, chain = 'ethereum', block, restrictTokenPrice = true, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
+  log_coreAssetPrices = [], log_minTokenValue = 1e6, useDefaultCoreAssets = false,
+}) {
+  if (!coreAssets.length && useDefaultCoreAssets)
+    coreAssets = getCoreAssets(chain)
+
   tokens = getUniqueAddresses(tokens)
   blacklist = getUniqueAddresses(blacklist)
   tokens = tokens.filter(t => !blacklist.includes(t))
@@ -409,11 +434,12 @@ async function vestingHelper({
   return finalBalances
 }
 
-
 async function sumUnknownTokens({ tokensAndOwners = [],
-  coreAssets, owner, tokens, chain = 'ethereum', block, restrictTokenPrice = true, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
-  log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [],
+  coreAssets = [], owner, tokens, chain = 'ethereum', block, restrictTokenPrice = true, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
+  log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [], useDefaultCoreAssets = false,
 }) {
+  if (!coreAssets.length && useDefaultCoreAssets)
+    coreAssets = getCoreAssets(chain)
   blacklist = getUniqueAddresses(blacklist)
   if (!tokensAndOwners.length)
     if (owners.length)
@@ -429,11 +455,12 @@ async function sumUnknownTokens({ tokensAndOwners = [],
   return balances
 }
 
-
 function staking({ tokensAndOwners = [],
-  coreAssets, owner, tokens, chain = 'ethereum', restrictTokenPrice = true, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
-  log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [],
+  coreAssets = [], owner, tokens, chain = 'ethereum', restrictTokenPrice = true, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
+  log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [], useDefaultCoreAssets = false,
 }) {
+  if (!coreAssets.length && useDefaultCoreAssets)
+    coreAssets = getCoreAssets(chain)
   blacklist = getUniqueAddresses(blacklist)
   if (!tokensAndOwners.length)
     if (owners.length)
@@ -452,8 +479,9 @@ function staking({ tokensAndOwners = [],
   }
 }
 
-
-function masterchefExports({ chain, masterchef, coreAssets, nativeTokens = [], nativeToken, poolInfoABI = masterchefAbi.poolInfo, poolLengthAbi = masterchefAbi.poolLength, getToken = output => output.lpToken, blacklistedTokens = [], }) {
+function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = [], lps = [], nativeToken, poolInfoABI = masterchefAbi.poolInfo, poolLengthAbi = masterchefAbi.poolLength, getToken = output => output.lpToken, blacklistedTokens = [],  useDefaultCoreAssets = false, }) {
+  if (!coreAssets.length && useDefaultCoreAssets)
+    coreAssets = getCoreAssets(chain)
   let allTvl
   if (nativeToken) nativeTokens.push(nativeToken)
   nativeTokens = getUniqueAddresses(nativeTokens)
@@ -464,6 +492,7 @@ function masterchefExports({ chain, masterchef, coreAssets, nativeTokens = [], n
 
     async function getTVL() {
       const transform = await getChainTransform(chain)
+      const fixBalances = await getFixBalances(chain)
       const balances = {
         tvl: {},
         staking: {},
@@ -485,16 +514,15 @@ function masterchefExports({ chain, masterchef, coreAssets, nativeTokens = [], n
       })
 
       const tokens = data.map(({ output }) => getToken(output).toLowerCase())
-      const lps = [...tokens].filter(i => !nativeTokens.includes(i))
-      const tempBalances = await sumTokens2({ chain, block, owner: masterchef, tokens, transformAddress: a => a, blacklistedTokens, })
+      const tokenLPs = [...tokens].filter(i => !nativeTokens.includes(i))
+      const tempBalances = await sumTokens2({ chain, block, owner: masterchef, tokens, transformAddress: a => a, blacklistedTokens})
       nativeTokens.forEach(nativeToken => {
         if (tempBalances[nativeToken]) sdk.util.sumSingleBalance(balances.staking, transform(nativeToken), tempBalances[nativeToken])
         delete tempBalances[nativeToken]
       })
 
-      const pairs = await getLPData({ lps, chain, block })
-
-      const { updateBalances, } = await getTokenPrices({ lps: Object.keys(pairs), allLps: true, coreAssets, block, chain, minLPRatio: 0.001, })
+      const pairs = await getLPData({ lps: tokenLPs, chain, block })
+      const { updateBalances, prices, } = await getTokenPrices({ lps: [ ...Object.keys(pairs), ...lps ], allLps: true, coreAssets, block, chain, minLPRatio: 0.001, })
       Object.entries(tempBalances).forEach(([token, balance]) => {
         if (pairs[token]) {
           const { token0Address, token1Address } = pairs[token]
@@ -506,11 +534,12 @@ function masterchefExports({ chain, masterchef, coreAssets, nativeTokens = [], n
         sdk.util.sumSingleBalance(balances.tvl, transform(token), balance)
       })
 
-      await updateBalances(balances.tvl)
-      await updateBalances(balances.pool2)
-      await updateBalances(balances.staking)
+      for (const bal of Object.values(balances)) {
+        await updateBalances(bal)
+        fixBalances(bal)
+      }
 
-      log(balances)
+       log(balances)
 
       return balances
     }
@@ -546,4 +575,5 @@ module.exports = {
   getLPList,
   sumUnknownTokens,
   staking,
+  sumTokensExport,
 };
