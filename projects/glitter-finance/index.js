@@ -12,7 +12,7 @@ const axiosObj = axios.create({
 })
 
 //addresses
-const SOLANA_VAULT = "92xRN79NA9p9D4Wg49Lr73yE6eypbmJwB1AESYfbD5xA";
+const SOLANA_VAULT = "7xCU4nvqu3Nz3BBQckKzibp3kBav4xbkuqQ3WM9CBHdJ";
 const ALGO_VAULT = "R7VCOR74LCUIFH5WKCCMZOS7ADLSDBQJ42YURFPDT3VGYTVNBNG7AIYTCQ";
 
 //TVL Calculations:
@@ -21,7 +21,10 @@ async function solana_tvl() {
     const tvlResult = {};
 
     //Get sol balance from the SOL vault
-    const amount_sol = await getSolBalance(SOLANA_VAULT);
+    var amount_sol = await getSolBalance(SOLANA_VAULT);
+    if (!amount_sol || amount_sol == 'NaN') {
+        amount_sol = 0;
+    }
 
     //Set solana return balance
     if (!tvlResult["solana"]) {
@@ -60,6 +63,9 @@ async function getAlgoBalance(address) {
 }
 
 module.exports = {
+    hallmarks: [
+        [1661337600, "SPL Vault Migration (V2 Expansion)"],
+    ],
     methodology:
         "TVL counts tokens and native assets locked in Glitter-Finance bridge vaults. CoinGecko is used to find the price of tokens in USD.",
     solana: { tvl: solana_tvl },
