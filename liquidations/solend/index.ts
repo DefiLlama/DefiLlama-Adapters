@@ -2,7 +2,8 @@ import { PublicKey, Connection } from "@solana/web3.js";
 import { SolendMarket, SolendObligation, parseObligation } from "@solendprotocol/solend-sdk";
 import { BigNumber } from "bignumber.js";
 
-const connection = new Connection("https://solend.genesysgo.net/", "confirmed");
+const endpoint = process.env.SOLANA_RPC || "https://solana-api.projectserum.com/"; // or "https://api.mainnet-beta.solana.com"
+const connection = new Connection(endpoint, "confirmed");
 
 const SOLEND_PROGRAM_ID = "So1endDq2YkqhipRh3WViPa8hdiSpxWy6z3Z6tMCpAo";
 const LENDING_MARKET_MAIN = "4UpD2fh7xH3VP9QQaXtsS1YY3bxzWhtfpks7FatyKvdY";
