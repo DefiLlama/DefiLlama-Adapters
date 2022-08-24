@@ -73,7 +73,7 @@ async function getTokenPrices({
   transformAddress, // function for transforming token address to coingecko friendly format
   allLps = false,   // if set true, assumes all tokens provided as lps are lps and skips validation/filtering
   minLPRatio = 0.5, // if a token pool has less that this percent of core asset tokens compared to a token pool with max tokens for a given core asset, this token pool is not used for price calculation
-  restrictTokenPrice = false, // if enabled, while computed tvl, an unknown token value can max 
+  restrictTokenRatio = 10, // while computing tvl, an unknown token value can max be x times the pool value, default 100 times pool value
   log_coreAssetPrices = [],
   log_minTokenValue = 1e6 // log only if token value is higer than this value, now minimum is set as 1 million
 }) {
@@ -211,11 +211,18 @@ async function getTokenPrices({
       const coreAsset = price[2]
       const tokensInLP = price[3]
       const coreTokenAmountInLP = price[0]
-      if (restrictTokenPrice && +amount > tokensInLP) tokenAmount = coreTokenAmountInLP  // use token amount in pool if balances amount is higher than amount in pool
-      if (DEBUG_MODE && tokenAmount * getAssetPrice(coreAsset) > log_minTokenValue)
-        console.log(`[converting balances] token vaule (in millions): ${(tokenAmount * getAssetPrice(coreAsset) / 1e6).toFixed(4)}, token value higher than pool: ${+amount > +tokensInLP} token: ${token} counter: ${++counter}`)
-      sdk.util.sumSingleBalance(balances, transformAddress(coreAsset), BigNumber(tokenAmount).toFixed(0))
-      delete balances[address]
+      const maxAllowedAmount = coreTokenAmountInLP * restrictTokenRatio
+      // if (DEBUG_MODE && tokenAmount * getAssetPrice(coreAsset) > log_minTokenValue)
+      //   log(`[converting balances] token vaule (in millions): ${(tokenAmount * getAssetPrice(coreAsset) / 1e6).toFixed(4)}, token value higher than pool: ${+amount > +tokensInLP} token: ${token} counter: ${++counter}`)
+
+      if (tokenAmount > maxAllowedAmount) {// use token amount in pool if balances amount is higher than amount in pool
+        log(`[converting balances]  Value to LP ratio: ${tokenAmount / tokensInLP} token: ${token} counter: ${++counter}`)
+        sdk.util.sumSingleBalance(balances, transformAddress(coreAsset), BigNumber(maxAllowedAmount).toFixed(0))
+        balances[address] = BigNumber((tokenAmount - maxAllowedAmount) / price[1]).toFixed(0)
+      } else {
+        sdk.util.sumSingleBalance(balances, transformAddress(coreAsset), BigNumber(tokenAmount).toFixed(0))
+        delete balances[address]
+      }
     })
 
     if (!resolveLP) return balances
@@ -251,10 +258,16 @@ async function getTokenPrices({
         const coreAsset = price[2]
         const tokensInLP = price[3]
         let tokenAmount = price[1] * +amount
-        if (restrictTokenPrice && +amount > tokensInLP) tokenAmount = coreTokenAmountInLP
-        if (DEBUG_MODE && tokenAmount * getAssetPrice(coreAsset) * ratio > log_minTokenValue)
-          console.log(`[resolve LP balance] token vaule (in millions): ${(tokenAmount * getAssetPrice(coreAsset) * ratio / 1e6).toFixed(4)}, token value higher than pool: ${+amount > +tokensInLP} LP Address: ${pairAddress} token: ${address} ratio: ${ratio} counter: ${++counter}`)
-        sdk.util.sumSingleBalance(finalBalances, transformAddress(coreAsset), BigNumber(tokenAmount * ratio).toFixed(0))
+        const maxAllowedAmount = coreTokenAmountInLP * restrictTokenRatio
+        // if (DEBUG_MODE && tokenAmount * getAssetPrice(coreAsset) * ratio > log_minTokenValue)
+        //   console.log(`[resolve LP balance] token vaule (in millions): ${(tokenAmount * getAssetPrice(coreAsset) * ratio / 1e6).toFixed(4)}, token value higher than pool: ${+amount > +tokensInLP} LP Address: ${pairAddress} token: ${address} ratio: ${ratio} counter: ${++counter}`)
+
+        if (tokenAmount > maxAllowedAmount) {// use token amount in pool if balances amount is higher than amount in pool
+          log(`[converting balances]  Value to LP ratio: ${tokenAmount / tokensInLP} LP Address: ${pairAddress} ratio: ${ratio} token: ${address} counter: ${++counter}`)
+          sdk.util.sumSingleBalance(balances, transformAddress(coreAsset), BigNumber(maxAllowedAmount * ratio).toFixed(0))
+        } else {
+          sdk.util.sumSingleBalance(balances, transformAddress(coreAsset), BigNumber(tokenAmount * ratio).toFixed(0))
+        }
       } else {
         if ((DEBUG_MODE && coreAssets.includes(address)) && (+amount * getAssetPrice(address) * ratio > log_minTokenValue))
           console.log(`[resolve LP balance] token vaule (in millions): ${(+amount * getAssetPrice(address) * ratio / 1e6).toFixed(4)}, LP Address: ${pairAddress}  core token: ${address} ratio: ${ratio} counter: ${++counter}`)
@@ -288,10 +301,11 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
   withMetaData = false,
   skipPair = [],
   useDefaultCoreAssets = false,
-  restrictTokenPrice = false, // if enabled, while computed tvl, an unknown token value can max 
+  restrictTokenRatio, // while computing tvl, an unknown token value can max be x times the pool value, default 100 times pool value
 }) {
-  if (!coreAssets.length && useDefaultCoreAssets)
+  if (!coreAssets.length && useDefaultCoreAssets) {
     coreAssets = getCoreAssets(chain)
+  }
   return async (ts, _block, { [chain]: block }) => {
     let pairAddresses;
     const pairLength = (await sdk.api.abi.call({ target: factory, abi: factoryAbi.allPairsLength, chain, block })).output
@@ -309,7 +323,7 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
 
     const response = await getTokenPrices({
       block, chain, coreAssets, blacklist, lps: pairAddresses, transformAddress, whitelist, allLps: true,
-      minLPRatio, log_coreAssetPrices, log_minTokenValue, restrictTokenPrice,
+      minLPRatio, log_coreAssetPrices, log_minTokenValue, restrictTokenRatio,
     })
     return withMetaData ? response : response.balances
   }
@@ -394,14 +408,14 @@ function pool2({ stakingContract, lpToken, chain = "ethereum", transformAddress,
 }
 
 function sumTokensExport({ tokensAndOwners = [],
-  coreAssets = [], owner, tokens, chain = 'ethereum', restrictTokenPrice = true, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
+  coreAssets = [], owner, tokens, chain = 'ethereum', restrictTokenRatio, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
   log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [], useDefaultCoreAssets = false,
 }) {
-  return (_, _b, { [chain]: block }) => sumUnknownTokens({ tokensAndOwners, coreAssets, owner, tokens, chain, block, restrictTokenPrice, blacklist, skipConversion, log_coreAssetPrices, log_minTokenValue, owners, lps, useDefaultCoreAssets, })
+  return (_, _b, { [chain]: block }) => sumUnknownTokens({ tokensAndOwners, coreAssets, owner, tokens, chain, block, restrictTokenRatio, blacklist, skipConversion, log_coreAssetPrices, log_minTokenValue, owners, lps, useDefaultCoreAssets, })
 }
 
 async function vestingHelper({
-  coreAssets = [], owner, tokens, chain = 'ethereum', block, restrictTokenPrice = true, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
+  coreAssets = [], owner, tokens, chain = 'ethereum', block, restrictTokenRatio, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
   log_coreAssetPrices = [], log_minTokenValue = 1e6, useDefaultCoreAssets = false,
 }) {
   if (!coreAssets.length && useDefaultCoreAssets)
@@ -424,7 +438,7 @@ async function vestingHelper({
         delete balances[token]
     })
     lps = lps.filter(lp => lpBalances[lp])  // we only care about LPs that are still locked in the protocol, we can ignore withdrawn LPs
-    const { updateBalances } = await getTokenPrices({ coreAssets, lps, allLps: true, chain, block, restrictTokenPrice, blacklist, log_coreAssetPrices, log_minTokenValue, minLPRatio })
+    const { updateBalances } = await getTokenPrices({ coreAssets, lps, allLps: true, chain, block, restrictTokenRatio, blacklist, log_coreAssetPrices, log_minTokenValue, minLPRatio })
     await updateBalances(balances, { skipConversion, onlyLPs })
     Object.entries(balances).forEach(([token, bal]) => sdk.util.sumSingleBalance(finalBalances, token, bal))
     if (i !== 0 && i % 2 === 0) await sleep(3000)
@@ -435,7 +449,7 @@ async function vestingHelper({
 }
 
 async function sumUnknownTokens({ tokensAndOwners = [],
-  coreAssets = [], owner, tokens, chain = 'ethereum', block, restrictTokenPrice = true, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
+  coreAssets = [], owner, tokens, chain = 'ethereum', block, restrictTokenRatio, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
   log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [], useDefaultCoreAssets = false,
 }) {
   if (!coreAssets.length && useDefaultCoreAssets)
@@ -448,7 +462,7 @@ async function sumUnknownTokens({ tokensAndOwners = [],
       tokensAndOwners = tokens.map(t => [t, owner])
   tokensAndOwners = tokensAndOwners.filter(t => !blacklist.includes(t[0]))
   const balances = await sumTokens2({ chain, block, tokensAndOwners, skipFixBalances: true, })
-  const { updateBalances, } = await getTokenPrices({ coreAssets, lps: [...tokensAndOwners.map(t => t[0]), ...lps,], chain, block, restrictTokenPrice, blacklist, log_coreAssetPrices, log_minTokenValue, minLPRatio })
+  const { updateBalances, } = await getTokenPrices({ coreAssets, lps: [...tokensAndOwners.map(t => t[0]), ...lps,], chain, block, restrictTokenRatio, blacklist, log_coreAssetPrices, log_minTokenValue, minLPRatio })
   await updateBalances(balances, { skipConversion, onlyLPs })
   const fixBalances = await getFixBalances(chain)
   fixBalances(balances)
@@ -456,7 +470,7 @@ async function sumUnknownTokens({ tokensAndOwners = [],
 }
 
 function staking({ tokensAndOwners = [],
-  coreAssets = [], owner, tokens, chain = 'ethereum', restrictTokenPrice = true, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
+  coreAssets = [], owner, tokens, chain = 'ethereum', restrictTokenRatio, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
   log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [], useDefaultCoreAssets = false,
 }) {
   if (!coreAssets.length && useDefaultCoreAssets)
@@ -471,7 +485,7 @@ function staking({ tokensAndOwners = [],
 
   return async (_, _b, { [chain]: block }) => {
     const balances = await sumTokens2({ chain, block, tokensAndOwners })
-    const { updateBalances, pairBalances, prices, } = await getTokenPrices({ coreAssets, lps: [...tokensAndOwners.map(t => t[0]), ...lps,], chain, block, restrictTokenPrice, blacklist, log_coreAssetPrices, log_minTokenValue, minLPRatio })
+    const { updateBalances, pairBalances, prices, } = await getTokenPrices({ coreAssets, lps: [...tokensAndOwners.map(t => t[0]), ...lps,], chain, block, restrictTokenRatio, blacklist, log_coreAssetPrices, log_minTokenValue, minLPRatio })
     await updateBalances(balances, { skipConversion, onlyLPs })
     const fixBalances = await getFixBalances(chain)
     fixBalances(balances)
@@ -479,7 +493,7 @@ function staking({ tokensAndOwners = [],
   }
 }
 
-function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = [], lps = [], nativeToken, poolInfoABI = masterchefAbi.poolInfo, poolLengthAbi = masterchefAbi.poolLength, getToken = output => output.lpToken, blacklistedTokens = [],  useDefaultCoreAssets = false, }) {
+function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = [], lps = [], nativeToken, poolInfoABI = masterchefAbi.poolInfo, poolLengthAbi = masterchefAbi.poolLength, getToken = output => output.lpToken, blacklistedTokens = [], useDefaultCoreAssets = false, }) {
   if (!coreAssets.length && useDefaultCoreAssets)
     coreAssets = getCoreAssets(chain)
   let allTvl
@@ -515,14 +529,14 @@ function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = 
 
       const tokens = data.map(({ output }) => getToken(output).toLowerCase())
       const tokenLPs = [...tokens].filter(i => !nativeTokens.includes(i))
-      const tempBalances = await sumTokens2({ chain, block, owner: masterchef, tokens, transformAddress: a => a, blacklistedTokens})
+      const tempBalances = await sumTokens2({ chain, block, owner: masterchef, tokens, transformAddress: a => a, blacklistedTokens })
       nativeTokens.forEach(nativeToken => {
         if (tempBalances[nativeToken]) sdk.util.sumSingleBalance(balances.staking, transform(nativeToken), tempBalances[nativeToken])
         delete tempBalances[nativeToken]
       })
 
       const pairs = await getLPData({ lps: tokenLPs, chain, block })
-      const { updateBalances, prices, } = await getTokenPrices({ lps: [ ...Object.keys(pairs), ...lps ], allLps: true, coreAssets, block, chain, minLPRatio: 0.001, })
+      const { updateBalances, prices, } = await getTokenPrices({ lps: [...Object.keys(pairs), ...lps], allLps: true, coreAssets, block, chain, minLPRatio: 0.001, })
       Object.entries(tempBalances).forEach(([token, balance]) => {
         if (pairs[token]) {
           const { token0Address, token1Address } = pairs[token]
@@ -539,7 +553,7 @@ function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = 
         fixBalances(bal)
       }
 
-       log(balances)
+      log(balances)
 
       return balances
     }
