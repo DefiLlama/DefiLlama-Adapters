@@ -25,12 +25,6 @@ type MarketConfig = {
   assetPriceUSD?: number;
 };
 
-type ExtendedPosition = {
-  mintAddress: string;
-  amount: string;
-  token: MarketConfig;
-};
-
 const func = async () => {
   const market = await SolendMarket.initialize(connection);
   await market.loadReserves();
@@ -54,16 +48,9 @@ const func = async () => {
       reserveAddress: c.address, // reserve address
     }));
 
-  const marketConfigsMap: Map<
-    string, // reserve address
-    MarketConfig
-  > = new Map(marketConfigs.map((c) => [c.reserveAddress, c]));
-
   const tokenInfosMap: Map<string, MarketConfig> = new Map(
     marketConfigs.map((c) => [c.mintAddress, c])
   );
-
-  // console.log(marketConfigsMap);
 
   const accounts = await connection.getProgramAccounts(
     new PublicKey(SOLEND_PROGRAM_ID),
