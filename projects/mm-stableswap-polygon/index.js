@@ -1,27 +1,22 @@
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
+const { sumTokens2, } = require('../helper/unwrapLPs')
 
-const MM3BasePool = "0x690BBaa9EDBb762542FD198763092eaB2B2A5350";
-const DAI = "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063";
-const USDT = "0xc2132D05D31c914a87C6611C10748AEb04B58e8F";
-const USDC = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174";
-
-async function tvl(timestamp, block, chainBlocks) {
-  const balances = {};
-
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    [
-      [USDT, false],
-      [USDC, false],
-      [DAI, false]
-    ],
-    [MM3BasePool],
-    chainBlocks["polygon"],
-    "polygon",
-    addr => `polygon:${addr}`
-  );
-
-  return balances;
+const pools = {
+  '3MM Basepool': {
+    owner: '0x690BBaa9EDBb762542FD198763092eaB2B2A5350',
+    tokens: [
+      '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',  // USDT
+      '0x2791bca1f2de4661ed88a30c99a7a9449aa84174',  // USDC
+      '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063', // DAI
+    ]
+  }
+}
+const chain = 'polygon'
+async function tvl(ts, _, { [chain]: block }) {
+  const toa = []
+  Object.values(pools).forEach(i => {
+    i.tokens.forEach(j => toa.push([j, i.owner]))
+  })
+  return sumTokens2({ tokensAndOwners: toa, chain, block, })
 };
 
 module.exports = {
