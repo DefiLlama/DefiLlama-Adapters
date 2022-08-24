@@ -1,5 +1,4 @@
 import { PublicKey, Connection } from "@solana/web3.js";
-import { BN } from "bn.js";
 import {
   SolendMarket,
   SolendObligation,
@@ -25,7 +24,7 @@ type MarketConfig = {
   assetPriceUSD?: number;
 };
 
-const func = async () => {
+const liquidations = async () => {
   const market = await SolendMarket.initialize(connection);
   await market.loadReserves();
 
@@ -142,4 +141,8 @@ const func = async () => {
   return positions;
 };
 
-func();
+module.exports = {
+  solana: {
+    liquidations,
+  },
+};
