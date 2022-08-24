@@ -1,9 +1,5 @@
 import { PublicKey, Connection } from "@solana/web3.js";
-import {
-  SolendMarket,
-  SolendObligation,
-  parseObligation,
-} from "@solendprotocol/solend-sdk";
+import { SolendMarket, SolendObligation, parseObligation } from "@solendprotocol/solend-sdk";
 import { BigNumber } from "bignumber.js";
 
 const connection = new Connection("https://solend.genesysgo.net/", "confirmed");
@@ -47,40 +43,30 @@ const liquidations = async () => {
       reserveAddress: c.address, // reserve address
     }));
 
-  const tokenInfosMap: Map<string, MarketConfig> = new Map(
-    marketConfigs.map((c) => [c.mintAddress, c])
-  );
+  const tokenInfosMap: Map<string, MarketConfig> = new Map(marketConfigs.map((c) => [c.mintAddress, c]));
 
-  const accounts = await connection.getProgramAccounts(
-    new PublicKey(SOLEND_PROGRAM_ID),
-    {
-      commitment: connection.commitment,
-      filters: [
-        {
-          memcmp: {
-            offset: 10,
-            bytes: LENDING_MARKET_MAIN,
-          },
+  const accounts = await connection.getProgramAccounts(new PublicKey(SOLEND_PROGRAM_ID), {
+    commitment: connection.commitment,
+    filters: [
+      {
+        memcmp: {
+          offset: 10,
+          bytes: LENDING_MARKET_MAIN,
         },
-        {
-          dataSize: OBLIGATION_LEN,
-        },
-      ],
-      encoding: "base64",
-    }
-  );
+      },
+      {
+        dataSize: OBLIGATION_LEN,
+      },
+    ],
+    encoding: "base64",
+  });
 
   const obligations = accounts
     .map((account) => parseObligation(account.pubkey, account.account))
     .map((o) => {
       if (!o) return null;
 
-      const so = new SolendObligation(
-        o?.account.owner!,
-        o?.pubkey!,
-        o?.info!,
-        solendReserves
-      );
+      const so = new SolendObligation(o?.account.owner!, o?.pubkey!, o?.info!, solendReserves);
       return {
         owner: o?.info.owner.toString(),
         borrows: so.borrows.map((b) => ({
@@ -130,7 +116,7 @@ const liquidations = async () => {
       .filter((p) => p.liqPrice > 0 && p.liqPrice < p.assetPriceUSD!)
       .map(({ owner, liqPrice, collateral, collateralAmount }) => ({
         owner,
-        liqPrice: liqPrice.toFixed(6),
+        liqPrice,
         collateral,
         collateralAmount,
       }));
