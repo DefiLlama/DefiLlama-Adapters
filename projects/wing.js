@@ -1,5 +1,7 @@
 
+const { default: BigNumber } = require('bignumber.js');
 const { get } = require('./helper/http')
+
 
 const config = {
   ontology: {
@@ -39,20 +41,20 @@ Object.keys(config).forEach(chain => {
       if (!result.totalBorrow) result.totalBorrow = result.TotalBorrow
       if (!result.totalSupply) result.totalSupply = result.TotalSupply
       return {
-        tether: result.totalSupply - result.totalBorrow
+        tether: BigNumber(result.totalSupply - result.totalBorrow).toFixed(0)
       }
     },
     staking: async () => {
       const { result } = await getData(chain)
       return {
-        tether: result.totalLockedWingDollar || result.TotalLockedWingDollar
+        tether: BigNumber(result.totalLockedWingDollar || result.TotalLockedWingDollar).toFixed(0)
       }
     },
     borrowed: async () => {
       const { result } = await getData(chain)
       if (!result.totalBorrow) result.totalBorrow = result.TotalBorrow
       return {
-        tether: result.totalBorrow
+        tether: BigNumber(result.totalBorrow).toFixed(0)
       }
     },
   }
