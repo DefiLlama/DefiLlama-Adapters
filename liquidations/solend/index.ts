@@ -117,15 +117,28 @@ const func = async () => {
     if (!o) return [];
     // true decimals in USD, not wad etc
     const { owner, userTotalDeposit, liquidationThreshold } = o;
-    const bufferInUsd = new BigNumber(userTotalDeposit - liquidationThreshold);
+    const liquidationRatio = userTotalDeposit / liquidationThreshold;
+
+    if (owner === "3oSE9CtGMQeAdtkm2U3ENhEpkFMfvrckJMA8QwVsuRbE") {
+      console.log({
+        liquidationThreshold,
+        userTotalDeposit,
+        bufferInUsd: userTotalDeposit - liquidationThreshold,
+      });
+    }
 
     const liquidablePositions = o.deposits
       .map((b) => {
         const token = tokenInfosMap.get(b.mintAddress)!;
         const { decimals, assetPriceUSD } = token;
-        const amount = new BigNumber(b.amount).div(10 ** decimals);
-        const liqPrice = new BigNumber(assetPriceUSD!)
-          .minus(bufferInUsd.div(amount))
+        const amount = new BigNumber(b.amount).div(10 ** decimals); // real decimal
+        const otherTotalDeposit = new BigNumber(userTotalDeposit).minus(
+          amount.times(assetPriceUSD!)
+        );
+        const liqPrice = new BigNumber(liquidationThreshold)
+          .minus(otherTotalDeposit)
+          .div(amount)
+          .div(liquidationRatio)
           .toNumber();
 
         return {
