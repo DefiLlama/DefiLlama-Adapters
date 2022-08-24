@@ -21,7 +21,7 @@ export interface Bins {
 
 export async function binResults(liqs: Liq[]) {
   const tokens = new Set<string>();
-  liqs.map((liq) => tokens.add(liq.collateral));
+  liqs.map((liq) => tokens.add(liq.collateral.toLowerCase()));
   const prices = (
     await axios.post("https://coins.llama.fi/prices", {
       coins: Array.from(tokens),
