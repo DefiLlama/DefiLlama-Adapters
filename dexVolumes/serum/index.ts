@@ -1,7 +1,6 @@
 import { DexVolumeAdapter } from "../dexVolume.type";
 import { getUniqStartOfTodayTimestamp } from "../helper/getUniSubgraphVolume";
-
-const { GraphQLClient, gql } = require("graphql-request");
+import { gql, GraphQLClient } from "graphql-request";
 
 const endpoint = "https://api.vybenetwork.com/v1/graphql";
 
@@ -16,11 +15,11 @@ const query = gql`
   }
 `;
 
-const graphQLClient = new GraphQLClient(endpoint, {
-  headers: {
-    authorization: process.env.PROD_VYBE_API_KEY,
-  },
-});
+const graphQLClient = new GraphQLClient(endpoint);
+const getGQLClient = () => {
+  graphQLClient.setHeader("authorization", process.env.PROD_VYBE_API_KEY ?? '')
+  return graphQLClient
+}
 
 interface IGraphResponse {
   api_serum_dex_m: {
@@ -34,7 +33,7 @@ interface IGraphResponse {
 const fetch = async (timestamp: number) => {
   const dayTimestamp = getUniqStartOfTodayTimestamp(new Date(timestamp * 1000))
 
-  const data: IGraphResponse = await graphQLClient.request(query);
+  const data: IGraphResponse = await getGQLClient().request(query);
 
   const dailyVolumeIndex = data.api_serum_dex_m.globalVolumeStats.t.findIndex(t => t === dayTimestamp);
 
@@ -45,7 +44,7 @@ const fetch = async (timestamp: number) => {
 };
 
 const getStartTimestamp = async () => {
-  const data = await graphQLClient.request(query);
+  const data: IGraphResponse = await getGQLClient().request(query);
   return data.api_serum_dex_m.globalVolumeStats.t[0]
 }
 
