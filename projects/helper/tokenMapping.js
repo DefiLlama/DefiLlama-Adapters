@@ -562,6 +562,8 @@ const fixBalancesTokens = {
     "0x97513e975a7fA9072c72C92d8000B0dB90b163c5": { coingeckoId: "frax-share", decimals: 18, },
     "0x332730a4F6E03D9C55829435f10360E13cfA41Ff": { coingeckoId: "binance-usd", decimals: 18, },
     "0xa649325aa7c5093d12d6f98eb4378deae68ce23f": { coingeckoId: "binancecoin", decimals: 18, },
+    "0xb12c13e66AdE1F72f71834f2FC5082Db8C091358": { coingeckoId: "quickswap", decimals: 18, },
+    "0xDC42728B0eA910349ed3c6e1c9Dc06b5FB591f98": { coingeckoId: "matic-network", decimals: 18, },
   },
   canto: {
     "0x80b5a32e4f032b2a058b4f29ec95eefeeb87adcd": { coingeckoId: "usd-coin", decimals: 6, },
