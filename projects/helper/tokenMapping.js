@@ -564,6 +564,14 @@ const fixBalancesTokens = {
     "0xa649325aa7c5093d12d6f98eb4378deae68ce23f": { coingeckoId: "binancecoin", decimals: 18, },
     "0xb12c13e66AdE1F72f71834f2FC5082Db8C091358": { coingeckoId: "quickswap", decimals: 18, },
     "0xDC42728B0eA910349ed3c6e1c9Dc06b5FB591f98": { coingeckoId: "matic-network", decimals: 18, },
+    // all synapse bridged tokens
+    "0x85C2D3bEBffD83025910985389aB8aD655aBC946": { coingeckoId: "usd-coin", decimals: 6, },
+    "0xB3306f03595490e5cC3a1b1704a5a158D3436ffC": { coingeckoId: "dai", decimals: 18, },
+    "0x9F4614E4Ea4A0D7c4B1F946057eC030beE416cbB": { coingeckoId: "ethereum", decimals: 18, },
+    "0x7f8e71DD5A7e445725F0EF94c7F01806299e877A": { coingeckoId: "tether", decimals: 6, },
+    "0xD0c6179c43C00221915f1a61f8eC06A5Aa32F9EC": { coingeckoId: "wrapped-bitcoin", decimals: 8, },
+    "0x10D70831f9C3c11c5fe683b2f1Be334503880DB6": { coingeckoId: "frax", decimals: 18, },
+    "0x1fC532187B4848d2F9c564531b776A4F8e11201d": { coingeckoId: "binancecoin", decimals: 18, },
   },
   canto: {
     "0x80b5a32e4f032b2a058b4f29ec95eefeeb87adcd": { coingeckoId: "usd-coin", decimals: 6, },
@@ -756,6 +764,12 @@ const fixBalancesTokens = {
     "0x9fcf418b971134625cdf38448b949c8640971671": { coingeckoId: "tether-eurt", decimals: 18 },
     "0x8751d4196027d4e6da63716fa7786b5174f04c15": { coingeckoId: "wrapped-bitcoin", decimals: 18 }
   },
+  moonbeam: {
+    // celer bridge
+    "0x81ecac0d6be0550a00ff064a4f9dd2400585fe9c": { coingeckoId: "tether", decimals: 6 },
+    "0x6a2d262d56735dba19dd70682b39f6be9a931d98": { coingeckoId: "usd-coin", decimals: 6 },
+    "0x6959027f7850adf4916ff5fdc898d958819e5375": { coingeckoId: "ethereum", decimals: 18 },
+  },
   iotex: {
     [nullAddress]: { coingeckoId: "iotex", decimals: 18 },
     '0xA00744882684C3e4747faEFD68D283eA44099D03': { coingeckoId: "iotex", decimals: 18 },
@@ -776,6 +790,7 @@ const coreAssets = {
     '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e', //yfi
     '0x6b175474e89094c44da98b954eedeac495271d0f', //dai
     '0x3aaDA3e213aBf8529606924d8D1c55CbDc70Bf74', // XMON
+    '0xc834fa996fa3bec7aad3693af486ae53d8aa8b50', // CONV
   ],
   canto: Object.values({
     USDC: '0x80b5a32E4F032B2a058b4F29EC95EEfEEB87aDcd',

@@ -143,7 +143,7 @@ async function getTokenPrices({
         setPrice(prices, token1Address, reserveAmounts[0], reserveAmounts[1], token0Address)
       }
     } else if (coreAssets.includes(token1Address)) {
-      if (!reserveAmounts) console.log('missing reserves', pairAddress)
+      if (!reserveAmounts) log('missing reserves', pairAddress)
       sdk.util.sumSingleBalance(pairBalances[pairAddress], token1Address, Number(reserveAmounts[1]) * 2)
       if (!blacklist.includes(token0Address) && (!whitelist.length || whitelist.includes(token0Address))) {
         setPrice(prices, token0Address, reserveAmounts[1], reserveAmounts[0], token1Address)
@@ -157,6 +157,39 @@ async function getTokenPrices({
       } else if (isWhitelistedToken0) {
         sdk.util.sumSingleBalance(pairBalances[pairAddress], token0Address, Number(reserveAmounts[0]) * 2)
       } else if (isWhitelistedToken1) {
+        sdk.util.sumSingleBalance(pairBalances[pairAddress], token1Address, Number(reserveAmounts[1]) * 2)
+      }
+    }
+  }
+
+  // set price of tokens that are not directly paired against core assets but with tokens that are paired against core tokens
+
+  for (let i = 0; i < reserves.length; i++) {
+    const pairAddress = reserves[i].input.target.toLowerCase();
+    const pair = pairs[pairAddress];
+    const token0Address = pair.token0Address.toLowerCase()
+    const token1Address = pair.token1Address.toLowerCase()
+    const reserveAmounts = reserves[i].output
+    if ((coreAssets.includes(token0Address) && coreAssets.includes(token1Address))
+      || coreAssets.includes(token0Address)
+      || coreAssets.includes(token1Address)
+    ) { // ignore these cases as tokens are already taken care of here
+    } else {
+      const isWhitelistedToken0 = !blacklist.includes(token0Address)
+      const isWhitelistedToken1 = !blacklist.includes(token1Address)
+      if (isWhitelistedToken0 && prices[token0Address] && !prices[token1Address]) {
+        pairBalances[pairAddress] = {}
+        const [coreTokenAmountInLP, tokenPrice, coreAsset, ] = prices[token0Address]
+        const newCoreAmount = coreTokenAmountInLP * tokenPrice / 10 // we are diluting the amount of core tokens intentionally
+        const newTokenAmount = reserveAmounts[1] / 10 // also divided by 10 to keep price steady
+        // setPrice(prices, token1Address, newCoreAmount, newTokenAmount, coreAsset)
+        sdk.util.sumSingleBalance(pairBalances[pairAddress], token0Address, Number(reserveAmounts[0]) * 2)
+      } else if (isWhitelistedToken1 && prices[token1Address] && !prices[token0Address]) {
+        pairBalances[pairAddress] = {}
+        const [coreTokenAmountInLP, tokenPrice, coreAsset, ] = prices[token1Address]
+        const newCoreAmount = coreTokenAmountInLP * tokenPrice / 10 // we are diluting the amount of core tokens intentionally
+        const newTokenAmount = reserveAmounts[0] / 10 // also divided by 10 to keep price steady
+        // setPrice(prices, token0Address, newCoreAmount, newTokenAmount, coreAsset)
         sdk.util.sumSingleBalance(pairBalances[pairAddress], token1Address, Number(reserveAmounts[1]) * 2)
       }
     }
