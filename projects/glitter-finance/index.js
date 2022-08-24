@@ -64,7 +64,7 @@ async function getAlgoBalance(address) {
 
 module.exports = {
     hallmarks: [
-        [1661336400, "SPL Vault Migration (V2 Expansion)"],
+        [1661337600, "SPL Vault Migration (V2 Expansion)"],
     ],
     methodology:
         "TVL counts tokens and native assets locked in Glitter-Finance bridge vaults. CoinGecko is used to find the price of tokens in USD.",
