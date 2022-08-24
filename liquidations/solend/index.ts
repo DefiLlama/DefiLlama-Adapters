@@ -116,36 +116,28 @@ const func = async () => {
   const positions = obligations.flatMap((o) => {
     if (!o) return [];
     // true decimals in USD, not wad etc
-    const { owner, userTotalDeposit, liquidationThreshold } = o;
-    const liquidationRatio = userTotalDeposit / liquidationThreshold;
-
-    if (owner === "3oSE9CtGMQeAdtkm2U3ENhEpkFMfvrckJMA8QwVsuRbE") {
-      console.log({
-        liquidationThreshold,
-        userTotalDeposit,
-        bufferInUsd: userTotalDeposit - liquidationThreshold,
-      });
-    }
+    const { owner, liquidationThreshold, userTotalBorrow } = o;
 
     const liquidablePositions = o.deposits
-      .map((b) => {
-        const token = tokenInfosMap.get(b.mintAddress)!;
+      .map((d) => {
+        const token = tokenInfosMap.get(d.mintAddress)!;
         const { decimals, assetPriceUSD } = token;
-        const amount = new BigNumber(b.amount).div(10 ** decimals); // real decimal
-        const otherTotalDeposit = new BigNumber(userTotalDeposit).minus(
-          amount.times(assetPriceUSD!)
-        );
-        const liqPrice = new BigNumber(liquidationThreshold)
-          .minus(otherTotalDeposit)
+        const amount = new BigNumber(d.amount).div(10 ** decimals); // real decimal
+
+        const oldTokenValue = new BigNumber(token.assetPriceUSD!).times(amount);
+
+        const liqPrice = new BigNumber(userTotalBorrow)
+          .minus(liquidationThreshold)
+          .div(token.liquidationThreshold!) // ratio here
+          .plus(oldTokenValue)
           .div(amount)
-          .div(liquidationRatio)
           .toNumber();
 
         return {
           owner,
           liqPrice,
-          collateral: "solana:" + b.mintAddress,
-          collateralAmount: b.amount,
+          collateral: "solana:" + d.mintAddress,
+          collateralAmount: d.amount,
           assetPriceUSD,
         };
       })
@@ -160,13 +152,7 @@ const func = async () => {
     return liquidablePositions;
   });
 
-  const target = positions.find(
-    (o) => o!.owner === "3oSE9CtGMQeAdtkm2U3ENhEpkFMfvrckJMA8QwVsuRbE"
-  );
-
-  const liquidables = target;
-
-  console.log(liquidables);
+  return positions;
 };
 
 func();
