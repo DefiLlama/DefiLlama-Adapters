@@ -44,6 +44,9 @@ const providers = {
     "wss://rpc.parallel.fi",
     "wss://parallel.api.onfinality.io/public-ws",
   ],
+  kintsugi: [
+    "wss://api-kusama.interlay.io/parachain",
+  ],
 }
 
 async function getAPI(chain) {

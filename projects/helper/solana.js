@@ -5,7 +5,8 @@ const { Connection, PublicKey, Keypair } = require("@solana/web3.js")
 const { AnchorProvider: Provider, Wallet, } = require("@project-serum/anchor");
 const BufferLayout = require("@solana/buffer-layout")
 const { MintLayout, TOKEN_PROGRAM_ID } = require("@solana/spl-token")
-const { sleep, sliceIntoChunks, log } = require('./utils')
+const { sleep, sliceIntoChunks, log, } = require('./utils')
+const sdk = require('@defillama/sdk')
 
 const solscan_base = "https://public-api.solscan.io/account/"
 
@@ -13,17 +14,16 @@ let connection, provider
 
 const endpoint = process.env.SOLANA_RPC || "https://solana-api.projectserum.com/" // or "https://api.mainnet-beta.solana.com"
 
-function getConnection() { 
-  if (!connection)  connection = new Connection(endpoint)
+function getConnection() {
+  if (!connection) connection = new Connection(endpoint)
   return connection
-
 }
 
 function getProvider() {
   if (!provider) {
     const dummy_keypair = Keypair.generate();
     const wallet = new Wallet(dummy_keypair);
-  
+
     provider = new Provider(
       getConnection(), wallet
     );
@@ -31,11 +31,15 @@ function getProvider() {
   return provider;
 }
 
+
+async function getSolBalances(accounts) {
+  const formBody = key => ({ "jsonrpc": "2.0", "id": 1, "method": "getBalance", "params": [key] })
+  const tokenBalances = await axios.post(endpoint, accounts.map(formBody));
+  return tokenBalances.data.reduce((a, i) => a + i.result.value, 0) / 1e9
+}
+
 async function getSolBalance(account) {
-  const solBalance = await axios
-    .get(solscan_base + account)
-    .then((r) => r.data.lamports);
-  return new BigNumber(solBalance).div(1e9).toString(10);
+  return getSolBalances([account])
 }
 
 const TOKEN_LIST_URL = "https://cdn.jsdelivr.net/gh/solana-labs/token-list@main/src/tokens/solana.tokenlist.json"
@@ -50,27 +54,55 @@ async function getTokenSupply(token) {
   return tokenSupply.data.result.value.uiAmount;
 }
 
-async function getTokenBalance(token, account) {
-  const tokenBalance = await axios.post(endpoint, {
+function formTokenBalanceQuery(token, account) {
+  return {
     jsonrpc: "2.0",
     id: 1,
     method: "getTokenAccountsByOwner",
     params: [
       account,
-      {
-        mint: token,
-      },
-      {
-        encoding: "jsonParsed",
-      },
+      { mint: token, },
+      { encoding: "jsonParsed", },
     ],
-  });
+  }
+}
+async function getTokenBalance(token, account) {
+  const tokenBalance = await axios.post(endpoint, formTokenBalanceQuery(token, account));
   return tokenBalance.data.result.value.reduce(
     (total, account) =>
       total + account.account.data.parsed.info.tokenAmount.uiAmount,
     0
   );
 }
+
+async function getTokenBalances(tokensAndAccounts) {
+  const body = tokensAndAccounts.map(([token, account]) => formTokenBalanceQuery(token, account))
+  const tokenBalances = await axios.post(endpoint, body);
+  const balances = {}
+  tokenBalances.data.forEach(({ result: { value } }) => {
+    value.forEach(({ account: { data: { parsed: { info: { mint, tokenAmount: { uiAmount } } } } } }) => {
+      balances[mint] = (balances[mint] || 0) + uiAmount
+    })
+  })
+  return balances
+}
+
+async function getTokenAccountBalances(tokenAccounts) {
+  const formBody = account => ({ method: "getAccountInfo", jsonrpc: "2.0", params: [account, { encoding: "jsonParsed", commitment: "confirmed" }], id: 1 })
+
+  const body = tokenAccounts.map(formBody)
+  const data = await axios.post(endpoint, body);
+  const balances = {}
+  data.data.forEach(({ result: { value } }, i) => {
+    if (!value) {
+      console.log(data.data.map(i => i.result.value )[i], tokenAccounts[i])
+    }
+    const { data: { parsed: { info: { mint, tokenAmount: { uiAmount }}}}} = value
+    balances[mint] = (balances[mint] || 0) + uiAmount
+  })
+  return balances
+}
+
 
 async function getTokenAccountBalance(account) {
   const tokenBalance = await axios.post(
@@ -115,11 +147,7 @@ async function getCoingeckoId() {
 
 // Example: [[token1, account1], [token2, account2], ...]
 async function sumTokens(tokensAndAccounts, balances = {}, ignoreBadTokens = false) {
-  const tokenlist = await axios
-    .get(
-      "https://cdn.jsdelivr.net/gh/solana-labs/token-list@main/src/tokens/solana.tokenlist.json"
-    )
-    .then((r) => r.data.tokens);
+  const tokenlist = await getTokenList();
   const tokenBalances = await Promise.all(
     tokensAndAccounts.map((t) => getTokenBalance(...t))
   );
@@ -145,11 +173,7 @@ async function sumTokens(tokensAndAccounts, balances = {}, ignoreBadTokens = fal
 
 // Example: [[token1, account1], [token2, account2], ...]
 async function sumTokensUnknown(tokensAndAccounts) {
-  const tokenlist = await axios
-    .get(
-      "https://cdn.jsdelivr.net/gh/solana-labs/token-list@main/src/tokens/solana.tokenlist.json"
-    )
-    .then((r) => r.data.tokens);
+  const tokenlist = await getTokenList();
   const tokenBalances = await Promise.all(
     tokensAndAccounts.map((t) => getTokenBalance(...t))
   );
@@ -182,7 +206,7 @@ async function getMultipleAccountsRaw(accountsArray) {
   ) {
     throw new Error("Expected accountsArray to be an array of strings");
   }
-  const accountsInfo = await axios.post("https://api.mainnet-beta.solana.com", {
+  const accountsInfo = await axios.post(endpoint, {
     jsonrpc: "2.0",
     id: 1,
     method: "getMultipleAccounts",
@@ -221,11 +245,7 @@ async function getMultipleAccountBuffers(labeledAddresses) {
 // Example: [[token1, account1], [token2, account2], ...]
 async function sumOrcaLPs(tokensAndAccounts) {
   const [tokenlist, orcaPools] = await Promise.all([
-    axios
-      .get(
-        "https://cdn.jsdelivr.net/gh/solana-labs/token-list@main/src/tokens/solana.tokenlist.json"
-      )
-      .then((r) => r.data.tokens),
+    getTokenList(),
     axios.get("https://api.orca.so/pools").then((r) => r.data),
   ]);
   let totalUsdValue = 0;
@@ -360,13 +380,67 @@ async function sumTokens2({
   owners = [],
   owner,
   ignoreBadTokens = true,
+  tokenAccounts = [],
+  solOwners = []
 }) {
   if (!tokensAndOwners.length) {
     if (owner) tokensAndOwners = tokens.map(t => [t, owner])
     if (owners.length) tokensAndOwners = tokens.map(t => owners.map(o => [t, o])).flat()
   }
 
-  return sumTokens(tokensAndOwners, balances, ignoreBadTokens)
+  if (tokensAndOwners.length) {
+    const chunks = sliceIntoChunks(tokensAndOwners, 99)
+    for (const chunk of chunks) {
+      await _sumTokens(chunk)
+      if (chunks.length > 2) {
+        log('waiting before more calls')
+        await sleep(2000)
+      }
+    }
+  }
+  
+  if (tokenAccounts.length) {
+    const chunks = sliceIntoChunks(tokenAccounts, 31)
+    for (const chunk of chunks) {
+      await _sumTokenAccounts(chunk)
+      if (chunks.length > 2) {
+        log('waiting before more calls')
+        await sleep(5000)
+      }
+    }
+  }
+
+  if (solOwners.length)  {
+    const solBalance = await getSolBalances(solOwners)
+    sdk.util.sumSingleBalance(balances, 'solana', solBalance)
+  }
+
+  return balances
+
+  async function _sumTokens(tokensAndAccounts) {
+    const tokenBalances = await getTokenBalances(tokensAndAccounts)
+    return transformBalances({ tokenBalances, balances, ignoreBadTokens, })
+  }
+
+  async function _sumTokenAccounts(tokenAccounts) {
+    const tokenBalances = await getTokenAccountBalances(tokenAccounts)
+    return transformBalances({ tokenBalances, balances, ignoreBadTokens, })
+  }
+}
+
+async function transformBalances({ tokenBalances, balances = {}, ignoreBadTokens = true, }) {
+  const tokenlist = await getTokenList();
+  for (const [token, balance] of Object.entries(tokenBalances)) {
+    let coingeckoId = tokenlist.find((t) => t.address === token)?.extensions?.coingeckoId;
+    if (!coingeckoId) {
+      if (!ignoreBadTokens)
+        throw new Error(`Solana token ${token} has no coingecko id`)
+      log(`Solana token ${token} has no coingecko id, it is ignored`)
+    }
+    if (coingeckoId)
+      balances[coingeckoId] = (balances[coingeckoId] || 0) + balance;
+  }
+  return balances
 }
 
 module.exports = {
@@ -390,4 +464,7 @@ module.exports = {
   getSaberPools,
   getQuarryData,
   sumTokens2,
+  getTokenBalances,
+  transformBalances,
+  getSolBalances,
 };

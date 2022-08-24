@@ -11,9 +11,7 @@ module.exports = {
     tvl: getUniTVL({
       chain: 'kava',
       factory: FACTORY,
-      coreAssets: [
-        WKAVA
-      ]
+      useDefaultCoreAssets: true,
     }),
   }
 } 

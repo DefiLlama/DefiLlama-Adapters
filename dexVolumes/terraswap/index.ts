@@ -1,8 +1,7 @@
 import { DexVolumeAdapter } from "../dexVolume.type";
-import { getTimestampAtStartOfHour } from "../helper/getTimestampAtStartOfHour";
 
 const { request, gql } = require("graphql-request");
-const BigNumber = require("bignumber.js");
+
 const {
   getUniqStartOfTodayTimestamp,
 } = require("../helper/getUniSubgraphVolume");
@@ -16,60 +15,51 @@ const historicalData = gql`
     terraswap {
       historicalData(from: $from, to: $to) {
         volumeUST
+        timestamp
       }
     }
   }
 `;
 
-const fetch = async () => {
-  const timestamp = getTimestampAtStartOfHour();
-  const todayUnix = getUniqStartOfTodayTimestamp();
-  const dailyVolumeRequest = await request(endpoints.terra, historicalData, {
-    from: todayUnix,
-    to: Math.floor(Date.now() / 1000),
+interface IGraphResponse {
+  terraswap: {
+    historicalData: Array<{
+      volumeUST: string,
+      timestamp: number
+    }>
+  }
+}
+const fetch = async (timestamp: number) => {
+  const dayTimestamp = getUniqStartOfTodayTimestamp(new Date(timestamp * 1000))
+  const data: IGraphResponse = await request(endpoints.terra, historicalData, {
+    from: dayTimestamp,
+    to: dayTimestamp,
   });
 
-  const totalVolumeRequests = [];
-  const days500 = 500 * 86400;
-
-  for (let i = 1605254400; i < todayUnix; i += days500) {
-    let to = i + days500 > todayUnix ? todayUnix : i + days500;
-    totalVolumeRequests.push(
-      request(endpoints.terra, historicalData, {
-        from: i,
-        to,
-      })
-    );
-  }
-
-  // fix types when redo adapter
-  const allVolume = (await Promise.all(totalVolumeRequests)).reduce(
-    (acc: any, graphRes) =>
-      graphRes?.terraswap?.historicalData
-        ?.reduce(
-          (acc: any, { volumeUST }: any) => new BigNumber(volumeUST).plus(acc),
-          new BigNumber(0)
-        )
-        .plus(acc),
-    new BigNumber(0)
-  );
-
   return {
-    totalVolume: allVolume.toString(),
-    dailyVolume: dailyVolumeRequest?.terraswap?.historicalData?.[0]?.volumeUST,
-    timestamp,
+    dailyVolume:
+      data.terraswap.historicalData[0]?.volumeUST === "NaN"
+        ? undefined
+        : data.terraswap.historicalData[0]?.volumeUST,
+    timestamp: dayTimestamp,
   };
 };
+
+const getStartTimestamp = async () => {
+  const data: IGraphResponse = await request(endpoints.terra, historicalData, {
+    from: Date.UTC(2020, 0, 1) / 1000,
+    to: Date.UTC(2021, 0, 1) / 1000,
+  });
+  return data.terraswap.historicalData[data.terraswap.historicalData.length - 1].timestamp
+}
 
 const adapter: DexVolumeAdapter = {
   volume: {
     terra: {
       fetch,
       runAtCurrTime: true,
-      customBackfill: undefined,
-      start: 0,
+      start: getStartTimestamp,
     },
-    // TODO custom backfill
   },
 };
 

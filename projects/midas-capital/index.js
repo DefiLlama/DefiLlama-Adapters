@@ -1,5 +1,4 @@
 const { compoundExportsWithAsyncTransform } = require("../helper/compound");
-const { transformBscAddress, transformMoonbeamAddress } = require("../helper/portedTokens");
 const sdk = require("@defillama/sdk");
 
 function getTvl(chain) {
@@ -13,14 +12,12 @@ function getTvl(chain) {
         "0xfeB4f9080Ad40ce33Fd47Ff6Da6e4822fE26C7d5", // Ankr
         "0xd3E5AAFebBF06A071509cf894f665710dDaa800d", // Tester
       ],
-      transform: transformBscAddress,
     },
     moonbeam: {
       pools: [
         "0xeB2D3A9D962d89b4A9a34ce2bF6a2650c938e185", // xDot
         "0x0fAbd597BDecb0EEE1fDFc9B8458Fe1ed0E35028", // BeamSwap
       ],
-      transform: transformMoonbeamAddress,
     }
   };
   const config = pools[chain] ?? { pools: [] };
@@ -29,8 +26,7 @@ function getTvl(chain) {
       pool,
       chain,
       undefined,
-      undefined,
-      config.transform
+      undefined
     )
   );
   return {
