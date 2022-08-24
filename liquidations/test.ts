@@ -4,6 +4,8 @@ import { ethers } from "ethers";
 import { providers } from "./utils/ethers";
 import { humanizeNumber } from "@defillama/sdk/build/computeTVL/humanizeNumber";
 import { TOTAL_BINS, Bins, binResults, Liq } from "./utils/binResults";
+import { config } from "dotenv";
+config();
 
 const f2 = (n: number) => Number(n.toFixed(2));
 
