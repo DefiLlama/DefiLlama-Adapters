@@ -5,6 +5,8 @@ const sdk = require('@defillama/sdk')
 
 const usdtAddress = "0xdac17f958d2ee523a2206206994597c13d831ec7"
 
+const { getProvider } = require("@defillama/sdk/build/general");
+const { keccak256, toUtf8Bytes } = require("ethers/lib/utils");
 const {
   AaveSubscriptions,
   AaveLoanInfo,
@@ -14,14 +16,27 @@ const {
   MCDSaverProxy,
   AaveSubscriptionsV2,
   AaveLoanInfoV2,
+  AaveV3View,
+  DefisaverLogger,
+  DFSRegistry,
 } = defisaverABIs;
 
 function getAddress(defisaverConfig) {
   return defisaverConfig.networks['1'].address
 }
 
+function getAddressByChain(defisaverConfig, chainId) {
+  return defisaverConfig.networks[chainId].address;
+}
+
 function getAbi(defisaverConfig, abiName) {
   return defisaverConfig.abi.find(obj => obj.name === abiName)
+}
+
+function getAbiByChain(defisaverConfig, abiName, chainId) {
+  return defisaverConfig.networks[chainId].abi.find(
+    (obj) => obj.name === abiName
+  );
 }
 
 // Configs
@@ -95,6 +110,29 @@ const coins = {
   RENBTC: 18,
   MATIC: 18,
 };
+
+const networkMapping = {
+  1: {
+    name: "ethereum",
+    multiCallChainName: "ethereum",
+    defaultAaveMarketAddress: "0xB53C1a33016B2DC2fF3653530bfF1848a515c8c5",
+  },
+  10: {
+    name: "optimism",
+    multiCallChainName: "optimism",
+    defaultAaveMarketAddress: "0xa97684ead0e402dc232d5a977953df7ecbab3cdb",
+    startBlock: 8515607, // block when the DefisaverLogger got deployed in optimism
+  },
+  42161: {
+    name: "arbitrum",
+    multiCallChainName: "arbitrum",
+    defaultAaveMarketAddress: "0xa97684ead0e402dC232d5A977953DF7ECBaB3CDb",
+    startBlock: 66751, // block when the DefisaverLogger got deployed in arbitrum
+  },
+};
+
+const filterTopicPrefix = "0x000000000000000000000000";
+const usdDecimals = 8;
 
 const keys = [
   {
@@ -325,8 +363,156 @@ async function tvl(ts, block) {
   }
 }
 
+async function getOptimismTvl() {
+  return getTvlAndBorrowedFromChain("optimism", 10, true);
+}
+
+async function getOptimismBorrowed() {
+  return getTvlAndBorrowedFromChain("optimism", 10, false);
+}
+
+async function getArbitrumTvl() {
+  return getTvlAndBorrowedFromChain("arbitrum", 42161, true);
+}
+
+async function getArbitrumBorrowed() {
+  return getTvlAndBorrowedFromChain("arbitrum", 42161, false);
+}
+
+async function getTvlAndBorrowedFromChain(chain, chainId, returnTvl) {
+  const balances = {};
+  const debt = {};
+  const prices = (await utils.getPrices(keys)).data;
+  await getAaveV3Data(returnTvl);
+  if (returnTvl) {
+    return balances;
+  } else {
+    return debt;
+  }
+
+  async function getAaveV3Data(returnTvl) {
+    const defaultMarket = networkMapping[chainId].defaultAaveMarketAddress;
+    const startBlock = networkMapping[chainId].startBlock;
+    const provider = getProvider(chain);
+    const endBlock = await provider.getBlockNumber();
+    const topic = "RecipeEvent(address,string)";
+    const topic1 = "ActionDirectEvent(address,string,bytes)";
+    const loggerContract = getAddressByChain(DefisaverLogger, chainId);
+    const aaveV3ViewAddress = getAddressByChain(AaveV3View, chainId);
+    // get proxy contracts by looking through the events : RecipeEvent(address,string)
+    const recipeEvents = (
+      await sdk.api.util.getLogs({
+        target: loggerContract,
+        topic: topic,
+        keys: [],
+        fromBlock: startBlock,
+        toBlock: endBlock,
+        chain: chain,
+      })
+    ).output;
+    // get proxy contracts by looking through the events : ActionDirectEvent(address,string,bytes)
+    const actionDirectEvents = (
+      await sdk.api.util.getLogs({
+        target: loggerContract,
+        topic: topic1,
+        keys: [],
+        fromBlock: startBlock,
+        toBlock: endBlock,
+        chain: chain,
+      })
+    ).output;
+    // there may be some duplicate contracts so filter out to only unique ones
+    const mergedEvents = [...recipeEvents, ...actionDirectEvents];
+    const mergeDedupe = (arr) => {
+      return [...new Set([].concat(...arr))];
+    };
+    let userAddresses = mergedEvents
+      .filter((event) => {
+        return event.topics && event.topics[1];
+      })
+      .map((event) => {
+        return `0x${event.topics[1].split(filterTopicPrefix).pop()}`;
+      });
+    const uniqueList = mergeDedupe(userAddresses);
+    let subData = [];
+    let batchSize = 30;
+    // reduced the batchsize to 10 for arbitrum and optimism since provider gives error with 30
+    if (chain === "arbitrum" || chain === "optimism") {
+      batchSize = 10;
+    }
+    let multiCalls = [];
+    for (let i = 0; i < uniqueList.length; i += batchSize) {
+      let userAddresses = uniqueList.slice(i, i + batchSize);
+      multiCalls.push({
+        target: aaveV3ViewAddress,
+        params: [defaultMarket, userAddresses],
+      });
+    }
+    subData = await sdk.api.abi.multiCall({
+      abi: getAbiByChain(AaveV3View, "getLoanDataArr", chainId),
+      calls: multiCalls,
+      chain: chain,
+    });
+    flattenArray = [];
+    for (let x = 0; x < subData.output.length; x++) {
+      let subGroup = subData.output[x];
+      if (subGroup && subGroup.output && Array.isArray(subGroup.output)) {
+        flattenArray = [...flattenArray, ...subGroup.output];
+      }
+    }
+    subData = flattenArray;
+    // aggregate the collateral amount for tvl and borrowed amount for total borrorwed amount per chain
+    const activeSubs = subData.map((sub) => {
+      let sumBorrowUsd = 0;
+      let sumCollUsd = 0;
+      sub.borrowStableAmounts.forEach((amount, i) => {
+        if (sub.borrowAddr[i] === "0x0000000000000000000000000000000000000000")
+          return;
+        // amount is returned in USD but need to divide by 10^8
+        const borrowUsd = Number(amount) / 10 ** usdDecimals;
+        sumBorrowUsd += borrowUsd;
+      });
+      sub.borrowVariableAmounts.forEach((amount, i) => {
+        if (sub.borrowAddr[i] === "0x0000000000000000000000000000000000000000")
+          return;
+        // amount is returned in USD but need to divide by 10^8
+        const borrowUsd = Number(amount) / 10 ** usdDecimals;
+        sumBorrowUsd += borrowUsd;
+      });
+      sub.collAmounts.forEach((amount, i) => {
+        if (sub.collAddr[i] === "0x0000000000000000000000000000000000000000")
+          return;
+        // amount is returned in USD but need to divide by 10^8
+        const collUsd = Number(amount) / 10 ** usdDecimals;
+        sumCollUsd += collUsd;
+      });
+      return { sumBorrowUsd, sumCollUsd };
+    });
+    activeSubs.forEach((sub) => {
+      addToDebtOrBalances(sub.sumCollUsd, sub.sumBorrowUsd, returnTvl);
+    });
+  }
+
+  function addToDebtOrBalances(colUsdValue, debtUsdValue,returnTvl) {
+    if(returnTvl){
+      sdk.util.sumSingleBalance(balances,usdtAddress,parseFloat(colUsdValue) * 10 ** 6);
+    }
+    else{
+      sdk.util.sumSingleBalance(debt,usdtAddress,parseFloat(debtUsdValue) * 10 ** 6);
+    }
+  }
+}
+
 module.exports = {
   ethereum: {
-    tvl
+    tvl,
+  },
+  optimism: {
+    tvl: getOptimismTvl,
+    borrowed: getOptimismBorrowed,
+  },
+  arbitrum: {
+    tvl: getArbitrumTvl,
+    borrowed: getArbitrumBorrowed,
   },
 };
