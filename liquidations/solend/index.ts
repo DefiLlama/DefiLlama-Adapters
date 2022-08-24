@@ -63,7 +63,7 @@ const func = async () => {
     marketConfigs.map((c) => [c.mintAddress, c])
   );
 
-  console.log(marketConfigsMap);
+  // console.log(marketConfigsMap);
 
   const accounts = await connection.getProgramAccounts(
     new PublicKey(SOLEND_PROGRAM_ID),
@@ -87,6 +87,8 @@ const func = async () => {
   const obligations = accounts
     .map((account) => parseObligation(account.pubkey, account.account))
     .map((o) => {
+      if (!o) return null;
+
       const so = new SolendObligation(
         o?.account.owner!,
         o?.pubkey!,
@@ -98,84 +100,55 @@ const func = async () => {
         borrows: so.borrows.map((b) => ({
           mintAddress: b.mintAddress,
           amount: b.amount.toString(),
-          token: tokenInfosMap.get(b.mintAddress),
+          token: tokenInfosMap.get(b.mintAddress)!,
         })),
         deposits: so.deposits.map((d) => ({
           mintAddress: d.mintAddress,
           amount: d.amount.toString(),
-          token: tokenInfosMap.get(d.mintAddress),
+          token: tokenInfosMap.get(d.mintAddress)!,
         })),
         ...so.obligationStats,
       };
     })
-    .filter((o) => o.borrowUtilization < 1);
+    .filter((o) => o !== null)
+    .filter((o) => o!.borrowUtilization < 1);
 
-  const positions = obligations.map((o) => {
-    const { userTotalBorrow, userTotalDeposit } = o; // true decimals in USD, not wad etc
+  const positions = obligations.flatMap((o) => {
+    if (!o) return [];
+    // true decimals in USD, not wad etc
+    const { owner, userTotalDeposit, liquidationThreshold } = o;
+    const bufferInUsd = new BigNumber(userTotalDeposit - liquidationThreshold);
 
-    const tokens = new Map<
-      string,
-      // TODO: no need for array cuz u cant have 2 borrow positions ova same token
-      // will refactor later
-      { borrows: ExtendedPosition[]; deposits: ExtendedPosition[] }
-    >();
+    const liquidablePositions = o.deposits
+      .map((b) => {
+        const token = tokenInfosMap.get(b.mintAddress)!;
+        const { decimals, assetPriceUSD } = token;
+        const amount = new BigNumber(b.amount).div(10 ** decimals);
+        const liqPrice = new BigNumber(assetPriceUSD!)
+          .minus(bufferInUsd.div(amount))
+          .toNumber();
 
-    o.borrows.forEach((b) => {
-      const token = b.token!;
-      const tokenBorrows = tokens.get(token.mintAddress) || {
-        borrows: [],
-        deposits: [],
-      };
-      tokenBorrows.borrows.push({
-        mintAddress: b.mintAddress,
-        amount: b.amount,
-        token,
-      });
-      tokens.set(token.mintAddress, tokenBorrows);
-    });
+        return {
+          owner,
+          liqPrice,
+          collateral: "solana:" + b.mintAddress,
+          collateralAmount: b.amount,
+          assetPriceUSD,
+        };
+      })
+      .filter((p) => p.liqPrice > 0 && p.liqPrice < p.assetPriceUSD!)
+      .map(({ owner, liqPrice, collateral, collateralAmount }) => ({
+        owner,
+        liqPrice: liqPrice.toFixed(6),
+        collateral,
+        collateralAmount,
+      }));
 
-    o.deposits.forEach((d) => {
-      const token = d.token!;
-      const tokenDeposits = tokens.get(token.mintAddress) || {
-        borrows: [],
-        deposits: [],
-      };
-      tokenDeposits.deposits.push({
-        mintAddress: d.mintAddress,
-        amount: d.amount,
-        token,
-      });
-      tokens.set(token.mintAddress, tokenDeposits);
-    });
-
-    const aggregatedDebts = new Map<string, string>(); // mintAddress, amount
-    for (const token of tokens) {
-      const { borrows, deposits } = token[1];
-      const borrowsTotal = borrows.reduce(
-        (acc, b) => acc.plus(new BigNumber(b.amount).negated()),
-        new BigNumber(0)
-      );
-      const depositsTotal = deposits.reduce(
-        (acc, d) => acc.plus(new BigNumber(d.amount)),
-        new BigNumber(0)
-      );
-      const total = borrowsTotal.plus(depositsTotal);
-      aggregatedDebts.set(token[0], total.toString());
-    }
-
-    for (const aggregatedDebt of aggregatedDebts) {
-      const [mintAddress, amount] = aggregatedDebt;
-      const token = tokenInfosMap.get(mintAddress)!;
-      const { name, symbol, decimals } = token;
-      const amountInUSD = new BigNumber(amount).dividedBy(10 ** decimals);
-      console.log(
-        `${name} (${symbol}) - ${amountInUSD.toFixed(2)} USD - ${amount} wad`
-      );
-    }
+    return liquidablePositions;
   });
 
-  const target = obligations.find(
-    (o) => o.owner === "3oSE9CtGMQeAdtkm2U3ENhEpkFMfvrckJMA8QwVsuRbE"
+  const target = positions.find(
+    (o) => o!.owner === "3oSE9CtGMQeAdtkm2U3ENhEpkFMfvrckJMA8QwVsuRbE"
   );
 
   const liquidables = target;
