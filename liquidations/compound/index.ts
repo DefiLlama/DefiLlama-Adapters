@@ -10,7 +10,6 @@ const accountsQuery = gql`
   query accounts($lastId: ID) {
     accounts(first: 1000, where: { hasBorrowed: true, id_gt: $lastId }) {
       id
-      health
       totalBorrowValueInEth
       totalCollateralValueInEth
       tokens {
@@ -22,8 +21,6 @@ const accountsQuery = gql`
           collateralFactor
           # underlyingPriceUSD
           underlyingPrice
-          exchangeRate
-          reserveFactor
           underlyingDecimals
           underlyingAddress
         }
@@ -42,7 +39,6 @@ const accountsQuery = gql`
 
 type Account = {
   id: string;
-  health: string;
   totalBorrowValueInEth: string;
   totalCollateralValueInEth: string;
   tokens: Token[];
@@ -62,8 +58,6 @@ type Market = {
   symbol: string;
   collateralFactor: string;
   underlyingPrice: string;
-  exchangeRate: string;
-  reserveFactor: string;
   underlyingDecimals: number;
   underlyingAddress: string;
 };
