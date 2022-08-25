@@ -574,9 +574,11 @@ const fixBalancesTokens = {
     "0x1fC532187B4848d2F9c564531b776A4F8e11201d": { coingeckoId: "binancecoin", decimals: 18, },
   },
   canto: {
+    [nullAddress]: { coingeckoId: "canto", decimals: 18, },
+    '0x826551890Dc65655a0Aceca109aB11AbDbD7a07B': { coingeckoId: "canto", decimals: 18, },
     "0x80b5a32e4f032b2a058b4f29ec95eefeeb87adcd": { coingeckoId: "usd-coin", decimals: 6, },
     "0xd567B3d7B8FE3C79a1AD8dA978812cfC4Fa05e75": { coingeckoId: "tether", decimals: 6, },
-    "0x4e71A2E537B7f9D9413D3991D37958c0b5e1e503": { coingeckoId: "usd-coin", decimals: 18, },  // NOTE
+    "0x4e71A2E537B7f9D9413D3991D37958c0b5e1e503": { coingeckoId: "note", decimals: 18, },
     "0x5FD55A1B9FC24967C4dB09C513C3BA0DFa7FF687": { coingeckoId: "ethereum", decimals: 18, },
   },
   ontology_evm: {
@@ -793,11 +795,11 @@ const coreAssets = {
     '0xc834fa996fa3bec7aad3693af486ae53d8aa8b50', // CONV
   ],
   canto: Object.values({
+    WCANTO: '0x826551890Dc65655a0Aceca109aB11AbDbD7a07B',
     USDC: '0x80b5a32E4F032B2a058b4F29EC95EEfEEB87aDcd',
     USDT: '0xd567B3d7B8FE3C79a1AD8dA978812cfC4Fa05e75',
     ETH: '0x5FD55A1B9FC24967C4dB09C513C3BA0DFa7FF687',
     NOTE: '0x4e71A2E537B7f9D9413D3991D37958c0b5e1e503',
-    // WCANTO: '0x826551890Dc65655a0Aceca109aB11AbDbD7a07B',
   }),
   telos: [
     '0xD102cE6A4dB07D247fcc28F366A623Df0938CA9E', // telos
