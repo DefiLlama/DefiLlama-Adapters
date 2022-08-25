@@ -99,12 +99,12 @@ async function ethTvl(_, block) {
     addVault(balances, yvUSDCETHPutVaultV2, usdc, block),
     addVault(balances, aaveCallVault, aave, block),
     addVault(balances, stETHCallVault, weth, block),
-    addVault(balances, perpCallVault, perp, block),
     addVault(balances, apeCallVault, ape, block),
+    addVault(balances, rethCallVault, reth, block),
 
     // treasury vault
+    addVault(balances, perpCallVault, perp, block),
     addVault(balances, balCallVault, bal, block),
-    addVault(balances, rethCallVault, reth, block),
     addVault(balances, spellCallVault, spell, block),
     addVault(balances, badgerCallVault, badger, block),
 
