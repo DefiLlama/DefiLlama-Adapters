@@ -573,6 +573,7 @@ const fixBalancesTokens = {
     "0xD0c6179c43C00221915f1a61f8eC06A5Aa32F9EC": { coingeckoId: "wrapped-bitcoin", decimals: 8, },
     "0x10D70831f9C3c11c5fe683b2f1Be334503880DB6": { coingeckoId: "frax", decimals: 18, },
     "0x1fC532187B4848d2F9c564531b776A4F8e11201d": { coingeckoId: "binancecoin", decimals: 18, },
+    "0x7264610A66EcA758A8ce95CF11Ff5741E1fd0455": { coingeckoId: "canto-inu", decimals: 18, },
   },
   canto: {
     [nullAddress]: { coingeckoId: "canto", decimals: 18, },
@@ -777,6 +778,9 @@ const fixBalancesTokens = {
     [nullAddress]: { coingeckoId: "iotex", decimals: 18 },
     '0xA00744882684C3e4747faEFD68D283eA44099D03': { coingeckoId: "iotex", decimals: 18 },
     "0x3fe04320885e6124231254c802004871be681218": { coingeckoId: "mcn-ventures", decimals: 18 },
+  },
+  polygon: {
+    '0xfc40a4f89b410a1b855b5e205064a38fc29f5eb5': { coingeckoId: "rusd", decimals: 18 },
   },
 }
 
