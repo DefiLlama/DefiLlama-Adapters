@@ -65,6 +65,7 @@ async function getLPList(lps, chain, block) {
 async function getTokenPrices({
   block,
   chain = 'ethereum',
+  abis = {},  // if some protocol uses custom abi instead of standard one
   useDefaultCoreAssets = false,  // use pre-defined list
   coreAssets = [],  // list of tokens that can used as base token to price unknown tokens against (Note: order matters, is there are two LPs for a token, the core asset with a lower index is used)
   blacklist = [],   // list of tokens to ignore/blacklist
@@ -96,7 +97,7 @@ async function getTokenPrices({
   [token0Addresses, token1Addresses, reserves] = await Promise.all([
     sdk.api.abi.multiCall({ abi: token0, chain, calls: pairCalls, block, }).then(({ output }) => output),
     sdk.api.abi.multiCall({ abi: token1, chain, calls: pairCalls, block, }).then(({ output }) => output),
-    sdk.api.abi.multiCall({ abi: getReserves, chain, calls: pairCalls, block, }).then(({ output }) => output),
+    sdk.api.abi.multiCall({ abi: abis.getReservesABI || getReserves, chain, calls: pairCalls, block, }).then(({ output }) => output),
   ]);
   await requery(token0Addresses, chain, block, token0);
   await requery(token1Addresses, chain, block, token1);
@@ -334,6 +335,7 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
   withMetaData = false,
   skipPair = [],
   useDefaultCoreAssets = false,
+  abis = {},
   restrictTokenRatio, // while computing tvl, an unknown token value can max be x times the pool value, default 100 times pool value
 }) {
   if (!coreAssets.length && useDefaultCoreAssets) {
@@ -356,7 +358,7 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
 
     const response = await getTokenPrices({
       block, chain, coreAssets, blacklist, lps: pairAddresses, transformAddress, whitelist, allLps: true,
-      minLPRatio, log_coreAssetPrices, log_minTokenValue, restrictTokenRatio,
+      minLPRatio, log_coreAssetPrices, log_minTokenValue, restrictTokenRatio, abis,
     })
     return withMetaData ? response : response.balances
   }
