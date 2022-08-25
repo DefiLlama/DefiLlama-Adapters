@@ -19,7 +19,7 @@ const tokenAPI = {
 module.exports = {
   [chain]: {
     tvl: async (_, _b, { [chain]: block }) => {
-      const pools = await get('https://raw.githubusercontent.com/autobark/autobark-app-pub/main/src/features/config/vault/dogechain_pools.js')
+      const pools = await get('https://raw.githubusercontent.com/autobark-finance/autobark-app-pub/main/src/features/config/vault/dogechain_pools.js')
       const vaults = pools
         .split('\n')
         .filter(i => i.includes('earnedTokenAddress'))
