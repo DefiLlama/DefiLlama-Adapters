@@ -7,10 +7,19 @@ async function tvl() {
   return toUSDTBalances(response.data.tvl);
 }
 
+async function fetch_juno() {
+  var response = await retry(async bail => await axios.get('https://arufaresearch.pythonanywhere.com/tvl'))
+
+  return response.tvl;
+}
+
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
   secret: {
     tvl
+  },
+  juno: {
+    tvl: fetch_juno
   }
 }
