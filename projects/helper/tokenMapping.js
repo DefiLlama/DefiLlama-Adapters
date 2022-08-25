@@ -552,6 +552,7 @@ const fixBalancesTokens = {
   dogechain: {
     [nullAddress]: { coingeckoId: "dogecoin", decimals: 18, },
     "0xB7ddC6414bf4F5515b52D8BdD69973Ae205ff101": { coingeckoId: "dogecoin", decimals: 18, },
+    "0x7b4328c127b85369d9f82ca0503b000d09cf9180": { coingeckoId: "dogechain", decimals: 18, },
     // all multichain bridged tokens
     "0x765277EebeCA2e31912C9946eAe1021199B39C61": { coingeckoId: "usd-coin", decimals: 6, },
     "0x639A647fbe20b6c8ac19E48E2de44ea792c62c5C": { coingeckoId: "dai", decimals: 18, },
