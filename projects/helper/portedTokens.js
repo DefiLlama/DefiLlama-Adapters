@@ -267,9 +267,21 @@ async function getChainTransform(chain) {
     return transformChainAddress(transformTokens[chain], chain) 
 
   return addr => {
+    addr = addr.toLowerCase()
     if (addr.startsWith('0x')) return `${chain}:${addr}`
     return addr
   };
+}
+
+async function transformBalances(chain, balances) {
+  const transform = await getChainTransform(chain)
+  const fixBalances = await getFixBalances(chain)
+  Object.entries(balances).forEach(([token, value]) => {
+    delete balances[token]
+    sdk.util.sumSingleBalance(balances, transform(token), value)
+  })
+  fixBalances(balances)
+  return balances
 }
 
 module.exports = {
@@ -285,4 +297,5 @@ module.exports = {
   transformIotexAddress,
   stripTokenHeader,
   getFixBalancesSync,
+  transformBalances,
 };

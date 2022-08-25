@@ -5,7 +5,7 @@ const token0 = require('./abis/token0.json');
 const token1 = require('./abis/token1.json');
 const masterchefAbi = require('./abis/masterchef.json')
 const getReserves = require('./abis/getReserves.json');
-const { getChainTransform, stripTokenHeader, getFixBalances, } = require('./portedTokens')
+const { getChainTransform, stripTokenHeader, getFixBalances, transformBalances, } = require('./portedTokens')
 const { requery, } = require('./getUsdUniTvl')
 const { getCoreAssets } = require('./tokenMapping')
 const { sumTokens, sumTokens2, } = require('./unwrapLPs')
@@ -179,14 +179,14 @@ async function getTokenPrices({
       const isWhitelistedToken1 = !blacklist.includes(token1Address)
       if (isWhitelistedToken0 && prices[token0Address] && !prices[token1Address]) {
         pairBalances[pairAddress] = {}
-        const [coreTokenAmountInLP, tokenPrice, coreAsset, ] = prices[token0Address]
+        const [coreTokenAmountInLP, tokenPrice, coreAsset,] = prices[token0Address]
         const newCoreAmount = coreTokenAmountInLP * tokenPrice / 10 // we are diluting the amount of core tokens intentionally
         const newTokenAmount = reserveAmounts[1] / 10 // also divided by 10 to keep price steady
         // setPrice(prices, token1Address, newCoreAmount, newTokenAmount, coreAsset)
         sdk.util.sumSingleBalance(pairBalances[pairAddress], token0Address, Number(reserveAmounts[0]) * 2)
       } else if (isWhitelistedToken1 && prices[token1Address] && !prices[token0Address]) {
         pairBalances[pairAddress] = {}
-        const [coreTokenAmountInLP, tokenPrice, coreAsset, ] = prices[token1Address]
+        const [coreTokenAmountInLP, tokenPrice, coreAsset,] = prices[token1Address]
         const newCoreAmount = coreTokenAmountInLP * tokenPrice / 10 // we are diluting the amount of core tokens intentionally
         const newTokenAmount = reserveAmounts[0] / 10 // also divided by 10 to keep price steady
         // setPrice(prices, token0Address, newCoreAmount, newTokenAmount, coreAsset)
@@ -328,7 +328,7 @@ async function getTokenPrices({
   }
 }
 
-function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitelist = [], factory, transformAddress, allowUndefinedBlock = true,
+function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitelist = [], factory, transformAddress,
   minLPRatio = 1,
   log_coreAssetPrices = [], log_minTokenValue = 1e6,
   withMetaData = false,
@@ -611,6 +611,65 @@ function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = 
   }
 }
 
+const yieldApis = {
+  balance: {
+    "inputs": [],
+    "name": "balance",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  token: {
+    "type": "function",
+    "stateMutability": "view",
+    "outputs": [
+      {
+        "type": "address",
+        "name": "",
+        "internalType": "contract IERC20"
+      }
+    ],
+    "name": "token",
+    "inputs": []
+  }
+}
+
+async function yieldHelper({ chain = 'ethereum', block, coreAssets = [], blacklist = [], whitelist = [], vaults = [], transformAddress,
+  useDefaultCoreAssets = false, balanceAPI = yieldApis.balance, tokenAPI = yieldApis.token,
+  restrictTokenRatio, // while computing tvl, an unknown token value can max be x times the pool value, default 100 times pool value
+}) {
+  if (!coreAssets.length && useDefaultCoreAssets)
+    coreAssets = getCoreAssets(chain)
+  
+  if (!transformAddress)
+    transformAddress = await getChainTransform(chain)
+
+  const calls = vaults.map(i => ({ target: i}))
+  const { output: balanceRes } = await sdk.api.abi.multiCall({
+    abi: balanceAPI,
+    calls,
+    chain, block,
+  })
+  const { output: targets } = await sdk.api.abi.multiCall({
+    abi: tokenAPI,
+    calls,
+    chain, block,
+  })
+  const tokens = targets.map(i => i.output)
+  const { updateBalances } = await getTokenPrices({ chain, block, lps: tokens, coreAssets, blacklist, whitelist, transformAddress, restrictTokenRatio, useDefaultCoreAssets, })
+  let balances = {}
+  balanceRes.forEach((data, i) => sdk.util.sumSingleBalance(balances, transformAddress(tokens[i]), data.output))
+  await updateBalances(balances)
+  return transformBalances(chain, balances)
+}
+
 module.exports = {
   getTokenPrices,
   getUniTVL,
@@ -623,4 +682,5 @@ module.exports = {
   sumUnknownTokens,
   staking,
   sumTokensExport,
+  yieldHelper,
 };
