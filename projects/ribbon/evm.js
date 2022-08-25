@@ -14,7 +14,6 @@ const aaveCallVault = "0xe63151A0Ed4e5fafdc951D877102cf0977Abd365";
 const stETHCallVault = "0x53773E034d9784153471813dacAFF53dBBB78E8c";
 const apeCallVault = "0xc0cF10Dd710aefb209D9dc67bc746510ffd98A53";
 const rethCallVault = "0xA1Da0580FA96129E753D736a5901C31Df5eC5edf";
-const earnVault = "0x84c2b16FA6877a8fF4F3271db7ea837233DFd6f0";
 
 // Avalanche Vaults
 const avaxCallVault = "0x98d03125c62DaE2328D9d3cb32b7B969e6a87787";
@@ -24,6 +23,15 @@ const usdcAvaxPutVault = "0x9DD6be071b4292cc88B8190aB718329adEA3E3a3";
 // Treasury Vaults
 const perpCallVault = "0xe44eDF7aD1D434Afe3397687DD0A914674F2E405";
 const balCallVault = "0x2a6B048eB15C7d4ddCa27db4f9A454196898A0Fe";
+const spellCallVault = "0x42cf874bBe5564EfCF252bC90829551f4ec639DC";
+const badgerCallVault = "0x270F4a26a3fE5766CcEF9608718491bb057Be238";
+
+// Pausers
+const pauserEth = "0xE04e8Ae290965AD4F7E40c68041c493d2e89cDC3";
+const pauserAvax = "0xf08d6a9c2C5a2Dc9B8645c5Ac0b529D4046D19aa";
+
+// Ribbon Earn vaults
+const rearnUSDC = "0x84c2b16FA6877a8fF4F3271db7ea837233DFd6f0";
 
 // Ethereum Assets
 const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
@@ -34,6 +42,9 @@ const perp = "0xbC396689893D065F41bc2C6EcbeE5e0085233447";
 const ape = "0x4d224452801ACEd8B2F0aebE155379bb5D594381";
 const bal = "0xba100000625a3754423978a60c9317c58a424e3D";
 const reth = "0xae78736Cd615f374D3085123A210448E74Fc6393";
+const steth = "0xae7ab96520de3a18e5e111b5eaab095312d7fe84";
+const spell = "0x090185f2135308BaD17527004364eBcC2D37e5F6";
+const badger = "0x3472A5A71965499acd81997a54BBA8D852C6E53d";
 
 // Avalanche Assets
 const wavax = "avax:0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7";
@@ -50,9 +61,35 @@ async function addVault(balances, vault, token, block, chain = "ethereum") {
   sdk.util.sumSingleBalance(balances, token, totalBalance.output);
 }
 
+async function addTokenHolder(
+  balances,
+  contract,
+  token,
+  block,
+  chain = "ethereum"
+) {
+  // Removes the chain prefix
+  const tokenWithoutPrefix =
+    token.split(":").length > 1 ? token.split(":")[1] : token;
+
+  sdk.util.sumSingleBalance(
+    balances,
+    token,
+    (
+      await sdk.api.erc20.balanceOf({
+        target: tokenWithoutPrefix,
+        owner: contract,
+        block,
+        chain,
+      })
+    ).output
+  );
+}
+
 async function ethTvl(_, block) {
   const balances = {};
   await Promise.all([
+    // theta vault
     addVault(balances, ethCallVault, weth, block),
     addVault(balances, ethCallVaultV2, weth, block),
     addVault(balances, wbtcCallVault, wbtc, block),
@@ -64,20 +101,60 @@ async function ethTvl(_, block) {
     addVault(balances, stETHCallVault, weth, block),
     addVault(balances, perpCallVault, perp, block),
     addVault(balances, apeCallVault, ape, block),
+
+    // treasury vault
     addVault(balances, balCallVault, bal, block),
     addVault(balances, rethCallVault, reth, block),
-    addVault(balances, earnVault, usdc, block),
+    addVault(balances, spellCallVault, spell, block),
+    addVault(balances, badgerCallVault, badger, block),
+
+    // ribbon earn
+    addVault(balances, rearnUSDC, usdc, block),
+
+    // pauser holds a variety of coins
+    addTokenHolder(balances, pauserEth, usdc, block),
+    addTokenHolder(balances, pauserEth, wbtc, block),
+    addTokenHolder(balances, pauserEth, steth, block),
+    addTokenHolder(balances, pauserEth, aave, block),
   ]);
+
+  sdk.util.sumSingleBalance(
+    balances,
+    weth,
+    (
+      await sdk.api.eth.getBalance({
+        target: pauserEth,
+        block,
+        chain: "ethereum",
+      })
+    ).output
+  );
+
   return balances;
 }
 
 async function avaxTvl(_, block) {
   const balances = {};
+
   await Promise.all([
     addVault(balances, avaxCallVault, wavax, block, "avax"),
     addVault(balances, savaxCallVault, savax, block, "avax"),
     addVault(balances, usdcAvaxPutVault, usdce, block, "avax"),
+    addTokenHolder(balances, pauserAvax, savax, block, "avax"),
   ]);
+
+  sdk.util.sumSingleBalance(
+    balances,
+    wavax,
+    (
+      await sdk.api.eth.getBalance({
+        target: pauserAvax,
+        block,
+        chain: "avax",
+      })
+    ).output
+  );
+
   return balances;
 }
 
@@ -93,7 +170,7 @@ module.exports = {
     tvl: ethTvl,
     staking: veRBNStaking,
   },
-  avax:{
+  avalanche: {
     tvl: avaxTvl,
   },
 };
