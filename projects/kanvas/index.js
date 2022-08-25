@@ -11,7 +11,7 @@ const stakingAddress = "0x34d2Cfb257cCf7EFDC41DB9a824ac314da80Bae8";
 const artStudio = "0xf15Bf479A5711f9411595C6289a9e7C36F24ad2F";
 
 const transform = {
-"0x150410ebbccc3be87997462ea7a44449b7c0dbf2":"kava:0xfa9343c3897324496a05fc75abed6bac29f8a40f"
+"0x150410ebbccc3be87997462ea7a44449b7c0dbf2":"kava:0x765277EebeCA2e31912C9946eAe1021199B39C61" 
 }
 
 async function calcTvl(block, chain, pool2) {
