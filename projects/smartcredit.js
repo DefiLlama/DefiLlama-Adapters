@@ -56,7 +56,7 @@ module.exports = {
   timetravel: false,
   ethereum: {
     tvl,
-    staking,
+    // staking,
     borrowed,
   }
 }
