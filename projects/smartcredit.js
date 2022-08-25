@@ -47,6 +47,7 @@ async function borrowed() {
   const balances = {}
   const stats = await getStats()
   stats.underlyingsStatistics.forEach(item => {
+    if (item.currency.ethAddress.toLowerCase() !== SMART_CREDIT) return
     sdk.util.sumSingleBalance(balances, replaceEth(item.currency.ethAddress), BigNumber(item.totalBorrowedAmount).toFixed(0))
   })
   return balances
