@@ -23,21 +23,10 @@ async function tvl() {
   const balances = {}
   const stats = await getStats()
   stats.underlyingsStatistics.forEach(item => {
-    if (item.currency.ethAddress.toLowerCase() === SMART_CREDIT) return
-    sdk.util.sumSingleBalance(balances, replaceEth(item.currency.ethAddress), BigNumber(item.totalLendedAmount).minus(item.totalBorrowedAmount).toFixed(0))
+    return sdk.util.sumSingleBalance(balances, replaceEth(item.currency.ethAddress), BigNumber(item.totalLendedAmount).minus(item.totalBorrowedAmount).toFixed(0))
   })
   stats.collateralsStatistics.forEach(item => {
     sdk.util.sumSingleBalance(balances, replaceEth(item.currency.ethAddress), BigNumber(item.lockedCollateralAmount).plus(item.unlockedCollateralAmount).toFixed(0))
-  })
-  return balances
-}
-
-async function staking() {
-  const balances = {}
-  const stats = await getStats()
-  stats.underlyingsStatistics.forEach(item => {
-    if (item.currency.ethAddress.toLowerCase() !== SMART_CREDIT) return
-    sdk.util.sumSingleBalance(balances, replaceEth(item.currency.ethAddress), BigNumber(item.totalLendedAmount).minus(item.totalBorrowedAmount).toFixed(0))
   })
   return balances
 }
@@ -56,7 +45,6 @@ module.exports = {
   timetravel: false,
   ethereum: {
     tvl,
-    staking,
     borrowed,
   }
 }
