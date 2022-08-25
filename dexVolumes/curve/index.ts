@@ -1,38 +1,44 @@
 import { DexVolumeAdapter } from "../dexVolume.type";
-import { IGraphs } from "../helper/customBackfill";
 
 const { fetchURL } = require("../helper/utils");
 
-const endpoints = {
+const endpoints: { [chain: string]: string } = {
   ethereum: "https://api.curve.fi/api/getAllPoolsVolume/ethereum",
+  polygon: "https://api.curve.fi/api/getAllPoolsVolume/polygon",
+  fantom: "https://api.curve.fi/api/getAllPoolsVolume/fantom",
+  arbitrum: "https://api.curve.fi/api/getAllPoolsVolume/arbitrum",
+  avalanche: "https://api.curve.fi/api/getAllPoolsVolume/avalanche",
+  optimism: "https://api.curve.fi/api/getAllPoolsVolume/optimism",
+  xdai: "https://api.curve.fi/api/getAllPoolsVolume/xdai"
 };
 
-// type better later
-const graphs: IGraphs = (chain: any) => async () => {
-  const timestamp = Date.now() / 1000;
-  let res;
-  switch (chain) {
-    case "ethereum":
-      res = await fetchURL(endpoints.ethereum);
-    default:
-      res = await fetchURL(endpoints.ethereum);
+interface IAPIResponse {
+  success: boolean
+  data: {
+    totalVolume: number,
+    cryptoShare: number,
+    generatedTimeMs: number
   }
+}
 
+const fetch = (chain: string) => async () => {
+  const response: IAPIResponse = (await fetchURL(endpoints[chain])).data;
   return {
-    totalVolume: res?.data?.data?.totalVolume,
-    timestamp,
+    dailyVolume: `${response.data.totalVolume}`,
+    timestamp: response.data.generatedTimeMs / 1000,
   };
 };
 
 const adapter: DexVolumeAdapter = {
-  volume: {
-    ethereum: {
-      fetch: graphs("ethereum"),
-      runAtCurrTime: true,
-      customBackfill: undefined,
-      start: async () => 0,
-    },
-    // TODO custom backfill
-  },
+  volume: Object.keys(endpoints).reduce((acc, chain) => {
+    return {
+      ...acc,
+      [chain]: {
+        fetch: fetch(chain),
+        start: async () => 0,
+        runAtCurrTime: true
+      }
+    }
+  }, {}) as DexVolumeAdapter['volume']
 };
 export default adapter;
