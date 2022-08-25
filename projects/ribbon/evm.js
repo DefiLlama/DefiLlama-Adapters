@@ -14,6 +14,7 @@ const aaveCallVault = "0xe63151A0Ed4e5fafdc951D877102cf0977Abd365";
 const stETHCallVault = "0x53773E034d9784153471813dacAFF53dBBB78E8c";
 const apeCallVault = "0xc0cF10Dd710aefb209D9dc67bc746510ffd98A53";
 const rethCallVault = "0xA1Da0580FA96129E753D736a5901C31Df5eC5edf";
+const earnVault = "0x84c2b16FA6877a8fF4F3271db7ea837233DFd6f0";
 
 // Avalanche Vaults
 const avaxCallVault = "0x98d03125c62DaE2328D9d3cb32b7B969e6a87787";
@@ -65,6 +66,7 @@ async function ethTvl(_, block) {
     addVault(balances, apeCallVault, ape, block),
     addVault(balances, balCallVault, bal, block),
     addVault(balances, rethCallVault, reth, block),
+    addVault(balances, earnVault, usdc, block),
   ]);
   return balances;
 }
