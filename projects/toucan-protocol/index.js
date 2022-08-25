@@ -26,6 +26,7 @@ const getCalculationMethod = (chain) => {
 };
 
 module.exports = {
+  start: 1634842800,
   timetravel: true,
   celo: {
     tvl: getCalculationMethod("celo")
@@ -34,8 +35,8 @@ module.exports = {
     tvl: getCalculationMethod("polygon")
   },
   hallmarks: [
-    [1634736872, "KlimaDAO launch"],
-    [1644330872, "NCT launch"],
+    [1634842800, "BCT launch"],
+    [1644330800, "NCT launch"],
     [1660147200, "Celo launch"],
   ]
 };
