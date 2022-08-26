@@ -792,6 +792,7 @@ const fixBalancesTokens = {
     '0x5c4b7ccbf908e64f32e12c6650ec0c96d717f03f': { coingeckoId: "binancecoin", decimals: 18 },
   },
   arbitrum_nova: {
+    [nullAddress]: { coingeckoId: "ethereum", decimals: 18 },
     '0x722E8BdD2ce80A4422E880164f2079488e115365': { coingeckoId: "ethereum", decimals: 18 },
     '0xda10009cbd5d07dd0cecc66161fc93d7c9000da1': { coingeckoId: "dai", decimals: 18 },
     '0x52484e1ab2e2b22420a25c20fa49e173a26202cd': { coingeckoId: "tether", decimals: 6 },
