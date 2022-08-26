@@ -15,7 +15,7 @@ let pTokensObject = {
   pXPRT: "0x8793cD84c22B94B1fDD3800f02C4B1dcCa40D50b",
 };
 const STKBNB_TOKEN_CONTRACT = '0xc2E9d07F66A89c44062459A47a0D2Dc038E4fb16';
-//0xC228CefDF841dEfDbD5B3a18dFD414cC0dbfa0D8
+
 const sushiGraphUrl =
   "https://api.thegraph.com/subgraphs/name/sushiswap/exchange";
 
