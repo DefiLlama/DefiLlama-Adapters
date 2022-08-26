@@ -1,7 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { sumTokensSharedOwners} = require("../helper/unwrapLPs");
 const { pool2s } = require("../helper/pool2");
-const { staking } = require("../helper/staking");
 
 const ctxToken = "0x321c2fe4446c7c963dc41dd58879af648838f98d";
 const factory = "0x70236b36f86AB4bd557Fe9934E1246537B472918";
@@ -78,12 +77,24 @@ async function treasury(timestamp, block) {
   return balances;
 }
 
+async function stakingBalance(timestamp, block) {
+  let stakingbalances = {};
+  const contractStake = (await sdk.api.abi.call({
+    abi: 'erc20:totalSupply',
+    target: factory,
+    block,
+  })).output;
+  await sdk.util.sumSingleBalance(stakingbalances, ctxToken, contractStake);
+  return stakingbalances;
+}
+
+
 module.exports = {
   methodology: "TVL includes collateral in vaults",
   ethereum: {
     tvl: ethTvl,
     pool2: pool2s(ethStakingContracts, ethPool2s),
-    staking: staking(factory, ctxToken),
+    staking: stakingBalance,
     treasury
   },
   optimism: {
