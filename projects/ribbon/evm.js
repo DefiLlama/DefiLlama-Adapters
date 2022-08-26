@@ -13,6 +13,7 @@ const yvUSDCETHPutVaultV2 = "0xCc323557c71C0D1D20a1861Dc69c06C5f3cC9624";
 const aaveCallVault = "0xe63151A0Ed4e5fafdc951D877102cf0977Abd365";
 const stETHCallVault = "0x53773E034d9784153471813dacAFF53dBBB78E8c";
 const apeCallVault = "0xc0cF10Dd710aefb209D9dc67bc746510ffd98A53";
+const usdcPPNVault = "0x84c2b16fa6877a8ff4f3271db7ea837233dfd6f0";
 
 // Avalanche Vaults
 const avaxCallVault = "0x98d03125c62DaE2328D9d3cb32b7B969e6a87787";
@@ -59,6 +60,7 @@ async function ethTvl(_, block) {
     addVault(balances, stETHCallVault, weth, block),
     addVault(balances, perpCallVault, perp, block),
     addVault(balances, apeCallVault, ape, block),
+    addVault(balances, usdcPPNVault, ape, block),
   ]);
   return balances;
 }
