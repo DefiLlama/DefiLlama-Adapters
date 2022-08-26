@@ -115,7 +115,7 @@ async function pool2(timestamp, block) {
 }
 
 
-async function tvl(timestamp, block, chainBlocks) {
+async function bsctvl(timestamp, block, chainBlocks) {
   const balances = {};
   const transform = await transformBscAddress();
 
@@ -150,6 +150,6 @@ module.exports = {
     pool2: pool2,
   },
   bsc: {
-    tvl,
+    tvl: bsctvl
   }
 };
