@@ -30,4 +30,7 @@ Object.keys(config).forEach((chain) => {
       return balances;
     },
   };
+  module.exports.hallmarks = [
+    [1661472000, "JioSwap live, all pools opened for deposits"],
+  ];
 });
