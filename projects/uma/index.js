@@ -2,7 +2,6 @@ const sdk = require("@defillama/sdk");
 const { sumTokens } = require("../helper/unwrapLPs");
 const { requery } = require("../helper/requery");
 const { getChainTransform } = require("../helper/portedTokens");
-const { getBlock } = require("../helper/getBlock");
 const abi = require("./abi");
 
 const ethLspCreators = [
@@ -92,7 +91,7 @@ async function polygonLsp(timestamp, block, chainBlocks) {
   const balances = {};
   const transform = await getChainTransform('polygon');
   for (let i = 0; i < polygonLspCreators.length; i++) {
-    block = await getBlock(timestamp, "polygon", chainBlocks);
+    block = chainBlocks.polygon;
     const logs = await sdk.api.util.getLogs({
       target: polygonLspCreators[i],
       topic: "CreatedLongShortPair(address,address,address,address)",
@@ -131,7 +130,7 @@ async function bobaLsp(timestamp, block, chainBlocks) {
 
   for (let i = 0; i < bobaLspCreators.length; i++) {
     const lspCreatorAddress = bobaLspCreators[i];
-    block = await getBlock(timestamp, chain, chainBlocks);
+    block = chainBlocks.boba;
     const logs = await sdk.api.util.getLogs({
       target: lspCreatorAddress,
       topic: "CreatedLongShortPair(address,address,address,address)",
