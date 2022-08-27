@@ -1,6 +1,4 @@
-const { getChainTvl } = require('../helper/getUniSubgraphTvl');
 const { getUniTVL } = require('../helper/unknownTokens');
-const endpoint = 'https://api.thegraph.com/subgraphs/name/voltfinance/voltage-exchange';
 
 module.exports = {
     tvl: getUniTVL({
