@@ -17,13 +17,6 @@ const chainTvl = getUniTVL({
   useDefaultCoreAssets: true,
 })
 
-/*
-const graphUrls = {
-  avax: 'https://api.thegraph.com/subgraphs/name/hurricaneswap/exchange-v2',
-}
-const chainTvl = getChainTvl(graphUrls, "pancakeFactories")("avax")
-*/
-
 module.exports = {
   timetravel: true,
   doublecounted: false,
