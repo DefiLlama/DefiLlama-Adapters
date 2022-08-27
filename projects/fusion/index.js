@@ -33,6 +33,7 @@ const bondStakingClassic = "0x7d9c6eC5Cd1fC08b3a9B168dE6c988649270e1af"; // 61
 const liquidStaking = "0x2A3605d98e26Ee6f682084d8E8018f71d867dcB3"; // 87, 250
 const liquidStakingClassic = "0x5bD915b4DDfE26D9Ba8Ad795231D7B068ADdc03E"; // 61
 const incomeStaking = "0x1bF49Db5Cb35575483dB2E630510fac8d8F177b9"; // 87
+const incomeStakingClassic = "0xb6B824D46B3Bd0698E5180bDb010a2C2bf012e1d"; // 61
 
 // Calculate TVL
 
