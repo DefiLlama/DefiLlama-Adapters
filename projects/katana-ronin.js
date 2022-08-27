@@ -1,7 +1,6 @@
 const sdk = require('@defillama/sdk');
 const { default: BigNumber } = require('bignumber.js');
 const { request, gql } = require("graphql-request");
-const { getBlock } = require('./helper/getBlock');
 
 // Ronin -> Mainnet lookup table
 const token_lookup_table = { // needed to add 0x in front
