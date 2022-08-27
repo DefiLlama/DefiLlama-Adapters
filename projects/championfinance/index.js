@@ -11,5 +11,5 @@ const usdcLPs = [
 ];
 
 module.exports = {
-    ...tombTvl(avicTokenAddress, chamTokenAddress, chamRewardPoolAddress, boardroomAddress, usdcLPs, "avic", undefined, false, usdcLPs[1])
+    ...tombTvl(avicTokenAddress, chamTokenAddress, chamRewardPoolAddress, boardroomAddress, usdcLPs, "avax", undefined, false, usdcLPs[1])
 }
