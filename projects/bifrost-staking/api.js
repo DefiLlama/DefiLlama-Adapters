@@ -2,7 +2,8 @@ const { ApiPromise, WsProvider } = require("@polkadot/api");
 const BigNumber = require("bignumber.js");
 const sdk = require("@defillama/sdk")
 
-// node test.js projects/bifrost/api.js
+// node test.js projects/bifrost-staking/api.js
+
 function formatTokenAmount(amount, tokenSymbol) {
   let decimals = 12;
 
@@ -28,25 +29,6 @@ function formatTokenAmount(amount, tokenSymbol) {
   return Number(amount / Number(10 ** decimals));
 }
 
-function formatToken(token) {
-  switch (token) {
-    case `{"Token":"RMRK"}`:
-      return "RMRK";
-    case `{"Token":"KSM"}`:
-      return "KSM";
-    case `{"VSToken":"KSM"}`:
-      return "KSM";
-    case `{"Token":"KAR"}`:
-      return "KAR";
-    case `{"Token":"ZLK"}`:
-      return "ZLK";
-    case `{"Stable":"KUSD"}`:
-      return "KUSD";
-    default :
-      return null;
-  }
-}
-
 const tokenToCoingecko = {
   DOT: "polkadot",
   BNC: "bifrost",
@@ -70,24 +52,6 @@ async function tvl() {
   const totalLiquidity = {};
   totalLiquidity.KSM = vsKSM;
   totalLiquidity.DOT = vsDOT;
-
-  // Get swap tvl
-  const pools = await api.query.zenlinkProtocol.pairStatuses.entries();
-  await Promise.all(pools.map(async (pool) => {
-    if (pool[1].toHuman()?.Trading?.pairAccount) {
-      const poolAccountTokens = await api.query.tokens.accounts.entries(pool[1].toHuman()?.Trading?.pairAccount);
-      poolAccountTokens.map(item => {
-        const currentToken = formatToken(JSON.stringify(item[0].toHuman()[1]));
-        if (currentToken) {
-          if (totalLiquidity[currentToken]) {
-            totalLiquidity[currentToken] = new BigNumber(totalLiquidity[currentToken]).plus(item[1].toJSON().free).toString();
-          } else {
-            totalLiquidity[currentToken] = new BigNumber(item[1].toJSON().free).toString();
-          }
-        }
-      });
-    }
-  }));
 
   // Get vToken tvl (vKSM / vMOVR )
   const tokenPool = await api.query.vtokenMinting.tokenPool.entries();
@@ -116,6 +80,6 @@ async function tvl() {
 
 module.exports = {
   timetravel: false,
-  methodology: "1.Liquidity Pools from Zenlink (only calculate the initiall Pool's liquidity). 2.Minted vTokens from other chains (only calculate the underlying asset value)",
+  methodology: "Minted vTokens from other chains (only calculate the underlying asset value)",
   bifrost: { tvl }
 };
