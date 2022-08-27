@@ -342,6 +342,9 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
     coreAssets = getCoreAssets(chain)
   }
   return async (ts, _block, { [chain]: block }) => {
+    
+    // get factory from LP
+    // console.log(await sdk.api.abi.call({ target: '0x463e451d05f84da345d641fbaa3129693ce13816', abi: { "inputs": [], "name": "factory", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" }, chain, block, }))
     let pairAddresses;
     const pairLength = (await sdk.api.abi.call({ target: factory, abi: factoryAbi.allPairsLength, chain, block })).output
     if (pairLength === null)
@@ -649,11 +652,11 @@ async function yieldHelper({ chain = 'ethereum', block, coreAssets = [], blackli
 }) {
   if (!coreAssets.length && useDefaultCoreAssets)
     coreAssets = getCoreAssets(chain)
-  
+
   if (!transformAddress)
     transformAddress = await getChainTransform(chain)
 
-  const calls = vaults.map(i => ({ target: i}))
+  const calls = vaults.map(i => ({ target: i }))
   const { output: balanceRes } = await sdk.api.abi.multiCall({
     abi: balanceAPI,
     calls,
