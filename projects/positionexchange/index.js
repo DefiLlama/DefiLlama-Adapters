@@ -42,7 +42,7 @@ const bodyParams = (method, params) => `{
       "id": 1
     }`;
 module.exports = {
-  methodology: "TVL in Binance Smart Chain calculated by value locked in MasterChef contract, casted NFT and treasury value is the POSI in the treasury contract. TVL in PosiChain is calculated by delegate into validator node.",
+  methodology: "TVL in Binance Smart Chain is calculated by value locked in the MasterChef contract, cast NFT and treasury value is the POSI in the treasury contract. TVL in PosiChain is calculated by delegating into the validator node.",
   bsc: {
     tvl: chefExport.tvl,
     pool2: chefExport.pool2,
