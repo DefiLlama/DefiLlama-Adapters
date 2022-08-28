@@ -195,6 +195,7 @@ function stripTokenHeader(token) {
 async function diplayUnknownTable({ tvlResults = {}, tvlBalances = {}, storedKey = 'ethereum', log = false, tableLabel = 'Unrecognized tokens' }) {
   if (!DEBUG_MODE && !log) return;
   const balances = {}
+  storedKey = storedKey.split('-')[0]
   Object.entries(tvlResults.tokenBalances).forEach(([label, balance]) => {
     if (!label.startsWith('UNKNOWN')) return;
     const token = label.split('(')[1].replace(')', '')
