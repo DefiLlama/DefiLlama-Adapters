@@ -75,7 +75,7 @@ function getParamCalls(length) {
   return createIncrementArray(length).map(i => ({ params: i }))
 }
 
-const LP_SYMBOLS = ['SLP', 'spLP', 'JLP', 'OLP', 'SCLP', 'DLP', 'MLP', 'MSLP', 'ULP', 'TLP', 'HMDX', 'YLP', 'SCNRLP', 'PGL', 'GREEN-V2', 'PNDA-V2', 'vTAROT', 'TETHYSLP', 'BAO-V2', 'DINO-V2', 'DFYNLP', 'LavaSwap', 'RLP', 'ZDEXLP', 'lawSWAPLP', 'ELP', ]
+const LP_SYMBOLS = ['SLP', 'spLP', 'JLP', 'OLP', 'SCLP', 'DLP', 'MLP', 'MSLP', 'ULP', 'TLP', 'HMDX', 'YLP', 'SCNRLP', 'PGL', 'GREEN-V2', 'PNDA-V2', 'vTAROT', 'TETHYSLP', 'BAO-V2', 'DINO-V2', 'DFYNLP', 'LavaSwap', 'RLP', 'ZDEXLP', 'lawSWAPLP', 'ELP',]
 const blacklisted_LPS = [
   '0xb3dc4accfe37bd8b3c2744e9e687d252c9661bc7',
   '0xf146190e4d3a2b9abe8e16636118805c628b94fe',
@@ -195,6 +195,7 @@ function stripTokenHeader(token) {
 async function diplayUnknownTable({ tvlResults = {}, tvlBalances = {}, storedKey = 'ethereum', log = false, tableLabel = 'Unrecognized tokens' }) {
   if (!DEBUG_MODE && !log) return;
   const balances = {}
+  storedKey = storedKey.split('-')[0]
   Object.entries(tvlResults.tokenBalances).forEach(([label, balance]) => {
     if (!label.startsWith('UNKNOWN')) return;
     const token = label.split('(')[1].replace(')', '')
@@ -202,7 +203,7 @@ async function diplayUnknownTable({ tvlResults = {}, tvlBalances = {}, storedKey
     if (balances[token] === 0) delete balances[token]
   })
 
-  return debugBalances({ balances, chain: storedKey, log, tableLabel })
+  return debugBalances({ balances, chain: storedKey, log, tableLabel, withETH: false, })
 }
 
 async function getSymbols(chain, tokens) {
@@ -219,7 +220,21 @@ async function getSymbols(chain, tokens) {
   return response
 }
 
-async function debugBalances({ balances = {}, chain, log = false, tableLabel = '' }) {
+async function getDecimals(chain, tokens) {
+  tokens = tokens.filter(i => i.includes('0x')).map(i => i.slice(i.indexOf('0x')))
+  const calls = tokens.map(i => ({ target: i }))
+  const { output: symbols } = await sdk.api.abi.multiCall({
+    abi: 'erc20:decimals',
+    calls,
+    chain,
+  })
+
+  const response = {}
+  symbols.map(i => response[i.input.target] = i.output)
+  return response
+}
+
+async function debugBalances({ balances = {}, chain, log = false, tableLabel = '', withETH = true }) {
   if (!DEBUG_MODE && !log) return;
   if (!Object.keys(balances).length) return;
 
@@ -247,6 +262,11 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
     calls: tokens.map(i => ({ target: i })),
     chain,
   })
+  const { output: decimals } = await sdk.api.abi.multiCall({
+    abi: 'erc20:decimals',
+    calls: tokens.map(i => ({ target: i })),
+    chain,
+  })
 
   const { output: name } = await sdk.api.abi.multiCall({
     abi: erc20.name,
@@ -254,26 +274,37 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
     chain,
   })
 
-  const { output: symbolsETH } = await sdk.api.abi.multiCall({
-    abi: 'erc20:symbol',
-    calls: ethTokens.map(i => ({ target: i })),
-  })
+  let symbolsETH, nameETH
 
-  const { output: nameETH } = await sdk.api.abi.multiCall({
-    abi: erc20.name,
-    calls: ethTokens.map(i => ({ target: i })),
-  })
+  if (withETH) {
+    symbolsETH = await sdk.api.abi.multiCall({
+      abi: 'erc20:symbol',
+      calls: ethTokens.map(i => ({ target: i })),
+    })
+
+    nameETH = await sdk.api.abi.multiCall({
+      abi: erc20.name,
+      calls: ethTokens.map(i => ({ target: i })),
+    })
+
+    symbolsETH = symbolsETH.output
+    nameETH = nameETH.output
+  }
 
   let symbolMapping = symbols.reduce((a, i) => ({ ...a, [i.input.target]: i.output }), {})
+  let decimalsMapping = decimals.reduce((a, i) => ({ ...a, [i.input.target]: i.output }), {})
   let nameMapping = name.reduce((a, i) => ({ ...a, [i.input.target]: i.output }), {})
-  symbolMapping = symbolsETH.reduce((a, i) => ({ ...a, [i.input.target]: i.output }), symbolMapping)
-  nameMapping = nameETH.reduce((a, i) => ({ ...a, [i.input.target]: i.output }), nameMapping)
+  if (withETH) {
+    symbolMapping = symbolsETH.reduce((a, i) => ({ ...a, [i.input.target]: i.output }), symbolMapping)
+    nameMapping = nameETH.reduce((a, i) => ({ ...a, [i.input.target]: i.output }), nameMapping)
+  }
   const logObj = []
   Object.entries(balances).forEach(([label, balance]) => {
     let token = labelMapping[label]
     let name = token && nameMapping[token] || '-'
     let symbol = token && symbolMapping[token] || '-'
-    logObj.push({ name, symbol, balance, label })
+    let decimal = token && decimalsMapping[token] || '-'
+    logObj.push({ name, symbol, balance, label, decimals: decimal })
   })
 
   console.log('Balance table for [%s] %s', chain, tableLabel)
