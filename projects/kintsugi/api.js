@@ -1,13 +1,8 @@
 
-const { ApiPromise, WsProvider } = require("@polkadot/api")
-
-const endpoint = "wss://api-kusama.interlay.io:443/parachain"
+const { getAPI } = require('../helper/acala/api')
 
 async function tvl(){
-
-  const provider = new WsProvider(endpoint);
-  const api = await ApiPromise.create(({ provider }));
-
+  const api = await getAPI('kintsugi');
   kintsugiTVL = {}
   
   // Fetch total BTC locked (= kBTC minted)
