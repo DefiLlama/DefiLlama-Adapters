@@ -548,10 +548,19 @@ const fixBalancesTokens = {
   },
   evmos: {
     "0x3F75ceabcdfed1aca03257dc6bdc0408e2b4b026": { coingeckoId: "diffusion", decimals: 18 },
-    "0xd4949664cd82660aae99bedc034a0dea8a0bd517": { coingeckoId: "evmos", decimals: 18 }
+    "0xd4949664cd82660aae99bedc034a0dea8a0bd517": { coingeckoId: "evmos", decimals: 18 },
   },
   energyweb: {
-    "0x6b3bd0478DF0eC4984b168Db0E12A539Cc0c83cd": { coingeckoId: "energy-web-token", decimals: 18 }
+    "0x6b3bd0478DF0eC4984b168Db0E12A539Cc0c83cd": { coingeckoId: "energy-web-token", decimals: 18 },
+  },
+  ultron: {
+    [nullAddress]: { coingeckoId: "ultron", decimals: 18 },
+    "0x3a4f06431457de873b588846d139ec0d86275d54": { coingeckoId: "ultron", decimals: 18 },
+    "0x2318bf5809a72aabadd15a3453a18e50bbd651cd": { coingeckoId: "ethereum", decimals: 18 },
+    "0xd2b86a80a8f30b83843e247a50ecdc8d843d87dd": { coingeckoId: "bitcoin", decimals: 18 },
+    "0xc7cac85c1779d2b8ada94effff49a4754865e2e4": { coingeckoId: "binance-usd", decimals: 18 },
+    "0x97fdd294024f50c388e39e73f1705a35cfe87656": { coingeckoId: "tether", decimals: 6 },
+    "0x3c4e0fded74876295ca36f62da289f69e3929cc4": { coingeckoId: "usd-coin", decimals: 6 },
   },
   bittorrent: {
     "0xca424b845497f7204d9301bd13ff87c0e2e86fcf": { coingeckoId: "usd-coin", decimals: 18 },
