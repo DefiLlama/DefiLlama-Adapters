@@ -1,12 +1,7 @@
 import { DexVolumeAdapter } from "../dexVolume.type";
-
-const {
-  getChainVolume,
-  DEFAULT_TOTAL_VOLUME_FIELD,
-  DEFAULT_DAILY_VOLUME_FIELD,
-} = require("../helper/getUniSubgraphVolume");
-const { ETHEREUM } = require("../helper/chains");
-const { getStartTimestamp } = require("../helper/getStartTimestamp");
+import { ETHEREUM } from "../helper/chains";
+import { getStartTimestamp } from "../helper/getStartTimestamp";
+import { DEFAULT_DAILY_VOLUME_FIELD, DEFAULT_TOTAL_VOLUME_FIELD, getChainVolume } from "../helper/getUniSubgraphVolume";
 
 const endpoints = {
   [ETHEREUM]:
