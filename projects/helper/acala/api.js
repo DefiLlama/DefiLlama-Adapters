@@ -45,7 +45,10 @@ const providers = {
     "wss://parallel.api.onfinality.io/public-ws",
   ],
   kintsugi: [
-    "wss://api-kusama.interlay.io/parachain",
+    "wss://api-kusama.interlay.io/parachain"
+  ],
+  interlay: [
+    "wss://api.interlay.io:443/parachain"
   ],
 }
 
