@@ -199,8 +199,8 @@ async function diplayUnknownTable({ tvlResults = {}, tvlBalances = {}, storedKey
   Object.entries(tvlResults.tokenBalances).forEach(([label, balance]) => {
     if (!label.startsWith('UNKNOWN')) return;
     const token = label.split('(')[1].replace(')', '')
-    balances[token] = +(+tvlBalances[token] / 1e18).toFixed(0)
-    if (balances[token] === 0) delete balances[token]
+    balances[token] = tvlBalances[token]
+    if (balances[token] === '0') delete balances[token]
   })
 
   return debugBalances({ balances, chain: storedKey, log, tableLabel, withETH: false, })
@@ -303,7 +303,10 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
     let token = labelMapping[label]
     let name = token && nameMapping[token] || '-'
     let symbol = token && symbolMapping[token] || '-'
-    let decimal = token && decimalsMapping[token] || '-'
+    let decimal = token && decimalsMapping[token]
+    if (decimal)
+      balance = (balance/(10 ** decimal)).toFixed(0)
+    
     logObj.push({ name, symbol, balance, label, decimals: decimal })
   })
 
