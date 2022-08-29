@@ -1,13 +1,9 @@
-const retry = require('async-retry')
-const axios = require("axios");
-
-async function fetch() {
-    const response = await retry(
-        async () => await axios.get('https://tifi.net/api/dex/tvl')
-    ).data;
-    return response.total_tvl;
-}
+const { getUniTVL } = require('../helper/unknownTokens')
+const { staking } = require('../helper/staking')
 
 module.exports = {
-    fetch
+  bsc: {
+    tvl: getUniTVL({ chain: 'bsc', factory: '0xb3456550c17128ca7ebbcc47d4be6cae29d43853', }),
+    staking: staking('0x0AEfF3d761F6706295f3828C87ccE29c9418a93B', '0x17E65E6b9B166Fb8e7c59432F0db126711246BC0', 'bsc')
+  }
 }
