@@ -545,10 +545,14 @@ const fixBalancesTokens = {
   },
   evmos: {
     "0x3F75ceabcdfed1aca03257dc6bdc0408e2b4b026": { coingeckoId: "diffusion", decimals: 18 },
-    "0xd4949664cd82660aae99bedc034a0dea8a0bd517": { coingeckoId: "evmos", decimals: 18 }
+    "0xd4949664cd82660aae99bedc034a0dea8a0bd517": { coingeckoId: "evmos", decimals: 18 },
   },
   energyweb: {
-    "0x6b3bd0478DF0eC4984b168Db0E12A539Cc0c83cd": { coingeckoId: "energy-web-token", decimals: 18 }
+    "0x6b3bd0478DF0eC4984b168Db0E12A539Cc0c83cd": { coingeckoId: "energy-web-token", decimals: 18 },
+  },
+  ultron: {
+    [nullAddress]: { coingeckoId: "ultron", decimals: 18 },
+    "0x3a4f06431457de873b588846d139ec0d86275d54": { coingeckoId: "ultron", decimals: 18 },
   },
   bittorrent: {
     "0xca424b845497f7204d9301bd13ff87c0e2e86fcf": { coingeckoId: "usd-coin", decimals: 18 },
