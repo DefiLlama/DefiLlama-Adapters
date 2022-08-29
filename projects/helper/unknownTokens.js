@@ -337,6 +337,7 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
   useDefaultCoreAssets = false,
   abis = {},
   restrictTokenRatio, // while computing tvl, an unknown token value can max be x times the pool value, default 100 times pool value
+  fetchInChunks = 0,  // if there are too many pairs, we might want to query in batches to avoid multicall failing and crashing
 }) {
   if (!coreAssets.length && useDefaultCoreAssets) {
     coreAssets = getCoreAssets(chain)
@@ -354,16 +355,34 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
 
     let pairNums = Array.from(Array(Number(pairLength)).keys())
     if (skipPair.length) pairNums = pairNums.filter(i => !skipPair.includes(i))
-    let pairs = (await sdk.api.abi.multiCall({ abi: factoryAbi.allPairs, chain, calls: pairNums.map(num => ({ target: factory, params: [num] })), block })).output
-    await requery(pairs, chain, block, factoryAbi.allPairs);
 
-    pairAddresses = pairs.map(result => result.output.toLowerCase())
-
-    const response = await getTokenPrices({
-      block, chain, coreAssets, blacklist, lps: pairAddresses, transformAddress, whitelist, allLps: true,
-      minLPRatio, log_coreAssetPrices, log_minTokenValue, restrictTokenRatio, abis,
-    })
-    return withMetaData ? response : response.balances
+    if (fetchInChunks === 0) {
+      let pairs = (await sdk.api.abi.multiCall({ abi: factoryAbi.allPairs, chain, calls: pairNums.map(num => ({ target: factory, params: [num] })), block })).output
+      await requery(pairs, chain, block, factoryAbi.allPairs);
+  
+      pairAddresses = pairs.map(result => result.output.toLowerCase())
+      const response = await getTokenPrices({
+        block, chain, coreAssets, blacklist, lps: pairAddresses, transformAddress, whitelist, allLps: true,
+        minLPRatio, log_coreAssetPrices, log_minTokenValue, restrictTokenRatio, abis,
+      })
+      return withMetaData ? response : response.balances
+    } else {
+      let i = 0
+      const allBalances = {}
+      const chunks = sliceIntoChunks(pairNums, fetchInChunks)
+      for (const chunk of chunks) {
+        log(`fetching ${++i} of ${chunks.length}`)
+        let pairs = (await sdk.api.abi.multiCall({ abi: factoryAbi.allPairs, chain, calls: chunk.map(num => ({ target: factory, params: [num] })), block })).output
+        await requery(pairs, chain, block, factoryAbi.allPairs);
+        pairAddresses = pairs.map(result => result.output.toLowerCase())
+        const { balances } = await getTokenPrices({
+          block, chain, coreAssets, blacklist, lps: pairAddresses, transformAddress, whitelist, allLps: true,
+          minLPRatio, log_coreAssetPrices, log_minTokenValue, restrictTokenRatio, abis,
+        })
+        Object.entries(balances).forEach(([token, value]) => sdk.util.sumSingleBalance(allBalances, token, value))
+      }
+      return allBalances
+    }
   }
 }
 
