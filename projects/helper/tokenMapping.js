@@ -466,7 +466,8 @@ const fixBalancesTokens = {
     "0x02Dac4898B2c2cA9D50fF8D6a7726166CF7bCFD0": { coingeckoId: "dai", decimals: 18, },  // aUsdtUsdc
     "0x4Bf769b05E832FCdc9053fFFBC78Ca889aCb5E1E": { coingeckoId: "binance-usd", decimals: 18, },
     "0xb7aB962c42A8Bb443e0362f58a5A43814c573FFb": { coingeckoId: "binance-usd", decimals: 18, },
-    "0x733ebcC6DF85f8266349DEFD0980f8Ced9B45f35": { coingeckoId: "bai-stablecoin", decimals: 18, },
+    "0x733ebcC6DF85f8266349DEFD0980f8Ced9B45f35": { coingeckoId: "bai-stablecoin", decimals: 18, }, // BAI
+    "0x5271D85CE4241b310C0B34b7C2f1f036686A6d7C": { coingeckoId: "astriddao-token", decimals: 18, }, // ATID
     "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF": { coingeckoId: "polkadot", decimals: 10, },
     "0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB": { coingeckoId: "jpy-coin", decimals: 18, },
   },
