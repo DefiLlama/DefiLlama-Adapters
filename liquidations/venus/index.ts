@@ -5,6 +5,10 @@ import { getPagedGql } from "../utils/gql";
 import BigNumber from "bignumber.js";
 import fs from "fs";
 
+// ALGORITHM:
+// 1. get all accounts-ctoken pairs currently in market
+// 2. calculate all positions for each account on chain
+
 // price oracle used in comptroller
 const uniswapAnchoredView = new ethers.Contract(
   "0x65c816077C29b557BEE980ae3cC2dCE80204A0C5",
