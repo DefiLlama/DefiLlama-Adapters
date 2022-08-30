@@ -603,6 +603,14 @@ const fixBalancesTokens = {
     "0x8059e671be1e76f8db5155bf4520f86acfdc5561": { coingeckoId: "wrapped-bitcoin", decimals: 8 },
     "0x5B07F2582d0Cc26E400D56266aeBB201c93560eD": { coingeckoId: "ethereum", decimals: 18 },
   },
+  tombchain: {
+    "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000": { coingeckoId: "tomb", decimals: 18, },
+    "0x4200000000000000000000000000000000000108": { coingeckoId: "lif3", decimals: 18, },
+    "0x4200000000000000000000000000000000000006": { coingeckoId: "fantom", decimals: 18, },
+    "0x4200000000000000000000000000000000000101": { coingeckoId: "tomb-shares", decimals: 18, },
+    "0x4200000000000000000000000000000000000100": { coingeckoId: "usd-coin", decimals: 6, },
+    "0x4200000000000000000000000000000000000109": { coingeckoId: "lif3-lshare", decimals: 18, },
+  },
   rsk: {
     "0x967f8799af07df1534d48a95a5c9febe92c53ae0": { coingeckoId: "rootstock", decimals: 18, },
     "0x542fda317318ebf1d3deaf76e0b632741a7e677d": { coingeckoId: "rootstock", decimals: 18, },
