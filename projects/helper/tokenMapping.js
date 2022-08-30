@@ -555,7 +555,16 @@ const fixBalancesTokens = {
     "0xe4f05a66ec68b54a58b17c22107b02e0232cc817": { coingeckoId: "klay-token", decimals: 18 }, // Wrapped KLAY
     "0x9eaefb09fe4aabfbe6b1ca316a3c36afc83a393f": { coingeckoId: "ripple", decimals: 6 },
     "0xd6dab4cff47df175349e6e7ee2bf7c40bb8c05a3": { coingeckoId: "tether", decimals: 6 },
-    "0xc6a2ad8cc6e4a7e08fc37cc5954be07d499e7654": { coingeckoId: "klayswap-protocol", decimals: 18 } // KLAYSWAP
+    "0xc6a2ad8cc6e4a7e08fc37cc5954be07d499e7654": { coingeckoId: "klayswap-protocol", decimals: 18 }, // KLAYSWAP
+    "0x98a8345bb9d3dda9d808ca1c9142a28f6b0430e1": { coingeckoId: "ethereum", decimals: 18 },
+    "0x981846be8d2d697f4dfef6689a161a25ffbab8f9": { coingeckoId: "wrapped-bitcoin", decimals: 8 },
+    "0x608792deb376cce1c9fa4d0e6b7b44f507cffa6a": { coingeckoId: "usd-coin", decimals: 6 },
+    "0x5c13e303a62fc5dedf5b52d66873f2e59fedadc2": { coingeckoId: "tether", decimals: 6 },
+    "0xcb2c7998696ef7a582dfd0aafadcd008d03e791a": { coingeckoId: "dai", decimals: 18 },
+    "0xac9c1e4787139af4c751b1c0fadfb513c44ed833": { coingeckoId: "binancecoin", decimals: 18 },
+    "0xe2765f3721dab5f080cf14ace661529e1ab9ade7": { coingeckoId: "binance-usd", decimals: 18 },
+    "0x45830b92443a8f750247da2a76c85c70d0f1ebf3": { coingeckoId: "avalanche-2", decimals: 18 },
+    "0xfAA03A2AC2d1B8481Ec3fF44A0152eA818340e6d": { coingeckoId: "solana", decimals: 18 },
   },
   evmos: {
     "0x3F75ceabcdfed1aca03257dc6bdc0408e2b4b026": { coingeckoId: "diffusion", decimals: 18 },
