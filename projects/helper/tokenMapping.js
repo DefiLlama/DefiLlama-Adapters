@@ -1500,6 +1500,7 @@ const coreAssets = {
     '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063', // DAI
     '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619', // WETH
     '0x4535e52cdf3ab787b379b7b72b5990767e6747e4', // myt
+    '0x22a31bD4cB694433B6de19e0aCC2899E553e9481', // MMF
   ],
   fantom: [
     '0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83', // wftm
