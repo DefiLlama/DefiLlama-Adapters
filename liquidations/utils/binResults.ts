@@ -8,7 +8,7 @@ export interface Liq {
   collateral: string;
   collateralAmount: string;
   extra?: {
-    name: string;
+    displayName: string;
     url: string;
   };
 }
