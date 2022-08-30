@@ -106,7 +106,7 @@ function fetchChain(chain) {
 const chainTvls = {}
 Object.keys(chains).forEach((chain) => {
   const chainName = chains[chain]
-  chainTvls[chainName === 'avax' ? 'avalanche' : chainName] = {
+  chainTvls[chainName] = {
     fetch: fetchChain(chain)
   }
 })
