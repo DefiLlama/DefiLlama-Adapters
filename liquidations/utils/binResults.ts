@@ -7,6 +7,10 @@ export interface Liq {
   liqPrice: number;
   collateral: string;
   collateralAmount: string;
+  extra?: {
+    name: string;
+    url: string;
+  };
 }
 
 export interface Bins {
