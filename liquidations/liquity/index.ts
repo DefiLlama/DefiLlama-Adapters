@@ -89,7 +89,6 @@ const positions = async () => {
       collateral: "ethereum:" + "0x0000000000000000000000000000000000000000", // ETH
       collateralAmount: rawCollateral,
       extra: {
-        displayName: owner.id,
         url: EXPLORER_BASE_URL + owner.id,
       },
     } as Liq;
