@@ -23,5 +23,8 @@ module.exports = {
   dogechain: {
     fetch: fetch('dogechain'),
   },
+  arbitrum: {
+    fetch: fetch('arbitrum'),
+  },
   fetch: fetch('tvl')
 }
