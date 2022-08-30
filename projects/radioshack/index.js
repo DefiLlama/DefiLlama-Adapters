@@ -37,6 +37,12 @@ const chainConfig = {
     shack: '0x671D2E0E1a9c8E117A071bFC5763aF3fBe9bDF0b',
     stakingContracts: ['0x68797130D8E63745761C524C33121fdD7290cB72'],
   },
+  optimism: {
+    factory: '0x5eF0153590D4a762F129dCf3c59186D91365e4e1',
+    radio: '0xf899e3909B4492859d44260E1de41A9E663e70F5',
+    shack: '0x66e8617d1Df7ab523a316a6c01D16Aa5beD93681',
+    stakingContracts: ['0x68797130D8E63745761C524C33121fdD7290cB72'],
+  },
 }
 
 const moduleExports = Object.keys(chainConfig).reduce((agg, chain) => {
