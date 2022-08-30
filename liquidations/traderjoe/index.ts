@@ -1,6 +1,7 @@
 import { gql } from "graphql-request";
 import { getPagedGql } from "../utils/gql";
 import BigNumber from "bignumber.js";
+import { Liq } from "../utils/binResults";
 
 const subgraphUrl = "https://api.thegraph.com/subgraphs/name/traderjoe-xyz/lending";
 
@@ -65,6 +66,8 @@ type Market = {
   underlyingAddress: string;
 };
 
+const EXPLORER_BASE_URL = "https://snowtrace.io/address/";
+
 const positions = async () => {
   const accounts = (await getPagedGql(subgraphUrl, accountsQuery, "accounts")) as Account[];
 
@@ -107,10 +110,20 @@ const positions = async () => {
             liqPrice: Number(liqPrice.toFixed(6)),
             collateral: "avax:" + pos.token,
             collateralAmount: new BigNumber(pos.totalBal).times(10 ** pos.decimals).toFixed(0),
+            extra: {
+              url: EXPLORER_BASE_URL + account.id,
+            },
+          } as Liq;
+        } else {
+          return {
+            owner: "",
+            liqPrice: 0,
+            collateral: "",
+            collateralAmount: "",
           };
         }
       })
-      .filter((t) => t !== undefined);
+      .filter((t) => !!t.owner);
 
     return liquidablePositions;
   });
