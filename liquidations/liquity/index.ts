@@ -75,8 +75,9 @@ const calculateLiquidationPrice = (debt: string, collateral: string, isRecoveryM
   return price;
 };
 
+const EXPLORER_BASE_URL = "https://etherscan.io/address/";
+
 const positions = async () => {
-  const explorerBaseUrl = "https://etherscan.io/address";
   const { totalCollateralRatio } = await getSystemState();
   const _isRecoveryMode = isRecoveryMode(totalCollateralRatio);
 
@@ -89,7 +90,7 @@ const positions = async () => {
       collateralAmount: rawCollateral,
       extra: {
         displayName: owner.id,
-        url: explorerBaseUrl + "/" + owner.id,
+        url: EXPLORER_BASE_URL + owner.id,
       },
     } as Liq;
   });

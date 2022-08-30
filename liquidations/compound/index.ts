@@ -84,8 +84,9 @@ const uniswapAnchoredView = new ethers.Contract(
   providers.ethereum
 );
 
+const EXPLORER_BASE_URL = "https://etherscan.io/address/";
+
 const positions = async () => {
-  const explorerBaseUrl = "https://etherscan.io/address";
   const accounts = (await getPagedGql(subgraphUrl, accountsQuery, "accounts")) as Account[];
 
   const ethPriceInUsd = Number(await uniswapAnchoredView.price("ETH")) / 1e6;
@@ -133,7 +134,7 @@ const positions = async () => {
             collateralAmount: new BigNumber(pos.totalBal).times(10 ** pos.decimals).toFixed(0),
             extra: {
               displayName: account.id,
-              url: `${explorerBaseUrl}/${account.id}`,
+              url: EXPLORER_BASE_URL + account.id,
             },
           } as Liq;
         } else {

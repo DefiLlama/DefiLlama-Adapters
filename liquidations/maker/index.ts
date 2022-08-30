@@ -164,7 +164,7 @@ function collateralPriceAtRatio({
   return collateral.isZero() || vaultDebt.isZero() ? new BigNumber("0") : vaultDebt.times(colRatio).div(collateral);
 }
 
-const INSPECTOR_BASE_URL = "https://oasis.app";
+const INSPECTOR_BASE_URL = "https://oasis.app/";
 
 const positions = async (): Promise<Liq[]> => {
   const cdpi = ((await cdpManager.cdpi()) as BigNumber).toNumber();
@@ -270,7 +270,7 @@ const positions = async (): Promise<Liq[]> => {
         owner,
         extra: {
           displayName: `Vault ${i}`,
-          url: INSPECTOR_BASE_URL + "/" + i,
+          url: INSPECTOR_BASE_URL + i,
         },
       } as Liq;
     })
