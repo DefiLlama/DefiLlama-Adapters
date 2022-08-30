@@ -8,9 +8,9 @@ async function tvl() {
 }
 
 async function fetch_juno() {
-  var response = await retry(async bail => await axios.get('https://arufaresearch.pythonanywhere.com/tvl'))
+  var response = await retry(async bail => await axios.get('https://arufaresearch.pythonanywhere.com/juno_tvl'))
 
-  return response.tvl;
+  return toUSDTBalances(response.data.tvl);
 }
 
 module.exports = {
