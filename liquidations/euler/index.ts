@@ -120,8 +120,9 @@ const mapAsset = (asset: Asset): MappedAsset => {
   };
 };
 
+const INSPECTOR_BASE_URL = "https://app.euler.finance/dashboard?spy=";
+
 const positions = async () => {
-  const inspectorBaseUrl = "https://app.euler.finance/dashboard?spy=";
   const _accounts = (await getPagedGql(subgraphUrl, accountsQuery, "accounts")) as Account[];
 
   const accounts = _accounts.map((x) => {
@@ -191,7 +192,7 @@ const positions = async () => {
               collateralAmount: pos.amount.times(10 ** Number(pos.decimals)).toFixed(0),
               extra: {
                 displayName: account.topLevelAccount.id,
-                url: inspectorBaseUrl + account.topLevelAccount.id,
+                url: INSPECTOR_BASE_URL + account.topLevelAccount.id,
               },
             } as Liq;
           } else {

@@ -57,14 +57,14 @@ const rc: { [chain in Chains]: AaveAdapterResource } = {
     chain: Chains.ethereum,
     usdcAddress: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
     subgraphUrl: "https://api.thegraph.com/subgraphs/name/aave/protocol-v2",
-    explorerBaseUrl: "https://etherscan.io/address",
+    explorerBaseUrl: "https://etherscan.io/address/",
   },
   [Chains.polygon]: {
     name: "aave",
     chain: Chains.polygon,
     usdcAddress: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
     subgraphUrl: "https://api.thegraph.com/subgraphs/name/aave/aave-v2-matic",
-    explorerBaseUrl: "https://polygonscan.com/address",
+    explorerBaseUrl: "https://polygonscan.com/address/",
   },
 };
 
@@ -119,7 +119,7 @@ const positions = (chain: Chains) => async () => {
               collateralAmount: pos.totalBal as string,
               extra: {
                 displayName: user.id as string,
-                url: `${explorerBaseUrl}/${user.id}`,
+                url: explorerBaseUrl + user.id,
               },
             } as Liq;
           } else {
