@@ -186,10 +186,7 @@ const transformTokens = {
     "0xA2F3C2446a3E20049708838a779Ff8782cE6645a": "bsc:0x1d2f0da169ceb9fc7b3144628db156f3f6c60dbe", // XRP
     "0x843Af718EF25708765a8E0942F89edEae1D88DF0": "bsc:0x3ee2200efb3400fabb9aacf31297cbdd1d435d47" // ADA
   },
-  hoo: {
-    "0xd16babe52980554520f6da505df4d1b124c815a7": "0xdac17f958d2ee523a2206206994597c13d831ec7", // USDT
-    "0x3eff9d389d13d6352bfb498bcf616ef9b1beac87": "0x6f259637dcd74c767781e37bc6133cd6a68aa161" // wHOO
-  },
+  hoo: {},
   harmony: {
     "0x6983D1E6DEf3690C4d616b13597A09e6193EA013": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
     "0xb1f6E61E1e113625593a22fa6aa94F8052bc39E0": "bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
@@ -570,6 +567,14 @@ const fixBalancesTokens = {
     "0x3F75ceabcdfed1aca03257dc6bdc0408e2b4b026": { coingeckoId: "diffusion", decimals: 18 },
     "0xd4949664cd82660aae99bedc034a0dea8a0bd517": { coingeckoId: "evmos", decimals: 18 },
   },
+  hoo: {
+    [nullAddress]: { coingeckoId: "hoo-token", decimals: 18 },
+    "0x3eff9d389d13d6352bfb498bcf616ef9b1beac87": { coingeckoId: "hoo-token", decimals: 18 },
+  },
+  elastos: {
+    [nullAddress]: { coingeckoId: "elastos", decimals: 18 },
+    "0x517e9e5d46c1ea8ab6f78677d6114ef47f71f6c4": { coingeckoId: "elastos", decimals: 18 },
+  },
   energyweb: {
     "0x6b3bd0478DF0eC4984b168Db0E12A539Cc0c83cd": { coingeckoId: "energy-web-token", decimals: 18 },
   },
@@ -842,6 +847,7 @@ const fixBalancesTokens = {
     [nullAddress]: { coingeckoId: "iotex", decimals: 18 },
     '0xA00744882684C3e4747faEFD68D283eA44099D03': { coingeckoId: "iotex", decimals: 18 },
     "0x3fe04320885e6124231254c802004871be681218": { coingeckoId: "mcn-ventures", decimals: 18 },
+    "0xe1ce1c0fa22ec693baca6f5076bcdc4d0183de1c": { coingeckoId: "elk-finance", decimals: 18 },
   },
   polygon: {
     '0xfc40a4f89b410a1b855b5e205064a38fc29f5eb5': { coingeckoId: "rusd", decimals: 18 },
