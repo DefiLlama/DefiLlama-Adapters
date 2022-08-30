@@ -1,6 +1,7 @@
 import { gql, request } from "graphql-request";
 import BigNumber from "bignumber.js";
 import { getPagedGql } from "../utils/gql";
+import { Liq } from "../utils/binResults";
 
 const subgraphUrl = "https://api.thegraph.com/subgraphs/name/liquity/liquity";
 
@@ -75,6 +76,7 @@ const calculateLiquidationPrice = (debt: string, collateral: string, isRecoveryM
 };
 
 const positions = async () => {
+  const explorerBaseUrl = "https://etherscan.io/address";
   const { totalCollateralRatio } = await getSystemState();
   const _isRecoveryMode = isRecoveryMode(totalCollateralRatio);
 
@@ -85,7 +87,11 @@ const positions = async () => {
       liqPrice: Number(calculateLiquidationPrice(debt, _collateral, _isRecoveryMode)),
       collateral: "ethereum:" + "0x0000000000000000000000000000000000000000", // ETH
       collateralAmount: rawCollateral,
-    };
+      extra: {
+        displayName: owner.id,
+        url: explorerBaseUrl + "/" + owner.id,
+      },
+    } as Liq;
   });
 
   return _troves;
