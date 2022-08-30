@@ -1,6 +1,7 @@
 import { PublicKey, Connection } from "@solana/web3.js";
 import { SolendMarket, SolendObligation, parseObligation } from "@solendprotocol/solend-sdk";
 import { BigNumber } from "bignumber.js";
+import { Liq } from "../utils/binResults";
 
 const endpoint = process.env.SOLANA_RPC || "https://solana-api.projectserum.com/"; // or "https://api.mainnet-beta.solana.com"
 const connection = new Connection(endpoint, "confirmed");
@@ -20,6 +21,8 @@ type MarketConfig = {
   liquidationThreshold?: number; // safe to
   assetPriceUSD?: number;
 };
+
+const INSPECTOR_BASE_URL = "https://solend.fi/dashboard?wallet=";
 
 const liquidations = async () => {
   const market = await SolendMarket.initialize(connection);
@@ -115,12 +118,19 @@ const liquidations = async () => {
         };
       })
       .filter((p) => p.liqPrice > 0 && p.liqPrice < p.assetPriceUSD!)
-      .map(({ owner, liqPrice, collateral, collateralAmount }) => ({
-        owner,
-        liqPrice,
-        collateral,
-        collateralAmount,
-      }));
+      .map(
+        ({ owner, liqPrice, collateral, collateralAmount }) =>
+          ({
+            owner,
+            liqPrice,
+            collateral,
+            collateralAmount,
+            extra: {
+              displayName: owner,
+              url: INSPECTOR_BASE_URL + owner,
+            },
+          } as Liq)
+      );
 
     return liquidablePositions;
   });
