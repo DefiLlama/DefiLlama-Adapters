@@ -191,7 +191,6 @@ const positions = async () => {
               collateral: "ethereum:" + pos.token,
               collateralAmount: pos.amount.times(10 ** Number(pos.decimals)).toFixed(0),
               extra: {
-                displayName: account.topLevelAccount.id,
                 url: INSPECTOR_BASE_URL + account.topLevelAccount.id,
               },
             } as Liq;

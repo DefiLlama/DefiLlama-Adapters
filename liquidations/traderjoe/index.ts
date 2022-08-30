@@ -111,7 +111,6 @@ const positions = async () => {
             collateral: "avax:" + pos.token,
             collateralAmount: new BigNumber(pos.totalBal).times(10 ** pos.decimals).toFixed(0),
             extra: {
-              displayName: account.id,
               url: EXPLORER_BASE_URL + account.id,
             },
           } as Liq;

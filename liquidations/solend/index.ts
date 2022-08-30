@@ -126,7 +126,6 @@ const liquidations = async () => {
             collateral,
             collateralAmount,
             extra: {
-              displayName: owner,
               url: INSPECTOR_BASE_URL + owner,
             },
           } as Liq)
