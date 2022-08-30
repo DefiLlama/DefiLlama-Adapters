@@ -1,4 +1,4 @@
-import oneInch from "./1inch";
+import mooniswap from "./mooniswap";
 import balancer from "./balancer";
 import bancor from "./bancor";
 import carthage from "./carthage";
@@ -23,7 +23,7 @@ import uniswap from "./uniswap";
 import yieldfields from "./yieldfields";
 
 export default {
-  "1inch": oneInch,
+  mooniswap,
   balancer,
   bancor,
   carthage,
