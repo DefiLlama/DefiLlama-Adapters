@@ -1,16 +1,6 @@
 const { sumTokens2 } = require("../helper/unwrapLPs");
 const config = require("./config");
 const { getFixBalances } = require("../helper/portedTokens");
-const ethers = require("ethers")
-const { config: configRPC } = require('@defillama/sdk/build/api');
-
-configRPC.setProvider("godwoken_v1", new ethers.providers.StaticJsonRpcProvider(
-  "https://v1.mainnet.godwoken.io/rpc",
-  {
-    name: "godwoken_v1",
-    chainId: 71402,
-  }
-))
 
 module.exports = {
   misrepresentedTokens: true,
@@ -40,4 +30,7 @@ Object.keys(config).forEach((chain) => {
       return balances;
     },
   };
+  module.exports.hallmarks = [
+    [1661472000, "JioSwap live, all pools opened for deposits"],
+  ];
 });

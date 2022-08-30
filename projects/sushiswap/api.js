@@ -48,14 +48,14 @@ function getChainTVL(chain) {
     console.log(chainBlocks, chain)
     const block = await getBlock(timestamp, chain, chainBlocks, false)
     const { factory } = await request(
-      'https://api.thegraph.com/subgraphs/name/sushiswap/exchange-'+chain,
+      'https://api.thegraph.com/subgraphs/name/sushiswap/exchange-' + chain,
       graphQueryPolygon,
       {
         block: block - 100,
       }
     );
     const usdTvl = Number(factory.liquidityUSD)
-  
+
     return toUSDTBalances(usdTvl)
   }
 }
@@ -172,6 +172,13 @@ module.exports = {
       useDefaultCoreAssets: true,
     }),
   },
+  arbitrum_nova: {
+    tvl: getUniTVL({
+      chain: 'arbitrum_nova',
+      useDefaultCoreAssets: true,
+      factory,
+    })
+  }
 }
 
 module.exports.polygon.tvl = getChainTVL('polygon')
