@@ -118,7 +118,7 @@ const positions = (chain: Chains) => async () => {
               collateral: `${chain}:` + pos.token,
               collateralAmount: pos.totalBal as string,
               extra: {
-                name: user.id as string,
+                displayName: user.id as string,
                 url: `${explorerBaseUrl}/${user.id}`,
               },
             } as Liq;
