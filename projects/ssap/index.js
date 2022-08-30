@@ -116,5 +116,10 @@ module.exports = {
       "0xBB4dfd53BA393DCD1AD1e30809C9527e9a00d522",
       "0x2b8DD6DE52F20EfA309BC56454b7A929B7a1E66D"
     ),
+    borrowed: lendingOasis(
+      true,
+      "0xBB4dfd53BA393DCD1AD1e30809C9527e9a00d522",
+      "0x2b8DD6DE52F20EfA309BC56454b7A929B7a1E66D"
+    ),
   },
 };
