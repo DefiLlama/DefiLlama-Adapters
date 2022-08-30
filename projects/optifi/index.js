@@ -60,6 +60,9 @@ module.exports = {
   misrepresentedTokens: true,
   timetravel: false,
   solana: {
-    tvl,
+    tvl: () => ({}),
   },
+  hallmarks: [
+    [Math.floor(new Date('2022-08-30')/1e3), 'OptiFi mainnet program was closed by mistake'],
+  ],
 };
