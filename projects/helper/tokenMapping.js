@@ -2,6 +2,7 @@
 const nullAddress = '0x0000000000000000000000000000000000000000'
 
 // Multichain bridge info: https://bridgeapi.anyswap.exchange/v2/serverInfo/all
+// IBC info - https://github.com/PulsarDefi/IBC-Cosmos/blob/main/ibc_data.json
 
 const transformTokens = {
   ethereum: {
@@ -481,6 +482,20 @@ const fixBalancesTokens = {
   avax: {
     "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7": { coingeckoId: "avalanche-2", decimals: 18, },
     "0x9dEbca6eA3af87Bf422Cea9ac955618ceb56EfB4": { coingeckoId: "avalanche-2", decimals: 18, },
+  },
+  crescent: {
+    // token info - https://apigw-v2.crescent.network/asset/info
+    "ubcre": { coingeckoId: "liquid-staking-crescent", decimals: 6, },
+    "ucre": { coingeckoId: "crescent-network", decimals: 6, },
+    "ibc/6F4968A73F90CF7DE6394BF937D6DF7C7D162D74D839C13F53B41157D315E05F": { coingeckoId: "terrausd", decimals: 6, },
+    "ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9": { coingeckoId: "cosmos", decimals: 6, },
+    "ibc/4627AD2524E3E0523047E35BB76CC90E37D9D57ACF14F0FCBCEB2480705F3CB8": { coingeckoId: "terra-luna", decimals: 6, },
+    "ibc/C950356239AD2A205DE09FDF066B1F9FF19A7CA7145EA48A5B19B76EE47E52F7": { coingeckoId: "graviton", decimals: 6, },
+    "ibc/DBF5FA602C46392DE9F4796A0FC7D02F3A8A3D32CA3FAA50B761D4AA6F619E95": { coingeckoId: "ethereum", decimals: 18, },
+    "ibc/CD01034D6749F20AAC5330EF4FD8B8CA7C40F7527AB8C4A302FBD2A070852EE1": { coingeckoId: "usd-coin", decimals: 6, },
+    "ibc/F1806958CA98757B91C3FA1573ECECD24F6FA3804F074A6977658914A49E65A3": { coingeckoId: "ethereum", decimals: 18, },
+    "ibc/BFF0D3805B50D93E2FA5C0B2DDF7E0B30A631076CD80BC12A48C0E95404B4A41": { coingeckoId: "usd-coin", decimals: 6, },
+    "ibc/11F940BCDFD7CFBFD7EDA13F25DA95D308286D441209D780C9863FD4271514EB": { coingeckoId: "agoric", decimals: 6, },
   },
   harmony: {
     "0x799a4202c12ca952cB311598a024C80eD371a41e": { coingeckoId: "harmony", decimals: 18, },
