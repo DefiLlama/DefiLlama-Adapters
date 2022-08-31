@@ -1,18 +1,4 @@
 module.exports = {
-  poolType: {
-    "inputs": [],
-    "name": "poolType",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "",
-        "type": "uint8"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function",
-    "constant": true
-  },
   getCurrentPool: {
     "constant": true,
     "inputs": [],
@@ -28,51 +14,6 @@ module.exports = {
         "name": "_reserve1",
         "type": "uint256"
       },
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  symbol: {
-    "constant": true,
-    "inputs": [],
-    "name": "symbol",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  token0: {
-    "constant": true,
-    "inputs": [],
-    "name": "token0",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  token1: {
-    "constant": true,
-    "inputs": [],
-    "name": "token0",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
     ],
     "payable": false,
     "stateMutability": "view",
