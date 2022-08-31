@@ -124,7 +124,6 @@ sdk.api.abi.call = async (...args) => {
     console.log(e)
   }
   const chains = Object.keys(module).filter(item => typeof module[item] === 'object' && !Array.isArray(module[item]));
-
   checkExportKeys(module, passedFile, chains)
   const unixTimestamp = Math.round(Date.now() / 1000) - 60;
   const chainBlocks = {};
@@ -132,14 +131,11 @@ sdk.api.abi.call = async (...args) => {
   if (!chains.includes("ethereum")) {
     chains.push("ethereum");
   }
-  console.log("chains",chains)
   await Promise.all(
     chains.map(async (chainRaw) => {
       const chain = chainRaw === "avalanche" ? "avax" : chainRaw
-      if (chainsForBlocks.includes(chain) || chain === "findora") {
-
+      if (chainsForBlocks.includes(chain) || chain === "ethereum") {
         chainBlocks[chain] = (await getLatestBlockRetry(chain)).number - 10;
-console.log("chainBlocks[chain]",chainBlocks[chain])
       }
     })
   );

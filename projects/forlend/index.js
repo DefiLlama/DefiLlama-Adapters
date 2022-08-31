@@ -87,7 +87,7 @@ async function getMarkets(chainBlocks) {
 }
 
 
-async function v2Tvl(chainBlocks, borrowed) {
+async function v2Tvl(balances,chainBlocks, borrowed) {
   let markets = await getMarkets(chainBlocks);
   // Get V2 tokens locked
   let v2Locked = await sdk.api.abi.multiCall({
@@ -108,24 +108,25 @@ async function v2Tvl(chainBlocks, borrowed) {
     chain: "findora",
     abi: abi["getUnderlyingPrice"]
   });
-  let balances = 0;
+
   markets.forEach((market) => {
     let getCash = v2Locked.output.find((result) => result.input.target === market.cToken);
     let price = prices.output.find((result) => result.input.params[0] === market.cToken);
-  //  console.log(getCash.output * price.output / 1e24);
-    balances = balances + getCash.output * price.output / 1e24;
-    //balances = balances.plus(BigNumber(getCash.output).multipliedBy(BigNumber(price.output)).div(BigNumber(10).pow(24)));
+    //  console.log(getCash.output * price.output / 1e24);
+    balances[market.underlying] = getCash.output * price.output / 1e24;
   });
   return balances;
 }
 
 async function borrowed(timestamp, block, chainBlocks) {
-  let balances = await v2Tvl(chainBlocks, true);
+  let balances = {};
+  await v2Tvl(chainBlocks, true);
   return balances;
 }
 
 async function tvl(timestamp, block, chainBlocks) {
-  let balances = await v2Tvl(chainBlocks, false);
+  let balances = {};
+  await v2Tvl(chainBlocks, false);
   return balances;
 }
 
