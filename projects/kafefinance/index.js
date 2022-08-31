@@ -3,9 +3,11 @@ const {toUSDTBalances} = require("../helper/balances");
 // Please refer to Github(https://github.com/kukafe/kafe-defillama/tree/main/kafe-defillama) for the codes to calculate the TVL via on-chain calls
 const apiUrl = "http://142.93.53.244:5001/getTvl";
 
+let responseData
 async function fetchChain(chain, includePool2) {
   let totalTvl = 0;
-  let response = (await utils.fetchURL(apiUrl)).data;
+  if (!responseData)  responseData = utils.fetchURL(apiUrl)
+  let response = (await responseData).data;
   Object.keys(response).forEach((key) => {
     let entry = response[key];
     if (entry.chain !== chain) return;

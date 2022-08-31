@@ -1,122 +1,75 @@
+const {
+  PublicKey,
+} = require("@solana/web3.js");
+const { deserializeAccount } = require("./accounts");
+const { Program } = require("@project-serum/anchor");
+const PsyAmericanIdl = require("./idl.json");
+const { getProvider, sumTokens2, } = require("../helper/solana");
 
+const textEncoder = new TextEncoder();
 
-const { clusterApiUrl, Connection, PublicKey, Keypair } = require("@solana/web3.js");
-const { getMultipleAccountInfo, getMultipleMintInfo } = require("./accounts");
-const { TOKENSBASE } = require("./tokens");
-const { Provider, Program } = require("@project-serum/anchor");
-const { NodeWallet } = require("@project-serum/anchor/dist/cjs/provider");
-const PsyAmericanIdl = require('./idl.json')
-const axios = require('axios');
-const { toUSDTBalances } = require("../helper/balances");
-
-function getAmountWithDecimal(amount, decimal) {
-    while (decimal > 0) {
-        amount /= 10;
-        decimal--;
-    }
-
-    return amount;
-}
-
-async function getPriceWithTokenAddress(
-    mintAddress
-) {
-    const {data} = await axios.post("https://coins.llama.fi/prices", {
-        coins: mintAddress.map(a=>`solana:${a}`)
-    })
-    return data.coins
-}
+const TOKEN_PROGRAM_ID = new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA');
 
 async function getAllOptionAccounts(program) {
-    const accts = (await program.account.optionMarket.all())
-    return accts.map(acct => ({
-        ...acct.account,
-        key: acct.publicKey
-    }))
+  const accts = await program.account.optionMarket.all();
+  return accts.map((acct) => ({
+    ...acct.account,
+    key: acct.publicKey,
+  }));
+}
+
+async function getPsyAmericanTokenAccounts(anchorProvider) {
+  const program = new Program(
+    PsyAmericanIdl,
+    new PublicKey("R2y9ip6mxmWUj4pt54jP2hz2dgvMozy9VTSwMWE7evs"),
+    anchorProvider
+  );
+  const optionMarkets = await getAllOptionAccounts(program);
+  const tokensAndOwners = []
+  optionMarkets.forEach((market) => {
+    tokensAndOwners.push([market.underlyingAssetMint.toBase58(), market.key])
+    tokensAndOwners.push([market.quoteAssetMint.toBase58(), market.key])
+  });
+  return { tokensAndOwners };
+}
+
+async function getTokenizedEurosControlledAccounts(anchorProvider) {
+  const programId = new PublicKey(
+    "FASQhaZQT53W9eT9wWnPoBFw8xzZDey9TbMmJj6jCQTs"
+  );
+  const [poolAuthority] = await PublicKey.findProgramAddress(
+    [textEncoder.encode("poolAuthority")],
+    programId
+  );
+  const tokenProgramAccounts =
+    await anchorProvider.connection.getTokenAccountsByOwner(poolAuthority, {
+      programId: TOKEN_PROGRAM_ID,
+    });
+  const tokensAndOwners = []
+  tokenProgramAccounts.value.forEach((tokenProgramAccount) => {
+    // Decode the account data buffer
+    const dataBuffer = tokenProgramAccount.account.data;
+    const decoded = deserializeAccount(dataBuffer);
+    const mintAddress = decoded.mint.toBase58();
+    tokensAndOwners.push([mintAddress, decoded.owner])
+  });
+
+  return {  tokensAndOwners, };
 }
 
 async function tvl() {
-    const connection = new Connection(clusterApiUrl('mainnet-beta'));
-    const anchorProvider = new Provider(connection, new NodeWallet(new Keypair()), {});
-    const program = new Program(PsyAmericanIdl, new PublicKey("R2y9ip6mxmWUj4pt54jP2hz2dgvMozy9VTSwMWE7evs"), anchorProvider);
-    const optionMarkets = await getAllOptionAccounts(program)
-
-    let assetPoolList = {};
-
-    const keys = [];
-    const poolList = [];
-
-    optionMarkets.forEach(market => {
-        if (!assetPoolList[market.underlyingAssetMint.toBase58()]) {
-            assetPoolList[market.underlyingAssetMint.toBase58()] = [];
-        }
-        if (!assetPoolList[market.quoteAssetMint.toBase58()]) {
-            assetPoolList[market.quoteAssetMint.toBase58()] = [];
-        }
-
-        if (assetPoolList[market.underlyingAssetMint.toBase58()]) {
-            assetPoolList[market.underlyingAssetMint.toBase58()].push(market.underlyingAssetPool);
-            poolList.push(market.underlyingAssetPool);
-        }
-
-        if (assetPoolList[market.quoteAssetMint.toBase58()]) {
-            assetPoolList[market.quoteAssetMint.toBase58()].push(market.quoteAssetPool);
-            poolList.push(market.quoteAssetPool);
-        }
-
-        if (keys.indexOf(market.underlyingAssetMint.toBase58()) < 0)
-            keys.push(market.underlyingAssetMint.toBase58());
-        if (keys.indexOf(market.quoteAssetMint.toBase58()) < 0)
-            keys.push(market.underlyingAssetMint.toBase58());
-    });
-
-    const priceOfMint = await getPriceWithTokenAddress(keys);
-
-    const mintList = await getMultipleMintInfo(connection, keys.map(key => new PublicKey(key)));
-
-    const accountList = await getMultipleAccountInfo(connection, poolList);
-
-    const keys2 = Object.keys(assetPoolList);
-    const assetAmounts = {};
-
-    for await (const key of keys2) {
-        assetAmounts[key] = 0;
-        accountList.forEach(accInfo => {
-            if (assetPoolList[key].indexOf(accInfo.pubkey) >= 0) {
-                const mint = mintList.find((mint) => mint && mint.key === key);
-                const pMint = priceOfMint[`solana:${key}`];
-                const price = pMint ? pMint.price : 0;
-                if (mint) {
-                    let decimal = mint.data.decimals;
-                    let amount = accInfo.info.amount.toNumber();
-                    assetAmounts[key] += getAmountWithDecimal(amount, decimal) * price;
-                }
-            }
-        });
-    };
-
-    let dataPoints = [];
-
-    let total = 0;
-    keys2.forEach(key => {
-        const tokenKeys = Object.keys(TOKENSBASE);
-        let symbol = '';
-        tokenKeys.forEach(tkey => {
-            if (TOKENSBASE[tkey].mintAddress === key)
-                symbol = TOKENSBASE[tkey].symbol;
-        });
-
-        dataPoints.push({ label: symbol, y: Math.round(assetAmounts[key]) });
-        total += assetAmounts[key];
-    })
-    return toUSDTBalances(total)
+  const anchorProvider = getProvider();
+  const responses = await Promise.all([
+    getPsyAmericanTokenAccounts(anchorProvider),
+    getTokenizedEurosControlledAccounts(anchorProvider),
+  ]);
+  return sumTokens2({ tokensAndOwners: responses.map(i => i.tokensAndOwners).flat()})
 }
 
-module.exports={
-    misrepresentedTokens: true,
-    timetravel: false,
-    solana:{
-        tvl
-    }
-}
-
+module.exports = {
+  misrepresentedTokens: true,
+  timetravel: false,
+  solana: {
+    tvl,
+  },
+};

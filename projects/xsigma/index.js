@@ -34,7 +34,6 @@ module.exports = {
     pool2: pool2(sigMasterchefContract, SIG_ETH_UNIV2),
     tvl: ethTvl,
   },
-  tvl: sdk.util.sumChainTvls([ethTvl]),
   methodology:
     "Counts tvl of Stablecoins(USDC, DAI and USDT) deposited through SigThreePoolContract Contract",
 };

@@ -27,5 +27,4 @@ async function tvl(timestamp, block) {
     ethereum:{
         tvl
     },
-    tvl
   }

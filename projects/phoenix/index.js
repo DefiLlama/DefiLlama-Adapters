@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js');
-const _ = require('underscore');
+
 const abi = require('./abi');
 
 const ploypool = '0x7751ff8c091b60cd51219ea244f9760d21fda041';

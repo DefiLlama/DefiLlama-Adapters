@@ -1,6 +1,3 @@
-const sdk = require("@defillama/sdk");
-const { default: BigNumber } = require("bignumber.js");
-const erc20 = require("../helper/abis/erc20.json");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const { staking } = require("../helper/staking.js");
 
@@ -32,6 +29,7 @@ const AXE_DAI_POOL = "0xd34d3b648db688bee383022dd26a9027592b82d5";
 }
 
 module.exports = {
+    deadFrom: 1648765747,
     start: 1637036516, // 16 Nov 2021
     ethereum: {
       tvl: ethTvl,

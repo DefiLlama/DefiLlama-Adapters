@@ -16,5 +16,4 @@ module.exports = {
     ethereum:{
         tvl
     },
-    tvl
 }

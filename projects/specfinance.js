@@ -1,14 +1,18 @@
 const axios = require('axios')
 
-async function fetch(){
+async function tvl(){
     const tvl = await axios.get('https://api.spec.finance/api/stat')
-    return tvl.data.tvl
+    return {
+        'terrausd': tvl.data.tvl,
+    }
 }
 
 module.exports = {
     timetravel: false,
     terra:{
-        fetch
+        tvl
     },
-    fetch
+    hallmarks:[
+    [1651881600, "UST depeg"],
+  ]
 }

@@ -1,5 +1,5 @@
 const BigNumber = require('bignumber.js');
-const utils = require('web3-utils');
+// const utils = require('web3-utils');
 const sdk = require('@defillama/sdk');
 const MakerSCDConstants = require("./abis/makerdao.js");
 const MakerMCDConstants = require("./abis/maker-mcd.js");
@@ -7,8 +7,9 @@ const { unwrapUniswapLPs } = require('../helper/unwrapLPs');
 const { requery } = require('../helper/requery.js');
 
 async function getJoins(block) {
-  let rely = utils.sha3("rely(address)").substr(0, 10);
-  let relyTopic = utils.padRight(rely, 64);
+  // let rely = utils.sha3("rely(address)").substr(0, 10);
+  // let relyTopic = utils.padRight(rely, 64);
+  let relyTopic = '0x65fae35e00000000000000000000000000000000000000000000000000000000'
 
   let joins = [];
 
@@ -96,14 +97,6 @@ async function tvl(timestamp, block) {
         }
       }
     }))
-
-    let pie = (await sdk.api.abi.call({
-      block,
-      target: MakerMCDConstants.POT,
-      abi: MakerMCDConstants.Pie
-    })).output;
-
-    sdk.util.sumSingleBalance(balances, MakerMCDConstants.DAI, pie);
   }
 
   return balances;
@@ -111,9 +104,11 @@ async function tvl(timestamp, block) {
 
 module.exports = {
   timetravel: true,
-  methodology: `Counts all the tokens being used as collateral of CDPs and the DAI locked in the DSR (Dai Savings Rate) contract.
+  methodology: `Counts all the tokens being used as collateral of CDPs.
   
   On the technical level, we get all the collateral tokens by fetching events, get the amounts locked by calling balanceOf() directly, unwrap any uniswap LP tokens and then get the price of each token from coingecko`,
   start: 1513566671, // 12/18/2017 @ 12:00am (UTC)
-  tvl,
+  ethereum: {
+    tvl
+  },
 };

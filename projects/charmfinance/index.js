@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const axios = require("axios");
-const yaml = require("js-yaml");
+const { sumTokens } = require('../helper/unwrapLPs')
 
 const vaultAbi = require("./vaultAbi.json");
 const cubePoolAbi = require("./cubePoolAbi.json");
@@ -20,7 +20,7 @@ const vaults = [
 
 const CUBE_POOL = "0x23F6A2D8d691294c3A1144EeD14F5632e8bc1B67";
 
-const ethTvl = async (timestamp, ethBlock) => {
+async function tvl(timestamp, block) {
   let balances = {};
 
   const optionsContracts = (
@@ -29,75 +29,40 @@ const ethTvl = async (timestamp, ethBlock) => {
     )
   ).data;
 
-  const OPTIONS_CONTRACTS = yaml.load(optionsContracts);
+  const optionsContractsWithoutComments = optionsContracts
+    .split('\n')
+    .map(i => i.trim())
+    .filter(i => !i.startsWith('#'))  // removing comments here
+    .join('')
 
-  for (let i = 0; i < vaults.length; i++) {
-    const vaultAmts = (
-      await sdk.api.abi.call({
-        abi: vaultAbi.getTotalAmounts,
-        target: vaults[i],
-        block: ethBlock,
-      })
-    ).output;
+  const OPTIONS_CONTRACTS = JSON.parse(optionsContractsWithoutComments);
+  const vaultCalls = vaults.map(v => ({ target: v }))
+  const { output: vaultAmts } = await sdk.api.abi.multiCall({ abi: vaultAbi.getTotalAmounts, calls: vaultCalls, block, })
+  const { output: token0 } = await sdk.api.abi.multiCall({ abi: vaultAbi.token0, calls: vaultCalls, block, })
+  const { output: token1 } = await sdk.api.abi.multiCall({ abi: vaultAbi.token1, calls: vaultCalls, block, })
 
-    const token0 = (
-      await sdk.api.abi.call({
-        abi: vaultAbi.token0,
-        target: vaults[i],
-        block: ethBlock,
-      })
-    ).output;
+  vaultAmts.map((vaultAmt, i) => {
+    sdk.util.sumSingleBalance(balances, token0[i].output, vaultAmt.output.total0);
+    sdk.util.sumSingleBalance(balances, token1[i].output, vaultAmt.output.total1);
+  })
 
-    const token1 = (
-      await sdk.api.abi.call({
-        abi: vaultAbi.token1,
-        target: vaults[i],
-        block: ethBlock,
-      })
-    ).output;
-
-    sdk.util.sumSingleBalance(balances, token0, vaultAmts.total0);
-    sdk.util.sumSingleBalance(balances, token1, vaultAmts.total1);
-  }
-
-  const poolBalance = (
-    await sdk.api.abi.call({
-      abi: cubePoolAbi.poolBalance,
-      target: CUBE_POOL,
-      block: ethBlock,
-    })
-  ).output;
-
+  const { output: poolBalance } = await sdk.api.abi.call({ abi: cubePoolAbi.poolBalance, target: CUBE_POOL, block, })
   sdk.util.sumSingleBalance(balances, ETH, poolBalance);
 
   // --- Run a check in all options contracts holdings (ETH, USDC, WBTC) ---
-  const erc20_holdings = [USDC, WBTC];
+  const erc20_holdings = [USDC, WBTC]
+  const tokensAndOwners = []
+  erc20_holdings.forEach(t => OPTIONS_CONTRACTS.forEach(o => tokensAndOwners.push([t, o])))
+  const { output: ethBalances } = await sdk.api.eth.getBalances({ targets: OPTIONS_CONTRACTS, block })
+  Object.values(ethBalances).forEach(item => {
+    sdk.util.sumSingleBalance(balances, ETH, item.balance)
+  })
 
-  for (let i = 0; i < OPTIONS_CONTRACTS.length; i++) {
-    for (let j = 0; j < erc20_holdings.length; j++) {
-      let erc20Bal = await sdk.api.erc20.balanceOf({
-        target: erc20_holdings[j],
-        owner: OPTIONS_CONTRACTS[i],
-        block: ethBlock,
-      });
-
-      sdk.util.sumSingleBalance(balances, erc20_holdings[j], erc20Bal.output);
-    }
-
-    let ethBal = await sdk.api.eth.getBalance({
-      target: OPTIONS_CONTRACTS[i],
-      block: ethBlock,
-    });
-
-    sdk.util.sumSingleBalance(balances, ETH, ethBal.output);
-  }
-
-  return balances;
+  return sumTokens(balances, tokensAndOwners, block)
 };
 
 module.exports = {
   ethereum: {
-    tvl: ethTvl,
+    tvl,
   },
-  tvl: sdk.util.sumChainTvls([ethTvl]),
 };

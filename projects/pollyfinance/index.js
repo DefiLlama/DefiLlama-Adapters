@@ -139,5 +139,4 @@ module.exports = {
     tvl,
     pool2
   },
-  tvl
 }

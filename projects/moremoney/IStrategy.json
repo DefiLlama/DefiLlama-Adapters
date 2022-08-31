@@ -1,0 +1,16 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "name": "viewAllApprovedTokens",
+      "outputs": [
+        {
+          "internalType": "address[]",
+          "name": "",
+          "type": "address[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }]
+}

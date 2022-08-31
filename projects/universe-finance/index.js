@@ -3,13 +3,21 @@ const utils = require("../helper/utils");
 
 const vaultsUrl = "https://raw.githubusercontent.com/UniverseFinance/UniverseFinanceProtocol/main/doc/vaultAddress.json";
 
-
 const token0Abi = require("../helper/abis/token0.json");
 const token1Abi = require("../helper/abis/token1.json");
 
-async function tvl(timestamp, block) {
-  let balances = {};
+function eth(timestamp, ethBlock, chainBlocks) {
+    return chainTvl(timestamp, ethBlock, chainBlocks, "ethereum");
+}
 
+function matic(timestamp, ethBlock, chainBlocks) {
+    return chainTvl(timestamp, ethBlock, chainBlocks, "polygon");
+}
+
+
+async function chainTvl(timestamp, ethBlock, chainBlocks, chain) {
+  const block = chain == "ethereum" ? ethBlock : chainBlocks[chain];
+  let balances = {};
   let resp = await utils.fetchURL(vaultsUrl);
 
   let allVaults = resp.data.filter(vault => vault.type > 0).map((vault) => ({
@@ -17,13 +25,17 @@ async function tvl(timestamp, block) {
         name: vault.name,
         getTotalAmounts: vault.getTotalAmounts,
         type: vault.type,
-        amountIndex: vault.amountIndex
+        amountIndex: vault.amountIndex,
+        chain: vault.chain
   }));
 
   const abiMap = {};
   const addressMap = {};
 
   for (let i = 0; i < allVaults.length; i++) {
+      if(allVaults[i].chain != chain){
+           continue;
+      }
       if(abiMap[allVaults[i].type] == undefined){
           abiMap[allVaults[i].type] = allVaults[i].getTotalAmounts;
       }
@@ -39,6 +51,7 @@ async function tvl(timestamp, block) {
           });
       }
   }
+
   const types = Object.keys(abiMap);
   const typeNumber = types.length;
   for (let i = 0; i < typeNumber; i++) {
@@ -50,6 +63,7 @@ async function tvl(timestamp, block) {
         })),
         abi: abi,
         block,
+        chain
       });
 
       let { output: token0 } = await sdk.api.abi.multiCall({
@@ -58,6 +72,7 @@ async function tvl(timestamp, block) {
         })),
         abi: token0Abi,
         block,
+        chain
       });
 
       let { output: token1 } = await sdk.api.abi.multiCall({
@@ -66,12 +81,17 @@ async function tvl(timestamp, block) {
         })),
         abi: token1Abi,
         block,
+        chain
       });
 
       for (let i = 0; i < addressList.length; i++) {
+        let addr0 = token0[i].output;
+        addr0 = (chain == "ethereum" ? addr0 : (chain + ":" + addr0));
+        let addr1 = token1[i].output;
+        addr1 = (chain == "ethereum" ? addr1 : (chain + ":" + addr1));
         // Sums value in UNI pools
-        sdk.util.sumSingleBalance(balances, token0[i].output, totalAmount[i].output[addressList[i].index]);
-        sdk.util.sumSingleBalance(balances, token1[i].output, totalAmount[i].output[addressList[i].index + 1]);
+        sdk.util.sumSingleBalance(balances, addr0, totalAmount[i].output[addressList[i].index]);
+        sdk.util.sumSingleBalance(balances, addr1, totalAmount[i].output[addressList[i].index + 1]);
       }
   }
 
@@ -81,7 +101,9 @@ async function tvl(timestamp, block) {
 module.exports = {
   methodology: "Vault TVL consists of the tokens in the vault contract and the total amount in the UNI V3 pool through the getTotalAmounts ABI call",
   ethereum: {
-    tvl,
+    tvl: eth,
   },
-  tvl,
+  polygon: {
+    tvl: matic
+  },
 };

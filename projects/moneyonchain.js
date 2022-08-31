@@ -9,27 +9,24 @@
 // Various API endpoints: https://api.moneyonchain.com/api/report/
 
 // stats from https://moneyonchain.com/stats/
-const retry = require('async-retry')
-const axios = require("axios");
-const BigNumber = require("bignumber.js");
-async function fetch() {
-  // Money on Chain measures TVL as MoC+RoC
-  let tvl_feed = await retry(async bail => await axios.get('https://api.moneyonchain.com/api/report/mocMainnet2/USDinSystem'))
-  let tvl_latest = tvl_feed.data.values[tvl_feed.data.values.length-1]
-  
-  //MoC (Money on Chain)
-  // console.log('%s', tvl_latest.MoC)
-  // let tvl = new BigNumber(tvl_latest.Total).toFixed(2);
-  
-  //RoC (Rif on Chain)
-  // console.log('%s', tvl_latest.RoC)
-  // let tvl = new BigNumber(tvl_latest.Total).toFixed(2);
-  
-  //Total
-  //console.log('%s', tvl_latest.Total)
-  let tvl = new BigNumber(tvl_latest.Total).toFixed(2);
-  return tvl;
+const sdk = require('@defillama/sdk')
+
+async function tvl(_, _b, { rsk: block }) {
+  const docCollateral = '0xf773b590af754d597770937fa8ea7abdf2668370'
+  const { output } = await sdk.api.eth.getBalances({
+    targets: [docCollateral],
+    chain: 'rsk', block,
+  });
+  let total = 0
+  output.forEach(i => total += i.balance/1e18)
+  return {
+    'rootstock': total
+  }
 }
+
 module.exports = {
-   fetch
+  timetravel: false,
+  rsk: {
+    tvl,
+  }
 }

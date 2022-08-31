@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const erc20 = require("../helper/abis/erc20.json");
 const BigNumber = require("bignumber.js");
 const { staking } = require("../helper/staking");
 
@@ -10,7 +9,7 @@ const DELTA_WETH_SLP = "0x1498bd576454159Bb81B5Ce532692a8752D163e8";
 const DELTA = "0x9EA3b5b4EC044b70375236A281986106457b20EF";
 const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 
-async function Pool2() {
+async function Pool2(timestamp, block) {
   const balances = {};
 
   const totalSupply_slp = (
@@ -27,17 +26,19 @@ async function Pool2() {
 
   const balance_slp = (
     await sdk.api.abi.call({
-      abi: erc20.balanceOf,
+      abi: 'erc20:balanceOf',
       target: DELTA_WETH_SLP,
       params: rebasingContract,
+      block
     })
   ).output;
 
   const balance_rlp = (
     await sdk.api.abi.call({
-      abi: erc20.balanceOf,
+      abi: 'erc20:balanceOf',
       target: rebasingContract,
       params: vaultStakingContract,
+      block
     })
   ).output;
 
@@ -47,7 +48,8 @@ async function Pool2() {
         target: token,
         params: DELTA_WETH_SLP,
       })),
-      abi: erc20.balanceOf,
+      abi: 'erc20:balanceOf',
+      block
     })
   ).output;
 
@@ -73,7 +75,7 @@ module.exports = {
   ethereum: {
     staking: staking(vaultStakingContract, DELTA),
     pool2: Pool2,
+    tvl: async () => ({})
   },
-  tvl: (async) => ({}),
   methodology: "Counts liquidty on the Staking and Pool2",
 };

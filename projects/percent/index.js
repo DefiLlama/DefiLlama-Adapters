@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const erc20 = require("../helper/abis/erc20.json");
 const abi = require("./abi.json");
 const { default: BigNumber } = require("bignumber.js");
 const { stakings } = require("../helper/staking");
@@ -40,7 +39,7 @@ const stakingContracts = pctPoolContracts.concat([stakingContract, comptroller])
 const calc = async (balances, poolContract, lpToken) => {
   const balanceLPofPool2 = (
     await sdk.api.abi.call({
-      abi: erc20.balanceOf,
+      abi: 'erc20:balanceOf',
       target: lpToken,
       params: poolContract,
     })
@@ -56,7 +55,7 @@ const calc = async (balances, poolContract, lpToken) => {
   for (const token of tokensOfLP) {
     const getBalance = (
       await sdk.api.abi.call({
-        abi: erc20.balanceOf,
+        abi: 'erc20:balanceOf',
         target: token,
         params: lpToken,
       })

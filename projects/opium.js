@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
-const _ = require('underscore');
+
 
 const utils = require('./helper/utils');
 const { unwrapUniswapLPs } = require('./helper/unwrapLPs');
@@ -8,7 +8,8 @@ const { unwrapUniswapLPs } = require('./helper/unwrapLPs');
 const CHAINS = {
   ETHEREUM: 'ethereum',
   POLYGON: 'polygon',
-  BSC: 'bsc'
+  BSC: 'bsc',
+  ARBITRUM: 'arbitrum'
 }
 
 const SUB_TOKENS = {
@@ -29,8 +30,8 @@ const tvl = (url, chain) => async (timestamp, blockETH, chainBlocks) => {
 
   // Prepare multiCall structure
   const calls = []
-    _.each(tokens, (token) => {
-      _.each(contracts, (contract) => {
+    tokens.forEach((token) => {
+      contracts.forEach((contract) => {
         calls.push({
           target: token,
           params: contract
@@ -46,7 +47,7 @@ const tvl = (url, chain) => async (timestamp, blockETH, chainBlocks) => {
   });
 
   // Sum all balances
-  _.each(balanceOfResults.output, (balanceOf) => {
+  balanceOfResults.output.forEach((balanceOf) => {
       const address = balanceOf.input.target;
       const balance = balances[address] ? BigNumber(balanceOf.output).plus(BigNumber(balances[address])).toFixed().toString(): balanceOf.output;
 
@@ -96,6 +97,7 @@ const tvl = (url, chain) => async (timestamp, blockETH, chainBlocks) => {
 const ethTvl = tvl('https://static.opium.network/data/opium-addresses.json', CHAINS.ETHEREUM)
 const polygonTvl = tvl('https://static.opium.network/data/opium-addresses-polygon.json', CHAINS.POLYGON)
 const bscTvl = tvl('https://static.opium.network/data/opium-addresses-bsc.json', CHAINS.BSC)
+const arbitrumTvl = tvl('https://static.opium.network/data/opium-addresses-arbitrum.json', CHAINS.ARBITRUM)
 
 module.exports = {
   [CHAINS.ETHEREUM]: {
@@ -107,9 +109,7 @@ module.exports = {
   [CHAINS.BSC]: {
     tvl: bscTvl
   },
-  tvl: sdk.util.sumChainTvls([
-    ethTvl,
-    polygonTvl,
-    bscTvl
-  ])
+  [CHAINS.ARBITRUM]: {
+    tvl: arbitrumTvl
+  },
 };

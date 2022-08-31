@@ -1,0 +1,4 @@
+{
+    "underlying":{"inputs":[],"name":"underlying","outputs":[{"internalType":"contract IERC20Detailed","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+    "calcTotalValue": {"inputs":[],"name":"calcTotalValue","outputs":[{"internalType":"uint256","name":"underlyingAmount","type":"uint256"}],"stateMutability":"view","type":"function"}
+}

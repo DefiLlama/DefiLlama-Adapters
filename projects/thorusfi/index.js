@@ -1,33 +1,36 @@
-const sdk = require('@defillama/sdk')
-const {transformAvaxAddress} = require('../helper/portedTokens')
-const {calculateUniTvl} = require('../helper/calculateUniTvl')
+const { staking } = require("../helper/staking");
+const { getUniTVL } = require('../helper/unknownTokens')
 
-async function swapTvl(timestamp, ethBlock, chainBlocks){
-  const trans = await transformAvaxAddress()
-  const balances = calculateUniTvl(trans, chainBlocks.avax, 'avax', '0xa98ea6356A316b44Bf710D5f9b6b4eA0081409Ef', 0, true)
-  return balances
-}
+const factoryContract = "0xa98ea6356A316b44Bf710D5f9b6b4eA0081409Ef";
 
-const { getChainTvl } = require('../helper/getUniSubgraphTvl');
-const { staking } = require('../helper/staking')
-const thorusMaster = "0x871d68cFa4994170403D9C1c7b3D3E037c76437d"
-const thorusToken = "0xAE4AA155D2987B454C29450ef4f862CF00907B61"
+const thorusMaster_avax = "0x871d68cFa4994170403D9C1c7b3D3E037c76437d";
+const THO_avax = "0xAE4AA155D2987B454C29450ef4f862CF00907B61";
 
-const graphUrls = {
-  avax: 'https://api.thegraph.com/subgraphs/name/thorusfi/thorus-swap',
-}
-const chainTvl = getChainTvl(graphUrls, "factories", "liquidityUSD")("avax")
+const thorusMaster_moonbeam = "0xEeB84a24e10502D8A5c97B11df381D1550B25b9d";
+const THO_moonbeam = "0x735aBE48e8782948a37C7765ECb76b98CdE97B0F";
+
 
 module.exports = {
   timetravel: true,
-  doublecounted: false,
-  misrepresentedTokens: true,
-  methodology: 'We count liquidity on the pairs and we get that information from the "thorusfi/thorus-swap" subgraph. The staking portion of TVL includes the THO within the ThorusMaster contract.',
-  avalanche:{
-    tvl: sdk.util.sumChainTvls([
-      swapTvl,
-    ]),
-    staking: staking(thorusMaster, thorusToken, "avax"),
-    treasury: 1,
-  }
-}
+  avax:{
+    tvl: getUniTVL({
+      chain: 'avax',
+      factory: factoryContract,
+    }),
+    staking: staking(thorusMaster_avax, THO_avax, "avax"),
+  },
+  moonbeam: {
+    tvl: getUniTVL({
+      chain: 'moonbeam',
+      factory: factoryContract,
+    }),
+    staking: staking(
+      thorusMaster_moonbeam,
+      THO_moonbeam,
+      "moonbeam",
+      `avax:${THO_avax}`
+    ),
+  },
+  methodology:
+    "We count liquidity on all AMM pools, using the TVL chart on https://app.thorus.fi/dashboard as the source. The staking portion of TVL includes the THO within the ThorusMaster contracts.",
+};

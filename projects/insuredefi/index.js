@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const _ = require('underscore');
+
 const BigNumber = require("bignumber.js");
 
 const constant = {
@@ -15,7 +15,7 @@ async function underwriting(block) {
   let balanceOf;
   balanceOf = await sdk.api.abi.call({
     block,
-    target: nsure,
+    target: SURE,
     abi: abi["balanceOf"],
     params: constant.treasuryPool.address,
   });
@@ -23,7 +23,7 @@ async function underwriting(block) {
 
   return { [SURE]: balanceOf }
 }
-
+//tracking SURE contributed to the community vaults.
 async function tvl(timestamp, block) {
   let underwritingPool = await underwriting(block);
   
@@ -36,10 +36,7 @@ async function tvl(timestamp, block) {
 
 
 module.exports = {
-  name: "inSure DeFi",
-  token: "SURE",
-  category: "Insurance",
   start: 1513566671, // 2020/10/21 6:34:47 (+UTC)
-  tvl,
+  ethereum: { tvl }
 };
 

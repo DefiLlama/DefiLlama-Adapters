@@ -1,27 +1,48 @@
 const {getTokenBalance} = require('../helper/solana')
 
 async function tvl() {
-    const [usdcAmount, btcAmount, srmAmount, ethAmount, rayAmount, stepAmount, solAmount, tulipAmount, sbrAmount, merAmount] = await Promise.all([
+    const [usdcAmount,
+        btcAmount,
+        srmAmount,
+        usdtAmount, //added
+        ethAmount,
+        rayAmount,
+        stepAmount,
+        xstepAmount, //added
+        solAmount,
+        sbrmssAmount, //changed for tulipa
+        sbrAmount,
+        sbrusdAmount, //added
+        saberwustAmount, //added
+        merAmount] = await Promise.all([
         //usdc
-        getTokenBalance("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "5Jo61FWkhG2jsaHfENdp7zz2G1SU6z5a2enpQWBEj83T"),
+        getTokenBalance("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", "5nDMa98okBQRNyQrtei1YBMCSFd1Nrkb9FZxf39g8aEW"),
         //btc
-        getTokenBalance("9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E", "5Jo61FWkhG2jsaHfENdp7zz2G1SU6z5a2enpQWBEj83T"),
+        getTokenBalance("9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E", "5nDMa98okBQRNyQrtei1YBMCSFd1Nrkb9FZxf39g8aEW"),
         //srm
-        getTokenBalance("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt", "5Jo61FWkhG2jsaHfENdp7zz2G1SU6z5a2enpQWBEj83T"),
+        getTokenBalance("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt", "5nDMa98okBQRNyQrtei1YBMCSFd1Nrkb9FZxf39g8aEW"),
+        //usdt
+        getTokenBalance("Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB", "5nDMa98okBQRNyQrtei1YBMCSFd1Nrkb9FZxf39g8aEW"), //added
         //eth
-        getTokenBalance("2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk", "5Jo61FWkhG2jsaHfENdp7zz2G1SU6z5a2enpQWBEj83T"),
+        getTokenBalance("2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk", "5nDMa98okBQRNyQrtei1YBMCSFd1Nrkb9FZxf39g8aEW"),
         //ray
-        getTokenBalance("4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R", "5Jo61FWkhG2jsaHfENdp7zz2G1SU6z5a2enpQWBEj83T"),
+        getTokenBalance("4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R", "5nDMa98okBQRNyQrtei1YBMCSFd1Nrkb9FZxf39g8aEW"),
         //step
-        getTokenBalance("StepAscQoEioFxxWGnh2sLBDFp9d8rvKz2Yp39iDpyT", "5Jo61FWkhG2jsaHfENdp7zz2G1SU6z5a2enpQWBEj83T"),
+        getTokenBalance("StepAscQoEioFxxWGnh2sLBDFp9d8rvKz2Yp39iDpyT", "5nDMa98okBQRNyQrtei1YBMCSFd1Nrkb9FZxf39g8aEW"),
+        //xstep
+        getTokenBalance("xStpgUCss9piqeFUk2iLVcvJEGhAdJxJQuwLkXP555G", "5nDMa98okBQRNyQrtei1YBMCSFd1Nrkb9FZxf39g8aEW"), //added  = 0
         //sol
-        getTokenBalance("So11111111111111111111111111111111111111112", "5Jo61FWkhG2jsaHfENdp7zz2G1SU6z5a2enpQWBEj83T"),
-        //tulip
-        getTokenBalance("TuLipcqtGVXP9XR62wM8WWCm6a9vhLs7T1uoWBk6FDs", "5Jo61FWkhG2jsaHfENdp7zz2G1SU6z5a2enpQWBEj83T"),
+        getTokenBalance("So11111111111111111111111111111111111111112", "5nDMa98okBQRNyQrtei1YBMCSFd1Nrkb9FZxf39g8aEW"),
+        //sbrm
+        getTokenBalance("DLukwcEV1bhGxzkZmQMNXtTjr1Mre42VvjQYiFjeRAsc", "5nDMa98okBQRNyQrtei1YBMCSFd1Nrkb9FZxf39g8aEW"), //changed for tulipa = 0
         //sbr   
-        getTokenBalance("Saber2gLauYim4Mvftnrasomsv6NvAuncvMEZwcLpD1", "5Jo61FWkhG2jsaHfENdp7zz2G1SU6z5a2enpQWBEj83T"),
+        getTokenBalance("Saber2gLauYim4Mvftnrasomsv6NvAuncvMEZwcLpD1", "5nDMa98okBQRNyQrtei1YBMCSFd1Nrkb9FZxf39g8aEW"),
+        //sbrusd
+        getTokenBalance("7QbiocpcnMs5qTXsvUDQ4HJ2yZwFC1DA4f2d2w9Bj52L", "5nDMa98okBQRNyQrtei1YBMCSFd1Nrkb9FZxf39g8aEW"), //added = 0
+        //sbrust
+        getTokenBalance("3reHdP6RnTvv5cqp7bXDm7ah2Q3t4mfJh8Ekj3EVNWkB", "5nDMa98okBQRNyQrtei1YBMCSFd1Nrkb9FZxf39g8aEW"), //added = 0
         //mer
-        getTokenBalance("MERt85fc5boKw3BW1eYdxonEuJNvXbiMbs6hvheau5K", "5Jo61FWkhG2jsaHfENdp7zz2G1SU6z5a2enpQWBEj83T"),
+        getTokenBalance("MERt85fc5boKw3BW1eYdxonEuJNvXbiMbs6hvheau5K", "5nDMa98okBQRNyQrtei1YBMCSFd1Nrkb9FZxf39g8aEW"),
 
     ])
 
@@ -30,14 +51,18 @@ async function tvl() {
         'ethereum': ethAmount,
         'solana':solAmount,
         'serum': srmAmount,
+        'tether': usdtAmount, //added
         'step-finance':stepAmount,
+        'step-staking':xstepAmount, //added
         'raydium': rayAmount,
         'usd-coin': usdcAmount,
         'saber': sbrAmount,
-        'solfarm': tulipAmount,
+        'usdt-saber': sbrusdAmount, //added
+        'saber-mSol': sbrmssAmount, // changed for tulipa
+        'saber-wust': saberwustAmount, //added
         'mercurial': merAmount,
     }
-}
+}   
 
 module.exports = {
     timetravel: false,

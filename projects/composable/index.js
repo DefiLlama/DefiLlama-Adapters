@@ -30,7 +30,8 @@ function chainTvl(chain){
             for(const pool of rugPools){
                 const token = await sdk.api.abi.call({
                     target: pool,
-                    abi: abi[0]
+                    abi: abi[0],
+                    block: ethBlock
                 })
                 const bal = await sdk.api.abi.call({
                     target: pool,

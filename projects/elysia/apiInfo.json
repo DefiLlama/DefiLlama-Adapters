@@ -1,0 +1,16 @@
+{
+  "elyfi-subgraph": {
+    "method": "POST",
+    "endpoint": "https://api.studio.thegraph.com/query/862/elyfi/v0.0.4",
+    "body": {
+      "query": "{\n    reserves {\n      id\n      lTokenInterestIndex\n      lastUpdateTimestamp\n      borrowAPY\n      depositAPY\n      totalBorrow\n      totalDeposit\n      lTokenUserBalanceCount\n      dTokenUserBalanceCount\n      deposit {\n        id\n      }\n      incentivePool {\n        id\n      }\n      borrow {\n        id\n        amount\n        timestamp\n        tokenId\n      }\n      repay {\n        id\n        userDTokenBalance\n        feeOnCollateralServiceProvider\n        timestamp\n        tokenId\n      }\n      reserveHistory(orderBy: timestamp) {\n        id\n        timestamp\n        borrowAPY\n        depositAPY\n        totalBorrow\n        totalDeposit\n      }\n      lToken {\n        id\n      }\n    }\n  }"
+    }
+  },
+  "elyfi-subgraph-bsc": {
+    "method": "POST",
+    "endpoint": "https://api.thegraph.com/subgraphs/name/donguks/elyfi-bsc",
+    "body": {
+      "query": "{\n    reserves {\n      id\n      lTokenInterestIndex\n      lastUpdateTimestamp\n      borrowAPY\n      depositAPY\n      totalBorrow\n      totalDeposit\n      lTokenUserBalanceCount\n      dTokenUserBalanceCount\n      deposit {\n        id\n      }\n      incentivePool {\n        id\n      }\n      borrow {\n        id\n        amount\n        timestamp\n        tokenId\n      }\n      repay {\n        id\n        userDTokenBalance\n        feeOnCollateralServiceProvider\n        timestamp\n        tokenId\n      }\n      reserveHistory(orderBy: timestamp) {\n        id\n        timestamp\n        borrowAPY\n        depositAPY\n        totalBorrow\n        totalDeposit\n      }\n      lToken {\n        id\n      }\n    }\n  }"
+    }
+  }
+}

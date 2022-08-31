@@ -57,9 +57,9 @@ async function tvl(timestamp, block) {
   
 
 module.exports = {
-  name: 'Force DAO',
-  token: '-',
-  category: 'Yield',
   start: 0, // WRONG!
-  tvl
+  ethereum: {
+    tvl,
+  },
+  broken: 'Api is down and the project is winding down: https://forcedao.medium.com/winding-down-and-redistribution-8ed28220101b, '
 }

@@ -139,7 +139,6 @@ async function xdai(timestamp, ethBlock, chainBlocks) {
 
 module.exports = {
   start: 1552065900,  // 03/08/2019 @ 5:25pm (UTC)
-  tvl:sdk.util.sumChainTvls([ethereum, polygon, xdai, bsc]),
   ethereum: {
     tvl: ethereum
   },

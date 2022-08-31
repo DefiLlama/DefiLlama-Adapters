@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const erc20 = require("../helper/abis/erc20.json");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { transformBscAddress } = require("../helper/portedTokens");
 
@@ -43,7 +42,7 @@ const bscTvl = async (chainBlocks) => {
     
     const strat_bal = (
       await sdk.api.abi.call({
-        abi: erc20.balanceOf,
+        abi: 'erc20:balanceOf',
         target: lpToken,
         params: strat,
         chain: "bsc",
@@ -78,15 +77,14 @@ const bscTvl = async (chainBlocks) => {
     transformAddress
   );
 
+  delete balances["bsc:0x95e7c70b58790a1cbd377bc403cd7e9be7e0afb1"]
   return balances;
 };
 
 module.exports = {
-  misrepresentedTokens: true,
   bsc: {
     tvl: bscTvl,
   },
-  tvl: sdk.util.sumChainTvls([bscTvl]),
   methodology:
     "We count liquidity on the Strategies (Vaults) through MasterChef contracts",
 };

@@ -27,5 +27,4 @@ module.exports = {
     pool2: pool2(bscPool2Contract, bscLP, "bsc", (addr) => `bsc:${addr}`),
     staking: staking(bscStakingContract, bscBaconToken, "bsc"),
   },
-  tvl: async () => ({}),
 };

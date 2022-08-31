@@ -123,6 +123,7 @@ function staking(stakingContract, chain) {
 }
 
 module.exports = {
+   doublecounted: true,
   ethereum: {
     tvl: eth,
     staking: staking("0xa72ad1293b253522fde41f1104aa432d7669b299", "ethereum"),
@@ -152,7 +153,7 @@ module.exports = {
       return `polygon:${addr}`
     })
   },
-  avalanche: {
+  avax:{
     tvl: avax,
   }
 }

@@ -118,7 +118,6 @@ async function tvl(timestamp, block, chainBlocks, chain) {
 // Using fractional REST API, a TVL is returned in USD, stored as USDC
 function getVaultsTvlApi(vaults) {
   return vaults.reduce((acc, vault) => acc.plus(BigNumber(vault.analytics ? vault.analytics.tvlUsd : 0)), BigNumber(0))
-  console.log(`${vaulstTVL_api.div(1e6).toFixed(2)}M TVL locked in vaults computed from REST API / in ${openedVaultsCount} opened vaults out of ${vaults.length} total vaults count`)
 }
 
 const usdc = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
@@ -128,7 +127,7 @@ async function tvl_api(timestamp, block, chainBlocks, chain) {
 }
 
 module.exports = {
-  tvl: tvl,
+  ethereum: { tvl },
   methodology: `TVL is the total quantity of tokens held in LPs against any vault token. Each vault has a token, which is provided as LP in several pools returned by fractional REST API. Do not account for vault token locked in pools as contributing to TVL.`
 }
 

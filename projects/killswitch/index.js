@@ -11,7 +11,6 @@ function fetchChain(chain) {
       throw new Error(`chain ${chain} tvl is 0`);
     }
 
-    console.log("tvl", tvl);
     return tvl;
   };
 }
@@ -20,7 +19,7 @@ async function fetch() {
   const response = await utils.fetchURL(tvlUrl);
 
   let tvl = 0;
-  for (chain in response.data.summary) {
+  for (const chain in response.data.summary) {
     tvl += Number(response.data.summary[chain]);
   }
   if (tvl === 0) {
@@ -31,6 +30,9 @@ async function fetch() {
 }
 
 module.exports = {
+  doublecounted: true,
+  timetravel: false,
+  misrepresentedTokens: true,
   bsc: {
     fetch: fetchChain("bsc"),
   },
@@ -39,6 +41,9 @@ module.exports = {
   },
   aurora: {
     fetch: fetchChain("aurora"),
+  },
+  clv: {
+    fetch: fetchChain("clv"),
   },
   fetch,
 };

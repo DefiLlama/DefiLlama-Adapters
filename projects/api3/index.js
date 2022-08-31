@@ -13,7 +13,7 @@ const stakingTVL = async (timestamp, ethBlock, chainBlocks) => {
   const { output: locked_and_vested } = await sdk.api.abi.call({
     target: api3CirculatingSupply,
     abi: abi["getLockedVestings"],
-    ethBlock,
+    block: ethBlock,
     chain: 'ethereum'
   });
   console.log(staked, locked_and_vested)
