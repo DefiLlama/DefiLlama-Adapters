@@ -26,6 +26,7 @@ jobs:
           fi
 
           npm ci --omit=dev
+          npm update @defillama/sdk
 
           for i in $(echo $RUN_FILES | tr  -d '"[]' | tr "," "\n")
           do 
