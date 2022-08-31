@@ -141,7 +141,6 @@
     ],
     "payable": false,
     "stateMutability": "view",
-    "type": "function",
-    "signature": "0xb0772d0b"
+    "type": "function"
   }
 }

@@ -136,6 +136,7 @@ sdk.api.abi.call = async (...args) => {
       const chain = chainRaw === "avalanche" ? "avax" : chainRaw
       if (chainsForBlocks.includes(chain) || chain === "ethereum") {
         chainBlocks[chain] = (await getLatestBlockRetry(chain)).number - 10;
+        console.log("chain:",chain,chainBlocks[chain])
       }
     })
   );
