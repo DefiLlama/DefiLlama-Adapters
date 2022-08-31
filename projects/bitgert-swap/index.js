@@ -1,11 +1,12 @@
 const { getUniTVL } = require('../helper/unknownTokens')
 
 module.exports = {
-  hoo: {
+  misrepresentedTokens: true,
+  bitgert: {
     tvl: getUniTVL({
-      chain: 'hoo',
-      factory: '0x6168D508ad65D87f8F5916986B55d134Af7153bb',
+      chain: 'bitgert',
+      factory: '0x456405E3d355ad27010Fd87e3c7cC8a2DcA372fD',
       useDefaultCoreAssets: true,
     }),
-  }
-}
+  },
+};

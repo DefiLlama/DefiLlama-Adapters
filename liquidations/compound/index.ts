@@ -3,9 +3,9 @@ import { ethers } from "ethers";
 import { providers } from "../utils/ethers";
 import { getPagedGql } from "../utils/gql";
 import BigNumber from "bignumber.js";
+import { Liq } from "../utils/binResults";
 
-const subgraphUrl =
-  "https://api.thegraph.com/subgraphs/name/graphprotocol/compound-v2";
+const subgraphUrl = "https://api.thegraph.com/subgraphs/name/graphprotocol/compound-v2";
 
 const accountsQuery = gql`
   query accounts($lastId: ID) {
@@ -84,12 +84,10 @@ const uniswapAnchoredView = new ethers.Contract(
   providers.ethereum
 );
 
+const EXPLORER_BASE_URL = "https://etherscan.io/address/";
+
 const positions = async () => {
-  const accounts = (await getPagedGql(
-    subgraphUrl,
-    accountsQuery,
-    "accounts"
-  )) as Account[];
+  const accounts = (await getPagedGql(subgraphUrl, accountsQuery, "accounts")) as Account[];
 
   const ethPriceInUsd = Number(await uniswapAnchoredView.price("ETH")) / 1e6;
 
@@ -98,22 +96,14 @@ const positions = async () => {
     const { totalBorrowValueInEth, totalCollateralValueInEth } = account;
 
     const debts = account.tokens
-      .filter(
-        (token) =>
-          !(
-            Number(token.borrowBalanceUnderlying) === 0 &&
-            Number(token.supplyBalanceUnderlying) === 0
-          )
-      )
+      .filter((token) => !(Number(token.borrowBalanceUnderlying) === 0 && Number(token.supplyBalanceUnderlying) === 0))
       .map((token) => {
         const decimals = token.market.underlyingDecimals;
         const price = Number(token.market.underlyingPrice) * ethPriceInUsd;
         const collateralFactor = Number(token.market.collateralFactor); // equivalent to liqThreshold in aave
         let debt = new BigNumber(token.borrowBalanceUnderlying);
         if (token.enteredMarket) {
-          const factoredSupply = new BigNumber(
-            token.supplyBalanceUnderlying
-          ).times(collateralFactor);
+          const factoredSupply = new BigNumber(token.supplyBalanceUnderlying).times(collateralFactor);
           debt = debt.minus(factoredSupply);
         }
         debt = debt.times(price);
@@ -133,9 +123,7 @@ const positions = async () => {
         const otherCollateral = new BigNumber(totalCollateralValueInEth)
           .times(ethPriceInUsd)
           .minus(usdPosNetCollateral);
-        const diffDebt = new BigNumber(totalBorrowValueInEth)
-          .times(ethPriceInUsd)
-          .minus(otherCollateral);
+        const diffDebt = new BigNumber(totalBorrowValueInEth).times(ethPriceInUsd).minus(otherCollateral);
         if (diffDebt.gt(0)) {
           const amountCollateral = usdPosNetCollateral.div(pos.price);
           const liqPrice = diffDebt.div(amountCollateral);
@@ -143,13 +131,21 @@ const positions = async () => {
             owner: account.id,
             liqPrice: Number(liqPrice.toFixed(6)),
             collateral: "ethereum:" + pos.token,
-            collateralAmount: new BigNumber(pos.totalBal)
-              .times(10 ** pos.decimals)
-              .toFixed(0),
+            collateralAmount: new BigNumber(pos.totalBal).times(10 ** pos.decimals).toFixed(0),
+            extra: {
+              url: EXPLORER_BASE_URL + account.id,
+            },
+          } as Liq;
+        } else {
+          return {
+            owner: "",
+            liqPrice: 0,
+            collateral: "",
+            collateralAmount: "",
           };
         }
       })
-      .filter((t) => t !== undefined);
+      .filter((t) => !!t.owner);
 
     return liquidablePositions;
   });
