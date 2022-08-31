@@ -42,8 +42,8 @@ const markets = [
 async function getAllCTokens(chainBlocks) {
   //block = 2797550
   return (await sdk.api.abi.call({
-    block: chainBlocks['findora'],
-    chain: 'findora',
+    block: chainBlocks["findora"],
+    chain: "findora",
     target: "0x3b056De20d662B09f73bDb28Ea6fa7b7aC82259C",
     params: [],
     abi: abi["getAllMarkets"]
@@ -53,7 +53,7 @@ async function getAllCTokens(chainBlocks) {
 async function getUnderlying(block, cToken) {
   return (await sdk.api.abi.call({
     block,
-    chain: 'findora',
+    chain: "findora",
     target: cToken,
     abi: abi["underlying"]
   })).output;
@@ -61,7 +61,7 @@ async function getUnderlying(block, cToken) {
 
 // returns {[underlying]: {cToken, decimals, symbol}}
 async function getMarkets(chainBlocks) {
-  if ( chainBlocks['findora'] < 2797544) {
+  if (chainBlocks["findora"] < 2797544) {
     // the allMarkets getter was only added in this block.
     return markets;
   } else {
@@ -87,36 +87,45 @@ async function getMarkets(chainBlocks) {
 }
 
 
-async function v2Tvl(balances, chainBlocks, borrowed) {
+async function v2Tvl(chainBlocks, borrowed) {
   let markets = await getMarkets(chainBlocks);
   // Get V2 tokens locked
   let v2Locked = await sdk.api.abi.multiCall({
-    block: chainBlocks['findora'],
+    block: chainBlocks["findora"],
     calls: markets.map((market) => ({
       target: market.cToken
     })),
-    chain: 'findora',
+    chain: "findora",
     abi: borrowed ? abi.totalBorrows : abi["getCash"]
   });
 
+  let prices = await sdk.api.abi.multiCall({
+    block: chainBlocks["findora"],
+    calls: markets.map((market) => ({
+      target: "0xdadBe4A286248b83A7dFECcDF67535bA4eC1A49c",
+      params: market.cToken
+    })),
+    chain: "findora",
+    abi: abi["getUnderlyingPrice"]
+  });
+  let balances = 0;
   markets.forEach((market) => {
     let getCash = v2Locked.output.find((result) => result.input.target === market.cToken);
-    balances[market.underlying] = BigNumber(balances[market.underlying] || 0)
-      .plus(getCash.output)
-      .toFixed();
+    let price = prices.output.find((result) => result.input.params[0] === market.cToken);
+  //  console.log(getCash.output * price.output / 1e24);
+    balances = balances + getCash.output * price.output / 1e24;
+    //balances = balances.plus(BigNumber(getCash.output).multipliedBy(BigNumber(price.output)).div(BigNumber(10).pow(24)));
   });
   return balances;
 }
 
 async function borrowed(timestamp, block, chainBlocks) {
-  const balances = {};
-  await v2Tvl(balances, chainBlocks, true);
+  let balances = await v2Tvl(chainBlocks, true);
   return balances;
 }
 
 async function tvl(timestamp, block, chainBlocks) {
-  let balances = {};
-  await v2Tvl(balances, block, false);
+  let balances = await v2Tvl(chainBlocks, false);
   return balances;
 }
 

@@ -1,102 +1,99 @@
 {
   "markets": {
-    "constant":true,
-    "inputs":[
+    "constant": true,
+    "inputs": [
       {
-        "name":"",
-        "type":"address"
+        "name": "",
+        "type": "address"
       }
     ],
-    "name":"markets",
-    "outputs":[
+    "name": "markets",
+    "outputs": [
       {
-        "name":"isSupported",
-        "type":"bool"
+        "name": "isSupported",
+        "type": "bool"
       },
       {
-        "name":"blockNumber",
-        "type":"uint256"
+        "name": "blockNumber",
+        "type": "uint256"
       },
       {
-        "name":"interestRateModel",
-        "type":"address"
+        "name": "interestRateModel",
+        "type": "address"
       },
       {
-        "name":"totalSupply",
-        "type":"uint256"
+        "name": "totalSupply",
+        "type": "uint256"
       },
       {
-        "name":"supplyRateMantissa",
-        "type":"uint256"
+        "name": "supplyRateMantissa",
+        "type": "uint256"
       },
       {
-        "name":"supplyIndex",
-        "type":"uint256"
+        "name": "supplyIndex",
+        "type": "uint256"
       },
       {
-        "name":"totalBorrows",
-        "type":"uint256"
+        "name": "totalBorrows",
+        "type": "uint256"
       },
       {
-        "name":"borrowRateMantissa",
-        "type":"uint256"
+        "name": "borrowRateMantissa",
+        "type": "uint256"
       },
       {
-        "name":"borrowIndex",
-        "type":"uint256"
+        "name": "borrowIndex",
+        "type": "uint256"
       }
     ],
-    "payable":false,
-    "stateMutability":"view",
-    "type":"function"
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
   },
   "totalBorrows": {
-    "constant":true,
-    "inputs":[
-
+    "constant": true,
+    "inputs": [
     ],
-    "name":"totalBorrows",
-    "outputs":[
+    "name": "totalBorrows",
+    "outputs": [
       {
-        "name":"",
-        "type":"uint256"
+        "name": "",
+        "type": "uint256"
       }
     ],
-    "payable":false,
-    "stateMutability":"view",
-    "type":"function"
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
   },
   "borrowRatePerBlock": {
-    "constant":true,
-    "inputs":[
-
+    "constant": true,
+    "inputs": [
     ],
-    "name":"borrowRatePerBlock",
-    "outputs":[
+    "name": "borrowRatePerBlock",
+    "outputs": [
       {
-        "name":"",
-        "type":"uint256"
+        "name": "",
+        "type": "uint256"
       }
     ],
-    "payable":false,
-    "stateMutability":"view",
-    "type":"function"
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
   },
   "supplyRatePerBlock": {
-    "constant":true,
-    "inputs":[
-
+    "constant": true,
+    "inputs": [
     ],
-    "name":"supplyRatePerBlock",
-    "outputs":[
+    "name": "supplyRatePerBlock",
+    "outputs": [
       {
-        "name":"",
-        "type":"uint256"
+        "name": "",
+        "type": "uint256"
       }
     ],
-    "payable":false,
-    "stateMutability":"view",
-    "type":"function"
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
   },
   "underlying": {
     "constant": true,
@@ -137,6 +134,27 @@
         "internalType": "contract CToken[]",
         "name": "",
         "type": "address[]"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "getUnderlyingPrice": {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "contract CToken",
+        "name": "cToken",
+        "type": "address"
+      }
+    ],
+    "name": "getUnderlyingPrice",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "payable": false,
