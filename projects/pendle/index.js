@@ -42,16 +42,27 @@ async function ethTvl(timestamp, block) {
         [ethTokens.SLP_PENDLEETH, true],
         [ethTokens.SUSHI, false],
         [ethTokens.COMP, false],
+        [ethTokens.wxBTRFLY, false],
         [ethTokens.SLP_OT_aUSDC_21, true],
         [ethTokens.SLP_OT_aUSDC_22, true],
         [ethTokens.SLP_OT_cDAI_21, true], 
         [ethTokens.SLP_OT_cDAI_22, true],
         [ethTokens.SLP_OT_ETHUSDC_22, true],
+        [ethTokens.SLP_OT_wxBTRFLY_22, true],
     ], ethFundedContracts, block);
-    for (token of ethOtTokens) {
+    for (let token of ethOtTokens) {
         delete balances[token.toLowerCase()];
     };
     delete balances[ethTokens.PENDLE];
+
+    balances[ethTokens.BTRFLY] = (await sdk.api.abi.call({
+        target: ethTokens.wxBTRFLY,
+        abi: abi.xBTRFLYValue,
+        params: [ balances[ethTokens.wxBTRFLY] ],
+        block: block
+      })).output;
+    delete balances[ethTokens.wxBTRFLY];
+
     return balances;
 };
 async function staking(timestamp, block) {
@@ -115,7 +126,7 @@ async function avaxTvl(timestamp, block, chainBlocks) {
       })).output;
     delete balances[`avax:${avaxTokens.wMEMO}`];
 
-    for (token of avaxOtTokens) {
+    for (let token of avaxOtTokens) {
         delete balances[`avax:${token.toLowerCase()}`];
     };
 
@@ -148,7 +159,7 @@ module.exports = {
         tvl: ethTvl,
         staking
     },
-    avalanche:{
+    avax:{
         pool2: avaxPool2,
         tvl: avaxTvl
     },

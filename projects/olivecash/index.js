@@ -1,7 +1,6 @@
 const sdk = require('@defillama/sdk');
 const abi = require("./abi.json");
 const { addTokensAndLPs } = require("../helper/unwrapLPs");
-const erc20 = require("../helper/abis/erc20.json");
 
 const CHEFS = {
   "avax": "0x5A9710f3f23053573301C2aB5024D0a43A461E80",
@@ -37,7 +36,7 @@ async function chainTvl(timestamp, block, chainBlocks, chain) {
 
   const amounts = (
     await sdk.api.abi.multiCall({
-      abi: erc20.balanceOf,
+      abi: 'erc20:balanceOf',
       calls: lpTokens.map((lp) => ({
         target: lp.output,
         params: chef,
@@ -76,8 +75,8 @@ async function fantomTvl(timestamp, block, chainBlocks) {
 
 module.exports = {
   methodology: "TVL includes all farms in MasterChef contract",
-  avalanche: {
-    tvl: avaxTvl,
+  avax:{
+    tvl: avaxTvl
   },
   bsc: {
     tvl: bscTvl,
@@ -85,5 +84,4 @@ module.exports = {
   fantom: {
     tvl: fantomTvl,
   },
-  tvl: sdk.util.sumChainTvls([avaxTvl, bscTvl, fantomTvl]),
 }

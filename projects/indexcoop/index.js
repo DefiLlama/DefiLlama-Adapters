@@ -7,6 +7,8 @@ const cgiAddress = "0xada0a1202462085999652dc5310a7a9e2bf3ed42";
 const btcFliAddress = "0x0b498ff89709d3838a063f1dfa463091f9801c2b";
 const bedAddress = "0x2aF1dF3AB0ab157e1E2Ad8F88A7D04fbea0c7dc6";
 const dataAddress = "0x33d63Ba1E57E54779F7dDAeaA7109349344cf5F1";
+const gmiAddress = "0x47110d43175f7f2c2425e7d15792acc5817eb44f";
+const icethAddress = "0x7c07f7abe10ce8e33dc6c5ad68fe033085256a84";
 const tokens = [
   dpiAddress,
   ethFliAddress,
@@ -15,6 +17,8 @@ const tokens = [
   btcFliAddress,
   bedAddress,
   dataAddress,
+  gmiAddress,
+  icethAddress
 ];
 
 async function tvl(timestamp, block) {
@@ -35,5 +39,4 @@ module.exports = {
   ethereum: {
     tvl,
   },
-  tvl,
 };

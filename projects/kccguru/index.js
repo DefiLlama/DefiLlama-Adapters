@@ -96,5 +96,4 @@ module.exports = {
    staking: staking,
    tvl: tvl
  },
- tvl: tvl
 }

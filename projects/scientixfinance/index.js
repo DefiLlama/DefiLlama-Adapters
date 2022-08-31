@@ -1,10 +1,9 @@
 /*==================================================
   Modules
 ==================================================*/
-const Web3 = require('web3')
 const axios = require("axios");
 const BigNumber = require('bignumber.js');
-const web3 = new Web3(new Web3.providers.HttpProvider(`https://bsc-dataseed.binance.org/`));
+const sdk = require("@defillama/sdk")
 
 const scientistAbi = require('./abi/Scientist.json');
 const transmuteAbi = require('./abi/Transmuter.json');
@@ -42,51 +41,71 @@ const scUsdBusdPoolId = 6;
 ==================================================*/
 
 async function getTokenBalance(token, account) {
-    const tokenContract = new web3.eth.Contract(scTokenAbi, token);
-    return tokenContract.methods.balanceOf(account)
-        .call();
+    const { output } = await sdk.api.abi.call({
+        chain: 'bsc',
+        target: token,
+        params: [account],
+        abi: scTokenAbi.find(i => i.name === 'balanceOf')
+    })
+    return output
 }
 
 async function getTokenTotalSupply(token) {
-    const tokenContract = new web3.eth.Contract(scTokenAbi, token);
-    return tokenContract.methods.totalSupply()
-        .call();
+    const { output } = await sdk.api.abi.call({
+        chain: 'bsc',
+        target: token,
+        abi: scTokenAbi.find(i => i.name === 'totalSupply')
+    })
+    return output
 }
 
 // vault
 async function totalDepositBUSD(vault) {
-    const vaultContract = new web3.eth.Contract(scientistAbi, vault);
-    return vaultContract.methods.totalDeposited()
-        .call();
+    const { output } = await sdk.api.abi.call({
+        chain: 'bsc',
+        target: vault,
+        abi: scientistAbi.find(i => i.name === 'totalDeposited')
+    })
+    return output
 }
 
 // transmute
 async function getTotalStakedScTokens(transmute) {
-    const transmuteContract = new web3.eth.Contract(transmuteAbi, transmute);
-    return transmuteContract.methods.totalSupplyScTokens()
-        .call();
+    const { output } = await sdk.api.abi.call({
+        chain: 'bsc',
+        target: transmute,
+        abi: transmuteAbi.find(i => i.name === 'totalSupplyScTokens')
+    })
+    return output
 }
 
 async function getAdapterTotalValue(transmuteAdapter) {
-    const transmuteContract = new web3.eth.Contract(transmuteAdapterAbi, transmuteAdapter);
-    return transmuteContract.methods.totalValue()
-        .call();
+    const { output } = await sdk.api.abi.call({
+        chain: 'bsc',
+        target: transmuteAdapter,
+        abi: transmuteAdapterAbi.find(i => i.name === 'totalValue')
+    })
+    return output
 }
 
 // farm
 async function getPoolTotalDeposited(contract, poolID) {
-    const poolContract = new web3.eth.Contract(stakingPoolsAbi, contract);
-    return poolContract.methods.getPoolTotalDeposited(poolID)
-        .call();
+    const { output } = await sdk.api.abi.call({
+        chain: 'bsc',
+        params: [poolID],
+        target: contract,
+        abi: stakingPoolsAbi.find(i => i.name === 'getPoolTotalDeposited')
+    })
+    return output
 }
 
 async function getBUSDLpPrice(lpTokenAddress, BUSDAddress, scUSDAddress) {
     try {
         let [BUSDBalance, scUSDBalance, totalSupply] = await Promise.all([
-                getTokenBalance(BUSDAddress, lpTokenAddress),
-                getTokenBalance(scUSDAddress, lpTokenAddress),
-                getTokenTotalSupply(lpTokenAddress)
-            ]
+            getTokenBalance(BUSDAddress, lpTokenAddress),
+            getTokenBalance(scUSDAddress, lpTokenAddress),
+            getTokenTotalSupply(lpTokenAddress)
+        ]
         );
         return new BigNumber(BUSDBalance).plus(new BigNumber(scUSDBalance))
             .div(new BigNumber(totalSupply));
@@ -97,15 +116,21 @@ async function getBUSDLpPrice(lpTokenAddress, BUSDAddress, scUSDAddress) {
 }
 
 async function getAalpacaTotal(vault) {
-    const alpacaContract = new web3.eth.Contract(alpacaVaultAbi, vault);
-    return alpacaContract.methods.totalToken()
-        .call();
+    const { output } = await sdk.api.abi.call({
+        chain: 'bsc',
+        target: vault,
+        abi: alpacaVaultAbi.find(i => i.name === 'totalToken')
+    })
+    return output
 }
 
 async function getAalpacaTotalSupply(vault) {
-    const alpacaContract = new web3.eth.Contract(alpacaVaultAbi, vault);
-    return alpacaContract.methods.totalSupply()
-        .call();
+    const { output } = await sdk.api.abi.call({
+        chain: 'bsc',
+        target: vault,
+        abi: alpacaVaultAbi.find(i => i.name === 'totalSupply')
+    })
+    return output
 }
 
 async function getAlpacePrice() {
@@ -134,10 +159,10 @@ async function getAlpacePrice() {
 async function getIbAlpacaPrice(vault) {
     try {
         let [price, totalToken, totalSupply] = await Promise.all([
-                getAlpacePrice(),
-                getAalpacaTotal(vault),
-                getAalpacaTotalSupply(vault)
-            ]
+            getAlpacePrice(),
+            getAalpacaTotal(vault),
+            getAalpacaTotalSupply(vault)
+        ]
         );
         return new BigNumber(price).times(new BigNumber(totalToken))
             .div(new BigNumber(totalSupply));
@@ -147,8 +172,12 @@ async function getIbAlpacaPrice(vault) {
 }
 
 async function getSCIXTotalLocked(ve) {
-    const contract = new web3.eth.Contract(votingEscrowAbi, ve);
-    return await contract.methods._totalLockedSCIX().call();
+    const { output } = await sdk.api.abi.call({
+        chain: 'bsc',
+        target: ve,
+        abi: votingEscrowAbi.find(i => i.name === '_totalLockedSCIX')
+    })
+    return output
 }
 
 async function getFarmBalance() {
@@ -158,20 +187,20 @@ async function getFarmBalance() {
         scUSDLPPrice, ibAlpacaPrice,
         veScixBalance
     ] = await Promise.all([
-            // farm
-            getPoolTotalDeposited(Farm, ScixBusdPoolId),
-            getPoolTotalDeposited(Farm, scUsdBusdPoolId),
-            getPoolTotalDeposited(Farm, ibALPACAPoolId),
-            // farm price
-            getTokenBalance(BUSD, ScixBusd),
-            getTokenBalance(SCIX, ScixBusd),
-            getTokenTotalSupply(ScixBusd),
-            // farm price 2
-            getBUSDLpPrice(scUsdBusd, BUSD, scUSD),
-            getIbAlpacaPrice(ibALPACA),
-            // veScix
-            getSCIXTotalLocked(VotingEscrow),
-        ]
+        // farm
+        getPoolTotalDeposited(Farm, ScixBusdPoolId),
+        getPoolTotalDeposited(Farm, scUsdBusdPoolId),
+        getPoolTotalDeposited(Farm, ibALPACAPoolId),
+        // farm price
+        getTokenBalance(BUSD, ScixBusd),
+        getTokenBalance(SCIX, ScixBusd),
+        getTokenTotalSupply(ScixBusd),
+        // farm price 2
+        getBUSDLpPrice(scUsdBusd, BUSD, scUSD),
+        getIbAlpacaPrice(ibALPACA),
+        // veScix
+        getSCIXTotalLocked(VotingEscrow),
+    ]
     );
     // price
     const BusdScixLPPrice = new BigNumber(BUSDBalance).times(2).div(new BigNumber(BusdScixLpSupply));
@@ -216,15 +245,15 @@ async function fetch() {
         stakedScUsd, transmuteBUSD, transmuteAdapterBUSD,
         farmBalance
     ] = await Promise.all([
-            // vault
-            totalDepositBUSD(Scientist),
-            // transmute
-            getTotalStakedScTokens(Transmute),
-            getTokenBalance(BUSD, Transmute),
-            getAdapterTotalValue(TransmuteAdapter),
-            // farm
-            getFarmBalance()
-        ]
+        // vault
+        totalDepositBUSD(Scientist),
+        // transmute
+        getTotalStakedScTokens(Transmute),
+        getTokenBalance(BUSD, Transmute),
+        getAdapterTotalValue(TransmuteAdapter),
+        // farm
+        getFarmBalance()
+    ]
     );
 
     let tvl = new BigNumber(0);
@@ -236,7 +265,7 @@ async function fetch() {
     tvl = tvl.plus(farmBalance);
 
     tvl = getGWeiFromWei(tvl);
-    return  balance = parseFloat(tvl);
+    return balance = parseFloat(tvl);
 }
 
 /*==================================================
@@ -244,8 +273,6 @@ async function fetch() {
   ==================================================*/
 
 module.exports = {
-    name: 'scientix.finance',
-    token: 'SCIX',
     start: 10880500,    // 09/16/2020 @ 12:00am (UTC+8)
     fetch,
 };

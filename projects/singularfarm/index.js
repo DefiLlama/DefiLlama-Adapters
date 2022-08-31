@@ -108,7 +108,7 @@ async function polyTvl(timestamp, block, chainBlocks) {
 module.exports = {
 	methodology:
 		"Only staked LP is counted as TVL. Excluded in TVL : Locked SING in the bank, meltingpot, value of BNB & xJOE which aren't on CoinGecko yet.",
-	avalanche: {
+	avax:{
 		tvl: avaxTvl,
 	},
 	bsc: {
@@ -120,5 +120,4 @@ module.exports = {
 	fantom: {
 		tvl: fantomTvl,
 	},
-	tvl: sdk.util.sumChainTvls([avaxTvl, bscTvl, polyTvl, fantomTvl]),
 };

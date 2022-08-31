@@ -1,8 +1,7 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const erc20 = require("../helper/abis/erc20.json");
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
+const { sumTokens2, } = require("../helper/unwrapLPs");
+const { stakings } = require("../helper/staking");
 
 const proxyContract = "0x5406e1136F423602C0685DF8802f8ef28b73570d";
 const candyFarmsContracts = [
@@ -12,21 +11,7 @@ const candyFarmsContracts = [
 ];
 const POP = "0x7fc3ec3574d408f3b59cd88709bacb42575ebf2b";
 
-const stakingPOP = async (block) => {
-  const balances = {};
-
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    [[POP, false]],
-    candyFarmsContracts
-  );
-
-  return balances;
-};
-
-const ethTvl = async (block) => {
-  const balances = {};
-
+const ethTvl = async (ts, block) => {
   const countMlp = (
     await sdk.api.abi.call({
       abi: abi.pendingMlpCount,
@@ -35,53 +20,41 @@ const ethTvl = async (block) => {
     })
   ).output;
 
-  const lpPositions = [];
+  const calls = []
+  const mlpCalls = []
 
   for (let i = 0; i < countMlp; i++) {
-    const mlp = (
-      await sdk.api.abi.call({
-        abi: abi.allMlp,
-        target: proxyContract,
-        params: i,
-        block,
-      })
-    ).output;
-
-    const mlpPairUNI = (
-      await sdk.api.abi.call({
-        abi: abi.uniswapPair,
-        target: mlp,
-        block,
-      })
-    ).output;
-
-    const mlpBalance = (
-      await sdk.api.abi.call({
-        abi: erc20.balanceOf,
-        target: mlpPairUNI,
-        params: mlp,
-        block,
-      })
-    ).output;
-
-    lpPositions.push({
-      token: mlpPairUNI,
-      balance: mlpBalance,
-    });
+    calls.push({ params: i })
+    if (i < 6) mlpCalls.push({ params: i })
   }
 
-  await unwrapUniswapLPs(balances, lpPositions, block);
+  const { output: getMlp } = await sdk.api.abi.multiCall({
+    target: proxyContract,
+    abi: abi.getMlp,
+    calls, block,
+  })
 
-  return balances;
+  const { output: mlps } = await sdk.api.abi.multiCall({
+    target: proxyContract,
+    abi: abi.allMlp,
+    calls: mlpCalls, block,
+  })
+  const tokensAndOwners = []
+  getMlp.forEach(({ output: { uniswapPair }}, i) => {
+    let owner = mlps[i] ? mlps[i].output : proxyContract
+    tokensAndOwners.push([uniswapPair, owner])
+  })
+
+
+  return sumTokens2({ block, tokensAndOwners, resolveLP: true, })
 };
 
 module.exports = {
   misrepresentedTokens: true,
   ethereum: {
-    staking: stakingPOP,
+    staking: stakings(candyFarmsContracts, POP),
     tvl: ethTvl,
   },
-  tvl: sdk.util.sumChainTvls([ethTvl]),
   methodology:
     "We count liquidity on the Marketplace and CandyFarms through Proxy and CandyFarm Contracts",
 };

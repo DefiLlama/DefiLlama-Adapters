@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk');
-const _ = require('underscore');
+
 const axios = require('axios')
 
 async function balancesInAddress(address, chain, chainId, block) {
@@ -9,7 +9,7 @@ async function balancesInAddress(address, chain, chainId, block) {
   const balanceOfOmniBridge = block > 10590093
     ? await sdk.api.abi.multiCall({
       block,
-      calls: _.map(allTokens, (token) => ({
+      calls: allTokens.map((token) => ({
         target: token.contract_address,
         params: omniBridge
       })),
@@ -40,7 +40,7 @@ async function eth(timestamp, block) {
   }
   const balanceOfXdaiBridge = await sdk.api.abi.multiCall({
     block,
-    calls: _.map(tokenAddresses, (token) => ({
+    calls: tokenAddresses.map((token) => ({
       target: token,
       params: xDaiBridge
     })),
@@ -74,5 +74,4 @@ module.exports = {
   },
   */
   start: 1539028166,
-  tvl: sdk.util.sumChainTvls([eth])
 };

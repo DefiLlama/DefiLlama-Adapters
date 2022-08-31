@@ -1,27 +1,39 @@
-const utils = require('../helper/utils');
 const sdk = require("@defillama/sdk");
-const { toUSDTBalances } = require("../helper/balances");
+const { sumTokens, unwrapLPsAuto } = require('../helper/unwrapLPs')
+const { toa, vaults } = require('./config')
+const abi = require('./abi')
+const { getChainTransform } = require('../helper/portedTokens')
 
-const CHAINS = {
-    FANTOM: 'fantom',
-    BSC: 'bsc'
+async function fantom(ts, _, { fantom: block }) {
+  const chain = 'fantom'
+  const transformAddress = await getChainTransform(chain)
+  const calls = vaults.fantom.map(i => ({ target: i }))
+  const balances = {}
+  const { output: token } = await sdk.api.abi.multiCall({
+    abi: abi.token,
+    calls,
+    chain, block,
+  })
+  const { output: balance } = await sdk.api.abi.multiCall({
+    abi: abi.balance,
+    calls,
+    chain, block,
+  })
+  token.forEach(({ output }, idx) => sdk.util.sumSingleBalance(balances, transformAddress(output), balance[idx].output))
+  await unwrapLPsAuto({ balances, block, chain, transformAddress })
+  return sumTokens(balances, toa.fantom, block, 'fantom')
 }
 
-function fetchByChain(chain) {
-    return async () => {
-        const urlQuery = chain ? `chain=${chain}` : ''
-        const result = await utils.fetchURL(`https://stats.bishares.finance/tvl?${urlQuery}`)
-        console.log(result.data.total);
-        return toUSDTBalances(result.data.total);
-    }
+
+async function bsc(ts, _, { bsc: block }) {
+  return sumTokens({}, toa.bsc, block, 'bsc')
 }
 
 module.exports = {
-    [CHAINS.BSC]: {
-        tvl: fetchByChain(CHAINS.BSC)
-    },
-    [CHAINS.FANTOM]: {
-        tvl: fetchByChain(CHAINS.FANTOM)
-    },
-    tvl: fetchByChain(),
+  fantom: {
+    tvl: fantom
+  },
+  bsc: {
+    tvl: bsc
+  },
 };

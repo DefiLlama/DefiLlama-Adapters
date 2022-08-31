@@ -34,9 +34,9 @@ async function tvl(timestamp, block) {
 
 module.exports = {
   misrepresentedTokens: true,
+  doublecounted: true,
   methodology: "Tokens locked in the Curve Metapool",
   ethereum: {
     tvl,
   },
-  tvl,
 };

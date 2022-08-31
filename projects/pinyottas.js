@@ -64,7 +64,7 @@ async function tvl(timestamp, block, chainBlocks) {
     })
   ).output
    
-  balances = {}
+  const balances = {}
   pinyottasTokenBalances.forEach(bal => {
     sdk.util.sumSingleBalance(
       balances,
@@ -77,5 +77,5 @@ async function tvl(timestamp, block, chainBlocks) {
 
 module.exports = {
   methodology: `Pinyottas are ERC-721 contracts which hold a given amount of ERC20 token. Get pinyottas count, then for each, get contract of token held in the pinyotta and amount (which is zero if pinyotta has been busted so tokens were retrieved)`,
-  tvl
+  ethereum: { tvl }
 }

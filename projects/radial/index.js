@@ -7,7 +7,7 @@ const {
   } = require("../helper/masterchef");
   const sdk = require("@defillama/sdk");
   const { default: BigNumber } = require("bignumber.js");
-  const { handleYearnTokens } = require("../creditum/index.js");
+  const { handleYearnTokens } = require("../creditum/helper.js");
   const { getBlock } = require("../helper/getBlock");
   const { transformFantomAddress } = require("../helper/portedTokens");
   const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
@@ -69,7 +69,7 @@ const {
         const balance = tokenBalances.output[idx].output;
         const token = symbol.input.target.toLowerCase();
         if (token === stakingToken) {
-        } else if (isLP(symbol.output)) {
+        } else if (isLP(symbol.output, token, chain)) {
           lpPositions.push({
             balance,
             token,

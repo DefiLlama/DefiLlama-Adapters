@@ -1,0 +1,49 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "address[]",
+        "name": "_poolsAddresses",
+        "type": "address[]"
+      }
+    ],
+    "name": "poolsReservesInfo",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "address", "name": "id", "type": "address" },
+          {
+            "internalType": "address",
+            "name": "token0Address",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "token1Address",
+            "type": "address"
+          },
+          {
+            "internalType": "uint256",
+            "name": "token0Reserve",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "token1Reserve",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint8",
+            "name": "token0Decimals",
+            "type": "uint8"
+          },
+          { "internalType": "uint8", "name": "token1Decimals", "type": "uint8" }
+        ],
+        "internalType": "struct ISolidlyLens.PoolReserveData[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }]

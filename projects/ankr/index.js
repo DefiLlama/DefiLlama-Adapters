@@ -1,23 +1,70 @@
-const sdk = require('@defillama/sdk');
+const { get } = require("../helper/http")
+const { toUSDTBalances } = require("../helper/balances")
+let _response
 
-const wethAddress = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
+async function getTvls(serviceName, key) {
+  if (!_response) _response = get('https://api.stkr.io/v1alpha/metrics')
+  const response = await _response
+  const data = response.services.find(i => i.serviceName === serviceName)
+  return data ? +data[key] : 0;
+}
 
-async function tvl(timestamp, block) {
-  const supply = await sdk.api.erc20.totalSupply({
-    target: '0xE95A203B1a91a908F9B9CE46459d101078c2c3cb',
-    block
-  })
-
-
+async function getETHTvl() {
   return {
-    [wethAddress]: supply.output 
+    ethereum: await getTvls("eth", "totalStaked"),
+    'matic-network': await getTvls("polygon", "totalStaked"),
+  }
+}
+
+async function getBscTvl() {
+  return {
+    binancecoin: await getTvls("bnb", "totalStaked"),
+  }
+}
+
+async function getAvaxTvl() {
+  return {
+    'avalanche-2': await getTvls("avax", "totalStaked"),
+  }
+}
+
+async function polkadot() {
+  return {
+    polkadot: await getTvls("dot", "totalStaked"),
+  }
+}
+
+async function ksm() {
+  return {
+    kusama: await getTvls("ksm", "totalStaked"),
+  }
+}
+
+async function getFantomTvl() {
+  return {
+    fantom: await getTvls("ftm", "totalStaked"),
   }
 }
 
 module.exports = {
+  timetravel: false,
   ethereum: {
-    tvl,
+    tvl: getETHTvl,
   },
-  tvl,
-  methodology: `We get the total supply of aETHc, the ETH staking contract and convert it to USD.`
-}
+  bsc: {
+    tvl: getBscTvl,
+  },
+  avax:{
+    tvl: getAvaxTvl,
+  },
+  fantom: {
+    tvl: getFantomTvl,
+  },
+  polkadot: {
+    tvl: polkadot,
+  },
+  kusama: {
+    tvl: ksm,
+  },
+  methodology: `We get the total staked amount and total staked USD from Ankr's official API.`,
+};
