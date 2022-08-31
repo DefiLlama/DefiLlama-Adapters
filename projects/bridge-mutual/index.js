@@ -303,5 +303,4 @@ module.exports = {
     tvl: polTvl,
     staking: polStaking,
   },
-  tvl: sdk.util.sumChainTvls([ethTvl, bscTvl, polTvl]),
 };
