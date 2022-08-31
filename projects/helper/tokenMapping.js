@@ -483,6 +483,12 @@ const fixBalancesTokens = {
     "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7": { coingeckoId: "avalanche-2", decimals: 18, },
     "0x9dEbca6eA3af87Bf422Cea9ac955618ceb56EfB4": { coingeckoId: "avalanche-2", decimals: 18, },
   },
+  findora: {
+    [nullAddress]: { coingeckoId: "findora", decimals: 18, },
+    "0x0000000000000000000000000000000000001000": { coingeckoId: "findora", decimals: 18, },
+    "0x2e8079e0fe49626af8716fc38adea6799065d7f7": { coingeckoId: "usd-coin", decimals: 6, },
+    "0x0632baa26299c9972ed4d9affa3fd057a72252ff": { coingeckoId: "tether", decimals: 6, },
+  },
   crescent: {
     // token info - https://apigw-v2.crescent.network/asset/info
     "ubcre": { coingeckoId: "liquid-staking-crescent", decimals: 6, },
