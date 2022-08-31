@@ -95,8 +95,8 @@ async function getTokenPrices({
   let token0Addresses, token1Addresses, reserves
 
   [token0Addresses, token1Addresses, reserves] = await Promise.all([
-    sdk.api.abi.multiCall({ abi: token0, chain, calls: pairCalls, block, }).then(({ output }) => output),
-    sdk.api.abi.multiCall({ abi: token1, chain, calls: pairCalls, block, }).then(({ output }) => output),
+    sdk.api.abi.multiCall({ abi: abis.token0ABI || token0, chain, calls: pairCalls, block, }).then(({ output }) => output),
+    sdk.api.abi.multiCall({ abi: abis.token1ABI || token1, chain, calls: pairCalls, block, }).then(({ output }) => output),
     sdk.api.abi.multiCall({ abi: abis.getReservesABI || getReserves, chain, calls: pairCalls, block, }).then(({ output }) => output),
   ]);
   await requery(token0Addresses, chain, block, token0);
@@ -259,7 +259,10 @@ async function getTokenPrices({
       }
     })
 
-    if (!resolveLP) return balances
+    if (!resolveLP) {
+      fixBalances(balances)
+      return balances
+    }
 
     if (lpAddresses.length) {
       const totalBalances = (await sdk.api.abi.multiCall({
@@ -275,6 +278,7 @@ async function getTokenPrices({
       })
     }
 
+    fixBalances(finalBalances)
     return finalBalances
   }
 
