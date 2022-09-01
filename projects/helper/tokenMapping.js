@@ -583,6 +583,12 @@ const fixBalancesTokens = {
     "0xe2765f3721dab5f080cf14ace661529e1ab9ade7": { coingeckoId: "binance-usd", decimals: 18 },
     "0x45830b92443a8f750247da2a76c85c70d0f1ebf3": { coingeckoId: "avalanche-2", decimals: 18 },
     "0xfAA03A2AC2d1B8481Ec3fF44A0152eA818340e6d": { coingeckoId: "solana", decimals: 18 },
+    "0x2b72d65941e657c1305b65fa330ffdde7b397239": { coingeckoId: "aave-usdc", decimals: 6 },
+    "0x61fbbfd5416c45f297a8e69ba113789c75f8841c": { coingeckoId: "aave-usdc", decimals: 6 },
+    "0x2eadfda6d830547b5168ba88c13d24156a026ce5": { coingeckoId: "aave-usdt", decimals: 6 },
+    "0x98aedff55dcc2e7a7d1899b325d1680527dd2742": { coingeckoId: "aave-usdt", decimals: 6 },
+    "0x2ff5371dad5c6ef76d55213b7c5a519f6654ba17": { coingeckoId: "aave-dai", decimals: 18 },
+    "0xe9a88c33abf71c902f7581321d05e6516cbca761": { coingeckoId: "aave-dai", decimals: 18 },
   },
   evmos: {
     "0x3F75ceabcdfed1aca03257dc6bdc0408e2b4b026": { coingeckoId: "diffusion", decimals: 18 },
