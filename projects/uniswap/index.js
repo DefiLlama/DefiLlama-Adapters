@@ -39,40 +39,32 @@ async function celotvl(timestamp, block) {
 async function v3EthTvl(_, block) {
   const size = 1000
   let sum = 0
-  let index = 0
-  const poolObj = {}
+  let lastId = ''
   let pools
-  const graphQuery = (direction) => `
-    query poolQuery {
-      pools(first:${size} skip:${index}  orderBy:totalValueLockedUSD orderDirection:${direction}) {
+  // remove the bad pools
+  const blacklisted = ['0xa850478adaace4c08fc61de44d8cf3b64f359bec']
+
+  const graphQuery = gql`
+    query poolQuery($lastId: String) {
+      pools(first:${size} where: {id_gt: $lastId}) {
         id
         totalValueLockedUSD
-        token0 {      id    }
-        token1 {      id    }
       }
     }
   `
 
   do {
-    const res = await request('https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3', graphQuery('desc'));
+    const res = await request('https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3', graphQuery, { lastId });
     pools = res.pools
-    pools.forEach(i => poolObj[i.id.toLowerCase()] = i)
-    log(index, 'desc')
-    index += size
-  } while (pools.length === size && index < 5000)
+    pools.forEach(i => {
+      if (blacklisted.includes(i.id)) return;
+      sum+= +i.totalValueLockedUSD
+    })
 
-  index = 0
-  do {
-    const res = await request('https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3', graphQuery('asc'));
-    pools = res.pools
-    pools.forEach(i => poolObj[i.id.toLowerCase()] = i)
-    log(index, 'asc')
-    index += size
-  } while (pools.length === size && index < 5000)
+    // log(lastId, pools.length)
+    lastId = pools[pools.length - 1].id
+  } while (pools.length === size)
 
-  // remove the bad pool 
-  delete poolObj['0xa850478adaace4c08fc61de44d8cf3b64f359bec']
-  Object.values(poolObj).forEach(i => sum += +i.totalValueLockedUSD)
   return { tether: sum }
 }
 
