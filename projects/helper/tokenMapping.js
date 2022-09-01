@@ -380,7 +380,6 @@ const transformTokens = {
     "0xcee8faf64bb97a73bb51e115aa89c17ffa8dd167": "0xdac17f958d2ee523a2206206994597c13d831ec7", // USDT
     "0x16d0e1fbd024c600ca0380a4c5d57ee7a2ecbf9c": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", // WBTC
     "0x34d21b1e550d73cee41151c77f3c73359527a396": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // WETH
-    "0x0000000000000000000000000000000000000000": "0xd7a4d10070a4f7bc2a015e78244ea137398c3b74" // Klaytn
   },
   canto: {
     [nullAddress]: "canto:0x826551890Dc65655a0Aceca109aB11AbDbD7a07B", // wCanto
@@ -483,6 +482,12 @@ const fixBalancesTokens = {
     "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7": { coingeckoId: "avalanche-2", decimals: 18, },
     "0x9dEbca6eA3af87Bf422Cea9ac955618ceb56EfB4": { coingeckoId: "avalanche-2", decimals: 18, },
   },
+  findora: {
+    [nullAddress]: { coingeckoId: "findora", decimals: 18, },
+    "0x0000000000000000000000000000000000001000": { coingeckoId: "findora", decimals: 18, },
+    "0x2e8079e0fe49626af8716fc38adea6799065d7f7": { coingeckoId: "usd-coin", decimals: 6, },
+    "0x0632baa26299c9972ed4d9affa3fd057a72252ff": { coingeckoId: "tether", decimals: 6, },
+  },
   crescent: {
     // token info - https://apigw-v2.crescent.network/asset/info
     "ubcre": { coingeckoId: "liquid-staking-crescent", decimals: 6, },
@@ -562,6 +567,7 @@ const fixBalancesTokens = {
     "0x1953cab0E5bFa6D4a9BaD6E05fD46C1CC6527a5a": { coingeckoId: "ethereum-classic", decimals: 18, },
   },
   klaytn: {
+    [nullAddress]: { coingeckoId: "klay-token", decimals: 18 }, // Wrapped KLAY
     "0xd7a4d10070a4f7bc2a015e78244ea137398c3b74": { coingeckoId: "klay-token", decimals: 18 }, // Wrapped KLAY
     "0xff3e7cf0c007f919807b32b30a4a9e7bd7bc4121": { coingeckoId: "klay-token", decimals: 18 }, // Wrapped KLAY
     "0xe4f05a66ec68b54a58b17c22107b02e0232cc817": { coingeckoId: "klay-token", decimals: 18 }, // Wrapped KLAY
