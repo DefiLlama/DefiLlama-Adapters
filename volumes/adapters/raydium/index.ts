@@ -1,6 +1,6 @@
-import { DexVolumeAdapter } from "../../dexVolume.type";
+import { SimpleVolumeAdapter } from "../../dexVolume.type";
 
-const { fetchURL } = require("../helper/utils");
+const { fetchURL } = require("../../helper/utils");
 
 const endpoints = {
   solana: "https://api.raydium.io/info",
@@ -21,7 +21,7 @@ const graphs = (chain: string) => async () => {
   };
 };
 
-const adapter: DexVolumeAdapter = {
+const adapter: SimpleVolumeAdapter = {
   volume: {
     solana: {
       fetch: graphs("solana"),

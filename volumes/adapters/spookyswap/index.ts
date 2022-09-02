@@ -1,8 +1,8 @@
-import { DexVolumeAdapter } from "../../dexVolume.type";
+import { SimpleVolumeAdapter } from "../../dexVolume.type";
 import { getStartTimestamp } from "../../helper/getStartTimestamp";
 
 const { getChainVolume } = require("../../helper/getUniSubgraphVolume");
-const { FANTOM } = require("../helper/chains");
+const { FANTOM } = require("../../helper/chains");
 const endpoints = {
   [FANTOM]: "https://api.thegraph.com/subgraphs/name/eerieeight/spookyswap",
 };
@@ -13,7 +13,7 @@ const graphs = getChainVolume({
   },
 });
 
-const adapter: DexVolumeAdapter = {
+const adapter: SimpleVolumeAdapter = {
   volume: {
     [FANTOM]: {
       fetch: graphs(FANTOM),

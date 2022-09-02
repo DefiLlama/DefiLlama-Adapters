@@ -1,4 +1,4 @@
-import { DexVolumeAdapter } from "../../dexVolume.type";
+import { SimpleVolumeAdapter } from "../../dexVolume.type";
 import { getStartTimestamp } from "../../helper/getStartTimestamp";
 import { getChainVolume } from "../../helper/getUniSubgraphVolume";
 
@@ -20,7 +20,7 @@ const graphs = getChainVolume({
   },
 });
 
-const adapter: DexVolumeAdapter = {
+const adapter: SimpleVolumeAdapter = {
   volume: {
     avax: {
       fetch: graphs("avax"),

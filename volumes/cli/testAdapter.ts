@@ -1,5 +1,5 @@
 import * as path from 'path'
-import type { ChainBlocks, DexAdapter, VolumeAdapter } from '../dexVolume.type';
+import type { Adapter, ChainBlocks, VolumeAdapter } from '../dexVolume.type';
 import { chainsForBlocks } from "@defillama/sdk/build/computeTVL/blocks";
 import { Chain } from '@defillama/sdk/build/general';
 import handleError from '../../utils/handleError';
@@ -15,17 +15,16 @@ process.on('uncaughtException', handleError)
 checkArguments(process.argv)
 
 // Get path of module import
-const passedFile = path.resolve(process.cwd(), `dexVolumes/${process.argv[2]}`);
+const passedFile = path.resolve(process.cwd(), `volumes/adapters/${process.argv[2]}`);
 (async () => {
   console.info(`Running ${process.argv[2].toUpperCase()} adapter`)
   // Import module to test
-  let module: DexAdapter = (await import(passedFile)).default
+  let module: VolumeAdapter = (await import(passedFile)).default
 
   const unixTimestamp = +process.argv[3] || Math.round(Date.now() / 1000) - 60;
   if ("volume" in module) {
     // Get adapter
-    const volumeAdapter = module.volume
-    const volumes = await runAdapter(volumeAdapter, unixTimestamp)
+    const volumes = await runAdapter(module.volume, unixTimestamp)
     printVolumes(volumes)
   } else if ("breakdown" in module) {
     const breakdownAdapter = module.breakdown
@@ -39,7 +38,7 @@ const passedFile = path.resolve(process.cwd(), `dexVolumes/${process.argv[2]}`);
   } else console.info("No compatible adapter found")
 })()
 
-async function runAdapter(volumeAdapter: VolumeAdapter, timestamp: number) {
+async function runAdapter(volumeAdapter: Adapter, timestamp: number) {
   // Get chains to check
   const chains: Chain[] = Object.keys(volumeAdapter).filter(item => typeof volumeAdapter[item] === 'object').map(c => c === "ava" ? "avax" : c as Chain)
   // Get lastest block 

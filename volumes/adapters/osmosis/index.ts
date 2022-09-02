@@ -1,6 +1,6 @@
-import { DexVolumeAdapter } from "../../dexVolume.type";
+import { SimpleVolumeAdapter } from "../../dexVolume.type";
 import { getUniqStartOfTodayTimestamp } from "../../helper/getUniSubgraphVolume";
-const { fetchURL } = require("../helper/utils");
+const { fetchURL } = require("../../helper/utils");
 
 const historicalVolumeEndpoint = "https://api-osmosis.imperator.co/volume/v2/historical/chart"
 
@@ -32,7 +32,7 @@ const getStartTimestamp = async () => {
   return (new Date(historicalVolume[0].time).getTime()) / 1000
 }
 
-const adapter: DexVolumeAdapter = {
+const adapter: SimpleVolumeAdapter = {
   volume: {
     cosmos: {
       fetch,

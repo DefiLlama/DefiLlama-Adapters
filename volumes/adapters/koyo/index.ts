@@ -1,4 +1,4 @@
-import { DexVolumeAdapter } from "../../dexVolume.type";
+import { SimpleVolumeAdapter } from "../../dexVolume.type";
 import { BOBA } from "../../helper/chains";
 import { getChainVolume } from "../../helper/getUniSubgraphVolume";
 
@@ -16,7 +16,7 @@ const graphs = getChainVolume({
   hasDailyVolume: false,
 });
 
-const adapter: DexVolumeAdapter = {
+const adapter: SimpleVolumeAdapter = {
   volume: {
     [BOBA]: {
       fetch: graphs(BOBA),

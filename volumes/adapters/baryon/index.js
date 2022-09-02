@@ -1,5 +1,5 @@
-const { fetchURL } = require("../helper/utils");
-const { BSC } = require("../helper/chains");
+const { fetchURL } = require("../../helper/utils");
+const { BSC } = require("../../helper/chains");
 
 const endpoints = {
   [BSC]: "https://api.baryon.network/program/info",
