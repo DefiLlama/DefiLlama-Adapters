@@ -1,0 +1,215 @@
+{
+  "version": "0.1.0",
+  "name": "cega_vault",
+  "instructions": [],
+  "accounts": [
+    {
+      "name": "Vault",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "productName",
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "vaultNumber",
+            "type": "u64"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": "VaultStatus"
+            }
+          },
+          {
+            "name": "vaultNonce",
+            "type": "u8"
+          },
+          {
+            "name": "redeemableMintNonce",
+            "type": "u8"
+          },
+          {
+            "name": "optionMintNonce",
+            "type": "u8"
+          },
+          {
+            "name": "vaultUnderlyingTokenAccountNonce",
+            "type": "u8"
+          },
+          {
+            "name": "vaultOptionTokenAccountNonce",
+            "type": "u8"
+          },
+          {
+            "name": "vaultWithdrawQueueRedeemableTokenAccountNonce",
+            "type": "u8"
+          },
+          {
+            "name": "withdrawQueueHeaderNonce",
+            "type": "u8"
+          },
+          {
+            "name": "structuredProductInfoAccountNonce",
+            "type": "u8"
+          },
+          {
+            "name": "underlyingMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "redeemableMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "optionMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "vaultUnderlyingTokenAccount",
+            "type": "publicKey"
+          },
+          {
+            "name": "vaultOptionTokenAccount",
+            "type": "publicKey"
+          },
+          {
+            "name": "vaultWithdrawQueueRedeemableTokenAccount",
+            "type": "publicKey"
+          },
+          {
+            "name": "underlyingAmount",
+            "type": "u64"
+          },
+          {
+            "name": "vaultTotalCouponPayoff",
+            "type": "u64"
+          },
+          {
+            "name": "knockInEvent",
+            "type": "bool"
+          },
+          {
+            "name": "knockOutEvent",
+            "type": "bool"
+          },
+          {
+            "name": "vaultFinalPayoff",
+            "type": "u64"
+          },
+          {
+            "name": "epochSequenceNumber",
+            "type": "u64"
+          },
+          {
+            "name": "startEpoch",
+            "type": "u64"
+          },
+          {
+            "name": "endEpoch",
+            "type": "u64"
+          },
+          {
+            "name": "epochCadence",
+            "type": "u32"
+          },
+          {
+            "name": "startDeposits",
+            "type": "u64"
+          },
+          {
+            "name": "endDeposits",
+            "type": "u64"
+          },
+          {
+            "name": "tradeDate",
+            "type": "u64"
+          },
+          {
+            "name": "withdrawQueueHeader",
+            "type": "publicKey"
+          },
+          {
+            "name": "structuredProductInfoAccount",
+            "type": "publicKey"
+          },
+          {
+            "name": "extraPubkeyOne",
+            "type": "publicKey"
+          },
+          {
+            "name": "extraPubkeyTwo",
+            "type": "publicKey"
+          },
+          {
+            "name": "extraPubkeyThree",
+            "type": "publicKey"
+          },
+          {
+            "name": "extraUint64One",
+            "type": "u64"
+          },
+          {
+            "name": "extraUint64Two",
+            "type": "u64"
+          },
+          {
+            "name": "extraUint64Three",
+            "type": "u64"
+          },
+          {
+            "name": "extraBoolOne",
+            "type": "bool"
+          },
+          {
+            "name": "extraBoolTwo",
+            "type": "bool"
+          },
+          {
+            "name": "extraBoolThree",
+            "type": "bool"
+          }
+        ]
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "VaultStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "NotTraded"
+          },
+          {
+            "name": "Traded"
+          },
+          {
+            "name": "EpochEnded"
+          },
+          {
+            "name": "PayoffCalculated"
+          },
+          {
+            "name": "FeesCollected"
+          },
+          {
+            "name": "ProcessingWithdrawQueue"
+          },
+          {
+            "name": "WithdrawQueueProcessed"
+          }
+        ]
+      }
+    }
+  ],
+  "events": [],
+  "errors": []
+}
