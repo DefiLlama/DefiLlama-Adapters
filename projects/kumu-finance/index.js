@@ -30,16 +30,10 @@ async function tvl(_, _b, { [chain]: block }) {
     toa.push([output.lpToken, output.strat0])
   })
 
-  const symbols = await getSymbols(chain, tokens)
-  tokens = tokens.filter((token) => symbols[token] === 'KSLP')
-  const { updateBalances } = await getTokenPrices({ chain, block, coreAssets: [], lps: tokens, allLps: true, abis: {
-    token0ABI: abi.tokenA,
-    token1ABI: abi.tokenB,
-    getReservesABI: abi.getCurrentPool
-  }})
+  // const { updateBalances } = await getTokenPrices({ chain, block, coreAssets: [], lps: tokens, })
 
   const balances = await sumUnknownTokens({ tokensAndOwners: toa, chain, block, useDefaultCoreAssets: true, })
-  await updateBalances(balances)
+  // await updateBalances(balances)
   return balances
 }
 

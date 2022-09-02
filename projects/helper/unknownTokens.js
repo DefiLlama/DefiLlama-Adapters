@@ -5,28 +5,44 @@ const token0 = require('./abis/token0.json');
 const token1 = require('./abis/token1.json');
 const masterchefAbi = require('./abis/masterchef.json')
 const getReserves = require('./abis/getReserves.json');
+const kslpABI = require('./abis/kslp.js');
 const { getChainTransform, stripTokenHeader, getFixBalances, transformBalances, } = require('./portedTokens')
 const { requery, } = require('./getUsdUniTvl')
 const { getCoreAssets } = require('./tokenMapping')
-const { sumTokens, sumTokens2, } = require('./unwrapLPs')
+const { sumTokens, sumTokens2, nullAddress, } = require('./unwrapLPs')
 const { isLP, getUniqueAddresses, DEBUG_MODE, sliceIntoChunks, sleep, log } = require('./utils')
 const factoryAbi = require('./abis/factory.json');
 const { default: BigNumber } = require('bignumber.js')
+
+const customLPHandlers = {
+  klaytn: {
+    kslp: {
+      lpFilter: (symbol, addr, chain) => chain === 'klaytn' && symbol === 'KSLP',
+      abis: {
+        getReservesABI: kslpABI.getCurrentPool,
+        token0ABI: kslpABI.tokenA,
+        token1ABI: kslpABI.tokenB,
+      },
+    }
+  }
+}
 
 async function getLPData({
   block,
   chain = 'ethereum',
   lps = [], // list of token addresses (all need not be LPs, code checks and filters out non LPs)
   allLps = false,   // if set true, assumes all tokens provided as lps are lps and skips validation/filtering
+  abis = {},
+  lpFilter = isLP,
 }) {
   lps = getUniqueAddresses(lps)
-  const pairAddresses = allLps ? lps : await getLPList(lps)
+  const pairAddresses = allLps ? lps : await getLPList({lps, chain, block, lpFilter, })
   const pairCalls = pairAddresses.map((pairAddress) => ({ target: pairAddress, }))
   let token0Addresses, token1Addresses, reserves
 
   [token0Addresses, token1Addresses, reserves] = await Promise.all([
-    sdk.api.abi.multiCall({ abi: token0, chain, calls: pairCalls, block, }).then(({ output }) => output),
-    sdk.api.abi.multiCall({ abi: token1, chain, calls: pairCalls, block, }).then(({ output }) => output),
+    sdk.api.abi.multiCall({ abi: abis.token0ABI || token0, chain, calls: pairCalls, block, }).then(({ output }) => output),
+    sdk.api.abi.multiCall({ abi: abis.token1ABI || token1, chain, calls: pairCalls, block, }).then(({ output }) => output),
   ]);
   await requery(token0Addresses, chain, block, token0);
   await requery(token1Addresses, chain, block, token1);
@@ -42,21 +58,13 @@ async function getLPData({
     pairs[token1Address.input.target].token1Address = token1Address.output.toLowerCase()
   })
   return pairs
-
-  async function getLPList(lps) {
-    const callArgs = lps.map(t => ({ target: t }))
-    let symbols = (await sdk.api.abi.multiCall({ calls: callArgs, abi: symbol, block, chain })).output
-    symbols = symbols.filter(item => isLP(item.output, item.input.target, chain))
-    // log(symbols.filter(item => item.output !== 'Cake-LP').map(i => `token: ${i.input.target} Symbol: ${i.output}`).join('\n'))
-    log('LP symbols:', getUniqueAddresses(symbols.map(i => i.output)).join(', '))
-    return symbols.map(item => item.input.target.toLowerCase())
-  }
 }
 
-async function getLPList(lps, chain, block) {
+async function getLPList({lps, chain, block, lpFilter = isLP, }) {
+  lps = lps.filter(i => i !== nullAddress)
   const callArgs = lps.map(t => ({ target: t }))
   let symbols = (await sdk.api.abi.multiCall({ calls: callArgs, abi: symbol, block, chain })).output
-  symbols = symbols.filter(item => isLP(item.output, item.input.target, chain))
+  symbols = symbols.filter(item => lpFilter(item.output, item.input.target, chain))
   // log(symbols.filter(item => item.output !== 'Cake-LP').map(i => `token: ${i.input.target} Symbol: ${i.output}`).join('\n'))
   log('LP symbols:', getUniqueAddresses(symbols.map(i => i.output)).join(', '))
   return symbols.map(item => item.input.target.toLowerCase())
@@ -76,7 +84,8 @@ async function getTokenPrices({
   minLPRatio = 0.5, // if a token pool has less that this percent of core asset tokens compared to a token pool with max tokens for a given core asset, this token pool is not used for price calculation
   restrictTokenRatio = 10, // while computing tvl, an unknown token value can max be x times the pool value, default 100 times pool value
   log_coreAssetPrices = [],
-  log_minTokenValue = 1e6 // log only if token value is higer than this value, now minimum is set as 1 million
+  log_minTokenValue = 1e6, // log only if token value is higer than this value, now minimum is set as 1 million
+  lpFilter,   // override the default logic for checking if an address is LP based on it's symbol
 }) {
   let counter = 0
   if (!transformAddress)
@@ -89,7 +98,7 @@ async function getTokenPrices({
   blacklist = blacklist.map(i => i.toLowerCase())
   whitelist = whitelist.map(i => i.toLowerCase())
   lps = getUniqueAddresses(lps)
-  const pairAddresses = allLps ? lps : await getLPList(lps, chain, block)
+  const pairAddresses = allLps ? lps : await getLPList({lps, chain, block, lpFilter})
   const pairCalls = pairAddresses.map((pairAddress) => ({ target: pairAddress, }))
 
   let token0Addresses, token1Addresses, reserves
@@ -193,6 +202,17 @@ async function getTokenPrices({
         // setPrice(prices, token0Address, newCoreAmount, newTokenAmount, coreAsset)
         sdk.util.sumSingleBalance(pairBalances[pairAddress], token1Address, Number(reserveAmounts[1]) * 2)
       }
+    }
+  }
+
+  if (!lpFilter && customLPHandlers[chain]) { // we want to handle custom LPs but dont want to end up in recorsive loop, hence this check
+    for (const customOptions of Object.values(customLPHandlers[chain])) {
+      const options = { ...arguments[0], ...customOptions }
+      const { prices: customPrices, pairBalances: customPairBalances, pairs: customPairs } = await getTokenPrices(options)
+      // add custom LP data to existing data
+      Object.entries(customPairs).forEach(([key, value]) => pairs[key] = value)
+      Object.entries(customPrices).forEach(([key, value]) => prices[key] = value)
+      Object.entries(customPairBalances).forEach(([key, value]) => pairBalances[key] = value)
     }
   }
 
@@ -489,7 +509,7 @@ async function vestingHelper({
   const finalBalances = {}
   for (let i = 0; i < chunks.length; i++) {
     log('resolving for %s/%s of total tokens: %s (chain: %s)', i + 1, chunks.length, tokens.length, chain)
-    let lps = await getLPList(chunks[i], chain, block)  // we count only LP tokens for vesting protocols
+    let lps = await getLPList({lps: chunks[i], chain, block})  // we count only LP tokens for vesting protocols
     const balances = await sumTokens2({ chain, block, owner, tokens: lps })
     const lpBalances = {}
     Object.entries(balances).forEach(([token, bal]) => {
@@ -596,8 +616,7 @@ function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = 
         delete tempBalances[nativeToken]
       })
 
-      const pairs = await getLPData({ lps: tokenLPs, chain, block })
-      const { updateBalances, prices, } = await getTokenPrices({ lps: [...Object.keys(pairs), ...lps], allLps: true, coreAssets, block, chain, minLPRatio: 0.001, })
+      const { updateBalances, pairs, } = await getTokenPrices({ lps: [...tokenLPs, ...lps], coreAssets, block, chain, minLPRatio: 0.001, })
       Object.entries(tempBalances).forEach(([token, balance]) => {
         if (pairs[token]) {
           const { token0Address, token1Address } = pairs[token]
@@ -613,8 +632,6 @@ function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = 
         await updateBalances(bal)
         fixBalances(bal)
       }
-
-      log(balances)
 
       return balances
     }
@@ -706,7 +723,6 @@ module.exports = {
   getLPData,
   masterchefExports,
   vestingHelper,
-  getLPList,
   sumUnknownTokens,
   staking,
   sumTokensExport,
