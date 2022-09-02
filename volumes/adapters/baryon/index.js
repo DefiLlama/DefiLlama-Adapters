@@ -1,4 +1,4 @@
-const { fetchURL } = require("../../helper/utils");
+const { fetchURL } = require("../../../helper/utils");
 const { BSC } = require("../../helper/chains");
 
 const endpoints = {
