@@ -1,7 +1,7 @@
 import { SimpleVolumeAdapter } from "../../dexVolume.type";
 import { getUniqStartOfTodayTimestamp } from "../../helper/getUniSubgraphVolume";
 
-const { fetchURL } = require("../../helper/utils");
+const { fetchURL } = require("../../../helper/utils");
 
 interface IKlaySwapInfoDayVolumeItem {
   dateId: string
