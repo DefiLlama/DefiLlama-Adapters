@@ -61,17 +61,17 @@ async function getPools(block, chain) {
     })).output;
   }
 
-  let allPools = {}
-  Object.entries(pools).map(([key, list])=>{
-    pools[key] = list.filter(p=>{
-      if(allPools[p.output] === undefined){
-        allPools[p.output] = true
-        return true
+  let allPools = {};
+  Object.entries(pools).map(([key, list]) => {
+    pools[key] = list.filter(p => {
+      if (allPools[p.output] === undefined) {
+        allPools[p.output] = true;
+        return true;
       } else {
-        return false
+        return false;
       }
-    })
-  })
+    });
+  });
 
   return pools;
 }
@@ -138,10 +138,14 @@ async function fixWrappedTokenBalances(balances, block, chain, transform) {
     await unwrapSdTokens(balances, contracts[chain].sdTokens, chain);
   }
 
-  const stDOT = "moonbeam:0xfa36fe1da08c89ec72ea1f0143a35bfd5daea108"
-  if(stDOT in balances){
-    balances["bsc:0x7083609fce4d1d8dc0c979aab8c869ea2c873402"] = BigNumber(balances[stDOT]).times(1e8).toFixed(0)
-    delete balances[stDOT]
+  const stDOT = "moonbeam:0xfa36fe1da08c89ec72ea1f0143a35bfd5daea108";
+  if (stDOT in balances) {
+    balances["bsc:0x7083609fce4d1d8dc0c979aab8c869ea2c873402"] = BigNumber(
+      balances[stDOT]
+    )
+      .times(1e8)
+      .toFixed(0);
+    delete balances[stDOT];
   }
 }
 
@@ -197,7 +201,7 @@ function mapGaugeTokenBalances(calls, chain) {
     //"0xe7a24ef0c5e95ffb0f6684b813a78f2a3ad7d171": "0x19793b454d3afc7b454f206ffe95ade26ca6912c", // maybe not? 4 0s poly
     "0x7f90122bf0700f9e7e1f688fe926940e8839f353": {
       to: "0xbf7e49483881c76487b0989cd7d9a8239b20ca41",
-      pools: ["0x30df229cefa463e991e29d42db0bae2e122b2ac7"],
+      pools: [],
       chains: []
     }, // need a pool conditional - only for (1) ['0x30dF229cefa463e991e29D42DB0bae2e122B2AC7']
     "0xd02a30d33153877bc20e5721ee53dedee0422b2f": {
@@ -209,11 +213,6 @@ function mapGaugeTokenBalances(calls, chain) {
       to: "0x5b5cfe992adac0c9d48e05854b2d91c73a003858",
       pools: [],
       chains: ["avax"]
-    },
-    "0x7f90122bf0700f9e7e1f688fe926940e8839f353": {
-      to: "0xbF7E49483881C76487b0989CD7d9A8239B20CA41",
-      pools: [],
-      chains: ["arbitrum"]
     },
     "0x27e611fd27b276acbd5ffd632e5eaebec9761e40": {
       to: "0x8866414733F22295b7563f9C5299715D2D76CAf4",
@@ -349,7 +348,7 @@ function tvl(chain) {
     let balances = {};
     const transform = await getChainTransform(chain);
     const poolList = await getPools(chainBlocks[chain], chain);
-    const block = await getBlock(_t, chain, chainBlocks, true)
+    const block = await getBlock(_t, chain, chainBlocks, true);
 
     for (let registry of Object.keys(poolList)) {
       await unwrapPools(
@@ -378,27 +377,32 @@ const chainTypeExports = chains => {
 
   exports.harmony = {
     tvl: async (ts, ethB, chainB) => {
-      if(ts > 1655989200) { // harmony hack
-        return {}
+      if (ts > 1655989200) {
+        // harmony hack
+        return {};
       }
-      const block = await getBlock(ts, "harmony", chainB, true)
-      const balances = {}
-      await sumTokensSharedOwners(balances, 
-        ["0xef977d2f931c1978db5f6747666fa1eacb0d0339", "0x3c2b8be99c50593081eaa2a724f0b8285f5aba8f"],
+      const block = await getBlock(ts, "harmony", chainB, true);
+      const balances = {};
+      await sumTokensSharedOwners(
+        balances,
+        [
+          "0xef977d2f931c1978db5f6747666fa1eacb0d0339",
+          "0x3c2b8be99c50593081eaa2a724f0b8285f5aba8f"
+        ],
         ["0xC5cfaDA84E902aD92DD40194f0883ad49639b023"],
         block,
         "harmony",
-        addr=>`harmony:${addr}`
-      )
-      return balances
+        addr => `harmony:${addr}`
+      );
+      return balances;
     }
-  }
+  };
   exports.hallmarks = [
     [1597446675, "CRV Launch"],
     [1621213201, "Convex Launch"],
     [1642374675, "MIM depeg"],
     [1651881600, "UST depeg"],
-    [1654822801, "stETH depeg"],
+    [1654822801, "stETH depeg"]
   ];
   return exports;
 };

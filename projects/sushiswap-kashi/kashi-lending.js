@@ -1,9 +1,9 @@
 const sdk = require("@defillama/sdk");
-const { request, gql } = require("graphql-request"); 
-const {sumTokens} = require('../helper/unwrapLPs')
-const { BigNumber } = require('bignumber.js');
+const { request, gql } = require("graphql-request");
+const { sumTokens, sumTokens2 } = require('../helper/unwrapLPs')
+const { getChainTransform } = require('../helper/portedTokens')
 
-const {getBlock} = require('../helper/getBlock')
+const { getBlock } = require('../helper/getBlock')
 
 const mimAddress = {
   ethereum: "0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3",
@@ -39,8 +39,27 @@ query get_bentoboxes($block: Int, $tokensSkip: Int) {
        symbol
        name
        decimals
-       totalSupplyBase # totalSupplyElastic
+       totalSupplyBase 
+       totalSupplyElastic
      }
+     kashiPairs(first:1000) {
+       id
+       bentoBox {
+         id
+       }
+       asset {
+         id
+       }
+       symbol
+       collateral {
+         id
+       }
+       totalAssetBase
+       totalBorrowBase
+       totalBorrowElastic
+       totalCollateralShare
+     }
+     totalKashiPairs
      totalTokens
    }
  } 
@@ -52,46 +71,42 @@ function kashiLending(chain, borrowed) {
     const boxTokens = []
     const graphUrl = graphUrls[chain]
     const block = chainBlocks[chain]
-    const transform = x => `${chain}:${x}`
+    const transform = await getChainTransform(chain)
 
     // Query graphql endpoint and add tokenAndOwner to list
     const { bentoBoxes } = await request(
-      graphUrl, 
-      bentoboxQuery, 
-      {block, tokensSkip: 0}
+      graphUrl,
+      bentoboxQuery,
+      { block, tokensSkip: 0 }
     )
-    bentoBoxes.forEach(async box => {
-      boxTokens.push(...box.tokens.map(t => [t.id, box.id]))
-      if (box.totalTokens > box.tokens.length) {
-        throw (`More tokens (${box.totalTokens}) in bento box than returned by graphql api, probably over the 1000 tokens limit`)
-      }
-    })
 
     // Sum all tokens
     const balances = {}
     // Filtering out causing null issues on bsc
     const filteredOutTokens = ['0x87b008e57f640d94ee44fd893f0323af933f9195']
-    const filtered = boxTokens.filter(t => (filteredOutTokens.indexOf(t[0]) == -1))
-    await sumTokens(balances, filtered, block, chain, transform)
+    // MIM uses kashi for unissued tokens, so these must be removed
+    if (mimAddress[chain]) filteredOutTokens.push(mimAddress[chain].toLowerCase())
+    const tokensAndOwners = []
 
-    // What is retrieved before this line and stored as balances is what's left in the bentobox, so real TVL. 
-    // Now compute borrowed = supply minus tvl where supply is retrieved from thegraph
-    if (borrowed) {
-      const borrowed_balances = {}
-      bentoBoxes.forEach(box => {
-        box.tokens.forEach(async token =>
-          sdk.util.sumSingleBalance(borrowed_balances, transform(token.id), token.totalSupplyBase) 
-        )
-      })
-      for (const [key, value] of Object.entries(balances)) {
-        borrowed_balances[key] = BigNumber.max(0, BigNumber(borrowed_balances[key]).minus(balances[key]));
+    bentoBoxes.forEach(async box => {
+      if (box.totalTokens > box.tokens.length) {
+        throw (`More tokens (${box.totalTokens}) in bento box than returned by graphql api, probably over the 1000 tokens limit`)
       }
-      delete borrowed_balances[chain+":"+mimAddress[chain]]
-      return borrowed_balances
-    } else {
-      delete balances[chain+":"+mimAddress[chain]]
-      return balances
-    }
+      if (box.totalKashiPairs > box.kashiPairs.length) {
+        throw (`More kashi pairs (${box.totalKashiPairs}) in bento box than returned by graphql api, probably over the 1000 limit`)
+      }
+      box.tokens.forEach(token => {
+        if (filteredOutTokens.includes(token.id)) return;
+        tokensAndOwners.push([token.id, box.id])
+      })
+      box.kashiPairs.forEach(pair => {
+        if (filteredOutTokens.includes(pair.asset.id)) return;
+        sdk.util.sumSingleBalance(balances, transform(pair.asset.id), pair.totalBorrowElastic)
+      })
+    })
+
+    if (borrowed) return balances
+    return sumTokens2({ tokensAndOwners, chain, block, })
   }
 }
 
@@ -101,9 +116,9 @@ const { transformFantomAddress } = require("../helper/portedTokens");
 async function kashiLendingFantom(timestamp, ethBlock, chainBlocks) {
   const transform = await transformFantomAddress()
   const chain = "fantom"
-  const block = await getBlock(timestamp, chain, chainBlocks, false) 
+  const block = await getBlock(timestamp, chain, chainBlocks, false)
   const box = "0xF5BCE5077908a1b7370B9ae04AdC565EBd643966"
-  const wsSPA= "0x89346b51a54263cf2e92da79b1863759efa68692";
+  const wsSPA = "0x89346b51a54263cf2e92da79b1863759efa68692";
   const spa = "fantom:0x5602df4a94eb6c680190accfa2a475621e0ddbdc";
 
   const boxTokens = [
@@ -119,7 +134,7 @@ async function kashiLendingFantom(timestamp, ethBlock, chainBlocks) {
     "0x89346b51a54263cf2e92da79b1863759efa68692", //wsSPA
   ]
   const balances = {}
-  await sumTokens(balances, boxTokens.map(t=>[t, box]), block, chain, addr=>`${chain}:${addr}`)
+  await sumTokens(balances, boxTokens.map(t => [t, box]), block, chain, addr => `${chain}:${addr}`)
   await handleYearnTokens(
     balances,
     [
@@ -133,14 +148,14 @@ async function kashiLendingFantom(timestamp, ethBlock, chainBlocks) {
   delete balances["fantom:0x0dec85e74a92c52b7f708c4b10207d9560cefaf0"];
   const sSPA = (await sdk.api.abi.call({
     target: wsSPA,
-    params:[balances["fantom:0x89346b51a54263cf2e92da79b1863759efa68692"]],
-    abi: {"inputs":[{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"wOHMTosOHM","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+    params: [balances["fantom:0x89346b51a54263cf2e92da79b1863759efa68692"]],
+    abi: { "inputs": [{ "internalType": "uint256", "name": "_amount", "type": "uint256" }], "name": "wOHMTosOHM", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
     block,
     chain: "fantom"
   })).output;
   balances[spa] = sSPA;
   delete balances["fantom:0x89346b51a54263cf2e92da79b1863759efa68692"];
-  delete balances[chain+":"+mimAddress[chain]]
+  delete balances[chain + ":" + mimAddress[chain]]
   return balances
 }
 

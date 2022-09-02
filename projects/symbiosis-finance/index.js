@@ -1,14 +1,10 @@
 const sdk = require('@defillama/sdk');
 const {
-  transformBscAddress,
-  transformAvaxAddress,
-  transformPolygonAddress,
-  transformBobaAddress
+  getChainTransform,
 } = require('../helper/portedTokens');
 
 const getTokenAbi = require("./abi/getToken.json");
 const getTokenBalanceAbi = require("./abi/getTokenBalance.json");
-const BigNumber = require("bignumber.js");
 
 const config = {
   chains: [
@@ -59,23 +55,30 @@ const config = {
         '0xe0ddd7afC724BD4B320472B5C954c0abF8192344', // USDC + sBUSD from BSC,
       ]
     },
+    {
+      id: 1313161554,
+      name: 'aurora',
+      portal: '0x17A0E3234f00b9D7028e2c78dB2caa777F11490F',
+      stable: '0xB12BFcA5A55806AaF64E99521918A4bf0fC40802', // USDC
+      pools: [
+        '0x7Ff7AdE2A214F9A4634bBAA4E870A5125dA521B8', // USDC + sBUSD from BSC,
+        '0x7F1245B61Ba0b7D4C41f28cAc9F8637fc6Bec9E4', // USDC + sUSDC from Polygon,
+      ]
+    },
+    {
+      id: 40,
+      name: 'telos',
+      portal: '0x17A0E3234f00b9D7028e2c78dB2caa777F11490F',
+      stable: '0x818ec0a7fe18ff94269904fced6ae3dae6d6dc0b', // USDC
+      pools: [
+        '0x7f3C1E54b8b8C7c08b02f0da820717fb641F26C8', // USDC + sBUSD from BSC,
+      ]
+    },
   ]
 }
 
 async function getTransform(chainName) {
-  let transform = (address) => {
-    return address
-  }
-  if (chainName === 'bsc') {
-    transform = await transformBscAddress();
-  } else if (chainName === 'avax') {
-    transform = await transformAvaxAddress();
-  } else if (chainName === 'polygon') {
-    transform = await transformPolygonAddress();
-  } else if (chainName === 'boba') {
-    transform = await transformBobaAddress();
-  }
-  return transform
+  return getChainTransform(chainName)
 }
 
 async function tvl(chainName, timestamp, block, chainBlocks) {
@@ -178,6 +181,16 @@ module.exports = {
   boba: {
     tvl: (...params) => {
       return tvl('boba', ...params)
+    },
+  },
+  aurora: {
+    tvl: (...params) => {
+      return tvl('aurora', ...params)
+    },
+  },
+  telos: {
+    tvl: (...params) => {
+      return tvl('telos', ...params)
     },
   },
 };
