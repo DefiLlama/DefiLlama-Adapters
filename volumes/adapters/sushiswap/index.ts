@@ -13,7 +13,7 @@ import {
   XDAI,
   MOONRIVER
 } from "../../helper/chains";
-import { DexVolumeAdapter } from "../../dexVolume.type";
+import { SimpleVolumeAdapter } from "../../dexVolume.type";
 import { Chain } from "@defillama/sdk/build/general";
 
 const endpoints = {
@@ -63,7 +63,7 @@ const volume = Object.keys(endpoints).reduce(
   {}
 );
 
-const adapter: DexVolumeAdapter = {
+const adapter: SimpleVolumeAdapter = {
   volume,
 };
 

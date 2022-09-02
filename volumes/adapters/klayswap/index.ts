@@ -1,7 +1,7 @@
-import { DexVolumeAdapter } from "../../dexVolume.type";
+import { SimpleVolumeAdapter } from "../../dexVolume.type";
 import { getUniqStartOfTodayTimestamp } from "../../helper/getUniSubgraphVolume";
 
-const { fetchURL } = require("../helper/utils");
+const { fetchURL } = require("../../helper/utils");
 
 interface IKlaySwapInfoDayVolumeItem {
   dateId: string
@@ -29,7 +29,7 @@ const getStartTimestamp = async () => {
   return (new Date(historicalVolume[0].dateId).getTime()) / 1000
 }
 
-const adapter: DexVolumeAdapter = {
+const adapter: SimpleVolumeAdapter = {
   volume: {
     klatyn: {
       fetch,

@@ -22,9 +22,10 @@ export async function getLatestBlockRetry(chain: string) {
 export function printVolumes(volumes: (FetchResult & { chain: string, startTimestamp?: number })[]) {
     volumes.forEach(element => {
         console.info("----------")
+        console.info(element.chain.toUpperCase())
         if (element.startTimestamp !== undefined)
-            console.info(`Start date\nTimestamp -> ${element.startTimestamp}\nDate -> ${new Date(element.startTimestamp * 1000).toUTCString()}`)
-        console.info(element.chain)
+            console.info(`Start time: ${new Date(element.startTimestamp * 1000).toUTCString()}`)
+        else console.info("Start time not defined")
         console.info(`Daily: ${element.dailyVolume}`)
         console.info(`Total: ${element.totalVolume}`)
         console.info("----------")

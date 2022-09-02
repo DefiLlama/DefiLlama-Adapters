@@ -1,6 +1,6 @@
-import { ChainBlocks, DexVolumeAdapter, FetchResult } from "../../dexVolume.type";
+import { ChainBlocks, SimpleVolumeAdapter, FetchResult } from "../../dexVolume.type";
 
-const { fetchURL } = require("../helper/utils");
+const { fetchURL } = require("../../helper/utils");
 const {
   getUniqStartOfTodayTimestamp,
 } = require("../../helper/getUniSubgraphVolume");
@@ -28,7 +28,6 @@ const graphs = (chain: string) =>
           .then(({ data }: BancorV2Response) => {
             const volume = data.find(item => (item.timestamp / 1000) === dayTimestamp)
             if (!volume) throw new Error(`Unexpected error: No volume found for ${dayTimestamp}`)
-            console.log(`Bancor timestamp -> ${dayTimestamp} ${volume.usd}`)
             return {
               timestamp: dayTimestamp,
               dailyVolume: volume.usd
@@ -39,7 +38,7 @@ const graphs = (chain: string) =>
     }
   }
 
-const adapter: DexVolumeAdapter = {
+const adapter: SimpleVolumeAdapter = {
   volume: {
     ethereum: {
       fetch: graphs("ethereum"),

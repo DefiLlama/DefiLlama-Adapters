@@ -1,4 +1,4 @@
-import { DexVolumeAdapter } from "../../dexVolume.type";
+import { SimpleVolumeAdapter } from "../../dexVolume.type";
 
 const { fetchURL } = require("../helper/utils");
 
@@ -29,7 +29,7 @@ const fetch = (chain: string) => async () => {
   };
 };
 
-const adapter: DexVolumeAdapter = {
+const adapter: SimpleVolumeAdapter = {
   volume: Object.keys(endpoints).reduce((acc, chain) => {
     return {
       ...acc,
@@ -39,6 +39,6 @@ const adapter: DexVolumeAdapter = {
         runAtCurrTime: true
       }
     }
-  }, {}) as DexVolumeAdapter['volume']
+  }, {}) as SimpleVolumeAdapter['volume']
 };
 export default adapter;

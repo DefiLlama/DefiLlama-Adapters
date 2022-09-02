@@ -3,10 +3,10 @@ const {
   DEFAULT_TOTAL_VOLUME_FIELD,
   DEFAULT_DAILY_VOLUME_FIELD,
 } = require("../../helper/getUniSubgraphVolume");
-const { BSC } = require("../helper/chains");
+const { BSC } = require("../../helper/chains");
 const { getStartTimestamp } = require("../../helper/getStartTimestamp");
 
-import { DexVolumeAdapter } from "../../dexVolume.type";
+import { SimpleVolumeAdapter } from "../../dexVolume.type";
 
 const endpoints = {
   [BSC]: "https://api.thegraph.com/subgraphs/name/cr3k/exchange",
@@ -28,7 +28,7 @@ const graphs = getChainVolume({
   },
 });
 
-const adapter: DexVolumeAdapter = {
+const adapter: SimpleVolumeAdapter = {
   volume: {
     [BSC]: {
       fetch: graphs(BSC),

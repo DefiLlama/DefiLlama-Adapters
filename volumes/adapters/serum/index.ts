@@ -1,4 +1,4 @@
-import { DexVolumeAdapter } from "../../dexVolume.type";
+import { SimpleVolumeAdapter } from "../../dexVolume.type";
 import { getUniqStartOfTodayTimestamp } from "../../helper/getUniSubgraphVolume";
 import { gql, GraphQLClient } from "graphql-request";
 
@@ -48,7 +48,7 @@ const getStartTimestamp = async () => {
   return data.api_serum_dex_m.globalVolumeStats.t[0]
 }
 
-const adapter: DexVolumeAdapter = {
+const adapter: SimpleVolumeAdapter = {
   volume: {
     solana: {
       fetch,

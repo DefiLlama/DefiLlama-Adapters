@@ -1,4 +1,4 @@
-import { DexVolumeAdapter } from "../../dexVolume.type";
+import { SimpleVolumeAdapter } from "../../dexVolume.type";
 
 const {
   getChainVolume,
@@ -25,7 +25,7 @@ const graphs = getChainVolume({
   },
 });
 
-const adapter: DexVolumeAdapter = {
+const adapter: SimpleVolumeAdapter = {
   volume: {
     fantom: {
       fetch: graphs("fantom"),

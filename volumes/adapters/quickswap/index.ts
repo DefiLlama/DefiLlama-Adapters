@@ -1,4 +1,4 @@
-import { DexVolumeAdapter } from "../../dexVolume.type";
+import { SimpleVolumeAdapter } from "../../dexVolume.type";
 
 const { getChainVolume } = require("../../helper/getUniSubgraphVolume");
 
@@ -12,7 +12,7 @@ const graphs = getChainVolume({
   },
 });
 
-const adapter: DexVolumeAdapter = {
+const adapter: SimpleVolumeAdapter = {
   volume: {
     polygon: {
       fetch: graphs("polygon"),

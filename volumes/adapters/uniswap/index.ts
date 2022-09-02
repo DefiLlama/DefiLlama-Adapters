@@ -1,4 +1,4 @@
-import { DexBreakdownAdapter } from "../../dexVolume.type";
+import { BreakdownVolumeAdapter } from "../../dexVolume.type";
 
 const {
   getChainVolume,
@@ -6,7 +6,7 @@ const {
   DEFAULT_TOTAL_VOLUME_FIELD,
 } = require("../../helper/getUniSubgraphVolume");
 
-const { ARBITRUM, ETHEREUM, OPTIMISM, POLYGON } = require("../helper/chains");
+const { ARBITRUM, ETHEREUM, OPTIMISM, POLYGON } = require("../../helper/chains");
 
 const { getStartTimestamp } = require("../../helper/getStartTimestamp");
 
@@ -64,7 +64,7 @@ const v3Graphs = getChainVolume({
   },
 });
 
-const adapter: DexBreakdownAdapter = {
+const adapter: BreakdownVolumeAdapter = {
   breakdown: {
     v1: {
       [ETHEREUM]: {

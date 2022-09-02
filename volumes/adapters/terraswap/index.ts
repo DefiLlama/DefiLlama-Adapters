@@ -1,4 +1,4 @@
-import { DexVolumeAdapter } from "../../dexVolume.type";
+import { SimpleVolumeAdapter } from "../../dexVolume.type";
 
 const { request, gql } = require("graphql-request");
 
@@ -53,7 +53,7 @@ const getStartTimestamp = async () => {
   return data.terraswap.historicalData[data.terraswap.historicalData.length - 1].timestamp
 }
 
-const adapter: DexVolumeAdapter = {
+const adapter: SimpleVolumeAdapter = {
   volume: {
     terra: {
       fetch,

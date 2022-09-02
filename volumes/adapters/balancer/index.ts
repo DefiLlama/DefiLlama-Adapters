@@ -1,22 +1,19 @@
-import { DexVolumeAdapter } from "../../dexVolume.type";
+import { ChainEndpoints, SimpleVolumeAdapter } from "../../dexVolume.type";
 import { getChainVolume } from "../../helper/getUniSubgraphVolume";
-import { ARBITRUM, ETHEREUM, POLYGON } from "../../helper/chains";
 import customBackfill from "../../helper/customBackfill";
+import { CHAIN } from "../../helper/chains";
+import { Chain } from "@defillama/sdk/build/general";
 
-const endpoints = {
-  [ETHEREUM]: "https://api.thegraph.com/subgraphs/name/balancer-labs/balancer",
-  [POLYGON]:
+const endpoints: ChainEndpoints = {
+  [CHAIN.ETHEREUM]: "https://api.thegraph.com/subgraphs/name/balancer-labs/balancer",
+  [CHAIN.POLYGON]:
     "https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-polygon-v2",
-  [ARBITRUM]:
+  [CHAIN.ARBITRUM]:
     "https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-arbitrum-v2",
 };
 
 const graphs = getChainVolume({
-  graphUrls: {
-    [ETHEREUM]: endpoints[ETHEREUM],
-    [POLYGON]: endpoints[POLYGON],
-    [ARBITRUM]: endpoints[ARBITRUM],
-  },
+  graphUrls: endpoints,
   totalVolume: {
     factory: "balancers",
     field: "totalSwapVolume",
@@ -24,26 +21,17 @@ const graphs = getChainVolume({
   hasDailyVolume: false,
 });
 
-const adapter: DexVolumeAdapter = {
-  volume: {
-    [ETHEREUM]: {
-      fetch: graphs(ETHEREUM),
-      start: async () => 0,
-      customBackfill: customBackfill(ETHEREUM, graphs),
-    },
-    // POLYGON
-    [POLYGON]: {
-      fetch: graphs(POLYGON),
-      start: async () => 0,
-      customBackfill: customBackfill(POLYGON, graphs),
-    },
-    // ARBITRUM
-    [ARBITRUM]: {
-      fetch: graphs(ARBITRUM),
-      start: async () => 0,
-      customBackfill: customBackfill(ARBITRUM, graphs),
-    },
-  },
+const adapter: SimpleVolumeAdapter = {
+  volume: Object.keys(endpoints).reduce((acc, chain) => {
+    return {
+      ...acc,
+      [chain]: {
+        fetch: graphs(chain as Chain),
+        start: async () => 0,
+        customBackfill: customBackfill(CHAIN.ETHEREUM, graphs),
+      }
+    }
+  }, {} as SimpleVolumeAdapter['volume'])
 };
 
 export default adapter;

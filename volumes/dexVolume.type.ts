@@ -1,12 +1,18 @@
+import { Chain } from "@defillama/sdk/build/general";
+
 export type ChainBlocks = {
   [x: string]: number
 };
 
+export type ChainEndpoints = {
+  [chain: string]: string
+}
+
 export type FetchResult = {
-  block?: number;
+  timestamp: number;
   dailyVolume?: string;
   totalVolume?: string;
-  timestamp: number;
+  block?: number;
 };
 
 export type Fetch = (
@@ -14,25 +20,25 @@ export type Fetch = (
   chainBlocks: ChainBlocks
 ) => Promise<FetchResult>;
 
-export type VolumeAdapter = {
+export type Adapter = {
   [chain: string]: {
     start: () => Promise<number>
     fetch: Fetch;
     runAtCurrTime?: boolean;
     customBackfill?: Fetch;
-  };
+  }
+};
+
+export type SimpleVolumeAdapter = {
+  volume: Adapter
 };
 
 export type BreakdownAdapter = {
-  [version: string]: VolumeAdapter;
+  [version: string]: Adapter
 };
 
-export type DexVolumeAdapter = {
-  volume: VolumeAdapter;
-};
-
-export type DexBreakdownAdapter = {
+export type BreakdownVolumeAdapter = {
   breakdown: BreakdownAdapter;
 };
 
-export type DexAdapter = DexVolumeAdapter | DexBreakdownAdapter;
+export type VolumeAdapter = SimpleVolumeAdapter | BreakdownVolumeAdapter;
