@@ -1,3 +1,24 @@
+// Use
+export enum CHAIN {
+  ARBITRUM = "arbitrum",
+  AVAX = "avax",
+  BOBA = "boba",
+  BSC = "bsc",
+  CELO = "celo",
+  ETHEREUM = "ethereum",
+  FANTOM = "fantom",
+  HARMONY = "harmony",
+  HECO = "heco",
+  OKEXCHAIN = "okexchain",
+  OPTIMISM = "optimism",
+  POLYGON = "polygon",
+  RONIN = "ronin",
+  XDAI = "xdai",
+  AURORA = "aurora",
+  MOONRIVER = "moonriver"
+}
+
+// Don´t use
 const ARBITRUM = "arbitrum";
 const AVAX = "avax";
 const BOBA = "boba";
@@ -15,6 +36,7 @@ const XDAI = "xdai";
 const AURORA = "aurora";
 const MOONRIVER = "moonriver"
 
+// Don't use
 export {
   ARBITRUM,
   AVAX,
