@@ -245,6 +245,7 @@ function transformChainAddress(
   normalizeMapping(mapping);
 
   return addr => {
+    if (!addr.startsWith('0x')) return addr
     addr = addr.toLowerCase();
     if (!mapping[addr] && skipUnmapped) {
       console.log(
