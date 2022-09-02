@@ -7,9 +7,7 @@ module.exports = {
     tvl: getUniTVL({
       chain: 'optimism',
       factory: '0x8BCeDD62DD46F1A76F8A1633d4f5B76e0CDa521E',
-      coreAssets: [
-        '0x4200000000000000000000000000000000000006', // WETH
-      ],
+      useDefaultCoreAssets: true,
       skipPair: [67],
     }),
   },
@@ -17,9 +15,7 @@ module.exports = {
     tvl: getUniTVL({
       chain: 'arbitrum',
       factory: '0x9e343Bea27a12B23523ad88333a1B0f68cc1F05E',
-      coreAssets: [
-        '0x82af49447d8a07e3bd95bd0d56f35241523fbab1', // WETH
-      ],
+      useDefaultCoreAssets: true,
     }),
   },
   methodology:

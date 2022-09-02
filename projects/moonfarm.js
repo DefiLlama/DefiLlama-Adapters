@@ -71,4 +71,7 @@ module.exports = {
     fetch: solana
   },
   fetch
-}
+},
+module.exports.hallmarks = [
+        [1651881600, "UST depeg"],
+      ]
