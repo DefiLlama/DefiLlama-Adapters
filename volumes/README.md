@@ -14,7 +14,7 @@ npm run test-dex 1inch 1662110960016
 
 ## Volume adapter
 
-An adapter is simply an object that contains mainly a promise that returns the protocol's volume given a timestamp or a block number
+An adapter is simply an object that contains, among other attributes, a promise that returns the protocol's volume given a timestamp or a block number
 
 A volume adapter could be either a `SimpleVolumeAdapter` or a `BreakdownVolumeAdapter`. A `BreakdownVolumeAdapter` adapter is a set of `SimpleVolumeAdapter` and is used to define adapters for a protocol that has multiple versions (I.e. Uniswap v1, v2, v3).
 
