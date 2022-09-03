@@ -8,7 +8,7 @@ const fractional_api_url = 'https://mainnet-api.fractional.art/vaults?perPage=12
 async function retrieveVaultsAPI() {
   // Get page count
   const page1 = await utils.fetchURL(fractional_api_url + '&page=1')
-  let pageCount = page1.data.metadata.pagination.total_pages;
+  let pageCount = page1.data.metadata.pagination.totalPages;
   //pageCount = 1 // uncomment for for debug
 
   const vaults = []
