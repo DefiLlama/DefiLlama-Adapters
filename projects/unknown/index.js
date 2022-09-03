@@ -7,10 +7,16 @@ const unCONEAddress = "0xE75B36e5fdaA10c885a2D429F3B95d9b2De9F946";
 const cone = '0xA60205802E1B5C6EC1CAFA3cAcd49dFeECe05AC9'
 const { getChainTransform } = require('../helper/portedTokens')
 const { getUniqueAddresses } = require('../helper/utils')
+const { sumTokensExport, getTokenPrices, } = require('../helper/unknownTokens')
 const { sumTokens } = require('../helper/unwrapLPs')
 const sdk = require('@defillama/sdk')
 const { default: BigNumber } = require('bignumber.js')
 const chain = 'bsc'
+
+const lps = [
+  '0xd8a928623224d83174811fb105d64c46462c438f', // UNKNOWN/BNB
+  '0x672cD8201CEB518F9E42526ef7bCFe5263F41951', // CONE/BNB
+]
 
 async function tvl(time, ethBlock, { [chain]: block }) {
   // 0xDAO Master Chef
@@ -52,25 +58,22 @@ async function tvl(time, ethBlock, { [chain]: block }) {
   const { output: uConeSupply} = await sdk.api.erc20.totalSupply({ target: unCONEAddress, chain, block })
   sdk.util.sumSingleBalance(balances, transformAddress(cone), uConeSupply)
 
-  return sumTokens(balances, [
+  await sumTokens(balances, [
     [cone, unConeRewardPoolAddress],
     [cone, partnerRewardsPoolAddress],
   ], block, chain)
-}
-
-async function staking(time, ethBlock, { [chain]: block }) {
-  const toa = [
-    [unkwnAddress, vlUnknwnAddress],
-    [unkwnAddress, partnerRewardsPoolAddress],
-    [unkwnAddress, unConeRewardPoolAddress],
-  ]
-
-  return sumTokens({}, toa, block, chain)
+  const { updateBalances } = await getTokenPrices({ chain, block, useDefaultCoreAssets: true, lps, allLps: true })
+  return updateBalances(balances)
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   bsc: {
     tvl,
-    staking,
+    staking: sumTokensExport({ tokensAndOwners: [
+      [unkwnAddress, vlUnknwnAddress],
+      [unkwnAddress, partnerRewardsPoolAddress],
+      [unkwnAddress, unConeRewardPoolAddress],
+    ], chain: 'bsc', lps, useDefaultCoreAssets: true, }),
   }
 }
