@@ -6,8 +6,7 @@ const stakingContract = "0xf075c896cbbb625e7911e284cd23ee19bdccf299";
 module.exports = {
   aurora: {
     tvl: staking(stakingContract, AURORA, "aurora"),
-    staking: staking(stakingContract, AURORA, "aurora"),
   },
-  methodology: "Tokens locked on staking",
+  methodology: "Aurora tokens locked in staking contract",
 };
 
