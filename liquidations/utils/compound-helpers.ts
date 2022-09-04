@@ -35,7 +35,7 @@ export type Price = { decimals: number; price: number; symbol: string; timestamp
 export type Prices = { [address: string]: Price };
 
 export const getUnderlyingPrices = async (markets: Market[], chainPrefix: string): Promise<Prices> => {
-  const tokens = markets.map((m) => m.underlyingAddress).map((a) => chainPrefix + ":" + a.toLowerCase());
+  const tokens = markets.map((m) => m.underlyingAddress).map((a) => chainPrefix + a.toLowerCase());
   const prices = (
     await axios.post("https://coins.llama.fi/prices", {
       coins: Array.from(tokens),
@@ -74,7 +74,9 @@ export const borrowBalanceUnderlying = (cToken: CToken): BigNumber =>
     : bignum(cToken.storedBorrowBalance).times(cToken.market.borrowIndex).dividedBy(cToken.accountBorrowIndex);
 
 export const tokenInUsd = (market: Market, prices: Prices): BigNumber =>
-  bignum(market.collateralFactor).times(market.exchangeRate).times(prices[market.underlyingAddress].price);
+  bignum(market.collateralFactor)
+    .times(market.exchangeRate)
+    .times(prices[market.underlyingAddress]?.price ?? 0);
 
 export const totalCollateralValueInUsd = (account: Account, prices: Prices): BigNumber =>
   account.tokens.reduce(
@@ -87,6 +89,6 @@ export const totalBorrowValueInUsd = (account: Account, prices: Prices): BigNumb
     ? bignum("0")
     : account.tokens.reduce(
         (acc, token) =>
-          acc.plus(bignum(prices[token.market.underlyingAddress].price).times(borrowBalanceUnderlying(token))),
+          acc.plus(bignum(prices[token.market.underlyingAddress]?.price ?? 0).times(borrowBalanceUnderlying(token))),
         bignum("0")
       );
