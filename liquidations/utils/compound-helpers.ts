@@ -73,22 +73,26 @@ export const borrowBalanceUnderlying = (cToken: CToken): BigNumber =>
     ? bignum("0")
     : bignum(cToken.storedBorrowBalance).times(cToken.market.borrowIndex).dividedBy(cToken.accountBorrowIndex);
 
-export const tokenInUsd = (market: Market, prices: Prices): BigNumber =>
+export const tokenInUsd = (market: Market, prices: Prices, chainPrefix: string): BigNumber =>
   bignum(market.collateralFactor)
     .times(market.exchangeRate)
-    .times(prices[market.underlyingAddress]?.price ?? 0);
+    .times(prices[chainPrefix + market.underlyingAddress]?.price ?? 0);
 
-export const totalCollateralValueInUsd = (account: Account, prices: Prices): BigNumber =>
+export const totalCollateralValueInUsd = (account: Account, prices: Prices, chainPrefix: string): BigNumber =>
   account.tokens.reduce(
-    (acc, token) => acc.plus(tokenInUsd(token.market, prices).times(token.cTokenBalance)),
+    (acc, token) => acc.plus(tokenInUsd(token.market, prices, chainPrefix).times(token.cTokenBalance)),
     bignum("0")
   );
 
-export const totalBorrowValueInUsd = (account: Account, prices: Prices): BigNumber =>
+export const totalBorrowValueInUsd = (account: Account, prices: Prices, chainPrefix: string): BigNumber =>
   !account.hasBorrowed
     ? bignum("0")
     : account.tokens.reduce(
         (acc, token) =>
-          acc.plus(bignum(prices[token.market.underlyingAddress]?.price ?? 0).times(borrowBalanceUnderlying(token))),
+          acc.plus(
+            bignum(prices[chainPrefix + token.market.underlyingAddress]?.price ?? 0).times(
+              borrowBalanceUnderlying(token)
+            )
+          ),
         bignum("0")
       );
