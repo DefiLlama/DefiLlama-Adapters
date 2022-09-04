@@ -108,11 +108,12 @@ async function polygonTvl(timestamp, chainBlocks) {
 async function fantomTvl(timestamp, chainBlocks) {
   const balances = {};
 
+  const newPoolUSDC = '0x6E0098A8c651F7A6A9510B270CD02c858C344D94'
   const transformAddress = await transformFantomAddress();
   await sumTokensAndLPsSharedOwners(
     balances,
     [[USDC_fantom, false]],
-    [poolUSDC],
+    [poolUSDC, newPoolUSDC,],
     chainBlocks["fantom"],
     "fantom",
     transformAddress
