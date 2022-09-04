@@ -52,8 +52,8 @@ const positions = async () => {
 
   // all positions across all users
   const positions = accounts.flatMap((account) => {
-    const _totalBorrowValueInUsd = totalBorrowValueInUsd(account, prices);
-    const _totalCollateralValueInUsd = totalCollateralValueInUsd(account, prices);
+    const _totalBorrowValueInUsd = totalBorrowValueInUsd(account, prices, "avax:");
+    const _totalCollateralValueInUsd = totalCollateralValueInUsd(account, prices, "avax:");
 
     const debts = account.tokens
       .filter((token) => {
@@ -66,6 +66,7 @@ const positions = async () => {
         const _supplyBalanceUnderlying = supplyBalanceUnderlying(token);
         const _price = prices["avax:" + token.market.underlyingAddress];
         if (!_price) {
+          console.log("no price for", "avax:" + token.market.underlyingAddress);
           return {
             debt: new BigNumber(0),
             price: 0,
