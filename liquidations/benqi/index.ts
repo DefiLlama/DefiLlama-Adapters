@@ -32,6 +32,7 @@ const accountsQuery = gql`
 
           underlyingAddress
         }
+        enteredMarket
       }
       hasBorrowed
     }
