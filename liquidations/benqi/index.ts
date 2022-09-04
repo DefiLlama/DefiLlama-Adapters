@@ -4,13 +4,15 @@ import BigNumber from "bignumber.js";
 import { Liq } from "../utils/binResults";
 import {
   Account,
+  borrowBalanceUnderlying,
   getMarkets,
   getUnderlyingPrices,
+  supplyBalanceUnderlying,
   totalBorrowValueInUsd,
   totalCollateralValueInUsd,
 } from "../utils/compound-helpers";
 
-const subgraphUrl = "https://api.thegraph.com/subgraphs/name/traderjoe-xyz/lending";
+const subgraphUrl = "https://api.thegraph.com/subgraphs/name/yhayun/benqi";
 
 const accountsQuery = gql`
   query accounts($lastId: ID) {
@@ -46,7 +48,7 @@ const EXPLORER_BASE_URL = "https://snowtrace.io/address/";
 const positions = async () => {
   const accounts = (await getPagedGql(subgraphUrl, accountsQuery, "accounts")) as Account[];
   const markets = await getMarkets(subgraphUrl);
-  const prices = await getUnderlyingPrices(markets, "avax");
+  const prices = await getUnderlyingPrices(markets, "avax:");
 
   // all positions across all users
   const positions = accounts.flatMap((account) => {
@@ -54,22 +56,38 @@ const positions = async () => {
     const _totalCollateralValueInUsd = totalCollateralValueInUsd(account, prices);
 
     const debts = account.tokens
-      .filter((token) => !(Number(token.borrowBalanceUnderlying) === 0 && Number(token.supplyBalanceUnderlying) === 0))
+      .filter((token) => {
+        const _borrowBalanceUnderlying = borrowBalanceUnderlying(token);
+        const _supplyBalanceUnderlying = supplyBalanceUnderlying(token);
+        return !(_borrowBalanceUnderlying.eq(0) && _supplyBalanceUnderlying.eq(0));
+      })
       .map((token) => {
-        const decimals = token.market.underlyingDecimals;
-        const price = Number(token.market.underlyingPriceUSD);
+        const _borrowBalanceUnderlying = borrowBalanceUnderlying(token);
+        const _supplyBalanceUnderlying = supplyBalanceUnderlying(token);
+        const _price = prices["avax:" + token.market.underlyingAddress];
+        if (!_price) {
+          return {
+            debt: new BigNumber(0),
+            price: 0,
+            token: "avax:" + token.market.underlyingAddress,
+            totalBal: _supplyBalanceUnderlying,
+            decimals: 0,
+          };
+        }
+        const decimals = _price.decimals;
+        const price = _price.price;
         const collateralFactor = Number(token.market.collateralFactor); // equivalent to liqThreshold in aave
-        let debt = new BigNumber(token.borrowBalanceUnderlying);
+        let debt = _borrowBalanceUnderlying;
         if (token.enteredMarket) {
-          const factoredSupply = new BigNumber(token.supplyBalanceUnderlying).times(collateralFactor);
+          const factoredSupply = _supplyBalanceUnderlying.times(collateralFactor);
           debt = debt.minus(factoredSupply);
         }
         debt = debt.times(price);
         return {
           debt,
           price,
-          token: token.market.underlyingAddress,
-          totalBal: token.supplyBalanceUnderlying,
+          token: "avax:" + token.market.underlyingAddress,
+          totalBal: _supplyBalanceUnderlying,
           decimals,
         };
       });
@@ -78,16 +96,16 @@ const positions = async () => {
       .filter(({ debt }) => debt.lt(0))
       .map((pos) => {
         const usdPosNetCollateral = pos.debt.negated();
-        const otherCollateral = new BigNumber(_totalCollateralValueInUsd).minus(usdPosNetCollateral);
-        const diffDebt = new BigNumber(_totalBorrowValueInUsd).minus(otherCollateral);
+        const otherCollateral = _totalCollateralValueInUsd.minus(usdPosNetCollateral);
+        const diffDebt = _totalBorrowValueInUsd.minus(otherCollateral);
         if (diffDebt.gt(0)) {
           const amountCollateral = usdPosNetCollateral.div(pos.price);
           const liqPrice = diffDebt.div(amountCollateral);
           return {
             owner: account.id,
             liqPrice: Number(liqPrice.toFixed(6)),
-            collateral: "avax:" + pos.token,
-            collateralAmount: new BigNumber(pos.totalBal).times(10 ** pos.decimals).toFixed(0),
+            collateral: pos.token,
+            collateralAmount: pos.totalBal.times(10 ** pos.decimals).toFixed(0),
             extra: {
               url: EXPLORER_BASE_URL + account.id,
             },
