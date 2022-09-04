@@ -1,35 +1,37 @@
 import { gql } from "graphql-request";
-import { ethers } from "ethers";
-import { providers } from "../utils/ethers";
 import { getPagedGql } from "../utils/gql";
 import BigNumber from "bignumber.js";
 import { Liq } from "../utils/binResults";
+import {
+  Account,
+  getMarkets,
+  getUnderlyingPrices,
+  totalBorrowValueInUsd,
+  totalCollateralValueInUsd,
+} from "../utils/compound-helpers";
 
-const subgraphUrl = "https://api.thegraph.com/subgraphs/name/yhayun/benqi";
+const subgraphUrl = "https://api.thegraph.com/subgraphs/name/traderjoe-xyz/lending";
 
 const accountsQuery = gql`
   query accounts($lastId: ID) {
     accounts(first: 1000, where: { hasBorrowed: true, id_gt: $lastId }) {
       id
-      # totalBorrowValueInEth
-      # totalCollateralValueInEth
       tokens {
-        id
-        symbol
+        cTokenBalance
+        accountBorrowIndex
+        storedBorrowBalance
         market {
           name
           symbol
-          collateralFactor
-          # underlyingPrice
+
           exchangeRate
-          reserveFactor
-          underlyingDecimals
+          collateralFactor
+          borrowIndex
+
           underlyingAddress
         }
-        # borrowBalanceUnderlying
-        # supplyBalanceUnderlying
-        enteredMarket
       }
+      hasBorrowed
     }
     _meta {
       block {
@@ -39,64 +41,23 @@ const accountsQuery = gql`
   }
 `;
 
-type Account = {
-  id: string;
-  // totalBorrowValueInEth: string;
-  // totalCollateralValueInEth: string;
-  tokens: Token[];
-};
-
-type Token = {
-  id: string;
-  symbol: string;
-  market: Market;
-  // borrowBalanceUnderlying: string;
-  // supplyBalanceUnderlying: string;
-  enteredMarket: boolean;
-};
-
-type Market = {
-  name: string;
-  symbol: string;
-  collateralFactor: string;
-  // underlyingPrice: string;
-  exchangeRate: string;
-  reserveFactor: string;
-  underlyingDecimals: number;
-  underlyingAddress: string;
-};
-
-// price oracle used in comptroller
-const uniswapAnchoredView = new ethers.Contract(
-  "0x65c816077C29b557BEE980ae3cC2dCE80204A0C5",
-  [
-    {
-      inputs: [{ internalType: "string", name: "symbol", type: "string" }],
-      name: "price",
-      outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-      stateMutability: "view",
-      type: "function",
-    },
-  ],
-  providers.ethereum
-);
-
-const EXPLORER_BASE_URL = "https://etherscan.io/address/";
+const EXPLORER_BASE_URL = "https://snowtrace.io/address/";
 
 const positions = async () => {
   const accounts = (await getPagedGql(subgraphUrl, accountsQuery, "accounts")) as Account[];
-
-  const ethPriceInUsd = Number(await uniswapAnchoredView.price("ETH")) / 1e6;
+  const markets = await getMarkets(subgraphUrl);
+  const prices = await getUnderlyingPrices(markets, "avax");
 
   // all positions across all users
   const positions = accounts.flatMap((account) => {
-    const { totalBorrowValueInEth, totalCollateralValueInEth } = account;
+    const _totalBorrowValueInUsd = totalBorrowValueInUsd(account, prices);
+    const _totalCollateralValueInUsd = totalCollateralValueInUsd(account, prices);
 
     const debts = account.tokens
       .filter((token) => !(Number(token.borrowBalanceUnderlying) === 0 && Number(token.supplyBalanceUnderlying) === 0))
       .map((token) => {
         const decimals = token.market.underlyingDecimals;
-        const price = Number(token.market.underlyingPrice) * ethPriceInUsd;
+        const price = Number(token.market.underlyingPriceUSD);
         const collateralFactor = Number(token.market.collateralFactor); // equivalent to liqThreshold in aave
         let debt = new BigNumber(token.borrowBalanceUnderlying);
         if (token.enteredMarket) {
@@ -117,17 +78,15 @@ const positions = async () => {
       .filter(({ debt }) => debt.lt(0))
       .map((pos) => {
         const usdPosNetCollateral = pos.debt.negated();
-        const otherCollateral = new BigNumber(totalCollateralValueInEth)
-          .times(ethPriceInUsd)
-          .minus(usdPosNetCollateral);
-        const diffDebt = new BigNumber(totalBorrowValueInEth).times(ethPriceInUsd).minus(otherCollateral);
+        const otherCollateral = new BigNumber(_totalCollateralValueInUsd).minus(usdPosNetCollateral);
+        const diffDebt = new BigNumber(_totalBorrowValueInUsd).minus(otherCollateral);
         if (diffDebt.gt(0)) {
           const amountCollateral = usdPosNetCollateral.div(pos.price);
           const liqPrice = diffDebt.div(amountCollateral);
           return {
             owner: account.id,
             liqPrice: Number(liqPrice.toFixed(6)),
-            collateral: "ethereum:" + pos.token,
+            collateral: "avax:" + pos.token,
             collateralAmount: new BigNumber(pos.totalBal).times(10 ** pos.decimals).toFixed(0),
             extra: {
               url: EXPLORER_BASE_URL + account.id,
@@ -151,7 +110,7 @@ const positions = async () => {
 };
 
 module.exports = {
-  ethereum: {
+  avalanche: {
     liquidations: positions,
   },
 };
