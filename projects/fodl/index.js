@@ -72,7 +72,8 @@ Object.keys(config).forEach(chain => {
         }
         // log(output[0])
         // if (+output[0].positionValue > 0)
-          sdk.util.sumSingleBalance(balances, chain + ':' + output[0].supplyTokenAddress, output[0].positionValue)
+          sdk.util.sumSingleBalance(balances, chain + ':' + output[0].supplyTokenAddress, output[0].supplyAmount)
+          // sdk.util.sumSingleBalance(balances, chain + ':' + output[0].borrowTokenAddress, output[0].borrowAmount)
       })
       return balances
     }
