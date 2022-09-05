@@ -716,6 +716,7 @@ async function yieldHelper({ chain = 'ethereum', block, coreAssets = [], blackli
 }
 
 module.exports = {
+  nullAddress,
   getTokenPrices,
   getUniTVL,
   unknownTombs,
