@@ -29,9 +29,5 @@ module.exports = unknownTombs({
     '0x05CaB739FDc0A4CE0642604c78F307C6c543cD6d',
   ],
   chain: 'cronos',
-  coreAssets: [
-    '0xc21223249CA28397B4B6541dfFaEcC539BfF0c59', // USDC
-	'0x062E66477Faf219F25D27dCED647BF57C3107d52',  // WBTC
-	'0x654bAc3eC77d6dB497892478f854cF6e8245DcA9'  // SVN
-  ]
+  useDefaultCoreAssets: true,
 })

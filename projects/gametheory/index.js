@@ -20,7 +20,5 @@ module.exports = unknownTombs({
     '0x670433FB874d4B7b94CF1D16E95fa241474E6787'
   ],
   chain: 'fantom',
-  coreAssets: [
-    '0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E', // DAI
-  ]
+  useDefaultCoreAssets: true,
 })

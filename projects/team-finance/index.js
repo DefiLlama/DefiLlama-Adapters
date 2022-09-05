@@ -44,7 +44,7 @@ function getTvl(args) {
       })
 
       const balances = await vestingHelper({
-        coreAssets: trackedTokens,
+        useDefaultCoreAssets: true,
         owner: contractAddress,
         tokens: lockedLPs,
         block, chain,

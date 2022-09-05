@@ -19,5 +19,8 @@ module.exports = {
     fantom: {
         tvl,
         staking: staking(dao, strategyX, chain)
-    }
+    },
+    hallmarks: [
+        [1658370720, "Rug pull"]
+    ],
 };

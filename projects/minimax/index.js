@@ -21,6 +21,11 @@ async function avalanche() {
     return parseFloat(tvl_data.data.TvlTotal);
 }
 
+async function arbitrum() {
+    const tvl_data = await retry(async bail => axios.get("https://api.minimax.finance/tvl/42161"));
+    return parseFloat(tvl_data.data.TvlTotal);
+}
+
 async function aurora() {
     const tvl_data = await retry(async bail => axios.get("https://api.minimax.finance/tvl/1313161554"));
     return parseFloat(tvl_data.data.TvlTotal);
@@ -48,8 +53,11 @@ module.exports = {
     fantom: {
         fetch: fantom
     },
-    avalanche: {
+    avax:{
         fetch: avalanche
+    },
+    arbitrum: {
+        fetch: arbitrum
     },
     aurora: {
         fetch: aurora

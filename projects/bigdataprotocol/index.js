@@ -62,7 +62,7 @@ const ethTvl = async (_, block) => {
     abi.poolInfo,
   );
 
-  console.log(toa.length)
+  // console.log(toa.length)
 
   return sumTokens2({ balances, tokensAndOwners: toa, chain, block, });
 };
