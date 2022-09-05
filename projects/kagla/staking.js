@@ -13,7 +13,7 @@ const getStaked = async (chain, block) => {
   })).output
 
   return {
-    [transformTokenAddress(KGL_ADDRESS)]: toBigNumberJsOrZero(lockedKGLBalance).shiftedBy(-18)
+    [transformTokenAddress(KGL_ADDRESS)]: toBigNumberJsOrZero(lockedKGLBalance).shiftedBy(-18).toFixed(0)
   }
 }
 

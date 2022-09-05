@@ -1,30 +1,12 @@
-const BigNumber = require('bignumber.js');
-const TVL = require('./utils');
+const sdk = require('@defillama/sdk')
+const { getUniTVL } = require('../helper/unknownTokens')
+const getReservesABI = require('./abis/sizeGetReserves.json')
 
-async function tvl(timestamp, block) {
-  const [five, size] = await Promise.all([
-    TVL(timestamp, block, 'five'),
-    TVL(timestamp, block, 'size')
-  ]);
-
-  const tokenAddresses = new Set(Object.keys(five).concat(Object.keys(size)));
-
-  const balances = (
-    Array
-      .from(tokenAddresses)
-      .reduce((accumulator, tokenAddress) => {
-        const fiveBalance = new BigNumber(five[tokenAddress] || '0');
-        const sizeBalance = new BigNumber(size[tokenAddress] || '0');
-        accumulator[tokenAddress] = fiveBalance.plus(sizeBalance).toFixed();
-
-        return accumulator;
-      }, {})
-  );
-  return balances;
-}
+const fiveTVL = getUniTVL({ factory: '0x673662e97b05e001816c380ba5a628d2e29f55d1' })
+const sizeTVL = getUniTVL({ factory: '0xC480b33eE5229DE3FbDFAD1D2DCD3F3BAD0C56c6', abis: { getReservesABI } })
 
 module.exports = {
   ethereum: {
-    tvl
+    tvl: sdk.util.sumChainTvls([fiveTVL, sizeTVL])
   },
 };
