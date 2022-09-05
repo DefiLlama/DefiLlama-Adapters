@@ -6,7 +6,7 @@ async function tvl(timestamp, block, chainBlocks) {
 
   const config = (
     await axios.get(
-      "https://raw.githubusercontent.com/powaa-protocol/powaa-contract-config/main/dev.json"
+      "https://raw.githubusercontent.com/powaa-protocol/powaa-contract-config/main/prod.json"
     )
   ).data;
   const vaults = config["TokenVault"];
