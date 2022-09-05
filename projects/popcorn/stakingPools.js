@@ -1,8 +1,5 @@
 const sdk = require('@defillama/sdk');
-const { default: BigNumber } = require('bignumber.js');
 const { getChainTransform } = require('../helper/portedTokens')
-const { getBlock } = require('../helper/getBlock')
-const { addRewardsEscrowTVL } = require("./rewardsEscrow")
 const { ADDRESSES } = require("./constants");
 const { unwrapUniswapLPs } = require('../helper/unwrapLPs');
 
@@ -31,7 +28,7 @@ function getStakingPools(chain) {
 
 async function addStakingPoolsTVL(balances, timestamp, chainBlocks, chain = "ethereum") {
   const stakingPools = getStakingPools(chain);
-  const block = await getBlock(timestamp, chain, chainBlocks)
+  const block = chainBlocks[chain]
   for (let i = 0; i < stakingPools.length; i++) {
     let pool = stakingPools[i]
     let stakingTokenBalance = (await sdk.api.abi.call({

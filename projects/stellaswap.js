@@ -6,11 +6,7 @@ const { sumTokens2 } = require('./helper/unwrapLPs')
 const dexTVL = getUniTVL({
   factory: "0x68A384D826D3678f78BB9FB1533c7E9577dACc0E",
   chain: "moonbeam",
-  coreAssets: [
-    "0xAcc15dC74880C9944775448304B263D191c6077F", // WGLMR
-    '0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b', // USDC
-    "0x0E358838ce72d5e61E0018a2ffaC4bEC5F4c88d2", // Stella token
-  ],
+  useDefaultCoreAssets: true,
 })
 
 const chain = 'moonbeam'
@@ -23,7 +19,7 @@ async function stablePoolTVL(_, _b, { [chain]: block }) {
 
   let { output: lpTokens } = await sdk.api.abi.multiCall({
     abi: abi.getLpToken,
-    calls: pools.map(i => ({target: i })),
+    calls: pools.map(i => ({ target: i })),
     chain, block,
   })
 
@@ -31,7 +27,7 @@ async function stablePoolTVL(_, _b, { [chain]: block }) {
 
   const { output: tokens } = await sdk.api.abi.multiCall({
     abi: abi.getTokens,
-    calls: pools.map(i => ({target: i })),
+    calls: pools.map(i => ({ target: i })),
     chain, block,
   })
 

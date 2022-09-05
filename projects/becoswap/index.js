@@ -11,11 +11,7 @@ module.exports = {
     staking: staking(masterChef, becoToken, "kardia"),
     tvl: getUniTVL({
       chain: 'kardia',
-      coreAssets: [
-        '0xAF984E23EAA3E7967F3C5E007fbe397D8566D23d', // WKAI
-        '0x92364Ec610eFa050D296f1EEB131f2139FB8810e', // KUSDT
-        becoToken,
-      ],
+      useDefaultCoreAssets: true,
       factory: '0x58b54BCDF2aF8a70dD6433EB39b308148261bB49',
     })
   },

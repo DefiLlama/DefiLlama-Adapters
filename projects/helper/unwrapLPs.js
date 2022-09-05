@@ -139,7 +139,9 @@ const token1Abi = { "constant": true, "inputs": [], "name": "token1", "outputs":
     token
 }[]
 */
-async function unwrapUniswapLPs(balances, lpPositions, block, chain = 'ethereum', transformAddress = (addr) => addr, excludeTokensRaw = [], retry = false, uni_type = 'standard',) {
+async function unwrapUniswapLPs(balances, lpPositions, block, chain = 'ethereum', transformAddress = null, excludeTokensRaw = [], retry = false, uni_type = 'standard',) {
+  if (!transformAddress)
+    transformAddress = await getChainTransform(chain)
   lpPositions = lpPositions.filter(i => +i.balance > 0)
   const excludeTokens = excludeTokensRaw.map(addr => addr.toLowerCase())
   const lpTokenCalls = lpPositions.map(lpPosition => ({
@@ -458,6 +460,7 @@ async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], block, c
 
     if (!owners && owner)
       owners = [owner]
+    owners = getUniqueAddresses(owners)
     nftsAndOwners = owners.map(o => [nftAddress, o])
   }
   await Promise.all(nftsAndOwners.map(([nftAddress, owner]) => unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain, transformAddress })))
@@ -990,6 +993,10 @@ async function sumTokens2({
   return balances
 }
 
+function sumTokensExport({ balances, tokensAndOwners, tokens, owner, owners, chain = 'ethereum', transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances }) {
+  return async (_, _b, { [chain]: block }) => sumTokens2({ balances, tokensAndOwners, tokens, owner, owners, chain, block, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances })
+}
+
 async function unwrapBalancerToken({ chain, block, balancerToken, owner, balances = {} }) {
   const { output: lpTokens } = await sdk.api.erc20.balanceOf({ target: balancerToken, owner, chain, block, })
   const { output: lpSupply } = await sdk.api.erc20.totalSupply({ target: balancerToken, chain, block, })
@@ -1048,4 +1055,5 @@ module.exports = {
   sumTokens2,
   unwrapBalancerToken,
   unwrapBalancerPool,
+  sumTokensExport,
 }

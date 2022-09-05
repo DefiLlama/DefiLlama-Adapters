@@ -9,6 +9,7 @@ const {
   getFixBalances,
 } = require("../helper/portedTokens");
 const BigNumber = require("bignumber.js");
+const { staking: stakingUnknown, sumTokensExport, } = require("../helper/unknownTokens");
 
 const vaultsUrl = {
   polygon:
@@ -114,10 +115,6 @@ async function pool2Polygon(timestamp, block, chainBlocks) {
     transformAddress
   );
   return balances;
-}
-
-async function pool2Cronos(timestamp, block, chainBlocks) {
-  return calcPool2(vaultAddresses_cronos, lpAddresses_cronos, "cronos", chainBlocks.cronos);
 }
 
 async function polygonTvl(timestamp, block, chainBlocks) {
@@ -324,9 +321,9 @@ async function curveTvl(balances, chain, block, curveVaults, transformAddress = 
 
       // lastly, break down any 3crv / 2crv
       // if (`${chain}:${crv3Address}` in balances) {
-        //strat_balances.push(new BigNumber(balances[`${chain}:${crv3Address}`]));
+      //strat_balances.push(new BigNumber(balances[`${chain}:${crv3Address}`]));
       // } else {
-        //return balances;
+      //return balances;
       // }
     }
   }
@@ -426,8 +423,9 @@ module.exports = {
     tvl: arbitrumTvl,
   },
   cronos: {
-    staking: stakings(stakingContracts_cronos, CADDY, "cronos"),
-    pool2: pool2Cronos,
+    staking: stakingUnknown({ owners: stakingContracts_cronos, tokens: [CADDY], chain: 'cronos', lps: lpAddresses_cronos, useDefaultCoreAssets: true }),
+    // pool2 appears empty
+    // pool2: sumTokensExport({ owners: vaultAddresses_cronos, tokens: lpAddresses_cronos, chain: 'cronos', useDefaultCoreAssets: true }),
     tvl: cronosTvl,
   },
   methodology:

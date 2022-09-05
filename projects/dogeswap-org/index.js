@@ -5,8 +5,9 @@ module.exports = {
   dogechain: {
     tvl: getUniTVL({
       chain: 'dogechain',
-      coreAssets: ['0xB7ddC6414bf4F5515b52D8BdD69973Ae205ff101'],
+      useDefaultCoreAssets: true,
       factory: '0xD27D9d61590874Bf9ee2a19b27E265399929C9C3',
+      fetchInChunks: 500,
     })
   }
 }

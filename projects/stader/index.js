@@ -73,7 +73,10 @@ module.exports = {
   },
   near: {
     tvl: nearTvl
-  }
+  },
+  hallmarks:[
+    [1651881600, "UST depeg"],
+  ]
 }
 
 
