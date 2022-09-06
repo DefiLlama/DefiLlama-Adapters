@@ -1,4 +1,5 @@
-import { BreakdownVolumeAdapter } from "../../dexVolume.type";
+import { Adapter, BreakdownVolumeAdapter } from "../../dexVolume.type";
+import { getStartTimestamp } from "../../helper/getStartTimestamp";
 
 const {
   getChainVolume,
@@ -7,8 +8,6 @@ const {
 } = require("../../helper/getUniSubgraphVolume");
 
 const { ARBITRUM, ETHEREUM, OPTIMISM, POLYGON } = require("../../helper/chains");
-
-const { getStartTimestamp } = require("../../helper/getStartTimestamp");
 
 const v1Endpoints = {
   [ETHEREUM]: "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap",
@@ -81,33 +80,18 @@ const adapter: BreakdownVolumeAdapter = {
         }),
       },
     },
-    v3: {
-      [ETHEREUM]: {
-        fetch: v3Graphs(ETHEREUM),
+    v3: Object.keys(v3Endpoints).reduce((acc, chain) => {
+      acc[chain] = {
+        fetch: v3Graphs(chain),
         start: getStartTimestamp({
           endpoints: v3Endpoints,
-          chain: ETHEREUM,
+          chain: chain,
           volumeField: VOLUME_USD,
-        }),
-      },
-      [ARBITRUM]: {
-        fetch: v3Graphs(ARBITRUM),
-        start: getStartTimestamp({
-          endpoints: v3Endpoints,
-          chain: ARBITRUM,
-          volumeField: VOLUME_USD,
-        }),
-      },
-      [POLYGON]: {
-        fetch: v3Graphs(POLYGON),
-        start: getStartTimestamp({
-          endpoints: v3Endpoints,
-          chain: POLYGON,
-          volumeField: VOLUME_USD,
-        }),
-      },
-    },
-  },
-};
+        })
+      }
+      return acc
+    }, {} as Adapter)
+  }
+}
 
 export default adapter;
