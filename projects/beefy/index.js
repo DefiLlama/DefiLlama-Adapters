@@ -37,7 +37,7 @@ const chains = {
   arbitrum: 42161,
   celo: 42220,
   oasis: 42262,
-  avalanche: 43114,
+  avax: 43114,
   aurora: 1313161554,
   harmony: 1666600000
 }

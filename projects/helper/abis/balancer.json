@@ -41,6 +41,19 @@
         "stateMutability": "view",
         "type": "function"
     },
+    "getVault": {
+      "inputs": [],
+      "name": "getVault",
+      "outputs": [
+        {
+          "internalType": "contract IVault",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
     "bPool": {
         "inputs": [],
         "name": "bPool",
