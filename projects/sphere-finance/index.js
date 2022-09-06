@@ -3,10 +3,10 @@ const { ohmTvl } = require('../helper/ohm')
 
 function ohmTvlMultiTreasuries(treasuries, treasuryTokens, chain, stakingAddress, stakingToken, transformOriginal, fix = id=>id, tokenOnCoingecko = true) {
     // Accumulate tvl for multiple treasuries, executing simply ohmTvl
-    const tvl_per_treasury = treasuries.map(treasury => 
+    const tvl_per_treasury = treasuries.map(treasury =>
         ohmTvl(treasury, treasuryTokens, chain, stakingAddress, stakingToken, transformOriginal, fix, tokenOnCoingecko)
     )
-    
+
     // Edit TVL of object to be the cumulative tvl
     const tvl_object = tvl_per_treasury[0]
     const tvls = tvl_per_treasury.map(o => o[chain === "avax"?"avalanche":chain].tvl)
@@ -26,10 +26,10 @@ const treasuryTokens = [
     ["0xf305242c46cfa2a07965efbd68b167c99173b496", true], // WMATIC/SPHERE, needs to account only half of it
 
     ["0xeE3B4Ce32A6229ae15903CDa0A5Da92E739685f7", false], // xIRON_LOAN_USDC
-    ["0xeF7B706cA139dBd9010031a50de5509D890CE527", false], // xMULTI_WMATIC 
-    ["0x4Cd44ced63d9a6FEF595f6AD3F7CED13fCEAc768", false], // tetuQi 
+    ["0xeF7B706cA139dBd9010031a50de5509D890CE527", false], // xMULTI_WMATIC
+    ["0x4Cd44ced63d9a6FEF595f6AD3F7CED13fCEAc768", false], // tetuQi
    ]
 module.exports = ohmTvlMultiTreasuries(treasuries, treasuryTokens, "polygon", stakingAddress, sphere_token, undefined, undefined, true)
 
-// const treasury = "0x1a2ce410a034424b784d4b228f167a061b94cff4" 
+// const treasury = "0x1a2ce410a034424b784d4b228f167a061b94cff4"
 // module.exports = ohmTvl(treasury, treasuryTokens, "polygon", stakingAddress, sphere_token, undefined, undefined, true)

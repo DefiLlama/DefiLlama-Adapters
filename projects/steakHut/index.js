@@ -53,7 +53,7 @@ module.exports = {
     misrepresentedTokens: false,
     start: 14003811,
     methodology: 'Counts the value of JLP tokens staked into SteakMasterChef.',
-    avalanche: {
+    avax:{
         tvl,
         staking: staking(steakMasterChef, steakToken, "avax"),
     }

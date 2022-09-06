@@ -4,6 +4,7 @@ const chainKeys = Object.keys(indexExports).filter(chain => typeof indexExports[
 
 module.exports = {
   timetravel: false,
+  misrepresentedTokens: true,
   ...getExports("deeplock", chainKeys),
 }
 
