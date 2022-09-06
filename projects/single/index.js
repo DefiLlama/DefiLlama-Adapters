@@ -1,11 +1,10 @@
-const { sumTokens } = require("../helper/unwrapLPs")
-const { getChainTransform, getFixBalances } = require("../helper/portedTokens")
+const { sumTokens2 } = require("../helper/unwrapLPs")
+const { getFixBalances } = require("../helper/portedTokens")
 const { getUserMasterChefBalances } = require("../helper/masterchef")
 const { getUserCraftsmanV2Balances } = require("./helpers")
 const vvsPoolInfoABI = require('./cronos/vvsPoolInfo.json')
+const spookyMasterChefV2PoolInfoABI = require('./fantom/spookyMasterChefV2PoolInfo.json')
 const { fetchURL } = require("../helper/utils")
-
-const EMPTY_ADDR = '0x0000000000000000000000000000000000000000'
 
 const BASE_API_URL = 'https://api.singlefinance.io'
 
@@ -18,6 +17,17 @@ const constants = {
     chainId: 250,
     single: '0x8cc97b50fe87f31770bcdcd6bc8603bc1558380b'
   }
+}
+
+const getWMasterChefBalances = ({ masterChef: masterChefAddress, wMasterChef, name, ...rest }, args) => {
+  const commonParams = { masterChefAddress, userAddres: wMasterChef }
+  if (name === "vvsMultiYield") {
+    return getUserCraftsmanV2Balances({ ...commonParams, poolInfoABI: vvsPoolInfoABI, craftsmanV1: rest.craftsmanV1, ...args })
+  }
+  if (name === "spookyMultiYield") {
+    return getUserMasterChefBalances({ ...commonParams, poolInfoABI: spookyMasterChefV2PoolInfoABI, getLPAddress:  a => a, ...args })
+  }
+  return getUserMasterChefBalances({ ...commonParams, poolInfoABI: vvsPoolInfoABI, ...args })
 }
 
 const getHelpers = (chain) => {
@@ -41,7 +51,7 @@ const getHelpers = (chain) => {
         fetchURL(`${BASE_API_URL}/api/protocol/contracts?chainid=${constants[chain].chainId}`)
           .then(value => {
             data = value;
-          
+
             for (const resolve of queues) {
               resolve(value);
             }
@@ -53,15 +63,14 @@ const getHelpers = (chain) => {
 
   async function staking(timestamp, _block, chainBlocks) {
 
-    const { data: { pools } } = await fetchDataOnce()
+    const { data: { pools, vaults, } } = await fetchDataOnce()
 
     let balances = {}
-    const transformAddress = await getChainTransform(chain)
     const fixBalances = await getFixBalances(chain)
     const block = chainBlocks[chain]
-    const tokenAndOwners= pools.filter(pool => !pool.isLP).map(pool => [pool.tokenContract, pool.address])
+    const tokensAndOwners = pools.filter(pool => !pool.isLP).map(pool => [pool.tokenContract, pool.address])
 
-    await sumTokens(balances, tokenAndOwners, block, chain, transformAddress)
+    await sumTokens2({ balances, tokensAndOwners, block, chain })
     fixBalances(balances)
     return balances
   }
@@ -74,16 +83,12 @@ const getHelpers = (chain) => {
     const block = chainBlocks[chain]
     const fixBalances = await getFixBalances(chain)
 
-    for (const { masterChef: masterChefAddress, wMasterChef, name, ...rest } of wmasterchefs) {
-      if (name === "vvsMultiYield") {
-        await getUserCraftsmanV2Balances({ balances, masterChefAddress, userAddres: wMasterChef, block, chain, poolInfoABI: vvsPoolInfoABI, excludePool2: true, pool2Tokens: [ SINGLE_TOKEN ], craftsmanV1: rest.craftsmanV1 })
-        continue;
-      }
-      await getUserMasterChefBalances({ balances, masterChefAddress, userAddres: wMasterChef, block, chain, poolInfoABI: vvsPoolInfoABI, excludePool2: true, pool2Tokens: [ SINGLE_TOKEN ] })
+    for (const wMasterChef of wmasterchefs) {
+      await getWMasterChefBalances(wMasterChef, { balances, block, chain, excludePool2: true, pool2Tokens: [SINGLE_TOKEN] })
     }
 
-    const tokenAndOwners = vaults.map(({token, address}) => [token, address])
-    await sumTokens(balances, tokenAndOwners, block, chain) // Add lending pool tokens to balances
+    const tokensAndOwners = vaults.map(({ token, address }) => [token, address])
+    await sumTokens2({ balances, tokensAndOwners, block, chain }) // Add lending pool tokens to balances
     fixBalances(balances)
     return balances
   }
@@ -95,22 +100,22 @@ const getHelpers = (chain) => {
     const balances = {}
     const block = chainBlocks[chain]
     const fixBalances = await getFixBalances(chain)
-    const tokenAndOwners = pools.filter(pool => pool.isLP).map(pool => [pool.tokenContract, pool.address])
-    await sumTokens(balances, tokenAndOwners, block, chain, undefined, { resolveLP: true }) // Add staked lp tokens to balances
+    const tokensAndOwners = pools.filter(pool => pool.isLP).map(pool => [pool.tokenContract, pool.address])
+    await sumTokens2({ balances, tokensAndOwners, block, chain, resolveLP: true }) // Add staked lp tokens to balances
 
-    for (const { masterChef: masterChefAddress, wMasterChef, name, ...rest } of wmasterchefs) {
-      if (name === "vvsMultiYield") {
-        await getUserCraftsmanV2Balances({ balances, masterChefAddress, userAddres: wMasterChef, block, chain, poolInfoABI: vvsPoolInfoABI, onlyPool2: true, pool2Tokens: [ SINGLE_TOKEN ], craftsmanV1: rest.craftsmanV1 })
-        continue;
-      }
-      await getUserMasterChefBalances({ balances, masterChefAddress, userAddres: wMasterChef, block, chain, poolInfoABI: vvsPoolInfoABI, onlyPool2: true, pool2Tokens: [ SINGLE_TOKEN ] })
+    for (const wMasterChef of wmasterchefs) {
+      await getWMasterChefBalances(wMasterChef, { balances, block, chain, onlyPool2: true, pool2Tokens: [SINGLE_TOKEN] })
     }
 
     fixBalances(balances)
     return balances
   }
 
-  return { tvl, pool2, staking }
+  return {
+    tvl,
+    pool2,
+    staking
+  }
 }
 
 module.exports = {

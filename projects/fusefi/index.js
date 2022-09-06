@@ -22,6 +22,6 @@ module.exports = {
     ),
   },
   hallmarks: [
-    [1648684800, "Reentrancy attack"]
+    [1648684800, "Ola Finance exploit"]
 ]
 };

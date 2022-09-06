@@ -37,7 +37,12 @@ const FACTORY_H2O_LP = "0x4f734D89531b6c9A1242C196297316E928AEeFBa";
 // FACTORY: USDC - MONEY
 const FACTORY_USDC_MONEY_LP = "0x551C259Bf4D88edFdAbb04179342a73dAa759583";
 const FACTORY_MONEY_LP = "0xE08947eE864Af325D9F98743B3b905875Ae0Ec99";
-
+// FACTORY: USDC - MAI
+const FACTORY_USDC_MAI_LP = "0x4bc279727585b80A2a6a64498Ae67E2db1D9fAdF";
+const FACTORY_MAI_LP = "0xb49626bB9F93F9c6466d67dc80F2f33B4162E416";
+// FACTORY: USDC - USX
+const FACTORY_USDC_USX_LP = "0x6689C9Eb9a8A0Dd8BbD0935Ce0cD7FeD72E8667E";
+const FACTORY_USX_LP = "0x2DebC993c5f9Cac766Efa3EdCb1b6e40aDb4F6E2";
 /**
  * token addresses
  */
@@ -57,7 +62,8 @@ const TSD = "0x4fbf0429599460d327bd5f55625e30e4fc066095";
 const MONEY = "0x0f577433bf59560ef2a79c124e9ff99fca258948";
 const BTCb = "0x152b9d0FdC40C096757F570A51E494bd4b943E50";
 const WBTCe = "0x50b7545627a5162F82A992c33b87aDc75187B218";
-
+const MAI = "0x3B55E45fD6bd7d4724F5c47E0d1bCaEdd059263e";
+const USX = "0x853ea32391AaA14c112C645FD20BA389aB25C5e0";
 module.exports = {
   DAI: {
     id: "dai",
@@ -82,6 +88,8 @@ module.exports = {
           FACTORY_USDC_H2O_LP,
           FACTORY_USDC_MONEY_LP,
           FACTORY_USDC_TSD_LP,
+          FACTORY_USDC_MAI_LP,
+          FACTORY_USDC_USX_LP,
         ],
       },
     ],
@@ -204,6 +212,24 @@ module.exports = {
       {
         token: WBTCe,
         lpTokens: [ALT_WBTCe_LP],
+      },
+    ],
+  },
+  MAI: {
+    id: "mimatic",
+    addresses: [
+      {
+        token: MAI,
+        lpTokens: [FACTORY_MAI_LP],
+      },
+    ],
+  },
+  USX: {
+    id: "token-dforce-usd",
+    addresses: [
+      {
+        token: USX,
+        lpTokens: [FACTORY_USX_LP],
       },
     ],
   },

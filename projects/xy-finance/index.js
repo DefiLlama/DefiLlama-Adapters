@@ -37,6 +37,9 @@ const config = {
   moonriver: {
     chainId: '1285',
   },
+  klaytn: {
+    chainId: '8217',
+  },
 }
 
 const yPoolDepositContract = {
@@ -158,6 +161,16 @@ const yPoolDepositContract = {
     "USDC": {
       "contractAddress": "0x680ab543ACd0e52035E9d409014dd57861FA1eDf",
       "tokenAddress": "0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D"
+    }
+  },
+  "8217": {
+    "USDT": {
+      "contractAddress": "0xF526EFc174b512e66243Cb52524C1BE720144e8d",
+      "tokenAddress": "0xceE8FAF64bB97a73bb51E115Aa89C17FfA8dD167"
+    },
+    "USDC": {
+      "contractAddress": "0xB238d4339a44f93aBCF4071A9bB0f55D2403Fd84",
+      "tokenAddress": "0x754288077D0fF82AF7a5317C7CB8c444D421d103"
     }
   }
 }
