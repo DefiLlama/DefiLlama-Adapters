@@ -4,6 +4,7 @@ const { stakings } = require('../helper/staking');
 
 const stakingContractRoundOne = '0x8d9Ae5a2Ecc16A66740A53Cc9080CcE29a7fD9F5';
 const stakingContractRoundTwo =  '0xa96cdb86332b105065ca99432916e631e469cf5d';
+const stakingContractRoundThree =  '0x3333B155fa21A972D179921718792f1036370333';
 const stakingToken = '0x8e3bcc334657560253b83f08331d85267316e08a'; // BRBC token (bsc)
 
 const pools = {
@@ -57,40 +58,41 @@ function solanaTvl() {
   }
 }
 
-
-
 module.exports = {
   timetravel: false, // solana :cries:
-  methodology: 'TVL for each network - USDC balance of the pool, in each network we have one pool and the total indicator is calculated as the sum of the balances of all pools.',
+  methodology: 'Staking pool balance',
   bsc: {
-    tvl: chainTvl('bsc'),
-    staking: stakings([stakingContractRoundOne, stakingContractRoundTwo], stakingToken, 'bsc'),
+    tvl: () => ({}),
+    staking: stakings([stakingContractRoundOne, stakingContractRoundTwo, stakingContractRoundThree, ], stakingToken, 'bsc'),
   },
-  ethereum: {
-    tvl: chainTvl('ethereum')
-  },
-  polygon: {
-    tvl: chainTvl('polygon')
-  },
-  fantom: {
-    tvl: chainTvl('fantom')
-  },
-  avalanche: {
-    tvl: chainTvl('avax')
-  },
-  harmony: {
-    tvl: chainTvl('harmony')
-  },
-  moonriver: {
-    tvl: chainTvl('moonriver')
-  },
-  arbitrum: {
-    tvl: chainTvl('arbitrum')
-  },
-  aurora: {
-    tvl: chainTvl('aurora')
-  },
-  solana: {
-    tvl: solanaTvl()
-  }
+  hallmarks:[
+    [1655991120, "Horizon bridge Hack $100m"],
+  ],
+  // ethereum: {
+  //   tvl: chainTvl('ethereum')
+  // },
+  // polygon: {
+  //   tvl: chainTvl('polygon')
+  // },
+  // fantom: {
+  //   tvl: chainTvl('fantom')
+  // },
+  // avax:{
+  //   tvl: chainTvl('avax')
+  // },
+  // harmony: {
+  //   tvl: chainTvl('harmony')
+  // },
+  // moonriver: {
+  //   tvl: chainTvl('moonriver')
+  // },
+  // arbitrum: {
+  //   tvl: chainTvl('arbitrum')
+  // },
+  // aurora: {
+  //   tvl: chainTvl('aurora')
+  // },
+  // solana: {
+  //   tvl: solanaTvl()
+  // }
 }

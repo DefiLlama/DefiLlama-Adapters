@@ -86,7 +86,8 @@ async function solana(timestamp, ethBlock, chainBlocks) {
 
 module.exports = {
   hallmarks: [
-    [1651881600,"UST depeg"]
+    [1651881600,"UST depeg"],
+    [1658145600, "News stETH on Layer 2"],
   ],
   methodology: 'Staked tokens are counted as TVL based on the chain that they are staked on and where the liquidity tokens are issued, stMATIC is counted as Ethereum TVL since MATIC is staked in Ethereum and the liquidity token is also issued on Ethereum',
   timetravel: false, // solana
@@ -105,5 +106,5 @@ module.exports = {
   },
   moonbeam:{
     tvl: dot
-  }
+  },
 }
