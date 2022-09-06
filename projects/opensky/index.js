@@ -2,12 +2,13 @@ const { default: BigNumber } = require("bignumber.js");
 const { parseEther } = require("ethers/lib/utils");
 const { request, gql } = require("graphql-request");
 const axios = require("axios");
+const sdk = require('@defillama/sdk')
 
 const graphUrl = 'https://api.studio.thegraph.com/query/30874/openskyfinancefallback/v0.0.2'
 
 const graphReservesQuery = gql`
-query GET_RESERVES ($limitReserve: Int) {
-  reserves(first: $limitReserve) {
+query GET_RESERVES {
+  reserves {
     id name symbol underlyingAsset oTokenAddress totalDeposits totalAmountOfBespokeLoans totalAmountOfInstantLoans interestPerSecondOfInstantLoans
   }
 }
@@ -26,33 +27,22 @@ query GET_COLLECTION_LOANS ($limit: Int) {
 async function tvl(timestamp, block, chainBlocks) {
   const balances = {};
 
-  const { reserves } = await request(
-    graphUrl,
-    graphReservesQuery, 
-    { limitReserve: 2 }
-  );
+  const { reserves } = await request(graphUrl, graphReservesQuery);
 
-  reserves.forEach(reserve => {
-    balances[reserve.underlyingAsset] = new BigNumber(reserve.totalDeposits)
+  reserves.forEach(i => {
+    sdk.util.sumSingleBalance(balances, i.underlyingAsset, BigNumber(i.totalDeposits).minus(i.totalAmountOfInstantLoans).minus(i.totalAmountOfBespokeLoans).toFixed(0))
   });
 
-  balances[reserves[0].underlyingAsset] = balances[reserves[0].underlyingAsset].plus(new BigNumber(await collateral()));
-
+  sdk.util.sumSingleBalance(balances, 'ethereum', (await collateral()) / 1e18)
   return balances;
 }
 
 async function borrowed(timestamp, block, chainBlocks) {
   const balances = {};
-  const { reserves } = await request(
-    graphUrl,
-    graphReservesQuery, 
-    { limitReserve: 2 }
-  );
+  const { reserves } = await request(graphUrl, graphReservesQuery);
 
-  reserves.forEach(reserve => {
-    balances[reserve.underlyingAsset] = (new BigNumber(reserve.totalAmountOfBespokeLoans)).plus(
-      new BigNumber(reserve.totalAmountOfInstantLoans)
-    )
+  reserves.forEach(i => {
+    sdk.util.sumSingleBalance(balances, i.underlyingAsset, BigNumber(i.totalAmountOfInstantLoans).plus(i.totalAmountOfBespokeLoans).toFixed(0))
   });
 
   return balances;
@@ -75,11 +65,11 @@ async function collateral() {
   const { collections } = await request(
     graphUrl,
     graphCollectionsQuery,
-    { limit: 100}
+    { limit: 100 }
   );
 
   const floorPrices = await Promise.all(
-    collections.map(collection => 
+    collections.map(collection =>
       getFloorPrice(collection.id)
     )
   );
@@ -96,7 +86,7 @@ async function collateral() {
 }
 
 module.exports = {
-  timetravel: true,
+  timetravel: false,
   methodology: `Counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted. There's multiple reasons behind this but one of the main ones is to avoid inflating the TVL through cycled lending`,
   ethereum: {
     tvl,
