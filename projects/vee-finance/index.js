@@ -3,7 +3,7 @@ const sdk = require('@defillama/sdk')
 
 module.exports={
   methodology: 'As in Compound Finance, TVL counts the tokens locked in the contracts to be used as collateral to borrow or to earn yield on Avalanche and Heco. Borrowed coins are not counted towards the TVL, so only the coins actually locked in the contracts are counted.',
-  avalanche: {
+  avax:{
     tvl: sdk.util.sumChainTvls([	
 	//V1&V2 on Avalanche
         getCompoundV2Tvl("0xA67DFeD73025b0d61F2515c531dd8D25D4Cfd0Db", "avax", addr=>`avax:${addr}`),

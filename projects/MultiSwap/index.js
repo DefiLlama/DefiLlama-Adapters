@@ -84,6 +84,11 @@ const config = {
     positionManager: '0x649Da64F6d4F2079156e13b38E95ffBF8EBB1B14',
     customToken: '0x274d83086C356E0cFc75933FBf838CA10A7E8274'.toLowerCase(),
   },
+  polygon: {
+    nativeCoinGeckoId: 'polygon',
+    positionManager: '0xc130807A61D5fE62F2cE3A38B14c61D658CE73F3',
+    customToken: '0x6CAcfaF65b1B1f9979aCF463a393A112D0980982'.toLowerCase(),
+  },
 }
 
 module.exports = {}
