@@ -165,7 +165,8 @@ const transformTokens = {
     "0x4537e328bf7e4efa29d05caea260d7fe26af9d74": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
     "0x4ecaba5870353805a9f068101a40e0f32ed605c6": "0xdac17f958d2ee523a2206206994597c13d831ec7",
     "0x7122d7661c4564b7c6cd4878b06766489a6028a2": "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0",
-    "0x8e5bbbb09ed1ebde8674cda39a0c169401db4252": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"
+    "0x8e5bbbb09ed1ebde8674cda39a0c169401db4252": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+    "0xec3f3e6d7907acDa3A7431abD230196CDA3FbB19": "0xFd09911130e6930Bf87F2B0554c44F400bD80D3e", // ETHIX (Ethichub)
     // '0x29414ec76d79ff238e5e773322799d1c7ca2443f': '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', // Boring oBTC
   },
   okexchain: {
@@ -315,7 +316,9 @@ const transformTokens = {
     "0x67c10c397dd0ba417329543c1a40eb48aaa7cd00": "0x0f2d719407fdbeff09d87557abb7232601fd9f29", //SYN
     "0x226d8bfb4da78ddc5bd8fd6c1532c58e88f9fd34": "0xbc19712feb3a26080ebf6f2f7849b417fdd792ca", // BoringDAO
   },
-  celo: {},
+  celo: {
+    "0x9995cc8F20Db5896943Afc8eE0ba463259c931ed": "0xFd09911130e6930Bf87F2B0554c44F400bD80D3e", // ETHIX (Ethichub)
+  },
   boba: {
     "0x0000000000000000000000000000000000000000": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // WETH
     "0xd203De32170130082896b4111eDF825a4774c18E": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // synapse wETH
