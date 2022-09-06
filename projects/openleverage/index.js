@@ -14,7 +14,11 @@ const subgraph_endpoint = {
     "bsc" : 'https://api.thegraph.com/subgraphs/name/openleveragedev/openleverage-bsc'
 }
 const http_endpoint = {
-    "kcc" : 'https://kcc.openleverage.finance/api/trade/markets/stat?page=1&size=1000',
+    "kcc" : {
+        size: 20,
+        firstPage: 1,
+        getDataURL: (page, size) => `https://kcc.openleverage.finance/api/trade/markets/stat?page=${page}&size=${size}`,
+    },
 }
 
 async function eth_tvl(timestamp, block) {
@@ -76,11 +80,21 @@ async function getPoolFromSubgraph(chain) {
 }
 
 async function getPoolFromHttp(chain) {
-    const results = await utils.fetchURL(http_endpoint[chain])
+    const { size, firstPage, getDataURL } = http_endpoint[chain]
+    let fetchNext = true
+    let page = firstPage
+    const results = []
+    while (fetchNext) {
+        const { data: { data: result }} = await utils.fetchURL(getDataURL(page, size))
+        fetchNext = size === result.length
+        page++
+        results.push(...result)
+    }
+
     const tokenAddressList = []
     const poolAddressList = []
     const poolToken = {}
-    for (const s of results["data"]["data"]) {
+    for (const s of results) {
         tokenAddressList.push(s["token0Addr"])
         poolAddressList.push(s["pool0Addr"])
         poolToken[s["pool0Addr"]] = s["token1Addr"]

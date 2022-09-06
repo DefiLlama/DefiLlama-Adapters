@@ -5,20 +5,26 @@ const { createIncrementArray } = require('../helper/utils')
 
 const chain = "ethereum"
 
-const addressProvider = '0x139c15e21b0f6e43fc397face5de5b7d5ae6874a'
+const addressProviders = [
+  '0x139c15e21b0f6e43fc397face5de5b7d5ae6874a',
+  '0xa298d39715AE492e4CAF3Ccb33cBF57abC5238d7',
+]
 
 async function tvl(timestamp, block) {
   const balances = {}
-  const { output: vaultCount } = await sdk.api.abi.call({
-    target: addressProvider,
-    abi: abi.vaultsCount,
+  const { output: vaultCounts } = await sdk.api.abi.multiCall({
+    calls: addressProviders.map(i => ({ target: i })),
+    abi: abi.poolsCount,
     chain, block,
   })
-  const vaultCalls = createIncrementArray(vaultCount).map(i => ({ params: i }))
+  const vaultCallsList = []
+  vaultCounts.forEach((j, idx) => {
+    createIncrementArray(j.output).forEach(i => vaultCallsList.push({ params: i, target: addressProviders[idx] }))
+  })
+  
   const { output: vaultsOut } = await sdk.api.abi.multiCall({
-    target: addressProvider,
-    abi: abi.getVaultAtIndex,
-    calls: vaultCalls,
+    abi: abi.getPoolAtIndex,
+    calls: vaultCallsList,
     chain, block,
   })
 
