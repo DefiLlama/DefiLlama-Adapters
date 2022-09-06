@@ -1,40 +1,33 @@
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const { default: axios } = require("axios");
+const { sumTokens2 } = require('../helper/unwrapLPs')
+const { sumUnknownTokens } = require('../helper/unknownTokens')
 
-async function tvl(timestamp, block, chainBlocks) {
-  const balances = {};
-
+async function tvl(ts, block) {
   const config = (
     await axios.get(
       "https://raw.githubusercontent.com/powaa-protocol/powaa-contract-config/main/prod.json"
     )
   ).data;
   const vaults = config["TokenVault"];
+  const toa = vaults.map(i => [i.TokenAddress, i.VaultAddress])
+  return sumTokens2({ block, tokensAndOwners: toa, resolveLP: true, })
+}
+
+async function pool2(ts, block) {
+  const config = (
+    await axios.get(
+      "https://raw.githubusercontent.com/powaa-protocol/powaa-contract-config/main/prod.json"
+    )
+  ).data;
   const gov = config["GovLPVault"];
-
-  const tokens = [
-    ...vaults.map((v) => {
-      return [
-        v.TokenAddress,
-        v.BaseAssets.length === 2 && v.Source === "Sushi",
-      ];
-    }),
-    [gov.TokenAddress, gov.BaseAssets.length === 2 && gov.Source === "Sushi"],
-  ];
-
-  const vaultAddresses = [
-    ...vaults.map((v) => {
-      return v.VaultAddress;
-    }),
-    gov.VaultAddress,
-  ];
-
-  await sumTokensAndLPsSharedOwners(balances, tokens, vaultAddresses);
-  return balances;
+  const toa = [[gov.TokenAddress, gov.VaultAddress]]
+  return sumUnknownTokens({ block, tokensAndOwners: toa, useDefaultCoreAssets: true })
 }
 
 module.exports = {
+  timetravel: false,
   ethereum: {
     tvl,
+    pool2,
   },
 };
