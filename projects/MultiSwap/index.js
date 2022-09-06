@@ -89,6 +89,11 @@ const config = {
     positionManager: '0xc130807A61D5fE62F2cE3A38B14c61D658CE73F3',
     customToken: '0x6CAcfaF65b1B1f9979aCF463a393A112D0980982'.toLowerCase(),
   },
+  bnb: {
+    nativeCoinGeckoId: 'bnb',
+    positionManager: '0x4eDeDaDFc96E44570b627bbB5c169d91304cF417',
+    customToken: '0xEa7A82E0Bc636667AB5c65623cd1438370620c3E'.toLowerCase(),
+  },
 }
 
 module.exports = {}
