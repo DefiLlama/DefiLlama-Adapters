@@ -51,12 +51,11 @@ async function tvl() {
   tvl_by_markets.tvl.forEach(entry => {
     const underlying = entry.tokens[0];
     const token_tvl = new BigNumber(entry.totalLiquid)
-      .plus(entry.totalBorrowed)
       .plus(entry.reserves)
       .div(10 ** 18);
-    if (underlying.name.includes("XTZ")) {
+    if (underlying.name.includes("XTZ"))
       sdk.util.sumSingleBalance(balances, "tezos", +token_tvl.div(10**6).toFixed(18));
-    } else sdk.util.sumSingleBalance(
+    else sdk.util.sumSingleBalance(
       balances,
       entry.contractAddress + (entry.isFa2 ? "-" + entry.tokenId : ""),
       +token_tvl.toFixed(18)
@@ -75,13 +74,13 @@ async function borrowed() {
     const underlying = entry.tokens[0];
     const token_borrows = new BigNumber(entry.totalBorrowed)
       .div(10 ** 18);
-    if (underlying.name.includes("XTZ")) {
+    if (underlying.name.includes("XTZ"))
       sdk.util.sumSingleBalance(
         balances,
         "tezos",
         +token_borrows.div(10 ** 6).toFixed(18)
       );
-    } else
+    else
       sdk.util.sumSingleBalance(
         balances,
         entry.contractAddress + (entry.isFa2 ? "-" + entry.tokenId : ""),
@@ -99,5 +98,5 @@ module.exports = {
     borrowed,
   },
   methodology:
-    'TVL counts the liquidity, reserves and borrows for each market.',
+    'TVL counts the liquidity, reserves for each market.',
 };
