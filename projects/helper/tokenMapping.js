@@ -398,6 +398,7 @@ const transformTokens = {
     "0x07379565cd8b0cae7c60dc78e7f601b34af2a21c": "0x6b175474e89094c44da98b954eedeac495271d0f", //  nUSD -> DAI
     "0x42cc1cbf253f89be6814a0f59f745b40b69b6220": "polygon:0x2791bca1f2de4661ed88a30c99a7a9449aa84174", // sUSDC(Aurora) -> USDC(Polygon)
     "0xd5e98caeb396dabe5a102bb9256b552944e3401f": "bsc:0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", // sBUSD(Aurora) -> BUSD(BSC)
+    "0x274d83086C356E0cFc75933FBf838CA10A7E8274": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
   },
   dfk: {
     "0xb57b60debdb0b8172bb6316a9164bd3c695f133a": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", // AVAX
@@ -509,6 +510,7 @@ const fixBalancesTokens = {
   },
   bsc: {
     "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c": { coingeckoId: "binancecoin", decimals: 18, },
+    "0xEa7A82E0Bc636667AB5c65623cd1438370620c3E": { coingeckoId: "binancecoin", decimals: 18, },
     "0x8b04E56A8cd5f4D465b784ccf564899F30Aaf88C": { coingeckoId: "anchorust", decimals: 6, },
   },
   oasis: {
@@ -829,7 +831,8 @@ const fixBalancesTokens = {
     "0xB44a9B6905aF7c801311e8F4E76932ee959c663C": { coingeckoId: "tether", decimals: 6 },
     "0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b": { coingeckoId: "bitcoin", decimals: 8 },
     "0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D": { coingeckoId: "ethereum", decimals: 18 },
-    "0x765277EebeCA2e31912C9946eAe1021199B39C61": { coingeckoId: "dai", decimals: 18 }
+    "0x765277EebeCA2e31912C9946eAe1021199B39C61": { coingeckoId: "dai", decimals: 18 },
+    "0xc13791DA84f43525189456CfE2026C60D3B7F706": { coingeckoId: "kava", decimals: 18 },
   },
   sx: {
     "0x90d27E008d5Db7f0a3c90a15A8Dcc4Ca18cFc670": { coingeckoId: "sx-network", decimals: 18 },
@@ -887,6 +890,7 @@ const fixBalancesTokens = {
   polygon: {
     '0xfc40a4f89b410a1b855b5e205064a38fc29f5eb5': { coingeckoId: "rusd", decimals: 18 },
     '0x4c28f48448720e9000907bc2611f73022fdce1fa': { coingeckoId: "matic-network", decimals: 18 },
+    '0x6CAcfaF65b1B1f9979aCF463a393A112D0980982': { coingeckoId: "matic-network", decimals: 18 },
     '0x5c4b7ccbf908e64f32e12c6650ec0c96d717f03f': { coingeckoId: "binancecoin", decimals: 18 },
   },
   ronin: {
