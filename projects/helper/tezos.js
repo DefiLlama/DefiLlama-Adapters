@@ -49,6 +49,17 @@ async function getStorage(account) {
   return http.get(`${RPC_ENDPOINT}/v1/contracts/${account}/storage`)
 }
 
+async function getBigMapById(id, limit=1000, offset=0, key, value) {
+  const response = await http.get(
+    `${RPC_ENDPOINT}/v1/bigmaps/${id}/keys?limit=${limit}&offset=${offset}` + (key ? `&key=${key}` : '') + (value ? `&value=${value}` : '')
+  );
+  const mapping = {};
+  for (map_entry of response) {
+    mapping[map_entry.key] = map_entry.value;
+  }
+  return mapping;
+}
+
 async function addDexPosition({ balances = {}, account, transformAddress }) {
   if (!transformAddress) transformAddress = await getChainTransform('tezos')
   const tokenBalances = await getTokenBalances(account)
@@ -149,4 +160,5 @@ module.exports = {
   addDexPosition,
   resolveLPPosition,
   getLPs,
+  getBigMapById,
 }
