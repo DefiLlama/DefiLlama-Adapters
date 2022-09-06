@@ -1,14 +1,10 @@
-
-const { ApiPromise, WsProvider } = require("@polkadot/api")
-
-const endpoint = "wss://api.interlay.io:443/parachain"
+const { getAPI } = require('../helper/acala/api')
 
 async function tvl(){
 
-  const provider = new WsProvider(endpoint);
-  const api = await ApiPromise.create(({ provider }));
+  const api = await getAPI('interlay');
 
-  voteEscrowTvl = 0
+  let voteEscrowTvl = 0
   
   // Fetch total BTC locked (= kBTC minted)
   const stakers = await api.query.escrow.locked.entries()
