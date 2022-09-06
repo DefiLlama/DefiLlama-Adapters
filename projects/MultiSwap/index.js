@@ -90,7 +90,7 @@ const config = {
     customToken: '0x6CAcfaF65b1B1f9979aCF463a393A112D0980982'.toLowerCase(),
   },
   bnb: {
-    nativeCoinGeckoId: 'bnb',
+    nativeCoinGeckoId: 'bsc',
     positionManager: '0x4eDeDaDFc96E44570b627bbB5c169d91304cF417',
     customToken: '0xEa7A82E0Bc636667AB5c65623cd1438370620c3E'.toLowerCase(),
   },
