@@ -51,7 +51,6 @@ async function tvl() {
   tvl_by_markets.tvl.forEach(entry => {
     const underlying = entry.tokens[0];
     const token_tvl = new BigNumber(entry.totalLiquid)
-      .plus(entry.reserves)
       .div(10 ** 18);
     if (underlying.name.includes("XTZ"))
       sdk.util.sumSingleBalance(balances, "tezos", +token_tvl.div(10**6).toFixed(18));
