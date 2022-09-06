@@ -1,14 +1,10 @@
 
-const { ApiPromise, WsProvider } = require("@polkadot/api")
-
-const endpoint = "wss://api.interlay.io:443/parachain"
+const { getAPI } = require('../helper/acala/api')
 
 async function tvl(){
+  const api = await getAPI('interlay');
 
-  const provider = new WsProvider(endpoint);
-  const api = await ApiPromise.create(({ provider }));
-
-  interlayTVL = {}
+  const interlayTVL = {}
 
   // Fetch collateral locked to secure kBTC
   const collaterals = await api.query.vaultRegistry.totalUserVaultCollateral.entries()

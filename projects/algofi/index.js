@@ -103,6 +103,12 @@ const appDictionary = {
         "oracleAppId": 841179855,
         "oracleFieldName": "latest_twap_price"
     },
+    "AF-BSTBL2-BALGO": {
+        "decimals": 6,
+        "appIds": [856183130],
+        "oracleAppId": 855726305,
+        "oracleFieldName": "latest_twap_price"
+    },
     "STAKING_CONTRACTS": {
         "STBL": {
             "decimals": 6,
