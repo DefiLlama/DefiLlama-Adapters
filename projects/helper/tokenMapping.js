@@ -823,6 +823,10 @@ const fixBalancesTokens = {
   syscoin: {
     "0xd3e822f3ef011Ca5f17D82C956D952D8d7C3A1BB": { coingeckoId: "syscoin", decimals: 18 }
   },
+  vision:{
+    "0x1Db6Cdc620388a0b6046B20CD59503a0839AdCFF": {coingeckoId: "tether", decimals: 18 },
+    "0x79ffbC4fff98b821D59dbD7B33f91a2783006b6f": {coingeckoId: "vision-metaverse", decimals: 6 }
+  },
   kava: {
     "0xc86c7C0eFbd6A49B35E8714C5f59D99De09A225b": { coingeckoId: "kava", decimals: 18 },
     "0x332730a4F6E03D9C55829435f10360E13cfA41Ff": { coingeckoId: "binance-usd", decimals: 18 },
