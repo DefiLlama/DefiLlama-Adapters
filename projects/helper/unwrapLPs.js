@@ -993,6 +993,10 @@ async function sumTokens2({
   return balances
 }
 
+function sumTokensExport({ balances, tokensAndOwners, tokens, owner, owners, chain = 'ethereum', transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances }) {
+  return async (_, _b, { [chain]: block }) => sumTokens2({ balances, tokensAndOwners, tokens, owner, owners, chain, block, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances })
+}
+
 async function unwrapBalancerToken({ chain, block, balancerToken, owner, balances = {} }) {
   const { output: lpTokens } = await sdk.api.erc20.balanceOf({ target: balancerToken, owner, chain, block, })
   const { output: lpSupply } = await sdk.api.erc20.totalSupply({ target: balancerToken, chain, block, })
@@ -1051,4 +1055,5 @@ module.exports = {
   sumTokens2,
   unwrapBalancerToken,
   unwrapBalancerPool,
+  sumTokensExport,
 }

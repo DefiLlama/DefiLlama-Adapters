@@ -20,7 +20,7 @@ module.exports = {
       const ownersList = logs.output.map(i => `0x${i.data.substring(26, 66)}`)
       log('List of owners: %s', ownersList.length)
 
-      const ownerArrays = sliceIntoChunks(ownersList, 10)
+      const ownerArrays = sliceIntoChunks(ownersList, 100)
       const balances = {}
       let i = 0
       for (const owners of ownerArrays) {
