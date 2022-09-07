@@ -1,16 +1,7 @@
 const { getBlock } = require("../helper/getBlock");
 const sdk = require("@defillama/sdk");
 const vTokenAbi = require("./abis/vToken.abi.json");
-const BigNumber = require("bignumber.js");
-
-const networks = {
-  ethereum: {
-    vTokenFactory: {
-      address: "0x24aD48f31CAb5E35D0E9CDfa9213b5451f22FB92",
-      blockNumber: 14832754
-    }
-  }
-};
+const networks = require("./networks.json");
 
 const tvl = (chain) => async (timestamp, block, chainBlocks) => {
   const vTokenFactory = networks[chain].vTokenFactory;
@@ -38,13 +29,18 @@ const tvl = (chain) => async (timestamp, block, chainBlocks) => {
 
   return Object.fromEntries(output
     .filter(({ output }) => output)
-    .map(({ output }, index) => [vTokens[index].asset, output])
+    .map(({ output }, index) => [`${chain}:${vTokens[index].asset}`, output])
   );
 };
 
 module.exports = {
   methodology: "TVL considers tokens deposited to Phuture Indices",
-  ethereum: {
-    tvl: tvl("ethereum")
-  }
+  timetravel: true,
+  misrepresentedTokens: true
 };
+
+Object.keys(networks).forEach((chain) => {
+  module.exports[chain] = {
+    tvl: tvl(chain)
+  };
+});
