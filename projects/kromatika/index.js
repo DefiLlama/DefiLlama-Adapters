@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const { getBlock } = require('../helper/getBlock');
 const BigNumber = require('bignumber.js');
-const {transformOptimismAddress, transformArbitrumAddress} = require('../helper/portedTokens')
+const {transformOptimismAddress, transformArbitrumAddress, transformEthereumAddress, transformPolygonAddress} = require('../helper/portedTokens')
 const abi = require('./abi.json')
 
 const contracts = {
@@ -16,6 +16,10 @@ const contracts = {
   arbitrum: {
     KROM: '0x55ff62567f09906a85183b866df84bf599a4bf70',
     position: '0x02c282f60fb2f3299458c2b85eb7e303b25fc6f0'
+  },
+  polygon: {
+    KROM : '0x14Af1F2f02DCcB1e43402339099A05a5E363b83c',
+    position: '0xD1fDF0144be118C30a53E1d08Cc1E61d600E508e',
   }
 };
 
@@ -29,6 +33,12 @@ const tvl = (chain) => async function (timestamp, ethBlock, chainBlocks) {
   } 
   if(chain == 'arbitrum'){
     transform = await transformArbitrumAddress();
+  }
+  if(chain === "ethereum"){
+    transform = await transformEthereumAddress();
+  } 
+  if(chain == 'polygon'){
+    transform = await transformPolygonAddress();
   }
 
   // Get Kroma deposited by users to pay for their fees
@@ -79,9 +89,12 @@ module.exports = {
   arbitrum: {
     tvl: tvl('arbitrum')
   },
-  // ethereum: {
-  //   tvl: tvl('ethereum')
-  // }
+  ethereum: {
+    tvl: tvl('ethereum')
+  },
+  polygon: {
+    tvl: tvl('polygon')
+  }
 };
 
 // UniswapV3Pool NonfungiblePositionManager has a low level mint method
