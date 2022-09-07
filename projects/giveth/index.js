@@ -1,8 +1,17 @@
 const { sumTokens, sumTokens2 } = require("../helper/unwrapLPs");
-const { sumTokensExport } = require("../helper/unknownTokens");
+const {
+  sumTokensExport,
+  sumUnknownTokens,
+  staking,
+} = require("../helper/unknownTokens");
+const utils = require("../helper/utils");
 
 const GIV = "0x900db999074d9277c5da2a43f252d74366230da0";
-const xdaiGIV = "0x4f4F9b8D5B4d0Dc10506e5551B0513B61fD59e75";
+const xdaiGIV = "0x4f4f9b8d5b4d0dc10506e5551b0513b61fd59e75";
+
+async function getGIVPrice() {
+  return (await utils.getPricesfromString("giveth")).data?.giveth?.usd;
+}
 
 async function mainnetStaking(ts, block) {
   const balances = {};
@@ -22,34 +31,52 @@ async function mainnetPools(_, block) {
   return sumTokens2({ tokensAndOwners: toa, block, resolveLP: true });
 }
 
-async function stakingXDAI(ts, EthBlock, chainBlocks) {
-  const balances = {};
-  const block = chainBlocks["xdai"];
-  const tokensAndOwners = [
-    [xdaiGIV, "0xD93d3bDBa18ebcB3317a57119ea44ed2Cf41C2F2"], // xDAI LM
-  ];
-  await sumTokens({
-    tokensAndOwners,
+async function mainnetTVL(_, block) {
+  let tvl;
+  const staking = await mainnetStaking(_, block);
+  const pools = await mainnetPools(_, block);
+  const givPrice = await getGIVPrice();
+  tvl = (staking[GIV] / 10 ** 18 + pools[GIV] / 10 ** 18) * givPrice;
+  return {
+    dai: tvl,
+  };
+}
+
+async function stakingXDAI() {
+  const balance = await sumUnknownTokens({
+    owners: ["0x24F2d06446AF8D6E89fEbC205e7936a602a87b60"],
+    tokens: [xdaiGIV],
     chain: "xdai",
-    block,
-    balances,
   });
-  console.log({ balances });
-  return balances;
+  return balance;
 }
 
 async function poolXDAI() {}
 
+async function xdaiTVL() {
+  let tvl;
+  const staking = await stakingXDAI();
+  const givPrice = await getGIVPrice();
+  tvl = (staking[`xdai:${xdaiGIV}`] / 10 ** 18) * givPrice;
+  return {
+    dai: tvl,
+  };
+}
+
 module.exports = {
   methodology: "Counts GIV staked in all farms",
   ethereum: {
-    tvl: () => [],
+    tvl: mainnetTVL,
     staking: mainnetStaking,
     pool2: mainnetPools,
   },
-  //   xdai: {
-  //     tvl: () => [],
-  //     staking: stakingXDAI,
-  //     // pool2: poolXDAI,
-  //   },
+  xdai: {
+    tvl: xdaiTVL,
+    staking: sumTokensExport({
+      owners: ["0x24F2d06446AF8D6E89fEbC205e7936a602a87b60"],
+      tokens: [xdaiGIV],
+      chain: "xdai",
+    }),
+    // pool2: poolXDAI,
+  },
 };
