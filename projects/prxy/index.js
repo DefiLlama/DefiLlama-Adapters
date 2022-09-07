@@ -9,10 +9,6 @@ const prxyTransformed = `polygon:${prxy}`;
 const wbtc = "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599";
 const btcpx = "0x9C32185b81766a051E08dE671207b34466DD1021";
 const farmProxy = "0x256116a8Ea8bAd13897462117d88082C464B68e1";
-const fAbi = require("./fAbi.json");
-const Web3 = require("web3");
-const web3 = new Web3(new Web3.providers.HttpProvider('https://rpc-mainnet.maticvigil.com/v1/d8df1938ab3aecb7dd672ca671a5d5dd0b75d9d1'));
-let contract1 = new web3.eth.Contract(fAbi, '0x256116a8Ea8bAd13897462117d88082C464B68e1');
 
 
 async function getPrograms() {
@@ -29,8 +25,9 @@ async function getPrograms() {
   return programList.data.txs;
 }
 
-function tvl(chain, staking) {
+async function tvl(chain, staking) {
   return async (timestamp, block, chainBlocks) => {
+
     block = await getBlock(timestamp, chain, chainBlocks);
     let balances = {};
 
@@ -60,7 +57,13 @@ function tvl(chain, staking) {
       }
     }
 
-    balances[farmProxy] =  await contract1.methods.getTVLInUsd().call(); //value will be divided by 1e6
+      balances[farmProxy] = (
+          await sdk.api.abi.call({
+              target: farmProxy,
+              abi,
+              chain
+          })
+      ).output;
 
     balances[wbtc] = (
       await sdk.api.erc20.totalSupply({
@@ -81,7 +84,6 @@ function tvl(chain, staking) {
     }
   };
 }
-
 module.exports = {
     misrepresentedTokens: true,
     polygon: {

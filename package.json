@@ -37,8 +37,7 @@
     "limiter": "2.1.0",
     "miscreant": "^0.3.2",
     "tron-format-address": "^0.1.8",
-    "typescript": "^4.7.4",
-    "web3": "^1.7.5"
+    "typescript": "^4.7.4"
   },
   "overrides": {
     "ansi-regex": "5.0.1",
