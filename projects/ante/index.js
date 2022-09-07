@@ -83,7 +83,7 @@ module.exports = {
     ethereum: {
         tvl: getTvl('ethereum'),
     },
-    avalanche: {
+    avax: {
         tvl: getTvl('avalanche'),
     },
     polygon: {
