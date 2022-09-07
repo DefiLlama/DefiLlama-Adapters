@@ -2,6 +2,7 @@ const { getBlock } = require("../helper/getBlock");
 const sdk = require("@defillama/sdk");
 const vTokenAbi = require("./abis/vToken.abi.json");
 const networks = require("./networks.json");
+const { getChainTransform } = require("../helper/portedTokens");
 
 const tvl = (chain) => async (timestamp, block, chainBlocks) => {
   const vTokenFactory = networks[chain].vTokenFactory;
@@ -27,9 +28,11 @@ const tvl = (chain) => async (timestamp, block, chainBlocks) => {
     chain
   });
 
+  const chainTransform = await getChainTransform(chain)
+
   return Object.fromEntries(output
     .filter(({ output }) => output)
-    .map(({ output }, index) => [`${chain}:${vTokens[index].asset}`, output])
+    .map(({ output }, index) => [chainTransform(vTokens[index].asset), output])
   );
 };
 
