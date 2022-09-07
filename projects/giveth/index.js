@@ -1,9 +1,5 @@
 const { sumTokens, sumTokens2 } = require("../helper/unwrapLPs");
-const {
-  sumTokensExport,
-  sumUnknownTokens,
-  staking,
-} = require("../helper/unknownTokens");
+const { sumUnknownTokens } = require("../helper/unknownTokens");
 const utils = require("../helper/utils");
 
 const GIV = "0x900db999074d9277c5da2a43f252d74366230da0";
@@ -44,20 +40,35 @@ async function mainnetTVL(_, block) {
 
 async function stakingXDAI() {
   const balance = await sumUnknownTokens({
-    owners: ["0x24F2d06446AF8D6E89fEbC205e7936a602a87b60"],
+    owners: ["0x24F2d06446AF8D6E89fEbC205e7936a602a87b60"], // GIV Garden
     tokens: [xdaiGIV],
     chain: "xdai",
   });
   return balance;
 }
 
-async function poolXDAI() {}
+async function poolXDAI() {
+  const balance = await sumUnknownTokens({
+    owners: [
+      "0x08ea9f608656A4a775EF73f5B187a2F1AE2ae10e", // GIV / HNY
+      "0x55FF0cef43F0DF88226E9D87D09fA036017F5586", // GIV / ETH
+      "0xB7189A7Ea38FA31210A79fe282AEC5736Ad5fA57", // GIV / XDAI
+    ],
+    tokens: [xdaiGIV],
+    chain: "xdai",
+  });
+  return balance;
+}
 
 async function xdaiTVL() {
   let tvl;
   const staking = await stakingXDAI();
+  const pools = await poolXDAI();
   const givPrice = await getGIVPrice();
-  tvl = (staking[`xdai:${xdaiGIV}`] / 10 ** 18) * givPrice;
+  tvl =
+    (staking[`xdai:${xdaiGIV}`] / 10 ** 18 +
+      pools[`xdai:${xdaiGIV}`] / 10 ** 18) *
+    givPrice;
   return {
     dai: tvl,
   };
@@ -72,11 +83,7 @@ module.exports = {
   },
   xdai: {
     tvl: xdaiTVL,
-    staking: sumTokensExport({
-      owners: ["0x24F2d06446AF8D6E89fEbC205e7936a602a87b60"],
-      tokens: [xdaiGIV],
-      chain: "xdai",
-    }),
-    // pool2: poolXDAI,
+    staking: stakingXDAI,
+    pool2: poolXDAI,
   },
 };
