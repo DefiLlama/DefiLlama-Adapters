@@ -19,6 +19,9 @@ const config = {
   ontology_evm: {
     url: "https://ethapi.wing.finance/ontevm/flash-pool/detail",
   },
+  nft_pool:{
+    url:"https://nftapi.wing.finance/backend/nft-pool/pool-overview",
+  }
 }
 
 module.exports = {
@@ -40,14 +43,17 @@ Object.keys(config).forEach(chain => {
       const { result } = await getData(chain)
       if (!result.totalBorrow) result.totalBorrow = result.TotalBorrow
       if (!result.totalSupply) result.totalSupply = result.TotalSupply
+      if (!result.nftCollateralTVL) result.totalSupply += result.nftCollateralTVL
       return {
         tether: BigNumber(result.totalSupply - result.totalBorrow).toFixed(0)
       }
     },
     staking: async () => {
       const { result } = await getData(chain)
+      if (!result.totalLockedWingDollar) result.totalLockedWingDollar = result.TotalLockedWingDollar
+      if (!result.totalWingInsuranceDollar) result.totalLockedWingDollar += result.totalWingInsuranceDollar
       return {
-        tether: BigNumber(result.totalLockedWingDollar || result.TotalLockedWingDollar).toFixed(0)
+        tether: BigNumber(result.totalLockedWingDollar).toFixed(0)
       }
     },
     borrowed: async () => {
