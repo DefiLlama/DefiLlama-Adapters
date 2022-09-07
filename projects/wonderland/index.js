@@ -27,6 +27,14 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
       ["0xf64e1c5B6E17031f5504481Ac8145F4c3eab4917", true], // wavax-time
       ["0x49d5c2bdffac6ce2bfdb6640f4f80f226bc10bab", false], // WETH
       ["0x4d308c46ea9f234ea515cc51f16fba776451cac8", true], // wmemo-mim
+
+      ["0xc7198437980c041c805a1edcba50c1ce5db95118", false], // USDT
+      ["0xce1bffbd5374dac86a2893119683f4911a2f7814", false], // SPELL
+      ["0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd", false], // JOE
+      ["0xcbb424fd93cdec0ef330d8a8c985e8b147f62339", true], // wavax-mim
+      ["0x6cb6cb160bd629aaf07d2e51b3a435d909d01dd0", true], // mim-time
+      ["0xb599E3Cc5e7730865E74d78F2b9B67fDC627b743", true], // mim-??
+      ["0x0da67235dd5787d67955420c84ca1cecd4e5bb3b", false], //wMEMO
     ],
     [treasury, dao],
     chainBlocks.avax,
@@ -72,7 +80,7 @@ async function ethTvl(timestamp, ethBlock, chainBlocks) {
 
 
 module.exports = {
-  avalanche: {
+  avax:{
     tvl,
     staking: staking(TimeStaking, time, "avax")
   },

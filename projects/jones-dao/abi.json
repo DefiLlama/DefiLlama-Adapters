@@ -1,0 +1,41 @@
+{
+    "MANAGEMENT_WINDOW_OPEN": {
+        "inputs": [],
+        "name": "MANAGEMENT_WINDOW_OPEN",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "snapshotVaultBalance": {
+        "inputs": [],
+        "name": "snapshotVaultBalance",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "snapshotAssetBalance": {
+        "inputs": [],
+        "name": "snapshotAssetBalance",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+}

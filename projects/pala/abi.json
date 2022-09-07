@@ -83,6 +83,43 @@
       "payable": false,
       "stateMutability": "view",
       "type": "function"
+    },
+    "farmInfos":{
+      "inputs": [{ "internalType": "address", "name": "farm", "type": "address" }],
+      "name": "farmInfos",
+      "outputs": [
+        {
+          "components": [
+            { "internalType": "address", "name": "pool", "type": "address" },
+            { "internalType": "uint256", "name": "totalLP", "type": "uint256" },
+            { "internalType": "uint256", "name": "allocPoint", "type": "uint256" },
+            { "internalType": "uint256", "name": "lastRewardBlock", "type": "uint256" },
+            { "internalType": "uint256", "name": "accRewardPerShare", "type": "uint256" }
+          ],
+          "internalType": "struct Viewer.FarmInfo[]",
+          "name": "farmInfoList",
+          "type": "tuple[]"
+        },
+        {
+          "components": [
+            { "internalType": "uint256", "name": "attenTotalAllocPoint", "type": "uint256" },
+            { "internalType": "uint256", "name": "attenFarmStartBlock", "type": "uint256" },
+            { "internalType": "uint256", "name": "attenFarmEndBlock", "type": "uint256" },
+            { "internalType": "uint256", "name": "attenPerBlock", "type": "uint256" },
+            { "internalType": "uint256", "name": "attenBonusMultiplier", "type": "uint256" },
+            { "internalType": "uint256", "name": "palaTotalAllocPoint", "type": "uint256" },
+            { "internalType": "uint256", "name": "palaFarmStartBlock", "type": "uint256" },
+            { "internalType": "uint256", "name": "palaPerBlock", "type": "uint256" },
+            { "internalType": "uint256", "name": "palaBonusMultiplier", "type": "uint256" }
+          ],
+          "internalType": "struct Viewer.FarmConfig",
+          "name": "config",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function",
+      "constant": true
     }
 
 }

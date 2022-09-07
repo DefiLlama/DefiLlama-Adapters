@@ -1,0 +1,23 @@
+{
+    "totalIssuedPynths": {
+        "constant": true,
+        "inputs": [
+            {
+                "internalType": "bytes32",
+                "name": "currencyKey",
+                "type": "bytes32"
+            }
+        ],
+        "name": "totalIssuedPynths",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "totalIssued",
+                "type": "uint256"
+            }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+    }
+}

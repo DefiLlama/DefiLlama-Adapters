@@ -1,0 +1,103 @@
+[
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getAllReserveData",
+    "outputs": [
+      {
+        "components": [
+          {
+            "name": "symbol",
+            "type": "string"
+          },
+          {
+            "name": "underlyingAssetAddress",
+            "type": "address"
+          },
+          {
+            "name": "marketTvl",
+            "type": "uint256"
+          },
+          {
+            "name": "marketTvlInUsd",
+            "type": "uint256"
+          }
+        ],
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "assetDataAddress",
+        "type": "address"
+      },
+      {
+        "name": "symbol",
+        "type": "string"
+      }
+    ],
+    "name": "_getReserveData",
+    "outputs": [
+      {
+        "components": [
+          {
+            "name": "symbol",
+            "type": "string"
+          },
+          {
+            "name": "underlyingAssetAddress",
+            "type": "address"
+          },
+          {
+            "name": "marketTvl",
+            "type": "uint256"
+          },
+          {
+            "name": "marketTvlInUsd",
+            "type": "uint256"
+          }
+        ],
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getAllStakedData",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "getTreasuryData",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

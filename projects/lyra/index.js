@@ -14,7 +14,17 @@ const v1_1_ShortCollateral = [
     '0x0A68E15f8E289b9f1Ad1BCAD524FeA30C6125c2D'
 ]
 
-const pools = [...new Set([...v1_0_Pools, ...v1_1_LiquidityPool, ...v1_1_ShortCollateral].map(t=>t.toLowerCase()))]
+const v1_2_LiquidityPool = [
+    '0x5Db73886c4730dBF3C562ebf8044E19E8C93843e',
+    '0x3C73CD65D708A5C951f0Cc19a4D0Bb6559ae20c5'
+    ]
+
+const v1_2_ShortCollateral = [
+    '0x3E86B53e1D7DA7eDbA225c3A218d0b5a7544fDfD',
+    '0x26cf967e466d9fd60af7d1b78a01c43e75e03b32'
+    ]
+
+const pools = [...new Set([...v1_0_Pools, ...v1_1_LiquidityPool, ...v1_1_ShortCollateral, ...v1_2_LiquidityPool, ...v1_2_ShortCollateral].map(t=>t.toLowerCase()))]
 
 const tokens = ['0x8c6f28f2f1a3c87f0f938b96d27520d9751ec8d9', '0xe405de8f52ba7559f9df3c368500b6e6ae6cee49',
     '0xc5db22719a06418028a40a9b5e9a7c02959d0d08', '0x298b9b95708152ff6968aafd889c6586e9169f1d']
@@ -39,13 +49,18 @@ async function tvl(ttimestamp, _b, chainBlocks){
 module.exports = {
     methodology: 'TVL counts the option market locked synth value, along with USDC in safety module.',
     optimism:{
-        tvl
+        tvl,
+        staking: staking("0xdE48b1B5853cc63B1D05e507414D3E02831722F8", "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb", "optimism")
     },
     ethereum:{
-        tvl: staking("0x54d59c4596c7ea66fd62188ba1e16db39e6f5472", "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", "ethereum")
+        tvl: staking("0x54d59c4596c7ea66fd62188ba1e16db39e6f5472", "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", "ethereum"),
+        staking: staking("0xb9619d73c08076bc5d4f0470593e98b9eb19a219", "0x01ba67aac7f75f647d94220cc98fb30fcc5105bf", "ethereum")
     },
  hallmarks:[
     [1635218174, "Lyra Token"],
     [1635822974, "Token Program Start"],
+    [1655341200, "Lyra V1.1 End"],
+    [1656291600, "Lyra Avalon Start"],
+    [1659560056, "OP Rewards Distribution Start"]
   ]
 }

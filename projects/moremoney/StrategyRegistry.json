@@ -1,0 +1,14 @@
+{
+  "abi": [{
+    "inputs": [],
+    "name": "allEnabledStrategies",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  } ]}

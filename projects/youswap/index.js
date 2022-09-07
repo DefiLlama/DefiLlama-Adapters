@@ -1,57 +1,13 @@
-const { request, gql } = require("graphql-request");
-const { toUSDTBalances } = require('../helper/balances');
-const sdk = require('@defillama/sdk')
-
-const graphUrls = {
-  ethereum: 'https://api.youswap.info/subgraphs/name/swap',
-  heco: 'https://api.youswap.info/subgraphs/name/swap_heco',
-  bsc: 'https://heco-api.youswap.com/subgraphs/name/swap_bsc'
-}
-const graphQuery = gql`
-query get_tvl($block: Int) {
-  uniswapFactories(
-    block: { number: $block }
-  ) {
-    totalVolumeUSD
-    totalLiquidityUSD
-  }
-}
-`;
-
-
-function chainTvl(chain) {
-  return async (timestamp, ethBlock, chainBlocks) => {
-    let block;
-    if(chain === "ethereum"){
-      block=ethBlock;
-    }
-    block = chainBlocks[chain]
-    if(block===undefined){
-      block = (await sdk.api.util.lookupBlock(timestamp, {chain})).block
-    }
-    const { uniswapFactories } = await request(
-      graphUrls[chain],
-      graphQuery,
-      {
-        block,
-      }
-    );
-    const usdTvl = Number(uniswapFactories[0].totalLiquidityUSD)
-
-    return toUSDTBalances(usdTvl)
-  }
-}
+const { uniTvlExport } = require('../helper/calculateUniTvl');
 
 module.exports = {
-  misrepresentedTokens: true,
-  ethereum: {
-    tvl: chainTvl('ethereum'),
-  },
   heco: {
-    tvl: chainTvl('heco'),
+    tvl: uniTvlExport('0x9f1cd0e59e78f5288e2fcf43030c9010d4f2991d', 'heco'),
   },
   bsc: {
-    tvl: chainTvl('bsc'),
+    tvl: uniTvlExport('0x137f34df5bcdb30f5e858fc77cb7ab60f8f7a09a', 'bsc'),
   },
-  tvl: sdk.util.sumChainTvls(['ethereum', 'bsc', 'heco'].map(chainTvl))
+  ethereum: {
+    tvl: uniTvlExport('0xa7028337d3da1f04d638cc3b4dd09411486b49ea', 'ethereum'),
+  },
 }

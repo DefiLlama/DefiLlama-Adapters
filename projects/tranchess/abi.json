@@ -56,5 +56,49 @@
         ],
         "stateMutability": "view",
         "type": "function"
+    },
+    "getTotalUnderlying": {
+      "inputs": [],
+      "name": "getTotalUnderlying",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    "quoteAddress": {
+      "inputs": [],
+      "name": "quoteAddress",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    "allBalances": {
+      "inputs": [],
+      "name": "allBalances",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
     }
 }

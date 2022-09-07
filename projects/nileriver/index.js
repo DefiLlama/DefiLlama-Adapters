@@ -1,33 +1,17 @@
-const retry = require("../helper/retry");
-const utils = require("../helper/utils");
-const { GraphQLClient, gql } = require("graphql-request");
+const axios = require('axios');
+const retry = require('../helper/retry');
+const { toUSDTBalances } = require('../helper/balances')
 
-const endpoint_farms = "https://api.nileriver.finance/public/farm";
-var endpoint_pools =
-  "https://subgraph.nileriver.finance/subgraphs/name/moonriver/swap";
+const tvlEndpoint = 'https://api.nileriver.finance/api/stats'
 
-var graphQLClient = new GraphQLClient(endpoint_pools);
-
-async function fetch() {
-  var query = gql`
-    {
-      pools {
-        totalLiquidity
-      }
-    }
-  `;
-
-  /*** Pools TVL Portion ***/
-  let tvlPools = 0;
-  (await retry(async (bail) => await graphQLClient.request(query)))
-    .pools
-    .forEach(function (liq) {
-      tvlPools += Number(liq.totalLiquidity);
-    });
-  
-  return tvlPools;
+async function tvl() {
+  const response = (
+    await retry(async (bail) => await axios.get(tvlEndpoint))
+  ).data.data;
+  return toUSDTBalances(response.tvl)
 }
 
 module.exports = {
-  fetch,
+  timetravel: false,
+  moonriver: { tvl }
 };

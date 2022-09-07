@@ -9,7 +9,7 @@ const chainIds = {
     bsc: 56,
     tomochain: 88,
     fantom: 250,
-    avalanche: 43114,
+    avax: 43114,
     moonriver: 1285,
     celo: 42220,
     songbird: 19,
@@ -22,6 +22,7 @@ const chainIds = {
     energyweb: 246,
     kcc: 321,
     arbitrum: 42161,
+    smartbch: 10000,
 }
 
 function chainTvl(chain) {
@@ -36,9 +37,7 @@ const tvls = Object.keys(chainIds).reduce((obj, chain) => ({
         [chain]: {
             offers: chainTvl(chain)
         }
-    }), {
-        tvl: async () => ({})
-    })
+    }), {})
 tvls.ethereumclassic.tvl = async () => ({});
 
 module.exports = {

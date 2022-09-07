@@ -71,5 +71,4 @@ module.exports = {
     staking: staking(chargeBoardroomAddress, chargeTokenAddress, "bsc"),
 
   },
-  tvl,
 };

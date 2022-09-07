@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const erc20 = require("../helper/abis/erc20.json");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 
 const AsgardStaking = "0x4EA2bb6Df87F66cbea70818aE92f3A48F98EBC93";
@@ -20,10 +19,10 @@ const staking = async (timestamp, ethBlock, chainBlocks) => {
 
   const stakingBalance = (
     await sdk.api.abi.call({
-      abi: erc20.balanceOf,
+      abi: 'erc20:balanceOf',
       target: ASG,
       params: AsgardStaking,
-      ethBlock,
+      block: ethBlock,
     })
   ).output;
 

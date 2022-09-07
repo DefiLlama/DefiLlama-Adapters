@@ -1,108 +1,103 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const { staking } = require("../helper/staking");
-const { pool2Exports } = require("../helper/pool2");
 const {BigNumber} = require("bignumber.js");
+const { pool2Exports, pool2s} = require("../helper/pool2");
 
-const ethStn = "0xe63d6b308bce0f6193aec6b7e6eba005f41e36ab";
-const ethStnVault = "0xa72ad1293b253522fde41f1104aa432d7669b299";
-const ethStaking = "0xbc96510af0f9dd7bae8deb6ac3daed2f18cf5757";
+const ethVaults = [
+   "0x0F9F39F6AABc86c457901df26275c72de32B26A4", // WETH
+   "0xFC1cF3DC111981eA4372E91f437581524f3721be", // USDC
+   "0xbA3CfEa6514cF5acdDeff3167Df0b7a4337751bc", // USDT
+   "0x5dC81697fC0b3752c1277D260064374E95E8A18b", // DAI
+   "0xb85E3Fe36a6084985E66d704ABD4be4EA51e06cE" // aETHc
+]
 
-const ethUniVault = "0xafb6c80ff3cfdae5977df0196f3d35cd65e3c7a3";
-const ethStnWeth = "0x00d76633a1071e9aed6158ae1a5e1c4c5dc75e54";
+const ethuniv2vault = "0xafB6c80FF3CFDaE5977Df0196F3d35Cd65e3c7a3";
+const ethuniv2lp = "0x00D76633A1071e9aed6158AE1a5e1C4C5dC75e54";
 
-const polyStn = "0xfb8a07e99450d1dc566da18a8f0e630addefdd3e";
-const polyStnVault = "0xa035ecd4824c4c13506d39d7041e8e0ad156686d";
-const polyStaking = "0x5fd6daeda01e83cec78b3696d581791f24d7eab4";
-
-const polyUniVault = "0x6ec3bcbb751fe3308dde173c9c91bf9ea9ac7163";
-const polyUsdtStn = "0x2ee7b1ddd28514d49d3bfe0bedef52ffa86d7a8b";
-
-const bscStn = "0xf7fb08c187e6cd1f2149e6c818d0b6d4d4ef1430";
-const bscStnVault = "0xbd2861c0f43f6e8d571fcfa5a7c77d13d5695ebf";
-const bscStaking = "0x76c43dff5adeea308eb3c47a735c91cddf857069";
-const bscBusdStn = "0x1f0af1934a4133e27469ec93a9840be99d127577";
-
-const stBnb = "0xd523a3c371c0c301794120c7ca9639f22c02839a";
-const cakeVault = "0xd478963bc6db450d35739b96b1542240eb606267";
-const bscstBnbWBnb = "0x002e1655e05bd214d1e517b549e2a80bda31d2e5";
 const stonebank = "0x63598a507B5901721097B1f1407d2Ba89D49b3d4";
+const bscVaults = [
+  "0x0F9F39F6AABc86c457901df26275c72de32B26A4", // WBNB
+  "0xFC1cF3DC111981eA4372E91f437581524f3721be", // ETH
+  "0xbA3CfEa6514cF5acdDeff3167Df0b7a4337751bc", // BTCB
+  "0x5dC81697fC0b3752c1277D260064374E95E8A18b", // USDT
+  "0xafB6c80FF3CFDaE5977Df0196F3d35Cd65e3c7a3", // USDC
+  "0xb85E3Fe36a6084985E66d704ABD4be4EA51e06cE", // CAKE
+  "0xcF0c55931629E90b222Ec9c72a9f035eCbC7E835", // MDX
+  "0xa72aD1293B253522FDE41f1104aa432d7669b299", // BUSD
+  "0xa004Bb9004418e8F13eAE2715cA53DdDa055d231" // DAI
+]
 
-const ignoreTokens = [ethStnWeth, polyUsdtStn, bscBusdStn, bscstBnbWBnb, stBnb];
+const bsccakevault = "0x69D4E3C772e8b5D52ccd63c96D7A8a2fa6D46542";
+const bsccakelp = "0x1f0af1934a4133e27469ec93a9840be99d127577";
+const stbnbcakevault = "0xd478963bC6dB450D35739B96b1542240Eb606267";
+const stbnbcakelp = "0x002e1655e05bd214d1e517b549e2a80bda31d2e5";
 
-async function tvlFromStaking(stakingContract, stn, block, chain) {
+const polyVaults = [
+  "0xf1EaEc1ecB26Ec987F2F7B77AAEd7a909F1aA907", // WETH
+  "0x2BDC312e7847f7a59ED09899863056236a3Ce180", // USDT
+  "0x33B617Fbe1A940d2E7D0a36FD359Dd1C48baf039", // USDC
+  "0x237Af22431CdcC29209793573295B942920c6C3c", // WMATIC
+  "0xDee0BC532a189EDfeBe4b02061443D596b529d62", // QUICK
+  "0x3311Cb9E5Af0bd0e8145Da5fd5D810D2432554Ce", // SUSHI
+  "0xD19DD17B99ab5e0244bfF2abB54f8e28aefc034d", // WBTC
+  "0x0B0216e3c02b334e97cF0421DB9c4CFa2024DA2A" // DAI
+]
+
+const polyuniv2vault = "0x6eC3BCBB751Fe3308Dde173C9c91Bf9ea9aC7163";
+const polyuniv2lp = "0x2ee7b1ddd28514d49d3bfe0bedef52ffa86d7a8b";
+
+const avaxVaults = [
+  "0x9BC91eAAb1380D3a40320B1b282b6f06e2F31Acf", // WAVAX
+  "0xd2D0e78d14b34FB7639eF832C0E184B65356595b", // USDT
+  "0x2aa65E137Ea0f55013A7dDc222092e46FBB51042", // USDC
+  "0xD22e6f065e54DEf005aFfB08D30eF6A2AB8782f1", // DAI
+  "0x44eEea93fC479ec7528A05DcDAF93046E1166F84", // WETH
+  "0x145743E6386d3f08c7d4c4D39db3F77D288089Ff", // WBTC
+  "0x34Ab7D654D44F9B03fc2DB1d648Eed1559064097", // LINK
+  "0x24Df5da9414F9f9B98390137f692b8E2bCF2336e", //  QI
+  "0x7A1b1e74f3646DE85066a501bC78edE6bc9D3FF2" //  AAVE
+]
+
+async function calcTvl(vaults, block, chain) {
   let balances = {};
 
-  const poolLength = (
-    await sdk.api.abi.call({
-      target: stakingContract,
-      abi: abi.poolLength,
-      block,
-      chain,
-    })
-  ).output;
+  const tokens = (await sdk.api.abi.multiCall({
+    calls: vaults.map(p => ({
+      target: p
+    })),
+    abi: abi.token,
+    block,
+    chain
+  })).output;
 
-  const poolInfo = (
-    await sdk.api.abi.multiCall({
-      calls: Array.from({ length: Number(poolLength) }, (_, k) => ({
-        target: stakingContract,
-        params: k,
-      })),
-      abi: abi.poolInfo,
-      block,
-      chain,
-    })
-  ).output;
+  const totalAssets = (await sdk.api.abi.multiCall({
+    calls: vaults.map(p => ({
+      target: p
+    })),
+    abi: abi.totalAssets,
+    block,
+    chain
+  })).output;
 
-  const underlying = (
-    await sdk.api.abi.multiCall({
-      calls: poolInfo.map((p) => ({
-        target: p.output.lpToken,
-      })),
-      abi: abi.token,
-      block,
-      chain,
-    })
-  ).output;
 
-  const totalAssets = (
-    await sdk.api.abi.multiCall({
-      calls: poolInfo.map((p) => ({
-        target: p.output.lpToken,
-      })),
-      abi: abi.totalAssets,
-      block,
-      chain,
-    })
-  ).output;
-
-  for (let i = 0; i < Number(poolLength); i++) {
-    let token = underlying[i].output.toLowerCase();
-    let balance = totalAssets[i].output;
-    if (token === stn || ignoreTokens.includes(token)) continue;
-    if (token === "0xd523a3c371c0c301794120c7ca9639f22c02839a") {
-      token = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
+  for (let i = 0; i < vaults.length; i++) {
+    let token = tokens[i].output.toLowerCase();
+    if ( token === "0xfb8a07e99450d1dc566da18a8f0e630addefdd3e" || token === "0xf7fb08c187e6cd1f2149e6c818d0b6d4d4ef1430") {
+      sdk.util.sumSingleBalance(balances, "0xe63d6b308bce0f6193aec6b7e6eba005f41e36ab", totalAssets[i].output);
+      continue;
     }
-    sdk.util.sumSingleBalance(balances, `${chain}:${token}`, balance);
+    sdk.util.sumSingleBalance(balances, `${chain}:${token}`, totalAssets[i].output);
   }
+
   return balances;
 }
 
-async function ethTvl(timestamp, block) {
-  return await tvlFromStaking(ethStaking, ethStn, block, "ethereum");
+async function eth (timestamp, block) {
+  return await calcTvl(ethVaults, block, "ethereum");
 }
 
-async function polyTvl(timestamp, block, chainBlocks) {
-  return await tvlFromStaking(
-    polyStaking,
-    polyStn,
-    chainBlocks.polygon,
-    "polygon"
-  );
-}
-
-async function bscTvl(timestamp, block, chainBlocks) {
-  let balances =  await tvlFromStaking(bscStaking, bscStn, chainBlocks.bsc, "bsc");
+async function bsc (timestamp, block, chainBlocks) {
+  let balances = await calcTvl(bscVaults, chainBlocks.bsc, "bsc");
   const bnbStakeBalance = (await sdk.api.abi.call({
     target: stonebank,
     abi: abi.stbnbMarketCapacityCountByBNB,
@@ -110,27 +105,55 @@ async function bscTvl(timestamp, block, chainBlocks) {
     chain: "bsc"
   })).output;
   sdk.util.sumSingleBalance(balances, ["binancecoin"], BigNumber(bnbStakeBalance).div(10 ** 18).toFixed(0));
-  return balances
+  return balances;
+}
+
+async function polygon (timestamp, block, chainBlocks) {
+  return await calcTvl(polyVaults, chainBlocks.polygon, "polygon");
+}
+
+async function avax (timestamp, block, chainBlocks) {
+  return await calcTvl(avaxVaults, chainBlocks.avax, "avax");
+}
+
+function staking(stakingContract, chain) {
+  return async (_timestamp, _block, chainBlocks) => {
+    return await calcTvl([stakingContract], chainBlocks[chain], chain);
+  }
 }
 
 module.exports = {
+   doublecounted: true,
   ethereum: {
-    tvl: ethTvl,
-    staking: staking(ethStnVault, ethStn),
-    pool2: pool2Exports(ethUniVault, [ethStnWeth]),
-  },
-  polygon: {
-    tvl: polyTvl,
-    staking: staking(polyStnVault, polyStn, "polygon", (addr = ethStn)),
-    pool2: pool2Exports(
-      polyUniVault,
-      [polyUsdtStn],
-      "polygon",
-      (addr => ethStn)
-    ),
+    tvl: eth,
+    staking: staking("0xa72ad1293b253522fde41f1104aa432d7669b299", "ethereum"),
+    pool2: pool2Exports(ethuniv2vault, [ethuniv2lp])
   },
   bsc: {
-    tvl: bscTvl,
-    staking: staking(bscStnVault, bscStn, "bsc", (addr = ethStn)),
+    tvl: bsc,
+    staking: staking("0xBd2861c0f43F6E8d571fcfA5a7C77D13d5695Ebf", "bsc"),
+    pool2: pool2s([bsccakevault, stbnbcakevault], [stbnbcakelp, bsccakelp], "bsc", addr=>{
+      addr = addr.toLowerCase();
+      if (addr === "0xd523a3c371c0c301794120c7ca9639f22c02839a") {
+        return "bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+      }
+      else if (addr === "0xf7fb08c187e6cd1f2149e6c818d0b6d4d4ef1430") {
+        return "0xe63d6b308bce0f6193aec6b7e6eba005f41e36ab"
+      }
+      return `bsc:${addr}`
+    })
   },
-};
+  polygon: {
+    tvl: polygon,
+    staking: staking("0xA035eCd4824c4C13506D39d7041e8E0Ad156686D", "polygon"),
+    pool2: pool2Exports(polyuniv2vault, [polyuniv2lp], "polygon", addr=>{
+      if (addr.toLowerCase() === "0xfb8a07e99450d1dc566da18a8f0e630addefdd3e") {
+        return "0xe63d6b308bce0f6193aec6b7e6eba005f41e36ab"
+      }
+      return `polygon:${addr}`
+    })
+  },
+  avax:{
+    tvl: avax,
+  }
+}

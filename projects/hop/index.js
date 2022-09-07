@@ -1,23 +1,18 @@
 const sdk = require('@defillama/sdk')
-const { transformXdaiAddress, transformOptimismAddress } = require('../helper/portedTokens')
+const { getChainTransform } = require('../helper/portedTokens')
 const { getBlock } = require('../helper/getBlock')
 const { chainExports } = require('../helper/exports')
 const { default: axios } = require('axios')
-
+// node test.js projects/hop/index.js
 const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
 function chainTvl(chain) {
     return async (timestamp, ethBlock, chainBlocks) => {
         const balances = {}
-        let transform = token => `${chain}:${token}`
-        if (chain === "xdai") {
-            transform = await transformXdaiAddress()
-        } else if (chain === 'optimism') {
-            transform = await transformOptimismAddress()
-        }
+        let transform = await getChainTransform(chain)
         const block = await getBlock(timestamp, chain, chainBlocks)
         const tokens = await axios('https://raw.githubusercontent.com/hop-protocol/hop/develop/packages/core/build/addresses/mainnet.json')
         for (const tokenConstants of Object.values(tokens.data.bridges)) {
-            const chainConstants = tokenConstants[chain]
+            const chainConstants = (chain == 'xdai' ? tokenConstants['gnosis'] : tokenConstants[chain])
             if (chainConstants === undefined) {
                 continue
             }
@@ -40,12 +35,22 @@ function chainTvl(chain) {
                     chain
                 })
             }
-            sdk.util.sumSingleBalance(balances, await transform(token), amount.output)
+            sdk.util.sumSingleBalance(balances, transform(token), amount.output)
         }
         if (chain === "ethereum") {
             for (const bonder of Object.entries(tokens.data.bonders)) {
                 const tokenName = bonder[0]
-                for (const contract of bonder[1]) {
+                let contractList = []
+                for (let i of Object.values(bonder[1])) {
+                    for (let j of Object.values(i)) {
+                        if (contractList.includes(j.toLowerCase())) {
+                            continue;
+                        } else {
+                            contractList.push(j.toLowerCase())
+                        }
+                    }
+                }
+                for (const contract of contractList) {
                     if (tokenName === "ETH") {
                         const amount = await sdk.api.eth.getBalance({
                             target: contract,

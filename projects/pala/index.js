@@ -1,81 +1,63 @@
 const ABI = require("./abi.json");
-const Caver = require("caver-js");
 const { toUSDTBalances } = require("../helper/balances");
+const sdk = require('@defillama/sdk')
+const { PromisePool } = require('@supercharge/promise-pool')
 
-const PALA_EP_URL = "https://gateway.pala.world";
+const VIEWER_ADDR = "0x2B16648ddD1559fc86e0c0617213Ab5dd2Ea01B9";
+const chain = 'klaytn'
 
-const VIEWER_ADDR = "0xEE50E2679E763a0a605e9c09e42a71340e4b67A3";
-const ATTEN_FARM_ADDR = "0x883726a307D420286086679F7851d8378bb16771"
-const PALA_FARM_ADDR = "0xCFC140E8e3b1B05f9ACb4a42249b7aBB8c27576C"
-
-const getPoolsInfo = async (caver) => {
-    const sc = caver.contract.create([ABI.poolInfos], VIEWER_ADDR);
-    return await sc.methods.poolInfos().call();
+const getPoolsInfo = async (block) => {
+	return (await sdk.api.abi.call({ target: VIEWER_ADDR, abi: ABI.poolInfos, block, chain })).output
 }
 
-const getTokenInfoDetail = async (caver, tokenAddr) => {
-    const sc = caver.contract.create([ABI.tokenInfoDetail], VIEWER_ADDR);
-    return await sc.methods.tokenInfoDetail(tokenAddr).call();
+const getTokenInfoDetail = async (block, tokenAddr) => {
+	return (await sdk.api.abi.call({ target: VIEWER_ADDR, abi: ABI.tokenInfoDetail, block, chain, params: tokenAddr })).output
 }
 
-const calcPoolLiquidityVolume = async (caver, poolInfo) => {
-    const t0Detail = await getTokenInfoDetail(caver, poolInfo.token0);
-    const t0Info = t0Detail.info;
-    const t0Price = t0Detail.price;
-    const t1Detail = await getTokenInfoDetail(caver, poolInfo.token1);
-    const t1Info = t1Detail.info;
-    const t1Price = t1Detail.price;
+const calcPoolLiquidityVolume = (pool, tokenMapping) => {
+	const t0Detail = tokenMapping[pool.token0] || { decimals: 1, price: 0};
+	const t0decimals = t0Detail.decimals;
+	const t0Price = t0Detail.price;
+	const t1Detail = tokenMapping[pool.token1] || { decimals: 1, price: 0};
+	const t1decimals = t1Detail.decimals;
+	const t1Price = t1Detail.price;
 
-    return ((t0Price / 1e18) * (poolInfo.token0Reserve / Math.pow(10, t0Info.decimals))) +
-    ((t1Price / 1e18) * (poolInfo.token1Reserve / Math.pow(10, t1Info.decimals)));
+	return ((t0Price / 1e18) * (pool.token0Reserve / Math.pow(10, t0decimals))) +
+		((t1Price / 1e18) * (pool.token1Reserve / Math.pow(10, t1decimals)));
 }
 
-const fetchLiquidity = async () => {
-    const caver = new Caver(PALA_EP_URL);
-    const poolInfos = await getPoolsInfo(caver);
-    const volumes = await Promise.all(
-        poolInfos.map((poolInfo) => { return calcPoolLiquidityVolume(caver, poolInfo)})
-    );
+const fetchLiquidity = async (ts, _block, chainBlocks) => {
+	const block = chainBlocks[chain]
+	const tokenMapping = {}
+	const poolInfos = await getPoolsInfo(block)
+	let tokenSet = new Set()
+	poolInfos.forEach((pool) => {
+		tokenSet.add(pool.token0)
+		tokenSet.add(pool.token1)
+	})
 
-    const tvl = volumes.reduce((acc, cur) => acc + cur);
-    return toUSDTBalances(tvl.toFixed(2));
+	await PromisePool
+		.withConcurrency(3)
+		.for([...tokenSet])
+		.process(async token => {
+			const response = await getTokenInfoDetail(block, token)
+			tokenMapping[token] = {
+				price: response.price,
+				decimals: response.info.decimals
+			}
+		})
+
+	const tvl = poolInfos.reduce((acc, pool) => {
+		return acc + calcPoolLiquidityVolume(pool, tokenMapping)
+	}, 0)
+	return toUSDTBalances(tvl);
 }
 
-const calcStakedToken = async (caver, poolInfo) => {
-    const sc = caver.contract.create([ABI.balanceOf, ABI.totalSupply], poolInfo.pool);
-
-    const totalLPSupply = await sc.methods.totalSupply().call();
-    const liquidityVolume = await calcPoolLiquidityVolume(caver, poolInfo)
-
-    const stakedAttenLP = await sc.methods.balanceOf(ATTEN_FARM_ADDR).call();
-    const stakedAttenRatio = stakedAttenLP / totalLPSupply;
-    const stakedAttenToken = stakedAttenRatio * liquidityVolume;
-
-    const stakedPalaLP = await sc.methods. balanceOf(PALA_FARM_ADDR).call();
-    const stakedPalaRatio = stakedPalaLP / totalLPSupply;
-    const stakedPalaToken = stakedPalaRatio * liquidityVolume;
-    const totalStaked = (stakedAttenToken + stakedPalaToken);
-    return totalStaked;
-}
-
-const fetchStakedToken = async () => {
-
-    const caver = new Caver(PALA_EP_URL);
-    const poolInfos = await getPoolsInfo(caver);
-
-    const totalStakeds = await Promise.all(
-        poolInfos.map((poolInfo) => { return calcStakedToken(caver, poolInfo)})        
-    );
-
-    return toUSDTBalances(totalStakeds.reduce((acc, cur) => acc + cur ).toFixed(2));
-}
 
 module.exports = {
-    timetravel: false,
-    klaytn:{
-        staking:fetchStakedToken,
-        tvl:fetchLiquidity
-    },
-    methodology:
-        "Sum of the total volume of the LPs. Staked is calculated by sum of the total staked ATTENTION and PALA tokens"
+	klaytn: {
+		tvl: fetchLiquidity
+	},
+	methodology:
+		"Sum of the total volume of the LPs. Staked is calculated by sum of the total staked PALA tokens"
 }

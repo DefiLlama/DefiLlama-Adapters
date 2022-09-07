@@ -1,20 +1,34 @@
-const {getBlock} = require('../helper/getBlock')
-const sdk = require('@defillama/sdk')
 
+const sdk = require('@defillama/sdk')
+const solana = require('../helper/solana')
+const terra = require('../helper/terra')
+const { staking } = require('../helper/staking');
+const near = require('../helper/near');
 const NATIVE_ADDRESS = "NATIVE";
 
 const data = {
     celo: {
         contractAddress: "0xBBbD1BbB4f9b936C3604906D7592A644071dE884",
+        staking: {
+            contractAddress: "0x788BA01f8E2b87c08B142DB46F82094e0bdCad4F",
+            abrAddress: "0x6e512BFC33be36F2666754E996ff103AD1680Cc9",
+            decimals: 18
+        },
         tokens: [
             {name: "celo-dollar", address: "0x765DE816845861e75A25fCA122bb6898B8B1282a", decimals: 18},
             {name: "usd-coin", address: "0x2A3684e9Dc20B857375EA04235F2F7edBe818FA7", decimals: 6},
             {name: "poofcash", address: "0x00400FcbF0816bebB94654259de7273f4A05c762", decimals: 18},
-            {name: "celo-euro", address: "0xD8763CBa276a3738E6DE85b4b3bF5FDed6D6cA73", decimals: 18}
+            {name: "celo-euro", address: "0xD8763CBa276a3738E6DE85b4b3bF5FDed6D6cA73", decimals: 18},
+            {name: "celo", address: NATIVE_ADDRESS, decimals: 18},
         ]
     },
     avax: {
         contractAddress: "0xBBbD1BbB4f9b936C3604906D7592A644071dE884",
+        staking: {
+            contractAddress: "0x788BA01f8E2b87c08B142DB46F82094e0bdCad4F",
+            abrAddress: "0xaFc43610C7840b20b90CAaF93759bE5b54B291c9",
+            decimals: 18
+        },
         tokens: [
             {name: "avalanche-2", address: NATIVE_ADDRESS, decimals: 18},
             {name: "usd-coin", address: "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664", decimals: 6},
@@ -25,16 +39,27 @@ const data = {
     },
     fantom: {
         contractAddress: "0xBBbD1BbB4f9b936C3604906D7592A644071dE884",
+        staking: {
+            contractAddress: "0x1Bb92e03d2bdF3D7849296Ff7F9685696b0CaA39",
+            abrAddress: "0x543Acd673960041eEe1305500893260F1887B679",
+            decimals: 18
+        },
         tokens: [
             {name: "bitcoin", address: "0x321162Cd933E2Be498Cd2267a90534A804051b11", decimals: 8},
             {name: "ethereum", address: "0x74b23882a30290451A17c44f4F05243b6b58C76d", decimals: 18},
             {name: "usd-coin", address: "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75", decimals: 6},
             {name: "dai", address: "0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E", decimals: 18},
-            {name: "chainlink", address: "0xb3654dc3D10Ea7645f8319668E8F54d2574FBdC8", decimals: 18}
+            {name: "chainlink", address: "0xb3654dc3D10Ea7645f8319668E8F54d2574FBdC8", decimals: 18},
+            {name: "fantom", address: NATIVE_ADDRESS, decimals: 18},
         ]
     },
     heco: {
         contractAddress: "0xBBbD1BbB4f9b936C3604906D7592A644071dE884",
+        staking: {
+            contractAddress: "0x788BA01f8E2b87c08B142DB46F82094e0bdCad4F",
+            abrAddress: "0x2D7E64def6c3311A75c2F6eB45E835CD58e52CDE",
+            decimals: 18
+        },
         tokens: [
             {name: "bitcoin", address: "0x66a79D23E58475D2738179Ca52cd0b41d73f0BEa", decimals: 18},
             {name: "tether", address: "0xa71EdC38d189767582C38A3145b5873052c3e47a", decimals: 18},
@@ -44,6 +69,11 @@ const data = {
     },
     polygon: {
         contractAddress: "0xBBbD1BbB4f9b936C3604906D7592A644071dE884",
+        staking: {
+            contractAddress: "0x788BA01f8E2b87c08B142DB46F82094e0bdCad4F",
+            abrAddress: "0x04429fbb948bbd09327763214b45e505a5293346",
+            decimals: 18
+        },
         tokens: [
             {name: "mimatic", address: "0xa3Fa99A148fA48D14Ed51d610c367C61876997F1", decimals: 18},
             {name: "usd-coin", address: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174", decimals: 6},
@@ -57,6 +87,11 @@ const data = {
     },
     bsc: {
         contractAddress: "0xBBbD1BbB4f9b936C3604906D7592A644071dE884",
+        staking: {
+            contractAddress: "0x788BA01f8E2b87c08B142DB46F82094e0bdCad4F",
+            abrAddress: "0x68784ffaa6Ff05E3e04575DF77960DC1D9F42b4a",
+            decimals: 18
+        },
         tokens: [
             {name: "impossible-finance", address: "0xB0e1fc65C1a741b4662B813eB787d369b8614Af1", decimals: 18},
             {name: "krown", address: "0x1446f3CEdf4d86a9399E49f7937766E6De2A3AAB", decimals: 18},
@@ -99,7 +134,69 @@ const data = {
             {name: "chainlink", address: "0x514910771AF9Ca656af840dff83E8264EcF986CA", decimals: 18},
             {name: "smartpad", address: "0x5067006f830224960fb419d7f25a3a53e9919bb0", decimals: 18},
         ]
+    },
+    aurora: {
+        tokens: [],
+        staking: {
+            contractAddress: "0x788BA01f8E2b87c08B142DB46F82094e0bdCad4F",
+            abrAddress: "0x2BAe00C8BC1868a5F7a216E881Bae9e662630111",
+            decimals: 18
+        },
+    },
+    harmony: {
+        tokens: [],
+        staking: {
+            contractAddress: "0x788BA01f8E2b87c08B142DB46F82094e0bdCad4F",
+            abrAddress: "0xf80eD129002B0eE58C6d2E63D0D7Dc9Fc9f3383C",
+            decimals: 18
+        },
+    },
+    fuse: {
+        tokens: [],
+        staking: {
+            contractAddress: "0x788BA01f8E2b87c08B142DB46F82094e0bdCad4F",
+            abrAddress: "0xa21AaB22A0bAF9fff3392B0aFc5115b955664FD4",
+            decimals: 18
+        },
     }
+}
+
+const solanaData = {
+    contractAddress: 'bb1XfNoER5QC3rhVDaVz3AJp9oFKoHNHG6PHfZLcCjj',
+    staking: {
+        tokenAccount: '51dd7AuT32b5VCK2rBVrjLGvfuvZ3kMayNrZZbWuvas2'
+    },
+    tokens: [
+        {name: "apyswap", tokenAccount: '8fdkYq4XWb1LfkNcAByZUHspyvasyqH7CmFBCkoqSK5d'},
+        {name: "solana", tokenAccount: 'HHC3niNsTB3hNN1kZH9BHMLiwLvCSegKBLu82tAT2iG8'},
+        {name: "usd-coin", tokenAccount: 'AxsSzB2JvyHZr6uDjV3Prmak2JEqYUoaSQh9rPMSUvf2'},
+        {name: "saber", tokenAccount: '7KkMhrF9Hv7dfaX5xXFtTTrfJfVjHYZ5ymwAuXVgJ6Kf'},
+    ]
+}
+
+
+const terraData = {
+    contractAddress: "terra18hf7422vyyc447uh3wpzm50wzr54welhxlytfg",
+    staking: {
+        contractAddress: "terra1n3v0c4dhn33adnznl3yh5r6myjgrz57x6pqkeg",
+        abrAddress: "terra1a7ye2splpfzyenu0yrdu8t83uzgusx2malkc7u",
+        decimals: 6
+    },
+    tokens: [
+        {name: "terrausd", address: "uusd", decimals: 6},
+        {name: "terra-luna", address: "uluna", decimals: 6},
+    ]
+}
+
+const nearData = {
+    contractAddress: "bridge.a11bd.near",
+    staking: {
+        contractAddress: "staking.a11bd.near",
+        decimals: 24
+    },
+    tokens: [
+        {name: "near", address: "wrap.near", decimals: 24},
+    ]
 }
 
 const toNumber = (decimals, n) => Number(n)/Math.pow(10, decimals)
@@ -109,7 +206,7 @@ function getTVLFunction(chain)
     return async function tvl(timestamp, ethBlock, chainBlocks) {
         const balances = {}
         const chainData = data[chain];
-        const block = await getBlock(timestamp, chain, chainBlocks);
+        const block = chainBlocks[chain];
         for (const token of chainData.tokens) {
             const balance = token.address === NATIVE_ADDRESS ? await sdk.api.eth.getBalance({
                 block, chain, target: chainData.contractAddress
@@ -122,14 +219,116 @@ function getTVLFunction(chain)
     }
 }
 
+function getStakingFunction(chain) {
+    const stakingData = data[chain].staking;
+    if (!stakingData) {
+        return
+    }
+    return staking(stakingData.contractAddress, stakingData.abrAddress, chain, "allbridge", stakingData.decimals);
+}
+
+async function solanaTvl() {
+    const balances = {}
+    for (const token of solanaData.tokens) {
+        const balance = await solana.getTokenAccountBalance(token.tokenAccount);
+        sdk.util.sumSingleBalance(balances, token.name, balance);
+    }
+    return balances
+}
+
+async function solanaStaking() {
+    const balance = await solana.getTokenAccountBalance(solanaData.staking.tokenAccount);
+    return {allbridge: balance}
+}
+
+async function terraTvl() {
+    const balances = {}
+    for (const token of terraData.tokens) {
+        const balance = token.address.length > 5
+          ? await terra.getBalance(token.address, terraData.contractAddress)
+          : await terra.getDenomBalance(token.address, terraData.contractAddress);
+        sdk.util.sumSingleBalance(balances, token.name, toNumber(token.decimals, balance));
+    }
+    return balances
+}
+
+
+async function terraStaking() {
+    const balance = await terra.getBalance(terraData.staking.abrAddress, terraData.staking.contractAddress);
+    return { allbridge: toNumber(terraData.staking.decimals, balance) }
+}
+
+async function nearTvl() {
+    const balances = {}
+    for (const token of nearData.tokens) {
+        const balance = await near.getTokenBalance(token.address, nearData.contractAddress);
+        sdk.util.sumSingleBalance(balances, token.name, toNumber(token.decimals, balance));
+    }
+    return balances
+}
+
+async function nearStaking() {
+    const balance = await near.call(nearData.staking.contractAddress, "get_abr_balance");
+    return { allbridge: toNumber(nearData.staking.decimals, balance) }
+}
+
+
 
 module.exports={
     methodology: "All tokens locked in Allbridge contracts.",
-    ethereum: { tvl: getTVLFunction('ethereum') },
-    polygon: { tvl: getTVLFunction('polygon') },
-    bsc: { tvl: getTVLFunction('bsc') },
-    fantom: { tvl: getTVLFunction('fantom') },
-    avax: { tvl: getTVLFunction('avax') },
-    heco: { tvl: getTVLFunction('heco') },
-    celo: { tvl: getTVLFunction('celo') }
+    ethereum: {
+        tvl: getTVLFunction('ethereum'),
+        staking: getStakingFunction('ethereum')
+    },
+    polygon: {
+        tvl: getTVLFunction('polygon'),
+        staking: getStakingFunction('polygon')
+    },
+    bsc: {
+        tvl: getTVLFunction('bsc'),
+        staking: getStakingFunction('bsc')
+    },
+    fantom: {
+        tvl: getTVLFunction('fantom'),
+        staking: getStakingFunction('fantom')
+    },
+    avax: {
+        tvl: getTVLFunction('avax'),
+        staking: getStakingFunction('avax')
+    },
+    heco: {
+        tvl: getTVLFunction('heco'),
+        staking: getStakingFunction('heco')
+    },
+    celo: {
+        tvl: getTVLFunction('celo'),
+        staking: getStakingFunction('celo')
+    },
+    aurora: {
+        tvl: getTVLFunction('aurora'),
+        staking: getStakingFunction('aurora'),
+    },
+    harmony: {
+        tvl: getTVLFunction('harmony'),
+        staking: getStakingFunction('harmony'),
+    },
+    fuse: {
+        tvl: getTVLFunction('fuse'),
+        staking: getStakingFunction('fuse'),
+    },
+    solana: {
+        tvl: solanaTvl,
+        staking: solanaStaking
+    },
+    terra: {
+        tvl: terraTvl,
+        staking: terraStaking
+    },
+    near: {
+        tvl: nearTvl,
+        staking: nearStaking
+    },
+    hallmarks:[
+        [1651881600, "UST depeg"],
+      ],
 }

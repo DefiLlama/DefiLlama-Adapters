@@ -11,7 +11,7 @@ const HAKKA_ADDRESSES = {
 const thirdFloorAddress = '0x66be1bc6C6aF47900BBD4F3711801bE6C2c6CB32'
 
 async function thirdFloor(price_feed) {
-  const ethBalance = await utils.returnEthBalance(thirdFloorAddress)
+  const ethBalance = await utils.returnEthBalance(thirdFloorAddress);
   const ethPrice = price_feed.data.ethereum.usd
   const ethValue = BigNumber(ethBalance).times(ethPrice)
   
