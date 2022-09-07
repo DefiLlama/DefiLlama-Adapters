@@ -8,6 +8,7 @@ const prxy = "0xab3d689c22a2bb821f50a4ff0f21a7980dcb8591";
 const prxyTransformed = `polygon:${prxy}`;
 const wbtc = "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599";
 const btcpx = "0x9C32185b81766a051E08dE671207b34466DD1021";
+const farmProxy = "0x256116a8Ea8bAd13897462117d88082C464B68e1";
 
 async function getPrograms() {
   const programList = await retry(
@@ -54,7 +55,15 @@ function tvl(chain, staking) {
       }
     }
 
-    balances[wbtc] = (
+      balances[farmProxy] = (
+          await sdk.api.abi.call({
+              target: farmProxy,
+              abi,
+              chain
+          })
+      ).output;
+
+      balances[wbtc] = (
       await sdk.api.erc20.totalSupply({
         block,
         target: btcpx,
