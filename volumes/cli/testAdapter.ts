@@ -48,7 +48,7 @@ async function runAdapter(volumeAdapter: Adapter, timestamp: number) {
       if (chainsForBlocks.includes(chain as Chain) || chain === "ethereum") {
         const latestBlock = await getBlock(timestamp, chain, chainBlocks)
         if (!latestBlock) throw new Error("latestBlock")
-        chainBlocks[chain] = latestBlock - 10
+        chainBlocks[chain] = latestBlock - 15
       }
     })
   );
@@ -58,7 +58,9 @@ async function runAdapter(volumeAdapter: Adapter, timestamp: number) {
       const startTimestamp = await volumeAdapter[chain].start()
       const fetchVolumeFunc = volumeAdapter[chain].customBackfill ?? volumeAdapter[chain].fetch
       return fetchVolumeFunc(timestamp, chainBlocks)
-        .then(res => ({ timestamp: res.timestamp, totalVolume: res.totalVolume, dailyVolume: res.dailyVolume, chain, startTimestamp }))
+        .then(res => ({ timestamp: res.timestamp, totalVolume: res.totalVolume, dailyVolume: res.dailyVolume, chain, startTimestamp })).catch(e=>{
+          throw new Error(`${process.argv[2]} ${timestamp}, ${chainBlocks} ${chain} ${e.message}`)
+        })
     }
   ))
   return volumes
