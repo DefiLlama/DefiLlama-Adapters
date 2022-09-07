@@ -8,6 +8,12 @@ const prxy = "0xab3d689c22a2bb821f50a4ff0f21a7980dcb8591";
 const prxyTransformed = `polygon:${prxy}`;
 const wbtc = "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599";
 const btcpx = "0x9C32185b81766a051E08dE671207b34466DD1021";
+const farmProxy = "0x256116a8Ea8bAd13897462117d88082C464B68e1";
+const fAbi = require("./fAbi.json");
+const Web3 = require("web3");
+const web3 = new Web3(new Web3.providers.HttpProvider('https://rpc-mainnet.maticvigil.com/v1/d8df1938ab3aecb7dd672ca671a5d5dd0b75d9d1'));
+let contract1 = new web3.eth.Contract(fAbi, '0x256116a8Ea8bAd13897462117d88082C464B68e1');
+
 
 async function getPrograms() {
   const programList = await retry(
@@ -54,6 +60,8 @@ function tvl(chain, staking) {
       }
     }
 
+    balances[farmProxy] =  await contract1.methods.getTVLInUsd().call(); //value will be divided by 1e6
+
     balances[wbtc] = (
       await sdk.api.erc20.totalSupply({
         block,
@@ -75,14 +83,16 @@ function tvl(chain, staking) {
 }
 
 module.exports = {
-  misrepresentedTokens: true,
-  polygon: {
-    tvl: tvl("polygon", false),
-    staking: tvl("polygon", true),
-  },
-  ethereum: {
-    tvl: tvl("ethereum", false),
-    staking: tvl("ethereum", true),
-  },
-  methodology: `BTC Proxy offers a unique institutional-grade wrapped Bitcoin solution that leverages Polygon technology to bring Bitcoin to DeFi 2.0 with no gas and no slippage and insured custody. BTC Proxy features (3,3) Staking and Bonding via the PRXY Governance token`,
+    misrepresentedTokens: true,
+    polygon: {
+        tvl: tvl("polygon", false),
+        staking: tvl("polygon", true),
+        farmProxy: tvl("polygon",false),
+    },
+    ethereum: {
+        tvl: tvl("ethereum", false),
+        staking: tvl("ethereum", true),
+        farmProxy: tvl("ethereum",false),
+    },
+    methodology: `BTC Proxy offers a unique institutional-grade wrapped Bitcoin solution that leverages Polygon technology to bring Bitcoin to DeFi 2.0 with no gas and no slippage and insured custody. BTC Proxy features (3,3) Staking and Bonding via the PRXY Governance token`,
 };
