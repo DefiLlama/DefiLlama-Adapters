@@ -23,8 +23,8 @@ const config = {
   aurora: { factoriesWithDiffABI: ['0x45a3a315277Fbc1BCe0611c4398b32E0317Fd7c1'], },
   moonbeam: { factoriesWithDiffABI: ['0x45603612891b6406A06854813e18443fC8ec7C73'], },
   avax: { factoriesWithDiffABI: ['0x45603612891b6406A06854813e18443fC8ec7C73'], },
-  okc: { factoriesWithDiffABI: ['0x2CA5708568003aBa525bFe32C7D6D149D384D874'], },
-
+  kava: { factoriesWithDiffABI: ['0xE2da68886db83cb1b4A9878F1EfA6843f539df69']},
+  okexchain: { factoriesWithDiffABI: ['0x2CA5708568003aBa525bFe32C7D6D149D384D874'], },
 };
 
 Object.keys(config).forEach(chain => {
