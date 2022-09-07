@@ -25,7 +25,7 @@ async function getPrograms() {
   return programList.data.txs;
 }
 
-async function tvl(chain, staking) {
+function tvl(chain, staking) {
   return async (timestamp, block, chainBlocks) => {
 
     block = await getBlock(timestamp, chain, chainBlocks);
@@ -89,12 +89,10 @@ module.exports = {
     polygon: {
         tvl: tvl("polygon", false),
         staking: tvl("polygon", true),
-        farmProxy: tvl("polygon",false),
     },
     ethereum: {
         tvl: tvl("ethereum", false),
         staking: tvl("ethereum", true),
-        farmProxy: tvl("ethereum",false),
     },
     methodology: `BTC Proxy offers a unique institutional-grade wrapped Bitcoin solution that leverages Polygon technology to bring Bitcoin to DeFi 2.0 with no gas and no slippage and insured custody. BTC Proxy features (3,3) Staking and Bonding via the PRXY Governance token`,
 };
