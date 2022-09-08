@@ -53,6 +53,7 @@ async function getBigMapById(id, limit=1000, offset=0, key, value) {
   const response = await http.get(
     `${RPC_ENDPOINT}/v1/bigmaps/${id}/keys?limit=${limit}&offset=${offset}` + (key ? `&key=${key}` : '') + (value ? `&value=${value}` : '')
   );
+  let map_entry;
   const mapping = {};
   for (map_entry of response) {
     mapping[map_entry.key] = map_entry.value;
