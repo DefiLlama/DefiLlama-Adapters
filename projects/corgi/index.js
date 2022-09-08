@@ -1,7 +1,9 @@
 const sdk = require("@defillama/sdk")
 const abi = require('./abi')
 const { getChainTransform } = require('../helper/portedTokens')
-const { getLPData, getTokenPrices, } = require('../helper/unknownTokens')
+const { getLPData, getTokenPrices } = require('../helper/unknownTokens')
+const {  stakingPricedLP, stakingUnknownPricedLP } = require('../helper/staking')
+const { pool2s , pool2} = require("../helper/pool2");
 const chain = 'dogechain'
 let totalTvl
 
@@ -16,8 +18,8 @@ async function gettotalTvl(block) {
         const transform = await getChainTransform(chain)
         const balances = {
             tvl: {},
-            pool2: {},
-            staking: {},
+            
+            
         }
         const { output: length } = await sdk.api.abi.call({
             target: contract,
@@ -46,8 +48,8 @@ async function gettotalTvl(block) {
             lps.push(token)
         })
 
-        balances.staking['dogechain:' + cog] = tempBalances[cog]
-        delete tempBalances[cog]
+       
+        
 
         const pairs = await getLPData({ lps, chain, block })
 
@@ -65,7 +67,7 @@ async function gettotalTvl(block) {
         })
 
         await updateBalances(balances.tvl)
-        await updateBalances(balances.pool2)
+        //await updateBalances(balances.pool2)
 
         return balances
     }
@@ -76,25 +78,21 @@ async function tvl(_, _b, {
 }) {
     return (await gettotalTvl(block)).tvl
 }
-
+/*
 async function pool2(_, _b, {
     [chain]: block
 }) {
     return (await gettotalTvl(block)).pool2
-}
+}*/
 
-async function staking(_, _b, {
-    [chain]: block
-}) {
-    return (await gettotalTvl(block)).staking
-}
+
 
 
 
 module.exports = {
     dogechain: {
-        tvl,
-        pool2,
-        staking,
+        tvl: tvl,
+        pool2: pool2(contract, '0xd9a09a130f73626a6f6526a575f8e23170186b42', 'dogechain', addr=>`dogechain:${addr}` ),
+        staking: stakingUnknownPricedLP('0x69e1f7e60A83BF250E0a277f3711a1612279dD7E', cog, 'dogechain', '0xd9a09a130f73626a6f6526a575f8e23170186b42', addr=>`dogechain:${addr}`, 18 ),
     }
 }
