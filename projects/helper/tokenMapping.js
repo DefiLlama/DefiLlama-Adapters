@@ -839,12 +839,12 @@ const fixBalancesTokens = {
     "0xc13791DA84f43525189456CfE2026C60D3B7F706": { coingeckoId: "kava", decimals: 18 },
   },
   sx: {
-    "0x90d27E008d5Db7f0a3c90a15A8Dcc4Ca18cFc670": { coingeckoId: "sx-network", decimals: 18 },
+    "0xaa99bE3356a11eE92c3f099BD7a038399633566f": { coingeckoId: "sx-network", decimals: 18 },
     "0xA173954Cc4b1810C0dBdb007522ADbC182DaB380": { coingeckoId: "ethereum", decimals: 18 },
     "0xe2aa35C2039Bd0Ff196A6Ef99523CC0D3972ae3e": { coingeckoId: "usd-coin", decimals: 6 },
     "0xfa6F64DFbad14e6883321C2f756f5B22fF658f9C": { coingeckoId: "matic-network", decimals: 18 },
     "0x53813CD4aCD7145A716B4686b195511FA93e4Cb7": { coingeckoId: "dai", decimals: 18 },
-    "0xa0cB58E7F783fce0F4042C790ea3045c48CD51e8": { coingeckoId: "shark", decimals: 18 }
+    "0x7Dc31a2FCBfbAd1ed4519111Fd33f78316BcBC81": { coingeckoId: "shark", decimals: 18 }
   },
   meter: {
     "0xd86e243fc0007e6226b07c9a50c9d70d78299eb5": { coingeckoId: "usd-coin", decimals: 6 },
