@@ -1,5 +1,5 @@
 import { SimpleVolumeAdapter } from "../../dexVolume.type";
-import { ARBITRUM, AURORA, AVAX, BOBA, BSC, ETHEREUM, POLYGON } from "../../helper/chains";
+import { ARBITRUM, AURORA, AVAX, BOBA, BSC, ETHEREUM, POLYGON, MOONRIVER } from "../../helper/chains";
 
 const { getChainVolume } = require("../../helper/getUniSubgraphVolume");
 const { getStartTimestamp } = require("../../helper/getStartTimestamp");
@@ -10,7 +10,7 @@ const endpoints = {
   [POLYGON]: "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-polygon",
   [ARBITRUM]:
     "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-arbitrum",
-  ["MOONRIVER"]: "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-moonriver",
+  [MOONRIVER]: "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-moonriver",
   [AURORA]: "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-aurora",
   [AVAX]: "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-avax",
   [BOBA]: "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-boba"
