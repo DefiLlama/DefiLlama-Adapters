@@ -27,17 +27,6 @@ async function mainnetPools(_, block) {
   return sumTokens2({ tokensAndOwners: toa, block, resolveLP: true });
 }
 
-async function mainnetTVL(_, block) {
-  let tvl;
-  const staking = await mainnetStaking(_, block);
-  const pools = await mainnetPools(_, block);
-  const givPrice = await getGIVPrice();
-  tvl = (staking[GIV] / 10 ** 18 + pools[GIV] / 10 ** 18) * givPrice;
-  return {
-    dai: tvl,
-  };
-}
-
 async function stakingXDAI() {
   const balance = await sumUnknownTokens({
     owners: ["0x24F2d06446AF8D6E89fEbC205e7936a602a87b60"], // GIV Garden
@@ -60,29 +49,15 @@ async function poolXDAI() {
   return balance;
 }
 
-async function xdaiTVL() {
-  let tvl;
-  const staking = await stakingXDAI();
-  const pools = await poolXDAI();
-  const givPrice = await getGIVPrice();
-  tvl =
-    (staking[`xdai:${xdaiGIV}`] / 10 ** 18 +
-      pools[`xdai:${xdaiGIV}`] / 10 ** 18) *
-    givPrice;
-  return {
-    dai: tvl,
-  };
-}
-
 module.exports = {
   methodology: "Counts GIV staked in all farms",
   ethereum: {
-    tvl: mainnetTVL,
+    tvl: () => ({}),
     staking: mainnetStaking,
     pool2: mainnetPools,
   },
   xdai: {
-    tvl: xdaiTVL,
+    tvl: () => ({}),
     staking: stakingXDAI,
     pool2: poolXDAI,
   },
