@@ -60,6 +60,7 @@ async function borrowed() {
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   timetravel: false,
   tezos: {
     tvl,
