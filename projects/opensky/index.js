@@ -62,10 +62,14 @@ async function getFloorPrice(address) {
 }
 
 async function collateral() {
-  const { collections } = await request(
+  let { collections } = await request(
     graphUrl,
     graphCollectionsQuery,
     { limit: 100 }
+  );
+
+  collections = collections.filter(collection => 
+    collection.numberOfBespokeLoans > 0 || collection.numberOfInstantLoans > 0
   );
 
   const floorPrices = await Promise.all(
@@ -78,7 +82,11 @@ async function collateral() {
 
   collections.forEach((collection, index) => {
     collateralValue = collateralValue.plus(
-      new BigNumber(parseEther(floorPrices[index] * (collection.numberOfBespokeLoans + collection.numberOfInstantLoans) + '').toString())
+      new BigNumber(
+        parseEther(
+          floorPrices[index] * (parseInt(collection.numberOfBespokeLoans) + parseInt(collection.numberOfInstantLoans)) + ''
+        ).toString()
+      )
     )
   });
 
