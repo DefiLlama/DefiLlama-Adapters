@@ -41,6 +41,6 @@ module.exports = {
     tvl,
   },
   hallmarks: [
-    [1662417125,"Mainnet's Official Live" ],
+    [1662417125,"Liquidity Mining Start" ],
   ],
 };
