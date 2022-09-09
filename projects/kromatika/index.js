@@ -102,16 +102,20 @@ module.exports = {
   methodology:
     "Kromatika handles Uniswap-v3 positions for their users who submit limit orders - TVL is amounts of tokens of each LP as well as KROM held by the contract to pay for fees",
   optimism: {
-    tvl: tvl("optimism"),
+    tvl: () => ({}),
+    staking: staking("optimism"),
   },
   arbitrum: {
-    tvl: tvl("arbitrum"),
+    tvl: () => ({}),
+    staking: staking("arbitrum"),
   },
   ethereum: {
-    tvl: tvl("ethereum"),
+    tvl: () => ({}),
+    staking: staking("ethereum"),
   },
   polygon: {
-    tvl: tvl("polygon"),
+    tvl: () => ({}),
+    staking: staking("polygon"),
   },
 };
 // UniswapV3Pool NonfungiblePositionManager has a low level mint method
