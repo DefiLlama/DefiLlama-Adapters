@@ -1,7 +1,7 @@
 export default (chain: string) => ({
-    "operationName": "FetchDashboardDailyData",
-    "variables": { "where": { "day": 365*10 } },
-    "query": `query FetchDashboardDailyData($where: Dashboardchain_daily_data_filter) {
+  operationName: "FetchDashboardDailyData",
+  variables: { "where": { "day": 365 * 3 } },
+  query: `query FetchDashboardDailyData($where: Dashboardchain_daily_data_filter) {
         dashboard_chain_day_data(where: $where) {
           list {
             timestamp
