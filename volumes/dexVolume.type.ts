@@ -20,9 +20,11 @@ export type Fetch = (
   chainBlocks: ChainBlocks
 ) => Promise<FetchResult>;
 
+export type IStartTimestamp = () => Promise<number>
+
 export type Adapter = {
   [chain: string]: {
-    start: () => Promise<number>
+    start: IStartTimestamp
     fetch: Fetch;
     runAtCurrTime?: boolean;
     customBackfill?: Fetch;

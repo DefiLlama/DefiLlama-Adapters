@@ -1,56 +1,64 @@
-import { SimpleVolumeAdapter } from "../../dexVolume.type";
-import { ARBITRUM, AURORA, AVAX, BOBA, BSC, ETHEREUM, POLYGON, MOONRIVER } from "../../helper/chains";
+import { Adapter, ChainEndpoints, Fetch, IStartTimestamp, SimpleVolumeAdapter } from "../../dexVolume.type";
+import { CHAIN } from "../../helper/chains";
+import { getUniqStartOfTodayTimestamp } from "../../helper/getUniSubgraphVolume";
+import payload from "./payload";
 
-const { getChainVolume } = require("../../helper/getUniSubgraphVolume");
-const { getStartTimestamp } = require("../../helper/getStartTimestamp");
+const { postURL } = require("../../helper/utils");
 
 const endpoints = {
-  [ETHEREUM]: "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2",
-  [BSC]: "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-bsc",
-  [POLYGON]: "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-polygon",
-  [ARBITRUM]:
-    "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-arbitrum",
-  [MOONRIVER]: "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-moonriver",
-  [AURORA]: "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-aurora",
-  [AVAX]: "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-avax",
-  [BOBA]: "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-boba"
+  [CHAIN.ARBITRUM]: "https://gateway.dodoex.io/graphql?opname=FetchDashboardDailyData",
+  [CHAIN.AURORA]: "https://gateway.dodoex.io/graphql?opname=FetchDashboardDailyData",
+  [CHAIN.BSC]: "https://gateway.dodoex.io/graphql?opname=FetchDashboardDailyData",
+  [CHAIN.ETHEREUM]: "https://gateway.dodoex.io/graphql?opname=FetchDashboardDailyData",
+  [CHAIN.POLYGON]: "https://gateway.dodoex.io/graphql?opname=FetchDashboardDailyData",
+  // [MOONRIVER]: "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-moonriver",
+  // [AVAX]: "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-avax",
+  // [BOBA]: "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-boba"
   // [HECO]: "https://n10.hg.network/subgraphs/name/dodoex-mine-v3-heco/heco",
   // [OKEXCHAIN]: "https://graph.kkt.one/subgraphs/name/dodoex/dodoex-v2-okchain",
-};
+} as ChainEndpoints
 
-const DAILY_VOLUME_FACTORY = "dodoDayData";
-const VOLUME_FIELD = "volumeUSD";
+const getFetch = (chain: string): Fetch => async (timestamp: number) => {
+  const dayTimestamp = getUniqStartOfTodayTimestamp(new Date(timestamp * 1000))
+  const response = await postURL(endpoints[chain], payload(chain))
+  return {
+    timestamp: dayTimestamp,
+    dailyVolume: response.data.data.dashboard_chain_day_data.list.find((item: any) => item.timestamp === dayTimestamp).volume[chain]
+  }
+}
 
-const graphs = getChainVolume({
-  graphUrls: endpoints,
-  totalVolume: {
-    factory: "dodoZoos",
-    field: VOLUME_FIELD,
-  },
-  dailyVolume: {
-    factory: DAILY_VOLUME_FACTORY,
-    field: VOLUME_FIELD,
-  },
-});
+interface IQueryResponse {
+  data: {
+    dashboard_chain_day_data: {
+      list: Array<{
+        timestamp: number,
+        volume: {
+          [chain: string]: string
+        }
+      }>
+    }
+  }
+}
 
-const startTimeQuery = {
-  endpoints,
-  dailyDataField: `${DAILY_VOLUME_FACTORY}s`,
-  volumeField: VOLUME_FIELD,
-};
+const getStartTimestamp = (chain: string): IStartTimestamp => async () => {
+  const response = (await postURL(endpoints[chain], payload(chain))).data as IQueryResponse
+  const firstDay = response.data.dashboard_chain_day_data.list.find((item: any) => item.volume[chain] !== '0')
+  console.log(firstDay);
+  return firstDay?.timestamp ?? 0
+}
 
 const volume = Object.keys(endpoints).reduce(
   (acc, chain) => ({
     ...acc,
     [chain]: {
-      fetch: graphs(chain),
-      start: getStartTimestamp({ ...startTimeQuery, chain }),
+      fetch: getFetch(chain),
+      start: getStartTimestamp(chain)
     },
   }),
   {}
 );
 
 const adapter: SimpleVolumeAdapter = {
-  volume,
+  volume
 };
 export default adapter;
