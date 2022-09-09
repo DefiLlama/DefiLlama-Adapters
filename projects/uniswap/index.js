@@ -17,7 +17,7 @@ const v2graph = getChainTvl({
 const v3Graphs = getChainTvl({
   // ethereum: "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3",
   optimism: "https://api.thegraph.com/subgraphs/name/ianlapham/optimism-post-regenesis",
-  arbitrum: 'https://api.thegraph.com/subgraphs/name/ianlapham/arbitrum-minimal',
+  arbitrum: 'https://api.thegraph.com/subgraphs/name/ianlapham/arbitrum-dev',
   polygon: "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-v3-polygon",
 }, "factories", "totalValueLockedUSD", 500)
 
