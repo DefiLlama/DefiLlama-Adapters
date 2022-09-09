@@ -47,7 +47,7 @@ const accountsQuery = gql`
 const EXPLORER_BASE_URL = "https://bscscan.com/address/";
 
 const positions = async () => {
-  const accounts = (await getPagedGql(subgraphUrl, accountsQuery, "accounts", true)).map((x) => {
+  const accounts = (await getPagedGql(subgraphUrl, accountsQuery, "accounts")).map((x) => {
     const clone = { ...x };
     clone["tokens"] = x["tokens"].map((token: any) => ({ ...token, cTokenBalance: token.vTokenBalance }));
     return clone;
