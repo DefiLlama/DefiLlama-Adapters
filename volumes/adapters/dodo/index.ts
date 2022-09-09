@@ -46,12 +46,11 @@ interface ITotalResponse {
 const getFetch = (chain: string): Fetch => async (timestamp: number) => {
   const dayTimestamp = getUniqStartOfTodayTimestamp(new Date(timestamp * 1000))
   const dailyResponse = (await postURL(dailyEndpoint, dailyVolumePayload(chain))).data as IDailyResponse
-  const totalResponse = (await postURL(totalEndpoint, totalVolumePayload(chain))).data as ITotalResponse
-  console.log(totalResponse)
+  // const totalResponse = (await postURL(totalEndpoint, totalVolumePayload(chain))).data as ITotalResponse
   return {
     timestamp: dayTimestamp,
     dailyVolume: dailyResponse.data.dashboard_chain_day_data.list.find((item: any) => item.timestamp === dayTimestamp)?.volume[chain],
-    totalVolume: totalResponse.data.dashboard_pairs_count_data.totalVolume
+    // totalVolume: totalResponse.data.dashboard_pairs_count_data.totalVolume
   }
 }
 
