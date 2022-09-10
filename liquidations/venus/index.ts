@@ -5,14 +5,17 @@ import { Liq } from "../utils/binResults";
 import {
   Account,
   borrowBalanceUnderlying,
+  CToken,
   getMarkets,
   getUnderlyingPrices,
+  Market,
   supplyBalanceUnderlying,
   totalBorrowValueInUsd,
   totalCollateralValueInUsd,
 } from "../utils/compound-helpers";
+const sdk = require("@defillama/sdk");
 
-const subgraphUrl = "https://api.thegraph.com/subgraphs/name/yhayun/benqi";
+const subgraphUrl = "https://api.thegraph.com/subgraphs/name/venusprotocol/venus-subgraph";
 
 const accountsQuery = gql`
   query accounts($lastId: ID) {
@@ -20,7 +23,7 @@ const accountsQuery = gql`
       id
       tokens {
         id
-        cTokenBalance
+        vTokenBalance
         accountBorrowIndex
         storedBorrowBalance
         market {
@@ -46,17 +49,73 @@ const accountsQuery = gql`
   }
 `;
 
-const EXPLORER_BASE_URL = "https://snowtrace.io/address/";
+const EXPLORER_BASE_URL = "https://bscscan.com/address/";
+const C_TOKEN_DECIMALS = 8;
+type MulticallResponse<T> = {
+  output: {
+    input: any;
+    success: boolean;
+    output: T;
+  }[];
+};
+
+const balanceOfs = async (market: Market, accounts: Account[]): Promise<{ [account: string]: string }> => {
+  const token = market.id;
+  const results = (
+    (await sdk.api.abi.multiCall({
+      calls: accounts.map((account) => ({
+        target: token,
+        params: account.id,
+      })),
+      abi: "erc20:balanceOf",
+      chain: "bsc",
+      requery: true,
+    })) as MulticallResponse<string>
+  ).output;
+
+  return results.reduce((acc, result) => {
+    if (result.success) {
+      acc[result.input.params[0]] = BigNumber(result.output)
+        .div(10 ** C_TOKEN_DECIMALS)
+        .toString();
+    }
+    return acc;
+  }, {} as { [account: string]: string });
+};
 
 const positions = async () => {
-  const accounts = (await getPagedGql(subgraphUrl, accountsQuery, "accounts")) as Account[];
   const markets = await getMarkets(subgraphUrl);
-  const prices = await getUnderlyingPrices(markets, "avax:");
+  const prices = await getUnderlyingPrices(markets, "bsc:");
+
+  const _accounts = (await getPagedGql(subgraphUrl, accountsQuery, "accounts")) as Account[];
+
+  const cTokenBalances: { [cToken: string]: { [account: string]: string } } = {};
+  for (const market of markets) {
+    const balances = await balanceOfs(market, _accounts);
+    cTokenBalances[market.id] = balances;
+  }
+
+  const accounts: Account[] = _accounts.map((account) => {
+    const tokens = account.tokens.map((token) => {
+      const market = markets.find((market) => market.id === token.market.id)!;
+
+      return {
+        ...token,
+        market,
+        cTokenBalance: cTokenBalances[market.id][account.id],
+      };
+    });
+
+    return {
+      ...account,
+      tokens,
+    };
+  });
 
   // all positions across all users
   const positions = accounts.flatMap((account) => {
-    const _totalBorrowValueInUsd = totalBorrowValueInUsd(account, prices, "avax:");
-    const _totalCollateralValueInUsd = totalCollateralValueInUsd(account, prices, "avax:");
+    const _totalBorrowValueInUsd = totalBorrowValueInUsd(account, prices, "bsc:");
+    const _totalCollateralValueInUsd = totalCollateralValueInUsd(account, prices, "bsc:");
 
     const debts = account.tokens
       .filter((token) => {
@@ -67,13 +126,13 @@ const positions = async () => {
       .map((token) => {
         const _borrowBalanceUnderlying = borrowBalanceUnderlying(token);
         const _supplyBalanceUnderlying = supplyBalanceUnderlying(token);
-        const _price = prices["avax:" + token.market.underlyingAddress];
+        const _price = prices["bsc:" + token.market.underlyingAddress];
         if (!_price) {
-          console.log("no price for", "avax:" + token.market.underlyingAddress);
+          console.log("no price for", "bsc:" + token.market.underlyingAddress);
           return {
             debt: new BigNumber(0),
             price: 0,
-            token: "avax:" + token.market.underlyingAddress,
+            token: "bsc:" + token.market.underlyingAddress,
             totalBal: _supplyBalanceUnderlying,
             decimals: 0,
           };
@@ -90,7 +149,7 @@ const positions = async () => {
         return {
           debt,
           price,
-          token: "avax:" + token.market.underlyingAddress,
+          token: "bsc:" + token.market.underlyingAddress,
           totalBal: _supplyBalanceUnderlying,
           decimals,
         };
@@ -132,7 +191,7 @@ const positions = async () => {
 };
 
 module.exports = {
-  avalanche: {
+  bsc: {
     liquidations: positions,
   },
 };
