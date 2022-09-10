@@ -19,10 +19,12 @@ const accountsQuery = gql`
     accounts(first: 1000, where: { hasBorrowed: true, id_gt: $lastId }) {
       id
       tokens {
+        id
         cTokenBalance
         accountBorrowIndex
         storedBorrowBalance
         market {
+          id
           name
           symbol
 
