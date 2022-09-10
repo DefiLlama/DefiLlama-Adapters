@@ -567,6 +567,7 @@ const fixBalancesTokens = {
   ethereumclassic: {
     "0x82A618305706B14e7bcf2592D4B9324A366b6dAd": { coingeckoId: "ethereum-classic", decimals: 18, },
     "0x1953cab0E5bFa6D4a9BaD6E05fD46C1CC6527a5a": { coingeckoId: "ethereum-classic", decimals: 18, },
+    "0x35e9A89e43e45904684325970B2E2d258463e072": { coingeckoId: "ethereum-classic", decimals: 18, }
   },
   klaytn: {
     [nullAddress]: { coingeckoId: "klay-token", decimals: 18 }, // Wrapped KLAY
