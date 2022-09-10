@@ -19,10 +19,7 @@ const subgraphUrl = "https://api.thegraph.com/subgraphs/name/venusprotocol/venus
 
 const accountsQuery = gql`
   query accounts($lastId: ID) {
-    accounts(
-      first: 1000
-      where: { id: "0x02b79df8c38f29f39888557c0a89917fd99ddf77", hasBorrowed: true, id_gt: $lastId }
-    ) {
+    accounts(first: 1000, where: { hasBorrowed: true, id_gt: $lastId }) {
       id
       tokens {
         id
@@ -72,6 +69,7 @@ const balanceOfs = async (market: Market, accounts: Account[]): Promise<{ [accou
       })),
       abi: "erc20:balanceOf",
       chain: "bsc",
+      requery: true,
     })) as MulticallResponse<string>
   ).output;
 
@@ -89,7 +87,7 @@ const positions = async () => {
   const markets = await getMarkets(subgraphUrl);
   const prices = await getUnderlyingPrices(markets, "bsc:");
 
-  const _accounts = (await getPagedGql(subgraphUrl, accountsQuery, "accounts", true)) as Account[];
+  const _accounts = (await getPagedGql(subgraphUrl, accountsQuery, "accounts")) as Account[];
 
   const cTokenBalances: { [cToken: string]: { [account: string]: string } } = {};
   for (const market of markets) {
@@ -114,14 +112,10 @@ const positions = async () => {
     };
   });
 
-  console.log(accounts);
-
   // all positions across all users
   const positions = accounts.flatMap((account) => {
     const _totalBorrowValueInUsd = totalBorrowValueInUsd(account, prices, "bsc:");
     const _totalCollateralValueInUsd = totalCollateralValueInUsd(account, prices, "bsc:");
-
-    console.log("account", account.id, JSON.stringify(account, null, 2));
 
     const debts = account.tokens
       .filter((token) => {
