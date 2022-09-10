@@ -5,24 +5,32 @@ import { Liq } from "../utils/binResults";
 import {
   Account,
   borrowBalanceUnderlying,
+  CToken,
   getMarkets,
   getUnderlyingPrices,
+  Market,
   supplyBalanceUnderlying,
   totalBorrowValueInUsd,
   totalCollateralValueInUsd,
 } from "../utils/compound-helpers";
+const sdk = require("@defillama/sdk");
 
 const subgraphUrl = "https://api.thegraph.com/subgraphs/name/venusprotocol/venus-subgraph";
 
 const accountsQuery = gql`
   query accounts($lastId: ID) {
-    accounts(first: 1000, where: { hasBorrowed: true, id_gt: $lastId }) {
+    accounts(
+      first: 1000
+      where: { id: "0x02b79df8c38f29f39888557c0a89917fd99ddf77", hasBorrowed: true, id_gt: $lastId }
+    ) {
       id
       tokens {
+        id
         vTokenBalance
         accountBorrowIndex
         storedBorrowBalance
         market {
+          id
           name
           symbol
 
@@ -45,20 +53,75 @@ const accountsQuery = gql`
 `;
 
 const EXPLORER_BASE_URL = "https://bscscan.com/address/";
+const C_TOKEN_DECIMALS = 8;
+type MulticallResponse<T> = {
+  output: {
+    input: any;
+    success: boolean;
+    output: T;
+  }[];
+};
+
+const balanceOfs = async (market: Market, accounts: Account[]): Promise<{ [account: string]: string }> => {
+  const token = market.id;
+  const results = (
+    (await sdk.api.abi.multiCall({
+      calls: accounts.map((account) => ({
+        target: token,
+        params: account.id,
+      })),
+      abi: "erc20:balanceOf",
+      chain: "bsc",
+    })) as MulticallResponse<string>
+  ).output;
+
+  return results.reduce((acc, result) => {
+    if (result.success) {
+      acc[result.input.params[0]] = BigNumber(result.output)
+        .div(10 ** C_TOKEN_DECIMALS)
+        .toString();
+    }
+    return acc;
+  }, {} as { [account: string]: string });
+};
 
 const positions = async () => {
-  const accounts = (await getPagedGql(subgraphUrl, accountsQuery, "accounts")).map((x) => {
-    const clone = { ...x };
-    clone["tokens"] = x["tokens"].map((token: any) => ({ ...token, cTokenBalance: token.vTokenBalance }));
-    return clone;
-  }) as Account[];
   const markets = await getMarkets(subgraphUrl);
   const prices = await getUnderlyingPrices(markets, "bsc:");
+
+  const _accounts = (await getPagedGql(subgraphUrl, accountsQuery, "accounts", true)) as Account[];
+
+  const cTokenBalances: { [cToken: string]: { [account: string]: string } } = {};
+  for (const market of markets) {
+    const balances = await balanceOfs(market, _accounts);
+    cTokenBalances[market.id] = balances;
+  }
+
+  const accounts: Account[] = _accounts.map((account) => {
+    const tokens = account.tokens.map((token) => {
+      const market = markets.find((market) => market.id === token.market.id)!;
+
+      return {
+        ...token,
+        market,
+        cTokenBalance: cTokenBalances[market.id][account.id],
+      };
+    });
+
+    return {
+      ...account,
+      tokens,
+    };
+  });
+
+  console.log(accounts);
 
   // all positions across all users
   const positions = accounts.flatMap((account) => {
     const _totalBorrowValueInUsd = totalBorrowValueInUsd(account, prices, "bsc:");
     const _totalCollateralValueInUsd = totalCollateralValueInUsd(account, prices, "bsc:");
+
+    console.log("account", account.id, JSON.stringify(account, null, 2));
 
     const debts = account.tokens
       .filter((token) => {
