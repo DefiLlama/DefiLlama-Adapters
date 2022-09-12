@@ -29,6 +29,12 @@ const CONFIG = {
         startBlock: 20928838,
         gasToken: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
     },
+    fantom: {
+        factory: '0xb4FD0Ce108e196d0C9844c48174d4C32Cd42F7bC',
+        version: '0.5.1',
+        startBlock: 46604874,
+        gasToken: '0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83',
+    }
 };
 
 async function getPools(chain, block) {
@@ -61,16 +67,17 @@ async function getPools(chain, block) {
 
 function getTvl(chain) {
     return async (timestamp, _block, chainBlocks) => {
-        if (chain === 'avalanche') chain = 'avax';
         const block = chainBlocks[chain];
         const transformAddress = await getChainTransform(chain);
 
         const pools = await getPools(chain, block);
+        console.log("pools on",chain,":",pools);
         const balances = await sdk.api.eth.getBalances({
             targets: pools,
             block,
             chain: chain,
         });
+        console.log("balances for",chain,":",balances);
         
         return {
             [transformAddress(CONFIG[chain].gasToken)]: balances.output.reduce((total, pool)=>total.plus(pool.balance), BigNumber(0)).toFixed(0)
@@ -84,12 +91,15 @@ module.exports = {
         tvl: getTvl('ethereum'),
     },
     avax: {
-        tvl: getTvl('avalanche'),
+        tvl: getTvl('avax'),
     },
     polygon: {
         tvl: getTvl('polygon'),
     },
     bsc: {
         tvl: getTvl('bsc'),
+    },
+    fantom: {
+        tvl: getTvl('fantom'),
     },
 }
