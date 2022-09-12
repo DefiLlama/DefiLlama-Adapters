@@ -98,26 +98,26 @@ const staking = (chain) =>
     return balances;
   };
 
-  module.exports = {
-    methodology:
+module.exports = {
+  methodology:
     "Kromatika handles Uniswap-v3 positions for their users who submit limit orders - TVL is amounts of tokens of each LP as well as KROM held by the contract to pay for fees",
-    optimism: {
+  optimism: {
     tvl: tvl("optimism"),
-    staking: staking("optimism")
-    },
-    arbitrum: {
-    tvl: ()=>({}),
+    staking: staking("optimism"),
+  },
+  arbitrum: {
+    tvl: tvl("arbitrum"),
     staking: staking("arbitrum"),
-    },
-    ethereum: {
-    tvl: ()=>({}),
+  },
+  ethereum: {
+    tvl: tvl("ethereum"),
     staking: staking("ethereum"),
-    },
-    polygon: {
-    tvl: ()=>({}),
+  },
+  polygon: {
+    tvl: tvl("polygon"),
     staking: staking("polygon"),
-    },
-    };
+  },
+};
 // UniswapV3Pool NonfungiblePositionManager has a low level mint method
 // this is what UniswapNFT uses and Kromatikaa is also using it; so in a way Kromatika is a different NFT LP manager for UniswapV3 but for limit orders
 // users gets Kromatika NFT for their limit position;  same as they get Uniswap NFT for their LP; so it is a similar impl from Uniswap, but extended to support limit orders
