@@ -71,13 +71,11 @@ function getTvl(chain) {
         const transformAddress = await getChainTransform(chain);
 
         const pools = await getPools(chain, block);
-        console.log("pools on",chain,":",pools);
         const balances = await sdk.api.eth.getBalances({
             targets: pools,
             block,
             chain: chain,
         });
-        console.log("balances for",chain,":",balances);
         
         return {
             [transformAddress(CONFIG[chain].gasToken)]: balances.output.reduce((total, pool)=>total.plus(pool.balance), BigNumber(0)).toFixed(0)
