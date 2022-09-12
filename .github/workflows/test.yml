@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - id: file_changes
-        uses: trilom/file-changes-action@v1.2.3
+        uses: trilom/file-changes-action@v1.2.4
         with:
           output: 'json'
           fileOutput: 'json'
@@ -25,7 +25,8 @@ jobs:
             exit 0
           fi
 
-          npm ci --production --only=prod
+          npm ci --omit=dev
+          npm update @defillama/sdk
 
           for i in $(echo $RUN_FILES | tr  -d '"[]' | tr "," "\n")
           do 

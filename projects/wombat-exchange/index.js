@@ -40,4 +40,7 @@ module.exports = {
   bsc: {
     tvl,
   },
+  hallmarks: [
+    [1662417125,"Liquidity Mining Start" ],
+  ],
 };

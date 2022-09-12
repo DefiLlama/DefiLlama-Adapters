@@ -1,48 +1,11 @@
-const utils = require("../helper/utils");
+const { sliceIntoChunks, log } = require("../helper/utils");
 const { PublicKey } = require("@solana/web3.js");
-const { Coder } = require("@project-serum/anchor");
-const QuarryMineIDL = require("./quarry_mine.json");
+const { BorshAccountsCoder, } = require("@project-serum/anchor");
+const { Program, } = require("@project-serum/anchor");
 const { getMSolLPTokens, MSOL_LP_MINT } = require("./msolLP");
+const sdk = require('@defillama/sdk')
 
-const { getMultipleAccountBuffers, getConnection } = require("../helper/solana");
-
-const readTVL = async ({
-  tokenA,
-  tokenB,
-  tokenAReserve,
-  tokenBReserve,
-  poolMint,
-  tokenAmount,
-}) => {
-  const accountData = await getMultipleAccountBuffers({
-    tokenAReserve,
-    tokenBReserve,
-    poolMint,
-  });
-
-  const decimals = accountData.poolMint.readUInt8(44);
-  const divisor = 10 ** decimals;
-
-  const lpTokenTotalSupply = Number(accountData.poolMint.readBigUInt64LE(36));
-  const poolShare = (tokenAmount * divisor) / lpTokenTotalSupply;
-
-  const reserveAAmount =
-    Number(accountData.tokenAReserve.readBigUInt64LE(64)) / divisor;
-  const reserveBAmount =
-    Number(accountData.tokenBReserve.readBigUInt64LE(64)) / divisor;
-
-  const poolTvlCoins = {};
-
-  if (tokenA === tokenB) {
-    poolTvlCoins[tokenA] =
-      poolShare * reserveAAmount + poolShare * reserveBAmount;
-  } else {
-    poolTvlCoins[tokenA] = poolShare * reserveAAmount;
-    poolTvlCoins[tokenB] = poolShare * reserveBAmount;
-  }
-
-  return poolTvlCoins;
-};
+const { getMultipleAccountBuffers, getConnection, getSaberPools, getQuarryData, getProvider, } = require("../helper/solana");
 
 async function tvl() {
   // a mapping of coin name to coin amount
@@ -50,19 +13,22 @@ async function tvl() {
 
   // this is a mapping of token mint to list of quarries
   // more details: https://github.com/QuarryProtocol/rewarder-list
-  const {
-    data: { quarriesByStakedMint, coingeckoIDs },
-  } = await utils.fetchURL(
-    "https://raw.githubusercontent.com/QuarryProtocol/rewarder-list-build/master/mainnet-beta/tvl.json"
-  );
-  const { data: saberPools } = await utils.fetchURL(
-    "https://registry.saber.so/data/llama.mainnet.json"
-  );
+  const { quarriesByStakedMint, coingeckoIDs,
+  } = await getQuarryData();
+  const saberPools = await getSaberPools()
 
-  const connection = getConnection();
-  const coder = new Coder(QuarryMineIDL);
+  // const connection = getConnection();
+  const quarryId = new PublicKey('QMNeHCGYnLVDn1icRAfQZpjPLBNkfGbSKRB83G5d8KB')
+  const provider = getProvider();
+  const QuarryMineIDL = await Program.fetchIdl(quarryId, provider)
+  const quarryProgram = new Program(QuarryMineIDL, quarryId, provider)
+  const allQuaries = await quarryProgram.account.quarry.all()
+  const quaryMapping = {}
+  allQuaries.forEach(i => quaryMapping[i.publicKey.toString()] = i)
+  // const coder = new BorshAccountsCoder(QuarryMineIDL);
   let i = 0
-  utils.log('total', Object.keys(quarriesByStakedMint).length)
+  log('total', Object.keys(quarriesByStakedMint).length)
+  const quarriies = []
 
   for (const [stakedMint, quarryKeys] of Object.entries(quarriesByStakedMint)) {
     const coingeckoID = coingeckoIDs[stakedMint];
@@ -76,17 +42,18 @@ async function tvl() {
       continue;
     }
 
-    const quarriesRaw = await connection.getMultipleAccountsInfo(
-      quarryKeys.map((q) => new PublicKey(q))
-    );
-    const quarries = quarriesRaw.map((q) =>
-      coder.accounts.decode("Quarry", q.data)
-    );
+    if (saberPool) {
+      quarriies.push(...quarryKeys)
+      continue;
+    }
+
+    const quarries = quarryKeys.map(i => quaryMapping[i].account)
+    
     const totalTokens = quarries.reduce(
       (sum, q) =>
         sum +
         parseFloat(q.totalTokensDeposited.toString()) /
-          10 ** q.tokenMintDecimals,
+        10 ** q.tokenMintDecimals,
       0
     );
 
@@ -95,22 +62,6 @@ async function tvl() {
         tvlResult[coingeckoID] = totalTokens;
       } else {
         tvlResult[coingeckoID] += totalTokens;
-      }
-    } else if (saberPool) {
-      const quarryTVL = await readTVL({
-        tokenA: saberPool.tokenACoingecko,
-        tokenB: saberPool.tokenBCoingecko,
-        tokenAReserve: saberPool.reserveA,
-        tokenBReserve: saberPool.reserveB,
-        poolMint: stakedMint,
-        tokenAmount: totalTokens,
-      });
-      for (const [tokenId, amount] of Object.entries(quarryTVL)) {
-        if (!tvlResult[tokenId]) {
-          tvlResult[tokenId] = amount;
-        } else {
-          tvlResult[tokenId] += amount;
-        }
       }
     } else if (isMsolSolLP) {
       const msolTVL = await getMSolLPTokens(totalTokens);
@@ -124,11 +75,61 @@ async function tvl() {
     }
 
     // sleep to avoid rate limiting issues
-    utils.log('done', ++i)
-    await utils.sleep(1200);
+    log('done', ++i)
+    // await sleep(1200);
   }
 
-  return tvlResult;
+  const balances = tvlResult
+  const quaryData = quarriies.map(i => quaryMapping[i].account)
+  const quarryDataKeyed = {}
+  quaryData.forEach((data, i) => {
+    if (!data) return;
+    quarryDataKeyed[quarriies[i]] = {
+      quarry: data,
+      tokenAmount: data.totalTokensDeposited / (10 ** data.tokenMintDecimals),
+      decimals: data.tokenMintDecimals
+    }
+  })
+
+  const dataKeys = []
+  for (const [stakedMint, quarryKeys] of Object.entries(quarriesByStakedMint)) {
+    const saberPool = saberPools.find((p) => p.lpMint === stakedMint)
+    if (!saberPool) continue;
+    quarryKeys.forEach(key => {
+      if (!quarryDataKeyed[key]) return;
+      quarryDataKeyed[key].saberPool = saberPool
+      quarryDataKeyed[key].stakedMint = stakedMint
+      dataKeys.push(stakedMint, saberPool.reserveA, saberPool.reserveB)
+    })
+  }
+  const dataCache = {}
+  for (const keys of sliceIntoChunks(dataKeys, 99)) {
+    const res = await getMultipleAccountBuffers(keys)
+    keys.forEach((key, i) => {
+      dataCache[key] = res[i]
+    })
+  }
+  Object.keys(quarryDataKeyed).forEach(key => {
+    if (!quarryDataKeyed[key].saberPool) delete quarryDataKeyed[key]
+  })
+  Object.values(quarryDataKeyed).forEach(quarry => addQuarryBalance(dataCache, balances, quarry))
+
+  return balances;
+}
+
+function addQuarryBalance(dataCache, balances = {}, { notYetReduced, tokenAmount, stakedMint, saberPool: { reserveA, reserveB, tokenACoingecko, tokenBCoingecko, } }) {
+
+  const decimals = dataCache[stakedMint].readUInt8(44);
+  const divisor = 10 ** decimals;
+  const lpTokenTotalSupply = Number(dataCache[stakedMint].readBigUInt64LE(36));
+  let poolShare = (tokenAmount * divisor) / lpTokenTotalSupply;
+  if (notYetReduced) poolShare /= divisor
+
+  const reserveAAmount = Number(dataCache[reserveA].readBigUInt64LE(64)) / divisor;
+  const reserveBAmount = Number(dataCache[reserveB].readBigUInt64LE(64)) / divisor;
+  sdk.util.sumSingleBalance(balances, tokenACoingecko, poolShare * reserveAAmount)
+  sdk.util.sumSingleBalance(balances, tokenBCoingecko, poolShare * reserveBAmount)
+  return balances
 }
 
 module.exports = {
