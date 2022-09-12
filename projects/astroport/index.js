@@ -14,5 +14,9 @@ module.exports = {
             "terra14x9fr055x5hvr48hzy2t4q7kvjvfttsvxusa4xsdcy702mnzsvuqprer8r", 
             true
         )
-    }
+    },
+    hallmarks:[
+        [1651881600, "UST depeg"],
+      ]
+    
 } // node test.js projects/astroport/index.js

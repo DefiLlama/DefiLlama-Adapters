@@ -60,7 +60,7 @@ async function lif3GenesisTVL(timestamp, _b, { [chain]: block }) {
 const dexTVL = getUniTVL({
   factory: '0xE236f6890F1824fa0a7ffc39b1597A5A6077Cfe9',
   chain: 'fantom',
-  coreAssets: [  ],
+  useDefaultCoreAssets: true,
 })
 
 module.exports = {

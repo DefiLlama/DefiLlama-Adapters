@@ -40,9 +40,6 @@ async function chainTvl(timestamp, block, chainBlocks) {
     block: chainBlocks["fantom"],
   });
 
-  console.log(amounts.output[0].input);
-  console.log(amounts.output[1].input);
-
   const balances = {};
   const tokens = { output: lpTokens };
   const transformAddress = await transformFantomAddress();

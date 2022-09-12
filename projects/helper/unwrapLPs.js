@@ -95,7 +95,7 @@ async function unwrapYearn(balances, yToken, block, chain = "ethereum", transfor
     underlying = _underlying
   }
 
-  console.log('underinglin found', underlying)
+  // console.log('underinglin found', underlying)
 
   const tokenKey = chain == 'ethereum' ? yToken : `${chain}:${yToken}`
   if (!balances[tokenKey]) return;
@@ -139,7 +139,10 @@ const token1Abi = { "constant": true, "inputs": [], "name": "token1", "outputs":
     token
 }[]
 */
-async function unwrapUniswapLPs(balances, lpPositions, block, chain = 'ethereum', transformAddress = (addr) => addr, excludeTokensRaw = [], retry = false, uni_type = 'standard',) {
+async function unwrapUniswapLPs(balances, lpPositions, block, chain = 'ethereum', transformAddress = null, excludeTokensRaw = [], retry = false, uni_type = 'standard',) {
+  if (!transformAddress)
+    transformAddress = await getChainTransform(chain)
+  lpPositions = lpPositions.filter(i => +i.balance > 0)
   const excludeTokens = excludeTokensRaw.map(addr => addr.toLowerCase())
   const lpTokenCalls = lpPositions.map(lpPosition => ({
     target: lpPosition.token
@@ -444,18 +447,20 @@ async function sumLPWithOnlyOneTokenOtherThanKnown(balances, lpToken, owner, tok
   }
   await sumLPWithOnlyOneToken(balances, lpToken, owner, listedToken, block, chain, transformAddress)
 }
-async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], block, chain, transformAddress, owner, nftAddress, owners }) {
+async function unwrapUniswapV3NFTs({ balances = {}, nftsAndOwners = [], block, chain = 'ethereum', transformAddress, owner, nftAddress, owners }) {
   if (!nftsAndOwners.length) {
     if (!nftAddress)
       switch (chain) {
         case 'ethereum':
         case 'polygon':
+        case 'optimism':
         case 'arbitrum': nftAddress = '0xC36442b4a4522E871399CD717aBDD847Ab11FE88'; break;
         default: throw new Error('missing default uniswap nft address')
       }
 
     if (!owners && owner)
       owners = [owner]
+    owners = getUniqueAddresses(owners)
     nftsAndOwners = owners.map(o => [nftAddress, o])
   }
   await Promise.all(nftsAndOwners.map(([nftAddress, owner]) => unwrapUniswapV3NFT({ balances, owner, nftAddress, block, chain, transformAddress })))
@@ -834,6 +839,10 @@ async function unwrapLPsAuto({ balances, block, chain = "ethereum", transformAdd
   const amounts = []
 
   Object.keys(balances).forEach(key => {
+    if (+balances[key] === 0) {
+      delete balances[key]
+      return;
+    }
     if (chain === 'ethereum' && key.indexOf(':') > -1) return;  // token is transformed, probably not an LP
     if (chain !== 'ethereum' && !key.startsWith(chain + ':')) return;  // token is transformed, probably not an LP
     const token = stripTokenHeader(key)
@@ -938,7 +947,7 @@ async function unwrapTroves({ balances = {}, chain = 'ethereum', block, troves =
   const tokensAndOwners = []
 
   for (let i = 0; i < troves.length; i++) {
-    tokensAndOwners.push([tokens[i].output, activePools[i].output])
+    tokensAndOwners.push([tokens[i].output || nullAddress, activePools[i].output ])
   }
 
   await sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { resolveCrv: true, resolveLP: true, resolveYearn: true })
@@ -982,6 +991,10 @@ async function sumTokens2({
   }
 
   return balances
+}
+
+function sumTokensExport({ balances, tokensAndOwners, tokens, owner, owners, chain = 'ethereum', transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances }) {
+  return async (_, _b, { [chain]: block }) => sumTokens2({ balances, tokensAndOwners, tokens, owner, owners, chain, block, transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances })
 }
 
 async function unwrapBalancerToken({ chain, block, balancerToken, owner, balances = {} }) {
@@ -1042,4 +1055,5 @@ module.exports = {
   sumTokens2,
   unwrapBalancerToken,
   unwrapBalancerPool,
+  sumTokensExport,
 }
