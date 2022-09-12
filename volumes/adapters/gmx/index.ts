@@ -10,10 +10,6 @@ const endpoints = {
 const historicalData = gql`
   query get_volume($period: String!, $id: String!) {
     volumeStats(where: {period: $period, id: $id}) {
-        burn
-        liquidation
-        margin
-        mint
         swap
       }
   }
