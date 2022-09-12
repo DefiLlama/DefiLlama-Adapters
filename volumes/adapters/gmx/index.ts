@@ -2,7 +2,7 @@ import { Fetch, SimpleVolumeAdapter } from "../../dexVolume.type";
 const { request, gql } = require("graphql-request");
 const { getUniqStartOfTodayTimestamp} = require("../../helper/getUniSubgraphVolume");
 
-const endpoints = {
+const endpoints: {[key: string]: string} = {
   arbitrum: "https://api.thegraph.com/subgraphs/name/gmx-io/gmx-stats",
   avax: "https://api.thegraph.com/subgraphs/name/gmx-io/gmx-avalanche-stats",
 }
@@ -31,7 +31,11 @@ const getFetch = (chain: string): Fetch => async (timestamp: number) => {
       id: chain == 'arbitrum'
         ? String(dayTimestamp)
         : String(dayTimestamp) + ':daily',
-      period: 'daily'
+      period: 'daily',
+    })
+    const totalData: IGraphResponse = await request(endpoints[chain], historicalData, {
+      id: 'total',
+      period: 'total',
     })
   
     return {
@@ -39,12 +43,17 @@ const getFetch = (chain: string): Fetch => async (timestamp: number) => {
       dailyVolume:
         dailyData.volumeStats.length == 1
           ? String(Number(Object.values(dailyData.volumeStats[0]).reduce((sum, element) => String(Number(sum) + Number(element))))*10**-30)
-          : undefined
+          : undefined,
+        totalVolume:
+        totalData.volumeStats.length == 1
+          ? String(Number(Object.values(totalData.volumeStats[0]).reduce((sum, element) => String(Number(sum) + Number(element))))*10**-30)
+          : undefined,
+      
     }
 }
 
-const getStartTimestamp = async (chain) => {
-        const startTimestamps ={
+const getStartTimestamp = async (chain: string) => {
+        const startTimestamps: {[key: string]: string} = {
           arbitrum: "1630368000",
           avax: "1640131200",
         }
