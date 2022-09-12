@@ -59,7 +59,8 @@ module.exports = {
   hedera: {
     tvl: hbarTvl,
   },
-  matic: {
+  // its on ethereum because funds are locked there
+  ethereum: {
     tvl: maticTvl
   },
   fantom: {
