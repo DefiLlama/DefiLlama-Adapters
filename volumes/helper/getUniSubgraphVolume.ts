@@ -99,8 +99,8 @@ function getChainVolume({
       let graphResDaily = hasDailyVolume ? await request(graphUrls[chain], graphQueryDailyVolume, { id, block }).catch(e => console.error(`Failed to get daily volume on ${chain}: ${e.message}`)) : undefined;
       let dailyVolumeValue = graphResDaily ? graphResDaily[dailyVolume.factory]?.[dailyVolume.field] : undefined
       if (hasDailyVolume && !dailyVolumeValue) {
-        graphResDaily = await request(graphUrls[chain], alternativeDaily(timestamp)).catch(e => console.error(`Failed to get daily volume via alternative query on ${chain}: ${e.message}`))
-        dailyVolumeValue = graphResDaily ? graphResDaily['uniswapDayDatas'][0].dailyVolumeUSD : undefined
+        graphResDaily = await request(graphUrls[chain], alternativeDaily(getUniqStartOfTodayTimestamp(new Date(timestamp * 1000)))).catch(e => console.error(`Failed to get daily volume via alternative query on ${chain}: ${e.message}`))
+        dailyVolumeValue = graphResDaily ? graphResDaily['uniswapDayDatas']?.[0]?.dailyVolumeUSD : undefined
       }
 
       return {
