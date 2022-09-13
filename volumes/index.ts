@@ -21,6 +21,9 @@ import terraswap from "./adapters/terraswap";
 import traderjoe from "./adapters/traderjoe";
 import uniswap from "./adapters/uniswap";
 import yieldfields from "./adapters/yieldfields";
+import gmx from "./adapters/gmx";
+import velodrome from "./adapters/velodrome";
+import woofi from "./adapters/woofi";
 
 export default {
   mooniswap,
@@ -46,5 +49,8 @@ export default {
   traderjoe,
   uniswap,
   yieldfields,
+  gmx,
+  velodrome,
+  woofi,
   // lyra -> OPTIONS DEX, not enable for now
 };
