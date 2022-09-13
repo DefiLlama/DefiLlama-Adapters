@@ -1,6 +1,7 @@
 // Set Helpers
 
 const { stakings } = require("../helper/staking");
+const { sumTokens2 } = require("../helper/unwrapLPs");
 const { getUniTVL, sumUnknownTokens } = require("../helper/unknownTokens");
 const { mergeExports } = require("../helper/utils");
 
@@ -79,7 +80,7 @@ const stakingExports = {
   // Nova Network
   nova: {
     staking: async (_, _b, { nova: block }) =>
-      sumUnknownTokens({
+      sumTokens2({
         owners: [callStaking, callStakingV2, bondStaking, liquidStaking, incomeStaking],
         tokens: [nullAddress, sntNovaNetwork, nusdNovaNetwork],
         lps: [yieldFarms],
@@ -91,7 +92,7 @@ const stakingExports = {
   // Fantom Opera
   fantom: {
     staking: async (_, _b, { fantom: block }) =>
-      sumUnknownTokens({
+      sumTokens2({
         owners: [callStaking, callStakingV2, bondStaking, liquidStaking, incomeStaking],
         tokens: [nullAddress, sntFantom, nusdFantom],
         lps: [yieldFarms],
@@ -103,7 +104,7 @@ const stakingExports = {
   // Ethereum Classic
   ethereumclassic: {
     staking: async (_, _b, { ethereumclassic: block }) =>
-      sumUnknownTokens({
+      sumTokens2({
         owners: [callStakingClassic, bondStakingClassic, liquidStakingClassic, incomeStakingClassic],
         tokens: [nullAddress, sntClassic, nusdClassic],
         lps: [yieldFarmsClassic],
