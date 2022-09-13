@@ -104,7 +104,7 @@ function getChainVolume({
       return {
         timestamp,
         block,
-        totalVolume: graphResTotal ? graphResTotal[totalVolume.factory]?.[0]?.[totalVolume.field] : undefined,
+        totalVolume: graphResTotal ? graphResTotal[totalVolume.factory]?.reduce((total:number, factory:any)=>total+Number(factory[totalVolume.field]), 0) : undefined,
         dailyVolume: dailyVolumeValue,
       };
     };
