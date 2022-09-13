@@ -51,5 +51,6 @@ export default {
   yieldfields,
   gmx,
   velodrome,
-  woofi
+  woofi,
+  // lyra -> OPTIONS DEX, not enable for now
 };
