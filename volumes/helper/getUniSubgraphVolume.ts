@@ -113,16 +113,21 @@ function getChainVolume({
 
 function univ2Adapter(endpoints: {
   [chain:string]:string
-}, factoriesName = DEFAULT_TOTAL_VOLUME_FACTORY){
+}, {
+  factoriesName = DEFAULT_TOTAL_VOLUME_FACTORY,
+  dayData = DEFAULT_DAILY_VOLUME_FACTORY,
+  totalVolume = DEFAULT_TOTAL_VOLUME_FIELD,
+  dailyVolume = DEFAULT_DAILY_VOLUME_FIELD
+}){
 const graphs = getChainVolume({
   graphUrls: endpoints,
   totalVolume: {
     factory: factoriesName,
-    field: "volumeUSD",
+    field: totalVolume
   },
   dailyVolume: {
-    factory: "dayData",
-    field: "volumeUSD",
+    factory: dayData,
+    field: dailyVolume,
   },
 });
 
@@ -135,8 +140,8 @@ const adapter: SimpleVolumeAdapter = {
         start: getStartTimestamp({
           endpoints: endpoints,
           chain,
-          volumeField: "volumeUSD",
-          dailyDataField: "dayDatas"
+          volumeField: dailyVolume,
+          dailyDataField: dayData + "s"
         }),
       }
     }
