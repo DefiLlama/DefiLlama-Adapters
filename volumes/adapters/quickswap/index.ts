@@ -1,21 +1,21 @@
 import { SimpleVolumeAdapter } from "../../dexVolume.type";
 import { CHAIN } from "../../helper/chains";
 import { getStartTimestamp } from "../../helper/getStartTimestamp";
-import { DEFAULT_TOTAL_VOLUME_FIELD, getChainVolume } from "../../helper/getUniSubgraphVolume";
+import { DEFAULT_DAILY_VOLUME_FACTORY, DEFAULT_DAILY_VOLUME_FIELD, DEFAULT_TOTAL_VOLUME_FACTORY, DEFAULT_TOTAL_VOLUME_FIELD, getChainVolume } from "../../helper/getUniSubgraphVolume";
 
 const endpoints = {
-  [CHAIN.POLYGON]: "https://api.thegraph.com/subgraphs/name/sameepsi/quickswap-v3",
+  [CHAIN.POLYGON]: "https://api.fura.org/subgraphs/name/quickswap",
 };
 
 const graphs = getChainVolume({
   graphUrls: endpoints,
   totalVolume: {
-    factory: "factories",
+    factory: DEFAULT_TOTAL_VOLUME_FACTORY,
     field: DEFAULT_TOTAL_VOLUME_FIELD,
   },
   dailyVolume: {
-    factory: "algebraDayData",
-    field: 'volumeUSD',
+    factory: DEFAULT_DAILY_VOLUME_FACTORY,
+    field: DEFAULT_DAILY_VOLUME_FIELD,
   },
 });
 
@@ -26,8 +26,8 @@ const adapter: SimpleVolumeAdapter = {
       start: getStartTimestamp({
         endpoints: endpoints,
         chain: CHAIN.POLYGON,
-        volumeField: 'volumeUSD',
-        dailyDataField: 'algebraDayDatas'
+        volumeField: DEFAULT_DAILY_VOLUME_FIELD,
+        dailyDataField: `${DEFAULT_DAILY_VOLUME_FACTORY}s`
       })
     },
   },
