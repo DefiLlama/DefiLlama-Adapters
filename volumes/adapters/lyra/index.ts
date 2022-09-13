@@ -13,8 +13,6 @@ const subgraph = getChainVolume({
   graphUrls: endpoints,
 });
 
-console.log(endpoints)
-
 const adapter: SimpleVolumeAdapter = {
   volume: Object.keys(endpoints).reduce((acc, chain) => {
     return {
