@@ -71,11 +71,7 @@ function getChainVolume({
     customDailyVolume ||
     gql`
     ${dailyVolume.factory} (id: $id) {
-        id
-        date
-        dailyVolumeETH
-        dailyVolumeUSD
-        dailyVolumeUntracked
+          ${dailyVolume.field}
       }`;
 
   const alternativeDaily = (timestamp: number) => gql`{
