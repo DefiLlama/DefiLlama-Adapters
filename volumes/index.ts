@@ -23,6 +23,7 @@ import uniswap from "./adapters/uniswap";
 import yieldfields from "./adapters/yieldfields";
 import gmx from "./adapters/gmx";
 import velodrome from "./adapters/velodrome";
+import woofi from "./adapters/woofi";
 
 export default {
   mooniswap,
@@ -49,5 +50,6 @@ export default {
   uniswap,
   yieldfields,
   gmx,
-  velodrome
+  velodrome,
+  woofi
 };
