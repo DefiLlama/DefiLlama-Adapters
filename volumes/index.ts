@@ -46,4 +46,5 @@ export default {
   traderjoe,
   uniswap,
   yieldfields,
+  // lyra -> OPTIONS DEX, not enable for now
 };
