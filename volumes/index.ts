@@ -24,6 +24,7 @@ import yieldfields from "./adapters/yieldfields";
 import gmx from "./adapters/gmx";
 import velodrome from "./adapters/velodrome";
 import woofi from "./adapters/woofi";
+import hashflow from "./adapters/hashflow";
 
 export default {
   mooniswap,
@@ -52,5 +53,6 @@ export default {
   gmx,
   velodrome,
   woofi,
+  hashflow
   // lyra -> OPTIONS DEX, not enable for now
 };
