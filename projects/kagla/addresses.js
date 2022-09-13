@@ -36,7 +36,11 @@ const TOKENS = {
   // ASTR
   "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" : "astar",
   // nASTR: staked ASTR by Algem
-  "0xE511ED88575C57767BAfb72BfD10775413E3F2b0": "astar"
+  "0xE511ED88575C57767BAfb72BfD10775413E3F2b0": "astar",
+  // LAY
+  "0xc4335B1b76fA6d52877b3046ECA68F6E708a27dd": "starlay-finance",
+  // muLAY: staked LAY by Muuu Finance
+  "0xDDF2ad1d9bFA208228166311FC22e76Ea7a4C44D": "starlay-finance",
 };
 
 
