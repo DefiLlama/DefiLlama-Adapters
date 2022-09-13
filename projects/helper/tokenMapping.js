@@ -752,6 +752,14 @@ const fixBalancesTokens = {
     "0x8E019acb11C7d17c26D334901fA2ac41C1f44d50": { coingeckoId: "tether", decimals: 6, }, // USDT (via Forcebridge from ETH)
     "0x3c790b38f466514ffCB4230e7B2334e52B64c942": { coingeckoId: "tether", decimals: 6, }, // USDT (Via Celer CBridge From ETH)
     "0xcD7bC9fC617a4F82eC1c8359D1C8610B90e3B44C": { coingeckoId: "binance-usd", decimals: 18, }, // BUSD (Via Celer CBridge From BSC)
+    "0x1C428a6539A40eC5Bb481631266a51cd19b233B1": { coingeckoId: "bitcoin", decimals: 8, }, // Wrapped BTC (Celer CBridge from ETH)
+    "0xB44a9B6905aF7c801311e8F4E76932ee959c663C": { coingeckoId: "bitcoin", decimals: 8, }, // Wrapped BTC (MultiChain Bridge from ETH)
+    "0x82455018f2c32943b3f12f4e59d0da2faf2257ef": { coingeckoId: "bitcoin", decimals: 8, }, // Wrapped BTC (via ForceBridge from ETH)
+    "0x765277EebeCA2e31912C9946eAe1021199B39C61": { coingeckoId: "dai", decimals: 18, }, // DAI (via Multichain Bridge from ETH)
+    "0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D": { coingeckoId: "usd-coin", decimals: 6, }, // USDC (via Multichain Bridge from ETH)
+    "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f": { coingeckoId: "tether", decimals: 6, }, // USDT (via Multichain Bridge from ETH)
+
+
   },
   waves: {
     "5UYBPpq4WoU5n4MwpFkgJnW3Fq4B1u3ukpK33ik4QerR": { coingeckoId: "binancecoin", decimals: 8 },
