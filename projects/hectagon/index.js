@@ -9,7 +9,7 @@ const HECTA_ADDRESS = "0x343915085b919fbd4414F7046f903d194c6F60EE";
 const TREASURY_ADDRESS = "0x4059c4a0b8a2B528C4f2E101A3bB8fB169aBa4fB";
 const HECTA_BUSD_ADDRESS = "0xc7cee4cea7c76e11e9f5e5e5cbc5e3b798a1c4d0";
 
-async function tvl(timestamp, block, chainBlocks) {
+async function TreasuryTvl(timestamp, block, chainBlocks) {
   const balances = {};
   const transform = await transformBscAddress();
 
@@ -65,6 +65,7 @@ module.exports = {
     "Total Value Lock in Hectagon protocol is calculated by sum of: Treasury locked value + staking",
   start: 20195418,
   bsc: {
-    tvl,
+    tvl: ()=>({}),
+    treasury: TreasuryTvl,
   },
 };
