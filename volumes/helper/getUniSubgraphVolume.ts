@@ -1,7 +1,9 @@
 import { Chain } from "@defillama/sdk/build/general";
 import { request, gql } from "graphql-request";
 import { getBlock } from "../../projects/helper/getBlock";
-import { ChainBlocks } from "../dexVolume.type";
+import { Adapter, ChainBlocks } from "../dexVolume.type";
+import { SimpleVolumeAdapter } from "../dexVolume.type";
+import { getStartTimestamp } from "./getStartTimestamp";
 
 const getUniqStartOfTodayTimestamp = (date = new Date()) => {
   var date_utc = Date.UTC(
@@ -109,9 +111,45 @@ function getChainVolume({
   };
 }
 
+function univ2Adapter(endpoints: {
+  [chain:string]:string
+}, factoriesName = DEFAULT_TOTAL_VOLUME_FACTORY){
+const graphs = getChainVolume({
+  graphUrls: endpoints,
+  totalVolume: {
+    factory: factoriesName,
+    field: "volumeUSD",
+  },
+  dailyVolume: {
+    factory: "dayData",
+    field: "volumeUSD",
+  },
+});
+
+const adapter: SimpleVolumeAdapter = {
+  volume: Object.keys(endpoints).reduce((acc, chain) => {
+    return {
+      ...acc,
+      [chain]: {
+        fetch: graphs(chain as Chain),
+        start: getStartTimestamp({
+          endpoints: endpoints,
+          chain,
+          volumeField: "volumeUSD",
+          dailyDataField: "dayDatas"
+        }),
+      }
+    }
+  }, {} as Adapter)
+};
+
+return adapter;
+}
+
 export {
   getUniqStartOfTodayTimestamp,
   getChainVolume,
+  univ2Adapter,
   DEFAULT_TOTAL_VOLUME_FACTORY,
   DEFAULT_TOTAL_VOLUME_FIELD,
   DEFAULT_DAILY_VOLUME_FACTORY,
