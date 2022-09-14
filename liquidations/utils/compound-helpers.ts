@@ -76,7 +76,7 @@ export const borrowBalanceUnderlying = (cToken: CToken): BigNumber =>
     : bignum(cToken.storedBorrowBalance).times(cToken.market.borrowIndex).dividedBy(cToken.accountBorrowIndex);
 
 export const tokenInUsd = (market: Market, prices: Prices, chainPrefix: string): BigNumber => {
-  console.log("market", JSON.stringify(market));
+  // console.log("market", JSON.stringify(market));
   return bignum(market.collateralFactor)
     .times(market.exchangeRate)
     .times(prices[chainPrefix + market.underlyingAddress]?.price ?? 0);
