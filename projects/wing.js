@@ -43,7 +43,7 @@ Object.keys(config).forEach(chain => {
       const { result } = await getData(chain)
       if (!result.totalBorrow) result.totalBorrow = result.TotalBorrow
       if (!result.totalSupply) result.totalSupply = result.TotalSupply
-      if (!result.nftCollateralTVL) result.totalSupply += result.nftCollateralTVL
+      if (result.nftCollateralTVL !=undefined && !result.nftCollateralTVL) result.totalSupply += result.nftCollateralTVL
       return {
         tether: BigNumber(result.totalSupply - result.totalBorrow).toFixed(0)
       }
@@ -51,7 +51,8 @@ Object.keys(config).forEach(chain => {
     staking: async () => {
       const { result } = await getData(chain)
       if (!result.totalLockedWingDollar) result.totalLockedWingDollar = result.TotalLockedWingDollar
-      if (!result.totalWingInsuranceDollar) result.totalLockedWingDollar += result.totalWingInsuranceDollar
+      if (result.totalLockedWingDollar == undefined) result.totalLockedWingDollar = BigNumber(0)
+      if (result.totalInsurance != undefined && !result.totalInsurance) result.totalLockedWingDollar += result.totalInsurance
       return {
         tether: BigNumber(result.totalLockedWingDollar).toFixed(0)
       }
@@ -60,7 +61,7 @@ Object.keys(config).forEach(chain => {
       const { result } = await getData(chain)
       if (!result.totalBorrow) result.totalBorrow = result.TotalBorrow
       return {
-        tether: BigNumber(result.totalBorrow).toFixed(0)
+        tether:new BigNumber(result.totalBorrow).toFixed(0)
       }
     },
   }
