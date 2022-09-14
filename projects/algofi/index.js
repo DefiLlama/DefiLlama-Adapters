@@ -26,7 +26,19 @@ const stakingV2Strings = {
     total_staked: "ts",
 }
 
-const orderedAssets = ["ALGO", "STBL", "USDC", "goBTC", "goETH", "vALGO", "USDT", "STBL2", "AF-NANO-BSTBL2-BUSDC"]
+const orderedAssets = [
+    "ALGO",
+    "STBL",
+    "USDC",
+    "goBTC",
+    "goETH",
+    "vALGO",
+    "USDT",
+    "STBL2",
+    "AF-NANO-BSTBL2-BUSDC",
+    "AF-BSTBL2-BALGO",
+    "AF-BSTBL2-BgoBTC",
+    "AF-BSTBL2-BgoETH"]
 const fixedValueStakingContracts = ["TINYMAN11_STBL_USDC_LP_STAKING", "ALGOFI-STBL-USDC-LP"]
 const singleSideStakingContracts = ["DEFLY", "STBL", "OPUL"]
 const variableValueStakingContracts = [
@@ -107,6 +119,18 @@ const appDictionary = {
         "decimals": 6,
         "appIds": [856183130],
         "oracleAppId": 855726305,
+        "oracleFieldName": "latest_twap_price"
+    },
+    "AF-BSTBL2-BgoBTC": {
+        "decimals": 6,
+        "appIds": [870271921],
+        "oracleAppId": 870267658,
+        "oracleFieldName": "latest_twap_price"
+    },
+    "AF-BSTBL2-BgoETH": {
+        "decimals": 6,
+        "appIds": [870275741],
+        "oracleAppId": 870268282,
         "oracleFieldName": "latest_twap_price"
     },
     "STAKING_CONTRACTS": {
