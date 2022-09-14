@@ -1,4 +1,4 @@
-const { sumTokensAndLPsSharedOwners, unwrapUniswapV3NFTs } = require('../helper/unwrapLPs')
+const { sumTokensAndLPsSharedOwners, unwrapUniswapV3NFTs, genericUnwrapCvx } = require('../helper/unwrapLPs')
 const sdk = require('@defillama/sdk')
 const { BigNumber } = require('ethers')
 
@@ -18,6 +18,8 @@ const AURA = '0xC0c293ce456fF0ED870ADd98a0828Dd4d2903DBF'
 const AURALocker = '0x3Fa73f1E5d8A792C80F426fc8F84FBF7Ce9bBCAC'
 const rlBTRFLY = '0x742B70151cd3Bc7ab598aAFF1d54B90c3ebC6027'
 const BTRFLYV2 = '0xc55126051B22eBb829D00368f4B12Bde432de5Da'
+const cvxCRVPool = '0x0392321e86F42C2F94FBb0c6853052487db521F0'
+const cvxFXSPool = '0xf27AFAD0142393e4b3E5510aBc5fe3743Ad669Cb'
 
 const rlBTRFLYAbi = {
     lockedSupply: {"inputs":[],"name":"lockedSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
@@ -26,6 +28,7 @@ const rlBTRFLYAbi = {
 async function tvl(timestamp, block, chainBlocks){
     const balances = {}
     
+    //Add tokens/curve LPs in wallet
     await sumTokensAndLPsSharedOwners(balances, [
         [CVX, false],
         [cvxCRV, false],
@@ -39,10 +42,16 @@ async function tvl(timestamp, block, chainBlocks){
         // FRAX
         ['0x853d955aCEf822Db058eb8505911ED77F175b99e', false],
     ], treasuries, block)
-
-    await unwrapUniswapV3NFTs({ balances, owners: treasuries, block})
     
+    //Add UniswapV3 LPs
+    await unwrapUniswapV3NFTs({ balances, owners: treasuries, block})
 
+    //Add convex deposited curve LPs
+    await genericUnwrapCvx(balances, treasuries[0], cvxCRVPool, block, 'ethereum')
+    
+    //This causes an error and not sure why
+    //await genericUnwrapCvx(balances, treasuries[0], cvxFXSPool, block, 'ethereum')
+    
     //Add vlCVX as CVX
     const vlCVXBalance = await sdk.api.erc20.balanceOf({
         target: CVXLocker,
