@@ -37,6 +37,7 @@ import saber from "./adapters/saber";
 import solidly from "./adapters/solidly";
 import yoshiExchange from "./adapters/yoshi-exchange";
 import platypus from "./adapters/platypus";
+import wombatExchange from "./adapters/wombat-exchange";
 
 export default {
   mooniswap,
@@ -77,6 +78,7 @@ export default {
   saber,
   solidly,
   "yoshi-exchange": yoshiExchange,
-  platypus
+  platypus,
+  "wombat-exchange": wombatExchange
   // lyra -> OPTIONS DEX, not enable for now
 };
