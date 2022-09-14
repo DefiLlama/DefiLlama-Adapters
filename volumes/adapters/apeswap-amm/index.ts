@@ -8,6 +8,6 @@ const endpoints = {
 };
 
 export default univ2Adapter(endpoints, {
-    factoriesName: "uniswapFactories",
-    dayData: "uniswapDayData",
+  factoriesName: "uniswapFactories",
+  dayData: "uniswapDayData",
 });
