@@ -2,6 +2,8 @@ import { request, gql } from "graphql-request";
 
 import { DEFAULT_DAILY_VOLUME_FACTORY, DEFAULT_DAILY_VOLUME_FIELD } from "./getUniSubgraphVolume";
 
+export const DEFAULT_DATE_FIELD = "date"
+
 interface IGetStartTimestamp {
   endpoints: {
     [chain: string]: string;
@@ -19,7 +21,7 @@ const getStartTimestamp =
     chain,
     dailyDataField = `${DEFAULT_DAILY_VOLUME_FACTORY}s`,
     volumeField = DEFAULT_DAILY_VOLUME_FIELD,
-    dateField = "date",
+    dateField = DEFAULT_DATE_FIELD,
     first = 1000,
   }: IGetStartTimestamp) =>
     async () => {
