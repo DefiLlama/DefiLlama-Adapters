@@ -118,10 +118,12 @@ function univ2Adapter(endpoints: {
   dayData = DEFAULT_DAILY_VOLUME_FACTORY,
   totalVolume = DEFAULT_TOTAL_VOLUME_FIELD,
   dailyVolume = DEFAULT_DAILY_VOLUME_FIELD,
-  dailyVolumeTimestampField = DEFAULT_DATE_FIELD
+  dailyVolumeTimestampField = DEFAULT_DATE_FIELD,
+  hasTotalVolume = true
 }){
 const graphs = getChainVolume({
   graphUrls: endpoints,
+  hasTotalVolume,
   totalVolume: {
     factory: factoriesName,
     field: totalVolume

@@ -9,5 +9,6 @@ export default univ2Adapter({
     dayData: "financialsDailySnapshot",
     factoriesName: "dexAmmProtocol",
     totalVolume: "cumulativeVolumeUSD",
-    dailyVolumeTimestampField: "timestamp"
+    dailyVolumeTimestampField: "timestamp",
+    hasTotalVolume: false
 });
