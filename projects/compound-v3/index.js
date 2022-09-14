@@ -27,14 +27,14 @@ async function v3Tvl(balances, block, borrowed) {
 
   const collateral = (
     await sdk.api.abi.multiCall({
-      abi: v3Abi.find(({ name }) => name === "totalsCollateral"),
+      abi: "erc20:balanceOf",
       block,
-      calls: markets.map((market) => ({
-        target: USDCV3,
-        params: market,
+      calls: [...markets, "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"].map((market) => ({
+        target: market,
+        params: USDCV3,
       })),
     })
-  ).output.map(({ output }) => output.totalSupplyAsset);
+  )
 
   const borrows = (
     await sdk.api.abi.call({
@@ -56,13 +56,7 @@ async function v3Tvl(balances, block, borrowed) {
       .plus(borrows)
       .toFixed();
   } else {
-    markets.forEach((market, i) => {
-      const reserves = collateral[i];
-
-      balances[market] = BigNumber(balances[market] || 0)
-        .plus(reserves)
-        .toFixed();
-    });
+    sdk.util.sumMultiBalanceOf(balances, collateral)
   }
 
   return balances;
