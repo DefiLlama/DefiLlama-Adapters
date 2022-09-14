@@ -36,6 +36,7 @@ import refFinance from "./adapters/ref-finance";
 import saber from "./adapters/saber";
 import solidly from "./adapters/solidly";
 import yoshiExchange from "./adapters/yoshi-exchange";
+import platypus from "./adapters/platypus";
 
 export default {
   mooniswap,
@@ -75,6 +76,7 @@ export default {
   "ref-finance": refFinance,
   saber,
   solidly,
-  "yoshi-exchange": yoshiExchange
+  "yoshi-exchange": yoshiExchange,
+  platypus
   // lyra -> OPTIONS DEX, not enable for now
 };
