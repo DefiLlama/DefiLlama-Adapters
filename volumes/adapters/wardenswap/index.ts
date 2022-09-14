@@ -1,3 +1,4 @@
+import { Chain } from "@defillama/sdk/build/general";
 import { SimpleVolumeAdapter } from "../../dexVolume.type";
 import { CHAIN } from "../../helper/chains";
 import customBackfill from "../../helper/customBackfill";

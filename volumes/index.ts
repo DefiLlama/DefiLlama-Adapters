@@ -28,6 +28,13 @@ import hashflow from "./adapters/hashflow";
 import biswap from "./adapters/biswap";
 import zipswap from "./adapters/zipswap";
 import wardenswap from "./adapters/wardenswap";
+import apeswap from "./adapters/apeswap";
+import kyberswap from "./adapters/kyberswap";
+import orca from "./adapters/orca";
+import pangolin from "./adapters/pangolin";
+import refFinance from "./adapters/ref-finance";
+import saber from "./adapters/saber";
+import solidly from "./adapters/solidly";
 
 export default {
   mooniswap,
@@ -59,6 +66,13 @@ export default {
   hashflow,
   biswap,
   zipswap,
-  wardenswap
+  wardenswap,
+  apeswap,
+  kyberswap,
+  orca,
+  pangolin,
+  "ref-finance": refFinance,
+  saber,
+  solidly
   // lyra -> OPTIONS DEX, not enable for now
 };
