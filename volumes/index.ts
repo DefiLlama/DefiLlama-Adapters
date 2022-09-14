@@ -35,6 +35,7 @@ import pangolin from "./adapters/pangolin";
 import refFinance from "./adapters/ref-finance";
 import saber from "./adapters/saber";
 import solidly from "./adapters/solidly";
+import yoshiExchange from "./adapters/yoshi-exchange";
 
 export default {
   mooniswap,
@@ -73,6 +74,7 @@ export default {
   pangolin,
   "ref-finance": refFinance,
   saber,
-  solidly
+  solidly,
+  "yoshi-exchange": yoshiExchange
   // lyra -> OPTIONS DEX, not enable for now
 };
