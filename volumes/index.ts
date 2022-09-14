@@ -25,6 +25,9 @@ import gmx from "./adapters/gmx";
 import velodrome from "./adapters/velodrome";
 import woofi from "./adapters/woofi";
 import hashflow from "./adapters/hashflow";
+import biswap from "./adapters/biswap";
+import zipswap from "./adapters/zipswap";
+import wardenswap from "./adapters/wardenswap";
 
 export default {
   mooniswap,
@@ -53,6 +56,9 @@ export default {
   gmx,
   velodrome,
   woofi,
-  hashflow
+  hashflow,
+  biswap,
+  zipswap,
+  wardenswap
   // lyra -> OPTIONS DEX, not enable for now
 };
