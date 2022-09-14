@@ -9,10 +9,11 @@ const stackingContracts = [
 
 module.exports = {
   bsc: {
+    tvl: stakings(stackingContracts, minto, 'bsc')
     staking: stakings(stackingContracts, minto, 'bsc')
   },
   heco: {
-    tvl: () => ({}),
+    tvl: stakings(stackingContracts, hminto, 'heco'),
     staking: stakings(stackingContracts, hminto, 'heco')
   }
 }
