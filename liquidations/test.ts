@@ -5,6 +5,8 @@ import { providers } from "./utils/ethers";
 import { humanizeNumber } from "@defillama/sdk/build/computeTVL/humanizeNumber";
 import { TOTAL_BINS, Bins, binResults, Liq } from "./utils/binResults";
 import { config } from "dotenv";
+import { performance } from "perf_hooks";
+
 config();
 
 const f2 = (n: number) => Number(n.toFixed(2));
@@ -104,7 +106,10 @@ async function main() {
   } catch (e) {
     console.log(e);
   }
+
+  const startTime = performance.now();
   const liqs = (await Promise.all(Object.values(module).map((m) => m.liquidations()))).flat();
+  const endTime = performance.now();
 
   // // write liqs to disk as JSON
   // fs.writeFileSync(path.resolve(process.cwd(), "liquidations2.json"), JSON.stringify(liqs, null, 2));
@@ -113,6 +118,7 @@ async function main() {
   await displayDebugInfo(skippedTokens, liqs, bins);
   //console.log(liqs)
   console.log(`\nSize of all liquidation data: ${JSON.stringify(liqs).length / 10 ** 6} MB`);
+  console.log(`Took ${f2((endTime - startTime) / 1000)} seconds to fetch liquidations`);
   process.exit(0);
 }
 main();
