@@ -3,6 +3,7 @@ import { getChainVolume } from "../../helper/getUniSubgraphVolume";
 import customBackfill from "../../helper/customBackfill";
 import { CHAIN } from "../../helper/chains";
 import { Chain } from "@defillama/sdk/build/general";
+import { getStartTimestamp } from "../../helper/getStartTimestamp";
 
 const endpoints: ChainEndpoints = {
   [CHAIN.ETHEREUM]: "https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-v2",
@@ -32,12 +33,21 @@ const v1graphs = getChainVolume({
   ...graphParams
 });
 
+const getStartTime = (chain: string) => getStartTimestamp({
+  endpoints,
+  chain: chain,
+  dailyDataField: `balancerSnapshots`,
+  dateField: 'timestamp',
+  volumeField: 'totalSwapVolume'
+})
+
 const adapter: BreakdownVolumeAdapter = {
   breakdown: {
     v1: {
       [CHAIN.ETHEREUM]: {
         fetch: v1graphs(CHAIN.ETHEREUM),
-        start: async () => 1582761600,
+        start: getStartTime(CHAIN.ETHEREUM),
+        customBackfill: customBackfill(CHAIN.ETHEREUM, v1graphs)
       },
     },
     v2: Object.keys(endpoints).reduce((acc, chain) => {
@@ -45,7 +55,8 @@ const adapter: BreakdownVolumeAdapter = {
         ...acc,
         [chain]: {
           fetch: graphs(chain as Chain),
-          start: async () => 0,
+          customBackfill: customBackfill(chain as Chain, graphs),
+          start: getStartTime(chain),
         }
       }
     }, {} as Adapter)
