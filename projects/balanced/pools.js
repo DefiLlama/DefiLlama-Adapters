@@ -106,7 +106,7 @@ module.exports = [
     },
     {
         chainId: 1,
-        id: 50,
+        id: 45,
         name: 'CLAW/sICX',
         baseCurrencyKey: 'CLAW',
         quoteCurrencyKey: 'sICX',
