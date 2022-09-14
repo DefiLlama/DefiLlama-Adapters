@@ -33,20 +33,12 @@ const v1graphs = getChainVolume({
   ...graphParams
 });
 
-const getStartTime = (chain: string) => getStartTimestamp({
-  endpoints,
-  chain: chain,
-  dailyDataField: `balancerSnapshots`,
-  dateField: 'timestamp',
-  volumeField: 'totalSwapVolume'
-})
-
 const adapter: BreakdownVolumeAdapter = {
   breakdown: {
     v1: {
       [CHAIN.ETHEREUM]: {
         fetch: v1graphs(CHAIN.ETHEREUM),
-        start: getStartTime(CHAIN.ETHEREUM),
+        start: async () => 1582761600,
         customBackfill: customBackfill(CHAIN.ETHEREUM, v1graphs)
       },
     },
@@ -56,7 +48,13 @@ const adapter: BreakdownVolumeAdapter = {
         [chain]: {
           fetch: graphs(chain as Chain),
           customBackfill: customBackfill(chain as Chain, graphs),
-          start: getStartTime(chain),
+          start: getStartTimestamp({
+            endpoints,
+            chain: chain,
+            dailyDataField: `balancerSnapshots`,
+            dateField: 'timestamp',
+            volumeField: 'totalSwapVolume'
+          }),
         }
       }
     }, {} as Adapter)
