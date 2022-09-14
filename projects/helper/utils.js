@@ -3,6 +3,7 @@ const retry = require('async-retry')
 const axios = require("axios");
 const sdk = require('@defillama/sdk')
 const http = require('./http')
+const erc20 = require('./abis/erc20.json')
 
 async function returnBalance(token, address, block, chain) {
   const { output: decimals } = await sdk.api.erc20.decimals(token, chain)
@@ -70,21 +71,35 @@ function createIncrementArray(length) {
   return arr
 }
 
-const LP_SYMBOLS = ['SLP', 'spLP', 'JLP', 'OLP', 'SCLP', 'DLP', 'MLP', 'MSLP', 'ULP', 'TLP', 'HMDX', 'YLP', 'SCNRLP', 'PGL', 'GREEN-V2', 'PNDA-V2', 'vTAROT', 'TETHYSLP', 'BAO-V2', 'DINO-V2', 'DFYNLP', 'LavaSwap', 'RLP']
+function getParamCalls(length) {
+  return createIncrementArray(length).map(i => ({ params: i }))
+}
+
+const LP_SYMBOLS = ['SLP', 'spLP', 'JLP', 'OLP', 'SCLP', 'DLP', 'MLP', 'MSLP', 'ULP', 'TLP', 'HMDX', 'YLP', 'SCNRLP', 'PGL', 'GREEN-V2', 'PNDA-V2', 'vTAROT', 'TETHYSLP', 'BAO-V2', 'DINO-V2', 'DFYNLP', 'LavaSwap', 'RLP', 'ZDEXLP', 'lawSWAPLP', 'ELP',]
 const blacklisted_LPS = [
   '0xb3dc4accfe37bd8b3c2744e9e687d252c9661bc7',
   '0xf146190e4d3a2b9abe8e16636118805c628b94fe',
   '0xCC8Fa225D80b9c7D42F96e9570156c65D6cAAa25',
+  '0xaee4164c1ee46ed0bbc34790f1a3d1fc87796668',
 ].map(i => i.toLowerCase())
 
 function isLP(symbol, token, chain) {
+  // console.log(symbol, chain, token)
+  if (!symbol) return false
   if (token && blacklisted_LPS.includes(token.toLowerCase())) return false
   if (chain === 'bsc' && ['OLP', 'DLP', 'MLP', 'LP'].includes(symbol)) return false
-  if (chain === 'metis' && ['NLP'].includes(symbol)) return true // Netswap LP Token
-  if (!symbol) return false
+  if (chain === 'bsc' && ['WLP', 'FstLP',].includes(symbol)) return true
+  if (chain === 'avax' && ['ELP', 'EPT', 'CRL', 'YSL', 'BGL', 'PLP'].includes(symbol)) return true
+  if (chain === 'ethereum' && ['SSLP'].includes(symbol)) return true
+  if (chain === 'ethereum' && ['SUDO-LP'].includes(symbol)) return false
+  if (chain === 'dogechain' && ['DST-V2'].includes(symbol)) return true
+  if (chain === 'harmony' && ['HLP'].includes(symbol)) return true
+  if (chain === 'songbird' && ['FLRX', 'OLP'].includes(symbol)) return true
+  if (chain === 'metis' && ['NLP', 'ALP'].includes(symbol)) return true // Netswap/Agora LP Token
+  if (['fantom', 'nova',].includes(chain) && ['NLT'].includes(symbol)) return true
   let label
 
-  if (symbol.startsWith('ZLK-LP') || symbol.includes('DMM-LP') || (chain === 'avax' && 'DLP' === symbol))
+  if (symbol.startsWith('ZLK-LP') || symbol.includes('DMM-LP') || (chain === 'avax' && 'DLP' === symbol) || symbol === 'fChe-LP')
     label = 'Blackisting this LP because of unsupported abi'
 
   if (label) {
@@ -92,7 +107,12 @@ function isLP(symbol, token, chain) {
     return false
   }
 
-  return LP_SYMBOLS.includes(symbol) || /(UNI-V2)/.test(symbol) || symbol.split(/\W+/).includes('LP')
+  const isLPRes = LP_SYMBOLS.includes(symbol) || /(UNI-V2|vAMM|sAMM)/.test(symbol) || symbol.split(/\W+/).includes('LP')
+
+  if (DEBUG_MODE && isLPRes && !['UNI-V2', 'Cake-LP'].includes(symbol))
+    console.log(chain, symbol, token)
+
+  return isLPRes
 }
 
 function mergeExports(...exportsArray) {
@@ -166,6 +186,140 @@ async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+
+function stripTokenHeader(token) {
+  token = token.toLowerCase();
+  return token.indexOf(":") > -1 ? token.split(":")[1] : token;
+}
+
+async function diplayUnknownTable({ tvlResults = {}, tvlBalances = {}, storedKey = 'ethereum', log = false, tableLabel = 'Unrecognized tokens' }) {
+  if (!DEBUG_MODE && !log) return;
+  const balances = {}
+  storedKey = storedKey.split('-')[0]
+  Object.entries(tvlResults.tokenBalances).forEach(([label, balance]) => {
+    if (!label.startsWith('UNKNOWN')) return;
+    const token = label.split('(')[1].replace(')', '')
+    balances[token] = tvlBalances[token]
+    if (balances[token] === '0') delete balances[token]
+  })
+
+  return debugBalances({ balances, chain: storedKey, log, tableLabel, withETH: false, })
+}
+
+async function getSymbols(chain, tokens) {
+  tokens = tokens.filter(i => i.includes('0x')).map(i => i.slice(i.indexOf('0x')))
+  const calls = tokens.map(i => ({ target: i }))
+  const { output: symbols } = await sdk.api.abi.multiCall({
+    abi: 'erc20:symbol',
+    calls,
+    chain,
+  })
+
+  const response = {}
+  symbols.map(i => response[i.input.target] = i.output)
+  return response
+}
+
+async function getDecimals(chain, tokens) {
+  tokens = tokens.filter(i => i.includes('0x')).map(i => i.slice(i.indexOf('0x')))
+  const calls = tokens.map(i => ({ target: i }))
+  const { output: symbols } = await sdk.api.abi.multiCall({
+    abi: 'erc20:decimals',
+    calls,
+    chain,
+  })
+
+  const response = {}
+  symbols.map(i => response[i.input.target] = i.output)
+  return response
+}
+
+async function debugBalances({ balances = {}, chain, log = false, tableLabel = '', withETH = true }) {
+  if (!DEBUG_MODE && !log) return;
+  if (!Object.keys(balances).length) return;
+
+  const labelMapping = {}
+  const tokens = []
+  const ethTokens = []
+  Object.keys(balances).forEach(label => {
+    const token = stripTokenHeader(label)
+    if (!token.startsWith('0x')) return;
+    if (!label.startsWith(chain))
+      ethTokens.push(token)
+    else
+      tokens.push(token)
+    labelMapping[label] = token
+  })
+
+  if (tokens.length > 100) {
+    console.log('too many unknowns')
+    return;
+  }
+
+
+  const { output: symbols } = await sdk.api.abi.multiCall({
+    abi: 'erc20:symbol',
+    calls: tokens.map(i => ({ target: i })),
+    chain,
+  })
+  const { output: decimals } = await sdk.api.abi.multiCall({
+    abi: 'erc20:decimals',
+    calls: tokens.map(i => ({ target: i })),
+    chain,
+  })
+
+  const { output: name } = await sdk.api.abi.multiCall({
+    abi: erc20.name,
+    calls: tokens.map(i => ({ target: i })),
+    chain,
+  })
+
+  let symbolsETH, nameETH
+
+  if (withETH) {
+    symbolsETH = await sdk.api.abi.multiCall({
+      abi: 'erc20:symbol',
+      calls: ethTokens.map(i => ({ target: i })),
+    })
+
+    nameETH = await sdk.api.abi.multiCall({
+      abi: erc20.name,
+      calls: ethTokens.map(i => ({ target: i })),
+    })
+
+    symbolsETH = symbolsETH.output
+    nameETH = nameETH.output
+  }
+
+  let symbolMapping = symbols.reduce((a, i) => ({ ...a, [i.input.target]: i.output }), {})
+  let decimalsMapping = decimals.reduce((a, i) => ({ ...a, [i.input.target]: i.output }), {})
+  let nameMapping = name.reduce((a, i) => ({ ...a, [i.input.target]: i.output }), {})
+  if (withETH) {
+    symbolMapping = symbolsETH.reduce((a, i) => ({ ...a, [i.input.target]: i.output }), symbolMapping)
+    nameMapping = nameETH.reduce((a, i) => ({ ...a, [i.input.target]: i.output }), nameMapping)
+  }
+  const logObj = []
+  Object.entries(balances).forEach(([label, balance]) => {
+    let token = labelMapping[label]
+    let name = token && nameMapping[token] || '-'
+    let symbol = token && symbolMapping[token] || '-'
+    let decimal = token && decimalsMapping[token]
+    if (decimal)
+      balance = (balance/(10 ** decimal)).toFixed(0)
+    
+    logObj.push({ name, symbol, balance, label, decimals: decimal })
+  })
+
+  console.log('Balance table for [%s] %s', chain, tableLabel)
+  console.table(logObj)
+}
+
+async function getRippleBalance(account) {
+  const body = { "method": "account_info", "params": [{ account }] }
+  const res = await http.post('https://s1.ripple.com:51234', body)
+  return res.result.account_data.Balance / 1e6
+}
+
 module.exports = {
   DEBUG_MODE,
   log,
@@ -183,4 +337,10 @@ module.exports = {
   getUniqueAddresses,
   sliceIntoChunks,
   sleep,
+  debugBalances,
+  stripTokenHeader,
+  diplayUnknownTable,
+  getRippleBalance,
+  getSymbols,
+  getParamCalls,
 }

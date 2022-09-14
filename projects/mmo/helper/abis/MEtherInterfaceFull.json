@@ -1,0 +1,59 @@
+[
+  {
+    "constant": true,
+    "inputs": [],
+    "name": "thisFungibleMToken",
+    "outputs": [
+      {
+        "internalType": "uint240",
+        "name": "",
+        "type": "uint240"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint240",
+        "name": "",
+        "type": "uint240"
+      }
+    ],
+    "name": "totalBorrows",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "internalType": "uint240",
+        "name": "",
+        "type": "uint240"
+      }
+    ],
+    "name": "totalCashUnderlying",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

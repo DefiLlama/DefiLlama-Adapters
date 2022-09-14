@@ -3,7 +3,6 @@ const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { getFixBalances } = require("../helper/portedTokens");
 const { getTokenPrices } = require("../helper/unknownTokens")
 const { stakingUnknownPricedLP } = require("../helper/staking")
-const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const wkavaAddress = "0xc86c7C0eFbd6A49B35E8714C5f59D99De09A225b";
 const rshareTokenAddress = "0x5547F680Ad0104273d0c007073B87f98dEF199c6";
@@ -20,7 +19,8 @@ const Kavalps = [rubyKavaLp, rshareKavaLp, rubyRshareLp, rubyUsdcLp];
 async function calcPool2(genesisPool, rewardPool, lps, block, chain) {
   let balances = {};
   const { updateBalances, } = await getTokenPrices({
-    block, chain, coreAssets: [wkavaAddress], allLps: true, lps,
+    block, chain, 
+    useDefaultCoreAssets: true, allLps: true, lps,
   })
 
    // calculate rewardPool
@@ -51,12 +51,36 @@ async function calcPool2(genesisPool, rewardPool, lps, block, chain) {
     (addr) => `${chain}:${addr}`
   );
 
-  const toa = [...lps, wkavaAddress].map(token => [genesisPool, rewardPool].map(o => [token, o])).flat()
-  await sumTokens2({ balances, tokensAndOwners: toa, block, chain, })
-
   await updateBalances(balances, { resolveLP: true  });
   (await getFixBalances(chain))(balances);
   return balances;
+}
+
+async function calcKava(rewardPool, block, chain) {
+  let balances = {};
+
+  const wkavaRewardBalance = (
+    await sdk.api.abi.call({
+      abi: "erc20:balanceOf",
+      chain: chain,
+      target: wkavaAddress,
+      params: rewardPool,
+      block: block,
+    })
+  ).output;
+
+  await sdk.util.sumSingleBalance(
+    balances,
+    `kava:${wkavaAddress}`,
+    wkavaRewardBalance
+  );
+
+  (await getFixBalances(chain))(balances);
+  return balances;
+}
+
+async function KavaSingle(timestamp, block, chainBlocks) {
+  return calcKava(rshareRewardPoolAddress, chainBlocks.kava, "kava");
 }
 
 async function KavaPool2(timestamp, block, chainBlocks) {
@@ -65,9 +89,9 @@ async function KavaPool2(timestamp, block, chainBlocks) {
 
 module.exports = {
   methodology:
-    "Pool2 deposits consist of RUBY/KAVA and RSHARE/KAVA LP and WKAVA tokens deposits while the staking TVL consists of the RSHARE tokens locked within the Boardroom contract.",
+    "Pool2 deposits consist of RUBY/USDC, RUBY/KAVA, RSHARE/KAVA and RUBY/RSHARE LP deposits while the staking TVL consists of the RSHARE tokens locked within the Boardroom contract.",
   kava: {
-    tvl: async () => ({}),
+    tvl: KavaSingle,
     pool2: KavaPool2,
     staking: stakingUnknownPricedLP(boardroomAddress, rshareTokenAddress, "kava", rshareKavaLp),
   },

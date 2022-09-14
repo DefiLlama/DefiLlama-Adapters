@@ -1,26 +1,23 @@
+const { vaults, getTVLData, getVaultL1Funds } = require("./helper");
+const MAX_BPS = 1e3;
 const sdk = require('@defillama/sdk')
-const abi = require('./abi.json')
 
-const vaults = [
-  '0xAa0508FcD0352B206F558b2B817dcC1F0cc3F401', // ETH Maxi
-  '0x1c4ceb52ab54a35f9d03fcc156a7c57f965e081e', // PM USDC
-]
+const tvl = async (_, block) => {
+  const { pendingDeposits, tokens, totalSupplies } = await getTVLData(block);
 
-const tvl = async (timestamp, block) => {
-  const calls = vaults.map(v => ({ target: v }))
-  const balances = {}
+  const balances = {};
 
-  const [
-    tokens, balance
-  ] = await Promise.all([
-    sdk.api.abi.multiCall({ block, calls, abi: abi.wantToken }),
-    // sdk.api.abi.multiCall({ block, calls, abi: abi.totalVaultFunds }),
-    sdk.api.abi.multiCall({ block, calls, abi: 'erc20:totalSupply' }),
-  ]).then(o => o.map(i => i.output))
+  for (const [idx, { address }] of vaults.entries()) {
+    const wantToken = tokens[idx].output;
+    const totalSupply = totalSupplies[idx].output;
 
-  tokens.forEach((i, j) => {
-    balances[i.output] = balance[j].output
-  });
+    const totalFunds = await getVaultL1Funds(address, wantToken, block);
+    const sharePrice = totalFunds * MAX_BPS / totalSupply;
+
+    const value = totalSupply * sharePrice / MAX_BPS + +pendingDeposits[idx].output
+    // console.log(value, value.toFixed(0))
+    sdk.util.sumSingleBalance(balances, wantToken, value.toFixed(0))
+  }
 
   return balances
 };

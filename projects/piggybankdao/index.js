@@ -26,7 +26,7 @@ async function avaxTvl(time, ethBlock, chainBlocks){
 module.exports={
     deadFrom: 1648765747,
     misrepresentedTokens: true,
-    avalanche:{
+    avax:{
         tvl: avaxTvl,
         staking: stakingPricedLP(STAKING_ADDRESS, PB_TOKEN, CHAIN, LP_TOKEN, COREASSETNAME, true),
     }

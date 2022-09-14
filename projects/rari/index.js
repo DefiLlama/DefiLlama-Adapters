@@ -186,5 +186,16 @@ module.exports = {
     tvl,
     pool2: pool2(rariGovernanceTokenUniswapDistributorAddress, RGTETHSushiLPTokenAddress),
     borrowed,
-  }
+  },
+  arbitrum: {
+    // Borrowing is disabled, and Tetranode's locker is the only pool with significant tvl, so counting only that
+    tvl: getCompoundV2Tvl('0xC7D021BD813F3b4BB801A4361Fbcf3703ed61716', 'arbitrum', undefined,  undefined, undefined, false),
+    borrowed: getCompoundV2Tvl('0xC7D021BD813F3b4BB801A4361Fbcf3703ed61716', 'arbitrum', undefined,  undefined, undefined, true),
+  },
+  hallmarks: [
+    [1651276800, "FEI hack"],
+    [1649548800, "ICHI sell-off"],
+    [1620432000, "First Rari hack"],
+    [1654905600, "Bhavnani's announcement"]
+  ]
 }

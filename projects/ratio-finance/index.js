@@ -1,29 +1,11 @@
-const { Connection, PublicKey } = require('@solana/web3.js')
-const { Program, Provider, web3, utils } = require("@project-serum/anchor");
-const { NodeWallet } = require("@project-serum/anchor/dist/cjs/provider");
+const { PublicKey } = require('@solana/web3.js')
+const { Program, utils } = require("@project-serum/anchor");
 const BigNumber = require("bignumber.js");
 const IDL = require("./ratio-state.json");
 const { toUSDTBalances } = require('../helper/balances')
+const { getProvider } = require('../helper/solana')
 
 const programId = new PublicKey("RFLeGTwFXiXXETdJkZuu9iKgXNkYbywLpTu1TioDsDQ");
-
-const getProvider = async () => {
-  /* create the provider and return it to the caller */
-  /* network set to local network for now */
-  const dummy_keypair = web3.Keypair.generate();
-  const wallet = new NodeWallet(dummy_keypair);
-  const network = "https://solana-api.projectserum.com/";
-  const connection = new Connection(network, 'processed');
-  const confirmOptions = {
-    commitment: "processed",
-    preflightCommitment: "processed",
-  };
-
-  const provider = new Provider(
-    connection, wallet, confirmOptions
-  );
-  return provider;
-}
 
 const encodeSeedString = (seedString) => Buffer.from(utils.bytes.utf8.encode(seedString));
 
@@ -41,7 +23,7 @@ const findGlobalStatePDA = async (globalStateSeed) => {
 };
 
 async function tvl() {
-  const provider = await getProvider();
+  const provider = getProvider();
   const program = await constructProgram(provider);
   const globalStateKey = await findGlobalStatePDA("GLOBAL_STATE_SEED");
 

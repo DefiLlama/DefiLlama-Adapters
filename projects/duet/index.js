@@ -16,20 +16,41 @@ async function fetch() {
     }
     vaultList.push(...token.vaults);
   }
-  const uniqueVaults = new Set(vaultList.filter(vault => vault.displayPosition !== "DASSETS").map(vault => vault.vaultAddress && vault.vaultAddress.trim()).filter(Boolean));
-  const { 1: tokenTVLs } = (await sdk.api.abi.call({
-    abi: collateralReaderContractABI.depositVaultValues,
-    chain: "bsc",
-    target: COLLATERAL_READER_CONTRACT,
-    params: [[...uniqueVaults], false]
-  })).output;
+  const uniqueVaults = new Set(
+    vaultList
+      .filter((vault) => vault.displayPosition !== "DASSETS")
+      .map((vault) => vault.vaultAddress && vault.vaultAddress.trim())
+      .filter(Boolean)
+  );
 
-  return tokenTVLs.reduce((previous, current) => previous.plus(current), new BigNumber(0)).div(Math.pow(10, 8));
+  const tokenTvls = await Promise.all(
+    [...uniqueVaults].map(async (vault) => {
+      try {
+        return (
+          await sdk.api.abi.call({
+            abi: collateralReaderContractABI.depositVaultValues,
+            chain: "bsc",
+            target: COLLATERAL_READER_CONTRACT,
+            params: [[vault], false],
+          })
+        ).output[1][0];
+      } catch (e) {
+        return null;
+      }
+    })
+  );
+
+  return tokenTvls
+    .filter(Boolean)
+    .reduce(
+      (previous, current) => new BigNumber(previous).plus(current),
+      new BigNumber(0)
+    )
+    .div(Math.pow(10, 8));
 }
 
 module.exports = {
-  methodology: "TVL is the sum of the USD value of all tokens in the staking pool",
-  fetch
+  methodology:
+    "TVL is the sum of the USD value of all tokens in the staking pool",
+  fetch,
 };
-
-
