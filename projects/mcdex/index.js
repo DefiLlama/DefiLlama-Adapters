@@ -87,7 +87,7 @@ async function muxTVL(chainID, chainName, subgraphName, poolAddress, block) {
             dexValue = dexValue.plus(new BigNumber(dex.value));
         }
     });
-    balances = toUSDTBalances(dexValue);
+    const balances = toUSDTBalances(dexValue);
     const endpoint = `https://api.thegraph.com/subgraphs/name/mux-world/${subgraphName}`;
     const query = gql`
         query getAssets {

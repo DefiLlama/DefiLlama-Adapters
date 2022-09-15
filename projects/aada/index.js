@@ -19,9 +19,10 @@ async function staking() {
 }
 
 const scriptAdresses = [
-  'addr1z89rdvu7tagp6lf2eansz4yhnm0ncs24jle973jc4qzf50tustjqjmgmrrw800v663gpvq8l4evpaxwxtx270nyxx60qxz7da3',
-  'addr1zxw4pl7c6c8dh0krxvkjuhdvplclvmf0ythar8y0da5ut0nustjqjmgmrrw800v663gpvq8l4evpaxwxtx270nyxx60qhr7a2u',
-  'addr1z95uc4zrsct76wda36asvz5cx7fhecv5v4t7t3d2uphj0dnustjqjmgmrrw800v663gpvq8l4evpaxwxtx270nyxx60qspzxnz',
+  'addr1zy9940grv28qxz9k82l9gmqd80vfd8a2734e35yzsz9cqktfjcnq9fczt4qkxgec2hz6x7f38vnj8xuxywk4x4qgzh9smq5w00', //request.hs -- Request created. Lender to fund
+  'addr1zykhtew0z93z6hmgu2ew7kl9puqz0wmafp0f3jypuejkwmrfjcnq9fczt4qkxgec2hz6x7f38vnj8xuxywk4x4qgzh9skq4p22', //collateral.hs -- Loan funded. Borrower to repay
+  'addr1zxfgvtfgp9476dhmq8fkm3x8wg20v33s6c9unyxmnpm0y5rfjcnq9fczt4qkxgec2hz6x7f38vnj8xuxywk4x4qgzh9st8q78h', //interest.hs -- Borrower repaid -- Lender to claim
+  'addr1zxcjtxuc7mj8w6v9l3dfxvm30kxf78nzw387mqjqvszxr4mfjcnq9fczt4qkxgec2hz6x7f38vnj8xuxywk4x4qgzh9sp92046', //liquidation.hs -- Funds were liquidated. Borrower to claim
 ];
 const tvl = async () => {
   let totalLovelaceLocked = 0;

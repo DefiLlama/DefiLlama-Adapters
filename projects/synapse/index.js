@@ -50,3 +50,6 @@ module.exports.terra.tvl = async (timestamp, ethBlock, { terra: block }) => {
   sumSingleBalance(balances, TOKEN_LIST.terrausd, balance)
 	return balances
 }
+module.exports.hallmarks = [
+        [1651881600, "UST depeg"],
+      ]

@@ -31,7 +31,8 @@ module.exports = {
         pool2,
         staking,
         tvl
-
-    }
-    
+    },
+    hallmarks:[
+    [1651881600, "UST depeg"],
+  ]
 }; 

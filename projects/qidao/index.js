@@ -2,7 +2,7 @@ const { sumTokens, unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { BigNumber } = require("bignumber.js");
-const { fixHarmonyBalances, getChainTransform } = require("../helper/portedTokens");
+const { getFixBalancesSync, getChainTransform } = require("../helper/portedTokens");
 const { handleYearnTokens } = require("../creditum/helper.js");
 
 async function handleMooTokens(balances, block, chain, tokens) {
@@ -184,6 +184,18 @@ async function polygon(timestamp, block, chainBlocks) {
         "0x9Bd9aD490dD3a52f096D229af4483b94D63BE618",
         "0x7CbF49E4214C7200AF986bc4aACF7bc79dd9C19a",
       ],  // WMATIC
+      [
+        "0xaa19d0e397c964a35e6e80262c692dbfc9c23451",
+        "0xf52B3250E026E0307d7d717AE0f331baAA4F83a8",
+      ], //tetu xxdai
+      [
+        "0x11826d20b6a16a22450978642404da95b4640123",
+        "0x6c5e2E7dF0372f834B7F40D16Ff4333Cf49Af235",
+      ], //tetu xxlink
+      [
+        "0x34fa22892256216a659d4f635354250b4d771458",
+        "0x3A58a54C066FdC0f2D55FC9C89F0415C92eBf3C4",
+      ], // stmatic
 
     ],
     chainBlocks.polygon,
@@ -521,7 +533,7 @@ async function harmony(timestamp, block, chainBlocks) {
       return `harmony:${addr}`;
     }
   );
-  fixHarmonyBalances(balances);
+  getFixBalancesSync('harmony')(balances);
   return balances;
 }
 
@@ -591,6 +603,18 @@ async function optimism (timestamp, block, chainBlocks) {
       [
         "0x4200000000000000000000000000000000000042",
         "0xbf1aea8670d2528e08334083616dd9c5f3b087ae"
+      ],
+      [
+        "0x7eE71053102d54Fc843BaEBaf07277C2b6dB64f1",
+        "0xF9CE2522027bD40D3b1aEe4abe969831FE3BeAf5"
+      ],
+      [
+        "0x8e2cDf8c6477439B7C989e86B917D80871B92339",
+        "0xAB91c51b55F7Dd7B34F2FD7217506fD5b632B2B9"
+      ],
+      [
+        "0x4D153F47F03c237F6360a6eccd185b4aE09c63D0",
+        "0xB89c1b3d9f335B9d8Bb16016F3d60160AE71041f"
       ]
       
     ],
@@ -634,7 +658,15 @@ async function metis (timestamp, block, chainBlocks) {
       [
         "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000", //Token Qidao
         "0x10dcbee8afa39a847707e16aea5eb34c6b01aba9"  //Token address
-      ],  
+      ],
+      [
+        "0xc09c73f7b32573d178138e76c0e286ba21085c20",
+        "0x420000000000000000000000000000000000000A",
+      ], //Eth
+      [
+        "0xb89c1b3d9f335b9d8bb16016f3d60160ae71041f",
+        "0xa5B55ab1dAF0F8e1EFc0eB1931a957fd89B918f4",
+      ], //Btc
     ],
     chainBlocks.metis,
     "metis",

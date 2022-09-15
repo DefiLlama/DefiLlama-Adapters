@@ -87,6 +87,8 @@ Object.keys(config).forEach(chain => {
       resolveLP: true, blacklistedLPs: [
         // '0x1f2bff0e37c592c7de6393c9dd3c0f7933408228', // disabled because _getReserves has a different abi compared to others
         '0x357c1b507ef563d342afecd01001f1c0b525e25b', // disabled Error: Returned error: execution reverted: VaultToken: INSUFFICIENT_RESERVES
+        '0x526b38991627c509a570ac18a46f7ac7aabc7e4a', // disabled Error: Returned error: execution reverted: VaultToken: INSUFFICIENT_RESERVES
+        '0x8706dc2067d64651620d66052bc065da1c81327f', // disabled Error: Returned error: execution reverted: VaultToken: INSUFFICIENT_RESERVES
       ]
     })
     return { balances, borrowedBalances }
