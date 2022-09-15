@@ -7,8 +7,8 @@ const XNL = "0x7cA1C28663b76CFDe424A9494555B94846205585";
 
 module.exports = {
   misrepresentedTokens: true,
-  tvl: (async) => ({}),
   aurora: {
+    tvl: (async) => ({}),
     staking: staking(farmContract, XNL, "aurora"),
     pool2: pool2(farmContract, XNL_AURORA_TriLP, "aurora"),
   },
