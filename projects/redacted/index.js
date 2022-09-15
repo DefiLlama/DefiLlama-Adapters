@@ -105,6 +105,12 @@ async function tvl(timestamp, block, chainBlocks){
         block: chainBlocks['ethereum']
     }).then(result => result.output)
     sdk.util.sumSingleBalance(balances, OHM, sOHMBalance)
+
+    return balances
+}
+
+async function staking(timestamp, block, chainBlocks) {
+    const balances = {}
     
     //Adding locked BTRFLY
     const lockedBTRFLY = await sdk.api.abi.call({
@@ -114,14 +120,15 @@ async function tvl(timestamp, block, chainBlocks){
         block: chainBlocks['ethereum'],
     }).then(result => result.output)
     sdk.util.sumSingleBalance(balances, BTRFLYV2, lockedBTRFLY)
-
+    
     return balances
 }
 
 module.exports = {
     timetravel: true,
-    methodology: "tvl = Treasury assets (bonding) + rlBTRFLY (locked tokens)",
+    methodology: "tvl = Treasury assets (bonding). staking = rlBTRFLY (locked tokens)",
     ethereum:{
-        tvl
+        tvl,
+        staking
     },
 }
