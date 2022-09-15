@@ -7,10 +7,10 @@ const XNL = "0x7cA1C28663b76CFDe424A9494555B94846205585";
 
 module.exports = {
   misrepresentedTokens: true,
-  bsc: {
+  tvl: (async) => ({}),
+  aurora: {
     staking: staking(farmContract, XNL, "aurora"),
     pool2: pool2(farmContract, XNL_AURORA_TriLP, "aurora"),
   },
-  tvl: (async) => ({}),
   methodology: "Counts liquidty on the staking and pool2 only",
 };
