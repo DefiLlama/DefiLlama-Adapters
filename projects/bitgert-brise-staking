@@ -3,6 +3,6 @@ const { staking } = require('../helper/staking')
 module.exports = {
   bitgert: {
   tvl: () =>  ({}),
-    staking: staking('0x8Ed91b2f3d9f6a5Ee426B4705F981090a7403795', '0x0000000000000000000000000000000000000000', 'bitgert')
+    staking: staking('0x8Ed91b2f3d9f6a5Ee426B4705F981090a7403795', '0x0eb9036cbE0f052386f36170c6b07eF0a0E3f710', 'bitgert')
   },
 };
