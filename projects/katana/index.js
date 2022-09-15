@@ -1,10 +1,11 @@
 const axios = require("axios");
 
 async function tvl() {
-  const tvlSnapshotResponse = await axios.get(
+  let tvlSnapshotResponse = await axios.get(
     "https://raw.githubusercontent.com/Katana-Labs/statistics/master/tvl/tvl.json"
   );
 
+  delete tvlSnapshotResponse.data[undefined]
   return tvlSnapshotResponse.data;
 }
 
@@ -15,4 +16,3 @@ module.exports = {
     tvl,  
   }
 };
-// node test.js projects/katana/index.js

@@ -65,7 +65,7 @@ async function tvl(chainBlocks, chain, transform=a=>a) {
         chain
     })).output.map((c) => c.output);
 
-    for (balance of tokenBalances) {
+    for (let balance of tokenBalances) {
         await sumSingleBalance(balances, transform(oraichainToken[chain]), balance);
     }
 
@@ -92,9 +92,9 @@ async function bscTvl(timestamp, ethBlock, chainBlocks) {
 module.exports = {
     ethereum: {
       staking: ethTvl,
+      tvl: async ()=>({}),
     },
     bsc: {
       staking: bscTvl,
     },
-    tvl: async ()=>({})
 }

@@ -1,65 +1,38 @@
-const retry = require("async-retry");
-const axios = require("axios");
-const BigNumber = require("bignumber.js");
-const { toUSDTBalances } = require('../helper/balances');
-const GODWOKEN_RPC = "https://mainnet.godwoken.io/rpc";
+const sdk = require("@defillama/sdk")
+const { default: BigNumber } = require("bignumber.js")
+const { toUSDTBalances } = require('../helper/balances')
 
-async function getDRMPrice() {
-  let priceComponents = await retry(
-    async () =>
-      await axios.post(GODWOKEN_RPC, {
-        method: "poly_executeRawL2Transaction",
-        jsonrpc: "2.0",
-        params: [
-          "0x84000000100000006c000000800000005c00000014000000180000001c0000002000000004000000279000000000000038000000ffffff504f4c590020bcbe00000000000000000000000000000000000000000000000000000000000000000000000000040000000902f1ac140000000c00000010000000000000000400000000000000",
-        ],
-        id: "",
-      })
-  );
-  const drmAmount = new BigNumber(
-    "0x" + priceComponents.data.result.return_data.slice(2, 66)
-  );
-  const usdcAmount = new BigNumber(
-    "0x" + priceComponents.data.result.return_data.slice(66, 130)
-  );
-  const drmPrice = usdcAmount
-    .div(drmAmount)
-    .times(10 ** 3)
-    .toFixed(2);
+const chain = 'godwoken'
+const STAKING_ADDRESS = '0x31A7D9c604C87F7aA490A350Ef8DF170dC2233AA'
+const DRM_ADDRESS = '0x81E60A955DC8c4d25535C358fcFE979351d102B5'
+const USDC_ADDRESS = '0xc3b946c53e2e62200515d284249f2a91d9df7954'
+const DRM_USDC_LP_ADDRESS = '0x268aaeed47d031751db1cbba50930fe2991f0ed0'
 
-  return Number(drmPrice);
-}
+async function tvl(ts, _block, chainBlocks) {
+  const block = chainBlocks[chain]
+  const [
+    { output: drmTokensStaked },
+    { output: drmTokensLP },
+    { output: usdcTokensLP },
+    { output: usdcDecimals },
+    { output: drmDecimals },
+  ] = await Promise.all([
+    sdk.api.erc20.balanceOf({ owner: STAKING_ADDRESS, target: DRM_ADDRESS, block, chain }),
+    sdk.api.erc20.balanceOf({ owner: DRM_USDC_LP_ADDRESS, target: DRM_ADDRESS, block, chain }),
+    sdk.api.erc20.balanceOf({ owner: DRM_USDC_LP_ADDRESS, target: USDC_ADDRESS, block, chain }),
+    sdk.api.erc20.decimals(USDC_ADDRESS, chain),
+    sdk.api.erc20.decimals(DRM_ADDRESS, chain),
+  ])
 
-async function getSDRMSupply() {
-  let supplyResponse = await retry(
-    async () =>
-      await axios.post(GODWOKEN_RPC, {
-        method: "poly_executeRawL2Transaction",
-        jsonrpc: "2.0",
-        params: [
-          "0x84000000100000006c000000800000005c00000014000000180000001c00000020000000858c0000179000001500000038000000ffffff504f4c590020bcbe00000000000000000000000000000000000000000000000000000000000000000000000000040000009358928b140000000c00000010000000000000000400000000000000",
-        ],
-        id: "",
-      })
-  );
-  const sdrmSupply = new BigNumber(supplyResponse.data.result.return_data)
-    .div(10 ** 9)
-    .toFixed(2);
-
-  return Number(sdrmSupply);
-}
-
-async function fetch() {
-  const drmPrice = await getDRMPrice();
-  const sdrmSupply = await getSDRMSupply();
-
-  return toUSDTBalances(drmPrice * sdrmSupply);
+  const tokenPrice = BigNumber(usdcTokensLP).dividedBy(10 ** usdcDecimals).multipliedBy(10 ** drmDecimals).dividedBy(drmTokensLP)
+  return toUSDTBalances(BigNumber(drmTokensStaked).multipliedBy(tokenPrice).dividedBy(10 ** drmDecimals).toFixed(0))
 }
 
 module.exports = {
   misrepresentedTokens: true,
   methodology: `Finds TVL by querying DRM contract for sDRM (Staked DRM) supply and the DRM price. TVL = sdrmSupply * drmPrice`,
   godwoken: {
-    tvl: fetch
+    tvl: async ()=>({}),
+    staking: tvl,
   }
-};
+}
