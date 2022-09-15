@@ -10,6 +10,11 @@ async function cronos() {
   return Number(lending.data.data.totalLiquidity);
 }
 
+async function kava() {
+  const lending = await axios.get("https://kavaapi.annex.finance/api/v1/governance/annex");
+  return Number(lending.data.data.totalLiquidity);
+}
+
 module.exports = {
   methodology:
     'TVL is comprised of tokens deposited to the protocol as collateral, similar to Compound Finance and other lending protocols the borrowed tokens are not counted as TVL. Data is pull from the Annex API "https://api.annex.finance/api/v1/governance/annex".',
@@ -19,5 +24,8 @@ module.exports = {
   cronos: {
     fetch: cronos,
   },
-  fetch: async () => (await bsc()) + (await cronos()),
+  kava: {
+    fetch: kava,
+  },
+  fetch: async () => (await bsc()) + (await cronos()) + (await kava()),
 };
