@@ -86,6 +86,7 @@ async function vault(timestamp, block, chainBlocks){
 }
 
 module.exports = {
+  doublecounted: true,
   cronos: {
     tvl:vault,
     pool2: pool2,

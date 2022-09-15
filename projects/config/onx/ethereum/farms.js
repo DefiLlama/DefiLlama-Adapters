@@ -1,5 +1,3 @@
-const web3 = require('../../web3.js');
-
 const UniswapV2PairContractAbi = require('../../../helper/ankr/abis/UniswapV2Pair.json');
 const ERC20Abi = require('../../../helper/ankr/abis/ERC20.json');
 
@@ -83,15 +81,6 @@ const rawFarms = [
   },
 ];
 
-const enrichFarms = () => {
-  return rawFarms.map(farm => {
-    const contract = new web3.eth.Contract(farm.abi, farm.address);
-    return { ...farm, contract }
-  })
-}
-
-const farms = enrichFarms();
-
 module.exports = {
-  farms,
+  farms: rawFarms,
 }

@@ -1,13 +1,21 @@
-const utils = require('../helper/utils');
+const { sumTokens } = require('../helper/unwrapLPs')
+const config = require('./config')
 
-const STATS_URL = 'https://api.nordfinance.io/tvl/statistics';
+module.exports = {}
 
-async function fetch() {
-    var totalTvl = await utils.fetchURL(STATS_URL);
-    return totalTvl.data.tvl.totalTvl;
-  }  
+Object.keys(config).forEach(chain => {
+  const { toa = [], staking = [], pool2 = [] } = config[chain]
+  const exportObj = {}
 
-module.exports = {
-  methodology: `TVL is obtained by making calls to the Nord Finance API "https://api.nordfinance.io/tvl/statistics".`,
-  fetch
-}
+  if (toa.length)
+    exportObj.tvl = async (_, _b, { [chain]: block }) => sumTokens({}, toa, block, chain)
+
+  if (staking.length)
+    exportObj.staking = async (_, _b, { [chain]: block }) => sumTokens({}, staking, block, chain)
+
+  if (pool2.length)
+    exportObj.pool2 = async (_, _b, { [chain]: block }) => sumTokens({}, pool2, block, chain, undefined, { resolveLP: true })
+
+  module.exports[chain] = exportObj
+
+})

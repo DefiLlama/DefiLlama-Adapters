@@ -5,21 +5,20 @@ const http = require('../helper/http')
 
 const chainConfig = {
   ethereum: {
-    controller: '0xa4F1671d3Aee73C05b552d57f2d16d3cfcBd0217',
     stakingPool: '0xbA4cFE5741b357FA371b506e5db0774aBFeCf8Fc',
     VSP: '0x1b40183efb4dd766f11bda7a7c3ad8982e998421',
-    api: 'https://api.vesper.finance/pools?stages=prod',
+    api: ['https://api.vesper.finance/pools?stages=prod', 'https://api.vesper.finance/pools?stages=orbit'],
   },
   avax: {
-    api: 'https://api-avalanche.vesper.finance/pools?stages=prod',
+    api: ['https://api-avalanche.vesper.finance/pools?stages=prod'],
   },
   polygon: {
-    api: 'https://api-polygon.vesper.finance/pools?stages=prod',
+    api: ['https://api-polygon.vesper.finance/pools?stages=prod'],
   },
 }
 
 function getChainExports(chain) {
-  const { controller, stakingPool, VSP, api } = chainConfig[chain] || {}
+  const { stakingPool, VSP, api } = chainConfig[chain] || {}
 
   async function tvl(timestamp, _block, chainBlocks) {
     const block = chainBlocks[chain]
@@ -30,28 +29,15 @@ function getChainExports(chain) {
 
     const poolSet = new Set()
 
-    if (controller) {
-      // Get pool list from controller
-      const { output: poolsAddress } = await sdk.api.abi.call({ target: controller, abi: abi.pools, block, chain, })
-      const { output: poolLength } = await sdk.api.abi.call({ target: poolsAddress, abi: abi.length, block, chain, })
-
-      let calls = []
-      for (let i = 0; i < +poolLength; i++)
-        calls.push({ params: i })
-
-      let { output: pools } = await sdk.api.abi.multiCall({ calls, target: poolsAddress, abi: abi.at, block, chain, })
-      pools.forEach(p => poolSet.add(p.output))
-    }
-
-    (await http.get(api)).forEach(pool => poolSet.add(pool.address)) // add pools from our contracts list
+    for (const url of api)
+      (await http.get(url)).forEach(pool => poolSet.add(pool.address)) // add pools from our contracts list
     if (stakingPool)  poolSet.delete(stakingPool)
     const poolList = [...poolSet]
-    console.log(chain, poolList)
 
     if (!poolList.length) return balances
 
     // Get collateral token
-    calls = poolList.map(target => ({ target }))
+    const calls = poolList.map(target => ({ target }))
     const { output: tokens } = await sdk.api.abi.multiCall({ calls, abi: abi.token, chain, block, })
     const { output: totalValue } = await sdk.api.abi.multiCall({ calls, abi: abi.totalValue, chain, block, })
     tokens.forEach((token, index) => sdk.util.sumSingleBalance(balances, transformAddress(token.output), totalValue[index].output))

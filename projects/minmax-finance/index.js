@@ -3,7 +3,7 @@
   ==================================================*/
 const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js')
-const _ = require('underscore');
+
 const abi = require("./abi.json");
 const IOTEX_CG_MAPPING = require("./iotex_cg_stablecoin_mapping.json")
 
@@ -111,7 +111,7 @@ async function tvl(block) {
   });
 
   // Compute Balances
-  _.each(balanceOfResults.output, (balanceOf) => {
+  balanceOfResults.output.forEach((balanceOf) => {
       let address = balanceOf.input.target
       let amount =  balanceOf.output
 
@@ -154,7 +154,7 @@ async function tvl(block) {
   });
 
   // Compute Balances
-  _.each(lpBalanceOfResults.output, (balanceOf) => {
+  lpBalanceOfResults.output.forEach((balanceOf) => {
       let address = balanceOf.input.target
       let amount =  balanceOf.output
 

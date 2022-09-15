@@ -39,5 +39,5 @@ module.exports = {
   ...masterChefExports(MasterChefContractCronos, "cronos", CGS_Cronos, false),
   ...masterChefExports(MasterChefContractMoonbeam, "moonbeam", CGS_Moonbeam, false),
   methodology:
-    "TVL includes all Farms and Pools seccion through MasterChef Contracts",
+    "TVL includes all Farms and Pools seccion through MasterChef Contracts"
 };

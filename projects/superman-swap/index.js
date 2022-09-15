@@ -6,4 +6,4 @@ const token = "0x1a5A8873DB5b83D9594A381F33CFE2A5543A9Ec6";
 module.exports = {
     misrepresentedTokens: true,
     ...masterChefExports(masterchef, "bsc", token, false)
-}
+};

@@ -17,9 +17,6 @@ const treasuryTokens = [
    module.exports = {
     misrepresentedTokens: true,
     ...ohmTvl(treasury, treasuryTokens, "fantom", stakingAddress, miniPantherToken, addr=>{
-        if (addr.toLowerCase() === "0x9cbccdaf10153edd092817a013470a0693852a77") {
-            return "fantom:0x9879abdea01a879644185341f7af7d8343556b7a".toLowerCase()
-        }
         return `fantom:${addr}`
-    }, undefined, false)
+    }, (balances)=>{delete balances["fantom:0x9cbccdaf10153edd092817a013470a0693852a77"]}, false)
 }

@@ -1,94 +1,98 @@
-const utils = require('../helper/utils');
-
-const ethers = require('ethers');
 const formatBytes32String = require('ethers').utils.formatBytes32String;
-const cfg = require('./utilities/cfg');
-const {bigNumberify,expandTo18Decimals, expandTo16Decimals} = require('./utilities/utilities');
+const { sumTokens, } = require('../helper/unwrapLPs')
+const { resolveCrvTokens, } = require('../helper/resolveCrvTokens')
+const { transformPolygonAddress } = require('../helper/portedTokens')
+const ResolverAddr = "0x1E02cdbbA6729B6470de81Ad4D2cCA4c514521b9"
 
 const ResolverJson = require('./abis/Resolver.json').abi;
-const AssetPriceJson = require('./abis/AssetPrice.json').abi;
-const IERC20Json = require('./abis/IERC20.json').abi;
-const am3CrvmoUSDPoolJson = require('./abis/am3CrvmoUSDPool.json').abi;
 
-const provider = new ethers.providers.JsonRpcProvider("https://polygon-rpc.com/");
-const Resolver = new ethers.Contract(cfg.ResolverAddr, ResolverJson, provider);
+const sdk = require('@defillama/sdk')
+const chain = 'polygon'
+const nullAddr = "0x0000000000000000000000000000000000000000"
+const motToken = '0x2db0Db271a10661e7090b6758350E18F6798a49D'
 
-var http = require("http");
+async function tvl(ts, _block, { polygon: block }) {
+  const mobiusStr = formatBytes32String("Mobius")
+  const stakeStr = formatBytes32String("Stake")
+  const motStr = formatBytes32String("MOT")
+  const balances = {}
+  const transform = await transformPolygonAddress()
 
-let TVL = 0;
+  const [
+    MobiusAddr,
+    Collaterals,
+  ] = await Promise.all([
+    sdk.api.abi.call({
+      target: ResolverAddr, abi: ResolverJson.find(i => i.name === 'getAddress'), params: [mobiusStr], block, chain,
+    }),
+    sdk.api.abi.call({
+      target: ResolverAddr, abi: ResolverJson.find(i => i.name === 'getAssets'), params: [stakeStr], block, chain,
+    }),
+  ]).then(o => o.map(i => i.output))
 
+  await Promise.all(Collaterals.map(async collateral => {
 
+    if (collateral === motStr)
+      return;
 
-async function polygon() { 
-    let TMP = bigNumberify(0);
-    let AssetPriceAddr = await Resolver.getAddress(formatBytes32String("AssetPrice"));
-    let AssetPrice = new ethers.Contract(AssetPriceAddr, AssetPriceJson, provider);
+    let { output: r } = await sdk.api.abi.call({
+      target: ResolverAddr, abi: ResolverJson.find(i => i.name === 'getAsset'), params: [stakeStr, collateral], block, chain,
+    })
 
-    let MobiusAddr = await Resolver.getAddress(formatBytes32String("Mobius"));
-    let Collaterals = await Resolver.getAssets(formatBytes32String("Stake"));
-    let MOTAddr;
-    let MOTPrice;
-    for (let i = 0;i < Collaterals.length;i++){
-        let r = await Resolver.getAsset(formatBytes32String("Stake"),Collaterals[i]);
-        if (!r[0]) {
-            continue;
-        }
-
-        let tokenStaked
-        if (r[1] == "0x0000000000000000000000000000000000000000") {
-            tokenStaked = await provider.getBalance(MobiusAddr);
-        } else {
-            let token = new ethers.Contract(r[1], IERC20Json, provider);
-            tokenStaked = await token.balanceOf(MobiusAddr);
-        }
-
-        let tokenPrice = await AssetPrice.getPrice(Collaterals[i]); 
-        TMP = TMP.add(tokenStaked.mul(tokenPrice).div(expandTo18Decimals(1)));
+    if (!r[0])
+      return;
 
 
-        if (Collaterals[i] == formatBytes32String("MOT")) {
-            MOTAddr = r[1];
-            MOTPrice = tokenPrice;
-        }
+    if (r[1] == nullAddr) {
+      const response = await sdk.api.eth.getBalance({ target: MobiusAddr, block, chain, })
+      sdk.util.sumSingleBalance(balances, transform(nullAddr), response.output)
+    } else {
+      const response = await sdk.api.erc20.balanceOf({ target: r[1], owner: MobiusAddr, block, chain, })
+      sdk.util.sumSingleBalance(balances, transform(r[1]), response.output)
     }
+  }))
 
-    //MOT-USDT LP
-    let MOTUSDTPOOL = new ethers.Contract(cfg.MOTUSDTLPAddr, IERC20Json, provider);
-    let USDT = new ethers.Contract(cfg.USDTAddr, IERC20Json, provider);
-    let MOT = new ethers.Contract(MOTAddr, IERC20Json, provider);
-
-    let RewardStakeingAddr = await Resolver.getAddress(formatBytes32String("RewardStaking"));
-    let TotalLP = await MOTUSDTPOOL.totalSupply();
-    let LPStaked = await MOTUSDTPOOL.balanceOf(RewardStakeingAddr);
-    let MOTStakedValue = (await MOT.balanceOf(cfg.MOTUSDTLPAddr)).mul(MOTPrice).div(expandTo18Decimals(1));
-    let USDTStakedValue = (await USDT.balanceOf(cfg.MOTUSDTLPAddr)).mul(bigNumberify(10).pow(12))
-
-     
-    TMP = TMP.add(
-        (MOTStakedValue.add(USDTStakedValue)).mul(LPStaked).div(TotalLP)
-    );
-
-    //moUSD-am3CRV LP
-    let am3CrvmoUSDPool = new ethers.Contract(cfg.am3CRVmoUSDLPAddr,am3CrvmoUSDPoolJson,provider);
-    LPStaked = await am3CrvmoUSDPool.balanceOf(RewardStakeingAddr);
-    let LPPrice = await am3CrvmoUSDPool.get_virtual_price();
-
-    TMP = TMP.add(
-        LPStaked.mul(LPPrice).div(expandTo18Decimals(1))
-    );
-
-    TVL = TMP.div(expandTo18Decimals(1)).toNumber();
-    return TVL;
+  await resolveCrvTokens(balances, block, chain, transform)
+  return balances
 }
 
-async function fetch() {
-    return await polygon()
-  }
+async function staking(ts, _block, { polygon: block }) {
+  const mobiusStr = formatBytes32String("Mobius")
 
+  const [
+    MobiusAddr,
+  ] = await Promise.all([
+    sdk.api.abi.call({
+      target: ResolverAddr, abi: ResolverJson.find(i => i.name === 'getAddress'), params: [mobiusStr], block, chain,
+    }),
+  ]).then(o => o.map(i => i.output))
+
+  return sumTokens({}, [[motToken, MobiusAddr]], block, chain)
+}
+
+async function pool2(ts, _block, { polygon: block }) {
+  const rewardAddrStr = formatBytes32String("RewardStaking")
+
+  const [
+    rewardAddr,
+  ] = await Promise.all([
+    sdk.api.abi.call({
+      target: ResolverAddr, abi: ResolverJson.find(i => i.name === 'getAddress'), params: [rewardAddrStr], block, chain,
+    }),
+  ]).then(o => o.map(i => i.output))
+  const toa = [
+    '0x162b21ba1a90dd9384c615192fa4053217d2a8db',
+    '0x53add4c98b2787f690042771ca8e512a5793e9c9',
+    '0x49d8136336e3feb7128c12172ae5ff78238a88be',
+  ].map(t => [t, rewardAddr])
+
+  return sumTokens({}, toa, block, chain, undefined, { resolveLP: true, resolveCrv: true, })
+}
 
 module.exports = {
-polygon:{
-    fetch:polygon
-},
-fetch
+  polygon: {
+    tvl,
+    staking,
+    pool2,
+  },
 }

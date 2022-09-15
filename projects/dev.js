@@ -1,11 +1,7 @@
-const utils = require('./helper/utils')
-const BigNumber = require('bignumber.js')
-
-const web3 = require('./config/web3.js');
+const sdk = require("@defillama/sdk")
 
 const ADDRESS_CONFIG_ADDRESS = '0x1D415aa39D647834786EB9B5a333A50e9935b796'
 const TOKEN_ADDRESS = '0x5cAf454Ba92e6F2c929DF14667Ee360eD9fD5b26'
-const TOKEN_ID = 'dev-protocol'
 
 const ADDRESS_CONFIG_ABI = [
   {
@@ -43,29 +39,25 @@ const LOCKUP_ABI = [
   },
 ]
 
-const KEYS = [
-  {
-    TOKEN_ADDRESS: TOKEN_ID,
-  },
-]
-
-async function fetch() {
-  const addressConfigInstance = await new web3.eth.Contract(
-    ADDRESS_CONFIG_ABI,
-    ADDRESS_CONFIG_ADDRESS
-  )
-  const lockupAddress = await addressConfigInstance.methods.lockup().call()
-  const lockupInstance = await new web3.eth.Contract(LOCKUP_ABI, lockupAddress)
-  const [allValue, priceFeed, decimals] = await Promise.all([
-    lockupInstance.methods.getAllValue().call(),
-    utils.getPrices(KEYS),
-    utils.returnDecimals(TOKEN_ADDRESS),
-  ])
-  const price = priceFeed.data[TOKEN_ID].usd
-  const tvl = new BigNumber(allValue).div(10 ** decimals).times(price)
-  return parseFloat(tvl.toFixed())
+async function staking(ts, block) {
+  const { output: lockupAddress } = await sdk.api.abi.call({
+    block,
+    target: ADDRESS_CONFIG_ADDRESS,
+    abi: ADDRESS_CONFIG_ABI.find(i => i.name === 'lockup')
+  })
+  const { output: allValue } = await sdk.api.abi.call({
+    block,
+    target: lockupAddress,
+    abi: LOCKUP_ABI.find(i => i.name === 'getAllValue')
+  })
+  return {
+    [TOKEN_ADDRESS]: allValue
+  }
 }
 
 module.exports = {
-  fetch,
+  ethereum: {
+    tvl: () => ({}),
+    staking,
+  }
 }

@@ -35,8 +35,6 @@ module.exports = {
       tvl: safe,
       pool2: farm,
       staking: stake
-  
-      
   },
-  
+  broken: 'website is down, discord link expired, twitter no longer active. Rugged?'
 }

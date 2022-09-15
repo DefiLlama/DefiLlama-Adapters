@@ -17,7 +17,7 @@ async function tvl() {
     )
   ).data;
 
-  for (pool of response.pools) {
+  for (let pool of response.pools) {
     balances[pool.token_y_name] =
       pool.token_y_name in balances
         ? Number(balances[pool.token_y_name]) + Number(pool.tvl_token_y)

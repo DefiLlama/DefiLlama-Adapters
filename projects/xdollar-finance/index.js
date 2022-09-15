@@ -2,7 +2,8 @@ const sdk = require("@defillama/sdk");
 const BigNumber = require('bignumber.js')
 const { transformIotexAddress } = require('../helper/portedTokens.js')
 const getEntireSystemCollAbi = require("./getEntireSystemColl.abi.json")
-const _ = require('underscore');
+const { staking } = require('../helper/staking')
+
 const {getLiquityTvl} = require('../helper/liquity')
 
 const ETH_ADDR = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
@@ -42,7 +43,7 @@ const iotexTvl = async (timestamp, ethBlock, chainBlocks) => {
         chain: 'iotex'
     });
 
-    _.each(getCollResults.output, (getColl) => {
+    getCollResults.output.forEach((getColl) => {
         let address = iotexTMs[getColl.input.target]
         let amount =  getColl.output
 
@@ -70,7 +71,7 @@ const iotexTvl = async (timestamp, ethBlock, chainBlocks) => {
         chain: 'iotex'
     });
 
-    _.each(balanceOfResults.output, (balanceOf) => {
+    balanceOfResults.output.forEach((balanceOf) => {
         let address = balanceOf.input.target
         let amount =  balanceOf.output
 
@@ -101,7 +102,7 @@ const ethStableCollat = async (timestamp, ethBlock, chainBlocks) => {
         chain: 'ethereum'
     });
 
-    _.each(balanceOfResults.output, (balanceOf) => {
+    balanceOfResults.output.forEach((balanceOf) => {
         let address = balanceOf.input.target
         let amount =  balanceOf.output
 
@@ -122,6 +123,18 @@ module.exports = {
             getLiquityTvl(BTC_ADDR,"0x675CD7d43d7665f851997B7F0f2B0265a213BAB8", "ethereum"),
             ethStableCollat
         ]) 
-    }
+    },
+    arbitrum: {
+        tvl: getLiquityTvl('0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',"0x561d2d58bdad7a723a2cf71e8909a409dc2112ec", "arbitrum"),
+        staking: staking('0xc3fbc4056689cfab3f23809aa25004899ff4d75a','0x9eF758aC000a354479e538B8b2f01b917b8e89e7', 'arbitrum'),
+    },
+    polygon: {
+        tvl: getLiquityTvl('0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',"0x68738A47d40C34d890168aB7B612A6f649f395e4", "polygon"),
+        staking: staking('0x3509f19581afedeff07c53592bc0ca84e4855475','0x3dc7b06dd0b1f08ef9acbbd2564f8605b4868eea', 'polygon'),
+    },
+    avax: {
+        tvl: getLiquityTvl('0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7',"0x561d2d58bdad7a723a2cf71e8909a409dc2112ec", "avax"),
+        staking: staking('0x68738a47d40c34d890168ab7b612a6f649f395e4','0x9ef758ac000a354479e538b8b2f01b917b8e89e7', 'avax', 'polygon:0x3dc7b06dd0b1f08ef9acbbd2564f8605b4868eea'),
+    },
     
 };

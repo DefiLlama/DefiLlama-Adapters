@@ -1,6 +1,5 @@
 const sdk = require('@defillama/sdk')
 const { unwrapUniswapLPs } = require('../helper/unwrapLPs')
-const {fixAvaxBalances} = require('../helper/portedTokens')
 
 const xavaAddress = "0xd1c3f94DE7e5B45fa4eDBBA472491a9f4B166FC4";
 const stakingContracts = [
@@ -26,7 +25,6 @@ async function pool2(timestamp, ethBlock, chainBlocks){
         token: lp,
         balance: lpLocked.output
     }], block, 'avax', addr=>`avax:${addr}`);
-    fixAvaxBalances(balances);
     return balances;
 };
 async function staking(timestamp, ethBlock, chainBlocks){
@@ -48,7 +46,7 @@ async function staking(timestamp, ethBlock, chainBlocks){
 
 module.exports={
     methodology: "Within pool2, it counts the XAVA-AVAX staked in the farm",
-    avalanche:{
+    avax:{
         tvl,
         pool2,
         staking

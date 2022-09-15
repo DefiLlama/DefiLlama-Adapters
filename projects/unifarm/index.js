@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const erc20Abi = require("./erc20.json");
 const BigNumber = require("bignumber.js");
 const {
   getCohortTokensByChainName,
@@ -20,7 +19,7 @@ const _tvl = async (timestamp, ethBlock, chainBlocks, chain, transform = a => a)
   let calls = createMulticalls(cohortAndProxies, tokens);
 
   const multiCallResult = await sdk.api.abi.multiCall({
-    abi: erc20Abi[0],
+    abi: 'erc20:balanceOf',
     calls,
     chain,
     block,

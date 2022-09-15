@@ -1,11 +1,8 @@
-const { createContractObject } = require('../../../helper/ankr/utils');
-const poolAbi = require('../../../helper/ankr/abis/SushiswapPool.json');
-const vaultABI = require('../../../helper/ankr/abis/SushiswapVault.json');
-
 const createVaultModel = (poolAddress, vaultAddress) => {
   return {
-    contract: createContractObject(poolAddress, poolAbi),
-    vault: createContractObject(vaultAddress, vaultABI),
+    pool: poolAddress,
+    vault: vaultAddress,
+    chain: 'ethereum',
   }
 }
 

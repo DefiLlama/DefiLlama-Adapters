@@ -34,7 +34,13 @@ async function calLyfTvl(chain, block) {
       await sdk.api.abi.multiCall({
         block,
         abi: abi.userInfo,
-        calls: addresses["Vaults"][i]["workers"].map((worker) => {
+        calls: addresses["Vaults"][i]["workers"].filter((n) => {
+          /// @dev filter only workers that are working with LPs
+          if (n.name.includes("CakeMaxiWorker")) {
+            return false;
+          }
+          return true;
+        }).map((worker) => {
           return {
             target: worker["stakingTokenAt"],
             params: [worker["pId"], worker["address"]],
@@ -74,25 +80,48 @@ async function calLyfTvl(chain, block) {
     );
 
     /// @dev update balances directly for single-asset workers
-    const singleAssetWorkersBalances = stakingTokenInfos
-      .filter((n) => {
-        /// @dev filter only single-asset LYF workers
-        const name = addresses["Vaults"][i]["workers"].find(
-          (w) => w.address === n.input.params[1]
-        ).name;
-        if (name.includes("CakeMaxiWorker")) {
-          return true;
-        }
-        return false;
+    const singleAssetWorkersInfos = (
+      await sdk.api.abi.multiCall({
+        block,
+        abi: abi.userInfoCake,
+        calls: addresses["Vaults"][i]["workers"].filter((n) => {
+          /// @dev filter only single-asset LYF workers
+          return n.name.includes("CakeMaxiWorker");
+        }).map((worker) => {
+          return {
+            target: worker["stakingTokenAt"],
+            params: [worker["address"]],
+          };
+        }),
+        chain,
       })
+    ).output;
+
+    const singleAssetPrice = (
+      await sdk.api.abi.multiCall({
+        block,
+        abi: abi.singleAssetPrice,
+        calls: addresses["Vaults"][0]["workers"].filter((n) => {
+          /// @dev filter only single-asset LYF workers
+          return n.name.includes("CakeMaxiWorker");
+        }).map((worker) => {
+          return {
+            target: worker["stakingTokenAt"],
+          };
+        }),
+        chain,
+      })
+    ).output;
+
+    const singleAssetWorkersBalances = singleAssetWorkersInfos
       .map((n) => {
         /// @dev getting staking token address and return the object to be sum with balances
         const stakingTokenAddr = addresses["Vaults"][i]["workers"].find(
-          (w) => w.address === n.input.params[1]
+          (w) => w.address === n.input.params[0]
         ).stakingToken;
         return {
           token: stakingTokenAddr,
-          balance: n.output.amount,
+          balance: BigNumber(n.output.shares).multipliedBy(BigNumber(singleAssetPrice[0].output)).div(1e18),
         };
       });
 
