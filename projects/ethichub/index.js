@@ -73,12 +73,12 @@ module.exports = {
   methodology: 'Count of the tokens in pools, reserves...',
   start: 1608640693,
   ethereum: {
-    tvl: tvlMainnet,
+    tvl: () => ({}),
     pool2: pool2(STAKED_UETHIX_MAINNET, ETHIX_WETH_UNIV2),
     staking: stakings([STAKED_ETHIX_MAINNET, ORIGINATOR_BRAZIL, ORIGINATOR_HONDURAS], ETHIX_TOKEN)
   },
   celo: {
-    tvl: tvlCelo,
+    tvl: () => ({}),
     staking: stakings([STAKED_ETHIX_CELO], ETHIX_TOKEN_CELO, 'celo')
   },
   hallmarks:[
