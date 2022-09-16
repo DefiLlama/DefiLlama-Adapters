@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { staking } = require("../helper/staking");
-const { fixHarmonyBalances } = require("../helper/portedTokens");
+const { getFixBalancesSync } = require("../helper/portedTokens");
 
 const uniteTokenAddress = "0xB4441013EA8aA3a9E35c5ACa2B037e577948C59e";
 const ushareTokenAddress = "0xd0105cff72a89f6ff0bd47e1209bf4bdfb9dea8a";
@@ -40,7 +40,7 @@ async function calcPool2(masterchef, lps, block, chain) {
     chain,
     (addr) => `${chain}:${addr}`
   );
-  fixHarmonyBalances(balances);
+  getFixBalancesSync('harmony')(balances);
   return balances;
 }
 

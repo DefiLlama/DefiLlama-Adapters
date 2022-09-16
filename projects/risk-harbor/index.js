@@ -30,6 +30,10 @@ const networks = {
         "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
         "0x207472891AF32F5636c35d9ca8e17464Df7108bB",
       ],
+      [
+        "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
+        "0xbcA81A2118982182d897845571BE950aE94C619c",
+      ],
     ],
   },
   avax: {
@@ -174,7 +178,7 @@ module.exports = {
   arbitrum: {
     tvl: evm("arbitrum"),
   },
-  avax:{
+  avax: {
     tvl: evm("avax"),
   },
   fantom: {
@@ -183,4 +187,7 @@ module.exports = {
   aurora: {
     tvl: evm("aurora"),
   },
+  hallmarks:[
+    [1651881600, "UST depeg"],
+  ]
 };
