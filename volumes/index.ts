@@ -38,6 +38,8 @@ import solidly from "./adapters/solidly";
 import yoshiExchange from "./adapters/yoshi-exchange";
 import platypus from "./adapters/platypus";
 import wombatExchange from "./adapters/wombat-exchange";
+import wingriders from "./adapters/wingriders";
+import minswap from "./adapters/minswap";
 
 export default {
   mooniswap,
@@ -79,6 +81,8 @@ export default {
   solidly,
   "yoshi-exchange": yoshiExchange,
   platypus,
-  "wombat-exchange": wombatExchange
+  "wombat-exchange": wombatExchange,
+  wingriders,
+  minswap
   // lyra -> OPTIONS DEX, not enable for now
 };
