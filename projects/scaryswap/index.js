@@ -3,7 +3,7 @@ const { getUniTVL} = require('../helper/unknownTokens')
 const chain = 'fantom'
 
 module.exports = {
-    dogechain: {
+    fantom: {
         tvl: getUniTVL({
             chain,
             useDefaultCoreAssets: true,
