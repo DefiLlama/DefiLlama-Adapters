@@ -2,6 +2,7 @@
 const { default: BigNumber } = require('bignumber.js');
 const { get } = require('./helper/http')
 
+const nft_url = "https://nftapi.wing.finance/backend/nft-pool/pool-overview"
 
 const config = {
   ontology: {
@@ -19,9 +20,6 @@ const config = {
   ontology_evm: {
     url: "https://ethapi.wing.finance/ontevm/flash-pool/detail",
   },
-  nft_pool:{
-    url:"https://nftapi.wing.finance/backend/nft-pool/pool-overview",
-  }
 }
 
 module.exports = {
@@ -43,7 +41,11 @@ Object.keys(config).forEach(chain => {
       const { result } = await getData(chain)
       if (!result.totalBorrow) result.totalBorrow = result.TotalBorrow
       if (!result.totalSupply) result.totalSupply = result.TotalSupply
-      if (result.nftCollateralTVL !=undefined && !result.nftCollateralTVL) result.totalSupply += result.nftCollateralTVL
+      if (chain == "ethereum") {
+        const result_nft  = await get(nft_url)
+        console.log("result_nft:", result_nft);
+        if (result_nft.nftCollateralTVL !=undefined && !result_nft.nftCollateralTVL) result.totalSupply += result_nft.nftCollateralTVL
+      }
       return {
         tether: BigNumber(result.totalSupply - result.totalBorrow).toFixed(0)
       }
