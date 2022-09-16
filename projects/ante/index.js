@@ -1,6 +1,19 @@
 const sdk = require('@defillama/sdk');
 const BigNumber = require('bignumber.js');
 const { getChainTransform } = require("../helper/portedTokens")
+const ethers = require("ethers")
+const { config } = require('@defillama/sdk/build/api');
+
+
+config.setProvider("bsc", new ethers.providers.StaticJsonRpcProvider(
+  "https://bsc.mytokenpocket.vip",
+  {
+    name: "bsc",
+    chainId: 56,
+  }
+))
+
+
 
 const toAddress = data => `0x${data.slice(64 - 40 + 2, 64 + 2)}`;
 
