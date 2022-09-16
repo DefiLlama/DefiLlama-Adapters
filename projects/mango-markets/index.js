@@ -1,6 +1,6 @@
 const axios = require('axios')
 
-const endpoint = 'https://mango-stats-v3.herokuapp.com/spot?mangoGroup=mainnet.1'
+const endpoint = 'https://mango-transaction-log.herokuapp.com/v3/stats/spot_stats_hourly?mango-group=mainnet.1'
 
 // Very inefficient
 function findClosestToDate(values, date) {

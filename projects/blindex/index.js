@@ -204,7 +204,7 @@ async function tvl(chainName, block) {
   const balancesArray = await Promise.all(promises);
 
   const balances = sumBalances(balancesArray);
-  const { updateBalances } = await getTokenPrices({ chain, block, coreAssets: [wbtc], lps: [blindexBTCLP] }) // get blindex price from LP
+  const { updateBalances } = await getTokenPrices({ chain, block, useDefaultCoreAssets: true, lps: [blindexBTCLP] }) // get blindex price from LP
   await updateBalances(balances)
   const fixBalances = await getFixBalances(chain)
   fixBalances(balances)
@@ -218,11 +218,7 @@ const rsk = async function rskTvl(timestamp, ethBlock, chainblocks) {
 const dexTVL = getUniTVL({
   chain: 'rsk',
   factory: '0x5Af7cba7CDfE30664ab6E06D8D2210915Ef73c2E',
-  coreAssets: [
-    '0x542fda317318ebf1d3deaf76e0b632741a7e677d', // wrBTC
-    '0x967f8799af07df1534d48a95a5c9febe92c53ae0', // wrBTC
-    '0x1d931bf8656d795e50ef6d639562c5bd8ac2b78f', // ETH
-  ]
+  useDefaultCoreAssets: true,
 })
 
 module.exports = {
