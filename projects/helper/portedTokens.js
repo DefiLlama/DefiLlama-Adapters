@@ -90,6 +90,10 @@ async function transformPolygonAddress() {
   return transformChainAddress(transformTokens.polygon, "polygon")
 }
 
+async function transformCeloAddress() {
+  return transformChainAddress(transformTokens.celo, "celo")
+}
+
 async function transformHarmonyAddress() {
   const bridge = (await utils.fetchURL(
     "https://be4.bridge.hmny.io/tokens/?page=0&size=1000"
@@ -296,6 +300,7 @@ module.exports = {
   transformOptimismAddress,
   transformArbitrumAddress,
   transformIotexAddress,
+  transformCeloAddress,
   stripTokenHeader,
   getFixBalancesSync,
   transformBalances,
