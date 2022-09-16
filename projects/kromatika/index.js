@@ -1,7 +1,9 @@
 const sdk = require("@defillama/sdk");
 const { getChainTransform } = require("../helper/portedTokens");
 const abi = require("./abi.json");
-const Web3 = require("../config/web3.js");
+const web3 = require("web3");
+const ETHEREUM_RPC = 'https://eth-mainnet.gateway.pokt.network/v1/5f3453978e354ab992c4da79'
+
 
 const contracts = {
   optimism: {
@@ -26,6 +28,7 @@ const multicall_address = {
 const tvl = (chain) =>
   async function (timestamp, ethBlock, chainBlocks) {
     const krom_position = contracts[chain].position;
+    const Web3 = new web3(web3.givenProvider || ETHEREUM_RPC)
 
     let transform = await getChainTransform(chain);
 
