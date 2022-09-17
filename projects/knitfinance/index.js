@@ -21,6 +21,7 @@ const chainConfig = {
   bitgert: "bitgert",
   xdai: "gnosis",
   reef: "reef",
+  kava: "kava"
 };
 
 module.exports = {
