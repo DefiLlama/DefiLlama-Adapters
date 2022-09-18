@@ -90,7 +90,6 @@ async function arbitrum(_timestamp, ethBlock, chainBlocks){
 async function optimism(_timestamp, ethBlock, chainBlocks){
     const wethSupplies = await allMarketSupplies(optimismContracts.weth, chainBlocks.optimism, "optimism");
     const usdcSupplies = await allMarketSupplies(optimismContracts.usdc, chainBlocks.optimism, "optimism");
-
     return {
         [weth]: wethSupplies,
         [usdc]: usdcSupplies,
