@@ -1,12 +1,14 @@
+// The provided address should be the FujiERC1155 contract that returns
+// totalSupply() for token `ids` indicated.
 const optimismContracts = {
   weth: [{
     name: "optimismF1155Core_VaultsWETH",
-    address: "0xaAb2AAfBFf7419Ff85181d3A846bA9045803dd67",
+    address: "0x3E57e261F1420f11688783534dd4a462a6B63bbc",
     ids: [0],
   }],
   usdc: [{
     name: "optimismF1155Core_VaultsUSDC",
-    address: "0x76E77921341e4414e60BdE4a3F56822c70e3ADf6",
+    address: "0x3E57e261F1420f11688783534dd4a462a6B63bbc",
     ids: [2],
   }],
 };
