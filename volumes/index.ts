@@ -23,6 +23,23 @@ import uniswap from "./adapters/uniswap";
 import yieldfields from "./adapters/yieldfields";
 import gmx from "./adapters/gmx";
 import velodrome from "./adapters/velodrome";
+import woofi from "./adapters/woofi";
+import hashflow from "./adapters/hashflow";
+import biswap from "./adapters/biswap";
+import zipswap from "./adapters/zipswap";
+import wardenswap from "./adapters/wardenswap";
+import apeswap from "./adapters/apeswap";
+import kyberswap from "./adapters/kyberswap";
+import orca from "./adapters/orca";
+import pangolin from "./adapters/pangolin";
+import refFinance from "./adapters/ref-finance";
+import saber from "./adapters/saber";
+import solidly from "./adapters/solidly";
+import yoshiExchange from "./adapters/yoshi-exchange";
+import platypus from "./adapters/platypus";
+import wombatExchange from "./adapters/wombat-exchange";
+import wingriders from "./adapters/wingriders";
+import minswap from "./adapters/minswap";
 
 export default {
   mooniswap,
@@ -49,5 +66,23 @@ export default {
   uniswap,
   yieldfields,
   gmx,
-  velodrome
+  velodrome,
+  woofi,
+  hashflow,
+  biswap,
+  zipswap,
+  wardenswap,
+  apeswap,
+  kyberswap,
+  orca,
+  pangolin,
+  "ref-finance": refFinance,
+  saber,
+  solidly,
+  "yoshi-exchange": yoshiExchange,
+  platypus,
+  "wombat-exchange": wombatExchange,
+  wingriders,
+  minswap
+  // lyra -> OPTIONS DEX, not enable for now
 };

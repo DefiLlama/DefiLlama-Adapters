@@ -87,6 +87,42 @@
           "name": "USDT (Via Celer CBridge From ETH)"
         }
       ]
+    },
+    "jio3BTC": {
+      "address": "0x9cFc3396801bbBe1Afb79226f3dD303Ea45018Ce",
+      "lpToken": "0xdaed14ddca3d1c45fc2be91c148468cbb3880247",
+      "poolTokens": [
+        {
+          "address": "0x1C428a6539A40eC5Bb481631266a51cd19b233B1",
+          "name": "WBTC (Via Celer CBridge From ETH)"
+        },
+        {
+          "address": "0xB44a9B6905aF7c801311e8F4E76932ee959c663C",
+          "name": "WBTC (Via MultiChain From ETH)"
+        },
+        {
+          "address": "0x82455018f2c32943b3f12f4e59d0da2faf2257ef",
+          "name": "WBTC (Via Force Bridge From ETH)"
+        }
+      ]
+    },
+    "jio3multiChainUSD": {
+      "address": "0xB99dA175BfEe98B2cF7B27eF4245C1d19Eeff29a",
+      "lpToken": "0xb5782C8B400Bf63827053B6e435B678033cbEc3F",
+      "poolTokens": [
+        {
+          "address": "0x765277EebeCA2e31912C9946eAe1021199B39C61",
+          "name": "DAI (via Multichain from ETH)"
+        },
+        {
+          "address": "0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D",
+          "name": "USDC (via Multichain from ETH)"
+        },
+        {
+          "address": "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f",
+          "name": "USDT (via Multichain from ETH)"
+        }
+      ]
     }
   }
 }
