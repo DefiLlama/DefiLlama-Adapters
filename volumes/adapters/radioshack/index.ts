@@ -38,7 +38,7 @@ const adapter: SimpleVolumeAdapter = {
       fetch: graphs(CHAIN.BSC),
       start: getStartTimestamp({
         endpoints: endpoints,
-        chain: CHAIN.POLYGON,
+        chain: CHAIN.BSC,
         volumeField: DEFAULT_DAILY_VOLUME_FIELD,
         dailyDataField: `${DEFAULT_DAILY_VOLUME_FACTORY}s`
       })
@@ -47,7 +47,7 @@ const adapter: SimpleVolumeAdapter = {
       fetch: graphs(CHAIN.ETHEREUM),
       start: getStartTimestamp({
         endpoints: endpoints,
-        chain: CHAIN.POLYGON,
+        chain: CHAIN.ETHEREUM,
         volumeField: DEFAULT_DAILY_VOLUME_FIELD,
         dailyDataField: `${DEFAULT_DAILY_VOLUME_FACTORY}s`
       })
@@ -56,7 +56,7 @@ const adapter: SimpleVolumeAdapter = {
       fetch: graphs(CHAIN.AVAX),
       start: getStartTimestamp({
         endpoints: endpoints,
-        chain: CHAIN.POLYGON,
+        chain: CHAIN.AVAX,
         volumeField: DEFAULT_DAILY_VOLUME_FIELD,
         dailyDataField: `${DEFAULT_DAILY_VOLUME_FACTORY}s`
       })
@@ -65,7 +65,7 @@ const adapter: SimpleVolumeAdapter = {
       fetch: graphs(CHAIN.FANTOM),
       start: getStartTimestamp({
         endpoints: endpoints,
-        chain: CHAIN.POLYGON,
+        chain: CHAIN.FANTOM,
         volumeField: DEFAULT_DAILY_VOLUME_FIELD,
         dailyDataField: `${DEFAULT_DAILY_VOLUME_FACTORY}s`
       })
