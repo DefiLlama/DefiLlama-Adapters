@@ -7,4 +7,7 @@ export default univ2Adapter({
     [CHAIN.ETHEREUM]: "https://api.thegraph.com/subgraphs/name/radioshackcreator/exchange-ethereum",
     [CHAIN.AVAX]: "https://api.thegraph.com/subgraphs/name/radioshackcreator/exchange-avalanche",
     [CHAIN.FANTOM]: "https://api.thegraph.com/subgraphs/name/radioshackcreator/exchange-fantom"
-}, {});
+}, {
+    factoriesName: "radioShackFactory",
+    dayData: "radioShackDayData",
+});
