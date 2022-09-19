@@ -128,7 +128,7 @@ const positions = async () => {
         const _supplyBalanceUnderlying = supplyBalanceUnderlying(token);
         const _price = prices["bsc:" + token.market.underlyingAddress];
         if (!_price) {
-          console.log("no price for", "bsc:" + token.market.underlyingAddress);
+          // console.log("no price for", "bsc:" + token.market.underlyingAddress);
           return {
             debt: new BigNumber(0),
             price: 0,
