@@ -39,9 +39,10 @@ async function tvl(timestamp, block) {
 }
 
 async function optimismTvl(timestamp, block) {
-  const optimismCalls = optimismTokens.map((token) => ({
-    target: token,
-  }));
+  // const optimismCalls = optimismTokens.map((token) => ({
+  //   target: token,
+  // }));
+  const optimismCalls = [{ target: mnyeAddress }];
   const optimismTotalSupplies = await sdk.api.abi.multiCall({
     block,
     optimismCalls,
