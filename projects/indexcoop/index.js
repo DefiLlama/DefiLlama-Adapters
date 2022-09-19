@@ -9,6 +9,7 @@ const bedAddress = "0x2aF1dF3AB0ab157e1E2Ad8F88A7D04fbea0c7dc6";
 const dataAddress = "0x33d63Ba1E57E54779F7dDAeaA7109349344cf5F1";
 const gmiAddress = "0x47110d43175f7f2c2425e7d15792acc5817eb44f";
 const icethAddress = "0x7c07f7abe10ce8e33dc6c5ad68fe033085256a84";
+const mnyeAddress = "0x0be27c140f9bdad3474beaff0a413ec7e19e9b93";
 const tokens = [
   dpiAddress,
   ethFliAddress,
@@ -18,8 +19,10 @@ const tokens = [
   bedAddress,
   dataAddress,
   gmiAddress,
-  icethAddress
+  icethAddress,
 ];
+
+const optimismTokens = [mnyeAddress];
 
 async function tvl(timestamp, block) {
   const calls = tokens.map((token) => ({
@@ -35,8 +38,27 @@ async function tvl(timestamp, block) {
   return balances;
 }
 
+async function optimismTvl(timestamp, block) {
+  const optimismCalls = optimismTokens.map((token) => ({
+    target: token,
+  }));
+  const optimismTotalSupplies = await sdk.api.abi.multiCall({
+    block,
+    optimismCalls,
+    abi: "erc20:totalSupply",
+    chain: "optimism",
+  });
+
+  const optimismBalances = {};
+  sdk.util.sumMultiBalanceOf(optimismBalances, optimismTotalSupplies, true);
+  return optimismBalances;
+}
+
 module.exports = {
   ethereum: {
     tvl,
+  },
+  optimism: {
+    tvl: optimismTvl,
   },
 };
