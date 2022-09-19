@@ -40,6 +40,7 @@ import platypus from "./adapters/platypus";
 import wombatExchange from "./adapters/wombat-exchange";
 import wingriders from "./adapters/wingriders";
 import minswap from "./adapters/minswap";
+import mdex from "./adapters/mdex";
 
 export default {
   mooniswap,
@@ -83,6 +84,7 @@ export default {
   platypus,
   "wombat-exchange": wombatExchange,
   wingriders,
-  minswap
+  minswap,
+  mdex
   // lyra -> OPTIONS DEX, not enable for now
 };
