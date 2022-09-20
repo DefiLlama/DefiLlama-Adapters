@@ -6,6 +6,7 @@ const lps = Object.values({
     'LION-USDC-LP': '0xf2059ed015ec4ecc80f902d9fdbcd2a227bfe037',
     'TIGER-USDC-LP': '0xf6464c80448d6ec4deb7e8e5ec95b8eb768fbf69',
     'BEAR-WBTC-LP': '0x3d9e539fa44b970605658e25d18f816ce78c4007',
+    'LION': '0x49fB98F9b4a3183Cd88e7a115144fdf00fa6fB95',
 })
 
 module.exports = unknownTombs({
