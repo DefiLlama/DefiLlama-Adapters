@@ -73,6 +73,7 @@ function chainTvl(chain, config) {
 
 module.exports = {
   timetravel: false,
+  doublecounted: true,
   arbitrum: {
     tvl: chainTvl('arbitrum', ARBITRUM),
   },
