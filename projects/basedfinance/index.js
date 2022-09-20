@@ -11,5 +11,5 @@ const lps = [
 
 module.exports = {
     misrepresentedTokens: true,
-    ...tombTvl(obol, smelt, SmeltRewardPool, Boardroom, lps, "ftm", undefined, true, lps[2])
-}
+    ...tombTvl(obol, smelt, SmeltRewardPool, Boardroom, lps, "fantom", undefined, true, lps[2])
+} 
