@@ -43,8 +43,7 @@ const tvl = async () => {
             valueLovelace: 0,
           };
         }
-        const value = BigNumber.sum(quantity, tvlLocked[unit].value);
-        tvlLocked[unit] = { value: value.toNumber(), };
+        tvlLocked[unit].value = BigNumber.sum(quantity, tvlLocked[unit].value).toNumber();
         const pair = pairs[`${unit}_lovelace`];
         if (pair) {
           if (!tvlLocked[unit].valueLovelace) {
