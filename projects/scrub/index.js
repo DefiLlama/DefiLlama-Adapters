@@ -1,6 +1,6 @@
 const { unknownTombs } = require("../helper/unknownTokens")
 
-const token = "0x49fB98F9b4a3183Cd88e7a115144fdf00fa6fB95"
+const token = ["0x49fB98F9b4a3183Cd88e7a115144fdf00fa6fB95","0xD6597AA36DD90d7fCcBd7B8A228F2d5CdC88eAd0","0xAA22aEBd60c9Eb653A0aE0Cb8b7367087a9B5Dba"]
 const rewardPool = ["0x44B4a1e8f34Bb52ed39854aD218FF94D2D5b4800","0x14103f4Fc36daCeaCDE4c5313a2b1a462e00B1e8"]
 const lps = Object.values({
     'LION-USDC-LP': '0xf2059ed015ec4ecc80f902d9fdbcd2a227bfe037',
