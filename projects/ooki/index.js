@@ -85,11 +85,11 @@ async function getBalances(timestamp, block, chainBlocks, network) {
     let balances = {};
     const balanceOfCalls = [];
     const getTokensResult = await sdk.api.abi.call({
-        block,
+        chainBlocks,
         target: contracts[network].registry,
-                params: [0, 200],
+        params: [0, 200],
         chain: network,
-        abi: registry["getTokens"]
+        abi: registry.getTokens
     });
 
     getTokensResult.output.forEach((token) =>{
@@ -108,17 +108,17 @@ async function getBalances(timestamp, block, chainBlocks, network) {
     }));
 
     const supplyResult = await sdk.api.abi.multiCall({
-        block,
+        chainBlocks,
         calls: iTokenCalls,
                chain: network,
-        abi: abi["totalAssetSupply"]
+        abi: abi.totalAssetSupply
     });
 
     const borrowResult = await sdk.api.abi.multiCall({
-        block,
+        chainBlocks,
         calls: iTokenCalls,
                chain: network,
-        abi: abi["totalAssetBorrow"]
+        abi: abi.totalAssetBorrow
     });
 
     iTokens.forEach((iToken) => {
@@ -137,7 +137,7 @@ async function getBalances(timestamp, block, chainBlocks, network) {
 
     //Balances
     const balanceOfs = await sdk.api.abi.multiCall({
-        block,
+        chainBlocks,
         calls: balanceOfCalls,
         chain: network,
         abi: abi["balanceOf"],
@@ -186,7 +186,7 @@ let stakingContracts = [
     '0x16f179f5c344cc29672a58ea327a26f64b941a63'  
 ]
 
-TreasureTokens = [ 
+let TreasureTokens = [ 
     '0x56d811088235F11C8920698a204A5010a788f4b3', //bzrx
     '0x0De05F6447ab4D22c8827449EE4bA2D5C288379B', //ooki
     //'vbzrx': '0xB72B31907C1C95F3650b64b2469e08EdACeE5e8F', vesting tokens not counted
