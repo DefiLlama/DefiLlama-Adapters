@@ -1,7 +1,7 @@
 const { calculateUniTvl } = require("../helper/calculateUniTvl");
 const { staking } = require("../helper/staking");
 const { getBlock } = require("../helper/getBlock");
-const { fixHarmonyBalances, transformHarmonyAddress } = require("../helper/portedTokens");
+const { getFixBalances, } = require("../helper/portedTokens");
 
 /*
 const { request, gql } = require("graphql-request");
@@ -38,7 +38,7 @@ async function tvl(timestamp, _ethBlock, chainBlocks) {
       0,
       true
   );
-  fixHarmonyBalances(balances)
+  (await getFixBalances('harmony'))(balances);
   delete balances["harmony:0xed0b4b0f0e2c17646682fc98ace09feb99af3ade"]
 
   return balances
@@ -50,4 +50,7 @@ module.exports = {
     tvl,
     staking: staking("0xa9ce83507d872c5e1273e745abcfda849daa654f", "0x72cb10c6bfa5624dd07ef608027e366bd690048f", "harmony"),
   },
+  hallmarks:[
+    [1655991120, "Horizon bridge Hack $100m"],
+  ],
 };

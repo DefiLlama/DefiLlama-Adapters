@@ -20,14 +20,15 @@ const OORT_LP = '0xB95783dCE72CF2C7fa13a6b3D7399A4223259878'
 // };
 
 
-module.exports = unknownTombs({ shares: [share], rewardPool: [genesisPool, rewardPool], masonry: [boardroom, nodeAddress, ], chain: 'rei', coreAssets: [WREI], lps: pool2lps })
+module.exports = unknownTombs({ shares: [share], rewardPool: [genesisPool, rewardPool], masonry: [boardroom, nodeAddress, ], chain: 'rei', 
+useDefaultCoreAssets: true, lps: pool2lps })
 module.exports.rei.tvl = async (_, _b, { rei: block }) => sumUnknownTokens({
   chain: 'rei',
   block,
   owners: [rewardPool, genesisPool],
   tokens: [WREI, OORT],
   lps: [OORT_LP],
-  coreAssets: [WREI]
+  useDefaultCoreAssets: true,
 })
 
 staking(rewardPool, WREI, 'rei')
