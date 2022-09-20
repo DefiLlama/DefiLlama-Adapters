@@ -34,7 +34,7 @@ module.exports = {
   astar: {
     tvl: fetchallchain(592),
   },
-  avalanche: {
+  avax:{
     tvl: fetchallchain(43114),
   },
   fantom: {

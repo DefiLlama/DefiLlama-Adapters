@@ -174,7 +174,7 @@ module.exports = {
   arbitrum: {
     tvl: arbitrumBullbearTVL
   },
-  avalanche: {
+  avax:{
     tvl: avaxBullbearTVL
   },
   timetravel: true,

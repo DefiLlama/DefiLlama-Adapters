@@ -117,7 +117,7 @@ const poolsPolygon = [
     '0xdF0BE663C84322f55aD7b40A4120CdECBa4C4B45',
     '0x51C30ee94052baAABA60Db6b931c1f4657FFe174',
     '0x39D28Db6742a457BCfB927D4539bEea55Dc5Dd87',
-    
+
 ]
 
 const ZERO = new BigNumber(0)
@@ -134,7 +134,7 @@ async function bsc(timestamp, ethBlock, chainBlock) {
         abi: abi,
         chain: 'bsc'
     })).output.reduce((tvl, call) => tvl.plus(new BigNumber(call.output)), ZERO)
-    
+
     const pot_total = (await sdk.api.abi.multiCall({
         calls: pots.map( address => ({
             target: address
@@ -143,7 +143,7 @@ async function bsc(timestamp, ethBlock, chainBlock) {
         abi: potABI,
         chain: 'bsc'
     })).output.reduce((tvl, call) => tvl.plus(new BigNumber(call.output)), ZERO)
-    
+
     const leverage_total = (await sdk.api.abi.multiCall({
         calls: leveragedPools.map( address => ({
             target: address
@@ -152,7 +152,7 @@ async function bsc(timestamp, ethBlock, chainBlock) {
         abi: leverageABI,
         chain: 'bsc'
     })).output.reduce((tvl, call) => tvl.plus(new BigNumber(call.output[1])), ZERO)
-        
+
     return {
         'tether': total.plus(pot_total).plus(leverage_total).dividedBy(ETHER).toNumber()
     }
@@ -184,4 +184,7 @@ module.exports = {
     polygon:{
         tvl:polygon
     },
+    hallmarks: [
+        [1621395248, 'Flash Loan Attack'],
+    ],
 }

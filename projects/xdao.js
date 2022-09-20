@@ -3,11 +3,7 @@ const retry = require("./helper/retry");
 const axios = require("axios");
 const { PromisePool } = require('@supercharge/promise-pool')
 const {
-  transformBscAddress,
-  transformAvaxAddress,
-  transformHecoAddress,
-  transformPolygonAddress,
-  transformFantomAddress,
+  getChainTransform,
 } = require("./helper/portedTokens");
 
 const factoryAddress = "0x72cc6E4DE47f673062c41C67505188144a0a3D84";
@@ -91,22 +87,7 @@ async function getTokens(chain, address) {
 }
 
 async function getTransform(chain) {
-  switch (chain) {
-    case "ethereum":
-      return (a) => a;
-    case "bsc":
-      return await transformBscAddress();
-    case "polygon":
-      return await transformPolygonAddress();
-    case "avax":
-      return await transformAvaxAddress();
-    case "fantom":
-      return await transformFantomAddress();
-    case "heco":
-      return await transformHecoAddress();
-    case "astar":
-      return (a) => a;
-  }
+  return getChainTransform(chain)
 }
 
 // node test.js projects/xdao.js
