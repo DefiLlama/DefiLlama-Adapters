@@ -31,7 +31,7 @@ const getStartTimestamp = async () => {
 
 const adapter: SimpleVolumeAdapter = {
   volume: {
-    klatyn: {
+    klaytn: {
       fetch,
       runAtCurrTime: true,
       start: getStartTimestamp,

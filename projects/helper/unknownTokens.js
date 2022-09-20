@@ -650,6 +650,7 @@ function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = 
   }
 
   return {
+    misrepresentedTokens: true,
     [chain]: {
       tvl, pool2, staking
     }
