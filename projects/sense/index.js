@@ -9,7 +9,7 @@ const DIVIDER_INIT_TS = 1647831440;
 // Converts a bytes32 into an address or, if there is more data, slices an address out of the first 32 byte word
 const toAddress = (data) => `0x${data.slice(64 - 40 + 2, 64 + 2)}`;
 
-async function tvl(_, block, _) {
+async function tvl(_time, block) {
   const balances = {};
   const adapterTargetCache = {};
 
