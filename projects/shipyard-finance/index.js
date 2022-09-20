@@ -1,39 +1,85 @@
-const utils = require('../helper/utils');
-const {toUSDTBalances} = require('../helper/balances');
+const sdk = require('@defillama/sdk');
+const abi = require('./abi.json');
+const {usdtAddress} = require("../helper/balances");
+const retry = require("../helper/retry");
+const axios = require("axios");
 
-const chains = {
-  ethereum: 1,
-  arbitrum: 42161,
-  avax: 43114,
+const USDT_DECIMALS = 6;
+
+const ARBITRUM = {
+  vaults: ['0xb5AAa74CbA960D9Cbb6beE05e5435299308C682c'],
+};
+const AVALANCHE = {
+  vaults: ['0x3B8Cfb57A87a091A90b5a3c00dF0F6EA0a371Ef7'],
+};
+const ETHEREUM = {
+  vaults: ['0x0bCB75D9c5d4D33EE36bFeAfa94F8b75080b4387'],
 }
 
-function getChainBalance(chainId, resp) {
-  return async () => {
+function chainTvl(chain, config) {
+  return async (timestamp, ethBlock, chainBlocks) => {
+    const block = chainBlocks[chain];
 
-    const data = (await resp).data;
+    let chainBalance = 0;
 
-    const tvl = data
-      .filter(item => item.chainId === chainId)
-      .map(item => item.tvl)
-      .reduce((prev, curr) => prev + curr, 0);
+    const wants = [];
+    const coins = [];
 
-    return toUSDTBalances(tvl);
-  }
-}
+    for (const vault of config.vaults) {
 
-function getData() {
+      const want = (await sdk.api.abi.call({
+        block,
+        target: vault,
+        abi: abi.want,
+        chain,
+      })).output;
 
-  const data = utils.fetchURL('http://api.shipyard.finance/vaults');
+      wants.push(want)
+      coins.push(`${chain}:${want}`.toLowerCase());
+    }
 
-  return Object.fromEntries(Object.entries(chains).map(chain =>
-    [chain[0], {
-      tvl: getChainBalance(chain[1], data),
-    }]));
+    const getCoins = () => axios.post("https://coins.llama.fi/prices", {
+      "coins": coins
+    });
+
+    const coinsData = (await retry(getCoins)).data.coins;
+
+    for (let index = 0; index < config.vaults.length; index++) {
+      const vault = config.vaults[index];
+      const want = wants[index];
+
+      const vaultBalance = (await sdk.api.abi.call({
+        block,
+        target: vault,
+        abi: abi.balance,
+        chain,
+      })).output;
+
+      const coinId = `${chain}:${want}`.toLowerCase();
+
+      const coinDecimals = coinsData[coinId].decimals;
+      const coinPrice = coinsData[coinId].price;
+
+      const divisor = coinDecimals === USDT_DECIMALS ? 1 : 10 ** (coinDecimals - USDT_DECIMALS);
+
+      chainBalance += vaultBalance * (coinPrice / divisor)
+    }
+
+    return {
+      [usdtAddress]: chainBalance
+    };
+  };
 }
 
 module.exports = {
   timetravel: false,
-  misrepresentedTokens: true,
-  doublecounted: true,
-  ...(getData())
-}
+  arbitrum: {
+    tvl: chainTvl('arbitrum', ARBITRUM),
+  },
+  avax: {
+    tvl: chainTvl('avax', AVALANCHE),
+  },
+  ethereum: {
+    tvl: chainTvl('ethereum', ETHEREUM),
+  }
+};
