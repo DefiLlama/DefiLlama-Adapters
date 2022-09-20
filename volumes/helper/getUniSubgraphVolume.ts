@@ -1,7 +1,9 @@
 import { Chain } from "@defillama/sdk/build/general";
 import { request, gql } from "graphql-request";
 import { getBlock } from "../../projects/helper/getBlock";
-import { ChainBlocks } from "../dexVolume.type";
+import { Adapter, ChainBlocks } from "../dexVolume.type";
+import { SimpleVolumeAdapter } from "../dexVolume.type";
+import { DEFAULT_DATE_FIELD, getStartTimestamp } from "./getStartTimestamp";
 
 const getUniqStartOfTodayTimestamp = (date = new Date()) => {
   var date_utc = Date.UTC(
@@ -70,12 +72,17 @@ function getChainVolume({
   const dailyVolumeQuery =
     customDailyVolume ||
     gql`
-    ${dailyVolume.factory} (
-      id: $id
-      ) {
-        ${dailyVolume.field}
+    ${dailyVolume.factory} (id: $id) {
+          ${dailyVolume.field}
+      }`;
+
+  const alternativeDaily = (timestamp: number) => gql`{
+      ${dailyVolume.factory}(where: {date: ${timestamp}}) {
+          date
+          dailyVolumeUSD
       }
-      `;
+  }`;
+
   const graphQueryTotalVolume = gql`${hasTotalVolume ? `query get_total_volume($block: Int) { ${totalVolumeQuery} }` : ""}`
   const graphQueryDailyVolume = gql`${hasDailyVolume ? `query get_daily_volume($id: Int) { ${dailyVolumeQuery} }` : ""}`;
 
@@ -87,20 +94,71 @@ function getChainVolume({
           await getBlock(timestamp, chain, chainBlocks);
       const id = getUniswapDateId(new Date(timestamp * 1000));
       const graphResTotal = hasTotalVolume ? await request(graphUrls[chain], graphQueryTotalVolume, { block }).catch(e => console.error(`Failed to get total volume on ${chain}: ${e.message}`)) : undefined;
-      const graphResDaily = hasDailyVolume ? await request(graphUrls[chain], graphQueryDailyVolume, { id }).catch(e => console.error(`Failed to get daily volume on ${chain}: ${e.message}`)) : undefined;
+      let graphResDaily = hasDailyVolume ? await request(graphUrls[chain], graphQueryDailyVolume, { id }).catch(e => console.error(`Failed to get daily volume on ${chain}: ${e.message}`)) : undefined;
+      let dailyVolumeValue = graphResDaily ? graphResDaily[dailyVolume.factory]?.[dailyVolume.field] : undefined
+      if (hasDailyVolume && !dailyVolumeValue) {
+        graphResDaily = await request(graphUrls[chain], alternativeDaily(getUniqStartOfTodayTimestamp(new Date(timestamp * 1000)))).catch(e => console.error(`Failed to get daily volume via alternative query on ${chain}: ${e.message}`))
+        dailyVolumeValue = graphResDaily ? graphResDaily['uniswapDayDatas']?.[0]?.dailyVolumeUSD : undefined
+      }
+
       return {
         timestamp,
         block,
-        totalVolume: graphResTotal ? graphResTotal[totalVolume.factory]?.[0]?.[totalVolume.field] : undefined,
-        dailyVolume: graphResDaily ? graphResDaily[dailyVolume.factory]?.[dailyVolume.field] : undefined,
+        totalVolume: graphResTotal ? graphResTotal[totalVolume.factory]?.reduce((total:number, factory:any)=>total+Number(factory[totalVolume.field]), 0) : undefined,
+        dailyVolume: dailyVolumeValue,
       };
     };
   };
 }
 
+function univ2Adapter(endpoints: {
+  [chain:string]:string
+}, {
+  factoriesName = DEFAULT_TOTAL_VOLUME_FACTORY,
+  dayData = DEFAULT_DAILY_VOLUME_FACTORY,
+  totalVolume = DEFAULT_TOTAL_VOLUME_FIELD,
+  dailyVolume = DEFAULT_DAILY_VOLUME_FIELD,
+  dailyVolumeTimestampField = DEFAULT_DATE_FIELD,
+  hasTotalVolume = true
+}){
+const graphs = getChainVolume({
+  graphUrls: endpoints,
+  hasTotalVolume,
+  totalVolume: {
+    factory: factoriesName,
+    field: totalVolume
+  },
+  dailyVolume: {
+    factory: dayData,
+    field: dailyVolume,
+  },
+});
+
+const adapter: SimpleVolumeAdapter = {
+  volume: Object.keys(endpoints).reduce((acc, chain) => {
+    return {
+      ...acc,
+      [chain]: {
+        fetch: graphs(chain as Chain),
+        start: getStartTimestamp({
+          endpoints: endpoints,
+          chain,
+          volumeField: dailyVolume,
+          dailyDataField: dayData + "s",
+          dateField: dailyVolumeTimestampField
+        }),
+      }
+    }
+  }, {} as Adapter)
+};
+
+return adapter;
+}
+
 export {
   getUniqStartOfTodayTimestamp,
   getChainVolume,
+  univ2Adapter,
   DEFAULT_TOTAL_VOLUME_FACTORY,
   DEFAULT_TOTAL_VOLUME_FIELD,
   DEFAULT_DAILY_VOLUME_FACTORY,

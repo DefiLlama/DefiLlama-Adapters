@@ -14,6 +14,7 @@ export type CToken = {
 };
 
 export type Market = {
+  id: string;
   name: string;
   symbol: string;
 
@@ -50,6 +51,7 @@ export const getMarkets = async (subgraphUrl: string) => {
   const marketsQuery = gql`
     query markets {
       markets {
+        id
         name
         symbol
         exchangeRate
@@ -73,10 +75,12 @@ export const borrowBalanceUnderlying = (cToken: CToken): BigNumber =>
     ? bignum("0")
     : bignum(cToken.storedBorrowBalance).times(cToken.market.borrowIndex).dividedBy(cToken.accountBorrowIndex);
 
-export const tokenInUsd = (market: Market, prices: Prices, chainPrefix: string): BigNumber =>
-  bignum(market.collateralFactor)
+export const tokenInUsd = (market: Market, prices: Prices, chainPrefix: string): BigNumber => {
+  // console.log("market", JSON.stringify(market));
+  return bignum(market.collateralFactor)
     .times(market.exchangeRate)
     .times(prices[chainPrefix + market.underlyingAddress]?.price ?? 0);
+};
 
 export const totalCollateralValueInUsd = (account: Account, prices: Prices, chainPrefix: string): BigNumber =>
   account.tokens.reduce(
