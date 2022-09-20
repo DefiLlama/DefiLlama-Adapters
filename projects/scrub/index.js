@@ -20,11 +20,7 @@ module.exports = unknownTombs({
   ],
   chain: 'cronos',
   coreAssets: [
-      "0xc21223249CA28397B4B6541dfFaEcC539BfF0c59",
-      "0x062e66477faf219f25d27dced647bf57c3107d52",
-      "0x49fB98F9b4a3183Cd88e7a115144fdf00fa6fB95", // LION
-      "0xaa22aebd60c9eb653a0ae0cb8b7367087a9b5dba", // BEAR
-      '0xD6597AA36DD90d7fCcBd7B8A228F2d5CdC88eAd0', //Tiger
+
 
   ],
 })
