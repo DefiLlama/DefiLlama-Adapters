@@ -1,10 +1,12 @@
 import { SimpleVolumeAdapter } from "../../dexVolume.type";
+const { getUniqStartOfTodayTimestamp } = require("../../helper/getUniSubgraphVolume");
 
 const { get } = require('../../../projects/helper/http')
 
 const fetch = async (timestamp: number) => {
 
-  const data = await get('https://api.flamingo.finance/project-info/defillama-volume?timestamp='+timestamp);
+  const dayTimestamp = getUniqStartOfTodayTimestamp(new Date(timestamp * 1000))
+  const data = await get('https://api.flamingo.finance/project-info/defillama-volume?timestamp=' + dayTimestamp);
 
   return {
     dailyVolume: data.volume,
