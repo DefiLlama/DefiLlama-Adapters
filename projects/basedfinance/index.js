@@ -29,7 +29,6 @@ const poolLPs = [
     crv3CryptoAddress
   ];
 
-
 //BASED V2
 const obol = "0x1539C63037D95f84A5981F96e43850d1451b6216";
 const smelt = "0x141FaA507855E56396EAdBD25EC82656755CD61e";
@@ -52,13 +51,13 @@ const longNodes = "0x62A2Ff4BcCC5dD5316C358cDF079EC5e5c0851fe";
 const chain = 'fantom'
 
 //BASED V1 BshareRewardPool
-async function basedV1Pool2(timestamp, _b, { [chain]: block }) {
+async function bshareRewardPoolTVL(timestamp, _b, { [chain]: block }) {
     return sumTokens2({
         chain, block, owner: bshareRewardPoolAddress, tokens: poolLPs, resolveLP: true,
       })
   }
 
-//BASED V2 SmeltRewardPool main
+//BASED V2 TwistedNodes TVL
 async function pool2(timestamp, _b, { [chain]: block }) {
     let balances = {}
 
@@ -111,7 +110,7 @@ async function pool2(timestamp, _b, { [chain]: block }) {
     return balances;
   }
 
-//BASED V2 Calc nft TVL from SmeltRewardPool with Fixed price $500
+//BASED V2 Calc NFT TVL from SmeltRewardPool with Fixed price $500
 async function nftTVL(timestamp, _b, { [chain]: block }) {
     let balances = {}
 
@@ -147,21 +146,21 @@ async function nftTVL(timestamp, _b, { [chain]: block }) {
     return balances;
   }
 
-//BASED V2 Calc twisted Nodes TVL
-async function twistedNodesTVL(timestamp, _b, { [chain]: block }) {
+//BASED V2 SmeltRewardPool TVL
+async function smeltRewardPoolTVL(timestamp, _b, { [chain]: block }) {
     return sumTokens2({
         chain, block, owner: SmeltRewardPool, tokens: lps, resolveLP: true,
       })
   }
 
 module.exports = {
-    methodology: "test",
+    methodology: "Pool2 consists of Nodes TVL, staking consists of Boardroom TVL (Smelt staked)",
     fantom: {
         tvl: sdk.util.sumChainTvls([
             nftTVL,
             staking(acropolisAddress, bshareTokenAddress, "fantom"), //BASED V1 Acropolis
-            basedV1Pool2,
-            twistedNodesTVL
+            bshareRewardPoolTVL,
+            smeltRewardPoolTVL
         ]),
         staking: staking(Boardroom, smelt, chain),
         pool2,
