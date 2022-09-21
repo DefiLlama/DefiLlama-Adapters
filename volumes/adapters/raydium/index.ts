@@ -17,6 +17,7 @@ const graphs = (chain: string) => async () => {
 
   return {
     totalVolume: res?.data?.totalvolume,
+    dailyVolume: res?.data?.volume24h,
     timestamp: 1, // fix
   };
 };
