@@ -1,5 +1,5 @@
-const { getCoreAssets } = require('./tokenMapping')
-const { sumTokens, sumTokens2, nullAddress, } = require('./unwrapLPs')
+const { getCoreAssets } = require('../helper/tokenMapping')
+const { sumTokens, sumTokens2, nullAddress, } = require('../helper/unwrapLPs')
 const token = ["0x49fB98F9b4a3183Cd88e7a115144fdf00fa6fB95","0xD6597AA36DD90d7fCcBd7B8A228F2d5CdC88eAd0","0xAA22aEBd60c9Eb653A0aE0Cb8b7367087a9B5Dba"]
 const rewardPool = ["0x44B4a1e8f34Bb52ed39854aD218FF94D2D5b4800","0x14103f4Fc36daCeaCDE4c5313a2b1a462e00B1e8"]
 const lps = Object.values({
