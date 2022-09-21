@@ -1,4 +1,5 @@
 const sdk = require("@defillama/sdk");
+const { staking } = require("../helper/staking");
 
 // Wombat Asset Address
 // Main Pool
@@ -62,6 +63,11 @@ async function tvl(timestamp, ethereumBlock, chainBlocks) {
 module.exports = {
   bsc: {
     tvl,
+    staking: staking(
+      "0x3DA62816dD31c56D9CdF22C6771ddb892cB5b0Cc",
+      "0xAD6742A35fB341A9Cc6ad674738Dd8da98b94Fb1",
+      "bsc"
+    ),
   },
   hallmarks: [
     [1662417125, "Liquidity Mining Start"],
