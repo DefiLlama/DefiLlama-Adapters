@@ -21,7 +21,7 @@ async function tvl() {
 
     const response = await axios(options);
     const nudes_amount = response.data.result.stack[0].value;
-    return parseFloat(nudes_amount / 10 ** 8);
+    return {nudes: parseFloat(nudes_amount / 10 ** 8)};
 }
 
 module.exports = {
