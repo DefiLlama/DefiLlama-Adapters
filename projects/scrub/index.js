@@ -64,7 +64,7 @@ function scrubTomb({ token = [], shares = [], rewardPool = [], masonry = [], lps
     [chain === "avax" ? "avalanche" : chain]: {
       staking,
       pool2,
-      tvl: async () => ({staking+pool2}),
+      tvl: async () => ({}),
 
     }
   }
