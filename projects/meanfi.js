@@ -10,6 +10,6 @@ async function fetch() {
 
 module.exports = {
     timetravel: false,
-    methodology: "Snapshots of the TVL from app.katana.so are saved periodically into the statistics repo",
+    methodology: "Snapshots of the TVL from app.meanfi.com are saved periodically into the statistics repo",
     fetch
 }
