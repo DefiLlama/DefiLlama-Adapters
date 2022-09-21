@@ -1,10 +1,8 @@
 const axios = require("axios");
 
 async function fetch() {
-    const tvlSnapshotResponse = await axios.get(
-        "https://raw.githubusercontent.com/mean-dao/MEAN-stats/main/mean-stats.json"
-    );
-    const { data } = tvlSnapshotResponse;
+    const { data } = await axios.get("https://raw.githubusercontent.com/mean-dao/MEAN-stats/main/mean-stats.json");
+    
     return data.tvl.total;
 }
 
