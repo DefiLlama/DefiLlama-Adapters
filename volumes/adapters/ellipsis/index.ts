@@ -20,7 +20,7 @@ const fetch = (chain: string) => async () => {
   return {
     dailyVolume: `${response.data.day}`,
     totalVolume: `${response.data.total}`,
-    timestamp: response.data.generatedTimeMs / 1000,
+    timestamp: Math.trunc(response.data.generatedTimeMs / 1000),
   };
 };
 
