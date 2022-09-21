@@ -8,7 +8,7 @@ const lps = Object.values({
     'BEAR-WBTC-LP': '0x3d9e539fa44b970605658e25d18f816ce78c4007',
 })
 
-function scrubTomb({ token = [], shares = [], rewardPool = [], masonry = [] lps, chain = "ethereum", coreAssets = [],
+function scrubTomb({ token = [], shares = [], rewardPool = [], masonry = [], lps, chain = "ethereum", coreAssets = [],
   useDefaultCoreAssets = false, }) {
   let getPrices
   if (!coreAssets.length && useDefaultCoreAssets)
