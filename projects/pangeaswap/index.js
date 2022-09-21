@@ -1,4 +1,5 @@
 const { getTridentTVL } = require('../helper/sushi-trident')
+const BigNumber = require("bignumber.js");
 
 /**
  * In Pangea Swap, there are multiple factories depending on the pool type.
@@ -31,7 +32,7 @@ function aggregateTVL(...tvls) {
       if (! (token in totalTVL)) {
         totalTVL[token] = tvl[token];
       } else {
-        totalTVL[token] += tvl[token];
+        totalTVL[token] = BigNumber(tvl[token]).plus(totalTVL[token]);
       }
     }
   }
