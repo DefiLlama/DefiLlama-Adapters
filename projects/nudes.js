@@ -1,5 +1,4 @@
 const axios = require("axios");
-const qs = require('qs');
 
 
 async function tvl() {
@@ -17,13 +16,11 @@ async function tvl() {
   const options = {
       method: "post",
       url: "http://seed2.neo.org:10332",
-      data: qs.stringify(query),
+      data: query,
     };
 
     const response = await axios(options);
-
-    const nudes_amount = response.result.stack[0].value;
-
+    const nudes_amount = response.data.result.stack[0].value;
     return parseFloat(nudes_amount / 10 ** 8);
 }
 
