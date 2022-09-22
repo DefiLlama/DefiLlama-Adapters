@@ -5,5 +5,5 @@ export default univ2Adapter({
   [CHAIN.POLYGON]: "https://api.thegraph.com/subgraphs/name/polymmfinance/exchang"
 }, {
   factoriesName: "pancakeFactories",
-  dayData: "pancakeDayData",
+  dayData: "pancakeDayData"
 });
