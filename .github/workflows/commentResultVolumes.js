@@ -21,6 +21,8 @@ async function main() {
     } else
         return;
 
+    console.info(`Posting comment:\n${body}`)
+
     await axios.post(
         `https://api.github.com/repos/${author}/${repo}/issues/${pr}/comments`,
         { body }, {
