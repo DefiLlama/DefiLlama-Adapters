@@ -40,7 +40,7 @@ jobs:
           for i in $(echo $RUN_FILES | tr  -d '"[]' | tr "," "\n")
           do 
             { 
-              npm run test-dex ${i} 2>&1 | tee output.txt
+              ts-node ${{ github.workspace }}/volumes/cli/testAdapter.ts ${i} 2>&1 | tee output.txt
               node ${{ github.workspace }}/.github/workflows/commentResultVolumes.js /home/runner/work/DefiLlama-Adapters/DefiLlama-Adapters/output.txt "${{ github.repository_owner }}" "${{ github.event.repository.name }}" "${{ github.event.number }}" ${i}
               if grep -q "\-\-\-\- ERROR \-\-\-\-" output.txt; then
                 exit 1;
