@@ -1,4 +1,4 @@
-name: Test_Change_Volumes
+name: test-volume-adapter
 on:
   pull_request
 jobs:

@@ -25,7 +25,7 @@ const passedFile = path.resolve(process.cwd(), `volumes/adapters/${process.argv[
     let module: VolumeAdapter = (await import(passedFile)).default
     getUniqStartOfTodayTimestamp
     const unixTimestamp = +process.argv[3] || getUniqStartOfTodayTimestamp(new Date()) - 1;
-    console.info(`Getting volume for ${formatTimestampAsDate(String(unixTimestamp))}`)
+    console.info(`Volume for ${formatTimestampAsDate(String(unixTimestamp))}`)
     console.info(`_______________________________________\n`)
     if ("volume" in module) {
       // Get adapter

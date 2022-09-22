@@ -8,13 +8,13 @@ async function main() {
 
 
     const errorString = '------ ERROR ------';
-    const summaryIndex = file.indexOf('🦙 Running');
+    const summaryIndex = file.indexOf('🦙');
     const errorIndex = file.indexOf(errorString);
     let body;
 
     if (summaryIndex != -1) {
         body = `The ${adapterName} adapter exports VOLUME: 
-        \n \n ${file.substring(summaryIndex + 17).replaceAll('\n', '\n    ')}`;
+        \n \n ${file.replaceAll('\n', '\n    ')}`;
     } else if (errorIndex != -1) {
         body = `Error while running adapter ${adapterName} adapter: 
         \n \n ${file.split(errorString)[1].replaceAll('\n', '\n    ')}`;
