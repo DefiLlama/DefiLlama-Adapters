@@ -30,12 +30,12 @@ jobs:
           fi
 
           if [ "$RUN_FILES" = "[]" ] && [ steps.check.outputs.triggered == 'true' ]; then
-            IFS='!' read -r -a array <<< steps.check.outputs.comment_body
+            IFS='!' read -r -a array <<< ${steps.check.outputs.comment_body}
             IFS='!' read -r -a RUN_FILES <<< ${array[1]}
           fi
 
           echo $RUN_FILES
-          echo steps.check.outputs.comment_body
+          echo ${steps.check.outputs.comment_body}
 
           npm ci --omit=dev
           npm update @defillama/sdk
