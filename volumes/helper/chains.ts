@@ -16,7 +16,9 @@ export enum CHAIN {
   XDAI = "xdai",
   AURORA = "aurora",
   MOONRIVER = "moonriver",
-  TRON = "tron"
+  TRON = "tron",
+  MOONBEAN = "moonbeam",
+  KLAYTN = "klaytn"
 }
 
 // Don´t use
