@@ -31,7 +31,7 @@ jobs:
 
           if [ "$RUN_FILES" = "[]" ] && [ steps.check.outputs.triggered == 'true' ]; then
             IFS='!' read -r -a array <<< steps.check.outputs.comment_body
-            IFS='!' read -r -a RUN_FILES <<< "${array[1]}"
+            IFS='!' read -r -a RUN_FILES <<< ${array[1]}
           fi
 
           echo $RUN_FILES
@@ -42,6 +42,7 @@ jobs:
           for i in $(echo $RUN_FILES | tr  -d '"[]' | tr "," "\n")
           do 
             { 
+              echo ${i}
               ts-node ${{ github.workspace }}/volumes/cli/testAdapter.ts ${i} 2>&1 | tee output.txt
               node ${{ github.workspace }}/.github/workflows/commentResultVolumes.js /home/runner/work/DefiLlama-Adapters/DefiLlama-Adapters/output.txt "${{ github.repository_owner }}" "${{ github.event.repository.name }}" "${{ github.event.number }}" ${i}
               if grep -q "\-\-\-\- ERROR \-\-\-\-" output.txt; then
