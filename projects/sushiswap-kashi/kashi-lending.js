@@ -138,5 +138,5 @@ function kashiLending(chain, borrowed) {
 
 module.exports = {
   kashiLending,
-  methodology: `TVL of Sushiswap Kashi lending consists of the tokens available to lend and the ones used as collateral, tokens borrowed are not counted to avoid inflating TVL through cycled lending.`,
+  methodology: `TVL of Sushiswap Kashi lending consists of the tokens available to borrow and the ones used as collateral, tokens borrowed are not counted to avoid inflating TVL through cycled lending.`,
 };
