@@ -8,7 +8,7 @@ jobs:
         uses: khan/pull-request-comment-trigger@v1.1.0
         id: check
         with:
-          trigger: '@test-volume'
+          trigger: '@test-volume!'
       - id: file_changes
         uses: trilom/file-changes-action@v1.2.4
         with:
@@ -28,6 +28,10 @@ jobs:
             echo "No adapter files were modified"
             exit 0
           fi
+
+          if [ "$RUN_FILES" = "[]" ] && [ steps.check.outputs.triggered == 'true' ]; then
+            IFS='!' read -r -a array <<< steps.check.outputs.comment_body
+            IFS='!' read -r -a RUN_FILES <<< ${array[1]}"
 
           npm ci --omit=dev
           npm update @defillama/sdk
