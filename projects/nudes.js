@@ -30,6 +30,7 @@ module.exports = {
   misrepresentedTokens: true,
   timetravel: false,
   neo: {
-    tvl
+    tvl: () => ({}),
+    staking: tvl
   }
 }
