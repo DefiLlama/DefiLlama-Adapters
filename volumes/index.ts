@@ -1,5 +1,5 @@
-import mooniswap from "./adapters/mooniswap";
 import balancer from "./adapters/balancer";
+import mooniswap from "./adapters/mooniswap";
 import bancor from "./adapters/bancor";
 import carthage from "./adapters/carthage";
 import champagneswap from "./adapters/champagneswap";
