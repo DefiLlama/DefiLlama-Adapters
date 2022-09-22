@@ -4,6 +4,7 @@ const {
   getVaultL1Funds,
   getERC4626VaultFundsByChain,
 } = require("./helper");
+const { transformPolygonAddress } = require("../helper/portedTokens");
 const MAX_BPS = 1e3;
 const sdk = require("@defillama/sdk");
 
@@ -24,15 +25,21 @@ const ethTvl = async (_, block) => {
     // console.log(value, value.toFixed(0))
     sdk.util.sumSingleBalance(balances, wantToken, value.toFixed(0));
   }
-
   return balances;
 };
 
 const polygonTvl = async (_, block) => {
-  const vaultFunds = await getERC4626VaultFundsByChain("polygon", block);
-  const totalChainFunds = vaultFunds.reduce((prev, cur) => prev + cur, 0);
+  balances = {};
+  const transform = await transformPolygonAddress();
 
-  return totalChainFunds;
+  const vaultFunds = await getERC4626VaultFundsByChain("polygon", block);
+  console.log(vaultFunds);
+
+  for (const { asset, funds } of vaultFunds) {
+    sdk.util.sumSingleBalance(balances, transform(asset), funds);
+  }
+
+  return balances;
 };
 
 module.exports = {
