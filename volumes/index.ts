@@ -1,5 +1,5 @@
-import mooniswap from "./adapters/mooniswap";
 import balancer from "./adapters/balancer";
+import mooniswap from "./adapters/mooniswap";
 import bancor from "./adapters/bancor";
 import carthage from "./adapters/carthage";
 import champagneswap from "./adapters/champagneswap";
@@ -41,6 +41,8 @@ import wombatExchange from "./adapters/wombat-exchange";
 import wingriders from "./adapters/wingriders";
 import minswap from "./adapters/minswap";
 import mojitoswap from "./adapters/mojitoswap";
+import mdex from "./adapters/mdex";
+import meshswap from "./adapters/meshswap";
 import vvsFinance from "./adapters/vvs-finance";
 import mmStableswapPolygon from "./adapters/mm-stableswap-polygon";
 import dfyn from "./adapters/dfyn";
@@ -90,6 +92,8 @@ export default {
   wingriders,
   minswap,
   mojitoswap,
+  mdex,
+  meshswap,
   "vvs-finance": vvsFinance,
   "mm-stableswap-polygon": mmStableswapPolygon,
   dfyn,
