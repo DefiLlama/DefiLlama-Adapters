@@ -38,7 +38,6 @@ const adapter: SimpleVolumeAdapter = {
   volume: {
     [CHAIN.TRON]: {
       fetch,
-      runAtCurrTime: true,
       start: getStartTimestamp,
       customBackfill: customBackfill(CHAIN.TRON, (_chian: string) => fetch)
     },
