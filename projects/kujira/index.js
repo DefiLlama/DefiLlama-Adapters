@@ -6,9 +6,6 @@ const COINGECKO_ID = "kujira";
 const USK_MARKETS = [
   "kujira1ecgazyd0waaj3g7l9cmy5gulhxkps2gmxu9ghducvuypjq68mq2smfdslf",
 ];
-const ORCA_MARKETS = [
-  "kujira1q8y46xg993cqg3xjycyw2334tepey7dmnh5jk2psutrz3fc69teskctgfc",
-];
 
 const TOKENS = {
   ukuji: { coinGeckoId: "kujira", decimals: 6 },
@@ -61,22 +58,20 @@ async function tvl() {
   const { pairs } = await get("https://api.kujira.app/api/coingecko/pairs");
   const balances = {};
   await Promise.all(
-    [...pairs.map((pair) => pair.pool_id), ...USK_MARKETS, ...ORCA_MARKETS].map(
-      async (addr) => {
-        const res = await get(
-          `https://lcd.kaiyo.kujira.setten.io/cosmos/bank/v1beta1/balances/${addr}`
-        );
-        console.log(res.balances);
-        res.balances.forEach((b) => {
-          TOKENS[b.denom] &&
-            sdk.util.sumSingleBalance(
-              balances,
-              TOKENS[b.denom].coinGeckoId,
-              parseInt(b.amount) / 10 ** TOKENS[b.denom].decimals
-            );
-        });
-      }
-    )
+    [...pairs.map((pair) => pair.pool_id), ...USK_MARKETS].map(async (addr) => {
+      const res = await get(
+        `https://lcd.kaiyo.kujira.setten.io/cosmos/bank/v1beta1/balances/${addr}`
+      );
+      console.log(res.balances);
+      res.balances.forEach((b) => {
+        TOKENS[b.denom] &&
+          sdk.util.sumSingleBalance(
+            balances,
+            TOKENS[b.denom].coinGeckoId,
+            parseInt(b.amount) / 10 ** TOKENS[b.denom].decimals
+          );
+      });
+    })
   );
 
   return balances;
