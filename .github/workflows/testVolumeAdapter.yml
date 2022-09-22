@@ -1,7 +1,5 @@
 name: test-volume-adapter
-on:
-  pull_request
-  issue_comment
+on: [pull_request, issue_comment]
 jobs:
   test:
     runs-on: ubuntu-latest
