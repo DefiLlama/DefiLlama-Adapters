@@ -232,11 +232,9 @@ async function tvl(timestamp, block) {
     const pool = data.output
     toa.push([vaults[i].tokenA, vault])
     toa.push([vaults[i].tokenB, vault])
-    toa.push([vaults[i].tokenA, pool])
-    toa.push([vaults[i].tokenB, pool])
   })
   const ichiTokens = oneTokens.map(i => i.output)
-  const blacklistedTokens = [...ichiTokens, ichi, ichiNew,]
+  const blacklistedTokens = [...ichiTokens, ichi, ichiNew]
   toa.push(
     // oneUNI strategy
     ['0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', '0x6287d56e246EEE33beAd2D7DD3a99Db693f4554C'], 
