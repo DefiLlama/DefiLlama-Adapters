@@ -40,6 +40,7 @@ import platypus from "./adapters/platypus";
 import wombatExchange from "./adapters/wombat-exchange";
 import wingriders from "./adapters/wingriders";
 import minswap from "./adapters/minswap";
+import meshswap from "./adapters/meshswap";
 import vvsFinance from "./adapters/vvs-finance";
 import mmStableswapPolygon from "./adapters/mm-stableswap-polygon";
 import dfyn from "./adapters/dfyn";
@@ -88,6 +89,7 @@ export default {
   "wombat-exchange": wombatExchange,
   wingriders,
   minswap,
+  meshswap,
   "vvs-finance": vvsFinance,
   "mm-stableswap-polygon": mmStableswapPolygon,
   dfyn,
