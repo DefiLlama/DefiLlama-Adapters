@@ -1,5 +1,7 @@
 const { fetchURL } = require("../../helper/utils");
 import { SimpleVolumeAdapter } from "../../dexVolume.type";
+import { CHAIN } from "../../helper/chains";
+import customBackfill from "../../helper/customBackfill";
 import { getUniqStartOfTodayTimestamp } from "../../helper/getUniSubgraphVolume";
 
 const historicalVolumeEndpoint = "https://info.mdex.one/pair/volume/statistics/max"
@@ -43,8 +45,8 @@ const adapter: SimpleVolumeAdapter = {
   volume: {
     bsc: {
       fetch,
-      runAtCurrTime: true,
       start: () => getStartTimestamp(56),
+      customBackfill: customBackfill(CHAIN.BSC, (_chian: string) => fetch)
     },
   },
 };
