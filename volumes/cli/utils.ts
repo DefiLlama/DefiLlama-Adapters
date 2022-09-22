@@ -5,8 +5,8 @@ export const ERROR_STRING = '------ ERROR ------'
 
 export function checkArguments(argv: string[]) {
     if (argv.length < 3) {
-        console.error(`Missing argument, you need to provide the filename of the adapter to test.
-    Eg: ts-node dexVolumes/cli/testAdapter.js dexVolumes/myadapter.js`);
+        console.error(`Missing arguments, you need to provide the folder name of the adapter to test.
+    Eg: npm run test-dex uniswap`);
         process.exit(1);
     }
 }
