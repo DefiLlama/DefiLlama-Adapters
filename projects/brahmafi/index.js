@@ -1,8 +1,13 @@
-const { vaults, getTVLData, getVaultL1Funds } = require("./helper");
+const {
+  vaults,
+  getTVLData,
+  getVaultL1Funds,
+  getERC4626VaultFundsByChain,
+} = require("./helper");
 const MAX_BPS = 1e3;
-const sdk = require('@defillama/sdk')
+const sdk = require("@defillama/sdk");
 
-const tvl = async (_, block) => {
+const ethTvl = async (_, block) => {
   const { pendingDeposits, tokens, totalSupplies } = await getTVLData(block);
 
   const balances = {};
@@ -12,20 +17,31 @@ const tvl = async (_, block) => {
     const totalSupply = totalSupplies[idx].output;
 
     const totalFunds = await getVaultL1Funds(address, wantToken, block);
-    const sharePrice = totalFunds * MAX_BPS / totalSupply;
+    const sharePrice = (totalFunds * MAX_BPS) / totalSupply;
 
-    const value = totalSupply * sharePrice / MAX_BPS + +pendingDeposits[idx].output
+    const value =
+      (totalSupply * sharePrice) / MAX_BPS + +pendingDeposits[idx].output;
     // console.log(value, value.toFixed(0))
-    sdk.util.sumSingleBalance(balances, wantToken, value.toFixed(0))
+    sdk.util.sumSingleBalance(balances, wantToken, value.toFixed(0));
   }
 
-  return balances
+  return balances;
+};
+
+const polygonTvl = async (_, block) => {
+  const vaultFunds = await getERC4626VaultFundsByChain("polygon", block);
+  const totalChainFunds = vaultFunds.reduce((prev, cur) => prev + cur, 0);
+
+  return totalChainFunds;
 };
 
 module.exports = {
   methodology:
     "TVL is the total supply of our vault tokens, multiplied by their corresponding share price. The share price is calculated based on the value of positions taken by vaults both on ethereum and optimism networks",
   ethereum: {
-    tvl,
+    tvl: ethTvl,
+  },
+  polygon: {
+    tvl: polygonTvl,
   },
 };
