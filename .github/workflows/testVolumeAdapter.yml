@@ -17,7 +17,7 @@ jobs:
           RUN_FILES=$(
             MODIFIED=${{ steps.file_changes.outputs.files_modified}} \
             ADDED=${{ steps.file_changes.outputs.files_added}} \
-            node ${{ github.workspace }}/.github/workflows/getFileList.js
+            node ${{ github.workspace }}/.github/workflows/getFileListVolumes.js
           )
 
           if [ "$RUN_FILES" = "[]" ]; then
