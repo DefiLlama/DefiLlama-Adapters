@@ -1,5 +1,7 @@
 const { fetchURL } = require("../../helper/utils");
 import { SimpleVolumeAdapter } from "../../dexVolume.type";
+import { CHAIN } from "../../helper/chains";
+import customBackfill from "../../helper/customBackfill";
 import { getUniqStartOfTodayTimestamp } from "../../helper/getUniSubgraphVolume";
 
 const historicalVolumeEndpoint = "https://abc.endjgfsv.link/swap/scan/volumeall"
@@ -34,10 +36,11 @@ const getStartTimestamp = async () => {
 
 const adapter: SimpleVolumeAdapter = {
   volume: {
-    tron: {
+    [CHAIN.TRON]: {
       fetch,
       runAtCurrTime: true,
       start: getStartTimestamp,
+      customBackfill: customBackfill(CHAIN.TRON, (_chian: string) => fetch)
     },
   },
 };
