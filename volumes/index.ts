@@ -41,6 +41,10 @@ import wombatExchange from "./adapters/wombat-exchange";
 import wingriders from "./adapters/wingriders";
 import minswap from "./adapters/minswap";
 import mojitoswap from "./adapters/mojitoswap";
+import vvsFinance from "./adapters/vvs-finance";
+import mmStableswapPolygon from "./adapters/mm-stableswap-polygon";
+import dfyn from "./adapters/dfyn";
+import radioshack from "./adapters/radioshack";
 
 export default {
   mooniswap,
@@ -85,6 +89,10 @@ export default {
   "wombat-exchange": wombatExchange,
   wingriders,
   minswap,
-  mojitoswap
+  mojitoswap,
+  "vvs-finance": vvsFinance,
+  "mm-stableswap-polygon": mmStableswapPolygon,
+  dfyn,
+  radioshack
   // lyra -> OPTIONS DEX, not enable for now
 };
