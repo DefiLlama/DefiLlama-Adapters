@@ -87,5 +87,6 @@ module.exports = scrubTomb({
     '0x05CaB739FDc0A4CE0642604c78F307C6c543cD6d',
   ],
   chain: 'cronos',
-  useDefaultCoreAssets: true
+  useDefaultCoreAssets: true,
+  misrepresentedTokens: true
 })
