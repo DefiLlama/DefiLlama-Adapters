@@ -3,8 +3,9 @@ import type { Adapter, ChainBlocks, VolumeAdapter } from '../dexVolume.type';
 import { chainsForBlocks } from "@defillama/sdk/build/computeTVL/blocks";
 import { Chain } from '@defillama/sdk/build/general';
 import handleError from '../../utils/handleError';
-import { checkArguments, printVolumes } from './utils';
+import { checkArguments, ERROR_STRING, formatTimestampAsDate, printVolumes } from './utils';
 import { getBlock } from '../../projects/helper/getBlock';
+import { getUniqStartOfTodayTimestamp } from '../helper/getUniSubgraphVolume';
 require('dotenv').config()
 
 // Add handler to rejections/exceptions
@@ -17,25 +18,36 @@ checkArguments(process.argv)
 // Get path of module import
 const passedFile = path.resolve(process.cwd(), `volumes/adapters/${process.argv[2]}`);
 (async () => {
-  console.info(`Running ${process.argv[2].toUpperCase()} adapter`)
-  // Import module to test
-  let module: VolumeAdapter = (await import(passedFile)).default
-
-  const unixTimestamp = +process.argv[3] || Math.round(Date.now() / 1000) - 60;
-  if ("volume" in module) {
-    // Get adapter
-    const volumes = await runAdapter(module.volume, unixTimestamp)
-    printVolumes(volumes)
-  } else if ("breakdown" in module) {
-    const breakdownAdapter = module.breakdown
-    const allVolumes = await Promise.all(Object.entries(breakdownAdapter).map(async ([version, adapter]) =>
-      await runAdapter(adapter, unixTimestamp).then(res => ({ version, res }))
-    ))
-    allVolumes.forEach((promise) => {
-      console.info(promise.version)
-      printVolumes(promise.res)
-    })
-  } else console.info("No compatible adapter found")
+  try {
+    console.info(`🦙 Running ${process.argv[2].toUpperCase()} adapter 🦙`)
+    console.info(`_______________________________________`)
+    // Import module to test
+    let module: VolumeAdapter = (await import(passedFile)).default
+    getUniqStartOfTodayTimestamp
+    const unixTimestamp = +process.argv[3] || getUniqStartOfTodayTimestamp(new Date()) - 1;
+    console.info(`Getting volume for ${formatTimestampAsDate(String(unixTimestamp))}`)
+    console.info(`_______________________________________\n`)
+    if ("volume" in module) {
+      // Get adapter
+      const volumes = await runAdapter(module.volume, unixTimestamp)
+      printVolumes(volumes)
+      console.info("\n")
+    } else if ("breakdown" in module) {
+      const breakdownAdapter = module.breakdown
+      const allVolumes = await Promise.all(Object.entries(breakdownAdapter).map(async ([version, adapter]) =>
+        await runAdapter(adapter, unixTimestamp).then(res => ({ version, res }))
+      ))
+      allVolumes.forEach((promise) => {
+        console.info("Version ->", promise.version.toUpperCase())
+        console.info("---------")
+        printVolumes(promise.res)
+        console.info("\n")
+      })
+    } else throw new Error("No compatible adapter found")
+  } catch (error) {
+    console.error(ERROR_STRING)
+    console.error(error)
+  }
 })()
 
 async function runAdapter(volumeAdapter: Adapter, timestamp: number) {
@@ -46,7 +58,7 @@ async function runAdapter(volumeAdapter: Adapter, timestamp: number) {
   await Promise.all(
     chains.map(async (chain) => {
       if (chainsForBlocks.includes(chain as Chain) || chain === "ethereum") {
-        const latestBlock = await getBlock(timestamp, chain, chainBlocks).catch(console.log)
+        const latestBlock = await getBlock(timestamp, chain, chainBlocks)
         if (latestBlock)
           chainBlocks[chain] = latestBlock - 15
       }
