@@ -40,6 +40,9 @@ import platypus from "./adapters/platypus";
 import wombatExchange from "./adapters/wombat-exchange";
 import wingriders from "./adapters/wingriders";
 import minswap from "./adapters/minswap";
+import mmStableswapPolygon from "./adapters/mm-stableswap-polygon";
+import dfyn from "./adapters/dfyn";
+import radioshack from "./adapters/radioshack";
 
 export default {
   mooniswap,
@@ -83,6 +86,9 @@ export default {
   platypus,
   "wombat-exchange": wombatExchange,
   wingriders,
-  minswap
+  minswap,
+  "mm-stableswap-polygon": mmStableswapPolygon,
+  dfyn,
+  radioshack
   // lyra -> OPTIONS DEX, not enable for now
 };
