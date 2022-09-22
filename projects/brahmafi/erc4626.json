@@ -11,5 +11,18 @@
     ],
     "stateMutability": "view",
     "type": "function"
+  },
+  "asset": {
+    "inputs": [],
+    "name": "asset",
+    "outputs": [
+      {
+        "internalType": "contract ERC20",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   }
 }

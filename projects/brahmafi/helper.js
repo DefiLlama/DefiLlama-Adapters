@@ -92,7 +92,13 @@ const getERC4626VaultFundsByChain = async (chain, block) => {
   const vaults = erc4626Vaults.filter((it) => it.chain === chain);
   const vaultCalls = vaults.map((v) => ({ target: v.address }));
 
-  const [_totalVaultAssets] = await Promise.all([
+  const [_vaultAssets, _totalVaultFunds] = await Promise.all([
+    sdk.api.abi.multiCall({
+      block,
+      calls: vaultCalls,
+      abi: erc4626Abi.asset,
+      chain,
+    }),
     sdk.api.abi.multiCall({
       block,
       calls: vaultCalls,
@@ -101,7 +107,10 @@ const getERC4626VaultFundsByChain = async (chain, block) => {
     }),
   ]).then((o) => o.map((it) => it.output));
 
-  return _totalVaultAssets.map((it) => parseInt(it.output));
+  return _totalVaultFunds.map((it, idx) => ({
+    asset: _vaultAssets[idx].output,
+    funds: it.output,
+  }));
 };
 
 const getExecutorsForVault = async (vault, block) => {
