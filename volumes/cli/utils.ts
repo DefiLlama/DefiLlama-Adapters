@@ -25,10 +25,10 @@ export function printVolumes(volumes: (FetchResult & { chain: string, startTimes
     volumes.forEach((element) => {
         console.info(element.chain.toUpperCase(), "👇")
         if (element.startTimestamp !== undefined)
-            console.info(`Start time: ${formatTimestampAsDate(String(element.startTimestamp))}`)
-        else console.info("Start time not defined")
-        console.info(`Daily: ${element.dailyVolume}`)
-        console.info(`Total: ${element.totalVolume}`)
+            console.info(`Backfill start time: ${formatTimestampAsDate(String(element.startTimestamp))}`)
+        else console.info("Backfill start time not defined")
+        console.info(`24h volume: ${element.dailyVolume}`)
+        console.info(`Total volume: ${element.totalVolume}`)
     });
 }
 
