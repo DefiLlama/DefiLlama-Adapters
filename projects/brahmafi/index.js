@@ -33,8 +33,6 @@ const polygonTvl = async (_, block) => {
   const transform = await transformPolygonAddress();
 
   const vaultFunds = await getERC4626VaultFundsByChain("polygon", block);
-  console.log(vaultFunds);
-
   for (const { asset, funds } of vaultFunds) {
     sdk.util.sumSingleBalance(balances, transform(asset), funds);
   }
