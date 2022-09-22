@@ -35,6 +35,7 @@ jobs:
           fi
 
           echo $RUN_FILES
+          echo steps.check.outputs.comment_body
 
           npm ci --omit=dev
           npm update @defillama/sdk
