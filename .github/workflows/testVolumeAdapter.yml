@@ -34,6 +34,8 @@ jobs:
             IFS='!' read -r -a RUN_FILES <<< "${array[1]}"
           fi
 
+          echo $RUN_FILES
+
           npm ci --omit=dev
           npm update @defillama/sdk
 
