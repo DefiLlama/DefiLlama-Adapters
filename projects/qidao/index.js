@@ -675,6 +675,37 @@ async function metis (timestamp, block, chainBlocks) {
   return balances;
 }
 
+async function ethereum (timestamp, block, chainBlocks) {
+  const balances = {};
+  const transformAddress = await getChainTransform('ethereum')
+
+  await sumTokens(
+    balances,
+    [
+      [
+        "0x671a912C10bba0CFA74Cfc2d6Fba9BA1ed9530B2", //
+        "0x60d133c666919B54a3254E0d3F14332cB783B733"  //
+      ],
+      [
+        "0xa258C4606Ca8206D8aA700cE2143D7db854D168c",
+        "0xEcbd32bD581e241739be1763DFE7a8fFcC844ae1",
+      ], 
+      [
+        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "0x98eb27E5F24FB83b7D129D789665b08C258b4cCF",
+      ], //weth
+      [
+        "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+        "0x8C45969aD19D297c9B85763e90D0344C6E2ac9d1",
+      ], 
+    ],
+    block,
+    "ethereum",
+    transformAddress
+  );
+  return balances;
+}
+
 module.exports = {
   misrepresentedTokens: true,
   methodology:
@@ -709,4 +740,7 @@ module.exports = {
   metis: {
     tvl: metis 
   },
+  ethereum: {
+    tvl: ethereum
+  }
 };
