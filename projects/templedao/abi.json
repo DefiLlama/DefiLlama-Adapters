@@ -81,5 +81,31 @@
     ],
     "stateMutability": "view",
     "type": "function"
+  },
+  "totalBalanceOf": {
+    "inputs": [
+      { "internalType": "address", "name": "_account", "type": "address" }
+    ],
+    "name": "totalBalanceOf",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "curveToken": {
+    "inputs": [],
+    "name": "curveToken",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "balances": {
+    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "name": "balances",
+    "outputs": [
+      { "internalType": "uint112", "name": "locked", "type": "uint112" },
+      { "internalType": "uint32", "name": "nextUnlockIndex", "type": "uint32" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
   }
 }

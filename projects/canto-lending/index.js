@@ -2,6 +2,7 @@
 const { compoundExports } = require('../helper/compound')
 const { unwrapLPsAuto } = require('../helper/unwrapLPs')
 const { getTokenPrices } = require('../helper/unknownTokens')
+const { getFixBalances } = require('../helper/portedTokens')
 
 const addresses = {
   CantoNoteLP: '0x1D20635535307208919f0b67c3B2065965A85aA9',
@@ -25,6 +26,9 @@ const checkForLPTokens = i => /vAMM/.test(i)
 const compoundData = compoundExports(addresses.Comptroller, chain, addresses.CCANTO, addresses.WCANTO, undefined, checkForLPTokens, { blacklistedTokens:[ addresses.Note ] })
 
 module.exports = {
+  hallmarks: [
+    [1661417246, "Remove canto dex LPs from tvl computation"]
+  ],
   misrepresentedTokens: true,
   canto: {
     tvl, borrowed,
@@ -42,13 +46,19 @@ async function update(block, balances) {
 async function tvl(_, _b, cb) {
   const block = cb[chain]
   const balances = await compoundData.tvl(_, _b, cb)
-  await unwrapLPsAuto({ balances, chain, block, })
-  return update(block, balances)
+  // await unwrapLPsAuto({ balances, chain, block, })
+  // await update(block, balances)
+  const fixBalances = await getFixBalances(chain)
+  fixBalances(balances)
+  return balances
 }
 
 async function borrowed(_, _b, cb) {
   const block = cb[chain]
   const balances = await compoundData.borrowed(_, _b, cb)
-  await unwrapLPsAuto({ balances, chain, block, })
-  return update(block, balances)
+  // await unwrapLPsAuto({ balances, chain, block, })
+  // await update(block, balances)
+  const fixBalances = await getFixBalances(chain)
+  fixBalances(balances)
+  return balances
 }

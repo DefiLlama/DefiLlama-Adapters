@@ -56,6 +56,8 @@ async function transformAvaxAddress() {
     )
   ]);
   return addr => {
+    const map = transformTokens.avax;
+    if (map[addr.toLowerCase()])  return map[addr.toLowerCase()]
     const srcToken = bridgeTokensOld.data.find(token =>
       compareAddresses(token["Avalanche Token Address"], addr)
     );
@@ -76,8 +78,7 @@ async function transformAvaxAddress() {
         return tokenData.nativeContractAddress;
       }
     }
-    const map = transformTokens.avax;
-    return map[addr.toLowerCase()] || `avax:${addr}`;
+    return `avax:${addr}`;
   };
 }
 
@@ -87,6 +88,10 @@ async function transformBscAddress() {
 
 async function transformPolygonAddress() {
   return transformChainAddress(transformTokens.polygon, "polygon")
+}
+
+async function transformCeloAddress() {
+  return transformChainAddress(transformTokens.celo, "celo")
 }
 
 async function transformHarmonyAddress() {
@@ -244,6 +249,7 @@ function transformChainAddress(
   normalizeMapping(mapping);
 
   return addr => {
+    if (!addr.startsWith('0x')) return addr
     addr = addr.toLowerCase();
     if (!mapping[addr] && skipUnmapped) {
       console.log(
@@ -266,9 +272,21 @@ async function getChainTransform(chain) {
     return transformChainAddress(transformTokens[chain], chain) 
 
   return addr => {
+    addr = addr.toLowerCase()
     if (addr.startsWith('0x')) return `${chain}:${addr}`
     return addr
   };
+}
+
+async function transformBalances(chain, balances) {
+  const transform = await getChainTransform(chain)
+  const fixBalances = await getFixBalances(chain)
+  Object.entries(balances).forEach(([token, value]) => {
+    delete balances[token]
+    sdk.util.sumSingleBalance(balances, transform(token), value)
+  })
+  fixBalances(balances)
+  return balances
 }
 
 module.exports = {
@@ -282,6 +300,8 @@ module.exports = {
   transformOptimismAddress,
   transformArbitrumAddress,
   transformIotexAddress,
+  transformCeloAddress,
   stripTokenHeader,
   getFixBalancesSync,
+  transformBalances,
 };

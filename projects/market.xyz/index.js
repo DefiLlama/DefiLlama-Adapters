@@ -50,14 +50,14 @@ async function getFusePools(
 async function polygonTvl(timestamp, block, chainBlocks) {
   const balances = {};
   const transform = await transformPolygonAddress();
-  block = getBlock(timestamp, "polygon", chainBlocks);
+  block = chainBlocks.polygon;
   await getFusePools(timestamp, block, balances, false, "polygon", transform);
   return balances;
 }
 async function polygonBorrowed(timestamp, block, chainBlocks) {
   const balances = {};
   const transform = await transformPolygonAddress();
-  block = getBlock(timestamp, "polygon", chainBlocks);
+  block = chainBlocks.polygon;
   await getFusePools(timestamp, block, balances, true, "polygon", transform);
   return balances;
 }

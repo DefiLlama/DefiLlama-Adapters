@@ -65,6 +65,7 @@ async function getChainTvl(chain, block, transformAddr) {
         ![
             '0xd79d32a4722129a4d9b90d52d44bf5e91bed430c', 
             '0xdb1e780db819333ea79c9744cc66c89fbf326ce8', // this token is destroyed
+            '0xa88c5693c9c2549a75acd2b44f052f6a5568e918', // this token is destroyed
             '0x738076a6cb6c30d906bcb2e9ba0e0d9a58b3292e', // SRSB is absuredly priced 
         ].includes(call.target.toLowerCase())
     )
