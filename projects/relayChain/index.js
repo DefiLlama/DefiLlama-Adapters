@@ -10,7 +10,6 @@ const relayEth = "0x5D843Fa9495d23dE997C394296ac7B4D721E841c";
 const xcasEth="0x7659CE147D0e714454073a5dd7003544234b6Aa0";
 const trueUSDEth="0x0000000000085d4780B73119b644AE5ecd22b376";
 const zeroEth="0xF0939011a9bb95c3B791f0cb546377Ed2693a574";
-const dxpEth="0x0a32930DD043aB54F9acb1696503CBF670538AFB";
 
 const usdtBsc = "0x55d398326f99059fF775485246999027B3197955";
 const daiBsc = "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3";
@@ -56,7 +55,7 @@ const relayMoonriver = "0xAd7F1844696652ddA7959a49063BfFccafafEfe7";
 const wMOVR = "0x98878B06940aE243284CA214f92Bb71a2b032B8A";
 
 
-const usdtFantom = "0x1B27A9dE6a775F98aaA5B90B62a4e2A0B84DbDd9";
+const usdtFantom = "0x1B27A9dE6a775F98aaA5B90B62a4e2A0B84DbDd9"; 
 const relayFantom = "0x338003E074DabFec661E1901bdB397aF9Cab6A76";
 const daiFantom = "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e";
 const usdcFantom = "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75";
@@ -64,7 +63,7 @@ const wFantom="0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83";
 const btcFantom="0x321162Cd933E2Be498Cd2267a90534A804051b11";
 
 
-const usdtHarmony = "0x224e64ec1bdce3870a6a6c777edd450454068fec";
+const usdtHarmony = "0x224e64ec1bdce3870a6a6c777edd450454068fec"; 
 const relayHarmony = "0x0e4d3a20b757cea2a0910129991b9d42cc2be188";
 const daiHarmony = "0xEf977d2f931C1978Db5F6747666fa1eACB0d0339";
 const usdcHarmony = "0x985458e523db3d53125813ed68c274899e9dfab4";
@@ -74,7 +73,7 @@ const woneOne = "0xcf664087a5bb0237a0bad6742852ec6c8d69a27a";
 
 
 const wsdnShiden = "0x1a6a12953d5439e8965d94d3d8452464fbd53e30";
-const usdtShiden = "0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b";
+const usdtShiden = "0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b"; 
 const usdcShiden = "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f";
 const busdShiden = "0x65e66a61d0a8f1e686c2d6083ad611a10d84d97a";
 
@@ -82,7 +81,7 @@ const busdShiden = "0x65e66a61d0a8f1e686c2d6083ad611a10d84d97a";
 
 
 const usdcMetis = "0xea32a96608495e54156ae48931a7c20f0dcc1a21";
-const usdtMetis = "0xbb06dca3ae6887fabf931640f67cab3e3a16f4dc";
+const usdtMetis = "0xbb06dca3ae6887fabf931640f67cab3e3a16f4dc"; 
 const relayMetis = "0xfe282Af5f9eB59C30A3f78789EEfFA704188bdD4";
 const maticMetis="0x4b9D2923D875edF43980BF5dddDEde3Fb20fC742";
 const mimMetis="0x44Dd7C98885cD3086E723B8554a90c9cC4089C4C";
@@ -91,7 +90,6 @@ const metis="0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000";
 const wbtcMetis="0xa5B55ab1dAF0F8e1EFc0eB1931a957fd89B918f4";
 const avaxMetis="0xE253E0CeA0CDD43d9628567d097052B33F98D611";
 const daiMetis="0x4651B38e7ec14BB3db731369BFE5B08F2466Bd0A";
-const mdaiMetis="0x4c078361FC9BbB78DF910800A991C7c3DD2F6ce0";
 
 
 
@@ -115,13 +113,6 @@ const busdIoTex= "0xacee9b11cd4b3f57e58880277ac72c8c41abe4e4";
 const wIotex="0xa00744882684c3e4747faefd68d283ea44099d03";
 
 
-const usdtOptimism = "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58";
-const daiOptimism = "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1";
-const wbtcOptimism = "0x68f180fcCe6836688e9084f035309E29Bf0A2095";
-
-const wbtcArbitrum = "0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f";
-const usdtArbitrum = "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9";
-const daiArbitrum = "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1";
 
 
 const ethAddr = "0xF687e1481d85F8b9F4D1f4D4C15348CeF8E5a762";
@@ -137,10 +128,9 @@ const iotexAddr = "0xEfB3E6a5cCe777AE472D1255D712407fd22A9547";
 const harmonyAddr = "0xa0026a3047bDf539f6Bf405aF576BE2038faC5A8";
 const metisAddr = "0x640b3408EaC140297136677aC0cFF13a8c82C5Ed";
 const cronosAddr = "0x3f1B059d94551c9300176ceB55FD23aF0e4E2E29";
-let BRIDGE_ADDRESS = "0x9A8cF02F3e56c664Ce75E395D0E4F3dC3DafE138";
 
 
-let ethTokenAddress =[usdtEth,daiEth,wbtcEth,usdcEth,wethEth,relayEth,xcasEth,trueUSDEth,zeroEth,dxpEth];
+let ethTokenAddress =[usdtEth,daiEth,wbtcEth,usdcEth,wethEth,relayEth,xcasEth,trueUSDEth,zeroEth];
 let bscTokenAddress=[usdtBsc,daiBsc,usdcBsc,busdBsc,ethBsc,wbnbBsc,relayBsc];
 let avaxTokenAddress=[daiAvax,wavax,wbtcAvax,usdcAvax,usdtAvax];
 let hecoTokenAddress=[wHeco,wbtcHeco,ethHeco,usdcHeco,daiHeco,husdHeco];
@@ -149,17 +139,16 @@ let moonTokenAddress=[usdtMoonriver,daiMoonriver,usdcMoonriver,wbtcMoonriver,wet
 let fantomTokenAddress=[usdcFantom,usdtFantom,relayFantom,daiFantom,wFantom,btcFantom];
 let harmonyTokenAddress=[usdtHarmony,relayHarmony,daiHarmony,usdcHarmony,busdHarmony,woneOne];
 let shidenTokenAddress=[wsdnShiden,usdtShiden,usdcShiden,busdShiden];
-let metisTokenAddress=[usdcMetis,usdtMetis,metis,maticMetis,ftmMetis,mimMetis,mdaiMetis];
+let metisTokenAddress=[usdcMetis,usdtMetis,metis,maticMetis,ftmMetis,mimMetis];
 let metisTotalSupply=[wbtcMetis,daiMetis,avaxMetis,relayMetis,ftmMetis,maticMetis];
 let cronosTokenAddress=[usdtCronos,daiCronos,usdcCronos,wbtcCronos,wethCronos,relayCronos,busdCronos,wCronos];
 let iotexTokenAddress=[usdtIoTex,daiIoTex,usdcIoTex,busdIoTex,wIotex]
-let optimismTokenAddress=[usdtOptimism,daiOptimism,wbtcOptimism]
-let arbitrumTokenAddress=[wbtcArbitrum,usdtArbitrum,daiArbitrum]
+
 
 async function ethTvl(timestamp, ethBlock) {
     let balances = {};
     let tokenBalance;
-
+  
     for(var i=0;i<ethTokenAddress.length;i++){
       tokenBalance  = (
         await sdk.api.abi.call({
@@ -176,16 +165,6 @@ async function ethTvl(timestamp, ethBlock) {
           target: ethTokenAddress[i],
           abi: 'erc20:balanceOf',
           params: eth1Addr,
-          block: ethBlock,
-        })
-      ).output;
-      await sdk.util.sumSingleBalance(balances, "ethereum:"+ethTokenAddress[i], tokenBalance)
-
-      tokenBalance  = (
-        await sdk.api.abi.call({
-          target: ethTokenAddress[i],
-          abi: 'erc20:balanceOf',
-          params: BRIDGE_ADDRESS,
           block: ethBlock,
         })
       ).output;
@@ -235,19 +214,7 @@ async function avaxTvl(timestamp, ethBlock, chainBlocks) {
         })
       ).output;
     sdk.util.sumSingleBalance(balances, "avax:"+avaxTokenAddress[i], tokenBalance)
-
-    tokenBalance= (
-      await sdk.api.abi.call({
-        target: avaxTokenAddress[i],
-        chain: 'avax',
-        abi: 'erc20:balanceOf',
-        params: BRIDGE_ADDRESS,
-        block: chainBlocks['avax'],
-      })
-    ).output;
-    sdk.util.sumSingleBalance(balances, "avax:"+avaxTokenAddress[i], tokenBalance)
     }
-
     return balances
   };
 
@@ -266,13 +233,13 @@ async function hecoTvl(timestamp, ethBlock, chainBlocks) {
       ).output;
     sdk.util.sumSingleBalance(balances, "heco:"+hecoTokenAddress[i], tokenBalance)
     }
-
+  
 
     return balances
 };
 
 async function polygonTvl(timestamp, ethBlock, chainBlocks) {
-
+  
   let balances = {};
   let tokenBalance;
 
@@ -287,24 +254,13 @@ async function polygonTvl(timestamp, ethBlock, chainBlocks) {
       })
     ).output;
   sdk.util.sumSingleBalance(balances, "polygon:"+maticTokenAddress[i], tokenBalance)
-
-  tokenBalance= (
-    await sdk.api.abi.call({
-      target: maticTokenAddress[i],
-      chain: 'polygon',
-      abi: 'erc20:balanceOf',
-      params: BRIDGE_ADDRESS,
-      block: chainBlocks['polygon'],
-    })
-  ).output;
-  sdk.util.sumSingleBalance(balances, "polygon:"+maticTokenAddress[i], tokenBalance)
   }
 
   return balances
 };
 
 async function fantomTvl(unixTimestamp, ethBlock, chainBlocks) {
-
+ 
   const balances = {}
 
   for(var i=0;i<fantomTokenAddress.length;i++){
@@ -318,19 +274,8 @@ async function fantomTvl(unixTimestamp, ethBlock, chainBlocks) {
       })
     ).output;
     sdk.util.sumSingleBalance(balances, "fantom:"+fantomTokenAddress[i], tokenBalance)
-
-    tokenBalance= (
-      await sdk.api.abi.call({
-        target: fantomTokenAddress[i],
-        chain: 'fantom',
-        abi: 'erc20:balanceOf',
-        params: BRIDGE_ADDRESS,
-        block: chainBlocks['fantom'],
-      })
-    ).output;
-    sdk.util.sumSingleBalance(balances, "fantom:"+fantomTokenAddress[i], tokenBalance)
   }
-
+  
   return balances
 }
 
@@ -351,9 +296,9 @@ async function harmonyTvl(unixTimestamp, ethBlock, chainBlocks) {
     ).output;
     sdk.util.sumSingleBalance(balances, "harmony:"+harmonyTokenAddress[i], tokenBalance)
   }
-
+  
   return balances
-}
+} 
 
 async function metisTvl(unixTimestamp, ethBlock, chainBlocks) {
   const block = chainBlocks["metis"]
@@ -374,6 +319,7 @@ async function metisTvl(unixTimestamp, ethBlock, chainBlocks) {
     sdk.util.sumSingleBalance(balances, "metis:"+metisTokenAddress[i], tokenBalance)
   }
 
+
   const transformMetisAddress = await getChainTransform('metis');
   for(var i=0;i<metisTotalSupply.length;i++){
     var tokenBalance1= (
@@ -385,23 +331,8 @@ async function metisTvl(unixTimestamp, ethBlock, chainBlocks) {
       })
     ).output;
     const tokenAddress = transformMetisAddress(metisTotalSupply[i]);
-    sdk.util.sumSingleBalance(balances,tokenAddress, tokenBalance1)
+    sdk.util.sumSingleBalance(balances,tokenAddress, tokenBalance1) 
   }
-
-  for(var i=0;i<metisTokenAddress.length;i++){
-    var tokenBalance2= (
-      await sdk.api.abi.call({
-        target: metisTokenAddress[i],
-        chain: 'metis',
-        abi: 'erc20:balanceOf',
-        params: BRIDGE_ADDRESS,
-        block: chainBlocks['metis'],
-      })
-    ).output;
-
-    sdk.util.sumSingleBalance(balances, "metis:"+metisTokenAddress[i], tokenBalance2)
-  }
-
   return balances
 }
 
@@ -441,10 +372,10 @@ async function ioTexTvl(timestamp, ethBlock, chainBlocks) {
     ).output;
   sdk.util.sumSingleBalance(balances, "iotex:"+iotexTokenAddress[i], tokenBalance)
   }
-
+  
   return balances
 }
-
+ 
 async function moonriverTvl(timestamp, ethBlock, chainBlocks) {
   let balances = {};
   let tokenBalance;
@@ -464,51 +395,11 @@ async function moonriverTvl(timestamp, ethBlock, chainBlocks) {
 return balances
 }
 
-async function optimismTvl(timestamp, ethBlock, chainBlocks) {
-    let balances = {};
-    let tokenBalance;
-
-    for(var i=0;i<optimismTokenAddress.length;i++ ){
-      tokenBalance= (
-        await sdk.api.abi.call({
-          target: optimismTokenAddress[i],
-          chain: 'optimism',
-          abi: 'erc20:balanceOf',
-          params: BRIDGE_ADDRESS,
-          block: chainBlocks['optimism'],
-        })
-      ).output;
-    sdk.util.sumSingleBalance(balances, "optimism:"+optimismTokenAddress[i], tokenBalance)
-
-    }
-      return balances
-  };
-
-async function arbitrumTvl(timestamp, ethBlock, chainBlocks) {
-    let balances = {};
-    let tokenBalance;
-
-    for(var i=0;i<arbitrumTokenAddress.length;i++ ){
-      tokenBalance= (
-        await sdk.api.abi.call({
-          target: arbitrumTokenAddress[i],
-          chain: 'arbitrum',
-          abi: 'erc20:balanceOf',
-          params: BRIDGE_ADDRESS,
-          block: chainBlocks['arbitrum'],
-        })
-      ).output;
-    sdk.util.sumSingleBalance(balances, "arbitrum:"+arbitrumTokenAddress[i], tokenBalance)
-
-    }
-      return balances
-  };
-
 
 
 module.exports = {
   ethereum: {
-    tvl:ethTvl,
+    tvl:ethTvl,  
   },
   bsc: {
     tvl:bscTvl,
@@ -521,10 +412,10 @@ module.exports = {
   },
   polygon:{
     tvl:polygonTvl,
-  },
+  }, 
   fantom:{
     tvl:fantomTvl,
-  },
+  }, 
   harmony :{
     tvl:harmonyTvl,
   },
@@ -540,11 +431,5 @@ module.exports = {
   moonriver:{
     tvl:moonriverTvl,
   },
-  optimism:{
-    tvl:optimismTvl,
-  },
-  arbitrum:{
-    tvl:arbitrumTvl,
-  },
 
-};
+}; 
