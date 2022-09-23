@@ -46,6 +46,8 @@ import vvsFinance from "./adapters/vvs-finance";
 import mmStableswapPolygon from "./adapters/mm-stableswap-polygon";
 import dfyn from "./adapters/dfyn";
 import radioshack from "./adapters/radioshack";
+import flamingoFinance from "./adapters/flamingo-finance";
+import ZEROx from "./adapters/0x";
 
 export default {
   mooniswap,
@@ -95,6 +97,8 @@ export default {
   "vvs-finance": vvsFinance,
   "mm-stableswap-polygon": mmStableswapPolygon,
   dfyn,
-  radioshack
+  radioshack,
+  flamingoFinance,
+  ZEROx
   // lyra -> OPTIONS DEX, not enable for now
 };
