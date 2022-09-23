@@ -1,3 +1,5 @@
+import { Fetch, VolumeAdapter } from "../../dexVolume.type";
+
 const { fetchURL } = require("../../helper/utils");
 const { BSC } = require("../../helper/chains");
 
@@ -5,19 +7,21 @@ const endpoints = {
   [BSC]: "https://api.baryon.network/program/info",
 };
 
-const graphs = async () => {
+const graphs: Fetch = async (_timestamp: number) => {
   let res = await fetchURL(endpoints[BSC]);
 
   return {
-    tvl: res?.data?.tvl,
+    timestamp: Math.trunc(Date.now() / 1000),
     dailyVolume: res?.data?.volume24h,
-    volume24h: res?.data?.volume24h,
     totalVolume: res?.data?.totalvolume,
   };
 };
 
 export default {
   volume: {
-    [BSC]: graphs,
+    [BSC]: {
+      fetch: graphs,
+      runAtCurrTime: true
+    },
   },
-};
+} as VolumeAdapter;
