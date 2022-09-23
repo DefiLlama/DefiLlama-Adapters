@@ -43,6 +43,12 @@ const chainConfig = {
     shack: '0x66e8617d1Df7ab523a316a6c01D16Aa5beD93681',
     stakingContracts: ['0x68797130D8E63745761C524C33121fdD7290cB72'],
   },
+  dogechain: {
+    factory: '0x6865bc167016EC79C89b03fce536f0c4BAE0EEda',
+    radio: '0x4e2a57A8ffE65F794e9A32637Bc67b502fFc84C6',
+    shack: '0x57B963fBB8e4Bfb6d9047ac6d5ed183FBe6E7397',
+    stakingContracts: ['0x55a5334d1a402383C5a8C622301ea00cc8Cd1681'],
+  },
 }
 
 const moduleExports = Object.keys(chainConfig).reduce((agg, chain) => {
