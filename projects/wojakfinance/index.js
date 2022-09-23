@@ -1,4 +1,4 @@
-const { staking } = require("../helper/staking");
+const { stakings } = require('./helper/staking')
 
 const MasterChefContract = "0x065AAE6127D2369C85fE3086b6707Ac5dBe8210a";
 const WojkPoolContract = "0xDF21058099e69D3635005339721C4826c4c47F8A";
@@ -30,7 +30,7 @@ module.exports = {
             ],
             "usd-coin"
         ),
-        staking: staking([MasterChefContract, WojkPoolContract], WOJK, "dogechain"),
+        staking: stakings([MasterChefContract, WojkPoolContract], WOJK, "dogechain"),
     }
 };
 
