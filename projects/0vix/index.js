@@ -25,7 +25,6 @@ async function get0vixUnderlyings(chain, block) {
     chain,
     block,
   });
-  console.log(markets + ", " + underlyings);
   return { markets, markets_minus_matic, underlyings };
 }
 async function tvl(timestamp, ethBlock, chainBlocks) {
@@ -71,14 +70,21 @@ async function supplied(timestamp, ethBlock, chainBlocks) {
     block,
   });
 
+  const { output: decimals } = await sdk.api.abi.multiCall({
+    abi: abi["market_decimals"],
+    calls: markets_minus_matic.map((m) => ({ target: m })),
+    chain,
+    block,
+  });
+
   const balances = Object.fromEntries(
     totalSupply.map((supply, idx) => [
       transform(underlyings[idx].output),
-      supply.output,
+      (supply.output * exchangeRateStored[idx].output) /
+        10 ** (26 - decimals[idx].output),
     ])
   );
 
-  console.log(balances);
   return balances;
 }
 
@@ -108,7 +114,7 @@ async function borrowed(timestamp, ethBlock, chainBlocks) {
       borrow.output,
     ])
   );
-  console.log(balances);
+
   return balances;
 }
 
