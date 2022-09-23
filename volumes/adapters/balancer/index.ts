@@ -39,7 +39,7 @@ const adapter: BreakdownVolumeAdapter = {
       [CHAIN.ETHEREUM]: {
         fetch: v1graphs(CHAIN.ETHEREUM),
         start: async () => 1582761600,
-        customBackfill: customBackfill(CHAIN.ETHEREUM, v1graphs)
+        customBackfill: customBackfill(CHAIN.ETHEREUM, v1graphs as any)
       },
     },
     v2: Object.keys(endpoints).reduce((acc, chain) => {
