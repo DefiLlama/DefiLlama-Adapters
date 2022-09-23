@@ -1,10 +1,10 @@
 import { Chain } from "@defillama/sdk/build/general";
 import { BigNumber } from "ethers";
 import { request, gql } from "graphql-request";
-import { getBlock } from "../../projects/helper/getBlock"
+import { getBlock } from "../../projects/helper/getBlock";
 
 const UNIT = BigNumber.from("1000000000000000000");
-const ONE_DAY_IN_SECONDS = 60 * 60 * 24
+const ONE_DAY_IN_SECONDS = 60 * 60 * 24;
 
 interface IGetChainVolumeParams {
   graphUrls: {
@@ -19,6 +19,7 @@ function getChainVolume({ graphUrls, timestamp }: IGetChainVolumeParams) {
       markets {
         latestVolumeAndFees {
           totalNotionalVolume
+          totalPremiumVolume
         }
       }
     }
@@ -28,6 +29,7 @@ function getChainVolume({ graphUrls, timestamp }: IGetChainVolumeParams) {
       markets(block:{number: $blockNumber}) {
         latestVolumeAndFees {
           totalNotionalVolume
+          totalPremiumVolume
         }
       }
     
@@ -43,9 +45,13 @@ function getChainVolume({ graphUrls, timestamp }: IGetChainVolumeParams) {
 
   return (chain: Chain) => {
     return async (timestamp: number) => {
-      const timestampPreviousDay = timestamp - ONE_DAY_IN_SECONDS
+      const timestampPreviousDay = timestamp - ONE_DAY_IN_SECONDS;
 
-      const chainBlocksPreviousDay = (await getBlock(timestampPreviousDay, chain, {}))
+      const chainBlocksPreviousDay = await getBlock(
+        timestampPreviousDay,
+        chain,
+        {}
+      );
 
       const previousDayVolume = await request(
         graphUrls[chain],
@@ -55,14 +61,25 @@ function getChainVolume({ graphUrls, timestamp }: IGetChainVolumeParams) {
         console.error(`Failed to get total volume on ${chain}: ${e.message}`)
       );
 
-      const prevDayVolumeSum = previousDayVolume.markets.reduce((acc, obj) => {
-        return (
-          acc +
-          BigNumber.from(obj.latestVolumeAndFees.totalNotionalVolume)
-            .div(UNIT)
-            .toNumber()
-        );
-      }, 0);
+      const prevDayVolumeSum = previousDayVolume.markets.reduce(
+        (acc, obj) => {
+          let vals = {
+            notional:
+              acc.notional +
+              BigNumber.from(obj.latestVolumeAndFees.totalNotionalVolume)
+                .div(UNIT)
+                .toNumber(),
+            premium:
+              acc.premium +
+              BigNumber.from(obj.latestVolumeAndFees.totalPremiumVolume)
+                .div(UNIT)
+                .toNumber(),
+          };
+
+          return vals;
+        },
+        { notional: 0, premium: 0 }
+      );
 
       const totalVolume = await request(
         graphUrls[chain],
@@ -72,18 +89,28 @@ function getChainVolume({ graphUrls, timestamp }: IGetChainVolumeParams) {
       );
 
       const totalVolumeSum = totalVolume.markets.reduce((acc, obj) => {
-        return (
-          acc +
-          BigNumber.from(obj.latestVolumeAndFees.totalNotionalVolume)
-            .div(UNIT)
-            .toNumber()
-        );
-      }, 0);
+        let vals = {
+          notional:
+            acc.notional +
+            BigNumber.from(obj.latestVolumeAndFees.totalNotionalVolume)
+              .div(UNIT)
+              .toNumber(),
+          premium:
+            acc.premium +
+            BigNumber.from(obj.latestVolumeAndFees.totalPremiumVolume)
+              .div(UNIT)
+              .toNumber(),
+        };
+
+        return vals;
+      }, { notional: 0, premium: 0 });
 
       return {
         timestamp,
-        totalVolume: totalVolumeSum,
-        dailyVolume: totalVolumeSum - prevDayVolumeSum,
+        totalPremiumVolume: totalVolumeSum.premium,
+        totalNotionalVolume: totalVolumeSum.notional,
+        dailyPremiumVolume: totalVolumeSum.premium - prevDayVolumeSum.premium,
+        dailyNotionalVolume: totalVolumeSum.notional - prevDayVolumeSum.notional
       };
     };
   };
