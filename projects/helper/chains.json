@@ -90,6 +90,7 @@
   "meter",
   "zilliqa",
   "godwoken",
+  "godwoken_v1",
   "zksync",
   "zyx",
   "karura",
@@ -140,6 +141,18 @@
   "nova",
   "parallel",
   "heiko",
+  "canto",
+  "dogechain",
   "kintsugi",
-  "kujira"
+  "kujira",
+  "posi",
+  "arbitrum_nova",
+  "ripple",
+  "ultron",
+  "interlay",
+  "crescent",
+  "juno",
+  "tombchain",
+  "vision",
+  "xdc"
 ]

@@ -36,7 +36,7 @@ function tvl(chain) {
       chain,
     });
 
-    sdk.util.sumMultiBalanceOf(balances, gameContractBalances, true, transform);
+    sdk.util.sumMultiBalanceOf(balances, gameContractBalances, false, transform);
 
     //fix decimal issue with celo tokens
     for (const representation of ["celo-dollar", "celo", "celo-euro"]) {
