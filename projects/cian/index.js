@@ -14,7 +14,7 @@ module.exports = {
   misrepresentedTokens: true,
   doublecounted: true,
   timetravel: false,
-  avalanche: {
+  avax:{
     tvl: fetch,
   },
 };

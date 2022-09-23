@@ -1,6 +1,5 @@
-const { unwrapTroves, sumTokens, unwrapUniswapV3NFTs, } = require("../helper/unwrapLPs.js");
-const BigNumber = require("bignumber.js");
-const sdk = require("@defillama/sdk");
+const { unwrapTroves, unwrapUniswapV3NFTs } = require("../helper/unwrapLPs.js");
+const { staking } = require("../helper/staking");
 
 const chain = "ethereum";
 
@@ -9,54 +8,26 @@ const eth = {
   ethMahaSLP2: "0xC0897d6Ba893E31F42F658eeAD777AA15B8f824d",
   ethMahaSushiStaking: "0x20257283d7B8Aa42FC00bcc3567e756De1E7BF5a",
   maha: "0xb4d930279552397bba2ee473229f89ec245bc365",
+  mahax: "0xbdd8f4daf71c2cb16cce7e54bb81ef3cfcf5aacb",
   weth: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
   frax: "0x853d955acef822db058eb8505911ed77f175b99e",
   arth: "0x8CC0F052fff7eaD7f2EdCCcaC895502E884a8a71",
+
+  arthMahaV3Gauge: "0x48165A4b84e00347C4f9a13b6D0aD8f7aE290bB8",
+  arthUsdcV3Gauge: "0x174327F7B7A624a87bd47b5d7e1899e3562646DF",
+  arthEthV3Gauge: "",
+
   "arth.usd": "0x973F054eDBECD287209c36A2651094fA52F99a71",
-  frxArthLP: "0x5a59fd6018186471727faaeae4e57890abc49b08",
-  frxArthStaking: "0x7B2F31Fe97f32760c5d6A4021eeA132d44D22039",
 };
 
 Object.keys(eth).forEach((k) => (eth[k] = eth[k].toLowerCase()));
 
 async function pool2(_, block) {
   const balances = {};
-  const tokensAndOwners = [[eth.ethMahaSLP, eth.ethMahaSushiStaking]];
-  const fraxArthbalances = {};
-  const fraxArthTokensAndOwners = [
-    [eth.frxArthLP, eth.frxArthStaking],
-    [eth.frax, eth.frxArthLP],
-    // [eth["arth.usd"], eth.frxArthLP,],
-  ];
 
-  await sumTokens(balances, tokensAndOwners, block, chain, undefined, {
-    resolveLP: true,
-  });
-  await sumTokens(
-    fraxArthbalances,
-    fraxArthTokensAndOwners,
-    block,
-    chain,
-    undefined
-  );
-
-  const { output: totalSupply } = await sdk.api.erc20.totalSupply({
-    target: eth.frxArthLP,
-    block,
-  });
-
-  const stakedRatio = BigNumber(fraxArthbalances[eth.frxArthLP]).dividedBy(
-    totalSupply
-  );
-
-  sdk.util.sumSingleBalance(
-    balances,
-    eth.frax,
-    stakedRatio
-      .multipliedBy(2)
-      .multipliedBy(fraxArthbalances[eth.frax])
-      .toFixed(0)
-  );
+  // uniswap v3 gauge staking
+  const v3poolStakers = [eth.arthMahaV3Gauge, eth.arthUsdcV3Gauge];
+  await unwrapUniswapV3NFTs({ balances, owners: v3poolStakers, chain, block });
 
   return balances;
 }
@@ -64,7 +35,6 @@ async function pool2(_, block) {
 async function tvl(_, block) {
   const balances = {};
   const troves = [
-    "0x4a47a8EB52c6213963727BF93baaa1CF66CBdF38", // FRAX Trove
     "0xd3761e54826837b8bbd6ef0a278d5b647b807583", // ETH Trove
   ];
   await unwrapTroves({ balances, chain, block, troves });
@@ -72,6 +42,7 @@ async function tvl(_, block) {
 }
 
 module.exports = {
+  staking: staking(eth.mahax, eth.maha),
   pool2,
   tvl,
 };

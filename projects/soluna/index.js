@@ -11,5 +11,8 @@ async function tvl(timestamp, ethBlock, { terra: block }) {
 module.exports = {
   terra: {
     tvl
-  }
+  },
+hallmarks:[
+[1651881600, "UST depeg"],
+  ]
 }
