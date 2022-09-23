@@ -9,8 +9,8 @@ const ushareRewardPoolAddress = "0xe3F4E2936F0Ac4104Bd6a58bEbd29e49437710Fe";
 const boardroomAddress = "0x68BeEc29183464e2C80Aa9B362db8b0c0eB826bd";
 
 const OneLPs = [
-  "0xa0377f9fd3de5dfefec34ae4807e9f2b9c56d534", // uniteOneLpAddress
-  "0x6372d14d29f07173f4e51bb664a4342b4a4da9e8", //ushareOneLpAddress
+  "0xeE2208256800398424a45Fe9F135AD0b60DeAE0C", // uniteOneLpAddress
+  "0xe302A970E80094a3abB820Eda275FAC5848b5bdA", //ushareOneLpAddress
 ];
 
 async function calcPool2(masterchef, lps, block, chain) {
