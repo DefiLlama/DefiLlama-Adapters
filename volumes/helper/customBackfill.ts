@@ -17,7 +17,7 @@ export default (chain: Chain, graphs: IGraphs): Fetch => async (timestamp: numbe
     const resultDayN = await fetchGetVolume(timestamp, chainBlocks)
     const timestampPreviousDay = timestamp - ONE_HOUR_IN_SECONDS
     let chainBlocksPreviousDay = {}
-    if (chainsForBlocks.includes(chain as Chain) || chain === "ethereum")
+    if (chainsForBlocks.includes(chain) || chain === "ethereum")
         chainBlocksPreviousDay = { [chain]: await getBlock(timestampPreviousDay, chain, {}).catch(() => { }) }
     const resultPreviousDayN = await fetchGetVolume(timestampPreviousDay, chainBlocksPreviousDay)
     return {
