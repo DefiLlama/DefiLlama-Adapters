@@ -21,6 +21,12 @@ const fx = (chain, factory1, factory2) => ({
   },
 })
 
+/* Missing
+https://facts.frax.finance/pools/0x2397321b301B80A1C0911d6f9ED4b6033d43cF51
+https://facts.frax.finance/pools/0xf2B9155E3C9756a18EF6572fC99B39F88a9fFf25
+https://facts.frax.finance/pools/0x247b71D57Ac80883364599ad5c9D74ea5EDc8660 (2k tvl)
+*/
+
 module.exports = {
   misrepresentedTokens: true,
   ...fx("ethereum", "0xb076b06f669e682609fb4a8c6646d2619717be4b", "0x43ec799eadd63848443e2347c49f5f52e8fe0f6f"),
