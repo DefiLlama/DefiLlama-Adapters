@@ -178,7 +178,7 @@ module.exports = {
       useDefaultCoreAssets: true,
       factory,
     })
-  },
+  }/*,
   kava: {
     tvl: getUniTVL({
       factory,
@@ -186,7 +186,7 @@ module.exports = {
       useDefaultCoreAssets: true,
       
     })
-  },
+  },*/
 }
 
 module.exports.polygon.tvl = getChainTVL('polygon')
