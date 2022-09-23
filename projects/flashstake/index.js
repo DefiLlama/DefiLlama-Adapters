@@ -20,6 +20,7 @@ async function pool2(timestamp, block) {
     const totalLPLocked = await sdk.api.abi.call({
       target: contractAddresses[i],
       abi: abi['totalLockedAmount'],
+      block: block,
     });
 
     if (!(principalTokenAddress in balances)) {
@@ -38,6 +39,7 @@ async function staking(timestamp, block) {
   const totalFlashLocked = await sdk.api.abi.call({
     target: contractAddress,
     abi: abi['totalLockedAmount'],
+    block: block,
   });
   return {
     "0xb1f1f47061a7be15c69f378cb3f69423bd58f2f8": totalFlashLocked['output']
@@ -71,12 +73,14 @@ async function tvl(timestamp, block) {
     const totalPrincipalStaked = await sdk.api.abi.call({
       target: strategyContractAddress,
       abi: abi['getPrincipalBalance'],
+      block: block,
     });
 
     // Retrieve the total yield generated and currently locked in the contract
     const totalYieldBalance = await sdk.api.abi.call({
       target: strategyContractAddress,
       abi: abi['getYieldBalance'],
+      block: block,
     });
 
     // Add these two together
