@@ -2,6 +2,7 @@ const { request, gql } = require("graphql-request");
 const { toUSDTBalances } = require('../helper/balances')
 const { staking } = require('../helper/unknownTokens')
 
+
 const MasterChefContract = "0x065AAE6127D2369C85fE3086b6707Ac5dBe8210a";
 const WojkPoolContract = "0xDF21058099e69D3635005339721C4826c4c47F8A";
 const WOJK = "0x570C41a71b5e2cb8FF4445184d7ff6f78A4DbcBD";
@@ -67,5 +68,7 @@ module.exports = {
            })
     },
 };
+        
+ 
 
 
