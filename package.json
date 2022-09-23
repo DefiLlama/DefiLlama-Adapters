@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "main": "index.js",
-  "pre-commit": "npm run check-types",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "weeklyChanges": "git pull && git diff $(git log -1 --before=@{7.days.ago} --format=%H) --stat | grep -E \"projects/\" | cut -d / -f 2 | cut -d \" \" -f 1 | uniq | wc -l",
@@ -11,7 +10,6 @@
     "test-interactive": "node utils/testInteractive",
     "test-dex": "ts-node volumes/cli/testAdapter.ts",
     "postinstall": "echo 'run \"npm update @defillama/sdk\" if you want lastest sdk changes' ",
-    "check-types": "npx tsc volumes/**/*.ts --noEmit"
   },
   "author": "",
   "license": "ISC",
