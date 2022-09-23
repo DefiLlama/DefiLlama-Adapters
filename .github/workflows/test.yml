@@ -2,7 +2,7 @@ name: Test_Change
 on:
   pull_request
 jobs:
-  test-adapter:
+  test:
     runs-on: ubuntu-latest
     steps:
       - id: file_changes
@@ -12,23 +12,6 @@ jobs:
           fileOutput: 'json'
       - name: Check out repository code
         uses: actions/checkout@v2
-      - name: Check types
-        run: |
-          RUN_FILES=$(
-            MODIFIED=${{ steps.file_changes.outputs.files_modified}} \
-            ADDED=${{ steps.file_changes.outputs.files_added}} \
-            node ${{ github.workspace }}/.github/workflows/getFileList.js
-          )
-
-          if [ "$RUN_FILES" = "[]" ]; then
-            echo "No adapter files were modified"
-            exit 0
-          fi
-
-          npx tsc volumes/**/*.ts --noEmit > 2>&1 | tee output-types.txt
-          if grep -q "error" output-types.txt; then
-            exit 1;
-          fi
       - name: Run changes files through test script
         run: |
           RUN_FILES=$(
