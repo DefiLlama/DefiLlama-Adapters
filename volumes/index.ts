@@ -48,6 +48,19 @@ import dfyn from "./adapters/dfyn";
 import radioshack from "./adapters/radioshack";
 import flamingoFinance from "./adapters/flamingo-finance";
 import ZEROx from "./adapters/0x";
+// import bakerySwap from "./adapters/bakeryswap"; //broken
+import baryon from "./adapters/baryon";
+import cherryswap from "./adapters/cherryswap";
+import clipper from "./adapters/clipper";
+import cryptoswap from "./adapters/cryptoswap";
+import ellipsis from "./adapters/ellipsis";
+import klexFinance from "./adapters/klex-finance";
+import koyo from "./adapters/koyo";
+// import lyra from "./adapters/lyra"; // Options dex
+import pyeswap from "./adapters/pyeswap";
+import smbswap from "./adapters/smbswap";
+import sunswap from "./adapters/sunswap";
+import whaleswap from "./adapters/whaleswap";
 
 export default {
   mooniswap,
@@ -98,7 +111,18 @@ export default {
   "mm-stableswap-polygon": mmStableswapPolygon,
   dfyn,
   radioshack,
-  flamingoFinance,
-  ZEROx
+  "flamingo-finance": flamingoFinance,
+  "0x": ZEROx,
+  baryon,
+  cherryswap,
+  clipper,
+  cryptoswap,
+  ellipsis,
+  "klex-finance": klexFinance,
+  koyo,
+  pyeswap,
+  smbswap,
+  sunswap,
+  whaleswap
   // lyra -> OPTIONS DEX, not enable for now
 };

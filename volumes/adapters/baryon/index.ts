@@ -16,7 +16,7 @@ const graphs = async () => {
   };
 };
 
-module.exports = {
+export default {
   volume: {
     [BSC]: graphs,
   },
