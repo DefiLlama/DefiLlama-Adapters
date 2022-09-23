@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const { request, gql } = require("graphql-request");
 const abi = require('./abi.json')
-const { transformCeloAddress, transformBscAddress } = require("../helper/portedTokens");
+const { getChainTransform } = require("../helper/portedTokens");
 const { getBlock } = require("../helper/getBlock");
 const { sumTokens } = require("../helper/unwrapLPs");
 
@@ -105,7 +105,7 @@ async function optimism(timestamp, block, chainBlocks) {
 }
 
 async function celo(timestamp, block, chainBlocks) {
-  const transform = await transformCeloAddress()
+  const transform = await getChainTransform('celo')
   let allPrizePools = []
   block = chainBlocks.celo
   const { prizePools } = await request(
@@ -115,7 +115,7 @@ async function celo(timestamp, block, chainBlocks) {
 }
 
 async function bsc(timestamp, block, chainBlocks) {
-  const transform = await transformBscAddress()
+  const transform = await getChainTransform('bsc')
   let allPrizePools = []
   block = await getBlock(timestamp, 'bsc', chainBlocks) - 1000
   const { prizePools } = await request(
@@ -144,5 +144,8 @@ module.exports = {
   bsc: {
     tvl: bsc
   },
+  hallmarks:[
+    [1658872800, "OP Rewards Start"],
+  ],
   methodology: `TVL is the total quantity of tokens locked in PoolTogether pools on Ethereum, Polygon, Avalanche, Optimism, Celo, and BSC`
 }

@@ -24,6 +24,34 @@ const liHndTokenAddress = "0xA147268f35Db4Ae3932eabe42AF16C36A8B89690";
 const LQDR = "0x10b620b2dbac4faa7d7ffd71da486f5d44cd86f9";
 const xLQDR = "0x3Ae658656d1C526144db371FaEf2Fff7170654eE";
 
+const shadowChefAddresses = [
+  "0x59ab3c33e75C91B2B632d51144e57293EF64E556", // LQDR/FTM"
+  "0xDC5bDd3966884a2b1cfFd4213DaE925778786f97", // SPIRIT/FTM
+  "0xFfa8B88160Bd847a3bF032B78c8967DCa877981C", // USDC/FTM
+  "0x767e4Dc3EA4FF70D97BDEEF086e4B021923E4BdD", // LINSPIRIT/SPIRIT
+  "0xA7cB4E3Ea2d6B44F4109970d7E9E7B7aBa372Eb5", // WBTC/FTM"
+  "0x9CD5ab5b2c00560E93Bb89174078a05b03Eb469e", // ETH/FTM"
+  "0x477A71A9154050DFbC497B9F782CC5169f7BDDf5", // fUSDT/FTM"
+  "0xc43a1555554FF87f957c0DD5B80ab54951265c2E", // DAI/FTM"
+  "0xf4987eE98881ded997D1F3389B82ADF99e6592ed", // MIM/FTM"
+  "0x3F576a5a3eb52e658bc88c23d8478Ac67eC90aeE", // FRAX/FTM"
+  "0x3Ce75C35AF2DD29D76C7C8521c218c5A0f2826A8", // BIFI/FTM"
+  "0x71943a80a81c64235fC45DE4BD06638556fC773E", // fUSDT/USDC"
+  "0x3beFeA69e89931b70B80231389F97A9bF6827B2E", // DAI/USDC"
+  "0x62A8bB540e52eDfFa5F71B9Ad6BEF52600A1e247", // MIM/USDC"
+  "0xDcBd61032cF40C16f6d7B124676C89a0e2e874c4", // FRAX/USDC"
+  "0xBb07eBA448e404B56Ba1273B762d690A57F7f84f", // MAI/USDC"
+  "0x5bC0F62BfBAc6C5f977BaC73EdC8FbCED89Ba8EC", // BUSD/USDC"
+  "0x4423Ca3dB49914c13068C484F9D341D636A515dd", // sFTMX/FTM"
+  "0x22214b00318300e0D046feD2D9CB166cBb48Ba60", // alUSD/USDC"
+  "0xA8E6F303092F0c345eEc9f780d72A8Bf56C54DF0", // gALCX/FTM"
+  "0x04C4244F6b497343e2CcD6f3fE992910c8557dCE", // COMB/FTM"
+  "0x46F8546E33900CcdB5D5FBE80af2449ecAe42128", // FXS/FTM"
+  "0xD75d45215a5E8E484F1f094f15b2f626A953456e", // TAROT/FTM"
+  "0x9757fd7d3B6281218E11Bab3b550eab8C4eF5eA9", // RING/FTM"
+  "0xa0AC54644dfCE40F83F3B1BC941c234532B4B8e1", // CRE8R/FTM"
+];
+
 const masterchefTvl = async (timestamp, ethBlock, chainBlocks) => {
   const balances = {};
 
@@ -297,6 +325,36 @@ const minichefTvl = async (timestamp, ethBlock, chainBlocks) => {
             transformAddress(usdcTokenAddress),
             bptDeiUsdcTvlInUsdc
           );
+        } else if (lpTokens.output[idx].output === "0xc0064b291bd3D4ba0E44ccFc81bF8E7f7a579cD2") { // SFTMX/FTM
+          const [tokenBalances, totalSupply] = await Promise.all([
+            sdk.api.abi.call({
+              abi: abi.getPoolTokens,
+              target: beethovenVaultAddress,
+              params: ["0xc0064b291bd3d4ba0e44ccfc81bf8e7f7a579cd200000000000000000000042c"],
+              chain: "fantom",
+              block: chainBlocks["fantom"],
+            }),
+            sdk.api.abi.call({
+              abi: abi.getVirtualSupply,
+              target: token,
+              chain: "fantom",
+              block: chainBlocks["fantom"],
+            }),
+          ]);
+          const sftmTokenAddress = "0xd7028092c830b5C8FcE061Af2E593413EbbC1fc1";
+          const lpTokenRatio = new BigNumber(totalSupply.output).isZero() ? new BigNumber(0) : totalBalance.div(totalSupply.output);
+          const bptSftmxTvlInFtm = new BigNumber(Number(tokenBalances.output['1'][1])).times(lpTokenRatio).toFixed(0);
+          const bptSftmxTvlInFtm1 = new BigNumber(Number(tokenBalances.output['1'][2])).times(lpTokenRatio).toFixed(0);
+          sdk.util.sumSingleBalance(
+            balances,
+            transformAddress(wftmTokenAddress),
+            bptSftmxTvlInFtm
+          );
+          sdk.util.sumSingleBalance(
+            balances,
+            transformAddress(sftmTokenAddress),
+            bptSftmxTvlInFtm1
+          );
         } else {
           sdk.util.sumSingleBalance(
             balances,
@@ -413,6 +471,104 @@ const hundredchefTvl = async (timestamp, ethBlock, chainBlocks) => {
   return balances;
 };
 
+const shadowchefTvl = async (timestamp, ethBlock, chainBlocks) => {
+  let balances = {};
+
+  const transformAddress = await transformFantomAddress();
+
+  const [lpTokens, strategies] = await Promise.all([
+    sdk.api.abi.multiCall({
+      block: chainBlocks["fantom"],
+      calls: Array.from(Array(Number(shadowChefAddresses.length)).keys()).map((i) => ({
+        target: shadowChefAddresses[i],
+      })),
+      abi: abi.shadowLpToken,
+      chain: "fantom",
+    }),
+    sdk.api.abi.multiCall({
+      block: chainBlocks["fantom"],
+      calls: Array.from(Array(Number(shadowChefAddresses.length)).keys()).map((i) => ({
+        target: shadowChefAddresses[i],
+      })),
+      abi: abi.shadowStrategy,
+      chain: "fantom",
+    }),
+  ]);
+
+  const [symbols, tokenBalances, strategyBalances] = await Promise.all([
+    sdk.api.abi.multiCall({
+      block: chainBlocks["fantom"],
+      calls: lpTokens.output.map((p) => ({
+        target: p.output,
+      })),
+      abi: "erc20:symbol",
+      chain: "fantom",
+    }),
+    sdk.api.abi.multiCall({
+      block: chainBlocks["fantom"],
+      calls: lpTokens.output.map((p, index) => ({
+        target: p.output,
+        params: shadowChefAddresses[index],
+      })),
+      abi: "erc20:balanceOf",
+      chain: "fantom",
+    }),
+    sdk.api.abi.multiCall({
+      block: chainBlocks["fantom"],
+      calls: strategies.output
+        .filter(
+          (strategy) =>
+            strategy.output !== "0x0000000000000000000000000000000000000000"
+        )
+        .map((strategy) => ({
+          target: strategy.output,
+        })),
+      abi: abi.balanceOf,
+      chain: "fantom",
+    })
+  ]);
+
+  const lpPositions = [];
+  let i = 0;
+
+  tokenBalances.output.forEach(async (balance, idx) => {
+    const strategy = strategies.output[idx].output;
+
+    let totalBalance = new BigNumber(balance.output);
+
+    if (strategy !== "0x0000000000000000000000000000000000000000") {
+      totalBalance = totalBalance.plus(
+        new BigNumber(strategyBalances.output[i].output)
+      );
+      i++;
+    }
+
+    const token = balance.input.target;
+    if (symbols.output[idx].success) {
+      lpPositions.push({
+        balance: totalBalance.toString(10),
+        token,
+      });
+    }
+  });
+
+  const turns = Math.floor(lpPositions.length / 10);
+  let n = 0;
+
+  for (let i = 0; i < turns; i++) {
+    await unwrapUniswapLPs(
+      balances,
+      lpPositions.slice(n, n + 10),
+      chainBlocks["fantom"],
+      "fantom",
+      transformAddress
+    );
+    n += 10;
+  }
+
+  return balances;
+};
+
 module.exports = {
   fantom: {
     staking: staking(xLQDR, LQDR, "fantom", "fantom:" + LQDR),
@@ -420,6 +576,7 @@ module.exports = {
       masterchefTvl,
       minichefTvl,
       hundredchefTvl,
+      shadowchefTvl,
     ]),
   }
 }; // node test.js projects/liquiddriver/index.js
