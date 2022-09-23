@@ -106,7 +106,9 @@ const getPairList = async (url, grouper) => {
             ],
           };
         }
-        throw new Error("Pair reserves fetch failed");
+        return {
+          reserves: [0, 0],
+        }
       })
     );
   } catch (err) {

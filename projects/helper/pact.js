@@ -7,6 +7,7 @@ async function fetchLocal(localCmd, apiHost) {
   const { pactCode, meta, networkId } = localCmd
   const cmd = prepareExecCmd(pactCode, meta, networkId);
   const res = await post(`${apiHost}/api/v1/local`, cmd)
+  console.log(res)
   return res;
 }
 
