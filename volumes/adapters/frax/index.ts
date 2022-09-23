@@ -64,7 +64,7 @@ const adapter: SimpleVolumeAdapter = {
       [chain]: {
         fetch: graphs(chain as Chain),
         start: async () => getStartTimestamp(chain),
-        customBackfill: customBackfill(CHAIN.ARBITRUM as Chain, graphs as unknown as IGraphs),
+        customBackfill: customBackfill(chain as Chain, graphs as unknown as IGraphs),
       }
     }
   }, {} as SimpleVolumeAdapter['volume'])
