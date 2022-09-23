@@ -178,10 +178,19 @@ module.exports = {
       useDefaultCoreAssets: true,
       factory,
     })
-  }
+  },
+  kava: {
+    tvl: getUniTVL({
+      factory,
+      chain: 'kava',
+      useDefaultCoreAssets: true,
+      
+    })
+  },
 }
 
 module.exports.polygon.tvl = getChainTVL('polygon')
 module.exports.bsc.tvl = getChainTVL('bsc')
 module.exports.fantom.tvl = getChainTVL('fantom')
 module.exports.harmony.tvl = getChainTVL('harmony')
+
