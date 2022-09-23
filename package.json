@@ -9,7 +9,7 @@
     "dev": "babel-watch curve.js",
     "test-interactive": "node utils/testInteractive",
     "test-dex": "ts-node volumes/cli/testAdapter.ts",
-    "postinstall": "echo 'run \"npm update @defillama/sdk\" if you want lastest sdk changes' ",
+    "postinstall": "echo 'run \"npm update @defillama/sdk\" if you want lastest sdk changes' "
   },
   "author": "",
   "license": "ISC",
