@@ -1,0 +1,66 @@
+{
+  "depositId": {
+      "inputs": [],
+  "name": "depositId",
+  "outputs": [
+    {
+      "internalType": "uint256",
+      "name": "",
+      "type": "uint256"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+  },
+  "getDepositDetails": {
+      "inputs": [
+    {
+      "internalType": "uint256",
+      "name": "_id",
+      "type": "uint256"
+    }
+  ],
+  "name": "getDepositDetails",
+  "outputs": [
+    {
+      "internalType": "address",
+      "name": "_tokenAddress",
+      "type": "address"
+    },
+    {
+      "internalType": "address",
+      "name": "_withdrawalAddress",
+      "type": "address"
+    },
+    {
+      "internalType": "uint256",
+      "name": "_tokenAmount",
+      "type": "uint256"
+    },
+    {
+      "internalType": "uint256",
+      "name": "_unlockTime",
+      "type": "uint256"
+    },
+    {
+      "internalType": "bool",
+      "name": "_withdrawn",
+      "type": "bool"
+    },
+    {
+      "internalType": "uint256",
+      "name": "_tokenId",
+      "type": "uint256"
+    },
+    {
+      "internalType": "bool",
+      "name": "_isNFT",
+      "type": "bool"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+  }
+}
+
+

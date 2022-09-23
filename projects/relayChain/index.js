@@ -1,9 +1,10 @@
 const sdk = require("@defillama/sdk");
-const {getChainTransform} = require('../helper/portedTokens');
+const { getChainTransform } = require('../helper/portedTokens');
+const { sumTokens } = require('../helper/unwrapLPs')
 
 const usdtEth = "0xdAC17F958D2ee523a2206206994597C13D831ec7";
 const daiEth = "0x6b175474e89094c44da98b954eedeac495271d0f";
-const wbtcEth ="0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599";
+const wbtcEth = "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599";
 const usdcEth = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
 const wethEth = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
 const relayEth = "0x5D843Fa9495d23dE997C394296ac7B4D721E841c";
@@ -15,36 +16,36 @@ const dxpEth="0x0a32930DD043aB54F9acb1696503CBF670538AFB";
 const usdtBsc = "0x55d398326f99059fF775485246999027B3197955";
 const daiBsc = "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3";
 const usdcBsc = "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d";
-const busdBsc="0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56";
-const ethBsc="0x2170Ed0880ac9A755fd29B2688956BD959F933F8";
+const busdBsc = "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56";
+const ethBsc = "0x2170Ed0880ac9A755fd29B2688956BD959F933F8";
 const wbnbBsc = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
 const relayBsc = "0xE338D4250A4d959F88Ff8789EaaE8c32700BD175";
 
 
-const daiAvax= "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70";
-const wavax ="0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7";
-const wbtcAvax="0x50b7545627a5162F82A992c33b87aDc75187B218";
-const usdcAvax="0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664";
-const usdtAvax ="0xc7198437980c041c805A1EDcbA50c1Ce5db95118";
+const daiAvax = "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70";
+const wavax = "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7";
+const wbtcAvax = "0x50b7545627a5162F82A992c33b87aDc75187B218";
+const usdcAvax = "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664";
+const usdtAvax = "0xc7198437980c041c805A1EDcbA50c1Ce5db95118";
 
 
 
-const wHeco ="0x5545153CCFcA01fbd7Dd11C0b23ba694D9509A6F";
-const wbtcHeco="0x66a79D23E58475D2738179Ca52cd0b41d73f0BEa";
-const ethHeco="0x64FF637fB478863B7468bc97D30a5bF3A428a1fD";
-const usdcHeco="0x9362Bbef4B8313A8Aa9f0c9808B80577Aa26B73B";
-const daiHeco="0x3D760a45D0887DFD89A2F5385a236B29Cb46ED2a";
-const husdHeco="0x0298c2b32eaE4da002a15f36fdf7615BEa3DA047";
+const wHeco = "0x5545153CCFcA01fbd7Dd11C0b23ba694D9509A6F";
+const wbtcHeco = "0x66a79D23E58475D2738179Ca52cd0b41d73f0BEa";
+const ethHeco = "0x64FF637fB478863B7468bc97D30a5bF3A428a1fD";
+const usdcHeco = "0x9362Bbef4B8313A8Aa9f0c9808B80577Aa26B73B";
+const daiHeco = "0x3D760a45D0887DFD89A2F5385a236B29Cb46ED2a";
+const husdHeco = "0x0298c2b32eaE4da002a15f36fdf7615BEa3DA047";
 
 
 
-const miMatic ="0xa3Fa99A148fA48D14Ed51d610c367C61876997F1";
-const wmatic ="0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270";
-const wethMatic ="0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619";
-const wbtcMatic="0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6";
-const usdcMatic="0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174";
-const daiMatic="0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063";
-const usdtMatic="0xc2132D05D31c914a87C6611C10748AEb04B58e8F";
+const miMatic = "0xa3Fa99A148fA48D14Ed51d610c367C61876997F1";
+const wmatic = "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270";
+const wethMatic = "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619";
+const wbtcMatic = "0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6";
+const usdcMatic = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174";
+const daiMatic = "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063";
+const usdtMatic = "0xc2132D05D31c914a87C6611C10748AEb04B58e8F";
 
 
 const usdtMoonriver = "0xB44a9B6905aF7c801311e8F4E76932ee959c663C";
@@ -60,8 +61,8 @@ const usdtFantom = "0x1B27A9dE6a775F98aaA5B90B62a4e2A0B84DbDd9";
 const relayFantom = "0x338003E074DabFec661E1901bdB397aF9Cab6A76";
 const daiFantom = "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e";
 const usdcFantom = "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75";
-const wFantom="0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83";
-const btcFantom="0x321162Cd933E2Be498Cd2267a90534A804051b11";
+const wFantom = "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83";
+const btcFantom = "0x321162Cd933E2Be498Cd2267a90534A804051b11";
 
 
 const usdtHarmony = "0x224e64ec1bdce3870a6a6c777edd450454068fec";
@@ -102,7 +103,7 @@ const wbtcCronos = "0x062e66477faf219f25d27dced647bf57c3107d52";
 const wethCronos = "0xe44fd7fcb2b1581822d0c862b68222998a0c299a";
 const relayCronos = "0x9C29650a1B273A031A35F3121914aae882B144A4";
 const busdCronos = "0x6aB6d61428fde76768D7b45D8BFeec19c6eF91A8";
-const wCronos=  "0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23";
+const wCronos = "0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23";
 
 
 
@@ -111,8 +112,8 @@ const wCronos=  "0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23";
 const usdtIoTex = "0x6fbCdc1169B5130C59E72E51Ed68A84841C98cd1";
 const daiIoTex = "0x1CbAd85Aa66Ff3C12dc84C5881886EEB29C1bb9b";
 const usdcIoTex = "0x3B2bf2b523f54C4E454F08Aa286D03115aFF326c";
-const busdIoTex= "0xacee9b11cd4b3f57e58880277ac72c8c41abe4e4";
-const wIotex="0xa00744882684c3e4747faefd68d283ea44099d03";
+const busdIoTex = "0xacee9b11cd4b3f57e58880277ac72c8c41abe4e4";
+const wIotex = "0xa00744882684c3e4747faefd68d283ea44099d03";
 
 
 const usdtOptimism = "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58";
@@ -125,11 +126,11 @@ const daiArbitrum = "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1";
 
 
 const ethAddr = "0xF687e1481d85F8b9F4D1f4D4C15348CeF8E5a762";
-const eth1Addr="0xc4DC891d5B5171f789829D6050D5eB64c447e0FE";
+const eth1Addr = "0xc4DC891d5B5171f789829D6050D5eB64c447e0FE";
 const bscAddr = "0x3Ea1f65cf49297eA6d265291a2b09D0f2AE649D6";
-const avaxAddr ="0x43BEddB3199F2a635C85FfC4f1af228198D268Ab";
-const hecoAddr ="0xA21D529B86ef6B71C0caaE4669726755876a0Dc0";
-const polyAddr ="0x3Ea1f65cf49297eA6d265291a2b09D0f2AE649D6";
+const avaxAddr = "0x43BEddB3199F2a635C85FfC4f1af228198D268Ab";
+const hecoAddr = "0xA21D529B86ef6B71C0caaE4669726755876a0Dc0";
+const polyAddr = "0x3Ea1f65cf49297eA6d265291a2b09D0f2AE649D6";
 const moonriverAddr = "0x3e3f619940d9a20DbcF3F7c0c7958f4A67Fac688";
 const ftmAddr = "0x502B4683D213C68507fc6d19417df0bB7995b23B";
 const sdnAddr = "0x074412fae37D4C3de9964980352faD07aacDd674";
@@ -200,25 +201,16 @@ async function ethTvl(timestamp, ethBlock) {
 
 
 async function bscTvl(timestamp, ethBlock, chainBlocks) {
-    let balances = {};
-    let tokenBalance;
+  const chain = 'bsc'
+  const toa = []
+  let balances = {};
+  bscTokenAddress.forEach(t => {
+    toa.push([t, bscAddr])
+  })
 
-    for(var i=0;i<bscTokenAddress.length;i++ ){
-      tokenBalance= (
-        await sdk.api.abi.call({
-          target: bscTokenAddress[i],
-          chain: 'bsc',
-          abi: 'erc20:balanceOf',
-          params: bscAddr,
-          block: chainBlocks['bsc'],
-        })
-      ).output;
-    sdk.util.sumSingleBalance(balances, "bsc:"+bscTokenAddress[i], tokenBalance)
 
-    }
-
-      return balances
-  };
+  return sumTokens(balances, toa, chainBlocks[chain], chain)
+};
 
 async function avaxTvl(timestamp, ethBlock, chainBlocks) {
     let balances = {};
@@ -274,7 +266,9 @@ async function hecoTvl(timestamp, ethBlock, chainBlocks) {
 async function polygonTvl(timestamp, ethBlock, chainBlocks) {
 
   let balances = {};
-  let tokenBalance;
+  maticTokenAddress.forEach(t => {
+    toa.push([t, polyAddr])
+  })
 
   for(var i=0;i<maticTokenAddress.length;i++){
     tokenBalance= (
@@ -406,28 +400,23 @@ async function metisTvl(unixTimestamp, ethBlock, chainBlocks) {
 }
 
 async function cronosTvl(timestamp, ethBlock, chainBlocks) {
+  const chain = 'cronos'
+  const toa = []
   let balances = {};
-  let tokenBalance;
+  cronosTokenAddress.forEach(t => {
+    toa.push([t, cronosAddr])
+  })
 
-  for(var i=0;i<cronosTokenAddress.length;i++){
-    tokenBalance= (
-      await sdk.api.abi.call({
-        target: cronosTokenAddress[i],
-        chain: 'cronos',
-        abi: 'erc20:balanceOf',
-        params: cronosAddr,
-        block: chainBlocks['cronos'],
-      })
-    ).output;
-  sdk.util.sumSingleBalance(balances, "cronos:"+cronosTokenAddress[i], tokenBalance)
-  }
-
-  return balances
-  }
+  return sumTokens(balances, toa, chainBlocks[chain], chain)
+}
 
 async function ioTexTvl(timestamp, ethBlock, chainBlocks) {
+  const chain = 'iotex'
+  const toa = []
   let balances = {};
-  let tokenBalance;
+  iotexTokenAddress.forEach(t => {
+    toa.push([t, iotexAddr])
+  })
 
   for(var i=0;i<iotexTokenAddress.length;i++){
     tokenBalance= (
@@ -446,22 +435,14 @@ async function ioTexTvl(timestamp, ethBlock, chainBlocks) {
 }
 
 async function moonriverTvl(timestamp, ethBlock, chainBlocks) {
+  const chain = 'moonriver'
+  const toa = []
   let balances = {};
-  let tokenBalance;
+  moonTokenAddress.forEach(t => {
+    toa.push([t, moonriverAddr])
+  })
 
-  for(var i=0;i<moonTokenAddress.length;i++){
-    tokenBalance= (
-      await sdk.api.abi.call({
-        target: moonTokenAddress[i],
-        chain: 'moonriver',
-        abi: 'erc20:balanceOf',
-        params: moonriverAddr,
-        block: chainBlocks['moonriver'],
-      })
-    ).output;
-  sdk.util.sumSingleBalance(balances, "moonriver:"+moonTokenAddress[i], tokenBalance)
-  }
-return balances
+  return sumTokens(balances, toa, chainBlocks[chain], chain)
 }
 
 async function optimismTvl(timestamp, ethBlock, chainBlocks) {
@@ -511,34 +492,34 @@ module.exports = {
     tvl:ethTvl,
   },
   bsc: {
-    tvl:bscTvl,
+    tvl: bscTvl,
   },
-  avax:{
-    tvl:avaxTvl,
+  avax: {
+    tvl: avaxTvl,
   },
-  heco:{
-    tvl:hecoTvl,
+  heco: {
+    tvl: hecoTvl,
   },
-  polygon:{
-    tvl:polygonTvl,
+  polygon: {
+    tvl: polygonTvl,
   },
-  fantom:{
-    tvl:fantomTvl,
+  fantom: {
+    tvl: fantomTvl,
   },
-  harmony :{
-    tvl:harmonyTvl,
+  harmony: {
+    tvl: harmonyTvl,
   },
-  metis :{
-    tvl:metisTvl,
+  metis: {
+    tvl: metisTvl,
   },
-  cronos :{
-    tvl:cronosTvl,
+  cronos: {
+    tvl: cronosTvl,
   },
-  iotex:{
-    tvl:ioTexTvl,
+  iotex: {
+    tvl: ioTexTvl,
   },
-  moonriver:{
-    tvl:moonriverTvl,
+  moonriver: {
+    tvl: moonriverTvl,
   },
   optimism:{
     tvl:optimismTvl,

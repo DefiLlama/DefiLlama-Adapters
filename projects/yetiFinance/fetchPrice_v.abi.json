@@ -1,0 +1,13 @@
+{
+    "inputs": [],
+    "name": "fetchPrice_v",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }

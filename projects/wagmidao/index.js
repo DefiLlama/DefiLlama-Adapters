@@ -1,12 +1,10 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const erc20 = require("../helper/abis/erc20.json");
-const { pool2BalanceFromMasterChefExports } = require("../helper/pool2");
 const { calculateUniTvl } = require("../helper/calculateUniTvl");
 const { getBlock } = require("../helper/getBlock");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const {
-  fixHarmonyBalances,
+  getFixBalancesSync,
   transformHarmonyAddress,
 } = require("../helper/portedTokens");
 
@@ -68,17 +66,14 @@ const Treasury = async (timesamp, ethBlock, chainBlocks) => {
     }
   });
 
-  let transformAddress = await transformHarmonyAddress();
-
   await unwrapUniswapLPs(
     balances,
     lpPositions,
     chainBlocks["harmony"],
     "harmony",
-    transformAddress
   );
 
-  fixHarmonyBalances(balances);
+  getFixBalancesSync('harmony')(balances);
 
   return balances;
 };
@@ -97,7 +92,7 @@ const Staking = async (chainBlocks) => {
 
   const balanceOf = (
     await sdk.api.abi.call({
-      abi: erc20.balanceOf,
+      abi: 'erc20:balanceOf',
       target: GMI,
       params: masterChef,
       chain: "harmony",
@@ -124,7 +119,7 @@ async function harmonyTvl(timestamp, _ethBlock, chainBlocks) {
     true
   );
 
-  fixHarmonyBalances(balances);
+  getFixBalancesSync('harmony')(balances);
 
   return balances;
 }

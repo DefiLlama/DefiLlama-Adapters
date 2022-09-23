@@ -37,3 +37,6 @@ module.exports = {
   misrepresentedTokens: true,
   timetravel: true,
 };
+module.exports.hallmarks = [
+        [1651881600, "UST depeg"],
+      ]

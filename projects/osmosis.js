@@ -4,11 +4,11 @@ const {getApiTvl} = require('./helper/historicalApi')
 function tvl(timestamp){
     return getApiTvl(timestamp, 
     async()=>{
-        const data = await utils.fetchURL("https://api-osmosis.imperator.co/liquidity/v1/actual")
-        return data.data.value
+        const data = await utils.fetchURL("https://api-osmosis.imperator.co/liquidity/v2/historical/chart")
+        return data.data.pop().value
     },
     async()=>{
-        const data = await utils.fetchURL("https://api-osmosis.imperator.co/liquidity/v1/historical/chart")
+        const data = await utils.fetchURL("https://api-osmosis.imperator.co/liquidity/v2/historical/chart")
         return data.data.map(d=>({
             date: Math.round(new Date(d.time).getTime()/1000),
             totalLiquidityUSD: d.value
@@ -19,5 +19,7 @@ function tvl(timestamp){
 module.exports = {
     misrepresentedTokens: true,
     methodology: "Counts the liquidity on all AMM pools. Metrics come from https://info.osmosis.zone/",
-    tvl
-}
+    osmosis: {
+        tvl
+    }
+} // node test.js projects/osmosis.js

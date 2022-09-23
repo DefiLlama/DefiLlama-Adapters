@@ -1,13 +1,10 @@
 const sdk = require('@defillama/sdk');
 const {
-  transformBscAddress,
-  transformAvaxAddress,
-  transformPolygonAddress
+  getChainTransform,
 } = require('../helper/portedTokens');
 
 const getTokenAbi = require("./abi/getToken.json");
 const getTokenBalanceAbi = require("./abi/getTokenBalance.json");
-const BigNumber = require("bignumber.js");
 
 const config = {
   chains: [
@@ -48,21 +45,40 @@ const config = {
         '0x3F1bfa6FA3B6D03202538Bf0cdE92BbE551104ac', // USDC + sUSDC.e from Avalanche
       ]
     },
+    {
+      id: 288,
+      name: 'boba',
+      portal: '0xD7F9989bE0d15319d13d6FA5d468211C89F0b147',
+      stable: '0x66a2A913e447d6b4BF33EFbec43aAeF87890FBbc', // USDC
+      pools: [
+        '0xab0738320A21741f12797Ee921461C691673E276', // USDC + sUSDC from Ethereum,
+        '0xe0ddd7afC724BD4B320472B5C954c0abF8192344', // USDC + sBUSD from BSC,
+      ]
+    },
+    {
+      id: 1313161554,
+      name: 'aurora',
+      portal: '0x17A0E3234f00b9D7028e2c78dB2caa777F11490F',
+      stable: '0xB12BFcA5A55806AaF64E99521918A4bf0fC40802', // USDC
+      pools: [
+        '0x7Ff7AdE2A214F9A4634bBAA4E870A5125dA521B8', // USDC + sBUSD from BSC,
+        '0x7F1245B61Ba0b7D4C41f28cAc9F8637fc6Bec9E4', // USDC + sUSDC from Polygon,
+      ]
+    },
+    {
+      id: 40,
+      name: 'telos',
+      portal: '0x17A0E3234f00b9D7028e2c78dB2caa777F11490F',
+      stable: '0x818ec0a7fe18ff94269904fced6ae3dae6d6dc0b', // USDC
+      pools: [
+        '0x7f3C1E54b8b8C7c08b02f0da820717fb641F26C8', // USDC + sBUSD from BSC,
+      ]
+    },
   ]
 }
 
 async function getTransform(chainName) {
-  let transform = (address) => {
-    return address
-  }
-  if (chainName === 'bsc') {
-    transform = await transformBscAddress();
-  } else if (chainName === 'avax') {
-    transform = await transformAvaxAddress();
-  } else if (chainName === 'polygon') {
-    transform = await transformPolygonAddress();
-  }
-  return transform
+  return getChainTransform(chainName)
 }
 
 async function tvl(chainName, timestamp, block, chainBlocks) {
@@ -71,8 +87,14 @@ async function tvl(chainName, timestamp, block, chainBlocks) {
   const chain = config.chains.find((chain) => chain.name === chainName)
   if (!chain) throw new Error('Chain config not found')
 
-  const chainBlock = chainBlocks[chainName]
-  if (!chainBlock) throw new Error('Cannot get block by chainName')
+  let chainBlock = chainBlocks[chainName]
+  if (!chainBlock) {
+    const block = await sdk.api.util.getLatestBlock(chainName)
+    chainBlock = block.number
+    if (!chainBlock) {
+      throw new Error('Cannot get block by chainName')
+    }
+  }
 
   const params = {
     abi: 'erc20:balanceOf',
@@ -85,7 +107,7 @@ async function tvl(chainName, timestamp, block, chainBlocks) {
   const collateralBalance = (await sdk.api.abi.call(params)).output;
 
   const portalBalances = {};
-  await sdk.util.sumSingleBalance(portalBalances, chain.stable, collateralBalance)
+  sdk.util.sumSingleBalance(portalBalances, chain.stable, collateralBalance)
 
   const poolIndexes = [0, 1] // every stable pool consists of 2 assets
   const poolBalancePromises = chain.pools.map(async (pool) => {
@@ -117,21 +139,15 @@ async function tvl(chainName, timestamp, block, chainBlocks) {
     })
   })
 
-  const poolBalances = (await Promise.all(poolBalancePromises))
+  const poolBalances = await Promise.all(poolBalancePromises)
+  const allBalances = poolBalances
     .reduce((acc, items) => {
       items.forEach((item) => {
-        if (!acc[item.address]) {
-          acc[item.address] = item.balance
-        } else {
-          const itemBalance = new BigNumber(item.balance)
-          const accBalance = new BigNumber(acc[item.address])
-          acc[item.address] = itemBalance.plus(accBalance).toString()
-        }
+        sdk.util.sumSingleBalance(acc, item.address, item.balance)
       })
       return acc
-    }, {})
+    }, portalBalances)
 
-  const allBalances = Object.assign(portalBalances, poolBalances)
   return Object.keys(allBalances).reduce((acc, address) => {
     acc[transform(address)] = allBalances[address]
     return acc
@@ -160,6 +176,21 @@ module.exports = {
   polygon: {
     tvl: (...params) => {
       return tvl('polygon', ...params)
+    },
+  },
+  boba: {
+    tvl: (...params) => {
+      return tvl('boba', ...params)
+    },
+  },
+  aurora: {
+    tvl: (...params) => {
+      return tvl('aurora', ...params)
+    },
+  },
+  telos: {
+    tvl: (...params) => {
+      return tvl('telos', ...params)
     },
   },
 };

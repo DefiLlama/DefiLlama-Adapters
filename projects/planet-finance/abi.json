@@ -78,6 +78,19 @@
       "payable": false,
       "stateMutability": "view",
       "type": "function"
+    },
+    "balanceOfGtoken": {
+      "inputs":[],
+      "name":"balanceOfGtoken",
+      "outputs":[
+        {
+          "internalType":"uint256",
+          "name":"",
+          "type":"uint256"
+        }
+      ],
+      "stateMutability":"view",
+      "type":"function"
     }
   }
   
