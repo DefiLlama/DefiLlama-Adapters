@@ -4,7 +4,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Chack keyword trigger
+      - name: Check keyword trigger
         uses: khan/pull-request-comment-trigger@v1.1.0
         id: check
         with:
@@ -32,6 +32,11 @@ jobs:
           if [ "$RUN_FILES" = "[]" ] && [ steps.check.outputs.triggered == 'true' ]; then
             IFS='!' read -r -a array <<< steps.check.outputs.comment_body
             IFS='!' read -r -a RUN_FILES <<< "${array[1]}"
+          fi
+
+          npx tsc volumes/**/*.ts --noEmit 2>&1 | tee output-types.txt
+          if grep -q "Error" output.txt; then
+            exit 1;
           fi
 
           npm ci --omit=dev
