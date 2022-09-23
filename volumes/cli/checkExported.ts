@@ -1,6 +1,6 @@
 import adapters from "../";
 import { readdirSync } from 'fs'
-import path from "path";
+const path = require("path")
 
 const normalizeAdapterName = (adapter:string) => adapter.toLowerCase().split('-').join(' ')
 
