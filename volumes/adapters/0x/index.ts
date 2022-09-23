@@ -46,7 +46,6 @@ interface IGraphResponse {
 
 const getFetch = (chain: string): Fetch => async (timestamp: number) => {
   const formattedChain = chain[0].toUpperCase() + chain.slice(1).toLowerCase()
-  console.log(getHistoricalDataQuery(timestamp), null, 2)
   const dailyDataResponse: IGraphResponse = await getGQLClient().request(getHistoricalDataQuery(timestamp))
   const dailyVolume = dailyDataResponse.fills.reduce((acc, curr) => formattedChain === curr.chainName ? acc += curr.volumeUSD : acc, 0)
   return {
