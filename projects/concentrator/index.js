@@ -40,7 +40,7 @@ async function getBalancerLpTvl(balances) {
 
 async function tvl(timestamp, block) {
   let balances = {}
-  await getBalancerLpTvl(balances, block)
+  await getBalancerLpTvl(balances)
   await getAFXSInfo(balances, block);
   const acrvTotalUnderlying = (await sdk.api.abi.call({
     target: concentratorAcrv,
