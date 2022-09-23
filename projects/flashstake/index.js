@@ -53,8 +53,8 @@ async function tvl(timestamp, block) {
   const endpoint = 'https://api.thegraph.com/subgraphs/name/blockzerolabs/flashstake-subgraph';
   const graphQLClient = new GraphQLClient(endpoint)
   const query = gql`
-      {
-          strategies(first: 1000) {
+      query Query($block: Int) {
+          strategies(first: 1000, block: {number: $block}) {
               id
               principalTokenAddress
           }
@@ -62,7 +62,7 @@ async function tvl(timestamp, block) {
   `;
 
   // Retrieve and iterate over all strategies
-  const results = await retry(async bail => await graphQLClient.request(query));
+  const results = await retry(async bail => await graphQLClient.request(query, {"block": block}));
   for(let i = 0; i < results['strategies'].length; i++) {
     const strategyContractAddress = results['strategies'][i]['id'];
     const principalTokenAddress = results['strategies'][i]['principalTokenAddress'];
@@ -99,5 +99,8 @@ module.exports = {
     pool2,
   },
   timetravel: true,
-  start: 15450000
+  start: 15450000,
+  hallmarks: [
+    [1659312000, "Protocol Launch"]
+  ]
 };
