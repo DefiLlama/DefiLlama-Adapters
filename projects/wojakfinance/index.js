@@ -1,14 +1,12 @@
 const { request, gql } = require("graphql-request");
 const { toUSDTBalances } = require('../helper/balances')
-const { staking } = require('../helper/unknownTokens')
+const { stakings } = require('../helper/staking')
 
 const MasterChefContract = "0x065AAE6127D2369C85fE3086b6707Ac5dBe8210a";
 const WojkPoolContract = "0xDF21058099e69D3635005339721C4826c4c47F8A";
 const WOJK = "0x570C41a71b5e2cb8FF4445184d7ff6f78A4DbcBD";
 
-const chain = 'dogechain'
 
-const lps = ['0xf4da9059f5BB18b50773Fe1725b94Fc189E1b75c']
 
 const graphEndpoint = 'https://api.dogechainhealth.com/subgraphs/name/wojakswap/exchange'
 const currentQuery = gql`
@@ -58,13 +56,7 @@ module.exports = {
     methodology: 'TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://wojak.fi/info as the source. Staking accounts for the WOJK locked in MasterChef (0x065AAE6127D2369C85fE3086b6707Ac5dBe8210a)',
     dogechain: {
         tvl,
-        staking: staking({
-            chain,
-            owners: [MasterChefContract, WojkPoolContract],
-            tokens: [WOJK],
-            useDefaultCoreAssets: true,
-            lps,
-           })
+        staking: stakings([MasterChefContract, WojkPoolContract], WOJK, "dogechain"),
     },
 };
 
