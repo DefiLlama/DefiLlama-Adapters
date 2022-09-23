@@ -35,7 +35,7 @@ jobs:
           fi
 
           npx tsc volumes/**/*.ts --noEmit 2>&1 | tee output-types.txt
-          if grep -q "Error" output.txt; then
+          if grep -q "Error" output-types.txt; then
             exit 1;
           fi
 
