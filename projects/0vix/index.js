@@ -35,11 +35,64 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     ).output,
   };
 
-  const totalSupply = await supplied(timestamp, chain, block);
+  const { markets_minus_matic, underlyings } = await get0vixUnderlyings(
+    chain,
+    block
+  );
+
+  // Put MATIC underlyings at the end
+  underlyings.push({
+    input: { target: oMATIC },
+    output: matic,
+  });
+  markets_minus_matic.push(oMATIC);
+
+  // const totalSupply = await supplied(timestamp, chain, block);
   // const tokensAndOwners = totalSupply.map((u) => [u.output, u.input.target]);
   // await sumTokens(balances, tokensAndOwners, block, chain, transform);
 
-  return totalSupply;
+  const { output: totalSupply } = await sdk.api.abi.multiCall({
+    abi: abi["market_totalSupply"],
+    calls: markets_minus_matic.map((m) => ({ target: m })),
+    chain,
+    block,
+  });
+
+  const { output: totalBorrows } = await sdk.api.abi.multiCall({
+    abi: abi["market_totalBorrows"],
+    calls: markets_minus_matic.map((m) => ({ target: m })),
+    chain,
+    block,
+  });
+
+  const { output: exchangeRateStored } = await sdk.api.abi.multiCall({
+    abi: abi["market_exchangeRateStored"],
+    calls: markets_minus_matic.map((m) => ({ target: m })),
+    chain,
+    block,
+  });
+
+  const { output: decimals } = await sdk.api.abi.multiCall({
+    abi: abi["market_decimals"],
+    calls: markets_minus_matic.map((m) => ({ target: m })),
+    chain,
+    block,
+  });
+
+  // prettier-ignore
+  const totalTvl = Object.fromEntries(
+    totalBorrows.map((borrow, idx) => [
+      transform(underlyings[idx].output),
+      (borrow.output /
+        10 ** (8 - decimals[idx].output)) +
+      ((totalSupply[idx].output * exchangeRateStored[idx].output) /
+          10 ** (26 - decimals[idx].output)),
+    ])
+  );
+
+  console.log(totalTvl);
+
+  return totalTvl;
 }
 
 async function supplied(timestamp, ethBlock, chainBlocks) {
