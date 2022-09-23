@@ -63,8 +63,7 @@ const adapter: BreakdownVolumeAdapter = {
           ...acc,
           [chain]: {
             fetch: getFetch(chain),
-            start: async () => 0,
-            runAtCurrTime: true
+            start: async () => 0
           }
         }
       }, {}) as SimpleVolumeAdapter['volume']
