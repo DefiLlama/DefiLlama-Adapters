@@ -8,7 +8,7 @@ const fractional_api_url = 'https://mainnet-api.fractional.art/vaults?perPage=12
 async function retrieveVaultsAPI() {
   // Get page count
   const page1 = await utils.fetchURL(fractional_api_url + '&page=1')
-  let pageCount = page1.data.metadata.pagination.total_pages;
+  let pageCount = page1.data.metadata.pagination.totalPages;
   //pageCount = 1 // uncomment for for debug
 
   const vaults = []
@@ -34,8 +34,7 @@ function exampleVaultDebug() {
     "contractAddress":	"0xbaac2b4491727d78d2b78815144570b9f2fe8899",
     "pools":	[ {
       "pool":	"0x7731CA4d00800b6a681D031F565DeB355c5b77dA",
-      "token0":	"0xBAac2B4491727D78D2b78815144570b9f2Fe8899",
-      "token1":	"0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "tokens":	["0xBAac2B4491727D78D2b78815144570b9f2Fe8899", "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"],
       "provider":	"UNISWAP_V3"
     }],
     "tokenAddress":	"0xabEFBc9fD2F806065b4f3C237d4b59D9A97Bcac7",
@@ -55,16 +54,20 @@ async function tvl(timestamp, block, chainBlocks, chain) {
   // note: vault with slug fractional-dream-930 has null analytics and symbol, because it is an ERC1155 not listed on any DEXes
   
   // Or try to find all pools associated to vault and account for tokens locked against vault token
-  // In pool: provider, pool, token0, token1
+  // In pool: provider, pool, tokens
   const univ2_sushiv1_pools = []
   const univ3_pools = []
+  let token0;
+  let token1;
   vaults.forEach(vault => {
     vault.pools.forEach(pool => {
+      token0 = pool.tokens[0];
+      token1 = pool.tokens[1];
       // Swap token0 and token1 if needed so token0 is always vault token
-      if (vault.contractAddress.toLowerCase() === pool.token1.toLowerCase()) {
-        const tmp = pool.token1
-        pool.token1 = pool.token0
-        pool.token0 = tmp
+      if (vault.contractAddress.toLowerCase() === token1.toLowerCase()) {
+        const tmp = token1
+        token1 = token0;
+        token0 = tmp;
       }
       // Pool provider can be any of ['UNISWAP_V3', 'SUSHISWAP_V1', 'UNISWAP_V2']
       const provider = pool.provider
@@ -84,7 +87,7 @@ async function tvl(timestamp, block, chainBlocks, chain) {
   // Get UNISWAP_V3 LPs
   // Simply get amount of token0 and token1 allocated to pool contract. And since we only need the token1 it is even more efficient
   const calls_v3_v2_t0_t1 = v2_v3_pools.map((pool) => ({ 
-      target: pool.token1,
+      target: token1,
       params: pool.pool
     }))
   /*
