@@ -1,5 +1,5 @@
 const { fetchURL } = require("../../helper/utils");
-import { SimpleVolumeAdapter } from "../../dexVolume.type";
+import { ChainBlocks, SimpleVolumeAdapter } from "../../dexVolume.type";
 import { CHAIN } from "../../helper/chains";
 import customBackfill from "../../helper/customBackfill";
 import { getUniqStartOfTodayTimestamp } from "../../helper/getUniSubgraphVolume";
