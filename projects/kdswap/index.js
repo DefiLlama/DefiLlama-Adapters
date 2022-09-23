@@ -107,7 +107,7 @@ const getPairList = async (url, grouper) => {
           };
         }
         return {
-          reserves: [0, 0],
+          reserves: [0, 0]
         }
       })
     );
