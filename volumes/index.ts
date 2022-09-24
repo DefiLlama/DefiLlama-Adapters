@@ -72,6 +72,7 @@ import tombFinance from "./adapters/tomb-finance";
 import dfxFinance from "./adapters/dfx-finance";
 import frax from "./adapters/frax";
 import izumiFinance from "./adapters/izumi-finance";
+import tinyman from "./adapters/tinyman";
 
 export default {
   mooniswap,
@@ -145,7 +146,7 @@ export default {
   "tomb-finance": tombFinance,
   "dfx-finance": dfxFinance,
   frax,
-  "izumi-finance": izumiFinance
-
+  "izumi-finance": izumiFinance,
+  tinyman
   // lyra -> OPTIONS DEX, not enable for now
 };
