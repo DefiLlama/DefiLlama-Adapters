@@ -40,6 +40,7 @@ import platypus from "./adapters/platypus";
 import wombatExchange from "./adapters/wombat-exchange";
 import wingriders from "./adapters/wingriders";
 import minswap from "./adapters/minswap";
+import mojitoswap from "./adapters/mojitoswap";
 import mdex from "./adapters/mdex";
 import meshswap from "./adapters/meshswap";
 import vvsFinance from "./adapters/vvs-finance";
@@ -106,6 +107,7 @@ export default {
   "wombat-exchange": wombatExchange,
   wingriders,
   minswap,
+  mojitoswap,
   mdex,
   meshswap,
   "vvs-finance": vvsFinance,
