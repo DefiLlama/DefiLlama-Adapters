@@ -144,5 +144,6 @@ export default {
   "tomb-finance": tombFinance,
   "dfx-finance": dfxFinance,
   frax
+
   // lyra -> OPTIONS DEX, not enable for now
 };
