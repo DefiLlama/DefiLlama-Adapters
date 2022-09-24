@@ -8,6 +8,7 @@ const MAIN_USDCe_LP = "0x909B0ce4FaC1A0dCa78F8Ca7430bBAfeEcA12871";
 const MAIN_USDT_LP = "0x776628A5C37335608DD2a9538807b9bba3869E14";
 const MAIN_USDTe_LP = "0x0D26D103c91F63052Fbca88aAF01d5304Ae40015";
 const MAIN_MIM_LP = "0x6220BaAd9D08Dee465BefAE4f82ee251cF7c8b82";
+const MAIN_BUSD_LP = "0xe23F8CCDeB4e8Ce5d9fE76782718cD85D12689C8";
 
 // Alt: FRAX - USDC
 const ALT_USDC_FRAX_LP = "0x035D7D7F209B5d18e2AB5C2072E85B32e1D43760";
@@ -68,6 +69,7 @@ const WBTCe = "0x50b7545627a5162F82A992c33b87aDc75187B218";
 const MAI = "0x3B55E45fD6bd7d4724F5c47E0d1bCaEdd059263e";
 const USX = "0x853ea32391AaA14c112C645FD20BA389aB25C5e0";
 const YYAVAX = "0xF7D9281e8e363584973F946201b82ba72C965D27";
+const BUSD = "0x9C9e5fD8bbc25984B178FdCE6117Defa39d2db39";
 
 module.exports = {
   DAI: {
@@ -244,6 +246,15 @@ module.exports = {
       {
         token: USX,
         lpTokens: [FACTORY_USX_LP],
+      },
+    ],
+  },
+  BUSD: {
+    id: "binance-usd",
+    addresses: [
+      {
+        token: BUSD,
+        lpTokens: [MAIN_BUSD_LP],
       },
     ],
   },
