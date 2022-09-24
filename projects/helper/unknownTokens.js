@@ -650,6 +650,7 @@ function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = 
   }
 
   return {
+    misrepresentedTokens: true,
     [chain]: {
       tvl, pool2, staking
     }
@@ -716,6 +717,7 @@ async function yieldHelper({ chain = 'ethereum', block, coreAssets = [], blackli
 }
 
 module.exports = {
+  nullAddress,
   getTokenPrices,
   getUniTVL,
   unknownTombs,

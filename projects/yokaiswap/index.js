@@ -21,7 +21,7 @@ async function fetch() {
 
   return toUSDTBalances(data.yokaiFactories[0].totalLiquidityUSD);
 }
-
+/*
 async function staking() {
   const response = await axios.get(
     "https://www.yokaiswap.com/api/pool_total_staked"
@@ -29,7 +29,7 @@ async function staking() {
 
   return toUSDTBalances(response.data/1e18);
 }
-
+*/
 const getReservesABI = {
   "constant": true,
   "inputs": [],
@@ -66,7 +66,7 @@ module.exports = {
   methodology: `Finds TotalLiquidityUSD using the YokaiSwap subgraph "https://www.yokaiswap.com/subgraphs/name/yokaiswap/exchange". Staking accounts for the YOK locked in MasterChef (0x62493bFa183bB6CcD4b4e856230CF72f68299469).`,
   godwoken: {
     tvl: fetch,
-    staking,
+    //staking,
   },
   godwoken_v1: {
     tvl: tvl_v1,

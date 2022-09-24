@@ -10,6 +10,7 @@ async function tvl(_, ethBlock, chainBlocks) {
 };
 
 module.exports = {
+  misrepresentedTokens: true,
   ethereum: {
     tvl: getUniTVL({
       factory: FACTORY,
