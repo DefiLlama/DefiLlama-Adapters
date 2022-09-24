@@ -21,6 +21,7 @@ const usdtAddress = "0xdac17f958d2ee523a2206206994597c13d831ec7";
 const addressZero = "0x0000000000000000000000000000000000000000"
 const ethAddress = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
 const wethAddress = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
+const aladdinBalancerLPGauge = '0x33e411ebE366D72d058F3eF22F1D0Cf8077fDaB0';
 const replacements = [
   "0x99d1Fa417f94dcD62BfE781a1213c092a47041Bc",
   "0x9777d7E2b60bB01759D0E2f8be2095df444cb07E",
@@ -31,16 +32,19 @@ const replacements = [
   "0x73a052500105205d34Daf004eAb301916DA8190f"
 ].map(i => i.toLowerCase())
 
-async function getBalancerLpTvl(balances) {
-  const res = await fetchURL('https://concentrator-api.aladdin.club/data/aladdin/initInfo')
-  const lpTvl = res.data.data.balancerCtrTvl.tvl;
-  const usdtTVL = toUSDTBalances(lpTvl)
-  sdk.util.sumSingleBalance(balances, usdtAddress, usdtTVL[usdtAddress])
+async function getBalancerLpTvl(balances, block) {
+  const ctrLpTotalSupply = (await sdk.api.abi.call({
+    target: aladdinBalancerLPGauge,
+    block,
+    abi: 'erc20:totalSupply',
+    params: []
+  })).output;
+  sdk.util.sumSingleBalance(balances, usdtAddress, (BigNumber(ctrLpTotalSupply).shiftedBy(-12)).toFixed(0))
 }
 
 async function tvl(timestamp, block) {
   let balances = {}
-  await getBalancerLpTvl(balances)
+  await getBalancerLpTvl(balances, block)
   await getAFXSInfo(balances, block);
   const acrvTotalUnderlying = (await sdk.api.abi.call({
     target: concentratorAcrv,
