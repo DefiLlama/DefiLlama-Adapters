@@ -10,6 +10,8 @@ const formatTimestamp = (timestamp: number) => {
   return `${d.getUTCFullYear()}-${d.getUTCMonth() + 1}-${d.getUTCDate()}T${d.getUTCHours()}:${d.getUTCMinutes()}:${d.getUTCSeconds()}+00:00`
 }
 
+// https://preview.info.0x.org/liquiditySources/0x%20RFQ?_data=routes%2FliquiditySources%2F%24liquiditySourceName
+
 const getHistoricalDataQuery = (timestamp: number) => {
   const gteDate = formatTimestamp(timestamp - DAY_IN_SECONDS)
   const ltDate = formatTimestamp(timestamp)
@@ -46,7 +48,6 @@ interface IGraphResponse {
 
 const getFetch = (chain: string): Fetch => async (timestamp: number) => {
   const formattedChain = chain[0].toUpperCase() + chain.slice(1).toLowerCase()
-  console.log(getHistoricalDataQuery(timestamp), null, 2)
   const dailyDataResponse: IGraphResponse = await getGQLClient().request(getHistoricalDataQuery(timestamp))
   const dailyVolume = dailyDataResponse.fills.reduce((acc, curr) => formattedChain === curr.chainName ? acc += curr.volumeUSD : acc, 0)
   return {
@@ -63,8 +64,7 @@ const adapter: BreakdownVolumeAdapter = {
           ...acc,
           [chain]: {
             fetch: getFetch(chain),
-            start: async () => 0,
-            runAtCurrTime: true
+            start: async () => 0
           }
         }
       }, {}) as SimpleVolumeAdapter['volume']
