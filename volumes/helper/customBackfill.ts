@@ -1,6 +1,7 @@
-import { Chain } from "@defillama/sdk/build/general"
 import { ChainBlocks, Fetch } from "../dexVolume.type"
 import { getBlock } from "../../projects/helper/getBlock"
+import { chainsForBlocks } from "@defillama/sdk/build/computeTVL/blocks";
+import { Chain } from "@defillama/sdk/build/general";
 
 const ONE_HOUR_IN_SECONDS = 60 * 60 * 24
 
@@ -15,8 +16,10 @@ export default (chain: Chain, graphs: IGraphs): Fetch => async (timestamp: numbe
     const fetchGetVolume = graphs(chain)
     const resultDayN = await fetchGetVolume(timestamp, chainBlocks)
     const timestampPreviousDay = timestamp - ONE_HOUR_IN_SECONDS
-    const chainBlocksPreviousDay = (await getBlock(timestampPreviousDay, chain, {}))
-    const resultPreviousDayN = await fetchGetVolume(timestampPreviousDay, { [chain]: chainBlocksPreviousDay })
+    let chainBlocksPreviousDay = {}
+    if (chainsForBlocks.includes(chain) || chain === "ethereum")
+        chainBlocksPreviousDay = { [chain]: await getBlock(timestampPreviousDay, chain, {}).catch(() => { }) }
+    const resultPreviousDayN = await fetchGetVolume(timestampPreviousDay, chainBlocksPreviousDay)
     return {
         block: resultDayN.block,
         timestamp: resultDayN.timestamp,

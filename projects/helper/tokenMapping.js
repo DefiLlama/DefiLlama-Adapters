@@ -840,6 +840,7 @@ const fixBalancesTokens = {
     "0x79ffbC4fff98b821D59dbD7B33f91a2783006b6f": {coingeckoId: "vision-metaverse", decimals: 6 }
   },
   kava: {
+    [nullAddress]: { coingeckoId: "kava", decimals: 18 },
     "0xc86c7C0eFbd6A49B35E8714C5f59D99De09A225b": { coingeckoId: "kava", decimals: 18 },
     "0x332730a4F6E03D9C55829435f10360E13cfA41Ff": { coingeckoId: "binance-usd", decimals: 18 },
     "0x65e66a61D0a8F1e686C2D6083ad611a10D84D97A": { coingeckoId: "binancecoin", decimals: 18 },
