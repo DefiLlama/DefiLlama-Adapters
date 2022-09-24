@@ -74,6 +74,7 @@ import frax from "./adapters/frax";
 import izumiFinance from "./adapters/izumi-finance";
 import tinyman from "./adapters/tinyman";
 import junoswap from "./adapters/junoswap";
+import knightswapFinance from "./adapters/knightswap-finance";
 
 export default {
   mooniswap,
@@ -149,6 +150,7 @@ export default {
   frax,
   "izumi-finance": izumiFinance,
   tinyman,
-  junoswap
+  junoswap,
+  "knightswap-finance": knightswapFinance
   // lyra -> OPTIONS DEX, not enable for now
 };
