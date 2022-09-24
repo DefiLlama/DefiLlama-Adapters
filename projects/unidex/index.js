@@ -37,6 +37,17 @@ async function MetisTvl(_time, _ethBlock, { metis: block }) {
   return sumTokens2({ chain, block, tokens, owners, })
 };
 
+async function KavaTvl(_time, _ethBlock, { kava: block }) {
+  const contracts = {
+    "trading": "0x22E7715EdE806fbACf4D103DBD8e249de1f21157",
+    "kavapool": "0x0e2C6C4BB24Ce8256499c9D4AdD5161deb676b90",
+  };
+  const chain = 'kava'
+  const tokens = [nullAddress]
+  const owners = Object.values(contracts)
+  return sumTokens2({ chain, block, tokens, owners, })
+};
+
 module.exports = {
   methodology: "Assets staked in the pool and trading contracts",
   fantom: {
@@ -47,5 +58,8 @@ module.exports = {
   },
   metis: {
     tvl: MetisTvl
+  },
+  kava: {
+    tvl: KavaTvl
   },
 };
