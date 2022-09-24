@@ -1,7 +1,8 @@
+import { CHAIN } from "../../helper/chains";
 import { univ2Adapter } from "../../helper/getUniSubgraphVolume";
 
 const endpoints = {
-  "bsc": "https://bsc.streamingfast.io/subgraphs/name/pancakeswap/exchange-v2",
+  [CHAIN.BSC]: "https://bsc.streamingfast.io/subgraphs/name/pancakeswap/exchange-v2",
 };
 
 const adapter = univ2Adapter(endpoints, {
