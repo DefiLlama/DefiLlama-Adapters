@@ -40,6 +40,7 @@ import platypus from "./adapters/platypus";
 import wombatExchange from "./adapters/wombat-exchange";
 import wingriders from "./adapters/wingriders";
 import minswap from "./adapters/minswap";
+import mojitoswap from "./adapters/mojitoswap";
 import mdex from "./adapters/mdex";
 import meshswap from "./adapters/meshswap";
 import vvsFinance from "./adapters/vvs-finance";
@@ -61,6 +62,11 @@ import pyeswap from "./adapters/pyeswap";
 import smbswap from "./adapters/smbswap";
 import sunswap from "./adapters/sunswap";
 import whaleswap from "./adapters/whaleswap";
+import nomiswap from "./adapters/nomiswap";
+import fstswap from "./adapters/fstswap";
+import beethovenX from "./adapters/beethoven-x";
+import defiSwap from "./adapters/defi-swap";
+import wanswapDex from "./adapters/wanswap-dex";
 
 export default {
   mooniswap,
@@ -105,6 +111,7 @@ export default {
   "wombat-exchange": wombatExchange,
   wingriders,
   minswap,
+  mojitoswap,
   mdex,
   meshswap,
   "vvs-finance": vvsFinance,
@@ -123,6 +130,11 @@ export default {
   pyeswap,
   smbswap,
   sunswap,
-  whaleswap
+  whaleswap,
+  nomiswap,
+  fstswap,
+  "beethoven-x": beethovenX,
+  "defi-swap": defiSwap,
+  "wanswap-dex": wanswapDex
   // lyra -> OPTIONS DEX, not enable for now
 };
