@@ -69,6 +69,7 @@ import defiSwap from "./adapters/defi-swap";
 import wanswapDex from "./adapters/wanswap-dex";
 import solarbeam from "./adapters/solarbeam";
 import tombFinance from "./adapters/tomb-finance";
+import dfxFinance from "./adapters/dfx-finance";
 
 export default {
   mooniswap,
@@ -139,6 +140,7 @@ export default {
   "defi-swap": defiSwap,
   "wanswap-dex": wanswapDex,
   solarbeam,
-  "tomb-finance": tombFinance
+  "tomb-finance": tombFinance,
+  "dfx-finance": dfxFinance
   // lyra -> OPTIONS DEX, not enable for now
 };
