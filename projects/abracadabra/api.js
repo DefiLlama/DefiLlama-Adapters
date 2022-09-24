@@ -21,4 +21,5 @@ function chainTvl(chain){
 module.exports = fetchChainExports(chainTvl, Object.keys(chainIds))
 module.exports.hallmarks = [
     [1651881600, "UST depeg"],
+    [1643245200, "0xSifu revealed as QuadrigaCX founder"],
   ]
