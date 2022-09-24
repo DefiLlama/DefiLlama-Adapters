@@ -1,7 +1,8 @@
+import { CHAIN } from "../../helper/chains";
 import { univ2Adapter } from "../../helper/getUniSubgraphVolume";
 
 const endpoints = {
-  "kcc": "https://thegraph.kcc.network/subgraphs/name/mojito/swap",
+  [CHAIN.KCC]: "https://thegraph.kcc.network/subgraphs/name/mojito/swap",
 };
 
 const adapter = univ2Adapter(endpoints, {
