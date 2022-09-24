@@ -73,6 +73,7 @@ import dfxFinance from "./adapters/dfx-finance";
 import frax from "./adapters/frax";
 import izumiFinance from "./adapters/izumi-finance";
 import tinyman from "./adapters/tinyman";
+import junoswap from "./adapters/junoswap";
 
 export default {
   mooniswap,
@@ -147,6 +148,7 @@ export default {
   "dfx-finance": dfxFinance,
   frax,
   "izumi-finance": izumiFinance,
-  tinyman
+  tinyman,
+  junoswap
   // lyra -> OPTIONS DEX, not enable for now
 };
