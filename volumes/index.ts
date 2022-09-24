@@ -63,6 +63,7 @@ import smbswap from "./adapters/smbswap";
 import sunswap from "./adapters/sunswap";
 import whaleswap from "./adapters/whaleswap";
 import nomiswap from "./adapters/nomiswap";
+import fstswap from "./adapters/fstswap";
 
 export default {
   mooniswap,
@@ -127,6 +128,7 @@ export default {
   smbswap,
   sunswap,
   whaleswap,
-  nomiswap
+  nomiswap,
+  fstswap
   // lyra -> OPTIONS DEX, not enable for now
 };
