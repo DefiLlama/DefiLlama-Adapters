@@ -1,0 +1,57 @@
+name: test-volume-adapter
+on: [pull_request, issue_comment]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check keyword trigger
+        uses: khan/pull-request-comment-trigger@v1.1.0
+        id: check
+        with:
+          trigger: '@test-volume!'
+      - id: file_changes
+        uses: trilom/file-changes-action@v1.2.4
+        with:
+          output: 'json'
+          fileOutput: 'json'
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Run changes files through test script
+        run: |
+          RUN_FILES=$(
+            MODIFIED=${{ steps.file_changes.outputs.files_modified}} \
+            ADDED=${{ steps.file_changes.outputs.files_added}} \
+            node ${{ github.workspace }}/.github/workflows/getFileListVolumes.js
+          )
+
+          if [ "$RUN_FILES" = "[]" ] && [ steps.check.outputs.triggered == 'false' ]; then
+            echo "No adapter files were modified"
+            exit 0
+          fi
+
+          if [ "$RUN_FILES" = "[]" ] && [ steps.check.outputs.triggered == 'true' ]; then
+            IFS='!' read -r -a array <<< steps.check.outputs.comment_body
+            IFS='!' read -r -a RUN_FILES <<< "${array[1]}"
+          fi
+
+          npx tsc volumes/**/*.ts --noEmit 2>&1 | tee output-types.txt
+          if grep -q "Error" output-types.txt; then
+            exit 1;
+          fi
+
+          npm ci --omit=dev
+          npm update @defillama/sdk
+
+          for i in $(echo $RUN_FILES | tr  -d '"[]' | tr "," "\n")
+          do 
+            { 
+              npm run test-dex ${i} 2>&1 | tee output.txt
+              node ${{ github.workspace }}/.github/workflows/commentResultVolumes.js /home/runner/work/DefiLlama-Adapters/DefiLlama-Adapters/output.txt "${{ github.repository_owner }}" "${{ github.event.repository.name }}" "${{ github.event.number }}" ${i}
+              if grep -q "\-\-\-\- ERROR \-\-\-\-" output.txt; then
+                exit 1;
+              fi
+            } || { 
+              echo -n $i
+              echo ' doesnt run'
+            }
+          done
