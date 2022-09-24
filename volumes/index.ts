@@ -66,6 +66,7 @@ import nomiswap from "./adapters/nomiswap";
 import fstswap from "./adapters/fstswap";
 import beethovenX from "./adapters/beethoven-x";
 import defiSwap from "./adapters/defi-swap";
+import wanswapDex from "./adapters/wanswap-dex";
 
 export default {
   mooniswap,
@@ -133,6 +134,7 @@ export default {
   nomiswap,
   fstswap,
   "beethoven-x": beethovenX,
-  "defi-swap": defiSwap
+  "defi-swap": defiSwap,
+  "wanswap-dex": wanswapDex
   // lyra -> OPTIONS DEX, not enable for now
 };

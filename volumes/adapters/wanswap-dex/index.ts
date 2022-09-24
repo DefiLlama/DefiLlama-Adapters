@@ -1,7 +1,8 @@
+import { CHAIN } from "../../helper/chains";
 import { univ2Adapter } from "../../helper/getUniSubgraphVolume";
 
 const adapter = univ2Adapter({
-    "wan": "https://thegraph.one/subgraphs/name/wanswap/wanswap-subgraph-3"
+    [CHAIN.WAN]: "https://thegraph.one/subgraphs/name/wanswap/wanswap-subgraph-3"
 }, {
     factoriesName: "uniswapFactories",
     dayData: "uniswapDayData",
