@@ -924,6 +924,9 @@ const fixBalancesTokens = {
     '0x52484e1ab2e2b22420a25c20fa49e173a26202cd': { coingeckoId: "tether", decimals: 6 },
     '0x750ba8b76187092b0d1e87e28daaf484d1b5273b': { coingeckoId: "usd-coin", decimals: 6 },
   },
+  ethpow: {
+    '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2': { coingeckoId: "ethereum-pow-iou", decimals: 18 },
+  }
 }
 
 const coreAssets = {
@@ -940,6 +943,9 @@ const coreAssets = {
     '0x6b175474e89094c44da98b954eedeac495271d0f', //dai
     '0x3aaDA3e213aBf8529606924d8D1c55CbDc70Bf74', // XMON
     '0xc834fa996fa3bec7aad3693af486ae53d8aa8b50', // CONV
+  ],
+  ethpow: [
+    '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
   ],
   velas: Object.values({
     WVLX: '0xc579D1f3CF86749E05CD06f7ADe17856c2CE3126',
