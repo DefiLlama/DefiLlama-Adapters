@@ -19,7 +19,8 @@ const chains = [
   "fantom", //-80M
   "optimism", //-6M
   "xdai", //G
-  "moonbeam"
+  "moonbeam",
+  "kava"
 ]; // Object.keys(contracts);
 const registryIds = {
   stableswap: 0,
@@ -393,6 +394,25 @@ const chainTypeExports = chains => {
         block,
         "harmony",
         addr => `harmony:${addr}`
+      );
+      return balances;
+    }
+  };
+  exports.kava = {
+    tvl: async (ts, ethB, chainB) => {
+      const block = await getBlock(ts, "kava", chainB, true);
+      const balances = {};
+      await sumTokensSharedOwners(
+        balances,
+        [
+          "0x765277EebeCA2e31912C9946eAe1021199B39C61",
+          "0xB44a9B6905aF7c801311e8F4E76932ee959c663C",
+          "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f"
+        ],
+        ["0x7A0e3b70b1dB0D6CA63Cac240895b2D21444A7b9"],
+        block,
+        "kava",
+        addr => `kava:${addr}`
       );
       return balances;
     }

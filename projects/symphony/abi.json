@@ -1,0 +1,31 @@
+{
+    "getTotalTokens": {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "token",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "contractBalance",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "tokenStrategy",
+                "type": "address"
+            }
+        ],
+        "name": "getTotalTokens",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "totalTokens",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    }
+}

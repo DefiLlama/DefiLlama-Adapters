@@ -2,7 +2,7 @@
 
 const { stakings } = require("../helper/staking");
 const { sumTokens2 } = require("../helper/unwrapLPs");
-const { getUniTVL } = require("../helper/unknownTokens");
+const { getUniTVL, sumUnknownTokens } = require("../helper/unknownTokens");
 const { mergeExports } = require("../helper/utils");
 
 // Set NULL, Factories
@@ -34,6 +34,11 @@ const liquidStaking = "0x2A3605d98e26Ee6f682084d8E8018f71d867dcB3"; // 87, 250
 const liquidStakingClassic = "0x5bD915b4DDfE26D9Ba8Ad795231D7B068ADdc03E"; // 61
 const incomeStaking = "0x1bF49Db5Cb35575483dB2E630510fac8d8F177b9"; // 87
 const incomeStakingClassic = "0xb6B824D46B3Bd0698E5180bDb010a2C2bf012e1d"; // 61
+
+// Set Farm Addresses
+
+const yieldFarms = 0x00501ed66d67b1127809e54395f064e256b75b23; // 87, 250
+const yieldFarmsClassic = 0x9599ceBf169A1F3503996CBf90deA38C515ddd54; // 61
 
 // Calculate TVL
 
@@ -78,6 +83,7 @@ const stakingExports = {
       sumTokens2({
         owners: [callStaking, callStakingV2, bondStaking, liquidStaking, incomeStaking],
         tokens: [nullAddress, sntNovaNetwork, nusdNovaNetwork],
+        lps: [yieldFarms],
         chain: "nova",
         block,
       }),
@@ -89,6 +95,7 @@ const stakingExports = {
       sumTokens2({
         owners: [callStaking, callStakingV2, bondStaking, liquidStaking, incomeStaking],
         tokens: [nullAddress, sntFantom, nusdFantom],
+        lps: [yieldFarms],
         chain: "fantom",
         block,
       }),
@@ -100,6 +107,7 @@ const stakingExports = {
       sumTokens2({
         owners: [callStakingClassic, bondStakingClassic, liquidStakingClassic, incomeStakingClassic],
         tokens: [nullAddress, sntClassic, nusdClassic],
+        lps: [yieldFarmsClassic],
         chain: "ethereumclassic",
         block,
       }),
