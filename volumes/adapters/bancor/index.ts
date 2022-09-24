@@ -1,4 +1,4 @@
-import { ChainBlocks, SimpleVolumeAdapter, FetchResult } from "../../dexVolume.type";
+import { SimpleVolumeAdapter, FetchResult } from "../../dexVolume.type";
 
 const { fetchURL } = require("../../helper/utils");
 const {
