@@ -3,7 +3,7 @@ import { SimpleVolumeAdapter } from "../../dexVolume.type";
 const { fetchURL } = require("../../helper/utils");
 
 const endpoints = {
-  solana: "https://api.raydium.io/info",
+  solana: "https://api.raydium.io/v2/main/info",
 };
 
 const graphs = (chain: string) => async () => {
@@ -17,7 +17,8 @@ const graphs = (chain: string) => async () => {
 
   return {
     totalVolume: res?.data?.totalvolume,
-    timestamp: 1, // fix
+    dailyVolume: res?.data?.volume24h,
+    timestamp: Math.trunc(Date.now() / 1000)
   };
 };
 
