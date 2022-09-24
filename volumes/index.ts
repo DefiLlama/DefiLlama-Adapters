@@ -64,6 +64,7 @@ import sunswap from "./adapters/sunswap";
 import whaleswap from "./adapters/whaleswap";
 import nomiswap from "./adapters/nomiswap";
 import fstswap from "./adapters/fstswap";
+import beethovenX from "./adapters/beethoven-x";
 
 export default {
   mooniswap,
@@ -129,6 +130,7 @@ export default {
   sunswap,
   whaleswap,
   nomiswap,
-  fstswap
+  fstswap,
+  "beethoven-x": beethovenX
   // lyra -> OPTIONS DEX, not enable for now
 };
