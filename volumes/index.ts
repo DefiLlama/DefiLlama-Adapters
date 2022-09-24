@@ -71,6 +71,7 @@ import solarbeam from "./adapters/solarbeam";
 import tombFinance from "./adapters/tomb-finance";
 import dfxFinance from "./adapters/dfx-finance";
 import frax from "./adapters/frax";
+import izumiFinance from "./adapters/izumi-finance";
 
 export default {
   mooniswap,
@@ -143,7 +144,8 @@ export default {
   solarbeam,
   "tomb-finance": tombFinance,
   "dfx-finance": dfxFinance,
-  frax
+  frax,
+  "izumi-finance": izumiFinance
 
   // lyra -> OPTIONS DEX, not enable for now
 };
