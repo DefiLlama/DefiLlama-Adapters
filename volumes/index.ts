@@ -1,5 +1,5 @@
-import mooniswap from "./adapters/mooniswap";
 import balancer from "./adapters/balancer";
+import mooniswap from "./adapters/mooniswap";
 import bancor from "./adapters/bancor";
 import carthage from "./adapters/carthage";
 import champagneswap from "./adapters/champagneswap";
@@ -40,8 +40,38 @@ import platypus from "./adapters/platypus";
 import wombatExchange from "./adapters/wombat-exchange";
 import wingriders from "./adapters/wingriders";
 import minswap from "./adapters/minswap";
+import mojitoswap from "./adapters/mojitoswap";
+import mdex from "./adapters/mdex";
+import meshswap from "./adapters/meshswap";
+import vvsFinance from "./adapters/vvs-finance";
+import mmStableswapPolygon from "./adapters/mm-stableswap-polygon";
 import dfyn from "./adapters/dfyn";
 import radioshack from "./adapters/radioshack";
+import flamingoFinance from "./adapters/flamingo-finance";
+import ZEROx from "./adapters/0x";
+// import bakerySwap from "./adapters/bakeryswap"; //broken
+import baryon from "./adapters/baryon";
+import cherryswap from "./adapters/cherryswap";
+import clipper from "./adapters/clipper";
+import cryptoswap from "./adapters/cryptoswap";
+import ellipsis from "./adapters/ellipsis";
+import klexFinance from "./adapters/klex-finance";
+import koyo from "./adapters/koyo";
+// import lyra from "./adapters/lyra"; // Options dex
+import pyeswap from "./adapters/pyeswap";
+import smbswap from "./adapters/smbswap";
+import sunswap from "./adapters/sunswap";
+import whaleswap from "./adapters/whaleswap";
+import nomiswap from "./adapters/nomiswap";
+import fstswap from "./adapters/fstswap";
+import beethovenX from "./adapters/beethoven-x";
+import defiSwap from "./adapters/defi-swap";
+import wanswapDex from "./adapters/wanswap-dex";
+import solarbeam from "./adapters/solarbeam";
+import tombFinance from "./adapters/tomb-finance";
+import dfxFinance from "./adapters/dfx-finance";
+import frax from "./adapters/frax";
+import izumiFinance from "./adapters/izumi-finance";
 
 export default {
   mooniswap,
@@ -86,7 +116,36 @@ export default {
   "wombat-exchange": wombatExchange,
   wingriders,
   minswap,
+  mojitoswap,
+  mdex,
+  meshswap,
+  "vvs-finance": vvsFinance,
+  "mm-stableswap-polygon": mmStableswapPolygon,
   dfyn,
-  radioshack
+  radioshack,
+  "flamingo-finance": flamingoFinance,
+  "0x": ZEROx,
+  baryon,
+  cherryswap,
+  clipper,
+  cryptoswap,
+  ellipsis,
+  "klex-finance": klexFinance,
+  koyo,
+  pyeswap,
+  smbswap,
+  sunswap,
+  whaleswap,
+  nomiswap,
+  fstswap,
+  "beethoven-x": beethovenX,
+  "defi-swap": defiSwap,
+  "wanswap-dex": wanswapDex,
+  solarbeam,
+  "tomb-finance": tombFinance,
+  "dfx-finance": dfxFinance,
+  frax,
+  "izumi-finance": izumiFinance
+
   // lyra -> OPTIONS DEX, not enable for now
 };
