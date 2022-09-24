@@ -19,6 +19,7 @@ export enum CHAIN {
   TRON = "tron",
   MOONBEAN = "moonbeam",
   KLAYTN = "klaytn",
+  JUNO = "juno",
   KCC = "kcc",
   WAN = "wan"
 }
