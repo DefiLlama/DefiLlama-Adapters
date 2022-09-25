@@ -140,7 +140,7 @@ export default {
   sunswap,
   whaleswap,
   nomiswap,
-  fstswap,
+  // fstswap, -> incorrect subgraph
   "beethoven-x": beethovenX,
   "defi-swap": defiSwap,
   "wanswap-dex": wanswapDex,
