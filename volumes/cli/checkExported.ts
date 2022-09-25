@@ -13,7 +13,7 @@ const exportedAdapters = Object.keys(adapters).map(d=>d.toLowerCase())
 
 // const adaptersList = Object.keys(adapters)
 const adaptersList = getDirectories(path.resolve('./volumes/adapters'))
-console.log(adaptersList)
+// console.log(adaptersList)
 
 // console.log("Adapters enabled")
 // console.log("_______________________")
