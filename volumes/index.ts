@@ -70,7 +70,7 @@ import wanswapDex from "./adapters/wanswap-dex";
 import solarbeam from "./adapters/solarbeam";
 import tombFinance from "./adapters/tomb-finance";
 import dfxFinance from "./adapters/dfx-finance";
-import frax from "./adapters/frax";
+import fraxSwap from "./adapters/fraxswap";
 import izumiFinance from "./adapters/izumi-finance";
 import tinyman from "./adapters/tinyman";
 import junoswap from "./adapters/junoswap";
@@ -147,7 +147,7 @@ export default {
   solarbeam,
   "tomb-finance": tombFinance,
   "dfx-finance": dfxFinance,
-  frax,
+  "frax-swap": fraxSwap,
   "izumi-finance": izumiFinance,
   tinyman,
   junoswap,
