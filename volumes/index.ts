@@ -68,7 +68,7 @@ import beethovenX from "./adapters/beethoven-x";
 import defiSwap from "./adapters/defi-swap";
 import wanswapDex from "./adapters/wanswap-dex";
 import solarbeam from "./adapters/solarbeam";
-import tombFinance from "./adapters/tomb-finance";
+import tombFinance from "./adapters/tomb-swap";
 import dfxFinance from "./adapters/dfx-finance";
 import fraxswap from "./adapters/frax-swap";
 import izumiFinance from "./adapters/izumi-finance";
@@ -146,7 +146,7 @@ export default {
   "defi-swap": defiSwap,
   "wanswap-dex": wanswapDex,
   solarbeam,
-  "tomb-finance": tombFinance,
+  "tomb-swap": tombFinance,
   "dfx-finance": dfxFinance,
   "frax-swap": fraxswap,
   "izumi-finance": izumiFinance,
