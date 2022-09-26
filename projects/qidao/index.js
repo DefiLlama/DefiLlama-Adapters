@@ -697,7 +697,15 @@ async function ethereum (timestamp, block, chainBlocks) {
       [
         "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
         "0x8C45969aD19D297c9B85763e90D0344C6E2ac9d1",
-      ], 
+      ],
+      [
+        "0xbC10c4F7B9FE0B305e8639B04c536633A3dB7065",
+        "0xcc61Ee649A95F2E2f0830838681f839BDb7CB823",
+      ],
+      [
+        "0xdCD90C7f6324cfa40d7169ef80b12031770B4325",
+        "0x82E90EB7034C1DF646bD06aFb9E67281AAb5ed28",
+      ]
     ],
     block,
     "ethereum",
