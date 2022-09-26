@@ -152,7 +152,7 @@ function getCompoundV2Tvl(comptroller, chain = "ethereum", transformAdress,
         sdk.util.sumSingleBalance(balances, transformAdress(underlying), getCash.output)
       }
     });
-    if (["harmony", 'oasis', 'bsc', 'findora', 'dogechain'].includes(chain)) {
+    if (["harmony", 'oasis', 'bsc', 'findora', 'dogechain', 'godwoken_v1'].includes(chain)) {
       const fixBalances = await getFixBalances(chain)
       fixBalances(balances);
     }
