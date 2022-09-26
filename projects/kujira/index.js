@@ -56,9 +56,16 @@ async function staking() {
 
 async function tvl() {
   const { pairs } = await get("https://api.kujira.app/api/coingecko/pairs");
+  const { contracts: blackWhaleVaults } = await get(
+    "https://lcd.kaiyo.kujira.setten.io/cosmwasm/wasm/v1/code/16/contracts?pagination.limit=100"
+  );
   const balances = {};
   await Promise.all(
-    [...pairs.map((pair) => pair.pool_id), ...USK_MARKETS].map(async (addr) => {
+    [
+      ...pairs.map((pair) => pair.pool_id),
+      ...USK_MARKETS,
+      ...blackWhaleVaults,
+    ].map(async (addr) => {
       const res = await get(
         `https://lcd.kaiyo.kujira.setten.io/cosmos/bank/v1beta1/balances/${addr}`
       );
