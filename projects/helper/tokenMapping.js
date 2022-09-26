@@ -3,6 +3,7 @@ const nullAddress = '0x0000000000000000000000000000000000000000'
 
 // Multichain bridge info: https://bridgeapi.anyswap.exchange/v2/serverInfo/all
 // IBC info - https://github.com/PulsarDefi/IBC-Cosmos/blob/main/ibc_data.json
+// O3swap - https://agg.o3swap.com/v1/tokens_all
 
 const transformTokens = {
   ethereum: {
@@ -603,6 +604,18 @@ const fixBalancesTokens = {
   hoo: {
     [nullAddress]: { coingeckoId: "hoo-token", decimals: 18 },
     "0x3eff9d389d13d6352bfb498bcf616ef9b1beac87": { coingeckoId: "hoo-token", decimals: 18 },
+  },
+  cube: {
+    [nullAddress]: { coingeckoId: "cube-network", decimals: 18 },
+    "0x9d3f61338d6eb394e378d28c1fd17d5909ac6591": { coingeckoId: "cube-network", decimals: 18 },
+    // o3 swap bridged tokens
+    "0x57EeA49Ec1087695274A9c4f341e414eb64328c2": { coingeckoId: "ethereum", decimals: 18 },
+    "0x040eA5C10e6BA4Badb6c433A365cCC4968697230": { coingeckoId: "bitcoin", decimals: 18 },
+    "0x79F1520268A20c879EF44d169A4E3812D223C6de": { coingeckoId: "tether", decimals: 18 },
+    "0x00f0D8595797943c12605cD59bc0D9f63D750cCf": { coingeckoId: "usd-coin", decimals: 18 },
+    "0x3a1F6e3E6F26E92bB0D07841EB68F8E84f39751E": { coingeckoId: "dai", decimals: 18 },
+    "0xEe9801669C6138E84bD50dEB500827b776777d28": { coingeckoId: "o3-swap", decimals: 18 },
+
   },
   elastos: {
     [nullAddress]: { coingeckoId: "elastos", decimals: 18 },
