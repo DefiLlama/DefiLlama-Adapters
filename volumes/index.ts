@@ -76,6 +76,7 @@ import tinyman from "./adapters/tinyman";
 import junoswap from "./adapters/junoswap";
 import knightswapFinance from "./adapters/knightswap-finance";
 import shibaswap from "./adapters/shibaswap";
+import oolongswap from "./adapters/oolongswap";
 
 export default {
   mooniswap,
@@ -153,6 +154,7 @@ export default {
   tinyman,
   junoswap,
   "knightswap-finance": knightswapFinance,
-  shibaswap
+  shibaswap,
+  oolongswap
   // lyra -> OPTIONS DEX, not enable for now
 };
