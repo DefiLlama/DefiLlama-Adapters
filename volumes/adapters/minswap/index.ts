@@ -2,8 +2,8 @@ import axios from "axios";
 import type { SimpleVolumeAdapter } from "../../dexVolume.type";
 import { getUniqStartOfTodayTimestamp } from "../../helper/getUniSubgraphVolume";
 
-const getVol = async()=>axios.post("https://monorepo-mainnet-prod.minswap.org/graphql?VolumeSeries", {"query":"\n    query VolumeSeries {\n  volumeSeries {\n    time\n    volume\n  }\n}\n    ","variables":{}})
-  .then(data=>data.data.data.volumeSeries)
+const getVol = async()=>axios.get("https://api-mainnet-prod.minswap.org/defillama/volume-series")
+  .then((data) => data.data);
 
 const adapter: SimpleVolumeAdapter = {
   volume: {
