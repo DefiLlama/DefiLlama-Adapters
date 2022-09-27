@@ -80,6 +80,7 @@ import oolongswap from "./adapters/oolongswap";
 import viperswap from "./adapters/viperswap";
 import swapr from "./adapters/swapr";
 import cone from "./adapters/cone";
+import claimswap from "./adapters/claimswap";
 
 export default {
   mooniswap,
@@ -161,6 +162,7 @@ export default {
   oolongswap,
   viperswap,
   swapr,
-  cone
+  cone,
+  claimswap
   // lyra -> OPTIONS DEX, not enable for now
 };
