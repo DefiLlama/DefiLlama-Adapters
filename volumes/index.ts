@@ -81,6 +81,7 @@ import viperswap from "./adapters/viperswap";
 import swapr from "./adapters/swapr";
 import cone from "./adapters/cone";
 import claimswap from "./adapters/claimswap";
+import spartacusExchange from "./adapters/spartacus-exchange";
 
 export default {
   mooniswap,
@@ -163,6 +164,7 @@ export default {
   viperswap,
   swapr,
   cone,
-  claimswap
+  claimswap,
+  "spartacus-exchange" : spartacusExchange
   // lyra -> OPTIONS DEX, not enable for now
 };
