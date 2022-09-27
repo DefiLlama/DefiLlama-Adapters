@@ -32,8 +32,6 @@ const config = {
   },
 }
 
-
-
 const abi = {
   getAllPools: {
     "inputs": [],
@@ -62,7 +60,6 @@ const abi = {
     "type": "function"
   }
 }
-
 
 module.exports = {}
 
