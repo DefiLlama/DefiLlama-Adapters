@@ -21,7 +21,8 @@ export enum CHAIN {
   KLAYTN = "klaytn",
   JUNO = "juno",
   KCC = "kcc",
-  WAN = "wan"
+  WAN = "wan",
+  CARDADO = "cardano"
 }
 
 // Don´t use
