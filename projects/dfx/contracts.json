@@ -29,6 +29,16 @@
       "address": "0xC574A613A3900e4314da13eB2287f13689A5b64D",
       "token": "0x2c537e5624e4af88a7ae4060c022609376c8d0eb",
       "currency": "TRYb"
+    },
+    {
+      "address": "0x66310ec13f36CAf5532c32B4359760592Db835Ab",
+      "token": "0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c",
+      "currency": "EUROC"
+    },
+	{
+      "address": "0x57BC10876fEbdC57f0ABb8C82ffAE600eEcc03A2",
+      "token": "0xC08512927D12348F6620a698105e1BAac6EcD911",
+      "currency": "GYEN"
     }
   ],
   "polygon": [
