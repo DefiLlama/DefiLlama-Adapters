@@ -4,6 +4,7 @@ const abi = require('./abi.json')
 const { getChainTransform } = require("../helper/portedTokens");
 const { getBlock } = require("../helper/getBlock");
 const { sumTokens } = require("../helper/unwrapLPs");
+const { default: BigNumber } = require("bignumber.js");
 
 const graphUrls = ['https://api.thegraph.com/subgraphs/name/pooltogether/pooltogether-v3_1_0',
   'https://api.thegraph.com/subgraphs/name/pooltogether/pooltogether-v3_3_2',
@@ -56,7 +57,7 @@ async function getChainBalances(allPrizePools, chain, block, transform) {
       pool.id === call.input.target).underlyingCollateralToken);
     const underlyingTokenBalance = ((underlyingToken.includes('0x')) ?
       call.output : call.output / 10 ** 18)
-    sdk.util.sumSingleBalance(balances, underlyingToken, underlyingTokenBalance)
+    sdk.util.sumSingleBalance(balances, underlyingToken, BigNumber(underlyingTokenBalance).toFixed(0))
   })
   if(v4pools[chain]!== undefined){
     await sumTokens(balances, v4pools[chain], block, chain, transform)
