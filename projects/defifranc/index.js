@@ -11,7 +11,7 @@ const Collaterals = {
 const TROVE_MANAGER_ADDRESS = "0x99838142189adE67c1951f9c57c3333281334F7F"; // deposits in native ETH and wBTC
 const STABILITY_POOL_ETH_ADDRESS = "0x6a9f9d6F5D672a9784c5E560a9648de6cbe2c548"; // deposits in native ETH
 const STABILITY_POOL_WBTCADDRESS = "0x04556d845f12Ff7D8Ff04a37F40387Dd1B454c4b"; // deposits in wBTC
-consta MONETA_STAKING_POOL = "0x8Bc3702c35D33E5DF7cb0F06cb72a0c34Ae0C56F"; // deposits DCHF
+const MONETA_STAKING_POOL = "0x8Bc3702c35D33E5DF7cb0F06cb72a0c34Ae0C56F"; // deposits DCHF
 
 async function tvl(, block, chainBlocks) {
   block = chainBlocks.ethereum;
