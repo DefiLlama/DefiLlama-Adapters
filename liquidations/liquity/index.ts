@@ -101,7 +101,3 @@ module.exports = {
     liquidations: positions,
   },
 };
-
-positions().then(vaultData => {
-  console.log(vaultData);
-});
