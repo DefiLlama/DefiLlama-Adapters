@@ -2,6 +2,8 @@ const { request, gql } = require("graphql-request");
 const { toUSDTBalances } = require('../helper/balances');
 const { getBlock } = require('../helper/getBlock')
 const { getUniTVL } = require("../helper/unknownTokens")
+const { sumTokens2 } = require('../helper/unwrapLPs')
+const sdk = require('@defillama/sdk')
 
 const graphUrl = 'https://api.thegraph.com/subgraphs/name/zippoxer/sushiswap-subgraph-fork'
 const graphQuery = gql`
@@ -45,7 +47,6 @@ async function eth(timestamp, ethBlock, chainBlocks) {
 
 function getChainTVL(chain) {
   return async (timestamp, _b, chainBlocks) => {
-    console.log(chainBlocks, chain)
     const block = await getBlock(timestamp, chain, chainBlocks, false)
     const { factory } = await request(
       'https://api.thegraph.com/subgraphs/name/sushiswap/exchange-' + chain,
@@ -158,6 +159,13 @@ module.exports = {
       useDefaultCoreAssets: true,
     }),
   },
+  boba: {
+    tvl: getUniTVL({
+      factory,
+      chain: 'boba',
+      useDefaultCoreAssets: true,
+    }),
+  },
   avax: {
     tvl: getUniTVL({
       factory,
@@ -178,15 +186,10 @@ module.exports = {
       useDefaultCoreAssets: true,
       factory,
     })
-  }/*,
+  },
   kava: {
-    tvl: getUniTVL({
-      factory,
-      chain: 'kava',
-      useDefaultCoreAssets: true,
-      
-    })
-  },*/
+    tvl: kavaTvl,
+  },
 }
 
 module.exports.polygon.tvl = getChainTVL('polygon')
@@ -194,3 +197,34 @@ module.exports.bsc.tvl = getChainTVL('bsc')
 module.exports.fantom.tvl = getChainTVL('fantom')
 module.exports.harmony.tvl = getChainTVL('harmony')
 
+async function kavaTvl(ts, _b, cb) {
+  const chain = 'kava'
+  const graph = 'https://pvt.graph.kava.io/subgraphs/name/sushiswap/trident-kava'
+  const query = `query get_tvl($block: Int){
+    pairs(
+      block: { number: $block }
+      size: 1000
+    ){
+      id
+      name
+      type
+      reserve0
+      reserve1
+      token0 {
+        id
+      }
+      token1 {
+        id
+      }
+    }
+  }`
+  const block = await getBlock(ts, chain, cb, false)
+  const { pairs } = await request(graph, query, {
+    block: block - 100,
+  })
+  const bentoBox = '0xc35DADB65012eC5796536bD9864eD8773aBc74C4'
+  const tokens = pairs.map(i => ( [i.token0.id, i.token1.id])).flat()
+  return sumTokens2({
+    chain, block, owner: bentoBox, tokens: [...new Set(tokens)]
+  })
+}
