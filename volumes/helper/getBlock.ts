@@ -1,5 +1,5 @@
 import { ChainBlocks } from "../dexVolume.type";
-import sdk from "@defillama/sdk"
+import * as sdk from "@defillama/sdk"
 import retry from "async-retry"
 import axios from "axios"
 import { providers } from "@defillama/sdk/build/general"
