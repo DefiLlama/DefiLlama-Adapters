@@ -1,27 +1,37 @@
 import axios from "axios"
+import BigNumber from "bignumber.js";
 import { VolumeAdapter } from "../../dexVolume.type"
 
-async function last24h(){
-    const data = await axios.post('https://aggregator.mainnet.wingriders.com/poolsWithMarketdata', {"limit":500})
+const volUrl = 'https://aggregator.mainnet.wingriders.com/volumeInAda';
+
+async function fetchVolume() {
+    const last24hVolInAda = await axios.post(volUrl, { "lastNHours": 24 });
+    const totalVolumeInAda = await axios.post(volUrl);
+
     const prices = await axios.post('https://coins.llama.fi/prices', {
         "coins": [
             "coingecko:cardano",
         ],
-    })
-    const vol = data.data.reduce((s:number, c:any)=>s+Number(c.marketData.volumeA24h)+Number(c.marketData.outputVolumeA24h), 0)/1e6
-        * prices.data.coins["coingecko:cardano"].price
+    });
+
+    const adaPrice = prices.data.coins["coingecko:cardano"].price;
+
+    const dailyVolume = (new BigNumber(last24hVolInAda.data).multipliedBy(adaPrice)).toString();
+    const totalVolume = (new BigNumber(totalVolumeInAda.data).multipliedBy(adaPrice)).toString();
+
     return {
-        dailyVolume: String(vol),
-        timestamp: Date.now()/1e3
+        dailyVolume,
+        totalVolume,
+        timestamp: Date.now() / 1e3
     }
 }
 
 export default {
-    volume:{
+    volume: {
         "cardano": {
-            fetch: last24h,
+            fetch: fetchVolume,
             runAtCurrTime: true,
-            start: async ()=>0,
+            start: async () => 0,
         }
     }
 } as VolumeAdapter
