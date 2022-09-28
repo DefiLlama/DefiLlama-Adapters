@@ -68,13 +68,21 @@ import beethovenX from "./adapters/beethoven-x";
 import defiSwap from "./adapters/defi-swap";
 import wanswapDex from "./adapters/wanswap-dex";
 import solarbeam from "./adapters/solarbeam";
-import tombFinance from "./adapters/tomb-finance";
+import tombFinance from "./adapters/tomb-swap";
 import dfxFinance from "./adapters/dfx-finance";
 import fraxswap from "./adapters/frax-swap";
 import izumiFinance from "./adapters/izumi-finance";
 import tinyman from "./adapters/tinyman";
 import junoswap from "./adapters/junoswap";
 import knightswapFinance from "./adapters/knightswap-finance";
+import shibaswap from "./adapters/shibaswap";
+import oolongswap from "./adapters/oolongswap";
+import viperswap from "./adapters/viperswap";
+import swapr from "./adapters/swapr";
+import cone from "./adapters/cone";
+import claimswap from "./adapters/claimswap";
+import spartacusExchange from "./adapters/spartacus-exchange";
+import beamswap from "./adapters/beamswap";
 
 export default {
   mooniswap,
@@ -145,12 +153,20 @@ export default {
   "defi-swap": defiSwap,
   "wanswap-dex": wanswapDex,
   solarbeam,
-  "tomb-finance": tombFinance,
+  "tomb-swap": tombFinance,
   "dfx-finance": dfxFinance,
   "frax-swap": fraxswap,
   "izumi-finance": izumiFinance,
   tinyman,
   junoswap,
-  "knightswap-finance": knightswapFinance
+  "knightswap-finance": knightswapFinance,
+  shibaswap,
+  oolongswap,
+  viperswap,
+  swapr,
+  cone,
+  claimswap,
+  "spartacus-exchange" : spartacusExchange,
+  beamswap
   // lyra -> OPTIONS DEX, not enable for now
 };
