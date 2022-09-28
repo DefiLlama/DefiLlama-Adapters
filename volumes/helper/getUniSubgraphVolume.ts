@@ -1,6 +1,6 @@
 import { Chain } from "@defillama/sdk/build/general";
 import { request, gql } from "graphql-request";
-import { getBlock } from "../../projects/helper/getBlock";
+import { getBlock } from "./getBlock";
 import { Adapter, ChainBlocks } from "../dexVolume.type";
 import { SimpleVolumeAdapter } from "../dexVolume.type";
 import { DEFAULT_DATE_FIELD, getStartTimestamp } from "./getStartTimestamp";
