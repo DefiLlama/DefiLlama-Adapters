@@ -82,6 +82,7 @@ import swapr from "./adapters/swapr";
 import cone from "./adapters/cone";
 import claimswap from "./adapters/claimswap";
 import spartacusExchange from "./adapters/spartacus-exchange";
+import beamswap from "./adapters/beamswap";
 
 export default {
   mooniswap,
@@ -165,6 +166,7 @@ export default {
   swapr,
   cone,
   claimswap,
-  "spartacus-exchange" : spartacusExchange
+  "spartacus-exchange" : spartacusExchange,
+  beamswap
   // lyra -> OPTIONS DEX, not enable for now
 };
