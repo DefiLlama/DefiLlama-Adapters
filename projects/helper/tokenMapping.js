@@ -69,6 +69,7 @@ const transformTokens = {
     "0x8cc97b50fe87f31770bcdcd6bc8603bc1558380b": "cronos:0x0804702a4e749d39a35fde73d1df0b1f1d6b8347", // single
     "0x95bf7e307bc1ab0ba38ae10fc27084bc36fcd605": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
     "0xc5cd01e988cd0794e05ab80f2bcdbdf13ce08bd3": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // nUSD -> USDC
+    "0x7f620d7d0b3479b1655cefb1b0bc67fb0ef4e443": "fantom:0xf16e81dce15b08f326220742020379b855b87df9", // nICE -> ICE
   },
   avax: {
     "0xaf2c034c764d53005cc6cbc092518112cbd652bb": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
