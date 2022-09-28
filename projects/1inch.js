@@ -87,14 +87,7 @@ Object.keys(config).forEach(chain => {
         tokens.forEach(i => toa.push([i, pool]))
       })
 
-      const balances = await sumTokens2({ chain, block, tokensAndOwners: toa, blacklistedTokens, })
-      Object.entries(balances).forEach(([token, value]) => {
-        if (value === 'NaN') {
-          console.log('Bad/not token: %s, deleting it from balances', token)
-          delete balances[token]
-        }
-      })
-      return balances
+      return sumTokens2({ chain, block, tokensAndOwners: toa, blacklistedTokens, })
     }
   }
 })
