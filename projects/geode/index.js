@@ -80,7 +80,7 @@ async function avax(timestamp, ethBlock, chainBlocks) {
   }, 0);
 
   return {
-    "avax:0x0000000000000000000000000000000000000000": TotalBalance.toString(),
+    "avax:0x0000000000000000000000000000000000000000": TotalBalance
   };
 }
 
