@@ -4,7 +4,7 @@ const fliperinoContractETHW = "0xFFE6280ae4E864D9aF836B562359FD828EcE8020";
 
 
 const Tvl = async (timestamp, ethBlock, chainBlocks) => {
-  const balance = sdk.api.eth.getBalance(fliperinoContractETHW,ethBlock,18,'ethpow');
+  const balance = sdk.api.eth.getBalance(fliperinoContractETHW,chainBlocks,18,'ethpow');
   return balance;
 };
 
