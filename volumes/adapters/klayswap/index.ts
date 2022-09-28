@@ -4,7 +4,7 @@ import { CHAIN } from "../../helper/chains";
 import customBackfill from "../../helper/customBackfill";
 import { getUniqStartOfTodayTimestamp } from "../../helper/getUniSubgraphVolume";
 
-const { fetchURL } = require("../../helper/utils");
+import fetchURL from "../../utils/fetchURL"
 
 interface IKlaySwapInfoDayVolumeItem {
   dateId: string
