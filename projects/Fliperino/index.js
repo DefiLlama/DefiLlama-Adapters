@@ -1,18 +1,11 @@
-const sdk = require("@defillama/sdk");
+const { nullAddress, sumTokens2 } = require('../helper/unwrapLPs')
 
-const fliperinoContractETHW = "0xFFE6280ae4E864D9aF836B562359FD828EcE8020";
-
-
-const Tvl = async (timestamp, ethBlock, chainBlocks) => {
-  const balance = sdk.api.eth.getBalance(fliperinoContractETHW,chainBlocks,18,'ethpow');
-  return balance;
-};
-
-console.log(Tvl)
+const fliperinoContractETHW = "0x1A25ee44ab9874C6652D35b26271937F43043F93";
 
 module.exports = {
-  timetravel: true,
   ethpow: {
-    tvl: Tvl,
+    tvl: async ( _, _b,{ ethpow: block}) => {
+      return sumTokens2({ owner: fliperinoContractETHW, chain: 'ethpow', block, tokens: [nullAddress]})
+    },
   },
 };
