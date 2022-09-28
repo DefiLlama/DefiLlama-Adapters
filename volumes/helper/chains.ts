@@ -22,7 +22,10 @@ export enum CHAIN {
   JUNO = "juno",
   KCC = "kcc",
   WAN = "wan",
-  CARDADO = "cardano"
+  CARDADO = "cardano",
+  LITECOIN = "litecoin",
+  BITCOIN = "bitcoin",
+  DOGE = "doge"
 }
 
 // Don´t use
@@ -42,6 +45,9 @@ const RONIN = "ronin";
 const XDAI = "xdai";
 const AURORA = "aurora";
 const MOONRIVER = "moonriver"
+const BITCOIN = "bitcoin";
+const LITECOIN = "litecoin";
+const DOGE = "doge";
 
 // Don't use
 export {
@@ -60,5 +66,8 @@ export {
   RONIN,
   XDAI,
   AURORA,
-  MOONRIVER
+  MOONRIVER,
+  BITCOIN,
+  LITECOIN,
+  DOGE
 };
