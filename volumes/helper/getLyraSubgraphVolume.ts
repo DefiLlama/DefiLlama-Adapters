@@ -1,7 +1,7 @@
 import { Chain } from "@defillama/sdk/build/general";
 import { BigNumber } from "ethers";
 import { request, gql } from "graphql-request";
-import { getBlock } from "../../projects/helper/getBlock"
+import { getBlock } from "./getBlock"
 
 const UNIT = BigNumber.from("1000000000000000000");
 const ONE_DAY_IN_SECONDS = 60 * 60 * 24
@@ -55,7 +55,7 @@ function getChainVolume({ graphUrls, timestamp }: IGetChainVolumeParams) {
         console.error(`Failed to get total volume on ${chain}: ${e.message}`)
       );
 
-      const prevDayVolumeSum = previousDayVolume.markets.reduce((acc, obj) => {
+      const prevDayVolumeSum = previousDayVolume.markets.reduce((acc: any, obj: any) => {
         return (
           acc +
           BigNumber.from(obj.latestVolumeAndFees.totalNotionalVolume)
@@ -71,7 +71,7 @@ function getChainVolume({ graphUrls, timestamp }: IGetChainVolumeParams) {
         console.error(`Failed to get total volume on ${chain}: ${e.message}`)
       );
 
-      const totalVolumeSum = totalVolume.markets.reduce((acc, obj) => {
+      const totalVolumeSum = totalVolume.markets.reduce((acc: any, obj: any) => {
         return (
           acc +
           BigNumber.from(obj.latestVolumeAndFees.totalNotionalVolume)

@@ -15,7 +15,7 @@
   },
   "author": "",
   "license": "ISC",
-  "dependencies": { 
+  "dependencies": {
     "@defillama/sdk": "latest",
     "@project-serum/anchor": "^0.25.0",
     "@solana/spl-token": "^0.3.0",
@@ -52,6 +52,7 @@
   },
   "description": "",
   "devDependencies": {
+    "@types/async-retry": "^1.4.5",
     "@types/bn.js": "^5.1.0",
     "ts-node": "^10.8.1"
   }
