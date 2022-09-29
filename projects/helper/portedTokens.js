@@ -8,27 +8,10 @@ const {
 } = require('./tokenMapping')
 
 async function transformFantomAddress() {
-  const multichainTokens = (await utils.fetchURL(
-    "https://netapi.anyswap.net/bridge/v2/info"
-  )).data.bridgeList;
-
   const mapping = transformTokens.fantom
 
   return addr => {
     addr = addr.toLowerCase()
-    const srcToken = multichainTokens.find(
-      token => token.chainId === "250" && token.token === addr.toLowerCase()
-    );
-    if (srcToken !== undefined) {
-      if (srcToken.srcChainId === "1") {
-        return srcToken.srcToken;
-      } else if (srcToken.srcChainId === "56") {
-        if (srcToken.srcToken === "") {
-          return "bsc:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c";
-        }
-        return `bsc:${srcToken.srcToken}`;
-      }
-    }
     return mapping[addr] || `fantom:${addr}`;
   };
 }
