@@ -38,9 +38,15 @@ const getVaultData = async () => {
     return vaultData;
 };
 
-const getPrices = async () => {
-  const url: string = 'https://api.coingecko.com/api/v3/simple/price?ids=ageur&vs_currencies=usd';
-  const price = (await axios.get(url)).data.ageur.usd;
+const getTokenInfo = async (address: string) => {
+  const info = (
+    await axios.post("https://coins.llama.fi/prices", {
+      coins: ["ethereum:" + address],
+    })
+  ).data.coins as {
+    [address: string]: { decimals: number; price: number; symbol: string; timestamp: number };
+  };
+  const price = info["ethereum:" + address.toLowerCase()]
   return price
 } 
 
@@ -55,7 +61,7 @@ const getVaultDebt = async (id: string) => {
   );
   const vaultDebtRaw = (await vaultManagerContract.getVaultDebt(vaultId));
   // convert vault debt to $
-  const vaultDebt = (await getPrices() * vaultDebtRaw); 
+  const vaultDebt = (await (await getTokenInfo('0x1a7e4e63778B4f12a199C062f3eFdD288afCBce8')).price * vaultDebtRaw); 
   return vaultDebt.toString();
 }
 
@@ -67,15 +73,18 @@ const positions = async () => {
   const positions : {owner: string, liquidationPrice: number, collateral: string, collateralAmount: string, extra: any}[] = [];
   for (const vault of vaultData) {
     const owner = vault.owner;
-    var collateral = vault.vaultManager.collateral;
+    const collateral = vault.vaultManager.collateral;
     const collateralAmount = vault.collateralAmount;
 
     // liquidation price computation
     const vaultDebt = await getVaultDebt(vault.id);
     const collateralFactor = parseFloat(vault.vaultManager.collateralFactor) / 10e8
     let liquidationPrice: number
-    if (collateral == '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599') {
-      liquidationPrice = parseFloat(vaultDebt) / (parseFloat(collateralAmount)*10e9*collateralFactor)
+
+    const collateralDecimals = await (await getTokenInfo(collateral)).decimals
+    if (collateralDecimals != 18) {
+      // correcting the number of decimals
+      liquidationPrice = (parseFloat(vaultDebt) / (parseFloat(collateralAmount)*collateralFactor)) * (10 ** (collateralDecimals - 18))
     } else {
       liquidationPrice = parseFloat(vaultDebt) / (parseFloat(collateralAmount)*collateralFactor)
     }
