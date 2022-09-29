@@ -29,7 +29,7 @@ const ethTvl = async (_, block) => {
 };
 
 const polygonTvl = async (_, block) => {
-  balances = {};
+  const balances = {};
   const transform = await transformPolygonAddress();
 
   const vaultFunds = await getERC4626VaultFundsByChain("polygon", block);

@@ -4,7 +4,7 @@ import { chainsForBlocks } from "@defillama/sdk/build/computeTVL/blocks";
 import { Chain } from '@defillama/sdk/build/general';
 import handleError from '../../utils/handleError';
 import { checkArguments, ERROR_STRING, formatTimestampAsDate, printVolumes } from './utils';
-import { getBlock } from '../../projects/helper/getBlock';
+import { getBlock } from '../helper/getBlock';
 import { getUniqStartOfTodayTimestamp } from '../helper/getUniSubgraphVolume';
 require('dotenv').config()
 

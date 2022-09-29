@@ -134,6 +134,14 @@ async function clv() {
     const tvl = await utils.fetchURL('https://explorer.poly.network/api/v1/getTVLClover')
     return Number(tvl.data);
 }
+async function conflux() {
+    const tvl = await utils.fetchURL('https://explorer.poly.network/api/v1/GetTVLConflux')
+    return Number(tvl.data);
+}
+async function astar() {
+    const tvl = await utils.fetchURL('https://explorer.poly.network/api/v1/GetTVLAstar')
+    return Number(tvl.data);
+}
 
 async function fetch() {
     const tvl = await utils.fetchURL('https://explorer.poly.network/api/v1/getTVLTotal')
@@ -224,6 +232,12 @@ module.exports = {
     },
     clv: {
         fetch: clv
+    },
+    conflux: {
+        fetch: conflux
+    },
+    astar: {
+        fetch: astar
     },
     fetch
 }
