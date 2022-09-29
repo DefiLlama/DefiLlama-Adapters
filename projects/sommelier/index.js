@@ -65,8 +65,7 @@ module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
   methodology:
-    "Sum assets deposited but uninvested, assets deployed to AAVE, and yield collected from AAVE",
+    "TVL is calculated as the sum of deposits invested into the strategy, deposits waiting to be invested, and yield waiting to be reinvested or redistributed.",
   start: 1656652494,
-  hallmarks: [],
   [chain]: { tvl },
 };
