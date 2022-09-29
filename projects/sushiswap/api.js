@@ -232,7 +232,3 @@ async function kavaTridentTvl(ts, _b, cb) {
   } )
   return balances
 }
-
-module.exports = {
-  kava: { tvl: kavaTridentTvl }
-}
