@@ -80,8 +80,8 @@ const EXPLORER_BASE_URL = "https://etherscan.io/address/";
 const positions = async () => {
   const { totalCollateralRatio } = await getSystemState();
   const _isRecoveryMode = isRecoveryMode(totalCollateralRatio);
-  const troves = (await getPagedGql(subgraphUrl, trovesQuery, "troves")) as Trove[];
 
+  const troves = (await getPagedGql(subgraphUrl, trovesQuery, "troves")) as Trove[];
   const _troves = troves.map(({ collateral: _collateral, debt, owner, rawCollateral }) => {
     return {
       owner: owner.id,
