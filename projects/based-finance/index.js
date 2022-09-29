@@ -1,5 +1,8 @@
+const sdk = require("@defillama/sdk");
+const { mergeExports } = require('../helper/utils')
 const { sumTokens2, } = require("../helper/unwrapLPs");
 const { staking } = require("../helper/staking");
+const basedV2Exports = require('./basedV2')
 const chain = 'fantom'
 
 const bshareRewardPoolAddress = "0xac0fa95058616d7539b6eecb6418a68e7c18a746";
@@ -72,4 +75,8 @@ module.exports = {
   },
 };
 
-// node test.js projects/based-finance/index.js
+module.exports = mergeExports([module.exports, basedV2Exports, ])
+
+module.exports.hallmarks = [
+  [Math.floor(new Date('2022-09-30')/1e3), 'Added Based V2'],
+]
