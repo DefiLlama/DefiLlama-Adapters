@@ -50,12 +50,6 @@ const markets = [
     cToken: '0xC11b1268C1A384e55C48c2391d8d480264A3A7F4',//cWBTC - legacy
   },
   {
-    underlying: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',
-    symbol: 'WBTC',
-    decimals: 8,
-    cToken: '0xccf4429db6322d5c611ee964527d42e5d685dd6a'//cWBTC
-  },
-  {
     underlying: '0xE41d2489571d322189246DaFA5ebDe1F4699F498',
     symbol: 'ZRX',
     decimals: 18,
@@ -146,6 +140,8 @@ async function v1Tvl(balances, block, borrowed){
     let amount
     if(borrowed){
       amount = m.output.totalBorrows
+    } else {
+      amount = BigNumber(m.output.totalSupply).minus(m.output.totalBorrows).toFixed(0)
     }
     sdk.util.sumSingleBalance(balances, token, amount)
   })
@@ -153,18 +149,6 @@ async function v1Tvl(balances, block, borrowed){
 
 async function v2Tvl(balances, block, borrowed){
   let markets = await getMarkets(block);
-
-  // Get V1 tokens locked
-  let v1Locked = await sdk.api.abi.multiCall({
-    block,
-    calls: markets.map((market) => ({
-      target: market.underlying,
-      params: '0x3FDA67f7583380E67ef93072294a7fAc882FD7E7',
-    })),
-    abi: 'erc20:balanceOf',
-  });
-
-  sdk.util.sumMultiBalanceOf(balances, v1Locked);
 
   // Get V2 tokens locked
   let v2Locked = await sdk.api.abi.multiCall({
@@ -194,18 +178,7 @@ async function borrowed(timestamp, block){
 async function tvl(timestamp, block) {
   let balances = {};
 
-  // Get V1 tokens locked
-  let v1Locked = await sdk.api.abi.multiCall({
-    block,
-    calls: markets.map((market) => ({
-      target: market.underlying,
-      params: v1Contract,
-    })),
-    abi: 'erc20:balanceOf',
-  });
-
-  sdk.util.sumMultiBalanceOf(balances, v1Locked);
-
+  await v1Tvl(balances, block, false)
   await v2Tvl(balances, block, false)
   return balances;
 }
