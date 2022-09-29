@@ -83,6 +83,7 @@ import cone from "./adapters/cone";
 import claimswap from "./adapters/claimswap";
 import spartacusExchange from "./adapters/spartacus-exchange";
 import beamswap from "./adapters/beamswap";
+import openleverage from "./adapters/openleverage";
 
 export default {
   mooniswap,
@@ -167,6 +168,7 @@ export default {
   cone,
   claimswap,
   "spartacus-exchange" : spartacusExchange,
-  beamswap
+  beamswap,
+  openleverage
   // lyra -> OPTIONS DEX, not enable for now
 };
