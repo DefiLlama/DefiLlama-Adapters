@@ -3,7 +3,7 @@ const BigNumber = require('bignumber.js');
 const abi = require('./abi.json');
 const { getBlock } = require('../helper/getBlock');
 const { requery } = require('../helper/requery');
-const { sliceIntoChunks } = require('../helper/utils');
+const { sliceIntoChunks, } = require('../helper/utils');
 const { request, gql } = require("graphql-request");
 
 const QUERY_NO_BLOCK = gql`
@@ -40,7 +40,7 @@ function chainTvl(chain) {
     let totalTopStakersSNXLocked = new BigNumber(0);
     let totalTopStakersSNX = new BigNumber(0);
 
-    const holdersAll = sliceIntoChunks(await SNXHolders(snxGraphEndpoint, block, chain), 300)
+    const holdersAll = sliceIntoChunks(await SNXHolders(snxGraphEndpoint, block, chain), 5000)
     console.log('holders count: ', holdersAll.flat().length, chain)
 
     const issuanceRatio = (await sdk.api.abi.call({
@@ -50,7 +50,10 @@ function chainTvl(chain) {
       abi: abi['issuanceRatio']
     })).output;
 
+    let i = 0
+
     for (const holders of holdersAll) {
+      console.log('fetching %s of %s', ++i, holdersAll.length)
 
       const calls = holders.map(holder => ({ target: synthetix, params: holder }))
       const [ratio, collateral] = await Promise.all([

@@ -10,6 +10,7 @@ const addresses = {
   dai: "0x6b175474e89094c44da98b954eedeac495271d0f",
   usdt: "0xdac17f958d2ee523a2206206994597c13d831ec7",
   busd: "0x4fabb145d64652a948d72533023f6e7a623c7c53",
+  usdc: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
   elfiStaking: [
     "0xb41bcd480fbd986331eeed516c52e447b50dacb4",
     "0xCD668B44C7Cf3B63722D5cE5F655De68dD8f2750",
@@ -43,7 +44,8 @@ async function getEthereumTvl(timestamp, block, chainBlocks) {
 
   sdk.util.sumSingleBalance(balances, addresses.el, elStakingValue);
   sdk.util.sumSingleBalance(balances, addresses.dai, reserves[0].totalDeposit);
-  sdk.util.sumSingleBalance(balances, addresses.usdt, reserves[1].totalDeposit);
+  sdk.util.sumSingleBalance(balances, addresses.usdc, reserves[1].totalDeposit);
+  sdk.util.sumSingleBalance(balances, addresses.usdt, reserves[2].totalDeposit);
 
   return balances;
 }

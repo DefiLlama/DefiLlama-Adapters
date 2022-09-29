@@ -16,6 +16,9 @@ function lending(borrowed) {
 }
 
 module.exports = {
+    hallmarks: [
+        [1652572800,"DEI depeg"]
+    ],
     methodology: "Same as compound, we just get all the collateral (not borrowed money) on the lending markets. fUSD is returned as TUSD",
     timetravel: true,
     doublecounted: false,

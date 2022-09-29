@@ -20,7 +20,7 @@ const SIENNA_SINGLE_SIDED_POOLS = [
 const SIENNA_TOKEN_ADDRESS = "secret1rgm2m5t530tdzyd99775n6vzumxa5luxcllml4";
 const LEND_OVERSEER_CONTRACT = "secret1pf88n9hm64mn58aw48jxfs2fsvzr07svnrrdlv";
 
-const SECRET_NODE_URL = "https://bridgeapi.azure-api.net/node10";
+const SECRET_NODE_URL = "https://bridgeapi.azure-api.net/lb/lcd";
 const queryClient = new CosmWasm(SECRET_NODE_URL)
 
 const CACHED_TOKENS = {};
@@ -50,7 +50,7 @@ async function PairsVolumes() {
 
     const pairs = await Pairs();
     return new Promise((resolve, reject) => {
-        eachLimit(pairs, 2, async (contract) => {
+        eachLimit(pairs, 10, async (contract) => {
             const pair_info = (await queryClient.queryContractSmart(contract.address, "pair_info")).pair_info;
 
             const token1 = await TokenInfo(pair_info.pair.token_0.custom_token.contract_addr);

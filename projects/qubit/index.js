@@ -77,6 +77,9 @@ function tvlKlaytn() {
 }
 
 module.exports = {
+  hallmarks: [
+    [1643241600, "tokenAddress hack"]
+],
   timetravel: true,
   doublecounted: false,
   methodology:

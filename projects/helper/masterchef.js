@@ -269,7 +269,7 @@ function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingeck
             })
         }
 
-        if (['smartbch', 'cronos'].includes(chain)) {
+        if (['smartbch', 'cronos', 'avax'].includes(chain)) {
             const fixBalances = await getFixBalances(chain)
             Object.values(balances).map(fixBalances)
         }
@@ -297,7 +297,7 @@ function masterChefExports(masterChef, chain, stakingTokenRaw, tokenIsOnCoingeck
 
 const standardPoolInfoAbi = { "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "name": "poolInfo", "outputs": [{ "internalType": "contract IERC20", "name": "lpToken", "type": "address" }, { "internalType": "uint256", "name": "allocPoint", "type": "uint256" }, { "internalType": "uint256", "name": "lastRewardBlock", "type": "uint256" }, { "internalType": "uint256", "name": "accWeVEPerShare", "type": "uint256" }], "stateMutability": "view", "type": "function" }
 
-async function getUserMasterChefBalances({ balances = {}, masterChefAddress, userAddres, block, chain = 'ethereum', transformAddress, excludePool2 = false, onlyPool2 = false, pool2Tokens= [], poolInfoABI = abi.poolInfo }) {
+async function getUserMasterChefBalances({ balances = {}, masterChefAddress, userAddres, block, chain = 'ethereum', transformAddress, excludePool2 = false, onlyPool2 = false, pool2Tokens= [], poolInfoABI = abi.poolInfo, getLPAddress = null }) {
     if (!transformAddress)
         transformAddress = await getChainTransform(chain)
 
@@ -307,7 +307,7 @@ async function getUserMasterChefBalances({ balances = {}, masterChefAddress, use
     const poolInfoCalls = dummyArray.map(i => ({ target: masterChefAddress, params: i, }))
     const userInfoCalls = dummyArray.map(i => ({ target: masterChefAddress, params: [i, userAddres], }))
     const lpTokens = (await sdk.api.abi.multiCall({ block, calls: poolInfoCalls, abi: poolInfoABI, chain, })).output
-        .map(a => a.output && a.output[0])
+        .map(a => getLPAddress ? getLPAddress(a.output) : (a.output && a.output[0]))
     const userBalances = (await sdk.api.abi.multiCall({ block, calls: userInfoCalls, abi: userInfoAbi, chain, })).output
         .map(a => a.output[0])
 

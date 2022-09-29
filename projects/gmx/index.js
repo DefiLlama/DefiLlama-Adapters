@@ -53,7 +53,7 @@ module.exports = {
     staking: staking(arbitrumStaking, arbitrumGMX, "arbitrum", "gmx", 18),
     tvl: arbitrumTVL
   },
-  avalanche: {
+  avax:{
     staking: staking(avalancheStaking, avalancheGMX, "avax", "gmx", 18),
     tvl: avalancheTVL
   }

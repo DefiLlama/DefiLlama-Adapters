@@ -27,80 +27,9 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     const block = chainBlocks.avax;
     const farms = (await request(graphUrl, graphQuery, { block })).farms
     const transformAddress = await transformAvaxAddress()
-    const calls = {
-        calls: farms.map(f => ({
-            target: f.id
-        })),
-        block,
-        chain
-    }
-    const [tokenAmounts, tokens] = await Promise.all([
-        sdk.api.abi.multiCall({
-            ...calls,
-            abi: abi.totalDeposits,
-        }),
-        sdk.api.abi.multiCall({
-            ...calls,
-            abi: abi.depositToken,
-        })
-    ])
-    await requery(tokenAmounts, "avax", block, abi.totalDeposits)
-    await requery(tokens, "avax", block, abi.depositToken)
-    tokens.output.forEach((token, idx) => {
-        if (token.output === null) {
-            token.output = farms[idx].depositToken.id
-        }
-    })
     const balances = {}
-    const lps = []
-    const crvLps = []
-    const snowballCalls = []
-    const snowballBalances = []
-    farms.forEach((farm, idx) => {
-        let token = tokens.output[idx].output.toLowerCase()
-        if (token === '0xb599c3590f42f8f995ecfa0f85d2980b76862fc1') return;    // Blacklist UST token
-        if (token == "0x0000000000000000000000000000000000000000") {
-            token = "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7"; // Replace YY's AVAX with WAVAX
-        }
-        let balance = tokenAmounts.output[idx].output
-        if (farm.name.startsWith("Snowball: sPGL ")) {
-            snowballCalls.push({ target: token })
-            snowballBalances.push(balance)
-        } else if (farm.name.startsWith("Yield Yak: Gondola ") || farm.name.includes("Curve 3pool")) {
-            crvLps.push({
-                token,
-                balance,
-            })
-        } else {
-            try {
-                sdk.util.sumSingleBalance(balances, transformAddress(token), balance)
-            } catch (e) {
-                console.log(e)
-            }
-        }
-    })
-
-
-    const [underlyingToken, ratio] = await Promise.all([abi.token, abi.getRatio].map(abi =>
-        sdk.api.abi.multiCall({
-            calls: snowballCalls,
-            block,
-            chain,
-            abi,
-            requery: true,
-        })
-    ))
-
-    underlyingToken.output.forEach(({ output }, idx) => {
-        const balance = BigNumber(snowballBalances[idx]).times(ratio.output[idx].output).div(1e18).toFixed(0)
-        sdk.util.sumSingleBalance(balances, transformAddress(output), balance)
-    })
-
-    await unwrapLPsAuto({ balances, block, chain, transformAddress })
-    await Promise.all(
-        crvLps.map(crvLp => unwrapCrv(balances, crvLp.token, crvLp.balance, block, 'avax', transformAddress))
-    )
-    //await addTokensAndLPs(balances, tokens, tokenAmounts, block, 'avax', transformAddress)
+    farms.forEach(i => sdk.util.sumSingleBalance(balances, transformAddress(i.depositToken.id), i.depositTokenBalance))
+    await unwrapLPsAuto({ balances, chain, block, blacklistedLPs: ['0xca87bf3ec55372d9540437d7a86a7750b42c02f4']})
     return balances
 }
 
@@ -113,7 +42,7 @@ async function pool2(time, ethBlock, chainBlocks) {
 }
 
 module.exports = {
-    avalanche: {
+    avax:{
         tvl,
         staking: staking(masterYak, yakToken, "avax"),
         pool2

@@ -166,7 +166,7 @@
       }
     })
     await Promise.all(unwrapCalls)
-    console.log('call')
+    // console.log('call')
     const bnbCollateral = await sdk.api.eth.getBalance({
       target: fortubeCollateralBsc,
       chain: 'bsc',

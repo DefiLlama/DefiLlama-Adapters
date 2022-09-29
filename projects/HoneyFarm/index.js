@@ -43,7 +43,7 @@ async function bsc(timestamp, block, chainBlocks) {
 module.exports = {
   methodology:
     "Only staked LP is counted as TVL. Excluded in TVL : Locked BEE in the RoyalJelly, NFT Jelly, value of BNB & xJOE which aren't on CoinGecko yet.",
-  avalanche: {
+  avax:{
     tvl: avax,
     staking: staking(
       "0x757490104fd4C80195D3C56bee4dc7B1279cCC51",
