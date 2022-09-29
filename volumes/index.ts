@@ -86,6 +86,7 @@ import beamswap from "./adapters/beamswap";
 import openleverage from "./adapters/openleverage";
 import ubeswap from "./adapters/ubeswap";
 import mobiusMoney from "./adapters/mobius-money";
+import honeyswap from "./adapters/honeyswap";
 
 export default {
   mooniswap,
@@ -173,6 +174,7 @@ export default {
   beamswap,
   openleverage,
   ubeswap,
-  "mobius-money": mobiusMoney
+  "mobius-money": mobiusMoney,
+  honeyswap
   // lyra -> OPTIONS DEX, not enable for now
 };
