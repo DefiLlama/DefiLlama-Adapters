@@ -1,7 +1,7 @@
 import { Chain } from "@defillama/sdk/build/general";
 import { SimpleVolumeAdapter } from "../../dexVolume.type";
 import { CHAIN } from "../../helper/chains";
-import customBackfill from "../../helper/customBackfill";
+
 const {
   getChainVolume,
 } = require("../../helper/getUniSubgraphVolume");
@@ -16,18 +16,16 @@ const endpoints = {
 
 const VOLUME_FIELD = "volumeUSD";
 const graphs = getChainVolume({
-  graphUrls: {
-    [CHAIN.BSC]: endpoints[CHAIN.BSC],
-    [CHAIN.OPTIMISM]: endpoints[CHAIN.OPTIMISM],
-    [CHAIN.ARBITRUM]: endpoints[CHAIN.ARBITRUM],
-    [CHAIN.ETHEREUM]: endpoints[CHAIN.ETHEREUM],
-    [CHAIN.POLYGON]: endpoints[CHAIN.POLYGON],
-  },
+  graphUrls: endpoints,
   totalVolume: {
     factory: "wardenSwaps",
     field: VOLUME_FIELD,
   },
-  hasDailyVolume: false,
+  dailyVolume: {
+    factory: "dayData",
+    field: "volumeUSD",
+    dateField: "date"
+  }
 });
 
 
@@ -37,8 +35,7 @@ const adapter: SimpleVolumeAdapter = {
       ...acc,
       [chain]: {
         fetch: graphs(chain as Chain),
-        start: async () => 1657443314,
-        customBackfill: customBackfill(chain, graphs),
+        start: async () => 1657443314
       }
     }
   }, {} as SimpleVolumeAdapter['volume'])
