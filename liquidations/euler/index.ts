@@ -217,5 +217,3 @@ module.exports = {
     liquidations: positions,
   },
 };
-
-
