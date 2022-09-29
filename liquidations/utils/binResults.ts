@@ -1,17 +1,7 @@
 import axios from "axios";
+import { Liq } from "./types";
 
 export const TOTAL_BINS = 20;
-
-export interface Liq {
-  owner: string;
-  liqPrice: number;
-  collateral: string;
-  collateralAmount: string;
-  extra?: {
-    displayName?: string;
-    url: string;
-  };
-}
 
 export interface Bins {
   [token: string]: {

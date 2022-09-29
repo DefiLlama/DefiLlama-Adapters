@@ -2,6 +2,7 @@ import axios from "axios";
 import BigNumber from "bignumber.js";
 import { gql } from "graphql-request";
 import { getPagedGql } from "./gql";
+import { Prices } from "./types";
 
 export const bignum = (value: string | number) => new BigNumber(value);
 
@@ -31,9 +32,6 @@ export type Account = {
   tokens: CToken[];
   hasBorrowed: boolean;
 };
-
-export type Price = { decimals: number; price: number; symbol: string; timestamp: number; confidence: number };
-export type Prices = { [address: string]: Price };
 
 export const getUnderlyingPrices = async (markets: Market[], chainPrefix: string): Promise<Prices> => {
   const tokens = markets.map((m) => m.underlyingAddress).map((a) => chainPrefix + a.toLowerCase());
