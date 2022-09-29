@@ -29,16 +29,10 @@ async function tvl(ts, block) {
     block, calls: tokenCalls, abi: bVaultAbi.find(i => i.name === 'underlyingBalance')
   })
 
-
-  const data = await sdk.api.abi.call({
-    block, target: '0x378388aa69f3032FA46150221210C7FA70A35153', abi: bVaultAbi.find(i => i.name === 'underlyingBalance')
-  })
-
   const balances = {}
   tokenResponse.forEach(({ input, output }, i) => {
     sdk.util.sumSingleBalance(balances, output, underlyingBalances[i].output || 0)
   })
-  console.log(balances)
   return balances
 }
 
