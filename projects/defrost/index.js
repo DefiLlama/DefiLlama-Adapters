@@ -52,6 +52,7 @@ async function staking(time, ethBlock, chainBlocks){
 
 
 module.exports = {
+  doublecounted: true,
   start: 6965653, 
   avax:{
     tvl: avax,

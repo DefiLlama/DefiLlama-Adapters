@@ -215,7 +215,7 @@ module.exports = {
     staking: stakings([ GROTokenStaker1, GROTokenStaker2 ], GRO),
     tvl,
   },
-  avalanche: {
+  avax:{
     tvl: avaxTvl,
   },
   start: 1622204347, // 28-05-2021 12:19:07 (UTC)

@@ -2,7 +2,7 @@ const sdk = require("@defillama/sdk");
 const { BigNumber } = require("bignumber.js");
 const {compoundExports, getCompoundV2Tvl} = require('../helper/compound')
 const { calculateUniTvl } = require('../helper/calculateUniTvl.js');
-const { fixHarmonyBalances } = require("../helper/portedTokens");
+const { getFixBalancesSync } = require("../helper/portedTokens");
 
 const tqOne = "0x34B9aa82D89AE04f0f546Ca5eC9C93eFE1288940"; // tqONE
 const wOne = "0xcf664087a5bb0237a0bad6742852ec6c8d69a27a";
@@ -89,7 +89,7 @@ async function swapTvl(timestamp, ethBlock, chainBlocks) {
       0,
       true
   );
-  fixHarmonyBalances(balances);
+  getFixBalancesSync('harmony')(balances);
   return balances;
 }
 
@@ -147,4 +147,7 @@ module.exports = {
      pool2: pool2,
      staking: staking,
   },
+  hallmarks:[
+    [1655991120, "Horizon bridge Hack $100m"],
+  ],
 };

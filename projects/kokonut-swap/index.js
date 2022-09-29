@@ -31,7 +31,12 @@ async function tvl(timestamp, block, chainBlocks) {
   const gasToken = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'.toLowerCase()
   const tokenSet = new Set()
 
-  for (const { output: poolInfo } of info.output) {
+  for (const data of info.output) {
+    const { output: poolInfo, input: { params } } = data
+    if (!poolInfo)  {
+      console.log('pool info missing for ', params)
+      continue;
+    }
     for (let token of poolInfo.tokens) {
       token = token.toLowerCase()
       if (token !== gasToken) tokenSet.add(token)
@@ -49,6 +54,7 @@ async function tvl(timestamp, block, chainBlocks) {
 
 
   for (const { output: poolInfo } of info.output) {
+    if (!poolInfo) continue;
     for (let j = 0; j < poolInfo.tokens.length;j++) {
       const token = poolInfo.tokens[j].toLowerCase()
       const decimal = token === gasToken ? 18 : tokenMapping[token]
