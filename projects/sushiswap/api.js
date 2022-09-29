@@ -3,7 +3,8 @@ const { toUSDTBalances } = require('../helper/balances');
 const { getBlock } = require('../helper/getBlock')
 const { getUniTVL } = require("../helper/unknownTokens")
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const sdk = require('@defillama/sdk')
+const sdk = require('@defillama/sdk');
+const { getChainTransform } = require("../helper/portedTokens");
 
 const graphUrl = 'https://api.thegraph.com/subgraphs/name/zippoxer/sushiswap-subgraph-fork'
 const graphQuery = gql`
@@ -188,7 +189,7 @@ module.exports = {
     })
   },
   kava: {
-    tvl: kavaTvl,
+    tvl: kavaTridentTvl,
   },
 }
 
@@ -197,34 +198,41 @@ module.exports.bsc.tvl = getChainTVL('bsc')
 module.exports.fantom.tvl = getChainTVL('fantom')
 module.exports.harmony.tvl = getChainTVL('harmony')
 
-async function kavaTvl(ts, _b, cb) {
+async function kavaTridentTvl(ts, _b, cb) {
   const chain = 'kava'
   const graph = 'https://pvt.graph.kava.io/subgraphs/name/sushiswap/trident-kava'
   const query = `query get_tvl($block: Int){
-    pairs(
-      block: { number: $block }
-      size: 1000
-    ){
-      id
-      name
-      type
-      reserve0
-      reserve1
-      token0 {
+      pairs(
+        block: { number: $block }
+        size: 1000
+      ){
         id
+        name
+        type
+        reserve0
+        reserve1
+        token0 {
+          id
+        }
+        token1 {
+          id
+        }
       }
-      token1 {
-        id
-      }
-    }
   }`
   const block = await getBlock(ts, chain, cb, false)
   const { pairs } = await request(graph, query, {
     block: block - 100,
   })
-  const bentoBox = '0xc35DADB65012eC5796536bD9864eD8773aBc74C4'
-  const tokens = pairs.map(i => ( [i.token0.id, i.token1.id])).flat()
-  return sumTokens2({
-    chain, block, owner: bentoBox, tokens: [...new Set(tokens)]
-  })
+  // const bentoBox = '0xc35DADB65012eC5796536bD9864eD8773aBc74C4'
+  const balances = {}
+  const transform = await getChainTransform(chain)
+  pairs.forEach(i => {
+    sdk.util.sumSingleBalance(balances, transform(i.token0.id), i.reserve0)
+    sdk.util.sumSingleBalance(balances, transform(i.token1.id), i.reserve1)
+  } )
+  return balances
+}
+
+module.exports = {
+  kava: { tvl: kavaTridentTvl }
 }
