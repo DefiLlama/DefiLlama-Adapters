@@ -28,7 +28,7 @@ const CONTRACTS = {
 };
 
 function getTVLFunc(contractAddress, chain) {
-  return async function (timestamp, block) {
+  return async function (timestamp, _, { [chain]: block }) {
     const tokens = await getTokens(contractAddress, chain);
     return sumTokens2({ owner: contractAddress, tokens, blacklistedTokens: [CONTRACTS[chain].RAIL], chain, block, })
   }

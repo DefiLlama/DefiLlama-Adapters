@@ -1,7 +1,7 @@
 import { Chain } from "@defillama/sdk/build/general";
 import { BigNumber } from "ethers";
 import { request, gql } from "graphql-request";
-import { getBlock } from "../../projects/helper/getBlock";
+import { getBlock } from "./getBlock"
 
 const UNIT = BigNumber.from("1000000000000000000");
 const ONE_DAY_IN_SECONDS = 60 * 60 * 24;
@@ -107,6 +107,8 @@ function getChainVolume({ graphUrls, timestamp }: IGetChainVolumeParams) {
 
       return {
         timestamp,
+        dailyVolume: totalVolumeSum.notional - prevDayVolumeSum.notional,
+        totalVolume: totalVolumeSum.notional,
         totalPremiumVolume: totalVolumeSum.premium,
         totalNotionalVolume: totalVolumeSum.notional,
         dailyPremiumVolume: totalVolumeSum.premium - prevDayVolumeSum.premium,

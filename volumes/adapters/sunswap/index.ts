@@ -1,4 +1,5 @@
 const { fetchURL } = require("../../helper/utils");
+import { Chain } from "@defillama/sdk/build/general";
 import { SimpleVolumeAdapter } from "../../dexVolume.type";
 import { CHAIN } from "../../helper/chains";
 import customBackfill from "../../helper/customBackfill";
@@ -39,7 +40,7 @@ const adapter: SimpleVolumeAdapter = {
     [CHAIN.TRON]: {
       fetch,
       start: getStartTimestamp,
-      customBackfill: customBackfill(CHAIN.TRON, (_chian: string) => fetch)
+      customBackfill: customBackfill(CHAIN.TRON as Chain, (_chian: string) => fetch)
     },
   },
 };
