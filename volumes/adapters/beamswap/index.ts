@@ -26,10 +26,14 @@ const v1graphs = getChainVolume({
     [CHAIN.MOONBEAN]: "https://api.thegraph.com/subgraphs/name/beamswap/beamswap-stable-amm",
   },
   totalVolume: {
-    factory: "dailyVolumes",
+    factory: "tradeVolumes",
     field: "volume",
   },
-  hasDailyVolume: false,
+  dailyVolume: {
+    factory: "dailyVolume",
+    field: "volume",
+    dateField: "timestamp"
+  }
 });
 
 const adapter: BreakdownVolumeAdapter = {
