@@ -85,6 +85,7 @@ import spartacusExchange from "./adapters/spartacus-exchange";
 import beamswap from "./adapters/beamswap";
 import openleverage from "./adapters/openleverage";
 import ubeswap from "./adapters/ubeswap";
+import mobiusMoney from "./adapters/mobius-money";
 
 export default {
   mooniswap,
@@ -171,6 +172,7 @@ export default {
   "spartacus-exchange" : spartacusExchange,
   beamswap,
   openleverage,
-  ubeswap
+  ubeswap,
+  "mobius-money": mobiusMoney
   // lyra -> OPTIONS DEX, not enable for now
 };
