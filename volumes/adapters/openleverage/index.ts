@@ -5,7 +5,6 @@ import { CHAIN } from "../../helper/chains";
 import customBackfill, { IGraphs } from "../../helper/customBackfill";
 import { getUniqStartOfTodayTimestamp } from "../../helper/getUniSubgraphVolume";
 
-
 type TEndoint = {
   [chain: string | Chain]: string;
 };
