@@ -25,6 +25,12 @@ Object.keys(config).forEach((chain) => {
         block,
         blacklistedTokens,
       });
+      const alETH = '0x0100546f2cd4c9d97f798ffc9755e47865ff7ee6'
+      if (chain === 'ethereum' && balances[alETH]) {
+        // alETH -> ETH
+        sdk.util.sumSingleBalance(balances, '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', balances[alETH])
+        delete balances[alETH]
+      }
       const fixBalances = await getFixBalances(chain);
       fixBalances(balances);
       return balances;
