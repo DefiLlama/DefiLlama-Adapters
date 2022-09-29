@@ -44,7 +44,7 @@ async function tvl(timestamp, block, chainBlocks, network, chainId, transform) {
         ])
     }
 
-    await sumTokens(balances, tokenPairs, block, network, transform)
+    await sumTokens(balances, tokenPairs, chainBlocks[network], network, transform)
 
     return balances;
 }
@@ -81,4 +81,4 @@ module.exports = {
     arbitrum: {
         tvl: arbitrumTVL
     }
-};
+}
