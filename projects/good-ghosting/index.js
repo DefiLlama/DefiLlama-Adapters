@@ -9,6 +9,16 @@ const chainIdMap = {
   celo: 42220,
 };
 
+const ContractVersion = {
+  v200: ["2.0.0", "2.0.1"],
+  v001: "0.0.1",
+  v002: "0.0.2",
+  v003: "0.0.3",
+};
+
+const isV2Game = (contractVersion) =>
+  ContractVersion.v200.includes(contractVersion);
+
 function tvl(chain) {
   return async (timestamp, ethBlock, chainBlocks) => {
     const gameData = await axios.get(apiUrl).then((resp) => resp.data);
@@ -24,7 +34,9 @@ function tvl(chain) {
           params: [game.id],
         },
         {
-          target: game.liquidityTokenAddress,
+          target: isV2Game(game.contractVersion)
+            ? game.strategyController
+            : game.liquidityTokenAddress,
           params: [game.id],
         },
       ])
@@ -36,7 +48,12 @@ function tvl(chain) {
       chain,
     });
 
-    sdk.util.sumMultiBalanceOf(balances, gameContractBalances, false, transform);
+    sdk.util.sumMultiBalanceOf(
+      balances,
+      gameContractBalances,
+      false,
+      transform
+    );
 
     //fix decimal issue with celo tokens
     for (const representation of ["celo-dollar", "celo", "celo-euro"]) {
@@ -60,4 +77,4 @@ module.exports = {
   celo: {
     tvl: tvl("celo"),
   },
-}
+};
