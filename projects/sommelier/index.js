@@ -64,7 +64,8 @@ async function tvl(timestamp, block, chainBlocks) {
 module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
-  methodology: "Sum up total assets ",
+  methodology:
+    "Sum assets deposited but uninvested, assets deployed to AAVE, and yield collected from AAVE",
   start: 1656652494,
   hallmarks: [],
   [chain]: { tvl },
