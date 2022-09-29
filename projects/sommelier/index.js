@@ -10,7 +10,7 @@ async function tvl(timestamp, block, chainBlocks) {
   // TVL for the AAVE Cellar is the sum of:
   // totalAssets (assets invested into aave)
   // totalHoldings (assets deposited into the strategy but uninvested)
-  // maxLocked (yield waiting to be distributed and reinvested)
+  // maxLocked (yield waiting to be distributed and reinvestedt gi)
   const totalAssets = (
     await sdk.api.abi.call({
       chain,
@@ -38,7 +38,8 @@ async function tvl(timestamp, block, chainBlocks) {
     })
   ).output;
 
-  // asset is the underlying ERC20 the cellar is invested in
+  // Asset is the underlying ERC20 the cellar is invested in and is accepted for deposit
+  // This can change as the cellar chases the AAVE pool with the highest yield
   const assetAddress = (
     await sdk.api.abi.call({
       chain,
