@@ -1,5 +1,5 @@
 import { gql, request } from "graphql-request";
-import { Liq } from "../utils/binResults";
+import { Liq } from "../utils/types";
 import { getPagedGql } from "../utils/gql";
 
 const query = gql`

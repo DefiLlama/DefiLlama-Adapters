@@ -4,7 +4,7 @@ import { ethers } from "ethers";
 import { providers } from "../utils/ethers";
 import BigNumber from "bignumber.js";
 import { getPagedGql } from "../utils/gql";
-import { Liq } from "../utils/binResults";
+import { Liq } from "../utils/types";
 
 const subgraphUrl = "https://api.thegraph.com/subgraphs/name/picodes/borrow";
 
