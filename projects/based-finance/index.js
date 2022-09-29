@@ -1,9 +1,6 @@
 const sdk = require("@defillama/sdk");
-const { mergeExports } = require('../helper/utils')
-const { sumTokens2, } = require("../helper/unwrapLPs");
+const { unwrapCrv, unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { staking } = require("../helper/staking");
-const basedV2Exports = require('./basedV2')
-const chain = 'fantom'
 
 const bshareRewardPoolAddress = "0xac0fa95058616d7539b6eecb6418a68e7c18a746";
 const acropolisAddress = "0xe5009dd5912a68b0d7c6f874cd0b4492c9f0e5cd";
@@ -51,18 +48,125 @@ const treasuryTokens = [
   usdcAddress,
   usdtAddress,
   wftmAddress,
-  // basedTokenAddress,
-  // bshareTokenAddress,
+  basedTokenAddress,
+  bshareTokenAddress,
   tshareAddress,
   maiAddress,
 ];
 
-async function pool2(_, _b, {fantom: block }) {
-  return sumTokens2({ owner: bshareRewardPoolAddress, tokens: poolLPs, block, chain, })
+async function calcPool2(rewardPool, lps, block, chain) {
+  let balances = {};
+  const lpBalances = (
+    await sdk.api.abi.multiCall({
+      calls: lps.map((p) => ({
+        target: p,
+        params: rewardPool,
+      })),
+      abi: "erc20:balanceOf",
+      block,
+      chain,
+    })
+  ).output;
+
+  let lpPositions = [];
+  lpBalances.slice(0, 6).forEach((p) => {
+    lpPositions.push({
+      balance: p.output,
+      token: p.input.target,
+    });
+  });
+
+  await unwrapUniswapLPs(
+    balances,
+    lpPositions,
+    block,
+    chain,
+    (addr) => `${chain}:${addr}`
+  );
+
+  await unwrapCrv(
+    balances,
+    g3CrvAddress,
+    lpBalances[6].output,
+    block,
+    chain,
+    (addr) => `${chain}:${addr}`
+  );
+
+  await unwrapCrv(
+    balances,
+    crv3CryptoAddress,
+    lpBalances[7].output,
+    block,
+    chain,
+    (addr) => `${chain}:${addr}`
+  );
+
+  return balances;
 }
 
-async function treasury(_, _b, { fantom: block }) {
-  return sumTokens2({ owner: treasuryAddress, tokens: treasuryTokens, block, chain, })
+async function calcTreasury(treasury, tokens, block, chain) {
+  let balances = {};
+
+  const tokenBalances = (
+    await sdk.api.abi.multiCall({
+      calls: tokens.map((p) => ({
+        target: p,
+        params: treasury,
+      })),
+      abi: "erc20:balanceOf",
+      block,
+      chain,
+    })
+  ).output;
+
+  let lpPositions = [];
+  tokenBalances.slice(0, 4).forEach((p) => {
+    lpPositions.push({
+      balance: p.output,
+      token: p.input.target,
+    });
+  });
+
+  await unwrapUniswapLPs(
+    balances,
+    lpPositions,
+    block,
+    chain,
+    (addr) => `${chain}:${addr}`
+  );
+
+  await unwrapCrv(
+    balances,
+    g3CrvAddress,
+    tokenBalances[4].output,
+    block,
+    chain,
+    (addr) => `${chain}:${addr}`
+  );
+
+  await unwrapCrv(
+    balances,
+    crv3CryptoAddress,
+    tokenBalances[5].output,
+    block,
+    chain,
+    (addr) => `${chain}:${addr}`
+  );
+
+  tokenBalances.slice(6).forEach((balance) => {
+    sdk.util.sumSingleBalance(balances, `${chain}:${balance.input.target}`, balance.output);
+  });
+
+  return balances;
+}
+
+async function pool2(timestamp, block, chainBlocks) {
+  return await calcPool2(bshareRewardPoolAddress, poolLPs, chainBlocks.fantom, "fantom");
+}
+
+async function treasury(timestamp, block, chainBlocks) {
+  return await calcTreasury(treasuryAddress, treasuryTokens, chainBlocks.fantom, "fantom");  
 }
 
 module.exports = {
@@ -75,8 +179,4 @@ module.exports = {
   },
 };
 
-module.exports = mergeExports([module.exports, basedV2Exports, ])
-
-module.exports.hallmarks = [
-  [Math.floor(new Date('2022-09-30')/1e3), 'Added Based V2'],
-]
+// node test.js projects/based-finance/index.js
