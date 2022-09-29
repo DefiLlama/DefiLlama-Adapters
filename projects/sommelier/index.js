@@ -10,7 +10,7 @@ async function tvl(timestamp, block, chainBlocks) {
   // TVL for the AAVE Cellar is the sum of:
   // totalAssets (assets invested into aave)
   // totalHoldings (assets deposited into the strategy but uninvested)
-  // totalLocked (yield waiting to be distributed to shareholders)
+  // maxLocked (yield waiting to be distributed and reinvested)
   const totalAssets = (
     await sdk.api.abi.call({
       chain,
@@ -29,10 +29,10 @@ async function tvl(timestamp, block, chainBlocks) {
     })
   ).output;
 
-  const totalLocked = (
+  const maxLocked = (
     await sdk.api.abi.call({
       chain,
-      abi: abiCellarAave.totalLocked,
+      abi: abiCellarAave.maxLocked,
       target: CELLAR_AAVE,
       block: chainBlocks[chain],
     })
@@ -55,7 +55,7 @@ async function tvl(timestamp, block, chainBlocks) {
     `${chain}:${assetAddress}`,
     totalHoldings
   );
-  sdk.util.sumSingleBalance(balances, `${chain}:${assetAddress}`, totalLocked);
+  sdk.util.sumSingleBalance(balances, `${chain}:${assetAddress}`, maxLocked);
 
   return balances;
 }
