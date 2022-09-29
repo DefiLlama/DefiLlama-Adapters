@@ -41,5 +41,5 @@ module.exports = {
   start: 1664074800,
   timetravel: true,
   methodology:
-    "Total deposits of ETH and wBTC for borrowed DCHF, Collateral Stability Pools and Moneta Staking Pool ",
+    "Total deposits of ETH and wBTC for borrowed DCHF.",
 };
