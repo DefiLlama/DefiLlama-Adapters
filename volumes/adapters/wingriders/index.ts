@@ -1,6 +1,7 @@
 import axios from "axios"
 import BigNumber from "bignumber.js";
 import { VolumeAdapter } from "../../dexVolume.type"
+import { CHAIN } from "../../helper/chains";
 
 const volUrl = 'https://aggregator.mainnet.wingriders.com/volumeInAda';
 
@@ -28,7 +29,7 @@ async function fetchVolume() {
 
 export default {
     volume: {
-        "cardano": {
+        [CHAIN.CARDADO]: {
             fetch: fetchVolume,
             runAtCurrTime: true,
             start: async () => 0,
