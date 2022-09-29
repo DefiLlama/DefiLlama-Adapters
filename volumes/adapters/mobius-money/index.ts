@@ -14,7 +14,11 @@ const graphs = getChainVolume({
     factory: "tradeVolumes",
     field: "volume",
   },
-  hasDailyVolume: false,
+  dailyVolume: {
+    factory: "dailyVolumes",
+    field: "volume",
+    dateField: "timestamp"
+  },
 });
 
 const adapter: SimpleVolumeAdapter = {
@@ -22,7 +26,7 @@ const adapter: SimpleVolumeAdapter = {
     [CHAIN.CELO]: {
       fetch: graphs(CHAIN.CELO),
       start: async () => 1636514733,
-      customBackfill: customBackfill(CHAIN.CELO as Chain, graphs)
+      // customBackfill: customBackfill(CHAIN.CELO as Chain, graphs)
     },
   },
 };

@@ -27,6 +27,7 @@ const DEFAULT_TOTAL_VOLUME_FIELD = "totalVolumeUSD";
 
 const DEFAULT_DAILY_VOLUME_FACTORY = "uniswapDayData";
 const DEFAULT_DAILY_VOLUME_FIELD = "dailyVolumeUSD";
+const DEFAULT_DAILY_DATE_FIELD = "date";
 
 interface IGetChainVolumeParams {
   graphUrls: {
@@ -38,7 +39,8 @@ interface IGetChainVolumeParams {
   },
   dailyVolume?: {
     factory: string,
-    field: string
+    field: string,
+    dateField?: string,
   },
   customDailyVolume?: string,
   hasDailyVolume?: boolean
@@ -55,6 +57,7 @@ function getChainVolume({
   dailyVolume = {
     factory: DEFAULT_DAILY_VOLUME_FACTORY,
     field: DEFAULT_DAILY_VOLUME_FIELD,
+    dateField: DEFAULT_DAILY_DATE_FIELD
   },
   customDailyVolume = undefined,
   hasDailyVolume = true,
@@ -77,9 +80,9 @@ function getChainVolume({
       }`;
 
   const alternativeDaily = (timestamp: number) => gql`{
-      ${dailyVolume.factory}(where: {date: ${timestamp}}) {
-          date
-          dailyVolumeUSD
+      ${dailyVolume.factory}(where: {${dailyVolume.dateField}: ${timestamp}}) {
+          ${dailyVolume.dateField}
+          ${dailyVolume.field}
       }
   }`;
 
@@ -97,8 +100,9 @@ function getChainVolume({
       let graphResDaily = hasDailyVolume ? await request(graphUrls[chain], graphQueryDailyVolume, { id }).catch(e => console.error(`Failed to get daily volume on ${chain}: ${e.message}`)) : undefined;
       let dailyVolumeValue = graphResDaily ? graphResDaily[dailyVolume.factory]?.[dailyVolume.field] : undefined
       if (hasDailyVolume && !dailyVolumeValue) {
-        graphResDaily = await request(graphUrls[chain], alternativeDaily(getUniqStartOfTodayTimestamp(new Date(timestamp * 1000)))).catch(e => console.error(`Failed to get daily volume via alternative query on ${chain}: ${e.message}`))
-        dailyVolumeValue = graphResDaily ? graphResDaily['uniswapDayDatas']?.[0]?.dailyVolumeUSD : undefined
+        graphResDaily = await request(graphUrls[chain], alternativeDaily(getUniqStartOfTodayTimestamp(new Date(timestamp * 1000)))).catch(e => console.error(`Failed to get daily volume via alternative query on ${chain}: ${e.message}`));
+        const factory = dailyVolume.factory.toLowerCase().charAt(dailyVolume.factory.length - 1) === 's' ? dailyVolume.factory : `${dailyVolume.factory}s`
+        dailyVolumeValue =  graphResDaily ? graphResDaily[`${factory}`].reduce((p: any, c: any) => p + Number(c[`${dailyVolume.field}`]), 0) : undefined;
       }
 
       return {
@@ -131,6 +135,7 @@ const graphs = getChainVolume({
   dailyVolume: {
     factory: dayData,
     field: dailyVolume,
+    dateField: dailyVolumeTimestampField
   },
 });
 
