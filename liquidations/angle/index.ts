@@ -64,7 +64,7 @@ const EXPLORER_BASE_URL = "https://etherscan.io/address/"
 const positions = async () => {
   const vaultData: any[] = await getVaultData();
 
-  const positions : {owner: string, collateral: string, collateralAmount: number, liquidationPrice: number, extra: any}[] = [];
+  const positions : {owner: string, liquidationPrice: number, collateral: string, collateralAmount: string, extra: any}[] = [];
   for (const vault of vaultData) {
     const owner = vault.owner;
     var collateral = vault.vaultManager.collateral;
@@ -83,7 +83,7 @@ const positions = async () => {
     positions.push({
       owner: owner, 
       liquidationPrice: liquidationPrice,
-      collateral: collateral, 
+      collateral: "ethereum:" + collateral, 
       collateralAmount: collateralAmount, 
       extra: {
         url: EXPLORER_BASE_URL + owner,
@@ -100,11 +100,3 @@ module.exports = {
     liquidations: positions,
   },
 };
-
-
-
-/*
-positions().then(vaultData => {
-    console.log(vaultData);
-});
-*/
