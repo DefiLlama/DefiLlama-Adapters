@@ -1,7 +1,7 @@
 import { gql } from "graphql-request";
 import { getPagedGql } from "../utils/gql";
 import BigNumber from "bignumber.js";
-import { Liq } from "../utils/binResults";
+import { Liq } from "../utils/types";
 import {
   Account,
   borrowBalanceUnderlying,
@@ -69,7 +69,7 @@ const positions = async () => {
         const _supplyBalanceUnderlying = supplyBalanceUnderlying(token);
         const _price = prices["ethereum:" + token.market.underlyingAddress];
         if (!_price) {
-          console.log("no price for", "ethereum:" + token.market.underlyingAddress);
+          // console.log("no price for", "ethereum:" + token.market.underlyingAddress);
           return {
             debt: new BigNumber(0),
             price: 0,

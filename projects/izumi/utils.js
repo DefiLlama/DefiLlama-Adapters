@@ -119,18 +119,19 @@ async function unwrapiZiswapV3NFTs({ balances = {}, nftsAndOwners = [], block, c
       return balances
     }
 
+    
     for(let i=0; i<Object.keys(owners).length; i++){
-      type = Object.keys(owners)[i]
+      let type = Object.keys(owners)[i]
       if(!owners[type] || owners[type].length == 0){
         continue}
       else if(type == 'fix'){
-        ownersUni = getUniqueAddresses(owners[type])
-        nftsAndOwners = ownersUni.map(o => [nftAddress, o])
+        let ownersUni = getUniqueAddresses(owners[type])
+        let nftsAndOwners = ownersUni.map(o => [nftAddress, o])
         await Promise.all(nftsAndOwners.map(([nftAddress, owner]) => unwrapiZiswapFixNFT({ balances, owner, nftAddress, block, chain, transformAddress })))
       }
       else if(type == 'dynamic'){
-        ownersUni = getUniqueAddresses(owners[type])
-        nftsAndOwners = ownersUni.map(o => [nftAddress, o])
+        let ownersUni = getUniqueAddresses(owners[type])
+        let nftsAndOwners = ownersUni.map(o => [nftAddress, o])
         await Promise.all(nftsAndOwners.map(([nftAddress, owner]) => unwrapiZiswapDynamicNFT({ balances, owner, nftAddress, block, chain, transformAddress })))
       }
     }
@@ -156,7 +157,7 @@ async function unwrapiZiswapFixNFT({ balances, owner, nftAddress, block, chain =
   })).output
   const state = (await sdk.api.abi.call({target: poolInfo, abi: abi.state, block, chain})).output
 
-  params = {
+  let params = {
     miningInfo: miningInfo,
     state: state,
     totalNIZI: totalNIZI,
@@ -200,7 +201,7 @@ async function checkAndFixToken(balances, chain){
           ),
           sdk.api.erc20.decimals(token.address, chain)
         ]);
-        amount = balances[token.address.toLowerCase()] ? balances[token.address.toLowerCase()] : balances[`${chain}:${token.address.toLowerCase()}`]
+        let amount = balances[token.address.toLowerCase()] ? balances[token.address.toLowerCase()] : balances[`${chain}:${token.address.toLowerCase()}`]
         if (!amount) {
           return;
         }

@@ -1,71 +1,20 @@
-const sdk = require("@defillama/sdk");
-
-const { transformBscAddress } = require("../helper/portedTokens");
-const getReserves = require("../helper/abis/getReserves.json");
+const { staking } = require('../helper/staking');
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const BUSD_ADDRESS = "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56";
-
+const gHECTA = '0x7d31ed03c2442f9ffc4f22d90772ee1f32fa9b0d'
+const chain = 'bsc'
 const HECTA_ADDRESS = "0x343915085b919fbd4414F7046f903d194c6F60EE";
 const TREASURY_ADDRESS = "0x4059c4a0b8a2B528C4f2E101A3bB8fB169aBa4fB";
 const HECTA_BUSD_ADDRESS = "0xc7cee4cea7c76e11e9f5e5e5cbc5e3b798a1c4d0";
 
-async function TreasuryTvl(timestamp, block, chainBlocks) {
-  const balances = {};
-  const transform = await transformBscAddress();
-
-  const [busdBalance, hectaBalance, hectaBusdBalance] = await Promise.all([
-    sdk.api.abi.call({
-      abi: "erc20:balanceOf",
-      chain: "bsc",
-      target: BUSD_ADDRESS,
-      params: [TREASURY_ADDRESS],
-      block: chainBlocks["bsc"],
-    }),
-    sdk.api.abi.call({
-      abi: "erc20:balanceOf",
-      chain: "bsc",
-      target: HECTA_ADDRESS,
-      params: [TREASURY_ADDRESS],
-      block: chainBlocks["bsc"],
-    }),
-    sdk.api.abi.call({
-      abi: "erc20:balanceOf",
-      chain: "bsc",
-      target: HECTA_BUSD_ADDRESS,
-      params: [TREASURY_ADDRESS],
-      block: chainBlocks["bsc"],
-    }),
-  ]);
-
-  sdk.util.sumSingleBalance(
-    balances,
-    transform(BUSD_ADDRESS),
-    busdBalance.output
-  );
-
-  sdk.util.sumSingleBalance(
-    balances,
-    transform(HECTA_ADDRESS),
-    hectaBalance.output
-  );
-
-  sdk.util.sumSingleBalance(
-    balances,
-    transform(HECTA_BUSD_ADDRESS),
-    hectaBusdBalance.output
-  );
-
-  return balances;
-}
-
 module.exports = {
   timetravel: true,
-  misrepresentedTokens: false,
   methodology:
-    "Total Value Lock in Hectagon protocol is calculated by sum of: Treasury locked value + staking",
+    "Total Value Lock in Hectagon protocol is calculated by sum of: Treasury locked value",
   start: 20195418,
   bsc: {
-    tvl: ()=>({}),
-    treasury: TreasuryTvl,
+    tvl: (_, _b, {[chain]: block}) => sumTokens2({ chain, block, owner: TREASURY_ADDRESS, tokens: [HECTA_BUSD_ADDRESS, BUSD_ADDRESS,]}),
+    staking: staking(gHECTA, HECTA_ADDRESS, chain),
   },
 };

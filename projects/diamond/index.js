@@ -25,7 +25,7 @@ const ARB_USDC = "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8";
 
 async function ethTvl(block) {
   return {
-    [WETH]: (
+    'ethereum:0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2': (
       await sdk.api.abi.call({
         target: ETH_BULL_VAULT,
         block,
@@ -134,7 +134,7 @@ async function arbTvl(block) {
 
   return {
     [transform(ARB_WETH)]: balanceOfPool,
-    [transform(ARB_USDC)]:
+    ['ethereum:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48']:
       balanceOfFactory + positionValue + balanceOfFarm + balanceOfFarmAction,
   };
 }

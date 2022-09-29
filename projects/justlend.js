@@ -2,7 +2,8 @@ const retry = require('./helper/retry');
 const axios = require('axios');
 const { toUSDTBalances } = require('./helper/balances');
 
-async function core() {
+function core(borrowed){
+return async () => {
   const response = (
     await retry(
       async (bail) => await axios.get(
@@ -12,21 +13,9 @@ async function core() {
 
   const tvl = response.totalDepositedUSD - response.totalBorrowedUSD;
 
-  return toUSDTBalances(tvl);
+  return toUSDTBalances(borrowed? response.totalBorrowedUSD : tvl);
 };
-
-async function historical() {
-  const response = (
-    await retry(
-      async (bail) => await axios.get(
-        'https://labc.ablesdxd.link/justlend/markets/dashboard')
-    )
-  ).data.data;
-
-  const tvl = response.totalDepositedUSD - response.totalBorrowedUSD;
-
-  return toUSDTBalances(tvl);
-};
+}
 
 // node test.js projects/justlend.js
 async function pool2() {
@@ -38,11 +27,11 @@ async function pool2() {
   ).data;
 
   const justLend = (response.projects.filter(
-    p => p.project == "JustLend"))[0];
+    p => p.project == "JustLend DAO"))[0];
 
-  const coreTVL = await core();
+  const coreTVL = await (core())(false);
 
-  if (coreTVL > 0) {
+  if (coreTVL['0xdac17f958d2ee523a2206206994597c13d831ec7'] > 0) {
     return justLend.locked - coreTVL;
   } else {
     return 0;
@@ -51,7 +40,8 @@ async function pool2() {
 module.exports = {
   misrepresentedTokens: true,
   tron: {
-    tvl: core,
-    pool2,
+    tvl: core(false),
+    borrowed: core(true),
+    //pool2,
   },
 };
