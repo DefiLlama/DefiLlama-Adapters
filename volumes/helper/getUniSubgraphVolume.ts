@@ -80,7 +80,7 @@ function getChainVolume({
       }`;
 
   const alternativeDaily = (timestamp: number) => gql`{
-      ${dailyVolume.factory}(where: {${dailyVolume.dateField}: ${timestamp}}) {
+      ${dailyVolume.factory}s(where: {${dailyVolume.dateField}: ${timestamp}}) {
           ${dailyVolume.dateField}
           ${dailyVolume.field}
       }
