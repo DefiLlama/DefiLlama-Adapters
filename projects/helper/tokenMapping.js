@@ -472,6 +472,10 @@ const fixBalancesTokens = {
   arbitrum: {
     "0x93C15cd7DE26f07265f0272E0b831C5D7fAb174f": { coingeckoId: "liquid-finance", decimals: 18, },
   },
+  functionx: {
+    [nullAddress]: { coingeckoId: "fx-coin", decimals: 18 },
+    "0x80b5a32E4F032B2a058b4F29EC95EEfEEB87aDcd": { coingeckoId: "fx-coin", decimals: 18, },
+  },
   clv: {
     "0x1376C97C5c512d2d6F9173A9A3A016B6140b4536": { coingeckoId: "clover-finance", decimals: 18, },
     "0xA1c3767c93E7B51EcB445fDbae1494DfC654e524": { coingeckoId: "ethereum", decimals: 18, },
