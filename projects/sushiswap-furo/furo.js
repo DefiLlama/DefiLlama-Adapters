@@ -96,5 +96,5 @@ function furo(chain) {
 
 module.exports = {
   furo,
-  methodology: `TVL of Furo is consists of tokens deployed into a Stream or a Vesting sitting in BentoBox.`,
+  methodology: `TVL of Furo consists of tokens deployed into a Stream or a Vesting sitting in BentoBox.`,
 };
