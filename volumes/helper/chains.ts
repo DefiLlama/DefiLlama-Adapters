@@ -29,7 +29,8 @@ export enum CHAIN {
   ENERGI = "energi",
   VELAS = "velas",
   ELASTOS = "elastos",
-  TEZOS = "tezos"
+  TEZOS = "tezos",
+  METIS = "metis"
 }
 
 // Don´t use
