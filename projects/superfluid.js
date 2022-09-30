@@ -39,14 +39,14 @@ query get_supertokens($block: Int) {
 
 const nullAddress = '0x0000000000000000000000000000000000000000'
 
-const whitelistedTokens = ['USDC', 'USDT','DAI', 'WETH', 'WFTM', 'WGLMR', 'WBNB', 'WAVAX', 'JCHF', 'JEUR', 'WBTC', 'AGDAI', 'JPYC', 'MIMATIC', 'WXDAI', 'EURS', 'JGBP', 'CNT', 'USD+', 'AMUSDC', 'RAI', 'SLP' ]
+const whitelistedTokens = ['USDC', 'USDT','DAI', 'WETH', 'WFTM', 'WGLMR', 'WBNB', 'WAVAX', 'JCHF', 'JEUR', 'WBTC', 'AGDAI', 'JPYC', 'MIMATIC', 'WXDAI', 'EURS', 'JGBP', 'CNT', 'USD+', 'AMUSDC', 'RAI', 'SLP', 'SDAM3CRV','AMDAI' ]
 // Main function for all chains to get balances of superfluid tokens
 async function getChainBalances(allTokens, chain, block) {
   // Init empty balances
   let balances = {};
 
   allTokens = allTokens.filter(({ underlyingAddress, underlyingToken = {}, symbol, }) => 
-  underlyingAddress === nullAddress || whitelistedTokens.includes(underlyingToken.symbol) 
+  underlyingAddress === nullAddress || whitelistedTokens.includes((underlyingToken.symbol || '').toUpperCase()) 
   ).filter(({ id }) => !tokensNativeToSidechain.includes(id.toLowerCase()))
 
   // Abi MultiCall to get supertokens supplies
@@ -118,7 +118,6 @@ async function polygon(timestamp, block, chainBlocks) {
 async function xdai(timestamp, block, chainBlocks) {
   return retrieveSupertokensBalances('xdai', timestamp, block, chainBlocks)
 }
-
 
 module.exports = {
   hallmarks: [
