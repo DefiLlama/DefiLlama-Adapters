@@ -1,7 +1,7 @@
 const { furo } = require("./furo.js");
 
 const modulesToExport = {};
-const kashi_chains = [
+const furo_chains = [
   "ethereum",
   "polygon",
   "fantom",
@@ -15,7 +15,7 @@ const kashi_chains = [
   "moonriver",
 ];
 
-kashi_chains.forEach((chain) => {
+furo_chains.forEach((chain) => {
   modulesToExport[chain] = {
     tvl: furo(chain),
   };
