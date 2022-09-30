@@ -24,6 +24,7 @@ query get_supertokens($block: Int) {
     underlyingToken {
       name
       decimals
+      symbol
       id
     }
     symbol
@@ -36,10 +37,17 @@ query get_supertokens($block: Int) {
 `;
 // An upcoming superfluid graphql subgraph will be published soon and provide token supplies. 
 
+const nullAddress = '0x0000000000000000000000000000000000000000'
+
+const whitelistedTokens = ['USDC', 'USDT','DAI', 'WETH', 'WFTM', 'WGLMR', 'WBNB', 'WAVAX', 'JCHF', 'JEUR', 'WBTC', 'AGDAI', 'JPYC', 'MIMATIC', 'WXDAI', 'EURS', 'JGBP', 'CNT', 'USD+', 'AMUSDC', 'RAI', 'SLP' ]
 // Main function for all chains to get balances of superfluid tokens
 async function getChainBalances(allTokens, chain, block) {
   // Init empty balances
   let balances = {};
+
+  allTokens = allTokens.filter(({ underlyingAddress, underlyingToken = {}, symbol, }) => 
+  underlyingAddress === nullAddress || whitelistedTokens.includes(underlyingToken.symbol) 
+  ).filter(({ id }) => !tokensNativeToSidechain.includes(id.toLowerCase()))
 
   // Abi MultiCall to get supertokens supplies
   const { output: supply } = await sdk.api.abi.multiCall({
@@ -66,7 +74,7 @@ async function getChainBalances(allTokens, chain, block) {
     // Accumulate to balances, the balance for tokens on mainnet or sidechain
     let prefixedUnderlyingAddress = chain + ':' + underlyingAddress
     // if (!underlyingToken && underlyingTokenBalance/1e24 > 1) console.log(name, symbol, chain, Math.floor(underlyingTokenBalance/1e24))
-    if (isNativeAssetSuperToken || tokensNativeToSidechain.includes(id.toLowerCase())) prefixedUnderlyingAddress = chain + ':' + id
+    if (isNativeAssetSuperToken) prefixedUnderlyingAddress = chain + ':' + id
     else if (!underlyingToken) return;
     sdk.util.sumSingleBalance(balances, prefixedUnderlyingAddress, underlyingTokenBalance)
   })
@@ -114,7 +122,8 @@ async function xdai(timestamp, block, chainBlocks) {
 
 module.exports = {
   hallmarks: [
-    [1644278400, "Fake ctx hack"]
+    [1644278400, "Fake ctx hack"],
+    [Math.floor(new Date('2022-10-01')/1e3), 'Vested tokens are no longer included in tvl'],
   ],
   polygon: {
     tvl: polygon
