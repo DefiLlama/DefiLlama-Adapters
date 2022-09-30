@@ -91,6 +91,7 @@ async function getMarkets(block) {
     // the allMarkets getter was only added in this block.
     return markets;
   } else {
+    const markets = []
     let allCTokens = await getAllCTokens(block);
     // if not in cache, get from the blockchain
     await (
