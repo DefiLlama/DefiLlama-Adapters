@@ -94,6 +94,7 @@ import dystopia from "./adapters/dystopia";
 import glideFinance from "./adapters/glide-finance";
 import quipuswap from "./adapters/quipuswap";
 import netswap from "./adapters/netswap";
+import jupiter from "./adapters/jupiter";
 
 export default {
   mooniswap,
@@ -189,6 +190,7 @@ export default {
   dystopia,
   "glide-finance": glideFinance,
   quipuswap,
-  netswap
+  netswap,
+  jupiter
   // lyra -> OPTIONS DEX, not enable for now
 };
