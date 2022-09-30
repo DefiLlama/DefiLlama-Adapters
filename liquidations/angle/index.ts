@@ -80,7 +80,7 @@ const positions = async () => {
     const collateralFactor = BigNumber(vault.vaultManager.collateralFactor).div(10e8);
     let liqPrice: number;
 
-    const collateralDecimals = (await getTokenInfo(collateral)).decimals;
+    const collateralDecimals = (await getTokenInfo("ethereum:" + collateral)).decimals;
     if (collateralDecimals != 18) {
       // correcting the number of decimals
       liqPrice = BigNumber(vaultDebt)
