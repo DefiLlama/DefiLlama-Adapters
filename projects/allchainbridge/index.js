@@ -1,5 +1,3 @@
-const sdk = require("@defillama/sdk");
-const BigNumber = require("bignumber.js");
 const { sumTokens2, nullAddress, } = require('../helper/unwrapLPs')
 
 const getBridgeContract = (chain) => {
@@ -19,7 +17,7 @@ const getBridgeContract = (chain) => {
     case 'kava':
       return '0xa62a9c5cC8B92E00AB269BcA9f5539617AA65863';
     default:
-      return '';
+      throw new Error('Missing bridge contract');
   }
 }
 
@@ -96,13 +94,11 @@ const createTvlFunction = (chain) => async (timestamp, block, chainBlocks) => {
   return sumTokens2({ chain, block:chainBlocks[chain], tokens, owners, })
 };
 
-const toExport = {
+module.exports = {
   methodology: "Assets staked in the pool and trading contracts",
-};
+}
 for (const network of Object.keys(tokensConf)) {
-  toExport[network] = {
+  module.exports[network] = {
     tvl: createTvlFunction(network),
   };
 }
-
-module.exports = toExport;
