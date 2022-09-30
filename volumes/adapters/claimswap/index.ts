@@ -1,5 +1,5 @@
 
-const { fetchURL } = require("../../helper/utils");
+import fetchURL from "../../utils/fetchURL"
 import { Chain } from "@defillama/sdk/build/general";
 import { SimpleVolumeAdapter } from "../../dexVolume.type";
 import { CHAIN } from "../../helper/chains";

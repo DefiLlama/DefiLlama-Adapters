@@ -194,7 +194,7 @@ module.exports = {
 }
 
 module.exports.polygon.tvl = getChainTVL('polygon')
-module.exports.bsc.tvl = getChainTVL('bsc')
+// module.exports.bsc.tvl = getChainTVL('bsc')
 module.exports.fantom.tvl = getChainTVL('fantom')
 module.exports.harmony.tvl = getChainTVL('harmony')
 
@@ -231,8 +231,4 @@ async function kavaTridentTvl(ts, _b, cb) {
     sdk.util.sumSingleBalance(balances, transform(i.token1.id), i.reserve1)
   } )
   return balances
-}
-
-module.exports = {
-  kava: { tvl: kavaTridentTvl }
 }
