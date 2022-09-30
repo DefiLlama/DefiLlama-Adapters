@@ -2,6 +2,7 @@ import axios from "axios";
 import BigNumber from "bignumber.js";
 import { gql } from "graphql-request";
 import { getPagedGql } from "./gql";
+import { Prices } from "./types";
 
 export const bignum = (value: string | number) => new BigNumber(value);
 
@@ -32,18 +33,9 @@ export type Account = {
   hasBorrowed: boolean;
 };
 
-export type Price = { decimals: number; price: number; symbol: string; timestamp: number };
-export type Prices = { [address: string]: Price };
-
 export const getUnderlyingPrices = async (markets: Market[], chainPrefix: string): Promise<Prices> => {
   const tokens = markets.map((m) => m.underlyingAddress).map((a) => chainPrefix + a.toLowerCase());
-  const prices = (
-    await axios.post("https://coins.llama.fi/prices", {
-      coins: Array.from(tokens),
-    })
-  ).data.coins as {
-    [address: string]: { decimals: number; price: number; symbol: string; timestamp: number };
-  };
+  const prices = (await axios.get("https://coins.llama.fi/prices/current/" + tokens.join(","))).data.coins as Prices;
   return prices;
 };
 
