@@ -174,10 +174,7 @@ async function avaxTvl(_, _B, _C) {
 
 
 module.exports = {
-    methodology: `
-    Curve: Balance of av3CRV-gauge in contract multiple by virtual price of corresponding Curve pool, 
-    Anchor: Balance of aUST in contract multiple by aUST rate
-  `,
+    methodology: "TVL come from amount deposit into pools such as Curve & Velodrome.",
     arbitrum: {
         tvl: arbTvl,
     },
