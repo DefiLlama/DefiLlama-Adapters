@@ -264,4 +264,7 @@ module.exports = {
     aurora: {
         tvl: auroraTvl
     },
+    hallmarks: [
+      [Math.floor(new Date('2022-09-30')/1e3), 'Thetanuts migration V0 -> V1'],
+    ],
 }
