@@ -20,10 +20,10 @@ function getStakedTvl(chain) {
     const graphUrl = graphUrls[chain]
     const block = chainBlocks[chain]
 
-    const {klerosCounters} = await request(
-      graphUrl, 
+    const { klerosCounters } = await request(
+      graphUrl,
       totalStakedQuery,
-      {block}
+      { block: block - 500 }
     )
 
     balances.kleros = klerosCounters[0].tokenStaked / (10 ** 18);
@@ -37,11 +37,11 @@ module.exports = {
   methodology: "Counts PNK staked in courts",
   timetravel: true,
   ethereum: {
-    tvl: ()=>([]),
+    tvl: () => ({}),
     staking: getStakedTvl('ethereum')
   },
   xdai: {
-    tvl: ()=>([]),
+    tvl: () => ({}),
     staking: getStakedTvl('xdai')
   },
 }
