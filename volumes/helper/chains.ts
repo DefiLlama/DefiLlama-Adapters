@@ -27,7 +27,10 @@ export enum CHAIN {
   BITCOIN = "bitcoin",
   DOGE = "doge",
   ENERGI = "energi",
-  VELAS = "velas"
+  VELAS = "velas",
+  ELASTOS = "elastos",
+  TEZOS = "tezos",
+  METIS = "metis"
 }
 
 // Don´t use
