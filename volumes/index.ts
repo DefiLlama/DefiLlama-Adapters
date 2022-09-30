@@ -90,6 +90,7 @@ import honeyswap from "./adapters/honeyswap";
 import energiswap from "./adapters/energiswap";
 import stellaswap from "./adapters/stellaswap";
 import wagyuswap from "./adapters/wagyuswap";
+import dystopia from "./adapters/dystopia";
 
 export default {
   mooniswap,
@@ -181,6 +182,7 @@ export default {
   honeyswap,
   energiswap,
   stellaswap,
-  wagyuswap
+  wagyuswap,
+  dystopia
   // lyra -> OPTIONS DEX, not enable for now
 };
