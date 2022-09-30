@@ -71,7 +71,7 @@ import solarbeam from "./adapters/solarbeam";
 import tombFinance from "./adapters/tomb-swap";
 import dfxFinance from "./adapters/dfx-finance";
 import fraxswap from "./adapters/frax-swap";
-import izumiFinance from "./adapters/izumi-finance";
+import iziswap from "./adapters/iziswap";
 import tinyman from "./adapters/tinyman";
 import junoswap from "./adapters/junoswap";
 import knightswapFinance from "./adapters/knightswap-finance";
@@ -160,7 +160,7 @@ export default {
   "tomb-swap": tombFinance,
   "dfx-finance": dfxFinance,
   "frax-swap": fraxswap,
-  "izumi-finance": izumiFinance,
+  iziswap,
   tinyman,
   junoswap,
   "knightswap-finance": knightswapFinance,
