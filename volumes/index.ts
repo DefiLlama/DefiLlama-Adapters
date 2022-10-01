@@ -95,6 +95,7 @@ import glideFinance from "./adapters/glide-finance";
 import quipuswap from "./adapters/quipuswap";
 import netswap from "./adapters/netswap";
 import jupiterAggregator from "./adapters/jupiter-aggregator";
+import astroport from "./adapters/astroport";
 
 export default {
   mooniswap,
@@ -191,6 +192,7 @@ export default {
   "glide-finance": glideFinance,
   quipuswap,
   netswap,
-  "jupiter-aggregator":jupiterAggregator
+  "jupiter-aggregator":jupiterAggregator,
+  astroport
   // lyra -> OPTIONS DEX, not enable for now
 };
