@@ -34,8 +34,13 @@ function getProvider() {
 
 async function getSolBalances(accounts) {
   const formBody = key => ({ "jsonrpc": "2.0", "id": 1, "method": "getBalance", "params": [key] })
-  const tokenBalances = await axios.post(endpoint, accounts.map(formBody));
-  return tokenBalances.data.reduce((a, i) => a + i.result.value, 0) / 1e9
+  const tokenBalances =  []
+  const chunks = sliceIntoChunks(accounts, 99)
+  for (let chunk of chunks) {
+    const bal = await axios.post(endpoint, chunk.map(formBody))
+    tokenBalances.push(...bal.data)
+  }
+  return tokenBalances.reduce((a, i) => a + i.result.value, 0) / 1e9
 }
 
 async function getSolBalance(account) {
