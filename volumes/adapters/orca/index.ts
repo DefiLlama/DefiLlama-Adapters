@@ -1,28 +1,30 @@
 import axios from 'axios';
+import { CHAIN } from '../../helper/chains';
 
-const endpoint = "https://api.orca.so/pools";
-const wpEndpoint = "https://mainnet-zp2-v2.orca.so/pools";
+const endpoint = "https://api.mainnet.orca.so/v1/standard-pool/list";
 
 async function fetch() {
-    const [pools, whirlpools] = await Promise.all([axios.get(endpoint), axios.get(wpEndpoint)]);
-    const poolsVol = pools.data.reduce((sum:number, pool:any) =>
+    const [pools] = await Promise.all([axios.get(endpoint)]);
+    const poolsVol = Object.keys(pools.data).map((index) => {
+        return {
+            volume_24h: Number(pools.data[index].volume.day)
+        }
+    }).reduce((sum:number, pool:any) =>
         sum + pool.volume_24h
     , 0);
-    const wpVol = whirlpools.data.reduce((sum:number, pool:any) =>
-        sum + pool.volume.day
-    , 0);
+
     return {
-        dailyVolume: poolsVol + wpVol,
-        timestamp: Date.now()/1e3
+        dailyVolume: poolsVol,
+        timestamp: Date.now() / 1e3
     }
 }
 
 export default {
     volume:{
-        "solana": {
+        [CHAIN.SOLANA]: {
             fetch: fetch,
             runAtCurrTime: true,
-            start: async ()=>0,
+            start: async () => 0,
         }
     }
 }
