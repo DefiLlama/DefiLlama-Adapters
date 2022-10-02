@@ -1,41 +1,45 @@
 const retry = require('../helper/retry')
-const { toUSDTBalances } = require('../helper/balances')
+const { sumTokens2, getConnection } = require('../helper/solana')
+const { PublicKey, } = require("@solana/web3.js")
 const { GraphQLClient, gql } = require('graphql-request')
+const { MintLayout, } = require("@solana/spl-token")
+const { sliceIntoChunks } = require('../helper/utils')
 
-const API_URL = 'https://api.aldrin.com/graphql'
+const API_URL = 'https://api.cryptocurrencies.ai/graphql'
+// for fetching volume
+// {"operationName":"getTradingVolumeForAllPools","variables":{"timestampTo":1664701199,"timestampFrom":1664614799},"query":"query getTradingVolumeForAllPools($timestampFrom: Int!, $timestampTo: Int!) {\n  getTradingVolumeForAllPools(timestampFrom: $timestampFrom, timestampTo: $timestampTo) {\n    pool\n    tradingVolume\n    __typename\n  }\n}\n"}
 
-async function tvl(timestamp) {
+async function tvl() {
   var graphQLClient = new GraphQLClient(API_URL)
-  const timestampFrom = Math.floor(timestamp - 60 * 60)
-  const timestampTo = Math.floor(timestamp)
-  const currentDate = new Date(timestamp * 1000).toISOString().slice(0,10)
+  const connection = await getConnection()
 
   var query = gql`
     {
-      getTotalVolumeLockedHistory(
-        timezone: "UTC", 
-        timestampFrom: ${timestampFrom}, 
-        timestampTo: ${timestampTo}
-      ) {
-        volumes {
-          vol
-          date
-        }
-      }
+      getPoolsInfo {    name    parsedName    swapToken    poolTokenMint    tokenA    tokenB    tokenADecimals    tokenBDecimals    poolTokenAccountA    poolTokenAccountB    lpTokenFreezeVaultBalance    lpTokenFreezeVault    tvl {      tokenA      tokenB      __typename    }    fees {      tradeFeeDenominator      ownerTradeFeeDenominator      tradeFeeNumerator      ownerTradeFeeNumerator      __typename    }    apy24h    supply    curve    amp    initializerAccount    curveType    farming {      farmingState      farmingTokenVault      farmingTokenMint      farmingTokenMintDecimals      farmingSnapshots      tokensUnlocked      tokensTotal      tokensPerPeriod      periodLength      vestingPeriod      currentTime      __typename    }    __typename  }
     }
     `;
 
   const results = await retry(async bail => await graphQLClient.request(query))
   const {
-    getTotalVolumeLockedHistory: {
-      volumes
-    }
+    getPoolsInfo: poolInfos
   } = results
-  const volumeToday = volumes.find(i => i.date === currentDate)
-  return toUSDTBalances(volumeToday.vol)
+
+  const tokensAndOwners = []
+  const chunks = sliceIntoChunks(poolInfos, 99)
+  for (const chunk of chunks) {
+    const poolAccounts = await connection.getMultipleAccountsInfo(chunk.map(i => new PublicKey(i.poolTokenMint)))
+    poolAccounts.forEach((account, i) => chunk[i].mintAuthoritiy = new PublicKey(MintLayout.decode(account.data).mintAuthority))
+    chunk.forEach(({ mintAuthoritiy, tokenA, tokenB }) => tokensAndOwners.push([tokenA, mintAuthoritiy], [tokenB, mintAuthoritiy]))
+  }
+  return sumTokens2({ tokensAndOwners })
+}
+
+async function staking() {
+  return sumTokens2({ tokenAccounts: ['BAhtu6WzzTY72abMwNcjm8P6QvASaQNWnLY94ma69ocu'] })
 }
 
 module.exports = {
+  timetravel: false,
   misrepresentedTokens: true,
-  solana: { tvl }
+  solana: { tvl, staking  }
 }
