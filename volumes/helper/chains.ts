@@ -32,7 +32,8 @@ export enum CHAIN {
   TEZOS = "tezos",
   METIS = "metis",
   SOLANA = "solana",
-  IOTEX = "iotex"
+  IOTEX = "iotex",
+  KARDIA = "kardia"
 }
 
 // Don´t use
