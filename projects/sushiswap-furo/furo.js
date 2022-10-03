@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const { request, gql } = require("graphql-request");
 const { getChainTransform } = require("../helper/portedTokens");
-const { nullAddress } = require('../helper/unwrapLPs')
+const { isWhitelistedToken } = require('../helper/streamingHelper')
 
 const graphUrls = {
   ethereum:
@@ -66,9 +66,7 @@ const toAmountAbi = {
   type: "function",
 };
 
-const whitelistedTokens = ['USDC', 'USDT','DAI', 'WETH', 'WFTM', 'WGLMR', 'WBNB', 'WAVAX', ]
-
-function furo(chain) {
+function furo(chain, isVested) {
   return async (timestamp, ethBlock, chainBlocks) => {
     const balances = {};
     const graphUrl = graphUrls[chain];
@@ -76,21 +74,19 @@ function furo(chain) {
     const transform = await getChainTransform(chain);
 
     // Query graphql endpoint
-    let { tokens } = await request(graphUrl, furoQuery, {
-      block,
-    });
+    let { tokens } = await request(graphUrl, furoQuery, { block, });
 
-    tokens = tokens.filter(t => whitelistedTokens.includes(t.symbol) || t.id === nullAddress)
-    const calls = tokens.map(token => ({ params: [token.id, token.liquidityShares, false]}))
+    tokens = tokens.filter(t => isWhitelistedToken(t.symbol, t.id, isVested))
+    const calls = tokens.map(token => ({ params: [token.id, token.liquidityShares, false] }))
 
-    const { output  } = await sdk.api.abi.multiCall({
+    const { output } = await sdk.api.abi.multiCall({
       target: bentoboxes[chain],
       abi: toAmountAbi,
       calls,
       chain, block,
     })
 
-    output.forEach(({ output: amount, input: { params: [token]}}) => sdk.util.sumSingleBalance(balances, transform(token), amount))
+    output.forEach(({ output: amount, input: { params: [token] } }) => sdk.util.sumSingleBalance(balances, transform(token), amount))
     return balances;
   };
 }

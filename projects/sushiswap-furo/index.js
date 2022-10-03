@@ -1,6 +1,5 @@
 const { furo } = require("./furo.js");
 
-const modulesToExport = {};
 const furo_chains = [
   "ethereum",
   "polygon",
@@ -16,12 +15,8 @@ const furo_chains = [
 ];
 
 furo_chains.forEach((chain) => {
-  modulesToExport[chain] = {
-    tvl: furo(chain),
+  module.exports[chain] = {
+    tvl: furo(chain, false),
+    vested: furo(chain, true),
   };
 });
-
-module.exports = {
-  misrepresentedTokens: false,
-  ...modulesToExport,
-};
