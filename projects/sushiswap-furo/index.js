@@ -17,6 +17,6 @@ const furo_chains = [
 furo_chains.forEach((chain) => {
   module.exports[chain] = {
     tvl: furo(chain, false),
-    vested: furo(chain, true),
+    vesting: furo(chain, true),
   };
 });
