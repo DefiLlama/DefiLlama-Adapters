@@ -7,7 +7,7 @@ async function tvl(){
     }
 }
 
-async function tvl(){
+async function terra2(){
     const tvl = await axios.get('https://spec-api.azurefd.net/api/data?type=tvl')
     return {
         'tether': tvl.data.tvl,
