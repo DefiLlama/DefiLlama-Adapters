@@ -949,7 +949,15 @@ const fixBalancesTokens = {
   ethpow: {
     [nullAddress]: { coingeckoId: "ethereum-pow-iou", decimals: 18 },
     '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2': { coingeckoId: "ethereum-pow-iou", decimals: 18 },
-  }
+  },
+  xdc: {
+    [nullAddress]: { coingeckoId: "xdce-crowd-sale", decimals: 18 },
+    '0x951857744785e80e2de051c32ee7b25f9c458c42': { coingeckoId: "xdce-crowd-sale", decimals: 18 },
+    '0x36726235dadbdb4658d33e62a249dca7c4b2bc68': { coingeckoId: "xswap-protocol", decimals: 18 },
+    '0x5d5f074837f5d4618b3916ba74de1bf9662a3fed': { coingeckoId: "storx", decimals: 18 },
+    '0xd04275e2fd2875beaade6a80b39a75d4fe267df6': { coingeckoId: "nota", decimals: 6 },
+    '0xff7412ea7c8445c46a8254dfb557ac1e48094391': { coingeckoId: "plugin", decimals: 18 },
+  },
 }
 
 const coreAssets = {
