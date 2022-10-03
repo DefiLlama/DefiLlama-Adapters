@@ -8,8 +8,6 @@ const { MintLayout, TOKEN_PROGRAM_ID } = require("@solana/spl-token")
 const { sleep, sliceIntoChunks, log, } = require('./utils')
 const sdk = require('@defillama/sdk')
 
-const solscan_base = "https://public-api.solscan.io/account/"
-
 let connection, provider
 
 const endpoint = process.env.SOLANA_RPC || "https://solana-api.projectserum.com/" // or "https://api.mainnet-beta.solana.com"
@@ -57,6 +55,14 @@ async function getTokenSupply(token) {
     params: [token],
   });
   return tokenSupply.data.result.value.uiAmount;
+}
+
+
+async function getTokenDecimals(tokens) {
+  const calls = tokens.map((t, i) => ({ jsonrpc: '2.0', id: i, method: 'getTokenSupply', params: [t]}))
+  
+  const tokenSupply = await axios.post(endpoint, calls);
+  return tokenSupply.data.map(i => i.result.value.decimals);
 }
 
 function formTokenBalanceQuery(token, account) {
@@ -472,4 +478,5 @@ module.exports = {
   getTokenBalances,
   transformBalances,
   getSolBalances,
+  getTokenDecimals,
 };
