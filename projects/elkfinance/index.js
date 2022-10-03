@@ -20,7 +20,8 @@ const factories = {
   iotex: "0xF96bE66DA0b9bC9DFD849827b4acfA7e8a6F3C42",
   ethereum: "0x6511eBA915fC1b94b2364289CCa2b27AE5898d80",
   optimism: "0xedfad3a0F42A8920B011bb0332aDe632e552d846",
-  arbitrum: "0xA59B2044EAFD15ee4deF138D410d764c9023E1F0"
+  arbitrum: "0xA59B2044EAFD15ee4deF138D410d764c9023E1F0",
+  kava: "0xC012C4b3d253A8F22d5e4ADA67ea2236FF9778fc"
 }
 
 function chainTvl(chain) {
