@@ -1,4 +1,4 @@
-const { getProvider, getTokenDecimals, transformBalances, } = require('../helper/solana')
+const { getProvider, getTokenDecimals, transformBalances, } = require('./helper/solana')
 const sdk = require('@defillama/sdk')
 const { Program, } = require("@project-serum/anchor");
 const vaults = {
