@@ -3,7 +3,7 @@ const { lookupApplications, lookupAccountByID, searchAccounts, } = require("../h
 const { toUSDTBalances } = require("../helper/balances");
 
 const reserveAddress = "J2E2XXS4FTW3POVNZIHRIHTFRGOWEWX65NFYIVYIA27HUK63NWT65OLB2Y"
-const v2ReserveAddress = "DM2VWY6UQQJJOGDDD46CKWYW7WSHA3POVTVTGHDMWKFUGGCWL25ROMNE6I"
+const v2ReserveAddress = "IRM4Q5KJPRJKWTFB2KONUZVUKH2X7INOEYIPWCRRUZ65VXGNPFXFDXJKOE"
 const treasuryAddress = "MTMJ5ADRK3CFG3HGUI7FS4Y55WGCUO5CRUMVNBZ7FW5IIG6T3IU2VJHUMM"
 const v2TreasuryAddress = "52O7EFC7TQPGSSM7HE6NDXMUUYM2W5OI4IOCDPTYJLPUYDO7BMNK5SCPEY"
 
@@ -11,6 +11,7 @@ const oracleAppId = 673925841
 const gardId = 684649988
 const gardPriceValidatorId = 684650147
 const v2GardPriceValidatorId = 890603991
+const sgardGardId = 890603920
 
 function getStateUint(state, key) {
   const val = state.find((entry) => {
@@ -32,6 +33,16 @@ async function getAlgoPrice() {
   const price = getStateUint(state, 'cHJpY2U=')
   const oracleDecimals = getStateUint(state, 'ZGVjaW1hbHM=')
   return price / (10 ** oracleDecimals);
+}
+
+async function getV2GardDebt(){
+  const validatorState = await getAppState(v2GardPriceValidatorId);
+  const SGardDebt = getStateUint(validatorState, btoa('SGARD_OWED'))
+
+  const sgardState = await getAppState(sgardGardId);
+  const SGardConversion = getStateUint(sgardState, btoa('conversion_rate'))
+
+  return SGardDebt * SGardConversion
 }
 
 /* Get value locked in user-controlled smart contracts */
@@ -66,9 +77,9 @@ async function getTreasuryBalUsd(price) {
   const info = await lookupAccountByID(treasuryAddress)
   const treasuryBal = info.account.amount;
 
-  const v2Info = await lookupAccountByID(v2TreasuryAddress)
-  const v2TreasuryBal = v2Info.account.amount
-  return (treasuryBal + v2TreasuryBal) * price / 1e6 // 1e6 comes from converting from microAlgos to Algos 
+  const v2Info = await lookupAccountByID(v2TreasuryAddress);
+  const v2TreasuryBal = v2Info.account.assets?.find((asset) => asset["asset-id"] === gardId).amount;
+  return ((treasuryBal * price) +  v2TreasuryBal)/ 1e6 // 1e6 comes from converting from microAlgos to Algos 
 }
 
 /* Get total deposits */
@@ -90,8 +101,9 @@ async function borrowed() {
   const info = await lookupAccountByID(reserveAddress)
   const gardBalance = info.account.assets?.find((asset) => asset["asset-id"] === gardId).amount;
 
-  const v2Info = await lookupAccountByID(v2ReserveAddress)
-  const v2GardBalance = v2Info.account.assets?.find((asset) => asset["asset-id"] === gardId).amount;
+  const v2GardBalance = await getV2GardDebt()
+  console.log(gardBalance);
+  console.log(v2GardBalance)
   return (25e10 - (gardBalance + v2GardBalance)) / 1e6
   // Contract is initialized with 9.2 quintillion microGARD. Each GARD is pegged to $1
 }
