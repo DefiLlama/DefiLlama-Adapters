@@ -2,6 +2,7 @@ const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const calculateLpTokenPrice = require("./calculate-lp-token-price");
 const getTokenPrice = require("./get-token-price");
+const { getUniTVL } = require("../helper/unknownTokens");
 
 const MASTERCHEF = "0xC07707C7AC7E383CE344C090F915F0a083764C94";
 
@@ -17,7 +18,7 @@ async function tvl() {
     })
   ).output;
 
-  const borkPrice = await getTokenPrice("UNIW");
+  const uniwPrice = await getTokenPrice("UNIW");
   for (let i = 0; i < length; i++) {
     const poolInfo = (
       await sdk.api.abi.call({
@@ -51,7 +52,7 @@ async function tvl() {
     if (token === "UNIW") {
       price = await getTokenPrice("UNIW");
     } else if (token === "LP") {
-      price = await calculateLpTokenPrice(poolInfo.lpToken, borkPrice);
+      price = await calculateLpTokenPrice(poolInfo.lpToken, uniwPrice);
     } else {
       price = await getTokenPrice(token);
     }
@@ -62,5 +63,12 @@ async function tvl() {
 }
 
 module.exports = {
-  fetch: tvl,
+  ethpow: {
+    fetch: tvl,
+    tvl: getUniTVL({
+      chain: "ethpow",
+      useDefaultCoreAssets: true,
+      factory: "0xaBC4325bAD182076EAa5877c68437833d596D3Ee",
+    }),
+  },
 };
