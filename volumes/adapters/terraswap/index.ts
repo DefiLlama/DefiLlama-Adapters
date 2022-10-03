@@ -1,4 +1,4 @@
-import { SimpleVolumeAdapter } from "../../dexVolume.type";
+import { DISABLED_ADAPTER_KEY, SimpleVolumeAdapter } from "../../dexVolume.type";
 
 const { request, gql } = require("graphql-request");
 
@@ -55,7 +55,7 @@ const getStartTimestamp = async () => {
 
 const adapter: SimpleVolumeAdapter = {
   volume: {
-    terra: {
+    [DISABLED_ADAPTER_KEY]: { // terra: {
       fetch,
       runAtCurrTime: true,
       start: getStartTimestamp,
