@@ -97,6 +97,7 @@ import netswap from "./adapters/netswap";
 import jupiterAggregator from "./adapters/jupiter-aggregator";
 import astroport from "./adapters/astroport";
 import mimo from "./adapters/mimo";
+import tethysFinance from "./adapters/tethys-finance";
 
 export default {
   mooniswap,
@@ -195,6 +196,7 @@ export default {
   netswap,
   "jupiter-aggregator":jupiterAggregator,
   astroport,
-  mimo
+  mimo,
+  "tethys-finance": tethysFinance
   // lyra -> OPTIONS DEX, not enable for now
 };
