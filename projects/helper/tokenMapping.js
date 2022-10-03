@@ -1267,6 +1267,12 @@ const coreAssets = {
   ],
   bitgert: [
     '0x0eb9036cbE0f052386f36170c6b07eF0a0E3f710', // WBRISE
+  ],
+  xdc: [
+      '0x951857744785E80e2De051c32EE7b25f9c458C42', // WXDC
+      '0x17476dc3eda45aD916cEAdDeA325B240A7FB259D', // XTT
+      '0x36726235dAdbdb4658D33E62a249dCA7c4B2bC68', // XSP
+      '0xD4B5f10D61916Bd6E0860144a91Ac658dE8a1437', // xUSDT
   ]
 }
 
