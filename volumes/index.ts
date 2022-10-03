@@ -88,6 +88,14 @@ import ubeswap from "./adapters/ubeswap";
 import mobiusMoney from "./adapters/mobius-money";
 import honeyswap from "./adapters/honeyswap";
 import energiswap from "./adapters/energiswap";
+import stellaswap from "./adapters/stellaswap";
+import wagyuswap from "./adapters/wagyuswap";
+import dystopia from "./adapters/dystopia";
+import glideFinance from "./adapters/glide-finance";
+import quipuswap from "./adapters/quipuswap";
+import netswap from "./adapters/netswap";
+import jupiterAggregator from "./adapters/jupiter-aggregator";
+import astroport from "./adapters/astroport";
 
 export default {
   mooniswap,
@@ -177,6 +185,14 @@ export default {
   ubeswap,
   "mobius-money": mobiusMoney,
   honeyswap,
-  energiswap
+  energiswap,
+  stellaswap,
+  wagyuswap,
+  dystopia,
+  "glide-finance": glideFinance,
+  quipuswap,
+  netswap,
+  "jupiter-aggregator":jupiterAggregator,
+  astroport
   // lyra -> OPTIONS DEX, not enable for now
 };

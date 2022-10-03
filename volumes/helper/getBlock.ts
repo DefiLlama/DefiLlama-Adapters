@@ -4,16 +4,16 @@ import { providers } from "@defillama/sdk/build/general"
 import type { Chain } from "@defillama/sdk/build/general"
 import { CHAIN } from "./chains";
 import * as sdk from "@defillama/sdk"
-import AsyncRetry = require("async-retry")
+const retry = require("async-retry")
 
 async function getBlock(timestamp: number, chain: Chain, chainBlocks: ChainBlocks, undefinedOk: boolean = false) {
     if (chainBlocks[chain] !== undefined || (process.env.HISTORICAL === undefined && undefinedOk)) {
         return chainBlocks[chain]
     } else {
         if (chain === CHAIN.CELO) {
-            return Number((await AsyncRetry(async () => await axios.get("https://explorer.celo.org/api?module=block&action=getblocknobytime&timestamp=" + timestamp + "&closest=before"))).data.result.blockNumber);
+            return Number((await retry(async () => await axios.get("https://explorer.celo.org/api?module=block&action=getblocknobytime&timestamp=" + timestamp + "&closest=before"))).data.result.blockNumber);
         } else if (chain === CHAIN.MOONRIVER) {
-            return Number((await AsyncRetry(async () => await axios.get(`https://blockscout.moonriver.moonbeam.network/api?module=block&action=getblocknobytime&timestamp=${timestamp}&closest=before`))).data.result.blockNumber);
+            return Number((await retry(async () => await axios.get(`https://blockscout.moonriver.moonbeam.network/api?module=block&action=getblocknobytime&timestamp=${timestamp}&closest=before`))).data.result.blockNumber);
         }
         return sdk.api.util.lookupBlock(timestamp, { chain }).then(blockData => blockData.block)
     }

@@ -3,7 +3,7 @@ const sdk = require('@defillama/sdk');
 const abi = require('./abi.json');
 const v1abi = require('./v1Abi.json');
 const BigNumber = require('bignumber.js');
-const {lendingMarket} = require('../helper/methodologies')
+const { lendingMarket } = require('../helper/methodologies')
 
 // cache some data
 const markets = [
@@ -73,17 +73,7 @@ async function getAllCTokens(block) {
   })).output;
 }
 
-async function getUnderlying(block, cToken) {
-  if (cToken === '0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5') {
-    return '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';//cETH => WETH
-  }
-
-  return (await sdk.api.abi.call({
-    block,
-    target: cToken,
-    abi: abi['underlying'],
-  })).output;
-}
+const CTOKEN_WETH = '0x4Ddc2D193948926D02f9B1fE9e1daa0718270ED5'.toLowerCase()
 
 // returns {[underlying]: {cToken, decimals, symbol}}
 async function getMarkets(block) {
@@ -91,36 +81,30 @@ async function getMarkets(block) {
     // the allMarkets getter was only added in this block.
     return markets;
   } else {
-    let allCTokens = await getAllCTokens(block);
-    // if not in cache, get from the blockchain
-    await (
-      Promise.all(allCTokens.map(async (cToken) => {
-        let foundMarket = false;
-        for (let market of markets) {
-          if (market.cToken.toLowerCase() === cToken.toLowerCase()) {
-            foundMarket = true;
-          }
-        }
-        if (!foundMarket) {
-          let underlying = await getUnderlying(block, cToken);
-          markets.push({ underlying, cToken })
-        }
-      }))
-    );
+    const markets = [{
+      cToken: CTOKEN_WETH,
+      underlying: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', //cETH => WETH
+    }]
 
+    const allCTokens = await getAllCTokens(block)
+    const calls = allCTokens.filter(i => i.toLowerCase() !== CTOKEN_WETH).map(i => ({ target: i }))
+    const { output } = await sdk.api.abi.multiCall({
+      abi: abi['underlying'], calls, block,
+    })
+    output.forEach(({ input: { target: cToken }, output: underlying}) => markets.push({ cToken, underlying, }))
     return markets;
   }
 }
 
 const v1Contract = '0x3FDA67f7583380E67ef93072294a7fAc882FD7E7'
-async function v1Tvl(balances, block, borrowed){
+async function v1Tvl(balances, block, borrowed) {
   const marketsLength = await sdk.api.abi.call({
     target: v1Contract,
     block,
     abi: v1abi.getCollateralMarketsLength
   });
   const underlyings = await sdk.api.abi.multiCall({
-    calls: Array(Number(marketsLength.output)).fill().map((n, i)=>({
+    calls: Array(Number(marketsLength.output)).fill().map((n, i) => ({
       target: v1Contract,
       params: [i]
     })),
@@ -128,17 +112,17 @@ async function v1Tvl(balances, block, borrowed){
     abi: v1abi.collateralMarkets
   });
   const markets = await sdk.api.abi.multiCall({
-    calls: underlyings.output.map(m=>({
+    calls: underlyings.output.map(m => ({
       target: v1Contract,
       params: [m.output]
     })),
     block,
     abi: v1abi.markets
   });
-  markets.output.forEach(m=>{
+  markets.output.forEach(m => {
     const token = m.input.params[0]
     let amount
-    if(borrowed){
+    if (borrowed) {
       amount = m.output.totalBorrows
     } else {
       amount = BigNumber(m.output.totalSupply).minus(m.output.totalBorrows).toFixed(0)
@@ -147,7 +131,7 @@ async function v1Tvl(balances, block, borrowed){
   })
 }
 
-async function v2Tvl(balances, block, borrowed){
+async function v2Tvl(balances, block, borrowed) {
   let markets = await getMarkets(block);
 
   // Get V2 tokens locked
@@ -156,19 +140,19 @@ async function v2Tvl(balances, block, borrowed){
     calls: markets.map((market) => ({
       target: market.cToken,
     })),
-    abi: borrowed?abi.totalBorrows: abi['getCash'],
+    abi: borrowed ? abi.totalBorrows : abi['getCash'],
   });
 
   markets.forEach((market) => {
     let getCash = v2Locked.output.find((result) => result.input.target === market.cToken);
-      balances[market.underlying] = BigNumber(balances[market.underlying] || 0)
-        .plus(getCash.output)
-        .toFixed();
+    balances[market.underlying] = BigNumber(balances[market.underlying] || 0)
+      .plus(getCash.output)
+      .toFixed();
   });
   return balances;
 }
 
-async function borrowed(timestamp, block){
+async function borrowed(timestamp, block) {
   const balances = {};
   await v1Tvl(balances, block, true)
   await v2Tvl(balances, block, true)
@@ -185,8 +169,8 @@ async function tvl(timestamp, block) {
 
 module.exports = {
   hallmarks: [
-    [1632873600,"Comptroller vulnerability exploit"],
-    [1623715200,"Liquidity mining begins"]
+    [1632873600, "Comptroller vulnerability exploit"],
+    [1623715200, "Liquidity mining begins"]
   ],
   timetravel: true,
   ethereum: {
