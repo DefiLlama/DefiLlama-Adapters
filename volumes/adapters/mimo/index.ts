@@ -18,6 +18,7 @@ const graphs = getChainVolume({
   dailyVolume: {
     factory: "uniswapDayData",
     field: "dailyVolumeUSD",
+    dateField: "date"
   }
 });
 
