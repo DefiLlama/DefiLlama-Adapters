@@ -28,7 +28,7 @@ const ethTvl = async (_, block) => {
   return balances;
 };
 
-const polygonTvl = async (_, block) => {
+const polygonTvl = async (_, _b, { polygon: block }) => {
   const balances = {};
   const transform = await transformPolygonAddress();
 
