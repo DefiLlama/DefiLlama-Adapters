@@ -66,7 +66,7 @@ const toAmountAbi = {
   type: "function",
 };
 
-function furo(chain, isVested) {
+function furo(chain, isVesting) {
   return async (timestamp, ethBlock, chainBlocks) => {
     const balances = {};
     const graphUrl = graphUrls[chain];
@@ -76,7 +76,7 @@ function furo(chain, isVested) {
     // Query graphql endpoint
     let { tokens } = await request(graphUrl, furoQuery, { block, });
 
-    tokens = tokens.filter(t => isWhitelistedToken(t.symbol, t.id, isVested))
+    tokens = tokens.filter(t => isWhitelistedToken(t.symbol, t.id, isVesting))
     const calls = tokens.map(token => ({ params: [token.id, token.liquidityShares, false] }))
 
     const { output } = await sdk.api.abi.multiCall({
