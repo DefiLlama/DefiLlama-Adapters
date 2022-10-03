@@ -5,12 +5,12 @@ const { requery, } = require('../helper/getUsdUniTvl')
 const { getCoreAssets } = require('../helper/tokenMapping')
 const { sumTokens, sumTokens2, nullAddress, } = require('../helper/unwrapLPs')
 const { isLP, getUniqueAddresses, DEBUG_MODE, sliceIntoChunks, sleep, log } = require('../helper/utils')
-const token = ["0x96b451770772e64a582685d5EDCdfe53A5CD8718","0x96b451770772e64a582685d5EDCdfe53A5CD8718"]
+const token = ["0x96b451770772e64a582685d5EDCdfe53A5CD8718","0x2963DAfc960310b400Ed4D4539a9afD40dA1C949"]
 const rewardPool = ["0x69F451a527484159F27F34f6A5bd21727434027e"]
 const lps = Object.values({
-    'LION-USDC-LP': '0xf2059ed015ec4ecc80f902d9fdbcd2a227bfe037',
-    'TIGER-USDC-LP': '0xf6464c80448d6ec4deb7e8e5ec95b8eb768fbf69',
-    'BEAR-WBTC-LP': '0x3d9e539fa44b970605658e25d18f816ce78c4007',
+    'LION-USDC-LP': '0xDcDc159cA74c727a8a34e311Ce6Fbd1274B6CBe9',
+    'TIGER-USDC-LP': '0x3cDA4fE281230B58935b24fB74B4177668b74F18',
+    'BEAR-WBTC-LP': '0x59F6b8e4FcB4089b8b9C9A1a42104B7c6C77B8A4',
 })
 
 function scrubTomb({ token = [], shares = [], rewardPool = [], masonry = [], lps, chain = "ethereum", coreAssets = [],
