@@ -100,6 +100,7 @@ import mimo from "./adapters/mimo";
 import tethysFinance from "./adapters/tethys-finance";
 import kaidex from "./adapters/kaidex";
 import lif3Swap from "./adapters/lif3-swap";
+import swappi from "./adapters/swappi";
 
 export default {
   mooniswap,
@@ -201,6 +202,7 @@ export default {
   mimo,
   "tethys-finance": tethysFinance,
   kaidex,
-  "lif3-swap": lif3Swap
+  "lif3-swap": lif3Swap,
+  swappi
   // lyra -> OPTIONS DEX, not enable for now
 };
