@@ -37,7 +37,7 @@ async function tvl(timestamp, block) {
 }
 
 // =================== GET Optimism usdc BALANCES =================== //
-async function optimismtvl(timestamp, block) {
+async function optimismtvl(timestamp, _, { optimism: block }) {
   let balances = {};
 
   const vusdcBalances = (
@@ -54,7 +54,7 @@ async function optimismtvl(timestamp, block) {
 }
 
 // =================== GET astar usdc BALANCES =================== //
-async function astartvl(timestamp, block) {
+async function astartvl(timestamp, _, { astar: block }) {
   let balances = {};
 
   const vusdcBalances = (

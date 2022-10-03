@@ -82,7 +82,7 @@ async function fantom(_, _b, { fantom: block }) {
   return sumTokens2({ tokensAndOwners: toa, chain, block, })
 }
 
-async function harmony(_, _b, { fantom: block }) {
+async function harmony(_, _b, { harmony: block }) {
   const chain = 'harmony'
   const pools = [
     '0xccb7c3166729fe92c914fb38b850696748d83db8',

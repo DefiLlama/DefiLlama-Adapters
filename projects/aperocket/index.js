@@ -47,6 +47,7 @@ const MERCURY_SINGLE_VAULTS_CONTRACTS_BSC = [
 ];
 
 const bscTvl = async (timestamp, block, chainBlocks) => {
+  block = chainBlocks.bsc
   const getV2Tvls = (
     await sdk.api.abi.multiCall({
       abi: abi.tvlOfPool,
