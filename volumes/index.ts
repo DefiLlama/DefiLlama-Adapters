@@ -96,6 +96,7 @@ import quipuswap from "./adapters/quipuswap";
 import netswap from "./adapters/netswap";
 import jupiterAggregator from "./adapters/jupiter-aggregator";
 import astroport from "./adapters/astroport";
+import mimo from "./adapters/mimo";
 
 export default {
   mooniswap,
@@ -193,6 +194,7 @@ export default {
   quipuswap,
   netswap,
   "jupiter-aggregator":jupiterAggregator,
-  astroport
+  astroport,
+  mimo
   // lyra -> OPTIONS DEX, not enable for now
 };
