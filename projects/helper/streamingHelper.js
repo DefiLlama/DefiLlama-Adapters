@@ -8,9 +8,9 @@ function isStableToken(symbol = '', address = '') {
   return stableTokenAddresses.includes(address.toLowerCase()) || stableTokens.includes(symbol.toUpperCase())
 }
 
-function isWhitelistedToken(symbol, address, isVested) {
+function isWhitelistedToken(symbol, address, isVesting) {
   const isStable = isStableToken(symbol, address)
-  return isVested ? !isStable : isStable
+  return isVesting ? !isStable : isStable
 }
 
 const stableTokenAddresses = [

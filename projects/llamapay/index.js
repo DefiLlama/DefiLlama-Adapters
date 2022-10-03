@@ -11,12 +11,12 @@ const llamaPayMeter = "0xc666badd040d5e471d2b77296fef46165ffe5132"
 const llamaPayMeterVesting = "0x6B24Fe659D1E91f8800E86600DE577A4cA8814a6";
 const llamaPayMetis = "0x43634d1C608f16Fb0f4926c12b54124C93030600";
 
-async function calculateTvl(llamapay, vesting, block, chain, isVested) {
+async function calculateTvl(llamapay, vesting, block, chain, isVesting) {
   let tokensAndOwners = await getTokensAndOwners(llamapay, chain, block)
   const tokens = tokensAndOwners.map(i => i[0])
   const symbolMapping = await getSymbols(chain, tokens)
-  tokensAndOwners = tokensAndOwners.filter(([token]) => isWhitelistedToken(symbolMapping[token], token, isVested))
-  if (isVested)
+  tokensAndOwners = tokensAndOwners.filter(([token]) => isWhitelistedToken(symbolMapping[token], token, isVesting))
+  if (isVesting)
     tokensAndOwners.push(...await getTokensAndOwners(vesting, chain, block, true))
   return sumTokens2({ tokensAndOwners, chain, block,  })
 }
@@ -75,7 +75,10 @@ chains.forEach(chain => {
   }
 
   module.exports[chain] = {
+    hallmarks: [
+      [Math.floor(new Date('2022-10-03')/1e3), 'Vesting tokens are not included in tvl'],
+    ],
     tvl: async (_, _b, { [chain]: block }) => calculateTvl(contract, vestingContract, block, chain, false),
-    vested: async (_, _b, { [chain]: block }) => calculateTvl(contract, vestingContract, block, chain, true),
+    vesting: async (_, _b, { [chain]: block }) => calculateTvl(contract, vestingContract, block, chain, true),
   }
 })

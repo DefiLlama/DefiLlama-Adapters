@@ -38,17 +38,17 @@ query get_supertokens($block: Int) {
 `;
 // An upcoming superfluid graphql subgraph will be published soon and provide token supplies. 
 
-function isWhitelistedToken(token, address, isVested) {
+function isWhitelistedToken(token, address, isVesting) {
   const isStable = isStableToken(token?.symbol, address) && !tokensNativeToSidechain.includes(address.toLowerCase())
-  return isVested ? !isStable : isStable
+  return isVesting ? !isStable : isStable
 }
 
 // Main function for all chains to get balances of superfluid tokens
-async function getChainBalances(allTokens, chain, block, isVested) {
+async function getChainBalances(allTokens, chain, block, isVesting) {
   // Init empty balances
   let balances = {};
 
-  allTokens = allTokens.filter(({ underlyingAddress, underlyingToken = {}, }) => isWhitelistedToken(underlyingToken, underlyingAddress, isVested))
+  allTokens = allTokens.filter(({ underlyingAddress, underlyingToken = {}, }) => isWhitelistedToken(underlyingToken, underlyingAddress, isVesting))
 
   // Abi MultiCall to get supertokens supplies
   const { output: supply } = await sdk.api.abi.multiCall({
@@ -90,7 +90,7 @@ const tokensNativeToSidechain = [
   '0x263026e7e53dbfdce5ae55ade22493f828922965', // polygon RIC
 ]
 
-async function retrieveSupertokensBalances(chain, block, isVested) {
+async function retrieveSupertokensBalances(chain, block, isVesting) {
   // Retrieve supertokens from graphql API
   let graphUrl;
   if (chain === 'polygon') {
@@ -108,21 +108,21 @@ async function retrieveSupertokensBalances(chain, block, isVested) {
 
   const allTokens = tokens.filter(t => t.isSuperToken)
 
-  return getChainBalances(allTokens, chain, block, isVested)
+  return getChainBalances(allTokens, chain, block, isVesting)
 }
 
 module.exports = {
   hallmarks: [
     [1644278400, "Fake ctx hack"],
-    [Math.floor(new Date('2022-10-01')/1e3), 'Vested tokens are no longer included in tvl'],
+    [Math.floor(new Date('2022-10-03')/1e3), 'Vesting tokens are not included in tvl'],
   ],
   polygon: {
     tvl: async (_, _b, { polygon: block }) => retrieveSupertokensBalances('polygon', block, false),
-    vested: async (_, _b, { polygon: block }) => retrieveSupertokensBalances('polygon', block, true),
+    vesting: async (_, _b, { polygon: block }) => retrieveSupertokensBalances('polygon', block, true),
   },
   xdai: {
     tvl: async (_, _b, { xdai: block }) => retrieveSupertokensBalances('xdai', block, false),
-    vested: async (_, _b, { xdai: block }) => retrieveSupertokensBalances('xdai', block, true),
+    vesting: async (_, _b, { xdai: block }) => retrieveSupertokensBalances('xdai', block, true),
   },
   methodology: `TVL is the total quantity of tokens locked in Super Tokens from Superfluid, on Polygon and xDai (most important being weth, dai, usdc and wbtc, as well as QiDAO and MOCA)`
 }
