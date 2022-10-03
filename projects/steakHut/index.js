@@ -7,6 +7,7 @@ const { staking } = require('../helper/staking');
 const steakMasterChef = '0xddBfBd5dc3BA0FeB96Cb513B689966b2176d4c09';
 
 async function tvl(timestamp, block, chainBlocks) {
+    block = chainBlocks.avax
     const balances = {};
     const lps = []
 
