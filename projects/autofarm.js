@@ -3,7 +3,8 @@ const {fetchChainExports} = require('./helper/exports');
 
 const transformChain = {
   okexchain: 'okex',
-  avalanche: 'avax',
+  avax: 'avax',
+  wan: 'wanchain',
 }
 
 function chainTvl(chain){
@@ -15,10 +16,16 @@ function chainTvl(chain){
 
 module.exports=fetchChainExports(chainTvl, [
   'bsc',       'polygon',
-  'heco',      'avalanche',
+  'heco',      'avax',
   'fantom',    'moonriver',
   'okexchain', 'celo',
   'cronos',    'boba',
-  'harmony','xdai',
-  'velas','aurora'
+  'harmony',   'xdai',
+  'velas',     'aurora',
+  'oasis',     'wan',
+  'kcc',       'evmos'
 ])
+module.exports.hallmarks=[
+  [1618966800, "Venus incident"],
+  [1634778000, "Emissions end"],
+]

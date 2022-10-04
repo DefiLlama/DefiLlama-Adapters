@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const BigNumber = require('bignumber.js')
-const erc20 = require("../helper/abis/erc20.json");
 const { pool2s } = require("../helper/pool2");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const { transformAvaxAddress } = require("../helper/portedTokens");
@@ -51,7 +50,7 @@ async function Staking(chainBlocks) {
 
   const balancepEVRT = (
     await sdk.api.abi.call({
-      abi: erc20.balanceOf,
+      abi: 'erc20:balanceOf',
       target: pEVRT,
       params: stakingContracts[1],
       chain: "avax",
@@ -67,6 +66,7 @@ async function Staking(chainBlocks) {
 }
 
 module.exports = {
+  deadFrom: 1648765747,
   avax: {
     staking: Staking,
     pool2: pool2s(pool2Contracts, pool2Lps, "avax"),

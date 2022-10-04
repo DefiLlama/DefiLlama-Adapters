@@ -80,26 +80,20 @@ async function ethereumTvl() {
   }
 }
 
-const getTvl = balances => Number(balances[ustAddress])
-async function tvl(timestamp, block) {
-  const eth = getTvl(await ethereumTvl())
-  const terr = getTvl(await terraTvl())
-  return {
-    [ustAddress]: fixed(eth+terr)
-  }
-}
-
-
 module.exports = {
+  hallmarks: [
+    [1633651200,"Lock contract exploit"],
+    [1653696000,"LUNC mispricing exploit"],
+    [1651881600, "UST depeg"],
+  ],
   timetravel: false,
   misrepresentedTokens: true,
-  tvl,
   ethereum: {
     tvl: ethereumTvl,
     pool2: ethereumPool2
   },
   terra: {
-    tvl: terraTvl,
-    pool2: terraPool2
+    tvl: () => ({'0': 0}),
+    //pool2: terraPool2
   }
 }

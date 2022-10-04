@@ -1,0 +1,13 @@
+{
+  "name": "get_virtual_price",
+  "outputs": [
+    {
+      "type": "uint256",
+      "name": ""
+    }
+  ],
+  "inputs": [],
+  "stateMutability": "view",
+  "type": "function",
+  "gas": 1011891
+}

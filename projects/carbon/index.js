@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const erc20 = require("../helper/abis/erc20.json");
 const { staking } = require("../helper/staking");
 const BigNumber = require("bignumber.js");
 const { getBlock } = require("../helper/getBlock");
@@ -32,7 +31,7 @@ async function pool2(time, ethBlock, chainBlocks) {
   for (let idx = 0; idx < lpAddresses.length; idx++) {
     const balances_slp = (
       await sdk.api.abi.call({
-        abi: erc20.balanceOf,
+        abi: 'erc20:balanceOf',
         target: lpAddresses[idx],
         params: stakingPool2Contracts[idx],
         chain: "arbitrum",
@@ -54,7 +53,7 @@ async function pool2(time, ethBlock, chainBlocks) {
           target: token,
           params: lpAddresses[idx],
         })),
-        abi: erc20.balanceOf,
+        abi: 'erc20:balanceOf',
         chain: "arbitrum",
         block: chainBlocks["arbitrum"],
       })
@@ -90,7 +89,7 @@ async function arbTvl(time, _ethBlock, chainBlocks) {
 
 module.exports = {
   misrepresentedTokens: true,
-  arbirtum: {
+  arbitrum: {
     staking: staking(stakingCARBONContract, CARBON, "arbitrum"),
     pool2: pool2,
     tvl: arbTvl,

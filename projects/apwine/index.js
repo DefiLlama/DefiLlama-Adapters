@@ -77,7 +77,7 @@ const tvl_from_registry = (chain) => {
     
     // ------------------------------
     // B. Also get AMM pools balances (get pools and underlyings balances)
-    const {output: ammPools} = await sdk.api.abi.multiCall({
+    const ammPools = (await sdk.api.abi.multiCall({
       abi: abi['ammregistry_getFutureAMMPool'],
       calls: futureVaults.map((vault) => ({
         target: AMMregistry,
@@ -85,7 +85,7 @@ const tvl_from_registry = (chain) => {
       })),
       block,
       chain,
-    })
+    })).output.filter(v=>v.output !== "0x0000000000000000000000000000000000000000")
     const {output: underlyingOfIBTAddresses} = await sdk.api.abi.multiCall({
       abi: abi['ammPool_getUnderlyingOfIBTAddress'],
       calls: ammPools.map((vault) => ({
@@ -138,6 +138,7 @@ const tvl_from_registry = (chain) => {
 }
 
 module.exports = {
+  doublecounted: true,
   ethereum: {
     tvl: tvl_from_registry('ethereum'),
     staking: staking(veAPW, APW, "ethereum"), 

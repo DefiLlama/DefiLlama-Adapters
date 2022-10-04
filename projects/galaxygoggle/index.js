@@ -42,19 +42,19 @@ const treasuryTokensBSC = [
 async function bscTvl(timestamp, block, chainBlocks) {
   let balances = {};
   await sumTokensAndLPsSharedOwners(balances, treasuryTokensBSC, [bscTreasury], chainBlocks.bsc, "bsc", addr=>`bsc:${addr}`);
-  balances[`avax:${gg}`] = balances["bsc:0xcaf23964ca8db16d816eb314a56789f58fe0e10e"];
+  balances[`avax:${gg}`] = balances["bsc:0xcaf23964ca8db16d816eb314a56789f58fe0e10e"]  || 0;
   delete balances["bsc:0xcaf23964ca8db16d816eb314a56789f58fe0e10e"];
   return balances;
 }
 
 module.exports = {
-  avalanche: {
+  avax:{
     tvl,
     staking: staking(GgStaking, gg, "avax")
   },
   bsc: {
     tvl: bscTvl,
-    staking: staking(bscStaking, bscGG, "bsc", addr=`avax:${gg}`)
+    staking: staking(bscStaking, bscGG, "bsc", `avax:${gg}`)
   },
   methodology:
     "Counts tokens on the treasury for tvl and staked GG for staking",

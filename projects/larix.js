@@ -1,27 +1,73 @@
-const {sumTokens} = require("./helper/solana")
+const sdk = require("@defillama/sdk");
+const { fetchURL } = require("./helper/utils");
 
-const getTokenBalance = (a,b)=>[a,b]
+const coingeckoMap = {
+  USDT: 'tether',
+  USDC: 'usd-coin',
+  BTC: 'bitcoin',
+  ETH: 'ethereum',
+  SOL: 'solana',
+  mSOL: 'solana',
+  soFTT: 'ftx-token',
+  SRM: 'serum',
+  RAY: 'raydium',
+  weWETH: 'ethereum',
+  stSOL: 'solana',
+  FTT: 'ftx-token',
+  UST: 'terrausd',
+  scnSOL: 'solana',
+  JSOL: 'solana',
+  FIDA: 'bonfida'
+};
 
-const contract = "BxnUi6jyYbtEEgkBq4bPLKzDpSfWVAzgyf3TF2jfC1my"
+async function getTokenPrices() {
+  const allApiIds = Object.values(coingeckoMap);
+  const allTokens = allApiIds
+    .filter((a,b) => a.indexOf(allApiIds) == a.lastIndexOf(b))
+    .reduce((a, b) => a + '%2C' + b);
+  
+    const prices = (await fetchURL(
+    `https://api.coingecko.com/api/v3/simple/price?ids=${allTokens}&vs_currencies=usd`
+    )).data;
+  
+  return prices;
+};
 
-async function tvl() {  
-  return sumTokens([
-    //btcAmount
-    getTokenBalance("9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E","BxnUi6jyYbtEEgkBq4bPLKzDpSfWVAzgyf3TF2jfC1my"),
-    //ethAmount
-    getTokenBalance("2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk","BxnUi6jyYbtEEgkBq4bPLKzDpSfWVAzgyf3TF2jfC1my"),
-    //solAmount
-    getTokenBalance("So11111111111111111111111111111111111111112","BxnUi6jyYbtEEgkBq4bPLKzDpSfWVAzgyf3TF2jfC1my"),
-    //usdtAmount
-    getTokenBalance("Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB","BxnUi6jyYbtEEgkBq4bPLKzDpSfWVAzgyf3TF2jfC1my"),
-    getTokenBalance("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v","BxnUi6jyYbtEEgkBq4bPLKzDpSfWVAzgyf3TF2jfC1my"), //usdc
-    getTokenBalance("AGFEad2et2ZJif9jaGpdMixQqvW5i81aBdvKe7PHNfz3","BxnUi6jyYbtEEgkBq4bPLKzDpSfWVAzgyf3TF2jfC1my"), // ftt
-    getTokenBalance("SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt", contract), // serum
-    ["mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So", contract, 'solana'],
-  ])
-}
+function tvl(borrowed) {
+  return async () => {
+    const balances = {};
+    const markets = (await fetchURL('https://api.projectlarix.com/market')).data.detail;
+    const tokenPrices = await getTokenPrices();
+
+    const tokens = markets.filter(a => !a.mint_name.includes('-')).map(m => ({
+      token: coingeckoMap[m.mint_name],
+      usdValue: (borrowed ? m.borrow_value : m.available_value)
+    }));
+    for (let market of tokens) {
+      const tokenQty = market.usdValue / tokenPrices[market.token].usd;
+      sdk.util.sumSingleBalance(balances, market.token, tokenQty);
+    };
+
+    const lps = markets.filter(a => a.mint_name.includes('-')).map(m => ({
+      token1: coingeckoMap[m.mint_name.substring(0, m.mint_name.indexOf('-'))],
+      token2: coingeckoMap[m.mint_name.substring(m.mint_name.indexOf('-') + 1)],
+      usdValue: (borrowed ? m.borrow_value : m.available_value)
+    }));
+    for (let market of lps) {
+      const token1Qty = market.usdValue / (2 * tokenPrices[market.token1].usd);
+      const token2Qty = market.usdValue / (2 * tokenPrices[market.token2].usd);
+      sdk.util.sumSingleBalance(balances, market.token1, token1Qty);
+      sdk.util.sumSingleBalance(balances, market.token2, token2Qty);
+    };
+
+    return balances;
+  };
+};
 
 module.exports = {
-  tvl,
-  methodology: 'To obtain the TVL of Larix we make on-chain calls using the function getTokenBalance() that uses the address of the token and the address of the contract where the tokens are held. These pools addresses are hard-coded. Making these calls returns the amount of tokens held in the smart contract. We then use Coingecko to get the price of each token in USD and export the sum of all tokens.',
-}
+  timetravel: false,
+  solana: {
+    tvl: tvl(),
+    borrowed: tvl(true)
+  }
+}; // node test.js projects/larix.js 

@@ -164,5 +164,4 @@ module.exports = {
     staking: polygonStaking,
     pool2: polygonPool2
   },
-  tvl: sdk.util.sumChainTvls([ethTvl])
 };

@@ -115,5 +115,4 @@ module.exports = {
         pool2,
         staking
     },
-    tvl
 }

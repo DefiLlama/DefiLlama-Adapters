@@ -3,8 +3,7 @@
   ==================================================*/
 
   const sdk = require('@defillama/sdk');
-  const _ = require('underscore');
-  _.flatMap = _.compose(_.flatten, _.map);
+
 
 /*==================================================
   Settings
@@ -55,12 +54,12 @@
 
     let swaps = [...swapsA, ...swapsB]
 
-    let balancesCalls = _.flatMap(swaps, (swap, i) => {
+    let balancesCalls = swaps.map((swap, i) => {
       return Array.from(Array(swap.coinNums), (e, idx) =>({target: swap.address, params: idx}))
-    })
+    }).flat()
 
-    const swapsA_coinSum = _.reduce(swapsA, (memo, num) => memo + num.coinNums, 0);
-    const swapsB_coinSum = _.reduce(swapsB, (memo, num) => memo + num.coinNums, 0);
+    const swapsA_coinSum = swapsA.reduce((memo, num) => memo + num.coinNums, 0);
+    const swapsB_coinSum = swapsB.reduce((memo, num) => memo + num.coinNums, 0);
 
     let balancesResultsA = await sdk.api.abi.multiCall({
       block,
@@ -112,9 +111,9 @@
 
     let balancesResults = [...balancesResultsA.output, ...balancesResultsB.output]
 
-    let coinsCalls = _.flatMap(swaps, (swap, i) => {
+    let coinsCalls = swaps.map((swap, i) => {
       return Array.from(Array(swap.coinNums), (e, idx) =>({target: swap.address, params: idx}))
-    })
+    }).flat()
 
     let coinsResultsA = await sdk.api.abi.multiCall({
       block,
@@ -161,10 +160,7 @@
       if(!balance || !balance.output) continue;
       // coin address
       const out = coinsResults[i].output;
-      // init
-      if(balances[out] == null) balances[out] = 0;
-      // update
-      balances[out] = String(parseFloat(balances[out]) + parseFloat(balance.output));
+      sdk.util.sumSingleBalance(balances, out, balance.output)
     }
 
     return balances;
@@ -180,5 +176,7 @@
     // #2 dfi pool started
     // start: 1602345600, // 10/10/2020 @ 04:00:00pm +UTC
     start: 1602374400, // 10/11/2020 @ 00:00:00am +UTC
-    tvl
+    ethereum: {
+      tvl
+    }
   }

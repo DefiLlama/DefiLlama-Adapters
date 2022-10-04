@@ -1,0 +1,85 @@
+{
+    "tokenByIndex": {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "index",
+                "type": "uint256"
+            }
+        ],
+        "name": "tokenByIndex",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "orders": {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "tokenId",
+                "type": "uint256"
+            }
+        ],
+        "name": "orders",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "owner",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "token0",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "token1",
+                "type": "address"
+            },
+            {
+                "internalType": "uint24",
+                "name": "fee",
+                "type": "uint24"
+            },
+            {
+                "internalType": "int24",
+                "name": "tickLower",
+                "type": "int24"
+            },
+            {
+                "internalType": "int24",
+                "name": "tickUpper",
+                "type": "int24"
+            },
+            {
+                "internalType": "uint128",
+                "name": "liquidity",
+                "type": "uint128"
+            },
+            {
+                "internalType": "uint256",
+                "name": "processed",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "tokensOwed0",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "tokensOwed1",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+}

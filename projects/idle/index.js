@@ -34,40 +34,65 @@ const contracts = {
       ]      
 }
 
-const trancheContracts = ["0xd0DbcD556cA22d3f3c142e9a3220053FD7a247BC", "0x77648a2661687ef3b05214d824503f6717311596"]
+const trancheContracts = [
+    "0xd0DbcD556cA22d3f3c142e9a3220053FD7a247BC", // DAI
+    "0x77648a2661687ef3b05214d824503f6717311596", // FEI
+    "0x34dcd573c5de4672c8248cd12a99f875ca112ad8", // stETH
+    "0x70320A388c6755Fc826bE0EF9f98bcb6bCCc6FeA", // mUSD
+    "0x4ccaf1392a17203edab55a1f2af3079a8ac513e7", // FRAX3CRV
+    "0x151e89e117728ac6c93aae94c621358b0ebd1866", // MIM3CRV
+    "0x7ecfc031758190eb1cb303d8238d553b1d4bc8ef", // steCRV
+    "0x008c589c471fd0a13ac2b9338b69f5f7a1a843e1", // ALUSD3CRV
+    "0x858F5A3a5C767F8965cF7b77C51FD178C4A92F05", // 3EUR
+    "0x16d88C635e1B439D8678e7BAc689ac60376fBfA6", // MUSD3CRV
+];
+
+const trancheTokenUnderlying = {
+    "0x6B175474E89094C44Da98b954EedeAC495271d0F":"0x6b175474e89094c44da98b954eedeac495271d0f", // DAI
+    "0x956F47F50A910163D8BF957Cf5846D573E7f87CA":"0x956f47f50a910163d8bf957cf5846d573e7f87ca", // FEI
+    "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84":"0xae7ab96520de3a18e5e111b5eaab095312d7fe84", // stETH
+    "0xe2f2a5C287993345a840Db3B0845fbC70f5935a5":"0xe2f2a5c287993345a840db3b0845fbc70f5935a5", // mUSD
+    "0xd632f22692FaC7611d2AA1C0D552930D43CAEd3B":"0x853d955acef822db058eb8505911ed77f175b99e", // FRAX3CRV
+    "0x5a6A4D54456819380173272A5E8E9B9904BdF41B":"0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3", // MIM3CRV
+    "0x06325440D014e39736583c165C2963BA99fAf14E":"0xae7ab96520de3a18e5e111b5eaab095312d7fe84", // steCRV
+    "0x43b4FdFD4Ff969587185cDB6f0BD875c5Fc83f8c":"0xBC6DA0FE9aD5f3b0d58160288917AA56653660E9", // ALUSD3CRV
+    "0xb9446c4Ef5EBE66268dA6700D26f96273DE3d571":"0x1a7e4e63778b4f12a199c062f3efdd288afcbce8", // 3EUR
+    "0x1AEf73d49Dedc4b1778d0706583995958Dc862e6":"0xe2f2a5c287993345a840db3b0845fbc70f5935a5", // MUSD3CRV
+};
 
 function chainTvl(chain){
-    return async (time, ethBlock, chainBlocks)=>{
-        const block = chainBlocks[chain]
+    return async (time, ethBlock, chainBlocks)=>{   
+        const block = chainBlocks[chain];
         const calls = {
             chain,
             block,
             calls: contracts[chain].map(c=>({target:c}))
-        }
+        };
         const [tokenPrice, token, supply] = await Promise.all([abi.tokenPrice, abi.token, "erc20:totalSupply"].map(abi=>
             sdk.api.abi.multiCall({
                 abi,
                 ...calls,
             }))
-        )
-        const balances = {}
+        );
+        const balances = {};
         tokenPrice.output.forEach((price, i)=>{
-            sdk.util.sumSingleBalance(balances, chain+":"+ token.output[i].output, 
-                BigNumber(price.output).times(supply.output[i].output).div(1e18).toFixed(0))
+            sdk.util.sumSingleBalance(balances, chain+":"+ token.output[i].output,
+            BigNumber(price.output).times(supply.output[i].output).div(1e18).toFixed(0))
         })
-        if(chain==="ethereum"){
+        if (chain==="ethereum"){
             const [contractValue, trancheToken] = await Promise.all([abi.getContractValue, abi.token].map(abi=>
                 sdk.api.abi.multiCall({
                     abi,
                     block, chain,
                     calls: trancheContracts.map(c=>({target:c}))
                 }))
-            )
+            );
+
             contractValue.output.forEach((value, i)=>{
-                sdk.util.sumSingleBalance(balances, chain+":"+ trancheToken.output[i].output, value.output)
+                sdk.util.sumSingleBalance(balances, chain+":"+ trancheTokenUnderlying[trancheToken.output[i].output], value.output)
             })
         }
-        return balances
+        return balances;
     }
 }
 

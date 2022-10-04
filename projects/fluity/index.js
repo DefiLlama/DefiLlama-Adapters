@@ -1,11 +1,11 @@
 const sdk = require("@defillama/sdk");
 const getEntireSystemCollAbi = require("./getEntireSystemColl.abi.json")
+const { getLiquityTvl } = require("../helper/liquity");
 
-const BNB_ADDRESS = 'bsc:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c';
-
+const BNB_ADDRESS = '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c';
 // TroveManager has a record of total system collateral
 const TROVE_MANAGER_ADDRESS = "0xe041c4099C0d6dcfC52C56A556EE4289D2E4b7C5";
-
+/*
 async function tvl(_, block, chainBlocks) {
   const balance = (
     await sdk.api.abi.call({
@@ -18,7 +18,7 @@ async function tvl(_, block, chainBlocks) {
 
   return { [BNB_ADDRESS]: balance };
 }
-
+*/
 module.exports = {
-  tvl,
+  tvl: getLiquityTvl(BNB_ADDRESS,TROVE_MANAGER_ADDRESS,"bsc")
 };

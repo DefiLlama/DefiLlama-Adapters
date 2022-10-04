@@ -1,15 +1,12 @@
-const { getChainTvl } = require('../helper/getUniSubgraphTvl');
-
-const graphUrls = {
-  kcc: 'https://info.kuswap.finance/subgraphs/name/kuswap/swap',
-}
-const chainTvl = getChainTvl(graphUrls)
+const { getUniTVL } = require('../helper/unknownTokens');
 
 module.exports = {
   misrepresentedTokens: true,
-  methodology: "We count liquidity on the dexes, pulling data from subgraphs",
   kcc: {
-    tvl: chainTvl('kcc'),
+    tvl: getUniTVL({
+      chain: 'kcc',
+      factory: '0xAE46cBBCDFBa3bE0F02F463Ec5486eBB4e2e65Ae',
+      useDefaultCoreAssets: true,
+    }),
   },
-  tvl: chainTvl('kcc'),
 }

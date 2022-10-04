@@ -15,8 +15,6 @@ async function fetch() {
     return parseFloat(results.getTVL)
 }
 
-fetch();
-
 module.exports = {
   fetch
 }

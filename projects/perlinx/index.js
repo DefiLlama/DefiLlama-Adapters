@@ -4,7 +4,7 @@
 
 const sdk = require('@defillama/sdk');
 const abi = require('./abi');
-const _ = require('underscore');
+
 const BigNumber = require('bignumber.js');
 
 /*==================================================
@@ -42,7 +42,7 @@ async function tvl(timestamp, block) {
     }
     const synths = await sdk.api.abi.multiCall({
         block,
-        calls: _.map(counts, (count) => {
+        calls: counts.map((count) => {
             return {
                 target: perlinX,
                 params: count
@@ -50,10 +50,10 @@ async function tvl(timestamp, block) {
         }),
         abi: abi.arraySynths
     })
-    const synthAddresses = _.map(synths.output, (item) => item.output)
+    const synthAddresses = synths.output.map((item) => item.output)
 
     const emps = (await sdk.api.abi.multiCall({
-        calls: _.map(synthAddresses, (address) => {
+        calls: synthAddresses.map((address) => {
             return {
                 target: perlinX,
                 params: address
@@ -62,11 +62,11 @@ async function tvl(timestamp, block) {
         abi: abi.mapSynth_EMP,
     }));
 
-    const empAddresses = _.map(emps.output, (item) => item.output)
+    const empAddresses = emps.output.map((item) => item.output)
 
     let calls = [];
 
-    _.forEach(empAddresses, (empAddress) => {
+    empAddresses.forEach((empAddress) => {
         calls.push({
             target: perlErc20,
             params: empAddress,
@@ -79,7 +79,7 @@ async function tvl(timestamp, block) {
         abi: 'erc20:balanceOf'
     })).output;
 
-    _.each(synthBalances, (balanceOf) => {
+    synthBalances.forEach((balanceOf) => {
             let balance = balanceOf.output;
             let address = balanceOf.input.target;
 
@@ -98,5 +98,5 @@ async function tvl(timestamp, block) {
 
 module.exports = {
     start: 1600905600,
-    tvl
+    ethereum: { tvl }
 }

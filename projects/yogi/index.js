@@ -1,6 +1,7 @@
 const sdk = require('@defillama/sdk');
+const { blockQuery } = require('../helper/graph')
 const { toUSDTBalances } = require('../helper/balances');
-const { GraphQLClient, gql } = require('graphql-request');
+const { gql } = require('graphql-request');
 
 const endpoints = {
   bsc: 'https://api.thegraph.com/subgraphs/name/yogi-fi/bsc',
@@ -20,8 +21,7 @@ query get_tvl($block: Int) {
 `;
 
 async function getChainTvl(chain, block) {
-  const graphQLClient = new GraphQLClient(endpoints[chain]);
-  const results = await graphQLClient.request(query, { block });
+  const results = await blockQuery(endpoints[chain], query, block, 800)
 
   return toUSDTBalances(results.balancers[0].totalLiquidity);
 }
@@ -42,5 +42,4 @@ module.exports = {
   polygon: {
     tvl: polygon
   },
-  tvl: sdk.util.sumChainTvls([polygon, bsc])
 }

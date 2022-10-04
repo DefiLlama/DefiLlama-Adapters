@@ -1,52 +1,70 @@
 const sdk = require("@defillama/sdk");
-const BigNumber = require('bignumber.js')
-const { GraphQLClient, gql } = require('graphql-request');
-const retry = require('../helper/retry');
-const utils = require('../helper/utils');
 const abi = require("./abi.json");
 const { staking } = require("../helper/staking");
 const { addFundsInMasterChef } = require("../helper/masterchef");
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const BDPMasterContract = "0x0De845955E2bF089012F682fE9bC81dD5f11B372";
 const BDP = "0xf3dcbc6d72a4e1892f7917b7c43b74131df8480e";
+const BFactory = '0xbe0083053744ecb871510c88dc0f6b77da162706'
 
-const pricesOfBDP = "https://api.coingecko.com/api/v3/simple/price?ids=big-data-protocol&vs_currencies=BTC,CAD,CNY,ETH,EUR,GBP,HKD,INR,JPY,LINK,RUB,SGD,USD"
-const endpoint = 'https://subgraph.mainnet.bigdataprotocolmarket.com:8000/subgraphs/name/oceanprotocol/ocean-subgraph'
+const chain = 'ethereum'
 
-const USDT = "0xdAC17F958D2ee523a2206206994597C13D831ec7";
+const getCurrentTokensABI = {
+  "constant": true,
+  "inputs": [],
+  "name": "getCurrentTokens",
+  "outputs": [
+    {
+      "name": "tokens",
+      "type": "address[]"
+    }
+  ],
+  "payable": false,
+  "stateMutability": "view",
+  "type": "function"
+}
 
-const ethTvl = async (chainBlocks) => {
+const ethTvl = async (_, block) => {
+
+
+  const logs = (
+    await sdk.api.util.getLogs({
+      keys: [],
+      toBlock: block,
+      target: BFactory,
+      fromBlock: 11105585,
+      topic: 'BPoolCreated(address,address)',
+    })
+  ).output
+
+  const pools = logs
+    .map((log) => `0x${log.topics[1].substring(26)}`)
+
+  const { output: tokens } = await sdk.api.abi.multiCall({
+    abi: getCurrentTokensABI,
+    calls: pools.map(i => ({ target: i })),
+    chain, block,
+  })
+
   const balances = {};
+  const toa = []
+
+  tokens.forEach(({ output, input: { target } }) => output.forEach(t => toa.push([t, target])))
 
   /*** BDP Seed Pools (Data Vault seccion) TVL portion ***/
   await addFundsInMasterChef(
     balances,
     BDPMasterContract,
-    chainBlocks["ethereum"],
-    "ethereum",
+    block,
+    chain,
     addr => addr,
     abi.poolInfo,
   );
 
-  /*** BDP Data Set Pools (Data Market seccion) TVL portion ***/
-  const graphQLClient = new GraphQLClient(endpoint);
+  // console.log(toa.length)
 
-  const query = gql`{
-    poolFactories{
-      totalValueLocked
-    }
-  }`;
-
-  const priceBDPtoUSD = (await utils.fetchURL(pricesOfBDP)).data['big-data-protocol'].usd;
-
-  const tvlInBDP = (await retry(
-    async bail => await graphQLClient.request(query))).poolFactories.map(tvl => tvl.totalValueLocked);
-
-  const USDTbalance = BigNumber(priceBDPtoUSD * tvlInBDP[0]).times(1e6).toFixed(0)
-
-  sdk.util.sumSingleBalance(balances, USDT, USDTbalance);
-
-  return balances;
+  return sumTokens2({ balances, tokensAndOwners: toa, chain, block, });
 };
 
 module.exports = {

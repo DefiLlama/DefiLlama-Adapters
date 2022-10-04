@@ -5,6 +5,7 @@ const token1 = require('./abis/token1.json');
 const getReserves = require('./abis/getReserves.json');
 const factoryAbi = require('./abis/factory.json');
 const { getBlock } = require('./getBlock');
+const { getChainTransform, getFixBalances } = require('./portedTokens')
 
 async function requery(results, chain, block, abi) {
     if (results.some(r => !r.success)) {
@@ -39,11 +40,12 @@ function setPrice(prices, address, coreAmount, tokenAmount) {
     prices[address] = [Number(coreAmount), Number(coreAmount) / Number(tokenAmount)]
 }
 
-function calculateUsdUniTvl(FACTORY, chain, coreAssetRaw, whitelistRaw, coreAssetName, decimals = 18, allowUndefinedBlock = true) {
+function calculateUsdUniTvl(FACTORY, chain, coreAssetRaw, whitelistRaw, coreAssetName = undefined, decimals = 18, allowUndefinedBlock = true) {
     const whitelist = whitelistRaw.map(t => t.toLowerCase())
     const coreAsset = coreAssetRaw.toLowerCase()
     return async (timestamp, ethBlock, chainBlocks) => {
         const block = await getBlock(timestamp, chain, chainBlocks, allowUndefinedBlock)
+        const transformAddress = await getChainTransform(chain)
 
         let pairAddresses;
         const pairLength = (await sdk.api.abi.call({
@@ -155,18 +157,147 @@ function calculateUsdUniTvl(FACTORY, chain, coreAssetRaw, whitelistRaw, coreAsse
                 }
             }
         }
+        const finalBalances = {}
         Object.entries(balances).forEach(([address, amount]) => {
             const price = prices[address];
             if (price !== undefined) {
                 coreBalance += price[1] * (amount ?? 0)
+            } else {
+                finalBalances[transformAddress(address)] = amount
             }
         })
-        return {
-            [coreAssetName]: (coreBalance) / (10 ** decimals)
+        
+        const fixBalances = await getFixBalances(chain)
+        fixBalances(finalBalances)
+
+        if (coreAssetName)
+            sdk.util.sumSingleBalance(finalBalances, coreAssetName, (coreBalance) / (10 ** decimals))
+        else
+            sdk.util.sumSingleBalance(finalBalances, transformAddress(coreAsset), coreBalance)
+
+        return finalBalances
+    }
+};
+
+// same as calculateUsdUniTvl, but takes pair addresses as params instead of iterating over all pairs from factory
+function calculateUsdUniTvlPairs(pairAddresses, chain, coreAssetRaw, whitelistRaw, coreAssetName = undefined, decimals = 18, allowUndefinedBlock = true) {
+    const whitelist = whitelistRaw.map(t => t.toLowerCase())
+    const coreAsset = coreAssetRaw.toLowerCase()
+    return async (timestamp, ethBlock, chainBlocks) => {
+        const block = await getBlock(timestamp, chain, chainBlocks, allowUndefinedBlock)
+        const transformAddress = await getChainTransform(chain)
+
+        const [token0Addresses, token1Addresses, reserves] = await Promise.all([
+            sdk.api.abi
+                .multiCall({
+                    abi: token0,
+                    chain,
+                    calls: pairAddresses.map((pairAddress) => ({
+                        target: pairAddress,
+                    })),
+                    block,
+                })
+                .then(({ output }) => output),
+            sdk.api.abi
+                .multiCall({
+                    abi: token1,
+                    chain,
+                    calls: pairAddresses.map((pairAddress) => ({
+                        target: pairAddress,
+                    })),
+                    block,
+                })
+                .then(({ output }) => output),
+            sdk.api.abi
+                .multiCall({
+                    abi: getReserves,
+                    chain,
+                    calls: pairAddresses.map((pairAddress) => ({
+                        target: pairAddress,
+                    })),
+                    block,
+                }).then(({ output }) => output),
+        ]);
+        await requery(token0Addresses, chain, block, token0);
+        await requery(token1Addresses, chain, block, token1);
+        await requery(reserves, chain, block, getReserves);
+
+        const pairs = {};
+        // add token0Addresses
+        token0Addresses.forEach((token0Address) => {
+            const tokenAddress = token0Address.output.toLowerCase();
+
+            const pairAddress = token0Address.input.target.toLowerCase();
+            pairs[pairAddress] = {
+                token0Address: tokenAddress,
+            }
+        });
+
+        // add token1Addresses
+        token1Addresses.forEach((token1Address) => {
+            const tokenAddress = token1Address.output.toLowerCase();
+            const pairAddress = token1Address.input.target.toLowerCase();
+            pairs[pairAddress] = {
+                ...(pairs[pairAddress] || {}),
+                token1Address: tokenAddress,
+            }
+        });
+
+        const balances = {}
+        let coreBalance = 0
+        const prices = {}
+        for (let i = 0; i < reserves.length; i++) {
+            const pairAddress = reserves[i].input.target.toLowerCase();
+            const pair = pairs[pairAddress];
+            const token0Address = pair.token0Address.toLowerCase()
+            const token1Address = pair.token1Address.toLowerCase()
+            const reserveAmounts = reserves[i].output
+            if (token0Address === coreAsset) {
+                coreBalance += Number(reserveAmounts[0]) * 2
+                if (whitelist.includes(token1Address)) {
+                    setPrice(prices, token1Address, reserveAmounts[0], reserveAmounts[1])
+                }
+            } else if (token1Address === coreAsset) {
+                coreBalance += Number(reserveAmounts[1]) * 2
+                if (whitelist.includes(token0Address)) {
+                    setPrice(prices, token0Address, reserveAmounts[1], reserveAmounts[0])
+                }
+            } else {
+                const whitelistedToken0 = whitelist.find(t => t === token0Address)
+                const whitelistedToken1 = whitelist.find(t => t === token1Address)
+                if (whitelistedToken0 !== undefined) {
+                    sum(balances, whitelistedToken0, Number(reserveAmounts[0]) * 2)
+                } else if (whitelistedToken1 !== undefined) {
+                    sum(balances, whitelistedToken1, Number(reserveAmounts[1]) * 2)
+                }
+            }
         }
+        const finalBalances = {}
+        Object.entries(balances).forEach(([address, amount]) => {
+            const price = prices[address];
+            if (price !== undefined) {
+                coreBalance += price[1] * (amount ?? 0)
+            } else {
+                finalBalances[transformAddress(address)] = amount
+            }
+        })
+
+        const fixBalances = await getFixBalances(chain)
+        fixBalances(finalBalances)
+
+        if (coreAssetName)
+            sdk.util.sumSingleBalance(finalBalances, coreAssetName, (coreBalance) / (10 ** decimals))
+        else
+            sdk.util.sumSingleBalance(finalBalances, transformAddress(coreAsset), coreBalance)
+
+        return finalBalances
     }
 };
 
 module.exports = {
     calculateUsdUniTvl,
+    calculateUsdUniTvlPairs,
+    requery,
+    setPrice,
+    sum
 };

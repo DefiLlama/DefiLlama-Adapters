@@ -5,7 +5,7 @@ async function tvl() {
   let balances = {};
 
   let deposits = (await retry(async bail => 
-    await axios.get('https://api.kava.io/cdp/totalCollateral'))).data.result;
+    await axios.get('https://api2.kava.io/cdp/totalCollateral'))).data.result;
   for (let i = 0; i < deposits.length; i++) {
     const info = convertSymbol(deposits[i].amount.denom);
     if (info.id in balances) {
@@ -17,7 +17,7 @@ async function tvl() {
   };
 
   // let borrowed = (await retry(async bail => 
-  //   await axios.get('https://api.kava.io/cdp/totalPrincipal'))).data.result;
+  //   await axios.get('https://api2.kava.io/cdp/totalPrincipal'))).data.result;
   // for (let i = 0; i < borrowed.length; i++) {
   //   const symbol = borrowed[i].collateral_type.substring(
   //     0, borrowed[i].collateral_type.indexOf('-'));
@@ -49,12 +49,15 @@ function convertSymbol(symbol) {
       return {id: 'kava', decimals: 6};
     case 'xrpb':
       return {id: 'ripple', decimals: 8};
+    case 'ibc/B448C0CA358B958301D328CCDC5D5AD642FC30A6D3AE106FF721DB315F3DDE5C':
+      return {id: 'terra-usd', decimals: 6};
     default:
       console.log(symbol);
   };
 };
 
 module.exports = {
-  tvl
+  timetravel: false,
+  kava: { tvl }
 };
 // node test.js projects/kava.js

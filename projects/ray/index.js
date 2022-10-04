@@ -1,5 +1,5 @@
   const sdk = require('@defillama/sdk');
-  const _ = require('underscore');
+
   const BigNumber = require('bignumber.js');
 
   const opportunityAbi = require('./abis/Opportunity');
@@ -60,7 +60,7 @@
          ((allPortfolioManagers[i].endTimestamp == null) ||
            timestamp <= allPortfolioManagers[i].endTimestamp)) {
 
-         let calls = _.reduce(tokenAddresses, (accum, tokenAddress) => [...accum, {
+         let calls = tokenAddresses.reduce((accum, tokenAddress) => [...accum, {
              target: tokenAddress,
              params: allPortfolioManagers[i].address
          }], []);
@@ -93,7 +93,7 @@
            supportedTokens = removeTokens(timestamp, supportedTokens, allOpportunities[i].added);
          }
 
-         let calls = _.reduce(supportedTokens, (accum, tokenAddress) => [...accum,
+         let calls = supportedTokens.reduce((accum, tokenAddress) => [...accum,
            {
              target: allOpportunities[i].address,
              params: tokenAddress
@@ -128,7 +128,7 @@
     let { pmCalls, portfolioManagers } = getPmCalls(timestamp);
     let opportunityCalls = getOpportunityCalls(timestamp);
 
-    await Promise.all(_.map(portfolioManagers, (portfolioManager) => {
+    await Promise.all(portfolioManagers.map((portfolioManager) => {
       return new Promise(async (resolve, reject) => {
         try {
           let balance = (await sdk.api.eth.getBalance({target: portfolioManager, block})).output;
@@ -147,7 +147,7 @@
       abi: 'erc20:balanceOf'
     })).output;
 
-    _.each(pmBalances, (result) => {
+    pmBalances.forEach((result) => {
         let balance = result.output;
         let address = result.input.target;
 
@@ -164,7 +164,7 @@
       abi: opportunityAbi.getBalance
     })).output;
 
-    _.each(opportunityBalances, (result) => {
+    opportunityBalances.forEach((result) => {
       if(result.input.params[0] === '0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359' && result.input.target === "0x759A728653C4d0483D897DCCf3a343fe2bBbb54A"){
         return
       }
