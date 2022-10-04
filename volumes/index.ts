@@ -111,6 +111,7 @@ import protofi from "./adapters/protofi";
 import voltage from "./adapters/voltage";
 import complusNetwork from "./adapters/complus-network";
 import padswap from "./adapters/padswap";
+import sharkswap from "./adapters/sharkswap";
 
 export default {
   mooniswap,
@@ -223,6 +224,7 @@ export default {
   protofi,
   voltage,
   "complus-network": complusNetwork,
-  padswap
+  padswap,
+  sharkswap
   // lyra -> OPTIONS DEX, not enable for now
 };
