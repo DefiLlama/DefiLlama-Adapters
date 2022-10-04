@@ -103,7 +103,7 @@ import lif3Swap from "./adapters/lif3-swap";
 import swappi from "./adapters/swappi";
 import yodeswap from "./adapters/yodeswap";
 import polycat from "./adapters/polycat";
-import defikingdoms from "./adapters/defikingdoms";
+import defikingdoms from "./adapters/defi-kingdoms";
 import defiplaza from "./adapters/defiplaza";
 import voltswap from "./adapters/voltswap";
 import yokaiswap from "./adapters/yokaiswap";
@@ -215,7 +215,7 @@ export default {
   swappi,
   yodeswap,
   polycat,
-  defikingdoms,
+  "defi-kingdoms" : defikingdoms,
   defiplaza,
   voltswap,
   yokaiswap,
