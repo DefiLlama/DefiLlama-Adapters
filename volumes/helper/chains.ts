@@ -35,7 +35,8 @@ export enum CHAIN {
   IOTEX = "iotex",
   KARDIA = "kardia",
   TOMBCHAIN = "tombchain",
-  CONFLUX = "conflux"
+  CONFLUX = "conflux",
+  TERRA = "terra"
 }
 
 // Don´t use
