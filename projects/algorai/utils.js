@@ -1,10 +1,22 @@
 const {lookupApplications} = require("../helper/algorand");
 
+/**
+ * @desc Read global state from algorand application
+ *
+ * @param appId
+ * @returns {Promise<*>}
+ */
 async function getAppState(appId) {
     const res = await lookupApplications(appId);
     return res.application.params["global-state"];
 }
 
+/**
+ * @desc Given an encoded string, return its decoded string.
+ *
+ * @param str
+ * @returns {*}
+ */
 const decodeString = (str) => {
     return Buffer.from(str, "base64").toString("binary");
 };
@@ -40,6 +52,13 @@ const readGlobalState = async (appIndex, keys) => {
     });
 };
 
+
+/**
+ * @desc The median of a sorted array of size N is defined as the middle element when N is odd and average of middle two elements when N is even
+ *
+ * @param arr1
+ * @returns {number|*}
+ */
 const medianFromArray = (arr1) => {
     let concat = arr1;
     concat = concat.sort(
