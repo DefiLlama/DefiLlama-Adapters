@@ -108,6 +108,7 @@ import defiplaza from "./adapters/defiplaza";
 import voltswap from "./adapters/voltswap";
 import yokaiswap from "./adapters/yokaiswap";
 import protofi from "./adapters/protofi";
+import voltage from "./voltage/voltage";
 
 export default {
   mooniswap,
@@ -217,6 +218,7 @@ export default {
   defiplaza,
   voltswap,
   yokaiswap,
-  protofi
+  protofi,
+  voltage
   // lyra -> OPTIONS DEX, not enable for now
 };
