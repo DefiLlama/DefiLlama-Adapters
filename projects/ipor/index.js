@@ -7,30 +7,6 @@ const miltonAddresses = [
   '0xEd7d74AA7eB1f12F83dA36DFaC1de2257b4e7523', // DAI
 ]
 
-const underlyings = [
-  {
-    symbol: "USDT",
-    underlyingAddress: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-    miltonAddress: "",
-    underlyingDecimals: 6,
-    outputDecimals: 18,
-  },
-  {
-    symbol: "USDC",
-    underlyingAddress: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-    miltonAddress: "",
-    underlyingDecimals: 6,
-    outputDecimals: 18,
-  },
-  {
-    symbol: "DAI",
-    underlyingAddress: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
-    miltonAddress: "",
-    underlyingDecimals: 18,
-    outputDecimals: 18,
-  },
-];
-
 async function tvl(_, block) {
   const balances = {};
   const calls = miltonAddresses.map(i => ({ target: i }))
