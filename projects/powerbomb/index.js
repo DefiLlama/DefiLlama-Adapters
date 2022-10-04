@@ -47,147 +47,72 @@ const avaxCrv3poolEthAddr = "0xFAcB839BF8f09f2e7B4b6C83349B5bbFD62fd659"
 const avaxCrv3poolGohmAddr = "0x4d3e58DAa8233Cc6a46b9c6e23df5A202B178550"
 const avaxCrv3poolWmemoAddr = "0x9adA6069D6C02c839111e8F406270ED03D1a9506"
 
-// arbitrum
-async function arbTvl(_, _B, _C) {
-    let total = 0
-    const arbVaults = [
-        arbCrvAtricryptoBtcAddr,
-        arbCrvAtricryptoEthAddr,
-        arbCrvAtricryptoUsdtAddr,
-        arbCrv2poolBtcAddr,
-        arbCrv2poolEthAddr,
-    ]
-    const arbOutput = await sdk.api.abi.multiCall({
-        abi: abi["getAllPoolInUSD"],
-        calls: arbVaults.map(i => ({ target: i })),
-        chain: "arbitrum",
-    })
-    arbOutput.output.forEach(i => total += +i.output)
-
-    return {
-        tether: total / 1e6,
-    }
+const vaults = {
+  arbitrum: [
+    arbCrvAtricryptoBtcAddr,
+    arbCrvAtricryptoEthAddr,
+    arbCrvAtricryptoUsdtAddr,
+    arbCrv2poolBtcAddr,
+    arbCrv2poolEthAddr,
+  ],
+  polygon: [
+    polyCrvAtricryptoBtcAddr,
+    polyCrvAtricryptoEthAddr,
+    polyCrvAtricryptoUsdcAddr,
+  ],
+  optimism: [
+    opCrvSusd3crvBtcAddr,
+    opCrvSusd3crvEthAddr,
+    opCrvSethethUsdcAddr,
+    opVeloUsdcSusdBtcAddr,
+    opVeloUsdcSusdEthAddr,
+    opVeloFraxUsdcBtcAddr,
+    opVeloFraxUsdcEthAddr,
+    opVeloUsdcDaiBtcAddr,
+    opVeloUsdcDaiEthAddr,
+    opVeloUsdcLusdBtcAddr,
+    opVeloUsdcLusdEthAddr,
+    opVeloUsdcMaiBtcAddr,
+    opVeloUsdcMaiEthAddr,
+    opVeloOpUsdcBtcAddr,
+    opVeloOpUsdcEthAddr,
+    opVeloOpUsdcUsdcAddr,
+    opVeloWethUsdcBtcAddr,
+    opVeloWethUsdcEthAddr,
+    opVeloWethUsdcUsdcAddr,
+    opVeloWethSethUsdcAddr,
+    // opUniUsdcDaiAddr,
+    opCrvPengAddr,
+  ],
+  harmony: [
+    oneCrv3poolBtcAddr,
+    oneCrv3poolEthAddr,
+  ],
+  avax: [
+    avaxCrv3poolBtcAddr,
+    avaxCrv3poolEthAddr,
+    avaxCrv3poolGohmAddr,
+    avaxCrv3poolWmemoAddr,
+  ]
 }
-
-
-// polygon
-async function polyTvl(_, _B, _C) {
-    let total = 0
-    const polyVaults = [
-        polyCrvAtricryptoBtcAddr,
-        polyCrvAtricryptoEthAddr,
-        polyCrvAtricryptoUsdcAddr,
-    ]
-    const polyOutput = await sdk.api.abi.multiCall({
-        abi: abi["getAllPoolInUSD"],
-        calls: polyVaults.map(i => ({ target: i })),
-        chain: "polygon",
-    })
-    polyOutput.output.forEach(i => total += +i.output)
-
-    return {
-        tether: total / 1e6,
-    }
-}
-
-
-// optimism
-async function opTvl(_, _B, _C) {
-    let total = 0
-    const opVaults = [
-        opCrvSusd3crvBtcAddr,
-        opCrvSusd3crvEthAddr,
-        opCrvSethethUsdcAddr,
-        opVeloUsdcSusdBtcAddr,
-        opVeloUsdcSusdEthAddr,
-        opVeloFraxUsdcBtcAddr,
-        opVeloFraxUsdcEthAddr,
-        opVeloUsdcDaiBtcAddr,
-        opVeloUsdcDaiEthAddr,
-        opVeloUsdcLusdBtcAddr,
-        opVeloUsdcLusdEthAddr,
-        opVeloUsdcMaiBtcAddr,
-        opVeloUsdcMaiEthAddr,
-        opVeloOpUsdcBtcAddr,
-        opVeloOpUsdcEthAddr,
-        opVeloOpUsdcUsdcAddr,
-        opVeloWethUsdcBtcAddr,
-        opVeloWethUsdcEthAddr,
-        opVeloWethUsdcUsdcAddr,
-        opVeloWethSethUsdcAddr,
-        // opUniUsdcDaiAddr,
-        opCrvPengAddr,
-    ]
-    const opOutput = await sdk.api.abi.multiCall({
-        abi: abi["getAllPoolInUSD"],
-        calls: opVaults.map(i => ({ target: i })),
-        chain: "optimism",
-    })
-    opOutput.output.forEach(i => total += +i.output)
-
-    return {
-        tether: total / 1e6,
-    }
-}
-
-
-// harmony
-async function oneTvl(_, _B, _C) {
-    let total = 0
-    const oneVaults = [
-        oneCrv3poolBtcAddr,
-        oneCrv3poolEthAddr,
-    ]
-    const oneOutput = await sdk.api.abi.multiCall({
-        abi: abi["getAllPoolInUSD"],
-        calls: oneVaults.map(i => ({ target: i })),
-        chain: "harmony",
-    })
-    oneOutput.output.forEach(i => total += +i.output)
-
-    return {
-        tether: total / 1e6,
-    }
-}
-
-
-// avalanche
-async function avaxTvl(_, _B, _C) {
-    let total = 0
-    const avaxVaults = [
-        avaxCrv3poolBtcAddr,
-        avaxCrv3poolEthAddr,
-        avaxCrv3poolGohmAddr,
-        avaxCrv3poolWmemoAddr,
-    ]
-    const avaxOutput = await sdk.api.abi.multiCall({
-        abi: abi["getAllPoolInUSD"],
-        calls: avaxVaults.map(i => ({ target: i })),
-        chain: "avax",
-    })
-    avaxOutput.output.forEach(i => total += +i.output)
-
-    return {
-        tether: total / 1e6,
-    }
-}
-
 
 module.exports = {
-    methodology: "TVL come from amount deposit into pools such as Curve & Velodrome.",
-    arbitrum: {
-        tvl: arbTvl,
-    },
-    polygon: {
-        tvl: polyTvl,
-    },
-    optimism: {
-        tvl: opTvl,
-    },
-    harmony: {
-        tvl: oneTvl,
-    },
-    avax: {
-        tvl: avaxTvl,
-    },
+  methodology: "TVL come from amount deposit into pools such as Curve & Velodrome.",
+  misrepresentedTokens: true,
 }
+
+Object.keys(vaults).forEach(chain => {
+  const vault = vaults[chain]
+  module.exports[chain] = {
+    tvl: async (_, _b, {[chain]: block}) => {
+      const { output } = await sdk.api.abi.multiCall({
+        abi: abi["getAllPoolInUSD"],
+        calls: vault.map(i => ({ target: i })),
+        chain, block,
+      })
+      return {
+        tether: output.reduce((acc, i) => acc + +i.output, 0) / 1e6,
+      }
+    }
+  }
+})
