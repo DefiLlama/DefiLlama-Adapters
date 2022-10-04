@@ -6,7 +6,7 @@ const registry_addr = "0xBd21dD5BCFE28475D26154935894d4F515A7b1C0";
 const helper_addr = "0x1A09643f4D70B9Aa9da5737568C1935ED37423aa";
 const chain = 'klaytn';
 
-async function tvl(timestamp, block, chainBlocks) {
+async function tvl(timestamp, _, chainBlocks) {
   const balances = {};
   block = chainBlocks[chain]
 
@@ -66,7 +66,7 @@ async function tvl(timestamp, block, chainBlocks) {
   return balances;
 };
 
-async function staking(timestamp, block, chainBlocks) {
+async function staking(timestamp, _, {klaytn: block}) {
   const info = (await sdk.api.abi.call({
     target: helper_addr,
     abi: abi.getStakedEyePriceInfo,

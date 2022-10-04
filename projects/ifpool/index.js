@@ -5,7 +5,8 @@ const validatorContract = "0x0000000000000000000000000000000000001000";
 const validatorAddress = "0xb0dC7A676Ab09868eBef78E16e6AEA9e79F0f9Cf";
 const CHAIN = "csc";
 
-async function coinexTVL(timestamp, block, chainBlocks) {
+async function coinexTVL(timestamp, _, chainBlocks) {
+  const block = chainBlocks[CHAIN]
   const validatorInfo = await sdk.api.abi.call({
     chain: CHAIN,
     block: block,
