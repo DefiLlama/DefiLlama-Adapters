@@ -51,7 +51,8 @@ async function eth_tvl(_time, block){
     return balances
 }
 
-async function op_tvl(_time, block){
+async function op_tvl(_time, block, cb){
+    block = cb.optimism
     const markets = await sdk.api.abi.call({
         target: opMarketsManager,
         abi: abi.activeMarkets,
@@ -64,7 +65,8 @@ async function op_tvl(_time, block){
     return balances
 }
 
-async function sports_tvl(_time, block){
+async function sports_tvl(_time, block, cb){
+    block = cb.optimism
     const markets = await sdk.api.abi.call({
         target: opSportsMarketsManager,
         abi: abi.activeMarkets,
@@ -77,7 +79,8 @@ async function sports_tvl(_time, block){
     return balances
 }
 
-async function polygon_tvl(_time, block){
+async function polygon_tvl(_time, block, cb){
+    block = cb.polygon
     const markets = await sdk.api.abi.call({
         target: polygonMarketsManager,
         abi: abi.activeMarkets,

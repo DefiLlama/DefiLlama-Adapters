@@ -101,6 +101,7 @@ import tethysFinance from "./adapters/tethys-finance";
 import kaidex from "./adapters/kaidex";
 import lif3Swap from "./adapters/lif3-swap";
 import swappi from "./adapters/swappi";
+import yodeswap from "./adapters/yodeswap";
 
 export default {
   mooniswap,
@@ -203,6 +204,7 @@ export default {
   "tethys-finance": tethysFinance,
   kaidex,
   "lif3-swap": lif3Swap,
-  swappi
+  swappi,
+  yodeswap
   // lyra -> OPTIONS DEX, not enable for now
 };
