@@ -42,7 +42,7 @@ async function getV2GardDebt(){
   const sgardState = await getAppState(sgardGardId);
   const SGardConversion = getStateUint(sgardState, btoa('conversion_rate'))
 
-  return SGardDebt * SGardConversion
+  return SGardDebt * SGardConversion / 1e10
 }
 
 /* Get value locked in user-controlled smart contracts */
@@ -102,10 +102,10 @@ async function borrowed() {
   const gardBalance = info.account.assets?.find((asset) => asset["asset-id"] === gardId).amount;
 
   const v2GardBalance = await getV2GardDebt()
-  console.log(18e18 - gardBalance);
+  console.log(188e16 - gardBalance);
   console.log(v2GardBalance);
 
-  return ((18e18 - gardBalance) + v2GardBalance)/1e14
+  return ((188e16 - gardBalance) + v2GardBalance)/1e6
   // Contract is initialized with 9.2 quintillion microGARD. Each GARD is pegged to $1
 }
 
