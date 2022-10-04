@@ -107,6 +107,7 @@ import defikingdoms from "./adapters/defikingdoms";
 import defiplaza from "./adapters/defiplaza";
 import voltswap from "./adapters/voltswap";
 import yokaiswap from "./adapters/yokaiswap";
+import protofi from "./adapters/protofi";
 
 export default {
   mooniswap,
@@ -215,6 +216,7 @@ export default {
   defikingdoms,
   defiplaza,
   voltswap,
-  yokaiswap
+  yokaiswap,
+  protofi
   // lyra -> OPTIONS DEX, not enable for now
 };
