@@ -5,27 +5,6 @@ async function getAppState(appId) {
     return res.application.params["global-state"];
 }
 
-/**
- * Calculate the sqrt of a bigint (rounded down to nearest integer)
- * @param value value to be square-rooted
- * @return bigint sqrt
- */
-function sqrt(value) {
-    if (value < BigInt(0))
-        throw Error("square root of negative numbers is not supported");
-
-    if (value < BigInt(2)) return value;
-
-    function newtonIteration(n, x0) {
-        const x1 = (n / x0 + x0) >> BigInt(1);
-        if (x0 === x1 || x0 === x1 - BigInt(1)) return x0;
-        return newtonIteration(n, x1);
-    }
-
-    return newtonIteration(value, BigInt(1));
-}
-
-
 const decodeString = (str) => {
     return Buffer.from(str, "base64").toString("binary");
 };
