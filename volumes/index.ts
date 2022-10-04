@@ -104,6 +104,7 @@ import swappi from "./adapters/swappi";
 import yodeswap from "./adapters/yodeswap";
 import polycat from "./adapters/polycat";
 import defikingdoms from "./adapters/defikingdoms";
+import defiplaza from "./adapters/defiplaza";
 
 export default {
   mooniswap,
@@ -209,6 +210,7 @@ export default {
   swappi,
   yodeswap,
   polycat,
-  defikingdoms
+  defikingdoms,
+  defiplaza
   // lyra -> OPTIONS DEX, not enable for now
 };
