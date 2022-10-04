@@ -24,6 +24,7 @@ async function tvl(_, block) {
   ]
   
   await addVaults({ balances, block, vaults, })
+  return balances
 }
 
 module.exports = {
