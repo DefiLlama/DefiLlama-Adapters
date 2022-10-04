@@ -102,7 +102,10 @@ async function borrowed() {
   const gardBalance = info.account.assets?.find((asset) => asset["asset-id"] === gardId).amount;
 
   const v2GardBalance = await getV2GardDebt()
-  return ((18e17 - gardBalance) + v2GardBalance)/1e6
+  console.log(18e18 - gardBalance);
+  console.log(v2GardBalance);
+
+  return ((18e18 - gardBalance) + v2GardBalance)/1e14
   // Contract is initialized with 9.2 quintillion microGARD. Each GARD is pegged to $1
 }
 
