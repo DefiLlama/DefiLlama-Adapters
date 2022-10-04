@@ -108,7 +108,7 @@ import defiplaza from "./adapters/defiplaza";
 import voltswap from "./adapters/voltswap";
 import yokaiswap from "./adapters/yokaiswap";
 import protofi from "./adapters/protofi";
-import voltage from "./voltage/voltage";
+import voltage from "./adapters/voltage";
 
 export default {
   mooniswap,
