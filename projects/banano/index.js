@@ -18,5 +18,5 @@ module.exports = {
         tvl: async ()=>({}),
         pool2: pool2BalanceFromMasterChefExports(bscContract, ban, "bsc", addr=>`bsc:${addr}`, masterchefAbi.poolInfo)
     },
-    tvl: async ()=>({})
 }
+

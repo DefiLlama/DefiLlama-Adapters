@@ -1,67 +1,134 @@
 const sdk = require('@defillama/sdk');
-const erc20 = require("../helper/abis/erc20.json");
+const {gql, GraphQLClient} = require("graphql-request");
+const retry = require("../helper/retry");
+const utils = require("../helper/utils");
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
-controller_address = '0x0eabe8e34a1fae4601953667f811acb9ff808e78'
-openlev_address = '0x03bf707deb2808f711bb0086fc17c5cafa6e8aaf'
-
-async function tvl(timestamp, block) {
-    const logOutput = (await sdk.api.util.getLogs({
-        target: controller_address,
-        fromBlock: 13755184,
-        toBlock: block,
-        keys:[],
-        topic:'LPoolPairCreated(address,address,address,address,uint16,uint16,bytes)'
-    })).output
-
-    tokenAddressList = []
-    poolAddressList = []
-    poolToToken = {}
-    for (const s of logOutput) {
-        token0 = "0x"+s.data.slice(26, 66)
-        tokenAddressList.push(token0)
-        pool0 = "0x"+s.data.slice(90, 130)
-        poolAddressList.push(pool0)
-        poolToToken[pool0] = token0
-
-        token1 = "0x"+s.data.slice(154, 194)
-        tokenAddressList.push(token1)
-        pool1 = "0x"+s.data.slice(218, 258)
-        poolAddressList.push(pool1)
-        poolToToken[pool1] = token1
-
-    }
-    tokenAddressList = Array.from(new Set(tokenAddressList))
-
-    const balances = {}
-    for (const pool of poolAddressList) {
-        const poolBalance = (
-            await sdk.api.abi.call({
-                abi: erc20.balanceOf,
-                target: poolToToken[pool],
-                params: pool
-            })
-        ).output;
-        sdk.util.sumSingleBalance(balances, poolToToken[pool], poolBalance);
-    }
-    for (const token of tokenAddressList) {
-        const openlevBalance = (
-            await sdk.api.abi.call({
-                abi: erc20.balanceOf,
-                target: token,
-                params: openlev_address
-            })
-        ).output;
-        sdk.util.sumSingleBalance(balances, token, openlevBalance);
-    }
-    return balances
+const openleve_address = {
+    "eth" : '0x03bf707deb2808f711bb0086fc17c5cafa6e8aaf',
+    "bsc" : '0x6A75aC4b8d8E76d15502E69Be4cb6325422833B4',
+    "kcc" : '0xEF6890d740E1244fEa42E3D1B9Ff515C24c004Ce'
+}
+const subgraph_endpoint = {
+    "eth" : 'https://api.thegraph.com/subgraphs/name/openleveragedev/openleverage',
+    "bsc" : 'https://api.thegraph.com/subgraphs/name/openleveragedev/openleverage-bsc'
+}
+const http_endpoint = {
+    "kcc" : {
+        size: 20,
+        firstPage: 1,
+        getDataURL: (page, size) => `https://kcc.openleverage.finance/api/trade/markets/stat?page=${page}&size=${size}`,
+    },
 }
 
+async function eth_tvl(timestamp, block) {
+    const poolInfo = await getPoolFromSubgraph("eth");
+    const toa = []    
+    for (const pool of poolInfo["poolAddressList"]) {
+        const poolToken = poolInfo["poolToken"][pool]
+        toa.push([poolToken, pool])
+    }
+    for (const token of poolInfo["tokenAddressList"]) {
+        toa.push([token, openleve_address["eth"]])
+    }
+    return sumTokens2({ block, tokensAndOwners: toa, })
+}
 
+async function bsc_tvl(timestamp, _block, { bsc: block }) {
+    const toa = []    
+    const poolInfo = await getPoolFromSubgraph("bsc");
+    for (const pool of poolInfo["poolAddressList"]) {
+        const poolToken = poolInfo["poolToken"][pool]
+        toa.push([poolToken, pool])
+    }
+    for (const token of poolInfo["tokenAddressList"]) {
+        toa.push([token, openleve_address["bsc"]])
+    }
+    return sumTokens2({ chain: 'bsc', block, tokensAndOwners: toa, })
+}
+
+async function getPoolFromSubgraph(chain) {
+    var sql =  gql`{
+        pairs(first: 1000) {
+            id
+            token0 {
+            id
+            }
+            token1 {
+            id
+            }
+            pool0
+            pool1
+        }
+    }
+  `;
+    var graphQLClient = new GraphQLClient(subgraph_endpoint[chain])
+    const results = await retry(async bail => await graphQLClient.request(sql))
+    const tokenAddressList = []
+    const poolAddressList = []
+    const poolToken = {}
+    for (const s of results["pairs"]) {
+        tokenAddressList.push(s["token0"]["id"])
+        poolAddressList.push(s["pool0"])
+        poolToken[s["pool0"]] = s["token0"]["id"]
+
+        tokenAddressList.push(s["token1"]["id"])
+        poolAddressList.push(s["pool1"])
+        poolToken[s["pool1"]] = s["token1"]["id"]
+    }
+    return {"tokenAddressList" : Array.from(new Set(tokenAddressList)), "poolAddressList" : poolAddressList, "poolToken": poolToken}
+}
+
+async function getPoolFromHttp(chain) {
+    const { size, firstPage, getDataURL } = http_endpoint[chain]
+    let fetchNext = true
+    let page = firstPage
+    const results = []
+    while (fetchNext) {
+        const { data: { data: result }} = await utils.fetchURL(getDataURL(page, size))
+        fetchNext = size === result.length
+        page++
+        results.push(...result)
+    }
+
+    const tokenAddressList = []
+    const poolAddressList = []
+    const poolToken = {}
+    for (const s of results) {
+        tokenAddressList.push(s["token0Addr"])
+        poolAddressList.push(s["pool0Addr"])
+        poolToken[s["pool0Addr"]] = s["token1Addr"]
+
+        tokenAddressList.push(s["token1Addr"])
+        poolAddressList.push(s["pool1Addr"])
+        poolToken[s["pool1Addr"]] = s["token0Addr"]
+    }
+    return {"tokenAddressList" : Array.from(new Set(tokenAddressList)), "poolAddressList" : poolAddressList, "poolToken": poolToken}
+}
+
+async function kcc_tvl(timestamp, _block, { kcc: block }) {
+    const toa = []    
+    const poolInfo = await getPoolFromHttp("kcc");
+    for (const pool of poolInfo["poolAddressList"]) {
+        const poolToken = poolInfo["poolToken"][pool]
+        toa.push([poolToken, pool])
+    }
+
+    for (const token of poolInfo["tokenAddressList"]) {
+        toa.push([token, openleve_address["kcc"]])
+    }
+    return sumTokens2({ chain: 'kcc', block, tokensAndOwners: toa, })
+}
 
 module.exports = {
-  name: 'openleverage',               // project name
-  website: 'https://openleverage.finance',
-  token: 'OLE',
-  start: 1638720000,            // 12/06/2021
-  tvl                           // tvl adapter
+    methodology: "get pool and token address from the openleverage subgraph",
+    ethereum: {
+        tvl: eth_tvl
+    },
+    bsc: {
+        tvl: bsc_tvl
+    },
+    kcc: {
+        tvl: kcc_tvl
+    } 
 }

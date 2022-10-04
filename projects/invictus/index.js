@@ -1,26 +1,31 @@
-const { toUSDTBalances } = require('../helper/balances')
-const {getTokenAccountBalance} = require('../helper/solana')
-const { fetchURL } = require('../helper/utils')
+const { getTokenAccountBalance, getTokenBalance } = require('../helper/solana')
 
-async function staking(){
-    const stakedInv = await getTokenAccountBalance("5EZiwr4fE1rbxpzQUWQ6N9ppkEridNwbH3dU3xUf7wPZ")
-    return {
-        "invictus": stakedInv
-    }
+async function staking() {
+  const stakedInv = await getTokenAccountBalance("5EZiwr4fE1rbxpzQUWQ6N9ppkEridNwbH3dU3xUf7wPZ")
+  return {
+    "invictus": stakedInv
+  }
 }
 
 const treasury = "6qfyGvoUqGB6AQ7xLc4pVwFNdgJSbAMkTtKkBXhLRiV1"
-async function tvl(){
-    const data = await fetchURL("https://api.invictusdao.fi/api/dashboard")
-    return toUSDTBalances(Number(data.data.treasury))
+async function tvl() {
+  const [usdc,] = await Promise.all([
+    "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", //usdc
+  ].map(t => getTokenBalance(t, treasury)))
+  return {
+    "usd-coin": usdc,
+  }
+
 }
 
 
-module.exports={
-    timetravel: false,
-    misrepresentedTokens: true,
-    solana:{
-        tvl,
-        staking
-    }
+module.exports = {
+  deadFrom: 1648765747,
+  timetravel: false,
+  misrepresentedTokens: true,
+  doublecounted: true,
+  solana: {
+    tvl,
+    staking
+  }
 }

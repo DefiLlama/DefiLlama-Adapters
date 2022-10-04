@@ -14,6 +14,12 @@ const contracts = {
     SAVINGS_ADDRESS: "0xF3c87c005B04a07Dc014e1245f4Cff7A77b6697b",
     CETH: "0x621CE6596E0B9CcF635316BFE7FdBC80C3029Bec",
   },
+  polygon: {
+    DEPLOY_BLOCK: 22745105,
+    GLOBAL_CONFIG_ADDRESS: "0x8dceE8E1555e1881fB16a546E86310aB573a6808",
+    SAVINGS_ADDRESS: "0x7C6e294E6555cD70D02D53735C6860AD03A6b34F",
+    CETH: "0xC1B02E52e9512519EDF99671931772E452fb4399",
+  },
 };
 
 const utility = {
@@ -120,26 +126,7 @@ const utility = {
     });
     return cEthToken.output;
   },
-
-  // Get Symbol
-  async getSymbol(block, markets) {
-    let callsArray = [];
-
-    markets.forEach((element) => {
-      callsArray.push({
-        target: element,
-      });
-    });
-    return (
-      await sdk.api.abi.multiCall({
-        block: block,
-        chain: chain,
-        abi: "erc20:symbol",
-        calls: callsArray,
-      })
-    ).output;
-  },
-
+  
   // Get cTokens
   async getCTokens(block, markets, chain) {
     let tokenRegistryAddress =
@@ -182,6 +169,12 @@ async function okexchainTvl(timestamp, blockETH, chainBlocks) {
   const chain = "okexchain";
   return await getTvlByChain(timestamp, block, chain);
 }
+async function polygonTvl(timestamp, blockETH, chainBlocks) {
+  const block = chainBlocks["polygon"];
+  const chain = "polygon";
+  return await getTvlByChain(timestamp, block, chain);
+}
+
 async function getTvlByChain(timestamp, block, chain) {
   let config = contracts[chain];
 
@@ -217,5 +210,8 @@ module.exports = {
   },
   okexchain: {
     tvl: okexchainTvl,
+  },
+  polygon: {
+    tvl: polygonTvl,
   },
 };

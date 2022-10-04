@@ -1,11 +1,7 @@
 const { request, gql } = require("graphql-request");
-const sdk = require('@defillama/sdk')
 const { toUSDTBalances } = require('./helper/balances')
+const { stakings } = require('./helper/staking')
 
-async function fetch() {
-  let response = await utils.fetchURL('https://api.pancakeswap.finance/api/v1/stat')
-  return response.data.total_value_locked_all;
-}
 
 const graphEndpoint = 'https://bsc.streamingfast.io/subgraphs/name/pancakeswap/exchange-v2'
 const currentQuery = gql`
@@ -72,28 +68,12 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
   }
 }
 
-const factory = '0xBCfCcbde45cE874adCB698cC183deBcF17952812'
-const cakeToken = '0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82'
-const masterChef = '0x73feaa1eE314F8c655E354234017bE2193C9E24E'
-async function staking(timestamp, ethBlock, chainBlocks) {
-  const balances = {}
-  const stakedCake = sdk.api.erc20.balanceOf({
-    target: cakeToken,
-    owner: masterChef,
-    chain: 'bsc',
-    block: chainBlocks.bsc
-  })
-
-  sdk.util.sumSingleBalance(balances, 'bsc:' + cakeToken, (await stakedCake).output)
-  return balances
-}
-
 module.exports = {
   timetravel: true,
   misrepresentedTokens: true,
   methodology: 'TVL accounts for the liquidity on all AMM pools, using the TVL chart on https://pancakeswap.info/ as the source. Staking accounts for the CAKE locked in MasterChef (0x73feaa1eE314F8c655E354234017bE2193C9E24E)',
   bsc: {
-    staking,
+    staking: stakings(["0x73feaa1eE314F8c655E354234017bE2193C9E24E", "0x45c54210128a065de780c4b0df3d16664f7f859e"], "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82", "bsc"),
     tvl
   },
 }

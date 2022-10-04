@@ -1,7 +1,4 @@
 {
-    "0xa00744882684c3e4747faefd68d283ea44099d03": {
-        "coingeckoId": "iotex"
-    },
     "0x6fbcdc1169b5130c59e72e51ed68a84841c98cd1": {
         "contract": "0xdac17f958d2ee523a2206206994597c13d831ec7",
         "coingeckoId": "tether"

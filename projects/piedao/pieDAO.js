@@ -1,8 +1,6 @@
-const utils = require('../helper/utils');
 const BigNumber = require("bignumber.js");
 const sdk = require('@defillama/sdk')
-
-const Web3 = require('web3');
+const { sumTokens } = require('../helper/unwrapLPs');
 
 const pies_config = require("./pies.json");
 const ovens_config = require("./ovens.json");
@@ -12,13 +10,10 @@ const pieABI = require("../config/piedao/abi/IPie.json");
 const pieStakingAll = require("../config/piedao/abi/IStakingAll.json");
 const IStakingBalancer = require("../config/piedao/abi/IStakingBalancer.json");
 const IStakedToken = require("../config/piedao/abi/IStakedToken.json");
-const ISLP = require("../config/piedao/abi/ISLP.json");
-const IBPT = require("../config/piedao/abi/IBPT.json");
+const IBPT = IStakedToken;
 const IBCP = require("../config/piedao/abi/IBCP.json");
-const IUniswap = require("../config/piedao/abi/IUniswap.json");
-const IStakedPieDAO = require("../config/piedao/abi/IStakedPieDAO.json");
-const IStakingUniswap = require("../config/piedao/abi/IStakingUniswap.json");
-const erc20ABI = require("../config/piedao/abi/ERC20.json");
+const IStakedPieDAO = IStakingBalancer;
+const IStakingUniswap = IStakingBalancer;
 
 module.exports = class PieDAO {
   constructor(block) {
@@ -27,152 +22,183 @@ module.exports = class PieDAO {
     this.pools = pools_config;
     this.tokenAmounts = {};
     this.ovenAmounts = {};
-    this.web3 = new Web3(new Web3.providers.HttpProvider(process.env.ETHEREUM_RPC.split(',')[0]));
-    this.web3.eth.defaultBlock = block;
   }
 
   async calculatePies() {
-    for (const pie of Object.keys(this.pies)) {  
-      const pieAddress = this.pies[pie];   
-      const pie_contract = new this.web3.eth.Contract(pieABI, pieAddress);
-      const totalSupply = await pie_contract.methods.totalSupply().call();
-      const tokensAndAmounts = await pie_contract.methods.calcTokensForAmount(totalSupply).call();
-  
-      //console.log("calculatePies", pieAddress);
-
-      for(let i = 0; i < tokensAndAmounts.tokens.length; i ++) {
-          const token = tokensAndAmounts.tokens[i];
-          const amount = tokensAndAmounts.amounts[i];
-          await this.pushTokenAmount(token, amount);
-      }   
-    }
-  }
-
-  async calculateOvens() {
-    for (const oven of Object.keys(this.ovens)) {
-      const ovenAddress = this.ovens[oven];
-
-      const ovenBalance = await this.web3.eth.getBalance(ovenAddress);
-      this.ovenAmounts[ovenAddress] = (ovenBalance / 1e18)
-    }
-  }
-
-  async calculatePools() {
-    for (const pool of Object.keys(this.pools)) {
-      const stakingPool = this.pools[pool];
-      const poolAddress = this.pools[pool].address; 
-      let stakingContract, underlyingContract, underlyingBalance, underlyingSupply, underlyingAddress, underlyings, symbol = null;
-
-      switch(stakingPool.type) {
-        case "all":
-          stakingContract = new this.web3.eth.Contract(pieStakingAll, poolAddress);
-          const poolCount = await stakingContract.methods.poolCount().call();
-
-          for(let i = 0; i < poolCount; i++) {
-            underlyingAddress = await stakingContract.methods.getPoolToken(i).call();
-            underlyingContract = new this.web3.eth.Contract(erc20ABI, underlyingAddress);
-
-            underlyingBalance = new BigNumber(await underlyingContract.methods.balanceOf(underlyingAddress).call());
-            underlyingSupply = new BigNumber(await underlyingContract.methods.totalSupply().call());            
-
-            symbol = await underlyingContract.methods.symbol().call();
-            //console.log("calculatePools", stakingPool.type, underlyingAddress, symbol);
-
-            switch(symbol) {
-              case "SLP":
-                underlyingContract = new this.web3.eth.Contract(ISLP, underlyingAddress);
-                
-                underlyings = new Array();
-                underlyings.push(await underlyingContract.methods.token0().call());
-                underlyings.push(await underlyingContract.methods.token1().call());
-                await this.calculateUnderLyings(underlyings, underlyingAddress, underlyingBalance, underlyingSupply);              
-
-                break;
-              case "BPT":
-                underlyingContract = new this.web3.eth.Contract(IBPT, underlyingAddress);
-                
-                underlyings = await underlyingContract.methods.getFinalTokens().call();
-                await this.calculateUnderLyings(underlyings, underlyingAddress, underlyingBalance, underlyingSupply);  
-
-                break;
-              case "BCP":
-                underlyingContract = new this.web3.eth.Contract(IBCP, underlyingAddress);
-                
-                underlyings = await underlyingContract.methods.getTokens().call();
-                await this.calculateUnderLyings(underlyings, underlyingAddress, underlyingBalance, underlyingSupply);                  
-                break;                                
-            }
-          }
-          break;
-        
-        case "balancer":
-          stakingContract = new this.web3.eth.Contract(IStakingBalancer, poolAddress);
-          underlyingAddress = stakingPool.lp ? stakingPool.lp : await stakingContract.methods.uni().call();
-          //console.log("calculatePools", stakingPool.type, underlyingAddress);
-
-          underlyingContract = new this.web3.eth.Contract(IStakedToken, underlyingAddress);
-          underlyingBalance = new BigNumber(await underlyingContract.methods.balanceOf(poolAddress).call());
-          underlyingSupply = new BigNumber(await underlyingContract.methods.totalSupply().call());
-
-          underlyings = await underlyingContract.methods.getFinalTokens().call();
-          await this.calculateUnderLyings(underlyings, underlyingAddress, underlyingBalance, underlyingSupply);
-          
-          break;
-        
-        case "piedao":
-          stakingContract = new this.web3.eth.Contract(IStakedPieDAO, poolAddress);
-          underlyingAddress = await stakingContract.methods.uni().call();
-
-          underlyingContract = new this.web3.eth.Contract(IBCP, underlyingAddress);
-
-          underlyingBalance = new BigNumber(await underlyingContract.methods.balanceOf(underlyingAddress).call());
-          underlyingSupply = new BigNumber(await underlyingContract.methods.totalSupply().call());            
-
-          symbol = await underlyingContract.methods.symbol().call();
-          //console.log("calculatePools", stakingPool.type, underlyingAddress, symbol);
-                
-          underlyings = await underlyingContract.methods.getTokens().call();
-          await this.calculateUnderLyings(underlyings, underlyingAddress, underlyingBalance, underlyingSupply);               
-                
-          break;
-
-        case "uniswap":
-          stakingContract = new this.web3.eth.Contract(IStakingUniswap, poolAddress);
-          underlyingAddress = await stakingContract.methods.uni().call();
-
-          underlyingContract = new this.web3.eth.Contract(IUniswap, underlyingAddress);
-
-          underlyingBalance = new BigNumber(await underlyingContract.methods.balanceOf(underlyingAddress).call());
-          underlyingSupply = new BigNumber(await underlyingContract.methods.totalSupply().call());            
-
-          symbol = await underlyingContract.methods.symbol().call();
-          //console.log("calculatePools", stakingPool.type, underlyingAddress, symbol);
-                
-          underlyings = new Array();
-          underlyings.push(await underlyingContract.methods.token0().call());
-          underlyings.push(await underlyingContract.methods.token1().call());
-          await this.calculateUnderLyings(underlyings, underlyingAddress, underlyingBalance, underlyingSupply); 
-
-          break;
+    const pieCalls = Object.values(this.pies).map(pie => ({ target: pie }))
+    const { output: supplies } = await sdk.api.abi.multiCall({
+      calls: pieCalls,
+      abi: pieABI.find(i => i.name === 'totalSupply')
+    })
+    const calls = supplies.map(({ input, output }) => ({
+      target: input.target,
+      params: [output],
+    }))
+    const { output: tokensAndAmountsAll } = await sdk.api.abi.multiCall({
+      calls,
+      abi: pieABI.find(i => i.name === 'calcTokensForAmount')
+    })
+    for (let j = 0; j < tokensAndAmountsAll.length; j++) {
+      const tokensAndAmounts = tokensAndAmountsAll[j].output
+      for (let i = 0; i < tokensAndAmounts.tokens.length; i++) {
+        const token = tokensAndAmounts.tokens[i];
+        const amount = tokensAndAmounts.amounts[i];
+        this.pushTokenAmount(token, amount);
       }
     }
   }
 
+  async calculateOvens() {
+    const output = await sdk.api.eth.getBalances({
+      targets: Object.values(this.ovens)
+    })
+
+    output.output.forEach(({ target, balance }) => {
+      this.ovenAmounts[target] = (balance / 1e18)
+    })
+  }
+
+  async calculatePools() {
+    const balances = {}
+    const hangingPromises = []
+    for (const pool of Object.keys(this.pools)) {
+      const stakingPool = this.pools[pool];
+      const poolAddress = this.pools[pool].address;
+      let underlyingBalance, underlyingSupply, underlyingAddress, underlyings, response, symbol = null;
+
+      switch (stakingPool.type) {
+        case "all":
+          const { output: poolCount } = await sdk.api.abi.call({
+            target: poolAddress,
+            abi: pieStakingAll.find(i => i.name === 'poolCount')
+          })
+          const poolCalls = []
+          for (let i=0;i<poolCount;i++) 
+            poolCalls.push({ target: poolAddress, params: [i]})
+          const { output: underlyingTokens } = await sdk.api.abi.multiCall({
+            calls: poolCalls,
+            abi: pieStakingAll.find(i => i.name === 'getPoolToken')
+          })
+          const tokens = underlyingTokens.map(i => i.output)
+          const tokenCalls = tokens.map(t => ({ target: t }))
+          const balanceCalls = tokens.map(t => ({ target: t, params: [poolAddress] }))
+          let [{ output: symbols }, {output: underLyingBalances }, {output: totalSupplies }] = await Promise.all([
+            sdk.api.abi.multiCall({ 
+              calls: tokenCalls,
+              abi: 'erc20:symbol'
+            }),sdk.api.abi.multiCall({ 
+              calls: balanceCalls,
+              abi: 'erc20:balanceOf'
+            }),sdk.api.abi.multiCall({ 
+              calls: tokenCalls,
+              abi: 'erc20:totalSupply'
+            }),
+          ])
+          symbols = symbols.map(i => i.output)
+          underLyingBalances = underLyingBalances.map(i => i.output)
+          totalSupplies = totalSupplies.map(i => i.output)
+
+
+          for (let i = 0; i < poolCount; i++) {
+            underlyingAddress = tokens[i];
+            underlyingBalance = underLyingBalances[i];
+            underlyingSupply = new BigNumber(totalSupplies[i]);
+            symbol = symbols[i]
+
+            switch (symbol) {
+              case "SLP":
+                hangingPromises.push(sumTokens(balances, [[underlyingAddress, poolAddress]], undefined, undefined, undefined, { resolveLP: true }))
+                break;
+              case "BPT":
+                response = await sdk.api.abi.call({ 
+                  target: underlyingAddress,
+                  abi: IBPT.find(i => i.name === 'getFinalTokens')
+                })
+                underlyings = response.output
+                hangingPromises.push(this.calculateUnderLyings(underlyings, underlyingAddress, underlyingBalance, underlyingSupply))
+
+                break;
+              case "BCP":
+                response = await sdk.api.abi.call({ 
+                  target: underlyingAddress,
+                  abi: IBCP.find(i => i.name === 'getTokens')
+                })
+                underlyings = response.output
+                hangingPromises.push(this.calculateUnderLyings(underlyings, underlyingAddress, underlyingBalance, underlyingSupply))
+                break;
+            }
+          }
+          break;
+
+        case "balancer":
+          underlyingAddress = stakingPool.lp ? stakingPool.lp : (await sdk.api.abi.call({ 
+            target: poolAddress,
+            abi: IStakingBalancer.find(i => i.name === 'uni')
+          })).output;
+          //console.log("calculatePools", stakingPool.type, underlyingAddress);
+
+          underlyingBalance = new BigNumber((await sdk.api.erc20.balanceOf({ target: underlyingAddress, owner: poolAddress })).output);
+          underlyingSupply = new BigNumber((await sdk.api.erc20.totalSupply({ target: underlyingAddress })).output);
+
+          response = await sdk.api.abi.call({ 
+            target: underlyingAddress,
+            abi: IStakedToken.find(i => i.name === 'getFinalTokens')
+          })
+          underlyings = response.output
+          hangingPromises.push(this.calculateUnderLyings(underlyings, underlyingAddress, underlyingBalance, underlyingSupply))
+          break;
+
+        case "piedao":
+          response = await sdk.api.abi.call({ 
+            target: poolAddress,
+            abi: IStakedPieDAO.find(i => i.name === 'uni')
+          })
+          underlyingAddress = response.output
+          underlyingBalance = new BigNumber((await sdk.api.erc20.balanceOf({ target: underlyingAddress, owner: poolAddress })).output);
+          underlyingSupply = new BigNumber((await sdk.api.erc20.totalSupply({ target: underlyingAddress })).output);
+
+          response = await sdk.api.abi.call({ 
+            target: underlyingAddress,
+            abi: IBCP.find(i => i.name === 'getTokens')
+          })
+          underlyings = response.output
+          hangingPromises.push(this.calculateUnderLyings(underlyings, underlyingAddress, underlyingBalance, underlyingSupply))
+          break;
+
+        case "uniswap":
+          response = await sdk.api.abi.call({ 
+            target: poolAddress,
+            abi: IStakingUniswap.find(i => i.name === 'uni')
+          })
+          underlyingAddress = response.output
+          hangingPromises.push(sumTokens(balances, [[underlyingAddress, poolAddress]], undefined, undefined, undefined, { resolveLP: true }))
+          break;
+      }
+    }
+
+    await Promise.all(hangingPromises)
+    Object.keys(balances).forEach(token => this.pushTokenAmount(token, BigNumber(balances[token])))
+  }
+
   async calculateUnderLyings(underlyings, underlyingAddress, underlyingBalance, underlyingSupply) {
-    for(const underlying of underlyings) {
-      const underlyingContract = new this.web3.eth.Contract(erc20ABI, underlying);
-      const tokenAmount = new BigNumber(await underlyingContract.methods.balanceOf(underlyingAddress).call());
-      await this.pushTokenAmount(underlying, tokenAmount.times(underlyingBalance).div(underlyingSupply));
-    }     
+    const { output: balances } = await sdk.api.abi.multiCall({
+      calls: underlyings.map(token => ({ target: token, params: [underlyingAddress] })),
+      abi: 'erc20:balanceOf'
+    })
+
+    for (let i = 0;i<balances.length;i++) {
+      const tokenAmount = new BigNumber(balances[i].output).times(underlyingBalance).div(underlyingSupply)
+      this.pushTokenAmount(underlyings[i], tokenAmount)
+    }
   }
 
   calculateNAV() {
-    const balances= {}
+    const balances = {}
 
     // Sum up nav
     for (const tokenAddress of Object.keys(this.tokenAmounts)) {
-        const tokenAmount = this.tokenAmounts[tokenAddress];
-        sdk.util.sumSingleBalance(balances, tokenAddress, tokenAmount.amount.toFixed(0))
+      const tokenAmount = this.tokenAmounts[tokenAddress];
+      sdk.util.sumSingleBalance(balances, tokenAddress, tokenAmount.amount.toFixed(0))
     }
 
     balances['ethereum'] = 0;
@@ -183,7 +209,7 @@ module.exports = class PieDAO {
     return balances;
   }
 
-  async pushTokenAmount(token, amount) {
+  pushTokenAmount(token, amount) {
     // Prevent double counting of TVL by excluding pies
     /*
     if(Object.keys(this.pies).find(x => this.pies[x].toLowerCase() == token.toLowerCase())) {
@@ -191,16 +217,16 @@ module.exports = class PieDAO {
     }
     */
 
-    if(this.tokenAmounts[token] == undefined) {
+    if (this.tokenAmounts[token] == undefined) {
 
-        //create empty object
-        this.tokenAmounts[token] = {
-            decimals: 0,
-            amount: BigNumber(0),
-            price: 0
-        };
+      //create empty object
+      this.tokenAmounts[token] = {
+        decimals: 0,
+        amount: BigNumber(0),
+        price: 0
+      };
     }
 
     this.tokenAmounts[token].amount = this.tokenAmounts[token].amount.plus(amount)
-}  
+  }
 }

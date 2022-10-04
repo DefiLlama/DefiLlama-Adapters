@@ -1,6 +1,5 @@
 const { transformPolygonAddress } = require('./helper/portedTokens');
 const sdk = require('@defillama/sdk');
-const { getBlock } = require('./helper/getBlock');
 const { pool2 } = require('./helper/pool2');
 
 const contracts = [
@@ -19,7 +18,7 @@ const tokens = {
 async function tvl(timestamp, block, chainBlocks) {
     const transform = await transformPolygonAddress();
     const balances = {};
-    block = await getBlock(timestamp, 'polygon', chainBlocks);
+    block = chainBlocks.polygon;
 
     const DAIbalance = (await sdk.api.abi.multiCall({
         calls: contracts.map((c) => ({

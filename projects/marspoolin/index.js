@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const erc20 = require("../helper/abis/erc20.json");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 
 const contracts = [
@@ -39,7 +38,7 @@ const ethTvl = async (timestamp, ethBlock) => {
 
   const tokenBalance = (
     await sdk.api.abi.multiCall({
-      abi: erc20.balanceOf,
+      abi: 'erc20:balanceOf',
       calls: erc20TokenContracts.map((etc, idx) => ({
         target: etc,
         params: contracts[idx],
@@ -58,7 +57,7 @@ const ethTvl = async (timestamp, ethBlock) => {
 
   const lpBalances = (
     await sdk.api.abi.multiCall({
-      abi: erc20.balanceOf,
+      abi: 'erc20:balanceOf',
       calls: lpVaults.map((vc, idx) => ({
         target: vc,
         params: vaultsContracts[idx],
@@ -82,8 +81,8 @@ const ethTvl = async (timestamp, ethBlock) => {
 };
 
 module.exports = {
+  doublecounted: false,
   ethereum: {
     tvl: ethTvl,
   },
-  tvl: sdk.util.sumChainTvls([ethTvl]),
 };

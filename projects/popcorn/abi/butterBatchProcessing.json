@@ -1,0 +1,24 @@
+{
+  "inputs": [
+    {
+      "internalType": "address[]",
+      "name": "_tokenAddresses",
+      "type": "address[]"
+    },
+    {
+      "internalType": "uint256[]",
+      "name": "_quantities",
+      "type": "uint256[]"
+    }
+  ],
+  "name": "valueOfComponents",
+  "outputs": [
+    {
+      "internalType": "uint256",
+      "name": "",
+      "type": "uint256"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+}

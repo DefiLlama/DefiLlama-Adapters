@@ -1,63 +1,64 @@
+const sdk = require("@defillama/sdk");
 const { stakings } = require("../helper/staking");
-const { pool2s } = require("../helper/pool2");
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
+const { getChainTransform } = require("../helper/portedTokens");
+const contracts = require("./contracts.json");
+const axios = require("axios");
 
-const DAO = "0x0f51bb10119727a7e5ea3538074fb341f56b09ad";
+async function fetchBalances(exports, contracts, transform, chainBlocks, chain) {
+    if (!contracts[chain]) return 0;
 
-const vaultsFarmsPool2Addresses = [
-    //convergence-finance
-    "0x218023631d37715Adf7C2f6CA3C40360E266ABdD",
-    //dao maker
-    "0xf91c7c211dB969aaFcB1cfC6CbBdCa048074EE07",
-    //evolution
-    "0x17d2974960005Ba5176A872cE63e53bB214D4856",
-    //openocean
-    "0x329420649604a57c616692c51106196a4712ea24",
-    //yield protocol
-    "0x2909122ea182368A4ba7bC5Eed2D2D536B3e25Ae",
-    //yield protocol v1
-    "0xe33b15629739770a27c4726a22be61128aa1c781",
-    //dao maker v3
-    "0xd07e86f68C7B9f9B215A3ca3E79E74Bf94D6A847",
-];
+    const balances = await sdk.api.abi.multiCall({
+        calls: Object.keys(contracts[chain]).map(c => ({
+            target: contracts[chain][c].tokenAddress,
+            params: [ contracts[chain][c].tokenHolder ]
+        })),
+        abi: "erc20:balanceOf",
+        block: chainBlocks[chain],
+        chain
+    });
 
-const DAO_USDC_UNIV2 = "0x4cd36d6F32586177e36179a810595a33163a20BF";
+    sdk.util.sumMultiBalanceOf(exports, balances, false, transform);
+};
 
-const vaultFarmsAddresses = [
-    //derace
-    "0x7C27bC15dee9BfFF50AA8C9FFd75e52367d1a9fF",
-    //dinox
-    "0x141Ba88B17442F4Fe305871c9642E3c1C6307346",
-    //gamestarter
-    "0x30E8dEf41D8c70De900Dd673c08238f77C2747bd",
-];
+// node test.js projects/daomaker/index.js
+function tvl(chain) {
+    return async (timestamp, block, chainBlocks) => {
+        const balances = {};
+        const transform = await getChainTransform(chain);
 
-const vaultlp = [
-    //DERC-USDC UNISWAP
-    "0xc88aC988A655B91b70DEF427c8778B4D43f2048D",
-    //DNXC-USDC UNISWAP
-    "0xa39d7a85553a46faeb3ba5e0c49d6a5db67df30f",
-    //GAME-USDT UNISWAP
-    "0x0cFB06414C6d9790Bc661230DbA0b24060808bF4",
-]
+        const vestingContracts = (await axios.get("https://api.daomaker.com/get-all-vesting-contracts")).data;
+        const clientVesting = {};
+        for (const vestingContract of vestingContracts) {
+            if (!clientVesting[vestingContract.chain_name]) {
+                clientVesting[vestingContract.chain_name] = {};
+            }
+            clientVesting[vestingContract.chain_name][vestingContract.vesting_smart_contract_address] = {
+                tokenHolder: vestingContract.vesting_smart_contract_address,
+                tokenAddress: vestingContract.token_address
+            };
+        }
 
-async function ethTvl(block) {
-  const balances = {};
+        await fetchBalances(
+            balances, 
+            clientVesting, 
+            transform, 
+            chainBlocks, 
+            chain
+        );
 
-    await sumTokensAndLPsSharedOwners(
-      balances,
-      vaultlp.map(v=>[v, true]),
-      vaultFarmsAddresses
-    );
+        return balances;
+    };
+};
 
-  return balances;
-}
+const chainTVLObject = contracts.chains.reduce(
+    (agg, chain) => ({ ...agg, [chain]: {tvl: tvl(chain) }}), {}
+);
+
+chainTVLObject.ethereum.staking = stakings(
+    [ contracts.stakingContractEth ], 
+    contracts.stakingTokenEth
+);
 
 module.exports = {
-  ethereum: {
-    staking: stakings(vaultsFarmsPool2Addresses, DAO),
-    pool2: pool2s(vaultsFarmsPool2Addresses, [DAO_USDC_UNIV2]),
-    tvl: ethTvl,
-  },
-  methodology: "Counts liquidity on the vaults through their Contracts",
+    ...chainTVLObject
 };

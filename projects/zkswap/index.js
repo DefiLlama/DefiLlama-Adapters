@@ -24,9 +24,6 @@ async function tvl(timestamp, block) {
 }
 
 module.exports = {
-  name: "ZKSwap",
-  token: "ZKS",
-  category: "dexes",
   start: 1613135160, // 02/12/2021 @ 01:06pm UTC
   tvl
 };

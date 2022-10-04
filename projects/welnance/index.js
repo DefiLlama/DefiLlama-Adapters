@@ -3,7 +3,6 @@ const { compoundExports } = require("../helper/compound");
 const comptroller = "0xdc21c1dAF3277f07fFA6EB09fCD3E07EDc36DC0A";
 
 module.exports = {
-  misrepresentedTokens: true,
   timetravel: true,
   doublecounted: false,
   bsc: {

@@ -1,0 +1,14 @@
+{
+  "type": "function",
+  "name": "totalStaked",
+  "inputs": [],
+  "outputs": [
+    {
+      "internalType": "uint256",
+      "name": "",
+      "type": "uint256"
+    }
+  ],
+  "constant": null,
+  "stateMutability": "view"
+}

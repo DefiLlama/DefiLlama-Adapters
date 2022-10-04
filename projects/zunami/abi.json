@@ -1,17 +1,4 @@
 {
-    "token": {
-        "inputs": [],
-        "name": "token",
-        "outputs": [
-            {
-                "internalType": "contract IERC20Metadata",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
     "totalHoldings": {
         "inputs": [],
         "name": "totalHoldings",

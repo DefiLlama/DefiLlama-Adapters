@@ -58,9 +58,6 @@ async function tvl(_timestamp, ethBlock, chainBlocks) {
 };
 
 module.exports = {
-    name: "Risq Protocol", // project name
-    website: "https://risq.capital",
-    category: "Options",
     start: 10340221, // Aug-25-2021 03:12:42 PM +UTC
     bsc: {
       tvl,

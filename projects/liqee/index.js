@@ -1,5 +1,5 @@
   const sdk = require('@defillama/sdk');
-  const _ = require('underscore');
+
   const BigNumber = require('bignumber.js');
   const abi = require('./abi.json');
   const BASE = BigNumber(10 ** 18)
@@ -128,5 +128,4 @@ module.exports = {
     tvl: bsc
   },
   start: 1629776276, // Aug-24-2021 11:37:56 AM +UTC
-  tvl: sdk.util.sumChainTvls([ethereum, bsc])
 }

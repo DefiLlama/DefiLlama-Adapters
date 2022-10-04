@@ -1,0 +1,59 @@
+{
+    "l1Token": {
+        "inputs": [],
+        "name": "l1Token",
+        "outputs": [
+            {
+                "internalType": "contract IERC20",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    "pooledTokens": {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "pooledTokens",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "lpToken",
+                "type": "address"
+            },
+            {
+                "internalType": "bool",
+                "name": "isEnabled",
+                "type": "bool"
+            },
+            {
+                "internalType": "uint32",
+                "name": "lastLpFeeUpdate",
+                "type": "uint32"
+            },
+            {
+                "internalType": "int256",
+                "name": "utilizedReserves",
+                "type": "int256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "liquidReserves",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "undistributedLpFees",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+}

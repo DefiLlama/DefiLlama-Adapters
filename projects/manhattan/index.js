@@ -19,6 +19,7 @@ var ifTokens = [
 ];
 
 async function tvl(timestamp, block, chainBlocks) {
+  block = chainBlocks.fantom
   let balances = {};
   let transform = await transformFantomAddress();
 
@@ -45,7 +46,7 @@ async function tvl(timestamp, block, chainBlocks) {
   ).output.map((o) => o.output);
 
   for (let i = 0; i < underlying.length; i++) {
-    await sdk.util.sumSingleBalance(
+    sdk.util.sumSingleBalance(
       balances,
       transform(underlying[i]),
       balance[i]

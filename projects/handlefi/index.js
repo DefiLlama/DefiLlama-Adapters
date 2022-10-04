@@ -9,7 +9,9 @@ const abi = require("./abi.json");
 const transformArbitrumAddress = addr => `arbitrum:${addr}`
 const treasuryContract = "0x5710B75A0aA37f4Da939A61bb53c519296627994"
 const WETH_arbitrum = "0x82af49447d8a07e3bd95bd0d56f35241523fbab1"
-const treasuryTokens = [WETH_arbitrum]
+const FOREX_arbitrum = "0xDb298285FE4C5410B05390cA80e8Fbe9DE1F259B"
+const treasuryTokens = [WETH_arbitrum,FOREX_arbitrum]
+const perpsVault = "0x1785e8491e7e9d771b2A6E9E389c25265F06326A"
 // Arbitrum Staking 
 const WETH_FOREX_sushi_LP = '0x9745e5cc0522827958ee3fc2c03247276d359186'
 const LP_staking_contract = '0x5cdeb8ff5fd3a3361e27e491696515f1d119537a'

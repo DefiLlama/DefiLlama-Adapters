@@ -1,260 +1,84 @@
 const sdk = require("@defillama/sdk");
-const BigNumber = require('bignumber.js');
 const abi = require("./abi.json");
-const erc20 = require("../helper/abis/erc20.json");
-const beltAbi = require("./abis/belt.json");
-const { transformBscAddress } = require("../helper/portedTokens");
-const {staking} = require('../helper/staking');
+const clqdr = require("./abis/clqdr.json");
+const psm = require("./abis/psm.json");
+const { staking } = require("../helper/staking");
+
+const {
+  transformBscAddress,
+  transformAvaxAddress,
+  transformFantomAddress,
+} = require("../helper/portedTokens");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 
-const stakingContract_eth = "0xD93f98b483CC2F9EFE512696DF8F5deCB73F9497";
-const GRO_ETH = "0x09e64c2B61a5f1690Ee6fbeD9baf5D6990F8dFd0"; /* it's not on coingecko yet!! */
-
-const gRootStakingContract_bsc = "0xDA2AE62e2B71ad3000BB75acdA2F8f68DC88aCE4";
-
-const treasuryContract_bsc = "0x392681Eaf8AD9BC65e74BE37Afe7503D92802b7d";
 const GRO_BSC = "0x336ed56d8615271b38ecee6f4786b55d0ee91b96";
-const gROOT_BSC = "0x8b571fe684133aca1e926beb86cb545e549c832d";
-const WBNB_BSC = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
-
-const BELT_4POOL_SWAP_BSC = "0xAEA4f7dcd172997947809CE6F12018a6D5c1E8b6"
-
-const wheatChains = {
-  bsc: {
-    masterChefContract: "0x95fABAe2E9Fb0A269cE307550cAC3093A3cdB448",
-    ignoreAddresses: [
-      "0xC8216C4ac63F3cAC4f7e74A82d2252B7658FA8b1",
-      "0x87BAde473ea0513D4aA7085484aEAA6cB6EBE7e3",
-    ]
-  },
-  avax: {
-    masterChefContract: "0x995eeDB14d5ecF3c7C44D7186fA013f3C12fA994",
-    ignoreAddresses: []
-  }
-}
+const LINSPIRIT = "0xc5713B6a0F26bf0fdC1c52B90cd184D950be515C";
 
 const morChains = {
   bsc: {
     pools: [
-      "0xB50Acf6195F97177D33D132A3E5617b934C351d3",
-      "0x13e7A6691FE00DE975CF27868386f4aE9aed3cdC",
-      "0xd8C76eF0de11f9cc9708EB966A87e25a7E6C7949",
-      "0x0170D4C58AD9A9D8ab031c0270353d7034B87f6F",
-      "0xE487a3780D56F2ECD142201907dF16350bb09946",
-      "0x9Df7B409925cc93dE1BB4ADDfA9Aed2bcE913F08",
-      "0x60CD286AF05A3e096C8Ace193950CffA5E8e3CE0",
-      "0x26E0701F5881161043d56eb3Ddfde0b8c6772060",
-      "0xFA6388B7980126C2d7d0c5FC02949a2fF40F95DE",
-      "0x9FDD69a473d2216c5D232510DDF2328272bC6847",
-      "0xcAD2E1b2257795f0D580d49520741E93654fAaB5",
-      "0xC2E8C3c427E0a5BaaF512A013516aECB65Bd75CB"
+      "0x13e7a6691fe00de975cf27868386f4ae9aed3cdc",
+      "0xc2e8c3c427e0a5baaf512a013516aecb65bd75cb",
     ],
-    ignoreAddresses: []
+
+    ignoreAddresses: [],
   },
   avax: {
+    pools: [],
+
+    ignoreAddresses: [],
+  },
+  fantom: {
     pools: [
-      "0x3eC9379c79ace6510574EE2c3B0B67aeeE1C23AC",
-      "0x156a4aD3aDbD14599F96dDC24e690e0B2841aB28",
-      "0x53073f685474341cdc765F97E7CFB2F427BD9db9",
-      "0x14955760d8c09D51a984C1c977e5A306C6133891",
-      "0xf5aFfe3459813AB193329E53f17098806709046A",
-      "0xDf93E61037DeEf5ca280e4A915bEB62e1bdE481F",
-      "0x5141da4ab5b3e13ceE7B10980aE6bB848FdB59Cd",
-      "0x0B32788B77c77265D08bf13E12FcE4C4978c64E8",
-      "0x691e486b5F7E39e90d37485164fAbDDd93aE43cD",
-      "0xB1429FB053242fd5b8483Ed452E22c688E405CB5",
+      "0x30463d33735677b4e70f956e3dd61c6e94d70dfe",
+      "0xaebd31E9FFcB222feE947f22369257cEcf1F96CA",
     ],
-    ignoreAddresses: []
-  }
-}
-
-const treasury = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
-
-  const transformAddress = await transformBscAddress();
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    [
-      [GRO_BSC, false],
-      [gROOT_BSC, false],
-      [WBNB_BSC, false],
-    ],
-    [treasuryContract_bsc],
-    chainBlocks["bsc"],
-    "bsc",
-    transformAddress
-  );
-
-  return balances;
+    ignoreAddresses: [],
+  },
 };
 
-//*** Wheat tvl portion as product of GrowthDefi Protocol ***//
-const fetchWheatChainTvl = async (timestamp, ethBlock, chainBlocks, chain, chainCustomProcessor) => {
-  const chainConfig = wheatChains[chain];
+const morChainsNonStk = {
+  bsc: {
+    pools: [],
+    mcds: [],
+    ignoreAddresses: [],
+  },
+  avax: {
+    pools: [],
+    mcds: [],
+    ignoreAddresses: [],
+  },
+  fantom: {
+    pools: [
+      "0x814c66594a22404e101fecfecac1012d8d75c156",
+      "0x3f569724cce63f7f24c5f921d5ddcfe125add96b",
+    ],
+    mcds: [
+      "0xe5fb3D583660e57b1f616f89Ae98dfb6e3c37f99",
+      "0x726d946BBF3d0E6f9e5078D4F5e1f0014c37288F",
+    ],
+    ignoreAddresses: [],
+  },
+};
 
-  const balances = {};
-
-  const poolLength = Number(
-    (
-      await sdk.api.abi.call({
-        abi: abi.poolLength,
-        target: chainConfig.masterChefContract,
-        chain: chain,
-        block: chainBlocks[chain],
-      })
-    ).output
-  );
-
-  const allPoolNums = Array.from(Array(poolLength).keys());
-
-  const lpTokens = (
-    await sdk.api.abi.multiCall({
-      abi: abi.poolInfo,
-      calls: allPoolNums.map((idx) => ({
-        target: chainConfig.masterChefContract,
-        params: idx,
-      })),
-      chain: chain,
-      block: chainBlocks[chain],
-    })
-  ).output.map((lp) => lp.output.lpToken);
-
-  const lpToken_bal = (
-    await sdk.api.abi.multiCall({
-      abi: erc20.balanceOf,
-      calls: lpTokens.map((lp) => ({
-        target: lp,
-        params: chainConfig.masterChefContract,
-      })),
-      chain: chain,
-      block: chainBlocks[chain],
-    })
-  ).output.map((bal) => bal.output);
-
-  const symbol = (
-    await sdk.api.abi.multiCall({
-      abi: abi.symbol,
-      calls: lpTokens.map((lp) => ({
-        target: lp,
-      })),
-      chain: chain,
-      block: chainBlocks[chain],
-    })
-  ).output;
-
-  const lpPositions = [];
-  const stkLpTokens = [];
-
-  await Promise.all(
-    symbol.map(async (symbol, idx) => {
-      const token = symbol.input.target;
-      if (
-        chainConfig.ignoreAddresses.some((addr) => addr.toLowerCase() === token.toLowerCase())
-      ) {
-        return;
-      } else if (symbol.output.includes("-LP")) {
-        lpPositions.push({
-          token: lpTokens[idx],
-          balance: lpToken_bal[idx],
-        });
-      } else if (symbol.output.includes("stk")) {
-        stkLpTokens.push({
-          token: lpTokens[idx],
-        });
-      } else {
-        const processedTokens = await chainCustomProcessor(
-          lpTokens[idx],
-          lpToken_bal[idx],
-          symbol.output,
-          chainBlocks
-        )
-
-        processedTokens.map(({ tokenAddress, tokenBalance }) => {
-          sdk.util.sumSingleBalance(
-            balances,
-            `${chain}:${tokenAddress}`,
-            tokenBalance
-          );
-        })
-      }
-    })
-  );
-
-  const stakeLpTokens = (
-    await sdk.api.abi.multiCall({
-      abi: abi.reserveToken,
-      calls: stkLpTokens.map((stkLp) => ({
-        target: stkLp.token,
-      })),
-      chain: chain,
-      block: chainBlocks[chain],
-    })
-  ).output.map((stkLp) => stkLp.output);
-
-  const stakeLpTokens_bal = (
-    await sdk.api.abi.multiCall({
-      abi: abi.totalReserve,
-      calls: stkLpTokens.map((stkLp) => ({
-        target: stkLp.token,
-      })),
-      chain: chain,
-      block: chainBlocks[chain],
-    })
-  ).output.map((stkLp_bal) => stkLp_bal.output);
-
-  const stkSymbol = (
-    await sdk.api.abi.multiCall({
-      abi: abi.symbol,
-      calls: stakeLpTokens.map((lp) => ({
-        target: lp,
-      })),
-      chain: chain,
-      block: chainBlocks[chain],
-    })
-  ).output;
-
-  await Promise.all(
-    stkSymbol.map(async (symbol, idx) => {
-      if (symbol.output.includes("LP")) {
-        lpPositions.push({
-          token: stakeLpTokens[idx],
-          balance: stakeLpTokens_bal[idx],
-        });
-      } else {
-        const processedTokens = await chainCustomProcessor(
-          stakeLpTokens[idx],
-          stakeLpTokens_bal[idx],
-          symbol.output,
-          chainBlocks
-        )
-
-        processedTokens.map(({ tokenAddress, tokenBalance }) => {
-          sdk.util.sumSingleBalance(
-            balances,
-            `${chain}:${tokenAddress}`,
-            tokenBalance
-          );
-        })
-      }
-    })
-  );
-
-  const transformAddress = await transformBscAddress();
-
-  await unwrapUniswapLPs(
-    balances,
-    lpPositions,
-    chainBlocks[chain],
-    chain,
-    transformAddress
-  );
-
-  return balances;
+const transformFrom = async (chain) => {
+  if (chain === "bsc") {
+    return transformBscAddress();
+  } else if (chain === "avax") {
+    return transformAvaxAddress();
+  } else {
+    return transformFantomAddress();
+  }
 };
 
 //*** MOR tvl portion as product of GrowthDefi Protocol ***//
-const fetchMorChainTvl = async (timestamp, ethBlock, chainBlocks, chain, chainCustomProcessor) => {
+const fetchMorChainTvl = async (
+  timestamp,
+  ethBlock,
+  chainBlocks,
+  chain,
+  chainCustomProcessor
+) => {
   const chainConfig = morChains[chain];
 
   const balances = {};
@@ -307,7 +131,7 @@ const fetchMorChainTvl = async (timestamp, ethBlock, chainBlocks, chain, chainCu
           stakeLpTokens_bal[idx],
           symbol.output,
           chainBlocks
-        )
+        );
 
         processedTokens.map(({ tokenAddress, tokenBalance }) => {
           sdk.util.sumSingleBalance(
@@ -315,12 +139,12 @@ const fetchMorChainTvl = async (timestamp, ethBlock, chainBlocks, chain, chainCu
             `${chain}:${tokenAddress}`,
             tokenBalance
           );
-        })
+        });
       }
     })
   );
 
-  const transformAddress = await transformBscAddress();
+  const transformAddress = await transformFrom(chain);
 
   await unwrapUniswapLPs(
     balances,
@@ -331,7 +155,278 @@ const fetchMorChainTvl = async (timestamp, ethBlock, chainBlocks, chain, chainCu
   );
 
   return balances;
-}
+};
+
+//*** MOR tvl portion as product of GrowthDefi Protocol - for the non strategy contracts ***//
+const fetchMorNonStkChainTvl = async (
+  timestamp,
+  ethBlock,
+  chainBlocks,
+  chain,
+  chainCustomProcessor
+) => {
+  const chainConfig = morChainsNonStk[chain];
+
+  const balances = {};
+
+  const stakeLpTokens = chainConfig.pools;
+
+  const stakeLpTokens_bal = (
+    await sdk.api.abi.multiCall({
+      abi: "erc20:balanceOf",
+      calls: chainConfig.pools.map((pool, idx) => ({
+        target: pool,
+        params: chainConfig.mcds[idx],
+      })),
+      chain: chain,
+      block: chainBlocks[chain],
+    })
+  ).output.map((stkLp_bal) => stkLp_bal.output);
+
+  const stkSymbol = (
+    await sdk.api.abi.multiCall({
+      abi: abi.symbol,
+      calls: stakeLpTokens.map((lp) => ({
+        target: lp,
+      })),
+      chain: chain,
+      block: chainBlocks[chain],
+    })
+  ).output;
+
+  const lpPositions = [];
+
+  await Promise.all(
+    stkSymbol.map(async (symbol, idx) => {
+      if (symbol.output.includes("LP")) {
+        lpPositions.push({
+          token: stakeLpTokens[idx],
+          balance: stakeLpTokens_bal[idx],
+        });
+      } else {
+        const processedTokens = await chainCustomProcessor(
+          stakeLpTokens[idx],
+          stakeLpTokens_bal[idx],
+          symbol.output,
+          chainBlocks
+        );
+
+        processedTokens.map(({ tokenAddress, tokenBalance }) => {
+          sdk.util.sumSingleBalance(
+            balances,
+            `${chain}:${tokenAddress}`,
+            tokenBalance
+          );
+        });
+      }
+    })
+  );
+
+  const transformAddress = await transformFrom(chain);
+
+  await unwrapUniswapLPs(
+    balances,
+    lpPositions,
+    chainBlocks[chain],
+    chain,
+    transformAddress
+  );
+
+  return balances;
+};
+
+//*** LQDR staked portion as product of GrowthDefi Protocol ***//
+const fetchCLQDRStaking = async (
+  timestamp,
+  ethBlock,
+  chainBlocks,
+  chain,
+  chainCustomProcessor
+) => {
+  const balances = {};
+
+  const stakeLpTokens = ["0x814c66594a22404e101fecfecac1012d8d75c156"];
+
+  const stakeLpTokens_bal = (
+    await sdk.api.abi.multiCall({
+      abi: clqdr.totalReserve,
+      calls: stakeLpTokens.map((pool, idx) => ({
+        target: pool,
+      })),
+      chain: chain,
+      block: chainBlocks[chain],
+    })
+  ).output.map((stkLp_bal) => stkLp_bal.output);
+
+  const stkSymbol = (
+    await sdk.api.abi.multiCall({
+      abi: abi.symbol,
+      calls: stakeLpTokens.map((lp) => ({
+        target: lp,
+      })),
+      chain: chain,
+      block: chainBlocks[chain],
+    })
+  ).output;
+
+  await Promise.all(
+    stkSymbol.map(async (symbol, idx) => {
+      const processedTokens = await chainCustomProcessor(
+        "0x10b620b2dbAC4Faa7D7FFD71Da486f5D44cd86f9",
+        stakeLpTokens_bal[idx],
+        "LQDR",
+        chainBlocks
+      );
+
+      processedTokens.map(({ tokenAddress, tokenBalance }) => {
+        sdk.util.sumSingleBalance(
+          balances,
+          `${chain}:${tokenAddress}`,
+          tokenBalance
+        );
+      });
+    })
+  );
+
+  return balances;
+};
+
+const psmConfig = {
+  avax: ["0x88cc23286f1356eb0163ad5bdbfa639416e4168d"],
+  bsc: [],
+  fantom: ["0xa561fa603bf0b43cb0d0911eeccc8b6777d3401b"],
+};
+
+const stableConfig = {
+  avax: ["0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664"],
+  bsc: ["0xe9e7cea3dedca5984780bafc599bd69add087d56"],
+  fantom: [],
+};
+
+const autoGem = {
+  avax: "0x65764167EC4B38D611F961515B51a40628614018",
+  bsc: "0xE02CE329281664A5d2BC0006342DC84f6c384663",
+  fantom: "",
+};
+
+const DAI = {
+  avax: "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70",
+  bsc: "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3",
+  fantom: "0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e",
+};
+
+//*** PSM staked portion as product of GrowthDefi Protocol ***//
+const fetchPSMMultiple = async (
+  timestamp,
+  ethBlock,
+  chainBlocks,
+  chain,
+  chainCustomProcessor
+) => {
+  const balances = {};
+
+  const stakeLpTokens = psmConfig[chain];
+
+  const stakeLpTokens_bal = (
+    await sdk.api.abi.multiCall({
+      abi: "erc20:totalSupply",
+      calls: stakeLpTokens.map((pool, idx) => ({
+        target: pool,
+      })),
+      chain: chain,
+      block: chainBlocks[chain],
+    })
+  ).output.map((stkLp_bal) => stkLp_bal.output);
+
+  const stkSymbol = (
+    await sdk.api.abi.multiCall({
+      abi: abi.symbol,
+      calls: stakeLpTokens.map((lp) => ({
+        target: lp,
+      })),
+      chain: chain,
+      block: chainBlocks[chain],
+    })
+  ).output;
+
+  await Promise.all(
+    stkSymbol.map(async (symbol, idx) => {
+      const processedTokens = await chainCustomProcessor(
+        DAI[chain],
+        stakeLpTokens_bal[idx],
+        "DAI",
+        chainBlocks
+      );
+
+      processedTokens.map(({ tokenAddress, tokenBalance }) => {
+        sdk.util.sumSingleBalance(
+          balances,
+          `${chain}:${tokenAddress}`,
+          tokenBalance
+        );
+      });
+    })
+  );
+
+  return balances;
+};
+
+//*** PSM staked portion as product of GrowthDefi Protocol ***//
+const fetchPSMSingle = async (
+  timestamp,
+  ethBlock,
+  chainBlocks,
+  chain,
+  chainCustomProcessor
+) => {
+  const balances = {};
+
+  const stakeLpTokens = stableConfig[chain];
+
+  const stakeLpTokens_bal = (
+    await sdk.api.abi.multiCall({
+      abi: "erc20:balanceOf",
+      calls: stakeLpTokens.map((pool, idx) => ({
+        target: pool,
+        params: autoGem[chain],
+      })),
+      chain: chain,
+      block: chainBlocks[chain],
+    })
+  ).output.map((stkLp_bal) => stkLp_bal.output);
+
+  const stkSymbol = (
+    await sdk.api.abi.multiCall({
+      abi: abi.symbol,
+      calls: stakeLpTokens.map((lp) => ({
+        target: lp,
+      })),
+      chain: chain,
+      block: chainBlocks[chain],
+    })
+  ).output;
+
+  await Promise.all(
+    stkSymbol.map(async (symbol, idx) => {
+      const processedTokens = await chainCustomProcessor(
+        DAI[chain],
+        stakeLpTokens_bal[idx],
+        "DAI",
+        chainBlocks
+      );
+
+      processedTokens.map(({ tokenAddress, tokenBalance }) => {
+        sdk.util.sumSingleBalance(
+          balances,
+          `${chain}:${tokenAddress}`,
+          tokenBalance
+        );
+      });
+    })
+  );
+
+  return balances;
+};
 
 /**
  * BSC-specific tokens processing logic
@@ -347,101 +442,12 @@ const bscTokensProcessor = async (address, balance, symbol, chainBlocks) => {
   let tokenBalance = balance;
 
   // Replace govGRO token with GRO (as it's pegged 1:1)
-  if (symbol === 'govGRO') {
+  if (symbol === "govGRO") {
     tokenAddress = GRO_BSC;
   }
 
-  // Unwrap belt-tokens
-  if (symbol.startsWith('belt') && symbol.length > 4) {
-    tokenAddress = (
-      await sdk.api.abi.call({
-        abi: beltAbi.token,
-        target: address,
-        chain: "bsc",
-        block: chainBlocks["bsc"]
-      })
-    ).output
-
-    tokenBalance = (
-      await sdk.api.abi.call({
-        abi: beltAbi.sharesToAmount,
-        target: address,
-        params: balance,
-        chain: "bsc",
-        block: chainBlocks["bsc"]
-      })
-    ).output
-  }
-
-  // Unwrap 4Belt
-  if (symbol === '4Belt') {
-    const tokensIndexes = [0, 1, 2, 3];
-
-    const lpBalance = new BigNumber(balance);
-    const totalSupply = new BigNumber((
-      await sdk.api.abi.call({
-        abi: beltAbi.totalSupply,
-        target: address,
-        chain: "bsc",
-        block: chainBlocks["bsc"]
-      })
-    ).output)
-
-    const coins = (
-      await sdk.api.abi.multiCall({
-        abi: beltAbi.coins,
-        calls: tokensIndexes.map((idx) => ({
-          target: BELT_4POOL_SWAP_BSC,
-          params: idx
-        })),
-        chain: "bsc",
-        block: chainBlocks["bsc"],
-      })
-    ).output.map((bal) => bal.output);
-
-    const balances = (
-      await sdk.api.abi.multiCall({
-        abi: beltAbi.balances,
-        calls: tokensIndexes.map((idx) => ({
-          target: BELT_4POOL_SWAP_BSC,
-          params: idx
-        })),
-        chain: "bsc",
-        block: chainBlocks["bsc"],
-      })
-    ).output.map((bal) => new BigNumber(bal.output));
-
-    const shares = balances.map((balance) => balance.times(lpBalance.div(totalSupply)).toFixed(0));
-
-    const underlyingTokens = (
-      await sdk.api.abi.multiCall({
-        abi: beltAbi.token,
-        calls: coins.map(coin => ({ target: coin })),
-        chain: "bsc",
-        block: chainBlocks["bsc"],
-      })
-    ).output.map((underlying) => underlying.output);
-
-    const underlyingBalances = (
-      await sdk.api.abi.multiCall({
-        abi: beltAbi.sharesToAmount,
-        calls: coins.map((coin, idx) => ({
-          target: coin,
-          params: shares[idx]
-        })),
-        chain: "bsc",
-        block: chainBlocks["bsc"],
-      })
-    ).output.map((bal) => bal.output);
-
-    return underlyingTokens.map((token, idx) => ({
-      tokenAddress: token,
-      tokenBalance: underlyingBalances[idx]
-    }))
-  }
-
-  return [{ tokenAddress, tokenBalance }]
-}
+  return [{ tokenAddress, tokenBalance }];
+};
 
 /**
  * Avax-specific tokens processing logic
@@ -456,38 +462,130 @@ const avaxTokensProcessor = async (address, balance, symbol, chainBlocks) => {
   let tokenAddress = address;
   let tokenBalance = balance;
 
-  return [{ tokenAddress, tokenBalance }]
-}
+  return [{ tokenAddress, tokenBalance }];
+};
 
-const wheatBscTvl = (timestamp, ethBlock, chainBlocks) => {
-  return fetchWheatChainTvl(timestamp, ethBlock, chainBlocks, 'bsc', bscTokensProcessor)
-}
+const ftmTokensProcessor = async (address, balance, symbol, chainBlocks) => {
+  let tokenAddress = address;
+  let tokenBalance = balance;
 
-const wheatAvaxTvl = (timestamp, ethBlock, chainBlocks) => {
-  return fetchWheatChainTvl(timestamp, ethBlock, chainBlocks, 'avax', avaxTokensProcessor)
-}
+  // Replace govGRO token with GRO (as it's pegged 1:1)
+  if (symbol === "slinSpirit") {
+    tokenAddress = LINSPIRIT;
+  }
+
+  return [{ tokenAddress, tokenBalance }];
+};
 
 const morBscTvl = (timestamp, ethBlock, chainBlocks) => {
-  return fetchMorChainTvl(timestamp, ethBlock, chainBlocks, 'bsc', bscTokensProcessor)
-}
+  return fetchMorChainTvl(
+    timestamp,
+    ethBlock,
+    chainBlocks,
+    "bsc",
+    bscTokensProcessor
+  );
+};
 
 const morAvaxTvl = (timestamp, ethBlock, chainBlocks) => {
-  return fetchMorChainTvl(timestamp, ethBlock, chainBlocks, 'avax', avaxTokensProcessor)
-}
+  return fetchMorChainTvl(
+    timestamp,
+    ethBlock,
+    chainBlocks,
+    "avax",
+    avaxTokensProcessor
+  );
+};
 
+const morFTMTvl = (timestamp, ethBlock, chainBlocks) => {
+  return fetchMorChainTvl(
+    timestamp,
+    ethBlock,
+    chainBlocks,
+    "fantom",
+    ftmTokensProcessor
+  );
+};
+
+const morFTMNonStkTvl = (timestamp, ethBlock, chainBlocks) => {
+  return fetchMorNonStkChainTvl(
+    timestamp,
+    ethBlock,
+    chainBlocks,
+    "fantom",
+    ftmTokensProcessor
+  );
+};
+
+const clqdrStakeTvl = (timestamp, ethBlock, chainBlocks) => {
+  return fetchCLQDRStaking(
+    timestamp,
+    ethBlock,
+    chainBlocks,
+    "fantom",
+    ftmTokensProcessor
+  );
+};
+
+const psmTVLMultipleFTM = (timestamp, ethBlock, chainBlocks) => {
+  return fetchPSMMultiple(
+    timestamp,
+    ethBlock,
+    chainBlocks,
+    "fantom",
+    ftmTokensProcessor
+  );
+};
+
+const psmTVLMultipleAVAX = (timestamp, ethBlock, chainBlocks) => {
+  return fetchPSMMultiple(
+    timestamp,
+    ethBlock,
+    chainBlocks,
+    "avax",
+    ftmTokensProcessor
+  );
+};
+
+const psmTVLSingleAVAX = (timestamp, ethBlock, chainBlocks) => {
+  return fetchPSMSingle(
+    timestamp,
+    ethBlock,
+    chainBlocks,
+    "avax",
+    ftmTokensProcessor
+  );
+};
+
+const psmTVLSingleBSC = (timestamp, ethBlock, chainBlocks) => {
+  return fetchPSMSingle(
+    timestamp,
+    ethBlock,
+    chainBlocks,
+    "bsc",
+    ftmTokensProcessor
+  );
+};
 module.exports = {
   misrepresentedTokens: true,
-  ethereum: {
-    staking: staking(stakingContract_eth, GRO_ETH),
-  },
   bsc: {
-    treasury,
-    staking: staking(gRootStakingContract_bsc, GRO_BSC, "bsc"),
-    tvl: sdk.util.sumChainTvls([wheatBscTvl, morBscTvl]),
+    tvl: sdk.util.sumChainTvls([morBscTvl, psmTVLSingleBSC]),
   },
   avax: {
-    tvl: sdk.util.sumChainTvls([wheatAvaxTvl, morAvaxTvl]),
+    tvl: sdk.util.sumChainTvls([
+      morAvaxTvl,
+      psmTVLMultipleAVAX,
+      psmTVLSingleAVAX,
+    ]),
+  },
+  fantom: {
+    tvl: sdk.util.sumChainTvls([
+      morFTMTvl,
+      morFTMNonStkTvl,
+      clqdrStakeTvl,
+      psmTVLMultipleFTM,
+    ]),
   },
   methodology:
-    "We count liquidity on the Wheath, GRoot, Mor as products of Growthdefi Protocol through MasterChef and Staking Contracts",
+    "We count liquidity on MOR through MasterChef and Staking Contracts",
 };

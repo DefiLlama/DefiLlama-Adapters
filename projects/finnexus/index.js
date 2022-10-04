@@ -76,6 +76,5 @@ module.exports = {
     wan: {
         tvl: wan,
     },
-    tvl
 }
 

@@ -8,4 +8,4 @@ historical-data.js
 yarn.lock
 .DS_Store
 projects/pooltogether/index.js
-package-lock.json
+.vscode

@@ -31,9 +31,6 @@ async function tvl(timestamp, block) {
   ==================================================*/
 
 module.exports = {
-  name: "Reflexer",
-  token: "RAI",
-  category: "lending",
   start: 1613520000,
   tvl,
 };

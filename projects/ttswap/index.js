@@ -11,10 +11,9 @@ const thundercoreTvl = async () => {
 
 module.exports = {
   timetravel: false,
-  ThunderCore: {
+  thundercore: {
     tvl: thundercoreTvl,
   },
-  tvl: sdk.util.sumChainTvls([thundercoreTvl]),
   methodology:
     "Counts the liquidity on all pairs. Metrics come from https://ttswap.space/#/stats",
-};
+}

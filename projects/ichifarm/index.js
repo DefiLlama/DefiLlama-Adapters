@@ -1,193 +1,204 @@
 const sdk = require("@defillama/sdk");
-const abiOneToken = require("./abiOneToken.json");
-const abiFarm = require("./abiFarm.json");
-const BigNumber = require("bignumber.js");
-const { fetchURL } = require("../helper/utils");
-const { staking } = require("../helper/staking");
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
+const { default: BigNumber } = require("bignumber.js");
+const { stakings } = require("../helper/staking");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
+const abi = require("./abi.json");
+const { requery } = require('./../helper/getUsdUniTvl');
+const { sumTokens2, unwrapUniswapV3NFTs } = require('../helper/unwrapLPs')
 
-const Contracts = [
-  // StakingConract
-  "0x70605a6457B0A8fBf1EEE896911895296eAB467E",
-  //farmV1Contract
-  "0xcC50953A743B9CE382f423E37b07Efa6F9d9B000",
-  //farmV2Contract
-  "0x275dFE03bc036257Cd0a713EE819Dbd4529739c8",
-];
-const ICHI = "0x903bEF1736CDdf2A537176cf3C64579C3867A881";
+const ichi = "0x903bEF1736CDdf2A537176cf3C64579C3867A881";
+const xIchi = "0x70605a6457B0A8fBf1EEE896911895296eAB467E";
+const tokenFactory = "0xD0092632B9Ac5A7856664eeC1abb6E3403a6A36a";
+const farmContract = "0x275dFE03bc036257Cd0a713EE819Dbd4529739c8";
+const ichiLending = "0xaFf95ac1b0A78Bd8E4f1a2933E373c66CC89C0Ce";
 
-const ignoreAddresses = [
-  "0x22c6289dB7E8EAB6aA12C35a044410327c4d9F93",
-  "0x1dcE26F543E591c27717e25294AEbbF59AD9f3a5",
-  "0x46935b2489d1468A580CcC3ccbA11D1eb7737199",
-  "0xfaeCcee632912c42a7c88c3544885A8D455408FA",
-];
+const unilps = [
+  // SLP
+  "0x9cD028B1287803250B1e226F0180EB725428d069",
+  // UNI-V2 lP
+  "0xd07D430Db20d2D7E0c4C11759256adBCC355B20C"
+]
+const poolWithTokens = [
+  // BANCOR
+  ["0x4a2F0Ca5E03B2cF81AebD936328CF2085037b63B", ["0x903bEF1736CDdf2A537176cf3C64579C3867A881", "0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C"]],
+  // ONE INCH
+  ["0x1dcE26F543E591c27717e25294AEbbF59AD9f3a5", ["0x903bEF1736CDdf2A537176cf3C64579C3867A881", "0x111111111117dC0aa78b770fA6A738034120C302"]],
+  // BALANCER
+  ["0x58378f5F8Ca85144ebD8e1E5e2ad95B02D29d2BB", ["0x903bEF1736CDdf2A537176cf3C64579C3867A881", "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"]]
+]
 
-const OneTokenFactoryContract = "0xD0092632B9Ac5A7856664eeC1abb6E3403a6A36a";
+async function getVaultTvl(balances, vaults, tokenAtIndex, block) {
+  let allOneTokens = []
+  tokenAtIndex.map(p => {
+    allOneTokens.push(p.output.toLowerCase());
+  })
 
-const oneTokensV1 = [
-  "0xC88F47067dB2E25851317A2FDaE73a22c0777c37",
-  "0xEc0d77a58528a218cBf41Fa6E1585c8D7A085868",
-  "0x18Cc17a1EeD37C02A77B0B96b7890C7730E2a2CF",
-  "0x8F041A3940a5e6FB580075C3774E15FcFA0E1618",
-  "0x7BD198b9107496fD5cC3d7655AF52f43a8eDBc4C",
-];
+  const token0s = (await sdk.api.abi.multiCall({
+    calls: vaults.map(p => ({
+      target: p
+    })),
+    abi: abi["token0"],
+    block
+  })).output;
 
-const USDC = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
-const endpoint =
-  "https://raw.githubusercontent.com/ichifarm/ichi/main/ichi-tokenlist.json";
+  const token1s = (await sdk.api.abi.multiCall({
+    calls: vaults.map(p => ({
+      target: p
+    })),
+    abi: abi["token1"],
+    block
+  })).output;
 
-const Staking = async (...params) => {
-  for (const stakingContract of Contracts) {
-    return staking(stakingContract, ICHI)(...params);
-  }
-};
+  const totalAmounts = (await sdk.api.abi.multiCall({
+    calls: vaults.map(p => ({
+      target: p
+    })),
+    abi: abi["getTotalAmounts"],
+    block
+  })).output;
 
-const calc = async (block, balances, farm, poolLength, lpToken, lpBalance) => {
-  const lengthOfPool = (
-    await sdk.api.abi.call({
-      abi: poolLength,
-      target: farm,
-      block,
-    })
-  ).output;
+  await requery(totalAmounts, 'ethereum', block, abi["getTotalAmounts"]);
+  await requery(token0s, 'ethereum', block, abi["token0"]);
+  await requery(token1s, 'ethereum', block, abi["token1"]);
 
-  const lpPositions = [];
+  for (let i = 0; i < vaults.length; i++) {
+    const tokens = [
+      token0s[i].output.toLowerCase(),
+      token1s[i].output.toLowerCase()
+    ]
 
-  for (let i = 0; i < lengthOfPool; i++) {
-    const tokenLp = (
-      await sdk.api.abi.call({
-        abi: lpToken,
-        target: farm,
-        params: i,
-        block,
-      })
-    ).output;
+    const bals = [
+      totalAmounts[i].output[0],
+      totalAmounts[i].output[1]
+    ]
 
-    const balanceLp = (
-      await sdk.api.abi.call({
-        abi: lpBalance,
-        target: farm,
-        params: i,
-        block,
-      })
-    ).output;
-
-    const lpSymbol = (
-      await sdk.api.abi.call({
-        abi: abiFarm.symbol,
-        target: tokenLp,
-        block,
-      })
-    ).output;
-
-    if (
-      ignoreAddresses.some(
-        (addr) => addr.toLowerCase() === tokenLp.toLowerCase()
-      )
-    ) {
-    } else if (lpSymbol.includes("LP") || lpSymbol.includes("UNI-V2")) {
-      lpPositions.push({
-        token: tokenLp,
-        balance: balanceLp,
-      });
-    } else if (lpSymbol == "BPT") {
-      const getCrTokens = (
-        await sdk.api.abi.call({
-          abi: abiFarm.getCurrentTokens,
-          target: tokenLp,
-          block,
-        })
-      ).output;
-
-      for (const token of getCrTokens) {
-        await sumTokensAndLPsSharedOwners(
-          balances,
-          [[token, false]],
-          [tokenLp]
-        );
+    for (let j = 0; j < 2; j++) {
+      if (allOneTokens.includes(tokens[j])) {
+        break;
       }
-    } else {
-      sdk.util.sumSingleBalance(balances, tokenLp, balanceLp);
+      sdk.util.sumSingleBalance(balances, tokens[j], bals[j]);
     }
   }
+}
+
+async function getOneTokens(block) {
+  const tokenCount = (await sdk.api.abi.call({
+    target: tokenFactory,
+    abi: abi.oneTokenCount,
+    block
+  })).output;
+
+  const tokenAtIndex = (await sdk.api.abi.multiCall({
+    calls: [...Array(tokenCount).keys()].map((i) => ({
+      target: tokenFactory,
+      params: [i]
+    })),
+    abi: abi.oneTokenAtIndex,
+    block
+  })).output;
+
+  return tokenAtIndex
+}
+
+async function getVaults(block) {
+  const estVaultCount = 50;
+  const vaults = (await sdk.api.abi.multiCall({
+    block,
+    calls: [...Array(estVaultCount).keys()].map((i) => ({
+      target: '0x5a40DFaF8C1115196A1CDF529F97122030F26112',
+      params: [i],
+    })),
+    abi: abi.allVaults,
+  })).output.filter(v => v.success == true).map(v => v.output);
+  return vaults;
+}
+
+async function tvl(timestamp, block) {
+  let balances = {};
+
+  const vaults = await getVaults(block)
+  const ichiTokens = await getOneTokens(block)
+  
+  await getVaultTvl(balances, vaults, ichiTokens, block);
+  
+  for (let t of ichiTokens) {
+    delete balances[t]
+  }
+  return balances;
+}
+
+async function getPoolTvl(balances, poolWithTokens, block) {
+  for (let i = 0; i < poolWithTokens.length; i++) {
+    const pool = poolWithTokens[i][0];
+    const tokens = poolWithTokens[i][1];
+    const poolBalances = (await sdk.api.abi.multiCall({
+      calls: tokens.map(p => ({
+        target: p,
+        params: pool
+      })),
+      abi: "erc20:balanceOf",
+      block
+    })).output;
+    poolBalances.forEach(p => {
+      sdk.util.sumSingleBalance(balances, p.input.target, p.output);
+    })
+  }
+}
+
+async function pool2(timestamp, block) {
+  let balances = {};
+
+  const unilpBalance = (await sdk.api.abi.multiCall({
+    calls: unilps.map(p => ({
+      target: p,
+      params: farmContract
+    })),
+    abi: "erc20:balanceOf",
+    block
+  })).output;
+
+  let lpPositions = [];
+  unilpBalance.forEach(p => {
+    lpPositions.push({ token: p.input.target, balance: p.output });
+  })
 
   await unwrapUniswapLPs(balances, lpPositions, block);
-};
+  await getPoolTvl(balances, poolWithTokens, block);
 
-const ethTvl = async (block) => {
-  const balances = {};
-
-  /*** ICHI oneTokens V1 TVL Portion ***/
-  const assetsList = (await fetchURL(endpoint)).data.tokens
-    .map((addr) => addr.address)
-    .concat(USDC);
-
-  for (const asset of assetsList) {
-    await sumTokensAndLPsSharedOwners(balances, [[asset, false]], oneTokensV1);
-  }
-
-  /*** ICHI Farm V1 TVL Portion ***/
-  await calc(
-    block,
-    balances,
-    Contracts[1],
-    abiFarm.poolLength,
-    abiFarm.getPoolToken,
-    abiFarm.getLPSupply
-  );
-
-  /*** ICHI oneTokens V2 TVL Portion ***/
-  const countOneTokens = (
-    await sdk.api.abi.call({
-      abi: abiOneToken.oneTokenCount,
-      target: OneTokenFactoryContract,
-      block,
-    })
-  ).output;
-
-  for (let i = 0; i < countOneTokens; i++) {
-    const oneToken = (
-      await sdk.api.abi.call({
-        abi: abiOneToken.oneTokenAtIndex,
-        target: OneTokenFactoryContract,
-        params: i,
-        block,
-      })
-    ).output;
-
-    const totalSuplay = (
-      await sdk.api.abi.call({
-        abi: abiOneToken.totalSupply,
-        target: oneToken,
-        block,
-      })
-    ).output;
-
-    const totalBalance = BigNumber(totalSuplay).div(1e12).toFixed(0);
-
-    sdk.util.sumSingleBalance(balances, USDC, totalBalance);
-  }
-
-  /*** ICHI Farm V2 TVL Portion ***/
-  await calc(
-    block,
-    balances,
-    Contracts[2],
-    abiFarm.poolLength,
-    abiFarm.lpToken,
-    abiFarm.getLPSupply
-  );
   return balances;
-};
+}
+
+async function polygonTvl(_, _b, { polygon: block }){
+  const chain = 'polygon'
+  const tokensAndOwners = [
+    // oneBTC mint
+    ['0x2791bca1f2de4661ed88a30c99a7a9449aa84174', '0x1f194578e7510A350fb517a9ce63C40Fa1899427'],
+    ['0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6', '0x1f194578e7510A350fb517a9ce63C40Fa1899427'],
+    // BTC pool
+    ['0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6', '0x61F7d1F537E959d62265a76Bf1ac40EB3E338De7'], 
+
+    // USDC pool
+    ['0x2791bca1f2de4661ed88a30c99a7a9449aa84174', '0x499277a14d1eDB5583dd070A447dEDA19E7aBf85'], 
+
+    // oneBTC Strategy
+    ['0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6', '0x339d2bb734bbe105b48a2983d504378cded3093b'], 
+    ['0x2791bca1f2de4661ed88a30c99a7a9449aa84174', '0x339d2bb734bbe105b48a2983d504378cded3093b'], 
+    ['0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6', '0x6980e5afafec8c9c5f039d0c1a8ccfa6cefb9393'], 
+    ['0x2791bca1f2de4661ed88a30c99a7a9449aa84174', '0x6980e5afafec8c9c5f039d0c1a8ccfa6cefb9393'], 
+  ]
+
+  return sumTokens2({ chain, block, tokensAndOwners, })
+}
 
 module.exports = {
+  methodology: "Tokens deposited to mint oneTokens, Angel and HODL vaults excluding oneTokens",
   misrepresentedTokens: true,
   ethereum: {
-    staking: Staking,
-    tvl: ethTvl,
+    tvl,
+    pool2,
+    staking: stakings([xIchi, ichiLending] , ichi)
   },
-  methodology:
-    "We count liquidity on the oneTokens and Farm seccions through oneTokenfactor and Farm Contracts",
-};
+  polygon: {
+    tvl: polygonTvl
+  }
+} // node test.js projects/ichifarm/index.js

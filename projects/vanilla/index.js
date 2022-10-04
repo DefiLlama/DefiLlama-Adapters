@@ -23,9 +23,5 @@ async function tvl(timestamp, block) {
 }
 
 module.exports = {
-  name: 'Vanilla',
-  website: 'https://vanilladefi.com',
-  token: 'VNL',              
-  category: 'derivatives',
   tvl
 }

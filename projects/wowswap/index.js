@@ -39,10 +39,6 @@ function tvl(chain) {
 }
 
 module.exports = {
-  name: "WOWswap",
-  website: "https://wowswap.io",
-  token: "WOW",
-  category: "lending",
   start: 1618218000,            // Mon Apr 12 2021 09:00:00
 
   misrepresentedTokens: true,

@@ -1,21 +1,33 @@
-const {getChainTvl} = require('../helper/getUniSubgraphTvl')
 const { stakingPricedLP } = require('../helper/staking')
-const { usdCompoundExports } = require('../helper/compound')
 const sdk = require('@defillama/sdk')
+const { getUniTVL } = require('../helper/unknownTokens')
+const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl");
 
-const unitroller = '0xcffef313b69d83cb9ba35d9c0f882b027b846ddc'
 
-const lendingMarket = usdCompoundExports(unitroller, "moonriver", "0x455D0c83623215095849AbCF7Cc046f78E3EDAe0")
 
-module.exports={
+const dexTVL = getUniTVL({
+    factory: '0x017603C8f29F7f6394737628a93c57ffBA1b7256',
+    chain: 'moonriver',
+    useDefaultCoreAssets: true,
+})
+
+module.exports = {
     methodology: "Liquidity on DEX and supplied and borrowed amounts found using the comptroller address(0xcffef313b69d83cb9ba35d9c0f882b027b846ddc)",
     misrepresentedTokens: true,
-    moonriver:{
+    moonriver: {
         staking: stakingPricedLP("0x37619cC85325aFea778830e184CB60a3ABc9210B", "0x9A92B5EBf1F6F6f7d93696FCD44e5Cf75035A756", "moonriver", "0xbBe2f34367972Cb37ae8dea849aE168834440685", "moonriver"),
-        tvl: sdk.util.sumChainTvls([
-            getChainTvl({moonriver: "https://graph-node.huckleberry.finance/subgraphs/name/huckleberry/huckleberry-subgraph"})('moonriver'),
-            lendingMarket.tvl
-        ]),
-        borrowed: lendingMarket.borrowed
-    }
+        tvl: dexTVL, 
+    },
+    clv: {
+        tvl: calculateUsdUniTvl(
+          "0x4531e148b55d89212E219F612A459fC65f657d7d",
+          "clv",
+          "0x6d6ad95425fcf315c39fa6f3226471d4f16f27b3",
+          [
+            "0xbea4928632e482a0a1241b38f596a311ad7b98b1", //finn
+            "0x1bbc16260d5d052f1493b8f2aeee7888fed1e9ab"  //usdc
+          ],
+          "clover-finance"
+        ),
+      },
 }

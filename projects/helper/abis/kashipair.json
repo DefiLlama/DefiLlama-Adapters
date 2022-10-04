@@ -1,0 +1,20 @@
+[
+  {
+    "inputs": [],
+    "name": "totalBorrow",
+    "outputs": [
+      {
+        "internalType": "uint128",
+        "name": "elastic",
+        "type": "uint128"
+      },
+      {
+        "internalType": "uint128",
+        "name": "base",
+        "type": "uint128"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

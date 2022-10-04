@@ -7,6 +7,7 @@ const contracts = {
     "trading1": "0x9BC357bc5b312AaCD41a84F3C687F031B8786853",
     "trading2": "0xA55Eee92a46A50A4C65908F28A0BE966D3e71633",
     "trading3": "0xCAEc650502F15c1a6bFf1C2288fC8F819776B2eC",
+    "trading4": "0xbEd32937D8A5D1421241F52809908f1a17D75bDb",
     "staking": "0xC8CDd2Ea6A5149ced1F2d225D16a775ee081C67D",
     "ethPool": "0xE0cCd451BB57851c1B2172c07d8b4A7c6952a54e",
 
@@ -31,6 +32,7 @@ async function tvl(_time, _ethBlock, chainBlocks) {
             contracts.trading1,
             contracts.trading2,
             contracts.trading3,
+            contracts.trading4,
             contracts.ethPool
         ],
         chain: 'arbitrum',
