@@ -16,5 +16,6 @@
   "offers",
   "deadFrom",
   "broken",
-  "ownTokens"
+  "ownTokens",
+  "vesting"
 ]

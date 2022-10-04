@@ -5,6 +5,8 @@ const { default: BigNumber } = require('bignumber.js');
 const {ethereumContracts} = require('./ethereum');
 const {fantomContracts} = require('./fantom');
 const {polygonContracts} = require('./polygon');
+const {arbitrumContracts} = require('./arbitrum');
+const {optimismContracts} = require('./optimism');
 
 const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 const wbtc = "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599";
@@ -75,6 +77,25 @@ async function polygon(_timestamp, ethBlock, chainBlocks){
     }
 }
 
+async function arbitrum(_timestamp, ethBlock, chainBlocks){
+    const wethSupplies = await allMarketSupplies(arbitrumContracts.weth, chainBlocks.arbirtum, "arbitrum");
+    const usdcSupplies = await allMarketSupplies(arbitrumContracts.usdc, chainBlocks.arbirtum, "arbitrum");
+
+    return {
+        [weth]: wethSupplies,
+        [usdc]: usdcSupplies,
+    }
+}
+
+async function optimism(_timestamp, ethBlock, chainBlocks){
+    const wethSupplies = await allMarketSupplies(optimismContracts.weth, chainBlocks.optimism, "optimism");
+    const usdcSupplies = await allMarketSupplies(optimismContracts.usdc, chainBlocks.optimism, "optimism");
+    return {
+        [weth]: wethSupplies,
+        [usdc]: usdcSupplies,
+    }
+}
+
 module.exports = {
     timetravel: false,
     misrepresentedTokens: false,
@@ -87,5 +108,11 @@ module.exports = {
     },
     polygon: {
         tvl: polygon
+    },
+    arbitrum: {
+        tvl: arbitrum
+    },
+    optimism: {
+        tvl: optimism
     },
 }
