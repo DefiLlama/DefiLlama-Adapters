@@ -109,6 +109,7 @@ import voltswap from "./adapters/voltswap";
 import yokaiswap from "./adapters/yokaiswap";
 import protofi from "./adapters/protofi";
 import voltage from "./adapters/voltage";
+import complusNetwork from "./adapters/complus-network";
 
 export default {
   mooniswap,
@@ -219,6 +220,7 @@ export default {
   voltswap,
   yokaiswap,
   protofi,
-  voltage
+  voltage,
+  "complus-network": complusNetwork
   // lyra -> OPTIONS DEX, not enable for now
 };
