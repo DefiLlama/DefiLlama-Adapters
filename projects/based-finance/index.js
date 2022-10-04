@@ -75,8 +75,6 @@ module.exports = {
   },
 };
 
-module.exports = mergeExports([module.exports, basedV2Exports, ])
-
 module.exports.hallmarks = [
   [Math.floor(new Date('2022-09-30')/1e3), 'Added Based V2'],
 ]
