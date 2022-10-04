@@ -93,10 +93,9 @@ async function getTVL(balances, chain, timestamp, chainBlocks) {
         sdk.api.abi.multiCall({
             calls: NFT_DAO_SET_ARRAY.map((address) => ({
                 target: address,
-                params: [ethers.utils.formatBytes32String("")],
             })),
             abi: abi.VAULT_ABI.find(
-                (a) => a.name === "nftTypeValueETH"
+                (a) => a.name === "getFloorETH"
             ),
             block: chainBlocks[chain],
             chain,

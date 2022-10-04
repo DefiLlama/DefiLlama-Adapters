@@ -113,6 +113,16 @@ async function kava(timestamp, ethBlock, chainBlocks) {
     }
 }
 
+async function optimism(timestamp, ethBlock, chainBlocks) {
+    return {
+        "0xeb4c2781e4eba804ce9a9803c67d0893436bb27d": (await sdk.api.erc20.totalSupply({
+            target: "0x85f6583762Bc76d775eAB9A7456db344f12409F7",
+            chain: "optimism",
+            block: chainBlocks.optimism
+        })).output
+    }
+}
+
 async function eth(timestamp, block) {
     const balances = await getAssetBalance(
         block,
@@ -172,5 +182,8 @@ module.exports = {
     },
     kava: {
         tvl: kava
+    },
+    optimism: {
+        tvl: optimism
     },
 };

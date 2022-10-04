@@ -85,7 +85,7 @@ function stakingTvl(chain) {
 function chainExports(chainTvl, stakingTvl, chains){
   const chainTvls = chains.reduce((obj, chain) => ({
     ...obj,
-    [chain === 'avax' ? 'avalanche' : chain]: {
+    [chain]: {
       tvl:chainTvl(chain),
       staking: stakingTvl(chain)
     }
