@@ -1,22 +1,19 @@
 /**
  *
- * @type {[{vaultID: number, assetDecimals: number, depositAssetID: number},{vaultID: number, assetDecimals: number, depositAssetID: number}]}
+ * @type {[{vaultID: number, stable: boolean, assetDecimals: number, depositAssetID: number},{vaultID: number, stable: boolean, assetDecimals: number, depositAssetID: number},{vaultID: number, stable: boolean, assetDecimals: number, depositAssetID: number}]}
  */
 const vaults = [
     {
-        vaultID: 114307159,
-        depositAssetID: 88808685,
-        assetDecimals: 6,
-    },
-    {
-        vaultID: 114308686,
-        depositAssetID: 88808609,
-        assetDecimals: 6,
-    },
-    {
-        vaultID: 114401737,
+        vaultID: 878144513,
         depositAssetID: 0,
         assetDecimals: 6,
+        stable: false
+    },
+    {
+        vaultID: 878140320,
+        depositAssetID: 31566704,
+        assetDecimals: 6,
+        stable: true
     },
 ];
 
@@ -27,9 +24,7 @@ const vaults = [
  * @type {{"deposit id": "medianizer id"}}
  */
 const price_feeds = {
-    0: 111693934,
-    88808685: 111693486,
-    88808609: 111692924,
+    0: 879224867,
 }
 
 const priceDecimals = 6;
