@@ -45,14 +45,14 @@ function trident(chain) {
   return async (timestamp, ethBlock, chainBlocks) => {
     const balances = {};
     const graphUrl = graphUrls[chain];
-    const block = chainBlocks[chain] - 50; //subgraphs can be late by few seconds/minutes
+    const block = chainBlocks[chain];
     const transform = await getChainTransform(chain);
 
     // Query graphql endpoint
     let result;
     if (block) {
       result = await request(graphUrl, tridentQueryWithBlock, {
-        block,
+        block: block - 50, //subgraphs can be late by few seconds/minutes
       });
     } else {
       result = await request(graphUrl, tridentQuery);
