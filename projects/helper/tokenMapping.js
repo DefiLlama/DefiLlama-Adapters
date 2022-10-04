@@ -4,6 +4,7 @@ const nullAddress = '0x0000000000000000000000000000000000000000'
 // Multichain bridge info: https://bridgeapi.anyswap.exchange/v2/serverInfo/all
 // IBC info - https://github.com/PulsarDefi/IBC-Cosmos/blob/main/ibc_data.json
 // O3swap - https://agg.o3swap.com/v1/tokens_all
+// wanchain - https://wanscan.org/tokens
 
 const transformTokens = {
   ethereum: {
@@ -951,6 +952,9 @@ const fixBalancesTokens = {
     '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2': { coingeckoId: "ethereum-pow-iou", decimals: 18 },
   },
   xdc: {
+    '0xD4B5f10D61916Bd6E0860144a91Ac658dE8a1437': { coingeckoId: "tether", decimals: 6 },
+    // '0xc6ae1db6c66d909f7bfeeeb24f9adb8620bf9dbf': { coingeckoId: "usd-coin", decimals: 6 },
+    // '0x1289f70b8a16797cccbfcca8a845f36324ac9f8b': { coingeckoId: "ethereum", decimals: 18 },
     [nullAddress]: { coingeckoId: "xdce-crowd-sale", decimals: 18 },
     '0x951857744785e80e2de051c32ee7b25f9c458c42': { coingeckoId: "xdce-crowd-sale", decimals: 18 },
     '0x36726235dadbdb4658d33e62a249dca7c4b2bc68': { coingeckoId: "xswap-protocol", decimals: 18 },
