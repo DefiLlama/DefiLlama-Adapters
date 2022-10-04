@@ -27,9 +27,7 @@ const readGlobalState = async (appIndex, keys) => {
 
             keys.forEach((key, index) => {
                 if (key === stateKey) {
-                    if (key === "ad") {
-                        foundedState[index] = algosdk.encodeAddress(Buffer.from(state.value.bytes, "base64"));
-                    } else if (key === "rss") {
+                    if (key === "rss") {
                         foundedState[index] = decodeString(state.value.bytes);
                     } else {
                         foundedState[index] = state.value.uint;
