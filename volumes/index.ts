@@ -112,6 +112,7 @@ import voltage from "./adapters/voltage";
 import complusNetwork from "./adapters/complus-network";
 import padswap from "./adapters/padswap";
 import sharkswap from "./adapters/sharkswap";
+import okcswap from "./adapters/okcswap";
 
 export default {
   mooniswap,
@@ -225,6 +226,7 @@ export default {
   voltage,
   "complus-network": complusNetwork,
   padswap,
-  sharkswap
+  sharkswap,
+  okcswap
   // lyra -> OPTIONS DEX, not enable for now
 };
