@@ -103,6 +103,7 @@ import lif3Swap from "./adapters/lif3-swap";
 import swappi from "./adapters/swappi";
 import yodeswap from "./adapters/yodeswap";
 import polycat from "./adapters/polycat";
+import defikingdoms from "./adapters/defikingdoms";
 
 export default {
   mooniswap,
@@ -207,6 +208,7 @@ export default {
   "lif3-swap": lif3Swap,
   swappi,
   yodeswap,
-  polycat
+  polycat,
+  defikingdoms
   // lyra -> OPTIONS DEX, not enable for now
 };
