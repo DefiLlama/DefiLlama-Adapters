@@ -12,6 +12,7 @@ module.exports = {
             payable: false,
             stateMutability: "view",
             type: "function",
-        }
+        },
+        getAsset: {"inputs":[],"name":"getAsset","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"}
     },
 };

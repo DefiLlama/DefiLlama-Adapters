@@ -67,14 +67,13 @@ const toAmountAbi = {
 };
 
 function furo(chain, isVesting) {
-  return async (timestamp, ethBlock, chainBlocks) => {
+  return async (timestamp, ethBlock, { [chain]: block}) => {
     const balances = {};
     const graphUrl = graphUrls[chain];
-    const block = chainBlocks[chain] - 50; //subgraphs can be late by few seconds/minutes
     const transform = await getChainTransform(chain);
 
     // Query graphql endpoint
-    let { tokens } = await request(graphUrl, furoQuery, { block, });
+    let { tokens } = await request(graphUrl, furoQuery, { block: block - 100, });
 
     tokens = tokens.filter(t => isWhitelistedToken(t.symbol, t.id, isVesting))
     const calls = tokens.map(token => ({ params: [token.id, token.liquidityShares, false] }))
