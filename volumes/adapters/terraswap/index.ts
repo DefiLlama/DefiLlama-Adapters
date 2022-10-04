@@ -1,4 +1,6 @@
 import { DISABLED_ADAPTER_KEY, SimpleVolumeAdapter } from "../../dexVolume.type";
+import { CHAIN } from "../../helper/chains";
+import disabledAdapter from "../../helper/disabledAdapter";
 
 const { request, gql } = require("graphql-request");
 
@@ -55,11 +57,12 @@ const getStartTimestamp = async () => {
 
 const adapter: SimpleVolumeAdapter = {
   volume: {
-    [DISABLED_ADAPTER_KEY]: { // terra: {
+    [CHAIN.TERRA]: {
       fetch,
       runAtCurrTime: true,
       start: getStartTimestamp,
     },
+    [DISABLED_ADAPTER_KEY]: disabledAdapter
   },
 };
 
