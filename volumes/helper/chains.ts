@@ -37,7 +37,9 @@ export enum CHAIN {
   TOMBCHAIN = "tombchain",
   CONFLUX = "conflux",
   TERRA = "terra",
-  METER = "meter"
+  METER = "meter",
+  GODWOKEN = "godwoken",
+  GODWOKEN_V1 = "godwoken_v1"
 }
 
 // Don´t use

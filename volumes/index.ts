@@ -106,6 +106,7 @@ import polycat from "./adapters/polycat";
 import defikingdoms from "./adapters/defikingdoms";
 import defiplaza from "./adapters/defiplaza";
 import voltswap from "./adapters/voltswap";
+import yokaiswap from "./adapters/yokaiswap";
 
 export default {
   mooniswap,
@@ -213,6 +214,7 @@ export default {
   polycat,
   defikingdoms,
   defiplaza,
-  voltswap
+  voltswap,
+  yokaiswap
   // lyra -> OPTIONS DEX, not enable for now
 };
