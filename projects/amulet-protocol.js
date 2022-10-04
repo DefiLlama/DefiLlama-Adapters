@@ -32,5 +32,3 @@ module.exports = {
     },
     methodology: `Amulet enables users to earn PoS staking rewards on Solana by staking SOL and mint amtSOL. amtSOL can be stake back to mint aUWT which will be used to underwrite covers. Hence, only the amount of SOL staked are counted as our TVL which the value are calculated based on the price get from Coingecko.`
 }
-
-tvl()
