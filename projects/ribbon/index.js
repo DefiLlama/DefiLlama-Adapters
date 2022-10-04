@@ -5,5 +5,5 @@ module.exports = {
   doublecounted: true,
   ...evm,
   ...solana,
-  methodology: "Sums the totalBalance of all Ribbon Theta Vaults",
+  methodology: "Sums the totalBalance of all Ribbon Theta Vaults and poolSize of all Ribbon Lend Pools",
 };

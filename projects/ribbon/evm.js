@@ -35,6 +35,10 @@ const pauserAvax = "0xf08d6a9c2C5a2Dc9B8645c5Ac0b529D4046D19aa";
 // Ribbon Earn vaults
 const rearnUSDC = "0x84c2b16FA6877a8fF4F3271db7ea837233DFd6f0";
 
+// Ribbon Lend pools
+const rlendWintermute = "0x0Aea75705Be8281f4c24c3E954D1F8b1D0f8044C";
+const rlendFolkvang = "0x3CD0ecf1552D135b8Da61c7f44cEFE93485c616d";
+
 // Ethereum Assets
 const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
 const wbtc = "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599";
@@ -61,6 +65,17 @@ async function addVaults({ balances, chain, vaults, block, transformAddress = a 
   })
 
   balanceRes.forEach((data, i) => sdk.util.sumSingleBalance(balances, transformAddress(vaults[i][0]), data.output))
+}
+
+// Ribbon Lend pools use poolSize as replacement for totalBalance
+async function addPools({ balances, chain, pools, block, transformAddress = a => a }) {
+  const { output: poolSizeRes } = await sdk.api.abi.multiCall({
+    abi: abi.poolSize,
+    calls: pools.map(i => ({ target: i[1]})),
+    chain, block,
+  })
+
+  poolSizeRes.forEach((data, i) => sdk.util.sumSingleBalance(balances, transformAddress(pools[i][0]), data.output))
 }
 
 async function ethTvl(_, block) {
@@ -90,6 +105,15 @@ async function ethTvl(_, block) {
   ]
   
   await addVaults({ balances, block, vaults, })
+
+  const pools = [
+    // ribbon lend
+    [usdc, rlendWintermute],
+    [usdc, rlendFolkvang],
+  ]
+  
+  await addPools({ balances, block, pools, })
+  
   // pauser holds a variety of coins
   return sumTokens2({ balances, owner: pauserEth, tokens: [nullAddress, usdc, wbtc, steth, aave, ], block, })
 }
