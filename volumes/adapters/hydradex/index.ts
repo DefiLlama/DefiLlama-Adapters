@@ -11,7 +11,6 @@ const blockQuery = gql`
       id
       number
       timestamp
-      __typename
     }
   }
 `;
@@ -36,13 +35,6 @@ const hydraswapFactories = (block) => {
     hydraswapFactories(block: {number: ${block}}, where: {id: "5a2a927bea6c5f4a48d4e0116049c1e36d52a528"}) {
       id
       totalVolumeUSD
-      totalVolumeHYDRA
-      untrackedVolumeUSD
-      totalLiquidityUSD
-      totalLiquidityHYDRA
-      txCount
-      pairCount
-      __typename
   }
 }
 `}
