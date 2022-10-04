@@ -188,9 +188,10 @@ module.exports = {
       factory,
     })
   },
-  kava: {
-    tvl: kavaTridentTvl,
-  },
+  //moved kava to trident adapter
+  //kava: {
+  //  tvl: kavaTridentTvl,
+  //},
 }
 
 module.exports.polygon.tvl = getChainTVL('polygon')
