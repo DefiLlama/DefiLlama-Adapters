@@ -102,6 +102,7 @@ import kaidex from "./adapters/kaidex";
 import lif3Swap from "./adapters/lif3-swap";
 import swappi from "./adapters/swappi";
 import yodeswap from "./adapters/yodeswap";
+import defikingdoms from "./adapters/defikingdoms";
 
 export default {
   mooniswap,
@@ -205,6 +206,7 @@ export default {
   kaidex,
   "lif3-swap": lif3Swap,
   swappi,
-  yodeswap
+  yodeswap,
+  defikingdoms
   // lyra -> OPTIONS DEX, not enable for now
 };
