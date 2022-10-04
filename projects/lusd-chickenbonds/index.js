@@ -5,7 +5,7 @@ const getTreasuryAbi = require("./getTreasury.abi.json");
 const CHICKEN_BOND_MANAGER_CONTRACT = '0x57619FE9C539f890b19c61812226F9703ce37137';
 const LUSD_ADDRESS = '0x5f98805A4E8be255a32880FDeC7F6728C6568bA0';
 
-async function tvl(_, block, chain='ethereum') {
+async function tvl(_, block) {
   const bucketAmounts = (await sdk.api.abi.call({
     target: CHICKEN_BOND_MANAGER_CONTRACT,
     abi: getTreasuryAbi,
