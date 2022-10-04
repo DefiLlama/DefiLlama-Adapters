@@ -48,5 +48,6 @@ module.exports = {
   heco: { tvl: tvl("heco") },
   avax: { tvl: tvl("avax") },
   iotex: { tvl: tvl("iotex") },
-  metis: { tvl: tvl("metis") }
+  metis: { tvl: tvl("metis") },
+  kava: { tvl: tvl("kava") }
 };
