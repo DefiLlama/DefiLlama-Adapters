@@ -21,7 +21,7 @@ async function getTotalTvl(prices) {
   return totalTvl.reduce((a, b) => a + b, 0);
 }
 
-/* Get total deposits */
+/* Get total tvl */
 async function tvl() {
   const prices = await getPrices();
 
