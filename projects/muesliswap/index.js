@@ -9,7 +9,7 @@ async function staking(){
         throw new Error("muesliswap tvl is below 0")
     }
     const info = (await fetchURL(`https://api.muesliswap.com/price/?base-policy-id=&base-tokenname=&quote-tokenname=4d494c4b&quote-policy-id=8a1cfae21368b8bebbbed9800fec304e95cce39a2a57dc35e2e3ebaa`)).data
-    const price = parseInt(info.price) / 1e6
+    const price = parseFloat(info.price) / 1e6
     return {
         cardano: tvl.data * price
     }
