@@ -13,7 +13,7 @@ async function staking(){
         throw new Error("Tokens paired against something other than ADA")
     }
     const topOrder = orders.orders[0]
-    const topPrice = (topOrder.fromAmount / 1e6) / topOrder.toAmount
+    const topPrice = (parseInt(topOrder.fromAmount) / parseInt(topOrder.toAmount)) / 1e6
     return {
         cardano: tvl.data * topPrice
     }
@@ -48,24 +48,25 @@ async function adaTvl(){
     // fetch the prices of each traded token first
     const tokenlistv2 = (await fetchURL("https://api.muesliswap.com/list?base-policy-id=&base-tokenname=")).data
     const adapricev2 = new Map(tokenlistv2.map(d => {
-       return [d.price.toToken, d.price.price]
+       return [d.price.toToken, parseFloat(d.price.bidPrice)]
     }))
     // then accumulate over the orderbooks
     const orderbooksv2 = (await fetchURL("https://onchain.muesliswap.com/all-orderbooks")).data
     await Promise.all(orderbooksv2.map(async ob=>{
         if(ob.fromToken !== "."){
-            const price = adapricev2[ob.fromToken]
+            const price = adapricev2.get(ob.fromToken)
             let totalAmountOtherToken = 0
             ob.orders.forEach(o=>{
-                totalAmountOtherToken += o.fromAmount
+                totalAmountOtherToken += parseInt(o.fromAmount)
             })
             const totalSell = totalAmountOtherToken * price
+            if(isNaN(totalSell) || !isFinite(totalSell)) return;
             totalAda += totalSell / 1e6
         }
         else if(ob.fromToken === "."){
             let totalLovelace = 0;
             ob.orders.forEach(o=>{
-                totalLovelace += o.fromAmount
+                totalLovelace += parseInt(o.fromAmount)
             })
             const totalBuy = totalLovelace
             totalAda += totalBuy / 1e6
