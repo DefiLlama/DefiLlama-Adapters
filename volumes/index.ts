@@ -117,6 +117,7 @@ import empiredex from "./adapters/empiredex";
 import makiswap from "./adapters/makiswap";
 import smartdex from "./adapters/smartdex";
 import cometh from "./adapters/cometh";
+import maiarExchange from "./adapters/maiar-exchange";
 
 export default {
   mooniswap,
@@ -235,6 +236,7 @@ export default {
   empiredex,
   makiswap,
   smartdex,
-  cometh
+  cometh,
+  "maiar-exchange": maiarExchange
   // lyra -> OPTIONS DEX, not enable for now
 };
