@@ -54,7 +54,7 @@ async function adaTvl(){
     const orderbooksv2 = (await fetchURL("https://onchain.muesliswap.com/all-orderbooks")).data
     await Promise.all(orderbooksv2.map(async ob=>{
         if(ob.fromToken !== "."){
-            const price = adapricev2[orders.fromToken]
+            const price = adapricev2[ob.fromToken]
             let totalAmountOtherToken = 0
             ob.orders.forEach(o=>{
                 totalAmountOtherToken += o.fromAmount
