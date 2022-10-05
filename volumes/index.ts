@@ -114,6 +114,7 @@ import padswap from "./adapters/padswap";
 import sharkswap from "./adapters/sharkswap";
 import okcswap from "./adapters/okcswap";
 import empiredex from "./adapters/empiredex";
+import makiswap from "./adapters/makiswap";
 
 export default {
   mooniswap,
@@ -229,6 +230,7 @@ export default {
   padswap,
   sharkswap,
   okcswap,
-  empiredex
+  empiredex,
+  makiswap
   // lyra -> OPTIONS DEX, not enable for now
 };
