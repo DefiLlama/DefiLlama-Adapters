@@ -8,14 +8,10 @@ async function staking(){
     if(tvl.data<=0){
         throw new Error("muesliswap tvl is below 0")
     }
-    const orders = (await fetchURL(`https://onchain.muesliswap.com/orderbook/?from-policy-id=&from-tokenname=&to-tokenname=4d494c4b&to-policy-id=8a1cfae21368b8bebbbed9800fec304e95cce39a2a57dc35e2e3ebaa`)).data
-    if(orders.fromToken !== "."){
-        throw new Error("Tokens paired against something other than ADA")
-    }
-    const topOrder = orders.orders[0]
-    const topPrice = (parseInt(topOrder.fromAmount) / parseInt(topOrder.toAmount)) / 1e6
+    const info = (await fetchURL(`https://api.muesliswap.com/price/?base-policy-id=&base-tokenname=&quote-tokenname=4d494c4b&quote-policy-id=8a1cfae21368b8bebbbed9800fec304e95cce39a2a57dc35e2e3ebaa`)).data
+    const price = parseInt(info.price) / 1e6
     return {
-        cardano: tvl.data * topPrice
+        cardano: tvl.data * price
     }
 }
 
