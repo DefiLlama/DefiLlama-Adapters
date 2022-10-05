@@ -119,6 +119,7 @@ import smartdex from "./adapters/smartdex";
 import cometh from "./adapters/cometh";
 import maiarExchange from "./adapters/maiar-exchange";
 import defichainDex from "./adapters/defichain-dex";
+import planet from "./adapters/planet";
 
 export default {
   mooniswap,
@@ -239,6 +240,7 @@ export default {
   smartdex,
   cometh,
   "maiar-exchange": maiarExchange,
-  "defichain-dex": defichainDex
+  "defichain-dex": defichainDex,
+  planet
   // lyra -> OPTIONS DEX, not enable for now
 };
