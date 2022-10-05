@@ -68,13 +68,58 @@ import beethovenX from "./adapters/beethoven-x";
 import defiSwap from "./adapters/defi-swap";
 import wanswapDex from "./adapters/wanswap-dex";
 import solarbeam from "./adapters/solarbeam";
-import tombFinance from "./adapters/tomb-finance";
+import tombFinance from "./adapters/tomb-swap";
 import dfxFinance from "./adapters/dfx-finance";
-import frax from "./adapters/frax";
-import izumiFinance from "./adapters/izumi-finance";
+import fraxswap from "./adapters/frax-swap";
+import iziswap from "./adapters/iziswap";
 import tinyman from "./adapters/tinyman";
 import junoswap from "./adapters/junoswap";
 import knightswapFinance from "./adapters/knightswap-finance";
+import shibaswap from "./adapters/shibaswap";
+import oolongswap from "./adapters/oolongswap";
+import viperswap from "./adapters/viperswap";
+import swapr from "./adapters/swapr";
+import cone from "./adapters/cone";
+import claimswap from "./adapters/claimswap";
+import spartacusExchange from "./adapters/spartacus-exchange";
+import beamswap from "./adapters/beamswap";
+import openleverage from "./adapters/openleverage";
+import ubeswap from "./adapters/ubeswap";
+import mobiusMoney from "./adapters/mobius-money";
+import honeyswap from "./adapters/honeyswap";
+import energiswap from "./adapters/energiswap";
+import stellaswap from "./adapters/stellaswap";
+import wagyuswap from "./adapters/wagyuswap";
+import dystopia from "./adapters/dystopia";
+import glideFinance from "./adapters/glide-finance";
+import quipuswap from "./adapters/quipuswap";
+import netswap from "./adapters/netswap";
+import jupiterAggregator from "./adapters/jupiter-aggregator";
+import astroport from "./adapters/astroport";
+import mimo from "./adapters/mimo";
+import tethysFinance from "./adapters/tethys-finance";
+import kaidex from "./adapters/kaidex";
+import lif3Swap from "./adapters/lif3-swap";
+import swappi from "./adapters/swappi";
+import yodeswap from "./adapters/yodeswap";
+import polycat from "./adapters/polycat";
+import defikingdoms from "./adapters/defi-kingdoms";
+import defiplaza from "./adapters/defiplaza";
+import voltswap from "./adapters/voltswap";
+import yokaiswap from "./adapters/yokaiswap";
+import protofi from "./adapters/protofi";
+import voltage from "./adapters/voltage";
+import complusNetwork from "./adapters/complus-network";
+import padswap from "./adapters/padswap";
+import sharkswap from "./adapters/sharkswap";
+import okcswap from "./adapters/okcswap";
+import empiredex from "./adapters/empiredex";
+import makiswap from "./adapters/makiswap";
+import smartdex from "./adapters/smartdex";
+import cometh from "./adapters/cometh";
+import maiarExchange from "./adapters/maiar-exchange";
+import defichainDex from "./adapters/defichain-dex";
+import planet from "./adapters/planet";
 
 export default {
   mooniswap,
@@ -140,17 +185,62 @@ export default {
   sunswap,
   whaleswap,
   nomiswap,
-  fstswap,
+  // fstswap, -> incorrect subgraph
   "beethoven-x": beethovenX,
   "defi-swap": defiSwap,
   "wanswap-dex": wanswapDex,
   solarbeam,
-  "tomb-finance": tombFinance,
+  "tomb-swap": tombFinance,
   "dfx-finance": dfxFinance,
-  frax,
-  "izumi-finance": izumiFinance,
+  "frax-swap": fraxswap,
+  iziswap,
   tinyman,
   junoswap,
-  "knightswap-finance": knightswapFinance
+  "knightswap-finance": knightswapFinance,
+  shibaswap,
+  oolongswap,
+  viperswap,
+  swapr,
+  cone,
+  claimswap,
+  "spartacus-exchange" : spartacusExchange,
+  beamswap,
+  openleverage,
+  ubeswap,
+  "mobius-money": mobiusMoney,
+  honeyswap,
+  energiswap,
+  stellaswap,
+  wagyuswap,
+  dystopia,
+  "glide-finance": glideFinance,
+  quipuswap,
+  netswap,
+  "jupiter-aggregator":jupiterAggregator,
+  astroport,
+  mimo,
+  "tethys-finance": tethysFinance,
+  kaidex,
+  "lif3-swap": lif3Swap,
+  swappi,
+  yodeswap,
+  polycat,
+  "defi-kingdoms" : defikingdoms,
+  defiplaza,
+  voltswap,
+  yokaiswap,
+  protofi,
+  voltage,
+  "complus-network": complusNetwork,
+  padswap,
+  sharkswap,
+  okcswap,
+  empiredex,
+  makiswap,
+  smartdex,
+  cometh,
+  "maiar-exchange": maiarExchange,
+  "defichain-dex": defichainDex,
+  planet
   // lyra -> OPTIONS DEX, not enable for now
 };

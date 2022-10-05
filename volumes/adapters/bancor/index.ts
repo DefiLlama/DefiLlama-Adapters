@@ -1,6 +1,6 @@
 import { SimpleVolumeAdapter, FetchResult, ChainBlocks } from "../../dexVolume.type";
 
-const { fetchURL } = require("../../helper/utils");
+import fetchURL from "../../utils/fetchURL"
 const {
   getUniqStartOfTodayTimestamp,
 } = require("../../helper/getUniSubgraphVolume");

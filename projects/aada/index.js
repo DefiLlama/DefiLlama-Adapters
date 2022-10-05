@@ -9,10 +9,10 @@ async function staking() {
     }
   })).data.amount.find(token => token.unit === "8fef2d34078659493ce161a6c7fba4b56afefa8535296a5743f6958741414441").quantity;
 
-  const topPrice = (await axios.get("https://orders.muesliswap.com/orderbook/?policy-id=8fef2d34078659493ce161a6c7fba4b56afefa8535296a5743f69587&tokenname=AADA")
-  ).data.buy[0].price;
+  const info = (await axios.get(`https://api.muesliswap.com/price/?base-policy-id=&base-tokenname=&quote-tokenname=41414441&quote-policy-id=8fef2d34078659493ce161a6c7fba4b56afefa8535296a5743f69587`)).data
+  const price = parseFloat(info.price) / 1e6
 
-  const cardano = aadaLocked * topPrice;
+  const cardano = aadaLocked * price;
   return { cardano };
 }
 

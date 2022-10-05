@@ -1,0 +1,19 @@
+{
+  "inputs": [
+    {
+      "internalType": "address",
+      "name": "_asset",
+      "type": "address"
+    }
+  ],
+  "name": "getEntireSystemColl",
+  "outputs": [
+    {
+      "internalType": "uint256",
+      "name": "entireSystemColl",
+      "type": "uint256"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+}

@@ -28,8 +28,8 @@ const ethTvl = async (_, block) => {
   return balances;
 };
 
-const polygonTvl = async (_, block) => {
-  balances = {};
+const polygonTvl = async (_, _b, { polygon: block }) => {
+  const balances = {};
   const transform = await transformPolygonAddress();
 
   const vaultFunds = await getERC4626VaultFundsByChain("polygon", block);
