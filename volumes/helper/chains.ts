@@ -21,7 +21,29 @@ export enum CHAIN {
   KLAYTN = "klaytn",
   JUNO = "juno",
   KCC = "kcc",
-  WAN = "wan"
+  WAN = "wan",
+  CARDADO = "cardano",
+  LITECOIN = "litecoin",
+  BITCOIN = "bitcoin",
+  DOGECHAIN = "dogechain",
+  ENERGI = "energi",
+  VELAS = "velas",
+  ELASTOS = "elastos",
+  TEZOS = "tezos",
+  METIS = "metis",
+  SOLANA = "solana",
+  IOTEX = "iotex",
+  KARDIA = "kardia",
+  TOMBCHAIN = "tombchain",
+  CONFLUX = "conflux",
+  TERRA = "terra",
+  METER = "meter",
+  GODWOKEN = "godwoken",
+  GODWOKEN_V1 = "godwoken_v1",
+  FUSE = "fuse",
+  SX = "sx",
+  ELROND = "elrond",
+  DEFICHAIN = "defichain"
 }
 
 // Don´t use
@@ -41,6 +63,9 @@ const RONIN = "ronin";
 const XDAI = "xdai";
 const AURORA = "aurora";
 const MOONRIVER = "moonriver"
+const BITCOIN = "bitcoin";
+const LITECOIN = "litecoin";
+const DOGE = "doge";
 
 // Don't use
 export {
@@ -59,5 +84,8 @@ export {
   RONIN,
   XDAI,
   AURORA,
-  MOONRIVER
+  MOONRIVER,
+  BITCOIN,
+  LITECOIN,
+  DOGE
 };

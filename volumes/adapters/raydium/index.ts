@@ -1,6 +1,6 @@
 import { SimpleVolumeAdapter } from "../../dexVolume.type";
 
-const { fetchURL } = require("../../helper/utils");
+import fetchURL from "../../utils/fetchURL"
 
 const endpoints = {
   solana: "https://api.raydium.io/v2/main/info",

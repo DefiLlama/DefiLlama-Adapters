@@ -31,6 +31,8 @@ export type Adapter = {
   }
 };
 
+export const DISABLED_ADAPTER_KEY = 'DISABLED_ADAPTER'
+
 export type SimpleVolumeAdapter = {
   volume: Adapter
 };

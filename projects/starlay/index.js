@@ -7,7 +7,7 @@ const { getLockedLAY } = require("./ve");
 const transferFromAddress = (underlying) => TOKENS[underlying]
 
 function astar(borrowed) {
-  return async (timestamp, block) => {
+  return async (timestamp, _, {astar: block}) => {
     const balances = {};
     const [lTokens, reserveTokens, validProtocolDataHelpers] =
       await getReserves(block);

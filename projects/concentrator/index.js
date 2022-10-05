@@ -141,8 +141,6 @@ async function getTokenTvl(balances, poolData, totalUnderlying, resolvedLPSupply
       coinAddress = '0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0' // replace cvxFXS -> FXS
     } else if (coinAddress === '0x3175Df0976dFA876431C2E9eE6Bc45b65d3473CC'.toLowerCase()) {
       coinAddress = '0x853d955aCEf822Db058eb8505911ED77F175b99e' // replace crvFRAX -> FRAX
-    } else if (coinAddress === '0x0100546f2cd4c9d97f798ffc9755e47865ff7ee6'.toLowerCase()) {
-      coinAddress = ethAddress // replace alETH -> ETH
     }
     const balance = BigNumber(totalUnderlying * coinBalance.balance / resolvedLPSupply);
     if (!balance.isZero()) {

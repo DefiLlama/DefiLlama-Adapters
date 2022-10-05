@@ -17,8 +17,9 @@ async function tvl(timestamp, _block, { harmony: block }) {
 
 module.exports = {
     fantom: {
-        tvl,
-        staking: staking(dao, strategyX, chain)
+        tvl: () => ({}),
+        // tvl,
+        // staking: staking(dao, strategyX, chain)
     },
     hallmarks: [
         [1658370720, "Rug pull"]

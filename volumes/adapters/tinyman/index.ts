@@ -1,4 +1,4 @@
-const { fetchURL } = require("../../helper/utils");
+import fetchURL from "../../utils/fetchURL"
 import type { SimpleVolumeAdapter } from "../../dexVolume.type";
 import { getUniqStartOfTodayTimestamp } from "../../helper/getUniSubgraphVolume";
 
