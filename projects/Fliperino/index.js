@@ -1,6 +1,6 @@
 const { nullAddress, sumTokens2 } = require('../helper/unwrapLPs')
 
-const fliperinoContractETHW = "0x1A25ee44ab9874C6652D35b26271937F43043F93";
+const fliperinoContractETHW = "0x877929914e9854066FC4f1d4B1db2f8b029FeB79";
 
 module.exports = {
   ethpow: {
