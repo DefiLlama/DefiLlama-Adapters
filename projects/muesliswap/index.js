@@ -49,7 +49,7 @@ async function adaTvl(){
     const tokenlistv2 = (await fetchURL("https://api.muesliswap.com/list?base-policy-id=&base-tokenname=")).data
     const adapricev2 = new Map(tokenlistv2.map(d => {
        return [d.price.toToken, d.price.price]
-    }
+    }))
     // then accumulate over the orderbooks
     const orderbooksv2 = (await fetchURL("https://onchain.muesliswap.com/all-orderbooks")).data
     await Promise.all(orderbooksv2.map(async ob=>{
