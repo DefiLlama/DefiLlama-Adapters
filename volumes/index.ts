@@ -99,6 +99,27 @@ import astroport from "./adapters/astroport";
 import mimo from "./adapters/mimo";
 import tethysFinance from "./adapters/tethys-finance";
 import kaidex from "./adapters/kaidex";
+import lif3Swap from "./adapters/lif3-swap";
+import swappi from "./adapters/swappi";
+import yodeswap from "./adapters/yodeswap";
+import polycat from "./adapters/polycat";
+import defikingdoms from "./adapters/defi-kingdoms";
+import defiplaza from "./adapters/defiplaza";
+import voltswap from "./adapters/voltswap";
+import yokaiswap from "./adapters/yokaiswap";
+import protofi from "./adapters/protofi";
+import voltage from "./adapters/voltage";
+import complusNetwork from "./adapters/complus-network";
+import padswap from "./adapters/padswap";
+import sharkswap from "./adapters/sharkswap";
+import okcswap from "./adapters/okcswap";
+import empiredex from "./adapters/empiredex";
+import makiswap from "./adapters/makiswap";
+import smartdex from "./adapters/smartdex";
+import cometh from "./adapters/cometh";
+import maiarExchange from "./adapters/maiar-exchange";
+import defichainDex from "./adapters/defichain-dex";
+import planet from "./adapters/planet";
 
 export default {
   mooniswap,
@@ -199,6 +220,27 @@ export default {
   astroport,
   mimo,
   "tethys-finance": tethysFinance,
-  kaidex
+  kaidex,
+  "lif3-swap": lif3Swap,
+  swappi,
+  yodeswap,
+  polycat,
+  "defi-kingdoms" : defikingdoms,
+  defiplaza,
+  voltswap,
+  yokaiswap,
+  protofi,
+  voltage,
+  "complus-network": complusNetwork,
+  padswap,
+  sharkswap,
+  okcswap,
+  empiredex,
+  makiswap,
+  smartdex,
+  cometh,
+  "maiar-exchange": maiarExchange,
+  "defichain-dex": defichainDex,
+  planet
   // lyra -> OPTIONS DEX, not enable for now
 };

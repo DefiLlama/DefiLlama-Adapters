@@ -51,7 +51,7 @@ async function tvl(_time, block) {
       block,
     });
 
-    await sdk.util.sumSingleBalance(
+    sdk.util.sumSingleBalance(
       balances,
       targetAddress,
       adapterTokenBalance
@@ -91,7 +91,7 @@ async function tvl(_time, block) {
         block,
       });
 
-      await sdk.util.sumSingleBalance(
+      sdk.util.sumSingleBalance(
         balances,
         targetAddress,
         poolBalances[1 - pti]

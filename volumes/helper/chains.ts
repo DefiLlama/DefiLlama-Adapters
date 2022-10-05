@@ -25,7 +25,7 @@ export enum CHAIN {
   CARDADO = "cardano",
   LITECOIN = "litecoin",
   BITCOIN = "bitcoin",
-  DOGE = "doge",
+  DOGECHAIN = "dogechain",
   ENERGI = "energi",
   VELAS = "velas",
   ELASTOS = "elastos",
@@ -33,7 +33,17 @@ export enum CHAIN {
   METIS = "metis",
   SOLANA = "solana",
   IOTEX = "iotex",
-  KARDIA = "kardia"
+  KARDIA = "kardia",
+  TOMBCHAIN = "tombchain",
+  CONFLUX = "conflux",
+  TERRA = "terra",
+  METER = "meter",
+  GODWOKEN = "godwoken",
+  GODWOKEN_V1 = "godwoken_v1",
+  FUSE = "fuse",
+  SX = "sx",
+  ELROND = "elrond",
+  DEFICHAIN = "defichain"
 }
 
 // Don´t use
