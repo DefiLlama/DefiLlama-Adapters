@@ -13,7 +13,7 @@ async function staking(){
         throw new Error("Tokens paired against something other than ADA")
     }
     const topOrder = orders.orders[0]
-    const topPrice = (topOrder.fromAmount / 10**6) / topOrder.toAmount
+    const topPrice = (topOrder.fromAmount / 1e6) / topOrder.toAmount
     return {
         cardano: tvl.data * topPrice
     }
@@ -45,25 +45,31 @@ async function adaTvl(){
         const totalSell = totalAmountOtherToken * topPrice
         totalAda += totalBuy + totalSell
     }))
-    const orderbooksv2 = (await fetchURL("https://pools.muesliswap.com/all-orderbooks")).data
-    await Promise.all(orderbooksv2.map(async orders=>{
-        if(orders.fromToken !== "."){
-            throw new Error("Tokens paired against something other than ADA")
+    // fetch the prices of each traded token first
+    const tokenlistv2 = (await fetchURL("https://api.muesliswap.com/list?base-policy-id=&base-tokenname=")).data
+    const adapricev2 = new Map(tokenlistv2.map(d => {
+       return [d.price.toToken, d.price.price]
+    }
+    // then accumulate over the orderbooks
+    const orderbooksv2 = (await fetchURL("https://onchain.muesliswap.com/all-orderbooks")).data
+    await Promise.all(orderbooksv2.map(async ob=>{
+        if(ob.fromToken !== "."){
+            const price = adaprcev2[orders.fromToken]
+            let totalAmountOtherToken = 0
+            ob.orders.forEach(o=>{
+                totalAmountOtherToken += o.fromAmount
+            })
+            const totalSell = totalAmountOtherToken * price
+            totalAda += totalSell / 1e6
         }
-        let totalBuy= 0;
-        orders.buy.forEach(o=>{
-            totalBuy += (o.totalLvl / 1e6)
-        })
-        if(orders.buy.length === 0 || orders.sell.length === 0){
-            return
+        else if(ob.fromToken === "."){
+            let totalLovelace = 0;
+            ob.orders.forEach(o=>{
+                totalLovelace += o.fromAmount
+            })
+            const totalBuy = totalLovelace
+            totalAda += totalBuy / 1e6
         }
-        const topPrice = (orders.buy[0].lvlPerToken / 1e6)
-        let totalAmountOtherToken = 0
-        orders.sell.forEach(o=>{
-            totalAmountOtherToken += o.amount
-        })
-        const totalSell = totalAmountOtherToken * topPrice
-        totalAda += totalBuy + totalSell
     }))
     return {
         cardano: totalAda
