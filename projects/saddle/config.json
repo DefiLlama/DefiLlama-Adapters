@@ -149,7 +149,7 @@
       ]
     },
     "sUSD Meta V2": {
-      "address": "0xc66Ed5d7800579220c71f21B1cCa2006B3a95900",
+      "address": "0x824dcD7b044D60df2e89B1bB888e66D8BCf41491",
       "lpToken": "0xb6214a9d18f5Bf34A23a355114A03bE4f7D804fa",
       "poolTokens": [
         {
@@ -171,7 +171,7 @@
       ]
     },
     "sUSD Meta": {
-      "address": "0x1e35ebF875f8A2185EDf22da02e7dBCa0F5558aB",
+      "address": "0x0C8BAe14c9f9BF2c953997C881BEfaC7729FD314",
       "lpToken": "0x8Fa31c1b33De16bf05c38AF20329f22D544aD64c",
       "poolTokens": [
         {
@@ -193,7 +193,7 @@
       ]
     },
     "tBTC Meta": {
-      "address": "0xee1ec4e1C6e39C31dAaf3db2A62A397bdf3fe2f1",
+      "address": "0xf74ebe6e5586275dc4CeD78F5DBEF31B1EfbE7a5",
       "lpToken": "0x122Eca07139EB368245A29FB702c9ff11E9693B7",
       "poolTokens": [
         {
@@ -215,7 +215,7 @@
       ]
     },
     "tBTC Meta V2": {
-      "address": "0x05383312655856E25b851c15fA856dB7e270F0cF",
+      "address": "0xA0b4a2667dD60d5CdD7EcFF1084F0CeB8dD84326",
       "lpToken": "0x3f2f811605bC6D701c3Ad6E501be13461c560320",
       "poolTokens": [
         {
@@ -237,7 +237,7 @@
       ]
     },
     "wCUSD Meta": {
-      "address": "0x401AFbc31ad2A3Bc0eD8960d63eFcDEA749b4849",
+      "address": "0x3F1d224557afA4365155ea77cE4BC32D5Dae2174",
       "lpToken": "0x78179d49C13c4ECa14C69545ec172Ba0179EAE6B",
       "poolTokens": [
         {
@@ -259,7 +259,7 @@
       ]
     },
     "wCUSD Meta V2": {
-      "address": "0x9898D87368DE0Bf1f10bbea8dE46c00cC3a2F9F1",
+      "address": "0xc02D481B52Ae04Ebc76a8882441cfAED45eb8342",
       "lpToken": "0x5F7872490a9B405946376dd40fCbDeF521F13e3f",
       "poolTokens": [
         {
@@ -281,7 +281,7 @@
       ]
     },
     "tBTCv2-BTCv2_v3": {
-      "address": "0x4946DE721ce70D4B7aa226aA0Fe869C935769388",
+      "address": "0xfa9ED0309Bf79Eb84C847819F0B3CB84F6d351Af",
       "lpToken": "0xA2E81Eb93F0F9814ae9A3bea2D2A63408f2709C1",
       "poolTokens": [
         {
@@ -303,7 +303,7 @@
       ]
     },
     "wcUSD-USDv2_v3": {
-      "address": "0x671D5942F901F5C60e4EbaD1c3bF284A4d28c675",
+      "address": "0xB62222B941e9B652BE3632EEa062cb0ff66b1d1c",
       "lpToken": "0x0dB8b09c13FE21913faF463274cE8e0a51719f16",
       "poolTokens": [
         {
@@ -325,7 +325,7 @@
       ]
     },
     "sUSD-USDv2_v3": {
-      "address": "0xB98fd1f66884cD5786b37cDE040B9f0cf763866f",
+      "address": "0x4568727f50c7246ded8C39214Ed6FF3c157f080D",
       "lpToken": "0x444F94460a641429CDa4e38E02E51642Cc38276A",
       "poolTokens": [
         {
@@ -361,7 +361,7 @@
       ]
     },
     "FRAXBP-USDT": {
-      "address": "0xAbf69CDE7B3725c12B8703005342EB5DD8a95D61",
+      "address": "0xC765Cd3d015626244AD63B5FB63a97c5634643b9",
       "lpToken": "0x486DFCfdbF9025c062110E8c0344a15279aD0a85",
       "poolTokens": [
         {
@@ -379,7 +379,7 @@
       ]
     },
     "FRAXBP-SUSD": {
-      "address": "0x7D6c760cBde5a9Ad47510A86b9DCc58F9473CdD8",
+      "address": "0x69baA0d7c2e864b74173922Ca069Ac79d3be1556",
       "lpToken": "0x6Ac7a4cB3BFa90DC651CD53EB098e23c88d04e77",
       "poolTokens": [
         {
@@ -397,7 +397,7 @@
       ]
     },
     "FRAXBP-alUSD": {
-      "address": "0xe9154791883Df07e1328B636BCedfcCb80fefa38",
+      "address": "0xFB516cF3710fC6901F2266aAEB8834cF5e4E9558",
       "lpToken": "0x3cF7b9479a01eeB3bbfC43581fa3bb21cd888e2A",
       "poolTokens": [
         {
@@ -453,7 +453,7 @@
       ]
     },
     "usds-arbUSDV2 Meta": {
-      "address": "0xDCA5b16A96f984ffb2A3022cfF339eb049126101",
+      "address": "0x5dD186f8809147F96D3ffC4508F3C82694E58c9c",
       "lpToken": "0xa815b134294580692482E321dD1A191aC1454192",
       "poolTokens": [
         {
@@ -507,7 +507,7 @@
       ]
     },
     "FRAXBP-USDT": {
-      "address": "0xc8DFCFC329E19fDAF43a338aD6038dBA02a5079B",
+      "address": "0xf8504e92428d65E56e495684A38f679C1B1DC30b",
       "lpToken": "0x166680852ae9Dec3d63374c5eBf89E974448BFE9",
       "poolTokens": [
         {
@@ -524,8 +524,8 @@
         }
       ]
     },
-    "arbFRAXBP-SUSD": {
-      "address": "0x1D434f50acf16BA013BE3536e9A3CDb5D7d4e694",
+    "arbFRAXBP-USDs": {
+      "address": "0xa5bD85ed9fA27ba23BfB702989e7218E44fd4706",
       "lpToken": "0x1e491122f3C096392b40a4EA27aa1a29360d38a1",
       "poolTokens": [
         {
@@ -559,7 +559,7 @@
       ]
     },
     "ftmFRAXBP-USDT": {
-      "address": "0x4A5208F83A17E030a18830521E4064E80728c4FC",
+      "address": "0xdb5c5A6162115Ce9a188E7D773C4D011F421BbE5",
       "lpToken": "0x21EA072844fd4aBEd72539750c054E009D877f72",
       "poolTokens": [
         {
@@ -577,7 +577,7 @@
       ]
     },
     "ftmFRAXBP-alUSD": {
-      "address": "0x0E510c9b20a5D136E75f7FD2a5F344BD98f9d875",
+      "address": "0x4E1484607760118ebE2Ab07C0c71f1B4D9671e01",
       "lpToken": "0xd7D1b50c8ef77d9aB410723f81363C8B252C729F",
       "poolTokens": [
         {
@@ -669,7 +669,7 @@
       ]
     },
     "tbtc-evmosBTC Meta": {
-      "address": "0xFdA5D2ad8b6d3884AbB799DA66f57175E8706941",
+      "address": "0xdb5c5A6162115Ce9a188E7D773C4D011F421BbE5",
       "lpToken": "0x21EA072844fd4aBEd72539750c054E009D877f72",
       "poolTokens": [
         {
@@ -707,7 +707,7 @@
       ]
     },
     "frax-optUSD": {
-      "address": "0x88Cc4aA0dd6Cf126b00C012dDa9f6F4fd9388b17",
+      "address": "0xc55E8C79e5A6c3216D4023769559D06fa9A7732e",
       "lpToken": "0xfF5fa61Eb9b5cDD63bdFa16EF029d5313457925A",
       "poolTokens": [
         {
@@ -743,7 +743,7 @@
       ]
     },
     "FRAXBP-USDT": {
-      "address": "0x3F1d224557afA4365155ea77cE4BC32D5Dae2174",
+      "address": "0xa9a84238098Dc3d1529228E6c74dBE7EbdF117a5",
       "lpToken": "0xb63d7B0D835ca6eFf89ab774498ed6dD0D71e93e",
       "poolTokens": [
         {
@@ -761,7 +761,7 @@
       ]
     },
     "FRAXBP-SUSD": {
-      "address": "0xdf815Ea6b066Ac9f3107d8863a6c19aA2a5d24d3",
+      "address": "0x250184dDDEC6d38E28ac12B481c9016867226E9D",
       "lpToken": "0x205c9B8c1fCa803B779b1eB4B887Aa0E00FE629F",
       "poolTokens": [
         {
@@ -775,6 +775,26 @@
         {
           "address": "0x2E3D870790dC77A83DD1d18184Acc7439A53f475",
           "name": "Frax"
+        }
+      ]
+    }
+  },
+  "kava": {
+    "3pool": {
+      "address": "0xA500b0e1360462eF777804BCAe6CE2BfB524dD2e",
+      "lpToken": "0xcCf860874cbF2d615192a4C4455580B4d622D3B9",
+      "poolTokens": [
+        {
+          "address": "0x765277EebeCA2e31912C9946eAe1021199B39C61",
+          "name": "Dai"
+        },
+        {
+          "address": "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f",
+          "name": "USDC Coin"
+        },
+        {
+          "address": "0xB44a9B6905aF7c801311e8F4E76932ee959c663C",
+          "name": "Tether"
         }
       ]
     }

@@ -230,7 +230,7 @@ module.exports = {
   polygon: {
     treasury: treasury("polygon"),
   },
-  avalanche: {
+  avax:{
     treasury: treasury("avax"),
   },
 };

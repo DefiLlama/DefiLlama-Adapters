@@ -16,7 +16,6 @@ async function tvl(timestamp, block, chainBlocks) {
         orderDirection: desc
         first: 1
       ) {
-        totalValueLocked
         treasuryMarketValue
         timestamp
       }
@@ -25,7 +24,7 @@ async function tvl(timestamp, block, chainBlocks) {
   const results = await retry(
     async (bail) =>
       await graphQLClient.request(query, {
-        start: timestamp - 86439,
+        start: timestamp - 2 * 60 * 60 * 1000,
         end: timestamp,
       })
   );

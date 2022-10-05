@@ -1,14 +1,13 @@
-const sdk = require('@defillama/sdk');
-const { getChainTvl } = require('../helper/getUniSubgraphTvl');
-
-const chainTvl = getChainTvl({
-    polis: 'https://graph.polis.tech/subgraphs/name/hadeswap/exchange',
-}, "factories", "liquidityUSD")
+const { getUniTVL } = require('../helper/unknownTokens')
 
 module.exports = {
     timetravel: true,
     misrepresentedTokens: true,
     polis: {
-        tvl: chainTvl('polis')
+        tvl: getUniTVL({
+            chain: 'polis',
+            factory: '0x4523ad2e05c455d0043910c84c83236a6c98b40b',
+            useDefaultCoreAssets: true,
+        })
     },
 }

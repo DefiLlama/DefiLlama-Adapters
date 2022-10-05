@@ -17,7 +17,7 @@ module.exports = {
   fantom: {
     fetch: fetch('vaults/fantom')
   },
-  avalanche:{
+  avax:{
     fetch: fetch('vaults/avalanche')
   },
   fetch: fetch('vaults'),

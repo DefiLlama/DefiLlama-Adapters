@@ -175,6 +175,9 @@ const bscBorrowed = async (timestamp, ethBlock, chainBlocks) => {
 }
 
 module.exports = {
+  hallmarks: [
+    [1635292800,"Flashloan exploit"]
+  ],
   timetravel: false, // bsc and fantom api's for staked coins can't be queried at historical points
   start: 1599552000, // 09/08/2020 @ 8:00am (UTC)
   ethereum: {

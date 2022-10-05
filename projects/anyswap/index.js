@@ -106,7 +106,7 @@ function fetchChain(chain) {
 const chainTvls = {}
 Object.keys(chains).forEach((chain) => {
   const chainName = chains[chain]
-  chainTvls[chainName === 'avax' ? 'avalanche' : chainName] = {
+  chainTvls[chainName] = {
     fetch: fetchChain(chain)
   }
 })
@@ -116,4 +116,7 @@ module.exports = {
   timetravel: false,
   ...chainTvls,
   fetch: fetchChain(null),
+  hallmarks:[
+    [1651881600, "UST depeg"],
+  ],
 }

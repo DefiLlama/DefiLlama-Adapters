@@ -1,11 +1,6 @@
 const sdk = require("@defillama/sdk");
 
 const { compoundExportsWithAsyncTransform } = require("../helper/compound");
-const {
-  transformBscAddress,
-  transformMoonbeamAddress,
-  transformPolygonAddress,
-} = require("../helper/portedTokens");
 
 function getTvl(chain) {
   const pools = {
@@ -21,7 +16,6 @@ function getTvl(chain) {
         "0x3F239A5C45849391E7b839190597B5130780790d", // PancakeStack
         "0x7f8B5fCA1a63C632776ffc9936D2e323c14B57f8", // tbd
       ],
-      transform: transformBscAddress,
     },
     moonbeam: {
       pools: [
@@ -29,7 +23,6 @@ function getTvl(chain) {
         "0x0fAbd597BDecb0EEE1fDFc9B8458Fe1ed0E35028", // BeamSwap
         "0xCc248E6106CB7B05293eF027D5c1c05BF3E39F21", // StellaSwap
       ],
-      transform: transformMoonbeamAddress,
     },
     polygon: {
       pools: [
@@ -38,7 +31,6 @@ function getTvl(chain) {
         "0xBd82D36B9CDfB9747aA12025CeCE3782EDe767FE", // tbd
         "0xF1ABd146B4620D2AE67F34EA39532367F73bbbd2", // MIMO
       ],
-      transform: transformPolygonAddress,
     },
   };
   const config = pools[chain] ?? { pools: [] };
@@ -47,8 +39,7 @@ function getTvl(chain) {
       pool,
       chain,
       undefined,
-      undefined,
-      config.transform
+      undefined
     )
   );
   return {

@@ -1,13 +1,8 @@
-const {getChainTvl} = require("../helper/getUniSubgraphTvl");
 const {uniTvlExport} = require("../helper/calculateUniTvl");
 const {sumTokens} = require("../helper/unwrapLPs");
 const { transformBscAddress } = require("../helper/portedTokens");
 
 const factory = "0x858e3312ed3a876947ea49d572a7c42de08af7ee";
-
-const subgraphTvl = getChainTvl({
-  "bsc": "https://api.thegraph.com/subgraphs/name/biswapcom/exchange5"
-}, "pancakeFactories")('bsc')
 
 const BSW = "0x965f527d9159dce6288a2219db51fc6eef120dd1"
 
@@ -50,4 +45,7 @@ module.exports = {
     staking,
     tvl: uniTvlExport(factory, "bsc", transformBscAddress)
   },
+  hallmarks:[
+    [1651881600, "UST depeg"],
+  ]
 };

@@ -218,7 +218,7 @@ module.exports = {
     bsc: {
         tvl: bscTvl
     },
-    avalanche: {
+    avax:{
         tvl: avaxTvl
     },
 };

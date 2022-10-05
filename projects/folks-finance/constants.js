@@ -107,6 +107,20 @@ const pools = [
     assetId: 27165954,
     assetDecimals: 6,
   },
+  {
+    // goBTC-gALGO PLP
+    appId: 818026112,
+    assetId: 807805560,
+    assetDecimals: 6,
+    poolAppId: 807805342,
+  },
+  {
+    // goETH-gALGO PLP
+    appId: 818028354,
+    assetId: 807804381,
+    assetDecimals: 6,
+    poolAppId: 807804196,
+  },
 ];
 
 // app id of the governance app used only on 3rd governance period

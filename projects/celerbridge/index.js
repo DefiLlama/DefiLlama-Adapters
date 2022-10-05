@@ -14,6 +14,13 @@ config.setProvider("clv", new ethers.providers.StaticJsonRpcProvider(
   }
 ))
 
+config.setProvider("syscoin", new ethers.providers.StaticJsonRpcProvider(
+  "https://rpc.ankr.com/syscoin",
+  {
+    name: "syscoin",
+    chainId: 57,
+  }
+))
 
 // Bridge and token contract addresses are taken from https://cbridge-docs.celer.network/reference/contract-addresses
 const liquidityBridgeContractsV2 = {
@@ -549,7 +556,9 @@ let chains = liquidityBridgeTokens.reduce((allChains, token) => {
 }, new Set());
 
 Object.keys(liquidityBridgeContractsV2).forEach(chain => chains.add(chain))
-
 module.exports = chainExports(chainTvl, Array.from(chains));
 module.exports.methodology = `Tokens bridged via cBridge are counted as TVL`;
 module.exports.misrepresentedTokens = true;
+module.exports.hallmarks = [
+  [1651881600, "UST depeg"],
+];

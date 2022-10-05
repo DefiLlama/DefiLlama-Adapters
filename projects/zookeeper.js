@@ -24,7 +24,7 @@ module.exports = {
   doublecounted: false,
   timetravel: false,
   incentivized: true,
-  avalanche:{
+  avax:{
     fetch: avax
   },
   wan:{
