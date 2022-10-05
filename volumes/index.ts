@@ -120,6 +120,7 @@ import cometh from "./adapters/cometh";
 import maiarExchange from "./adapters/maiar-exchange";
 import defichainDex from "./adapters/defichain-dex";
 import planet from "./adapters/planet";
+import aldrin from "./adapters/aldrin";
 
 export default {
   mooniswap,
@@ -241,6 +242,7 @@ export default {
   cometh,
   "maiar-exchange": maiarExchange,
   "defichain-dex": defichainDex,
-  planet
+  planet,
+  aldrin
   // lyra -> OPTIONS DEX, not enable for now
 };
