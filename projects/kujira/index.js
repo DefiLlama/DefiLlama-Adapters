@@ -3,6 +3,10 @@ const { get } = require("../helper/http");
 
 const COINGECKO_ID = "kujira";
 
+const USK_MARKETS = [
+  "kujira1ecgazyd0waaj3g7l9cmy5gulhxkps2gmxu9ghducvuypjq68mq2smfdslf",
+];
+
 const TOKENS = {
   ukuji: { coinGeckoId: "kujira", decimals: 6 },
   "ibc/1B38805B1C75352B28169284F96DF56BDEBD9E8FAC005BDCC8CF0378C82AA8E7": {
@@ -33,6 +37,11 @@ const TOKENS = {
     coinGeckoId: "secret",
     decimals: 6,
   },
+  "factory/kujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7/uusk":
+    {
+      coinGeckoId: "usk",
+      decimals: 6,
+    },
 };
 
 async function staking() {
@@ -47,12 +56,20 @@ async function staking() {
 
 async function tvl() {
   const { pairs } = await get("https://api.kujira.app/api/coingecko/pairs");
+  const { contracts: blackWhaleVaults } = await get(
+    "https://lcd.kaiyo.kujira.setten.io/cosmwasm/wasm/v1/code/16/contracts?pagination.limit=100"
+  );
   const balances = {};
   await Promise.all(
-    pairs.map(async (pair) => {
+    [
+      ...pairs.map((pair) => pair.pool_id),
+      ...USK_MARKETS,
+      ...blackWhaleVaults,
+    ].map(async (addr) => {
       const res = await get(
-        `https://lcd.kaiyo.kujira.setten.io/cosmos/bank/v1beta1/balances/${pair.pool_id}`
+        `https://lcd.kaiyo.kujira.setten.io/cosmos/bank/v1beta1/balances/${addr}`
       );
+      console.log(res.balances);
       res.balances.forEach((b) => {
         TOKENS[b.denom] &&
           sdk.util.sumSingleBalance(

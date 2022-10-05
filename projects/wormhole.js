@@ -50,8 +50,21 @@ module.exports = {
   karura: {
     fetch: fetch("11")
   },
+  acala: {
+    fetch: fetch("12") 
+  },
+  klaytn: {
+    fetch: fetch("13")
+  },
   celo: {
     fetch: fetch("14")
   },
-  fetch: fetch("*")
+  terra2: {
+    fetch: fetch("18")
+  },
+  fetch: fetch("*"),
+  hallmarks:[
+    [1652008803, "UST depeg"],
+  ],
+  
 }
