@@ -116,6 +116,7 @@ import okcswap from "./adapters/okcswap";
 import empiredex from "./adapters/empiredex";
 import makiswap from "./adapters/makiswap";
 import smartdex from "./adapters/smartdex";
+import cometh from "./adapters/cometh";
 
 export default {
   mooniswap,
@@ -233,6 +234,7 @@ export default {
   okcswap,
   empiredex,
   makiswap,
-  smartdex
+  smartdex,
+  cometh
   // lyra -> OPTIONS DEX, not enable for now
 };
