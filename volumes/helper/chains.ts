@@ -41,7 +41,8 @@ export enum CHAIN {
   GODWOKEN = "godwoken",
   GODWOKEN_V1 = "godwoken_v1",
   FUSE = "fuse",
-  SX = "sx"
+  SX = "sx",
+  ELROND = "elrond"
 }
 
 // Don´t use
