@@ -323,7 +323,6 @@ const axios = require("axios");
 
 const ethereumAddress = "0x0000000000000000000000000000000000000000";
 const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-const DAY = 24 * 3600;
 
 function fixBalances(balances) {
   Object.entries(balances).forEach(([token, value]) => {
@@ -337,13 +336,21 @@ function fixBalances(balances) {
   })
 }
 
+const confidenceThreshold = 0.5
 async function computeTVL(balances, timestamp) {
   fixBalances(balances)
+
+  Object.keys(balances).map(k => {
+    balances[k.toLowerCase()] = balances[k];
+    if (k.toLowerCase() != k) delete balances[k]
+  })
+
   const eth = balances[ethereumAddress];
   if (eth !== undefined) {
     balances[weth] = new BigNumber(balances[weth] ?? 0).plus(eth).toFixed(0);
     delete balances[ethereumAddress];
   }
+
   const PKsToTokens = {};
   const readKeys = Object.keys(balances)
     .map((address) => {
@@ -357,54 +364,42 @@ async function computeTVL(balances, timestamp) {
       }
     })
     .filter((item) => item !== undefined);
+
   const readRequests = [];
-  for (let i = 0; i < readKeys.length; i += 100) {
-    readRequests.push(
-      axios.post("https://coins.llama.fi/prices", {
-        "coins": readKeys.slice(i, i + 100)
-      }).then(r => {
-        return Object.entries(r.data.coins).map(
-          ([PK, value]) => ({
-            ...value,
-            PK
-          })
-        )
-      })
-    );
+  const burl = "https://coins.llama.fi/prices/current/";
+  for (let i = 0; i < readKeys.length; i += 50) {
+    const coins = readKeys.reduce((p, c) => p + `${c},`, "").slice(0, -1);
+    readRequests.push(axios.get(`${burl}${coins}`));
   }
-  let tokenData = ([]).concat(...(await Promise.all(readRequests)));
-  const pkSet = new Set(tokenData.map(i => i.PK))
+  let tokenData = (await Promise.all(readRequests)).map(g => g.data.coins);
+
   let usdTvl = 0;
   const tokenBalances = {};
   const usdTokenBalances = {};
-  const now = timestamp === "now" ? Math.round(Date.now() / 1000) : timestamp;
-  tokenData.forEach((response) => {
-    if (Math.abs(response.timestamp - now) < DAY) {
-      PKsToTokens[response.PK].forEach((address) => {
-        const balance = balances[address];
-        const { price, decimals } = response;
-        let symbol, amount, usdAmount;
-        if (response.PK.includes(':') && !response.PK.startsWith("coingecko:")) {
-          symbol = response.symbol.toUpperCase();
-          amount = new BigNumber(balance).div(10 ** decimals).toNumber();
-          usdAmount = amount * price;
-        } else {
-          symbol = response.PK.startsWith("coingecko:") ? response.PK.split(':')[1] : response.PK.slice('asset#'.length);
-          amount = Number(balance);
-          usdAmount = amount * price;
-        }
-        tokenBalances[symbol] = (tokenBalances[symbol] ?? 0) + amount;
-        usdTokenBalances[symbol] = (usdTokenBalances[symbol] ?? 0) + usdAmount;
-        usdTvl += usdAmount;
-      });
-    } else {
-      console.error(`Data for ${response.PK} is stale`);
-    }
+
+  tokenData.forEach(response => {
+    Object.keys(response).forEach(address => {
+      const data = response[address];
+      const balance = balances[address];
+
+      if (data == undefined) tokenBalances[`UNKNOWN (${address})`] = balance
+      if ('confidence' in data && data.confidence < confidenceThreshold) return
+
+      let amount, usdAmount;
+      if (address.includes(":") && !address.startsWith("coingecko:")) {
+        amount = new BigNumber(balance).div(10 ** data.decimals).toNumber();
+        usdAmount = amount * data.price;
+      } else {
+        amount = Number(balance);
+        usdAmount = amount * data.price;
+      }
+
+      tokenBalances[data.symbol] = (tokenBalances[data.symbol] ?? 0) + amount;
+      usdTokenBalances[data.symbol] = (usdTokenBalances[data.symbol] ?? 0) + usdAmount;
+      usdTvl += usdAmount;
+    })
   });
-  readKeys.filter(key => key.includes('0x')).forEach(key => {
-    if (pkSet.has(key)) return;
-    tokenBalances[`UNKNOWN (${key})`] = balances[key]
-  })
+
   return {
     usdTvl,
     tokenBalances,
