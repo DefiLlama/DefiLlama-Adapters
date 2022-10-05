@@ -113,6 +113,7 @@ import complusNetwork from "./adapters/complus-network";
 import padswap from "./adapters/padswap";
 import sharkswap from "./adapters/sharkswap";
 import okcswap from "./adapters/okcswap";
+import empiredex from "./adapters/empiredex";
 
 export default {
   mooniswap,
@@ -227,6 +228,7 @@ export default {
   "complus-network": complusNetwork,
   padswap,
   sharkswap,
-  okcswap
+  okcswap,
+  empiredex
   // lyra -> OPTIONS DEX, not enable for now
 };
