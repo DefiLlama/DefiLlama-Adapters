@@ -44,7 +44,8 @@ export enum CHAIN {
   SX = "sx",
   ELROND = "elrond",
   DEFICHAIN = "defichain",
-  CUBE = "cube"
+  CUBE = "cube",
+  STACKS = "stacks"
 }
 
 // Don´t use
