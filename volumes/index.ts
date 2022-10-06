@@ -124,6 +124,7 @@ import aldrin from "./adapters/aldrin";
 import capricornFinance from "./adapters/capricorn-finance";
 import alex from "./adapters/alex";
 import stepExchange from "./adapters/step-exchange";
+import pegasys from "./adapters/pegasys";
 
 export default {
   mooniswap,
@@ -249,6 +250,7 @@ export default {
   aldrin,
   "capricorn-finance" :capricornFinance,
   alex,
-  "step-exchange": stepExchange
+  "step-exchange": stepExchange,
+  pegasys
   // lyra -> OPTIONS DEX, not enable for now
 };
