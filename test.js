@@ -12,7 +12,7 @@ const sdk = require("@defillama/sdk");
 const whitelistedExportKeys = require('./projects/helper/whitelistedExportKeys.json')
 const chainList = require('./projects/helper/chains.json')
 const handleError = require('./utils/handleError')
-const { diplayUnknownTable } = require('./projects/helper/utils')
+const { log, diplayUnknownTable } = require('./projects/helper/utils')
 
 async function getLatestBlockRetry(chain) {
   for (let i = 0; i < 5; i++) {
@@ -365,15 +365,16 @@ async function computeTVL(balances, timestamp) {
     })
     .filter((item) => item !== undefined);
 
-  const readRequests = [];
   const burl = "https://coins.llama.fi/prices/current/";
   const unknownTokens = {}
+  let tokenData = []
   readKeys.forEach(i => unknownTokens[i] = true)
-  for (let i = 0; i < readKeys.length; i += 50) {
-    const coins = readKeys.reduce((p, c) => p + `${c},`, "").slice(0, -1);
-    readRequests.push(axios.get(`${burl}${coins}`));
+  const batchSize = 50
+  for (let i = 0; i < readKeys.length; i += batchSize) {
+    const coins = readKeys.slice(i, i + batchSize).reduce((p, c) => p + `${c},`, "");
+    log('Querying prices ', i/batchSize, ' out of ', Math.ceil(readKeys.length/batchSize))
+    tokenData.push((await axios.get(`${burl}${coins}`)).data.coins)
   }
-  let tokenData = (await Promise.all(readRequests)).map(g => g.data.coins);
 
   let usdTvl = 0;
   const tokenBalances = {};
