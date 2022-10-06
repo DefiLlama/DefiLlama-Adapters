@@ -64,11 +64,6 @@ async function tvl() {
     const dipState = parseDipState(account.account.data);
     const { strike, expiration, splMint } = dipState;
 
-    // Expired vaults do not count for tvl
-    if (expiration * 1000 < Date.now()) {
-      continue;
-    }
-
     const [vaultTokenMint, _vaultMintBump] =
       await web3.PublicKey.findProgramAddress(
         [
