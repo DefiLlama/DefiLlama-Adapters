@@ -13,6 +13,6 @@ module.exports = {
     methodology: "Same as Compound Finance, we just count all the tokens supplied (not borrowed money) on the lending markets",
     ethereum: { tvl, borrowed },
     hallmarks:[
-      [1664992807, "Liquidity Bonding Start "]
+      [1664992807, "Liquidity Bonding Start"]
     ],
 }
