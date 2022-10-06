@@ -29,7 +29,7 @@ const indexTvl = (chain) => async (timestamp, block, chainBlocks) => {
     abi: indexAbi.inactiveAnatomy
   });
 
-  for ({ output, input: { target } } of inactiveAnatomy)
+  for (const { output, input: { target } } of inactiveAnatomy)
     indexes[target].push(...output);
 
   const { output: vTokenFactories } = await sdk.api.abi.multiCall({
@@ -40,7 +40,7 @@ const indexTvl = (chain) => async (timestamp, block, chainBlocks) => {
   });
 
   const vTokens = {};
-  for ({ output, input: { target } } of vTokenFactories) {
+  for (const { output, input: { target } } of vTokenFactories) {
     const { output: vTokenOf } = await sdk.api.abi.multiCall({
       chain,
       block: chainBlocks[chain],
@@ -48,7 +48,7 @@ const indexTvl = (chain) => async (timestamp, block, chainBlocks) => {
       abi: vTokenFactoryAbi.vTokenOf
     });
 
-    for ({ output, input: { params } } of vTokenOf)
+    for (const { output, input: { params } } of vTokenOf)
       vTokens[output] = params[0];
   }
 
@@ -76,8 +76,6 @@ const savingsVaultTvl = (chain) => async (timestamp, block, chainBlocks) => {
     calls: networks[chain]["savingsVaults"].map((target) => ({ target })),
     abi: savingsVaultAbi.asset
   });
-
-  console.log(assets);
 
   const { output: totalAssets } = await sdk.api.abi.multiCall({
     chain,
