@@ -123,6 +123,7 @@ import planet from "./adapters/blue-planet";
 import aldrin from "./adapters/aldrin";
 import capricornFinance from "./adapters/capricorn-finance";
 import alex from "./adapters/alex";
+import stepExchange from "./adapters/step-exchange";
 
 export default {
   mooniswap,
@@ -247,6 +248,7 @@ export default {
   "blue-planet": planet,
   aldrin,
   "capricorn-finance" :capricornFinance,
-  alex
+  alex,
+  "step-exchange": stepExchange
   // lyra -> OPTIONS DEX, not enable for now
 };
