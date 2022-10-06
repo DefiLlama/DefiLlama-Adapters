@@ -3,7 +3,6 @@ const abi = require("./abi.json");
 const BigNumber = require("bignumber.js");
 
 const { staking } = require("../helper/staking");
-const { pool2 } = require("../helper/pool2");
 
 const VOTING_ESCROW = "0xa770697cecA9Af6584aA59DD9F226eaF6Cd0c2dc";
 const NUMIS = "0x34769D3e122C93547836AdDD3eb298035D68F1C3";
@@ -18,57 +17,24 @@ const funds = [
   "0x428F5B8b8fE7b9247c09aDE2cbd7573A3BfF649D", // FRAX3CRV
 ];
 
-async function tvl(timestamp, ethBlock, chainBlocks) {
+async function tvl(timestamp, block) {
   const balances = {};
+  const calls = funds.map(i => ({ target: i }))
+  const [
+    tokens, vaultTokens, pricePerFullShares
+  ] = await Promise.all([abi.token, abi.vaultToken, abi.getPricePerFullShare].map(abi => sdk.api.abi.multiCall({ calls, abi, block })))
 
-  for (const fund of funds) {
-    const token = (
-      await sdk.api.abi.call({
-        target: fund,
-        abi: abi.token,
-        chain: "ethereum",
-        block: chainBlocks["ethereum"],
-      })
-    ).output;
-
-    const vaultToken = (
-      await sdk.api.abi.call({
-        target: fund,
-        abi: abi.vaultToken,
-        chain: "ethereum",
-        block: chainBlocks["ethereum"],
-      })
-    ).output;
-
-    const pricePerFullShare = (
-      await sdk.api.abi.call({
-        target: fund,
-        abi: abi.getPricePerFullShare,
-        chain: "ethereum",
-        block: chainBlocks["ethereum"],
-      })
-    ).output;
-
-    const totalSupply = (
-      await sdk.api.abi.call({
-        target: vaultToken,
-        abi: "erc20:totalSupply",
-        chain: "ethereum",
-        block: chainBlocks["ethereum"],
-      })
-    ).output;
-
-    sdk.util.sumSingleBalance(
-      balances,
-      token,
-      new BigNumber(totalSupply)
-        .times(new BigNumber(pricePerFullShare))
-        .dividedBy(10 ** 18)
-        .toFixed(0)
-    );
-  }
-
-  return balances;
+  const tokenCalls = vaultTokens.output.map(i => ({ target: i.output }))
+  const { output: supplies } = await sdk.api.abi.multiCall({
+    abi: 'erc20:totalSupply',
+    calls: tokenCalls, block,
+  })
+  tokens.output.forEach(({ output: token }, i) => {
+    const pricePerFullShare = pricePerFullShares.output[i].output
+    const supply = supplies[i].output
+    sdk.util.sumSingleBalance(balances, token, BigNumber(supply * pricePerFullShare / 1e18).toFixed(0))
+  })
+  return balances
 }
 
 module.exports = {
@@ -76,6 +42,6 @@ module.exports = {
   ethereum: {
     tvl,
     staking: staking(VOTING_ESCROW, NUMIS),
-    pool2: pool2(LP_REWARDS, NUMIS_LP),
+    pool2: staking(LP_REWARDS, NUMIS_LP),
   },
 };
