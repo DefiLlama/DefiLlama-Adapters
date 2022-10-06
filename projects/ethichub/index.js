@@ -35,7 +35,7 @@ const STAKED_SYMMETRIC_LP_CONTRACT = '0x359a3060A68488F0ea43D5cD8F6F53fe81A15f59
 // Bonds Celo
 const MINIMICE_CELO = '0x0f497a790429685a3CfD43b841865Ee185378ff0';
 
-async function tvlMainnet(timestamp, block, chainBlocks) {
+async function tvlMainnet(timestamp, block) {
   const balances = {};
 
   const collateralBalanceMainnet = (await sdk.api.abi.call({
@@ -43,23 +43,23 @@ async function tvlMainnet(timestamp, block, chainBlocks) {
     chain: 'ethereum',
     target: ETHIX_TOKEN,
     params: [COLLATERAL_RESERVE_MAINNET],
-    block: chainBlocks['ethereum'],
+    block: block
   })).output;
-  sdk.util.sumSingleBalance(balances, ETHIX_TOKEN, collateralBalanceMainnet);
+  await sdk.util.sumSingleBalance(balances, ETHIX_TOKEN, collateralBalanceMainnet);
 
   const minimiceBalanceMainnet = (await sdk.api.abi.call({
     abi: 'erc20:balanceOf',
     chain: 'ethereum',
     target: ETHIX_TOKEN,
     params: [MINIMICE_ETH],
-    block: chainBlocks['ethereum'],
+    block: block
   })).output;
-  sdk.util.sumSingleBalance(balances, ETHIX_TOKEN, minimiceBalanceMainnet);
+  await sdk.util.sumSingleBalance(balances, ETHIX_TOKEN, minimiceBalanceMainnet);
 
   return balances;
 }
 
-async function tvlCelo(timestamp, block, chainBlocks) {
+async function tvlCelo(timestamp, block) {
   const balances = {};
   const transform = await transformCeloAddress();
 
@@ -68,18 +68,18 @@ async function tvlCelo(timestamp, block, chainBlocks) {
     chain: 'celo',
     target: ETHIX_TOKEN_CELO,
     params: [COLLATERAL_RESERVE_CELO],
-    block: chainBlocks['celo'],
+    block: block
   })).output;
-  sdk.util.sumSingleBalance(balances, transform(ETHIX_TOKEN_CELO), collateralBalanceCelo);
+  await sdk.util.sumSingleBalance(balances, transform(ETHIX_TOKEN_CELO), collateralBalanceCelo);
 
   const minimiceBalanceCelo = (await sdk.api.abi.call({
     abi: 'erc20:balanceOf',
     chain: 'celo',
     target: ETHIX_TOKEN_CELO,
     params: [MINIMICE_CELO],
-    block: chainBlocks['celo'],
+    block: block
   })).output;
-  sdk.util.sumSingleBalance(balances, transform(ETHIX_TOKEN_CELO), minimiceBalanceCelo);
+  await sdk.util.sumSingleBalance(balances, transform(ETHIX_TOKEN_CELO), minimiceBalanceCelo);
 
   return balances;
 }
@@ -147,4 +147,4 @@ module.exports = {
     [1634714203, "Originator Honduras"],
     [1610472600, "Grand Opening Cryptocafé in Madrid"],
   ]
-}; 
+};
