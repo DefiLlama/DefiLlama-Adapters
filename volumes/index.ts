@@ -125,6 +125,7 @@ import capricornFinance from "./adapters/capricorn-finance";
 import alex from "./adapters/alex";
 import stepExchange from "./adapters/step-exchange";
 import pegasys from "./adapters/pegasys";
+import crodex from "./adapters/crodex";
 
 export default {
   mooniswap,
@@ -251,6 +252,7 @@ export default {
   "capricorn-finance" :capricornFinance,
   alex,
   "step-exchange": stepExchange,
-  pegasys
+  pegasys,
+  crodex
   // lyra -> OPTIONS DEX, not enable for now
 };
