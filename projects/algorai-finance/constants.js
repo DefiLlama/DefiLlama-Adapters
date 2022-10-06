@@ -7,12 +7,14 @@ const vaults = [
         vaultID: 878144513,
         depositAssetID: 0,
         assetDecimals: 6,
+        coingecko: 'algorand',
         stable: false
     },
     {
         vaultID: 878140320,
         depositAssetID: 31566704,
         assetDecimals: 6,
+        coingecko: 'usd-coin',
         stable: true
     },
 ];
