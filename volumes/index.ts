@@ -121,6 +121,7 @@ import maiarExchange from "./adapters/maiar-exchange";
 import defichainDex from "./adapters/defichain-dex";
 import planet from "./adapters/blue-planet";
 import aldrin from "./adapters/aldrin";
+import capricornFinance from "./adapters/capricorn-finance";
 
 export default {
   mooniswap,
@@ -243,6 +244,7 @@ export default {
   "maiar-exchange": maiarExchange,
   "defichain-dex": defichainDex,
   "blue-planet": planet,
-  aldrin
+  aldrin,
+  "capricorn-finance" :capricornFinance
   // lyra -> OPTIONS DEX, not enable for now
 };

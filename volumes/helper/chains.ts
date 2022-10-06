@@ -43,7 +43,8 @@ export enum CHAIN {
   FUSE = "fuse",
   SX = "sx",
   ELROND = "elrond",
-  DEFICHAIN = "defichain"
+  DEFICHAIN = "defichain",
+  CUBE = "cube"
 }
 
 // Don´t use
