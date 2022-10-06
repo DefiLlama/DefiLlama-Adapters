@@ -1,14 +1,15 @@
 {
   "ethereum": {
-    "vTokenFactory": {
-      "address": "0x24aD48f31CAb5E35D0E9CDfa9213b5451f22FB92",
-      "blockNumber": 14832754
-    }
+    "indexes": [
+      "0x632806bf5c8f062932dd121244c9fbe7becb8b48"
+    ],
+    "savingsVaults": [
+      "0x6bad6a9bcfda3fd60da6834ace5f93b8cfed9598"
+    ]
   },
   "avax": {
-    "vTokenFactory": {
-      "address": "0xA654211aE2fAC7e029df45FCDc0ACFa77e174134",
-      "blockNumber": 19403158
-    }
+    "indexes": [
+      "0x48f88a3fe843ccb0b5003e70b4192c1d7448bef0"
+    ]
   }
 }
