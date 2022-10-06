@@ -126,6 +126,7 @@ import alex from "./adapters/alex";
 import stepExchange from "./adapters/step-exchange";
 import pegasys from "./adapters/pegasys";
 import crodex from "./adapters/crodex";
+import dexalot from "./adapters/dexalot";
 
 export default {
   mooniswap,
@@ -253,6 +254,7 @@ export default {
   alex,
   "step-exchange": stepExchange,
   pegasys,
-  crodex
+  crodex,
+  dexalot
   // lyra -> OPTIONS DEX, not enable for now
 };
