@@ -46,7 +46,8 @@ export enum CHAIN {
   DEFICHAIN = "defichain",
   CUBE = "cube",
   STACKS = "stacks",
-  STEP = "step"
+  STEP = "step",
+  SYSCOIN = "syscoin"
 }
 
 // Don´t use
