@@ -1,5 +1,6 @@
 const sdk = require('@defillama/sdk');
 const axios = require("axios");
+const { default: BigNumber } = require('bignumber.js');
 const { stakings } = require("../helper/staking");
 
 const VAULT_LIST_URL = 'https://devapi.ease.org/api/v1/vaults';
@@ -24,30 +25,28 @@ const RCA_SHIELD = {
   },
 };
 
-async function tvl(timestamp, block, chainBlocks) {
+async function tvl(_, block) {
   let resp = await axios.get(VAULT_LIST_URL);
   let vaults = resp.data
   const balances = {};
-
-  for(let i = 0; i < vaults.length; i++) {
-    let vs = vaults[i];
-    const collateralBalance = (await sdk.api.abi.call({
-      abi: RCA_SHIELD.abis.uBalance,
-      target: vs.address,
-      params: [],
-      block,
-    })).output;
-    await sdk.util.sumSingleBalance(balances, vs.token.address, collateralBalance);
-  }
+  const { output: bal } = await sdk.api.abi.multiCall({
+    abi: RCA_SHIELD.abis.uBalance,
+    calls: vaults.map(i => ({ target: i.address })),
+    block,
+  })
+  bal.forEach(({ output}, i) => {
+    const { decimals, token, address } = vaults[i]
+    const fixDecimals = 10 ** (decimals - token.decimals)
+    console.log(token.symbol)
+    console.log(token.address)
+    sdk.util.sumSingleBalance(balances, token.address, BigNumber( output / fixDecimals).toFixed(0));
+  })
   return balances;
 }
 
 module.exports = {
-  misrepresentedTokens: false,
-  //TODO: get exact number
-  start: 14000000,
   ethereum:{
     tvl,
     staking: stakings(STAKING_CONTRACTS, EASE),
   },
-}; 
+}
