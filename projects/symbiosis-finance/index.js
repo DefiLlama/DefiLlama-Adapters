@@ -74,16 +74,18 @@ const config = {
         '0x7f3C1E54b8b8C7c08b02f0da820717fb641F26C8', // USDC + sBUSD from BSC,
       ]
     },
+    {
+      id: 2001,
+      name: 'milkomeda',
+      portal: '0x3Cd5343546837B958a70B82E3F9a0E857d0b5fea',
+      // stable: 'NOT EXIST',
+      pools: [],
+      synthStable: '0x42110A5133F91B49E32B671Db86E2C44Edc13832' // sUSDC
+    },
   ]
 }
 
-async function getTransform(chainName) {
-  return getChainTransform(chainName)
-}
-
 async function tvl(chainName, timestamp, block, chainBlocks) {
-  const transform = await getTransform(chainName)
-
   const chain = config.chains.find((chain) => chain.name === chainName)
   if (!chain) throw new Error('Chain config not found')
 
@@ -96,18 +98,35 @@ async function tvl(chainName, timestamp, block, chainBlocks) {
     }
   }
 
-  const params = {
-    abi: 'erc20:balanceOf',
-    chain: chain.name,
-    target: chain.stable,
-    params: [chain.portal],
-    block: chainBlock,
+  const balances = {};
+
+  let portalBalance = '0'
+  if (chain.stable) {
+    const params = {
+      abi: 'erc20:balanceOf',
+      chain: chain.name,
+      target: chain.stable,
+      params: [chain.portal],
+      block: chainBlock,
+    }
+
+    portalBalance = (await sdk.api.abi.call(params)).output;
+    sdk.util.sumSingleBalance(balances, chain.stable, portalBalance)
   }
 
-  const collateralBalance = (await sdk.api.abi.call(params)).output;
+  let synthBalance = '0'
+  if (chain.synthStable) {
+    const params = {
+      abi: 'erc20:totalSupply',
+      chain: chain.name,
+      target: chain.synthStable,
+      params: [],
+      block: chainBlock,
+    }
 
-  const portalBalances = {};
-  sdk.util.sumSingleBalance(portalBalances, chain.stable, collateralBalance)
+    synthBalance = (await sdk.api.abi.call(params)).output;
+    sdk.util.sumSingleBalance(balances, chain.synthStable, synthBalance)
+  }
 
   const poolIndexes = [0, 1] // every stable pool consists of 2 assets
   const poolBalancePromises = chain.pools.map(async (pool) => {
@@ -146,8 +165,9 @@ async function tvl(chainName, timestamp, block, chainBlocks) {
         sdk.util.sumSingleBalance(acc, item.address, item.balance)
       })
       return acc
-    }, portalBalances)
+    }, balances)
 
+  const transform = await getChainTransform(chainName)
   return Object.keys(allBalances).reduce((acc, address) => {
     acc[transform(address)] = allBalances[address]
     return acc
@@ -191,6 +211,11 @@ module.exports = {
   telos: {
     tvl: (...params) => {
       return tvl('telos', ...params)
+    },
+  },
+  milkomeda: {
+    tvl: (...params) => {
+      return tvl('milkomeda', ...params)
     },
   },
 };
