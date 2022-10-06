@@ -367,6 +367,8 @@ async function computeTVL(balances, timestamp) {
 
   const readRequests = [];
   const burl = "https://coins.llama.fi/prices/current/";
+  const unknownTokens = {}
+  readKeys.forEach(i => unknownTokens[i] = true)
   for (let i = 0; i < readKeys.length; i += 50) {
     const coins = readKeys.reduce((p, c) => p + `${c},`, "").slice(0, -1);
     readRequests.push(axios.get(`${burl}${coins}`));
@@ -379,6 +381,7 @@ async function computeTVL(balances, timestamp) {
 
   tokenData.forEach(response => {
     Object.keys(response).forEach(address => {
+      delete unknownTokens[address]
       const data = response[address];
       const balance = balances[address];
 
@@ -399,6 +402,8 @@ async function computeTVL(balances, timestamp) {
       usdTvl += usdAmount;
     })
   });
+
+  Object.keys(unknownTokens).forEach(address => tokenBalances[`UNKNOWN (${address})`] = balances[address])
 
   return {
     usdTvl,
