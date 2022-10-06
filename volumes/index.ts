@@ -119,7 +119,7 @@ import smartdex from "./adapters/smartdex";
 import cometh from "./adapters/cometh";
 import maiarExchange from "./adapters/maiar-exchange";
 import defichainDex from "./adapters/defichain-dex";
-import planet from "./adapters/planet";
+import planet from "./adapters/blue-planet";
 import aldrin from "./adapters/aldrin";
 
 export default {
@@ -242,7 +242,7 @@ export default {
   cometh,
   "maiar-exchange": maiarExchange,
   "defichain-dex": defichainDex,
-  planet,
+  "blue-planet": planet,
   aldrin
   // lyra -> OPTIONS DEX, not enable for now
 };
