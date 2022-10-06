@@ -68,4 +68,4 @@ module.exports = {
     borrowed: ethereum(true),
   }
 };
-// node test.js projects/morpho/index.js
+// node test.js projects/morpho-compound/index.js
