@@ -128,6 +128,7 @@ import pegasys from "./adapters/pegasys";
 import crodex from "./adapters/crodex";
 import dexalot from "./adapters/dexalot";
 import babyswap from "./adapters/babyswap";
+import lifinity from "./adapters/lifinity";
 
 export default {
   mooniswap,
@@ -257,6 +258,7 @@ export default {
   pegasys,
   crodex,
   dexalot,
-  babyswap
+  babyswap,
+  lifinity
   // lyra -> OPTIONS DEX, not enable for now
 };
