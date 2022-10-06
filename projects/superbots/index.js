@@ -1,4 +1,6 @@
-const { sumTokens } = require('../helper/unwrapLPs')
+const { sumTokens2 } = require('../helper/unwrapLPs')
+const { pool2 } = require('../helper/pool2')
+const { staking } = require('../helper/staking')
 
 const vault_tokens = [
     '0xe9e7cea3dedca5984780bafc599bd69add087d56', // BUSD
@@ -17,7 +19,7 @@ const vaults = [
     '0x6f073b79a7e59547cd3f0472606b1e349049a5e7',
     '0x711D6C0f87f1Ddd8B2589f50a5b7E8F02BD61990'
 ]
-const allTokens = {
+const config = {
     'bsc': {
         ubxt: '0xbbeb90cfb6fafa1f69aa130b7341089abeef5811',
         stakingPool: '0x2500C97d1eBD63275DdC3511c825c4d73335Cb77',
@@ -30,40 +32,20 @@ const allTokens = {
     }
 }
 
-function tvl(chain) {
-    return async (timestamp, block, chainBlocks) => {
-        let tokensAndOwners = []
-        for (let i = 0; i < vault_tokens.length; i++) {
-            for (let j = 0; j < vaults.length; j++) {
-                tokensAndOwners.push([vault_tokens[i],vaults[j]])
-            }
-        }
-        const balances = {}
-        return await sumTokens(balances, tokensAndOwners, block, chain)
-    }
-};
-
-function staking(chain) {
-    return async (timestamp, block, chainBlocks) => {
-        const tokens = allTokens[chain]
-        let tokensAndOwners = [
-            [tokens.ubxt, tokens.stakingPool],
-            [tokens.ubxtLP, tokens.stakingPool]
-        ]
-        
-        const balances = {}
-        return await sumTokens(balances, tokensAndOwners, block, chain)
-    }
-};
+async function tvl(_, _b, { bsc: block }) {
+    return sumTokens2({ owners: vaults, tokens: vault_tokens, chain: 'bsc', block })
+}
 
 module.exports = {
     timetravel: false,
     misrepresentedTokens: true,
     bsc: {
-        tvl: tvl('bsc'),
-        staking: staking('bsc')
+        tvl,
+        staking: staking(config.bsc.stakingPool, config.bsc.ubxt, 'bsc'),
+        pool2: staking(config.bsc.stakingPool, config.bsc.ubxtLP, 'bsc'),
     },
     ethereum: {
-        staking: staking('ethereum')
+        staking: staking(config.ethereum.stakingPool, config.ethereum.ubxt,),
+        pool2: staking(config.ethereum.stakingPool, config.ethereum.ubxtLP,),
     }
 }
