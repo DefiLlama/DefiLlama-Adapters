@@ -129,6 +129,7 @@ import crodex from "./adapters/crodex";
 import dexalot from "./adapters/dexalot";
 import babyswap from "./adapters/babyswap";
 import lifinity from "./adapters/lifinity";
+import vanswap from "./adapters/vanswap";
 
 export default {
   mooniswap,
@@ -259,6 +260,7 @@ export default {
   crodex,
   dexalot,
   babyswap,
-  lifinity
+  lifinity,
+  vanswap
   // lyra -> OPTIONS DEX, not enable for now
 };
