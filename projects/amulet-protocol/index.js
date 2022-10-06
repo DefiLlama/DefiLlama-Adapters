@@ -1,6 +1,6 @@
 const BN = require("bn.js");
 const { PublicKey } = require("@solana/web3.js")
-const { getConnection } = require("./helper/solana");
+const { getConnection } = require("../helper/solana");
 
 async function tvl() {
     const connection = getConnection();
