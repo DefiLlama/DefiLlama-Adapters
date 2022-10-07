@@ -9,13 +9,15 @@ const usdcGoUsdLpSupply = 18446744073709551615;
 
 
 async function getBasketBal(usdcId,usdcGoUsdLpId,goUsdBasketAddress) {
+    
     const response = await axios.get(`https://algoindexer.algoexplorerapi.io/v2/accounts/${goUsdBasketAddress}`)
     const responseObject = await response.data;
     const accountObject =  responseObject["account"];
     const accountAssets = accountObject["assets"];
-    let goUsdBasketUsdcBal = 0;
-    let goUsdBasketLpBal = 0;
-    for( let i = 0; i< accountAssets.length; i++){
+    let   goUsdBasketUsdcBal = 0;
+    let   goUsdBasketLpBal = 0;
+    
+    for( let i = 0; i < accountAssets.length; i++ ){
         let query = accountAssets[i]
 
         if(query["asset-id"] == usdcId){
@@ -25,9 +27,8 @@ async function getBasketBal(usdcId,usdcGoUsdLpId,goUsdBasketAddress) {
             goUsdBasketLpBal = query["amount"]
         }
     }
-    const usdcBalance = goUsdBasketUsdcBal / (10**6)
-    const lpBalance = goUsdBasketLpBal / (10**6)
-    return [usdcBalance,lpBalance]
+
+    return [goUsdBasketUsdcBal /= (10**6), goUsdBasketLpBal /= (10**6)]
 }
 
 async function getTotalCirculatingLP(usdcGoUsdLpSupply,pactLpAddress){
@@ -35,6 +36,7 @@ async function getTotalCirculatingLP(usdcGoUsdLpSupply,pactLpAddress){
     const responseObject = await response.data;
     const accountObject =  responseObject["account"];
     const accountAssets = accountObject["assets"];
+    
     let lpBalance = 0;
     for( let i = 0; i< accountAssets.length; i++){
         let query = accountAssets[i]
@@ -43,15 +45,18 @@ async function getTotalCirculatingLP(usdcGoUsdLpSupply,pactLpAddress){
             lpBalance = query["amount"]
         }
     }
+    
     const totalCirculating = usdcGoUsdLpSupply - lpBalance
     return totalCirculating
 }
 
 async function lpRatio(totalCirc,usdcId,goUsdId,pactLpAddress){
+    
     const response = await axios.get(`https://algoindexer.algoexplorerapi.io/v2/accounts/${pactLpAddress}`)
     const responseObject = await response.data;
     const accountObject =  responseObject["account"];
     const accountAssets = accountObject["assets"];
+    
     let usdcBal = 0;
     let goUsdBal = 0;
     for( let i = 0; i< accountAssets.length; i++){
@@ -64,40 +69,37 @@ async function lpRatio(totalCirc,usdcId,goUsdId,pactLpAddress){
             goUsdBal = query["amount"]
         }   
     }
+    
     const usdcRatio = usdcBal / totalCirc
     const goUsdRatio = goUsdBal / totalCirc
     return [usdcRatio, goUsdRatio]
+
 }
 
 async function lpPosition(ratio,basketLpBal){
+    
     const usdcRatio = ratio[0]
     const goUsdRatio = ratio[1]
     const usdcPositon = basketLpBal * usdcRatio
     const goUsdPostion = basketLpBal * goUsdRatio
     const total = usdcPositon + goUsdPostion
     return total
+
 }
 
 
 async function tvl(){
+    
     const basketBal = await getBasketBal(usdcId,usdcGoUsdLpId,goUsdBasketAddress)
     const usdcBal = basketBal[0];
     const basketLpBal = basketBal[1];
-
     const totalCirc = await getTotalCirculatingLP(usdcGoUsdLpSupply, pactLpAddress)
     const ratio = await lpRatio(totalCirc,usdcId,goUsdId,pactLpAddress)
-
     const lpTotal = await lpPosition(ratio, basketLpBal)
-    // console.log(usdc_bal)
-    // console.log(bask_lp_bal)
-    // console.log(totalCirc)
-    // console.log(ratio)
-    // console.log("lp total", lp_total)
     const tvl = usdcBal + lpTotal
-    // console.log("tvl",tvl)
     return tvl
+    
 }
-
 
 module.exports = {
     algorand: {
