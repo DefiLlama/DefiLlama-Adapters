@@ -1,8 +1,5 @@
 const sdk = require("@defillama/sdk");
-const { getChainTransform } = require("../helper/portedTokens");
 const contracts = require("./contracts.json");
-const { getBlock } = require("../helper/getBlock");
-const { sumSingleBalance } = require("@defillama/sdk/build/generalUtil");
 const { sumLPWithOnlyOneToken } = require("./../helper/unwrapLPs");
 const BigNumber = require("bignumber.js");
 
@@ -14,8 +11,7 @@ const gfs = "0x5d0f4ca481fd725c9bc6b415c0ce5b3c3bd726cf";
 const gfsLiquidityPool = "0x19f3cb6a4452532793d1605c8736d4a94f48752c";
 
 function pool2(chain, gasToken) {
-  return async (timestamp, block, chainBlocks) => {
-    block = await getBlock(timestamp, chain, chainBlocks);
+  return async (timestamp, _, {[chain]: block}) => {
     let balances = { iotex: 0 };
     for (let contract of Object.entries(contracts[chain])) {
       await sumLPWithOnlyOneToken(
