@@ -1,11 +1,8 @@
 const sdk = require("@defillama/sdk");
-const { getBlock } = require("../helper/getBlock");
 
-async function tvl(timestamp, _ethBlock, chainBlocks) {
+async function tvl(timestamp, _ethBlock, {klaytn: block}) {
   const chain = "klaytn";
   const stKlayAddress = "0xF80F2b22932fCEC6189b9153aA18662b15CC9C00"
-
-  const block = await getBlock(timestamp, chain, chainBlocks, true);
 
   const pooledKlay = await sdk.api.abi.call({
     block,
