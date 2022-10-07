@@ -3,7 +3,6 @@ const token0 = require('./abis/token0.json');
 const token1 = require('./abis/token1.json');
 const getReserves = require('./abis/getReserves.json');
 const factoryAbi = require('./abis/factory.json');
-const { getBlock } = require('./getBlock');
 
 async function requery(results, chain, block, abi) {
     if (results.some(r => !r.success)) {
@@ -43,9 +42,7 @@ const step = 10e3;
 function calculateUsdUniTvl(FACTORY, chain, coreAssetRaw, whitelistRaw, coreAssetName, decimals = 18) {
     const whitelist = whitelistRaw.map(t => t.toLowerCase())
     const coreAsset = coreAssetRaw.toLowerCase()
-    return async (timestamp, ethBlock, chainBlocks) => {
-        const block = await getBlock(timestamp, chain, chainBlocks)
-
+    return async (timestamp, ethBlock, {[chain]: block}) => {
         let pairAddresses;
         const pairLengthRaw = (await sdk.api.abi.call({
             target: FACTORY,
