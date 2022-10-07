@@ -1,12 +1,13 @@
 const sdk = require('@defillama/sdk');
 
 const axios = require('axios')
+const fetchBalance = block => !block || (block > 10590093)
 
 async function balancesInAddress(address, chain, chainId, block) {
   const allTokens = (await axios.get(`https://api.covalenthq.com/v1/${chainId}/address/${address}/balances_v2/?&key=ckey_72cd3b74b4a048c9bc671f7c5a6`)).data.data.items
     .filter(t=>t.contract_address !== "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
 
-  const balanceOfOmniBridge = block > 10590093
+  const balanceOfOmniBridge = fetchBalance(block)
     ? await sdk.api.abi.multiCall({
       block,
       calls: allTokens.map((token) => ({
@@ -35,7 +36,7 @@ const owlBridge = '0xed7e6720ac8525ac1aeee710f08789d02cd87ecb'
 async function eth(timestamp, block) {
   let balances = {};
 
-  if (block > 10590093) {
+  if (fetchBalance(block)) {
     balances = await balancesInAddress(omniBridge, 'ethereum', 1, block)
   }
   const balanceOfXdaiBridge = await sdk.api.abi.multiCall({
