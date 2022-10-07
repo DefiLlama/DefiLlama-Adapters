@@ -30,7 +30,7 @@ async function tvl(timestamp, block, chainBlocks) {
     const partner_tokens = data["supported_tokens"]
     let ondo_multisigs = data["ondo_multisigs"]
     
-    if (block > 15258765)
+    if (!block || (block > 15258765))
       ondo_multisigs = []
 
     const ondo_lps = data["ondo_lps"]
