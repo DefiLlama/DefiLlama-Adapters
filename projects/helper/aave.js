@@ -1,7 +1,6 @@
 const sdk = require('@defillama/sdk');
 const { default: BigNumber } = require('bignumber.js');
 const abi = require('./abis/aave.json');
-const { getBlock } = require('./getBlock');
 const { getChainTransform, getFixBalances, } = require('../helper/portedTokens')
 
 async function getV2Reserves(block, addressesProviderRegistry, chain, dataHelperAddress) {
@@ -102,11 +101,10 @@ async function getBorrowed(balances, block, chain, v2ReserveTokens, dataHelper, 
 }
 
 function aaveChainTvl(chain, addressesProviderRegistry, transformAddressRaw, dataHelperAddresses, borrowed, v3 = false) {
-  return async (timestamp, ethBlock, chainBlocks) => {
+  return async (timestamp, ethBlock, {[chain]: block}) => {
     const balances = {}
     const transformAddress = transformAddressRaw || await getChainTransform(chain)
     const fixBalances = await getFixBalances(chain)
-    const block = await getBlock(timestamp, chain, chainBlocks, true);
     const [v2Atokens, v2ReserveTokens, dataHelper] = await getV2Reserves(block, addressesProviderRegistry, chain, dataHelperAddresses)
     if(borrowed){
       await getBorrowed(balances, block, chain, v2ReserveTokens, dataHelper, transformAddress, v3);
