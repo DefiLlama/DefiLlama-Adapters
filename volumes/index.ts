@@ -130,6 +130,7 @@ import dexalot from "./adapters/dexalot";
 import babyswap from "./adapters/babyswap";
 import lifinity from "./adapters/lifinity";
 import vanswap from "./adapters/vanswap";
+import daoMaker from "./adapters/dao-maker";
 
 export default {
   mooniswap,
@@ -261,6 +262,7 @@ export default {
   dexalot,
   babyswap,
   lifinity,
-  vanswap
+  vanswap,
+  "dao-maker": daoMaker
   // lyra -> OPTIONS DEX, not enable for now
 };
