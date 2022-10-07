@@ -28,7 +28,7 @@ async function OnePool2(timestamp, _block, { [chain]: block }) {
     resolveLP: true,
   })
 
-  if (!block || (block > 30170257)) {
+  if (!block || block > 30170257) {
     const uDexBalances = await sumTokens2({
       chain, block,
       owner: ushareRewardPoolAddress,
