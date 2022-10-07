@@ -1,107 +1,105 @@
 const axios = require("axios")
 
-const PACT_LP_ADDR = "CWELFRXFDWLRY6ZO6QET3AB7L3PKZD3KVDJWZULYIJYOARHUTAWN2LZT2Y"
-const goUSD_BASKET_ADDR = "SORHGFCFW4DMJRG33OBWQ5X5YQMRPHK3P5ITMBFMRCVNX74WAOOMLK32F4";
-const USDC_ID = 31566704;
-const goUSD_ID = 672913181;
-const USDC_GOUSD_LP_ID = 885102318;
-const USDC_GOUSD_LP_Supply = 18446744073709551615;
+const pactLpAddress = "CWELFRXFDWLRY6ZO6QET3AB7L3PKZD3KVDJWZULYIJYOARHUTAWN2LZT2Y"
+const goUsdBasketAddress = "SORHGFCFW4DMJRG33OBWQ5X5YQMRPHK3P5ITMBFMRCVNX74WAOOMLK32F4";
+const usdcId = 31566704;
+const goUsdId = 672913181;
+const usdcGoUsdLpId = 885102318;
+const usdcGoUsdLpSupply = 18446744073709551615;
 
 
-async function getBasketBal(USDC_ID,USDC_GOUSD_LP_ID,goUSD_BASKET_ADDR) {
-    const response = await axios.get(`https://algoindexer.algoexplorerapi.io/v2/accounts/${goUSD_BASKET_ADDR}`)
+async function getBasketBal(usdcId,usdcGoUsdLpId,goUsdBasketAddress) {
+    const response = await axios.get(`https://algoindexer.algoexplorerapi.io/v2/accounts/${goUsdBasketAddress}`)
     const responseObject = await response.data;
     const accountObject =  responseObject["account"];
     const accountAssets = accountObject["assets"];
-    let goUSD_Basket_USDC_Bal = 0;
-    let goUSD_Basket_LP_bal = 0;
+    let goUsdBasketUsdcBal = 0;
+    let goUsdBasketLpBal = 0;
     for( let i = 0; i< accountAssets.length; i++){
         let query = accountAssets[i]
 
-        if(query["asset-id"] == USDC_ID){
-            goUSD_Basket_USDC_Bal = query["amount"]
+        if(query["asset-id"] == usdcId){
+            goUsdBasketUsdcBal = query["amount"]
         }
-        else if(query["asset-id"] == USDC_GOUSD_LP_ID){
-            goUSD_Basket_LP_bal = query["amount"]
+        else if(query["asset-id"] == usdcGoUsdLpId){
+            goUsdBasketLpBal = query["amount"]
         }
     }
-
-    const usdc_balance = goUSD_Basket_USDC_Bal / (10**6)
-    const lp_balance = goUSD_Basket_LP_bal / (10**6)
-    return [usdc_balance,lp_balance]
+    const usdcBalance = goUsdBasketUsdcBal / (10**6)
+    const lpBalance = goUsdBasketLpBal / (10**6)
+    return [usdcBalance,lpBalance]
 }
 
-async function getTotalCirculatingLP(USDC_GOUSD_LP_Supply,PACT_LP_ADDR){
-    const response = await axios.get(`https://algoindexer.algoexplorerapi.io/v2/accounts/${PACT_LP_ADDR}`)
+async function getTotalCirculatingLP(usdcGoUsdLpSupply,pactLpAddress){
+    const response = await axios.get(`https://algoindexer.algoexplorerapi.io/v2/accounts/${pactLpAddress}`)
     const responseObject = await response.data;
     const accountObject =  responseObject["account"];
     const accountAssets = accountObject["assets"];
-    let lp_balance = 0;
+    let lpBalance = 0;
     for( let i = 0; i< accountAssets.length; i++){
         let query = accountAssets[i]
 
-        if(query["asset-id"] == USDC_GOUSD_LP_ID){
-            lp_balance = query["amount"]
+        if(query["asset-id"] == usdcGoUsdLpId){
+            lpBalance = query["amount"]
         }
     }
-    const total_circulating = USDC_GOUSD_LP_Supply - lp_balance
-    return total_circulating
+    const totalCirculating = usdcGoUsdLpSupply - lpBalance
+    return totalCirculating
 }
 
-async function lpRatio(totalCirc,USDC_ID,goUSD_ID,PACT_LP_ADDR){
-    const response = await axios.get(`https://algoindexer.algoexplorerapi.io/v2/accounts/${PACT_LP_ADDR}`)
+async function lpRatio(totalCirc,usdcId,goUsdId,pactLpAddress){
+    const response = await axios.get(`https://algoindexer.algoexplorerapi.io/v2/accounts/${pactLpAddress}`)
     const responseObject = await response.data;
     const accountObject =  responseObject["account"];
     const accountAssets = accountObject["assets"];
-    let usdc_bal = 0;
-    let goUSD_bal = 0;
+    let usdcBal = 0;
+    let goUsdBal = 0;
     for( let i = 0; i< accountAssets.length; i++){
         let query = accountAssets[i]
 
-        if(query["asset-id"] == USDC_ID){
-            usdc_bal = query["amount"]
+        if(query["asset-id"] == usdcId){
+            usdcBal = query["amount"]
         }
-        else if (query["asset-id"] == goUSD_ID){
-            goUSD_bal = query["amount"]
+        else if (query["asset-id"] == goUsdId){
+            goUsdBal = query["amount"]
         }   
     }
-
-    const USDC_Ratio = usdc_bal / totalCirc
-    const goUSD_Ratio = goUSD_bal / totalCirc
-    return [USDC_Ratio, goUSD_Ratio]
+    const usdcRatio = usdcBal / totalCirc
+    const goUsdRatio = goUsdBal / totalCirc
+    return [usdcRatio, goUsdRatio]
 }
 
-async function lpPosition(ratio,bask_lp_bal){
-    const usdc_ratio = ratio[0]
-    const goUSD_ratio = ratio[1]
-
-    const usdc_positon = bask_lp_bal * usdc_ratio
-    const goUSD_postion = bask_lp_bal * goUSD_ratio
-
-    const total = usdc_positon + goUSD_postion
+async function lpPosition(ratio,basketLpBal){
+    const usdcRatio = ratio[0]
+    const goUsdRatio = ratio[1]
+    const usdcPositon = basketLpBal * usdcRatio
+    const goUsdPostion = basketLpBal * goUsdRatio
+    const total = usdcPositon + goUsdPostion
     return total
 }
 
 
-async function main(){
-    const basketBal = await getBasketBal(USDC_ID,USDC_GOUSD_LP_ID,goUSD_BASKET_ADDR)
-    const usdc_bal = basketBal[0];
-    const basket_lp_bal = basketBal[1];
+async function tvl(){
+    const basketBal = await getBasketBal(usdcId,usdcGoUsdLpId,goUsdBasketAddress)
+    const usdcBal = basketBal[0];
+    const basketLpBal = basketBal[1];
 
-    const totalCirc = await getTotalCirculatingLP(USDC_GOUSD_LP_Supply, PACT_LP_ADDR)
-    const ratio = await lpRatio(totalCirc,USDC_ID,goUSD_ID,PACT_LP_ADDR)
+    const totalCirc = await getTotalCirculatingLP(usdcGoUsdLpSupply, pactLpAddress)
+    const ratio = await lpRatio(totalCirc,usdcId,goUsdId,pactLpAddress)
 
-    const lp_total = await lpPosition(ratio, basket_lp_bal)
-
+    const lpTotal = await lpPosition(ratio, basketLpBal)
     // console.log(usdc_bal)
     // console.log(bask_lp_bal)
     // console.log(totalCirc)
     // console.log(ratio)
     // console.log("lp total", lp_total)
-
-    const tvl = usdc_bal + lp_total
-
+    const tvl = usdcBal + lpTotal
     console.log("tvl",tvl)
 }
 
-main()
+
+module.exports = {
+    algorand: {
+        tvl
+    }
+}
