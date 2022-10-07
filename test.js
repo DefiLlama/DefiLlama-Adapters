@@ -341,8 +341,9 @@ async function computeTVL(balances, timestamp) {
   fixBalances(balances)
 
   Object.keys(balances).map(k => {
+    if (+balances[k] === 0) delete balances[k]
     balances[k.toLowerCase()] = balances[k];
-    if (k.toLowerCase() != k) delete balances[k]
+    if (k.toLowerCase() !== k) delete balances[k]
   })
 
   const eth = balances[ethereumAddress];
