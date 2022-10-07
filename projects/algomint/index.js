@@ -94,7 +94,8 @@ async function tvl(){
     // console.log(ratio)
     // console.log("lp total", lp_total)
     const tvl = usdcBal + lpTotal
-    console.log("tvl",tvl)
+    // console.log("tvl",tvl)
+    return tvl
 }
 
 
