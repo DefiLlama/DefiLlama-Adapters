@@ -1,6 +1,4 @@
 const sdk = require('@defillama/sdk')
-const BigNumber = require("bignumber.js");
-const { getBlock } = require('../helper/getBlock');
 
 async function tvl(timestamp, ethBlock, chainBlocks) {
 
