@@ -9,13 +9,15 @@ const usdcGoUsdLpSupply = 18446744073709551615;
 
 
 async function getBasketBal(usdcId,usdcGoUsdLpId,goUsdBasketAddress) {
+    
     const response = await axios.get(`https://algoindexer.algoexplorerapi.io/v2/accounts/${goUsdBasketAddress}`)
     const responseObject = await response.data;
     const accountObject =  responseObject["account"];
     const accountAssets = accountObject["assets"];
-    let goUsdBasketUsdcBal = 0;
-    let goUsdBasketLpBal = 0;
-    for( let i = 0; i< accountAssets.length; i++){
+    let   goUsdBasketUsdcBal = 0;
+    let   goUsdBasketLpBal = 0;
+    
+    for( let i = 0; i < accountAssets.length; i++ ){
         let query = accountAssets[i]
 
         if(query["asset-id"] == usdcId){
@@ -25,9 +27,8 @@ async function getBasketBal(usdcId,usdcGoUsdLpId,goUsdBasketAddress) {
             goUsdBasketLpBal = query["amount"]
         }
     }
-    const usdcBalance = goUsdBasketUsdcBal / (10**6)
-    const lpBalance = goUsdBasketLpBal / (10**6)
-    return [usdcBalance,lpBalance]
+
+    return [goUsdBasketUsdcBal /= (10**6), goUsdBasketLpBal /= (10**6)]
 }
 
 async function getTotalCirculatingLP(usdcGoUsdLpSupply,pactLpAddress){
@@ -81,6 +82,9 @@ async function lpPosition(ratio,basketLpBal){
 
 async function tvl(){
     const basketBal = await getBasketBal(usdcId,usdcGoUsdLpId,goUsdBasketAddress)
+    console.log(basketBal);
+
+    
     const usdcBal = basketBal[0];
     const basketLpBal = basketBal[1];
 
@@ -97,7 +101,7 @@ async function tvl(){
     // console.log("tvl",tvl)
     return tvl
 }
-
+tvl();
 
 module.exports = {
     algorand: {
