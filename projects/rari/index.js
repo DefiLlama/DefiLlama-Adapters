@@ -3,7 +3,8 @@ const { requery } = require("../helper/requery");
 const abi = require("./abi");
 const { default: BigNumber } = require("bignumber.js");
 const { getCompoundV2Tvl } = require('../helper/compound')
-const { pool2 } = require('../helper/pool2')
+const { pool2 } = require('../helper/pool2');
+const { getBlock } = require("../helper/getBlock");
 
 const earnETHPoolFundControllerAddressesIncludingLegacy = [
   '0xD9F223A36C2e398B0886F945a7e556B41EF91A3C',
@@ -98,16 +99,16 @@ async function borrowed(timestamp, block) {
 
 async function tvl(timestamp, block) {
   const balances = {}
+  block = await getBlock(timestamp, 'ethereum', { ethereum: block })
 
   const getEarnYieldProxyAddressAsArray = (block) => {
-    if (!block || (block <= 11306334)) {
+    if (block <= 11306334) {
+      return ['0x35DDEFa2a30474E64314aAA7370abE14c042C6e8']
+    } else if (block > 11306334 && block <= 11252873) {
+      return ['0x6dd8e1Df9F366e6494c2601e515813e0f9219A88']
+    } else {
       return ['0x35DDEFa2a30474E64314aAA7370abE14c042C6e8']
     }
-    if (block > 11306334 && block <= 11252873) {
-      return ['0x6dd8e1Df9F366e6494c2601e515813e0f9219A88']
-    } 
-    
-    return ['0x35DDEFa2a30474E64314aAA7370abE14c042C6e8']
   }
 
   const updateBalance = (token, amount) => {
