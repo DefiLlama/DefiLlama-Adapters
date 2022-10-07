@@ -100,13 +100,14 @@ async function tvl(timestamp, block) {
   const balances = {}
 
   const getEarnYieldProxyAddressAsArray = (block) => {
-    if (block <= 11306334) {
-      return ['0x35DDEFa2a30474E64314aAA7370abE14c042C6e8']
-    } else if (block > 11306334 && block <= 11252873) {
-      return ['0x6dd8e1Df9F366e6494c2601e515813e0f9219A88']
-    } else {
+    if (!block || (block <= 11306334)) {
       return ['0x35DDEFa2a30474E64314aAA7370abE14c042C6e8']
     }
+    if (block > 11306334 && block <= 11252873) {
+      return ['0x6dd8e1Df9F366e6494c2601e515813e0f9219A88']
+    } 
+    
+    return ['0x35DDEFa2a30474E64314aAA7370abE14c042C6e8']
   }
 
   const updateBalance = (token, amount) => {

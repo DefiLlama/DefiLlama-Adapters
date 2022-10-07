@@ -26,10 +26,10 @@ async function pool2(timestamp,_, { terra: block }) {
 
 module.exports = {
   terra: {
+    tvl: () => ({}),
     staking: staking,
     pool2: pool2,
   },
-  tvl: (tvl) => ({}),
   misrepresentedTokens: true,
   timetravel: true,
 };
