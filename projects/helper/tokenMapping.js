@@ -848,6 +848,8 @@ const fixBalancesTokens = {
     "0x7b2B3C5308ab5b2a1d9a94d20D35CCDf61e05b72": { coingeckoId: "flex-usd", decimals: 18 },
     "0x24d8d5Cbc14FA6A740c3375733f0287188F8dF3b": { coingeckoId: "tropical-finance", decimals: 18 },
     "0xBc2F884680c95A02cea099dA2F524b366d9028Ba": { coingeckoId: "tether", decimals: 18 },
+    "0x265bD28d79400D55a1665707Fa14A72978FA6043": { coingeckoId: "cashcats", decimals: 2 },
+    "0x9192940099fDB2338B928DE2cad9Cd1525fEa881": { coingeckoId: "bchpad", decimals: 18 },
   },
   palm: {
     "0x4c1f6fcbd233241bf2f4d02811e3bf8429bc27b8": { coingeckoId: "dai", decimals: 18 },
@@ -951,6 +953,7 @@ const fixBalancesTokens = {
   ethpow: {
     [nullAddress]: { coingeckoId: "ethereum-pow-iou", decimals: 18 },
     '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2': { coingeckoId: "ethereum-pow-iou", decimals: 18 },
+    '0x7bf88d2c0e32de92cdaf2d43ccdc23e8edfd5990': { coingeckoId: "ethereum-pow-iou", decimals: 18 },
 
     // Multichain
     '0x11bbB41B3E8baf7f75773DB7428d5AcEe25FEC75': { coingeckoId: "usd-coin", decimals: 6 },
