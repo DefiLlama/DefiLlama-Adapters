@@ -4,7 +4,6 @@ const token0 = require('./abis/token0.json');
 const token1 = require('./abis/token1.json');
 const getReserves = require('./abis/getReserves.json');
 const factoryAbi = require('./abis/factory.json');
-const { getBlock } = require('./getBlock');
 const { getChainTransform, getFixBalances } = require('./portedTokens')
 
 async function requery(results, chain, block, abi) {
@@ -43,8 +42,7 @@ function setPrice(prices, address, coreAmount, tokenAmount) {
 function calculateUsdUniTvl(FACTORY, chain, coreAssetRaw, whitelistRaw, coreAssetName = undefined, decimals = 18, allowUndefinedBlock = true) {
     const whitelist = whitelistRaw.map(t => t.toLowerCase())
     const coreAsset = coreAssetRaw.toLowerCase()
-    return async (timestamp, ethBlock, chainBlocks) => {
-        const block = await getBlock(timestamp, chain, chainBlocks, allowUndefinedBlock)
+    return async (timestamp, ethBlock, {[chain]: block}) => {
         const transformAddress = await getChainTransform(chain)
 
         let pairAddresses;
