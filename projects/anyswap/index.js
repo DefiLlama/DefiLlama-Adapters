@@ -31,7 +31,6 @@ const chains = {
   '1024': 'clv',
   '1030': 'conflux',
   '1088': 'metis',
-  '1234': 'step',
   '1284': 'moonbeam',
   '1285': 'moonriver',
   '1818': 'cube',
