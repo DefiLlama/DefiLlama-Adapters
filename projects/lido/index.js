@@ -1,9 +1,9 @@
 const axios = require('axios');
 const abis = require('./abis.json')
 const sdk = require('@defillama/sdk')
-const { Connection } = require('@solana/web3.js');
 const sol = require('./sol-helpers');
 const { getBlock } = require('../helper/getBlock');
+const { getConnection } = require('../helper/solana');
 
 const ethContract = '0xae7ab96520de3a18e5e111b5eaab095312d7fe84';
 
@@ -58,8 +58,23 @@ async function ksm(timestamp, ethBlock, chainBlocks) {
   }
 }
 
+async function dot(timestamp, ethBlock, chainBlocks) {
+  const chain = "moonbeam"
+  const block = await getBlock(timestamp, chain, chainBlocks, true)
+  const pooledCoin = await sdk.api.abi.call({
+    block,
+    chain,
+    target: "0xfa36fe1da08c89ec72ea1f0143a35bfd5daea108",
+    abi: {"inputs":[],"name":"getTotalPooledKSM","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+  })
+
+  return {
+    'polkadot': Number(pooledCoin.output)/1e10,
+  }
+}
+
 async function solana(timestamp, ethBlock, chainBlocks) {
-  const connection = new Connection('https://solana-api.projectserum.com/');
+  const connection = getConnection()
   const validatorsBalance = await sol.retrieveValidatorsBalance(connection)
   const reserveAccountBalance = await sol.retrieveReserveAccountBalance(connection)
 
@@ -70,6 +85,10 @@ async function solana(timestamp, ethBlock, chainBlocks) {
 }
 
 module.exports = {
+  hallmarks: [
+    [1651881600,"UST depeg"],
+    [1658145600, "News stETH on Layer 2"],
+  ],
   methodology: 'Staked tokens are counted as TVL based on the chain that they are staked on and where the liquidity tokens are issued, stMATIC is counted as Ethereum TVL since MATIC is staked in Ethereum and the liquidity token is also issued on Ethereum',
   timetravel: false, // solana
   doublecounted: true,
@@ -84,5 +103,8 @@ module.exports = {
   },
   moonriver:{
     tvl: ksm
+  },
+  moonbeam:{
+    tvl: dot
   },
 }

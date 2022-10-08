@@ -9,7 +9,7 @@ async function addRewardsEscrowTVL(balances, timestamp, chainBlocks, chain = "et
   const rewardsEscrowAddress = ADDRESSES[chain].rewardsEscrow
   const rewardToken = ADDRESSES[chain].pop
   const block = await getBlock(timestamp, chain, chainBlocks)
-  const rewardsEscrowBalance = (await sdk.api.abi.call({
+  let rewardsEscrowBalance = (await sdk.api.abi.call({
     abi: "erc20:balanceOf",
     target: rewardToken,
     params: [rewardsEscrowAddress],
@@ -18,12 +18,12 @@ async function addRewardsEscrowTVL(balances, timestamp, chainBlocks, chain = "et
   })).output
 
   let address = rewardToken;
-  if (!!transformedRewardTokenAddress) {
+  if (transformedRewardTokenAddress) {
     address = transformedRewardTokenAddress
   } else {
     address = (await getChainTransform(chain))(rewardToken)
   }
-  if (!!decimals) {
+  if (decimals) {
     rewardsEscrowBalance = Number(rewardsEscrowBalance) / (10 ** decimals)
   }
   let coingeckoPopAddress = ADDRESSES.ethereum.pop

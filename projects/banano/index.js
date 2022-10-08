@@ -19,3 +19,4 @@ module.exports = {
         pool2: pool2BalanceFromMasterChefExports(bscContract, ban, "bsc", addr=>`bsc:${addr}`, masterchefAbi.poolInfo)
     },
 }
+

@@ -13,7 +13,7 @@ const WBCH = "0x3743eC0673453E5009310C727Ba4eaF7b3a1cc04";
 const MIST = "0x5fA664f69c2A4A3ec94FaC3cBf7049BD9CA73129";
 
 function waterloan(chain, borrowed) {
-  return async (timestamp, block) => {
+  return async (timestamp, _, {[chain]: block }) => {
     const balances = {};
 
     const [v2Atokens, v2ReserveTokens, dataHelper] = await getV2Reserves(
@@ -41,7 +41,7 @@ function waterloan(chain, borrowed) {
       );
     }
 
-    erc20Map = {
+    const erc20Map = {
       "0xE6f8988d30614afE4F7124b76477Add79c665822":
         "0x081f67afa0ccf8c7b17540767bbe95df2ba8d97f", // CET
       "0x1D7C98750A47762FA8B45c6E3744aC6704F44698":

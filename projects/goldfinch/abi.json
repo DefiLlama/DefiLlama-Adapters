@@ -1,35 +1,16 @@
 {
-    "assets": {
+    "totalLoansOutstanding": {
       "inputs": [],
-      "name": "assets",
+      "name": "totalLoansOutstanding",
       "outputs": [
-          {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-          }
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
       ],
       "stateMutability": "view",
       "type": "function"
-    },
-    "PoolCreated": {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "pool",
-          "type": "address"
-        },
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "borrower",
-          "type": "address"
-        }
-      ],
-      "name": "PoolCreated",
-      "type": "event"
     },
     "pools": {
       "inputs": [
@@ -60,15 +41,15 @@
       "stateMutability": "view",
       "type": "function"
     },
-    "totalLoansOutstanding":     {
+    "assets": {
       "inputs": [],
-      "name": "totalLoansOutstanding",
+      "name": "assets",
       "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
       ],
       "stateMutability": "view",
       "type": "function"

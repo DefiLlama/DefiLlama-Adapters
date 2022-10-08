@@ -1,21 +1,15 @@
 {
-  "checkBalance": {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_asset",
-        "type": "address"
-      }
-    ],
-    "name": "checkBalance",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "balance",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
+  "totalValueLocked": {
+      "inputs": [],
+      "name": "totalValueLocked",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "value",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   }
 }

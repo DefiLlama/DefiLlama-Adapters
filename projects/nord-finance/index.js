@@ -1,49 +1,21 @@
-const utils = require('../helper/utils');
-const { toUSDTBalances } = require('../helper/balances');
-const STATS_URL = 'https://api.nordfinance.io/tvl/statistics';
+const { sumTokens } = require('../helper/unwrapLPs')
+const config = require('./config')
 
-function core(chain) {
-  return async () => {
-    var totalTvl = await utils.fetchURL(STATS_URL);
-    return toUSDTBalances(
-      totalTvl.data.tvl[chain] 
-      - totalTvl.data.tvl.lpStaking[chain] 
-      - totalTvl.data.tvl.staking[chain]
-      );
-  };
-};
+module.exports = {}
 
-function pool2(chain) {
-  return async () => {
-    var totalTvl = await utils.fetchURL(STATS_URL);
-    return toUSDTBalances(totalTvl.data.tvl.lpStaking[chain]);
-  };
-};
+Object.keys(config).forEach(chain => {
+  const { toa = [], staking = [], pool2 = [] } = config[chain]
+  const exportObj = {}
 
-function staking(chain) {
-  return async () => {
-    var totalTvl = await utils.fetchURL(STATS_URL);
-    return toUSDTBalances(totalTvl.data.tvl.staking[chain]);
-  };
-};
+  if (toa.length)
+    exportObj.tvl = async (_, _b, { [chain]: block }) => sumTokens({}, toa, block, chain)
 
-module.exports = {
-  misrepresentedTokens: true,
-  timetravel: false,
-  methodology: `TVL is obtained by making calls to the Nord Finance API "https://api.nordfinance.io/tvl/statistics".`,
-  ethereum: {
-    tvl: core('ethereum'),
-    staking: staking('ethereum'),
-    pool2: pool2('ethereum')
-  },
-  avalanche: {
-    tvl: core('avalanche'),
-    staking: staking('avalanche'),
-    pool2: pool2('avalanche')
-  },
-  polygon: {
-    tvl: core('polygon'),
-    staking: staking('polygon'),
-    pool2: pool2('polygon')
-  }
-};
+  if (staking.length)
+    exportObj.staking = async (_, _b, { [chain]: block }) => sumTokens({}, staking, block, chain)
+
+  if (pool2.length)
+    exportObj.pool2 = async (_, _b, { [chain]: block }) => sumTokens({}, pool2, block, chain, undefined, { resolveLP: true })
+
+  module.exports[chain] = exportObj
+
+})

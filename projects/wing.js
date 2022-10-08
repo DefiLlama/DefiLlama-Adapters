@@ -1,80 +1,70 @@
-const { toUSDTBalances } = require('./helper/balances');
-const utils = require('./helper/utils');
 
-function fetchChain(chainId) {
-  return async ()=>{
-  let url;
-  switch (chainId) {
-    case 'ontology':
-      url = 'https://flashapi.wing.finance/api/v1/flashpooldetail';
-      break;
-    case 'ethereum':
-      url = 'https://ethapi.wing.finance/eth/flash-pool/detail';
-      break;
-    case 'okexchain':
-      url = 'https://ethapi.wing.finance/okexchain/flash-pool/detail';
-      break;
-    case 'bsc':
-      url = "https://ethapi.wing.finance/bsc/flash-pool/detail";
-      break;
-  };
-  const response = await utils.fetchURL(url);
-  let tvl = response.data.result.totalSupply - response.data.result.totalBorrow;
-  if (!tvl) {
-    tvl = response.data.result.TotalSupply - response.data.result.TotalBorrow;
-  }
-  return tvl;
-  }
-}
-async function fetch() {
-  const tvl = await utils.fetchURL('https://api.wing.finance/wing/analytics/tvl-overview')
-  return tvl.data.result.overview.totalSupply - tvl.data.result.overview.totalBorrow;
-}
-function stake(chainId) {
-  return async ()=>{
-  let url;
-  switch (chainId) {
-    case 'ontology':
-      url = 'https://flashapi.wing.finance/api/v1/flashpooldetail';
-      break;
-    case 'ethereum':
-      url = 'https://ethapi.wing.finance/eth/flash-pool/detail';
-      break;
-    case 'okexchain':
-      url = 'https://ethapi.wing.finance/okexchain/flash-pool/detail';
-      break;
-    case 'bsc':
-        url = "https://ethapi.wing.finance/bsc/flash-pool/detail";
-        break;
-  };
-  const response = await utils.fetchURL(url);
-  let staked = response.data.result.totalLockedWingDollar;
-  if (!staked) {
-    staked = response.data.result.TotalLockedWingDollar;
-  }
-  return toUSDTBalances(staked);
-  }
+const { default: BigNumber } = require('bignumber.js');
+const { get } = require('./helper/http')
+
+const nft_url = "https://nftapi.wing.finance/backend/nft-pool/pool-overview"
+
+const config = {
+  ontology: {
+    url: 'https://flashapi.wing.finance/api/v1/flashpooldetail',
+  },
+  ethereum: {
+    url: 'https://ethapi.wing.finance/eth/flash-pool/detail',
+  },
+  okexchain: {
+    url: 'https://ethapi.wing.finance/okexchain/flash-pool/detail',
+  },
+  bsc: {
+    url: "https://ethapi.wing.finance/bsc/flash-pool/detail",
+  },
+  ontology_evm: {
+    url: "https://ethapi.wing.finance/ontevm/flash-pool/detail",
+  },
 }
 
 module.exports = {
-  ontology:{
-    fetch: fetchChain('ontology'),
-    staking: stake('ontology')
-  },
-  ethereum:{
-    fetch: fetchChain('ethereum'),
-    staking: stake('ethereum')
-  },
-  okexchain:{
-    fetch: fetchChain('okexchain'),
-    staking: stake('okexchain')
-  },
-  bsc:{
-    fetch: fetchChain('bsc'),
-    staking: stake('bsc')
-  },
-  fetch,
-  methodology: `Wing Finance TVL is achieved by subtracting total borrow from total supply on each chain. Staking is calculated by finding the dollar value of locked WING on each chain. The values are fetched from Wing Finance's own API.`
+  timetravel: true,
+  misrepresentedTokens: true,
+};
+
+const data = {}
+
+async function getData(chain) {
+  const { url } = config[chain]
+  if (!data[chain]) data[chain] = get(url)
+  return data[chain]
 }
-// node test.js projects/wing.js
-// node projects/wing.js
+
+Object.keys(config).forEach(chain => {
+  module.exports[chain] = {
+    tvl: async () => {
+      const { result } = await getData(chain)
+      if (!result.totalBorrow) result.totalBorrow = result.TotalBorrow
+      if (!result.totalSupply) result.totalSupply = result.TotalSupply
+      if (chain == "ethereum") {
+        const result_nft  = await get(nft_url)
+        console.log("result_nft:", result_nft);
+        if (result_nft.nftCollateralTVL !=undefined && !result_nft.nftCollateralTVL) result.totalSupply += result_nft.nftCollateralTVL
+      }
+      return {
+        tether: BigNumber(result.totalSupply - result.totalBorrow).toFixed(0)
+      }
+    },
+    staking: async () => {
+      const { result } = await getData(chain)
+      if (!result.totalLockedWingDollar) result.totalLockedWingDollar = result.TotalLockedWingDollar
+      if (result.totalLockedWingDollar == undefined) result.totalLockedWingDollar = BigNumber(0)
+      if (result.totalInsurance != undefined && !result.totalInsurance) result.totalLockedWingDollar += result.totalInsurance
+      return {
+        tether: BigNumber(result.totalLockedWingDollar).toFixed(0)
+      }
+    },
+    borrowed: async () => {
+      const { result } = await getData(chain)
+      if (!result.totalBorrow) result.totalBorrow = result.TotalBorrow
+      return {
+        tether:new BigNumber(result.totalBorrow).toFixed(0)
+      }
+    },
+  }
+})

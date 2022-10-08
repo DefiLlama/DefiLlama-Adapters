@@ -69,5 +69,18 @@
         ],
         "stateMutability": "view",
         "type": "function"
+    },
+    "principalOut": {
+        "inputs": [],
+        "name": "principalOut",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
     }
 }

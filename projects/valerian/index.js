@@ -1,6 +1,4 @@
 const { stakingPricedLP } = require("../helper/staking");
-const ethers = require("ethers")
-const { config } = require('@defillama/sdk/build/api');
 
 const VAL = "0xe1af4d744e2a66cd07c474bed167960be872fcd9"
 const stakingContract = "0x99a2278ab93Ee6F590a87D8F37a16EE8f53F97Cc"

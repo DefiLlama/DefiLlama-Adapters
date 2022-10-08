@@ -39,8 +39,22 @@ function getLpTokenTVL(chain = "ethereum") {
         chain
       }))
       sdk.util.sumMultiBalanceOf(balances, gUniBalances, true)
-
     }
+    // For Arrakis pool
+    const arrakisPool = ADDRESSES[chain].arrakisPool;
+    if (arrakisPool) {
+      const arrakisBalances = (await sdk.api.abi.multiCall({
+        abi: "erc20:balanceOf",
+        calls: poolTokens.map(token => ({
+          target: token,
+          params: [lpPool]
+        })),
+        block,
+        chain
+      }))
+      sdk.util.sumMultiBalanceOf(balances, arrakisBalances, true)
+    }
+
     // map addressess
     Object.keys(balances).forEach(tokenAddress => {
       const transformedAddress = chainAddressTransformer(tokenAddress);
