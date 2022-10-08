@@ -115,13 +115,13 @@ async function celo(timestamp, block, chainBlocks) {
   return getChainBalances(allPrizePools, 'celo', block, transform)
 }
 
-async function bsc(timestamp, block, chainBlocks) {
+async function bsc(timestamp, _, chainBlocks) {
   const transform = await getChainTransform('bsc')
   let allPrizePools = []
-  block = await getBlock(timestamp, 'bsc', chainBlocks) - 1000
-  const { prizePools } = await request(bscGraphUrl, graphQuery, { block })
+  const blockG = await getBlock(timestamp, 'bsc', chainBlocks) - 1000
+  const { prizePools } = await request(bscGraphUrl, graphQuery, { block: blockG })
   allPrizePools = allPrizePools.concat(prizePools)
-  return getChainBalances(allPrizePools, 'bsc', block, transform)
+  return getChainBalances(allPrizePools, 'bsc', chainBlocks.bsc, transform)
 }
 
 module.exports = {

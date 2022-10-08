@@ -2,7 +2,6 @@ const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const retry = require("async-retry");
 const axios = require("axios");
-const { getBlock } = require("../helper/getBlock");
 const usdc = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
 const prxy = "0xab3d689c22a2bb821f50a4ff0f21a7980dcb8591";
 const prxyTransformed = `polygon:${prxy}`;
@@ -25,8 +24,7 @@ async function getPrograms() {
 }
 
 function tvl(chain) {
-return async (timestamp, block, chainBlocks) => {
-block = await getBlock(timestamp, chain, chainBlocks);
+return async (timestamp, _, {[chain]: block}) => {
   let balances = {};  
 
   const programs = await getPrograms();
