@@ -132,6 +132,7 @@ import lifinity from "./adapters/lifinity";
 import vanswap from "./adapters/vanswap";
 import daoMaker from "./adapters/dao-swap";
 import jswap from "./adapters/jswap";
+import babydogeswap from "./adapters/babydogeswap";
 
 export default {
   mooniswap,
@@ -265,6 +266,7 @@ export default {
   lifinity,
   vanswap,
   "dao-swap": daoMaker,
-  jswap
+  jswap,
+  babydogeswap
   // lyra -> OPTIONS DEX, not enable for now
 };
