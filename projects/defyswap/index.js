@@ -1,4 +1,4 @@
-const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl.js");
+const { getUniTVL } = require('../helper/unknownTokens')
 const { stakingUnknownPricedLP } = require("../helper/staking.js");
 
 const factory = "0xAffdbEAE1ec595cba4C262Bdb52A6083aEc2e2a6";
@@ -16,7 +16,7 @@ module.exports = {
   timetravel: true,
   doublecounted: false,
   fantom: {
-    tvl: calculateUsdUniTvl(factory, "fantom", ftm, whitelist, "fantom"),
+    tvl: getUniTVL({ factory, chain: 'fantom', useDefaultCoreAssets: true }),
     staking: stakingUnknownPricedLP(
       masterchef,
       dfy,
