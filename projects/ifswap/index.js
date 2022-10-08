@@ -11,7 +11,7 @@ const IFS_USDT_LP = "0x72083c2de1b53a09ea9ed4a99c63749102ba9aaf";
 const COREASSETNAME = "tether";
 const CHAIN = "csc";
 
-const ifswapDexTvl = getUniTVL({ factory: FACTORY, chain: CHAIN, })
+const ifswapDexTvl = getUniTVL({ factory: FACTORY, chain: CHAIN, useDefaultCoreAssets: true, })
 
 module.exports = {
   misrepresentedTokens: true,
