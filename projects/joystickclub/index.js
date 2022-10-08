@@ -21,12 +21,12 @@ const staking = async (timestamp, ethBlock, {[chain]: block}) => {
             "stateMutability": "view",
             "type": "function"
           },
-        chain: CHAIN,
+        chain,
         block
     })).output
 
     const floorPrice = 500; // 500 JOY to mint an NFT
-    return { 'joystick-2': BigNumber(total).multipliedBy(floorPrice) }
+    return { 'joystick1': BigNumber(total).multipliedBy(floorPrice) }
 }
 
 module.exports = {
