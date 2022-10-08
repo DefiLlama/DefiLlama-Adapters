@@ -62,23 +62,23 @@ const chains = {
 const url = 'https://netapi.anyswap.net/bridge/v2/info'
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-let coingeckoMcapsPromise = null
-function getCgMcaps(){
-  if(coingeckoMcapsPromise !== null){
+let coingeckoMcapsPromise
+
+async function getCgMcaps() {
+  if (coingeckoMcapsPromise) {
     return coingeckoMcapsPromise
   }
-  coingeckoMcapsPromise = new Promise(async (resolve)=>{
+  coingeckoMcapsPromise = new Promise(async (resolve) => {
     const { data } = await utils.fetchURL(url)
     const protocolsInChain = data.bridgeList
     const protocolsWithRouters = Array.from(new Set(protocolsInChain.filter(p => p.type === "router" && p.label !== null).map(p => p.label.toLowerCase())));
 
     const coingeckoMcaps = {}
     const step = 200;;
-    for(let i=0; i<protocolsWithRouters.length; i+=step){
-      console.log(i/step)
-      const cgUrl = `https://api.coingecko.com/api/v3/simple/price?vs_currencies=usd&include_market_cap=true&ids=${
-        protocolsWithRouters.slice(i, i+step).join(',')
-      }`
+    for (let i = 0; i < protocolsWithRouters.length; i += step) {
+      console.log(i / step)
+      const cgUrl = `https://api.coingecko.com/api/v3/simple/price?vs_currencies=usd&include_market_cap=true&ids=${protocolsWithRouters.slice(i, i + step).join(',')
+        }`
       await sleep(1e3)
       const partMcaps = await utils.fetchURL(cgUrl)
       Object.assign(coingeckoMcaps, partMcaps.data)
@@ -104,11 +104,11 @@ function fetchChain(chain) {
       } else if (item.type === "router") {
         const label = item.label
         const mcap = coingeckoMcaps[label]?.usd_market_cap
-        if(counted[label]===undefined){
+        if (counted[label] === undefined) {
           counted[label] = 0
         }
-        if (mcap !== undefined && mcap>counted[label]) {
-          const tvlToAdd = Math.min(tvl, mcap-counted[label])
+        if (mcap !== undefined && mcap > counted[label]) {
+          const tvlToAdd = Math.min(tvl, mcap - counted[label])
           total += tvlToAdd
           counted[label] += tvlToAdd
         }
@@ -122,7 +122,7 @@ function fetchChain(chain) {
 const chainTvls = {}
 Object.keys(chains).forEach((chain) => {
   const chainName = chains[chain]
-  chainTvls[chainName === 'avax' ? 'avalanche' : chainName] = {
+  chainTvls[chainName] = {
     fetch: fetchChain(chain)
   }
 })
@@ -132,4 +132,7 @@ module.exports = {
   timetravel: false,
   ...chainTvls,
   fetch: fetchChain(null),
+  hallmarks:[
+    [1651881600, "UST depeg"],
+  ],
 }

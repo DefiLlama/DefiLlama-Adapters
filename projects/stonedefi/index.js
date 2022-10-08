@@ -153,7 +153,7 @@ module.exports = {
       return `polygon:${addr}`
     })
   },
-  avalanche: {
+  avax:{
     tvl: avax,
   }
 }

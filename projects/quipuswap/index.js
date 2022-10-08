@@ -1,24 +1,19 @@
-const BigNumber = require('bignumber.js')
-const { request, gql } = require("graphql-request");
 
-const graphUrl = 'https://granada-api.quipuswap.com';
-const tvlQuery = gql`
-query {
-  overview {
-    xtzUsdQuote
-    totalLiquidity
-  }
-}`;
+const { getLPs, sumTokens, convertBalances, } = require('../helper/tezos')
+const { getFixBalances } = require('../helper/portedTokens')
 
-async function fetch() {
-    const data = await request(graphUrl, tvlQuery);
-    const xtzUsdQuote = new BigNumber(data.overview.xtzUsdQuote);
-    const totalLiquidity = new BigNumber(data.overview.totalLiquidity);
-    return totalLiquidity.multipliedBy(xtzUsdQuote).dividedBy(1000000).toFixed(0);
+async function tvl() {
+  const tokenToTokenLPAddress = 'KT1VNEzpf631BLsdPJjt2ZhgUitR392x6cSi'
+  let balances = await sumTokens({ owners: [tokenToTokenLPAddress, ... await getLPs('Quipuswap')], includeTezos: true, })
+  const fixBalances = await getFixBalances('tezos')
+  balances = await convertBalances(balances)
+  fixBalances(balances)
+  return balances
 }
 
 module.exports = {
-  methodology: 'TVL counts the liquidity of QuipuSwap DEX. Data is pulled from:"https://granada-api.quipuswap.com".',
-    misrepresentedTokens: true,
-    fetch
+  timetravel: false,
+  tezos: {
+    tvl,
+  }
 }

@@ -3,7 +3,7 @@ const sdk = require('@defillama/sdk')
 
 async function tvl(timestamp, ethBlock, chainBlocks) {
     let balances = {};
-    let url = `https://api.data.kava.io/swap/pools`
+    let url = `https://api2.kava.io/swap/pools`
     if(Math.abs(Date.now()/1000 - timestamp) > 3600){
         const block = await sdk.api.util.lookupBlock(timestamp, {chain:'kava'})
         url += `?height=${block.block}`
@@ -46,5 +46,6 @@ function generic(ticker) {
 };
 
 module.exports = {
+    timetravel: false,
     kava: { tvl }
 }

@@ -3,7 +3,9 @@ const axios = require("axios");
 function fetch(endpoint) {
   return async () => {
     const vaults = (await axios.get(`https://api.robo-vault.com/${endpoint}`)).data;
-    return vaults.map(e => e.tvlUsd).filter(e => e != undefined).reduce((a, b) => a + b, 0);
+    return vaults
+      .filter((p) => p.status.toLowerCase() === 'active')
+      .map(e => e.tvlUsd).filter(e => e != undefined).reduce((a, b) => a + b, 0);
   };
 };
 
@@ -15,5 +17,8 @@ module.exports = {
   fantom: {
     fetch: fetch('vaults/fantom')
   },
-  fetch: fetch('vault'),
+  avax:{
+    fetch: fetch('vaults/avalanche')
+  },
+  fetch: fetch('vaults'),
 }; // node test.js projects/robovault/index.js

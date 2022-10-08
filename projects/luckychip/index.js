@@ -1,8 +1,7 @@
 const { sumTokens } = require('../helper/unwrapLPs')
 const sdk = require('@defillama/sdk')
-const { getBlock } = require('../helper/getBlock');
 const { transformBscAddress } = require('../helper/portedTokens');
-const { stakingPricedLP } = require("../helper/staking");
+const { staking } = require("../helper/staking");
 
 const tokenHolderMap = [
     {
@@ -32,7 +31,7 @@ function normalizeArray(arrayOrString){
 
 async function tvl(timestamp, ethBlock, chainBlocks) {
     const transform = await transformBscAddress();
-    const block = await getBlock(timestamp, "bsc", chainBlocks);
+    const block = chainBlocks.bsc;
 
     const tokensAndHolders = []
     let ethHolders = []
@@ -72,7 +71,7 @@ module.exports={
     misrepresentedTokens: false,
     methodology: 'TVL comes from the tables of LuckyChip for now.',
     bsc: {
-        staking: stakingPricedLP(masterChef, lcToken, 'bsc', "0xA7610F4Ad54778f2108A6634d3cb9f8ff61923DE", "wbnb", true),
+        staking: staking(masterChef, lcToken, 'bsc'),
         tvl,
     }
 }

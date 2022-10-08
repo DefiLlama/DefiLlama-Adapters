@@ -72,7 +72,7 @@ async function getTotalSupply(pools, timestamp, block, chainBlocks) {
             }
         })
     })).output.map((result, i) => {
-        for (pid of Object.keys(pools)) {
+        for (let pid of Object.keys(pools)) {
             if (pools[pid].virtualBalance == result.input.target) {
                 pools[pid].totalSupply = (new BN(result.output));
                 pools[pid].totalSupplyString = result.output;
@@ -84,7 +84,7 @@ async function getTotalSupply(pools, timestamp, block, chainBlocks) {
 }
 
 async function calculateTokenAmount(pools, timestamp, block, chainBlocks) {
-    for (pid of Object.keys(pools)) {
+    for (let pid of Object.keys(pools)) {
         await sdk.api.abi.call({
             block: chainBlocks.ethereum,
             chain: "ethereum",
