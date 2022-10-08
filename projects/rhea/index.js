@@ -24,21 +24,29 @@ async function getTvl(timestamp, ethBlock, chainBlocks) {
     tvl: {}
   }
 
+  const calls = [
+    { target: KDAI_RHEA_LP, params: TREASURY},
+    { target: KDAI, params: TREASURY},
+    { target: KDAI, params: KDAI_RHEA_LP},
+    { target: RHEA, params: KDAI_RHEA_LP},
+    { target: RHEA, params:STAKING_ADDR },
+  ]
+
+  const { output } = await sdk.api.abi.multiCall({
+    abi: 'erc20:balanceOf',
+    calls,
+    chain, block,
+  });
+
   const [
     lpBalance,
     kdaiBalance,
     lpKdaiBalance,
     lpRheaBalance,
     stakingRheaBalance,
-    lpSupply,
-  ] = await Promise.all([
-    sdk.api.erc20.balanceOf({ target: KDAI_RHEA_LP, owner: TREASURY, block, chain }),
-    sdk.api.erc20.balanceOf({ target: KDAI, owner: TREASURY, block, chain }),
-    sdk.api.erc20.balanceOf({ target: KDAI, owner: KDAI_RHEA_LP, block, chain }),
-    sdk.api.erc20.balanceOf({ target: RHEA, owner: KDAI_RHEA_LP, block, chain }),
-    sdk.api.erc20.balanceOf({ target: RHEA, owner: STAKING_ADDR, block, chain }),
-    sdk.api.erc20.totalSupply({ target: KDAI_RHEA_LP, block, chain }),
-  ]).then(all => all.map(i => i.output))
+  ] = output.map(i => i.output)
+
+  const { output: lpSupply } = await sdk.api.erc20.totalSupply({ target: KDAI_RHEA_LP, block, chain })
 
   const rheaPrice = lpKdaiBalance / lpRheaBalance
   const staking = stakingRheaBalance * rheaPrice / 10 ** 18

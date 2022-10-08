@@ -1,4 +1,3 @@
-const { getBlock } = require("../helper/getBlock");
 const sdk = require("@defillama/sdk");
 
 const tokens = [
@@ -36,11 +35,10 @@ const tokens = [
 
 const toNumber = (n) => Number(n) / 1e18;
 
-async function tvl(timestamp, ethBlock, chainBlocks) {
+async function tvl(timestamp, ethBlock, { celo: block }) {
   const chain = "celo";
-  const block = await getBlock(timestamp, chain, chainBlocks);
   const balances = {};
-  for (token of tokens) {
+  for (let token of tokens) {
     const bal = await sdk.api.erc20.balanceOf({
       block,
       chain,
@@ -55,5 +53,5 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 module.exports = {
   methodology:
     "Poof uses wrapped Moola tokens to hold user balances. Calculate how many Moola tokens are in each of these wrapped tokens.",
-  tvl,
+  celo: { tvl },
 };

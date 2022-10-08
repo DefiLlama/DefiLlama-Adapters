@@ -2,7 +2,7 @@ const tenderSwapABI = require('./tenderSwapABI.json');
 const sdk = require('@defillama/sdk');
 const { GraphQLClient, gql } = require('graphql-request');
 const retry = require('../helper/retry');
-const { BigNumber } = require('ethers');
+const BigNumber = require('bignumber.js');
 const { transformArbitrumAddress } = require('../helper/portedTokens');
 
 const ethereumEndpoint =
@@ -30,7 +30,7 @@ const currentPrincipalQuery = gql`
 `;
 
 const addBNstr = (a, b) => {
-  return BigNumber.from(a).add(BigNumber.from(b)).toString();
+  return BigNumber(+a + +b).toFixed(0);
 };
 
 async function fetchArbitrum(timestamp, ethBlock, chainBlocks) {

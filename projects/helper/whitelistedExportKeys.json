@@ -15,5 +15,7 @@
   "incentivized",
   "offers",
   "deadFrom",
-  "broken"
+  "broken",
+  "ownTokens",
+  "vesting"
 ]

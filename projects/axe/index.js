@@ -1,6 +1,3 @@
-const sdk = require("@defillama/sdk");
-const { default: BigNumber } = require("bignumber.js");
-const erc20 = require("../helper/abis/erc20.json");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const { staking } = require("../helper/staking.js");
 
