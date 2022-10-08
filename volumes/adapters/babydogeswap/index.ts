@@ -7,5 +7,6 @@ const adapters = univ2Adapter({
   factoriesName: "babyDogeFactories",
   dayData: "factoryDayData",
 });
+
 adapters.volume.bsc.start = async () => 1661780137;
 export default adapters;
