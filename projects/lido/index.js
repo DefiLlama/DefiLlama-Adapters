@@ -2,7 +2,6 @@ const axios = require('axios');
 const abis = require('./abis.json')
 const sdk = require('@defillama/sdk')
 const sol = require('./sol-helpers');
-const { getBlock } = require('../helper/getBlock');
 const { getConnection } = require('../helper/solana');
 
 const ethContract = '0xae7ab96520de3a18e5e111b5eaab095312d7fe84';
@@ -43,9 +42,8 @@ async function eth(timestamp, ethBlock, chainBlocks) {
   }
 }
 
-async function ksm(timestamp, ethBlock, chainBlocks) {
+async function ksm(timestamp, ethBlock, {moonriver: block}) {
   const chain = "moonriver"
-  const block = await getBlock(timestamp, chain, chainBlocks, true)
   const pooledCoin = await sdk.api.abi.call({
     block,
     chain,
@@ -58,9 +56,8 @@ async function ksm(timestamp, ethBlock, chainBlocks) {
   }
 }
 
-async function dot(timestamp, ethBlock, chainBlocks) {
+async function dot(timestamp, ethBlock, {moonbeam: block}) {
   const chain = "moonbeam"
-  const block = await getBlock(timestamp, chain, chainBlocks, true)
   const pooledCoin = await sdk.api.abi.call({
     block,
     chain,
