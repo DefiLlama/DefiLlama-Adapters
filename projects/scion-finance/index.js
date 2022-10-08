@@ -1,10 +1,9 @@
 const sdk = require("@defillama/sdk");
-const { getBlock } = require("../helper/getBlock");
 const ADDRESSES = require("./addresses");
 const scionVaultAbi = require("./abis/scionVaultAbi");
 
 async function getVaultBalance(timestamp, chainBlocks, chain) {
-  const block = await getBlock(timestamp, chain, chainBlocks);
+  const block = chainBlocks[chain];
   const balances = {};
 
   const vaults = ADDRESSES[chain];

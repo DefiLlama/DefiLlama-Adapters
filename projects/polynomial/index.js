@@ -1,12 +1,10 @@
 const sdk = require('@defillama/sdk')
 const axios = require('axios')
 const BigNumber = require('bignumber.js')
-const { getBlock } = require('../helper/getBlock')
 const abi = require('./abi.json')
 const abi2 = require('./abi2.json')
 const chain = 'optimism'
 const transform = t => `${chain}:${t}`
-const ethers = require('ethers')
 
 // Polynomial contract addresses
 const polynomial_contracts = [
@@ -47,8 +45,7 @@ function getL1SynthAddressFromL2SynthAddress( l2 ){
   return "ethereum:" + L2toL1Synths[l2.split(":")[1].toLowerCase()];
 }
 
-async function tvl (timestamp, ethBlock, chainBlocks) {
-  const block = await getBlock(timestamp, chain, chainBlocks, false)
+async function tvl (timestamp, ethBlock, {[chain]: block}) {
 
   // Get if contract type is Put or Call - so that we can distinguish between calling the UNDERLYING or COLLATERAL read function
   const {output: contractNames} = await sdk.api.abi.multiCall({
