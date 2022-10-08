@@ -1,5 +1,4 @@
 const { sumTokens } = require('./helper/unwrapLPs');
-const { pool2 } = require('./helper/pool2');
 const { staking } = require('./helper/staking');
 
 const liquidityMinesAddress = '0x4DaC3e07316D2A31baABb252D89663deE8F76f09';
@@ -31,6 +30,6 @@ module.exports = {
   ethereum: {
     tvl,
 		staking: staking(loyaltyMineAddress, gdaoToken),
-		pool2: pool2(loyaltyMineAddress, GDAOLP),
+		pool2: staking(loyaltyMineAddress, GDAOLP),
   }
 }

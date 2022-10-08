@@ -8,7 +8,7 @@ const marketsUnderlyings = require("./marketsUnderlyings")
 const getMetrics = async (balances, block, borrowed) => {
   const marketsCall = await sdk.api.abi.call({
     target: morphoCompoundMainnetLens,
-    abi: abi.morphoCompoundLens.getAllMarkets,
+    abi: abi.morphoLens.getAllMarkets,
     block,
     chain: "ethereum"
   });
@@ -24,7 +24,7 @@ const getMetrics = async (balances, block, borrowed) => {
     target: morphoCompoundMainnetLens,
     block,
     chain: "ethereum",
-    abi: abi.morphoCompoundLens.getTotalMarketBorrow
+    abi: abi.morphoLens.getTotalMarketBorrow
   })
   const toUnderlying = (marketAddress) => underlyings[markets.indexOf(marketAddress)] // multiCall keeps the order of the list
   if(borrowed) {
@@ -41,7 +41,7 @@ const getMetrics = async (balances, block, borrowed) => {
     target: morphoCompoundMainnetLens,
     block,
     chain: "ethereum",
-    abi: abi.morphoCompoundLens.getTotalMarketSupply
+    abi: abi.morphoLens.getTotalMarketSupply
   })
   balancesTotalSupply.output.forEach((totalSupplyData, idx) => {
     const totalBorrowData = balancesTotalBorrow.output[idx];
@@ -68,4 +68,4 @@ module.exports = {
     borrowed: ethereum(true),
   }
 };
-// node test.js projects/morpho/index.js
+// node test.js projects/morpho-compound/index.js

@@ -1,7 +1,6 @@
 
 const sdk = require('@defillama/sdk');
 const abi = require('./abis/compound.json');
-const { getBlock } = require('./getBlock');
 const { unwrapUniswapLPs } = require('./unwrapLPs');
 const { requery } = require("./requery");
 const { getChainTransform, getFixBalances, } = require('./portedTokens');
@@ -112,9 +111,8 @@ function getCompoundV2Tvl(comptroller, chain = "ethereum", transformAdress,
     }
   } = {}) {
   blacklistedTokens = blacklistedTokens.map(i => i.toLowerCase())
-  return async (timestamp, ethBlock, chainBlocks) => {
+  return async (timestamp, ethBlock, {[chain]: block}) => {
     if (!transformAdress) transformAdress = await getChainTransform(chain)
-    const block = await getBlock(timestamp, chain, chainBlocks, true);
     let balances = {};
     let markets = await getMarkets(comptroller, block, chain, cether, cetheEquivalent, blacklistedTokens, abis);
     const cTokenCalls = markets.map(market => ({
@@ -232,8 +230,7 @@ function getCompoundUsdTvl(comptroller, chain, cether, borrowed, abis = {
 }, {
   blacklist = []
 } = {}) {
-  return async (timestamp, ethBlock, chainBlocks) => {
-    const block = await getBlock(timestamp, chain, chainBlocks, true);
+  return async (timestamp, ethBlock, {[chain]: block}) => {
     let tvl = new BigNumber('0');
     blacklist = blacklist.map(i => i.toLowerCase())
     const marketData = await getMarkets(comptroller, block, chain, cether, undefined, blacklist, abis)

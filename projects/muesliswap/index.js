@@ -8,13 +8,10 @@ async function staking(){
     if(tvl.data<=0){
         throw new Error("muesliswap tvl is below 0")
     }
-    const orders = (await fetchURL(`https://orders.muesliswap.com/orderbook/?policy-id=8a1cfae21368b8bebbbed9800fec304e95cce39a2a57dc35e2e3ebaa&tokenname=MILK`)).data
-    if(orders.fromToken !== "."){
-        throw new Error("Tokens paired against something other than ADA")
-    }
-    const topPrice = orders.buy[0].price
+    const info = (await fetchURL(`https://api.muesliswap.com/price/?base-policy-id=&base-tokenname=&quote-tokenname=4d494c4b&quote-policy-id=8a1cfae21368b8bebbbed9800fec304e95cce39a2a57dc35e2e3ebaa`)).data
+    const price = parseFloat(info.price) / 1e6
     return {
-        cardano: tvl.data * topPrice
+        cardano: tvl.data * price
     }
 }
 
@@ -44,25 +41,32 @@ async function adaTvl(){
         const totalSell = totalAmountOtherToken * topPrice
         totalAda += totalBuy + totalSell
     }))
-    const orderbooksv2 = (await fetchURL("https://pools.muesliswap.com/all-orderbooks")).data
-    await Promise.all(orderbooksv2.map(async orders=>{
-        if(orders.fromToken !== "."){
-            throw new Error("Tokens paired against something other than ADA")
+    // fetch the prices of each traded token first
+    const tokenlistv2 = (await fetchURL("https://api.muesliswap.com/list?base-policy-id=&base-tokenname=")).data
+    const adapricev2 = new Map(tokenlistv2.map(d => {
+       return [d.price.toToken, parseFloat(d.price.bidPrice)]
+    }))
+    // then accumulate over the orderbooks
+    const orderbooksv2 = (await fetchURL("https://onchain.muesliswap.com/all-orderbooks")).data
+    await Promise.all(orderbooksv2.map(async ob=>{
+        if(ob.fromToken !== "."){
+            const price = adapricev2.get(ob.fromToken)
+            let totalAmountOtherToken = 0
+            ob.orders.forEach(o=>{
+                totalAmountOtherToken += parseInt(o.fromAmount)
+            })
+            const totalSell = totalAmountOtherToken * price
+            if(isNaN(totalSell) || !isFinite(totalSell)) return;
+            totalAda += totalSell / 1e6
         }
-        let totalBuy= 0;
-        orders.buy.forEach(o=>{
-            totalBuy += (o.totalLvl / 1e6)
-        })
-        if(orders.buy.length === 0 || orders.sell.length === 0){
-            return
+        else if(ob.fromToken === "."){
+            let totalLovelace = 0;
+            ob.orders.forEach(o=>{
+                totalLovelace += parseInt(o.fromAmount)
+            })
+            const totalBuy = totalLovelace
+            totalAda += totalBuy / 1e6
         }
-        const topPrice = (orders.buy[0].lvlPerToken / 1e6)
-        let totalAmountOtherToken = 0
-        orders.sell.forEach(o=>{
-            totalAmountOtherToken += o.amount
-        })
-        const totalSell = totalAmountOtherToken * topPrice
-        totalAda += totalBuy + totalSell
     }))
     return {
         cardano: totalAda
