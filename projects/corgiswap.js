@@ -1,48 +1,6 @@
-const { request, gql } = require("graphql-request");
 const { calculateUsdUniTvl } = require('./helper/getUsdUniTvl');
-const { staking, stakingPricedLP } = require("./helper/staking");
+const { stakingPricedLP } = require("./helper/staking");
 
-const graphEndpoint = 'https://api.thegraph.com/subgraphs/name/corgiswap/exchange'
-const currentQuery = gql`
-query pancakeFactories {
-  pancakeFactories(first: 1) {
-    totalTransactions
-    totalVolumeUSD
-    totalLiquidityUSD
-    __typename
-  }
-}
-`
-const historicalQuery = gql`
-query pancakeDayDatas {
-pancakeDayDatas(
-  first: 1000
-  orderBy: date
-  orderDirection: asc
-  ) {
-    date
-    dailyVolumeUSD
-    totalLiquidityUSD
-    __typename
-  }
-}
-`
-
-async function tvl(timestamp, ethBlock, chainBlocks) {
-  if (Math.abs(timestamp - Date.now() / 1000) < 3600) {
-    const tvl = await request(graphEndpoint, currentQuery)
-    return toUSDTBalances(tvl.pancakeFactories[0].totalLiquidityUSD)
-  } else {
-    const tvl = (await request(graphEndpoint, historicalQuery)).pancakeDayDatas
-    let closest = tvl[0]
-    tvl.forEach(dayTvl => {
-      if (Math.abs(dayTvl.date - timestamp) < Math.abs(closest.date - timestamp)) {
-        closest = dayTvl
-      }
-    })
-    return toUSDTBalances(closest.totalLiquidityUSD)
-  }
-}
 const factory = "0x632F04bd6c9516246c2df373032ABb14159537cd"
 
 const corisToken = '0x2a2cd8b1f69eb9dda5d703b3498d97080c2f194f'

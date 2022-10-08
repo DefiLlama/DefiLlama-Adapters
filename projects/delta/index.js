@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const erc20 = require("../helper/abis/erc20.json");
 const BigNumber = require("bignumber.js");
 const { staking } = require("../helper/staking");
 
@@ -27,7 +26,7 @@ async function Pool2(timestamp, block) {
 
   const balance_slp = (
     await sdk.api.abi.call({
-      abi: erc20.balanceOf,
+      abi: 'erc20:balanceOf',
       target: DELTA_WETH_SLP,
       params: rebasingContract,
       block
@@ -36,7 +35,7 @@ async function Pool2(timestamp, block) {
 
   const balance_rlp = (
     await sdk.api.abi.call({
-      abi: erc20.balanceOf,
+      abi: 'erc20:balanceOf',
       target: rebasingContract,
       params: vaultStakingContract,
       block
@@ -49,7 +48,7 @@ async function Pool2(timestamp, block) {
         target: token,
         params: DELTA_WETH_SLP,
       })),
-      abi: erc20.balanceOf,
+      abi: 'erc20:balanceOf',
       block
     })
   ).output;

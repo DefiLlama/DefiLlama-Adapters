@@ -1,6 +1,7 @@
 const retry = require("./helper/retry");
 const axios = require("axios");
 const { toUSDTBalances } = require("./helper/balances");
+const { getTokenBalance } = require("./helper/solana");
 
 async function fetch() {
   const response = (
@@ -15,13 +16,9 @@ async function fetch() {
 }
 
 async function fetchStaking() {
-  const response = (
-    await retry(async (bail) => await axios.get("https://api.cropper.finance/staking/"))
-  ).data;
-
-  const stakingTvl = response.value
-
-  return toUSDTBalances(stakingTvl);
+  return {
+    cropperfinance: await getTokenBalance('DubwWZNWiNGMMeeQHPnMATNj77YZPZSAz2WVR5WjLJqz', '5mEH7a7abQwUEXqfusVepc3z9cHVQg8uhqTXdq47J91o')
+  };
 }
 
 module.exports = {

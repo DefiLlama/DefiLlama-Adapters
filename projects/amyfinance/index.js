@@ -1,6 +1,5 @@
 const { sumTokensAndLPsSharedOwners } = require('../helper/unwrapLPs');
 const { transformArbitrumAddress } = require('../helper/portedTokens');
-const { getBlock } = require('../helper/getBlock');
 
 const tokens = [
     ["0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8", false], //USDC
@@ -25,8 +24,7 @@ const aibContracts = [
     "0x52444Aa321dfD7b24aA263Af6F7DCC26565f3629", //aibSUSHI
 ];
 
-async function tvl(timestamp, ethBlock, chainBlocks) {
-    const block = await getBlock(timestamp, "arbitrum", chainBlocks);
+async function tvl(timestamp, ethBlock, {arbitrum: block}) {
     let balances = {};
     const transformAdress = await transformArbitrumAddress();
 
@@ -36,5 +34,5 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 }
 
 module.exports = {
-    tvl,
+    arbitrum: { tvl, }
 }

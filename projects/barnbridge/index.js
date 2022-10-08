@@ -9,7 +9,10 @@ const syPoolAPIs = {
 const saPoolAPIs = {
     'ethereum': 'https://api-v2.barnbridge.com/api/smartalpha/pools',
     'polygon': 'https://prod-poly-v2.api.barnbridge.com/api/smartalpha/pools',
-    'avax': 'https://prod-avalanche.api.barnbridge.com/api/smartalpha/pools'
+    'avax': 'https://prod-avalanche.api.barnbridge.com/api/smartalpha/pools',
+    'arbitrum': 'https://prod-arbitrum.api.barnbridge.com/api/smartalpha/pools',
+    'optimism': 'https://prod-optimistic.api.barnbridge.com/api/smartalpha/pools',
+    'bsc': 'https://prod-bsc.api.barnbridge.com/api/smartalpha/pools',
 }
 
 const STK_AAVE_ADDRESS = '0x4da27a545c0c5b758a6ba100e3a049001de870f5';
@@ -182,6 +185,19 @@ async function polygonTvl(timestamp, block, chainBlocks) {
 async function avaxTvl(timestamp, block, chainBlocks) {
     return tvl('avax', chainBlocks['avax'])
 }
+
+async function arbitrumTvl(timestamp, block, chainBlocks) {
+    return tvl('arbitrum', chainBlocks['arbitrum'])
+}
+
+async function optimismTvl(timestamp, block, chainBlocks) {
+    return tvl('optimism', chainBlocks['optimism'])
+}
+
+async function bscTvl(timestamp, block, chainBlocks) {
+    return tvl('bsc', chainBlocks['bsc'])
+}
+
 module.exports = {
     start: 1615564559, // Mar-24-2021 02:17:40 PM +UTC
     doublecounted: true,
@@ -193,7 +209,16 @@ module.exports = {
     polygon: {
         tvl: polygonTvl
     },
-    avalanche: {
+    arbitrum: {
+        tvl: arbitrumTvl
+    },
+    optimism: {
+        tvl: optimismTvl
+    },
+    bsc: {
+        tvl: bscTvl
+    },
+    avax:{
         tvl: avaxTvl
     },
 };

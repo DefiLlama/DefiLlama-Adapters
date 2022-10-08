@@ -1,4 +1,5 @@
 const {calculateUniTvl} = require('../helper/calculateUniTvl.js')
+const {getUniTVL} = require('../helper/unknownTokens')
 
 const FACTORY = '0x115934131916c8b277dd010ee02de363c09d037c';
 
@@ -9,7 +10,12 @@ async function tvl(_, ethBlock, chainBlocks) {
 };
 
 module.exports = {
+  misrepresentedTokens: true,
   ethereum: {
-    tvl
+    tvl: getUniTVL({
+      factory: FACTORY,
+      chain: 'ethereum',
+      useDefaultCoreAssets: true,
+    })
   }
 }; 

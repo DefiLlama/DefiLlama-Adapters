@@ -1,7 +1,6 @@
 const oxLensAbi = require("./oxLens.json");
 const solidlyLensAbi = require("./solidlyLens.json");
 const veAbi = require("./ve.json");
-const erc20Abi = require("./erc20.json");
 const partnerRewardsPoolAddress = "0xDA006E87DB89e1C5213D4bfBa771e53c91D920aC";
 const oxdV1RewardsPoolAddress = "0xDA000779663501df3C9Bc308E7cEc70cE6F04211";
 const oxSolidRewardPoolAddress = "0xDA0067ec0925eBD6D583553139587522310Bec60";
@@ -176,19 +175,19 @@ async function tvl(time, ethBlock, chainBlocks) {
         block,
         chain: 'fantom',
         target: oxdV1RewardsPoolAddress,
-        abi: erc20Abi.find(i => i.name === 'totalSupply')
+        abi: 'erc20:totalSupply'
     })
     const { output: oxSolidRewardsPoolBalance } = await sdk.api.abi.call({
         block,
         chain: 'fantom',
         target: oxSolidRewardPoolAddress,
-        abi: erc20Abi.find(i => i.name === 'totalSupply')
+        abi: 'erc20:totalSupply'
     })
     const { output: partnerRewardsPoolBalance } = await sdk.api.abi.call({
         block,
         chain: 'fantom',
         target: partnerRewardsPoolAddress,
-        abi: erc20Abi.find(i => i.name === 'totalSupply')
+        abi: 'erc20:totalSupply'
     })
 
     addBalance(oxSolidAddress, oxdV1RewardsPoolBalance);
@@ -201,7 +200,7 @@ async function tvl(time, ethBlock, chainBlocks) {
         chain: 'fantom',
         target: oxdAddress,
         params: vlOxdAddress,
-        abi: erc20Abi.find(i => i.name === 'balanceOf')
+        abi: 'erc20:balanceOf'
     })
     addBalance(oxdAddress, voteLockedOxdBalance);
 

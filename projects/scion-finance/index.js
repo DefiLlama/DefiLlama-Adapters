@@ -19,7 +19,7 @@ async function getVaultBalance(timestamp, chainBlocks, chain) {
       block,
     });
 
-    await sdk.util.sumSingleBalance(balances, UNDERLYING, totalHoldings.output);
+    sdk.util.sumSingleBalance(balances, UNDERLYING, totalHoldings.output);
   }
 
   return balances;

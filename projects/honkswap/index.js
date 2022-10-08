@@ -17,4 +17,4 @@ module.exports = {
       "bitcoin-cash"
     )
   }
-};
+}

@@ -35,7 +35,9 @@ async function tvl(ts, block) {
     block,
   });
   const tokensAndOwners = [];
-  tokens.map((t, index) =>
+  tokens
+  .filter(t => t.output)
+  .map((t, index) =>
     t.output.forEach((token) => tokensAndOwners.push([token, dynasets[index]]))
   );
   await sumTokens(balances, tokensAndOwners, block);

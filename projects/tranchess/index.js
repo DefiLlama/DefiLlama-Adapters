@@ -10,6 +10,19 @@ const funds = new Map([
   ['0x629d4562033e432B390d0808B54A82B0C4A0896B', true ],  // BNB
 ]);
 
+const v2Funds = [
+  '0x2f40c245c66C5219e0615571a526C93883B456BB',  // BTC V2 Fund
+  '0x1F18cC2b50575A71dD2EbF58793d4e661a7Ba0e0',  // ETH V2 Fund
+  '0x7618f37EfE8930d5EE6da34185b3AbB750BD2a34',  // BNB V2 Fund
+]
+
+const v2Swaps = [
+  '0x999DB223F0807B164b783eE33d48782cc6E06742',  // BTC V2 BISHOP Swap
+  '0x87585A84E0A04b96e653de3DDA77a3Cb1fdf5B6a',  // ETH V2 BISHOP Swap
+  '0x56118E49582A8FfA8e7309c58E9Cd8A7e2dDAa37',  // BNB V2 BISHOP Swap
+  '0xfcF44D5EB5C4A03D03CF5B567C7CDe9B66Ba5773',  // BNB V2 QUEEN Swap
+]
+
 function getBSCAddress(address) {
   return `bsc:${address}`
 }
@@ -69,6 +82,44 @@ async function bsc(timestamp, blockETH, chainBlocks){
     }
 
     sdk.util.sumSingleBalance(balances, getBSCAddress(tokenUnderlying), underlyingInFund)
+  }
+
+  // ------------------------------------------- V2 ------------------------------------------------
+
+  for (const fund of v2Funds) {
+    const tokenUnderlying = (await sdk.api.abi.call({
+      target: fund,
+      abi: abi.tokenUnderlying,
+      chain: 'bsc',
+      block: chainBlocks["bsc"]
+    })).output
+
+    const underlyingInFund = (await sdk.api.abi.call({
+      target: fund,
+      abi: abi.getTotalUnderlying,
+      chain: 'bsc',
+      block: chainBlocks["bsc"]
+    })).output
+
+    sdk.util.sumSingleBalance(balances, getBSCAddress(tokenUnderlying), underlyingInFund)
+  }
+
+  for (const swap of v2Swaps) {
+    const quoteAddress = (await sdk.api.abi.call({
+      target: swap,
+      abi: abi.quoteAddress,
+      chain: 'bsc',
+      block: chainBlocks["bsc"]
+    })).output
+
+    const balancesInSwap = (await sdk.api.abi.call({
+      target: swap,
+      abi: abi.allBalances,
+      chain: 'bsc',
+      block: chainBlocks["bsc"]
+    })).output
+
+    sdk.util.sumSingleBalance(balances, getBSCAddress(quoteAddress), balancesInSwap[1])
   }
   
   return balances

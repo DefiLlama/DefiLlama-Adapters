@@ -1,5 +1,4 @@
 const sdk = require('@defillama/sdk');
-const { getBlock } = require('../helper/getBlock');
 const { calculateUsdUniTvl } = require('../helper/getUsdUniTvl')
 const { stakingPricedLP } = require('../helper/staking')
 
@@ -12,8 +11,7 @@ const EBEN_WBCH_LP = "0x0D4372aCc0503Fbcc7EB129e0De3283c348B82c3";
 const COREASSETNAME = "bitcoin-cash";
 const CHAIN = "smartbch";
 
-async function bchMasterChef(timestamp, ethBlock, chainBlocks) {
-    const block = await getBlock(timestamp, CHAIN, chainBlocks, true);
+async function bchMasterChef(timestamp, ethBlock, {[CHAIN]: block}) {
 
     const stakedBCH = (await sdk.api.erc20.balanceOf({
         target: WBCH,

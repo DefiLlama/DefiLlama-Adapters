@@ -110,7 +110,7 @@ function pool2(chain) {
 
 module.exports = {
 	start: 1619654324,        // Apr-28-2021 23:58:44 PM +UTC
-	avalanche: {
+	avax:{
 		staking: staking("avax"),
 		pool2: pool2("avax"),
 	},
