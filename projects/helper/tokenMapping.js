@@ -562,6 +562,7 @@ const fixBalancesTokens = {
     "linear-protocol.near": { coingeckoId: "linear-protocol", decimals: 24 },
     "token.pembrock.near": { coingeckoId: "pembrock", decimals: 18 },
     "token.burrow.near": { coingeckoId: "burrow", decimals: 18 },
+    "token.marmaj.near": { coingeckoId: "marmaj", decimals: 18 },
   },
   cronos: {
     "0x0000000000000000000000000000000000000000": { coingeckoId: "crypto-com-chain", decimals: 18, },
