@@ -41,7 +41,15 @@ export enum CHAIN {
   GODWOKEN = "godwoken",
   GODWOKEN_V1 = "godwoken_v1",
   FUSE = "fuse",
-  SX = "sx"
+  SX = "sx",
+  ELROND = "elrond",
+  DEFICHAIN = "defichain",
+  CUBE = "cube",
+  STACKS = "stacks",
+  STEP = "step",
+  SYSCOIN = "syscoin",
+  CRONOS = "cronos",
+  VISION = "vision"
 }
 
 // Don´t use

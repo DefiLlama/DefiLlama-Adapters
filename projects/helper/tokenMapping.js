@@ -352,7 +352,8 @@ const transformTokens = {
     "0x41eAFC40CD5Cb904157A10158F73fF2824dC1339": "0x6B175474E89094C44Da98b954EedeAC495271d0F", // DAI
     "0xab58DA63DFDd6B97EAaB3C94165Ef6f43d951fb2": "0xdAC17F958D2ee523a2206206994597C13D831ec7", // USDT
     "0x5a955FDdF055F2dE3281d99718f5f1531744B102": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // USDC
-    "0x48AEB7584BA26D3791f06fBA360dB435B3d7A174": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599" // WBTC
+    "0x48AEB7584BA26D3791f06fBA360dB435B3d7A174": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599", // WBTC
+    "0x42110A5133F91B49E32B671Db86E2C44Edc13832": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // sUSDC(Milkomeda) -> USDC
   },
   bittorrent: {
     "0xdb28719f7f938507dbfe4f0eae55668903d34a15": "0xdac17f958d2ee523a2206206994597c13d831ec7", // USDT
@@ -847,6 +848,8 @@ const fixBalancesTokens = {
     "0x7b2B3C5308ab5b2a1d9a94d20D35CCDf61e05b72": { coingeckoId: "flex-usd", decimals: 18 },
     "0x24d8d5Cbc14FA6A740c3375733f0287188F8dF3b": { coingeckoId: "tropical-finance", decimals: 18 },
     "0xBc2F884680c95A02cea099dA2F524b366d9028Ba": { coingeckoId: "tether", decimals: 18 },
+    "0x265bD28d79400D55a1665707Fa14A72978FA6043": { coingeckoId: "cashcats", decimals: 2 },
+    "0x9192940099fDB2338B928DE2cad9Cd1525fEa881": { coingeckoId: "bchpad", decimals: 18 },
   },
   palm: {
     "0x4c1f6fcbd233241bf2f4d02811e3bf8429bc27b8": { coingeckoId: "dai", decimals: 18 },
@@ -950,6 +953,14 @@ const fixBalancesTokens = {
   ethpow: {
     [nullAddress]: { coingeckoId: "ethereum-pow-iou", decimals: 18 },
     '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2': { coingeckoId: "ethereum-pow-iou", decimals: 18 },
+    '0x7bf88d2c0e32de92cdaf2d43ccdc23e8edfd5990': { coingeckoId: "ethereum-pow-iou", decimals: 18 },
+
+    // Multichain
+    '0x11bbB41B3E8baf7f75773DB7428d5AcEe25FEC75': { coingeckoId: "usd-coin", decimals: 6 },
+    '0x8a496486f4c7cb840555bc2be327cba1447027c3': { coingeckoId: "tether", decimals: 6 },
+    '0x5df101f56ea643e06066392d266e9f4366b9186d': { coingeckoId: "wrapped-bitcoin", decimals: 8 },
+    '0xaf3ccfd9b59b36628cc2f659a09d6440795b2520': { coingeckoId: "ethereum", decimals: 18 },
+    '0x312b15d6d531ea0fe91ddd212db8c0f37e4cc698': { coingeckoId: "dai", decimals: 18 },
   },
   xdc: {
     '0xD4B5f10D61916Bd6E0860144a91Ac658dE8a1437': { coingeckoId: "tether", decimals: 6 },

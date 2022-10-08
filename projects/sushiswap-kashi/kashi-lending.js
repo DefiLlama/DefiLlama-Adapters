@@ -1,5 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { request, gql } = require("graphql-request");
+const { getBlock } = require('../helper/getBlock')
 const { getChainTransform } = require("../helper/portedTokens");
 const { BigNumber } = require("ethers");
 
@@ -56,12 +57,13 @@ function kashiLending(chain, borrowed) {
   return async (timestamp, ethBlock, chainBlocks) => {
     const balances = {};
     const graphUrl = graphUrls[chain];
-    const block = chainBlocks[chain] - 100; //subgraphs can be late by few seconds/minutes
+    const block = await getBlock(timestamp, chain, chainBlocks)
+    const blockSubGraph = block - 100; //subgraphs can be late by few seconds/minutes
     const transform = await getChainTransform(chain);
 
     // Query graphql endpoint
     const { kashiPairs } = await request(graphUrl, kashiQuery, {
-      block,
+      block: blockSubGraph,
     });
 
     await Promise.all(
