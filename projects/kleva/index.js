@@ -1,41 +1,111 @@
+const sdk = require("@defillama/sdk")
 const retry = require('async-retry')
-const axios = require("axios");
-const BigNumber = require("bignumber.js");
-const { toUSDTBalances } = require('../helper/balances');
+const axios = require("axios")
+const BigNumber = require("bignumber.js")
 
-async function retryFetch(url, fallbackData) {
-  return await retry(async bail => {
-    try {
-      const result = await axios.get(url)
-      return result.data
-    } catch (e) {
-      return fallbackData
-    }
+const { userInfos } = require('./FairLaunch')
+const { getTotalToken } = require('./IbToken')
+
+const { toUSDTBalances } = require('../helper/balances')
+
+const chain = 'klaytn'
+const TOKEN_PRICE_QUERY_URL = "https://api.kltalchemy.com/klay/ksInfo"
+const WORKERS_QUERY_URL = "https://kleva.io/static/data.json"
+
+async function getWorkers() {
+  const { data } = await retry(async bail => await axios.get(WORKERS_QUERY_URL))
+  return data
+}
+
+// Fetch token & lp token prices
+async function getTokenPrice() {
+  const { data: tokenInfo } = await retry(async bail => await axios.get(TOKEN_PRICE_QUERY_URL))
+  return {
+    klayPrice: tokenInfo.klayPrice,
+    ["0x" + "0".repeat(40)]: tokenInfo.klayPrice,
+    ...tokenInfo.priceOutput
+  }
+}
+
+// Fetch farm list
+// - multicall 'userInfos' on FairLaunch contract with lpPoolId & workerAddress
+async function getFarmingTVL(data, tokenPrice) {
+
+  const calls = Object.entries(data.workerInfo).map(([workerAddress, item]) => ({
+    target: data.address.FAIRLAUNCH,
+    params: [item.lpPoolId, workerAddress]
+  }))
+
+  const { output: farmResult } = await sdk.api.abi.multiCall({
+    chain,
+    calls,
+    abi: userInfos,
+    requery: true,
   })
+
+  const depositedPerWorker = farmResult.reduce((acc, { input, output }) => {
+    const workerAddress = input.params[1]
+    const worker = data.workerInfo[workerAddress]
+    const stakingToken = worker.lpToken
+
+    const depositedInUSD = new BigNumber(output.amount)
+      .div(10 ** stakingToken.decimals)
+      .multipliedBy(tokenPrice[stakingToken.address.toLowerCase()])
+      .toNumber()
+
+    acc[workerAddress] = depositedInUSD
+
+    return acc
+  }, {})
+
+  const farmingTVL = Object.values(depositedPerWorker).reduce((acc, cur) => acc += cur)
+
+  return farmingTVL
+}
+
+// Fetch lending pool(ibToken) list
+// - multicall 'getTotalToken' on ibToken contracts
+async function getLendingTVL(data, tokenPrice) {
+  const { output: lendingResult } = await sdk.api.abi.multiCall({
+    chain,
+    calls: data.lendingPools.map(({ vaultAddress }) => ({
+      target: vaultAddress,
+      params: []
+    })),
+    abi: getTotalToken,
+    requery: true,
+  })
+
+  const depositedPerLendingPool = lendingResult.reduce((acc, { input, output }, idx) => {
+    const lendingPool = data.lendingPools[idx]
+    const stakingToken = lendingPool.ibToken.originalToken
+
+    const depositedInUSD = new BigNumber(output)
+      .div(10 ** stakingToken.decimals)
+      .multipliedBy(tokenPrice[stakingToken.address.toLowerCase()])
+      .toNumber()
+
+    acc[lendingPool.vaultAddress] = depositedInUSD
+
+    return acc
+  }, {})
+
+  const lendingTVL = Object.values(depositedPerLendingPool).reduce((acc, cur) => acc += cur)
+
+  return lendingTVL
 }
 
 async function fetchLiquidity() {
+  const data = await getWorkers()
+  const tokenPrice = await getTokenPrice()
+  const lendingTVL = await getLendingTVL(data, tokenPrice)
+  const farmingTVL = await getFarmingTVL(data, tokenPrice)
 
-  const yesterday = new Date(Date.now() - 864e5)
-
-  const chartDate = `${new Date().getFullYear()}_${String(new Date().getMonth() + 1).padStart(2, "0")}_${String(new Date().getDate()).padStart(2, "0")}`
-  const chartBackupDate = `${new Date().getFullYear()}_${String(yesterday.getMonth() + 1).padStart(2, "0")}_${String(yesterday.getDate()).padStart(2, "0")}`
-
-  const CHART_FETCH_URL = `https://wt-mars-share.s3.ap-northeast-2.amazonaws.com/KLEVA_${chartDate}.json`
-  const CHART_BACKUP_FETCH_URL = `https://wt-mars-share.s3.ap-northeast-2.amazonaws.com/KLEVA_${chartBackupDate}.json`
-
-  const tvl_list_recent = await retryFetch(CHART_FETCH_URL, [{ total_tvl: 0 }])
-  const tvl_list_backup = await retryFetch(CHART_BACKUP_FETCH_URL, [{ total_tvl: 0 }])
-
-  const tvl_recent = tvl_list_recent[tvl_list_recent.length - 1]
-  const tvl_backup = tvl_list_backup[tvl_list_backup.length - 1]
-
-  return toUSDTBalances(tvl_recent.total_tvl || tvl_backup.total_tvl)
+  const totalTVL = new BigNumber(farmingTVL).plus(lendingTVL).toNumber()
+  return toUSDTBalances(totalTVL)
 }
 
 module.exports = {
-  klaytn: {
-    tvl: fetchLiquidity,
-  },
+  klaytn: { tvl: fetchLiquidity },
   timetravel: false,
 }
