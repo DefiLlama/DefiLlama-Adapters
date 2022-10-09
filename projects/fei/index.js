@@ -69,7 +69,7 @@ async function tvl(timestamp, block) {
 
 module.exports = {
   timetravel: true,
-  tvl
+  ethereum: { tvl },
 };
 module.exports.hallmarks = [
   [1651325520, "Exploit $80M FEI"],

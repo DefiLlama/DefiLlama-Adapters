@@ -256,7 +256,7 @@ function checkExportKeys(module, filePath, chains) {
     || (filePath.length === 2 && !['api.js', 'index.js'].includes(filePath[1])))  // matches .../projects/projectXYZ/index.js
     process.exit(0)
 
-  const blacklistedRootExportKeys = ['tvl', 'staking', 'pool2', 'borrowed', 'treasury'];
+  const blacklistedRootExportKeys = ['tvl', 'staking', 'pool2', 'borrowed', 'treasury', 'offers', 'vesting'];
   const rootexportKeys = Object.keys(module).filter(item => typeof module[item] !== 'object');
   const unknownChains = chains.filter(chain => !chainList.includes(chain));
   const blacklistedKeysFound = rootexportKeys.filter(key => blacklistedRootExportKeys.includes(key));

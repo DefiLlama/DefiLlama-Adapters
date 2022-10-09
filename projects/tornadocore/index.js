@@ -43,7 +43,7 @@ module.exports = {
       WMATIC_TCORE_UNIV2_polygon,
       "polygon"
     ),
+    tvl: (async) => ({}),
   },
-  tvl: (async) => ({}),
   methodology: "Counts liquidty on the staking and pool2 only",
 };

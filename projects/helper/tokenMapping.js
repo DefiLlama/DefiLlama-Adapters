@@ -282,11 +282,9 @@ const transformTokens = {
   },
   oasis: {
     "0x3223f17957ba502cbe71401d55a0db26e5f7c68f": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", //WETH
-    "0xe8a638b3b7565ee7c5eb9755e58552afc87b94dd": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USDC
     "0x4bf769b05e832fcdc9053fffbc78ca889acb5e1e": "0xdac17f958d2ee523a2206206994597c13d831ec7", // USDT
     "0x6cb9750a92643382e020ea9a170abb83df05f30b": "0xdac17f958d2ee523a2206206994597c13d831ec7", // USDT
     "0xdc19a122e268128b5ee20366299fc7b5b199c8e3": "0xdac17f958d2ee523a2206206994597c13d831ec7", // USDT wormhole
-    "0x81ecac0d6be0550a00ff064a4f9dd2400585fe9c": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USDC celer
     "0x94fbffe5698db6f54d6ca524dbe673a7729014be": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USDC
     "0x80a16016cc4a2e6a2caca8a4a498b1699ff0f844": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48" // USDC
     //'0x21c718c22d52d0f3a789b752d4c2fd5908a8a733': 'wrapped-rose',
@@ -549,6 +547,8 @@ const fixBalancesTokens = {
     "0x3223f17957Ba502cbe71401D55A0DB26E5F7c68F": { coingeckoId: "ethereum", decimals: 18, },
     "0x6aB6d61428fde76768D7b45D8BFeec19c6eF91A8": { coingeckoId: "tether", decimals: 6, },
     "0x80A16016cC4A2E6a2CACA8a4a498b1699fF0f844": { coingeckoId: "usd-coin", decimals: 6, },
+    "0xe8a638b3b7565ee7c5eb9755e58552afc87b94dd": { coingeckoId: "usd-coin", decimals: 6, },
+    "0x81ecac0d6be0550a00ff064a4f9dd2400585fe9c": { coingeckoId: "usd-coin", decimals: 6, }, // USDC celer
   },
   celo: {
     "0x7d00cd74ff385c955ea3d79e47bf06bd7386387d": { coingeckoId: "mcelo", decimals: 18, },
@@ -655,9 +655,14 @@ const fixBalancesTokens = {
   elastos: {
     [nullAddress]: { coingeckoId: "elastos", decimals: 18 },
     "0x517e9e5d46c1ea8ab6f78677d6114ef47f71f6c4": { coingeckoId: "elastos", decimals: 18 },
+    "0x9f1d0ed4e041c503bd487e5dc9fc935ab57f9a57": { coingeckoId: "binance-usd", decimals: 18 },
   },
   energyweb: {
     "0x6b3bd0478DF0eC4984b168Db0E12A539Cc0c83cd": { coingeckoId: "energy-web-token", decimals: 18 },
+  },
+  milkomeda: {
+    "0xAE83571000aF4499798d1e3b0fA0070EB3A3E3F9": { coingeckoId: "cardano", decimals: 18 },
+    "0x4bf769b05e832fcdc9053fffbc78ca889acb5e1e": { coingeckoId: "binance-usd", decimals: 18 },
   },
   ultron: {
     [nullAddress]: { coingeckoId: "ultron", decimals: 18 },
