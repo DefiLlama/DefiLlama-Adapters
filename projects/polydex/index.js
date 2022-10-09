@@ -12,5 +12,5 @@ async function tvl(_, ethBlock, chainBlocks) {
 };
 
 module.exports = {
-  tvl
+  polygon: { tvl }
 };
