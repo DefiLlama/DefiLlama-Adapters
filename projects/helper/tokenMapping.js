@@ -1010,6 +1010,7 @@ const fixBalancesTokens = {
   ethpow: {
     [nullAddress]: { coingeckoId: "ethereum-pow-iou", decimals: 18 },
     '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2': { coingeckoId: "ethereum-pow-iou", decimals: 18 },
+    '0x0c9f28FBdFd79f7C00B805d8c63D053c146d282c': { coingeckoId: "billionhappiness", decimals: 18 },
     '0x7bf88d2c0e32de92cdaf2d43ccdc23e8edfd5990': { coingeckoId: "ethereum-pow-iou", decimals: 18 },
 
     // Multichain
