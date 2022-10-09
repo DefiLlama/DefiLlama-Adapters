@@ -98,7 +98,7 @@ const optimismTvl = async (chainBlocks) => {
 };
 
 module.exports = {
-    avalanche: { tvl: avaxTVL },
+    avax: { tvl: avaxTVL },
     polygon: { tvl: polygonTvl },
     optimism: { tvl: optimismTvl },
     methodology: "we only count tokens deposited in the yolo contract",
