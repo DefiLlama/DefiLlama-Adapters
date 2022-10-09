@@ -29,9 +29,12 @@ function stakings(stakingContracts, stakingToken, chain = "ethereum", transforme
                 [address]: Number(bal) / (10 ** decimals)
             }
         }
-        return {
+        const balances = {
             [address]: bal
         }
+        const fixBalances = await getFixBalances(chain)
+        fixBalances(balances)
+        return balances
     }
 }
 
@@ -73,10 +76,8 @@ function stakingUnknownPricedLP(stakingContract, stakingToken, chain, lpContract
             [transform(token)]: stakedBal
         }
 
-        if (['klaytn', 'kava'].includes(chain)) {
-            const fixBalances = await getFixBalances(chain)
-            fixBalances(balances)
-        }
+        const fixBalances = await getFixBalances(chain)
+        fixBalances(balances)
 
         return balances
     }
