@@ -1,15 +1,15 @@
 const sdk = require("@defillama/sdk")
 const retry = require('async-retry')
 const axios = require("axios")
-const BigNumber = require("bignumber.js")
 
 const { userInfos } = require('./FairLaunch')
-const { getTotalToken } = require('./IbToken')
 
-const { toUSDTBalances } = require('../helper/balances')
+const { sumTokens2 } = require('../helper/unwrapLPs')
+const { getChainTransform, getFixBalances } = require('../helper/portedTokens')
+const { getTokenPrices } = require('../helper/unknownTokens')
 
 const chain = 'klaytn'
-const TOKEN_PRICE_QUERY_URL = "https://api.kltalchemy.com/klay/ksInfo"
+// const TOKEN_PRICE_QUERY_URL = "https://api.kltalchemy.com/klay/ksInfo"
 const WORKERS_QUERY_URL = "https://kleva.io/static/data.json"
 
 async function getWorkers() {
@@ -17,19 +17,14 @@ async function getWorkers() {
   return data
 }
 
-// Fetch token & lp token prices
-async function getTokenPrice() {
-  const { data: tokenInfo } = await retry(async bail => await axios.get(TOKEN_PRICE_QUERY_URL))
-  return {
-    klayPrice: tokenInfo.klayPrice,
-    ["0x" + "0".repeat(40)]: tokenInfo.klayPrice,
-    ...tokenInfo.priceOutput
-  }
-}
 
 // Fetch farm list
 // - multicall 'userInfos' on FairLaunch contract with lpPoolId & workerAddress
-async function getFarmingTVL(data, tokenPrice) {
+async function getFarmingTVL(data, balances,) {
+  const transform = await getChainTransform(chain)
+  const fixBalances = await getFixBalances(chain)
+  const balancesTemp = {}
+  const lps = []
 
   const calls = Object.entries(data.workerInfo).map(([workerAddress, item]) => ({
     target: data.address.FAIRLAUNCH,
@@ -43,69 +38,39 @@ async function getFarmingTVL(data, tokenPrice) {
     requery: true,
   })
 
-  const depositedPerWorker = farmResult.reduce((acc, { input, output }) => {
+  farmResult.forEach(({ input, output }) => {
     const workerAddress = input.params[1]
     const worker = data.workerInfo[workerAddress]
     const stakingToken = worker.lpToken
+    sdk.util.sumSingleBalance(balancesTemp, transform(stakingToken.address), output.amount)
+    lps.push(stakingToken.address)
+  })
 
-    const depositedInUSD = new BigNumber(output.amount)
-      .div(10 ** stakingToken.decimals)
-      .multipliedBy(tokenPrice[stakingToken.address.toLowerCase()])
-      .toNumber()
+  const { updateBalances } = await getTokenPrices({ chain, lps, })
 
-    acc[workerAddress] = depositedInUSD
+  await updateBalances(balancesTemp)
 
-    return acc
-  }, {})
+  await fixBalances(balancesTemp)
+  Object.entries(balancesTemp).forEach(([token, value]) => sdk.util.sumSingleBalance(balances, token, value))
 
-  const farmingTVL = Object.values(depositedPerWorker).reduce((acc, cur) => acc += cur)
-
-  return farmingTVL
+  return balances
 }
 
 // Fetch lending pool(ibToken) list
 // - multicall 'getTotalToken' on ibToken contracts
-async function getLendingTVL(data, tokenPrice) {
-  const { output: lendingResult } = await sdk.api.abi.multiCall({
-    chain,
-    calls: data.lendingPools.map(({ vaultAddress }) => ({
-      target: vaultAddress,
-      params: []
-    })),
-    abi: getTotalToken,
-    requery: true,
-  })
-
-  const depositedPerLendingPool = lendingResult.reduce((acc, { input, output }, idx) => {
-    const lendingPool = data.lendingPools[idx]
-    const stakingToken = lendingPool.ibToken.originalToken
-
-    const depositedInUSD = new BigNumber(output)
-      .div(10 ** stakingToken.decimals)
-      .multipliedBy(tokenPrice[stakingToken.address.toLowerCase()])
-      .toNumber()
-
-    acc[lendingPool.vaultAddress] = depositedInUSD
-
-    return acc
-  }, {})
-
-  const lendingTVL = Object.values(depositedPerLendingPool).reduce((acc, cur) => acc += cur)
-
-  return lendingTVL
+async function getLendingTVL(data) {
+  const tokensAndOwners = data.lendingPools.map(({ vaultAddress, ibToken: { originalToken }}) => ([originalToken.address, vaultAddress]))
+  return sumTokens2({ chain, tokensAndOwners })
 }
 
 async function fetchLiquidity() {
   const data = await getWorkers()
-  const tokenPrice = await getTokenPrice()
-  const lendingTVL = await getLendingTVL(data, tokenPrice)
-  const farmingTVL = await getFarmingTVL(data, tokenPrice)
-
-  const totalTVL = new BigNumber(farmingTVL).plus(lendingTVL).toNumber()
-  return toUSDTBalances(totalTVL)
+  const balances = await getLendingTVL(data)
+  return getFarmingTVL(data, balances)
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   klaytn: { tvl: fetchLiquidity },
   timetravel: false,
 }
