@@ -86,7 +86,7 @@ async function tvl(timestamp, block) {
     }
   }
 
-  return sumTokens2({ block, tokensAndOwners: toa, resolveLP: true })
+  return sumTokens2({ block, tokensAndOwners: toa })
 }
 
 module.exports = {

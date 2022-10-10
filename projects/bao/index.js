@@ -31,7 +31,7 @@ async function getTvl(chain, block, ethBlock) {
   })
   tokens.forEach(t => toa.push([t.output[0], owner]))
   if (chain !== 'xdai') {
-    return sumTokens({}, toa, block, chain, undefined, { resolveLP: true })
+    return sumTokens({}, toa, block, chain)
   }
 
   const balances = {}
