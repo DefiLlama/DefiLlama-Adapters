@@ -10,7 +10,6 @@ const endpoints = {
   [CHAIN.ETHEREUM]: "https://api.thegraph.com/subgraphs/name/templedao/templedao-core"
 };
 
-
 const VOLUME_FIELD = "volumeUSD";
 const graphs = getChainVolume({
   graphUrls: endpoints,
