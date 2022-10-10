@@ -17,7 +17,7 @@ const ftmLPs = [
 
 async function pool2(timestamp, _b, { [chain]: block }) {
   return sumTokens2({
-    chain, block, owner: tshareRewardPoolAddress, tokens: ftmLPs, resolveLP: true,
+    chain, block, owner: tshareRewardPoolAddress, tokens: ftmLPs,
   })
 }
 
