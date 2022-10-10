@@ -1,11 +1,12 @@
 const axios = require("axios")
+const BigNumber = require("bignumber.js")
 
 const pactLpAddress = "CWELFRXFDWLRY6ZO6QET3AB7L3PKZD3KVDJWZULYIJYOARHUTAWN2LZT2Y"
 const goUsdBasketAddress = "SORHGFCFW4DMJRG33OBWQ5X5YQMRPHK3P5ITMBFMRCVNX74WAOOMLK32F4";
 const usdcId = 31566704;
 const goUsdId = 672913181;
 const usdcGoUsdLpId = 885102318;
-const usdcGoUsdLpSupply = 18446744073709551615;
+const usdcGoUsdLpSupply = BigNumber('18446744073709551615');
 
 
 async function getBasketBal(usdcId,usdcGoUsdLpId,goUsdBasketAddress) {
@@ -19,7 +20,6 @@ async function getBasketBal(usdcId,usdcGoUsdLpId,goUsdBasketAddress) {
     
     for( let i = 0; i < accountAssets.length; i++ ){
         let query = accountAssets[i]
-
         if(query["asset-id"] == usdcId){
             goUsdBasketUsdcBal = query["amount"]
         }
@@ -27,8 +27,8 @@ async function getBasketBal(usdcId,usdcGoUsdLpId,goUsdBasketAddress) {
             goUsdBasketLpBal = query["amount"]
         }
     }
-
-    return [goUsdBasketUsdcBal /= (10**6), goUsdBasketLpBal /= (10**6)]
+    return [BigNumber(goUsdBasketUsdcBal).dividedBy(1000000).toFixed(6), 
+        BigNumber(goUsdBasketLpBal).dividedBy(1000000).toFixed(6)]
 }
 
 async function getTotalCirculatingLP(usdcGoUsdLpSupply,pactLpAddress){
@@ -45,8 +45,8 @@ async function getTotalCirculatingLP(usdcGoUsdLpSupply,pactLpAddress){
             lpBalance = query["amount"]
         }
     }
-    
-    const totalCirculating = usdcGoUsdLpSupply - lpBalance
+
+    const totalCirculating = usdcGoUsdLpSupply.minus(lpBalance).toFixed()
     return totalCirculating
 }
 
@@ -70,8 +70,8 @@ async function lpRatio(totalCirc,usdcId,goUsdId,pactLpAddress){
         }   
     }
     
-    const usdcRatio = usdcBal / totalCirc
-    const goUsdRatio = goUsdBal / totalCirc
+    const usdcRatio = BigNumber(usdcBal).dividedBy(totalCirc).toFixed()
+    const goUsdRatio = BigNumber(goUsdBal).dividedBy(totalCirc).toFixed()
     return [usdcRatio, goUsdRatio]
 
 }
@@ -80,9 +80,9 @@ async function lpPosition(ratio,basketLpBal){
     
     const usdcRatio = ratio[0]
     const goUsdRatio = ratio[1]
-    const usdcPositon = basketLpBal * usdcRatio
-    const goUsdPostion = basketLpBal * goUsdRatio
-    const total = usdcPositon + goUsdPostion
+    const usdcPositon = BigNumber(basketLpBal).multipliedBy(usdcRatio).toFixed()
+    const goUsdPostion = BigNumber(basketLpBal).multipliedBy(goUsdRatio).toFixed()
+    const total = BigNumber(usdcPositon).plus(goUsdPostion).toFixed()
     return total
 
 }
@@ -96,7 +96,7 @@ async function tvl(){
     const totalCirc = await getTotalCirculatingLP(usdcGoUsdLpSupply, pactLpAddress)
     const ratio = await lpRatio(totalCirc,usdcId,goUsdId,pactLpAddress)
     const lpTotal = await lpPosition(ratio, basketLpBal)
-    const tvl = usdcBal + lpTotal
+    const tvl = BigNumber(usdcBal).plus(lpTotal).toFixed()
     return tvl
     
 }
