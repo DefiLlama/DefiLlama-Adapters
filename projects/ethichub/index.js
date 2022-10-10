@@ -35,7 +35,7 @@ const STAKED_SYMMETRIC_LP_CONTRACT = '0x359a3060A68488F0ea43D5cD8F6F53fe81A15f59
 // Bonds Celo
 const MINIMICE_CELO = '0x0f497a790429685a3CfD43b841865Ee185378ff0';
 
-async function tvlMainnet(timestamp, block) {
+async function tvlMainnet(timestamp, block, chainBlocks) {
   const balances = {};
 
   const collateralBalanceMainnet = (await sdk.api.abi.call({
@@ -43,23 +43,23 @@ async function tvlMainnet(timestamp, block) {
     chain: 'ethereum',
     target: ETHIX_TOKEN,
     params: [COLLATERAL_RESERVE_MAINNET],
-    block: block
+    block: chainBlocks['ethereum'],
   })).output;
-  await sdk.util.sumSingleBalance(balances, ETHIX_TOKEN, collateralBalanceMainnet);
+  sdk.util.sumSingleBalance(balances, ETHIX_TOKEN, collateralBalanceMainnet);
 
   const minimiceBalanceMainnet = (await sdk.api.abi.call({
     abi: 'erc20:balanceOf',
     chain: 'ethereum',
     target: ETHIX_TOKEN,
     params: [MINIMICE_ETH],
-    block: block
+    block: chainBlocks['ethereum'],
   })).output;
-  await sdk.util.sumSingleBalance(balances, ETHIX_TOKEN, minimiceBalanceMainnet);
+  sdk.util.sumSingleBalance(balances, ETHIX_TOKEN, minimiceBalanceMainnet);
 
   return balances;
 }
 
-async function tvlCelo(timestamp, block) {
+async function tvlCelo(timestamp, block, chainBlocks) {
   const balances = {};
   const transform = await transformCeloAddress();
 
@@ -68,44 +68,44 @@ async function tvlCelo(timestamp, block) {
     chain: 'celo',
     target: ETHIX_TOKEN_CELO,
     params: [COLLATERAL_RESERVE_CELO],
-    block: block
+    block: chainBlocks['celo'],
   })).output;
-  await sdk.util.sumSingleBalance(balances, transform(ETHIX_TOKEN_CELO), collateralBalanceCelo);
+  sdk.util.sumSingleBalance(balances, transform(ETHIX_TOKEN_CELO), collateralBalanceCelo);
 
   const minimiceBalanceCelo = (await sdk.api.abi.call({
     abi: 'erc20:balanceOf',
     chain: 'celo',
     target: ETHIX_TOKEN_CELO,
     params: [MINIMICE_CELO],
-    block: block
+    block: chainBlocks['celo'],
   })).output;
-  await sdk.util.sumSingleBalance(balances, transform(ETHIX_TOKEN_CELO), minimiceBalanceCelo);
+  sdk.util.sumSingleBalance(balances, transform(ETHIX_TOKEN_CELO), minimiceBalanceCelo);
 
   return balances;
 }
 
-async function poolsTvlMainnet(timestamp, block) {
+async function poolsTvlMainnet(timestamp, block, chainBlocks) {
   const balances = {};
   const lpMultisigBalance = (await sdk.api.erc20.balanceOf({
-    block: block,
+    block: chainBlocks['ethereum'],
     target: UNISWAP_LP_ETHIXWETH,
     owner: MULTISIG_ETHICHUB_MAINNET
   })).output;
-  await unwrapUniswapLPs(balances, [{ balance: lpMultisigBalance, token: UNISWAP_LP_ETHIXWETH }], block);
-  await unwrapBalancerToken({ block, owner:  MULTISIG_ETHICHUB_MAINNET, balancerToken: BALANCER_LP_ETHIXDAI, balances: balances });
+  await unwrapUniswapLPs(balances, [{ balance: lpMultisigBalance, token: UNISWAP_LP_ETHIXWETH }], chainBlocks['ethereum']);
+  await unwrapBalancerToken({ block: chainBlocks['ethereum'], owner:  MULTISIG_ETHICHUB_MAINNET, balancerToken: BALANCER_LP_ETHIXDAI, balances: balances });
   return balances;
 }
 
-async function poolsTvlCelo(timestamp, block) {
+async function poolsTvlCelo(timestamp, block, chainBlocks) {
   const balances = {};
   const lpMultisigBalance = (await sdk.api.erc20.balanceOf({
     chain: 'celo',
-    block: block,
+    block: chainBlocks['celo'],
     target: UBESWAP_LP_ETHIXCUSD,
     owner: MULTISIG_ETHICHUB_CELO
   })).output;
-  await unwrapUniswapLPs(balances, [{ balance: lpMultisigBalance, token: UBESWAP_LP_ETHIXCUSD }], block, 'celo');
-  await unwrapBalancerPool({ chain: 'celo', block, owner:  MULTISIG_ETHICHUB_CELO, balancerPool: SYMMETRIC_LP_ETHIXCELO, balances: balances });
+  await unwrapUniswapLPs(balances, [{ balance: lpMultisigBalance, token: UBESWAP_LP_ETHIXCUSD }], chainBlocks['celo'], 'celo');
+  await unwrapBalancerPool({ chain: 'celo', block: chainBlocks['celo'], owner:  MULTISIG_ETHICHUB_CELO, balancerPool: SYMMETRIC_LP_ETHIXCELO, balances: balances });
   return balances;
 }
 
@@ -138,7 +138,7 @@ module.exports = {
   celo: {
     tvl: tvlCelo,
     pool2: poolsTvlCelo,
-    staking: stakedCelo
+    //staking: stakedCelo
   },
   hallmarks:[
     [1608640694, "Ethix launch"],
