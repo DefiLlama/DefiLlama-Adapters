@@ -1,5 +1,4 @@
 const { staking } = require("../helper/staking");
-const { pool2s } = require("../helper/pool2");
 
 const stakingContracts = [
     "0x5E4935fe0f1f622bfc9521c0e098898e7b8b573c",
@@ -32,26 +31,10 @@ const pool2Lps_FL = [
     "0xeC314D972FC771EAe56EC5063A5282A554FD54a2"
 ];
 
-const Staking = async (...params) => {
-    for (const stakingContract of stakingContracts) {
-        return staking(stakingContract, FL)(...params);
-    }
-};
-
-const Pool2 = async (...params) => {
-    for (const stakingContract of [lpStakingContract_USDFL, lpStakingContract_FL]) {
-        if (stakingContract == lpStakingContract_FL) {
-            return pool2s([lpStakingContract_FL], pool2Lps_FL)(...params);
-        } else {
-            return pool2s([lpStakingContract_USDFL], pool2Lps_USDFL)(...params);
-        }
-    }
-};
-
 module.exports = {
     ethereum: {
-        staking: Staking,
-        pool2: Pool2,
+        staking: staking(stakingContracts, FL),
+        pool2: staking( [lpStakingContract_USDFL, lpStakingContract_FL], [...pool2Lps_USDFL, ...pool2Lps_FL]),
         tvl: async => ({})
     },
     methodology:

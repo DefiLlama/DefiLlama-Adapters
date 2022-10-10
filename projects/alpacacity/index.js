@@ -85,12 +85,12 @@ module.exports = {
         tvl: async => ({}),
         treasury: ethTreasury,
         staking: Staking,
-        pool2: pool2(farmContract, WETH_ALPA2_UNIV2),
+        pool2: staking(farmContract, WETH_ALPA2_UNIV2),
     },
     bsc: {
         treasury: bscTreasury,
         staking: staking(stakingContractBSC, ALPA_BSC, "bsc"),
-        pool2: pool2s(farmContractsBSC, lpPairContractsBSC, "bsc"),
+        pool2: staking(farmContractsBSC, lpPairContractsBSC, "bsc"),
     },
     methodology:
         "Counts liquidity on the Farms through AlpacaFarm Contracts; and there are Staking and Pool2 parts only. We export the comunity amount as Treasury Part",

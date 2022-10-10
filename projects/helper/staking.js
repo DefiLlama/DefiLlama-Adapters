@@ -16,8 +16,8 @@ function staking(stakingContract, stakingToken, chain = "ethereum", transformedT
 function stakings(stakingContracts, stakingToken, chain = "ethereum", transformedTokenAddress = undefined, decimals = undefined) {
     return async (timestamp, _ethBlock, {[chain]: block}) => {
         if (!Array.isArray(stakingToken))  stakingToken = [stakingToken]
-        let transformAddress = undefined
-        if (transformedTokenAddress) transformAddress = i => transformedTokenAddress
+        let transformAddress = transformedTokenAddress
+        if (typeof transformedTokenAddress === 'string') transformAddress = i => transformedTokenAddress
         const balances = await sumTokens2({ chain, block, tokens: stakingToken, owners: stakingContracts, transformAddress, })
         
         if (decimals) {
