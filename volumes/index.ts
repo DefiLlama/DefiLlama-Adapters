@@ -137,6 +137,7 @@ import wigoswap from "./adapters/wigoswap";
 import levinswap from "./adapters/levinswap";
 import templeDao from "./adapters/temple-dao";
 import karuraSwap from "./adapters/karura-swap";
+import sphynx from "./adapters/sphynx";
 
 export default {
   mooniswap,
@@ -275,6 +276,7 @@ export default {
   wigoswap,
   levinswap,
   "temple-dao": templeDao,
-  "karura-swap": karuraSwap
+  "karura-swap": karuraSwap,
+  sphynx
   // lyra -> OPTIONS DEX, not enable for now
 };
