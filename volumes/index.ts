@@ -134,6 +134,7 @@ import daoMaker from "./adapters/dao-swap";
 import jswap from "./adapters/jswap";
 import babydogeswap from "./adapters/babydogeswap";
 import wigoswap from "./adapters/wigoswap";
+import levinswap from "./adapters/levinswap";
 
 export default {
   mooniswap,
@@ -269,6 +270,7 @@ export default {
   "dao-swap": daoMaker,
   jswap,
   babydogeswap,
-  wigoswap
+  wigoswap,
+  levinswap
   // lyra -> OPTIONS DEX, not enable for now
 };
