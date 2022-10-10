@@ -119,7 +119,7 @@ async function stakedMainnet(timestamp, block, chainBlocks) {
 async function stakedCelo(timestamp, block, chainBlocks) {
   const stkSymmetricBalance = {}
   const stkUbeswapBalance = await pool2(STAKED_UBESWAP_LP_CONTRACT, UBESWAP_LP_ETHIXCUSD, 'celo')(timestamp, block, chainBlocks);
-  await unwrapBalancerPool({ chain: 'celo', block, owner:  STAKED_SYMMETRIC_LP_CONTRACT, balancerPool: SYMMETRIC_LP_ETHIXCELO, balances: stkSymmetricBalance });
+  await unwrapBalancerPool({ chain: 'celo', block: chainBlocks['celo'], owner:  STAKED_SYMMETRIC_LP_CONTRACT, balancerPool: SYMMETRIC_LP_ETHIXCELO, balances: stkSymmetricBalance });
   const stkETHIXBalance = await staking(STAKED_ETHIX_CELO, ETHIX_TOKEN_CELO, 'celo')(timestamp, block, chainBlocks);
   const balances = { ...stkUbeswapBalance, ...stkSymmetricBalance, ...stkETHIXBalance };
   return balances;
@@ -144,7 +144,7 @@ module.exports = {
   celo: {
     tvl: tvlCelo,
     pool2: poolsTvlCelo,
-    //staking: stakedCelo
+    staking: stakedCelo
   },
   hallmarks:[
     [1608640694, "Ethix launch"],
