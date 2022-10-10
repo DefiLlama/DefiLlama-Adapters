@@ -106,4 +106,12 @@ module.exports = {
   optimism: getV2TvlObject('optimism'),
   polygon: getV2TvlObject('polygon'),
   arbitrum: getV2TvlObject('arbitrum'),
+   hallmarks: [
+    [1638850958, "V2 Beta launch on Optimism"],
+    [1643602958, "V2 full launch"],
+    [1646367758, "Deployment on Polygon"],
+    [1650082958, "Protocol is paused because a non-critical vulnerability"],
+    [1653366158, "V2 Relaunch"],
+    [1654057358, "OP launch bring more users into Optimism and benefit Mean"]
+  ]
 };

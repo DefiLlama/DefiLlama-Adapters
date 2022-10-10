@@ -38,58 +38,27 @@ const abis = {
     "stateMutability": "view",
     "type": "function"
   },
-  token0:
-  {
-    "inputs": [],
-    "name": "protocolFees",
-    "outputs": [
-      {
-        "internalType": "uint128",
-        "name": "token0",
-        "type": "uint128"
-      },
-      {
-        "internalType": "uint128",
-        "name": "token1",
-        "type": "uint128"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  token1:
-  {
-    "inputs": [],
-    "name": "token1",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
 }
 
 const config = {
   kava: {
-    nativeCoinGeckoId: 'kava',
     positionManager: '0x1Bf12f0650d8065fFCE3Cd9111feDEC21deF6825',
-    customToken: '0xc13791DA84f43525189456CfE2026C60D3B7F706'.toLowerCase(),
   },
   aurora: {
-    nativeCoinGeckoId: 'aurora',
     positionManager: '0x649Da64F6d4F2079156e13b38E95ffBF8EBB1B14',
-    customToken: '0x274d83086C356E0cFc75933FBf838CA10A7E8274'.toLowerCase(),
+  },
+  polygon: {
+    positionManager: '0xc130807A61D5fE62F2cE3A38B14c61D658CE73F3',
+  },
+  bsc: {
+    positionManager: '0x4eDeDaDFc96E44570b627bbB5c169d91304cF417',
   },
 }
 
 module.exports = {}
 
 Object.keys(config).forEach(chain => {
-  const { nativeCoinGeckoId, positionManager, customToken } = config[chain]
+  const { positionManager } = config[chain]
   module.exports[chain] = {
     tvl: async function tvl(_, _b, { [chain]: block }) {
 
@@ -120,11 +89,7 @@ Object.keys(config).forEach(chain => {
       const toa = []
       token0s.forEach(({ input: { target }, output }) => toa.push([output, target]))
       token1s.forEach(({ input: { target }, output }) => toa.push([output, target]))
-      const balances = await sumTokens2({ chain, block, tokensAndOwners: toa })
-      const customKey = chain + ':' + customToken
-      sdk.util.sumSingleBalance(balances, nativeCoinGeckoId, (balances[customKey] || 0) / 1e18)
-      delete balances[customKey]
-      return balances
+      return sumTokens2({ chain, block, tokensAndOwners: toa })
     }
   }
 })

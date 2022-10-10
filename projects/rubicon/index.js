@@ -25,8 +25,7 @@ const owners = [
     "0x574a21fE5ea9666DbCA804C9d69d8Caf21d5322b"  // bathOP
 ]
 
-async function tvl(time, ethBlock, chainBlocks){
-    const block = await getBlock(time, "optimism", chainBlocks, true)
+async function tvl(time, ethBlock, {optimism: block}){
     const balances={}
     const transform = await transformOptimismAddress()
     await sumTokensAndLPsSharedOwners(balances, tokens.map(t=>[t, false]), owners, block, "optimism", transform)
@@ -37,5 +36,8 @@ module.exports={
     methodology: "Counts the tokens on the bath pools and on the market (orders in the orderbook)",
     optimism:{
         tvl
-    }
+    },
+    hallmarks:[
+        [1657915200, "OP Rewards Start"],
+      ]
 }

@@ -19,14 +19,14 @@ module.exports = {
     tvl: getUniTVL({
       factory: dexFactory,
       chain: "nova",
-      coreAssets: [sntNova, nUSD],
+      useDefaultCoreAssets: true,
     }),
     staking: async (_, _b, { nova: block }) =>
     sumUnknownTokens({
         owners: [poolAuto, poolManual],
         tokens: [qsrToken],
         lps: [sntQsrFarm],
-        coreAssets: [sntNova],
+        useDefaultCoreAssets: true,
         chain: "nova",
         block,
       }),

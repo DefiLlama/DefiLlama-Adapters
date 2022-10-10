@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi");
-const { getBlock } = require("../helper/getBlock.js");
 const {
   transformPolygonAddress,
   transformFantomAddress,
@@ -50,28 +49,26 @@ async function getFusePools(
 async function polygonTvl(timestamp, block, chainBlocks) {
   const balances = {};
   const transform = await transformPolygonAddress();
-  block = getBlock(timestamp, "polygon", chainBlocks);
+  block = chainBlocks.polygon;
   await getFusePools(timestamp, block, balances, false, "polygon", transform);
   return balances;
 }
 async function polygonBorrowed(timestamp, block, chainBlocks) {
   const balances = {};
   const transform = await transformPolygonAddress();
-  block = getBlock(timestamp, "polygon", chainBlocks);
+  block = chainBlocks.polygon;
   await getFusePools(timestamp, block, balances, true, "polygon", transform);
   return balances;
 }
-async function fantomTvl(timestamp, block, chainBlocks) {
+async function fantomTvl(timestamp, _, {fantom: block}) {
   const balances = {};
   const transform = await transformFantomAddress();
-  block = getBlock(timestamp, "fantom", chainBlocks);
   await getFusePools(timestamp, block, balances, false, "fantom", transform);
   return balances;
 }
-async function fantomBorrowed(timestamp, block, chainBlocks) {
+async function fantomBorrowed(timestamp, _, {fantom: block}) {
   const balances = {};
   const transform = await transformFantomAddress();
-  block = getBlock(timestamp, "fantom", chainBlocks);
   await getFusePools(timestamp, block, balances, true, "fantom", transform);
   return balances;
 }

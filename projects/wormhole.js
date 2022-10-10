@@ -62,5 +62,9 @@ module.exports = {
   terra2: {
     fetch: fetch("18")
   },
-  fetch: fetch("*")
+  fetch: fetch("*"),
+  hallmarks:[
+    [1652008803, "UST depeg"],
+  ],
+  
 }

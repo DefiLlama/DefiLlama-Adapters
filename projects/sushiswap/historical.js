@@ -25,7 +25,7 @@ const chainTvl = getChainTvl(
 
 const subgraphChainTvls = Object.keys(subgraphs).reduce((obj, chain) => ({
     ...obj,
-    [chain === 'avax' ? 'avalanche' : chain]: {
+    [chain]: {
         tvl:chainTvl(chain)
     }
 }), {})

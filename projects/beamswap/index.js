@@ -41,12 +41,7 @@ async function stablePoolTVL(_, _b, { [chain]: block }) {
 const dexTVL = getUniTVL({
   factory: "0x985BcA32293A7A496300a48081947321177a86FD",
   chain: "moonbeam",
-  coreAssets: [
-    "0xAcc15dC74880C9944775448304B263D191c6077F", // WGLMR
-    '0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b', // USDC
-    GLINT_TOKEN, // glint,
-    "0xA649325Aa7C5093d12D6F98EB4378deAe68CE23F" // busd
-  ],
+  useDefaultCoreAssets: true,
 })
 
 

@@ -7,6 +7,8 @@ const { PromisePool } = require('@supercharge/promise-pool')
 
 const RPC_ENDPOINT = 'https://api.tzkt.io'
 
+const usdtAddressTezos = 'KT1XnTn74bUtxHfDtBmm2bGZAQfhPbvKWR8o'
+
 const tokenBlacklist = [
   'KT18quSVkqhbJS38d5sbRAEkXd5GoNqmAoro',
   'KT1TtaMcoSx5cZrvaVBWsFoeZ1L15cxo5AEy',
@@ -19,6 +21,7 @@ const tokenBlacklist = [
   'KT1JXxK3bd39ayLiiBdKm2cdReYnVSG3bkzK',
   'KT1FR9ij18K3dDExgFMBs7ppxfdGYzHiPo7c',
   'KT1GhX6MzTHKcjkMTg1mwCPzam12HRjsp6Sf',
+  'KT1C9X9s5rpVJGxwVuHEVBLYEdAQ1Qw8QDjH'
 ]
 
 async function getTokenBalances(account, includeTezosBalance = true) {
@@ -46,6 +49,18 @@ async function getTezosBalance(account) {
 
 async function getStorage(account) {
   return http.get(`${RPC_ENDPOINT}/v1/contracts/${account}/storage`)
+}
+
+async function getBigMapById(id, limit = 1000, offset = 0, key, value) {
+  const response = await http.get(
+    `${RPC_ENDPOINT}/v1/bigmaps/${id}/keys?limit=${limit}&offset=${offset}` + (key ? `&key=${key}` : '') + (value ? `&value=${value}` : '')
+  );
+  let map_entry;
+  const mapping = {};
+  for (map_entry of response) {
+    mapping[map_entry.key] = map_entry.value;
+  }
+  return mapping;
 }
 
 async function addDexPosition({ balances = {}, account, transformAddress }) {
@@ -141,6 +156,7 @@ async function getLPs(dex) {
 
 module.exports = {
   RPC_ENDPOINT,
+  usdtAddressTezos,
   getStorage,
   sumTokens,
   convertBalances,
@@ -148,4 +164,5 @@ module.exports = {
   addDexPosition,
   resolveLPPosition,
   getLPs,
+  getBigMapById,
 }

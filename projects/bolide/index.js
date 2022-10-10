@@ -1,7 +1,8 @@
 const { staking } = require("../helper/staking")
 const { pool2 } = require("../helper/pool2")
-const { toUSDTBalances } = require("../helper/balances")
+const { usdtAddress} = require("../helper/balances")
 const sdk = require('@defillama/sdk')
+const BigNumber = require("bignumber.js");
 
 const getTotalDepositABI = {
   'inputs': [],
@@ -18,14 +19,36 @@ const getTotalDepositABI = {
 }
 
 async function tvl(ts, _block, chainBlocks) {
-  const value = (await sdk.api.abi.call({
-    target: '0xf1f25A26499B023200B3f9A30a8eCEE87b031Ee1', 
+  const lrsStrategyValue = (await sdk.api.abi.call({
+    target: '0xf1f25A26499B023200B3f9A30a8eCEE87b031Ee1',
     abi: getTotalDepositABI,
     block: chainBlocks.bsc,
     chain: 'bsc'
   })).output
 
-  return toUSDTBalances(value, 1e-12)
+  const ethStrategyValue = (await sdk.api.abi.call({
+    target: '0x941ef9AaF3277052e2e6c737ae9a75b229A20988',
+    abi: getTotalDepositABI,
+    block: chainBlocks.bsc,
+    chain: 'bsc'
+  })).output
+
+  const btcStrategyValue = (await sdk.api.abi.call({
+    target: '0xed18f1CE58fED758C7937cC0b8BE66CB02Dc45c6',
+    abi: getTotalDepositABI,
+    block: chainBlocks.bsc,
+    chain: 'bsc'
+  })).output
+
+  const valueUsdt = new BigNumber(lrsStrategyValue)
+      .plus(ethStrategyValue)
+      .plus(btcStrategyValue)
+      .times(1e-12)
+      .toFixed(0);
+
+  return {
+    [usdtAddress]: valueUsdt,
+  };
 }
 
 module.exports = {

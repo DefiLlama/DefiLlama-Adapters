@@ -1,16 +1,6 @@
 const { getAPI } = require('../helper/acala/api')
 const { forceToCurrencyId } = require("@acala-network/sdk-core");
 const sdk = require('@defillama/sdk')
-const ethers = require("ethers")
-const { config } = require('@defillama/sdk/build/api');
-
-config.setProvider("karura_evm", new ethers.providers.StaticJsonRpcProvider(
-  "https://eth-rpc-karura.aca-api.network",
-  {
-    name: "karura_evm",
-    chainId: 686,
-  }
-))
 
 module.exports = {
   karura: {

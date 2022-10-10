@@ -78,12 +78,7 @@ const bscTvl = async (ts, _b, { bsc: block }) => {
     })
     const tokens = output.map(i => i.output.tokenAddress)
     return vestingHelper({
-      coreAssets: [
-        '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // WBNB
-        '0xe9e7cea3dedca5984780bafc599bd69add087d56', // BUSD
-        '0x55d398326f99059ff775485246999027b3197955', // USDT token
-        '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d', // USDC token
-      ],
+      useDefaultCoreAssets: true,
       blacklist,
       owner: vault,
       tokens,

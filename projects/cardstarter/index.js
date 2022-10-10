@@ -1,5 +1,4 @@
 const { staking } = require('../helper/staking');
-const { pool2s } = require('../helper/pool2');
 
 const cardsStakeAddr = "0xad2fd18932c39fa5085429853e1f0d39a65a438e";
 const lpStakeAddr = "0x7Dca3372A0a236A305FdEC3D48d52B09dff82E14";
@@ -13,6 +12,6 @@ module.exports = {
   ethereum: {
     tvl: () => ({}),
     staking: staking(cardsStakeAddr, cardsAddr),
-    pool2: pool2s([lpStakeAddr], lpPoolAddrs),
+    pool2: staking([lpStakeAddr], lpPoolAddrs),
   }
 }

@@ -1,8 +1,16 @@
 const { stakings } = require('../helper/staking')
 const { pool2UniV3 } = require('../helper/pool2')
+const { sumTokens2, nullAddress } = require('../helper/unwrapLPs');
+
+// const ETH_DAO_CONTRACT = "0xc35BD9072de45215a25EB9DADB4fA54eea445a01";
 
 const config = {
   ethereum: {
+    toa: [
+      [nullAddress, '0xaAA50f60a256b74D1C71ED4AD739836b50059201'],  // ETH pool
+      ['0xdac17f958d2ee523a2206206994597c13d831ec7', '0x51bb873D5b68309cf645e84234bC290b7D991D2C'],  // USDT pool
+      ['0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', '0xdCE224F9299CDd66e4D01D196d4cabce35a2F478'],  // WBTC pool
+    ],
     token: '0x3E5D9D8a63CC8a88748f229999CF59487e90721e',
     staking: [
       '0xCbD0F8e80e32B8e82f21f39FDE0A8bcf18535B21', // Pool 360 days
@@ -21,6 +29,7 @@ const config = {
       '0xd38b66aACA9819623380f60814308c6594E2DC26', // Pool 30 days
       '0xd9b5b86De1F696dFe290803b92Fe5e9baCa9371A', // Pool 60 days
       '0x306825856807321671d21d4A2A9a65b02CCB51db', // Smart Pool 3 months + 3 months
+      '0x842fDf4A6e861983D3Ef9299bF26EFC1FDB1Ba7A', // Smart Pool 2
     ],
   },
 }
@@ -32,9 +41,9 @@ module.exports = {
 };
 
 Object.keys(config).forEach(chain => {
-  const { staking, token, } = config[chain]
+  const { staking, token, toa = [] } = config[chain]
   module.exports[chain] = {
-    tvl: () => ({}),
+    tvl: (_, _b, {[chain]: block }) => sumTokens2({chain, block, tokensAndOwners: toa }),
     staking: stakings(staking, token, chain),
   }
 })
