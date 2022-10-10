@@ -128,7 +128,13 @@ async function stakedCelo(timestamp, block, chainBlocks) {
 module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
-  methodology: 'Count of the tokens in pools, reserves...',
+  methodology: `
+    1. Our general TVL is the ETHIX locked in our collateral reserves. They are found in our compensation reserves in different chains and in bond issuance contracts. These ETHIX would only move when a farmer's default appears.
+    2. In the different AMM pools we have blocked an initial amount of LP tokens, in a multisig belonging to Ethichub.
+    3. We have ETHIX staked in the different staking contracts in the chains where we operate. There are staked ETHIX, staked LP tokens, and ETHIX belonging to staked originator nodes.
+    Active networks: ETH/CELO/GNOSIS.
+    All our pools and staking options are in: https://ethix.ethichub.com, and info about project: https://ethichub.com
+    `,
   start: 1608640693,
   ethereum: {
     tvl: tvlMainnet,
