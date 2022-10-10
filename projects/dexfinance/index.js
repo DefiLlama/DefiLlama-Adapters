@@ -1,8 +1,8 @@
 const sdk = require("@defillama/sdk");
+const BigNumber = require("bignumber.js");
 const { fetchURL } = require("../helper/utils");
 const getReserves = require('../helper/abis/getReserves.json');
-const token0Abi = require('../helper/abis/token0.json');
-const token1Abi = require('../helper/abis/token1.json');
+const { ETF_ABI, ETF_ORACLE_ABI } = require('./abi');
 // const { staking, sumTokensExport } = require('../helper/unknownTokens')
 
 const { staking, stakingUnknownPricedLP } = require("../helper/staking");
@@ -16,6 +16,9 @@ const { staking, stakingUnknownPricedLP } = require("../helper/staking");
 
 const REGULATION_STAKING_POOL = '0xd69dB827939e26511068AA2bf742E7463b292190'
 const FARM = '0xCC180BfA5d2C3Ac191758B721C9bBbB263b3fd1C'
+
+const ETF_INDEX_POOL = '0x60EBfD605Cb25C7796F729c78a4453ACeCb1CE03'
+const ETF_ORACLE = '0x3B186d534c714679cf9d0504D1FBFD56c2339E7C'
 
 const TOKENS = {
   USDEX_USDC_LP: '0x79F3bb5534b8f060b37b3e5deA032a39412F6B10',
@@ -83,7 +86,7 @@ async function getTokenPrices() {
   return pricesMap;
 };
 
-async function farmsTvl() {
+async function farmsTvl(tokenPrices) {
   let tvl = 0
   const commonOptions = {
     chain: 'bsc',
@@ -93,7 +96,6 @@ async function farmsTvl() {
     { output: USDEX_USDC_LPFarmBalance },
     { output: DEXSHARE_BNB_LPFarmBalance },
     { output: WDEX_DEXSHAREFarmBalance },
-    tokenPrices
   ] = await Promise.all([
     sdk.api.erc20.balanceOf({
       target: TOKENS.USDEX_USDC_LP,
@@ -110,13 +112,61 @@ async function farmsTvl() {
       owner: FARM,
       ...commonOptions,
     }),
-    getTokenPrices()
   ])
   tvl += USDEX_USDC_LPFarmBalance * tokenPrices['USDEX_USDC_LP']
   tvl += DEXSHARE_BNB_LPFarmBalance * tokenPrices['DEXSHARE_BNB_LP']
   tvl += WDEX_DEXSHAREFarmBalance * tokenPrices['WDEX_DEXSHARE']
   return tvl
 };
+
+async function dexEtfTvl(bnbPrice) {
+  const { output: tokenAddresses } = await sdk.api.abi.call({
+    target: ETF_INDEX_POOL,
+    abi: ETF_ABI['getCurrentTokens'],
+    chain: 'bsc',
+    params: []
+  })
+  const tokensBalanceWeight = (await sdk.api.abi.multiCall({
+    abi: ETF_ABI['getBalance'],
+    calls: tokenAddresses.map(ta => ({ target: ETF_INDEX_POOL, params: [ta] })),
+    chain: 'bsc',
+  })).output.map(({ output }) => output)
+
+  const decimals = (await Promise.all(tokenAddresses.map((ta) => sdk.api.abi.call({
+    target: ta,
+    abi: 'erc20:decimals',
+    chain: 'bsc',
+  })))).map(({ output }) => output)
+
+  const tokenPrices = (await sdk.api.abi.call({
+    target: ETF_ORACLE,
+    abi: ETF_ORACLE_ABI['computeAverageTokenPrices'],
+    chain: 'bsc',
+    params: [tokenAddresses, '1', '172800']
+  })).output.map(([price]) => price)
+
+  const tvl = tokenPrices.reduce((acc, tokenPrice, index) => {
+    const balance = tokensBalanceWeight[index];
+    const decimalsNum = Number(decimals[index]);
+    const tokenPriceInBnb = new BigNumber(tokenPrice).div(2 ** 112).div(10 ** (18 - decimalsNum));
+    const tokenBnbValue = new BigNumber(balance).div(10 ** decimalsNum).times(tokenPriceInBnb);
+    return acc.plus(tokenBnbValue.times(bnbPrice));
+  }, new BigNumber(0));
+
+  return Number(tvl.toFixed(0))
+}
+
+async function fetch() {
+  const priceMap = await getTokenPrices()
+  console.log('~ priceMap', priceMap);
+
+  const [etfTvlUsd, farmsTvlUsd] = await Promise.all([
+    dexEtfTvl(priceMap['BNB']),
+    farmsTvl(priceMap)
+  ])
+  console.log('~ priceM', priceMap['BNB']);
+  return etfTvlUsd + farmsTvlUsd
+}
 
 module.exports = {
   // tvl: async () => ({}),
@@ -132,5 +182,5 @@ module.exports = {
   //   owners: [FARM],
   //   tokens: [TOKENS.WDEX_DEXSHARE]
   // }),
-  fetch: farmsTvl
+  fetch: fetch
 };
