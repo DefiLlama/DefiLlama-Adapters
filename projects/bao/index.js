@@ -62,11 +62,12 @@ async function getTvl(chain, block, ethBlock) {
 
   // console.log(JSON.stringify(ethBalances, null, 2));
   // resolve LPs
-  await Promise.all([
-    unwrapLPsAuto({ balances, block, chain, }),
-    // disabling resolving ETH balance resolving since we dont know how to resolve bridged LP address
-    // unwrapLPsAuto({ balances: ethBalances, block: ethBlock, chain: 'ethereum', }),
-  ])
+  if (chain === 'xdai')
+    await Promise.all([
+      unwrapLPsAuto({ balances, block, chain, }),
+      // disabling resolving ETH balance resolving since we dont know how to resolve bridged LP address
+      // unwrapLPsAuto({ balances: ethBalances, block: ethBlock, chain: 'ethereum', }),
+    ])
 
   // merge balances
   // Object.entries(ethBalances).forEach(([token, balance]) => {
