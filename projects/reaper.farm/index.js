@@ -32,5 +32,8 @@ module.exports = {
   },
   optimism: {
     tvl: fetchTvl('optimism')
-  }
+  },
+  hallmarks:[
+    [1659441956, "$1.7m Exploit"],
+  ]
 }

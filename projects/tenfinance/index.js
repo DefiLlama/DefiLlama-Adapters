@@ -236,4 +236,4 @@ module.exports = {
     pool2,
     staking: staking(tenVault, tenfi, "bsc"),
   },
-};
+}

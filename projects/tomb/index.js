@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { sumTokens2 } = require("../helper/unwrapLPs");
-const { getUniTVL } = require("../helper/unknownTokens")
+
 
 const tombTokenAddress = "0x6c021ae822bea943b2e66552bde1d2696a53fbb7";
 const tshareTokenAddress = "0x4cdf39285d7ca8eb3f090fda0c069ba5f4145b37";
@@ -17,7 +17,7 @@ const ftmLPs = [
 
 async function pool2(timestamp, _b, { [chain]: block }) {
   return sumTokens2({
-    chain, block, owner: tshareRewardPoolAddress, tokens: ftmLPs, resolveLP: true,
+    chain, block, owner: tshareRewardPoolAddress, tokens: ftmLPs,
   })
 }
 
@@ -57,19 +57,11 @@ async function lif3GenesisTVL(timestamp, _b, { [chain]: block }) {
   })
 }
 
-const dexTVL = getUniTVL({
-  factory: '0xE236f6890F1824fa0a7ffc39b1597A5A6077Cfe9',
-  chain: 'fantom',
-  coreAssets: [  ],
-})
 
 module.exports = {
   methodology: "Pool2 deposits consist of TOMB/FTM and TSHARE/FTM LP tokens deposits while the staking TVL consists of the TSHARES tokens locked within the Masonry contract(0x8764de60236c5843d9faeb1b638fbce962773b67).",
   fantom: {
-    tvl: sdk.util.sumChainTvls([
-      dexTVL, 
-      lif3GenesisTVL,
-    ]),
+    tvl: lif3GenesisTVL,
     pool2,
     staking,
   },

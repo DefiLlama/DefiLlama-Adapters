@@ -1,7 +1,7 @@
 const { sumTokens, } = require('../helper/unwrapLPs')
 const axios = require('axios')
 const { staking } = require('../helper/staking');
-const { transformBscAddress, transformEthereumAddress, transformPolygonAddress, transformArbitrumAddress } = require("../helper/portedTokens");
+const { getChainTransform } = require("../helper/portedTokens");
 
 // token list
 const tokenListsApiEndpoint = "https://token-list.solv.finance/vouchers-prod.json"
@@ -13,22 +13,22 @@ const solvBscTokenAddress = '0xC073c4eD65622A9423b5e5BDe2BFC8B81EBC471c'
 const solvBscPoolAddress = '0xE5742912EDb4599779ACC1CE2acB6a06E01f1089'
 
 const ethereumTVL = async (timestamp, block, chainBlocks) => {
-    const transform = await transformEthereumAddress();
+    const transform = await getChainTransform('ethereum');
     return tvl(timestamp, block, chainBlocks, "ethereum", 1, transform);
 }
 
 const polygonTVL = async (timestamp, block, chainBlocks) => {
-    const transform = await transformPolygonAddress();
+    const transform = await getChainTransform('polygon');
     return tvl(timestamp, block, chainBlocks, "polygon", 137, transform);
 }
 
 const arbitrumTVL = async (timestamp, block, chainBlocks) => {
-    const transform = await transformArbitrumAddress();
+    const transform = await getChainTransform('arbitrum');
     return tvl(timestamp, block, chainBlocks, "arbitrum", 42161, transform);
 };
 
 const bscTVL = async (timestamp, block, chainBlocks) => {
-    const transform = await transformBscAddress();
+    const transform = await getChainTransform('bsc');
     return tvl(timestamp, block, chainBlocks, "bsc", 56, transform);
 };
 
@@ -44,7 +44,7 @@ async function tvl(timestamp, block, chainBlocks, network, chainId, transform) {
         ])
     }
 
-    await sumTokens(balances, tokenPairs, block, network, transform)
+    await sumTokens(balances, tokenPairs, chainBlocks[network], network, transform)
 
     return balances;
 }
@@ -81,4 +81,4 @@ module.exports = {
     arbitrum: {
         tvl: arbitrumTVL
     }
-};
+}

@@ -12,14 +12,15 @@ const sdk = require("@defillama/sdk");
 const whitelistedExportKeys = require('./projects/helper/whitelistedExportKeys.json')
 const chainList = require('./projects/helper/chains.json')
 const handleError = require('./utils/handleError')
-const { diplayUnknownTable } = require('./projects/helper/utils')
+const { log, diplayUnknownTable, sliceIntoChunks } = require('./projects/helper/utils')
+const { PromisePool } = require('@supercharge/promise-pool')
 
 async function getLatestBlockRetry(chain) {
   for (let i = 0; i < 5; i++) {
     try {
       return await getLatestBlock(chain);
     } catch (e) {
-      throw new Error(`Couln't get block heights for chain "${chain}"`, e);
+      throw new Error(`Couln't get block height for chain "${chain}"`, e);
     }
   }
 }
@@ -89,7 +90,11 @@ function mergeBalances(key, storedKeys, balancesObject) {
     balancesObject[key] = {};
     storedKeys.map((keyToMerge) => {
       Object.entries(balancesObject[keyToMerge]).forEach((balance) => {
-        util.sumSingleBalance(balancesObject[key], balance[0], balance[1]);
+        try {
+          util.sumSingleBalance(balancesObject[key], balance[0], BigNumber(balance[1] || '0').toFixed(0));
+        } catch (e) {
+          console.log(e)
+        }
       });
     });
   }
@@ -103,10 +108,10 @@ if (process.argv.length < 3) {
 const passedFile = path.resolve(process.cwd(), process.argv[2]);
 
 const originalCall = sdk.api.abi.call
-sdk.api.abi.call = async (...args)=>{
-  try{
+sdk.api.abi.call = async (...args) => {
+  try {
     return await originalCall(...args)
-  } catch(e){
+  } catch (e) {
     console.log("sdk.api.abi.call errored with params:", args)
     throw e
   }
@@ -116,7 +121,7 @@ sdk.api.abi.call = async (...args)=>{
   let module = {};
   try {
     module = require(passedFile)
-  } catch(e) {
+  } catch (e) {
     console.log(e)
   }
   const chains = Object.keys(module).filter(item => typeof module[item] === 'object' && !Array.isArray(module[item]));
@@ -129,7 +134,7 @@ sdk.api.abi.call = async (...args)=>{
   }
   await Promise.all(
     chains.map(async (chainRaw) => {
-      const chain = chainRaw === "avalanche"?"avax":chainRaw
+      const chain = chainRaw === "avalanche" ? "avax" : chainRaw
       if (chainsForBlocks.includes(chain) || chain === "ethereum") {
         chainBlocks[chain] = (await getLatestBlockRetry(chain)).number - 10;
       }
@@ -246,19 +251,33 @@ function checkExportKeys(module, filePath, chains) {
   filePath = filePath.split(path.sep)
   filePath = filePath.slice(filePath.lastIndexOf('projects') + 1)
 
-  if (filePath.length > 2  
+  if (filePath.length > 2
     || (filePath.length === 1 && !['.js', ''].includes(path.extname(filePath[0]))) // matches .../projects/projectXYZ.js or .../projects/projectXYZ
     || (filePath.length === 2 && !['api.js', 'index.js'].includes(filePath[1])))  // matches .../projects/projectXYZ/index.js
     process.exit(0)
 
-  const blacklistedRootExportKeys = ['tvl', 'staking', 'pool2', 'borrowed', 'treasury'];
+  const blacklistedRootExportKeys = ['tvl', 'staking', 'pool2', 'borrowed', 'treasury', 'offers', 'vesting'];
   const rootexportKeys = Object.keys(module).filter(item => typeof module[item] !== 'object');
   const unknownChains = chains.filter(chain => !chainList.includes(chain));
   const blacklistedKeysFound = rootexportKeys.filter(key => blacklistedRootExportKeys.includes(key));
   let exportKeys = chains.map(chain => Object.keys(module[chain])).flat()
   exportKeys.push(...rootexportKeys)
-  exportKeys = Object.keys(exportKeys.reduce((agg, key) => ({...agg, [key]: 1}), {})) // get unique keys
+  exportKeys = Object.keys(exportKeys.reduce((agg, key) => ({ ...agg, [key]: 1 }), {})) // get unique keys
   const unknownKeys = exportKeys.filter(key => !whitelistedExportKeys.includes(key))
+
+  const hallmarks = module.hallmarks || [];
+
+  if (hallmarks.length) {
+    const TIMESTAMP_LENGTH = 10;
+    hallmarks.forEach(([timestamp, text]) => {
+      const strTimestamp = String(timestamp)
+      if (strTimestamp.length !== TIMESTAMP_LENGTH) {
+        throw new Error(`
+        Incorrect time format for the hallmark: [${strTimestamp}, ${text}] ,please use unix timestamp
+        `)
+      }
+    })
+  }
 
 
   if (unknownChains.length) {
@@ -301,11 +320,10 @@ process.on('uncaughtException', handleError)
 
 
 const BigNumber = require("bignumber.js");
-const axios =require("axios");
+const axios = require("axios");
 
 const ethereumAddress = "0x0000000000000000000000000000000000000000";
 const weth = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-const DAY = 24 * 3600;
 
 function fixBalances(balances) {
   Object.entries(balances).forEach(([token, value]) => {
@@ -314,22 +332,35 @@ function fixBalances(balances) {
     else if (!token.includes(':')) newKey = `coingecko:${token}`
     if (newKey) {
       delete balances[token]
-      sdk.util.sumSingleBalance(balances, newKey, value)
+      sdk.util.sumSingleBalance(balances, newKey, BigNumber(value).toFixed(0))
     }
   })
 }
 
+const confidenceThreshold = 0.5
 async function computeTVL(balances, timestamp) {
   fixBalances(balances)
+
+  Object.keys(balances).map(k => {
+    if (+balances[k] === 0) {
+      delete balances[k]
+      return;
+    }
+    if (k.toLowerCase() === k) return;
+    balances[k.toLowerCase()] = balances[k];
+    delete balances[k]
+  })
+
   const eth = balances[ethereumAddress];
   if (eth !== undefined) {
     balances[weth] = new BigNumber(balances[weth] ?? 0).plus(eth).toFixed(0);
     delete balances[ethereumAddress];
   }
+
   const PKsToTokens = {};
   const readKeys = Object.keys(balances)
     .map((address) => {
-      const PK = `${timestamp === "now"?"":"asset#"}${address.toLowerCase()}`;
+      const PK = `${timestamp === "now" ? "" : "asset#"}${address.toLowerCase()}`;
       if (PKsToTokens[PK] === undefined) {
         PKsToTokens[PK] = [address];
         return PK;
@@ -339,49 +370,52 @@ async function computeTVL(balances, timestamp) {
       }
     })
     .filter((item) => item !== undefined);
-  const readRequests = [];
-  for (let i = 0; i < readKeys.length; i += 100) {
-    readRequests.push(
-      axios.post("https://coins.llama.fi/prices", {
-        "coins": readKeys.slice(i, i + 100)
-      }).then(r => {
-        return Object.entries(r.data.coins).map(
-          ([PK, value]) => ({
-            ...value,
-            PK
-          })
-        )
-      })
-    );
-  }
-  let tokenData = ([]).concat(...(await Promise.all(readRequests)));
+
+  const burl = "https://coins.llama.fi/prices/current/";
+  const unknownTokens = {}
+  let tokenData = []
+  readKeys.forEach(i => unknownTokens[i] = true)
+
+  const { errors } = await PromisePool.withConcurrency(5)
+    .for(sliceIntoChunks(readKeys, 50))
+    .process(async (keys) => {
+      const coins = keys.reduce((p, c) => p + `${c},`, "");
+      tokenData.push((await axios.get(`${burl}${coins}`)).data.coins)
+    })
+
+  if (errors && errors.length)
+    throw errors[0]
+
   let usdTvl = 0;
   const tokenBalances = {};
-  const usdTokenBalances = {} ;
-  const now = timestamp === "now" ? Math.round(Date.now() / 1000) : timestamp;
-  tokenData.forEach((response) => {
-    if (Math.abs(response.timestamp - now) < DAY) {
-      PKsToTokens[response.PK].forEach((address) => {
-        const balance = balances[address];
-        const { price, decimals } = response;
-        let symbol, amount, usdAmount;
-        if (response.PK.includes(':') && !response.PK.startsWith("coingecko:")) {
-          symbol = response.symbol.toUpperCase();
-          amount = new BigNumber(balance).div(10 ** decimals).toNumber();
-          usdAmount = amount * price;
-        } else {
-          symbol = response.PK.startsWith("coingecko:") ? response.PK.split(':')[1] : response.PK.slice('asset#'.length);
-          amount = Number(balance);
-          usdAmount = amount * price;
-        }
-        tokenBalances[symbol] = (tokenBalances[symbol] ?? 0) + amount;
-        usdTokenBalances[symbol] = (usdTokenBalances[symbol] ?? 0) + usdAmount;
-        usdTvl += usdAmount;
-      });
-    } else {
-      console.error(`Data for ${response.PK} is stale`);
-    }
+  const usdTokenBalances = {};
+
+  tokenData.forEach(response => {
+    Object.keys(response).forEach(address => {
+      delete unknownTokens[address]
+      const data = response[address];
+      const balance = balances[address];
+
+      if (data == undefined) tokenBalances[`UNKNOWN (${address})`] = balance
+      if ('confidence' in data && data.confidence < confidenceThreshold) return
+
+      let amount, usdAmount;
+      if (address.includes(":") && !address.startsWith("coingecko:")) {
+        amount = new BigNumber(balance).div(10 ** data.decimals).toNumber();
+        usdAmount = amount * data.price;
+      } else {
+        amount = Number(balance);
+        usdAmount = amount * data.price;
+      }
+
+      tokenBalances[data.symbol] = (tokenBalances[data.symbol] ?? 0) + amount;
+      usdTokenBalances[data.symbol] = (usdTokenBalances[data.symbol] ?? 0) + usdAmount;
+      usdTvl += usdAmount;
+    })
   });
+
+  Object.keys(unknownTokens).forEach(address => tokenBalances[`UNKNOWN (${address})`] = balances[address])
+
   return {
     usdTvl,
     tokenBalances,

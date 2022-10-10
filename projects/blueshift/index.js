@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk');
 const { default: BigNumber } = require('bignumber.js');
-const { transformMilkomedaAddress } = require('../helper/portedTokens');
+const { getChainTransform } = require('../helper/portedTokens');
 
 const abi = require('./abi.json');
 
@@ -13,7 +13,7 @@ const BLUESHIFT_INDEX_PORTFOLIO = '0xB2A76Ce2D5eD32aD7F8B93a1098C1Fee473e27bA';
 
 async function staking(timestamp, block, chainBlocks) {
   const balances = {};
-  const transform = await transformMilkomedaAddress();
+  const transform = await getChainTransform('milkomeda');
 
   const value = (await sdk.api.abi.call({
     abi: abi.BlueshiftEarning.getAccDeposit,
@@ -51,18 +51,18 @@ async function staking(timestamp, block, chainBlocks) {
   const tokenPrice = bluesPortfolio.tokens.filter(token => token.tokenAddress === tokenAddress)[0].price;
   const valueInBaseToken = BigNumber(value).multipliedBy(tokenPrice).div(baseTokenPrice);
 
-  await sdk.util.sumSingleBalance(balances, transform(baseTokenAddress), valueInBaseToken.toNumber());
+  sdk.util.sumSingleBalance(balances, transform(baseTokenAddress), valueInBaseToken.toNumber());
   // ----------------------------------------
 
   // CoinGecko solution
-  // await sdk.util.sumSingleBalance(balances, transform(tokenAddress), value);
+  // sdk.util.sumSingleBalance(balances, transform(tokenAddress), value);
 
   return balances;
 }
 
 async function tvl(timestamp, block, chainBlocks) {
   const balances = {};
-  const transform = await transformMilkomedaAddress();
+  const transform = await getChainTransform('milkomeda');
 
   const portfolios = (await sdk.api.abi.call({
     abi: abi.BlueshiftRegistry.getPortfolios,
@@ -74,7 +74,7 @@ async function tvl(timestamp, block, chainBlocks) {
 
   for (let portfolio of portfolios) {
     const value = portfolio.totalValue;
-    await sdk.util.sumSingleBalance(balances, transform(portfolio.baseTokenAddress), value);
+    sdk.util.sumSingleBalance(balances, transform(portfolio.baseTokenAddress), value);
   }
 
   return balances;

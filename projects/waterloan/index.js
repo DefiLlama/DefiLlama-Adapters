@@ -13,7 +13,7 @@ const WBCH = "0x3743eC0673453E5009310C727Ba4eaF7b3a1cc04";
 const MIST = "0x5fA664f69c2A4A3ec94FaC3cBf7049BD9CA73129";
 
 function waterloan(chain, borrowed) {
-  return async (timestamp, block) => {
+  return async (timestamp, _, {[chain]: block }) => {
     const balances = {};
 
     const [v2Atokens, v2ReserveTokens, dataHelper] = await getV2Reserves(

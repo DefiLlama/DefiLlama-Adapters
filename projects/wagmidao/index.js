@@ -1,10 +1,9 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { calculateUniTvl } = require("../helper/calculateUniTvl");
-const { getBlock } = require("../helper/getBlock");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const {
-  fixHarmonyBalances,
+  getFixBalancesSync,
   transformHarmonyAddress,
 } = require("../helper/portedTokens");
 
@@ -66,17 +65,14 @@ const Treasury = async (timesamp, ethBlock, chainBlocks) => {
     }
   });
 
-  let transformAddress = await transformHarmonyAddress();
-
   await unwrapUniswapLPs(
     balances,
     lpPositions,
     chainBlocks["harmony"],
     "harmony",
-    transformAddress
   );
 
-  fixHarmonyBalances(balances);
+  getFixBalancesSync('harmony')(balances);
 
   return balances;
 };
@@ -109,9 +105,7 @@ const Staking = async (chainBlocks) => {
   return balances;
 };
 
-async function harmonyTvl(timestamp, _ethBlock, chainBlocks) {
-  const block = await getBlock(timestamp, "harmony", chainBlocks, true);
-
+async function harmonyTvl(timestamp, _ethBlock, {harmony: block}) {
   let transformAddress = await transformHarmonyAddress();
   const balances = await calculateUniTvl(
     transformAddress,
@@ -122,7 +116,7 @@ async function harmonyTvl(timestamp, _ethBlock, chainBlocks) {
     true
   );
 
-  fixHarmonyBalances(balances);
+  getFixBalancesSync('harmony')(balances);
 
   return balances;
 }

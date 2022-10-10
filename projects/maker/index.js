@@ -1,9 +1,8 @@
-const BigNumber = require('bignumber.js');
 // const utils = require('web3-utils');
 const sdk = require('@defillama/sdk');
 const MakerSCDConstants = require("./abis/makerdao.js");
 const MakerMCDConstants = require("./abis/maker-mcd.js");
-const { unwrapUniswapLPs } = require('../helper/unwrapLPs');
+const { sumTokens2 } = require('../helper/unwrapLPs')
 const { requery } = require('../helper/requery.js');
 
 async function getJoins(block) {
@@ -49,57 +48,45 @@ async function getJoins(block) {
 }
 
 async function tvl(timestamp, block) {
-  let balances = {};
-  balances[MakerSCDConstants.WETH_ADDRESS] = (await sdk.api.erc20.balanceOf({
-    block,
-    target: MakerSCDConstants.WETH_ADDRESS,
-    owner: MakerSCDConstants.TUB_ADDRESS
-  })).output;
+  const toa = [
+    [MakerSCDConstants.WETH_ADDRESS, MakerSCDConstants.TUB_ADDRESS,],
+  ]
 
-  if (block >= MakerMCDConstants.STARTBLOCK) {
+  const blacklistedJoins = [
+    '0x7b3799b30f268ba55f926d7f714a3001af89d359',
+    '0x41ca7a7aa2be78cf7cb80c0f4a9bdfbc96e81815',
+  ]
+  if (block > MakerMCDConstants.STARTBLOCK) {
     let joins = await getJoins(block);
+    joins = joins.filter(i => !blacklistedJoins.includes(i))
 
-    await Promise.all(joins.map(async join => {
-      try {
-        const gem = (await sdk.api.abi.call({
-          block,
-          target: join,
-          abi: MakerMCDConstants.gem
-        })).output;
-        const balance = (await sdk.api.erc20.balanceOf({
-          target: gem,
-          owner: join,
-          block
-        })).output;
-
-        const symbol = join === "0xad37fd42185ba63009177058208dd1be4b136e6b"?"SAI": await sdk.api.erc20.symbol(gem)
-        if (symbol.output === "UNI-V2") {
-          await unwrapUniswapLPs(balances, [{
-            token: gem,
-            balance
-          }],
-            block)
-        } else {
-          sdk.util.sumSingleBalance(balances, gem, balance);
-        }
-      } catch (e) {
-        try{
-          if(join !== "0x7b3799b30f268ba55f926d7f714a3001af89d359"){
-            await sdk.api.abi.call({
-              block,
-              target: join,
-              abi: MakerMCDConstants.dog
-            })
-          }
-          return
-        } catch(e){
-          throw new Error("failed gem() and dog() on "+join)
-        }
+    const { output: gems } = await sdk.api.abi.multiCall({
+      abi: MakerMCDConstants.gem,
+      block, calls: joins.map(i => ({ target: i })),
+    })
+    const dogCalls = []
+    gems.forEach(({ success, output, input: { target } }) => {
+      if (!success) {
+        dogCalls.push({ target })
+        return;
       }
-    }))
+
+      toa.push([output, target])
+    })
+
+    const { output: dogRes } = await sdk.api.abi.multiCall({
+      abi: MakerMCDConstants.dog,
+      calls: dogCalls, block,
+    })
+
+    const failedCalls = dogRes.filter(i => !i.success)
+    if (failedCalls.length) {
+      failedCalls.forEach(i => console.log('Failed both gem and dog calls', i.input.target))
+      throw new Error('Failed both gem and dog calls')
+    }
   }
 
-  return balances;
+  return sumTokens2({ block, tokensAndOwners: toa })
 }
 
 module.exports = {

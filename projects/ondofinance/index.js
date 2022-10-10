@@ -1,8 +1,8 @@
 const sdk = require('@defillama/sdk')
 const abi = require('./abi.json')
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs")
-const { get } = require("../helper/http")
 const { default: BigNumber } = require('bignumber.js')
+const { getBlock } = require('../helper/getBlock')
 
 const NEAR_TOKEN = "0x85f17cf997934a597031b2e18a9ab6ebd4b9f6a4"
 const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
@@ -28,7 +28,12 @@ const data = {"ondo_lps":["0x9241943c29eb0B1Fc0f8E5B464fbc14915Da9A57","0x5d6213
 async function tvl(timestamp, block, chainBlocks) {
     const balances = {};
     const partner_tokens = data["supported_tokens"]
-    const ondo_multisigs = data["ondo_multisigs"]
+    let ondo_multisigs = data["ondo_multisigs"]
+    block = await getBlock(timestamp, 'ethereum', { ethereum: block })
+    
+    if (block > 15258765)
+      ondo_multisigs = []
+
     const ondo_lps = data["ondo_lps"]
 
     await addEthBalances(ondo_multisigs, block, balances)

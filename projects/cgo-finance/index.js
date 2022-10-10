@@ -7,7 +7,6 @@ const getReservesAbi = require("../helper/abis/getReserves.json");
 const strategyAbi =  require('./strategyAbi.json')
 
 const { unwrapUniswapLPs, unwrapLPsAuto, isLP } = require('../helper/unwrapLPs')
-const { getBlock } = require('../helper/getBlock');
 const { default: BigNumber } = require('bignumber.js');
 const { getChainTransform, getFixBalances } = require('../helper/portedTokens');
 
@@ -77,8 +76,7 @@ function vaultMasterChefExports(masterChef,
   const stakingToken = stakingTokenRaw.toLowerCase();
   let balanceResolve;
 
-  async function getTvl(timestamp, ethBlock, chainBlocks) {
-    const block = await getBlock(timestamp, chain, chainBlocks, true)
+  async function getTvl(timestamp, ethBlock, {[chain]: block}) {
     const transformAddress = await getChainTransform(chain);
 
     const poolInfo = await getPoolInfo(masterChef, block, chain, poolInfoAbi)
