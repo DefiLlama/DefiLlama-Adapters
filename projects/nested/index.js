@@ -1,5 +1,4 @@
 const sdk = require('@defillama/sdk')
-const { getBlock } = require('../helper/getBlock')
 const axios = require("axios");
 const retry = require('../helper/retry');
 const {chainExports} = require('../helper/exports')
@@ -35,8 +34,7 @@ const nested = {
 // const graphUrl = 'https://api.nested.finance/graphql'
 
 function chainTvl_onchain(chain) {
-  return async (timestamp, ethBlock, chainBlocks) => {
-    const block = await getBlock(timestamp, chain, chainBlocks, false)
+  return async (timestamp, ethBlock, {[chain]: block}) => {
     const balances = {}
     const transformAddress = (addr) => `${chain}:${addr}`
 

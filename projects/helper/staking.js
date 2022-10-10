@@ -1,5 +1,4 @@
 const sdk = require('@defillama/sdk');
-const { getBlock } = require('./getBlock');
 const getReserves = require('./abis/getReserves.json');
 const token0Abi = require('./abis/token0.json');
 const token1Abi = require('./abis/token1.json');
@@ -12,8 +11,7 @@ function staking(stakingContract, stakingToken, chain = "ethereum", transformedT
 }
 
 function stakings(stakingContracts, stakingToken, chain = "ethereum", transformedTokenAddress = undefined, decimals = undefined) {
-    return async (timestamp, _ethBlock, chainBlocks) => {
-        const block = await getBlock(timestamp, chain, chainBlocks, true)
+    return async (timestamp, _ethBlock, {[chain]: block}) => {
         const bal = (await sdk.api.abi.multiCall({
             calls: stakingContracts.map(c => ({ target: stakingToken, params: [c] })),
             chain,
@@ -31,9 +29,12 @@ function stakings(stakingContracts, stakingToken, chain = "ethereum", transforme
                 [address]: Number(bal) / (10 ** decimals)
             }
         }
-        return {
+        const balances = {
             [address]: bal
         }
+        const fixBalances = await getFixBalances(chain)
+        fixBalances(balances)
+        return balances
     }
 }
 
@@ -42,10 +43,9 @@ function stakingPricedLP(stakingContract, stakingToken, chain, lpContract, coing
 }
 
 function stakingUnknownPricedLP(stakingContract, stakingToken, chain, lpContract, transform, decimals) {
-    return async (timestamp, _ethBlock, chainBlocks) => {
+    return async (timestamp, _ethBlock, {[chain]: block}) => {
         if (!transform)   transform = await getChainTransform(chain)
 
-        const block = await getBlock(timestamp, chain, chainBlocks, true)
         const [bal, reserveAmounts, token0, token1] = await Promise.all([
             sdk.api.erc20.balanceOf({
                 target: stakingToken,
@@ -76,10 +76,8 @@ function stakingUnknownPricedLP(stakingContract, stakingToken, chain, lpContract
             [transform(token)]: stakedBal
         }
 
-        if (['klaytn', 'kava'].includes(chain)) {
-            const fixBalances = await getFixBalances(chain)
-            fixBalances(balances)
-        }
+        const fixBalances = await getFixBalances(chain)
+        fixBalances(balances)
 
         return balances
     }

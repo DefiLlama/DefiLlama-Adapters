@@ -1,32 +1,21 @@
 const { _BASE_TOKEN_, _QUOTE_TOKEN_ } = require('./abis/dodo.json')
 const sdk = require('@defillama/sdk')
 const { default: BigNumber } = require('bignumber.js')
-const { unwrapUniswapLPs, sumTokensAndLPsSharedOwners, sumTokensAndLPs, unwrapUniswapV3NFTs } = require('./unwrapLPs');
+const { unwrapUniswapLPs, sumTokensAndLPsSharedOwners, sumTokensAndLPs, unwrapUniswapV3NFTs, sumTokens2, } = require('./unwrapLPs');
 const masterchefAbi = require("./abis/masterchef.json")
 const token0Abi = require("./abis/token0.json")
 const token1Abi = require("./abis/token1.json")
 const { isLP, getPoolInfo } = require('./masterchef')
 
 function pool2(stakingContract, lpToken, chain = "ethereum", transformAddress) {
-    return async (_timestamp, _ethBlock, chainBlocks) => {
-        const balances = {}
-        if (transformAddress === undefined) {
-            transformAddress = addr => `${chain}:${addr}`
-        }
-        await sumTokensAndLPs(balances, [[lpToken, stakingContract, true]], chainBlocks[chain], chain, transformAddress)
-        return balances
+    return async (_timestamp, _ethBlock, {[chain]: block }) => {
+        return sumTokens2({ tokens: [lpToken], owner: stakingContract, transformAddress, chain, block, resolveLP: true, })
     }
 }
 
 function pool2s(stakingContracts, lpTokens, chain = "ethereum", transformAddress = undefined) {
-    return async (_timestamp, _ethBlock, chainBlocks) => {
-        const balances = {}
-        let transform = transformAddress
-        if (transform === undefined) {
-            transform = addr => `${chain}:${addr}`
-        }
-        await sumTokensAndLPsSharedOwners(balances, lpTokens.map(token => [token, true]), stakingContracts, chainBlocks[chain], chain, transform)
-        return balances
+    return async (_timestamp, _ethBlock, {[chain]: block }) => {
+        return sumTokens2({ tokens: lpTokens, owners: stakingContracts, transformAddress, chain, block, resolveLP: true, })
     }
 }
 

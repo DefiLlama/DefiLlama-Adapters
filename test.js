@@ -12,7 +12,8 @@ const sdk = require("@defillama/sdk");
 const whitelistedExportKeys = require('./projects/helper/whitelistedExportKeys.json')
 const chainList = require('./projects/helper/chains.json')
 const handleError = require('./utils/handleError')
-const { log, diplayUnknownTable } = require('./projects/helper/utils')
+const { log, diplayUnknownTable, sliceIntoChunks } = require('./projects/helper/utils')
+const { PromisePool } = require('@supercharge/promise-pool')
 
 async function getLatestBlockRetry(chain) {
   for (let i = 0; i < 5; i++) {
@@ -255,7 +256,7 @@ function checkExportKeys(module, filePath, chains) {
     || (filePath.length === 2 && !['api.js', 'index.js'].includes(filePath[1])))  // matches .../projects/projectXYZ/index.js
     process.exit(0)
 
-  const blacklistedRootExportKeys = ['tvl', 'staking', 'pool2', 'borrowed', 'treasury'];
+  const blacklistedRootExportKeys = ['tvl', 'staking', 'pool2', 'borrowed', 'treasury', 'offers', 'vesting'];
   const rootexportKeys = Object.keys(module).filter(item => typeof module[item] !== 'object');
   const unknownChains = chains.filter(chain => !chainList.includes(chain));
   const blacklistedKeysFound = rootexportKeys.filter(key => blacklistedRootExportKeys.includes(key));
@@ -341,8 +342,13 @@ async function computeTVL(balances, timestamp) {
   fixBalances(balances)
 
   Object.keys(balances).map(k => {
+    if (+balances[k] === 0) {
+      delete balances[k]
+      return;
+    }
+    if (k.toLowerCase() === k) return;
     balances[k.toLowerCase()] = balances[k];
-    if (k.toLowerCase() != k) delete balances[k]
+    delete balances[k]
   })
 
   const eth = balances[ethereumAddress];
@@ -369,12 +375,16 @@ async function computeTVL(balances, timestamp) {
   const unknownTokens = {}
   let tokenData = []
   readKeys.forEach(i => unknownTokens[i] = true)
-  const batchSize = 50
-  for (let i = 0; i < readKeys.length; i += batchSize) {
-    const coins = readKeys.slice(i, i + batchSize).reduce((p, c) => p + `${c},`, "");
-    log('Querying prices ', i/batchSize, ' out of ', Math.ceil(readKeys.length/batchSize))
-    tokenData.push((await axios.get(`${burl}${coins}`)).data.coins)
-  }
+
+  const { errors } = await PromisePool.withConcurrency(5)
+    .for(sliceIntoChunks(readKeys, 50))
+    .process(async (keys) => {
+      const coins = keys.reduce((p, c) => p + `${c},`, "");
+      tokenData.push((await axios.get(`${burl}${coins}`)).data.coins)
+    })
+
+  if (errors && errors.length)
+    throw errors[0]
 
   let usdTvl = 0;
   const tokenBalances = {};

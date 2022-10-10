@@ -48,7 +48,8 @@ export enum CHAIN {
   STACKS = "stacks",
   STEP = "step",
   SYSCOIN = "syscoin",
-  CRONOS = "cronos"
+  CRONOS = "cronos",
+  VISION = "vision"
 }
 
 // Don´t use

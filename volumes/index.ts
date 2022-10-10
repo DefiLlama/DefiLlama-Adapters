@@ -127,6 +127,12 @@ import stepExchange from "./adapters/step-exchange";
 import pegasys from "./adapters/pegasys";
 import crodex from "./adapters/crodex";
 import dexalot from "./adapters/dexalot";
+import babyswap from "./adapters/babyswap";
+import lifinity from "./adapters/lifinity";
+import vanswap from "./adapters/vanswap";
+import daoMaker from "./adapters/dao-swap";
+import jswap from "./adapters/jswap";
+import babydogeswap from "./adapters/babydogeswap";
 
 export default {
   mooniswap,
@@ -255,6 +261,12 @@ export default {
   "step-exchange": stepExchange,
   pegasys,
   crodex,
-  dexalot
+  dexalot,
+  babyswap,
+  lifinity,
+  vanswap,
+  "dao-swap": daoMaker,
+  jswap,
+  babydogeswap
   // lyra -> OPTIONS DEX, not enable for now
 };
