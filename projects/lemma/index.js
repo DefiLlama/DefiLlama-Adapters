@@ -21,13 +21,11 @@ const perpLemmaWrappers = [
     "0x119f85ECFcFBC1d7033d266192626202Df7dbDf2",
     "0x13c214b430fE304C4C6437F3564A690cd4e4f23B"
 ];
-const isTailAsset = [false, true, true, true, true, true];
 //tracks only tvl on optimism (v2) as v1 (on arbitrum) is getting deprecated
 async function tvl(timestamp, block, chainBlocks) {
     const balances = {};
     const transform = await transformOptimismAddress();
 
-    //WBTC is a tail asset meaning we can't deposit it in the vault
     for (let i = 0; i < tokens.length; i++) {
         const token = tokens[i];
         const perpLemmaWrapper = perpLemmaWrappers[i];
