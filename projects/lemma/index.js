@@ -66,7 +66,7 @@ async function tvl(timestamp, block, chainBlocks) {
 
         }
 
-        const usdcBalancePerpLemmaWBTC = (await sdk.api.abi.call({
+        const usdcBalancePerpLemmaWrapper = (await sdk.api.abi.call({
             abi: perpV2VaultABI["getBalanceByToken"],
             chain: 'optimism',
             target: PERP_V2_VAULT,
@@ -74,7 +74,7 @@ async function tvl(timestamp, block, chainBlocks) {
             block: chainBlocks['optimism'],
         })).output;
 
-        sdk.util.sumSingleBalance(balances, transform(USDC), usdcBalancePerpLemmaWBTC);
+        sdk.util.sumSingleBalance(balances, transform(USDC), usdcBalancePerpLemmaWrapper);
 
     }
 
