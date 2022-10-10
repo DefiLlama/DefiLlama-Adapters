@@ -139,6 +139,7 @@ import templeDao from "./adapters/temple-dao";
 import karuraSwap from "./adapters/karura-swap";
 import sphynx from "./adapters/sphynx";
 import kuswap from "./adapters/kuswap";
+import paintSwap from "./adapters/paint-swap";
 
 export default {
   mooniswap,
@@ -279,6 +280,7 @@ export default {
   "temple-dao": templeDao,
   "karura-swap": karuraSwap,
   sphynx,
-  kuswap
+  kuswap,
+  "paint-swap": paintSwap
   // lyra -> OPTIONS DEX, not enable for now
 };
