@@ -136,6 +136,7 @@ import babydogeswap from "./adapters/babydogeswap";
 import wigoswap from "./adapters/wigoswap";
 import levinswap from "./adapters/levinswap";
 import templeDao from "./adapters/temple-dao";
+import karuraSwap from "./adapters/karura-swap";
 
 export default {
   mooniswap,
@@ -273,6 +274,7 @@ export default {
   babydogeswap,
   wigoswap,
   levinswap,
-  "temple-dao": templeDao
+  "temple-dao": templeDao,
+  "karura-swap": karuraSwap
   // lyra -> OPTIONS DEX, not enable for now
 };
