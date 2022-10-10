@@ -70,7 +70,6 @@ async function fetchLiquidity() {
 }
 
 module.exports = {
-  misrepresentedTokens: true,
   klaytn: { tvl: fetchLiquidity },
   timetravel: false,
 }
