@@ -18,7 +18,7 @@ const arbitrumTvl = async (timestamp, ethBlock, { arbitrum: block }) => {
       block,
     })
   ).output;
-  await sdk.util.sumSingleBalance(balances, transform(USDC), collateralBalance);
+  sdk.util.sumSingleBalance(balances, transform(USDC), collateralBalance);
   return balances;
 };
 

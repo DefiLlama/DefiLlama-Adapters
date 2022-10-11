@@ -48,7 +48,7 @@ const calcTvl = async (balances, id, chain, block, transformAddress) => {
 
     for (let i = 0; i < tokenList.length - 1; i++) {
         if (totalFunds[i].success) {
-            await sdk.util.sumSingleBalance(
+            sdk.util.sumSingleBalance(
                 balances,
                 transformAddress(tokenList[i].address),
                 totalFunds[i].output
@@ -98,7 +98,7 @@ const optimismTvl = async (chainBlocks) => {
 };
 
 module.exports = {
-    avalanche: { tvl: avaxTVL },
+    avax: { tvl: avaxTVL },
     polygon: { tvl: polygonTvl },
     optimism: { tvl: optimismTvl },
     methodology: "we only count tokens deposited in the yolo contract",
