@@ -6,16 +6,16 @@ import BigNumber from "bignumber.js";
 import { getPagedGql } from "../utils/gql";
 import { Liq } from "../utils/types";
 
-enum Chains {
+enum Chain {
   ethereum = "ethereum",
   polygon = "polygon",
   optimism = "optimism",
   arbitrum = "arbitrum",
 }
 
-const getSubgraphUrl = (chain: string) => {
+const getSubgraphUrl = (chain: Chain) => {
   let subgraphUrl: string;
-  if (chain == "ethereum") {
+  if (chain === Chain.ethereum) {
     subgraphUrl = "https://api.thegraph.com/subgraphs/name/picodes/borrow";
   } else {
     subgraphUrl =
@@ -50,7 +50,7 @@ type VaultData = {
   owner: string;
 };
 
-const getVaultData = async (chain: string) => {
+const getVaultData = async (chain: Chain) => {
   const subgraphUrl = getSubgraphUrl(chain);
   const vaultData = (await getPagedGql(
     subgraphUrl,
@@ -79,7 +79,7 @@ const getTokenInfo = async (tokenId: string) => {
 const AGEUR_TOKEN_ID = "ethereum:0x1a7e4e63778B4f12a199C062f3eFdD288afCBce8";
 
 // returns vault agEUR debt in $
-const getVaultDebt = async (id: string, chain: string) => {
+const getVaultDebt = async (id: string, chain: Chain) => {
   const vaultManager = id.split("_")[0];
   const vaultId = id.split("_")[1];
   const vaultManagerContract = new ethers.Contract(
@@ -104,7 +104,7 @@ const explorers: { [key: string]: string } = {
   arbitrum: "https://arbiscan.io/",
 };
 
-const positions = (chain: string) => async () => {
+const positions = (chain: Chain) => async () => {
   const vaultData = await getVaultData(chain);
 
   const positions: Liq[] = [];
@@ -150,15 +150,15 @@ const positions = (chain: string) => async () => {
 
 module.exports = {
   ethereum: {
-    liquidations: positions(Chains.ethereum),
+    liquidations: positions(Chain.ethereum),
   },
   polygon: {
-    liquidations: positions(Chains.polygon),
+    liquidations: positions(Chain.polygon),
   },
   optimism: {
-    liquidations: positions(Chains.optimism),
+    liquidations: positions(Chain.optimism),
   },
   arbitrum: {
-    liquidations: positions(Chains.arbitrum),
+    liquidations: positions(Chain.arbitrum),
   },
 };
