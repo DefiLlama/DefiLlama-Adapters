@@ -1,7 +1,7 @@
 {
-  "token": {
+  "asset": {
     "inputs": [],
-    "name": "token",
+    "name": "asset",
     "outputs": [
       {
         "internalType": "address",
@@ -12,9 +12,9 @@
     "stateMutability": "view",
     "type": "function"
   },
-  "balance": {
+  "totalAssets": {
     "inputs": [],
-    "name": "balance",
+    "name": "totalAssets",
     "outputs": [
       {
         "internalType": "uint256",

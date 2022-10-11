@@ -113,6 +113,33 @@ import complusNetwork from "./adapters/complus-network";
 import padswap from "./adapters/padswap";
 import sharkswap from "./adapters/sharkswap";
 import okcswap from "./adapters/okcswap";
+import empiredex from "./adapters/empiredex";
+import makiswap from "./adapters/makiswap";
+import smartdex from "./adapters/smartdex";
+import cometh from "./adapters/cometh";
+import maiarExchange from "./adapters/maiar-exchange";
+import defichainDex from "./adapters/defichain-dex";
+import planet from "./adapters/blue-planet";
+import aldrin from "./adapters/aldrin";
+import capricornFinance from "./adapters/capricorn-finance";
+import alex from "./adapters/alex";
+import stepExchange from "./adapters/step-exchange";
+import pegasys from "./adapters/pegasys";
+import crodex from "./adapters/crodex";
+import dexalot from "./adapters/dexalot";
+import babyswap from "./adapters/babyswap";
+import lifinity from "./adapters/lifinity";
+import vanswap from "./adapters/vanswap";
+import daoMaker from "./adapters/dao-swap";
+import jswap from "./adapters/jswap";
+import babydogeswap from "./adapters/babydogeswap";
+import wigoswap from "./adapters/wigoswap";
+import levinswap from "./adapters/levinswap";
+import templeDao from "./adapters/temple-dao";
+import karuraSwap from "./adapters/karura-swap";
+import sphynx from "./adapters/sphynx";
+import kuswap from "./adapters/kuswap";
+import paintSwap from "./adapters/paint-swap";
 
 export default {
   mooniswap,
@@ -227,6 +254,33 @@ export default {
   "complus-network": complusNetwork,
   padswap,
   sharkswap,
-  okcswap
+  okcswap,
+  empiredex,
+  makiswap,
+  smartdex,
+  cometh,
+  "maiar-exchange": maiarExchange,
+  "defichain-dex": defichainDex,
+  "blue-planet": planet,
+  aldrin,
+  "capricorn-finance" :capricornFinance,
+  alex,
+  "step-exchange": stepExchange,
+  pegasys,
+  crodex,
+  dexalot,
+  babyswap,
+  lifinity,
+  vanswap,
+  "dao-swap": daoMaker,
+  jswap,
+  babydogeswap,
+  wigoswap,
+  levinswap,
+  "temple-dao": templeDao,
+  "karura-swap": karuraSwap,
+  sphynx,
+  kuswap,
+  "paint-swap": paintSwap
   // lyra -> OPTIONS DEX, not enable for now
 };

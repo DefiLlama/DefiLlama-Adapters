@@ -1,4 +1,3 @@
-const { getBlock } = require('../helper/getBlock')
 const { staking } = require('../helper/staking')
 const { sumTokens } = require('../helper/unwrapLPs')
 
@@ -38,9 +37,8 @@ const L2toL1Synths = {
     '0xc5db22719a06418028a40a9b5e9a7c02959d0d08': '0xbbc455cb4f1b9e4bfc4b73970d360c8f032efee6'
 }
 
-async function tvl(ttimestamp, _b, chainBlocks){
+async function tvl(ttimestamp, _b, {optimism: block}){
     const balances = {}
-    const block = await getBlock(ttimestamp, 'optimism', chainBlocks)
     const transform = (addr)=>{
         return L2toL1Synths[addr] || addr;
     }
