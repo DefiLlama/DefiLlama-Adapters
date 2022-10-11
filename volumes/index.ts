@@ -145,6 +145,7 @@ import surfswap from "./adapters/surfswap";
 import boggedFinance from "./adapters/bogged-finance";
 import jetswap from "./adapters/jetswap";
 import saucerswap from "./adapters/saucerswap";
+import synthetify from "./adapters/synthetify";
 
 export default {
   mooniswap,
@@ -291,6 +292,7 @@ export default {
   surfswap,
   "bogged-finance": boggedFinance,
   jetswap,
-  saucerswap
+  saucerswap,
+  synthetify
   // lyra -> OPTIONS DEX, not enable for now
 };
