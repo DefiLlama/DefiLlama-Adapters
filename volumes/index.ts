@@ -140,6 +140,7 @@ import karuraSwap from "./adapters/karura-swap";
 import sphynx from "./adapters/sphynx";
 import kuswap from "./adapters/kuswap";
 import paintSwap from "./adapters/paint-swap";
+import benswap from "./adapters/benswap";
 
 export default {
   mooniswap,
@@ -281,6 +282,7 @@ export default {
   "karura-swap": karuraSwap,
   sphynx,
   kuswap,
-  "paint-swap": paintSwap
+  "paint-swap": paintSwap,
+  benswap
   // lyra -> OPTIONS DEX, not enable for now
 };
