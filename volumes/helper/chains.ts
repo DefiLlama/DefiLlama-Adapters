@@ -51,7 +51,8 @@ export enum CHAIN {
   CRONOS = "cronos",
   VISION = "vision",
   KARURA = "KARURA",
-  SMARTBCH = "smartbch"
+  SMARTBCH = "smartbch",
+  KAVA = "kava"
 }
 
 // Don´t use
