@@ -10,18 +10,19 @@ enum Chains {
   ethereum = "ethereum",
   polygon = "polygon",
   optimism = "optimism",
-  arbitrum = "arbitrum"
+  arbitrum = "arbitrum",
 }
 
 const getSubgraphUrl = (chain: string) => {
-  let subgraphUrl: string
+  let subgraphUrl: string;
   if (chain == "ethereum") {
     subgraphUrl = "https://api.thegraph.com/subgraphs/name/picodes/borrow";
   } else {
-    subgraphUrl = "https://api.thegraph.com/subgraphs/name/picodes/" + chain + "-borrow";
+    subgraphUrl =
+      "https://api.thegraph.com/subgraphs/name/picodes/" + chain + "-borrow";
   }
-  return subgraphUrl
-} 
+  return subgraphUrl;
+};
 
 const vaultDataQuery = gql`
   query vaultDatas($lastId: ID) {
@@ -50,14 +51,26 @@ type VaultData = {
 };
 
 const getVaultData = async (chain: string) => {
-  const subgraphUrl = getSubgraphUrl(chain)
-  const vaultData = (await getPagedGql(subgraphUrl, vaultDataQuery, "vaultDatas")) as VaultData[];
+  const subgraphUrl = getSubgraphUrl(chain);
+  const vaultData = (await getPagedGql(
+    subgraphUrl,
+    vaultDataQuery,
+    "vaultDatas"
+  )) as VaultData[];
   return vaultData;
 };
 
 const getTokenInfo = async (tokenId: string) => {
-  const info = (await axios.get("https://coins.llama.fi/prices/current/" + tokenId)).data.coins as {
-    [tokenId: string]: { decimals: number; price: number; symbol: string; timestamp: number; confidence: number };
+  const info = (
+    await axios.get("https://coins.llama.fi/prices/current/" + tokenId)
+  ).data.coins as {
+    [tokenId: string]: {
+      decimals: number;
+      price: number;
+      symbol: string;
+      timestamp: number;
+      confidence: number;
+    };
   };
   const price = info[tokenId];
   return price;
@@ -74,20 +87,24 @@ const getVaultDebt = async (id: string, chain: string) => {
     ["function getVaultDebt(uint256) view returns (uint256)"],
     providers[chain]
   );
-  const vaultDebtRaw = BigNumber((await vaultManagerContract.getVaultDebt(vaultId)).toString());
+  const vaultDebtRaw = BigNumber(
+    (await vaultManagerContract.getVaultDebt(vaultId)).toString()
+  );
   // convert vault debt to $
-  const vaultDebt = vaultDebtRaw.times((await getTokenInfo(AGEUR_TOKEN_ID)).price);
+  const vaultDebt = vaultDebtRaw.times(
+    (await getTokenInfo(AGEUR_TOKEN_ID)).price
+  );
   return vaultDebt;
 };
 
-const explorers: {[key: string]: string} = {
-  "ethereum": "https://etherscan.io/",
-  "polygon": "https://polygonscan.com/",
-  "optimism": "https://optimistic.etherscan.io/",
-  "arbitrum": "https://arbiscan.io/"
-}
+const explorers: { [key: string]: string } = {
+  ethereum: "https://etherscan.io/",
+  polygon: "https://polygonscan.com/",
+  optimism: "https://optimistic.etherscan.io/",
+  arbitrum: "https://arbiscan.io/",
+};
 
-const positions = (chain: string)=> async () => {
+const positions = (chain: string) => async () => {
   const vaultData = await getVaultData(chain);
 
   const positions: Liq[] = [];
@@ -98,10 +115,13 @@ const positions = (chain: string)=> async () => {
 
     // liquidation price computation
     const vaultDebt = await getVaultDebt(vault.id, chain);
-    const collateralFactor = BigNumber(vault.vaultManager.collateralFactor).div(10e8);
+    const collateralFactor = BigNumber(vault.vaultManager.collateralFactor).div(
+      10e8
+    );
     let liqPrice: number;
 
-    const collateralDecimals = (await getTokenInfo(chain + ":" + collateral)).decimals;
+    const collateralDecimals = (await getTokenInfo(chain + ":" + collateral))
+      .decimals;
     if (collateralDecimals != 18) {
       // correcting the number of decimals
       liqPrice = BigNumber(vaultDebt)
@@ -109,7 +129,9 @@ const positions = (chain: string)=> async () => {
         .times(10 ** (collateralDecimals - 18))
         .toNumber();
     } else {
-      liqPrice = BigNumber(vaultDebt).div(BigNumber(collateralAmount).times(collateralFactor)).toNumber();
+      liqPrice = BigNumber(vaultDebt)
+        .div(BigNumber(collateralAmount).times(collateralFactor))
+        .toNumber();
     }
 
     positions.push({
