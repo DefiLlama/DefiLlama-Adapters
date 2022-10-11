@@ -18,7 +18,7 @@ function ohmTvl(treasury, treasuryTokens, chain = 'ethereum', stakingAddress, st
         return balances
     }
     return {
-        [chain === "avax"?"avalanche":chain]: {
+        [chain]: {
             tvl,
             staking: tokenOnCoingecko?
                 staking(stakingAddress, stakingToken, chain, transform ? transform(stakingToken) : undefined)

@@ -9,8 +9,8 @@ function ohmTvlMultiTreasuries(treasuries, treasuryTokens, chain, stakingAddress
 
     // Edit TVL of object to be the cumulative tvl
     const tvl_object = tvl_per_treasury[0]
-    const tvls = tvl_per_treasury.map(o => o[chain === "avax"?"avalanche":chain].tvl)
-    tvl_object[chain === "avax"?"avalanche":chain].tvl = sdk.util.sumChainTvls(tvls)
+    const tvls = tvl_per_treasury.map(o => o[chain].tvl)
+    tvl_object[chain].tvl = sdk.util.sumChainTvls(tvls)
     return tvl_object
 }
 
