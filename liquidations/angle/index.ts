@@ -145,7 +145,7 @@ const positions = (chain: string) => async () => {
     });
   }
 
-  return positions;
+  return positions.filter((position) => position.liqPrice > 0);
 };
 
 module.exports = {
