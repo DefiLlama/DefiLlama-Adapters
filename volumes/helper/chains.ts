@@ -50,7 +50,8 @@ export enum CHAIN {
   SYSCOIN = "syscoin",
   CRONOS = "cronos",
   VISION = "vision",
-  KARURA = "KARURA"
+  KARURA = "KARURA",
+  SMARTBCH = "smartbch"
 }
 
 // Don´t use
