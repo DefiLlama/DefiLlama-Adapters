@@ -142,6 +142,7 @@ import kuswap from "./adapters/kuswap";
 import paintSwap from "./adapters/paint-swap";
 import benswap from "./adapters/benswap";
 import surfswap from "./adapters/surfswap";
+import boggedFinance from "./adapters/bogged-finance";
 
 export default {
   mooniswap,
@@ -285,6 +286,7 @@ export default {
   kuswap,
   "paint-swap": paintSwap,
   benswap,
-  surfswap
+  surfswap,
+  "bogged-finance": boggedFinance
   // lyra -> OPTIONS DEX, not enable for now
 };
