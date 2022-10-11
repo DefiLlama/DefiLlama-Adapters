@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const { default: BigNumber } = require("bignumber.js");
 const { stakings } = require("../helper/staking");
 const { transformBalances } = require('../helper/portedTokens')
 const abi = require("./abi.json");
@@ -56,7 +55,7 @@ async function getVaultsByGraph(chain = 'ethereum') {
   return vaults;
 }
 
-async function vaultBalances(block, chain = 'ethereum'){
+async function vaultBalances(block, chain = 'ethereum', oneTokenList){
   const vaults = await getVaultsByGraph(chain)
   
   const poolsCalls = vaults.map(i => ({ target: i.address }))
@@ -69,11 +68,17 @@ async function vaultBalances(block, chain = 'ethereum'){
 
   const balances = {}
   vaultBalances.forEach((data, i) => {
-    balances[vaults[i].tokenA] = BigNumber(balances[vaults[i].tokenA] || 0).plus(data.output.total0).toFixed(0)
-    balances[vaults[i].tokenB] = BigNumber(balances[vaults[i].tokenB] || 0).plus(data.output.total1).toFixed(0)
+    addBalance(vaults[i].tokenA, data.output.total0)
+    addBalance(vaults[i].tokenB, data.output.total1)
   })
 
   return balances;
+
+  function addBalance(token, balance) {
+    if (oneTokenList.includes(token.toLowerCase()))
+      return;
+    sdk.util.sumSingleBalance(balances, token, balance)
+  }
 }
 
 const oneFactory = {
@@ -98,7 +103,7 @@ async function oneTokenBalances(block, chain='ethereum') {
     chain, block,
   })
 
-  const oneTokenList = oneTokens.map(i => ( i.output ))
+  const oneTokenList = oneTokens.map(i => ( i.output.toLowerCase() ))
 
   // get list of all tokens in the system
   const { output: foreignTokenCount } = await sdk.api.abi.call({
@@ -179,18 +184,17 @@ async function oneTokenBalances(block, chain='ethereum') {
 
   await unwrapUniswapV3NFTs({ balances, owners: uniV3NFTHolders, chain, block })
 
-  return balances;
+  return { balances, oneTokenList };
 }
 
 async function tvl(timestamp, block) {
 
-  const balances = await oneTokenBalances(block)
+  const { balances, oneTokenList } = await oneTokenBalances(block)
 
-  const vBalances = await vaultBalances(block)
+  const vBalances = await vaultBalances(block, undefined, oneTokenList)
   
-  for(var token in vBalances) {
-    balances[token] = BigNumber(balances[token] || 0).plus(vBalances[token]).toFixed(0)
-  }
+  for(var token in vBalances)
+    sdk.util.sumSingleBalance(balances, token, vBalances[token])
 
   return balances
 }
@@ -198,13 +202,12 @@ async function tvl(timestamp, block) {
 async function polygonTvl(_, _b, { polygon: block }){
   const chain = 'polygon'
 
-  const balances = await oneTokenBalances(block, chain)
+  const { balances, oneTokenList } = await oneTokenBalances(block, chain)
 
-  const vBalances = await vaultBalances(block, chain)
+  const vBalances = await vaultBalances(block, chain, oneTokenList)
   const vBalancesTransformed = await transformBalances(chain,vBalances)
-  for(var token in vBalancesTransformed) {
-    balances[token] = BigNumber(balances[token] || 0).plus(vBalancesTransformed[token]).toFixed(0)
-  }
+  for(var token in vBalancesTransformed)
+    sdk.util.sumSingleBalance(balances, token, vBalancesTransformed[token])
 
   return balances;
 }
