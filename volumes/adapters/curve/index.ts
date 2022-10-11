@@ -1,6 +1,6 @@
 import { SimpleVolumeAdapter } from "../../dexVolume.type";
 
-const { fetchURL } = require("../../helper/utils");
+import fetchURL from "../../utils/fetchURL"
 
 const endpoints: { [chain: string]: string } = {
   ethereum: "https://api.curve.fi/api/getAllPoolsVolume/ethereum",

@@ -13,12 +13,12 @@ const UMB_bsc = "0x846F52020749715F02AEf25b5d1d65e48945649D";
 module.exports = {
   misrepresentedTokens: true,
   ethereum: {
+    tvl: (async) => ({}),
     staking: staking(stakingContract, UMB),
     pool2: pool2(pool2StakingContract, UMB_WETH_UNIV2),
   },
   bsc: {
     staking: staking(stakingContract_bsc, UMB_bsc, "bsc"),
   },
-  tvl: (async) => ({}),
   methodology: "Counts liquidty on the staking and pool2 only",
 };

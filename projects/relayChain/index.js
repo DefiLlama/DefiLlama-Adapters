@@ -11,6 +11,7 @@ const relayEth = "0x5D843Fa9495d23dE997C394296ac7B4D721E841c";
 const xcasEth = "0x7659CE147D0e714454073a5dd7003544234b6Aa0";
 const trueUSDEth = "0x0000000000085d4780B73119b644AE5ecd22b376";
 const zeroEth = "0xF0939011a9bb95c3B791f0cb546377Ed2693a574";
+const dxpEth="0x88aa4a6C5050b9A1b2Aa7e34D0582025cA6AB745";
 
 const usdtBsc = "0x55d398326f99059fF775485246999027B3197955";
 const daiBsc = "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3";
@@ -91,6 +92,7 @@ const metis = "0xDeadDeAddeAddEAddeadDEaDDEAdDeaDDeAD0000";
 const wbtcMetis = "0xa5B55ab1dAF0F8e1EFc0eB1931a957fd89B918f4";
 const avaxMetis = "0xE253E0CeA0CDD43d9628567d097052B33F98D611";
 const daiMetis = "0x4651B38e7ec14BB3db731369BFE5B08F2466Bd0A";
+const mdaiMetis="0x4c078361FC9BbB78DF910800A991C7c3DD2F6ce0";
 
 
 
@@ -114,6 +116,14 @@ const busdIoTex = "0xacee9b11cd4b3f57e58880277ac72c8c41abe4e4";
 const wIotex = "0xa00744882684c3e4747faefd68d283ea44099d03";
 
 
+const usdtOptimism = "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58";
+const daiOptimism = "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1";
+const wbtcOptimism = "0x68f180fcCe6836688e9084f035309E29Bf0A2095";
+
+const wbtcArbitrum = "0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f";
+const usdtArbitrum = "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9";
+const daiArbitrum = "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1";
+
 
 
 const ethAddr = "0xF687e1481d85F8b9F4D1f4D4C15348CeF8E5a762";
@@ -129,9 +139,10 @@ const iotexAddr = "0xEfB3E6a5cCe777AE472D1255D712407fd22A9547";
 const harmonyAddr = "0xa0026a3047bDf539f6Bf405aF576BE2038faC5A8";
 const metisAddr = "0x640b3408EaC140297136677aC0cFF13a8c82C5Ed";
 const cronosAddr = "0x3f1B059d94551c9300176ceB55FD23aF0e4E2E29";
+const BRIDGE_ADDRESS = "0x9A8cF02F3e56c664Ce75E395D0E4F3dC3DafE138";
 
 
-let ethTokenAddress = [usdtEth, daiEth, wbtcEth, usdcEth, wethEth, xcasEth, trueUSDEth, zeroEth];
+let ethTokenAddress = [usdtEth, daiEth, wbtcEth, usdcEth, wethEth, xcasEth, trueUSDEth, zeroEth,dxpEth];
 let bscTokenAddress = [usdtBsc, daiBsc, usdcBsc, busdBsc, ethBsc, wbnbBsc];
 let avaxTokenAddress = [daiAvax, wavax, wbtcAvax, usdcAvax, usdtAvax];
 let hecoTokenAddress = [wHeco, wbtcHeco, ethHeco, usdcHeco, daiHeco, husdHeco];
@@ -140,10 +151,12 @@ let moonTokenAddress = [usdtMoonriver, daiMoonriver, usdcMoonriver, wbtcMoonrive
 let fantomTokenAddress = [usdcFantom, usdtFantom, daiFantom, wFantom, btcFantom];
 let harmonyTokenAddress = [usdtHarmony, daiHarmony, usdcHarmony, busdHarmony, woneOne];
 let shidenTokenAddress = [wsdnShiden, usdtShiden, usdcShiden, busdShiden];
-let metisTokenAddress = [usdcMetis, usdtMetis, metis, maticMetis, ftmMetis, mimMetis];
+let metisTokenAddress = [usdcMetis, usdtMetis, metis, maticMetis, ftmMetis, mimMetis,mdaiMetis];
 let metisTotalSupply = [wbtcMetis, daiMetis, avaxMetis, ftmMetis, maticMetis];
 let cronosTokenAddress = [usdtCronos, daiCronos, usdcCronos, wbtcCronos, wethCronos, busdCronos, wCronos];
 let iotexTokenAddress = [usdtIoTex, daiIoTex, usdcIoTex, busdIoTex, wIotex]
+let optimismTokenAddress=[usdtOptimism,daiOptimism,wbtcOptimism]
+let arbitrumTokenAddress=[wbtcArbitrum,usdtArbitrum,daiArbitrum]
 
 
 async function ethTvl(timestamp, ethBlock) {
@@ -153,10 +166,11 @@ async function ethTvl(timestamp, ethBlock) {
   ethTokenAddress.forEach(t => {
     toa.push([t, ethAddr])
     toa.push([t, eth1Addr])
+    toa.push([t, BRIDGE_ADDRESS])
   })
 
   tokenBalance = (await sdk.api.eth.getBalance({ target: eth1Addr })).output;
-  await sdk.util.sumSingleBalance(balances, "ethereum:" + "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", tokenBalance)
+  sdk.util.sumSingleBalance(balances, "ethereum:" + "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", tokenBalance)
 
   return sumTokens(balances, toa, ethBlock)
 };
@@ -168,6 +182,7 @@ async function bscTvl(timestamp, ethBlock, chainBlocks) {
   let balances = {};
   bscTokenAddress.forEach(t => {
     toa.push([t, bscAddr])
+    toa.push([t, BRIDGE_ADDRESS])
   })
 
 
@@ -180,6 +195,7 @@ async function avaxTvl(timestamp, ethBlock, chainBlocks) {
   let balances = {};
   avaxTokenAddress.forEach(t => {
     toa.push([t, avaxAddr])
+    toa.push([t, BRIDGE_ADDRESS])
   })
 
   return sumTokens(balances, toa, chainBlocks[chain], chain)
@@ -191,6 +207,7 @@ async function hecoTvl(timestamp, ethBlock, chainBlocks) {
   let balances = {};
   hecoTokenAddress.forEach(t => {
     toa.push([t, hecoAddr])
+    toa.push([t, BRIDGE_ADDRESS])
   })
 
   return sumTokens(balances, toa, chainBlocks[chain], chain)
@@ -202,6 +219,7 @@ async function polygonTvl(timestamp, ethBlock, chainBlocks) {
   let balances = {};
   maticTokenAddress.forEach(t => {
     toa.push([t, polyAddr])
+    toa.push([t, BRIDGE_ADDRESS])
   })
 
   return sumTokens(balances, toa, chainBlocks[chain], chain)
@@ -213,6 +231,7 @@ async function fantomTvl(unixTimestamp, ethBlock, chainBlocks) {
   let balances = {};
   fantomTokenAddress.forEach(t => {
     toa.push([t, ftmAddr])
+    toa.push([t, BRIDGE_ADDRESS])
   })
 
   return sumTokens(balances, toa, chainBlocks[chain], chain)
@@ -224,6 +243,7 @@ async function harmonyTvl(unixTimestamp, ethBlock, chainBlocks) {
   let balances = {};
   harmonyTokenAddress.forEach(t => {
     toa.push([t, harmonyAddr])
+    toa.push([t, BRIDGE_ADDRESS])
   })
 
   return sumTokens(balances, toa, chainBlocks[chain], chain)
@@ -235,6 +255,7 @@ async function metisTvl(unixTimestamp, ethBlock, chainBlocks) {
   let balances = {};
   metisTokenAddress.forEach(t => {
     toa.push([t, metisAddr])
+    toa.push([t, BRIDGE_ADDRESS])
   })
 
   return sumTokens(balances, toa, chainBlocks[chain], chain)
@@ -246,6 +267,7 @@ async function cronosTvl(timestamp, ethBlock, chainBlocks) {
   let balances = {};
   cronosTokenAddress.forEach(t => {
     toa.push([t, cronosAddr])
+    toa.push([t, BRIDGE_ADDRESS])
   })
 
   return sumTokens(balances, toa, chainBlocks[chain], chain)
@@ -257,6 +279,7 @@ async function ioTexTvl(timestamp, ethBlock, chainBlocks) {
   let balances = {};
   iotexTokenAddress.forEach(t => {
     toa.push([t, iotexAddr])
+    toa.push([t, BRIDGE_ADDRESS])
   })
 
   return sumTokens(balances, toa, chainBlocks[chain], chain)
@@ -268,6 +291,29 @@ async function moonriverTvl(timestamp, ethBlock, chainBlocks) {
   let balances = {};
   moonTokenAddress.forEach(t => {
     toa.push([t, moonriverAddr])
+    toa.push([t, BRIDGE_ADDRESS])
+  })
+
+  return sumTokens(balances, toa, chainBlocks[chain], chain)
+}
+
+async function optimismTvl(timestamp, ethBlock, chainBlocks) {
+  const chain = 'optimism'
+  const toa = []
+  let balances = {};
+  optimismTokenAddress.forEach(t => {
+    toa.push([t, BRIDGE_ADDRESS])
+  })
+
+  return sumTokens(balances, toa, chainBlocks[chain], chain)
+}
+
+async function arbitrumTvl(timestamp, ethBlock, chainBlocks) {
+  const chain = 'arbitrum'
+  const toa = []
+  let balances = {};
+  arbitrumTokenAddress.forEach(t => {
+    toa.push([t, BRIDGE_ADDRESS])
   })
 
   return sumTokens(balances, toa, chainBlocks[chain], chain)
@@ -309,5 +355,11 @@ module.exports = {
   moonriver: {
     tvl: moonriverTvl,
   },
+  optimism: {
+    tvl: optimismTvl,
+  },
+  arbitrum: {
+    tvl: arbitrumTvl,
+  },
 
-}; 
+};

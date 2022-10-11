@@ -1,10 +1,8 @@
 const sdk = require('@defillama/sdk')
-const { getBlock } = require('../helper/getBlock');
 
 
-async function tvl(timestamp, ethBlock, chainBlocks) {
+async function tvl(timestamp, ethBlock, {kcc: block}) {
   const chain = "kcc"
-  const block = await getBlock(timestamp, chain, chainBlocks, true)
   const totalLockedKCS = await sdk.api.abi.call({
     block,
     chain,

@@ -42,7 +42,7 @@ async function v3EthTvl(_, block) {
   let lastId = ''
   let pools
   // remove the bad pools
-  const blacklisted = ['0xa850478adaace4c08fc61de44d8cf3b64f359bec']
+  const blacklisted = ['0xa850478adaace4c08fc61de44d8cf3b64f359bec', '0x055284a4ca6532ecc219ac06b577d540c686669d', '0x8c0411f2ad5470a66cb2e9c64536cfb8dcd54d51', '0x277667eb3e34f134adf870be9550e9f323d0dc24']
 
   const graphQuery = gql`
     query poolQuery($lastId: String) {
