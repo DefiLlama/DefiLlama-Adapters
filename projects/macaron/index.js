@@ -102,9 +102,9 @@ function setChainTVL(chain) {
       })
     })
 
-    await sumTokens(balances.tvl, toaTvl, block, chain, transform, { resolveLP: true })
-    await sumTokens(balances.pool2, toaPool2, block, chain, transform, { resolveLP: true })
-    await sumTokens(balances.staking, toaStaking, block, chain, transform, { resolveLP: false })
+    await sumTokens(balances.tvl, toaTvl, block, chain, transform)
+    await sumTokens(balances.pool2, toaPool2, block, chain, transform)
+    await sumTokens(balances.staking, toaStaking, block, chain, transform)
     await unwrapUniswapLPs(balances.tvl, lpPositions, block, chain, transform)
     return balances
   }

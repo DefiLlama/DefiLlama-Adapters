@@ -33,7 +33,7 @@ async function tvl(_timestamp, block){
 
 module.exports = {
   start: 1610650220,
-  tvl
+  ethereum: { tvl },
 }
 
 const tokenHolderMap = [

@@ -21,5 +21,19 @@
     ],
     "stateMutability": "view",
     "type": "function"
+  }, 
+  "escrows_length": {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "escrows_length",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "uint256" }]
+  },
+  "escrows": {
+    "stateMutability": "view",
+    "type": "function",
+    "name": "escrows",
+    "inputs": [{ "name": "arg0", "type": "uint256" }],
+    "outputs": [{ "name": "", "type": "address" }]
   }
 }

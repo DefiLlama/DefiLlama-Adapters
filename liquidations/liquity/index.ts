@@ -1,7 +1,7 @@
 import { gql, request } from "graphql-request";
 import BigNumber from "bignumber.js";
 import { getPagedGql } from "../utils/gql";
-import { Liq } from "../utils/binResults";
+import { Liq } from "../utils/types";
 
 const subgraphUrl = "https://api.thegraph.com/subgraphs/name/liquity/liquity";
 

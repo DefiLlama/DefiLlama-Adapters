@@ -3,6 +3,8 @@ const nullAddress = '0x0000000000000000000000000000000000000000'
 
 // Multichain bridge info: https://bridgeapi.anyswap.exchange/v2/serverInfo/all
 // IBC info - https://github.com/PulsarDefi/IBC-Cosmos/blob/main/ibc_data.json
+// O3swap - https://agg.o3swap.com/v1/tokens_all
+// wanchain - https://wanscan.org/tokens
 
 const transformTokens = {
   ethereum: {
@@ -68,6 +70,7 @@ const transformTokens = {
     "0x8cc97b50fe87f31770bcdcd6bc8603bc1558380b": "cronos:0x0804702a4e749d39a35fde73d1df0b1f1d6b8347", // single
     "0x95bf7e307bc1ab0ba38ae10fc27084bc36fcd605": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
     "0xc5cd01e988cd0794e05ab80f2bcdbdf13ce08bd3": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // nUSD -> USDC
+    "0x7f620d7d0b3479b1655cefb1b0bc67fb0ef4e443": "fantom:0xf16e81dce15b08f326220742020379b855b87df9", // nICE -> ICE
   },
   avax: {
     "0xaf2c034c764d53005cc6cbc092518112cbd652bb": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
@@ -165,7 +168,8 @@ const transformTokens = {
     "0x4537e328bf7e4efa29d05caea260d7fe26af9d74": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
     "0x4ecaba5870353805a9f068101a40e0f32ed605c6": "0xdac17f958d2ee523a2206206994597c13d831ec7",
     "0x7122d7661c4564b7c6cd4878b06766489a6028a2": "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0",
-    "0x8e5bbbb09ed1ebde8674cda39a0c169401db4252": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599"
+    "0x8e5bbbb09ed1ebde8674cda39a0c169401db4252": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+    "0xec3f3e6d7907acDa3A7431abD230196CDA3FbB19": "0xFd09911130e6930Bf87F2B0554c44F400bD80D3e", // ETHIX (Ethichub)
     // '0x29414ec76d79ff238e5e773322799d1c7ca2443f': '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', // Boring oBTC
   },
   okexchain: {
@@ -225,7 +229,8 @@ const transformTokens = {
   },
   moonriver: {
     "0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c": "avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c",
-    "0x0000000000000000000000000000000000000000": "moonriver:0x98878B06940aE243284CA214f92Bb71a2b032B8A"
+    "0x0000000000000000000000000000000000000000": "moonriver:0x98878B06940aE243284CA214f92Bb71a2b032B8A",
+    "0xE3C7487Eb01C74b73B7184D198c7fBF46b34E5AF": "moonriver:0x98878B06940aE243284CA214f92Bb71a2b032B8A",
   },
   moonbeam: {
     '0x322E86852e492a7Ee17f28a78c663da38FB33bfb': '0x853d955aCEf822Db058eb8505911ED77F175b99e', // frax
@@ -237,6 +242,7 @@ const transformTokens = {
     '0xc234A67a4F840E61adE794be47de455361b52413': '0x6b175474e89094c44da98b954eedeac495271d0f', // dai
     '0x1d4C2a246311bB9f827F4C768e277FF5787B7D7E': 'moonriver:0x98878b06940ae243284ca214f92bb71a2b032b8a', // movr
     '0x0000000000000000000000000000000000000000': 'moonbeam:0xacc15dc74880c9944775448304b263d191c6077f', // GLMR -> WGLMR
+    '0x5f6c5C2fB289dB2228d159C69621215e354218d7': 'moonbeam:0xacc15dc74880c9944775448304b263d191c6077f', // GLMR -> WGLMR
   },
   arbitrum: {
     "0x0000000000000000000000000000000000000000": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // WETH
@@ -276,11 +282,9 @@ const transformTokens = {
   },
   oasis: {
     "0x3223f17957ba502cbe71401d55a0db26e5f7c68f": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", //WETH
-    "0xe8a638b3b7565ee7c5eb9755e58552afc87b94dd": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USDC
     "0x4bf769b05e832fcdc9053fffbc78ca889acb5e1e": "0xdac17f958d2ee523a2206206994597c13d831ec7", // USDT
     "0x6cb9750a92643382e020ea9a170abb83df05f30b": "0xdac17f958d2ee523a2206206994597c13d831ec7", // USDT
     "0xdc19a122e268128b5ee20366299fc7b5b199c8e3": "0xdac17f958d2ee523a2206206994597c13d831ec7", // USDT wormhole
-    "0x81ecac0d6be0550a00ff064a4f9dd2400585fe9c": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USDC celer
     "0x94fbffe5698db6f54d6ca524dbe673a7729014be": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USDC
     "0x80a16016cc4a2e6a2caca8a4a498b1699ff0f844": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48" // USDC
     //'0x21c718c22d52d0f3a789b752d4c2fd5908a8a733': 'wrapped-rose',
@@ -298,6 +302,7 @@ const transformTokens = {
   },
   metis: {
     "0x0000000000000000000000000000000000000000": "0x9e32b13ce7f2e80a01932b42553652e053d6ed8e", // METIS
+    "0x75cb093e4d61d2a2e65d8e0bbb01de8d89b53481": "0x9e32b13ce7f2e80a01932b42553652e053d6ed8e", // METIS
     "0xdeaddeaddeaddeaddeaddeaddeaddeaddead0000": "0x9e32b13ce7f2e80a01932b42553652e053d6ed8e",
     "0xbb06dca3ae6887fabf931640f67cab3e3a16f4dc": "0xdac17f958d2ee523a2206206994597c13d831ec7",
     "0x420000000000000000000000000000000000000a": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
@@ -315,7 +320,9 @@ const transformTokens = {
     "0x67c10c397dd0ba417329543c1a40eb48aaa7cd00": "0x0f2d719407fdbeff09d87557abb7232601fd9f29", //SYN
     "0x226d8bfb4da78ddc5bd8fd6c1532c58e88f9fd34": "0xbc19712feb3a26080ebf6f2f7849b417fdd792ca", // BoringDAO
   },
-  celo: {},
+  celo: {
+    "0x9995cc8F20Db5896943Afc8eE0ba463259c931ed": "0xFd09911130e6930Bf87F2B0554c44F400bD80D3e", // ETHIX (Ethichub)
+  },
   boba: {
     "0x0000000000000000000000000000000000000000": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // WETH
     "0xd203De32170130082896b4111eDF825a4774c18E": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // synapse wETH
@@ -346,7 +353,8 @@ const transformTokens = {
     "0x41eAFC40CD5Cb904157A10158F73fF2824dC1339": "0x6B175474E89094C44Da98b954EedeAC495271d0F", // DAI
     "0xab58DA63DFDd6B97EAaB3C94165Ef6f43d951fb2": "0xdAC17F958D2ee523a2206206994597C13D831ec7", // USDT
     "0x5a955FDdF055F2dE3281d99718f5f1531744B102": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // USDC
-    "0x48AEB7584BA26D3791f06fBA360dB435B3d7A174": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599" // WBTC
+    "0x48AEB7584BA26D3791f06fBA360dB435B3d7A174": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599", // WBTC
+    "0x42110A5133F91B49E32B671Db86E2C44Edc13832": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // sUSDC(Milkomeda) -> USDC
   },
   bittorrent: {
     "0xdb28719f7f938507dbfe4f0eae55668903d34a15": "0xdac17f958d2ee523a2206206994597c13d831ec7", // USDT
@@ -401,8 +409,6 @@ const transformTokens = {
     "0x274d83086C356E0cFc75933FBf838CA10A7E8274": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
   },
   dfk: {
-    "0xb57b60debdb0b8172bb6316a9164bd3c695f133a": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", // AVAX
-    "0x3ad9dfe640e1a9cc1d9b0948620820d975c3803a": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48" // USDC
   },
   cronos: {
     "0x87EFB3ec1576Dec8ED47e58B832bEdCd86eE186e": "0x0000000000085d4780B73119b644AE5ecd22b376",
@@ -453,6 +459,7 @@ const fixBalancesTokens = {
     "0x19574c3c8fafc875051b665ec131b7e60773d2c9": { coingeckoId: "astar", decimals: 18, },
     "0xE511ED88575C57767BAfb72BfD10775413E3F2b0": { coingeckoId: "astar", decimals: 18, },// nASTR
     "0xAeaaf0e2c81Af264101B9129C00F4440cCF0F720": { coingeckoId: "astar", decimals: 18, },
+    "0xEcC867DE9F5090F55908Aaa1352950b9eed390cD": { coingeckoId: "astar", decimals: 18, },
     "0xb361DAD0Cc1a03404b650A69d9a5ADB5aF8A531F": { coingeckoId: "emiswap", decimals: 18, },
     "0xC404E12D3466acCB625c67dbAb2E1a8a457DEf3c": { coingeckoId: "usd-coin", decimals: 6, }, // interest bearing USDC
     "0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98": { coingeckoId: "usd-coin", decimals: 6, },
@@ -472,7 +479,12 @@ const fixBalancesTokens = {
   arbitrum: {
     "0x93C15cd7DE26f07265f0272E0b831C5D7fAb174f": { coingeckoId: "liquid-finance", decimals: 18, },
   },
+  functionx: {
+    [nullAddress]: { coingeckoId: "fx-coin", decimals: 18 },
+    "0x80b5a32E4F032B2a058b4F29EC95EEfEEB87aDcd": { coingeckoId: "fx-coin", decimals: 18, },
+  },
   clv: {
+    "0x6d6ad95425fcf315c39fa6f3226471d4f16f27b3": { coingeckoId: "clover-finance", decimals: 18, },
     "0x1376C97C5c512d2d6F9173A9A3A016B6140b4536": { coingeckoId: "clover-finance", decimals: 18, },
     "0xA1c3767c93E7B51EcB445fDbae1494DfC654e524": { coingeckoId: "ethereum", decimals: 18, },
     "0x30bEBbC0b6b357945AC30660E025C1532B9C7804": { coingeckoId: "wrapped-bitcoin", decimals: 8, },
@@ -482,6 +494,21 @@ const fixBalancesTokens = {
   avax: {
     "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7": { coingeckoId: "avalanche-2", decimals: 18, },
     "0x9dEbca6eA3af87Bf422Cea9ac955618ceb56EfB4": { coingeckoId: "avalanche-2", decimals: 18, },
+  },
+  lachain: {
+    "0x3a898D596840C6B6b586d722bFAdCC8c4761BF41": { coingeckoId: "latoken", decimals: 18, },
+  },
+  theta: {
+    "0x4dc08b15ea0e10b96c41aec22fab934ba15c983e": { coingeckoId: "theta-fuel", decimals: 18, },
+  },
+  telos: {
+    "0xD102cE6A4dB07D247fcc28F366A623Df0938CA9E": { coingeckoId: "telos", decimals: 18, },
+  },
+  zyx: {
+    "0xc9e1aea009b0bae9141f3dc7523fb42fd48c8656": { coingeckoId: "zyx", decimals: 18, },
+  },
+  ubiq: {
+    "0x1fa6a37c64804c0d797ba6bc1955e50068fbf362": { coingeckoId: "ubiq", decimals: 18, },
   },
   findora: {
     [nullAddress]: { coingeckoId: "findora", decimals: 18, },
@@ -515,9 +542,13 @@ const fixBalancesTokens = {
   },
   oasis: {
     "0x21c718c22d52d0f3a789b752d4c2fd5908a8a733": { coingeckoId: "oasis-network", decimals: 18, },
+    "0x5C78A65AD6D0eC6618788b6E8e211F31729111Ca": { coingeckoId: "oasis-network", decimals: 18, },
+    "0x9e832CaE5d19e7ff2f0D62881D1E33bb16Ac9bdc": { coingeckoId: "oasis-network", decimals: 18, },
     "0x3223f17957Ba502cbe71401D55A0DB26E5F7c68F": { coingeckoId: "ethereum", decimals: 18, },
     "0x6aB6d61428fde76768D7b45D8BFeec19c6eF91A8": { coingeckoId: "tether", decimals: 6, },
     "0x80A16016cC4A2E6a2CACA8a4a498b1699fF0f844": { coingeckoId: "usd-coin", decimals: 6, },
+    "0xe8a638b3b7565ee7c5eb9755e58552afc87b94dd": { coingeckoId: "usd-coin", decimals: 6, },
+    "0x81ecac0d6be0550a00ff064a4f9dd2400585fe9c": { coingeckoId: "usd-coin", decimals: 6, }, // USDC celer
   },
   celo: {
     "0x7d00cd74ff385c955ea3d79e47bf06bd7386387d": { coingeckoId: "mcelo", decimals: 18, },
@@ -551,9 +582,11 @@ const fixBalancesTokens = {
     "linear-protocol.near": { coingeckoId: "linear-protocol", decimals: 24 },
     "token.pembrock.near": { coingeckoId: "pembrock", decimals: 18 },
     "token.burrow.near": { coingeckoId: "burrow", decimals: 18 },
+    "token.marmaj.near": { coingeckoId: "marmaj", decimals: 18 },
   },
   cronos: {
     "0x0000000000000000000000000000000000000000": { coingeckoId: "crypto-com-chain", decimals: 18, },
+    "0xca2503482e5D6D762b524978f400f03E38d5F962": { coingeckoId: "crypto-com-chain", decimals: 18, },
     "0x45c135c1cdce8d25a3b729a28659561385c52671": { coingeckoId: "alethea-artificial-liquid-intelligence-token", decimals: 18 },
     "0x39a65a74dc5a778ff93d1765ea51f57bc49c81b3": { coingeckoId: "akash-network", decimals: 6 },
     "0xbed48612bc69fa1cab67052b42a95fb30c1bcfee": { coingeckoId: "shiba-inu", decimals: 18 },
@@ -564,9 +597,16 @@ const fixBalancesTokens = {
   multivac: {
     "0x8E321596267a4727746b2F48BC8736DB5Da26977": { coingeckoId: "multivac", decimals: 18, },
   },
+  tomochain: {
+    "0xB1f66997A5760428D3a87D68b90BfE0aE64121cC": { coingeckoId: "tomochain", decimals: 18, },
+  },
+  csc: {
+    "0x398dcA951cD4fc18264d995DCD171aa5dEbDa129": { coingeckoId: "tether", decimals: 18, },
+  },
   ethereumclassic: {
     "0x82A618305706B14e7bcf2592D4B9324A366b6dAd": { coingeckoId: "ethereum-classic", decimals: 18, },
     "0x1953cab0E5bFa6D4a9BaD6E05fD46C1CC6527a5a": { coingeckoId: "ethereum-classic", decimals: 18, },
+    "0x35e9A89e43e45904684325970B2E2d258463e072": { coingeckoId: "ethereum-classic", decimals: 18, }
   },
   klaytn: {
     [nullAddress]: { coingeckoId: "klay-token", decimals: 18 }, // Wrapped KLAY
@@ -600,12 +640,29 @@ const fixBalancesTokens = {
     [nullAddress]: { coingeckoId: "hoo-token", decimals: 18 },
     "0x3eff9d389d13d6352bfb498bcf616ef9b1beac87": { coingeckoId: "hoo-token", decimals: 18 },
   },
+  cube: {
+    [nullAddress]: { coingeckoId: "cube-network", decimals: 18 },
+    "0x9d3f61338d6eb394e378d28c1fd17d5909ac6591": { coingeckoId: "cube-network", decimals: 18 },
+    // o3 swap bridged tokens
+    "0x57EeA49Ec1087695274A9c4f341e414eb64328c2": { coingeckoId: "ethereum", decimals: 18 },
+    "0x040eA5C10e6BA4Badb6c433A365cCC4968697230": { coingeckoId: "bitcoin", decimals: 18 },
+    "0x79F1520268A20c879EF44d169A4E3812D223C6de": { coingeckoId: "tether", decimals: 18 },
+    "0x00f0D8595797943c12605cD59bc0D9f63D750cCf": { coingeckoId: "usd-coin", decimals: 18 },
+    "0x3a1F6e3E6F26E92bB0D07841EB68F8E84f39751E": { coingeckoId: "dai", decimals: 18 },
+    "0xEe9801669C6138E84bD50dEB500827b776777d28": { coingeckoId: "o3-swap", decimals: 18 },
+
+  },
   elastos: {
     [nullAddress]: { coingeckoId: "elastos", decimals: 18 },
     "0x517e9e5d46c1ea8ab6f78677d6114ef47f71f6c4": { coingeckoId: "elastos", decimals: 18 },
+    "0x9f1d0ed4e041c503bd487e5dc9fc935ab57f9a57": { coingeckoId: "binance-usd", decimals: 18 },
   },
   energyweb: {
     "0x6b3bd0478DF0eC4984b168Db0E12A539Cc0c83cd": { coingeckoId: "energy-web-token", decimals: 18 },
+  },
+  milkomeda: {
+    "0xAE83571000aF4499798d1e3b0fA0070EB3A3E3F9": { coingeckoId: "cardano", decimals: 18 },
+    "0x4bf769b05e832fcdc9053fffbc78ca889acb5e1e": { coingeckoId: "binance-usd", decimals: 18 },
   },
   ultron: {
     [nullAddress]: { coingeckoId: "ultron", decimals: 18 },
@@ -721,7 +778,8 @@ const fixBalancesTokens = {
     "KT1UsSfaXyqcjSVPeiD7U1bWgKy3taYN7NWY-4": { coingeckoId: "matic-network", decimals: 18 }, // plenty bridge
     "KT1UsSfaXyqcjSVPeiD7U1bWgKy3taYN7NWY-5": { coingeckoId: "chainlink", decimals: 18 }, // plenty bridge
     "KT1UsSfaXyqcjSVPeiD7U1bWgKy3taYN7NWY-6": { coingeckoId: "dai", decimals: 18 }, // plenty bridge
-    "KT1UsSfaXyqcjSVPeiD7U1bWgKy3taYN7NWY-7": { coingeckoId: "binance-usd", decimals: 18 } // plenty bridge
+    "KT1UsSfaXyqcjSVPeiD7U1bWgKy3taYN7NWY-7": { coingeckoId: "binance-usd", decimals: 18 }, // plenty bridge
+    "KT1XnTn74bUtxHfDtBmm2bGZAQfhPbvKWR8o": { coingeckoId: "tether", decimals: 6 } // usdt on tezos
   },
   hpb: {
     "0xBE05Ac1FB417c9EA435b37a9Cecd39Bc70359d31": { coingeckoId: "high-performance-blockchain", decimals: 18 }
@@ -737,6 +795,7 @@ const fixBalancesTokens = {
   },
   godwoken_v1: {
     "0xc296f806d15e97243a08334256c705ba5c5754cd": { coingeckoId: "nervos-network", decimals: 18, }, // Wrapped CKB
+    "0x7538c85cae4e4673253ffd2568c1f1b48a71558a": { coingeckoId: "nervos-network", decimals: 18, }, // pCKB
     "0x9E858A7aAEDf9FDB1026Ab1f77f627be2791e98A": { coingeckoId: "ethereum", decimals: 18, }, // ETH (via Forcebridge from ETH)
     "0xbadb9b25150ee75bb794198658a4d0448e43e528": { coingeckoId: "binancecoin", decimals: 18, }, // BNB (via Forcebridge from BSC)
     "0x82455018f2c32943b3f12f4e59d0da2faf2257ef": { coingeckoId: "wrapped-bitcoin", decimals: 8, }, // WBTC (via Forcebridge from ETH)
@@ -751,6 +810,14 @@ const fixBalancesTokens = {
     "0x8E019acb11C7d17c26D334901fA2ac41C1f44d50": { coingeckoId: "tether", decimals: 6, }, // USDT (via Forcebridge from ETH)
     "0x3c790b38f466514ffCB4230e7B2334e52B64c942": { coingeckoId: "tether", decimals: 6, }, // USDT (Via Celer CBridge From ETH)
     "0xcD7bC9fC617a4F82eC1c8359D1C8610B90e3B44C": { coingeckoId: "binance-usd", decimals: 18, }, // BUSD (Via Celer CBridge From BSC)
+    "0x1C428a6539A40eC5Bb481631266a51cd19b233B1": { coingeckoId: "bitcoin", decimals: 8, }, // Wrapped BTC (Celer CBridge from ETH)
+    "0xB44a9B6905aF7c801311e8F4E76932ee959c663C": { coingeckoId: "bitcoin", decimals: 8, }, // Wrapped BTC (MultiChain Bridge from ETH)
+    "0x82455018f2c32943b3f12f4e59d0da2faf2257ef": { coingeckoId: "bitcoin", decimals: 8, }, // Wrapped BTC (via ForceBridge from ETH)
+    "0x765277EebeCA2e31912C9946eAe1021199B39C61": { coingeckoId: "dai", decimals: 18, }, // DAI (via Multichain Bridge from ETH)
+    "0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D": { coingeckoId: "usd-coin", decimals: 6, }, // USDC (via Multichain Bridge from ETH)
+    "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f": { coingeckoId: "tether", decimals: 6, }, // USDT (via Multichain Bridge from ETH)
+
+
   },
   waves: {
     "5UYBPpq4WoU5n4MwpFkgJnW3Fq4B1u3ukpK33ik4QerR": { coingeckoId: "binancecoin", decimals: 8 },
@@ -808,6 +875,26 @@ const fixBalancesTokens = {
     "0x7A86173daa4fDA903c9A4C0517735a7d34B9EC39": { coingeckoId: "energi", decimals: 18 },
     "0xa55f26319462355474a9f2c8790860776a329aa4": { coingeckoId: "energi", decimals: 18 }
   },
+  nahmii: {
+    "0x4200000000000000000000000000000000000006": { coingeckoId: "ethereum", decimals: 18 },
+    "0x595DBA438a1bf109953F945437c1584319515d88": { coingeckoId: "nahmii", decimals: 15 }
+  },
+  curio: {
+    "0x134EbAb7883dFa9D04d20674dd8A8A995fB40Ced": { coingeckoId: "curio-governance", decimals: 18 },
+  },
+  gochain: {
+    "0xcC237fa0A4B80bA47992d102352572Db7b96A6B5": { coingeckoId: "gochain", decimals: 18 },
+    "0x97a19aD887262d7Eca45515814cdeF75AcC4f713": { coingeckoId: "usd-coin", decimals: 6 },
+    "0x67bBB47f6942486184f08a671155FCFA6cAd8d71": { coingeckoId: "fast-finance", decimals: 18 },
+  },
+  dfk: {
+    "0xCCb93dABD71c8Dad03Fc4CE5559dC3D89F67a260": { coingeckoId: "defi-kingdoms", decimals: 18 },
+    "0x77f2656d04E158f915bC22f07B779D94c1DC47Ff": { coingeckoId: "xjewel", decimals: 18 },
+    "0x0ab87046fBb341D058F17CBC4c1133F25a20a52f": { coingeckoId: "governance-ohm", decimals: 18 },
+    "0x2Df041186C844F8a2e2b63F16145Bc6Ff7d23E25": { coingeckoId: "fantom", decimals: 18 },
+    // "0xb57b60debdb0b8172bb6316a9164bd3c695f133a": { coingeckoId: "avalanche-2", decimals: 18 },
+    // "0x3ad9dfe640e1a9cc1d9b0948620820d975c3803a": { coingeckoId: "usd-coin", decimals: 18 },
+  },
   smartbch: {
     [nullAddress]: { coingeckoId: "bitcoin-cash", decimals: 18 },
     "0x3743ec0673453e5009310c727ba4eaf7b3a1cc04": { coingeckoId: "bitcoin-cash", decimals: 18 },
@@ -815,6 +902,8 @@ const fixBalancesTokens = {
     "0x7b2B3C5308ab5b2a1d9a94d20D35CCDf61e05b72": { coingeckoId: "flex-usd", decimals: 18 },
     "0x24d8d5Cbc14FA6A740c3375733f0287188F8dF3b": { coingeckoId: "tropical-finance", decimals: 18 },
     "0xBc2F884680c95A02cea099dA2F524b366d9028Ba": { coingeckoId: "tether", decimals: 18 },
+    "0x265bD28d79400D55a1665707Fa14A72978FA6043": { coingeckoId: "cashcats", decimals: 2 },
+    "0x9192940099fDB2338B928DE2cad9Cd1525fEa881": { coingeckoId: "bchpad", decimals: 18 },
   },
   palm: {
     "0x4c1f6fcbd233241bf2f4d02811e3bf8429bc27b8": { coingeckoId: "dai", decimals: 18 },
@@ -823,11 +912,12 @@ const fixBalancesTokens = {
   syscoin: {
     "0xd3e822f3ef011Ca5f17D82C956D952D8d7C3A1BB": { coingeckoId: "syscoin", decimals: 18 }
   },
-  vision:{
-    "0x1Db6Cdc620388a0b6046B20CD59503a0839AdCFF": {coingeckoId: "tether", decimals: 18 },
-    "0x79ffbC4fff98b821D59dbD7B33f91a2783006b6f": {coingeckoId: "vision-metaverse", decimals: 6 }
+  vision: {
+    "0x1Db6Cdc620388a0b6046B20CD59503a0839AdCFF": { coingeckoId: "tether", decimals: 18 },
+    "0x79ffbC4fff98b821D59dbD7B33f91a2783006b6f": { coingeckoId: "vision-metaverse", decimals: 6 }
   },
   kava: {
+    [nullAddress]: { coingeckoId: "kava", decimals: 18 },
     "0xc86c7C0eFbd6A49B35E8714C5f59D99De09A225b": { coingeckoId: "kava", decimals: 18 },
     "0x332730a4F6E03D9C55829435f10360E13cfA41Ff": { coingeckoId: "binance-usd", decimals: 18 },
     "0x65e66a61D0a8F1e686C2D6083ad611a10D84D97A": { coingeckoId: "binancecoin", decimals: 18 },
@@ -837,20 +927,23 @@ const fixBalancesTokens = {
     "0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D": { coingeckoId: "ethereum", decimals: 18 },
     "0x765277EebeCA2e31912C9946eAe1021199B39C61": { coingeckoId: "dai", decimals: 18 },
     "0xc13791DA84f43525189456CfE2026C60D3B7F706": { coingeckoId: "kava", decimals: 18 },
+    "0x7c598c96d02398d89fbcb9d41eab3df0c16f227d": { coingeckoId: "sushi", decimals: 18 },
   },
   sx: {
-    "0x90d27E008d5Db7f0a3c90a15A8Dcc4Ca18cFc670": { coingeckoId: "sx-network", decimals: 18 },
+    "0xaa99bE3356a11eE92c3f099BD7a038399633566f": { coingeckoId: "sx-network", decimals: 18 },
     "0xA173954Cc4b1810C0dBdb007522ADbC182DaB380": { coingeckoId: "ethereum", decimals: 18 },
     "0xe2aa35C2039Bd0Ff196A6Ef99523CC0D3972ae3e": { coingeckoId: "usd-coin", decimals: 6 },
     "0xfa6F64DFbad14e6883321C2f756f5B22fF658f9C": { coingeckoId: "matic-network", decimals: 18 },
     "0x53813CD4aCD7145A716B4686b195511FA93e4Cb7": { coingeckoId: "dai", decimals: 18 },
-    "0xa0cB58E7F783fce0F4042C790ea3045c48CD51e8": { coingeckoId: "shark", decimals: 18 }
+    "0x7Dc31a2FCBfbAd1ed4519111Fd33f78316BcBC81": { coingeckoId: "shark", decimals: 18 }
   },
   meter: {
-    "0xd86e243fc0007e6226b07c9a50c9d70d78299eb5": { coingeckoId: "usd-coin", decimals: 6 },
     "0x5729cb3716a315d0bde3b5e489163bf8b9659436": { coingeckoId: "meter", decimals: 18 },
+    "0x160361ce13ec33c993b5cca8f62b6864943eb083": { coingeckoId: "meter", decimals: 18 },
+    "0xd86e243fc0007e6226b07c9a50c9d70d78299eb5": { coingeckoId: "usd-coin", decimals: 6 },
     "0x6abaedab0ba368f1df52d857f24154cc76c8c972": { coingeckoId: "meter-stable", decimals: 18 },
     "0x24aa189dfaa76c671c279262f94434770f557c35": { coingeckoId: "binance-usd", decimals: 18 },
+    "0x75fd6f7edcc5e7a8100ead3d29ccd844153ef0f3": { coingeckoId: "theta-fuel", decimals: 18 },
     "0x5fa41671c48e3c951afc30816947126ccc8c162e": { coingeckoId: "tether", decimals: 6 }
   },
   callisto: {
@@ -862,8 +955,11 @@ const fixBalancesTokens = {
     "0x9FaE2529863bD691B4A7171bDfCf33C7ebB10a65": { coingeckoId: "soy-finance", decimals: 18 },
   },
   thundercore: {
+    "0x413cefea29f2d07b8f2acfa69d92466b9535f717": { coingeckoId: "thunder-token", decimals: 18 },
     "0x4f3c8e20942461e2c3bdd8311ac57b0c222f2b82": { coingeckoId: "tether", decimals: 6 },
+    "0x6576bb918709906dcbfdceae4bb1e6df7c8a1077": { coingeckoId: "ethereum", decimals: 18 },
     "0x22e89898a04eaf43379beb70bf4e38b1faf8a31e": { coingeckoId: "usd-coin", decimals: 6 },
+    "0xbeb0131d95ac3f03fd15894d0ade5dbf7451d171": { coingeckoId: "binance-usd", decimals: 18 },
   },
   conflux: {
     "0x14b2d3bc65e74dae1030eafd8ac30c533c976a9b": { coingeckoId: "conflux-token", decimals: 18 },
@@ -877,7 +973,8 @@ const fixBalancesTokens = {
     "0x97fe22e7341a0cd8db6f6c021a24dc8f4dad855f": { coingeckoId: "jarvis-synthetic-british-pound", decimals: 18 },
     "0x0f83287ff768d1c1e17a42f44d644d7f22e8ee1d": { coingeckoId: "upper-swiss-franc", decimals: 18 },
     "0x9fcf418b971134625cdf38448b949c8640971671": { coingeckoId: "tether-eurt", decimals: 18 },
-    "0x8751d4196027d4e6da63716fa7786b5174f04c15": { coingeckoId: "wrapped-bitcoin", decimals: 18 }
+    "0x8751d4196027d4e6da63716fa7786b5174f04c15": { coingeckoId: "wrapped-bitcoin", decimals: 18 },
+    "0xf56b164efd3cfc02ba739b719b6526a6fa1ca32a": { coingeckoId: "curio-governance", decimals: 18 },
   },
   moonbeam: {
     // celer bridge
@@ -911,6 +1008,30 @@ const fixBalancesTokens = {
     '0x52484e1ab2e2b22420a25c20fa49e173a26202cd': { coingeckoId: "tether", decimals: 6 },
     '0x750ba8b76187092b0d1e87e28daaf484d1b5273b': { coingeckoId: "usd-coin", decimals: 6 },
   },
+  ethpow: {
+    [nullAddress]: { coingeckoId: "ethereum-pow-iou", decimals: 18 },
+    '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2': { coingeckoId: "ethereum-pow-iou", decimals: 18 },
+    '0x0c9f28FBdFd79f7C00B805d8c63D053c146d282c': { coingeckoId: "billionhappiness", decimals: 18 },
+    '0x7bf88d2c0e32de92cdaf2d43ccdc23e8edfd5990': { coingeckoId: "ethereum-pow-iou", decimals: 18 },
+
+    // Multichain
+    '0x11bbB41B3E8baf7f75773DB7428d5AcEe25FEC75': { coingeckoId: "usd-coin", decimals: 6 },
+    '0x8a496486f4c7cb840555bc2be327cba1447027c3': { coingeckoId: "tether", decimals: 6 },
+    '0x5df101f56ea643e06066392d266e9f4366b9186d': { coingeckoId: "wrapped-bitcoin", decimals: 8 },
+    '0xaf3ccfd9b59b36628cc2f659a09d6440795b2520': { coingeckoId: "ethereum", decimals: 18 },
+    '0x312b15d6d531ea0fe91ddd212db8c0f37e4cc698': { coingeckoId: "dai", decimals: 18 },
+  },
+  xdc: {
+    '0xD4B5f10D61916Bd6E0860144a91Ac658dE8a1437': { coingeckoId: "tether", decimals: 6 },
+    // '0xc6ae1db6c66d909f7bfeeeb24f9adb8620bf9dbf': { coingeckoId: "usd-coin", decimals: 6 },
+    // '0x1289f70b8a16797cccbfcca8a845f36324ac9f8b': { coingeckoId: "ethereum", decimals: 18 },
+    [nullAddress]: { coingeckoId: "xdce-crowd-sale", decimals: 18 },
+    '0x951857744785e80e2de051c32ee7b25f9c458c42': { coingeckoId: "xdce-crowd-sale", decimals: 18 },
+    '0x36726235dadbdb4658d33e62a249dca7c4b2bc68': { coingeckoId: "xswap-protocol", decimals: 18 },
+    '0x5d5f074837f5d4618b3916ba74de1bf9662a3fed': { coingeckoId: "storx", decimals: 18 },
+    '0xd04275e2fd2875beaade6a80b39a75d4fe267df6': { coingeckoId: "nota", decimals: 6 },
+    '0xff7412ea7c8445c46a8254dfb557ac1e48094391': { coingeckoId: "plugin", decimals: 18 },
+  },
 }
 
 const coreAssets = {
@@ -927,6 +1048,9 @@ const coreAssets = {
     '0x6b175474e89094c44da98b954eedeac495271d0f', //dai
     '0x3aaDA3e213aBf8529606924d8D1c55CbDc70Bf74', // XMON
     '0xc834fa996fa3bec7aad3693af486ae53d8aa8b50', // CONV
+  ],
+  ethpow: [
+    '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'
   ],
   velas: Object.values({
     WVLX: '0xc579D1f3CF86749E05CD06f7ADe17856c2CE3126',
@@ -1172,12 +1296,12 @@ const coreAssets = {
     '0xD4949664cD82660AaE99bEdc034a0deA8A0bd517',
   ],
   sx: Object.values({
-    WSX: '0x90d27E008d5Db7f0a3c90a15A8Dcc4Ca18cFc670',
+    WSX: '0xaa99bE3356a11eE92c3f099BD7a038399633566f',
     WETH: '0xA173954Cc4b1810C0dBdb007522ADbC182DaB380',
     USDC: '0xe2aa35C2039Bd0Ff196A6Ef99523CC0D3972ae3e',
     WMATIC: '0xfa6F64DFbad14e6883321C2f756f5B22fF658f9C',
     DAI: '0x53813CD4aCD7145A716B4686b195511FA93e4Cb7',
-    SHARK: '0xa0cB58E7F783fce0F4042C790ea3045c48CD51e8',
+    SHARK: '0x7Dc31a2FCBfbAd1ed4519111Fd33f78316BcBC81',
   }),
   callisto: [
     "0xF5AD6F6EDeC824C7fD54A66d241a227F6503aD3a", // WCLO

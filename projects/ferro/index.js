@@ -1,5 +1,4 @@
 const { sumTokens2 } = require('../helper/unwrapLPs')
-const { getBlock } = require('../helper/getBlock');
 
 const threeFerPoolAddress = '0xe8d13664a42B338F009812Fa5A75199A865dA5cD';
 const chain = 'cronos'
@@ -19,8 +18,7 @@ const tokens = {
   ],
 };
 
-async function tvl(timestamp, ethBlock, chainBlocks) {
-  const block = await getBlock(timestamp, 'cronos', chainBlocks);
+async function tvl(timestamp, ethBlock, {cronos: block}) {
   const tokensAndOwners = Object.entries(tokens).map(([token, owners]) => owners.map(owner => [token, owner])).flat()
   return sumTokens2({ chain, block, tokensAndOwners })
 }
