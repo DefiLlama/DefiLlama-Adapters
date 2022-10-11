@@ -146,6 +146,7 @@ import boggedFinance from "./adapters/bogged-finance";
 import jetswap from "./adapters/jetswap";
 import saucerswap from "./adapters/saucerswap";
 import synthetify from "./adapters/synthetify";
+import pandora from "./adapters/pandora";
 
 export default {
   mooniswap,
@@ -293,6 +294,7 @@ export default {
   "bogged-finance": boggedFinance,
   jetswap,
   saucerswap,
-  synthetify
+  synthetify,
+  pandora
   // lyra -> OPTIONS DEX, not enable for now
 };
