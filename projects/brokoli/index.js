@@ -1,5 +1,4 @@
 const { staking } = require("../helper/staking");
-const { pool2s } = require("../helper/pool2");
 
 /*** Ethereum Addresses ***/
 const farmContracts = [
@@ -22,11 +21,11 @@ const BRKL_bsc = "0x66cafcf6c32315623c7ffd3f2ff690aa36ebed38";
 module.exports = {
   ethereum: {
     tvl: (async) => ({}),
-    pool2: pool2s(farmContracts, [USDC_BRKL_UNIV2]),   
+    pool2: staking(farmContracts, [USDC_BRKL_UNIV2]),   
   },
   bsc: {
     staking: staking(farmStakingContract_bsc, BRKL_bsc, "bsc"),
-    pool2: pool2s(farmContracts_bsc, [BUSD_BRKL_CakeLP], "bsc"),
+    pool2: staking(farmContracts_bsc, [BUSD_BRKL_CakeLP], "bsc"),
   },
   methodology: "Counts liquidty on the staking and pool2 only",
 };
