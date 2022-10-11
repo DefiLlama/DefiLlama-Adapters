@@ -6,7 +6,22 @@ import BigNumber from "bignumber.js";
 import { getPagedGql } from "../utils/gql";
 import { Liq } from "../utils/types";
 
-const subgraphUrl = "https://api.thegraph.com/subgraphs/name/picodes/borrow";
+enum Chains {
+  ethereum = "ethereum",
+  polygon = "polygon",
+  optimism = "optimism",
+  arbitrum = "arbitrum"
+}
+
+const getSubgraphUrl = (chain: string) => {
+  let subgraphUrl: string
+  if (chain == "ethereum") {
+    subgraphUrl = "https://api.thegraph.com/subgraphs/name/picodes/borrow";
+  } else {
+    subgraphUrl = "https://api.thegraph.com/subgraphs/name/picodes/" + chain + "-borrow";
+  }
+  return subgraphUrl
+} 
 
 const vaultDataQuery = gql`
   query vaultDatas($lastId: ID) {
@@ -34,7 +49,8 @@ type VaultData = {
   owner: string;
 };
 
-const getVaultData = async () => {
+const getVaultData = async (chain: string) => {
+  const subgraphUrl = getSubgraphUrl(chain)
   const vaultData = (await getPagedGql(subgraphUrl, vaultDataQuery, "vaultDatas")) as VaultData[];
   return vaultData;
 };
@@ -50,13 +66,13 @@ const getTokenInfo = async (tokenId: string) => {
 const AGEUR_TOKEN_ID = "ethereum:0x1a7e4e63778B4f12a199C062f3eFdD288afCBce8";
 
 // returns vault agEUR debt in $
-const getVaultDebt = async (id: string) => {
+const getVaultDebt = async (id: string, chain: string) => {
   const vaultManager = id.split("_")[0];
   const vaultId = id.split("_")[1];
   const vaultManagerContract = new ethers.Contract(
     vaultManager,
     ["function getVaultDebt(uint256) view returns (uint256)"],
-    providers.ethereum
+    providers[chain]
   );
   const vaultDebtRaw = BigNumber((await vaultManagerContract.getVaultDebt(vaultId)).toString());
   // convert vault debt to $
@@ -64,10 +80,15 @@ const getVaultDebt = async (id: string) => {
   return vaultDebt;
 };
 
-const EXPLORER_BASE_URL = "https://etherscan.io/address/";
+const explorers: {[key: string]: string} = {
+  "ethereum": "https://etherscan.io/",
+  "polygon": "https://polygonscan.com/",
+  "optimism": "https://optimistic.etherscan.io/",
+  "arbitrum": "https://arbiscan.io/"
+}
 
-const positions = async () => {
-  const vaultData = await getVaultData();
+const positions = (chain: string)=> async () => {
+  const vaultData = await getVaultData(chain);
 
   const positions: Liq[] = [];
   for (const vault of vaultData) {
@@ -76,11 +97,11 @@ const positions = async () => {
     const collateralAmount = vault.collateralAmount;
 
     // liquidation price computation
-    const vaultDebt = await getVaultDebt(vault.id);
+    const vaultDebt = await getVaultDebt(vault.id, chain);
     const collateralFactor = BigNumber(vault.vaultManager.collateralFactor).div(10e8);
     let liqPrice: number;
 
-    const collateralDecimals = (await getTokenInfo("ethereum:" + collateral)).decimals;
+    const collateralDecimals = (await getTokenInfo(chain + ":" + collateral)).decimals;
     if (collateralDecimals != 18) {
       // correcting the number of decimals
       liqPrice = BigNumber(vaultDebt)
@@ -94,10 +115,10 @@ const positions = async () => {
     positions.push({
       owner,
       liqPrice,
-      collateral: "ethereum:" + collateral,
+      collateral: chain + ":" + collateral,
       collateralAmount,
       extra: {
-        url: EXPLORER_BASE_URL + owner,
+        url: explorers[chain] + "address/" + owner,
       },
     });
   }
@@ -107,6 +128,15 @@ const positions = async () => {
 
 module.exports = {
   ethereum: {
-    liquidations: positions,
+    liquidations: positions(Chains.ethereum),
+  },
+  polygon: {
+    liquidations: positions(Chains.polygon),
+  },
+  optimism: {
+    liquidations: positions(Chains.optimism),
+  },
+  arbitrum: {
+    liquidations: positions(Chains.arbitrum),
   },
 };
