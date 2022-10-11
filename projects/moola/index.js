@@ -1,4 +1,3 @@
-const { getBlock } = require('../helper/getBlock')
 const { aaveChainTvl } = require('../helper/aave')
 const { singleAssetV1Market } = require('../aave/v1')
 const sdk = require('@defillama/sdk')
@@ -7,9 +6,8 @@ const v1PoolCore = "0xAF106F8D4756490E7069027315F4886cc94A8F73"
 const gasAsset = "0x471ece3750da237f93b8e339c536989b8978a438"
 
 function lending(borrowed) {
-    return async (timestamp, ethBlock, chainBlocks) => {
+    return async (timestamp, ethBlock, {celo: block}) => {
         const chain = 'celo'
-        const block = await getBlock(timestamp, chain, chainBlocks, true);
         const v1Balances = {};
         await singleAssetV1Market(v1Balances, v1PoolCore, block, borrowed, chain, gasAsset);
 

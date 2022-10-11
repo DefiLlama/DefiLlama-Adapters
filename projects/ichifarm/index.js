@@ -1,12 +1,10 @@
 const sdk = require("@defillama/sdk");
-const ethers = require("ethers");
+const { default: BigNumber } = require("bignumber.js");
 const { stakings } = require("../helper/staking");
 const { transformBalances } = require('../helper/portedTokens')
 const abi = require("./abi.json");
-const chain = 'ethereum'
 const { createIncrementArray } = require('../helper/utils');
 const { sumTokens2, unwrapUniswapV3NFTs } = require('../helper/unwrapLPs');
-const BigNumber = require("bignumber.js");
 const { GraphQLClient, gql } = require('graphql-request');
 
 
@@ -23,7 +21,6 @@ const unilps = [
   // UNI-V2 lP
   "0xd07D430Db20d2D7E0c4C11759256adBCC355B20C"
 ]
-
 const poolWithTokens = [
   // BANCOR
   ["0x4a2F0Ca5E03B2cF81AebD936328CF2085037b63B", ["0x903bEF1736CDdf2A537176cf3C64579C3867A881", "0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C"]],
@@ -228,6 +225,6 @@ module.exports = {
     staking: stakings([xIchi, ichiLending] , ichiLegacy)
   },
   polygon: {
-    tvl: polygonTvl,
+    tvl: polygonTvl
   }
 } // node test.js projects/ichifarm/index.js

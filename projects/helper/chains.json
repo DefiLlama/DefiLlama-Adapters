@@ -130,6 +130,7 @@
   "clv",
   "echelon",
   "multivac",
+  "stellar",
   "sx",
   "lbry",
   "rvn",
@@ -154,5 +155,8 @@
   "juno",
   "tombchain",
   "vision",
-  "xdc"
+  "functionx",
+  "xdc",
+  "ethpow",
+  "cube"
 ]

@@ -16,6 +16,7 @@ const graphs = getChainVolume({
   dailyVolume: {
     factory: DEFAULT_DAILY_VOLUME_FACTORY,
     field: DEFAULT_DAILY_VOLUME_FIELD,
+    dateField: "date"
   },
 });
 

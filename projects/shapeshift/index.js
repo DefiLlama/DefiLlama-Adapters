@@ -10,9 +10,9 @@ const FOX = "0xc770eefad204b5180df6a14ee197d99d808ee52d";
 
 module.exports = {
   ethereum: {
-    pool2: pool2s([StakingYieldContract, StakingYieldContractV2], [ETH_FOX_UNIV2])
+    pool2: pool2s([StakingYieldContract, StakingYieldContractV2], [ETH_FOX_UNIV2]),
+    tvl: async ()=>({}),
   },
-  tvl: async ()=>({}),
   methodology:
     "We count liquidity of ETH-FOX LP deposited on Uniswap V2 pool through StakingYieldContract contract; and the staking of native token",
 };

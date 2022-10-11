@@ -49,11 +49,11 @@ module.exports = {
   misrepresentedTokens: true,
   timetravel: false,
   cronos: {
-    tvl: fetchCronos,
+    tvl: () => ({}),
   },
   moonriver: {
-    tvl: fetchMoonriver,
-    staking: fetchMoonriverStaking,
-    pool2: fetchMoonRiverPool2
+    tvl: () => ({}),
+    // staking: fetchMoonriverStaking,
+    // pool2: fetchMoonRiverPool2
   },
 }

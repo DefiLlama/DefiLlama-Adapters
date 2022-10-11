@@ -1,4 +1,4 @@
-const { fetchURL } = require("../../helper/utils");
+import fetchURL from "../../utils/fetchURL"
 import { ChainBlocks, SimpleVolumeAdapter } from "../../dexVolume.type";
 import { CHAIN } from "../../helper/chains";
 import customBackfill from "../../helper/customBackfill";
