@@ -7,19 +7,16 @@ function tvl(type) {
       async (_) => await axios.get("https://devilfinance.io/api/tvls")
     );
 
-    return response.data[type];
+    return { tether: response.data[type] };
   };
 };
 
 module.exports = {
+  misrepresentedTokens: true,
+  timetravel: false,
   fantom: {
-    fetch: tvl("nonNative"),
+    tvl: tvl("nonNative"),
+    pool2: tvl("nativeLP"),
+    staking: tvl("native"),
   },
-  pool2: {
-    fetch: tvl("nativeLP"),
-  },
-  staking: {
-    fetch: tvl("native"),
-  },
-  fetch: tvl("nonNative"),
 };

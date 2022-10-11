@@ -1,8 +1,7 @@
 const { GraphQLClient, gql } = require("graphql-request");
 const retry = require('../helper/retry')
 const sdk = require("@defillama/sdk")
-const { usdtAddress } = require('../helper/balances')
-const { addDexPosition, getTokenBalances, resolveLPPosition, getStorage, convertBalances, } = require('../helper/tezos')
+const { addDexPosition, getTokenBalances, resolveLPPosition, getStorage, convertBalances, usdtAddressTezos, } = require('../helper/tezos')
 const { getFixBalances } = require('../helper/portedTokens')
 const { dexes, farms } = require('./data')
 const { PromisePool } = require('@supercharge/promise-pool');
@@ -11,11 +10,20 @@ let graphQLClient
 
 const indexer = "https://youves-mainnet-indexer.prod.gke.papers.tech/v1/graphql"
 const engines = {
-  uUSDTezos: 'KT1FFE2LC5JpVakVjHm5mM36QVp2p3ZzH4hH',
-  uUSDtzBTCLP: 'KT1FzcHaNhmpdYPNTgfb8frYXx7B5pvVyowu',
-  uDefiuUSD: 'KT1B2GSe47rcMCZTRk294havTpyJ36JbgdeB',
-  uBTCTezos: 'KT1VjQoL5QvyZtm9m1voQKNTNcQLi5QiGsRZ',
-  uBTCtzBTCLP: 'KT1NFWUqr9xNvVsz2LXCPef1eRcexJz5Q2MH',
+  uUSDTezosV1: 'KT1FFE2LC5JpVakVjHm5mM36QVp2p3ZzH4hH',
+  uUSDTezosV3: 'KT1DHndgk8ah1MLfciDnCV2zPJrVbnnAH9fd',
+  uUSDUSDtV3: 'KT1JmfujyCYTw5krfu9bSn7YbLYuz2VbNaje',
+  uUSDtzBTCV3: 'KT1V9Rsc4ES3eeQTr4gEfJmNhVbeHrAZmMgC',
+  uUSDtzBTCV2: 'KT1HxgqnVjGy7KsSUTEsQ6LgpD5iKSGu7QpA',
+  uUSDtzBTCLPV2: 'KT1FzcHaNhmpdYPNTgfb8frYXx7B5pvVyowu',
+  uUSDtzBTCLPV3: 'KT1F1JMgh6SfqBCK6T6o7ggRTdeTLw91KKks',
+  uDefiuUSDV2: 'KT1B2GSe47rcMCZTRk294havTpyJ36JbgdeB',
+  uDefitzV2: 'KT1LQcsXGpmLXnwrfftuQdCLNvLRLUAuNPCV',
+  uDefitzBTCLPV2: 'KT1E45AvpSr7Basw2bee3g8ri2LK2C2SV2XG',
+  uBTCTezosV2: 'KT1VjQoL5QvyZtm9m1voQKNTNcQLi5QiGsRZ',
+  uBTCTezosV3: 'KT1CP1C8afHqdNfBsSE3ggQhzM2iMHd4cRyt',
+  uBTCtzBTCLPV2: 'KT1NFWUqr9xNvVsz2LXCPef1eRcexJz5Q2MH',
+  uBTCtzBTCLPV3: 'KT1G6RzVX25YnoU55Xb7Vve3zvuZKmouf24a',
 }
 
 const uDEFI_LP = 'KT1H8sJY2VzrbiX4pYeUVsoMUd4iGw2DV7XH'
@@ -42,7 +50,7 @@ async function fetchBalance(balances, token, engineAddress, decimals = 1, shareP
     const balancetZ = balance * sharePrice.xtzPool / sharePrice.lqtTotal
     const balanceBTC = balance * sharePrice.tokenPool / sharePrice.lqtTotal
     sdk.util.sumSingleBalance(balances, 'tezos', balancetZ / 1e6)
-    sdk.util.sumSingleBalance(balances, sharePrice.tokenAddress, balanceBTC)
+    sdk.util.sumSingleBalance(balances, sharePrice.tokenAddress, balanceBTC / 1e8)
     return;
   }
 
@@ -59,12 +67,28 @@ async function tvl() {
   const balances = {}
   const sharePrice = await getTzBTCLPSharePrice()
   await Promise.all([
-    fetchBalance(balances, 'tezos', engines.uUSDTezos, 6),
-    fetchBalance(balances, 'tezos', engines.uBTCTezos, 6),
-    fetchBalance(balances, usdtAddress, engines.uDefiuUSD, 6),
-    fetchBalance(balances, 'tzbtc-lp', engines.uUSDtzBTCLP, 0, sharePrice),
-    fetchBalance(balances, 'tzbtc-lp', engines.uBTCtzBTCLP, 0, sharePrice),
+    fetchBalance(balances, 'tezos', engines.uUSDTezosV1, 6),
+    fetchBalance(balances, 'tezos', engines.uUSDTezosV3, 6),
+    fetchBalance(balances, 'tezos', engines.uBTCTezosV2, 6),
+    fetchBalance(balances, 'tezos', engines.uBTCTezosV3, 6),
+    fetchBalance(balances, 'KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW', engines.uDefiuUSDV2, 12),
+    fetchBalance(balances, 'tzbtc-lp', engines.uUSDtzBTCLPV2, 0, sharePrice),
+    fetchBalance(balances, 'tzbtc-lp', engines.uUSDtzBTCLPV3, 0, sharePrice),
+    fetchBalance(balances, 'tzbtc-lp', engines.uBTCtzBTCLPV2, 0, sharePrice),
+    fetchBalance(balances, 'tzbtc-lp', engines.uBTCtzBTCLPV3, 0, sharePrice),
+    fetchBalance(balances, usdtAddressTezos, engines.uUSDUSDtV3, 6),
+    fetchBalance(balances, 'KT1PWx2mnDueood7fEmfbBDKx1D9BAnnXitn', engines.uUSDtzBTCV2, 8),
+    fetchBalance(balances, 'KT1PWx2mnDueood7fEmfbBDKx1D9BAnnXitn', engines.uUSDtzBTCV3, 8),
+    fetchBalance(balances, 'tezos', engines.uDefitzV2, 6),
+    fetchBalance(balances, 'tzbtc-lp', engines.uDefitzBTCLPV2, 0, sharePrice),
+
   ])
+
+  // Convert to smallest unit because of later calculations
+  balances['KT1PWx2mnDueood7fEmfbBDKx1D9BAnnXitn'] = balances['KT1PWx2mnDueood7fEmfbBDKx1D9BAnnXitn'] * 10 ** 8
+  balances['KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW'] = balances['KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW'] * 10 ** 12
+  balances['KT1XnTn74bUtxHfDtBmm2bGZAQfhPbvKWR8o'] = balances['KT1XnTn74bUtxHfDtBmm2bGZAQfhPbvKWR8o'] * 10 ** 6
+
   return convertBalances(balances)
 }
 

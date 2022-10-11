@@ -46,7 +46,7 @@ async function bammTvlFunc(chain, retTvl, unixTimestamp, ethBlock, chainBlocks) 
           ).output;
         
         const ethToken = bamm["underlyingEth"]
-        balances[ethToken] = (new BigNumber(balances[ethToken]).plus(new BigNumber(bammBalance))).toString(10)        
+        sdk.util.sumSingleBalance(balances, ethToken, bammBalance)
     }
 
     return balances

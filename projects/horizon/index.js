@@ -34,7 +34,7 @@ async function calculateLPStaking(timestamp, _block, chainBlocks) {
     const block = chainBlocks.bsc
     const tokensAndOwners = lpStaking.map(lp => [lp.stakingLPToken, lp.stakingContract])
     const balances = {}
-    await sumTokens(balances, tokensAndOwners, block, 'bsc', undefined, { resolveLP: true })
+    await sumTokens(balances, tokensAndOwners, block, 'bsc')
     return balances;
 }
 

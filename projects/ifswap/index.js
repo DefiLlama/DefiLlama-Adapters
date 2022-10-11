@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { getBlock } = require("../helper/getBlock");
-const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl");
+const { getUniTVL } = require('../helper/unknownTokens')
 const { stakingPricedLP } = require("../helper/staking");
 
 const USDT = "0x398dcA951cD4fc18264d995DCD171aa5dEbDa129";
@@ -11,13 +11,7 @@ const IFS_USDT_LP = "0x72083c2de1b53a09ea9ed4a99c63749102ba9aaf";
 const COREASSETNAME = "tether";
 const CHAIN = "csc";
 
-const ifswapDexTvl = calculateUsdUniTvl(
-  FACTORY,
-  CHAIN,
-  USDT,
-  [IFS],
-  COREASSETNAME
-);
+const ifswapDexTvl = getUniTVL({ factory: FACTORY, chain: CHAIN, useDefaultCoreAssets: true, })
 
 module.exports = {
   misrepresentedTokens: true,

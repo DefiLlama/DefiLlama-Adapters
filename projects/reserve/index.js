@@ -13,6 +13,6 @@ async function tvl(time, block){
 }
 
 module.exports={
-    tvl,
+    ethereum: { tvl },
     methodology: `Gets the tokens on ${vault}`
 }

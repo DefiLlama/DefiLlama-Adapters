@@ -11,5 +11,8 @@ module.exports = {
     timetravel: true,
     doublecounted: false,
     methodology: "Same as Compound Finance, we just count all the tokens supplied (not borrowed money) on the lending markets",
-    ethereum: { tvl, borrowed }
+    ethereum: { tvl, borrowed },
+    hallmarks:[
+      [1664974802, "Liquidity Bonding Start"]
+    ],
 }

@@ -1,7 +1,7 @@
 import { gql } from "graphql-request";
 import { getPagedGql } from "../utils/gql";
 import BigNumber from "bignumber.js";
-import { Liq } from "../utils/binResults";
+import { Liq } from "../utils/types";
 
 const subgraphUrl = "https://api.thegraph.com/subgraphs/name/euler-xyz/euler-mainnet";
 
