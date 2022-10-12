@@ -147,6 +147,7 @@ import jetswap from "./adapters/jetswap";
 import saucerswap from "./adapters/saucerswap";
 import synthetify from "./adapters/synthetify";
 import pandora from "./adapters/pandora";
+import soyFinance from "./adapters/soy-finance";
 
 export default {
   mooniswap,
@@ -295,6 +296,7 @@ export default {
   jetswap,
   saucerswap,
   synthetify,
-  pandora
+  pandora,
+  "soy-finance": soyFinance
   // lyra -> OPTIONS DEX, not enable for now
 };
