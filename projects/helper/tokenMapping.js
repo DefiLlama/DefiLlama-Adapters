@@ -539,6 +539,10 @@ const fixBalancesTokens = {
     "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c": { coingeckoId: "binancecoin", decimals: 18, },
     "0xEa7A82E0Bc636667AB5c65623cd1438370620c3E": { coingeckoId: "binancecoin", decimals: 18, },
     "0x8b04E56A8cd5f4D465b784ccf564899F30Aaf88C": { coingeckoId: "anchorust", decimals: 6, },
+    "0x6A46d878401F46B4C7f665f065E0667580e031ec": { coingeckoId: "investin", decimals: 18, },
+    "0xa4eF4b0B23C1fc81d3f9ecF93510e64f58A4A016": { coingeckoId: "1million-nfts", decimals: 18, },
+    "0x37dfACfaeDA801437Ff648A1559d73f4C40aAcb7": { coingeckoId: "apyswap", decimals: 18, },
+    "0xC7d8D35EBA58a0935ff2D5a33Df105DD9f071731": { coingeckoId: "hedget", decimals: 6, },
   },
   oasis: {
     "0x21c718c22d52d0f3a789b752d4c2fd5908a8a733": { coingeckoId: "oasis-network", decimals: 18, },
@@ -555,6 +559,7 @@ const fixBalancesTokens = {
     "0x918146359264c492bd6934071c6bd31c854edbc3": { coingeckoId: "mceur", decimals: 18, },
     "0xe273ad7ee11dcfaa87383ad5977ee1504ac07568": { coingeckoId: "moola-celo-dollars", decimals: 18, },
     "0x37f750B7cC259A2f741AF45294f6a16572CF5cAd": { coingeckoId: "usd-coin", decimals: 6, },
+    "0x2a3684e9dc20b857375ea04235f2f7edbe818fa7": { coingeckoId: "usd-coin", decimals: 6, },
     "0xb70e0a782b058bfdb0d109a3599bec1f19328e36": { coingeckoId: "usd-coin", decimals: 18, },
     "0xcd7d7ff64746c1909e44db8e95331f9316478817": { coingeckoId: "usd-coin", decimals: 18, },
     "0x93db49be12b864019da9cb147ba75cdc0506190e": { coingeckoId: "usd-coin", decimals: 18, },
@@ -976,6 +981,8 @@ const fixBalancesTokens = {
     "0x9fcf418b971134625cdf38448b949c8640971671": { coingeckoId: "tether-eurt", decimals: 18 },
     "0x8751d4196027d4e6da63716fa7786b5174f04c15": { coingeckoId: "wrapped-bitcoin", decimals: 18 },
     "0xf56b164efd3cfc02ba739b719b6526a6fa1ca32a": { coingeckoId: "curio-governance", decimals: 18 },
+    "0xb1c9bc94aCd2fAE6aABf4ffae4429B93512a81D2": { coingeckoId: "ariadne", decimals: 18 },
+    "0x5067006f830224960fb419d7f25a3a53e9919bb0": { coingeckoId: "smartpad-2", decimals: 18 },
   },
   moonbeam: {
     // celer bridge
@@ -993,7 +1000,11 @@ const fixBalancesTokens = {
     '0xfc40a4f89b410a1b855b5e205064a38fc29f5eb5': { coingeckoId: "rusd", decimals: 18 },
     '0x4c28f48448720e9000907bc2611f73022fdce1fa': { coingeckoId: "matic-network", decimals: 18 },
     '0x6CAcfaF65b1B1f9979aCF463a393A112D0980982': { coingeckoId: "matic-network", decimals: 18 },
+    "0x14743e1c6f812154f7ecc980d890f0f5234103e7": { coingeckoId: "apyswap", decimals: 18, },
     '0x5c4b7ccbf908e64f32e12c6650ec0c96d717f03f': { coingeckoId: "binancecoin", decimals: 18 },
+  },
+  heco: {
+    "0x90e8896b12a92D51CD213b681C2CaD83A9a6bD49": { coingeckoId: "apyswap", decimals: 18, },
   },
   ronin: {
     '0xe514d9deb7966c8be0ca922de8a064264ea6bcd4': { coingeckoId: "ronin", decimals: 18 },
