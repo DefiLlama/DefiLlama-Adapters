@@ -1,5 +1,5 @@
 const { ethers } = require("ethers");
-
+const sdk = require("@defillama/sdk");
 const { getProvider } = require("@defillama/sdk/build/general");
 const CurvePoolRewards = "0x9727D535165e19590013bdDea8Fd85dd618b9aF7";
 const BigNumber = require("bignumber.js");
@@ -8,10 +8,8 @@ const StrategyRegistry = require("./StrategyRegistry.json");
 const IStrategy = require("./IStrategy.json");
 const addresses = require("./addresses.json");
 
-async function useStrategyMetadata() {
+async function useStrategyMetadata(block) {
   const curAddresses = addresses["43114"];
-
-  const provider = getProvider("avax");
 
   const token2Strat = {
     ["0xE5e9d67e93aD363a50cABCB9E931279251bBEFd0"]:
@@ -41,25 +39,19 @@ async function useStrategyMetadata() {
   tokens.push("0xF7D9281e8e363584973F946201b82ba72C965D27");
   strats.push(curAddresses.YieldYakStrategy2);
 
-  const stratViewer = new ethers.Contract(
-    curAddresses.StrategyViewer,
-    StrategyViewer.abi,
-    provider
-  );
-  const normalResults = await stratViewer.viewMetadata(
-    curAddresses.StableLending2,
-    tokens,
-    strats
-  );
+  const stratViewer = await sdk.api.abi.call({
+    target: curAddresses.StrategyViewer,
+    abi: StrategyViewer.abi[1],
+    chain: "avax",
+    params: [curAddresses.StableLending2, tokens, strats],
+    block: block,
+  });
+  const normalResults = stratViewer.output;
   return normalResults;
 }
 
-async function useLegacyIsolatedStrategyMetadata() {
+async function useLegacyIsolatedStrategyMetadata(block) {
   const curAddresses = addresses["43114"];
-
-  const provider = new ethers.providers.JsonRpcProvider(
-    "https://api.avax.network/ext/bc/C/rpc"
-  );
 
   //legacy
   const legacyToken2Strat = {
@@ -101,16 +93,14 @@ async function useLegacyIsolatedStrategyMetadata() {
   legacyTokens.push("0x6e84a6216eA6dACC71eE8E6b0a5B7322EEbC0fDd");
   legacyStrats.push(curAddresses.sJoeStrategy);
 
-  const stratViewer = new ethers.Contract(
-    curAddresses.LegacyStrategyViewer,
-    StrategyViewer.abi,
-    provider
-  );
-  const normalResults = await stratViewer.viewMetadata(
-    curAddresses.StableLending,
-    legacyTokens,
-    legacyStrats
-  );
+  const stratViewer = await sdk.api.abi.call({
+    target: curAddresses.LegacyStrategyViewer,
+    abi: StrategyViewer.abi[1],
+    block: block,
+    chain: "avax",
+    params: [curAddresses.StableLending, legacyTokens, legacyStrats],
+  });
+  const normalResults = stratViewer.output;
 
   return normalResults;
 }

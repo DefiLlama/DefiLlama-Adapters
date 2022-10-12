@@ -9,13 +9,12 @@ const useParsedStakingMetadata =
   require("./StakingMetadata").useParsedStakingMetadata;
 
 async function tvl(timestamp, block) {
-  const allStratMeta = await useStrategyMetadata();
-  const legacyStratMeta = await useLegacyIsolatedStrategyMetadata();
+  const allStratMeta = await useStrategyMetadata(block);
+  const legacyStratMeta = await useLegacyIsolatedStrategyMetadata(block);
   const { tokenDecimals, tokenValuePer1e18 } =
     await getTokenDecimalsAndValue1e18([...allStratMeta, ...legacyStratMeta]);
 
   const stakeMeta = await useParsedStakingMetadata();
-  console.log("stakeMeta", stakeMeta);
 
   const tvlsFarm = stakeMeta
     .filter((x) => x)
@@ -35,10 +34,13 @@ async function tvl(timestamp, block) {
         .div(ethers.utils.parseEther("1"));
       return {
         ...row,
-        tvlInPeg: row.tvl.mul(valPerOne).div(trueOne),
+        tvlInPeg: BigNumber.from(row.tvl).mul(valPerOne).div(trueOne),
       };
     })
-    .reduce((tvl, row) => tvl.add(row.tvlInPeg), BigNumber.from(0));
+    .reduce(
+      (tvl, row) => BigNumber.from(tvl).add(row.tvlInPeg),
+      BigNumber.from(0)
+    );
 
   const legacyTvlNoFarm = Object.values(legacyStratMeta)
     .map((row) => {
@@ -50,10 +52,13 @@ async function tvl(timestamp, block) {
         .div(ethers.utils.parseEther("1"));
       return {
         ...row,
-        tvlInPeg: row.tvl.mul(valPerOne).div(trueOne),
+        tvlInPeg: BigNumber.from(row.tvl).mul(valPerOne).div(trueOne),
       };
     })
-    .reduce((tvl, row) => tvl.add(row.tvlInPeg), BigNumber.from(0));
+    .reduce(
+      (tvl, row) => BigNumber.from(tvl).add(row.tvlInPeg),
+      BigNumber.from(0)
+    );
   const tvl = tvlNoFarm.add(tvlsFarm).add(legacyTvlNoFarm);
 
   return {
