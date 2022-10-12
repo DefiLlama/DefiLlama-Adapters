@@ -44,7 +44,6 @@ async function useStrategyMetadata(block) {
     abi: StrategyViewer.abi[1],
     chain: "avax",
     params: [curAddresses.StableLending2, tokens, strats],
-    block: block,
   });
   const normalResults = stratViewer.output;
   return normalResults;
@@ -96,7 +95,6 @@ async function useLegacyIsolatedStrategyMetadata(block) {
   const stratViewer = await sdk.api.abi.call({
     target: curAddresses.LegacyStrategyViewer,
     abi: StrategyViewer.abi[1],
-    block: block,
     chain: "avax",
     params: [curAddresses.StableLending, legacyTokens, legacyStrats],
   });
