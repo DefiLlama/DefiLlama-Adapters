@@ -113,7 +113,4 @@ module.exports = {
   },
   methodology:
     "Counts TVL through TempleTreasury contract, locked LP in Convex and Aura",
-  module.exports.hallmarks = [
-        [1665457200, "Exploit $2M"],
-      ]
 };
