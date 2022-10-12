@@ -1,35 +1,15 @@
+const sdk = require("@defillama/sdk");
 const { ethers } = require("ethers");
 
 async function getTokenDecimalsAndValue1e18(normalResults) {
   let tokenDecimals = {};
   let tokenValuePer1e18 = {};
 
-  const provider = new ethers.providers.JsonRpcProvider(
-    "https://api.avax.network/ext/bc/C/rpc"
-  );
-
   await Promise.all(
     normalResults.map(async (normalResult) => {
-      const contract = new ethers.Contract(
-        normalResult.token,
-        [
-          {
-            inputs: [],
-            name: "decimals",
-            outputs: [
-              {
-                internalType: "uint8",
-                name: "",
-                type: "uint8",
-              },
-            ],
-            stateMutability: "view",
-            type: "function",
-          },
-        ],
-        provider
-      );
-      const decimals = await contract.decimals();
+      const decimals = (
+        await sdk.api.erc20.decimals(normalResult.token, "avax")
+      ).output;
       tokenDecimals[normalResult.token] = decimals;
       tokenValuePer1e18[normalResult.token] = normalResult.valuePer1e18;
     })
