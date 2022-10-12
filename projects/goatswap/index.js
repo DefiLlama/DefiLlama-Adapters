@@ -50,8 +50,10 @@ const idl = {
             type: 'publicKey'
           },
           {
-            name: 'collection',
-            type: 'publicKey'
+            name: 'collectionVerification',
+            type: {
+              defined: 'CollectionVerification'
+            }
           },
           {
             name: 'poolType',
@@ -82,6 +84,10 @@ const idl = {
             type: {
               option: 'publicKey'
             }
+          },
+          {
+            name: 'nfts',
+            type: 'u32'
           }
         ]
       }
@@ -115,6 +121,32 @@ const idl = {
           },
           {
             name: 'Trade'
+          }
+        ]
+      }
+    },
+    {
+      name: 'CollectionVerification',
+      type: {
+        kind: 'enum',
+        variants: [
+          {
+            name: 'Collection',
+            fields: [
+              {
+                name: 'collection',
+                type: 'publicKey'
+              }
+            ]
+          },
+          {
+            name: 'Goatkeeper',
+            fields: [
+              {
+                name: 'goatkeeper',
+                type: 'publicKey'
+              }
+            ]
           }
         ]
       }

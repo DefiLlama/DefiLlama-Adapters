@@ -21,7 +21,7 @@ async function fetchBalances(exports, contracts, transform, chainBlocks, chain) 
 };
 
 // node test.js projects/daomaker/index.js
-function tvl(chain) {
+function vesting(chain) {
     return async (timestamp, block, chainBlocks) => {
         const balances = {};
         const transform = await getChainTransform(chain);
@@ -51,7 +51,9 @@ function tvl(chain) {
 };
 
 const chainTVLObject = contracts.chains.reduce(
-    (agg, chain) => ({ ...agg, [chain]: {tvl: tvl(chain) }}), {}
+    (agg, chain) => ({ ...agg, [chain]: {
+        tvl: ()=>({}),
+        vesting: vesting(chain) }}), {}
 );
 
 chainTVLObject.ethereum.staking = stakings(

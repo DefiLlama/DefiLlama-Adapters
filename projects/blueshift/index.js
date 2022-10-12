@@ -51,11 +51,11 @@ async function staking(timestamp, block, chainBlocks) {
   const tokenPrice = bluesPortfolio.tokens.filter(token => token.tokenAddress === tokenAddress)[0].price;
   const valueInBaseToken = BigNumber(value).multipliedBy(tokenPrice).div(baseTokenPrice);
 
-  await sdk.util.sumSingleBalance(balances, transform(baseTokenAddress), valueInBaseToken.toNumber());
+  sdk.util.sumSingleBalance(balances, transform(baseTokenAddress), valueInBaseToken.toNumber());
   // ----------------------------------------
 
   // CoinGecko solution
-  // await sdk.util.sumSingleBalance(balances, transform(tokenAddress), value);
+  // sdk.util.sumSingleBalance(balances, transform(tokenAddress), value);
 
   return balances;
 }
@@ -74,7 +74,7 @@ async function tvl(timestamp, block, chainBlocks) {
 
   for (let portfolio of portfolios) {
     const value = portfolio.totalValue;
-    await sdk.util.sumSingleBalance(balances, transform(portfolio.baseTokenAddress), value);
+    sdk.util.sumSingleBalance(balances, transform(portfolio.baseTokenAddress), value);
   }
 
   return balances;

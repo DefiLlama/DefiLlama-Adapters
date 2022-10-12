@@ -85,8 +85,6 @@ async function ethTvl(_, block) {
     [spell, spellCallVault],
     [badger, badgerCallVault],
 
-    // ribbon earn
-    [usdc, rearnUSDC],
   ]
   
   await addVaults({ balances, block, vaults, })

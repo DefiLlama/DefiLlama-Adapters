@@ -115,7 +115,7 @@ module.exports = {
   polygon: {
     staking: staking(stkGHST_QUICKContract, GHST_Polygon, "polygon"),
     tvl: polygonTvl,
-    pool2: pool2s([stkGHST_QUICKContract], GHST_pools2, "polygon")
+    pool2: staking([stkGHST_QUICKContract], GHST_pools2, "polygon")
   },
   methodology:
     `We count liquidity on Vaults from ETHEREUM and Polygon chains through Vault Contracts;

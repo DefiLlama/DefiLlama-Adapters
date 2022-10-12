@@ -23,9 +23,9 @@ const DMO_FARM_ACTION = "0x4Ec4e76c11E2182918a80822df114DB03048388b";
 const ARB_WETH = "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1";
 const ARB_USDC = "0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8";
 
-async function ethTvl(block) {
+async function ethTvl(_, block) {
   return {
-    [WETH]: (
+    'ethereum:0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2': (
       await sdk.api.abi.call({
         target: ETH_BULL_VAULT,
         block,
@@ -36,7 +36,7 @@ async function ethTvl(block) {
   };
 }
 
-async function optTvl(block) {
+async function optTvl(_, _b,{ optimism: block}) {
   const transform = await transformOptimismAddress();
   return {
     [transform(OPT_USDC)]: (
@@ -89,7 +89,7 @@ async function getTotalPositionValue(block) {
   return positionValues;
 }
 
-async function arbTvl(block) {
+async function arbTvl(_, _b,{ arbitrum: block}) {
   const transform = await transformArbitrumAddress();
 
   const balanceOfPool = +(
@@ -134,7 +134,7 @@ async function arbTvl(block) {
 
   return {
     [transform(ARB_WETH)]: balanceOfPool,
-    [transform(ARB_USDC)]:
+    ['ethereum:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48']:
       balanceOfFactory + positionValue + balanceOfFarm + balanceOfFarmAction,
   };
 }

@@ -1,5 +1,5 @@
-import mooniswap from "./adapters/mooniswap";
 import balancer from "./adapters/balancer";
+import mooniswap from "./adapters/mooniswap";
 import bancor from "./adapters/bancor";
 import carthage from "./adapters/carthage";
 import champagneswap from "./adapters/champagneswap";
@@ -37,6 +37,119 @@ import saber from "./adapters/saber";
 import solidly from "./adapters/solidly";
 import yoshiExchange from "./adapters/yoshi-exchange";
 import platypus from "./adapters/platypus";
+import wombatExchange from "./adapters/wombat-exchange";
+import wingriders from "./adapters/wingriders";
+import minswap from "./adapters/minswap";
+import mojitoswap from "./adapters/mojitoswap";
+import mdex from "./adapters/mdex";
+import meshswap from "./adapters/meshswap";
+import vvsFinance from "./adapters/vvs-finance";
+import mmStableswapPolygon from "./adapters/mm-stableswap-polygon";
+import dfyn from "./adapters/dfyn";
+import radioshack from "./adapters/radioshack";
+import flamingoFinance from "./adapters/flamingo-finance";
+import ZEROx from "./adapters/0x";
+// import bakerySwap from "./adapters/bakeryswap"; //broken
+import baryon from "./adapters/baryon";
+import cherryswap from "./adapters/cherryswap";
+import clipper from "./adapters/clipper";
+import cryptoswap from "./adapters/cryptoswap";
+import ellipsis from "./adapters/ellipsis";
+import klexFinance from "./adapters/klex-finance";
+import koyo from "./adapters/koyo";
+// import lyra from "./adapters/lyra"; // Options dex
+import pyeswap from "./adapters/pyeswap";
+import smbswap from "./adapters/smbswap";
+import sunswap from "./adapters/sunswap";
+import whaleswap from "./adapters/whaleswap";
+import nomiswap from "./adapters/nomiswap";
+import fstswap from "./adapters/fstswap";
+import beethovenX from "./adapters/beethoven-x";
+import defiSwap from "./adapters/defi-swap";
+import wanswapDex from "./adapters/wanswap-dex";
+import solarbeam from "./adapters/solarbeam";
+import tombFinance from "./adapters/tomb-swap";
+import dfxFinance from "./adapters/dfx-finance";
+import fraxswap from "./adapters/frax-swap";
+import iziswap from "./adapters/iziswap";
+import tinyman from "./adapters/tinyman";
+import junoswap from "./adapters/junoswap";
+import knightswapFinance from "./adapters/knightswap-finance";
+import shibaswap from "./adapters/shibaswap";
+import oolongswap from "./adapters/oolongswap";
+import viperswap from "./adapters/viperswap";
+import swapr from "./adapters/swapr";
+import cone from "./adapters/cone";
+import claimswap from "./adapters/claimswap";
+import spartacusExchange from "./adapters/spartacus-exchange";
+import beamswap from "./adapters/beamswap";
+import openleverage from "./adapters/openleverage";
+import ubeswap from "./adapters/ubeswap";
+import mobiusMoney from "./adapters/mobius-money";
+import honeyswap from "./adapters/honeyswap";
+import energiswap from "./adapters/energiswap";
+import stellaswap from "./adapters/stellaswap";
+import wagyuswap from "./adapters/wagyuswap";
+import dystopia from "./adapters/dystopia";
+import glideFinance from "./adapters/glide-finance";
+import quipuswap from "./adapters/quipuswap";
+import netswap from "./adapters/netswap";
+import jupiterAggregator from "./adapters/jupiter-aggregator";
+import astroport from "./adapters/astroport";
+import mimo from "./adapters/mimo";
+import tethysFinance from "./adapters/tethys-finance";
+import kaidex from "./adapters/kaidex";
+import lif3Swap from "./adapters/lif3-swap";
+import swappi from "./adapters/swappi";
+import yodeswap from "./adapters/yodeswap";
+import polycat from "./adapters/polycat";
+import defikingdoms from "./adapters/defi-kingdoms";
+import defiplaza from "./adapters/defiplaza";
+import voltswap from "./adapters/voltswap";
+import yokaiswap from "./adapters/yokaiswap";
+import protofi from "./adapters/protofi";
+import voltage from "./adapters/voltage";
+import complusNetwork from "./adapters/complus-network";
+import padswap from "./adapters/padswap";
+import sharkswap from "./adapters/sharkswap";
+import okcswap from "./adapters/okcswap";
+import empiredex from "./adapters/empiredex";
+import makiswap from "./adapters/makiswap";
+import smartdex from "./adapters/smartdex";
+import cometh from "./adapters/cometh";
+import maiarExchange from "./adapters/maiar-exchange";
+import defichainDex from "./adapters/defichain-dex";
+import planet from "./adapters/blue-planet";
+import aldrin from "./adapters/aldrin";
+import capricornFinance from "./adapters/capricorn-finance";
+import alex from "./adapters/alex";
+import stepExchange from "./adapters/step-exchange";
+import pegasys from "./adapters/pegasys";
+import crodex from "./adapters/crodex";
+import dexalot from "./adapters/dexalot";
+import babyswap from "./adapters/babyswap";
+import lifinity from "./adapters/lifinity";
+import vanswap from "./adapters/vanswap";
+import daoMaker from "./adapters/dao-swap";
+import jswap from "./adapters/jswap";
+import babydogeswap from "./adapters/babydogeswap";
+import wigoswap from "./adapters/wigoswap";
+import levinswap from "./adapters/levinswap";
+import templeDao from "./adapters/temple-dao";
+import karuraSwap from "./adapters/karura-swap";
+import sphynx from "./adapters/sphynx";
+import kuswap from "./adapters/kuswap";
+import paintSwap from "./adapters/paint-swap";
+import benswap from "./adapters/benswap";
+import surfswap from "./adapters/surfswap";
+import boggedFinance from "./adapters/bogged-finance";
+import jetswap from "./adapters/jetswap";
+import saucerswap from "./adapters/saucerswap";
+import synthetify from "./adapters/synthetify";
+import pandora from "./adapters/pandora";
+import soyFinance from "./adapters/soy-finance";
+import paycash from "./adapters/paycash";
+import alitaFinance from "./adapters/alita-finance";
 
 export default {
   mooniswap,
@@ -77,6 +190,117 @@ export default {
   saber,
   solidly,
   "yoshi-exchange": yoshiExchange,
-  platypus
+  platypus,
+  "wombat-exchange": wombatExchange,
+  wingriders,
+  minswap,
+  mojitoswap,
+  mdex,
+  meshswap,
+  "vvs-finance": vvsFinance,
+  "mm-stableswap-polygon": mmStableswapPolygon,
+  dfyn,
+  radioshack,
+  "flamingo-finance": flamingoFinance,
+  "0x": ZEROx,
+  baryon,
+  cherryswap,
+  clipper,
+  cryptoswap,
+  ellipsis,
+  "klex-finance": klexFinance,
+  koyo,
+  pyeswap,
+  smbswap,
+  sunswap,
+  whaleswap,
+  nomiswap,
+  // fstswap, -> incorrect subgraph
+  "beethoven-x": beethovenX,
+  "defi-swap": defiSwap,
+  "wanswap-dex": wanswapDex,
+  solarbeam,
+  "tomb-swap": tombFinance,
+  "dfx-finance": dfxFinance,
+  "frax-swap": fraxswap,
+  iziswap,
+  tinyman,
+  junoswap,
+  "knightswap-finance": knightswapFinance,
+  shibaswap,
+  oolongswap,
+  viperswap,
+  swapr,
+  cone,
+  claimswap,
+  "spartacus-exchange" : spartacusExchange,
+  beamswap,
+  openleverage,
+  ubeswap,
+  "mobius-money": mobiusMoney,
+  honeyswap,
+  energiswap,
+  stellaswap,
+  wagyuswap,
+  dystopia,
+  "glide-finance": glideFinance,
+  quipuswap,
+  netswap,
+  "jupiter-aggregator":jupiterAggregator,
+  astroport,
+  mimo,
+  "tethys-finance": tethysFinance,
+  kaidex,
+  "lif3-swap": lif3Swap,
+  swappi,
+  yodeswap,
+  polycat,
+  "defi-kingdoms" : defikingdoms,
+  defiplaza,
+  voltswap,
+  yokaiswap,
+  protofi,
+  voltage,
+  "complus-network": complusNetwork,
+  padswap,
+  sharkswap,
+  okcswap,
+  empiredex,
+  makiswap,
+  smartdex,
+  cometh,
+  "maiar-exchange": maiarExchange,
+  "defichain-dex": defichainDex,
+  "blue-planet": planet,
+  aldrin,
+  "capricorn-finance" :capricornFinance,
+  alex,
+  "step-exchange": stepExchange,
+  pegasys,
+  crodex,
+  dexalot,
+  babyswap,
+  lifinity,
+  vanswap,
+  "dao-swap": daoMaker,
+  jswap,
+  babydogeswap,
+  wigoswap,
+  levinswap,
+  "temple-dao": templeDao,
+  "karura-swap": karuraSwap,
+  sphynx,
+  kuswap,
+  "paint-swap": paintSwap,
+  benswap,
+  surfswap,
+  "bogged-finance": boggedFinance,
+  jetswap,
+  saucerswap,
+  synthetify,
+  pandora,
+  "soy-finance": soyFinance,
+  paycash,
+  "alita-finance": alitaFinance
   // lyra -> OPTIONS DEX, not enable for now
 };

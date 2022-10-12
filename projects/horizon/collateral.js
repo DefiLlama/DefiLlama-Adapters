@@ -1,4 +1,5 @@
 const { request, gql } = require("graphql-request");
+const { getBlock } = require('../helper/getBlock');
 
 const graph_endpoint = 'https://api.thegraph.com/subgraphs/name/rout-horizon/bsc15-issuance'
 const graphQuery = gql`
@@ -9,7 +10,7 @@ query get_tvl($block: Int) {
 }`
 
 async function tvl(ts, _block, chainBlocks) {
-    const block = chainBlocks.bsc
+    const block = await getBlock(ts, 'bsc', chainBlocks)
     const { snxholders } = await request(
         graph_endpoint,
         graphQuery,

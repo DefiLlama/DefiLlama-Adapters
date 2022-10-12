@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { transformBscAddress } = require("../helper/portedTokens");
-const { staking } = require("../helper/staking");
+const { stakings } = require("../helper/staking");
 const { pool2 } = require("../helper/pool2");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 
@@ -80,7 +80,7 @@ async function tvl(timestamp, block, chainBlocks) {
   );
 
   return balances;
-} // node test.js projects/grizzlyfi/index.js
+}
 
 module.exports = {
   bsc: {
@@ -90,8 +90,11 @@ module.exports = {
       "0x352008bf4319c3B7B8794f1c2115B9Aa18259EBb",
       "bsc"
     ),
-    staking: staking(
-      "0x6F42895f37291ec45f0A307b155229b923Ff83F1",
+    staking: stakings(
+      [
+        "0x6F42895f37291ec45f0A307b155229b923Ff83F1", 
+        "0xB80287c110a76e4BbF0315337Dbc8d98d7DE25DB"
+      ],
       "0xa045e37a0d1dd3a45fefb8803d22457abc0a728a",
       "bsc"
     )

@@ -1,7 +1,5 @@
 const sdk = require('@defillama/sdk')
 const { toUSDTBalances } = require('../helper/balances')
-const { get } = require('../helper/http')
-const retry = require("async-retry");
 const axios = require("axios");
 const { lookupApplications, } = require("../helper/algorand");
 
@@ -10,20 +8,13 @@ const marketStrings = {
     underlying_borrowed : "ub",
     underlying_reserves : "ur",
     active_collateral : "acc",
+    active_collateral_v2 : "ac",
     lp_circulation: "lc",
     bank_to_underlying_exchange: "bt",
     b_asset_circulation: "bac",
     oracle_price_field_name: "opfn",
     oracle_price_scale_factor: "ops",
     oracle_app_id: "oai",
-}
-
-const marketV2Strings = {
-    b_asset_to_underlying_exchange_rate: "baer"
-}
-
-const stakingV2Strings = {
-    total_staked: "ts",
 }
 
 const orderedAssets = [
@@ -33,32 +24,14 @@ const orderedAssets = [
     "goBTC",
     "goETH",
     "vALGO",
+    "vALGO2",
     "USDT",
     "STBL2",
     "AF-NANO-BSTBL2-BUSDC",
     "AF-BSTBL2-BALGO",
     "AF-BSTBL2-BgoBTC",
     "AF-BSTBL2-BgoETH"]
-const fixedValueStakingContracts = ["TINYMAN11_STBL_USDC_LP_STAKING", "ALGOFI-STBL-USDC-LP"]
-const singleSideStakingContracts = ["DEFLY", "STBL", "OPUL"]
-const variableValueStakingContracts = [
-                                        "ALGOFI-STBL-ALGO-LP",
-                                        "AF-XET-STBL-75BP-STAKING",
-                                        "AF-GOBTC-STBL-25BP-STAKING",
-                                        "AF-GOETH-STBL-25BP-STAKING",
-                                        "AF-OPUL-STBL-75BP-STAKING",
-                                        "AF-DEFLY-STBL-75BP-STAKING",
-                                        "AF-NANO-USDC-STBL-5BP-STAKING",
-                                        "AF-NANO-USDT-STBL-5BP-STAKING",
-                                        "AF-NANO-USDT-USDC-5BP-STAKING",
-                                        "AF-USDC-STBL-NANO-SUPER-STAKING",
-                                        "AF-ZONE-STBL-75BP-STAKING",
-                                        "AF-TINY-STBL-75BP-STAKING",
-                                        "AF-GOMINT-STBL-25BP-STAKING"
-                                      ]
 
-const stakingContractsV1 = fixedValueStakingContracts.concat(variableValueStakingContracts).concat(singleSideStakingContracts)
-const bankStakingContractsV2 = ["AF-BANK-USDC-STANDARD", "AF-BANK-USDt-STANDARD"]
 
 const appDictionary = {
     "ALGO": {
@@ -106,6 +79,12 @@ const appDictionary = {
     "vALGO": {
         "decimals": 6,
         "appIds": [465814318],
+        "oracleAppId": 531724540,
+        "oracleFieldName": "latest_twap_price",
+    },
+    "vALGO2": {
+        "decimals": 6,
+        "appIds": [879935316],
         "oracleAppId": 531724540,
         "oracleFieldName": "latest_twap_price",
     },
@@ -268,7 +247,14 @@ async function getPrices(marketDictionary, orderedAssets) {
 }
 
 function getMarketSupply(assetName, appGlobalState, prices, appDictionary) {
-    let underlyingCash = ((assetName === "STBL") || (assetName === "vALGO")) ? appGlobalState[marketStrings.active_collateral] : appGlobalState[marketStrings.underlying_cash]
+    let underlyingCash = 0;
+    if (assetName == "vALGO2") {
+        underlyingCash = appGlobalState[marketStrings.active_collateral_v2];
+    } else if ((assetName === "STBL") || (assetName === "vALGO")) {
+        underlyingCash = appGlobalState[marketStrings.active_collateral];
+    } else {
+        underlyingCash = appGlobalState[marketStrings.underlying_cash];
+    }
     let supplyUnderlying = underlyingCash - appGlobalState[marketStrings.underlying_reserves]
     supplyUnderlying /= Math.pow(10, appDictionary[assetName]["decimals"])
 
@@ -312,86 +298,10 @@ async function supply() {
     return toUSDTBalances(supply)
 }
 
-async function stakingV1() {
-    let lpCirculations = {}
-
-    let prices = {
-             "TINYMAN11_STBL_USDC_LP_STAKING": 2,
-             "ALGOFI-STBL-USDC-LP": 2,
-    }
-
-    for (const contractName of variableValueStakingContracts) {
-        let contractState = await getAppGlobalState(
-            appDictionary["STAKING_CONTRACTS"][contractName]["poolAppId"]
-        )
-        lpCirculations[contractName] = contractState[marketStrings.lp_circulation] / 1000000
-    }
-
-    let poolSnapshots = await get("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_pool_snapshots/?network=MAINNET")
-    let assetSnapshots = await get("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_asset_snapshots/?network=MAINNET")
-
-    for (const poolSnapshot of poolSnapshots.pool_snapshots) {
-        for (const contractName of variableValueStakingContracts) {
-            if (poolSnapshot.id == appDictionary["STAKING_CONTRACTS"][contractName]["poolAppId"]) {
-                prices[contractName] = poolSnapshot.balance_info.total_usd / lpCirculations[contractName]
-            }
-        }
-    }
-
-    for (const assetSnapshot of assetSnapshots.asset_snapshots) {
-        for (const contractName of singleSideStakingContracts) {
-            if (assetSnapshot.id == appDictionary["STAKING_CONTRACTS"][contractName]["assetId"]) {
-                prices[contractName] = assetSnapshot.price
-            }
-        }
-    }
-
-    let staked = 0
-    for (const contractName of stakingContractsV1) {
-        let appGlobalState = await getAppGlobalState(appDictionary["STAKING_CONTRACTS"][contractName]["appId"])
-        staked += getMarketSupply(contractName, appGlobalState, prices, appDictionary["STAKING_CONTRACTS"])
-    }
-
-    return toUSDTBalances(staked)
-}
-
-async function stakingV2() {
-    let totalStaked = 0
-    for (const contractName of bankStakingContractsV2) {
-        let stakingAppGlobalState = await getAppGlobalState(appDictionary["STAKING_CONTRACTS"][contractName]["appId"])
-        let marketAppGlobalState = await getAppGlobalState(appDictionary["STAKING_CONTRACTS"][contractName]["marketAppId"])
-
-        let bAssetStaked = stakingAppGlobalState[stakingV2Strings.total_staked] / 1000000
-        let bAssetToUnderlyingExchange = marketAppGlobalState[marketV2Strings.b_asset_to_underlying_exchange_rate] / 1000000000
-        let underlyingStaked = bAssetStaked * bAssetToUnderlyingExchange
-
-        let oracleState = await getAppGlobalState(marketAppGlobalState[marketStrings.oracle_app_id])
-
-        let oraclePriceFieldName = appDictionary["STAKING_CONTRACTS"][contractName]["oracleFieldName"]
-        let oraclePrice = oracleState[oraclePriceFieldName] / 1000000
-
-        let stakedUsd = underlyingStaked * oraclePrice
-
-        totalStaked  += stakedUsd
-    }
-    return toUSDTBalances(totalStaked)
-}
-
-
-async function dex() {
-    const response = (
-        await retry(
-          async (bail) =>
-            await axios.get("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_protocol_snapshot/?network=MAINNET")
-        )
-      ).data.protocol_snapshot.tvl.total_usd;
-    return toUSDTBalances(response)
-}
 module.exports = {
     algorand: {
-        tvl: sdk.util.sumChainTvls([supply, dex]),
-        borrowed,
-        staking: sdk.util.sumChainTvls([stakingV1, stakingV2])
+        tvl: supply,
+        borrowed
     }
 }
 // node test.js projects/algofi/index.js

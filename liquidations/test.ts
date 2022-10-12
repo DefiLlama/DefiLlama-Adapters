@@ -3,7 +3,8 @@ import * as fs from "fs";
 import { ethers } from "ethers";
 import { providers } from "./utils/ethers";
 import { humanizeNumber } from "@defillama/sdk/build/computeTVL/humanizeNumber";
-import { TOTAL_BINS, Bins, binResults, Liq } from "./utils/binResults";
+import { TOTAL_BINS, Bins, binResults } from "./utils/binResults";
+import { Liq } from "./utils/types";
 import { config } from "dotenv";
 import { performance } from "perf_hooks";
 

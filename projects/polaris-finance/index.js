@@ -70,7 +70,7 @@ const pool2Total = async (_timestamp, _ethBlock, {[chain]: block}) => {
       })
     ).output;
 
-    await sdk.util.sumSingleBalance(balances, `aurora:${token}`, tokenBalance);
+    sdk.util.sumSingleBalance(balances, `aurora:${token}`, tokenBalance);
   }
 
   for (const lp of LPTokens) {

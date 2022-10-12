@@ -3,7 +3,6 @@
   "bsc",
   "polygon",
   "fantom",
-  "avalanche",
   "arbitrum",
   "cronos",
   "harmony",
@@ -130,6 +129,7 @@
   "clv",
   "echelon",
   "multivac",
+  "stellar",
   "sx",
   "lbry",
   "rvn",
@@ -154,5 +154,8 @@
   "juno",
   "tombchain",
   "vision",
-  "xdc"
+  "functionx",
+  "xdc",
+  "ethpow",
+  "cube"
 ]

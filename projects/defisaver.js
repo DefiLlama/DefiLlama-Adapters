@@ -326,6 +326,7 @@ async function tvl(ts, block) {
 }
 
 module.exports = {
+  doublecounted: true,
   ethereum: {
     tvl
   },
