@@ -59,4 +59,7 @@ module.exports = {
     solana: {
         tvl,
     },
+    hallmarks:[
+        [1665525600, "Oracle Price Manipulation"],
+      ],
 }
