@@ -1,5 +1,4 @@
 const { staking } = require("../helper/staking");
-const { pool2 } = require("../helper/pool2");
 
 const stakingContract = "0xDa9A63D77406faa09d265413F4E128B54b5057e0";
 const UMB = "0x6fC13EACE26590B80cCCAB1ba5d51890577D83B2";
@@ -15,7 +14,7 @@ module.exports = {
   ethereum: {
     tvl: (async) => ({}),
     staking: staking(stakingContract, UMB),
-    pool2: pool2(pool2StakingContract, UMB_WETH_UNIV2),
+    pool2: staking(pool2StakingContract, UMB_WETH_UNIV2),
   },
   bsc: {
     staking: staking(stakingContract_bsc, UMB_bsc, "bsc"),

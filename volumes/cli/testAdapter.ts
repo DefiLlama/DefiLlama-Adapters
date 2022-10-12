@@ -43,6 +43,7 @@ const passedFile = path.resolve(process.cwd(), `volumes/adapters/${process.argv[
         printVolumes(promise.res)
         console.info("\n")
       })
+      process.exit(0);
     } else throw new Error("No compatible adapter found")
   } catch (error) {
     console.error(ERROR_STRING)
@@ -53,7 +54,7 @@ const passedFile = path.resolve(process.cwd(), `volumes/adapters/${process.argv[
 async function runAdapter(volumeAdapter: Adapter, timestamp: number) {
   // Get chains to check
   const chains: Chain[] = Object.keys(volumeAdapter).filter(item => typeof volumeAdapter[item] === 'object').map(c => c === "ava" ? "avax" : c as Chain)
-  // Get lastest block 
+  // Get lastest block
   const chainBlocks: ChainBlocks = {};
   await Promise.all(
     chains.map(async (chain) => {

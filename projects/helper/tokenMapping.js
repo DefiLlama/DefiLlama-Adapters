@@ -539,6 +539,10 @@ const fixBalancesTokens = {
     "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c": { coingeckoId: "binancecoin", decimals: 18, },
     "0xEa7A82E0Bc636667AB5c65623cd1438370620c3E": { coingeckoId: "binancecoin", decimals: 18, },
     "0x8b04E56A8cd5f4D465b784ccf564899F30Aaf88C": { coingeckoId: "anchorust", decimals: 6, },
+    "0x6A46d878401F46B4C7f665f065E0667580e031ec": { coingeckoId: "investin", decimals: 18, },
+    "0xa4eF4b0B23C1fc81d3f9ecF93510e64f58A4A016": { coingeckoId: "1million-nfts", decimals: 18, },
+    "0x37dfACfaeDA801437Ff648A1559d73f4C40aAcb7": { coingeckoId: "apyswap", decimals: 18, },
+    "0xC7d8D35EBA58a0935ff2D5a33Df105DD9f071731": { coingeckoId: "hedget", decimals: 6, },
   },
   oasis: {
     "0x21c718c22d52d0f3a789b752d4c2fd5908a8a733": { coingeckoId: "oasis-network", decimals: 18, },
@@ -555,6 +559,7 @@ const fixBalancesTokens = {
     "0x918146359264c492bd6934071c6bd31c854edbc3": { coingeckoId: "mceur", decimals: 18, },
     "0xe273ad7ee11dcfaa87383ad5977ee1504ac07568": { coingeckoId: "moola-celo-dollars", decimals: 18, },
     "0x37f750B7cC259A2f741AF45294f6a16572CF5cAd": { coingeckoId: "usd-coin", decimals: 6, },
+    "0x2a3684e9dc20b857375ea04235f2f7edbe818fa7": { coingeckoId: "usd-coin", decimals: 6, },
     "0xb70e0a782b058bfdb0d109a3599bec1f19328e36": { coingeckoId: "usd-coin", decimals: 18, },
     "0xcd7d7ff64746c1909e44db8e95331f9316478817": { coingeckoId: "usd-coin", decimals: 18, },
     "0x93db49be12b864019da9cb147ba75cdc0506190e": { coingeckoId: "usd-coin", decimals: 18, },
@@ -613,6 +618,7 @@ const fixBalancesTokens = {
     "0xd7a4d10070a4f7bc2a015e78244ea137398c3b74": { coingeckoId: "klay-token", decimals: 18 }, // Wrapped KLAY
     "0xff3e7cf0c007f919807b32b30a4a9e7bd7bc4121": { coingeckoId: "klay-token", decimals: 18 }, // Wrapped KLAY
     "0xe4f05a66ec68b54a58b17c22107b02e0232cc817": { coingeckoId: "klay-token", decimals: 18 }, // Wrapped KLAY
+    "0xf6f6b8bd0ac500639148f8ca5a590341a97de0de": { coingeckoId: "klay-token", decimals: 18 }, // Wrapped KLAY
     "0x9eaefb09fe4aabfbe6b1ca316a3c36afc83a393f": { coingeckoId: "ripple", decimals: 6 },
     "0xd6dab4cff47df175349e6e7ee2bf7c40bb8c05a3": { coingeckoId: "tether", decimals: 6 },
     "0xc6a2ad8cc6e4a7e08fc37cc5954be07d499e7654": { coingeckoId: "klayswap-protocol", decimals: 18 }, // KLAYSWAP
@@ -751,22 +757,30 @@ const fixBalancesTokens = {
     "0x722377a047e89ca735f09eb7cccab780943c4cb4": { coingeckoId: "standard-protocol", decimals: 18 }
   },
   tezos: {
-    KT1PWx2mnDueood7fEmfbBDKx1D9BAnnXitn: { coingeckoId: "tzbtc", decimals: 8 },
+    // KT1PWx2mnDueood7fEmfbBDKx1D9BAnnXitn: { coingeckoId: "tzbtc", decimals: 8 },
     tezos: { coingeckoId: "tezos", decimals: 0 },
+    'KT1UpeXdK6AJbX58GJ92pLZVCucn2DR8Nu4b': { coingeckoId: "tezos", decimals: 6 },
     KT1GRSvLoikDsXujKgZPsGLX8k8VvR2Tq95b: { coingeckoId: "plenty-dao", decimals: 18 },
     KT1SjXiUX63QvdNMcM2m492f7kuf8JxXRLp4: { coingeckoId: "tezos", decimals: 6 }, // this is ctez, ideally should be valued higher
     KT1Ha4yFVeyzw6KRAdkzq6TxDHB97KG4pZe8: { coingeckoId: "dogami", decimals: 5 },
     KT1JkoE42rrMBP9b2oDhbx6EUr26GcySZMUH: { coingeckoId: "kolibri-dao", decimals: 18 },
     "KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-19": { coingeckoId: "wrapped-bitcoin", decimals: 8 },
     "KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-17": { coingeckoId: "usd-coin", decimals: 6 },
+    "KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-11": { coingeckoId: "matic-network", decimals: 18 },
+    "KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-10": { coingeckoId: "chainlink", decimals: 18 },
     "KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-1": { coingeckoId: "binance-usd", decimals: 18 },
     "KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-20": { coingeckoId: "ethereum", decimals: 18 },
     "KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-5": { coingeckoId: "dai", decimals: 18 },
+    "KT19DUSZw7mfeEATrbWVPHRrWNVbNnmfFAE6": { coingeckoId: "paul-token", decimals: 18 },
+    "KT1TgmD7kXQzofpuc9VbTRMdZCS2e6JDuTtc": { coingeckoId: "upsorber", decimals: 0 },
+    "KT1TwzD6zV3WeJ39ukuqxcfK2fJCnhvrdN1X": { coingeckoId: "smartlink", decimals: 3 },
+    "KT19at7rQUvyjxnZ2fBv7D9zc8rkyG7gAoU8": { coingeckoId: "ethtez", decimals: 18 },
     KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ: { coingeckoId: "aave", decimals: 18 },
     "KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-18": { coingeckoId: "tether", decimals: 6 },
     KT1K9gCRgaLRFKTErYt1wVxA3Frb9FjasjTV: { coingeckoId: "kolibri-usd", decimals: 18 },
     KT1LN4LPSqTMS7Sd2CJw4bbDGRkMv2t68Fy9: { coingeckoId: "usdtez", decimals: 6 },
     KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW: { coingeckoId: "youves-uusd", decimals: 12 },
+    'KT1XRPEPXBZK25R3HTZP2O1X7XDMMMFOCKNW-0': { coingeckoId: "youves-uusd", decimals: 12 },
     // 'KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW-1': { coingeckoId: 'youves-you-defi', decimals: 12, },  //uDEFI token - update gecko id here after adding in coin geckp
     KT1Xobej4mc6XgEjDoJoHtTKgbD1ELMvcQuL: { coingeckoId: "youves-you-governance", decimals: 12 },
     "KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW-2": { coingeckoId: "wrapped-bitcoin", decimals: 12 }, // youves BTC
@@ -779,7 +793,20 @@ const fixBalancesTokens = {
     "KT1UsSfaXyqcjSVPeiD7U1bWgKy3taYN7NWY-5": { coingeckoId: "chainlink", decimals: 18 }, // plenty bridge
     "KT1UsSfaXyqcjSVPeiD7U1bWgKy3taYN7NWY-6": { coingeckoId: "dai", decimals: 18 }, // plenty bridge
     "KT1UsSfaXyqcjSVPeiD7U1bWgKy3taYN7NWY-7": { coingeckoId: "binance-usd", decimals: 18 }, // plenty bridge
-    "KT1XnTn74bUtxHfDtBmm2bGZAQfhPbvKWR8o": { coingeckoId: "tether", decimals: 6 } // usdt on tezos
+    "KT1XnTn74bUtxHfDtBmm2bGZAQfhPbvKWR8o": { coingeckoId: "tether", decimals: 6 }, // usdt on tezos
+    "KT1F1mn2jbqQCJcsNgYKVAQjvenecNMY2oPK": { coingeckoId: "pixelpotus", decimals: 6 },
+    "KT193D4vozYnhGJQVtw7CoxxqphqUEEwK6Vb": { coingeckoId: "quipuswap-governance-token", decimals: 6 },
+    "KT1ErKVqEhG9jxXgUG2KGLW3bNM7zXHX8SDF": { coingeckoId: "unobtanium-tezos", decimals: 9 },
+    "KT1AFA2mwNUMNd4SsujE1YYp29vd8BZejyKW": { coingeckoId: "hic-et-nunc-dao", decimals: 6 },
+    "KT1XTxpQvo7oRCqp85LikEZgAZ22uDxhbWJv": { coingeckoId: "gif-dao", decimals: 9 },
+    "KT1A5P4ejnLix13jtadsfV9GCnXLMNnab8UT": { coingeckoId: "kalamint", decimals: 10 },
+    "KT1XPFjZqCULSnqfKaaYy8hJjeY63UNSGwXg": { coingeckoId: "crunchy-dao", decimals: 8 },
+    "KT1BHCumksALJQJ8q8to2EPigPW6qpyTr7Ng": { coingeckoId: "crunchy-network", decimals: 8 },
+    "KT1LRboPna9yQY9BrjtQYDS1DVxhKESK4VVd": { coingeckoId: "wrap-governance-token", decimals: 8 },
+    "KT1REEb5VxWRjcHm5GzDMwErMmNFftsE5Gpf": { coingeckoId: "stableusd", decimals: 6 },
+    "KT1AEfeckNbdEYwaMKkytBwPJPycz7jdSGea": { coingeckoId: "staker-dao", decimals: 18 },
+    "KT1BB1uMwVvJ1M3vVHXWALs1RWdgTp1rnXTR": { coingeckoId: "moneyhero", decimals: 8 },
+    "KT19y6R8x53uDKiM46ahgguS6Tjqhdj2rSzZ": { coingeckoId: "instaraise", decimals: 9 },
   },
   hpb: {
     "0xBE05Ac1FB417c9EA435b37a9Cecd39Bc70359d31": { coingeckoId: "high-performance-blockchain", decimals: 18 }
@@ -975,6 +1002,8 @@ const fixBalancesTokens = {
     "0x9fcf418b971134625cdf38448b949c8640971671": { coingeckoId: "tether-eurt", decimals: 18 },
     "0x8751d4196027d4e6da63716fa7786b5174f04c15": { coingeckoId: "wrapped-bitcoin", decimals: 18 },
     "0xf56b164efd3cfc02ba739b719b6526a6fa1ca32a": { coingeckoId: "curio-governance", decimals: 18 },
+    "0xb1c9bc94aCd2fAE6aABf4ffae4429B93512a81D2": { coingeckoId: "ariadne", decimals: 18 },
+    "0x5067006f830224960fb419d7f25a3a53e9919bb0": { coingeckoId: "smartpad-2", decimals: 18 },
   },
   moonbeam: {
     // celer bridge
@@ -992,7 +1021,11 @@ const fixBalancesTokens = {
     '0xfc40a4f89b410a1b855b5e205064a38fc29f5eb5': { coingeckoId: "rusd", decimals: 18 },
     '0x4c28f48448720e9000907bc2611f73022fdce1fa': { coingeckoId: "matic-network", decimals: 18 },
     '0x6CAcfaF65b1B1f9979aCF463a393A112D0980982': { coingeckoId: "matic-network", decimals: 18 },
+    "0x14743e1c6f812154f7ecc980d890f0f5234103e7": { coingeckoId: "apyswap", decimals: 18, },
     '0x5c4b7ccbf908e64f32e12c6650ec0c96d717f03f': { coingeckoId: "binancecoin", decimals: 18 },
+  },
+  heco: {
+    "0x90e8896b12a92D51CD213b681C2CaD83A9a6bD49": { coingeckoId: "apyswap", decimals: 18, },
   },
   ronin: {
     '0xe514d9deb7966c8be0ca922de8a064264ea6bcd4': { coingeckoId: "ronin", decimals: 18 },

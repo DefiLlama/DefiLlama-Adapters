@@ -135,11 +135,25 @@ import jswap from "./adapters/jswap";
 import babydogeswap from "./adapters/babydogeswap";
 import wigoswap from "./adapters/wigoswap";
 import levinswap from "./adapters/levinswap";
-import templeDao from "./adapters/temple-dao";
+import templeDao from "./adapters/templedao-trade";
 import karuraSwap from "./adapters/karura-swap";
 import sphynx from "./adapters/sphynx";
 import kuswap from "./adapters/kuswap";
 import paintSwap from "./adapters/paint-swap";
+import benswap from "./adapters/benswap";
+import surfswap from "./adapters/surfswap";
+import boggedFinance from "./adapters/bogged-finance";
+import jetswap from "./adapters/jetswap";
+import saucerswap from "./adapters/saucerswap";
+import synthetify from "./adapters/synthetify";
+import pandora from "./adapters/pandora";
+import soyFinance from "./adapters/soy-finance";
+import paycash from "./adapters/paycash";
+import alitaFinance from "./adapters/alita-finance";
+import photonswapFinance from "./adapters/photonswap-finance";
+import unifi from "./adapters/unifi";
+import wineryswap from "./adapters/wineryswap";
+
 
 export default {
   mooniswap,
@@ -277,10 +291,23 @@ export default {
   babydogeswap,
   wigoswap,
   levinswap,
-  "temple-dao": templeDao,
+  "templedao-trade": templeDao,
   "karura-swap": karuraSwap,
   sphynx,
   kuswap,
-  "paint-swap": paintSwap
+  "paint-swap": paintSwap,
+  benswap,
+  surfswap,
+  "bogged-finance": boggedFinance,
+  jetswap,
+  saucerswap,
+  synthetify,
+  pandora,
+  "soy-finance": soyFinance,
+  paycash,
+  "alita-finance": alitaFinance,
+  "photonswap-finance": photonswapFinance,
+  unifi,
+  wineryswap
   // lyra -> OPTIONS DEX, not enable for now
 };

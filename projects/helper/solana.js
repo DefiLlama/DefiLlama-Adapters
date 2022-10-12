@@ -443,6 +443,7 @@ async function transformBalances({ tokenBalances, balances = {}, ignoreBadTokens
   const tokenlist = await getTokenList();
   for (const [token, balance] of Object.entries(tokenBalances)) {
     let coingeckoId = tokenlist.find((t) => t.address === token)?.extensions?.coingeckoId;
+    if (!coingeckoId) coingeckoId = coingeckoMapping[token]
     if (!coingeckoId) {
       if (!ignoreBadTokens)
         throw new Error(`Solana token ${token} has no coingecko id`)
@@ -452,6 +453,10 @@ async function transformBalances({ tokenBalances, balances = {}, ignoreBadTokens
       balances[coingeckoId] = (balances[coingeckoId] || 0) + balance;
   }
   return balances
+}
+
+const coingeckoMapping = {
+  '7i5KKsX2weiTkry7jA4ZwSuXGhs5eJBEjY8vVxR4pfRx' : 'stepn'
 }
 
 module.exports = {
