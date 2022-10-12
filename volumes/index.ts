@@ -150,6 +150,8 @@ import pandora from "./adapters/pandora";
 import soyFinance from "./adapters/soy-finance";
 import paycash from "./adapters/paycash";
 import alitaFinance from "./adapters/alita-finance";
+import photonswapFinance from "./adapters/photonswap-finance";
+
 
 export default {
   mooniswap,
@@ -301,6 +303,7 @@ export default {
   pandora,
   "soy-finance": soyFinance,
   paycash,
-  "alita-finance": alitaFinance
+  "alita-finance": alitaFinance,
+  "photonswap-finance": photonswapFinance
   // lyra -> OPTIONS DEX, not enable for now
 };
