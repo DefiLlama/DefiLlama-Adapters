@@ -14,12 +14,10 @@ const banks = {
 };
 
 function treasury(chain) {
-  return async (_timestamp, _block, chainBlocks) => {
-    const block = chainBlocks[chain];
-
+  return async (_timestamp, _block, {[chain]: block}) => {
     // Get the Bank for the input block
     const [, bankAddressOfBlock] = banks[chain].find(
-      ([bankLastBlock]) => (block || Infinity) < bankLastBlock
+      ([bankLastBlock]) => (block || 999999999999) < bankLastBlock
     );
 
     // Retrieves all tokens from the Bank contract
