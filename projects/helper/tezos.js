@@ -146,7 +146,6 @@ async function convertBalances(balances) {
     sdk.util.sumSingleBalance(balances, 'tether', bal)
   })
 
-  console.log(balances)
   return balances
 }
 
