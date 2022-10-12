@@ -60,6 +60,6 @@ module.exports = {
         tvl,
     },
     hallmarks:[
-        [1665525600, "Oracle Price Manipulation"],
+        [1665521360, "Oracle Price Manipulation"],
       ],
 }
