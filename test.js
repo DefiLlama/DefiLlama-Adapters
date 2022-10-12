@@ -134,7 +134,7 @@ sdk.api.abi.call = async (...args) => {
   }
   await Promise.all(
     chains.map(async (chainRaw) => {
-      const chain = chainRaw === "avalanche" ? "avax" : chainRaw
+      const chain = chainRaw
       if (chainsForBlocks.includes(chain) || chain === "ethereum") {
         chainBlocks[chain] = (await getLatestBlockRetry(chain)).number - 10;
       }
@@ -253,7 +253,7 @@ function checkExportKeys(module, filePath, chains) {
 
   if (filePath.length > 2
     || (filePath.length === 1 && !['.js', ''].includes(path.extname(filePath[0]))) // matches .../projects/projectXYZ.js or .../projects/projectXYZ
-    || (filePath.length === 2 && !['api.js', 'index.js'].includes(filePath[1])))  // matches .../projects/projectXYZ/index.js
+    || (filePath.length === 2 && !['api.js', 'index.js', 'apiCache.js', ].includes(filePath[1])))  // matches .../projects/projectXYZ/index.js
     process.exit(0)
 
   const blacklistedRootExportKeys = ['tvl', 'staking', 'pool2', 'borrowed', 'treasury', 'offers', 'vesting'];

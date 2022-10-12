@@ -63,6 +63,10 @@ const alusd = "0xBC6DA0FE9aD5f3b0d58160288917AA56653660E9";
 const alusdPool = "0x7211508D283353e77b9A7ed2f22334C219AD4b4C";
 const steth = "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84";
 const crvSteth = "0xDC24316b9AE028F1497c275EB9192a3Ea0f67022";
+const myc = "0x4b13006980acb09645131b91d259eaa111eaf5ba";
+const mycPool = "0x061aee9ab655e73719577EA1df116D7139b2A7E7";
+const visr = "0xF938424F7210f31dF2Aee3011291b658f872e91e";
+const visrPool = "0x2d3eADE781c4E203c6028DAC11ABB5711C022029";
 
 async function tvl(timestamp, block) {
   const balances = {}
@@ -88,24 +92,26 @@ async function tvl(timestamp, block) {
     [gohm, gohmPool],
     [mim, mimPool],
     [gamma, gammaPool],
-    [alusd, alusdPool]
+    [alusd, alusdPool],
+    [myc, mycPool],
+    [visr, visrPool]
   ], block)
   const cvxUSTWPool = "0x7e2b9b5244bcfa5108a76d5e7b507cfd5581ad4a";
   const cvxFRAXPool = "0xB900EF131301B307dB5eFcbed9DBb50A3e209B2e";
   const cvxalUSDPool = "0x02E2151D4F351881017ABdF2DD2b51150841d5B3";
   const cvxstethPool = "0x0A760466E1B4621579a82a39CB56Dda2F4E70f03";
-
+  
   let tokeManager = "0xA86e412109f77c45a3BC1c5870b880492Fb86A14";
   // node test.js projects/tokemak/index.js
   await unwrapCvxSteth(balances, tokeManager, cvxstethPool, block, "ethereum");
-
-  //UST CVX Wormhole Pool
+  
+  // UST CVX Wormhole Pool
   await genericUnwrapCvx(balances, tokeManager, cvxUSTWPool, block, "ethereum");
-
-  //FRAX CVX Pool
+  
+  // FRAX CVX Pool
   await genericUnwrapCvx(balances, tokeManager, cvxFRAXPool, block, "ethereum");
 
-  //CVX alUSD Pool
+  // CVX alUSD Pool
   await genericUnwrapCvx(
     balances,
     tokeManager,
@@ -113,6 +119,21 @@ async function tvl(timestamp, block) {
     block,
     "ethereum"
   );
+    
+  // cvxcrvFRAX
+  const cvxFraxUsdcPool = "0x7e880867363A7e321f5d260Cade2B0Bb2F717B02";
+  const cvxcrvFrax = "0x117A0bab81F25e60900787d98061cCFae023560c";
+  const cvx_abi = {
+    "cvxBRP_balanceOf": { "inputs": [{ "internalType": "address", "name": "account", "type": "address" }], "name": "balanceOf", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
+  }
+  const { output: cvxcrvFraxBal } = await sdk.api.abi.call({
+    abi: cvx_abi['cvxBRP_balanceOf'],
+    target: cvxFraxUsdcPool,
+    params: [tokeManager],
+    chain: "ethereum",
+    block
+  });
+  balances[cvxcrvFrax] = cvxcrvFraxBal;
 
   let curveHoldings = positions.exchanges.filter(
     pool => pool.type == 'Curve')

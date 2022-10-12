@@ -198,13 +198,27 @@ function stripTokenHeader(token) {
 }
 
 async function getFixBalances(chain) {
-  const dummyFn = i => i;
-  return fixBalancesMapping[chain] || dummyFn;
+  return getFixBalancesSync(chain)
 }
 
 function getFixBalancesSync(chain) {
   const dummyFn = i => i;
+  if (chain === 'tezos') return fixTezosBalances
   return fixBalancesMapping[chain] || dummyFn;
+}
+
+function fixTezosBalances(balances) {
+  const mapping = fixBalancesTokens.tezos
+  Object.entries(balances).forEach(([key, value]) => {
+    const token = stripTokenHeader(key)
+    if (mapping[token]) {
+      delete balances[key]
+      const { coingeckoId, decimals } = mapping[token]
+      balances[coingeckoId] = BigNumber(balances[coingeckoId] || 0).toFixed(0)
+      sdk.util.sumSingleBalance(balances, coingeckoId, BigNumber(value/ 10 ** decimals).toFixed(0))
+    }
+  })
+  return balances
 }
 
 const fixBalancesMapping = {};
@@ -287,4 +301,5 @@ module.exports = {
   stripTokenHeader,
   getFixBalancesSync,
   transformBalances,
+  fixTezosBalances,
 };
