@@ -55,7 +55,10 @@ export enum CHAIN {
   KAVA = "kava",
   HEDERA = "hedera",
   CALLISTO = "callisto",
-  EOS = "eos"
+  EOS = "eos",
+  BITTORRENT = "bittorrent",
+  ONTOLOGY_EVM = "ontology_evm",
+  ICON = "icon"
 }
 
 // Don´t use
