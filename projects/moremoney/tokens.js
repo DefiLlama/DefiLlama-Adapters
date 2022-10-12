@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const { ethers } = require("ethers");
 
-async function getTokenDecimalsAndValue1e18(normalResults) {
+async function getTokenDecimalsAndValue1e18(normalResults, block) {
   let tokenDecimals = {};
   let tokenValuePer1e18 = {};
 
