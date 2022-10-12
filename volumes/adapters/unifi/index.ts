@@ -21,7 +21,7 @@ const chains: TChains = {
   [CHAIN.ICON]: "Icon",
   [CHAIN.IOTEX]: "IoTeX",
   [CHAIN.POLYGON]: "Polygon",
-  [CHAIN.FANTOM]: "Fantom"
+  // [CHAIN.FANTOM]: "Fantom"
 };
 
 interface IVolumeall {
