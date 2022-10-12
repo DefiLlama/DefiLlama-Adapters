@@ -757,22 +757,30 @@ const fixBalancesTokens = {
     "0x722377a047e89ca735f09eb7cccab780943c4cb4": { coingeckoId: "standard-protocol", decimals: 18 }
   },
   tezos: {
-    KT1PWx2mnDueood7fEmfbBDKx1D9BAnnXitn: { coingeckoId: "tzbtc", decimals: 8 },
+    // KT1PWx2mnDueood7fEmfbBDKx1D9BAnnXitn: { coingeckoId: "tzbtc", decimals: 8 },
     tezos: { coingeckoId: "tezos", decimals: 0 },
+    'KT1UpeXdK6AJbX58GJ92pLZVCucn2DR8Nu4b': { coingeckoId: "tezos", decimals: 6 },
     KT1GRSvLoikDsXujKgZPsGLX8k8VvR2Tq95b: { coingeckoId: "plenty-dao", decimals: 18 },
     KT1SjXiUX63QvdNMcM2m492f7kuf8JxXRLp4: { coingeckoId: "tezos", decimals: 6 }, // this is ctez, ideally should be valued higher
     KT1Ha4yFVeyzw6KRAdkzq6TxDHB97KG4pZe8: { coingeckoId: "dogami", decimals: 5 },
     KT1JkoE42rrMBP9b2oDhbx6EUr26GcySZMUH: { coingeckoId: "kolibri-dao", decimals: 18 },
     "KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-19": { coingeckoId: "wrapped-bitcoin", decimals: 8 },
     "KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-17": { coingeckoId: "usd-coin", decimals: 6 },
+    "KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-11": { coingeckoId: "matic-network", decimals: 18 },
+    "KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-10": { coingeckoId: "chainlink", decimals: 18 },
     "KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-1": { coingeckoId: "binance-usd", decimals: 18 },
     "KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-20": { coingeckoId: "ethereum", decimals: 18 },
     "KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-5": { coingeckoId: "dai", decimals: 18 },
+    "KT19DUSZw7mfeEATrbWVPHRrWNVbNnmfFAE6": { coingeckoId: "paul-token", decimals: 18 },
+    "KT1TgmD7kXQzofpuc9VbTRMdZCS2e6JDuTtc": { coingeckoId: "upsorber", decimals: 0 },
+    "KT1TwzD6zV3WeJ39ukuqxcfK2fJCnhvrdN1X": { coingeckoId: "smartlink", decimals: 3 },
+    "KT19at7rQUvyjxnZ2fBv7D9zc8rkyG7gAoU8": { coingeckoId: "ethtez", decimals: 18 },
     KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ: { coingeckoId: "aave", decimals: 18 },
     "KT18fp5rcTW7mbWDmzFwjLDUhs5MeJmagDSZ-18": { coingeckoId: "tether", decimals: 6 },
     KT1K9gCRgaLRFKTErYt1wVxA3Frb9FjasjTV: { coingeckoId: "kolibri-usd", decimals: 18 },
     KT1LN4LPSqTMS7Sd2CJw4bbDGRkMv2t68Fy9: { coingeckoId: "usdtez", decimals: 6 },
     KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW: { coingeckoId: "youves-uusd", decimals: 12 },
+    'KT1XRPEPXBZK25R3HTZP2O1X7XDMMMFOCKNW-0': { coingeckoId: "youves-uusd", decimals: 12 },
     // 'KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW-1': { coingeckoId: 'youves-you-defi', decimals: 12, },  //uDEFI token - update gecko id here after adding in coin geckp
     KT1Xobej4mc6XgEjDoJoHtTKgbD1ELMvcQuL: { coingeckoId: "youves-you-governance", decimals: 12 },
     "KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW-2": { coingeckoId: "wrapped-bitcoin", decimals: 12 }, // youves BTC
@@ -785,7 +793,20 @@ const fixBalancesTokens = {
     "KT1UsSfaXyqcjSVPeiD7U1bWgKy3taYN7NWY-5": { coingeckoId: "chainlink", decimals: 18 }, // plenty bridge
     "KT1UsSfaXyqcjSVPeiD7U1bWgKy3taYN7NWY-6": { coingeckoId: "dai", decimals: 18 }, // plenty bridge
     "KT1UsSfaXyqcjSVPeiD7U1bWgKy3taYN7NWY-7": { coingeckoId: "binance-usd", decimals: 18 }, // plenty bridge
-    "KT1XnTn74bUtxHfDtBmm2bGZAQfhPbvKWR8o": { coingeckoId: "tether", decimals: 6 } // usdt on tezos
+    "KT1XnTn74bUtxHfDtBmm2bGZAQfhPbvKWR8o": { coingeckoId: "tether", decimals: 6 }, // usdt on tezos
+    "KT1F1mn2jbqQCJcsNgYKVAQjvenecNMY2oPK": { coingeckoId: "pixelpotus", decimals: 6 },
+    "KT193D4vozYnhGJQVtw7CoxxqphqUEEwK6Vb": { coingeckoId: "quipuswap-governance-token", decimals: 6 },
+    "KT1ErKVqEhG9jxXgUG2KGLW3bNM7zXHX8SDF": { coingeckoId: "unobtanium-tezos", decimals: 9 },
+    "KT1AFA2mwNUMNd4SsujE1YYp29vd8BZejyKW": { coingeckoId: "hic-et-nunc-dao", decimals: 6 },
+    "KT1XTxpQvo7oRCqp85LikEZgAZ22uDxhbWJv": { coingeckoId: "gif-dao", decimals: 9 },
+    "KT1A5P4ejnLix13jtadsfV9GCnXLMNnab8UT": { coingeckoId: "kalamint", decimals: 10 },
+    "KT1XPFjZqCULSnqfKaaYy8hJjeY63UNSGwXg": { coingeckoId: "crunchy-dao", decimals: 8 },
+    "KT1BHCumksALJQJ8q8to2EPigPW6qpyTr7Ng": { coingeckoId: "crunchy-network", decimals: 8 },
+    "KT1LRboPna9yQY9BrjtQYDS1DVxhKESK4VVd": { coingeckoId: "wrap-governance-token", decimals: 8 },
+    "KT1REEb5VxWRjcHm5GzDMwErMmNFftsE5Gpf": { coingeckoId: "stableusd", decimals: 6 },
+    "KT1AEfeckNbdEYwaMKkytBwPJPycz7jdSGea": { coingeckoId: "staker-dao", decimals: 18 },
+    "KT1BB1uMwVvJ1M3vVHXWALs1RWdgTp1rnXTR": { coingeckoId: "moneyhero", decimals: 8 },
+    "KT19y6R8x53uDKiM46ahgguS6Tjqhdj2rSzZ": { coingeckoId: "instaraise", decimals: 9 },
   },
   hpb: {
     "0xBE05Ac1FB417c9EA435b37a9Cecd39Bc70359d31": { coingeckoId: "high-performance-blockchain", decimals: 18 }
