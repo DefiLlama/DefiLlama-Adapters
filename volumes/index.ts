@@ -151,6 +151,7 @@ import soyFinance from "./adapters/soy-finance";
 import paycash from "./adapters/paycash";
 import alitaFinance from "./adapters/alita-finance";
 import photonswapFinance from "./adapters/photonswap-finance";
+import unifi from "./adapters/unifi";
 
 
 export default {
@@ -304,6 +305,7 @@ export default {
   "soy-finance": soyFinance,
   paycash,
   "alita-finance": alitaFinance,
-  "photonswap-finance": photonswapFinance
+  "photonswap-finance": photonswapFinance,
+  unifi
   // lyra -> OPTIONS DEX, not enable for now
 };
