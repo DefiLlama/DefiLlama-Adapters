@@ -4,7 +4,9 @@ const { getUserMasterChefBalances } = require("../helper/masterchef")
 const { getUserCraftsmanV2Balances } = require("./helpers")
 const vvsPoolInfoABI = require('./cronos/vvsPoolInfo.json')
 const spookyMasterChefV2PoolInfoABI = require('./fantom/spookyMasterChefV2PoolInfo.json')
-const { fetchURL } = require("../helper/utils")
+const { fetchURL, } = require("../helper/utils")
+const { get, } = require("../helper/http")
+const sdk = require('@defillama/sdk')
 
 const BASE_API_URL = 'https://api.singlefinance.io'
 
@@ -25,7 +27,7 @@ const getWMasterChefBalances = ({ masterChef: masterChefAddress, wMasterChef, na
     return getUserCraftsmanV2Balances({ ...commonParams, poolInfoABI: vvsPoolInfoABI, craftsmanV1: rest.craftsmanV1, ...args })
   }
   if (name === "spookyMultiYield") {
-    return getUserMasterChefBalances({ ...commonParams, poolInfoABI: spookyMasterChefV2PoolInfoABI, getLPAddress:  a => a, ...args })
+    return getUserMasterChefBalances({ ...commonParams, poolInfoABI: spookyMasterChefV2PoolInfoABI, getLPAddress: a => a, ...args })
   }
   return getUserMasterChefBalances({ ...commonParams, poolInfoABI: vvsPoolInfoABI, ...args })
 }
@@ -121,11 +123,22 @@ const getHelpers = (chain) => {
 module.exports = {
   start: 1643186078,
   // if we can backfill data with your adapter. Most SDK adapters will allow this, but not all. For example, if you fetch a list of live contracts from an API before querying data on-chain, timetravel should be 'false'.
-  timetravel: true,
   //if you have used token substitutions at any point in the adapter this should be 'true'.
   misrepresentedTokens: true,
-  cronos: getHelpers('cronos'),
+  // cronos: getHelpers('cronos'),
+  cronos: {
+    tvl: cronosTvl,
+  },
   fantom: getHelpers('fantom'),
 } // see if single will run with updated unwrapLPs
 
 
+async function cronosTvl(_, _b, { cronos: block }) {
+  const { data } = await get('https://api.singlefinance.io/api/vaults?chainid=25')
+  const { data: strategies } = await get('https://api.singlefinance.io/api/strategies?chainid=25')
+  const tether = strategies.reduce((a, i)=> a+i.tvl/1e18, 0)
+  const balances = {}
+  data.forEach(({ token: { id }, totalTokens }) => sdk.util.sumSingleBalance(balances, 'cronos:' + id, totalTokens))
+  sdk.util.sumSingleBalance(balances, 'tether', tether)
+  return balances
+}
