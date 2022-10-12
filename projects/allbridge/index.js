@@ -120,7 +120,7 @@ const data = {
             {name: "hapi", address: "0xD9c2D319Cd7e6177336b0a9c93c21cb48d84Fb54", decimals: 18},
             {name: "hedget", address: "0x7968bc6a03017eA2de509AAA816F163Db0f35148", decimals: 6},
             {name: "1million-nfts", address: "0xa4eF4b0B23C1fc81d3f9ecF93510e64f58A4A016", decimals: 18},
-            {name: "allbridge", address: "0xa11bD36801d8fa4448F0ac4ea7A62e3634cE8C7C", decimals: 18},
+            // {name: "allbridge", address: "0xa11bD36801d8fa4448F0ac4ea7A62e3634cE8C7C", decimals: 18},
             {name: "ariadne", address: "0xb1c9bc94aCd2fAE6aABf4ffae4429B93512a81D2", decimals: 18},
             {name: "cyberfi", address: "0x63b4f3e3fa4e438698CE330e365E831F7cCD1eF4", decimals: 18},
             {name: "ethereum", address: NATIVE_ADDRESS, decimals: 18},
