@@ -149,6 +149,7 @@ import synthetify from "./adapters/synthetify";
 import pandora from "./adapters/pandora";
 import soyFinance from "./adapters/soy-finance";
 import paycash from "./adapters/paycash";
+import alitaFinance from "./adapters/alita-finance";
 
 export default {
   mooniswap,
@@ -299,6 +300,7 @@ export default {
   synthetify,
   pandora,
   "soy-finance": soyFinance,
-  paycash
+  paycash,
+  "alita-finance": alitaFinance
   // lyra -> OPTIONS DEX, not enable for now
 };
