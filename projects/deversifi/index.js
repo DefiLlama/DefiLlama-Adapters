@@ -1,4 +1,4 @@
-const {sumTokensAndLPsSharedOwners, sumTokens2} = require('../helper/unwrapLPs')
+const {nullAddress, sumTokens2} = require('../helper/unwrapLPs')
 const sdk = require('@defillama/sdk')
 
 const contracts = {
@@ -11,6 +11,7 @@ const contracts = {
 };
 
 const listedTokens = [
+  nullAddress,
   '0xdac17f958d2ee523a2206206994597c13d831ec7',
   '0x6B175474E89094C44Da98b954EedeAC495271d0F',
   '0xd26114cd6EE289AccF82350c8d8487fedB8A0C07',
@@ -55,50 +56,28 @@ const listedTokens = [
   '0x6b3595068778dd592e39a122f4f5a5cf09c90fe2'
 ];
 const arbitrumTokens = [
+  nullAddress,
   '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8',
   '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
   '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1'
 ];
 const polygonTokens = [
+  nullAddress,
   '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
   '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
   '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063'
 ];
-const weth = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
 
-async function tvl(timestamp, ethBlock){
-    const balances = {}
-    await sumTokensAndLPsSharedOwners(balances, listedTokens.map(t=>[t, false]), [contracts.stark], ethBlock)
-    const eth = await sdk.api.eth.getBalance({
-        target: contracts.stark,
-        block: ethBlock
-    })
-    sdk.util.sumSingleBalance(balances, weth, eth.output)
-    return balances
+async function tvl(timestamp, block){
+    return sumTokens2({ owner: contracts.stark, tokens: listedTokens, block })
 }
 
-async function arbitrumTvl(timestamp, ethBlock, chainBlocks){
-    const balances = {}
-    const chain = 'arbitrum'
-    const block = chainBlocks.arbitrum
-
-    let _ethBalance = await sdk.api.eth.getBalance({ target: contracts.arbiBridge, chain, block })
-    sdk.util.sumSingleBalance(balances, 'ethereum', _ethBalance.output / 1e18)
-
-    await sumTokens2({balances, chain, block, owners: [contracts.arbiBridge], tokens: arbitrumTokens})
-    return balances
+async function arbitrumTvl(timestamp, ethBlock, {arbitrum: block}){
+  return sumTokens2({ owner: contracts.arbiBridge, tokens: arbitrumTokens, block, chain: 'arbitrum' })
 }
 
-async function polygonTvl(timestamp, ethBlock, chainBlocks){
-    const balances = {}
-    const chain = 'polygon'
-    const block = chainBlocks.polygon
-
-    let _maticBalance = await sdk.api.eth.getBalance({ target: contracts.polyBridge, chain, block })
-    sdk.util.sumSingleBalance(balances, 'matic-network', _maticBalance.output / 1e18)
-
-    await sumTokens2({balances, chain, block, owners: [contracts.polyBridge, contracts.polySmartWallet], tokens: polygonTokens})
-    return balances
+async function polygonTvl(timestamp, ethBlock, {polygon: block}){
+  return sumTokens2({ owners: [contracts.polyBridge, contracts.polySmartWallet], tokens: polygonTokens, block, chain: 'polygon' })
 }
 
 module.exports = {
