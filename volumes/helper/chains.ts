@@ -60,7 +60,8 @@ export enum CHAIN {
   ONTOLOGY_EVM = "ontology_evm",
   ICON = "icon",
   CLV = "clv",
-  ULTRON = "ultron"
+  ULTRON = "ultron",
+  STELLAR = "stellar"
 }
 
 // Don´t use
