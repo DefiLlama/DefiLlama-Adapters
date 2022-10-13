@@ -28,9 +28,10 @@ const engines = {
 
 const uDEFI_LP = 'KT1H8sJY2VzrbiX4pYeUVsoMUd4iGw2DV7XH'
 const uDEFI_TOKEN = 'KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW-1'
+const tzBTC_TOKEN = 'KT1PWx2mnDueood7fEmfbBDKx1D9BAnnXitn'
 
 
-async function fetchBalance(balances, token, engineAddress, decimals = 1, sharePrice) {
+async function fetchBalance(balances, token, engineAddress, decimals = 0, sharePrice) {
   const query = gql`
 {
   vault_aggregate(where: { engine_contract_address: { _eq: "${engineAddress}" } }) {
@@ -50,7 +51,7 @@ async function fetchBalance(balances, token, engineAddress, decimals = 1, shareP
     const balancetZ = balance * sharePrice.xtzPool / sharePrice.lqtTotal
     const balanceBTC = balance * sharePrice.tokenPool / sharePrice.lqtTotal
     sdk.util.sumSingleBalance(balances, 'tezos', balancetZ / 1e6)
-    sdk.util.sumSingleBalance(balances, sharePrice.tokenAddress, balanceBTC / 1e8)
+    sdk.util.sumSingleBalance(balances, sharePrice.tokenAddress, balanceBTC)
     return;
   }
 
@@ -67,27 +68,21 @@ async function tvl() {
   const balances = {}
   const sharePrice = await getTzBTCLPSharePrice()
   await Promise.all([
+    // fetchBalance(balances, 'KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW', engines.uDefiuUSDV2, 0),  // disabling this because backing of uUSD is already counted in tvl
+    fetchBalance(balances, usdtAddressTezos, engines.uUSDUSDtV3, 0),
+    fetchBalance(balances, tzBTC_TOKEN, engines.uUSDtzBTCV2, 0),
+    fetchBalance(balances, tzBTC_TOKEN, engines.uUSDtzBTCV3, 0),
     fetchBalance(balances, 'tezos', engines.uUSDTezosV1, 6),
     fetchBalance(balances, 'tezos', engines.uUSDTezosV3, 6),
     fetchBalance(balances, 'tezos', engines.uBTCTezosV2, 6),
     fetchBalance(balances, 'tezos', engines.uBTCTezosV3, 6),
-    fetchBalance(balances, 'KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW', engines.uDefiuUSDV2, 12),
+    fetchBalance(balances, 'tezos', engines.uDefitzV2, 6),
     fetchBalance(balances, 'tzbtc-lp', engines.uUSDtzBTCLPV2, 0, sharePrice),
     fetchBalance(balances, 'tzbtc-lp', engines.uUSDtzBTCLPV3, 0, sharePrice),
     fetchBalance(balances, 'tzbtc-lp', engines.uBTCtzBTCLPV2, 0, sharePrice),
     fetchBalance(balances, 'tzbtc-lp', engines.uBTCtzBTCLPV3, 0, sharePrice),
-    fetchBalance(balances, usdtAddressTezos, engines.uUSDUSDtV3, 6),
-    fetchBalance(balances, 'KT1PWx2mnDueood7fEmfbBDKx1D9BAnnXitn', engines.uUSDtzBTCV2, 8),
-    fetchBalance(balances, 'KT1PWx2mnDueood7fEmfbBDKx1D9BAnnXitn', engines.uUSDtzBTCV3, 8),
-    fetchBalance(balances, 'tezos', engines.uDefitzV2, 6),
     fetchBalance(balances, 'tzbtc-lp', engines.uDefitzBTCLPV2, 0, sharePrice),
-
   ])
-
-  // Convert to smallest unit because of later calculations
-  balances['KT1PWx2mnDueood7fEmfbBDKx1D9BAnnXitn'] = balances['KT1PWx2mnDueood7fEmfbBDKx1D9BAnnXitn'] * 10 ** 8
-  balances['KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW'] = balances['KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW'] * 10 ** 12
-  balances['KT1XnTn74bUtxHfDtBmm2bGZAQfhPbvKWR8o'] = balances['KT1XnTn74bUtxHfDtBmm2bGZAQfhPbvKWR8o'] * 10 ** 6
 
   return convertBalances(balances)
 }
@@ -104,8 +99,10 @@ async function pool2() {
     .for(youvesLPs)
     .process(account => addDexPosition({ balances, account }))
 
+  const promises = []
   for (const { farmContract, contractAddress } of eligibleFarms)
-    await resolveLPPosition({ balances, lpToken: contractAddress, owner: farmContract, ignoreList: youvesLPs })
+    promises.push(resolveLPPosition({ balances, lpToken: contractAddress, owner: farmContract, ignoreList: youvesLPs }))
+  await Promise.all(promises)
 
   fixBalances(balances)
   if (balances[`tezos:${uDEFI_TOKEN}`]) {
