@@ -58,7 +58,10 @@ export enum CHAIN {
   EOS = "eos",
   BITTORRENT = "bittorrent",
   ONTOLOGY_EVM = "ontology_evm",
-  ICON = "icon"
+  ICON = "icon",
+  CLV = "clv",
+  ULTRON = "ultron",
+  STELLAR = "stellar"
 }
 
 // Don´t use
