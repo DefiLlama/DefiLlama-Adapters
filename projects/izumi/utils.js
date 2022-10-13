@@ -1,8 +1,8 @@
 const { getChainTransform } = require('../helper/portedTokens')
+const {  unwrapUniswapV3NFTs } = require('../helper/unwrapLPs')
 const sdk = require("@defillama/sdk");
 const abi = require('./abi.json');
 const BigNumber = require('bignumber.js');
-const config = require('./config.json');
 const retry = require("async-retry");
 const { default: axios } = require("axios");
 
@@ -124,12 +124,12 @@ async function unwrapiZiswapV3NFTs({ balances = {}, nftsAndOwners = [], block, c
       let type = Object.keys(owners)[i]
       if(!owners[type] || owners[type].length == 0){
         continue}
-      else if(type == 'fix'){
+      else if(type == 'fixRange'){
         let ownersUni = getUniqueAddresses(owners[type])
         let nftsAndOwners = ownersUni.map(o => [nftAddress, o])
         await Promise.all(nftsAndOwners.map(([nftAddress, owner]) => unwrapiZiswapFixNFT({ balances, owner, nftAddress, block, chain, transformAddress })))
       }
-      else if(type == 'dynamic'){
+      else if(type == 'dynamicRange'){
         let ownersUni = getUniqueAddresses(owners[type])
         let nftsAndOwners = ownersUni.map(o => [nftAddress, o])
         await Promise.all(nftsAndOwners.map(([nftAddress, owner]) => unwrapiZiswapDynamicNFT({ balances, owner, nftAddress, block, chain, transformAddress })))
@@ -182,15 +182,12 @@ async function unwrapiZiswapDynamicNFT({ balances, owner, nftAddress, block, cha
   sdk.util.sumSingleBalance(balances, transformAddress(tokenA), new BigNumber(tokenAAmount).toFixed(0))
   sdk.util.sumSingleBalance(balances, transformAddress(tokenB), new BigNumber(tokenBAmount).toFixed(0))
 
-  // to fix balances of token addresses which are not on CoinGecko
-  await checkAndFixToken(balances, chain)
   return balances
 }
 
-async function checkAndFixToken(balances, chain){
-  if ("fixToken" in config[chain]) {
-    const tokens = Object.values(config[chain].fixToken);
-    for (let token of tokens) {
+async function checkAndFixToken(balances, chain, fixTokens){
+  if(fixTokens.length){
+    for (let token of fixTokens) {
       if (`${chain}:${token.address.toLowerCase()}` in balances || token.address.toLowerCase() in balances) {
         const [{ data: data }, { output: decimals }] = await Promise.all([
           retry(
@@ -218,6 +215,17 @@ async function checkAndFixToken(balances, chain){
   return;
 }
 
+async function unwrapNFTs({ balances = {}, nftsAndOwners = [], block, chain = 'bsc', transformAddress, owner, nftAddress, config, fixTokens }){
+  const uniContracts = config.uniContracts
+  const iZiContracts = config.iZiContracts
+  if (iZiContracts) await unwrapiZiswapV3NFTs({balances, chain, block, nftAddress, owners: iZiContracts, })
+  if (uniContracts) await unwrapUniswapV3NFTs({balances, chain, block, owners: uniContracts, })
+  // to fix balances of token addresses which are not on CoinGecko
+  await checkAndFixToken(balances, chain, fixTokens)
+  return balances
+}
+
 module.exports = {
   unwrapiZiswapV3NFTs,
+  unwrapNFTs
 }
