@@ -352,7 +352,7 @@ async function computeTVL(balances, timestamp) {
       + Number(balances[k]) : balances[k];
     delete balances[k]
   })
-  
+
   const eth = balances[ethereumAddress];
   if (eth !== undefined) {
     balances[weth] = new BigNumber(balances[weth] ?? 0).plus(eth).toFixed(0);
@@ -408,9 +408,6 @@ async function computeTVL(balances, timestamp) {
       } else {
         amount = Number(balance);
         usdAmount = amount * data.price;
-      }
-      if (isNaN(usdAmount)) {
-        console.log('hi')
       }
       tokenBalances[data.symbol] = (tokenBalances[data.symbol] ?? 0) + amount;
       usdTokenBalances[data.symbol] = (usdTokenBalances[data.symbol] ?? 0) + usdAmount;
