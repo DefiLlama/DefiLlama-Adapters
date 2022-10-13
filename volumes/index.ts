@@ -156,6 +156,7 @@ import wineryswap from "./adapters/wineryswap";
 import arctic from "./adapters/arctic";
 import huckleberry from "./adapters/huckleberry";
 import hakuswap from "./adapters/hakuswap";
+import leonicornswap from "./adapters/leonicornswap";
 
 
 export default {
@@ -314,6 +315,7 @@ export default {
   wineryswap,
   arctic,
   huckleberry,
-  hakuswap
+  hakuswap,
+  leonicornswap
   // lyra -> OPTIONS DEX, not enable for now
 };
