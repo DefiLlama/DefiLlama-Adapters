@@ -347,7 +347,9 @@ async function computeTVL(balances, timestamp) {
       return;
     }
     if (k.toLowerCase() === k) return;
-    balances[k.toLowerCase()] = balances[k];
+    balances[k.toLowerCase()] = (k.toLowerCase() in balances) 
+      ? Number(balances[k.toLowerCase()]) 
+      + Number(balances[k]) : balances[k];
     delete balances[k]
   })
 
@@ -377,7 +379,7 @@ async function computeTVL(balances, timestamp) {
   readKeys.forEach(i => unknownTokens[i] = true)
 
   const { errors } = await PromisePool.withConcurrency(5)
-    .for(sliceIntoChunks(readKeys, 50))
+    .for(sliceIntoChunks(readKeys, 40))
     .process(async (keys) => {
       const coins = keys.reduce((p, c) => p + `${c},`, "");
       tokenData.push((await axios.get(`${burl}${coins}`)).data.coins)
