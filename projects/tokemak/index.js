@@ -111,9 +111,6 @@ async function tvl(timestamp, block) {
 
   // cvxcrvFRAX
   const cvxFraxUsdcPool = "0x7e880867363A7e321f5d260Cade2B0Bb2F717B02";
-  const cvx_abi = {
-    "cvxBRP_balanceOf": { "inputs": [{ "internalType": "address", "name": "account", "type": "address" }], "name": "balanceOf", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
-  }
   const { output: cvxcrvFraxBal } = await sdk.api.abi.call({
     abi: cvx_abi['cvxBRP_balanceOf'],
     target: cvxFraxUsdcPool,
