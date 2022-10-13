@@ -309,7 +309,7 @@ export default {
   "bogged-finance": boggedFinance,
   jetswap,
   saucerswap,
-  synthetify,
+  // synthetify, -> volume out of date
   pandora,
   "soy-finance": soyFinance,
   paycash,
