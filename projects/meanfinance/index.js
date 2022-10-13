@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
+const { fetchURL } = require("../helper/utils");
 const { V1_POOLS, TOKENS_IN_LEGACY_VERSIONS } = require("./addresses");
 const { getChainTransform } = require("../helper/portedTokens")
-const { request, gql } = require("graphql-request");
 
 const YIELD_VERSION = '0xA5AdC5484f9997fBF7D405b9AA62A7d88883C345'
 const YIELDLESS_VERSION = '0x059d306A25c4cE8D7437D25743a8B94520536BD5'
@@ -13,22 +13,11 @@ const LEGACY_VERSIONS = {
   polygon: [VULN_VERSION, YIELDLESS_VERSION]
 }
 
-const SUBGRAPHS = {
-  optimism: 'https://api.thegraph.com/subgraphs/name/mean-finance/dca-v2-yf-optimism',
-  polygon: 'https://api.thegraph.com/subgraphs/name/mean-finance/dca-v2-yf-polygon',
+async function getTokensInChain(chain) {
+  const { data } = await fetchURL(`https://api.mean.finance/v1/dca/networks/${chain}/tokens`)
+  return data.map(({ address }) => address)
+    .filter(address => address.toLowerCase() !== '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee')
 }
-const query = gql`
-  query tokens {
-    tokens (where: { id_not: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" }) {
-      id
-    }
-  }`
-;
-
-const getTokensInChain = async (subgraph) => {
-  const result = await request(subgraph, query);
-  return result.tokens.map(({ id }) => id)
-};
 
 function getV2TvlObject(chain) {
   return {
@@ -41,14 +30,13 @@ async function getV2TVL(chain, block) {
 
   const legacyVersions = LEGACY_VERSIONS[chain] ?? []
   const legacyTokens = TOKENS_IN_LEGACY_VERSIONS[chain] ?? []
-  const tokens = await getTokensInChain(SUBGRAPHS[chain])
+  const tokens = await getTokensInChain(chain)
   const versions = [
     ...legacyVersions.map(contract => ({ contract, tokens: legacyTokens })),
     { contract: YIELD_VERSION, tokens }
   ]
 
-  const promises = versions.map(({ contract, tokens }) => getV2TVLForContract(balances, chain, contract, tokens, block))
-  await Promise.all(promises)
+  await Promise.all(versions.map(({ contract, tokens }) => getV2TVLForContract(balances, chain, contract, tokens, block)))
 
   return balances
 }
