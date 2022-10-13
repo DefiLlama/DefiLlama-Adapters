@@ -153,6 +153,7 @@ import alitaFinance from "./adapters/alita-finance";
 import photonswapFinance from "./adapters/photonswap-finance";
 import unifi from "./adapters/unifi";
 import wineryswap from "./adapters/wineryswap";
+import arctic from "./adapters/arctic";
 
 
 export default {
@@ -308,6 +309,7 @@ export default {
   "alita-finance": alitaFinance,
   "photonswap-finance": photonswapFinance,
   unifi,
-  wineryswap
+  wineryswap,
+  arctic
   // lyra -> OPTIONS DEX, not enable for now
 };
