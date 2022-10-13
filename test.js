@@ -341,6 +341,18 @@ const confidenceThreshold = 0.5
 async function computeTVL(balances, timestamp) {
   fixBalances(balances)
 
+  Object.keys(balances).map(k => {
+    if (+balances[k] === 0) {
+      delete balances[k]
+      return;
+    }
+    if (k.toLowerCase() === k) return;
+    balances[k.toLowerCase()] = (k.toLowerCase() in balances) 
+      ? Number(balances[k.toLowerCase()]) 
+      + Number(balances[k]) : balances[k];
+    delete balances[k]
+  })
+  
   const eth = balances[ethereumAddress];
   if (eth !== undefined) {
     balances[weth] = new BigNumber(balances[weth] ?? 0).plus(eth).toFixed(0);
@@ -397,7 +409,9 @@ async function computeTVL(balances, timestamp) {
         amount = Number(balance);
         usdAmount = amount * data.price;
       }
-
+      if (isNaN(usdAmount)) {
+        console.log('hi')
+      }
       tokenBalances[data.symbol] = (tokenBalances[data.symbol] ?? 0) + amount;
       usdTokenBalances[data.symbol] = (usdTokenBalances[data.symbol] ?? 0) + usdAmount;
       usdTvl += usdAmount;
