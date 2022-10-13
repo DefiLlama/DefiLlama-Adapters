@@ -160,6 +160,7 @@ import leonicornswap from "./adapters/leonicornswap";
 import autoshark from "./adapters/autoshark";
 import ultronswap from "./adapters/ultronswap";
 import titanoSwych from "./adapters/titano-swych";
+import stellarx from "./adapters/stellarx";
 
 
 export default {
@@ -322,6 +323,7 @@ export default {
   leonicornswap,
   autoshark,
   ultronswap,
-  "titano-swych": titanoSwych
+  "titano-swych": titanoSwych,
+  stellarx
   // lyra -> OPTIONS DEX, not enable for now
 };
