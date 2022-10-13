@@ -31,8 +31,8 @@ type SystemState = {
 };
 
 const trovesQuery = gql`
-  query troves($lastId: String) {
-    troves(first: 1000, where: { status: open, id_gt: $lastId }) {
+  query troves($lastId: String, $pageSize: Int) {
+    troves(first: $pageSize, where: { status: open, id_gt: $lastId }) {
       id
       collateral
       rawCollateral

@@ -6,8 +6,8 @@ import { Liq } from "../utils/types";
 const subgraphUrl = "https://api.thegraph.com/subgraphs/name/traderjoe-xyz/lending";
 
 const accountsQuery = gql`
-  query accounts($lastId: ID) {
-    accounts(first: 1000, where: { hasBorrowed: true, id_gt: $lastId }) {
+  query accounts($lastId: ID, $pageSize: Int) {
+    accounts(first: $pageSize, where: { hasBorrowed: true, id_gt: $lastId }) {
       id
       health
       totalBorrowValueInUSD
