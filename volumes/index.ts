@@ -154,6 +154,7 @@ import photonswapFinance from "./adapters/photonswap-finance";
 import unifi from "./adapters/unifi";
 import wineryswap from "./adapters/wineryswap";
 import arctic from "./adapters/arctic";
+import huckleberry from "./adapters/huckleberry";
 
 
 export default {
@@ -310,6 +311,7 @@ export default {
   "photonswap-finance": photonswapFinance,
   unifi,
   wineryswap,
-  arctic
+  arctic,
+  huckleberry
   // lyra -> OPTIONS DEX, not enable for now
 };
