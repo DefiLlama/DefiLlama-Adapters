@@ -3,8 +3,8 @@ import { Liq } from "../utils/types";
 import { getPagedGql } from "../utils/gql";
 
 const query = gql`
-  query users($lastId: String) {
-    users(first: 1000, where: { id_gt: $lastId, reserves_: { currentTotalDebt_gt: "0" } }) {
+  query users($lastId: String, $pageSize: Int) {
+    users(first: $pageSize, where: { id_gt: $lastId, reserves_: { currentTotalDebt_gt: "0" } }) {
       id
       reserves {
         usageAsCollateralEnabledOnUser
@@ -92,7 +92,7 @@ const positions = (chain: Chains) => async () => {
   const subgraphUrl = rc[chain].subgraphUrl;
   const usdcAddress = rc[chain].usdcAddress;
   const _ethPriceQuery = ethPriceQuery(usdcAddress);
-  const users = (await getPagedGql(rc[chain].subgraphUrl, query, "users")) as User[];
+  const users = (await getPagedGql(rc[chain].subgraphUrl, query, "users", 300)) as User[];
   const ethPrice = 1 / ((await request(subgraphUrl, _ethPriceQuery)).priceOracleAsset.priceInEth / 1e18);
   const positions = users
     .map((user) => {
