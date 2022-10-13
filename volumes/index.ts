@@ -153,6 +153,14 @@ import alitaFinance from "./adapters/alita-finance";
 import photonswapFinance from "./adapters/photonswap-finance";
 import unifi from "./adapters/unifi";
 import wineryswap from "./adapters/wineryswap";
+import arctic from "./adapters/arctic";
+import huckleberry from "./adapters/huckleberry";
+import hakuswap from "./adapters/hakuswap";
+import leonicornswap from "./adapters/leonicornswap";
+import autoshark from "./adapters/autoshark";
+import ultronswap from "./adapters/ultronswap";
+import titanoSwych from "./adapters/titano-swych";
+import stellarx from "./adapters/stellarx";
 
 
 export default {
@@ -301,13 +309,21 @@ export default {
   "bogged-finance": boggedFinance,
   jetswap,
   saucerswap,
-  synthetify,
+  // synthetify, -> volume out of date
   pandora,
   "soy-finance": soyFinance,
   paycash,
   "alita-finance": alitaFinance,
   "photonswap-finance": photonswapFinance,
   unifi,
-  wineryswap
+  wineryswap,
+  arctic,
+  huckleberry,
+  hakuswap,
+  leonicornswap,
+  autoshark,
+  ultronswap,
+  "titano-swych": titanoSwych,
+  stellarx
   // lyra -> OPTIONS DEX, not enable for now
 };

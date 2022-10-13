@@ -760,6 +760,7 @@ const fixBalancesTokens = {
     // KT1PWx2mnDueood7fEmfbBDKx1D9BAnnXitn: { coingeckoId: "tzbtc", decimals: 8 },
     tezos: { coingeckoId: "tezos", decimals: 0 },
     'KT1UpeXdK6AJbX58GJ92pLZVCucn2DR8Nu4b': { coingeckoId: "tezos", decimals: 6 },
+    'KT1VYsVfmobT7rsMVivvZ4J8i3bPiqz12NaH': { coingeckoId: "tezos", decimals: 6 },
     KT1GRSvLoikDsXujKgZPsGLX8k8VvR2Tq95b: { coingeckoId: "plenty-dao", decimals: 18 },
     KT1SjXiUX63QvdNMcM2m492f7kuf8JxXRLp4: { coingeckoId: "tezos", decimals: 6 }, // this is ctez, ideally should be valued higher
     KT1Ha4yFVeyzw6KRAdkzq6TxDHB97KG4pZe8: { coingeckoId: "dogami", decimals: 5 },
@@ -780,6 +781,7 @@ const fixBalancesTokens = {
     KT1K9gCRgaLRFKTErYt1wVxA3Frb9FjasjTV: { coingeckoId: "kolibri-usd", decimals: 18 },
     KT1LN4LPSqTMS7Sd2CJw4bbDGRkMv2t68Fy9: { coingeckoId: "usdtez", decimals: 6 },
     KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW: { coingeckoId: "youves-uusd", decimals: 12 },
+    KT1PWx2mnDueood7fEmfbBDKx1D9BAnnXitn: { coingeckoId: "bitcoin", decimals: 8 }, // TODO: tzBTC is not coingecko, so marking it as btc
     'KT1XRPEPXBZK25R3HTZP2O1X7XDMMMFOCKNW-0': { coingeckoId: "youves-uusd", decimals: 12 },
     // 'KT1XRPEPXbZK25r3Htzp2o1x7xdMMmfocKNW-1': { coingeckoId: 'youves-you-defi', decimals: 12, },  //uDEFI token - update gecko id here after adding in coin geckp
     KT1Xobej4mc6XgEjDoJoHtTKgbD1ELMvcQuL: { coingeckoId: "youves-you-governance", decimals: 12 },
@@ -997,6 +999,7 @@ const fixBalancesTokens = {
   },
   ethereum: {
     "0xf6b1c627e95bfc3c1b4c9b825a032ff0fbf3e07d": { coingeckoId: "jpyc", decimals: 18 },
+    "0xa80505c408C4DEFD9522981cD77e026f5a49FE63": { coingeckoId: "neuy", decimals: 18 },
     "0x97fe22e7341a0cd8db6f6c021a24dc8f4dad855f": { coingeckoId: "jarvis-synthetic-british-pound", decimals: 18 },
     "0x0f83287ff768d1c1e17a42f44d644d7f22e8ee1d": { coingeckoId: "upper-swiss-franc", decimals: 18 },
     "0x9fcf418b971134625cdf38448b949c8640971671": { coingeckoId: "tether-eurt", decimals: 18 },
@@ -1004,6 +1007,8 @@ const fixBalancesTokens = {
     "0xf56b164efd3cfc02ba739b719b6526a6fa1ca32a": { coingeckoId: "curio-governance", decimals: 18 },
     "0xb1c9bc94aCd2fAE6aABf4ffae4429B93512a81D2": { coingeckoId: "ariadne", decimals: 18 },
     "0x5067006f830224960fb419d7f25a3a53e9919bb0": { coingeckoId: "smartpad-2", decimals: 18 },
+    "0x2e9d63788249371f1dfc918a52f8d799f4a38c94": { coingeckoId: "tokemak", decimals: 18 },
+    "0x6b3595068778dd592e39a122f4f5a5cf09c90fe2": { coingeckoId: "sushi", decimals: 18 },
   },
   moonbeam: {
     // celer bridge
