@@ -157,6 +157,7 @@ import arctic from "./adapters/arctic";
 import huckleberry from "./adapters/huckleberry";
 import hakuswap from "./adapters/hakuswap";
 import leonicornswap from "./adapters/leonicornswap";
+import autoshark from "./adapters/autoshark";
 
 
 export default {
@@ -316,6 +317,7 @@ export default {
   arctic,
   huckleberry,
   hakuswap,
-  leonicornswap
+  leonicornswap,
+  autoshark
   // lyra -> OPTIONS DEX, not enable for now
 };
