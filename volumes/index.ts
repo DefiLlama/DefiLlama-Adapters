@@ -155,6 +155,7 @@ import unifi from "./adapters/unifi";
 import wineryswap from "./adapters/wineryswap";
 import arctic from "./adapters/arctic";
 import huckleberry from "./adapters/huckleberry";
+import hakuswap from "./adapters/hakuswap";
 
 
 export default {
@@ -312,6 +313,7 @@ export default {
   unifi,
   wineryswap,
   arctic,
-  huckleberry
+  huckleberry,
+  hakuswap
   // lyra -> OPTIONS DEX, not enable for now
 };
