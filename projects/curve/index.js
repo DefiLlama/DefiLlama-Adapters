@@ -18,7 +18,7 @@ const chains = [
   "avax", //-30M
   "fantom", //-80M
   "optimism", //-6M
-  "xdai", //G
+  //"xdai", //G
   "moonbeam",
   "kava"
 ]; // Object.keys(contracts);
