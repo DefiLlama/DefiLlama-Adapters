@@ -903,6 +903,7 @@ const fixBalancesTokens = {
   },
   ethereum: {
     "0xf6b1c627e95bfc3c1b4c9b825a032ff0fbf3e07d": { coingeckoId: "jpyc", decimals: 18 },
+    "0xa80505c408C4DEFD9522981cD77e026f5a49FE63": { coingeckoId: "neuy", decimals: 18 },
     "0x97fe22e7341a0cd8db6f6c021a24dc8f4dad855f": { coingeckoId: "jarvis-synthetic-british-pound", decimals: 18 },
     "0x0f83287ff768d1c1e17a42f44d644d7f22e8ee1d": { coingeckoId: "upper-swiss-franc", decimals: 18 },
     "0x9fcf418b971134625cdf38448b949c8640971671": { coingeckoId: "tether-eurt", decimals: 18 },
