@@ -760,6 +760,7 @@ const fixBalancesTokens = {
     // KT1PWx2mnDueood7fEmfbBDKx1D9BAnnXitn: { coingeckoId: "tzbtc", decimals: 8 },
     tezos: { coingeckoId: "tezos", decimals: 0 },
     'KT1UpeXdK6AJbX58GJ92pLZVCucn2DR8Nu4b': { coingeckoId: "tezos", decimals: 6 },
+    'KT1VYsVfmobT7rsMVivvZ4J8i3bPiqz12NaH': { coingeckoId: "tezos", decimals: 6 },
     KT1GRSvLoikDsXujKgZPsGLX8k8VvR2Tq95b: { coingeckoId: "plenty-dao", decimals: 18 },
     KT1SjXiUX63QvdNMcM2m492f7kuf8JxXRLp4: { coingeckoId: "tezos", decimals: 6 }, // this is ctez, ideally should be valued higher
     KT1Ha4yFVeyzw6KRAdkzq6TxDHB97KG4pZe8: { coingeckoId: "dogami", decimals: 5 },
@@ -1004,6 +1005,8 @@ const fixBalancesTokens = {
     "0xf56b164efd3cfc02ba739b719b6526a6fa1ca32a": { coingeckoId: "curio-governance", decimals: 18 },
     "0xb1c9bc94aCd2fAE6aABf4ffae4429B93512a81D2": { coingeckoId: "ariadne", decimals: 18 },
     "0x5067006f830224960fb419d7f25a3a53e9919bb0": { coingeckoId: "smartpad-2", decimals: 18 },
+    "0x2e9d63788249371f1dfc918a52f8d799f4a38c94": { coingeckoId: "tokemak", decimals: 18 },
+    "0x6b3595068778dd592e39a122f4f5a5cf09c90fe2": { coingeckoId: "sushi", decimals: 18 },
   },
   moonbeam: {
     // celer bridge
