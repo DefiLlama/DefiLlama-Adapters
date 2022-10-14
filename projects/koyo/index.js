@@ -146,5 +146,6 @@ module.exports = {
     [1656419883, "Boba adds to FRAX-USDC"],
     [1658439731, "Boba removes from FRAX-USDC"],
     [1659129231, "Boba adds to USDC-DAI"],
+    [1665774187, "Boba removes from USDC-DAI"]
   ],
 };
