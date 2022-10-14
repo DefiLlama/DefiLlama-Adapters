@@ -58,20 +58,23 @@ async function sumTokens({ owner, owners = [], tokens = [], token, balances = {}
   return fixBalances(balances)
 }
 
-async function getAssetInfo(assetId) {
+async function getAssetInfo(assetId, { includeReserveInfo = false } = {}) {
   const { data: { asset } } = await axiosObj.get(`/v2/assets/${assetId}`)
-  const reserveInfo = await getAccountInfo(asset.params.reserve)
-  const assetObj = { ...asset.params, ...asset, reserveInfo, }
-  assetObj.circulatingSupply = assetObj.total - reserveInfo.assetMapping[assetId].amount
-  assetObj.assets = { ...reserveInfo.assetMapping }
-  delete assetObj.assets[assetId]
+  const assetObj = { ...asset.params, ...asset, }
+  if (includeReserveInfo) {
+    const reserveInfo = await getAccountInfo(asset.params.reserve)
+    assetObj.reserveInfo = reserveInfo
+    assetObj.circulatingSupply = assetObj.total - reserveInfo.assetMapping[assetId].amount
+    assetObj.assets = { ...reserveInfo.assetMapping }
+    delete assetObj.assets[assetId]
+  }
   return assetObj
 }
 
 async function resolveTinymanLp(balances, lpId, unknownAsset) {
   const lpBalance = balances[lpId]
   if (lpBalance && lpBalance !== '0') {
-    const lpInfo = await getAssetInfo(lpId)
+    const lpInfo = await getAssetInfo(lpId, { includeReserveInfo: true })
     let ratio = lpBalance / lpInfo.circulatingSupply
     if (unknownAsset && lpInfo.assets[unknownAsset]) {
       ratio = ratio * 2

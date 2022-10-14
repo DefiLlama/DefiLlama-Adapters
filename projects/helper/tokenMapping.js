@@ -1,5 +1,8 @@
 
 const nullAddress = '0x0000000000000000000000000000000000000000'
+const coingeckoCache = require('./coingecko/cache.json')
+
+const caseSensitiveChains = ['bitcoin', 'tezos', 'solana']
 
 // Multichain bridge info: https://bridgeapi.anyswap.exchange/v2/serverInfo/all
 // IBC info - https://github.com/PulsarDefi/IBC-Cosmos/blob/main/ibc_data.json
@@ -441,6 +444,7 @@ const transformTokens = {
 }
 
 const fixBalancesTokens = {
+  solana: {},
   astar: {
     "0xcdb32eed99aa19d39e5d6ec45ba74dc4afec549f": { coingeckoId: "orcus-oru", decimals: 18, },
     "0xc5bcac31cf55806646017395ad119af2441aee37": { coingeckoId: "muuu", decimals: 18, },
@@ -1421,23 +1425,32 @@ const coreAssets = {
   ]
 }
 
+Object.keys(coingeckoCache).forEach(chain => {
+  if (!fixBalancesTokens[chain]) fixBalancesTokens[chain] = []
+  const mapping = fixBalancesTokens[chain]
+  for (const [key, value] of Object.entries(coingeckoCache[chain]))
+    if (!mapping[key])
+      mapping[key] = value
+})
+
 function getUniqueAddresses(addresses) {
   const set = new Set()
-  addresses.forEach(i => set.add(i.toLowerCase()))
+  addresses.forEach(i => set.add(caseSensitiveChains[chain] ? i : i.toLowerCase()))
   return [...set]
 }
 
-function normalizeMapping(mapping) {
+function normalizeMapping(mapping, chain) {
+  if (caseSensitiveChains[chain]) return;
   Object.keys(mapping).forEach(
     key => (mapping[key.toLowerCase()] = mapping[key])
   );
 }
 
-for (const mapping of Object.values(transformTokens))
-  normalizeMapping(mapping)
+for (const [chain, mapping] of Object.entries(transformTokens))
+  normalizeMapping(mapping, chain)
 
-for (const mapping of Object.values(fixBalancesTokens))
-  normalizeMapping(mapping)
+for (const [chain, mapping] of Object.entries(fixBalancesTokens))
+  normalizeMapping(mapping, chain)
 
 function getCoreAssets(chain) {
   const tokens = [
@@ -1445,7 +1458,7 @@ function getCoreAssets(chain) {
     Object.keys(transformTokens[chain] || {}),
     Object.keys(fixBalancesTokens[chain] || {}),
   ].flat()
-  return getUniqueAddresses(tokens)
+  return getUniqueAddresses(tokens, chain)
 }
 
 module.exports = {
