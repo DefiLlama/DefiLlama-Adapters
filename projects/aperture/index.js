@@ -1,19 +1,13 @@
-const { queryContractStore, } = require('../helper/terra')
-const { log, sleep, } = require('../helper/utils')
-const { GraphQLClient } = require('graphql-request')
+const { queryContractStore } = require('../helper/terra')
+const { log } = require('../helper/utils')
 
 const TERRA_MANAGER = 'terra1ajkmy2c0g84seh66apv9x6xt6kd3ag80jmcvtz'
 const APERTURE_CONTRACT = 'terra1jvehz6d9gk3gl4tldrzd8qzj8zfkurfvtcg99x'
-const host = 'https://hive.terra.dev/graphql'
 let openPositions = require('./openPositions.json')
-
-
-// const posQuery = gql`{  wasm {    contractQuery(      contractAddress: "terra1ajkmy2c0g84seh66apv9x6xt6kd3ag80jmcvtz"      query: {get_next_position_id: {}}    )  }}`
 
 const currentQueriedCount = 11190
 
-async function tvl() {
-  // await updatePositionsList()
+async function terra_tvl() {
   let sumTvl = 0
   const { next_position_id } = await queryContractStore({
     contract: TERRA_MANAGER,
@@ -47,7 +41,6 @@ async function tvl() {
           sumTvl += +detailed_info.uusd_value
 
       }))
-    // await sleep(2000)
   }
 
   log('Final UST sum: %s', sumTvl)
@@ -61,52 +54,84 @@ async function tvl() {
   }
 }
 
-async function updatePositionsList() {
-  openPositions = []
-  const { next_position_id } = await queryContractStore({
-    contract: TERRA_MANAGER,
-    queryParam: { get_next_position_id: {}, },
-  })
-  const positions = [...Array(+next_position_id).keys()]
-    .map((_value, i) => ({ chain_id: 3, position_id: `${i}` }))
+const { BigNumber } = require("ethers");
+const sdk = require("@defillama/sdk");
+const abi = require("./abi.json");
 
-  const chunkSize = 50
-  for (let i = 0; i < positions.length; i += chunkSize) {
-    log('fetching %s of %s', i/chunkSize, Math.ceil(positions.length / chunkSize), openPositions.length)
-    await Promise.all(positions.slice(i, i + chunkSize)
-      .map(async position => {
-        const {
-          items: [{
-            info: {
-              position_close_info,
-            }
-          }]
-        } = await queryContractStore({
-          contract: APERTURE_CONTRACT,
-          queryParam: getQuery(position),
-        })
+const ORACLE = "0x5196e0a4fb2A459856e1D41Ab4975316BbdF19F8";
+const USDC_TOKEN_ADDRESS = "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E";
+const vaultLibAddr = "0x16Ab749236B326905be4195Fe01CBB260d944a1d";
+const vaultContracts = [
+  "0x39471BEe1bBe79F3BFA774b6832D6a530edDaC6B", // Vault 0
+  "0xFC7D93c51f1BCa3CEEbF71f30B4af3bf209115A0", // Vault 1
+  "0x12D89E117141F061274692Ed43B774905433706A", // Vault 2
+];
 
-        if (!position_close_info)  // position is closed no need to add it to tvl
-          openPositions.push(+position.position_id)
-      }))
+async function avax_tvl(timestamp, block, chainBlocks) {
+  const ETHPx = (
+    await sdk.api.abi.call({
+      abi: abi.getETHPx,
+      target: vaultLibAddr,
+      params: [ORACLE, USDC_TOKEN_ADDRESS],
+      chain: "avax",
+      block: chainBlocks.avax,
+    })
+  ).output;
 
-    require('fs').writeFileSync(__dirname + '/openPositions.json', JSON.stringify(openPositions.sort((a, b) => a - b)))
-    // await sleep(2000)
+  const equityETHValues = (
+    await sdk.api.abi.multiCall({
+      abi: abi.getEquityETHValue,
+      calls: vaultContracts.map((vc) => ({
+        target: vc,
+      })),
+      chain: "avax",
+      block: chainBlocks.avax,
+    })
+  ).output;
+
+  const vaultLeverage = (
+    await sdk.api.abi.multiCall({
+      abi: abi.getLeverage,
+      calls: vaultContracts.map((vc) => ({
+        target: vc,
+      })),
+      chain: "avax",
+      block: chainBlocks.avax,
+    })
+  ).output;
+
+  let balances = {};
+  const nVaults = vaultContracts.length;
+  for (let i = 0; i < nVaults; i++) {
+    const usdPriceETH = BigNumber.from(ETHPx)
+      .mul(1e6)
+      .div(BigNumber.from(2).pow(112));
+    const equityValueUSD = BigNumber.from(equityETHValues[i].output)
+      .mul(1e6)
+      .div(usdPriceETH)
+      .div(1e6);
+    const leverage = BigNumber.from(vaultLeverage[i].output);
+    const vaultValue = equityValueUSD.mul(leverage).div(10000).mul(1e6); // Adding USDC decimals () again here `mul(1e6)` because `sumSingleBalance` will remove them
+
+    sdk.util.sumSingleBalance(
+      balances,
+      `avax:${USDC_TOKEN_ADDRESS}`,
+      vaultValue
+    );
   }
 
-  // require('fs').writeFileSync(__dirname + '/openPositions.json', JSON.stringify(openPositions))
-
-  function getQuery(postion) {
-    return { batch_get_position_info: { positions: [postion], } }
-  }
+  return balances;
 }
 
 module.exports = {
   timetravel: false,
-  terra: {
-    tvl,
+  avax: {
+    avax_tvl,
   },
-  hallmarks:[
+  terra: {
+    terra_tvl,
+  },
+  hallmarks: [
     [1651881600, "UST depeg"],
   ]
 }
