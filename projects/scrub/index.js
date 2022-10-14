@@ -28,6 +28,9 @@ module.exports.kava = require('../scrubKava/index.js').kava
 const lionStaking = {
   cronos: {
     staking: sumTokensExport({ chain: 'cronos', owner: '0x14103f4Fc36daCeaCDE4c5313a2b1a462e00B1e8', tokens: ['0x49fb98f9b4a3183cd88e7a115144fdf00fa6fb95'], lps: ['0xf2059ed015ec4ecc80f902d9fdbcd2a227bfe037'], useDefaultCoreAssets: true, })
+  },
+  kava: {
+    staking: sumTokensExport({ chain: 'kava', owner: '0x0dB75Ef798a12312afd98d1884577664f4DD4411', tokens: ['0x990e157fC8a492c28F5B50022F000183131b9026'], lps: ['0x59e38a5799B64fE17c5fAb7E0E5396C15E2acb7b'], useDefaultCoreAssets: true, })
   }
 }
 
