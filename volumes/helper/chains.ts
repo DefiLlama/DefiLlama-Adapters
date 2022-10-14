@@ -62,7 +62,8 @@ export enum CHAIN {
   CLV = "clv",
   ULTRON = "ultron",
   STELLAR = "stellar",
-  ALGORAND = "algorand"
+  ALGORAND = "algorand",
+  TELOS = "telos"
 }
 
 // Don´t use
