@@ -2,6 +2,7 @@
 const { default: BigNumber } = require('bignumber.js');
 const { get } = require('./helper/http')
 
+const nft_url = "https://nftapi.wing.finance/backend/nft-pool/pool-overview"
 
 const config = {
   ontology: {
@@ -40,21 +41,29 @@ Object.keys(config).forEach(chain => {
       const { result } = await getData(chain)
       if (!result.totalBorrow) result.totalBorrow = result.TotalBorrow
       if (!result.totalSupply) result.totalSupply = result.TotalSupply
+      if (chain == "ethereum") {
+        const result_nft  = await get(nft_url)
+        console.log("result_nft:", result_nft);
+        if (result_nft.nftCollateralTVL !=undefined && !result_nft.nftCollateralTVL) result.totalSupply += result_nft.nftCollateralTVL
+      }
       return {
         tether: BigNumber(result.totalSupply - result.totalBorrow).toFixed(0)
       }
     },
     staking: async () => {
       const { result } = await getData(chain)
+      if (!result.totalLockedWingDollar) result.totalLockedWingDollar = result.TotalLockedWingDollar
+      if (result.totalLockedWingDollar == undefined) result.totalLockedWingDollar = BigNumber(0)
+      if (result.totalInsurance != undefined && !result.totalInsurance) result.totalLockedWingDollar += result.totalInsurance
       return {
-        tether: BigNumber(result.totalLockedWingDollar || result.TotalLockedWingDollar).toFixed(0)
+        tether: BigNumber(result.totalLockedWingDollar).toFixed(0)
       }
     },
     borrowed: async () => {
       const { result } = await getData(chain)
       if (!result.totalBorrow) result.totalBorrow = result.TotalBorrow
       return {
-        tether: BigNumber(result.totalBorrow).toFixed(0)
+        tether:new BigNumber(result.totalBorrow).toFixed(0)
       }
     },
   }

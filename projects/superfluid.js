@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
 const { default: BigNumber } = require("bignumber.js");
 const { request, gql } = require("graphql-request"); // GraphQLClient
+const { isStableToken } = require('./helper/streamingHelper')
 
 // Superfluid Supertokens can be retrieved using GraphQl API - cannot use block number to retrieve historical data at the moment though
 // TheGraph URL before being deprecated, before 2021-12-23
@@ -24,6 +25,7 @@ query get_supertokens($block: Int) {
     underlyingToken {
       name
       decimals
+      symbol
       id
     }
     symbol
@@ -36,10 +38,17 @@ query get_supertokens($block: Int) {
 `;
 // An upcoming superfluid graphql subgraph will be published soon and provide token supplies. 
 
+function isWhitelistedToken(token, address, isVesting) {
+  const isStable = isStableToken(token?.symbol, address) && !tokensNativeToSidechain.includes(address.toLowerCase())
+  return isVesting ? !isStable : isStable
+}
+
 // Main function for all chains to get balances of superfluid tokens
-async function getChainBalances(allTokens, chain, block) {
+async function getChainBalances(allTokens, chain, block, isVesting) {
   // Init empty balances
   let balances = {};
+
+  allTokens = allTokens.filter(({ underlyingAddress, underlyingToken = {}, }) => isWhitelistedToken(underlyingToken, underlyingAddress, isVesting))
 
   // Abi MultiCall to get supertokens supplies
   const { output: supply } = await sdk.api.abi.multiCall({
@@ -66,7 +75,7 @@ async function getChainBalances(allTokens, chain, block) {
     // Accumulate to balances, the balance for tokens on mainnet or sidechain
     let prefixedUnderlyingAddress = chain + ':' + underlyingAddress
     // if (!underlyingToken && underlyingTokenBalance/1e24 > 1) console.log(name, symbol, chain, Math.floor(underlyingTokenBalance/1e24))
-    if (isNativeAssetSuperToken || tokensNativeToSidechain.includes(id.toLowerCase())) prefixedUnderlyingAddress = chain + ':' + id
+    if (isNativeAssetSuperToken) prefixedUnderlyingAddress = chain + ':' + id
     else if (!underlyingToken) return;
     sdk.util.sumSingleBalance(balances, prefixedUnderlyingAddress, underlyingTokenBalance)
   })
@@ -81,16 +90,14 @@ const tokensNativeToSidechain = [
   '0x263026e7e53dbfdce5ae55ade22493f828922965', // polygon RIC
 ]
 
-async function retrieveSupertokensBalances(chain, timestamp, ethBlock, chainBlocks) {
+async function retrieveSupertokensBalances(chain, block, isVesting) {
   // Retrieve supertokens from graphql API
-  let graphUrl, block;
+  let graphUrl;
   if (chain === 'polygon') {
     graphUrl = polygonGraphUrl
-    block = chainBlocks.polygon
   }
   else if (chain === 'xdai') {
     graphUrl = xdaiGraphUrl
-    block = chainBlocks.xdai
   }
 
   const { tokens } = await request(
@@ -101,26 +108,21 @@ async function retrieveSupertokensBalances(chain, timestamp, ethBlock, chainBloc
 
   const allTokens = tokens.filter(t => t.isSuperToken)
 
-  return getChainBalances(allTokens, chain, block)
+  return getChainBalances(allTokens, chain, block, isVesting)
 }
-async function polygon(timestamp, block, chainBlocks) {
-  return retrieveSupertokensBalances('polygon', timestamp, block, chainBlocks)
-}
-
-async function xdai(timestamp, block, chainBlocks) {
-  return retrieveSupertokensBalances('xdai', timestamp, block, chainBlocks)
-}
-
 
 module.exports = {
   hallmarks: [
-    [1644278400, "Fake ctx hack"]
+    [1644278400, "Fake ctx hack"],
+    [Math.floor(new Date('2022-10-03')/1e3), 'Vesting tokens are not included in tvl'],
   ],
   polygon: {
-    tvl: polygon
+    tvl: async (_, _b, { polygon: block }) => retrieveSupertokensBalances('polygon', block, false),
+    vesting: async (_, _b, { polygon: block }) => retrieveSupertokensBalances('polygon', block, true),
   },
   xdai: {
-    tvl: xdai
+    tvl: async (_, _b, { xdai: block }) => retrieveSupertokensBalances('xdai', block, false),
+    vesting: async (_, _b, { xdai: block }) => retrieveSupertokensBalances('xdai', block, true),
   },
   methodology: `TVL is the total quantity of tokens locked in Super Tokens from Superfluid, on Polygon and xDai (most important being weth, dai, usdc and wbtc, as well as QiDAO and MOCA)`
 }

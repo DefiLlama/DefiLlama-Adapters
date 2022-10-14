@@ -32,7 +32,9 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 module.exports = {
     timetravel: false,
     methodology: "Total TVL on vaults",
-    tvl
+    terra:{
+        tvl
+    },
 },
 module.exports.hallmarks = [
 [1651881600, "UST depeg"],

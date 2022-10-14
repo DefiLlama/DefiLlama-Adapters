@@ -15,7 +15,53 @@ export enum CHAIN {
   RONIN = "ronin",
   XDAI = "xdai",
   AURORA = "aurora",
-  MOONRIVER = "moonriver"
+  MOONRIVER = "moonriver",
+  TRON = "tron",
+  MOONBEAN = "moonbeam",
+  KLAYTN = "klaytn",
+  JUNO = "juno",
+  KCC = "kcc",
+  WAN = "wan",
+  CARDADO = "cardano",
+  LITECOIN = "litecoin",
+  BITCOIN = "bitcoin",
+  DOGECHAIN = "dogechain",
+  ENERGI = "energi",
+  VELAS = "velas",
+  ELASTOS = "elastos",
+  TEZOS = "tezos",
+  METIS = "metis",
+  SOLANA = "solana",
+  IOTEX = "iotex",
+  KARDIA = "kardia",
+  TOMBCHAIN = "tombchain",
+  CONFLUX = "conflux",
+  TERRA = "terra",
+  METER = "meter",
+  GODWOKEN = "godwoken",
+  GODWOKEN_V1 = "godwoken_v1",
+  FUSE = "fuse",
+  SX = "sx",
+  ELROND = "elrond",
+  DEFICHAIN = "defichain",
+  CUBE = "cube",
+  STACKS = "stacks",
+  STEP = "step",
+  SYSCOIN = "syscoin",
+  CRONOS = "cronos",
+  VISION = "vision",
+  KARURA = "KARURA",
+  SMARTBCH = "smartbch",
+  KAVA = "kava",
+  HEDERA = "hedera",
+  CALLISTO = "callisto",
+  EOS = "eos",
+  BITTORRENT = "bittorrent",
+  ONTOLOGY_EVM = "ontology_evm",
+  ICON = "icon",
+  CLV = "clv",
+  ULTRON = "ultron",
+  STELLAR = "stellar"
 }
 
 // Don´t use
@@ -35,6 +81,9 @@ const RONIN = "ronin";
 const XDAI = "xdai";
 const AURORA = "aurora";
 const MOONRIVER = "moonriver"
+const BITCOIN = "bitcoin";
+const LITECOIN = "litecoin";
+const DOGE = "doge";
 
 // Don't use
 export {
@@ -53,5 +102,8 @@ export {
   RONIN,
   XDAI,
   AURORA,
-  MOONRIVER
+  MOONRIVER,
+  BITCOIN,
+  LITECOIN,
+  DOGE
 };

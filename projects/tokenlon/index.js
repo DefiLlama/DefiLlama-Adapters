@@ -61,7 +61,7 @@ module.exports = {
   ethereum: {
     tvl: ethTvl,
     staking: staking(CONTRACT_FOR_STAKING, LON_TOKEN),
-    pool2: (_, block) => sumTokens2({ tokensAndOwners: STAGES_STAKING_CONTRACTS, block, resolveLP: true, }),
+    pool2: (_, block) => sumTokens2({ tokensAndOwners: STAGES_STAKING_CONTRACTS, block, }),
     treasury: (_, block) => sumTokens2({ tokensAndOwners:[ [WETH, MULTISIG_ONE]], block, }),
   },
   

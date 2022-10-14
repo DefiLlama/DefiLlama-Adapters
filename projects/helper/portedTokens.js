@@ -8,27 +8,10 @@ const {
 } = require('./tokenMapping')
 
 async function transformFantomAddress() {
-  const multichainTokens = (await utils.fetchURL(
-    "https://netapi.anyswap.net/bridge/v2/info"
-  )).data.bridgeList;
-
   const mapping = transformTokens.fantom
 
   return addr => {
     addr = addr.toLowerCase()
-    const srcToken = multichainTokens.find(
-      token => token.chainId === "250" && token.token === addr.toLowerCase()
-    );
-    if (srcToken !== undefined) {
-      if (srcToken.srcChainId === "1") {
-        return srcToken.srcToken;
-      } else if (srcToken.srcChainId === "56") {
-        if (srcToken.srcToken === "") {
-          return "bsc:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c";
-        }
-        return `bsc:${srcToken.srcToken}`;
-      }
-    }
     return mapping[addr] || `fantom:${addr}`;
   };
 }
@@ -88,6 +71,10 @@ async function transformBscAddress() {
 
 async function transformPolygonAddress() {
   return transformChainAddress(transformTokens.polygon, "polygon")
+}
+
+async function transformCeloAddress() {
+  return transformChainAddress(transformTokens.celo, "celo")
 }
 
 async function transformHarmonyAddress() {
@@ -211,13 +198,27 @@ function stripTokenHeader(token) {
 }
 
 async function getFixBalances(chain) {
-  const dummyFn = i => i;
-  return fixBalancesMapping[chain] || dummyFn;
+  return getFixBalancesSync(chain)
 }
 
 function getFixBalancesSync(chain) {
   const dummyFn = i => i;
+  if (chain === 'tezos') return fixTezosBalances
   return fixBalancesMapping[chain] || dummyFn;
+}
+
+function fixTezosBalances(balances) {
+  const mapping = fixBalancesTokens.tezos
+  Object.entries(balances).forEach(([key, value]) => {
+    const token = stripTokenHeader(key)
+    if (mapping[token]) {
+      delete balances[key]
+      const { coingeckoId, decimals } = mapping[token]
+      balances[coingeckoId] = BigNumber(balances[coingeckoId] || 0).toFixed(0)
+      sdk.util.sumSingleBalance(balances, coingeckoId, BigNumber(value/ 10 ** decimals).toFixed(0))
+    }
+  })
+  return balances
 }
 
 const fixBalancesMapping = {};
@@ -296,7 +297,9 @@ module.exports = {
   transformOptimismAddress,
   transformArbitrumAddress,
   transformIotexAddress,
+  transformCeloAddress,
   stripTokenHeader,
   getFixBalancesSync,
   transformBalances,
+  fixTezosBalances,
 };

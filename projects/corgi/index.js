@@ -18,8 +18,8 @@ async function gettotalTvl(block) {
         const transform = await getChainTransform(chain)
         const balances = {
             tvl: {},
-            
-            
+
+
         }
         const { output: length } = await sdk.api.abi.call({
             target: contract,
@@ -48,8 +48,8 @@ async function gettotalTvl(block) {
             lps.push(token)
         })
 
-       
-        
+
+
 
         const pairs = await getLPData({ lps, chain, block })
 
@@ -91,8 +91,12 @@ async function pool2(_, _b, {
 
 module.exports = {
     dogechain: {
-        tvl: tvl,
-        pool2: pool2(contract, '0xd9a09a130f73626a6f6526a575f8e23170186b42', 'dogechain', addr=>`dogechain:${addr}` ),
-        staking: stakingUnknownPricedLP('0x69e1f7e60A83BF250E0a277f3711a1612279dD7E', cog, 'dogechain', '0xd9a09a130f73626a6f6526a575f8e23170186b42', addr=>`dogechain:${addr}`, 18 ),
-    }
+        tvl: () => ({}),
+        // tvl: tvl,
+        // pool2: pool2(contract, '0xd9a09a130f73626a6f6526a575f8e23170186b42', 'dogechain', addr=>`dogechain:${addr}` ),
+        // staking: stakingUnknownPricedLP('0x69e1f7e60A83BF250E0a277f3711a1612279dD7E', cog, 'dogechain', '0xd9a09a130f73626a6f6526a575f8e23170186b42', addr=>`dogechain:${addr}`, 18 ),
+    },
+    hallmarks: [
+        [1662859935, "Rug pull"],
+    ]
 }

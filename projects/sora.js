@@ -99,5 +99,5 @@ async function tvl(timestamp) {
 
 module.exports = {
   methodology: "All pools from https://polkaswap.io launched on SORA network are included in TVL. Data comes from https://polkaview.io",
-  tvl,
+  sora: { tvl },
 };

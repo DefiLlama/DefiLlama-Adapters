@@ -116,12 +116,12 @@ async function arbitrumTvl(timestamp, block, chainBlocks) {
 module.exports = {
   ethereum: {
     tvl: ethTvl,
-    staking: staking(rnbwEthPool, rnbwEthToken),
+    //staking: staking(rnbwEthPool, rnbwEthToken),
     pool2: pool2('0x9cFf4A10b6Fb163a4DF369AaFed9d95838222ca6', '0x3E8E036Ddfd310B0838d3CC881A9fa827778845D'),
   },
   polygon: {
     tvl: polygonTvl,
-    staking: staking(wrnbwPolyPool, wrnbwPolyToken, "polygon"),
+    //staking: staking(wrnbwPolyPool, wrnbwPolyToken, "polygon"),
   },
   arbitrum: {
     tvl: arbitrumTvl,
