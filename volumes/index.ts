@@ -163,6 +163,7 @@ import titanoSwych from "./adapters/titano-swych";
 import stellarx from "./adapters/stellarx";
 import humbleDefi from "./adapters/humble-defi";
 import pact from "./adapters/pact";
+import algofi from "./adapters/algofi";
 
 
 export default {
@@ -328,6 +329,7 @@ export default {
   "titano-swych": titanoSwych,
   stellarx,
   "humble-defi": humbleDefi,
-  pact
+  pact,
+  algofi
   // lyra -> OPTIONS DEX, not enable for now
 };
