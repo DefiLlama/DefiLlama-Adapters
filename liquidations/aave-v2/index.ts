@@ -1,10 +1,10 @@
 import { gql, request } from "graphql-request";
-import { Liq } from "../utils/binResults";
+import { Liq } from "../utils/types";
 import { getPagedGql } from "../utils/gql";
 
 const query = gql`
-  query users($lastId: String) {
-    users(first: 1000, where: { borrowedReservesCount_gt: 0, id_gt: $lastId }) {
+  query users($lastId: String, $pageSize: Int) {
+    users(first: $pageSize, where: { id_gt: $lastId, reserves_: { currentTotalDebt_gt: "0" } }) {
       id
       reserves {
         usageAsCollateralEnabledOnUser
@@ -30,6 +30,25 @@ const query = gql`
   }
 `;
 
+interface User {
+  id: string;
+  reserves: {
+    usageAsCollateralEnabledOnUser: boolean;
+    reserve: {
+      symbol: string;
+      usageAsCollateralEnabled: boolean;
+      underlyingAsset: string;
+      price: {
+        priceInEth: string;
+      };
+      decimals: string;
+      reserveLiquidationThreshold: string;
+    };
+    currentATokenBalance: string;
+    currentTotalDebt: string;
+  }[];
+}
+
 const ethPriceQuery = (usdcAddress: string) => gql`
   {
     priceOracleAsset(id: "${usdcAddress}") {
@@ -40,7 +59,7 @@ const ethPriceQuery = (usdcAddress: string) => gql`
 
 enum Chains {
   ethereum = "ethereum",
-  polygon = "polygon",
+  // polygon = "polygon",
 }
 
 type AaveAdapterResource = {
@@ -59,13 +78,13 @@ const rc: { [chain in Chains]: AaveAdapterResource } = {
     subgraphUrl: "https://api.thegraph.com/subgraphs/name/aave/protocol-v2",
     explorerBaseUrl: "https://etherscan.io/address/",
   },
-  [Chains.polygon]: {
-    name: "aave",
-    chain: Chains.polygon,
-    usdcAddress: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
-    subgraphUrl: "https://api.thegraph.com/subgraphs/name/aave/aave-v2-matic",
-    explorerBaseUrl: "https://polygonscan.com/address/",
-  },
+  // [Chains.polygon]: {
+  //   name: "aave",
+  //   chain: Chains.polygon,
+  //   usdcAddress: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+  //   subgraphUrl: "https://api.thegraph.com/subgraphs/name/aave/aave-v2-matic",
+  //   explorerBaseUrl: "https://polygonscan.com/address/",
+  // },
 };
 
 const positions = (chain: Chains) => async () => {
@@ -73,7 +92,7 @@ const positions = (chain: Chains) => async () => {
   const subgraphUrl = rc[chain].subgraphUrl;
   const usdcAddress = rc[chain].usdcAddress;
   const _ethPriceQuery = ethPriceQuery(usdcAddress);
-  const users = await getPagedGql(rc[chain].subgraphUrl, query, "users");
+  const users = (await getPagedGql(rc[chain].subgraphUrl, query, "users")) as User[];
   const ethPrice = 1 / ((await request(subgraphUrl, _ethPriceQuery)).priceOracleAsset.priceInEth / 1e18);
   const positions = users
     .map((user) => {
@@ -142,7 +161,7 @@ module.exports = {
   ethereum: {
     liquidations: positions(Chains.ethereum),
   },
-  polygon: {
-    liquidations: positions(Chains.polygon),
-  },
+  // polygon: {
+  //   liquidations: positions(Chains.polygon),
+  // },
 };

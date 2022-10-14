@@ -5,7 +5,7 @@ const { toUSDTBalances } = require('../helper/balances');
 const { getBlock } = require('../helper/getBlock');
 async function getTVL(subgraphName, block) {
   // delayed by around 5 mins to allow subgraph to update
-  block -= 25;
+  block -= 100;
   var endpoint = `https://api.thegraph.com/subgraphs/name/balancer-labs/${subgraphName}`
   var graphQLClient = new GraphQLClient(endpoint)
 
@@ -39,7 +39,7 @@ async function getTVL(subgraphName, block) {
 
 async function getTVLFromPools(subgraphName, block) {
   // delayed by around 5 mins to allow subgraph to update
-  block -= 25;
+  block -= 100;
   var endpoint = `https://api.thegraph.com/subgraphs/name/balancer-labs/${subgraphName}`
   var graphQLClient = new GraphQLClient(endpoint)
 

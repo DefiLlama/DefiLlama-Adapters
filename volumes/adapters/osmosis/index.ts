@@ -1,6 +1,6 @@
 import { SimpleVolumeAdapter } from "../../dexVolume.type";
 import { getUniqStartOfTodayTimestamp } from "../../helper/getUniSubgraphVolume";
-const { fetchURL } = require("../../helper/utils");
+import fetchURL from "../../utils/fetchURL"
 
 const historicalVolumeEndpoint = "https://api-osmosis.imperator.co/volume/v2/historical/chart"
 

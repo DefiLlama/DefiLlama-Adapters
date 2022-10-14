@@ -1,4 +1,4 @@
-const { calculateUsdUniTvl } = require('../helper/getUsdUniTvl')
+const { getUniTVL } = require('../helper/unknownTokens')
 const { stakings } = require("../helper/staking");
 const { getFixBalances } = require('../helper/portedTokens');
 
@@ -74,40 +74,10 @@ const STAKING_CONTRACTS = {
 }
 
 const tvls = {
-    astar: calculateUsdUniTvl(
-        FACTORIES.astar,
-        "astar",
-        NATIVE_TOKENS.WASTAR,
-        [
-            ...Object.values(TOKENS.astar),
-            PKEX.astar
-        ], "astar"),
-    shiden: calculateUsdUniTvl(
-        FACTORIES.shiden,
-        "shiden",
-        NATIVE_TOKENS.WSDN,
-        [
-            ...Object.values(TOKENS.shiden),
-            PKEX.shiden
-        ], "shiden"),
-    bsc: calculateUsdUniTvl(
-        FACTORIES.bsc,
-        "bsc",
-        NATIVE_TOKENS.WBNB,
-        [
-            ...Object.values(TOKENS.bsc),
-            PKEX.bsc
-        ], "wbnb"),
-    ethereum: calculateUsdUniTvl(
-        FACTORIES.ethereum,
-        "ethereum",
-        NATIVE_TOKENS.WETH,
-        [
-            ...Object.values(TOKENS.ethereum),
-            PKEX.ethereum
-        ],
-        "weth"
-    ),
+    astar: getUniTVL({ factory: FACTORIES.astar, chain: 'astar', useDefaultCoreAssets: true, }),
+    shiden: getUniTVL({ factory: FACTORIES.shiden, chain: 'shiden', useDefaultCoreAssets: true, }),
+    bsc: getUniTVL({ factory: FACTORIES.bsc, chain: 'bsc', useDefaultCoreAssets: true, }),
+    ethereum: getUniTVL({ factory: FACTORIES.ethereum, chain: 'ethereum', useDefaultCoreAssets: true, }),
     polygon: async () => 0,
 }
 

@@ -64,9 +64,7 @@ const farms = {
 let tokenData
 
 function chainTvls(chain) {
-  return async (timestamp, ethBlock, chainBlocks) => {
-    const block = chainBlocks[chain]
-    // const block = await getBlock(timestamp, chain, chainBlocks, false)
+  return async (timestamp, ethBlock, {[chain]: block}) => {
     const vault = vaults[chain]
     let targetChain = chain
     if (chain === 'ethereum') targetChain = 'eth'

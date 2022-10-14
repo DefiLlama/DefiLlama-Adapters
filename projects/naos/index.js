@@ -199,7 +199,7 @@ module.exports = {
     tvl: tvl,
     staking: staking(STAKING_POOL_ADDRESS, NAOS_ADDRESS),
     pool2: async (_, block) => {
-      const balances = await sumTokens2({ block, owner: STAKING_POOL_ADDRESS, tokens: [UNI_ETH_NAOS_LP_ADDRESS,], resolveLP: true, })
+      const balances = await sumTokens2({ block, owner: STAKING_POOL_ADDRESS, tokens: [UNI_ETH_NAOS_LP_ADDRESS,], })
       const [crvBalance, decimals, price,] = (await Promise.all([
         sdk.api.erc20.balanceOf({
           target: NUSD_3CRV_LP_ADDRESS,

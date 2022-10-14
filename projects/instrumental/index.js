@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const { pool2s, pool2 } = require("../helper/pool2");
 const { staking } = require("../helper/staking");
 
 // Sushi LP Staking + locking on Mainnet
@@ -12,10 +11,7 @@ const veSTRM = "0x62ae88697782f474b2537b890733cc15d3e01f1d";
 module.exports = {
   ethereum: {
     tvl: () => ({}),
-    // pool2: pool2(LP_locking, STRM_ETH_sushi, "ethereum"), // 1M TVL
-    // pool2: pool2(LP_staking, STRM_ETH_sushi, "ethereum"), // 1.13M
-
-    pool2: pool2s([LP_staking, LP_locking], [STRM_ETH_sushi], "ethereum"),
+    pool2: staking([LP_staking, LP_locking], [STRM_ETH_sushi], "ethereum"),
     staking: staking(veSTRM, STRM, "ethereum"), // vote escrowed STRM, TVL corresponds
   },
   methodology:

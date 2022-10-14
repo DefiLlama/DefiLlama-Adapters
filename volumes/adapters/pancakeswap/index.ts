@@ -1,4 +1,5 @@
-import { SimpleVolumeAdapter } from "../../dexVolume.type";
+import { BreakdownVolumeAdapter, DISABLED_ADAPTER_KEY, SimpleVolumeAdapter } from "../../dexVolume.type";
+import disabledAdapter from "../../helper/disabledAdapter";
 
 const {
   getChainVolume,
@@ -27,15 +28,20 @@ const graphs = getChainVolume({
   },
 });
 
-const adapter: SimpleVolumeAdapter = {
-  volume: {
-    [BSC]: {
-      fetch: graphs(BSC),
-      start: getStartTimestamp({
-        endpoints,
-        chain: BSC,
-        dailyDataField: `${DAILY_VOLUME_FACTORY}s`,
-      }),
+const adapter: BreakdownVolumeAdapter = {
+  breakdown: {
+    v1: {
+      [DISABLED_ADAPTER_KEY]: disabledAdapter
+    },
+    v2: {
+      [BSC]: {
+        fetch: graphs(BSC),
+        start: getStartTimestamp({
+          endpoints,
+          chain: BSC,
+          dailyDataField: `${DAILY_VOLUME_FACTORY}s`,
+        }),
+      }
     },
   },
 };

@@ -24,7 +24,7 @@ async function mainnetPools(_, block) {
     [GIV, "0xc3151A58d519B94E915f66B044De3E55F77c2dd9"], // Angel Vault
     [GIV, "0x7819f1532c49388106f7762328c51ee70edd134c"], // GIV / ETH Balancer
   ];
-  return sumTokens2({ tokensAndOwners: toa, block, resolveLP: true });
+  return sumTokens2({ tokensAndOwners: toa, block });
 }
 
 async function stakingXDAI() {
