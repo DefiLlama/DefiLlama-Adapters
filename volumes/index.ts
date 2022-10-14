@@ -161,6 +161,12 @@ import autoshark from "./adapters/autoshark";
 import ultronswap from "./adapters/ultronswap";
 import titanoSwych from "./adapters/titano-swych";
 import stellarx from "./adapters/stellarx";
+import humbleDefi from "./adapters/humble-defi";
+import pact from "./adapters/pact";
+import algofi from "./adapters/algofi";
+import saddleFinance from "./adapters/saddle-finance";
+import elk from "./adapters/elk";
+import luaswap from "./adapters/luaswap";
 
 
 export default {
@@ -324,6 +330,12 @@ export default {
   autoshark,
   ultronswap,
   "titano-swych": titanoSwych,
-  stellarx
+  stellarx,
+  "humble-defi": humbleDefi,
+  pact,
+  algofi,
+  "saddle-finance": saddleFinance,
+  elk,
+  luaswap
   // lyra -> OPTIONS DEX, not enable for now
 };
