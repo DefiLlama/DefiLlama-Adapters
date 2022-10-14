@@ -165,6 +165,7 @@ import humbleDefi from "./adapters/humble-defi";
 import pact from "./adapters/pact";
 import algofi from "./adapters/algofi";
 import saddleFinance from "./adapters/saddle-finance";
+import elk from "./adapters/elk";
 
 
 export default {
@@ -332,6 +333,7 @@ export default {
   "humble-defi": humbleDefi,
   pact,
   algofi,
-  "saddle-finance": saddleFinance
+  "saddle-finance": saddleFinance,
+  elk
   // lyra -> OPTIONS DEX, not enable for now
 };
