@@ -162,6 +162,7 @@ import ultronswap from "./adapters/ultronswap";
 import titanoSwych from "./adapters/titano-swych";
 import stellarx from "./adapters/stellarx";
 import humbleDefi from "./adapters/humble-defi";
+import pact from "./adapters/pact";
 
 
 export default {
@@ -326,6 +327,7 @@ export default {
   ultronswap,
   "titano-swych": titanoSwych,
   stellarx,
-  "humble-defi": humbleDefi
+  "humble-defi": humbleDefi,
+  pact
   // lyra -> OPTIONS DEX, not enable for now
 };
