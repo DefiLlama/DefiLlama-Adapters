@@ -161,6 +161,7 @@ import autoshark from "./adapters/autoshark";
 import ultronswap from "./adapters/ultronswap";
 import titanoSwych from "./adapters/titano-swych";
 import stellarx from "./adapters/stellarx";
+import humbleDefi from "./adapters/humble-defi";
 
 
 export default {
@@ -324,6 +325,7 @@ export default {
   autoshark,
   ultronswap,
   "titano-swych": titanoSwych,
-  stellarx
+  stellarx,
+  "humble-defi": humbleDefi
   // lyra -> OPTIONS DEX, not enable for now
 };
