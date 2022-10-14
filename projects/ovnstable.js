@@ -28,74 +28,15 @@ const abi = {
     "type": "function"
 }
 
+module.exports = {};
 
-async function polygonTvl(timestamp, _block, {polygon: block }) {
-    const balances = {}
-
-    const totalNetAssets = (await sdk.api.abi.call({
-        target: m2m.polygon,
-        abi: abi,
-        block: block,
-        chain: 'polygon',
-    })).output;
-
-    sdk.util.sumSingleBalance(balances, `polygon:${assets.polygon}`, totalNetAssets);
-    return balances;
-}
-
-async function bscTvl(timestamp, _block, {bsc: block }) {
-    const balances = {}
-
-    const totalNetAssets = (await sdk.api.abi.call({
-        target: m2m.bsc,
-        abi: abi,
-        block: block,
-        chain: 'bsc',
-    })).output;
-
-    sdk.util.sumSingleBalance(balances, `bsc:${assets.bsc}`, totalNetAssets);
-    return balances;
-}
-
-async function optimismTvl(timestamp, _block, {optimism: block }) {
-    const balances = {}
-
-    const totalNetAssets = (await sdk.api.abi.call({
-        target: m2m.optimism,
-        abi: abi,
-        block: block,
-        chain: 'optimism',
-    })).output;
-
-    sdk.util.sumSingleBalance(balances, `optimism:${assets.optimism}`, totalNetAssets);
-    return balances;
-}
-
-async function avaxTvl(timestamp, _block, {avax: block }) {
-    const balances = {}
-
-    const totalNetAssets = (await sdk.api.abi.call({
-        target: m2m.avax,
-        abi: abi,
-        block: block,
-        chain: 'avax',
-    })).output;
-
-    sdk.util.sumSingleBalance(balances, `avax:${assets.avax}`, totalNetAssets);
-    return balances;
-}
-
-module.exports = {
-    polygon: {
-        tvl: polygonTvl,
-    },
-    bsc: {
-        tvl: bscTvl,
-    },
-    optimism: {
-        tvl: optimismTvl,
-    },
-    avax: {
-        tvl: avaxTvl,
-    },
-};
+Object.keys(m2m).forEach(chain => {
+  module.exports[chain] = {
+    tvl: async (_, _b, {[chain]: block}) => {
+        const { output } = await sdk.api.abi.call({ chain, block, abi, target: m2m[chain]})
+        return {
+            [`${chain}:${assets[chain]}`]: output
+        }
+    }
+  }
+})
