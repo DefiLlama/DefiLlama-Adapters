@@ -166,6 +166,7 @@ import pact from "./adapters/pact";
 import algofi from "./adapters/algofi";
 import saddleFinance from "./adapters/saddle-finance";
 import elk from "./adapters/elk";
+import luaswap from "./adapters/luaswap";
 
 
 export default {
@@ -334,6 +335,7 @@ export default {
   pact,
   algofi,
   "saddle-finance": saddleFinance,
-  elk
+  elk,
+  luaswap
   // lyra -> OPTIONS DEX, not enable for now
 };
