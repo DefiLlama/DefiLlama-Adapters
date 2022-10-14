@@ -1,8 +1,8 @@
 const { gql } = require("graphql-request");
 
-const tvlExclusion = ["treasury"];
+const tvlExclusion = ["ethereum"];
 const treasuryExclusion = [];
-const stakingExclusion = ["treasury"];
+const stakingExclusion = ["ethereum"];
 
 const addresses = {
   boba: {
