@@ -164,6 +164,8 @@ import stellarx from "./adapters/stellarx";
 import humbleDefi from "./adapters/humble-defi";
 import pact from "./adapters/pact";
 import algofi from "./adapters/algofi";
+import saddleFinance from "./adapters/saddle-finance";
+import elk from "./adapters/elk";
 
 
 export default {
@@ -330,6 +332,8 @@ export default {
   stellarx,
   "humble-defi": humbleDefi,
   pact,
-  algofi
+  algofi,
+  "saddle-finance": saddleFinance,
+  elk
   // lyra -> OPTIONS DEX, not enable for now
 };
