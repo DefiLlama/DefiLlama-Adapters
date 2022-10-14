@@ -21,7 +21,7 @@ const fetch = async (timestamp: number) => {
 
 const adapter: SimpleVolumeAdapter = {
   volume: {
-    [CHAIN.ALGORAND]: {
+    algorand: {
       fetch,
       runAtCurrTime: true,
       customBackfill: undefined,
