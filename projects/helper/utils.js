@@ -345,5 +345,6 @@ module.exports = {
   diplayUnknownTable,
   getRippleBalance,
   getSymbols,
+  getDecimals,
   getParamCalls,
 }
