@@ -57,13 +57,13 @@ function kashiLending(chain, borrowed) {
   return async (timestamp, ethBlock, chainBlocks) => {
     const balances = {};
     const graphUrl = graphUrls[chain];
-    const block = await getBlock(timestamp, chain, chainBlocks)
-    const blockSubGraph = block - 100; //subgraphs can be late by few seconds/minutes
+    let block = await getBlock(timestamp, chain, chainBlocks)
+    block = block - 60; //subgraphs can be late by few seconds/minutes
     const transform = await getChainTransform(chain);
 
     // Query graphql endpoint
     const { kashiPairs } = await request(graphUrl, kashiQuery, {
-      block: blockSubGraph,
+      block: block,
     });
 
     await Promise.all(
