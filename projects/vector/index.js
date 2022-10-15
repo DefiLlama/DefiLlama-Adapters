@@ -21,7 +21,6 @@ async function tvl(timestamp, block, chainBlocks) {
       block: chainBlocks.avax,
     })
   ).output;
-  console.log(masterChefBalances);
   const stakingCalls = masterChefBalances.map((b) => ({
     params: [b.output, contracts.markets[b.input.target].underlying],
   }));

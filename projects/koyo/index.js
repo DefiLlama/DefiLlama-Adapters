@@ -1,17 +1,18 @@
+const sdk = require("@defillama/sdk");
 const constants = require("./constants");
-const utils = require("../helper/utils");
+const { requery } = require("../helper/requery");
 const { chainJoinExports, chainTypeExports } = require("./utils");
 const { getBlock } = require("../helper/getBlock");
 const { staking } = require("../helper/staking");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
-const { transformBobaAddress } = require("../helper/portedTokens");
+const {
+  getChainTransform,
+} = require("../helper/portedTokens");
+const { request } = require("graphql-request");
 
 const DATA = {
   boba: async () => {
-    const bobaTransform = transformBobaAddress();
-    const pools = await utils.fetchURL(
-      "https://api.exchange.koyo.finance/pools/raw/boba"
-    );
+    const bobaTransform = await getChainTransform('boba');
 
     return [
       bobaTransform,
@@ -21,19 +22,30 @@ const DATA = {
           tokens: [
             [constants.addresses.boba.BOBA, false], // BOBA(Boba)
             [constants.addresses.boba.FRAX, false], // FRAX(Boba)
-            [constants.addresses.boba.FRAX_KYO, true], // FRAX-KYO(Boba, OolongSwap)
+            [constants.addresses.boba.USDC, false], // USDC(Boba)
+            [constants.addresses.boba.USDT, false], // USDT(Boba)
+            [constants.addresses.boba.DAI, false], // DAI(Boba)
           ],
         },
         staking: {
           address: constants.addresses.boba.staking,
           token: constants.addresses.boba.KYO,
         },
-        swaps: Object.entries(pools.data.data)
-          .filter(([k]) => k !== "generatedTime")
-          .map(([, pool]) => ({
-            address: pool.addresses.swap,
-            tokens: pool.coins.map((coin) => coin.address),
-          })),
+      },
+    ];
+  },
+  optimism: async () => {
+    const optimismTransform = await getChainTransform('optimism');
+
+    return [
+      optimismTransform,
+      {
+        treasury: {
+          addresss: [constants.addresses.optimism.treasury],
+          tokens: [
+            [constants.addresses.optimism.USDC, false], // USDC(Optimism)
+          ],
+        },
       },
     ];
   },
@@ -41,27 +53,51 @@ const DATA = {
 
 const chainTVL = (chain) => {
   return async (timestamp, _ethBlock, chainBlocks) => {
+    if (!DATA[chain] || constants.tvlExclusion.includes(chain)) return {};
+
     const balances = {};
     const block = await getBlock(timestamp, chain, chainBlocks);
 
-    const [transform, data] = await DATA[chain]();
+    const [transform] = await DATA[chain]();
+    const subgraphApi = `https://api.thegraph.com/subgraphs/name/koyo-finance/exchange-subgraph-${chain}`;
 
-    await sumTokensAndLPsSharedOwners(
-      balances,
-      [...new Set(data.swaps.flatMap((swap) => swap.tokens)).values()].map(
-        (token) => [token, false]
-      ),
-      data.swaps.map((swap) => swap.address),
+    const koyoVault = await request(subgraphApi, constants.POOL_TOKENS, {
       block,
-      chain,
-      transform
-    );
+    });
+
+    let tokenAddresses = [];
+    for (const pool of koyoVault.koyos[0].pools) {
+      for (let address of pool.tokens) {
+        tokenAddresses.push(address.address);
+      }
+    }
+    tokenAddresses = [...new Set(tokenAddresses)];
+
+    const balanceCalls = tokenAddresses.flatMap((address) => {
+      return [
+        {
+          target: address,
+          params: koyoVault.koyos[0].address,
+        },
+        { target: address, params: constants.addresses[chain].feeCollector },
+      ];
+    });
+    const balancesCalled = await sdk.api.abi.multiCall({
+      block,
+      calls: balanceCalls,
+      abi: "erc20:balanceOf",
+    });
+    await requery(balancesCalled, chain, block, "erc20:balanceOf");
+
+    sdk.util.sumMultiBalanceOf(balances, balancesCalled, true, transform);
 
     return balances;
   };
 };
 const chainTreasury = (chain) => {
   return async (timestamp, _ethBlock, chainBlocks) => {
+    if (!DATA[chain] || constants.treasuryExclusion.includes(chain)) return {};
+
     const balances = {};
     const block = await getBlock(timestamp, chain, chainBlocks);
 
@@ -81,6 +117,8 @@ const chainTreasury = (chain) => {
 };
 const chainStaking = (chain) => {
   return async (timestamp, ethBlock, chainBlocks) => {
+    if (!DATA[chain] || constants.stakingExclusion.includes(chain)) return {};
+
     const [, data] = await DATA[chain]();
 
     return staking(data.staking.address, data.staking.token, chain)(
@@ -97,12 +135,16 @@ module.exports = chainJoinExports(
     (chains) => chainTypeExports("treasury", chainTreasury, chains),
     (chains) => chainTypeExports("staking", chainStaking, chains),
   ],
-  ["boba"]
+  ["boba", "optimism"]
 );
 
 module.exports = {
   ...module.exports,
   methodology:
     "Counts the tokens locked on swap pools based on their holdings.",
-  start: 587_102,
+  hallmarks: [
+    [1656419883, "Boba adds to FRAX-USDC"],
+    [1658439731, "Boba removes from FRAX-USDC"],
+    [1659129231, "Boba adds to USDC-DAI"],
+  ],
 };

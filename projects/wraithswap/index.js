@@ -12,7 +12,7 @@ const translate = {
 
 async function tvl(timestamp, block, chainBlocks) {
     let balances =  await calculateUniTvl(addr=>`fantom:${addr}`, chainBlocks.fantom, "fantom", factory, 0, true);
-    for (key in translate) {
+    for (let key in translate) {
         balances[translate[key]] = balances[key];
         delete balances[key]
     }

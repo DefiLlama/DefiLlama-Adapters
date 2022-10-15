@@ -1,0 +1,76 @@
+{
+  "tokenHolders": {
+    "ethereum": [
+      {
+        "address": "0x4bfb33d65f4167ebe190145939479227e7bf2cb0",
+        "chain": "ethereum"
+      },
+      {
+        "address": "0x8a43e670619973944cb573bb23688c24cc0b5131",
+        "chain": "ethereum"
+      }
+    ],
+    "fantom": [
+      {
+        "address": "0xcb54ea94191b280c296e6ff0e37c7e76ad42dc6a",
+        "chain": "fantom"
+      },
+      {
+        "address": "0x677d6ec74fa352d4ef9b1886f6155384acd70d90",
+        "chain": "fantom"
+      },
+      {
+        "address": "0x8a43e670619973944cb573bb23688c24cc0b5131",
+        "chain": "fantom"
+      },
+      {
+        "address": "0xbe4b73f5caff476ed0cdb4c043236fce81f4dc6c",
+        "chain": "fantom"
+      },
+      {
+        "address": "0x35796ce4ed757075d346c1bc374d67628fadcbb1",
+        "chain": "fantom"
+      }
+    ],
+    "bsc": [
+      {
+        "address": "0x3cdf52cc28d21c5b7b91d7065fd6dfe6d426fcc5",
+        "chain": "bsc"
+      },
+      {
+        "address": "0x8a43e670619973944cb573bb23688c24cc0b5131",
+        "chain": "bsc"
+      }
+    ]
+  },
+  "chainMap": {
+    "ethereum": {
+      "chainId": 1,
+      "gasToken": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "wrappedGasToken": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+    },
+    "fantom": {
+      "chainId": 250,
+      "gasToken": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "wrappedGasToken": "fantom:0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83"
+    },
+    "bsc": {
+      "chainId": 56,
+      "gasToken": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "wrappedGasToken": "bsc:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"
+    }
+  },
+  "uniLPs": {
+    "fantom": [
+      "0xbc0eecda2d8141e3a26d2535c57cadcb1095bca9",
+      "0x41d88635029c4402bf9914782ae55c412f8f2142"
+    ]
+  },
+  "curveLPs": {
+    "fantom": ["0x24699312cb27c26cfc669459d670559e5e44ee60"],
+    "ethereum": [
+      "0x3a283d9c08e8b55966afb64c515f5143cf907611",
+      "0xed4064f376cb8d68f770fb1ff088a3d0f3ff5c4d"
+    ]
+  }
+}

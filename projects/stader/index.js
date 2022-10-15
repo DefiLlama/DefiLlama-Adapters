@@ -1,6 +1,8 @@
 const { fetchURL } = require("../helper/utils")
 const { addHBarBalance } = require("../helper/hbar")
 
+//const bscStakeManger = '0x7276241a669489E4BBB76f63d2A43Bfe63080F2F'
+/*
 async function tvl() {
   const res = await fetchURL("https://staderverse.staderlabs.com/tvl")
   return {
@@ -8,9 +10,9 @@ async function tvl() {
     //"terrausd": res.data.totalStakedLunaInUst / 1e6
   }
 }
-
+*/
 async function hbarTvl(timestamp) {
-  return addHBarBalance({ timestamp, address: '0.0.834119' })
+  return addHBarBalance({ timestamp, address: '0.0.1027588' })
 }
 
 async function maticTvl() {
@@ -34,16 +36,31 @@ async function terra2Tvl() {
   }
 }
 
+async function bscTvl() {
+  const res = await fetchURL("https://staderverse.staderlabs.com/tvl")
+  return {
+    "binancecoin": res.data.bnb.native
+  }
+}
+
+async function nearTvl() {
+  const res = await fetchURL("https://staderverse.staderlabs.com/tvl")
+  return {
+    "near": res.data.near.native
+  }
+}
+
 module.exports = {
   timetravel: false,
   methodology: 'We aggregated the luna staked across Stader stake-pools & liquid token and then converted to UST',
-  terra: {
+  /*terra: {
     tvl,
-  },
+  },*/
   hedera: {
     tvl: hbarTvl,
   },
-  polygon: {
+  // its on ethereum because funds are locked there
+  ethereum: {
     tvl: maticTvl
   },
   fantom: {
@@ -51,7 +68,16 @@ module.exports = {
   },
   terra2: {
     tvl: terra2Tvl
-  }
+  },
+  bsc: {
+    tvl: bscTvl
+  },
+  near: {
+    tvl: nearTvl
+  },
+  hallmarks:[
+    [1651881600, "UST depeg"],
+  ]
 }
 
 

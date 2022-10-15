@@ -1,20 +1,13 @@
 const sdk = require('@defillama/sdk')
-const { transformXdaiAddress, transformOptimismAddress } = require('../helper/portedTokens')
-const { getBlock } = require('../helper/getBlock')
+const { getChainTransform } = require('../helper/portedTokens')
 const { chainExports } = require('../helper/exports')
 const { default: axios } = require('axios')
 // node test.js projects/hop/index.js
 const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
 function chainTvl(chain) {
-    return async (timestamp, ethBlock, chainBlocks) => {
+    return async (timestamp, ethBlock, {[chain]: block}) => {
         const balances = {}
-        let transform = token => `${chain}:${token}`
-        if (chain === "xdai") {
-            transform = await transformXdaiAddress()
-        } else if (chain === 'optimism') {
-            transform = await transformOptimismAddress()
-        }
-        const block = await getBlock(timestamp, chain, chainBlocks)
+        let transform = await getChainTransform(chain)
         const tokens = await axios('https://raw.githubusercontent.com/hop-protocol/hop/develop/packages/core/build/addresses/mainnet.json')
         for (const tokenConstants of Object.values(tokens.data.bridges)) {
             const chainConstants = (chain == 'xdai' ? tokenConstants['gnosis'] : tokenConstants[chain])

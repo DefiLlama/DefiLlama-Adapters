@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
 
 const { getChainTransform } = require("../helper/portedTokens");
+const { staking } = require("../helper/staking");
 const getPositionDetails = require("./abis/getPositionDetails.json");
 
 const FACTORY_ADDRESSES = {
@@ -9,6 +10,9 @@ const FACTORY_ADDRESSES = {
     passiveFactory: "0x06c2ae330c57a6320b2de720971ebd09003c7a01",
   },
 };
+
+const PILOT_STAKING_CONTRACT = "0xc9256e6e85ad7ac18cd9bd665327fc2062703628";
+const PILOT = "0x37c997b35c619c21323f3518b9357914e8b99525";
 
 const START_BLOCKS = {
   ethereum: {
@@ -126,5 +130,6 @@ module.exports = {
   misrepresentedTokens: true,
   ethereum: {
     tvl: protocolTvl("ethereum"),
+    staking: staking(PILOT_STAKING_CONTRACT, PILOT, "ethereum"),
   },
 };

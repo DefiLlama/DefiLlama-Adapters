@@ -19,6 +19,8 @@ async function tvl(_, _ethBlock, chainBlocks) {
 }
 */
 module.exports = {
-  tvl: getLiquityTvl(FTM_ADDRESS,TROVE_MANAGER_ADDRESS,"fantom"),
+  fantom: {
+    tvl: getLiquityTvl(FTM_ADDRESS,TROVE_MANAGER_ADDRESS,"fantom"),
+  },
   methodology: `Aquarius does not run its own web interface deposits for it's TVL are made at third-party frontend operators incetivized with the AQU token. TVL consists of deposits made to mint aUSD.`
 };

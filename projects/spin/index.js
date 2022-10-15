@@ -17,10 +17,6 @@ async function tvl() {
     delete ftCurrencies[FT_AURORA];
 
     let balances = await addTokenBalances(ftCurrencies, SPOT_PROJECT_CONTRACT);
-    
-    // NOTE: usd-coin's decimals set to 18 because previously this is the right way 
-    //       to adjust the decimals for coingecko
-    balances['usd-coin'] = balances['usd-coin'].shiftedBy(12);
 
     const spot_contract_state = await view_account(SPOT_PROJECT_CONTRACT);
     sumSingleBalance(balances, FT_NEAR, spot_contract_state['amount']);
@@ -30,8 +26,9 @@ async function tvl() {
 
 
 module.exports = {
+  timetravel: false,
   near: {
     tvl,
   },
   methodology: 'Summed up all the tokens deposited into Spin DEX'
-};
+}

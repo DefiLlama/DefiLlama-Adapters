@@ -24,6 +24,11 @@ module.exports = {
     swapContract: '0x1d4b4796853aeda5ab457644a18b703b6ba8b4ab',
     underlyingTokens: ['0x88fd584dF3f97c64843CD474bDC6F78e398394f4', '0x5b5bd8913d766d005859ce002533d4838b0ebbb5'],
   },
+  // ARTH.usd
+  '0xc5c71accca3a1357985e8912e1ed0aa910c30bdc': {
+    swapContract: '0xaf6b98b5dc17f4a9a5199545a1c29ee427266da4',
+    underlyingTokens: ['0x8b02998366f7437f6c4138f4b543ea5c000cd608', '0x5b5bD8913D766D005859CE002533D4838B0Ebbb5'],
+  },
   // val3PS
   '0x5b5bd8913d766d005859ce002533d4838b0ebbb5': {
     swapContract: '0x19ec9e3f7b21dd27598e7ad5aae7dc0db00a806d',

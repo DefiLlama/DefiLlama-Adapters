@@ -126,5 +126,5 @@ async function tvl(timestamp, block) {
     return balances;
 }
 module.exports  = {
-        tvl
+        ethereum: { tvl },
     };
