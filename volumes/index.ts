@@ -168,6 +168,7 @@ import saddleFinance from "./adapters/saddle-finance";
 import elk from "./adapters/elk";
 import luaswap from "./adapters/luaswap";
 import unicly from "./adapters/unicly";
+import cremaFinance from "./adapters/crema-finance";
 
 
 export default {
@@ -338,6 +339,7 @@ export default {
   "saddle-finance": saddleFinance,
   elk,
   luaswap,
-  unicly
+  unicly,
+  "crema-finance": cremaFinance
   // lyra -> OPTIONS DEX, not enable for now
 };
