@@ -1,15 +1,10 @@
-const { ethers } = require("ethers");
 const sdk = require("@defillama/sdk");
-const { getProvider } = require("@defillama/sdk/build/general");
-const CurvePoolRewards = "0x9727D535165e19590013bdDea8Fd85dd618b9aF7";
-const BigNumber = require("bignumber.js");
 const StrategyViewer = require("./StrategyViewer.json");
-const StrategyRegistry = require("./StrategyRegistry.json");
-const IStrategy = require("./IStrategy.json");
 const addresses = require("./addresses.json");
+const chain = 'avax'
 
 async function useStrategyMetadata(block) {
-  const curAddresses = addresses["43114"];
+  const curAddresses = addresses.avax;
 
   const token2Strat = {
     ["0xE5e9d67e93aD363a50cABCB9E931279251bBEFd0"]:
@@ -41,16 +36,15 @@ async function useStrategyMetadata(block) {
 
   const stratViewer = await sdk.api.abi.call({
     target: curAddresses.StrategyViewer,
-    abi: StrategyViewer.abi[1],
-    chain: "avax",
+    abi: StrategyViewer.abi.find(i => i.name === 'viewMetadata'),
+    chain, block,
     params: [curAddresses.StableLending2, tokens, strats],
   });
-  const normalResults = stratViewer.output;
-  return normalResults;
+  return stratViewer.output;
 }
 
 async function useLegacyIsolatedStrategyMetadata(block) {
-  const curAddresses = addresses["43114"];
+  const curAddresses = addresses.avax;
 
   //legacy
   const legacyToken2Strat = {
@@ -94,13 +88,12 @@ async function useLegacyIsolatedStrategyMetadata(block) {
 
   const stratViewer = await sdk.api.abi.call({
     target: curAddresses.LegacyStrategyViewer,
-    abi: StrategyViewer.abi[1],
-    chain: "avax",
+    abi: StrategyViewer.abi.find(i => i.name === 'viewMetadata'),
+    chain, block,
     params: [curAddresses.StableLending, legacyTokens, legacyStrats],
   });
-  const normalResults = stratViewer.output;
 
-  return normalResults;
+  return stratViewer.output;
 }
 
 module.exports = {

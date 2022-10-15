@@ -1,12 +1,13 @@
-const { ethers } = require("ethers");
+
+const nullAddress = '0x0000000000000000000000000000000000000000'
 const sdk = require("@defillama/sdk");
 const addresses = require("./addresses.json");
-const VestingStakingRewards = require("./VestingStakingRewards.json");
 
-async function useParsedStakingMetadata() {
-  const curAddresses = addresses["43114"];
+async function useParsedStakingMetadata(block) {
+  const curAddresses = addresses.avax;
 
   const stratViewer = await sdk.api.abi.call({
+    block,
     target: curAddresses.CurvePoolRewards,
     abi: {
       inputs: [
@@ -90,7 +91,7 @@ async function useParsedStakingMetadata() {
       type: "function",
     },
     chain: "avax",
-    params: [ethers.constants.AddressZero],
+    params: [nullAddress],
   });
 
   const normalResults = stratViewer.output;
