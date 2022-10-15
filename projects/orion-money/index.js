@@ -47,7 +47,7 @@ async function tvl(timestamp, block) {
 
         // sum contract token balances
         const tokenDecimals = await returnDecimals(stable[i], block);
-        for (contract of fundedContracts) {
+        for (const contract of fundedContracts) {
             const contractTokenBalance =
                 await utils.returnBalance(anchor[i], contract);
             totalCoins = Number(totalCoins) +

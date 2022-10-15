@@ -79,6 +79,42 @@ module.exports = {
               "stepn",
             ],
           },
+          {
+            pool: 'DqTF8aZu63iHF55tBz1ePuaBKJ3F2srNVha3B4PpCT4N', // Meta Aurora-USDC
+            tokens: [
+              '9Y8pJhF8AQGBGL5PTd12P4w82n2qAADTmWakkXSatdAu', // Aurora-USDC
+            ],
+            symbols: [
+              "usd-coin",
+            ],
+          },
+          {
+            pool: '23CU3bqMJoRTpvyti84CmPbkAyNJDnTZE7DYj6MnhGdK', // Meta Aurora-USDT
+            tokens: [
+              'GFhej2oJ1NPLbzSX3D3B9jzYaidff6NoBAUNmu6dLXwU', // Aurora-USDT
+            ],
+            symbols: [
+              "tether",
+            ],
+          },
+          {
+            pool: 'H7BkMwbJfLiWE9sSDATHTqXykm1xBjeRzzLDatW2QdEt', // Meta Fantom-USDC
+            tokens: [
+              'Dnr8fDaswHtYMSKbtR9e8D5EadyxqyJwE98xp17ZxE2E', // Fantom-USDC
+            ],
+            symbols: [
+              "usd-coin",
+            ],
+          },
+          {
+            pool: '4XQz1qHMMTkFETn5PSNyLVutYPyZ4han8RB8Mmw1G48Q', // Meta Karura-USDT
+            tokens: [
+              'E942z7FnS7GpswTvF5Vggvo7cMTbvZojjLbFgsrDVff1', // Karura-USDT
+            ],
+            symbols: [
+              "tether",
+            ],
+          },
         ],
       }
     },

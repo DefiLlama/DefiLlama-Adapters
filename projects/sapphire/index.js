@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const { transformFantomAddress } = require("../helper/portedTokens");
 const { addFundsInMasterChef } = require("../helper/masterchef");
-const { pool2s } = require('../helper/pool2')
+const { stakings } = require('../helper/staking')
 const poolInfo = {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"poolInfo","outputs":[{"internalType":"contract IERC20","name":"lpToken","type":"address"},{"internalType":"uint256","name":"allocPoint","type":"uint256"},{"internalType":"uint256","name":"lastRewardBlock","type":"uint256"},{"internalType":"uint256","name":"accfSapphirePerShare","type":"uint256"},{"internalType":"uint16","name":"depositFeeBP","type":"uint16"},{"internalType":"uint256","name":"lpSupply","type":"uint256"}],"stateMutability":"view","type":"function"}
 const warPoolInfo = {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"poolInfo","outputs":[{"internalType":"contract IERC20","name":"lpToken","type":"address"},{"internalType":"uint256","name":"allocPoint","type":"uint256"},{"internalType":"uint256","name":"lastRewardBlock","type":"uint256"},{"internalType":"uint256","name":"accfSapphirePerShare","type":"uint256"},{"internalType":"uint16","name":"depositFeeBP","type":"uint16"},{"internalType":"uint256","name":"lpSupply","type":"uint256"}],"stateMutability":"view","type":"function"}
 
@@ -47,7 +47,7 @@ module.exports = {
   methodology: "TVL includes all farms in MasterChef contract",
   fantom: {
     tvl,
-    pool2: pool2s([chef, sapphireWarChef], [sapphireFtmLP, sapphireWarFtmLP], "fantom"),
+    pool2: stakings([chef, sapphireWarChef], [sapphireFtmLP, sapphireWarFtmLP], "fantom"),
     staking,
     masterchef: tvl,
   }

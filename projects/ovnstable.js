@@ -1,8 +1,20 @@
 const sdk = require("@defillama/sdk");
-const {getBlock} = require("./helper/getBlock");
+const { getBlock } = require('./helper/getBlock')
 
-const m2m = "0x33efB0868A6f12aEce19B451e0fcf62302Ec4A72";
-const USDC = "0x2791bca1f2de4661ed88a30c99a7a9449aa84174";
+const m2m = {
+    polygon: "0x33efB0868A6f12aEce19B451e0fcf62302Ec4A72",
+    bsc: "0x9Af655c4DBe940962F776b685d6700F538B90fcf",
+    optimism: "0x9Af655c4DBe940962F776b685d6700F538B90fcf",
+    avax: "0x9Af655c4DBe940962F776b685d6700F538B90fcf",
+}
+
+const assets = {
+    polygon: "0x2791bca1f2de4661ed88a30c99a7a9449aa84174", //USDC
+    bsc: "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56", //BUSD
+    optimism: "0x7F5c764cBc14f9669B88837ca1490cCa17c31607", //USDC
+    avax: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E", //USDC
+}
+
 const abi = {
     "inputs": [],
     "name": "totalNetAssets",
@@ -17,25 +29,17 @@ const abi = {
     "type": "function"
 }
 
+module.exports = {};
 
-async function tvl(timestamp, block, chainBlocks) {
-    block = await getBlock(timestamp, "polygon", chainBlocks);
-
-    const balances = {}
-
-    const totalNetAssets = (await sdk.api.abi.call({
-        target: m2m,
-        abi: abi,
-        block: block,
-        chain:'polygon',
-    })).output;
-
-    sdk.util.sumSingleBalance(balances, `polygon:${USDC}`, totalNetAssets);
-    return balances;
-}
-
-module.exports = {
-    polygon: {
-        tvl,
-    },
-};
+Object.keys(m2m).forEach(chain => {
+  module.exports[chain] = {
+    tvl: async (_, _b, cb) => {
+        const block = await getBlock(_, chain, cb)
+        //console.log(_ ,chain, block)
+        const { output } = await sdk.api.abi.call({ chain, block, abi, target: m2m[chain]})
+        return {
+            [`${chain}:${assets[chain]}`]: output
+        }
+    }
+  }
+})

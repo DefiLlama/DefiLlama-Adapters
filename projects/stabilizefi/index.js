@@ -224,7 +224,7 @@ async function tvl(_, _ethBlock, chainBlocks) {
 }
 */
 module.exports = {
-  avalanche:{
+  avax:{
     tvl: sdk.util.sumChainTvls([
       getLiquityTvl(ETH_ADDRESS,ETH_TROVE_MANAGER_ADDRESS,"avax",transformAvaxAddress),
       getLiquityTvl(BTC_ADDRESS,BTC_TROVE_MANAGER_ADDRESS,"avax"),

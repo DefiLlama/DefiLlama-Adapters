@@ -1,79 +1,34 @@
 const sdk = require("@defillama/sdk");
-const erc20 = require("../helper/abis/erc20.json");
 const abi = require("./abi.json");
-const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { transformAvaxAddress } = require("../helper/portedTokens");
+const { createIncrementArray } = require("../helper/utils");
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
+const chain = 'avax'
 const FARMING_CONTRACT_ADDRESS = "0xf61b4f980A1F34B55BBF3b2Ef28213Efcc6248C4";
 
-const avaxTvl = async (timestamp, ethBlock, chainBlocks) => {
-  const balances = {};
-
+const avaxTvl = async (timestamp, ethBlock, {[chain]: block }) => {
   const lengthOfPool = (
     await sdk.api.abi.call({
       abi: abi.poolLength,
       target: FARMING_CONTRACT_ADDRESS,
-      chain: "avax",
-      block: chainBlocks["avax"],
+      chain, block,
     })
   ).output;
 
-  const lpPositions = [];
+  const calls = createIncrementArray(lengthOfPool).map(i => ({ params: i }));
+  const { output } = await sdk.api.abi.multiCall({
+    target: FARMING_CONTRACT_ADDRESS,
+    abi: abi.poolInfo,
+    calls,
+    chain, block,
+  })
 
-  for (let index = 0; index < lengthOfPool; index++) {
-    const lpOrTokens = (
-      await sdk.api.abi.call({
-        abi: abi.poolInfo,
-        target: FARMING_CONTRACT_ADDRESS,
-        params: index,
-        chain: "avax",
-        block: chainBlocks["avax"],
-      })
-    ).output[0];
-
-    const lpOrToken_bal = (
-      await sdk.api.abi.call({
-        abi: erc20.balanceOf,
-        target: lpOrTokens,
-        params: FARMING_CONTRACT_ADDRESS,
-        chain: "avax",
-        block: chainBlocks["avax"],
-      })
-    ).output;
-
-    if (
-      index == 12 ||
-      index == 13 ||
-      index == 21 ||
-      index == 22 ||
-      index == 36 ||
-      index == 39 ||
-      index == 40
-    ) {
-      lpPositions.push({
-        token: lpOrTokens,
-        balance: lpOrToken_bal,
-      });
-    } else {
-      sdk.util.sumSingleBalance(balances, `avax:${lpOrTokens}`, lpOrToken_bal);
-    }
-  }
-
-  const transformAddress = await transformAvaxAddress();
-
-  await unwrapUniswapLPs(
-    balances,
-    lpPositions,
-    chainBlocks["avax"],
-    "avax",
-    transformAddress
-  );
-
-  return balances;
+  const toa = output.map(i => ([i.output[0], FARMING_CONTRACT_ADDRESS]))
+  return sumTokens2({ chain, block, tokensAndOwners: toa,})
 };
 
 module.exports = {
-  avalanche: {
+  avax:{
     tvl: avaxTvl,
   },
   methodology:

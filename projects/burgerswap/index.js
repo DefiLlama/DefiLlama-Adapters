@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl");
+const { getUniTVL } = require('../helper/unknownTokens')
 const { staking } = require("../helper/staking");
 
 const stakingContract = "0x9154c2684aeF8d106babcB19Aa81d4FabF7581ec";
@@ -54,13 +54,7 @@ async function bscShackTvl(timestamp, ethBlock, chainBlocks) {
   return balances;
 }
 
-const bscDexTvl = calculateUsdUniTvl(
-  Factory,
-  "bsc",
-  WBNB,
-  [BURGER],
-  "binancecoin"
-);
+const bscDexTvl = getUniTVL({ factory: Factory, chain: 'bsc', useDefaultCoreAssets: true, })
 
 module.exports = {
   misrepresentedTokens: true,

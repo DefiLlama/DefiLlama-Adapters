@@ -95,7 +95,7 @@ async function getMarkets(block, liquidityPool) {
   } else {
     let allTokens = await getAllTokens(block, liquidityPool);
     // if not in cache, get from the blockchain
-    for (token of allTokens) {
+    for (const token of allTokens) {
       let kToken = await getKToken(block, token, liquidityPool);
 
       if (!markets[token]) {

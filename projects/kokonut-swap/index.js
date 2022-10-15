@@ -6,14 +6,13 @@ const registry_addr = "0xBd21dD5BCFE28475D26154935894d4F515A7b1C0";
 const helper_addr = "0x1A09643f4D70B9Aa9da5737568C1935ED37423aa";
 const chain = 'klaytn';
 
-async function tvl(timestamp, block, chainBlocks) {
+async function tvl(timestamp, _, { klaytn: block }) {
   const balances = {};
 
   const poolList = (await sdk.api.abi.call({
     target: registry_addr,
     abi: abi.getPoolList,
-    block: chainBlocks[chain],
-    chain
+    block, chain
   })).output;
 
   const info = await sdk.api.abi.multiCall({
@@ -22,35 +21,53 @@ async function tvl(timestamp, block, chainBlocks) {
       params: p
     })),
     abi: abi.getPoolPriceInfo,
-    block: chainBlocks[chain],
-    chain
+    block, chain
   });
 
-  await requery(info, chain, chainBlocks[chain], abi.getPoolPriceInfo);
+  await requery(info, chain, block, abi.getPoolPriceInfo);
+  const gasToken = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'.toLowerCase()
+  const tokenSet = new Set()
 
-  const successes = info.output.filter(o => o.success == true)
-  if (successes.length == 0) throw 'not a single call was successful'
+  for (const data of info.output) {
+    const { output: poolInfo, input: { params } } = data
+    if (!poolInfo) {
+      console.log('pool info missing for ', params)
+      continue;
+    }
+    for (let token of poolInfo.tokens) {
+      token = token.toLowerCase()
+      if (token !== gasToken) tokenSet.add(token)
+    }
+  }
 
-  for (let i = 0; i < info.output.length; i++) {
-    if (!info.output[i].success) continue;
-    const poolInfo = info.output[i].output;
+  const { output: tokenResponse } = await sdk.api.abi.multiCall({
+    abi: 'erc20:decimals',
+    calls: [...tokenSet].map(i => ({ target: i })),
+    chain, block,
+  })
+
+  const tokenMapping = {}
+  tokenResponse.forEach(i => tokenMapping[i.input.target] = i.output)
+
+
+  for (const { output: poolInfo } of info.output) {
+    if (!poolInfo) continue;
     for (let j = 0; j < poolInfo.tokens.length; j++) {
-      const decimal = poolInfo.tokens[j]==`0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE`?18:
-        (await sdk.api.erc20.decimals(poolInfo.tokens[j], chain)).output
-      const balance = poolInfo.prices[j] / 10**(18) * poolInfo.balances[j] / 10**(decimal);
+      const token = poolInfo.tokens[j].toLowerCase()
+      const decimal = token === gasToken ? 18 : tokenMapping[token]
+      const balance = poolInfo.prices[j] / 1e18 * poolInfo.balances[j] / 10 ** (decimal);
       sdk.util.sumSingleBalance(balances, 'usd-coin', balance);
-    };
-  };
+    }
+  }
 
   return balances;
 };
 
-async function staking(timestamp, block, chainBlocks) {
+async function staking(timestamp, _, { klaytn: block }) {
   const info = (await sdk.api.abi.call({
     target: helper_addr,
     abi: abi.getStakedEyePriceInfo,
-    block: chainBlocks[chain],
-    chain
+    block, chain
   })).output;
 
   return { 'usd-coin': info.price * info.balance / 10 ** 36 };
