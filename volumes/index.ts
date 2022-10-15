@@ -167,6 +167,7 @@ import algofi from "./adapters/algofi";
 import saddleFinance from "./adapters/saddle-finance";
 import elk from "./adapters/elk";
 import luaswap from "./adapters/luaswap";
+import unicly from "./adapters/unicly";
 
 
 export default {
@@ -336,6 +337,7 @@ export default {
   algofi,
   "saddle-finance": saddleFinance,
   elk,
-  luaswap
+  luaswap,
+  unicly
   // lyra -> OPTIONS DEX, not enable for now
 };
