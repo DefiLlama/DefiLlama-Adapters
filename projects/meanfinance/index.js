@@ -1,7 +1,6 @@
-const sdk = require("@defillama/sdk");
 const { fetchURL } = require("../helper/utils");
 const { V1_POOLS, TOKENS_IN_LEGACY_VERSIONS } = require("./addresses");
-const { getChainTransform } = require("../helper/portedTokens")
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const YIELD_VERSION = '0xA5AdC5484f9997fBF7D405b9AA62A7d88883C345'
 const YIELDLESS_VERSION = '0x059d306A25c4cE8D7437D25743a8B94520536BD5'
@@ -42,42 +41,18 @@ async function getV2TVL(chain, block) {
 }
 
 async function getV2TVLForContract(balances, chain, contract, tokens, block) {
-  const chainTransform = await getChainTransform(chain)
-  const balanceOfResults = await sdk.api.abi.multiCall({
-    block,
-    calls: tokens.map((token) => ({
-        target: token,
-        params: contract,
-    })),
-    abi: "erc20:balanceOf",
-    chain,
-  });
-
-  sdk.util.sumMultiBalanceOf(balances, balanceOfResults, true, chainTransform);
+  return sumTokens2({ balances, chain, block, tokens, owner: contract })
 }
 
 async function ethTvl(timestamp, block) {
-  const balances = {};
+  const toa = []
   // Calls for tokens in pair and balances of them then adds to balance
   for (let i = 0; i < V1_POOLS.length; i++) {
     const { pool, tokenA, tokenB } = V1_POOLS[i]
-    const tokenABalance = await sdk.api.erc20.balanceOf({
-      target: tokenA,
-      owner: pool,
-      block,
-      chain: 'ethereum'
-    })
-    const tokenBBalance = await sdk.api.erc20.balanceOf({
-      target: tokenB,
-      owner: pool,
-      block,
-      chain: 'ethereum'
-    })
-    sdk.util.sumSingleBalance(balances, tokenA, tokenABalance.output);
-    sdk.util.sumSingleBalance(balances, tokenB, tokenBBalance.output);
+    toa.push([tokenA, pool], [tokenB, pool])
   }
 
-  return balances;
+  return sumTokens2({ tokensAndOwners: toa, block, });
 }
 
 module.exports = {
