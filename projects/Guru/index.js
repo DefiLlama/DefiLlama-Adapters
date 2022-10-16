@@ -55,7 +55,7 @@ const ITVL = [
 ]
 
 //	TvlGuru:	On-Chain Universal TVL Finder
-const tvlGuru = {
+const tvlGuru = { 
   "fantom": "0x0786c3a78f5133F08C1c70953B8B10376bC6dCad",
   "kcc": "0x426a4A4B73d4CD173C9aB78d18c0d79d1717eaA9",
   "multivac": "0xe345A50C33e5c9D0284D6fF0b891c4Fc99a9C117",
