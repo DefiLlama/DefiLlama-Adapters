@@ -149,6 +149,7 @@ function protocolTvl(chain) {
 }
 
 module.exports = {
+  misrepresentedTokens: true,
   ethereum: {
     tvl: protocolTvl("ethereum"),
     staking: staking(PILOT_STAKING_CONTRACT, PILOT, "ethereum"),
