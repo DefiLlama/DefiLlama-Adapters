@@ -210,7 +210,7 @@ async function getKashiTokens(chain) {
       if (!balances[pair.collateral.id]) {
         balances[pair.collateral.id] = totalCollateral;
       } else {
-        balances[pair.collateral.id] =
+        balances[pair.collateral.id] = balances[pair.collateral.id] =
           balances[pair.collateral.id].add(totalCollateral);
       }
     }
