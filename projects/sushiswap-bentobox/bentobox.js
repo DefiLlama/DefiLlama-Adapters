@@ -38,5 +38,5 @@ function bentobox(chain) {
 
 module.exports = {
   bentobox,
-  methodology: `TVL of BentoBox consist of tokens deposited into it minus Trident, Furo and Kashi TVL since they are built on it.`,
+  methodology: `TVL of BentoBox consist of tokens deposited into it minus Trident, Furo and Kashi TVL since they are built on it and already listed on DefiLlama.`,
 };
