@@ -19,7 +19,6 @@ type TChains = {
 
 const chains: TChains =  {
   [CHAIN.BSC]: 56,
-  [CHAIN.AURORA]: 1313161554,
 };
 
 const fetch = (chain: Chain) => {
@@ -54,11 +53,6 @@ const adapter: SimpleVolumeAdapter = {
       fetch: fetch(CHAIN.BSC),
       start: () => getStartTimestamp(chains[CHAIN.BSC]),
       customBackfill: customBackfill(CHAIN.BSC as Chain, fetch)
-    },
-    [CHAIN.AURORA]: {
-      fetch: fetch(CHAIN.AURORA),
-      start: () => getStartTimestamp(chains[CHAIN.AURORA]),
-      customBackfill: customBackfill(CHAIN.AURORA as Chain, fetch)
     },
   },
 };

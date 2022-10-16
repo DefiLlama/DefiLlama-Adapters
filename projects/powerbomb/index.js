@@ -36,6 +36,7 @@ const opVeloWethUsdcUsdcAddr = "0x0F0fFF5EA56b0eA2246A926F13181e33Be9FbAEA"
 const opVeloWethSethUsdcAddr = "0xcba7864134e1A5326b817676ad5302A009c84d68"
 // const opUniUsdcDaiAddr = "0xAb736E1D68f3A51933E0De23CbC6c1147d0C2934"
 const opCrvPengAddr = "0x68ca3a3BBD306293e693871E45Fe908C04387614"
+const opCrvSethPengAddr = "0x98f82ADA10C55BC7D67b92d51b4e1dae69eD0250"
 
 // harmony
 const oneCrv3poolBtcAddr = "0x12CEf50b6a6dDBeC998353724180184157a685a7"
@@ -83,6 +84,7 @@ const vaults = {
     opVeloWethSethUsdcAddr,
     // opUniUsdcDaiAddr,
     opCrvPengAddr,
+    opCrvSethPengAddr,
   ],
   harmony: [
     oneCrv3poolBtcAddr,

@@ -1,8 +1,8 @@
 const { gql } = require("graphql-request");
 
-const tvlExclusion = ["optimism"];
+const tvlExclusion = ["ethereum"];
 const treasuryExclusion = [];
-const stakingExclusion = ["optimism"];
+const stakingExclusion = ["ethereum"];
 
 const addresses = {
   boba: {
@@ -16,9 +16,9 @@ const addresses = {
     USDT: "0x5DE1677344D3Cb0D7D465c10b72A8f60699C062d",
     DAI: "0xf74195Bb8a5cf652411867c5C2C5b8C2a402be35",
   },
-  optimism: {
-    treasury: "0x027F41F041Ed3d484296b9eF7B965d23aBf04200",
-    USDC: "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
+  ethereum: {
+    treasury: "0x47BbF992a25B7fe1D532F8128D514524462731eF",
+    USDC: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
   }
 };
 

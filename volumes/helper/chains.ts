@@ -53,7 +53,19 @@ export enum CHAIN {
   KARURA = "KARURA",
   SMARTBCH = "smartbch",
   KAVA = "kava",
-  HEDERA = "hedera"
+  HEDERA = "hedera",
+  CALLISTO = "callisto",
+  EOS = "eos",
+  BITTORRENT = "bittorrent",
+  ONTOLOGY_EVM = "ontology_evm",
+  ICON = "icon",
+  CLV = "clv",
+  ULTRON = "ultron",
+  STELLAR = "stellar",
+  ALGORAND = "algorand",
+  TELOS = "telos",
+  TOMOCHAIN = "tomochain",
+  BITGERT = "bitgert"
 }
 
 // Don´t use
