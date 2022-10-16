@@ -1,3 +1,4 @@
+const sdk = require("@defillama/sdk");
 const { request, gql } = require("graphql-request");
 const { BigNumber } = require("ethers");
 
@@ -16,6 +17,18 @@ const bentoboxes = {
   //metis: "0xc35DADB65012eC5796536bD9864eD8773aBc74C4",
   celo: "0x0711B6026068f736bae6B213031fCE978D48E026",
   //kava: "0xc35DADB65012eC5796536bD9864eD8773aBc74C4",
+};
+
+const toAmountAbi = {
+  inputs: [
+    { internalType: "contract IERC20", name: "token", type: "address" },
+    { internalType: "uint256", name: "share", type: "uint256" },
+    { internalType: "bool", name: "roundUp", type: "bool" },
+  ],
+  name: "toAmount",
+  outputs: [{ internalType: "uint256", name: "amount", type: "uint256" }],
+  stateMutability: "view",
+  type: "function",
 };
 
 const bentoSubgraphs = {
@@ -44,12 +57,9 @@ const bentoQuery = gql`
   query get_tokens($id: ID!) {
     tokens(first: 1000, where: { id_gt: $id }) {
       id
-      kpi {
-        liquidity
-      }
       rebase {
-        elastic
-        base
+        elastic #amount
+        base #shares
       }
     }
   }
@@ -120,9 +130,9 @@ const kashiQuery = gql`
 
 const tridentSubgraphs = {
   polygon: "https://api.thegraph.com/subgraphs/name/sushi-0m/trident-polygon",
-  optimism: "https://api.thegraph.com/subgraphs/name/sushi-0m/trident-optimism",
-  //kava: "https://pvt.graph.kava.io/subgraphs/name/sushi-0m/trident-kava",
-  //metis: "https://andromeda.thegraph.metis.io/subgraphs/name/sushi-0m/trident-metis",
+  optimism: "https://api.thegraph.com/subgraphs/name/sushi-qa/trident-optimism",
+  //kava: "https://pvt.graph.kava.io/subgraphs/name/sushi-qa/trident-kava",
+  //metis: "https://andromeda.thegraph.metis.io/subgraphs/name/sushi-qa/trident-metis",
 };
 
 const tridentQuery = gql`
@@ -149,9 +159,29 @@ async function getFuroTokens(chain) {
   }
 
   let { tokens } = await request(subgraph, furoQuery);
-  tokens.map((token) => {
-    balances[token.id] = BigNumber.from(token.liquidityShares);
+
+  const calls = tokens.map((token) => {
+    return {
+      params: [token.id, token.liquidityShares, false],
+    };
   });
+  const { output } = await sdk.api.abi.multiCall({
+    target: bentoboxes[chain],
+    abi: toAmountAbi,
+    calls,
+    chain,
+  });
+
+  output.forEach(
+    ({
+      output: amount,
+      input: {
+        params: [tokenId],
+      },
+    }) => {
+      balances[tokenId] = BigNumber.from(amount);
+    }
+  );
 
   return balances;
 }
@@ -166,17 +196,48 @@ async function getKashiTokens(chain) {
 
   let { kashiPairs } = await request(subgraph, kashiQuery);
   kashiPairs.map((pair) => {
-    if (!balances[pair.asset.id]) {
-      balances[pair.asset.id] = BigNumber.from(pair.totalAsset.elastic);
-    } else {
-      balances[pair.asset.id].add(pair.totalAsset.elastic);
+    const totalAsset = BigNumber.from(pair.totalAsset.elastic);
+    const totalCollateral = BigNumber.from(pair.totalCollateralShare);
+    if (totalAsset.gt(0)) {
+      if (!balances[pair.asset.id]) {
+        balances[pair.asset.id] = totalAsset;
+      } else {
+        balances[pair.asset.id] = balances[pair.asset.id].add(totalAsset);
+      }
     }
-    if (!balances[pair.collateral.id]) {
-      balances[pair.collateral.id] = BigNumber.from(pair.totalCollateralShare);
-    } else {
-      balances[pair.collateral.id].add(pair.totalCollateralShare);
+
+    if (totalCollateral.gt(0)) {
+      if (!balances[pair.collateral.id]) {
+        balances[pair.collateral.id] = totalCollateral;
+      } else {
+        balances[pair.collateral.id] =
+          balances[pair.collateral.id].add(totalCollateral);
+      }
     }
   });
+
+  const calls = Object.entries(balances).map(([id, shares]) => {
+    return {
+      params: [id, shares, false],
+    };
+  });
+  const { output } = await sdk.api.abi.multiCall({
+    target: bentoboxes[chain],
+    abi: toAmountAbi,
+    calls,
+    chain,
+  });
+
+  output.forEach(
+    ({
+      output: amount,
+      input: {
+        params: [tokenId],
+      },
+    }) => {
+      balances[tokenId] = BigNumber.from(amount);
+    }
+  );
 
   return balances;
 }
@@ -197,10 +258,34 @@ async function getTridentTokens(chain) {
   return balances;
 }
 
-async function getBentoboxTokens(chain) {}
+async function getBentoboxTokensArray(chain) {
+  let allTokens = [];
+  const subgraph = bentoSubgraphs[chain];
+
+  if (!subgraph) {
+    return tokens;
+  }
+
+  //query all tokens even if > 1000 as we can't order efficiently by $ liquidity
+  let id = 0;
+  while (true) {
+    let { tokens } = await request(subgraph, bentoQuery, {
+      id: id,
+    });
+
+    allTokens.push(...tokens);
+    if (tokens.length < 1000) {
+      break;
+    }
+    id = tokens[999].id;
+  }
+
+  return allTokens;
+}
 
 module.exports = {
   getFuroTokens,
   getKashiTokens,
   getTridentTokens,
+  getBentoboxTokensArray,
 };
