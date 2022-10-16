@@ -135,7 +135,7 @@ import jswap from "./adapters/jswap";
 import babydogeswap from "./adapters/babydogeswap";
 import wigoswap from "./adapters/wigoswap";
 import levinswap from "./adapters/levinswap";
-import templeDao from "./adapters/temple-dao";
+import templeDao from "./adapters/templedao-trade";
 import karuraSwap from "./adapters/karura-swap";
 import sphynx from "./adapters/sphynx";
 import kuswap from "./adapters/kuswap";
@@ -147,6 +147,30 @@ import jetswap from "./adapters/jetswap";
 import saucerswap from "./adapters/saucerswap";
 import synthetify from "./adapters/synthetify";
 import pandora from "./adapters/pandora";
+import soyFinance from "./adapters/soy-finance";
+import paycash from "./adapters/paycash";
+import alitaFinance from "./adapters/alita-finance";
+import photonswapFinance from "./adapters/photonswap-finance";
+import unifi from "./adapters/unifi";
+import wineryswap from "./adapters/wineryswap";
+import arctic from "./adapters/arctic";
+import huckleberry from "./adapters/huckleberry";
+import hakuswap from "./adapters/hakuswap";
+import leonicornswap from "./adapters/leonicornswap";
+import autoshark from "./adapters/autoshark";
+import ultronswap from "./adapters/ultronswap";
+import titanoSwych from "./adapters/titano-swych";
+import stellarx from "./adapters/stellarx";
+import humbleDefi from "./adapters/humble-defi";
+import pact from "./adapters/pact";
+import algofi from "./adapters/algofi";
+import saddleFinance from "./adapters/saddle-finance";
+import elk from "./adapters/elk";
+import luaswap from "./adapters/luaswap";
+import unicly from "./adapters/unicly";
+import cremaFinance from "./adapters/crema-finance";
+import icecreamswap from "./adapters/icecreamswap";
+
 
 export default {
   mooniswap,
@@ -284,7 +308,7 @@ export default {
   babydogeswap,
   wigoswap,
   levinswap,
-  "temple-dao": templeDao,
+  "templedao-trade": templeDao,
   "karura-swap": karuraSwap,
   sphynx,
   kuswap,
@@ -294,7 +318,30 @@ export default {
   "bogged-finance": boggedFinance,
   jetswap,
   saucerswap,
-  synthetify,
-  pandora
+  // synthetify, -> volume out of date
+  pandora,
+  "soy-finance": soyFinance,
+  paycash,
+  "alita-finance": alitaFinance,
+  "photonswap-finance": photonswapFinance,
+  unifi,
+  wineryswap,
+  arctic,
+  huckleberry,
+  hakuswap,
+  leonicornswap,
+  autoshark,
+  ultronswap,
+  "titano-swych": titanoSwych,
+  stellarx,
+  "humble-defi": humbleDefi,
+  pact,
+  algofi,
+  "saddle-finance": saddleFinance,
+  elk,
+  luaswap,
+  unicly,
+  "crema-finance": cremaFinance,
+  icecreamswap
   // lyra -> OPTIONS DEX, not enable for now
 };
