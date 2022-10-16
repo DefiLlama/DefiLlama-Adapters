@@ -170,6 +170,7 @@ import luaswap from "./adapters/luaswap";
 import unicly from "./adapters/unicly";
 import cremaFinance from "./adapters/crema-finance";
 import icecreamswap from "./adapters/icecreamswap";
+import swapsicle from "./adapters/swapsicle";
 
 
 export default {
@@ -342,6 +343,7 @@ export default {
   luaswap,
   unicly,
   "crema-finance": cremaFinance,
-  icecreamswap
+  icecreamswap,
+  swapsicle
   // lyra -> OPTIONS DEX, not enable for now
 };
