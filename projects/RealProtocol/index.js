@@ -10,26 +10,18 @@ const ETHW_ADDRESS = "0x0000000000000000000000000000000000000000";
 // TroveManager holds total system collateral (deposited ETH)
 const TROVE_MANAGER_ADDRESS = "0x25d27cbdfaFb1B7314AC5e409a1F24112e376829";
 
-async function tvl(_, block) {
-  /*const stabilityPoolLusdTvl = (
-    await sdk.api.erc20.balanceOf({
-      target: USDW_TOKEN_ADDRESS,
-      owner: STABILITY_POOL_ADDRESS,
-      block,
-    })
-  ).output;*/
-
+async function tvl(_, _b, {ethpow: block}) {
   const troveEthTvl = (
     await sdk.api.abi.call({
       target: TROVE_MANAGER_ADDRESS,
+      chain: 'ethpow',
       abi: getEntireSystemCollAbi,
       block,
     })
   ).output;
 
   return {
-    [ETHW_ADDRESS]: troveEthTvl,
-    //[USDW_TOKEN_ADDRESS]: stabilityPoolLusdTvl,
+    'coingecko:ethereum-pow-iou': troveEthTvl/1e18 ,
   };
 }
 
@@ -37,5 +29,4 @@ module.exports = {
   ethpow: {
     tvl,
   }
-  
 };
