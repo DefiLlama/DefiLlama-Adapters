@@ -7,6 +7,8 @@ const PoolFactory = "0xde204e5a060ba5d3b63c7a4099712959114c2d48";
 const START_BLOCK = 14443222;
 const polygonPoolURL = 'https://api-v3.clearpool.finance/137/pools'
 
+
+
 const ethereumTVL = async (timestamp, block, chainBlocks) => {
   const balances = {};
   const Logs = (
@@ -59,6 +61,18 @@ const ethereumBorrowed = async (timestamp, block, chainBlocks) => {
   borrowed.forEach((data, i) => sdk.util.sumSingleBalance(totalBorrowed, tokens[i], data.output))
   return totalBorrowed;
 };
+
+const ethereumStaked = async (timestamp, block, chainBlocks) => {
+
+  const data = await get(
+    'https://clearpool.finance/api/kpi'
+  );
+  const { staking } = Promise.resolve(data);
+  return staking.tvl;
+
+  
+};
+
 
 
 const polygonTvl = async (timestamp, _,  { polygon: block }) => {
