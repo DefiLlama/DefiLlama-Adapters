@@ -172,6 +172,7 @@ import cremaFinance from "./adapters/crema-finance";
 import icecreamswap from "./adapters/icecreamswap";
 import swapsicle from "./adapters/swapsicle";
 import fairyswap from "./adapters/fairyswap";
+import morpheusSwap from "./adapters/morpheus-swap";
 
 
 export default {
@@ -346,6 +347,7 @@ export default {
   "crema-finance": cremaFinance,
   icecreamswap,
   swapsicle,
-  fairyswap
+  fairyswap,
+  "morpheus-swap": morpheusSwap
   // lyra -> OPTIONS DEX, not enable for now
 };
