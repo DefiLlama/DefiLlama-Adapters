@@ -22,7 +22,6 @@ async function tvl(_, block) {
   const troveEthTvl = (
     await sdk.api.abi.call({
       target: TROVE_MANAGER_ADDRESS,
-      chain: 'ethpow',
       abi: getEntireSystemCollAbi,
       block,
     })
