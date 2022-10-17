@@ -54,9 +54,9 @@ async function terra_tvl() {
   }
 }
 
-const { BigNumber } = require("ethers");
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
+const { default: BigNumber } = require('bignumber.js')
 
 const ORACLE = "0x5196e0a4fb2A459856e1D41Ab4975316BbdF19F8";
 const USDC_TOKEN_ADDRESS = "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E";
@@ -67,57 +67,27 @@ const vaultContracts = [
   "0x12D89E117141F061274692Ed43B774905433706A", // Vault 2
 ];
 
-async function avax_tvl(timestamp, block, chainBlocks) {
-  const ETHPx = (
-    await sdk.api.abi.call({
-      abi: abi.getETHPx,
-      target: vaultLibAddr,
-      params: [ORACLE, USDC_TOKEN_ADDRESS],
-      chain: "avax",
-      block: chainBlocks.avax,
-    })
-  ).output;
-
+async function avax_tvl(timestamp, _, { avax: block }) {
+  const chain = 'avax'
+  const calls = vaultContracts.map(i => ({ target: i }))
   const equityETHValues = (
     await sdk.api.abi.multiCall({
       abi: abi.getEquityETHValue,
-      calls: vaultContracts.map((vc) => ({
-        target: vc,
-      })),
-      chain: "avax",
-      block: chainBlocks.avax,
+      calls, chain, block,
     })
   ).output;
 
   const vaultLeverage = (
     await sdk.api.abi.multiCall({
       abi: abi.getLeverage,
-      calls: vaultContracts.map((vc) => ({
-        target: vc,
-      })),
-      chain: "avax",
-      block: chainBlocks.avax,
+      calls, chain, block,
     })
   ).output;
 
   let balances = {};
-  const nVaults = vaultContracts.length;
-  for (let i = 0; i < nVaults; i++) {
-    const usdPriceETH = BigNumber.from(ETHPx)
-      .mul(1e6)
-      .div(BigNumber.from(2).pow(112));
-    const equityValueUSD = BigNumber.from(equityETHValues[i].output)
-      .mul(1e6)
-      .div(usdPriceETH)
-      .div(1e6);
-    const leverage = BigNumber.from(vaultLeverage[i].output);
-    const vaultValue = equityValueUSD.mul(leverage).div(10000).mul(1e6); // Adding USDC decimals () again here `mul(1e6)` because `sumSingleBalance` will remove them
-
-    sdk.util.sumSingleBalance(
-      balances,
-      `avax:${USDC_TOKEN_ADDRESS}`,
-      vaultValue
-    );
+  for (let i = 0; i < vaultContracts.length; i++) {
+    const bal = vaultLeverage[i].output * equityETHValues[i].output / 1e22
+    sdk.util.sumSingleBalance(balances, `coingecko:avalanche-2`, BigNumber(bal).toFixed(0));
   }
 
   return balances;
@@ -126,10 +96,10 @@ async function avax_tvl(timestamp, block, chainBlocks) {
 module.exports = {
   timetravel: false,
   avax: {
-    avax_tvl,
+    tvl: avax_tvl,
   },
   terra: {
-    terra_tvl,
+    tvl: terra_tvl,
   },
   hallmarks: [
     [1651881600, "UST depeg"],
