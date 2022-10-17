@@ -4,13 +4,11 @@ const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { abis } = require("./abis");
 const { transformArbitrumAddress } = require("../helper/portedTokens");
 
-
 const CHAIN = "arbitrum";
 
 const plutusToken = "0x51318B7D00db7ACc4026C88c3952B66278B6A67F";
 
 async function tvl(ts, _block, chainBlocks) {
-
   const transformAddr = await transformArbitrumAddress();
   const customTransformAddress = (address) => {
     const a = address.toLowerCase();
@@ -36,18 +34,18 @@ async function tvl(ts, _block, chainBlocks) {
   balances["jones-dao"] = balances["jones-dao"] / 1e16;
   balances["dopex"] = balances["dopex"] / 1e18;
   balances["sperax"] = balances["sperax"] / 1e18;
-  // GLP does not have coingecko support, will use USDC price * GLP price 
+  // GLP does not have coingecko support, will use USDC price * GLP price
   // get from calculateGLPPrice method
-  balances["usd-coin"] = balances["usd-coin"] * glpPrice / 1e18;
-
+  balances["usd-coin"] = (balances["usd-coin"] * glpPrice) / 1e18;
 
   return balances;
 }
 
-
+// Follow their official Github to calculate GLP price
+// https://github.com/gmx-io/gmx-stats/blob/99139b377d7fc6e8be6f31a9da6d3513e0f1172d/src/dataProvider.js#L109
 const calculateGLPPrice = async (block) => {
   const glpControllerAddr = `0x321F653eED006AD1C29D174e17d96351BDe22649`;
-  const fGlpFarm = `0x4e971a87900b931fF39d1Aad67697F49835400b6`
+  const fGlpFarm = `0x4e971a87900b931fF39d1Aad67697F49835400b6`;
 
   const { output: glpAum } = await sdk.api.abi.call({
     target: glpControllerAddr,
@@ -64,7 +62,7 @@ const calculateGLPPrice = async (block) => {
     block,
   });
 
-  const glpPrice = (glpAum / 1e18) / (glpTotalSupply / 1e18)
+  const glpPrice = glpAum / 1e18 / (glpTotalSupply / 1e18);
 
   return glpPrice;
 };
@@ -83,7 +81,6 @@ const sumSingleStakingFarms = () => {
 
   const jones = staking(plsJonesFarm, plsJones, "arbitrum", `jones-dao`);
 
-  
   // plsSpa single staking farm
   const plsSpa = "0x0D111e482146fE9aC9cA3A65D92E65610BBC1Ba6";
 
@@ -117,7 +114,6 @@ const calculateStaking = async (ts, _block, chainBlocks) => {
     CHAIN,
     "plutusdao"
   )(ts, _block, chainBlocks);
-
 
   balances["plutusdao"] = balances["plutusdao"] / 1e18;
   return balances;
@@ -177,8 +173,6 @@ const sumPlutusLPFarms = (transformAddr) => {
     }
   };
 };
-
-
 
 module.exports = {
   misrepresentedTokens: true,
