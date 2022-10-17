@@ -13,8 +13,9 @@ async function getEosBalance(account_name, chain = "eos") {
 }
 
 async function get_currency_balance(code, account, symbol, chain = "eos") {
-    const response = await retry(async () => await axios.default.post(`${RPC_ENDPOINTS[chain]}/v1/chain/get_currency_balance`, { code, account, symbol }));
-    return Number(response.data[0].split(" ")[0]);
+    const { data} = await retry(async () => await axios.default.post(`${RPC_ENDPOINTS[chain]}/v1/chain/get_currency_balance`, { code, account, symbol }));
+    if (!data.length) return 0
+    return Number(data[0].split(" ")[0]);
 }
 
 /**
