@@ -105,6 +105,7 @@ module.exports = {
   ethereum: {
     tvl: ethereumTVL,
     borrowed: ethereumBorrowed,
+    staked: ethereumStaked,
   },
   polygon: {
     tvl: polygonTvl,
