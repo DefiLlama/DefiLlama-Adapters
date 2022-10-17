@@ -173,6 +173,7 @@ import icecreamswap from "./adapters/icecreamswap";
 import swapsicle from "./adapters/swapsicle";
 import fairyswap from "./adapters/fairyswap";
 import morpheusSwap from "./adapters/morpheus-swap";
+import moonSwap from "./adapters/moon-swap";
 
 
 export default {
@@ -348,6 +349,7 @@ export default {
   icecreamswap,
   swapsicle,
   fairyswap,
-  "morpheus-swap": morpheusSwap
+  "morpheus-swap": morpheusSwap,
+  "moon-swap": moonSwap
   // lyra -> OPTIONS DEX, not enable for now
 };
