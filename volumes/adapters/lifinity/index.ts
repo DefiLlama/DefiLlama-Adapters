@@ -39,7 +39,7 @@ const adapter: SimpleVolumeAdapter = {
     [CHAIN.SOLANA]: {
       fetch,
       start: getStartTimestamp,
-      customBackfill: customBackfill(CHAIN.TRON as Chain, (_chian: string) => fetch)
+      customBackfill: customBackfill(CHAIN.SOLANA as Chain, (_chian: string) => fetch)
     },
   },
 };
