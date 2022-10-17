@@ -171,6 +171,7 @@ import unicly from "./adapters/unicly";
 import cremaFinance from "./adapters/crema-finance";
 import icecreamswap from "./adapters/icecreamswap";
 import swapsicle from "./adapters/swapsicle";
+import fairyswap from "./adapters/fairyswap";
 
 
 export default {
@@ -344,6 +345,7 @@ export default {
   unicly,
   "crema-finance": cremaFinance,
   icecreamswap,
-  swapsicle
+  swapsicle,
+  fairyswap
   // lyra -> OPTIONS DEX, not enable for now
 };
