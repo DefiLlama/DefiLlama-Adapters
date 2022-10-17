@@ -24,57 +24,59 @@ const NFT_CHAINLINKED_ARRAY = [
     CRYPTO_PUNK_VAULT,
     BAYC_VAULT,
     MAYC_VAULT,
-    DOODLES_VAULT
+    DOODLES_VAULT,
+    ETHER_ROCKS_VAULT,
 ];
 
 const NFT_DAO_SET_ARRAY = [
-    ETHER_ROCKS_VAULT
 ];
 
 
 async function getTVL(balances, chain, timestamp, chainBlocks) {
     // Fetch positions and oracles from vaults
-    const [totalChainlinkedPositions, floorOracles] = await Promise.all([
-        sdk.api.abi.multiCall({
-            calls: NFT_CHAINLINKED_ARRAY.map((address) => ({
-                target: address,
-            })),
-            abi: abi.VAULT_ABI.find(
-                (a) => a.name === "totalPositions"
-            ),
-            block: chainBlocks[chain],
-            chain,
-        }),
-        sdk.api.abi.multiCall({
-            calls: NFT_CHAINLINKED_ARRAY.map((address) => ({
-                target: address,
-            })),
-            abi: abi.VAULT_ABI.find(
-                (a) => a.name === "floorOracle"
-            ),
-            block: chainBlocks[chain],
-            chain,
-        })
-    ]);
+    const { output: totalChainlinkedPositions } = await sdk.api.abi.multiCall({
+        calls: NFT_CHAINLINKED_ARRAY.map((address) => ({
+            target: address,
+        })),
+        abi: abi.VAULT_ABI.find(
+            (a) => a.name === "totalPositions"
+        ),
+        block: chainBlocks[chain],
+        chain,
+    })
 
-    // Fetch prices from oracles
-    const floorPrices = (
-        await sdk.api.abi.multiCall({
-            calls: floorOracles.output.map((address) => ({
-                target: address.output,
-            })),
-            abi: abi.PRICEORACLE_ABI.find(
-                (a) => a.name === "latestAnswer"
-            ),
-            chain,
-            block: chainBlocks[chain],
-        })
-    ).output;
+    const { output: floorPrices } = await sdk.api.abi.multiCall({
+        calls: NFT_CHAINLINKED_ARRAY.map((address, i) => ({
+            target: address, params: totalChainlinkedPositions[i].output - 1
+        })),
+        abi: {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "_nftIndex",
+                    "type": "uint256"
+                }
+            ],
+            "name": "getNFTValueETH",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        block: chainBlocks[chain],
+        chain,
+    })
+
 
     let collateralValueETH = 0;
-    for(let i=0; i<totalChainlinkedPositions.output.length; i++){
+    for (let i = 0; i < totalChainlinkedPositions.length; i++) {
         const floorPrice = floorPrices[i].output;
-        const position = totalChainlinkedPositions.output[i].output;
+        const position = totalChainlinkedPositions[i].output;
         collateralValueETH += position * floorPrice;
     }
 
@@ -102,7 +104,7 @@ async function getTVL(balances, chain, timestamp, chainBlocks) {
         })
     ]);
 
-    for(let i=0; i<totalPositions.output.length; i++){
+    for (let i = 0; i < totalPositions.output.length; i++) {
         const floorPrice = daoPrices.output[i].output;
         const position = totalPositions.output[i].output;
         collateralValueETH += position * floorPrice;
