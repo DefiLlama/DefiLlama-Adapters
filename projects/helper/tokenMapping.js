@@ -534,6 +534,7 @@ const fixBalancesTokens = {
     "0x799a4202c12ca952cB311598a024C80eD371a41e": { coingeckoId: "harmony", decimals: 18, },
     "0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a": { coingeckoId: "harmony", decimals: 18, },
     "0xa9ce83507d872c5e1273e745abcfda849daa654f": { coingeckoId: "xjewel", decimals: 18, },
+    "0xea589e93ff18b1a1f1e9bac7ef3e86ab62addc79": { coingeckoId: "viper", decimals: 18, },
   },
   bsc: {
     "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c": { coingeckoId: "binancecoin", decimals: 18, },
@@ -688,6 +689,10 @@ const fixBalancesTokens = {
   bitgert: {
     [nullAddress]: { coingeckoId: "bitrise-token", decimals: 18, },
     "0x0eb9036cbE0f052386f36170c6b07eF0a0E3f710": { coingeckoId: "bitrise-token", decimals: 18, },
+  },
+  echelon: {
+    [nullAddress]: { coingeckoId: "echelon", decimals: 18, },
+    "0xadEE5159f4f82a35B9068A6c810bdc6c599Ba6a8": { coingeckoId: "echelon", decimals: 18, },
   },
   rei: {
     "0x2545af3d8b11e295bb7aedd5826021ab54f71630": { coingeckoId: "rei-network", decimals: 18, },
