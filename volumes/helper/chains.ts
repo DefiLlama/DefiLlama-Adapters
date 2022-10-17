@@ -65,7 +65,8 @@ export enum CHAIN {
   ALGORAND = "algorand",
   TELOS = "telos",
   TOMOCHAIN = "tomochain",
-  BITGERT = "bitgert"
+  BITGERT = "bitgert",
+  FINDORA = "findora"
 }
 
 // Don´t use
