@@ -174,6 +174,7 @@ import swapsicle from "./adapters/swapsicle";
 import fairyswap from "./adapters/fairyswap";
 import morpheusSwap from "./adapters/morpheus-swap";
 import moonSwap from "./adapters/moon-swap";
+import fxSwap from "./adapters/fx-swap";
 
 
 export default {
@@ -350,6 +351,7 @@ export default {
   swapsicle,
   fairyswap,
   "morpheus-swap": morpheusSwap,
-  "moon-swap": moonSwap
+  "moon-swap": moonSwap,
+  "fx-swap": fxSwap
   // lyra -> OPTIONS DEX, not enable for now
 };
