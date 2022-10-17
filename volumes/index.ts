@@ -176,6 +176,7 @@ import morpheusSwap from "./adapters/morpheus-swap";
 import moonSwap from "./adapters/moon-swap";
 import fxSwap from "./adapters/fx-swap";
 import pinkswap from "./adapters/pinkswap";
+import spartan from "./adapters/spartan";
 
 
 export default {
@@ -354,6 +355,7 @@ export default {
   "morpheus-swap": morpheusSwap,
   "moon-swap": moonSwap,
   "fx-swap": fxSwap,
-  pinkswap
+  pinkswap,
+  spartan
   // lyra -> OPTIONS DEX, not enable for now
 };
