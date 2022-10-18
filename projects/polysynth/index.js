@@ -9,6 +9,7 @@ const usdcMatic = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"
 const wethMatic = "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619"
 const wbtcMatic = "0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6"
 const wmatic = "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"
+const maticX = "0xfa68FB4628DFF1028CFEc22b4162FCcd0d45efb6"
 const stakingAddress = "0xb88cc657d93979495045e9f204cec2eed265ed42"
 const usdcAssetVaults = [
     "0x26dde715023d8acb57f6702731b569c160e2a3fb",
@@ -28,6 +29,10 @@ const wmaticAssetVaults = [
     "0xbBf71cbE5Cf84DEB429fEA9BC77394931230a054"
 ]
 
+const maticxAssetVaults = [
+  "0x1D289fB120e06E6D58a288df1a9828a2C647fb52"
+]
+
 //ETH mainnet
 const wethMainnet = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
 const wbtcMainnet = "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599"
@@ -40,7 +45,9 @@ const btcAssetVaultsMainnet = [
 ]
 const usdcAssetVaultsMainnet = [
     "0x2d2ac1edaf20C1f34A153167E62D1A41F11Ad940",
-    "0x16b9f400192dc0809431219EeBB38650b980A11F"
+    "0x16b9f400192dc0809431219EeBB38650b980A11F",
+    '0x9ca9e71830aC1d1e9c918595396f19739eC3B7b7',
+    '0x1D289fB120e06E6D58a288df1a9828a2C647fb52'
 ]
 
 
@@ -50,6 +57,7 @@ async function tvl(_timestamp, ethBlock, chainBlocks) {
     const weth = await (await transformPolygonAddress())(wethMatic);
     const wbtc = await (await transformPolygonAddress())(wbtcMatic);
     const trWMatic = await (await transformPolygonAddress())(wmatic);
+    const trMaticX = await (await transformPolygonAddress())(maticX);
 
     //TVL for Perpetuals
     const underlyingBalances = await sdk.api.abi.multiCall({
@@ -128,6 +136,21 @@ async function tvl(_timestamp, ethBlock, chainBlocks) {
     totalBalancesWMATIC.output.forEach((totalBalanceVault)=>{
         sdk.util.sumSingleBalance(balances, trWMatic, totalBalanceVault.output)
     })
+
+      //TVL for MATICX DOV vaults
+      const totalBalancesMATICX = await sdk.api.abi.multiCall({
+        calls: maticxAssetVaults.map((address) => ({
+            target: address
+          })),
+        abi: totalBalanceABI['totalBalance'],        
+        block: chainBlocks.polygon,        
+        chain: 'polygon'
+    })
+
+    totalBalancesMATICX.output.forEach((totalBalanceVault)=>{
+        sdk.util.sumSingleBalance(balances, trMaticX, totalBalanceVault.output)
+    })
+          
         
     return balances
 }

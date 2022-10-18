@@ -1,7 +1,6 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { calculateUniTvl } = require("../helper/calculateUniTvl");
-const { getBlock } = require("../helper/getBlock");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const {
   getFixBalancesSync,
@@ -106,9 +105,7 @@ const Staking = async (chainBlocks) => {
   return balances;
 };
 
-async function harmonyTvl(timestamp, _ethBlock, chainBlocks) {
-  const block = await getBlock(timestamp, "harmony", chainBlocks, true);
-
+async function harmonyTvl(timestamp, _ethBlock, {harmony: block}) {
   let transformAddress = await transformHarmonyAddress();
   const balances = await calculateUniTvl(
     transformAddress,

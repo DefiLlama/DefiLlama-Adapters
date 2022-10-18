@@ -1,13 +1,11 @@
 const sdk = require('@defillama/sdk');
-const { getBlock } = require('../helper/getBlock')
 const { ADDRESSES } = require("./constants");
-const { getChainTransform } = require('../helper/portedTokens')
 const yearnVaultABI = require("./abi/yearnVaultABI.json")
 const curveMetapoolABI = require("./abi/curveMetapoolABI.json")
 const { ethers } = require("ethers")
 
 async function addButterV2TVL(balances, timestamp, chainBlocks, chain = "ethereum") {
-  const block = await getBlock(timestamp, chain, chainBlocks)
+  const block = chainBlocks[chain]
   const WAD = ethers.constants.WeiPerEther;
   const butterTokens = [
     ADDRESSES.ethereum.ycrvAlusd, ADDRESSES.ethereum.ycrvFRAX,
@@ -57,7 +55,7 @@ async function addButterV2TVL(balances, timestamp, chainBlocks, chain = "ethereu
 }
 
 async function addThreeXTVL(balances, timestamp, chainBlocks, chain = "ethereum") {
-  const block = await getBlock(timestamp, chain, chainBlocks)
+  const block = chainBlocks[chain]
   const WAD = ethers.constants.WeiPerEther;
   const threeXTokens = [
     ADDRESSES.ethereum.yCrv3Eur, ADDRESSES.ethereum.yCrvSUSD,

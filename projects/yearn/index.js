@@ -70,6 +70,17 @@ async function arbitrum(timestamp) {
     })
 }
 
+async function optimism(timestamp) {
+    return getApiTvl(timestamp, async () => {
+        const tvl = await axios.get('https://api.yearn.finance/v1/chains/10/vaults/all')
+        const total = tvl.data.reduce((all, vault) => all + vault.tvl.tvl, 0)
+        if(total === 0){ throw new Error("TVL can't be 0")}
+        return total
+    }, async () => {
+        throw new Error("No historical data for optimism")
+    })
+}
+
 module.exports = {
     doublecounted: true,
     misrepresentedTokens: true,
@@ -82,5 +93,8 @@ module.exports = {
     },
     arbitrum: {
         tvl: arbitrum
+    },
+    optimism: {
+        tvl: optimism
     },
 };

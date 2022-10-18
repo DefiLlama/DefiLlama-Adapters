@@ -8,6 +8,7 @@ const marketStrings = {
     underlying_borrowed : "ub",
     underlying_reserves : "ur",
     active_collateral : "acc",
+    active_collateral_v2 : "ac",
     lp_circulation: "lc",
     bank_to_underlying_exchange: "bt",
     b_asset_circulation: "bac",
@@ -23,6 +24,7 @@ const orderedAssets = [
     "goBTC",
     "goETH",
     "vALGO",
+    "vALGO2",
     "USDT",
     "STBL2",
     "AF-NANO-BSTBL2-BUSDC",
@@ -77,6 +79,12 @@ const appDictionary = {
     "vALGO": {
         "decimals": 6,
         "appIds": [465814318],
+        "oracleAppId": 531724540,
+        "oracleFieldName": "latest_twap_price",
+    },
+    "vALGO2": {
+        "decimals": 6,
+        "appIds": [879935316],
         "oracleAppId": 531724540,
         "oracleFieldName": "latest_twap_price",
     },
@@ -239,7 +247,14 @@ async function getPrices(marketDictionary, orderedAssets) {
 }
 
 function getMarketSupply(assetName, appGlobalState, prices, appDictionary) {
-    let underlyingCash = ((assetName === "STBL") || (assetName === "vALGO")) ? appGlobalState[marketStrings.active_collateral] : appGlobalState[marketStrings.underlying_cash]
+    let underlyingCash = 0;
+    if (assetName == "vALGO2") {
+        underlyingCash = appGlobalState[marketStrings.active_collateral_v2];
+    } else if ((assetName === "STBL") || (assetName === "vALGO")) {
+        underlyingCash = appGlobalState[marketStrings.active_collateral];
+    } else {
+        underlyingCash = appGlobalState[marketStrings.underlying_cash];
+    }
     let supplyUnderlying = underlyingCash - appGlobalState[marketStrings.underlying_reserves]
     supplyUnderlying /= Math.pow(10, appDictionary[assetName]["decimals"])
 

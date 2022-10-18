@@ -1,7 +1,6 @@
 const sdk = require('@defillama/sdk');
 const abi = require('./abi.json');
 const BigNumber = require('bignumber.js')
-const {getBlock} = require('../helper/getBlock')
 
 // V1
 const hubAddress = '0xdfa6edAe2EC0cF1d4A60542422724A48195A5071';
@@ -127,13 +126,11 @@ async function bsc(timestamp, ethBlock, chainBlocks) {
   return balances
 }
 
-async function polygon(timestamp, ethBlock, chainBlocks) {
-  const block = await getBlock(timestamp, 'polygon', chainBlocks)
+async function polygon(timestamp, ethBlock, {polygon: block}) {
   return getRouterBalances(timestamp, 'polygon', polygonSettings, block)
 }
 
-async function xdai(timestamp, ethBlock, chainBlocks) {
-  const block = await getBlock(timestamp, 'xdai', chainBlocks)
+async function xdai(timestamp, ethBlock, {xdai: block}) {
   return getRouterBalances(timestamp, 'xdai', xdaiSettings, block)
 }
 
