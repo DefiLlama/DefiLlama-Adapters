@@ -23,11 +23,11 @@ const fetch = async (timestamp: number, chainBlocks: ChainBlocks) => {
   const dayTimestamp = getUniqStartOfTodayTimestamp(new Date(timestamp * 1000));
   const historicalVolume: IVolume[] = (await fetchURL(`${historicalVolumeEndpoint}${queryByChainId}`))?.data.result;
   const totalVolume = historicalVolume
-    .filter(volItem => (new Date(volItem.created_time).getTime() / 1000) <= dayTimestamp)
+    .filter(volItem => getUniqStartOfTodayTimestamp(new Date(volItem.created_time)) <= dayTimestamp)
     .reduce((acc, { max_swap_amount }) => acc + Number(max_swap_amount), 0)
 
   const dailyVolume = historicalVolume
-    .find(dayItem => (new Date(dayItem.created_time).getTime() / 1000) === dayTimestamp)?.max_swap_amount
+    .find(dayItem => getUniqStartOfTodayTimestamp(new Date(dayItem.created_time)) === dayTimestamp)?.max_swap_amount
 
   return {
     totalVolume: `${totalVolume}`,
