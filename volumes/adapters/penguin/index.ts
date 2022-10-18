@@ -5,22 +5,22 @@ import { CHAIN } from "../../helper/chains";
 import customBackfill from "../../helper/customBackfill";
 import { getUniqStartOfTodayTimestamp } from "../../helper/getUniSubgraphVolume";
 
-const historicalVolumeEndpoint = "https://lifinity.io/api/dashboard/volume"
+const historicalVolumeEndpoint = "https://api.png.fi/stats/day"
 
 interface IVolumeall {
-  volume: number;
+  value: number;
   date: string;
 }
 
 const fetch = async (timestamp: number) => {
   const dayTimestamp = getUniqStartOfTodayTimestamp(new Date(timestamp * 1000))
-  const historicalVolume: IVolumeall[] = (await fetchURL(historicalVolumeEndpoint))?.data.volume.daily.data;
+  const historicalVolume: IVolumeall[] = (await fetchURL(historicalVolumeEndpoint))?.data.data.dashboards.chartDatas;
   const totalVolume = historicalVolume
     .filter(volItem => getUniqStartOfTodayTimestamp(new Date(volItem.date)) <= dayTimestamp)
-    .reduce((acc, { volume }) => acc + Number(volume), 0);
+    .reduce((acc, { value }) => acc + Number(value), 0)
 
   const dailyVolume = historicalVolume
-    .find(dayItem => getUniqStartOfTodayTimestamp(new Date(dayItem.date)) === dayTimestamp)?.volume;
+    .find(dayItem => getUniqStartOfTodayTimestamp(new Date(dayItem.date)) === dayTimestamp)?.value
 
   return {
     totalVolume: `${totalVolume}`,
@@ -30,7 +30,7 @@ const fetch = async (timestamp: number) => {
 };
 
 const getStartTimestamp = async () => {
-  const historicalVolume: IVolumeall[] = (await fetchURL(historicalVolumeEndpoint))?.data.volume.daily.data;
+  const historicalVolume: IVolumeall[] = (await fetchURL(historicalVolumeEndpoint))?.data.data.dashboards.chartDatas;
   return (new Date(historicalVolume[0].date).getTime()) / 1000
 }
 

@@ -531,7 +531,7 @@ async function vestingHelper({
   return finalBalances
 }
 
-async function sumUnknownTokens({ tokensAndOwners = [],
+async function sumUnknownTokens({ tokensAndOwners = [], balances = {},
   coreAssets = [], owner, tokens, chain = 'ethereum', block, restrictTokenRatio, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
   log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [], useDefaultCoreAssets = false,
 }) {
@@ -544,7 +544,7 @@ async function sumUnknownTokens({ tokensAndOwners = [],
     else if (owner)
       tokensAndOwners = tokens.map(t => [t, owner])
   tokensAndOwners = tokensAndOwners.filter(t => !blacklist.includes(t[0]))
-  const balances = await sumTokens2({ chain, block, tokensAndOwners, skipFixBalances: true, })
+  await sumTokens2({ balances, chain, block, tokensAndOwners, skipFixBalances: true, })
   const { updateBalances, } = await getTokenPrices({ coreAssets, lps: [...tokensAndOwners.map(t => t[0]), ...lps,], chain, block, restrictTokenRatio, blacklist, log_coreAssetPrices, log_minTokenValue, minLPRatio })
   await updateBalances(balances, { skipConversion, onlyLPs })
   const fixBalances = await getFixBalances(chain)

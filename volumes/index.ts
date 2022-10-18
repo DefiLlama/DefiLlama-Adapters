@@ -171,6 +171,14 @@ import unicly from "./adapters/unicly";
 import cremaFinance from "./adapters/crema-finance";
 import icecreamswap from "./adapters/icecreamswap";
 import swapsicle from "./adapters/swapsicle";
+import fairyswap from "./adapters/fairyswap";
+import morpheusSwap from "./adapters/morpheus-swap";
+import moonSwap from "./adapters/moon-swap";
+import fxSwap from "./adapters/fx-swap";
+import pinkswap from "./adapters/pinkswap";
+import spartan from "./adapters/spartan";
+import penguin from "./adapters/penguin";
+import vortexProtocol from "./adapters/vortex-protocol";
 
 
 export default {
@@ -344,6 +352,14 @@ export default {
   unicly,
   "crema-finance": cremaFinance,
   icecreamswap,
-  swapsicle
+  swapsicle,
+  fairyswap,
+  "morpheus-swap": morpheusSwap,
+  "moon-swap": moonSwap,
+  "fx-swap": fxSwap,
+  pinkswap,
+  spartan,
+  penguin,
+  "vortex-protocol": vortexProtocol
   // lyra -> OPTIONS DEX, not enable for now
 };

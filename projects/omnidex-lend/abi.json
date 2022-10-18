@@ -1,0 +1,24 @@
+{
+    "getAllOTokens": {
+        "inputs": [],
+        "name": "getAllOTokens",
+        "outputs": [{
+            "components": [{
+                    "internalType": "string",
+                    "name": "symbol",
+                    "type": "string"
+                },
+                {
+                    "internalType": "address",
+                    "name": "tokenAddress",
+                    "type": "address"
+                }
+            ],
+            "internalType": "struct AaveProtocolDataProvider.TokenData[]",
+            "name": "",
+            "type": "tuple[]"
+        }],
+        "stateMutability": "view",
+        "type": "function"
+    }
+}
