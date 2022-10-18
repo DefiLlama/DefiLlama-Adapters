@@ -67,7 +67,8 @@ export enum CHAIN {
   TOMOCHAIN = "tomochain",
   BITGERT = "bitgert",
   FINDORA = "findora",
-  FUNCTIONX = "functionx"
+  FUNCTIONX = "functionx",
+  ENERGYWEB = "energyweb"
 }
 
 // Don´t use
