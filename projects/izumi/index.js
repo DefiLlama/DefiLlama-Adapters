@@ -1,15 +1,12 @@
 const { staking } = require('../helper/staking')
 const { unwrapNFTs } = require('./utils')
 const { default: axios } = require("axios");
-const retry = require("async-retry");
+const configList = require('./config.json')
 
 async function getConfig(chainId) {
-  const data = await retry(
-      async bail =>
-        await axios.get(
-          `https://izumi.finance/api/v1/farm/compute?chainId=${chainId}`
-        )
-    );
+  const data = await axios.get(
+          `https://izumi.finance/api/v1/farm/compute?chainId=${chainId}`)
+    
   return data.data.data;
 }
 
@@ -35,8 +32,15 @@ Object.keys(chains).forEach(chain => {
 
 function getTvl(chain, isPool2) {
   return async (_, _b, { [chain]: block }) => {
-    const config = await getConfig(chains[chain]);
     var contracts
+    var config = {}
+
+    try {
+      config = await getConfig(chains[chain])
+    } catch {
+      config = configList
+    }
+
     if (isPool2){contracts = config.contracts[chain].pool2}
     else {contracts = config.contracts[chain].pools}
     return unwrapNFTs({ chain, block, nftAddress: config.liquidityManagers[chain], config: contracts, fixTokens: config.fixTokens[chain] })

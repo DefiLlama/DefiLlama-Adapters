@@ -1,0 +1,174 @@
+{
+  "contracts": {
+      "ethereum": {
+          "pools": {
+              "uniContracts": [
+                  "0x461b154b688D5171934D70F991C17d719082710C",
+                  "0x57AFF370686043B5d21fDd76aE4b513468B9fb3C",
+                  "0x8981c60ff02CDBbF2A6AC1a9F150814F9cF68f62",
+                  "0x99CC0A41F8006385f42aed747e2d3642a226d06E"
+              ]
+          },
+          "pool2": {
+              "uniContracts": [
+                  "0x9f58193b717449d00c7dcaf5d9F6f5AF48a09894",
+                  "0xbE138aD5D41FDc392AE0B61b09421987C1966CC3",
+                  "0xDc035E4b6fbc48103e213F9638A81dEFC9323b98"
+              ]
+          }
+      },
+      "polygon": {
+          "pools": {
+              "uniContracts": [
+                  "0x01Cc44fc1246D17681B325926865cDB6242277A5",
+                  "0x150848c11040F6E52D4802bFFAfFBD57E6264737",
+                  "0x28d7BFf13c5A1227aEe2E892F8d22d8A1a84A0D4",
+                  "0xaFD5f7a790041761F33bFbf3dF1b54DF272F2576"
+              ]
+          },
+          "pool2": {
+              "uniContracts": [
+                  "0xC0840394978CbCDe9fCCcDE2934636853A524965"
+              ]
+          }
+      },
+      "arbitrum": {
+          "pools": {
+              "uniContracts": [
+                  "0x1c0a560EF9f6Ff3f5c2BCCe98dC92f2649a507EF",
+                  "0xB2DeceA19D58ebe10ab215A04dB2EDBE52E37fA4",
+                  "0xbE138aD5D41FDc392AE0B61b09421987C1966CC3"
+              ]
+          },
+          "pool2": {
+              "uniContracts": [
+                  "0x0893eB041c20a34Ce524050711492Fa8377d838b"
+              ]
+          }
+      },
+      "bsc": {
+          "pools": {
+              "iZiContracts": {
+                  "fixRange": [
+                      "0x0161D7Ac41F530aca89Fa2548A63eEd7D3a7E02a",
+                      "0x1B8c940bE8a5a9F1ABd9C24eA337978f44376aE7",
+                      "0x50E024bd504f066fd7f343d6D048F4BD97B1064E"
+                  ],
+                  "oneSide": [],
+                  "dynamicRange": [
+                      "0x02F91e7f9F0B2a0B62Ef0a2a5986870d99451C62",
+                      "0x11Ac7642C504Bd3828D063dBe1b783c46f8da413",
+                      "0x130E0f3B35d7b3CE1658138Be53D103Fd85bF6B6",
+                      "0x18a624DCd952E7B67CA22873e70617eA1a3498cB",
+                      "0x2df0675e0C60aFDB18cfdff1Eb752E8AC1f0F43C",
+                      "0x389a0C309b4530C1E1194789a9BD76A561d16F9E",
+                      "0x414e38CF17a1CCcAc33599D2D88DAf6dbb680b1F",
+                      "0x45b534B329d1410F37026e50014C37BD140B055d",
+                      "0x56D9c3AdDa53BFE55E9ED864B05a8827E18FCD68",
+                      "0x5DC486C222DAeEC3f6C678Bf3e941fBCEa290ceB",
+                      "0xa2337F50091dbfC8e802F811eaD575162FA104e6",
+                      "0xA39dD789D77a8D8AE17DdF1b3a8f569a31d6dd41",
+                      "0xBe986370f5821C8347A731B6C5E4E815E4316a2F",
+                      "0xc5E9eDda9958730e26ff521BA3b6c82B92946700",
+                      "0xE2380f4Cc37027B4bF23bBb3b6c092470dB4975f"
+                  ]
+              }
+          },
+          "pool2": {
+              "iZiContracts": {
+                  "fixRange": [
+                      "0xAdA24c4d35252001DD0947570E85DE01650160a1"
+                  ],
+                  "oneSide": [],
+                  "dynamicRange": [
+                      "0x29038f8ADFA0325Ae8dF92b3a1491e2eED281d23",
+                      "0x5264F77F8af8550cDa8e81Fee0360c0De6b52432"
+                  ]
+              }
+          }
+      },
+      "aurora": {
+          "pools": {
+              "iZiContracts": {
+                  "fixRange": [],
+                  "oneSide": [],
+                  "dynamicRange": []
+              }
+          },
+          "pool2": {
+              "iZiContracts": {
+                  "fixRange": [],
+                  "oneSide": [],
+                  "dynamicRange": []
+              }
+          }
+    },
+    "cronos": {
+        "pools": {
+            "iZiContracts": {
+                "fixRange": [],
+                "oneSide": [],
+                "dynamicRange": []
+            }
+        },
+        "pool2": {
+            "iZiContracts": {
+                "fixRange": [],
+                "oneSide": [],
+                "dynamicRange": []
+            }
+        }
+    }
+  },
+  "fixTokens": {
+      "ethereum": [],
+      "polygon": [
+          {
+              "address": "0x794Baab6b878467F93EF17e2f2851ce04E3E34C8",
+              "symbol": "YIN"
+          },
+          {
+              "address": "0x8b1f836491903743fE51ACd13f2CC8Ab95b270f6",
+              "symbol": "ACY"
+          }
+      ],
+      "arbitrum": [
+          {
+              "address": "0x61A1ff55C5216b636a294A07D77C6F4Df10d3B56",
+              "symbol": "APEX"
+          }
+      ],
+      "bsc": [
+          {
+              "address": "0xCa5e32d44F1744001b5600Dc2F5F5e0BbB6E9D3e",
+              "symbol": "RIV"
+          },
+          {
+              "address": "0x9A981FAcCD3B9b3B9453BFF266296fc0f2De21a2",
+              "symbol": "LAND"
+          },
+          {
+              "address": "0x09CdC7E87ABd416246F1015B08B4463Abdda00B4",
+              "symbol": "DMT"
+          },
+          {
+              "address": "0x8E596702B7e84907836776fDdC56067b64147C8f",
+              "symbol": "MNW"
+          },
+          {
+              "address": "0x2E1F3D4cB35980F6339C006e64AC3a555dB6676d",
+              "symbol": "NAS"
+          },
+          {
+              "address": "0x708F90170722f8F8775bf64d7f435A2BADBd89FD",
+              "symbol": "GE"
+          }
+      ]
+  },
+  "liquidityManagers": {
+      "ethereum": "0xC36442b4a4522E871399CD717aBDD847Ab11FE88",
+      "polygon": "0x33531bDBFE34fa6Fd5963D0423f7699775AacaaF",
+      "arbitrum": "0x611575eE1fbd4F7915D0eABCC518eD396fF78F0c",
+      "bsc": "0x93C22Fbeff4448F2fb6e432579b0638838Ff9581"
+  }
+}
