@@ -54,9 +54,11 @@ const bentoSubgraphs = {
 };
 
 const bentoQuery = gql`
-  query get_tokens($id: ID!) {
-    tokens(first: 1000, where: { id_gt: $id }) {
+  query get_tokens($block: Int, $id: ID!) {
+    tokens(block: { number: $block }, first: 1000, where: { id_gt: $id }) {
       id
+      symbol
+      name
       rebase {
         elastic #amount
         base #shares
@@ -87,8 +89,9 @@ const furoSubgraphs = {
 };
 
 const furoQuery = gql`
-  query get_tokens {
+  query get_tokens($block: Int) {
     tokens(
+      block: { number: $block },
       orderBy: liquidityShares
       orderDirection: desc
       first: 1000
@@ -111,8 +114,8 @@ const kashiSubgraphs = {
 };
 
 const kashiQuery = gql`
-  query get_pairs {
-    kashiPairs(first: 1000) {
+  query get_pairs($block: Int) {
+    kashiPairs(block: { number: $block }, first: 1000) {
       id
       asset {
         id
@@ -136,8 +139,9 @@ const tridentSubgraphs = {
 };
 
 const tridentQuery = gql`
-  query get_tokens {
+  query get_tokens($block: Int) {
     tokens(
+      block: { number: $block },
       first: 1000
       orderBy: liquidityUSD
       orderDirection: desc
@@ -150,7 +154,7 @@ const tridentQuery = gql`
   }
 `;
 
-async function getFuroTokens(chain) {
+async function getFuroTokens(chain, block) {
   let balances = {};
   const subgraph = furoSubgraphs[chain];
 
@@ -158,7 +162,7 @@ async function getFuroTokens(chain) {
     return balances;
   }
 
-  let { tokens } = await request(subgraph, furoQuery);
+  let { tokens } = await request(subgraph, furoQuery, { block });
 
   const calls = tokens.map((token) => {
     return {
@@ -186,7 +190,7 @@ async function getFuroTokens(chain) {
   return balances;
 }
 
-async function getKashiTokens(chain) {
+async function getKashiTokens(chain, block) {
   let balances = {};
   const subgraph = kashiSubgraphs[chain];
 
@@ -194,7 +198,7 @@ async function getKashiTokens(chain) {
     return balances;
   }
 
-  let { kashiPairs } = await request(subgraph, kashiQuery);
+  let { kashiPairs } = await request(subgraph, kashiQuery, { block });
   kashiPairs.map((pair) => {
     const totalAsset = BigNumber.from(pair.totalAsset.elastic);
     const totalCollateral = BigNumber.from(pair.totalCollateralShare);
@@ -242,7 +246,7 @@ async function getKashiTokens(chain) {
   return balances;
 }
 
-async function getTridentTokens(chain) {
+async function getTridentTokens(chain, block) {
   let balances = {};
   const subgraph = tridentSubgraphs[chain];
 
@@ -250,7 +254,7 @@ async function getTridentTokens(chain) {
     return balances;
   }
 
-  let { tokens } = await request(subgraph, tridentQuery);
+  let { tokens } = await request(subgraph, tridentQuery, { block });
   tokens.map((token) => {
     balances[token.id] = BigNumber.from(token.liquidity);
   });
@@ -258,7 +262,7 @@ async function getTridentTokens(chain) {
   return balances;
 }
 
-async function getBentoboxTokensArray(chain) {
+async function getBentoboxTokensArray(chain, block) {
   let allTokens = [];
   const subgraph = bentoSubgraphs[chain];
 
@@ -270,7 +274,7 @@ async function getBentoboxTokensArray(chain) {
   let id = 0;
   while (true) {
     let { tokens } = await request(subgraph, bentoQuery, {
-      id: id,
+      id, block,
     });
 
     allTokens.push(...tokens);
