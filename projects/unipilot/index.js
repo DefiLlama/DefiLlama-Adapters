@@ -1,4 +1,5 @@
 const sdk = require("@defillama/sdk");
+const { request, gql } = require("graphql-request");
 
 const { getChainTransform } = require("../helper/portedTokens");
 const { staking } = require("../helper/staking");
@@ -13,6 +14,11 @@ const FACTORY_ADDRESSES = {
     activeFactory: "0x95b77505b38f8a261ada04f54b8d0cda08904708",
     passiveFactory: "0x2536527121fc1048ae5d45327a34241a355a6a95",
   },
+};
+
+const GRAPH_URLS = {
+  polygon:
+    "https://api.thegraph.com/subgraphs/name/unipilotvoirstudio/stats-v2-polygon",
 };
 
 const VAULT_CREATION_TOPIC = {
@@ -33,6 +39,20 @@ const START_BLOCKS = {
     passiveFactory: 34371363,
   },
 };
+
+const vaultQuery = gql`
+  {
+    vaults {
+      id
+      token0 {
+        id
+      }
+      token1 {
+        id
+      }
+    }
+  }
+`;
 
 async function getVaultLogs(chain, block, factoryType) {
   const vaults = {};
@@ -61,20 +81,30 @@ async function getVaultLogs(chain, block, factoryType) {
 function protocolTvl(chain) {
   return async (timestamp, block, chainBlocks) => {
     const balances = {};
-
-    const activeVaultLogs = await getVaultLogs(
-      chain,
-      chainBlocks[chain],
-      "activeFactory"
-    );
-    const passiveVaultLogs = await getVaultLogs(
-      chain,
-      chainBlocks[chain],
-      "passiveFactory"
-    );
-
-    const vaults = { ...activeVaultLogs, ...passiveVaultLogs };
-
+    let vaults = {};
+    if (chain === "ethereum") {
+      const activeVaultLogs = await getVaultLogs(
+        chain,
+        chainBlocks[chain],
+        "activeFactory"
+      );
+      const passiveVaultLogs = await getVaultLogs(
+        chain,
+        chainBlocks[chain],
+        "passiveFactory"
+      );
+      vaults = { ...activeVaultLogs, ...passiveVaultLogs };
+    } else {
+      //extract vault details from graph for chains other than ethereum
+      const res = await request(GRAPH_URLS[chain], vaultQuery);
+      vaults = res.vaults.reduce((accum, vault) => {
+        accum[vault.id] = {
+          token0Address: vault.token0.id,
+          token1Address: vault.token1.id,
+        };
+        return accum;
+      }, {});
+    }
     const vaultCalls = [];
     const balanceCalls = [];
 
