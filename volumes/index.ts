@@ -181,6 +181,7 @@ import penguin from "./adapters/penguin";
 import vortexProtocol from "./adapters/vortex-protocol";
 import dinosaurEggs from "./adapters/dinosaur-eggs";
 import mcdex from "./adapters/mcdex";
+import mistswap from "./adapters/mistswap";
 
 
 export default {
@@ -364,6 +365,7 @@ export default {
   penguin,
   "vortex-protocol": vortexProtocol,
   "dinosaur-eggs": dinosaurEggs,
-  mcdex
+  mcdex,
+  mistswap
   // lyra -> OPTIONS DEX, not enable for now
 };
