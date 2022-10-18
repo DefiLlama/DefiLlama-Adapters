@@ -58,81 +58,52 @@ function kashiLending(chain, borrowed) {
     const balances = {};
     const graphUrl = graphUrls[chain];
     let block = await getBlock(timestamp, chain, chainBlocks)
-    block = block - 60; //subgraphs can be late by few seconds/minutes
+    block = block - 100; //subgraphs can be late by few seconds/minutes
     const transform = await getChainTransform(chain);
 
     // Query graphql endpoint
     const { kashiPairs } = await request(graphUrl, kashiQuery, {
       block: block,
     });
+    const calls = []
 
-    await Promise.all(
-      kashiPairs.map(async (pair) => {
+    kashiPairs.map(async (pair) => {
+      if (
+        pair.asset.id === "0x0000000000000000000000000000000000000000" ||
+        pair.collateral.id === "0x0000000000000000000000000000000000000000"
+      ) {
+        return;
+      }
+      if (borrowed) {
+        if (BigNumber.from(pair.totalBorrow.elastic).lte(0)) {
+          return;
+        }
+        //count tokens borrowed
+        const shares = pair.totalBorrow.elastic;
+        //convert shares to amount
+        calls.push({ params: [pair.asset.id, shares, false] })
+      } else {
         if (
-          pair.asset.id === "0x0000000000000000000000000000000000000000" ||
-          pair.collateral.id === "0x0000000000000000000000000000000000000000"
+          BigNumber.from(pair.totalAsset.elastic).lte(0) &&
+          BigNumber.from(pair.totalAsset.elastic).lte(0)
         ) {
           return;
         }
-        if (borrowed) {
-          if (BigNumber.from(pair.totalBorrow.elastic).lte(0)) {
-            return;
-          }
-          //count tokens borrowed
-          const shares = pair.totalBorrow.elastic;
-          //convert shares to amount
-          const amount = (
-            await sdk.api.abi.call({
-              abi: toAmountAbi,
-              chain: chain,
-              target: bentoboxes[chain],
-              params: [pair.asset.id, shares, false],
-              block: block,
-            })
-          ).output;
-          sdk.util.sumSingleBalance(balances, transform(pair.asset.id), amount);
-        } else {
-          if (
-            BigNumber.from(pair.totalAsset.elastic).lte(0) &&
-            BigNumber.from(pair.totalAsset.elastic).lte(0)
-          ) {
-            return;
-          }
-          //count tokens not borrowed + collateral
-          const assetShares = pair.totalAsset.elastic;
-          const collateralShares = pair.totalCollateralShare;
-          //convert shares to amount
-          const assetAmount = (
-            await sdk.api.abi.call({
-              abi: toAmountAbi,
-              chain: chain,
-              target: bentoboxes[chain],
-              params: [pair.asset.id, assetShares, false],
-              block: block,
-            })
-          ).output;
-          const collateralAmount = (
-            await sdk.api.abi.call({
-              abi: toAmountAbi,
-              chain: chain,
-              target: bentoboxes[chain],
-              params: [pair.collateral.id, collateralShares, false],
-              block: block,
-            })
-          ).output;
-          sdk.util.sumSingleBalance(
-            balances,
-            transform(pair.asset.id),
-            assetAmount
-          );
-          sdk.util.sumSingleBalance(
-            balances,
-            transform(pair.collateral.id),
-            collateralAmount
-          );
-        }
-      })
-    );
+        //count tokens not borrowed + collateral
+        const assetShares = pair.totalAsset.elastic;
+        const collateralShares = pair.totalCollateralShare;
+        calls.push({ params: [pair.asset.id, assetShares, false] })
+        calls.push({ params: [pair.collateral.id, collateralShares, false] })
+      }
+    })
+
+    const { output } = await sdk.api.abi.multiCall({
+      calls, chain, block, abi: toAmountAbi, target: bentoboxes[chain],
+    })
+
+    output.forEach(({ input: { params: [token]}, output: balance}) => {
+      sdk.util.sumSingleBalance(balances, transform(token), balance)
+    })
 
     return balances;
   };
