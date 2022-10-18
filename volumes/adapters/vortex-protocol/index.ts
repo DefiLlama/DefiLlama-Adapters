@@ -33,7 +33,7 @@ const START_TIME = 1647604761;
 const fetch = async (timestamp: number) => {
   const dayTimestamp = getUniqStartOfTodayTimestamp(new Date(timestamp * 1000));
   const response = (await getGQLClient().request(getDailyVolume(), {start: START_TIME}));
-  const historicalVolume:IGraphResponse[] = response.data.flatMap(e => e.pairDayData);
+  const historicalVolume:IGraphResponse[] = response.data.flatMap((e:any) => e.pairDayData);
 
   const totalVolume = historicalVolume
     .filter(volItem => volItem.timestamp <= dayTimestamp)
