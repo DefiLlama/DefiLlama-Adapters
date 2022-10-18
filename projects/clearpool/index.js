@@ -2,6 +2,7 @@ const sdk = require("@defillama/sdk");
 const { sumTokens } = require("../helper/unwrapLPs");
 const abi = require("./abi.json");
 const { get } = require('../helper/http')
+const { staking } = require('./helper/staking')
 
 const PoolFactory = "0xde204e5a060ba5d3b63c7a4099712959114c2d48";
 const START_BLOCK = 14443222;
@@ -113,7 +114,8 @@ module.exports = {
   ethereum: {
     tvl: ethereumTVL,
     borrowed: ethereumBorrowed,
-    staking: ethereumStaked,
+    // staking: ethereumStaked,
+    staking: staking('0x629E39da1Db5654fe59cAE31d48CAEBB8dC2A9c6', '0x66761fa41377003622aee3c7675fc7b5c1c2fac5'),
   },
   polygon: {
     tvl: polygonTvl,
