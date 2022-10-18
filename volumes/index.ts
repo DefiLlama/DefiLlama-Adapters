@@ -180,6 +180,7 @@ import spartan from "./adapters/spartan";
 import penguin from "./adapters/penguin";
 import vortexProtocol from "./adapters/vortex-protocol";
 import dinosaurEggs from "./adapters/dinosaur-eggs";
+import mcdex from "./adapters/mcdex";
 
 
 export default {
@@ -362,6 +363,7 @@ export default {
   spartan,
   penguin,
   "vortex-protocol": vortexProtocol,
-  "dinosaur-eggs": dinosaurEggs
+  "dinosaur-eggs": dinosaurEggs,
+  mcdex
   // lyra -> OPTIONS DEX, not enable for now
 };
