@@ -18,10 +18,9 @@ const getStakingTvl = () => {
 };
 
 module.exports = {
-  misrepresentedTokens: true,
   arbitrum: {
     tvl: getStakingTvl(),
   },
   methodology:
-    "We count liquidity in Staking through the LentMyc contract.",
+    "We count liquidity in Staking based on the amount of MYC staked in the LentMyc contract.",
 };
