@@ -177,6 +177,7 @@ import moonSwap from "./adapters/moon-swap";
 import fxSwap from "./adapters/fx-swap";
 import pinkswap from "./adapters/pinkswap";
 import spartan from "./adapters/spartan";
+import penguin from "./adapters/penguin";
 
 
 export default {
@@ -356,6 +357,7 @@ export default {
   "moon-swap": moonSwap,
   "fx-swap": fxSwap,
   pinkswap,
-  spartan
+  spartan,
+  penguin
   // lyra -> OPTIONS DEX, not enable for now
 };
