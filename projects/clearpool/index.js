@@ -106,7 +106,7 @@ module.exports = {
   ethereum: {
     tvl: ethereumTVL,
     borrowed: ethereumBorrowed,
-    staking: staking('0x629E39da1Db5654fe59cAE31d48CAEBB8dC2A9c6', '0x66761fa41377003622aee3c7675fc7b5c1c2fac5'),
+    staking: stakings('0x629E39da1Db5654fe59cAE31d48CAEBB8dC2A9c6', '0x66761fa41377003622aee3c7675fc7b5c1c2fac5'),
   },
   polygon: {
     tvl: polygonTvl,
