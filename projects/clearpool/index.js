@@ -61,14 +61,6 @@ const ethereumBorrowed = async (timestamp, block, chainBlocks) => {
   return totalBorrowed;
 };
 
-const ethereumStaked = async () => {
-  const kpi = await get(
-    'https://clearpool.finance/api/kpi'
-  );
-  let tvl = parseFloat(kpi?.staking.tvl);
-  return tvl
-};
-
 const polygonTvl = async (timestamp, _,  { polygon: block }) => {
   const balances = {};
   const chain = 'polygon'
