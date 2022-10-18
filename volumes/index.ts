@@ -182,6 +182,7 @@ import vortexProtocol from "./adapters/vortex-protocol";
 import dinosaurEggs from "./adapters/dinosaur-eggs";
 import mcdex from "./adapters/mcdex";
 import mistswap from "./adapters/mistswap";
+import bxh from "./adapters/bxh";
 
 
 export default {
@@ -366,6 +367,7 @@ export default {
   "vortex-protocol": vortexProtocol,
   "dinosaur-eggs": dinosaurEggs,
   mcdex,
-  mistswap
+  mistswap,
+  bxh
   // lyra -> OPTIONS DEX, not enable for now
 };
