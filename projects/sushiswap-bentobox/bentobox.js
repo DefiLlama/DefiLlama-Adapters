@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
-const { BigNumber } = require("ethers");
+const { default: BigNumber } = require("bignumber.js");
 const { getChainTransform } = require("../helper/portedTokens");
+const { getBlock } = require("../helper/getBlock");
 const {
   getFuroTokens,
   getKashiTokens,
@@ -12,24 +13,27 @@ function bentobox(chain) {
   return async (timestamp, ethBlock, chainBlocks) => {
     const balances = {};
     const transform = await getChainTransform(chain);
+    let block = await getBlock(timestamp, chain, chainBlocks)
+    block = block - 100;
 
-    const bentoTokens = await getBentoboxTokensArray(chain); //array with shares and amount
-    const tridentTokens = await getTridentTokens(chain); //mapping with amount
-    const kashiTokens = await getKashiTokens(chain); //mapping with amount
-    const furoTokens = await getFuroTokens(chain); //mapping with amount
+    const bentoTokens = await getBentoboxTokensArray(chain, block); //array with shares and amount
+    const tridentTokens = await getTridentTokens(chain, block); //mapping with amount
+    const kashiTokens = await getKashiTokens(chain, block); //mapping with amount
+    const furoTokens = await getFuroTokens(chain, block); //mapping with amount
     bentoTokens.map((token) => {
-      let amount = BigNumber.from(token.rebase.elastic);
+      if (token.symbol === 'MIM') return;
+      let amount = BigNumber(token.rebase.elastic);
       if (tridentTokens[token.id]) {
-        amount = amount.sub(tridentTokens[token.id]);
+        amount = amount.minus(+tridentTokens[token.id]);
       }
       if (kashiTokens[token.id]) {
-        amount = amount.sub(kashiTokens[token.id]);
+        amount = amount.minus(+kashiTokens[token.id]);
       }
       if (furoTokens[token.id]) {
-        amount = amount.sub(furoTokens[token.id]);
+        amount = amount.minus(+furoTokens[token.id]);
       }
 
-      sdk.util.sumSingleBalance(balances, transform(token.id), amount);
+      sdk.util.sumSingleBalance(balances, transform(token.id), amount.toFixed(0));
     });
 
     return balances;
