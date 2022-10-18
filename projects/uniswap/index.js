@@ -1,10 +1,9 @@
 const { getChainTvl } = require('../helper/getUniSubgraphTvl');
 const sdk = require('@defillama/sdk')
-// const {optimism, ethereum:v3Ethereum} = require('./v3/index')
 const { request, gql } = require('graphql-request');
 const { toUSDTBalances } = require('../helper/balances');
-const { log } = require('../helper/utils');
 const { default: BigNumber } = require('bignumber.js');
+const { getBlock } = require('../helper/getBlock');
 
 const v1graph = getChainTvl({
   ethereum: 'https://api.thegraph.com/subgraphs/name/ianlapham/uniswap'
@@ -20,6 +19,7 @@ const graphs = {
   optimism: "https://api.thegraph.com/subgraphs/name/ianlapham/optimism-post-regenesis",
   arbitrum: 'https://api.thegraph.com/subgraphs/name/ianlapham/arbitrum-dev',
   polygon: "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-v3-polygon",
+  celo: "https://api.thegraph.com/subgraphs/name/jesse-sawa/uniswap-celo",
 }
 
 const blacklists = {
@@ -28,32 +28,27 @@ const blacklists = {
   polygon: ['0x8d52c2d70a7c28a9daac2ff12ad9bfbf041cd318',],
 }
 
-const v3Graphs = getChainTvl({
-  optimism: graphs.optimism,
-}, "factories", "totalValueLockedUSD", 500)
-
-const graphUrl = 'https://api.thegraph.com/subgraphs/name/jesse-sawa/uniswap-celo';
-const graphQuery = gql`
-query uniswapFactories($block: Int) {  
-  factories(first: 1, subgraphError: allow) {  
-    totalValueLockedUSD
-  }
-}
-`;
-
 async function celotvl(timestamp, block) {
-  const { factories } = await request(graphUrl, graphQuery);
+
+  const graphQuery = gql`
+  query uniswapFactories($block: Int) {  
+    factories(first: 1, subgraphError: allow) {  
+      totalValueLockedUSD
+    }
+  }
+  `;
+  const { factories } = await request(graphs.celo, graphQuery);
   const usdTvl = Number(factories[0].totalValueLockedUSD);
   return toUSDTBalances(usdTvl);
 }
 
 function v3TvlPaged(chain) {
   return async (_, _b, { [chain]: block }) => {
+    block = await getBlock(_, chain, {[chain]: block})
     const balances = {}
     const transform = i => `${chain}:${i}` 
-    block -= 50
+    block -= 300
     const size = 1000
-    let sum = 0
     let lastId = ''
     let pools
     const graphQueryPaged = gql`
@@ -88,7 +83,7 @@ function v3TvlPaged(chain) {
 }
 
 module.exports = {
-  timetravel: false,
+  timetravel: false, // celo graph issues
   misrepresentedTokens: true,
   methodology: `Counts the tokens locked on AMM pools, pulling the data from the 'ianlapham/uniswapv2' subgraph`,
   ethereum: {
@@ -101,10 +96,10 @@ module.exports = {
     tvl: v3TvlPaged('polygon')
   },
   optimism: {
-    tvl: v3Graphs('optimism')
+    tvl: v3TvlPaged('optimism')
   },
   celo: {
-    tvl: celotvl
+    tvl: celotvl,
   },
   hallmarks: [
     [1598412107, "SushiSwap launch"],
