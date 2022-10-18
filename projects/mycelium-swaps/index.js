@@ -35,7 +35,9 @@ const getSwapsTvl = () => {
 };
 
 module.exports = {
+  misrepresentedTokens: true,
   arbitrum: {
     tvl: getSwapsTvl(),
   },
+  methodology: "We count liquidity in Perpetual Swaps based on the value of tokens in the MLP pool.",
 };

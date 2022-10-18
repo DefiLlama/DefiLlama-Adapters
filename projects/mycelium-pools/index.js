@@ -63,5 +63,5 @@ module.exports = {
     tvl: getPoolsTvl(),
   },
   methodology:
-    "We count liquidity on the Leveraged Pools through PoolFactory contract",
+    "We count liquidity on the Leveraged Pools through PoolFactory contract.",
 };
