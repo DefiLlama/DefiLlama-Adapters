@@ -178,6 +178,7 @@ import fxSwap from "./adapters/fx-swap";
 import pinkswap from "./adapters/pinkswap";
 import spartan from "./adapters/spartan";
 import penguin from "./adapters/penguin";
+import vortexProtocol from "./adapters/vortex-protocol";
 
 
 export default {
@@ -358,6 +359,7 @@ export default {
   "fx-swap": fxSwap,
   pinkswap,
   spartan,
-  penguin
+  penguin,
+  "vortex-protocol": vortexProtocol
   // lyra -> OPTIONS DEX, not enable for now
 };
