@@ -179,6 +179,7 @@ import pinkswap from "./adapters/pinkswap";
 import spartan from "./adapters/spartan";
 import penguin from "./adapters/penguin";
 import vortexProtocol from "./adapters/vortex-protocol";
+import dinosaurEggs from "./adapters/dinosaur-eggs";
 
 
 export default {
@@ -360,6 +361,7 @@ export default {
   pinkswap,
   spartan,
   penguin,
-  "vortex-protocol": vortexProtocol
+  "vortex-protocol": vortexProtocol,
+  "dinosaur-eggs": dinosaurEggs
   // lyra -> OPTIONS DEX, not enable for now
 };
