@@ -68,8 +68,6 @@ const ethereumStaked = async () => {
   return tvl
 };
 
-
-
 const polygonTvl = async (timestamp, _,  { polygon: block }) => {
   const balances = {};
   const chain = 'polygon'
