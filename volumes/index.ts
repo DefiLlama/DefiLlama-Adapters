@@ -183,6 +183,7 @@ import dinosaurEggs from "./adapters/dinosaur-eggs";
 import mcdex from "./adapters/mcdex";
 import mistswap from "./adapters/mistswap";
 import bxh from "./adapters/bxh";
+import auraswap from "./adapters/auraswap";
 
 
 export default {
@@ -368,6 +369,7 @@ export default {
   "dinosaur-eggs": dinosaurEggs,
   mcdex,
   mistswap,
-  bxh
+  bxh,
+  auraswap
   // lyra -> OPTIONS DEX, not enable for now
 };
