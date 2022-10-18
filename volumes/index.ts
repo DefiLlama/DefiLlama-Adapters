@@ -184,6 +184,7 @@ import mcdex from "./adapters/mcdex";
 import mistswap from "./adapters/mistswap";
 import bxh from "./adapters/bxh";
 import auraswap from "./adapters/auraswap";
+import carbonswap from "./adapters/carbonswap";
 
 
 export default {
@@ -370,6 +371,7 @@ export default {
   mcdex,
   mistswap,
   bxh,
-  auraswap
+  auraswap,
+  carbonswap
   // lyra -> OPTIONS DEX, not enable for now
 };
