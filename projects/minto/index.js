@@ -10,6 +10,8 @@ const stackingContracts = [
   '0x78ae303182fca96a4629a78ee13235e6525ebcfb',
   '0xe742FCE58484FF7be7835D95E350c23CE55A7E12',
 ]
+const heco = mintoStaking(stackingContracts, minto, 'heco');
+const bsc = mintoStaking(stackingContracts, minto, 'bsc');
 
 const abiBalanceOfSum = {
   "inputs": [
@@ -59,9 +61,9 @@ function mintoStaking(stakingContracts, stakingToken, chain = "ethereum", transf
 }
 module.exports = {
   bsc: {
-    tvl: mintoStaking(stackingContracts, minto, 'bsc'),
+    tvl: bsc,
   },
   heco: {
-    tvl: mintoStaking(stackingContracts, hminto, 'heco'),
+    tvl: heco,
   }
 }
