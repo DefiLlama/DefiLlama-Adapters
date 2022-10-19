@@ -187,6 +187,7 @@ import bxh from "./adapters/bxh";
 import auraswap from "./adapters/auraswap";
 import carbonswap from "./adapters/carbonswap";
 import gravityFinance from "./adapters/gravity-finance";
+import gravis from "./adapters/gravis";
 import fourSwap from "./adapters/4swap";
 
 
@@ -378,6 +379,7 @@ export default {
   carbonswap,
   "pangea-swap": pangeaswap,
   "gravity-finance": gravityFinance,
+  gravis,
   "4swap": fourSwap
   // lyra -> OPTIONS DEX, not enable for now
 };
