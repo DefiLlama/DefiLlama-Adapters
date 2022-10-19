@@ -115,9 +115,14 @@ module.exports = {
   polygon: {
     staking: staking(stkGHST_QUICKContract, GHST_Polygon, "polygon"),
     tvl: polygonTvl,
-    pool2: pool2s([stkGHST_QUICKContract], GHST_pools2, "polygon")
+    pool2: staking([stkGHST_QUICKContract], GHST_pools2, "polygon")
   },
   methodology:
     `We count liquidity on Vaults from ETHEREUM and Polygon chains through Vault Contracts;
     On Rarity Farming, Staking and Pool2s parts on Polygon chain through their Contrats`,
+  hallmarks: [
+    [1623769208, "Rarity Farming S1 Final Round"],
+    [1638885512, "Rarity Farming S2 Final Round"],
+    [1650549722, "Rarity Farming S3 Final Round"],
+  ],
 };

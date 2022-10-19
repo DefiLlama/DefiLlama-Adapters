@@ -6,15 +6,13 @@ const { getBlock } = require("../helper/getBlock");
 const { staking } = require("../helper/staking");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const {
-  transformBobaAddress,
-  transformArbitrumAddress,
-  transformAvaxAddress,
+  getChainTransform,
 } = require("../helper/portedTokens");
 const { request } = require("graphql-request");
 
 const DATA = {
   boba: async () => {
-    const bobaTransform = transformBobaAddress();
+    const bobaTransform = await getChainTransform('boba');
 
     return [
       bobaTransform,
@@ -27,7 +25,6 @@ const DATA = {
             [constants.addresses.boba.USDC, false], // USDC(Boba)
             [constants.addresses.boba.USDT, false], // USDT(Boba)
             [constants.addresses.boba.DAI, false], // DAI(Boba)
-            [constants.addresses.boba.FRAX_KYO, true], // FRAX-KYO(Boba, OolongSwap)
           ],
         },
         staking: {
@@ -37,31 +34,16 @@ const DATA = {
       },
     ];
   },
-  arbitrum: async () => {
-    const arbitrumTransform = await transformArbitrumAddress();
+  ethereum: async () => {
+    const ethereumTransform = await getChainTransform('ethereum');
 
     return [
-      arbitrumTransform,
+      ethereumTransform,
       {
         treasury: {
-          addresss: [constants.addresses.arbitrum.treasury],
+          addresss: [constants.addresses.ethereum.treasury],
           tokens: [
-            [constants.addresses.arbitrum.USDC, false], // USDC(Arbitrum)
-          ],
-        },
-      },
-    ];
-  },
-  avax: async () => {
-    const avalancheTransform = await transformAvaxAddress();
-
-    return [
-      avalancheTransform,
-      {
-        treasury: {
-          addresss: [constants.addresses.avalanche.treasury],
-          tokens: [
-            [constants.addresses.avalanche.USDC, false], // USDC(Avalanche)
+            [constants.addresses.ethereum.USDC, false], // USDC(Ethereum)
           ],
         },
       },
@@ -91,11 +73,14 @@ const chainTVL = (chain) => {
     }
     tokenAddresses = [...new Set(tokenAddresses)];
 
-    const balanceCalls = tokenAddresses.map((address) => {
-      return {
-        target: address,
-        params: koyoVault.koyos[0].address,
-      };
+    const balanceCalls = tokenAddresses.flatMap((address) => {
+      return [
+        {
+          target: address,
+          params: koyoVault.koyos[0].address,
+        },
+        { target: address, params: constants.addresses[chain].feeCollector },
+      ];
     });
     const balancesCalled = await sdk.api.abi.multiCall({
       block,
@@ -150,12 +135,17 @@ module.exports = chainJoinExports(
     (chains) => chainTypeExports("treasury", chainTreasury, chains),
     (chains) => chainTypeExports("staking", chainStaking, chains),
   ],
-  ["boba", "arbitrum", "avax"]
+  ["boba", "ethereum"]
 );
 
 module.exports = {
   ...module.exports,
   methodology:
     "Counts the tokens locked on swap pools based on their holdings.",
-  start: 668_337,
+  hallmarks: [
+    [1656419883, "Boba adds to FRAX-USDC"],
+    [1658439731, "Boba removes from FRAX-USDC"],
+    [1659129231, "Boba adds to USDC-DAI"],
+    [1665774187, "Boba removes from USDC-DAI"]
+  ],
 };

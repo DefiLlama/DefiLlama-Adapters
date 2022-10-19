@@ -5,15 +5,20 @@ const utils = require('../helper/utils')
 const chains = {
   '1': 'ethereum',
   '10': 'optimism',
+  '24': 'kardia',
   '25': 'cronos',
   '30': 'rsk',
   '40': 'telos',
   '56': 'bsc',
   '57': 'syscoin',
+  '58': 'ontology_evm',
   '61': 'ethereumclassic',
   '66': 'okexchain',
+  '70': 'hoo',
+  '88': 'tomochain',
   '100': 'xdai',
   '106': 'velas',
+  '108': 'thundercore',
   '122': 'fuse',
   '128': 'heco',
   '137': 'polygon',
@@ -23,20 +28,30 @@ const chains = {
   '321': 'kcc',
   '336': 'shiden',
   '592': 'astar',
+  '1024': 'clv',
   '1030': 'conflux',
   '1088': 'metis',
   '1284': 'moonbeam',
   '1285': 'moonriver',
+  '1818': 'cube',
+  '2000': 'dogechain',
   '2001': 'milkomeda',
   '2020': 'ronin',
+  '2222': 'kava',
   '4689': 'iotex',
+  '8217': 'klaytn',
   '9001': 'evmos',
+  '10000': 'smartbch',
+  '10001': 'ethpow',
   '32659': 'fusion',
   '42161': 'arbitrum',
+  '42170': 'arbitrum_nova',
   '42220': 'celo',
   '42262': 'oasis',
   '43114': 'avax',
+  '47805': 'rei',
   '53935': 'dfk',
+  '71402': 'godwoken_v1',
   '1313161554': 'aurora',
   '1666600000': 'harmony'
 }
@@ -106,7 +121,7 @@ function fetchChain(chain) {
 const chainTvls = {}
 Object.keys(chains).forEach((chain) => {
   const chainName = chains[chain]
-  chainTvls[chainName === 'avax' ? 'avalanche' : chainName] = {
+  chainTvls[chainName] = {
     fetch: fetchChain(chain)
   }
 })
@@ -116,4 +131,7 @@ module.exports = {
   timetravel: false,
   ...chainTvls,
   fetch: fetchChain(null),
+  hallmarks:[
+    [1651881600, "UST depeg"],
+  ],
 }

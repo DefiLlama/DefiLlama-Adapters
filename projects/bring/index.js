@@ -1,7 +1,7 @@
 const { staking, stakings } = require("../helper/staking");
-const { transformBscAddress, transformHarmonyAddress, fixHarmonyBalances } = require("../helper/portedTokens");
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
+const { sumTokens2, } = require("../helper/unwrapLPs");
 const { pool2s } = require("../helper/pool2");
+
 
 /*** Ethereum Addresses ***/
 const chefContracts = "0xDfa3D27Aa7E93527b2075Da5b7911184449f2c27";
@@ -20,6 +20,7 @@ const listOfToken = [
 
 /*** New BSC Addresses ***/
 const chefContractsNew_bsc = "0xe9d8b35e1D51b9C17504E5903C3F4D5b14d8c29E";
+const chefContractsNew_bsc1 = "0x3877D0E8DbB9e69beD6abDd8A40ED6A4a26EB44f";
 const BRNG_bsc = "0x939D5A13cf0074586a2Dcf17bC692B2D3CCdD517";
 const BNB_BRNG2_CakeLP = "0xE412f518A6a39351c965E201A329eC83047FEb4A";
 
@@ -71,54 +72,25 @@ const listOfToken_harmony = [
   "0x3Ecb96039340630c8B82E5A7732bc88b2aeadE82",
 ];
 
-
-async function calc(
-  balances,
-  chefContract,
-  lpTokens,
-  chain = "ethereum",
-  bool = false
-) {
-  let chainBlocks = {};
-  const transformAddress = await transformBscAddress();
-  for (const token of lpTokens) {
-    await sumTokensAndLPsSharedOwners(
-      balances,
-      [[token, bool]],
-      [chefContract],
-      chainBlocks[chain],
-      chain,
-      chain == "bsc" ? transformAddress : (id) => id
-    );
-  }
+async function bscTvl(_, _b, { bsc: block }) {
+  const chain = 'bsc'
+  const toa = [];
+  ([...lpPoolsNew_bsc, ...listOfTokenNew_bsc]).forEach(token => toa.push([token, chefContractsNew_bsc]));
+  ([...listOfTokenOld_bsc, ...lpPoolsOld_bsc]).forEach(token => toa.push([token, chefContractsOld_bsc]));
+  return sumTokens2({ chain, block, tokensAndOwners: toa,  })
 }
 
-async function bscTvl() {
-  const balances = {};
-
-  await calc(balances, chefContractsNew_bsc, lpPoolsNew_bsc, "bsc", true);
-  await calc(balances, chefContractsNew_bsc, listOfTokenNew_bsc, "bsc");
-
-  await calc(balances, chefContractsOld_bsc, lpPoolsOld_bsc, "bsc", true);
-  await calc(balances, chefContractsOld_bsc, listOfTokenOld_bsc, "bsc");
-
-  return balances;
+async function ethTvl(_, block) {
+  const toa = [];
+  listOfToken.forEach(token => toa.push([token, chefContracts]))
+  return sumTokens2({ block, tokensAndOwners: toa,  })
 }
 
-async function ethTvl() {
-  const balances = {};
-
-  await calc(balances, chefContracts, listOfToken);
-
-  return balances;
-}
-
-async function harmonyTvl() {
-  const balances = {};
-
-  await calc(balances, chefHarmonyContracts, listOfToken_harmony, "harmony");
-
-  return balances;
+async function harmonyTvl(_, _b, { harmony: block }) {
+  const chain = 'harmony'
+  const toa = [];
+  listOfToken_harmony.forEach(token => toa.push([token, chefHarmonyContracts]))
+  return sumTokens2({ chain, block, tokensAndOwners: toa, })
 }
 
 
@@ -130,12 +102,12 @@ module.exports = {
   },
   bsc: {
     staking: stakings(
-      [chefContractsNew_bsc, chefContractsOld_bsc],
+      [chefContractsNew_bsc, chefContractsOld_bsc, chefContractsNew_bsc1],
       BRNG_bsc,
       "bsc"
     ),
     pool2: pool2s(
-      [chefContractsNew_bsc, chefContractsOld_bsc],
+      [chefContractsNew_bsc, chefContractsOld_bsc, chefContractsNew_bsc1],
       [BNB_BRNG2_CakeLP],
       "bsc"
     ),
@@ -143,7 +115,7 @@ module.exports = {
   },
   harmony: {
     staking: harmonyTvl,
-    tvl: ()=>({})
+    tvl: () => ({})
   },
   methodology: "Counts liquidty of the Pools through their chefContracts",
 };

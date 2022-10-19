@@ -54,17 +54,17 @@ const pools = [
     '0xD2220455E760Fb27ED8aaA6F9C7E143A687BB0aD',
     '0xBdd478cF8313240EfDC54108A2ed389d450cD702',
 
-    // qSAV
-    '0xDe80CE223C9f1D1db0BC8D5bDD88E03f6882eEA3',   // CAKE
-    '0x67c42b3dAC9526efCBFeeb2FC1C56Cf77F494e46',   // BNB
-    '0x4FC359E39A99acFDF44c794eF702fab93067B2A6',   // BUSD
-    '0x53fd20bc5D4d222764B70817810494F1D06f3403',   // USDT
-    '0x401c22395200Caaae87f8aB9f9446636Dde38c9A',   // DAI
-    '0xEe3Ee0BEb7919eDD31a4506d7d4C93940f2ACED6',   // USDC
-    '0xB9Cf0d36e82C2a1b46eD51e44dC0a4B0100D6d74',   // BTCB
-    '0x4b107b794c9Bbfd83E5Ac9E8Dd59F918510C5729',   // ETH
-    '0x33F93897e914a7482A262Ef10A94319840EB8D05',   // bQBT
-    '0xE6b3fb8E6c7B9d7fBf3BFD1a50ac8201c2fa5a8F',   // bQBT-BNB
+    // // qSAV - disabling these vaults because qubit was hacked and these tokens are no longer there
+    // '0xDe80CE223C9f1D1db0BC8D5bDD88E03f6882eEA3',   // CAKE
+    // '0x67c42b3dAC9526efCBFeeb2FC1C56Cf77F494e46',   // BNB
+    // '0x4FC359E39A99acFDF44c794eF702fab93067B2A6',   // BUSD
+    // '0x53fd20bc5D4d222764B70817810494F1D06f3403',   // USDT
+    // '0x401c22395200Caaae87f8aB9f9446636Dde38c9A',   // DAI
+    // '0xEe3Ee0BEb7919eDD31a4506d7d4C93940f2ACED6',   // USDC
+    // '0xB9Cf0d36e82C2a1b46eD51e44dC0a4B0100D6d74',   // BTCB
+    // '0x4b107b794c9Bbfd83E5Ac9E8Dd59F918510C5729',   // ETH
+    // '0x33F93897e914a7482A262Ef10A94319840EB8D05',   // bQBT
+    // '0xE6b3fb8E6c7B9d7fBf3BFD1a50ac8201c2fa5a8F',   // bQBT-BNB
 
     // vSAV v2
     '0xA555443A5eE77f334648eF4F557C0B5070fcb4de',
@@ -117,7 +117,7 @@ const poolsPolygon = [
     '0xdF0BE663C84322f55aD7b40A4120CdECBa4C4B45',
     '0x51C30ee94052baAABA60Db6b931c1f4657FFe174',
     '0x39D28Db6742a457BCfB927D4539bEea55Dc5Dd87',
-    
+
 ]
 
 const ZERO = new BigNumber(0)
@@ -134,7 +134,7 @@ async function bsc(timestamp, ethBlock, chainBlock) {
         abi: abi,
         chain: 'bsc'
     })).output.reduce((tvl, call) => tvl.plus(new BigNumber(call.output)), ZERO)
-    
+
     const pot_total = (await sdk.api.abi.multiCall({
         calls: pots.map( address => ({
             target: address
@@ -143,7 +143,7 @@ async function bsc(timestamp, ethBlock, chainBlock) {
         abi: potABI,
         chain: 'bsc'
     })).output.reduce((tvl, call) => tvl.plus(new BigNumber(call.output)), ZERO)
-    
+
     const leverage_total = (await sdk.api.abi.multiCall({
         calls: leveragedPools.map( address => ({
             target: address
@@ -152,7 +152,7 @@ async function bsc(timestamp, ethBlock, chainBlock) {
         abi: leverageABI,
         chain: 'bsc'
     })).output.reduce((tvl, call) => tvl.plus(new BigNumber(call.output[1])), ZERO)
-        
+
     return {
         'tether': total.plus(pot_total).plus(leverage_total).dividedBy(ETHER).toNumber()
     }
@@ -184,4 +184,7 @@ module.exports = {
     polygon:{
         tvl:polygon
     },
+    hallmarks: [
+        [1621395248, 'Flash Loan Attack'],
+    ],
 }

@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const { unwrapLPsAuto } = require("../helper/unwrapLPs");
 const { transformBscAddress } = require("../helper/portedTokens");
 
 const NATIVE_CONTRACT = "0x33AdBf5f1ec364a4ea3a5CA8f310B597B8aFDee3";
@@ -39,7 +38,7 @@ const bscTvl = async (_, _b, { [chain]: block }) => {
     sdk.util.sumSingleBalance(balances, transformAddress(strat.output[0]), wantBalances[i].output)
   })
 
-  return unwrapLPsAuto({ balances, block, chain, });
+  return balances;
 };
 
 module.exports = {

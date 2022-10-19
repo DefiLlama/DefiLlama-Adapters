@@ -17,7 +17,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     const mento_contract_address = '0x9380fA34Fd9e4Fd14c06305fd7B6199089eD4eb9';
     const mento_locked_contract_address = '0x246f4599eFD3fA67AC44335Ed5e749E518Ffd8bB';
 
-    const block = await getBlock(timestamp, 'celo', chainBlocks)
+    const block = chainBlocks.celo
 
     const mento_pooled = await sdk.api.eth.getBalance({
         target: mento_contract_address,
@@ -32,11 +32,11 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     })
 
     return {
-        'celo': Number(mento_pooled.output)/1e18 + Number(mento_locked_pooled.output)/1e18
+        'celo': Number(mento_pooled.output) / 1e18 + Number(mento_locked_pooled.output) / 1e18
     };
 }
 
 module.exports = {
     methodology: 'TVL counts Celo deposited as collateral to mint cUSD.',
-    tvl,
+    celo: { tvl },
 }

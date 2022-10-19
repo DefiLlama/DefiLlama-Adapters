@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk")
-const { getBlock } = require("../helper/getBlock");
-const {sumTokens, unwrapCrv} = require("../helper/unwrapLPs.js")
+const {sumTokens,} = require("../helper/unwrapLPs.js")
 const {staking} = require("../helper/staking.js")
 const abi = require("./abi.json");
 const { sumMultiBalanceOf } = require("@defillama/sdk/build/generalUtil");
@@ -14,9 +13,8 @@ const SPOOL_staking = '0xc3160C5cc63B6116DD182faA8393d3AD9313e213'
 
 const chain = 'ethereum'
 // TVL is asset holdings of the masterSpool + all capital deployed via each strategy
-async function tvl (timestamp, ethBlock, chainBlocks) {
+async function tvl (timestamp, block, chainBlocks) {
     const balances = {}
-    const block = await getBlock(timestamp, chain, chainBlocks) // 14501309 // 
 
     // Get strategies contract addresses and underlying tokens
     let {output: strategies} = await sdk.api.abi.call({
