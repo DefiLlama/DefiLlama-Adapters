@@ -186,6 +186,7 @@ import mistswap from "./adapters/mistswap";
 import bxh from "./adapters/bxh";
 import auraswap from "./adapters/auraswap";
 import carbonswap from "./adapters/carbonswap";
+import gravityFinance from "./adapters/gravity-finance";
 
 
 export default {
@@ -374,6 +375,7 @@ export default {
   bxh,
   auraswap,
   carbonswap,
-  "pangea-swap": pangeaswap
+  "pangea-swap": pangeaswap,
+  "gravity-finance": gravityFinance
   // lyra -> OPTIONS DEX, not enable for now
 };
