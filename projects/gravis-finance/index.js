@@ -16,11 +16,11 @@ module.exports = {
   useDefaultCoreAssets: true,
   }),
   },
- // heco: {
- //   tvl: getUniTVL({
- //     chain: 'heco',
- //     factory: '-',
- //     useDefaultCoreAssets: true,
- //   }),
- // },
+heco: {
+tvl: getUniTVL({
+chain: 'heco',
+factory: '0x4a3B76860C1b76f0403025485DE7bfa1F08C48fD',
+useDefaultCoreAssets: true,
+}),
+},
 };
