@@ -2,12 +2,11 @@ const sdk = require("@defillama/sdk");
 const { sumTokens } = require("../helper/unwrapLPs");
 const abi = require("./abi.json");
 const { get } = require('../helper/http')
-const { staking } = require('./helper/staking')
+const { staking } = require('../helper/staking')
 
 const PoolFactory = "0xde204e5a060ba5d3b63c7a4099712959114c2d48";
 const START_BLOCK = 14443222;
 const polygonPoolURL = 'https://api-v3.clearpool.finance/137/pools'
-
 const ethereumTVL = async (timestamp, block, chainBlocks) => {
   const balances = {};
   const Logs = (
@@ -28,7 +27,6 @@ const ethereumTVL = async (timestamp, block, chainBlocks) => {
   await sumTokens(balances, tokensAndOwners, block);
   return balances;
 };
-
 const ethereumBorrowed = async (timestamp, block, chainBlocks) => {
   const totalBorrowed = {};
   const Logs = (
@@ -40,23 +38,19 @@ const ethereumBorrowed = async (timestamp, block, chainBlocks) => {
       toBlock: block,
     })
   ).output;
-
   const pools = []
   const tokens = []
-
   for (let i = 0; i < Logs.length; i++) {
     const pool = "0x" + Logs[i].topics[1].substring(26, 66);
     const token = "0x" + Logs[i].topics[3].substring(26, 66);
     pools.push(pool)
     tokens.push(token)
   }
-
   const { output: borrowed } = await sdk.api.abi.multiCall({
     abi: abi.borrows,
     calls: pools.map(i => ({ target: i })),
     block,
   })
-
   borrowed.forEach((data, i) => sdk.util.sumSingleBalance(totalBorrowed, tokens[i], data.output))
   return totalBorrowed;
 };
@@ -74,28 +68,23 @@ const polygonTvl = async (timestamp, _,  { polygon: block }) => {
   await sumTokens(balances, tokensAndOwners, block, chain);
   return balances;
 };
-
 const polygonBorrowed = async (timestamp, _,  { polygon: block }) => {
   const chain = 'polygon'
   const poolData = await get(polygonPoolURL)
   const totalBorrowed = {};
-
   const pools = []
   const tokens = []
-
   for (let i = 0; i < poolData.length; i++) {
     const pool = poolData[i].address;
     const token = poolData[i].currency.address;
     pools.push(pool)
     tokens.push(token)
   }
-
   const { output: borrowed } = await sdk.api.abi.multiCall({
     abi: abi.borrows,
     calls: pools.map(i => ({ target: i })),
     chain, block,
   })
-
   borrowed.forEach((data, i) => sdk.util.sumSingleBalance(totalBorrowed, chain + ':' + tokens[i], data.output))
   return totalBorrowed;
 };
@@ -113,7 +102,7 @@ module.exports = {
   ethereum: {
     tvl: ethereumTVL,
     borrowed: ethereumBorrowed,
-    staking: stakings(singleStakingContracts, CPOOL),
+    staking: staking(singleStakingContracts, CPOOL),
   },
   polygon: {
     tvl: polygonTvl,
