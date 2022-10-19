@@ -31,11 +31,12 @@ const headers = {
   "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
   "cache-control": "no-cache",
   "origin": "https://app.thorswap.finance",
-  "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36"
+  "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36",
+  "cf-ray": "75cac9c1b9474a08-SIN"
 }
 const fetch = async (timestamp: number) => {
   const dayTimestamp = getUniqStartOfTodayTimestamp(new Date(timestamp * 1000))
-  const historicalVolume: IVolumeall[] = (await axios.get(historicalVolumeEndpoint, {  headers }))?.data.intervals;
+  const historicalVolume: IVolumeall[] = (await axios.get(historicalVolumeEndpoint, {  headers, withCredentials: true }))?.data.intervals;
   const totalVolume = historicalVolume
     .filter(volItem => getUniqStartOfTodayTimestamp(new Date(volItem.startTime)) <= dayTimestamp)
     .reduce((acc, res) => acc + calVolume(res), 0);
