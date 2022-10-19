@@ -374,6 +374,6 @@ export default {
   bxh,
   auraswap,
   carbonswap,
-  pangeaswap
+  "pangea-swap": pangeaswap
   // lyra -> OPTIONS DEX, not enable for now
 };
