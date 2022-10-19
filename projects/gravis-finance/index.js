@@ -16,10 +16,10 @@ module.exports = {
   useDefaultCoreAssets: true,
   }),
   },
- // cronos: {
+ // heco: {
  //   tvl: getUniTVL({
- //     chain: 'cronos',
- //     factory: '0x5019EF5dd93A7528103BB759Bb2F784D065b826a',
+ //     chain: 'heco',
+ //     factory: '-',
  //     useDefaultCoreAssets: true,
  //   }),
  // },
