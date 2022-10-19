@@ -3,6 +3,7 @@ const { PublicKey } = require("@solana/web3.js")
 const { getConnection } = require("../helper/solana");
 
 async function tvl() {
+    const connection = getConnection();
     const stakingInstanceState = await connection.getAccountInfo(new PublicKey("HNhPNHkp3RobeJzepNzyVyewtAaoF3QCCvtBTxKJVnRX"));
     const liqStakedAmtSOLAmount = stakingInstanceState.data.slice(203, 211);
     liqStakedAmtSOLAmount.reverse();
