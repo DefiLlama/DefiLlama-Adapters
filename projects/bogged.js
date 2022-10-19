@@ -1,5 +1,4 @@
 const { stakings } = require("./helper/staking");
-const { pool2s } = require("./helper/pool2");
 
 const stakingContracts = [
   "0xc3ab35d3075430f52D2636d08D4f29bD39a18B65",
@@ -19,7 +18,7 @@ const lpAddresses = [
 module.exports = {
   bsc: {
     staking: stakings(stakingContracts, boggedToken, "bsc"),
-    pool2: pool2s(lpContracts, lpAddresses, "bsc"),
+    pool2: stakings(lpContracts, lpAddresses, "bsc"),
     tvl: (async) => ({}),
   },
 };

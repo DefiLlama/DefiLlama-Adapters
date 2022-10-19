@@ -1,8 +1,7 @@
 const { staking } = require('../helper/staking');
 const { sumTokensAndLPsSharedOwners } = require('../helper/unwrapLPs');
 const { transformHarmonyAddress } = require('../helper/portedTokens');
-const { getBlock } = require('../helper/getBlock');
-const { fixHarmonyBalances } = require('../helper/portedTokens');
+const { getFixBalances } = require('../helper/portedTokens');
 
 const wagmiAddresses = {
   staking: '0x95066025af40F7f7832f61422802cD1e13C23753',
@@ -24,10 +23,9 @@ const wagmiReserves = {
   },
 };
 
-async function tvl(time, ethBlock, chainBlocks) {
+async function tvl(time, ethBlock, {harmony: block}) {
   const balances = {};
   const transform = await transformHarmonyAddress();
-  const block = await getBlock(time, 'harmony', chainBlocks, true);
 
   await sumTokensAndLPsSharedOwners(
     balances,
@@ -46,7 +44,7 @@ async function tvl(time, ethBlock, chainBlocks) {
     transform
   );
 
-  fixHarmonyBalances(balances);
+  (await getFixBalances('harmony'))(balances);
 
   return balances;
 }

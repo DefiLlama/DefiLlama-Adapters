@@ -56,7 +56,7 @@ const ITVL = [
 const tvlGuru = "0x426a4A4B73d4CD173C9aB78d18c0d79d1717eaA9";   //On-Chain Universal TVL Finder
 const USD = "kcc:0x0039f574eE5cC39bdD162E9A88e3EB1f111bAF48";   //same as abi.call({target:tvlGuru,abi:ITVL["usd"]})
 //NOTE: USD===kcc:USDT is used explicitly to reduce EVM calls by this adapter. It makes this process faster.
-async function pool2(timestamp,block) {
+async function pool2(timestamp,_, {kcc: block}) {
    let _pool2 = await sdk.api.abi.call({
     target: tvlGuru,
     abi: ITVL[0],
@@ -67,7 +67,7 @@ async function pool2(timestamp,block) {
    balances[USD]=(_pool2.output)
    return balances;
 }
-async function staking(timestamp,block) {
+async function staking(timestamp,_, {kcc: block}) {
    let _staking = await sdk.api.abi.call({
     target: tvlGuru,
     abi: ITVL[1],
@@ -78,7 +78,7 @@ async function staking(timestamp,block) {
    balances[USD]=(_staking.output)
    return balances;
 }
-async function tvl(timestamp,block) {
+async function tvl(timestamp,_, {kcc: block}) {
    let _tvl = await sdk.api.abi.call({
     target: tvlGuru,
     abi: ITVL[2],

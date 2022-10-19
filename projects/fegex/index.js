@@ -14,8 +14,8 @@ module.exports = {
   },
   bsc: {
     staking: staking(stakingContractBSC, FEG_BSC, "bsc"),
+    tvl: async ()=>({}),
   },
-  tvl: async ()=>({}),
   methodology:
     "We count liquidity of FEG token staked on ETHEREUM and BSC chains through their Staking Contracts",
 };

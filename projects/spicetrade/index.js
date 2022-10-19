@@ -1,6 +1,9 @@
 const { sumTokens } = require('../helper/unwrapLPs');
+// taken from https://docs.spicetrade.ai/misc/official-addresses
 const contracts = require('./contracts.json');
 const chains = Object.keys(contracts);
+const sdk = require('@defillama/sdk')
+const { getUniTVL } = require('../helper/unknownTokens')
 
 function getTokens(chain, type) {
     switch (type) {
@@ -31,15 +34,22 @@ const tvl = (chain, type) => {
 };
 
 const chainTypeExports = (chains) => {
-    return chains.reduce((obj, chain) => ({
-        ...obj,
-        [chain]: {
-            tvl: tvl(chain, "tvl"),
-            pool2: tvl(chain, "pool2"),
-            staking: tvl(chain, "staking")
-        }
-    }), {}
+    return chains.reduce((obj, chain) => {
+        const uniTVL = getUniTVL({
+            chain, 
+            factory: contracts[chain].factory,
+            useDefaultCoreAssets: true,
+        })
+        return ({
+            ...obj,
+            [chain]: {
+                tvl: sdk.util.sumChainTvls([uniTVL, ]),
+                pool2: tvl(chain, "pool2"),
+                staking: tvl(chain, "staking")
+            }
+        })
+    }, {}
     );
 };
 
-module.exports = chainTypeExports(chains);
+module.exports = chainTypeExports(chains)

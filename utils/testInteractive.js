@@ -41,6 +41,7 @@ async function runAdapter(adapterPath, debugMode) {
   const startTime = Date.now()
   return new Promise((resolve, reject) => {
     const env = {
+      ...process.env,
       LLAMA_SDK_MAX_PARALLEL: 100,
       LLAMA_DEBUG_MODE: !!debugMode
     }
@@ -48,7 +49,6 @@ async function runAdapter(adapterPath, debugMode) {
     const startTime = Date.now()
 
     const child = childProcess.fork('test.js', [adapterPath], {
-      ...process.env,
       env,
     })
 
