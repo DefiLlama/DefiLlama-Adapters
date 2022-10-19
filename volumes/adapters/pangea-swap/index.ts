@@ -9,7 +9,7 @@ const getDailyVolume = () => {
           tradingVolume1D
           totalValueLocked
           totalVirtualLocked
-      }   
+      }
   }`
 }
 

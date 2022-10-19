@@ -49,7 +49,7 @@ import dfyn from "./adapters/dfyn";
 import radioshack from "./adapters/radioshack";
 import flamingoFinance from "./adapters/flamingo-finance";
 import ZEROx from "./adapters/0x";
-import pangeaswap from './adapters/pangeaswap';
+import pangeaswap from './adapters/pangea-swap';
 // import bakerySwap from "./adapters/bakeryswap"; //broken
 import baryon from "./adapters/baryon";
 import cherryswap from "./adapters/cherryswap";
