@@ -56,7 +56,7 @@ async function getTVL(balances, chain, timestamp, chainBlocks) {
 
     const { output: floorPrices } = await sdk.api.abi.multiCall({
         calls: NFT_CHAINLINKED_ARRAY.map((address, i) => ({
-            target: address, params: totalChainlinkedPositions[i].output - 1
+            target: address, params: totalChainlinkedPositions[i].output > 0 ? totalChainlinkedPositions[i].output - 1 : 0
         })),
         abi: {
             "inputs": [
