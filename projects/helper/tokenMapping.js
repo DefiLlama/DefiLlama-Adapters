@@ -727,6 +727,15 @@ const fixBalancesTokens = {
   polis: {
     "0x6fc851b8d66116627fb1137b9d5fe4e2e1bea978": { coingeckoId: "polis", decimals: 18, },
   },
+  aptos: {
+    "0x1": { coingeckoId: "aptos", decimals: 8, },
+    "0x5e156f1207d0ebfa19a9eeff00d62a282278fb8719f4fab3a586a0a2c0fffbea": { coingeckoId: "usd-coin", decimals: 6, },
+    "0xa2eda21a58856fda86451436513b867c97eecb4ba099da5775520e0f7492e852": { coingeckoId: "tether", decimals: 6, },
+    "0xcc8a89c8dce9693d354449f1f73e60e14e347417854f029db5bc8e7454008abb": { coingeckoId: "ethereum", decimals: 8, },
+    "0xdd89c0e695df0692205912fb69fc290418bed0dbe6e4573d744a6d5e6bab6c13": { coingeckoId: "solana", decimals: 8, },
+    "0x84d7aeef42d38a5ffc3ccef853e1b82e4958659d16a7de736a29c55fbbeb0114": { coingeckoId: "aptos", decimals: 8, },  // tortuga staked aptos
+    "0xd11107bdf0d6d7040c6c0bfbdecb6545191fdf13e8d8d259952f53e1713f61b5": { coingeckoId: "aptos", decimals: 8, },  // ditto staked aptos
+  },
   dogechain: {
     [nullAddress]: { coingeckoId: "dogecoin", decimals: 18, },
     "0xB7ddC6414bf4F5515b52D8BdD69973Ae205ff101": { coingeckoId: "dogecoin", decimals: 18, },
