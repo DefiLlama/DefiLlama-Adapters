@@ -18,16 +18,16 @@ const blacklists = {
   polygon: ['0x8d52c2d70a7c28a9daac2ff12ad9bfbf041cd318',],
 }
 
-async function celotvl(timestamp, block) {
-
+async function celotvl(timestamp, block, cb) {
+  block = await getBlock(timestamp, 'celo', cb)
   const graphQuery = gql`
   query uniswapFactories($block: Int) {  
-    factories(first: 1, subgraphError: allow) {  
+    factories(block: { number: $block } first: 1, subgraphError: allow) {  
       totalValueLockedUSD
     }
   }
   `;
-  const { factories } = await request(graphs.celo, graphQuery);
+  const { factories } = await request(graphs.celo, graphQuery, { block });
   const usdTvl = Number(factories[0].totalValueLockedUSD);
   return toUSDTBalances(usdTvl);
 }
@@ -73,7 +73,6 @@ function v3TvlPaged(chain) {
 }
 
 module.exports = {
-  timetravel: false, // celo graph issues
   misrepresentedTokens: true,
   methodology: `Counts the tokens locked on AMM pools, pulling the data from the 'ianlapham/uniswapv2' subgraph`,
   celo: {

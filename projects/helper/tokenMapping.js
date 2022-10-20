@@ -530,6 +530,9 @@ const fixBalancesTokens = {
     "ibc/BFF0D3805B50D93E2FA5C0B2DDF7E0B30A631076CD80BC12A48C0E95404B4A41": { coingeckoId: "usd-coin", decimals: 6, },
     "ibc/11F940BCDFD7CFBFD7EDA13F25DA95D308286D441209D780C9863FD4271514EB": { coingeckoId: "agoric", decimals: 6, },
   },
+  osmosis: {
+    "uion": { coingeckoId: "ion", decimals: 6, },
+  },
   harmony: {
     "0x799a4202c12ca952cB311598a024C80eD371a41e": { coingeckoId: "harmony", decimals: 18, },
     "0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a": { coingeckoId: "harmony", decimals: 18, },
@@ -1058,6 +1061,10 @@ const fixBalancesTokens = {
     "0x81ecac0d6be0550a00ff064a4f9dd2400585fe9c": { coingeckoId: "tether", decimals: 6 },
     "0x6a2d262d56735dba19dd70682b39f6be9a931d98": { coingeckoId: "usd-coin", decimals: 6 },
     "0x6959027f7850adf4916ff5fdc898d958819e5375": { coingeckoId: "ethereum", decimals: 18 },
+    "0x4edf8e0778967012d46968ceadb75436d0426f88": { coingeckoId: "bepro-network", decimals: 18 },
+  },
+  moonriver: {
+    "0xcb4a593ce512d78162c58384f0b2fd6e802c2c47": { coingeckoId: "bepro-network", decimals: 18 },
   },
   iotex: {
     [nullAddress]: { coingeckoId: "iotex", decimals: 18 },
