@@ -530,6 +530,9 @@ const fixBalancesTokens = {
     "ibc/BFF0D3805B50D93E2FA5C0B2DDF7E0B30A631076CD80BC12A48C0E95404B4A41": { coingeckoId: "usd-coin", decimals: 6, },
     "ibc/11F940BCDFD7CFBFD7EDA13F25DA95D308286D441209D780C9863FD4271514EB": { coingeckoId: "agoric", decimals: 6, },
   },
+  osmosis: {
+    "uion": { coingeckoId: "ion", decimals: 6, },
+  },
   harmony: {
     "0x799a4202c12ca952cB311598a024C80eD371a41e": { coingeckoId: "harmony", decimals: 18, },
     "0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a": { coingeckoId: "harmony", decimals: 18, },
