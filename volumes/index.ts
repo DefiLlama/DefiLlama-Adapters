@@ -190,6 +190,7 @@ import gravityFinance from "./adapters/gravity-finance";
 import gravis from "./adapters/gravis";
 import fourSwap from "./adapters/4swap";
 import bisq from "./adapters/bisq";
+import tetu from "./adapters/tetu";
 
 
 export default {
@@ -382,6 +383,7 @@ export default {
   "gravity-finance": gravityFinance,
   gravis,
   "4swap": fourSwap,
-  bisq
+  bisq,
+  tetu
   // lyra -> OPTIONS DEX, not enable for now
 };
