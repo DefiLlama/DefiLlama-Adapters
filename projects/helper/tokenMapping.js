@@ -546,7 +546,12 @@ const fixBalancesTokens = {
     "0x6A46d878401F46B4C7f665f065E0667580e031ec": { coingeckoId: "investin", decimals: 18, },
     "0xa4eF4b0B23C1fc81d3f9ecF93510e64f58A4A016": { coingeckoId: "1million-nfts", decimals: 18, },
     "0x37dfACfaeDA801437Ff648A1559d73f4C40aAcb7": { coingeckoId: "apyswap", decimals: 18, },
-    "0xC7d8D35EBA58a0935ff2D5a33Df105DD9f071731": { coingeckoId: "hedget", decimals: 6, },
+    "0x71be881e9c5d4465b3fff61e89c6f3651e69b5bb": { coingeckoId: "brz", decimals: 4, }, // BRZ Token
+    "0x316622977073bbc3df32e7d2a9b3c77596a0a603": { coingeckoId: "brz", decimals: 18, }, // jarvis synthetic BRL
+    "0x5b1a9850f55d9282a7c4bf23a2a21b050e3beb2f": { coingeckoId: "brz", decimals: 4, }, // BRZ 
+    "0xdcecf0664c33321ceca2effce701e710a2d28a3f": { coingeckoId: "tether", decimals: 18, },
+    "0x1ddcaa4ed761428ae348befc6718bcb12e63bfaa": { coingeckoId: "usd-coin", decimals: 18, },  // Debridge USDC
+    "0x4268b8f0b87b6eae5d897996e6b845ddbd99adf3": { coingeckoId: "usd-coin", decimals: 6, },  // alexar USDC
   },
   oasis: {
     "0x21c718c22d52d0f3a789b752d4c2fd5908a8a733": { coingeckoId: "oasis-network", decimals: 18, },
