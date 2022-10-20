@@ -973,7 +973,6 @@ async function sumTokens2({
   skipFixBalances = false,
   abis = {},
 }) {
-
   if (!tokensAndOwners.length) {
     tokens = getUniqueAddresses(tokens)
     owners = getUniqueAddresses(owners)

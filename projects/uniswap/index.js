@@ -1,8 +1,7 @@
-const sdk = require('@defillama/sdk')
 const { request, gql } = require('graphql-request');
-const { toUSDTBalances } = require('../helper/balances');
-const { default: BigNumber } = require('bignumber.js');
 const { getBlock } = require('../helper/getBlock');
+const { sumTokens2 } = require('../helper/unwrapLPs')
+const { log } = require('../helper/utils')
 
 const graphs = {
   ethereum: "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3",
@@ -18,38 +17,21 @@ const blacklists = {
   polygon: ['0x8d52c2d70a7c28a9daac2ff12ad9bfbf041cd318',],
 }
 
-async function celotvl(timestamp, block, cb) {
-  block = await getBlock(timestamp, 'celo', cb)
-  const graphQuery = gql`
-  query uniswapFactories($block: Int) {  
-    factories(block: { number: $block } first: 1, subgraphError: allow) {  
-      totalValueLockedUSD
-    }
-  }
-  `;
-  const { factories } = await request(graphs.celo, graphQuery, { block });
-  const usdTvl = Number(factories[0].totalValueLockedUSD);
-  return toUSDTBalances(usdTvl);
-}
-
 function v3TvlPaged(chain) {
   return async (_, _b, { [chain]: block }) => {
-    block = await getBlock(_, chain, {[chain]: block})
+    block = await getBlock(_, chain, { [chain]: block })
+    log('Fetching data for block: ',chain, block)
     const balances = {}
-    const transform = i => `${chain}:${i}` 
-    block -= 300
+    block -= 200
     const size = 1000
     let lastId = ''
     let pools
     const graphQueryPaged = gql`
     query poolQuery($lastId: String, $block: Int) {
-      tokens(block: { number: $block } first:${size} where: {id_gt: $lastId totalValueLockedUSD_gt: 100}) {
+      pools(block: { number: $block } first:${size} where: {id_gt: $lastId totalValueLockedUSD_gt: 100}) {
         id
-        totalValueLocked
-        totalValueLockedUSD
-        symbol
-        name
-        decimals
+        token0 { id }
+        token1 { id }
       }
     }
   `// remove the bad pools
@@ -57,14 +39,10 @@ function v3TvlPaged(chain) {
 
     do {
       const res = await request(graphs[chain], graphQueryPaged, { lastId, block });
-      pools = res.tokens
-      console.log(chain, pools.length)
-      pools.forEach(i => {
-        if (blacklisted.includes(i.id)) return;
-        sdk.util.sumSingleBalance(balances, transform(i.id), BigNumber(i.totalValueLocked * (10 ** i.decimals)).toFixed(0))
-      })
-
-      // log(lastId, pools.length)
+      pools = res.pools
+      const tokensAndOwners = pools.map(i => ([[i.token0.id, i.id], [i.token1.id, i.id]])).flat()
+      log(chain, block, lastId, pools.length, tokensAndOwners.length)
+      await sumTokens2({ balances, tokensAndOwners, chain, block, blacklistedTokens: blacklisted })
       lastId = pools[pools.length - 1].id
     } while (pools.length === size)
 
@@ -73,11 +51,7 @@ function v3TvlPaged(chain) {
 }
 
 module.exports = {
-  misrepresentedTokens: true,
   methodology: `Counts the tokens locked on AMM pools, pulling the data from the 'ianlapham/uniswapv2' subgraph`,
-  celo: {
-    tvl: celotvl,
-  },
   hallmarks: [
     [1598412107, "SushiSwap launch"],
     [1599535307, "SushiSwap migration"],
@@ -87,7 +61,8 @@ module.exports = {
   ]
 }
 
-const chains = ['ethereum', 'arbitrum', 'optimism', 'polygon']
+const chains = ['ethereum', 'arbitrum', 'optimism', 'polygon', 'celo']
+// const chains = ['celo']
 
 chains.forEach(chain => {
   module.exports[chain] = {
