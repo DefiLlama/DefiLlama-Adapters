@@ -69,7 +69,8 @@ export enum CHAIN {
   FINDORA = "findora",
   FUNCTIONX = "functionx",
   ENERGYWEB = "energyweb",
-  MIXIN = "mixin"
+  MIXIN = "mixin",
+  THORCHAIN ="thorchain"
 }
 
 // Don´t use
