@@ -3,7 +3,7 @@ const { toUSDTBalances } = require("../helper/balances")
 let _response
 
 async function getTvls(serviceName, key) {
-  if (!_response) _response = get('https://api.stkr.io/v1alpha/metrics')
+  if (!_response) _response = get('https://api.staking.ankr.com/v1alpha/metrics')
   const response = await _response
   const data = response.services.find(i => i.serviceName === serviceName)
   return data ? +data[key] : 0;
