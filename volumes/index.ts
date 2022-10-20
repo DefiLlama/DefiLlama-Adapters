@@ -192,6 +192,7 @@ import fourSwap from "./adapters/4swap";
 import bisq from "./adapters/bisq";
 import tetu from "./adapters/tetu";
 import muesliswap from "./adapters/muesliswap";
+import ginFinance from "./adapters/gin-finance";
 
 
 export default {
@@ -386,6 +387,7 @@ export default {
   "4swap": fourSwap,
   bisq,
   tetu,
-  muesliswap
+  muesliswap,
+  "gin-finance": ginFinance
   // lyra -> OPTIONS DEX, not enable for now
 };
