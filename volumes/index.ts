@@ -191,7 +191,7 @@ import gravis from "./adapters/gravis";
 import fourSwap from "./adapters/4swap";
 import bisq from "./adapters/bisq";
 import tetu from "./adapters/tetu";
-
+import thorswap from "./adapters/thorswap";
 
 export default {
   mooniswap,
@@ -384,6 +384,7 @@ export default {
   gravis,
   "4swap": fourSwap,
   bisq,
-  tetu
+  tetu,
+  thorswap
   // lyra -> OPTIONS DEX, not enable for now
 };
