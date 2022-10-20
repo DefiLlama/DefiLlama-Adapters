@@ -27,6 +27,7 @@ Object.keys(config).forEach(chain => {
   const owners = [...bountyNetworks]
   if (registry) owners.push(registry)
   module.exports[chain] = {
-    tvl: sumTokensExport({ chain, owners, tokens: [token]})
+    tvl: () => ({}),
+    staking: sumTokensExport({ chain, owners, tokens: [token]})
   }
 })
