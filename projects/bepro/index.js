@@ -23,8 +23,10 @@ module.exports = {
 };
 
 Object.keys(config).forEach(chain => {
-  const { token, registry, bountyNetworks} = config[chain]
+  const { token, registry, bountyNetworks  = []} = config[chain]
+  const owners = [...bountyNetworks]
+  if (registry) owners.push(registry)
   module.exports[chain] = {
-    tvl: sumTokensExport({ chain, owners: [...bountyNetworks, registry], tokens: [token]})
+    tvl: sumTokensExport({ chain, owners, tokens: [token]})
   }
 })
