@@ -158,5 +158,6 @@
   "xdc",
   "ethpow",
   "cube",
-  "aptos"
+  "aptos",
+  "mixin"
 ]
