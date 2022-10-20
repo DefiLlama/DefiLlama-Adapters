@@ -2,6 +2,18 @@ const { request, gql } = require('graphql-request');
 const { getBlock } = require('../helper/getBlock');
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const { log } = require('../helper/utils')
+/* 
+const ethers = require("ethers")
+const { config } = require('@defillama/sdk/build/api');
+
+config.setProvider("celo", new ethers.providers.StaticJsonRpcProvider(
+  "wss://forno.celo.org/ws,https://rpc.ankr.com/celo,https://forno.celo.org",
+  {
+    name: "celo",
+    chainId: 42220,
+  }
+))
+ */
 
 const graphs = {
   ethereum: "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3",
@@ -12,9 +24,9 @@ const graphs = {
 }
 
 const blacklists = {
-  ethereum: ['0xa850478adaace4c08fc61de44d8cf3b64f359bec', '0x055284a4ca6532ecc219ac06b577d540c686669d', '0x8c0411f2ad5470a66cb2e9c64536cfb8dcd54d51', '0x277667eb3e34f134adf870be9550e9f323d0dc24'],
+  ethereum: ['0xa850478adaace4c08fc61de44d8cf3b64f359bec', '0x055284a4ca6532ecc219ac06b577d540c686669d', '0x8c0411f2ad5470a66cb2e9c64536cfb8dcd54d51', '0x277667eb3e34f134adf870be9550e9f323d0dc24','0x4c83a7f819a5c37d64b4c5a2f8238ea082fa1f4e','0x290a6a7460b308ee3f19023d2d00de604bcf5b42','0x4b5ab61593a2401b1075b90c04cbcdd3f87ce011','0x582d23c7ec6b59afd041a522ff64ff081e8c0d2d','0x1f98431c8ad98523631ae4a59f267346ea31f984',],
   arbitrum: ['0xd4d2f4110878a33ea5b97f0665e518253446161a',],
-  polygon: ['0x8d52c2d70a7c28a9daac2ff12ad9bfbf041cd318',],
+  polygon: ['0x8d52c2d70a7c28a9daac2ff12ad9bfbf041cd318', '0x1f98431c8ad98523631ae4a59f267346ea31f984','0xd5302a8ead77b85ea3326b45f4714e0b3432b233','0xc951ab482ff11d8df636742e1f1c3fc8037427a9', ],
 }
 
 function v3TvlPaged(chain) {
@@ -22,7 +34,6 @@ function v3TvlPaged(chain) {
     block = await getBlock(_, chain, { [chain]: block })
     log('Fetching data for block: ',chain, block)
     const balances = {}
-    block -= 200
     const size = 1000
     let lastId = ''
     let pools
@@ -38,10 +49,10 @@ function v3TvlPaged(chain) {
     const blacklisted = blacklists[chain] || []
 
     do {
-      const res = await request(graphs[chain], graphQueryPaged, { lastId, block });
+      const res = await request(graphs[chain], graphQueryPaged, { lastId, block: block - 500 });
       pools = res.pools
       const tokensAndOwners = pools.map(i => ([[i.token0.id, i.id], [i.token1.id, i.id]])).flat()
-      log(chain, block, lastId, pools.length, tokensAndOwners.length)
+      log(chain, block, lastId, pools.length)
       await sumTokens2({ balances, tokensAndOwners, chain, block, blacklistedTokens: blacklisted })
       lastId = pools[pools.length - 1].id
     } while (pools.length === size)
