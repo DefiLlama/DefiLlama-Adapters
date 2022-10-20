@@ -1,4 +1,4 @@
-const sdk = require('@defillama/sdk');
+const { sumTokensExport } = require('../helper/unwrapLPs')
 
 /** BEPRO Protocol is available on Moonbeam and Moonriver */
 const config = {
@@ -17,55 +17,14 @@ const config = {
     }
 }
 
-async function addRegistryTvl(network, key, chainBlocks, balances) {
-    if (network.registry) {
-        const registryBalance = (await sdk.api.abi.call({
-            abi: 'erc20:balanceOf',
-            chain: key,
-            target: config[key].token,
-            params: [config[key].registry],
-            block: chainBlocks[key],
-        })).output;
-        await sdk.util.sumSingleBalance(balances, `ethereum:${config.ethereum.token}`, registryBalance);
-    }
-}
-async function addBountyNetworkTvls(key, chainBlocks, balances) {
-    for (const bountyNetwork of config[key].bountyNetworks) {
-        const collateralBalance = (await sdk.api.abi.call({
-            abi: 'erc20:balanceOf',
-            chain: key,
-            target: config[key].token,
-            params: [bountyNetwork],
-            block: chainBlocks[key],
-        })).output;
-
-        await sdk.util.sumSingleBalance(balances, `ethereum:${config.ethereum.token}`, collateralBalance);
-    }
-}
-
-function buildTvls() {
-    const tvls = {};
-    for (const key in config) {
-        if (Object.hasOwnProperty.call(config, key)) {
-            const network = config[key];
-            tvls[key] = {
-                tvl: async (timestamp, block, chainBlocks) => {
-                    const balances = {};
-                    await addRegistryTvl(network, key, chainBlocks, balances);                  
-                    await addBountyNetworkTvls(key, chainBlocks, balances);
-                    return balances;
-                }
-            }
-        }
-    }
-    return tvls;   
-}
-
 module.exports = {
-    timetravel: true,
-    misrepresentedTokens: false,
     methodology: 'counts the number of BEPRO tokens on Moonbeam Network contracts',
     start: 1000235,
-    ...buildTvls(),
-}; 
+};
 
+Object.keys(config).forEach(chain => {
+  const { token, registry, bountyNetworks} = config[chain]
+  module.exports[chain] = {
+    tvl: sumTokensExport({ chain, owners: [...bountyNetworks, registry], tokens: [token]})
+  }
+})
