@@ -1,5 +1,7 @@
 
 const http = require('./http')
+const { fixBalancesTokens } = require('./tokenMapping')
+const coreTokens = Object.keys(fixBalancesTokens.aptos)
 
 const endpoint = process.env.APTOS_RPC || "https://fullnode.mainnet.aptoslabs.com"
 
@@ -20,4 +22,5 @@ module.exports = {
   aQuery,
   getCoinInfo,
   getResources,
+  coreTokens,
 };

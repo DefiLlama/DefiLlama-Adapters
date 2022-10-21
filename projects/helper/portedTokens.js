@@ -203,7 +203,6 @@ async function getFixBalances(chain) {
 
 function getFixBalancesSync(chain) {
   const dummyFn = i => i;
-  if (chain === 'tezos') return fixTezosBalances
   return fixBalancesMapping[chain] || dummyFn;
 }
 
@@ -221,10 +220,28 @@ function fixTezosBalances(balances) {
   return balances
 }
 
-const fixBalancesMapping = {};
+function fixAptosBalances(balances) {
+  const mapping = fixBalancesTokens.aptos
+  Object.entries(balances).forEach(([key, value]) => {
+    const token = key.replace(/^aptos\:/, '')
+    if (mapping[token]) {
+      delete balances[key]
+      const { coingeckoId, decimals } = mapping[token]
+      balances[coingeckoId] = BigNumber(balances[coingeckoId] || 0).toFixed(0)
+      sdk.util.sumSingleBalance(balances, coingeckoId, BigNumber(value/ 10 ** decimals).toFixed(0))
+    }
+  })
+  return balances
+}
+
+const fixBalancesMapping = {
+  tezos: fixTezosBalances,
+  aptos: fixAptosBalances,
+};
 
 for (const chain of Object.keys(fixBalancesTokens)) {
-  fixBalancesMapping[chain] = b => fixBalances(b, fixBalancesTokens[chain])
+  if (!fixBalancesMapping[chain])
+    fixBalancesMapping[chain] = b => fixBalances(b, fixBalancesTokens[chain])
 }
 
 const chainTransforms = {
