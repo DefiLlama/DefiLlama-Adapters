@@ -195,6 +195,7 @@ import muesliswap from "./adapters/muesliswap";
 import ginFinance from "./adapters/gin-finance";
 import ferro from "./adapters/ferro";
 import incrementSwap from "./adapters/increment-swap";
+import chaingeFinance from "./adapters/chainge-finance";
 
 
 export default {
@@ -392,6 +393,7 @@ export default {
   muesliswap,
   "gin-finance": ginFinance,
   ferro,
-  "increment-swap": incrementSwap
+  "increment-swap": incrementSwap,
+  "chainge-finance": chaingeFinance
   // lyra -> OPTIONS DEX, not enable for now
 };
