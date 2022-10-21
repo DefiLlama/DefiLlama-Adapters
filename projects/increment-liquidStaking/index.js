@@ -1,5 +1,3 @@
-const { fetchURL } = require("../helper/utils");
-
 // increment liquid staking link: https://app.increment.fi/staking
 const axios = require("axios");
 
@@ -10,7 +8,6 @@ pub fun main(): UFix64 {\
 }";
 
 const queryCodeBase64 = Buffer.from(queryLiquidStakingTVLCode, 'utf-8').toString('base64');
-
 
 async function tvl() {
     try {
@@ -27,24 +24,17 @@ async function tvl() {
         let resString = Buffer.from(resEncoded, 'base64').toString('utf-8');
         let resJson = JSON.parse(resString);
         let flowTokenTVL = Number(resJson.value);
-        
-        let resPrice = await fetchURL("https://www.binance.com/api/v3/ticker/price?symbol=FLOWUSDT");
-        let flowPrice = Number(resPrice.data.price);
 
-        return flowTokenTVL * flowPrice;
+        return {flow: flowTokenTVL};
     } catch (error) {
         throw new Error(`Couln't query scripts of increment liquid staking for flow chain`, error);
     }
 }
 
-async function fetch() {
-    return await tvl();
-}
-
 module.exports = {
+    timetravel: false,
     methodology: "Counting the flow tokens staked by users in the protocol, and tokens locked by unstaking are not counted.",
     flow: {
-        fetch: tvl,
+        tvl,
     },
-    fetch,
 };
