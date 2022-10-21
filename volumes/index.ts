@@ -193,6 +193,7 @@ import bisq from "./adapters/bisq";
 import tetu from "./adapters/tetu";
 import muesliswap from "./adapters/muesliswap";
 import ginFinance from "./adapters/gin-finance";
+import ferro from "./adapters/ferro";
 
 
 export default {
@@ -388,6 +389,7 @@ export default {
   bisq,
   tetu,
   muesliswap,
-  "gin-finance": ginFinance
+  "gin-finance": ginFinance,
+  ferro
   // lyra -> OPTIONS DEX, not enable for now
 };
