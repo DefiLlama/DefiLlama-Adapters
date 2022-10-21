@@ -62,7 +62,15 @@ export enum CHAIN {
   CLV = "clv",
   ULTRON = "ultron",
   STELLAR = "stellar",
-  ALGORAND = "algorand"
+  ALGORAND = "algorand",
+  TELOS = "telos",
+  TOMOCHAIN = "tomochain",
+  BITGERT = "bitgert",
+  FINDORA = "findora",
+  FUNCTIONX = "functionx",
+  ENERGYWEB = "energyweb",
+  MIXIN = "mixin",
+  MILKOMEDA = "milkomeda"
 }
 
 // Don´t use

@@ -5,7 +5,8 @@ async function tvl() {
   const balances = await sumTokens({ 
     owner: goUsdBasketAddress, 
     blacklistedTokens: [ tokens.goUsd, ],
-    tinymanLps: [ [tokens.usdcGoUsdLp, tokens.goUsd], ],
+    blacklistOnLpAsWell: true,
+    tinymanLps: [ [tokens.usdcGoUsdLp,], ],
    })
   return balances
 }

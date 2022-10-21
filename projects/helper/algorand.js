@@ -40,7 +40,7 @@ const withLimiter = (fn, tokensToRemove = 1) => async (...args) => {
   return fn(...args);
 }
 
-async function sumTokens({ owner, owners = [], tokens = [], token, balances = {}, blacklistedTokens = [], tinymanLps = [], }) {
+async function sumTokens({ owner, owners = [], tokens = [], token, balances = {}, blacklistedTokens = [], tinymanLps = [], blacklistOnLpAsWell = false, }) {
   if (owner) owners = [owner]
   if (token) tokens = [token]
   const accounts = await Promise.all(owners.map(getAccountInfo))
@@ -52,7 +52,7 @@ async function sumTokens({ owner, owners = [], tokens = [], token, balances = {}
     })
   })
   if (tinymanLps.length) {
-    await Promise.all(tinymanLps.map(([lp, unknown]) => resolveTinymanLp(balances, lp, unknown)))
+    await Promise.all(tinymanLps.map(([lp, unknown]) => resolveTinymanLp({ balances, lpId: lp, unknownAsset: unknown, blacklistedTokens: blacklistOnLpAsWell ? blacklistedTokens : [] })))
   }
   const fixBalances = getFixBalancesSync('algorand')
   return fixBalances(balances)
@@ -71,7 +71,7 @@ async function getAssetInfo(assetId, { includeReserveInfo = false } = {}) {
   return assetObj
 }
 
-async function resolveTinymanLp(balances, lpId, unknownAsset) {
+async function resolveTinymanLp({ balances, lpId, unknownAsset, blacklistedTokens, }) {
   const lpBalance = balances[lpId]
   if (lpBalance && lpBalance !== '0') {
     const lpInfo = await getAssetInfo(lpId, { includeReserveInfo: true })
@@ -79,12 +79,15 @@ async function resolveTinymanLp(balances, lpId, unknownAsset) {
     if (unknownAsset && lpInfo.assets[unknownAsset]) {
       ratio = ratio * 2
       Object.keys(lpInfo.assets).forEach((token) => {
-        if (token !== unknownAsset)
-          sdk.util.sumSingleBalance(balances, token, BigNumber(lpInfo.assets[token].amount * ratio).toFixed(0))
+        console.log(blacklistedTokens, token)
+        if (!blacklistedTokens.length || !blacklistedTokens.includes(token))
+          if (token !== unknownAsset)
+            sdk.util.sumSingleBalance(balances, token, BigNumber(lpInfo.assets[token].amount * ratio).toFixed(0))
       })
     } else {
       Object.keys(lpInfo.assets).forEach((token) => {
-        sdk.util.sumSingleBalance(balances, token, BigNumber(lpInfo.assets[token].amount * ratio).toFixed(0))
+        if (!blacklistedTokens.length || !blacklistedTokens.includes(token))
+          sdk.util.sumSingleBalance(balances, token, BigNumber(lpInfo.assets[token].amount * ratio).toFixed(0))
       })
     }
   }
