@@ -71,7 +71,8 @@ export enum CHAIN {
   ENERGYWEB = "energyweb",
   MIXIN = "mixin",
   MILKOMEDA = "milkomeda",
-  FLOW = "flow"
+  FLOW = "flow",
+  FUSION = "fusion"
 }
 
 // Don´t use
