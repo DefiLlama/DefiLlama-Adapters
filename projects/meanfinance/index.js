@@ -67,7 +67,7 @@ module.exports = {
     [1646367758, "Deployment on Polygon"],
     [1650082958, "Protocol is paused because a non-critical vulnerability"],
     [1653366158, "V2 Relaunch"],
-    [1654057358, "OP launch bring more users into Optimism and benefits Mean"]
-    [1666364400, "Yield-While-DCA is launched"]
+    [1654057358, "OP launch brings more users into Optimism and benefits Mean"]
+    [1666364400, "Yield-While-DCA launch"]
   ]
 };
