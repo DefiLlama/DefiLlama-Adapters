@@ -17,8 +17,8 @@ async function tvl(timestamp, block, chainBlocks) {
 }
 
 module.exports={
-    avax:{
+    telos: {
         tvl,
     },
-    methodology: "Counts staked TLOS tokens.",
+    methodology: "Counts staked TLOS tokens in sTLOS contract.",
 }
