@@ -1485,7 +1485,7 @@ Object.keys(coingeckoCache).forEach(chain => {
 
 })
 
-function getUniqueAddresses(addresses) {
+function getUniqueAddresses(addresses, chain) {
   const set = new Set()
   addresses.forEach(i => set.add(caseSensitiveChains[chain] ? i : i.toLowerCase()))
   return [...set]
