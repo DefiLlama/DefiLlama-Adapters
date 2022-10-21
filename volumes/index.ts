@@ -194,6 +194,7 @@ import tetu from "./adapters/tetu";
 import muesliswap from "./adapters/muesliswap";
 import ginFinance from "./adapters/gin-finance";
 import ferro from "./adapters/ferro";
+import incrementSwap from "./adapters/increment-swap";
 
 
 export default {
@@ -390,6 +391,7 @@ export default {
   tetu,
   muesliswap,
   "gin-finance": ginFinance,
-  ferro
+  ferro,
+  "increment-swap": incrementSwap
   // lyra -> OPTIONS DEX, not enable for now
 };
