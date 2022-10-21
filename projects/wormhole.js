@@ -26,6 +26,9 @@ module.exports = {
   ethereum: {
     fetch: fetch("2")
   },
+  aptos: {
+    fetch: fetch("22")
+  },
   terra: {
     fetch: fetch("3")
   },
