@@ -498,9 +498,14 @@ const fixBalancesTokens = {
   avax: {
     "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7": { coingeckoId: "avalanche-2", decimals: 18, },
     "0x9dEbca6eA3af87Bf422Cea9ac955618ceb56EfB4": { coingeckoId: "avalanche-2", decimals: 18, },
+    "0xf538030Ba4B39E35A3576bD6698cfcc6AC34A81f": { coingeckoId: "nemo", decimals: 18, },
+    "0x4860a28be33ad04dadfc91722728effa8430f836": { coingeckoId: "spear-finance", decimals: 9, },
   },
   lachain: {
     "0x3a898D596840C6B6b586d722bFAdCC8c4761BF41": { coingeckoId: "latoken", decimals: 18, },
+  },
+  xdai: {
+    "0x270DE58F54649608D316fAa795a9941b355A2Bd0": { coingeckoId: "freedom-reserve", decimals: 18, },
   },
   theta: {
     "0x4dc08b15ea0e10b96c41aec22fab934ba15c983e": { coingeckoId: "theta-fuel", decimals: 18, },
@@ -542,6 +547,7 @@ const fixBalancesTokens = {
     "0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a": { coingeckoId: "harmony", decimals: 18, },
     "0xa9ce83507d872c5e1273e745abcfda849daa654f": { coingeckoId: "xjewel", decimals: 18, },
     "0xea589e93ff18b1a1f1e9bac7ef3e86ab62addc79": { coingeckoId: "viper", decimals: 18, },
+    "0xcA04E074A124159EC066eF547323ff890Dc3C51b": { coingeckoId: "stableusd", decimals: 6, },
   },
   bsc: {
     "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c": { coingeckoId: "binancecoin", decimals: 18, },
@@ -556,6 +562,9 @@ const fixBalancesTokens = {
     "0xdcecf0664c33321ceca2effce701e710a2d28a3f": { coingeckoId: "tether", decimals: 18, },
     "0x1ddcaa4ed761428ae348befc6718bcb12e63bfaa": { coingeckoId: "usd-coin", decimals: 18, },  // Debridge USDC
     "0x4268b8f0b87b6eae5d897996e6b845ddbd99adf3": { coingeckoId: "usd-coin", decimals: 6, },  // alexar USDC
+    "0xaa44051bdd76e251aab66dbbe82a97343b4d7da3": { coingeckoId: "lamea", decimals: 18, },
+    "0x77F86D401e067365dD911271530B0c90DeC3e0f7": { coingeckoId: "lofi", decimals: 18, },
+    "0x06ae7A979D9818B64498c8acaFDd0ccc78bC6fd2": { coingeckoId: "neuron-chain", decimals: 18, },
   },
   oasis: {
     "0x21c718c22d52d0f3a789b752d4c2fd5908a8a733": { coingeckoId: "oasis-network", decimals: 18, },
@@ -685,6 +694,7 @@ const fixBalancesTokens = {
   milkomeda: {
     "0xAE83571000aF4499798d1e3b0fA0070EB3A3E3F9": { coingeckoId: "cardano", decimals: 18 },
     "0x4bf769b05e832fcdc9053fffbc78ca889acb5e1e": { coingeckoId: "binance-usd", decimals: 18 },
+    "0x386e685b5cbaa7bc06e3dd2eecdc56105076e4fa": { coingeckoId: "muesliswap-milk", decimals: 18 },
   },
   ultron: {
     [nullAddress]: { coingeckoId: "ultron", decimals: 18 },
@@ -769,6 +779,7 @@ const fixBalancesTokens = {
     "0x10D70831f9C3c11c5fe683b2f1Be334503880DB6": { coingeckoId: "frax", decimals: 18, },
     "0x1fC532187B4848d2F9c564531b776A4F8e11201d": { coingeckoId: "binancecoin", decimals: 18, },
     "0x7264610A66EcA758A8ce95CF11Ff5741E1fd0455": { coingeckoId: "canto-inu", decimals: 18, },
+    "0xB0EE479CA14b4B6e250511ddD21C7E3856F99dd9": { coingeckoId: "hound", decimals: 18, },
   },
   canto: {
     [nullAddress]: { coingeckoId: "canto", decimals: 18, },
@@ -973,7 +984,7 @@ const fixBalancesTokens = {
   },
   energi: {
     "0x7A86173daa4fDA903c9A4C0517735a7d34B9EC39": { coingeckoId: "energi", decimals: 18 },
-    "0xa55f26319462355474a9f2c8790860776a329aa4": { coingeckoId: "energi", decimals: 18 }
+    "0xa55f26319462355474a9f2c8790860776a329aa4": { coingeckoId: "energi", decimals: 18 },
   },
   nahmii: {
     "0x4200000000000000000000000000000000000006": { coingeckoId: "ethereum", decimals: 18 },
@@ -1004,6 +1015,7 @@ const fixBalancesTokens = {
     "0xBc2F884680c95A02cea099dA2F524b366d9028Ba": { coingeckoId: "tether", decimals: 18 },
     "0x265bD28d79400D55a1665707Fa14A72978FA6043": { coingeckoId: "cashcats", decimals: 2 },
     "0x9192940099fDB2338B928DE2cad9Cd1525fEa881": { coingeckoId: "bchpad", decimals: 18 },
+    "0x225FCa2A940cd5B18DFb168cD9B7f921C63d7B6E": { coingeckoId: "incinerate", decimals: 18 },
   },
   palm: {
     "0x4c1f6fcbd233241bf2f4d02811e3bf8429bc27b8": { coingeckoId: "dai", decimals: 18 },
@@ -1028,6 +1040,7 @@ const fixBalancesTokens = {
     "0x765277EebeCA2e31912C9946eAe1021199B39C61": { coingeckoId: "dai", decimals: 18 },
     "0xc13791DA84f43525189456CfE2026C60D3B7F706": { coingeckoId: "kava", decimals: 18 },
     "0x7c598c96d02398d89fbcb9d41eab3df0c16f227d": { coingeckoId: "sushi", decimals: 18 },
+    "0xCa7350Ed65c2fC90A9DBF2D15C75E80EA91aB1c1": { coingeckoId: "ruby-cash", decimals: 18 },
   },
   sx: {
     "0xaa99bE3356a11eE92c3f099BD7a038399633566f": { coingeckoId: "sx-network", decimals: 18 },
@@ -1080,6 +1093,8 @@ const fixBalancesTokens = {
     "0x5067006f830224960fb419d7f25a3a53e9919bb0": { coingeckoId: "smartpad-2", decimals: 18 },
     "0x2e9d63788249371f1dfc918a52f8d799f4a38c94": { coingeckoId: "tokemak", decimals: 18 },
     "0x6b3595068778dd592e39a122f4f5a5cf09c90fe2": { coingeckoId: "sushi", decimals: 18 },
+    "0x76574c7b61b07ba14eace42e60cc73a08038da85": { coingeckoId: "all-me", decimals: 18 },
+    "0x1da4858ad385cc377165a298cc2ce3fce0c5fd31": { coingeckoId: "cloutcontracts", decimals: 0 },
   },
   moonbeam: {
     // celer bridge
@@ -1096,6 +1111,8 @@ const fixBalancesTokens = {
     '0xA00744882684C3e4747faEFD68D283eA44099D03': { coingeckoId: "iotex", decimals: 18 },
     "0x3fe04320885e6124231254c802004871be681218": { coingeckoId: "mcn-ventures", decimals: 18 },
     "0xe1ce1c0fa22ec693baca6f5076bcdc4d0183de1c": { coingeckoId: "elk-finance", decimals: 18 },
+    "0x4d7b88403aa2f502bf289584160db01ca442426c": { coingeckoId: "cyclone-protocol", decimals: 18 },
+    "0xd67de0e0a0fd7b15dc8348bb9be742f3c5850454": { coingeckoId: "wowswap", decimals: 18 },
   },
   polygon: {
     '0xfc40a4f89b410a1b855b5e205064a38fc29f5eb5': { coingeckoId: "rusd", decimals: 18 },
@@ -1460,9 +1477,12 @@ const coreAssets = {
 Object.keys(coingeckoCache).forEach(chain => {
   if (!fixBalancesTokens[chain]) fixBalancesTokens[chain] = []
   const mapping = fixBalancesTokens[chain]
-  for (const [key, value] of Object.entries(coingeckoCache[chain]))
+  for (const [key, value] of Object.entries(coingeckoCache[chain])) {
+    if (value.decimals === null) continue;
     if (!mapping[key])
       mapping[key] = value
+  }
+
 })
 
 function getUniqueAddresses(addresses) {
