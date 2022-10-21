@@ -1,22 +1,35 @@
 const sdk = require('@defillama/sdk')
 const { userInfo } = require('../pendle/abi.json')
-const { sumTokensExport } = require('../helper/unwrapLPs')
-const getTotalDeposited = { "inputs": [], "name": "getTotalDeposited", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }
-const USDF_TOKEN_CONTRACT = '0x51acB1ea45c1EC2512ae4202B9076C13016dc8aA';
+const { sumTokens2 } = require('../helper/unwrapLPs')
 const FRACTAL_VAULT_CONTRACT = '0x3EAa4b3e8967c02cE1304C1EB35e8C5409838DFC';
-
-async function tvl(timestamp, block) {
-  const { output: total } = await sdk.api.abi.call({ target: FRACTAL_VAULT_CONTRACT, block, abi: getTotalDeposited })
-
-  return {
-    'usd-coin': total / 1e6
-  }
-}
+const YIELD_RESERVE = '0xbA83B569e99B6afc2f2BfE5124460Be6f36a4a56';
 
 module.exports = {
   misrepresentedTokens: true,
   ethereum: {
-    tvl: sumTokensExport({ owner: FRACTAL_VAULT_CONTRACT, tokens: ['0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'], chain: 'ethereum' }),
+    tvl: async (_, block) => {
+      const convexStakingWrapper_tUSD = '0x00Ec5E23B203B8aE16d55C7F601d1c67e45D826c'
+      const franUnifiedFarm_tUSD = '0xb324b2bd8a3dc55b04111e84d5cce0c3771f8889'
+      const convexStakingWrapper_alUSD = '0x0def0fac24dead04e2f4b49b5fb50b10478e2fa6'
+      const franUnifiedFarm_alUSD = '0x711d650cd10df656c2c28d375649689f137005fa'
+      const { output: tUSDBal } = await sdk.api.abi.call({
+        target: franUnifiedFarm_tUSD, params: convexStakingWrapper_tUSD,
+        abi: abis.lockedLiquidityOf, block,
+      })
+      const { output: alUSDBal } = await sdk.api.abi.call({
+        target: franUnifiedFarm_alUSD, params: convexStakingWrapper_alUSD,
+        abi: abis.lockedLiquidityOf, block,
+      })
+      const { output: convexTUSD  } = await sdk.api.erc20.balanceOf({
+        target: '0x4a744870fd705971c8c00ac510eac2206c93d5bb', owner: '0xFD1D1339Dbc24496D70DBF7912c07aE2EF71bC2d', block,
+      })
+      const balances = {
+        '0xB30dA2376F63De30b42dC055C93fa474F31330A5': alUSDBal,
+        '0x33baeDa08b8afACc4d3d07cf31d49FC1F1f3E893': tUSDBal,
+        '0x10BE382cfAB53e0aBD093D6801B5e95C6Aedb715': convexTUSD,
+      }
+      return sumTokens2({ balances, owners: [FRACTAL_VAULT_CONTRACT, YIELD_RESERVE,], tokens: ['0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'], block, })
+    },
     borrowed: async (_, block) => {
       const loanContract = '0xf0e3020934450152308e4a84a3c4a5801fcb8d29'
       const { output: token } = await sdk.api.abi.call({ block, target: loanContract, abi: abis.principalToken })
@@ -79,5 +92,6 @@ const abis = {
   exchangeRateStored: {"constant":true,"inputs":[],"name":"exchangeRateStored","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},
   getVirtualPrice: {"inputs":[],"name":"getVirtualPrice","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
   principalToken: {"inputs":[],"name":"principalToken","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
+  lockedLiquidityOf: { "inputs": [{ "internalType": "address", "name": "account", "type": "address" }], "name": "lockedLiquidityOf", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
   getDebt: {"inputs":[],"name":"getDebt","outputs":[{"internalType":"uint256","name":"interestDebtAmount","type":"uint256"},{"internalType":"uint256","name":"grossDebtAmount","type":"uint256"},{"internalType":"uint256","name":"principalDebtAmount","type":"uint256"},{"internalType":"uint256","name":"interestOwed","type":"uint256"},{"internalType":"uint256","name":"applicableLateFee","type":"uint256"},{"internalType":"uint256","name":"netDebtAmount","type":"uint256"},{"internalType":"uint256","name":"daysSinceFunding","type":"uint256"},{"internalType":"uint256","name":"currentBillingCycle","type":"uint256"},{"internalType":"uint256","name":"minPaymentAmount","type":"uint256"},{"internalType":"uint256","name":"maxPaymentAmount","type":"uint256"}],"stateMutability":"view","type":"function"},
 }
