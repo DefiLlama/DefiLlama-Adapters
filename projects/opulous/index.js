@@ -11,7 +11,7 @@ async function staking() {
         let decodedKey = Buffer.from(y.key, 'base64').toString('binary')
         if (decodedKey === "pool_size") {
           //OPUL has 10 digits
-          poolAmount = y.value.uint / 10000000000
+          poolAmount = y.value.uint / 1e10
         }
       }
 
@@ -21,16 +21,12 @@ async function staking() {
 
 }
 
-async function tvl() {
-    return staking()
-}
-
 module.exports = {
         //timetravel: true,
         //start: 1660827158,
         methodology: `Counts the number of OPUL tokens locked in the staking pool.`,
         algorand: {
-            tvl,
+            tvl: () => ({}),
             staking: staking
         }
 }
