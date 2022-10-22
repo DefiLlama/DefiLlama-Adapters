@@ -25,10 +25,10 @@ console.log(tomb)
 tomb.kava.tvl=async (timestamp, _block, chainBlocks) => {
 const staking= await tomb.kava.staking(timestamp,_block,chainBlocks);
 const farmsBalance = await tomb.kava.pool2(timestamp,_block,chainBlocks);
-farmsBalace['usd-coin']+=staking['usd-coin'];
-console.log(staking,pool2, farmsBalace);
+farmsBalance['usd-coin']+=staking['usd-coin'];
+console.log(staking,pool2, farmsBalance);
 
-return  farmsBalace; 
+return  farmsBalance; 
 }
   
 module.exports=tomb;
