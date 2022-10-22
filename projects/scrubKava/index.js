@@ -21,7 +21,7 @@ const tomb = unknownTombs({
   useDefaultCoreAssets: true,
 })
 
-tomb['kava'].tvl=tomb['kava'].staking+tomb['kava'].pool2;
+tomb.tvl=tomb.staking+tomb.pool2;
   
 module.exports=tomb;
 module.exports.misrepresentedTokens = true
