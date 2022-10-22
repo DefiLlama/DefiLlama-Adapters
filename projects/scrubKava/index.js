@@ -21,7 +21,10 @@ const tomb = unknownTombs({
   useDefaultCoreAssets: true,
 })
 console.log(tomb)
-tomb.kava.tvl=tomb.kava.staking+tomb.kava.pool2;
+
+tomb.kava.tvl=async (timestamp, _block, chainBlocks) => {
+tomb.kava.staking(timestamp,_block,chainBlocks)+tomb.kava.pool2(timestamp,_block,chainBlocks)
+}
   
 module.exports=tomb;
 module.exports.misrepresentedTokens = true
