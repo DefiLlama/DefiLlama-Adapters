@@ -20,7 +20,7 @@ const tomb = unknownTombs({
   chain: 'kava',
   useDefaultCoreAssets: true,
 })
-
+console.log(tomb)
 tomb.kava.tvl=tomb.kava.staking+tomb.kava.pool2;
   
 module.exports=tomb;
