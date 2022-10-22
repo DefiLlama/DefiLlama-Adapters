@@ -23,7 +23,7 @@ const tomb = unknownTombs({
 console.log(tomb)
 
 tomb.kava.tvl=async (timestamp, _block, chainBlocks) => {
-return await tomb.kava.staking(timestamp,_block,chainBlocks).add(await tomb.kava.pool2(timestamp,_block,chainBlocks))
+return await tomb.kava.staking(timestamp,_block,chainBlocks) + (await tomb.kava.pool2(timestamp,_block,chainBlocks))
 }
   
 module.exports=tomb;
