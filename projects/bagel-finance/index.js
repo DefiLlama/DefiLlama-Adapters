@@ -221,5 +221,5 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 
 module.exports = {
   start: 1602054167,
-  tvl,
+  bsc: { tvl },
 };

@@ -36,7 +36,7 @@ async function getLPData({
   lpFilter = isLP,
 }) {
   lps = getUniqueAddresses(lps)
-  const pairAddresses = allLps ? lps : await getLPList({lps, chain, block, lpFilter, })
+  const pairAddresses = allLps ? lps : await getLPList({ lps, chain, block, lpFilter, })
   const pairCalls = pairAddresses.map((pairAddress) => ({ target: pairAddress, }))
   let token0Addresses, token1Addresses, reserves
 
@@ -60,7 +60,7 @@ async function getLPData({
   return pairs
 }
 
-async function getLPList({lps, chain, block, lpFilter = isLP, }) {
+async function getLPList({ lps, chain, block, lpFilter = isLP, }) {
   lps = lps.filter(i => i !== nullAddress)
   const callArgs = lps.map(t => ({ target: t }))
   let symbols = (await sdk.api.abi.multiCall({ calls: callArgs, abi: symbol, block, chain })).output
@@ -98,7 +98,7 @@ async function getTokenPrices({
   blacklist = blacklist.map(i => i.toLowerCase())
   whitelist = whitelist.map(i => i.toLowerCase())
   lps = getUniqueAddresses(lps)
-  const pairAddresses = allLps ? lps : await getLPList({lps, chain, block, lpFilter})
+  const pairAddresses = allLps ? lps : await getLPList({ lps, chain, block, lpFilter })
   const pairCalls = pairAddresses.map((pairAddress) => ({ target: pairAddress, }))
 
   let token0Addresses, token1Addresses, reserves
@@ -367,7 +367,7 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
     coreAssets = getCoreAssets(chain)
   }
   return async (ts, _block, { [chain]: block }) => {
-    
+
     // get factory from LP
     // console.log(await sdk.api.abi.call({ target: '0x463e451d05f84da345d641fbaa3129693ce13816', abi: { "inputs": [], "name": "factory", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" }, chain, block, }))
     let pairAddresses;
@@ -383,7 +383,7 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
     if (fetchInChunks === 0) {
       let pairs = (await sdk.api.abi.multiCall({ abi: factoryAbi.allPairs, chain, calls: pairNums.map(num => ({ target: factory, params: [num] })), block })).output
       await requery(pairs, chain, block, factoryAbi.allPairs);
-  
+
       pairAddresses = pairs.map(result => result.output.toLowerCase())
       const response = await getTokenPrices({
         block, chain, coreAssets, blacklist, lps: pairAddresses, transformAddress, whitelist, allLps: true,
@@ -410,7 +410,7 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
   }
 }
 
-function unknownTombs({ token, shares = [], rewardPool = [], masonry = [], lps, chain = "ethereum", coreAssets = [],
+function unknownTombs({ token = [], shares = [], rewardPool = [], masonry = [], lps, chain = "ethereum", coreAssets = [],
   useDefaultCoreAssets = false, }) {
   let getPrices
   if (!coreAssets.length && useDefaultCoreAssets)
@@ -422,6 +422,8 @@ function unknownTombs({ token, shares = [], rewardPool = [], masonry = [], lps, 
     masonry = [masonry]
   if (!Array.isArray(rewardPool) && typeof rewardPool === 'string')
     rewardPool = [rewardPool]
+  if (!Array.isArray(token) && typeof token === 'string')
+    token = [token]
 
   const pool2 = async (timestamp, _block, chainBlocks) => {
     let balances = {};
@@ -451,6 +453,7 @@ function unknownTombs({ token, shares = [], rewardPool = [], masonry = [], lps, 
 
     const tao = []
     shares.forEach(token => masonry.forEach(owner => tao.push([token, owner])))
+    // token.forEach(t => masonry.forEach(owner => tao.push([t, owner])))
 
     await sumTokens(balances, tao, block, chain, undefined, { skipFixBalances: true })
     const fixBalances = await getFixBalances(chain)
@@ -460,13 +463,12 @@ function unknownTombs({ token, shares = [], rewardPool = [], masonry = [], lps, 
   }
 
   return {
-    [chain === "avax" ? "avalanche" : chain]: {
+    [chain]: {
       tvl: async () => ({}),
       staking,
       pool2
     }
   }
-
 }
 
 function pool2({ stakingContract, lpToken, chain = "ethereum", transformAddress, coreAssets = [], useDefaultCoreAssets = false, }) {
@@ -509,7 +511,7 @@ async function vestingHelper({
   const finalBalances = {}
   for (let i = 0; i < chunks.length; i++) {
     log('resolving for %s/%s of total tokens: %s (chain: %s)', i + 1, chunks.length, tokens.length, chain)
-    let lps = await getLPList({lps: chunks[i], chain, block})  // we count only LP tokens for vesting protocols
+    let lps = await getLPList({ lps: chunks[i], chain, block })  // we count only LP tokens for vesting protocols
     const balances = await sumTokens2({ chain, block, owner, tokens: lps })
     const lpBalances = {}
     Object.entries(balances).forEach(([token, bal]) => {
@@ -529,7 +531,7 @@ async function vestingHelper({
   return finalBalances
 }
 
-async function sumUnknownTokens({ tokensAndOwners = [],
+async function sumUnknownTokens({ tokensAndOwners = [], balances = {},
   coreAssets = [], owner, tokens, chain = 'ethereum', block, restrictTokenRatio, blacklist = [], skipConversion = false, onlyLPs, minLPRatio,
   log_coreAssetPrices = [], log_minTokenValue = 1e6, owners = [], lps = [], useDefaultCoreAssets = false,
 }) {
@@ -542,7 +544,7 @@ async function sumUnknownTokens({ tokensAndOwners = [],
     else if (owner)
       tokensAndOwners = tokens.map(t => [t, owner])
   tokensAndOwners = tokensAndOwners.filter(t => !blacklist.includes(t[0]))
-  const balances = await sumTokens2({ chain, block, tokensAndOwners, skipFixBalances: true, })
+  await sumTokens2({ balances, chain, block, tokensAndOwners, skipFixBalances: true, })
   const { updateBalances, } = await getTokenPrices({ coreAssets, lps: [...tokensAndOwners.map(t => t[0]), ...lps,], chain, block, restrictTokenRatio, blacklist, log_coreAssetPrices, log_minTokenValue, minLPRatio })
   await updateBalances(balances, { skipConversion, onlyLPs })
   const fixBalances = await getFixBalances(chain)

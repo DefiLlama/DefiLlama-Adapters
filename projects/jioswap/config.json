@@ -124,5 +124,105 @@
         }
       ]
     }
+  },
+   "ethereum": {
+    "jioWRenSBTC": {
+      "address": "0xc117B388e5951FD7484F4FCbc3a803ACC4632459",
+      "lpToken": "0xABb76b01FE5Ce41Ec4cE98B8437e17BE6B349211",
+      "poolTokens": [
+        {
+          "address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+          "name": "WBTC"
+        },
+        {
+          "address": "0xeb4c2781e4eba804ce9a9803c67d0893436bb27d",
+          "name": "renBTC"
+        },
+        {
+          "address": "0xfe18be6b3bd88a2d2a7f928d00292e7a9963cfc6",
+          "name": "sBTC"
+        }
+      ]
+    },
+    "JioUSDPoolV2": {
+      "address": "0xB53617cEEA4c2e65c5e40bcA74ca418C2F4C341c",
+      "lpToken": "0xfd7bE7d03A178908B2dB90b2eFDE0914844AEa5e",
+      "poolTokens": [
+        {
+          "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+          "name": "Dai"
+        },
+        {
+          "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          "name": "USDC Coin"
+        },
+        {
+          "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+          "name": "Tether"
+        }
+      ]
+    },
+    "JioALETHPool": {
+      "address": "0x0a644a073Bc75E38985784AE8bebc8EB11B09e75",
+      "lpToken": "0x437e52e69C30238B54edE1Ba65019322F873BD36",
+      "poolTokens": [
+        {
+          "address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+          "name": "WETH"
+        },
+        {
+          "address": "0x0100546F2cD4C9D97f798fFC9755E47865FF7Ee6",
+          "name": "Alchemix ETH"
+        },
+        {
+          "address": "0x5e74C9036fb86BD7eCdcb084a0673EFc32eA31cb",
+          "name": "Synth sETH"
+        }
+      ]
+    },
+    "jioD4": {
+      "address": "0x7fFd58B8DeEF68B1C0A98f2d06D7D35AB45CB407",
+      "lpToken": "0x7739EEF68C9828Cc8CCD062E94eF4E67746C7Cc7",
+      "poolTokens": [
+        {
+          "address": "0xBC6DA0FE9aD5f3b0d58160288917AA56653660E9",
+          "name": "Alchemix USD"
+        },
+        {
+          "address": "0x956F47F50A910163D8BF957Cf5846D573E7f87CA",
+          "name": "Fei Protocol"
+        },
+        {
+          "address": "0x853d955aCEf822Db058eb8505911ED77F175b99e",
+          "name": "Frax"
+        },
+        {
+          "address": "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0",
+          "name": "Liquity USD"
+        }
+      ]
+    },
+    "jioSUSDMetaPool": {
+      "address": "0x2c7B39F034888aEb4Bc6A5c0E0695D93835d40E4",
+      "lpToken": "0xa6692adc7898Eea5a06BC56678cA2795B850CC78",
+      "poolTokens": [
+        {
+          "address": "0x57Ab1ec28D129707052df4dF418D58a2D46d5f51",
+          "name": "sUSD"
+        },
+        {
+          "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+          "name": "Dai"
+        },
+        {
+          "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+          "name": "USDC Coin"
+        },
+        {
+          "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+          "name": "Tether"
+        }
+      ]
+    }
   }
 }

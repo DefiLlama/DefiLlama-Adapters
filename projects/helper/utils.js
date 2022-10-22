@@ -91,6 +91,8 @@ function isLP(symbol, token, chain) {
   if (chain === 'bsc' && ['WLP', 'FstLP',].includes(symbol)) return true
   if (chain === 'avax' && ['ELP', 'EPT', 'CRL', 'YSL', 'BGL', 'PLP'].includes(symbol)) return true
   if (chain === 'ethereum' && ['SSLP'].includes(symbol)) return true
+  if (chain === 'moonriver' && ['HBLP'].includes(symbol)) return true
+  if (chain === 'ethpow' && ['LFG_LP'].includes(symbol)) return true
   if (chain === 'ethereum' && ['SUDO-LP'].includes(symbol)) return false
   if (chain === 'dogechain' && ['DST-V2'].includes(symbol)) return true
   if (chain === 'harmony' && ['HLP'].includes(symbol)) return true
@@ -206,8 +208,9 @@ async function diplayUnknownTable({ tvlResults = {}, tvlBalances = {}, storedKey
   return debugBalances({ balances, chain: storedKey, log, tableLabel, withETH: false, })
 }
 
+const nullAddress = '0x0000000000000000000000000000000000000000'
 async function getSymbols(chain, tokens) {
-  tokens = tokens.filter(i => i.includes('0x')).map(i => i.slice(i.indexOf('0x')))
+  tokens = tokens.filter(i => i.includes('0x')).map(i => i.slice(i.indexOf('0x'))).filter(i => i !== nullAddress)
   const calls = tokens.map(i => ({ target: i }))
   const { output: symbols } = await sdk.api.abi.multiCall({
     abi: 'erc20:symbol',
@@ -342,5 +345,6 @@ module.exports = {
   diplayUnknownTable,
   getRippleBalance,
   getSymbols,
+  getDecimals,
   getParamCalls,
 }

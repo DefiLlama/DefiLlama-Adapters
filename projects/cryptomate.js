@@ -58,6 +58,7 @@ async function tvl() {
 }
 
 module.exports = {
+  timetravel: false,
   misrepresentedTokens: true,
   stacks: {
     tvl,
