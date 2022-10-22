@@ -8,7 +8,7 @@ const lps = Object.values({
     'BEAR-WBTC-LP': '0x9e334ce82f7659d2967C92a4a399aD694F63bbCF',
 })
 
-module.exports = unknownTombs({
+const tomb = unknownTombs({
   lps,
   shares: [
     '0x471F79616569343e8e84a66F342B7B433b958154', //Tiger
@@ -20,4 +20,7 @@ module.exports = unknownTombs({
   chain: 'kava',
   useDefaultCoreAssets: true,
 })
+
+tomb.tvl=tomb.staking+tomb.pool2;
+module.exports=tomb;
 module.exports.misrepresentedTokens = true
