@@ -53,7 +53,8 @@ const chains = {
   '53935': 'dfk',
   '71402': 'godwoken_v1',
   '1313161554': 'aurora',
-  '1666600000': 'harmony'
+  '1666600000': 'harmony',
+  '32520': 'bitgert'
 }
 
 
