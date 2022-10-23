@@ -727,6 +727,11 @@ const fixBalancesTokens = {
   polis: {
     "0x6fc851b8d66116627fb1137b9d5fe4e2e1bea978": { coingeckoId: "polis", decimals: 18, },
   },
+  kekchain: {
+    [nullAddress]: { coingeckoId: "kekchain", decimals: 18, },
+    "0x71ec0cb8f7dd4f4c5bd4204015c4c287fbdaa04a": { coingeckoId: "kekchain", decimals: 18, },
+    "0x54Bd9D8d758AC3717B37b7DC726877a23afF1B89": { coingeckoId: "kekchain", decimals: 18, },
+  },
   aptos: {
     "0x1::aptos_coin::AptosCoin": { coingeckoId: "aptos", decimals: 8, }, 
     "0x5e156f1207d0ebfa19a9eeff00d62a282278fb8719f4fab3a586a0a2c0fffbea::coin::T": { coingeckoId: "usd-coin", decimals: 6, }, // usdc on eth via wormhole
