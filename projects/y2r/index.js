@@ -59,7 +59,7 @@ async function balance(chainBlocks) {
       ).output,
     });
   }
-  console.log(lpPositions)
+
   await unwrapUniswapLPs(
     balances,
     lpPositions,
@@ -72,7 +72,7 @@ async function balance(chainBlocks) {
   balances['canto'] = new BigNumber(balances['canto']) / 1e18
   balances['note'] = new BigNumber(balances['note']) / 1e18
 
-  console.log(balances)
+
   return balances
 }
 
