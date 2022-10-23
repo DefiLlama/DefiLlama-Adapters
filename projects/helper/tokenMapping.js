@@ -395,12 +395,6 @@ const transformTokens = {
     "0x16d0e1fbd024c600ca0380a4c5d57ee7a2ecbf9c": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", // WBTC
     "0x34d21b1e550d73cee41151c77f3c73359527a396": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // WETH
   },
-  canto: {
-    [nullAddress]: "canto:0x826551890Dc65655a0Aceca109aB11AbDbD7a07B", // wCanto
-    "0x80b5a32e4f032b2a058b4f29ec95eefeeb87adcd": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USDC
-    "0xd567B3d7B8FE3C79a1AD8dA978812cfC4Fa05e75": "0xdAC17F958D2ee523a2206206994597C13D831ec7",  // USDT
-    "0x5FD55A1B9FC24967C4dB09C513C3BA0DFa7FF687": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",  // ETH
-  },
   nova: {
     "0x0000000000000000000000000000000000000000": "fantom:0x69D17C151EF62421ec338a0c92ca1c1202A427EC", // SNT
     "0x657a66332a65b535da6c5d67b8cd1d410c161a08": "fantom:0x69D17C151EF62421ec338a0c92ca1c1202A427EC", // SNT
@@ -785,6 +779,7 @@ const fixBalancesTokens = {
     "0xd567B3d7B8FE3C79a1AD8dA978812cfC4Fa05e75": { coingeckoId: "tether", decimals: 6, },
     "0x4e71A2E537B7f9D9413D3991D37958c0b5e1e503": { coingeckoId: "note", decimals: 18, },
     "0x5FD55A1B9FC24967C4dB09C513C3BA0DFa7FF687": { coingeckoId: "ethereum", decimals: 18, },
+    "0xeceeefcee421d8062ef8d6b4d814efe4dc898265": { coingeckoId: "cosmos", decimals: 6, },
   },
   ontology_evm: {
     "0xd8bc24cfd45452ef2c8bc7618e32330b61f2691b": { coingeckoId: "ong", decimals: 18, },
@@ -1184,13 +1179,6 @@ const coreAssets = {
   ],
   velas: Object.values({
     WVLX: '0xc579D1f3CF86749E05CD06f7ADe17856c2CE3126',
-  }),
-  canto: Object.values({
-    WCANTO: '0x826551890Dc65655a0Aceca109aB11AbDbD7a07B',
-    USDC: '0x80b5a32E4F032B2a058b4F29EC95EEfEEB87aDcd',
-    USDT: '0xd567B3d7B8FE3C79a1AD8dA978812cfC4Fa05e75',
-    ETH: '0x5FD55A1B9FC24967C4dB09C513C3BA0DFa7FF687',
-    NOTE: '0x4e71A2E537B7f9D9413D3991D37958c0b5e1e503',
   }),
   telos: [
     '0xD102cE6A4dB07D247fcc28F366A623Df0938CA9E', // telos
