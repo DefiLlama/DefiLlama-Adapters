@@ -5,6 +5,7 @@ const nullAddress = '0x0000000000000000000000000000000000000000'
 // IBC info - https://github.com/PulsarDefi/IBC-Cosmos/blob/main/ibc_data.json
 // O3swap - https://agg.o3swap.com/v1/tokens_all
 // wanchain - https://wanscan.org/tokens
+// chainge - https://openapi.chainge.finance/open/v1/base/getSupportTokens,https://openapi.chainge.finance/open/v1/base/getSupportChains
 
 const transformTokens = {
   ethereum: {
@@ -1135,6 +1136,15 @@ const fixBalancesTokens = {
     '0x5df101f56ea643e06066392d266e9f4366b9186d': { coingeckoId: "wrapped-bitcoin", decimals: 8 },
     '0xaf3ccfd9b59b36628cc2f659a09d6440795b2520': { coingeckoId: "ethereum", decimals: 18 },
     '0x312b15d6d531ea0fe91ddd212db8c0f37e4cc698': { coingeckoId: "dai", decimals: 18 },
+
+    // chainge
+    '0x2ad7868ca212135c6119fd7ad1ce51cfc5702892': { coingeckoId: "tether", decimals: 6 },
+    '0x34a9c05b638020a07bb153bf624c8763bf8b4a86': { coingeckoId: "ethereum", decimals: 18 },
+    '0xbd1563046a90f18127fd39f3481fd8d6ab22877f': { coingeckoId: "binancecoin", decimals: 18 },
+    '0xf61eb8999f2f222f425d41da4c2ff4b6d8320c87': { coingeckoId: "binance-usd", decimals: 18 },
+    '0x4bbd68d8b1f25ae7b460e3347c637fe9e7338e0c': { coingeckoId: "wrapped-bitcoin", decimals: 8 },
+    '0x25de68ef588cb0c2c8f3537861e828ae699cd0db': { coingeckoId: "usd-coin", decimals: 6 },
+    '0x0b35d852dcb8b59eb1e8d3182ebad4e96e2df8f0': { coingeckoId: "dai", decimals: 18 },
   },
   xdc: {
     '0xD4B5f10D61916Bd6E0860144a91Ac658dE8a1437': { coingeckoId: "tether", decimals: 6 },
