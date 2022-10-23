@@ -14,8 +14,8 @@ module.exports = {
       // Compute pool's TVL
       const pools = data.filter(i => i.type.includes('amm::Pool'))
       pools.forEach(({ type: typeString, data }) => {
-        reserve0 = data.x_reserve.value;
-        reserve1 = data.y_reserve.value;
+        const reserve0 = data.x_reserve.value;
+        const reserve1 = data.y_reserve.value;
         const [token0, token1] = typeString.slice(0, -1).split('<')[1].split(', ')
         
         if (coreTokens.includes(token0) && reserve0 !== '0') {
@@ -29,8 +29,8 @@ module.exports = {
       // Compute CLOB's TVL from vault
       const coins = data.filter(i => i.type.includes('CoinStore'))
       coins.forEach(({ type: typeString, data }) => {
-        token = typeString.slice(0, -1).split('<')[1]
-        reserve = data.coin.value;
+        const token = typeString.slice(0, -1).split('<')[1]
+        const reserve = data.coin.value;
         if (coreTokens.includes(token) && reserve !== '0') {
             sdk.util.sumSingleBalance(balances, token, reserve)
         }
