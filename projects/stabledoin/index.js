@@ -1,12 +1,7 @@
-const { getUniTVL } = require('../helper/unknownTokens')
+const { masterchefExports } = require("../helper/unknownTokens");
 
-const factory = "0x7bbAB21475d99C09a92fc4B93Fa2DDa987DbA17c"
+const token = "0x507D8340B2A1fB72F5672E0a2AD28873a81e2339";
+const masterchef = "0x32d979A69249452898071c2eD1A689dCa659AD93";
+const chain = "dogechain";
 
-module.exports = {
-  misrepresentedTokens: true,
-  dogechain: {
-    tvl: getUniTVL({
-      chain: 'dogechain',factory , useDefaultCoreAssets: true,
-    }),
-  }
-}
+module.exports = masterchefExports({ chain, masterchef, nativeTokens: [token], useDefaultCoreAssets: true, })
