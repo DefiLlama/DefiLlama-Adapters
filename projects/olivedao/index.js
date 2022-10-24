@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const {transformPolygonAddress} = require('../helper/portedTokens');
-const { staking } = require("../helper/staking");
 
 const ethPool = "0x8e300739960457B532Af3bEd62475B790e0Dee5E"
 const usdcPool = "0x05a37e1745926D8725A6C5dbD7Fd9873Dd9E356e"

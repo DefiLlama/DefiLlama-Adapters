@@ -20,5 +20,5 @@ async function tvl(){
 module.exports={
     timetravel: false,
     methodology: 'TVL is the liquidity on the AMM.',
-    tvl
+    telos: { tvl }
 }

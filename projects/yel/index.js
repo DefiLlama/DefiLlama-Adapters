@@ -114,7 +114,8 @@ async function tvl() {
 module.exports = {
     ethereum: {
         staking: ethereumStaking,
-        pool2: ethereumPool2
+        pool2: ethereumPool2,
+        tvl,
     },
     bsc: {
         staking: bscStaking,
@@ -128,7 +129,6 @@ module.exports = {
         staking: maticStaking,
         pool2: maticPool2
     },
-    tvl,
     methodology: "TVL is accounted from YEL liquidity mining farms, enhanced pools, partner farms and other protocols. Basically, that’s all the funds held at YEL Finance smart-contracts.",
 };
 // node test.js projects/yel/index.js

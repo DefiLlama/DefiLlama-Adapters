@@ -1,129 +1,227 @@
 {
-  "pool_list": {
-    "name": "pool_list",
-    "outputs": [{ "type": "address", "name": "" }],
-    "inputs": [{ "type": "uint256", "name": "arg0" }],
-    "stateMutability": "view",
-    "type": "function",
-    "gas": 2280
-  },
-  "pool_count": {
-    "name": "pool_count",
-    "outputs": [{ "type": "uint256", "name": "" }],
-    "inputs": [],
-    "stateMutability": "view",
-    "type": "function",
-    "gas": 2201
-  },
-  "coins128": {
-    "name": "coins",
-    "outputs": [
-     {
-      "type": "address",
-      "name": "out"
-     }
-    ],
-    "inputs": [
-     {
-      "type": "int128",
-      "name": "arg0"
-     }
-    ],
-    "constant": true,
-    "payable": false,
-    "type": "function",
-    "gas": 2190
-  },
-  "coins256": {
-    "name": "coins",
-    "outputs": [
-     {
-      "type": "address",
-      "name": "out"
-     }
-    ],
-    "inputs": [
-     {
-      "type": "uint256",
-      "name": "arg0"
-     }
-    ],
-    "constant": true,
-    "payable": false,
-    "type": "function",
-    "gas": 2190
-  },
-  "balances128": {
-    "name": "balances",
-    "outputs": [
-     {
-      "type": "uint256",
-      "name": "out"
-     }
-    ],
-    "inputs": [
-     {
-      "type": "int128",
-      "name": "arg0"
-     }
-    ],
-    "constant": true,
-    "payable": false,
-    "type": "function",
-    "gas": 2250
-  },
-  "balances256": {
-    "name": "balances",
-    "outputs": [
-     {
-      "type": "uint256",
-      "name": "out"
-     }
-    ],
-    "inputs": [
-     {
-      "type": "uint256",
-      "name": "arg0"
-     }
-    ],
-    "constant": true,
-    "payable": false,
-    "type": "function",
-    "gas": 2250
-  },
-  "get_registry": {
-    "name": "get_registry",
-    "outputs": [{ "type": "address", "name": "" }],
-    "inputs": [],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "get_coins": {
-    "name": "get_coins",
-    "outputs": [{"name":"","type":"address[8]"}],
-    "inputs": [{"name":"_pool","type":"address"}],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "get_balances": {
-    "name": "get_balances",
-    "outputs": [{"name":"","type":"uint256[8]"}],
-    "inputs": [{"name":"_pool","type":"address"}],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "get_coinsf": {
-    "name": "get_coins",
-    "outputs": [{"name":"","type":"address[2]"}],
-    "inputs": [{"name":"_pool","type":"address"}],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  "get_balancesf": {
-    "name": "get_balances",
-    "outputs": [{"name":"","type":"uint256[2]"}],
-    "inputs": [{"name":"_pool","type":"address"}],
-    "stateMutability": "view",
-    "type": "function"
-  }
+    "get_registry": {
+        "name": "get_registry",
+        "outputs": [
+            {
+                "type": "address",
+                "name": ""
+            }
+        ],
+        "inputs": [],
+        "stateMutability": "view",
+        "type": "function",
+        "gas": 1061
+    },
+    "pool_list": {
+        "stateMutability": "view",
+        "type": "function",
+        "name": "pool_list",
+        "inputs": [
+            {
+                "name": "arg0",
+                "type": "uint256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "gas": 2217
+    },
+    "pool_count": {
+        "stateMutability": "view",
+        "type": "function",
+        "name": "pool_count",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "gas": 2138
+    },
+    "get_n_coins": {
+        "stableswap": {
+            "stateMutability": "view",
+            "type": "function",
+            "name": "get_n_coins",
+            "inputs": [
+                {
+                    "name": "_pool",
+                    "type": "address"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "uint256[2]"
+                }
+            ],
+            "gas": 1521
+        },
+        "stableFactory": {
+            "stateMutability": "view",
+            "type": "function",
+            "name": "get_n_coins",
+            "inputs": [
+                {
+                    "name": "_pool",
+                    "type": "address"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "gas": 2699
+        },
+        "crypto": {
+            "stateMutability": "view",
+            "type": "function",
+            "name": "get_n_coins",
+            "inputs": [
+                {
+                    "name": "_pool",
+                    "type": "address"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "gas": 2834
+        },
+        "cryptoFactory": {
+            "stateMutability": "view",
+            "type": "function",
+            "name": "get_n_coins",
+            "inputs": [
+                {
+                    "name": "_pool",
+                    "type": "address"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "gas": 2834
+        }
+    },
+    "get_coins": {
+        "stableswap": {
+            "stateMutability": "view",
+            "type": "function",
+            "name": "get_coins",
+            "inputs": [
+                {
+                    "name": "_pool",
+                    "type": "address"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "address[8]"
+                }
+            ],
+            "gas": 12102
+        },
+        "stableFactory": {
+            "stateMutability": "view",
+            "type": "function",
+            "name": "get_coins",
+            "inputs": [
+                {
+                    "name": "_pool",
+                    "type": "address"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "address[4]"
+                }
+            ],
+            "gas": 9164
+        },
+        "crypto": {
+            "stateMutability": "view",
+            "type": "function",
+            "name": "get_coins",
+            "inputs": [
+                {
+                    "name": "_pool",
+                    "type": "address"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "address[8]"
+                }
+            ],
+            "gas": 22975
+        },
+        "cryptoFactory": {
+            "stateMutability": "view",
+            "type": "function",
+            "name": "get_coins",
+            "inputs": [
+                {
+                    "name": "_pool",
+                    "type": "address"
+                }
+            ],
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "address[2]"
+                }
+            ]
+        }
+    },
+    "get_id_info": {
+        "name": "get_id_info",
+        "outputs": [
+            {
+                "type": "address",
+                "name": "addr"
+            },
+            {
+                "type": "bool",
+                "name": "is_active"
+            },
+            {
+                "type": "uint256",
+                "name": "version"
+            },
+            {
+                "type": "uint256",
+                "name": "last_modified"
+            },
+            {
+                "type": "string",
+                "name": "description"
+            }
+        ],
+        "inputs": [
+            {
+                "type": "uint256",
+                "name": "arg0"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function",
+        "gas": 12168
+    }
 }

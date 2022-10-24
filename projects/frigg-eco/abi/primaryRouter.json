@@ -1,0 +1,36 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "tokenData",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "issuer",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "issuancePrice",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "expiryPrice",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "issuanceTokenAddress",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

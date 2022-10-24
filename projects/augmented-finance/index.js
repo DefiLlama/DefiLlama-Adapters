@@ -67,7 +67,7 @@ module.exports = {
     bsc: {
         tvl: bsc,
     },
-    avalanche: {
+    avax:{
         tvl: avalanche,
     },
     xdai: {

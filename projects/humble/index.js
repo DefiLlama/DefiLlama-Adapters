@@ -6,17 +6,19 @@ async function tvl(){
     const response = (
         await retry(
             async () => await axios.get(
-                'https://yhnyufyj90.execute-api.us-east-1.amazonaws.com/prod/humble-tvl'
+                'https://free-api.vestige.fi/providers?currency=USD'
             )
         )
     )
 
-    const data = response.data
+    const data = response.data.find(p => p.id === 'H2')
 
-    return data.tvl ? toUSDTBalances(data.tvl) : toUSDTBalances(0);
+    return toUSDTBalances(data.tvl);
 }
 
 module.exports={
+    timetravel: false,
+    misrepresentedTokens:true,
     algorand:{
         tvl
     }

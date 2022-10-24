@@ -7,11 +7,11 @@ Object.values(config).forEach((chain) => {
   Object.values(chain).forEach((tvl) => {
     Object.values(tvl).forEach((pools) => {
       Object.values(pools).forEach((pool) => {
-        Object.values(pool.tokens).forEach((token) => {
+        Object.values(pool.tokens).forEach((token, i) => {
           tokensAndAccounts.push([
             token,
             pool.pool,
-            'tether',
+            pool.symbols[i],
           ])
         });
       })
