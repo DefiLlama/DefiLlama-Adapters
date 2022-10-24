@@ -1,4 +1,5 @@
 const sdk = require('@defillama/sdk')
+const { get } = require('../helper/http')
 const { toUSDTBalances } = require('../helper/balances')
 const axios = require("axios");
 const { lookupApplications, } = require("../helper/algorand");
@@ -15,9 +16,10 @@ const marketStrings = {
     oracle_price_field_name: "opfn",
     oracle_price_scale_factor: "ops",
     oracle_app_id: "oai",
+    total_locked: "tl"
 }
 
-const orderedAssets = [
+const orderedAssetsOracle = [
     "ALGO",
     "STBL",
     "USDC",
@@ -30,8 +32,12 @@ const orderedAssets = [
     "AF-NANO-BSTBL2-BUSDC",
     "AF-BSTBL2-BALGO",
     "AF-BSTBL2-BgoBTC",
-    "AF-BSTBL2-BgoETH"]
-
+    "AF-BSTBL2-BgoETH"
+]
+const orderedAssetsDEX = [
+    "BANK"
+]
+const totalOrderedAssets = orderedAssetsOracle.concat(orderedAssetsDEX)
 
 const appDictionary = {
     "ALGO": {
@@ -87,6 +93,11 @@ const appDictionary = {
         "appIds": [879935316],
         "oracleAppId": 531724540,
         "oracleFieldName": "latest_twap_price",
+    },
+    "BANK": {
+        "decimals": 6,
+        "appIds": [900883415],
+        "assetId": 900652777
     },
     "AF-NANO-BSTBL2-BUSDC": {
         "decimals": 6,
@@ -216,6 +227,11 @@ const appDictionary = {
             "decimals": 6,
             "oracleFieldName": "price",
         },
+    },
+    "VotingEscrow": {
+        "decimals": 6,
+        "appId": 900653165,
+        "assetId": 900652777
     }
 }
 
@@ -231,15 +247,34 @@ async function getAppGlobalState(marketId) {
   return results
 }
 
-async function getPrices(marketDictionary, orderedAssets) {
+async function getDexPrices() {
+    let assetSnapshots = await get("https://api.algofi.org/assets")
+    let prices = {}
+    for (const assetSnapshot of assetSnapshots) {
+        prices[assetSnapshot.asset_id] = assetSnapshot.price
+    }
+    return prices
+}
+
+async function getPrices(marketDictionary, orderedAssetsOracle, orderedAssetsDEX) {
   let prices = {}
-  for (const assetName of orderedAssets) {
+  // get prices off of oracles
+  for (const assetName of orderedAssetsOracle) {
     let response = await lookupApplications(marketDictionary[assetName]["oracleAppId"])
     for (const y of response.application.params["global-state"]) {
       let decodedKey = Buffer.from(y.key, 'base64').toString('binary')
       if (decodedKey === marketDictionary[assetName]["oracleFieldName"]) {
         prices[assetName] = y.value.uint / 1000000
       }
+    }
+  }
+
+  // get prices off of DEX
+  if (Object.keys(orderedAssetsDEX).length > 0) {
+    let dexPrices = await getDexPrices()
+    for (const assetName of orderedAssetsDEX) {
+        let assetId = marketDictionary[assetName]["assetId"]
+        prices[assetName] = dexPrices[assetId]
     }
   }
 
@@ -269,11 +304,10 @@ function getMarketBorrow(assetName, appGlobalState, prices) {
 }
 
 async function borrowed() {
-    let prices = await getPrices(appDictionary, orderedAssets)
-
+    let prices = await getPrices(appDictionary, orderedAssetsOracle, orderedAssetsDEX)
     let borrow = 0
 
-    for (const assetName of orderedAssets) {
+    for (const assetName of totalOrderedAssets) {
         for (const id of appDictionary[assetName]["appIds"]) {
             let appGlobalState = await getAppGlobalState(id)
             borrow += getMarketBorrow(assetName, appGlobalState, prices)
@@ -284,10 +318,10 @@ async function borrowed() {
 }
 
 async function supply() {
-    let prices = await getPrices(appDictionary, orderedAssets)
+    let prices = await getPrices(appDictionary, orderedAssetsOracle, orderedAssetsDEX)
 
     let supply = 0
-    for (const assetName of orderedAssets) {
+    for (const assetName of totalOrderedAssets) {
         for (const id of appDictionary[assetName]["appIds"]) {
             let appGlobalState = await getAppGlobalState(id)
             let assetTvl = getMarketSupply(assetName, appGlobalState, prices, appDictionary)
@@ -298,10 +332,27 @@ async function supply() {
     return toUSDTBalances(supply)
 }
 
+async function staking() {
+    let prices = await getPrices(appDictionary, orderedAssetsOracle, orderedAssetsDEX)
+
+    let staking = 0
+    
+    // voting escrow
+    let votingEscrowGlobalState = await getAppGlobalState(appDictionary["VotingEscrow"]["appId"])
+    let totalLockedBank = votingEscrowGlobalState[marketStrings.total_locked]
+    totalLockedBank /= Math.pow(10, appDictionary["VotingEscrow"]["decimals"])
+    totalLockedBank *= prices["BANK"]
+
+    staking += totalLockedBank
+
+    return toUSDTBalances(staking)
+}
+
 module.exports = {
     algorand: {
         tvl: supply,
-        borrowed
+        borrowed,
+        staking: staking
     }
 }
 // node test.js projects/algofi/index.js
