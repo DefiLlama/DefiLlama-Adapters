@@ -4,6 +4,7 @@ const axios = require("axios");
 const { transformArbitrumAddress } = require("../helper/portedTokens");
 const cmUmamiABI = require("./cmUmami.abi.json");
 const { default: BigNumber } = require('bignumber.js');
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 async function getPools() {
 
@@ -51,69 +52,37 @@ async function tvl(timestamp, block, chainBlocks) {
   block = chainBlocks.arbitrum;
   const balances = {};
   const pools = await getPools();
+  const tokensAndOwners = []
 
-  // create list of calls to make
-  let calls = [];
   for (const pool of pools) {
 
     // get collateral and lend token
     const colToken = ethers.utils.getAddress(pool._colToken);
     const lendToken = ethers.utils.getAddress(pool._lendToken);
     const poolAddress = pool.id;
-
-    // add collateral and lend token balanceOf calls to list
-    calls.push({
-      target: colToken,
-      params: [poolAddress]
-    });
-    calls.push({
-      target: lendToken,
-      params: [poolAddress]
-    });
-
+    tokensAndOwners.push([lendToken, poolAddress])
+    tokensAndOwners.push([colToken, poolAddress])
   }
 
-  // execute calls
-  const { output } = await sdk.api.abi.multiCall({
-    calls, 
-    block, 
-    chain,
-    abi: 'erc20:balanceOf',
-  });
+  await sumTokens2({ tokensAndOwners, chain, block, balances, });
+  const cUMAMI = 'arbitrum:0x1922c36f3bc762ca300b4a46bb2102f84b1684ab'
+  if (balances[cUMAMI]) {
+    // get cmUmami price per share for later
+    const { output: pps} = await sdk.api.abi.call({
+      abi: cmUmamiABI,
+      target: tokens.CMUMAMI,
+      params: [1000000000],
+      chain, block
+    })
+    const umamiBal = balances[cUMAMI] * pps / 1e9
+    delete balances[cUMAMI]
+    sdk.util.sumSingleBalance(balances, transform(tokens.UMAMI), BigNumber(umamiBal).toFixed(0))
+  }
 
-  // get cmUmami price per share for later
-  const pps = (await sdk.api.abi.call({
-    abi: cmUmamiABI,
-    target: tokens.CMUMAMI,
-    params: [1000000000],
-    chain,
-    block
-  })).output;
-
-  let umamiPerCmUmami = new BigNumber("0");
-
-  output.forEach(({ input: { target  }, output }) => {
-
-    // use UMAMI PPS (price per share) to get the number of UMAMI tokens per CMUMAMI tokens
-    if (target === tokens.CMUMAMI) { 
-      let newOutput = new BigNumber(output).multipliedBy(pps).div(Math.pow(10, 9));
-      umamiPerCmUmami = umamiPerCmUmami.plus(newOutput);
-    }
-
-    sdk.util.sumSingleBalance(balances, transform(target), output)
-
-  })
-
-  // add UMAMI tokens per CMUMAMI to final UMAMI balance
-  const extraUmami = new BigNumber(balances[transform(tokens.UMAMI)]).plus(umamiPerCmUmami);
-  balances[transform(tokens.UMAMI)] = extraUmami.toString();
-
-  return balances;
+  return balances
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
   methodology: 'The sum of the balance of all listed collateral and lend tokens in all deployed pools.',
   start: 20274088,
   arbitrum: {
