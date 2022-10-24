@@ -17,7 +17,7 @@ module.exports = {
           coin_x_reserve: { value: reserve0 },
           coin_y_reserve: { value: reserve1 },
         } = data
-        const [token0, token1] = typeString.split('<')[1].split(', ')
+        const [token0, token1] = typeString.split('<')[1].replace('>', '').split(', ')
         const isCoreAsset0 = coreTokens.includes(token0)
         const isCoreAsset1 = coreTokens.includes(token1)
         const nonNeglibleReserves = reserve0 !== '0' && reserve1 !== '0'
