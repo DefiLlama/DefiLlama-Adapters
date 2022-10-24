@@ -442,6 +442,7 @@ const transformTokens = {
 
 const fixBalancesTokens = {
   astar: {
+    [nullAddress]: { coingeckoId: "astar", decimals: 18, },
     "0xcdb32eed99aa19d39e5d6ec45ba74dc4afec549f": { coingeckoId: "orcus-oru", decimals: 18, },
     "0xc5bcac31cf55806646017395ad119af2441aee37": { coingeckoId: "muuu", decimals: 18, },
     "0x6df98e5fbff3041105cb986b9d44c572a43fcd22": { coingeckoId: "alnair-finance-nika", decimals: 18, },
