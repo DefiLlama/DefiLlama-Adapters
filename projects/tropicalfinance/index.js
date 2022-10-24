@@ -1,6 +1,5 @@
 const sdk = require('@defillama/sdk');
-const { getBlock } = require('../helper/getBlock');
-const { calculateUsdUniTvl } = require('../helper/getUsdUniTvl')
+const { getUniTVL } = require('../helper/unknownTokens')
 const { default: BigNumber } = require('bignumber.js');
 const { staking } = require('../helper/staking')
 
@@ -16,8 +15,7 @@ const FLEXUSD = "0x7b2B3C5308ab5b2a1d9a94d20D35CCDf61e05b72";
 const LAW = "0x0b00366fBF7037E9d75E4A569ab27dAB84759302";
 const CLY = "0x7642Df81b5BEAeEb331cc5A104bd13Ba68c34B91";
 
-const bchMasterChef = async (timestamp, ethBlock, chainBlocks) => {
-    const block = await getBlock(timestamp, CHAIN, chainBlocks, false)
+const bchMasterChef = async (timestamp, ethBlock, {[CHAIN]: block}) => {
     const masterchefs = [MASTERCHEF_DAIQUIRI, MASTERCHEF_MARGARITA]
     const totals = await Promise.all(masterchefs.map(async (chef) => {
         const stakedBCH = (await sdk.api.erc20.balanceOf({
@@ -34,7 +32,7 @@ const bchMasterChef = async (timestamp, ethBlock, chainBlocks) => {
     return {'bitcoin-cash': BigNumber(total).dividedBy(10 ** 18).toNumber()}
 }
 
-const bchDexTvl = calculateUsdUniTvl(FACTORY, CHAIN, WBCH, [DAIQUIRI, MARGARITA], COREASSETNAME)
+const bchDexTvl = getUniTVL({ factory: FACTORY, chain: CHAIN, useDefaultCoreAssets: true, })
 
 module.exports = {
     misrepresentedTokens: true,

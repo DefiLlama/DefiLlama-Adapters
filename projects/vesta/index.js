@@ -41,7 +41,8 @@ async function tvl(_, block, chainBlocks) {
   return balances;
 };
 
-async function pool2(_timestamp, block, chainBlocks) {
+async function pool2(_timestamp, block, chainBlocks) {  
+  block = chainBlocks.arbitrum;
   const balances = {};
   const transform = await transformArbitrumAddress();
   await sumBalancerLps(balances, [[LP_VSTA_ETH_ADDRESS, VSTA_FARMING_ADDRESS]], chainBlocks.arbitrum, chain, transform);

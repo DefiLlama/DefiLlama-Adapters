@@ -138,11 +138,14 @@ module.exports = {
     tvl: sdk.util.sumChainTvls([polygonTvl, polygonLending]),
     borrowed: polygonBorrowed
   },
-  avalanche: {
+  avax:{
     tvl: avaxTvl,
   },
   fantom: {
     tvl:  sdk.util.sumChainTvls([fantomTvl, fantomLending]),
     borrowed: fantomBorrowed
   },
+  hallmarks: [
+    [1652270400,"Re-entrancy Exploit"]
+  ],
 };

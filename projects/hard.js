@@ -35,8 +35,8 @@ const decimals = {
 
 var tvl = async () => {
     const balances = {}
-    const totalDeposited = await retry(async bail => await axios.get('https://api.kava.io/hard/total-deposited'))
-    const totalBorrowed = await retry(async bail => await axios.get('https://api.kava.io/hard/total-borrowed'))
+    const totalDeposited = await retry(async bail => await axios.get('https://api2.kava.io/hard/total-deposited'))
+    const totalBorrowed = await retry(async bail => await axios.get('https://api2.kava.io/hard/total-borrowed'))
     for(const coin of totalDeposited.data.result){
         const borrowed = Number(totalBorrowed.data.result.find(item=>item.denom === coin.denom)?.amount || 0);
         balances[coingeckoIds[coin.denom]]=(Number(coin.amount)-borrowed)/(10**decimals[coin.denom]);
@@ -46,7 +46,7 @@ var tvl = async () => {
 
 var borrowed = async () => {
     const balances = {}
-    const totalBorrowed = await retry(async bail => await axios.get('https://api.kava.io/hard/total-borrowed'))
+    const totalBorrowed = await retry(async bail => await axios.get('https://api2.kava.io/hard/total-borrowed'))
     for(const coin of totalBorrowed.data.result){
         balances[coingeckoIds[coin.denom]]=Number(coin.amount)/(10**decimals[coin.denom]);
     }

@@ -50,7 +50,7 @@ async function ethTvl(timestamp, block) {
         [ethTokens.SLP_OT_ETHUSDC_22, true],
         [ethTokens.SLP_OT_wxBTRFLY_22, true],
     ], ethFundedContracts, block);
-    for (token of ethOtTokens) {
+    for (let token of ethOtTokens) {
         delete balances[token.toLowerCase()];
     };
     delete balances[ethTokens.PENDLE];
@@ -82,10 +82,9 @@ async function ethPool2(timestamp, block) {
 
     return pool2;
 };
-async function avaxTvl(timestamp, block, chainBlocks) {
+async function avaxTvl(timestamp, _, {avax: block}) {
     const transform = await transformAvaxAddress();
     const balances = {};
-    block = await getBlock(timestamp, "avax", chainBlocks);
     
     const masterChefContract = "0xd6a4F121CA35509aF06A0Be99093d08462f53052";
     const TIME = "avax:0xb54f16fb19478766a268f172c9480f8da1a7c9c3";
@@ -126,7 +125,7 @@ async function avaxTvl(timestamp, block, chainBlocks) {
       })).output;
     delete balances[`avax:${avaxTokens.wMEMO}`];
 
-    for (token of avaxOtTokens) {
+    for (let token of avaxOtTokens) {
         delete balances[`avax:${token.toLowerCase()}`];
     };
 
@@ -139,10 +138,9 @@ async function avaxTvl(timestamp, block, chainBlocks) {
 
     return balances;
 };
-async function avaxPool2(timestamp, block, chainBlocks) {
+async function avaxPool2(timestamp, _, {avax: block}) {
     const transform = await transformAvaxAddress();
     const pool2 = {};
-    block = await getBlock(timestamp, "avax", chainBlocks);
 
     await sumTokensAndLPsSharedOwners(pool2, [
         [avaxTokens.JLP_PENDLEAVAX, true],
@@ -159,7 +157,7 @@ module.exports = {
         tvl: ethTvl,
         staking
     },
-    avalanche:{
+    avax:{
         pool2: avaxPool2,
         tvl: avaxTvl
     },

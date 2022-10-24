@@ -1,10 +1,9 @@
 const BigNumber = require("bignumber.js");
-const { PublicKey, Connection } = require("@solana/web3.js");
+const { PublicKey, } = require("@solana/web3.js");
 const { parseReserve } = require("./utils");
-const { getTokenBalance, getCoingeckoId } = require("../helper/solana");
+const { getTokenBalance, getCoingeckoId, getConnection, } = require("../helper/solana");
 const { fetchURL } = require('../helper/utils')
 
-const connection = new Connection("https://solana-api.projectserum.com/");
 const solendConfigEndpoint = "https://api.solend.fi/v1/config?deployment=production";
 const assetToCoinGeckoIdMap = {
   "USDT-USDC": "usd-coin",
@@ -38,6 +37,7 @@ async function borrowed() {
       if(coingeckoId === undefined){
         coingeckoId = getAssetToCoingeckoIDFallback(reserve.asset);
       }
+      const connection = getConnection()
       const accountInfo = await connection.getAccountInfo(new PublicKey(reserve.address), "processed");
       const parsedReserve = parseReserve(PublicKey.default, accountInfo);
       const amount = new BigNumber(

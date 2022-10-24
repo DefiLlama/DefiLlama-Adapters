@@ -6,7 +6,9 @@ async function fetch() {
         await retry(async () => 
             await axios.get("https://app.stackswap.org/api/v1/pools")
             )
-        ).data.map(p => p.liquidity_locked);
+        ).data
+            .filter(p => p.pair_name !== 'STSW-lBTC')
+            .map(p => p.liquidity_locked);
     poolValues = poolValues.map(v => v.substring(0, v.indexOf('USD')));
     return poolValues.reduce((a, b) => a + parseFloat(b), 0);
 };

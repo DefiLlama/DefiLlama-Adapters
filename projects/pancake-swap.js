@@ -1,12 +1,7 @@
 const { request, gql } = require("graphql-request");
-const sdk = require('@defillama/sdk')
 const { toUSDTBalances } = require('./helper/balances')
 const { stakings } = require('./helper/staking')
 
-async function fetch() {
-  let response = await utils.fetchURL('https://api.pancakeswap.finance/api/v1/stat')
-  return response.data.total_value_locked_all;
-}
 
 const graphEndpoint = 'https://bsc.streamingfast.io/subgraphs/name/pancakeswap/exchange-v2'
 const currentQuery = gql`
