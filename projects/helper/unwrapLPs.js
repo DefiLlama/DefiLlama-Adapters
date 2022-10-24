@@ -954,7 +954,6 @@ async function unwrapTroves({ balances = {}, chain = 'ethereum', block, troves =
   return balances
 }
 
-
 async function sumTokens2({
   balances = {},
   tokensAndOwners = [],
@@ -982,6 +981,7 @@ async function sumTokens2({
 
   blacklistedTokens = blacklistedTokens.map(t => t.toLowerCase())
   tokensAndOwners = tokensAndOwners.map(([t, o]) => [t.toLowerCase(), o]).filter(([token]) => !blacklistedTokens.includes(token))
+  tokensAndOwners = getUniqueToA(tokensAndOwners)
 
   await sumTokens(balances, tokensAndOwners, block, chain, transformAddress, { resolveCrv, resolveLP, resolveYearn, unwrapAll, blacklistedLPs, skipFixBalances: true, abis, })
 
@@ -991,6 +991,11 @@ async function sumTokens2({
   }
 
   return balances
+
+  function getUniqueToA(toa) {
+    toa = toa.map(i => i.join('-'))
+    return getUniqueAddresses(toa).map(i => i.split('-'))
+  }
 }
 
 function sumTokensExport({ balances, tokensAndOwners, tokens, owner, owners, chain = 'ethereum', transformAddress, unwrapAll, resolveLP, blacklistedLPs, blacklistedTokens, skipFixBalances }) {
