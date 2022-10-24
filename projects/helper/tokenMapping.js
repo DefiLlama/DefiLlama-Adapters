@@ -739,12 +739,20 @@ const fixBalancesTokens = {
     "0xae478ff7d83ed072dbc5e264250e67ef58f57c99d89b447efd8a0a2e8b2be76e::coin::T": { coingeckoId: "wrapped-bitcoin", decimals: 8 }, // via wormhole
     "0xcc8a89c8dce9693d354449f1f73e60e14e347417854f029db5bc8e7454008abb::coin::T": { coingeckoId: "ethereum", decimals: 8, }, // via wormhole
     "0xc91d826e29a3183eb3b6f6aa3a722089fdffb8e9642b94c5fcd4c48d035c0080::coin::T": { coingeckoId: "usd-coin", decimals: 6, }, // usdc on solana via wormhole
+    "0x1000000fa32d122c18a6a31c009ce5e71674f22d06a581bb0a15575e6addadcc::usda::USDA": { coingeckoId: "usd-coin", decimals: 6, }, // USD-A
     "0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDC": { coingeckoId: "usd-coin", decimals: 6, }, // via LayerZero
     "0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::USDT": { coingeckoId: "tether", decimals: 6, }, // via LayerZero
     "0xf22bede237a07e121b56d91a491eb7bcdfd1f5907926a9e58338f964a01b17fa::asset::WETH": { coingeckoId: "ethereum", decimals: 6, }, // via LayerZero
     "0xdd89c0e695df0692205912fb69fc290418bed0dbe6e4573d744a6d5e6bab6c13::coin::T": { coingeckoId: "solana", decimals: 8, },
     "0x84d7aeef42d38a5ffc3ccef853e1b82e4958659d16a7de736a29c55fbbeb0114::staked_aptos_coin::StakedAptosCoin": { coingeckoId: "aptos", decimals: 8, },  // tortuga staked aptos
     "0xd11107bdf0d6d7040c6c0bfbdecb6545191fdf13e8d8d259952f53e1713f61b5::staked_coin::StakedAptos": { coingeckoId: "aptos", decimals: 8, },  // ditto staked aptos
+    "0x8d87a65ba30e09357fa2edea2c80dbac296e5dec2b18287113500b902942929d::celer_coin_manager::BnbCoin": { coingeckoId: "binancecoin", decimals: 8, },  // Celer
+    "0x8d87a65ba30e09357fa2edea2c80dbac296e5dec2b18287113500b902942929d::celer_coin_manager::BusdCoin": { coingeckoId: "binance-usd", decimals: 8, },  // Celer
+    "0x8d87a65ba30e09357fa2edea2c80dbac296e5dec2b18287113500b902942929d::celer_coin_manager::UsdcCoin": { coingeckoId: "usd-coin", decimals: 6, },  // Celer
+    "0x8d87a65ba30e09357fa2edea2c80dbac296e5dec2b18287113500b902942929d::celer_coin_manager::UsdtCoin": { coingeckoId: "tether", decimals: 6, },  // Celer
+    "0x8d87a65ba30e09357fa2edea2c80dbac296e5dec2b18287113500b902942929d::celer_coin_manager::DaiCoin": { coingeckoId: "dai", decimals: 8, },  // Celer
+    "0x8d87a65ba30e09357fa2edea2c80dbac296e5dec2b18287113500b902942929d::celer_coin_manager::WethCoin": { coingeckoId: "ethereum", decimals: 6, },  // Celer
+    "0x8d87a65ba30e09357fa2edea2c80dbac296e5dec2b18287113500b902942929d::celer_coin_manager::WbtcCoin": { coingeckoId: "wrapped-bitcoin", decimals: 8, },  // Celer
   },
   dogechain: {
     [nullAddress]: { coingeckoId: "dogecoin", decimals: 18, },
