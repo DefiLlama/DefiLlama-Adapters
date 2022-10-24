@@ -12,7 +12,7 @@ async function fetch() {
 }
 
 module.exports = {
-  avax:{
+  velas:{
     fetch
   },
   fetch
