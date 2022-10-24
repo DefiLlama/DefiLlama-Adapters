@@ -1,6 +1,9 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
-const { transformBscAddress, transformPolygonAddress } = require("../helper/portedTokens");
+const {
+  transformBscAddress,
+  transformPolygonAddress,
+} = require("../helper/portedTokens");
 const { BRIDGE_ADDRESS } = require("./constants");
 
 const callMethod = async (method, chain, chainBlocks, params = []) => {
@@ -14,9 +17,11 @@ const callMethod = async (method, chain, chainBlocks, params = []) => {
     })
   ).output;
 };
-
+const balckList = new Set(["SPHRI"]);
 const getTokenNames = async (chain, chainBlocks) => {
-  return await callMethod("getAllWhitelistedTokenNames", chain, chainBlocks);
+  return (
+    await callMethod("getAllWhitelistedTokenNames", chain, chainBlocks)
+  ).filter((tokenName) => !balckList.has(tokenName));
 };
 
 const getTokenAddress = async (chain, chainBlocks, tokenName) => {

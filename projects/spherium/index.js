@@ -2,7 +2,7 @@ const sdk = require("@defillama/sdk");
 const { getChainTransform } = require("../helper/portedTokens");
 const abi = require("./abi.json");
 const { getTokenNames, getTokenAddress, getTokenAmount } = require("./utils");
-const { BSC, ETH, AVAX, POLYGON } = require('./constants');
+const { BSC, ETH, AVAX, POLYGON } = require("./constants");
 
 function chainTvl(chain) {
   return async (_timestamp, _block, chainBlocks) => {
@@ -26,17 +26,17 @@ function chainTvl(chain) {
   };
 }
 
-const supportedChains = [ETH, BSC, POLYGON, AVAX]
+const supportedChains = [ETH, BSC, POLYGON, AVAX];
 function chainsBuilder() {
-  const chains = {}
+  const chains = {};
 
-  supportedChains.forEach(chain => {  
-    chains[chain] = { tvl: chainTvl(chain) }
-  })
+  supportedChains.forEach((chain) => {
+    chains[chain] = { tvl: chainTvl(chain) };
+  });
 
-  return chains
+  return chains;
 }
 
 module.exports = {
-  ...chainsBuilder()
+  ...chainsBuilder(),
 };
