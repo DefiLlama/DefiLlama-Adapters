@@ -74,7 +74,6 @@ async function getWallet(chain) {
 
 const fixMapping = {
   parallel: {
-    1: { geckoId: 'parallel-finance', decimals: 12, },
     101: { geckoId: 'polkadot', decimals: 10, },
     108: { geckoId: 'acala', decimals: 12, },
     104: { geckoId: 'acala-dollar', decimals: 12, },
@@ -153,8 +152,6 @@ async function getTokenPrices({ api, chain = '' }) {
     } else {
       quoteAmount = +lpTokenPoolsReverse[i].baseAmount
       baseAmount = +lpTokenPoolsReverse[i].quoteAmount
-      baseAsset = mapping.assets[1].assetId
-      quoteAsset = mapping.assets[0].assetId
     }
 
     const coreToken1 = coreAssets.includes(''+baseAsset)
