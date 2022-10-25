@@ -4,14 +4,14 @@ const {
   transformBscAddress,
   transformPolygonAddress,
 } = require("../helper/portedTokens");
-const { BRIDGE_ADDRESS } = require("./constants");
+const { bridgeAddr } = require("./constants");
 
 const callMethod = async (method, chain, chainBlocks, params = []) => {
   return (
     await sdk.api.abi.call({
       abi: abi[method],
       chain,
-      target: BRIDGE_ADDRESS,
+      target: bridgeAddr,
       params,
       block: chainBlocks[chain],
     })
@@ -36,7 +36,7 @@ const getTokenAmount = async (chain, chainBlocks, tokenAddress) => {
       abi: "erc20:balanceOf",
       chain,
       target: tokenAddress,
-      params: [BRIDGE_ADDRESS],
+      params: [bridgeAddr],
       block: chainBlocks[chain],
     })
   ).output;
