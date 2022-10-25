@@ -362,7 +362,7 @@ const transformTokens = {
     "0x48AEB7584BA26D3791f06fBA360dB435B3d7A174": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599", // WBTC
     "0x42110A5133F91B49E32B671Db86E2C44Edc13832": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // sUSDC(Milkomeda) -> USDC
   },
-  milkomeda_algorand: {
+  milkomeda_a1: {
     // '0x0000000000000000000000000000000000000000': '', // MilkALGO
     "0xaF86E6c5Fd9dAf53e5100ed38BaB2572609fCA27": "algorand",
     "0xBc31960A049Fe10297Ed8432Fb61DD734fEAd4ea": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // USDC
@@ -689,7 +689,7 @@ const fixBalancesTokens = {
     "0xAE83571000aF4499798d1e3b0fA0070EB3A3E3F9": { coingeckoId: "cardano", decimals: 18 },
     "0x4bf769b05e832fcdc9053fffbc78ca889acb5e1e": { coingeckoId: "binance-usd", decimals: 18 },
   },
-  milkomeda_algorand: {
+  milkomeda_a1: {
     "0xaF86E6c5Fd9dAf53e5100ed38BaB2572609fCA27": { coingeckoId: "algorand", decimals: 18 },
   },
   ultron: {
@@ -1377,7 +1377,7 @@ const coreAssets = {
     '0x6aB6d61428fde76768D7b45D8BFeec19c6eF91A8', // WBTC
     '0x3795C36e7D12A8c252A20C5a7B455f7c57b60283', // USDT
   ],
-  milkomeda_algorand: [
+  milkomeda_a1: [
     '0xaF86E6c5Fd9dAf53e5100ed38BaB2572609fCA27', // WALGO
   ],
   songbird: [

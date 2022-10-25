@@ -91,9 +91,9 @@ module.exports = {
     staking: (timestamp, block, chainBlocks) => staking('milkomeda', timestamp, block, chainBlocks),
     tvl: (timestamp, block, chainBlocks) => tvl('milkomeda', timestamp, block, chainBlocks)
   },
-  milkomeda_algorand: {
+  milkomeda_a1: {
     start: 1300,
-    // staking: (timestamp, block, chainBlocks) => staking('milkomeda_algorand', timestamp, block, chainBlocks),
-    tvl: (timestamp, block, chainBlocks) => tvl('milkomeda_algorand', timestamp, block, chainBlocks)
+    // staking: (timestamp, block, chainBlocks) => staking('milkomeda_a1', timestamp, block, chainBlocks),
+    tvl: (timestamp, block, chainBlocks) => tvl('milkomeda_a1', timestamp, block, chainBlocks)
   }
 };
