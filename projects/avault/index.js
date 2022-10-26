@@ -4,7 +4,7 @@ const { getChainTransform, getFixBalances } = require("../helper/portedTokens");
 const utils = require("../helper/utils");
 const { vaultsBase } = require("./avault-vault-utils");
 const url = "https://www.avault.network/media/get-vaults.json";
-async function tvl(chainBlocks) {
+async function tvl(_, _b, chainBlocks) {
   const balances = {};
   const vaultsInfo = (await utils.fetchURL(url)).data;
   // const vaultsInfo = {
@@ -34,15 +34,15 @@ async function tvl(chainBlocks) {
   //   },
   // };
   const chainArr = Object.keys(vaultsInfo);
-  const chain = "astr";
-  const chainLocal = chain === "astr" ? "astar" : chainArr[i];
+  const chain = "astar";
+  const chainLocal = chain === "astar" ? "astar" : chainArr[i];
   const fixBalances = await getFixBalances(chainLocal);
   const vaultAddressArr = Object.values(vaultsInfo[chainLocal]);
   const transformAddress = await getChainTransform(chainLocal);
   const { wantedLocked, wantedAddresses, vaultName } = await vaultsBase(
     chainLocal,
     vaultAddressArr,
-    chainBlocks
+    chainBlocks[chain]
   );
 
   const lpPositions = [];

@@ -1,14 +1,12 @@
 const sdk = require('@defillama/sdk');
 const { default: BigNumber } = require('bignumber.js');
 const { getChainTransform } = require('../helper/portedTokens')
-const { getBlock } = require('../helper/getBlock')
 const { addRewardsEscrowTVL } = require("./rewardsEscrow")
-const { ADDRESSES } = require("./constants");
 
 // gets balance of staking token held by the array of staking contract addresses.
 function staking(isStakingEnabled, stakingContracts, stakingToken, chain = "ethereum",) {
   return async (timestamp, _ethBlock, chainBlocks) => {
-    const block = await getBlock(timestamp, chain, chainBlocks)
+    const block = chainBlocks[chain]
     const balances = {};
     if (isStakingEnabled) {
       const bal = (await sdk.api.abi.multiCall({

@@ -1,7 +1,6 @@
 const sdk = require('@defillama/sdk');
 const abi = require('./abi.json');
 const axios = require("axios");
-const { unwrapLPsAuto } = require("../helper/unwrapLPs");
 const { getChainTransform, getFixBalances } = require('../helper/portedTokens')
 
 async function getConfig(network) {
@@ -38,7 +37,6 @@ function getChainTVL(chain) {
       sdk.util.sumSingleBalance(balances, token, balance)
     })
 
-    await unwrapLPsAuto({ balances, chain, block, transformAddress: transform })
     fixBalances(balances)
     return balances
   }

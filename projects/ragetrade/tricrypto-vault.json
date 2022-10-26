@@ -1,0 +1,13 @@
+{
+  "inputs": [],
+  "name": "getVaultMarketValue",
+  "outputs": [
+    {
+      "internalType": "int256",
+      "name": "vaultMarketValue",
+      "type": "int256"
+    }
+  ],
+  "stateMutability": "view",
+  "type": "function"
+}

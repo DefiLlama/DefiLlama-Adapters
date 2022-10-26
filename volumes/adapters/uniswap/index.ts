@@ -1,4 +1,5 @@
 import { Adapter, BreakdownVolumeAdapter } from "../../dexVolume.type";
+import { CHAIN } from "../../helper/chains";
 import { getStartTimestamp } from "../../helper/getStartTimestamp";
 
 const {
@@ -7,32 +8,29 @@ const {
   DEFAULT_TOTAL_VOLUME_FIELD,
 } = require("../../helper/getUniSubgraphVolume");
 
-const { ARBITRUM, ETHEREUM, OPTIMISM, POLYGON } = require("../../helper/chains");
-
 const v1Endpoints = {
-  [ETHEREUM]: "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap",
+  [CHAIN.ETHEREUM]: "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap",
 };
 
 const v2Endpoints = {
-  [ETHEREUM]: "https://api.thegraph.com/subgraphs/name/ianlapham/uniswapv2",
+  [CHAIN.ETHEREUM]: "https://api.thegraph.com/subgraphs/name/ianlapham/uniswapv2",
 };
 
 const v3Endpoints = {
-  [ETHEREUM]: "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3",
-  [OPTIMISM]:
+  [CHAIN.ETHEREUM]: "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3",
+  [CHAIN.OPTIMISM]:
     "https://api.thegraph.com/subgraphs/name/ianlapham/optimism-post-regenesis",
-  [ARBITRUM]:
+  [CHAIN.ARBITRUM]:
     "https://api.thegraph.com/subgraphs/name/ianlapham/arbitrum-dev",
-  [POLYGON]:
+  [CHAIN.POLYGON]:
     "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-v3-polygon",
+  /* [CHAIN.CELO]: "https://api.thegraph.com/subgraphs/name/messari/uniswap-v3-celo" */
 };
 
 const VOLUME_USD = "volumeUSD";
 
 const v1Graph = getChainVolume({
-  graphUrls: {
-    [ETHEREUM]: v1Endpoints[ETHEREUM],
-  },
+  graphUrls: v1Endpoints,
   totalVolume: {
     factory: "uniswaps",
     field: "totalVolumeUSD",
@@ -44,15 +42,11 @@ const v1Graph = getChainVolume({
 });
 
 const v2Graph = getChainVolume({
-  graphUrls: {
-    [ETHEREUM]: v2Endpoints[ETHEREUM],
-  },
+  graphUrls: v2Endpoints
 });
 
 const v3Graphs = getChainVolume({
-  graphUrls: {
-    ...v3Endpoints,
-  },
+  graphUrls: v3Endpoints,
   totalVolume: {
     factory: "factories",
     field: DEFAULT_TOTAL_VOLUME_FIELD,
@@ -66,17 +60,17 @@ const v3Graphs = getChainVolume({
 const adapter: BreakdownVolumeAdapter = {
   breakdown: {
     v1: {
-      [ETHEREUM]: {
-        fetch: v1Graph(ETHEREUM),
+      [CHAIN.ETHEREUM]: {
+        fetch: v1Graph(CHAIN.ETHEREUM),
         start: async () => 1541203200,
       },
     },
     v2: {
-      [ETHEREUM]: {
-        fetch: v2Graph(ETHEREUM),
+      [CHAIN.ETHEREUM]: {
+        fetch: v2Graph(CHAIN.ETHEREUM),
         start: getStartTimestamp({
           endpoints: v2Endpoints,
-          chain: ETHEREUM,
+          chain: CHAIN.ETHEREUM,
         }),
       },
     },
