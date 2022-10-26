@@ -1,4 +1,6 @@
-import { SimpleVolumeAdapter } from "../../dexVolume.type";
+import { BreakdownVolumeAdapter, DISABLED_ADAPTER_KEY } from "../../dexVolume.type";
+import { CHAIN } from "../../helper/chains";
+import disabledAdapter from "../../helper/disabledAdapter";
 
 const {
   getChainVolume,
@@ -8,15 +10,14 @@ const {
 const { BSC } = require("../../helper/chains");
 const { getStartTimestamp } = require("../../helper/getStartTimestamp");
 const endpoints = {
-  [BSC]: "https://bsc.streamingfast.io/subgraphs/name/pancakeswap/exchange-v2",
+  [CHAIN.BSC]: "https://bsc.streamingfast.io/subgraphs/name/pancakeswap/exchange-v2",
+  [CHAIN.ETHEREUM]: "https://api.thegraph.com/subgraphs/name/pancakeswap/exhange-eth"
 };
 
 const DAILY_VOLUME_FACTORY = "pancakeDayData";
 
 const graphs = getChainVolume({
-  graphUrls: {
-    [BSC]: endpoints[BSC],
-  },
+  graphUrls: endpoints,
   totalVolume: {
     factory: "pancakeFactories",
     field: DEFAULT_TOTAL_VOLUME_FIELD,
@@ -27,15 +28,28 @@ const graphs = getChainVolume({
   },
 });
 
-const adapter: SimpleVolumeAdapter = {
-  volume: {
-    [BSC]: {
-      fetch: graphs(BSC),
-      start: getStartTimestamp({
-        endpoints,
-        chain: BSC,
-        dailyDataField: `${DAILY_VOLUME_FACTORY}s`,
-      }),
+const adapter: BreakdownVolumeAdapter = {
+  breakdown: {
+    v1: {
+      [DISABLED_ADAPTER_KEY]: disabledAdapter
+    },
+    v2: {
+      [CHAIN.BSC]: {
+        fetch: graphs(CHAIN.BSC),
+        start: getStartTimestamp({
+          endpoints,
+          chain: CHAIN.BSC,
+          dailyDataField: `${DAILY_VOLUME_FACTORY}s`,
+        }),
+      },
+      [CHAIN.ETHEREUM]: {
+        fetch: graphs(CHAIN.ETHEREUM),
+        start: getStartTimestamp({
+          endpoints,
+          chain: CHAIN.ETHEREUM,
+          dailyDataField: `${DAILY_VOLUME_FACTORY}s`,
+        }),
+      }
     },
   },
 };

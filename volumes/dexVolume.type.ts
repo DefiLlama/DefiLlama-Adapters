@@ -20,14 +20,18 @@ export type Fetch = (
   chainBlocks: ChainBlocks
 ) => Promise<FetchResult>;
 
+export type IStartTimestamp = () => Promise<number>
+
 export type Adapter = {
   [chain: string]: {
-    start: () => Promise<number>
+    start: IStartTimestamp
     fetch: Fetch;
     runAtCurrTime?: boolean;
     customBackfill?: Fetch;
   }
 };
+
+export const DISABLED_ADAPTER_KEY = 'DISABLED_ADAPTER'
 
 export type SimpleVolumeAdapter = {
   volume: Adapter

@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
 const {calculateUniTvl} = require('../helper/calculateUniTvl.js');
 const { staking } = require("../helper/staking.js");
+const { getUniTVL } = require('../helper/unknownTokens')
 
 
 const BANANA_TOKEN = '0x603c7f932ED1fc6575303D8Fb018fDCBb0f39a95'
@@ -43,6 +44,9 @@ module.exports = {
   },
   ethereum:{
     tvl: ethTvl
+  },
+  telos: {
+    tvl: getUniTVL({ factory: '0x411172Dfcd5f68307656A1ff35520841C2F7fAec', chain: 'telos', useDefaultCoreAssets: true }),
   },
   methodology: "TVL comes from the DEX liquidity pools, staking TVL is accounted as the banana on 0x5c8D727b265DBAfaba67E050f2f739cAeEB4A6F9",
 }

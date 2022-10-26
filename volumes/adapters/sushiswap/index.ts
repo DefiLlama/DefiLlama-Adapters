@@ -24,7 +24,7 @@ const endpoints = {
   [ARBITRUM]: "https://api.thegraph.com/subgraphs/name/sushiswap/arbitrum-exchange",
   [CELO]: "https://api.thegraph.com/subgraphs/name/sushiswap/celo-exchange",
   [AVAX]: "https://api.thegraph.com/subgraphs/name/sushiswap/avalanche-exchange",
-  [HARMONY]: "https://sushi.graph.t.hmny.io/subgraphs/name/sushiswap/harmony-exchange",
+  [HARMONY]: "https://api.thegraph.com/subgraphs/name/sushiswap/harmony-exchange",
   [MOONRIVER]: "https://api.thegraph.com/subgraphs/name/sushiswap/moonriver-exchange",
   [XDAI]: "https://api.thegraph.com/subgraphs/name/sushiswap/xdai-exchange",
   // [HECO]: "https://q.hg.network/subgraphs/name/heco-exchange/heco",

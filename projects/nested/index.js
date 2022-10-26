@@ -1,5 +1,4 @@
 const sdk = require('@defillama/sdk')
-const { getBlock } = require('../helper/getBlock')
 const axios = require("axios");
 const retry = require('../helper/retry');
 const {chainExports} = require('../helper/exports')
@@ -26,13 +25,16 @@ const nested = {
     'prefix': 'opti', 
     'nestReserve_contract': '0x150fb0Cfa5bF3D4023bA198C725b6DCBc1577f21'
   }, 
+  'arbitrum': {
+    'prefix': 'arbi', 
+    'nestReserve_contract': '0x31A2a9E625C111d98d74241C046C1117cc1D94b0'
+  }, 
 }
 // const nestRecords_contract = '0x3Ee96E771D5E56b34245b023E8B31ffDf36dFafd'
 // const graphUrl = 'https://api.nested.finance/graphql'
 
 function chainTvl_onchain(chain) {
-  return async (timestamp, ethBlock, chainBlocks) => {
-    const block = await getBlock(timestamp, chain, chainBlocks, false)
+  return async (timestamp, ethBlock, {[chain]: block}) => {
     const balances = {}
     const transformAddress = (addr) => `${chain}:${addr}`
 

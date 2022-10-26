@@ -8,7 +8,6 @@ const {
   const sdk = require("@defillama/sdk");
   const { default: BigNumber } = require("bignumber.js");
   const { handleYearnTokens } = require("../creditum/helper.js");
-  const { getBlock } = require("../helper/getBlock");
   const { transformFantomAddress } = require("../helper/portedTokens");
   const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
   
@@ -42,10 +41,8 @@ const {
   const includeYVTokens = true;
   const stakingToken = "0xf04d7f53933becbf51ddf1f637fe7ecaf3d4ff94";
   
-  async function tvl(timestamp, ethBlock, chainBlocks) {
+  async function tvl(timestamp, ethBlock, {[chain]: block}) {
     const transform = await transformFantomAddress();
-  
-    const block = await getBlock(timestamp, chain, chainBlocks, true);
   
     const poolInfo = await getPoolInfo(
       masterChef,

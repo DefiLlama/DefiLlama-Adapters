@@ -25,22 +25,22 @@ async function fetch() {
     valueLockedMap[poolToken] = poolValue;
   }
 
-  return totalValueLocked;
+  return { tether: totalValueLocked };
 }
 
 async function staking() {
   const url = `${ALEX_API}/stats/tvl`;
   const alexResponse = (await retry(async () => await axios.get(url))).data;
-  return alexResponse.reserve_pool_value;
+  return { tether: alexResponse.reserve_pool_value };
 }
 
 // node test.js projects/alexlab/index.js
 module.exports = {
+  misrepresentedTokens: true,
   timetravel: false,
   stacks: {
-    fetch,
+    tvl: fetch,
+    staking,
   },
-  staking: { fetch: staking },
-  fetch,
   methodology: "Alex Lab TVL is sum of tokens locked in ALEX platform.",
 };
