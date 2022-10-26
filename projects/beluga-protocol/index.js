@@ -1,19 +1,9 @@
 const { sumTokens2, } = require('../helper/solana')
-
-const tokens = {
-  usdt: 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
-  usdc: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
-}
-
-const pools = {
-  '2usd': {
-    owner: '37YxD3yze3v92pFdER4X5ymUbLSmRoMP99WDgA18Gt8k',
-    tokens: [tokens.usdc, tokens.usdt,],
-  }
-}
+const utils = require('../helper/utils')
 
 async function tvl() {
-  const tokensAndOwners = Object.values(pools).map(({ owner, tokens}) => tokens.map(i => ([i, owner]))).flat()
+  const { data: pools } = await utils.fetchURL('https://www.beluga.so/api/poolinfos.json')
+  const tokensAndOwners = pools.map(({ owner, tokens}) => tokens.map(i => ([i, owner]))).flat()
   return sumTokens2({ tokensAndOwners })
 }
 
