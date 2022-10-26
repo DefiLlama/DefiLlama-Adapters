@@ -13,6 +13,7 @@ const gardId = 684649988
 const gardPriceValidatorId = 684650147
 const v2GardPriceValidatorId = 890603991
 const sgardGardId = 890603920
+const stakingGARDId = 890604041
 
 function getStateUint(state, key) {
   const val = state.find((entry) => {
@@ -87,6 +88,24 @@ async function getAlgoGovernanceAccountBalsUsd(price, gprice) {
   return (totalContractAlgo * price) + (totalContractgAlgo * gprice)
 }
 
+async function getGARDStakedBalUSD() {
+  gstate = await getAppState(stakingGARDId);
+  total = 0
+  // 6 pool keys
+  keys = [btoa("NL"), btoa("NLL"), btoa("3M"), btoa("6M"), btoa("9M"), btoa("12M")]
+  // sum up the 6 pools
+  for (let i = 0; i < gstate.length; i++){
+    for (let j = 0; j < 6; j++){
+      if (gstate[i].key == keys[j]){
+        total += gstate[i].value.uint
+        break
+      }
+    }
+  }
+  // GARD has 6 decimals, pegged to $1
+  return total/1e6
+}
+
 /* Get value locked in treasury */
 async function getTreasuryBalUsd(price) {
 
@@ -132,6 +151,11 @@ async function treasuryBalances() {
   return toUSDTBalances(await getTreasuryBalUsd(price))
 }
 
+// Converts USD to USDT
+async function stakingBalances() {
+  return toUSDTBalances(await getGARDStakedBalUSD())
+}
+
 module.exports = {
   hallmarks: [
     [Math.floor(new Date('2022-10-06')/1e3), 'Gard V2 mainnet launch'],
@@ -140,5 +164,6 @@ module.exports = {
     tvl,
     borrowed: borrowedBalances,
     treasury: treasuryBalances,
+    staking: stakingBalances,
   }
 }
