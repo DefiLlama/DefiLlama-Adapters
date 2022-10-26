@@ -63,6 +63,7 @@ function v3TvlPaged(chain) {
 
 module.exports = {
   methodology: `Counts the tokens locked on AMM pools, pulling the data from the 'ianlapham/uniswapv2' subgraph`,
+  misrepresentedTokens: true,
   hallmarks: [
     [1598412107, "SushiSwap launch"],
     [1599535307, "SushiSwap migration"],
