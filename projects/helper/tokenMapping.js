@@ -362,13 +362,6 @@ const transformTokens = {
     "0x48AEB7584BA26D3791f06fBA360dB435B3d7A174": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599", // WBTC
     "0x42110A5133F91B49E32B671Db86E2C44Edc13832": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // sUSDC(Milkomeda) -> USDC
   },
-  milkomeda_a1: {
-    // '0x0000000000000000000000000000000000000000': '', // MilkALGO
-    "0xaF86E6c5Fd9dAf53e5100ed38BaB2572609fCA27": "algorand",
-    "0xBc31960A049Fe10297Ed8432Fb61DD734fEAd4ea": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", // USDC
-    "0x32564ae38E5DBf316958CE25A6aD2A2249EbCc2D": "0xdAC17F958D2ee523a2206206994597C13D831ec7", // USDt
-    "0x522B61755b5FF8176B2931DA7bF1a5F9414Eb710": "0xdAC17F958D2ee523a2206206994597C13D831ec7", // ceUSDT
-  },
   bittorrent: {
     "0xdb28719f7f938507dbfe4f0eae55668903d34a15": "0xdac17f958d2ee523a2206206994597c13d831ec7", // USDT
     "0x935faa2fcec6ab81265b301a30467bbc804b43d3": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USDC
@@ -691,7 +684,11 @@ const fixBalancesTokens = {
     "0x4bf769b05e832fcdc9053fffbc78ca889acb5e1e": { coingeckoId: "binance-usd", decimals: 18 },
   },
   milkomeda_a1: {
+    [nullAddress]: { coingeckoId: "algorand", decimals: 18 },
     "0xaF86E6c5Fd9dAf53e5100ed38BaB2572609fCA27": { coingeckoId: "algorand", decimals: 18 },
+    "0xBc31960A049Fe10297Ed8432Fb61DD734fEAd4ea": { coingeckoId: "usd-coin", decimals: 6 }, // USDC
+    "0x32564ae38E5DBf316958CE25A6aD2A2249EbCc2D": { coingeckoId: "tether", decimals: 6 }, // USDt
+    "0x522B61755b5FF8176B2931DA7bF1a5F9414Eb710": { coingeckoId: "tether", decimals: 6 }, // ceUSDT
   },
   ultron: {
     [nullAddress]: { coingeckoId: "ultron", decimals: 18 },
@@ -1385,9 +1382,6 @@ const coreAssets = {
     '0x8d50a024B2F5593605d3cE8183Ca8969226Fcbf8', // WBTC
     '0x6aB6d61428fde76768D7b45D8BFeec19c6eF91A8', // WBTC
     '0x3795C36e7D12A8c252A20C5a7B455f7c57b60283', // USDT
-  ],
-  milkomeda_a1: [
-    '0xaF86E6c5Fd9dAf53e5100ed38BaB2572609fCA27', // WALGO
   ],
   songbird: [
     '0x02f0826ef6aD107Cfc861152B32B52fD11BaB9ED',  // WSGB
