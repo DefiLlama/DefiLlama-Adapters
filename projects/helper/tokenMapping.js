@@ -794,6 +794,8 @@ const fixBalancesTokens = {
     "0xd8bc24cfd45452ef2c8bc7618e32330b61f2691b": { coingeckoId: "ong", decimals: 18, },
   },
   algorand: {
+    1: { coingeckoId: "algorand", decimals: 6, },
+    312769: { coingeckoId: "tether", decimals: 6, },
     31566704: { coingeckoId: "usd-coin", decimals: 6, },
     692085161: { coingeckoId: "algodao", decimals: 6, },
     724480511: { coingeckoId: "algodex", decimals: 6, },
@@ -801,6 +803,7 @@ const fixBalancesTokens = {
     230946361: { coingeckoId: "algogems", decimals: 6, },
     441139422: { coingeckoId: "algomint", decimals: 6, },
     465865291: { coingeckoId: "algostable", decimals: 6, },
+    841126810: { coingeckoId: "algostable", decimals: 6, },
     511484048: { coingeckoId: "algostake", decimals: 2, },
     163650: { coingeckoId: "arcc", decimals: 6, },
     663905154: { coingeckoId: "bnext-b3x", decimals: 6, },
