@@ -62,17 +62,11 @@ async function voterProxyBalances(block) {
     }),
     chain,
   });
-  return underlyingAmounts.output.map((a, i) => ({amount: a.output.amount, token: underlyingTokens.output[i].output}));
-}
-
-async function lockerBalance(block) {
-  return sdk.api.abi.call({
-    abi: abi.lockedSupply,
-    target: wmxLocker,
-    params: [],
-    block,
-    chain
-  }).then(s => s.output);
+  return underlyingAmounts.output
+    .map((a, i) => {
+      if (masterWombatVoterProxyBalances.output[i].output.amount === '0') return;
+      return ({amount: a.output.amount, token: underlyingTokens.output[i].output})
+    }).filter(i => i);
 }
 
 async function veWomBalance(block) {
