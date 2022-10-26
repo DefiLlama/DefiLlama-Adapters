@@ -683,6 +683,13 @@ const fixBalancesTokens = {
     "0xAE83571000aF4499798d1e3b0fA0070EB3A3E3F9": { coingeckoId: "cardano", decimals: 18 },
     "0x4bf769b05e832fcdc9053fffbc78ca889acb5e1e": { coingeckoId: "binance-usd", decimals: 18 },
   },
+  milkomeda_a1: {
+    [nullAddress]: { coingeckoId: "algorand", decimals: 18 },
+    "0xaF86E6c5Fd9dAf53e5100ed38BaB2572609fCA27": { coingeckoId: "algorand", decimals: 18 },
+    "0xBc31960A049Fe10297Ed8432Fb61DD734fEAd4ea": { coingeckoId: "usd-coin", decimals: 6 }, // USDC
+    "0x32564ae38E5DBf316958CE25A6aD2A2249EbCc2D": { coingeckoId: "tether", decimals: 6 }, // USDt
+    "0x522B61755b5FF8176B2931DA7bF1a5F9414Eb710": { coingeckoId: "tether", decimals: 6 }, // ceUSDT
+  },
   ultron: {
     [nullAddress]: { coingeckoId: "ultron", decimals: 18 },
     "0x3a4f06431457de873b588846d139ec0d86275d54": { coingeckoId: "ultron", decimals: 18 },
@@ -1370,11 +1377,11 @@ const coreAssets = {
     '0x332730a4F6E03D9C55829435f10360E13cfA41Ff', // busd
   ],
   milkomeda: [
-    '0xAE83571000aF4499798d1e3b0fA0070EB3A3E3F9',
-    '0x80A16016cC4A2E6a2CACA8a4a498b1699fF0f844',
-    '0x8d50a024B2F5593605d3cE8183Ca8969226Fcbf8',
-    '0x6aB6d61428fde76768D7b45D8BFeec19c6eF91A8',
-    '0x3795C36e7D12A8c252A20C5a7B455f7c57b60283'
+    '0xAE83571000aF4499798d1e3b0fA0070EB3A3E3F9', // WADA
+    '0x80A16016cC4A2E6a2CACA8a4a498b1699fF0f844', // USDT
+    '0x8d50a024B2F5593605d3cE8183Ca8969226Fcbf8', // WBTC
+    '0x6aB6d61428fde76768D7b45D8BFeec19c6eF91A8', // WBTC
+    '0x3795C36e7D12A8c252A20C5a7B455f7c57b60283', // USDT
   ],
   songbird: [
     '0x02f0826ef6aD107Cfc861152B32B52fD11BaB9ED',  // WSGB
