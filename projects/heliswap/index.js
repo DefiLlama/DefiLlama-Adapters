@@ -31,7 +31,7 @@ const getWhitelistedTokenAddresses = async () => {
   return tokens;
 };
 
-const getTVL = async () => {
+const fetch = async () => {
   let totalTVL = 0;
 
   try {
@@ -79,10 +79,8 @@ const getTVL = async () => {
   return totalTVL;
 };
 
-getTVL();
+fetch();
 
 module.exports = {
-  hedera: {
-    tvl: getTVL,
-  },
+  fetch,
 };
