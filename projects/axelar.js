@@ -7,7 +7,6 @@ async function fetch() {
 
     var tvl = 0;
     for (const asset of res.data.data) {
-        console.log(asset.total)
         tvl = tvl + (parseFloat(asset.total)) * (parseFloat(asset.price))
     }
     return new BigNumber(tvl);
