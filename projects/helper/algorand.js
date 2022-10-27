@@ -132,6 +132,7 @@ const tokens = {
   usdc: 31566704,
   goUsd: 672913181,
   usdcGoUsdLp: 885102318,
+  gard: 684649988,
 }
 
 // store all asset ids as string
