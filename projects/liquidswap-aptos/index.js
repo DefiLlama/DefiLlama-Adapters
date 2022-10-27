@@ -1,7 +1,12 @@
 const sdk = require('@defillama/sdk')
-const { getResources, coreTokens } = require('../helper/aptos')
+const { coreTokens } = require('../helper/aptos')
 const { transformBalances } = require('../helper/portedTokens')
 const { log } = require('../helper/utils')
+const { get } = require('../helper/http')
+
+async function getResources(account){
+  return get(`https://aptos-mainnet.pontem.network/v1/accounts/${account}/resources`)
+}
 
 module.exports = {
   timetravel: false,
