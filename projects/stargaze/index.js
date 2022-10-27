@@ -11,7 +11,7 @@ async function fetch() {
   var p_atom = await retry(async bail => await axios.get('https://api.osmosis.zone/pools/v2/611'))
   var p_ststars = await retry(async bail => await axios.get('https://api.osmosis.zone/pools/v2/810'))
   // Sum all bonded quantities
-  var tvl = await new BigNumber((parseFloat(stars.data.bonded_tokens).div(10 ** 6).toFixed(2)) + parseFloat(p_osmo.data.symbol.amount) + parseFloat(p_atom.data.symbol.amount) + parseFloat(p_ststars.data.symbol.amount));
+  var tvl = await new BigNumber(((parseFloat(stars.data.bonded_tokens) / parseFloat(10 ** 6)).toFixed(2)) + parseFloat(p_osmo.data.symbol.amount) + parseFloat(p_atom.data.symbol.amount) + parseFloat(p_ststars.data.symbol.amount));
   tvl = tvl * price_feed.data.stargaze.usd;
   return tvl;
 }
