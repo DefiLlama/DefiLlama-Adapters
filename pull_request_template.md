@@ -11,43 +11,62 @@
 
 
 ##### Twitter Link:
+https://twitter.com/tangibleDAO
 
 
 ##### List of audit links if any:
 
 
 ##### Website Link:
+https://www.tangible.store
 
 
 ##### Logo (High resolution, preferably in .svg and .png, for application on both white and black backgrounds. Will be shown with rounded borders):
 
+https://drive.google.com/drive/folders/1J2enAQqOqJWjrVDiwwWMBq2fTsBQLerF?usp=sharing
 
 ##### Current TVL:
+https://api.tangible.store/tvl
+
 
 
 ##### Chain:
-
+Polygon
 
 ##### Coingecko ID (so your TVL can appear on Coingecko): (https://api.coingecko.com/api/v3/coins/list)
+tangible
 
-
-##### Coinmarketcap ID (so your TVL can appear on Coinmarketcap): (https://api.coinmarketcap.com/data-api/v3/map/all?listing_status=active,inactive,untracked&start=1&limit=10000)
+##### Coinmarketcap ID (so your TVL can appear on Coinmarketcap): 
+https://coinmarketcap.com/currencies/tangible/
 
 
 ##### Short Description (to be shown on DefiLlama):
 
 
+Tangible is an NFT marketplace for Real World Assets. Tangible is also the creator of Real USD, the first stablecoin backed by tokenized, yield-producing real estate. 
+
+Rental income from Real USD’s backing is paid out to Real USD holders in the form of a daily rebase projected to range between 10 - 15% APY.
+
+
 ##### Token address and ticker if any:
 
+https://polygonscan.com/address/0xb5DFABd7fF7F83BAB83995E72A52B97ABb7bcf63
+
+Name: Real USD
+Ticker: USDR
 
 ##### Category (full list at https://defillama.com/categories) *Please choose only one:
 
+RWA
 
 ##### Oracle used (Chainlink/Band/API3/TWAP or any other that you are using):
 
+Curve
 
 ##### forkedFrom (Does your project originate from another project):
 
+No
 
 ##### methodology (what is being counted as tvl, how is tvl being calculated):
 
+The TVL is the sum of the Real USD treasury + any RWAs tokenized by Tangible that are not in the Real USD treasury.
