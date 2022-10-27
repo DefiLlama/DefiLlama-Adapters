@@ -2,13 +2,16 @@ const utils = require("../helper/utils");
 const sdk = require("@defillama/sdk");
 const IOTEX_CG_MAPPING = require("./../xdollar-finance/iotex_cg_mapping.json");
 const BigNumber = require("bignumber.js");
-const { transformTokens, fixBalancesTokens } = require("./tokenMapping");
+const {
+  transformTokens,
+  fixBalancesTokens,
+} = require('./tokenMapping')
 
 async function transformFantomAddress() {
-  const mapping = transformTokens.fantom;
+  const mapping = transformTokens.fantom
 
-  return (addr) => {
-    addr = addr.toLowerCase();
+  return addr => {
+    addr = addr.toLowerCase()
     return mapping[addr] || `fantom:${addr}`;
   };
 }
@@ -18,34 +21,37 @@ function compareAddresses(a, b) {
 }
 
 async function transformAvaxAddress() {
-  const [bridgeTokensOld, bridgeTokensNew, bridgeTokenDetails] =
-    await Promise.all([
-      utils.fetchURL(
-        "https://raw.githubusercontent.com/0xngmi/bridge-tokens/main/data/penultimate.json"
-      ),
-      utils
-        .fetchURL(
-          "https://raw.githubusercontent.com/ava-labs/avalanche-bridge-resources/main/avalanche_contract_address.json"
-        )
-        .then((r) => Object.entries(r.data)),
-      utils.fetchURL(
-        "https://raw.githubusercontent.com/ava-labs/avalanche-bridge-resources/main/token_list.json"
-      ),
-    ]);
-  return (addr) => {
+  const [
+    bridgeTokensOld,
+    bridgeTokensNew,
+    bridgeTokenDetails
+  ] = await Promise.all([
+    utils.fetchURL(
+      "https://raw.githubusercontent.com/0xngmi/bridge-tokens/main/data/penultimate.json"
+    ),
+    utils
+      .fetchURL(
+        "https://raw.githubusercontent.com/ava-labs/avalanche-bridge-resources/main/avalanche_contract_address.json"
+      )
+      .then(r => Object.entries(r.data)),
+    utils.fetchURL(
+      "https://raw.githubusercontent.com/ava-labs/avalanche-bridge-resources/main/token_list.json"
+    )
+  ]);
+  return addr => {
     const map = transformTokens.avax;
-    if (map[addr.toLowerCase()]) return map[addr.toLowerCase()];
-    const srcToken = bridgeTokensOld.data.find((token) =>
+    if (map[addr.toLowerCase()])  return map[addr.toLowerCase()]
+    const srcToken = bridgeTokensOld.data.find(token =>
       compareAddresses(token["Avalanche Token Address"], addr)
     );
     if (
       srcToken !== undefined &&
       srcToken["Ethereum Token Decimals"] ===
-        srcToken["Avalanche Token Decimals"]
+      srcToken["Avalanche Token Decimals"]
     ) {
       return srcToken["Ethereum Token Address"];
     }
-    const newBridgeToken = bridgeTokensNew.find((token) =>
+    const newBridgeToken = bridgeTokensNew.find(token =>
       compareAddresses(addr, token[1])
     );
     if (newBridgeToken !== undefined) {
@@ -60,28 +66,28 @@ async function transformAvaxAddress() {
 }
 
 async function transformBscAddress() {
-  return transformChainAddress(transformTokens.bsc, "bsc");
+  return transformChainAddress(transformTokens.bsc, "bsc")
 }
 
 async function transformPolygonAddress() {
-  return transformChainAddress(transformTokens.polygon, "polygon");
+  return transformChainAddress(transformTokens.polygon, "polygon")
 }
 
 async function transformCeloAddress() {
-  return transformChainAddress(transformTokens.celo, "celo");
+  return transformChainAddress(transformTokens.celo, "celo")
 }
 
 async function transformHarmonyAddress() {
-  const bridge = (
-    await utils.fetchURL("https://be4.bridge.hmny.io/tokens/?page=0&size=1000")
-  ).data.content;
+  const bridge = (await utils.fetchURL(
+    "https://be4.bridge.hmny.io/tokens/?page=0&size=1000"
+  )).data.content;
 
-  const mapping = transformTokens.harmony;
+  const mapping = transformTokens.harmony
 
-  return (addr) => {
+  return addr => {
     addr = addr.toLowerCase();
     if (mapping[addr]) return mapping[addr];
-    const srcToken = bridge.find((token) =>
+    const srcToken = bridge.find(token =>
       compareAddresses(addr, token.hrc20Address)
     );
     if (srcToken !== undefined) {
@@ -93,23 +99,23 @@ async function transformHarmonyAddress() {
 }
 
 async function transformOptimismAddress() {
-  const bridge = (
-    await utils.fetchURL("https://static.optimism.io/optimism.tokenlist.json")
-  ).data.tokens;
+  const bridge = (await utils.fetchURL(
+    "https://static.optimism.io/optimism.tokenlist.json"
+  )).data.tokens;
 
-  const mapping = transformTokens.optimism;
+  const mapping = transformTokens.optimism
 
-  return (addr) => {
+  return addr => {
     addr = addr.toLowerCase();
 
     if (mapping[addr]) return mapping[addr];
 
     const dstToken = bridge.find(
-      (token) => compareAddresses(addr, token.address) && token.chainId === 10
+      token => compareAddresses(addr, token.address) && token.chainId === 10
     );
     if (dstToken !== undefined) {
       const srcToken = bridge.find(
-        (token) => dstToken.logoURI === token.logoURI && token.chainId === 1
+        token => dstToken.logoURI === token.logoURI && token.chainId === 1
       );
       if (srcToken !== undefined) {
         return srcToken.address;
@@ -120,15 +126,15 @@ async function transformOptimismAddress() {
 }
 
 async function transformArbitrumAddress() {
-  const bridge = (
-    await utils.fetchURL("https://bridge.arbitrum.io/token-list-42161.json")
-  ).data.tokens;
-  const mapping = transformTokens.arbitrum;
+  const bridge = (await utils.fetchURL(
+    "https://bridge.arbitrum.io/token-list-42161.json"
+  )).data.tokens;
+  const mapping = transformTokens.arbitrum
 
-  return (addr) => {
+  return addr => {
     addr = addr.toLowerCase();
     if (mapping[addr]) return mapping[addr];
-    const dstToken = bridge.find((token) =>
+    const dstToken = bridge.find(token =>
       compareAddresses(addr, token.address)
     );
     if (dstToken !== undefined) {
@@ -139,8 +145,8 @@ async function transformArbitrumAddress() {
 }
 
 async function transformIotexAddress() {
-  return (addr) => {
-    const dstToken = Object.keys(IOTEX_CG_MAPPING).find((token) =>
+  return addr => {
+    const dstToken = Object.keys(IOTEX_CG_MAPPING).find(token =>
       compareAddresses(addr, token)
     );
     if (dstToken !== undefined) {
@@ -155,18 +161,18 @@ async function transformIotexAddress() {
 
 function normalizeMapping(mapping) {
   Object.keys(mapping).forEach(
-    (key) => (mapping[key.toLowerCase()] = mapping[key])
+    key => (mapping[key.toLowerCase()] = mapping[key])
   );
 }
 
 function fixBalances(balances, mapping, { removeUnmapped = false } = {}) {
   normalizeMapping(mapping);
 
-  Object.keys(balances).forEach((token) => {
+  Object.keys(balances).forEach(token => {
     const tokenKey = stripTokenHeader(token).toLowerCase();
     const { coingeckoId, decimals } = mapping[tokenKey] || {};
     if (!coingeckoId) {
-      if (removeUnmapped && tokenKey.startsWith("0x")) {
+      if (removeUnmapped && tokenKey.startsWith('0x')) {
         console.log(
           `Removing token from balances, it is not part of whitelist: ${tokenKey}`
         );
@@ -192,48 +198,40 @@ function stripTokenHeader(token) {
 }
 
 async function getFixBalances(chain) {
-  return getFixBalancesSync(chain);
+  return getFixBalancesSync(chain)
 }
 
 function getFixBalancesSync(chain) {
-  const dummyFn = (i) => i;
+  const dummyFn = i => i;
   return fixBalancesMapping[chain] || dummyFn;
 }
 
 function fixTezosBalances(balances) {
-  const mapping = fixBalancesTokens.tezos;
+  const mapping = fixBalancesTokens.tezos
   Object.entries(balances).forEach(([key, value]) => {
-    const token = stripTokenHeader(key);
+    const token = stripTokenHeader(key)
     if (mapping[token]) {
-      delete balances[key];
-      const { coingeckoId, decimals } = mapping[token];
-      balances[coingeckoId] = BigNumber(balances[coingeckoId] || 0).toFixed(0);
-      sdk.util.sumSingleBalance(
-        balances,
-        coingeckoId,
-        BigNumber(value / 10 ** decimals).toFixed(0)
-      );
+      delete balances[key]
+      const { coingeckoId, decimals } = mapping[token]
+      balances[coingeckoId] = BigNumber(balances[coingeckoId] || 0).toFixed(0)
+      sdk.util.sumSingleBalance(balances, coingeckoId, BigNumber(value/ 10 ** decimals).toFixed(0))
     }
-  });
-  return balances;
+  })
+  return balances
 }
 
 function fixAptosBalances(balances) {
-  const mapping = fixBalancesTokens.aptos;
+  const mapping = fixBalancesTokens.aptos
   Object.entries(balances).forEach(([key, value]) => {
-    const token = key.replace(/^aptos\:/, "");
+    const token = key.replace(/^aptos\:/, '')
     if (mapping[token]) {
-      delete balances[key];
-      const { coingeckoId, decimals } = mapping[token];
-      balances[coingeckoId] = BigNumber(balances[coingeckoId] || 0).toFixed(0);
-      sdk.util.sumSingleBalance(
-        balances,
-        coingeckoId,
-        BigNumber(value / 10 ** decimals).toFixed(0)
-      );
+      delete balances[key]
+      const { coingeckoId, decimals } = mapping[token]
+      balances[coingeckoId] = BigNumber(balances[coingeckoId] || 0).toFixed(0)
+      sdk.util.sumSingleBalance(balances, coingeckoId, BigNumber(value/ 10 ** decimals).toFixed(0))
     }
-  });
-  return balances;
+  })
+  return balances
 }
 
 const fixBalancesMapping = {
@@ -243,7 +241,7 @@ const fixBalancesMapping = {
 
 for (const chain of Object.keys(fixBalancesTokens)) {
   if (!fixBalancesMapping[chain])
-    fixBalancesMapping[chain] = (b) => fixBalances(b, fixBalancesTokens[chain]);
+    fixBalancesMapping[chain] = b => fixBalances(b, fixBalancesTokens[chain])
 }
 
 const chainTransforms = {
@@ -264,8 +262,8 @@ function transformChainAddress(
 ) {
   normalizeMapping(mapping);
 
-  return (addr) => {
-    if (!addr.startsWith("0x")) return addr;
+  return addr => {
+    if (!addr.startsWith('0x')) return addr
     addr = addr.toLowerCase();
     if (!mapping[addr] && skipUnmapped) {
       console.log(
@@ -275,33 +273,34 @@ function transformChainAddress(
       );
       return "0x1000000000000000000000000000000000000001";
     }
-    if (chain === "ethereum") return mapping[addr] ? mapping[addr] : addr;
+    if (chain === 'ethereum')  return mapping[addr] ? mapping[addr] : addr
     return mapping[addr] || `${chain}:${addr}`;
   };
 }
 
 async function getChainTransform(chain) {
-  if (chainTransforms[chain]) return chainTransforms[chain]();
+  if (chainTransforms[chain]) 
+    return chainTransforms[chain]()
 
-  if (transformTokens[chain])
-    return transformChainAddress(transformTokens[chain], chain);
+  if (transformTokens[chain]) 
+    return transformChainAddress(transformTokens[chain], chain) 
 
-  return (addr) => {
-    addr = addr.toLowerCase();
-    if (addr.startsWith("0x")) return `${chain}:${addr}`;
-    return addr;
+  return addr => {
+    addr = addr.toLowerCase()
+    if (addr.startsWith('0x')) return `${chain}:${addr}`
+    return addr
   };
 }
 
 async function transformBalances(chain, balances) {
-  const transform = await getChainTransform(chain);
-  const fixBalances = await getFixBalances(chain);
+  const transform = await getChainTransform(chain)
+  const fixBalances = await getFixBalances(chain)
   Object.entries(balances).forEach(([token, value]) => {
-    delete balances[token];
-    sdk.util.sumSingleBalance(balances, transform(token), value);
-  });
-  fixBalances(balances);
-  return balances;
+    delete balances[token]
+    sdk.util.sumSingleBalance(balances, transform(token), value)
+  })
+  fixBalances(balances)
+  return balances
 }
 
 module.exports = {
