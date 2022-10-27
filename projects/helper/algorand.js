@@ -38,6 +38,18 @@ async function searchAccounts({ appId, limit = 1000, nexttoken, }) {
   return response.data
 }
 
+
+async function searchAccountsAll({ appId, limit = 1000 }) {
+  const accounts = []
+  let nexttoken
+  do {
+    const res = await searchAccounts({ appId, limit, nexttoken, })
+    nexttoken = res['next-token']
+    accounts.push(...res.accounts)
+  } while(nexttoken)
+  return accounts
+}
+
 const withLimiter = (fn, tokensToRemove = 1) => async (...args) => {
   await indexerLimiter.removeTokens(tokensToRemove);
   return fn(...args);
@@ -164,6 +176,7 @@ async function getPriceFromAlgoFiLP(lpAssetId, unknownAssetId) {
 module.exports = {
   tokens,
   getAssetInfo: withLimiter(getAssetInfo),
+  searchAccountsAll,
   getAccountInfo,
   sumTokens,
   getApplicationAddress,
