@@ -2,7 +2,7 @@ const sdk = require("@defillama/sdk");
 const { getResources, coreTokens } = require("../helper/aptos");
 const { transformBalances } = require("../helper/portedTokens");
 
-const obj = {
+module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
   methodology:
@@ -36,5 +36,3 @@ const obj = {
     },
   },
 };
-
-obj.aptos.tvl();
