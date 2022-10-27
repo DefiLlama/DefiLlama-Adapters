@@ -1,41 +1,35 @@
 const sdk = require("@defillama/sdk");
-const { getChainTransform } = require("../helper/portedTokens");
 const abi = require("./abi.json");
-const { getTokenNames, getTokenAddress, getTokenAmount } = require("./utils");
-const { supportedChains } = require("./constants");
+const { supportedChains, bridgeAddr } = require("./constants");
+const { sumTokens2 } = require('../helper/unwrapLPs')
+
+const blackList = new Set(["SPHRI"]);
 
 function chainTvl(chain) {
-  return async (_timestamp, _block, chainBlocks) => {
-    const transform = await getChainTransform(chain);
-    const tokenNames = await getTokenNames(chain, chainBlocks);
-    const balances = {};
-
-    for (let tokenName of tokenNames) {
-      let tokenAddress = await getTokenAddress(chain, chainBlocks, tokenName);
-      const tokenAmount = await getTokenAmount(
-        chain,
-        chainBlocks,
-        tokenAddress
-      );
-
-      const transformedAddress = transform(tokenAddress);
-      balances[transformedAddress] = tokenAmount;
-    }
-
-    return balances;
+  return async (_timestamp, _block, {[chain]: block}) => {
+    const tokens = await getTokens(chain, block)
+    return sumTokens2({ chain, block, owner: bridgeAddr, tokens, })
   };
 }
 
-function chainsBuilder() {
-  const chains = {};
-
-  supportedChains.forEach((chain) => {
-    chains[chain] = { tvl: chainTvl(chain) };
-  });
-
-  return chains;
+async function getTokens(chain, block) {
+  let { output: tokenNames } = await sdk.api.abi.call({
+    target: bridgeAddr,
+    abi: abi.getAllWhitelistedTokenNames,
+    chain, block,
+  })
+  tokenNames = tokenNames.filter(i => !blackList.has(i))
+  const { output: tokens } = await sdk.api.abi.multiCall({
+    target: bridgeAddr,
+    abi: abi.whitelistedTokenAddress,
+    calls: tokenNames.map(i => ({ params: i})),
+    chain, block,
+  })
+  return tokens.map(i => i.output)
 }
 
-module.exports = {
-  ...chainsBuilder(),
-};
+module.exports = {}
+
+supportedChains.forEach((chain) => {
+  module.exports[chain] = { tvl: chainTvl(chain) };
+});
