@@ -286,7 +286,6 @@ async function getChainTransform(chain) {
     return transformChainAddress(transformTokens[chain], chain) 
 
   return addr => {
-    if (['algorand'].includes(chain)) return `${chain}:${addr}`
     addr = addr.toLowerCase()
     if (addr.startsWith('0x')) return `${chain}:${addr}`
     return addr
