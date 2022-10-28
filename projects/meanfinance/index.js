@@ -36,6 +36,8 @@ async function getV2TVL(chain, block) {
   ]
 
   await Promise.all(versions.map(({ contract, tokens }) => sumTokens2({ balances, chain, block, tokens, owner: contract })))
+
+  return balances
 }
 
 async function ethTvl(timestamp, block) {
