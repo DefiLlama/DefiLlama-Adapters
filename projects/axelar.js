@@ -1,15 +1,14 @@
-const retry = require('async-retry')
-const axios = require("axios");
-const BigNumber = require("bignumber.js");
+
+const { get, } = require('../helper/http')
 
 async function fetch() {
-    var res = await retry(async bail => await axios.get('https://api.axelarscan.io/cross-chain/tvl'))
+    var { data } = await get('https://api.axelarscan.io/cross-chain/tvl')
 
     var tvl = 0;
-    for (const asset of res.data.data) {
-        tvl = tvl + (parseFloat(asset.total)) * (parseFloat(asset.price))
+    for (const asset of data) {
+        tvl += asset.value
     }
-    return new BigNumber(tvl);
+    return tvl
 }
 
 module.exports = {
