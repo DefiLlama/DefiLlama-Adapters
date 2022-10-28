@@ -6,12 +6,6 @@ const pools = [
     assetDecimals: 6,
   },
   {
-    // gALGO
-    appId: 794055220,
-    assetId: 793124631,
-    assetDecimals: 6,
-  },
-  {
     // USDC
     appId: 686500029,
     assetId: 31566704,
@@ -34,12 +28,6 @@ const pools = [
     appId: 694405065,
     assetId: 386195940,
     assetDecimals: 8,
-  },
-  {
-    // gAlgo3
-    appId: 694464549,
-    assetId: 694432641,
-    assetDecimals: 6,
   },
   // USDC-gALGO TMP1.1
   {
