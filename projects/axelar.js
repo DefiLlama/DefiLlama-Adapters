@@ -1,5 +1,5 @@
 
-const { get, } = require('../helper/http')
+const { get, } = require('./helper/http')
 
 async function fetch() {
     var { data } = await get('https://api.axelarscan.io/cross-chain/tvl')
