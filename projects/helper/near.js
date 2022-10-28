@@ -35,6 +35,7 @@ const tokenMapping = {
   'token.burrow.near': { name: 'burrow', decimals: 18 },
   'token.paras.near': { name: 'paras', decimals: 18 },
   'token.pembrock.near': { name: 'pembrock', decimals: 18 },
+  'token.sweat': { name: 'sweatcoin', decimals: 18 },
 }
 
 async function view_account(account_id) {
