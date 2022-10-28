@@ -35,13 +35,7 @@ async function getV2TVL(chain, block) {
     { contract: YIELD_VERSION, tokens }
   ]
 
-  await Promise.all(versions.map(({ contract, tokens }) => getV2TVLForContract(balances, chain, contract, tokens, block)))
-
-  return balances
-}
-
-async function getV2TVLForContract(balances, chain, contract, tokens, block) {
-  return sumTokens2({ balances, chain, block, tokens, owner: contract })
+  await Promise.all(versions.map(({ contract, tokens }) => sumTokens2({ balances, chain, block, tokens, owner: contract })))
 }
 
 async function ethTvl(timestamp, block) {
@@ -61,6 +55,7 @@ module.exports = {
   },
   optimism: getV2TvlObject('optimism'),
   polygon: getV2TvlObject('polygon'),
+  arbitrum: getV2TvlObject('arbitrum'),
    hallmarks: [
     [1638850958, "V2 Beta launch on Optimism"],
     [1643602958, "V2 full launch"],
