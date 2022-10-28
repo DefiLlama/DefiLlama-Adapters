@@ -1,5 +1,4 @@
 
-const { keys } = require("../convex/pools-crv");
 const { searchAccountsAll, } = require("../helper/algorand");
 const { sumTokens, tokens, getAppGlobalState, } = require('../helper/algorand')
 const { transformBalances } = require('../helper/portedTokens')
@@ -15,7 +14,8 @@ const gAlgoId = 793124631
 // const sgardGardId = 890603920
 
 async function treasury() {
-  return sumTokens({ owners: [treasuryAddress, v2TreasuryAddress], blacklistedTokens: [tokens.gard] })
+  const balances = await sumTokens({ owner: treasuryAddress, blacklistedTokens: [tokens.gard] })
+  return sumTokens({ balances, owner: v2TreasuryAddress, })
 }
 
 async function tvl() {
