@@ -1,10 +1,3 @@
-const { getChainTvl } = require('../helper/getUniSubgraphTvl');
+const { uniTvlExport } = require('../helper/unknownTokens')
 
-module.exports = {
-  misrepresentedTokens: true,
-  ethpow: {
-    tvl: getChainTvl({
-      'ethpow': 'https://subgraph.minerswap.fi/subgraphs/name/pancakeswap/exchange'
-    }, 'pancakeFactories')('ethpow')
-  }
-}
+module.exports = uniTvlExport('ethpow', '0x91836d77af0a5fda36c5a1f3c11dbc7766de4d03')
