@@ -37,7 +37,7 @@ async function avax(timestamp, ethBlock, chainBlocks) {
 }
 
 module.exports = {
-    start: 16328353,
+    start: 1658869201,
     misrepresentedTokens: false,
     methodology:
         "Total Supply and Underlying Price of the derivative is multiplied, resulting in number of staked Avax tokens.",
