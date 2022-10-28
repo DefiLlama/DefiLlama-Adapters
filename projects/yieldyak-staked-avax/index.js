@@ -2,7 +2,7 @@
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 
-const gAVAX = require("./abi.json");
+const gAVAX = require("../geode/abis/avax/gAVAX.json");
 const yieldYak_id = "45756385483164763772015628191198800763712771278583181747295544980036831301432";
 
 async function avax(timestamp, ethBlock, chainBlocks) {
