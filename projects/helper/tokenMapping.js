@@ -6,6 +6,9 @@ const nullAddress = '0x0000000000000000000000000000000000000000'
 // O3swap - https://agg.o3swap.com/v1/tokens_all
 // wanchain - https://wanscan.org/tokens
 // chainge - https://openapi.chainge.finance/open/v1/base/getSupportTokens,https://openapi.chainge.finance/open/v1/base/getSupportChains
+// TODO: get celer info
+// Alexar info: https://api.axelarscan.io/cross-chain/tvl
+
 
 const transformTokens = {
   ethereum: {
@@ -483,6 +486,9 @@ const fixBalancesTokens = {
   functionx: {
     [nullAddress]: { coingeckoId: "fx-coin", decimals: 18 },
     "0x80b5a32E4F032B2a058b4F29EC95EEfEEB87aDcd": { coingeckoId: "fx-coin", decimals: 18, },
+    "0xd567b3d7b8fe3c79a1ad8da978812cfc4fa05e75": { coingeckoId: "pundi-x-2", decimals: 18, },
+    "0x5fd55a1b9fc24967c4db09c513c3ba0dfa7ff687": { coingeckoId: "pundi-x-purse", decimals: 18, },
+    "0xeceeefcee421d8062ef8d6b4d814efe4dc898265": { coingeckoId: "tether", decimals: 6, },
   },
   clv: {
     "0x6d6ad95425fcf315c39fa6f3226471d4f16f27b3": { coingeckoId: "clover-finance", decimals: 18, },
@@ -801,6 +807,8 @@ const fixBalancesTokens = {
     "0xd8bc24cfd45452ef2c8bc7618e32330b61f2691b": { coingeckoId: "ong", decimals: 18, },
   },
   algorand: {
+    1: { coingeckoId: "algorand", decimals: 6, },
+    312769: { coingeckoId: "tether", decimals: 6, },
     31566704: { coingeckoId: "usd-coin", decimals: 6, },
     692085161: { coingeckoId: "algodao", decimals: 6, },
     724480511: { coingeckoId: "algodex", decimals: 6, },
@@ -808,6 +816,7 @@ const fixBalancesTokens = {
     230946361: { coingeckoId: "algogems", decimals: 6, },
     441139422: { coingeckoId: "algomint", decimals: 6, },
     465865291: { coingeckoId: "algostable", decimals: 6, },
+    841126810: { coingeckoId: "algostable", decimals: 6, },
     511484048: { coingeckoId: "algostake", decimals: 2, },
     163650: { coingeckoId: "arcc", decimals: 6, },
     663905154: { coingeckoId: "bnext-b3x", decimals: 6, },

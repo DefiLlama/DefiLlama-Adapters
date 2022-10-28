@@ -1,6 +1,4 @@
-const utils = require('../helper/utils')
-// const sdk = require("@defillama/sdk")
-// console.log(sdk)
+const { get } = require('../helper/http')
 
 const chains = {
   '1': 'ethereum',
@@ -34,8 +32,10 @@ const chains = {
   '1284': 'moonbeam',
   '1285': 'moonriver',
   '1818': 'cube',
+  '1294': 'boba',
   '2000': 'dogechain',
   '2001': 'milkomeda',
+  '2002': 'milkomeda_a1',
   '2020': 'ronin',
   '2222': 'kava',
   '4689': 'iotex',
@@ -59,7 +59,6 @@ const chains = {
 
 
 
-const url = 'https://netapi.anyswap.net/bridge/v2/info'
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 let coingeckoMcapsPromise
@@ -69,8 +68,7 @@ async function getCgMcaps() {
     return coingeckoMcapsPromise
   }
   coingeckoMcapsPromise = new Promise(async (resolve) => {
-    const { data } = await utils.fetchURL(url)
-    const protocolsInChain = data.bridgeList
+    const protocolsInChain = await getChainData()
     const protocolsWithRouters = Array.from(new Set(protocolsInChain.filter(p => p.type === "router" && p.label !== null).map(p => p.label.toLowerCase())));
 
     const coingeckoMcaps = {}
@@ -80,18 +78,24 @@ async function getCgMcaps() {
       const cgUrl = `https://api.coingecko.com/api/v3/simple/price?vs_currencies=usd&include_market_cap=true&ids=${protocolsWithRouters.slice(i, i + step).join(',')
         }`
       await sleep(1e3)
-      const partMcaps = await utils.fetchURL(cgUrl)
-      Object.assign(coingeckoMcaps, partMcaps.data)
+      const partMcaps = await get(cgUrl)
+      Object.assign(coingeckoMcaps, partMcaps)
     }
     resolve(coingeckoMcaps)
   })
   return coingeckoMcapsPromise
 }
 
+let chainData
+async function getChainData() {
+  if (!chainData) chainData = get('https://netapi.anyswap.net/bridge/v2/info').then(i => i.bridgeList.filter(j => j.amount > 0))
+  return chainData
+}
+
 function fetchChain(chain) {
   return async () => {
-    const { data } = await utils.fetchURL(url)
-    const protocolsInChain = chain === null ? data.bridgeList : data.bridgeList.filter(p => p.chainId.toString() === chain.toString())
+    const data = await getChainData()
+    const protocolsInChain = chain === null ? data : data.filter(p => p.chainId.toString() === chain.toString())
 
     const coingeckoMcaps = await getCgMcaps();
     const counted = {}
