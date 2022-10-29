@@ -1,19 +1,14 @@
 const axios = require('axios');
 const { default: BigNumber } = require('bignumber.js');
-const { getAddressesUTXOs } = require("../helper/cardano/blockfrost");
+const { getAddressesUTXOs, getAssets, } = require("../helper/cardano/blockfrost");
 
 async function staking() {
-  const aadaLocked = (await axios.get("https://cardano-mainnet.blockfrost.io/api/v0/addresses/addr1wyvej5rmcrhfpcwrwmnqsjtwvf8gv3dn64vwy3xzekp95wqqhdkwa", {
-    headers: {
-      project_id: "mainnetTV9qV3mfZXbE6e44TVGMe1UoRlLrpSQt"
-    }
-  })).data.amount.find(token => token.unit === "8fef2d34078659493ce161a6c7fba4b56afefa8535296a5743f6958741414441").quantity;
+  const stakingContract = 'addr1wyvej5rmcrhfpcwrwmnqsjtwvf8gv3dn64vwy3xzekp95wqqhdkwa'
+  const aadaLocked = (await getAssets(stakingContract)).find(token => token.unit === "8fef2d34078659493ce161a6c7fba4b56afefa8535296a5743f6958741414441").quantity;
 
-  const info = (await axios.get(`https://api.muesliswap.com/price/?base-policy-id=&base-tokenname=&quote-tokenname=41414441&quote-policy-id=8fef2d34078659493ce161a6c7fba4b56afefa8535296a5743f69587`)).data
-  const price = parseFloat(info.price) / 1e6
-
-  const cardano = aadaLocked * price;
-  return { cardano };
+  return { 
+    'aada-finance': aadaLocked / 1e6,
+   }
 }
 
 const scriptAdresses = [
