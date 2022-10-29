@@ -39,6 +39,7 @@ import yoshiExchange from "./adapters/yoshi-exchange";
 import platypus from "./adapters/platypus";
 import wombatExchange from "./adapters/wombat-exchange";
 import wingriders from "./adapters/wingriders";
+import minerswap from "./adapters/minerswap";
 import minswap from "./adapters/minswap";
 import mojitoswap from "./adapters/mojitoswap";
 import mdex from "./adapters/mdex";
@@ -240,6 +241,7 @@ export default {
   platypus,
   "wombat-exchange": wombatExchange,
   wingriders,
+  minerswap,
   minswap,
   mojitoswap,
   mdex,
