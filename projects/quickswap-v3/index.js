@@ -1,90 +1,54 @@
-const sdk = require("@defillama/sdk");
-const { transformPolygonAddress } = require("../helper/portedTokens");
+const { request, gql } = require('graphql-request');
+const { getBlock } = require('../helper/getBlock');
+const { sumTokens2 } = require('../helper/unwrapLPs')
+const { log } = require('../helper/utils')
 
-const { getBlock } = require("../helper/getBlock");
-
-const FACTORY = "0x411b0fAcC3489691f28ad58c47006AF5E3Ab3A28";
-
-const startBlocks = {
-  polygon: 32610688,
-};
-
-function chainTvl(chain) {
-  return async (timestamp, ethBlock, chainBlocks) => {
-    const START_BLOCK = startBlocks[chain];
-    const block = await getBlock(timestamp, chain, chainBlocks);
-    const logs = (
-      await sdk.api.util.getLogs({
-        keys: [],
-        toBlock: block,
-        target: FACTORY,
-        fromBlock: START_BLOCK,
-        chain,
-        topic: "Pool(address,address,address)",
-      })
-    ).output;
-
-    const pairAddresses = [];
-    const token0Addresses = [];
-    const token1Addresses = [];
-
-    for (let log of logs) {
-      token0Addresses.push(`0x${log.topics[1].substr(-40)}`.toLowerCase());
-      token1Addresses.push(`0x${log.topics[2].substr(-40)}`.toLowerCase());
-      pairAddresses.push(`0x${log.data.substr(-40)}`.toLowerCase());
-    }
-
-    const pairs = {};
-
-    token0Addresses.forEach((token0Address, i) => {
-      const pairAddress = pairAddresses[i];
-      pairs[pairAddress] = {
-        token0Address: token0Address,
-      };
-    });
-
-    token1Addresses.forEach((token1Address, i) => {
-      const pairAddress = pairAddresses[i];
-      pairs[pairAddress] = {
-        ...(pairs[pairAddress] || {}),
-        token1Address: token1Address,
-      };
-    });
-
-    let balanceCalls = [];
-
-    for (let pair of Object.keys(pairs)) {
-      balanceCalls.push({
-        target: pairs[pair].token0Address,
-        params: pair,
-      });
-      balanceCalls.push({
-        target: pairs[pair].token1Address,
-        params: pair,
-      });
-    }
-
-    const tokenBalances = await sdk.api.abi.multiCall({
-      abi: "erc20:balanceOf",
-      calls: balanceCalls,
-      block,
-      chain,
-    });
-    let transform = (id) => id;
-    if (chain === "polygon") {
-      transform = await transformPolygonAddress();
-    }
-
-    let balances = {};
-
-    sdk.util.sumMultiBalanceOf(balances, tokenBalances, false, transform);
-
-    return balances;
-  };
+const graphs = {
+  polygon: "https://api.thegraph.com/subgraphs/name/sameepsi/quickswap-v3",
 }
 
-module.exports = {
-  polygon: {
-    tvl: chainTvl("polygon"),
-  },
-};
+const blacklists = {
+  polygon: [ ],
+}
+
+function v3TvlPaged(chain) {
+  return async (_, _b, { [chain]: block }) => {
+    block = await getBlock(_, chain, { [chain]: block })
+    log('Fetching data for block: ',chain, block)
+    const balances = {}
+    const size = 1000
+    let lastId = ''
+    let pools
+    const graphQueryPaged = gql`
+    query poolQuery($lastId: String, $block: Int) {
+      pools(block: { number: $block } first:${size} where: {id_gt: $lastId totalValueLockedUSD_gt: 100}) {
+        id
+        token0 { id }
+        token1 { id }
+      }
+    }
+  `// remove the bad pools
+    const blacklisted = blacklists[chain] || []
+
+    do {
+      const res = await request(graphs[chain], graphQueryPaged, { lastId, block: block - 500 });
+      pools = res.pools
+      const tokensAndOwners = pools.map(i => ([[i.token0.id, i.id], [i.token1.id, i.id]])).flat()
+      log(chain, block, lastId, pools.length)
+      await sumTokens2({ balances, tokensAndOwners, chain, block, blacklistedTokens: blacklisted })
+      lastId = pools[pools.length - 1].id
+    } while (pools.length === size)
+
+    return balances
+  }
+}
+
+module.exports = {}
+
+const chains = [ 'polygon',]
+
+chains.forEach(chain => {
+  module.exports[chain] = {
+    tvl: v3TvlPaged(chain)
+  }
+})
