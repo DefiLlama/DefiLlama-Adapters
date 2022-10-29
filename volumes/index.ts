@@ -197,6 +197,7 @@ import ginFinance from "./adapters/gin-finance";
 import ferro from "./adapters/ferro";
 import incrementSwap from "./adapters/increment-swap";
 import chaingeFinance from "./adapters/chainge-finance";
+import wavelengthDao from "./adapters/wavelength-dao";
 
 
 export default {
@@ -396,6 +397,7 @@ export default {
   "gin-finance": ginFinance,
   ferro,
   "increment-swap": incrementSwap,
-  "chainge-finance": chaingeFinance
+  "chainge-finance": chaingeFinance,
+  "wavelength-dao": wavelengthDao
   // lyra -> OPTIONS DEX, not enable for now
 };
