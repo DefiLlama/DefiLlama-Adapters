@@ -77,7 +77,7 @@ function chainTvl(chain) {
 
     let balances = {};
 
-    sdk.util.sumMultiBalanceOf(balances, tokenBalances, true, transform);
+    sdk.util.sumMultiBalanceOf(balances, tokenBalances, false, transform);
 
     return balances;
   };
