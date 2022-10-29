@@ -25,8 +25,6 @@ function getV2TvlObject(chain) {
 }
 
 async function getV2TVL(chain, block) {
-  const balances = {};
-
   const legacyVersions = LEGACY_VERSIONS[chain] ?? []
   const legacyTokens = TOKENS_IN_LEGACY_VERSIONS[chain] ?? []
   const tokens = await getTokensInChain(chain)
@@ -35,9 +33,8 @@ async function getV2TVL(chain, block) {
     { contract: YIELD_VERSION, tokens }
   ]
 
-  await Promise.all(versions.map(({ contract, tokens }) => sumTokens2({ balances, chain, block, tokens, owner: contract })))
-
-  return balances
+  const toa = versions.map(({ contract, tokens }) => tokens.map(t => ([t, contract]))).flat()
+  return sumTokens2({ chain, block, tokensAndOwners: toa})
 }
 
 async function ethTvl(timestamp, block) {
