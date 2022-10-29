@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { pool2s } = require("../helper/pool2");
+const { getUniqueAddresses } = require('../helper/utils')
 const { vestingHelper, getCache, setCache, } = require("../helper/cache");
 
 const project = 'deeplock'
@@ -85,6 +86,7 @@ const bscTvl = async (ts, _b, { bsc: block }) => {
       calls, chain, block,
     })
     output.forEach(i => cCache.tokens.push(i.output.tokenAddress))
+    cCache.tokens = getUniqueAddresses(cCache.tokens)
     return vestingHelper({
       cache,
       useDefaultCoreAssets: true,
