@@ -6,6 +6,9 @@ const nullAddress = '0x0000000000000000000000000000000000000000'
 // O3swap - https://agg.o3swap.com/v1/tokens_all
 // wanchain - https://wanscan.org/tokens
 // chainge - https://openapi.chainge.finance/open/v1/base/getSupportTokens,https://openapi.chainge.finance/open/v1/base/getSupportChains
+// TODO: get celer info
+// Alexar info: https://api.axelarscan.io/cross-chain/tvl
+
 
 const transformTokens = {
   ethereum: {
