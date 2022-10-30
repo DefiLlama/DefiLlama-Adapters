@@ -16,11 +16,11 @@ const fetch = async (timestamp: number) => {
   const dayTimestamp = getUniqStartOfTodayTimestamp(new Date(timestamp * 1000))
   const historicalVolume: IVolumeall[] = (await fetchURL(historicalVolumeEndpoint))?.data.volume.daily.data;
   const totalVolume = historicalVolume
-    .filter(volItem => (new Date(volItem.date).getTime() / 1000) <= dayTimestamp)
-    .reduce((acc, { volume }) => acc + Number(volume), 0)
+    .filter(volItem => getUniqStartOfTodayTimestamp(new Date(volItem.date)) <= dayTimestamp)
+    .reduce((acc, { volume }) => acc + Number(volume), 0);
 
   const dailyVolume = historicalVolume
-    .find(dayItem => (new Date(dayItem.date).getTime() / 1000) === dayTimestamp)?.volume
+    .find(dayItem => getUniqStartOfTodayTimestamp(new Date(dayItem.date)) === dayTimestamp)?.volume;
 
   return {
     totalVolume: `${totalVolume}`,
@@ -39,7 +39,7 @@ const adapter: SimpleVolumeAdapter = {
     [CHAIN.SOLANA]: {
       fetch,
       start: getStartTimestamp,
-      customBackfill: customBackfill(CHAIN.TRON as Chain, (_chian: string) => fetch)
+      customBackfill: customBackfill(CHAIN.SOLANA as Chain, (_chian: string) => fetch)
     },
   },
 };

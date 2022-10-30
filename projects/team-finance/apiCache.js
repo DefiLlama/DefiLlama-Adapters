@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const { ethereumContractData, polygonContractData, avaxContractData, bscContractData } = require("./config");
+const { ethereumContractData, polygonContractData, avaxContractData, bscContractData, kavaContractData, } = require("./config");
 const { vestingHelper, getCache, setCache, } = require("../helper/cache");
 
 const project = 'team-finance'
@@ -79,5 +79,8 @@ module.exports = {
   avax: {
     tvl: getTvl(avaxContractData),
   },
+  kava: {
+    tvl: getTvl(kavaContractData)
+  }
 };
 
