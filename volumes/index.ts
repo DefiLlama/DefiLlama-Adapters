@@ -39,6 +39,7 @@ import yoshiExchange from "./adapters/yoshi-exchange";
 import platypus from "./adapters/platypus";
 import wombatExchange from "./adapters/wombat-exchange";
 import wingriders from "./adapters/wingriders";
+import minerswap from "./adapters/minerswap";
 import minswap from "./adapters/minswap";
 import mojitoswap from "./adapters/mojitoswap";
 import mdex from "./adapters/mdex";
@@ -49,6 +50,7 @@ import dfyn from "./adapters/dfyn";
 import radioshack from "./adapters/radioshack";
 import flamingoFinance from "./adapters/flamingo-finance";
 import ZEROx from "./adapters/0x";
+import pangeaswap from './adapters/pangea-swap';
 // import bakerySwap from "./adapters/bakeryswap"; //broken
 import baryon from "./adapters/baryon";
 import cherryswap from "./adapters/cherryswap";
@@ -157,6 +159,45 @@ import arctic from "./adapters/arctic";
 import huckleberry from "./adapters/huckleberry";
 import hakuswap from "./adapters/hakuswap";
 import leonicornswap from "./adapters/leonicornswap";
+import autoshark from "./adapters/autoshark";
+import ultronswap from "./adapters/ultronswap";
+import titanoSwych from "./adapters/titano-swych";
+import stellarx from "./adapters/stellarx";
+import humbleDefi from "./adapters/humble-defi";
+import pact from "./adapters/pact";
+import algofi from "./adapters/algofi";
+import saddleFinance from "./adapters/saddle-finance";
+import elk from "./adapters/elk";
+import luaswap from "./adapters/luaswap";
+import unicly from "./adapters/unicly";
+import cremaFinance from "./adapters/crema-finance";
+import icecreamswap from "./adapters/icecreamswap";
+import swapsicle from "./adapters/swapsicle";
+import fairyswap from "./adapters/fairyswap";
+import morpheusSwap from "./adapters/morpheus-swap";
+import moonSwap from "./adapters/moon-swap";
+import fxSwap from "./adapters/fx-swap";
+import pinkswap from "./adapters/pinkswap";
+import spartan from "./adapters/spartan";
+import penguin from "./adapters/penguin";
+import vortexProtocol from "./adapters/vortex-protocol";
+import dinosaurEggs from "./adapters/dinosaur-eggs";
+import mcdex from "./adapters/mcdex";
+import mistswap from "./adapters/mistswap";
+import bxh from "./adapters/bxh";
+import auraswap from "./adapters/auraswap";
+import carbonswap from "./adapters/carbonswap";
+import gravityFinance from "./adapters/gravity-finance";
+import gravis from "./adapters/gravis";
+import fourSwap from "./adapters/4swap";
+import bisq from "./adapters/bisq";
+import tetu from "./adapters/tetu";
+import muesliswap from "./adapters/muesliswap";
+import ginFinance from "./adapters/gin-finance";
+import ferro from "./adapters/ferro";
+import incrementSwap from "./adapters/increment-swap";
+import chaingeFinance from "./adapters/chainge-finance";
+import wavelengthDao from "./adapters/wavelength-dao";
 
 
 export default {
@@ -201,6 +242,7 @@ export default {
   platypus,
   "wombat-exchange": wombatExchange,
   wingriders,
+  minerswap,
   minswap,
   mojitoswap,
   mdex,
@@ -305,7 +347,7 @@ export default {
   "bogged-finance": boggedFinance,
   jetswap,
   saucerswap,
-  synthetify,
+  // synthetify, -> volume out of date
   pandora,
   "soy-finance": soyFinance,
   paycash,
@@ -316,6 +358,46 @@ export default {
   arctic,
   huckleberry,
   hakuswap,
-  leonicornswap
+  leonicornswap,
+  autoshark,
+  ultronswap,
+  "titano-swych": titanoSwych,
+  stellarx,
+  "humble-defi": humbleDefi,
+  pact,
+  algofi,
+  "saddle-finance": saddleFinance,
+  elk,
+  luaswap,
+  unicly,
+  "crema-finance": cremaFinance,
+  icecreamswap,
+  swapsicle,
+  fairyswap,
+  "morpheus-swap": morpheusSwap,
+  "moon-swap": moonSwap,
+  "fx-swap": fxSwap,
+  pinkswap,
+  spartan,
+  penguin,
+  "vortex-protocol": vortexProtocol,
+  "dinosaur-eggs": dinosaurEggs,
+  mcdex,
+  mistswap,
+  bxh,
+  auraswap,
+  carbonswap,
+  "pangea-swap": pangeaswap,
+  "gravity-finance": gravityFinance,
+  gravis,
+  "4swap": fourSwap,
+  bisq,
+  tetu,
+  muesliswap,
+  "gin-finance": ginFinance,
+  ferro,
+  "increment-swap": incrementSwap,
+  "chainge-finance": chaingeFinance,
+  "wavelength-dao": wavelengthDao
   // lyra -> OPTIONS DEX, not enable for now
 };

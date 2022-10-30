@@ -59,7 +59,20 @@ export enum CHAIN {
   BITTORRENT = "bittorrent",
   ONTOLOGY_EVM = "ontology_evm",
   ICON = "icon",
-  CLV = "clv"
+  CLV = "clv",
+  ULTRON = "ultron",
+  STELLAR = "stellar",
+  ALGORAND = "algorand",
+  TELOS = "telos",
+  TOMOCHAIN = "tomochain",
+  BITGERT = "bitgert",
+  FINDORA = "findora",
+  FUNCTIONX = "functionx",
+  ENERGYWEB = "energyweb",
+  MIXIN = "mixin",
+  MILKOMEDA = "milkomeda",
+  FLOW = "flow",
+  FUSION = "fusion"
 }
 
 // Don´t use
