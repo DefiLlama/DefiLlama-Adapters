@@ -1,6 +1,7 @@
 const { get } = require("../helper/http")
 const sdk = require('@defillama/sdk');
 const abi = require("./abi.json");
+const { ethers } = require("ethers");
 const { toUSDTBalances } = require("../helper/balances")
 
 let _response
@@ -50,8 +51,6 @@ async function getFantomTvl() {
 }
 
 async function getGnosisTvl(timestamp, block, chainBlocks) {
-
-  const { ethers } = require("ethers");
   
   //Current Ankr Provider Address, there is a hard cap on how much mGNO each address can stake, other addresses might appear*/
   const ankrProviderAddress = "0x4069D8A3dE3A72EcA86CA5e0a4B94619085E7362"
