@@ -34,7 +34,6 @@ function tvlFunctionGetterV1(chain) {
     });
 
     const toa = results.pools.map(i => i.tokens.map(j => ([j.address, i.id]))).flat()
-    console.log(toa, block)
     return sumTokens2({ chain, block, tokensAndOwners: toa, })
     }
 }
