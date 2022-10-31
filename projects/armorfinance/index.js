@@ -33,14 +33,14 @@ const ethTvl = async (timestamp, block) => {
     })
   ).output;
 
-  sdk.util.sumSingleBalance(balances, NXM, aum);
+  // sdk.util.sumSingleBalance(balances, NXM, aum);
 
   return sumTokens2({ block, tokensAndOwners: toa, balances, })
 }
 
 module.exports = {
   ethereum: {
-    tvl: ethTvl,
+    tvl: () =>  ({}), // Project rebranded. arNXM is now being managed by EASE.
     staking: staking('0x5afedef11aa9cd7dae4023807810d97c20791dec', '0x1337def16f9b486faed0293eb623dc8395dfe46a')
   },
 };
