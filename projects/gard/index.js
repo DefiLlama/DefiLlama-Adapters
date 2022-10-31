@@ -50,7 +50,7 @@ async function staking() {
 
 module.exports = {
   hallmarks: [
-    [Math.floor(new Date('2022-10-06') / 1e3), 'Gard V2 mainnet launch'],
+    [Math.floor(new Date('2022-10-06') / 1e3), 'Gard V2 Launch'],
   ],
   timetravel: false,
   algorand: {
