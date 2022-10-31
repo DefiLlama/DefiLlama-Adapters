@@ -59,8 +59,8 @@ async function tvl() {
     let state = await getAppGlobalState(appId)
     let underlyingCash
     switch(assetName) {
-      case 'vALGO2': underlyingCash = state[marketStrings.active_collateral_v2]; break;
-      case 'vALGO': underlyingCash = state[marketStrings.active_collateral]; break;
+      // case 'vALGO2': underlyingCash = state[marketStrings.active_collateral_v2]; break;
+      // case 'vALGO': underlyingCash = state[marketStrings.active_collateral]; break;
       default: underlyingCash = state[marketStrings.underlying_cash]; break;
     }
     let supplyUnderlying = underlyingCash
