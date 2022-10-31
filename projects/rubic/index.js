@@ -18,6 +18,7 @@ const pools = {
   arbitrum: '0x5F3c8d58A01Aad4f875d55E2835D82e12f99723c',
   aurora: '0x55Be05ecC1c417B16163b000CB71DcE8526a5D06',
   solana: 'DrmQS74dx5yDPzAJdGpVMqpSkVP9RXFQnMQAdeo1P7mj',
+  kava: '0x333b8881485fB8dE9af05d0B259a7f3f032B3333'
 };
 
 const usdcByChain = {
@@ -30,7 +31,8 @@ const usdcByChain = {
   moonriver: '0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d',
   arbitrum: '0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8',
   aurora: '0xB12BFcA5A55806AaF64E99521918A4bf0fC40802',
-  solana: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
+  solana: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+  kava: '0xfA9343C3897324496A05fC75abeD6bAC29f8A40f'
 }
 
 function chainTvl(chain) {
@@ -68,6 +70,9 @@ module.exports = {
   hallmarks:[
     [1655991120, "Horizon bridge Hack $100m"],
   ],
+  kava: {
+    tvl: chainTvl('kava')
+  }
   // ethereum: {
   //   tvl: chainTvl('ethereum')
   // },

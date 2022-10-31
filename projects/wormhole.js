@@ -26,6 +26,9 @@ module.exports = {
   ethereum: {
     fetch: fetch("2")
   },
+  aptos: {
+    fetch: fetch("22")
+  },
   terra: {
     fetch: fetch("3")
   },
@@ -40,6 +43,9 @@ module.exports = {
   },
   oasis: {
     fetch: fetch("7")
+  },
+  algorand: {
+    fetch: fetch("8")
   },
   aurora: {
     fetch: fetch("9")
@@ -59,12 +65,18 @@ module.exports = {
   celo: {
     fetch: fetch("14")
   },
+  near: {
+    fetch: fetch("15")
+  },
+  moonbeam: {
+    fetch: fetch("16")
+  },
   terra2: {
     fetch: fetch("18")
   },
   fetch: fetch("*"),
   hallmarks:[
     [1652008803, "UST depeg"],
+    [Math.floor(new Date('2022-02-02')/1e3), 'Hacked: Signature Exploit'],
   ],
-  
 }

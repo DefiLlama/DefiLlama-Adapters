@@ -229,10 +229,10 @@ function checkExportKeys(module, filePath, chains) {
 
   if (filePath.length > 2
     || (filePath.length === 1 && !['.js', ''].includes(path.extname(filePath[0]))) // matches .../projects/projectXYZ.js or .../projects/projectXYZ
-    || (filePath.length === 2 && !['api.js', 'index.js'].includes(filePath[1])))  // matches .../projects/projectXYZ/index.js
+    || (filePath.length === 2 && !['api.js', 'index.js', 'apiCache.js', ].includes(filePath[1])))  // matches .../projects/projectXYZ/index.js
     process.exit(0)
 
-  const blacklistedRootExportKeys = ['tvl', 'staking', 'pool2', 'borrowed', 'treasury'];
+  const blacklistedRootExportKeys = ['tvl', 'staking', 'pool2', 'borrowed', 'treasury', 'offers', 'vesting'];
   const rootexportKeys = Object.keys(module).filter(item => typeof module[item] !== 'object');
   const unknownChains = chains.filter(chain => !chainList.includes(chain));
   const blacklistedKeysFound = rootexportKeys.filter(key => blacklistedRootExportKeys.includes(key));
@@ -323,7 +323,9 @@ async function computeTVL(balances, timestamp) {
       return;
     }
     if (k.toLowerCase() === k) return;
-    balances[k.toLowerCase()] = balances[k];
+    balances[k.toLowerCase()] = (k.toLowerCase() in balances) 
+      ? Number(balances[k.toLowerCase()]) 
+      + Number(balances[k]) : balances[k];
     delete balances[k]
   })
 
@@ -353,7 +355,7 @@ async function computeTVL(balances, timestamp) {
   readKeys.forEach(i => unknownTokens[i] = true)
 
   const { errors } = await PromisePool.withConcurrency(5)
-    .for(sliceIntoChunks(readKeys, 50))
+    .for(sliceIntoChunks(readKeys, 40))
     .process(async (keys) => {
       const coins = keys.reduce((p, c) => p + `${c},`, "");
       tokenData.push((await axios.get(`${burl}${coins}`)).data.coins)
@@ -383,7 +385,6 @@ async function computeTVL(balances, timestamp) {
         amount = Number(balance);
         usdAmount = amount * data.price;
       }
-
       tokenBalances[data.symbol] = (tokenBalances[data.symbol] ?? 0) + amount;
       usdTokenBalances[data.symbol] = (usdTokenBalances[data.symbol] ?? 0) + usdAmount;
       usdTvl += usdAmount;

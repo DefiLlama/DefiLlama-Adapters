@@ -10,7 +10,7 @@ module.exports = {
   bsc: {
     staking: staking(stakingContract, ULTRA, "bsc"),
     pool2: pool2(stakingContract, ULTRA_WBNB_CakeLP, "bsc"),
+    tvl: (async) => ({}),
   },
-  tvl: (async) => ({}),
   methodology: "Counts liquidty on the staking and pool2 only",
 };

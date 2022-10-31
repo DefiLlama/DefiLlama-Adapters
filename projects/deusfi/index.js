@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 const { pool2, pool2s } = require("../helper/pool2");
+const { staking } = require("../helper/staking");
 const { sumTokensExport } = require('../helper/unknownTokens')
 
 const poolUSDC = "0xa0F395aD5df1Fceb319e162CCf1Ef6645dE8508f"; // same address for all chains
@@ -82,18 +83,18 @@ module.exports = {
     tvl: sumTokensExport({ owner: poolUSDC, tokens: [USDC] }),
     pool2: sdk.util.sumChainTvls([
       Pool2,
-      pool2s(stakingPool2Contracts, [DEI_DEUS_UNIV2, DEUS_WETH_UNIV2]),
+      staking(stakingPool2Contracts, [DEI_DEUS_UNIV2, DEUS_WETH_UNIV2]),
     ]),
   },
   polygon: {
     tvl: sumTokensExport({ owner: poolUSDC, tokens: [USDC_polygon], chain: 'polygon' }),
     pool2: sdk.util.sumChainTvls([
-      pool2s(
+      staking(
         stakingPool2Contracts,
         [DEI_DEUS_UNIV2_polygon, DEUS_WMATIC_UNIV2_polygon],
         "polygon"
       ),
-      pool2(stakingPool2Contract, DEI_USDC_UNIV2, "polygon"),
+      staking(stakingPool2Contract, DEI_USDC_UNIV2, "polygon"),
     ]),
   },
   fantom: {

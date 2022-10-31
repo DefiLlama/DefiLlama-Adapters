@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk');
-const { calculateUsdUniTvl } = require('../helper/getUsdUniTvl')
+const { getUniTVL } = require('../helper/unknownTokens')
 const { default: BigNumber } = require('bignumber.js');
 const { staking } = require('../helper/staking')
 
@@ -32,7 +32,7 @@ const bchMasterChef = async (timestamp, ethBlock, {[CHAIN]: block}) => {
     return {'bitcoin-cash': BigNumber(total).dividedBy(10 ** 18).toNumber()}
 }
 
-const bchDexTvl = calculateUsdUniTvl(FACTORY, CHAIN, WBCH, [DAIQUIRI, MARGARITA], COREASSETNAME)
+const bchDexTvl = getUniTVL({ factory: FACTORY, chain: CHAIN, useDefaultCoreAssets: true, })
 
 module.exports = {
     misrepresentedTokens: true,
