@@ -3,7 +3,6 @@
   "bsc",
   "polygon",
   "fantom",
-  "avalanche",
   "arbitrum",
   "cronos",
   "harmony",
@@ -95,6 +94,7 @@
   "zyx",
   "karura",
   "milkomeda",
+  "milkomeda_a1",
   "evmos",
   "dfk",
   "crab",
@@ -130,6 +130,7 @@
   "clv",
   "echelon",
   "multivac",
+  "stellar",
   "sx",
   "lbry",
   "rvn",
@@ -157,5 +158,8 @@
   "functionx",
   "xdc",
   "ethpow",
-  "cube"
+  "cube",
+  "aptos",
+  "kekchain",
+  "mixin"
 ]

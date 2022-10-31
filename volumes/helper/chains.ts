@@ -49,7 +49,30 @@ export enum CHAIN {
   STEP = "step",
   SYSCOIN = "syscoin",
   CRONOS = "cronos",
-  VISION = "vision"
+  VISION = "vision",
+  KARURA = "KARURA",
+  SMARTBCH = "smartbch",
+  KAVA = "kava",
+  HEDERA = "hedera",
+  CALLISTO = "callisto",
+  EOS = "eos",
+  BITTORRENT = "bittorrent",
+  ONTOLOGY_EVM = "ontology_evm",
+  ICON = "icon",
+  CLV = "clv",
+  ULTRON = "ultron",
+  STELLAR = "stellar",
+  ALGORAND = "algorand",
+  TELOS = "telos",
+  TOMOCHAIN = "tomochain",
+  BITGERT = "bitgert",
+  FINDORA = "findora",
+  FUNCTIONX = "functionx",
+  ENERGYWEB = "energyweb",
+  MIXIN = "mixin",
+  MILKOMEDA = "milkomeda",
+  FLOW = "flow",
+  FUSION = "fusion"
 }
 
 // Don´t use

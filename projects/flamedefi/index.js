@@ -22,5 +22,5 @@ async function tvl() {
 module.exports = {
     methodology: 'TVL counts the liquidity of FlameDefi farms. Data is pulled from:"https://api2.spacefarm.xyz/api".',
     misrepresentedTokens: true,
-    tvl
+    tezos: {tvl}
 }

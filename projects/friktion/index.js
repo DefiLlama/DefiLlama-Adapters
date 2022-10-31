@@ -32,5 +32,5 @@ module.exports = {
   timetravel: false,
   methodology:
     "TVL is scraped from the window.friktionSnapshot variable in app.friktion.fi and saved to the GitHub repo at Friktion-Labs/mainnet-tvl-snapshots. The data is the same as what is displayed on the app",
-  tvl,
+  solana: {tvl},
 };

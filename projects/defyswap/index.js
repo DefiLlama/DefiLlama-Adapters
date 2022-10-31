@@ -1,4 +1,4 @@
-const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl.js");
+const { getUniTVL } = require('../helper/unknownTokens')
 const { stakingUnknownPricedLP } = require("../helper/staking.js");
 
 const factory = "0xAffdbEAE1ec595cba4C262Bdb52A6083aEc2e2a6";
@@ -13,10 +13,11 @@ const whitelist = [
 
 module.exports = {
   misrepresentedTokens: true,
-  timetravel: true,
-  doublecounted: false,
+  echelon: {
+    tvl: getUniTVL({ chain: 'echelon', useDefaultCoreAssets: true, factory: '0xdBE4CC36D0C19858d8cc7c5030593E9922aC680D' })
+  },
   fantom: {
-    tvl: calculateUsdUniTvl(factory, "fantom", ftm, whitelist, "fantom"),
+    tvl: getUniTVL({ factory, chain: 'fantom', useDefaultCoreAssets: true }),
     staking: stakingUnknownPricedLP(
       masterchef,
       dfy,

@@ -13,5 +13,5 @@ async function tvl(time, _ethBlock, {optimism: block}){
 }
 
 module.exports = {
-    tvl
+    optimism: {tvl}
 }

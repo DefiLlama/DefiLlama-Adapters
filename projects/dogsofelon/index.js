@@ -14,10 +14,10 @@ module.exports = {
   misrepresentedTokens: true,
   ethereum: {
     staking: stakings(stakingContracts, DOE),
+    tvl: (async) => ({}),
   },
   arbitrum: {
     pool2: pool2(stakingPool2Contract, DOE_WETH_SLP, "arbitrum"),
   },
-  tvl: (async) => ({}),
   methodology: "Counts liquidty on the staking and pool2 only",
 };
