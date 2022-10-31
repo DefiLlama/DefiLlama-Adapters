@@ -70,11 +70,7 @@ async function getV2GardDebt() {
 
 /* Get total borrows */
 async function borrowed() {
-  return getV2GardDebt()
-}
-
-async function borrowedBalances() {
-  return transformBalances(chain, { ['' + gardId]: await borrowed() })
+  return transformBalances(chain, { ['' + gardId]: await getV2GardDebt() })
 }
 
 module.exports = {
@@ -85,7 +81,7 @@ module.exports = {
   algorand: {
     tvl,
     treasury,
-    borrowed: borrowedBalances,
+    borrowed,
     staking,
   }
 }
