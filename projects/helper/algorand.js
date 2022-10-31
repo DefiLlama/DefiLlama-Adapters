@@ -10,6 +10,7 @@ const { default: BigNumber } = require('bignumber.js');
 const stateCache = {}
 const accountCache = {}
 const assetCache = {}
+let round
 
 const geckoMapping = fixBalancesTokens.algorand
 const axiosObj = axios.create({
@@ -19,12 +20,15 @@ const axiosObj = axios.create({
 
 const indexerLimiter = new RateLimiter({ tokensPerInterval: 10, interval: "second" });
 
+function setRound(_round) {
+  round = _round
+}
 async function lookupApplications(appId) {
-  return (await axiosObj.get(`/v2/applications/${appId}`)).data
+  return (await axiosObj.get(`/v2/applications/${appId}`, { params: { round, } })).data
 }
 
-async function lookupAccountByID(appId) {
-  return (await axiosObj.get(`/v2/accounts/${appId}`)).data
+async function lookupAccountByID(accountId) {
+  return (await axiosObj.get(`/v2/accounts/${accountId}`, { params: { round, } })).data
 }
 
 async function searchAccounts({ appId, limit = 1000, nexttoken, }) {
@@ -32,7 +36,8 @@ async function searchAccounts({ appId, limit = 1000, nexttoken, }) {
     params: {
       'application-id': appId,
       limit,
-      next: nexttoken
+      next: nexttoken,
+      round,
     }
   }))
   return response.data
@@ -46,7 +51,7 @@ async function searchAccountsAll({ appId, limit = 1000 }) {
     const res = await searchAccounts({ appId, limit, nexttoken, })
     nexttoken = res['next-token']
     accounts.push(...res.accounts)
-  } while(nexttoken)
+  } while (nexttoken)
   return accounts
 }
 
@@ -78,7 +83,7 @@ async function getAssetInfo(assetId) {
   return assetCache[assetId]
 
   async function _getAssetInfo() {
-    const { data: { asset } } = await axiosObj.get(`/v2/assets/${assetId}`)
+    const { data: { asset } } = await axiosObj.get(`/v2/assets/${assetId}`, { params: { round, } })
     const reserveInfo = await getAccountInfo(asset.params.reserve)
     const assetObj = { ...asset.params, ...asset, reserveInfo, }
     assetObj.circulatingSupply = assetObj.total - reserveInfo.assetMapping[assetId].amount
@@ -117,7 +122,7 @@ async function getAccountInfo(accountId) {
   return accountCache[accountId]
 
   async function _getAccountInfo() {
-    const { data: { account } } = await axiosObj.get(`/v2/accounts/${accountId}`)
+    const { data: { account } } = await axiosObj.get(`/v2/accounts/${accountId}`, { params: { round, } })
     if (account.amount) account.assets.push({ amount: account.amount, 'asset-id': '1', })
     account.assetMapping = {}
     account.assets.forEach(i => {
@@ -156,26 +161,27 @@ async function getAppGlobalState(marketId) {
 
 async function getPriceFromAlgoFiLP(lpAssetId, unknownAssetId) {
   let lpInfo = await getAssetInfo(lpAssetId)
-  if (lpInfo['unit-name'] !== 'AF-POOL')  throw new Error('No, this is not an AlgoFi LP')
+  if (lpInfo['unit-name'] !== 'AF-POOL') throw new Error('No, this is not an AlgoFi LP')
 
-  const unknownAssetQuantity = lpInfo.reserveInfo.assets.find(i => i['asset-id'] === ''+unknownAssetId).amount
+  const unknownAssetQuantity = lpInfo.reserveInfo.assets.find(i => i['asset-id'] === '' + unknownAssetId).amount
   for (const i of lpInfo.reserveInfo.assets) {
     const id = i['asset-id']
     if (geckoMapping[id]) {
       const { coingeckoId, decimals } = geckoMapping[id]
       return {
         price: i.amount / unknownAssetQuantity,
-        geckoId: coingeckoId, 
+        geckoId: coingeckoId,
         decimals,
       }
     }
   }
-  
+
   throw new Error('Not mapped with any whitelisted assets')
 }
 
 module.exports = {
   tokens,
+  setRound,
   getAssetInfo: withLimiter(getAssetInfo),
   searchAccountsAll,
   getAccountInfo,
