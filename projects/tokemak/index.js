@@ -11,7 +11,8 @@ const cvx_abi = {
   "cvxBRP_rewards": { "inputs": [{ "internalType": "address", "name": "", "type": "address" }], "name": "rewards", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
   "cvxBRP_userRewardPerTokenPaid": { "inputs": [{ "internalType": "address", "name": "", "type": "address" }], "name": "userRewardPerTokenPaid", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" },
   "cvxBRP_stakingToken": { "inputs": [], "name": "stakingToken", "outputs": [{ "internalType": "address", "name": "stakingToken", "type": "address" }], "stateMutability": "view", "type": "function" },
-  "cvxBooster_poolInfo": { "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "name": "poolInfo", "outputs": [{ "internalType": "address", "name": "lptoken", "type": "address" }, { "internalType": "address", "name": "token", "type": "address" }, { "internalType": "address", "name": "gauge", "type": "address" }, { "internalType": "address", "name": "crvRewards", "type": "address" }, { "internalType": "address", "name": "stash", "type": "address" }, { "internalType": "bool", "name": "shutdown", "type": "bool" }], "stateMutability": "view", "type": "function" }
+  "cvxBooster_poolInfo": { "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "name": "poolInfo", "outputs": [{ "internalType": "address", "name": "lptoken", "type": "address" }, { "internalType": "address", "name": "token", "type": "address" }, { "internalType": "address", "name": "gauge", "type": "address" }, { "internalType": "address", "name": "crvRewards", "type": "address" }, { "internalType": "address", "name": "stash", "type": "address" }, { "internalType": "bool", "name": "shutdown", "type": "bool" }], "stateMutability": "view", "type": "function" },
+  "stkcvxFRAXBP_lockedStakesOf": {"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"lockedStakesOf","outputs":[{"components":[{"internalType":"bytes32","name":"kek_id","type":"bytes32"},{"internalType":"uint256","name":"start_timestamp","type":"uint256"},{"internalType":"uint256","name":"liquidity","type":"uint256"},{"internalType":"uint256","name":"ending_timestamp","type":"uint256"},{"internalType":"uint256","name":"lock_multiplier","type":"uint256"}],"internalType":"struct FraxUnifiedFarm_ERC20.LockedStake[]","name":"","type":"tuple[]"}],"stateMutability":"view","type":"function"}
 }
 
 const cvxBoosterAddress = "0xF403C135812408BFbE8713b5A23a04b3D48AAE31";
@@ -75,7 +76,8 @@ async function tvl(timestamp, block) {
   const cvxstethPool = "0x0A760466E1B4621579a82a39CB56Dda2F4E70f03";
   const cvxcrvFrax = "0x117A0bab81F25e60900787d98061cCFae023560c";
 
-  let tokeManager = "0xA86e412109f77c45a3BC1c5870b880492Fb86A14";
+  const tokeManager = "0xA86e412109f77c45a3BC1c5870b880492Fb86A14";
+  const tokeTreasuryVault = "0x5d9EF8F1CFa952a4a383E10a447dD23C5EA20EB8";
   const toa = [
     [weth, degenesisContract],
     [usdc, degenesisContract],
@@ -118,7 +120,16 @@ async function tvl(timestamp, block) {
     chain: "ethereum",
     block
   });
-  balances[cvxcrvFrax] = cvxcrvFraxBal;
+  const fraxFraxUsdcPool = "0x963f487796d54d2f27bA6F3Fbe91154cA103b199";
+  const { output: treasuryFraxBal } = await sdk.api.abi.call({
+    abi: cvx_abi['stkcvxFRAXBP_lockedStakesOf'],
+    target: fraxFraxUsdcPool,
+    params: [tokeTreasuryVault],
+    chain: "ethereum",
+    block
+  });
+  const fraxUsdcBal = BigNumber(cvxcrvFraxBal).plus(BigNumber(treasuryFraxBal[0]['liquidity']));
+  balances[cvxcrvFrax] = fraxUsdcBal.toFixed();
 
   let curveHoldings = positions.exchanges.filter(
     pool => pool.type == 'Curve')
