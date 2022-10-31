@@ -7,8 +7,10 @@ const { fixBalancesTokens } = require('../helper/tokenMapping')
 const { getFixBalancesSync } = require('../helper/portedTokens')
 const sdk = require('@defillama/sdk');
 const { default: BigNumber } = require('bignumber.js');
+const accountCache = {}
 
 
+const geckoMapping = fixBalancesTokens.algorand
 const axiosObj = axios.create({
   baseURL: 'https://algoindexer.algoexplorerapi.io',
   timeout: 300000,
@@ -105,18 +107,25 @@ async function resolveTinymanLp({ balances, lpId, unknownAsset, blacklistedToken
 }
 
 async function getAccountInfo(accountId) {
-  const { data: { account } } = await axiosObj.get(`/v2/accounts/${accountId}`)
-  account.assetMapping = {}
-  account.assets.forEach(i => {
-    i['asset-id'] = '' + i['asset-id']
-    account.assetMapping[i['asset-id']] = i
-  })
-  return account
+  if (!accountCache[accountId]) accountCache[accountId] = _getAccountInfo()
+  return accountCache[accountId]
+
+  async function _getAccountInfo() {
+    const { data: { account } } = await axiosObj.get(`/v2/accounts/${accountId}`)
+    if (account.amount) account.assets.push({ amount: account.amount, 'asset-id': '1', })
+    account.assetMapping = {}
+    account.assets.forEach(i => {
+      i['asset-id'] = '' + i['asset-id']
+      account.assetMapping[i['asset-id']] = i
+    })
+    return account
+  }
 }
 
 const tokens = {
   usdc: 31566704,
   goUsd: 672913181,
+  gard: 684649988,
   usdcGoUsdLp: 885102318,
 }
 

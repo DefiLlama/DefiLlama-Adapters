@@ -840,6 +840,7 @@ const fixBalancesTokens = {
     "0xd8bc24cfd45452ef2c8bc7618e32330b61f2691b": { coingeckoId: "ong", decimals: 18, },
   },
   algorand: {
+    1: { coingeckoId: "algorand", decimals: 6, },
     31566704: { coingeckoId: "usd-coin", decimals: 6, },
     692085161: { coingeckoId: "algodao", decimals: 6, },
     724480511: { coingeckoId: "algodex", decimals: 6, },
