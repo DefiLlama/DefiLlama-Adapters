@@ -123,12 +123,12 @@ function getPool2(chainObject) {
       );
 
       for(let j = 0; j < Object.keys(underlyingTokens).length; j++) {
-        const tokenAddress = Object.keys(underlyingTokens)[j];
+        const formattedAddress = chain + ":" + Object.keys(underlyingTokens)[j];
 
-        if (!(tokenAddress in newBalances)) {
-          newBalances[tokenAddress] = 0;
+        if (!(formattedAddress in newBalances)) {
+          newBalances[formattedAddress] = 0;
         }
-        newBalances[tokenAddress] += underlyingTokens[Object.keys(underlyingTokens)[j]];
+        newBalances[formattedAddress] += underlyingTokens[Object.keys(underlyingTokens)[j]];
       }
     }
     balances = newBalances;
@@ -171,9 +171,10 @@ function getStaking(chainObject) {
     totalFlashLocked = totalFlashLocked['output'];
 
     // Format the output to the expected format
+    const formattedAddress = chain + ":" + stakingTokenAddress;
     let out = {};
-    out[stakingTokenAddress] = totalFlashLocked;
-    log("getStaking", chain, block, stakingTokenAddress, totalFlashLocked, out);
+    out[formattedAddress] = totalFlashLocked;
+    log("getStaking", chain, block, formattedAddress, totalFlashLocked, out);
 
     return out;
   }
@@ -246,10 +247,11 @@ function getTVL(chainObject) {
       // Add these two together
       // Add this to the final balances dict
       // Note: There can be more than one strategy with the same principal token
-      if (!(principalTokenAddress in balances)) {
-        balances[principalTokenAddress] = 0;
+      const formattedAddress = chain + ":" + principalTokenAddress;
+      if (!(formattedAddress in balances)) {
+        balances[formattedAddress] = 0;
       }
-      balances[principalTokenAddress] += Number(totalPrincipalStaked['output']) + (Number(totalYieldBalance['output']));
+      balances[formattedAddress] += Number(totalPrincipalStaked['output']) + (Number(totalYieldBalance['output']));
     }
 
     log("getTVL", chain, block, balances);
