@@ -11,16 +11,6 @@ const gardId = 684649988
 const gardPriceValidatorId = 684650147
 const v2GardPriceValidatorId = 890603991
 const gAlgoId = 793124631
-const sgardGardId = 890603920
-
-function getStateUint(state, key) {
-  const val = state.find((entry) => {
-    if (entry.key === key) {
-      return entry;
-    }
-  })
-  return val.value.uint
-}
 
 async function getAppState(appId) {
   const res = await lookupApplications(appId);
@@ -58,21 +48,6 @@ async function staking() {
   return transformBalances(chain, { ['' + gardId]: gardBal })
 }
 
-async function getV2GardDebt() {
-  const validatorState = await getAppState(v2GardPriceValidatorId);
-  const SGardDebt = getStateUint(validatorState, btoa('SGARD_OWED'))
-
-  const sgardState = await getAppState(sgardGardId);
-  const SGardConversion = getStateUint(sgardState, btoa('conversion_rate'))
-
-  return (SGardDebt * SGardConversion / 1e10)
-}
-
-/* Get total borrows */
-async function borrowed() {
-  return transformBalances(chain, { ['' + gardId]: await getV2GardDebt() })
-}
-
 module.exports = {
   hallmarks: [
     [Math.floor(new Date('2022-10-06') / 1e3), 'Gard V2 mainnet launch'],
@@ -81,7 +56,6 @@ module.exports = {
   algorand: {
     tvl,
     treasury,
-    borrowed,
     staking,
   }
 }
