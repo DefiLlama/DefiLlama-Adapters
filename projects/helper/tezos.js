@@ -1,6 +1,6 @@
 const http = require('./http')
 const sdk = require('@defillama/sdk')
-const { fixTezosBalances, } = require('./portedTokens')
+const { getFixBalancesSync, } = require('./portedTokens')
 const { default: BigNumber } = require('bignumber.js')
 const { PromisePool } = require('@supercharge/promise-pool')
 const { log } = require('../helper/utils')
@@ -131,6 +131,7 @@ async function getPrices() {
 
 async function convertBalances(balances) {
   const prices = await getPrices()
+  const fixTezosBalances = getFixBalancesSync('tezos')
   balances = fixTezosBalances(balances)
   Object.entries(balances).forEach(([key, balance]) => {
     const token = key.replace('tezos:', '')
@@ -143,7 +144,7 @@ async function convertBalances(balances) {
     const bal = BigNumber(+balance * usdValue / 10 ** decimals).toFixed(0)
     const inMillions = bal / 1e6
     if (inMillions > 0.2) log(inMillions, decimals, balance, usdValue, token)
-    sdk.util.sumSingleBalance(balances, 'tether', bal)
+    balances.tether = BigNumber(+(balances.tether || 0) + +bal).toFixed(0)
   })
 
   return balances
