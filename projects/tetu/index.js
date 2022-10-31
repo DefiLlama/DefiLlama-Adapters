@@ -4,7 +4,7 @@ const { getParamCalls } = require("../helper/utils");
 
 const EXCLUDED_PLATFORMS = {
   "12": true, // TETU_SWAP
-  "29": true // TETU
+  "29": true // TETU self farm
 }
 
 module.exports = {
