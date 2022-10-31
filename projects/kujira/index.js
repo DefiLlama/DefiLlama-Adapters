@@ -45,6 +45,6 @@ async function tvl() {
 module.exports = {
   kujira: {
     tvl,
-    staking,
+    // staking, // we do not include chain staking , this is meant for protocols
   },
 };
