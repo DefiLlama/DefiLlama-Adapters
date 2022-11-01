@@ -2,7 +2,7 @@ const BigNumber = require("bignumber.js");
 const { request, gql } = require("graphql-request");
 const data = {}
 
-const subgraphUrl = 'https://api.thegraph.com/subgraphs/name/astox/main';
+const subgraphUrl = 'https://api.thegraph.com/subgraphs/name/centrifuge/tinlake';
 const graphTotalTokenTVLQuery = gql`
 query GET_TOTAL_TOKEN_TVL($block: Int) {
   pools(

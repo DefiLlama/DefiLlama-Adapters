@@ -6,6 +6,7 @@ const { pool2 } = require('../helper/pool2')
 const { fetchURL } = require('../helper/utils')
 const { gql, request } = require('graphql-request')
 const { default: BigNumber } = require('bignumber.js')
+const { getBlock } = require('../helper/getBlock')
 
 /*
 const vaults = [
@@ -33,11 +34,13 @@ const globalDataQuery = gql`
   }
 `;
 
-async function polygonTvl(_, _b, { polygon: block }) {
+async function polygonTvl(_, _block, cb) {
+  const block = await getBlock(_, 'polygon', cb)
   return tvl('polygon', block, '137')
 }
 
-async function avaxTvl(_, _b, { polygon: block }) {
+async function avaxTvl(_, _block, cb) {
+  const block = await getBlock(_, 'avax', cb)
   return tvl('avax', block, '43114')
 }
 
