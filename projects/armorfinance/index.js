@@ -33,7 +33,7 @@ const ethTvl = async (timestamp, block) => {
     })
   ).output;
 
-  // sdk.util.sumSingleBalance(balances, NXM, aum);
+  sdk.util.sumSingleBalance(balances, NXM, aum);
 
   return sumTokens2({ block, tokensAndOwners: toa, balances, })
 }
