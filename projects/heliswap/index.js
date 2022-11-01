@@ -41,8 +41,7 @@ const fetch = async () => {
     const requestData = {
       query: `query getWhitelistedPools($tokens: [String]!) {
                 poolsConsistingOf(tokens: $tokens) {
-                  volume24h
-                  volume7d
+                  tvl
                 }
               }`,
       variables: {
@@ -65,7 +64,7 @@ const fetch = async () => {
     totalTVL =
       data && data.poolsConsistingOf && data.poolsConsistingOf?.length > 0
         ? data.poolsConsistingOf.reduce((acc, pool) => {
-            acc = acc + Number(pool.volume24h);
+            acc = acc + Number(pool.tvl);
 
             return acc;
           }, 0)
@@ -78,8 +77,6 @@ const fetch = async () => {
 
   return totalTVL;
 };
-
-fetch();
 
 module.exports = {
   fetch,
