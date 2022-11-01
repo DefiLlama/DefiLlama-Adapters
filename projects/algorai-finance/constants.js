@@ -35,20 +35,6 @@ const vaults = [
     },
 ];
 
-/**
- * @desc Key - Deposit ID
- * @desc Value - Medianizer Contract ID
- *
- * @type {{"deposit id": "medianizer id"}}
- */
-const price_feeds = {
-    0: 879224867,
-}
-
-const priceDecimals = 6;
-
 module.exports = {
     vaults,
-    price_feeds,
-    priceDecimals
 };
