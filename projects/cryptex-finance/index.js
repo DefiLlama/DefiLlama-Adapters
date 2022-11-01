@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const { sumTokensSharedOwners} = require("../helper/unwrapLPs");
-const { pool2s } = require("../helper/pool2");
 const { staking } = require("../helper/staking");
 
 const ctxToken = "0x321c2fe4446c7c963dc41dd58879af648838f98d";
@@ -83,7 +82,7 @@ module.exports = {
   methodology: "TVL includes collateral in vaults",
   ethereum: {
     tvl: ethTvl,
-    pool2: pool2s(ethStakingContracts, ethPool2s),
+    pool2: staking(ethStakingContracts, ethPool2s),
     staking: staking(factory, ctxToken),
     treasury
   },

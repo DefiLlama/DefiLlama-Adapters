@@ -22,10 +22,7 @@ async function pool2(_timestamp, _ethBlock, chainBlocks) {
     [bscTokens.ARTHuval3PS, bscTokens.ARTHuval3PSDotBasicStaking], // ellipsis masterchef? SE: contains ARTH our stablecoin
   ];
 
-  return sumTokens(balances, tokensAndOwners, block, chain, undefined, {
-    resolveLP: true,
-    resolveCrv: true,
-  });
+  return sumTokens(balances, tokensAndOwners, block, chain);
 }
 
 async function tvl(ts, _block, chainBlocks) {

@@ -205,11 +205,6 @@ function mapGaugeTokenBalances(calls, chain) {
       pools: [],
       chains: []
     }, // need a pool conditional - only for (1) ['0x30dF229cefa463e991e29D42DB0bae2e122B2AC7']
-    "0xd02a30d33153877bc20e5721ee53dedee0422b2f": {
-      to: "0xd4f94d0aaa640bbb72b5eec2d85f6d114d81a88e",
-      pools: [],
-      chains: []
-    },
     "0x1337bedc9d22ecbe766df105c9623922a27963ec": {
       to: "0x5b5cfe992adac0c9d48e05854b2d91c73a003858",
       pools: [],

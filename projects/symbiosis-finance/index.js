@@ -1,10 +1,8 @@
 const sdk = require('@defillama/sdk');
-const {
-  getChainTransform,
-} = require('../helper/portedTokens');
+const { sumTokens2 } = require('../helper/unwrapLPs')
+const erc20Abi = require("../helper/abis/erc20.json")
 
 const getTokenAbi = require("./abi/getToken.json");
-const getTokenBalanceAbi = require("./abi/getTokenBalance.json");
 
 const config = {
   chains: [
@@ -74,123 +72,42 @@ const config = {
         '0x7f3C1E54b8b8C7c08b02f0da820717fb641F26C8', // USDC + sBUSD from BSC,
       ]
     },
+    {
+      id: 2001,
+      name: 'milkomeda',
+      portal: '0x3Cd5343546837B958a70B82E3F9a0E857d0b5fea',
+      pools: [],
+      synthStable: '0x42110A5133F91B49E32B671Db86E2C44Edc13832' // sUSDC
+    },
   ]
 }
 
-async function getTransform(chainName) {
-  return getChainTransform(chainName)
-}
+module.exports = {
+  methodology: 'Counts the amount of locked assets in Portal contracts plus amount locked in stable pools',
+};
 
-async function tvl(chainName, timestamp, block, chainBlocks) {
-  const transform = await getTransform(chainName)
-
-  const chain = config.chains.find((chain) => chain.name === chainName)
-  if (!chain) throw new Error('Chain config not found')
-
-  let chainBlock = chainBlocks[chainName]
-  if (!chainBlock) {
-    const block = await sdk.api.util.getLatestBlock(chainName)
-    chainBlock = block.number
-    if (!chainBlock) {
-      throw new Error('Cannot get block by chainName')
+config.chains.forEach(chainInfo => {
+  const { name: chain, stable, portal, pools, } = chainInfo
+  module.exports[chain] = {
+    tvl: async (_, _b, { [chain]: block }) => {
+      const tokensAndOwners = []
+      if (stable) tokensAndOwners.push([stable, portal])
+      if (pools) {
+        const poolIndexes = [0, 1] // every stable pool consists of 2 assets
+        const calls = pools.map(i => poolIndexes.map(j => ({ target: i, params: j }))).flat();
+        (await sdk.api.abi.multiCall({
+          abi: getTokenAbi,
+          calls, chain, block,
+        })).output.forEach(({ input: { target }, output }) => tokensAndOwners.push([output, target]))
+      }
+      const tokens = tokensAndOwners.map(i => i[0])
+      const { output: nameRes } = await sdk.api.abi.multiCall({
+        abi: erc20Abi.name,
+        calls: tokens.map(i => ({ target: i })),
+        chain, block,
+      })
+      const blacklistedTokens = tokens.filter((_, i) => nameRes[i].output.startsWith('Synthetic '))
+      return sumTokens2({ chain, block, tokensAndOwners, blacklistedTokens, })
     }
   }
-
-  const params = {
-    abi: 'erc20:balanceOf',
-    chain: chain.name,
-    target: chain.stable,
-    params: [chain.portal],
-    block: chainBlock,
-  }
-
-  const collateralBalance = (await sdk.api.abi.call(params)).output;
-
-  const portalBalances = {};
-  sdk.util.sumSingleBalance(portalBalances, chain.stable, collateralBalance)
-
-  const poolIndexes = [0, 1] // every stable pool consists of 2 assets
-  const poolBalancePromises = chain.pools.map(async (pool) => {
-    const tokens = (await sdk.api.abi.multiCall({
-      calls: poolIndexes.map((index) => ({
-        target: pool,
-        params: [index],
-      })),
-      abi: getTokenAbi,
-      chain: chain.name,
-      block: chainBlock,
-    })).output.map((i) => i.output);
-
-    const tokenBalances = (await sdk.api.abi.multiCall({
-      calls: poolIndexes.map((index) => ({
-        target: pool,
-        params: [index],
-      })),
-      abi: getTokenBalanceAbi,
-      chain: chain.name,
-      block: chainBlock,
-    })).output.map((i) => i.output);
-
-    return poolIndexes.map((index) => {
-      return {
-        address: tokens[index],
-        balance: tokenBalances[index],
-      }
-    })
-  })
-
-  const poolBalances = await Promise.all(poolBalancePromises)
-  const allBalances = poolBalances
-    .reduce((acc, items) => {
-      items.forEach((item) => {
-        sdk.util.sumSingleBalance(acc, item.address, item.balance)
-      })
-      return acc
-    }, portalBalances)
-
-  return Object.keys(allBalances).reduce((acc, address) => {
-    acc[transform(address)] = allBalances[address]
-    return acc
-  }, {})
-}
-
-module.exports = {
-  timetravel: true,
-  misrepresentedTokens: true,
-  methodology: 'Counts the amount of locked assets in Portal contracts plus amount locked in stable pools',
-  ethereum: {
-    tvl: (...params) => {
-      return tvl('ethereum', ...params)
-    },
-  },
-  bsc: {
-    tvl: (...params) => {
-      return tvl('bsc', ...params)
-    },
-  },
-  avax: {
-    tvl: (...params) => {
-      return tvl('avax', ...params)
-    },
-  },
-  polygon: {
-    tvl: (...params) => {
-      return tvl('polygon', ...params)
-    },
-  },
-  boba: {
-    tvl: (...params) => {
-      return tvl('boba', ...params)
-    },
-  },
-  aurora: {
-    tvl: (...params) => {
-      return tvl('aurora', ...params)
-    },
-  },
-  telos: {
-    tvl: (...params) => {
-      return tvl('telos', ...params)
-    },
-  },
-};
+})

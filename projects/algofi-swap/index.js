@@ -264,20 +264,20 @@ async function stakingV1() {
         lpCirculations[contractName] = contractState[marketStrings.lp_circulation] / 1000000
     }
 
-    let poolSnapshots = await get("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_pool_snapshots/?network=MAINNET")
-    let assetSnapshots = await get("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_asset_snapshots/?network=MAINNET")
+    let poolSnapshots = await get("https://api.algofi.org/pools")
+    let assetSnapshots = await get("https://api.algofi.org/assets")
 
-    for (const poolSnapshot of poolSnapshots.pool_snapshots) {
+    for (const poolSnapshot of poolSnapshots) {
         for (const contractName of variableValueStakingContracts) {
-            if (poolSnapshot.id == appDictionary["STAKING_CONTRACTS"][contractName]["poolAppId"]) {
-                prices[contractName] = poolSnapshot.balance_info.total_usd / lpCirculations[contractName]
+            if (poolSnapshot.app_id == appDictionary["STAKING_CONTRACTS"][contractName]["poolAppId"]) {
+                prices[contractName] = poolSnapshot.tvl / lpCirculations[contractName]
             }
         }
     }
 
-    for (const assetSnapshot of assetSnapshots.asset_snapshots) {
+    for (const assetSnapshot of assetSnapshots) {
         for (const contractName of singleSideStakingContracts) {
-            if (assetSnapshot.id == appDictionary["STAKING_CONTRACTS"][contractName]["assetId"]) {
+            if (assetSnapshot.asset_id == appDictionary["STAKING_CONTRACTS"][contractName]["assetId"]) {
                 prices[contractName] = assetSnapshot.price
             }
         }
@@ -318,9 +318,9 @@ async function dex() {
     const response = (
         await retry(
           async (bail) =>
-            await axios.get("https://thf1cmidt1.execute-api.us-east-2.amazonaws.com/Prod/amm_protocol_snapshot/?network=MAINNET")
+            await axios.get("https://api.algofi.org/protocolStats")
         )
-      ).data.protocol_snapshot.tvl.total_usd;
+      ).data.amm.tvl;
     return toUSDTBalances(response)
 }
 

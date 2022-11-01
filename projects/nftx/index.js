@@ -3,6 +3,7 @@ const { blockQuery } = require('../helper/graph')
 const { getTokenPrices } = require('../helper/unknownTokens')
 const sdk = require('@defillama/sdk')
 const { getChainTransform } = require('../helper/portedTokens')
+const { getBlock } = require('../helper/getBlock')
 
 const config = {
   ethereum: {
@@ -16,7 +17,8 @@ const config = {
 }
 function getTvl(chain) {
   const { weth, graphUrl } = config[chain]
-  return async (_timestamp, _, { [chain]: block }) => {
+  return async (timestamp, _, cb) => {
+    const block = await getBlock(timestamp, chain, cb)
     const { vaults } = await blockQuery(graphUrl, graphQuery, block, 500)
     const LPs = new Set(vaults.map(v => v.lpStakingPool.stakingToken.id))
     const tokens = new Set(vaults.map(v => v.token.id))
