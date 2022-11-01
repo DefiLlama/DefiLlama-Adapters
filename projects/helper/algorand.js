@@ -10,7 +10,6 @@ const { default: BigNumber } = require('bignumber.js');
 const stateCache = {}
 const accountCache = {}
 const assetCache = {}
-let round
 
 const geckoMapping = fixBalancesTokens.algorand
 const axiosObj = axios.create({
@@ -20,15 +19,12 @@ const axiosObj = axios.create({
 
 const indexerLimiter = new RateLimiter({ tokensPerInterval: 10, interval: "second" });
 
-function setRound(_round) {
-  round = _round
-}
 async function lookupApplications(appId) {
-  return (await axiosObj.get(`/v2/applications/${appId}`, { params: { round, } })).data
+  return (await axiosObj.get(`/v2/applications/${appId}`)).data
 }
 
 async function lookupAccountByID(accountId) {
-  return (await axiosObj.get(`/v2/accounts/${accountId}`, { params: { round, } })).data
+  return (await axiosObj.get(`/v2/accounts/${accountId}`)).data
 }
 
 async function searchAccounts({ appId, limit = 1000, nexttoken, }) {
@@ -37,7 +33,6 @@ async function searchAccounts({ appId, limit = 1000, nexttoken, }) {
       'application-id': appId,
       limit,
       next: nexttoken,
-      round,
     }
   }))
   return response.data
@@ -83,7 +78,7 @@ async function getAssetInfo(assetId) {
   return assetCache[assetId]
 
   async function _getAssetInfo() {
-    const { data: { asset } } = await axiosObj.get(`/v2/assets/${assetId}`, { params: { round, } })
+    const { data: { asset } } = await axiosObj.get(`/v2/assets/${assetId}`)
     const reserveInfo = await getAccountInfo(asset.params.reserve)
     const assetObj = { ...asset.params, ...asset, reserveInfo, }
     assetObj.circulatingSupply = assetObj.total - reserveInfo.assetMapping[assetId].amount
@@ -101,7 +96,6 @@ async function resolveTinymanLp({ balances, lpId, unknownAsset, blacklistedToken
     if (unknownAsset && lpInfo.assets[unknownAsset]) {
       ratio = ratio * 2
       Object.keys(lpInfo.assets).forEach((token) => {
-        console.log(blacklistedTokens, token)
         if (!blacklistedTokens.length || !blacklistedTokens.includes(token))
           if (token !== unknownAsset)
             sdk.util.sumSingleBalance(balances, token, BigNumber(lpInfo.assets[token].amount * ratio).toFixed(0))
@@ -122,7 +116,7 @@ async function getAccountInfo(accountId) {
   return accountCache[accountId]
 
   async function _getAccountInfo() {
-    const { data: { account } } = await axiosObj.get(`/v2/accounts/${accountId}`, { params: { round, } })
+    const { data: { account } } = await axiosObj.get(`/v2/accounts/${accountId}`)
     if (account.amount) account.assets.push({ amount: account.amount, 'asset-id': '1', })
     account.assetMapping = {}
     account.assets.forEach(i => {
@@ -181,7 +175,6 @@ async function getPriceFromAlgoFiLP(lpAssetId, unknownAssetId) {
 
 module.exports = {
   tokens,
-  setRound,
   getAssetInfo: withLimiter(getAssetInfo),
   searchAccountsAll,
   getAccountInfo,
