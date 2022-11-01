@@ -75,9 +75,11 @@ async function tvl(timestamp, block) {
   const cvxalUSDPool = "0x02E2151D4F351881017ABdF2DD2b51150841d5B3";
   const cvxstethPool = "0x0A760466E1B4621579a82a39CB56Dda2F4E70f03";
   const cvxcrvFrax = "0x117A0bab81F25e60900787d98061cCFae023560c";
+  const cvxcvxFxs = "0xCB6D873f7BbE57584a9b08380901Dc200Be7CE74";
 
   const tokeManager = "0xA86e412109f77c45a3BC1c5870b880492Fb86A14";
-  const tokeTreasuryVault = "0x5d9EF8F1CFa952a4a383E10a447dD23C5EA20EB8";
+  const tokeTreasury = "0x8b4334d4812C530574Bd4F2763FcD22dE94A969B";
+  const tokeTreasuryFraxConvexVault = "0x5d9EF8F1CFa952a4a383E10a447dD23C5EA20EB8";
   const toa = [
     [weth, degenesisContract],
     [usdc, degenesisContract],
@@ -102,8 +104,9 @@ async function tvl(timestamp, block) {
     [alusd, alusdPool],
     [myc, mycPool],
     [visr, visrPool],
+    [steth, tokeTreasury]
   ]
-  const balances = await sumTokens2({ block, tokensAndOwners: toa, })
+  const balances = await sumTokens2({ block, tokensAndOwners: toa })
   await Promise.all([
     unwrapCvxSteth(balances, tokeManager, cvxstethPool, block, "ethereum"),
     genericUnwrapCvx(balances, tokeManager, cvxUSTWPool, block, "ethereum"),
@@ -124,12 +127,23 @@ async function tvl(timestamp, block) {
   const { output: treasuryFraxBal } = await sdk.api.abi.call({
     abi: cvx_abi['stkcvxFRAXBP_lockedStakesOf'],
     target: fraxFraxUsdcPool,
-    params: [tokeTreasuryVault],
+    params: [tokeTreasuryFraxConvexVault],
     chain: "ethereum",
     block
   });
   const fraxUsdcBal = BigNumber(cvxcrvFraxBal).plus(BigNumber(treasuryFraxBal[0]['liquidity']));
   balances[cvxcrvFrax] = fraxUsdcBal.toFixed();
+
+  /// cvxcvxFXS
+  const cvxcvxFxsPool = "0xf27AFAD0142393e4b3E5510aBc5fe3743Ad669Cb";
+  const { output: cvxcvxFxsBal } = await sdk.api.abi.call({
+    abi: cvx_abi['cvxBRP_balanceOf'],
+    target: cvxcvxFxsPool,
+    params: [tokeTreasury],
+    chain: "ethereum",
+    block
+  });
+  balances[cvxcvxFxs] = cvxcvxFxsBal;
 
   let curveHoldings = positions.exchanges.filter(
     pool => pool.type == 'Curve')
