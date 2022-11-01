@@ -9,7 +9,7 @@ const programs = {
 }
 
 async function tvl() {
-  return sumTokens2({ tokenAccounts: ["GfKM5yKppizEG91Sm2Xtwk8XJG5se2E2vimXP7qZfqzt","77PYoAUcS8uiQDoqd8miT8PfYHgzzAXnQDRVVvo9Dp7U","8ZtBSY3h3D5J8mNtHswtESwJXzNRTUVpUdVPS91R95Nh","4sYi8fvNoRqg8VXgFmsWjoWT2b2icZ6mdsiTjKKy6jWn","BMzD7Ni8ZZRm49n2zScBTz5HVdR9SNzm26MTo8ZkFyHF","3vFaMhtLT86TbXi5Hik66U8rffoP7FrLFeNSpvMWwJvY","GeznfKFQoVawp4mXu2rAQkdMBy5TAoWg32gF2xaYqrTJ","GSBNJWb9cfvL5TwHAsJQa5ujejaYNZVTru8BhLR75eMD"] })
+  return sumTokens2({ tokenAccounts: ["GfKM5yKppizEG91Sm2Xtwk8XJG5se2E2vimXP7qZfqzt","77PYoAUcS8uiQDoqd8miT8PfYHgzzAXnQDRVVvo9Dp7U","8ZtBSY3h3D5J8mNtHswtESwJXzNRTUVpUdVPS91R95Nh","4sYi8fvNoRqg8VXgFmsWjoWT2b2icZ6mdsiTjKKy6jWn","BMzD7Ni8ZZRm49n2zScBTz5HVdR9SNzm26MTo8ZkFyHF","3vFaMhtLT86TbXi5Hik66U8rffoP7FrLFeNSpvMWwJvY","GeznfKFQoVawp4mXu2rAQkdMBy5TAoWg32gF2xaYqrTJ","GSBNJWb9cfvL5TwHAsJQa5ujejaYNZVTru8BhLR75eMD", "4QvXemwYtNB7urqYE742ertcM93Qbc4L4qmy8oiKP3gY"] })
 }
 
 async function staking() {
