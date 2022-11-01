@@ -2,6 +2,7 @@ const sdk = require("@defillama/sdk");
 const { default: BigNumber } = require("bignumber.js");
 const { request, gql } = require("graphql-request"); // GraphQLClient
 const { isStableToken } = require('./helper/streamingHelper')
+const { getBlock } = require('./helper/getBlock')
 
 // Superfluid Supertokens can be retrieved using GraphQl API - cannot use block number to retrieve historical data at the moment though
 // TheGraph URL before being deprecated, before 2021-12-23
@@ -90,7 +91,9 @@ const tokensNativeToSidechain = [
   '0x263026e7e53dbfdce5ae55ade22493f828922965', // polygon RIC
 ]
 
-async function retrieveSupertokensBalances(chain, block, isVesting) {
+async function retrieveSupertokensBalances(chain, block, isVesting, ts) {
+
+  block = await getBlock(ts, chain, { [chain]: block })
   // Retrieve supertokens from graphql API
   let graphUrl;
   if (chain === 'polygon') {
@@ -117,12 +120,12 @@ module.exports = {
     [Math.floor(new Date('2022-10-03')/1e3), 'Vesting tokens are not included in tvl'],
   ],
   polygon: {
-    tvl: async (_, _b, { polygon: block }) => retrieveSupertokensBalances('polygon', block, false),
-    vesting: async (_, _b, { polygon: block }) => retrieveSupertokensBalances('polygon', block, true),
+    tvl: async (_, _b, { polygon: block }) => retrieveSupertokensBalances('polygon', block, false, _),
+    vesting: async (_, _b, { polygon: block }) => retrieveSupertokensBalances('polygon', block, true, _),
   },
   xdai: {
-    tvl: async (_, _b, { xdai: block }) => retrieveSupertokensBalances('xdai', block, false),
-    vesting: async (_, _b, { xdai: block }) => retrieveSupertokensBalances('xdai', block, true),
+    tvl: async (_, _b, { xdai: block }) => retrieveSupertokensBalances('xdai', block, false, _),
+    vesting: async (_, _b, { xdai: block }) => retrieveSupertokensBalances('xdai', block, true, _),
   },
   methodology: `TVL is the total quantity of tokens locked in Super Tokens from Superfluid, on Polygon and xDai (most important being weth, dai, usdc and wbtc, as well as QiDAO and MOCA)`
 }

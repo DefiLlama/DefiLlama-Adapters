@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const BigNumber = require('bignumber.js')
-const { transformIotexAddress } = require('../helper/portedTokens.js')
+const { transformBalances } = require('../helper/portedTokens.js')
 const getEntireSystemCollAbi = require("./getEntireSystemColl.abi.json")
 const { staking } = require('../helper/staking')
 
@@ -17,7 +17,7 @@ const iotexTMs = {
 const iotexStableAPs = {
     "0x8Af0EE5A98609fEdaf301Af74d3ca4Da614eaD43": "0x84abcb2832be606341a50128aeb1db43aa017449", // BUSD_b
     "0xF524F844216069b167d65DCe68B24F3358260BD5": "0x6fbcdc1169b5130c59e72e51ed68a84841c98cd1", // USDT
-    "0x206aAF608d1DD7eA9Db4b8460B2Bf8647522f90a": "0xd6070ae98b8069de6b494332d1a1a81b6179d960", // any
+    // "0x206aAF608d1DD7eA9Db4b8460B2Bf8647522f90a": "0xd6070ae98b8069de6b494332d1a1a81b6179d960", // any
     "0x84724DAEC2943B1FDd5250ffcF64dfa290606250": "0x84abcb2832be606341a50128aeb1db43aa017449", // BUSD_b v2
     "0xc67cF429b055D664c7Ba06c9F5D17d0692C554fC": "0x6fbcdc1169b5130c59e72e51ed68a84841c98cd1", // USDT v2
 }
@@ -29,7 +29,7 @@ const ethStables = {
 const iotexTvl = async (timestamp, ethBlock, chainBlocks) => {
     const balances = {};
     const calls = [];
-    const transform = await transformIotexAddress()
+    const transform = i => i
     for (const troveManager in iotexTMs) {
         calls.push({
             target: troveManager
@@ -80,7 +80,7 @@ const iotexTvl = async (timestamp, ethBlock, chainBlocks) => {
         balances[address] = BigNumber(balances[address]|| 0).plus(amount).toFixed()
     });
 
-    return balances;
+    return transformBalances('iotex', balances)
 };
 
 
@@ -136,5 +136,7 @@ module.exports = {
         tvl: getLiquityTvl('0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7',"0x561d2d58bdad7a723a2cf71e8909a409dc2112ec", "avax"),
         staking: staking('0x68738a47d40c34d890168ab7b612a6f649f395e4','0x9ef758ac000a354479e538b8b2f01b917b8e89e7', 'avax', 'polygon:0x3dc7b06dd0b1f08ef9acbbd2564f8605b4868eea'),
     },
-    
+    hallmarks: [
+      [Math.floor(new Date('2022-10-30')/1e3), 'XUSD is no longer counted as part of tvl'],
+    ],
 };

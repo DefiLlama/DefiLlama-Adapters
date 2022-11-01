@@ -22,6 +22,10 @@ async function getAddressesUTXOs(address) {
   return utxos
 }
 
+async function getAssets(address) {
+  return (await axiosObj.get(`addresses/${address}`)).data.amount
+}
+
 async function getTxsRedeemers(utxo) {
   const { data } = await axiosObj.get(`txs/${utxo}/redeemers`)
   return data
@@ -33,6 +37,7 @@ async function getTxsMetadata(utxo) {
 }
 
 module.exports = {
+  getAssets,
   getAddressesUTXOs,
   getTxsRedeemers,
   getTxsMetadata,

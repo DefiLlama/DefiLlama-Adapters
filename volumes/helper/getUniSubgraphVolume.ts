@@ -65,10 +65,10 @@ function getChainVolume({
   getCustomBlock = undefined,
 }: IGetChainVolumeParams) {
   const totalVolumeQuery = gql`
-  ${totalVolume.factory}(
+  ${totalVolume.factory ?? DEFAULT_TOTAL_VOLUME_FACTORY}(
     block: { number: $block }
     ) {
-      ${totalVolume.field}
+      ${totalVolume.field ?? DEFAULT_TOTAL_VOLUME_FIELD}
     }
     `;
 
@@ -80,9 +80,9 @@ function getChainVolume({
       }`;
 
   const alternativeDaily = (timestamp: number) => gql`{
-      ${dailyVolume.factory}s(where: {${dailyVolume.dateField}: ${timestamp}}) {
-          ${dailyVolume.dateField}
-          ${dailyVolume.field}
+      ${dailyVolume.factory ?? DEFAULT_DAILY_VOLUME_FACTORY}s(where: {${dailyVolume.dateField ?? DEFAULT_DAILY_DATE_FIELD}: ${timestamp}}) {
+          ${dailyVolume.dateField ?? DEFAULT_DAILY_DATE_FIELD}
+          ${dailyVolume.field ?? DEFAULT_DAILY_VOLUME_FIELD}
       }
   }`;
 
