@@ -1390,6 +1390,7 @@ const coreAssets = {
     "0x4988a896b1227218e4A686fdE5EabdcAbd91571f",
     //wNEAR
     "0xC42C30aC6Cc15faC9bD938618BcaA1a1FaE8501d",
+    '0x8bec47865ade3b172a928df8f990bc7f2a3b9f79',
   ],
   cronos: [
     "0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23",
