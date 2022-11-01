@@ -4,14 +4,24 @@ const { fetchURL } = require('../helper/utils')
 
 
 async function staking(){
-    const tvl = await fetchURL("https://staking.muesliswap.com/milk-locked")
-    if(tvl.data<=0){
+    let totalAda = 0
+    // Milk locked
+    const tvlMilk = (await fetchURL("https://staking.muesliswap.com/milk-locked")).data
+    if(tvlMilk.data<=0){
         throw new Error("muesliswap tvl is below 0")
     }
-    const info = (await fetchURL(`https://api.muesliswap.com/price/?base-policy-id=&base-tokenname=&quote-tokenname=4d494c4b&quote-policy-id=8a1cfae21368b8bebbbed9800fec304e95cce39a2a57dc35e2e3ebaa`)).data
-    const price = parseFloat(info.price) / 1e6
+    const infoMilk = (await fetchURL(`https://api.muesliswap.com/price/?base-policy-id=&base-tokenname=&quote-tokenname=4d494c4b&quote-policy-id=8a1cfae21368b8bebbbed9800fec304e95cce39a2a57dc35e2e3ebaa`)).data
+    const priceMilk = parseFloat(infoMilk.price) / 1e6
+    totalAda += priceMilk * tvlMilk
+
+    // Myield locked
+    const tvlMyield = parseFloat((await fetchURL("http://staking.muesliswap.com/myield-info")).data[0]["amountStaked"]) / 1e6
+    const infoMyield = (await fetchURL(`https://api.muesliswap.com/price/?base-policy-id=&base-tokenname=&quote-tokenname=4d5949454c44&quote-policy-id=8f9c32977d2bacb87836b64f7811e99734c6368373958da20172afba`)).data
+    const priceMyield = parseFloat(infoMyield.price)
+    totalAda += priceMyield * tvlMyield
+
     return {
-        cardano: tvl.data * price
+        cardano: totalAda
     }
 }
 
