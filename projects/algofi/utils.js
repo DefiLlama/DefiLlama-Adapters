@@ -60,16 +60,16 @@ const appDictionary = {
     "oracleAppId": 451327550,
     "oracleFieldName": "price",
   },
-  // "vALGO": {
-  //   "decimals": 6,
-  //   "appIds": [465814318],
-  //   "geckoId": "algorand",
-  // },
-  // "vALGO2": {
-  //   "decimals": 6,
-  //   "appIds": [879935316],
-  //   "geckoId": "algorand",
-  // },
+  "vALGO": {
+    "decimals": 6,
+    "appIds": [465814318],
+    "geckoId": "algorand",
+  },
+  "vALGO2": {
+    "decimals": 6,
+    "appIds": [879935316],
+    "geckoId": "algorand",
+  },
   "BANK": {
     "decimals": 6,
     "appIds": [900883415],
