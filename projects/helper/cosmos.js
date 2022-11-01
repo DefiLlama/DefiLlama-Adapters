@@ -3,7 +3,8 @@ const { default: BigNumber } = require("bignumber.js")
 const sdk = require('@defillama/sdk')
 
 const endPoints = {
-  crescent: 'https://mainnet.crescent.network:1317'
+  crescent: 'https://mainnet.crescent.network:1317',
+  osmosis: 'https://lcd.osmosis.zone',
 }
 
 const chainSubpaths = {
