@@ -5,12 +5,12 @@ const pools = [
     assetId: 0,
     assetDecimals: 6,
   },
-  {
-    // gALGO
-    appId: 794055220,
-    assetId: 793124631,
-    assetDecimals: 6,
-  },
+  // {
+  //   // gALGO
+  //   appId: 794055220,
+  //   assetId: 793124631,
+  //   assetDecimals: 6,
+  // },
   {
     // USDC
     appId: 686500029,
@@ -35,12 +35,12 @@ const pools = [
     assetId: 386195940,
     assetDecimals: 8,
   },
-  {
-    // gAlgo3
-    appId: 694464549,
-    assetId: 694432641,
-    assetDecimals: 6,
-  },
+  // {
+  //   // gAlgo3
+  //   appId: 694464549,
+  //   assetId: 694432641,
+  //   assetDecimals: 6,
+  // },
   // USDC-gALGO TMP1.1
   {
     appId: 805843312,
@@ -123,11 +123,6 @@ const pools = [
   },
 ];
 
-// app id of the governance app used only on 3rd governance period
-const liquidGovernance3AppId = 694427622;
-// app id of the governance app used from 4th governance period on
-const liquidGovernanceAppId = 793119194;
-
 const oracleAppId = 793269965;
 const oracleAdapterAppId = 751277258;
 const oracleDecimals = 14;
@@ -135,8 +130,6 @@ const tinymanValidatorAppId = 552635992;
 
 module.exports = {
   pools,
-  liquidGovernance3AppId,
-  liquidGovernanceAppId,
   oracleAppId,
   oracleAdapterAppId,
   oracleDecimals,
