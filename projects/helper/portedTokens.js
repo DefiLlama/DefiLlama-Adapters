@@ -1,10 +1,13 @@
 const utils = require("../helper/utils");
 const sdk = require("@defillama/sdk");
-const IOTEX_CG_MAPPING = require("./../xdollar-finance/iotex_cg_mapping.json");
 const BigNumber = require("bignumber.js");
 const {
+  normalizeAddress,
+  getCoreAssets,
   transformTokens,
   fixBalancesTokens,
+  unsupportedGeckoChains,
+  ibcChains,
 } = require('./tokenMapping')
 
 async function transformFantomAddress() {
@@ -40,7 +43,7 @@ async function transformAvaxAddress() {
   ]);
   return addr => {
     const map = transformTokens.avax;
-    if (map[addr.toLowerCase()])  return map[addr.toLowerCase()]
+    if (map[addr.toLowerCase()]) return map[addr.toLowerCase()]
     const srcToken = bridgeTokensOld.data.find(token =>
       compareAddresses(token["Avalanche Token Address"], addr)
     );
@@ -137,42 +140,22 @@ async function transformArbitrumAddress() {
     const dstToken = bridge.find(token =>
       compareAddresses(addr, token.address)
     );
-    if (dstToken !== undefined) {
+    if (dstToken && dstToken.extensions) {
       return dstToken.extensions.bridgeInfo[1].tokenAddress;
     }
     return `arbitrum:${addr}`;
   };
 }
 
-async function transformIotexAddress() {
-  return addr => {
-    const dstToken = Object.keys(IOTEX_CG_MAPPING).find(token =>
-      compareAddresses(addr, token)
-    );
-    if (dstToken !== undefined) {
-      return (
-        IOTEX_CG_MAPPING[dstToken].contract ||
-        IOTEX_CG_MAPPING[dstToken].coingeckoId
-      );
-    }
-    return `iotex:${addr}`;
-  };
-}
-
-function normalizeMapping(mapping) {
-  Object.keys(mapping).forEach(
-    key => (mapping[key.toLowerCase()] = mapping[key])
-  );
-}
-
-function fixBalances(balances, mapping, { removeUnmapped = false } = {}) {
-  normalizeMapping(mapping);
+function fixBalances(balances, mapping, { chain, } = {}) {
+  const removeUnmapped = unsupportedGeckoChains.includes(chain)
 
   Object.keys(balances).forEach(token => {
-    const tokenKey = stripTokenHeader(token).toLowerCase();
+    let tokenKey = stripTokenHeader(token, chain)
+    tokenKey = normalizeAddress(tokenKey, chain)
     const { coingeckoId, decimals } = mapping[tokenKey] || {};
     if (!coingeckoId) {
-      if (removeUnmapped && tokenKey.startsWith('0x')) {
+      if (removeUnmapped && (tokenKey.startsWith('0x') || token.startsWith(chain + ':'))) {
         console.log(
           `Removing token from balances, it is not part of whitelist: ${tokenKey}`
         );
@@ -192,8 +175,9 @@ function fixBalances(balances, mapping, { removeUnmapped = false } = {}) {
   return balances;
 }
 
-function stripTokenHeader(token) {
-  token = token.toLowerCase();
+function stripTokenHeader(token, chain) {
+  if (chain === 'aptos') return token.replace(/^aptos\:/, '')
+  token = normalizeAddress(token, chain);
   return token.indexOf(":") > -1 ? token.split(":")[1] : token;
 }
 
@@ -206,42 +190,11 @@ function getFixBalancesSync(chain) {
   return fixBalancesMapping[chain] || dummyFn;
 }
 
-function fixTezosBalances(balances) {
-  const mapping = fixBalancesTokens.tezos
-  Object.entries(balances).forEach(([key, value]) => {
-    const token = stripTokenHeader(key)
-    if (mapping[token]) {
-      delete balances[key]
-      const { coingeckoId, decimals } = mapping[token]
-      balances[coingeckoId] = BigNumber(balances[coingeckoId] || 0).toFixed(0)
-      sdk.util.sumSingleBalance(balances, coingeckoId, BigNumber(value/ 10 ** decimals).toFixed(0))
-    }
-  })
-  return balances
-}
-
-function fixAptosBalances(balances) {
-  const mapping = fixBalancesTokens.aptos
-  Object.entries(balances).forEach(([key, value]) => {
-    const token = key.replace(/^aptos\:/, '')
-    if (mapping[token]) {
-      delete balances[key]
-      const { coingeckoId, decimals } = mapping[token]
-      balances[coingeckoId] = BigNumber(balances[coingeckoId] || 0).toFixed(0)
-      sdk.util.sumSingleBalance(balances, coingeckoId, BigNumber(value/ 10 ** decimals).toFixed(0))
-    }
-  })
-  return balances
-}
-
-const fixBalancesMapping = {
-  tezos: fixTezosBalances,
-  aptos: fixAptosBalances,
-};
+const fixBalancesMapping = {};
 
 for (const chain of Object.keys(fixBalancesTokens)) {
   if (!fixBalancesMapping[chain])
-    fixBalancesMapping[chain] = b => fixBalances(b, fixBalancesTokens[chain])
+    fixBalancesMapping[chain] = b => fixBalances(b, fixBalancesTokens[chain], { chain })
 }
 
 const chainTransforms = {
@@ -252,7 +205,6 @@ const chainTransforms = {
   harmony: transformHarmonyAddress,
   optimism: transformOptimismAddress,
   arbitrum: transformArbitrumAddress,
-  iotex: transformIotexAddress,
 };
 
 function transformChainAddress(
@@ -260,7 +212,6 @@ function transformChainAddress(
   chain,
   { skipUnmapped = false, chainName = "" } = {}
 ) {
-  normalizeMapping(mapping);
 
   return addr => {
     if (!addr.startsWith('0x')) return addr
@@ -273,22 +224,28 @@ function transformChainAddress(
       );
       return "0x1000000000000000000000000000000000000001";
     }
-    if (chain === 'ethereum')  return mapping[addr] ? mapping[addr] : addr
+    if (chain === 'ethereum') return mapping[addr] ? mapping[addr] : addr
     return mapping[addr] || `${chain}:${addr}`;
   };
 }
 
 async function getChainTransform(chain) {
-  if (chainTransforms[chain]) 
+  if (chainTransforms[chain])
     return chainTransforms[chain]()
 
-  if (transformTokens[chain]) 
-    return transformChainAddress(transformTokens[chain], chain) 
+  if (transformTokens[chain])
+    return transformChainAddress(transformTokens[chain], chain)
 
   return addr => {
-    addr = addr.toLowerCase()
-    if (addr.startsWith('0x')) return `${chain}:${addr}`
-    return addr
+    addr = normalizeAddress(addr, chain)
+    const chainStr = `${chain}:${addr}`
+    if (chain === 'near' && addr.endsWith('.near')) return chainStr
+    if (chain === 'tezos' && addr.startsWith('KT1')) return chainStr
+    if (ibcChains.includes(chain) && addr.startsWith('ibc/')) return chainStr
+    if (chain === 'terra2' && addr.startsWith('terra1')) return chainStr
+    if (chain === 'algorand' && /^\d+$/.test(addr)) return chainStr
+    if (addr.startsWith('0x')) return chainStr
+    return addr 
   };
 }
 
@@ -303,6 +260,96 @@ async function transformBalances(chain, balances) {
   return balances
 }
 
+async function transformDexBalances({ chain, data, balances = {}, restrictTokenRatio = 10, withMetadata = false, }) {
+
+  const coreTokens = new Set(getCoreAssets(chain))
+  const prices = {}
+  data.forEach(i => {
+    i.token0 = normalizeAddress(i.token0, chain)
+    i.token1 = normalizeAddress(i.token1, chain)
+    i.token0Bal = +i.token0Bal
+    i.token1Bal = +i.token1Bal
+    priceToken(i)
+  })
+  data.forEach(addTokens)
+  updateBalances(balances)
+
+  if (!withMetadata)
+    return transformBalances(chain, balances)
+  
+  return {
+    prices,
+    updateBalances,
+    balances: await transformBalances(chain, balances),
+  }
+
+  function addTokens({ token0, token0Bal, token1, token1Bal }) {
+    const isCoreToken0 = coreTokens.has(token0)
+    const isCoreToken1 = coreTokens.has(token1)
+    if ((isCoreToken0 && isCoreToken1) || (!isCoreToken0 && !isCoreToken1)) {
+      sdk.util.sumSingleBalance(balances, token0, token0Bal)
+      sdk.util.sumSingleBalance(balances, token1, token1Bal)
+    } else if (isCoreToken0) {
+      sdk.util.sumSingleBalance(balances, token0, token0Bal * 2)
+    } else {
+      sdk.util.sumSingleBalance(balances, token1, token1Bal * 2)
+    }
+  }
+
+  function updateBalances(balances) {
+    Object.entries(balances).forEach(([token, bal]) => {
+      bal = +bal
+      const tokenKey = normalizeAddress(token, chain)
+      if (!prices[tokenKey]) return;
+      const priceObj = prices[tokenKey]
+      const { coreToken, price } = priceObj
+      delete balances[token]
+      if (bal > priceObj.convertableTokenAmount) {
+        const unconverted = bal - priceObj.convertableTokenAmount
+        const convertible = priceObj.convertableTokenAmount
+        priceObj.convertableTokenAmount = 0
+        sdk.util.sumSingleBalance(balances, tokenKey, unconverted)
+        sdk.util.sumSingleBalance(balances, coreToken, convertible * price)
+        return
+      }
+
+      priceObj.convertableTokenAmount -= bal
+      sdk.util.sumSingleBalance(balances, coreToken, bal * price)
+    })
+  }
+
+  function priceToken({ token0, token0Bal, token1, token1Bal }) {
+    const isCoreToken0 = coreTokens.has(token0)
+    const isCoreToken1 = coreTokens.has(token1)
+    if (isCoreToken0 && isCoreToken1) return;
+    if (!isCoreToken0 && !isCoreToken1) return;
+    if (isCoreToken0) setPrice(token1, token1Bal, token0, token0Bal)
+    else setPrice(token0, token0Bal, token1, token1Bal)
+  }
+
+  function setPrice(token, tokenBal, coreToken, coreTokenBal) {
+    if (!prices[token]) {
+      prices[token] = {
+        coreToken,
+        coreTokenBal,
+        tokensInCorePool: tokenBal,
+        convertableTokenAmount: coreTokenBal * restrictTokenRatio,
+        price: coreTokenBal / tokenBal
+      }
+      return;
+    }
+
+    const priceObj = prices[token]
+    priceObj.convertableTokenAmount += coreTokenBal * restrictTokenRatio
+    if (tokenBal > priceObj.tokensInCorePool) { // i.e current pool has more liquidity
+      priceObj.tokensInCorePool = coreTokenBal
+      priceObj.coreToken = coreToken
+      priceObj.coreTokenBal = coreTokenBal
+      priceObj.price = coreTokenBal / tokenBal
+    }
+  }
+}
+
 module.exports = {
   getChainTransform,
   getFixBalances,
@@ -313,10 +360,9 @@ module.exports = {
   transformHarmonyAddress,
   transformOptimismAddress,
   transformArbitrumAddress,
-  transformIotexAddress,
   transformCeloAddress,
   stripTokenHeader,
   getFixBalancesSync,
   transformBalances,
-  fixTezosBalances,
+  transformDexBalances,
 };
