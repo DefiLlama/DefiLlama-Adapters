@@ -70,6 +70,7 @@ export enum CHAIN {
   FUNCTIONX = "functionx",
   ENERGYWEB = "energyweb",
   MIXIN = "mixin",
+  THORCHAIN ="thorchain",
   MILKOMEDA = "milkomeda",
   FLOW = "flow",
   FUSION = "fusion"

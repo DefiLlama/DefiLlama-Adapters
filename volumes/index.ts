@@ -192,6 +192,7 @@ import gravis from "./adapters/gravis";
 import fourSwap from "./adapters/4swap";
 import bisq from "./adapters/bisq";
 import tetu from "./adapters/tetu";
+import thorswap from "./adapters/thorswap";
 import muesliswap from "./adapters/muesliswap";
 import ginFinance from "./adapters/gin-finance";
 import ferro from "./adapters/ferro";
@@ -393,6 +394,7 @@ export default {
   "4swap": fourSwap,
   bisq,
   tetu,
+  thorswap,
   muesliswap,
   "gin-finance": ginFinance,
   ferro,
