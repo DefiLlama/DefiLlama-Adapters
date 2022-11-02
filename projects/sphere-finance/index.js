@@ -16,7 +16,7 @@ function ohmTvlMultiTreasuries(treasuries, treasuryTokens, chain, stakingAddress
 
 const sphere_token = "0x62f594339830b90ae4c084ae7d223ffafd9658a7"
 const treasuries = ["0x1a2ce410a034424b784d4b228f167a061b94cff4", "0x826b8d2d523e7af40888754e3de64348c00b99f4", "0x20d61737f972eecb0af5f0a85ab358cd083dd56a" ]
-const stakingAddress = "0x0000000000000000000000000000000000000000" // NONE
+const stakingAddress = "0x62F594339830b90AE4C084aE7D223fFAFd9658A7" // Sphere Games StakePrizePool
 const treasuryTokens = [
     // ["0x8D546026012bF75073d8A586f24A5d5ff75b9716", false], // SPHERE, remove as it is the collateralized token
     ["0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270", false], // WMATIC
