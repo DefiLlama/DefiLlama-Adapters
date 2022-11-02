@@ -27,7 +27,7 @@ const getWhitelistedTokenAddresses = async () => {
   return tokens;
 };
 
-const fetch = async () => {
+const tvl = async () => {
   let totalTVL = 0;
 
   const whitelistedAddresses = await getWhitelistedTokenAddresses();
@@ -69,8 +69,9 @@ const fetch = async () => {
 };
 
 module.exports = {
+  timetravel: false,
   misrepresentedTokens: true,
   hedera: {
-    tvl: hbarTvl,
+    tvl,
   },
 };
