@@ -1,9 +1,15 @@
 const { get_account_tvl } = require("../helper/eos");
 
+const accounts = [
+  "bullishfunds",
+  "j4obibe5lfv1", // cold wallet
+  "vbdoctdtpwb1", // cold wallet
+];
+
 // Bullish
 // https://bullish.com
 async function eos() {
-  return await get_account_tvl("bullishfunds", [["eosio.token", "EOS", "eos"]]);
+  return await get_account_tvl(accounts, [["eosio.token", "EOS", "eos"]]);
 }
 
 module.exports = {
