@@ -55,7 +55,7 @@ const adapters = (() => {
     milkomeda.volume[CHAIN.CARDADO] = {
       start: getStartTimestamp,
       fetch: fetch,
-      customBackfill: customBackfill(CHAIN.CARDADO as Chain, (_chain: string) => fetch)
+      // customBackfill: customBackfill(CHAIN.CARDADO as Chain, (_chain: string) => fetch)
     };
     return milkomeda
 })();
