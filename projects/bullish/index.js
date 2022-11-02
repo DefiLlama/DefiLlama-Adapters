@@ -1,9 +1,9 @@
 const { get_account_tvl } = require("../helper/eos");
 
 const accounts = [
-  "bullishfunds",
-  "j4obibe5lfv1", // cold wallet
-  "vbdoctdtpwb1", // cold wallet
+  "bullishfunds", // deposit account
+  "j4obibe5lfv1", // cold account
+  "vbdoctdtpwb1", // withdraw account
 ];
 
 // Bullish
