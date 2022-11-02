@@ -115,8 +115,7 @@ sdk.api.abi.call = async (...args) => {
   const chains = Object.keys(module).filter(item => typeof module[item] === 'object' && !Array.isArray(module[item]));
   checkExportKeys(module, passedFile, chains)
   const unixTimestamp = Math.round(Date.now() / 1000) - 60;
-  // const { chainBlocks } = await getCurrentBlocks(chains);
-  const chainBlocks = {}
+  const { chainBlocks } = await getCurrentBlocks([]); // fetch only ethereum block for local test
   const ethBlock = chainBlocks.ethereum;
   const usdTvls = {};
   const tokensBalances = {};
