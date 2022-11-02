@@ -14,19 +14,15 @@ const axiosConfig = {
 const getWhitelistedTokenAddresses = async () => {
   let tokens = [];
 
-  try {
-    const response = await axios(urlConfigs.tokenListUrl);
-    const {
-      data: { tokens: whitelistedTokens },
-    } = response;
+  const response = await axios(urlConfigs.tokenListUrl);
+  const {
+    data: { tokens: whitelistedTokens },
+  } = response;
 
-    tokens =
-      whitelistedTokens.length > 0
-        ? whitelistedTokens.map((token) => token.address)
-        : [];
-  } catch (e) {
-    console.error(`[Error on fetching tokens: ${e.message}]`);
-  }
+  tokens =
+    whitelistedTokens.length > 0
+      ? whitelistedTokens.map((token) => token.address)
+      : [];
 
   return tokens;
 };
@@ -34,50 +30,47 @@ const getWhitelistedTokenAddresses = async () => {
 const fetch = async () => {
   let totalTVL = 0;
 
-  try {
-    const whitelistedAddresses = await getWhitelistedTokenAddresses();
+  const whitelistedAddresses = await getWhitelistedTokenAddresses();
 
-    const { url, method } = axiosConfig;
-    const requestData = {
-      query: `query getWhitelistedPools($tokens: [String]!) {
+  const { url, method } = axiosConfig;
+  const requestData = {
+    query: `query getWhitelistedPools($tokens: [String]!) {
                 poolsConsistingOf(tokens: $tokens) {
                   tvl
                 }
               }`,
-      variables: {
-        tokens: whitelistedAddresses,
-      },
-    };
+    variables: {
+      tokens: whitelistedAddresses,
+    },
+  };
 
-    const requestObject = {
-      url,
-      method,
-      data: requestData,
-    };
+  const requestObject = {
+    url,
+    method,
+    data: requestData,
+  };
 
-    const response = await axios(requestObject);
+  const response = await axios(requestObject);
 
-    const {
-      data: { data },
-    } = response;
+  const {
+    data: { data },
+  } = response;
 
-    totalTVL =
-      data && data.poolsConsistingOf && data.poolsConsistingOf?.length > 0
-        ? data.poolsConsistingOf.reduce((acc, pool) => {
-            acc = acc + Number(pool.tvl);
+  totalTVL =
+    data && data.poolsConsistingOf && data.poolsConsistingOf?.length > 0
+      ? data.poolsConsistingOf.reduce((acc, pool) => {
+        acc = acc + Number(pool.tvl);
 
-            return acc;
-          }, 0)
-        : 0;
+        return acc;
+      }, 0)
+      : 0;
 
-    return totalTVL;
-  } catch (e) {
-    console.log(`[Error on fetching tvl: ${e.message}]`);
-  }
-
-  return totalTVL;
+  return {tether: totalTVL};
 };
 
 module.exports = {
-  fetch,
+  misrepresentedTokens: true,
+  hedera: {
+    tvl: hbarTvl,
+  },
 };
