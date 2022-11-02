@@ -11,7 +11,7 @@ const HERA_TOKEN = "0x6F05709bc91Bad933346F9E159f0D3FdBc2c9DCE";
 
 module.exports = {
   metis: {
-    staking: stakings(stakingContracts, HERA_TOKEN),
-    tvl: (async) => ({}),
+    staking: stakings(stakingContracts, HERA_TOKEN, 'metis'),
+    tvl: () => ({}),
   },
 };
