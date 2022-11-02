@@ -39,11 +39,7 @@ const readGlobalState = async (appIndex, keys) => {
 
             keys.forEach((key, index) => {
                 if (key === stateKey) {
-                    if (key === "rss") {
-                        foundedState[index] = decodeString(state.value.bytes);
-                    } else {
-                        foundedState[index] = state.value.uint;
-                    }
+                    foundedState[index] = state.value.uint;
                 }
             });
 
@@ -52,32 +48,6 @@ const readGlobalState = async (appIndex, keys) => {
     });
 };
 
-
-/**
- * @desc The median of a sorted array of size N is defined as the middle element when N is odd and average of middle two elements when N is even
- *
- * @param arr1
- * @returns {number|*}
- */
-const medianFromArray = (arr1) => {
-    let concat = arr1;
-    concat = concat.sort(
-        function (a, b) {
-            return a - b
-        });
-
-    let length = concat.length;
-
-    if (length % 2 === 1) {
-        return concat[(length / 2) - .5]
-    } else {
-        return (concat[length / 2]
-            + concat[(length / 2) - 1]) / 2;
-    }
-}
-
-
 module.exports = {
     readGlobalState,
-    medianFromArray
 };

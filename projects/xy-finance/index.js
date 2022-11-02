@@ -40,9 +40,6 @@ const config = {
   klaytn: {
     chainId: '8217',
   },
-  cube: {
-    chainId: '1818',
-  },
 }
 
 const ethAddress = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
@@ -209,16 +206,6 @@ const yPoolDepositContract = {
       "tokenAddress": "0x754288077D0fF82AF7a5317C7CB8c444D421d103"
     }
   },
-  "1818": {
-    "USDT": {
-      "contractAddress": "0x903a82456D27500f16C51f10115c699ca1f64951",
-      "tokenAddress": "0x79F1520268A20c879EF44d169A4E3812D223C6de"
-    },
-    "USDC": {
-      "contractAddress": "0x9fE77412aA5c6Ba67fF3095bBc534884F9a61a38",
-      "tokenAddress": "0x00f0D8595797943c12605cD59bc0D9f63D750cCf"
-    }
-  }
 }
 
 module.exports={}

@@ -718,6 +718,13 @@ async function yieldHelper({ chain = 'ethereum', block, coreAssets = [], blackli
   return transformBalances(chain, balances)
 }
 
+function uniTvlExport(chain, factory) {
+  return {
+    misrepresentedTokens: true,
+    [chain]: { tvl: getUniTVL({ chain, factory, useDefaultCoreAssets: true })}
+  }
+}
+
 module.exports = {
   nullAddress,
   getTokenPrices,
@@ -731,4 +738,5 @@ module.exports = {
   staking,
   sumTokensExport,
   yieldHelper,
+  uniTvlExport,
 };

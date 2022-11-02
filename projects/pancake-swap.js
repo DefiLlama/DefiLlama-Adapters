@@ -1,6 +1,8 @@
 const { request, gql } = require("graphql-request");
 const { toUSDTBalances } = require('./helper/balances')
 const { stakings } = require('./helper/staking')
+const { getUniTVL } = require('./helper/unknownTokens')
+const { dexExport } = require('./helper/aptos')
 
 
 const graphEndpoint = 'https://bsc.streamingfast.io/subgraphs/name/pancakeswap/exchange-v2'
@@ -76,4 +78,13 @@ module.exports = {
     staking: stakings(["0x73feaa1eE314F8c655E354234017bE2193C9E24E", "0x45c54210128a065de780c4b0df3d16664f7f859e"], "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82", "bsc"),
     tvl
   },
+  // ethereum: {
+  //   tvl: getUniTVL({ chain: 'ethereum', factory: '0x1097053Fd2ea711dad45caCcc45EfF7548fCB362', useDefaultCoreAssets: true, })
+  // },
+  aptos: dexExport({
+    account: '0xc7efb4076dbe143cbcd98cfaaa929ecfc8f299203dfff63b95ccb6bfe19850fa',
+    poolStr: 'swap::TokenPairReserve',
+    token0Reserve: i => i.data.reserve_x,
+    token1Reserve: i => i.data.reserve_y,
+  }).aptos,
 }

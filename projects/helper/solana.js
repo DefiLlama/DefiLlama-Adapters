@@ -456,6 +456,7 @@ async function transformBalances({ tokenBalances, balances = {}, ignoreBadTokens
 }
 
 const coingeckoMapping = {
+  '6LNeTYMqtNm1pBFN8PfhQaoLyegAH8GD32WmHU9erXKN' : 'aptos',
   '7i5KKsX2weiTkry7jA4ZwSuXGhs5eJBEjY8vVxR4pfRx' : 'stepn'
 }
 

@@ -1,5 +1,6 @@
 const { GraphQLClient, gql } = require('graphql-request')
 const { transformPolygonAddress } = require('../helper/portedTokens');
+const { getBlock } = require('../helper/getBlock')
 
 
 async function fetchData(block, balances, transform, borrowed=false) {
@@ -52,18 +53,18 @@ async function fetchData(block, balances, transform, borrowed=false) {
 }
 
 
-async function tvl (timestamp, block, chainBlocks) {
+async function tvl (timestamp, _, chainBlocks) {
   const balances = {};
+  const block = await getBlock(timestamp, 'polygon', chainBlocks)
   const transform = await transformPolygonAddress();
-  block = chainBlocks.polygon;
   await fetchData(block, balances, transform);
   return balances;
 }
 
-async function borrowed (timestamp, block, chainBlocks) {
+async function borrowed (timestamp, _, chainBlocks) {
   const balances = {};
   const transform = await transformPolygonAddress();
-  block = chainBlocks.polygon;
+  const block = await getBlock(timestamp, 'polygon', chainBlocks)
   await fetchData(block, balances, transform, true);
   return balances;
 }
@@ -73,7 +74,7 @@ module.exports = {
   timetravel: true,
   misrepresentedTokens: false,
   polygon: {
-    tvl: tvl,
-    borrowed: borrowed,
+    tvl,
+    borrowed,
   }
 };

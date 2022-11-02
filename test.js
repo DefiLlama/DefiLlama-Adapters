@@ -1,9 +1,7 @@
 #!/usr/bin/env node
 const path = require("path");
 require("dotenv").config();
-//const { default: computeTVL } = require("@defillama/sdk/build/computeTVL");
-const { chainsForBlocks } = require("@defillama/sdk/build/computeTVL/blocks");
-const { getLatestBlock } = require("@defillama/sdk/build/util/index");
+const { getCurrentBlocks } = require("@defillama/sdk/build/computeTVL/blocks");
 const {
   humanizeNumber,
 } = require("@defillama/sdk/build/computeTVL/humanizeNumber");
@@ -14,16 +12,6 @@ const chainList = require('./projects/helper/chains.json')
 const handleError = require('./utils/handleError')
 const { log, diplayUnknownTable, sliceIntoChunks } = require('./projects/helper/utils')
 const { PromisePool } = require('@supercharge/promise-pool')
-
-async function getLatestBlockRetry(chain) {
-  for (let i = 0; i < 5; i++) {
-    try {
-      return await getLatestBlock(chain);
-    } catch (e) {
-      throw new Error(`Couln't get block height for chain "${chain}"`, e);
-    }
-  }
-}
 
 const locks = [];
 function getCoingeckoLock() {
@@ -127,19 +115,8 @@ sdk.api.abi.call = async (...args) => {
   const chains = Object.keys(module).filter(item => typeof module[item] === 'object' && !Array.isArray(module[item]));
   checkExportKeys(module, passedFile, chains)
   const unixTimestamp = Math.round(Date.now() / 1000) - 60;
-  const chainBlocks = {};
-
-  if (!chains.includes("ethereum")) {
-    chains.push("ethereum");
-  }
-  await Promise.all(
-    chains.map(async (chainRaw) => {
-      const chain = chainRaw
-      if (chainsForBlocks.includes(chain) || chain === "ethereum") {
-        chainBlocks[chain] = (await getLatestBlockRetry(chain)).number - 10;
-      }
-    })
-  );
+  // const { chainBlocks } = await getCurrentBlocks(chains);
+  const chainBlocks = {}
   const ethBlock = chainBlocks.ethereum;
   const usdTvls = {};
   const tokensBalances = {};

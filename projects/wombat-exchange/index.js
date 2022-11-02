@@ -1,5 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 // Wombat Asset Address
 // Main Pool
@@ -18,6 +19,10 @@ const Asset_P02_stkBNB = "0xc496f42ea6fc72af434f48469b847a469fe0d17f";
 const Asset_P03_BUSD = "0xa649be04619a8f3b3475498e1ac15c90c9661c1a";
 const Asset_P03_HAY = "0x1fa71df4b344ffa5755726ea7a9a56fbbee0d38b";
 
+// wmxWom Pool
+const Asset_P04_WOM = "0xf9bdc872d75f76b946e0770f96851b1f2f653cac";
+const Asset_P04_wmxWOM = "0x3c42e4f84573ab8c88c8e479b7dc38a7e678d688";
+
 // underlyingToken Address
 const BUSD = "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56";
 const DAI = "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3";
@@ -28,54 +33,40 @@ const BNBx = "0x1bdd3cf7f79cfb8edbb955f20ad99211551ba275";
 const aBNBc = "0xe85afccdafbe7f2b096f268e31cce3da8da2990a";
 const stkBNB = "0xc2e9d07f66a89c44062459a47a0d2dc038e4fb16";
 const HAY = "0x0782b6d8c4551b9760e74c0545a9bcd90bdc41e5";
+const WOM = "0xAD6742A35fB341A9Cc6ad674738Dd8da98b94Fb1";
+const wmxWOM = "0x0415023846Ff1C6016c4d9621de12b24B2402979";
+const chain = "bsc";
 
 async function balanceOf(owner, target, block) {
-  const chain = "bsc";
   let decimals = (await sdk.api.erc20.decimals(target, chain)).output;
   let balance = (
-    await sdk.api.erc20.balanceOf({
-      owner,
-      target,
-      block,
-      chain,
-    })
+    await sdk.api.erc20.balanceOf({ owner, target, block, chain, })
   ).output;
   return Number(balance) / 10 ** decimals;
 }
 
-async function tvl(timestamp, ethereumBlock, chainBlocks) {
-  const block = chainBlocks["bsc"];
-  let balances = {};
-  balances["binance-usd"] =
-    (await balanceOf(Asset_P01_BUSD, BUSD, block)) +
-    (await balanceOf(Asset_P03_BUSD, BUSD, block));
-  balances["dai"] = await balanceOf(Asset_P01_DAI, DAI, block);
-  balances["usd-coin"] = await balanceOf(Asset_P01_USDC, USDC, block);
-  balances["tether"] = await balanceOf(Asset_P01_USDT, USDT, block);
-  balances["wbnb"] = await balanceOf(Asset_P02_WBNB, WBNB, block);
-  balances["stader-bnbx"] = await balanceOf(Asset_P02_BNBx, BNBx, block);
-  balances["ankr-reward-bearing-stake"] = await balanceOf(
-    Asset_P02_aBNBc,
-    aBNBc,
-    block
-  );
-  balances["pstake-staked-bnb"] = await balanceOf(
-    Asset_P02_stkBNB,
-    stkBNB,
-    block
-  );
-  balances["helio-protocol-hay"] = await balanceOf(Asset_P03_HAY, HAY, block);
+async function tvl(_t, _, { bsc: block }) {
+  const toa = [
+    [BUSD, Asset_P01_BUSD],
+    [BUSD, Asset_P03_BUSD],
+    [DAI, Asset_P01_DAI],
+    [USDC, Asset_P01_USDC],
+    [USDT, Asset_P01_USDT],
+    [WBNB, Asset_P02_WBNB],
+    [BNBx, Asset_P02_BNBx],
+    [aBNBc, Asset_P02_aBNBc],
+    [stkBNB, Asset_P02_stkBNB],
+    [HAY, Asset_P03_HAY],
+  ]
+  let balances = await sumTokens2({ tokensAndOwners: toa, chain, block, })
+  balances["wombat-exchange"] = await balanceOf(Asset_P04_WOM, WOM, block);
   return balances;
 }
 
 module.exports = {
   bsc: {
     tvl,
-    staking: staking(
-      "0x3DA62816dD31c56D9CdF22C6771ddb892cB5b0Cc",
-      "0xAD6742A35fB341A9Cc6ad674738Dd8da98b94Fb1",
-      "bsc"
-    ),
+    staking: staking("0x3DA62816dD31c56D9CdF22C6771ddb892cB5b0Cc","0xAD6742A35fB341A9Cc6ad674738Dd8da98b94Fb1","bsc"),
   },
   hallmarks: [
     [1662417125, "Liquidity Mining Start"],

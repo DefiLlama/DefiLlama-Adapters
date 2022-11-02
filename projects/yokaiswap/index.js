@@ -6,7 +6,7 @@ const axios = require("axios");
 
 async function fetch() {
   const endpoint =
-    "https://www.yokaiswap.com/subgraphs/name/yokaiswap/exchange";
+    "https://v0.yokaiswap.com/subgraphs/name/yokaiswap/exchange";
   const graphQLClient = new GraphQLClient(endpoint);
 
   const query = gql`
