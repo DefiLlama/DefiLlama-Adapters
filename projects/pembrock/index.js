@@ -4,6 +4,7 @@ const { call, addTokenBalances, sumSingleBalance } = require('../helper/near');
 const PEMBROCK_CONTRACT = "v1.pembrock.near";
 const REF_FINANCE_CONTRACT = "v2.ref-finance.near";
 const REF_BOOST_CONTRACT = "boostfarm.ref-labs.near";
+const STAKING_CONTRACT = "staking.v1.pembrock.near";
 
 async function addFarmBalances(farms, seeds, balances) {
   return Promise.all(Object.values(farms).map(async farm => {
@@ -24,17 +25,19 @@ async function addFarmBalances(farms, seeds, balances) {
 }
 
 async function tvl() {
-  const [tokens, farms, seeds] = await Promise.all([
+  const [tokens, farms, seeds, totalStaked] = await Promise.all([
     call(PEMBROCK_CONTRACT, "get_tokens", {account_id: PEMBROCK_CONTRACT}),
     call(PEMBROCK_CONTRACT, "get_farms",  {}),
-    call(REF_BOOST_CONTRACT, "list_farmer_seeds", {farmer_id: PEMBROCK_CONTRACT})
+    call(REF_BOOST_CONTRACT, "list_farmer_seeds", {farmer_id: PEMBROCK_CONTRACT}),
+    call(STAKING_CONTRACT, "get_total_staked", {}),
   ]);
-
   const balances = {};
   await Promise.all([
     addTokenBalances(Object.keys(tokens), PEMBROCK_CONTRACT, balances),
     addFarmBalances(farms, seeds, balances)
   ]);
+  // add total staked PEMs
+  sumSingleBalance(balances, "token.pembrock.near", totalStaked);
   return balances;
 }
 
