@@ -1,6 +1,8 @@
 import { CHAIN } from "../../helper/chains";
 import { univ2Adapter, getUniqStartOfTodayTimestamp } from "../../helper/getUniSubgraphVolume";
 import axios from "axios";
+import { Chain } from "@defillama/sdk/build/general";
+import customBackfill from "../../helper/customBackfill";
 
 
 interface IVolumeall {
@@ -53,10 +55,10 @@ const adapters = (() => {
     milkomeda.volume[CHAIN.CARDADO] = {
       start: getStartTimestamp,
       fetch: fetch,
+      customBackfill: customBackfill(CHAIN.CARDADO as Chain, (_chain: string) => fetch)
     };
     return milkomeda
 })();
 
 adapters.volume.milkomeda.start = async () => 1648427924;
 export default adapters;
-
