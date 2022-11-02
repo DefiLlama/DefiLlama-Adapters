@@ -89,6 +89,9 @@ async function staking(_, _b, { [chain]: block }) {
 
 module.exports = {
   bsc: {
-    tvl, pool2, staking,
-  }
+    tvl: () => ({}),
+  },
+  hallmarks: [
+    [Math.floor(new Date('2022-08-10')/1e3), 'Rug pull'],
+  ],
 }

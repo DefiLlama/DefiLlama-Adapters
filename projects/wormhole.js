@@ -26,6 +26,9 @@ module.exports = {
   ethereum: {
     fetch: fetch("2")
   },
+  aptos: {
+    fetch: fetch("22")
+  },
   terra: {
     fetch: fetch("3")
   },
@@ -74,6 +77,6 @@ module.exports = {
   fetch: fetch("*"),
   hallmarks:[
     [1652008803, "UST depeg"],
+    [Math.floor(new Date('2022-02-02')/1e3), 'Hacked: Signature Exploit'],
   ],
-  
 }
