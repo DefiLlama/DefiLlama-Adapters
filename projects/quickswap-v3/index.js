@@ -16,15 +16,15 @@ const blacklists = {
 
 function v3TvlPaged(chain) {
   return async (_, _b, { [chain]: block }) => {
-    block = await getBlock(_, chain, { [chain]: block });
+    // block = await getBlock(_, chain, { [chain]: block });
     log("Fetching data for block: ", chain, block);
     const balances = {};
     const size = 1000;
     let lastId = "";
     let pools;
     const graphQueryPaged = gql`
-    query poolQuery($lastId: String, $block: Int) {
-      pools(block: { number: $block } first:${size} where: {id_gt: $lastId totalValueLockedUSD_gt: 100}) {
+    query poolQuery($lastId: String) {
+      pools(first:${size} where: {id_gt: $lastId totalValueLockedUSD_gt: 100}) {
         id
         token0 { id }
         token1 { id }
@@ -36,7 +36,7 @@ function v3TvlPaged(chain) {
     do {
       const res = await request(graphs[chain], graphQueryPaged, {
         lastId,
-        block: block - 500,
+        // block: block - 500,
       });
       pools = res.pools;
       const tokensAndOwners = pools
@@ -60,7 +60,9 @@ function v3TvlPaged(chain) {
   };
 }
 
-module.exports = {};
+module.exports = {
+  timetravel: false,
+};
 
 const chains = ["polygon", "dogechain"];
 
