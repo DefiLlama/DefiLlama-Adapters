@@ -6,6 +6,8 @@ function transformAddress(addr) {
   const bridgedAssetIdentifier = ".factory.bridge.near";
   if (addr.endsWith(bridgedAssetIdentifier))
     return `0x${addr.slice(0, addr.length - bridgedAssetIdentifier.length)}`;
+  if (addr.endsWith('.near'))
+    return `near:${addr}`
   return addr
 }
 
@@ -36,6 +38,7 @@ const tokenMapping = {
   'token.paras.near': { name: 'paras', decimals: 18 },
   'token.pembrock.near': { name: 'pembrock', decimals: 18 },
   'token.sweat': { name: 'sweatcoin', decimals: 18 },
+  'v2-nearx.stader-labs.near': { name: 'stader-nearx', decimals: 24 },
 }
 
 async function view_account(account_id) {
