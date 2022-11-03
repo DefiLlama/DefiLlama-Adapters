@@ -1351,6 +1351,7 @@ const coreAssets = {
     '0x46d502fac9aea7c5bc7b13c8ec9d02378c33d36f',  // WSPP
     '0xf83849122f769a0a7386df183e633607c890f6c0',  // ABS
     '0x1f534d2b1ee2933f1fdf8e4b63a44b2249d77eaf',  // 0 token
+    '0x9a3321e1acd3b9f6debee5e042dd2411a1742002',  // AFP
   ],
   heco: [
     '0x5545153ccfca01fbd7dd11c0b23ba694d9509a6f', // wheco

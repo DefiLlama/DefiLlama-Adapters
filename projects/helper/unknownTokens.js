@@ -463,6 +463,7 @@ function unknownTombs({ token = [], shares = [], rewardPool = [], masonry = [], 
   }
 
   return {
+    misrepresentedTokens: true,
     [chain]: {
       tvl: async () => ({}),
       staking,

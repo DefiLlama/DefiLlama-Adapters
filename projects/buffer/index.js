@@ -15,7 +15,7 @@ const contracts = {
 }
 
 module.exports = {
-  methodology: `TVL for Buffer is calculated by using the BNB deposited in the write pool and the iBFR deposited in the revenue share pool`,
+  methodology: `Uniswap pool / USDC vault that acts as counterparty to all trades placed on the platform. Staking BFR for revenue share. No staking has any double counting`,
   bsc: {
     staking: staking(contracts.BSC_STAKING, tokens.IBFR, 'bsc'),
     tvl: async (_, _b, {bsc: block}) => sumTokens2({ chain: 'bsc', block, tokens: [nullAddress], owner: contracts.BSC_POOL}),

@@ -38,9 +38,16 @@ async function tvl() {
   return balances;
 }
 
+async function staking() {
+  const balances = {};
+  sumSingleBalance(balances, "token.pembrock.near", await call('staking.v1.pembrock.near', "get_total_staked", {}))
+  return balances;
+}
+
 module.exports = {
   near: {
-    tvl
+    tvl,
+    staking,
   },
   hallmarks: [
     [1666648800,"DCB withdrawn liquidity from Ref Finance's "]
