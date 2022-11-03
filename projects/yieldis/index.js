@@ -82,7 +82,7 @@ const getTVL = async (subgraph, block, transformAddress = a => a) => {
 }
 
 const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
-  block = await getBlock(timestamp, 'ethereum', chainBlocks)
+  const block = await getBlock(timestamp, 'ethereum', chainBlocks)
   return getTVL('yieldprotocol/v2-mainnet', ethBlock)
 };
 
