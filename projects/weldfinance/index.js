@@ -1,24 +1,8 @@
-const { get } = require("../helper/http");
-const { toUSDTBalances } = require("../helper/balances");
+const { masterchefExports, } = require("../helper/unknownTokens")
 
-const url = "https://knit-admin.herokuapp.com/api/public/tvl-weld/";
-
-const chainConfig = {
-  kava: "kava"
-};
-
-module.exports = {
-  timetravel: false,
-};
-
-function addChain(chain) {
-  module.exports[chain] = {
-    tvl: async () => {
-      const key = chainConfig[chain];
-      let response = await get(url + key);
-      return toUSDTBalances(response.data.data.tvl[key]);
-    },
-  };
-}
-
-Object.keys(chainConfig).map(addChain);
+module.exports = masterchefExports({
+  chain: 'kava',
+  useDefaultCoreAssets: true,
+  masterchef: '0xAbF3edbDf79dAfBBd9AaDBe2efEC078E557762D7',
+  nativeToken: '0xa0EEDa2e3075092d66384fe8c91A1Da4bcA21788'
+})
