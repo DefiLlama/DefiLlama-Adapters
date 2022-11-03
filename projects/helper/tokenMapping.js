@@ -12,7 +12,7 @@ const nullAddress = '0x0000000000000000000000000000000000000000'
 // gravity brdge for IBC: https://api.mintscan.io/v2/assets/gravity-bridge
 
 const unsupportedGeckoChains = ['aptos', 'terra2', 'terra', 'kujira']
-const ibcChains = ['terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', ]
+const ibcChains = ['terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno',]
 const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'algorand', 'aptos', 'near', 'bitcoin', 'waves']
 const transformTokens = {
   ethereum: {
@@ -143,6 +143,19 @@ const transformTokens = {
     "0x42586ef4495bb512a86cf7496f6ef85ae7d69a64": "polygon:0x66e8617d1df7ab523a316a6c01d16aa5bed93681", // SPICE
     "0x60d01ec2d5e98ac51c8b4cf84dfcce98d527c747": "0x9ad37205d608b8b219e6a2573f922094cec5c200", // iZi
     "0x0a3bb08b3a15a19b4de82f8acfc862606fb69a2d": "0x0a3bb08b3a15a19b4de82f8acfc862606fb69a2d", // iUSD
+    "0xa8bb71facdd46445644c277f9499dd22f6f0a30c": "bsc:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c", //beltBNB -> wbnb
+    "0x9cb73f20164e399958261c289eb5f9846f4d1404": "bsc:0x55d398326f99059ff775485246999027b3197955", // 4belt -> usdt
+    "0x51bd63f240fb13870550423d208452ca87c44444": "bsc:0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c", //beltBTC->
+    "0xaa20e8cb61299df2357561c2ac2e1172bc68bc25": "bsc:0x2170ed0880ac9a755fd29b2688956bd959f933f8", //beltETH->
+    "0x13ab6739368a4e4abf24695bf52959224367391f": "0x25f8087ead173b73d6e8b84329989a8eea16cf73", //YGG
+    // ib tokens
+    "0xd7d069493685a581d27824fc46eda46b7efc0063": "bsc:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c", //ibBNB
+    "0x7c9e73d4c71dae564d41f78d56439bb4ba87592f": "bsc:0xe9e7cea3dedca5984780bafc599bd69add087d56", //ibBUSD
+    "0x158da805682bdc8ee32d52833ad41e74bb951e59": "bsc:0xe9e7cea3dedca5984780bafc599bd69add087d56", //ibUSDT
+    "0x08fc9ba2cac74742177e0afc3dc8aed6961c24e7": "bsc:0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c", //ibBTCB
+    "0xbff4a34a4644a113e8200d7f1d79b3555f723afe": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", //ibETH
+    "0x3282d2a151ca00bfe7ed17aa16e42880248cd3cd": "0x0000000000085d4780b73119b644ae5ecd22b376", //ibTUSD
+    "0xf1be8ecc990cbcb90e166b71e368299f0116d421": "bsc:0x8f0528ce5ef7b51152a59745befdd91d97091d2f", //ibALPACA
     // "0x250632378E573c6Be1AC2f97Fcdf00515d0Aa91B": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // BETH->WETH
   },
   polygon: {
@@ -650,7 +663,7 @@ const fixBalancesTokens = {
     "0x45c135c1cdce8d25a3b729a28659561385c52671": { coingeckoId: "alethea-artificial-liquid-intelligence-token", decimals: 18 },
     "0x39a65a74dc5a778ff93d1765ea51f57bc49c81b3": { coingeckoId: "akash-network", decimals: 6 },
     "0xbed48612bc69fa1cab67052b42a95fb30c1bcfee": { coingeckoId: "shiba-inu", decimals: 18 },
-    "0x1a8e39ae59e5556b56b76fcba98d22c9ae557396": { coingeckoId: "dogecoin", decimals: 8 },
+    // "0x1a8e39ae59e5556b56b76fcba98d22c9ae557396": { coingeckoId: "dogecoin", decimals: 8 },
     "0xb888d8dd1733d72681b30c00ee76bde93ae7aa93": { coingeckoId: "cosmos", decimals: 6 },
     "0x02dccaf514c98451320a9365c5b46c61d3246ff3": { coingeckoId: "dogelon-mars", decimals: 18 },
   },
@@ -783,7 +796,7 @@ const fixBalancesTokens = {
     "0x54Bd9D8d758AC3717B37b7DC726877a23afF1B89": { coingeckoId: "kekchain", decimals: 18, },
   },
   aptos: {
-    "0x1::aptos_coin::AptosCoin": { coingeckoId: "aptos", decimals: 8, }, 
+    "0x1::aptos_coin::AptosCoin": { coingeckoId: "aptos", decimals: 8, },
     "0x5e156f1207d0ebfa19a9eeff00d62a282278fb8719f4fab3a586a0a2c0fffbea::coin::T": { coingeckoId: "usd-coin", decimals: 6, }, // usdc on eth via wormhole
     "0xa2eda21a58856fda86451436513b867c97eecb4ba099da5775520e0f7492e852::coin::T": { coingeckoId: "tether", decimals: 6, }, // via wormhole
     "0xae478ff7d83ed072dbc5e264250e67ef58f57c99d89b447efd8a0a2e8b2be76e::coin::T": { coingeckoId: "wrapped-bitcoin", decimals: 8 }, // via wormhole
@@ -1243,7 +1256,7 @@ const fixBalancesTokens = {
   },
 }
 
-ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {})})
+ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixBalancesTokens[chain] || {}) })
 
 const coreAssets = {
   ethereum: [
@@ -1567,7 +1580,7 @@ function normalizeMapping(mapping, chain) {
 for (const [chain, mapping] of Object.entries(transformTokens))
   normalizeMapping(mapping, chain)
 
-for (const  [chain, mapping] of Object.entries(fixBalancesTokens))
+for (const [chain, mapping] of Object.entries(fixBalancesTokens))
   normalizeMapping(mapping, chain)
 
 function getCoreAssets(chain) {
