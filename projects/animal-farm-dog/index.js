@@ -4,10 +4,12 @@ const { sumTokensExport, nullAddress } = require('../helper/unwrapLPs')
 module.exports = unknownTombs({
   shares: [
     '0x198271b868daE875bFea6e6E4045cDdA5d6B9829', // AFD
+    '0x9a3321E1aCD3B9F6debEE5e042dD2411A1742002', // AFP
   ],
   masonry: [
     '0x935B36a774f2c04b8fA92acf3528d7DF681C0297', // AFD
     '0x7993a5a830a158961eff96280538960c875f6807', // Auto pool AFD
+    '0x1f8a98be5c102d145ac672ded99c5be0330d7e4f', // Pig Pen
   ],
   rewardPool: [
     '0xac93829C9708664af6B68662b52991b967493CD4',
