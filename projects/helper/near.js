@@ -29,11 +29,11 @@ const tokenMapping = {
   // 'gold.l2e.near': { name: '', }, // https://www.landtoempire.com/
   'token.v2.ref-finance.near': { name: 'ref-finance', decimals: 18, },
   // 'myriadcore.near': { name: '', },  // Myria
-  '6b175474e89094c44da98b954eedeac495271d0f.factory.bridge.near': { name: 'dai', decimals: 18 },
-  'a0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.factory.bridge.near': { name: 'usd-coin', decimals: 6 },
-  'dac17f958d2ee523a2206206994597c13d831ec7.factory.bridge.near': { name: 'tether', decimals: 6 },
-  '2260fac5e5542a773aa44fbcfedf7c193bc2c599.factory.bridge.near': { name: 'wrapped-bitcoin', decimals: 8 },
-  'aaaaaa20d9e0e2461697782ef11675f668207961.factory.bridge.near': { name: 'aurora-near', decimals: 18 },
+  // '6b175474e89094c44da98b954eedeac495271d0f.factory.bridge.near': { name: 'dai', decimals: 18 },
+  // 'a0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.factory.bridge.near': { name: 'usd-coin', decimals: 6 },
+  // 'dac17f958d2ee523a2206206994597c13d831ec7.factory.bridge.near': { name: 'tether', decimals: 6 },
+  // '2260fac5e5542a773aa44fbcfedf7c193bc2c599.factory.bridge.near': { name: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', decimals: 0 },
+  // 'aaaaaa20d9e0e2461697782ef11675f668207961.factory.bridge.near': { name: 'aurora-near', decimals: 18 },
   'token.burrow.near': { name: 'burrow', decimals: 18 },
   'token.paras.near': { name: 'paras', decimals: 18 },
   'token.pembrock.near': { name: 'pembrock', decimals: 18 },
@@ -100,7 +100,7 @@ function sumSingleBalance(balances, token, balance) {
     if (decimals)
       balance = balance / (10 ** decimals)
 
-    balances[name] = BigNumber(+(balances[name] || 0) + balance).toFixed(0)
+    balances[name] = +(balances[name] || 0) + balance
     return
   }
 
