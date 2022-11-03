@@ -1,0 +1,78 @@
+{
+    "wantLockedTotal": {
+        "inputs": [],
+        "name": "wantLockedTotal",
+        "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+        "stateMutability": "view",
+        "type": "function"
+      },
+    "poolLength": {
+      "inputs": [],
+      "name": "poolLength",
+      "outputs": [
+        { 
+          "internalType": "uint256",
+          "name": "", 
+          "type": "uint256" 
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    "poolInfo": {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"poolInfo","outputs":[{"internalType":"uint256","name":"allocPoint","type":"uint256"},{"internalType":"uint256","name":"lastRewardBlock","type":"uint256"},{"internalType":"uint256","name":"accGAMMAPerShare","type":"uint256"},{"internalType":"uint256","name":"accGAMMAPerFactorPerShare","type":"uint256"},{"internalType":"uint256","name":"gammaRewardBoostPercentage","type":"uint256"},{"internalType":"uint256","name":"totalFactor","type":"uint256"},{"internalType":"contract IERC20","name":"want","type":"address"},{"internalType":"address","name":"strat","type":"address"},{"internalType":"address","name":"gToken","type":"address"},{"internalType":"address","name":"iToken","type":"address"},{"internalType":"bool","name":"isInfinity","type":"bool"},{"internalType":"bool","name":"hasStratRewards","type":"bool"},{"internalType":"bool","name":"isBoosted","type":"bool"}],"stateMutability":"view","type":"function"},
+    "totalSupply":{
+      "constant": true,
+      "inputs": [],
+      "name": "totalSupply",
+      "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    "exchangeRateStored":{
+      "constant": true,
+      "inputs": [],
+      "name": "exchangeRateStored",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    "decimals":{
+      "constant": true,
+      "inputs": [],
+      "name": "decimals",
+      "outputs": [
+        {
+          "internalType": "uint8",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    "balanceOfGtoken": {
+      "inputs":[],
+      "name":"balanceOfGtoken",
+      "outputs":[
+        {
+          "internalType":"uint256",
+          "name":"",
+          "type":"uint256"
+        }
+      ],
+      "stateMutability":"view",
+      "type":"function"
+    }
+  }
+  
+  
+  
