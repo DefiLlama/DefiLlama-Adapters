@@ -34,9 +34,11 @@ async function tvl(timestamp, block, chainBlocks) {
       return asset.denom === `st${hostZone.HostDenom}`;
     });
 
+    const amount = assetBalance.amount / 1_000_000;
+
     const usdPrice = prices[coinGeckoIds[hostZone.HostDenom]].usd;
 
-    return assetBalance.amount * hostZone.RedemptionRate * usdPrice;
+    return amount * hostZone.RedemptionRate * usdPrice;
   });
 
   const totalTvl = coinTvls.reduce((total, current) => {
