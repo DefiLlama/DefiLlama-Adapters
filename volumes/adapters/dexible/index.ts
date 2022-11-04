@@ -21,7 +21,7 @@ interface IVolumeResponse {
 
 const urlTemplate = "http://<NETWORK>.<CHAIN>.api.dexible.io/v1/stats/volume?";
 
-const buildPath = (network, chain = "mainnet"): string => {
+const buildPath = (network: string, chain: string = "mainnet"): string => {
   return urlTemplate.replace("<NETWORK>", network)
     .replace("<CHAIN>", chain);
 }
