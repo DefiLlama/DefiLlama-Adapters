@@ -49,6 +49,8 @@ const chainPath = (chain: string): string => {
     case CHAIN.POLYGON: {
       return buildPath("polygon");
     }
+    default:
+      throw new Error(`${chain} is not a compatible chain`)
   }
 }
 
