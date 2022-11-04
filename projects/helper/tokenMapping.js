@@ -737,6 +737,7 @@ const fixBalancesTokens = {
   milkomeda: {
     "0xAE83571000aF4499798d1e3b0fA0070EB3A3E3F9": { coingeckoId: "cardano", decimals: 18 },
     "0x4bf769b05e832fcdc9053fffbc78ca889acb5e1e": { coingeckoId: "binance-usd", decimals: 18 },
+    "0x8c008BBA2Dd56b99f4A6aB276bE3a478cB075F0C": { coingeckoId: "blueshift", decimals: 18 } // BLUES
   },
   milkomeda_a1: {
     [nullAddress]: { coingeckoId: "algorand", decimals: 18 },
@@ -744,6 +745,7 @@ const fixBalancesTokens = {
     "0xBc31960A049Fe10297Ed8432Fb61DD734fEAd4ea": { coingeckoId: "usd-coin", decimals: 6 }, // USDC
     "0x32564ae38E5DBf316958CE25A6aD2A2249EbCc2D": { coingeckoId: "tether", decimals: 6 }, // USDt
     "0x522B61755b5FF8176B2931DA7bF1a5F9414Eb710": { coingeckoId: "tether", decimals: 6 }, // ceUSDT
+    "0xc9BAA8cfdDe8E328787E29b4B078abf2DaDc2055": { coingeckoId: "blueshift", decimals: 18 } // BLUES
   },
   ultron: {
     [nullAddress]: { coingeckoId: "ultron", decimals: 18 },
