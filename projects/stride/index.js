@@ -1,6 +1,13 @@
 const utils = require("../helper/utils");
 const { toUSDTBalances } = require("../helper/balances");
 
+const coinGeckoIds = {
+  uatom: "cosmos",
+  ustars: "stargaze",
+  ujuno: "juno-network",
+  uosmo: "osmosis",
+};
+
 async function tvl(timestamp, block, chainBlocks) {
   const {
     data: { HostZone: hostZones },
@@ -14,12 +21,22 @@ async function tvl(timestamp, block, chainBlocks) {
     "https://stride-fleet.main.stridenet.co/api/cosmos/bank/v1beta1/supply"
   );
 
+  const { data: prices } = await utils.getPricesfromString(
+    hostZones
+      .map((hostZone) => {
+        return coinGeckoIds[hostZone.HostDenom];
+      })
+      .join(",")
+  );
+
   const coinTvls = hostZones.map((hostZone) => {
     const assetBalance = assetBalances.find((asset) => {
       return asset.denom === `st${hostZone.HostDenom}`;
     });
 
-    return assetBalance.amount * hostZone.RedemptionRate;
+    const usdPrice = prices[coinGeckoIds[hostZone.HostDenom]].usd;
+
+    return assetBalance.amount * hostZone.RedemptionRate * usdPrice;
   });
 
   const totalTvl = coinTvls.reduce((total, current) => {
@@ -36,4 +53,4 @@ module.exports = {
   stride: {
     tvl,
   },
-};
+}; // node test.js projects/stride/index.js
