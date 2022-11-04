@@ -14,7 +14,7 @@ async function getPools() {
     {
       query: `
       {
-        pools {
+        pools (first: 300) {
           id,
           _colToken,
           _lendToken
