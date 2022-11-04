@@ -51,7 +51,7 @@ async function tvl(timestamp, block, chainBlocks) {
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
-  methodology: "Sum of all the coins that are liquid staked on Stride",
+  methodology: "Sum of all the tokens that are liquid staked on Stride",
   stride: {
     tvl,
   },
