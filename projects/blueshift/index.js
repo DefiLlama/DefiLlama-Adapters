@@ -25,27 +25,7 @@ async function staking(chain, chainBlocks) {
     block: chainBlocks[chain],
   })).output;
 
-
-  // temporary solution using BLUES/(ADA or ALGO) price
-  const portfolios = (await sdk.api.abi.call({
-    abi: abi.BlueshiftRegistry.getPortfolios,
-    chain: chain,
-    target: config.registry[chain],
-    params: [],
-    block: chainBlocks[chain],
-  })).output;
-
-  const bluesPortfolio = portfolios.filter(portfolio => portfolio.contractAddress === config.blueshiftPortfolio[chain])[0];
-  if (!bluesPortfolio) {
-    return balances;
-  }
-
-  const baseTokenAddress = bluesPortfolio.baseTokenAddress;
-  const baseTokenPrice = bluesPortfolio.tokens.filter(token => token.tokenAddress === baseTokenAddress)[0].price;
-  const tokenPrice = bluesPortfolio.tokens.filter(token => token.tokenAddress === tokenAddress)[0].price;
-  const valueInBaseToken = BigNumber(value).multipliedBy(tokenPrice).div(baseTokenPrice);
-
-  sdk.util.sumSingleBalance(balances, baseTokenAddress, valueInBaseToken.toNumber());
+  sdk.util.sumSingleBalance(balances, tokenAddress, value);
   return transformBalances(chain, balances)
 }
 
@@ -76,6 +56,7 @@ module.exports = {
   },
   milkomeda_a1: {
     start: 1300,
+    staking: (timestamp, block, chainBlocks) => staking('milkomeda_a1',chainBlocks),
     tvl: (timestamp, block, chainBlocks) => tvl('milkomeda_a1',chainBlocks)
   }
 };
