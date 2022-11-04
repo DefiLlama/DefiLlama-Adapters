@@ -199,6 +199,7 @@ import ferro from "./adapters/ferro";
 import incrementSwap from "./adapters/increment-swap";
 import chaingeFinance from "./adapters/chainge-finance";
 import wavelengthDao from "./adapters/wavelength-dao";
+import dexible from "./adapters/dexible";
 
 
 export default {
@@ -400,6 +401,7 @@ export default {
   ferro,
   "increment-swap": incrementSwap,
   "chainge-finance": chaingeFinance,
-  "wavelength-dao": wavelengthDao
+  "wavelength-dao": wavelengthDao,
+  dexible
   // lyra -> OPTIONS DEX, not enable for now
 };
