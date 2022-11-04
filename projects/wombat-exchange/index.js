@@ -42,13 +42,6 @@ const wmxWOM = "0x0415023846Ff1C6016c4d9621de12b24B2402979";
 const mWOM = "0x027a9d301fb747cd972cfb29a63f3bda551dfc5c";
 const chain = "bsc";
 
-async function balanceOf(owner, target, block) {
-  let decimals = (await sdk.api.erc20.decimals(target, chain)).output;
-  let balance = (await sdk.api.erc20.balanceOf({ owner, target, block, chain }))
-    .output;
-  return Number(balance) / 10 ** decimals;
-}
-
 async function tvl(_t, _, { bsc: block }) {
   const toa = [
     [BUSD, Asset_P01_BUSD],
