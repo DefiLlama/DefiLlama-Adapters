@@ -708,6 +708,8 @@ const fixBalancesTokens = {
   bitgert: {
     [nullAddress]: { coingeckoId: "bitrise-token", decimals: 18, },
     "0x0eb9036cbE0f052386f36170c6b07eF0a0E3f710": { coingeckoId: "bitrise-token", decimals: 18, },
+    "0xc3b730dd10a7e9a69204bdf6cb5a426e4f1f09e3": { coingeckoId: "lunagens", decimals: 18 },
+    "0x11203a00a9134db8586381c4b2fca0816476b3fd": { coingeckoId: "youngparrot", decimals: 18 },
   },
   echelon: {
     [nullAddress]: { coingeckoId: "echelon", decimals: 18, },
