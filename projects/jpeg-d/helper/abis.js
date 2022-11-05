@@ -36,21 +36,6 @@ const VAULT_ABI = [{
   "type": "function"
 }];
 
-const PRICEORACLE_ABI = [{
-    "inputs": [],
-    "name": "latestAnswer",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-}];
-
 module.exports = {
-    VAULT_ABI,
-    PRICEORACLE_ABI
+    VAULT_ABI
 };
