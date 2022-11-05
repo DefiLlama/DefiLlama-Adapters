@@ -1562,6 +1562,15 @@ const coreAssets = {
   ],
   bitgert: [
     '0x0eb9036cbE0f052386f36170c6b07eF0a0E3f710', // WBRISE
+    '0xB999Ea90607a826A3E6E6646B404c3C7d11fa39D', // IceCream
+    '0xc7e6d7e08a89209f02af47965337714153c529f0', // USDTi (IceCream Bridge USDT)
+    '0xaedd3ff7b9fc5fc4e44d140b80f0b1c7fdb6102c', // USDCi (IceCream Bridge USDC)
+    '0x74446a7418bfbfcde3f1f6bcaffa097d050a6dd8', // BNBi (IceCream Bridge BNB)
+    '0xea61dc96f105469522d39cbf7bd59b42393678f7', // ETHi (IceCream Bridge ETH)
+    '0x38ea4741d100cae9700f66b194777f31919142ee', // $Tokyo
+    '0xc3b730dd10a7e9a69204bdf6cb5a426e4f1f09e3', // LunaGens
+    '0x11203a00a9134db8586381c4b2fca0816476b3fd', // Young Parrot
+    '0x31226b28add9062c5064a9bd35ea155f323c6ca6', // Brise Paradise
   ]
 }
 
