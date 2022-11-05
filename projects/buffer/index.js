@@ -23,8 +23,7 @@ module.exports = {
   },
   arbitrum: {
     staking: staking(contracts.ARBI_STAKING, tokens.BFR, 'arbitrum'),
-    tvl: async (_, _b, {arbitrum: block}) => sumTokens2({ chain: 'arbitrum', block, tokens: [tokens.USDC], owner: contracts.ARBI_POOL}),
-    pool2: async (_, _b, {arbitrum: block}) => sumTokens2({ chain: 'arbitrum', block, tokens: [tokens.USDC], owner: contracts.ARBI_POOL_V2}),
+    tvl: async (_, _b, {arbitrum: block}) => sumTokens2({ chain: 'arbitrum', block, tokens: [tokens.USDC], owners: [contracts.ARBI_POOL, contracts.ARBI_POOL_V2]}),
   },
   hallmarks: [
     [Math.floor(new Date('2022-09-29')/1e3), 'Migrate to Arbitrum'],
