@@ -30,6 +30,10 @@ const masterchefTvl = async (timestamp, ethBlock, chainBlocks) => {
   return balances;
 };
 
+const { uniTvlExport } = require('../helper/unknownTokens')
+const chain = 'bsc'
+const factory = '0x40dFC2f530469452D5A9bB33356B071Be0758c4c' // v2 factory address
+
 module.exports = {
   methodology: 'MasterChef Contents Sum',
   fantom:{
@@ -37,4 +41,7 @@ module.exports = {
     tvl: masterchefTvl,
     masterchef: masterchefTvl
   }
+  bsc:{
+    tvl: uniTvlExport(chain, factory)
+}
 };
