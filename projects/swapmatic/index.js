@@ -1,13 +1,14 @@
 const sdk = require('@defillama/sdk')
 const BigNumber = require('bignumber.js');
+const { getBlock } = require('../helper/getBlock')
 
 const START_BLOCK = 3285065 - 1;
 const FACTORY = '0x90D882B2789523403ff263D1F93Ead986c38446C';
 const MATIC = '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0'.toLowerCase();
 
-async function tvl(timestamp, ethBlock, chainBlocks) {
+async function tvl(_, _block, cb) {
+  const block = await getBlock(_, 'polygon', cb)
   const chain = 'polygon'
-  const block = chainBlocks[chain]
   const logs = (await sdk.api.util
     .getLogs({
       keys: [],
@@ -74,5 +75,5 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 
 module.exports = {
   misrepresentedTokens: true,
-  tvl
+  polygon: { tvl }
 }

@@ -1,4 +1,5 @@
 const sdk = require("@defillama/sdk");
+const { request, gql } = require("graphql-request");
 
 const { getChainTransform } = require("../helper/portedTokens");
 const { staking } = require("../helper/staking");
@@ -9,6 +10,20 @@ const FACTORY_ADDRESSES = {
     activeFactory: "0x4b8e58d252ba251e044ec63125e83172eca5118f",
     passiveFactory: "0x06c2ae330c57a6320b2de720971ebd09003c7a01",
   },
+  polygon: {
+    activeFactory: "0x95b77505b38f8a261ada04f54b8d0cda08904708",
+    passiveFactory: "0x2536527121fc1048ae5d45327a34241a355a6a95",
+  },
+};
+
+const GRAPH_URLS = {
+  polygon:
+    "https://api.thegraph.com/subgraphs/name/unipilotvoirstudio/stats-v2-polygon",
+};
+
+const VAULT_CREATION_TOPIC = {
+  ethereum: "VaultCreated(address,address,uint24,address)",
+  polygon: "VaultCreated(address,address,uint16,uint24,address)",
 };
 
 const PILOT_STAKING_CONTRACT = "0xc9256e6e85ad7ac18cd9bd665327fc2062703628";
@@ -19,7 +34,25 @@ const START_BLOCKS = {
     activeFactory: 14495907,
     passiveFactory: 14495929,
   },
+  polygon: {
+    activeFactory: 34288237,
+    passiveFactory: 34371363,
+  },
 };
+
+const vaultQuery = gql`
+  {
+    vaults {
+      id
+      token0 {
+        id
+      }
+      token1 {
+        id
+      }
+    }
+  }
+`;
 
 async function getVaultLogs(chain, block, factoryType) {
   const vaults = {};
@@ -27,10 +60,11 @@ async function getVaultLogs(chain, block, factoryType) {
   const vaultLogs = (
     await sdk.api.util.getLogs({
       target: FACTORY_ADDRESSES[chain][factoryType],
-      topic: "VaultCreated(address,address,uint24,address)",
+      topic: VAULT_CREATION_TOPIC[chain],
       keys: [],
       fromBlock: START_BLOCKS[chain][factoryType],
       toBlock: block,
+      chain,
     })
   ).output;
 
@@ -47,12 +81,30 @@ async function getVaultLogs(chain, block, factoryType) {
 function protocolTvl(chain) {
   return async (timestamp, block, chainBlocks) => {
     const balances = {};
-
-    const activeVaultLogs = await getVaultLogs(chain, block, "activeFactory");
-    const passiveVaultLogs = await getVaultLogs(chain, block, "passiveFactory");
-
-    const vaults = { ...activeVaultLogs, ...passiveVaultLogs };
-
+    let vaults = {};
+    if (chain === "ethereum") {
+      const activeVaultLogs = await getVaultLogs(
+        chain,
+        chainBlocks[chain],
+        "activeFactory"
+      );
+      const passiveVaultLogs = await getVaultLogs(
+        chain,
+        chainBlocks[chain],
+        "passiveFactory"
+      );
+      vaults = { ...activeVaultLogs, ...passiveVaultLogs };
+    } else {
+      //extract vault details from graph for chains other than ethereum
+      const res = await request(GRAPH_URLS[chain], vaultQuery);
+      vaults = res.vaults.reduce((accum, vault) => {
+        accum[vault.id] = {
+          token0Address: vault.token0.id,
+          token1Address: vault.token1.id,
+        };
+        return accum;
+      }, {});
+    }
     const vaultCalls = [];
     const balanceCalls = [];
 
@@ -131,5 +183,8 @@ module.exports = {
   ethereum: {
     tvl: protocolTvl("ethereum"),
     staking: staking(PILOT_STAKING_CONTRACT, PILOT, "ethereum"),
+  },
+  polygon: {
+    tvl: protocolTvl("polygon"),
   },
 };

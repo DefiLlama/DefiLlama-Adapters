@@ -7,10 +7,7 @@ module.exports = {
     tvl: getUniTVL({
       chain: 'bsc',
       factory: '0xd76d8c2a7ca0a1609aea0b9b5017b3f7782891bf',
-      coreAssets: [
-        '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // WBNB
-        '0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d', // BUSD
-      ]
+      useDefaultCoreAssets: true,
     }),
     staking: staking('0x44eB0f1ce777394564070f9E50dD8784FCDB7e6a', '0x9029fdfae9a03135846381c7ce16595c3554e10a', 'bsc')
   },
@@ -31,9 +28,7 @@ module.exports = {
     tvl: getUniTVL({
       chain: 'avax',
       factory: '0x042AF448582d0a3cE3CFa5b65c2675e88610B18d',
-      coreAssets: [
-        '0xc7198437980c041c805a1edcba50c1ce5db95118', // USDT
-      ]
+      useDefaultCoreAssets: true,
     }),
     staking: staking('0x4C431b568e8baAB20F004BB16E44570e8E0cD6D7', '0x0ebd9537a25f56713e34c45b38f421a1e7191469', 'avax')
   },

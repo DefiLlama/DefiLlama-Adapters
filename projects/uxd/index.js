@@ -1,16 +1,19 @@
-const axios = require("axios");
-const { toUSDTBalances } = require('../helper/balances');
-
-const api = "https://api.uxd.fi/api/uxd-circulating-supply";
+const { PublicKey } = require("@solana/web3.js");
+const { getConnection } = require("../helper/solana");
+const { MintLayout } = require("@solana/spl-token");
 
 async function tvl() {
-    const result = (await axios.get(api)).data;
-    return toUSDTBalances(result);
+  const connection = getConnection()
+  const mint = await connection.getAccountInfo(new PublicKey('7kbnvuGBxxj8AG9qp8Scn56muWGaRaFqxg1FsRp3PaFT'));
+  const mintInfo = MintLayout.decode(mint.data);
+  return {
+    'uxd-stablecoin': mintInfo.supply.toString()/ (10**mintInfo.decimals)
+  };
 }
 
 module.exports = {
-    misrepresentedTokens: true,
-    solana: {
-        tvl
-    }
+  timetravel: false,
+  solana: {
+    tvl,
+  },
 }

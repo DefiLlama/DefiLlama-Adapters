@@ -1,7 +1,7 @@
 const utils = require('../helper/utils');
 
 async function staking() {
-  const { data: { 'Total amount staked': totalStaked } } = await utils.fetchURL('https://ergopad.io/api/staking/status');
+  const { data: { 'Total amount staked': totalStaked } } = await utils.fetchURL('https://api.ergopad.io/staking/status/');
   const price = await getErgopadPrice()
   return {
     ergo: totalStaked * price

@@ -1,13 +1,13 @@
 const { getReserves, getStarlayTvl } = require("./starlay");
 const BigNumber = require("bignumber.js");
 const { getBorrowed } = require("../helper/aave");
-const { TOKENS, DOT_TOKEN, DOT_DECIMALS, DEFAULT_DECIMALS, LAY_ADDRESS } = require("./constanrs");
+const { TOKENS, TOKEN_INFO, DEFAULT_DECIMALS, LAY_ADDRESS } = require("./constanrs");
 const { getLockedLAY } = require("./ve");
 
 const transferFromAddress = (underlying) => TOKENS[underlying]
 
 function astar(borrowed) {
-  return async (timestamp, block) => {
+  return async (timestamp, _, {astar: block}) => {
     const balances = {};
     const [lTokens, reserveTokens, validProtocolDataHelpers] =
       await getReserves(block);
@@ -36,9 +36,11 @@ function astar(borrowed) {
    return Object.keys(balances).reduce((res, key) => {
       if (key.startsWith("0x"))
         return { ...res, [key]: balances[key] };
-      if (key === DOT_TOKEN)
-        return { ...res, [key]: new BigNumber(balances[key]).shiftedBy(-DOT_DECIMALS) };
-      return { ...res, [key]: new BigNumber(balances[key]).shiftedBy(-DEFAULT_DECIMALS) };
+      for (const token of Object.values(TOKEN_INFO)) {
+        if (key === token.key)
+          return { ...res, [key]: new BigNumber(balances[key]).shiftedBy(-token.decimals).toFixed(0) };
+      }
+      return { ...res, [key]: new BigNumber(balances[key]).shiftedBy(-DEFAULT_DECIMALS).toFixed(0) };
     }, {});
   };
 }
@@ -47,7 +49,7 @@ async function staking(_timestamp, _block, {astar: block}) {
   const chain = "astar"
   const stakedLay = await getLockedLAY(chain, block)
   return {
-    [transferFromAddress(LAY_ADDRESS)]: stakedLay.shiftedBy(-DEFAULT_DECIMALS)
+    [transferFromAddress(LAY_ADDRESS)]: stakedLay.shiftedBy(-DEFAULT_DECIMALS).toFixed(0)
   }
 }
 
