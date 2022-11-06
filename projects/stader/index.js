@@ -44,7 +44,7 @@ async function nearTvl() {
 
 module.exports = {
   timetravel: false,
-  methodology: 'We aggregated the luna staked across Stader stake-pools & liquid token and then converted to UST',
+  methodology: 'We aggregated the assets staked across Stader staking protocols',
   /*terra: {
     tvl,
   },*/
