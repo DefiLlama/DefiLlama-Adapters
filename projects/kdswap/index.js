@@ -39,6 +39,25 @@ const getPairTokens = async (url) => {
   return await retry(async bail => await graphQLClient.request(reserveQuery))
 }
 
+const isBasePair = (token) => token.code === 'coin'
+
+const swapToBasePair = (pair) => {
+  if (isBasePair(pair.token1)) {
+    return {
+     ...pair,
+     token0: {
+      name: pair.token1.name,
+      code: pair.token1.code
+     },
+     token1: {
+      name: pair.token0.name,
+      code: pair.token0.code
+     }
+    }
+  }
+  return pair
+}
+
 const normalizeTokens = (items, key) =>
   items.reduce((result, item) => {
     const selectedKey = item[key].replace('_', ':')
@@ -60,7 +79,8 @@ const getPairList = async (url, grouper) => {
 
   try {
     return await Promise.all(
-      Object.values(pairTokens).map(async (pair) => {
+      Object.values(pairTokens).map(async (pairData) => {
+        const pair = swapToBasePair(pairData)
         const data = await fetchLocal(
           {
             pactCode: `
@@ -86,7 +106,9 @@ const getPairList = async (url, grouper) => {
             ],
           };
         }
-        throw new Error("Pair reserves fetch failed");
+        return {
+          reserves: [0, 0]
+        }
       })
     );
   } catch (err) {

@@ -12,7 +12,7 @@ async function fetch() {
 }
 
 module.exports = {
-  avalanche: {
+  avax:{
     fetch
   },
   fetch

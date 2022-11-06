@@ -17,6 +17,10 @@ async function tvl(time, ethBlock, chainBlocks){
 }
 
 module.exports={
+    hallmarks: [
+        [1639440000, "Brinc hack due to private key compromise"],
+        [1644019200, "Relaunch on Arbitrum"]
+    ],
     methodology: `DAI reserves in the bonding curve `,
     arbitrum:{
         tvl,

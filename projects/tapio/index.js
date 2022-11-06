@@ -1,9 +1,6 @@
-const axios = require('axios');
-
-async function fetch(){
-    return (await axios.get('https://api.taigaprotocol.io/protocol/tapio/tvl')).data;
-}
+const { getExports } = require('../helper/heroku-api')
 
 module.exports = {
-    fetch
+  timetravel: false,
+  ...getExports("tapio", ['acala']),
 }

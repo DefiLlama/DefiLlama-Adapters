@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const { getChainTransform } = require('../helper/portedTokens')
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 const banks = {
   bsc: [
@@ -14,13 +14,10 @@ const banks = {
 };
 
 function treasury(chain) {
-  return async (_timestamp, _block, chainBlocks) => {
-    const transform = await getChainTransform(chain)
-    const block = chainBlocks[chain];
-
+  return async (_timestamp, _block, {[chain]: block}) => {
     // Get the Bank for the input block
     const [, bankAddressOfBlock] = banks[chain].find(
-      ([bankLastBlock]) => block < bankLastBlock
+      ([bankLastBlock]) => (block || 999999999999) < bankLastBlock
     );
 
     // Retrieves all tokens from the Bank contract
@@ -177,43 +174,8 @@ function treasury(chain) {
     });
 
     // Filter BetSwirl's governance token
-    const tokensWithoutBETS = tokens.filter((token) => token.symbol !== "BETS");
-
-    // Retrieves tokens balance from the Bank contract
-    const { output: bankBalances } = await sdk.api.abi.multiCall({
-      calls: tokensWithoutBETS.map((token) => ({
-        target: bankAddressOfBlock,
-        params: token.tokenAddress,
-      })),
-      abi: {
-        inputs: [
-          {
-            internalType: "address",
-            name: "token",
-            type: "address",
-          },
-        ],
-        name: "getBalance",
-        outputs: [
-          {
-            internalType: "uint256",
-            name: "",
-            type: "uint256",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      block,
-      chain,
-    });
-
-    // Returns the token and balance mapping
-    return bankBalances.reduce((balances, bankBalance, i) => {
-      let address = transform(tokensWithoutBETS[i].tokenAddress)
-      sdk.util.sumSingleBalance(balances, address, bankBalance.output)
-      return balances;
-    }, {});
+    const tokensWithoutBETS = tokens.filter((token) => token.symbol !== "BETS").map(i => i.tokenAddress)
+    return sumTokens2({ owner: bankAddressOfBlock, tokens: tokensWithoutBETS, chain, block, })
   };
 }
 
@@ -230,7 +192,7 @@ module.exports = {
   polygon: {
     treasury: treasury("polygon"),
   },
-  avalanche: {
+  avax:{
     treasury: treasury("avax"),
   },
 };

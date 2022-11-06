@@ -69,6 +69,13 @@ async function lpMinter(token, block, { isTerra2 = false } = {}) {
 async function queryContract({ contract, isTerra2 = false, data }) {
   if (typeof data !== 'string') data = JSON.stringify(data)
   data = Buffer.from(data).toString('base64')
+
+  if(!isTerra2) {
+    let path = `${getEndpoint(isTerra2)}/terra/wasm/v1beta1/contracts/${contract}/store?query_msg=${data}`;
+    let result = await axios.get(path)
+    return (result).data.query_result
+  }
+
   return (await axios.get(`${getEndpoint(isTerra2)}/cosmwasm/wasm/v1/contract/${contract}/smart/${data}`)).data.data
 }
 

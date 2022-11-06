@@ -25,7 +25,7 @@ const CONFIG = {
   fantom: {
     router: '0xAf5191B0De278C7286d6C7CC6ab6BB8A73bA2Cd6',
   },
-  avalanche: {
+  avax:{
     router: '0x45A01E4e04F14f7A4a6702c74187c5F6222033cd',
   },
 }

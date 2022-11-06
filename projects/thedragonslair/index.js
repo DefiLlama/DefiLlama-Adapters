@@ -18,7 +18,7 @@ async function tvl(timestamp, ethBlock, chainBlocks){
 };
 
 module.exports = {
-  avalanche:{
+  avax:{
     staking:  staking(STAKING_CONTRACT, dregg, "avax"),
     tvl,
     pool2: pool2s([STAKING_CONTRACT], pool2LPs, "avax")

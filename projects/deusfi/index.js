@@ -1,11 +1,8 @@
 const sdk = require("@defillama/sdk");
 const BigNumber = require("bignumber.js");
 const { pool2, pool2s } = require("../helper/pool2");
-const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
-const {
-  transformPolygonAddress,
-  transformFantomAddress,
-} = require("../helper/portedTokens");
+const { staking } = require("../helper/staking");
+const { sumTokensExport } = require('../helper/unknownTokens')
 
 const poolUSDC = "0xa0F395aD5df1Fceb319e162CCf1Ef6645dE8508f"; // same address for all chains
 const USDC = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48";
@@ -38,13 +35,14 @@ const DEI3CRV = "0x6870f9b4dd5d34c7fc53d0d85d9dbd1aab339bf7";
 const DEI = "0xde12c7959e1a72bbe8a5f7a1dc8f8eef9ab011b3";
 const CRV3 = "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490";
 const DEUS = "0xde5ed76e7c05ec5e4572cfc88d1acea165109e44";
+const newPoolUSDC = '0x6E0098A8c651F7A6A9510B270CD02c858C344D94'
 
-async function Pool2() {
+async function Pool2(_, block) {
   const balances = {};
 
   const totalSupply_slp = (
     await sdk.api.erc20.totalSupply({
-      target: DEI3CRV,
+      target: DEI3CRV, block,
     })
   ).output;
 
@@ -53,6 +51,7 @@ async function Pool2() {
       abi: 'erc20:balanceOf',
       target: DEI3CRV,
       params: stakingPool2Contract,
+      block,
     })
   ).output;
 
@@ -62,6 +61,7 @@ async function Pool2() {
         target: token,
         params: DEI3CRV,
       })),
+      block,
       abi: 'erc20:balanceOf',
     })
   ).output;
@@ -71,52 +71,8 @@ async function Pool2() {
       .times(balance_slp)
       .div(totalSupply_slp);
 
-    sdk.util.sumSingleBalance(
-      balances,
-      call.input.target,
-      underlyingSetBalance.toFixed(0)
-    );
+    sdk.util.sumSingleBalance(balances, call.input.target, underlyingSetBalance.toFixed(0));
   });
-
-  return balances;
-}
-
-async function ethTvl() {
-  const balances = {};
-
-  await sumTokensAndLPsSharedOwners(balances, [[USDC, false]], [poolUSDC]);
-
-  return balances;
-}
-
-async function polygonTvl(timestamp, chainBlocks) {
-  const balances = {};
-
-  const transformAddress = await transformPolygonAddress();
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    [[USDC_polygon, false]],
-    [poolUSDC],
-    chainBlocks["polygon"],
-    "polygon",
-    transformAddress
-  );
-
-  return balances;
-}
-
-async function fantomTvl(timestamp, chainBlocks) {
-  const balances = {};
-
-  const transformAddress = await transformFantomAddress();
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    [[USDC_fantom, false]],
-    [poolUSDC],
-    chainBlocks["fantom"],
-    "fantom",
-    transformAddress
-  );
 
   return balances;
 }
@@ -124,38 +80,34 @@ async function fantomTvl(timestamp, chainBlocks) {
 module.exports = {
   misrepresentedTokens: true,
   ethereum: {
-    tvl: ethTvl,
+    tvl: sumTokensExport({ owner: poolUSDC, tokens: [USDC] }),
     pool2: sdk.util.sumChainTvls([
       Pool2,
-      pool2s(stakingPool2Contracts, [DEI_DEUS_UNIV2, DEUS_WETH_UNIV2]),
+      staking(stakingPool2Contracts, [DEI_DEUS_UNIV2, DEUS_WETH_UNIV2]),
     ]),
   },
   polygon: {
-    tvl: polygonTvl,
+    tvl: sumTokensExport({ owner: poolUSDC, tokens: [USDC_polygon], chain: 'polygon' }),
     pool2: sdk.util.sumChainTvls([
-      pool2s(
+      staking(
         stakingPool2Contracts,
         [DEI_DEUS_UNIV2_polygon, DEUS_WMATIC_UNIV2_polygon],
         "polygon"
       ),
-      pool2(stakingPool2Contract, DEI_USDC_UNIV2, "polygon"),
+      staking(stakingPool2Contract, DEI_USDC_UNIV2, "polygon"),
     ]),
   },
   fantom: {
-    tvl: fantomTvl,
-    pool2: sdk.util.sumChainTvls([
-      pool2(
-        stakingPool2Contracts[0],
-        DEI_DEUS_SPIRITLP_fantom,
-        "fantom",
-        (id) => id
-      ),
-      pool2s(
-        stakingPool2Contracts_fantom,
-        [DEI_USDC_SPIRITLP_fantom, DEUS_WFTM_SPIRITLP_fantom],
-        "fantom"
-      ),
-    ]),
+    tvl: sumTokensExport({ owners: [poolUSDC, newPoolUSDC,], tokens: [USDC_fantom], chain: 'fantom' }),
+    pool2: sumTokensExport({
+      tokensAndOwners: [
+        [DEI_DEUS_SPIRITLP_fantom, stakingPool2Contracts[0]],
+        [DEUS_WFTM_SPIRITLP_fantom, stakingPool2Contracts_fantom[0]],
+        [DEUS_WFTM_SPIRITLP_fantom, stakingPool2Contracts_fantom[1]],
+        [DEI_USDC_SPIRITLP_fantom, stakingPool2Contracts_fantom[0]],
+        [DEI_USDC_SPIRITLP_fantom, stakingPool2Contracts_fantom[1]],
+      ], chain: 'fantom'
+    }),
   },
   methodology:
     "Counts liquidty of Minted assets(USDC) through PoolUSDC Contracts; and Pool2s from Farm seccions",

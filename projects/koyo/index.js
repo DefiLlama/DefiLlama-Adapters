@@ -6,17 +6,13 @@ const { getBlock } = require("../helper/getBlock");
 const { staking } = require("../helper/staking");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const {
-  transformBobaAddress,
-  transformArbitrumAddress,
-  transformAvaxAddress,
-  transformBscAddress,
-  transformAuroraAddress,
+  getChainTransform,
 } = require("../helper/portedTokens");
 const { request } = require("graphql-request");
 
 const DATA = {
   boba: async () => {
-    const bobaTransform = transformBobaAddress();
+    const bobaTransform = await getChainTransform('boba');
 
     return [
       bobaTransform,
@@ -29,7 +25,6 @@ const DATA = {
             [constants.addresses.boba.USDC, false], // USDC(Boba)
             [constants.addresses.boba.USDT, false], // USDT(Boba)
             [constants.addresses.boba.DAI, false], // DAI(Boba)
-            [constants.addresses.boba.FRAX_KYO, true], // FRAX-KYO(Boba, OolongSwap)
           ],
         },
         staking: {
@@ -39,60 +34,17 @@ const DATA = {
       },
     ];
   },
-  arbitrum: async () => {
-    const arbitrumTransform = await transformArbitrumAddress();
+  ethereum: async () => {
+    const ethereumTransform = await getChainTransform('ethereum');
 
     return [
-      arbitrumTransform,
+      ethereumTransform,
       {
         treasury: {
-          addresss: [constants.addresses.arbitrum.treasury],
+          addresss: [constants.addresses.ethereum.treasury],
           tokens: [
-            [constants.addresses.arbitrum.USDC, false], // USDC(Arbitrum)
+            [constants.addresses.ethereum.USDC, false], // USDC(Ethereum)
           ],
-        },
-      },
-    ];
-  },
-  avax: async () => {
-    const avalancheTransform = await transformAvaxAddress();
-
-    return [
-      avalancheTransform,
-      {
-        treasury: {
-          addresss: [constants.addresses.avax.treasury],
-          tokens: [
-            [constants.addresses.avax.USDC, false], // USDC(Avalanche)
-          ],
-        },
-      },
-    ];
-  },
-  bsc: async () => {
-    const bscTransform = await transformBscAddress();
-
-    return [
-      bscTransform,
-      {
-        treasury: {
-          addresss: [constants.addresses.bsc.treasury],
-          tokens: [
-            [constants.addresses.bsc.BUSD, false], // BUSD(Binance Smart Chain)
-          ],
-        },
-      },
-    ];
-  },
-  aurora: async () => {
-    const auroraTransform = await transformAuroraAddress();
-
-    return [
-      auroraTransform,
-      {
-        treasury: {
-          addresss: [constants.addresses.aurora.treasury],
-          tokens: [],
         },
       },
     ];
@@ -183,11 +135,17 @@ module.exports = chainJoinExports(
     (chains) => chainTypeExports("treasury", chainTreasury, chains),
     (chains) => chainTypeExports("staking", chainStaking, chains),
   ],
-  ["boba", "arbitrum", "avax", "bsc", "aurora"]
+  ["boba", "ethereum"]
 );
 
 module.exports = {
   ...module.exports,
   methodology:
     "Counts the tokens locked on swap pools based on their holdings.",
+  hallmarks: [
+    [1656419883, "Boba adds to FRAX-USDC"],
+    [1658439731, "Boba removes from FRAX-USDC"],
+    [1659129231, "Boba adds to USDC-DAI"],
+    [1665774187, "Boba removes from USDC-DAI"]
+  ],
 };

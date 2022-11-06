@@ -19,7 +19,7 @@ module.exports = {
   polygon: {
     tvl: getPolygonTvl,
   },
-  avalanche: {
+  avax:{
     tvl: getAvalancheTvl,
   },
 };

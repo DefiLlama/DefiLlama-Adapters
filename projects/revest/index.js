@@ -20,7 +20,7 @@ const config = {
   },
   fantom: {
     holder: '0x3923E7EdBcb3D0cE78087ac58273E732ffFb82cf',
-    graph: 'https://api.thegraph.com/subgraphs/name/revest-finance/revestfantomtvl',
+    // graph: 'https://api.thegraph.com/subgraphs/name/revest-finance/revestfantomtvl',
     chainId: 250,
   },
   avax: {

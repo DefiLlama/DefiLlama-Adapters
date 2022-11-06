@@ -18,8 +18,15 @@ function tvl(chain) {
         transform
       );
 
-    for (const yvToken of Object.values(contracts[chain].yvTokens)) {
-      await unwrapYearn(balances, yvToken, chainBlocks[chain], chain, transform);
+    for (const [name, yvToken] of Object.entries(contracts[chain].yvTokens)) {
+      if(chain === "optimism"){
+          const underlying = "optimism:"+contracts[chain].underlyingTokens[name.substring(1)]
+          const yvTokenFinal = transform(yvToken)
+          balances[underlying] = balances[yvTokenFinal]
+          delete balances[yvTokenFinal]
+      } else {
+        await unwrapYearn(balances, yvToken, chainBlocks[chain], chain, transform);
+      }
     };
 
     return balances;
@@ -33,5 +40,8 @@ module.exports = {
   },
   fantom: {
     tvl: tvl('fantom')
+  },
+  optimism: {
+    tvl: tvl('optimism')
   }
 };

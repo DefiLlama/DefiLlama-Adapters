@@ -1,15 +1,13 @@
 const sdk = require("@defillama/sdk");
-const { sumTokens, unwrapUniswapLPs } = require("../helper/unwrapLPs");
-const { transformPolygonAddress, transformBobaAddress } = require("../helper/portedTokens");
-const { getBlock } = require("../helper/getBlock");
+const { sumTokens, } = require("../helper/unwrapLPs");
+const { getChainTransform } = require("../helper/portedTokens");
 const abi = require("./abi");
 const { Chain, lsps, uniswapFactory, ZERO_ADDRESS, usdc } = require("./registry");
 
 const makeUniswapReserves = (chain, makeAddressTransform) => {
-  return async (timestamp, block, chainBlocks) => {
+  return async (timestamp, _, {[chain]: block}) => {
     const balances = {};
-    const transform = await makeAddressTransform?.();
-    block = await getBlock(timestamp, chain, chainBlocks);
+    const transform = await getChainTransform(chain);
 
     const getLongToken = abi["LongShortPair.longToken"];
     const getShortToken = abi["LongShortPair.shortToken"];
@@ -76,10 +74,9 @@ const makeUniswapReserves = (chain, makeAddressTransform) => {
 }
 
 const makeLspTvl = (chain, makeAddressTransform) => {
-  return async (timestamp, block, chainBlocks) => {
+  return async (timestamp, _, {[chain]: block}) => {
     const balances = {};
-    const transform = await makeAddressTransform?.();
-    block = await getBlock(timestamp, chain, chainBlocks);
+    const transform = await getChainTransform(chain);
 
     const getCollateralToken = abi["LongShortPair.collateralToken"];
     const collaterals = await sdk.api.abi.multiCall({
@@ -104,15 +101,8 @@ const makeLspTvl = (chain, makeAddressTransform) => {
   }
 }
 
-const transformers = {
-  [Chain.ETHEREUM]: undefined,
-  [Chain.POLYGON]: transformPolygonAddress,
-  [Chain.BOBA]: transformBobaAddress,
-}
-
 const run = (chain, f) => {
-  const transform = transformers[chain];
-  return f(chain, transform);
+  return f(chain);
 }
 
 const runAll = (chain, fs) => {

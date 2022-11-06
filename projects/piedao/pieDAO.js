@@ -107,7 +107,7 @@ module.exports = class PieDAO {
 
             switch (symbol) {
               case "SLP":
-                hangingPromises.push(sumTokens(balances, [[underlyingAddress, poolAddress]], undefined, undefined, undefined, { resolveLP: true }))
+                hangingPromises.push(sumTokens(balances, [[underlyingAddress, poolAddress]]))
                 break;
               case "BPT":
                 response = await sdk.api.abi.call({ 
@@ -171,7 +171,7 @@ module.exports = class PieDAO {
             abi: IStakingUniswap.find(i => i.name === 'uni')
           })
           underlyingAddress = response.output
-          hangingPromises.push(sumTokens(balances, [[underlyingAddress, poolAddress]], undefined, undefined, undefined, { resolveLP: true }))
+          hangingPromises.push(sumTokens(balances, [[underlyingAddress, poolAddress]], ))
           break;
       }
     }

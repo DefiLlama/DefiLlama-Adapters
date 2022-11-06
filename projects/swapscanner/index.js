@@ -16,7 +16,7 @@ module.exports = {
     tvl: async () => ({}),
     staking: stakingUnknownPricedLP(SCNR.staking, SCNR.address, 'klaytn', SCNR.LPs.KLAY),
     pool2: pool2({ 
-      coreAsset: WKLAY,
+      useDefaultCoreAssets: true,
       chain: 'klaytn',
       lpToken: SCNR.LPs.KLAY,
       stakingContract: SCNR.staking,

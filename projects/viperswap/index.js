@@ -1,5 +1,5 @@
 const { calculateUniTvl } = require("../helper/calculateUniTvl");
-const { fixHarmonyBalances } = require("../helper/portedTokens");
+const { getFixBalancesSync } = require("../helper/portedTokens");
 const { staking } = require("../helper/staking");
 
 const factory = "0x7d02c116b98d0965ba7b642ace0183ad8b8d2196";
@@ -10,7 +10,7 @@ async function tvl(timestamp, block, chainBlocks) {
   let balances = await calculateUniTvl(addr => {
     return `harmony:${addr}`;
   }, chainBlocks.harmony, "harmony", factory, 0, true);
-  fixHarmonyBalances(balances);
+  getFixBalancesSync('harmony')(balances);
   return balances;
 }
 
@@ -18,5 +18,8 @@ module.exports = {
   harmony: {
     tvl,
     staking: staking(xviper, viper, "harmony")
-  }
+  },
+  hallmarks:[
+    [1655991120, "Horizon bridge Hack $100m"],
+  ],
 }

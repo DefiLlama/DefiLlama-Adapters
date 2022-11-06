@@ -15,6 +15,7 @@ async function getMarkets(block) {
 };
 
 async function pool2(timestamp, block, chainBlocks) {
+  block = chainBlocks.arbitrum
   const contracts = await getMarkets(block);
   return {
     [usdc]: (await sdk.api.abi.multiCall({

@@ -9,6 +9,16 @@ const chainIdMap = {
   celo: 42220,
 };
 
+const contractVersions = {
+  v200: ["2.0.0", "2.0.1"],
+  v001: "0.0.1",
+  v002: "0.0.2",
+  v003: "0.0.3",
+};
+
+const isV2Game = (contractVersion) =>
+  contractVersions.v200.includes(contractVersion);
+
 function tvl(chain) {
   return async (timestamp, ethBlock, chainBlocks) => {
     const gameData = await axios.get(apiUrl).then((resp) => resp.data);
@@ -18,16 +28,31 @@ function tvl(chain) {
 
     const calls = Object.values(gameData)
       .filter((game) => game.networkId == chainIdMap[chain])
-      .map((game) => [
-        {
-          target: game.depositTokenAddress,
-          params: [game.id],
-        },
-        {
-          target: game.liquidityTokenAddress,
-          params: [game.id],
-        },
-      ])
+      .map((game) => {
+        const gameParams = [
+          {
+            target: game.depositTokenAddress,
+            params: [game.id],
+          },
+          {
+            target: game.liquidityTokenAddress,
+            params: [game.id],
+          },
+        ];
+
+        if (isV2Game(game.contractVersion)) {
+          gameParams.push({
+            target: game.depositTokenAddress,
+            params: [game.strategyController.toLowerCase()],
+          });
+
+          gameParams.push({
+            target: game.liquidityTokenAddress,
+            params: [game.strategyController.toLowerCase()],
+          });
+        }
+        return gameParams;
+      })
       .flat();
 
     const gameContractBalances = await sdk.api.abi.multiCall({
@@ -36,7 +61,12 @@ function tvl(chain) {
       chain,
     });
 
-    sdk.util.sumMultiBalanceOf(balances, gameContractBalances, true, transform);
+    sdk.util.sumMultiBalanceOf(
+      balances,
+      gameContractBalances,
+      false,
+      transform
+    );
 
     //fix decimal issue with celo tokens
     for (const representation of ["celo-dollar", "celo", "celo-euro"]) {
@@ -60,4 +90,4 @@ module.exports = {
   celo: {
     tvl: tvl("celo"),
   },
-}
+};

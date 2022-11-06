@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
 const { get } = require("../helper/http");
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const { sumTokens2 } = require("../helper/unwrapLPs");
 
 const ANGLE = "0x31429d1856ad1377a8a0079410b297e1a9e214c2";
 const veANGLE = "0x0C462Dbb9EC8cD1630f1728B2CFD2769d09f0dd5";
@@ -15,18 +15,18 @@ const poolManagers_abi = {
     type: "function",
   },
   token: {
-    "inputs": [],
-    "name": "token",
-    "outputs": [
+    inputs: [],
+    name: "token",
+    outputs: [
       {
-        "internalType": "contract IERC20",
-        "name": "",
-        "type": "address"
-      }
+        internalType: "contract IERC20",
+        name: "",
+        type: "address",
+      },
     ],
-    "stateMutability": "view",
-    "type": "function"
-  }
+    stateMutability: "view",
+    type: "function",
+  },
 };
 
 // get Borrowing module vault managers list
@@ -37,23 +37,24 @@ async function getVaultManagersFromAPI(chain) {
     optimism: 10,
     arbitrum: 42161,
     fantom: 250,
-  }
+  };
   let chainId = chainIds[chain];
   let calls = [];
-  let result = await get("https://api.angle.money/v1/vaultManagers?chainId=" + chainId)
+  let result = await get(
+    "https://api.angle.money/v1/vaultManagers?chainId=" + chainId
+  );
 
   for (const data of Object.values(result)) {
-    const token = data.collateral
-    if (token) calls.push([token, data.address])
+    const token = data.collateral;
+    if (token) calls.push([token, data.address]);
   }
   return calls;
 }
 
 async function tvl(chain, block) {
-  const balances = {}
-  const tokensAndOwners = []
-  if (chain === 'ethereum') {
-
+  const balances = {};
+  const tokensAndOwners = [];
+  if (chain === "ethereum") {
     // Registry will be released in next sdk of Angle + graphql endpoint to come
     const collaterals = {
       dai: "0x6b175474e89094c44da98b954eedeac495271d0f",
@@ -75,29 +76,35 @@ async function tvl(chain, block) {
       },
     };
 
-    const agTokens = [agEUR]
-    const tokenMapping = {}
+    const agTokens = [agEUR];
+    const tokenMapping = {};
     agTokens.map((t) => {
       return Object.entries(t.poolManagers).forEach(([key, value]) => {
-        tokenMapping[value] = collaterals[key]
+        tokenMapping[value] = collaterals[key];
       });
-    })
+    });
 
     let { output: assets } = await sdk.api.abi.multiCall({
-      calls: Object.keys(tokenMapping).map(i => ({ target: i })),
-      abi: poolManagers_abi["getTotalAsset"], chain, block,
-    })
+      calls: Object.keys(tokenMapping).map((i) => ({ target: i })),
+      abi: poolManagers_abi["getTotalAsset"],
+      chain,
+      block,
+    });
     let { output: tokens } = await sdk.api.abi.multiCall({
-      calls: Object.keys(tokenMapping).map(i => ({ target: i })),
-      abi: poolManagers_abi["token"], chain, block,
-    })
+      calls: Object.keys(tokenMapping).map((i) => ({ target: i })),
+      abi: poolManagers_abi["token"],
+      chain,
+      block,
+    });
 
-    assets.forEach(({ output }, i) => sdk.util.sumSingleBalance(balances, tokens[i].output, output))
+    assets.forEach(({ output }, i) =>
+      sdk.util.sumSingleBalance(balances, tokens[i].output, output)
+    );
   }
 
   // Borrowing module
-  tokensAndOwners.push(...await getVaultManagersFromAPI(chain))
-  return sumTokens2({ balances, chain, block, tokensAndOwners, })
+  tokensAndOwners.push(...(await getVaultManagersFromAPI(chain)));
+  return sumTokens2({ balances, chain, block, tokensAndOwners });
 }
 
 /*
@@ -112,7 +119,8 @@ module.exports = {
   methodology: `TVL is retrieved on-chain by querying the total assets managed by the Core module, and the balances of the vaultManagers of the Borrowing module.`,
 };
 
-['ethereum', 'polygon'].forEach(chain => {
-  if (!module.exports[chain]) module.exports[chain] = {}
-  module.exports[chain].tvl = async (_, _b, { [chain]: block }) => tvl(chain, block)
-})
+["ethereum", "polygon", "optimism", "arbitrum"].forEach((chain) => {
+  if (!module.exports[chain]) module.exports[chain] = {};
+  module.exports[chain].tvl = async (_, _b, { [chain]: block }) =>
+    tvl(chain, block);
+});

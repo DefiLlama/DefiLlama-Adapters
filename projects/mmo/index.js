@@ -4,7 +4,7 @@ const { gql } = require("graphql-request");
 const mEtherABI = require("./helper/abis/MEtherInterfaceFull.json");
 const { getTotalCash, getTotalCollateral, fetch } = require("./helper/helper");
 
-async function tvl(block) {
+async function tvl(_, block) {
   const totalCashAvailable = await getTotalCash(block);
   const totalCollateral = await getTotalCollateral(block);
   return {
@@ -12,7 +12,7 @@ async function tvl(block) {
   };
 }
 
-async function borrowed(block) {
+async function borrowed(_, block) {
   const getTotalBorrows = gql`
     {
       vaults {
@@ -54,7 +54,6 @@ async function borrowed(block) {
 }
 
 module.exports = {
-  timetravel: false,
   methodology: `Counts the tokens locked in our vault as collateral and the available cash in the pools. Borrowed ETH is not counted towards the TVL`,
   ethereum: {
     tvl,

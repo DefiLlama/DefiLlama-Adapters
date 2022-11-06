@@ -37,7 +37,6 @@ async function GenerateCallList() {
     return calls;
 }
 
-
 async function ethereum(timestamp, block) {
     const ethBalance = (await sdk.api.eth.getBalance({
         target: '0x220a9f0DD581cbc58fcFb907De0454cBF3777f76',
@@ -63,10 +62,8 @@ async function getTVL(subgraphName, block) {
     const endpoint = `https://api.thegraph.com/subgraphs/name/mcdexio/${subgraphName}`
 
     const query = gql`
-        query getTvl($block: Int) {
-            factories(
-                block: { number: $block }
-            ) {
+        query getTvl {
+            factories {
                 id
                 totalValueLockedUSD
             }

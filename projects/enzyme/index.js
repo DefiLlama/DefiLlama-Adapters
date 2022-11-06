@@ -21,7 +21,7 @@ async function tvl(ts, block) {
       vaultsObj[vault] = true
     })
   })
-  await sumTokens(balances, tokensAndOwners, block, undefined, undefined, { resolveCrv: true, resolveLP: true, resolveYearn: true })
+  await sumTokens(balances, tokensAndOwners, block,)
   
   if (balances[cwADA_ETH]) {
     balances[cwADA_POLY] = balances[cwADA_ETH]

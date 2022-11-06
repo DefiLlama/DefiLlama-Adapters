@@ -33,4 +33,7 @@ module.exports = {
 		treasury,
 	},
 	timetravel: false,
+	hallmarks:[
+          [1651881600, "UST depeg"],
+  ]
 }

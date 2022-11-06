@@ -25,11 +25,12 @@ async function tvl() {
 
 
 module.exports = {
-  methodology: `TVL is the sum of Singel Asset Staking tokens i Liquidity pool tokens`,
-  misrepresentedTokens: true,
+  methodology: `Project rebranded as GameSwift`,
   timetravel: false,
   terra: {
-    pool2,
-    tvl
+    tvl: () => ({})
   },
+   hallmarks:[
+    [1651881600, "UST depeg"],
+  ]
 }

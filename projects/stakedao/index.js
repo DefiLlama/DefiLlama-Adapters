@@ -322,7 +322,7 @@ module.exports = {
   polygon:{
     tvl: polygon
   },
-  avalanche: {
+  avax:{
     tvl: avax
   },
   harmony: {

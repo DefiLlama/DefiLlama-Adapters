@@ -36,7 +36,7 @@ const pool2 = async (timestamp, ethBlock, chainBlocks) => {
 };
 
 module.exports = {
-  avalanche: {
+  avax:{
     tvl: avaxTvl,
     pool2,
     staking: staking(STAKING_CONTRACT, cyf, 'avax', `avax:${cyf}`)
