@@ -134,6 +134,13 @@ module.exports = {
   doublecounted: true,
   timetravel: false,
   misrepresentedTokens: true,
+  hallmarks: [
+    [1612789200, "BOND staking pool end"],
+    [1618228800, "Stablecoin pool end"],
+    [1617210000, "SMART Yield incentive program start"],
+    [1632330000, "SMART Yield incentive program end"],
+    [1664193600, "BOND/USDC rewards end"],
+  ],
 };
 
 const chains = ['ethereum', 'polygon', 'arbitrum', 'optimism', 'bsc', 'avax']
