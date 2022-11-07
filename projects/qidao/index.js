@@ -667,6 +667,10 @@ async function metis (timestamp, block, chainBlocks) {
         "0xb89c1b3d9f335b9d8bb16016f3d60160ae71041f",
         "0xa5B55ab1dAF0F8e1EFc0eB1931a957fd89B918f4",
       ], //Btc
+      [
+        "0x5A03716bd1f338D7849f5c9581AD5015ce0020B0",
+        "0x433E43047B95cB83517abd7c9978Bdf7005E9938",
+      ], //Btc
     ],
     chainBlocks.metis,
     "metis",
