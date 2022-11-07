@@ -6,7 +6,7 @@ const token1 = require('./abis/token1.json');
 const masterchefAbi = require('./abis/masterchef.json')
 const getReserves = require('./abis/getReserves.json');
 const kslpABI = require('./abis/kslp.js');
-const { getChainTransform, stripTokenHeader, getFixBalances, transformBalances, } = require('./portedTokens')
+const { getChainTransform, stripTokenHeader, getFixBalances, transformBalances, transformDexBalances, } = require('./portedTokens')
 const { requery, } = require('./getUsdUniTvl')
 const { getCoreAssets } = require('./tokenMapping')
 const { sumTokens, sumTokens2, nullAddress, } = require('./unwrapLPs')
@@ -136,6 +136,7 @@ async function getTokenPrices({
 
   const prices = {}
   const pairBalances = {}
+  const pairBalances2 = []
 
   for (let i = 0; i < reserves.length; i++) {
     const pairAddress = reserves[i].input.target.toLowerCase();
@@ -144,6 +145,12 @@ async function getTokenPrices({
     const token0Address = pair.token0Address.toLowerCase()
     const token1Address = pair.token1Address.toLowerCase()
     const reserveAmounts = reserves[i].output
+    pairBalances2.push({
+      token0:token0Address,
+      token1:token1Address,
+      token0Bal: reserveAmounts[0],
+      token1Bal: reserveAmounts[1],
+    })
     if (coreAssets.includes(token0Address) && coreAssets.includes(token1Address)) {
       sdk.util.sumSingleBalance(pairBalances[pairAddress], token0Address, Number(reserveAmounts[0]))
       sdk.util.sumSingleBalance(pairBalances[pairAddress], token1Address, Number(reserveAmounts[1]))
@@ -228,6 +235,7 @@ async function getTokenPrices({
     pairBalances,
     prices,
     balances,
+    pairBalances2,
   }
 
   function setPrice(prices, address, coreAmount, tokenAmount, coreAsset) {
@@ -362,10 +370,16 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
   abis = {},
   restrictTokenRatio, // while computing tvl, an unknown token value can max be x times the pool value, default 100 times pool value
   fetchInChunks = 0,  // if there are too many pairs, we might want to query in batches to avoid multicall failing and crashing
+  version = '1',
 }) {
   if (!coreAssets.length && useDefaultCoreAssets) {
     coreAssets = getCoreAssets(chain)
   }
+  const isVersion2 = version === '2'
+  if (fetchInChunks && isVersion2) {
+    throw new Error ('Not yet supported!')
+  }
+
   return async (ts, _block, { [chain]: block }) => {
 
     // get factory from LP
@@ -389,6 +403,7 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
         block, chain, coreAssets, blacklist, lps: pairAddresses, transformAddress, whitelist, allLps: true,
         minLPRatio, log_coreAssetPrices, log_minTokenValue, restrictTokenRatio, abis,
       })
+      if (isVersion2) return transformDexBalances({ chain, data: response.pairBalances2, })
       return withMetaData ? response : response.balances
     } else {
       let i = 0
