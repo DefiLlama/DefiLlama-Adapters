@@ -1,27 +1,34 @@
 const { getNetworkInfo, Network } = require('@injectivelabs/networks')
-const { protoObjectToJson, IndexerGrpcSpotApi } = require('@injectivelabs/sdk-ts')
+const { protoObjectToJson, IndexerGrpcSpotApi, IndexerGrpcDerivativesApi } = require('@injectivelabs/sdk-ts')
 const { sliceIntoChunks } = require('../helper/utils')
 let clients = {}
 
+const TYPES = {
+  SPOT: 'SPOT',
+  DERIVATIVES: 'DERIVATIVES',
+}
+
 const p2j = str => JSON.parse(protoObjectToJson(str))
 
-function getClient(type = 'spot') {
+function getClient(type = TYPES.SPOT) {
   if (!clients[type]) {
     const network = getNetworkInfo(Network.Mainnet)
-    switch(type) {
-      case 'spot': clients[type] = new IndexerGrpcSpotApi(network.exchangeWeb3GatewayApi); break;
-      default: throw new Error('Unknown type')
-    }
+    if (type === TYPES.SPOT)
+      clients[type] = new IndexerGrpcSpotApi(network.exchangeWeb3GatewayApi);
+    else if (type === TYPES.DERIVATIVES)
+      clients[type] = new IndexerGrpcDerivativesApi(network.exchangeWeb3GatewayApi)
+    else
+      throw new Error('Unknown type')
   }
   return clients[type]
 }
 
-async function getMarkets({type = 'spot', marketStatus = 'active'} = {}) {
+async function getMarkets({ type = TYPES.SPOT, marketStatus = 'active' } = {}) {
   const markets = await getClient(type).fetchMarkets({ marketStatus, })
   return p2j(markets)
 }
 
-async function getOrders({type = 'spot', marketIds}) {
+async function getOrders({ type = TYPES.SPOT, marketIds }) {
   const chunks = sliceIntoChunks(marketIds, 20)
   const response = []
   for (const chunk of chunks)
@@ -30,6 +37,7 @@ async function getOrders({type = 'spot', marketIds}) {
 }
 
 module.exports = {
+  TYPES,
   getClient,
   p2j,
   getMarkets,

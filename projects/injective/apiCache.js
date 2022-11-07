@@ -1,36 +1,42 @@
-const { getMarkets, getOrders } = require('../helper/injective')
+const { getMarkets, getOrders, TYPES } = require('../helper/injective')
 const { transformBalances } = require('../helper/portedTokens')
 const sdk = require('@defillama/sdk')
 const { default: BigNumber } = require('bignumber.js')
 
-async function tvl() {
-  const balances = {}
-  const markets = await getMarkets()
-  const orders = await getOrders({ marketIds: markets.map(i => i.marketId) })
-  const marketObj = {}
-  const tokens = {}
-  for (const market of markets) {
-    const { baseDenom, quoteDenom, quoteToken, baseToken } = market
-    marketObj[market.marketId] = market
-    if (!quoteToken) console.log('missing token quote', quoteDenom)
-    else tokens[quoteDenom] = { addr: quoteDenom, ...quoteToken }
-    if (!baseToken) console.log('missing token base', baseDenom)
-    else tokens[baseDenom] = { addr: baseDenom, ...baseToken }
-  }
-  for (const order of orders) marketObj[order.marketId].orderbook = order.orderbook
-  for (const { quoteDenom, baseDenom, orderbook: { buys, sells, } } of markets) {
-    for (const { price, quantity } of buys)
-      sdk.util.sumSingleBalance(balances, quoteDenom, BigNumber(quantity * price).toFixed(0))
-    for (const { quantity } of sells)
-      sdk.util.sumSingleBalance(balances, baseDenom, BigNumber(quantity).toFixed(0))
+function getOrderBookTvl(typeStr) {
+  return async () => {
+    const balances = {}
+    const markets = await getMarkets({ type: typeStr })
+    const orders = await getOrders({ type: typeStr, marketIds: markets.map(i => i.marketId) })
+    const marketObj = {}
+    for (const market of markets)
+      marketObj[market.marketId] = market
 
+    for (const order of orders) marketObj[order.marketId].orderbook = order.orderbook
+    for (const { quoteDenom, baseDenom, orderbook: { buys, sells, } } of markets) {
+      for (const { price, quantity } of buys)
+        sdk.util.sumSingleBalance(balances, quoteDenom, BigNumber(quantity * price).toFixed(0))
+
+      for (const { quantity } of sells) {
+
+        if (typeStr === TYPES.SPOT) {
+          sdk.util.sumSingleBalance(balances, baseDenom, BigNumber(quantity).toFixed(0))
+        } else if (typeStr === TYPES.DERIVATIVES) {
+          const price = buys.length ? buys[0].price : 0
+          sdk.util.sumSingleBalance(balances, quoteDenom, BigNumber(quantity * price).toFixed(0))
+        }
+      }
+    }
+    return transformBalances('injective', balances)
   }
-  return transformBalances('injective', balances)
 }
 
 module.exports = {
   timetravel: false,
   injective: {
-    tvl
+    tvl: sdk.util.sumChainTvls([
+      getOrderBookTvl(TYPES.SPOT),
+      getOrderBookTvl(TYPES.DERIVATIVES)
+    ])
   }
 }
