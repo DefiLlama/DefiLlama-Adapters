@@ -147,6 +147,14 @@ async function transformArbitrumAddress() {
   };
 }
 
+async function transformInjectiveAddress() {
+  return addr => {
+    if (addr.startsWith('peggy0x'))
+      return `ethereum:${addr.replace('peggy', '')}`
+    return `injective:${addr}`;
+  };
+}
+
 function fixBalances(balances, mapping, { chain, } = {}) {
   const removeUnmapped = unsupportedGeckoChains.includes(chain)
 
@@ -205,6 +213,7 @@ const chainTransforms = {
   harmony: transformHarmonyAddress,
   optimism: transformOptimismAddress,
   arbitrum: transformArbitrumAddress,
+  injective: transformInjectiveAddress,
 };
 
 function transformChainAddress(
