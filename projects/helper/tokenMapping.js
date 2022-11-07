@@ -9,10 +9,10 @@ const nullAddress = '0x0000000000000000000000000000000000000000'
 // TODO: get celer info
 // Alexar info: https://api.axelarscan.io/cross-chain/tvl
 // coingecko coins: https://api.coingecko.com/api/v3/coins/list?include_platform=true
-// gravity brdge for IBC: https://api.mintscan.io/v2/assets/gravity-bridge
+// gravity bridge for IBC: https://api.mintscan.io/v2/assets/gravity-bridge
 
 const unsupportedGeckoChains = ['aptos', 'terra2', 'terra', 'kujira']
-const ibcChains = ['terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno',]
+const ibcChains = ['terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', ]
 const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'algorand', 'aptos', 'near', 'bitcoin', 'waves']
 const transformTokens = {
   ethereum: {
@@ -491,6 +491,12 @@ const ibcMappings = {
   'ibc/B3504E092456BA618CC28AC671A71FB08C6CA0FD0BE7C8A5B5A3E2DD933CC9E4': { coingeckoId: 'usd-coin', decimals: 6, },
   'ibc/903A61A498756EA560B85A85132D3AEE21B5DEDD41213725D22ABF276EA6945E': { coingeckoId: 'axelar', decimals: 6, },
   'ibc/C01154C2547F4CB10A985EA78E7CD4BA891C1504360703A37E1D7043F06B5E1F': { coingeckoId: 'axelar', decimals: 6, },
+  // from injective
+  'ibc/E7807A46C0B7B44B350DA58F51F278881B863EC4DCA94635DAB39E52C30766CB': { coingeckoId: 'chihuahua-token', decimals: 6, },
+  'ibc/16618B7F7AC551F48C057A13F4CA5503693FBFF507719A85BC6876B8BD75F821': { coingeckoId: 'evmos', decimals: 18, },
+  'ibc/B786E7CBBF026F6F15A8DA248E0F18C62A0F7A70CB2DABD9239398C8B5150ABB': { coingeckoId: 'persistence', decimals: 6, },
+  'ibc/624BA9DD171915A2B9EA70F69638B2CEA179959850C1A586F6C485498F29EDD4': { coingeckoId: 'polkadot', decimals: 10, },
+  'ibc/3FDD002A3A4019B05A33D324B2F29748E77AF501BEA5C96D1F28B2D6755F9F25': { coingeckoId: 'stride', decimals: 6, },
 }
 
 const fixBalancesTokens = {
@@ -588,6 +594,9 @@ const fixBalancesTokens = {
   kujira: {
     "ukuji": { coingeckoId: "kujira", decimals: 6, },
     "factory/kujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7/uusk": { coingeckoId: "usk", decimals: 6, },
+  },
+  injective: {
+    "inj": { coingeckoId: "injective-protocol", decimals: 18, },
   },
   harmony: {
     "0x799a4202c12ca952cB311598a024C80eD371a41e": { coingeckoId: "harmony", decimals: 18, },
