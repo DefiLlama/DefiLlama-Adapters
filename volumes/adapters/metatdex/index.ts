@@ -1,56 +1,55 @@
-import fetchURL from "../../utils/fetchURL"
-import { ChainBlocks, SimpleVolumeAdapter } from "../../dexVolume.type";
-import { CHAIN } from "../../helper/chains";
-import customBackfill from "../../helper/customBackfill";
-import { getUniqStartOfTodayTimestamp } from "../../helper/getUniSubgraphVolume";
+const { fetchURL } = require("../../helper/utils");
 import { Chain } from "@defillama/sdk/build/general";
+import { FetchResult, SimpleVolumeAdapter, ChainBlocks } from "../../dexVolume.type";
+import { CHAIN } from "../../helper/chains";
+import customBackfill, { IGraphs } from "../../helper/customBackfill";
+import { getUniqStartOfTodayTimestamp } from "../../helper/getUniSubgraphVolume";
 
-const historicalVolumeEndpoint = "http://public.tdex.cz/volumes"
-
-interface IVolume {
-  created_time: string;
-  max_swap_amount: string;
-}
-type ChainMapId = {
-  [chain: string | Chain]: number;
-}
-const mapChainId: ChainMapId = {
-  [CHAIN.BSC]: 56,
-  [CHAIN.HECO]: 128
+type TEndoint = {
+  [chain: string | Chain]: string;
 };
-const fetch = (chain: Chain) => {
-  return async (timestamp: number) => {
-    const queryByChainId = `?chain_id=${mapChainId[chain]}`;
-    const dayTimestamp = getUniqStartOfTodayTimestamp(new Date(timestamp * 1000));
-    const historicalVolume: IVolume[] = (await fetchURL(`${historicalVolumeEndpoint}${queryByChainId}`))?.data.result;
-    const totalVolume = historicalVolume
-      .filter(volItem => getUniqStartOfTodayTimestamp(new Date(volItem.created_time)) <= dayTimestamp)
-      .reduce((acc, { max_swap_amount }) => acc + Number(max_swap_amount), 0)
 
+const endpoints: TEndoint = {
+  [CHAIN.BSC]: "http://public.tdex.cz/get_volumes_list?chain_id=56",
+  [CHAIN.HECO]: "http://public.tdex.cz/get_volumes_list?chain_id=128",
+};
+
+interface IVolumeall {
+  date: string;
+  volume: number;
+}
+
+const graphs = (chain: Chain) => {
+  return async (timestamp: number, _chainBlocks: ChainBlocks): Promise<FetchResult> => {
+    const dayTimestamp = getUniqStartOfTodayTimestamp(new Date(timestamp * 1000))
+    const historicalVolume: IVolumeall[] = (await fetchURL(endpoints[chain]))?.data.result;
+    const totalVolume = historicalVolume
+      .filter(volItem => (new Date(volItem.date).getTime() / 1000) <= dayTimestamp)
+      .reduce((acc, { volume }) => acc + Number(volume), 0)
     const dailyVolume = historicalVolume
-      .find(dayItem => getUniqStartOfTodayTimestamp(new Date(dayItem.created_time)) === dayTimestamp)?.max_swap_amount
+      .find(dayItem => (new Date(dayItem.date).getTime() / 1000) === dayTimestamp)?.volume
 
     return {
       totalVolume: `${totalVolume}`,
       dailyVolume: dailyVolume ? `${dailyVolume}` : undefined,
       timestamp: dayTimestamp,
     };
-  };
-}
+  }
+};
 
 const getStartTimestamp = async (chain: Chain) => {
-  const queryByChainId = `?chain_id=${mapChainId[chain]}`;
-  const historicalVolume: IVolume[] = (await fetchURL(`${historicalVolumeEndpoint}${queryByChainId}`))?.data.result;
-  return (new Date(historicalVolume[0].created_time).getTime()) / 1000
+  const historicalVolume: IVolumeall[] = (await fetchURL(endpoints[chain]))?.data.result;
+  return (new Date(historicalVolume[0].date).getTime()) / 1000;
 }
+
 const adapter: SimpleVolumeAdapter = {
-  volume: Object.keys(mapChainId).reduce((acc, chain: any) => {
+  volume: Object.keys(endpoints).reduce((acc, chain: any) => {
     return {
       ...acc,
       [chain]: {
-        fetch: fetch(chain as Chain),
+        fetch: graphs(chain as Chain),
         start: async () => getStartTimestamp(chain),
-        customBackfill: customBackfill(chain as Chain, fetch),
+        customBackfill: customBackfill(chain as Chain, graphs as unknown as IGraphs),
       }
     }
   }, {} as SimpleVolumeAdapter['volume'])
