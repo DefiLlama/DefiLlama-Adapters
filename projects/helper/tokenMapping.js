@@ -23,13 +23,15 @@ const tokens = {
   ethereum: 'ethereum:'+nullAddress,
   weth: 'ethereum:0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
   busd: 'bsc:0xe9e7cea3dedca5984780bafc599bd69add087d56',
+  bnb: 'bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
+  link: 'ethereum:0x514910771af9ca656af840dff83e8264ecf986ca'
 }
 
 const transformTokens = {
   ethereum: {
     "0x88536c9b2c4701b8db824e6a16829d5b5eb84440": "polygon:0xac63686230f64bdeaf086fe6764085453ab3023f", // USV token
     "0xFEEf77d3f69374f66429C91d732A244f074bdf74": "0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0", // CVX FXS token
-    "0xb8c77482e45f1f44de1745f52c74426c631bdd52": "bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c", // BNB
+    "0xb8c77482e45f1f44de1745f52c74426c631bdd52": tokens.bnb, // BNB
     "0xeb637a9ab6be83c7f8c79fdaa62e1043b65534f0": "heco:0xcbd6cb9243d8e3381fea611ef023e17d1b7aedf0", // BXH
     "0x18a1ea69a50a85752b7bc204a2c45a95ce6e429d": "avax:0xf30c5083a1479865c9a8916dec6ddadd82e8907b", // SPICE
     "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": tokens.ethereum, // ETH -> WETH
@@ -70,10 +72,10 @@ const transformTokens = {
     "0x808d5f0a62336917da14fa9a10e9575b1040f71c": "avax:0x60781c2586d68229fde47564546784ab3faca982",
     "0x0dec85e74a92c52b7f708c4b10207d9560cefaf0": "fantom:0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
     "0x637ec617c86d24e421328e6caea1d92114892439": tokens.dai,
-    "0xb3654dc3d10ea7645f8319668e8f54d2574fbdc8": "0x514910771af9ca656af840dff83e8264ecf986ca",
+    "0xb3654dc3d10ea7645f8319668e8f54d2574fbdc8": tokens.link,
     "0x0a03d2c1cfca48075992d810cc69bd9fe026384a": tokens.ethereum,
     "0x97927abfe1abbe5429cbe79260b290222fc9fbba": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
-    "0x6dfe2aaea9daadadf0865b661b53040e842640f8": "0x514910771af9ca656af840dff83e8264ecf986ca",
+    "0x6dfe2aaea9daadadf0865b661b53040e842640f8": tokens.link,
     "0x920786cff2a6f601975874bb24c63f0115df7dc8": tokens.dai,
     "0x49c68edb7aebd968f197121453e41b8704acde0c": "fantom:0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
     "0x0665ef3556520b21368754fb644ed3ebf1993ad4": "0x6c3f90f043a72fa612cbac8115ee7e52bde6e490",
@@ -118,10 +120,10 @@ const transformTokens = {
     "0x808d5f0a62336917da14fa9a10e9575b1040f71c": "avax:0x60781c2586d68229fde47564546784ab3faca982",
     "0x0dec85e74a92c52b7f708c4b10207d9560cefaf0": "fantom:0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
     "0x637ec617c86d24e421328e6caea1d92114892439": tokens.dai,
-    "0xb3654dc3d10ea7645f8319668e8f54d2574fbdc8": "0x514910771af9ca656af840dff83e8264ecf986ca",
+    "0xb3654dc3d10ea7645f8319668e8f54d2574fbdc8": tokens.link,
     "0x0a03d2c1cfca48075992d810cc69bd9fe026384a": tokens.ethereum,
     "0x97927abfe1abbe5429cbe79260b290222fc9fbba": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
-    "0x6dfe2aaea9daadadf0865b661b53040e842640f8": "0x514910771af9ca656af840dff83e8264ecf986ca",
+    "0x6dfe2aaea9daadadf0865b661b53040e842640f8": tokens.link,
     "0x920786cff2a6f601975874bb24c63f0115df7dc8": tokens.dai,
     "0x49c68edb7aebd968f197121453e41b8704acde0c": "fantom:0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
     "0x0665ef3556520b21368754fb644ed3ebf1993ad4": "0x6c3f90f043a72fa612cbac8115ee7e52bde6e490",
@@ -132,8 +134,8 @@ const transformTokens = {
     "0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7": tokens.usdc,
   },
   bsc: {
-    "0x0000000000000000000000000000000000000000": "bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c", // BNB -> WBNB
-    "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": "bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c", // BNB -> WBNB
+    "0x0000000000000000000000000000000000000000": tokens.bnb, // BNB -> WBNB
+    "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": tokens.bnb, // BNB -> WBNB
     "0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c": "avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c", // ELK
     "0xb7f8cd00c5a06c0537e2abff0b58033d02e5e094": "0x8e870d67f660d95d5be530380d0ec0bd388289e1", // PAX
     "0x2170ed0880ac9a755fd29b2688956bd959f933f8": tokens.ethereum, // WETH
@@ -154,13 +156,13 @@ const transformTokens = {
     "0x42586ef4495bb512a86cf7496f6ef85ae7d69a64": "polygon:0x66e8617d1df7ab523a316a6c01d16aa5bed93681", // SPICE
     "0x60d01ec2d5e98ac51c8b4cf84dfcce98d527c747": "0x9ad37205d608b8b219e6a2573f922094cec5c200", // iZi
     "0x0a3bb08b3a15a19b4de82f8acfc862606fb69a2d": "0x0a3bb08b3a15a19b4de82f8acfc862606fb69a2d", // iUSD
-    "0xa8bb71facdd46445644c277f9499dd22f6f0a30c": "bsc:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c", //beltBNB -> wbnb
+    "0xa8bb71facdd46445644c277f9499dd22f6f0a30c": tokens.bnb, //beltBNB -> wbnb
     "0x9cb73f20164e399958261c289eb5f9846f4d1404": "bsc:0x55d398326f99059ff775485246999027b3197955", // 4belt -> usdt
     "0x51bd63f240fb13870550423d208452ca87c44444": "bsc:0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c", //beltBTC->
     "0xaa20e8cb61299df2357561c2ac2e1172bc68bc25": "bsc:0x2170ed0880ac9a755fd29b2688956bd959f933f8", //beltETH->
     "0x13ab6739368a4e4abf24695bf52959224367391f": "0x25f8087ead173b73d6e8b84329989a8eea16cf73", //YGG
     // ib tokens
-    "0xd7d069493685a581d27824fc46eda46b7efc0063": "bsc:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c", //ibBNB
+    "0xd7d069493685a581d27824fc46eda46b7efc0063": tokens.bnb, //ibBNB
     "0x7c9e73d4c71dae564d41f78d56439bb4ba87592f": tokens.busd, //ibBUSD
     "0x158da805682bdc8ee32d52833ad41e74bb951e59": tokens.busd, //ibUSDT
     "0x08fc9ba2cac74742177e0afc3dc8aed6961c24e7": "bsc:0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c", //ibBTCB
@@ -226,7 +228,7 @@ const transformTokens = {
   hoo: {},
   harmony: {
     "0x6983D1E6DEf3690C4d616b13597A09e6193EA013": tokens.ethereum,
-    "0xb1f6E61E1e113625593a22fa6aa94F8052bc39E0": "bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    "0xb1f6E61E1e113625593a22fa6aa94F8052bc39E0": tokens.bnb,
     "0xFbdd194376de19a88118e84E279b977f165d01b8": "polygon:0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0",
     "0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a": "harmony:0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a",
     "0x72cb10c6bfa5624dd07ef608027e366bd690048f": "harmony:0x72cb10c6bfa5624dd07ef608027e366bd690048f",
@@ -329,7 +331,7 @@ const transformTokens = {
   kcc: {
     "0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c": "avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c",
     "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": "okexchain:0xc946daf81b08146b1c7a8da2a851ddf2b3eaaf85",
-    "0x639a647fbe20b6c8ac19e48e2de44ea792c62c5c": "bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    "0x639a647fbe20b6c8ac19e48e2de44ea792c62c5c": tokens.bnb,
     "0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d": "0x4fabb145d64652a948d72533023f6e7a623c7c53",
     "0xc9baa8cfdde8e328787e29b4b078abf2dadc2055": tokens.dai,
     "0xfa93c12cd345c658bc4644d1d4e1b9615952258c": "bsc:0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c",
@@ -345,7 +347,7 @@ const transformTokens = {
     "0x420000000000000000000000000000000000000a": tokens.ethereum,
     "0x5801d0e1c7d977d78e4890880b8e579eb4943276": "bsc:0x5801d0e1c7d977d78e4890880b8e579eb4943276",
     "0xea32a96608495e54156ae48931a7c20f0dcc1a21": tokens.usdc,
-    "0x2692be44a6e38b698731fddf417d060f0d20a0cb": "bsc:0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+    "0x2692be44a6e38b698731fddf417d060f0d20a0cb": tokens.bnb,
     "0xa5B55ab1dAF0F8e1EFc0eB1931a957fd89B918f4": "avax:0x50b7545627a5162F82A992c33b87aDc75187B218",
     "0x12d84f1cfe870ca9c9df9785f8954341d7fbb249": tokens.busd, // bUSD
     "0xE253E0CeA0CDD43d9628567d097052B33F98D611": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7", // wAVAX
@@ -376,7 +378,7 @@ const transformTokens = {
     "0xf04d3a8eb17b832fbebf43610e94bdc4fd5cf2dd": tokens.busd // sBUSD(Boba) -> BUSD(BSC)
   },
   findora: {
-    "0xABc979788c7089B516B8F2f1b5cEaBd2E27Fd78b": "bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c", // BNB token
+    "0xABc979788c7089B516B8F2f1b5cEaBd2E27Fd78b": tokens.bnb, // BNB token
     "0x008A628826E9470337e0Cd9c0C944143A83F32f3": "bsc:0x2170ed0880ac9a755fd29b2688956bd959f933f8", // ETH token
     "0x93EDFa31D7ac69999E964DAC9c25Cd6402c75DB3": "bsc:0x55d398326f99059ff775485246999027b3197955", // USDT token
     "0xdA33eF1A7b48beBbF579eE86DFA735a9529C4950": "bsc:0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d", // USDC token
@@ -384,7 +386,7 @@ const transformTokens = {
     "0x07EfA82E00E458ca3D53f2CD5B162e520F46d911": "bsc:0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c" //  WBTC token
   },
   milkomeda: {
-    "0x7f27352d5f83db87a5a3e00f4b07cc2138d8ee52": "bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c", // BNB token
+    "0x7f27352d5f83db87a5a3e00f4b07cc2138d8ee52": tokens.bnb, // BNB token
     // '0x0000000000000000000000000000000000000000': '' // MilkADA
     "0x5950F9B6EF36f3127Ea66799e64D0ea1f5fdb9D1": tokens.ethereum, // WETH
     "0x41eAFC40CD5Cb904157A10158F73fF2824dC1339": tokens.dai, // DAI
@@ -450,7 +452,7 @@ const transformTokens = {
     "0x85219708c49aa701871ad330a94ea0f41dff24ca": tokens.ethereum, // WETH
     "0x6ab0B8C1a35F9F4Ce107cCBd05049CB1Dbd99Ec5": "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0", // MATIC
     "0x639A647fbe20b6c8ac19E48E2de44ea792c62c5C": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", // WBTC
-    "0x2B8e9cD44C9e09D936149549a8d207c918ecB5C4": "bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c", // BNB
+    "0x2B8e9cD44C9e09D936149549a8d207c918ecB5C4": tokens.bnb, // BNB
     "0xc9b3aA6E91d70f4ca0988D643Ca2bB93851F3de4": "fantom:0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83", // FTM
     "0xe2c120f188ebd5389f71cf4d9c16d05b62a58993": tokens.usdc, // USDC
     "0x01445c31581c354b7338ac35693ab2001b50b9ae": tokens.usdc, // USDT
@@ -467,7 +469,7 @@ const transformTokens = {
   },
   reichain: {
     "0xDD2bb4e845Bd97580020d8F9F58Ec95Bf549c3D9": tokens.busd, // killswitch busd -> busd token
-    "0xf8ab4aaf70cef3f3659d3f466e35dc7ea10d4a5d": "bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c" // killswitch bnb -> bnb token
+    "0xf8ab4aaf70cef3f3659d3f466e35dc7ea10d4a5d": tokens.bnb // killswitch bnb -> bnb token
   },
   solana: {
     "9EaLkQrbjmbbuZG9Wdpo8qfNUEjHATJFSycEmw6f1rGX": tokens.solana,
@@ -607,6 +609,7 @@ const fixBalancesTokens = {
     "6LNeTYMqtNm1pBFN8PfhQaoLyegAH8GD32WmHU9erXKN": {coingeckoId: "aptos", decimals: 8, },
     "EjmyN6qEC1Tf1JxiG1ae7UTJhUxSwk1TCWNWqxWV4J6o": {coingeckoId: tokens.dai, decimals: -10, },
     "eqKJTf1Do4MDPyKisMYqVaUFpkEFAs3riGF3ceDH2Ca": {coingeckoId: tokens.usdc, decimals: 0, },
+    "BTsbZDV7aCMRJ3VNy9ygV4Q2UeEo9GpR8D6VvmMZzNr8": {coingeckoId: tokens.usdc, decimals: 0, },  // solend cUSDC
     "FCqfQSujuPxy6V42UvafBhsysWtEq1vhjfMN1PUbgaxA": {coingeckoId: tokens.usdc, decimals: 2, },
     "DdFPRnccQqLD4zCHrBqdY95D6hvw6PLWp9DEXj1fLCL9": {coingeckoId: tokens.usdc, decimals: 3, },
     "8Yv9Jz4z7BUHP68dz8E8m3tMe6NKgpMUKn8KVqrPA6Fr": {coingeckoId: tokens.usdc, decimals: 3, },
@@ -616,6 +619,7 @@ const fixBalancesTokens = {
     "E77cpQ4VncGmcAXX16LHFFzNBEBb2U7Ar7LBmZNfCgwL": {coingeckoId: tokens.usdt, decimals: 3, },
     "Bn113WT6rbdgwrm12UJtnmNqGqZjY4it2WoUQuQopFVn": {coingeckoId: tokens.usdt, decimals: 3, },
     "FwEHs3kJEdMa2qZHv7SgzCiFXUQPEycEXksfBkwmS8gj": {coingeckoId: tokens.usdt, decimals: 3, },
+    "993dVFL2uXWYeoXuEBFXR4BijeXdTv4s6BzsCjJZuwqk": {coingeckoId: tokens.usdt, decimals: 0, },  // solend cUSDT
     "5RpUwQ8wtdPCZHhu6MERp2RGrpobsbZ6MH5dDHkUjs2": {coingeckoId: tokens.busd, decimals: -10, },
     "PUhuAtMHsKavMTwZsLaDeKy2jb7ciETHJP7rhbKLJGY": {coingeckoId: 'usn', decimals: 9, },
   },
@@ -1300,7 +1304,7 @@ const coreAssets = {
     tokens.weth,  // WETH
     tokens.usdc, //usdc
     tokens.usdc,
-    '0x514910771af9ca656af840dff83e8264ecf986ca', //link
+    tokens.link, //link
     '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984', //uni
     '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9', //aave
     '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', //wbtc
@@ -1391,7 +1395,7 @@ const coreAssets = {
   ],
   bsc: [
     '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // wbnb
-    '0xe9e7cea3dedca5984780bafc599bd69add087d56', // busd
+    tokens.busd, // busd
     '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d', // USDC
     '0x55d398326f99059ff775485246999027b3197955', // USDT
     '0x2170ed0880ac9a755fd29b2688956bd959f933f8', // ETH

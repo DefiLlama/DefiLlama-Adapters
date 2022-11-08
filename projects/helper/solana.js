@@ -1,4 +1,3 @@
-const BigNumber = require("bignumber.js");
 const axios = require("axios");
 const http = require('./http')
 const { transformBalances: transformBalancesOrig, transformDexBalances, } = require('./portedTokens.js')
@@ -6,7 +5,6 @@ const { tokens } = require('./tokenMapping')
 const { Connection, PublicKey, Keypair } = require("@solana/web3.js")
 const { AnchorProvider: Provider, Wallet, } = require("@project-serum/anchor");
 const BufferLayout = require("@solana/buffer-layout")
-const { MintLayout, TOKEN_PROGRAM_ID } = require("@solana/spl-token")
 const { sleep, sliceIntoChunks, log, } = require('./utils')
 const sdk = require('@defillama/sdk')
 const tokenMapping = tokens
