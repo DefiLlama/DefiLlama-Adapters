@@ -41,5 +41,8 @@ async function staking() {
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
-  solana: { tvl, staking  }
+  solana: { tvl, staking  },
+  hallmarks:[
+    [1665521360, "Mango Markets Hack"],
+  ],
 }
