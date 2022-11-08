@@ -6,7 +6,4 @@ module.exports={
     misrepresentedTokens: true,
     methodology: "Tokens in masterchef",
     ...masterChefExports("0xacAb1D5FaBD5c675db07d40De8E0E218EBe75A9e", "cronos", MATRIX, false, abi.poolInfo),
-    hallmarks:[
-        [1665521360, "Mango Markets Hack"],
-      ],
 }
