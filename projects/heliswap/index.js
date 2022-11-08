@@ -3,7 +3,7 @@ const axios = require("axios");
 const urlConfigs = {
   graphQLUrl: "https://heliswap-prod-362307.oa.r.appspot.com/query",
   tokenListUrl:
-    "https://heliswap.infura-ipfs.io/ipfs/QmPuGdL54tqq4vPx15k7tLh2rzwJTRXBNYi92PJnrr39pY",
+    "https://heliswap.infura-ipfs.io/ipfs/QmVckDDS58AUWDREptfvbAcg6XwbMVccy5GKUPsGQkixMC",
 };
 
 const axiosConfig = {
