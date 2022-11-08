@@ -1,4 +1,4 @@
-const { getProvider, getTokenDecimals, transformBalances, } = require('./helper/solana')
+const { getProvider, transformBalances, } = require('./helper/solana')
 const sdk = require('@defillama/sdk')
 const { Program, } = require("@project-serum/anchor");
 const vaults = {
@@ -23,11 +23,9 @@ async function tvl() {
   const idl = await Program.fetchIdl(programId, provider)
   const program = new Program(idl, programId, provider)
   const data = await program.account.vaultAccount.fetchMultiple(Object.values(vaults))
-  const tokens = data.map(i => i.inputMintPubkey.toString())
-  const decimals = await getTokenDecimals(tokens)
   const tokenBalances = {}
   data.forEach((i, idx) =>
-    sdk.util.sumSingleBalance(tokenBalances, i.inputMintPubkey.toString(), i.currentTvl / (10 ** decimals[idx])))
+    sdk.util.sumSingleBalance(tokenBalances, i.inputMintPubkey.toString(), +i.currentTvl))
   return transformBalances({ tokenBalances })
 }
 
