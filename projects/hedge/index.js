@@ -1,4 +1,4 @@
-const { getProvider, sumTokens2, } = require("../helper/solana");
+const { getProvider, sumTokens2, transformBalances, } = require("../helper/solana");
 const { Program, } = require("@project-serum/anchor");
 const sdk = require('@defillama/sdk')
 
@@ -11,10 +11,11 @@ async function tvl() {
   const vaultTypes = await program.account.vaultType.all()
   const psmAccounts = await program.account.psmAccount.all()
   const tokensAndOwners = psmAccounts.map(i => [i.account.collateralMint.toString(), i.publicKey.toString()])
-  const balances = {}
+  let balances = {}
   vaultTypes.forEach(({ account }) => {
-    sdk.util.sumSingleBalance(balances, 'solana:'+account.collateralMint.toString(), +account.collateralHeld)
+    sdk.util.sumSingleBalance(balances, account.collateralMint.toString(), +account.collateralHeld)
   })
+  balances = await transformBalances({ tokenBalances: balances })
   return sumTokens2({ balances, tokensAndOwners, })
 }
 
