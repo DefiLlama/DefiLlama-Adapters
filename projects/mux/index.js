@@ -1,28 +1,8 @@
-const {toUSDTBalances} = require('../helper/balances');
 const BigNumber = require("bignumber.js");
 const abi = require("./abi.json");
-
 const sdk = require("@defillama/sdk");
 const { Contract, providers } = require("ethers");
-const utils = require("../helper/utils");
-
-const keys = [
-  {
-    ETH: "ethereum",
-    BTC: "bitcoin",
-    DAI: "dai",
-    USDC: "usd-coin",
-    'USDC.e': "usd-coin",
-    AVAX: "avalanche-2",
-    USDT: "tether",
-    fUSDT: "tether",
-    'USDT.e': "tether",
-    BUSD: "binance-usd",
-    'BUSD.e': "binance-usd",
-    BNB: "binancecoin",
-    FTM: "fantom",
-  },
-];
+const { getChainTransform, getFixBalances } = require("../helper/portedTokens");
 
 const liquidityPoolContract = {
   arbitrum: '0x3e0199792Ce69DC29A0a36146bFa68bd7C8D6633',
@@ -49,101 +29,71 @@ const rpc = {
   arbitrum: process.env.ARBITRUM_RPC || 'https://arb1.arbitrum.io/rpc',
   bsc: process.env.BSC_RPC || 'https://bsc-dataseed4.binance.org',
   avax: process.env.AVAX_RPC || 'https://api.avax.network/ext/bc/C/rpc',
-  fantom: process.env.FANTOM_RPC || 'https://rpcapi.fantom.network',
+  fantom: process.env.FANTOM_RPC || 'https://fantom-mainnet.gateway.pokt.network/v1/lb/62759259ea1b320039c9e7ac',
 }
 
 const invalidAddress = '0x0000000000000000000000000000000000000000'
 
-function hexToStr(hex) {
-  const trimedStr = hex.trim();
-  const rawStr = trimedStr.substr(0,2).toLowerCase() === "0x" ? trimedStr.substr(2) : trimedStr;
-  const len = rawStr.length;
-  if(len % 2 !== 0) {
-    return "";
-  }
-  let curCharCode;
-  const resultStr = [];
-  for(let i = 0; i < len;i = i + 2) {
-    curCharCode = parseInt(rawStr.substr(i, 2), 16);
-    if (curCharCode !== 0) {
-      resultStr.push(String.fromCharCode(curCharCode));
-    }
-  }
-  return resultStr.filter(str => str !== '').join("");
-}
-
-async function tvl(chain) {
+async function tvl(chain, block) {
+  const transformAddress = await getChainTransform(chain)
   const provider = new providers.JsonRpcProvider(rpc[chain], chainId[chain])
   const contract = new Contract(readerContract[chain], abi, provider)
   const storage = await contract.callStatic.getChainStorage()
   const assets = storage[1]
   const dexs = storage[2]
 
-  const prices = (await utils.getPrices(keys)).data;
-  const assetsInfoMap = new Map()
+  const tokens = assets.filter(token => token.tokenAddress !== invalidAddress).map(token => {
+    return {address: token.tokenAddress, key: transformAddress(token.tokenAddress), decimals: token.decimals, assetId: token.id}
+  })
 
-  let tvl = new BigNumber(0)
-  await Promise.all(assets.map(async (token) => {
-    if (token.tokenAddress === invalidAddress) {
-      return
+  const owner = liquidityPoolContract[chain]
+  const balances = {}
+  const balanceOfTokens = await sdk.api.abi.multiCall({
+    calls: tokens.map(t => ({
+      target: t.address,
+      params: owner
+    })),
+    abi: 'erc20:balanceOf',
+    block,
+    chain
+  })
+
+  balanceOfTokens.output.forEach((result, idx) => {
+    const token = tokens[idx]
+    const balance = BigNumber(result.output)
+    try {
+      balances[token.key] = BigNumber(balances[token.key] || 0).plus(balance).toFixed(0)
+    } catch (e) {
+      console.log(token, balance, balances[token])
+      throw e
     }
-    const symbol = hexToStr(token.symbol)
-    const price = prices[keys[0][symbol]]?.usd || 0
-    assetsInfoMap.set(token.id, {
-      price: price,
-      decimals: token.decimals,
-      symbol: symbol
-    })
-    const balance = (await sdk.api.erc20.balanceOf({
-      target: token.tokenAddress,
-      owner: liquidityPoolContract[chain],
-      chain: chain
-    })).output;
-    const tokenAmount = new BigNumber(balance).shiftedBy(-Number(token.decimals))
-    tvl = tvl.plus(new BigNumber(tokenAmount).times(price))
-  }))
+  })
 
-  let dexLiquidity = new BigNumber(0)
-  dexs.map(dex => {
-    dex.liquidityBalance.map((balance, index) => {
-      const assetInfo = assetsInfoMap.get(dex.assetIds[index])
-      const tokenAmount =  new BigNumber(balance.toString()).shiftedBy(-Number(assetInfo.decimals))
-      dexLiquidity = dexLiquidity.plus(tokenAmount.times(assetInfo?.price || 0))
+  dexs.forEach(dex => {
+    dex.liquidityBalance.forEach((balance, index) => {
+      const assetId = dex.assetIds[index]
+      const token = tokens.find(t => assetId === t.assetId)
+      balances[token.key] = BigNumber(balances[token.key] || 0).plus(balance.toString()).toFixed(0)
     })
   })
 
-  return toUSDTBalances(tvl.plus(dexLiquidity))
-}
+  Object.entries(balances).forEach(([token, value]) => {
+    if (+value === 0) delete balances[token]
+  })
 
-async function arbitrum() {
-  return await tvl('arbitrum')
-}
-
-async function bsc() {
-  return await tvl('bsc')
-}
-
-async function fantom() {
-  return await tvl('fantom')
-}
-
-async function avax() {
-  return await tvl('avax')
+  const fixBalances = await getFixBalances(chain)
+  const fixedBalances = fixBalances(balances)
+  return fixedBalances
 }
 
 module.exports = {
-  misrepresentedTokens: true,
   methodology: `This is the total value of all tokens in the MUXLP Pool. The liquidity pool consists of a token portfolio used for margin trading and third-party DEX mining.`,
-  arbitrum: {
-    tvl: arbitrum,
-  },
-  bsc: {
-    tvl: bsc
-  },
-  fantom: {
-    tvl: fantom
-  },
-  avax: {
-    tvl: avax
-  }
 }
+
+Object.keys(chainId).forEach(chain => {
+  module.exports[chain] = {
+    tvl: async (_, _b, {[chain]: block}) => {
+      return tvl(chain, block)
+    }
+  }
+})
