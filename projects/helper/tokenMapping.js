@@ -1173,7 +1173,7 @@ const fixBalancesTokens = {
     "0xcb4a593ce512d78162c58384f0b2fd6e802c2c47": { coingeckoId: "bepro-network", decimals: 18 },
   },
   muuchain: {
-    "	0x875358f6194d7c622d6355455f3137cceb2955c4": { coingeckoId: "muu-inu", decimals: 18 },
+    "0x875358f6194d7c622d6355455f3137cceb2955c4": { coingeckoId: "muu-inu", decimals: 18 },
   },
   iotex: {
     [nullAddress]: { coingeckoId: "iotex", decimals: 18 },
