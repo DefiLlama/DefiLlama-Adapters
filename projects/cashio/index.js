@@ -18,23 +18,6 @@ const {
   getMultipleAccountsRaw,
 } = require("../helper/solana");
 
-async function getTotalBalancesFromMultipleAccounts(tokenAccounts) {
-  const tokenAccountsData = (await getMultipleAccountsRaw(tokenAccounts))
-    .map((account) => {
-      if (account !== null) {
-        return Buffer.from(account.data[0], account.data[1]);
-      }
-      return null;
-    })
-    .filter((d) => !!d);
-  return tokenAccountsData
-    .map((tad) =>
-      // sorry, this code is a tad hacky
-      Number(tad.readBigUInt64LE(64))
-    )
-    .reduce((acc, el) => acc + el, 0);
-}
-
 const readTVL = async ({
   tokenA,
   tokenB,
@@ -97,10 +80,6 @@ async function tvl() {
   // contains a list of all token accounts + their associated sunny pool or coingecko ID
   // more details: https://github.com/cashioapp/treasury
   const cashioTreasuryAccounts = {
-    "coingeckoTokens": {
-      // "sunny-aggregator": ["7xm1b8ZcharzxxqJUTeu4LtnVK1u65599f9wSRxzUwNf"],  // Disabling saber/sunny tokens from treasury since this was run by the same person
-      // "saber": ["8pkYj9PGyGaJR5FdmXprnJcsFLZ8Q9afgydPG85H1GcF"]  // Disabling saber/sunny tokens from treasury since this was run by the same person
-    },
     "sunnyPools": {
       "3Zk1PhVap6mwrB9jZktucoSaMBa2whYSq8jtLew3tXbp": [
         "D67ZNjaRERdc7Ej8SjbpyGwJT4MnadgzfGnwgCmMJAa1",
@@ -110,18 +89,7 @@ async function tvl() {
   }
   
 
-  const { coingeckoTokens, sunnyPools } = cashioTreasuryAccounts;
-
-  // fetch all normal tokens (tokens with coingecko IDs)
-  for (const [coingeckoID, tokenAccounts] of Object.entries(coingeckoTokens)) {
-    const amount =
-      (await getTotalBalancesFromMultipleAccounts(tokenAccounts)) / 10 ** 6;
-    if (!tvlResult[coingeckoID]) {
-      tvlResult[coingeckoID] = amount;
-    } else {
-      tvlResult[coingeckoID] += amount;
-    }
-  }
+  const { sunnyPools } = cashioTreasuryAccounts;
 
   // Run these serially to avoid rate limiting issues
   for (const [sunnyPoolKey, tokenAccounts] of Object.entries(sunnyPools)) {

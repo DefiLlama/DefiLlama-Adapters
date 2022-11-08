@@ -19,7 +19,7 @@ async function borrowed() {
   const balances = {};
   accounts.forEach(({ account: i }) => {
     if (Buffer.from(i.productName).toString().trim().includes("test")) return;
-    sdk.util.sumSingleBalance(balances, i.underlyingMint.toString(), +i.underlyingAmount / 1e6);
+    sdk.util.sumSingleBalance(balances, i.underlyingMint.toString(), +i.underlyingAmount );
   });
   const usdcBalance = await getTokenBalance(usdcTokenSpl, vaultMintAuthority)
   sdk.util.sumSingleBalance(balances, usdcTokenSpl, -1 * usdcBalance);
@@ -39,10 +39,7 @@ async function tvl() {
     ],
   });
 
-  const balancesInProgram = await sumTokens2({ owner: vaultMintAuthority, tokens: [usdcTokenSpl]});
-  return {
-    'usd-coin': (collateralBalances[ercCoinGeckoMap['usd-coin']] / 1e6) + balancesInProgram['usd-coin'],
-  }
+  return sumTokens2({ balances: collateralBalances, owner: vaultMintAuthority, tokens: [usdcTokenSpl]});
 }
 
 module.exports = {
