@@ -168,6 +168,12 @@
             "isLP": true,
             "isJoeLP": true
         },
+        "0xD5817AC3027B1958961903238b374EcD8a5537A8": {
+            "name": "BTCb_WAVAX",
+            "underlying": "0x2fd81391e30805cc7f2ec827013ce86dc591b806",
+            "isLP": true,
+            "isJoeLP": true
+        },
         "0x25DD42103b7DA808e68A2bae5e14F48871488a85": {
             "name": "AVAX",
             "underlying": "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
@@ -186,6 +192,16 @@
         "0xbB720b2e8623C2351302Fe03C9DFD44945CeF738": {
             "name": "USDC_YUSD",
             "underlying": "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+            "isLP": false
+        },
+        "0x9554903a1Ad1E42781008eAb66aC163818B8ecB1": {
+            "name": "BTCb",
+            "underlying": "0x152b9d0fdc40c096757f570a51e494bd4b943e50",
+            "isLP": false
+        },
+        "0x77A3eAA4045ef334A5d87deb2f4AE506c85dceA1": {
+            "name": "WBTCe",
+            "underlying": "0x50b7545627a5162F82A992c33b87aDc75187B218",
             "isLP": false
         }
         

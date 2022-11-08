@@ -3,7 +3,8 @@ const { requery } = require("../helper/requery");
 const abi = require("./abi");
 const { default: BigNumber } = require("bignumber.js");
 const { getCompoundV2Tvl } = require('../helper/compound')
-const { pool2 } = require('../helper/pool2')
+const { pool2 } = require('../helper/pool2');
+const { getBlock } = require("../helper/getBlock");
 
 const earnETHPoolFundControllerAddressesIncludingLegacy = [
   '0xD9F223A36C2e398B0886F945a7e556B41EF91A3C',
@@ -98,6 +99,7 @@ async function borrowed(timestamp, block) {
 
 async function tvl(timestamp, block) {
   const balances = {}
+  block = await getBlock(timestamp, 'ethereum', { ethereum: block })
 
   const getEarnYieldProxyAddressAsArray = (block) => {
     if (block <= 11306334) {
@@ -186,5 +188,16 @@ module.exports = {
     tvl,
     pool2: pool2(rariGovernanceTokenUniswapDistributorAddress, RGTETHSushiLPTokenAddress),
     borrowed,
-  }
+  },
+  arbitrum: {
+    // Borrowing is disabled, and Tetranode's locker is the only pool with significant tvl, so counting only that
+    tvl: getCompoundV2Tvl('0xC7D021BD813F3b4BB801A4361Fbcf3703ed61716', 'arbitrum', undefined,  undefined, undefined, false),
+    borrowed: getCompoundV2Tvl('0xC7D021BD813F3b4BB801A4361Fbcf3703ed61716', 'arbitrum', undefined,  undefined, undefined, true),
+  },
+  hallmarks: [
+    [1651276800, "FEI hack"],
+    [1649548800, "ICHI sell-off"],
+    [1620432000, "First Rari hack"],
+    [1654905600, "Bhavnani's announcement"]
+  ]
 }

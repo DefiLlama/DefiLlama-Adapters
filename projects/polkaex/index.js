@@ -1,5 +1,6 @@
-const { calculateUsdUniTvl } = require('../helper/getUsdUniTvl')
+const { getUniTVL } = require('../helper/unknownTokens')
 const { stakings } = require("../helper/staking");
+const { getFixBalances } = require('../helper/portedTokens');
 
 const FACTORIES = {
     astar: "0x1E66b3e7141bDF8c414F91269a3A99d098D2d356",
@@ -19,6 +20,7 @@ const TOKENS = {
     astar: {
         USDC: "0x6a2d262D56735DbA19Dd70682B39F6bE9a931D98",
         USDT: "0x3795C36e7D12A8c252A20C5a7B455f7c57b60283",
+        DOT: "0xFFfFfFffFFfffFFfFFfFFFFFffFFFffffFfFFFfF",
         WASTAR: NATIVE_TOKENS.WASTAR,
     },
     shiden: {
@@ -53,7 +55,9 @@ const PKEX = {
 const STAKING_CONTRACTS = {
     astar: [
         "0xC8f9d27B4e5E9c956c7344C87D2eF05381D89Fc9",
-        "0x517066B4D6eE14Ea8f8BF3A422b88dB95CE4C333"
+        "0x517066B4D6eE14Ea8f8BF3A422b88dB95CE4C333",
+        "0x8986CD046741CBfEe8F36a1dCD2af7C2a4942F1A",
+        "0x6B44EF63fe77C56478a191bC1673E24e0408a780",
     ],
     shiden: [
         "0xC9e3Ca62B14818D23D29E658888c03A61bE22AB6",
@@ -70,40 +74,10 @@ const STAKING_CONTRACTS = {
 }
 
 const tvls = {
-    astar: calculateUsdUniTvl(
-        FACTORIES.astar,
-        "astar",
-        NATIVE_TOKENS.WASTAR,
-        [
-            ...Object.values(TOKENS.astar),
-            PKEX.astar
-        ], "astar"),
-    shiden: calculateUsdUniTvl(
-        FACTORIES.shiden,
-        "shiden",
-        NATIVE_TOKENS.WSDN,
-        [
-            ...Object.values(TOKENS.shiden),
-            PKEX.shiden
-        ], "shiden"),
-    bsc: calculateUsdUniTvl(
-        FACTORIES.bsc,
-        "bsc",
-        NATIVE_TOKENS.WBNB,
-        [
-            ...Object.values(TOKENS.bsc),
-            PKEX.bsc
-        ], "wbnb"),
-    ethereum: calculateUsdUniTvl(
-        FACTORIES.ethereum,
-        "ethereum",
-        NATIVE_TOKENS.WETH,
-        [
-            ...Object.values(TOKENS.ethereum),
-            PKEX.ethereum
-        ],
-        "weth"
-    ),
+    astar: getUniTVL({ factory: FACTORIES.astar, chain: 'astar', useDefaultCoreAssets: true, }),
+    shiden: getUniTVL({ factory: FACTORIES.shiden, chain: 'shiden', useDefaultCoreAssets: true, }),
+    bsc: getUniTVL({ factory: FACTORIES.bsc, chain: 'bsc', useDefaultCoreAssets: true, }),
+    ethereum: getUniTVL({ factory: FACTORIES.ethereum, chain: 'ethereum', useDefaultCoreAssets: true, }),
     polygon: async () => 0,
 }
 
@@ -113,12 +87,24 @@ module.exports = {
     methodology: "PolkaEx Tvl Calculation",
     astar: {
         tvl: tvls.astar,
-        staking: stakings(
-            STAKING_CONTRACTS.astar,
-            PKEX.astar,
-            "astar",
-            PKEX.ethereum
-        ),
+        staking: async (timestamp, _ethBlock, chainBlocks) => {
+            const pkexStaking = await stakings(
+                STAKING_CONTRACTS.astar,
+                PKEX.astar,
+                "astar",
+                PKEX.ethereum
+            )(timestamp, _ethBlock, chainBlocks);
+
+            const dotStaking = await stakings(
+                STAKING_CONTRACTS.astar,
+                TOKENS.astar.DOT,
+                "astar"
+            )(timestamp, _ethBlock, chainBlocks);
+
+            const result = { ...pkexStaking, ...dotStaking };
+            (await getFixBalances("astar"))(result);
+            return result;
+        },
     },
     shiden: {
         tvl: tvls.shiden,

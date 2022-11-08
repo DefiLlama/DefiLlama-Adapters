@@ -13,7 +13,7 @@ async function tvl() {
 }
 
 module.exports = {
-    avalanche:{
+    avax:{
         tvl,
         staking
     },

@@ -1,14 +1,11 @@
-const retry = require('./helper/retry');
-const axios = require("axios");
 const { toUSDTBalances } = require('./helper/balances');
+const { get } = require('./helper/http');
 
 async function fetch() {
-    let response = await retry(
-        async bail => await axios.get(
-            'https://antex.finance/api/token/statistic?platform=bsc&network=main'
-        )
-    );
-    return toUSDTBalances(response.data.data.total_liquid_lock);
+    let response = await get(
+        'https://antpad.io/api/index/statistic?platform=bsc&network=main'
+    )
+    return toUSDTBalances(response.data.total_liquidity_locked);
 };
 
 module.exports = {

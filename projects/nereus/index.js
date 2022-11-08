@@ -32,7 +32,7 @@ async function tvl(timestamp, block, chainBlocks) {
 }
 
 module.exports = {
-    avalanche: {
+    avax:{
         tvl
     }
 }

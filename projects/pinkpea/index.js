@@ -35,7 +35,6 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
       block: chainBlocks.aurora,
     })
   ).output;
-  console.log(totalSupply);
 
   let totalTvl = 0;
   totalSupply.forEach((data) => {
@@ -43,17 +42,10 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
     if (tokenDecimals[data.vaultAddress]) {
       decimal = tokenDecimals[data.vaultAddress];
     }
-    console.log(
-      decimal,
-      Number(ethers.utils.formatUnits(data.tvl, data.decimal)) *
-        Number(ethers.utils.formatUnits(data.tokenPrice, decimal)),
-      data.tokenPrice
-    );
     totalTvl +=
       Number(ethers.utils.formatUnits(data.tvl, data.decimal)) *
       Number(ethers.utils.formatUnits(data.tokenPrice, decimal));
   });
-  console.log(totalTvl);
   return {
     "aurora:0x4988a896b1227218e4A686fdE5EabdcAbd91571f": totalTvl * 1000000,
   };

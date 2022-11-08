@@ -1,45 +1,59 @@
-const { GraphQLClient, gql } = require("graphql-request");
+const { request, gql } = require("graphql-request");
 const { toUSDTBalances } = require("../helper/balances");
-const { getBlock } = require("../helper/getBlock");
-async function getTVL(subgraphName, block) {
-  // delayed by 500 blocks to allow subgraph to update
-  block -= 500;
-  var endpoint = `https://api.thegraph.com/subgraphs/name/beethovenxfi/${subgraphName}`;
-  var graphQLClient = new GraphQLClient(endpoint);
+const { getBalancerSubgraphTvl } = require("../helper/balancer");
 
-  var query = gql`
-    query get_tvl($block: Int) {
-      balancers(first: 5, block: { number: $block }) {
-        totalLiquidity
-        totalSwapVolume
-      }
+const backendGraphUrlFantom = "https://backend-v2.beets-ftm-node.com/graphql";
+const backendGraphUrlOptimism =
+  "https://backend-optimism-v2.beets-ftm-node.com/graphql";
+
+const backendTvlGraphQuery = gql`
+  query get_tvl {
+    data: protocolMetrics {
+      totalLiquidity
     }
-  `;
-  const results = await graphQLClient.request(query, {
-    block,
-  });
-  return results.balancers[0].totalLiquidity;
+  }`;
+
+const backendLatestBlockQuery = gql`
+query get_latest_block {
+  data: latestSyncedBlocks {
+    poolSyncBlock
+  }
+}`;
+
+async function getLatestSyncedBlockFantom() {
+  const { data } = await request(backendGraphUrlFantom, backendLatestBlockQuery);
+  return data.poolSyncBlock;
 }
 
-async function fantom(timestamp, ethBlock, chainBlocks) {
-  return toUSDTBalances(
-    await getTVL("beethovenx", await getBlock(timestamp, "fantom", chainBlocks))
-  );
+async function getLatestSyncedBlockOptimism() {
+  const { data } = await request(backendGraphUrlOptimism, backendLatestBlockQuery);
+  return data.poolSyncBlock;
 }
 
-async function optimism(timestamp, ethBlock, chainBlocks) {
-  return toUSDTBalances(
-    await getTVL(
-      "beethovenx-optimism",
-      await getBlock(timestamp, "optimism", chainBlocks)
-    )
-  );
+async function fantom(timestamp, ...params) {
+  if (Math.abs(timestamp - Date.now() / 1000) < 3600 / 2) {
+    const { data } = await request(backendGraphUrlFantom, backendTvlGraphQuery);
+    return toUSDTBalances(data.totalLiquidity);
+  }
+  return getBalancerSubgraphTvl(
+    "https://api.thegraph.com/subgraphs/name/beethovenxfi/beethovenx",
+    "fantom"
+  )(timestamp, ...params);
+}
+
+async function optimism(timestamp, ...params) {
+  if (Math.abs(timestamp - Date.now() / 1000) < 3600 / 2) {
+    const { data } = await request(backendGraphUrlOptimism, backendTvlGraphQuery);
+    return toUSDTBalances(data.totalLiquidity);
+  }
+  return getBalancerSubgraphTvl(
+    "https://api.thegraph.com/subgraphs/name/beethovenxfi/beethovenx-optimism",
+    "optimism"
+  )(timestamp, ...params);
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: true,
-  methodology: `BeethovenX TVL is pulled from the Balancer subgraph and includes deposits made to v2 liquidity pools.`,
+  methodology: `BeethovenX TVL is pulled from the Balancer subgraph and on-chain. It includes deposits made to v2 liquidity pools.`,
   fantom: {
     tvl: fantom,
   },

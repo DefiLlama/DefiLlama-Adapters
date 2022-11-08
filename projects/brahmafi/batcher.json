@@ -1,0 +1,15 @@
+{
+  "pendingDeposit": {
+    "inputs": [],
+    "name": "pendingDeposit",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+}

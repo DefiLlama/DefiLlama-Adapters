@@ -20,5 +20,6 @@ async function tvl(_, block, chainBlocks) {
 }
 */
 module.exports = {
+  bsc: {
   tvl: getLiquityTvl(BNB_ADDRESS,TROVE_MANAGER_ADDRESS,"bsc")
-};
+}}

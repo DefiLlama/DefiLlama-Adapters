@@ -224,4 +224,7 @@ module.exports = {
     const tvl = await loadTvl();
     return Object.values(tvl).reduce((acc, i) => acc + i, 0)
   },
+  hallmarks:[
+    [1651881600, "UST depeg"],
+  ],
 };
