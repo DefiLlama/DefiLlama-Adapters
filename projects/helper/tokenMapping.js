@@ -21,6 +21,7 @@ const tokens = {
   usdt: 'ethereum:0xdac17f958d2ee523a2206206994597c13d831ec7',
   usdc: 'ethereum:0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
   ethereum: 'ethereum:'+nullAddress,
+  weth: 'ethereum:0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
   busd: 'bsc:0xe9e7cea3dedca5984780bafc599bd69add087d56',
 }
 
@@ -1296,7 +1297,7 @@ ibcChains.forEach(chain => fixBalancesTokens[chain] = { ...ibcMappings, ...(fixB
 
 const coreAssets = {
   ethereum: [
-    tokens.ethereum,  // WETH
+    tokens.weth,  // WETH
     tokens.usdc, //usdc
     tokens.usdc,
     '0x514910771af9ca656af840dff83e8264ecf986ca', //link
@@ -1310,7 +1311,7 @@ const coreAssets = {
     '0xc834fa996fa3bec7aad3693af486ae53d8aa8b50', // CONV
   ],
   ethpow: [
-    tokens.ethereum
+    tokens.weth
   ],
   velas: Object.values({
     WVLX: '0xc579D1f3CF86749E05CD06f7ADe17856c2CE3126',
