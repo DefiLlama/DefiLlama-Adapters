@@ -150,12 +150,6 @@ async function getTokenList() {
   return tokenList
 }
 
-async function getCoingeckoId() {
-  const tokenlist = await getTokenList();
-  return address => tokenlist.find((t) => t.address === address)?.extensions
-    ?.coingeckoId;
-}
-
 // Example: [[token1, account1], [token2, account2], ...]
 async function sumTokens(tokensAndOwners, balances = {}) {
   return sumTokens2({ balances, tokensAndOwners, })
@@ -374,7 +368,6 @@ module.exports = {
   getMultipleAccountBuffers,
   sumOrcaLPs,
   getSolBalance,
-  getCoingeckoId,
   sumTokensUnknown,
   exportDexTVL,
   getProvider,

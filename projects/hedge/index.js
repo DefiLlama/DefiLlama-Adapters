@@ -1,47 +1,41 @@
-const { default: BigNumber } = require("bignumber.js");
-const { getCoingeckoId } = require("../helper/solana");
-const { fetchURL } = require('../helper/utils')
+const { getProvider, sumTokens2, } = require("../helper/solana");
+const { Program, } = require("@project-serum/anchor");
+const sdk = require('@defillama/sdk')
 
-const HEDGE_API_URL = 'http://www.hedge.so/api/overview?mode=coingecko'
+const programId = 'HedgeEohwU6RqokrvPU4Hb6XKPub8NuKbnPmY7FoMMtN'
 
 async function tvl() {
-    const data = (await fetchURL(HEDGE_API_URL))?.data;
-    const getCgId = await getCoingeckoId();
-    
-    const tvl = {
-        'usd-coin': new BigNumber(0),
-        'hedge-usd': new BigNumber(0),
-    };
-
-    //collateral
-    for (const mint in data?.collateralHeld) {
-        const cgId = await getCgId(mint);
-        tvl[cgId] = new BigNumber(data.collateralHeld[mint])
-    }
-
-    //psm
-    tvl['usd-coin'] = tvl['usd-coin'].plus(data?.psm?.deposited)
-
-    //stability pool
-    //tvl['hedge-usd'] = tvl['hedge-usd'].plus(data?.liquidationPoolDeposits)
-
-    return tvl;    
+  const provider = getProvider()
+  const idl = await Program.fetchIdl(programId, provider)
+  const program = new Program(idl, programId, provider)
+  const vaultTypes = await program.account.vaultType.all()
+  const psmAccounts = await program.account.psmAccount.all()
+  const tokensAndOwners = psmAccounts.map(i => [i.account.collateralMint.toString(), i.publicKey.toString()])
+  const balances = {}
+  vaultTypes.forEach(({ account }) => {
+    sdk.util.sumSingleBalance(balances, 'solana:'+account.collateralMint.toString(), +account.collateralHeld)
+  })
+  return sumTokens2({ balances, tokensAndOwners, })
 }
 
 async function staking() {
-    const data = (await fetchURL(HEDGE_API_URL))?.data;
-    const staking = {
-        'hedge-protocol': new BigNumber(data?.stakingPoolDeposits)
-    }
-    return staking;
-} 
+  const provider = getProvider()
+  const idl = await Program.fetchIdl(programId, provider)
+  const program = new Program(idl, programId, provider)
+  const stakingPools = await program.account.stakingPool.all()
+  const balances = {}
+  stakingPools.forEach(({ account, }) => {
+    sdk.util.sumSingleBalance(balances, 'solana:'+account.stakedTokenMint.toString(), +account.deposits)
+  })
+  return balances
+}
 
 module.exports = {
-    timetravel: false,
-    solana:{
-      tvl,
-      staking
-    },
-    methodology:
-      "TVL is equal to the Collateral Value + assets in PSM. Staking adds Amount of HDG staked * HDG price"
-  };
+  timetravel: false,
+  solana: {
+    tvl,
+    staking
+  },
+  methodology:
+    "TVL is equal to the Collateral Value + assets in PSM. Staking adds Amount of HDG staked * HDG price"
+};
