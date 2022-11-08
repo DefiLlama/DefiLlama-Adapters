@@ -1172,6 +1172,9 @@ const fixBalancesTokens = {
   moonriver: {
     "0xcb4a593ce512d78162c58384f0b2fd6e802c2c47": { coingeckoId: "bepro-network", decimals: 18 },
   },
+  muuchain: {
+    "	0x875358f6194d7c622d6355455f3137cceb2955c4": { coingeckoId: "muu-inu", decimals: 18 },
+  },
   iotex: {
     [nullAddress]: { coingeckoId: "iotex", decimals: 18 },
     '0xA00744882684C3e4747faEFD68D283eA44099D03': { coingeckoId: "iotex", decimals: 18 },
@@ -1454,6 +1457,9 @@ const coreAssets = {
   ],
   smartbch: [
     '0x3743eC0673453E5009310C727Ba4eaF7b3a1cc04', // smartbch
+  ],
+  muuchain: [
+    '0x875358f6194d7c622d6355455f3137cceb2955c4', // wmuu
   ],
   kava: [
     '0xc86c7C0eFbd6A49B35E8714C5f59D99De09A225b',
