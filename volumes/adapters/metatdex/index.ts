@@ -28,7 +28,6 @@ const graphs = (chain: Chain) => {
       .reduce((acc, { volume }) => acc + Number(volume), 0)
     const dailyVolume = historicalVolume
       .find(dayItem => (new Date(dayItem.date).getTime() / 1000) === dayTimestamp)?.volume
-
     return {
       totalVolume: `${totalVolume}`,
       dailyVolume: dailyVolume ? `${dailyVolume}` : undefined,
@@ -56,3 +55,5 @@ const adapter: SimpleVolumeAdapter = {
 };
 
 export default adapter;
+
+
