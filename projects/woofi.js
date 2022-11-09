@@ -18,6 +18,10 @@ const chainConfig = {
 	polygon: {
 		woo: '0x1b815d120b3ef02039ee11dc2d33de7aa4a8c603',
 		stakingContract: '0x9BCf8b0B62F220f3900e2dc42dEB85C3f79b405B',
+	},
+	arbitrum: {
+		woo: '0xcafcd85d8ca7ad1e1c6f82f651fa15e33aefd07b',
+		stakingContract: '0x9321785D257b3f0eF7Ff75436a87141C683DC99d',
 	}
 }
 

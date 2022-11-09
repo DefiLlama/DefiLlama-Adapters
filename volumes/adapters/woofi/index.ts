@@ -1,5 +1,5 @@
 import { SimpleVolumeAdapter } from "../../dexVolume.type";
-import {  AVAX, BSC, FANTOM, POLYGON } from "../../helper/chains";
+import {  AVAX, BSC, FANTOM, POLYGON, ARBITRUM } from "../../helper/chains";
 
 const { getChainVolume } = require("../../helper/getUniSubgraphVolume");
 const { getStartTimestamp } = require("../../helper/getStartTimestamp");
@@ -9,6 +9,7 @@ const endpoints = {
   [BSC]: "https://api.thegraph.com/subgraphs/name/woonetwork/woofi-bsc",
   [FANTOM]: "https://api.thegraph.com/subgraphs/name/woonetwork/woofi-fantom",
   [POLYGON]: "https://api.thegraph.com/subgraphs/name/woonetwork/woofi-polygon",
+  [ARBITRUM]: "https://api.thegraph.com/subgraphs/name/woonetwork/woofi-arbitrum",
 };
 
 const TOTAL_VOLUME_FACTORY = "globalVariables";
