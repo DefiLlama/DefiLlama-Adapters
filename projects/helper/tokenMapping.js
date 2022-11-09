@@ -9,10 +9,10 @@ const nullAddress = '0x0000000000000000000000000000000000000000'
 // TODO: get celer info
 // Alexar info: https://api.axelarscan.io/cross-chain/tvl
 // coingecko coins: https://api.coingecko.com/api/v3/coins/list?include_platform=true
-// gravity brdge for IBC: https://api.mintscan.io/v2/assets/gravity-bridge
+// gravity bridge for IBC: https://api.mintscan.io/v2/assets/gravity-bridge
 
 const unsupportedGeckoChains = ['aptos', 'terra2', 'terra', 'kujira']
-const ibcChains = ['terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno',]
+const ibcChains = ['terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', ]
 const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'algorand', 'aptos', 'near', 'bitcoin', 'waves']
 
 const tokens = {
@@ -24,8 +24,12 @@ const tokens = {
   weth: 'ethereum:0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
   busd: 'bsc:0xe9e7cea3dedca5984780bafc599bd69add087d56',
   bnb: 'bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
-  link: 'ethereum:0x514910771af9ca656af840dff83e8264ecf986ca'
+  link: 'ethereum:0x514910771af9ca656af840dff83e8264ecf986ca',
+  wbtc: 'ethereum:0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
 }
+const tokensBare = {}
+for (const [label, value] of Object.entries(tokens))
+  tokensBare[label] = value.split(':')[1]
 
 const transformTokens = {
   ethereum: {
@@ -74,7 +78,7 @@ const transformTokens = {
     "0x637ec617c86d24e421328e6caea1d92114892439": tokens.dai,
     "0xb3654dc3d10ea7645f8319668e8f54d2574fbdc8": tokens.link,
     "0x0a03d2c1cfca48075992d810cc69bd9fe026384a": tokens.ethereum,
-    "0x97927abfe1abbe5429cbe79260b290222fc9fbba": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+    "0x97927abfe1abbe5429cbe79260b290222fc9fbba": tokens.wbtc,
     "0x6dfe2aaea9daadadf0865b661b53040e842640f8": tokens.link,
     "0x920786cff2a6f601975874bb24c63f0115df7dc8": tokens.dai,
     "0x49c68edb7aebd968f197121453e41b8704acde0c": "fantom:0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
@@ -122,7 +126,7 @@ const transformTokens = {
     "0x637ec617c86d24e421328e6caea1d92114892439": tokens.dai,
     "0xb3654dc3d10ea7645f8319668e8f54d2574fbdc8": tokens.link,
     "0x0a03d2c1cfca48075992d810cc69bd9fe026384a": tokens.ethereum,
-    "0x97927abfe1abbe5429cbe79260b290222fc9fbba": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+    "0x97927abfe1abbe5429cbe79260b290222fc9fbba": tokens.wbtc,
     "0x6dfe2aaea9daadadf0865b661b53040e842640f8": tokens.link,
     "0x920786cff2a6f601975874bb24c63f0115df7dc8": tokens.dai,
     "0x49c68edb7aebd968f197121453e41b8704acde0c": "fantom:0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
@@ -202,9 +206,9 @@ const transformTokens = {
     "0x4537e328bf7e4efa29d05caea260d7fe26af9d74": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
     "0x4ecaba5870353805a9f068101a40e0f32ed605c6": tokens.usdc,
     "0x7122d7661c4564b7c6cd4878b06766489a6028a2": "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0",
-    "0x8e5bbbb09ed1ebde8674cda39a0c169401db4252": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+    "0x8e5bbbb09ed1ebde8674cda39a0c169401db4252": tokens.wbtc,
     "0xec3f3e6d7907acDa3A7431abD230196CDA3FbB19": "0xFd09911130e6930Bf87F2B0554c44F400bD80D3e", // ETHIX (Ethichub)
-    // '0x29414ec76d79ff238e5e773322799d1c7ca2443f': '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', // Boring oBTC
+    // '0x29414ec76d79ff238e5e773322799d1c7ca2443f': tokens.wbtc, // Boring oBTC
   },
   okexchain: {
     "0x0000000000000000000000000000000000000000": "0x75231f58b43240c9718dd58b4967c5114342a86c", // okex
@@ -272,7 +276,7 @@ const transformTokens = {
     '0xdfa46478f9e5ea86d57387849598dbfb2e964b02': 'polygon:0xa3fa99a148fa48d14ed51d610c367c61876997f1', // mai
     '0x8e70cD5B4Ff3f62659049e74b6649c6603A0E594': tokens.usdc, // usdt.mad
     '0x30D2a9F5FDf90ACe8c17952cbb4eE48a55D916A7': tokens.ethereum, // eth.mad
-    '0x1DC78Acda13a8BC4408B207c9E48CDBc096D95e0': '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', // wtbc.mad
+    '0x1DC78Acda13a8BC4408B207c9E48CDBc096D95e0': tokens.wbtc, // wtbc.mad
     '0xc234A67a4F840E61adE794be47de455361b52413': tokens.dai, // dai.mad
     '0x1d4C2a246311bB9f827F4C768e277FF5787B7D7E': 'moonriver:0x98878b06940ae243284ca214f92bb71a2b032b8a', // movr
     '0x0000000000000000000000000000000000000000': 'moonbeam:0xacc15dc74880c9944775448304b263d191c6077f', // GLMR -> WGLMR
@@ -280,7 +284,7 @@ const transformTokens = {
     '0x931715FEE2d06333043d11F658C8CE934aC61D0c': tokens.usdc, // usdc.wh
     '0xFFFFFFfFea09FB06d082fd1275CD48b191cbCD1d': tokens.usdc, // xc usdt (native)
     '0xab3f0245B83feB11d15AAffeFD7AD465a59817eD': tokens.ethereum, // eth.wh
-    '0xE57eBd2d67B462E9926e04a8e33f01cD0D64346D': '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', // wtbc.wh
+    '0xE57eBd2d67B462E9926e04a8e33f01cD0D64346D': tokens.wbtc, // wtbc.wh
     '0x692C57641fc054c2Ad6551Ccc6566EbA599de1BA': '0x4Fabb145d64652a948d72533023f6E7A623C7C53', // busd.wh
   },
   arbitrum: {
@@ -315,7 +319,7 @@ const transformTokens = {
     "0x7FF4a56B32ee13D7D4D405887E0eA37d61Ed919e": tokens.usdc, // madUSDT
     "0xb72A7567847abA28A2819B855D7fE679D4f59846": tokens.usdc, // ceUSDT
     "0x5842C5532b61aCF3227679a8b1BD0242a41752f2": tokens.ethereum, // WETH
-    "0xF80699Dc594e00aE7bA200c7533a07C1604A106D": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599", // WBTC
+    "0xF80699Dc594e00aE7bA200c7533a07C1604A106D": tokens.wbtc, // WBTC
     "0x28eC4B29657959F4A5052B41079fe32919Ec3Bd3": "0x853d955aCEf822Db058eb8505911ED77F175b99e", // madFRAX
     "0xE03494D0033687543a80c9B1ca7D6237F2EA8BD8": "0x853d955aCEf822Db058eb8505911ED77F175b99e" // FRAX
   },
@@ -335,7 +339,7 @@ const transformTokens = {
     "0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d": "0x4fabb145d64652a948d72533023f6e7a623c7c53",
     "0xc9baa8cfdde8e328787e29b4b078abf2dadc2055": tokens.dai,
     "0xfa93c12cd345c658bc4644d1d4e1b9615952258c": "bsc:0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c",
-    "0x218c3c3d49d0e7b37aff0d8bb079de36ae61a4c0": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+    "0x218c3c3d49d0e7b37aff0d8bb079de36ae61a4c0": tokens.wbtc,
     // "0xf55af137a98607f7ed2efefa4cd2dfe70e4253b1": tokens.ethereum,
     "0x980a5afef3d17ad98635f6c5aebcbaeded3c3430": "okexchain:0xc946daf81b08146b1c7a8da2a851ddf2b3eaaf85",
   },
@@ -370,7 +374,7 @@ const transformTokens = {
     "0x5de1677344d3cb0d7d465c10b72a8f60699c062d": tokens.usdc, // USDT
     "0xf74195bb8a5cf652411867c5c2c5b8c2a402be35": tokens.dai, // DAI
     "0x461d52769884ca6235B685EF2040F47d30C94EB5": tokens.busd, // BUSD
-    "0xdc0486f8bf31df57a952bcd3c1d3e166e3d9ec8b": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", // WBTC
+    "0xdc0486f8bf31df57a952bcd3c1d3e166e3d9ec8b": tokens.wbtc, // WBTC
     "0xa18bf3994c0cc6e3b63ac420308e5383f53120d7": "0x42bbfa2e77757c645eeaad1655e0911a7553efbc", // BOBA
     "0xe1e2ec9a85c607092668789581251115bcbd20de": "0xd26114cd6EE289AccF82350c8d8487fedB8A0C07", // OMG
     "0x7562f525106f5d54e891e005867bf489b5988cd9": "0x853d955acef822db058eb8505911ed77f175b99e", // FRAX
@@ -392,7 +396,7 @@ const transformTokens = {
     "0x41eAFC40CD5Cb904157A10158F73fF2824dC1339": tokens.dai, // DAI
     "0xab58DA63DFDd6B97EAaB3C94165Ef6f43d951fb2": tokens.usdc, // USDT
     "0x5a955FDdF055F2dE3281d99718f5f1531744B102": tokens.usdc, // USDC
-    "0x48AEB7584BA26D3791f06fBA360dB435B3d7A174": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599", // WBTC
+    "0x48AEB7584BA26D3791f06fBA360dB435B3d7A174": tokens.wbtc, // WBTC
     "0x42110A5133F91B49E32B671Db86E2C44Edc13832": tokens.usdc, // sUSDC(Milkomeda) -> USDC
   },
   bittorrent: {
@@ -405,7 +409,7 @@ const transformTokens = {
     "0x1249c65afb11d179ffb3ce7d4eedd1d9b98ad006": tokens.ethereum, // WETH
     "0xe887512ab8bc60bcc9224e1c3b5be68e26048b8b": tokens.usdc, // USDT
     "0xe467f79e9869757dd818dfb8535068120f6bcb97": "0xdefa4e8a7bcba345f687a2f1456f5edd9ce97202", // KNC
-    "0x9888221fe6b5a2ad4ce7266c7826d2ad74d40ccf": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599" // WBTC
+    "0x9888221fe6b5a2ad4ce7266c7826d2ad74d40ccf": tokens.wbtc // WBTC
   },
   klaytn: {
     "0x5388ce775de8f7a69d17fd5caa9f7dbfee65dfce": "0x4576E6825B462b6916D2a41E187626E9090A92c6", // Donkey
@@ -418,14 +422,14 @@ const transformTokens = {
     "0x4fa62f1f404188ce860c8f0041d6ac3765a72e67": tokens.dai, // KSD
     "0xce40569d65106c32550626822b91565643c07823": tokens.dai, // KASH
     "0x210bc03f49052169d5588a52c317f71cf2078b85": tokens.busd, // kBUSD
-    "0xDCbacF3f7a069922E677912998c8d57423C37dfA": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", // WBTC
+    "0xDCbacF3f7a069922E677912998c8d57423C37dfA": tokens.wbtc, // WBTC
     "0xCD6f29dC9Ca217d0973d3D21bF58eDd3CA871a86": tokens.ethereum, // WETH
     "0xe4f05A66Ec68B54A58B17c22107b02e0232cC817": "0xe4f05a66ec68b54a58b17c22107b02e0232cc817", // Klaytn
 
     "0x5c74070fdea071359b86082bd9f9b3deaafbe32b": tokens.dai, // dai
     "0x754288077d0ff82af7a5317c7cb8c444d421d103": tokens.usdc, // USDC
     "0xcee8faf64bb97a73bb51e115aa89c17ffa8dd167": tokens.usdc, // USDT
-    "0x16d0e1fbd024c600ca0380a4c5d57ee7a2ecbf9c": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", // WBTC
+    "0x16d0e1fbd024c600ca0380a4c5d57ee7a2ecbf9c": tokens.wbtc, // WBTC
     "0x34d21b1e550d73cee41151c77f3c73359527a396": tokens.ethereum, // WETH
   },
   nova: {
@@ -451,7 +455,7 @@ const transformTokens = {
     "0xe41c4324dCbD2926481101f8580D13930AFf8A75": "velas:0xc579D1f3CF86749E05CD06f7ADe17856c2CE3126", // WVLX
     "0x85219708c49aa701871ad330a94ea0f41dff24ca": tokens.ethereum, // WETH
     "0x6ab0B8C1a35F9F4Ce107cCBd05049CB1Dbd99Ec5": "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0", // MATIC
-    "0x639A647fbe20b6c8ac19E48E2de44ea792c62c5C": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599", // WBTC
+    "0x639A647fbe20b6c8ac19E48E2de44ea792c62c5C": tokens.wbtc, // WBTC
     "0x2B8e9cD44C9e09D936149549a8d207c918ecB5C4": tokens.bnb, // BNB
     "0xc9b3aA6E91d70f4ca0988D643Ca2bB93851F3de4": "fantom:0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83", // FTM
     "0xe2c120f188ebd5389f71cf4d9c16d05b62a58993": tokens.usdc, // USDC
@@ -507,6 +511,12 @@ const ibcMappings = {
   'ibc/B3504E092456BA618CC28AC671A71FB08C6CA0FD0BE7C8A5B5A3E2DD933CC9E4': { coingeckoId: 'usd-coin', decimals: 6, },
   'ibc/903A61A498756EA560B85A85132D3AEE21B5DEDD41213725D22ABF276EA6945E': { coingeckoId: 'axelar', decimals: 6, },
   'ibc/C01154C2547F4CB10A985EA78E7CD4BA891C1504360703A37E1D7043F06B5E1F': { coingeckoId: 'axelar', decimals: 6, },
+  // from injective
+  'ibc/E7807A46C0B7B44B350DA58F51F278881B863EC4DCA94635DAB39E52C30766CB': { coingeckoId: 'chihuahua-token', decimals: 6, },
+  'ibc/16618B7F7AC551F48C057A13F4CA5503693FBFF507719A85BC6876B8BD75F821': { coingeckoId: 'evmos', decimals: 18, },
+  'ibc/B786E7CBBF026F6F15A8DA248E0F18C62A0F7A70CB2DABD9239398C8B5150ABB': { coingeckoId: 'persistence', decimals: 6, },
+  'ibc/624BA9DD171915A2B9EA70F69638B2CEA179959850C1A586F6C485498F29EDD4': { coingeckoId: 'polkadot', decimals: 10, },
+  'ibc/3FDD002A3A4019B05A33D324B2F29748E77AF501BEA5C96D1F28B2D6755F9F25': { coingeckoId: 'stride', decimals: 6, },
 }
 
 const fixBalancesTokens = {
@@ -604,6 +614,9 @@ const fixBalancesTokens = {
   kujira: {
     "ukuji": { coingeckoId: "kujira", decimals: 6, },
     "factory/kujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7/uusk": { coingeckoId: "usk", decimals: 6, },
+  },
+  injective: {
+    "inj": { coingeckoId: "injective-protocol", decimals: 18, },
   },
   solana: {
     "6LNeTYMqtNm1pBFN8PfhQaoLyegAH8GD32WmHU9erXKN": {coingeckoId: "aptos", decimals: 8, },
@@ -1305,7 +1318,7 @@ const coreAssets = {
     tokens.link, //link
     '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984', //uni
     '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9', //aave
-    '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599', //wbtc
+    tokens.wbtc, //wbtc
     '0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f', //snx
     '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e', //yfi
     tokens.dai, //dai
@@ -1654,6 +1667,7 @@ function stripTokenHeader(token, chain) {
 
 module.exports = {
   tokens, 
+  tokensBare,
   unsupportedGeckoChains,
   caseSensitiveChains,
   transformTokens,
