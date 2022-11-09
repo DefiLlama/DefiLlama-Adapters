@@ -3,7 +3,7 @@ const { PublicKey, } = require("@solana/web3.js");
 const { parseReserve } = require("./utils");
 const { sliceIntoChunks, } = require('../helper/utils')
 const { transformBalances, } = require('../helper/portedTokens')
-const { sumTokens, getConnection, getMultipleAccountsRaw } = require("../helper/solana");
+const { sumTokens, getConnection, } = require("../helper/solana");
 const { fetchURL } = require('../helper/utils')
 const sdk = require('@defillama/sdk')
 
