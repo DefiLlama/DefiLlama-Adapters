@@ -1,11 +1,25 @@
-const { getProvider, sumTokens2, transformBalances, } = require("../helper/solana");
+const { getProvider, getConnection, sumTokens2, } = require("../helper/solana");
+const { parseReserve } = require("../solend/utils");
 const { Program, } = require("@project-serum/anchor");
-const sdk = require('@defillama/sdk')
+const { PublicKey, } = require("@solana/web3.js");
+const sdk = require('@defillama/sdk');
+const { default: BigNumber } = require("bignumber.js");
 
 const programId = 'HedgeEohwU6RqokrvPU4Hb6XKPub8NuKbnPmY7FoMMtN'
+const reserves = {
+  cusdc: 'BgxfHJDzm44T7XG68MYKx7YisTjZu73tVovyZSjJMpmw',
+  cusdt: '8K9WC8xoh2rtQNY7iEGXtPvfbDCi563SdWhCAhuMP2xE',
+}
 
 async function tvl() {
   const provider = getProvider()
+  const connection = getConnection()
+  const reserveInfo = {}
+  for (const reserve of Object.values(reserves)) {
+    const [info] = await connection.getMultipleAccountsInfo([new PublicKey(reserve)])
+    const { info: { liquidity: { mintPubkey, marketPrice, }, collateral }} = parseReserve(info)
+    reserveInfo[collateral.mintPubkey.toString()] = { price: marketPrice/1e18, key: mintPubkey.toString(), }
+  }
   const idl = await Program.fetchIdl(programId, provider)
   const program = new Program(idl, programId, provider)
   const vaultTypes = await program.account.vaultType.all()
@@ -13,9 +27,15 @@ async function tvl() {
   const tokensAndOwners = psmAccounts.map(i => [i.account.collateralMint.toString(), i.publicKey.toString()])
   let balances = {}
   vaultTypes.forEach(({ account }) => {
-    sdk.util.sumSingleBalance(balances, account.collateralMint.toString(), +account.collateralHeld)
+    let token = account.collateralMint.toString()
+    let balance = +account.collateralHeld
+    const { key, price} = reserveInfo[token] || {}
+    if (key) {
+      token = key
+      balance = BigNumber(price * balance).toFixed(0)
+    }
+    sdk.util.sumSingleBalance(balances, 'solana:'+token, balance )
   })
-  balances = await transformBalances({ tokenBalances: balances })
   return sumTokens2({ balances, tokensAndOwners, })
 }
 
