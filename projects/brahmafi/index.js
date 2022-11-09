@@ -3,6 +3,7 @@ const {
   getTVLData,
   getVaultL1Funds,
   getERC4626VaultFundsByChain,
+  getL1VaultOnlyFunds,
 } = require("./helper");
 const { transformPolygonAddress } = require("../helper/portedTokens");
 const MAX_BPS = 1e3;
@@ -22,9 +23,15 @@ const ethTvl = async (_, block) => {
 
     const value =
       (totalSupply * sharePrice) / MAX_BPS + +pendingDeposits[idx].output;
-    // console.log(value, value.toFixed(0))
     sdk.util.sumSingleBalance(balances, wantToken, value.toFixed(0));
   }
+
+  const l1OnlyVaultFunds = await getL1VaultOnlyFunds(block);
+
+  for (const [wantToken, totalFunds] of Object.entries(l1OnlyVaultFunds)) {
+    sdk.util.sumSingleBalance(balances, wantToken, totalFunds);
+  }
+
   return balances;
 };
 
