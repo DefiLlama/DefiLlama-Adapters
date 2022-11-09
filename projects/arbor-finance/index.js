@@ -11,9 +11,7 @@ const graphQuery = (block) => gql`
       id
       collateralToken {
         id
-        decimals
       }
-      collateralTokenAmount
     }
   }
 `;
