@@ -23,13 +23,12 @@ const ethTvl = async (_, block) => {
 
     const value =
       (totalSupply * sharePrice) / MAX_BPS + +pendingDeposits[idx].output;
-    // console.log(value, value.toFixed(0))
     sdk.util.sumSingleBalance(balances, wantToken, value.toFixed(0));
   }
 
   const l1OnlyVaultFunds = await getL1VaultOnlyFunds(block);
 
-  for (const [wantToken, totalFunds] of l1OnlyVaultFunds.entries()) {
+  for (const [wantToken, totalFunds] of Object.entries(l1OnlyVaultFunds)) {
     sdk.util.sumSingleBalance(balances, wantToken, totalFunds);
   }
 
