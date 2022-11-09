@@ -108,7 +108,11 @@ const getL1VaultOnlyFunds = async (block) => {
   ]).then((o) => o.map((it) => it.output));
 
   _totalVaultFunds.forEach((it, idx) => {
-    sdk.util.sumSingleBalance(balances, _wantTokenAddresses[idx], it);
+    sdk.util.sumSingleBalance(
+      balances,
+      _wantTokenAddresses[idx].output,
+      it.output
+    );
   });
 
   return balances;
