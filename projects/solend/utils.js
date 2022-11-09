@@ -150,7 +150,8 @@ const ReserveLayout = BufferLayout.struct([
   BufferLayout.blob(256, "padding"),
 ]);
 
-const parseReserve = (pubkey, info) => {
+const parseReserve = (info) => {
+  const pubkey = PublicKey.default
   const { data } = info;
   const buffer = Buffer.from(data);
   const reserve = ReserveLayout.decode(buffer);
