@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const erc20 = require("../helper/abis/erc20.json");
 const { stakings } = require("../helper/staking");
 
 const PUSDMorPool = "0x505eFcC134552e34ec67633D1254704B09584227"; // Mortgage-PUSD pool contract

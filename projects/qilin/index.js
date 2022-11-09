@@ -13,5 +13,5 @@ async function tvl(_timestamp, ethBlock){
 }
 
 module.exports = {
-    tvl
+    ethereum: { tvl },
 }

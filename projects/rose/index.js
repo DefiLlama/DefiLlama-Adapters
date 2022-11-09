@@ -139,9 +139,7 @@ const staking = async (timestamp, ethBlock, chainBlock) => {
 };
 
 const borrowed = async (timestamp, ethBlock, chainBlock) => {
-  amount = {};
-
-  calls = [];
+  const calls = [];
   Object.entries(gardenToTokensMap).forEach(([gardenAddress, gardenTokens]) => {
     gardenTokens.forEach((_) => {
       calls.push({

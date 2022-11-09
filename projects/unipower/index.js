@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
-const { pool2, pool2s } = require("../helper/pool2");
 
 /*** Ethereum Addresses ***/
     // Static Power Part
@@ -41,13 +40,13 @@ async function ethTvl() {
 module.exports = {
     ethereum: {
         staking: staking(staticPowerContract, POWER_eth),
-        pool2: pool2s(liquidityVaultContracts, [WETH_POWER_UNIV2]),
+        pool2: staking(liquidityVaultContracts, [WETH_POWER_UNIV2]),
         tvl: ethTvl,
     },
     polygon: {
         tvl: async () => ({}),
         staking: staking(stakingContract, POWER_polygon, "polygon"),
-        pool2: pool2(stakingContract, POWER_USDC_UNIV2, "polygon"),
+        pool2: staking(stakingContract, POWER_USDC_UNIV2, "polygon"),
     },
     methodology:
         "Counts tvl of WETH deposited through ETH Prime Contract, also there are pool2 and staking part from different seccions. Polygon tvl consist of staked POWER and the POWER/USDC LP pool2",

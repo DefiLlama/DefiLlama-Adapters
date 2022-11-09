@@ -60,7 +60,9 @@ const CHAIN_DATA = {
 }
 
 
-async function tvl(chain, timestamp, block) {
+function tvl(chain) {
+  return async (_, _b, {[chain]: block}) => {
+
   const { stats, pools } = CHAIN_DATA[chain];
   let balances = {};
   const lockedBalances = (
@@ -84,14 +86,15 @@ async function tvl(chain, timestamp, block) {
   }
   
   return balances;
+  }
 }
 
 module.exports = {
   methodology: `All assets that were deposited into our active pools.`,
   ethereum: {
-    tvl: tvl.bind(null, "ethereum"),
+    tvl: tvl("ethereum"),
   },
   fantom: {
-    tvl: tvl.bind(null, "fantom")
+    tvl: tvl("fantom")
   }
 };
