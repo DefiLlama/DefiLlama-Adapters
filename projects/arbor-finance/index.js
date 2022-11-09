@@ -32,8 +32,8 @@ async function tvl(timestamp, block) {
       const collateralBalance = await api.abi.call({
         abi: "erc20:balanceOf",
         chain: "ethereum",
-        target: token, // token address (i.e. collateral token; rbn token)
-        params: bondAddress, // contract address where tokens are stored (i.e. bond address; rbn convertible bond)
+        target: token, // token address (i.e. collateral token)
+        params: bondAddress, // contract address where tokens are stored (i.e. bond address)
         block,
       });
 
