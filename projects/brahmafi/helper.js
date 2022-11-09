@@ -26,6 +26,8 @@ const erc4626Vaults = [
   },
 ];
 
+const l1OnlyVaults = ["0xB3dA8d6Da3eDe239ccbF576cA0Eaa74D86f0e9D3"];
+
 const getTVLData = async (block) => {
   const vaultCalls = vaults.map((v) => ({ target: v.address }));
   const batcherCalls = vaults.map((v) => ({ target: v.batcher }));
@@ -88,6 +90,34 @@ const getVaultL1Funds = async (vault, wantToken, block) => {
   return totalExecutorFunds + +vaultBalance.output;
 };
 
+const getL1VaultOnlyFunds = async (block) => {
+  const vaultCalls = l1OnlyVaults.map((v) => ({ target: v }));
+  const balances = {};
+
+  const [_wantTokenAddresses, _totalVaultFunds] = await Promise.all([
+    sdk.api.abi.multiCall({
+      block,
+      calls: vaultCalls,
+      abi: vaultAbi.wantToken,
+    }),
+    sdk.api.abi.multiCall({
+      block,
+      calls: vaultCalls,
+      abi: vaultAbi.totalVaultFunds,
+    }),
+  ]).then((o) => o.map((it) => it.output));
+
+  _totalVaultFunds.forEach((it, idx) => {
+    sdk.util.sumSingleBalance(
+      balances,
+      _wantTokenAddresses[idx].output,
+      it.output
+    );
+  });
+
+  return balances;
+};
+
 const getERC4626VaultFundsByChain = async (chain, block) => {
   const vaults = erc4626Vaults.filter((it) => it.chain === chain);
   const vaultCalls = vaults.map((v) => ({ target: v.address }));
@@ -144,4 +174,5 @@ module.exports = {
   getTVLData,
   getVaultL1Funds,
   getERC4626VaultFundsByChain,
+  getL1VaultOnlyFunds,
 };
