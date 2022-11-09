@@ -30,7 +30,8 @@ async function getTVL(chainBlocks) {
   await sumTokens(pool2Balances, tokensAndOwners, block, chain)
   const {
     updateBalances
-  } = await getTokenPrices({ block, chain, lps: pools, coreAssets: [USDC] })
+  } = await getTokenPrices({ block, chain, lps: pools, 
+    useDefaultCoreAssets: true, })
   await updateBalances(pool2Balances)
   await fixBalances(pool2Balances)
 

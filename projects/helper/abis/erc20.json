@@ -16,5 +16,19 @@
     "name": "symbol",
     "inputs": [],
     "constant": true
+  },
+  "name":  {
+    "type": "function",
+    "stateMutability": "view",
+    "payable": false,
+    "outputs": [
+      {
+        "type": "string",
+        "name": ""
+      }
+    ],
+    "name": "name",
+    "inputs": [],
+    "constant": true
   }
 }

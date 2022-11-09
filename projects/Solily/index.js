@@ -1,20 +1,9 @@
 const BigNumber = require('bignumber.js')
-const { Connection, PublicKey } = require('@solana/web3.js')
+const { getConnection } = require('../helper/solana')
+const { PublicKey } = require('@solana/web3.js')
 const utils = require('../helper/utils')
 
-function getConnection()
-{
-  return new Connection('https://solana-api.projectserum.com')
-}
-
 const programInfoKey = new PublicKey('4GmnzdmugEG4EcwqV5PqEYNsEpXR7KHHFjdUR581383U')
-
-
-
-
-
-
-
 
 const stratTokens = [
   ['So11111111111111111111111111111111111111112', 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'],   // ray lp: sol-usdc

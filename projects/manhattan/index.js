@@ -19,6 +19,7 @@ var ifTokens = [
 ];
 
 async function tvl(timestamp, block, chainBlocks) {
+  block = chainBlocks.fantom
   let balances = {};
   let transform = await transformFantomAddress();
 

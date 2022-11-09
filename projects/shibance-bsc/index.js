@@ -1,9 +1,6 @@
 const BigNumber = require("bignumber.js");
 const { getBalanceNumber } = require('./format');
-const sdk = require("@defillama/sdk");
 const chains = require('./constants/chain');
-
-require("dotenv").config();
 
 const fetchPublicVaultData = require("./vault");
 const fetchFarms = require('./farm');

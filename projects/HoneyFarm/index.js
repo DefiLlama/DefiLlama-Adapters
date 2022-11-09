@@ -1,14 +1,12 @@
 const { addFundsInMasterChef } = require("../helper/masterchef");
-const { getBlock } = require("../helper/getBlock");
 const {
   transformAvaxAddress,
   transformBscAddress,
 } = require("../helper/portedTokens");
 const { staking } = require("../helper/staking");
 
-async function avax(timestamp, block, chainBlocks) {
+async function avax(timestamp, _, {avax: block}) {
   let balances = {};
-  block = await getBlock(timestamp, "avax", chainBlocks);
   const transform = await transformAvaxAddress();
 
   await addFundsInMasterChef(
@@ -23,9 +21,8 @@ async function avax(timestamp, block, chainBlocks) {
   return balances;
 }
 
-async function bsc(timestamp, block, chainBlocks) {
+async function bsc(timestamp, _, {bsc: block}) {
   let balances = {};
-  block = await getBlock(timestamp, "bsc", chainBlocks);
   const transform = await transformBscAddress();
 
   await addFundsInMasterChef(
@@ -43,7 +40,7 @@ async function bsc(timestamp, block, chainBlocks) {
 module.exports = {
   methodology:
     "Only staked LP is counted as TVL. Excluded in TVL : Locked BEE in the RoyalJelly, NFT Jelly, value of BNB & xJOE which aren't on CoinGecko yet.",
-  avalanche: {
+  avax:{
     tvl: avax,
     staking: staking(
       "0x757490104fd4C80195D3C56bee4dc7B1279cCC51",

@@ -1,7 +1,6 @@
 const sdk = require("@defillama/sdk");
-const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl");
+const { getUniTVL } = require('../helper/unknownTokens')
 const { calculateUniTvl } = require("../helper/calculateUniTvl.js");
-const { pool2 } = require("../helper/pool2");
 const { staking, stakingUnknownPricedLP} = require("../helper/staking");
 
 const KACMasterChefContract = {
@@ -58,21 +57,6 @@ module.exports = {
       KAC["bsc"],
       0
     ),
-    tvl: calculateUsdUniTvl(
-      "0xcd8620889c1dA22ED228e6C00182177f9dAd16b7",
-      "shiden",
-      "0x0f933Dc137D21cA519ae4C7E93f87a4C8EF365Ef",
-      [
-        // USDC
-        "0xfA9343C3897324496A05fC75abeD6bAC29f8A40f",
-        // USDT
-        "0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b",
-        // JPYC
-        "0x735aBE48e8782948a37C7765ECb76b98CdE97B0F",
-        // STND
-        "0x722377A047e89CA735f09Eb7CccAb780943c4CB4",
-      ],
-      "shiden"
-    ),
+    tvl: getUniTVL({ factory: '0xcd8620889c1dA22ED228e6C00182177f9dAd16b7', chain: 'shiden', useDefaultCoreAssets: true }),
   },
 };

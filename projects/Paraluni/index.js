@@ -1,6 +1,5 @@
 const sdk = require("@defillama/sdk");
 const { addFundsInMasterChef } = require("../helper/masterchef");
-const erc20 = require("../helper/abis/erc20.json");
 const BigNumber = require("bignumber.js");
 const usdtAddr = "0x55d398326f99059ff775485246999027b3197955";
 const busdAddr = "0xe9e7cea3dedca5984780bafc599bd69add087d56";
@@ -107,7 +106,7 @@ async function pool2(time, ethBlock, chainBlocks) {
   for (let idx = 0; idx < pool2Addresses.length; idx++) {
     const balances_slp = (
       await sdk.api.abi.call({
-        abi: erc20.balanceOf,
+        abi: 'erc20:balanceOf',
         target: pool2Addresses[idx],
         params: paraChef,
         chain: "bsc",
@@ -129,7 +128,7 @@ async function pool2(time, ethBlock, chainBlocks) {
           target: token,
           params: pool2Addresses[idx]
         })),
-        abi: erc20.balanceOf,
+        abi: 'erc20:balanceOf',
         chain: "bsc",
         block: chainBlocks["bsc"]
       })

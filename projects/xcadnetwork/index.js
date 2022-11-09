@@ -3,32 +3,6 @@ const {
   getBalances,
 } = require('../helper/zilliqa')
 
-
-// List taken from their front end code
-// Maybe they are staking contracts?
-const SUB_CONTRACT = [
-  '0x0b719d791741d3937cea5b661c5d4699740a6063',
-  '0x4522c41F5e60Ec47A3E8BB2f8E73cA6CfC2BE0b4',
-  '0x8d24BAAE9877d735900873834448373B8917dA1F',
-  '0xda12fA83A9ce290eb5E1BBEa6e51f5Fca2955Ae1',
-  '0x0bF04c6ae283c9A054AA15DBa4996F9246351929',
-  '0x62ceedfa70a34fcbeacebb6d76bcbf339ed47648',
-  '0x588413c16644069d82c838aa8ad4ed1cb5bf5a8a',
-  '0x9695a2c7fa5ae141f1ed994d4fe04d1162c44427',
-  '0xa7d9862dceead3bcd43811462118bff08737a03a',
-  '0xdc54428db01207524385ab07b418bf541efedabe',
-  '0xf5f4e66c65551a9a48dd146783ce0ec754836281',
-  '0xa11cf5474cd132e6f1812c3e20ba47e51818cb62',
-  '0xa6994b8d8c5530d1996fd76f89df0523b893e5d0',
-  '0xc6474b616fbb71fca8dcf4b09b5ea1b553231a4d',
-  '0xa397c1aa3054bdad8aecf645a2b582202eea57b9',
-  '0x5b1be8e077f4f2702b4fcff93dfefc6010bd2370',
-  '0xc78b6c4a7c13f1e556ee59af20c74f8c9156e6b6',
-  '0xcf87bd87e32e059533d0b6a2c575db3a5a83792c',
-  '0xb15a7cc9fc08a2c77f96b5d892ab1f1a4cf022cc',
-  '0xb90c6392e2c550eaff55fdbc8101bf24cb6ec386'
-]
-
 // taken from https://swap.xcadnetwork.com/_next/data/E6YkkwWJMYjzQhGDTm38j/pool-overview.json
 const TOKENS = [
   "0x153feaddc48871108e286de3304b9597c817b456",   // XCAD
@@ -71,6 +45,7 @@ module.exports = {
   zilliqa: {
     tvl,
   },
+  timetravel: false,
   misrepresentedTokens: true,
   methodology: 'Summed up all the tokens deposited in their dex contract and those controlled by their dex'
 }

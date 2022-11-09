@@ -2,13 +2,14 @@ const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const utils = require("../helper/utils");
 const { stakings } = require("../helper/staking");
-const { unwrapUniswapLPs, sumTokens, } = require("../helper/unwrapLPs");
+const { unwrapUniswapLPs, sumTokens, unwrapLPsAuto, } = require("../helper/unwrapLPs");
 const {
   transformPolygonAddress,
   getChainTransform,
   getFixBalances,
 } = require("../helper/portedTokens");
 const BigNumber = require("bignumber.js");
+const { staking: stakingUnknown, sumTokensExport, } = require("../helper/unknownTokens");
 
 const vaultsUrl = {
   polygon:
@@ -57,12 +58,6 @@ const lpAddresses_cronos = [
   "0x332937463df26f46a1a715a41205765774beef80", //CADDY-WCRO Cronos
   "0x2a008ef8ec3ef6b03eff10811054e989aad1cf71", //CADDY-WCRO Cronos
 ];
-
-async function calcPool2(uniVaults, lpAddress, chain, block) {
-  const toa = []
-  uniVaults.forEach(owner => lpAddress.forEach(lp => toa.push([lp, owner])))
-  return sumTokens({}, toa, block, chain, undefined, { resolveLP: true })
-}
 
 async function calcPool2_staking_rewards(
   balances,
@@ -114,10 +109,6 @@ async function pool2Polygon(timestamp, block, chainBlocks) {
     transformAddress
   );
   return balances;
-}
-
-async function pool2Cronos(timestamp, block, chainBlocks) {
-  return calcPool2(vaultAddresses_cronos, lpAddresses_cronos, "cronos", chainBlocks.cronos);
 }
 
 async function polygonTvl(timestamp, block, chainBlocks) {
@@ -174,8 +165,8 @@ async function valueInGauge(chain, block, GAUGE, HOLDER, transformAddress = (a) 
 }
 
 async function crvPoolTvl(chain, block, COIN_TARGET, transformAddress = (a) => a, SUPPLY_TARGET = COIN_TARGET) {
-  balances = {};
-  maincoins = [];
+  const balances = {};
+  const maincoins = [];
 
   // find coins in curve pool
   for (var c = 0; c < 10; c++) {
@@ -207,29 +198,11 @@ async function crvPoolTvl(chain, block, COIN_TARGET, transformAddress = (a) => a
   ).output.map((val) => new BigNumber(val.output));
 
   // add up total pool tvl
-  for (j = 0; j < maincoins.length; j++) {
+  for (let j = 0; j < maincoins.length; j++) {
     sdk.util.sumSingleBalance(balances, transformAddress(maincoins[j]), underlying_balances[j].toFixed(0));
   }
 
   return balances;
-}
-
-function join(obj1, obj2) {
-  // joins 2 balances objects
-  var a = {};
-
-  for (var i in obj1) {
-    a[i] = obj1[i];
-  }
-
-  for (var j in obj2) {
-    if (j in a) {
-      a[j] = BigNumber(a[j]) + BigNumber(obj2[j]);
-    } else {
-      a[j] = obj2[j];
-    }
-  }
-  return a;
 }
 
 async function curveTvl(balances, chain, block, curveVaults, transformAddress = (a) => a) {
@@ -322,7 +295,7 @@ async function curveTvl(balances, chain, block, curveVaults, transformAddress = 
         .dividedBy(strat_supplies[i])
     );
 
-    for (j = 0; j < maincoins.length; j++) {
+    for (let j = 0; j < maincoins.length; j++) {
       sdk.util.sumSingleBalance(
         balances,
         await transformAddress(maincoins[j]),
@@ -341,11 +314,11 @@ async function curveTvl(balances, chain, block, curveVaults, transformAddress = 
       }
 
       // lastly, break down any 3crv / 2crv
-      if (`${chain}:${crv3Address}` in balances) {
-        //strat_balances.push(new BigNumber(balances[`${chain}:${crv3Address}`]));
-      } else {
-        //return balances;
-      }
+      // if (`${chain}:${crv3Address}` in balances) {
+      //strat_balances.push(new BigNumber(balances[`${chain}:${crv3Address}`]));
+      // } else {
+      //return balances;
+      // }
     }
   }
 
@@ -390,14 +363,11 @@ async function uniTvl(balances, chain, block, uniVaults, lpAddressesIgnored, tra
       )
     ) {
     } else {
-      lpPositions.push({
-        balance: vault_balances[idx],
-        token: v.lpAddress,
-      });
+      sdk.util.sumSingleBalance(balances, chain + ':' + v.lpAddress, vault_balances[idx])
     }
   });
 
-  await unwrapUniswapLPs(balances, lpPositions, block, chain, transformAddress);
+  await unwrapLPsAuto({ balances, block, chain, });
   return balances;
 }
 
@@ -447,8 +417,9 @@ module.exports = {
     tvl: arbitrumTvl,
   },
   cronos: {
-    staking: stakings(stakingContracts_cronos, CADDY, "cronos"),
-    pool2: pool2Cronos,
+    staking: stakingUnknown({ owners: stakingContracts_cronos, tokens: [CADDY], chain: 'cronos', lps: lpAddresses_cronos, useDefaultCoreAssets: true }),
+    // pool2 appears empty
+    // pool2: sumTokensExport({ owners: vaultAddresses_cronos, tokens: lpAddresses_cronos, chain: 'cronos', useDefaultCoreAssets: true }),
     tvl: cronosTvl,
   },
   methodology:

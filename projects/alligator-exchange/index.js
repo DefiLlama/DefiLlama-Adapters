@@ -35,7 +35,7 @@ async function tvl(timestamp, block, chainBlocks) {
 
 module.exports = {
     misrepresentedTokens: true,
-    avalanche: {
+    avax:{
         tvl,
         staking: stakingUnknownPricedLP(stakingContract, token, "avax", "0x039b4C79916b7ACc953f0f67e6181842EFBE6e6e")
     }

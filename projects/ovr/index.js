@@ -11,7 +11,7 @@ module.exports = {
   misrepresentedTokens: true,
   ethereum: {
     staking: stakings(stakingContract, OVR),
+    tvl: (async) => ({}),
   },
-  tvl: (async) => ({}),
   methodology: "Counts liquidty on the staking only",
 };

@@ -35,7 +35,7 @@ async function perpetualPool(
     })
   ).output.map((value) => value.output);
 
-  for (i = 0; i < bTokens.length; i++) {
+  for (let i = 0; i < bTokens.length; i++) {
     let tokenBalance = (
       await sdk.api.erc20.balanceOf({
         block,
@@ -158,7 +158,7 @@ let arbitrumContracts = {
 async function bsc(timestamp, ethBlock, chainBlocks) {
   let balances = {};
   const transform = (a) => `bsc:${a}`;
-  for ([key, contract] of Object.entries(bscContracts)) {
+  for (let [key, contract] of Object.entries(bscContracts)) {
     if (contract.lite === true) {
       await perpetualPoolLite(
         chainBlocks["bsc"],
@@ -192,7 +192,7 @@ async function bsc(timestamp, ethBlock, chainBlocks) {
 async function polygon(timestamp, ethBlock, chainBlocks) {
   let balances = {};
   const transform = await transformPolygonAddress();
-  for ([key, contract] of Object.entries(polygonContracts)) {
+  for (let [key, contract] of Object.entries(polygonContracts)) {
     if (contract.lite === true) {
       await perpetualPoolLite(
         chainBlocks["polygon"],
@@ -217,7 +217,7 @@ async function polygon(timestamp, ethBlock, chainBlocks) {
 async function arbitrum(timestamp, ethBlock, chainBlocks) {
   let balances = {};
   const transform = (a) => `arbitrum:${a}`;
-  for ([key, contract] of Object.entries(arbitrumContracts)) {
+  for (let [key, contract] of Object.entries(arbitrumContracts)) {
     if (contract.v3 === true) {
       await v3Pool(
         chainBlocks["arbitrum"],

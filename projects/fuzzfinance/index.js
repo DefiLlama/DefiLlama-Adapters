@@ -2,7 +2,7 @@
 const sdk = require("@defillama/sdk");
 // const { toUSDTBalances } = require('../helper/balances');
 const { calculateUniTvl } = require("../helper/calculateUniTvl");
-const { fixHarmonyBalances } = require("../helper/portedTokens");
+const { getFixBalances } = require("../helper/portedTokens");
 
 const fuzz = "0x984b969a8e82f5ce1121ceb03f96ff5bb3f71fee";
 const factory = "0x5245d2136dc79Df222f00695C0c29d0c4d0E98A6";
@@ -48,7 +48,7 @@ async function tvl(timestamp, block, chainBlocks) {
     0,
     true
   );
-  fixHarmonyBalances(balances);
+  (await getFixBalances('harmony'))(balances);
   return balances;
 }
 

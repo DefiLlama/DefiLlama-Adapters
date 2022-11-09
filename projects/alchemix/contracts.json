@@ -15,6 +15,26 @@
         "yvUSDT": "0x148c05caf1bb09b5670f00d511718f733c54bc4c"
       }
     },
+    "optimism": {
+      "tokenHolders": {
+        "alUSDAlchemist": "0x10294d57a419c8eb78c648372c5baa27fd1484af",
+        "alUSDTransmuterBuffer": "0xe99a9a717c60f9639b235ede422c27d60fbeb3b9",
+        "alETHAlchemist": "0xe04Bb5B4de60FA2fBa69a93adE13A8B3B569d5B4",
+        "alETHTransmuter": "0x7f50923ee8e2bc3596a63998495baf2948a28f68"
+      },
+      "underlyingTokens": {
+        "DAI": "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1",
+        "USDC": "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
+        "USDT": "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58",
+        "WETH": "0x4200000000000000000000000000000000000006"
+      },
+      "yvTokens": {
+        "aDAI": "0x43A502D7e947c8A2eBBaf7627E104Ddcc253aBc6",
+        "aUSDC": "0x4186Eb285b1efdf372AC5896a08C346c7E373cC4", 
+        "aUSDT": "0x2680b58945A31602E4B6122C965c2849Eb76Dd3B",
+        "aWETH": "0x337B4B933d60F40CB57DD19AE834Af103F049810"
+      }
+    },
     "ethereum": {
       "tokenHolders": {
         "alUSDAlchemist": "0x5C6374a2ac4EBC38DeA0Fc1F8716e5Ea1AdD94dd",
@@ -27,7 +47,9 @@
         "ETHTransmuter": "0x9FD9946E526357B35D95Bcb4b388614be4cFd4AC",
         "ETHAlchemist": "0xf8317BD5F48B6fE608a52B48C856D3367540B73B",
         "ETHYearnVaultAdapter": "0x546E6711032Ec744A7708D4b7b283A210a85B3BC",
-        "ETHYearnVaultAdapterB": "0x6d75657771256C7a8CB4d475fDf5047B70160132"
+        "ETHYearnVaultAdapterB": "0x6d75657771256C7a8CB4d475fDf5047B70160132",
+        "WETHMigration": "0xb4E7cc74e004F95AEe7565a97Dbfdea9c1761b24",
+        "DAIMigration": "0x72A7cb4d5daB8E9Ba23f30DBE8E72Bc854a9945A"
       },
       "underlyingTokens": {
         "DAI": "0x6B175474E89094C44Da98b954EedeAC495271d0F",

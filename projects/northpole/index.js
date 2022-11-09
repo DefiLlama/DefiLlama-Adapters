@@ -21,7 +21,7 @@ async function tvl(timestamp, ethBlock, chainBlocks) {
 
 module.exports = {
   methodology: 'The cumulative market value of each vault collateral is TVL',
-  avalanche: {
+  avax:{
     tvl,
   },
 }

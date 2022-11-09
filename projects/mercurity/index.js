@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const erc20 = require("../helper/abis/erc20.json");
 const abi = require("./abi.json");
 
 const pool_factoryV1 = "0x20dC7DA7cFc8F5b465060496a170229dc4A47A87";
@@ -34,7 +33,7 @@ const calc = async (balances, block, factory) => {
         for (const token of tokens) {
             const getBalance = (
                 await sdk.api.abi.call({
-                    abi: erc20.balanceOf,
+                    abi: 'erc20:balanceOf',
                     target: token,
                     params: pool,
                 })

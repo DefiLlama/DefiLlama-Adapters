@@ -1,0 +1,51 @@
+{
+  "depositId": {
+    "constant": true,
+    "inputs": [],
+    "name": "depositId",
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  "getDepositDetails": {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "_id",
+        "type": "uint256"
+      }
+    ],
+    "name": "getDepositDetails",
+    "outputs": [
+      {
+        "name": "_tokenAddress",
+        "type": "address"
+      },
+      {
+        "name": "_withdrawalAddress",
+        "type": "address"
+      },
+      {
+        "name": "_tokenAmount",
+        "type": "uint256"
+      },
+      {
+        "name": "_unlockTime",
+        "type": "uint256"
+      },
+      {
+        "name": "_withdrawn",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  }
+}

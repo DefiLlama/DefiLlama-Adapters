@@ -9,7 +9,7 @@ const chainConfig = {
   ethereum: "eth",
   heco: "heco",
   fantom: "fantom",
-  avalanche: "avalanche",
+  avax: "avalanche",
   kcc: "kcc",
   harmony: "harmony",
   okexchain: "okexchain",
@@ -21,6 +21,7 @@ const chainConfig = {
   bitgert: "bitgert",
   xdai: "gnosis",
   reef: "reef",
+  kava: "kava"
 };
 
 module.exports = {

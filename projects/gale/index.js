@@ -6,6 +6,7 @@ const config = {
     tokenContract: "0x627E86E9eC832b59018Bf91456599e752288Aa97",
     liquidityContract: "0x1fC3152de89b0c6c36F0d330b7Be369d6dDB219F",
     vaultContract: "0x973Abe726E3e37bbD8501B2D8909Fa59535Babdd",
+    busd: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
   }
 }
 
@@ -14,7 +15,7 @@ module.exports = {
   misrepresentedTokens: false,
   bsc: {
     tvl: () => ({}),
-    treasury:  staking(config.bsc.vaultContract, config.bsc.tokenContract, "bsc"),
+    treasury:  staking(config.bsc.vaultContract, config.bsc.busd, "bsc"),
     staking:  staking(config.bsc.windmillContract, config.bsc.tokenContract, "bsc"),
   },
   methodology:

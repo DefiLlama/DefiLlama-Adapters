@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const { calculateUsdUniTvl } = require("../helper/getUsdUniTvl");
+const { getUniTVL } = require('../helper/unknownTokens')
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const abi = require("./abi.json");
 const factory = "0x477Ce834Ae6b7aB003cCe4BC4d8697763FF456FA";
@@ -172,7 +172,9 @@ module.exports = {
   misrepresentedTokens: true,
   methodology: "TVL are from the pools created by the factory and TVL in vaults",
   polygon: {
-    tvl: sdk.util.sumChainTvls([calculateUsdUniTvl(factory,"polygon",WMATIC,["0x2791bca1f2de4661ed88a30c99a7a9449aa84174","0xc2132d05d31c914a87c6611c10748aeb04b58e8f","0x7ceb23fd6bc0add59e62ac25578270cff1b9f619"],"wmatic"),vaulttvl]),
+    tvl: sdk.util.sumChainTvls([
+      getUniTVL({ factory, chain: 'polygon', useDefaultCoreAssets: true }),
+      vaulttvl]),
     pool2,
     staking
   }

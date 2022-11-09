@@ -1,8 +1,5 @@
 const { getTokenAccountBalance } = require("./helper/solana");
-
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
+const { sleep } = require("./helper/utils");
 
 // The data here comes directly from
 // https://registry.saber.so/data/llama.mainnet.json
@@ -29,7 +26,7 @@ async function tvl() {
               },
             ];
           } catch (e) {
-            await sleep(1000);
+            await sleep(1200);
             console.log(e);
           }
         }
@@ -48,7 +45,7 @@ async function tvl() {
 
 module.exports = {
   timetravel: false,
-  tvl,
+  solana: { tvl },
   methodology:
     'To obtain the TVL of Saber we make on-chain calls using the function getTokenBalance() that uses the address of the token and the address of the contract where the tokens are found. TVL is calculated using the list of pool addresses found under the "Pools" button of the Saber App. These pools addresses are hard-coded. Making these calls returns the amount of tokens held in each contract. We then use Coingecko to get the price of each token in USD and export the sum of all tokens. "USDP" is used to price the stablecoin "PAI" since it has not been listed on Coingecko.',
 };

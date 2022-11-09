@@ -3,7 +3,6 @@
 const sdk = require("@defillama/sdk");
 const { sumBalancerLps } = require("../helper/unwrapLPs");
 const { unwrapUniswapLPs, unwrapCrvLPs } = require("./helpers");
-const { getBlock } = require("../helper/getBlock");
 const { transformAvaxAddress } = require("../helper/portedTokens");
 
 const groTokenAbi = require("./abi.json");
@@ -186,9 +185,8 @@ const labs = [
   },
 ];
 
-async function avaxTvl(timestamp, block, chainBlocks) {
+async function avaxTvl(timestamp, _, {avax: block}) {
   let balances = {};
-  block = await getBlock(timestamp, "avax", chainBlocks);
   const transform = await transformAvaxAddress();
   const totalAssets = (
     await sdk.api.abi.multiCall({
@@ -215,7 +213,7 @@ module.exports = {
     staking: stakings([ GROTokenStaker1, GROTokenStaker2 ], GRO),
     tvl,
   },
-  avalanche: {
+  avax:{
     tvl: avaxTvl,
   },
   start: 1622204347, // 28-05-2021 12:19:07 (UTC)

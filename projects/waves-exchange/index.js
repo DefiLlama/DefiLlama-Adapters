@@ -1,6 +1,6 @@
 const { sumSingleBalance } = require('@defillama/sdk/build/generalUtil')
 const { get } = require('../helper/http')
-const { wavesMapping } = require('../helper/portedTokens')
+const { fixBalancesTokens: { waves: wavesMapping } } = require('../helper/tokenMapping')
 
 
 const endpoint = "https://waves.exchange/api/v1/liquidity_pools/stats"

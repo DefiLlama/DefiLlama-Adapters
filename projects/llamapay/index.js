@@ -1,107 +1,84 @@
 const sdk = require("@defillama/sdk");
-const { GraphQLClient, gql } = require("graphql-request");
+const abi = require("./abi.json");
+const { sumTokens2, } = require('../helper/unwrapLPs')
+const { getParamCalls, getSymbols } = require('../helper/utils')
+const { isWhitelistedToken,  } = require('../helper/streamingHelper')
 
-const arbitrumEndpoint = "https://api.thegraph.com/subgraphs/name/nemusonaneko/llamapay-arbitrum";
-const avaxEndpoint = "https://api.thegraph.com/subgraphs/name/nemusonaneko/llamapay-avalanche-mainnet";
-const bscEndpoint = "https://api.thegraph.com/subgraphs/name/nemusonaneko/llamapay-bsc";
-const fantomEndpoint = "https://api.thegraph.com/subgraphs/name/nemusonaneko/llamapay-fantom";
-const mainnetEndpoint = "https://api.thegraph.com/subgraphs/name/nemusonaneko/llamapay-mainnet";
-const optimismEndpoint = "https://api.thegraph.com/subgraphs/name/nemusonaneko/llamapay-optimism";
-const polygonEndpoint = "https://api.thegraph.com/subgraphs/name/nemusonaneko/llamapay-polygon";
-const xdaiEndpoint = "https://api.thegraph.com/subgraphs/name/nemusonaneko/llamapay-xdai";
+const llamaPayAvax = "0x7d507b4c2d7e54da5731f643506996da8525f4a3";
+const llamaPayDefault = "0xde1C04855c2828431ba637675B6929A684f84C7F";
+const llamaPayVesting = "0xB93427b83573C8F27a08A909045c3e809610411a";
+const llamaPayMeter = "0xc666badd040d5e471d2b77296fef46165ffe5132"
+const llamaPayMeterVesting = "0x6B24Fe659D1E91f8800E86600DE577A4cA8814a6";
+const llamaPayMetis = "0x43634d1C608f16Fb0f4926c12b54124C93030600";
 
-const queryField = gql`
-    {
-  llamaPayContracts(first:1000) {
-    address
-    token {
-      id
-    }
+async function calculateTvl(llamapay, vesting, block, chain, isVesting) {
+  let tokensAndOwners = await getTokensAndOwners(llamapay, chain, block)
+  const tokens = tokensAndOwners.map(i => i[0])
+  const symbolMapping = await getSymbols(chain, tokens)
+  tokensAndOwners = tokensAndOwners.filter(([token]) => isWhitelistedToken(symbolMapping[token], token, isVesting))
+  if (isVesting)
+    tokensAndOwners.push(...await getTokensAndOwners(vesting, chain, block, true))
+  return sumTokens2({ tokensAndOwners, chain, block,  })
+}
+
+async function getTokensAndOwners(contract, chain, block, isVestingContract) {
+  const abis = {
+    count: isVestingContract ? abi.escrows_length : abi.getLlamaPayContractCount,
+    vault: isVestingContract ? abi.escrows : abi.getLlamaPayContractByIndex,
   }
-}
-`
+  const { output:contractCount  } = await sdk.api.abi.call({
+    target: contract,
+    abi: abis.count,
+    chain, block,
+  })
 
-async function getTvl(block, chain, endpoint) {
-    const balances = {};
-    const gqlClient = new GraphQLClient(endpoint);
-    const queryResults = (await gqlClient.request(queryField, {block})).llamaPayContracts;
-    const tokensAndBalances = (await sdk.api.abi.multiCall({
-        calls: queryResults.map((p) => ({
-            target: p.token.id,
-            params: p.address
-        })),
-        abi: "erc20:balanceOf",
-        block,
-        chain
-    })).output;
-    ;
-    tokensAndBalances.map(p => {
-        sdk.util.sumSingleBalance(balances, `${chain}:${p.input.target}`, p.output);
-    })
-    return balances
-}
+  const { output: llamaPayContractsRes } = await sdk.api.abi.multiCall({
+    target: contract,
+    abi: abis.vault,
+    calls: getParamCalls(contractCount),
+    chain, block,
+  })
 
-async function avaxTvl(timestamp, block, chainBlocks) {
-    block = chainBlocks.avax;
-    return getTvl(block, "avax", avaxEndpoint);
+  const llamaPayContracts = llamaPayContractsRes.map(i => i.output)
+  const { output: llamaPayTokens } = await sdk.api.abi.multiCall({
+    calls: llamaPayContracts.map(i => ({ target: i })) ,
+    abi: abi.token,
+    chain, block,
+  })
+
+  return llamaPayTokens.map(({ output}, i) => ([output, llamaPayContracts[i]]))
 }
 
-async function arbitrumTvl(timestamp, block, chainBlocks) {
-    block = chainBlocks.arbitrum;
-    return getTvl(block, "arbitrum", arbitrumEndpoint);
-}
+const chains = [
+  'avax',
+  'arbitrum',
+  'bsc',
+  'fantom',
+  'ethereum',
+  'optimism',
+  'polygon',
+  'xdai',
+  'meter',
+  "metis"
+]
 
-async function bscTvl(timestamp, block, chainBlocks) {
-    block = chainBlocks.bsc;
-    return getTvl(block, "bsc", bscEndpoint);
-}
+module.exports = {}
 
-async function fantomTvl(timestamp, block, chainBlocks) {
-    block = chainBlocks.fantom;
-    return getTvl(block, "fantom", fantomEndpoint);
-}
+chains.forEach(chain => {
+  let contract = llamaPayDefault
+  let vestingContract = llamaPayVesting
 
-async function ethTvl(timestamp, block) {
-    return getTvl(block, "ethereum", mainnetEndpoint);
-} 
+  switch (chain) {
+    case 'avax': contract = llamaPayAvax; break;
+    case 'meter': contract = llamaPayMeter; vestingContract = llamaPayMeterVesting; break;
+    case 'metis': contract = llamaPayMetis; break;
+  }
 
-async function optimismTvl(timestamp, block) {
-    return getTvl(block, "optimism", optimismEndpoint);
-}
-
-async function polygonTvl(timestamp, block, chainBlocks) {
-    block = chainBlocks.polygon;
-    return getTvl(block, "polygon", polygonEndpoint);
-}
-
-async function xdaiTvl(timestamp, block, chainBlocks) {
-    block = chainBlocks.xdai;
-    return getTvl(block, "xdai", xdaiEndpoint);
-}
-
-module.exports = {
-    arbitrum: {
-        tvl: arbitrumTvl
-    },
-    avalanche: {
-        tvl: avaxTvl
-    },
-    bsc: {
-        tvl: bscTvl
-    },
-    fantom: {
-        tvl: fantomTvl
-    },
-    ethereum: {
-        tvl: ethTvl
-    },
-    optimism: {
-        tvl :optimismTvl
-    },
-    polygon: {
-        tvl: polygonTvl
-    },
-    xdai: {
-        tvl: xdaiTvl
-    }
-}
+  module.exports[chain] = {
+    hallmarks: [
+      [Math.floor(new Date('2022-10-03')/1e3), 'Vesting tokens are not included in tvl'],
+    ],
+    tvl: async (_, _b, { [chain]: block }) => calculateTvl(contract, vestingContract, block, chain, false),
+    vesting: async (_, _b, { [chain]: block }) => calculateTvl(contract, vestingContract, block, chain, true),
+  }
+})

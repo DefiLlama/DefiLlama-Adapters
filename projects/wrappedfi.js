@@ -103,9 +103,7 @@ const ethTvls = ethContracts.map((contractAddress) => {
 });
 
 const celoTvls = celoContracts.map((contractAddress) => {
-  return async (timestamp, ethBlock, chainBlocks) => {
-    const block = await getBlock(timestamp, "celo", chainBlocks);
-
+  return async (timestamp, ethBlock, { celo: block }) => {
     return {
       [`celo:${contractAddress}`]: (
         await sdk.api.erc20.totalSupply({
