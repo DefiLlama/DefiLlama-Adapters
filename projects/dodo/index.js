@@ -1,6 +1,6 @@
 const { request, gql } = require("graphql-request");
 const { getBlock } = require('../helper/getBlock')
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const sdk = require('@defillama/sdk')
 
 const graphEndpoints = {
   'ethereum': "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2",
@@ -11,9 +11,10 @@ const graphEndpoints = {
   "aurora": "https://api.thegraph.com/subgraphs/name/dodoex/dodoex-v2-aurora"
 }
 const graphQuery = gql`
-query get_pairs($lastId: String) {
+query get_pairs($lastId: String, $block: Int) {
     pairs(
       first: 1000,
+      block: { number: $block }
       where: {id_gt: $lastId}
     ) {
         id
@@ -23,11 +24,13 @@ query get_pairs($lastId: String) {
           id
           symbol
           usdPrice
+          decimals
         }
         quoteToken{
           id
           symbol
           usdPrice
+          decimals
         }
     }
 }
@@ -47,22 +50,13 @@ Object.keys(graphEndpoints).forEach(chain => {
         response = await request(
           graphEndpoints[chain],
           graphQuery,
-          {
-            lastId
-          }
+          { lastId, block: block - 500, }
         );
         allPairs = allPairs.concat(response.pairs)
         lastId = response.pairs[response.pairs.length - 1].id
       } while (response.pairs.length >= 1000);
 
-      const tokensAndOwners = []
-      allPairs.forEach(pair => {
-        if (pair.id.includes('-'))
-          return null
-        tokensAndOwners.push([pair.quoteToken.id, pair.id])
-        tokensAndOwners.push([pair.baseToken.id, pair.id])
-      })
-
+      const balances = {}
       const blacklist = [
         '0xd79d32a4722129a4d9b90d52d44bf5e91bed430c',
         '0xdb1e780db819333ea79c9744cc66c89fbf326ce8', // this token is destroyed
@@ -70,9 +64,18 @@ Object.keys(graphEndpoints).forEach(chain => {
         '0x738076a6cb6c30d906bcb2e9ba0e0d9a58b3292e', // SRSB is absuredly priced 
         '0x95e7c70b58790a1cbd377bc403cd7e9be7e0afb1', // YSL is absuredly priced 
         '0x2b1e9ded77ff8ecd81f71ffc5751622e6f1291c3', // error querying balance
-      ]
+      ].map(i => i.toLowerCase())
 
-      return sumTokens2({ tokensAndOwners, chain, block, blacklistedTokens: blacklist })
+      allPairs.forEach(pair => {
+        if (pair.id.includes('-'))
+          return null
+        if (!blacklist.includes(pair.baseToken.id.toLowerCase()) && +pair.baseReserve > 1)
+          sdk.util.sumSingleBalance(balances, chain + ':' + pair.baseToken.id, pair.baseReserve * (10 ** pair.baseToken.decimals))
+        if (!blacklist.includes(pair.quoteToken.id.toLowerCase()) && +pair.quoteReserve > 1)
+          sdk.util.sumSingleBalance(balances, chain + ':' + pair.quoteToken.id, pair.quoteReserve * (10 ** pair.quoteToken.decimals))
+      })
+
+      return balances
     }
   }
 })
