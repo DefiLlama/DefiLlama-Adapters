@@ -609,7 +609,6 @@ const fixBalancesTokens = {
     "6LNeTYMqtNm1pBFN8PfhQaoLyegAH8GD32WmHU9erXKN": {coingeckoId: "aptos", decimals: 8, },
     "EjmyN6qEC1Tf1JxiG1ae7UTJhUxSwk1TCWNWqxWV4J6o": {coingeckoId: tokens.dai, decimals: -10, },
     "eqKJTf1Do4MDPyKisMYqVaUFpkEFAs3riGF3ceDH2Ca": {coingeckoId: tokens.usdc, decimals: 0, },
-    "BTsbZDV7aCMRJ3VNy9ygV4Q2UeEo9GpR8D6VvmMZzNr8": {coingeckoId: tokens.usdc, decimals: 0, },  // solend cUSDC
     "FCqfQSujuPxy6V42UvafBhsysWtEq1vhjfMN1PUbgaxA": {coingeckoId: tokens.usdc, decimals: 2, },
     "DdFPRnccQqLD4zCHrBqdY95D6hvw6PLWp9DEXj1fLCL9": {coingeckoId: tokens.usdc, decimals: 3, },
     "8Yv9Jz4z7BUHP68dz8E8m3tMe6NKgpMUKn8KVqrPA6Fr": {coingeckoId: tokens.usdc, decimals: 3, },
@@ -619,7 +618,6 @@ const fixBalancesTokens = {
     "E77cpQ4VncGmcAXX16LHFFzNBEBb2U7Ar7LBmZNfCgwL": {coingeckoId: tokens.usdt, decimals: 3, },
     "Bn113WT6rbdgwrm12UJtnmNqGqZjY4it2WoUQuQopFVn": {coingeckoId: tokens.usdt, decimals: 3, },
     "FwEHs3kJEdMa2qZHv7SgzCiFXUQPEycEXksfBkwmS8gj": {coingeckoId: tokens.usdt, decimals: 3, },
-    "993dVFL2uXWYeoXuEBFXR4BijeXdTv4s6BzsCjJZuwqk": {coingeckoId: tokens.usdt, decimals: 0, },  // solend cUSDT
     "5RpUwQ8wtdPCZHhu6MERp2RGrpobsbZ6MH5dDHkUjs2": {coingeckoId: tokens.busd, decimals: -10, },
     "PUhuAtMHsKavMTwZsLaDeKy2jb7ciETHJP7rhbKLJGY": {coingeckoId: 'usn', decimals: 9, },
   },
