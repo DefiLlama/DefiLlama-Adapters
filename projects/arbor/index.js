@@ -10,9 +10,7 @@ const graphQuery = gql`
       id
       collateralToken {
         id
-        decimals
       }
-      collateralTokenAmount
     }
   }
 `;
