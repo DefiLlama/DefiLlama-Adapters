@@ -1,203 +1,99 @@
-const { sumTokens2 } = require('../helper/unwrapLPs')
-
+const BigNumber = require("bignumber.js");
+const abi = require("./abi.json");
 const sdk = require("@defillama/sdk");
-const abi = [
-  {
-    inputs: [],
-    name: "getAllAssetInfo",
-    outputs: [
-      {
-        components: [
-          {
-            internalType: "bytes32",
-            name: "symbol",
-            type: "bytes32",
-          },
-          {
-            internalType: "address",
-            name: "tokenAddress",
-            type: "address",
-          },
-          {
-            internalType: "uint8",
-            name: "id",
-            type: "uint8",
-          },
-          {
-            internalType: "uint8",
-            name: "decimals",
-            type: "uint8",
-          },
-          {
-            internalType: "uint56",
-            name: "flags",
-            type: "uint56",
-          },
-          {
-            internalType: "uint24",
-            name: "_flagsPadding",
-            type: "uint24",
-          },
-          {
-            internalType: "uint32",
-            name: "initialMarginRate",
-            type: "uint32",
-          },
-          {
-            internalType: "uint32",
-            name: "maintenanceMarginRate",
-            type: "uint32",
-          },
-          {
-            internalType: "uint32",
-            name: "minProfitRate",
-            type: "uint32",
-          },
-          {
-            internalType: "uint32",
-            name: "minProfitTime",
-            type: "uint32",
-          },
-          {
-            internalType: "uint32",
-            name: "positionFeeRate",
-            type: "uint32",
-          },
-          {
-            internalType: "address",
-            name: "referenceOracle",
-            type: "address",
-          },
-          {
-            internalType: "uint32",
-            name: "referenceDeviation",
-            type: "uint32",
-          },
-          {
-            internalType: "uint8",
-            name: "referenceOracleType",
-            type: "uint8",
-          },
-          {
-            internalType: "uint32",
-            name: "halfSpread",
-            type: "uint32",
-          },
-          {
-            internalType: "uint128",
-            name: "_reserved1",
-            type: "uint128",
-          },
-          {
-            internalType: "uint128",
-            name: "_reserved2",
-            type: "uint128",
-          },
-          {
-            internalType: "uint96",
-            name: "collectedFee",
-            type: "uint96",
-          },
-          {
-            internalType: "uint32",
-            name: "_reserved3",
-            type: "uint32",
-          },
-          {
-            internalType: "uint96",
-            name: "spotLiquidity",
-            type: "uint96",
-          },
-          {
-            internalType: "uint96",
-            name: "maxLongPositionSize",
-            type: "uint96",
-          },
-          {
-            internalType: "uint96",
-            name: "totalLongPosition",
-            type: "uint96",
-          },
-          {
-            internalType: "uint96",
-            name: "averageLongPrice",
-            type: "uint96",
-          },
-          {
-            internalType: "uint96",
-            name: "maxShortPositionSize",
-            type: "uint96",
-          },
-          {
-            internalType: "uint96",
-            name: "totalShortPosition",
-            type: "uint96",
-          },
-          {
-            internalType: "uint96",
-            name: "averageShortPrice",
-            type: "uint96",
-          },
-          {
-            internalType: "address",
-            name: "muxTokenAddress",
-            type: "address",
-          },
-          {
-            internalType: "uint32",
-            name: "spotWeight",
-            type: "uint32",
-          },
-          {
-            internalType: "uint32",
-            name: "longFundingBaseRate8H",
-            type: "uint32",
-          },
-          {
-            internalType: "uint32",
-            name: "longFundingLimitRate8H",
-            type: "uint32",
-          },
-          {
-            internalType: "uint128",
-            name: "longCumulativeFundingRate",
-            type: "uint128",
-          },
-          {
-            internalType: "uint128",
-            name: "shortCumulativeFunding",
-            type: "uint128",
-          },
-        ],
-        internalType: "struct Asset[]",
-        name: "",
-        type: "tuple[]",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-]
+const { Contract, providers } = require("ethers");
+const { getChainTransform, getFixBalances } = require("../helper/portedTokens");
 
-const config = {
+const liquidityPoolContract = {
   arbitrum: '0x3e0199792Ce69DC29A0a36146bFa68bd7C8D6633',
   bsc: '0x855E99F768FaD76DD0d3EB7c446C0b759C96D520',
   avax: '0x0bA2e492e8427fAd51692EE8958eBf936bEE1d84',
   fantom: '0x2e81F443A11a943196c88afcB5A0D807721A88E6',
 }
 
+const readerContract = {
+  arbitrum: '0x6e29c4e8095B2885B8d30b17790924F33EcD7b33',
+  bsc: '0xeAb5b06a1ea173674601dD54C612542b563beca1',
+  avax: '0x5996D4545EE59D96cb1FE8661a028Bef0f4744B0',
+  fantom: '0x29F4dC996a0219838AfeCF868362E4df28A70a7b',
+}
+
+const chainId = {
+  arbitrum: 42161,
+  bsc: 56,
+  avax: 43114,
+  fantom: 250,
+}
+
+const rpc = {
+  arbitrum: process.env.ARBITRUM_RPC || 'https://arb1.arbitrum.io/rpc',
+  bsc: process.env.BSC_RPC || 'https://bsc-dataseed4.binance.org',
+  avax: process.env.AVAX_RPC || 'https://api.avax.network/ext/bc/C/rpc',
+  fantom: process.env.FANTOM_RPC || 'https://fantom-mainnet.gateway.pokt.network/v1/lb/62759259ea1b320039c9e7ac',
+}
+
+const invalidAddress = '0x0000000000000000000000000000000000000000'
+
+async function tvl(chain, block) {
+  const transformAddress = await getChainTransform(chain)
+  const provider = new providers.JsonRpcProvider(rpc[chain], chainId[chain])
+  const contract = new Contract(readerContract[chain], abi, provider)
+  const storage = await contract.callStatic.getChainStorage()
+  const assets = storage[1]
+  const dexs = storage[2]
+
+  const tokens = assets.filter(token => token.tokenAddress !== invalidAddress).map(token => {
+    return {address: token.tokenAddress, key: transformAddress(token.tokenAddress), decimals: token.decimals, assetId: token.id}
+  })
+
+  const owner = liquidityPoolContract[chain]
+  const balances = {}
+  const balanceOfTokens = await sdk.api.abi.multiCall({
+    calls: tokens.map(t => ({
+      target: t.address,
+      params: owner
+    })),
+    abi: 'erc20:balanceOf',
+    block,
+    chain
+  })
+
+  balanceOfTokens.output.forEach((result, idx) => {
+    const token = tokens[idx]
+    const balance = BigNumber(result.output)
+    try {
+      balances[token.key] = BigNumber(balances[token.key] || 0).plus(balance).toFixed(0)
+    } catch (e) {
+      console.log(token, balance, balances[token])
+      throw e
+    }
+  })
+
+  dexs.forEach(dex => {
+    dex.liquidityBalance.forEach((balance, index) => {
+      const assetId = dex.assetIds[index]
+      const token = tokens.find(t => assetId === t.assetId)
+      balances[token.key] = BigNumber(balances[token.key] || 0).plus(balance.toString()).toFixed(0)
+    })
+  })
+
+  Object.entries(balances).forEach(([token, value]) => {
+    if (+value === 0) delete balances[token]
+  })
+
+  const fixBalances = await getFixBalances(chain)
+  const fixedBalances = fixBalances(balances)
+  return fixedBalances
+}
+
 module.exports = {
   methodology: `This is the total value of all tokens in the MUXLP Pool. The liquidity pool consists of a token portfolio used for margin trading and third-party DEX mining.`,
 }
 
-
-Object.keys(config).forEach(chain => {
-  const owner = config[chain]
+Object.keys(chainId).forEach(chain => {
   module.exports[chain] = {
     tvl: async (_, _b, {[chain]: block}) => {
-      const { output } = await sdk.api.abi.call({ target: owner, chain, block, abi: abi.find(i => i.name === 'getAllAssetInfo') })
-      const tokens = output.map(i => i.tokenAddress)
-      return sumTokens2({ chain, block, owner, tokens})
+      return tvl(chain, block)
     }
   }
 })
