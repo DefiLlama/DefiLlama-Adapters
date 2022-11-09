@@ -4,6 +4,7 @@ const BigNumber = require("bignumber.js");
 const {
   normalizeAddress,
   getCoreAssets,
+  stripTokenHeader,
   transformTokens,
   fixBalancesTokens,
   unsupportedGeckoChains,
@@ -183,12 +184,6 @@ function fixBalances(balances, mapping, { chain, } = {}) {
   return balances;
 }
 
-function stripTokenHeader(token, chain) {
-  if (chain === 'aptos') return token.replace(/^aptos\:/, '')
-  token = normalizeAddress(token, chain);
-  return token.indexOf(":") > -1 ? token.split(":")[1] : token;
-}
-
 async function getFixBalances(chain) {
   return getFixBalancesSync(chain)
 }
@@ -223,6 +218,9 @@ function transformChainAddress(
 ) {
 
   return addr => {
+    if (['solana'].includes(chain)) {
+      return mapping[addr] ? mapping[addr] : `${chain}:${addr}`
+    }
     if (!addr.startsWith('0x')) return addr
     addr = addr.toLowerCase();
     if (!mapping[addr] && skipUnmapped) {
@@ -253,8 +251,8 @@ async function getChainTransform(chain) {
     if (ibcChains.includes(chain) && addr.startsWith('ibc/')) return chainStr
     if (chain === 'terra2' && addr.startsWith('terra1')) return chainStr
     if (chain === 'algorand' && /^\d+$/.test(addr)) return chainStr
-    if (addr.startsWith('0x')) return chainStr
-    return addr 
+    if (addr.startsWith('0x') || ['solana'].includes(chain)) return chainStr
+    return addr
   };
 }
 
@@ -269,7 +267,7 @@ async function transformBalances(chain, balances) {
   return balances
 }
 
-async function transformDexBalances({ chain, data, balances = {}, restrictTokenRatio = 10, withMetadata = false, }) {
+async function transformDexBalances({ chain, data, balances = {}, restrictTokenRatio = 10, withMetadata = false, blacklistedTokens, }) {
 
   const coreTokens = new Set(getCoreAssets(chain))
   const prices = {}
@@ -283,9 +281,11 @@ async function transformDexBalances({ chain, data, balances = {}, restrictTokenR
   data.forEach(addTokens)
   updateBalances(balances)
 
+  blacklistedTokens.forEach(i => delete balances[i])
+
   if (!withMetadata)
     return transformBalances(chain, balances)
-  
+
   return {
     prices,
     updateBalances,
@@ -337,6 +337,7 @@ async function transformDexBalances({ chain, data, balances = {}, restrictTokenR
   }
 
   function setPrice(token, tokenBal, coreToken, coreTokenBal) {
+    if (+tokenBal === 0 || +coreTokenBal === 0) return;
     if (!prices[token]) {
       prices[token] = {
         coreToken,

@@ -200,6 +200,7 @@ import incrementSwap from "./adapters/increment-swap";
 import chaingeFinance from "./adapters/chainge-finance";
 import wavelengthDao from "./adapters/wavelength-dao";
 import dexible from "./adapters/dexible";
+import metatdex from "./adapters/metatdex";
 
 
 export default {
@@ -402,6 +403,7 @@ export default {
   "increment-swap": incrementSwap,
   "chainge-finance": chaingeFinance,
   "wavelength-dao": wavelengthDao,
-  dexible
+  dexible,
+  metatdex
   // lyra -> OPTIONS DEX, not enable for now
 };

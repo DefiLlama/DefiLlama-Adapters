@@ -31,7 +31,7 @@ async function tvl() {
     poolAccounts.forEach((account, i) => chunk[i].mintAuthoritiy = new PublicKey(MintLayout.decode(account.data).mintAuthority))
     chunk.forEach(({ mintAuthoritiy, tokenA, tokenB }) => tokensAndOwners.push([tokenA, mintAuthoritiy], [tokenB, mintAuthoritiy]))
   }
-  return sumTokens2({ tokensAndOwners })
+  return sumTokens2({ tokensAndOwners, blacklistedTokens: ['A7rqejP8LKN8syXMr4tvcKjs2iJ4WtZjXNs1e6qP3m9g'], })
 }
 
 async function staking() {
@@ -41,5 +41,8 @@ async function staking() {
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
-  solana: { tvl, staking  }
+  solana: { tvl, staking  },
+  hallmarks:[
+    [1665521360, "Mango Markets Hack"],
+  ],
 }

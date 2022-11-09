@@ -11,29 +11,23 @@ const VAULT_ABI = [{
     "stateMutability": "view",
     "type": "function"
   },{
-    "inputs": [],
-    "name": "floorOracle",
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_nftIndex",
+        "type": "uint256"
+      }
+    ],
+    "name": "getNFTValueETH",
     "outputs": [
       {
-        "internalType": "address",
+        "internalType": "uint256",
         "name": "",
-        "type": "address"
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
     "type": "function"
-},{
-  "inputs": [],
-  "name": "getFloorETH",
-  "outputs": [
-    {
-      "internalType": "uint256",
-      "name": "",
-      "type": "uint256"
-    }
-  ],
-  "stateMutability": "view",
-  "type": "function"
 }];
 
 module.exports = {
