@@ -132,6 +132,7 @@ module.exports = {
     tokensAndOwners: getTokensAndOwners('BEP20')
   },
   bep2: {
+    geckoId: 'binancecoin',
     addresses: getAddresses('BEP2'),
   },
   tron: {
