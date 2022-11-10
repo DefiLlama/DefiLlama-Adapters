@@ -1,25 +1,25 @@
-const utils = require("./helper/utils");
+const utils = require("../helper/utils");
 const sdk = require("@defillama/sdk");
 
 async function tvl(timestamp) {
   let balances = {};
-  let url = `https://api2.kava.io/kava/savings/v1beta1/total_supply`;
+  let url = `https://api2.kava.io/kava/earn/v1beta1/total_supply`;
 
-  if (Math.abs(Date.now() / 1000 - timestamp) > 3600) {
-    const block = await sdk.api.util.lookupBlock(timestamp, { chain: "kava" });
-    url += `?height=${block.block}`;
-  }
+  // if (Math.abs(Date.now() / 1000 - timestamp) > 3600) {
+  //   const block = await sdk.api.util.lookupBlock(timestamp, { chain: "kava" });
+  //   url += `?height=${block.block}`;
+  // }
 
   const response = await utils.fetchURL(url);
 
   for (let coin of response.data.result) {
     const tokenInfo = generic(coin.denom);
     if (!tokenInfo) {
-      console.log("unknown token", coin.denom);
+      utils.log("unknown token", coin.denom);
       continue;
     }
-    const tokenName = coin.denom === "bkava" ? "bkava" : tokenInfo[0];
-    balances[tokenName] = coin.amount / 10 ** tokenInfo[1];
+    const tokenName = tokenInfo[0];
+    sdk.util.sumSingleBalance(balances,tokenName,coin.amount / 10 ** tokenInfo[1])
   }
 
   return balances;
