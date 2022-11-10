@@ -12,12 +12,7 @@ const {
 } = require('./tokenMapping')
 
 async function transformFantomAddress() {
-  const mapping = transformTokens.fantom
-
-  return addr => {
-    addr = addr.toLowerCase()
-    return mapping[addr] || `fantom:${addr}`;
-  };
+  return transformChainAddress(transformTokens.fantom, "fantom")
 }
 
 function compareAddresses(a, b) {
