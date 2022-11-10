@@ -153,13 +153,16 @@ async function getBalance(chain, account) {
   switch (chain) {
     case 'bitcoin':
       return (await http.get(`https://chain.api.btc.com/v3/address/${account}`)).data.balance / 1e8
+    case 'bep2':
+      const balObject = (await http.get(`https://api-binance-mainnet.cosmostation.io/v1/account/${account}`)).balances.find(i => i.symbol === 'BNB')
+      return +(balObject || { free: 0 }).free
     default: throw new Error('Unsupported chain')
   }
 }
 
-function getUniqueAddresses(addresses) {
+function getUniqueAddresses(addresses, isCaseSensitive = false) {
   const set = new Set()
-  addresses.forEach(i => set.add(i.toLowerCase()))
+  addresses.forEach(i => set.add(isCaseSensitive ? i : i.toLowerCase()))
   return [...set]
 }
 
@@ -304,8 +307,8 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
     let symbol = token && symbolMapping[token] || '-'
     let decimal = token && decimalsMapping[token]
     if (decimal)
-      balance = (balance/(10 ** decimal)).toFixed(0)
-    
+      balance = (balance / (10 ** decimal)).toFixed(0)
+
     logObj.push({ name, symbol, balance, label, decimals: decimal })
   })
 
