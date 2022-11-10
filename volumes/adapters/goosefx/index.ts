@@ -8,7 +8,7 @@ const gfx_volume_endpoint = "https://nest-api.goosefx.io/stats/volume"
 const graphs = (chain: string) => async () => {
   let res = await fetchURL(gfx_volume_endpoint);
   return {
-    dailyVolume: res?.data?.volume24h,
+    dailyVolume: res?.data?.volume24hr,
     timestamp: Math.trunc(Date.now() / 1000)
   };
 };
@@ -18,7 +18,7 @@ const adapter: SimpleVolumeAdapter = {
     solana: {
       fetch: graphs("solana"),
       runAtCurrTime: true,
-      customBackfill: undefined,
+      //customBackfill: undefined,
       start: async () => 0,
     },
     // TODO custom backfill
