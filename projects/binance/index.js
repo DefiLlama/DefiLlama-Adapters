@@ -27,7 +27,6 @@ chains.forEach(chain => {
   }
 })
 
-
 const bscTvl = module.exports.bsc.tvl
 module.exports.bsc.tvl = sdk.util.sumChainTvls([
   bscTvl, getChainTvl('bep2')
