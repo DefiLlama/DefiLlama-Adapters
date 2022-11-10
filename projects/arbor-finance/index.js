@@ -1,5 +1,6 @@
-const { api, util } = require("@defillama/sdk");
 const { request, gql } = require("graphql-request");
+const { sumTokens2 } = require('../helper/unwrapLPs')
+const { getBlock } = require('../helper/getBlock')
 
 const graphUrl =
   "https://api.thegraph.com/subgraphs/name/alwaysbegrowing/arbor-v1";
@@ -14,38 +15,16 @@ const graphQuery = (block) => gql`
       }
     }
   }
-`;
+`
 
-async function tvl(timestamp, block) {
-  const { bonds } = await request(graphUrl, graphQuery(block), {});
-  const balances = {};
-
-  // Map over array of bonds and tokens to sum the total amount of collateral locked in all bonds
-  await Promise.all(
-    bonds.map(async (bond) => {
-      const token = bond?.collateralToken?.id;
-      const bondAddress = bond?.id;
-      if (token == null || bondAddress == null) {
-        return;
-      }
-
-      const collateralBalance = await api.abi.call({
-        abi: "erc20:balanceOf",
-        chain: "ethereum",
-        target: token, // token address (i.e. collateral token)
-        params: bondAddress, // contract address where tokens are stored (i.e. bond address)
-        block,
-      });
-
-      await util.sumSingleBalance(balances, token, collateralBalance?.output);
-    })
-  );
-  return balances;
+async function tvl(timestamp, block, cb) {
+  block = await getBlock(timestamp, 'ethereum', cb)
+  const { bonds } = await request(graphUrl, graphQuery(block - 500), {});
+  const toa = bonds.map(i => ([i.collateralToken.id, i.id])).filter(i => i[0] && i[1])
+  return sumTokens2({ block, tokensAndOwners: toa})
 }
 
 module.exports = {
-  timetravel: true,
-  misrepresentedTokens: false,
   methodology: "Sum the collateral value of active Arbor Finance bonds.",
   start: 14906553,
   ethereum: {
