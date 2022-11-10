@@ -1,3 +1,5 @@
+> ⚠️ If you would like to add a `volume` adapter please submit the PR [here](https://github.com/DefiLlama/adapters). ⚠️ 
+
 # DEX volumes
 
 ## Test an adapter
