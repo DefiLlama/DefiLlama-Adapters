@@ -201,6 +201,7 @@ import chaingeFinance from "./adapters/chainge-finance";
 import wavelengthDao from "./adapters/wavelength-dao";
 import dexible from "./adapters/dexible";
 import metatdex from "./adapters/metatdex";
+import goosefx from "./adapters/goosefx";
 
 
 export default {
@@ -404,6 +405,7 @@ export default {
   "chainge-finance": chaingeFinance,
   "wavelength-dao": wavelengthDao,
   dexible,
-  metatdex
+  metatdex,
+  goosefx
   // lyra -> OPTIONS DEX, not enable for now
 };
