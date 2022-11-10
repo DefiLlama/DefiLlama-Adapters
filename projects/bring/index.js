@@ -20,6 +20,7 @@ const listOfToken = [
 
 /*** New BSC Addresses ***/
 const chefContractsNew_bsc = "0xe9d8b35e1D51b9C17504E5903C3F4D5b14d8c29E";
+const chefContractsNew_bsc1 = "0x3877D0E8DbB9e69beD6abDd8A40ED6A4a26EB44f";
 const BRNG_bsc = "0x939D5A13cf0074586a2Dcf17bC692B2D3CCdD517";
 const BNB_BRNG2_CakeLP = "0xE412f518A6a39351c965E201A329eC83047FEb4A";
 
@@ -76,20 +77,20 @@ async function bscTvl(_, _b, { bsc: block }) {
   const toa = [];
   ([...lpPoolsNew_bsc, ...listOfTokenNew_bsc]).forEach(token => toa.push([token, chefContractsNew_bsc]));
   ([...listOfTokenOld_bsc, ...lpPoolsOld_bsc]).forEach(token => toa.push([token, chefContractsOld_bsc]));
-  return sumTokens2({ chain, block, tokensAndOwners: toa, resolveLP: true, })
+  return sumTokens2({ chain, block, tokensAndOwners: toa,  })
 }
 
 async function ethTvl(_, block) {
   const toa = [];
   listOfToken.forEach(token => toa.push([token, chefContracts]))
-  return sumTokens2({ block, tokensAndOwners: toa, resolveLP: true, })
+  return sumTokens2({ block, tokensAndOwners: toa,  })
 }
 
 async function harmonyTvl(_, _b, { harmony: block }) {
   const chain = 'harmony'
   const toa = [];
   listOfToken_harmony.forEach(token => toa.push([token, chefHarmonyContracts]))
-  return sumTokens2({ chain, block, tokensAndOwners: toa, resolveLP: true, })
+  return sumTokens2({ chain, block, tokensAndOwners: toa, })
 }
 
 
@@ -101,12 +102,12 @@ module.exports = {
   },
   bsc: {
     staking: stakings(
-      [chefContractsNew_bsc, chefContractsOld_bsc],
+      [chefContractsNew_bsc, chefContractsOld_bsc, chefContractsNew_bsc1],
       BRNG_bsc,
       "bsc"
     ),
     pool2: pool2s(
-      [chefContractsNew_bsc, chefContractsOld_bsc],
+      [chefContractsNew_bsc, chefContractsOld_bsc, chefContractsNew_bsc1],
       [BNB_BRNG2_CakeLP],
       "bsc"
     ),

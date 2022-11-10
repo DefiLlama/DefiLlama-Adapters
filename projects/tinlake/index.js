@@ -1,5 +1,6 @@
 const BigNumber = require("bignumber.js");
 const { request, gql } = require("graphql-request");
+const data = {}
 
 const subgraphUrl = 'https://api.thegraph.com/subgraphs/name/centrifuge/tinlake';
 const graphTotalTokenTVLQuery = gql`
@@ -28,7 +29,8 @@ async function getData(ethBlock) {
 
 async function borrowed(timestamp, ethBlock) {
   let total = BigNumber(0)
-  const { pools } = await getData(ethBlock);
+  if (!data[ethBlock]) data[ethBlock] = await getData(ethBlock)
+  const { pools } = await data[ethBlock]
   pools.forEach(pool => {
     total = total.plus(pool.assetValue)
   })
@@ -40,7 +42,8 @@ async function borrowed(timestamp, ethBlock) {
 
 async function tvl(timestamp, ethBlock) {
   let total = BigNumber(0)
-  const { pools } = await getData(ethBlock);
+  if (!data[ethBlock]) data[ethBlock] = await getData(ethBlock)
+  const { pools } = await data[ethBlock]
   pools.forEach(pool => {
     total = total.plus(pool.reserve)
   })

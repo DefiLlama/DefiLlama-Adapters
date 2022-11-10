@@ -1,0 +1,31 @@
+{
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
+    ],
+    "name": "getPoolInfo",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "freeAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "frozenAmount",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct PoolType.PoolInfo",
+        "name": "poolInfo",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }

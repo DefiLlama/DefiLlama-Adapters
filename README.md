@@ -4,6 +4,7 @@ Follow [this guide](https://docs.llama.fi/submit-a-project) to create an adapter
 
 Also, don't hesitate to send a message on [our discord](https://discord.gg/buPFYXzDDd) if we're late to merge your PR.
 
+> If you would like to add a `volume` adapter please submit the PR [here](https://github.com/DefiLlama/adapters).
 
 ## Getting listed
 

@@ -41,6 +41,21 @@ const pools = [
     assetId: 694432641,
     assetDecimals: 6,
   },
+  // USDC-gALGO TMP1.1
+  {
+    appId: 805843312,
+    assetId: 794948880,
+    assetDecimals: 6,
+    poolAppAddress:
+      "3WT6YVLQY2WSQ6VLX73MJB7BI3CGBDTB2KKAAFZ2CZQJUFUCIOMUN2K24U",
+  },
+  // ALGO-gALGO PLP
+  {
+    appId: 805846536,
+    assetId: 794882756,
+    assetDecimals: 6,
+    poolAppId: 794882684,
+  },
   {
     // Algo-gAlgo3 TMP1.1
     appId: 743679535,
@@ -92,12 +107,21 @@ const pools = [
     assetId: 27165954,
     assetDecimals: 6,
   },
+  {
+    // goBTC-gALGO PLP
+    appId: 818026112,
+    assetId: 807805560,
+    assetDecimals: 6,
+    poolAppId: 807805342,
+  },
+  {
+    // goETH-gALGO PLP
+    appId: 818028354,
+    assetId: 807804381,
+    assetDecimals: 6,
+    poolAppId: 807804196,
+  },
 ];
-
-// app id of the governance app used only on 3rd governance period
-const liquidGovernance3AppId = 694427622;
-// app id of the governance app used from 4th governance period on
-const liquidGovernanceAppId = 793119194;
 
 const oracleAppId = 793269965;
 const oracleAdapterAppId = 751277258;
@@ -106,8 +130,6 @@ const tinymanValidatorAppId = 552635992;
 
 module.exports = {
   pools,
-  liquidGovernance3AppId,
-  liquidGovernanceAppId,
   oracleAppId,
   oracleAdapterAppId,
   oracleDecimals,

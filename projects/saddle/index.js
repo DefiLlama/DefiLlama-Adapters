@@ -1,7 +1,7 @@
 
 const { sumTokens2 } = require('../helper/unwrapLPs')
 const config = require("./config");
-
+const sdk = require('@defillama/sdk')
 
 module.exports = {
   misrepresentedTokens: true,
@@ -22,7 +22,8 @@ Object.keys(config).forEach(chain => {
         blacklistedTokens.push(lpToken)
         poolTokens.forEach(i => toa.push([i.address, address]))
       })
-      return sumTokens2({ tokensAndOwners: toa, chain, block, blacklistedTokens, })
+      const balances = await sumTokens2({ tokensAndOwners: toa, chain, block, blacklistedTokens, })
+      return balances
     }
   }
 })

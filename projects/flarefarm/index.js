@@ -14,8 +14,8 @@ async function farmTvl(timestamp, ethblock, { [chain]: block }) {
     ["0xb5bf334b8cc30b8b13fc035d171d77a217aab091", "0x864201b2227Ee23f0875c5D3Fc49F4F0ec59aC19"],
     ["0x47c830e141234d029d953df39b13d7728eb9f2d4", "0x921E8f58cF517d289c01BCBE800c2d31838c1a28"],
   ];
-  
-  return sumUnknownTokens({ tokensAndOwners: tokens, chain, block, coreAssets: [WSGB, CANARY_DOLLAR,], })
+
+  return sumUnknownTokens({ tokensAndOwners: tokens, chain, block, useDefaultCoreAssets: true, })
 }
 
 async function pool2(timestamp, ethblock, { [chain]: block }) {
@@ -24,13 +24,13 @@ async function pool2(timestamp, ethblock, { [chain]: block }) {
     ["0xcd15c231b8a0bae40bd7938ae5ea8e43f1e9a15f", "0x3b343A6FC05B699F48CBe6FF127C0af8e2aA9EEE"],
     ["0x48195ca4d228ce487ae2ae1335b017a95493ade6", "0xc5478a1d5914cF9D0Ee20Da21459502eCb7E1646"],
   ]
-  return sumUnknownTokens({ tokensAndOwners: tokens, chain, block, coreAssets: [WSGB, CANARY_DOLLAR] })
+  return sumUnknownTokens({ tokensAndOwners: tokens, chain, block, useDefaultCoreAssets: true, })
 };
 async function staking(timestamp, ethblock, { [chain]: block }) {
   const tokens = [
     ['0x0D94e59332732D18CF3a3D457A8886A2AE29eA1B', '0x554742076743b366504972F86609d64fd18BDC34']
   ]
-  return sumUnknownTokens({ tokensAndOwners: tokens, chain, block, coreAssets: [WSGB, CANARY_DOLLAR], lps: ['0x48195Ca4D228ce487AE2AE1335B017a95493Ade6'] })
+  return sumUnknownTokens({ tokensAndOwners: tokens, chain, block, useDefaultCoreAssets: true, lps: ['0x48195Ca4D228ce487AE2AE1335B017a95493Ade6'] })
 };
 
 module.exports = {

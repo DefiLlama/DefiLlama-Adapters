@@ -1,6 +1,9 @@
 const axios = require('axios')
 const BigNumber = require('bignumber.js')
 const ethers = require('ethers')
+const sdk = require('@defillama/sdk')
+const { getUniqueAddresses, } = require('./utils')
+const { transformBalances, } = require('./portedTokens')
 const { toHex } = require('tron-format-address')
 const axiosObj = axios.create({
   baseURL: 'https://api.trongrid.io/',
@@ -98,9 +101,40 @@ async function getTrxBalance(account) {
 }
 
 
+async function sumTokens({ 
+  balances = {},
+  tokensAndOwners = [],
+  tokens = [],
+  owners = [],
+  owner,
+  blacklistedTokens = [],
+}) {
+  if (!tokensAndOwners.length) {
+    tokens = getUniqueAddresses(tokens, true)
+    owners = getUniqueAddresses(owners, true)
+    if (owner) tokensAndOwners = tokens.map(t => [t, owner])
+    if (owners.length) tokensAndOwners = tokens.map(t => owners.map(o => [t, o])).flat()
+  }
+  tokensAndOwners = tokensAndOwners.filter(([token]) => !blacklistedTokens.includes(token))
+  tokensAndOwners = getUniqueToA(tokensAndOwners)
+
+  const results = await Promise.all(tokensAndOwners.map(i => getUnverifiedTokenBalance(i[0], i[1])))
+
+  results.forEach((bal, i) => sdk.util.sumSingleBalance(balances,'tron:'+tokensAndOwners[i][0],bal.toFixed(0)))
+
+  return transformBalances('tron', balances)
+
+  function getUniqueToA(toa) {
+    toa = toa.map(i => i.join('-'))
+    return getUniqueAddresses(toa, true).map(i => i.split('-'))
+  }
+}
+
+
 module.exports = {
   getTokenBalance,
   getTrxBalance,
   getUnverifiedTokenBalance,
-  unverifiedCall
+  unverifiedCall,
+  sumTokens,
 }

@@ -14,6 +14,14 @@ const chainConfig = {
 	avax: {
 		woo: '0xabc9547b534519ff73921b1fba6e672b5f58d083',
 		stakingContract: '0xcd1B9810872aeC66d450c761E93638FB9FE09DB0',
+	},
+	polygon: {
+		woo: '0x1b815d120b3ef02039ee11dc2d33de7aa4a8c603',
+		stakingContract: '0x9BCf8b0B62F220f3900e2dc42dEB85C3f79b405B',
+	},
+	arbitrum: {
+		woo: '0xcafcd85d8ca7ad1e1c6f82f651fa15e33aefd07b',
+		stakingContract: '0x9321785D257b3f0eF7Ff75436a87141C683DC99d',
 	}
 }
 
