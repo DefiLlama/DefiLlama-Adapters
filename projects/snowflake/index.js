@@ -1,36 +1,14 @@
-const sdk = require("@defillama/sdk");
 const { staking } = require("../helper/staking");
 const constants = require("./constants");
-
-async function balanceOf(owner, target, block) {
-  const chain = "polygon";
-  let decimals = (await sdk.api.erc20.decimals(target, chain)).output;
-
-  let balance = (
-    await sdk.api.erc20.balanceOf({
-      owner,
-      target,
-      block,
-      chain,
-    })
-  ).output;
-  return Number(balance) / 10 ** decimals;
-}
+const { sumTokens2 } = require('../helper/unwrapLPs')
 
 async function tvl(timestamp, ethereumBlock, chainBlocks) {
   const block = chainBlocks["polygon"];
-  let balances = {};
-  for (const key in constants) {
-    const { id, addresses } = constants[key];
-    let totalBalance = 0;
-    for (const { token, lpTokens } of addresses) {
-      for (const lpToken of lpTokens) {
-        totalBalance += await balanceOf(lpToken, token, block);
-      }
-    }
-    balances[id] = totalBalance;
-  }
-  return balances;
+  const toa = []
+  for (const key in constants)
+    for (const { token, lpTokens } of constants[key].addresses)
+      lpTokens.forEach(i => toa.push([token, i]))
+  return sumTokens2({ chain: 'polygon', block, tokensAndOwners: toa, })
 }
 
 module.exports = {
