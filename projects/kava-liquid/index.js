@@ -1,20 +1,20 @@
-const utils = require("./helper/utils");
-const sdk = require("@defillama/sdk");
+const utils = require("../helper/utils");
+// const sdk = require("@defillama/sdk");
 
 async function tvl(timestamp) {
   let totalValueLocked = {};
   let url = `https://api2.kava.io/kava/liquid/v1beta1/total_supply`;
-  if (Math.abs(Date.now() / 1000 - timestamp) > 3600) {
-    const block = await sdk.api.util.lookupBlock(timestamp, { chain: "kava" });
-    url += `?height=${block.block}`;
-  }
+  // if (Math.abs(Date.now() / 1000 - timestamp) > 3600) {
+  //   const block = await sdk.api.util.lookupBlock(timestamp, { chain: "kava" });
+  //   url += `?height=${block.block}`;
+  // }
 
   const response = await utils.fetchURL(url);
 
   for (let coin of response.data.result) {
     const tokenInfo = generic(coin.denom);
     if (!tokenInfo) {
-      console.log("unknown token", coin.denom);
+      utils.log("unknown token", coin.denom);
       continue;
     }
 
