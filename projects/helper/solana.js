@@ -64,10 +64,14 @@ async function getTokenSupply(token) {
 
 
 async function getTokenDecimals(tokens) {
-  const calls = tokens.map((t, i) => ({ jsonrpc: '2.0', id: i, method: 'getTokenSupply', params: [t] }))
-
-  const tokenSupply = await axios.post(endpoint, calls);
-  return tokenSupply.data.map(i => i.result.value.decimals);
+  const calls = tokens => tokens.map((t, i) => ({ jsonrpc: '2.0', id: t, method: 'getTokenSupply', params: [t] }))
+  const res = {}
+  const chunks = sliceIntoChunks(tokens, 99)
+  for (const chunk of chunks) {
+    const tokenSupply = await axios.post(endpoint, calls(chunk))
+    tokenSupply.data.forEach(({ id, result}) => res[id] = result.value.decimals)
+  }
+  return res
 }
 
 function formTokenBalanceQuery(token, account) {
@@ -103,7 +107,7 @@ async function getTokenBalances(tokensAndAccounts) {
   return balances
 }
 
-async function getTokenAccountBalances(tokenAccounts, {individual = false} = {}) {
+async function getTokenAccountBalances(tokenAccounts, { individual = false } = {}) {
   const formBody = account => ({ method: "getAccountInfo", jsonrpc: "2.0", params: [account, { encoding: "jsonParsed", commitment: "confirmed" }], id: 1 })
   const balancesIndividual = []
   const body = tokenAccounts.map(formBody)
@@ -178,7 +182,7 @@ async function getMultipleAccountsRaw(accountsArray) {
     })
     res.push(...accountsInfo.data.result.value)
   }
-  ;
+
   return res;
 }
 
@@ -272,12 +276,12 @@ function exportDexTVL(DEX_PROGRAM_ID) {
     const results = []
     for (const chunk of chunks)
       results.push(...await getTokenAccountBalances(chunk, { individual: true }))
-    
+
     const data = []
-    for (let i = 0;i<results.length;i=i+2) {
+    for (let i = 0; i < results.length; i = i + 2) {
       const tokenA = results[i]
-      const tokenB = results[i+1]
-      data.push({ token0: tokenA.mint, token0Bal: tokenA.amount,  token1: tokenB.mint, token1Bal: tokenB.amount, })
+      const tokenB = results[i + 1]
+      data.push({ token0: tokenA.mint, token0Bal: tokenA.amount, token1: tokenB.mint, token1Bal: tokenB.amount, })
     }
 
     return transformDexBalances({ chain: 'solana', data, blacklistedTokens, })
