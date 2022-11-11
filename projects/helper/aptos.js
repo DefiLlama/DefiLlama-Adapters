@@ -4,25 +4,24 @@ const sdk = require('@defillama/sdk')
 const http = require('./http')
 const { fixBalancesTokens } = require('./tokenMapping')
 const { transformBalances } = require('../helper/portedTokens')
-const { log } = require('../helper/utils')
+const { log, getUniqueAddresses } = require('../helper/utils')
 
 const coreTokens = Object.keys(fixBalancesTokens.aptos)
 
 const endpoint = process.env.APTOS_RPC || "https://aptos-mainnet.pontem.network"
 
-async function aQuery(api){
+async function aQuery(api) {
   return http.get(`${endpoint}${api}`)
 }
-async function getResources(account){
+async function getResources(account) {
   return http.get(`${endpoint}/v1/accounts/${account}/resources`)
 }
 async function getCoinInfo(address) {
-  if (address === '0x1') return { data: { decimals: 8, name: 'Aptos'}}
-  console.log(`${endpoint}/v1/accounts/${address}/resource/0x1::coin::CoinInfo%3C${address}::coin::T%3E`)
+  if (address === '0x1') return { data: { decimals: 8, name: 'Aptos' } }
   return http.get(`${endpoint}/v1/accounts/${address}/resource/0x1::coin::CoinInfo%3C${address}::coin::T%3E`)
 }
 
-function dexExport({ 
+function dexExport({
   account,
   poolStr,
   token0Reserve = i => i.data.coin_x_reserve.value,
@@ -65,6 +64,16 @@ function dexExport({
   }
 }
 
+async function sumTokens({ balances = {}, owners = [] }) {
+  owners = getUniqueAddresses(owners, true)
+  const resources = await Promise.all(owners.map(getResources))
+  resources.flat().filter(i => i.type.includes('::CoinStore')).forEach(i => {
+    const token = i.type.split('<')[1].replace('>', '')
+    sdk.util.sumSingleBalance(balances, token, i.data.coin.value)
+  })
+  return transformBalances('aptos', balances)
+}
+
 module.exports = {
   endpoint,
   dexExport,
@@ -72,4 +81,5 @@ module.exports = {
   getCoinInfo,
   getResources,
   coreTokens,
+  sumTokens,
 };

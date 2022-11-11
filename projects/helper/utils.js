@@ -153,6 +153,8 @@ async function getBalance(chain, account) {
   switch (chain) {
     case 'bitcoin':
       return (await http.get(`https://chain.api.btc.com/v3/address/${account}`)).data.balance / 1e8
+    case 'elrond':
+      return (await http.get(`https://gateway.elrond.com/address/${account}`)).data.account.balance / 1e18
     case 'bep2':
       const balObject = (await http.get(`https://api-binance-mainnet.cosmostation.io/v1/account/${account}`)).balances.find(i => i.symbol === 'BNB')
       return +(balObject || { free: 0 }).free

@@ -12,7 +12,7 @@ const nullAddress = '0x0000000000000000000000000000000000000000'
 // gravity bridge for IBC: https://api.mintscan.io/v2/assets/gravity-bridge
 
 const unsupportedGeckoChains = ['aptos', 'terra2', 'terra', 'kujira']
-const ibcChains = ['terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective',]
+const ibcChains = ['terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', ]
 const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron',]
 
 const tokens = {
@@ -607,6 +607,9 @@ const fixBalancesTokens = {
     "0x2e8079e0fe49626af8716fc38adea6799065d7f7": { coingeckoId: "usd-coin", decimals: 6, },
     "0x0632baa26299c9972ed4d9affa3fd057a72252ff": { coingeckoId: "tether", decimals: 6, },
   },
+  cosmos: {
+    "uatom": { coingeckoId: "cosmos", decimals: 6, },
+  },
   terra2: {
     "uluna": { coingeckoId: "terra-luna-2", decimals: 6, },
     "terra1nsuqsk6kh58ulczatwev87ttq2z6r3pusulg9r24mfj2fvtzd4uq3exn26": { coingeckoId: "astroport-fi", decimals: 6, },
@@ -731,6 +734,7 @@ const fixBalancesTokens = {
     "0x398dcA951cD4fc18264d995DCD171aa5dEbDa129": { coingeckoId: "tether", decimals: 18, },
   },
   ethereumclassic: {
+    [nullAddress]: { coingeckoId: "ethereum-classic", decimals: 18, },
     "0x82A618305706B14e7bcf2592D4B9324A366b6dAd": { coingeckoId: "ethereum-classic", decimals: 18, },
     "0x1953cab0E5bFa6D4a9BaD6E05fD46C1CC6527a5a": { coingeckoId: "ethereum-classic", decimals: 18, },
     "0x35e9A89e43e45904684325970B2E2d258463e072": { coingeckoId: "ethereum-classic", decimals: 18, }

@@ -117,6 +117,7 @@ async function getAccountInfo(accountId) {
 
   async function _getAccountInfo() {
     const { data: { account } } = await axiosObj.get(`/v2/accounts/${accountId}`)
+    if (!account.assets) account.assets = []
     if (account.amount) account.assets.push({ amount: account.amount, 'asset-id': '1', })
     account.assetMapping = {}
     account.assets.forEach(i => {
