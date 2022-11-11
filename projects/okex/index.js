@@ -65,13 +65,7 @@ const config = {
       '0xe9172daf64b05b26eb18f07ac8d6d723acb48f99',
       '0xf51cd688b8744b1bfd2fba70d050de85ec4fb9fb',
       '0xf59869753f41db720127ceb8dbb8afaf89030de4',
-<<<<<<< HEAD
-      '0x6fb624b48d9299674022a23d92515e76ba880113',
-      
-
-=======
       '0xf7858da8a6617f7c6d0ff2bcafdb6d2eedf64840',
->>>>>>> cd66fafc6 (update okex addresses)
     ],
   },
   tron:{
