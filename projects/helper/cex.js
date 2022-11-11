@@ -1,11 +1,11 @@
 
-const { tokensBare } = require('./tokenMapping')
-const { getBalance } = require('../helper/utils')
-const tronHelper = require('../helper/tron')
-const solanaHelper = require('../helper/solana')
-const algorandHelper = require('../helper/algorand')
-const eosHelper = require('../helper/eos')
-const { sumTokensExport, nullAddress } = require('../helper/unwrapLPs')
+const { tokensBare, ibcChains } = require('./tokenMapping')
+const { getBalance, log } = require('./utils')
+const { sumTokensExport, nullAddress } = require('./unwrapLPs')
+
+const helpers = {};
+
+(['tron', 'eos', 'cardano', 'algorand', 'cosmos', 'solana', 'aptos']).forEach(chain => helpers[chain] = require('./'+chain))
 
 const defaultTokens = {
   ethereum: [
@@ -55,6 +55,11 @@ const defaultTokens = {
     'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t', // USDT
     'TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8',  // USDC
   ],
+  polygon: [
+    nullAddress,
+    '0xc2132d05d31c914a87c6611c10748aeb04b58e8f', // USDT
+    '0x0000000000000000000000000000000000001010', // WMATIC
+  ],
   algorand: [],
   solana: [],
   bsc: [
@@ -81,20 +86,12 @@ const defaultTokens = {
     '0xff970a61a04b1ca14834a43f5de4533ebddb5cc8', // USDC
     '0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9', // USDT
   ],
-  kcc: [
-    nullAddress,
-  ],
-  polygon: [
-    nullAddress
-  ],
   avax: [
-    nullAddress
-  ],
-  fantom:[
-    nullAddress
+    nullAddress,
+    '0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7', // USDT
   ],
 }
-const specialChains = ['bitcoin', 'bep2']
+const specialChains = ['bitcoin', 'bep2', 'elrond',]
 
 function cexExports(config) {
   const chains = Object.keys(config).filter(i => i !== 'bep2')
@@ -112,18 +109,31 @@ function cexExports(config) {
 
     if (!tokensAndOwners && !tokens) {
       tokens = defaultTokens[chain]
-      if (!tokens) throw new Error(chain, 'Missing default token list')
+      if (!tokens) {
+        log(chain, 'Missing default token list, counting only native token balance', )
+        tokens = [nullAddress]
+      }
     }
 
     const optionsObj = { owners, tokens, tokensAndOwners, chain }
+    let helper
+    if (ibcChains.includes(chain)) {
+      helper = helpers.cosmos
+    } else if(helpers[chain]) {
+      helper = helpers[chain]
 
-    switch(chain) {
-      case 'tron': exportObj[chain] = { tvl: async () => tronHelper.sumTokens(optionsObj) }; return;
-      case 'solana': exportObj[chain] = { tvl: async () => solanaHelper.sumTokens2({...optionsObj, solOwners: owners, }) }; return;
-      case 'algorand': exportObj[chain] = { tvl: async () => algorandHelper.sumTokens({...optionsObj, }) }; return;
-      case 'eos': exportObj[chain] = { tvl: async () => eosHelper.get_account_tvl(owners, tokens, 'eos') }; return;
-      default:  exportObj[chain] = { tvl: sumTokensExport(optionsObj) }
+      switch(chain) {
+        case 'solana': exportObj[chain] = { tvl: async () => helper.sumTokens2({...optionsObj, solOwners: owners, }) }; return;
+        case 'eos': exportObj[chain] = { tvl: async () => helper.get_account_tvl(owners, tokens, 'eos') }; return;
+      }
     }
+
+    if (helper) {
+      exportObj[chain] = { tvl: async () => helper.sumTokens(optionsObj) }
+    } else {
+      exportObj[chain] = { tvl: sumTokensExport(optionsObj) }
+    }
+
   })
   return exportObj
 }
@@ -136,6 +146,8 @@ function getChainTvl(chain, config) {
   if (chain === 'bitcoin') {
     geckoId = 'bitcoin'
     noParallel = true
+  } else if (chain === 'elrond') {
+    geckoId = 'elrond-erd-2'
   }
   return async () => {
     let balance = 0

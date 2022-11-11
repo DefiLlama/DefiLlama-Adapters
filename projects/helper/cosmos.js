@@ -1,14 +1,18 @@
 const axios = require('axios')
 const { default: BigNumber } = require("bignumber.js")
 const sdk = require('@defillama/sdk')
+const { transformBalances } = require('./portedTokens')
 
+// https://cosmos-chain.directory/chains/cosmoshub
+// https://cosmos-chain.directory/chains
 const endPoints = {
   crescent: 'https://mainnet.crescent.network:1317',
   osmosis: 'https://lcd.osmosis.zone',
+  cosmos: 'https://cosmoshub-lcd.stakely.io',
 }
 
 const chainSubpaths = {
-  crescent: 'crescent'
+  crescent: 'crescent',
 }
 
 function getEndpoint(chain) {
@@ -58,6 +62,18 @@ async function getDenomBalance({ denom, owner, block, chain } = {}) {
 
   const balance = data.find(balance => balance.denom === denom);
   return balance ? Number(balance.amount) : 0
+}
+
+async function getBalance2({ balances = {}, owner, block, chain } = {}) {
+  const subpath = chainSubpaths[chain] || 'cosmos'
+  let endpoint = `${getEndpoint(chain)}/${subpath}/bank/v1beta1/balances/${owner}?pagination.limit=1000`
+  if (block) {
+    endpoint += `?height=${block - (block % 100)}`
+  }
+  const data = (await axios.get(endpoint)).data.balances
+  for (const {denom, amount} of data)
+    sdk.util.sumSingleBalance(balances,denom,amount)
+  return balances
 }
 
 // LP stuff
@@ -121,6 +137,11 @@ function sumSingleBalance(balances, token, balance, price) {
   return balances
 }
 
+async function sumTokens({balances = {}, owners = [], chain, }) {
+  await Promise.all(owners.map(i => getBalance2({ balances, owner: i, chain, })))
+  return transformBalances(chain, balances)
+}
+
 module.exports = {
   totalSupply,
   getBalance,
@@ -131,4 +152,5 @@ module.exports = {
   queryContractStore,
   sumSingleBalance,
   queryContract,
+  sumTokens,
 }

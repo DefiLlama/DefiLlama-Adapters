@@ -20,17 +20,16 @@ const config = {
     owners: [
       '0x77134cbc06cb00b66f4c7e623d5fdbf6777635ec', //Polygon hot wallet
       '0x742d35Cc6634C0532925a3b844Bc454e4438f44e', //Polygon cold wallet
-      '0x876EabF441B2EE5B5b0554Fd502a8E0600950cFa', //Polygon (old) hot wallet
+      // '0x876EabF441B2EE5B5b0554Fd502a8E0600950cFa', //Polygon (old) hot wallet
     ]
   },
   avax: {
     owners: [
       '0x77134cbc06cb00b66f4c7e623d5fdbf6777635ec', // Avalanche (C-Chain) hot wallet
       '0x742d35Cc6634C0532925a3b844Bc454e4438f44e', // Avalanche (C-Chain) cold wallet
-      '0x876EabF441B2EE5B5b0554Fd502a8E0600950cFa', // Avalanche (old) hot wallet
+      // '0x876EabF441B2EE5B5b0554Fd502a8E0600950cFa', // Avalanche (old) hot wallet
     ]
   },
-/*
   cardano: {
     owners: [
       'DdzFFzCqrhstFM5XQYA28G2ekCkvpb6bPdhUT5vcsZtqYT3i7wAtjNPCTEGNbUmgL4ym9udeV5k6Utc3vCmAbky6Bvda72r1SQknZH9L', //Cardano ADA hot wallet
@@ -50,13 +49,12 @@ const config = {
   cosmos: {
     owners: [
       'cosmos1h9ymfm2fxrqgd257dlw5nku3jgqjgpl59sm5ns', //Cosmos hot wallet
-      'cosmos1jtdkj8hxhj88jxv8lul9xvdpnwsl00evvvpnhj', //Cosmos cold wallet
+      // 'cosmos1jtdkj8hxhj88jxv8lul9xvdpnwsl00evvvpnhj', //Cosmos cold wallet
     ]
   },
   elrond: {
-    owners: ['Erd1a56dkgcpwwx6grmcvw9w5vpf9zeq53w3w7n6dmxcpxjry3l7uh2s3h9dtr']
+    owners: ['erd1a56dkgcpwwx6grmcvw9w5vpf9zeq53w3w7n6dmxcpxjry3l7uh2s3h9dtr']
   },
-*/
   eos: {
     owners: [
       'bitfinexdep1',
@@ -70,14 +68,12 @@ const config = {
       'bitfinexcw55' ,
     ]
   },
-/*
   ethereumclassic: {
     owners: [
       '0x618F37D7ff7B140E604172466CD42D1Ec35E0544',
       '0x88037f361891A0B5De3C0C30632fBcA7DB2D341F',
     ]
   },
-*/
   fantom: {
     owners: ['0xed9eef56e64a8e779cfae9ddedb25d11ba2b2425']
   },
