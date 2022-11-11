@@ -2,9 +2,8 @@ const { cexExports } = require('../helper/cex')
 
 const config = {
   bitcoin: {
-    geckoId: 'bitcoin',
     // from https://bitinfocharts.com/bitcoin/wallet/Bitfinex-coldwallet
-    addresses: [
+    owners: [
 "3D2oetdNuZUqQHPJmcMDDHYoqkyNVsFk9r",
 "3NwnVkVurPjrzS7pZdbrMh4QGo14CSY6j3",
 "3PvethXtsqaD9CkMrj28HtK31aXKM6FfuY",
@@ -93,7 +92,6 @@ const config = {
 "3QKw6AdQCLSFXPJ5Yx6KvhnzpX1N6kajH7",
 "3JAYhncrzteYQAftxnoGANGDTCSmZUadd6"
     ],
-    noParallel: true,
   }
 }
 
