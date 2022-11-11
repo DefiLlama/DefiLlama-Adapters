@@ -1,7 +1,7 @@
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { staking } = require("../helper/staking");
-const { sumTokens2, sumTokensAndLPsSharedOwners, nullAddress } = require('../helper/unwrapLPs');
+const { sumTokens2, nullAddress } = require('../helper/unwrapLPs');
 const { getChainTransform } = require('../helper/portedTokens');
 
 // Treasury
@@ -113,25 +113,11 @@ async function avaxTvl(_, _b, { avax: block }) {
 }
 
 async function getTreasury(timestamp, block, chainBlocks) {
-  const balances = {};
-  await sumTokensAndLPsSharedOwners(
-    balances,
-    [
-        [weth, false],
-        [wsteth, false],
-        [wbtc, false],
-        [usdc, false],
-        [aave, false],
-        [ldo, false],
-        [reth, false],
-        [bal, false],
-        [rbnWeth, true],
-    ],
-    [treasury],
-    chainBlocks["ethereum"],
-    "ethereum"
-  );
-  return balances;
+  return sumTokens2({
+    block, owner: treasury,
+    tokens: [ weth, wsteth, wbtc, usdc, aave, ldo, reth, bal, rbnWeth, nullAddress],
+    resolveLP: true,
+  })
 }
 
 /**
