@@ -3,6 +3,8 @@ const { tokensBare } = require('./tokenMapping')
 const { getBalance } = require('../helper/utils')
 const tronHelper = require('../helper/tron')
 const solanaHelper = require('../helper/solana')
+const algorandHelper = require('../helper/algorand')
+const eosHelper = require('../helper/eos')
 const { sumTokensExport, nullAddress } = require('../helper/unwrapLPs')
 
 const defaultTokens = {
@@ -52,7 +54,35 @@ const defaultTokens = {
     'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t', // USDT
     'TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8',  // USDC
   ],
+  algorand: [],
   solana: [],
+  bsc: [
+    nullAddress,
+    '0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c', // BTCB
+    '0x2170ed0880ac9a755fd29b2688956bd959f933f8', // BTCE
+    '0xfd5840cd36d94d7229439859c0112a4185bc0255', // vUSDT
+    '0x250632378e573c6be1ac2f97fcdf00515d0aa91b', // BETH
+    '0x95c78222b3d6e262426483d42cfa53685a67ab9d', // vBUSD
+    '0x7083609fce4d1d8dc0c979aab8c869ea2c873402', // BDOT
+    '0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82', // CAKE
+    '0x55d398326f99059ff775485246999027b3197955', // BUSDT
+    '0xe9e7cea3dedca5984780bafc599bd69add087d56', // BUSD
+    '0x1d2f0da169ceb9fc7b3144628db156f3f6c60dbe', // BXRP
+    '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d', // B-USDC
+    '0x14016e85a25aeb13065688cafb43044c2ef86784', // B-TUSD
+  ],
+  eos: [
+    ["eosio.token", "EOS", "eos"],
+    ["tethertether", "USDT", "tether"],
+  ],
+  arbitrum: [
+    nullAddress,
+    '0xff970a61a04b1ca14834a43f5de4533ebddb5cc8', // USDC
+    '0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9', // USDT
+  ],
+  kcc: [
+    nullAddress,
+  ],
 }
 const specialChains = ['bitcoin', 'bep2']
 
@@ -80,6 +110,8 @@ function cexExports(config) {
     switch(chain) {
       case 'tron': exportObj[chain] = { tvl: async () => tronHelper.sumTokens(optionsObj) }; return;
       case 'solana': exportObj[chain] = { tvl: async () => solanaHelper.sumTokens2({...optionsObj, solOwners: owners, }) }; return;
+      case 'algorand': exportObj[chain] = { tvl: async () => algorandHelper.sumTokens({...optionsObj, }) }; return;
+      case 'eos': exportObj[chain] = { tvl: async () => eosHelper.get_account_tvl(owners, tokens, 'eos') }; return;
       default:  exportObj[chain] = { tvl: sumTokensExport(optionsObj) }
     }
   })

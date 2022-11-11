@@ -45,15 +45,14 @@ const config = {
   },
   kcc: {
     owners: [
-    '0x2a8c8b09bd77c13980495a959b26c1305166a57f',
-    '0x14ea40648fc8c1781d19363f5b9cc9a877ac2469',
-    '0xb8e6d31e7b212b2b7250ee9c26c56cebbfbe6b23',
-  ],
-},
-//EOS CHAIN missing 
-
-//qlwzviixzm1h
-//kucoinrise11
+      '0x2a8c8b09bd77c13980495a959b26c1305166a57f',
+      '0x14ea40648fc8c1781d19363f5b9cc9a877ac2469',
+      '0xb8e6d31e7b212b2b7250ee9c26c56cebbfbe6b23',
+    ],
+  },
+  eos: {
+    owners: ['qlwzviixzm1h', 'kucoinrise11'],
+  },
 }
 
 module.exports = cexExports(config)
