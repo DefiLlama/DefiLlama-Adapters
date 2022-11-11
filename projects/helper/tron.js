@@ -44,22 +44,22 @@ function encodeParams(inputs) {
 function decodeParams(types, output, ignoreMethodHash) {
 
   if (!output || typeof output === 'boolean') {
-      ignoreMethodHash = output;
-      output = types;
+    ignoreMethodHash = output;
+    output = types;
   }
 
   if (ignoreMethodHash && output.replace(/^0x/, '').length % 64 === 8)
-      output = '0x' + output.replace(/^0x/, '').substring(8);
+    output = '0x' + output.replace(/^0x/, '').substring(8);
 
   const abiCoder = new AbiCoder();
 
   if (output.replace(/^0x/, '').length % 64)
-      throw new Error('The encoded string is not valid. Its length must be a multiple of 64.');
+    throw new Error('The encoded string is not valid. Its length must be a multiple of 64.');
   return abiCoder.decode(types, output).reduce((obj, arg, index) => {
-      if (types[index] == 'address')
-          arg = ADDRESS_PREFIX + arg.substr(2).toLowerCase();
-      obj.push(arg);
-      return obj;
+    if (types[index] == 'address')
+      arg = ADDRESS_PREFIX + arg.substr(2).toLowerCase();
+    obj.push(arg);
+    return obj;
   }, []);
 }
 
@@ -100,8 +100,10 @@ async function getTrxBalance(account) {
   return axiosResponse.data.data[0].balance
 }
 
+const nullAddress = '0x0000000000000000000000000000000000000000'
+const gasTokens = [nullAddress, '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee']
 
-async function sumTokens({ 
+async function sumTokens({
   balances = {},
   tokensAndOwners = [],
   tokens = [],
@@ -118,10 +120,25 @@ async function sumTokens({
   tokensAndOwners = tokensAndOwners.filter(([token]) => !blacklistedTokens.includes(token))
   tokensAndOwners = getUniqueToA(tokensAndOwners)
 
+  let tronBalanceInputs = []
+
+  tokensAndOwners = tokensAndOwners.filter(i => {
+    const token = i[0]
+    if (token !== nullAddress && !gasTokens.includes(token))
+      return true
+    tronBalanceInputs.push(i[1])
+    return false
+  })
+  tronBalanceInputs = getUniqueAddresses(tronBalanceInputs, true)
+
+  if (tronBalanceInputs.length) {
+    const bals = await Promise.all(tronBalanceInputs.map(getTrxBalance))
+    bals.forEach(balance=> sdk.util.sumSingleBalance(balances, nullAddress, balance))
+  }
+
   const results = await Promise.all(tokensAndOwners.map(i => getUnverifiedTokenBalance(i[0], i[1])))
 
   results.forEach((bal, i) => sdk.util.sumSingleBalance(balances,'tron:'+tokensAndOwners[i][0],bal.toFixed(0)))
-
   return transformBalances('tron', balances)
 
   function getUniqueToA(toa) {
