@@ -138,6 +138,6 @@ module.exports = {
     addresses: getAddresses('BEP2'),
   },
   tron: {
-    tokensAndOwners: getTokensAndOwners('TRX')
+    owners: getUniqueAddresses(getTokensAndOwners('TRX').map(i => i[1]), true)
   }
 }

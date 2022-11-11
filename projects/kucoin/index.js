@@ -1,12 +1,6 @@
 const { cexExports } = require('../helper/cex')
 
 const config = {
-  bitcoin: {
-    geckoId: 'bitcoin',
-    addresses: [
-    ],
-    noParallel: true,
-  },
   ethereum: {
     owners: [
       '0x2b5634c42055806a59e9107ed44d43c426e58258',
@@ -19,6 +13,9 @@ const config = {
       '0xcad621da75a66c7a8f4ff86d30a2bf981bfc8fdd',
     ]
   },
+  tron: {
+    owners: ['TUpHuDkiCCmwaTZBHZvQdwWzGNm5t8J2b9']
+  }
 }
 
 module.exports = cexExports(config)
