@@ -11,6 +11,7 @@ const config = {
         "13JJ1nxDeX5fMsDeyGHiLoK8rF2ayGq1cX",
         "1MdrdcEzfiJdvs6eVSwUx6bWboPX8if5U3",
         "35WHp4Hid61peyH4tuhNunwRj2gtNB41Lo",
+        "34ZHV8dd6uucEUABUydWpKi6F4qKQntEUf",
     ],
   },
   ethereum:{
@@ -23,7 +24,8 @@ const config = {
         "0xA7e15eF7C01B58eBe5eF74Aa73625Ae4b11FE754",
         "0x062448f804191128d71fc72e10a1d13bd7308e7e",
         "0xA0F6121319a34f24653fB82aDdC8dD268Af5b9e1",
-        "0x904cC2B2694FFa78F04708D6F7dE205108213126"
+        "0x904cC2B2694FFa78F04708D6F7dE205108213126",
+        "0x63F41034871535ceE49996Cc47719891Fe03dff9",
     ]
   },
   solana: {
@@ -32,6 +34,7 @@ const config = {
         "A5ANHizfayJUDBSwV5Cm7CNXCj6E6AAda49wzzdYPons"
     ]
   }
+// ETHW 0x77021d475E36b3ab1921a0e3A8380f069d3263de
 }
 
 module.exports = cexExports(config)
