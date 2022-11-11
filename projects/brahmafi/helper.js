@@ -56,14 +56,8 @@ const getTVLData = async (block) => {
 const getVaultL1Funds = async (vault, wantToken, block) => {
   const executors = await getExecutorsForVault(vault, block);
   const positionCalls = executors.map((e) => ({ target: e }));
-  const balanceCalls = executors.map((e) => ({ target: wantToken, params: e }));
 
-  const [_wantTokenBalances, _positionValues] = await Promise.all([
-    sdk.api.abi.multiCall({
-      block,
-      calls: balanceCalls,
-      abi: "erc20:balanceOf",
-    }),
+  const [_positionValues] = await Promise.all([
     sdk.api.abi.multiCall({
       block,
       calls: positionCalls,
@@ -71,13 +65,12 @@ const getVaultL1Funds = async (vault, wantToken, block) => {
     }),
   ]).then((o) => o.map((it) => it.output));
 
-  const wantTokenBalances = _wantTokenBalances.map((it) => +it.output);
   const positionValues = _positionValues.map((it) => +it.output.posValue);
 
   let totalExecutorFunds = 0;
 
   for (const [index] of executors.entries()) {
-    totalExecutorFunds += wantTokenBalances[index] + positionValues[index];
+    totalExecutorFunds += positionValues[index];
   }
 
   const vaultBalance = await sdk.api.abi.call({
