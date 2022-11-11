@@ -11,7 +11,11 @@ const config = {
       '0xd6216fc19db775df9774a6e33526131da7d19a2c',
       '0xf16e9b0d03470827a95cdfd0cb8a8a3b46969b91',
       '0xcad621da75a66c7a8f4ff86d30a2bf981bfc8fdd',
-    ]
+      '0xd89350284c7732163765b23338f2ff27449e0bf5',
+      '0xb8e6d31e7b212b2b7250ee9c26c56cebbfbe6b23',
+      '0xec30d02f10353f8efc9601371f56e808751f396f',
+      '0x88bd4d3e2997371bceefe8d9386c6b5b4de60346',
+    ],
   },
   tron: {
     owners: [
@@ -28,7 +32,28 @@ const config = {
       'bc1q8yja3gw33ngd8aunmfr4hj820adc9nlsv0syvz',
       'bc1qgrxsrmrhsapvh9addyx6sh8j4rw0sn9xtur9uq',
     ]
-  }
+  },
+  arbitrum: {
+    owners: [
+      '0xd6216fc19db775df9774a6e33526131da7d19a2c',
+      '0x03e6fa590cadcf15a38e86158e9b3d06ff3399ba',
+      '0xf3f094484ec6901ffc9681bcb808b96bafd0b8a8',
+    ],
+  },
+  algorand: {
+    owners: ['T6MXHXMGXURKJ7AD5NCB4IYPLWXYXKKFLLO5KAPJ56GKS7BFXHNHOODZCM'],
+  },
+  kcc: {
+    owners: [
+    '0x2a8c8b09bd77c13980495a959b26c1305166a57f',
+    '0x14ea40648fc8c1781d19363f5b9cc9a877ac2469',
+    '0xb8e6d31e7b212b2b7250ee9c26c56cebbfbe6b23',
+  ],
+},
+//EOS CHAIN missing 
+
+//qlwzviixzm1h
+//kucoinrise11
 }
 
 module.exports = cexExports(config)
