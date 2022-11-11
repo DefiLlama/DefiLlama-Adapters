@@ -106,7 +106,6 @@ const config = {
       'J4rzLDLhLWFpjSgCMCcxTU84bQ8AH5vhgjwq7SjYVk8Q'
     ]
   },
-/*
   tezos: {
     owners:[
       'tz1KtGwriE7VuLwT3LwuvU9Nv4wAxP7XZ57d', //Tezos (XTZ) hot wallet
@@ -114,20 +113,19 @@ const config = {
       'tz1N47UGiVScUUvHemXd2kGwJi44h7qZMUzp', //Tether USDt (Tezos) hot wallet
     ]
   },
-*/
   tron: {
     owners: [
       'TXFBqBbqJommqZf7BV8NNYzePh97UmJodJ', //Tron TRX/TRC10/TRC20 hot wallet
       'TMhJviFWiaxvqKLdng9dmsi1H5H5yTGEeu', // Tron TRX/TRC10/TRC20 cold wallet
     ]
   },
-/*
   zilliqa: {
     owners: [
       'zil1xfsrre5qgx0mqg99xc0l2cuyu9ntt259ngsu7s', //Zilliqa hot wallet
       'zil184u2al6n0nrks06xjgq080hc95f77ttd7rkqvn', // Zilliqa cold wallet
     ]
   },
+/*
   doge: {
     owners: ['DQQckuSMsiFjaAdGiNjvDyswcz9RWQU2xe']
   }

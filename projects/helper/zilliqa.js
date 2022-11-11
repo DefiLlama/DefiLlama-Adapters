@@ -107,6 +107,13 @@ async function getBalances(tokens, addresses, balances = {}) {
   return balances
 }
 
+async function sumTokens({ owners, }) {
+  const balances = await Promise.all(owners.map(getZilliqaBalance))
+  return {
+    zilliqa: balances.reduce((a, i) => a + +i, 0),
+  }
+}
+
 // taken from https://swap.xcadnetwork.com/_next/data/E6YkkwWJMYjzQhGDTm38j/pool-overview.json
 const TOKENS = {
   '0x153feaddc48871108e286de3304b9597c817b456': {
@@ -282,4 +289,5 @@ module.exports = {
   getBalance,
   getZilliqaBalance,
   getBalances,
+  sumTokens,
 }
