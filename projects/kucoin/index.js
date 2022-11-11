@@ -14,7 +14,20 @@ const config = {
     ]
   },
   tron: {
-    owners: ['TUpHuDkiCCmwaTZBHZvQdwWzGNm5t8J2b9']
+    owners: [
+      'TUpHuDkiCCmwaTZBHZvQdwWzGNm5t8J2b9',
+      'TEWzF5ZsaWMh6sTNDPrYaPJrK8TTMGfwCC',
+      'TQeNNo5zVarhdKm5EiJSekfNXg6H1tRN4n',
+      'TRYL7PKCG4b4xRCM554Q5J6o8f1UjUmfn',
+    ]
+  },
+  bitcoin: {
+    owners: [
+      '38fJPq4dYGPoJizEUGCL9yWkqg73cJmC2n',
+      'bc1q080rkmk3kj86pxvf5nkxecdrw6nrx3zzy9xl7q',
+      'bc1q8yja3gw33ngd8aunmfr4hj820adc9nlsv0syvz',
+      'bc1qgrxsrmrhsapvh9addyx6sh8j4rw0sn9xtur9uq',
+    ]
   }
 }
 
