@@ -11,6 +11,7 @@ const defaultTokens = {
     '0x4fabb145d64652a948d72533023f6e7a623c7c53', // BUSD
     '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0', // MATIC
     '0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE', // SHIBA INU
+    '0xa0b73e1ff0b80914ab6fe0444e65848c4c34450b', // CRO
   ],
 }
 
