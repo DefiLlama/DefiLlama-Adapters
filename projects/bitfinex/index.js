@@ -30,6 +30,7 @@ const config = {
       '0x876EabF441B2EE5B5b0554Fd502a8E0600950cFa', // Avalanche (old) hot wallet
     ]
   },
+/*
   cardano: {
     owners: [
       'DdzFFzCqrhstFM5XQYA28G2ekCkvpb6bPdhUT5vcsZtqYT3i7wAtjNPCTEGNbUmgL4ym9udeV5k6Utc3vCmAbky6Bvda72r1SQknZH9L', //Cardano ADA hot wallet
@@ -55,6 +56,7 @@ const config = {
   elrond: {
     owners: ['Erd1a56dkgcpwwx6grmcvw9w5vpf9zeq53w3w7n6dmxcpxjry3l7uh2s3h9dtr']
   },
+*/
   eos: {
     owners: [
       'bitfinexdep1',
@@ -68,15 +70,18 @@ const config = {
       'bitfinexcw55' ,
     ]
   },
+/*
   ethereumclassic: {
     owners: [
       '0x618F37D7ff7B140E604172466CD42D1Ec35E0544',
       '0x88037f361891A0B5De3C0C30632fBcA7DB2D341F',
     ]
   },
+*/
   fantom: {
     owners: ['0xed9eef56e64a8e779cfae9ddedb25d11ba2b2425']
   },
+/*
   litecoin: {
     owners: [
       'LXTQdps2Pf83WdAXMinboiqLsEjSWrwJCD',
@@ -96,6 +101,7 @@ const config = {
       '13AE11jLvxcxsjqaSoWFXCTGUfbjXb1gmZTY8x3TXJzWutmf'
     ]
   },
+*/
   solana: {
     owners: [
       'FxteHmLwG9nk1eL4pjNve3Eub2goGkkz6g6TbvdmW46a', //Solana hot wallet
@@ -104,6 +110,7 @@ const config = {
       'J4rzLDLhLWFpjSgCMCcxTU84bQ8AH5vhgjwq7SjYVk8Q'
     ]
   },
+/*
   tezos: {
     owners:[
       'tz1KtGwriE7VuLwT3LwuvU9Nv4wAxP7XZ57d', //Tezos (XTZ) hot wallet
@@ -111,12 +118,14 @@ const config = {
       'tz1N47UGiVScUUvHemXd2kGwJi44h7qZMUzp', //Tether USDt (Tezos) hot wallet
     ]
   },
+*/
   tron: {
     owners: [
       'TXFBqBbqJommqZf7BV8NNYzePh97UmJodJ', //Tron TRX/TRC10/TRC20 hot wallet
       'TMhJviFWiaxvqKLdng9dmsi1H5H5yTGEeu', // Tron TRX/TRC10/TRC20 cold wallet
     ]
   },
+/*
   zilliqa: {
     owners: [
       'zil1xfsrre5qgx0mqg99xc0l2cuyu9ntt259ngsu7s', //Zilliqa hot wallet
@@ -126,6 +135,7 @@ const config = {
   doge: {
     owners: ['DQQckuSMsiFjaAdGiNjvDyswcz9RWQU2xe']
   }
+*/
 }
 
 module.exports = cexExports(config)
