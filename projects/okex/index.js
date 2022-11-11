@@ -2,8 +2,7 @@ const { cexExports } = require('../helper/cex')
 
 const config = {
   bitcoin: {
-    geckoId: 'bitcoin',
-    addresses: [
+    owners: [
       '13jTtHxBPFwZkaCdm6BwJMMJkqvTpBZccw',
       '13rCGm4Z3PDeYwo5a7GTT4jFYnRFBZbKr1',
       '14kHu26yWkVD8qAnBfcFXHXxgquNoSpKum',
@@ -28,7 +27,6 @@ const config = {
       '1M6E6vPaYsuCb34mDNS2aepu2aJyL6xBG4',
       '1MbNM3jwxMjRzeA9xyHbMyePN68MY4Jxb'
     ],
-    noParallel: true,
   },
   ethereum: {
     owners: [

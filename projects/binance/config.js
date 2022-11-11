@@ -123,9 +123,7 @@ function getTokensAndOwners(chain) {
 
 module.exports = {
   bitcoin: {
-    geckoId: 'bitcoin',
-    addresses: getAddresses('BTC'),
-    noParallel: true,
+    owners: getAddresses('BTC'),
   },
   ethereum: {
     owners: getUniqueAddresses(getTokensAndOwners('ETH').map(i => i[1]))
