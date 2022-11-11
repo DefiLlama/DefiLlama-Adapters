@@ -2,9 +2,8 @@ const { cexExports } = require('../helper/cex')
 
 const config = {
   bitcoin: {
-    geckoId: 'bitcoin',
     // from https://insights.deribit.com/exchange-updates/deribit-wallet-holdings/
-    addresses: [
+    owners: [
         "bc1qa3phj5uhnuauk6r62cku6r6fl9rawqx4n6d690",
         "bc1qtq5zfllw9fs9w6stnfgalf9v59fgrcxxyawuvm",
         "1MDq7zyLw6oKichbFiDDZ3aaK59byc6CT8",
@@ -13,7 +12,6 @@ const config = {
         "1MdrdcEzfiJdvs6eVSwUx6bWboPX8if5U3",
         "35WHp4Hid61peyH4tuhNunwRj2gtNB41Lo",
     ],
-    noParallel: true,
   },
   ethereum:{
     owners: [
@@ -35,6 +33,5 @@ const config = {
     ]
   }
 }
-
 
 module.exports = cexExports(config)

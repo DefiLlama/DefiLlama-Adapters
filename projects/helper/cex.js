@@ -2,6 +2,7 @@
 const { tokensBare } = require('./tokenMapping')
 const { getBalance } = require('../helper/utils')
 const tronHelper = require('../helper/tron')
+const solanaHelper = require('../helper/solana')
 const { sumTokensExport, nullAddress } = require('../helper/unwrapLPs')
 
 const defaultTokens = {
@@ -51,6 +52,7 @@ const defaultTokens = {
     'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t', // USDT
     'TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8',  // USDC
   ],
+  solana: [],
 }
 const specialChains = ['bitcoin', 'bep2']
 
@@ -73,15 +75,12 @@ function cexExports(config) {
       if (!tokens) throw new Error(chain, 'Missing default token list')
     }
 
-    if (chain === 'tron') {
-      exportObj.tron = {
-        tvl: async () => tronHelper.sumTokens({ owners, tokens, tokensAndOwners })
-      }
-      return;
-    }
+    const optionsObj = { owners, tokens, tokensAndOwners, chain }
 
-    exportObj[chain] = {
-      tvl: sumTokensExport({ owners, chain, tokens, tokensAndOwners, })
+    switch(chain) {
+      case 'tron': exportObj[chain] = { tvl: async () => tronHelper.sumTokens(optionsObj) }; return;
+      case 'solana': exportObj[chain] = { tvl: async () => solanaHelper.sumTokens2({...optionsObj, solOwners: owners, }) }; return;
+      default:  exportObj[chain] = { tvl: sumTokensExport(optionsObj) }
     }
   })
   return exportObj
