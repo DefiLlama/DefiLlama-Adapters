@@ -84,6 +84,15 @@ const defaultTokens = {
   kcc: [
     nullAddress,
   ],
+  polygon: [
+    nullAddress
+  ],
+  avax: [
+    nullAddress
+  ],
+  fantom:[
+    nullAddress
+  ],
 }
 const specialChains = ['bitcoin', 'bep2']
 
