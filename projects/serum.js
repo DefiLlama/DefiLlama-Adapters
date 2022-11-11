@@ -8,7 +8,10 @@ async function fetch() {
             )
         ).data;
 
-        const tvl = response.tvl;
+        const blacklisted = ['MTGX']
+        const tvl = response.markets
+            .filter(i => !blacklisted.includes(i.quote_symbol) && !blacklisted.includes(i.base_symbol))
+            .reduce((a, i) => a + i.total_liquidity, 0)
 
         return tvl
 }
