@@ -108,17 +108,12 @@ const tokenMapping = {
   }
 }
 
-function transform(chain, key) {
-  const address = tokenMapping[chain][key]
-  if (!address) throw new Error(chain + ' Mapping is missing!!! ' + key)
-  return address
-}
-
 function getAddresses(chain) {
   return assetList.filter(i => i[1] === chain).map(i => i[2])
 }
-function getTokensAndOwners(chain) {
-  return assetList.filter(i => i[1] === chain).map(i => ([transform(chain, i[0]), i[2]]))
+function getOwners(chain) {
+  const isCaseSensitive = ['BTC', 'TRX'].includes(chain)
+  return getUniqueAddresses(assetList.filter(i => i[1] === chain).map(i => i[2]), isCaseSensitive)
 }
 
 module.exports = {
@@ -126,16 +121,17 @@ module.exports = {
     owners: getAddresses('BTC'),
   },
   ethereum: {
-    owners: getUniqueAddresses(getTokensAndOwners('ETH').map(i => i[1]))
+    owners: getOwners('ETH'),
   },
   bsc: {
-    tokensAndOwners: getTokensAndOwners('BEP20')
+    owners: getOwners('BEP20'),
+    tokens: ['0x0000000000000000000000000000000000000000',],
   },
   bep2: {
     geckoId: 'binancecoin',
     addresses: getAddresses('BEP2'),
   },
   tron: {
-    owners: getUniqueAddresses(getTokensAndOwners('TRX').map(i => i[1]), true)
+    owners: getOwners('TRX'),
   }
 }
