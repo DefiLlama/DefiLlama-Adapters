@@ -1,14 +1,20 @@
+const sdk = require("@defillama/sdk")
 const { staking } = require("../helper/staking");
-const constants = require("./constants");
 const { sumTokens2 } = require('../helper/unwrapLPs')
+const assetsAbi = require("./abi")
+const asssetsContract = "0x2c326AbbE089B786E7170da84e39F3d0c6650653"
+const chain = "polygon"
 
 async function tvl(timestamp, ethereumBlock, chainBlocks) {
-  const block = chainBlocks["polygon"];
-  const toa = []
-  for (const key in constants)
-    for (const { token, lpTokens } of constants[key].addresses)
-      lpTokens.forEach(i => toa.push([token, i]))
-  return sumTokens2({ chain: 'polygon', block, tokensAndOwners: toa, })
+  const block = chainBlocks[chain];
+
+  const { output: toa } = await sdk.api.abi.call({
+    target: asssetsContract,
+    abi: assetsAbi.getAssets,
+    chain, block,
+  })
+  
+  return sumTokens2({ chain: chain, block, tokensAndOwners: toa, })
 }
 
 module.exports = {
