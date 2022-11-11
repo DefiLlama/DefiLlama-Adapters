@@ -1,7 +1,5 @@
 const sdk = require("@defillama/sdk");
 const axios = require("axios");
-const { default: BigNumber } = require("bignumber.js");
-const { ethers } = require("ethers");
 
 const optyfi_api = "https://api.opty.fi";
 const get_vaults_api = `${optyfi_api}/v1/yield/vaults`;
@@ -32,95 +30,32 @@ const abi = {
     stateMutability: "view",
     type: "function",
   },
-  decimals: {
-    inputs: [],
-    name: "decimals",
-    outputs: [
-      {
-        internalType: "uint8",
-        name: "",
-        type: "uint8",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
 };
 
-async function getTVL(chainName, tokenAddress, block, decimals) {
-  const totalSupply = (
-    await sdk.api.abi.call({
-      target: tokenAddress,
-      abi: abi.totalSupply,
-      block,
-      chain: chainName,
-    })
-  ).output;
-
-  const pricePerFullShare = (
-    await sdk.api.abi.call({
-      target: tokenAddress,
-      abi: abi.getPricePerFullShare,
-      block,
-      chain: chainName,
-    })
-  ).output;
-  const convertedPricePerFullShare = ethers.utils.formatUnits(
-    pricePerFullShare,
-    18
-  );
-  const tvl = BigNumber(convertedPricePerFullShare)
-    .multipliedBy(BigNumber(totalSupply))
-    .toFixed(0);
-  return Number(tvl);
+async function getTVL(chain, block, chain_id) {
+  const vaults = (await axios.get(get_vaults_api)).data.items.filter(i => !i.is_staging && i.chain.chain_id === chain_id)
+  const calls = vaults.map(i => ({ target: i.vault_token.address }))
+  const { output: supply } = await sdk.api.abi.multiCall({
+    abi: abi.totalSupply,
+    calls, block, chain,
+  })
+  const { output: price } = await sdk.api.abi.multiCall({
+    abi: abi.getPricePerFullShare,
+    calls, block, chain,
+  })
+  const balances = {}
+  vaults.forEach((v, i) => {
+    sdk.util.sumSingleBalance(balances, chain + ':' + v.vault_underlying_token.address, supply[i].output * price[i].output / 1e18)
+  })
+  return balances
 }
 
 async function ethereum_tvl(timestamp, block, chainBlocks) {
-  const vaults = (await axios.get(get_vaults_api)).data.items;
-  const balances = {};
-
-  for (let i = 0; i < vaults.length; i++) {
-    const vault = vaults[i];
-    if (!vault.is_staging && vault.chain.chain_id === 1) {
-      const tvl = await getTVL(
-        vault.chain.chain_name,
-        vault.vault_token.address,
-        block,
-        vault.vault_token.decimals
-      );
-      sdk.util.sumSingleBalance(
-        balances,
-        vault.vault_underlying_token.address,
-        tvl
-      );
-    }
-  }
-  return balances;
+  return getTVL('ethereum', block, 1)
 }
 
 async function polygon_tvl(timestamp, block, chainBlocks) {
-  const vaults = (await axios.get(get_vaults_api)).data.items;
-  block = chainBlocks.polygon;
-  const balances = {};
-
-  for (let i = 0; i < vaults.length; i++) {
-    const vault = vaults[i];
-    if (!vault.is_staging && vault.chain.chain_id === 137) {
-      const tvl = await getTVL(
-        vault.chain.chain_name,
-        vault.vault_token.address,
-        block,
-        vault.vault_token.decimals
-      );
-
-      sdk.util.sumSingleBalance(
-        balances,
-        `polygon:${vault.vault_underlying_token.address}`,
-        tvl
-      );
-    }
-  }
-  return balances;
+  return getTVL('polygon', chainBlocks.polygon, 137)
 }
 
 module.exports = {
