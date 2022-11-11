@@ -33,8 +33,12 @@ const config = {
         "H8z2yZcrKo7ngiMz3Vsuw823nYo11qdCqs3sJDDjeTdD",
         "A5ANHizfayJUDBSwV5Cm7CNXCj6E6AAda49wzzdYPons"
     ]
+  },
+  ethpow: {
+    owners:[
+        "0x77021d475E36b3ab1921a0e3A8380f069d3263de",
+    ]
   }
-// ETHW 0x77021d475E36b3ab1921a0e3A8380f069d3263de
 }
 
 module.exports = cexExports(config)
