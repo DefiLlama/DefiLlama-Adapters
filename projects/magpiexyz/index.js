@@ -1,6 +1,7 @@
 const sdk = require('@defillama/sdk');
 const { POOL_LIST } = require("./pool")
 const MasterMagpieAddress =  "0xa3B615667CBd33cfc69843Bf11Fbb2A1D926BD46";
+const WOMAddress = "0xAD6742A35fB341A9Cc6ad674738Dd8da98b94Fb1"
 async function tvl(timestamp, block, chainBlocks) {
   const balances = {};
   for(let i = 0, l = POOL_LIST.length; i < l; i++) {
@@ -12,7 +13,13 @@ async function tvl(timestamp, block, chainBlocks) {
         params: [MasterMagpieAddress],
         block: chainBlocks['bsc'],
       })).output;
-      await sdk.util.sumSingleBalance(balances, `bsc:${[pool.stakingToken]}`, collateralBalance)
+      if (pool.type == "MAGPIE_WOM_POOL") {
+        await sdk.util.sumSingleBalance(balances, `bsc:${WOMAddress}`, collateralBalance)
+      }
+      else {
+        await sdk.util.sumSingleBalance(balances, `bsc:${pool.stakingToken}`, collateralBalance)
+      }
+      
   }
   return balances;
 }
