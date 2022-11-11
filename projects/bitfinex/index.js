@@ -37,7 +37,11 @@ const config = {
     ]
   },
   algorand: {
-    owners: ['JDQ7EW3VY2ZHK4DKUHMNP35XLFPRJBND6M7SZ7W5RCFDNYAA47OC5IS62I'],
+    owners: [
+      'JDQ7EW3VY2ZHK4DKUHMNP35XLFPRJBND6M7SZ7W5RCFDNYAA47OC5IS62I',
+      'UGYKOYFAEB6373DVH6ME6BFVHNG6BMWTYU6VZBMFFI2YQ72QACBSZLNYZ4',
+      'NWPUVAIOBZHBVLCCYGERFGQ3ZRQPSJ7R6UB3NXFBF552BGYAGX4I5TCVCY'
+  ]
   },
   aptos: {
     owners: ['0xfd9192f8ad8dc60c483a884f0fbc8940f5b8618f3cf2bbf91693982b373dfdea']
@@ -74,14 +78,54 @@ const config = {
     owners: ['0xed9eef56e64a8e779cfae9ddedb25d11ba2b2425']
   },
   litcoin: {
-    owners: ['LXTQdps2Pf83WdAXMinboiqLsEjSWrwJCD']
+    owners: [
+      'LXTQdps2Pf83WdAXMinboiqLsEjSWrwJCD',
+      'LNSFU7hmF6GP2AFdcrCgd4QvFimvspviSs'
+    ]
   },
   near: {
-    owners: ['383e50ea1a754ed3acd0d59116f221add87adb82559f31ca6d377f058fe83375']
+    owners: [
+      '383e50ea1a754ed3acd0d59116f221add87adb82559f31ca6d377f058fe83375',
+      '965c8b57b7f36fe9a40ce6188d444ca78708e4d83843b108f7f53d0fe5332076',
+    ]
   },
   polkadot: {
-    owners: ['12T1tgaYZzEkFpnPvyqttmPRJxbGbR4uDx49cvZR5SRF8QDu']
+    owners: [
+      '12T1tgaYZzEkFpnPvyqttmPRJxbGbR4uDx49cvZR5SRF8QDu',
+      '1UJSCYLh44UYhkm1WwXAwT2W8nirTD74VzPsdhfsstY8S3u',
+      '13AE11jLvxcxsjqaSoWFXCTGUfbjXb1gmZTY8x3TXJzWutmf'
+    ]
   },
+  solana: {
+    owners: [
+      'FxteHmLwG9nk1eL4pjNve3Eub2goGkkz6g6TbvdmW46a', //Solana hot wallet
+      'FyJBKcfcEBzGN74uNxZ95GxnCxeuJJujQCELpPv14ZfN', //Solana cold wallet
+      'GnCRxKqUEPouYMvTb5nJMGrDB3VkTXZnDTaDuVZdnWA3',
+      'J4rzLDLhLWFpjSgCMCcxTU84bQ8AH5vhgjwq7SjYVk8Q'
+    ]
+  },
+  tezos: {
+    owners:[
+      'tz1KtGwriE7VuLwT3LwuvU9Nv4wAxP7XZ57d', //Tezos (XTZ) hot wallet
+      'tz1fK1ZmVMtshYoCoQ1zC1SCCUG4SnbyR75p', //Tezos (XTZ) cold wallet
+      'tz1N47UGiVScUUvHemXd2kGwJi44h7qZMUzp', //Tether USDt (Tezos) hot wallet
+    ]
+  },
+  tron: {
+    owners: [
+      'TXFBqBbqJommqZf7BV8NNYzePh97UmJodJ', //Tron TRX/TRC10/TRC20 hot wallet
+      'TMhJviFWiaxvqKLdng9dmsi1H5H5yTGEeu', // Tron TRX/TRC10/TRC20 cold wallet
+    ]
+  },
+  zilliqa: {
+    owners: [
+      'zil1xfsrre5qgx0mqg99xc0l2cuyu9ntt259ngsu7s', //Zilliqa hot wallet
+      'zil184u2al6n0nrks06xjgq080hc95f77ttd7rkqvn', // Zilliqa cold wallet
+    ]
+  },
+  doge: {
+    owners: ['DQQckuSMsiFjaAdGiNjvDyswcz9RWQU2xe']
+  }
 }
 
 module.exports = cexExports(config)
