@@ -5,7 +5,7 @@ const { sumTokensExport, nullAddress } = require('./unwrapLPs')
 
 const helpers = {};
 
-(['tron', 'eos', 'cardano', 'algorand', 'cosmos', 'solana', 'aptos']).forEach(chain => helpers[chain] = require('./'+chain))
+(['tron', 'eos', 'cardano', 'algorand', 'cosmos', 'solana', 'aptos', 'tezos', 'zilliqa',]).forEach(chain => helpers[chain] = require('./'+chain))
 
 const defaultTokens = {
   ethereum: [
@@ -125,6 +125,7 @@ function cexExports(config) {
       switch(chain) {
         case 'solana': exportObj[chain] = { tvl: async () => helper.sumTokens2({...optionsObj, solOwners: owners, }) }; return;
         case 'eos': exportObj[chain] = { tvl: async () => helper.get_account_tvl(owners, tokens, 'eos') }; return;
+        case 'tezos': optionsObj.includeTezos = true; break;
       }
     }
 
