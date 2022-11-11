@@ -48,6 +48,40 @@ const config = {
       'cosmos1jtdkj8hxhj88jxv8lul9xvdpnwsl00evvvpnhj', //Cosmos cold wallet
     ]
   },
+  elrond: {
+    owners: ['Erd1a56dkgcpwwx6grmcvw9w5vpf9zeq53w3w7n6dmxcpxjry3l7uh2s3h9dtr']
+  },
+  eos: {
+    owners: [
+      'bitfinexdep1',
+      'bitfinexcw21' ,
+      'bitfinexcw23' ,
+      'bitfinexcw24' , 
+      'bitfinexcw25' ,
+      'bitfinexcw31' ,
+      'bitfinexcw22' ,
+      'bitfinexcw33' ,
+      'bitfinexcw55' ,
+    ]
+  },
+  ethereumclassic: {
+    owners: [
+      '0x618F37D7ff7B140E604172466CD42D1Ec35E0544',
+      '0x88037f361891A0B5De3C0C30632fBcA7DB2D341F',
+    ]
+  },
+  fantom: {
+    owners: ['0xed9eef56e64a8e779cfae9ddedb25d11ba2b2425']
+  },
+  litcoin: {
+    owners: ['LXTQdps2Pf83WdAXMinboiqLsEjSWrwJCD']
+  },
+  near: {
+    owners: ['383e50ea1a754ed3acd0d59116f221add87adb82559f31ca6d377f058fe83375']
+  },
+  polkadot: {
+    owners: ['12T1tgaYZzEkFpnPvyqttmPRJxbGbR4uDx49cvZR5SRF8QDu']
+  },
 }
 
 module.exports = cexExports(config)
