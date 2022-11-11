@@ -1,4 +1,6 @@
 
+const { getUniqueAddresses } = require('../helper/utils')
+
 // taken from https://www.binance.com/en/blog/community/our-commitment-to-transparency-2895840147147652626
 const assetList = [
   ["BTC", "BTC", "34xp4vRoCGJym3xR7yCVPFHoCNxv4Twseo"],
@@ -126,7 +128,7 @@ module.exports = {
     noParallel: true,
   },
   ethereum: {
-    tokensAndOwners: getTokensAndOwners('ETH')
+    owners: getUniqueAddresses(getTokensAndOwners('ETH').map(i => i[1]))
   },
   bsc: {
     tokensAndOwners: getTokensAndOwners('BEP20')

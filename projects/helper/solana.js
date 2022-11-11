@@ -338,11 +338,13 @@ async function sumTokens2({
   return balances
 
   async function _sumTokens(tokensAndAccounts) {
+    log('total balance queries: ', tokensAndAccounts.length)
     const tokenBalances = await getTokenBalances(tokensAndAccounts)
     return transformBalances({ tokenBalances, balances, })
   }
 
   async function _sumTokenAccounts(tokenAccounts) {
+    log('total token accounts: ', tokenAccounts.length)
     const tokenBalances = await getTokenAccountBalances(tokenAccounts)
     return transformBalances({ tokenBalances, balances, })
   }
