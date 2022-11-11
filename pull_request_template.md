@@ -1,5 +1,7 @@
 **NOTE**
 
+> If you would like to add a `volume` adapter please submit the PR [here](https://github.com/DefiLlama/adapters).
+
 1. Sorry, We no longer accept fetch adapter for new projects, we prefer the tvl to computed from blockchain data, if you have trouble with creating a the adapter, please hop onto our discord, we are happy to assist you.
 2. The protocol is usually listed within 24 hours of merging the PR
 3. Please fill the form below  **only if the PR is for listing a new protocol** else it can be ignored/replaced with reason/details about the PR

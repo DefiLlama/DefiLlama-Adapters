@@ -12,12 +12,7 @@ const {
 } = require('./tokenMapping')
 
 async function transformFantomAddress() {
-  const mapping = transformTokens.fantom
-
-  return addr => {
-    addr = addr.toLowerCase()
-    return mapping[addr] || `fantom:${addr}`;
-  };
+  return transformChainAddress(transformTokens.fantom, "fantom")
 }
 
 function compareAddresses(a, b) {
@@ -267,7 +262,7 @@ async function transformBalances(chain, balances) {
   return balances
 }
 
-async function transformDexBalances({ chain, data, balances = {}, restrictTokenRatio = 10, withMetadata = false, blacklistedTokens, }) {
+async function transformDexBalances({ chain, data, balances = {}, restrictTokenRatio = 10, withMetadata = false, blacklistedTokens = [], }) {
 
   const coreTokens = new Set(getCoreAssets(chain))
   const prices = {}

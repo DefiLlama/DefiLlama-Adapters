@@ -13,7 +13,7 @@ const nullAddress = '0x0000000000000000000000000000000000000000'
 
 const unsupportedGeckoChains = ['aptos', 'terra2', 'terra', 'kujira']
 const ibcChains = ['terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', ]
-const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'algorand', 'aptos', 'near', 'bitcoin', 'waves']
+const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', ]
 
 const tokens = {
   solana: 'solana:So11111111111111111111111111111111111111112',
@@ -196,6 +196,8 @@ const transformTokens = {
     "0x81A123f10C78216d32F8655eb1A88B5E9A3e9f2F": "0x00000000441378008ea67f4284a57932b1c000a5", // wTGBP
     "0xAf12F8Ec3f8C711d15434B63f9d346224C1c4666": "0x8dB253a1943DdDf1AF9bcF8706ac9A0Ce939d922", // UNB unbound token
     "0xc5b57e9a1e7914fda753a88f24e5703e617ee50c": "0xd0cd466b34a24fcb2f87676278af2005ca8a78c4", // Popcorn
+    "0xf826a91e8de52bc1baf40d88203e572dc2551aa3": "bsc:0x6421531af54c7b14ea805719035ebf1e3661c44a", // LEO
+    "0x28cead9e4ff96806c79f4189ef28fc61418e2216": "bsc:0x1633b7157e7638c4d6593436111bf125ee74703f", // SPS
   },
   xdai: {
     "0x0000000000000000000000000000000000000000": tokens.dai,
@@ -576,6 +578,11 @@ const fixBalancesTokens = {
   },
   avax: {
     "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7": { coingeckoId: "avalanche-2", decimals: 18, },
+    "0x9dEbca6eA3af87Bf422Cea9ac955618ceb56EfB4": { coingeckoId: "avalanche-2", decimals: 18, },
+  },
+  tron: {
+    "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t": { coingeckoId: "tether", decimals: 6, },
+    "TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8": { coingeckoId: "usd-coin", decimals: 6, },
     "0x9dEbca6eA3af87Bf422Cea9ac955618ceb56EfB4": { coingeckoId: "avalanche-2", decimals: 18, },
   },
   lachain: {
