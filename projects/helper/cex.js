@@ -48,6 +48,7 @@ const defaultTokens = {
     '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9',  // AAVE
     '0xc944e90c64b2c07662a292be6244bdf05cda44a7',  // GRT
     '0x4a220e6096b25eadb88358cb44068a3248254675',  // QNT
+    '0xf34960d9d60be18cC1D5Afc1A6F012A723a28811',  // KCS
   ],
   tron: [
     nullAddress,
