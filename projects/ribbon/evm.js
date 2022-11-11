@@ -117,7 +117,6 @@ async function getTreasury(timestamp, block, chainBlocks) {
   await sumTokensAndLPsSharedOwners(
     balances,
     [
-        [RBN, false],
         [weth, false],
         [wsteth, false],
         [wbtc, false],
