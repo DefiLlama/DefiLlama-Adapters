@@ -18,7 +18,6 @@ const config = {
       'TUpHuDkiCCmwaTZBHZvQdwWzGNm5t8J2b9',
       'TEWzF5ZsaWMh6sTNDPrYaPJrK8TTMGfwCC',
       'TQeNNo5zVarhdKm5EiJSekfNXg6H1tRN4n',
-      'TRYL7PKCG4b4xRCM554Q5J6o8f1UjUmfn',
     ]
   },
   bitcoin: {
