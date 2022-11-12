@@ -25,7 +25,9 @@ const config = {
       '1Lj2mCPJYbbC2X6oYwV6sXnE8CZ4heK5UD',
       '1LnoZawVFFQihU8d8ntxLMpYheZUfyeVAK',
       '1M6E6vPaYsuCb34mDNS2aepu2aJyL6xBG4',
-      '1MbNM3jwxMjRzeA9xyHbMyePN68MY4Jxb'
+      '1MbNM3jwxMjRzeA9xyHbMyePN68MY4Jxb',
+      'bc1quhruqrghgcca950rvhtrg7cpd7u8k6svpzgzmrjy8xyukacl5lkq0r8l2d',
+      'bc1qphk6rkypc8q64xesgy67l8n5780f2kuh286x9j5a5vje4p6mtgtqkzd2s8',
     ],
   },
   ethereum: {
@@ -73,6 +75,21 @@ const config = {
         "TM1zzNDZD2DPASbKcgdVoTYhfmYgtfwx9R",
         "TSaRZDiBPD8Rd5vrvX8a4zgunHczM9mj8S",
         "TWGZbjofbTLY3UCjCV4yiLkRg89zLqwRgi",
+    ]
+  },
+  arbitrum:{
+    owners:[
+      "0x62383739d68dd0f844103db8dfb05a7eded5bbe6",
+    ]
+  },
+  avax:{
+    owners:[
+      "0x7e4aa755550152a522d9578621ea22edab204308"
+    ]
+  },
+  polygon:{
+    owners:[
+      "0x06959153b974d0d5fdfd87d561db6d8d4fa0bb0b",
     ]
   }
 }
