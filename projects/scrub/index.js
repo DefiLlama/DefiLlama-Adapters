@@ -27,14 +27,14 @@ module.exports.kava = require('../scrubKava/index.js').kava
 
 const lionStaking = {
   kava: {
-    staking: sumTokensExport({ chain: 'kava', owner: '0xBD98813A2F43587CCeC8c0489a5486d1f6Ef9C50', tokens: ['0x990e157fC8a492c28F5B50022F000183131b9026'], useDefaultCoreAssets: true, })
+    staking: sumTokensExport({ chain: 'kava', owner: '0xBD98813A2F43587CCeC8c0489a5486d1f6Ef9C50', tokens: ['0x990e157fC8a492c28F5B50022F000183131b9026'],lps: ["0x59e38a5799B64fE17c5fAb7E0E5396C15E2acb7b"], useDefaultCoreAssets: true, })
   }
 }
 
 
 const tigerStaking = {
   kava: {
-    staking: sumTokensExport({ chain: 'kava', owner: '0x2d4F96b3cdAEB79165459199B93baD49A8533C23', tokens: ['0x471F79616569343e8e84a66F342B7B433b958154'], useDefaultCoreAssets: true, })
+    staking: sumTokensExport({ chain: 'kava', owner: '0x2d4F96b3cdAEB79165459199B93baD49A8533C23', tokens: ['0x471F79616569343e8e84a66F342B7B433b958154'],lps: ["0x6Eff7d2D494bc13949523e3504dE1994a6325F0A"], useDefaultCoreAssets: true, })
   }
 }
 
