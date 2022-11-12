@@ -7,15 +7,15 @@ const { sumTokens, getConnection, } = require("../helper/solana");
 const { fetchURL } = require('../helper/utils')
 const sdk = require('@defillama/sdk')
 
-const solendConfigEndpoint = "https://api.solend.fi/v1/config?deployment=production";
+const solendConfigEndpoint = "https://api.solend.fi/v1/markets/configs?scope=all&deployment=production";
 
 async function borrowed() {
-  const solendConfig = (await fetchURL(solendConfigEndpoint))?.data;
+  const markets = (await fetchURL(solendConfigEndpoint))?.data;
   const connection = getConnection()
   const balances = {};
   const reserves = []
 
-  for (const market of solendConfig.markets)
+  for (const market of markets)
     for (const reserve of market.reserves)
       reserves.push(new PublicKey(reserve.address))
 
@@ -33,13 +33,12 @@ async function borrowed() {
 }
 
 async function tvl() {
-  const solendConfig = (await fetchURL(solendConfigEndpoint))?.data;
+  const markets = (await fetchURL(solendConfigEndpoint))?.data;
   const tokensAndOwners = []
 
-  for (const market of solendConfig.markets) {
+  for (const market of markets) {
     for (const reserve of market.reserves) {
-      const asset = solendConfig.assets.find(asset => asset.symbol === reserve.asset);
-      tokensAndOwners.push([asset.mintAddress, market.authorityAddress])
+      tokensAndOwners.push([reserve.liquidityToken.mint, market.authorityAddress])
     }
   }
 
