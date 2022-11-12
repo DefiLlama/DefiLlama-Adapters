@@ -26,11 +26,15 @@ module.exports.misrepresentedTokens = true
 module.exports.kava = require('../scrubKava/index.js').kava
 
 const lionStaking = {
-  cronos: {
-    staking: sumTokensExport({ chain: 'cronos', owner: '0x14103f4Fc36daCeaCDE4c5313a2b1a462e00B1e8', tokens: ['0x49fb98f9b4a3183cd88e7a115144fdf00fa6fb95'], lps: ['0xf2059ed015ec4ecc80f902d9fdbcd2a227bfe037'], useDefaultCoreAssets: true, })
-  },
   kava: {
-    staking: sumTokensExport({ chain: 'kava', owner: '0x0dB75Ef798a12312afd98d1884577664f4DD4411', tokens: ['0x990e157fC8a492c28F5B50022F000183131b9026'], lps: ['0x59e38a5799B64fE17c5fAb7E0E5396C15E2acb7b'], useDefaultCoreAssets: true, })
+    staking: sumTokensExport({ chain: 'kava', owner: '0xBD98813A2F43587CCeC8c0489a5486d1f6Ef9C50', tokens: ['0x990e157fC8a492c28F5B50022F000183131b9026'], useDefaultCoreAssets: true, })
+  }
+}
+
+
+const tigerStaking = {
+  kava: {
+    staking: sumTokensExport({ chain: 'kava', owner: '0x2d4F96b3cdAEB79165459199B93baD49A8533C23', tokens: ['0x471F79616569343e8e84a66F342B7B433b958154'], useDefaultCoreAssets: true, })
   }
 }
 
