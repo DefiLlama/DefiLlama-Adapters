@@ -1,11 +1,18 @@
-const path = require('path');
 const { tokensBare, ibcChains } = require('./tokenMapping')
 const { getBalance, log } = require('./utils')
 const { sumTokensExport, nullAddress } = require('./unwrapLPs')
 
-const helpers = {};
-
-(['tron', 'eos', 'cardano', 'algorand', 'cosmos', 'solana', 'aptos', 'tezos', 'zilliqa',]).forEach(chain => helpers[chain] = require(path.join(__dirname, chain)))
+const helpers = {
+  "tron": require("./tron"),
+  "eos": require("./eos"),
+  "cardano":require("./cardano"),
+  "algorand":require("./algorand"),
+  "cosmos":require("./cosmos"),
+  "solana":require("./solana"),
+  "aptos":require("./aptos"),
+  "tezos":require("./tezos"),
+  "zilliqa":require("./zilliqa"),
+};
 
 const defaultTokens = {
   ethereum: [
