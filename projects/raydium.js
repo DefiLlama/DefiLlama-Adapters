@@ -5,6 +5,13 @@ const sdk = require('@defillama/sdk')
 
 async function tvl() {
   const { official, unOfficial } = await get("https://api.raydium.io/v2/sdk/liquidity/mainnet.json")
+  let raydiumData = [...official, ...unOfficial]
+  let deduplicateMarkets = {}
+  raydiumData.forEach(i => {
+    deduplicateMarkets[i.marketAuthority] = i
+  })
+  raydiumData = Object.values(deduplicateMarkets)
+
   const balances = {}
   const getAccounts = data => data.map(i => ([i.marketBaseVault, i.marketQuoteVault])).flat()
 
@@ -20,8 +27,7 @@ async function tvl() {
     '2LxZrcJJhzcAju1FBHuGvw929EVkX7R7Q8yA2cdp8q7b', // BORK
   ]
 
-  await addDexData(official)
-  await addDexData(unOfficial)
+  await addDexData(raydiumData)
 
   return transformBalances('solana', balances)
 
