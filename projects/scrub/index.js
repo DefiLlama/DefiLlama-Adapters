@@ -34,7 +34,7 @@ const lionStaking = {
 //address tiger stake: 0x2d4F96b3cdAEB79165459199B93baD49A8533C23
 const tigerStaking = {
   kava: {
-    staking: sumTokensExport({ chain: 'kava', owner: '0x9C94210b6eC60Ebc728CEEf7515f6501121F35Ae', tokens: ['0x471F79616569343e8e84a66F342B7B433b958154'],lps: ["0x6Eff7d2D494bc13949523e3504dE1994a6325F0A"], useDefaultCoreAssets: true, })
+    staking: sumTokensExport({ chain: 'kava', owner: '0x67041094c4fc1492A1AB988Fb8De0ab4A0a4A080', tokens: ['0x471F79616569343e8e84a66F342B7B433b958154'],lps: ["0x6Eff7d2D494bc13949523e3504dE1994a6325F0A"], useDefaultCoreAssets: true, })
   }
 }
 
