@@ -313,6 +313,7 @@ async function sumTokens2({
   tokensAndOwners = tokensAndOwners.filter(([token]) => !blacklistedTokens.includes(token))
 
   if (tokensAndOwners.length) {
+    log('total balance queries: ', tokensAndOwners.length)
     const chunks = sliceIntoChunks(tokensAndOwners, 99)
     for (const chunk of chunks) {
       await _sumTokens(chunk)
@@ -324,7 +325,8 @@ async function sumTokens2({
   }
 
   if (tokenAccounts.length) {
-    const chunks = sliceIntoChunks(tokenAccounts, 31)
+    log('total token accounts: ', tokenAccounts.length)
+    const chunks = sliceIntoChunks(tokenAccounts, 99)
     for (const chunk of chunks) {
       await _sumTokenAccounts(chunk)
       if (chunks.length > 2) {
@@ -342,13 +344,11 @@ async function sumTokens2({
   return balances
 
   async function _sumTokens(tokensAndAccounts) {
-    log('total balance queries: ', tokensAndAccounts.length)
     const tokenBalances = await getTokenBalances(tokensAndAccounts)
     return transformBalances({ tokenBalances, balances, })
   }
 
   async function _sumTokenAccounts(tokenAccounts) {
-    log('total token accounts: ', tokenAccounts.length)
     const tokenBalances = await getTokenAccountBalances(tokenAccounts)
     return transformBalances({ tokenBalances, balances, })
   }
