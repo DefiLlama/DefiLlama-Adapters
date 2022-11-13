@@ -51,6 +51,9 @@ const config = {
 },
   avax: {
     owners: ['0xe195b82df6a797551eb1acd506e892531824af27']
+  },
+  eos: {
+    owners: ['vuniyuoxoeub'],
   }
 }
 
