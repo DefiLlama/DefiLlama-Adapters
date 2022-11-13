@@ -62,6 +62,12 @@ async function getTokenSupply(token) {
   return tokenSupply.data.result.value.uiAmount;
 }
 
+async function getGeckoSolTokens() {
+  const tokens = await getTokenList()
+  const tokenSet = new Set()
+  tokens.filter(i => i.extensions?.coingeckoId).forEach(i => tokenSet.add(i.address))
+  return tokenSet
+}
 
 async function getTokenDecimals(tokens) {
   const calls = tokens => tokens.map((t, i) => ({ jsonrpc: '2.0', id: t, method: 'getTokenSupply', params: [t] }))
@@ -69,7 +75,7 @@ async function getTokenDecimals(tokens) {
   const chunks = sliceIntoChunks(tokens, 99)
   for (const chunk of chunks) {
     const tokenSupply = await axios.post(endpoint, calls(chunk))
-    tokenSupply.data.forEach(({ id, result}) => res[id] = result.value.decimals)
+    tokenSupply.data.forEach(({ id, result }) => res[id] = result.value.decimals)
   }
   return res
 }
@@ -107,20 +113,28 @@ async function getTokenBalances(tokensAndAccounts) {
   return balances
 }
 
-async function getTokenAccountBalances(tokenAccounts, { individual = false } = {}) {
+async function getTokenAccountBalances(tokenAccounts, { individual = false, chunkSize = 99 } = {}) {
+  log('total token accounts: ', tokenAccounts.length)
   const formBody = account => ({ method: "getAccountInfo", jsonrpc: "2.0", params: [account, { encoding: "jsonParsed", commitment: "confirmed" }], id: 1 })
   const balancesIndividual = []
-  const body = tokenAccounts.map(formBody)
-  const data = await axios.post(endpoint, body);
   const balances = {}
-  data.data.forEach(({ result: { value } }, i) => {
-    if (!value || !value.data.parsed) {
-      console.log(data.data.map(i => i.result.value)[i], tokenAccounts[i])
+  const chunks = sliceIntoChunks(tokenAccounts, chunkSize)
+  for (const chunk of chunks) {
+    const body = chunk.map(formBody)
+    const data = await axios.post(endpoint, body);
+    data.data.forEach(({ result: { value } }, i) => {
+      if (!value || !value.data.parsed) {
+        console.log(data.data.map(i => i.result.value)[i], tokenAccounts[i])
+      }
+      const { data: { parsed: { info: { mint, tokenAmount: { amount } } } } } = value
+      sdk.util.sumSingleBalance(balances, mint, amount)
+      balancesIndividual.push({ mint, amount })
+    })
+    if (chunks.length > 4) {
+      log('waiting before more calls')
+      await sleep(300)
     }
-    const { data: { parsed: { info: { mint, tokenAmount: { amount } } } } } = value
-    sdk.util.sumSingleBalance(balances, mint, amount)
-    balancesIndividual.push({ mint, amount })
-  })
+  }
   if (individual) return balancesIndividual
   return balances
 }
@@ -325,15 +339,8 @@ async function sumTokens2({
   }
 
   if (tokenAccounts.length) {
-    log('total token accounts: ', tokenAccounts.length)
-    const chunks = sliceIntoChunks(tokenAccounts, 99)
-    for (const chunk of chunks) {
-      await _sumTokenAccounts(chunk)
-      if (chunks.length > 2) {
-        log('waiting before more calls')
-        await sleep(300)
-      }
-    }
+    const tokenBalances = await getTokenAccountBalances(tokenAccounts)
+    return transformBalances({ tokenBalances, balances, })
   }
 
   if (solOwners.length) {
@@ -345,11 +352,6 @@ async function sumTokens2({
 
   async function _sumTokens(tokensAndAccounts) {
     const tokenBalances = await getTokenBalances(tokensAndAccounts)
-    return transformBalances({ tokenBalances, balances, })
-  }
-
-  async function _sumTokenAccounts(tokenAccounts) {
-    const tokenBalances = await getTokenAccountBalances(tokenAccounts)
     return transformBalances({ tokenBalances, balances, })
   }
 }
@@ -383,4 +385,6 @@ module.exports = {
   transformBalances,
   getSolBalances,
   getTokenDecimals,
+  getGeckoSolTokens,
+  getTokenAccountBalances,
 };
