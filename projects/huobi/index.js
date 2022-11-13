@@ -41,15 +41,14 @@ const config = {
       'TCiRCBNFrL6bFKWL94yWQi5hNMGNp1Nu27',
       'TGn1uvntAVntT1pG8o7qoKkbViiYfeg6Gj',
       'TAuUCiH4JVNBZmDnEDZkXEUXDARdGpXTmX',
-      'TUJGLHo3rq4EAUY1LHRhNkHPX8qmrv9WFs',
       'TF2fmSbg5HAD34KPUH7WtWCxxvgXHohzYM',
       'THZovMcKoZaV9zzFTWteQYd2f3NEvnzxAM',
       'TZ1SsapyhKNWaVLca6P2qgVzkHTdk6nkXa',
     ]
   },
   algorand: {
-    owners: ['J4AEINCSSLDA7LNBNWM4ZXFCTLTOZT5LG3F5BLMFPJYGFWVCMU37EZI2AM']
-  },
+  owners: ['J4AEINCSSLDA7LNBNWM4ZXFCTLTOZT5LG3F5BLMFPJYGFWVCMU37EZI2AM']
+},
   avax: {
     owners: ['0xe195b82df6a797551eb1acd506e892531824af27']
   }
