@@ -18,8 +18,8 @@ const axiosObj = axios.create({
 const AbiCoder = ethers.utils.AbiCoder;
 const ADDRESS_PREFIX_REGEX = /^(41)/;
 const ADDRESS_PREFIX = "41";
-const accountData = {}
-
+const accountData = {
+}
 async function getAccountDetails(account) {
   if (!accountData[account])
     accountData[account] = get('https://apilist.tronscan.org/api/account?address=' + account)
@@ -107,7 +107,7 @@ async function getTokenBalance(token, account) {
 
 async function getTrxBalance(account) {
   const data = await getAccountDetails(account)
-  return data.balance
+  return data.balance + (data.totalFrozen || 0)
 }
 
 const nullAddress = '0x0000000000000000000000000000000000000000'
