@@ -12,6 +12,8 @@ const helpers = {
   "aptos":require("./aptos"),
   "tezos":require("./tezos"),
   "zilliqa":require("./zilliqa"),
+  "near":require("./near"),
+  "bitcoin":require("./bitcoin"),
 };
 
 const defaultTokens = {
@@ -97,8 +99,11 @@ const defaultTokens = {
     nullAddress,
     '0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7', // USDT
   ],
+  near: [
+    'usdt.tether-token.near',
+  ],
 }
-const specialChains = ['bitcoin', 'bep2', 'elrond',]
+const specialChains = ['bep2', 'elrond',]
 
 function cexExports(config) {
   const chains = Object.keys(config).filter(i => i !== 'bep2')
