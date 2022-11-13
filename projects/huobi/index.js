@@ -50,7 +50,7 @@ const config = {
   algorand: {
     owners: ['J4AEINCSSLDA7LNBNWM4ZXFCTLTOZT5LG3F5BLMFPJYGFWVCMU37EZI2AM']
   },
-  avalanche: {
+  avax: {
     owners: ['0xe195b82df6a797551eb1acd506e892531824af27']
   }
 }
