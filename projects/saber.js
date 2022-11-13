@@ -1,5 +1,4 @@
-const { getTokenAccountBalance } = require("./helper/solana");
-const { sleep } = require("./helper/utils");
+const { sumTokens2 } = require("./helper/solana");
 
 // The data here comes directly from
 // https://registry.saber.so/data/llama.mainnet.json
@@ -10,37 +9,8 @@ async function tvl() {
     "https://registry.saber.so/data/llama.mainnet.json"
   );
 
-  const pools = await Promise.all(
-    saberPools.map(
-      async ({ reserveA, reserveB, tokenACoingecko, tokenBCoingecko }) => {
-        for (let i = 0; i < 5; i++) {
-          try {
-            return [
-              {
-                coingeckoID: tokenACoingecko,
-                amount: await getTokenAccountBalance(reserveA),
-              },
-              {
-                coingeckoID: tokenBCoingecko,
-                amount: await getTokenAccountBalance(reserveB),
-              },
-            ];
-          } catch (e) {
-            await sleep(1200);
-            console.log(e);
-          }
-        }
-        throw new Error(`Can't get data: ${reserveA}, ${reserveB}`);
-      }
-    )
-  );
-
-  return pools.flat().reduce((acc, pool) => {
-    return {
-      ...acc,
-      [pool.coingeckoID]: (acc[pool.coingeckoID] ?? 0) + pool.amount,
-    };
-  }, {});
+  const tokenAccounts = saberPools.map(i => ([i.reserveA, i.reserveB])).flat()
+  return sumTokens2({ tokenAccounts })
 }
 
 module.exports = {
