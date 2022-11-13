@@ -3,6 +3,7 @@ const BigNumber = require('bignumber.js')
 const ethers = require('ethers')
 const sdk = require('@defillama/sdk')
 const { getUniqueAddresses, } = require('./utils')
+const { get, } = require('./http')
 const { transformBalances, } = require('./portedTokens')
 const { toHex } = require('tron-format-address')
 const axiosObj = axios.create({
@@ -17,6 +18,13 @@ const axiosObj = axios.create({
 const AbiCoder = ethers.utils.AbiCoder;
 const ADDRESS_PREFIX_REGEX = /^(41)/;
 const ADDRESS_PREFIX = "41";
+const accountData = {}
+
+async function getAccountDetails(account) {
+  if (!accountData[account])
+    accountData[account] = get('https://apilist.tronscan.org/api/account?address=' + account)
+  return accountData[account]
+}
 
 function encodeParams(inputs) {
   let typesValues = inputs
@@ -78,26 +86,28 @@ async function unverifiedCall(contract, functionSelector, parameter) {
   return BigNumber("0x" + axiosResponse.data['constant_result'][0])
 }
 
-function getUnverifiedTokenBalance(token, account) {
-  return unverifiedCall(token, 'balanceOf(address)', [
-    {
-      type: 'address',
-      value: toHex(account)
-    }
-  ])
+async function getUnverifiedTokenBalance(token, account) {
+  const data = await getAccountDetails(account)
+  const bal = data.trc20token_balances.find(i => i.tokenId === token)?.balance ?? 0
+  return BigNumber(bal)
+}
+
+async function getTokenDecimals(token, account) {
+  const data = await getAccountDetails(account)
+  return data.trc20token_balances.find(i => i.tokenId === token)?.tokenDecimal ?? 0
 }
 
 async function getTokenBalance(token, account) {
   const [balance, decimals] = await Promise.all([
     getUnverifiedTokenBalance(token, account),
-    unverifiedCall(token, 'decimals()', [])
+    getTokenDecimals(token, account)
   ]);
   return Number(balance.toString()) / (10 ** decimals)
 }
 
 async function getTrxBalance(account) {
-  const axiosResponse = await axiosObj.get('v1/accounts/' + account)
-  return axiosResponse.data.data[0].balance
+  const data = await getAccountDetails(account)
+  return data.balance
 }
 
 const nullAddress = '0x0000000000000000000000000000000000000000'
@@ -133,12 +143,12 @@ async function sumTokens({
 
   if (tronBalanceInputs.length) {
     const bals = await Promise.all(tronBalanceInputs.map(getTrxBalance))
-    bals.forEach(balance=> sdk.util.sumSingleBalance(balances, nullAddress, balance))
+    bals.forEach(balance => sdk.util.sumSingleBalance(balances, nullAddress, balance))
   }
 
   const results = await Promise.all(tokensAndOwners.map(i => getUnverifiedTokenBalance(i[0], i[1])))
 
-  results.forEach((bal, i) => sdk.util.sumSingleBalance(balances,'tron:'+tokensAndOwners[i][0],bal.toFixed(0)))
+  results.forEach((bal, i) => sdk.util.sumSingleBalance(balances, 'tron:' + tokensAndOwners[i][0], bal.toFixed(0)))
   return transformBalances('tron', balances)
 
   function getUniqueToA(toa) {
@@ -151,7 +161,6 @@ async function sumTokens({
 module.exports = {
   getTokenBalance,
   getTrxBalance,
-  getUnverifiedTokenBalance,
   unverifiedCall,
   sumTokens,
 }
