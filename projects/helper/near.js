@@ -24,6 +24,7 @@ const tokenMapping = {
   // 'hak.tkn.near': { name: '', }, // Hakuna matata
   'meta-token.near': { name: 'meta-near', decimals: 24 },
   'v3.oin_finance.near': { name: 'oin-finance', decimals: 8, },
+  'usdt.tether-token.near': { name: 'tether', decimals: 6, },
   // 'gems.l2e.near': { name: '', }, // https://www.landtoempire.com/
   // 'nd.tkn.near': { name: '', },   // nearDog
   // 'gold.l2e.near': { name: '', }, // https://www.landtoempire.com/
@@ -108,10 +109,19 @@ function sumSingleBalance(balances, token, balance) {
   return balances
 }
 
+async function sumTokens({ balances = {}, owners = [], tokens = []}) {
+  await Promise.all(owners.map(i => addTokenBalances(tokens, i, balances)))
+  const bals = await Promise.all(owners.map(view_account))
+  const nearBalance = bals.reduce((a,i) => a + (i.amount/1e24), 0)
+  sdk.util.sumSingleBalance(balances,'coingecko:near',nearBalance)
+  return balances
+}
+
 module.exports = {
   view_account,
   call,
   addTokenBalances,
   getTokenBalance,
   sumSingleBalance,
+  sumTokens,
 };

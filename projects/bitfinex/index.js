@@ -84,12 +84,14 @@ const config = {
       'LNSFU7hmF6GP2AFdcrCgd4QvFimvspviSs'
     ]
   },
+*/
   near: {
     owners: [
       '383e50ea1a754ed3acd0d59116f221add87adb82559f31ca6d377f058fe83375',
       '965c8b57b7f36fe9a40ce6188d444ca78708e4d83843b108f7f53d0fe5332076',
     ]
   },
+/*
   polkadot: {
     owners: [
       '12T1tgaYZzEkFpnPvyqttmPRJxbGbR4uDx49cvZR5SRF8QDu',
