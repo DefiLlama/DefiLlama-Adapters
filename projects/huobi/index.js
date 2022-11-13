@@ -25,9 +25,9 @@ const config = {
   polygon: {
     owners: ['0xd70250731a72c33bfb93016e3d1f0ca160df7e42']
   },
-  litecoin: {
-    owners: ['MNky8PL58UjL14mcZm3ESvEkYQkzMY9kfu']
-  },
+  //litecoin: {
+  //  owners: ['MNky8PL58UjL14mcZm3ESvEkYQkzMY9kfu']
+ // },
   solana: {
     owners: ['88xTWZMeKfiTgbfEmPLdsUCQcZinwUfk25EBQZ21XMAZ']
   },
