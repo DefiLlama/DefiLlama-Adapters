@@ -47,9 +47,10 @@ const config = {
       'TZ1SsapyhKNWaVLca6P2qgVzkHTdk6nkXa',
     ]
   },
-  algorand: {
-    owners: ['J4AEINCSSLDA7LNBNWM4ZXFCTLTOZT5LG3F5BLMFPJYGFWVCMU37EZI2AM']
-  },
+  
+  //algorand: {
+  //  owners: ['J4AEINCSSLDA7LNBNWM4ZXFCTLTOZT5LG3F5BLMFPJYGFWVCMU37EZI2AM']
+  //},
   avax: {
     owners: ['0xe195b82df6a797551eb1acd506e892531824af27']
   }
