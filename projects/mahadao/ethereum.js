@@ -1,28 +1,24 @@
-const { balanceOf, totalSupply } = require("@defillama/sdk/build/erc20");
-const sdk = require('@defillama/sdk');
-const { unwrapTroves, unwrapUniswapV3NFTs } = require("../helper/unwrapLPs.js");
+const { sumTokens } = require("../helper/unwrapLPs.js");
+const { unwrapTroves } = require("../helper/unwrapLPs.js");
 const { staking } = require("../helper/staking");
 
 const chain = "ethereum";
 
 const eth = {
-  ethMahaSLP: "0xB73160F333b563f0B8a0bcf1a25ac7578A10DE96",
-  ethMahaSLP2: "0xC0897d6Ba893E31F42F658eeAD777AA15B8f824d",
-  ethMahaSushiStaking: "0x20257283d7B8Aa42FC00bcc3567e756De1E7BF5a",
+  dai: "0x6b175474e89094c44da98b954eedeac495271d0f",
   maha: "0xb4d930279552397bba2ee473229f89ec245bc365",
-  mahax: "0xbdd8f4daf71c2cb16cce7e54bb81ef3cfcf5aacb",
   weth: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-  frax: "0x853d955acef822db058eb8505911ed77f175b99e",
   arth: "0x8CC0F052fff7eaD7f2EdCCcaC895502E884a8a71",
-  vecrv: "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490",
-  unisawapV3Pool: '0xC5Ee69662e7EF79e503be9D54C237d5aafaC305d',
+  crv3: "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490",
+  usdc: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+
+  mahax: "0xbdd8f4daf71c2cb16cce7e54bb81ef3cfcf5aacb",
+
+  daiMahaPool: "0x8cb8f052e7337573cd59d33bb67b2acbb65e9876",
+  arthUsdcPool: "0x031a1d307C91fbDE01005Ec2Ebc5Fcb03b6f80aB",
+  arthMahaPool: "0xC5Ee69662e7EF79e503be9D54C237d5aafaC305d",
   arth3crvPool: "0x96f34Bb82fcA57e475e6ad218b0dd0C5c78DF423",
   arthWethPool: "0xE7cDba5e9b0D5E044AaB795cd3D659aAc8dB869B",
-  arthMahaV3Gauge: "0x48165A4b84e00347C4f9a13b6D0aD8f7aE290bB8",
-  arthUsdcV3Gauge: "0x174327F7B7A624a87bd47b5d7e1899e3562646DF",
-  arthEthV3Gauge: "",
-
-  "arth.usd": "0x973F054eDBECD287209c36A2651094fA52F99a71",
 };
 
 Object.keys(eth).forEach((k) => (eth[k] = eth[k].toLowerCase()));
@@ -30,82 +26,40 @@ Object.keys(eth).forEach((k) => (eth[k] = eth[k].toLowerCase()));
 async function pool2(_, block) {
   const balances = {};
 
-  // uniswap v3 gauge staking
-  const v3poolStakers = [eth.arthMahaV3Gauge, eth.arthUsdcV3Gauge];
-  await unwrapUniswapV3NFTs({ balances, owners: v3poolStakers, chain, block });
+  const tokensAndOwners = [
+    // ARTH/CRV - Curve
+    // https://curve.fi/#/ethereum/pools/factory-crypto-142/swap
+    // Stablecoin part of the pool
+    [eth.arth, eth.arth3crvPool],
+    [eth.crv3, eth.arth3crvPool],
 
-  const mahauniswapV3Bal = await getBalance(
-    eth["maha"],
-    eth["unisawapV3Pool"],
-    block
-  );
-  sdk.util.sumSingleBalance(balances, eth["maha"], mahauniswapV3Bal);
+    // ARTH/ETH Uniswap 1%
+    // https://info.uniswap.org/#/pools/0xe7cdba5e9b0d5e044aab795cd3d659aac8db869b
+    // Stablecoin part of the pool
+    [eth.arth, eth.arthWethPool],
+    [eth.weth, eth.arthWethPool],
 
-  const arthuniswapV3Bal = await getBalance(
-    eth["arth"],
-    eth["unisawapV3Pool"],
-    block
-  );
-  sdk.util.sumSingleBalance(balances, eth["arth"], arthuniswapV3Bal);
+    // ARTH/MAHA Uniswap 1%
+    // https://info.uniswap.org/#/pools/0xc5ee69662e7ef79e503be9d54c237d5aafac305d
+    // Stablecoin & Governance token part of the pool
+    [eth.arth, eth.arthMahaPool],
+    [eth.maha, eth.arthMahaPool],
 
-  const arthV3Bal = await getBalance(
-    eth["arth"],
-    eth["arth3crvPool"],
-    block
-  );
-  sdk.util.sumSingleBalance(balances, eth["arth"], arthV3Bal);
+    // ARTH/USDC Uniswap 1%
+    // https://info.uniswap.org/#/pools/0x031a1d307c91fbde01005ec2ebc5fcb03b6f80ab
+    // Stablecoin part of the pool
+    [eth.arth, eth.arthUsdcPool],
+    [eth.usdc, eth.arthUsdcPool],
 
-  const v3CrvBal = await getBalance(
-    eth["vecrv"],
-    eth["arth3crvPool"],
-    block
-  );
-  sdk.util.sumSingleBalance(balances, eth["vecrv"], v3CrvBal);
+    // DAI/MAHA Uniswap 1%
+    // https://info.uniswap.org/#/pools/0x8cb8f052e7337573cd59d33bb67b2acbb65e9876
+    // Governance part of the pool
+    [eth.dai, eth.daiMahaPool],
+    [eth.maha, eth.daiMahaPool],
+  ];
 
-  const valueCoinBal = await getTotalSupply(
-    eth["arth"],
-    block
-  )
-  sdk.util.sumSingleBalance(balances, eth["arth"], valueCoinBal);
-
-  const arth2Bal = await getBalance(
-    eth["arth"],
-    eth["arthWethPool"],
-    block
-  );
-  sdk.util.sumSingleBalance(balances, eth["arth"], arth2Bal);
-
-  const wethBal = await getBalance(
-    eth["weth"],
-    eth["arthWethPool"],
-    block
-  );
-  sdk.util.sumSingleBalance(balances, eth["weth"], wethBal);
-
-  return balances;
-
+  return sumTokens(balances, tokensAndOwners, block, chain);
 }
-
-const getBalance = async (target, owner, block) => {
-  return (
-    await balanceOf({
-      target: target,
-      owner: owner,
-      block,
-      chain,
-    })
-  ).output;
-};
-
-const getTotalSupply = async (target, block) => {
-  return (
-    await totalSupply({
-      target: target,
-      block,
-      chain,
-    })
-  ).output;
-};
 
 async function tvl(_, block) {
   const balances = {};
