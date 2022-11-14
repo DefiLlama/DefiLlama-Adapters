@@ -13,7 +13,7 @@ const nullAddress = '0x0000000000000000000000000000000000000000'
 
 const unsupportedGeckoChains = ['aptos', 'terra2', 'terra', 'kujira']
 const ibcChains = ['terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', ]
-const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron',]
+const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', ]
 
 const tokens = {
   solana: 'solana:So11111111111111111111111111111111111111112',
@@ -1689,4 +1689,5 @@ module.exports = {
   getCoreAssets,
   ibcChains,
   stripTokenHeader,
+  getUniqueAddresses,
 }
