@@ -3,7 +3,7 @@ const axios = require("axios");
 const urlConfigs = {
   graphQLUrl: "https://heliswap-prod-362307.oa.r.appspot.com/query",
   tokenListUrl:
-    "https://heliswap.infura-ipfs.io/ipfs/QmVckDDS58AUWDREptfvbAcg6XwbMVccy5GKUPsGQkixMC",
+    "https://heliswap.infura-ipfs.io/ipfs/QmWcPfxiQsi2R6EXQLygLV5XVq36QcP6bmbaHN6ajwLeGv",
 };
 
 const axiosConfig = {
@@ -27,9 +27,7 @@ const getWhitelistedTokenAddresses = async () => {
   return tokens;
 };
 
-const tvl = async () => {
-  let totalTVL = 0;
-
+const hedera = async () => {
   const whitelistedAddresses = await getWhitelistedTokenAddresses();
 
   const { url, method } = axiosConfig;
@@ -37,6 +35,8 @@ const tvl = async () => {
     query: `query getWhitelistedPools($tokens: [String]!) {
                 poolsConsistingOf(tokens: $tokens) {
                   tvl
+                  volume24hUsd
+                  volume7dUsd
                 }
               }`,
     variables: {
@@ -56,22 +56,42 @@ const tvl = async () => {
     data: { data },
   } = response;
 
-  totalTVL =
+  const initialAccValue = {
+    tvl: {
+      tether: 0,
+    },
+    volume24H: {
+      tether: 0,
+    },
+    volume7D: {
+      tether: 0,
+    },
+  };
+
+  const returnObject =
     data && data.poolsConsistingOf && data.poolsConsistingOf?.length > 0
       ? data.poolsConsistingOf.reduce((acc, pool) => {
-        acc = acc + Number(pool.tvl);
+          const updatedAcc = {
+            tvl: {
+              tether: acc.tvl.tether + Number(pool.tvl),
+            },
+            volume24H: {
+              tether: acc.volume24H.tether + Number(pool.volume24hUsd),
+            },
+            volume7D: {
+              tether: acc.volume7D.tether + Number(pool.volume7dUsd),
+            },
+          };
 
-        return acc;
-      }, 0)
-      : 0;
+          return updatedAcc;
+        }, initialAccValue)
+      : initialAccValue;
 
-  return {tether: totalTVL};
+  return returnObject;
 };
 
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
-  hedera: {
-    tvl,
-  },
+  hedera,
 };
