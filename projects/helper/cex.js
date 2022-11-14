@@ -1,20 +1,8 @@
-const { tokensBare, ibcChains } = require('./tokenMapping')
-const { getBalance, log } = require('./utils')
-const { sumTokensExport, nullAddress } = require('./unwrapLPs')
-
-const helpers = {
-  "tron": require("./tron"),
-  "eos": require("./eos"),
-  "cardano":require("./cardano"),
-  "algorand":require("./algorand"),
-  "cosmos":require("./cosmos"),
-  "solana":require("./solana"),
-  "aptos":require("./aptos"),
-  "tezos":require("./tezos"),
-  "zilliqa":require("./zilliqa"),
-  "near":require("./near"),
-  "bitcoin":require("./bitcoin"),
-};
+const { tokensBare, } = require('./tokenMapping')
+const { log } = require('./utils')
+const { nullAddress } = require('./unwrapLPs')
+const { sumTokensExport } = require('../helper/sumTokens')
+const sdk = require('@defillama/sdk')
 
 const defaultTokens = {
   ethereum: [
@@ -104,7 +92,6 @@ const defaultTokens = {
     'usdt.tether-token.near',
   ],
 }
-const specialChains = ['bep2', 'elrond',]
 
 function cexExports(config) {
   const chains = Object.keys(config).filter(i => i !== 'bep2')
@@ -113,72 +100,28 @@ function cexExports(config) {
   }
   chains.forEach(chain => {
     let { tokensAndOwners, owners, tokens } = config[chain]
-    if (specialChains.includes(chain)) {
-      exportObj[chain] = {
-        tvl: getChainTvl(chain, config),
-      }
-      return;
-    }
 
     if (!tokensAndOwners && !tokens) {
       tokens = defaultTokens[chain]
       if (!tokens) {
-        log(chain, 'Missing default token list, counting only native token balance', )
+        log(chain, 'Missing default token list, counting only native token balance',)
         tokens = [nullAddress]
       }
     }
 
-    const optionsObj = { owners, tokens, tokensAndOwners, chain }
-    let helper
-    if (ibcChains.includes(chain)) {
-      helper = helpers.cosmos
-    } else if(helpers[chain]) {
-      helper = helpers[chain]
-
-      switch(chain) {
-        case 'solana': exportObj[chain] = { tvl: async () => helper.sumTokens2({...optionsObj, solOwners: owners, }) }; return;
-        case 'eos': exportObj[chain] = { tvl: async () => helper.get_account_tvl(owners, tokens, 'eos') }; return;
-        case 'tezos': optionsObj.includeTezos = true; break;
-      }
-    }
-
-    if (helper) {
-      exportObj[chain] = { tvl: async () => helper.sumTokens(optionsObj) }
-    } else {
-      exportObj[chain] = { tvl: sumTokensExport(optionsObj) }
-    }
-
+    const options = { ...config[chain], owners, tokens, chain }
+    if (chain === 'solana')  options.solOwners = owners
+    exportObj[chain] = { tvl: sumTokensExport(options) }
   })
+  if (config.bep2) {
+    const bscTvl = exportObj.bsc.tvl
+    exportObj.bsc.tvl = sdk.util.sumChainTvls([
+      bscTvl, sumTokensExport({ chain: 'bep2', ...config.bep2 })
+    ])
+  }
   return exportObj
-}
-
-function getChainTvl(chain, config) {
-  let { addresses, geckoId, noParallel = false, owners, } = config[chain]
-  if (!addresses && owners && owners.length) {
-    addresses = owners
-  }
-  if (chain === 'bitcoin') {
-    geckoId = 'bitcoin'
-    noParallel = true
-  } else if (chain === 'elrond') {
-    geckoId = 'elrond-erd-2'
-  }
-  return async () => {
-    let balance = 0
-    if (noParallel) {
-      for (const account of addresses)
-        balance += await getBalance(chain, account)
-    } else {
-      balance = (await Promise.all(addresses.map(i => getBalance(chain, i)))).reduce((a, i) => a + i, 0)
-    }
-    return {
-      [geckoId]: balance
-    }
-  }
 }
 
 module.exports = {
   cexExports,
-  defaultTokens,
-  getChainTvl,
 }

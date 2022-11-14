@@ -77,14 +77,12 @@ const config = {
   fantom: {
     owners: ['0xed9eef56e64a8e779cfae9ddedb25d11ba2b2425']
   },
-/*
   litecoin: {
     owners: [
       'LXTQdps2Pf83WdAXMinboiqLsEjSWrwJCD',
       'LNSFU7hmF6GP2AFdcrCgd4QvFimvspviSs'
     ]
   },
-*/
   near: {
     owners: [
       '383e50ea1a754ed3acd0d59116f221add87adb82559f31ca6d377f058fe83375',
