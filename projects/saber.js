@@ -9,7 +9,15 @@ async function tvl() {
     "https://registry.saber.so/data/llama.mainnet.json"
   );
 
-  const tokenAccounts = saberPools.map(i => ([i.reserveA, i.reserveB])).flat()
+  const tokenAccounts = saberPools.map(i => {
+    // filter out cashio dollars
+    const res = []
+    if (i.tokenACoingecko !== 'cashio-dollar')
+      res.push(i.reserveA)
+    if (i.tokenBCoingecko !== 'cashio-dollar')
+      res.push(i.reserveB)
+    return res
+  }).flat()
   return sumTokens2({ tokenAccounts })
 }
 
