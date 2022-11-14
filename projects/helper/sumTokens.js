@@ -17,6 +17,7 @@ const helpers = {
   "near":require("./near"),
   "bitcoin":require("./bitcoin"),
   "litecoin":require("./litecoin"),
+  "polkadot":require("./polkadot"),
 }
 
 const geckoMapping = {

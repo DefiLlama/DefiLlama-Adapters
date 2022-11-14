@@ -89,15 +89,13 @@ const config = {
       '965c8b57b7f36fe9a40ce6188d444ca78708e4d83843b108f7f53d0fe5332076',
     ]
   },
-/*
   polkadot: {
     owners: [
       '12T1tgaYZzEkFpnPvyqttmPRJxbGbR4uDx49cvZR5SRF8QDu',
-      '1UJSCYLh44UYhkm1WwXAwT2W8nirTD74VzPsdhfsstY8S3u',
+      // '1UJSCYLh44UYhkm1WwXAwT2W8nirTD74VzPsdhfsstY8S3u',
       '13AE11jLvxcxsjqaSoWFXCTGUfbjXb1gmZTY8x3TXJzWutmf'
     ]
   },
-*/
   solana: {
     owners: [
       'FxteHmLwG9nk1eL4pjNve3Eub2goGkkz6g6TbvdmW46a', //Solana hot wallet
