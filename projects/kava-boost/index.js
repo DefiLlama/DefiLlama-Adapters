@@ -29,9 +29,9 @@ function generic(ticker) {
       return ["kava", 6];
     case "erc20/multichain/usdc":
       return ["usd-coin", 6];
-      case "erc20/multichain/usdt":
+    case "erc20/multichain/usdt":
       return ["tether", 6];
-      case "erc20/multichain/dai":
+    case "erc20/multichain/dai":
       return ["dai", 18];
   }
 }
