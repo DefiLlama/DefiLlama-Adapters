@@ -1,7 +1,7 @@
 const { get } = require('../helper/http');
 const sdk = require('@defillama/sdk')
 const chain = 'bsc'
-const { sumTokens2 } = require('../helper/unwrapLPs')
+const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 const { PromisePool } = require('@supercharge/promise-pool')
 
 const abis = {
@@ -83,6 +83,8 @@ async function tvl(_, _b, { [chain]: block }) {
     if (lpTokens.includes(token)) return;
     tokensAndOwners.push([token, owner])
   }
+
+  tokensAndOwners.push([nullAddress, '0xfd4afeac39da03a05f61844095a75c4fb7d766da'])
   return sumTokens2({
     chain, block, tokensAndOwners,
   })
