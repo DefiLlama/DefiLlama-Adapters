@@ -32,7 +32,7 @@ function generic(ticker) {
       case "erc20/multichain/usdt":
       return ["tether", 6];
       case "erc20/multichain/dai":
-      return ["usd-coin", 18];
+      return ["dai", 18];
   }
 }
 
