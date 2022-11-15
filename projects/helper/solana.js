@@ -69,6 +69,13 @@ async function getGeckoSolTokens() {
   return tokenSet
 }
 
+async function getSolTokenMap() {
+  const tokenList = await getTokenList()
+  let map = {}
+  tokenList.forEach(i => map[i.address] = i)
+  return map
+}
+
 async function getTokenDecimals(tokens) {
   const calls = tokens => tokens.map((t, i) => ({ jsonrpc: '2.0', id: t, method: 'getTokenSupply', params: [t] }))
   const res = {}
@@ -387,4 +394,6 @@ module.exports = {
   getTokenDecimals,
   getGeckoSolTokens,
   getTokenAccountBalances,
+  getTokenList,
+  getSolTokenMap,
 };
