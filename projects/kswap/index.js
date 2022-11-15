@@ -1,13 +1,4 @@
-const { calculateUniTvl } = require("../helper/calculateUniTvl");
+const { uniTvlExport } = require('../helper/unknownTokens')
+const factory = '0xEFD3ad14E5cF09b0EbE435756337fb2e9D10Dc1a' // v2 factory address
 
-const factory = "0xEFD3ad14E5cF09b0EbE435756337fb2e9D10Dc1a";
-
-async function tvl (timestamp, block, chainBlocks) {
-  return await calculateUniTvl(addr=>`kava:${addr}`, chainBlocks.kava, "kava", factory, 0, true);
-}
-
-module.exports = {
-  kava: {
-    tvl,
-  }
-}
+module.exports = uniTvlExport('kava', factory)
