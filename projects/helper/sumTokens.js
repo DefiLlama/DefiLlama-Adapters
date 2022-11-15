@@ -32,6 +32,7 @@ async function getBalance(chain, account) {
     case 'elrond':
       return (await get(`https://gateway.elrond.com/address/${account}`)).data.account.balance / 1e18
     case 'bep2':
+      // info: https://docs.bnbchain.org/api-swagger/index.html
       const balObject = (await get(`https://dex.binance.org/api/v1/account/${account}`)).balances.find(i => i.symbol === 'BNB')
       return +(balObject?.free ?? 0)
     default: throw new Error('Unsupported chain')

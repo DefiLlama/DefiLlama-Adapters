@@ -61,8 +61,11 @@ module.exports = {
   ethereum: {
     tvl: ethTvl,
     staking: staking(CONTRACT_FOR_STAKING, LON_TOKEN),
-    pool2: (_, block) => sumTokens2({ tokensAndOwners: STAGES_STAKING_CONTRACTS, block, }),
-    treasury: (_, block) => sumTokens2({ tokensAndOwners:[ [WETH, MULTISIG_ONE]], block, }),
+    pool2: (_, block) => sumTokens2({ tokensAndOwners: STAGES_STAKING_CONTRACTS, block, resolveLP: true }),
+    treasury: (_, block) => sumTokens2({ owner: MULTISIG_ONE, tokens: [
+      '0xdac17f958d2ee523a2206206994597c13d831ec7',
+      '0x55d31f68975e446a40a2d02ffa4b0e1bfb233c2f',
+    ], block, }),
   },
   
 };
