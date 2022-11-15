@@ -1,5 +1,3 @@
-const { get } = require('./helper/http')
-const { toUSDTBalances } = require('./helper/balances')
 const { staking } = require('./helper/staking')
 
 const wooPPConfig = {
@@ -67,35 +65,11 @@ const chainConfig = {
 	}
 }
 
-const moduleExports = {}
-
 Object.keys(chainConfig).forEach(chain => {
 	const wooPPTokens = wooPPConfig[chain]
 	const { wooPPContract, woo, stakingContract } = chainConfig[chain]
-	moduleExports[chain] = {
+	module.exports[chain] = {
 		staking: staking(stakingContract, woo, chain),
 		tvl: staking(wooPPContract, wooPPTokens, chain),
-		pool2: fetchVaultTVL(chain),
 	}
 })
-
-function fetchVaultTVL(network) {
-	return async () => {
-		let data = await get('https://fi-api.woo.org/yield?network=' + network)
-		// data = Object.values(data.data.auto_compounding).filter(data => {
-		// 	const isWooLP = /LP/i.test(data.symbol) && /WOO/i.test(data.symbol)
-		// 	return pool2 ? isWooLP : !isWooLP
-		// })
-		// let tvl = 0
-		// data.forEach(item => {
-		// 	tvl += +item.tvl / 10 ** item.decimals
-		// })
-		const tvl = data.data.total_deposit / 1e18
-		return toUSDTBalances(tvl)
-	}
-}
-
-module.exports = {
-	timetravel: false,
-	...moduleExports,
-}
