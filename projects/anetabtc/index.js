@@ -1,7 +1,23 @@
 const { get } = require('../helper/http')
 const { getAssets } = require('../helper/cardano/blockfrost')
 
+let tokenPrice
+const DAY = 24 * 60 * 60 * 1000
+const aDayAgo = new Date() - DAY
+
+async function getTokenPrice() {
+  if (!tokenPrice) tokenPrice = _getTokenPrice()
+  return tokenPrice
+
+  async function _getTokenPrice() {
+    const data = await get('https://api.ergodex.io/v1/amm/markets?from='+aDayAgo)
+    const priceObj = data.find(i => i.quoteSymbol === 'NETA' && i.baseSymbol === 'ERG')
+    return 1/priceObj.lastPrice
+  }
+}
+
 module.exports = {
+  misrepresentedTokens: true,
   timetravel: false,
   cardano: {
     tvl: () => ({}),
@@ -9,7 +25,7 @@ module.exports = {
       const data = await getAssets('addr1w8p79rekquuw5kmdg4z36y9gpnm88k5huddwqluk9mjjeqgc3xmss')
       const balance = data.find(i => i.unit === 'b34b3ea80060ace9427bda98690a73d33840e27aaa8d6edb7f0c757a634e455441').quantity
       return {
-        cneta: +balance
+        ergo: +balance * (await getTokenPrice())
       }
     }
   },
@@ -19,7 +35,7 @@ module.exports = {
       const data = await get(api)
       const tokenData = data.tokens.find(i => i.tokenId === '472c3d4ecaa08fb7392ff041ee2e6af75f4a558810a74b28600549d5392810e8')
       return {
-        cneta: tokenData.amount/(10 ** tokenData.decimals)
+        ergo: tokenData.amount * (await getTokenPrice())/(10 ** tokenData.decimals)
       }
     }
   }
