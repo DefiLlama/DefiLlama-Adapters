@@ -23,9 +23,28 @@ async function tvl(timestamp, ethBlock, chainBlocks){
         sdk.util.sumSingleBalance(bals, `arbitrum:${asset.output}`, totalAssets[i].output)
         return bals;
     }, {})
+    const userAccounts = (await sdk.api.abi.call({
+        block, chain,
+        target: "0x17b07cfbab33c0024040e7c299f8048f4a49679b",
+        abi: {"inputs":[],"name":"getAllAccounts","outputs":[{"internalType":"address[]","name":"","type":"address[]"}],"stateMutability":"view","type":"function"}
+    })).output
+    const equity = (await sdk.api.abi.multiCall({
+        block, chain,
+        calls: userAccounts.map(t=>({target:"0xc0ac97A0eA320Aa1E32e9DEd16fb580Ef3C078Da", params: [t]})),
+        abi: {"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"getBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+    })).output
+    const borrows = (await sdk.api.abi.multiCall({
+        block, chain,
+        calls: userAccounts.map(t=>({target:"0xc0ac97A0eA320Aa1E32e9DEd16fb580Ef3C078Da", params: [t]})),
+        abi: {"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"getBorrows","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+    })).output
+    for(let i=0; i<equity.length; i++){
+        sdk.util.sumSingleBalance(balances, "0xdac17f958d2ee523a2206206994597c13d831ec7", (equity[i].output-borrows[i].output)/1e12)
+    }
     return balances
 }
 
 module.exports={
+    misrepresentedTokens: true,
     arbitrum:{tvl}
 }
