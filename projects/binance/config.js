@@ -91,23 +91,6 @@ const assetList = [
   ["BNB", "ETH", "0xf977814e90da44bfa03b6295a0616a897441acec"]
 ]
 
-const tokenMapping = {
-  ETH: {
-    USDC: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-    USDT: '0xdac17f958d2ee523a2206206994597c13d831ec7',
-    BUSD: '0x4fabb145d64652a948d72533023f6e7a623c7c53',
-    BNB: '0xB8c77482e45F1F44dE1745F52C74426C631bDD52',
-    ETH: '0x0000000000000000000000000000000000000000',
-  },
-  BEP20: {
-    BNB: '0x0000000000000000000000000000000000000000',
-  },
-  TRX: {
-    USDT: 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',
-    USDC: 'TEkxiTehnzSmSe2XqrBj4w32RUN966rdz8',
-  }
-}
-
 function getAddresses(chain) {
   return assetList.filter(i => i[1] === chain).map(i => i[2])
 }
@@ -129,7 +112,7 @@ module.exports = {
   },
   bep2: {
     geckoId: 'binancecoin',
-    addresses: getAddresses('BEP2'),
+    owners: getAddresses('BEP2'),
   },
   tron: {
     owners: getOwners('TRX'),

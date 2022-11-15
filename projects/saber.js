@@ -1,4 +1,4 @@
-const { sumTokens2 } = require("./helper/solana");
+const { sumTokens2, getGeckoSolTokens, getSolTokenMap } = require("./helper/solana");
 
 // The data here comes directly from
 // https://registry.saber.so/data/llama.mainnet.json
@@ -8,8 +8,24 @@ async function tvl() {
   const { data: saberPools } = await utils.fetchURL(
     "https://registry.saber.so/data/llama.mainnet.json"
   );
+  const whitelistedTokens = await getGeckoSolTokens()
+  const tokenMap = await getSolTokenMap()
 
-  const tokenAccounts = saberPools.map(i => ([i.reserveA, i.reserveB])).flat()
+  function isValidToken(token) {
+    // if (!whitelistedTokens.has(token))  return false
+    const isSaberToken = /saber/i.test(tokenMap[token]?.name ?? '')
+    return !isSaberToken
+  }
+
+  const tokenAccounts = saberPools.map(i => {
+    // filter out cashio dollars
+    const res = []
+    if (isValidToken(i.tokenA))
+      res.push(i.reserveA)
+    if (isValidToken(i.tokenB))
+      res.push(i.reserveB)
+    return res
+  }).flat()
   return sumTokens2({ tokenAccounts })
 }
 
