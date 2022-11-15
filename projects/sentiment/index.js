@@ -39,7 +39,7 @@ async function tvl(timestamp, ethBlock, chainBlocks){
         abi: {"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"getBorrows","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
     })).output
     for(let i=0; i<equity.length; i++){
-        sdk.util.sumSingleBalance(balances, "0xdac17f958d2ee523a2206206994597c13d831ec7", (equity[i].output-borrows[i].output)/1e12)
+        sdk.util.sumSingleBalance(balances, "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", equity[i].output-borrows[i].output)
     }
     return balances
 }
