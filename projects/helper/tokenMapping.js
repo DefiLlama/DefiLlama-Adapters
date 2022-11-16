@@ -561,6 +561,9 @@ const fixBalancesTokens = {
   arbitrum: {
     "0x93C15cd7DE26f07265f0272E0b831C5D7fAb174f": { coingeckoId: "liquid-finance", decimals: 18, },
   },
+  cardano: {
+    "ADA": { coingeckoId: "cardano", decimals: 0, },
+  },
   functionx: {
     [nullAddress]: { coingeckoId: "fx-coin", decimals: 18 },
     "0x80b5a32E4F032B2a058b4F29EC95EEfEEB87aDcd": { coingeckoId: "fx-coin", decimals: 18, },
