@@ -87,14 +87,25 @@ const defaultTokens = {
     nullAddress,
     '0xff970a61a04b1ca14834a43f5de4533ebddb5cc8', // USDC
     '0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9', // USDT
+    '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1', // DAI
   ],
   avax: [
     nullAddress,
     '0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7', // USDT
+    '0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E', // USDC
+    '0xd586E7F844cEa2F87f50152665BCbc2C279D8d70', // DAI
   ],
   near: [
     'usdt.tether-token.near',
   ],
+  optimism: [
+    nullAddress,
+    '0x4200000000000000000000000000000000000042', //OP
+    '0x94b008aa00579c1307b0ef2c499ad98a8ce58e58',  //USDT
+    '0x7F5c764cBc14f9669B88837ca1490cCa17c31607',  //USDC
+    '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1' // DAI
+
+  ]
 }
 
 function cexExports(config) {
