@@ -41,6 +41,9 @@ const config = {
   arbitrum: {
     owners: ['0xf89d7b9c864f589bbF53a82105107622B35EaA40']
   },
+  avax: {
+    owners: ['0xf89d7b9c864f589bbF53a82105107622B35EaA40']
+  }
   // we are missing ripple network
 }
 
