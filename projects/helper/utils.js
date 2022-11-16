@@ -318,12 +318,6 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
   console.table(logObj)
 }
 
-async function getRippleBalance(account) {
-  const body = { "method": "account_info", "params": [{ account }] }
-  const res = await http.post('https://s1.ripple.com:51234', body)
-  return res.result.account_data.Balance / 1e6
-}
-
 module.exports = {
   DEBUG_MODE,
   log,
@@ -343,7 +337,6 @@ module.exports = {
   debugBalances,
   stripTokenHeader,
   diplayUnknownTable,
-  getRippleBalance,
   getSymbols,
   getDecimals,
   getParamCalls,
