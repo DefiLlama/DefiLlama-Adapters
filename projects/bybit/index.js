@@ -14,7 +14,8 @@ const config = {
     owners: [
         'bc1q2qqqt87kh33s0er58akh7v9cwjgd83z5smh9rp',
         'bc1q9w4g79ndel72lygvwtqzem67z6uqv4yncvqjz3yn8my9swnwflxsutg4cx',
-        'bc1qjysjfd9t9aspttpjqzv68k0ydpe7pvyd5vlyn37868473lell5tqkz456m'
+        'bc1qjysjfd9t9aspttpjqzv68k0ydpe7pvyd5vlyn37868473lell5tqkz456m',
+        '1GrwDkr33gT6LuumniYjKEGjTLhsL5kmqC'
            ]
   },
   bsc: {
