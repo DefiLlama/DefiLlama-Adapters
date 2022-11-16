@@ -146,8 +146,8 @@ async function getTokenPrices({
     const token1Address = pair.token1Address.toLowerCase()
     const reserveAmounts = reserves[i].output
     pairBalances2.push({
-      token0:token0Address,
-      token1:token1Address,
+      token0: token0Address,
+      token1: token1Address,
       token0Bal: reserveAmounts[0],
       token1Bal: reserveAmounts[1],
     })
@@ -377,7 +377,7 @@ function getUniTVL({ chain = 'ethereum', coreAssets = [], blacklist = [], whitel
   }
   const isVersion2 = version === '2'
   if (fetchInChunks && isVersion2) {
-    throw new Error ('Not yet supported!')
+    throw new Error('Not yet supported!')
   }
 
   return async (ts, _block, { [chain]: block }) => {
@@ -592,7 +592,9 @@ function staking({ tokensAndOwners = [],
   }
 }
 
-function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = [], lps = [], nativeToken, poolInfoABI = masterchefAbi.poolInfo, poolLengthAbi = masterchefAbi.poolLength, getToken = output => output.lpToken, blacklistedTokens = [], useDefaultCoreAssets = false, }) {
+function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = [], lps = [], nativeToken, poolInfoABI = masterchefAbi.poolInfo, poolLengthAbi = masterchefAbi.poolLength, getToken = output => output.lpToken, blacklistedTokens = [], useDefaultCoreAssets = false,
+  getBalance,
+}) {
   if (!coreAssets.length && useDefaultCoreAssets)
     coreAssets = getCoreAssets(chain)
   let allTvl
@@ -628,7 +630,13 @@ function masterchefExports({ chain, masterchef, coreAssets = [], nativeTokens = 
 
       const tokens = data.map(({ output }) => getToken(output).toLowerCase())
       const tokenLPs = [...tokens].filter(i => !nativeTokens.includes(i))
-      const tempBalances = await sumTokens2({ chain, block, owner: masterchef, tokens, transformAddress: a => a, blacklistedTokens })
+      let tempBalances = {}
+      if (getBalance) {
+        data.forEach(({ output }) => {
+          sdk.util.sumSingleBalance(tempBalances, getToken(output).toLowerCase(), getBalance(output))
+        })
+      } else
+        tempBalances = await sumTokens2({ chain, block, owner: masterchef, tokens, transformAddress: a => a, blacklistedTokens })
       nativeTokens.forEach(nativeToken => {
         if (tempBalances[nativeToken]) sdk.util.sumSingleBalance(balances.staking, transform(nativeToken), tempBalances[nativeToken])
         delete tempBalances[nativeToken]
@@ -737,7 +745,7 @@ async function yieldHelper({ chain = 'ethereum', block, coreAssets = [], blackli
 function uniTvlExport(chain, factory) {
   return {
     misrepresentedTokens: true,
-    [chain]: { tvl: getUniTVL({ chain, factory, useDefaultCoreAssets: true })}
+    [chain]: { tvl: getUniTVL({ chain, factory, useDefaultCoreAssets: true }) }
   }
 }
 

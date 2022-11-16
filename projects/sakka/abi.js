@@ -50,15 +50,4 @@ module.exports = {
         "stateMutability": "view",
         "type": "function"
     },
-    poolLength: {
-        "inputs": [],
-        "name": "poolLength",
-        "outputs": [{
-            "internalType": "uint256",
-            "name": "",
-            "type": "uint256"
-        }],
-        "stateMutability": "view",
-        "type": "function"
-    },
 }
