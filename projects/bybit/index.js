@@ -43,8 +43,16 @@ const config = {
   },
   avax: {
     owners: ['0xf89d7b9c864f589bbF53a82105107622B35EaA40']
-  }
+  },
   // we are missing ripple network
+  /*
+  ripple: {
+    owners: [
+        'rMvCasZ9cohYrSZRNYPTZfoaaSUQMfgQ8G',
+        'rwBHqnCgNRnk3Kyoc6zon6Wt4Wujj3HNGe',
+    ]
+  }
+  */
 }
 
 module.exports = cexExports(config)
