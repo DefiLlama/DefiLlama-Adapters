@@ -49,6 +49,7 @@ const defaultTokens = {
     '0xa2cd3d43c775978a96bdbf12d733d5a1ed94fb18',  //XCN
     '0xE66747a101bFF2dBA3697199DCcE5b743b454759',  //GT
     '0x3883f5e181fccaF8410FA61e12b59BAd963fb645',  //THETA
+    '0x1a4b46696b2bb4794eb3d4c26f1c55f9170fa4c5', //BITDAO
 
   ],
   tron: [
