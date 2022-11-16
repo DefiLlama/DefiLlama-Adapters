@@ -12,15 +12,15 @@ const config = {
   },
   bitcoin: {
     owners: [
-        '31GrwDkr33gT6LuumniYjKEGjTLhsL5kmqC',
         'bc1q2qqqt87kh33s0er58akh7v9cwjgd83z5smh9rp',
         'bc1q9w4g79ndel72lygvwtqzem67z6uqv4yncvqjz3yn8my9swnwflxsutg4cx',
         'bc1qjysjfd9t9aspttpjqzv68k0ydpe7pvyd5vlyn37868473lell5tqkz456m'
            ]
   },
-  binance: {
+  bsc: {
     owners: [
-        ['0xee5B5B923fFcE93A870B3104b7CA09c3db80047A',]
+        '0xee5B5B923fFcE93A870B3104b7CA09c3db80047A',
+        '0xf89d7b9c864f589bbf53a82105107622b35eaa40',
     ]
   },
   tron: {
@@ -34,6 +34,9 @@ const config = {
         'TXRRpT4BZ3dB5ShUQew2HXv1iK3Gg4MM9j',
         'TYgFxMvvu2VHFJnxQf8fh1qVAeMfXZJZ3K',
     ]
+  },
+  polygon: {
+    owners: ['0xf89d7b9c864f589bbf53a82105107622b35eaa40']
   }
   // we are missing ripple network
 }
