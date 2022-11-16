@@ -1,6 +1,6 @@
 const { ibcChains, getUniqueAddresses} = require('./tokenMapping')
 const { log,  } = require('./utils')
-const { get } = require('./http')
+const { get, post, } = require('./http')
 const { sumTokens2: sumTokensEVM, } = require('./unwrapLPs')
 const sdk = require('@defillama/sdk')
 
@@ -23,12 +23,14 @@ const helpers = {
 const geckoMapping = {
   bep2: 'binancecoin',
   elrond: 'elrond-erd-2',
+  ripple: 'ripple',
 }
 
 const specialChains = Object.keys(geckoMapping)
 
 async function getBalance(chain, account) {
   switch (chain) {
+    case 'ripple': return getRippleBalance(account)
     case 'elrond':
       return (await get(`https://gateway.elrond.com/address/${account}`)).data.account.balance / 1e18
     case 'bep2':
@@ -92,6 +94,12 @@ async function sumTokens(options) {
     toa = toa.map(i => i.join('¤'))
     return getUniqueAddresses(toa, chain).map(i => i.split('¤'))
   }
+}
+
+async function getRippleBalance(account) {
+  const body = { "method": "account_info", "params": [{ account }] }
+  const res = await post('https://s1.ripple.com:51234', body)
+  return res.result.account_data.Balance / 1e6
 }
 
 module.exports = {
