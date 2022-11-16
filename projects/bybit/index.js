@@ -11,14 +11,16 @@ const config = {
     ],
   },
   bitcoin: {
-    owners: ['31GrwDkr33gT6LuumniYjKEGjTLhsL5kmqC']
+    owners: [
+        '31GrwDkr33gT6LuumniYjKEGjTLhsL5kmqC',
+        'bc1q2qqqt87kh33s0er58akh7v9cwjgd83z5smh9rp',
+        'bc1q9w4g79ndel72lygvwtqzem67z6uqv4yncvqjz3yn8my9swnwflxsutg4cx',
+        'bc1qjysjfd9t9aspttpjqzv68k0ydpe7pvyd5vlyn37868473lell5tqkz456m'
+           ]
   },
   binance: {
     owners: [
-        '0xee5B5B923fFcE93A870B3104b7CA09c3db80047A',
-        'bc1q2qqqt87kh33s0er58akh7v9cwjgd83z5smh9rp',
-        'bc1q9w4g79ndel72lygvwtqzem67z6uqv4yncvqjz3yn8my9swnwflxsutg4cx',
-        'bc1qjysjfd9t9aspttpjqzv68k0ydpe7pvyd5vlyn37868473lell5tqkz456m',
+        ['0xee5B5B923fFcE93A870B3104b7CA09c3db80047A',]
     ]
   },
   tron: {
@@ -31,7 +33,6 @@ const config = {
         'TU4vEruvZwLLkSfV9bNw12EJTPvNr7Pvaa',
         'TXRRpT4BZ3dB5ShUQew2HXv1iK3Gg4MM9j',
         'TYgFxMvvu2VHFJnxQf8fh1qVAeMfXZJZ3K',
-
     ]
   }
   // we are missing ripple network
