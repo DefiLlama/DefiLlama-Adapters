@@ -37,7 +37,10 @@ const config = {
   },
   polygon: {
     owners: ['0xf89d7b9c864f589bbf53a82105107622b35eaa40']
-  }
+  },
+  arbitrum: {
+    owners: ['0xf89d7b9c864f589bbF53a82105107622B35EaA40']
+  },
   // we are missing ripple network
 }
 
