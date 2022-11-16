@@ -50,6 +50,8 @@ const defaultTokens = {
     '0xE66747a101bFF2dBA3697199DCcE5b743b454759',  //GT
     '0x3883f5e181fccaF8410FA61e12b59BAd963fb645',  //THETA
     '0x1a4b46696b2bb4794eb3d4c26f1c55f9170fa4c5', //BITDAO
+    '0x6f259637dcd74c767781e37bc6133cd6a68aa161',  //HT
+    '0xf34960d9d60be18cC1D5Afc1A6F012A723a28811', //KCS
 
   ],
   tron: [
@@ -104,8 +106,7 @@ const defaultTokens = {
     '0x94b008aa00579c1307b0ef2c499ad98a8ce58e58',  //USDT
     '0x7F5c764cBc14f9669B88837ca1490cCa17c31607',  //USDC
     '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1' // DAI
-
-  ]
+  ],
 }
 
 function cexExports(config) {
