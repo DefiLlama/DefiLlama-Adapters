@@ -1,6 +1,6 @@
 const http = require('../http')
 const sdk = require('@defillama/sdk')
-const { getFixBalancesSync, } = require('./portedTokens')
+const { getFixBalancesSync, } = require('../portedTokens')
 const { default: BigNumber } = require('bignumber.js')
 const { PromisePool } = require('@supercharge/promise-pool')
 const { log } = require('../utils')

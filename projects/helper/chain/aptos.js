@@ -2,7 +2,7 @@
 const sdk = require('@defillama/sdk')
 
 const http = require('../http')
-const { fixBalancesTokens } = require('./tokenMapping')
+const { fixBalancesTokens } = require('../tokenMapping')
 const { transformBalances } = require('../portedTokens')
 const { log, getUniqueAddresses } = require('../utils')
 
