@@ -12,8 +12,8 @@ const nullAddress = '0x0000000000000000000000000000000000000000'
 // gravity bridge for IBC: https://api.mintscan.io/v2/assets/gravity-bridge
 
 const unsupportedGeckoChains = ['aptos', 'terra2', 'terra', 'kujira']
-const ibcChains = ['terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos', ]
-const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple', ]
+const ibcChains = ['terra2', 'crescent', 'osmosis', 'kujira', 'stargaze', 'juno', 'injective', 'cosmos',]
+const caseSensitiveChains = [...ibcChains, 'solana', 'tezos', 'algorand', 'aptos', 'near', 'bitcoin', 'waves', 'tron', 'litecoin', 'polkadot', 'ripple',]
 
 const tokens = {
   solana: 'solana:So11111111111111111111111111111111111111112',
@@ -658,6 +658,7 @@ const fixBalancesTokens = {
     "0xea589e93ff18b1a1f1e9bac7ef3e86ab62addc79": { coingeckoId: "viper", decimals: 18, },
   },
   bsc: {
+    "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": { coingeckoId: "binancecoin", decimals: 18, },
     "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c": { coingeckoId: "binancecoin", decimals: 18, },
     "0xEa7A82E0Bc636667AB5c65623cd1438370620c3E": { coingeckoId: "binancecoin", decimals: 18, },
     "0x8b04E56A8cd5f4D465b784ccf564899F30Aaf88C": { coingeckoId: "anchorust", decimals: 6, },
