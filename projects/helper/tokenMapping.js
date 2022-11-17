@@ -564,6 +564,9 @@ const fixBalancesTokens = {
   cardano: {
     "ADA": { coingeckoId: "cardano", decimals: 0, },
   },
+  velas: {
+    "0x3611Fbfb06ffBcEf9Afb210f6Ace86742e6c14a4": { coingeckoId: "cardano", decimals: 6, },
+  },
   functionx: {
     [nullAddress]: { coingeckoId: "fx-coin", decimals: 18 },
     "0x80b5a32E4F032B2a058b4F29EC95EEfEEB87aDcd": { coingeckoId: "fx-coin", decimals: 18, },
