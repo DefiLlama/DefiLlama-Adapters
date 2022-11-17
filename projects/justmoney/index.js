@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk')
-const { getTokenBalance } = require('../helper/tron')
+const { getTokenBalance } = require('../helper/chain/tron')
 const { getUniTVL, } = require('../helper/unknownTokens')
 
 const tokens = {

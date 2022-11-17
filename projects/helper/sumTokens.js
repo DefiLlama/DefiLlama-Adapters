@@ -5,20 +5,20 @@ const { sumTokens2: sumTokensEVM, } = require('./unwrapLPs')
 const sdk = require('@defillama/sdk')
 
 const helpers = {
-  "tron": require("./tron"),
-  "eos": require("./eos"),
-  "cardano":require("./cardano"),
-  "algorand":require("./algorand"),
-  "cosmos":require("./cosmos"),
+  "tron": require("./chain/tron"),
+  "eos": require("./chain/eos"),
+  "cardano":require("./chain/cardano"),
+  "algorand":require("./chain/algorand"),
+  "cosmos":require("./chain/cosmos"),
   "solana":require("./solana"),
-  "aptos":require("./aptos"),
-  "tezos":require("./tezos"),
-  "zilliqa":require("./zilliqa"),
-  "near":require("./near"),
-  "bitcoin":require("./bitcoin"),
-  "litecoin":require("./litecoin"),
-  "polkadot":require("./polkadot"),
-  "hedera":require("./hbar"),
+  "aptos":require("./chain/aptos"),
+  "tezos":require("./chain/tezos"),
+  "zilliqa":require("./chain/zilliqa"),
+  "near":require("./chain/near"),
+  "bitcoin":require("./chain/bitcoin"),
+  "litecoin":require("./chain/litecoin"),
+  "polkadot":require("./chain/polkadot"),
+  "hedera":require("./chain/hbar"),
 }
 
 const geckoMapping = {

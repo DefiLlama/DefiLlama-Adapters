@@ -2,7 +2,7 @@ const {
   getTokenBalance,
   getTrxBalance,
   unverifiedCall,
-} = require("../helper/tron")
+} = require("../helper/chain/tron")
 
 const stakingWaterContract = "THyHbFrG5wnxdp9Lv7AgwJ4k7Nt1dp2pzj";
 const WATER = "TFMUZn349bztRCCkL2PAmkWfy23Gyn5g5r";

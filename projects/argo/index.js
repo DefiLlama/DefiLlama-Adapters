@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk')
-const { getResources, } = require('../helper/aptos')
+const { getResources, } = require('../helper/chain/aptos')
 const { transformBalances } = require('../helper/portedTokens')
 
 module.exports = {

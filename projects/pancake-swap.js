@@ -2,7 +2,7 @@ const { request, gql } = require("graphql-request");
 const { toUSDTBalances } = require('./helper/balances')
 const { stakings } = require('./helper/staking')
 const { getUniTVL } = require('./helper/unknownTokens')
-const { dexExport } = require('./helper/aptos')
+const { dexExport } = require('./helper/chain/aptos')
 
 
 const graphEndpoint = 'https://bsc.streamingfast.io/subgraphs/name/pancakeswap/exchange-v2'

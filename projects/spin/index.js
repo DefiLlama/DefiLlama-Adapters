@@ -1,4 +1,4 @@
-const { call, view_account, addTokenBalances, sumSingleBalance } = require('../helper/near');
+const { call, view_account, addTokenBalances, sumSingleBalance } = require('../helper/chain/near');
 
 const SPOT_PROJECT_CONTRACT = 'spot.spin-fi.near';
 const GET_CURRENCIES_METHOD = 'get_currencies';

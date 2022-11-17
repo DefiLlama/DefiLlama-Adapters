@@ -1,9 +1,9 @@
 
 const sdk = require('@defillama/sdk')
 const solana = require('../helper/solana')
-const terra = require('../helper/terra')
+const terra = require('../helper/chain/terra')
 const { staking } = require('../helper/staking');
-const near = require('../helper/near');
+const near = require('../helper/chain/near');
 const { default: BigNumber } = require('bignumber.js');
 const { sumTokens2, nullAddress } = require('../helper/unwrapLPs');
 const NATIVE_ADDRESS = nullAddress;

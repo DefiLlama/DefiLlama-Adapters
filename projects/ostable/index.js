@@ -10,7 +10,7 @@ const {
     fetchOstableExchangeRatesInUSD,
     fetchOstableAssets,
     summingBaseAABalancesToTvl,
-} = require('../helper/obyte')
+} = require('../helper/chain/obyte')
 
 /**
  * Bonding curve autonomous agents that lock in GBYTEs as reserve and issue interest tokens and growth tokens.

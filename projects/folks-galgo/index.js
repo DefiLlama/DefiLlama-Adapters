@@ -1,5 +1,5 @@
 
-const { getAssetInfo } = require("../helper/algorand")
+const { getAssetInfo } = require("../helper/chain/algorand")
 
 const gAlgoAssetId = 793124631
 const gAlgo3Assetd = 694432641

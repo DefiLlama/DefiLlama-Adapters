@@ -1,5 +1,5 @@
 const axios = require('axios')
-const { sumTokens2, } = require('../helper/tezos')
+const { sumTokens2, } = require('../helper/chain/tezos')
 
 async function tvl() {
   return sumTokens2({ owners: await getDexes(), includeTezos: true, })

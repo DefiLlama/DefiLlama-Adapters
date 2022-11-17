@@ -1,4 +1,4 @@
-const { dexExport } = require('../helper/aptos')
+const { dexExport } = require('../helper/chain/aptos')
 
 module.exports = dexExport({
   account: '0xec42a352cc65eca17a9fa85d0fc602295897ed6b8b8af6a6c79ef490eb8f9eba',

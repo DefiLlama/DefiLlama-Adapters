@@ -1,4 +1,4 @@
-const { lookupAccountByID, lookupApplications } = require("../helper/algorand");
+const { lookupAccountByID, lookupApplications } = require("../helper/chain/algorand");
 const {
   oracleAppId,
   oracleAdapterAppId,

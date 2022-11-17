@@ -1,5 +1,5 @@
 
-const { getAppGlobalState } = require("../helper/algorand")
+const { getAppGlobalState } = require("../helper/chain/algorand")
 
 const vAlgoAssetId = 465814318
 const vAlgo2Assetd = 879935316

@@ -1,4 +1,4 @@
-const { queryContractStore } = require('../helper/terra')
+const { queryContractStore } = require('../helper/chain/terra')
 const { log } = require('../helper/utils')
 
 const TERRA_MANAGER = 'terra1ajkmy2c0g84seh66apv9x6xt6kd3ag80jmcvtz'
