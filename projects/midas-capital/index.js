@@ -33,6 +33,11 @@ const pools = {
       "0xF1ABd146B4620D2AE67F34EA39532367F73bbbd2", // MIMO
     ],
   },
+  arbitrum: {
+    pools: [
+      "0x185Fa7d0e7d8A4FE7E09eB9df68B549c660e1116", // Risedle
+    ]
+  }
 };
 
 function getTvl(chain) {
