@@ -20,8 +20,8 @@ async function tvl() {
     };
 
     const response = await axios(options);
-    const nudes_amount = response.data.result.stack[0].value;
-    return {ghostmarket: parseFloat(nudes_amount / 10 ** 8)};
+    const gm_amount = response.data.result.stack[0].value;
+    return {ghostmarket: parseFloat(gm_amount / 10 ** 8)};
 }
 
 module.exports = {
