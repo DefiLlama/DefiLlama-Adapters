@@ -1,42 +1,19 @@
 const sdk = require("@defillama/sdk")
 const abi = require('./abi.json');
+const { sumTokens2, nullAddress } = require('../helper/unwrapLPs')
 
 const aztecRollupProcessor = '0x737901bea3eeb88459df9ef1BE8fF3Ae1B42A2ba'
-// "getSupportedAssets" "getTotalDeposited" "getTotalPendingDeposit" "getTotalWithdrawn" "getTotalFees" 
-const weth = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2' 
+const aztecConnect = '0xFF1F2B4ADb9dF6FC8eAFecDcbF96A2B351680455'
+const connectAbi = {"inputs":[],"name":"getSupportedAssets","outputs":[{"internalType":"address[]","name":"","type":"address[]"},{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"}
 
-async function tvl(timestamp, ethBlock, chainBlocks) { 
-    const balances = {}
-  
+async function tvl(_, block) { 
     // Get aztec supported assets
-    const { output: supportedAssets } = await sdk.api.abi.call({
-        abi: abi['getSupportedAssets'],
-        target: aztecRollupProcessor, 
-        block: ethBlock, 
-        chain: 'ethereum' 
-    })
-
-    // Get eth balance
-    const { output: ethBalance } = await sdk.api.eth.getBalance({
-        target: aztecRollupProcessor,
-        block: ethBlock, 
-        chain: 'ethereum' 
-    });
-    sdk.util.sumSingleBalance( balances, weth, ethBalance );
-    
-    // Get supported assets balances
-    const assetsBalances = await sdk.api.abi.multiCall({
-        abi: 'erc20:balanceOf',
-        calls: supportedAssets.map( asset => ({
-            params: aztecRollupProcessor,
-            target: asset,
-        })), 
-        block: ethBlock, 
-        chain: 'ethereum' 
-    })
-    sdk.util.sumMultiBalanceOf( balances, assetsBalances, true);
-
-    return balances
+    const { output: supportedAssets } = await sdk.api.abi.call({ target: aztecRollupProcessor, abi: abi['getSupportedAssets'], block, })
+    const tokensAndOwners = ([nullAddress, ...supportedAssets]).map(i => ([i, aztecRollupProcessor]))
+    const { output: [supportedAssetsConnect] } = await sdk.api.abi.call({ target: aztecConnect, abi: connectAbi, block, })
+    tokensAndOwners.push([nullAddress, aztecConnect])
+    supportedAssetsConnect.map(i => tokensAndOwners.push([i, aztecConnect]))
+    return sumTokens2({ tokensAndOwners, block, })
 }
 
 module.exports = {
