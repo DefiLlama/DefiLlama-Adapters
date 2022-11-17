@@ -1,4 +1,4 @@
-const { query, queryContract } = require('../helper/terra')
+const { query, queryContract } = require('../helper/chain/terra')
 const { PromisePool } = require('@supercharge/promise-pool')
 const { transformDexBalances } = require('../helper/portedTokens')
 

@@ -1,6 +1,6 @@
 const { getNetworkInfo, Network } = require('@injectivelabs/networks')
 const { protoObjectToJson, IndexerGrpcSpotApi, IndexerGrpcDerivativesApi } = require('@injectivelabs/sdk-ts')
-const { sliceIntoChunks } = require('../helper/utils')
+const { sliceIntoChunks } = require('../utils')
 let clients = {}
 
 const TYPES = {

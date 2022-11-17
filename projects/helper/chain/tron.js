@@ -2,9 +2,9 @@ const axios = require('axios')
 const BigNumber = require('bignumber.js')
 const ethers = require('ethers')
 const sdk = require('@defillama/sdk')
-const { getUniqueAddresses, } = require('./utils')
-const { get, } = require('./http')
-const { transformBalances, } = require('./portedTokens')
+const { getUniqueAddresses, } = require('../utils')
+const { get, } = require('../http')
+const { transformBalances, } = require('../portedTokens')
 const { toHex } = require('tron-format-address')
 const axiosObj = axios.create({
   baseURL: 'https://api.trongrid.io/',

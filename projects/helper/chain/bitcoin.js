@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk')
-const { get } = require('./http')
+const { get } = require('../http')
 
 const url = addr => 'https://blockstream.info/api/address/'+addr
 

@@ -1,9 +1,9 @@
-const http = require('./http')
+const http = require('../http')
 const sdk = require('@defillama/sdk')
-const { getFixBalancesSync, } = require('./portedTokens')
+const { getFixBalancesSync, } = require('../portedTokens')
 const { default: BigNumber } = require('bignumber.js')
 const { PromisePool } = require('@supercharge/promise-pool')
-const { log } = require('../helper/utils')
+const { log } = require('../utils')
 
 const RPC_ENDPOINT = 'https://api.tzkt.io'
 

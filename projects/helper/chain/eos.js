@@ -1,5 +1,5 @@
 const axios = require('axios')
-const retry = require('../helper/retry')
+const retry = require('../retry')
 
 const RPC_ENDPOINTS = {
     'eos': 'https://eos.greymass.com',

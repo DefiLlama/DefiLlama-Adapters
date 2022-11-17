@@ -1,5 +1,5 @@
 const { toUSDTBalances } = require("../helper/balances");
-const { getAppGlobalState } = require("../helper/algorand");
+const { getAppGlobalState } = require("../helper/chain/algorand");
 
 const {  pools,} = require("./constants");
 const { getPrices } = require("./prices");

@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { default: BigNumber } = require("bignumber.js");
-const { getResources, } = require("../helper/aptos");
+const { getResources, } = require("../helper/chain/aptos");
 const { transformBalances } = require("../helper/portedTokens");
 
 let resourcesCache

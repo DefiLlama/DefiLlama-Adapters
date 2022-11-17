@@ -3,8 +3,8 @@
 const axios = require('axios')
 const { getApplicationAddress } = require('./algorandUtils/address')
 const { RateLimiter } = require("limiter");
-const { fixBalancesTokens } = require('../helper/tokenMapping')
-const { getFixBalancesSync } = require('../helper/portedTokens')
+const { fixBalancesTokens } = require('../tokenMapping')
+const { getFixBalancesSync } = require('../portedTokens')
 const sdk = require('@defillama/sdk');
 const { default: BigNumber } = require('bignumber.js');
 const stateCache = {}
