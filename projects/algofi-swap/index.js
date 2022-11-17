@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk')
 const { get } = require('../helper/http')
-const { getAssetInfo, } = require("../helper/algorand");
+const { getAssetInfo, } = require("../helper/chain/algorand");
 const { transformBalances } = require('../helper/portedTokens')
 
 const chain = 'algorand'

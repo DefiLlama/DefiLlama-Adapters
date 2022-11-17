@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk')
-const { getTokenBalance, getTrxBalance, unverifiedCall } = require('../helper/tron');
+const { getTokenBalance, getTrxBalance, unverifiedCall } = require('../helper/chain/tron');
 
 const pools = [
   {

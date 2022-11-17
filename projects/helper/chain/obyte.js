@@ -1,4 +1,4 @@
-const utils = require('./utils')
+const utils = require('../utils')
 
 /**
  * @param {number} timestamp - unix timestamp in seconds from epoch of the moment in time for which the balances are requested

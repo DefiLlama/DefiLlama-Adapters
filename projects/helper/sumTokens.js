@@ -5,19 +5,20 @@ const { sumTokens2: sumTokensEVM, } = require('./unwrapLPs')
 const sdk = require('@defillama/sdk')
 
 const helpers = {
-  "tron": require("./tron"),
-  "eos": require("./eos"),
-  "cardano":require("./cardano"),
-  "algorand":require("./algorand"),
-  "cosmos":require("./cosmos"),
+  "tron": require("./chain/tron"),
+  "eos": require("./chain/eos"),
+  "cardano":require("./chain/cardano"),
+  "algorand":require("./chain/algorand"),
+  "cosmos":require("./chain/cosmos"),
   "solana":require("./solana"),
-  "aptos":require("./aptos"),
-  "tezos":require("./tezos"),
-  "zilliqa":require("./zilliqa"),
-  "near":require("./near"),
-  "bitcoin":require("./bitcoin"),
-  "litecoin":require("./litecoin"),
-  "polkadot":require("./polkadot"),
+  "aptos":require("./chain/aptos"),
+  "tezos":require("./chain/tezos"),
+  "zilliqa":require("./chain/zilliqa"),
+  "near":require("./chain/near"),
+  "bitcoin":require("./chain/bitcoin"),
+  "litecoin":require("./chain/litecoin"),
+  "polkadot":require("./chain/polkadot"),
+  "hedera":require("./chain/hbar"),
 }
 
 const geckoMapping = {
@@ -44,7 +45,7 @@ async function getBalance(chain, account) {
 function sumTokensExport(options) {
   const {chain} = options
   if (!chain) throw new Error('Missing chain info')
-  return async (_, _b, {[chain]: block}) => sumTokens({ block, ...options})
+  return async (timestamp, _b, {[chain]: block}) => sumTokens({ timestamp, block, ...options})
 }
 
 async function sumTokens(options) {

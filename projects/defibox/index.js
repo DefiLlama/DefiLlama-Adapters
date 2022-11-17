@@ -1,6 +1,6 @@
 const axios = require("axios");
 const utils = require("../helper/utils");
-const {get_account_tvl} = require('../helper/eos')
+const {get_account_tvl} = require('../helper/chain/eos')
 const {lendingMarket} = require("../helper/methodologies")
 
 const eosEndpoint = "https://dapp.defibox.io/api/"

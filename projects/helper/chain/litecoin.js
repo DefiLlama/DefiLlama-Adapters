@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk')
-const { get } = require('./http')
+const { get } = require('../http')
 
 const url = addr => 'https://chainz.cryptoid.info/ltc/api.dws?q=getbalance&a=' + addr
 

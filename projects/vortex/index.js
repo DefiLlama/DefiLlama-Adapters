@@ -1,6 +1,6 @@
 const host = 'https://api.vortex.network/v1/graphql'
 const retry = require('../helper/retry')
-const { sumTokens2, } = require('../helper/tezos')
+const { sumTokens2, } = require('../helper/chain/tezos')
 const { GraphQLClient, gql } = require('graphql-request')
 const half_hour = 30 * 60
 const half_day = 12 * 60 * 60

@@ -1,6 +1,6 @@
 const sdk = require('@defillama/sdk')
 const { log } = require('../helper/utils')
-const { getAppGlobalState, } = require("../helper/algorand")
+const { getAppGlobalState, } = require("../helper/chain/algorand")
 const { getPrices, appDictionary, marketStrings } = require('./utils')
 
 

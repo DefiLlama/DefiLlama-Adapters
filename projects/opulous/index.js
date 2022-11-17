@@ -1,4 +1,4 @@
-const { lookupApplications, } = require("../helper/algorand");
+const { lookupApplications, } = require("../helper/chain/algorand");
 
 async function staking() {
 

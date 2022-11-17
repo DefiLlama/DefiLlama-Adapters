@@ -1,10 +1,10 @@
 
 const sdk = require('@defillama/sdk')
 
-const http = require('./http')
-const { fixBalancesTokens } = require('./tokenMapping')
-const { transformBalances } = require('../helper/portedTokens')
-const { log, getUniqueAddresses } = require('../helper/utils')
+const http = require('../http')
+const { fixBalancesTokens } = require('../tokenMapping')
+const { transformBalances } = require('../portedTokens')
+const { log, getUniqueAddresses } = require('../utils')
 
 const coreTokens = Object.keys(fixBalancesTokens.aptos)
 

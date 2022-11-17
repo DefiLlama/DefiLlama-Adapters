@@ -1,4 +1,4 @@
-const { aQuery } = require('../helper/aptos')
+const { aQuery } = require('../helper/chain/aptos')
 
 module.exports = {
   timetravel: false,

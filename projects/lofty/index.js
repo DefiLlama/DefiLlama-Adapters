@@ -3,7 +3,7 @@ const sdk = require('@defillama/sdk');
 const { toUSDTBalances } = require('../helper/balances');
 const retry = require("async-retry");
 const axios = require("axios");
-const { lookupApplications, } = require("../helper/algorand");
+const { lookupApplications, } = require("../helper/chain/algorand");
 
 const LoftyTVLApi = "https://api.lofty.ai/prod/properties/v2/valuations";
 
