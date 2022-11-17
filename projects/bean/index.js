@@ -3,9 +3,9 @@ const utils = require('../helper/utils')
 const { sumTokens } = require('../helper/unwrapLPs');
 const { unwrapCrvSimple } = require ("./bean-utils.js");
 
-const BEAN_DIA_ADDR = "0xC1E088fC1323b20BCBee9bd1B9fC9546db5624C5";
+const BEANSTALK_CONTRACT_ADDR = "0xC1E088fC1323b20BCBee9bd1B9fC9546db5624C5";
 
-const BEAN_TOKEN_ADDR = "0xdc59ac4fefa32293a95889dc396682858d52e5db";
+const OLD_BEAN_TOKEN_ADDR = "0xdc59ac4fefa32293a95889dc396682858d52e5db";
 const NEW_BEAN_TOKEN_ADDR = "0xBEA0000029AD1c77D3d5D23Ba2D8893dB9d1Efab";
 const BEAN_ETH_ADDR = "0x87898263B6C5BABe34b4ec53F22d98430b91e371";
 
@@ -20,7 +20,7 @@ const BEAN_CRV_POOLS = [
 async function staking0(time, block) {
     const balances = {};
     // add balance of siloed Beans
-    await sumTokens(balances, [[NEW_BEAN_TOKEN_ADDR,BEAN_TOKEN_ADDR, BEAN_DIA_ADDR]], block)
+    await sumTokens(balances, [[NEW_BEAN_TOKEN_ADDR, OLD_BEAN_TOKEN_ADDR, BEANSTALK_CONTRACT_ADDR]], block)
 
     return balances;
 }
@@ -28,7 +28,7 @@ async function staking0(time, block) {
 async function staking1(time, block) {
     const balances = {};
     // add balance of siloed Beans
-    await sumTokens(balances, [[NEW_BEAN_TOKEN_ADDR, BEAN_DIA_ADDR]], block)
+    await sumTokens(balances, [[NEW_BEAN_TOKEN_ADDR, BEANSTALK_CONTRACT_ADDR]], block)
 
     return balances;
 }
@@ -37,7 +37,7 @@ async function pool2(time, block) {
     const balances = {};
 
     // add balance of siloed BEAN:ETH from uniswap pool
-    await sumTokens(balances, [[BEAN_ETH_ADDR, BEAN_DIA_ADDR]], block,)
+    await sumTokens(balances, [[BEAN_ETH_ADDR, BEANSTALK_CONTRACT_ADDR]], block,)
 
     // add balances of all siloed curve pools
     // this is the block when SiloV2Facet with getTotalDeposited() was introduced
@@ -47,11 +47,11 @@ async function pool2(time, block) {
                 abi: 'erc20:balanceOf',
                 chain: 'ethereum',
                 target: pool.addr,
-                params: BEAN_DIA_ADDR,
+                params: BEANSTALK_CONTRACT_ADDR,
                 block: block,
             })).output;
             // skip if there's a balance of 0 to avoid errors when curve pool doesn't exist yet in a block number
-            if(lpBalance !== "0") {
+            if (lpBalance !== "0") {
                 await unwrapCrvSimple(balances, pool.addr, lpBalance, block, "ethereum", pool.numToken);
             }
         }));
@@ -65,11 +65,12 @@ module.exports={
     methodology: "Counts all beans and current LPs in the silo.",
     start: 12974077,
     ethereum: {
-        tvl: async () => ({}),
+        tvl: sdk.util.sumChainTvls([staking0,staking1, pool2]),
         pool2,
         staking: sdk.util.sumChainTvls([staking0,staking1])
     },    
     hallmarks: [
-        [1650153600, "Governance proposal hack"]
+        [1650153600, "Governance proposal hack"],
+        [1659602715, "Replant"]
     ]
 };
