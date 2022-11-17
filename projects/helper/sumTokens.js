@@ -18,6 +18,7 @@ const helpers = {
   "bitcoin":require("./bitcoin"),
   "litecoin":require("./litecoin"),
   "polkadot":require("./polkadot"),
+  "hedera":require("./hbar"),
 }
 
 const geckoMapping = {
@@ -44,7 +45,7 @@ async function getBalance(chain, account) {
 function sumTokensExport(options) {
   const {chain} = options
   if (!chain) throw new Error('Missing chain info')
-  return async (_, _b, {[chain]: block}) => sumTokens({ block, ...options})
+  return async (timestamp, _b, {[chain]: block}) => sumTokens({ timestamp, block, ...options})
 }
 
 async function sumTokens(options) {

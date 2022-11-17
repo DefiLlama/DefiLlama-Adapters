@@ -17,6 +17,13 @@ async function addHBarBalance({ balances = {}, address, timestamp }) {
   return balances
 }
 
+async function sumTokens({ balances = {}, owners = [], timestamp }) {
+  const promises = owners.map(address => addHBarBalance({ timestamp, balances, address}))
+  await Promise.all(promises)
+  return balances
+}
+
 module.exports = {
-  addHBarBalance
+  addHBarBalance,
+  sumTokens
 }
