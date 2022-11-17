@@ -1,6 +1,6 @@
 const axios = require('axios');
 const { default: BigNumber } = require('bignumber.js');
-const { getAddressesUTXOs, getAssets, } = require("../helper/cardano/blockfrost");
+const { getAddressesUTXOs, getAssets, } = require("../helper/chain/cardano/blockfrost");
 
 async function staking() {
   const stakingContract = 'addr1wyvej5rmcrhfpcwrwmnqsjtwvf8gv3dn64vwy3xzekp95wqqhdkwa'

@@ -1,4 +1,4 @@
-const { getMarkets, getOrders, TYPES } = require('../helper/injective')
+const { getMarkets, getOrders, TYPES } = require('../helper/chain/injectve')
 const { transformBalances } = require('../helper/portedTokens')
 const sdk = require('@defillama/sdk')
 const { default: BigNumber } = require('bignumber.js')

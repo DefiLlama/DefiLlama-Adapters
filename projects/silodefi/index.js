@@ -1,4 +1,4 @@
-const { searchAccountsAll } = require('../helper/algorand')
+const { searchAccountsAll } = require('../helper/chain/algorand')
 const sdk = require('@defillama/sdk')
 
 async function tvl() {

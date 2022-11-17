@@ -1,6 +1,6 @@
 const { getUniTVL } = require('../helper/unknownTokens')
 const { staking } = require('../helper/staking')
-const { getTokenBalance } = require('../helper/tron');
+const { getTokenBalance } = require('../helper/chain/tron');
 const { toUSDTBalances } = require('../helper/balances')
 const { get } = require('../helper/http')
 const { mergeExports } = require('../helper/utils')

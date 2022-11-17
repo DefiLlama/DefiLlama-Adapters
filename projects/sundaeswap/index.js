@@ -1,4 +1,4 @@
-const { getAdaInAddress } = require('../helper/cardano')
+const { getAdaInAddress } = require('../helper/chain/cardano')
 
 async function tvl(){
     const ammLocked = await getAdaInAddress("addr1w9qzpelu9hn45pefc0xr4ac4kdxeswq7pndul2vuj59u8tqaxdznu")

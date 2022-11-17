@@ -1,5 +1,5 @@
 const { get } = require('../helper/http')
-const { getAssets } = require('../helper/cardano/blockfrost')
+const { getAssets } = require('../helper/chain/cardano/blockfrost')
 
 let tokenPrice
 const DAY = 24 * 60 * 60 * 1000

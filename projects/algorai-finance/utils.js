@@ -1,4 +1,4 @@
-const {lookupApplications} = require("../helper/algorand");
+const {lookupApplications} = require("../helper/chain/algorand");
 
 /**
  * @desc Read global state from algorand application
