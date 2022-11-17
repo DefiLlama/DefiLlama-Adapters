@@ -1,4 +1,4 @@
-const http = require('./http')
+const http = require('../http')
 const BigNumber = require('bignumber.js')
 const sdk = require('@defillama/sdk')
 

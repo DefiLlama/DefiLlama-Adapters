@@ -1,5 +1,5 @@
 const sdk = require('@defillama/sdk')
-const { post } = require('./http')
+const { post } = require('../http')
 
 const endpoint = 'https://polkadot.api.subscan.io/api/v2/scan/search'
 
