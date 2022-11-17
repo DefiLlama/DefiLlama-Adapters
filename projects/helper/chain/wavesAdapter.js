@@ -1,5 +1,5 @@
-const {getApiTvl} = require('../helper/historicalApi')
-const {fetchURL} = require('../helper/utils')
+const {getApiTvl} = require('../historicalApi')
+const {fetchURL} = require('../utils')
 
 const MINUTE = 60*1000
 

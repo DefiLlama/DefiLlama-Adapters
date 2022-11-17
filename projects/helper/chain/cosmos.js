@@ -1,7 +1,7 @@
 const axios = require('axios')
 const { default: BigNumber } = require("bignumber.js")
 const sdk = require('@defillama/sdk')
-const { transformBalances } = require('./portedTokens')
+const { transformBalances } = require('../portedTokens')
 
 // https://cosmos-chain.directory/chains/cosmoshub
 // https://cosmos-chain.directory/chains
