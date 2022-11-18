@@ -51,6 +51,7 @@ const defaultTokens = {
     '0x3883f5e181fccaF8410FA61e12b59BAd963fb645',  //THETA
     '0x1a4b46696b2bb4794eb3d4c26f1c55f9170fa4c5', //BITDAO
     '0x6f259637dcd74c767781e37bc6133cd6a68aa161',  //HT
+    '0xba9d4199fab4f26efe3551d490e3821486f135ba', //CHSB
   ],
   tron: [
     nullAddress,
