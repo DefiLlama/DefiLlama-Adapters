@@ -1362,7 +1362,7 @@ const coreAssets = {
     '0x4c1f6fcbd233241bf2f4d02811e3bf8429bc27b8', // dai
   ],
   solana: [
-    'So11111111111111111111111111111111111111112', // USDC
+    'So11111111111111111111111111111111111111112', // SOL
     'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', // USDC
   ],
   moonriver: [
