@@ -10,7 +10,6 @@ async function tvl(timestamp, block, chainBlocks) {
     tokens.WMATIC,
     tokens.WETH,
     tokens.WBTC,
-    tokens.DAI,
     tokens.USDC,
     tokens.USDT,
   ]
@@ -25,7 +24,7 @@ async function tvl(timestamp, block, chainBlocks) {
     })).output;
     await sdk.util.sumSingleBalance(balances, `polygon:${token}`, balance)
   }))
-  
+
   return balances;
 }
 
