@@ -1,5 +1,5 @@
-const { sumTokensExport, nullAddress } = require('../helper/unwrapLPs')
-const tokens = [nullAddress]
+const { sumTokensExport, nullAddress } = require("../helper/unwrapLPs");
+const USDTpolygon = "0xc2132D05D31c914a87C6611C10748AEb04B58e8F";
 
 const config = {
   bsc: {
@@ -14,15 +14,16 @@ const config = {
       predictionBTCPOLY: "0xd71b0366CD2f2E90dd1F80A1F0EA540F73Ac0EF6",
       predictionTESLA: "0x3fc376530Ac35d37Dd1Fa794F922e0f30CbB2c46",
       predictionMATIC: "0x59e0aD27d0F58A15128051cAA1D2917aA71AB864",
+      predictionPRO: "0x764C3Ea13e7457261E5C1AaD597F281f3e738240",
     }),
   },
-}
+};
 
 module.exports = {};
 
-Object.keys(config).forEach(chain => {
-  const { owners } = config[chain]
-  module.exports[chain] = {
-    tvl: sumTokensExport({ chain, owners, tokens, })
-  }
-})
+module.exports = {
+  bsc: { tvl: sumTokensExport({ chain: "bsc", owners: config.bsc.owners, tokens: [nullAddress] }) },
+  polygon: {
+    tvl: sumTokensExport({ chain: "polygon", owners: config.polygon.owners, tokens: [nullAddress, USDTpolygon] }),
+  },
+};
