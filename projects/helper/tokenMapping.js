@@ -97,6 +97,10 @@ const transformTokens = {
     "0xc5cd01e988cd0794e05ab80f2bcdbdf13ce08bd3": tokens.usdc, // nUSD -> USDC
     "0x7f620d7d0b3479b1655cefb1b0bc67fb0ef4e443": "fantom:0xf16e81dce15b08f326220742020379b855b87df9", // nICE -> ICE
   },
+  csc: {
+    [nullAddress]: 'ethereum:0x081f67afa0ccf8c7b17540767bbe95df2ba8d97f',
+    '0xE6f8988d30614afE4F7124b76477Add79c665822': 'ethereum:0x081f67afa0ccf8c7b17540767bbe95df2ba8d97f',
+  },
   avax: {
     "0xaf2c034c764d53005cc6cbc092518112cbd652bb": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
     "0x57319d41f71e81f3c65f2a47ca4e001ebafd4f33": "avax:0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd",
