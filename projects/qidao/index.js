@@ -197,6 +197,10 @@ async function polygon(timestamp, block, chainBlocks) {
         "0x34fa22892256216a659d4f635354250b4d771458",
         "0x3A58a54C066FdC0f2D55FC9C89F0415C92eBf3C4",
       ], // stmatic
+      [
+        "0x873f4aE80867b9f97304B9Bb7Ef92c4d563fA48c",
+        "0x7d75F83f0aBe2Ece0b9Daf41CCeDdF38Cb66146b"
+      ]
 
     ],
     chainBlocks.polygon,
