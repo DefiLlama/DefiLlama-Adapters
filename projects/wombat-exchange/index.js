@@ -27,6 +27,10 @@ const Asset_P04_wmxWOM = "0x3c42e4f84573ab8c88c8e479b7dc38a7e678d688";
 const Asset_P05_WOM = "0xEABa290B154aF45DE72FDf2a40E56349e4E68AC2";
 const Asset_P05_mWOM = "0x1f502fF26dB12F8e41B373f36Dc0ABf2D7F6723E";
 
+// qWOM Pool
+const Asset_P06_WOM = "0xB5c9368545A26b91d5f7340205e5d9559f48Bcf8";
+const Asset_P06_qWOM = "0x87073ba87517E7ca981AaE3636754bCA95C120E4";
+
 // underlyingToken Address
 const BUSD = "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56";
 const DAI = "0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3";
@@ -40,6 +44,7 @@ const HAY = "0x0782b6d8c4551b9760e74c0545a9bcd90bdc41e5";
 const WOM = "0xAD6742A35fB341A9Cc6ad674738Dd8da98b94Fb1";
 const wmxWOM = "0x0415023846Ff1C6016c4d9621de12b24B2402979";
 const mWOM = "0x027a9d301fb747cd972cfb29a63f3bda551dfc5c";
+const qWOM = "0x0fE34B8aaAf3f522A6088E278936D10F934c0b19";
 const chain = "bsc";
 
 async function tvl(_t, _, { bsc: block }) {
@@ -58,6 +63,8 @@ async function tvl(_t, _, { bsc: block }) {
     [wmxWOM, Asset_P04_wmxWOM],
     [WOM, Asset_P05_WOM],
     [mWOM, Asset_P05_mWOM],
+    [WOM, Asset_P06_WOM],
+    [qWOM, Asset_P06_qWOM],
   ];
   let balances = await sumTokens2({ tokensAndOwners: toa, chain, block });
 
