@@ -52,6 +52,14 @@ const defaultTokens = {
     '0x1a4b46696b2bb4794eb3d4c26f1c55f9170fa4c5', //BITDAO
     '0x6f259637dcd74c767781e37bc6133cd6a68aa161',  //HT
     '0xba9d4199fab4f26efe3551d490e3821486f135ba', //CHSB
+    '0xdc9Ac3C20D1ed0B540dF9b1feDC10039Df13F99c', //UTK
+    '0xd13c7342e1ef687c5ad21b27c2b65d772cab5c8c', //UOS
+    '0x90b831fa3bebf58e9744a14d638e25b4ee06f9bc', //MIMO
+    '0x408e41876cccdc0f92210600ef50372656052a38', //REN
+    '0xC581b735A1688071A1746c968e0798D642EDE491', //EURO-T
+    '0x4da27a545c0c5b758a6ba100e3a049001de870f5', //aAAVE
+    '0xa06bc25b5805d5f8d82847d191cb4af5a3e873e0', //aLINK
+    '0xae7ab96520de3a18e5e111b5eaab095312d7fe84', //stETH
   ],
   tron: [
     nullAddress,
