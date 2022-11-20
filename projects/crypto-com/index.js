@@ -20,6 +20,12 @@ const config = {
       '0x46340b20830761efd32832a74d7169b29feb9758',
     ],
   },
+  bsc: {
+    owners: ['0x72A53cDBBcc1b9efa39c834A540550e23463AAcB']
+  },
+  polygon: {
+    owners: ['0x72A53cDBBcc1b9efa39c834A540550e23463AAcB']
+  }
 }
 
 module.exports = cexExports(config)
