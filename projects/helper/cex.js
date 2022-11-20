@@ -60,6 +60,8 @@ const defaultTokens = {
     '0x4da27a545c0c5b758a6ba100e3a049001de870f5', //aAAVE
     '0xa06bc25b5805d5f8d82847d191cb4af5a3e873e0', //aLINK
     '0xae7ab96520de3a18e5e111b5eaab095312d7fe84', //stETH
+    '0x9ee91f9f426fa633d227f7a9b000e28b9dfd8599', //STmatic
+    '0xc00e94cb662c3520282e6f5717214004a7f26888', //COMP
   ],
   tron: [
     nullAddress,

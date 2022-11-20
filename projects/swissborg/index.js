@@ -60,6 +60,9 @@ const config = {
       '0.0.686123',
     ],
   },
+  bsc: {
+    owners: ['0x5770815B0c2a09A43C9E5AEcb7e2f3886075B605']
+  }
 }
 
 module.exports = cexExports(config)
