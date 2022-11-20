@@ -53,6 +53,9 @@ module.exports = {
   },
   methodology:
     "TVL consists of deposits made to the protocol and like other lending protocols, borrowed tokens are not counted. Coingecko is used to price tokens.",
-  hallmarks: [[1635940800, "SLND launch"]],
+  hallmarks: [
+    [1635940800, "SLND launch"],
+    [1667826000, "FTX collapse, SOL whale liquidated"],
+  ],
 };
 
