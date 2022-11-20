@@ -17,5 +17,6 @@ module.exports = {
   fetch,
   hallmarks:[
     [1665521360, "Mango Markets Hack"],
+    [1667865600, "FTX collapse"]
   ],
 };

@@ -30,6 +30,9 @@ async function tvl() {
 }
 
 module.exports = {
+  hallmarks:[
+    [1667865600, "FTX collapse"]
+],
   timetravel: false,
   solana: { tvl },
   methodology:
