@@ -1,4 +1,3 @@
-
 const sdk = require('@defillama/sdk');
 const abi = require('./abi.json');
 const { unwrapUniswapLPs } = require('../helper/unwrapLPs')
@@ -6,7 +5,6 @@ const { fixBalancesTokens, transformTokens } = require("../helper/tokenMapping")
 
 const comptroller = "0xfbAFd34A4644DC4f7c5b2Ae150279162Eb2B0dF6"
 
-// ask comptroller for all markets array
 async function getAllCTokens(block) {
   return (await sdk.api.abi.call({
     block,
@@ -77,9 +75,8 @@ function lending(borrowed) {
       if (symbol.output.endsWith("LP")) {
         lps.push({
           token: market.underlying,
-          balance: getCash.output / 1e12
+          balance: getCash.output
         })
-        //console.log(balances)
       } else {
         let under=market.underlying.toLowerCase()
         const replacement = fixBalancesTokens.kcc[under]
@@ -97,9 +94,8 @@ function lending(borrowed) {
   }
 }
 
-// DANGER!! Oracles are not priced against USD but against other base tokens, such as IOTX
 module.exports = {
-  timetravel: true, // Impossible because getBlock will rug tho
+  timetravel: true,
   kcc: {
     tvl: lending(false),
     borrowed: lending(true)
