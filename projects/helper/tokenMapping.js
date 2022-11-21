@@ -24,6 +24,7 @@ const tokens = {
   weth: 'ethereum:0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
   busd: 'bsc:0xe9e7cea3dedca5984780bafc599bd69add087d56',
   bsc: 'bsc:' + nullAddress,
+  bnb: 'bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
   link: 'ethereum:0x514910771af9ca656af840dff83e8264ecf986ca',
   wbtc: 'ethereum:0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
 }
@@ -33,16 +34,13 @@ for (const [label, value] of Object.entries(tokens))
 
 const transformTokens = {
   ethereum: {
-    "0x88536c9b2c4701b8db824e6a16829d5b5eb84440": "polygon:0xac63686230f64bdeaf086fe6764085453ab3023f", // USV token
     "0xFEEf77d3f69374f66429C91d732A244f074bdf74": "0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0", // CVX FXS token
     "0xb8c77482e45f1f44de1745f52c74426c631bdd52": tokens.bnb, // BNB
     "0xeb637a9ab6be83c7f8c79fdaa62e1043b65534f0": "heco:0xcbd6cb9243d8e3381fea611ef023e17d1b7aedf0", // BXH
-    "0x18a1ea69a50a85752b7bc204a2c45a95ce6e429d": "avax:0xf30c5083a1479865c9a8916dec6ddadd82e8907b", // SPICE
     "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee": tokens.ethereum, // ETH -> WETH
     "0x18084fbA666a33d37592fA2633fD49a74DD93a88": "0x8dAEBADE922dF735c38C80C7eBD708Af50815fAa", //tBTC
     "0xef779cf3d260dbe6177b30ff08b10db591a6dd9c": "0x0000000000085d4780B73119b644AE5ecd22b376", // kUSD
     "0x42ef9077d8e79689799673ae588e046f8832cb95": "0x0000000000085d4780B73119b644AE5ecd22b376", //fUSD
-    "0x99534ef705df1fff4e4bd7bbaaf9b0dff038ebfe": "0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0", // aMATICb
     "0xd3d13a578a53685b4ac36a1bab31912d2b2a2f36": tokens.ethereum, // tWETH
     "0x94671a3cee8c7a12ea72602978d1bb84e920efb2": "0x853d955aCEf822Db058eb8505911ED77F175b99e", // tFRAX
     "0x2fc6e9c1b2c07e18632efe51879415a580ad22e1": "0x6bea7cfef803d1e3d5f7c0103f7ded065644e197", // tGAMMA
@@ -55,43 +53,27 @@ const transformTokens = {
     "0xadf15ec41689fc5b6dca0db7c53c9bfe7981e655": "0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0", // tFXS
     "0xc7d9c108d4e1dd1484d3e2568d7f74bfd763d356": "0x0000000000085d4780B73119b644AE5ecd22b376", // XSTUSD
     "0x65f7ba4ec257af7c55fd5854e5f6356bbd0fb8ec": "0x92d6c1e31e14520e676a687f0a93788b716beff5", // sDYDX
-    "0x586aa273f262909eef8fa02d90ab65f5015e0516": "0x0000000000085d4780B73119b644AE5ecd22b376", // FIAT
     "0x0a5e677a6a24b2f1a2bf4f3bffc443231d2fdec8": "bsc:0xb5102cee1528ce2c760893034a4603663495fd72", // USX
     "0x2163383C1F4E74fE36c50E6154C7F18d9Fd06d6f": "avax:0x75739a693459f33b1fbcc02099eea3ebcf150cbe",  // Elasticswap token
   },
   fantom: {
     // WFTM && FTM
-    "0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83": "0x4e15361fd6b4bb609fa63c81a2be19d873717870",
-    "0x0000000000000000000000000000000000000000": "0x4e15361fd6b4bb609fa63c81a2be19d873717870",
     "0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx": "0x4e15361fd6b4bb609fa63c81a2be19d873717870",
     "0x658b0c7613e890ee50b8c4bc6a3f41ef411208ad": tokens.ethereum,  // fETH
-    "0x82f0b8b456c1a451378467398982d4834b6829c1": "0x99d8a9c45b2eca8864373a26d1459e3dff1e17f3",  // MIM
-    "0x260b3e40c714ce8196465ec824cd8bb915081812": "polygon:0x4a81f8796e0c6ad4877a51c86693b0de8093f2ef",   // IRON ICE
+    // moo tokens
     "0xbf07093ccd6adfc3deb259c557b61e94c1f66945": "fantom:0xd6070ae98b8069de6b494332d1a1a81b6179d960",
-    "0x1b156c5c75e9df4caab2a5cc5999ac58ff4f9090": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
-    "0xa48d959ae2e88f1daa7d5f611e01908106de7598": "fantom:0x841fad6eae12c286d1fd18d1d525dffa75c7effe",
-    "0xd795d70ec3c7b990ffed7a725a18be5a9579c3b9": "avax:0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
-    "0xb6767518b205ea8b312d2ef4d992a2a08c2f2416": "avax:0xc7198437980c041c805a1edcba50c1ce5db95118",
-    "0xaf9f33df60ca764307b17e62dde86e9f7090426c": "avax:0xd586e7f844cea2f87f50152665bcbc2c279d8d70",
-    "0x808d5f0a62336917da14fa9a10e9575b1040f71c": "avax:0x60781c2586d68229fde47564546784ab3faca982",
-    "0x0dec85e74a92c52b7f708c4b10207d9560cefaf0": "fantom:0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
-    "0x637ec617c86d24e421328e6caea1d92114892439": tokens.dai,
-    "0xb3654dc3d10ea7645f8319668e8f54d2574fbdc8": tokens.link,
     "0x0a03d2c1cfca48075992d810cc69bd9fe026384a": tokens.ethereum,
     "0x97927abfe1abbe5429cbe79260b290222fc9fbba": tokens.wbtc,
     "0x6dfe2aaea9daadadf0865b661b53040e842640f8": tokens.link,
     "0x920786cff2a6f601975874bb24c63f0115df7dc8": tokens.dai,
     "0x49c68edb7aebd968f197121453e41b8704acde0c": "fantom:0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
-    "0x0665ef3556520b21368754fb644ed3ebf1993ad4": "0x6c3f90f043a72fa612cbac8115ee7e52bde6e490",
     // update below to binspirit when it lists on coingecko
     "0x7345a537a975d9ca588ee631befddfef34fd5e8f": "fantom:0x5Cc61A78F164885776AA610fb0FE1257df78E59B",
+
     "0xdbf31df14b66535af65aac99c32e9ea844e14501": "0xeb4c2781e4eba804ce9a9803c67d0893436bb27d", // RenBTC
     "0x4a89338a2079a01edbf5027330eac10b615024e5": "fantom:0xad84341756bf337f5a0164515b1f6f993d194e1f", // USDL
     "0xc0d9784fdba39746919bbf236eb73bc015fd351d": "fantom:0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83", // FTML
     "0xe3a486c1903ea794eed5d5fa0c9473c7d7708f40": "fantom:0xad84341756bf337f5a0164515b1f6f993d194e1f", // cUSD (revenent finance)
-    "0x02a2b736f9150d36c0919f3acee8ba2a92fbbb40": "0x1a7e4e63778b4f12a199c062f3efdd288afcbce8", // agEUR
-    "0x1b6382dbdea11d97f24495c9a90b7c88469134a4": tokens.usdc, // axUSDC
-    "0xB67FA6deFCe4042070Eb1ae1511Dcd6dcc6a532E": "0xBC6DA0FE9aD5f3b0d58160288917AA56653660E9", // alUSD
     "0x8cc97b50fe87f31770bcdcd6bc8603bc1558380b": "cronos:0x0804702a4e749d39a35fde73d1df0b1f1d6b8347", // single
     "0x95bf7e307bc1ab0ba38ae10fc27084bc36fcd605": tokens.usdc,
     "0xc5cd01e988cd0794e05ab80f2bcdbdf13ce08bd3": tokens.usdc, // nUSD -> USDC
@@ -105,40 +87,17 @@ const transformTokens = {
     "0xaf2c034c764d53005cc6cbc092518112cbd652bb": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
     "0x57319d41f71e81f3c65f2a47ca4e001ebafd4f33": "avax:0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd",
     "0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
-    "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
-    "0xd45b7c061016102f9fa220502908f2c0f1add1d7": "0xffc97d72e13e01096502cb8eb52dee56f74dad7b",
-    "0x46a51127c3ce23fb7ab1de06226147f446e4a857": "0xbcca60bb61934080951369a648fb03df4f96263c",
-    "0x532e6537fea298397212f09a61e03311686f548e": "0x3ed3b47dd13ec9a98b44e6204a523e766b225811",
-    "0xdfe521292ece2a4f44242efbcd66bc594ca9714b": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
-    "0x686bef2417b6dc32c50a3cbfbcc3bb60e1e9a15d": "0x9ff58f4ffb29fa2266ab25e75e2a8b3503311656",
-    "0x53f7c5869a859f0aec3d334ee8b4cf01e3492f21": "0x030ba81f1c18d280636f32af80b9aad02cf0854e",
-    "0x47afa96cdc9fab46904a55a6ad4bf6660b53c38a": "0x028171bca77440897b824ca71d1c56cac55b68a3",
     "0x574679ec54972cf6d705e0a71467bb5bb362919d": "avax:0x5817d4f0b62a59b17f75207da1848c2ce75e7af4",
     "0x2f28add68e59733d23d5f57d94c31fb965f835d0": tokens.usdc, // sUSDC(Avalanche) -> USDC(Ethereum)
     "0xf04d3a8eb17b832fbebf43610e94bdc4fd5cf2dd": tokens.busd, // sBUSD(Avalanche) -> BUSD(BSC)
-    "0xb0a8e082e5f8d2a04e74372c1be47737d85a0e73": "polygon:0xac63686230f64bdeaf086fe6764085453ab3023f", // USV
-    "0x02bfd11499847003de5f0f5aa081c43854d48815": "0x7a5d3A9Dcd33cb8D527f7b5F96EB4Fef43d55636", // Radioshack
-    "0xbf07093ccd6adfc3deb259c557b61e94c1f66945": "fantom:0xd6070ae98b8069de6b494332d1a1a81b6179d960",
     "0x1b156c5c75e9df4caab2a5cc5999ac58ff4f9090": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
-    "0xa48d959ae2e88f1daa7d5f611e01908106de7598": "fantom:0x841fad6eae12c286d1fd18d1d525dffa75c7effe",
     "0xd795d70ec3c7b990ffed7a725a18be5a9579c3b9": "avax:0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
     "0xb6767518b205ea8b312d2ef4d992a2a08c2f2416": "avax:0xc7198437980c041c805a1edcba50c1ce5db95118",
     "0xaf9f33df60ca764307b17e62dde86e9f7090426c": "avax:0xd586e7f844cea2f87f50152665bcbc2c279d8d70",
     "0x808d5f0a62336917da14fa9a10e9575b1040f71c": "avax:0x60781c2586d68229fde47564546784ab3faca982",
-    "0x0dec85e74a92c52b7f708c4b10207d9560cefaf0": "fantom:0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83",
-    "0x637ec617c86d24e421328e6caea1d92114892439": tokens.dai,
-    "0xb3654dc3d10ea7645f8319668e8f54d2574fbdc8": tokens.link,
-    "0x0a03d2c1cfca48075992d810cc69bd9fe026384a": tokens.ethereum,
-    "0x97927abfe1abbe5429cbe79260b290222fc9fbba": tokens.wbtc,
-    "0x6dfe2aaea9daadadf0865b661b53040e842640f8": tokens.link,
-    "0x920786cff2a6f601975874bb24c63f0115df7dc8": tokens.dai,
-    "0x49c68edb7aebd968f197121453e41b8704acde0c": "fantom:0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
     "0x0665ef3556520b21368754fb644ed3ebf1993ad4": "0x6c3f90f043a72fa612cbac8115ee7e52bde6e490",
     // update below to binspirit when it lists on coingecko
-    "0x7345a537a975d9ca588ee631befddfef34fd5e8f": "fantom:0x5Cc61A78F164885776AA610fb0FE1257df78E59B",
     "0x90a424754ad0d72cebd440faba18cdc362bfe70a": "heco:0xcbd6cb9243d8e3381fea611ef023e17d1b7aedf0", // BXH
-    "0x8965349fb649a33a30cbfda057d8ec2c48abe2a2": "0x6e9730ecffbed43fd876a264c982e254ef05a0de", // Nord
-    "0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7": tokens.usdc,
   },
   bsc: {
     "0x0000000000000000000000000000000000000000": tokens.bnb, // BNB -> WBNB
@@ -1428,6 +1387,7 @@ const coreAssets = {
     '0x04068da6c83afcfa0e13ba15a6696662335d5b75', // USDC
     '0x049d68029688eabf473097a2fc38ef61633a3c7a', // USDT
     '0x8d11ec38a3eb5e956b052f67da8bdc9bef8abf3e', // DAI
+    '0x82f0b8b456c1a451378467398982d4834b6829c1', // MIM
   ],
   bsc: [
     '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // wbnb
