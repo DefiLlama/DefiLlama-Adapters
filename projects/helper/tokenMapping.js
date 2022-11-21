@@ -23,7 +23,7 @@ const tokens = {
   ethereum: 'ethereum:' + nullAddress,
   weth: 'ethereum:0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
   busd: 'bsc:0xe9e7cea3dedca5984780bafc599bd69add087d56',
-  bnb: 'bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
+  bsc: 'bsc:' + nullAddress,
   link: 'ethereum:0x514910771af9ca656af840dff83e8264ecf986ca',
   wbtc: 'ethereum:0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
 }
@@ -344,10 +344,8 @@ const transformTokens = {
     "0x639a647fbe20b6c8ac19e48e2de44ea792c62c5c": tokens.bnb,
     "0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d": "0x4fabb145d64652a948d72533023f6e7a623c7c53",
     "0xc9baa8cfdde8e328787e29b4b078abf2dadc2055": tokens.dai,
-    "0xfa93c12cd345c658bc4644d1d4e1b9615952258c": "bsc:0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c",
     "0x218c3c3d49d0e7b37aff0d8bb079de36ae61a4c0": tokens.wbtc,
-    // "0xf55af137a98607f7ed2efefa4cd2dfe70e4253b1": tokens.ethereum,
-    "0x980a5afef3d17ad98635f6c5aebcbaeded3c3430": "okexchain:0xc946daf81b08146b1c7a8da2a851ddf2b3eaaf85",
+    "0xf55af137a98607f7ed2efefa4cd2dfe70e4253b1": tokens.ethereum,
   },
   metis: {
     "0x0000000000000000000000000000000000000000": "0x9e32b13ce7f2e80a01932b42553652e053d6ed8e", // METIS
@@ -713,12 +711,12 @@ const fixBalancesTokens = {
     [nullAddress]: { coingeckoId: "kucoin-shares", decimals: 18, },
     "0x4446fc4eb47f2f6586f9faab68b3498f86c07521": { coingeckoId: "kucoin-shares", decimals: 18, },
     "0x2ca48b4eea5a731c2b54e7c3944dbdb87c0cfb6f": { coingeckoId: "mojitoswap", decimals: 18, },
-    "0xf55af137a98607f7ed2efefa4cd2dfe70e4253b1": { coingeckoId: "ethereum", decimals: 18, },
     "0x0039f574ee5cc39bdd162e9a88e3eb1f111baf48": { coingeckoId: "tether", decimals: 18, },
     "0x980a5afef3d17ad98635f6c5aebcbaeded3c3430": { coingeckoId: "usd-coin", decimals: 18, },
     "0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d": { coingeckoId: "binance-usd", decimals: 18, },
-    "0xfa93c12cd345c658bc4644d1d4e1b9615952258c": { coingeckoId: "wrapped-bitcoin", decimals: 18, }, // BTC-K
+    "0xfa93c12cd345c658bc4644d1d4e1b9615952258c": { coingeckoId: "bitcoin", decimals: 18, }, // BTC-K
     "0x639a647fbe20b6c8ac19e48e2de44ea792c62c5c": { coingeckoId: "binancecoin", decimals: 18, },
+    "0x00ee2d494258d6c5a30d6b6472a09b27121ef451": { coingeckoId: "staked-kcs", decimals: 18, },
   },
   near: {
     "token.jumbo_exchange.near": { coingeckoId: "jumbo-exchange", decimals: 18 },
@@ -1528,7 +1526,6 @@ const coreAssets = {
     '0x1d931bf8656d795e50ef6d639562c5bd8ac2b78f', // ETH
   ],
   kcc: [
-    '0x4446fc4eb47f2f6586f9faab68b3498f86c07521', // wkcs
     '0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d', // BUSD
     '0x4A81704d8C16d9FB0d7f61B747D0B5a272badf14', // kuswap
   ],
@@ -1690,6 +1687,7 @@ function normalizeAddress(address, chain) {
 function stripTokenHeader(token, chain) {
   if (chain === 'aptos') return token.replace(/^aptos\:/, '')
   token = normalizeAddress(token, chain);
+  if (chain && !token.startsWith(chain))  return token;
   return token.indexOf(":") > -1 ? token.split(":")[1] : token;
 }
 
