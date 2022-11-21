@@ -60,6 +60,28 @@ const config = {
         'rsae9sMcxRe9WXHFM3WJJ3NdZESaoRY3KC'
     ]
   },
+  litecoin: {
+    owners: [
+         'LNwvCzirtdVFTeG3YcQZ3Cg7FPCwmyeYJm',
+         'LeZcdqjgfd3L8vDVYWGuFvrJyT2Xy9grCf',
+         'LYSR1E7kzoxnX8fbgRgDUJo1VVd2H1vwXF',
+         'LPosd2yrP7RNP688yFTuMnMnhSrs5zLPia',
+         'LPVrozsF3z6C6mYRGKN6xRCHs7dm1htTYs',
+         'Lax8DbJauyWhV5YNTaeZge4oBP2HTNiqYz',
+
+    ]
+  },
+  /*
+  doge: {
+    owners: [
+        'D9uH999MANKyNkzfb8XwRmQhHEBNLBh9sA',
+        'DQNrmw9tb9NDxyhjb6BvJnvAvDBC3CMurE',
+        'DAMt5CrmkVuiNDEWCWRiyecpvNKi58FSbd',
+        'DGXx3yTPND5E7uJdCzLe945ri6Qa9as3Go',
+        'DAd1JWwtwx1paUuWG71ePNLU3WJUFaMJoh'
+    ]
+  }
+  */
 }
 
 module.exports = cexExports(config)
