@@ -344,10 +344,7 @@ const transformTokens = {
     "0x639a647fbe20b6c8ac19e48e2de44ea792c62c5c": tokens.bnb,
     "0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d": "0x4fabb145d64652a948d72533023f6e7a623c7c53",
     "0xc9baa8cfdde8e328787e29b4b078abf2dadc2055": tokens.dai,
-    "0xfa93c12cd345c658bc4644d1d4e1b9615952258c": "bsc:0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c",
     "0x218c3c3d49d0e7b37aff0d8bb079de36ae61a4c0": tokens.wbtc,
-    "0x0039f574ee5cc39bdd162e9a88e3eb1f111baf48": "okexchain:0x382bB369d343125BfB2117af9c149795C6C65C50",
-    "0x980a5afef3d17ad98635f6c5aebcbaeded3c3430": "okexchain:0xc946daf81b08146b1c7a8da2a851ddf2b3eaaf85",
     "0xf55af137a98607f7ed2efefa4cd2dfe70e4253b1": tokens.ethereum,
   },
   metis: {
@@ -714,7 +711,6 @@ const fixBalancesTokens = {
     [nullAddress]: { coingeckoId: "kucoin-shares", decimals: 18, },
     "0x4446fc4eb47f2f6586f9faab68b3498f86c07521": { coingeckoId: "kucoin-shares", decimals: 18, },
     "0x2ca48b4eea5a731c2b54e7c3944dbdb87c0cfb6f": { coingeckoId: "mojitoswap", decimals: 18, },
-    "0xf55af137a98607f7ed2efefa4cd2dfe70e4253b1": { coingeckoId: "ethereum", decimals: 18, },
     "0x0039f574ee5cc39bdd162e9a88e3eb1f111baf48": { coingeckoId: "tether", decimals: 18, },
     "0x980a5afef3d17ad98635f6c5aebcbaeded3c3430": { coingeckoId: "usd-coin", decimals: 18, },
     "0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d": { coingeckoId: "binance-usd", decimals: 18, },
@@ -1530,14 +1526,8 @@ const coreAssets = {
     '0x1d931bf8656d795e50ef6d639562c5bd8ac2b78f', // ETH
   ],
   kcc: [
-    '0x4446fc4eb47f2f6586f9faab68b3498f86c07521', // wkcs
     '0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d', // BUSD
     '0x4A81704d8C16d9FB0d7f61B747D0B5a272badf14', // kuswap
-    '0xfa93c12cd345c658bc4644d1d4e1b9615952258c', // btc
-    '0xf55af137a98607f7ed2efefa4cd2dfe70e4253b1', // eth
-    '0x980a5afef3d17ad98635f6c5aebcbaeded3c3430', // usdc
-    '0x0039f574ee5cc39bdd162e9a88e3eb1f111baf48', // usdt
-    '0x2ca48b4eea5a731c2b54e7c3944dbdb87c0cfb6f', // skcs
   ],
   smartbch: [
     '0x3743eC0673453E5009310C727Ba4eaF7b3a1cc04', // smartbch
@@ -1697,6 +1687,7 @@ function normalizeAddress(address, chain) {
 function stripTokenHeader(token, chain) {
   if (chain === 'aptos') return token.replace(/^aptos\:/, '')
   token = normalizeAddress(token, chain);
+  if (chain && !token.startsWith(chain))  return token;
   return token.indexOf(":") > -1 ? token.split(":")[1] : token;
 }
 
