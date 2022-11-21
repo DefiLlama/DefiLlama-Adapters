@@ -24,6 +24,8 @@ const tokens = {
   weth: 'ethereum:0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
   busd: 'bsc:0xe9e7cea3dedca5984780bafc599bd69add087d56',
   bsc: 'bsc:' + nullAddress,
+  kcs: 'ethereum:0xf34960d9d60be18cC1D5Afc1A6F012A723a28811',
+  avax: 'avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7',
   link: 'ethereum:0x514910771af9ca656af840dff83e8264ecf986ca',
   wbtc: 'ethereum:0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
 }
@@ -104,7 +106,7 @@ const transformTokens = {
   avax: {
     "0xaf2c034c764d53005cc6cbc092518112cbd652bb": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
     "0x57319d41f71e81f3c65f2a47ca4e001ebafd4f33": "avax:0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd",
-    "0x0000000000000000000000000000000000000000": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+    "0x0000000000000000000000000000000000000000": "bsc:0x1CE0c2827e2eF14D5C4f29a091d735A204794041",
     "0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
     "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
     "0xd45b7c061016102f9fa220502908f2c0f1add1d7": "0xffc97d72e13e01096502cb8eb52dee56f74dad7b",
@@ -339,6 +341,7 @@ const transformTokens = {
     //'0x21c718c22d52d0f3a789b752d4c2fd5908a8a733': 'wrapped-rose',
   },
   kcc: {
+    [nullAddress]: tokens.kcs,
     "0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c": "avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c",
     "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": "okexchain:0xc946daf81b08146b1c7a8da2a851ddf2b3eaaf85",
     "0x639a647fbe20b6c8ac19e48e2de44ea792c62c5c": tokens.bnb,
