@@ -23,7 +23,7 @@ const tokens = {
   ethereum: 'ethereum:' + nullAddress,
   weth: 'ethereum:0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
   busd: 'bsc:0xe9e7cea3dedca5984780bafc599bd69add087d56',
-  bnb: 'bsc:0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
+  bsc: 'bsc:' + nullAddress,
   link: 'ethereum:0x514910771af9ca656af840dff83e8264ecf986ca',
   wbtc: 'ethereum:0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
 }
