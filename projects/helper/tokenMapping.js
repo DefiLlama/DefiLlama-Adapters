@@ -339,8 +339,6 @@ const transformTokens = {
     //'0x21c718c22d52d0f3a789b752d4c2fd5908a8a733': 'wrapped-rose',
   },
   kcc: {
-    "0x0039f574ee5cc39bdd162e9a88e3eb1f111baf48": tokens.usdt,
-    "0x980a5afef3d17ad98635f6c5aebcbaeded3c3430": tokens.usdc,
     "0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c": "avax:0xe1c110e1b1b4a1ded0caf3e42bfbdbb7b5d7ce1c",
     "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": "okexchain:0xc946daf81b08146b1c7a8da2a851ddf2b3eaaf85",
     "0x639a647fbe20b6c8ac19e48e2de44ea792c62c5c": tokens.bnb,
@@ -348,6 +346,8 @@ const transformTokens = {
     "0xc9baa8cfdde8e328787e29b4b078abf2dadc2055": tokens.dai,
     "0xfa93c12cd345c658bc4644d1d4e1b9615952258c": "bsc:0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c",
     "0x218c3c3d49d0e7b37aff0d8bb079de36ae61a4c0": tokens.wbtc,
+    "0x0039f574ee5cc39bdd162e9a88e3eb1f111baf48": "okexchain:0x382bB369d343125BfB2117af9c149795C6C65C50",
+    "0x980a5afef3d17ad98635f6c5aebcbaeded3c3430": "okexchain:0xc946daf81b08146b1c7a8da2a851ddf2b3eaaf85",
     "0xf55af137a98607f7ed2efefa4cd2dfe70e4253b1": tokens.ethereum,
   },
   metis: {
