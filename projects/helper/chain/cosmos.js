@@ -2,6 +2,8 @@ const axios = require('axios')
 const { default: BigNumber } = require("bignumber.js")
 const sdk = require('@defillama/sdk')
 const { transformBalances } = require('../portedTokens')
+const { PromisePool } = require('@supercharge/promise-pool')
+const { log } = require('../utils')
 
 // https://cosmos-chain.directory/chains/cosmoshub
 // https://cosmos-chain.directory/chains
@@ -9,6 +11,7 @@ const endPoints = {
   crescent: 'https://mainnet.crescent.network:1317',
   osmosis: 'https://lcd.osmosis.zone',
   cosmos: 'https://cosmoshub-lcd.stakely.io',
+  kujira: 'https://lcd.kaiyo.kujira.setten.io',
 }
 
 const chainSubpaths = {
@@ -70,9 +73,9 @@ async function getBalance2({ balances = {}, owner, block, chain } = {}) {
   if (block) {
     endpoint += `?height=${block - (block % 100)}`
   }
-  const data = (await axios.get(endpoint)).data.balances
-  for (const {denom, amount} of data)
-    sdk.util.sumSingleBalance(balances,denom,amount)
+  const { data: { balances: data } } = await axios.get(endpoint)
+  for (const { denom, amount } of data)
+    sdk.util.sumSingleBalance(balances, denom, amount)
   return balances
 }
 
@@ -137,12 +140,21 @@ function sumSingleBalance(balances, token, balance, price) {
   return balances
 }
 
-async function sumTokens({balances = {}, owners = [], chain, }) {
-  await Promise.all(owners.map(i => getBalance2({ balances, owner: i, chain, })))
+async function sumTokens({ balances = {}, owners = [], chain, }) {
+  log(chain, 'fetching balances for ', owners.length)
+  let parallelLimit = 25
+
+  const { errors } = await PromisePool.withConcurrency(parallelLimit)
+    .for(owners)
+    .process(async (owner) => getBalance2({ balances, owner, chain, }))
+
+  if (errors && errors.length)
+    throw errors[0]
   return transformBalances(chain, balances)
 }
 
 module.exports = {
+  endPoints,
   totalSupply,
   getBalance,
   getDenomBalance,

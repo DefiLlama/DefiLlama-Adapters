@@ -152,7 +152,7 @@ async function transformInjectiveAddress() {
 }
 
 function fixBalances(balances, mapping, { chain, } = {}) {
-  const removeUnmapped = unsupportedGeckoChains.includes(chain)
+  const removeUnmapped = unsupportedGeckoChains.includes(chain) // TODO: fix server-side, remove this
 
   Object.keys(balances).forEach(token => {
     let tokenKey = stripTokenHeader(token, chain)
@@ -262,7 +262,7 @@ async function transformBalances(chain, balances) {
   return balances
 }
 
-async function transformDexBalances({ chain, data, balances = {}, restrictTokenRatio = 10, withMetadata = false, blacklistedTokens = [], coreTokens}) {
+async function transformDexBalances({ chain, data, balances = {}, restrictTokenRatio = 10, withMetadata = false, blacklistedTokens = [], coreTokens }) {
 
   if (!coreTokens)
     coreTokens = new Set(getCoreAssets(chain))
