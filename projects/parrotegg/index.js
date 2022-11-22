@@ -1,4 +1,4 @@
-const { transformArbitrumAddress, transformPolygonAddress, transformHarmonyAddress, getFixBalancesSync, transformBalances, } = require("../helper/portedTokens");
+const { transformArbitrumAddress, transformPolygonAddress, getChainTransform, getFixBalancesSync, transformBalances, } = require("../helper/portedTokens");
 const { addFundsInMasterChef } = require('../helper/masterchef');
 const STAKING_CONTRACT_ARBITRUM = "0x1cCf20F4eE3EFD291267c07268BEcbFDFd192311"; //MASTERCHEF ARBITRUM
 const STAKING_CONTRACT_IOTEX = "0x83E7e97C4e92D56c0653f92d9b0c0B70288119b8";  // MASTERCHEF IOTEX
@@ -31,7 +31,7 @@ const polygonTvl = async (timestamp, ethBlock, chainBlocks) => {
 
 const harmonyTvl = async (timestamp, ethBlock, chainBlocks) => {
   const balances = {};
-  const transformAddress = await transformHarmonyAddress();
+  const transformAddress = await getChainTransform('harmony');
 
   await addFundsInMasterChef(
       balances, STAKING_CONTRACT_HARMONY, chainBlocks.harmony, 'harmony', transformAddress);
