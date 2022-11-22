@@ -59,7 +59,7 @@ async function terra_tvl() {
 const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { default: BigNumber } = require("bignumber.js");
-const { getVaults } = require("../helper/getVaults.js");
+const { getVaults } = require("./getVaults.js");
 
 async function avax_tvl(timestamp, _, { avax: block }) {
   const chain = "avax";
