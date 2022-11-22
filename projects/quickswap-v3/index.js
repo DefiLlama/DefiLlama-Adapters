@@ -6,7 +6,7 @@ const { log } = require("../helper/utils");
 const graphs = {
   polygon: "https://api.thegraph.com/subgraphs/name/sameepsi/quickswap-v3",
   dogechain:
-    "https://api-dogechain.algebra.finance/subgraphs/name/quickswap/dogechain-info",
+    "https://graph-node.dogechain.dog/subgraphs/name/quickswap/dogechain-info",
 };
 
 const blacklists = {
