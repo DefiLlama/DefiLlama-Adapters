@@ -50,7 +50,7 @@ import dfyn from "./adapters/dfyn";
 import radioshack from "./adapters/radioshack";
 import flamingoFinance from "./adapters/flamingo-finance";
 import ZEROx from "./adapters/0x";
-import pangeaswap from './adapters/pangea-swap';
+import pangeaswap from "./adapters/pangea-swap";
 // import bakerySwap from "./adapters/bakeryswap"; //broken
 import baryon from "./adapters/baryon";
 import cherryswap from "./adapters/cherryswap";
@@ -202,7 +202,7 @@ import wavelengthDao from "./adapters/wavelength-dao";
 import dexible from "./adapters/dexible";
 import metatdex from "./adapters/metatdex";
 import goosefx from "./adapters/goosefx";
-
+import thorwallet from "./adapters/thorwallet";
 
 export default {
   mooniswap,
@@ -287,7 +287,7 @@ export default {
   swapr,
   cone,
   claimswap,
-  "spartacus-exchange" : spartacusExchange,
+  "spartacus-exchange": spartacusExchange,
   beamswap,
   openleverage,
   ubeswap,
@@ -300,7 +300,7 @@ export default {
   "glide-finance": glideFinance,
   quipuswap,
   netswap,
-  "jupiter-aggregator":jupiterAggregator,
+  "jupiter-aggregator": jupiterAggregator,
   astroport,
   mimo,
   "tethys-finance": tethysFinance,
@@ -309,7 +309,7 @@ export default {
   swappi,
   yodeswap,
   polycat,
-  "defi-kingdoms" : defikingdoms,
+  "defi-kingdoms": defikingdoms,
   defiplaza,
   voltswap,
   yokaiswap,
@@ -327,7 +327,7 @@ export default {
   "defichain-dex": defichainDex,
   "blue-planet": planet,
   aldrin,
-  "capricorn-finance" :capricornFinance,
+  "capricorn-finance": capricornFinance,
   alex,
   "step-exchange": stepExchange,
   pegasys,
@@ -406,6 +406,7 @@ export default {
   "wavelength-dao": wavelengthDao,
   dexible,
   metatdex,
-  goosefx
+  goosefx,
+  thorwallet,
   // lyra -> OPTIONS DEX, not enable for now
 };
