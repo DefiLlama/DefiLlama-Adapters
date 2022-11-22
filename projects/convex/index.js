@@ -1,5 +1,6 @@
 const sdk = require("@defillama/sdk");
 const ABI = require('./abi.json')
+const { log, getParamCalls } = require('../helper/utils')
 const { default: BigNumber } = require("bignumber.js");
 
 const addressZero = "0x0000000000000000000000000000000000000000"
@@ -54,7 +55,7 @@ const lpTokenToSwapAddress = {
 }
 
 async function tvl(timestamp, block) {
-  console.log('convex start')
+  log('convex start')
   var allCoins = {};
 
   const poolLength = (await sdk.api.abi.call({
@@ -62,54 +63,60 @@ async function tvl(timestamp, block) {
     abi: ABI.poolLength,
     block
   })).output;
-  var poolInfo = [];
-  var calldata = [];
-  for (let i = 0; i < poolLength; i++) {
-    calldata.push({
-      target: boosterAddress,
-      params: [i]
-    })
-  }
-  var returnData = await sdk.api.abi.multiCall({
+  let {output: poolInfo } = await sdk.api.abi.multiCall({
     abi: ABI.poolInfo,
-    calls: calldata,
+    target: boosterAddress,
+    calls: getParamCalls(poolLength),
     block
   })
-  for (let i = 0; i < poolLength; i++) {
-    var pdata = returnData.output[i].output;
-    poolInfo.push(pdata);
-  }
+  poolInfo = poolInfo.map(i => i.output);
 
+  const { output: convexSupplies } = await sdk.api.abi.multiCall({
+    abi: 'erc20:totalSupply',
+    calls: poolInfo.map(i => ({ target: i.token })),
+    block,
+  })
+
+  const { output: lpSupplies } = await sdk.api.abi.multiCall({
+    abi: 'erc20:totalSupply',
+    calls: poolInfo.map(i => ({ target: i.lptoken })),
+    block,
+  })
+
+  const { output: pools } = await sdk.api.abi.multiCall({
+    target: currentRegistryAddress,
+    abi: ABI.get_pool_from_lp_token,
+    calls: poolInfo.map(i => ({ params: i.lptoken })),
+    block,
+  })
+
+  const mainCoinCalls = pools.filter(i => i.output !== addressZero).map(i => ({ params: i.output }))
+
+  const { output: mainCoinsRes } = await sdk.api.abi.multiCall({
+    target: currentRegistryAddress,
+    abi: ABI.get_coins,
+    calls: mainCoinCalls,
+    block,
+  })
+
+  const mainCoinsObj = {}
+  mainCoinsRes.forEach(({ output, input: { params: [pool]}}) => mainCoinsObj[pool] = output)
   
   await Promise.all([...Array(Number(poolLength)).keys()].map(async i => {
-    console.log("getting supplies and balances for pool " + i + "...");
+    log("getting supplies and balances for pool " + i + "...");
 
-    var convexsupply = await sdk.api.erc20.totalSupply({
-      target: poolInfo[i].token,
-      block
-    });
-
-    var totalsupply = await sdk.api.erc20.totalSupply({
-      target: poolInfo[i].lptoken,
-      block
-    })
-
+    var convexsupply = convexSupplies[i]
+    var totalsupply = lpSupplies[i]
     var share = BigNumber(convexsupply.output).times(1e18).div(totalsupply.output).toFixed(0);
 
-    var pool = await sdk.api.abi.call({
-      target: currentRegistryAddress,
-      block,
-      abi: ABI.get_pool_from_lp_token,
-      params: poolInfo[i].lptoken
-    })
+    var pool = pools[i]
 
     var maincoins;
 
     if(pool.output == addressZero){
-      console.log("pool " +i +" not in registry yet.")
+      log("pool " +i +" not in registry yet.")
 
-      maincoins = {};
-      maincoins.output = [];
+      maincoins = [];
 
       var swapPool = poolInfo[i].lptoken;
       if(lpTokenToSwapAddress[swapPool] != undefined){
@@ -126,34 +133,30 @@ async function tvl(timestamp, block) {
             abi: ABI.coins,
             params: c
           });
-          maincoins.output.push(coinX.output);
+          maincoins.push(coinX.output);
         } catch (error) {
           //console.error(error);
           break;
         }
       }
       
-      if(maincoins.output.length == 0){
-        console.log("could not get coins off of lptoken for pool " +i);
+      if(maincoins.length == 0){
+        log("could not get coins off of lptoken for pool " +i);
         return;
       }else{
         //coins successfully pulled from lptoken (factory pool, thus swap is same as lp token)
-        console.log("pool " +i +" is a factory pool, use lptoken as swap address");
+        log("pool " +i +" is a factory pool, use lptoken as swap address");
         pool.output = swapPool
       }
     }else{
-      maincoins = await sdk.api.abi.call({
-        target: currentRegistryAddress,
-        block,
-        abi: ABI.get_coins,
-        params: pool.output
-      });
+      maincoins = mainCoinsObj[pool.output]
+      if (!maincoins) throw new Error('Unreachable')
     }
 
     var coins = [];
 
-    for (var coinlist = 0; coinlist < maincoins.output.length; coinlist++) {
-      var coin = maincoins.output[coinlist];
+    for (var coinlist = 0; coinlist < maincoins.length; coinlist++) {
+      var coin = maincoins[coinlist];
       if(coin == addressZero){
         continue;
       }
@@ -237,7 +240,7 @@ async function tvl(timestamp, block) {
   //as the tokens have accrued interest, this means current tvl is under reporting
   // ....or defillama supports their price feed.
 
-  console.log('convex end', allCoins)
+  log('convex end', allCoins)
   return allCoins;
 }
 
@@ -259,7 +262,6 @@ module.exports = {
   ethereum:{
     tvl,
     staking,
-    //pool2: pool2("0x5F465e9fcfFc217c5849906216581a657cd60605", "0x05767d9ef41dc40689678ffca0608878fb3de906"),
   },
   hallmarks:[
     [1651881600, "UST depeg"],
