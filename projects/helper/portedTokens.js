@@ -76,27 +76,6 @@ async function transformCeloAddress() {
   return transformChainAddress(transformTokens.celo, "celo")
 }
 
-async function transformHarmonyAddress() {
-  const bridge = (await utils.fetchURL(
-    "https://be4.bridge.hmny.io/tokens/?page=0&size=1000"
-  )).data.content;
-
-  const mapping = transformTokens.harmony
-
-  return addr => {
-    addr = addr.toLowerCase();
-    if (mapping[addr]) return mapping[addr];
-    const srcToken = bridge.find(token =>
-      compareAddresses(addr, token.hrc20Address)
-    );
-    if (srcToken !== undefined) {
-      const prefix = srcToken.network === "BINANCE" ? "bsc:" : "";
-      return prefix + srcToken.erc20Address;
-    }
-    return `harmony:${addr}`;
-  };
-}
-
 async function transformOptimismAddress() {
   const bridge = (await utils.fetchURL(
     "https://static.optimism.io/optimism.tokenlist.json"
@@ -200,7 +179,6 @@ const chainTransforms = {
   bsc: transformBscAddress,
   polygon: transformPolygonAddress,
   avax: transformAvaxAddress,
-  harmony: transformHarmonyAddress,
   optimism: transformOptimismAddress,
   arbitrum: transformArbitrumAddress,
   injective: transformInjectiveAddress,
@@ -366,7 +344,6 @@ module.exports = {
   transformBscAddress,
   transformPolygonAddress,
   transformAvaxAddress,
-  transformHarmonyAddress,
   transformOptimismAddress,
   transformArbitrumAddress,
   transformCeloAddress,
