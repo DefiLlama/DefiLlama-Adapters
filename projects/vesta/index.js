@@ -10,7 +10,7 @@ const VaultTokens = {
   renBTC: "0xdbf31df14b66535af65aac99c32e9ea844e14501",
   DPX: "0x6c2c06790b3e3e3c38e12ee22f8183b37a13ee55",
   GMX: "0xfc5a1a6eb076a2c7ad06ed22c90d7e710e35ad0a",
-  GLP: '0x2f546ad4edd93b956c8999be404cdcafde3e89ae'
+  GLP: "0x2f546ad4edd93b956c8999be404cdcafde3e89ae"
 }
 
 const VSTA_FARMING_ADDRESS = "0x65207da01293C692a37f59D1D9b1624F0f21177c";
@@ -34,12 +34,10 @@ async function tvl(_, block, chainBlocks) {
   })
 
   output.forEach(({ input: { params: [token] }, output }) => {
-    if (token.toLowerCase() === '0xdbf31df14b66535af65aac99c32e9ea844e14501') output /= 1e10 // fix renBTC balance
+    if (token.toLowerCase() === VaultTokens.renBTC) output /= 1e10 // fix renBTC balance
 
-    let llamaTokenAddress = transform(token)
-    if (token.toLowerCase() === VaultTokens.GLP) {
-      llamaTokenAddress = 'arbitrum:0x4277f8F2c384827B5273592FF7CeBd9f2C1ac258'
-    }
+    const llamaTokenAddress = transform(token.toLowerCase() === VaultTokens.GLP ? '0x4277f8F2c384827B5273592FF7CeBd9f2C1ac258' : token) // convert sGLP to feGLP address for price api
+   
     sdk.util.sumSingleBalance(balances, llamaTokenAddress, output)
   })
 
