@@ -2,6 +2,13 @@ const sdk = require("@defillama/sdk");
 const { BigNumber } = require("ethers");
 const abis = require("./abis");
 
+module.exports = {
+  start: 1668410449,
+  timetravel: true,
+  methodology:
+    "Counts GOO balance of the vault then sums it with the total multiplier reserve based on the vaults pricing of a multiplier in GOO",
+}
+
 module.exports["ethereum"] = {
   tvl: async (_, block) => {
     const { output: gooberReserves } = await sdk.api.abi.call({
