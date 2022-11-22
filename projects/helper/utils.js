@@ -83,7 +83,7 @@ function isLP(symbol, token, chain) {
   if (!symbol) return false
   if (token && blacklisted_LPS.includes(token.toLowerCase())) return false
   if (chain === 'bsc' && ['OLP', 'DLP', 'MLP', 'LP'].includes(symbol)) return false
-  if (chain === 'bsc' && ['WLP', 'FstLP',].includes(symbol)) return true
+  if (chain === 'bsc' && ['WLP', 'FstLP', 'BLP',].includes(symbol)) return true
   if (chain === 'avax' && ['ELP', 'EPT', 'CRL', 'YSL', 'BGL', 'PLP'].includes(symbol)) return true
   if (chain === 'ethereum' && ['SSLP'].includes(symbol)) return true
   if (chain === 'moonriver' && ['HBLP'].includes(symbol)) return true

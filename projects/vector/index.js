@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const { transformAvaxAddress } = require("../helper/portedTokens");
+const { transformAvaxAddress, } = require("../helper/portedTokens");
 const { unwrapUniswapLPs } = require("../helper/unwrapLPs");
 const { pool2 } = require("../helper/pool2");
 const { staking } = require("../helper/staking.js");
@@ -66,7 +66,7 @@ async function tvl(timestamp, block, chainBlocks) {
       );
     }
   }
-  return balances;
+  return balances
 }
 
 module.exports = {
