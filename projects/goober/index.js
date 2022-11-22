@@ -30,8 +30,6 @@ module.exports["ethereum"] = {
     const gobbersInGoo = poolPricePerMult.mul(gooberReserves._gobblerReserve);
     const totalGoo = BigNumber.from(gooBalance).add(gobbersInGoo).toString();
 
-    console.log(totalGoo.toString());
-
     return {
       "0x600000000a36F3cD48407e35eB7C5c910dc1f7a8": totalGoo,
     };
