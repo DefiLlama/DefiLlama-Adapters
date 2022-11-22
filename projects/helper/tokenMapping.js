@@ -86,6 +86,8 @@ const transformTokens = {
   },
   avax: {
     "0xaf2c034c764d53005cc6cbc092518112cbd652bb": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+    "0x9dEbca6eA3af87Bf422Cea9ac955618ceb56EfB4": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+    "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
     "0x57319d41f71e81f3c65f2a47ca4e001ebafd4f33": "avax:0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd",
     "0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx": "avax:0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
     "0x574679ec54972cf6d705e0a71467bb5bb362919d": "avax:0x5817d4f0b62a59b17f75207da1848c2ce75e7af4",
