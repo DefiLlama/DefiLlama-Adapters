@@ -14,6 +14,9 @@ async function fetch() {
 }
 
 module.exports = {
+  hallmarks:[
+    [1667865600, "FTX collapse"]
+  ],
   timetravel: false,
   methodology: 'Value of total LP tokens locked + deposits that are not borrowed.',
   fetch,

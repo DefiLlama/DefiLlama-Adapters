@@ -12,6 +12,9 @@ async function fetch() {
 }
 
 module.exports = {
+  hallmarks:[
+    [1667865600, "FTX collapse"]
+],
   timetravel: false,
   fetch,
 };
