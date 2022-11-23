@@ -15,7 +15,7 @@ const blacklistedTokens = [
 
 let connection, provider
 
-const endpoint = process.env.SOLANA_RPC || "https://api.mainnet-beta.solana.com" // or "https://solana-api.projectserum.com/"
+const endpoint = process.env.SOLANA_RPC || "https://rpc.ankr.com/solana" // or "https://solana-api.projectserum.com/"
 
 function getConnection() {
   if (!connection) connection = new Connection(endpoint)
@@ -122,7 +122,7 @@ async function getTokenBalances(tokensAndAccounts) {
 
 async function getTokenAccountBalances(tokenAccounts, { individual = false, chunkSize = 99 } = {}) {
   log('total token accounts: ', tokenAccounts.length)
-  const formBody = account => ({ method: "getAccountInfo", jsonrpc: "2.0", params: [account, { encoding: "jsonParsed", commitment: "confirmed" }], id: 1 })
+  const formBody = account => ({ method: "getAccountInfo", jsonrpc: "2.0", params: [account, { encoding: "jsonParsed", commitment: "confirmed" }], id: account })
   const balancesIndividual = []
   const balances = {}
   const chunks = sliceIntoChunks(tokenAccounts, chunkSize)
