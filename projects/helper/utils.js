@@ -318,6 +318,22 @@ async function debugBalances({ balances = {}, chain, log = false, tableLabel = '
   console.table(logObj)
 }
 
+async function fetchItemList({ chain, block, lengthAbi, itemAbi, target }) {
+  const { output: length } = await sdk.api.abi.call({
+    target,
+    abi: lengthAbi,
+    chain, block,
+  })
+  const { output: data } = await sdk.api.abi.multiCall({
+    target,
+    abi: itemAbi,
+    calls: getParamCalls(length),
+    chain, block,
+  })
+
+  return data
+}
+
 module.exports = {
   DEBUG_MODE,
   log,
@@ -340,4 +356,5 @@ module.exports = {
   getSymbols,
   getDecimals,
   getParamCalls,
+  fetchItemList,
 }
