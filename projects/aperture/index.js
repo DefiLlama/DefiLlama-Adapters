@@ -63,7 +63,7 @@ const { getVaults } = require("./getVaults.js");
 
 async function avax_tvl(timestamp, _, { avax: block }) {
   const chain = "avax";
-  const vaultContracts = await getVaults();
+  const vaultContracts = await getVaults(chain, block);
   const calls = vaultContracts.map((i) => ({ target: i }));
   const equityETHValues = (
     await sdk.api.abi.multiCall({
