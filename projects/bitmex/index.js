@@ -14,4 +14,4 @@ const config = {
 }
 
 module.exports = cexExports(config)
-module.exports.methodology = 'We collect only wallets that have more than 50 bitcoins'
+module.exports.methodology = 'We collect only wallets that have more than 20 bitcoins'
