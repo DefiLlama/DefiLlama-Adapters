@@ -1,48 +1,52 @@
-const { multicall } = require("./multicall.js");
-const { ethers } = require("ethers");
+const sdk = require('@defillama/sdk')
+const abi = require("./abi.json");
+const { getParamCalls, getUniqueAddresses } = require('../helper/utils')
 
 const APERTURE_MANAGER_ADDRESS = "0xeD380115259FcC9088c187Be1279678e23a6E565";
-const APERTURE_MANAGER_ABI = [
-  "function nextStrategyId() external view returns (uint128)",
-  "function strategyIdToMetadata(uint64) external view returns (string, string, address)",
-];
 
-const provider = new ethers.providers.JsonRpcProvider(
-  "https://api.avax.network/ext/bc/C/rpc"
-);
+const abis = {
+  strategyIdToMetadata: {
+    "inputs": [
+      {
+        "name": "arg0",
+        "type": "uint64"
+      }],
+    "name": "strategyIdToMetadata",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      },
+      {
+        "internalType": "contract IERC20",
+        "name": "",
+        "type": "address"
+      },
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+}
 
-const apertureManager = new ethers.Contract(
-  APERTURE_MANAGER_ADDRESS,
-  APERTURE_MANAGER_ABI,
-  provider
-);
-
-async function getVaults() {
-  const setOfVaults = new Set();
-  const nextStrategyId = await apertureManager.nextStrategyId();
-
-  let calldata = [];
-  let strategyAddr;
-
-  for (var i = 0; i < nextStrategyId; i++) {
-    calldata.push({
-      contract: apertureManager,
-      method: "strategyIdToMetadata",
-      args: i,
-    });
-  }
-
-  const result = await multicall(calldata);
-  for (let i = 0; i < nextStrategyId; i++) {
-    strategyAddr = result[i][2];
-    if (strategyAddr !== undefined) {
-      setOfVaults.add(strategyAddr);
-    } else {
-      console.log(i);
-    }
-  }
-
-  return Array.from(setOfVaults);
+async function getVaults(chain, block) {
+  const { output: nextStrategyId } = await sdk.api.abi.call({
+    target: APERTURE_MANAGER_ADDRESS,
+    abi: abi.getStrategyId,
+    chain, block,
+  })
+  const { output: vaults } = await sdk.api.abi.multiCall({
+    target: APERTURE_MANAGER_ADDRESS,
+    abi: abis.strategyIdToMetadata,
+    calls: getParamCalls(nextStrategyId),
+    chain, block,
+  })
+  return getUniqueAddresses(vaults.map(i => i.output[2]));
 }
 
 module.exports = {
