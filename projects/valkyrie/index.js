@@ -1,4 +1,4 @@
-const { getBalance, unwrapLp } = require("../helper/terra");
+const { getBalance, unwrapLp } = require("../helper/chain/terra");
 
 const holderToken = "terra1w6xf64nlmy3fevmmypx6w2fa34ue74hlye3chk";
 const token = "terra1dy9kmlm4anr92e42mrkjwzyvfqwz66un00rwr5";

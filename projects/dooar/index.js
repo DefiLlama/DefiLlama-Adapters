@@ -1,4 +1,5 @@
 const { getUniTVL } = require('../helper/unknownTokens')
+const {exportDexTVL} = require("../helper/solana")
 
 module.exports = {
   misrepresentedTokens: true,
@@ -9,4 +10,7 @@ module.exports = {
       useDefaultCoreAssets: true
     })
   },
+  solana:{
+    tvl: exportDexTVL("Dooar9JkhdZ7J3LHN3A7YCuoGRUggXhQaG4kijfLGU2j")
+  }
 };

@@ -13,9 +13,8 @@ const LEGACY_VERSIONS = {
 }
 
 async function getTokensInChain(chain) {
-  const { data } = await fetchURL(`https://api.mean.finance/v1/dca/networks/${chain}/tokens`)
+  const { data } = await fetchURL(`https://api.mean.finance/v1/dca/networks/${chain}/tokens?includeNotAllowed`)
   return data.map(({ address }) => address)
-    .filter(address => address.toLowerCase() !== '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee')
 }
 
 function getV2TvlObject(chain) {
@@ -25,8 +24,6 @@ function getV2TvlObject(chain) {
 }
 
 async function getV2TVL(chain, block) {
-  const balances = {};
-
   const legacyVersions = LEGACY_VERSIONS[chain] ?? []
   const legacyTokens = TOKENS_IN_LEGACY_VERSIONS[chain] ?? []
   const tokens = await getTokensInChain(chain)
@@ -35,13 +32,8 @@ async function getV2TVL(chain, block) {
     { contract: YIELD_VERSION, tokens }
   ]
 
-  await Promise.all(versions.map(({ contract, tokens }) => getV2TVLForContract(balances, chain, contract, tokens, block)))
-
-  return balances
-}
-
-async function getV2TVLForContract(balances, chain, contract, tokens, block) {
-  return sumTokens2({ balances, chain, block, tokens, owner: contract })
+  const toa = versions.map(({ contract, tokens }) => tokens.map(t => ([t, contract]))).flat()
+  return sumTokens2({ chain, block, tokensAndOwners: toa})
 }
 
 async function ethTvl(timestamp, block) {
@@ -61,12 +53,15 @@ module.exports = {
   },
   optimism: getV2TvlObject('optimism'),
   polygon: getV2TvlObject('polygon'),
+  arbitrum: getV2TvlObject('arbitrum'),
    hallmarks: [
     [1638850958, "V2 Beta launch on Optimism"],
     [1643602958, "V2 full launch"],
     [1646367758, "Deployment on Polygon"],
     [1650082958, "Protocol is paused because a non-critical vulnerability"],
     [1653366158, "V2 Relaunch"],
-    [1654057358, "OP launch bring more users into Optimism and benefits Mean"]
+    [1654057358, "OP launch brings more users into Optimism and benefits Mean"],
+    [1666364400, "Yield-While-DCA launch"],
+    [1668006000, "Deployment on Arbitrum"],
   ]
 };

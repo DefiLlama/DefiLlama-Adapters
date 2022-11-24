@@ -7,7 +7,7 @@ function diff(interval, timestamp){
 }
 
 async function fetch(timestamp) {
-  var res = await retry(async bail => await axios.get('https://midgard.thorchain.info/v2/history/tvl?interval=day&count=400'))
+  var res = await retry(async bail => await axios.get('https://midgard.ninerealms.com/v2/history/tvl?interval=day&count=400'))
   let interval = res.data.intervals[0]
   res.data.intervals.forEach(newInter=>{
     if(diff(newInter, timestamp)<diff(interval, timestamp)){
@@ -22,7 +22,7 @@ async function fetch(timestamp) {
 }
 
 async function staking(timestamp) {
-  var res = await retry(async bail => await axios.get('https://midgard.thorchain.info/v2/network'))
+  var res = await retry(async bail => await axios.get('https://midgard.ninerealms.com/v2/network'))
   const {totalActiveBond, totalStandbyBond} = res.data.bondMetrics
   return {
     "thorchain": (Number(totalActiveBond) + Number(totalStandbyBond))/1e8

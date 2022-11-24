@@ -36,6 +36,7 @@ async function staking() {
 
 // node test.js projects/alexlab/index.js
 module.exports = {
+  misrepresentedTokens: true,
   timetravel: false,
   stacks: {
     tvl: fetch,

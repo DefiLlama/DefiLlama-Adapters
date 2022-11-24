@@ -4,6 +4,7 @@ const { pool2s } = require("../helper/pool2");
 const { transformPolygonAddress } = require("../helper/portedTokens");
 const { sumTokensAndLPsSharedOwners } = require("../helper/unwrapLPs");
 const { request, gql } = require("graphql-request");
+const { getBlock } = require('../helper/getBlock')
 
 const vaultContractETH = "0xFFE6280ae4E864D9aF836B562359FD828EcE8020";
 const tokensETH = [
@@ -87,8 +88,9 @@ async function getGotchisCollateral(timestamp, block) {
   return gotchisBalances;
 }
 
-const polygonTvl = async (timestamp, block, chainBlocks) => {
+const polygonTvl = async (_, _block, chainBlocks) => {
   const balances = {};
+  const block = await getBlock(_, 'polygon', chainBlocks)
 
   let transformAddress = await transformPolygonAddress();
 
@@ -96,12 +98,12 @@ const polygonTvl = async (timestamp, block, chainBlocks) => {
     balances,
     [[GHST_Polygon, false]],
     vaultContractsPolygon,
-    chainBlocks["polygon"],
+    block,
     "polygon",
     transformAddress
   );
 
-  const gotchisBalances = await getGotchisCollateral(timestamp, chainBlocks["polygon"]);
+  const gotchisBalances = await getGotchisCollateral(_, block);
   sdk.util.sumMultiBalanceOf(balances, gotchisBalances, true, x => 'polygon:' + x);
 
   return balances;

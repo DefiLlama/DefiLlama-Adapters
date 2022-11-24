@@ -3,7 +3,7 @@ const { request, gql } = require("graphql-request");
 const { getChainTransform } = require("../helper/portedTokens");
 
 const graphUrls = {
-  polygon: "https://api.thegraph.com/subgraphs/name/sushi-0m/trident-polygon",
+  polygon: "https://api.thegraph.com/subgraphs/name/sushi-qa/trident-polygon",
   optimism: "https://api.thegraph.com/subgraphs/name/sushi-qa/trident-optimism",
   kava: "https://pvt.graph.kava.io/subgraphs/name/sushi-qa/trident-kava",
   metis:

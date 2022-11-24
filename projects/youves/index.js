@@ -1,7 +1,7 @@
 const { GraphQLClient, gql } = require("graphql-request");
 const retry = require('../helper/retry')
 const sdk = require("@defillama/sdk")
-const { addDexPosition, getTokenBalances, resolveLPPosition, getStorage, convertBalances, usdtAddressTezos, } = require('../helper/tezos')
+const { addDexPosition, getTokenBalances, resolveLPPosition, getStorage, convertBalances, usdtAddressTezos, } = require('../helper/chain/tezos')
 const { getFixBalances } = require('../helper/portedTokens')
 const { dexes, farms } = require('./data')
 const { PromisePool } = require('@supercharge/promise-pool');

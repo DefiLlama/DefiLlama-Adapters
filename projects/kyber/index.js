@@ -1,5 +1,4 @@
 const sdk = require("@defillama/sdk");
-const retry = require("async-retry");
 const { GraphQLClient, gql } = require("graphql-request");
 const { getChainTransform } = require("../helper/portedTokens");
 const { calcTvl } = require("./tvl.js");
@@ -40,9 +39,9 @@ const chains = {
     factory: "0x1c758aF0688502e49140230F6b0EBd376d429be5"
   },
   aurora: { factory: "0xD9bfE9979e9CA4b2fe84bA5d4Cf963bBcB376974" },
-  //velas: { factory: "0xD9bfE9979e9CA4b2fe84bA5d4Cf963bBcB376974" },
-  oasis: { factory: "0xD9bfE9979e9CA4b2fe84bA5d4Cf963bBcB376974" }
-  //bittorrent: { factory: "0xD9bfE9979e9CA4b2fe84bA5d4Cf963bBcB376974" }
+  velas: { factory: "0xD9bfE9979e9CA4b2fe84bA5d4Cf963bBcB376974" },
+  oasis: { factory: "0xD9bfE9979e9CA4b2fe84bA5d4Cf963bBcB376974" },
+  bittorrent: { factory: "0xD9bfE9979e9CA4b2fe84bA5d4Cf963bBcB376974" },
 };
 
 async function fetchPools(chain) {
@@ -52,16 +51,27 @@ async function fetchPools(chain) {
       : `https://api.thegraph.com/subgraphs/name/kybernetwork/kyberswap-elastic-${chain}`;
   const graphQLClient = new GraphQLClient(url);
 
-  return (await retry(
-    async bail =>
-      await graphQLClient.request(gql`
-        {
-          pools {
-            id
-          }
+  let addresses = [];
+  let reservereThreshold = 0;
+  for (let i = 0; i < 10; i++) {
+    const lpQuery = gql`
+      query lps {
+        pools(first: 1000, orderBy: liquidity, orderDirection: desc,
+          where: {${i == 0 ? `` : `liquidity_lt: ${reservereThreshold}`}
+        }) {
+          id
+          liquidity
         }
-      `)
-  )).pools.map(p => p.id);
+      }`;
+    const result = (await graphQLClient.request(lpQuery)).pools;
+    if (result.length < 1000) {
+      i = 10;
+    } else {
+      reservereThreshold = result[result.length - 1].liquidity;
+    }
+    addresses.push(...result.map(p => p.id));
+  }
+  return addresses;
 }
 function elastic(chain) {
   return async (_, block, chainBlocks) => {

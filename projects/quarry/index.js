@@ -1,23 +1,18 @@
 const { sliceIntoChunks, log } = require("../helper/utils");
 const { PublicKey } = require("@solana/web3.js");
-const { BorshAccountsCoder, } = require("@project-serum/anchor");
 const { Program, } = require("@project-serum/anchor");
 const { getMSolLPTokens, MSOL_LP_MINT } = require("./msolLP");
 const sdk = require('@defillama/sdk')
 
-const { getMultipleAccountBuffers, getConnection, getSaberPools, getQuarryData, getProvider, } = require("../helper/solana");
+const { getMultipleAccountBuffers, getSaberPools, getQuarryData, getProvider, } = require("../helper/solana");
 
 async function tvl() {
-  // a mapping of coin name to coin amount
-  const tvlResult = {};
-
   // this is a mapping of token mint to list of quarries
   // more details: https://github.com/QuarryProtocol/rewarder-list
-  const { quarriesByStakedMint, coingeckoIDs,
+  const { quarriesByStakedMint,
   } = await getQuarryData();
   const saberPools = await getSaberPools()
 
-  // const connection = getConnection();
   const quarryId = new PublicKey('QMNeHCGYnLVDn1icRAfQZpjPLBNkfGbSKRB83G5d8KB')
   const provider = getProvider();
   const QuarryMineIDL = await Program.fetchIdl(quarryId, provider)
@@ -25,22 +20,13 @@ async function tvl() {
   const allQuaries = await quarryProgram.account.quarry.all()
   const quaryMapping = {}
   allQuaries.forEach(i => quaryMapping[i.publicKey.toString()] = i)
-  // const coder = new BorshAccountsCoder(QuarryMineIDL);
-  let i = 0
   log('total', Object.keys(quarriesByStakedMint).length)
   const quarriies = []
+  const balances = {}
 
   for (const [stakedMint, quarryKeys] of Object.entries(quarriesByStakedMint)) {
-    const coingeckoID = coingeckoIDs[stakedMint];
-    const saberPool = coingeckoID
-      ? null
-      : saberPools.find((p) => p.lpMint === stakedMint);
+    const saberPool = saberPools.find((p) => p.lpMint === stakedMint);
     const isMsolSolLP = stakedMint === MSOL_LP_MINT.toString();
-
-    if (!coingeckoID && !saberPool && !isMsolSolLP) {
-      // we can't price this asset, so don't bother fetching anything
-      continue;
-    }
 
     if (saberPool) {
       quarriies.push(...quarryKeys)
@@ -48,45 +34,26 @@ async function tvl() {
     }
 
     const quarries = quarryKeys.map(i => quaryMapping[i].account)
-    
-    const totalTokens = quarries.reduce(
-      (sum, q) =>
-        sum +
-        parseFloat(q.totalTokensDeposited.toString()) /
-        10 ** q.tokenMintDecimals,
-      0
-    );
 
-    if (coingeckoID) {
-      if (!tvlResult[coingeckoID]) {
-        tvlResult[coingeckoID] = totalTokens;
-      } else {
-        tvlResult[coingeckoID] += totalTokens;
-      }
+    const totalTokens = quarries.reduce((sum, q) => sum + +q.totalTokensDeposited, 0);
+
+    if (!isMsolSolLP) {
+      sdk.util.sumSingleBalance(balances,'solana:'+stakedMint,totalTokens)
     } else if (isMsolSolLP) {
       const msolTVL = await getMSolLPTokens(totalTokens);
       for (const [tokenId, amount] of Object.entries(msolTVL)) {
-        if (!tvlResult[tokenId]) {
-          tvlResult[tokenId] = amount;
-        } else {
-          tvlResult[tokenId] += amount;
-        }
+        sdk.util.sumSingleBalance(balances,tokenId,amount)
       }
     }
-
-    // sleep to avoid rate limiting issues
-    log('done', ++i)
-    // await sleep(1200);
   }
 
-  const balances = tvlResult
   const quaryData = quarriies.map(i => quaryMapping[i].account)
   const quarryDataKeyed = {}
   quaryData.forEach((data, i) => {
     if (!data) return;
     quarryDataKeyed[quarriies[i]] = {
       quarry: data,
-      tokenAmount: data.totalTokensDeposited / (10 ** data.tokenMintDecimals),
+      tokenAmount: data.totalTokensDeposited,
       decimals: data.tokenMintDecimals
     }
   })
@@ -117,18 +84,14 @@ async function tvl() {
   return balances;
 }
 
-function addQuarryBalance(dataCache, balances = {}, { notYetReduced, tokenAmount, stakedMint, saberPool: { reserveA, reserveB, tokenACoingecko, tokenBCoingecko, } }) {
-
-  const decimals = dataCache[stakedMint].readUInt8(44);
-  const divisor = 10 ** decimals;
+function addQuarryBalance(dataCache, balances = {}, { tokenAmount, stakedMint, saberPool: { reserveA, reserveB, tokenA, tokenB, } }) {
   const lpTokenTotalSupply = Number(dataCache[stakedMint].readBigUInt64LE(36));
-  let poolShare = (tokenAmount * divisor) / lpTokenTotalSupply;
-  if (notYetReduced) poolShare /= divisor
+  let poolShare = tokenAmount / lpTokenTotalSupply;
 
-  const reserveAAmount = Number(dataCache[reserveA].readBigUInt64LE(64)) / divisor;
-  const reserveBAmount = Number(dataCache[reserveB].readBigUInt64LE(64)) / divisor;
-  sdk.util.sumSingleBalance(balances, tokenACoingecko, poolShare * reserveAAmount)
-  sdk.util.sumSingleBalance(balances, tokenBCoingecko, poolShare * reserveBAmount)
+  const reserveAAmount = Number(dataCache[reserveA].readBigUInt64LE(64));
+  const reserveBAmount = Number(dataCache[reserveB].readBigUInt64LE(64));
+  sdk.util.sumSingleBalance(balances, 'solana:'+tokenA, poolShare * reserveAAmount)
+  sdk.util.sumSingleBalance(balances, 'solana:'+tokenB, poolShare * reserveBAmount)
   return balances
 }
 
@@ -138,4 +101,7 @@ module.exports = {
   methodology:
     "TVL counts deposits made to Quarry Protocol. CoinGecko is used to find the price of tokens in USD.",
   solana: { tvl },
+  hallmarks: [
+    [1665521360, "Mango Markets Hack"],
+  ],
 };

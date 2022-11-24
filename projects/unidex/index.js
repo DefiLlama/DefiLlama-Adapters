@@ -36,12 +36,24 @@ async function MetisTvl(_time, _ethBlock, { metis: block }) {
   return sumTokens2({ chain, block, tokens, owners, })
 };
 
-async function KavaTvl(_time, _ethBlock, { kava: block }) {
+async function OpTvl(_time, _ethBlock, { optimism: block }) {
   const contracts = {
-    "kavapool": "0x0e2C6C4BB24Ce8256499c9D4AdD5161deb676b90",
+    "daiPool": "0xCdDF71750E596b4C38785afFEc3bd4C9bff43f6F",
   };
-  const chain = 'kava'
-  const tokens = [nullAddress]
+  const dai = "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1";
+  const chain = 'optimism'
+  const tokens = [dai]
+  const owners = Object.values(contracts)
+  return sumTokens2({ chain, block, tokens, owners, })
+};
+
+async function BscTvl(_time, _ethBlock, { bsc: block }) {
+  const contracts = {
+    "busdPool": "0xa8D4bd632f394CED42BD439Bc34F09198072e519",
+  };
+  const busd = "0xe9e7cea3dedca5984780bafc599bd69add087d56";
+  const chain = 'bsc'
+  const tokens = [busd]
   const owners = Object.values(contracts)
   return sumTokens2({ chain, block, tokens, owners, })
 };
@@ -57,7 +69,10 @@ module.exports = {
   metis: {
     tvl: MetisTvl
   },
-  kava: {
-    tvl: KavaTvl
+  optimism: {
+    tvl: OpTvl
+  },
+  bsc: {
+    tvl: BscTvl
   },
 };

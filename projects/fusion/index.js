@@ -112,6 +112,11 @@ const stakingExports = {
         block,
       }),
   },
+  
+  methodology: `Fusion calculates all LPs across the different compatible chains to determine the TVL, and uses CoinGecko to determine the USD
+                denomination. Staking is calculated separately using all staking contracts across the different networks, and CoinGecko to determine
+                the USD denomination of the TVL. Visit https://fusion.novanetwork.io/ for more information or https://info.fusion.novanetwork.io/ for
+                in-depth analytics (available exclusively on Nova Network).`,
 
 };
 

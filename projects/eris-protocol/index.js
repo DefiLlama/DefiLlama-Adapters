@@ -1,4 +1,4 @@
-const { queryContract } = require("../helper/terra");
+const { queryContract } = require("../helper/chain/terra");
 
 // For testing run
 // node test.js projects/eris-protocol/index.js
