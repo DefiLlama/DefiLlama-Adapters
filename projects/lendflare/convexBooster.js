@@ -1,6 +1,5 @@
 const sdk = require('@defillama/sdk');
 const BN = require("bignumber.js");
-const utils = require('./utils.js');
 
 const CONVEX_BOOSTER_PROXY = `0x4C3c78cEbc9Cc87436dEEd2782998bC002F2B69f`;
 
@@ -102,26 +101,17 @@ async function calculateTokenAmount(pools, timestamp, block, chainBlocks) {
 }
 
 async function tvl(timestamp, block, chainBlocks) {
-    let tvl = new BN(0);
-
+    const balances = {}
     const pools = await getTotalSupply(convexPools, timestamp, block, chainBlocks).then(pools => {
         return calculateTokenAmount(pools, timestamp, block, chainBlocks);
     });
-    const prices = await utils.getPricesfromString().then(result => {
-        return result.data;
-    });
-
     Object.keys(pools).map((pid, _) => {
         if (convexPools[pid].calculateTokenAmount.isGreaterThan(new BN(0))) {
             convexPools[pid].calculateTokenAmount = convexPools[pid].calculateTokenAmount.dividedBy(10 ** convexPools[pid].decimals);
         }
-
-        convexPools[pid].tvl = convexPools[pid].calculateTokenAmount.multipliedBy(new BN(prices[convexPools[pid].coinName].usd));
-
-        tvl = tvl.plus(convexPools[pid].tvl);
+        sdk.util.sumSingleBalance(balances, convexPools[pid].coinName, +convexPools[pid].calculateTokenAmount)
     });
-
-    return tvl;
+    return balances;
 }
 
 module.exports = {

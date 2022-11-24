@@ -1,6 +1,6 @@
 const { staking } = require('../helper/staking');
 const { sumTokensAndLPsSharedOwners } = require('../helper/unwrapLPs');
-const { transformHarmonyAddress } = require('../helper/portedTokens');
+const { getChainTransform } = require('../helper/portedTokens');
 const { getFixBalances } = require('../helper/portedTokens');
 
 const wagmiAddresses = {
@@ -25,7 +25,7 @@ const wagmiReserves = {
 
 async function tvl(time, ethBlock, {harmony: block}) {
   const balances = {};
-  const transform = await transformHarmonyAddress();
+  const transform = await getChainTransform('harmony');
 
   await sumTokensAndLPsSharedOwners(
     balances,

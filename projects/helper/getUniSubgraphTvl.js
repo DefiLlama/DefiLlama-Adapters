@@ -3,7 +3,7 @@ const { toUSDTBalances } = require('../helper/balances');
 const { getBlock } = require('../helper/getBlock');
 const { blockQuery } = require('./graph')
 
-function getChainTvl(graphUrls, factoriesName = "uniswapFactories", tvlName = "totalLiquidityUSD", blockCatchupLimit) {
+function getChainTvl(graphUrls, factoriesName = "uniswapFactories", tvlName = "totalLiquidityUSD", blockCatchupLimit = 500) {
   const graphQuery = gql`
 query get_tvl($block: Int) {
   ${factoriesName}(

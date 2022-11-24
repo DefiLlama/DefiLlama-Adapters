@@ -2,6 +2,7 @@ const sdk = require("@defillama/sdk");
 const abi = require("./abi.json");
 const { GraphQLClient, gql } = require('graphql-request')
 const { transformArbitrumAddress } = require("../helper/portedTokens");
+const { getBlock } = require('../helper/getBlock')
 
 const wrappedAssetHandlers = {
   // yvUSDC
@@ -80,12 +81,14 @@ const getTVL = async (subgraph, block, transformAddress = a => a) => {
   return output
 }
 
-const ethTvl = async (timestamp, ethBlock) => {
+const ethTvl = async (timestamp, ethBlock, chainBlocks) => {
+  const block = await getBlock(timestamp, 'ethereum', chainBlocks)
   return getTVL('yieldprotocol/v2-mainnet', ethBlock)
 };
 
 const arbTvl = async (timestamp, ethBlock, chainBlocks) => {
-  return getTVL('yieldprotocol/v2-arbitrum', chainBlocks['arbitrum'], (await transformArbitrumAddress()))
+  const block = await getBlock(timestamp, 'arbitrum', chainBlocks)
+  return getTVL('yieldprotocol/v2-arbitrum', block, (await transformArbitrumAddress()))
 };
 
 module.exports = {

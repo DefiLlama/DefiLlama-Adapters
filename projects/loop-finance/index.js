@@ -1,6 +1,6 @@
 const sdk = require("@defillama/sdk");
 const { fetchURL } = require('../helper/utils')
-const { getBalance, getDenomBalance } = require("../helper/terra");
+const { getBalance, getDenomBalance } = require("../helper/chain/terra");
 
 async function getPairs() {
     const factory00 = (await fetchURL(

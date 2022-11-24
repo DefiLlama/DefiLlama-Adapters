@@ -2,7 +2,6 @@ const sdk = require("@defillama/sdk");
 const commonAbi = require("./abis/index.json")
 const { default: BigNumber } = require("bignumber.js");
 const { createIncrementArray, fetchURL } = require('../helper/utils');
-const { sumTokens2 } = require('../helper/unwrapLPs')
 const config = require("./config")
 const lockCvxAddress = '0x96C68D861aDa016Ed98c30C810879F9df7c64154';
 const cvxAddress = "0x4e3FBD56CD56c3e72c1403e103b45Db9da5B9D2B";
@@ -76,6 +75,21 @@ async function getTokenTvl(balances, poolData, poolSupply, totalSupply, block) {
     coinBalances.map((coinBalance) => {
       let coinAddress = coinBalance.coin.toLowerCase()
       const balance = BigNumber(poolSupply * coinBalance.balance / totalSupply);
+      if (!balance.isZero()) {
+        sdk.util.sumSingleBalance(balances, coinAddress, balance.toFixed(0))
+      }
+    })
+  } else {
+    let balancerInfo = (await sdk.api.abi.call({
+      abi: commonAbi.balancer.getPoolTokens,
+      target: config.tokens.BalancerContract,
+      params: [poolAddress],
+      block,
+    })).output
+    balancerInfo.tokens.map((coins, index) => {
+      let coinAddress = coins.toLowerCase()
+      let coinBalances = balancerInfo.balances[index]
+      const balance = BigNumber(poolSupply * coinBalances / totalSupply);
       if (!balance.isZero()) {
         sdk.util.sumSingleBalance(balances, coinAddress, balance.toFixed(0))
       }

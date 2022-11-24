@@ -1,6 +1,7 @@
 const sdk = require("@defillama/sdk")
 const abi = require('./abi')
 const config = require('./config')
+const { getUniqueAddresses } = require('../helper/utils')
 const { vestingHelper, getCache, setCache, } = require("../helper/cache");
 
 const project = 'pinksale'
@@ -38,6 +39,7 @@ Object.keys(config).forEach(chain => {
         })
 
         tokens.map(i => cCache.tokens.push(i.output[1]))
+        cCache.tokens = getUniqueAddresses(cCache.tokens)
 
         const balance = await vestingHelper({
           cache,

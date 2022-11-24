@@ -120,4 +120,7 @@ async function getSilos(block) {
 
 module.exports = {
   ethereum: { tvl, borrowed, },
+  hallmarks: [
+    [1668816000, "XAI Genesis"]
+  ]
 }
