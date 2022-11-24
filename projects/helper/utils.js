@@ -47,15 +47,11 @@ async function getPricesFromContract(object) {
 }
 
 async function fetchURL(url) {
-  return retry(async bail => await axios.get(url), {
-    retries: 3
-  })
+  return axios.get(url)
 }
 
 async function postURL(url, data) {
-  return retry(async bail => await axios.post(url, data), {
-    retries: 3
-  })
+  return axios.post(url, data)
 }
 
 function createIncrementArray(length) {
