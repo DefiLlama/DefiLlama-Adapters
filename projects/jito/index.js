@@ -41,7 +41,6 @@ async function tvl() {
   const connection = getConnection();
   const account = await connection.getAccountInfo(new PublicKey('Jito4APyf642JPZPx3hGc6WWJ8zPKtRbRs4P815Awbb'))
   const decodedData = StakePoolLayout.decode(account.data)
-  console.log(decodedData.totalLamports/1e9)
   return {
     solana: decodedData.totalLamports/1e9
   }
