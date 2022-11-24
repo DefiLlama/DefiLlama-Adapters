@@ -1,10 +1,9 @@
-const retry = require('./retry')
 const axios = require("axios")
 const { request } = require("graphql-request")
 const COVALENT_KEY = 'ckey_72cd3b74b4a048c9bc671f7c5a6'
 
 async function get(endpoint) {
-  return (await retry(async _ => await axios.get(endpoint))).data
+  return (await axios.get(endpoint)).data
 }
 
 async function post(endpoint, body) {
