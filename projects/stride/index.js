@@ -1,5 +1,6 @@
-const utils = require("../helper/utils");
 const sdk = require('@defillama/sdk')
+const { get } = require('../helper/http');
+const { log } = require('../helper/utils');
 
 const coinGeckoIds = {
   uatom: "cosmos",
@@ -11,25 +12,23 @@ const coinGeckoIds = {
 async function tvl() {
   const balances = {}
   const {
-    data: { HostZone: hostZones },
-  } = await utils.fetchURL(
-    "https://stride-library.main.stridenet.co/api/Stride-Labs/stride/stakeibc/host_zone"
-  );
+    host_zone: hostZones
+  } = await get("https://stride-library.main.stridenet.co/api/Stride-Labs/stride/stakeibc/host_zone");
 
   const {
-    data: { supply: assetBalances },
-  } = await utils.fetchURL(
-    "https://stride-fleet.main.stridenet.co/api/cosmos/bank/v1beta1/supply"
-  );
+    supply: assetBalances
+  } = await get("https://stride-fleet.main.stridenet.co/api/cosmos/bank/v1beta1/supply");
 
   hostZones.map((hostZone) => {
     const assetBalance = assetBalances.find((asset) => {
-      return asset.denom === `st${hostZone.HostDenom}`;
+      return asset.denom === `st${hostZone.host_denom}`;
     });
 
-    const amount = assetBalance.amount / 1_000_000;
-
-    sdk.util.sumSingleBalance(balances, coinGeckoIds[hostZone.HostDenom], amount * hostZone.RedemptionRate)
+    const amount = assetBalance.amount / 1e6;
+    const geckoId = coinGeckoIds[hostZone.host_denom]
+    if (!geckoId)
+      throw new Error('Missing gecko mapping: '+hostZone.host_denom)
+    sdk.util.sumSingleBalance(balances, geckoId, amount * hostZone.redemption_rate)
   });
 
   return balances
