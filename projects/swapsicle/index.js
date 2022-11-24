@@ -13,6 +13,9 @@ const contracts = {
     pops: "0x240248628B7B6850352764C5dFa50D1592A033A8",
     stakingContract_sPOPS: "0x5108176bC1B7e72440e6B48862c51d7eB0AEd5c4",
     stakingContract_IB: "0x6aA10ead8531504a8A3B04a9BfCFd18108F2d2c2",
+  },
+  polygon: {
+    factory: "0x1eb5644fAC0FB43f79dE25C0BaB94F0d56062718"
   }
 };
 
@@ -47,8 +50,10 @@ module.exports = {
     staking: sdk.util.sumChainTvls([
       stakingPricedLP(contracts.avax.stakingContract_sPOPS, contracts.avax.pops,'avax','0x7E454625e4bD0CFdC27e752B46bF35C6343D9A78',"wrapped-avax",true), 
       stakedAVAX
-      
     ])
+  },
+  polygon: {
+    tvl: getUniTVL({ chain: 'polygon', useDefaultCoreAssets: false, factory: contracts.polygon.factory }),
   },
   start: 15434772,
 };
