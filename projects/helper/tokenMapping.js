@@ -56,6 +56,7 @@ const transformTokens = {
     "0x65f7ba4ec257af7c55fd5854e5f6356bbd0fb8ec": "0x92d6c1e31e14520e676a687f0a93788b716beff5", // sDYDX
     "0x0a5e677a6a24b2f1a2bf4f3bffc443231d2fdec8": "bsc:0xb5102cee1528ce2c760893034a4603663495fd72", // USX
     "0x2163383C1F4E74fE36c50E6154C7F18d9Fd06d6f": "avax:0x75739a693459f33b1fbcc02099eea3ebcf150cbe",  // Elasticswap token
+    "0x36f8d0d0573ae92326827c4a82fe4ce4c244cab6": "ethereum:0x028171bCA77440897B824Ca71D1c56caC55b68A3",  // Morpho-Aave Dai Stablecoin 
   },
   fantom: {
     // WFTM && FTM
