@@ -4,42 +4,18 @@ const {toUSDTBalances} = require('../helper/balances')
 
 const LiquidityQuery= gql`
 {
-    farms {
-      farmingToken {
-        identifier
-      }
-      farmTokenPriceUSD
-      farmingTokenReserve
-    }
-    pairs {
-      firstToken {
-        decimals
-      }
-      secondToken {
-        decimals
-      }
-      firstTokenPriceUSD
-      secondTokenPriceUSD
-      info {
-        reserves0
-        reserves1
-      }
+    factory {
+      pairCount
+      totalValueLockedUSD
     }
   }
   
 `
 
 async function tvl(){
-    const {pairs} = await request("https://graph.maiar.exchange/graphql", LiquidityQuery)
-    const totalTvl = pairs.reduce((total, pair)=>{
-        if(pair.firstTokenPriceUSD === "NaN" || pair.secondTokenPriceUSD === "NaN"){
-            return total
-        }
-        return total 
-        + (pair.firstTokenPriceUSD * pair.info.reserves0 / (10**(pair.firstToken.decimals)))
-        + (pair.secondTokenPriceUSD * pair.info.reserves1 / (10**(pair.secondToken.decimals))) 
-    }, 0)
-    return toUSDTBalances(totalTvl)
+    const results = await request("https://graph.maiar.exchange/graphql", LiquidityQuery)
+
+    return toUSDTBalances(results.factory.totalValueLockedUSD)
 }
 
 const stakingContracts = [
