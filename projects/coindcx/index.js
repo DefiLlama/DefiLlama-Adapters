@@ -96,15 +96,13 @@ const config = {
         'addr1vyzrghamkktczv3wujrdqt243emzu49zu0z3vxw768kpy0gyprm8q',        
     ]
   },
-     /*
   ripple: {
     owners: [
-        'rGcT3Dpz9Dk3oV7hsDT7Q1s6NRPo9a8iDt',
         'rKa1G2q15ya4Xr3U3LVdEhBpR3H1CUNnQN',
         'rLUpiBeLhUyEzVtBkYE4S9t4zhdybSSARw',
         'rMa4tVPUFTBC7Zzg1BkDwVWPLuE8bbQMX9',
     ]
-  }
+  },
  solana: {
     owners: [
         '4E73T5Zubx3kPtheJ5DB6QMEaadMQowhUcdRV6f9rvVt',
@@ -123,7 +121,6 @@ const config = {
         'HwgxMWxaq5cDbdVmoH24Gy8F9m9DkU7Mwgdbgh4mh2m7',
     ]
  }
-   */
 }
 module.exports = cexExports(config)
 module.exports.methodology = 'We are not counting their binance spot account'
