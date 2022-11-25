@@ -1,4 +1,4 @@
-const {usdCompoundExports} = require('./helper/compound');
+const {usdCompoundExports, compoundExports} = require('./helper/compound');
 
 const contracts = {
   ethereum: {
@@ -90,6 +90,8 @@ const contracts = {
 const chainExports = {}
 Object.entries(contracts).forEach(([chain, chainData])=>{
   chainExports[chain]=usdCompoundExports(chainData.comptroller, chain, chainData.gas.pToken)
+  if (chain === 'heco') 
+    chainExports[chain]=compoundExports(chainData.comptroller, chain, chainData.gas.pToken, '0xhecozzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz')
 })
 
 module.exports={
