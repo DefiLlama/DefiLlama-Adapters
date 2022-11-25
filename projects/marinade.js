@@ -1,11 +1,10 @@
-const retry = require('async-retry')
-const axios = require("axios");
+const { get } = require('./helper/http')
 
 async function tvl() {
-    var response = await retry(async bail => await axios.get('https://api.marinade.finance/tlv'))
+    var response = await get('https://api.marinade.finance/tlv')
 
     return {
-        'solana': response.data.total_sol
+        'solana': response.total_sol
     }
 }
 
