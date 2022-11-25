@@ -429,6 +429,13 @@ const fixBalancesTokens = {
     "DFI": { coingeckoId: "defichain", decimals: 0, },
     "DUSD": { coingeckoId: "decentralized-usd", decimals: 0, },
   },
+  step: {
+    '0xb58a9d5920af6ac1a9522b0b10f55df16686d1b6': { coingeckoId: "step-app-fitfi", decimals: 18, },
+    '0xe3f5a90f9cb311505cd691a46596599aa1a0ad7d': { coingeckoId: "usd-coin", decimals: 6, },
+    '0xfa9343c3897324496a05fc75abed6bac29f8a40f': { coingeckoId: "tether", decimals: 6, },
+    '0x818ec0a7fe18ff94269904fced6ae3dae6d6dc0b': { coingeckoId: "ethereum", decimals: 18, },
+    '0xefaeee334f0fd1712f9a8cc375f427d9cdd40d73': { coingeckoId: "binancecoin", decimals: 18, },
+  },
   velas: {
     "0x3611Fbfb06ffBcEf9Afb210f6Ace86742e6c14a4": { coingeckoId: "cardano", decimals: 6, },
   },
