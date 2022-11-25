@@ -428,6 +428,10 @@ const fixBalancesTokens = {
   defichain: {
     "DFI": { coingeckoId: "defichain", decimals: 0, },
     "DUSD": { coingeckoId: "decentralized-usd", decimals: 0, },
+    "ETH": { coingeckoId: "ethereum", decimals: 0, },
+    "BTC": { coingeckoId: "bitcoin", decimals: 0, },
+    "USDC": { coingeckoId: "usd-coin", decimals: 0, },
+    "USDT": { coingeckoId: "tether", decimals: 0, },
   },
   velas: {
     "0x3611Fbfb06ffBcEf9Afb210f6Ace86742e6c14a4": { coingeckoId: "cardano", decimals: 6, },
