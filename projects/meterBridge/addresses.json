@@ -1,0 +1,44 @@
+{
+    "ethereum": {
+        "ERC20Handler": "0xEa31ca828F53A41bA2864FA194bb8A2d3f11C0C0",
+        "Tokens": [
+            "0xBd2949F67DcdC549c6Ebe98696449Fa79D988A9F",
+            "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+            "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+            "0xCF3C8Be2e2C42331Da80EF210e9B1b307C03d36A",
+            "0xaC0104Cca91D167873B8601d2e71EB3D4D8c33e0",
+            "0xABe580E7ee158dA464b51ee1a83Ac0289622e6be",
+            "0xD478161C952357F05f0292B56012Cd8457F1cfbF",
+            "0xa58a4f5c4Bb043d2CC1E170613B74e767c94189B",
+            "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+            "0x0Def8d8addE14c9eF7c2a986dF3eA4Bd65826767",
+            "0x6B175474E89094C44Da98b954EedeAC495271d0F"
+        ],
+        "Wrapped": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+    },
+    "bsc": {
+        "ERC20Handler": "0x83354D47379881e167F7160A80dAC8269Fe946Fa",
+        "Tokens": [
+            "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
+            "0xbcf39F0EDDa668C58371E519AF37CA705f2bFcbd"
+        ],
+        "Wrapped": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c"
+    },
+    "moonriver": {
+        "ERC20Handler": "0xB1eFA941D6081afdE172e29D870f1Bbb91BfABf7",
+        "Tokens": [
+            "0xbD90A6125a84E5C512129D622a75CDDE176aDE5E",
+            "0x5c22ba65F65ADfFADFc0947382f2E7C286A0Fe45",
+            "0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D"
+        ],
+        "Wrapped": "0x98878B06940aE243284CA214f92Bb71a2b032B8A"
+    },
+    "meter": {
+        "ERC20Handler": "0x139d9b458acda76457dd99db3a6a36ca9cb3bbf1",
+        "Tokens": [
+            "0x228ebBeE999c6a7ad74A6130E81b12f9Fe237Ba3",
+            "0x8df95e66cb0ef38f91d2776da3c921768982fba0"
+        ],
+        "Wrapped": "0x160361ce13ec33C993b5cCA8f62B6864943eb083"
+    }
+}
