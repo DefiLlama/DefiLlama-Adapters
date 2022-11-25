@@ -17,8 +17,6 @@ async function getBalances(pools, block) {
         })
 
         sdk.util.sumSingleBalance(balances, sportTokenAddress, balanceResponse.output);
-
-        balances[sportTokenAddress] = balanceResponse.output;
     }
 
     return balances
