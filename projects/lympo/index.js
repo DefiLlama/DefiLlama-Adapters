@@ -34,5 +34,6 @@ async function tvl(timestamp, block) {
 module.exports = {
     polygon: {
         tvl
-    }
+    },
+    methodology: "TVL is calculated as value of SPORT tokens in Lympo pools staking",
 }
