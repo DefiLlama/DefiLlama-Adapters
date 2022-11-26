@@ -13,10 +13,8 @@ const jonesStaking = [
 ];
 
 const ethVault = "0x6be861aA87009331bF62E22D418Ab666e88B1354";
-const ethDpxFarm = "0x1f80C96ca521d7247a818A09b0b15C38E3e58a28"; //DPX-ETH LP
-const rdpxEthFarm = "0xEb0F03A203F25F08c7aFF0e1b1C2E0EE25Ca29Eb";  //RDPX-ETH LP
-const ethDpxSlp = "0x0C1Cf6883efA1B496B01f654E247B9b419873054";
-const ethRdpxSlp = "0x7418F5A2621E13c05d1EFBd71ec922070794b90a";
+const ethDpxFarm = "0x1f80C96ca521d7247a818A09b0b15C38E3e58a28"; //DPX-ETH LP STAKING
+const rdpxEthFarm = "0xEb0F03A203F25F08c7aFF0e1b1C2E0EE25Ca29Eb";  //RDPX-ETH LP STAKING
 
 const vaultandCollateral = [
     ["0x9a62E407028961EaC4538453Cb5D97038b69C814", "0x8d9ba570d6cb60c7e3e0f31343efe75ab8e65fb1"],// gOHM
@@ -59,10 +57,11 @@ async function tvl(timestamp, block, chainBlocks) {
     let balanceRdpxEthBull;
     let balanceRdpxEthBear;
     let balances = {};
+    let slps = ["0x0C1Cf6883efA1B496B01f654E247B9b419873054", "0x0C1Cf6883efA1B496B01f654E247B9b419873054", "0x7418F5A2621E13c05d1EFBd71ec922070794b90a", "0x7418F5A2621E13c05d1EFBd71ec922070794b90a"]; //DPX-ETH SLP and RDPX-ETH SLP
     block = chainBlocks.arbitrum;
     const chain = "arbitrum";
     const transformAddress = await getChainTransform(chain)
-    
+
     const ethManagementWindow = (await sdk.api.abi.call({
         target: ethVault,
         abi: abi.MANAGEMENT_WINDOW_OPEN,
@@ -118,57 +117,22 @@ async function tvl(timestamp, block, chainBlocks) {
         chain
     })).output;
     
-    await unwrapUniswapLPs(
-        balances, 
-        [
-            {
-                balance: balanceDpxEthBull,
-                token: ethDpxSlp
-            }
-        ],
-        block,
-        chain,
-        transformAddress
-    );
+    let balancesMetavaults = [balanceDpxEthBull, balanceDpxEthBear, balanceRdpxEthBull, balanceRdpxEthBear];
 
-    await unwrapUniswapLPs(
-        balances, 
-        [
-            {
-                balance: balanceDpxEthBear,
-                token: ethDpxSlp
-            }
-        ],
-        block,
-        chain,
-        transformAddress
-    );
-
-    await unwrapUniswapLPs(
-        balances, 
-        [
-            {
-                balance: balanceRdpxEthBull,
-                token: ethRdpxSlp
-            }
-        ],
-        block,
-        chain,
-        transformAddress
-    );
-
-    await unwrapUniswapLPs(
-        balances, 
-        [
-            {
-                balance: balanceRdpxEthBear,
-                token: ethRdpxSlp
-            }
-        ],
-        block,
-        chain,
-        transformAddress
-    );
+    for (let i = 0; i < 3; i++) {
+        await unwrapUniswapLPs(
+            balances, 
+            [
+                {
+                    balance: balancesMetavaults[i],
+                    token: slps[i]
+                }
+            ],
+            block,
+            chain,
+            transformAddress
+        );
+    }
 
     const vaultManagementWindows = (await sdk.api.abi.multiCall({
         calls: vaultandCollateral.map(p => ({
