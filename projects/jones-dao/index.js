@@ -96,21 +96,19 @@ async function tvl(timestamp, block, chainBlocks) {
     }
     
     for (let i = 0; i < 3; i++) {
-        metaVaultsBalance[i] = (await sdk.api.abi.call({
+        let temp = (await sdk.api.abi.call({
             target: dopexFarms[i],
             abi: abi.balanceOf,
             params: metaVaultsAddresses[i],
             block,
             chain
         })).output;
-    }
 
-    for (let i = 0; i < 3; i++) {
         await unwrapUniswapLPs(
             balances, 
             [
                 {
-                    balance: metaVaultsBalance[i],
+                    balance: temp,
                     token: slps[i]
                 }
             ],
