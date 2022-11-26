@@ -1,21 +1,15 @@
-const retry = require('async-retry')
-const utils = require('../helper/utils');
+const { get } = require('../helper/http')
 
-async function getData() {
-  const res = await retry(async bail => await utils.fetchURL('https://vite-api.thomiz.dev/tvl/vitcswap'))
-  return res.data;
-}
-
-async function fetch() {
-  const data = await getData()
-  return data.tvl
+async function tvl() {
+  return {
+    tether: (await get('https://vite-api.thomiz.dev/tvl/vitcswap')).tvl
+  }
 }
 
 module.exports = {
   timetravel: false,
   misrepresentedTokens: true,
   vite:{
-    fetch: fetch
+    tvl
   },
-  fetch: fetch
 }
