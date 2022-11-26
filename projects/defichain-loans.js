@@ -16,14 +16,18 @@ async function tvl() {
     const res = await get(endpoint)
     next = res.page?.next
 
-    res.data.forEach(({ collateralAmounts }) => {
+    res.data.forEach(({ collateralAmounts, loanAmounts, }) => {
       collateralAmounts.forEach(({ amount, symbol }) => {
         sdk.util.sumSingleBalance(balances, symbol, +amount)
+      })
+      loanAmounts.forEach(({ amount, symbol }) => {
+        if (symbol === 'DUSD')
+          sdk.util.sumSingleBalance(balances, symbol, +amount * -1)
       })
     })
   } while (next)
 
-  delete balances.DUSD
+  balances.DUSD *= 0.7 // value is reduced by 30% to compensate for DEX stability fees 
   return transformBalances('defichain', balances)
 }
 
