@@ -1,5 +1,4 @@
-const axios = require("axios");
-const retry = require('../helper/retry');
+const { get } = require('../helper/http')
 const { chainExports } = require('../helper/exports');
 const { sumTokens } = require("../helper/unwrapLPs");
 
@@ -19,9 +18,9 @@ function chainTvl(chain) {
     const transformAddress = id=>`${chain}:${id}`;
 
     const url = `${http_api_url}?chainId=${chainIds[chain]}`;
-    const debridge_response = await retry(async () => await axios.get(url));
+    const debridge_response = await get(url);
     // console.log(debridge_response)
-    const tokensAndOwners = debridge_response.data
+    const tokensAndOwners = debridge_response
       .filter(t => !t.tokenName.startsWith('deBridge '))
       .map(t => [t.tokenAddress, debridgeGate]);
 
