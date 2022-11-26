@@ -428,6 +428,10 @@ const fixBalancesTokens = {
   defichain: {
     "DFI": { coingeckoId: "defichain", decimals: 0, },
     "DUSD": { coingeckoId: "decentralized-usd", decimals: 0, },
+    "ETH": { coingeckoId: "ethereum", decimals: 0, },
+    "BTC": { coingeckoId: "bitcoin", decimals: 0, },
+    "USDC": { coingeckoId: "usd-coin", decimals: 0, },
+    "USDT": { coingeckoId: "tether", decimals: 0, },
   },
   step: {
     '0xb58a9d5920af6ac1a9522b0b10f55df16686d1b6': { coingeckoId: "step-app-fitfi", decimals: 18, },
