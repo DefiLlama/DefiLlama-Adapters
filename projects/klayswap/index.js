@@ -1,11 +1,10 @@
-const retry = require('async-retry')
-const axios = require("axios");
+const { get } = require('../helper/http')
 const BigNumber = require("bignumber.js");
 const { toUSDTBalances } = require('../helper/balances');
 
 async function fetchLiquidity() {
-  const klayswapInfo = await retry(async bail => await axios.get('https://s.klayswap.com/stat/klayswapInfo.json'))
-  const recentPoolInfo = klayswapInfo.data.recentPoolInfo;
+  const klayswapInfo = await get('https://s.klayswap.com/stat/klayswapInfo.json')
+  const recentPoolInfo = klayswapInfo.recentPoolInfo;
   var totalLiquidity = new BigNumber('0');
 
   for (const pool of recentPoolInfo) {
@@ -13,7 +12,7 @@ async function fetchLiquidity() {
   }
 
   // Single-sided deposits
-  const SinglePoolInfo = klayswapInfo.data.leveragePoolInfo.single;
+  const SinglePoolInfo = klayswapInfo.leveragePoolInfo.single;
   var totalSingleSided = new BigNumber('0');
 
   for (const spool of SinglePoolInfo) {
@@ -25,8 +24,8 @@ async function fetchLiquidity() {
 
 
 async function fetchStakedToken() {
-  const klayswapInfo = await retry(async bail => await axios.get('https://s.klayswap.com/stat/klayswapInfo.json'))
-  var totalStaking = new BigNumber(klayswapInfo.data.common.stakingVol);
+  const klayswapInfo = await get('https://s.klayswap.com/stat/klayswapInfo.json')
+  var totalStaking = new BigNumber(klayswapInfo.common.stakingVol);
   return toUSDTBalances(totalStaking.toFixed(2));
 }
 

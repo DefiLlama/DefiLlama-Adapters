@@ -1,5 +1,4 @@
-const axios = require('axios')
-const retry = require('../retry')
+const { post } = require('../http')
 
 const RPC_ENDPOINTS = {
     'eos': 'https://eos.greymass.com',
@@ -8,12 +7,11 @@ const RPC_ENDPOINTS = {
 }
 
 async function getEosBalance(account_name, chain = "eos") {
-    const { data } = await retry(async () => await axios.default.post(`${RPC_ENDPOINTS[chain]}/v1/chain/get_account`, { account_name, }));
-    return data;
+    return post(`${RPC_ENDPOINTS[chain]}/v1/chain/get_account`, { account_name, })
 }
 
 async function get_currency_balance(code, account, symbol, chain = "eos") {
-    const { data} = await retry(async () => await axios.default.post(`${RPC_ENDPOINTS[chain]}/v1/chain/get_currency_balance`, { code, account, symbol }));
+    const data = await post(`${RPC_ENDPOINTS[chain]}/v1/chain/get_currency_balance`, { code, account, symbol })
     if (!data.length) return 0
     return Number(data[0].split(" ")[0]);
 }
@@ -40,9 +38,9 @@ function get_precision(symbol) {
 
 // native staked CPU/Net & REX should be counted as liquid balance
 async function get_staked(account_name, symbol, chain = "eos") {
-    const response = await retry(async () => await axios.default.post(`${RPC_ENDPOINTS[chain]}/v1/chain/get_account`, { account_name }));
+    const response = await post(`${RPC_ENDPOINTS[chain]}/v1/chain/get_account`, { account_name })
     try {
-        return response.data.voter_info.staked / (10 ** get_precision(symbol))
+        return response.voter_info.staked / (10 ** get_precision(symbol))
     } catch (e) {
         return 0;
     }
