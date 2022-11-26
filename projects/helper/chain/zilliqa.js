@@ -1,11 +1,10 @@
-const retry = require('../retry')
-const axios = require('axios')
+const { post } = require('../http')
 const BigNumber = require('bignumber.js')
 
 const ZILLIQA_API = 'https://api.zilliqa.com/' // Mainnet API
 
 async function call(query) {
-  return retry(async () => await axios.post(ZILLIQA_API, query))
+  return post(ZILLIQA_API, query)
 }
 
 function formQuery(args) {
