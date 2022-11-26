@@ -58,10 +58,6 @@ const lps = [
 ]
 
 async function tvl(timestamp, block, chainBlocks) {
-    let balanceDpxEthBull;
-    let balanceDpxEthBear;
-    let balanceRdpxEthBull;
-    let balanceRdpxEthBear;
     let balances = {};
     let slps = [dpxEthSlp, dpxEthSlp, rdpxEthSlp, rdpxEthSlp];
     let dopexFarms = [ethDpxFarm, ethDpxFarm, rdpxEthFarm, rdpxEthFarm];
