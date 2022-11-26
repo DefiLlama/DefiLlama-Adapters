@@ -1,4 +1,3 @@
-const retry = require("../helper/retry");
 const { GraphQLClient, gql } = require("graphql-request");
 
 var graphql_url = "https://graphql.loop.markets/graphql?PairContractsQuery";
@@ -20,9 +19,7 @@ async function fetch() {
   `;
 
   let tvl = 0;
-  const token0_token1 = (
-    await retry(async (bail) => await graphQLClient.request(query1))
-  ).AssetPositions;
+  const token0_token1 = (await graphQLClient.request(query1)).AssetPositions;
 
   for (const token of token0_token1) {
     let query2 = gql`
@@ -36,9 +33,7 @@ async function fetch() {
     }
     `;
 
-    const data = (await retry(
-      async (bail) => await graphQLClient.request(query2)
-    ));
+    const data = await graphQLClient.request(query2)
 
     tvl += parseFloat(data.tokenTotalLockedValue.liquidity)/10**6;
   }
