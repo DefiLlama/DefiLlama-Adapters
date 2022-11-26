@@ -1,5 +1,5 @@
 const sdk = require("@defillama/sdk");
-const abi = require("./abis");
+const abi = require("../../helper/abis/chainlink.json");
 const { nftPriceFeeds } = require('../../helper/tokenMapping');
 
 // Tokens
@@ -35,7 +35,7 @@ async function getTVL(balances, chain, timestamp, chainBlocks) {
         calls: nftPriceFeeds[chain].map((priceFeed) => ({
             target: priceFeed.oracle,
         })),
-        abi: abi.abis.latestAnswer,
+        abi: abi.latestAnswer,
         block: chainBlocks[chain],
         chain,
     });
