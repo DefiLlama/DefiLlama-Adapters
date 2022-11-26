@@ -216,7 +216,7 @@ function getTVL(chainObject) {
     `;
 
     // Retrieve and iterate over all strategies
-    const results = await retry(async bail => await graphQLClient.request(query, {"block": block}));
+    const results = await graphQLClient.request(query, {"block": block});
 
     for(let i = 0; i < results['strategies'].length; i++) {
       const strategyContractAddress = results['strategies'][i]['id'];
