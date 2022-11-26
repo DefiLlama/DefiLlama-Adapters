@@ -1,9 +1,6 @@
 const sdk = require("@defillama/sdk");
 const abi = require("../../helper/abis/chainlink.json");
-const { nftPriceFeeds } = require('../../helper/tokenMapping');
-
-// Tokens
-const WETH = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+const { nftPriceFeeds, tokens } = require('../../helper/tokenMapping');
 
 // Vaults
 const v2 = "0xf896527c49b44aAb3Cf22aE356Fa3AF8E331F280";
@@ -47,7 +44,7 @@ async function getTVL(balances, chain, timestamp, chainBlocks) {
         collateralValueETH += position * floorPrice;
     }
 
-    sdk.util.sumSingleBalance(balances, `${chain}:${WETH}`, collateralValueETH);
+    sdk.util.sumSingleBalance(balances, tokens.weth, collateralValueETH);
     return balances;
 }
 
