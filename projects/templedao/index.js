@@ -6,7 +6,6 @@ const { resolveCrvTokens } = require("../helper/resolveCrvTokens")
 const sdk = require('@defillama/sdk');
 const abi = require("./abi.json");
 const { GraphQLClient, gql } = require("graphql-request");
-const { retry } = require("async");
 const poolInfos = {}
 
 const templeStakingContract = "0xEc3C1aBDAb15EbC069ec5e320EaACf716eDfC011";
@@ -98,7 +97,7 @@ async function fetchAuraPoolData(account) {
   }
   `;
 
-  return await retry(async bail => await graphQLClient.request(query));
+  return graphQLClient.request(query)
 }
 
 
