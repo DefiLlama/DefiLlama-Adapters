@@ -62,7 +62,6 @@ async function tvl(timestamp, block, chainBlocks) {
     let slps = [dpxEthSlp, dpxEthSlp, rdpxEthSlp, rdpxEthSlp];
     let dopexFarms = [ethDpxFarm, ethDpxFarm, rdpxEthFarm, rdpxEthFarm];
     let metaVaultsAddresses = [DpxEthBullVault, DpxEthBearVault, RdpxEthBullVault, RdpxEthBearVault];
-    let metaVaultsBalance = [];
 
     block = chainBlocks.arbitrum;
     const chain = "arbitrum";
