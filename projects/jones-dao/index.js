@@ -15,6 +15,12 @@ const jonesStaking = [
 const ethVault = "0x6be861aA87009331bF62E22D418Ab666e88B1354";
 const ethDpxFarm = "0x1f80C96ca521d7247a818A09b0b15C38E3e58a28"; //DPX-ETH LP STAKING
 const rdpxEthFarm = "0xEb0F03A203F25F08c7aFF0e1b1C2E0EE25Ca29Eb";  //RDPX-ETH LP STAKING
+const dpxEthSlp = "0x0C1Cf6883efA1B496B01f654E247B9b419873054"; //DPX-ETH SLP
+const rdpxEthSlp = "0x7418F5A2621E13c05d1EFBd71ec922070794b90a"; //RDPX-ETH SLP
+const DpxEthBullVault = "0x7AA12db079C901400e22a5B912204Dc575ff9C19";
+const DpxEthBearVault = "0x7a82A0ca7A2569d6cD3Df2aFeAF508f6d85Fd2c3";
+const RdpxEthBullVault = "0x64F6c761d855A6Eff9EF8b025B0258BDdEde5393";
+const RdpxEthBearVault = "0xf3e914c15d0bAa1f6537b0966d6F3394BA260747";
 
 const vaultandCollateral = [
     ["0x9a62E407028961EaC4538453Cb5D97038b69C814", "0x8d9ba570d6cb60c7e3e0f31343efe75ab8e65fb1"],// gOHM
@@ -57,7 +63,11 @@ async function tvl(timestamp, block, chainBlocks) {
     let balanceRdpxEthBull;
     let balanceRdpxEthBear;
     let balances = {};
-    let slps = ["0x0C1Cf6883efA1B496B01f654E247B9b419873054", "0x0C1Cf6883efA1B496B01f654E247B9b419873054", "0x7418F5A2621E13c05d1EFBd71ec922070794b90a", "0x7418F5A2621E13c05d1EFBd71ec922070794b90a"]; //DPX-ETH SLP and RDPX-ETH SLP
+    let slps = [dpxEthSlp, dpxEthSlp, rdpxEthSlp, rdpxEthSlp];
+    let dopexFarms = [ethDpxFarm, ethDpxFarm, rdpxEthFarm, rdpxEthFarm];
+    let metaVaultsAddresses = [DpxEthBullVault, DpxEthBearVault, RdpxEthBullVault, RdpxEthBearVault];
+    let metaVaultsBalance = [];
+
     block = chainBlocks.arbitrum;
     const chain = "arbitrum";
     const transformAddress = await getChainTransform(chain)
@@ -85,46 +95,22 @@ async function tvl(timestamp, block, chainBlocks) {
         sdk.util.sumSingleBalance(balances, "arbitrum:0x82af49447d8a07e3bd95bd0d56f35241523fbab1", ethBalance);
     }
     
-    balanceDpxEthBull = (await sdk.api.abi.call({
-        target: ethDpxFarm,
-        abi: abi.balanceOf,
-        params: "0x7AA12db079C901400e22a5B912204Dc575ff9C19",
-        block,
-        chain
-    })).output;
-
-    balanceDpxEthBear = (await sdk.api.abi.call({
-        target: ethDpxFarm,
-        abi: abi.balanceOf,
-        params: "0x7a82A0ca7A2569d6cD3Df2aFeAF508f6d85Fd2c3",
-        block,
-        chain
-    })).output;
-
-    balanceRdpxEthBull = (await sdk.api.abi.call({
-        target: rdpxEthFarm,
-        abi: abi.balanceOf,
-        params: "0x64F6c761d855A6Eff9EF8b025B0258BDdEde5393",
-        block,
-        chain
-    })).output;
-
-    balanceRdpxEthBear = (await sdk.api.abi.call({
-        target: rdpxEthFarm,
-        abi: abi.balanceOf,
-        params: "0xf3e914c15d0bAa1f6537b0966d6F3394BA260747",
-        block,
-        chain
-    })).output;
-    
-    let balancesMetavaults = [balanceDpxEthBull, balanceDpxEthBear, balanceRdpxEthBull, balanceRdpxEthBear];
+    for (let i = 0; i < 3; i++) {
+        metaVaultsBalance[i] = (await sdk.api.abi.call({
+            target: dopexFarms[i],
+            abi: abi.balanceOf,
+            params: metaVaultsAddresses[i],
+            block,
+            chain
+        })).output;
+    }
 
     for (let i = 0; i < 3; i++) {
         await unwrapUniswapLPs(
             balances, 
             [
                 {
-                    balance: balancesMetavaults[i],
+                    balance: metaVaultsBalance[i],
                     token: slps[i]
                 }
             ],
