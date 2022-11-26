@@ -1,7 +1,5 @@
 const { sumTokens } = require("../helper/unwrapLPs");
 const { getFixBalances } = require("../helper/portedTokens");
-const retry = require("../helper/retry");
-const axios = require("axios");
 const { GraphQLClient, gql } = require("graphql-request");
 const abi = require("./abi.json");
 const sdk = require("@defillama/sdk");

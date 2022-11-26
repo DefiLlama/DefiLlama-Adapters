@@ -1,14 +1,9 @@
-const axios = require("axios");
-const retry = require("async-retry");
+const { get } = require('../helper/http')
 const {staking} = require("../helper/staking");
 const {toUSDTBalances} = require("../helper/balances");
-const sdk = require("@defillama/sdk");
 
 async function getPlatformData() {
-  const response = await retry(async (_) =>
-    axios.get("https://55vvs1ddm4.execute-api.eu-central-1.amazonaws.com/default/tvl")
-  );
-  return response.data;
+  return get("https://55vvs1ddm4.execute-api.eu-central-1.amazonaws.com/default/tvl")
 }
 
 const vlty = "0x38A5cbe2FB53d1d407Dd5A22C4362daF48EB8526"

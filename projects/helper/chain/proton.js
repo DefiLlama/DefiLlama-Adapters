@@ -1,6 +1,4 @@
-const axios = require('axios');
-const retry = require('./retry')
-
+const { get, post, } = require('../http')
 const CHAIN_RPC = 'https://proton.greymass.com';
 const SWAP_CONTRACT = 'proton.swaps';
 const ORACLES_CONTRACT = 'oracles';
@@ -19,7 +17,7 @@ async function getTableRows({
   show_payer = false,
 }) {
   try {
-    const { data } = await axios.default.post(
+    const data = await post(
       CHAIN_RPC + '/v1/chain/get_table_rows',
       JSON.stringify({
         json,
@@ -73,7 +71,7 @@ async function getFullTable ({
 
 async function getCurrencyBalance(code, account, symbol) {
   try {
-    const { data } = await axios.default.post(
+    const data = await post(
       CHAIN_RPC + '/v1/chain/get_currency_balance',
       JSON.stringify({
         code,
@@ -116,7 +114,7 @@ async function getAllSwapPools(lower_bound) {
 }
 
 async function getTokenPriceUsd(tokenSymbol, tokenContract) {
-  const { data: tokens } = await axios.get('https://api.protonchain.com/v1/chain/exchange-rates/info')
+  const tokens = await get('https://api.protonchain.com/v1/chain/exchange-rates/info')
   const token = tokens.find(token => token.symbol === tokenSymbol && token.contract === tokenContract)
   const exchangeRate = token.rates.find(rate => rate.counterCurrency === 'USD')
   return exchangeRate.price
