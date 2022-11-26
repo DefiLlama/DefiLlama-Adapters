@@ -1,5 +1,5 @@
-const retry = require("async-retry");
-const { fetchLocal, mkMeta } = require("../helper/pact");
+const { fetchLocal, mkMeta } = require("../helper/pact")
+const { get } = require('../helper/http')
 
 const chainId = "3";
 const network = `https://api.chainweb.com/chainweb/0.0/mainnet01/chain/${chainId}/pact`;
@@ -93,7 +93,7 @@ const getPairList = async () => {
 };
 
 async function fetch() {
-  const pairList = await retry(async (bail) => getPairList());
+  const pairList = await getPairList();
   const anedakPairKdaAmount = pairList[0].reserves[0];
   const babenaPairKdaAmount = pairList[1].reserves[0];
   const fluxPairKdaAmount = pairList[2].reserves[0];

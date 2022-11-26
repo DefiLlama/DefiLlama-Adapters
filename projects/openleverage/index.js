@@ -1,6 +1,4 @@
-const sdk = require('@defillama/sdk');
 const {gql, GraphQLClient} = require("graphql-request");
-const retry = require("../helper/retry");
 const utils = require("../helper/utils");
 const { sumTokens2 } = require('../helper/unwrapLPs')
 
@@ -63,7 +61,7 @@ async function getPoolFromSubgraph(chain) {
     }
   `;
     var graphQLClient = new GraphQLClient(subgraph_endpoint[chain])
-    const results = await retry(async bail => await graphQLClient.request(sql))
+    const results = await graphQLClient.request(sql)
     const tokenAddressList = []
     const poolAddressList = []
     const poolToken = {}
