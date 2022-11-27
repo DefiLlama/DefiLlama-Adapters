@@ -41,13 +41,16 @@ module.exports = {
     ethereum: {
         tvl: getTvl('ethereum'),
     },
-    // bsc: {
-    //     tvl: getTvl('bsc'),
-    // },
+    bsc: {
+        tvl: getTvl('bsc'),
+    },
     moonriver: {
         tvl: getTvl('moonriver'),
     },
     meter: {
         tvl: getTvl('meter'),
     },
+    theta: {
+        tvl: getTvl('theta'),
+    }
 }; 
