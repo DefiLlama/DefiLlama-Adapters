@@ -40,5 +40,12 @@
             "0x8df95e66cb0ef38f91d2776da3c921768982fba0"
         ],
         "Wrapped": "0x160361ce13ec33C993b5cCA8f62B6864943eb083"
+    },
+    "theta": {
+        "ERC20Handler": "0xe1c892A6cE33cB31c100369aA6fC302d7B96254a",
+        "Tokens": [
+            "0x1336739b05c7ab8a526d40dcc0d04a826b5f8b03"
+        ],
+        "Wrapped": "0x4dc08b15ea0e10b96c41aec22fab934ba15c983e"
     }
 }
