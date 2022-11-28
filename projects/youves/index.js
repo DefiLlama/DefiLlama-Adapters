@@ -83,11 +83,6 @@ async function tvl() {
     fetchBalance(balances, 'tzbtc-lp', engines.uDefitzBTCLPV2, 0, sharePrice),
   ])
 
-  return convertBalances(balances)
-}
-
-async function pool2() {
-  const balances = {}
   const fixBalances = await getFixBalances('tezos')
 
   const youvesLPs = dexes.map(i => i.contractAddress).filter(i => i)
@@ -110,7 +105,8 @@ async function pool2() {
     sdk.util.sumSingleBalance(balances, 'tezos', +BigNumber(balances[`tezos:${uDEFI_TOKEN}`]).multipliedBy(uDefiPrice).toFixed(0))
     delete balances[`tezos:${uDEFI_TOKEN}`]
   }
-  return balances
+
+  return convertBalances(balances)
 }
 
 async function getUDefiPriceTEZ() {
@@ -121,7 +117,6 @@ async function getUDefiPriceTEZ() {
 module.exports = {
   timetravel: false,
   tezos: {
-    tvl,
-    pool2,
+    tvl
   }
 }
