@@ -4,7 +4,6 @@ const { transformBalances: transformBalancesOrig, transformDexBalances, } = requ
 const { tokens } = require('./tokenMapping')
 const { Connection, PublicKey, Keypair } = require("@solana/web3.js")
 const { AnchorProvider: Provider, Wallet, } = require("@project-serum/anchor");
-const BufferLayout = require("@solana/buffer-layout")
 const { sleep, sliceIntoChunks, log, } = require('./utils')
 const { decodeAccount } = require('./utils/solana/layout')
 
@@ -282,37 +281,15 @@ function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts) {
   async function _getTokenAccounts() {
     const connection = getConnection()
 
-    const TokenSwapLayout = BufferLayout.struct([
-      BufferLayout.u8("version"),
-      BufferLayout.u8("isInitialized"),
-      BufferLayout.u8("bumpSeed"),
-      BufferLayout.blob(32, "tokenProgramId"),
-      BufferLayout.blob(32, "tokenAccountA"),
-      BufferLayout.blob(32, "tokenAccountB"),
-      BufferLayout.blob(32, "tokenPool"),
-      BufferLayout.blob(32, "mintA"),
-      BufferLayout.blob(32, "mintB"),
-      BufferLayout.blob(32, "feeAccount"),
-      BufferLayout.blob(8, "tradeFeeNumerator"),
-      BufferLayout.blob(8, "tradeFeeDenominator"),
-      BufferLayout.blob(8, "ownerTradeFeeNumerator"),
-      BufferLayout.blob(8, "ownerTradeFeeDenominator"),
-      BufferLayout.blob(8, "ownerWithdrawFeeNumerator"),
-      BufferLayout.blob(8, "ownerWithdrawFeeDenominator"),
-      BufferLayout.blob(8, "hostFeeNumerator"),
-      BufferLayout.blob(8, "hostFeeDenominator"),
-      BufferLayout.u8("curveType"),
-      BufferLayout.blob(32, "curveParameters"),
-    ])
 
     const programPublicKey = new PublicKey(DEX_PROGRAM_ID)
     const programAccounts = await connection.getParsedProgramAccounts(programPublicKey);
     const tokenAccounts = []
 
     programAccounts.forEach((account) => {
-      const tokenSwap = TokenSwapLayout.decode(account.account.data);
-      tokenAccounts.push(new PublicKey(tokenSwap.tokenAccountA).toString())
-      tokenAccounts.push(new PublicKey(tokenSwap.tokenAccountB).toString())
+      const tokenSwap = decodeAccount('tokenSwap', account.account);
+      tokenAccounts.push(tokenSwap.tokenAccountA.toString())
+      tokenAccounts.push(tokenSwap.tokenAccountB.toString())
     });
 
     return tokenAccounts
