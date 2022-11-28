@@ -1,9 +1,8 @@
 const BigNumber = require("bignumber.js");
 const { PublicKey, } = require("@solana/web3.js");
-const { parseReserve } = require("./utils");
 const { sliceIntoChunks, } = require('../helper/utils')
 const { transformBalances, } = require('../helper/portedTokens')
-const { sumTokens, getConnection, } = require("../helper/solana");
+const { sumTokens, getConnection, decodeAccount, } = require("../helper/solana");
 const { fetchURL } = require('../helper/utils')
 const sdk = require('@defillama/sdk')
 
@@ -23,7 +22,7 @@ async function borrowed() {
   for (const chunk of chunks) {
     const infos = await connection.getMultipleAccountsInfo(chunk)
     infos.forEach(i => {
-      const { info: { liquidity } } = parseReserve(i)
+      const { info: { liquidity } } = decodeAccount('reserve', i)
       const amount = new BigNumber(liquidity.borrowedAmountWads.toString() / 1e18).toFixed(0);
       sdk.util.sumSingleBalance(balances, liquidity.mintPubkey.toString(), amount)
     })
