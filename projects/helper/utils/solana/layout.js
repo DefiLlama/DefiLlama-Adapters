@@ -176,6 +176,29 @@ const AccountLayout = BufferLayout.struct([
   publicKey('closeAuthority'),
 ]);
 
+const TokenSwapLayout = BufferLayout.struct([
+  BufferLayout.u8("version"),
+  BufferLayout.u8("isInitialized"),
+  BufferLayout.u8("bumpSeed"),
+  publicKey("tokenProgramId"),
+  publicKey("tokenAccountA"),
+  publicKey("tokenAccountB"),
+  publicKey("tokenPool"),
+  publicKey("mintA"),
+  publicKey("mintB"),
+  publicKey("feeAccount"),
+  BufferLayout.blob(8, "tradeFeeNumerator"),
+  BufferLayout.blob(8, "tradeFeeDenominator"),
+  BufferLayout.blob(8, "ownerTradeFeeNumerator"),
+  BufferLayout.blob(8, "ownerTradeFeeDenominator"),
+  BufferLayout.blob(8, "ownerWithdrawFeeNumerator"),
+  BufferLayout.blob(8, "ownerWithdrawFeeDenominator"),
+  BufferLayout.blob(8, "hostFeeNumerator"),
+  BufferLayout.blob(8, "hostFeeDenominator"),
+  BufferLayout.u8("curveType"),
+  publicKey("curveParameters"),
+])
+
 const parseReserve = (info) => {
   const pubkey = PublicKey.default
   const { data } = info;
@@ -469,6 +492,7 @@ const customDecoders = {
   reserve: parseReserve,
   mint: defaultParseLayout(MintLayout),
   account: defaultParseLayout(AccountLayout),
+  tokenSwap: defaultParseLayout(TokenSwapLayout),
 }
 
 function decodeAccount(layout, accountInfo) {
