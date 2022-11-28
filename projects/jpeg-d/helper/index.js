@@ -53,7 +53,7 @@ const VAULT_ARRAY = [
 
 async function getTVL(balances, chain, timestamp, chainBlocks) {
     // Fetch positions from vaults
-    const { output: totalChainlinkedPositions } = await sdk.api.abi.multiCall({
+    const { output: positions } = await sdk.api.abi.multiCall({
         calls: VAULT_ARRAY.map((address) => ({
             target: address,
         })),
@@ -64,13 +64,24 @@ async function getTVL(balances, chain, timestamp, chainBlocks) {
         chain,
     })
 
-    // Fetch floor prices from price feeds set in the vaults
-    const { output: floorPrices } = await sdk.api.abi.multiCall({
-        calls: VAULT_ARRAY.map((address, i) => ({
-            target: address, params: totalChainlinkedPositions[i].output > 0 ? totalChainlinkedPositions[i].output - 1 : 0
+    const { output: valueProviders } = await sdk.api.abi.multiCall({
+        calls: VAULT_ARRAY.map((address) => ({
+            target: address,
         })),
         abi: abi.VAULT_ABI.find(
-            (a) => a.name === "getNFTValueETH"
+            (a) => a.name === "nftValueProvider"
+        ),
+        block: chainBlocks[chain],
+        chain,
+    })
+
+    // Fetch floor prices from price feeds set in the vaults
+    const { output: floorPrices } = await sdk.api.abi.multiCall({
+        calls: valueProviders.map((item) => ({
+            target: item.output,
+        })),
+        abi: abi.VALUE_PROVIDER_ABI.find(
+            (a) => a.name === "getFloorETH"
         ),
         block: chainBlocks[chain],
         chain,
@@ -78,9 +89,9 @@ async function getTVL(balances, chain, timestamp, chainBlocks) {
 
     // Calculate total TVL in ETH terms
     let collateralValueETH = 0;
-    for (let i = 0; i < totalChainlinkedPositions.length; i++) {
+    for (let i = 0; i < positions.length; i++) {
         const floorPrice = floorPrices[i].output;
-        const position = totalChainlinkedPositions[i].output;
+        const position = positions[i].output;
         collateralValueETH += position * floorPrice;
     }
 
