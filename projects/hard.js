@@ -1,5 +1,4 @@
-const retry = require('./helper/retry')
-const axios = require("axios");
+const { get } = require('./helper/http')
 
 const KAVA_DENOM = "ukava";
 const HARD_DENOM = "hard";
@@ -35,10 +34,10 @@ const decimals = {
 
 var tvl = async () => {
     const balances = {}
-    const totalDeposited = await retry(async bail => await axios.get('https://api2.kava.io/hard/total-deposited'))
-    const totalBorrowed = await retry(async bail => await axios.get('https://api2.kava.io/hard/total-borrowed'))
-    for(const coin of totalDeposited.data.result){
-        const borrowed = Number(totalBorrowed.data.result.find(item=>item.denom === coin.denom)?.amount || 0);
+    const totalDeposited = await get('https://api2.kava.io/hard/total-deposited')
+    const totalBorrowed = await get('https://api2.kava.io/hard/total-borrowed')
+    for(const coin of totalDeposited.result){
+        const borrowed = Number(totalBorrowed.result.find(item=>item.denom === coin.denom)?.amount || 0);
         balances[coingeckoIds[coin.denom]]=(Number(coin.amount)-borrowed)/(10**decimals[coin.denom]);
     }
     return balances;
@@ -46,8 +45,8 @@ var tvl = async () => {
 
 var borrowed = async () => {
     const balances = {}
-    const totalBorrowed = await retry(async bail => await axios.get('https://api2.kava.io/hard/total-borrowed'))
-    for(const coin of totalBorrowed.data.result){
+    const totalBorrowed = await get('https://api2.kava.io/hard/total-borrowed')
+    for(const coin of totalBorrowed.result){
         balances[coingeckoIds[coin.denom]]=Number(coin.amount)/(10**decimals[coin.denom]);
     }
     return balances;

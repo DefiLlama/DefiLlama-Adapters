@@ -6,6 +6,8 @@ const { Connection, PublicKey, Keypair } = require("@solana/web3.js")
 const { AnchorProvider: Provider, Wallet, } = require("@project-serum/anchor");
 const BufferLayout = require("@solana/buffer-layout")
 const { sleep, sliceIntoChunks, log, } = require('./utils')
+const { decodeAccount } = require('./utils/solana/layout')
+
 const sdk = require('@defillama/sdk')
 const tokenMapping = tokens
 
@@ -256,8 +258,28 @@ async function sumOrcaLPs(tokensAndAccounts) {
   return totalUsdValue;
 }
 
-function exportDexTVL(DEX_PROGRAM_ID) {
+function exportDexTVL(DEX_PROGRAM_ID, getTokenAccounts) {
   return async () => {
+    if (!getTokenAccounts) getTokenAccounts = _getTokenAccounts
+
+    const tokenAccounts = await getTokenAccounts()
+
+    const chunks = sliceIntoChunks(tokenAccounts, 99)
+    const results = []
+    for (const chunk of chunks)
+      results.push(...await getTokenAccountBalances(chunk, { individual: true }))
+
+    const data = []
+    for (let i = 0; i < results.length; i = i + 2) {
+      const tokenA = results[i]
+      const tokenB = results[i + 1]
+      data.push({ token0: tokenA.mint, token0Bal: tokenA.amount, token1: tokenB.mint, token1Bal: tokenB.amount, })
+    }
+
+    return transformDexBalances({ chain: 'solana', data, blacklistedTokens, })
+  }
+
+  async function _getTokenAccounts() {
     const connection = getConnection()
 
     const TokenSwapLayout = BufferLayout.struct([
@@ -293,19 +315,7 @@ function exportDexTVL(DEX_PROGRAM_ID) {
       tokenAccounts.push(new PublicKey(tokenSwap.tokenAccountB).toString())
     });
 
-    const chunks = sliceIntoChunks(tokenAccounts, 99)
-    const results = []
-    for (const chunk of chunks)
-      results.push(...await getTokenAccountBalances(chunk, { individual: true }))
-
-    const data = []
-    for (let i = 0; i < results.length; i = i + 2) {
-      const tokenA = results[i]
-      const tokenB = results[i + 1]
-      data.push({ token0: tokenA.mint, token0Bal: tokenA.amount, token1: tokenB.mint, token1Bal: tokenB.amount, })
-    }
-
-    return transformDexBalances({ chain: 'solana', data, blacklistedTokens, })
+    return tokenAccounts
   }
 }
 
@@ -370,6 +380,17 @@ async function transformBalances({ tokenBalances, balances = {}, }) {
   return balances
 }
 
+function readBigUInt64LE(buffer, offset) {
+  const first = buffer[offset];
+  const last = buffer[offset + 7];
+  if (first === undefined || last === undefined) {
+    throw new Error();
+  }
+  const lo = first + buffer[++offset] * 2 ** 8 + buffer[++offset] * 2 ** 16 + buffer[++offset] * 2 ** 24;
+  const hi = buffer[++offset] + buffer[++offset] * 2 ** 8 + buffer[++offset] * 2 ** 16 + last * 2 ** 24;
+  return BigInt(lo) + (BigInt(hi) << BigInt(32));
+}
+
 module.exports = {
   endpoint,
   tokens,
@@ -396,4 +417,6 @@ module.exports = {
   getTokenAccountBalances,
   getTokenList,
   getSolTokenMap,
+  readBigUInt64LE,
+  decodeAccount,
 };

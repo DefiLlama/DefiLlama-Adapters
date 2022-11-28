@@ -1,22 +1,18 @@
-const retry = require("../helper/retry");
-const axios = require("axios");
+const { get } = require('../helper/http')
 const { toUSDTBalances } = require("../helper/balances");
 
 async function fetchAvax() {
   const value = (
-    await retry(async (cian) => await axios.get("https://data.cian.app/tvl "))
-  ).data;
+    await get("https://data.cian.app/tvl ")
+  );
 
   return toUSDTBalances(value);
 }
 
 async function fetchPolygon() {
   const value = (
-    await retry(
-      async (cian) =>
-        await axios.get("https://data.cian.app/polygon/api/v1/tvl")
+    await get("https://data.cian.app/polygon/api/v1/tvl")
     )
-  ).data;
 
   return toUSDTBalances(value);
 }
