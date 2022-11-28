@@ -1,10 +1,8 @@
-const retry = require("./helper/retry");
-const axios = require("axios");
-
+const { get } = require('./helper/http')
 async function fetch() {
   const response = (
-    await retry(async (bail) => await axios.get("https://francium.io/api/pools/liquidity"))
-  ).data.data;
+    await get("https://francium.io/api/pools/liquidity")
+  ).data;
 
   const poolLiqArray = response.farm.map(pool => pool.liquidityLocked);
   const lendArray = response.lend.map(pool => pool.available);

@@ -1,11 +1,9 @@
-const retry = require('./helper/retry')
-const axios = require("axios");
+const { get } = require('./helper/http')
 
 async function tvl() {
   let balances = {};
 
-  let deposits = (await retry(async bail => 
-    await axios.get('https://api2.kava.io/cdp/totalCollateral'))).data.result;
+  let deposits = (await get('https://api2.kava.io/cdp/totalCollateral')).result;
   for (let i = 0; i < deposits.length; i++) {
     const info = convertSymbol(deposits[i].amount.denom);
     if (info.id in balances) {
@@ -15,19 +13,7 @@ async function tvl() {
       balances[info.id] = deposits[i].amount.amount / 10 ** info.decimals;
     };
   };
-
-  // let borrowed = (await retry(async bail => 
-  //   await axios.get('https://api2.kava.io/cdp/totalPrincipal'))).data.result;
-  // for (let i = 0; i < borrowed.length; i++) {
-  //   const symbol = borrowed[i].collateral_type.substring(
-  //     0, borrowed[i].collateral_type.indexOf('-'));
-  //   const info = convertSymbol(symbol);
-  //   const tokenPrice = (await retry(async bail => await axios.get(
-  //     `https://api.coingecko.com/api/v3/simple/price?ids=${info.id}&vs_currencies=usd`
-  //     ))).data[info.id].usd;
-  //   const borrowedQty = borrowed[i].amount.amount / (tokenPrice * 10 ** 6);
-  //   balances[info.id] = Number(balances[info.id]) - Number(borrowedQty);
-  // };
+  
   return balances;
 };
 
@@ -60,4 +46,3 @@ module.exports = {
   timetravel: false,
   kava: { tvl }
 };
-// node test.js projects/kava.js

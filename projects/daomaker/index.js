@@ -9,6 +9,7 @@ const chainIds = {
   "bsc": "56",
   "polygon": "137",
   "fantom": "250",
+  "step": "1234",
   "celo": "42220"
 }
 
@@ -35,7 +36,7 @@ function vesting(chain) {
   return async (timestamp, _, { [chain]: block }) => {
     const toa = []
     const vestingContracts = await getVestingData();
-    vestingContracts.filter(i => i.chain_name === chain)
+    vestingContracts.filter(i => i.chain_id.toString() === chainIds[chain])
       .forEach(i => toa.push([i.token_address, i.vesting_smart_contract_address]))
     return sumTokens2({ chain, block, tokensAndOwners: filterDuplicates(toa) })
   };
@@ -45,7 +46,7 @@ function staking(chain) {
     const toa = []
     const contracts = await getStakingData();
     contracts.forEach(({ farms }) => {
-      farms.filter(i => i.chain_id === chainIds[chain])
+      farms.filter(i => i.chain_id.toString() === chainIds[chain])
         .forEach(i => toa.push([i.staking_address, i.farm_address]))
     })
     return sumTokens2({ chain, block, tokensAndOwners: filterDuplicates(toa) })

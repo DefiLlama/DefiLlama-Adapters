@@ -7,8 +7,7 @@ const abi = require("./abi.json");
 const creamAbi = require("../helper/abis/cream.json");
 const contracts = require("./contracts.json");
 const { requery } = require("../helper/requery");
-const { default: axios } = require("axios");
-const retry = require("async-retry");
+const { get } = require('../helper/http')
 const { getBlock } = require("../helper/getBlock");
 const chains = [
   "ethereum", //-200M
@@ -106,7 +105,7 @@ async function fixGasTokenBalances(poolBalances, block, chain) {
     if (
       poolBalances.output[i].success == false &&
       poolBalances.output[i].input.target.toLowerCase() ==
-        contracts[chain].gasTokenDummy
+      contracts[chain].gasTokenDummy
     ) {
       const ethBalance = (await sdk.api.eth.getBalance({
         target: poolBalances.output[i].input.params[0],
@@ -222,7 +221,7 @@ function mapGaugeTokenBalances(calls, chain) {
     }
   };
 
-  return calls.map(function(c) {
+  return calls.map(function (c) {
     let target = c.target;
     if (
       c.target.toLowerCase() in mapping &&
@@ -238,9 +237,8 @@ function mapGaugeTokenBalances(calls, chain) {
 }
 
 async function unwrapSdTokens(balances, sdTokens, chain) {
-  const apiData = (await retry(
-    async bail => await axios.get("https://lockers.stakedao.org/api/lockers")
-  )).data.map(t => ({
+  const apiData = (await get("https://lockers.stakedao.org/api/lockers")
+  ).map(t => ({
     address: t.tokenReceipt.address.toLowerCase(),
     usdPrice: t.tokenPriceUSD,
     decimals: t.tokenReceipt.decimals
@@ -266,13 +264,8 @@ async function handleUnlistedFxTokens(balances, chain) {
     const tokens = Object.values(contracts[chain].fxTokens);
     for (let token of tokens) {
       if (token.address in balances) {
-        const [{ data: rate }, { output: decimals }] = await Promise.all([
-          retry(
-            async bail =>
-              await axios.get(
-                `https://api.exchangerate.host/convert?from=${token.currency}&to=USD`
-              )
-          ),
+        const [rate, { output: decimals }] = await Promise.all([
+          get(`https://api.exchangerate.host/convert?from=${token.currency}&to=USD`),
           sdk.api.erc20.decimals(token.address, chain)
         ]);
 
