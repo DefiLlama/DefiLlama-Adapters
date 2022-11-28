@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 const path = require("path");
 require("dotenv").config();
-const { getCurrentBlocks } = require("@defillama/sdk/build/computeTVL/blocks");
-const {
-  humanizeNumber,
-} = require("@defillama/sdk/build/computeTVL/humanizeNumber");
+const { util: {
+  blocks: { getCurrentBlocks },
+  humanizeNumber: { humanizeNumber },
+} } = require("@defillama/sdk");
 const { util } = require("@defillama/sdk");
 const sdk = require("@defillama/sdk");
 const whitelistedExportKeys = require('./projects/helper/whitelistedExportKeys.json')
