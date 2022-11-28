@@ -26,23 +26,24 @@ async function tvl(timestamp, block, chainBlocks) {
     const transformAddress = await getChainTransform(chain)
 
     const ethManagementWindow = (await sdk.api.abi.call({
-        target: addresses.ethVault,
-        abi: abi.MANAGEMENT_WINDOW_OPEN,
+        target: addresses.ethVaultV3,
+        abi: abi.state,
         block,
         chain
     })).output; // node test.js projects/jones-dao/index.js
 
     if (ethManagementWindow === true) {
         const ethSnapshot = (await sdk.api.abi.call({
-            target: addresses.ethVault,
-            abi: abi.snapshotVaultBalance,
+            target: addresses.ethVaultV3,
+            abi: abi.totalAssets,
             block,
             chain
         })).output;
         sdk.util.sumSingleBalance(balances, "arbitrum:0x82af49447d8a07e3bd95bd0d56f35241523fbab1", ethSnapshot);
+        console.log("test=>" + ethSnapshot / 1e18);
     } else {
         const ethBalance = (await sdk.api.eth.getBalance({
-            target: addresses.ethVault,
+            target: addresses.ethVaultV3,
             block,
             chain
         })).output;
@@ -113,12 +114,12 @@ async function tvl(timestamp, block, chainBlocks) {
             transformAddress
         );
     }
-
+    
     const vaultManagementWindows = (await sdk.api.abi.multiCall({
         calls: addresses.vaultandCollateral.map(p => ({
             target: p[0]
         })),
-        abi: abi.MANAGEMENT_WINDOW_OPEN,
+        abi: abi.state,
         block,
         chain
     })).output;
@@ -127,7 +128,7 @@ async function tvl(timestamp, block, chainBlocks) {
         calls: addresses.vaultandCollateral.map(p => ({
             target: p[0]
         })),
-        abi: abi.snapshotVaultBalance,
+        abi: abi.snapshotAssetBalance,
         block,
         chain
     })).output;
@@ -142,21 +143,10 @@ async function tvl(timestamp, block, chainBlocks) {
         chain
     })).output;
 
-    const vaultAssetBalances = (await sdk.api.abi.multiCall({
-        calls: addresses.vaultandCollateral.map(p => ({
-            target: p[0]
-        })),
-        abi: abi.snapshotAssetBalance,
-        block,
-        chain
-    })).output;
-
     for (let i = 0; i < addresses.vaultandCollateral.length; i++) {
         if (vaultManagementWindows[i].output === true) {
             sdk.util.sumSingleBalance(balances, `arbitrum:${addresses.vaultandCollateral[i][1]}`, vaultSnapshots[i].output);
-        } else if (vaultAssetBalances[i].success === true) {
-           sdk.util.sumSingleBalance(balances, `arbitrum:${addresses.vaultandCollateral[i][1]}`, vaultAssetBalances[i].output);
-        } else {
+        }  else {
            sdk.util.sumSingleBalance(balances, `arbitrum:${addresses.vaultandCollateral[i][1]}`, vaultBalances[i].output);
         }
     }
