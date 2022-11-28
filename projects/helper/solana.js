@@ -6,6 +6,8 @@ const { Connection, PublicKey, Keypair } = require("@solana/web3.js")
 const { AnchorProvider: Provider, Wallet, } = require("@project-serum/anchor");
 const BufferLayout = require("@solana/buffer-layout")
 const { sleep, sliceIntoChunks, log, } = require('./utils')
+const { decodeAccount } = require('./utils/solana/layout')
+
 const sdk = require('@defillama/sdk')
 const tokenMapping = tokens
 
@@ -416,4 +418,5 @@ module.exports = {
   getTokenList,
   getSolTokenMap,
   readBigUInt64LE,
+  decodeAccount,
 };
